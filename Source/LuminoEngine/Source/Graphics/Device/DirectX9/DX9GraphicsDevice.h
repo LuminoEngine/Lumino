@@ -42,7 +42,7 @@ public:
 	void initialize(const ConfigData& configData);
 
 	/// FileManager
-	FileManager* GetFileManager() { return m_fileManager; }
+	FileManager* getFileManager() { return m_fileManager; }
 
 	/// IDirect3DDevice9 取得
 	IDirect3DDevice9* GetIDirect3DDevice9() { return m_dxDevice; }
@@ -60,9 +60,9 @@ public:
 public:
 	virtual void Finalize() override;
 	virtual bool IsStandalone() const override { return m_direct3D != NULL; }
-	virtual GraphicsAPI GetGraphicsAPI() const override { return GraphicsAPI::DirectX9; }
+	virtual GraphicsAPI getGraphicsAPI() const override { return GraphicsAPI::DirectX9; }
 	virtual ISwapChain* GetDefaultSwapChain() override;
-	virtual IRenderer* GetRenderer() override { return m_renderer; }
+	virtual IRenderer* getRenderer() override { return m_renderer; }
 	virtual RefPtr<IVertexDeclaration> CreateVertexDeclarationImplement(const VertexElement* elements, int elementsCount) override;
 	virtual RefPtr<IVertexBuffer> CreateVertexBufferImplement(size_t bufferSize, const void* data, ResourceUsage usage) override;
 	virtual RefPtr<IIndexBuffer> CreateIndexBufferImplement(int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage) override;
@@ -75,8 +75,8 @@ public:
 	virtual RefPtr<ISwapChain> CreateSwapChainImplement(PlatformWindow* window) override;
 	virtual DeviceState GetDeviceState()  override { return m_deviceState; }
 	virtual void ResetDevice() override;
-	virtual void OnLostDevice() override;
-	virtual void OnResetDevice() override;
+	virtual void onLostDevice() override;
+	virtual void onResetDevice() override;
 	virtual void FlushResource() override {}
 
 private:

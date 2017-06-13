@@ -13,7 +13,7 @@ enum class NotifyCollectionChangedAction
 	Move,		/**< コレクション内で 1 つ以上の項目が移動されました。*/
 	Remove,		/**< 1 つ以上の項目がコレクションから削除されました。*/
 	replace,	/**< コレクション内で 1 つ以上の項目が置き換えられました。*/
-	Reset,		/**< コレクションの内容が大幅に変更されました。*/
+	reset,		/**< コレクションの内容が大幅に変更されました。*/
 };
 
 struct ChildCollectionChangedArgs

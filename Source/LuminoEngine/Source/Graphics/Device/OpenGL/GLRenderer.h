@@ -26,7 +26,7 @@ public:
 	void Activate();
 	void Deactivate();
 
-	/// ShaderPass::Begin から呼ばれる
+	/// ShaderPass::begin から呼ばれる
 	void SetCurrentShaderPass(GLShaderPass* pass) { m_currentShaderPass = pass; }
 
 	GLuint GetVertexArrayObject();

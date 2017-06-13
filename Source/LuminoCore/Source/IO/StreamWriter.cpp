@@ -41,7 +41,7 @@ void StreamWriter::init(Stream* stream, Encoding* encoding)
 {
 	// encoding –¢Žw’è‚Å‚ ‚ê‚Î UTF8 ‚Æ‚·‚é
 	if (encoding == NULL) {
-		encoding = Encoding::GetUTF8Encoding();
+		encoding = Encoding::getUTF8Encoding();
 	}
 
 	m_stream = stream;

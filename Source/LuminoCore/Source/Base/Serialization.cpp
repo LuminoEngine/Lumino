@@ -78,7 +78,7 @@ void ScVariantCore::setMap()
 }
 
 ////------------------------------------------------------------------------------
-//void ScVariantCore::Serialize(Archive& ar, int version)
+//void ScVariantCore::serialize(Archive& ar, int version)
 //{
 //	if (ar.IsSaving())
 //	{
@@ -140,7 +140,7 @@ ScVariantType ScVariant::getType() const
 //------------------------------------------------------------------------------
 void ScVariant::setInt(int value)
 {
-	if (m_core == nullptr) m_core = NewObject<ScVariantCore>();
+	if (m_core == nullptr) m_core = newObject<ScVariantCore>();
 	m_core->setInt(value);
 }
 
@@ -154,7 +154,7 @@ int ScVariant::getInt() const
 //------------------------------------------------------------------------------
 void ScVariant::setString(const StringRef& value)
 {
-	if (m_core == nullptr) m_core = NewObject<ScVariantCore>();
+	if (m_core == nullptr) m_core = newObject<ScVariantCore>();
 	m_core->setString(value);
 }
 
@@ -187,7 +187,7 @@ void ScVariant::loadInternal(ISerializeElement* value)
 		{
 			if (m_core == nullptr)
 			{
-				m_core = NewObject<ScVariantCore>();
+				m_core = newObject<ScVariantCore>();
 			}
 			switch (type)
 			{
@@ -249,7 +249,7 @@ void ScVariant::loadInternal(ISerializeElement* value)
 	{
 		if (m_core == nullptr)
 		{
-			m_core = NewObject<ScVariantCore>();
+			m_core = newObject<ScVariantCore>();
 		}
 		m_core->setList();
 		int count = value->getSerializeElementCount();
@@ -265,7 +265,7 @@ void ScVariant::loadInternal(ISerializeElement* value)
 	{
 		if (m_core == nullptr)
 		{
-			m_core = NewObject<ScVariantCore>();
+			m_core = newObject<ScVariantCore>();
 		}
 		m_core->setMap();
 		int count = value->getSerializeElementCount();
@@ -295,15 +295,15 @@ const TCHAR* Archive::ClassBaseDefaultNameKey = _T("_ln_class_base");
 //------------------------------------------------------------------------------
 RefPtr<ReflectionObject> Archive::createObject(const String& className, TypeInfo* requestedType)
 {
-	if (className == requestedType->GetName())
+	if (className == requestedType->getName())
 	{
 		// 格納したい変数の型と同じなら型情報を総検索する必要は無い
-		return requestedType->CreateInstance();
+		return requestedType->createInstance();
 	}
 	else
 	{
-		auto* typeInfo = TypeInfo::FindTypeInfo(className);
-		return typeInfo->CreateInstance();
+		auto* typeInfo = TypeInfo::findTypeInfo(className);
+		return typeInfo->createInstance();
 	}
 }
 

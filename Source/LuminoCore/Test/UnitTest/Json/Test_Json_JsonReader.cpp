@@ -33,7 +33,7 @@ public:
 //---------------------------------------------------------------------
 TEST_F(Test_Json_JsonReader, Basic)
 {
-	String str = FileSystem::readAllText(LN_LOCALFILE("TestData/ReaderTest1.txt"), Encoding::GetSystemMultiByteEncoding());
+	String str = FileSystem::readAllText(LN_LOCALFILE("TestData/ReaderTest1.txt"), Encoding::getSystemMultiByteEncoding());
 	TestJsonHandler handler;
 	JsonReader reader(&handler);
 	reader.parse(str);

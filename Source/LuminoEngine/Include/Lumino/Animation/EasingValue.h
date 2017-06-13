@@ -40,7 +40,7 @@ public:
 		m_targetValue = targetValue;
 		m_totalTime = time;
 		m_currentTime = 0.0;
-		SetTime(m_currentTime);
+		getTime(m_currentTime);
 	}
 
 	/**
@@ -54,13 +54,13 @@ public:
 		m_targetValue = targetValue;
 		m_totalTime = time;
 		m_currentTime = 0.0;
-		SetTime(m_currentTime);
+		getTime(m_currentTime);
 	}
 	
 	/**
 		@brief      アニメーションの繰り返し方法を設定します。
 	*/
-	void SetWrapMode(WrapMode mode)
+	void setWrapMode(WrapMode mode)
 	{
 		m_wrapMode = mode;
 	}
@@ -68,7 +68,7 @@ public:
 	/**
 		@brief      イージング関数を設定します。
 	*/
-	void SetEasingFunction(EasingFunction easing)
+	void eetEasingFunction(EasingFunction easing)
 	{
 		m_easing = easing;
 	}
@@ -76,19 +76,19 @@ public:
 	/**
 		@brief      経過時間を設定します。
 	*/
-	void SetTime(const TTime& time)
+	void getTime(const TTime& time)
 	{
 		m_currentTime = time;
-		UpdateValue();
+		updateValue();
 	}
 
 	/**
 		@brief      指定した値だけ時間を進めます。
 	*/
-	void AdvanceTime(const TTime& deltaTime)
+	void advanceTime(const TTime& deltaTime)
 	{
 		m_currentTime += deltaTime;
-		UpdateValue();
+		updateValue();
 	}
 
 	/**
@@ -100,27 +100,27 @@ public:
 	/**
 		@brief      開始値を取得します。
 	*/
-	const TValue& GetStartValue() const { return m_startValue; }
+	const TValue& getStartValue() const { return m_startValue; }
 	
 	/**
 		@brief      終了値を取得します。
 	*/
-	const TValue& GetTargetValue() const { return m_targetValue; }
+	const TValue& getTargetValue() const { return m_targetValue; }
 
 	/**
 		@brief      現在の経過時間を取得します。
 	*/
-	const TTime& GetTime() const { return m_currentTime; }
+	const TTime& getTime() const { return m_currentTime; }
 
 	/**
 		@brief      値の遷移が完了しているかを確認します。
 	*/
-	bool IsFinished() const { return (m_currentTime >= m_totalTime); }
+	bool isFinished() const { return (m_currentTime >= m_totalTime); }
 
 	
 private:
 
-	void UpdateValue()
+	void updateValue()
 	{
 		TTime time;
 		switch (m_wrapMode)

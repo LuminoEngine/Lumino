@@ -50,7 +50,7 @@ public:
 	void StopVibration();
 
 	/// フレーム更新
-	void Update();
+	void update();
 
 private:
 

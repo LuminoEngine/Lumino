@@ -107,7 +107,7 @@ void DX9GraphicsDevice::initialize(const ConfigData& configData)
 	m_renderer = LN_NEW DX9Renderer(this);
 
 	if (m_defaultSwapChain != NULL) {
-		m_defaultSwapChain->PostInitialize();
+		m_defaultSwapChain->postInitialize();
 	}
 
 
@@ -170,7 +170,7 @@ RefPtr<ITexture> DX9GraphicsDevice::CreateTextureImplement(const SizeI& size, bo
 {
 	RefPtr<DX9Texture> obj(LN_NEW DX9Texture(this, size, format, mipmap), false);
 	if (initialData != nullptr) {
-		obj->SetSubData(PointI(0, 0), initialData, Utils::GetTextureFormatByteCount(format) * size.width * size.height, size);
+		obj->setSubData(PointI(0, 0), initialData, Utils::getTextureFormatByteCount(format) * size.width * size.height, size);
 	}
 	return obj;
 }
@@ -192,7 +192,7 @@ RefPtr<ITexture> DX9GraphicsDevice::CreateTexture3DImplement(int width, int heig
 	RefPtr<DX9Texture3D> obj(LN_NEW DX9Texture3D(this), false);
 	obj->initialize(width, height, depth, format, mipLevels);
 	if (initialData != nullptr) {
-		obj->SetSubData3D(Box32::Zero, initialData, Utils::GetTextureFormatByteCount(format) * width * height * depth);
+		obj->SetSubData3D(Box32::Zero, initialData, Utils::getTextureFormatByteCount(format) * width * height * depth);
 	}
 	return obj;
 }
@@ -234,34 +234,34 @@ RefPtr<ISwapChain> DX9GraphicsDevice::CreateSwapChainImplement(PlatformWindow* w
 //------------------------------------------------------------------------------
 void DX9GraphicsDevice::ResetDevice()
 {
-	// 先に OnLostDevice() を呼ぶこと
+	// 先に onLostDevice() を呼ぶこと
 	LN_THROW(m_deviceState == DeviceState_Pausing, InvalidOperationException);
 
 	ResetDevice(false);
 }
 
 //------------------------------------------------------------------------------
-void DX9GraphicsDevice::OnLostDevice()
+void DX9GraphicsDevice::onLostDevice()
 {
 	m_deviceState = DeviceState_Pausing;
 
-	m_renderer->OnLostDevice();
-	m_defaultSwapChain->OnLostDevice();
+	m_renderer->onLostDevice();
+	m_defaultSwapChain->onLostDevice();
 	for (int i = 0; i < m_deviceObjectList.getCount(); i++) {
-		m_deviceObjectList[i]->OnLostDevice();
+		m_deviceObjectList[i]->onLostDevice();
 	}
 
 	// TODO: DepthBuffer がどんどん増え続けている
 }
 
 //------------------------------------------------------------------------------
-void DX9GraphicsDevice::OnResetDevice()
+void DX9GraphicsDevice::onResetDevice()
 {
 	for (int i = m_deviceObjectList.getCount() - 1; i >= 0; i--) {
-		m_deviceObjectList[i]->OnResetDevice();
+		m_deviceObjectList[i]->onResetDevice();
 	}
-	m_defaultSwapChain->OnResetDevice();
-	m_renderer->OnResetDevice();
+	m_defaultSwapChain->onResetDevice();
+	m_renderer->onResetDevice();
 
 	m_deviceState = DeviceState_Enabled;
 }

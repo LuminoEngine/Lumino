@@ -13,7 +13,7 @@ class OffscreenWorldView
 	: public RenderView
 {
 public:
-	RenderTargetTexture* GetRenderTarget() const;
+	RenderTargetTexture* getRenderTarget() const;
 
 	void HideVisual(VisualComponent* renderObject);
 

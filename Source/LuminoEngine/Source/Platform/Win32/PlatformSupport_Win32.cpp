@@ -10,12 +10,12 @@ LN_NAMESPACE_BEGIN
 void PlatformSupport::ShowAlertMessageBox(const TCHAR* message) LN_NOEXCEPT
 {
 	HWND owner = NULL;
-	PlatformManager* manager = PlatformManager::GetInstance();
+	PlatformManager* manager = PlatformManager::getInstance();
 	if (manager != nullptr)
 	{
 		try
 		{
-			owner = GetWindowHandle(manager->GetMainWindow());
+			owner = GetWindowHandle(manager->getMainWindow());
 		}
 		catch (...)
 		{

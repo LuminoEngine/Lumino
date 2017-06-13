@@ -26,8 +26,8 @@ TEST_F(Test_Scripting, Basic)
 	auto node1 = RefPtr<NlNode_Print>::makeRef();
 	auto node2 = RefPtr<NlNode_Add>::makeRef();
 
-	node2->GetDataInputLhsPin()->GetValueCache()->SetValue(200);
-	node2->GetDataInputRhsPin()->GetValueCache()->SetValue(300);
+	node2->GetDataInputLhsPin()->GetValueCache()->setValue(200);
+	node2->GetDataInputRhsPin()->GetValueCache()->setValue(300);
 
 	nlif->GetGraph()->AddGraphNode(node1);
 	nlif->GetGraph()->AddGraphNode(node2);

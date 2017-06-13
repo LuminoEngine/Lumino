@@ -37,8 +37,8 @@ public:
 	RawFont* GetFont() const;
 	void setText(const UTF32* str, int len);	// TODO: internal
 	void setText(const StringRef& text);
-	void SetTextAlignment(TextAlignment align);	// TODO: Run に持たせるべき？
-	const SizeI& GetRenderSize();
+	void SetTextAlignment(TextAlignment align);	// TODO: run に持たせるべき？
+	const SizeI& getRenderSize();
 
 	/** 行頭からの指定した距離に対応する文字ヒットを取得します。*/
 	bool GetCharacterHitFromDistance(const PointF& pos, GlyphHit* outResult);

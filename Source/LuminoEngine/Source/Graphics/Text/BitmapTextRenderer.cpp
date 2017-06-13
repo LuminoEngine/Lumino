@@ -45,7 +45,7 @@ void BitmapTextRenderer::DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const 
 	RawFont* font = glyphRun->GetFont();
 
 	auto& items = glyphRun->RequestLayoutItems();
-	auto& renderSize = glyphRun->GetRenderSize();
+	auto& renderSize = glyphRun->getRenderSize();
 
 	PointI offset(0, 0);
 	switch (m_textAlignment)
@@ -86,7 +86,7 @@ void BitmapTextRenderer::DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const 
 				item.Location.BitmapSize.width,
 				item.Location.BitmapSize.height);
 			srcRect.set(0, 0, gb->OutlineBitmap->getSize());
-			target->BitBlt(dstRect, gb->OutlineBitmap, srcRect, strokeColor, true);
+			target->bitBlt(dstRect, gb->OutlineBitmap, srcRect, strokeColor, true);
 		}
 
 		// 内側 (or 通常) 部分の描画
@@ -98,7 +98,7 @@ void BitmapTextRenderer::DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const 
 				item.Location.BitmapSize.width,
 				item.Location.BitmapSize.height);
 			srcRect.set(0, 0, gb->GlyphBitmap->getSize());
-			target->BitBlt(dstRect, gb->GlyphBitmap, srcRect, fillColor, true);
+			target->bitBlt(dstRect, gb->GlyphBitmap, srcRect, fillColor, true);
 		}
 	}
 }

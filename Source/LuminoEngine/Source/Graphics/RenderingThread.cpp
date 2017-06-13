@@ -13,8 +13,8 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 RenderingThread::RenderingThread()
 	: m_exception(NULL)
 {
-	m_running.SetFalse();
-	m_endRequested.SetFalse();
+	m_running.setFalse();
+	m_endRequested.setFalse();
 }
 
 //------------------------------------------------------------------------------
@@ -24,41 +24,41 @@ RenderingThread::~RenderingThread()
 }
 
 //------------------------------------------------------------------------------
-void RenderingThread::Reset(Driver::IGraphicsDevice* device)
+void RenderingThread::reset(Driver::IGraphicsDevice* device)
 {
 	m_device = device;
-	m_renderer = m_device->GetRenderer();
+	m_renderer = m_device->getRenderer();
 }
 
 //------------------------------------------------------------------------------
 void RenderingThread::Dispose()
 {
 	// 終了要求を出して待つ
-	m_endRequested.SetTrue();
-	m_running.SetTrue();
-	Wait();
+	m_endRequested.setTrue();
+	m_running.setTrue();
+	wait();
 
 	// 残っているコマンドはすべて破棄
 	MutexScopedLock lock(m_mutex);
 	for (RenderingCommandList* c : m_commandListQueue)
 	{
-		c->PostExecute();		// TODO: デストラクタでやるべきかも？
-		c->m_running.SetFalse();
-		c->m_idling.SetTrue();
+		c->postExecute();		// TODO: デストラクタでやるべきかも？
+		c->m_running.setFalse();
+		c->m_idling.setTrue();
 		c->release();
 	}
 	m_commandListQueue.clear();
 }
 
 //------------------------------------------------------------------------------
-void RenderingThread::PushRenderingCommand(RenderingCommandList* commandList)
+void RenderingThread::pushRenderingCommand(RenderingCommandList* commandList)
 {
 	MutexScopedLock lock(m_mutex);
 	m_commandListQueue.push_back(commandList);
-	commandList->m_running.SetTrue();
-	commandList->m_idling.SetFalse();
+	commandList->m_running.setTrue();
+	commandList->m_idling.setFalse();
 	commandList->addRef();
-	m_running.SetTrue();
+	m_running.setTrue();
 
 	// 既に描画スレッド例外していれば、それを再 throw する。
 	// （↑受け取ったコマンドリストは Release を実行するため、とりあえずキューに入れておく）
@@ -68,14 +68,14 @@ void RenderingThread::PushRenderingCommand(RenderingCommandList* commandList)
 }
 
 //------------------------------------------------------------------------------
-void RenderingThread::RequestPauseAndWait()
+void RenderingThread::requestPauseAndWait()
 {
 	// TODO: このスピンロックは何とかしたいが…
-	while (m_running.IsTrue()) { Thread::Sleep(1); }
+	while (m_running.isTrue()) { Thread::sleep(1); }
 }
 
 //------------------------------------------------------------------------------
-void RenderingThread::RequestResume()
+void RenderingThread::requestResume()
 {
 }
 
@@ -98,12 +98,12 @@ void RenderingThread::execute()
 			}
 			else {
 				// コマンドリストがなかった。待機状態にする。Mutex でロックされているのでこの直前に true になっていることはない
-				m_running.SetFalse();
+				m_running.setFalse();
 			}
 		}
 
 		// コマンドリストのキューをチェックした後、キューが空で、かつ終了要求が来ている場合は終了する
-		if (m_running.IsFalse() && m_endRequested.IsTrue())
+		if (m_running.isFalse() && m_endRequested.isTrue())
 		{
 			break;
 		}
@@ -127,15 +127,15 @@ void RenderingThread::execute()
 					m_exception = e.copy();
 				}
 			}
-			commandList->PostExecute();
-			//commandList->m_running.SetFalse();
-			commandList->m_idling.SetTrue();
+			commandList->postExecute();
+			//commandList->m_running.setFalse();
+			commandList->m_idling.setTrue();
 			commandList->release();
 		}
 		else
 		{
 			// 処理するコマンドがない。true になるまで待機する
-			m_running.Wait();
+			m_running.wait();
 		}
 	}
 

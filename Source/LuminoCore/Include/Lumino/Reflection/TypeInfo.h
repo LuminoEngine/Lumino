@@ -35,14 +35,14 @@ namespace detail
 	{};
 	template<class TObject> struct ObjectFactorySelector<TObject, std::false_type>
 	{
-		static ObjectFactory GetFactory()
+		static ObjectFactory getFactory()
 		{
-			return []() { return RefPtr<ReflectionObject>::staticCast(NewObject<TObject>()); };
+			return []() { return RefPtr<ReflectionObject>::staticCast(newObject<TObject>()); };
 		}
 	};
 	template<class TObject> struct ObjectFactorySelector<TObject, std::true_type>
 	{
-		static ObjectFactory GetFactory()
+		static ObjectFactory getFactory()
 		{
 			return nullptr;
 		}
@@ -58,38 +58,38 @@ public:
 		return &static_cast<T*>(thisObj)->lnref_localValueHavingFlags;
 	}
 	template<class T>
-	static TypeInfo* GetClassTypeInfo()
+	static TypeInfo* getClassTypeInfo()
 	{
 		return &T::lnref_typeInfo;
 	}
 	template<class T>
-	static void SetBindingTypeInfo(void* data)
+	static void setBindingTypeInfo(void* data)
 	{
 		T::lnref_bindingTypeInfo = data;
 	}
 	template<class T>
-	static void* GetBindingTypeInfo()
+	static void* getBindingTypeInfo()
 	{
 		return T::lnref_bindingTypeInfo;
 	}
 	template<class T>
-	static TypeInfo* GetTypeInfo(const T* obj)
+	static TypeInfo* getTypeInfo(const T* obj)
 	{
 		return obj->lnref_GetThisTypeInfo();
 	}
 	template<class T>
-	inline static TypeInfo* GetTypeInfo()
+	inline static TypeInfo* getTypeInfo()
 	{
 		return &T::lnref_typeInfo;
 	}
 
 	template<class T>
-	inline static detail::WeakRefInfo* RequestWeakRefInfo(T* obj)
+	inline static detail::WeakRefInfo* requestWeakRefInfo(T* obj)
 	{
-		return obj->RequestWeakRefInfo();
+		return obj->requestWeakRefInfo();
 	}
 	template<class T, class TData>
-	inline static TData* RequestAnimationData(T* obj)
+	inline static TData* requestAnimationData(T* obj)
 	{
 		if (obj->m_animationData == nullptr)
 		{
@@ -98,22 +98,22 @@ public:
 		return static_cast<TData*>(obj->m_animationData);
 	}
 
-	static void AddGCObject(ReflectionObject* obj, ReflectionObject* child);
-	static void RemoveGCObject(ReflectionObject* obj, ReflectionObject* child);
-	static void GCObjects(ReflectionObject* obj);
-	static bool IsGCReady(ReflectionObject* obj);
+	static void addGCObject(ReflectionObject* obj, ReflectionObject* child);
+	static void removeGCObject(ReflectionObject* obj, ReflectionObject* child);
+	static void gcObjects(ReflectionObject* obj);
+	static bool isGCReady(ReflectionObject* obj);
 
 	template<class TList>
-	inline static void GCObjectList(TList* list)
+	inline static void gcObjectList(TList* list)
 	{
-		list->removeAll([](typename TList::value_type& obj) { return IsGCReady(obj); });
+		list->removeAll([](typename TList::value_type& obj) { return isGCReady(obj); });
 	}
 
 
 
-	static int32_t GetInternalReferenceCount(RefObject* obj) { return obj->m_internalReferenceCount; }
-	static void AddRefInternal(RefObject* obj) { obj->m_internalReferenceCount++; }
-	static void ReleaseInternal(RefObject* obj) { obj->releaseInternal(); }
+	static int32_t getInternalReferenceCount(RefObject* obj) { return obj->m_internalReferenceCount; }
+	static void addRefInternal(RefObject* obj) { obj->m_internalReferenceCount++; }
+	static void releaseInternal(RefObject* obj) { obj->releaseInternal(); }
 };
 
 /**
@@ -130,7 +130,7 @@ public:
 
 	struct ConstructArg
 	{
-		virtual void DoSet(TypeInfo* typeInfo) = 0;
+		virtual void doSet(TypeInfo* typeInfo) = 0;
 	};
 	template<class T>
 	struct ClassVersion : public ConstructArg
@@ -139,10 +139,10 @@ public:
 			: m_version(version)
 		{}
 
-		virtual void DoSet(TypeInfo* typeInfo) override
+		virtual void doSet(TypeInfo* typeInfo) override
 		{
 			typeInfo->m_serializeClassVersion = m_version;
-			typeInfo->m_factory = ::tr::detail::ObjectFactorySelector<T, std::is_abstract<T>::type>::GetFactory();
+			typeInfo->m_factory = ::tr::detail::ObjectFactorySelector<T, std::is_abstract<T>::type>::getFactory();
 		}
 
 		int m_version;
@@ -160,15 +160,15 @@ public:
 	/**
 		@brief	指定したオブジェクトの型情報を取得します。
 	*/
-	static TypeInfo* GetTypeInfo(const ReflectionObject* obj);
+	static TypeInfo* getTypeInfo(const ReflectionObject* obj);
 
 	/**
 		@brief	型引数に指定したクラス型の型情報を取得します。
 	*/
 	template<class T>
-	static TypeInfo* GetTypeInfo();
+	static TypeInfo* getTypeInfo();
 
-	static TypeInfo* FindTypeInfo(const StringRef& name);
+	static TypeInfo* findTypeInfo(const StringRef& name);
 
 public:
 	TypeInfo(
@@ -185,14 +185,14 @@ public:
 	/**
 		@brief	クラス名を取得します。
 	*/
-	const String& GetName() const;
+	const String& getName() const;
 
-	void RegisterProperty(PropertyInfo* prop);
-	PropertyInfo* FindProperty(const String& name) const;
-	PropertyInfo* FindProperty(size_t memberOffset) const;
+	void registerProperty(PropertyInfo* prop);
+	PropertyInfo* findProperty(const String& name) const;
+	PropertyInfo* findProperty(size_t memberOffset) const;
 
-	void RegisterReflectionEvent(ReflectionEventInfo* ev);
-	bool InvokeReflectionEvent(ReflectionObject* target, const ReflectionEventInfo* ev, ReflectionEventArgs* e);
+	void registerReflectionEvent(ReflectionEventInfo* ev);
+	bool invokeReflectionEvent(ReflectionObject* target, const ReflectionEventInfo* ev, ReflectionEventArgs* e);
 
 	//// childObjProp が継承できるプロパティをこの TypeInfo から探す。見つからなければ NULL を返す。
 	//// childObj : childObjProp を持つオブジェクト
@@ -207,28 +207,28 @@ public:
 	//void RegisterRoutedEventHandler(const RoutedEvent* ev, RoutedEventHandler* handler);
 	//RoutedEventHandler* FindRoutedEventHandler(const RoutedEvent* ev) const;
 
-	TypeInfo* GetBaseClass() const { return m_baseClass; }
+	TypeInfo* getBaseClass() const { return m_baseClass; }
 
 	///// ベースクラスも含めた全てのプロパティを列挙する
 	//static void ForEachAllProperty(const TypeInfo* typeInfo, const std::function<void(Property*)>& callback);
 
 
-	void SetBindingTypeInfo(void* data);
-	static void* GetBindingTypeInfo(const ReflectionObject* obj);
+	void setBindingTypeInfo(void* data);
+	static void* getBindingTypeInfo(const ReflectionObject* obj);
 
 	bool operator == (const TypeInfo& info) const { return m_name == info.m_name; }
 	bool operator < (const TypeInfo& info) const { return m_name < info.m_name; }
 
-	intptr_t GetInternalGroup() const { return m_internalGroup; }
+	intptr_t getInternalGroup() const { return m_internalGroup; }
 
-	void InitializeProperties(ReflectionObject* obj);
+	void initializeProperties(ReflectionObject* obj);
 
 
-	RefPtr<ReflectionObject> CreateInstance();
-	int GetSerializeClassVersion() const { return m_serializeClassVersion; }
+	RefPtr<ReflectionObject> createInstance();
+	int getSerializeClassVersion() const { return m_serializeClassVersion; }
 
 protected:
-	void SetInternalGroup(intptr_t group) { m_internalGroup = group; }
+	void setInternalGroup(intptr_t group) { m_internalGroup = group; }
 
 private:
 	//typedef SortedArray<const RoutedEvent*, RoutedEventHandler*>	RoutedEventHandlerList;
@@ -248,9 +248,9 @@ private:
 
 //------------------------------------------------------------------------------
 template<class T>
-inline TypeInfo* TypeInfo::GetTypeInfo()
+inline TypeInfo* TypeInfo::getTypeInfo()
 {
-	return ReflectionHelper::GetTypeInfo<T>();
+	return ReflectionHelper::getTypeInfo<T>();
 }
 
 } // namespace tr

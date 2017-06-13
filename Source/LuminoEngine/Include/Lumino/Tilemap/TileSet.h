@@ -61,7 +61,7 @@ private:
 //public:
 //	RGSS1TileSet();
 //	virtual ~RGSS1TileSet();
-//	void CreateCore();
+//	void createCore();
 //
 //
 //protected:

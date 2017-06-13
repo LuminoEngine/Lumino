@@ -54,20 +54,20 @@ public:
 	/**
 		@brief		このベクトルの長さの 2 乗を返します。
 	*/
-	float GetLengthSquared() const;
+	float getLengthSquared() const;
 
 	/**
 		@brief		このベクトルを正規化します。
 		@details	ベクトルの長さが 0 の場合は正規化を行いません。
 	*/
-    void Normalize();
+    void normalize();
 
 	/**
 		@brief		指定された行列を使用してこのベクトルを座標変換します。
 		@param[in]	mat		: 座標変換行列
 		@details	ベクトルを (X, Y, 0.0, 1.0) として座標変換を行い、結果を w で除算します。
 	*/
-	void TransformCoord(const Matrix& mat);
+	void transformCoord(const Matrix& mat);
 	
 	/**
 		@brief		要素のいずれかが NaN または Inf かを判別します。
@@ -89,7 +89,7 @@ public:
 		@param[in]	vec		: 処理の基になるベクトル
 		@return		正規化されたベクトル
 	*/
-	static Vector2 Normalize(const Vector2& vec);
+	static Vector2 normalize(const Vector2& vec);
 
 	/**
 		@brief		2つのベクトルの内積を計算します。
@@ -97,7 +97,7 @@ public:
 		@param[in]	vec2	: 処理の基になるベクトル
 		@return		2つのベクトルの内積
 	*/
-	static float Dot(const Vector2& vec1, const Vector2& vec2);
+	static float dot(const Vector2& vec1, const Vector2& vec2);
 
 	/**
 		@brief		2つのベクトルの最小値で構成されるベクトルを返します。
@@ -105,7 +105,7 @@ public:
 		@param[in]	vec2	: 処理の基になるベクトル
 		@return		最小値から作成されたベクトル
 	*/
-	static Vector2 Min(const Vector2& vec1, const Vector2& vec2);
+	static Vector2 min(const Vector2& vec1, const Vector2& vec2);
 
 	/**
 		@brief		2つのベクトルの最大値で構成されるベクトルを返します。
@@ -113,7 +113,7 @@ public:
 		@param[in]	vec2	: 処理の基になるベクトル
 		@return		最大値から作成されたベクトル
 	*/
-	static Vector2 Max(const Vector2& vec1, const Vector2& vec2);
+	static Vector2 max(const Vector2& vec1, const Vector2& vec2);
 
 	/**
 		@brief		指定された行列を使用してベクトルを座標変換します。
@@ -121,7 +121,7 @@ public:
 		@param[in]	mat		: 処理の基になる行列
 		@return		変換されたベクトル
 	*/
-	static Vector4 Transform(const Vector2& vec, const Matrix& mat);
+	static Vector4 transform(const Vector2& vec, const Matrix& mat);
 
 	/**
 		@brief		指定された行列を使用してベクトルを座標変換します。
@@ -130,7 +130,7 @@ public:
 		@details	ベクトルを (X, Y, 0.0, 1.0) として座標変換を行い、結果を w で除算します。
 		@return		変換されたベクトル
 	*/
-	static Vector2 TransformCoord(const Vector2& vec, const Matrix& mat);
+	static Vector2 transformCoord(const Vector2& vec, const Matrix& mat);
 
 	/**
 		@brief		2 つのベクトル間の線形補間を行います。

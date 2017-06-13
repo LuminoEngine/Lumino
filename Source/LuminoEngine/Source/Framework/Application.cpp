@@ -31,9 +31,9 @@ void Application::initialize(EngineManager* engineManager)
 }
 
 //------------------------------------------------------------------------------
-PlatformWindow* Application::GetNativeMainWindow()
+PlatformWindow* Application::getNativeMainWindow()
 {
-	return m_engineManager->GetPlatformManager()->GetMainWindow();
+	return m_engineManager->getPlatformManager()->getMainWindow();
 }
 
 //==============================================================================
@@ -65,24 +65,24 @@ void GameApplication::OnConfigure()
 }
 
 //------------------------------------------------------------------------------
-void GameApplication::Run(GameScene* initialScene)
+void GameApplication::run(GameScene* initialScene)
 {
 	//OnConfigure();
 
 	//Engine::initialize();
 
 	if (initialScene == nullptr)
-		m_gameSceneManager->GotoScene(RefPtr<GameScene>::makeRef());
+		m_gameSceneManager->gotoScene(RefPtr<GameScene>::makeRef());
 	else
-		m_gameSceneManager->GotoScene(initialScene);
+		m_gameSceneManager->gotoScene(initialScene);
 
 	do
 	{
-		m_gameSceneManager->UpdateFrame();
+		m_gameSceneManager->updateFrame();
 
-	} while (Engine::Update());
+	} while (Engine::update());
 
-	//Engine::Terminate();
+	//Engine::terminate();
 }
 
 LN_NAMESPACE_END

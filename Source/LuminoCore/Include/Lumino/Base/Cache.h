@@ -92,7 +92,7 @@ public: \
 		{ \
 			return RefObject::release(); \
 		} \
-		int32_t count = m_referenceCount.Decrement(); \
+		int32_t count = m_referenceCount.decrement(); \
 		LN_ASSERT(count >= 0); \
 		if (count == 0) \
 		{ \

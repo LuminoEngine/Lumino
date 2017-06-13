@@ -77,7 +77,7 @@ PlaneCollisionShape::~PlaneCollisionShape()
 //------------------------------------------------------------------------------
 void PlaneCollisionShape::initialize(const Vector3& direction)
 {
-	CollisionShape::initialize(new btStaticPlaneShape(detail::BulletUtil::LNVector3ToBtVector3(Vector3::Normalize(direction)), 0.0f));
+	CollisionShape::initialize(new btStaticPlaneShape(detail::BulletUtil::LNVector3ToBtVector3(Vector3::normalize(direction)), 0.0f));
 }
 
 //==============================================================================
@@ -207,22 +207,22 @@ void MeshCollisionShape::initialize(MeshResource* mesh)
 
 	IndexBuffer* indexBuffer = mesh->GetIndexBuffer();
 
-	void* vb = mesh->GetVertexBuffer(MeshResource::VB_BasicVertices)->GetMappedData();
-	void* ib = indexBuffer->GetMappedData();
+	void* vb = mesh->GetVertexBuffer(MeshResource::VB_BasicVertices)->getMappedData();
+	void* ib = indexBuffer->getMappedData();
 
 	btIndexedMesh btMesh;
 	btMesh.m_numTriangles = mesh->GetTriangleCount();
 	btMesh.m_triangleIndexBase = (const unsigned char *)ib;
-	btMesh.m_triangleIndexStride = indexBuffer->GetIndexStride() * 3;
+	btMesh.m_triangleIndexStride = indexBuffer->getIndexStride() * 3;
 	btMesh.m_numVertices = mesh->GetVertexCount();
 	btMesh.m_vertexBase = (const unsigned char *)vb;
 	btMesh.m_vertexStride = sizeof(Vertex);
 
 	m_btMeshData = new btTriangleIndexVertexArray();
-	m_btMeshData->addIndexedMesh(btMesh, (indexBuffer->GetIndexStride() == 2) ? PHY_SHORT : PHY_INTEGER);
+	m_btMeshData->addIndexedMesh(btMesh, (indexBuffer->getIndexStride() == 2) ? PHY_SHORT : PHY_INTEGER);
 
 	//m_btMeshData = new btTriangleIndexVertexArray(
-	//	mesh->GetTriangleCount(), (int*)ib, mesh->GetIndexStride(),
+	//	mesh->GetTriangleCount(), (int*)ib, mesh->getIndexStride(),
 	//	mesh->GetVertexCount(), (btScalar*)vb, sizeof(Vertex));
 	
 	CollisionShape::initialize(new btBvhTriangleMeshShape(m_btMeshData, true));

@@ -41,7 +41,7 @@ void DotNetPInvokeLibGenerator::Generate()
 			for (auto& constantInfo : enumInfo->declaredConstants)
 			{
 				enumsText.AppendLines(DotNetCommon::MakeXmlDocument(constantInfo->document));
-				enumsText.AppendLine("{0} = {1},", constantInfo->name, tr::Variant::Cast<int>(constantInfo->value)).NewLine();
+				enumsText.AppendLine("{0} = {1},", constantInfo->name, tr::Variant::cast<int>(constantInfo->value)).NewLine();
 			}
 			enumsText.DecreaseIndent();
 			enumsText.AppendLine("}").NewLine();

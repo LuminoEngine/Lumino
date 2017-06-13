@@ -7,10 +7,10 @@
 	・ボーンのグローバル行列更新	MMDModel.BoneUpdate()
 	・<ボーン位置合わせ>			MMDXでは対応していない	http://www10.atwiki.jp/mmdphysics/pages/14.html
 	・IK更新						MMDModel.BoneUpdate()
-	・物理更新(相互反映)			MMDModel.SkinUpdate()	PhysicsManager.Update() -> motionState.Flush()
+	・物理更新(相互反映)			MMDModel.SkinUpdate()	PhysicsManager.update() -> motionState.Flush()
 	・物理更新						stepSimulation()
 	・物理更新(※フレーム落ち対策)	PhysicsManager.DropFrame() -> motionState.FlushFD()
-	・表情更新						MMDModel.SkinUpdate()	MMDFaceManager.Update()
+	・表情更新						MMDModel.SkinUpdate()	MMDFaceManager.update()
 	・表情頂点更新					MMDModel.SkinUpdate()
 	・スキン行列更新				MMDModel.SkinUpdate()
 	・頂点更新						MMDModel.SkinUpdate()
@@ -67,12 +67,12 @@
 		剛体の姿勢は m_graphicsWorldTrans。
 		これは virtual メソッド setWorldTransform getWorldTransform により Bullet に渡る。
 
-	MMDCore.Update()
-		PhysicsThreadManager.Update()	メインスレッド。マルチスレッド有効の時は、物理スレッドの更新完了を待ってから Sync を呼んでいる。
+	MMDCore.update()
+		PhysicsThreadManager.update()	メインスレッド。マルチスレッド有効の時は、物理スレッドの更新完了を待ってから Sync を呼んでいる。
 										もし遅れていた場合はDropFrameを呼ぶ。
 			PhysicsThreadManager.Sync()
 				PhysicsThreadManager.Instanse.Synchronize event
-					PhysicsManager.Update()
+					PhysicsManager.update()
 						MMDMotionState.Flash()
 
 	物理スレッドは PhysicsThreadManager.threadFunc()。
@@ -191,7 +191,7 @@ static const size_t toon10DataLen = LN_ARRAY_SIZE_OF(toon10Data);
 static ModelManager* g_modelManagerInstance = nullptr;
 
 //------------------------------------------------------------------------------
-ModelManager* ModelManager::GetInstance(ModelManager* priority)
+ModelManager* ModelManager::getInstance(ModelManager* priority)
 {
 	if (priority != nullptr) return priority;
 	return g_modelManagerInstance;
@@ -215,25 +215,25 @@ void ModelManager::initialize(const ConfigData& configData)
 	m_graphicsManager = configData.graphicsManager;
 
 	MemoryStream data1(toon01Data, toon01DataLen);
-	m_mmdDefaultToonTexture[0] = NewObject<Texture2D>(&data1, TextureFormat::R8G8B8A8, false);
+	m_mmdDefaultToonTexture[0] = newObject<Texture2D>(&data1, TextureFormat::R8G8B8A8, false);
 	MemoryStream data2(toon02Data, toon02DataLen);
-	m_mmdDefaultToonTexture[1] = NewObject<Texture2D>(&data2, TextureFormat::R8G8B8A8, false);
+	m_mmdDefaultToonTexture[1] = newObject<Texture2D>(&data2, TextureFormat::R8G8B8A8, false);
 	MemoryStream data3(toon03Data, toon03DataLen);
-	m_mmdDefaultToonTexture[2] = NewObject<Texture2D>(&data3, TextureFormat::R8G8B8A8, false);
+	m_mmdDefaultToonTexture[2] = newObject<Texture2D>(&data3, TextureFormat::R8G8B8A8, false);
 	MemoryStream data4(toon04Data, toon04DataLen);
-	m_mmdDefaultToonTexture[3] = NewObject<Texture2D>(&data4, TextureFormat::R8G8B8A8, false);
+	m_mmdDefaultToonTexture[3] = newObject<Texture2D>(&data4, TextureFormat::R8G8B8A8, false);
 	MemoryStream data5(toon05Data, toon05DataLen);
-	m_mmdDefaultToonTexture[4] = NewObject<Texture2D>(&data5, TextureFormat::R8G8B8A8, false);
+	m_mmdDefaultToonTexture[4] = newObject<Texture2D>(&data5, TextureFormat::R8G8B8A8, false);
 	MemoryStream data6(toon06Data, toon06DataLen);
-	m_mmdDefaultToonTexture[5] = NewObject<Texture2D>(&data6, TextureFormat::R8G8B8A8, false);
+	m_mmdDefaultToonTexture[5] = newObject<Texture2D>(&data6, TextureFormat::R8G8B8A8, false);
 	MemoryStream data7(toon07Data, toon07DataLen);
-	m_mmdDefaultToonTexture[6] = NewObject<Texture2D>(&data7, TextureFormat::R8G8B8A8, false);
+	m_mmdDefaultToonTexture[6] = newObject<Texture2D>(&data7, TextureFormat::R8G8B8A8, false);
 	MemoryStream data8(toon08Data, toon08DataLen);
-	m_mmdDefaultToonTexture[7] = NewObject<Texture2D>(&data8, TextureFormat::R8G8B8A8, false);
+	m_mmdDefaultToonTexture[7] = newObject<Texture2D>(&data8, TextureFormat::R8G8B8A8, false);
 	MemoryStream data9(toon09Data, toon09DataLen);
-	m_mmdDefaultToonTexture[8] = NewObject<Texture2D>(&data9, TextureFormat::R8G8B8A8, false);
+	m_mmdDefaultToonTexture[8] = newObject<Texture2D>(&data9, TextureFormat::R8G8B8A8, false);
 	MemoryStream data10(toon10Data, toon10DataLen);
-	m_mmdDefaultToonTexture[9] = NewObject<Texture2D>(&data10, TextureFormat::R8G8B8A8, false);
+	m_mmdDefaultToonTexture[9] = newObject<Texture2D>(&data10, TextureFormat::R8G8B8A8, false);
 
 	m_defaultMaterial = RefPtr<Material>::makeRef();
 	m_defaultMaterial->initialize();
@@ -405,7 +405,7 @@ RefPtr<Texture> ModelManager::CreateTexture(const PathName& parentDir, const Str
 	}
 
 	// TODO: キャッシュが効かない
-	auto tex = NewObject<Texture2D>(path, TextureFormat::B8G8R8A8, false);	// TODO: mipmap
+	auto tex = newObject<Texture2D>(path, TextureFormat::B8G8R8A8, false);	// TODO: mipmap
 	return tex;
 }
 

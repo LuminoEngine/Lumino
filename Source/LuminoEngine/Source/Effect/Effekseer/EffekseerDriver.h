@@ -76,10 +76,10 @@ public:
 	virtual VisualEffect* CreateEffectCore(const PathName& filePath) override;
 
 	virtual void SetViewProjectin(const Matrix& view, const Matrix& proj) override;
-	virtual void UpdateFrame(float elapsedTime) override;
-	virtual void Render() override;
-	virtual void OnLostDevice() override;
-	virtual void OnResetDevice() override;
+	virtual void updateFrame(float elapsedTime) override;
+	virtual void render() override;
+	virtual void onLostDevice() override;
+	virtual void onResetDevice() override;
 
 public:
 	::Effekseer::Manager* GetEffekseerManager() { return m_efkManager; }
@@ -123,12 +123,12 @@ public:
 
 	EffekseerEffectCore* GetEffectCore() { return m_ownerEffectCore; }
 
-	//virtual void Play(bool overlap) override;
-	virtual void Stop() override;
-	virtual bool IsPlaying() override;
+	//virtual void play(bool overlap) override;
+	virtual void stop() override;
+	virtual bool isPlaying() override;
 	virtual void SetWorldMatrix(const Matrix& matrix) override;
 
-	void UpdateFrame();	// 更新スレッド
+	void updateFrame();	// 更新スレッド
 	void Draw();	// 描画スレッド
 
 	static void LNToEFKMatrix43(const Matrix& mat, ::Effekseer::Matrix43* efkMat);

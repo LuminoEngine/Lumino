@@ -20,7 +20,7 @@ int EntryPoint()
 	{
 		PlatformSupport::ShowAlertMessageBox(e.getMessage());
 	}
-	Engine::Terminate();
+	Engine::terminate();
 	return 0;
 }
 

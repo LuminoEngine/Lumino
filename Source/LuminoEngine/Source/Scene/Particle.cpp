@@ -133,7 +133,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SpriteParticleModel, Object);
 SpriteParticleModelPtr SpriteParticleModel::create()
 {
 	auto ptr = SpriteParticleModelPtr::makeRef();
-	ptr->initialize(detail::GraphicsManager::GetInstance());
+	ptr->initialize(detail::GraphicsManager::getInstance());
 	return ptr;
 }
 
@@ -190,7 +190,7 @@ void SpriteParticleModel::initialize(detail::GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-//void SpriteParticleModel::SetTexture(Texture* texture)
+//void SpriteParticleModel::setTexture(Texture* texture)
 //{
 //	LN_REFOBJ_SET(m_texture, texture);
 //}
@@ -216,9 +216,9 @@ void SpriteParticleModel::SetSubParticle(SpriteParticleModel* particle)
 }
 
 //------------------------------------------------------------------------------
-void SpriteParticleModel::Commit()
+void SpriteParticleModel::commit()
 {
-	if (m_mesh != nullptr) return;	// Commit済み
+	if (m_mesh != nullptr) return;	// commit済み
 
 	// 1 つ放出する最小時間
 	m_oneSpawnDeltaTime = 1.0f / m_spawnRate;
@@ -291,7 +291,7 @@ void SpriteParticleModel::UpdateInstance(detail::SpriteParticleModelInstance* in
 //------------------------------------------------------------------------------
 void SpriteParticleModel::SpawnParticle(const Matrix& emitterTransform, detail::ParticleData* data, float spawnTime)
 {
-	data->ramdomBaseValue = m_rand.GetFloatRange(m_minRandomBaseValue, m_maxRandomBaseValue);
+	data->ramdomBaseValue = m_rand.getFloatRange(m_minRandomBaseValue, m_maxRandomBaseValue);
 
 	if (m_movementType == ParticleMovementType::Physical)
 	{
@@ -305,7 +305,7 @@ void SpriteParticleModel::SpawnParticle(const Matrix& emitterTransform, detail::
 			localFront.x = MakeRandom(data, -1.0, 1.0, ParticleRandomSource::Self);
 			localFront.y = MakeRandom(data, -1.0, 1.0, ParticleRandomSource::Self);
 			localFront.z = MakeRandom(data, -1.0, 1.0, ParticleRandomSource::Self);
-			localFront = Vector3::SafeNormalize(localFront, Vector3::UnitZ);
+			localFront = Vector3::safeNormalize(localFront, Vector3::UnitZ);
 			break;
 		case ParticleEmitterShapeType::Cone:
 		{
@@ -330,15 +330,15 @@ void SpriteParticleModel::SpawnParticle(const Matrix& emitterTransform, detail::
 			break;
 		}
 
-		Vector3 worldFront = Vector3::TransformCoord(localFront, emitterTransform);
+		Vector3 worldFront = Vector3::transformCoord(localFront, emitterTransform);
 		data->position = localPosition + localFront * MakeRandom(data, m_forwardPosition);
 		data->positionVelocity = localFront * MakeRandom(data, m_forwardVelocity);
 		data->positionAccel = localFront * MakeRandom(data, m_forwardAccel);
 
-		data->position.TransformCoord(emitterTransform);
-		//TODO: 回転だけのTransformCoord
-		//data->positionVelocity.TransformCoord(emitterTransform);
-		//data->positionAccel.TransformCoord(emitterTransform);
+		data->position.transformCoord(emitterTransform);
+		//TODO: 回転だけのtransformCoord
+		//data->positionVelocity.transformCoord(emitterTransform);
+		//data->positionAccel.transformCoord(emitterTransform);
 	}
 	else if (m_movementType == ParticleMovementType::Radial)
 	{
@@ -347,8 +347,8 @@ void SpriteParticleModel::SpawnParticle(const Matrix& emitterTransform, detail::
 		data->m_axis.z = MakeRandom(data, m_axis.minValue.z, m_axis.maxValue.z, m_axis.randomSource);
 
 		Vector3 yaxis = data->m_axis;
-		Vector3 xaxis = Vector3::Cross(Vector3::UnitY, yaxis);
-		Vector3 zaxis = Vector3::Cross(xaxis, yaxis);
+		Vector3 xaxis = Vector3::cross(Vector3::UnitY, yaxis);
+		Vector3 zaxis = Vector3::cross(xaxis, yaxis);
 
 
 
@@ -379,7 +379,7 @@ void SpriteParticleModel::SpawnParticle(const Matrix& emitterTransform, detail::
 	data->sizeVelocity = MakeRandom(data, m_minSizeVelocity, m_maxSizeVelocity, m_sizeVelocityRandomSource);
 	data->sizeAccel = MakeRandom(data, m_minSizeAccel, m_maxSizeAccel, m_sizeAccelRandomSource);
 
-	//data->currentDirection = Vector3::SafeNormalize(data->position - prevPos, data->positionVelocity);
+	//data->currentDirection = Vector3::safeNormalize(data->position - prevPos, data->positionVelocity);
 
 	// TODO
 	data->color = Color::White;
@@ -452,8 +452,8 @@ void SpriteParticleModel::SimulateOneParticle(detail::ParticleData* data, double
 				float t = time - data->spawnTime;
 				Vector3 pos = data->startPosition + data->positionVelocity * t + 0.5 * data->positionAccel * t * t;
 
-				Matrix mat = Matrix::MakeRotationAxis(data->m_axis, data->m_angle) * instance->m_worldTransform;
-				data->position = Vector3::TransformCoord(pos, mat);
+				Matrix mat = Matrix::makeRotationAxis(data->m_axis, data->m_angle) * instance->m_worldTransform;
+				data->position = Vector3::transformCoord(pos, mat);
 			}
 			else
 			{
@@ -463,8 +463,8 @@ void SpriteParticleModel::SimulateOneParticle(detail::ParticleData* data, double
 			data->sizeVelocity += data->sizeAccel * deltaTime;
 			data->size += data->sizeVelocity * deltaTime;
 
-			data->currentDirection = Vector3::Normalize(data->position - prevPos);
-			if (data->currentDirection.isNaNOrInf()) data->currentDirection = Vector3::SafeNormalize(data->positionVelocity, Vector3::UnitY);
+			data->currentDirection = Vector3::normalize(data->position - prevPos);
+			if (data->currentDirection.isNaNOrInf()) data->currentDirection = Vector3::safeNormalize(data->positionVelocity, Vector3::UnitY);
 			
 
 			if (time >= data->endTime)
@@ -500,7 +500,7 @@ void SpriteParticleModel::SimulateOneParticle(detail::ParticleData* data, double
 		data->lastTime = time;
 
 		// Z 距離は視点からの距離ではなく、視点平面からの距離でなければ正しくソートできない
-		data->zDistance = Vector3::Dot(data->position - viewPosition, viewDirection);
+		data->zDistance = Vector3::dot(data->position - viewPosition, viewDirection);
 	}
 }
 
@@ -532,12 +532,12 @@ float SpriteParticleModel::MakeRandom(detail::ParticleData* data, float minValue
 	}
 	else
 	{
-		return m_rand.GetFloatRange(minValue, maxValue);
+		return m_rand.getFloatRange(minValue, maxValue);
 	}
 }
 
 //------------------------------------------------------------------------------
-void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelInstance* instance, const Matrix& emitterTransform, const Vector3& viewPosition, const Vector3& viewDirection, const Matrix& viewInv, Material* material)
+void SpriteParticleModel::render(DrawList* context, detail::SpriteParticleModelInstance* instance, const Matrix& emitterTransform, const Vector3& viewPosition, const Vector3& viewDirection, const Matrix& viewInv, Material* material)
 {
 
 	// 更新処理
@@ -589,11 +589,11 @@ void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelI
 			transform.m43 = 0.0f;
 
 			// 頂点バッファ・インデックスバッファに反映して描画する
-			Vertex* vb = reinterpret_cast<Vertex*>(m_mesh->GetVertexBuffer(MeshResource::VB_BasicVertices)->GetMappedData());
-			uint16_t* ib = reinterpret_cast<uint16_t*>(m_mesh->GetIndexBuffer()->GetMappedData());
+			Vertex* vb = reinterpret_cast<Vertex*>(m_mesh->GetVertexBuffer(MeshResource::VB_BasicVertices)->getMappedData());
+			uint16_t* ib = reinterpret_cast<uint16_t*>(m_mesh->GetIndexBuffer()->getMappedData());
 
-			//SpriteParticleVertex* vb = (SpriteParticleVertex*)m_vertexBuffer->Lock()->GetData();	
-			//uint16_t* ib = (uint16_t*)m_indexBuffer->Lock()->GetData();
+			//SpriteParticleVertex* vb = (SpriteParticleVertex*)m_vertexBuffer->lock()->GetData();	
+			//uint16_t* ib = (uint16_t*)m_indexBuffer->lock()->GetData();
 			int iData = 0;
 			int count = instance->m_particleIndices.getCount();
 			for (; iData < count; ++iData)
@@ -610,7 +610,7 @@ void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelI
 					data.currentDirection != Vector3::Zero)
 				{
 					// 進行方向に対する右方向
-					Vector3 r = Vector3::Cross(Vector3::Normalize(viewPosition - data.position), data.currentDirection);
+					Vector3 r = Vector3::cross(Vector3::normalize(viewPosition - data.position), data.currentDirection);
 
 					Vector3 fd = data.currentDirection * m_lengthScale;
 					vb[(iData * 4) + 0].position = pos - (fd * hs) + r * hs;	// 後方右
@@ -624,8 +624,8 @@ void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelI
 					Vector3 pv(viewPosition.x, 0, viewPosition.z);
 
 
-					Vector3 fd = Vector3::Normalize(pp - pv);
-					Vector3 r = Vector3::Cross(Vector3::UnitY, fd);
+					Vector3 fd = Vector3::normalize(pp - pv);
+					Vector3 r = Vector3::cross(Vector3::UnitY, fd);
 
 
 					vb[(iData * 4) + 0].position = pos - (fd * hs) + r * hs;	// 後方右
@@ -641,10 +641,10 @@ void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelI
 					vb[(iData * 4) + 2].position.set(hs, hs, 0.0f);		// 右上
 					vb[(iData * 4) + 3].position.set(hs, -hs, 0.0f);	// 右下
 					// 視点へ向ける
-					vb[(iData * 4) + 0].position.TransformCoord(transform);
-					vb[(iData * 4) + 1].position.TransformCoord(transform);
-					vb[(iData * 4) + 2].position.TransformCoord(transform);
-					vb[(iData * 4) + 3].position.TransformCoord(transform);
+					vb[(iData * 4) + 0].position.transformCoord(transform);
+					vb[(iData * 4) + 1].position.transformCoord(transform);
+					vb[(iData * 4) + 2].position.transformCoord(transform);
+					vb[(iData * 4) + 3].position.transformCoord(transform);
 
 					vb[(iData * 4) + 0].position += pos;
 					vb[(iData * 4) + 1].position += pos;
@@ -670,11 +670,11 @@ void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelI
 				ib[(iData * 6) + 4] = (iData * 4) + 1;
 				ib[(iData * 6) + 5] = (iData * 4) + 3;
 			}
-			//m_vertexBuffer->Unlock();
-			//m_indexBuffer->Unlock();
+			//m_vertexBuffer->unlock();
+			//m_indexBuffer->unlock();
 
 			//LN_NOTIMPLEMENTED();
-			//context->DrawPrimitiveIndexed(m_vertexDeclaration, m_vertexBuffer, m_indexBuffer, PrimitiveType_TriangleList, 0, iData * 2);
+			//context->drawPrimitiveIndexed(m_vertexDeclaration, m_vertexBuffer, m_indexBuffer, PrimitiveType_TriangleList, 0, iData * 2);
 			instance->m_activeCount = iData;
 			m_mesh->m_attributes.resize(1);
 			m_mesh->m_attributes[0].PrimitiveNum = instance->m_activeCount * 2;
@@ -691,8 +691,8 @@ void SpriteParticleModel::Render(DrawList* context, detail::SpriteParticleModelI
 				detail::ParticleData& data = instance->m_particles[idx];
 				if (data.spawnTime < 0.0f) break;	// 非アクティブが見つかったら終了
 
-				Matrix mat = Matrix::MakeTranslation(data.position);
-				m_childModel->Render(context, data.m_childInstance, mat, viewPosition, viewDirection, viewInv, m_childModel->GetMaterial());
+				Matrix mat = Matrix::makeTranslation(data.position);
+				m_childModel->render(context, data.m_childInstance, mat, viewPosition, viewDirection, viewInv, m_childModel->GetMaterial());
 				
 			}
 			instance->m_activeCount = iData;
@@ -727,7 +727,7 @@ void ParticleEmitterComponent::initialize(SpriteParticleModel* model)
 
 	VisualComponent::initialize();
 	m_model = model;
-	m_model->Commit();
+	m_model->commit();
 	m_instance = m_model->CreateInstane();
 
 	// TODO: なんか良くないやり方な気がする・・・	共有マテリアルは変更禁止にしたほうがいいと思う
@@ -735,13 +735,13 @@ void ParticleEmitterComponent::initialize(SpriteParticleModel* model)
 	//m_materialList->SetAt(0, m_model->GetMaterial());
 	//m_materialList->m_mainMaterial = m_model->GetMaterial();
 
-	m_material = NewObject<Material>();
+	m_material = newObject<Material>();
 }
 
 //------------------------------------------------------------------------------
 void ParticleEmitterComponent::OnUpdateFrame(float deltaTime)
 {
-	m_instance->m_worldTransform = GetOwnerObject()->transform.GetWorldMatrix();
+	m_instance->m_worldTransform = getOwnerObject()->transform.getWorldMatrix();
 	m_model->UpdateInstance(m_instance, deltaTime, m_instance->m_worldTransform);
 }
 
@@ -750,10 +750,10 @@ void ParticleEmitterComponent::OnRender2(DrawList* renderer)
 {
 	// TODO: name RenderInstance
 	Vector4 dir = renderer->GetCurrentCamera()->GetDirectionInternal();
-	m_model->Render(
+	m_model->render(
 		renderer,
 		m_instance,
-		GetOwnerObject()->transform.GetWorldMatrix(),
+		getOwnerObject()->transform.getWorldMatrix(),
 		renderer->GetCurrentCamera()->getPosition(),
 		dir.GetXYZ(),
 		renderer->GetCurrentCamera()->GetViewMatrixI(),
@@ -770,7 +770,7 @@ RefPtr<ParticleEmitter3DComponent> ParticleEmitter3DComponent::create(SpritePart
 {
 	auto ptr = RefPtr<ParticleEmitter3DComponent>::makeRef();
 	ptr->initialize(model);
-	//detail::EngineDomain::GetDefaultSceneGraph3D()->GetRootNode()->AddChild(ptr);
+	//detail::EngineDomain::getDefaultSceneGraph3D()->GetRootNode()->AddChild(ptr);
 	return ptr;
 
 }

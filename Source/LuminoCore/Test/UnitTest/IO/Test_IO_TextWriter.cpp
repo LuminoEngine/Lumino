@@ -15,7 +15,7 @@ protected:
 TEST_F(Test_IO_TextWriter, Basic)
 {
 	{
-		StreamWriter writer(TEMPFILE("Test1.txt"), Encoding::GetUTF8Encoding());
+		StreamWriter writer(TEMPFILE("Test1.txt"), Encoding::getUTF8Encoding());
 		writer.write(32);
 	}
 

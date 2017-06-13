@@ -14,9 +14,9 @@ public:
 	virtual ~BitmapFont();
 	void initialize(Bitmap* bitmap);
 
-	virtual void SetName(const String& fontName) { LN_THROW(0, InvalidOperationException); }
-	virtual const String& GetName() const { return m_name; }
-	virtual void SetSize(int size) { LN_THROW(0, InvalidOperationException); }
+	virtual void setName(const String& fontName) { LN_THROW(0, InvalidOperationException); }
+	virtual const String& getName() const { return m_name; }
+	virtual void setSize(int size) { LN_THROW(0, InvalidOperationException); }
 	virtual int getSize() const { return 0; }
 	virtual void SetEdgeSize(int size) { LN_THROW(0, InvalidOperationException); }
 	virtual int GetEdgeSize() const { return 0; }
@@ -35,7 +35,7 @@ public:
 	virtual void DecomposeOutline(UTF32 utf32code, RawFont::VectorGlyphInfo* outInfo) override { }
 	virtual Vector2 GetKerning(UTF32 prev, UTF32 next) override { return Vector2::Zero; }
 	virtual void GetGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics) override;
-	virtual FontManager* GetManager() const { return m_manager; }
+	virtual FontManager* getManager() const { return m_manager; }
 
 private:
 	FontManager*			m_manager;

@@ -16,7 +16,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 VertexDeclarationPtr VertexDeclaration::create()
 {
 	auto ptr = VertexDeclarationPtr::makeRef();
-	ptr->initialize(detail::GraphicsManager::GetInstance());
+	ptr->initialize(detail::GraphicsManager::getInstance());
 	return ptr;
 }
 
@@ -58,7 +58,7 @@ void VertexDeclaration::Dispose()
 }
 
 //------------------------------------------------------------------------------
-void VertexDeclaration::AddVertexElement(int streamIndex, VertexElementType type, VertexElementUsage usage, int usageIndex)
+void VertexDeclaration::addVertexElement(int streamIndex, VertexElementType type, VertexElementUsage usage, int usageIndex)
 {
 	if (LN_CHECK_ARG(streamIndex >= 0)) return;
 	if (LN_CHECK_ARG(usageIndex >= 0)) return;
@@ -72,24 +72,24 @@ void VertexDeclaration::AddVertexElement(int streamIndex, VertexElementType type
 }
 
 //------------------------------------------------------------------------------
-void VertexDeclaration::TryUpdateResource()
+void VertexDeclaration::tryUpdateResource()
 {
 	if (m_modified)
 	{
-		m_deviceObj.attach(m_manager->GetGraphicsDevice()->CreateVertexDeclaration(&m_vertexElements[0], m_vertexElements.getCount()), false);
+		m_deviceObj.attach(m_manager->getGraphicsDevice()->CreateVertexDeclaration(&m_vertexElements[0], m_vertexElements.getCount()), false);
 		m_modified = false;
 	}
 }
 
 //------------------------------------------------------------------------------
-Driver::IVertexDeclaration* VertexDeclaration::GetDeviceObject()
+Driver::IVertexDeclaration* VertexDeclaration::getDeviceObject()
 {
-	TryUpdateResource();
+	tryUpdateResource();
 	return m_deviceObj;
 }
 
 //------------------------------------------------------------------------------
-void VertexDeclaration::OnChangeDevice(Driver::IGraphicsDevice* device)
+void VertexDeclaration::onChangeDevice(Driver::IGraphicsDevice* device)
 {
 	if (device == nullptr)
 	{
@@ -101,7 +101,7 @@ void VertexDeclaration::OnChangeDevice(Driver::IGraphicsDevice* device)
 		assert(m_deviceObj == NULL);
 
 		// 作り直す
-		m_deviceObj.attach(m_manager->GetGraphicsDevice()->CreateVertexDeclaration(&m_vertexElements[0], m_vertexElements.getCount()), false);
+		m_deviceObj.attach(m_manager->getGraphicsDevice()->CreateVertexDeclaration(&m_vertexElements[0], m_vertexElements.getCount()), false);
 		m_modified = false;
 	}
 }

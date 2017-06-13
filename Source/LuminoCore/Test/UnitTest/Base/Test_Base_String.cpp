@@ -399,7 +399,7 @@ TEST_F(Test_Base_String, assignCStr)
 //------------------------------------------------------------------------------
 TEST_F(Test_Base_String, sprintf)
 {
-	// StringA Max 文字数チェック
+	// StringA max 文字数チェック
 	{
 		char buf1[2048 + 1] = { 0 };
 		for (int i = 0; i < 2048; i++) {
@@ -425,7 +425,7 @@ TEST_F(Test_Base_String, sprintf)
 //	}
 //#endif
 
-	// StringW Max 文字数チェック
+	// StringW max 文字数チェック
 	{
 		wchar_t buf1[2048 + 1] = { 0 };
 		for (int i = 0; i < 2048; i++) {
@@ -448,7 +448,7 @@ TEST_F(Test_Base_String, convertTo)
 {
 	{
 		StringA str1("test");
-		ByteBuffer buf = str1.convertTo(Encoding::GetWideCharEncoding());
+		ByteBuffer buf = str1.convertTo(Encoding::getWideCharEncoding());
 		wchar_t* wstr = (wchar_t*)buf.getData();
 		ASSERT_EQ(sizeof(wchar_t) * 5, buf.getSize());
 		ASSERT_EQ(L't', wstr[0]);
@@ -460,7 +460,7 @@ TEST_F(Test_Base_String, convertTo)
 
 	{
 		StringW str1(L"test");
-		ByteBuffer buf = str1.convertTo(Encoding::GetSystemMultiByteEncoding());
+		ByteBuffer buf = str1.convertTo(Encoding::getSystemMultiByteEncoding());
 		char* astr = (char*)buf.getData();
 		ASSERT_EQ(5, buf.getSize());
 		ASSERT_EQ('t', astr[0]);

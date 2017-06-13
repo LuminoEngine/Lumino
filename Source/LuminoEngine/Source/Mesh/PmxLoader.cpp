@@ -52,7 +52,7 @@ RefPtr<PmxSkinnedMeshResource> PmxLoader::load(detail::ModelManager* manager, St
 
 	BinaryReader reader(stream);
 	m_modelCore = RefPtr<PmxSkinnedMeshResource>::makeRef();
-	m_modelCore->initialize(manager->GetGraphicsManager(), MeshCreationFlags::None);
+	m_modelCore->initialize(manager->getGraphicsManager(), MeshCreationFlags::None);
 	m_modelCore->Format = ModelFormat_PMX;
 	
 	//-----------------------------------------------------
@@ -121,16 +121,16 @@ RefPtr<PmxSkinnedMeshResource> PmxLoader::load(detail::ModelManager* manager, St
 void PmxLoader::LoadModelInfo(BinaryReader* reader)
 {
 	// モデル名
-	m_modelCore->Name = ReadString(reader);
+	m_modelCore->Name = readString(reader);
 
 	// モデル名英
-	/*m_modelCore->EnglishName = */ReadString(reader);
+	/*m_modelCore->EnglishName = */readString(reader);
 
 	// コメント
-	/*m_modelCore->Comment = */ReadString(reader);
+	/*m_modelCore->Comment = */readString(reader);
 
 	// コメント英
-	/*m_modelCore->EnglishComment = */ReadString(reader);
+	/*m_modelCore->EnglishComment = */readString(reader);
 }
 
 //------------------------------------------------------------------------------
@@ -154,10 +154,10 @@ void PmxLoader::LoadVertices(BinaryReader* reader)
 	{
 		// 頂点、法線、テクスチャUV
 		reader->read(&baseVertex, sizeof(BaseVertex));
-		m_modelCore->SetPosition(i, baseVertex.Position);
+		m_modelCore->setPosition(i, baseVertex.Position);
 		m_modelCore->SetNormal(i, baseVertex.Normal);
 		m_modelCore->SetUV(i, baseVertex.TexUV);
-		m_modelCore->SetColor(i, Color::White);
+		m_modelCore->setColor(i, Color::White);
 
 		// 追加UV
 		for (int iAddUV = 0; iAddUV < getAdditionalUVCount(); iAddUV++)
@@ -246,7 +246,7 @@ void PmxLoader::LoadIndices(BinaryReader* reader)
 		format = IndexBufferFormat_UInt16;
 	}
 	m_modelCore->ResizeIndexBuffer(indexCount);
-	m_modelCore->RequestIndexBuffer()->SetFormat(format);
+	m_modelCore->RequestIndexBuffer()->setFormat(format);
 
 	// とりあえずまずは全部読み込む
 	ByteBuffer indicesBuffer(getVertexIndexSize() * indexCount);
@@ -264,9 +264,9 @@ void PmxLoader::LoadIndices(BinaryReader* reader)
 		for (int i = 0; i < indexCount; i += 3)
 		{
 			// PMX と Lumino では面方向が逆なので反転する
-			m_modelCore->SetIndex(i + 0, indices[i + 0]);
-			m_modelCore->SetIndex(i + 1, indices[i + 2]);
-			m_modelCore->SetIndex(i + 2, indices[i + 1]);
+			m_modelCore->setIndex(i + 0, indices[i + 0]);
+			m_modelCore->setIndex(i + 1, indices[i + 2]);
+			m_modelCore->setIndex(i + 2, indices[i + 1]);
 		}
 	}
 	// 2 or 4 バイトインデックス
@@ -276,9 +276,9 @@ void PmxLoader::LoadIndices(BinaryReader* reader)
 		for (int i = 0; i < indexCount; i += 3)
 		{
 			// PMX と Lumino では面方向が逆なので反転する
-			m_modelCore->SetIndex(i + 0, indices[i + 0]);
-			m_modelCore->SetIndex(i + 1, indices[i + 2]);
-			m_modelCore->SetIndex(i + 2, indices[i + 1]);
+			m_modelCore->setIndex(i + 0, indices[i + 0]);
+			m_modelCore->setIndex(i + 1, indices[i + 2]);
+			m_modelCore->setIndex(i + 2, indices[i + 1]);
 		}
 	}
 }
@@ -295,7 +295,7 @@ void PmxLoader::LoadTextureTable(BinaryReader* reader, const PathName& baseDir)
 	for (int i = 0; i < textureCount; ++i)
 	{
 		// テクスチャ名
-		String name = ReadString(reader);
+		String name = readString(reader);
 
 		// 作成
 		PathName filePath(baseDir, name);
@@ -320,10 +320,10 @@ void PmxLoader::LoadMaterials(BinaryReader* reader)
 		m_modelCore->materials[i] = m;;
 
 		// 材質名
-		/*m_modelCore->Material.Name = */ReadString(reader);
+		/*m_modelCore->Material.Name = */readString(reader);
 
 		// 材質英名
-		/*m_modelCore->Material.EnglishName = */ReadString(reader);
+		/*m_modelCore->Material.EnglishName = */readString(reader);
 
 		// Diffuse
 		reader->read(&m->Diffuse, sizeof(float) * 4);
@@ -413,10 +413,10 @@ void PmxLoader::LoadBones(BinaryReader* reader)
 		PmxBoneResource* bone = m_modelCore->bones[i];
 
 		// ボーン名
-		bone->Name = ReadString(reader);
+		bone->Name = readString(reader);
 
 		// ボーン英名
-		/*bone->EnglishName = */ ReadString(reader);
+		/*bone->EnglishName = */ readString(reader);
 
 		// 初期位置
 		reader->read(&bone->OrgPosition, sizeof(float) * 3);
@@ -504,8 +504,8 @@ void PmxLoader::LoadBones(BinaryReader* reader)
 					Vector3 minLimit, maxLimit;
 					reader->read(&minLimit, sizeof(float) * 3);
 					reader->read(&maxLimit, sizeof(float) * 3);
-					ikLink.MinLimit = Vector3::Min(minLimit, maxLimit);
-					ikLink.MaxLimit = Vector3::Max(minLimit, maxLimit);
+					ikLink.MinLimit = Vector3::min(minLimit, maxLimit);
+					ikLink.MaxLimit = Vector3::max(minLimit, maxLimit);
 
 					const Vector3 EularMaximum(Math::PI - FLT_EPSILON, 0.5f * Math::PI - FLT_EPSILON, Math::PI - FLT_EPSILON);
 					const Vector3 EularMinimum = -EularMaximum;
@@ -533,10 +533,10 @@ void PmxLoader::LoadMorphs(BinaryReader* reader)
 		m_modelCore->morphs[i] = morph;
 
 		// モーフ名
-		morph->Name = ReadString(reader);
+		morph->Name = readString(reader);
 
 		// モーフ英名
-		/*morph->EnglishName = */ ReadString(reader);
+		/*morph->EnglishName = */ readString(reader);
 
 		// 操作パネル
 		morph->OperationPanel = reader->readInt8();
@@ -677,10 +677,10 @@ void PmxLoader::LoadRigidBodys(BinaryReader* reader)
 		m_modelCore->rigidBodys[i] = body;
 
 		// 剛体名
-		body->Name = ReadString(reader);
+		body->Name = readString(reader);
 
 		// 剛体英名
-		/*body->EnglishName =*/ ReadString(reader);
+		/*body->EnglishName =*/ readString(reader);
 
 		// 関連ボーンIndex - 関連なしの場合は-1
 		body->RelatedBoneIndex = (int)reader->readInt(getBoneIndexSize());
@@ -729,7 +729,7 @@ void PmxLoader::LoadRigidBodys(BinaryReader* reader)
 		if (Math::isNaN(Rotation.z)) Rotation.z = 0;
 
 		// オフセット行列化
-		body->InitialTransform = Matrix::MakeRotationYawPitchRoll(Rotation.y, Rotation.x, Rotation.z) * Matrix::MakeTranslation(Position);
+		body->InitialTransform = Matrix::makeRotationYawPitchRoll(Rotation.y, Rotation.x, Rotation.z) * Matrix::makeTranslation(Position);
 
 		// 剛体基本情報
 		body->Mass = reader->readFloat();
@@ -769,10 +769,10 @@ void PmxLoader::LoadJoints(BinaryReader* reader)
 		m_modelCore->joints[i] = joint;
 
 		// Joint名
-		joint->Name = ReadString(reader);
+		joint->Name = readString(reader);
 
 		// Joint名英
-		/*joint->EnglishName =*/ ReadString(reader);
+		/*joint->EnglishName =*/ readString(reader);
 
 		// Joint種類 - 0:スプリング6DOF   | PMX2.0では 0 のみ(拡張用)
 		int type = reader->readUInt8();
@@ -797,7 +797,7 @@ void PmxLoader::LoadJoints(BinaryReader* reader)
 }
 
 //------------------------------------------------------------------------------
-String PmxLoader::ReadString(BinaryReader* reader)
+String PmxLoader::readString(BinaryReader* reader)
 {
 	uint32_t byteSize = reader->readInt32();
 	m_tmpBuffer.resize(byteSize);
@@ -805,10 +805,10 @@ String PmxLoader::ReadString(BinaryReader* reader)
 
 	String str;
 	if (getEncode() == PMX_Encode_UTF16) {
-		str.convertFrom(m_tmpBuffer.getData(), byteSize, Encoding::GetUTF16Encoding());
+		str.convertFrom(m_tmpBuffer.getData(), byteSize, Encoding::getUTF16Encoding());
 	}
 	else {
-		str.convertFrom(m_tmpBuffer.getData(), byteSize, Encoding::GetUTF8Encoding());
+		str.convertFrom(m_tmpBuffer.getData(), byteSize, Encoding::getUTF8Encoding());
 	}
 
 	return str;

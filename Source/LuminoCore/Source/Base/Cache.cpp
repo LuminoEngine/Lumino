@@ -1,4 +1,5 @@
 ﻿
+#include "../Internal.h"
 #include <Lumino/Base/Common.h>
 #include <Lumino/Base/Stack.h>
 #include <Lumino/Base/Cache.h>
@@ -468,7 +469,7 @@ void CacheManager::addCacheUnusedList(ICacheObject* obj)
 		/*	この関数の最後で DeleteCachedObject を呼び出すが、
 			obj がこの CacheManager を参照する最後のオブジェクトである場合
 			delete したとき、CacheManager も delete される。
-			その状態で MutexScopedLock が Unlock すると解放済みのオブジェクトを操作することになるので NG。
+			その状態で MutexScopedLock が unlock すると解放済みのオブジェクトを操作することになるので NG。
 			DeleteCachedObject() は排他処理したくないので、ブロックをひとつ下げて逃げる。
 		*/
 		MutexScopedLock lock(m_mutex);

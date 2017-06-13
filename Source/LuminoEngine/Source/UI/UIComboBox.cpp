@@ -65,7 +65,7 @@ void UIPopup::open()
 }
 
 //------------------------------------------------------------------------------
-Size UIPopup::MeasureOverride(const Size& constraint)
+Size UIPopup::measureOverride(const Size& constraint)
 {
 	// Popup は常にサイズ 0 となる。
 	// また、子要素のレイアウトは行わない。
@@ -74,21 +74,21 @@ Size UIPopup::MeasureOverride(const Size& constraint)
 }
 
 //------------------------------------------------------------------------------
-Size UIPopup::ArrangeOverride(const Size& finalSize)
+Size UIPopup::arrangeOverride(const Size& finalSize)
 {
-	return UIElement::ArrangeOverride(finalSize);
+	return UIElement::arrangeOverride(finalSize);
 }
 
 //------------------------------------------------------------------------------
 void UIPopup::UpdateLayoutForInPlacePopup(const Size& viewSize)
 {
 	m_content->UpdateLayout(viewSize);
-	//m_content->MeasureLayout(viewSize);
+	//m_content->measureLayout(viewSize);
 
 	////TODO: このへんでchildの位置を決める
 
-	//m_content->ArrangeLayout(RectF(0, 0, viewSize));
-	//m_content->UpdateTransformHierarchy(RectF(0, 0, viewSize));
+	//m_content->arrangeLayout(RectF(0, 0, viewSize));
+	//m_content->updateTransformHierarchy(RectF(0, 0, viewSize));
 }
 
 
@@ -145,10 +145,10 @@ void UIComboBox::initialize()
 {
 	UIControl::initialize();
 
-	m_popup = NewObject<UIPopup>();
+	m_popup = newObject<UIPopup>();
 	AddVisualChild(m_popup);
 
-	m_scrollViewer = NewObject<UIScrollViewer>();
+	m_scrollViewer = newObject<UIScrollViewer>();
 	m_scrollViewer->SetWidth(100);	// TODO:
 	m_scrollViewer->SetHeight(30);
 	m_scrollViewer->SetBackground(Brush::Blue);
@@ -168,7 +168,7 @@ void UIComboBox::initialize()
 //UIComboBoxItemPtr UIComboBox::AddTextItem(const String& text)
 //{
 //	auto textBlock = RefPtr<UITextBlock>::MakeRef();
-//	textBlock->initialize(GetManager());
+//	textBlock->initialize(getManager());
 //	textBlock->SetText(text);
 //	return AddItem(textBlock);
 //}
@@ -180,7 +180,7 @@ void UIComboBox::initialize()
 //
 //	// 受け取った item を UIComboBoxItem でラップして、UIComboBoxItem をリストに入れる
 //	auto listItem = RefPtr<UIComboBoxItem>::MakeRef();
-//	listItem->initialize(GetManager());
+//	listItem->initialize(getManager());
 //	listItem->SetContent(item);
 //	GetItems()->Add(listItem);
 //	return listItem;

@@ -26,7 +26,7 @@ Document::~Document()
 //------------------------------------------------------------------------------
 void Document::initialize()
 {
-	m_manager = detail::DocumentsManager::GetInstance();
+	m_manager = detail::DocumentsManager::getInstance();
 }
 
 //------------------------------------------------------------------------------
@@ -41,7 +41,7 @@ void Document::setText(const StringRef& text)
 void Document::replace(int offset, int length, const StringRef& text)
 {
 	// UTF32 へ変換
-	const ByteBuffer& utf32Buf = m_manager->GetTCharToUTF32Converter()->Convert(text.getBegin(), sizeof(TCHAR) * text.getLength());
+	const ByteBuffer& utf32Buf = m_manager->getTCharToUTF32Converter()->convert(text.getBegin(), sizeof(TCHAR) * text.getLength());
 	int len = utf32Buf.getSize() / sizeof(UTF32);
 	replace(offset, length, (const UTF32*)utf32Buf.getConstData(), len);
 }
@@ -51,7 +51,7 @@ void Document::replace(int offset, int length, const UTF32* text, int len)
 {
 	LN_ASSERT(offset == 0 && length == 0);	// TODO: まだ
 
-	// text を Run と LineBrake のリストにする
+	// text を run と LineBrake のリストにする
 	List<RefPtr<Inline>> inlines;
 	{
 		const UTF32* pos = text;
@@ -60,23 +60,23 @@ void Document::replace(int offset, int length, const UTF32* text, int len)
 		int nlCount = 0;
 		while (StringTraits::indexOfNewLineSequence(pos, end, &nlIndex, &nlCount))
 		{
-			inlines.add(NewObject<Run>(pos, nlIndex).get());
-			inlines.add(NewObject<LineBreak>().get());
+			inlines.add(newObject<run>(pos, nlIndex).get());
+			inlines.add(newObject<LineBreak>().get());
 			pos += (nlIndex + nlCount);	// 改行文字の次の文字を指す
 		}
 		if (pos != end)
 		{
-			inlines.add(NewObject<Run>(pos, nlIndex).get());
+			inlines.add(newObject<run>(pos, nlIndex).get());
 		}
 	}
 
 	// TODO: Insert 先を割る
 	int localInsertPoint = 0;
 	LN_ASSERT(m_blockList.isEmpty());	// TODO
-	RefPtr<Block> parentBlock = NewObject<Paragraph>();
+	RefPtr<Block> parentBlock = newObject<Paragraph>();
 	m_blockList.add(parentBlock);
 
-	parentBlock->InsertInlines(localInsertPoint, inlines);
+	parentBlock->insertInlines(localInsertPoint, inlines);
 
 
 	// TODO: マージする
@@ -142,7 +142,7 @@ TextElement::~TextElement()
 //------------------------------------------------------------------------------
 void TextElement::initialize()
 {
-	m_manager = detail::DocumentsManager::GetInstance();
+	m_manager = detail::DocumentsManager::getInstance();
 	m_fontData.Family = String::getEmpty();
 	m_fontData.Size = 20;
 	m_fontData.IsBold = false;
@@ -154,61 +154,61 @@ void TextElement::initialize()
 }
 
 //------------------------------------------------------------------------------
-Brush* TextElement::GetForeground() const
+Brush* TextElement::getForeground() const
 {
 	return m_foreground;
 }
 
 //------------------------------------------------------------------------------
-void TextElement::OnFontDataChanged(const FontData& newData)
+void TextElement::onFontDataChanged(const FontData& newData)
 {
 }
 
 //------------------------------------------------------------------------------
-void TextElement::Render(const Matrix& transform, IDocumentsRenderer* renderer)
+void TextElement::render(const Matrix& transform, IDocumentsRenderer* renderer)
 {
 }
 
 //------------------------------------------------------------------------------
-Size TextElement::MeasureOverride(const Size& constraint)
+Size TextElement::measureOverride(const Size& constraint)
 {
 	if (m_fontDataModified)
 	{
-		OnFontDataChanged(m_fontData);
+		onFontDataChanged(m_fontData);
 		m_fontDataModified = false;
 	}
-	return ILayoutElement::MeasureOverride(constraint);
+	return ILayoutElement::measureOverride(constraint);
 }
 
 //------------------------------------------------------------------------------
-InternalTextElementType TextElement::GetInternalTextElementType() const
+InternalTextElementType TextElement::getInternalTextElementType() const
 {
 	return InternalTextElementType::Common;
 }
 
 //------------------------------------------------------------------------------
-const PointF& TextElement::GetLayoutPosition() const { return m_position; }
-Size TextElement::GetLayoutSize() const { return m_size; }
-const ThicknessF& TextElement::GetLayoutMargin() const { return m_margin; }
-const ThicknessF& TextElement::GetLayoutPadding() const { return m_padding; }
-AlignmentAnchor TextElement::GetLayoutAnchor() const { return m_anchor; }
-HAlignment TextElement::GetLayoutHAlignment() const { return m_horizontalAlignment; }
-VAlignment TextElement::GetLayoutVAlignment() const { return m_verticalAlignment; }
-void TextElement::GetLayoutMinMaxInfo(Size* outMin, Size* outMax) const { *outMin = Size::Zero, outMax->set(INFINITY, INFINITY); }	// TODO:
-ILayoutElement* TextElement::GetLayoutParent() const { return m_parent; }
-const HAlignment* TextElement::GetLayoutContentHAlignment() { return nullptr; }
-const VAlignment* TextElement::GetLayoutContentVAlignment() { return nullptr; }
-const Size& TextElement::GetLayoutDesiredSize() const { return m_desiredSize; }
-void TextElement::SetLayoutDesiredSize(const Size& size) { m_desiredSize = size; }
-void TextElement::SetLayoutFinalLocalRect(const Rect& rect) { m_finalLocalRect = rect; }
-const Rect& TextElement::GetLayoutFinalLocalRect() const { return m_finalLocalRect; }
-void TextElement::SetLayoutFinalGlobalRect(const Rect& rect) { m_finalGlobalRect = rect; }
-int TextElement::GetVisualChildrenCount() const { return 0; }
-ILayoutElement* TextElement::GetVisualChild(int index) const { return nullptr; }
-int TextElement::GetLayoutColumn() const { return m_gridLayoutInfo.layoutColumn; }
-int TextElement::GetLayoutRow() const { return m_gridLayoutInfo.layoutRow; }
-int TextElement::GetLayoutColumnSpan() const { return m_gridLayoutInfo.layoutColumnSpan; }
-int TextElement::GetLayoutRowSpan() const { return m_gridLayoutInfo.layoutRowSpan; }
+const PointF& TextElement::getLayoutPosition() const { return m_position; }
+Size TextElement::getLayoutSize() const { return m_size; }
+const ThicknessF& TextElement::getLayoutMargin() const { return m_margin; }
+const ThicknessF& TextElement::getLayoutPadding() const { return m_padding; }
+AlignmentAnchor TextElement::getLayoutAnchor() const { return m_anchor; }
+HAlignment TextElement::getLayoutHAlignment() const { return m_horizontalAlignment; }
+VAlignment TextElement::getLayoutVAlignment() const { return m_verticalAlignment; }
+void TextElement::getLayoutMinMaxInfo(Size* outMin, Size* outMax) const { *outMin = Size::Zero, outMax->set(INFINITY, INFINITY); }	// TODO:
+ILayoutElement* TextElement::getLayoutParent() const { return m_parent; }
+const HAlignment* TextElement::getLayoutContentHAlignment() { return nullptr; }
+const VAlignment* TextElement::getLayoutContentVAlignment() { return nullptr; }
+const Size& TextElement::getLayoutDesiredSize() const { return m_desiredSize; }
+void TextElement::setLayoutDesiredSize(const Size& size) { m_desiredSize = size; }
+void TextElement::setLayoutFinalLocalRect(const Rect& rect) { m_finalLocalRect = rect; }
+const Rect& TextElement::getLayoutFinalLocalRect() const { return m_finalLocalRect; }
+void TextElement::setLayoutFinalGlobalRect(const Rect& rect) { m_finalGlobalRect = rect; }
+int TextElement::getVisualChildrenCount() const { return 0; }
+ILayoutElement* TextElement::getVisualChild(int index) const { return nullptr; }
+int TextElement::getLayoutColumn() const { return m_gridLayoutInfo.layoutColumn; }
+int TextElement::getLayoutRow() const { return m_gridLayoutInfo.layoutRow; }
+int TextElement::getLayoutColumnSpan() const { return m_gridLayoutInfo.layoutColumnSpan; }
+int TextElement::getLayoutRowSpan() const { return m_gridLayoutInfo.layoutRowSpan; }
 
 
 //==============================================================================
@@ -233,72 +233,72 @@ void Block::initialize()
 }
 
 //------------------------------------------------------------------------------
-void Block::AddInline(Inline* inl)
+void Block::addInline(Inline* inl)
 {
 	if (LN_CHECK_ARG(inl != nullptr)) return;
 	if (LN_CHECK_ARG(inl->getParent() == nullptr)) return;
 	m_inlines.add(inl);
-	inl->SetParent(this);
+	inl->setParent(this);
 }
 
 //------------------------------------------------------------------------------
-void Block::InsertInlines(int index, const List<RefPtr<Inline>>& inlines)
+void Block::insertInlines(int index, const List<RefPtr<Inline>>& inlines)
 {
 	m_inlines.insertRange(index, inlines);
 	for (Inline* inl : inlines)
 	{
-		inl->SetParent(this);
+		inl->setParent(this);
 	}
 }
 
 //------------------------------------------------------------------------------
-void Block::ClearInlines()
+void Block::clearInlines()
 {
-	for (TextElement* child : m_inlines) child->SetParent(nullptr);
+	for (TextElement* child : m_inlines) child->setParent(nullptr);
 	m_inlines.clear();
 }
 
 //------------------------------------------------------------------------------
-void Block::Render(const Matrix& transform, IDocumentsRenderer* renderer)
+void Block::render(const Matrix& transform, IDocumentsRenderer* renderer)
 {
-	for (TextElement* child : m_inlines) child->Render(transform, renderer);
+	for (TextElement* child : m_inlines) child->render(transform, renderer);
 }
 
 //------------------------------------------------------------------------------
-Size Block::MeasureOverride(const Size& constraint)
+Size Block::measureOverride(const Size& constraint)
 {
 	Size childDesirdSize;
 	for (TextElement* child : m_inlines)
 	{
 		// TODO: とりあえず 左から右へのフロー
-		//Size size = child->MeasureOverride(constraint);
-		child->MeasureLayout(constraint);
-		Size size = child->GetLayoutDesiredSize();
+		//Size size = child->measureOverride(constraint);
+		child->measureLayout(constraint);
+		Size size = child->getLayoutDesiredSize();
 		childDesirdSize.width += size.width;
 		childDesirdSize.height = std::max(childDesirdSize.height, size.height);
 	}
 
-	Size desirdSize = TextElement::MeasureOverride(constraint);
-	return Size::Max(desirdSize, childDesirdSize);
+	Size desirdSize = TextElement::measureOverride(constraint);
+	return Size::max(desirdSize, childDesirdSize);
 }
 
 //------------------------------------------------------------------------------
-Size Block::ArrangeOverride(const Size& finalSize)
+Size Block::arrangeOverride(const Size& finalSize)
 {
 	float prevChildSize = 0;
 	Rect childRect;
 	for (TextElement* child : m_inlines)
 	{
 		// TODO: とりあえず 左から右へのフロー
-		Size childDesiredSize = child->GetDesiredSize();
+		Size childDesiredSize = child->getDesiredSize();
 		childRect.x += prevChildSize;
 		prevChildSize = childDesiredSize.width;
 		childRect.width = prevChildSize;
 		childRect.height = std::max(childRect.height, childDesiredSize.height);
-		child->ArrangeLayout(childRect);
+		child->arrangeLayout(childRect);
 	}
 
-	return Size::Min(finalSize, childRect.getSize());
+	return Size::min(finalSize, childRect.getSize());
 }
 
 //==============================================================================
@@ -345,32 +345,32 @@ void Inline::initialize()
 
 
 //==============================================================================
-// Run
+// run
 //==============================================================================
 
 //------------------------------------------------------------------------------
-Run::Run()
+run::run()
 	: Inline()
 {
 }
 
 //------------------------------------------------------------------------------
-Run::~Run()
+run::~run()
 {
 }
 
 //------------------------------------------------------------------------------
-void Run::initialize()
+void run::initialize()
 {
 	Inline::initialize();
 
 	// TODO: 本当に画面に表示されている分だけ作ればいろいろ節約できそう
 	m_glyphRun = RefPtr<GlyphRun>::makeRef();
-	m_glyphRun->initialize(GetManager()->GetGraphicsManager());
+	m_glyphRun->initialize(getManager()->getGraphicsManager());
 }
 
 //------------------------------------------------------------------------------
-void Run::initialize(const UTF32* str, int len)
+void run::initialize(const UTF32* str, int len)
 {
 	initialize();
 
@@ -378,23 +378,23 @@ void Run::initialize(const UTF32* str, int len)
 }
 
 //------------------------------------------------------------------------------
-void Run::setText(const StringRef& text)
+void run::setText(const StringRef& text)
 {
 	//m_text.Clear();
-	//m_text.Append(GetManager()->GetTCharToUTF32Converter()->Convert(text.GetBegin(), text.GetLength()));
+	//m_text.Append(getManager()->getTCharToUTF32Converter()->convert(text.GetBegin(), text.GetLength()));
 	m_glyphRun->setText(text);
 }
 
 //------------------------------------------------------------------------------
-void Run::OnFontDataChanged(const FontData& newData)
+void run::onFontDataChanged(const FontData& newData)
 {
 }
 
 //------------------------------------------------------------------------------
-Size Run::MeasureOverride(const Size& constraint)
+Size run::measureOverride(const Size& constraint)
 {
-	Size size = Inline::MeasureOverride(constraint);
-	const SizeI& runSize = m_glyphRun->GetRenderSize();
+	Size size = Inline::measureOverride(constraint);
+	const SizeI& runSize = m_glyphRun->getRenderSize();
 
 	size.width = std::max(size.width, (float)runSize.width);
 	size.height = std::max(size.height, (float)runSize.height);
@@ -402,9 +402,9 @@ Size Run::MeasureOverride(const Size& constraint)
 }
 
 //------------------------------------------------------------------------------
-void Run::Render(const Matrix& transform, IDocumentsRenderer* renderer)
+void run::render(const Matrix& transform, IDocumentsRenderer* renderer)
 {
-	renderer->OnDrawGlyphRun(transform, GetForeground(), m_glyphRun, PointF());
+	renderer->onDrawGlyphRun(transform, getForeground(), m_glyphRun, PointF());
 }
 
 
@@ -429,7 +429,7 @@ void LineBreak::initialize()
 }
 
 //------------------------------------------------------------------------------
-InternalTextElementType LineBreak::GetInternalTextElementType() const
+InternalTextElementType LineBreak::getInternalTextElementType() const
 {
 	return InternalTextElementType::LineBreak;
 }
@@ -444,19 +444,19 @@ InternalTextElementType LineBreak::GetInternalTextElementType() const
 //==============================================================================
 
 //------------------------------------------------------------------------------
-void VisualBlock::RebuildVisualLineList()
+void VisualBlock::rebuildVisualLineList()
 {
 	//m_visualLineList.Clear();
 
-	//m_visualLineList.Add(NewObject<VisualLine>());
+	//m_visualLineList.Add(newObject<VisualLine>());
 	//VisualLine* lastLine = m_visualLineList.GetLast();
 	//for (const RefPtr<TextElement>& element : m_paragraph->GetChildElements())
 	//{
-	//	lastLine->m_visualTextElementList.Add(NewObject<VisualTextElement>());
+	//	lastLine->m_visualTextElementList.Add(newObject<VisualTextElement>());
 
-	//	if (element->GetInternalTextElementType() == InternalTextElementType::LineBreak)
+	//	if (element->getInternalTextElementType() == InternalTextElementType::LineBreak)
 	//	{
-	//		m_visualLineList.Add(NewObject<VisualLine>());
+	//		m_visualLineList.Add(newObject<VisualLine>());
 	//		VisualLine* lastLine = m_visualLineList.GetLast();
 	//	}
 	//}

@@ -23,40 +23,40 @@ class ILayoutElement
 {
 public:
 	virtual void UpdateLayout(const Size& viewSize);
-	virtual void MeasureLayout(const Size& availableSize);
-	virtual void ArrangeLayout(const Rect& finalLocalRect);
+	virtual void measureLayout(const Size& availableSize);
+	virtual void arrangeLayout(const Rect& finalLocalRect);
 
 protected:
-	virtual const PointF& GetLayoutPosition() const = 0;
-	virtual Size GetLayoutSize() const = 0;
-	virtual const ThicknessF& GetLayoutMargin() const = 0;
-	virtual const ThicknessF& GetLayoutPadding() const = 0;
-	virtual AlignmentAnchor GetLayoutAnchor() const = 0;
-	virtual HAlignment GetLayoutHAlignment() const = 0;
-	virtual VAlignment GetLayoutVAlignment() const = 0;
-	virtual void GetLayoutMinMaxInfo(Size* outMin, Size* outMax) const = 0;
-	virtual ILayoutElement* GetLayoutParent() const = 0;
-	virtual const HAlignment* GetLayoutContentHAlignment() = 0;
-	virtual const VAlignment* GetLayoutContentVAlignment() = 0;
-	virtual const Size& GetLayoutDesiredSize() const = 0;
-	virtual void SetLayoutDesiredSize(const Size& size) = 0;
-	virtual void SetLayoutFinalLocalRect(const Rect& rect) = 0;
-	virtual const Rect& GetLayoutFinalLocalRect() const = 0;
-	virtual void SetLayoutFinalGlobalRect(const Rect& rect) = 0;
+	virtual const PointF& getLayoutPosition() const = 0;
+	virtual Size getLayoutSize() const = 0;
+	virtual const ThicknessF& getLayoutMargin() const = 0;
+	virtual const ThicknessF& getLayoutPadding() const = 0;
+	virtual AlignmentAnchor getLayoutAnchor() const = 0;
+	virtual HAlignment getLayoutHAlignment() const = 0;
+	virtual VAlignment getLayoutVAlignment() const = 0;
+	virtual void getLayoutMinMaxInfo(Size* outMin, Size* outMax) const = 0;
+	virtual ILayoutElement* getLayoutParent() const = 0;
+	virtual const HAlignment* getLayoutContentHAlignment() = 0;
+	virtual const VAlignment* getLayoutContentVAlignment() = 0;
+	virtual const Size& getLayoutDesiredSize() const = 0;
+	virtual void setLayoutDesiredSize(const Size& size) = 0;
+	virtual void setLayoutFinalLocalRect(const Rect& rect) = 0;
+	virtual const Rect& getLayoutFinalLocalRect() const = 0;
+	virtual void setLayoutFinalGlobalRect(const Rect& rect) = 0;
 
-	virtual int GetVisualChildrenCount() const = 0;
-	virtual ILayoutElement* GetVisualChild(int index) const = 0;
+	virtual int getVisualChildrenCount() const = 0;
+	virtual ILayoutElement* getVisualChild(int index) const = 0;
 
 protected:
 	// GridLayout properties
-	virtual int GetLayoutColumn() const = 0;
-	virtual int GetLayoutRow() const = 0;
-	virtual int GetLayoutColumnSpan() const = 0;
-	virtual int GetLayoutRowSpan() const = 0;
+	virtual int getLayoutColumn() const = 0;
+	virtual int getLayoutRow() const = 0;
+	virtual int getLayoutColumnSpan() const = 0;
+	virtual int getLayoutRowSpan() const = 0;
 
-	virtual Size MeasureOverride(const Size& constraint);
-	virtual Size ArrangeOverride(const Size& finalSize);
-	virtual void UpdateTransformHierarchy(const Rect& parentGlobalRect);
+	virtual Size measureOverride(const Size& constraint);
+	virtual Size arrangeOverride(const Size& finalSize);
+	virtual void updateTransformHierarchy(const Rect& parentGlobalRect);
 
 protected:
 	ILayoutElement();
@@ -136,15 +136,15 @@ class LayoutHelper
 {
 public:
 
-	// 単純に element のサイズによった Measure を行う。MeasureOverride() の中で使用することを想定している。
+	// 単純に element のサイズによった Measure を行う。measureOverride() の中で使用することを想定している。
 	static Size MeasureElement(ILayoutElement* element, const Size& constraint);
 
 	//static void ForEachVisualChildren(UIElement* element, std::function<void(UIElement* child)> func)
 	//{
-	//	int count = element->GetVisualChildrenCount();
+	//	int count = element->getVisualChildrenCount();
 	//	for (int i = 0; i < count; ++i)
 	//	{
-	//		func(element->GetVisualChild(i));
+	//		func(element->getVisualChild(i));
 	//	}
 	//}
 

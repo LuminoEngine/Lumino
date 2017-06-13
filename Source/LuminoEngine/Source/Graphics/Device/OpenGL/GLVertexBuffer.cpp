@@ -49,11 +49,11 @@ void GLVertexBuffer::create(size_t bufferSize, const void* initialData, Resource
 		m_usage = GL_STATIC_DRAW;
 	}
 
-	OnResetDevice();
+	onResetDevice();
 }
 
 //------------------------------------------------------------------------------
-void GLVertexBuffer::SetSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes)
+void GLVertexBuffer::setSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes)
 {
 	glBindBuffer(GL_ARRAY_BUFFER, m_glVertexBuffer); LN_CHECK_GLERROR();
 	glBufferSubData(GL_ARRAY_BUFFER, offsetBytes, dataBytes, data); LN_CHECK_GLERROR();
@@ -61,12 +61,12 @@ void GLVertexBuffer::SetSubData(uint32_t offsetBytes, const void* data, uint32_t
 }
 
 //------------------------------------------------------------------------------
-void* GLVertexBuffer::Lock()
+void* GLVertexBuffer::lock()
 {
 	/*	glMapBuffer は使わない。
 	 *	これは OpenGL ES では READ モードでロックできないため。
 	 *	つまり 一度 OpenGL にデータを送ってしまった後、その値を得ることができなくなってしまう。
-	 *	通常の Lock の用途なら Write だけでほぼ問題ないが、
+	 *	通常の lock の用途なら Write だけでほぼ問題ないが、
 	 *	デバイスロストしたときの復帰ではバックアップから GL の頂点バッファを作り直さなければならず、
 	 *	結局こちら側でずっと握っていた方が色々と都合が良かったりする。
 	 */
@@ -74,7 +74,7 @@ void* GLVertexBuffer::Lock()
 }
 
 //------------------------------------------------------------------------------
-void GLVertexBuffer::Unlock()
+void GLVertexBuffer::unlock()
 {
 	glBindBuffer(GL_ARRAY_BUFFER, m_glVertexBuffer); LN_CHECK_GLERROR();
 	glBufferSubData(GL_ARRAY_BUFFER, 0, m_byteCount, m_data); LN_CHECK_GLERROR();
@@ -82,13 +82,13 @@ void GLVertexBuffer::Unlock()
 }
 
 //------------------------------------------------------------------------------
-void GLVertexBuffer::OnLostDevice()
+void GLVertexBuffer::onLostDevice()
 {
 	glDeleteBuffers(1, &m_glVertexBuffer); LN_CHECK_GLERROR();
 }
 
 //------------------------------------------------------------------------------
-void GLVertexBuffer::OnResetDevice()
+void GLVertexBuffer::onResetDevice()
 {
 	glGenBuffers(1, &m_glVertexBuffer); LN_CHECK_GLERROR();
 	glBindBuffer(GL_ARRAY_BUFFER, m_glVertexBuffer); LN_CHECK_GLERROR();
@@ -186,7 +186,7 @@ void GLVertexDeclaration::ConvertDeclTypeLNToGL(VertexElementType type, GLenum* 
 	{
 		GLenum		Type;
 		GLint		Size;
-		GLboolean	Normalize;
+		GLboolean	normalize;
 	} formatTable[] =
 	{
 		{ 0,				0,	GL_FALSE },	// VertexElementType_Unknown
@@ -205,7 +205,7 @@ void GLVertexDeclaration::ConvertDeclTypeLNToGL(VertexElementType type, GLenum* 
 
 	*gl_type = formatTable[type].Type;
 	*size = formatTable[type].Size;
-	*normalized = formatTable[type].Normalize;
+	*normalized = formatTable[type].normalize;
 }
 
 } // namespace Driver

@@ -32,7 +32,7 @@ inline void Vector3::set(float x_, float y_, float z_)
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-inline const Vector2& Vector3::GetXY() const
+inline const Vector2& Vector3::getXY() const
 {
 	return *reinterpret_cast<const Vector2*>(this);
 }
@@ -40,7 +40,7 @@ inline const Vector2& Vector3::GetXY() const
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-inline float Vector3::GetLengthSquared() const
+inline float Vector3::getLengthSquared() const
 {
 	return x * x + y * y + z * z;
 }

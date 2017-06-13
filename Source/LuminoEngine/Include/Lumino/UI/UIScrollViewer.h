@@ -88,7 +88,7 @@ public:
 	Orientation GetOrientation() const { return m_orientation; }
 
 	/** スクロール位置に対する値を設定します。*/
-	void SetValue(float value) { m_value = value; }
+	void setValue(float value) { m_value = value; }
 
 	/** スクロール位置に対する値を取得します。規定値は 0 です。*/
 	float getValue() const { return m_value; }
@@ -126,8 +126,8 @@ LN_CONSTRUCT_ACCESS:
 
 protected:
 	// UIElement interface
-	virtual Size MeasureOverride(const Size& constraint) override;
-	virtual Size ArrangeOverride(const Size& finalSize) override;
+	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
 
 private:
 	void CoerceLength(float& componentLength, float trackLength);
@@ -215,7 +215,7 @@ public:
 	Orientation GetOrientation() const;
 
 	/** スクロール位置に対する値を設定します。*/
-	void SetValue(float value);
+	void setValue(float value);
 
 	/** スクロール位置に対する値を取得します。規定値は 0 です。*/
 	float getValue() const;
@@ -246,12 +246,12 @@ LN_CONSTRUCT_ACCESS:
 protected:
 	// UIElement interface
 	virtual void OnRoutedEvent(UIEventArgs* e) override;
-	virtual Size MeasureOverride(const Size& constraint) override;
-	virtual Size ArrangeOverride(const Size& finalSize) override;
+	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
 	//virtual void GetStyleClassName(String* outSubStateName);
 
 private:
-	void UpdateValue(float horizontalDragDelta, float verticalDragDelta);
+	void updateValue(float horizontalDragDelta, float verticalDragDelta);
 
 	RefPtr<UITrack>		m_track;
 	RefPtr<UIButton>	m_lineUpButton;
@@ -277,8 +277,8 @@ LN_CONSTRUCT_ACCESS:
 
 protected:
 	// UIElement interface
-	virtual Size MeasureOverride(const Size& constraint) override;
-	virtual Size ArrangeOverride(const Size& finalSize) override;
+	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
 	virtual void OnRoutedEvent(UIEventArgs* e) override;
 
 	// UIControl interface

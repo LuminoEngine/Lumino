@@ -25,7 +25,7 @@ public:
 	NlVariantType getType() const { return m_type; }
 
 
-	void SetValue(int32_t value) { m_type = NlVariantType::Int32; m_int32 = value; }
+	void setValue(int32_t value) { m_type = NlVariantType::Int32; m_int32 = value; }
 
 
 	template<typename T>

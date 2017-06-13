@@ -25,39 +25,39 @@ Component::~Component()
 }
 
 //------------------------------------------------------------------------------
-WorldObject* Component::GetOwnerObject() const
+WorldObject* Component::getOwnerObject() const
 {
 	return m_owner;
 }
 
 //------------------------------------------------------------------------------
-Transform* Component::GetTransform() const
+transform* Component::getTransform() const
 {
 	return (m_owner != nullptr) ? &m_owner->transform : nullptr;
 }
 
 //------------------------------------------------------------------------------
-void Component::OnAttached()
+void Component::onAttached()
 {
 }
 
 //------------------------------------------------------------------------------
-void Component::OnDetaching()
+void Component::onDetaching()
 {
 }
 
 //------------------------------------------------------------------------------
-void Component::OnUpdate()
+void Component::onUpdate()
 {
 }
 
 //------------------------------------------------------------------------------
-void Component::OnRender(DrawList* context)
+void Component::onRender(DrawList* context)
 {
 }
 
 //------------------------------------------------------------------------------
-void Component::OnUIEvent(UIEventArgs* e)
+void Component::onUIEvent(UIEventArgs* e)
 {
 }
 
@@ -66,39 +66,39 @@ void Component::attach(WorldObject* owner)
 {
 	m_owner = owner;
 	transfotm = &m_owner->transform;
-	OnAttached();
+	onAttached();
 }
 
 //------------------------------------------------------------------------------
 void Component::detach()
 {
-	OnDetaching();
+	onDetaching();
 	m_owner = nullptr;
 	transfotm = nullptr;
 }
 
 //------------------------------------------------------------------------------
-void Component::UpdateFrame()
+void Component::updateFrame()
 {
-	OnUpdate();
+	onUpdate();
 }
 
 //------------------------------------------------------------------------------
-void Component::Render(DrawList* context)
+void Component::render(DrawList* context)
 {
-	OnRender(context);
+	onRender(context);
 }
 
 //==============================================================================
-// Transform
+// transform
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Transform, Component);
-LN_TR_PROPERTY_IMPLEMENT(Transform, Vector3, position, tr::PropertyMetadata());
-LN_TR_PROPERTY_IMPLEMENT(Transform, Quaternion, rotation, tr::PropertyMetadata());
-LN_TR_PROPERTY_IMPLEMENT(Transform, Vector3, scale, tr::PropertyMetadata());
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(transform, Component);
+LN_TR_PROPERTY_IMPLEMENT(transform, Vector3, position, tr::PropertyMetadata());
+LN_TR_PROPERTY_IMPLEMENT(transform, Quaternion, rotation, tr::PropertyMetadata());
+LN_TR_PROPERTY_IMPLEMENT(transform, Vector3, scale, tr::PropertyMetadata());
 
 //------------------------------------------------------------------------------
-Transform::Transform()
+transform::transform()
 	: position(Vector3::Zero)
 	, rotation(Quaternion::Identity)
 	, scale(Vector3::Ones)
@@ -108,58 +108,58 @@ Transform::Transform()
 }
 
 //------------------------------------------------------------------------------
-Transform::~Transform()
+transform::~transform()
 {
 }
 
 //------------------------------------------------------------------------------
-Vector3 Transform::getFront() const
+Vector3 transform::getFront() const
 {
-	return Vector3::Transform(Vector3::UnitZ, rotation.get());
+	return Vector3::transform(Vector3::UnitZ, rotation.get());
 }
 
 //------------------------------------------------------------------------------
-void Transform::translate(const Vector3& translation)
+void transform::translate(const Vector3& translation)
 {
 	position = position.get() + translation;
 }
 
 //------------------------------------------------------------------------------
-void Transform::translate(float x, float y, float z)
+void transform::translate(float x, float y, float z)
 {
 	translate(Vector3(x, y, z));
 }
 
 //------------------------------------------------------------------------------
-void Transform::LookAt(const Vector3& target, const Vector3& up)
+void transform::lookAt(const Vector3& target, const Vector3& up)
 {
 	if (target == position.get()) return;
 
 	// left-hand coord
-	Vector3 f = Vector3::Normalize(target - position.get());
-	Vector3 s = Vector3::Normalize(Vector3::Cross(up, f));
-	Vector3 u = Vector3::Cross(f, s);
+	Vector3 f = Vector3::normalize(target - position.get());
+	Vector3 s = Vector3::normalize(Vector3::cross(up, f));
+	Vector3 u = Vector3::cross(f, s);
 	Matrix mat(
 		s.x, s.y, s.z, 0.0f,
 		u.x, u.y, u.z, 0.0f,
 		f.x, f.y, f.z, 0.0f,
 		0.0f, 0.0f, 0.0f, 1.0f);
-	rotation = Quaternion::MakeFromRotationMatrix(mat);
+	rotation = Quaternion::makeFromRotationMatrix(mat);
 }
 
 //------------------------------------------------------------------------------
-Matrix Transform::GetTransformMatrix() const
+Matrix transform::getTransformMatrix() const
 {
-	return Matrix::MakeAffineTransformation(scale, center, rotation, position);
+	return Matrix::makeAffineTransformation(scale, center, rotation, position);
 }
 
 //------------------------------------------------------------------------------
-void Transform::UpdateWorldMatrix()
+void transform::updateWorldMatrix()
 {
-	Matrix localMatrix = Matrix::MakeAffineTransformation(scale, center, rotation, position);
+	Matrix localMatrix = Matrix::makeAffineTransformation(scale, center, rotation, position);
 
 	if (m_parent != nullptr)
-		m_worldMatrix = localMatrix * m_parent->GetWorldMatrix();
+		m_worldMatrix = localMatrix * m_parent->getWorldMatrix();
 	else
 		m_worldMatrix = localMatrix;
 }

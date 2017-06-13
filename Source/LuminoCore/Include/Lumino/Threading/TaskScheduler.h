@@ -20,7 +20,7 @@ public:
 	static TaskScheduler* getDefault();
 
 	/** この TaskScheduler が同時に並列実行できる Task の数を取得します。*/
-	int GetMaxConcurrencyLevel() const;
+	int getMaxConcurrencyLevel() const;
 
 private:
 	friend class Task;
@@ -28,8 +28,8 @@ private:
 	TaskScheduler(int threadCount);
 	~TaskScheduler();
 	
-	void QueueTask(Task* task);
-	void ExecuteThread();
+	void queueTask(Task* task);
+	void executeThread();
 
 	List<DelegateThread*>	m_threadList;
 	std::deque<Task*>		m_taskQueue;

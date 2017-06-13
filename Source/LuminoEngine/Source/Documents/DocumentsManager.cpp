@@ -12,7 +12,7 @@ namespace detail {
 static DocumentsManager* g_manager = nullptr;
 
 //------------------------------------------------------------------------------
-DocumentsManager* DocumentsManager::GetInstance(DocumentsManager* priority)
+DocumentsManager* DocumentsManager::getInstance(DocumentsManager* priority)
 {
 	return (priority != nullptr) ? priority : g_manager;
 }
@@ -35,10 +35,10 @@ DocumentsManager::~DocumentsManager()
 void DocumentsManager::initialize(const ConfigData& configData)
 {
 	m_graphicsManager = configData.graphicsManager;
-	m_TCharToUTF32Converter.SetDestinationEncoding(Encoding::GetUTF32Encoding());
-	m_TCharToUTF32Converter.SetSourceEncoding(Encoding::GetTCharEncoding());
-	m_UTF32ToTCharConverter.SetDestinationEncoding(Encoding::GetTCharEncoding());
-	m_UTF32ToTCharConverter.SetSourceEncoding(Encoding::GetUTF32Encoding());
+	m_TCharToUTF32Converter.setDestinationEncoding(Encoding::getUTF32Encoding());
+	m_TCharToUTF32Converter.getSourceEncoding(Encoding::getTCharEncoding());
+	m_UTF32ToTCharConverter.setDestinationEncoding(Encoding::getTCharEncoding());
+	m_UTF32ToTCharConverter.getSourceEncoding(Encoding::getUTF32Encoding());
 
 	g_manager = this;
 }

@@ -29,16 +29,16 @@ public:
 	};
 
 public:
-	static ModelManager* GetInstance(ModelManager* priority = nullptr);
+	static ModelManager* getInstance(ModelManager* priority = nullptr);
 
 	ModelManager();
 	virtual ~ModelManager();
 
 	void initialize(const ConfigData& configData);
 	void Finalize();
-	FileManager* GetFileManager() const { return m_fileManager; }
-	detail::PhysicsManager* GetPhysicsManager() { return m_physicsManager; }
-	GraphicsManager* GetGraphicsManager() { return m_graphicsManager; }
+	FileManager* getFileManager() const { return m_fileManager; }
+	detail::PhysicsManager* getPhysicsManager() { return m_physicsManager; }
+	GraphicsManager* getGraphicsManager() { return m_graphicsManager; }
 	Texture2D* GetMMDDefaultToonTexture(int index);
 
 	RefPtr<Texture> CreateTexture(const PathName& parentDir, const StringRef& filePath, ModelCreationFlag flags);

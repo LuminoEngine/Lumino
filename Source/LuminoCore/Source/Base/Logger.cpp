@@ -27,7 +27,7 @@ public:
 #ifdef _WIN32
 	typedef timeb Time;
 
-	static void GetTime(Time* t)
+	static void getTime(Time* t)
 	{
 		::ftime(t);
 	}
@@ -69,14 +69,14 @@ public:
 		, m_file(file)
 		, m_func(func)
 		, m_line(line)
-		, m_threadId(Thread::GetCurrentThreadId())
+		, m_threadId(Thread::getCurrentThreadId())
 	{
-		LogHelper::GetTime(&m_time);
+		LogHelper::getTime(&m_time);
 	}
 
 	void setMessage(const StringRefA& message) { m_message = message; }
 
-	LogHelper::Time& GetTime() { return m_time; }
+	LogHelper::Time& getTime() { return m_time; }
 
 	LogLevel GetLevel() const { return m_level; }
 
@@ -88,7 +88,7 @@ public:
 
 	int GetLine() const { return m_line; }
 
-	unsigned int GetThreadId() const { return m_threadId; }
+	unsigned int getThreadId() const { return m_threadId; }
 
 private:
 	LogHelper::Time	m_time;
@@ -395,9 +395,9 @@ LogRecord::LogRecord(LogLevel level, const char* file, const char* func, int lin
 	, m_file(file)
 	, m_func(func)
 	, m_line(line)
-	, m_threadId(Thread::GetCurrentThreadId())
+	, m_threadId(Thread::getCurrentThreadId())
 {
-	LogHelper::GetTime(&m_time);
+	LogHelper::getTime(&m_time);
 }
 
 //------------------------------------------------------------------------------
@@ -446,7 +446,7 @@ static const char* GetLogLevelString(LogLevel level)
 }
 
 //------------------------------------------------------------------------------
-Logger* Logger::GetInstance()
+Logger* Logger::getInstance()
 {
 	if (!g_logEnabled) return nullptr;
 	return &g_logger;
@@ -468,14 +468,14 @@ void Logger::operator+=(const LogRecord& record)
 
 	tm t;
 	char date[64];
-	LogHelper::GetLocalTime(&t, &record.GetTime().time);
+	LogHelper::GetLocalTime(&t, &record.getTime().time);
 	strftime(date, sizeof(date), "%Y/%m/%d %H:%M:%S", &t);
 
 	g_logSS.str("");							// バッファをクリアする。
 	g_logSS.clear(std::stringstream::goodbit);	// ストリームの状態をクリアする。この行がないと意図通りに動作しない
 	g_logSS << date << " ";
 	g_logSS << std::setw(5) << std::left << GetLogLevelString(record.GetLevel()) << " ";
-	g_logSS << "[" << record.GetThreadId() << "]";
+	g_logSS << "[" << record.getThreadId() << "]";
 	g_logSS << "[" << record.GetFunc() << "(" << record.GetLine() << ")] ";
 	g_logSS << record.getMessage() << std::endl;
 

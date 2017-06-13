@@ -53,7 +53,7 @@ public:
 public:
 	// Application interface
 	virtual void CreateMainWindow(const WindowCreationSettings& settings);
-	virtual PlatformWindow* GetMainWindow();
+	virtual PlatformWindow* getMainWindow();
 	virtual PlatformWindow* CreateSubWindow(const WindowCreationSettings& settings);
 	virtual void DoEvents();
 	virtual void Finalize();

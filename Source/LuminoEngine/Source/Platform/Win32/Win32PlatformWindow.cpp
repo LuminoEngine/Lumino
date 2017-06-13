@@ -72,7 +72,7 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 
 	if (!UserWndProc.isEmpty())
 	{
-		LRESULT dr = UserWndProc.call(hwnd, msg, wparam, lparam, handled);//RaiseDelegateEvent(PreWndProc, hwnd, msg, wparam, lparam, handled);
+		LRESULT dr = UserWndProc.call(hwnd, msg, wparam, lparam, handled);//raiseDelegateEvent(PreWndProc, hwnd, msg, wparam, lparam, handled);
 		if (*handled) {
 			return dr;
 		}
@@ -338,7 +338,7 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 }
 
 //------------------------------------------------------------------------------
-void Win32PlatformWindow::SetSize(const SizeI& size)
+void Win32PlatformWindow::setSize(const SizeI& size)
 {
 	Win32WindowManager::SetWindowClientSize(GetWindowHandle(), size);
 }

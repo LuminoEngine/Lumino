@@ -27,7 +27,7 @@ LN_NAMESPACE_BEGIN
 //------------------------------------------------------------------------------
 RawFontPtr RawFont::create()
 {
-	auto ptr = NewObject<detail::FreeTypeFont>();
+	auto ptr = newObject<detail::FreeTypeFont>();
 	return RawFontPtr::staticCast(ptr);
 }
 
@@ -142,7 +142,7 @@ void FreeTypeFont::initialize()
 {
 	RawFont::initialize();
 
-	m_manager = detail::EngineDomain::GetGraphicsManager()->GetFontManager();
+	m_manager = detail::EngineDomain::getGraphicsManager()->getFontManager();
 	m_glyphData.CopyGlyph = NULL;
 	m_glyphData.CopyOutlineGlyph = NULL;
 
@@ -169,7 +169,7 @@ void FreeTypeFont::Dispose_()
 //------------------------------------------------------------------------------
 RawFontPtr FreeTypeFont::copy() const
 {
-	auto font = NewObject<FreeTypeFont>();
+	auto font = newObject<FreeTypeFont>();
 	font->m_fontData = m_fontData;
 	font->m_modified = true;
 	return RawFontPtr::staticCast(font);
@@ -856,7 +856,7 @@ void FreeTypeFont::UpdateFont()
 
 		if (m_fontData.IsItalic)
 		{
-			// イタリック体の場合は Transform で傾ける
+			// イタリック体の場合は transform で傾ける
 			FT_Vector transform = { 0, 0 };
 			FT_Matrix matrix;
 			matrix.xx = 1 << 16;
@@ -1009,7 +1009,7 @@ void FreeTypeFont::RefreshBitmap(Bitmap* bitmap, FT_Bitmap* ftBitmap)
 	// ビットマップデータを参照モードでセットする
 	bitmap->m_bitmapData.attach(
 		ftBitmap->buffer,
-		Bitmap::GetPixelFormatByteCount(bitmap->m_format, bitmap->m_size, 1));
+		Bitmap::getPixelFormatByteCount(bitmap->m_format, bitmap->m_size, 1));
 }
 
 #if 0

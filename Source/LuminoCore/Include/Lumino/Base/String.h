@@ -58,7 +58,7 @@ namespace tr { class Variant; }
 	例えば VisualStudio (Windows) で LN_UNICODE シンボルを定義している場合、
 	String は wchar_t 型であり、エンコーディングは UTF-16 として扱われます。
 
-	現在の環境のエンコーディングは Encoding::GetTCharEncoding() により取得することができます。
+	現在の環境のエンコーディングは Encoding::getTCharEncoding() により取得することができます。
 
 
 	@section	比較について
@@ -441,7 +441,7 @@ public:
 		@param[in]	usedDefaultChar	: 変換不可文字をデフォルト文字 ('?') に変換したかどうか
 		@details	この関数は char 用、wchar_t 用それぞれオーバーロードされます。
 					型引数 TChar に対して必要であれば、
-					それぞれ Encoding::GetSystemMultiByteEncoding()、Encoding::GetWideCharEncoding() で取得できるエンコーディングを使用して
+					それぞれ Encoding::getSystemMultiByteEncoding()、Encoding::getWideCharEncoding() で取得できるエンコーディングを使用して
 					文字コードをの変換を行います。
 					TChar と str の型が同じ場合は文字コードの変換を行いません。
 	*/
@@ -758,7 +758,7 @@ public:
 		if (IsSharedEmpty()) {
 			return;
 		}
-		m_refCount.fetch_add(1, std::memory_order_relaxed);/*m_refCount.Increment();*/
+		m_refCount.fetch_add(1, std::memory_order_relaxed);/*m_refCount.increment();*/
 	}
 	inline void release()
 	{
@@ -767,7 +767,7 @@ public:
 		}
 
 		int before = m_refCount.fetch_sub(1, std::memory_order_relaxed);
-		/*m_refCount.Decrement();*/
+		/*m_refCount.decrement();*/
 		//if (m_refCount.Get() <= 0)
 		if (before <= 1)
 		{

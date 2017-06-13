@@ -36,7 +36,7 @@ void XAudio2AudioPlayerBase::initialize(AudioStream* audioStream, bool enable3d)
 
 	if (enable3d)
 	{
-		mEmitterState = LN_NEW EmitterState(m_decoder->GetWaveFormat()->channels);
+		mEmitterState = LN_NEW EmitterState(m_decoder->getWaveFormat()->channels);
 	}
 }
 
@@ -88,13 +88,13 @@ void XAudio2OnMemoryAudioPlayer::initialize(AudioStream* audioStream, bool enabl
 	XAudio2AudioPlayerBase::initialize(audioStream, enable3d);
 
 	// オンメモリ再生用に内部に持ってるバッファを埋める
-	m_decoder->FillOnmemoryBuffer();
+	m_decoder->fillOnmemoryBuffer();
 }
 
 //------------------------------------------------------------------------------
-void XAudio2OnMemoryAudioPlayer::SetVolume(float volume)
+void XAudio2OnMemoryAudioPlayer::setVolume(float volume)
 {
-    XAudio2AudioPlayerBase::SetVolume( volume );
+    XAudio2AudioPlayerBase::setVolume( volume );
     if ( mSourceVoice )
 	{
 		LN_COMCALL(mSourceVoice->SetVolume(/*0.01f * */mVolume));
@@ -102,9 +102,9 @@ void XAudio2OnMemoryAudioPlayer::SetVolume(float volume)
 }
 
 //------------------------------------------------------------------------------
-void XAudio2OnMemoryAudioPlayer::SetPitch(float pitch)
+void XAudio2OnMemoryAudioPlayer::setPitch(float pitch)
 {
-    XAudio2AudioPlayerBase::SetPitch( pitch );
+    XAudio2AudioPlayerBase::setPitch( pitch );
     if ( mSourceVoice )
 	{
 		LN_COMCALL(mSourceVoice->SetFrequencyRatio(/*0.01f * */mPitch));
@@ -112,7 +112,7 @@ void XAudio2OnMemoryAudioPlayer::SetPitch(float pitch)
 }
 
 //------------------------------------------------------------------------------
-uint64_t XAudio2OnMemoryAudioPlayer::GetPlayedSamples() const
+uint64_t XAudio2OnMemoryAudioPlayer::getPlayedSamples() const
 {
     if ( mSourceVoice )
     {
@@ -124,23 +124,23 @@ uint64_t XAudio2OnMemoryAudioPlayer::GetPlayedSamples() const
 }
 
 //------------------------------------------------------------------------------
-void XAudio2OnMemoryAudioPlayer::Play()
+void XAudio2OnMemoryAudioPlayer::play()
 {
-	Stop();
+	stop();
 
     // XAudio のソースボイス作成
-	const WaveFormat* ln_format = m_decoder->GetWaveFormat();
+	const WaveFormat* ln_format = m_decoder->getWaveFormat();
 	WAVEFORMATEX format;
-	AudioUtils::ConvertLNWaveFormatToWAVEFORMATEX(*ln_format, &format);
+	AudioUtils::convertLNWaveFormatToWAVEFORMATEX(*ln_format, &format);
 
-	LN_COMCALL(m_XAudio2AudioDevice->GetXAudio2()->CreateSourceVoice(&mSourceVoice, &format));
+	LN_COMCALL(m_XAudio2AudioDevice->getXAudio2()->CreateSourceVoice(&mSourceVoice, &format));
 
 	LN_COMCALL(mSourceVoice->FlushSourceBuffers());
         
     // SourceVoiceに送信するデータ
     XAUDIO2_BUFFER submit = { 0 };
-	submit.AudioBytes = m_decoder->GetOnmemoryPCMBufferSize();	// バッファのバイト数
-	submit.pAudioData = m_decoder->GetOnmemoryPCMBuffer();		// バッファの先頭アドレス
+	submit.AudioBytes = m_decoder->getOnmemoryPCMBufferSize();	// バッファのバイト数
+	submit.pAudioData = m_decoder->getOnmemoryPCMBuffer();		// バッファの先頭アドレス
 	submit.Flags = XAUDIO2_END_OF_STREAM;
 
 	// ループ再生する場合
@@ -167,11 +167,11 @@ void XAudio2OnMemoryAudioPlayer::Play()
 	mIsPlaying = true;
 	mIsPausing = false;
 
-	Polling();	// 3D オーディオの計算を行うため
+	polling();	// 3D オーディオの計算を行うため
 }
 
 //------------------------------------------------------------------------------
-void XAudio2OnMemoryAudioPlayer::Stop()
+void XAudio2OnMemoryAudioPlayer::stop()
 {
     if ( mSourceVoice )
 	{
@@ -187,7 +187,7 @@ void XAudio2OnMemoryAudioPlayer::Stop()
 }
 
 //------------------------------------------------------------------------------
-void XAudio2OnMemoryAudioPlayer::Pause( bool isPause )
+void XAudio2OnMemoryAudioPlayer::pause( bool isPause )
 {
 	// 再生中の場合
 	if ( mSourceVoice && mIsPlaying )
@@ -208,7 +208,7 @@ void XAudio2OnMemoryAudioPlayer::Pause( bool isPause )
 }
 
 //------------------------------------------------------------------------------
-bool XAudio2OnMemoryAudioPlayer::Polling()
+bool XAudio2OnMemoryAudioPlayer::polling()
 {
 	// 再生中ではない場合は中断
 	if (!mSourceVoice || !mIsPlaying) {
@@ -228,7 +228,7 @@ bool XAudio2OnMemoryAudioPlayer::Polling()
 		// ボイスキューが空になった場合
 		if ( state.BuffersQueued == 0 )
 		{
-			Stop();
+			stop();
 			return false;
 		}
 	}
@@ -236,12 +236,12 @@ bool XAudio2OnMemoryAudioPlayer::Polling()
     // 3D オーディオの更新
     if ( mEmitterState != NULL)
     {
-        m_XAudio2AudioDevice->CalcEmitterState( mEmitterState );
+        m_XAudio2AudioDevice->calcEmitterState( mEmitterState );
 
 		LN_COMCALL(mSourceVoice->SetFrequencyRatio(mEmitterState->DSPSettings.DopplerFactor * (mPitch/* * 0.01f*/)));
 
 		LN_COMCALL(mSourceVoice->SetOutputMatrix(
-			m_XAudio2AudioDevice->GetMasteringVoice(),   // NULL でもいいみたいだけど一応
+			m_XAudio2AudioDevice->getMasteringVoice(),   // NULL でもいいみたいだけど一応
 			mEmitterState->DSPSettings.SrcChannelCount,
 			mEmitterState->DSPSettings.DstChannelCount,
 			mEmitterState->DSPSettings.pMatrixCoefficients ));
@@ -293,7 +293,7 @@ void XAudio2StreamingAudioPlayer::initialize(AudioStream* audioStream, bool enab
 	XAudio2AudioPlayerBase::initialize(audioStream, enable3d);
 
 	// 1 秒分のバッファサイズ取得
-	mAudioDataBufferSize = m_decoder->GetBytesPerSec();
+	mAudioDataBufferSize = m_decoder->getBytesPerSec();
 
 	// 1 秒のバッファをふたつ用意
 	mPrimaryAudioData	= LN_NEW uint8_t[ mAudioDataBufferSize ];
@@ -301,9 +301,9 @@ void XAudio2StreamingAudioPlayer::initialize(AudioStream* audioStream, bool enab
 }
 
 //------------------------------------------------------------------------------
-void XAudio2StreamingAudioPlayer::SetVolume(float volume)
+void XAudio2StreamingAudioPlayer::setVolume(float volume)
 {
-    XAudio2AudioPlayerBase::SetVolume( volume );
+    XAudio2AudioPlayerBase::setVolume( volume );
     if ( mSourceVoice )
 	{
 		LN_COMCALL(mSourceVoice->SetVolume(/*0.01f * */mVolume));
@@ -311,9 +311,9 @@ void XAudio2StreamingAudioPlayer::SetVolume(float volume)
 }
 
 //------------------------------------------------------------------------------
-void XAudio2StreamingAudioPlayer::SetPitch(float pitch)
+void XAudio2StreamingAudioPlayer::setPitch(float pitch)
 {
-	XAudio2AudioPlayerBase::SetPitch(pitch);
+	XAudio2AudioPlayerBase::setPitch(pitch);
     if ( mSourceVoice )
 	{
 		LN_COMCALL(mSourceVoice->SetFrequencyRatio(/*0.01f * */mPitch));
@@ -321,7 +321,7 @@ void XAudio2StreamingAudioPlayer::SetPitch(float pitch)
 }
 
 //------------------------------------------------------------------------------
-uint64_t XAudio2StreamingAudioPlayer::GetPlayedSamples() const
+uint64_t XAudio2StreamingAudioPlayer::getPlayedSamples() const
 {
     if ( mSourceVoice )
     {
@@ -333,27 +333,27 @@ uint64_t XAudio2StreamingAudioPlayer::GetPlayedSamples() const
 }
 
 //------------------------------------------------------------------------------
-void XAudio2StreamingAudioPlayer::Play()
+void XAudio2StreamingAudioPlayer::play()
 {
-	Stop();
+	stop();
 
     // ソースボイス作成
-	const WaveFormat* ln_format = m_decoder->GetWaveFormat();
+	const WaveFormat* ln_format = m_decoder->getWaveFormat();
 	WAVEFORMATEX format;
-    AudioUtils::ConvertLNWaveFormatToWAVEFORMATEX( *ln_format, &format );
+    AudioUtils::convertLNWaveFormatToWAVEFORMATEX( *ln_format, &format );
 
-	LN_COMCALL(m_XAudio2AudioDevice->GetXAudio2()->CreateSourceVoice(&mSourceVoice, &format));
+	LN_COMCALL(m_XAudio2AudioDevice->getXAudio2()->CreateSourceVoice(&mSourceVoice, &format));
 	LN_COMCALL(mSourceVoice->FlushSourceBuffers());
 
 	// デコード状態をリセットする ( MP3 用 )
-	m_decoder->Reset();
+	m_decoder->reset();
 
 	// ストリーミング読み込み位置リセット
 	mReadCursor = 0;
 
     // とりあえずソースデータをカーソルの終端にする。
     // ファイル内から読むのは _addNextBuffer() で
-	mCursorEndPos = m_decoder->GetSourceDataSize();
+	mCursorEndPos = m_decoder->getSourceDataSize();
         
     mWriteSampleNum = 0;
     mCursorBeginPos = 0;
@@ -371,11 +371,11 @@ void XAudio2StreamingAudioPlayer::Play()
 	mIsPlaying = true;
 	mIsPausing = false;
 
-	Polling();	// 3D オーディオの計算を行うため
+	polling();	// 3D オーディオの計算を行うため
 }
 
 //------------------------------------------------------------------------------
-void XAudio2StreamingAudioPlayer::Stop()
+void XAudio2StreamingAudioPlayer::stop()
 {
 	if ( mSourceVoice )
 	{
@@ -391,7 +391,7 @@ void XAudio2StreamingAudioPlayer::Stop()
 }
 
 //------------------------------------------------------------------------------
-void XAudio2StreamingAudioPlayer::Pause( bool isPause )
+void XAudio2StreamingAudioPlayer::pause( bool isPause )
 {
 	// 再生中の場合
 	if ( mSourceVoice && mIsPlaying )
@@ -412,7 +412,7 @@ void XAudio2StreamingAudioPlayer::Pause( bool isPause )
 }
 
 //------------------------------------------------------------------------------
-bool XAudio2StreamingAudioPlayer::Polling()
+bool XAudio2StreamingAudioPlayer::polling()
 {
 	// 再生中ではない場合は中断
 	if ( !mSourceVoice || !mIsPlaying ) {
@@ -437,7 +437,7 @@ bool XAudio2StreamingAudioPlayer::Polling()
 			if ( mIsLoop )
 			{
 				mReadCursor = mCursorBeginPos;
-				mCursorEndPos = m_decoder->GetSourceDataSize();
+				mCursorEndPos = m_decoder->getSourceDataSize();
 			}
 			// ループ再生しない場合はファイルの最後まで読み切ったことを示すフラグを ON
 			else
@@ -460,7 +460,7 @@ bool XAudio2StreamingAudioPlayer::Polling()
 		// キューが完全になくなった場合、停止とする
 		if ( voice_state.BuffersQueued == 0 )
 		{
-			Stop();
+			stop();
 			return false;
 		}
 	}
@@ -468,12 +468,12 @@ bool XAudio2StreamingAudioPlayer::Polling()
     // 3D オーディオの更新
     if ( mEmitterState )
     {
-        m_XAudio2AudioDevice->CalcEmitterState( mEmitterState );
+        m_XAudio2AudioDevice->calcEmitterState( mEmitterState );
 
 		LN_COMCALL(mSourceVoice->SetFrequencyRatio(mEmitterState->DSPSettings.DopplerFactor * (mPitch/* * 0.01f*/)));
 
 		LN_COMCALL(mSourceVoice->SetOutputMatrix(
-			m_XAudio2AudioDevice->GetMasteringVoice(),   // NULL でもいいみたいだけど一応
+			m_XAudio2AudioDevice->getMasteringVoice(),   // NULL でもいいみたいだけど一応
 			mEmitterState->DSPSettings.SrcChannelCount,
 			mEmitterState->DSPSettings.DstChannelCount,
 			mEmitterState->DSPSettings.pMatrixCoefficients));
@@ -512,15 +512,15 @@ void XAudio2StreamingAudioPlayer::_addNextBuffer()
     // ループ上で扱うサンプル数は、チャンネル数関係無しになってる。
     // それを正しい値に変換するため、実際の 1 サンプルあたりのバイト数を計算する
     uint32_t smp_size =
-		m_decoder->GetWaveFormat()->channels *
-		m_decoder->GetWaveFormat()->bitsPerSample / 8;
+		m_decoder->getWaveFormat()->channels *
+		m_decoder->getWaveFormat()->bitsPerSample / 8;
 
     if ( mIsLoop )
     {
         if ( mLoopBegin == 0 && mLoopLength == 0 )
         {
             mCursorBeginPos = 0;
-			mCursorEndPos = m_decoder->GetSourceDataSize();
+			mCursorEndPos = m_decoder->getSourceDataSize();
         }
         else
         {

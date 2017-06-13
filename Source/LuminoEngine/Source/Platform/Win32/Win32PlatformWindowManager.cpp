@@ -218,7 +218,7 @@ void Win32WindowManager::CreateMainWindow(const WindowCreationSettings& settings
 }
 
 //------------------------------------------------------------------------------
-PlatformWindow* Win32WindowManager::GetMainWindow()
+PlatformWindow* Win32WindowManager::getMainWindow()
 {
 	return m_mainWindow;
 }

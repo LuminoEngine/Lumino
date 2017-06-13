@@ -23,13 +23,13 @@ float Vector2::getLength() const
 }
 
 //------------------------------------------------------------------------------
-float Vector2::GetLengthSquared() const
+float Vector2::getLengthSquared() const
 {
     return ( x * x + y * y );
 }
 
 //------------------------------------------------------------------------------
-void Vector2::Normalize()
+void Vector2::normalize()
 {
 	float t = getLength();
 	if (t == 0.0f)
@@ -40,9 +40,9 @@ void Vector2::Normalize()
 }
 
 //------------------------------------------------------------------------------
-void Vector2::TransformCoord(const Matrix& mat)
+void Vector2::transformCoord(const Matrix& mat)
 {
-	*this = TransformCoord(*this, mat);
+	*this = transformCoord(*this, mat);
 }
 
 //------------------------------------------------------------------------------
@@ -66,17 +66,17 @@ void Vector2::print(const char* format, FILE* stream) const
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Vector2 Vector2::Normalize(const Vector2& vec)
+Vector2 Vector2::normalize(const Vector2& vec)
 {
 	Vector2 t(vec);
-	t.Normalize();
+	t.normalize();
 	return t;
 }
 
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-float Vector2::Dot(const Vector2& vec1, const Vector2& vec2)
+float Vector2::dot(const Vector2& vec1, const Vector2& vec2)
 {
 	return (vec1.x * vec2.x) + (vec1.y * vec2.y);
 }
@@ -84,7 +84,7 @@ float Vector2::Dot(const Vector2& vec1, const Vector2& vec2)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Vector2 Vector2::Min(const Vector2& vec1, const Vector2& vec2)
+Vector2 Vector2::min(const Vector2& vec1, const Vector2& vec2)
 {
 	return Vector2(
 		(vec1.x < vec2.x) ? vec1.x : vec2.x,
@@ -94,7 +94,7 @@ Vector2 Vector2::Min(const Vector2& vec1, const Vector2& vec2)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Vector2 Vector2::Max(const Vector2& vec1, const Vector2& vec2)
+Vector2 Vector2::max(const Vector2& vec1, const Vector2& vec2)
 {
 	return Vector2(
 		(vec1.x > vec2.x) ? vec1.x : vec2.x,
@@ -104,7 +104,7 @@ Vector2 Vector2::Max(const Vector2& vec1, const Vector2& vec2)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Vector4 Vector2::Transform(const Vector2& vec, const Matrix& mat)
+Vector4 Vector2::transform(const Vector2& vec, const Matrix& mat)
 {
 	Vector4 t;
 	t.x = (vec.x * mat.m[0][0]) + (vec.y * mat.m[1][0]) + mat.m[3][0];
@@ -117,7 +117,7 @@ Vector4 Vector2::Transform(const Vector2& vec, const Matrix& mat)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Vector2 Vector2::TransformCoord(const Vector2& vec, const Matrix& mat)
+Vector2 Vector2::transformCoord(const Vector2& vec, const Matrix& mat)
 {
 	float tx = (vec.x * mat.m[0][0]) + (vec.y * mat.m[1][0]) + mat.m[3][0];
 	float ty = (vec.x * mat.m[0][1]) + (vec.y * mat.m[1][1]) + mat.m[3][1];

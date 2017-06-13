@@ -44,7 +44,7 @@ public:
 private:
 	void resetType(ScVariantType type);
 	void releaseValue();
-	//void Serialize(Archive& ar, int version);
+	//void serialize(Archive& ar, int version);
 
 	ScVariantType	m_type;
 	union
@@ -312,7 +312,7 @@ public:
 	}
 
 	//template<class T>
-	//void Serialize(const )
+	//void serialize(const )
 	//{
 
 	//}
@@ -490,7 +490,7 @@ private:
 	//		m_currentObject が示す Object 型へ、指定した名前と値のペアを追加する
 	template<typename T> void doSaveObjectType(T& value, bool baseCall)
 	{
-		value.Serialize(*this, 0);
+		value.serialize(*this, 0);
 	}
 	template<typename T> void doSaveObjectType(RefPtr<T>& value, bool baseCall)
 	{
@@ -506,7 +506,7 @@ private:
 
 	//template<typename T> void AddMemberValueInternal(T& obj)
 	//{
-	//	obj.Serialize(*this, 0);
+	//	obj.serialize(*this, 0);
 	//}
 	//template<typename T> void AddMemberValueInternal(RefPtr<T>& value)
 	//{
@@ -537,7 +537,7 @@ private:
 
 	//	auto* old = m_currentObject;
 	//	m_currentObject = so;
-	//	obj.Serialize(*this);
+	//	obj.serialize(*this);
 	//	m_currentObject = old;
 	//}
 	//template<typename T> void ReadValue(const StringRef& name, List<T>& value)	 // non‐intrusive Object
@@ -563,7 +563,7 @@ private:
 
 	//	//auto* old = m_currentObject;
 	//	//m_currentObject = so;
-	//	//obj.Serialize(*this);
+	//	//obj.serialize(*this);
 	//	//m_currentObject = old;
 	//}
 
@@ -595,7 +595,7 @@ private:
 
 		auto* old = m_currentObject;
 		m_currentObject = objectElement;
-		value.Serialize(*this, 0);
+		value.serialize(*this, 0);
 		//CallSave(value);
 		m_currentObject = old;
 	}
@@ -612,7 +612,7 @@ private:
 			ISerializeElement* objectElement = arrayElement->addSerializeItemNewObject();
 			auto* old = m_currentObject;
 			m_currentObject = objectElement;
-			//value->Serialize(*this, T::lnsl_GetClassVersion());
+			//value->serialize(*this, T::lnsl_GetClassVersion());
 			callSave(*value, false);
 			m_currentObject = old;
 		}
@@ -711,7 +711,7 @@ private:
 	{
 		auto* old = m_currentObject;
 		m_currentObject = element;
-		value->Serialize(*this, 0);
+		value->serialize(*this, 0);
 		m_currentObject = old;
 		return true;
 	}
@@ -725,7 +725,7 @@ private:
 	//template<typename T>
 	//void DoLoadObjectType(T* value, bool callBase)
 	//{
-	//	value->Serialize(*this, 0);
+	//	value->serialize(*this, 0);
 	//}
 	//void DoLoadObjectType(ScVariant* value, bool callBase)
 	//{
@@ -743,18 +743,18 @@ private:
 
 			if (callBase)
 			{
-				typeInfo = TypeInfo::GetTypeInfo<T>();
+				typeInfo = TypeInfo::getTypeInfo<T>();
 			}
 			else
 			{
-				typeInfo = TypeInfo::GetTypeInfo(&obj);
+				typeInfo = TypeInfo::getTypeInfo(&obj);
 			}
 
 			int version = 0;
-			if (typeInfo != TypeInfo::GetTypeInfo<Object>())
+			if (typeInfo != TypeInfo::getTypeInfo<Object>())
 			{
-				String typeName = typeInfo->GetName();
-				int version = typeInfo->GetSerializeClassVersion();
+				String typeName = typeInfo->getName();
+				int version = typeInfo->getSerializeClassVersion();
 				m_currentObject->addSerializeMemberValue(ClassNameKey, SerializationValueType::String, &typeName);
 				m_currentObject->addSerializeMemberValue(ClassVersionKey, SerializationValueType::Int32, &version);
 			}
@@ -765,13 +765,13 @@ private:
 			}
 
 			if (callBase)
-				obj.T::Serialize(*this, version);
+				obj.T::serialize(*this, version);
 			else
-				obj.Serialize(*this, version);
+				obj.serialize(*this, version);
 		}
 		else
 		{
-			obj.Serialize(*this, 0);
+			obj.serialize(*this, 0);
 		}
 	}
 
@@ -789,15 +789,15 @@ private:
 				int classVersion;
 				if (tryGetValue(classNameElement, &className, false) && tryGetValue(classVersionElement, &classVersion, false))
 				{
-					TypeInfo* typeInfo = TypeInfo::GetTypeInfo<T>();
+					TypeInfo* typeInfo = TypeInfo::getTypeInfo<T>();
 					if (callBase)
 					{
-						(*value)->T::Serialize(*this, classVersion);
+						(*value)->T::serialize(*this, classVersion);
 					}
 					else
 					{
 						(*value) = RefPtr<T>::staticCast(createObject(className, typeInfo));
-						(*value)->Serialize(*this, classVersion);
+						(*value)->serialize(*this, classVersion);
 					}
 					loaded = true;
 				}
@@ -806,8 +806,8 @@ private:
 		
 		if (!loaded)
 		{
-			(*value) = NewObject<T>();
-			(*value)->Serialize(*this, 0);
+			(*value) = newObject<T>();
+			(*value)->serialize(*this, 0);
 		}
 	}
 /*
@@ -829,7 +829,7 @@ private:
 
 	ArchiveMode					m_mode;
 	ISerializationeStore*		m_stream;
-	ISerializeElement*			m_currentObject;			//　Serialize() 内で & された値の保存先、または復元元となる親 Object(Map)。Serialize() に入るとき、にセットされる。
+	ISerializeElement*			m_currentObject;			//　serialize() 内で & された値の保存先、または復元元となる親 Object(Map)。serialize() に入るとき、にセットされる。
 	bool						m_refrectionSupported;
 
 };
@@ -837,7 +837,7 @@ private:
 
 //#define LN_SERIALIZE(ar, version, classVersion) \
 //	static const int lnsl_GetClassVersion() { return classVersion; } \
-//	virtual void Serialize(tr::Archive& ar, int version)
+//	virtual void serialize(tr::Archive& ar, int version)
 
 } // namespace tr
 

@@ -22,7 +22,7 @@ public:
 	virtual ~CapturerContext() = default;
 	virtual void open(const PathName& filePath, const SizeI& size) = 0;
 	virtual void close() = 0;
-	virtual void AddFrame(Bitmap* bitmap, int delayMS) = 0;
+	virtual void addFrame(Bitmap* bitmap, int delayMS) = 0;
 };
 
 /*
@@ -67,7 +67,7 @@ public:
 	{
 		if (m_task != nullptr)
 		{
-			m_task->Wait();
+			m_task->wait();
 			m_task.safeRelease();
 		}
 		jo_gif_end(&m_joGif);
@@ -76,7 +76,7 @@ public:
 		EGifCloseFile(m_gif, &error);
 	}
 
-	virtual void AddFrame(Bitmap* bitmap, int delayMS) override
+	virtual void addFrame(Bitmap* bitmap, int delayMS) override
 	{
 		if (delayMS <= 0) return;
 
@@ -85,7 +85,7 @@ public:
 			byte_t r, g, b, x;
 		};
 
-		if (m_task == nullptr || m_task->IsCompleted())
+		if (m_task == nullptr || m_task->isCompleted())
 		{
 			// Task の中で jo_gif で減色を行うため、ピクセルフォーマットを変換しつつ作業領域にビットマップデータを取り出す
 			const SizeI& bmpSize = bitmap->getSize();
@@ -104,7 +104,7 @@ public:
 					}
 					else
 					{
-						Color32 c = bitmap->GetPixel(x, y);
+						Color32 c = bitmap->getPixel(x, y);
 						p->r = c.r;
 						p->g = c.g;
 						p->b = c.b;
@@ -165,7 +165,7 @@ public:
 
 				++m_frameCount;
 			};
-			m_task = tr::Task::Run(Delegate<void()>(func));
+			m_task = tr::Task::run(Delegate<void()>(func));
 		}
 	}
 
@@ -241,7 +241,7 @@ public:
 		GifFreeMapObject(m_globalPalette);
 	}
 
-	virtual void AddFrame(Bitmap* bitmap, int delayMS) override
+	virtual void addFrame(Bitmap* bitmap, int delayMS) override
 	{
 		if (delayMS <= 0) return;
 
@@ -267,7 +267,7 @@ public:
 				}
 				else
 				{
-					*p = PeekR4G2B4Index(bitmap->GetPixel(x, y));
+					*p = PeekR4G2B4Index(bitmap->getPixel(x, y));
 				}
 			}
 
@@ -338,7 +338,7 @@ const GifColorType GifContext::PaletteGPriority[256] =
 FrameCapturerPtr FrameCapturer::create()
 {
 	auto ptr = FrameCapturerPtr::makeRef();
-	ptr->initialize(detail::GraphicsManager::GetInstance());
+	ptr->initialize(detail::GraphicsManager::getInstance());
 	return ptr;
 }
 
@@ -368,31 +368,31 @@ void FrameCapturer::initialize(detail::GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void FrameCapturer::SetCapturerTarget(RenderTargetTexture* renderTarget)
+void FrameCapturer::setCapturerTarget(RenderTargetTexture* renderTarget)
 {
 	LN_REFOBJ_SET(m_capturerTarget, renderTarget);
 }
 
 //------------------------------------------------------------------------------
-void FrameCapturer::StartRecording()
+void FrameCapturer::startRecording()
 {
 	m_requestedState = State::Recording;
 }
 
 //------------------------------------------------------------------------------
-void FrameCapturer::StopRecording()
+void FrameCapturer::stopRecording()
 {
 	m_requestedState = State::Stoped;
 }
 
 //------------------------------------------------------------------------------
-void FrameCapturer::Record()
+void FrameCapturer::record()
 {
 	if (LN_CHECK_STATE(m_capturerTarget != nullptr)) return;
 
 
 	RefPtr<FrameCapturer> fc = this;
-	Driver::ITexture* target = m_capturerTarget->ResolveDeviceObject();
+	Driver::ITexture* target = m_capturerTarget->resolveDeviceObject();
 	State newState = m_requestedState;
 
 	LN_ENQUEUE_RENDER_COMMAND_3(
@@ -435,9 +435,9 @@ void FrameCapturer::RecordCommand(Driver::ITexture* target, State newState)
 		if (m_lastTick == 0 || deltaTick > 64)	// FPS15 くらいでプロットする場合はコレ (TODO: fps指定)
 		{
 			// RenderTargetTexture の内容を読み取る
-			Bitmap* bmp = target->Lock();	//TODO: Scoped
-			m_gifContext->AddFrame(bmp, deltaTick);
-			target->Unlock();
+			Bitmap* bmp = target->lock();	//TODO: Scoped
+			m_gifContext->addFrame(bmp, deltaTick);
+			target->unlock();
 
 			m_lastTick = curTick;
 		}

@@ -119,7 +119,7 @@ bool XAudio2AudioDevice::initialize(/* const ConfigData& configData */)
 }
 
 //------------------------------------------------------------------------------
-void XAudio2AudioDevice::CalcEmitterState(EmitterState* emitter)
+void XAudio2AudioDevice::calcEmitterState(EmitterState* emitter)
 {
     if ( emitter )
     {
@@ -130,7 +130,7 @@ void XAudio2AudioDevice::CalcEmitterState(EmitterState* emitter)
             X3DAUDIO_CALCULATE_REVERB       |
             X3DAUDIO_CALCULATE_DOPPLER;
 
-		emitter->UpdateXAudioEmitter(m_metreUnitDistanceInv);
+		emitter->updateXAudioEmitter(m_metreUnitDistanceInv);
 		emitter->DSPSettings.DstChannelCount = m_deviceChannels;
 
 		m_module.X3DAudioCalculate(
@@ -143,7 +143,7 @@ void XAudio2AudioDevice::CalcEmitterState(EmitterState* emitter)
 }
 
 //------------------------------------------------------------------------------
-AudioPlayer* XAudio2AudioDevice::CreateAudioPlayer(AudioStream* audioStream, bool enable3d, SoundPlayingMode mode)
+AudioPlayer* XAudio2AudioDevice::createAudioPlayer(AudioStream* audioStream, bool enable3d, SoundPlayingMode mode)
 {
 	RefPtr<AudioPlayer> audioPlayer;
 
@@ -176,9 +176,9 @@ AudioPlayer* XAudio2AudioDevice::CreateAudioPlayer(AudioStream* audioStream, boo
 }
 
 //------------------------------------------------------------------------------
-void XAudio2AudioDevice::Update()
+void XAudio2AudioDevice::update()
 {
-	auto* data = GetSoundListenerData();
+	auto* data = getSoundListenerData();
     m_listenerState.OrientFront.x = data->direction.x;
 	m_listenerState.OrientFront.y = data->direction.y;
 	m_listenerState.OrientFront.z = data->direction.z;
@@ -259,7 +259,7 @@ EmitterState::~EmitterState()
 	LN_SAFE_DELETE_ARRAY(MatrixCoefficients);
 }
 //------------------------------------------------------------------------------
-void EmitterState::UpdateXAudioEmitter( float scale )
+void EmitterState::updateXAudioEmitter( float scale )
 {
     Emitter.Position.x = Position.x * scale;
     Emitter.Position.y = Position.y * scale;
@@ -267,7 +267,7 @@ void EmitterState::UpdateXAudioEmitter( float scale )
     Emitter.Velocity.x = Velocity.x * scale;
     Emitter.Velocity.y = Velocity.y * scale;
     Emitter.Velocity.z = Velocity.z * scale;
-    Emitter.CurveDistanceScaler = Distance * scale;
+    Emitter.CurveDistanceScaler = distance * scale;
 }
 
 } // namespace detail

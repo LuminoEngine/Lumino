@@ -502,7 +502,7 @@ void GenericString<TChar>::assignCStr(const char* str, int begin, int length, bo
 		clear();
 	}
 	else {
-		convertFrom(str + begin, len, Encoding::GetSystemMultiByteEncoding());
+		convertFrom(str + begin, len, Encoding::getSystemMultiByteEncoding());
 	}
 }
 template<typename TChar>
@@ -537,7 +537,7 @@ void GenericString<TChar>::assignCStr(const wchar_t* str, int begin, int length,
 		clear();
 	}
 	else {
-		convertFrom(str + begin, len, Encoding::GetWideCharEncoding());
+		convertFrom(str + begin, len, Encoding::getWideCharEncoding());
 	}
 }
 template<typename TChar>
@@ -571,7 +571,7 @@ void GenericString<TChar>::convertFrom(const void* buffer, int byteCount, const 
 		options.NullTerminated = false;
 
 		EncodingConversionResult result;
-		const ByteBuffer tmpBuffer = Encoding::Convert(buffer, byteCount, encoding, thisTypeEncoding, options, &result);
+		const ByteBuffer tmpBuffer = Encoding::convert(buffer, byteCount, encoding, thisTypeEncoding, options, &result);
 		if (outUsedDefaultChar != nullptr) {
 			*outUsedDefaultChar = result.UsedDefaultChar;
 		}
@@ -588,7 +588,7 @@ ByteBuffer GenericString<TChar>::convertTo(const Encoding* encoding, bool* outUs
 	options.NullTerminated = true;
 
 	EncodingConversionResult result;
-	const ByteBuffer buf = Encoding::Convert(c_str(), getByteCount(), getThisTypeEncoding(), encoding, options, &result);
+	const ByteBuffer buf = Encoding::convert(c_str(), getByteCount(), getThisTypeEncoding(), encoding, options, &result);
 	if (outUsedDefaultChar != nullptr) {
 		*outUsedDefaultChar = result.UsedDefaultChar;
 	}
@@ -1130,12 +1130,12 @@ Encoding* GenericString<TChar>::getThisTypeEncoding() const
 	if (sizeof(TChar) == sizeof(char))
 	{
 		// this のエンコーディングはシステム依存である
-		return Encoding::GetSystemMultiByteEncoding();
+		return Encoding::getSystemMultiByteEncoding();
 	}
 	else if (sizeof(TChar) == sizeof(wchar_t))
 	{
 		// this のエンコーディングは wchar_t である
-		return Encoding::GetWideCharEncoding();
+		return Encoding::getWideCharEncoding();
 	}
 	else
 	{

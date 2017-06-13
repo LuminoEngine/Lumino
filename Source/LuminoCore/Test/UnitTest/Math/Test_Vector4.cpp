@@ -29,9 +29,9 @@ TEST_F(Test_Vector4, Basic)
 		v1.set(1, 2, 3, 4);
 		ASSERT_VEC4_NEAR(1, 2, 3, 4, v1);
 	}
-	// this->GetXY
+	// this->getXY
 	{
-		Vector2 v = sample1.GetXY();
+		Vector2 v = sample1.getXY();
 		ASSERT_VEC2_NEAR(1, 2, v);
 	}
 	// this->GetXYZ
@@ -39,10 +39,10 @@ TEST_F(Test_Vector4, Basic)
 		Vector3 v = sample1.GetXYZ();
 		ASSERT_VEC3_NEAR(1, 2, 3, v);
 	}
-	// this->GetLength / GetLengthSquared
+	// this->GetLength / getLengthSquared
 	{
 		ASSERT_NEAR(5.477226, sample1.getLength(), LN_FLOAT_THRESHOLD);
-		ASSERT_NEAR(30.000000, sample1.GetLengthSquared(), LN_FLOAT_THRESHOLD);
+		ASSERT_NEAR(30.000000, sample1.getLengthSquared(), LN_FLOAT_THRESHOLD);
 	}
 	// this->Clamp
 	{
@@ -63,29 +63,29 @@ TEST_F(Test_Vector4, Basic)
 		ASSERT_TRUE(v.isNaNOrInf());
 	}
 
-	// Vector4::Normalize
+	// Vector4::normalize
 	{
-		Vector4 v1 = Vector4::Normalize(sample1);
+		Vector4 v1 = Vector4::normalize(sample1);
 		ASSERT_VEC4_NEAR(0.182574, 0.365148, 0.547723, 0.730297, v1);
 	}
-	// Vector4::Dot
+	// Vector4::dot
 	{
 		Vector4 v1(5, 6, 7, 8);
-		float d = Vector4::Dot(sample1, v1);
+		float d = Vector4::dot(sample1, v1);
 		ASSERT_FLOAT_EQ(70.000000, d);
 	}
-	// Vector4::Min / Max
+	// Vector4::min / max
 	{
-		Vector4 v1 = Vector4::Min(Vector4(1, 3, 5, 7), Vector4(4, 2, 6, 8));
+		Vector4 v1 = Vector4::min(Vector4(1, 3, 5, 7), Vector4(4, 2, 6, 8));
 		ASSERT_VEC4_NEAR(1, 2, 5, 7, v1);
 
-		Vector4 v2 = Vector4::Max(Vector4(1, 3, 5, 7), Vector4(4, 2, 6, 8));
+		Vector4 v2 = Vector4::max(Vector4(1, 3, 5, 7), Vector4(4, 2, 6, 8));
 		ASSERT_VEC4_NEAR(4, 3, 6, 8, v2);
 	}
-	// Vector4::Transform
+	// Vector4::transform
 	{
-		Matrix m = Matrix::MakeRotationYawPitchRoll(1, 2, 3);
-		Vector4 v1 = Vector4::Transform(sample1, m);
+		Matrix m = Matrix::makeRotationYawPitchRoll(1, 2, 3);
+		Vector4 v1 = Vector4::transform(sample1, m);
 		ASSERT_VEC4_NEAR(-3.144919, -1.962654, -0.507415, 4.000000, v1);
 	}
 	// Vector4::Lerp()

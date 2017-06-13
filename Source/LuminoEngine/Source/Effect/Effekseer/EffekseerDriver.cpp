@@ -4,7 +4,7 @@
 
 		DrawHandle() のたびにクリティカルセクションに入っているし、ハンドルからインスタンスを求めるのに set の検索が走る。
 		(一括描画ならイテレートするだけ)
-		この仕組みは Update() も同じ。
+		この仕組みは update() も同じ。
 
 		また、個別に BeginRendering()、EndRedering() する必要があり、ここで全てのステートを保存する。
 		(これはステートを自動保存しないようにすることはできるが)
@@ -24,21 +24,21 @@
 		↓
 		Flip() と Draw() は並列実行できない。
 
-	ManagerImplemented::Play()
+	ManagerImplemented::play()
 		InstanceContainer を作って m_DrawSets に入れる。
 
-	ManagerImplemented::Update()
-		サンプルでは Play() と並列実行できることになっている。
+	ManagerImplemented::update()
+		サンプルでは play() と並列実行できることになっている。
 		中身は m_renderingDrawSets に対して更新を行っている。
 
 	まとめ
-		・Play() と Update() は並列実行できる。
-		・1フレームは {Flip()} → {Update()} → {Draw()} の順で実行しなければならない。
-		・Play() は Update() または Draw() と並列で実行できる。Flip() とはできない。
+		・play() と update() は並列実行できる。
+		・1フレームは {Flip()} → {update()} → {Draw()} の順で実行しなければならない。
+		・play() は update() または Draw() と並列で実行できる。Flip() とはできない。
 
 	対策
-		・Update() は更新スレッドを新しく立て、Draw() は描画スレッドから呼びたい。
-		・Update() が遅れているからと言って、Draw() しないのは無し。
+		・update() は更新スレッドを新しく立て、Draw() は描画スレッドから呼びたい。
+		・update() が遅れているからと言って、Draw() しないのは無し。
 
 		前提
 		・Lumino は、描画スレッドが遅れているなら Draw() は呼ばない。
@@ -46,33 +46,33 @@
 		・2フレーム目以降で、
 										[更新スレッド]		[描画スレッド]
 			PreUpdateFrame Flip()	→	開始 ※1				↓
-			UpdateFrame					・・・				↓
+			updateFrame					・・・				↓
 			PostUpdateFrame				・・・				↓
 			PreDraw						終了					開始 ※2
 			Draw						
 			PostDraw				→						コマンド実行開始
 
 			※1 まずは Draw() が終わるまで待つ。
-			※2 まずは Update() が終わるまで待つ。
+			※2 まずは update() が終わるまで待つ。
 
 			↑もしこうすると、描画が遅れている時が問題になりそう。
 				更新スレッドの開始は、開始時点でまだ Draw 未実行だったら実行されるまで待つ。
 				または、今回のフレームでは更新を行わない。
 				待つパターンでは、描画遅延がメインスレッドに響くのでやりたくない。
 				スキップする場合、スキップしたフレームで遅延が解消したとき、
-				次に Draw できるときは Update 未実施。つまりエフェクトが止まって見える。
+				次に Draw できるときは update 未実施。つまりエフェクトが止まって見える。
 				遅延中は何フレームか毎に遅延が発生するはずだから、
 				遅延→解消→遅延→解消・・・と続くと永遠に止まって見える。
 
 				対策できなくはないと思うけど、複雑すぎる。
 				他の案でどうしても速度がでなければ改めて考える。
 
-		・シンプルで安全に実装するなら Update を描画スレッドで行うのが無難。
-			・メインスレッドで Manager::Render() したら描画スレッドにコマンド投げる。
+		・シンプルで安全に実装するなら update を描画スレッドで行うのが無難。
+			・メインスレッドで Manager::render() したら描画スレッドにコマンド投げる。
 			・同時に更新スレッドに開始を通知する。
 			・コマンド実行は更新が終わるまで待つ。
 			↓
-			つまり、UpdateFrame の終了 ～ 描画コマンドの実行開始 までを並列化するという方法。
+			つまり、updateFrame の終了 ～ 描画コマンドの実行開始 までを並列化するという方法。
 			あくまで描画の一環と考え、Draw() するべき時は必ずセットで更新開始する。
 
 			更新スレッドに開始を通知するのは、現在描画遅延しているかを判別し、描画することになった直後がベスト。
@@ -130,9 +130,9 @@ EffekseerEffectEngine::EffekseerEffectEngine()
 {
 	EncodingConversionOptions options;
 	options.NullTerminated = true;
-	m_TCharToUTF16Converter.SetConversionOptions(options);
-	m_TCharToUTF16Converter.SetSourceEncoding(Encoding::GetTCharEncoding());
-	m_TCharToUTF16Converter.SetDestinationEncoding(Encoding::GetUTF16Encoding());
+	m_TCharToUTF16Converter.setConversionOptions(options);
+	m_TCharToUTF16Converter.getSourceEncoding(Encoding::getTCharEncoding());
+	m_TCharToUTF16Converter.setDestinationEncoding(Encoding::getUTF16Encoding());
 }
 
 //------------------------------------------------------------------------------
@@ -146,10 +146,10 @@ void EffekseerEffectEngine::initialize(EffectManager* manager, int cacheObjectCo
 	EffectEngine::initialize(manager, cacheObjectCount, cacheMemorySize);
 
 	// ファイルIOインターフェイス
-	m_fileInterface = LN_NEW EffekseerFileInterface(m_manager->GetFileManager());
+	m_fileInterface = LN_NEW EffekseerFileInterface(m_manager->getFileManager());
 
 #if defined(LN_OS_WIN32)
-	auto* dx9Device = dynamic_cast<Driver::DX9GraphicsDevice*>(m_manager->GetGraphicsManager()->GetGraphicsDevice());
+	auto* dx9Device = dynamic_cast<Driver::DX9GraphicsDevice*>(m_manager->getGraphicsManager()->getGraphicsDevice());
 	if (dx9Device != nullptr)
 	{
 		// エフェクト管理用インスタンスの生成(自動フリップは行わない)
@@ -162,7 +162,7 @@ void EffekseerEffectEngine::initialize(EffectManager* manager, int cacheObjectCo
 	else
 #endif
 	{
-		//auto* glDevice = dynamic_cast<Driver::DX9GraphicsDevice*>(m_manager->GetGraphicsManager()->GetGraphicsDevice());
+		//auto* glDevice = dynamic_cast<Driver::DX9GraphicsDevice*>(m_manager->getGraphicsManager()->getGraphicsDevice());
 
 
 		m_efkManager = ::Effekseer::Manager::Create(2000, false);
@@ -187,11 +187,11 @@ void EffekseerEffectEngine::initialize(EffectManager* manager, int cacheObjectCo
 #if defined(LN_OS_WIN32)
 	if (m_efkManager != nullptr)
 	{
-		auto* xa2Device = dynamic_cast<XAudio2AudioDevice*>(m_manager->GetAudioManager()->GetAudioDevice());
+		auto* xa2Device = dynamic_cast<XAudio2AudioDevice*>(m_manager->getAudioManager()->getAudioDevice());
 		if (xa2Device != nullptr)
 		{
 			// 音再生用インスタンスの生成
-			m_efkSound = ::EffekseerSound::Sound::Create(xa2Device->GetXAudio2(), 16, 16);
+			m_efkSound = ::EffekseerSound::Sound::Create(xa2Device->getXAudio2(), 16, 16);
 
 			// 音再生用インスタンスから再生機能を指定
 			m_efkManager->SetSoundPlayer(m_efkSound->CreateSoundPlayer());
@@ -261,7 +261,7 @@ VisualEffect* EffekseerEffectEngine::CreateEffectCore(const PathName& filePath)
 	}
 
 	// unicode へ
-	ByteBuffer utf16 = m_TCharToUTF16Converter.Convert(filePath.c_str(), _tcslen(filePath.c_str()) * sizeof(TCHAR));
+	ByteBuffer utf16 = m_TCharToUTF16Converter.convert(filePath.c_str(), _tcslen(filePath.c_str()) * sizeof(TCHAR));
 
 	// エフェクトの読込
 	Effekseer::Effect* efkEffect = Effekseer::Effect::Create(
@@ -299,14 +299,14 @@ void EffekseerEffectEngine::SetViewProjectin(const Matrix& view, const Matrix& p
 }
 
 //------------------------------------------------------------------------------
-void EffekseerEffectEngine::UpdateFrame(float elapsedTime)
+void EffekseerEffectEngine::updateFrame(float elapsedTime)
 {
 	m_efkManager->Flip();
 	m_efkManager->Update();	// TODO: time
 }
 
 //------------------------------------------------------------------------------
-void EffekseerEffectEngine::Render()
+void EffekseerEffectEngine::render()
 {
 	// エフェクトの描画開始処理を行う。
 	m_efkRenderer->BeginRendering();
@@ -319,13 +319,13 @@ void EffekseerEffectEngine::Render()
 }
 
 //------------------------------------------------------------------------------
-void EffekseerEffectEngine::OnLostDevice()
+void EffekseerEffectEngine::onLostDevice()
 {
 	m_efkRenderer->OnLostDevice();
 }
 
 //------------------------------------------------------------------------------
-void EffekseerEffectEngine::OnResetDevice()
+void EffekseerEffectEngine::onResetDevice()
 {
 	m_efkRenderer->OnResetDevice();
 }
@@ -371,20 +371,20 @@ EffekseerEffectInstance::~EffekseerEffectInstance()
 }
 
 //------------------------------------------------------------------------------
-//void EffekseerEffectInstance::Play(bool overlap)
+//void EffekseerEffectInstance::play(bool overlap)
 //{
 //	if (m_currentHandle != 0)
 //	{
 //		// 今の状態で更新した後、バックへ
 //		::Effekseer::Matrix43 efkMat;
 //		LNToEFKMatrix43(m_worldMatrix, &efkMat);
-//		m_ownerEffectCore->GetEffectEngine()->GetEffekseerManager()->SetMatrix(m_currentHandle, efkMat);
+//		m_ownerEffectCore->GetEffectEngine()->GetEffekseerManager()->setMatrix(m_currentHandle, efkMat);
 //		m_drawHandleArray.Add(m_currentHandle);
 //	}
 //}
 
 //------------------------------------------------------------------------------
-void EffekseerEffectInstance::Stop()
+void EffekseerEffectInstance::stop()
 {
 	if (m_currentHandle != 0)
 	{
@@ -398,7 +398,7 @@ void EffekseerEffectInstance::Stop()
 }
 
 //------------------------------------------------------------------------------
-bool EffekseerEffectInstance::IsPlaying()
+bool EffekseerEffectInstance::isPlaying()
 {
 	if (m_currentHandle == 0) {
 		return false;
@@ -413,7 +413,7 @@ void EffekseerEffectInstance::SetWorldMatrix(const Matrix& matrix)
 }
 
 //------------------------------------------------------------------------------
-void EffekseerEffectInstance::UpdateFrame()
+void EffekseerEffectInstance::updateFrame()
 {
 	::Effekseer::Manager* efkManager = m_ownerEffectCore->GetEffectEngine()->GetEffekseerManager();
 
@@ -432,7 +432,7 @@ void EffekseerEffectInstance::Draw()
 	//ln_foreach(::Effekseer::Handle handle, mDrawHandleArray) {
 	//	efkManager->DrawHandle(handle);
 	//}
-	//r->EndRendering();
+	//r->endRendering();
 
 }
 

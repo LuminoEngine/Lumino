@@ -31,21 +31,21 @@ class SceneNode
 public:
 
 	/// ノード名の設定
-	void SetName(const String& name);
+	void setName(const String& name);
 
 	/// ノード名の取得
-	const String& GetName() const { return m_name; }
+	const String& getName() const { return m_name; }
 
 	/// ワールド変換行列の設定
 	void SetTransform(const AttitudeTransform& transform) { m_transform = transform; }
 
 	/// ワールド変換行列の取得
-	//const AttitudeTransform& GetTransform() const { return m_transform; }
+	//const AttitudeTransform& getTransform() const { return m_transform; }
 
 	/** 位置を設定します。*/
 	LN_METHOD(Property)
-	void SetPosition(const Vector3& pos) { m_transform.translation = pos; }
-	void SetPosition(float x, float y, float z = 0.0f) { m_transform.translation.set(x, y, z); }
+	void setPosition(const Vector3& pos) { m_transform.translation = pos; }
+	void setPosition(float x, float y, float z = 0.0f) { m_transform.translation.set(x, y, z); }
 
 	/** 位置を取得します。*/
 	LN_METHOD(Property)
@@ -53,7 +53,7 @@ public:
 
 	/// 回転の設定
 	void SetRotation(const Quaternion& rot) { m_transform.rotation = rot; }
-	void SetAngles(float x, float y, float z) { m_transform.rotation = Quaternion::MakeFromEulerAngles(Vector3(x, y, z)); }
+	void SetAngles(float x, float y, float z) { m_transform.rotation = Quaternion::makeFromEulerAngles(Vector3(x, y, z)); }
 
 	/// 回転の取得
 	const Quaternion& GetRotation() const { return m_transform.rotation; }
@@ -133,8 +133,8 @@ public:
 
 
 	// MME の CONTROLOBJECT アノテーション関係
-	//virtual const Matrix& GetMatrix() const { return m_combinedGlobalMatrix; }
-	//virtual float GetOpacity() const { return 0.0f; }
+	//virtual const Matrix& getMatrix() const { return m_combinedGlobalMatrix; }
+	//virtual float getOpacity() const { return 0.0f; }
 	//virtual const Matrix& FindFrameMarix(const String& name) const { return Matrix::Identity; }	// TODO
 	//virtual float FindMorphBlend(const String& name) const { return 0.0f; }	// TODO
 	//virtual LightNodeList* GetAffectLightList() { return NULL; }
@@ -142,7 +142,7 @@ public:
 protected:
 
 	// Component interface
-	virtual void OnUpdate() override;
+	virtual void onUpdate() override;
 
 LN_INTERNAL_ACCESS:
 	SceneNode();

@@ -174,7 +174,7 @@ public:
 	DrawElement();
 	virtual ~DrawElement();
 
-	const Matrix& GetTransform(DrawElementList* oenerList) const;
+	const Matrix& getTransform(DrawElementList* oenerList) const;
 
 	virtual void MakeElementInfo(DrawElementList* oenerList, const CameraInfo& cameraInfo, ElementInfo* outInfo);
 	virtual void MakeSubsetInfo(DrawElementList* oenerList, CombinedMaterial* material, SubsetInfo* outInfo);
@@ -216,32 +216,32 @@ class BatchState
 public:
 	BatchState();
 
-	//void SetBlendMode(BlendMode mode);
+	//void setBlendMode(BlendMode mode);
 
-	void SetRenderTarget(int index, RenderTargetTexture* renderTarget);
-	RenderTargetTexture* GetRenderTarget(int index) const { return m_renderTargets[index]; }
+	void setRenderTarget(int index, RenderTargetTexture* renderTarget);
+	RenderTargetTexture* getRenderTarget(int index) const { return m_renderTargets[index]; }
 
-	void SetDepthBuffer(DepthBuffer* depthBuffer);
-	DepthBuffer* GetDepthBuffer() const { return m_depthBuffer; }
+	void setDepthBuffer(DepthBuffer* depthBuffer);
+	DepthBuffer* getDepthBuffer() const { return m_depthBuffer; }
 
 	void SetScissorRect(const RectI& scissorRect);
 	const RectI& GetScissorRect() const { return m_scissorRect; }
 
-	void SetBlendMode(BlendMode mode);
-	BlendMode GetBlendMode() const { return m_blendMode; }
+	void setBlendMode(BlendMode mode);
+	BlendMode getBlendMode() const { return m_blendMode; }
 
-	void SetCullingMode(CullingMode mode);
-	CullingMode GetCullingMode() const { return m_cullingMode; }
+	void setCullingMode(CullingMode mode);
+	CullingMode getCullingMode() const { return m_cullingMode; }
 
-	void SetDepthTestEnabled(bool enabled);
-	bool IsDepthTestEnabled() const { return m_depthTestEnabled; }
+	void setDepthTestEnabled(bool enabled);
+	bool isDepthTestEnabled() const { return m_depthTestEnabled; }
 
-	void SetDepthWriteEnabled(bool enabled);
-	bool IsDepthWriteEnabled() const { return m_depthWriteEnabled; }
+	void setDepthWriteEnabled(bool enabled);
+	bool isDepthWriteEnabled() const { return m_depthWriteEnabled; }
 
 
-	void SetBrush(Brush* brush);
-	Brush* GetBrush() const;
+	void setBrush(Brush* brush);
+	Brush* getBrush() const;
 
 	Pen* GetPen() const { return nullptr; }	// TODO
 
@@ -252,7 +252,7 @@ public:
 LN_INTERNAL_ACCESS:
 	void ApplyStatus(InternalContext* context, CombinedMaterial* combinedMaterial, const DefaultStatus& defaultStatus);
 	uint32_t getHashCode() const;
-	void Reset();
+	void reset();
 	bool IsHashDirty() const { return m_hashDirty; }
 
 private:
@@ -290,7 +290,7 @@ public:
 	bool IsStandaloneShaderRenderer() const;
 
 	bool Equal(const BatchState& state, Material* material, const Matrix& transfrom, const BuiltinEffectData& effectData) const;
-	void Reset();
+	void reset();
 	void ApplyStatus(InternalContext* context, const DefaultStatus& defaultStatus);
 	size_t getHashCode() const;
 	size_t GetBuiltinEffectDataHashCode() const;
@@ -317,9 +317,9 @@ class BatchStateBlock
 public:
 	DrawElementBatch	state;
 
-	void Reset()
+	void reset()
 	{
-		state.Reset();
+		state.reset();
 		//transfrom = Matrix::Identity;
 	}
 };
@@ -331,25 +331,25 @@ public:
 
 	DrawElementList();
 
-	int getElementCount() { return m_commandDataCache.GetDataCount(); }
-	DrawElement* getElement(int index) { return reinterpret_cast<DrawElement*>(m_commandDataCache.GetDataByIndex(index)); }
+	int getElementCount() { return m_commandDataCache.getDataCount(); }
+	DrawElement* getElement(int index) { return reinterpret_cast<DrawElement*>(m_commandDataCache.getDataByIndex(index)); }
 	DrawElementBatch* GetBatch(int index) { return &m_batchList[index]; }
 
-	void ClearCommands();
+	void clearCommands();
 
 	template<typename T, typename... TArgs>
-	T* AddCommand(const BatchState& state, Material* availableMaterial, const Matrix& transform, const BuiltinEffectData& effectData, TArgs... args)
+	T* addCommand(const BatchState& state, Material* availableMaterial, const Matrix& transform, const BuiltinEffectData& effectData, TArgs... args)
 	{
-		auto handle = m_commandDataCache.AllocData(sizeof(T));
+		auto handle = m_commandDataCache.allocData(sizeof(T));
 		T* t = new (m_commandDataCache.getData(handle))T(args...);
 		PostAddCommandInternal(state, availableMaterial, transform, effectData, t);
 		t->m_ownerDrawElementList = this;
 		return t;
 	}
 
-	//byte_t* AllocExtData(size_t size) { return m_extDataCache.GetData(m_extDataCache.AllocData(size)); }
-	CommandDataCache::DataHandle AllocExtData(size_t size) { return m_extDataCache.AllocData(size); }
-	void* GetExtData(CommandDataCache::DataHandle handle) { return m_extDataCache.getData(handle); }
+	//byte_t* allocExtData(size_t size) { return m_extDataCache.GetData(m_extDataCache.allocData(size)); }
+	CommandDataCache::DataHandle allocExtData(size_t size) { return m_extDataCache.allocData(size); }
+	void* getExtData(CommandDataCache::DataHandle handle) { return m_extDataCache.getData(handle); }
 
 	//void ResolveCombinedMaterials();
 
@@ -390,7 +390,7 @@ public:
 	virtual ~SceneRenderer();
 	void initialize(GraphicsManager* manager);
 
-	void Render(
+	void render(
 		RenderView* drawElementListSet,
 		//DrawElementList* elementList,
 		//const detail::CameraInfo& cameraInfo,
@@ -413,7 +413,7 @@ class ScopedStateBlock2
 public:
 	ScopedStateBlock2(DrawList* renderer);
 	~ScopedStateBlock2();
-	void Apply();
+	void apply();
 
 private:
 	DrawList*		m_renderer;
@@ -706,20 +706,20 @@ public:
 	// TODO: MeshResource など、一度コマンド化したら実行されるまでは変更禁止状態にしたい。
 
 	//--------------------------------------------------------------------------
-	/** @name Render targets */
+	/** @name render targets */
 	/** @{ */
 
 	/** レンダリングターゲットを設定します。*/
-	void SetRenderTarget(int index, RenderTargetTexture* renderTarget);
+	void setRenderTarget(int index, RenderTargetTexture* renderTarget);
 
 	/** 現在設定されているレンダリングターゲットを取得します。*/
-	RenderTargetTexture* GetRenderTarget(int index) const;
+	RenderTargetTexture* getRenderTarget(int index) const;
 
 	/** 深度バッファを設定します。*/
-	void SetDepthBuffer(DepthBuffer* depthBuffer);
+	void setDepthBuffer(DepthBuffer* depthBuffer);
 
 	/** 現在設定されている深度バッファを取得します。*/
-	DepthBuffer* GetDepthBuffer() const;
+	DepthBuffer* getDepthBuffer() const;
 
 	/** シザー領域を設定します。*/
 	void SetViewport(const RectI& rect);
@@ -731,30 +731,30 @@ public:
 
 
 	//--------------------------------------------------------------------------
-	/** @name Render status */
+	/** @name render status */
 	/** @{ */
-	void SetOpacity(float opacity);
+	void setOpacity(float opacity);
 
-	void SetBlendMode(BlendMode mode);
+	void setBlendMode(BlendMode mode);
 
-	void SetCullingMode(CullingMode mode);
+	void setCullingMode(CullingMode mode);
 
-	void SetDepthTestEnabled(bool enabled);
+	void setDepthTestEnabled(bool enabled);
 
-	void SetDepthWriteEnabled(bool enabled);
+	void setDepthWriteEnabled(bool enabled);
 
 	/** @} */
 
 	void SetTransform(const Matrix& transform);
 
 
-	void SetBrush(Brush* brush);
-	Brush* GetBrush() const;
+	void setBrush(Brush* brush);
+	Brush* getBrush() const;
 
 	void SetFont(Font* font);
 
-	void SetShader(Shader* shader);
-	Shader* GetShader() const;
+	void setShader(Shader* shader);
+	Shader* getShader() const;
 
 	void clear(ClearFlags flags, const Color& color, float z = 1.0f, uint8_t stencil = 0x00);
 	
@@ -797,10 +797,10 @@ public:
 	void DrawMesh(MeshResource* mesh, int subsetIndex, Material* material);
 	//void DrawMesh(StaticMeshModel* mesh, int subsetIndex, Material* material);
 
-	void Blit(Texture* source);
-	void Blit(Texture* source, const Matrix& transform);
-	void Blit(Texture* source, RenderTargetTexture* dest, const Matrix& transform);
-	void Blit(Texture* source, RenderTargetTexture* dest, Material* material);
+	void blit(Texture* source);
+	void blit(Texture* source, const Matrix& transform);
+	void blit(Texture* source, RenderTargetTexture* dest, const Matrix& transform);
+	void blit(Texture* source, RenderTargetTexture* dest, Material* material);
 
 	void DrawGlyphRun(const PointF& position, GlyphRun* glyphRun);
 
@@ -829,7 +829,7 @@ LN_INTERNAL_ACCESS:
 	DrawList();
 	virtual ~DrawList();
 	void initialize(detail::GraphicsManager* manager);
-	detail::GraphicsManager* GetManager() const { return m_manager; }
+	detail::GraphicsManager* getManager() const { return m_manager; }
 	detail::DrawElementList* GetDrawElementList() { return &m_drawElementList; }
 	void SetDefaultMaterial(Material* material);
 	void SetBuiltinEffectData(const detail::BuiltinEffectData& data);
@@ -839,7 +839,7 @@ LN_INTERNAL_ACCESS:
 	void SetState(const detail::BatchStateBlock& state) { m_state = state; }
 	void AddDynamicLightInfo(detail::DynamicLightInfo* lightInfo);
 	void PushMetadata(const DrawElementMetadata* metadata);
-	const DrawElementMetadata* GetMetadata();
+	const DrawElementMetadata* getMetadata();
 	void PopMetadata();
 
 	template<typename TElement> TElement* ResolveDrawElement(detail::DrawingSectionId sectionId, detail::IRenderFeature* renderer, Material* userMaterial);
@@ -908,11 +908,11 @@ inline TElement* DrawList::ResolveDrawElement(detail::DrawingSectionId sectionId
 	Material* availableMaterial = (userMaterial != nullptr) ? userMaterial : m_defaultMaterial.get();
 
 	// これを決定してから比較を行う
-	m_state.state.SetStandaloneShaderRenderer(renderer->IsStandaloneShader());
+	m_state.state.SetStandaloneShaderRenderer(renderer->isStandaloneShader());
 
 	m_state.state.m_rendererId = reinterpret_cast<intptr_t>(renderer);
 
-	const DrawElementMetadata* userMetadata = GetMetadata();
+	const DrawElementMetadata* userMetadata = getMetadata();
 	const DrawElementMetadata* metadata = (userMetadata != nullptr) ? userMetadata : &DrawElementMetadata::Default;
 
 	// 何か前回追加された DrawElement があり、それと DrawingSectionId、State が一致するならそれに対して追記できる
@@ -927,7 +927,7 @@ inline TElement* DrawList::ResolveDrawElement(detail::DrawingSectionId sectionId
 	}
 
 	// DrawElement を新しく作る
-	TElement* element = m_drawElementList.AddCommand<TElement>(m_state.state.state, availableMaterial, m_state.state.GetTransfrom(), m_builtinEffectData);
+	TElement* element = m_drawElementList.addCommand<TElement>(m_state.state.state, availableMaterial, m_state.state.GetTransfrom(), m_builtinEffectData);
 	//element->OnJoindDrawList(m_state.transfrom);
 	element->drawingSectionId = sectionId;
 	element->metadata = *metadata;

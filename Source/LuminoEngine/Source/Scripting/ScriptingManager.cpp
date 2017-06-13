@@ -175,7 +175,7 @@ NlContext::NlContext()
 }
 
 //------------------------------------------------------------------------------
-NlVariant* NlContext::Evaluate(NlGraphPin* dataInputPin)
+NlVariant* NlContext::evaluate(NlGraphPin* dataInputPin)
 {
 	NlGraphNode* node = dataInputPin->GetLinkedToNode();
 	if (node != nullptr)
@@ -194,7 +194,7 @@ void NlContext::CallInterface(NlGraphInterface* inter)
 {
 	GotoNode(inter->GetEntryPoint());
 
-	while (!IsCompleted())
+	while (!isCompleted())
 	{
 		Step();
 	}
@@ -213,7 +213,7 @@ void NlContext::Goto(NlGraphPin* nextFlowPin)
 }
 
 //------------------------------------------------------------------------------
-bool NlContext::IsCompleted() const
+bool NlContext::isCompleted() const
 {
 	return m_pc == nullptr;
 }
@@ -291,7 +291,7 @@ void NlNode_Print::execute(NlContext* sc)
 {
 	printf("test\n");
 
-	NlVariant* v = sc->Evaluate(m_inputValuePin);
+	NlVariant* v = sc->evaluate(m_inputValuePin);
 	printf("test %d\n", v->getValue<int32_t>());
 
 	sc->Goto(GetFlowOutputPin());

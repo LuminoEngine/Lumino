@@ -18,35 +18,35 @@ public:
 	virtual ~MidiDecoder();
 	
 	// メモリ上に展開された MIDI データの取得
-	const byte_t* GetSourceData() const { return m_midiFileData.getData(); }
+	const byte_t* getSourceData() const { return m_midiFileData.getData(); }
 
 	// 音量を正規化して読み込むかの設定 ( fillBufferAndReleaseStream() の前に呼ぶこと )
-	void SetEnableVolumeNormalize(bool flag) { m_volumeNormalize = flag; }
+	void setEnableVolumeNormalize(bool flag) { m_volumeNormalize = flag; }
 
 public:
 	// AudioDecoder interface
 	virtual void				create(Stream* stream) override;
-	virtual StreamFormat		GetSourceFormat() const override { return StreamFormat_Midi; }
-	virtual const WaveFormat*	GetWaveFormat() const override { return NULL; }
-	virtual uint32_t			GetSourceDataSize() const override { return m_midiFileData.getSize(); }
-	virtual uint32_t			GetTotalUnits() const override { return 0; }
-	virtual byte_t*				GetOnmemoryPCMBuffer() const override { return NULL; }
-	virtual uint32_t			GetOnmemoryPCMBufferSize() const override { return 0; }
-	virtual uint32_t			GetBytesPerSec() const override { return 0; }
-	virtual void				GetLoopState(uint32_t* begin, uint32_t* length) const override;
-	virtual void				FillOnmemoryBuffer() override;
+	virtual StreamFormat		getSourceFormat() const override { return StreamFormat_Midi; }
+	virtual const WaveFormat*	getWaveFormat() const override { return NULL; }
+	virtual uint32_t			getSourceDataSize() const override { return m_midiFileData.getSize(); }
+	virtual uint32_t			getTotalUnits() const override { return 0; }
+	virtual byte_t*				getOnmemoryPCMBuffer() const override { return NULL; }
+	virtual uint32_t			getOnmemoryPCMBufferSize() const override { return 0; }
+	virtual uint32_t			getBytesPerSec() const override { return 0; }
+	virtual void				setLoopState(uint32_t* begin, uint32_t* length) const override;
+	virtual void				fillOnmemoryBuffer() override;
 	virtual void				read(uint32_t seekPos, void* buffer, uint32_t bufferSize, uint32_t* outReadSize, uint32_t* outWriteSize) override;
-	virtual void				Reset() override;
+	virtual void				reset() override;
 
 private:
 	// midi データの中の必要なデータをチェックする
-	void SearchData();
+	void searchData();
 
 	// デルタタイムの読み込み
-	uint32_t ReadDelta(BinaryReader& reader);
+	uint32_t readDelta(BinaryReader& reader);
 
 	// トラック内の CC111 検索
-	bool SearchTrack(BinaryReader& reader, uint32_t* cc111_time);
+	bool searchTrack(BinaryReader& reader, uint32_t* cc111_time);
 
 	// Midi ファイルのヘッダ
 	struct MidiHeader

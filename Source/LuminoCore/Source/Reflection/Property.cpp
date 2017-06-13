@@ -21,7 +21,7 @@ PropertyInfo::PropertyInfo(TypeInfo* ownerClassType, PropertyMetadata* metadata,
 	, m_stored(stored)
 	, m_registerd(false)
 {
-	m_ownerClassType->RegisterProperty(this);
+	m_ownerClassType->registerProperty(this);
 }
 
 //------------------------------------------------------------------------------
@@ -30,43 +30,43 @@ PropertyInfo::~PropertyInfo()
 }
 
 //------------------------------------------------------------------------------
-void PropertyInfo::NotifyPropertyChanged(ReflectionObject* ownerObject, PropertyBase* target, const PropertyInfo* prop, PropertySetSource source)
+void PropertyInfo::notifyPropertyChanged(ReflectionObject* ownerObject, PropertyBase* target, const PropertyInfo* prop, PropertySetSource source)
 {
 	RefPtr<PropertyChangedEventArgs> e(g_eventArgsPool.create<PropertyChangedEventArgs>(prop, source), false);
-	//target->OnPropertyChanged(e);
+	//target->onPropertyChanged(e);
 	//target->CallListener(e);
 	//prop->m_metadata->CallPropertyChangedCallback(target, e);
-	if (ownerObject != nullptr && prop != nullptr)	// InitializeProperties ‚³‚ê‚Ä‚¢‚È‚¢‚Æ‚±‚ê‚ç‚ÍÝ’è‚³‚ê‚È‚¢
+	if (ownerObject != nullptr && prop != nullptr)	// initializeProperties ‚³‚ê‚Ä‚¢‚È‚¢‚Æ‚±‚ê‚ç‚ÍÝ’è‚³‚ê‚È‚¢
 	{
-		ownerObject->OnPropertyChanged(e);
+		ownerObject->onPropertyChanged(e);
 
 		if (!e->handled)
 		{
-			prop->GetMetadata().CallStaticPropertyChanged(ownerObject);
+			prop->getMetadata().callStaticPropertyChanged(ownerObject);
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
-void PropertyInfo::SetPropertyValue(ReflectionObject* obj, const PropertyInfo* prop, const Variant& value, PropertySetSource source)
+void PropertyInfo::setPropertyValue(ReflectionObject* obj, const PropertyInfo* prop, const Variant& value, PropertySetSource source)
 {
-	obj->SetPropertyValueInternal(prop, value, false, source);
+	obj->setPropertyValueInternal(prop, value, false, source);
 }
 
 //------------------------------------------------------------------------------
-Variant PropertyInfo::GetPropertyValue(ReflectionObject* obj, const PropertyInfo* prop)
+Variant PropertyInfo::getPropertyValue(ReflectionObject* obj, const PropertyInfo* prop)
 {
-	//if (prop->IsStored())
+	//if (prop->isStored())
 	//{
 	//	if (m_propertyDataStore == NULL) {
-	//		return prop->GetMetadata()->GetDefaultValue();
+	//		return prop->getMetadata()->getDefaultValue();
 	//	}
 	//	//LN_THROW(m_propertyDataStore != NULL, KeyNotFoundException);
 	//	Variant v;
 	//	if (m_propertyDataStore->TryGetValue(prop, &v)) {
 	//		return v;
 	//	}
-	//	return prop->GetMetadata()->GetDefaultValue();
+	//	return prop->getMetadata()->getDefaultValue();
 	//}
 	//else
 	//{
@@ -87,7 +87,7 @@ Variant PropertyInfo::GetPropertyValue(ReflectionObject* obj, const PropertyInfo
 //		 m_staticListener(m_staticListenerOwner, e);
 //	}
 //
-//	for (IPropertyChangedListener* listener : m_listeners) listener->OnPropertyChanged(e);
+//	for (IPropertyChangedListener* listener : m_listeners) listener->onPropertyChanged(e);
 //}
 
 } // namespace tr

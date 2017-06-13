@@ -14,22 +14,22 @@ LN_NAMESPACE_BEGIN
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UITextElement, UIElement);
 LN_TR_PROPERTY_IMPLEMENT(UITextElement, String, FontFamily, tr::PropertyMetadata(UITextElement::OnFontPropertyChanged));
 LN_TR_PROPERTY_IMPLEMENT(UITextElement, int, FontSize, tr::PropertyMetadata(UITextElement::OnFontPropertyChanged));
-LN_TR_PROPERTY_IMPLEMENT(UITextElement, bool, IsFontBold, tr::PropertyMetadata(UITextElement::OnFontPropertyChanged));
-LN_TR_PROPERTY_IMPLEMENT(UITextElement, bool, IsFontItalic, tr::PropertyMetadata(UITextElement::OnFontPropertyChanged));
+LN_TR_PROPERTY_IMPLEMENT(UITextElement, bool, isFontBold, tr::PropertyMetadata(UITextElement::OnFontPropertyChanged));
+LN_TR_PROPERTY_IMPLEMENT(UITextElement, bool, isFontItalic, tr::PropertyMetadata(UITextElement::OnFontPropertyChanged));
 
 
 //------------------------------------------------------------------------------
 UITextElement::UITextElement()
 	: FontFamily(String::getEmpty())
 	, FontSize(RawFont::DefaultSize)
-	, IsFontBold(false)
-	, IsFontItalic(false)
+	, isFontBold(false)
+	, isFontItalic(false)
 	, m_invalidateFont(true)
 {
-	//m_fontFamily.SetStaticListener(this, OnFontPropertyChanged);
-	//m_fontSize.SetStaticListener(this, OnFontPropertyChanged);
-	//m_fontBold.SetStaticListener(this, OnFontPropertyChanged);
-	//m_fontItalic.SetStaticListener(this, OnFontPropertyChanged);
+	//m_fontFamily.setStaticListener(this, OnFontPropertyChanged);
+	//m_fontSize.setStaticListener(this, OnFontPropertyChanged);
+	//m_fontBold.setStaticListener(this, OnFontPropertyChanged);
+	//m_fontItalic.setStaticListener(this, OnFontPropertyChanged);
 }
 
 //------------------------------------------------------------------------------
@@ -38,7 +38,7 @@ UITextElement::~UITextElement()
 }
 
 //------------------------------------------------------------------------------
-Size UITextElement::MeasureOverride(const Size& constraint)
+Size UITextElement::measureOverride(const Size& constraint)
 {
 	// フォント更新
 	if (m_invalidateFont)
@@ -47,17 +47,17 @@ Size UITextElement::MeasureOverride(const Size& constraint)
 		{
 			// TODO: GetActiveFont() でやったほうがいいかな
 			m_font = RefPtr<Font>::makeRef();
-			m_font->initialize(GetManager()->GetGraphicsManager(), nullptr);
+			m_font->initialize(getManager()->getGraphicsManager(), nullptr);
 		}
 		m_font->SetFamily(FontFamily);
-		m_font->SetSize(FontSize);
-		m_font->SetBold(IsFontBold);
-		m_font->SetItalic(IsFontItalic);
+		m_font->setSize(FontSize);
+		m_font->SetBold(isFontBold);
+		m_font->SetItalic(isFontItalic);
 		m_font->SetAntiAlias(true);
 		m_invalidateFont = false;
 	}
 
-	return UIElement::MeasureOverride(constraint);
+	return UIElement::measureOverride(constraint);
 }
 
 //------------------------------------------------------------------------------
@@ -68,10 +68,10 @@ void UITextElement::OnUpdateStyle(detail::UIStylePropertyTableInstance* localSty
 	// TODO: 本来はStyle 用の優先順位で設定するべき。
 	// https://msdn.microsoft.com/ja-jp/library/ms743230%28v=vs.110%29.aspx#Anchor_3
 	// また、アニメーションする場合はここで起動する。
-	//SetFontFamily(localStyle->m_fontFamily.value);
-	//SetFontSize(localStyle->m_fontSize.value);
-	//SetFontBold(localStyle->m_fontBold.value);
-	//SetFontItalic(localStyle->m_fontItalic.value);
+	//setFontFamily(localStyle->m_fontFamily.value);
+	//setFontSize(localStyle->m_fontSize.value);
+	//setFontBold(localStyle->m_fontBold.value);
+	//setFontItalic(localStyle->m_fontItalic.value);
 }
 
 //------------------------------------------------------------------------------

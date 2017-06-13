@@ -57,12 +57,12 @@ void WrapperIFGenerator::Generate(SymbolDatabase* database)
 
 		if (!classInfo->isStatic())
 		{
-			static const String SetBindingTypeInfo =
+			static const String setBindingTypeInfo =
 				"LN_API void LN%ClassName%_SetBindingTypeInfo(void* data)\n"
 				"{\n"
 				"    tr::TypeInfo::GetTypeInfo<%ClassName%>()->SetBindingTypeInfo(data);\n"
 				"}\n";
-			buffer.AppendLines(SetBindingTypeInfo.replace("%ClassName%", classInfo->name));
+			buffer.AppendLines(setBindingTypeInfo.replace("%ClassName%", classInfo->name));
 		}
 	}
 
@@ -78,7 +78,7 @@ void WrapperIFGenerator::Generate(SymbolDatabase* database)
 			for (auto& constantInfo : enumInfo->declaredConstants)
 			{
 				String name = (enumInfo->name + "_" + constantInfo->name).toUpper();
-				enumsText.AppendLine("LN_{0} = {1},", name, tr::Variant::Cast<int>(constantInfo->value));
+				enumsText.AppendLine("LN_{0} = {1},", name, tr::Variant::cast<int>(constantInfo->value));
 			}
 			enumsText.DecreaseIndent();
 			enumsText.AppendLine("}} LN{0};", enumInfo->name);

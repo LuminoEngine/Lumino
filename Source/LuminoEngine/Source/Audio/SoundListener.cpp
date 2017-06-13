@@ -8,75 +8,75 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
 
 //------------------------------------------------------------------------------
-void SoundListener::SetPosition(const Vector3& position)
+void SoundListener::setPosition(const Vector3& position)
 {
-	detail::AudioManager::GetInstance()->GetAudioDevice()->GetSoundListenerData()->position = position;
+	detail::AudioManager::getInstance()->getAudioDevice()->getSoundListenerData()->position = position;
 }
 
 //------------------------------------------------------------------------------
-void SoundListener::SetPosition(float x, float y, float z)
+void SoundListener::setPosition(float x, float y, float z)
 {
-	SetPosition(Vector3(x, y, z));
+	setPosition(Vector3(x, y, z));
 }
 
 //------------------------------------------------------------------------------
 const Vector3& SoundListener::getPosition()
 {
-	return detail::AudioManager::GetInstance()->GetAudioDevice()->GetSoundListenerData()->position;
+	return detail::AudioManager::getInstance()->getAudioDevice()->getSoundListenerData()->position;
 }
 
 //------------------------------------------------------------------------------
-void SoundListener::SetDirection(const Vector3& direction)
+void SoundListener::setDirection(const Vector3& direction)
 {
-	detail::AudioManager::GetInstance()->GetAudioDevice()->GetSoundListenerData()->direction = direction;
+	detail::AudioManager::getInstance()->getAudioDevice()->getSoundListenerData()->direction = direction;
 }
 
 //------------------------------------------------------------------------------
-void SoundListener::SetDirection(float x, float y, float z)
+void SoundListener::setDirection(float x, float y, float z)
 {
-	SetDirection(Vector3(x, y, z));
+	setDirection(Vector3(x, y, z));
 }
 
 //------------------------------------------------------------------------------
-const Vector3& SoundListener::GetDirection()
+const Vector3& SoundListener::getDirection()
 {
-	return detail::AudioManager::GetInstance()->GetAudioDevice()->GetSoundListenerData()->direction;
+	return detail::AudioManager::getInstance()->getAudioDevice()->getSoundListenerData()->direction;
 }
 
 //------------------------------------------------------------------------------
-void SoundListener::SetUpDirection(const Vector3& direction)
+void SoundListener::setUpDirection(const Vector3& direction)
 {
-	detail::AudioManager::GetInstance()->GetAudioDevice()->GetSoundListenerData()->upDirection = direction;
+	detail::AudioManager::getInstance()->getAudioDevice()->getSoundListenerData()->upDirection = direction;
 }
 
 //------------------------------------------------------------------------------
-void SoundListener::SetUpDirection(float x, float y, float z)
+void SoundListener::setUpDirection(float x, float y, float z)
 {
-	SetUpDirection(Vector3(x, y, z));
+	setUpDirection(Vector3(x, y, z));
 }
 
 //------------------------------------------------------------------------------
-const Vector3& SoundListener::GetUpDirection(const Vector3& direction)
+const Vector3& SoundListener::getUpDirection(const Vector3& direction)
 {
-	return detail::AudioManager::GetInstance()->GetAudioDevice()->GetSoundListenerData()->upDirection;
+	return detail::AudioManager::getInstance()->getAudioDevice()->getSoundListenerData()->upDirection;
 }
 
 //------------------------------------------------------------------------------
-void SoundListener::SetVelocity(const Vector3& velocity)
+void SoundListener::setVelocity(const Vector3& velocity)
 {
-	detail::AudioManager::GetInstance()->GetAudioDevice()->GetSoundListenerData()->velocity = velocity;
+	detail::AudioManager::getInstance()->getAudioDevice()->getSoundListenerData()->velocity = velocity;
 }
 
 //------------------------------------------------------------------------------
-void SoundListener::SetVelocity(float x, float y, float z)
+void SoundListener::setVelocity(float x, float y, float z)
 {
-	SetVelocity(Vector3(x, y, z));
+	setVelocity(Vector3(x, y, z));
 }
 
 //------------------------------------------------------------------------------
-const Vector3& SoundListener::GetVelocity()
+const Vector3& SoundListener::getVelocity()
 {
-	return detail::AudioManager::GetInstance()->GetAudioDevice()->GetSoundListenerData()->velocity;
+	return detail::AudioManager::getInstance()->getAudioDevice()->getSoundListenerData()->velocity;
 }
 
 LN_NAMESPACE_AUDIO_END

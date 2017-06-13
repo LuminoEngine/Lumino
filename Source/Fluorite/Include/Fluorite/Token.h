@@ -99,7 +99,7 @@ public:
 	//	StringBuilder sb;
 	//	for (int i = 0; i < GetCount(); ++i)
 	//	{
-	//		if (GetAt(i).IsValid())
+	//		if (GetAt(i).isValid())
 	//		{
 	//			sb.Append(GetAt(i).GetBegin(), GetAt(i).GetLength());
 	//		}

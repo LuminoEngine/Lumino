@@ -913,7 +913,7 @@ static NumberConversionResult StrToNumInternal(
 		++count;
 
 		// 計算する前にオーバーフローを確認する
-		if (num < overflowMax ||					// 例) uint8(Max 255) のとき、num は 25 より小さければOK
+		if (num < overflowMax ||					// 例) uint8(max 255) のとき、num は 25 より小さければOK
 			(num == overflowMax && d <= baseMax)) {	// 例) num が 25 のときは d が 5 以下であればOK
 			num = num * base + d;
 		}

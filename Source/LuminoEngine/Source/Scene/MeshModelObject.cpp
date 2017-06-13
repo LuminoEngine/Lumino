@@ -19,7 +19,7 @@ LN_NAMESPACE_BEGIN
 RefPtr<SkinnedMeshComponent> SkinnedMeshComponent::create(const StringRef& filePath)
 {
 	auto ptr = RefPtr<SkinnedMeshComponent>::makeRef();
-	auto mesh = SceneGraphManager::Instance->GetModelManager()->CreateSkinnedMeshModel(filePath);
+	auto mesh = SceneGraphManager::Instance->getModelManager()->CreateSkinnedMeshModel(filePath);
 	ptr->initialize(mesh);
 	return ptr;
 }
@@ -45,7 +45,7 @@ void SkinnedMeshComponent::initialize(SkinnedMeshModel* meshModel)
 
 	VisualComponent::initialize();
 
-	//m_materialList->CopyShared(meshModel->m_mesh->m_materials, true);
+	//m_materialList->copyShared(meshModel->m_mesh->m_materials, true);
 
 
 	//ownerSceneGraph->GetRootNode()->AddChild(this);
@@ -64,13 +64,13 @@ SkinnedMeshModel* SkinnedMeshComponent::GetSkinnedMeshModel() const
 void SkinnedMeshComponent::OnUpdateFrame(float elapsedTime)
 {
 	// TODO: OnLateUpdate へ
-	m_meshModel->SetWorldTransform(GetOwnerObject()->transform.GetWorldMatrix());
+	m_meshModel->SetWorldTransform(getOwnerObject()->transform.getWorldMatrix());
 
-	m_meshModel->GetAnimator()->AdvanceTime(elapsedTime);
+	m_meshModel->GetAnimator()->advanceTime(elapsedTime);
 	//static bool init = false;
 	//if (!init)
 	//{
-	//	m_meshModel->GetAnimator()->AdvanceTime(808.11);
+	//	m_meshModel->GetAnimator()->advanceTime(808.11);
 	//	init = true;
 	//}
 	m_meshModel->PreUpdate();
@@ -83,21 +83,21 @@ void SkinnedMeshComponent::OnUpdateFrame(float elapsedTime)
 //	Shader* core = priorityShader;
 //	ShaderVariable* v;
 //
-//	v = core->FindVariable(_T("lnBoneTextureReciprocalSize"));
+//	v = core->findVariable(_T("lnBoneTextureReciprocalSize"));
 //	if (v) {
 //		Vector4 invSize;
 //		invSize.x = 1.0f / m_meshModel->GetSkinningMatricesTexture()->GetRealSize().width;
 //		invSize.y = 1.0f / m_meshModel->GetSkinningMatricesTexture()->GetRealSize().height;
-//		v->SetVector(invSize);
+//		v->setVector(invSize);
 //	}
 //
-//	v = core->FindVariable(_T("lnBoneTexture"));
+//	v = core->findVariable(_T("lnBoneTexture"));
 //	if (v) {
-//		v->SetTexture(m_meshModel->GetSkinningMatricesTexture());
+//		v->setTexture(m_meshModel->GetSkinningMatricesTexture());
 //	}
-//	v = core->FindVariable(_T("lnBoneLocalQuaternionTexture"));
+//	v = core->findVariable(_T("lnBoneLocalQuaternionTexture"));
 //	if (v) {
-//		v->SetTexture(m_meshModel->m_skinningLocalQuaternionsTexture);
+//		v->setTexture(m_meshModel->m_skinningLocalQuaternionsTexture);
 //	}
 //}
 
@@ -168,7 +168,7 @@ LN_NAMESPACE_END
 //void MeshModelObject::initialize(SceneGraph* owner, const StringRef& filePath)
 //{
 //	m_model.Attach(LN_NEW Model(), false);
-//	m_model->create(owner->GetManager()->GetModelManager(), filePath);
+//	m_model->create(owner->getManager()->getModelManager(), filePath);
 //	VisualComponent::initialize(owner, m_model->GetSubsetCount());
 //
 //	// マテリアルをコピーする (急ぎ足で作ったから、もっとちゃんと考えた方が良いと思う)
@@ -178,14 +178,14 @@ LN_NAMESPACE_END
 //	//}
 //	LN_NOTIMPLEMENTED();
 //
-//	owner->GetManager()->GetDefault3DSceneGraph()->GetRootNode()->AddChild(this);
+//	owner->getManager()->GetDefault3DSceneGraph()->GetRootNode()->AddChild(this);
 //	SetAutoRemove(true);
 //}
 //
 ////------------------------------------------------------------------------------
 //void MeshModelObject::OnUpdateFrame(float elapsedTime)
 //{
-//	//m_model->GetAnimator()->AdvanceTime((double)elapsedTime);
+//	//m_model->GetAnimator()->advanceTime((double)elapsedTime);
 //	//m_model->UpdateBoneTransformHierarchy();
 //	//m_model->UpdateSkinningMatrices();
 //}
@@ -196,17 +196,17 @@ LN_NAMESPACE_END
 //	//Shader* core = priorityShader->GetCoreShader();
 //	//ShaderVariable* v;
 //
-//	//v = core->FindVariable(_T("lnBoneTextureReciprocalSize"));
+//	//v = core->findVariable(_T("lnBoneTextureReciprocalSize"));
 //	//if (v) {
 //	//	Vector4 invSize;
 //	//	invSize.X = 1.0f / m_model->GetSkinningMatricesTexture()->GetRealSize().Width;
 //	//	invSize.Y = 1.0f / m_model->GetSkinningMatricesTexture()->GetRealSize().Height;
-//	//	v->SetVector(invSize);
+//	//	v->setVector(invSize);
 //	//}
 //
-//	//v = core->FindVariable(_T("lnBoneTexture"));
+//	//v = core->findVariable(_T("lnBoneTexture"));
 //	//if (v) {
-//	//	v->SetTexture(m_model->GetSkinningMatricesTexture());
+//	//	v->setTexture(m_model->GetSkinningMatricesTexture());
 //	//}
 //}
 //

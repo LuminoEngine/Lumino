@@ -66,13 +66,13 @@ protected:
 		ScopedAccessContext(GraphicsDeviceBase* d)
 		{
 			m_device = d;
-			m_device->m_contextAccessMutex.Lock();
+			m_device->m_contextAccessMutex.lock();
 			//m_device->OnBeginAccessContext();
 		}
 		~ScopedAccessContext()
 		{
 			//m_device->OnEndAccessContext();
-			m_device->m_contextAccessMutex.Unlock();
+			m_device->m_contextAccessMutex.unlock();
 		}
 	};
 

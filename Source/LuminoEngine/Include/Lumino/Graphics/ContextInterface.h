@@ -40,15 +40,15 @@ struct ContextState
 	ContextState& operator=(const ContextState& obj) { copy(obj); return *this; }
 
 
-	void SetRenderTarget(int index, Texture* texture);
-	Texture* GetRenderTarget(int index) const;
-	void SetShaderPass(ShaderPass* pass);
-	ShaderPass* GetShaderPass() const { return m_shaderPass; }
+	void setRenderTarget(int index, Texture* texture);
+	Texture* getRenderTarget(int index) const;
+	void setShaderPass(ShaderPass* pass);
+	ShaderPass* getShaderPass() const { return m_shaderPass; }
 
-	void SetFillBrush(Brush* brush);
-	Brush* GetFillBrush() const { return m_fillBrush; }
+	void setFillBrush(Brush* brush);
+	Brush* getFillBrush() const { return m_fillBrush; }
 
-	void Reset()
+	void reset()
 	{
 		renderState = RenderState();
 		depthStencilState = DepthStencilState();
@@ -70,12 +70,12 @@ private:
 class IRenderFeature
 {
 public:
-	virtual bool IsStandaloneShader() const = 0;
+	virtual bool isStandaloneShader() const = 0;
 	virtual void flush() = 0;
-	virtual void OnActivated() = 0;
-	virtual void OnDeactivated() = 0;
+	virtual void onActivated() = 0;
+	virtual void onDeactivated() = 0;
 
-	virtual void OnSetState(const DrawElementBatch* state) {}
+	virtual void onSetState(const DrawElementBatch* state) {}
 };
 
 
@@ -86,10 +86,10 @@ struct BasicContextState
 	RefPtr<DepthBuffer>			depthBuffer;
 	//RectI					viewport;
 
-	void SetRenderTarget(int index, Texture* texture);
-	Texture* GetRenderTarget(int index) const;
-	void SetShaderPass(ShaderPass* pass);
-	ShaderPass* GetShaderPass() const { return m_shaderPass; }
+	void setRenderTarget(int index, Texture* texture);
+	Texture* getRenderTarget(int index) const;
+	void setShaderPass(ShaderPass* pass);
+	ShaderPass* getShaderPass() const { return m_shaderPass; }
 
 	bool equals(const BasicContextState& s) const;
 	void copy(const BasicContextState& s);
@@ -109,33 +109,33 @@ protected:
 	ContextInterface();
 	virtual ~ContextInterface();
 	void initialize(GraphicsManager* manager);
-	GraphicsManager* GetManager() const { return m_manager; }
+	GraphicsManager* getManager() const { return m_manager; }
 
-	void NorityStateChanging();
-	void NorityStartDrawing(detail::IRenderFeature* rendererPloxy);
-	void FlushImplemented();
+	void norityStateChanging();
+	void norityStartDrawing(detail::IRenderFeature* rendererPloxy);
+	void flushImplemented();
 
 	// call by GraphicsManager
-	void OnActivated();
-	void OnDeactivated();
+	void onActivated();
+	void onDeactivated();
 
-	virtual bool OnCheckStateChanged() = 0;
-	virtual void OnStateFlush(detail::IRenderFeature* activeRenderer);
-	virtual void OnPrimitiveFlush();
+	virtual bool onCheckStateChanged() = 0;
+	virtual void onStateFlush(detail::IRenderFeature* activeRenderer);
+	virtual void onPrimitiveFlush();
 
-	// call by ShaderVariable::SetModified()
-	virtual void OnShaderVariableModified(ShaderVariable* var);
+	// call by ShaderVariable::setModified()
+	virtual void onShaderVariableModified(ShaderVariable* var);
 
-	void SetBasicContextState(const BasicContextState& state);
-	Details::Renderer* GetBaseRenderer() const { return m_baseRenderer; }
+	void setBasicContextState(const BasicContextState& state);
+	Details::Renderer* getBaseRenderer() const { return m_baseRenderer; }
 
 
 public:
 	// Utils
-	static void MakeBlendMode(BlendMode mode, RenderState* state);
+	static void makeBlendMode(BlendMode mode, RenderState* state);
 
 private:
-	void SwitchActiveRendererPloxy(detail::IRenderFeature* rendererPloxy);
+	void switchActiveRendererPloxy(detail::IRenderFeature* rendererPloxy);
 
 	GraphicsManager*		m_manager;
 	Details::Renderer*		m_baseRenderer;
@@ -152,7 +152,7 @@ class SimpleOneTimeObjectCache
 	: public RefObject
 {
 public:
-	T* QueryCommandList()
+	T* queryCommandList()
 	{
 		MutexScopedLock lock(m_mutex);
 
@@ -170,13 +170,13 @@ public:
 		}
 	}
 
-	void ReleaseCommandList(T* commandList)
+	void releaseCommandList(T* commandList)
 	{
 		MutexScopedLock lock(m_mutex);
 		m_freeObjects.push(commandList);
 	}
 
-	void ReleaseAll()
+	void releaseAll()
 	{
 		MutexScopedLock lock(m_mutex);
 		m_freeObjects.clear();

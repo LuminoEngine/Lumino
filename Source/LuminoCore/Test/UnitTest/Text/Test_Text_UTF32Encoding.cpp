@@ -18,7 +18,7 @@ TEST_F(Test_Text_UTF32Encoding, AsciiCode)
 		UTF32 utf32[95];
 
 		EncodingConversionResult result;
-		Encoding::Convert(ascii, 95, Encoding::getEncoding(EncodingType::ASCII), utf32, sizeof(utf32), Encoding::GetUTF32Encoding(), &result);
+		Encoding::convert(ascii, 95, Encoding::getEncoding(EncodingType::ASCII), utf32, sizeof(utf32), Encoding::getUTF32Encoding(), &result);
 	
 		for (int i = 0; i < 95; ++i) {
 			ASSERT_EQ(0x20 + i, utf32[i]);

@@ -35,7 +35,7 @@ GlyphRun::~GlyphRun()
 //------------------------------------------------------------------------------
 void GlyphRun::initialize()
 {
-	initialize(detail::EngineDomain::GetGraphicsManager());
+	initialize(detail::EngineDomain::getGraphicsManager());
 }
 
 //------------------------------------------------------------------------------
@@ -44,7 +44,7 @@ void GlyphRun::initialize(detail::GraphicsManager* manager)
 	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_manager = manager;
 	m_layoutEngine = LN_NEW detail::TextLayoutEngine();
-	m_layoutEngine->SetFont(m_manager->GetFontManager()->GetDefaultRawFont());
+	m_layoutEngine->SetFont(m_manager->getFontManager()->GetDefaultRawFont());
 }
 
 //------------------------------------------------------------------------------
@@ -54,7 +54,7 @@ void GlyphRun::SetFont(RawFont* font)
 	{
 		if (font == nullptr)
 		{
-			font = m_manager->GetFontManager()->GetDefaultRawFont();
+			font = m_manager->getFontManager()->GetDefaultRawFont();
 		}
 		m_layoutEngine->SetFont(font);
 		LN_SAFE_RELEASE(m_glyphTextureCache);	// 必要なときにまた取得しなおす
@@ -81,9 +81,9 @@ void GlyphRun::setText(const UTF32* str, int len)
 //------------------------------------------------------------------------------
 void GlyphRun::setText(const StringRef& text)
 {
-	EncodingConverter* conv = m_manager->GetFontManager()->GetTCharToUTF32Converter();
+	EncodingConverter* conv = m_manager->getFontManager()->getTCharToUTF32Converter();
 	m_utf32Text.clear();
-	m_utf32Text.append(conv->Convert(text.getBegin(), text.getLength() * sizeof(TCHAR)));
+	m_utf32Text.append(conv->convert(text.getBegin(), text.getLength() * sizeof(TCHAR)));
 	m_modifiedRenderSize = true;
 	m_modifiedItems = true;
 }
@@ -101,7 +101,7 @@ void GlyphRun::SetTextAlignment(TextAlignment align)
 //}
 
 //------------------------------------------------------------------------------
-const SizeI& GlyphRun::GetRenderSize()
+const SizeI& GlyphRun::getRenderSize()
 {
 	// RenderSize だけ更新する
 	if (m_modifiedRenderSize)
@@ -120,7 +120,7 @@ bool GlyphRun::GetCharacterHitFromDistance(const PointF& pos, GlyphHit* outResul
 {
 	UpdateTextLayoutItem();
 
-	Size area = m_glyphData.AreaSize.ToFloatSize();
+	Size area = m_glyphData.AreaSize.toFloatSize();
 	if (0.0f <= pos.x && pos.x <= area.width &&		// TODO: Contains とかの関数にしたい
 		0.0f <= pos.y && pos.y <= area.height)
 	{

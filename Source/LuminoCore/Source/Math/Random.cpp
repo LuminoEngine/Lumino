@@ -18,17 +18,17 @@ Randomizer Random;
 //------------------------------------------------------------------------------
 Randomizer::Randomizer()
 {
-	SetSeed((int)::time(NULL));
+	setSeed((int)::time(NULL));
 }
 
 //------------------------------------------------------------------------------
 Randomizer::Randomizer(int seed)
 {
-	SetSeed(seed);
+	setSeed(seed);
 }
 
 //------------------------------------------------------------------------------
-void Randomizer::SetSeed(int seed)
+void Randomizer::setSeed(int seed)
 {
 	x = DEFAULT_X;
 	y = DEFAULT_Y;
@@ -57,7 +57,7 @@ int Randomizer::getInt(int maxValue)
 }
 
 //------------------------------------------------------------------------------
-int Randomizer::GetIntRange(int minValue, int maxValue)
+int Randomizer::getIntRange(int minValue, int maxValue)
 {
 	if (maxValue - minValue == 0) { return 0; }
 	int r = getInt();
@@ -67,9 +67,9 @@ int Randomizer::GetIntRange(int minValue, int maxValue)
 }
 
 //------------------------------------------------------------------------------
-int Randomizer::GetIntWidth(int median, int width)
+int Randomizer::getIntWidth(int median, int width)
 {
-	return GetIntRange(median - width, median + width);
+	return getIntRange(median - width, median + width);
 }
 
 //------------------------------------------------------------------------------
@@ -90,7 +90,7 @@ float Randomizer::getFloat(float maxValue)
 }
 
 //------------------------------------------------------------------------------
-float Randomizer::GetFloatRange(float minValue, float maxValue)
+float Randomizer::getFloatRange(float minValue, float maxValue)
 {
 	float r = getFloat();
 	r *= (maxValue - minValue);
@@ -99,9 +99,9 @@ float Randomizer::GetFloatRange(float minValue, float maxValue)
 }
 
 //------------------------------------------------------------------------------
-float Randomizer::GetFloatWidth(float median, float width)
+float Randomizer::getFloatWidth(float median, float width)
 {
-	return GetFloatRange(median - width, median + width);
+	return getFloatRange(median - width, median + width);
 }
 
 LN_NAMESPACE_END

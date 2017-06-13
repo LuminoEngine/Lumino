@@ -39,11 +39,11 @@ AudioStream::~AudioStream()
 //------------------------------------------------------------------------------
 void AudioStream::create(bool async)
 {
-	InvokeIOProc(async, m_manager->GetFileManager());
+	InvokeIOProc(async, m_manager->getFileManager());
 }
 
 //------------------------------------------------------------------------------
-bool AudioStream::CheckCreated()
+bool AudioStream::checkCreated()
 {
 	if (GetASyncIOState() == ASyncIOState_Completed) {
 		return true;
@@ -55,10 +55,10 @@ bool AudioStream::CheckCreated()
 }
 
 //------------------------------------------------------------------------------
-void AudioStream::OnASyncIOProc()
+void AudioStream::onASyncIOProc()
 {
 	// フォーマットを調べてデコーダを作る
-	StreamFormat format = AudioUtils::CheckFormat(m_stream);
+	StreamFormat format = AudioUtils::checkFormat(m_stream);
 	switch (format)
 	{
 		// Wave
@@ -108,7 +108,7 @@ AudioDecoder::~AudioDecoder()
 ////------------------------------------------------------------------------------
 ////
 ////------------------------------------------------------------------------------
-//bool AudioDecoder::CheckCreated()
+//bool AudioDecoder::checkCreated()
 //{
 //	if (m_exception != NULL) {
 //		throw m_exception;

@@ -65,13 +65,13 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIImage, UIElement)
 //------------------------------------------------------------------------------
 RefPtr<UIImage> UIImage::create()
 {
-	return NewObject<UIImage>();
+	return newObject<UIImage>();
 }
 
 //------------------------------------------------------------------------------
 RefPtr<UIImage> UIImage::create(const StringRef& filePath)
 {
-	return NewObject<UIImage>(filePath);
+	return newObject<UIImage>(filePath);
 }
 
 //------------------------------------------------------------------------------
@@ -97,27 +97,27 @@ void UIImage::initialize()
 void UIImage::initialize(const StringRef& filePath)
 {
 	initialize();
-	//m_brush->SetTexture(NewObject<Texture2D>(filePath));
+	//m_brush->setTexture(newObject<Texture2D>(filePath));
 
-	m_texture = NewObject<Texture2D>(filePath);
+	m_texture = newObject<Texture2D>(filePath);
 }
 
 //------------------------------------------------------------------------------
-Size UIImage::MeasureOverride(const Size& availableSize)
+Size UIImage::measureOverride(const Size& availableSize)
 {
 	return MeasureInternal(availableSize);
 }
 
 //------------------------------------------------------------------------------
-Size UIImage::ArrangeOverride(const Size& finalSize)
+Size UIImage::arrangeOverride(const Size& finalSize)
 {
 	return MeasureInternal(finalSize);
 }
 
 //------------------------------------------------------------------------------
-void UIImage::OnRender(DrawingContext* g)
+void UIImage::onRender(DrawingContext* g)
 {
-	UIElement::OnRender(g);
+	UIElement::onRender(g);
 
 	g->DrawTexture(GetFinalGlobalRect(), m_texture, Rect(0, 0, 32, 32));	// TODO:
 }
@@ -130,7 +130,7 @@ Size UIImage::MeasureInternal(Size contentSize)
 		return Size::Zero;
 	}
 
-	Size size = m_texture->getSize().ToFloatSize();
+	Size size = m_texture->getSize().toFloatSize();
 
 	Vector2 scale = CalcViewBoxScale(
 		contentSize,

@@ -15,70 +15,70 @@ void TestEnv::TearDown()
 }
 
 //------------------------------------------------------------------------------
-void TestEnv::SaveScreenShot(const TCHAR* filePath)
+void TestEnv::saveScreenShot(const TCHAR* filePath)
 {
-	EngineManager::Instance->GetGraphicsManager()->GetMainSwapChain()->GetBackBuffer()->Lock()->save(filePath);
-	EngineManager::Instance->GetGraphicsManager()->GetMainSwapChain()->GetBackBuffer()->Unlock();
+	EngineManager::Instance->getGraphicsManager()->getMainSwapChain()->getBackBuffer()->lock()->save(filePath);
+	EngineManager::Instance->getGraphicsManager()->getMainSwapChain()->getBackBuffer()->unlock();
 }
 
 //------------------------------------------------------------------------------
 bool TestEnv::EqualsScreenShot(const TCHAR* filePath, int passRate)
 {
-	bool r = TestEnv::EqualsBitmapFile(EngineManager::Instance->GetGraphicsManager()->GetMainSwapChain()->GetBackBuffer()->Lock(), filePath, passRate);
-	EngineManager::Instance->GetGraphicsManager()->GetMainSwapChain()->GetBackBuffer()->Unlock();
+	bool r = TestEnv::EqualsBitmapFile(EngineManager::Instance->getGraphicsManager()->getMainSwapChain()->getBackBuffer()->lock(), filePath, passRate);
+	EngineManager::Instance->getGraphicsManager()->getMainSwapChain()->getBackBuffer()->unlock();
 	return r;
 }
 
 //------------------------------------------------------------------------------
-//bool TestEnv::EqualsTexture(Texture* texture, const TCHAR* filePath)
+//bool TestEnv::equalsTexture(Texture* texture, const TCHAR* filePath)
 //{
-//	bool r = TestEnv::EqualsBitmapFile(texture->Lock(), filePath, 90);
-//	texture->Unlock();
+//	bool r = TestEnv::EqualsBitmapFile(texture->lock(), filePath, 90);
+//	texture->unlock();
 //	return r;
 //}
 
 //------------------------------------------------------------------------------
 Color32 MixPixels(Bitmap* bmp, int x, int y)
 {
-	const Color32& c = bmp->GetPixel(x, y);
+	const Color32& c = bmp->getPixel(x, y);
 	int r = c.r; int g = c.g; int b = c.b; int a = c.a;
 	int count = 1;
 
 	if (y > 0) {
 		if (x > 0) {
-			const Color32& c = bmp->GetPixel(x - 1, y - 1);
+			const Color32& c = bmp->getPixel(x - 1, y - 1);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 		{
-			const Color32& c = bmp->GetPixel(x, y - 1);
+			const Color32& c = bmp->getPixel(x, y - 1);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 		if (x < bmp->getSize().width - 1) {
-			const Color32& c = bmp->GetPixel(x + 1, y - 1);
+			const Color32& c = bmp->getPixel(x + 1, y - 1);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 	}
 	{
 		if (x > 0) {
-			const Color32& c = bmp->GetPixel(x - 1, y);
+			const Color32& c = bmp->getPixel(x - 1, y);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 		if (x < bmp->getSize().width - 1) {
-			const Color32& c = bmp->GetPixel(x + 1, y);
+			const Color32& c = bmp->getPixel(x + 1, y);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 	}
 	if (y < bmp->getSize().height - 1) {
 		if (x > 0) {
-			const Color32& c = bmp->GetPixel(x - 1, y + 1);
+			const Color32& c = bmp->getPixel(x - 1, y + 1);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 		{
-			const Color32& c = bmp->GetPixel(x, y + 1);
+			const Color32& c = bmp->getPixel(x, y + 1);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 		if (x < bmp->getSize().width - 1) {
-			const Color32& c = bmp->GetPixel(x + 1, y + 1);
+			const Color32& c = bmp->getPixel(x + 1, y + 1);
 			r += c.r; g += c.g; b += c.b; a += c.a; ++count;
 		}
 	}
@@ -124,7 +124,7 @@ bool TestEnv::CheckScreenShot(const TCHAR* filePath, int passRate, bool save)
 {
 	if (save)
 	{
-		SaveScreenShot(filePath);
+		saveScreenShot(filePath);
 		return true;
 	}
 	else
@@ -135,7 +135,7 @@ bool TestEnv::CheckScreenShot(const TCHAR* filePath, int passRate, bool save)
 //------------------------------------------------------------------------------
 void TestEnv::WaitRendering()
 {
-	Engine::GetMainWindow()->GetSwapChain()->WaitForPresent();
+	Engine::getMainWindow()->GetSwapChain()->WaitForPresent();
 }
 
 
@@ -153,24 +153,24 @@ void EngineInitalize()
 	Engine::initialize();
 
 	// テストしやすいように固定フレームレートにする
-	Engine::SetFrameUpdateMode(FrameUpdateMode::Fixed);
+	Engine::setFrameUpdateMode(FrameUpdateMode::Fixed);
 
 	RawFont::RegisterFontFile(LN_LOCALFILE("../../../../Tools/VLGothic/VL-Gothic-Regular.ttf"));
-	RawFont::GetDefaultFont()->SetName(_T("VL Gothic"));
+	RawFont::GetDefaultFont()->setName(_T("VL Gothic"));
 
 	// 背景はグレーにしておくと加算合成のテストとか、いろいろ都合がよい
-	Engine::GetMainViewport()->SetViewBackgroundColor(Color32::Gray);
+	Engine::getMainViewport()->SetViewBackgroundColor(Color32::Gray);
 
 
 
 	{
-		auto buttonNormalBrush = TextureBrush::create(detail::UIManager::GetInstance()->GetDefaultSkinTexture());
-		buttonNormalBrush->SetSourceRect(0, 0, 32, 32);
-		buttonNormalBrush->SetBorderThickness(8, 8, 8, 8);
-		buttonNormalBrush->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
-		buttonNormalBrush->SetWrapMode(BrushWrapMode::Stretch);
+		auto buttonNormalBrush = TextureBrush::create(detail::UIManager::getInstance()->GetDefaultSkinTexture());
+		buttonNormalBrush->setSourceRect(0, 0, 32, 32);
+		buttonNormalBrush->getBorderThickness(8, 8, 8, 8);
+		buttonNormalBrush->getImageDrawMode(BrushImageDrawMode::BoxFrame);
+		buttonNormalBrush->setWrapMode(BrushWrapMode::Stretch);
 
-		auto* res = detail::UIManager::GetInstance()->GetDefaultStyleTable();
+		auto* res = detail::UIManager::getInstance()->GetDefaultStyleTable();
 		auto* style = res->GetStyle(_T("UIButton"));
 		// base
 		{
@@ -205,8 +205,8 @@ GTEST_API_ int main(int argc, char **argv)
 		Logger::initialize(_T("test_log.txt"));
 
 		int scale = 1;
-		EngineSettings::SetMainWindowSize(SizeI(160 * scale, 120 * scale));
-		EngineSettings::SetMainBackBufferSize(SizeI(160 * scale, 120 * scale));
+		EngineSettings::setMainWindowSize(SizeI(160 * scale, 120 * scale));
+		EngineSettings::setMainBackBufferSize(SizeI(160 * scale, 120 * scale));
 		EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Threaded);//GraphicsRenderingType::Immediate);//
 		detail::EngineSettings::instance.defaultSkinFilePath = LN_LOCALFILE("UI/Data/Skin.png");
 	}
@@ -216,7 +216,7 @@ GTEST_API_ int main(int argc, char **argv)
 
 		EngineInitalize();
 		int r = RUN_ALL_TESTS();
-		Engine::Terminate();
+		Engine::terminate();
 		if (r != 0) return r;
 	}
 	//{
@@ -224,7 +224,7 @@ GTEST_API_ int main(int argc, char **argv)
 
 	//	EngineInitalize();
 	//	int r = RUN_ALL_TESTS();
-	//	Engine::Terminate();
+	//	Engine::terminate();
 	//	if (r != 0) return r;
 	//}
 

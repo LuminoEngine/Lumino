@@ -27,7 +27,7 @@ Document::~Document()
 //------------------------------------------------------------------------------
 void Document::initialize()
 {
-	m_manager = ln::detail::DocumentsManager::GetInstance();
+	m_manager = ln::detail::DocumentsManager::getInstance();
 }
 
 //------------------------------------------------------------------------------
@@ -42,17 +42,17 @@ void Document::setText(const StringRef& text)
 void Document::replace(int offset, int length, const StringRef& text)
 {
 	// UTF32 へ変換
-	const ByteBuffer& utf32Buf = m_manager->GetTCharToUTF32Converter()->Convert(text.getBegin(), sizeof(TCHAR) * text.getLength());
+	const ByteBuffer& utf32Buf = m_manager->getTCharToUTF32Converter()->convert(text.getBegin(), sizeof(TCHAR) * text.getLength());
 	int len = utf32Buf.getSize() / sizeof(UTF32);
-	ReplaceInternal(offset, length, (const UTF32*)utf32Buf.getConstData(), len);
+	replaceInternal(offset, length, (const UTF32*)utf32Buf.getConstData(), len);
 }
 
 //------------------------------------------------------------------------------
-void Document::ReplaceInternal(int offset, int length, const UTF32* text, int len)
+void Document::replaceInternal(int offset, int length, const UTF32* text, int len)
 {
 	LN_ASSERT(offset == 0 && length == 0);	// TODO: まだ
 
-	// text を Run と LineBreak のリストにする
+	// text を run と LineBreak のリストにする
 	List<RefPtr<Inline>> inlines;
 	{
 		const UTF32* pos = text;
@@ -61,25 +61,25 @@ void Document::ReplaceInternal(int offset, int length, const UTF32* text, int le
 		int nlCount = 0;
 		while (StringTraits::indexOfNewLineSequence(pos, end, &nlIndex, &nlCount))
 		{
-			inlines.add(NewObject<Run>(pos, nlIndex).get());
-			inlines.add(NewObject<LineBreak>().get());
+			inlines.add(newObject<Run>(pos, nlIndex).get());
+			inlines.add(newObject<LineBreak>().get());
 			pos += (nlIndex + nlCount);	// 改行文字の次の文字を指す
 		}
 		if (pos != end)
 		{
-			inlines.add(NewObject<Run>(pos, end - pos).get());
+			inlines.add(newObject<Run>(pos, end - pos).get());
 		}
 	}
 
 	// TODO: Insert 先を割る
 	int localInsertPoint = 0;
 	LN_ASSERT(m_blockList.isEmpty());	// TODO
-	RefPtr<Block> parentBlock = NewObject<Paragraph>();
+	RefPtr<Block> parentBlock = newObject<Paragraph>();
 	m_blockList.add(parentBlock);
-	parentBlock->SetParentContent(this);
-	IncreaseRevision();
+	parentBlock->setParentContent(this);
+	increaseRevision();
 
-	parentBlock->InsertInlines(localInsertPoint, inlines);
+	parentBlock->insertInlines(localInsertPoint, inlines);
 
 
 	// TODO: マージする
@@ -138,7 +138,7 @@ TextElement::~TextElement()
 //------------------------------------------------------------------------------
 void TextElement::initialize()
 {
-	m_manager = ln::detail::DocumentsManager::GetInstance();
+	m_manager = ln::detail::DocumentsManager::getInstance();
 	m_fontData.Family = String::getEmpty();
 	m_fontData.Size = 20;
 	m_fontData.IsBold = false;
@@ -150,19 +150,19 @@ void TextElement::initialize()
 }
 
 //------------------------------------------------------------------------------
-Brush* TextElement::GetForeground() const
+Brush* TextElement::getForeground() const
 {
 	return m_foreground;
 }
 
 //------------------------------------------------------------------------------
-void TextElement::OnFontDataChanged(const ln::detail::FontData& newData)
+void TextElement::onFontDataChanged(const ln::detail::FontData& newData)
 {
 }
 
 
 //------------------------------------------------------------------------------
-InternalTextElementType TextElement::GetInternalTextElementType() const
+InternalTextElementType TextElement::getInternalTextElementType() const
 {
 	return InternalTextElementType::Common;
 }
@@ -190,31 +190,31 @@ void Block::initialize()
 }
 
 //------------------------------------------------------------------------------
-void Block::AddInline(Inline* inl)
+void Block::addInline(Inline* inl)
 {
 	if (LN_CHECK_ARG(inl != nullptr)) return;
 	m_inlines.add(inl);
-	inl->SetParentContent(this);
-	IncreaseRevision();
+	inl->setParentContent(this);
+	increaseRevision();
 }
 
 //------------------------------------------------------------------------------
-void Block::InsertInlines(int index, const List<RefPtr<Inline>>& inlines)
+void Block::insertInlines(int index, const List<RefPtr<Inline>>& inlines)
 {
 	m_inlines.insertRange(index, inlines);
 	for (Inline* inl : inlines)
 	{
-		inl->SetParentContent(this);
+		inl->setParentContent(this);
 	}
-	IncreaseRevision();
+	increaseRevision();
 }
 
 //------------------------------------------------------------------------------
-void Block::ClearInlines()
+void Block::clearInlines()
 {
-	for (TextElement* child : m_inlines) child->SetParentContent(nullptr);
+	for (TextElement* child : m_inlines) child->setParentContent(nullptr);
 	m_inlines.clear();
-	IncreaseRevision();
+	increaseRevision();
 }
 
 //==============================================================================
@@ -282,7 +282,7 @@ void Run::initialize()
 
 	// TODO: 本当に画面に表示されている分だけ作ればいろいろ節約できそう
 	//m_glyphRun = RefPtr<GlyphRun>::MakeRef();
-	//m_glyphRun->initialize(GetManager()->GetGraphicsManager());
+	//m_glyphRun->initialize(getManager()->getGraphicsManager());
 }
 
 //------------------------------------------------------------------------------
@@ -291,27 +291,27 @@ void Run::initialize(const UTF32* str, int len)
 	initialize();
 
 	m_text.clear();
-	m_text.append(str, len/*GetManager()->GetTCharToUTF32Converter()->Convert(str, len)*/);
-	IncreaseRevision();
+	m_text.append(str, len/*getManager()->getTCharToUTF32Converter()->convert(str, len)*/);
+	increaseRevision();
 }
 
 ////------------------------------------------------------------------------------
 //void Run::SetText(const StringRef& text)
 //{
 //	m_text.Clear();
-//	m_text.Append(GetManager()->GetTCharToUTF32Converter()->Convert(text.GetBegin(), text.GetLength()));
+//	m_text.Append(getManager()->getTCharToUTF32Converter()->convert(text.GetBegin(), text.GetLength()));
 //	//m_glyphRun->SetText(text);
 //
-//	IncreaseRevision();
+//	increaseRevision();
 //}
 
 //------------------------------------------------------------------------------
-void Run::OnFontDataChanged(const ln::detail::FontData& newData)
+void Run::onFontDataChanged(const ln::detail::FontData& newData)
 {
 }
 
 //------------------------------------------------------------------------------
-InternalTextElementType Run::GetInternalTextElementType() const
+InternalTextElementType Run::getInternalTextElementType() const
 {
 	return InternalTextElementType::TextRun;
 }
@@ -337,7 +337,7 @@ void LineBreak::initialize()
 }
 
 //------------------------------------------------------------------------------
-InternalTextElementType LineBreak::GetInternalTextElementType() const
+InternalTextElementType LineBreak::getInternalTextElementType() const
 {
 	return InternalTextElementType::LineBreak;
 }
@@ -355,11 +355,11 @@ InternalTextElementType LineBreak::GetInternalTextElementType() const
 /*
 	1. Block::Measure()
 		m_inlines を階層的に Measure する。
-	2. Inline(Run)::Measure()
+	2. Inline(run)::Measure()
 		カーニングを考慮して、VisualGlyph をたくさん作る。ここは TextLayoutEngine 使える。
 		ついでにルートの Block の visualGlyph リストへ追加していく。
 		変数の展開やルビの配置はここ。
-	2. Inline(Run以外)::Measure()
+	2. Inline(run以外)::Measure()
 		画像を示す VisualGlyph を作る。
 	3. Block::Measure() (2. の呼び出しから戻ってきたとき)
 		折り返しは考慮しないサイズで desiardSize を決定する。これの height が行高さとなる。（余白・ルビ考慮）
@@ -392,9 +392,9 @@ InternalTextElementType LineBreak::GetInternalTextElementType() const
 //}
 //
 ////------------------------------------------------------------------------------
-//void VisualGlyph::Render(DrawList* renderer)
+//void VisualGlyph::render(DrawList* renderer)
 //{
-//	renderer->SetBrush(Brush::Red);
+//	renderer->setBrush(Brush::Red);
 //	renderer->DrawRectangle(m_localRect);
 //}
 
@@ -419,9 +419,9 @@ void VisualTextFragment::initialize()
 }
 
 //------------------------------------------------------------------------------
-void VisualTextFragment::Render(DrawList* renderer)
+void VisualTextFragment::render(DrawList* renderer)
 {
-	renderer->SetBrush(Brush::Red);
+	renderer->setBrush(Brush::Red);
 	//renderer->DrawRectangle(m_localRect);
 	renderer->DrawGlyphRun(PointF(), m_glyphRun);
 }
@@ -467,30 +467,30 @@ void VisualInline::initialize(Inline* inl)
 }
 
 //------------------------------------------------------------------------------
-void VisualInline::MeasureLayout(const Size& availableSize, VisualBlock* rootBlock)
+void VisualInline::measureLayout(const Size& availableSize, VisualBlock* rootBlock)
 {
 	// update this
 	// Block 下の Inline のうち1つでも変更があれば、Block 下の全ての Inline は再更新が必要になる
-	if (GetThisRevision() != m_inline->GetThisRevision())
+	if (getThisRevision() != m_inline->getThisRevision())
 	{
-		// Model が Run なら GlyphRun を作っておく
-		if (m_inline->GetInternalTextElementType() == InternalTextElementType::TextRun)
+		// Model が run なら GlyphRun を作っておく
+		if (m_inline->getInternalTextElementType() == InternalTextElementType::TextRun)
 		{
 			//if (m_glyphRun == nullptr)
 			{
-				auto frag = NewObject<VisualTextFragment>();	// TODO: キャッシュしたい
+				auto frag = newObject<VisualTextFragment>();	// TODO: キャッシュしたい
 				frag->m_glyphRun = RefPtr<GlyphRun>::makeRef();
-				frag->m_glyphRun->initialize(ln::detail::EngineDomain::GetGraphicsManager());
+				frag->m_glyphRun->initialize(ln::detail::EngineDomain::getGraphicsManager());
 
 				auto* run = static_cast<Run*>(m_inline.get());
 				frag->m_glyphRun->setText(run->getText(), run->getLength());
 
-				rootBlock->AddVisualFragment(frag);
+				rootBlock->addVisualFragment(frag);
 			}
 
 		}
 
-		SetThisRevision(m_inline->GetThisRevision());
+		setThisRevision(m_inline->getThisRevision());
 	}
 
 	//if (m_glyphRun != nullptr)
@@ -498,18 +498,18 @@ void VisualInline::MeasureLayout(const Size& availableSize, VisualBlock* rootBlo
 	//	auto& items = m_glyphRun->RequestLayoutItems();
 	//	for (auto& item : items)
 	//	{
-	//		auto g = NewObject<VisualTextFragment>();	// TODO: キャッシュしたい
+	//		auto g = newObject<VisualTextFragment>();	// TODO: キャッシュしたい
 	//		g->m_localRect.Set(
 	//			item.Location.BitmapTopLeftPosition.x,
 	//			item.Location.BitmapTopLeftPosition.y,
 	//			item.Location.BitmapSize.width,
 	//			item.Location.BitmapSize.height);
-	//		rootBlock->AddVisualFragment(g);
+	//		rootBlock->addVisualFragment(g);
 	//	}
 	//}
 
 	// update children
-	if (GetChildrenRevision() != m_inline->GetChildrenRevision())
+	if (getChildrenRevision() != m_inline->getChildrenRevision())
 	{
 		// TODO: 必要ないかも
 	}
@@ -521,12 +521,12 @@ void VisualInline::MeasureLayout(const Size& availableSize, VisualBlock* rootBlo
 }
 
 ////------------------------------------------------------------------------------
-//void VisualInline::ArrangeLayout(const Rect& finalLocalRect)
+//void VisualInline::arrangeLayout(const Rect& finalLocalRect)
 //{
 //}
 //
 ////------------------------------------------------------------------------------
-//void VisualInline::Render(const Matrix& transform, ln::detail::IDocumentsRenderer* renderer)
+//void VisualInline::render(const Matrix& transform, ln::detail::IDocumentsRenderer* renderer)
 //{
 //}
 
@@ -551,77 +551,77 @@ void VisualBlock::initialize(Block* block)
 }
 
 //------------------------------------------------------------------------------
-void VisualBlock::SetBlock(Block* block)
+void VisualBlock::setBlock(Block* block)
 {
 	m_block = block;
 }
 
 //------------------------------------------------------------------------------
-bool VisualBlock::IsModelDeleted() const
+bool VisualBlock::isModelDeleted() const
 {
-	return m_block->IsDeleted();
+	return m_block->isDeleted();
 }
 
 //------------------------------------------------------------------------------
-void VisualBlock::RebuildVisualLineList()
+void VisualBlock::rebuildVisualLineList()
 {
 	//m_visualLineList.Clear();
 
-	//m_visualLineList.Add(NewObject<VisualLine>());
+	//m_visualLineList.Add(newObject<VisualLine>());
 	//VisualLine* lastLine = m_visualLineList.GetLast();
 	//for (const RefPtr<TextElement>& element : m_paragraph->GetChildElements())
 	//{
-	//	lastLine->m_visualTextElementList.Add(NewObject<VisualTextElement>());
+	//	lastLine->m_visualTextElementList.Add(newObject<VisualTextElement>());
 
-	//	if (element->GetInternalTextElementType() == InternalTextElementType::LineBreak)
+	//	if (element->getInternalTextElementType() == InternalTextElementType::LineBreak)
 	//	{
-	//		m_visualLineList.Add(NewObject<VisualLine>());
+	//		m_visualLineList.Add(newObject<VisualLine>());
 	//		VisualLine* lastLine = m_visualLineList.GetLast();
 	//	}
 	//}
 }
 
 //------------------------------------------------------------------------------
-void VisualBlock::MeasureLayout(const Size& availableSize)
+void VisualBlock::measureLayout(const Size& availableSize)
 {
 	// update this (inline list)
-	if (GetThisRevision() != m_block->GetThisRevision())
+	if (getThisRevision() != m_block->getThisRevision())
 	{
-		LN_ASSERT(GetThisRevision() == 0);	// TODO: 今は初回のみ
+		LN_ASSERT(getThisRevision() == 0);	// TODO: 今は初回のみ
 
-		for (auto& inl : m_block->GetInlines())
+		for (auto& inl : m_block->getInlines())
 		{
-			m_visualInlines.add(NewObject<VisualInline>(inl));
+			m_visualInlines.add(newObject<VisualInline>(inl));
 		}
 
-		SetThisRevision(m_block->GetThisRevision());
+		setThisRevision(m_block->getThisRevision());
 	}
 
 	// update children
-	if (GetChildrenRevision() != m_block->GetChildrenRevision())
+	if (getChildrenRevision() != m_block->getChildrenRevision())
 	{
 		m_visualFragments.clear();
 
 		for (auto& inl : m_visualInlines)
 		{
-			inl->MeasureLayout(availableSize, this);
+			inl->measureLayout(availableSize, this);
 		}
 
-		SetChildrenRevision(m_block->GetChildrenRevision());
+		setChildrenRevision(m_block->getChildrenRevision());
 	}
 }
 
 //------------------------------------------------------------------------------
-void VisualBlock::ArrangeLayout(const Rect& finalLocalRect)
+void VisualBlock::arrangeLayout(const Rect& finalLocalRect)
 {
 }
 
 //------------------------------------------------------------------------------
-void VisualBlock::Render(DrawList* renderer)
+void VisualBlock::render(DrawList* renderer)
 {
 	for (auto& glyph : m_visualFragments)
 	{
-		glyph->Render(renderer);
+		glyph->render(renderer);
 	}
 }
 
@@ -630,7 +630,7 @@ void VisualBlock::Render(DrawList* renderer)
 // DocumentView
 //------------------------------------------------------------------------------
 /*
-	Visual 側は、Model の参照を持つ。IsDeleted() = true だったら、Measure で消す。
+	Visual 側は、Model の参照を持つ。isDeleted() = true だったら、Measure で消す。
 */
 //==============================================================================
 
@@ -653,47 +653,47 @@ void DocumentView::initialize(Document* document)
 }
 
 //------------------------------------------------------------------------------
-void DocumentView::MeasureLayout(const Size& availableSize)
+void DocumentView::measureLayout(const Size& availableSize)
 {
 	// Delete 済みの Model を持つ Block を全て取り除く
-	//m_visualBlicks.RemoveAll([](const RefPtr<VisualBlock>& ptr) { return ptr->IsModelDeleted(); });
+	//m_visualBlicks.RemoveAll([](const RefPtr<VisualBlock>& ptr) { return ptr->isModelDeleted(); });
 
 	// update this (block list)
-	if (GetThisRevision() != m_document->GetThisRevision())
+	if (getThisRevision() != m_document->getThisRevision())
 	{
-		LN_ASSERT(GetThisRevision() == 0);	// TODO: 今は初回のみ
+		LN_ASSERT(getThisRevision() == 0);	// TODO: 今は初回のみ
 
-		for (auto& block : m_document->GetBlocks())
+		for (auto& block : m_document->getBlocks())
 		{
-			m_visualBlocks.add(NewObject<VisualBlock>(block));
+			m_visualBlocks.add(newObject<VisualBlock>(block));
 		}
 
-		SetThisRevision(m_document->GetThisRevision());
+		setThisRevision(m_document->getThisRevision());
 	}
 
 	// update children
-	if (GetChildrenRevision() != m_document->GetChildrenRevision())
+	if (getChildrenRevision() != m_document->getChildrenRevision())
 	{
 		for (auto& block : m_visualBlocks)
 		{
-			block->MeasureLayout(availableSize);
+			block->measureLayout(availableSize);
 		}
 
-		SetChildrenRevision(m_document->GetChildrenRevision());
+		setChildrenRevision(m_document->getChildrenRevision());
 	}
 }
 
 //------------------------------------------------------------------------------
-void DocumentView::ArrangeLayout(const Rect& finalLocalRect)
+void DocumentView::arrangeLayout(const Rect& finalLocalRect)
 {
 }
 
 //------------------------------------------------------------------------------
-void DocumentView::Render(DrawList* renderer)
+void DocumentView::render(DrawList* renderer)
 {
 	for (auto& block : m_visualBlocks)
 	{
-		block->Render(renderer);
+		block->render(renderer);
 	}
 }
 

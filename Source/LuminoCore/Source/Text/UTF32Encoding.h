@@ -14,14 +14,14 @@ public:
 
 public:
 	// override Encoding
-	virtual const TCHAR* GetName() const { return (m_bigEndian) ? _T("UTF-32BE") : _T("UTF-32LE"); }
-	virtual int GetMinByteCount() const { return 4; }
-	virtual int GetMaxByteCount() const { return 4; }
-	virtual Decoder* CreateDecoder() const { return LN_NEW UTF32Decoder(); }
-	virtual Encoder* CreateEncoder() const { return LN_NEW UTF32Encoder(); }
-	virtual byte_t* GetPreamble() const;
-	virtual int GetCharacterCount(const void* buffer, size_t bufferSize) const;
-	virtual int GetLeadExtraLength(const void* buffer, size_t bufferSize) const { return 0; }
+	virtual const TCHAR* getName() const { return (m_bigEndian) ? _T("UTF-32BE") : _T("UTF-32LE"); }
+	virtual int getMinByteCount() const { return 4; }
+	virtual int getMaxByteCount() const { return 4; }
+	virtual Decoder* createDecoder() const { return LN_NEW UTF32Decoder(); }
+	virtual Encoder* createEncoder() const { return LN_NEW UTF32Encoder(); }
+	virtual byte_t* getPreamble() const;
+	virtual int getCharacterCount(const void* buffer, size_t bufferSize) const;
+	virtual int getLeadExtraLength(const void* buffer, size_t bufferSize) const { return 0; }
 
 private:
 	bool m_bigEndian;
@@ -32,14 +32,14 @@ private:
 	class UTF32Decoder : public Decoder
 	{
 	public:
-		UTF32Decoder() { Reset(); }
-		virtual int GetMinByteCount() { return 4; }
-		virtual int GetMaxByteCount() { return 4; }
-		virtual bool CanRemain() { return true; }
-		virtual void ConvertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, size_t* outBytesUsed, size_t* outCharsUsed);
-		virtual int UsedDefaultCharCount() { return mUsedDefaultCharCount; }
-		virtual bool Completed() { return m_lastLeadBytesCount == 0; }
-		virtual void Reset() { mUsedDefaultCharCount = 0; m_lastLeadBytesCount = false; }
+		UTF32Decoder() { reset(); }
+		virtual int getMinByteCount() { return 4; }
+		virtual int getMaxByteCount() { return 4; }
+		virtual bool canRemain() { return true; }
+		virtual void convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, size_t* outBytesUsed, size_t* outCharsUsed);
+		virtual int usedDefaultCharCount() { return mUsedDefaultCharCount; }
+		virtual bool completed() { return m_lastLeadBytesCount == 0; }
+		virtual void reset() { mUsedDefaultCharCount = 0; m_lastLeadBytesCount = false; }
 
 	private:
 		int		mUsedDefaultCharCount;
@@ -51,14 +51,14 @@ private:
 	class UTF32Encoder : public Encoder
 	{
 	public:
-		UTF32Encoder() { Reset(); }
-		virtual int GetMinByteCount() { return 4; }
-		virtual int GetMaxByteCount() { return 4; }
-		virtual bool CanRemain() { return true; }
-		virtual void ConvertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, size_t* outBytesUsed, size_t* outCharsUsed);
-		virtual int UsedDefaultCharCount() { return mUsedDefaultCharCount; }
-		virtual bool Completed() { return m_lastLeadWord == 0x0000; }
-		virtual void Reset() { mUsedDefaultCharCount = 0; m_lastLeadWord = 0x0000; }
+		UTF32Encoder() { reset(); }
+		virtual int getMinByteCount() { return 4; }
+		virtual int getMaxByteCount() { return 4; }
+		virtual bool canRemain() { return true; }
+		virtual void convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, size_t* outBytesUsed, size_t* outCharsUsed);
+		virtual int usedDefaultCharCount() { return mUsedDefaultCharCount; }
+		virtual bool completed() { return m_lastLeadWord == 0x0000; }
+		virtual void reset() { mUsedDefaultCharCount = 0; m_lastLeadWord = 0x0000; }
 
 	private:
 		int			mUsedDefaultCharCount;

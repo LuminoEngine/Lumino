@@ -161,11 +161,11 @@ public:
 	void ExecuteCommand(NanoVGCommandList* commandList);
 
 protected:
-	virtual bool IsStandaloneShader() const { return true; }
+	virtual bool isStandaloneShader() const { return true; }
 	virtual void flush() override {}
-	virtual void OnActivated() override {}
-	virtual void OnDeactivated() override { flush(); }
-	virtual void OnSetState(const DrawElementBatch* state);
+	virtual void onActivated() override {}
+	virtual void onDeactivated() override { flush(); }
+	virtual void onSetState(const DrawElementBatch* state);
 
 private:
 	void ExecuteCommandInternal(const NanoVGState& state, NanoVGCommandList* commandList);

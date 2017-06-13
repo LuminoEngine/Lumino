@@ -68,12 +68,12 @@ public:
 	/**
 		@brief		このクォータニオンの長さの 2 乗を返します。
 	*/
-	float GetLengthSquared() const;
+	float getLengthSquared() const;
 	
 	/**
 		@brief		このクォータニオンを正規化します。
 	*/
-	void Normalize();
+	void normalize();
 	
 	/**
 		@brief		このクォータニオンが単位クォータニオンであるかを判定します。
@@ -85,7 +85,7 @@ public:
 		@brief		このクォータニオンに指定されたクォータニオンを乗算します。
 		@param[in]	qua		: 乗算するクォータニオン
 	*/
-	void Multiply(const Quaternion& qua);
+	void multiply(const Quaternion& qua);
 
 	/**
 		@brief		このクォータニオンを X 軸で回転します。
@@ -130,7 +130,7 @@ public:
 		@param[in]	angle		: 回転角度を格納する変数のポインタ
 		@details	axis には単位ベクトルを格納します。
 	*/
-	void ToAxisAngle(Vector3* axis, float* angle) const;
+	void toAxisAngle(Vector3* axis, float* angle) const;
 	
 	/**
 		@brief		要素のいずれかが NaN または Inf かを判別します。
@@ -152,14 +152,14 @@ public:
 		@param[in]	qua		: 処理の基になるクォータニオン
 		@return		正規化されたクォータニオン
 	*/
-    static Quaternion Normalize(const Quaternion& qua);
+    static Quaternion normalize(const Quaternion& qua);
 	
 	/**
 		@brief		指定クォータニオンの共役を返します。
 		@param[in]	qua		: 処理の基になるクォータニオン
 		@return		共役クォータニオン
 	*/
-    static Quaternion Conjugate(const Quaternion& qua);
+    static Quaternion conjugate(const Quaternion& qua);
 	
 	/**
 		@brief		2つのクォータニオンの内積を計算します。
@@ -167,7 +167,7 @@ public:
 		@param[in]	qua2	: 処理の基になるクォータニオン
 		@return		2つのクォータニオンの内積
 	*/
-	static float Dot(const Quaternion& qua1, const Quaternion& qua2);
+	static float dot(const Quaternion& qua1, const Quaternion& qua2);
 
 	/**
 		@brief		2つのクォータニオンの積を計算します。
@@ -175,14 +175,14 @@ public:
 		@param[in]	qua2	: 処理の基になるクォータニオン
 		@details	Multiply(qua1, qua2) は、先に qua1、次に qua2 の回転を行うクォータニオンを作成します。
 	*/
-	static Quaternion Multiply(const Quaternion& qua1, const Quaternion& qua2);
+	static Quaternion multiply(const Quaternion& qua1, const Quaternion& qua2);
 	
 	/**
 		@brief		クォータニオンを共役し、再正規化します。
 		@param[in]	qua		: 処理の基になるクォータニオン
 		@return		逆数クォータニオン
 	*/
-	static Quaternion MakeInverse(const Quaternion& qua);
+	static Quaternion makeInverse(const Quaternion& qua);
 
 	/**
 		@brief		回転軸と角度を指定してクォータニオンを作成します。
@@ -191,14 +191,14 @@ public:
 		@return		新しく作成されたクォータニオン
 		@details	axis が単位ベクトルでなければ正規化してから計算を行います。
 	*/
-	static Quaternion MakeFromRotationAxis(const Vector3& axis, float r);
+	static Quaternion makeFromRotationAxis(const Vector3& axis, float r);
 	
 	/**
 		@brief		回転行列からクォータニオンを作成します。
 		@param[in]  mat		: 処理の基になる行列
 		@return		新しく作成されたクォータニオン
 	*/
-	static Quaternion MakeFromRotationMatrix(const Matrix& mat);
+	static Quaternion makeFromRotationMatrix(const Matrix& mat);
 	
 	/**
 		@brief		ヨー、ピッチ、ロールを指定してクォータニオンを作成します。
@@ -210,7 +210,7 @@ public:
 					これは  D3DXQuaternionRotationYawPitchRoll の回転順序と同じで、
 					RotationEulerAngles に RotationOrder_ZXY を指定して計算した結果とも同じです。
 	*/
-	static Quaternion MakeFromYawPitchRoll(float yaw, float pitch, float roll);
+	static Quaternion makeFromYawPitchRoll(float yaw, float pitch, float roll);
 
 	/**
 		@brief		XYZ 各軸のオイラー角からクォータニオンを作成します。
@@ -218,7 +218,7 @@ public:
 		@param[in]  order	: 回転順序
 		@return		演算結果のクォータニオン
 	*/
-	static Quaternion MakeFromEulerAngles(const Vector3& angles, RotationOrder order = RotationOrder::ZXY);
+	static Quaternion makeFromEulerAngles(const Vector3& angles, RotationOrder order = RotationOrder::ZXY);
 
 	/**
 		@brief		球面線形補間を使用して、2 つのクオータニオン間を補間します。
@@ -228,7 +228,7 @@ public:
 		@return		補間結果のクォータニオン
 		@details	t は通常、0.0～1.0 を指定します。
 	*/
-	static Quaternion Slerp(const Quaternion& qua1, const Quaternion& qua2, float t);
+	static Quaternion slerp(const Quaternion& qua1, const Quaternion& qua2, float t);
 
 	/**
 		@brief		指定した方向を向くように回転するクオータニオンを作成します。
@@ -236,7 +236,7 @@ public:
 		@param[in]	up		: 上方向
 		@return		演算結果のクォータニオン
 	*/
-	static Quaternion LookRotation(const Vector3& forward, const Vector3& up = Vector3::UnitY);
+	static Quaternion lookRotation(const Vector3& forward, const Vector3& up = Vector3::UnitY);
 
 public:
 	

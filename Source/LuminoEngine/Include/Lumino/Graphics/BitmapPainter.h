@@ -30,12 +30,12 @@ public:
 	/**
 		@brief		矩形を塗りつぶします。
 	*/
-	void FillRectangle(const RectI& rect, const Color32& color);
+	void fillRectangle(const RectI& rect, const Color32& color);
 
 private:
 	LN_DISALLOW_COPY_AND_ASSIGN(BitmapPainter);
 
-	uint32_t GetColorByteSec(const Color32& color, PixelFormat format);
+	uint32_t getColorByteSec(const Color32& color, PixelFormat format);
 
 public:
 	Bitmap*	m_bitmap;
@@ -45,7 +45,7 @@ public:
 class BitmapFilter
 {
 public:
-	void FlipVertical(Bitmap* dst, const Bitmap* src);
+	void flipVertical(Bitmap* dst, const Bitmap* src);
 };
 
 LN_NAMESPACE_GRAPHICS_END

@@ -24,10 +24,10 @@ public:
 
 public:
 	void SetTransform(const Matrix& matrix);
-	void SetViewProjMatrix(const Matrix& view, const Matrix& proj);
+	void setViewProjMatrix(const Matrix& view, const Matrix& proj);
 	void SetViewPixelSize(const Size& size);
 
-	void SetRenderState(const RenderState& state);
+	void setRenderState(const RenderState& state);
 
 	void SetSortMode(uint32_t flags, SortingDistanceBasis basis);
 
@@ -198,12 +198,12 @@ public:
 		SpriteBaseDirection baseDirection,
 		BillboardType billboardType);
 
-	virtual bool IsStandaloneShader() const { return true; }
+	virtual bool isStandaloneShader() const { return true; }
 	virtual void flush() override;
-	virtual void OnActivated() override {}
-	virtual void OnDeactivated() override { flush(); }
+	virtual void onActivated() override {}
+	virtual void onDeactivated() override { flush(); }
 
-	GraphicsManager* GetManager() const { return m_manager; }
+	GraphicsManager* getManager() const { return m_manager; }
 
 	static void MakeBoundingSphere(const Vector2& size, SpriteBaseDirection baseDir, detail::Sphere* sphere);
 

@@ -1111,10 +1111,10 @@ bool JsonReader2::parseString(bool isKey)
 	//// Handler に通知
 	//bool cont = false;
 	//if (isKey) {
-	//	cont = m_handler->OnKey((TCHAR*)m_tmpStream.GetBuffer(), ((int)m_tmpStream.GetPosition()) / sizeof(TCHAR));
+	//	cont = m_handler->OnKey((TCHAR*)m_tmpStream.getBuffer(), ((int)m_tmpStream.GetPosition()) / sizeof(TCHAR));
 	//}
 	//else {
-	//	cont = m_handler->OnString((TCHAR*)m_tmpStream.GetBuffer(), ((int)m_tmpStream.GetPosition()) / sizeof(TCHAR));
+	//	cont = m_handler->OnString((TCHAR*)m_tmpStream.getBuffer(), ((int)m_tmpStream.GetPosition()) / sizeof(TCHAR));
 	//}
 	//if (!cont)
 	//{

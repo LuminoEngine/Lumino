@@ -232,7 +232,7 @@ public:
 	void ClearAvailableRenderElements();
 	detail::InvalidateFlags InheritParentElementStyle(UIStylePropertyTableInstance* parent);
 	detail::InvalidateFlags Merge(const UIStylePropertyTable* source, UIStyleAttributeInheritSourceType sourceType);
-	void Apply(UIElement* targetElement, bool useTransitionAnimation);
+	void apply(UIElement* targetElement, bool useTransitionAnimation);
 
 public:
 	UIStyleAttribute<float>				width;
@@ -307,7 +307,7 @@ public:
 LN_INTERNAL_ACCESS:
 	UIStylePropertyTable* FindStylePropertyTable(const String& visualStateName);
 	//detail::InvalidateFlags UpdateInherit(UIStyle* parent);
-	//void Apply(UIElement* targetElement);
+	//void apply(UIElement* targetElement);
 
 	detail::InvalidateFlags MergeActiveStylePropertyTables(detail::UIStylePropertyTableInstance* store, const List<String>& visualStateNames);
 
@@ -403,10 +403,10 @@ public:
 	static const int MaxIndex = 20;
 
 	/** 色を取得します。*/
-	static const Color& GetColor(UIColorIndex index, int depth = 5);
+	static const Color& getColor(UIColorIndex index, int depth = 5);
 
 	/** SolidColorBrush を取得します。*/
-	static SolidColorBrush* GetBrush(UIColorIndex index, int depth = 5);
+	static SolidColorBrush* getBrush(UIColorIndex index, int depth = 5);
 };
 
 LN_NAMESPACE_END

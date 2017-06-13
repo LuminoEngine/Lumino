@@ -76,7 +76,7 @@ String DotNetCommon::MakeLiteral(ConstantInfoPtr constantInfo)
 {
 	if (constantInfo->type == PredefinedTypes::boolType)
 	{
-		if (tr::Variant::Cast<bool>(constantInfo->value))
+		if (tr::Variant::cast<bool>(constantInfo->value))
 			return "true";
 		else
 			return "false";
@@ -91,11 +91,11 @@ String DotNetCommon::MakeLiteral(ConstantInfoPtr constantInfo)
 	}
 	if (constantInfo->type == PredefinedTypes::intType)
 	{
-		return String::format("{0}", tr::Variant::Cast<int>(constantInfo->value));
+		return String::format("{0}", tr::Variant::cast<int>(constantInfo->value));
 	}
 	if (constantInfo->type == PredefinedTypes::floatType)
 	{
-		return String::format("{0}f", tr::Variant::Cast<float>(constantInfo->value));
+		return String::format("{0}f", tr::Variant::cast<float>(constantInfo->value));
 	}
 	return "";
 }

@@ -5,10 +5,6 @@
 #include <Lumino/IO/FileSystem.h>
 #include <Lumino/IO/PathName.h>
 #include <Lumino/IO/DirectoryUtils.h>
-#if defined(LN_OS_WIN32)
-#define NOMINMAX
-#include <windows.h>
-#endif
 
 
 LN_NAMESPACE_BEGIN

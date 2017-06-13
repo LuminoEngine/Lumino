@@ -34,7 +34,7 @@ void UIButtonBase::initialize()
 
 	// TODO: UIControl::initialize() の中でも作ってるから、そっちが無駄になる。
 	// UIControl では何も作らなくてもいいかも。null の場合、UILayoutPanel と同じレイアウトにするとか。
-	SetLayoutPanel(NewObject<UIStackPanel>());
+	SetLayoutPanel(newObject<UIStackPanel>());
 }
 
 //------------------------------------------------------------------------------
@@ -105,13 +105,13 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIButton, UIButtonBase);
 //------------------------------------------------------------------------------
 RefPtr<UIButton> UIButton::create()
 {
-	return NewObject<UIButton>();
+	return newObject<UIButton>();
 }
 
 //------------------------------------------------------------------------------
 RefPtr<UIButton> UIButton::create(const StringRef& text, float width, float height)
 {
-	return NewObject<UIButton>(text, width, height);
+	return newObject<UIButton>(text, width, height);
 }
 
 //------------------------------------------------------------------------------
@@ -150,7 +150,7 @@ const String UIToggleButton::UncheckedState = _T("Unchecked");
 //------------------------------------------------------------------------------
 RefPtr<UIToggleButton> UIToggleButton::create()
 {
-	return NewObject<UIToggleButton>();
+	return newObject<UIToggleButton>();
 }
 
 //------------------------------------------------------------------------------

@@ -60,8 +60,8 @@ void GraphicsResourceObject::finalize_()
 //------------------------------------------------------------------------------
 void GraphicsResourceObject::initialize()
 {
-	m_manager = detail::EngineDomain::GetGraphicsManager();
-	m_manager->AddResourceObject(this);
+	m_manager = detail::EngineDomain::getGraphicsManager();
+	m_manager->addResourceObject(this);
 }
 
 //------------------------------------------------------------------------------
@@ -69,7 +69,7 @@ void GraphicsResourceObject::Dispose()
 {
 	if (m_manager != nullptr)
 	{
-		m_manager->RemoveResourceObject(this);
+		m_manager->removeResourceObject(this);
 		m_manager = nullptr;
 	}
 }
@@ -82,7 +82,7 @@ namespace detail {
 static GraphicsManager* g_GraphicsManagerInstance = nullptr;
 
 //------------------------------------------------------------------------------
-GraphicsManager* GraphicsManager::GetInstance(GraphicsManager* priority)
+GraphicsManager* GraphicsManager::getInstance(GraphicsManager* priority)
 {
 	if (priority != nullptr)
 	{
@@ -176,7 +176,7 @@ void GraphicsManager::initialize(const ConfigData& configData)
 		data.EnableFPUPreserve = configData.fpuPreserveEnabled;
 		auto* device = LN_NEW Driver::DX9GraphicsDevice();
 		device->initialize(data);
-		ChangeDevice(device);
+		changeDevice(device);
 		device->release();
 	}
 	else if (configData.graphicsAPI == GraphicsAPI::OpenGL)
@@ -190,7 +190,7 @@ void GraphicsManager::initialize(const ConfigData& configData)
 		data.createSharedRenderingContext = (m_renderingType == GraphicsRenderingType::Threaded);
 		auto* device = LN_NEW Driver::WGLGraphicsDevice();
 		device->initialize(data);
-		ChangeDevice(device);
+		changeDevice(device);
 		device->release();
 	}
 	else {
@@ -221,7 +221,7 @@ void GraphicsManager::initialize(const ConfigData& configData)
 	LN_THROW(0, NotImplementedException);
 #endif
 
-	Driver::IRenderer* renderer = m_graphicsDevice->GetRenderer();
+	Driver::IRenderer* renderer = m_graphicsDevice->getRenderer();
 	renderer->SetDiag(configData.diag);
 
 	// Renderer
@@ -255,10 +255,10 @@ void GraphicsManager::initialize(const ConfigData& configData)
 
 	m_defaultVertexDeclaration = LN_NEW VertexDeclaration();
 	m_defaultVertexDeclaration->initialize(this);
-	m_defaultVertexDeclaration->AddVertexElement(0, VertexElementType_Float3, VertexElementUsage_Position, 0);
-	m_defaultVertexDeclaration->AddVertexElement(0, VertexElementType_Float2, VertexElementUsage_TexCoord, 0);
-	m_defaultVertexDeclaration->AddVertexElement(0, VertexElementType_Float3, VertexElementUsage_Normal, 0);
-	m_defaultVertexDeclaration->AddVertexElement(0, VertexElementType_Float4, VertexElementUsage_Color, 0);
+	m_defaultVertexDeclaration->addVertexElement(0, VertexElementType_Float3, VertexElementUsage_Position, 0);
+	m_defaultVertexDeclaration->addVertexElement(0, VertexElementType_Float2, VertexElementUsage_TexCoord, 0);
+	m_defaultVertexDeclaration->addVertexElement(0, VertexElementType_Float3, VertexElementUsage_Normal, 0);
+	m_defaultVertexDeclaration->addVertexElement(0, VertexElementType_Float4, VertexElementUsage_Color, 0);
 
 	
 	// Shader common header.
@@ -299,7 +299,7 @@ void GraphicsManager::initialize(const ConfigData& configData)
 	{
 		// 描画スレッドを立ち上げる
 		m_renderingThread = LN_NEW RenderingThread();
-		m_renderingThread->Reset(m_graphicsDevice);
+		m_renderingThread->reset(m_graphicsDevice);
 		m_renderingThread->start();
 	}
 
@@ -308,7 +308,7 @@ void GraphicsManager::initialize(const ConfigData& configData)
 		g_GraphicsManagerInstance = this;
 	}
 
-	CreateGlobalObjects();
+	createGlobalObjects();
 }
 
 
@@ -339,35 +339,35 @@ void GraphicsManager::Dispose()
 }
 
 //------------------------------------------------------------------------------
-GraphicsAPI GraphicsManager::GetGraphicsAPI() const
+GraphicsAPI GraphicsManager::getGraphicsAPI() const
 {
-	return m_graphicsDevice->GetGraphicsAPI();
+	return m_graphicsDevice->getGraphicsAPI();
 }
 
 //------------------------------------------------------------------------------
-void GraphicsManager::PauseDevice()
+void GraphicsManager::pauseDevice()
 {
 	// TODO: ユーザーコールバック
 	for (auto* listener : m_deviceResetListenerList)
 	{
-		listener->OnLostDevice();
+		listener->onLostDevice();
 	}
-	m_graphicsDevice->OnLostDevice();
+	m_graphicsDevice->onLostDevice();
 }
 
 //------------------------------------------------------------------------------
-void GraphicsManager::ResumeDevice()
+void GraphicsManager::resumeDevice()
 {
-	m_graphicsDevice->OnResetDevice();
+	m_graphicsDevice->onResetDevice();
 	for (auto* listener : m_deviceResetListenerList)
 	{
-		listener->OnResetDevice();
+		listener->onResetDevice();
 	}
 	// TODO: ユーザーコールバック
 }
 
 //------------------------------------------------------------------------------
-void GraphicsManager::ChangeDevice(Driver::IGraphicsDevice* device)
+void GraphicsManager::changeDevice(Driver::IGraphicsDevice* device)
 {
 	if (m_renderingThread != NULL) {
 		LN_THROW(0, InvalidOperationException);
@@ -377,7 +377,7 @@ void GraphicsManager::ChangeDevice(Driver::IGraphicsDevice* device)
 	{
 		// 全オブジェクトに通知
 		for (auto& obj : m_resourceObjectList) {
-			obj->OnChangeDevice(NULL);
+			obj->onChangeDevice(NULL);
 		}
 
 		// 色々解放
@@ -405,70 +405,70 @@ void GraphicsManager::ChangeDevice(Driver::IGraphicsDevice* device)
 		// ダミーテクスチャ
 		m_dummyDeviceTexture = m_graphicsDevice->CreateTexture(SizeI(32, 32), false, TextureFormat::R8G8B8A8, NULL);
 		{
-			BitmapPainter painter(m_dummyDeviceTexture->Lock());
+			BitmapPainter painter(m_dummyDeviceTexture->lock());
 			painter.clear(Color32::White);
-			m_dummyDeviceTexture->Unlock();
+			m_dummyDeviceTexture->unlock();
 		}
 
 		// 全オブジェクトに通知
 		for (auto& obj : m_resourceObjectList) {
-			obj->OnChangeDevice(device);
+			obj->onChangeDevice(device);
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
-void GraphicsManager::SwitchActiveContext(detail::ContextInterface* context)
+void GraphicsManager::switchActiveContext(detail::ContextInterface* context)
 {
 	if (context != m_activeContext)
 	{
 		if (m_activeContext != nullptr)
 		{
-			m_activeContext->OnDeactivated();
+			m_activeContext->onDeactivated();
 		}
 
 		m_activeContext = context;
 
 		if (m_activeContext != nullptr)
 		{
-			m_activeContext->OnActivated();
+			m_activeContext->onActivated();
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
-void GraphicsManager::AddResourceObject(GraphicsResourceObject* obj)
+void GraphicsManager::addResourceObject(GraphicsResourceObject* obj)
 {
 	m_resourceObjectList.add(obj);
 }
 
 //------------------------------------------------------------------------------
-void GraphicsManager::RemoveResourceObject(GraphicsResourceObject* obj)
+void GraphicsManager::removeResourceObject(GraphicsResourceObject* obj)
 {
 	m_resourceObjectList.remove(obj);
 }
 
 //------------------------------------------------------------------------------
-InternalContext* GraphicsManager::GetInternalContext() const
+InternalContext* GraphicsManager::getInternalContext() const
 {
 	return m_internalContext;
 }
 
 //------------------------------------------------------------------------------
-const RefPtr<Shader>& GraphicsManager::GetBuiltinShader(BuiltinShader shader) const
+const RefPtr<Shader>& GraphicsManager::getBuiltinShader(BuiltinShader shader) const
 {
 	return m_builtinShaders[(int)shader];
 }
 
 //------------------------------------------------------------------------------
-void GraphicsManager::PresentSwapChain(SwapChain* swapChain)
+void GraphicsManager::presentSwapChain(SwapChain* swapChain)
 {
-	if (GetRenderingType() == GraphicsRenderingType::Immediate)
+	if (getRenderingType() == GraphicsRenderingType::Immediate)
 	{
 		swapChain->PresentInternal();
 
 		// 一時メモリの解放とかをやっておく
-		GetPrimaryRenderingCommandList()->PostExecute();
+		getPrimaryRenderingCommandList()->postExecute();
 	}
 	else
 	{
@@ -483,31 +483,31 @@ void GraphicsManager::PresentSwapChain(SwapChain* swapChain)
 		swapChain->WaitForPresent();
 
 		// 実行状態にする。Present コマンドが実行された後、コマンドリストクラスから True がセットされる。
-		// ※ PresentCommandList() の前に false にしておかないとダメ。
-		//    後で false にすると、PresentCommandList() と同時に全部のコマンドが実行されて、描画スレッドから
+		// ※ presentCommandList() の前に false にしておかないとダメ。
+		//    後で false にすると、presentCommandList() と同時に全部のコマンドが実行されて、描画スレッドから
 		//    true がセットされるのに、その後 false をセットしてしまうことがある。
-		swapChain->m_waiting.SetFalse();
+		swapChain->m_waiting.setFalse();
 
-		GetGraphicsDevice()->FlushResource();
+		getGraphicsDevice()->FlushResource();
 
 		// Primary コマンドリストの末尾に Present を追加し、キューへ追加する
-		GetRenderer()->PresentCommandList(swapChain);
+		getRenderer()->presentCommandList(swapChain);
 	}
 }
 
 //------------------------------------------------------------------------------
-RenderingCommandList* GraphicsManager::GetPrimaryRenderingCommandList()
+RenderingCommandList* GraphicsManager::getPrimaryRenderingCommandList()
 {
 	return m_renderer->m_primaryCommandList;
 }
 
 //------------------------------------------------------------------------------
-void GraphicsManager::CreateGlobalObjects()
+void GraphicsManager::createGlobalObjects()
 {
 	// 作成の式を簡単にするためのヘルパー
 	auto colorBrush = [this](const Color& c)
 	{
-		auto brush = NewObject<SolidColorBrush>(c);
+		auto brush = newObject<SolidColorBrush>(c);
 		this->m_globalBrushes.add(brush);
 		return brush;
 	};
@@ -522,11 +522,11 @@ void GraphicsManager::CreateGlobalObjects()
 	Brush::DimGray = colorBrush(Color(0.25, 0.25, 0.25, 1.0));
 
 	// black texture
-	m_dymmyBlackTexture = NewObject<Texture2D>(SizeI(32, 32), TextureFormat::R8G8B8A8, false, ResourceUsage::Static);
+	m_dymmyBlackTexture = newObject<Texture2D>(SizeI(32, 32), TextureFormat::R8G8B8A8, false, ResourceUsage::Static);
 	m_dymmyBlackTexture->clear(Color32::Black);
 
 	// white texture
-	m_dymmyWhiteTexture = NewObject<Texture2D>(SizeI(32, 32), TextureFormat::R8G8B8A8, false, ResourceUsage::Static);
+	m_dymmyWhiteTexture = newObject<Texture2D>(SizeI(32, 32), TextureFormat::R8G8B8A8, false, ResourceUsage::Static);
 	m_dymmyWhiteTexture->clear(Color32::White);
 }
 
@@ -541,13 +541,13 @@ ShaderVariableCommitSerializeHelper::ShaderVariableCommitSerializeHelper()
 }
 
 //------------------------------------------------------------------------------
-void ShaderVariableCommitSerializeHelper::BeginSerialize()
+void ShaderVariableCommitSerializeHelper::beginSerialize()
 {
 	m_writer->seek(0, SeekOrigin_Begin);
 }
 
 //------------------------------------------------------------------------------
-void ShaderVariableCommitSerializeHelper::WriteValue(Driver::IShaderVariable* targetVariable, const ShaderValue& value)
+void ShaderVariableCommitSerializeHelper::writeValue(Driver::IShaderVariable* targetVariable, const ShaderValue& value)
 {
 	m_writer->writeInt8(value.getType());
 	m_writer->writeUInt64((intptr_t)targetVariable);
@@ -558,8 +558,8 @@ void ShaderVariableCommitSerializeHelper::WriteValue(Driver::IShaderVariable* ta
 		m_writer->writeUInt8(value.getBool() ? 1 : 0);
 		break;
 	case ShaderVariableType_BoolArray:
-		m_writer->writeUInt8(value.GetArrayLength());
-		m_writer->write(value.GetBoolArray(), sizeof(bool) * value.GetArrayLength());
+		m_writer->writeUInt8(value.getArrayLength());
+		m_writer->write(value.getBoolArray(), sizeof(bool) * value.getArrayLength());
 		break;
 	case ShaderVariableType_Int:
 		m_writer->writeInt32(value.getInt());
@@ -568,28 +568,28 @@ void ShaderVariableCommitSerializeHelper::WriteValue(Driver::IShaderVariable* ta
 		m_writer->writeFloat(value.getFloat());
 		break;
 	case ShaderVariableType_FloatArray:
-		m_writer->writeUInt8(value.GetArrayLength());
-		m_writer->write(value.GetFloatArray(), sizeof(float) * value.GetArrayLength());
+		m_writer->writeUInt8(value.getArrayLength());
+		m_writer->write(value.getFloatArray(), sizeof(float) * value.getArrayLength());
 		break;
 	case ShaderVariableType_Vector:
-		m_writer->write(&value.GetVector(), sizeof(Vector4));
+		m_writer->write(&value.getVector(), sizeof(Vector4));
 		break;
 	case ShaderVariableType_VectorArray:
-		m_writer->writeUInt8(value.GetArrayLength());
-		m_writer->write(value.GetVectorArray(), sizeof(Vector4) * value.GetArrayLength());
+		m_writer->writeUInt8(value.getArrayLength());
+		m_writer->write(value.getVectorArray(), sizeof(Vector4) * value.getArrayLength());
 		break;
 	case ShaderVariableType_Matrix:
-		m_writer->write(&value.GetMatrix(), sizeof(Matrix));
+		m_writer->write(&value.getMatrix(), sizeof(Matrix));
 		break;
 	case ShaderVariableType_MatrixArray:
-		m_writer->writeUInt8(value.GetArrayLength());
-		m_writer->write(value.GetMatrixArray(), sizeof(Matrix) * value.GetArrayLength());
+		m_writer->writeUInt8(value.getArrayLength());
+		m_writer->write(value.getMatrixArray(), sizeof(Matrix) * value.getArrayLength());
 		break;
 	case ShaderVariableType_DeviceTexture:
-		m_writer->writeUInt64((intptr_t)value.GetDeviceTexture());
+		m_writer->writeUInt64((intptr_t)value.getDeviceTexture());
 		break;
 	case ShaderVariableType_ManagedTexture:
-		m_writer->writeUInt64((intptr_t)((value.GetManagedTexture()) ? value.GetManagedTexture()->ResolveDeviceObject() : nullptr));
+		m_writer->writeUInt64((intptr_t)((value.getManagedTexture()) ? value.getManagedTexture()->resolveDeviceObject() : nullptr));
 		break;
 	default:
 		// TODO: シェーダ変数に値が1度もセットされなかった場合ここに来る。デフォルト値を使うべき？
@@ -599,19 +599,19 @@ void ShaderVariableCommitSerializeHelper::WriteValue(Driver::IShaderVariable* ta
 }
 
 //------------------------------------------------------------------------------
-void* ShaderVariableCommitSerializeHelper::GetSerializeData()
+void* ShaderVariableCommitSerializeHelper::getSerializeData()
 {
 	return m_writerBuffer->getBuffer();
 }
 
 //------------------------------------------------------------------------------
-size_t ShaderVariableCommitSerializeHelper::GetSerializeDataLength()
+size_t ShaderVariableCommitSerializeHelper::getSerializeDataLength()
 {
 	return (size_t)m_writerBuffer->getPosition();
 }
 
 //------------------------------------------------------------------------------
-void ShaderVariableCommitSerializeHelper::Deserialize(const void* data, size_t length)
+void ShaderVariableCommitSerializeHelper::deserialize(const void* data, size_t length)
 {
 	const byte_t* raw = (const byte_t*)data;
 	MemoryStream buffer(data, length);
@@ -632,7 +632,7 @@ void ShaderVariableCommitSerializeHelper::Deserialize(const void* data, size_t l
 			case ShaderVariableType_BoolArray:
 			{
 				size_t size = reader.readUInt8();
-				variable->SetBoolArray((const bool*)&raw[buffer.getPosition()], size);
+				variable->setBoolArray((const bool*)&raw[buffer.getPosition()], size);
 				reader.seek(sizeof(bool) * size);
 				break;
 			}
@@ -649,7 +649,7 @@ void ShaderVariableCommitSerializeHelper::Deserialize(const void* data, size_t l
 			case ShaderVariableType_FloatArray:
 			{
 				size_t size = reader.readUInt8();
-				variable->SetFloatArray((const float*)&raw[buffer.getPosition()], size);
+				variable->setFloatArray((const float*)&raw[buffer.getPosition()], size);
 				reader.seek(sizeof(float) * size);
 				break;
 			}
@@ -657,13 +657,13 @@ void ShaderVariableCommitSerializeHelper::Deserialize(const void* data, size_t l
 			{
 				Vector4 v;
 				reader.read(&v, sizeof(Vector4));
-				variable->SetVector(v);
+				variable->setVector(v);
 				break;
 			}
 			case ShaderVariableType_VectorArray:
 			{
 				size_t size = reader.readUInt8();
-				variable->SetVectorArray((const Vector4*)&raw[buffer.getPosition()], size);
+				variable->setVectorArray((const Vector4*)&raw[buffer.getPosition()], size);
 				reader.seek(sizeof(Vector4) * size);
 				break;
 			}
@@ -671,19 +671,19 @@ void ShaderVariableCommitSerializeHelper::Deserialize(const void* data, size_t l
 			{
 				Matrix v;
 				reader.read(&v, sizeof(Matrix));
-				variable->SetMatrix(v);
+				variable->setMatrix(v);
 				break;
 			}
 			case ShaderVariableType_MatrixArray:
 			{
 				size_t size = reader.readUInt8();
-				variable->SetMatrixArray((const Matrix*)&raw[buffer.getPosition()], size);
+				variable->setMatrixArray((const Matrix*)&raw[buffer.getPosition()], size);
 				reader.seek(sizeof(Matrix) * size);
 				break;
 			}
 			case ShaderVariableType_DeviceTexture:
 			case ShaderVariableType_ManagedTexture:
-				variable->SetTexture((Driver::ITexture*)reader.readUInt64());
+				variable->setTexture((Driver::ITexture*)reader.readUInt64());
 				break;
 			default:
 				LN_THROW(0, InvalidOperationException);

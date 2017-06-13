@@ -27,7 +27,7 @@ static const size_t g_ScreenMotionBlurImageEffect_fx_Len = LN_ARRAY_SIZE_OF(g_Sc
 ScreenMotionBlurImageEffectPtr ScreenMotionBlurImageEffect::create()
 {
 	ScreenMotionBlurImageEffectPtr obj(LN_NEW ScreenMotionBlurImageEffect(), false);
-	obj->initialize(detail::GraphicsManager::GetInstance());
+	obj->initialize(detail::GraphicsManager::getInstance());
 	return obj;
 }
 
@@ -38,7 +38,7 @@ ScreenMotionBlurImageEffect::ScreenMotionBlurImageEffect()
 	, m_center(0, 0)
 	, m_scale(1.0)
 {
-	InitializeProperties();
+	initializeProperties();
 }
 
 //------------------------------------------------------------------------------
@@ -55,35 +55,35 @@ void ScreenMotionBlurImageEffect::initialize(detail::GraphicsManager* manager)
 	auto shader = Object::makeRef<Shader>(m_manager, g_ScreenMotionBlurImageEffect_fx_Data, g_ScreenMotionBlurImageEffect_fx_Len);
 
 	m_material = Object::makeRef<Material>();
-	m_material->SetShader(shader);
-	m_material->SetBlendMode(BlendMode::Alpha);
+	m_material->setShader(shader);
+	m_material->setBlendMode(BlendMode::Alpha);
 }
 
 //------------------------------------------------------------------------------
-void ScreenMotionBlurImageEffect::SetBlurStatus(float amount, const Vector2& center, float scale, float duration)
+void ScreenMotionBlurImageEffect::setBlurStatus(float amount, const Vector2& center, float scale, float duration)
 {
-	SetRadialCenter(center);
-	SetRadialScale(scale);
+	setRadialCenter(center);
+	setRadialScale(scale);
 
 	if (duration == 0.0f)
 	{
-		SetAmount(amount);			// アニメーション再生中でも、ここでプロパティを再設定するときに停止される
+		setAmount(amount);			// アニメーション再生中でも、ここでプロパティを再設定するときに停止される
 	}
 	else
 	{
 		LN_NOTIMPLEMENTED();
 		//auto anim = ValueEasingCurve<float>::create(0, duration, EasingMode::Linear);
-		//AnimationClock* ac = m_manager->GetAnimationManager()->StartPropertyAnimation(this);
-		//ac->AddAnimationCurve(anim.Get(), this, AmountId, amount);
+		//AnimationClock* ac = m_manager->getAnimationManager()->StartPropertyAnimation(this);
+		//ac->addAnimationCurve(anim.Get(), this, AmountId, amount);
 	}
 }
 
 //------------------------------------------------------------------------------
-void ScreenMotionBlurImageEffect::OnRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+void ScreenMotionBlurImageEffect::onRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
 	if (Amount == 0.0f)
 	{
-		context->Blit(source, destination, Matrix::Identity);
+		context->blit(source, destination, Matrix::Identity);
 		return;
 	}
 
@@ -93,8 +93,8 @@ void ScreenMotionBlurImageEffect::OnRender(DrawList* context, RenderTargetTextur
 	if (m_accumTexture == nullptr || m_accumTexture->getSize() != sourceSize)
 	{
 		m_accumTexture = LN_NEW RenderTargetTexture();
-		m_accumTexture->CreateImpl(m_manager, sourceSize, 1, TextureFormat::R8G8B8X8);
-		context->Blit(source, m_accumTexture, Matrix::Identity);
+		m_accumTexture->createImpl(m_manager, sourceSize, 1, TextureFormat::R8G8B8X8);
+		context->blit(source, m_accumTexture, Matrix::Identity);
 	}
 
 	Matrix blurMatrix;
@@ -102,22 +102,22 @@ void ScreenMotionBlurImageEffect::OnRender(DrawList* context, RenderTargetTextur
 	blurMatrix.scale(m_scale);
 	blurMatrix.translate(m_center.x, m_center.y, 0);
 
-	m_material->SetVectorParameter(_T("_BlurColor"), Vector4(1, 1, 1, Amount.get()));
-	m_material->SetMatrixParameter(_T("_BlurMatrix"), blurMatrix);
+	m_material->setVectorParameter(_T("_BlurColor"), Vector4(1, 1, 1, Amount.get()));
+	m_material->setMatrixParameter(_T("_BlurMatrix"), blurMatrix);
 
 	//// m_accumTexture > source
-	//context->Blit(m_accumTexture, destination, m_material);
+	//context->blit(m_accumTexture, destination, m_material);
 
 	//// save
-	//context->Blit(destination, m_accumTexture, Matrix::Identity);
+	//context->blit(destination, m_accumTexture, Matrix::Identity);
 
 	// m_accumTexture > source
-	context->Blit(m_accumTexture, source, m_material);
+	context->blit(m_accumTexture, source, m_material);
 
 	// save
-	context->Blit(source, m_accumTexture, Matrix::Identity);
+	context->blit(source, m_accumTexture, Matrix::Identity);
 
-	context->Blit(m_accumTexture, destination, Matrix::Identity);
+	context->blit(m_accumTexture, destination, Matrix::Identity);
 
 }
 

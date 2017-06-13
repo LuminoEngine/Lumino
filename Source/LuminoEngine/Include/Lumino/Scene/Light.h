@@ -23,7 +23,7 @@ public:
 	LightType getType() const { return m_lightInfo->m_type; }
 
 	/// ライトの有効、無効を設定する
-	void SetEnabled(bool enabled) { m_enabled = enabled; }
+	void setEnabled(bool enabled) { m_enabled = enabled; }
 
 	/// ライトの有効、無効を確認する
 	bool IsEnabled() const { return m_enabled; }
@@ -82,7 +82,7 @@ public:	// internal
 	//const Matrix& GetViewProjectionMatrixIT() const { return m_viewProjMatrixIT; }
 
 protected:
-	virtual void OnRender(DrawList* renderer) override;
+	virtual void onRender(DrawList* renderer) override;
 
 private:
 	friend class VisualComponent;

@@ -413,10 +413,10 @@ String FileSystem::readAllText(const StringRef& filePath, const Encoding* encodi
 	if (encoding == nullptr)
 	{
 		Encoding* e = Encoding::getEncoding(EncodingType::UTF8);
-		if (ByteBuffer::compare(buffer, e->GetPreamble(), 3, 3) == 0)
+		if (ByteBuffer::compare(buffer, e->getPreamble(), 3, 3) == 0)
 			encoding = e;
 		else
-			encoding = Encoding::GetUTF8Encoding();
+			encoding = Encoding::getUTF8Encoding();
 	}
 
 	String str;
@@ -434,12 +434,12 @@ void FileSystem::writeAllBytes(const TCHAR* filePath, const void* buffer, size_t
 //------------------------------------------------------------------------------
 void FileSystem::writeAllText(const TCHAR* filePath, const String& str, const Encoding* encoding)
 {
-	encoding = (encoding == nullptr) ? Encoding::GetUTF8Encoding() : encoding;
+	encoding = (encoding == nullptr) ? Encoding::getUTF8Encoding() : encoding;
 
 	EncodingConversionResult result;
 	EncodingConversionOptions options;
 	options.NullTerminated = false;
-	ByteBuffer buffer = Encoding::Convert(str.c_str(), str.getByteCount(), Encoding::GetTCharEncoding(), encoding, options, &result);
+	ByteBuffer buffer = Encoding::convert(str.c_str(), str.getByteCount(), Encoding::getTCharEncoding(), encoding, options, &result);
 	
 	writeAllBytes(filePath, buffer.getConstData(), buffer.getSize());
 }

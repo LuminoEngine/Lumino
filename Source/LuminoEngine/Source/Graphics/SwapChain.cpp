@@ -30,9 +30,9 @@ void SwapChain::InitializeDefault(detail::GraphicsManager* manager)
 {
 	GraphicsResourceObject::initialize();
 
-	m_deviceObj = m_manager->GetGraphicsDevice()->GetDefaultSwapChain();
+	m_deviceObj = m_manager->getGraphicsDevice()->GetDefaultSwapChain();
 	m_deviceObj->addRef();
-	PostInitialize();
+	postInitialize();
 }
 
 //------------------------------------------------------------------------------
@@ -40,8 +40,8 @@ void SwapChain::InitializeSub(detail::GraphicsManager* manager, PlatformWindow* 
 {
 	GraphicsResourceObject::initialize();
 
-	m_deviceObj = m_manager->GetGraphicsDevice()->CreateSwapChain(window);
-	PostInitialize();
+	m_deviceObj = m_manager->getGraphicsDevice()->CreateSwapChain(window);
+	postInitialize();
 }
 
 //------------------------------------------------------------------------------
@@ -50,9 +50,9 @@ void SwapChain::Dispose()
 	if (m_deviceObj != nullptr)
 	{
 		// 前回発行したコマンドリストがまだ処理中である。待ち状態になるまで待機する。
-		m_waiting.Wait();
+		m_waiting.wait();
 
-		m_backColorBuffer->DetachDefaultBackBuffer();
+		m_backColorBuffer->detachDefaultBackBuffer();
 
 		LN_SAFE_RELEASE(m_commandList);
 		LN_SAFE_RELEASE(m_backColorBuffer);
@@ -63,34 +63,34 @@ void SwapChain::Dispose()
 }
 
 //------------------------------------------------------------------------------
-void SwapChain::PostInitialize()
+void SwapChain::postInitialize()
 {
 	m_commandList = LN_NEW RenderingCommandList(m_manager);
 
 	// TODO: デフォルトのバックバッファという仕組みは入らない気がする。
 	// こちら側でレンダリングターゲット作って、Present で全体転送してもらえばいいし。
 
-	//Driver::IGraphicsDevice* device = m_manager->GetGraphicsDevice();
-	//m_deviceObj->GetBackBuffer()->AddRef();	// ↓の set 用に+1しておく (TODO: ↓の中でやるのがいいのかもしれないが・・・。)
+	//Driver::IGraphicsDevice* device = m_manager->getGraphicsDevice();
+	//m_deviceObj->getBackBuffer()->AddRef();	// ↓の set 用に+1しておく (TODO: ↓の中でやるのがいいのかもしれないが・・・。)
 	m_backColorBuffer = LN_NEW RenderTargetTexture();//Texture::CreateRenderTarget(m_manager, backbufferSize, 1, TextureFormat_R8G8B8X8);
-	m_backColorBuffer->CreateCore(m_manager, true/*m_deviceObj->GetBackBuffer(), NULL*/);
-	m_backColorBuffer->AttachDefaultBackBuffer(m_deviceObj->GetBackBuffer());
+	m_backColorBuffer->createCore(m_manager, true/*m_deviceObj->getBackBuffer(), NULL*/);
+	m_backColorBuffer->attachDefaultBackBuffer(m_deviceObj->getBackBuffer());
 
 	// 独自管理できる深度バッファを作る。
 	// これがないと、OpenGL のバックバッファはレンダリングターゲットと深度バッファを分離することが出来ないため、本Lib的に不都合が起こる。
 	//m_backDepthBuffer = LN_NEW DepthBuffer();
-	//m_backDepthBuffer->CreateImpl(m_manager, m_deviceObj->GetBackBuffer()->GetSize(), TextureFormat::D24S8);
+	//m_backDepthBuffer->createImpl(m_manager, m_deviceObj->getBackBuffer()->GetSize(), TextureFormat::D24S8);
 
-	m_waiting.SetTrue();
+	m_waiting.setTrue();
 }
 
 //------------------------------------------------------------------------------
-RenderTargetTexture* SwapChain::GetBackBuffer()
+RenderTargetTexture* SwapChain::getBackBuffer()
 {
-	if (m_backColorBuffer->GetDeviceObjectConst() != m_deviceObj->GetBackBuffer())
+	if (m_backColorBuffer->getDeviceObjectConst() != m_deviceObj->getBackBuffer())
 	{
-		m_backColorBuffer->DetachDefaultBackBuffer();
-		m_backColorBuffer->AttachDefaultBackBuffer(m_deviceObj->GetBackBuffer());
+		m_backColorBuffer->detachDefaultBackBuffer();
+		m_backColorBuffer->attachDefaultBackBuffer(m_deviceObj->getBackBuffer());
 	}
 	return m_backColorBuffer;
 }
@@ -98,17 +98,17 @@ RenderTargetTexture* SwapChain::GetBackBuffer()
 //------------------------------------------------------------------------------
 void SwapChain::Present()
 {
-	m_manager->PresentSwapChain(this);
+	m_manager->presentSwapChain(this);
 }
 
 //------------------------------------------------------------------------------
 void SwapChain::MightResizeAndDeviceReset(const SizeI& newSize)
 {
 	// Resize
-	if (GetBackBuffer()->getSize() != newSize)
+	if (getBackBuffer()->getSize() != newSize)
 	{
 		m_deviceObj->resize(newSize);
-		m_backColorBuffer->AttachDefaultBackBuffer(m_deviceObj->GetBackBuffer());
+		m_backColorBuffer->attachDefaultBackBuffer(m_deviceObj->getBackBuffer());
 		// ※ここではまだ深度バッファはリサイズしない。Present を終えた後に行う。
 	}
 
@@ -120,55 +120,55 @@ void SwapChain::MightResizeAndDeviceReset(const SizeI& newSize)
 		その時点で作られている描画コマンドは古いサイズのバックバッファへの描画を前提としていることになる。
 	*/
 
-	auto* device = m_manager->GetGraphicsDevice();
+	auto* device = m_manager->getGraphicsDevice();
 
-	if (m_manager->GetRenderingType() == GraphicsRenderingType::Immediate)
+	if (m_manager->getRenderingType() == GraphicsRenderingType::Immediate)
 	{
 		// デバイスロストのチェック
 		if (device->GetDeviceState() == Driver::DeviceState_Lost)
 		{
-			device->GetRenderer()->LeaveRenderState();
-			m_manager->PauseDevice();
+			device->getRenderer()->LeaveRenderState();
+			m_manager->pauseDevice();
 			device->ResetDevice();
-			m_manager->ResumeDevice();
-			device->GetRenderer()->EnterRenderState();
+			m_manager->resumeDevice();
+			device->getRenderer()->EnterRenderState();
 
 			// 深度バッファのサイズを新しいバックバッファサイズに合わせる
-			//m_backDepthBuffer->Resize(m_deviceObj->GetBackBuffer()->GetSize());
+			//m_backDepthBuffer->Resize(m_deviceObj->getBackBuffer()->GetSize());
 		}
 	}
 	else
 	{
-		RenderingThread* thread = m_manager->GetRenderingThread();
+		RenderingThread* thread = m_manager->getRenderingThread();
 
 		// デバイスロストのチェック
 		if (device->GetDeviceState() == Driver::DeviceState_Lost)
 		{
 			// 溜まっているコマンドを全て実行してレンダリングレッドを一時停止する
-			thread->RequestPauseAndWait();
+			thread->requestPauseAndWait();
 
 			// リセット
 			try
 			{
-				m_manager->PauseDevice();
+				m_manager->pauseDevice();
 				device->ResetDevice();
-				m_manager->ResumeDevice();
+				m_manager->resumeDevice();
 			}
 			catch (...) {
-				thread->RequestResume();
+				thread->requestResume();
 				throw;
 			}
-			thread->RequestResume();
+			thread->requestResume();
 
 			// 深度バッファのサイズを新しいバックバッファサイズに合わせる
-			//m_backDepthBuffer->Resize(m_deviceObj->GetBackBuffer()->GetSize());
+			//m_backDepthBuffer->Resize(m_deviceObj->getBackBuffer()->GetSize());
 
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
-void SwapChain::OnChangeDevice(Driver::IGraphicsDevice* device)
+void SwapChain::onChangeDevice(Driver::IGraphicsDevice* device)
 {
 	if (device == nullptr)
 	{
@@ -176,7 +176,7 @@ void SwapChain::OnChangeDevice(Driver::IGraphicsDevice* device)
 	}
 	else
 	{
-		m_deviceObj = m_manager->GetGraphicsDevice()->GetDefaultSwapChain();
+		m_deviceObj = m_manager->getGraphicsDevice()->GetDefaultSwapChain();
 		m_deviceObj->addRef();
 	}
 }
@@ -184,19 +184,19 @@ void SwapChain::OnChangeDevice(Driver::IGraphicsDevice* device)
 //------------------------------------------------------------------------------
 void SwapChain::PresentInternal()
 {
-	m_deviceObj->Present(m_backColorBuffer->ResolveDeviceObject());
+	m_deviceObj->Present(m_backColorBuffer->resolveDeviceObject());
 
 	// 実行完了。m_waiting を ture にすることで、メインスレッドからはこのスワップチェインをキューに追加できるようになる。
 	// コマンドの成否にかかわらず true にしないと、例外した後にデッドロックが発生する。
 
 	// TODO: ポインタが fefefefe とかなってたことがあった。メモリバリア張っておくこと。
-	m_waiting.SetTrue();
+	m_waiting.setTrue();
 }
 
 //------------------------------------------------------------------------------
 void SwapChain::WaitForPresent()
 {
-	m_waiting.Wait();
+	m_waiting.wait();
 }
 
 LN_NAMESPACE_GRAPHICS_END

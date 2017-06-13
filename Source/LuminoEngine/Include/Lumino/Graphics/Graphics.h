@@ -13,8 +13,8 @@ public:
 
 	//static void Set2DRenderingMode(float minZ = 0.0f, float maxZ = 1.0f);
 
-	//static void SetBrush(Brush* brush);
-	//static void SetOpacity(float opacity);	// 0~1
+	//static void setBrush(Brush* brush);
+	//static void setOpacity(float opacity);	// 0~1
 	//static void SetPrimitiveRenderingEnabled(bool enabled);
 
 	//static void MoveTo(const Vector3& point, const Color& color);
@@ -32,22 +32,22 @@ public:
 
 	//static void DrawTexture(const RectF& rect, Texture* texture, const RectI& srcRect, const Color& color);
 
-	//static void DrawText(const StringRef& text, const PointF& position);
+	//static void drawText(const StringRef& text, const PointF& position);
 
 	//static void Flush();
 
 	/**
 		@brief		レンダリングを開始します。
-		@details	Application::UpdateFrame() を使用する場合、この関数を呼び出す必要はありません。
+		@details	Application::updateFrame() を使用する場合、この関数を呼び出す必要はありません。
 	*/
 	//void BeginRendering();
 	
 	/**
 		@brief		レンダリングを終了します。
 	*/
-	//void EndRendering();
+	//void endRendering();
 
-	static void ChangeDirectX9Device(void* id3d9device);
+	static void changeDirectX9Device(void* id3d9device);
 };
 
 //class GraphicsPlatformSupport

@@ -91,8 +91,8 @@ public:
 
 
 	/// 位置の設定
-	void SetPosition(const Vector3& position);
-	void SetPosition(float x, float y, float z);
+	void setPosition(const Vector3& position);
+	void setPosition(float x, float y, float z);
 
 	void SetLinearVelocity(const Vector3& velocity);
 	void SetAngularVelocity(const Vector3& velocity);
@@ -196,7 +196,7 @@ LN_INTERNAL_ACCESS:
 
 
 	// Component interface
-	virtual void OnUpdate();
+	virtual void onUpdate();
 
 private:
 	void CreateBtRigidBody();

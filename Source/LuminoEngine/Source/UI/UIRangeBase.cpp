@@ -35,7 +35,7 @@ void UIRangeBase::initialize()
 }
 
 //------------------------------------------------------------------------------
-void UIRangeBase::SetValue(float value)
+void UIRangeBase::setValue(float value)
 {
 	float oldValue = m_value;
 	m_value = value;

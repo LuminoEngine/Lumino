@@ -83,12 +83,12 @@ public:
 	/**
 		@brief		現在のノードの種類を取得します。
 	*/
-	XmlNodeType GetNodeType() const;
+	XmlNodeType getNodeType() const;
 
 	/**
 		@brief		現在のノードの名前を取得します。
 	*/
-	const String& GetName();
+	const String& getName();
 
 	/**
 		@brief		現在のノードの値 (文字列形式) を取得します。
@@ -99,64 +99,64 @@ public:
 	/**
 		@brief		現在のノードが空要素(<book/> 等) かどうかを確認します。
 	*/
-	bool IsEmptyElement() const;
+	bool isEmptyElement() const;
 
 	/**
 		@brief		現在のノードが開始タグまたは空の要素タグかどうかを確認します。
-		@details	この関数は種類を確認する前に MoveToContent() を呼び出します。
+		@details	この関数は種類を確認する前に moveToContent() を呼び出します。
 	*/
-	bool IsStartElement();
+	bool isStartElement();
 
 	/**
 		@brief		現在のノードが指定された名前の開始タグまたは空の要素タグかどうかを確認します。
-		@details	この関数は種類を確認する前に MoveToContent() を呼び出します。
+		@details	この関数は種類を確認する前に moveToContent() を呼び出します。
 	*/
-	bool IsStartElement(const String& name);
+	bool isStartElement(const String& name);
 
 	/**
 		@brief		現在のノードの属性数を取得します。
 	*/
-	int GetAttributeCount() const;
+	int getAttributeCount() const;
 
 	/**
 		@brief		現在のノードの最初の属性に移動します。
 		@return		属性が存在する場合は true。それ以外の場合は false。
 		@details	属性が存在しない場合、現在位置は変更されません。
 	*/
-	bool MoveToFirstAttribute();
+	bool moveToFirstAttribute();
 
 	/**
 		@brief		次の属性に移動します。
 		@return		次の属性が存在する場合は true。それ以上属性が存在しない場合は false。
 		@details	次の属性が存在しない場合、現在位置は変更されません。
 	*/
-	bool MoveToNextAttribute();
+	bool moveToNextAttribute();
 
 	/**
 		@brief		現在の属性ノードを含む要素に移動します。
 		@return		現在位置が属性であった場合は true。それ以外の場合は false。
 		@details	現在位置が属性でない場合、現在位置は変更されません。
 	*/
-	bool MoveToElement();
+	bool moveToElement();
 
 	/**
 		@brief		次のコンテンツノードまで移動します。
 		@return		移動後の現在のノード種類。末尾まで移動した場合は XmlNodeType.None。
 		@details	コンテンツは Text、CDATA、Element、EndElement、EntityReference です。
 					現在位置がコンテンツであれば移動しません。
-					現在位置が属性であれば MoveToElement() により要素まで移動します。
+					現在位置が属性であれば moveToElement() により要素まで移動します。
 	*/
-	XmlNodeType MoveToContent();
+	XmlNodeType moveToContent();
 
 	/**
 		@brief		現在位置の次のノードがテキストである場合、その内容を読み取ります。
 		@details	読み取った後、現在位置はテキストノードの次のノードになります。
 	*/
-	String ReadString();
+	String readString();
 
 protected:
 	XmlReader();
-	void InitializeReader(TextReader* reader);
+	void initializeReader(TextReader* reader);
 
 LN_INTERNAL_ACCESS:
 
@@ -164,7 +164,7 @@ LN_INTERNAL_ACCESS:
 	enum class ParsingState
 	{
 		ReadElement,
-		PopNode,
+		popNode,
 		IterateAttributes,
 		IteratePartialElements,	// "a&xxx;b" のように ReferenceEntity が含まれる場合、[a][&xxx;][b] のように1度の Read() で 複数の Node をスタックに積む。次からの Read() では順に返していく。
 	};
@@ -179,7 +179,7 @@ LN_INTERNAL_ACCESS:
 		int			AttrCount;		///< Element の場合に持つ子 Attribute の数
 		bool		IsSubData;		///< 他の要素の子であるか (Attribute)
 		bool		IsPartial;
-		bool		IsEmptyElement;	///< <a />　のような空要素であるか 
+		bool		isEmptyElement;	///< <a />　のような空要素であるか 
 
 		NodeData()
 		{
@@ -196,43 +196,43 @@ LN_INTERNAL_ACCESS:
 			AttrCount = 0;
 			IsSubData = false;
 			IsPartial = false;
-			IsEmptyElement = false;
+			isEmptyElement = false;
 		}
 	};
 
-	StringRef GetStringFromCache(int pos, int len);
-	StringRef GetNodeName(const NodeData& node);
+	StringRef getStringFromCache(int pos, int len);
+	StringRef getNodeName(const NodeData& node);
 
 
-	bool ReadInternal();
-	int PushNode(const NodeData& node);
-	void PopNode();
+	bool readInternal();
+	int pushNode(const NodeData& node);
+	void popNode();
 
-	bool ParseElementInner();	// '<' から始まる
-	bool ParseElementOuter();	// '<' 以外から始まる
+	bool parseElementInner();	// '<' から始まる
+	bool parseElementOuter();	// '<' 以外から始まる
 
-	bool ParseComment();
+	bool parseComment();
 
-	bool ParseName(int* startPos, int* length);
+	bool parseName(int* startPos, int* length);
 
-	bool ParseXmlDeclOrPI(int nameStart, int nameLength, bool isXmlDecl);
-	bool ParseElement(int nameStart, int nameLength);
-	bool ParseEndElement(int nameStart, int nameLength);
-	bool ParseAttribute();
+	bool parseXmlDeclOrPI(int nameStart, int nameLength, bool isXmlDecl);
+	bool parseElement(int nameStart, int nameLength);
+	bool parseEndElement(int nameStart, int nameLength);
+	bool parseAttribute();
 
-	bool IsTextChar(int ch);
+	bool isTextChar(int ch);
 
 
-	bool IsWhiteSpace(int ch);
+	bool isWhiteSpace(int ch);
 	bool skipWhitespace();
 
-	bool IsReservedEntity(const TCHAR* text, int len);	// & と ; は含まないこと
+	bool isReservedEntity(const TCHAR* text, int len);	// & と ; は含まないこと
 
-	bool ParseWhiteSpace();
+	bool parseWhiteSpace();
 
-	bool IsAlphaNum(int ch);
+	bool isAlphaNum(int ch);
 
-	static void ExpandReservedEntities(const TCHAR* text, int len, StringBuilder* outBuilder);
+	static void expandReservedEntities(const TCHAR* text, int len, StringBuilder* outBuilder);
 
 
 

@@ -45,7 +45,7 @@ void UIControl::initialize()
 
 
 	m_items = RefPtr<UIElementCollection>::makeRef(this);
-	auto panel = NewObject<UIAbsoluteLayout>();
+	auto panel = newObject<UIAbsoluteLayout>();
 	SetLayoutPanel(panel);
 }
 
@@ -123,20 +123,20 @@ UILayoutPanel* UIControl::GetLayoutPanel() const
 
 
 ////------------------------------------------------------------------------------
-//int UIControl::GetVisualChildrenCount() const
+//int UIControl::getVisualChildrenCount() const
 //{
 //	return (m_visualTreeRoot != nullptr) ? 1 : 0;
 //}
 //
 ////------------------------------------------------------------------------------
-//ILayoutElement* UIControl::GetVisualChild(int index) const
+//ILayoutElement* UIControl::getVisualChild(int index) const
 //{
-//	LN_THROW(0 <= index && index < GetVisualChildrenCount(), OutOfRangeException);
+//	LN_THROW(0 <= index && index < getVisualChildrenCount(), OutOfRangeException);
 //	return m_visualTreeRoot;
 //}
 //
 //------------------------------------------------------------------------------
-Size UIControl::MeasureOverride(const Size& constraint)
+Size UIControl::measureOverride(const Size& constraint)
 {
 	//if (m_invalidateItemsHostPanel)
 	//{
@@ -146,10 +146,10 @@ Size UIControl::MeasureOverride(const Size& constraint)
 
 
 #if 1
-	Size desiredSize = UIElement::MeasureOverride(constraint);
+	Size desiredSize = UIElement::measureOverride(constraint);
 
-	m_itemsHostPanel->MeasureLayout(constraint);
-	const Size& childDesiredSize = m_itemsHostPanel->GetDesiredSize();
+	m_itemsHostPanel->measureLayout(constraint);
+	const Size& childDesiredSize = m_itemsHostPanel->getDesiredSize();
 
 	desiredSize.width = std::max(desiredSize.width, childDesiredSize.width);
 	desiredSize.height = std::max(desiredSize.height, childDesiredSize.height);
@@ -159,11 +159,11 @@ Size UIControl::MeasureOverride(const Size& constraint)
 	return detail::LayoutImpl<UIControl>::UILayoutPanel_MeasureOverride(
 		this, constraint,
 		[](UIControl* panel, const Size& constraint) { return panel->UIElement::MeasureOverride(constraint); });
-	//Size desiredSize = UIElement::MeasureOverride(constraint);
+	//Size desiredSize = UIElement::measureOverride(constraint);
 	//if (m_visualTreeRoot != nullptr)
 	//{
-	//    m_visualTreeRoot->MeasureLayout(constraint);
-	//    const Size& childDesiredSize = m_visualTreeRoot->GetDesiredSize();
+	//    m_visualTreeRoot->measureLayout(constraint);
+	//    const Size& childDesiredSize = m_visualTreeRoot->getDesiredSize();
 
 	//    desiredSize.width = std::max(desiredSize.width, childDesiredSize.width);
 	//    desiredSize.height = std::max(desiredSize.height, childDesiredSize.height);
@@ -174,23 +174,23 @@ Size UIControl::MeasureOverride(const Size& constraint)
 }
 
 //------------------------------------------------------------------------------
-Size UIControl::ArrangeOverride(const Size& finalSize)
+Size UIControl::arrangeOverride(const Size& finalSize)
 {
 #if 1
-	Size childDesiredSize = m_itemsHostPanel->GetDesiredSize();
+	Size childDesiredSize = m_itemsHostPanel->getDesiredSize();
 	childDesiredSize.width = std::max(finalSize.width, childDesiredSize.width);
 	childDesiredSize.height = std::max(finalSize.height, childDesiredSize.height);
-	m_itemsHostPanel->ArrangeLayout(Rect(0.0f, 0.0f, childDesiredSize));
+	m_itemsHostPanel->arrangeLayout(Rect(0.0f, 0.0f, childDesiredSize));
 	return finalSize;
 #else
 	return detail::LayoutImpl<UIControl>::UILayoutPanel_ArrangeOverride(this, Vector2::Zero, finalSize);
 	//RectF childFinal(0, 0, finalSize);
 	//if (m_visualTreeRoot != nullptr)
 	//{
-	//    Size childDesiredSize = m_visualTreeRoot->GetDesiredSize();
+	//    Size childDesiredSize = m_visualTreeRoot->getDesiredSize();
 	//    childDesiredSize.width = std::max(finalSize.width, childDesiredSize.width);
 	//    childDesiredSize.height = std::max(finalSize.height, childDesiredSize.height);
-	//    m_visualTreeRoot->ArrangeLayout(RectF(0, 0, childDesiredSize));
+	//    m_visualTreeRoot->arrangeLayout(RectF(0, 0, childDesiredSize));
 	//}
 	//return finalSize;
 #endif
@@ -246,14 +246,14 @@ void UIControl::OnLostFocus(UIEventArgs* e)
 //{
 //	if (m_visualTreeRoot != nullptr)
 //	{
-//		m_visualTreeRoot->SetParent(nullptr);
+//		m_visualTreeRoot->setParent(nullptr);
 //	}
 //
 //	LN_REFOBJ_SET(m_visualTreeRoot, element);
 //
 //	if (m_visualTreeRoot != nullptr)
 //	{
-//		m_visualTreeRoot->SetParent(this);
+//		m_visualTreeRoot->setParent(this);
 //	}
 //}
 
@@ -280,7 +280,7 @@ void UIControl::OnChildCollectionChanged(const tr::ChildCollectionChangedArgs& e
 	case tr::NotifyCollectionChangedAction::replace:
 		LN_NOTIMPLEMENTED();
 		break;
-	case tr::NotifyCollectionChangedAction::Reset:
+	case tr::NotifyCollectionChangedAction::reset:
 		m_itemsHostPanel->GetChildren()->clear();
 		break;
 	default:

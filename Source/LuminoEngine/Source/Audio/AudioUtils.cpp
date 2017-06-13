@@ -15,7 +15,7 @@ namespace detail
 #if defined(_WIN32)
 
 //------------------------------------------------------------------------------
-void AudioUtils::ConvertLNWaveFormatToWAVEFORMATEX(const WaveFormat& lnFmt, WAVEFORMATEX* wavFmt)
+void AudioUtils::convertLNWaveFormatToWAVEFORMATEX(const WaveFormat& lnFmt, WAVEFORMATEX* wavFmt)
 {
     wavFmt->wFormatTag       = lnFmt.formatTag;
     wavFmt->nChannels        = lnFmt.channels;
@@ -27,7 +27,7 @@ void AudioUtils::ConvertLNWaveFormatToWAVEFORMATEX(const WaveFormat& lnFmt, WAVE
 }
 
 //------------------------------------------------------------------------------
-void AudioUtils::ConvertWAVEFORMATEXToLNWaveFormat(const WAVEFORMATEX& wavFmt, WaveFormat* lnFmt)
+void AudioUtils::convertWAVEFORMATEXToLNWaveFormat(const WAVEFORMATEX& wavFmt, WaveFormat* lnFmt)
 {
     lnFmt->formatTag      = wavFmt.wFormatTag;
     lnFmt->channels       = wavFmt.nChannels;
@@ -39,7 +39,7 @@ void AudioUtils::ConvertWAVEFORMATEXToLNWaveFormat(const WAVEFORMATEX& wavFmt, W
 }   
 
 //------------------------------------------------------------------------------
-void AudioUtils::PrintWAVEFORMATEX(const WAVEFORMATEX& wavFmt, const char* str)
+void AudioUtils::printWAVEFORMATEX(const WAVEFORMATEX& wavFmt, const char* str)
 {
     if ( str )
 	{
@@ -61,7 +61,7 @@ void AudioUtils::PrintWAVEFORMATEX(const WAVEFORMATEX& wavFmt, const char* str)
 #endif
 
 //------------------------------------------------------------------------------
-StreamFormat AudioUtils::CheckFormat(Stream* stream)
+StreamFormat AudioUtils::checkFormat(Stream* stream)
 {
 	if (!stream || stream->getLength() < 4) {
 		return StreamFormat_Unknown;
@@ -119,10 +119,10 @@ StreamFormat AudioUtils::CheckFormat(Stream* stream)
 }
 
 //------------------------------------------------------------------------------
-SoundPlayingMode AudioUtils::CheckAudioPlayType(SoundPlayingMode type, AudioStream* audioStream, uint32_t limitSize)
+SoundPlayingMode AudioUtils::checkAudioPlayType(SoundPlayingMode type, AudioStream* audioStream, uint32_t limitSize)
 {
 	// 作成するオーディオプレイヤーの種類を決めていく
-	if (audioStream->GetDecoder()->GetSourceFormat() == StreamFormat_Midi)
+	if (audioStream->getDecoder()->getSourceFormat() == StreamFormat_Midi)
 	{
 		type = SoundPlayingMode::Midi;
 	}
@@ -130,7 +130,7 @@ SoundPlayingMode AudioUtils::CheckAudioPlayType(SoundPlayingMode type, AudioStre
 	{
 		if (type == SoundPlayingMode::Unknown)
 		{
-			if (audioStream->GetDecoder()->GetOnmemoryPCMBufferSize() > limitSize)
+			if (audioStream->getDecoder()->getOnmemoryPCMBufferSize() > limitSize)
 			{
 				type = SoundPlayingMode::Streaming;
 			}

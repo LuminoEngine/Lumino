@@ -57,7 +57,7 @@ void SpriteRenderFeature::SetState(const RenderState& renderState)
 		SpriteRendererImpl*, m_internal,
 		RenderState, renderState,
 		{
-			m_internal->SetRenderState(renderState);
+			m_internal->setRenderState(renderState);
 		});
 }
 
@@ -72,7 +72,7 @@ void SpriteRenderFeature::SetViewInfo(const Size& size, const Matrix& view, cons
 		Matrix, proj,
 		{
 			m_internal->SetViewPixelSize(size);
-			m_internal->SetViewProjMatrix(view, proj);
+			m_internal->setViewProjMatrix(view, proj);
 		});
 }
 
@@ -93,7 +93,7 @@ void SpriteRenderFeature::DrawRequest2D(
 	BillboardType billboardType)
 {
 	SpriteColorTable ct = { { color, color, color, color } };
-	Driver::ITexture* deviceTexture = (texture != nullptr) ? texture->ResolveDeviceObject() : nullptr;
+	Driver::ITexture* deviceTexture = (texture != nullptr) ? texture->resolveDeviceObject() : nullptr;
 	LN_ENQUEUE_RENDER_COMMAND_8(
 		SpriteRenderer_SetTransform, m_manager,
 		SpriteRendererImpl*, m_internal,
@@ -121,7 +121,7 @@ void SpriteRenderFeature::DrawRequest(
 	BillboardType billboardType)
 {
 	SpriteColorTable ct = { { color, color, color, color } };
-	Driver::ITexture* deviceTexture = (texture != nullptr) ? texture->ResolveDeviceObject() : nullptr;
+	Driver::ITexture* deviceTexture = (texture != nullptr) ? texture->resolveDeviceObject() : nullptr;
 
 	struct Options
 	{
@@ -212,7 +212,7 @@ SpriteRendererImpl::~SpriteRendererImpl()
 }
 
 ////------------------------------------------------------------------------------
-//void SpriteRendererImpl::OnChangeDevice(Driver::IGraphicsDevice* device)
+//void SpriteRendererImpl::onChangeDevice(Driver::IGraphicsDevice* device)
 //{
 //	if (device == NULL)
 //	{
@@ -232,7 +232,7 @@ void SpriteRendererImpl::initialize(GraphicsManager* manager, int maxSpriteCount
 	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_manager = manager;
 	m_maxSprites = maxSpriteCount;
-	auto* device = manager->GetGraphicsDevice();
+	auto* device = manager->getGraphicsDevice();
 
 	//-----------------------------------------------------
 	// 頂点バッファとインデックスバッファ
@@ -323,10 +323,10 @@ void SpriteRendererImpl::SetTransform(const Matrix& matrix)
 }
 
 //------------------------------------------------------------------------------
-void SpriteRendererImpl::SetViewProjMatrix(const Matrix& view, const Matrix& proj)
+void SpriteRendererImpl::setViewProjMatrix(const Matrix& view, const Matrix& proj)
 {
 	m_viewDirection.set(view.m[0][2], view.m[1][2], view.m[2][2]);
-	m_viewInverseMatrix = Matrix::MakeInverse(view);
+	m_viewInverseMatrix = Matrix::makeInverse(view);
 	m_viewPosition = m_viewInverseMatrix.getPosition();
 	m_viewProjMatrix = (view * proj);
 }
@@ -338,7 +338,7 @@ void SpriteRendererImpl::SetViewPixelSize(const Size& size)
 }
 
 //------------------------------------------------------------------------------
-void SpriteRendererImpl::SetRenderState(const RenderState& state)
+void SpriteRendererImpl::setRenderState(const RenderState& state)
 {
 	// 同じものがあればカレントに
 	size_t count = m_renderStateList.getCount();
@@ -453,9 +453,9 @@ void SpriteRendererImpl::DrawRequestInternal(
 	// ビルボード
 	if (billboardType == BillboardType::ToCameraPoint)
 	{
-		Vector3 f = Vector3::Normalize(m_viewPosition - position);
-		Vector3 r = Vector3::Normalize(Vector3::Cross(Vector3::UnitY, f));
-		Vector3 u = Vector3::Cross(f, r);
+		Vector3 f = Vector3::normalize(m_viewPosition - position);
+		Vector3 r = Vector3::normalize(Vector3::cross(Vector3::UnitY, f));
+		Vector3 u = Vector3::cross(f, r);
 		mat = Matrix(
 			r.x, r.y, r.z, 0.0f,
 			u.x, u.y, u.z, 0.0f,
@@ -467,12 +467,12 @@ void SpriteRendererImpl::DrawRequestInternal(
 		// ↑がカメラ位置を基準にするのに対し、こちらはビュー平面に垂直に交差する点を基準とする。
 
 		// ビュー平面との距離
-		float d = Vector3::Dot(position - m_viewPosition, m_viewDirection);
+		float d = Vector3::dot(position - m_viewPosition, m_viewDirection);
 
 		// left-hand coord
-		Vector3 f = Vector3::Normalize(m_viewDirection * d);
-		Vector3 r = Vector3::Normalize(Vector3::Cross(Vector3::UnitY, f));
-		Vector3 u = Vector3::Cross(f, r);
+		Vector3 f = Vector3::normalize(m_viewDirection * d);
+		Vector3 r = Vector3::normalize(Vector3::cross(Vector3::UnitY, f));
+		Vector3 u = Vector3::cross(f, r);
 		mat = Matrix(
 			r.x, r.y, r.z, 0.0f,
 			u.x, u.y, u.z, 0.0f,
@@ -505,10 +505,10 @@ void SpriteRendererImpl::DrawRequestInternal(
 	mat.translate(m_transformMatrix.getPosition());
 
 	// 座標変換
-	sprite.Vertices[0].Position.TransformCoord(mat);
-	sprite.Vertices[1].Position.TransformCoord(mat);
-	sprite.Vertices[2].Position.TransformCoord(mat);
-	sprite.Vertices[3].Position.TransformCoord(mat);
+	sprite.Vertices[0].Position.transformCoord(mat);
+	sprite.Vertices[1].Position.transformCoord(mat);
+	sprite.Vertices[2].Position.transformCoord(mat);
+	sprite.Vertices[3].Position.transformCoord(mat);
 
 	// 色
 	sprite.Vertices[0].Color = colorTable.colors[0];
@@ -549,12 +549,12 @@ void SpriteRendererImpl::DrawRequestInternal(
 		sprite.Vertices[2].TexUV.y = 0;
 		sprite.Vertices[3].TexUV.x = 1;
 		sprite.Vertices[3].TexUV.y = 1;
-		sprite.Texture = m_manager->GetDummyDeviceTexture();
+		sprite.Texture = m_manager->getDummyDeviceTexture();
 	}
 
 	// カメラからの距離をソート用Z値にする場合
 	if (m_sortingBasis == SortingDistanceBasis_ViewPont) {
-		sprite.Depth = (m_viewPosition - position).GetLengthSquared();
+		sprite.Depth = (m_viewPosition - position).getLengthSquared();
 	}
 	else {
 		sprite.Depth = position.z;
@@ -744,7 +744,7 @@ void SpriteRendererImpl::flush(SpriteSortMode sortFlags)
 
 	int si = 0;     // Sprite Index (m_spriteIndexList)
 	int vi = 0;     // Vertex Index
-	int ri = 0;     // Request Index (m_spriteRequestList)
+	int ri = 0;     // request Index (m_spriteRequestList)
 	int start_idx = 0;
 	int prim_num = 0;
 	Driver::ITexture* current_tex = m_spriteRequestList[m_spriteIndexList[0]].Texture;
@@ -798,7 +798,7 @@ void SpriteRendererImpl::flush(SpriteSortMode sortFlags)
 	//-----------------------------------------------------
 	// 頂点データをコピー
 
-	BatchSpriteVertex* vb = static_cast< BatchSpriteVertex* >(m_vertexBuffer->Lock());
+	BatchSpriteVertex* vb = static_cast< BatchSpriteVertex* >(m_vertexBuffer->lock());
 	si = 0;
 	vi = 0;
 	for (; si < spriteCount; ++si)
@@ -807,29 +807,29 @@ void SpriteRendererImpl::flush(SpriteSortMode sortFlags)
 		memcpy(&vb[vi], m_spriteRequestList[ri].Vertices, sizeof(m_spriteRequestList[0].Vertices));
 		vi += 4;
 	}
-	m_vertexBuffer->Unlock();
+	m_vertexBuffer->unlock();
 
 	//-----------------------------------------------------
 	// 描画
 
-	auto* r = m_manager->GetGraphicsDevice()->GetRenderer();
-	m_shader.varViewProjMatrix->SetMatrix(m_viewProjMatrix);
+	auto* r = m_manager->getGraphicsDevice()->getRenderer();
+	m_shader.varViewProjMatrix->setMatrix(m_viewProjMatrix);
 	if (m_shader.varViewPixelSize != nullptr)
-		m_shader.varViewPixelSize->SetVector(Vector4(m_viewPixelSize.x, m_viewPixelSize.y, 0, 0));
+		m_shader.varViewPixelSize->setVector(Vector4(m_viewPixelSize.x, m_viewPixelSize.y, 0, 0));
 
-	Driver::IShaderPass* pass = m_shader.techMainDraw->GetPass(0);
+	Driver::IShaderPass* pass = m_shader.techMainDraw->getPass(0);
 
 	AttributeList::iterator itr = m_attributeList.begin();
 	AttributeList::iterator end = m_attributeList.end();
 	for (; itr != end; ++itr)
 	{
 		//r->SetRenderState(m_renderStateList[itr->RenderStateIndex]);
-		m_shader.varTexture->SetTexture(itr->Texture);
-		r->SetShaderPass(pass);
+		m_shader.varTexture->setTexture(itr->Texture);
+		r->setShaderPass(pass);
 		r->SetVertexDeclaration(m_vertexDeclaration);
 		r->SetVertexBuffer(0, m_vertexBuffer);
 		r->SetIndexBuffer(m_indexBuffer);
-		r->DrawPrimitiveIndexed(PrimitiveType_TriangleList, itr->StartIndex, itr->PrimitiveNum);
+		r->drawPrimitiveIndexed(PrimitiveType_TriangleList, itr->StartIndex, itr->PrimitiveNum);
 	}
 
 	//-----------------------------------------------------

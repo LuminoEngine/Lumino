@@ -136,7 +136,7 @@ TEST_F(Test_Base_ElapsedTimer, Basic)
 {
 	ElapsedTimer timer;
 	timer.start();
-	Thread::Sleep(100);
+	Thread::sleep(100);
 	uint64_t t = timer.getElapsed();
 	ASSERT_EQ(true, t >= 98 * 1000 * 1000);		// 微妙に早く終わることを考慮する
 }

@@ -33,7 +33,7 @@ public:
 	/// 作成
 	static ShaderCompileResultLevel create(DX9GraphicsDevice* device, const char* code, size_t codeByteCount, DX9Shader** outShader, StringA* outMessage);
 
-	DX9GraphicsDevice* GetGraphicsDevice() { return m_device; }
+	DX9GraphicsDevice* getGraphicsDevice() { return m_device; }
 	ID3DXEffect* GetID3DXEffect() { return m_dxEffect; }
 
 	//const SamplerState* FindSamplerState(IDirect3DBaseTexture9* dxTexture) const;
@@ -44,8 +44,8 @@ public:
 	virtual IShaderVariable* GetVariable(int index) const;
 	virtual int GetTechniqueCount() const { return m_techniques.getCount(); }
 	virtual IShaderTechnique* GetTechnique(int index) const;
-	virtual void OnLostDevice();
-	virtual void OnResetDevice();
+	virtual void onLostDevice();
+	virtual void onResetDevice();
 
 private:
 
@@ -72,15 +72,15 @@ public:
 
 public:
 	virtual void setBool(bool value);
-	virtual void SetBoolArray(const bool* values, int count);
+	virtual void setBoolArray(const bool* values, int count);
 	virtual void setInt(int value);
 	virtual void setFloat(float value);
-	virtual void SetFloatArray(const float* values, int count);
-	virtual void SetVector(const Vector4& vec);
-	virtual void SetVectorArray(const Vector4* vectors, int count);
-	virtual void SetMatrix(const Matrix& matrix);
-	virtual void SetMatrixArray(const Matrix* matrices, int count);
-	virtual void SetTexture(ITexture* texture);
+	virtual void setFloatArray(const float* values, int count);
+	virtual void setVector(const Vector4& vec);
+	virtual void setVectorArray(const Vector4* vectors, int count);
+	virtual void setMatrix(const Matrix& matrix);
+	virtual void setMatrixArray(const Matrix* matrices, int count);
+	virtual void setTexture(ITexture* texture);
 	virtual int GetAnnotationCount() { return m_annotations.getCount(); }
 	virtual IShaderVariable* GetAnnotation(int index);
 
@@ -104,11 +104,11 @@ public:
 	virtual void setBool(bool value) { LN_THROW(0, InvalidOperationException); }
 	virtual void setInt(int value) { LN_THROW(0, InvalidOperationException); }
 	virtual void setFloat(float value) { LN_THROW(0, InvalidOperationException); }
-	virtual void SetVector(const Vector4& vec) { LN_THROW(0, InvalidOperationException); }
-	virtual void SetVectorArray(const Vector4* vectors, int count) { LN_THROW(0, InvalidOperationException); }
-	virtual void SetMatrix(const Matrix& matrix) { LN_THROW(0, InvalidOperationException); }
-	virtual void SetMatrixArray(const Matrix* matrices, int count) { LN_THROW(0, InvalidOperationException); }
-	virtual void SetTexture(ITexture* texture) { LN_THROW(0, InvalidOperationException); }
+	virtual void setVector(const Vector4& vec) { LN_THROW(0, InvalidOperationException); }
+	virtual void setVectorArray(const Vector4* vectors, int count) { LN_THROW(0, InvalidOperationException); }
+	virtual void setMatrix(const Matrix& matrix) { LN_THROW(0, InvalidOperationException); }
+	virtual void setMatrixArray(const Matrix* matrices, int count) { LN_THROW(0, InvalidOperationException); }
+	virtual void setTexture(ITexture* texture) { LN_THROW(0, InvalidOperationException); }
 	virtual int GetAnnotationCount() { return 0; }
 	virtual IShaderVariable* GetAnnotation(int index) { return NULL; }
 };
@@ -123,9 +123,9 @@ public:
 
 public:
 	// override IShaderTechnique
-	virtual const TCHAR* GetName() const { return m_name.c_str(); }
+	virtual const TCHAR* getName() const { return m_name.c_str(); }
 	virtual int GetPassCount() const { return m_passes.getCount(); }
-	virtual IShaderPass* GetPass(int index);
+	virtual IShaderPass* getPass(int index);
 	virtual int GetAnnotationCount() { return m_annotations.getCount(); }
 	virtual IShaderVariable* GetAnnotation(int index) { return m_annotations[index]; }
 
@@ -147,10 +147,10 @@ public:
 
 public:
 	// override IShaderPass
-	virtual const TCHAR* GetName() const { return m_name.c_str(); }
+	virtual const TCHAR* getName() const { return m_name.c_str(); }
 	virtual int GetAnnotationCount() { return m_annotations.getCount(); }
 	virtual IShaderVariable* GetAnnotation(int index) { return m_annotations[index]; }
-	virtual void Apply();
+	virtual void apply();
 
 	void EndPass();		// Renderer から呼ばれる
 	void CommitSamplerStatus();

@@ -132,7 +132,7 @@ void Archive::open(const PathName& filePath, const String& key)
 		ByteBuffer nameBuf(name_len * sizeof(UTF16));
 		ReadPadding16(nameBuf.getData(), name_len * sizeof(UTF16));
 		String tmpName;
-		tmpName.convertFrom(nameBuf.getData(), nameBuf.getSize(), Encoding::GetUTF16Encoding());
+		tmpName.convertFrom(nameBuf.getData(), nameBuf.getSize(), Encoding::getUTF16Encoding());
 		PathName name(m_virtualDirectoryPath, tmpName);	// 絶対パスにする
 		name = name.canonicalizePath();
 			

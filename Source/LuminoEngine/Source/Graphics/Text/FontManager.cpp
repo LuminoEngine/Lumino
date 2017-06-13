@@ -95,15 +95,15 @@ void FontManager::initialize(FileManager* fileManager, GraphicsManager* graphics
 {
 	m_fileManager = fileManager;
 	m_graphicsManager = graphicsManager;
-	m_charToUTF32Converter.SetDestinationEncoding(Encoding::GetUTF32Encoding());
-	m_charToUTF32Converter.SetSourceEncoding(Encoding::GetSystemMultiByteEncoding());
-	m_wcharToUTF32Converter.SetDestinationEncoding(Encoding::GetUTF32Encoding());
-	m_wcharToUTF32Converter.SetSourceEncoding(Encoding::GetWideCharEncoding());
+	m_charToUTF32Converter.setDestinationEncoding(Encoding::getUTF32Encoding());
+	m_charToUTF32Converter.getSourceEncoding(Encoding::getSystemMultiByteEncoding());
+	m_wcharToUTF32Converter.setDestinationEncoding(Encoding::getUTF32Encoding());
+	m_wcharToUTF32Converter.getSourceEncoding(Encoding::getWideCharEncoding());
 
-	m_TCharToUTF32Converter.SetDestinationEncoding(Encoding::GetUTF32Encoding());
-	m_TCharToUTF32Converter.SetSourceEncoding(Encoding::GetTCharEncoding());
-	m_UTF32ToTCharConverter.SetDestinationEncoding(Encoding::GetTCharEncoding());
-	m_UTF32ToTCharConverter.SetSourceEncoding(Encoding::GetUTF32Encoding());
+	m_TCharToUTF32Converter.setDestinationEncoding(Encoding::getUTF32Encoding());
+	m_TCharToUTF32Converter.getSourceEncoding(Encoding::getTCharEncoding());
+	m_UTF32ToTCharConverter.setDestinationEncoding(Encoding::getTCharEncoding());
+	m_UTF32ToTCharConverter.getSourceEncoding(Encoding::getUTF32Encoding());
 
 	// FreeType 初期化
 	FT_Error err = FT_Init_FreeType(&m_ftLibrary);
@@ -133,9 +133,9 @@ void FontManager::initialize(FileManager* fileManager, GraphicsManager* graphics
 	m_defaultFont->SetAntiAlias(true);
 
 
-	m_defaultRawFont = NewObject<FreeTypeFont>();
-	m_defaultRawFont->SetName(m_defaultFontName);
-	m_defaultRawFont->SetSize(12);
+	m_defaultRawFont = newObject<FreeTypeFont>();
+	m_defaultRawFont->setName(m_defaultFontName);
+	m_defaultRawFont->setSize(12);
 	m_defaultRawFont->SetAntiAlias(true);
 	//m_defaultFont = RawFont::CreateBuiltInBitmapFontInternal(this, 7);
 
@@ -227,7 +227,7 @@ void FontManager::RegisterFontFile(const String& fontFilePath)
 
 			//// 初回登録の場合はデフォルトフォント名として登録する
 			//if (m_ttfDataEntryMap.size() == 1) {
-			//	m_defaultFont->SetName(familyName);
+			//	m_defaultFont->setName(familyName);
 			//}
 		}
 		FT_Done_Face(face);
@@ -264,7 +264,7 @@ void FontManager::RegisterFontFile(const String& fontFilePath)
 
 				//// 初回登録の場合はデフォルトフォント名として登録する
 				//if (m_ttfDataEntryMap.size() == 1) {
-				//	m_defaultFont->SetName(familyName);
+				//	m_defaultFont->setName(familyName);
 				//}
 			}
 			FT_Done_Face(face);
@@ -302,12 +302,12 @@ RawFontPtr FontManager::LookupRawFont(const detail::FontData& keyData)
 	}
 	else
 	{
-		auto ftFont = NewObject<FreeTypeFont>();
+		auto ftFont = newObject<FreeTypeFont>();
 		ref = ftFont;
 	}
 
-	ref->SetName(keyData.Family);
-	ref->SetSize(keyData.Size);
+	ref->setName(keyData.Family);
+	ref->setSize(keyData.Size);
 	ref->SetBold(keyData.IsBold);
 	ref->SetItalic(keyData.IsItalic);
 	ref->SetAntiAlias(keyData.IsAntiAlias);

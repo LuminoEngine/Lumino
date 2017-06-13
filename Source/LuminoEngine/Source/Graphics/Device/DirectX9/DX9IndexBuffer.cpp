@@ -38,31 +38,31 @@ void DX9IndexBuffer::create(DX9GraphicsDevice* device, int indexCount, const voi
 	m_indexCount = indexCount;
 	m_indexStride = (m_format == IndexBufferFormat_UInt16) ? 2 : 4;
 
-	OnResetDevice();
+	onResetDevice();
 
 	// data コピー
 	if (initialData)
 	{
 		void* buf;
 		size_t lockedSize;
-		Lock(&buf, &lockedSize);
+		lock(&buf, &lockedSize);
 		memcpy(buf, initialData, m_indexStride * m_indexCount);
-		Unlock();
+		unlock();
 	}
 }
 
 //------------------------------------------------------------------------------
-void DX9IndexBuffer::SetSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes)
+void DX9IndexBuffer::setSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes)
 {
 	byte_t* buf;
 	size_t lockedSize;
-	Lock((void**)&buf, &lockedSize);
+	lock((void**)&buf, &lockedSize);
 	memcpy(buf + offsetBytes, data, std::min(lockedSize - offsetBytes, dataBytes));
-	Unlock();
+	unlock();
 }
 
 //------------------------------------------------------------------------------
-void DX9IndexBuffer::Lock(void** lockedBuffer, size_t* lockedSize)
+void DX9IndexBuffer::lock(void** lockedBuffer, size_t* lockedSize)
 {
 	DWORD flags = 0;
 	if (m_usage == ResourceUsage::Dynamic)
@@ -75,13 +75,13 @@ void DX9IndexBuffer::Lock(void** lockedBuffer, size_t* lockedSize)
 }
 
 //------------------------------------------------------------------------------
-void DX9IndexBuffer::Unlock()
+void DX9IndexBuffer::unlock()
 {
 	LN_COMCALL(m_indexBuffer->Unlock());
 }
 
 //------------------------------------------------------------------------------
-void DX9IndexBuffer::OnLostDevice()
+void DX9IndexBuffer::onLostDevice()
 {
 	if (m_usage == ResourceUsage::Dynamic)
 	{
@@ -90,7 +90,7 @@ void DX9IndexBuffer::OnLostDevice()
 }
 
 //------------------------------------------------------------------------------
-void DX9IndexBuffer::OnResetDevice()
+void DX9IndexBuffer::onResetDevice()
 {
 	if (m_indexBuffer == nullptr)
 	{

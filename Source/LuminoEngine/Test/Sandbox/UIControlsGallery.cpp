@@ -12,14 +12,14 @@ void UIControlsGallery()
 	Engine::initialize();
 
 
-	Engine::GetWorld3D()->SetVisibleGridPlane(true);
+	Engine::getWorld3D()->SetVisibleGridPlane(true);
 
 	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::makeRef();
 	CameraComponent::GetMain3DCamera()->SetCameraBehavior(cb);
 
 
-	//auto* uiRoot = Engine::GetMainWindow();
-	auto* uiRoot = Engine::GetDefaultUILayer()->GetLayoutView();
+	//auto* uiRoot = Engine::getMainWindow();
+	auto* uiRoot = Engine::getDefaultUILayer()->GetLayoutView();
 
 
 	//auto listBox1 = UIListBox::create();
@@ -28,7 +28,7 @@ void UIControlsGallery()
 
 	//auto item = listBox1->AddTextItem(_T("スプライト"));
 	//auto button1 = UIButton::create(_T(">"), 20, 20);
-	////button1->SetPosition(PointF(2, 0));
+	////button1->setPosition(PointF(2, 0));
 	//button1->margin = ThicknessF(2);
 	//button1->SetAnchor(AlignmentAnchor::RightOffsets | AlignmentAnchor::VCenter);
 	//item->AddChild(button1);
@@ -37,25 +37,25 @@ void UIControlsGallery()
 
 
 	auto slider = UISlider::create(0.75, 0.5, 2.0);
-	slider->SetPosition(PointF(10, 10));
+	slider->setPosition(PointF(10, 10));
 	slider->SetWidth(300);
 	slider->SetHeight(16);
 	//slider->SetOrientation(Orientation::Vertical);
 	uiRoot->AddChild(slider);
 
-	//auto sky = NewObject<SkyComponent>();
-	//sky->SetDepthTestEnabled(false);
-	//sky->SetDepthWriteEnabled(false);
-	//auto skyObj = ln::NewObject<ln::WorldObject3D>();
+	//auto sky = newObject<SkyComponent>();
+	//sky->setDepthTestEnabled(false);
+	//sky->setDepthWriteEnabled(false);
+	//auto skyObj = ln::newObject<ln::WorldObject3D>();
 	//skyObj->AddComponent(sky);
-	//skyObj->SetPosition(10, 0, 0);
+	//skyObj->setPosition(10, 0, 0);
 
-	////auto mirror = NewObject<MirrorComponent>();
-	////mirror->SetDepthTestEnabled(false);
-	////mirror->SetDepthWriteEnabled(false);
-	////auto mirrorObj = ln::NewObject<ln::WorldObject3D>();
+	////auto mirror = newObject<MirrorComponent>();
+	////mirror->setDepthTestEnabled(false);
+	////mirror->setDepthWriteEnabled(false);
+	////auto mirrorObj = ln::newObject<ln::WorldObject3D>();
 	////mirrorObj->AddComponent(mirror);
-	////mirrorObj->SetPosition(10, 0, 0);
+	////mirrorObj->setPosition(10, 0, 0);
 
 
 
@@ -63,15 +63,15 @@ void UIControlsGallery()
 	//auto mesh = ln::StaticMeshComponent::CreateSphere(1);
 	////mesh->GetStaticMeshModel()->
 	//auto material = mesh->GetStaticMeshModel()->GetMaterial(0);
-	//material->SetMaterialTexture(ln::Assets::LoadTexture(_T("D:/GameProjects/Chronicles/sky/incskies_024_png8/incskies_024_8k_.png")));
-	////material->SetMaterialTexture(Texture2D::GetBlackTexture());
-	//auto m_map = ln::NewObject<ln::WorldObject3D>();
+	//material->setMaterialTexture(ln::Assets::loadTexture(_T("D:/GameProjects/Chronicles/sky/incskies_024_png8/incskies_024_8k_.png")));
+	////material->setMaterialTexture(Texture2D::getBlackTexture());
+	//auto m_map = ln::newObject<ln::WorldObject3D>();
 	//m_map->AddComponent(mesh);
-	//mesh->SetBlendMode(BlendMode::Normal);
-	//mesh->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
+	//mesh->setBlendMode(BlendMode::Normal);
+	//mesh->setShader(Shader::getBuiltinShader(BuiltinShader::Sprite));
 	//m_map->SetScale(-1.5, 1.5, 1.5);
 	////m_map->SetScale(-10, 10, 10);
-	//m_map->SetPosition(0, 2, 0);
+	//m_map->setPosition(0, 2, 0);
 	////mesh->SetVisible(false);
 
 
@@ -82,7 +82,7 @@ void UIControlsGallery()
 
 	//auto shader = Shader::create(StringRef(_T("C:/Proj/LuminoStudio/external/Lumino/Source/LuminoEngine/Test/Sandbox/SSBasic2D.fx")), true);
 	//auto rect = Rectangle::create(RectF(0, 0, 3, 1));
-	//rect->SetShader(shader);
+	//rect->setShader(shader);
 	//rect->SetAngles(Math::PI/2, 0, 0);
 
 	//auto grid1 = UIGridLayout::create(1, 1);
@@ -106,13 +106,13 @@ void UIControlsGallery()
 	//stack1->AddChild(text1);
 
 	auto ps1 = TransitionPostEffect::create();
-	Engine::GetDefault3DLayer()->AddPostEffect(ps1);
+	Engine::getDefault3DLayer()->AddPostEffect(ps1);
 	
 	//auto box1 = StaticMeshComponent::create(LN_LOCALFILE("Assets/cube.mqo"));
 	//auto box1 = StaticMeshComponent::create(LN_LOCALFILE("Assets/cylinder2.mqo"));
 	//auto box1 = StaticMeshComponent::create(LN_LOCALFILE("Assets/Plant1.mqo"));
 	//auto box1 = StaticMeshComponent::create(_T("D:/Documents/Modeling/test4.mqo"));
-	//auto mesh1 = NewObject<WorldObject3D>();
+	//auto mesh1 = newObject<WorldObject3D>();
 	//mesh1->AddComponent(box1);
 	
 #if 0
@@ -249,7 +249,7 @@ void UIControlsGallery()
 	mainWindow->AddChild(thumb1);
 
 	auto scrollBar1 = UIScrollBar::create();
-	//scrollBar1->SetSize(Size(Math::NaN, 32));
+	//scrollBar1->setSize(Size(Math::NaN, 32));
 	scrollBar1->SetMaximum(10);
 	scrollBar1->SetValue(3);
 	scrollBar1->SetViewportSize(2);
@@ -267,9 +267,9 @@ void UIControlsGallery()
 #endif
 
 	float t = 0;
-	while (!Engine::IsEndRequested())
+	while (!Engine::isEndRequested())
 	{
-		Engine::UpdateFrame();
+		Engine::updateFrame();
 
 		if (Input::IsTriggered(InputButtons::OK))
 		{
@@ -277,33 +277,33 @@ void UIControlsGallery()
 		}
 
 
-			Engine::RenderFrame();
+			Engine::renderFrame();
 
-			//Engine::GetDefaultSceneGraph3D()->GetRenderer()->SetShader(shader);
-			//Engine::GetDefaultSceneGraph3D()->GetRenderer()->DrawScreenRectangle();
+			//Engine::getDefaultSceneGraph3D()->getRenderer()->setShader(shader);
+			//Engine::getDefaultSceneGraph3D()->getRenderer()->DrawScreenRectangle();
 			
-		//Engine::GetDefaultSceneGraph3D()->GetDebugRenderer()->DrawLinePrimitive(
+		//Engine::getDefaultSceneGraph3D()->GetDebugRenderer()->DrawLinePrimitive(
 		//	Vector3(0, 0, 0), Color::Red,
 		//	Vector3(5, 5, 5), Color::White);
 
 			t += 0.016;
-			//shader->FindVariable(_T("time"))->SetFloat(t);
+			//shader->findVariable(_T("time"))->SetFloat(t);
 
-		Engine::PresentFrame();
+		Engine::presentFrame();
 
 		printf("%f\n", slider->getValue());
 
 
 		//printf("----------\n");
-		//Engine::GetMainWindow()->GetRenderDiagnostic()->print();
+		//Engine::getMainWindow()->GetRenderDiagnostic()->print();
 	}
 
-	//while (Engine::Update())
+	//while (Engine::update())
 	//{
 	//	//printf("----\n");
 	//}
 
-	Engine::Terminate();
+	Engine::terminate();
 
 }
 

@@ -25,25 +25,25 @@ public:
 
 public:
 	virtual void create(Stream* stream);
-	virtual StreamFormat GetSourceFormat() const { return StreamFormat_Mp3; }
-	virtual const WaveFormat* GetWaveFormat() const { return &m_waveFormat; }
-	virtual uint32_t GetSourceDataSize() const { return m_sourceDataSize; }
-	virtual uint32_t GetTotalUnits() const { return m_totalSamples; }
-	virtual byte_t* GetOnmemoryPCMBuffer() const { return m_onmemoryPCMBuffer; }
-	virtual uint32_t GetOnmemoryPCMBufferSize() const { return m_onmemoryPCMBufferSize; }
-	virtual uint32_t GetBytesPerSec() const { return m_streamingPCMBufferSize; }
-	virtual void GetLoopState(uint32_t* begin, uint32_t* length) const { *begin = 0; *length = 0; }
-	virtual void FillOnmemoryBuffer();
+	virtual StreamFormat getSourceFormat() const { return StreamFormat_Mp3; }
+	virtual const WaveFormat* getWaveFormat() const { return &m_waveFormat; }
+	virtual uint32_t getSourceDataSize() const { return m_sourceDataSize; }
+	virtual uint32_t getTotalUnits() const { return m_totalSamples; }
+	virtual byte_t* getOnmemoryPCMBuffer() const { return m_onmemoryPCMBuffer; }
+	virtual uint32_t getOnmemoryPCMBufferSize() const { return m_onmemoryPCMBufferSize; }
+	virtual uint32_t getBytesPerSec() const { return m_streamingPCMBufferSize; }
+	virtual void setLoopState(uint32_t* begin, uint32_t* length) const { *begin = 0; *length = 0; }
+	virtual void fillOnmemoryBuffer();
 	virtual void read(uint32_t seekPos, void* buffer, uint32_t bufferSize, uint32_t* outReadSize, uint32_t* outWriteSize);
-	virtual void Reset() { m_resetFlag = true; }
+	virtual void reset() { m_resetFlag = true; }
 
 private:
 
 	/// どのフォーマットの mp3 か調べて、データまでのオフセットやタグフィールドのサイズをメンバに格納
-	void CheckId3v();
+	void checkId3v();
 
 	/// mp3 の PCM フォーマットを調べてメンバに格納する
-	void GetPCMFormat();
+	void getPCMFormat();
 
 private:
 

@@ -22,10 +22,10 @@ namespace tr
 		ln::tr::LocalValueHavingFlags			lnref_localValueHavingFlags; \
 		virtual typeInfo*						lnref_GetThisTypeInfo() const override; \
 		static void*							lnref_bindingTypeInfo; \
-		inline void								InitializeProperties() { lnref_typeInfo.InitializeProperties(this); }
+		inline void								initializeProperties() { lnref_typeInfo.initializeProperties(this); }
 
 #define LN_TR_REFLECTION_TYPEINFO_IMPLEMENT_COMMON(typeInfo, classType, baseClassType, ...) \
-	typeInfo						classType::lnref_typeInfo(_T(#classType), ln::tr::ReflectionHelper::GetClassTypeInfo<baseClassType>(), &ln::tr::ReflectionHelper::GetLocalValueHavingFlags<classType>, &ln::tr::ReflectionHelper::SetBindingTypeInfo<classType>, &ln::tr::ReflectionHelper::GetBindingTypeInfo<classType>, {__VA_ARGS__}); \
+	typeInfo						classType::lnref_typeInfo(_T(#classType), ln::tr::ReflectionHelper::getClassTypeInfo<baseClassType>(), &ln::tr::ReflectionHelper::GetLocalValueHavingFlags<classType>, &ln::tr::ReflectionHelper::setBindingTypeInfo<classType>, &ln::tr::ReflectionHelper::getBindingTypeInfo<classType>, {__VA_ARGS__}); \
 	typeInfo*						classType::lnref_GetThisTypeInfo() const { return &lnref_typeInfo; } \
 	void*							classType::lnref_bindingTypeInfo = nullptr;
 
@@ -59,25 +59,25 @@ public:
 	virtual ~ReflectionObject();
 	void initialize() {}
 
-	void SetUserData(void* data) { m_userData = data; }
-	void* GetUserData() const { return m_userData; }
+	void setUserData(void* data) { m_userData = data; }
+	void* getUserData() const { return m_userData; }
 
 
 protected:
 	friend class PropertyInfo;
-	void RaiseReflectionEvent(const ReflectionEventBase& ev, ReflectionEventArgs* args);
-	virtual void OnPropertyChanged(PropertyChangedEventArgs* e);
+	void raiseReflectionEvent(const ReflectionEventBase& ev, ReflectionEventArgs* args);
+	virtual void onPropertyChanged(PropertyChangedEventArgs* e);
 
 	template<typename... TArgs>
-	void RaiseDelegateEvent(DelegateEvent<TArgs...>& ev, TArgs... args) { ev.raise(args...); }
+	void raiseDelegateEvent(DelegateEvent<TArgs...>& ev, TArgs... args) { ev.raise(args...); }
 
 private:
-	void SetPropertyValueInternal(const PropertyInfo* prop, const Variant& value, bool reset, PropertySetSource source);
+	void setPropertyValueInternal(const PropertyInfo* prop, const Variant& value, bool reset, PropertySetSource source);
 
 	void*	m_userData;
 
 	friend class ReflectionHelper;
-	detail::WeakRefInfo* RequestWeakRefInfo();
+	detail::WeakRefInfo* requestWeakRefInfo();
 
 	detail::WeakRefInfo*	m_weakRefInfo;
 	Mutex					m_weakRefInfoMutex;
@@ -99,18 +99,18 @@ LN_INTERNAL_ACCESS:
 /**
 	@brief
 	@details
-		監視しているオブジェクトにアクセスする場合は IsAlive() と Resolve() を併用しないでください。
+		監視しているオブジェクトにアクセスする場合は isAlive() と resolve() を併用しないでください。
 		マルチスレッドプログラムで不正アクセスの危険があります。
 		次のコードは間違いです。
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		WeakRefPtr<MyClass> weak(obj);
-		if (weak.IsAlive())
-			weak->Resolve()->Func();
+		if (weak.isAlive())
+			weak->resolve()->Func();
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		正しいコードは次の通りです。
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		WeakRefPtr<MyClass> weak(obj);
-		RefPtr<MyClass> ptr = weak.Resolve();
+		RefPtr<MyClass> ptr = weak.resolve();
 		if (ptr != nullptr)
 			ptr->Func();
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -129,7 +129,7 @@ public:
 	WeakRefPtr(T* obj)
 		: m_weakRefInfo(nullptr)
 	{
-		set(ReflectionHelper::RequestWeakRefInfo(obj));
+		set(ReflectionHelper::requestWeakRefInfo(obj));
 	}
 
 	/** コピーコンストラクタ */
@@ -146,15 +146,15 @@ public:
 	}
 
 	/** 監視しているオブジェクトが削除されておらず、使用できるかを確認します。*/
-	bool IsAlive() const
+	bool isAlive() const
 	{
 		return (m_weakRefInfo != nullptr && m_weakRefInfo->owner != nullptr);
 	}
 
 	/** 監視しているオブジェクトへの RefPtr を取得します。*/
-	RefPtr<T> Resolve() const
+	RefPtr<T> resolve() const
 	{
-		if (!IsAlive())
+		if (!isAlive())
 		{
 			return RefPtr<T>();
 		}
@@ -171,7 +171,7 @@ public:
 	/** */
 	WeakRefPtr<T>& operator =(T* obj)
 	{
-		set(ReflectionHelper::RequestWeakRefInfo(obj));
+		set(ReflectionHelper::requestWeakRefInfo(obj));
 		return *this;
 	}
 
@@ -257,7 +257,7 @@ typedef tr::ReflectionObject Object;
 
 
 template<class T, typename... TArgs>
-RefPtr<T> NewObject(TArgs&&... args)
+RefPtr<T> newObject(TArgs&&... args)
 {
 	auto ptr = RefPtr<T>(new T(), false);
 	ptr->initialize(std::forward<TArgs>(args)...);
@@ -265,7 +265,7 @@ RefPtr<T> NewObject(TArgs&&... args)
 }
 
 template<class T, typename... TArgs>
-void PlacementNewObject(void* ptr, TArgs&&... args)
+void placementNewObject(void* ptr, TArgs&&... args)
 {
 	new (ptr)T();
 	static_cast<T*>(ptr)->initialize(std::forward<TArgs>(args)...);

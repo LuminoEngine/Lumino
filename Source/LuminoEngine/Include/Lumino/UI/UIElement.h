@@ -183,16 +183,16 @@ public:
 	/** @name Properties */
 	/** @{ */
 
-	void SetPosition(const PointF& value) { tr::PropertyInfo::SetPropertyValueDirect<PointF>(this, positionId, value); }
-	const PointF& getPosition() const { return tr::PropertyInfo::GetPropertyValueDirect<PointF>(this, positionId); }
+	void setPosition(const PointF& value) { tr::PropertyInfo::setPropertyValueDirect<PointF>(this, positionId, value); }
+	const PointF& getPosition() const { return tr::PropertyInfo::getPropertyValueDirect<PointF>(this, positionId); }
 
-	void SetWidth(float value) { tr::PropertyInfo::SetPropertyValueDirect<float>(this, widthId, value); }
-	float GetWidth() const { return tr::PropertyInfo::GetPropertyValueDirect<float>(this, widthId); }
+	void SetWidth(float value) { tr::PropertyInfo::setPropertyValueDirect<float>(this, widthId, value); }
+	float getWidth() const { return tr::PropertyInfo::getPropertyValueDirect<float>(this, widthId); }
 
-	void SetHeight(float value) { tr::PropertyInfo::SetPropertyValueDirect<float>(this, heightId, value); }
-	float GetHeight() const { return tr::PropertyInfo::GetPropertyValueDirect<float>(this, heightId); }
+	void SetHeight(float value) { tr::PropertyInfo::setPropertyValueDirect<float>(this, heightId, value); }
+	float getHeight() const { return tr::PropertyInfo::getPropertyValueDirect<float>(this, heightId); }
 
-	void SetSize(const Size& value) { SetWidth(value.width); SetHeight(value.height); }
+	void setSize(const Size& value) { SetWidth(value.width); SetHeight(value.height); }
 	Size getSize() const { return Size(width, height); }
 
 	void SetMinWidth(float value) { m_minSize.width = value; }
@@ -203,21 +203,21 @@ public:
 
 	void SetMaxHeight(float value) { m_maxSize.height = value; }
 
-	void SetAnchor(AlignmentAnchor value) { tr::PropertyInfo::SetPropertyValueDirect<AlignmentAnchor>(this, anchorId, value); }
-	AlignmentAnchor GetAnchor() const { return tr::PropertyInfo::GetPropertyValueDirect<AlignmentAnchor>(this, anchorId); }
+	void SetAnchor(AlignmentAnchor value) { tr::PropertyInfo::setPropertyValueDirect<AlignmentAnchor>(this, anchorId, value); }
+	AlignmentAnchor GetAnchor() const { return tr::PropertyInfo::getPropertyValueDirect<AlignmentAnchor>(this, anchorId); }
 
-	void SetHAlignment(HAlignment value) { tr::PropertyInfo::SetPropertyValueDirect<HAlignment>(this, hAlignmentId, value); }
-	HAlignment GetHAlignment() const { return tr::PropertyInfo::GetPropertyValueDirect<HAlignment>(this, hAlignmentId); }
+	void SetHAlignment(HAlignment value) { tr::PropertyInfo::setPropertyValueDirect<HAlignment>(this, hAlignmentId, value); }
+	HAlignment GetHAlignment() const { return tr::PropertyInfo::getPropertyValueDirect<HAlignment>(this, hAlignmentId); }
 
-	void SetVAlignment(VAlignment value) { tr::PropertyInfo::SetPropertyValueDirect<VAlignment>(this, vAlignmentId, value); }
-	VAlignment GetVAlignment() const { return tr::PropertyInfo::GetPropertyValueDirect<VAlignment>(this, vAlignmentId); }
+	void SetVAlignment(VAlignment value) { tr::PropertyInfo::setPropertyValueDirect<VAlignment>(this, vAlignmentId, value); }
+	VAlignment GetVAlignment() const { return tr::PropertyInfo::getPropertyValueDirect<VAlignment>(this, vAlignmentId); }
 
 	void SetBackground(Brush* value);
 	Brush* GetBackground() const;
 
 
-	void SetOpacity(float value) { m_builtinEffectData.SetOpacity(value); }
-	float GetOpacity() const { return m_builtinEffectData.GetOpacity(); }
+	void setOpacity(float value) { m_builtinEffectData.setOpacity(value); }
+	float getOpacity() const { return m_builtinEffectData.getOpacity(); }
 
 	/** @} */
 
@@ -231,7 +231,7 @@ public:
 	/** 論理上の親要素を取得します。*/
 	UIElement* GetLogicalParent() const { return m_logicalParent; }
 
-	//void SetSize(const Size& size) { m_size = size; }
+	//void setSize(const Size& size) { m_size = size; }
 
 	void SetFocusable(bool value) { m_isFocusable = value; }
 
@@ -243,10 +243,10 @@ public:
 	bool IsHitTestVisible() const { return m_isHitTestVisible; }
 
 	/** レイアウト処理の測定パスの実行中にこの要素が計算したサイズを取得します。この値は子要素が親要素へ要求する、子要素自身の最低サイズです。*/
-	const Size& GetDesiredSize() const { return m_desiredSize; }
+	const Size& getDesiredSize() const { return m_desiredSize; }
 
 	/** この要素の最終的な描画サイズを取得します。この値は Arrange() で確定します。*/
-	const Size& GetRenderSize() const { return m_finalLocalRect.getSize(); }
+	const Size& getRenderSize() const { return m_finalLocalRect.getSize(); }
 
 	/** この要素へのフォーカスの取得を試みます。*/
 	void Focus();
@@ -258,17 +258,17 @@ public:
 	void ReleaseMouseCapture();
 
 	/** この要素内の子ビジュアル要素の数を取得します。(論理要素も含めたすべての子要素) */
-	virtual int GetVisualChildrenCount() const override;
+	virtual int getVisualChildrenCount() const override;
 
 	/** Zオーダーやアクティブ状態を考慮した順で、子ビジュアル要素を取得します。奥にある要素が先、手前にある要素が後になります。*/
-	virtual ILayoutElement* GetVisualChild(int index) const override;
+	virtual ILayoutElement* getVisualChild(int index) const override;
 
 	/** この要素が関連付けられている UILayoutView を取得します。*/
 	//UILayoutView* GetOwnerLayoutView() const { return m_ownerLayoutView; }
 
 
-	virtual void MeasureLayout(const Size& availableSize) override;
-	virtual void ArrangeLayout(const Rect& finalLocalRect) override;
+	virtual void measureLayout(const Size& availableSize) override;
+	virtual void arrangeLayout(const Rect& finalLocalRect) override;
 
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
 	void RaiseEvent(const UIEventInfo* ev, UIElement* sender, UIEventArgs* e);
@@ -285,13 +285,13 @@ public:
 	/** @{ */
 
 	void SetLayoutColumn(int index);
-	virtual int GetLayoutColumn() const override;
+	virtual int getLayoutColumn() const override;
 	void SetLayoutRow(int index);
-	virtual int GetLayoutRow() const override;
+	virtual int getLayoutRow() const override;
 	void SetLayoutColumnSpan(int span);
-	virtual int GetLayoutColumnSpan() const override;
+	virtual int getLayoutColumnSpan() const override;
 	void SetLayoutRowSpan(int span);
-	virtual int GetLayoutRowSpan() const override;
+	virtual int getLayoutRowSpan() const override;
 
 	/** @} */
 
@@ -322,7 +322,7 @@ protected:
 					この要素のサイズと、全ての子要素のサイズに基づき決定します。NaN や Inf であってはなりません。
 		@details	constraint は、ScrollViewer 等のコンテンツとなった場合は Infinity が渡されることがあります。
 	*/
-	virtual Size MeasureOverride(const Size& constraint) override;
+	virtual Size measureOverride(const Size& constraint) override;
 
 	/**
 		@brief		Visual 子要素の配置を確定し、この要素の最終サイズを返します。
@@ -333,9 +333,9 @@ protected:
 					この余白を正しく反映するためには派生クラスで padding プロパティを参照し、子要素の位置を計算します。
 
 					親要素は、各子要素の Arrange を呼び出し、適切に配置する必要があります。
-					そうでない場合、子要素はレンダリングされません。(UIElement::ArrangeOverride() は、子要素の配置は行いません)
+					そうでない場合、子要素はレンダリングされません。(UIElement::arrangeOverride() は、子要素の配置は行いません)
 	*/
-	virtual Size ArrangeOverride(const Size& finalSize) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
 
 	virtual void OnUpdateFrame();
 
@@ -345,7 +345,7 @@ protected:
 	/**
 		@brief	この要素の描画を行います。
 	*/
-	virtual void OnRender(DrawingContext* g);
+	virtual void onRender(DrawingContext* g);
 
 	virtual void OnMouseMove(UIMouseEventArgs* e);
 	virtual void OnMouseDown(UIMouseEventArgs* e);
@@ -363,13 +363,13 @@ protected:
 
 	//UIStylePropertyTable* GetLocalStyle() const { return m_localStyle; }
 
-	virtual bool OnEvent(detail::UIInternalEventType type, UIEventArgs* args);
+	virtual bool onEvent(detail::UIInternalEventType type, UIEventArgs* args);
 	virtual void OnRoutedEvent(UIEventArgs* e);
 	virtual void UpdateLayout(const Size& viewSize) override;
 	virtual detail::SpcialUIElementType GetSpcialUIElementType() const;
 
 LN_INTERNAL_ACCESS:
-	detail::UIManager* GetManager() const { return m_manager; }
+	detail::UIManager* getManager() const { return m_manager; }
 	UIContext* GetContext() const;
 	const PointF& GetPositionInternal() const { return position; }
 	void SetSizeInternal(const Size& size) { width = size.width; height = size.height; }
@@ -393,11 +393,11 @@ LN_INTERNAL_ACCESS:
 	void SetSpecialElementType(UISpecialElementType type) { m_specialElementType = type; }
 	UISpecialElementType GetSpecialElementType2() const { return m_specialElementType; }
 
-	void UpdateFrame();
-	void Render(DrawingContext* g);
+	void updateFrame();
+	void render(DrawingContext* g);
 
 protected:
-	virtual void UpdateTransformHierarchy(const Rect& parentGlobalRect) override;
+	virtual void updateTransformHierarchy(const Rect& parentGlobalRect) override;
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	virtual const HAlignment* GetPriorityContentHAlignment();
@@ -412,22 +412,22 @@ LN_PROTECTED_INTERNAL_ACCESS:
 
 private:
 	// ILayoutElement interface
-	virtual const PointF& GetLayoutPosition() const override;
-	virtual Size GetLayoutSize() const override;
-	virtual const ThicknessF& GetLayoutMargin() const override;
-	virtual const ThicknessF& GetLayoutPadding() const override;
-	virtual AlignmentAnchor GetLayoutAnchor() const override;
-	virtual HAlignment GetLayoutHAlignment() const override;
-	virtual VAlignment GetLayoutVAlignment() const override;
-	virtual void GetLayoutMinMaxInfo(Size* outMin, Size* outMax) const override;
-	virtual ILayoutElement* GetLayoutParent() const override;
-	virtual const HAlignment* GetLayoutContentHAlignment() override;
-	virtual const VAlignment* GetLayoutContentVAlignment() override;
-	virtual const Size& GetLayoutDesiredSize() const override;
-	virtual void SetLayoutDesiredSize(const Size& size) override;
-	virtual void SetLayoutFinalLocalRect(const Rect& rect) override;
-	virtual const Rect& GetLayoutFinalLocalRect() const override;
-	virtual void SetLayoutFinalGlobalRect(const Rect& rect) override;
+	virtual const PointF& getLayoutPosition() const override;
+	virtual Size getLayoutSize() const override;
+	virtual const ThicknessF& getLayoutMargin() const override;
+	virtual const ThicknessF& getLayoutPadding() const override;
+	virtual AlignmentAnchor getLayoutAnchor() const override;
+	virtual HAlignment getLayoutHAlignment() const override;
+	virtual VAlignment getLayoutVAlignment() const override;
+	virtual void getLayoutMinMaxInfo(Size* outMin, Size* outMax) const override;
+	virtual ILayoutElement* getLayoutParent() const override;
+	virtual const HAlignment* getLayoutContentHAlignment() override;
+	virtual const VAlignment* getLayoutContentVAlignment() override;
+	virtual const Size& getLayoutDesiredSize() const override;
+	virtual void setLayoutDesiredSize(const Size& size) override;
+	virtual void setLayoutFinalLocalRect(const Rect& rect) override;
+	virtual const Rect& getLayoutFinalLocalRect() const override;
+	virtual void setLayoutFinalGlobalRect(const Rect& rect) override;
 
 
 private:
@@ -445,7 +445,7 @@ private:
 	//UIStylePropertyTable*	m_localStyle;			// 内部的に使用されるスタイル。親や VisualState から取得したスタイルをマージしたもの。
 	//	m_localStyle;
 	RefPtr<detail::UIStylePropertyTableInstance>	m_localStyle;
-	Size					m_desiredSize;			// MeasureLayout() で決定されるこのコントロールの要求サイズ
+	Size					m_desiredSize;			// measureLayout() で決定されるこのコントロールの要求サイズ
 	Rect					m_finalLocalRect;		// 描画に使用する最終境界矩形 (グローバル座標系=RootFrame のローカル座標系)
 	Rect					m_finalGlobalRect;
 	String					m_elementName;				// 要素名 ("UITextBlock" など) TODO: いらないかも
@@ -457,7 +457,7 @@ private:
 	std::shared_ptr<List<RefPtr<UIElement>>>    m_visualChildren;
 
 	// Property
-	//		これらには直接値を設定しないこと。Property::SetValueDirect() を使う。
+	//		これらには直接値を設定しないこと。Property::setValueDirect() を使う。
 	//		これによって必要にアニメーションを止めたりできる。
 	//tr::Property<PointF>	m_position;
 	//tr::Property<Size>		m_size;

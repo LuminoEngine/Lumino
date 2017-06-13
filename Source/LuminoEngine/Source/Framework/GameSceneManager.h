@@ -10,22 +10,22 @@ class GameSceneManager
 	: public RefObject
 {
 public:
-	static GameSceneManager* GetInstance(GameSceneManager* priority = nullptr);
+	static GameSceneManager* getInstance(GameSceneManager* priority = nullptr);
 
 	GameSceneManager();
 	virtual ~GameSceneManager();
 	void Finalize();
 
-	void GotoScene(GameScene* scene);
-	void CallScene(GameScene* scene);
-	void ReturnScene();
-	GameScene* GetActiveScene() const { return m_activeScene; }
+	void gotoScene(GameScene* scene);
+	void callScene(GameScene* scene);
+	void returnScene();
+	GameScene* getActiveScene() const { return m_activeScene; }
 
-	void UpdateFrame();
+	void updateFrame();
 
 private:
-	void ExecuteCommands();
-	void ReleaseAndTerminateAllRunningScenes();
+	void executeCommands();
+	void releaseAndTerminateAllRunningScenes();
 
 	enum class EventType
 	{

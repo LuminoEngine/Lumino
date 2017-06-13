@@ -17,9 +17,9 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
-static Details::Renderer* GetRenderer()
+static Details::Renderer* getRenderer()
 {
-	return detail::GraphicsManager::GetInstance()->GetRenderer();
+	return detail::GraphicsManager::getInstance()->getRenderer();
 }
 
 
@@ -33,7 +33,7 @@ namespace Details
 
 //------------------------------------------------------------------------------
 Renderer::Renderer(detail::GraphicsManager* manager)
-	: m_internal(manager->GetGraphicsDevice()->GetRenderer())
+	: m_internal(manager->getGraphicsDevice()->getRenderer())
 	, m_primaryCommandList(NULL)
 	, m_currentRenderState()
 	, m_currentDepthStencilState()
@@ -42,7 +42,7 @@ Renderer::Renderer(detail::GraphicsManager* manager)
 	memset(m_currentRenderTargets, 0, sizeof(m_currentRenderTargets));
 	GraphicsResourceObject::initialize();
 
-	//if (m_manager->GetRenderingType() == GraphicsRenderingType::Deferred) {
+	//if (m_manager->getRenderingType() == GraphicsRenderingType::Deferred) {
 	m_primaryCommandList = LN_NEW RenderingCommandList(manager);
 	//}
 }
@@ -52,7 +52,7 @@ Renderer::~Renderer()
 {
 	if (m_primaryCommandList != NULL)
 	{
-		m_primaryCommandList->PostExecute();	// Present される前に解放されることの対策
+		m_primaryCommandList->postExecute();	// Present される前に解放されることの対策
 		LN_SAFE_RELEASE(m_primaryCommandList);
 	}
 
@@ -63,18 +63,18 @@ Renderer::~Renderer()
 }
 
 //------------------------------------------------------------------------------
-void Renderer::Begin()
+void Renderer::begin()
 {
-	bool isStandalone = m_manager->GetGraphicsDevice()->IsStandalone();
+	bool isStandalone = m_manager->getGraphicsDevice()->IsStandalone();
 
 	LN_ENQUEUE_RENDER_COMMAND_2(
-		Begin, m_manager,
+		begin, m_manager,
 		Driver::IRenderer*, m_internal,
 		bool, isStandalone,
 		{
 			if (isStandalone)
 			{
-				m_internal->Begin();
+				m_internal->begin();
 				m_internal->EnterRenderState();
 			}
 			else
@@ -85,19 +85,19 @@ void Renderer::Begin()
 }
 
 //------------------------------------------------------------------------------
-void Renderer::End()
+void Renderer::end()
 {
-	bool isStandalone = m_manager->GetGraphicsDevice()->IsStandalone();
+	bool isStandalone = m_manager->getGraphicsDevice()->IsStandalone();
 
 	LN_ENQUEUE_RENDER_COMMAND_2(
-		End, m_manager,
+		end, m_manager,
 		Driver::IRenderer*, m_internal,
 		bool, isStandalone,
 		{
 			if (isStandalone)
 			{
 				m_internal->LeaveRenderState();
-				m_internal->End();
+				m_internal->end();
 			}
 			else
 			{
@@ -107,85 +107,85 @@ void Renderer::End()
 }
 
 //------------------------------------------------------------------------------
-void Renderer::SetRenderState(const RenderState& state)
+void Renderer::setRenderState(const RenderState& state)
 {
 	m_currentRenderState = state;
 
 	LN_ENQUEUE_RENDER_COMMAND_2(
-		SetRenderState, m_manager,
+		setRenderState, m_manager,
 		Driver::IRenderer*, m_internal,
 		RenderState, state,
 		{
-			m_internal->SetRenderState(state);
+			m_internal->setRenderState(state);
 		});
 }
 
 //------------------------------------------------------------------------------
-const RenderState& Renderer::GetRenderState() const
+const RenderState& Renderer::getRenderState() const
 {
 	return m_currentRenderState;
 }
 
 //------------------------------------------------------------------------------
-void Renderer::SetDepthStencilState(const DepthStencilState& state)
+void Renderer::setDepthStencilState(const DepthStencilState& state)
 {
 	m_currentDepthStencilState = state;
 
 	LN_ENQUEUE_RENDER_COMMAND_2(
-		SetDepthStencilState, m_manager,
+		setDepthStencilState, m_manager,
 		Driver::IRenderer*, m_internal,
 		DepthStencilState, state,
 		{
-			m_internal->SetDepthStencilState(state);
+			m_internal->setDepthStencilState(state);
 		});
 }
 
 //------------------------------------------------------------------------------
-const DepthStencilState& Renderer::GetDepthStencilState() const
+const DepthStencilState& Renderer::getDepthStencilState() const
 {
 	return m_currentDepthStencilState;
 }
 
 //------------------------------------------------------------------------------
-void Renderer::SetRenderTarget(int index, Texture* texture)
+void Renderer::setRenderTarget(int index, Texture* texture)
 {
-	Driver::ITexture* t = (texture != NULL) ? texture->ResolveDeviceObject() : NULL;
+	Driver::ITexture* t = (texture != NULL) ? texture->resolveDeviceObject() : NULL;
 	LN_REFOBJ_SET(m_currentRenderTargets[index], texture);
 
 	LN_ENQUEUE_RENDER_COMMAND_3(
-		SetRenderTarget, m_manager,
+		setRenderTarget, m_manager,
 		Driver::IRenderer*, m_internal,
 		int, index,
 		RefPtr<Driver::ITexture>, t,
 		{
-			m_internal->SetRenderTarget(index, t);
+			m_internal->setRenderTarget(index, t);
 		});
 }
 
 //------------------------------------------------------------------------------
-Texture* Renderer::GetRenderTarget(int index) const
+Texture* Renderer::getRenderTarget(int index) const
 {
 	LN_THROW(0 <= index && index < Graphics::MaxMultiRenderTargets, ArgumentException);
 	return m_currentRenderTargets[index];
 }
 
 //------------------------------------------------------------------------------
-void Renderer::SetDepthBuffer(DepthBuffer* depthBuffer)
+void Renderer::setDepthBuffer(DepthBuffer* depthBuffer)
 {
-	Driver::ITexture* t = (depthBuffer != nullptr) ? depthBuffer->ResolveDeviceObject() : nullptr;
+	Driver::ITexture* t = (depthBuffer != nullptr) ? depthBuffer->resolveDeviceObject() : nullptr;
 	LN_REFOBJ_SET(m_currentDepthBuffer, depthBuffer);
 
 	LN_ENQUEUE_RENDER_COMMAND_2(
-		SetDepthBuffer, m_manager,
+		setDepthBuffer, m_manager,
 		Driver::IRenderer*, m_internal,
 		RefPtr<Driver::ITexture>, t,
 		{
-			m_internal->SetDepthBuffer(t);
+			m_internal->setDepthBuffer(t);
 		});
 }
 
 //------------------------------------------------------------------------------
-DepthBuffer* Renderer::GetDepthBuffer() const
+DepthBuffer* Renderer::getDepthBuffer() const
 {
 	return m_currentDepthBuffer;
 }
@@ -216,7 +216,7 @@ DepthBuffer* Renderer::GetDepthBuffer() const
 ////------------------------------------------------------------------------------
 //void Renderer::SetVertexBuffer(VertexBuffer* vertexBuffer)
 //{
-//	Driver::IVertexBuffer* t = (vertexBuffer != NULL) ? Helper::GetDeviceObject(vertexBuffer) : NULL;
+//	Driver::IVertexBuffer* t = (vertexBuffer != NULL) ? Helper::getDeviceObject(vertexBuffer) : NULL;
 //	//LN_CALL_RENDERER_COMMAND(SetVertexBuffer, SetVertexBufferCommand, t);
 //
 //	LN_ENQUEUE_RENDER_COMMAND_2(
@@ -233,7 +233,7 @@ DepthBuffer* Renderer::GetDepthBuffer() const
 ////------------------------------------------------------------------------------
 //void Renderer::SetIndexBuffer(IndexBuffer* indexBuffer)
 //{
-//	Driver::IIndexBuffer* t = (indexBuffer != NULL) ? Helper::GetDeviceObject(indexBuffer) : NULL;
+//	Driver::IIndexBuffer* t = (indexBuffer != NULL) ? Helper::getDeviceObject(indexBuffer) : NULL;
 //	//LN_CALL_RENDERER_COMMAND(SetIndexBuffer, SetIndexBufferCommand, t);
 //
 //	LN_ENQUEUE_RENDER_COMMAND_2(
@@ -246,16 +246,16 @@ DepthBuffer* Renderer::GetDepthBuffer() const
 //}
 
 //------------------------------------------------------------------------------
-void Renderer::SetShaderPass(ShaderPass* pass)
+void Renderer::setShaderPass(ShaderPass* pass)
 {
 	if (pass != nullptr)
-		pass->Apply();
+		pass->apply();
 }
 
 //------------------------------------------------------------------------------
 void Renderer::clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
-	VerifyFrameBuffers();
+	verifyFrameBuffers();
 
 	LN_ENQUEUE_RENDER_COMMAND_5(
 		clear, m_manager,
@@ -272,14 +272,14 @@ void Renderer::clear(ClearFlags flags, const Color& color, float z, uint8_t sten
 }
 
 //------------------------------------------------------------------------------
-void Renderer::DrawPrimitive(VertexDeclaration* vertexDeclaration, VertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount)
+void Renderer::drawPrimitive(VertexDeclaration* vertexDeclaration, VertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount)
 {
-	VerifyFrameBuffers();
+	verifyFrameBuffers();
 
-	Driver::IVertexDeclaration* decl = (vertexDeclaration != nullptr) ? vertexDeclaration->GetDeviceObject() : nullptr;
-	Driver::IVertexBuffer* vb = (vertexBuffer != nullptr) ? vertexBuffer->ResolveRHIObject() : nullptr;
+	Driver::IVertexDeclaration* decl = (vertexDeclaration != nullptr) ? vertexDeclaration->getDeviceObject() : nullptr;
+	Driver::IVertexBuffer* vb = (vertexBuffer != nullptr) ? vertexBuffer->resolveRHIObject() : nullptr;
 	LN_ENQUEUE_RENDER_COMMAND_6(
-		DrawPrimitive, m_manager,
+		drawPrimitive, m_manager,
 		Driver::IRenderer*, m_internal,
 		Driver::IVertexDeclaration*, decl,
 		Driver::IVertexBuffer*, vb,
@@ -289,22 +289,22 @@ void Renderer::DrawPrimitive(VertexDeclaration* vertexDeclaration, VertexBuffer*
 		{
 			m_internal->SetVertexDeclaration(decl);
 			m_internal->SetVertexBuffer(0, vb);
-			m_internal->DrawPrimitive(primitive, startVertex, primitiveCount);
+			m_internal->drawPrimitive(primitive, startVertex, primitiveCount);
 		});
 
-	//LN_CALL_RENDERER_COMMAND(DrawPrimitive, DrawPrimitiveCommand, primitive, startVertex, primitiveCount);
+	//LN_CALL_RENDERER_COMMAND(drawPrimitive, DrawPrimitiveCommand, primitive, startVertex, primitiveCount);
 }
 
 //------------------------------------------------------------------------------
-void Renderer::DrawPrimitiveIndexed(VertexDeclaration* vertexDeclaration, VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount)
+void Renderer::drawPrimitiveIndexed(VertexDeclaration* vertexDeclaration, VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount)
 {
-	VerifyFrameBuffers();
+	verifyFrameBuffers();
 
-	Driver::IVertexDeclaration* decl = (vertexDeclaration != nullptr) ? vertexDeclaration->GetDeviceObject() : nullptr;
-	Driver::IVertexBuffer* vb = (vertexBuffer != nullptr) ? vertexBuffer->ResolveRHIObject() : nullptr;
-	Driver::IIndexBuffer* ib = (indexBuffer != nullptr) ? indexBuffer->ResolveRHIObject() : nullptr;
+	Driver::IVertexDeclaration* decl = (vertexDeclaration != nullptr) ? vertexDeclaration->getDeviceObject() : nullptr;
+	Driver::IVertexBuffer* vb = (vertexBuffer != nullptr) ? vertexBuffer->resolveRHIObject() : nullptr;
+	Driver::IIndexBuffer* ib = (indexBuffer != nullptr) ? indexBuffer->resolveRHIObject() : nullptr;
 	LN_ENQUEUE_RENDER_COMMAND_7(
-		DrawPrimitiveIndexed, m_manager,
+		drawPrimitiveIndexed, m_manager,
 		Driver::IRenderer*, m_internal,
 		Driver::IVertexDeclaration*, decl,
 		Driver::IVertexBuffer*, vb,
@@ -316,32 +316,32 @@ void Renderer::DrawPrimitiveIndexed(VertexDeclaration* vertexDeclaration, Vertex
 			m_internal->SetVertexDeclaration(decl);
 			m_internal->SetVertexBuffer(0, vb);
 			m_internal->SetIndexBuffer(ib);
-			m_internal->DrawPrimitiveIndexed(primitive, startIndex, primitiveCount);
+			m_internal->drawPrimitiveIndexed(primitive, startIndex, primitiveCount);
 		});
-	//LN_CALL_RENDERER_COMMAND(DrawPrimitiveIndexed, DrawPrimitiveIndexedCommand, primitive, startIndex, primitiveCount);
+	//LN_CALL_RENDERER_COMMAND(drawPrimitiveIndexed, DrawPrimitiveIndexedCommand, primitive, startIndex, primitiveCount);
 }
 
 //------------------------------------------------------------------------------
-void Renderer::FlushState(const detail::ContextState& state)
+void Renderer::flushState(const detail::ContextState& state)
 {
 	// TODO: 1つのコマンドで一括設定したい
 	if (state.modifiedFlags.TestFlag(detail::ContextStateFlags::CommonState))
 	{
-		SetRenderState(state.renderState);
-		SetDepthStencilState(state.depthStencilState);
+		setRenderState(state.renderState);
+		setDepthStencilState(state.depthStencilState);
 		for (int i = 0; i < Graphics::MaxMultiRenderTargets; ++i) {
-			SetRenderTarget(i, state.GetRenderTarget(i));
+			setRenderTarget(i, state.getRenderTarget(i));
 		}
-		SetDepthBuffer(state.depthBuffer);
+		setDepthBuffer(state.depthBuffer);
 		//SetViewport(state.viewport);
 		//SetVertexBuffer(state.vertexBuffer);
 		//SetIndexBuffer(state.indexBuffer);
 	}
 	if (state.modifiedFlags.TestFlag(detail::ContextStateFlags::ShaderPass))
 	{
-		if (state.GetShaderPass() != nullptr)
+		if (state.getShaderPass() != nullptr)
 		{
-			state.GetShaderPass()->Apply();
+			state.getShaderPass()->apply();
 		}
 	}
 }
@@ -353,23 +353,23 @@ void Renderer::flush()
 }
 
 //------------------------------------------------------------------------------
-void Renderer::OnChangeDevice(Driver::IGraphicsDevice* device)
+void Renderer::onChangeDevice(Driver::IGraphicsDevice* device)
 {
 	if (device == NULL) {
 	}
 	else {
-		m_internal = device->GetRenderer();
+		m_internal = device->getRenderer();
 	}
 }
 
 //------------------------------------------------------------------------------
-void Renderer::PresentCommandList(SwapChain* swapChain)
+void Renderer::presentCommandList(SwapChain* swapChain)
 {
 
-	m_primaryCommandList->AddCommand<PresentCommand>(swapChain);
+	m_primaryCommandList->addCommand<PresentCommand>(swapChain);
 	
-	auto* renderingThread = m_manager->GetRenderingThread();
-	renderingThread->PushRenderingCommand(m_primaryCommandList);
+	auto* renderingThread = m_manager->getRenderingThread();
+	renderingThread->pushRenderingCommand(m_primaryCommandList);
 
 	// swapChain の持っているコマンドリストとスワップ。それをプライマリにする。
 	RenderingCommandList* t = swapChain->m_commandList;
@@ -378,7 +378,7 @@ void Renderer::PresentCommandList(SwapChain* swapChain)
 }
 
 //------------------------------------------------------------------------------
-void Renderer::VerifyFrameBuffers()
+void Renderer::verifyFrameBuffers()
 {
 	// レンダリングターゲットと深度バッファのサイズが一致している必要がある。
 	if (m_currentDepthBuffer != nullptr)

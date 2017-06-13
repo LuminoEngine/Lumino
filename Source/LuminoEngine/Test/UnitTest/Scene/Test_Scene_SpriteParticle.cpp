@@ -126,7 +126,7 @@ TEST_F(Test_Scene_SpriteParticle, MovementDirection)
 	for (int i = 0; i < 60; ++i) { Engine::UpdateFrame(); }
 
 	ASSERT_TRUE(TestEnv::EqualsScreenShot(LN_LOCALFILE("TestData/Test_Scene_SpriteParticle.MovementDirection.png")));
-	//TestEnv::SaveScreenShot(LN_LOCALFILE("TestData/Test_Scene_SpriteParticle.MovementDirection.png"));
+	//TestEnv::saveScreenShot(LN_LOCALFILE("TestData/Test_Scene_SpriteParticle.MovementDirection.png"));
 }
 
 //------------------------------------------------------------------------------

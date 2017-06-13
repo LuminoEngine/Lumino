@@ -62,10 +62,10 @@ void Mp3Decoder::create(Stream* stream)
 	m_dataOffset = 0;
 
 	// ID3v 確認
-	CheckId3v();
+	checkId3v();
 		
 	// PCM フォーマット取得
-	GetPCMFormat();
+	getPCMFormat();
 
 	// mp3 を PCM にデコードした時の wave フォーマットを取得
 	MPEGLAYER3WAVEFORMAT* mp3_format = &m_acmMP3WaveFormat;
@@ -80,7 +80,7 @@ void Mp3Decoder::create(Stream* stream)
 	LN_THROW(mmr == 0, InvalidOperationException, _T("MMRESULT:%u"), mmr);
 
 	// WAVEFORMATEX → Audio::WaveFormat
-	AudioUtils::ConvertWAVEFORMATEXToLNWaveFormat(wav_fmt_ex, &m_waveFormat);
+	AudioUtils::convertWAVEFORMATEXToLNWaveFormat(wav_fmt_ex, &m_waveFormat);
 
 	// 全体を変換した時の PCM サイズを m_onmemoryPCMBufferSize に格納
     DWORD pcm_size = 0;
@@ -118,7 +118,7 @@ void Mp3Decoder::create(Stream* stream)
 }
 
 //------------------------------------------------------------------------------
-void Mp3Decoder::FillOnmemoryBuffer()
+void Mp3Decoder::fillOnmemoryBuffer()
 {
 	MutexScopedLock lock(m_mutex);
 
@@ -228,7 +228,7 @@ void Mp3Decoder::read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uint
 //----------------------------------------------------------------------
 //
 //----------------------------------------------------------------------
-void Mp3Decoder::CheckId3v()
+void Mp3Decoder::checkId3v()
 {
 	// とりあえず最初に、ファイルサイズを mp3 データ全体のサイズとする
 	m_sourceDataSize = (uint32_t)m_stream->getLength();
@@ -281,7 +281,7 @@ void Mp3Decoder::CheckId3v()
 //----------------------------------------------------------------------
 //
 //----------------------------------------------------------------------
-void Mp3Decoder::GetPCMFormat()
+void Mp3Decoder::getPCMFormat()
 {
 	BYTE  index;
 	BYTE  version;

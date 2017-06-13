@@ -57,7 +57,7 @@ void UIRenderElement::LayoutAndRender(DrawingContext* context, const Size& paren
 	detail::LayoutHelper::AdjustHorizontalAlignment(areaSize, desiredSize, Math::isNaN(m_width), m_hAlignment, &localRect);
 	detail::LayoutHelper::AdjustVerticalAlignment(areaSize, desiredSize, Math::isNaN(m_height), m_vAlignment, &localRect);
 
-	context->SetBrush(m_brush);
+	context->setBrush(m_brush);
 	context->DrawBoxBackground(localRect, CornerRadius());
 }
 
@@ -72,7 +72,7 @@ UIStylePropertyTable::UIStylePropertyTable()
 {
 	// 初期状態を ByInherit にしておく。
 	// こうすることで、MergeActiveStylePropertyTables() で 有効な VisualStyle が1つも無いときに各プロパティがデフォルト値に戻るようにする。
-	//background.SetValueSource(tr::PropertySetSource::ByInherit);
+	//background.setValueSource(tr::PropertySetSource::ByInherit);
 }
 
 //------------------------------------------------------------------------------
@@ -160,13 +160,13 @@ detail::InvalidateFlags UIStylePropertyTableInstance::Merge(const UIStylePropert
 	{
 		bool changed = false;
 		changed |= background.inherit(source->background, sourceType);
-		changed |= borderThickness.Inherit(source->borderThickness);
-		changed |= cornerRadius.Inherit(source->cornerRadius);
-		changed |= leftBorderColor.Inherit(source->leftBorderColor);
-		changed |= topBorderColor.Inherit(source->topBorderColor);
-		changed |= rightBorderColor.Inherit(source->rightBorderColor);
-		changed |= bottomBorderColor.Inherit(source->bottomBorderColor);
-		changed |= borderDirection.Inherit(source->borderDirection);
+		changed |= borderThickness.inherit(source->borderThickness);
+		changed |= cornerRadius.inherit(source->cornerRadius);
+		changed |= leftBorderColor.inherit(source->leftBorderColor);
+		changed |= topBorderColor.inherit(source->topBorderColor);
+		changed |= rightBorderColor.inherit(source->rightBorderColor);
+		changed |= bottomBorderColor.inherit(source->bottomBorderColor);
+		changed |= borderDirection.inherit(source->borderDirection);
 		if (changed) flags |= detail::InvalidateFlags::Rendering;
 	}
 
@@ -194,7 +194,7 @@ detail::InvalidateFlags UIStylePropertyTableInstance::Merge(const UIStylePropert
 }
 
 //------------------------------------------------------------------------------
-void UIStylePropertyTableInstance::Apply(UIElement* targetElement, bool useTransitionAnimation)
+void UIStylePropertyTableInstance::apply(UIElement* targetElement, bool useTransitionAnimation)
 {
 	if (width.hasValue())
 		targetElement->SetWidth(width);
@@ -217,19 +217,19 @@ void UIStylePropertyTableInstance::Apply(UIElement* targetElement, bool useTrans
 //{
 //	if (!useTransitionAnimation || setter.time == 0.0)
 //	{
-//		tr::PropertyInfo::SetPropertyValue(targetElement, setter.m_targetProperty, setter.value);
+//		tr::PropertyInfo::setPropertyValue(targetElement, setter.m_targetProperty, setter.value);
 //	}
 //	else
 //	{
 //		// アニメーション
 //		if (setter.value.GetType() == tr::VariantType::Float)
 //		{
-//			float now = tr::PropertyInfo::GetPropertyValueDirect<float>(targetElement, setter.m_targetProperty);
-//			float target = tr::Variant::Cast<float>(setter.value);
+//			float now = tr::PropertyInfo::getPropertyValueDirect<float>(targetElement, setter.m_targetProperty);
+//			float target = tr::Variant::cast<float>(setter.value);
 //
 //			auto anim = ValueEasingCurve<float>::create(target, setter.time, setter.easingMode);
-//			AnimationClock* ac = targetElement->GetManager()->GetAnimationManager()->StartPropertyAnimation(targetElement);
-//			ac->AddAnimationCurve(anim.Get(), targetElement, static_cast<const tr::TypedPropertyInfo<float>*>(setter.m_targetProperty), now);
+//			AnimationClock* ac = targetElement->getManager()->getAnimationManager()->StartPropertyAnimation(targetElement);
+//			ac->addAnimationCurve(anim.Get(), targetElement, static_cast<const tr::TypedPropertyInfo<float>*>(setter.m_targetProperty), now);
 //		}
 //		else
 //		{
@@ -248,7 +248,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIStyle, Object);
 //------------------------------------------------------------------------------
 UIStylePtr UIStyle::create()
 {
-	return NewObject<UIStyle>();//UIStylePtr::MakeRef();
+	return newObject<UIStyle>();//UIStylePtr::MakeRef();
 }
 
 //------------------------------------------------------------------------------
@@ -420,14 +420,14 @@ detail::InvalidateFlags UIStyle::MergeActiveStylePropertyTables(detail::UIStyleP
 //}
 
 //------------------------------------------------------------------------------
-//void UIStyle::Apply(UIElement* targetElement)
+//void UIStyle::apply(UIElement* targetElement)
 //{
 //	LN_ASSERT(targetElement != nullptr);
 //
 //	RefPtr<UIStylePropertyTable> table;
 //	if (m_propertyTableMap.TryGetValue(targetElement->GetCurrentVisualStateName(), &table))
 //	{
-//		table->Apply(targetElement);
+//		table->apply(targetElement);
 //	}
 //}
 
@@ -467,7 +467,7 @@ UIStyle* UIStyleTable::GetStyle(const StringRef& typeName)
 	RefPtr<UIStyle>* s = m_table.find(key);
 	if (s == nullptr)
 	{
-		auto s2 = NewObject<UIStyle>();
+		auto s2 = newObject<UIStyle>();
 		m_table.add(key, s2);
 		return s2;
 	}
@@ -486,7 +486,7 @@ UIStyle* UIStyleTable::GetSubControlStyle(const StringRef& subControlOwnerName, 
 	RefPtr<UIStyle>* s = m_subControlStyleTable.find(key);
 	if (s == nullptr)
 	{
-		auto s2 = NewObject<UIStyle>();
+		auto s2 = newObject<UIStyle>();
 		m_subControlStyleTable.add(key, s2);
 		return s2;
 	}
@@ -507,16 +507,16 @@ UIStyle* UIStyleTable::FindStyle(const tr::TypeInfo* targetType/*, const StringR
 {
 	if (LN_CHECK_ARG(targetType != nullptr)) return nullptr;
 
-	StyleKey key = targetType->GetName().getHashCode();// +subControlName.GetHashCode();
+	StyleKey key = targetType->getName().getHashCode();// +subControlName.GetHashCode();
 	RefPtr<UIStyle>* s = m_table.find(key);
 	if (s != nullptr)
 	{
 		return s->get();
 	}
-	else if (targetType->GetBaseClass() != nullptr)
+	else if (targetType->getBaseClass() != nullptr)
 	{
 		// ベースクラスで再帰検索
-		return FindStyle(targetType->GetBaseClass()/*, subControlName*/);
+		return FindStyle(targetType->getBaseClass()/*, subControlName*/);
 	}
 	return nullptr;
 }
@@ -586,7 +586,7 @@ static const void InitColors()
 }
 
 //------------------------------------------------------------------------------
-const Color& UIColors::GetColor(UIColorIndex index, int depth)
+const Color& UIColors::getColor(UIColorIndex index, int depth)
 {
 	if (LN_CHECK_RANGE(depth, 0, UIColors::MaxDepth)) return Color::Black;
 	InitColors();
@@ -594,7 +594,7 @@ const Color& UIColors::GetColor(UIColorIndex index, int depth)
 }
 
 //------------------------------------------------------------------------------
-SolidColorBrush* UIColors::GetBrush(UIColorIndex index, int depth)
+SolidColorBrush* UIColors::getBrush(UIColorIndex index, int depth)
 {
 	if (LN_CHECK_RANGE(depth, 0, UIColors::MaxDepth)) return nullptr;
 	InitColors();

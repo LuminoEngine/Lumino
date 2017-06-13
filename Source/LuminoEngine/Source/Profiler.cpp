@@ -30,16 +30,16 @@ Profiler::Profiler()
 	, m_commitMutex()
 	, m_enabled(false)
 {
-	Group_MainThread = RegisterGroup(_T("Main"));
-	Group_RenderThread = RegisterGroup(_T("Rendering"));
-	Section_MainThread_Update = RegisterSection(Group_MainThread, _T("Update"));
-	Section_MainThread_PrepareRendering = RegisterSection(Group_MainThread, _T("Prepare rendering"));
-	Section_MainThread_GUILayput = RegisterSection(Group_MainThread, _T("GUI layput"));
-	Section_RenderThread_CommandExecute = RegisterSection(Group_RenderThread, _T("Execute commands"));
+	Group_MainThread = registerGroup(_T("Main"));
+	Group_RenderThread = registerGroup(_T("Rendering"));
+	Section_MainThread_Update = registerSection(Group_MainThread, _T("Update"));
+	Section_MainThread_PrepareRendering = registerSection(Group_MainThread, _T("Prepare rendering"));
+	Section_MainThread_GUILayput = registerSection(Group_MainThread, _T("GUI layput"));
+	Section_RenderThread_CommandExecute = registerSection(Group_RenderThread, _T("Execute commands"));
 }
 
 //------------------------------------------------------------------------------
-int Profiler::RegisterGroup(const TCHAR* name)
+int Profiler::registerGroup(const TCHAR* name)
 {
 	std::shared_ptr<Group> group(LN_NEW Group());
 	group->Name = name;
@@ -53,7 +53,7 @@ int Profiler::RegisterGroup(const TCHAR* name)
 }
 
 //------------------------------------------------------------------------------
-int Profiler::RegisterSection(int parentGroupIndex, const TCHAR* name)
+int Profiler::registerSection(int parentGroupIndex, const TCHAR* name)
 {
 	std::shared_ptr<Section> section(LN_NEW Section());
 	section->Name;
@@ -67,13 +67,13 @@ int Profiler::RegisterSection(int parentGroupIndex, const TCHAR* name)
 }
 
 //------------------------------------------------------------------------------
-void Profiler::SetBaseFrameRate(int group, float baseFrameRate)
+void Profiler::setBaseFrameRate(int group, float baseFrameRate)
 {
 	m_groups[group]->LimitElapsedTime = (1.0f / baseFrameRate) * 1000 * 1000 * 1000;	// ns 単位
 }
 
 //------------------------------------------------------------------------------
-void Profiler::StartSection(int groupIndex, int sectionIndex)
+void Profiler::startSection(int groupIndex, int sectionIndex)
 {
 	if (!m_enabled) { return; }
 	m_groups[groupIndex]->Timer.start();
@@ -82,7 +82,7 @@ void Profiler::StartSection(int groupIndex, int sectionIndex)
 }
 
 //------------------------------------------------------------------------------
-void Profiler::EndSection(int groupIndex, int sectionIndex)
+void Profiler::endSection(int groupIndex, int sectionIndex)
 {
 	if (!m_enabled) { return; }
 	//TODO:
@@ -90,7 +90,7 @@ void Profiler::EndSection(int groupIndex, int sectionIndex)
 }
 
 //------------------------------------------------------------------------------
-void Profiler::Commit()
+void Profiler::commit()
 {
 	MutexScopedLock lock(m_commitMutex);
 

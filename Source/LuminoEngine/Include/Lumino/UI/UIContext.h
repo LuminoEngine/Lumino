@@ -30,7 +30,7 @@ LN_INTERNAL_ACCESS:
 	void InjectElapsedTime(float elapsedTime);
 	//void AddElement(UIElement* element) { m_allElementList.Add(element); }
 	//void RemoveElement(UIElement* element) { m_allElementList.Remove(element); }
-	detail::UIManager* GetManager() { return m_manager; }
+	detail::UIManager* getManager() { return m_manager; }
 
 private:
 

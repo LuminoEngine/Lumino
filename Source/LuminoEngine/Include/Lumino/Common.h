@@ -139,7 +139,7 @@ enum class FrameUpdateMode
 	/**
 		@brief		可変フレームレート (GameTime)
 		@details	ランタイムエンジンが扱う1フレームの経過時間が、実際の経過時間となります。
-					ただし、アプリケーションが非アクティブとなっている間や、Engine::ResetFrameDelay() で遅延をリセットした分は含まれません。
+					ただし、アプリケーションが非アクティブとなっている間や、Engine::resetFrameDelay() で遅延をリセットした分は含まれません。
 					つまり、実際にゲームが動作している時間のみを対象とした可変フレームレートモードです。
 	*/
 	VariableOnGameTime,
@@ -147,7 +147,7 @@ enum class FrameUpdateMode
 	/**
 		@brief		可変フレームレート (RealTime)
 		@details	ランタイムエンジンが扱う1フレームの経過時間が、実際の経過時間となります。
-					この経過時間は Engine::ResetFrameDelay() などの特殊な時間を考慮しない、現実の経過時間です。
+					この経過時間は Engine::resetFrameDelay() などの特殊な時間を考慮しない、現実の経過時間です。
 	*/
 	VariableOnRealTime,
 };

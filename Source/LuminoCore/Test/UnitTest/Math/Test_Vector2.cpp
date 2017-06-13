@@ -29,22 +29,22 @@ TEST_F(Test_Vector2, Basic)
 		Vector2 v1(1, 2);
 		ASSERT_FLOAT_EQ(2.236068f, v1.getLength());
 	}
-	// this->GetLengthSquared()
+	// this->getLengthSquared()
 	{
 		Vector2 v1(1, 2);
-		ASSERT_FLOAT_EQ(5, v1.GetLengthSquared());
+		ASSERT_FLOAT_EQ(5, v1.getLengthSquared());
 	}
 	// this->Normaize()
 	{
 		Vector2 v1(1, 2);
-		v1.Normalize();
+		v1.normalize();
 		ASSERT_VEC2_NEAR(0.447214, 0.894427, v1);
 	}
-	// this->TransformCoord()
+	// this->transformCoord()
 	{
 		Vector2 v1(1, 2);
-		Matrix m = Matrix::MakeRotationYawPitchRoll(1, 2, 3);
-		v1.TransformCoord(m);
+		Matrix m = Matrix::makeRotationYawPitchRoll(1, 2, 3);
+		v1.transformCoord(m);
 		ASSERT_VEC2_NEAR(-2.094393, 0.765238, v1);
 	}
 	// this->IsNaNOrInf
@@ -58,32 +58,32 @@ TEST_F(Test_Vector2, Basic)
 
 	// Vector2::Normaize()
 	{
-		Vector2 v1 = Vector2::Normalize(Vector2(1, 2));
+		Vector2 v1 = Vector2::normalize(Vector2(1, 2));
 		ASSERT_VEC2_NEAR(0.447214, 0.894427, v1);
 	}
-	// Vector2::Dot()
+	// Vector2::dot()
 	{
-		float v1 = Vector2::Dot(Vector2(1, 2), Vector2(3, 4));
+		float v1 = Vector2::dot(Vector2(1, 2), Vector2(3, 4));
 		EXPECT_NEAR(11.0, v1, LN_FLOAT_THRESHOLD);
 	}
-	// Vector2::Min / Max
+	// Vector2::min / max
 	{
-		Vector2 v1 = Vector2::Min(Vector2(1, 3), Vector2(4, 2));
+		Vector2 v1 = Vector2::min(Vector2(1, 3), Vector2(4, 2));
 		ASSERT_VEC2_NEAR(1, 2, v1);
 
-		Vector2 v2 = Vector2::Max(Vector2(1, 3), Vector2(4, 2));
+		Vector2 v2 = Vector2::max(Vector2(1, 3), Vector2(4, 2));
 		ASSERT_VEC2_NEAR(4, 3, v2);
 	}
-	// Vector2::Transform()
+	// Vector2::transform()
 	{
-		Matrix m = Matrix::MakeRotationYawPitchRoll(1, 2, 3);
-		Vector4 v1 = Vector2::Transform(Vector2(1, 2), m);
+		Matrix m = Matrix::makeRotationYawPitchRoll(1, 2, 3);
+		Vector4 v1 = Vector2::transform(Vector2(1, 2), m);
 		ASSERT_VEC4_NEAR(-2.094393, 0.765238, 0.167121, 1.000000, v1);
 	}
-	// Vector2::TransformCoord()
+	// Vector2::transformCoord()
 	{
-		Matrix m = Matrix::MakeRotationYawPitchRoll(1, 2, 3);
-		Vector2 v1 = Vector2::TransformCoord(Vector2(1, 2), m);
+		Matrix m = Matrix::makeRotationYawPitchRoll(1, 2, 3);
+		Vector2 v1 = Vector2::transformCoord(Vector2(1, 2), m);
 		ASSERT_VEC2_NEAR(-2.094393, 0.765238, v1);
 	}
 	// Vector2::Lerp()

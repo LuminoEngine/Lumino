@@ -28,7 +28,7 @@ void ShapesRendererCommandList::AddDrawBoxBackground(const Rect& rect, const Cor
 		// [5]
 		cornerRadius.topLeft, cornerRadius.topRight, cornerRadius.bottomLeft, cornerRadius.bottomRight,
 	};
-	AllocData(sizeof(cmd), cmd);
+	allocData(sizeof(cmd), cmd);
 }
 
 //------------------------------------------------------------------------------
@@ -52,7 +52,7 @@ void ShapesRendererCommandList::AddDrawBoxBorder(
 		shadowColor.r, shadowColor.g, shadowColor.b, shadowColor.a,
 		shadowBlur, shadowWidth, (shadowInset) ? 1.0f : 0.0f, (borderInset) ? 1.0f : 0.0f,
 	};
-	AllocData(sizeof(cmd), cmd);
+	allocData(sizeof(cmd), cmd);
 }
 
 //------------------------------------------------------------------------------s
@@ -74,7 +74,7 @@ void ShapesRendererCommandList::AddDrawBoxBorder2(const Rect& rect, const Thickn
 		cornerRadius.topLeft, cornerRadius.topRight, cornerRadius.bottomLeft, cornerRadius.bottomRight,
 		(borderInset) ? 1.0f : 0.0f,
 	};
-	AllocData(sizeof(cmd), cmd);
+	allocData(sizeof(cmd), cmd);
 }
 
 //------------------------------------------------------------------------------
@@ -92,7 +92,7 @@ void ShapesRendererCommandList::AddDrawBoxShadow(const Rect& rect, const CornerR
 		// [13]
 		blur, width, (inset) ? 1.0f : 0.0f
 	};
-	AllocData(sizeof(cmd), cmd);
+	allocData(sizeof(cmd), cmd);
 }
 
 //==============================================================================
@@ -143,8 +143,8 @@ void ShapesRendererCore::RequestBuffers(int vertexCount, int indexCount, Vertex*
 	////assert(vb != nullptr);
 	////assert(ib != nullptr);
 	////*outBeginVertexIndex = m_vertexCache.GetCount();
-	////*vb = m_vertexCache.Request(vertexCount);
-	////*ib = m_indexCache.Request(indexCount);
+	////*vb = m_vertexCache.request(vertexCount);
+	////*ib = m_indexCache.request(indexCount);
 }
 
 //------------------------------------------------------------------------------
@@ -184,7 +184,7 @@ void ShapesRendererCore::RenderCommandList(ShapesRendererCommandList* commandLis
 	//	uint16_t beginVertexIndex;
 	//	RequestBuffers(
 	//		cache->GetVertexCount(dataList[i].cacheGlyphInfoHandle),
-	//		cache->GetIndexCount(dataList[i].cacheGlyphInfoHandle),
+	//		cache->getIndexCount(dataList[i].cacheGlyphInfoHandle),
 	//		&vb, &ib, &beginVertexIndex);
 	//	cache->GenerateMesh(
 	//		dataList[i].cacheGlyphInfoHandle, Vector3(dataList[i].origin.x, dataList[i].origin.y, 0), dataList[i].transform,
@@ -193,30 +193,30 @@ void ShapesRendererCore::RenderCommandList(ShapesRendererCommandList* commandLis
 
 	// TODO: このへん PrimitiveRenderFeature と同じ。共通にできないか？
 	{
-		Driver::IRenderer* renderer = m_manager->GetGraphicsDevice()->GetRenderer();
+		Driver::IRenderer* renderer = m_manager->getGraphicsDevice()->getRenderer();
 
 		// サイズが足りなければ再作成
-		auto* device = m_manager->GetGraphicsDevice();
-		if (m_vertexBuffer == nullptr || m_vertexBuffer->getByteCount() < m_vertexCache.GetBufferUsedByteCount())
+		auto* device = m_manager->getGraphicsDevice();
+		if (m_vertexBuffer == nullptr || m_vertexBuffer->getByteCount() < m_vertexCache.getBufferUsedByteCount())
 		{
 			LN_SAFE_RELEASE(m_vertexBuffer);
-			m_vertexBuffer = device->CreateVertexBuffer(m_vertexCache.GetBufferUsedByteCount(), nullptr, ResourceUsage::Dynamic);
+			m_vertexBuffer = device->CreateVertexBuffer(m_vertexCache.getBufferUsedByteCount(), nullptr, ResourceUsage::Dynamic);
 		}
-		if (m_indexBuffer == nullptr || m_indexBuffer->getByteCount() < m_indexCache.GetBufferUsedByteCount())
+		if (m_indexBuffer == nullptr || m_indexBuffer->getByteCount() < m_indexCache.getBufferUsedByteCount())
 		{
 			LN_SAFE_RELEASE(m_indexBuffer);
-			m_indexBuffer = device->CreateIndexBuffer(m_indexCache.GetBufferUsedByteCount(), nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
+			m_indexBuffer = device->CreateIndexBuffer(m_indexCache.getBufferUsedByteCount(), nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
 		}
 
 		// 描画する
-		m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
-		m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
+		m_vertexBuffer->setSubData(0, m_vertexCache.getBuffer(), m_vertexCache.getBufferUsedByteCount());
+		m_indexBuffer->setSubData(0, m_indexCache.getBuffer(), m_indexCache.getBufferUsedByteCount());
 
 		{
-			renderer->SetVertexDeclaration(m_manager->GetDefaultVertexDeclaration()->GetDeviceObject());
+			renderer->SetVertexDeclaration(m_manager->getDefaultVertexDeclaration()->getDeviceObject());
 			renderer->SetVertexBuffer(0, m_vertexBuffer);
 			renderer->SetIndexBuffer(m_indexBuffer);
-			renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.getCount() / 3);
+			renderer->drawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.getCount() / 3);
 		}
 	}
 
@@ -229,10 +229,10 @@ void ShapesRendererCore::RenderCommandList(ShapesRendererCommandList* commandLis
 }
 
 //------------------------------------------------------------------------------
-void ShapesRendererCore::ReleaseCommandList(ShapesRendererCommandList* commandList)
+void ShapesRendererCore::releaseCommandList(ShapesRendererCommandList* commandList)
 {
 	commandList->clear();
-	m_manager->GetShapesRendererCommandListCache()->ReleaseCommandList(commandList);
+	m_manager->getShapesRendererCommandListCache()->releaseCommandList(commandList);
 }
 
 //------------------------------------------------------------------------------
@@ -251,10 +251,10 @@ void ShapesRendererCore::EndPath(Path* path)
 //------------------------------------------------------------------------------
 void ShapesRendererCore::ExtractBasePoints(ShapesRendererCommandList* commandList)
 {
-	int count = commandList->GetDataCount();
+	int count = commandList->getDataCount();
 	for (int i = 0; i < count; i++)
 	{
-		float* cmd = (float*)commandList->GetDataByIndex(i);
+		float* cmd = (float*)commandList->getDataByIndex(i);
 		switch ((int)cmd[0])
 		{
 			//------------------------------------------------------------------
@@ -768,10 +768,10 @@ void ShapesRendererCore::MakeBasePointsAndBorderComponent(const Rect& rect, cons
 	Vector2 lb[3];
 	Vector2 rb[3];
 	// basis
-	lt[1] = rect.GetTopLeft();
-	rt[1] = rect.GetTopRight();
-	lb[1] = rect.GetBottomLeft();
-	rb[1] = rect.GetBottomRight();
+	lt[1] = rect.getTopLeft();
+	rt[1] = rect.getTopRight();
+	lb[1] = rect.getBottomLeft();
+	rb[1] = rect.getBottomRight();
 	// outer
 	lt[0] = Vector2(lt[1].x - thickness.Left, lt[1].y - thickness.Top);
 	rt[0] = Vector2(rt[1].x + thickness.Right, rt[1].y - thickness.Top);
@@ -1093,7 +1093,7 @@ void ShapesRendererCore::PlotCornerBasePointsBezier(const Vector2& first, const 
 		pt.pos = Vector2(
 			Math::cubicBezier(first.x, cp2.x, cp3.x, last.x, t),
 			Math::cubicBezier(first.y, cp2.y, cp3.y, last.y, t));
-		pt.exDir = Vector2::Normalize(pt.pos - center);
+		pt.exDir = Vector2::normalize(pt.pos - center);
 		pt.enabledAA = (0.0f < t && t < 1.0f);//true;
 		pt.exDirect = false;
 		m_basePoints.add(pt);
@@ -1102,7 +1102,7 @@ void ShapesRendererCore::PlotCornerBasePointsBezier(const Vector2& first, const 
 	pt.pos = Vector2(
 		Math::cubicBezier(first.x, cp2.x, cp3.x, last.x, lastT),
 		Math::cubicBezier(first.y, cp2.y, cp3.y, last.y, lastT));
-	pt.exDir = Vector2::Normalize(pt.pos - center);
+	pt.exDir = Vector2::normalize(pt.pos - center);
 	pt.enabledAA = (0.0f < lastT && lastT < 1.0f);
 	pt.exDirect = false;
 	m_basePoints.add(pt);
@@ -1147,11 +1147,11 @@ void ShapesRenderFeature::ExecuteCommand(ShapesRendererCommandList* commandList)
 		});
 }
 //------------------------------------------------------------------------------
-void ShapesRenderFeature::OnSetState(const DrawElementBatch* state)
+void ShapesRenderFeature::onSetState(const DrawElementBatch* state)
 {
-	if (state->state.GetBrush() != nullptr)
+	if (state->state.getBrush() != nullptr)
 	{
-		state->state.GetBrush()->GetRawData(&m_fillBrush);
+		state->state.getBrush()->getRawData(&m_fillBrush);
 	}
 }
 

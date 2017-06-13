@@ -9,7 +9,7 @@ namespace detail
 	
 /*
 	別スレッドでのデコード・再生管理を行いたいので、別スレッドで処理中に各種ステートを変更してほしくない。
-	Polling でステートを丸ごとコピーしておく。
+	polling でステートを丸ごとコピーしておく。
 	Sound クラスの持つステートを変更する関数は全て mutex 張らなければならない。読み取りは無くてもいい。
 */
 class AudioPlayerState
@@ -29,20 +29,20 @@ public:
 public:
 	AudioPlayerState();
 
-	void				SetModifiedFlags(uint32_t v) { m_modified = v; }
-	uint32_t			GetModifiedFlags() const { return m_modified; }
-	void				SetVolume(float v) { m_volume = v; m_modified |= ModifiedFlags_Volume; }
-	float				GetVolume() const { return m_volume; }
-	void				SetPitch(float v) { m_pitch = v; m_modified |= ModifiedFlags_Pitch; }
-	float				GetPitch() const { return m_pitch; }
-	void				SetLoopEnabled(bool v) { m_loopEnabled = v; m_modified |= ModifiedFlags_LoopEnabled; }
-	bool				IsLoopEnabled() const { return m_loopEnabled; }
-	void				SetLoopBegin(uint32_t v) { m_loopBegin = v; m_modified |= ModifiedFlags_LoopBegin; }
-	uint32_t			GetLoopBegin() const { return m_loopBegin; }
-	void				SetLoopLength(uint32_t v) { m_loopLength = v; m_modified |= ModifiedFlags_LoopLength; }
-	uint32_t			GetLoopLength() const { return m_loopLength; }
-	void				SetPlayingState(SoundPlayingState v) { m_playingState = v; m_modified |= ModifiedFlags_PlayingState; }
-	SoundPlayingState	GetPlayingState() const { return m_playingState; }
+	void				setModifiedFlags(uint32_t v) { m_modified = v; }
+	uint32_t			getModifiedFlags() const { return m_modified; }
+	void				setVolume(float v) { m_volume = v; m_modified |= ModifiedFlags_Volume; }
+	float				getVolume() const { return m_volume; }
+	void				setPitch(float v) { m_pitch = v; m_modified |= ModifiedFlags_Pitch; }
+	float				getPitch() const { return m_pitch; }
+	void				setLoopEnabled(bool v) { m_loopEnabled = v; m_modified |= ModifiedFlags_LoopEnabled; }
+	bool				isLoopEnabled() const { return m_loopEnabled; }
+	void				setLoopBegin(uint32_t v) { m_loopBegin = v; m_modified |= ModifiedFlags_LoopBegin; }
+	uint32_t			getLoopBegin() const { return m_loopBegin; }
+	void				setLoopLength(uint32_t v) { m_loopLength = v; m_modified |= ModifiedFlags_LoopLength; }
+	uint32_t			getLoopLength() const { return m_loopLength; }
+	void				setPlayingState(SoundPlayingState v) { m_playingState = v; m_modified |= ModifiedFlags_PlayingState; }
+	SoundPlayingState	getPlayingState() const { return m_playingState; }
 
 private:
 	uint32_t			m_modified;			// ModifiedFlags

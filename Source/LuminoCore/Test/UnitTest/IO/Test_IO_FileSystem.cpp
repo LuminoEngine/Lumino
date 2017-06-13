@@ -173,5 +173,5 @@ TEST_F(Test_IO_FileSystem, writeAllText)
 {
 	String text = _T("abc");
 	FileSystem::writeAllText(TEMPFILE("Test_IO_FileSystem/WriteAllText1"), text);
-	ASSERT_EQ(true, TestHelper::EqualFiles(TEMPFILE("Test_IO_FileSystem/WriteAllText1"), LN_LOCALFILE("TestData/WriteAllText1.txt")));
+	ASSERT_EQ(true, TestHelper::equalFiles(TEMPFILE("Test_IO_FileSystem/WriteAllText1"), LN_LOCALFILE("TestData/WriteAllText1.txt")));
 }

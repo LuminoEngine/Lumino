@@ -58,7 +58,7 @@ public:
 	/**
 		@brief		このベクトルの X Y 要素を Vector2 として返します。
 	*/
-	const Vector2& GetXY() const;
+	const Vector2& getXY() const;
 	
 	/**
 		@brief		このベクトルの X Y Z 要素を Vector3 として返します。
@@ -73,7 +73,7 @@ public:
 	/**
 		@brief		ベクトルの長さの 2 乗を返します。
 	*/
-	float GetLengthSquared() const;
+	float getLengthSquared() const;
 
 	/**
 		@brief		このベクトルを指定された最大値と最小値の範囲にクランプします。
@@ -107,7 +107,7 @@ public:
 		@param[in]	vec		: 処理の基になるベクトル
 		@return		正規化されたベクトル
 	*/
-	static Vector4 Normalize(const Vector4& vec);
+	static Vector4 normalize(const Vector4& vec);
 
 	/**
 		@brief		2つのベクトルの内積を計算します。
@@ -115,7 +115,7 @@ public:
 		@param[in]	vec2	: 処理の基になるベクトル
 		@return		2つのベクトルの内積
 	*/
-	static float Dot(const Vector4& vec1, const Vector4& vec2);
+	static float dot(const Vector4& vec1, const Vector4& vec2);
 
 	/**
 		@brief		2つのベクトルの最小値で構成されるベクトルを返します。
@@ -123,7 +123,7 @@ public:
 		@param[in]	vec2	: 処理の基になるベクトル
 		@return		最小値から作成されたベクトル
 	*/
-	static Vector4 Min(const Vector4& vec1, const Vector4& vec2);
+	static Vector4 min(const Vector4& vec1, const Vector4& vec2);
 
 	/**
 		@brief		2つのベクトルの最大値で構成されるベクトルを返します。
@@ -131,7 +131,7 @@ public:
 		@param[in]	vec2	: 処理の基になるベクトル
 		@return		最大値から作成されたベクトル
 	*/
-	static Vector4 Max(const Vector4& vec1, const Vector4& vec2);
+	static Vector4 max(const Vector4& vec1, const Vector4& vec2);
 
 	/**
 		@brief		指定された行列を使用してベクトルを座標変換します。
@@ -139,7 +139,7 @@ public:
 		@param[in]	mat		: 処理の基になる行列
 		@return		変換されたベクトル
 	*/
-	static Vector4 Transform(const Vector4& vec, const Matrix& mat);
+	static Vector4 transform(const Vector4& vec, const Matrix& mat);
 
 	/**
 		@brief		2 つのベクトル間の線形補間を行います。

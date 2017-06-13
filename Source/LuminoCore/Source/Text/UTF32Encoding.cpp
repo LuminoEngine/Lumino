@@ -20,7 +20,7 @@ UTF32Encoding::UTF32Encoding(bool bigEndian, bool byteOrderMark)
 }
 
 //------------------------------------------------------------------------------
-byte_t* UTF32Encoding::GetPreamble() const
+byte_t* UTF32Encoding::getPreamble() const
 {
 	static byte_t bom[] = { 0x00 };
 	LN_THROW(0, NotImplementedException);
@@ -28,13 +28,13 @@ byte_t* UTF32Encoding::GetPreamble() const
 }
 
 //------------------------------------------------------------------------------
-int UTF32Encoding::GetCharacterCount(const void* buffer, size_t bufferSize) const
+int UTF32Encoding::getCharacterCount(const void* buffer, size_t bufferSize) const
 {
 	return bufferSize / sizeof(UTF32);
 }
 
 //------------------------------------------------------------------------------
-void UTF32Encoding::UTF32Decoder::ConvertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, size_t* outBytesUsed, size_t* outCharsUsed)
+void UTF32Encoding::UTF32Decoder::convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, size_t* outBytesUsed, size_t* outCharsUsed)
 {
 	*outBytesUsed = 0;
 	*outCharsUsed = 0;
@@ -53,7 +53,7 @@ void UTF32Encoding::UTF32Decoder::ConvertToUTF16(const byte_t* input, size_t inp
 		memcpy_s(buf + m_lastLeadBytesCount, req, input, req);
 
 		// 変換 (1文字だけ)
-		UTFConversionResult result = UnicodeUtils::ConvertUTF32toUTF16((UnicodeUtils::UTF32*)buf, 1, (UnicodeUtils::UTF16*)output, outputElementSize, &options);
+		UTFConversionResult result = UnicodeUtils::convertUTF32toUTF16((UnicodeUtils::UTF32*)buf, 1, (UnicodeUtils::UTF16*)output, outputElementSize, &options);
 		LN_THROW(result == UTFConversionResult_Success, EncodingException);
 
 		// バッファ先頭は消費した分だけ進め、バッファサイズは消費した分だけ縮める
@@ -74,7 +74,7 @@ void UTF32Encoding::UTF32Decoder::ConvertToUTF16(const byte_t* input, size_t inp
 	}
 	
 	// 変換
-	UTFConversionResult result = UnicodeUtils::ConvertUTF32toUTF16(
+	UTFConversionResult result = UnicodeUtils::convertUTF32toUTF16(
 		(UnicodeUtils::UTF32*)input,
 		inputByteSize / sizeof(UnicodeUtils::UTF32),
 		(UnicodeUtils::UTF16*)output,
@@ -88,7 +88,7 @@ void UTF32Encoding::UTF32Decoder::ConvertToUTF16(const byte_t* input, size_t inp
 }
 
 //------------------------------------------------------------------------------
-void UTF32Encoding::UTF32Encoder::ConvertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, size_t* outBytesUsed, size_t* outCharsUsed)
+void UTF32Encoding::UTF32Encoder::convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, size_t* outBytesUsed, size_t* outCharsUsed)
 {
 	*outBytesUsed = 0;
 	*outCharsUsed = 0;
@@ -104,7 +104,7 @@ void UTF32Encoding::UTF32Encoder::ConvertFromUTF16(const UTF16* input, size_t in
 		uint16_t buf[2] = { m_lastLeadWord, input[0] };
 
 		// 変換 (サロゲートペアで1文字だけ)
-		UTFConversionResult result = UnicodeUtils::ConvertUTF16toUTF32((UnicodeUtils::UTF16*)buf, 2, (UnicodeUtils::UTF32*)output, outputByteSize, &options);
+		UTFConversionResult result = UnicodeUtils::convertUTF16toUTF32((UnicodeUtils::UTF16*)buf, 2, (UnicodeUtils::UTF32*)output, outputByteSize, &options);
 		LN_THROW(result == UTFConversionResult_Success, EncodingException);
 
 		// バッファ先頭は消費した分だけ進め、バッファサイズは消費した分だけ縮める
@@ -118,14 +118,14 @@ void UTF32Encoding::UTF32Encoder::ConvertFromUTF16(const UTF16* input, size_t in
 	}
 
 	// 前回途中で途切れたワードがあれば先に変換する (とりあえずエンディアン考慮せず、サロゲートなら取っておく)
-	if (UnicodeUtils::CheckUTF16HighSurrogate(input[inputElementSize - 1])/* || UnicodeUtils::CheckUTF16LowSurrogate(inBuffer[inputElementSize])*/)
+	if (UnicodeUtils::checkUTF16HighSurrogate(input[inputElementSize - 1])/* || UnicodeUtils::checkUTF16LowSurrogate(inBuffer[inputElementSize])*/)
 	{
 		m_lastLeadWord = input[inputElementSize];
 		inputElementSize -= 1;
 	}
 	
 	// 変換
-	UTFConversionResult result = UnicodeUtils::ConvertUTF16toUTF32(
+	UTFConversionResult result = UnicodeUtils::convertUTF16toUTF32(
 		(UnicodeUtils::UTF16*)input,
 		inputElementSize,
 		(UnicodeUtils::UTF32*)output,

@@ -23,8 +23,8 @@ public:
 protected:
 
 	// UIElement interface
-	virtual Size MeasureOverride(const Size& constraint) override;
-	virtual Size ArrangeOverride(const Size& finalSize) override;
+	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
 
 LN_CONSTRUCT_ACCESS:
 	UITreeViewItem();

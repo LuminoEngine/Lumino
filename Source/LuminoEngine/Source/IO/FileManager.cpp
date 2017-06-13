@@ -10,7 +10,7 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
-//FileManager& FileManager::GetInstance()
+//FileManager& FileManager::getInstance()
 //{
 //	static FileManager instance;
 //	return instance;
@@ -35,8 +35,8 @@ FileManager::FileManager(const Settings& settings)
 FileManager::~FileManager()
 {
 	// 非同期処理のスレッドを停止する
-	m_endRequested.SetTrue();
-	m_asyncProcThread.Wait();
+	m_endRequested.setTrue();
+	m_asyncProcThread.wait();
 
 	for (IArchive* a : m_archiveList) {
 		a->release();
@@ -127,7 +127,7 @@ CaseSensitivity FileManager::getFileSystemCaseSensitivity() const
 //------------------------------------------------------------------------------
 void FileManager::RequestASyncTask(ASyncIOObject* task)
 {
-	if (m_endRequested.IsTrue()) {
+	if (m_endRequested.isTrue()) {
 		return;		// 終了要求が来ている場合は追加しない
 	}
 
@@ -139,13 +139,13 @@ void FileManager::RequestASyncTask(ASyncIOObject* task)
 	task->m_ayncIOState = ASyncIOState_Ready;
 	task->addRef();
 	m_asyncTaskList.add(task);
-	m_isASyncTaskListEmpty.SetFalse();
+	m_isASyncTaskListEmpty.setFalse();
 }
 
 //------------------------------------------------------------------------------
 void FileManager::WaitForAllASyncTask()
 {
-	m_isASyncTaskListEmpty.Wait();
+	m_isASyncTaskListEmpty.wait();
 }
 
 //------------------------------------------------------------------------------
@@ -177,7 +177,7 @@ void FileManager::RefreshArchiveList()
 void FileManager::Thread_ASyncProc()
 {
 	// 終了フラグが ON でも、リストに何か残っていればすべて処理する
-	while (m_endRequested.IsFalse() || m_isASyncTaskListEmpty.IsFalse())
+	while (m_endRequested.isFalse() || m_isASyncTaskListEmpty.isFalse())
 	{
 		// 読み込みリクエストを取り出す
 		ASyncIOObject* task = NULL;
@@ -196,7 +196,7 @@ void FileManager::Thread_ASyncProc()
 		{
 			try
 			{
-				task->OnASyncIOProc();							// 実行
+				task->onASyncIOProc();							// 実行
 				task->m_ayncIOState = ASyncIOState_Completed;		// 処理完了状態にする
 			}
 			catch (Exception& e)
@@ -221,12 +221,12 @@ void FileManager::Thread_ASyncProc()
 			MutexScopedLock lock(m_asyncTaskListMutex);
 			if (m_asyncTaskList.isEmpty())
 			{
-				m_isASyncTaskListEmpty.SetTrue();
+				m_isASyncTaskListEmpty.setTrue();
 			}
 		}
 
 		// 適当に待って、CPU 使用率が MAX にならないようにする
-		Thread::Sleep(10);
+		Thread::sleep(10);
 	}
 }
 

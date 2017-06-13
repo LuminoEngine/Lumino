@@ -25,25 +25,25 @@ BitmapPainter::~BitmapPainter()
 //------------------------------------------------------------------------------
 void BitmapPainter::clear(const Color32& color)
 {
-	FillRectangle(RectI(0, 0, m_bitmap->getSize()), color);
+	fillRectangle(RectI(0, 0, m_bitmap->getSize()), color);
 }
 
 //------------------------------------------------------------------------------
-void BitmapPainter::FillRectangle(const RectI& rect, const Color32& color)
+void BitmapPainter::fillRectangle(const RectI& rect, const Color32& color)
 {
 	RectI destRect = rect;
-	destRect.Clip(RectI(0, 0, m_bitmap->getSize()));
+	destRect.clip(RectI(0, 0, m_bitmap->getSize()));
 
-	PixelFormat format = m_bitmap->GetPixelFormat();
+	PixelFormat format = m_bitmap->getPixelFormat();
 
 	// 32bit 系
 	if (format == PixelFormat::R8G8B8A8 ||
 		format == PixelFormat::B8G8R8A8 ||
 		format == PixelFormat::B8G8R8X8)
 	{
-		uint32_t* data = (uint32_t*)m_bitmap->GetBitmapBuffer()->getData();
+		uint32_t* data = (uint32_t*)m_bitmap->getBitmapBuffer()->getData();
 
-		uint32_t c = GetColorByteSec(color, format);
+		uint32_t c = getColorByteSec(color, format);
 		for (int y = 0; y < destRect.height; y++)
 		{
 			for (int x = 0; x < destRect.width; x++)
@@ -58,7 +58,7 @@ void BitmapPainter::FillRectangle(const RectI& rect, const Color32& color)
 }
 
 //------------------------------------------------------------------------------
-uint32_t BitmapPainter::GetColorByteSec(const Color32& color, PixelFormat format)
+uint32_t BitmapPainter::getColorByteSec(const Color32& color, PixelFormat format)
 {
 	switch (format)
 	{
@@ -89,13 +89,13 @@ uint32_t BitmapPainter::GetColorByteSec(const Color32& color, PixelFormat format
 //==============================================================================
 
 //------------------------------------------------------------------------------
-void BitmapFilter::FlipVertical(Bitmap* dst, const Bitmap* src)
+void BitmapFilter::flipVertical(Bitmap* dst, const Bitmap* src)
 {
 	for (int y = 0; y < dst->getSize().height; ++y)
 	{
 		for (int x = 0; x < dst->getSize().width; ++x)
 		{
-			dst->SetPixel(x, y, src->GetPixel(x, src->getSize().height - y - 1));
+			dst->setPixel(x, y, src->getPixel(x, src->getSize().height - y - 1));
 		}
 	}
 }

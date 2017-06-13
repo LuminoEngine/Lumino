@@ -39,7 +39,7 @@ TEST_F(Test_Base_ByteBuffer, Constructor)
 	ByteBuffer buf5(data2, 2, true);
 	buf5.copy("ab", 2);
 	ASSERT_EQ(2, buf5.getSize());
-	ASSERT_TRUE(TestHelper::CheckArrays(data2, buf5.getData(), 2));
+	ASSERT_TRUE(TestHelper::checkArrays(data2, buf5.getData(), 2));
 	ASSERT_EQ('a', buf5[0]);
 	ASSERT_EQ('b', buf5[1]);
 	ASSERT_EQ('a', data2[0]);	// 元バッファにも書き込まれている
@@ -199,7 +199,7 @@ TEST_F(Test_Base_ByteBuffer, attach)
 	buf1.attach(data2, 2);
 	buf1.copy("ab", 2);
 	ASSERT_EQ(2, buf1.getSize());
-	ASSERT_TRUE(TestHelper::CheckArrays(data2, buf1.getData(), 2));
+	ASSERT_TRUE(TestHelper::checkArrays(data2, buf1.getData(), 2));
 	ASSERT_EQ('a', buf1[0]);
 	ASSERT_EQ('b', buf1[1]);
 	ASSERT_EQ('a', data2[0]);	// 元バッファにも書き込まれている

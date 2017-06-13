@@ -25,13 +25,13 @@ TEST_F(Test_Threading_EventFlag, Basic)
 		virtual void execute()
 		{
 			gValue++;
-			mInited.SetTrue();
+			mInited.setTrue();
 
 			do
 			{
 				gValue++;
-				Thread::Sleep(10);
-			} while (mRunning.IsTrue());
+				Thread::sleep(10);
+			} while (mRunning.isTrue());
 		}
 
 		ConditionFlag mInited;
@@ -43,12 +43,12 @@ TEST_F(Test_Threading_EventFlag, Basic)
 	TestThread t;
 	t.execute();
 
-	t.mInited.Wait();	// 初期化完了待ち
+	t.mInited.wait();	// 初期化完了待ち
 	ASSERT_TRUE(gValue >= 2);
 
 
-	t.mRunning.SetFalse();	// 終了要求
-	t.Wait();
+	t.mRunning.setFalse();	// 終了要求
+	t.wait();
 	ASSERT_TRUE(gValue >= 2);
 }
 
@@ -58,9 +58,9 @@ TEST_F(Test_Threading_EventFlag, Basic2)
 	ConditionFlag f1;
 	ConditionFlag f2(true);
 	ConditionFlag f3(false);
-	ASSERT_FALSE(f1.IsTrue());
-	ASSERT_TRUE(f2.IsTrue());
-	ASSERT_FALSE(f3.IsTrue());
+	ASSERT_FALSE(f1.isTrue());
+	ASSERT_TRUE(f2.isTrue());
+	ASSERT_FALSE(f3.isTrue());
 
-	f2.Wait();	// true なので止まらずに進む
+	f2.wait();	// true なので止まらずに進む
 }

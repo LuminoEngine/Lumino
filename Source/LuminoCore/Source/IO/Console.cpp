@@ -1,7 +1,4 @@
 #include "../Internal.h"
-#if defined(LN_OS_WIN32)
-#include <windows.h>
-#endif
 #include <Lumino/Base/Environment.h>
 #include <Lumino/IO/Console.h>
 

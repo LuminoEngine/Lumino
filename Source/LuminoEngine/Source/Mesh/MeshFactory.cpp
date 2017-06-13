@@ -108,12 +108,12 @@ namespace Bezier
 				Vector3 tangent1 = CubicTangent(p1, p2, p3, p4, v);
 				Vector3 tangent2 = CubicTangent(q1, q2, q3, q4, u);
 
-				// Cross the two tangent vectors to compute the normal.
-				Vector3 normal = Vector3::Cross(tangent1, tangent2);
+				// cross the two tangent vectors to compute the normal.
+				Vector3 normal = Vector3::cross(tangent1, tangent2);
 
 				if (!Vector3::nearEqual(normal, Vector3::Zero/*, g_XMEpsilon*/))
 				{
-					normal = Vector3::Normalize(normal);
+					normal = Vector3::normalize(normal);
 
 					// If this patch is mirrored, we must invert the normal.
 					if (isMirrored)
@@ -196,7 +196,7 @@ void TeapotMeshFactory::ComputeTeapot(float size, size_t tessellation/*, bool rh
 	if (tessellation < 1)
 		throw std::out_of_range("tesselation parameter out of range");
 
-	Vector3 scaleVector = Vector3::Replicate(size);
+	Vector3 scaleVector = Vector3::replicate(size);
 
 	Vector3 scaleNegateX = scaleVector * g_XMNegateX;
 	Vector3 scaleNegateZ = scaleVector * g_XMNegateZ;
@@ -302,7 +302,7 @@ int TeapotMeshFactory::GetVertexCount() const
 }
 
 //------------------------------------------------------------------------------
-int TeapotMeshFactory::GetIndexCount() const
+int TeapotMeshFactory::getIndexCount() const
 {
 	return GetPatchBaseCalls() * (m_tessellation * m_tessellation) * 6;
 }

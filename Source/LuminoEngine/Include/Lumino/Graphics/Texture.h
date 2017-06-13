@@ -5,7 +5,7 @@
 #include "GraphicsResourceObject.h"
 
 #pragma push_macro("DrawText")
-#undef DrawText
+#undef drawText
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
@@ -31,31 +31,31 @@ public:
 		@brief		テクスチャの幅を取得します。
 		@return		テクスチャの幅 (ピクセル単位)
 	*/
-	int GetWidth() const;
+	int getWidth() const;
 
 	/**
 		@brief		テクスチャの高さを取得します。
 		@return		テクスチャの高さ (ピクセル単位)
 	*/
-	int GetHeight() const;
+	int getHeight() const;
 
 	/**
 		@brief		テクスチャのピクセルフォーマットを取得します。
 	*/
-	TextureFormat GetFormat() const;
+	TextureFormat getFormat() const;
 
 protected:
 	virtual void Dispose() override;
 
 LN_INTERNAL_ACCESS:
-	Driver::ITexture* GetDeviceObjectConst() const { return m_deviceObj; }
-	Driver::ITexture* ResolveDeviceObject() { ApplyModifies(); return m_deviceObj; }
+	Driver::ITexture* getDeviceObjectConst() const { return m_deviceObj; }
+	Driver::ITexture* resolveDeviceObject() { applyModifies(); return m_deviceObj; }
 	const SizeI& getSize() const;
 
 protected:
 	Texture();
 	virtual ~Texture();
-	virtual void ApplyModifies();
+	virtual void applyModifies();
 
 	friend struct ReadLockTextureCommand;
 	friend struct ReadUnlockTextureCommand;
@@ -123,33 +123,33 @@ public:
 		@brief		黒い小さなテクスチャを取得します。
 		@detail		このテクスチャの全ピクセルは不透明な白 Color(0, 0, 0, 1) です。
 	*/
-	static Texture2DPtr GetBlackTexture();
+	static Texture2DPtr getBlackTexture();
 	
 	/**
 		@brief		白い小さなテクスチャを取得します。
 		@detail		このテクスチャの全ピクセルは不透明な白 Color(1, 1, 1, 1) です。
 	*/
-	static Texture2DPtr GetWhiteTexture();
+	static Texture2DPtr getWhiteTexture();
 
 public:
 
 	/** 指定した色でテクスチャ全体を塗りつぶします。*/
 	void clear(const Color32& color);
 
-	void SetPixel(int x, int y, const Color& color);
+	void setPixel(int x, int y, const Color& color);
 
-	void Blit(int x, int y, Texture2D* srcTexture, const RectI& srcRect);	// TODO: アルファブレンド有無
+	void blit(int x, int y, Texture2D* srcTexture, const RectI& srcRect);	// TODO: アルファブレンド有無
 	
-	void Blt(int x, int y, Bitmap* srcBitmap/*, const RectI& srcRect*/);
+	void blt(int x, int y, Bitmap* srcBitmap/*, const RectI& srcRect*/);
 
 
-	void DrawText(const StringRef& text, const RectI& rect, Font* font, const Color32& fillColor, const Color32& strokeColor, int strokeThickness, TextAlignment alignment);
-	void LN_AFX_FUNCNAME(DrawText)(const StringRef& text, const RectI& rect, Font* font, const Color32& fillColor, const Color32& strokeColor, int strokeThickness, TextAlignment alignment);
+	void drawText(const StringRef& text, const RectI& rect, Font* font, const Color32& fillColor, const Color32& strokeColor, int strokeThickness, TextAlignment alignment);
+	void LN_AFX_FUNCNAME(drawText)(const StringRef& text, const RectI& rect, Font* font, const Color32& fillColor, const Color32& strokeColor, int strokeThickness, TextAlignment alignment);
 	// TODO: ↑ TextAlignment じゃなくて TextLayoutFlags の方が良いと思う
 
 LN_PROTECTED_INTERNAL_ACCESS:
-	void FlushPrimarySurface();
-	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
+	void flushPrimarySurface();
+	virtual void onChangeDevice(Driver::IGraphicsDevice* device);
 
 LN_CONSTRUCT_ACCESS:
 	Texture2D();
@@ -163,12 +163,12 @@ LN_CONSTRUCT_ACCESS:
 	void initialize(Stream* stream, TextureFormat format, bool mipmap);
 
 LN_INTERNAL_ACCESS:
-	void TryLock();
-	void SetSubData(const PointI& offset, Bitmap* bitmap);
-	void SetData(const void* data);
+	void tryLock();
+	void setSubData(const PointI& offset, Bitmap* bitmap);
+	void setData(const void* data);
 
 protected:
-	virtual void ApplyModifies() override;
+	virtual void applyModifies() override;
 
 	friend struct PresentCommand;
 	bool			m_mipmap;
@@ -200,13 +200,13 @@ LN_INTERNAL_ACCESS:
 	RenderTargetTexture();
 	virtual ~RenderTargetTexture();
 	void initialize(const SizeI& size, int mipLevels, TextureFormat format);
-	void CreateImpl(detail::GraphicsManager* manager, const SizeI& size, int mipLevels, TextureFormat format);
-	void CreateCore(detail::GraphicsManager* manager, bool isDefaultBackBuffer);
-	void AttachDefaultBackBuffer(Driver::ITexture* deviceObj);
-	void DetachDefaultBackBuffer();
-	Bitmap* Lock();
-	void Unlock();
-	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
+	void createImpl(detail::GraphicsManager* manager, const SizeI& size, int mipLevels, TextureFormat format);
+	void createCore(detail::GraphicsManager* manager, bool isDefaultBackBuffer);
+	void attachDefaultBackBuffer(Driver::ITexture* deviceObj);
+	void detachDefaultBackBuffer();
+	Bitmap* lock();
+	void unlock();
+	virtual void onChangeDevice(Driver::IGraphicsDevice* device);
 
 private:
 	int				m_mipLevels;
@@ -239,13 +239,13 @@ protected:
 LN_INTERNAL_ACCESS :
 	DepthBuffer();
 	virtual ~DepthBuffer();
-	void CreateImpl(detail::GraphicsManager* manager, const SizeI& size, TextureFormat format);
-	Driver::ITexture* ResolveDeviceObject() const { return m_deviceObj; }
+	void createImpl(detail::GraphicsManager* manager, const SizeI& size, TextureFormat format);
+	Driver::ITexture* resolveDeviceObject() const { return m_deviceObj; }
 	void resize(const SizeI& newSize);
-	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
+	virtual void onChangeDevice(Driver::IGraphicsDevice* device);
 
 private:
-	void RefreshDeviceResource();
+	void refreshDeviceResource();
 
 	Driver::ITexture*	m_deviceObj;
 	SizeI				m_size;
@@ -282,9 +282,9 @@ public:
 	/**
 		@brief		テクスチャの奥行きを取得します。
 	*/
-	int GetDepth() const;
+	int getDepth() const;
 
-	void SetPixel32(int x, int y, int z, const Color32& color);
+	void setPixel32(int x, int y, int z, const Color32& color);
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	Texture3D();
@@ -292,12 +292,12 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	void initialize(ln::detail::GraphicsManager* manager, int width, int height, int depth, TextureFormat format, int mipLevels, ResourceUsage usage);
 
 protected:
-	virtual void ApplyModifies() override;
-	virtual void OnChangeDevice(Driver::IGraphicsDevice* device) override;
+	virtual void applyModifies() override;
+	virtual void onChangeDevice(Driver::IGraphicsDevice* device) override;
 
 LN_INTERNAL_ACCESS:
-	void TryLock();
-	//Driver::ITexture* GetDeviceObject() const { return m_deviceObj; }
+	void tryLock();
+	//Driver::ITexture* getDeviceObject() const { return m_deviceObj; }
 
 private:
 	int				m_depth;

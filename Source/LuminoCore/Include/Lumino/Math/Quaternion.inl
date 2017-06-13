@@ -93,7 +93,7 @@ inline Quaternion& Quaternion::operator -= (float v)
 //-------------------------------------------------------------------------
 inline Quaternion& Quaternion::operator *= (const Quaternion& v)
 {
-	this->Multiply(v);
+	this->multiply(v);
 	return (*this);
 }
 
@@ -199,7 +199,7 @@ inline Quaternion operator - (float v1, const Quaternion& v2)
 //-------------------------------------------------------------------------
 inline Quaternion operator * (const Quaternion& v1, const Quaternion& v2)
 {
-	return Quaternion::Multiply(v1, v2);
+	return Quaternion::multiply(v1, v2);
 }
 
 //-------------------------------------------------------------------------

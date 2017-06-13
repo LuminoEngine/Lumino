@@ -43,8 +43,8 @@ void FrameRectRendererCore::initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
 
-	auto* device = m_manager->GetGraphicsDevice();
-	m_renderer = device->GetRenderer();
+	auto* device = m_manager->getGraphicsDevice();
+	m_renderer = device->getRenderer();
 
 	//-----------------------------------------------------
 	// Vertex and Index buffers
@@ -66,7 +66,7 @@ void FrameRectRendererCore::initialize(GraphicsManager* manager)
 	LN_THROW(r.Level != ShaderCompileResultLevel_Error, CompilationException, r);
 
 	m_shader.technique = m_shader.shader->GetTechnique(0);
-	m_shader.pass = m_shader.technique->GetPass(0);
+	m_shader.pass = m_shader.technique->getPass(0);
 	m_shader.varWorldMatrix = m_shader.shader->GetVariableByName(_T("g_worldMatrix"));
 	m_shader.varViewProjMatrix = m_shader.shader->GetVariableByName(_T("g_viewProjMatrix"));
 	m_shader.varTone = m_shader.shader->GetVariableByName(_T("g_tone"));
@@ -74,8 +74,8 @@ void FrameRectRendererCore::initialize(GraphicsManager* manager)
 	m_shader.varGlyphMaskSampler = m_shader.shader->GetVariableByName(_T("g_glyphMaskTexture"));
 	m_shader.varViewportSize = m_shader.shader->GetVariableByName(_T("g_viewportSize"));
 
-	m_shader.varWorldMatrix->SetMatrix(Matrix::Identity);
-	m_shader.varViewProjMatrix->SetMatrix(Matrix::Identity);
+	m_shader.varWorldMatrix->setMatrix(Matrix::Identity);
+	m_shader.varViewProjMatrix->setMatrix(Matrix::Identity);
 }
 
 //------------------------------------------------------------------------------
@@ -83,7 +83,7 @@ void FrameRectRendererCore::SetState(const FrameRectRendererState& state)
 {
 	m_state = state;
 	
-	m_shader.varViewProjMatrix->SetMatrix(m_state.viewProjTransform);
+	m_shader.varViewProjMatrix->setMatrix(m_state.viewProjTransform);
 }
 
 //------------------------------------------------------------------------------
@@ -94,7 +94,7 @@ void FrameRectRendererCore::Draw(const Matrix& transform, const Rect& rect)
 	// TODO: とりあえず今は fill だけ
 
 	Driver::ITexture* srcTexture = m_state.texture;
-	if (srcTexture == nullptr) srcTexture = m_manager->GetDummyDeviceTexture();
+	if (srcTexture == nullptr) srcTexture = m_manager->getDummyDeviceTexture();
 
 
 	// 枠
@@ -132,24 +132,24 @@ void FrameRectRendererCore::Draw(const Matrix& transform, const Rect& rect)
 
 		if (m_indexCache.getCount() == 0) { return; }
 
-		//const SizeI& viewPixelSize = m_renderer->GetRenderTarget(0)->GetSize();
+		//const SizeI& viewPixelSize = m_renderer->getRenderTarget(0)->GetSize();
 		//if (m_shader.varViewportSize != nullptr)
-		//	m_shader.varViewportSize->SetVector(Vector4((float)viewPixelSize.width, (float)viewPixelSize.height, 0, 0));
+		//	m_shader.varViewportSize->setVector(Vector4((float)viewPixelSize.width, (float)viewPixelSize.height, 0, 0));
 
 		// 描画する
-		m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
-		m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
-		//m_shader.varWorldMatrix->SetMatrix(transform);
-		//m_shader.varTone->SetVector(ToneF());
-		//m_shader.varTexture->SetTexture(srcTexture);
-		//m_shader.varGlyphMaskSampler->SetTexture(m_manager->GetDummyDeviceTexture());
-		//m_renderer->SetShaderPass(m_shader.pass);
+		m_vertexBuffer->setSubData(0, m_vertexCache.getBuffer(), m_vertexCache.getBufferUsedByteCount());
+		m_indexBuffer->setSubData(0, m_indexCache.getBuffer(), m_indexCache.getBufferUsedByteCount());
+		//m_shader.varWorldMatrix->setMatrix(transform);
+		//m_shader.varTone->setVector(ToneF());
+		//m_shader.varTexture->setTexture(srcTexture);
+		//m_shader.varGlyphMaskSampler->setTexture(m_manager->getDummyDeviceTexture());
+		//m_renderer->setShaderPass(m_shader.pass);
 		//m_renderer->SetVertexDeclaration(m_vertexDeclaration);
 
-		m_renderer->SetVertexDeclaration(m_manager->GetDefaultVertexDeclaration()->GetDeviceObject());
+		m_renderer->SetVertexDeclaration(m_manager->getDefaultVertexDeclaration()->getDeviceObject());
 		m_renderer->SetVertexBuffer(0, m_vertexBuffer);
 		m_renderer->SetIndexBuffer(m_indexBuffer);
-		m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.getCount() / 3);
+		m_renderer->drawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.getCount() / 3);
 
 		// キャッシュクリア
 		m_vertexCache.clear();
@@ -163,7 +163,7 @@ void FrameRectRendererCore::RequestBuffers(int faceCount)
 	LN_SAFE_RELEASE(m_vertexBuffer);
 	LN_SAFE_RELEASE(m_indexBuffer);
 
-	auto* device = m_manager->GetGraphicsDevice();
+	auto* device = m_manager->getGraphicsDevice();
 	//m_vertexDeclaration.Attach(device->CreateVertexDeclaration(Vertex::Elements(), Vertex::ElementCount), false);
 	m_vertexBuffer = device->CreateVertexBuffer(sizeof(Vertex) * faceCount * 4, nullptr, ResourceUsage::Dynamic);
 	m_indexBuffer = device->CreateIndexBuffer(faceCount * 6, nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
@@ -249,14 +249,14 @@ void FrameRectRendererCore::PutRectangleStretch(const Rect& rect, const Rect& sr
 	m_indexCache.add(i + 1);
 	m_indexCache.add(i + 3);
 
-	float pos_l = rect.GetLeft();
+	float pos_l = rect.getLeft();
 	float pos_r = rect.getRight();
 	float pos_t = rect.getTop();
-	float pos_b = rect.GetBottom();
-	float uv_l = srcUVRect.GetLeft();
+	float pos_b = rect.getBottom();
+	float uv_l = srcUVRect.getLeft();
 	float uv_r = srcUVRect.getRight();
 	float uv_t = srcUVRect.getTop();
-	float uv_b = srcUVRect.GetBottom();
+	float uv_b = srcUVRect.getBottom();
 
 	ln::Vertex v;
 	v.color.set(1, 1, 1, 1);
@@ -289,7 +289,7 @@ void FrameRectRendererCore::PutRectangleTiling(const Rect& rect, const RectI& sr
 	{
 		float pos_t = bh * y;
 		float pos_b = pos_t + bh;
-		float uv_b = srcUVRect.GetBottom();
+		float uv_b = srcUVRect.getBottom();
 		if (pos_b > rect.height)
 		{
 			float ratio = (1.0f - (pos_b - rect.height) / bh);
@@ -404,18 +404,18 @@ void FrameRectRendererCore::PutFrameRectangle(const Rect& rect, const ThicknessF
 	//		□　□
 	//		□□□
 	PutRectangle(
-		Rect(outerRect.GetLeft(), outerRect.getTop(), dstFrame.Left, dstFrame.Top),
-		RectI(outerSrcRect.GetLeft(), outerSrcRect.getTop(), srcFrame.Left, srcFrame.Top),
-		Rect(outerUVRect.GetLeft(), outerUVRect.getTop(), uvFrame.Left, uvFrame.Top),
+		Rect(outerRect.getLeft(), outerRect.getTop(), dstFrame.Left, dstFrame.Top),
+		RectI(outerSrcRect.getLeft(), outerSrcRect.getTop(), srcFrame.Left, srcFrame.Top),
+		Rect(outerUVRect.getLeft(), outerUVRect.getTop(), uvFrame.Left, uvFrame.Top),
 		srcTexture, wrapMode);
 
 	// 上	□■□
 	//		□　□
 	//		□□□
 	PutRectangle(
-		Rect(innerRect.GetLeft(), outerRect.getTop(), innerRect.width, dstFrame.Top),
-		RectI(innerSrcRect.GetLeft(), outerSrcRect.getTop(), innerSrcRect.width, srcFrame.Top),
-		Rect(innerUVRect.GetLeft(), outerUVRect.getTop(), innerUVRect.width, uvFrame.Top),
+		Rect(innerRect.getLeft(), outerRect.getTop(), innerRect.width, dstFrame.Top),
+		RectI(innerSrcRect.getLeft(), outerSrcRect.getTop(), innerSrcRect.width, srcFrame.Top),
+		Rect(innerUVRect.getLeft(), outerUVRect.getTop(), innerUVRect.width, uvFrame.Top),
 		srcTexture, wrapMode);
 
 	// 右上	□□■
@@ -440,36 +440,36 @@ void FrameRectRendererCore::PutFrameRectangle(const Rect& rect, const ThicknessF
 	//		□　□
 	//		□□■
 	PutRectangle(
-		Rect(innerRect.getRight(), innerRect.GetBottom(), dstFrame.Right, dstFrame.Bottom),
-		RectI(innerSrcRect.getRight(), innerSrcRect.GetBottom(), srcFrame.Right, srcFrame.Bottom),
-		Rect(innerUVRect.getRight(), innerUVRect.GetBottom(), uvFrame.Right, uvFrame.Bottom),
+		Rect(innerRect.getRight(), innerRect.getBottom(), dstFrame.Right, dstFrame.Bottom),
+		RectI(innerSrcRect.getRight(), innerSrcRect.getBottom(), srcFrame.Right, srcFrame.Bottom),
+		Rect(innerUVRect.getRight(), innerUVRect.getBottom(), uvFrame.Right, uvFrame.Bottom),
 		srcTexture, wrapMode);
 
 	// 下	□□□
 	//		□　□
 	//		□■□
 	PutRectangle(
-		Rect(innerRect.GetLeft(), innerRect.GetBottom(), innerRect.width, dstFrame.Bottom),
-		RectI(innerSrcRect.GetLeft(), innerSrcRect.GetBottom(), innerSrcRect.width, srcFrame.Bottom),
-		Rect(innerUVRect.GetLeft(), innerUVRect.GetBottom(), innerUVRect.width, uvFrame.Bottom),
+		Rect(innerRect.getLeft(), innerRect.getBottom(), innerRect.width, dstFrame.Bottom),
+		RectI(innerSrcRect.getLeft(), innerSrcRect.getBottom(), innerSrcRect.width, srcFrame.Bottom),
+		Rect(innerUVRect.getLeft(), innerUVRect.getBottom(), innerUVRect.width, uvFrame.Bottom),
 		srcTexture, wrapMode);
 
 	// 左下	□□□
 	//		□　□
 	//		■□□
 	PutRectangle(
-		Rect(outerRect.GetLeft(), innerRect.GetBottom(), dstFrame.Left, dstFrame.Bottom),
-		RectI(outerSrcRect.GetLeft(), innerSrcRect.GetBottom(), srcFrame.Left, srcFrame.Bottom),
-		Rect(outerUVRect.GetLeft(), innerUVRect.GetBottom(), uvFrame.Left, uvFrame.Bottom),
+		Rect(outerRect.getLeft(), innerRect.getBottom(), dstFrame.Left, dstFrame.Bottom),
+		RectI(outerSrcRect.getLeft(), innerSrcRect.getBottom(), srcFrame.Left, srcFrame.Bottom),
+		Rect(outerUVRect.getLeft(), innerUVRect.getBottom(), uvFrame.Left, uvFrame.Bottom),
 		srcTexture, wrapMode);
 
 	// 左	□□□
 	//		■　□
 	//		□□□
 	PutRectangle(
-		Rect(outerRect.GetLeft(), innerRect.getTop(), dstFrame.Left, innerRect.height),
-		RectI(outerSrcRect.GetLeft(), innerSrcRect.getTop(), srcFrame.Left, innerSrcRect.height),
-		Rect(outerUVRect.GetLeft(), innerUVRect.getTop(), uvFrame.Left, innerUVRect.height),
+		Rect(outerRect.getLeft(), innerRect.getTop(), dstFrame.Left, innerRect.height),
+		RectI(outerSrcRect.getLeft(), innerSrcRect.getTop(), srcFrame.Left, innerSrcRect.height),
+		Rect(outerUVRect.getLeft(), innerUVRect.getTop(), uvFrame.Left, innerUVRect.height),
 		srcTexture, wrapMode);
 }
 
@@ -519,11 +519,11 @@ void FrameRectRenderFeature::SetState(Brush* brush, const Matrix& world, const M
 	FrameRectRendererState state;
 	//state.worldTransform = world;
 	state.viewProjTransform = viewProj;
-	state.imageDrawMode = brush->GetImageDrawMode();
-	state.borderThickness = brush->GetBorderThickness();
-	state.srcRect = RectI::FromFloatRect(brush->GetSourceRect());
-	state.wrapMode = brush->GetWrapMode();
-	state.texture = (brush->GetTexture() != nullptr) ? brush->GetTexture()->ResolveDeviceObject() : nullptr;
+	state.imageDrawMode = brush->getImageDrawMode();
+	state.borderThickness = brush->getBorderThickness();
+	state.srcRect = RectI::fromFloatRect(brush->getSourceRect());
+	state.wrapMode = brush->getWrapMode();
+	state.texture = (brush->getTexture() != nullptr) ? brush->getTexture()->resolveDeviceObject() : nullptr;
 	if (LN_CHECK_STATE(state.texture != nullptr)) return;
 
 	LN_ENQUEUE_RENDER_COMMAND_2(
@@ -556,9 +556,9 @@ void FrameRectRenderFeature::flush()
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRenderFeature::OnSetState(const DrawElementBatch* state)
+void FrameRectRenderFeature::onSetState(const DrawElementBatch* state)
 {
-	SetState(state->state.GetBrush());
+	SetState(state->state.getBrush());
 }
 
 } // namespace detail

@@ -41,7 +41,7 @@ int GenericStreamReader<TChar>::peek()
 			return -1;
 		}
 	}
-	const TChar* buf = (const TChar*)m_converter.GetLastBuffer().getConstData();
+	const TChar* buf = (const TChar*)m_converter.getLastBuffer().getConstData();
 	return buf[m_charPos];
 }
 
@@ -57,7 +57,7 @@ int GenericStreamReader<TChar>::read()
 			return -1;
 		}
 	}
-	const TChar* buf = (const TChar*)m_converter.GetLastBuffer().getConstData();
+	const TChar* buf = (const TChar*)m_converter.getLastBuffer().getConstData();
 	return buf[m_charPos++];
 }
 
@@ -79,7 +79,7 @@ bool GenericStreamReader<TChar>::readLine(GenericString<TChar>* line)
 		int i = m_charPos;
 		do
 		{
-			const TChar* buf = (const TChar*)m_converter.GetLastBuffer().getConstData();
+			const TChar* buf = (const TChar*)m_converter.getLastBuffer().getConstData();
 			TChar ch = buf[i];
 			if (ch == '\r' || ch == '\n')
 			{
@@ -100,7 +100,7 @@ bool GenericStreamReader<TChar>::readLine(GenericString<TChar>* line)
 
 		// ここに来るのは、charBuffer の現在位置 ～ 終端までに改行が無かったとき。
 		// 現在の残りバッファを str に結合して、次のバッファを ReadBuffer() で読み出す。
-		const TChar* buf = (const TChar*)m_converter.GetLastBuffer().getConstData();
+		const TChar* buf = (const TChar*)m_converter.getLastBuffer().getConstData();
 		builder.append(buf + m_charPos, m_charElementLen - m_charPos);
 
 	} while (readBuffer() > 0);
@@ -118,7 +118,7 @@ GenericString<TChar> GenericStreamReader<TChar>::readToEnd()
 	{
 		if (m_charElementLen - m_charPos > 0)
 		{
-			const TChar* buf = (const TChar*)m_converter.GetLastBuffer().getConstData();
+			const TChar* buf = (const TChar*)m_converter.getLastBuffer().getConstData();
 			builder.append(buf + m_charPos, m_charElementLen - m_charPos);
 			m_charPos = m_charElementLen;
 		}
@@ -144,12 +144,12 @@ void GenericStreamReader<TChar>::initReader(Stream* stream, Encoding* encoding)
 {
 	// encoding 未指定であれば UTF8 とする
 	if (encoding == nullptr) {
-		encoding = Encoding::GetUTF8Encoding();
+		encoding = Encoding::getUTF8Encoding();
 	}
 
 	m_stream = stream;
-	m_converter.SetSourceEncoding(encoding);
-	m_converter.SetDestinationEncoding(Encoding::GetEncodingTemplate<TChar>());
+	m_converter.getSourceEncoding(encoding);
+	m_converter.setDestinationEncoding(Encoding::getEncodingTemplate<TChar>());
 	m_byteBuffer.resize(DefaultBufferSize, false);
 	m_byteLen = 0;
 	m_charElementLen = 0;
@@ -170,8 +170,8 @@ int GenericStreamReader<TChar>::readBuffer()
 	if (m_byteLen == 0) { return m_charElementLen; }
 
 	// 文字コード変換 (ユーザー指定 → TChar)
-	m_converter.Convert(m_byteBuffer.getData(), m_byteLen);
-	m_charElementLen = m_converter.GetLastResult().BytesUsed / sizeof(TChar);
+	m_converter.convert(m_byteBuffer.getData(), m_byteLen);
+	m_charElementLen = m_converter.getLastResult().BytesUsed / sizeof(TChar);
 	return m_charElementLen;
 }
 

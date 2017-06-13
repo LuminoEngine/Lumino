@@ -1,8 +1,7 @@
 ﻿#include "../Internal.h"
 #if defined(LN_OS_WIN32)
-#include <windows.h>
 #else
-#include <sys/time.h>
+	#include <sys/time.h>
 #endif
 #include <Lumino/Base/ElapsedTimer.h>
 

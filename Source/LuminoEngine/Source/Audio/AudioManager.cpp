@@ -33,7 +33,7 @@ namespace detail
 static AudioManager* g_audioManager = nullptr;
 
 //------------------------------------------------------------------------------
-AudioManager* AudioManager::GetInstance(AudioManager* priority)
+AudioManager* AudioManager::getInstance(AudioManager* priority)
 {
 	return (priority != nullptr) ? priority : g_audioManager;
 }
@@ -100,7 +100,7 @@ void AudioManager::initialize(const Settings& settings)
 	m_gameAudio = LN_NEW GameAudioImpl(this);
 
 	// ポーリングスレッド開始
-	m_pollingThread.start(Delegate<void()>(this, &AudioManager::Thread_Polling));
+	m_pollingThread.start(Delegate<void()>(this, &AudioManager::thread_Polling));
 
 	if (g_audioManager == nullptr)
 	{
@@ -112,10 +112,10 @@ void AudioManager::initialize(const Settings& settings)
 void AudioManager::Finalize()
 {
 	// ポーリングスレッドの終了を待つ
-	m_endRequested.SetTrue();
-	m_pollingThread.Wait();
+	m_endRequested.setTrue();
+	m_pollingThread.wait();
 
-	// GameAudio のデストラクタでは Sound::Stop が呼ばれるので、
+	// GameAudio のデストラクタでは Sound::stop が呼ばれるので、
 	// これより下の Sound 削除処理の前に delete する。
 	LN_SAFE_DELETE(m_gameAudio);
 
@@ -146,7 +146,7 @@ void AudioManager::Finalize()
 }
 
 //------------------------------------------------------------------------------
-AudioStream* AudioManager::CreateAudioStream(Stream* stream, const CacheKey& key, SoundLoadingMode loadingMode)
+AudioStream* AudioManager::createAudioStream(Stream* stream, const CacheKey& key, SoundLoadingMode loadingMode)
 {
 	// キャッシュを検索する。
 	// 見つかった AudioStream は、まだ非同期初期化中であることもある。
@@ -157,7 +157,7 @@ AudioStream* AudioManager::CreateAudioStream(Stream* stream, const CacheKey& key
 	{
 		audioStream.attach(LN_NEW AudioStream(this, stream), false);
 		audioStream->create(loadingMode == SoundLoadingMode::ASync);	// 非同期読み込み開始
-								// TODO: 同期読み込みだけにして、Polling スレッドで読み込んでも良いかも？
+								// TODO: 同期読み込みだけにして、polling スレッドで読み込んでも良いかも？
 		/*
 			非同期読み込みの開始で FileManager のタスクリストに入れられる。
 			そこで参照カウントが +1 され、処理が完了するまで参照され続ける。
@@ -174,22 +174,22 @@ AudioStream* AudioManager::CreateAudioStream(Stream* stream, const CacheKey& key
 }
 
 //------------------------------------------------------------------------------
-AudioPlayer* AudioManager::CreateAudioPlayer(AudioStream* stream, SoundPlayingMode mode, bool enable3D)
+AudioPlayer* AudioManager::createAudioPlayer(AudioStream* stream, SoundPlayingMode mode, bool enable3D)
 {
 	// 再生方法の選択
-	SoundPlayingMode playerType = AudioUtils::CheckAudioPlayType(mode, stream, m_onMemoryLimitSize);
+	SoundPlayingMode playerType = AudioUtils::checkAudioPlayType(mode, stream, m_onMemoryLimitSize);
 
 	// 作成
 	if (playerType == SoundPlayingMode::Midi) {
-		return m_midiAudioDevice->CreateAudioPlayer(stream, enable3D, playerType);
+		return m_midiAudioDevice->createAudioPlayer(stream, enable3D, playerType);
 	}
 	else {
-		return m_audioDevice->CreateAudioPlayer(stream, enable3D, playerType);
+		return m_audioDevice->createAudioPlayer(stream, enable3D, playerType);
 	}
 }
 
 //------------------------------------------------------------------------------
-void AudioManager::AddSound(Sound* sound)
+void AudioManager::addSound(Sound* sound)
 {
 	// 管理リストに追加
 	MutexScopedLock lock(m_soundListMutex);
@@ -200,7 +200,7 @@ void AudioManager::AddSound(Sound* sound)
 }
 
 //------------------------------------------------------------------------------
-void AudioManager::Thread_Polling()
+void AudioManager::thread_Polling()
 {
 #ifdef LN_OS_WIN32
 	// COM 初期化
@@ -208,9 +208,9 @@ void AudioManager::Thread_Polling()
 #endif
 
 	uint64_t lastTime = Environment::getTickCount();
-	while (m_endRequested.IsFalse())
+	while (m_endRequested.isFalse())
 	{
-		Thread::Sleep(10);	// CPU 負荷 100% を避けるため、とりあえず 10ms 待つ
+		Thread::sleep(10);	// CPU 負荷 100% を避けるため、とりあえず 10ms 待つ
 
 		// 追加待ちリストの内容を本リストに移す
 		{
@@ -225,7 +225,7 @@ void AudioManager::Thread_Polling()
 		uint64_t curTime = Environment::getTickCount();
 		float elapsedTime = static_cast<float>(curTime - lastTime) / 1000.0f;
 		for (Sound* sound : m_soundList) {
-			sound->Polling(elapsedTime);
+			sound->polling(elapsedTime);
 		}
 		lastTime = curTime;
 
@@ -235,11 +235,11 @@ void AudioManager::Thread_Polling()
 		MutexScopedLock lock(m_soundListMutex);
 #endif
 
-		m_audioDevice->Update();
+		m_audioDevice->update();
         
         if (m_midiAudioDevice != nullptr)
         {
-            m_midiAudioDevice->Update();
+            m_midiAudioDevice->update();
         }
 
 		// GC。このリストからしか参照されてなければ Release する。
@@ -261,7 +261,7 @@ void AudioManager::Thread_Polling()
 		}
 
 		if (m_gameAudio != NULL) {
-			m_gameAudio->Polling();
+			m_gameAudio->polling();
 		}
 	}
 

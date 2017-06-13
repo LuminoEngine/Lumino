@@ -24,11 +24,11 @@ TextWriter::TextWriter()
 	, m_writtenPreamble(true)
 {
 	// String を中間文字コード (UTF16) に変換するためのデコーダ
-	//m_decoder.Attach(Encoding::GetTCharEncoding()->CreateDecoder());
+	//m_decoder.Attach(Encoding::getTCharEncoding()->createDecoder());
 
 	// デフォルト Encoding
-	m_converter.SetSourceEncoding(Encoding::GetTCharEncoding());
-	m_converter.SetDestinationEncoding(Encoding::GetTCharEncoding());
+	m_converter.getSourceEncoding(Encoding::getTCharEncoding());
+	m_converter.setDestinationEncoding(Encoding::getTCharEncoding());
 }
 
 //------------------------------------------------------------------------------
@@ -39,7 +39,7 @@ TextWriter::~TextWriter()
 //------------------------------------------------------------------------------
 void TextWriter::setEncoding(Encoding* encoding)
 {
-	m_converter.SetDestinationEncoding(encoding);
+	m_converter.setDestinationEncoding(encoding);
 #if 0
 	m_encoding = encoding;
 
@@ -69,7 +69,7 @@ void TextWriter::setEncoding(Encoding* encoding)
 //------------------------------------------------------------------------------
 Encoding* TextWriter::getEncoding() const
 {
-	return m_converter.GetDestinationEncoding();
+	return m_converter.getDestinationEncoding();
 }
 
 //------------------------------------------------------------------------------
@@ -273,7 +273,7 @@ void TextWriter::writeInternal(const TCHAR* str, int len)
 	// BOM の書き込みが必要であればここで書き込む
 	if (!m_writtenPreamble)
 	{
-		const byte_t* bom = m_converter.GetDestinationEncoding()->GetPreamble();
+		const byte_t* bom = m_converter.getDestinationEncoding()->getPreamble();
 		size_t len = strlen((char*)bom);
 		writeOverride(bom, len);
 		m_writtenPreamble = true;
@@ -284,7 +284,7 @@ void TextWriter::writeInternal(const TCHAR* str, int len)
 		return;
 	}
 
-	const ByteBuffer buf = m_converter.Convert(str, len * sizeof(TCHAR));
+	const ByteBuffer buf = m_converter.convert(str, len * sizeof(TCHAR));
 
 	writeOverride(buf.getConstData(), buf.getSize());
 
@@ -293,7 +293,7 @@ void TextWriter::writeInternal(const TCHAR* str, int len)
 	if (m_decoder != NULL && m_encoder != NULL)
 	{
 		// 変換状態を保持できる Encoding であれば余分にメモリを確保しないで変換できる。
-		if (m_decoder->CanRemain()/* && m_encoder->CanRemain()*/)	// encoder 側は状態保存できなくても良い
+		if (m_decoder->CanRemain()/* && m_encoder->canRemain()*/)	// encoder 側は状態保存できなくても良い
 		{
 			// 後のコードがキャストだらけにならないように
 			UTF16* utf16Buf = (Text::UTF16*)m_utf16Buffer.GetData();

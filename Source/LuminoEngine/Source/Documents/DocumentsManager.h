@@ -16,15 +16,15 @@ public:
 		GraphicsManager*	graphicsManager = nullptr;
 	};
 
-	static DocumentsManager* GetInstance(DocumentsManager* priority = nullptr);
+	static DocumentsManager* getInstance(DocumentsManager* priority = nullptr);
 
 public:
 	DocumentsManager();
 	virtual ~DocumentsManager();
 	void initialize(const ConfigData& configData);
-	GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
-	EncodingConverter* GetTCharToUTF32Converter() { return &m_TCharToUTF32Converter; }	// TODO: fontmanager ‚ÌŽg‚¦‚Î‚¢‚¢‚©‚à
-	EncodingConverter* GetUTF32ToTCharConverter() { return &m_UTF32ToTCharConverter; }
+	GraphicsManager* getGraphicsManager() const { return m_graphicsManager; }
+	EncodingConverter* getTCharToUTF32Converter() { return &m_TCharToUTF32Converter; }	// TODO: fontmanager ‚ÌŽg‚¦‚Î‚¢‚¢‚©‚à
+	EncodingConverter* getUTF32ToTCharConverter() { return &m_UTF32ToTCharConverter; }
 
 private:
 	GraphicsManager*		m_graphicsManager;

@@ -262,7 +262,7 @@ static bool ParseHexColor(const StringRef& str, Color32* outColor)
 }
 
 //------------------------------------------------------------------------------
-Color32 Color32::FromString(const StringRef& str)
+Color32 Color32::fromString(const StringRef& str)
 {
 	Color32 c;
 	if (!ParseHexColor(str, &c))
@@ -463,7 +463,7 @@ Color::Color(const Vector4& vec)
 }
 
 //------------------------------------------------------------------------------
-void Color::AddClamp(const Color& color)
+void Color::addClamp(const Color& color)
 {
 	r = Math::clamp(r + color.r, 0.0f, 1.0f);
 	g = Math::clamp(g + color.g, 0.0f, 1.0f);
@@ -472,7 +472,7 @@ void Color::AddClamp(const Color& color)
 }
 
 //------------------------------------------------------------------------------
-void Color::MultiplyClamp(const Color& color)
+void Color::multiplyClamp(const Color& color)
 {
 	r = Math::clamp(r * color.r, 0.0f, 1.0f);
 	g = Math::clamp(g * color.g, 0.0f, 1.0f);
@@ -481,7 +481,7 @@ void Color::MultiplyClamp(const Color& color)
 }
 
 //------------------------------------------------------------------------------
-Color32 Color::To32BitColor() const
+Color32 Color::to32BitColor() const
 {
 	return Color32(
 		static_cast<uint8_t>(r * 255),
@@ -491,9 +491,9 @@ Color32 Color::To32BitColor() const
 }
 
 //------------------------------------------------------------------------------
-Color Color::FromString(const StringRef& str)
+Color Color::fromString(const StringRef& str)
 {
-	Color32 c = Color32::FromString(str);
+	Color32 c = Color32::fromString(str);
 	return Color(c);
 }
 
@@ -516,7 +516,7 @@ Color Color::lerp(const Color& color1, const Color& color2, float t)
 const ToneF ToneF::Zero(0, 0, 0, 0);
 
 //------------------------------------------------------------------------------
-void ToneF::AddClamp(const ToneF& tone)
+void ToneF::addClamp(const ToneF& tone)
 {
 	r = Math::clamp(r + tone.r, 0.0f, 1.0f);
 	g = Math::clamp(g + tone.g, 0.0f, 1.0f);
@@ -530,7 +530,7 @@ void ToneF::AddClamp(const ToneF& tone)
 //==============================================================================
 
 //------------------------------------------------------------------------------
-Color32 HSVColor::ToColor() const
+Color32 HSVColor::toColor() const
 {
 	unsigned char c1, c2, c3;
 	if (S == 0)
@@ -557,9 +557,9 @@ Color32 HSVColor::ToColor() const
 }
 
 //------------------------------------------------------------------------------
-Color HSVColor::ToColorF() const
+Color HSVColor::toColorF() const
 {
-	Color32 c = ToColor();
+	Color32 c = toColor();
 	return Color(c);
 }
 

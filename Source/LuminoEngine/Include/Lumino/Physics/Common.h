@@ -41,7 +41,7 @@ public:
 	btCollisionShape* GetBtCollisionShape();
 
 private:
-	void Refresh();
+	void refresh();
 
 	RefPtr<CollisionShape>		m_collisionShape;
 	btCompoundShape*			m_btCompoundShape;

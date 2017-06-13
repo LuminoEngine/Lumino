@@ -23,7 +23,7 @@ void Main()
 	Engine::initialize();
 
 
-	auto* mainWindow = Engine::GetMainWindow();
+	auto* mainWindow = Engine::getMainWindow();
 
 
 	auto listBox1 = UIListBox::create();
@@ -36,11 +36,11 @@ void Main()
 	}
 
 
-	while (!Engine::IsEndRequested() && g_samplesIndex >= 0)
+	while (!Engine::isEndRequested() && g_samplesIndex >= 0)
 	{
 		g_samples[g_samplesIndex].mainFunc();
 	}
 
-	Engine::Terminate();
+	Engine::terminate();
 }
 

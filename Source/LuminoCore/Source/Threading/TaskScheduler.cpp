@@ -28,7 +28,7 @@ TaskScheduler::TaskScheduler(int threadCount)
 	for (int i = 0; i < threadCount; ++i)
 	{
 		auto thr = LN_NEW DelegateThread();
-		thr->start(createDelegate(this, &TaskScheduler::ExecuteThread));
+		thr->start(createDelegate(this, &TaskScheduler::executeThread));
 		m_threadList.add(thr);
 	}
 }
@@ -36,27 +36,27 @@ TaskScheduler::TaskScheduler(int threadCount)
 //------------------------------------------------------------------------------
 TaskScheduler::~TaskScheduler()
 {
-	m_endRequested.SetTrue();		// 終了要求を出して、
+	m_endRequested.setTrue();		// 終了要求を出して、
 
 	for (auto& thr : m_threadList)	// スレッドの数だけセマフォ増やして全部起こして、
 	{
-		m_semaphore.Unlock();
+		m_semaphore.unlock();
 	}
 	for (auto& thr : m_threadList)	// 全部終わるまで待つ
 	{
-		thr->Wait();
+		thr->wait();
 		LN_SAFE_DELETE(thr);
 	}
 }
 
 //------------------------------------------------------------------------------
-int TaskScheduler::GetMaxConcurrencyLevel() const
+int TaskScheduler::getMaxConcurrencyLevel() const
 {
 	return m_threadList.getCount();
 }
 
 //------------------------------------------------------------------------------
-void TaskScheduler::QueueTask(Task* task)
+void TaskScheduler::queueTask(Task* task)
 {
 	if (LN_CHECK_ARG(task != nullptr)) return;
 
@@ -64,18 +64,18 @@ void TaskScheduler::QueueTask(Task* task)
 	m_taskQueue.push_back(task);
 	task->addRef();
 
-	m_semaphore.Unlock();	// キューに入れたので取り出したい人はどうぞ。
+	m_semaphore.unlock();	// キューに入れたので取り出したい人はどうぞ。
 }
 
 //------------------------------------------------------------------------------
-void TaskScheduler::ExecuteThread()
+void TaskScheduler::executeThread()
 {
 	while (true)
 	{
-		m_semaphore.Lock();	// キューに何か追加されるまで待つ。または終了要求まで。
+		m_semaphore.lock();	// キューに何か追加されるまで待つ。または終了要求まで。
 
 		// 終了要求がきていたらおしまい
-		if (m_endRequested.IsTrue()) {
+		if (m_endRequested.isTrue()) {
 			break;
 		}
 

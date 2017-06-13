@@ -31,8 +31,8 @@ void MeshRenderFeature::initialize(GraphicsManager* manager)
 	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_manager = manager;
 
-	Driver::IGraphicsDevice* device = m_manager->GetGraphicsDevice();
-	m_renderer = device->GetRenderer();
+	Driver::IGraphicsDevice* device = m_manager->getGraphicsDevice();
+	m_renderer = device->getRenderer();
 }
 
 //------------------------------------------------------------------------------
@@ -48,18 +48,18 @@ void MeshRenderFeature::DrawMesh(MeshResource* mesh, int startIndex, int primiti
 	mesh->CommitRenderData(&decls, vb, &vbCount, &ib);
 
 	DrawMeshCommandData data;
-	data.vertexDeclaration = decls->GetDeviceObject();
+	data.vertexDeclaration = decls->getDeviceObject();
 	for (int i = 0; i < vbCount; ++i)
 	{
-		data.vertexBuffers[i] = vb[i]->ResolveRHIObject();
+		data.vertexBuffers[i] = vb[i]->resolveRHIObject();
 	}
 	data.vertexBuffersCount = vbCount;
-	data.indexBuffer = ib->ResolveRHIObject();
+	data.indexBuffer = ib->resolveRHIObject();
 	data.startIndex = startIndex;
 	data.primitiveCount = primitiveCount;
 	data.primitiveType = primitiveType;
 	LN_ENQUEUE_RENDER_COMMAND_2(
-		FlushState, m_manager,
+		flushState, m_manager,
 		MeshRenderFeature*, _this,
 		DrawMeshCommandData, data,
 		{
@@ -76,7 +76,7 @@ void MeshRenderFeature::DrawMeshImpl(const DrawMeshCommandData& data)
 		m_renderer->SetVertexBuffer(i, data.vertexBuffers[i]);
 	}
 	m_renderer->SetIndexBuffer(data.indexBuffer);
-	m_renderer->DrawPrimitiveIndexed(data.primitiveType, data.startIndex, data.primitiveCount);
+	m_renderer->drawPrimitiveIndexed(data.primitiveType, data.startIndex, data.primitiveCount);
 }
 
 } // namespace detail

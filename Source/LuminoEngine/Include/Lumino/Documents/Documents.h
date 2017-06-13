@@ -43,14 +43,14 @@ protected:
 	{}
 
 
-	void SetThisRevision(int rev) { m_thisRevision = rev; }
-	void SetChildrenRevision(int rev) { m_childrenRevision = rev; }
+	void setThisRevision(int rev) { m_thisRevision = rev; }
+	void setChildrenRevision(int rev) { m_childrenRevision = rev; }
 
 LN_INTERNAL_ACCESS:
-	void SetParentContent(DocumentContentElement* parent) { m_parent = parent; IncreaseRevision(); }
-	int GetThisRevision() const { return m_thisRevision; }
-	int GetChildrenRevision() const { return m_childrenRevision; }
-	void IncreaseRevision() { m_thisRevision++; if (m_parent != nullptr) { m_parent->m_childrenRevision++; } }
+	void setParentContent(DocumentContentElement* parent) { m_parent = parent; increaseRevision(); }
+	int getThisRevision() const { return m_thisRevision; }
+	int getChildrenRevision() const { return m_childrenRevision; }
+	void increaseRevision() { m_thisRevision++; if (m_parent != nullptr) { m_parent->m_childrenRevision++; } }
 
 private:
 	DocumentContentElement*		m_parent;
@@ -76,10 +76,10 @@ public:
 
 LN_INTERNAL_ACCESS:
 	void replace(int offset, int length, const StringRef& text);
-	const List<RefPtr<Block>>& GetBlocks() const { return m_blockList; }
+	const List<RefPtr<Block>>& getBlocks() const { return m_blockList; }
 
 private:
-	void ReplaceInternal(int offset, int length, const UTF32* text, int len);
+	void replaceInternal(int offset, int length, const UTF32* text, int len);
 
 	ln::detail::DocumentsManager*	m_manager;
 	List<RefPtr<Block>>				m_blockList;
@@ -94,39 +94,39 @@ class TextElement
 public:
 
 	/** フォントファミリ名を設定します。*/
-	void SetFontFamily(const StringRef& value) { m_fontData.Family = value; m_fontDataModified = true; }
+	void setFontFamily(const StringRef& value) { m_fontData.Family = value; m_fontDataModified = true; }
 
 	/** フォントファミリ名を取得します。*/
-	const String& GetFontFamily() const { return m_fontData.Family; }
+	const String& getFontFamily() const { return m_fontData.Family; }
 
 	/** フォントサイズを設定します。*/
-	void SetFontSize(int value) { m_fontData.Size = value; m_fontDataModified = true; }
+	void setFontSize(int value) { m_fontData.Size = value; m_fontDataModified = true; }
 
 	/** フォントサイズを取得します。*/
-	int GetFontSize() const { return m_fontData.Size; }
+	int getFontSize() const { return m_fontData.Size; }
 
 	/** フォントの太字有無を設定します。*/
-	void SetFontBold(bool value) { m_fontData.IsBold = value; m_fontDataModified = true; }
+	void setFontBold(bool value) { m_fontData.IsBold = value; m_fontDataModified = true; }
 
 	/** フォントの太字有無を取得します。*/
-	bool IsFontBold() const { return m_fontData.IsBold; }
+	bool isFontBold() const { return m_fontData.IsBold; }
 
 	/** フォントのイタリック体有無を設定します。*/
-	void SetFontItalic(bool value) { m_fontData.IsItalic = value; m_fontDataModified = true; }
+	void setFontItalic(bool value) { m_fontData.IsItalic = value; m_fontDataModified = true; }
 
 	/** フォントのイタリック体有無を取得します。*/
-	bool IsFontItalic() const { return m_fontData.IsItalic; }
+	bool isFontItalic() const { return m_fontData.IsItalic; }
 
 	/** フォントのアンチエイリアス有無を設定します。*/
-	void SetFontAntiAlias(bool value) { m_fontData.IsAntiAlias = value; m_fontDataModified = true; }
+	void setFontAntiAlias(bool value) { m_fontData.IsAntiAlias = value; m_fontDataModified = true; }
 
 	/** フォントのアンチエイリアス有無を取得します。*/
-	bool IsFontAntiAlias() const { return m_fontData.IsAntiAlias; }
+	bool isFontAntiAlias() const { return m_fontData.IsAntiAlias; }
 
-	Brush* GetForeground() const;
+	Brush* getForeground() const;
 
 LN_PROTECTED_INTERNAL_ACCESS:
-	virtual void OnFontDataChanged(const ln::detail::FontData& newData);
+	virtual void onFontDataChanged(const ln::detail::FontData& newData);
 
 
 LN_CONSTRUCT_ACCESS:
@@ -135,13 +135,13 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 LN_INTERNAL_ACCESS:
-	ln::detail::DocumentsManager* GetManager() const { return m_manager; }
-	virtual InternalTextElementType GetInternalTextElementType() const;
-	//void SetParent(TextElement* parent) { m_parent = parent; }
+	ln::detail::DocumentsManager* getManager() const { return m_manager; }
+	virtual InternalTextElementType getInternalTextElementType() const;
+	//void setParent(TextElement* parent) { m_parent = parent; }
 	//TextElement* GetParent() const { return m_parent; }
-	//int GetThisRevision() const { return m_thisRevision; }
-	//int GetChildrenRevision() const { return m_childrenRevision; }
-	bool IsDeleted() const { return m_deleted; }
+	//int getThisRevision() const { return m_thisRevision; }
+	//int getChildrenRevision() const { return m_childrenRevision; }
+	bool isDeleted() const { return m_deleted; }
 
 private:
 	ln::detail::DocumentsManager*		m_manager;
@@ -168,14 +168,14 @@ public:
 	virtual ~Block();
 	void initialize();
 
-	void AddInline(Inline* inl);
-	void ClearInlines();
+	void addInline(Inline* inl);
+	void clearInlines();
 
 protected:
 
 LN_INTERNAL_ACCESS:
-	void InsertInlines(int index, const List<RefPtr<Inline>>& inlines);
-	const List<RefPtr<Inline>>& GetInlines() const { return m_inlines; }
+	void insertInlines(int index, const List<RefPtr<Inline>>& inlines);
+	const List<RefPtr<Inline>>& getInlines() const { return m_inlines; }
 
 private:
 	List<RefPtr<Inline>>	m_inlines;
@@ -226,8 +226,8 @@ public:
 
 protected:
 	// TextElement interface
-	virtual void OnFontDataChanged(const ln::detail::FontData& newData) override;
-	virtual InternalTextElementType GetInternalTextElementType() const;
+	virtual void onFontDataChanged(const ln::detail::FontData& newData) override;
+	virtual InternalTextElementType getInternalTextElementType() const;
 
 LN_INTERNAL_ACCESS:
 	const UTF32* getText() const { return m_text.c_str(); }
@@ -266,7 +266,7 @@ public:
 	void initialize();
 
 private:
-	virtual InternalTextElementType GetInternalTextElementType() const;
+	virtual InternalTextElementType getInternalTextElementType() const;
 };
 
 
@@ -294,11 +294,11 @@ class VisualBlock;
 //	void initialize();
 //
 //LN_INTERNAL_ACCESS:
-//	//void MeasureLayout(const Size& availableSize);
-//	//void ArrangeLayout(const Rect& finalLocalRect);
-//	//const Size& GetDesiredSize() const { return m_desiredSize; }
+//	//void measureLayout(const Size& availableSize);
+//	//void arrangeLayout(const Rect& finalLocalRect);
+//	//const Size& getDesiredSize() const { return m_desiredSize; }
 //
-//	void Render(DrawList* renderer);
+//	void render(DrawList* renderer);
 //
 //private:
 //	//Size	m_desiredSize;
@@ -321,11 +321,11 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 LN_INTERNAL_ACCESS:
-	//void MeasureLayout(const Size& availableSize);
-	//void ArrangeLayout(const Rect& finalLocalRect);
-	//const Size& GetDesiredSize() const { return m_desiredSize; }
+	//void measureLayout(const Size& availableSize);
+	//void arrangeLayout(const Rect& finalLocalRect);
+	//const Size& getDesiredSize() const { return m_desiredSize; }
 
-	void Render(DrawList* renderer);
+	void render(DrawList* renderer);
 
 private:
 	//Size	m_desiredSize;
@@ -359,9 +359,9 @@ LN_CONSTRUCT_ACCESS:
 	void initialize(Inline* inl);
 
 LN_INTERNAL_ACCESS:
-	void MeasureLayout(const Size& availableSize, VisualBlock* rootBlock);
-	//void ArrangeLayout(const Rect& finalLocalRect);
-	void Render(const Matrix& transform, ln::detail::IDocumentsRenderer* renderer);
+	void measureLayout(const Size& availableSize, VisualBlock* rootBlock);
+	//void arrangeLayout(const Rect& finalLocalRect);
+	void render(const Matrix& transform, ln::detail::IDocumentsRenderer* renderer);
 
 private:
 	RefPtr<Inline>	m_inline;
@@ -378,9 +378,9 @@ class VisualBlock
 	: public VisualTextElement
 {
 public:
-	void SetBlock(Block* block);
+	void setBlock(Block* block);
 
-	bool IsModelDeleted() const;
+	bool isModelDeleted() const;
 
 LN_CONSTRUCT_ACCESS:
 	VisualBlock();
@@ -388,13 +388,13 @@ LN_CONSTRUCT_ACCESS:
 	void initialize(Block* block);
 
 LN_INTERNAL_ACCESS:
-	void MeasureLayout(const Size& availableSize);
-	void ArrangeLayout(const Rect& finalLocalRect);
-	void Render(DrawList* renderer);
-	void AddVisualFragment(VisualTextFragment* glyph) { m_visualFragments.add(glyph); }
+	void measureLayout(const Size& availableSize);
+	void arrangeLayout(const Rect& finalLocalRect);
+	void render(DrawList* renderer);
+	void addVisualFragment(VisualTextFragment* glyph) { m_visualFragments.add(glyph); }
 
 private:
-	void RebuildVisualLineList();
+	void rebuildVisualLineList();
 
 	RefPtr<Block>						m_block;
 	List<RefPtr<VisualInline>>			m_visualInlines;
@@ -413,9 +413,9 @@ LN_CONSTRUCT_ACCESS:
 	void initialize(Document* document);
 
 LN_INTERNAL_ACCESS:
-	void MeasureLayout(const Size& availableSize);
-	void ArrangeLayout(const Rect& finalLocalRect);
-	void Render(DrawList* renderer);
+	void measureLayout(const Size& availableSize);
+	void arrangeLayout(const Rect& finalLocalRect);
+	void render(DrawList* renderer);
 
 private:
 	Document*					m_document;

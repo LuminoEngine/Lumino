@@ -32,7 +32,7 @@ int GenericStringRef<wchar_t>::copyToLocal8Bit(char* dest, int destLen) const
 	Win32CodePageEncoding::Win32CodePageEncoder enc(cpInfo);
 	size_t byteUsed = 0;
 	size_t charUsed = 0;
-	enc.ConvertFromUTF16(m_str + m_pos, m_len, (byte_t*)dest, destLen - 1, &byteUsed, &charUsed);
+	enc.convertFromUTF16(m_str + m_pos, m_len, (byte_t*)dest, destLen - 1, &byteUsed, &charUsed);
 	dest[byteUsed] = '\0';
 	return byteUsed;
 #else
@@ -47,7 +47,7 @@ int GenericStringRef<wchar_t>::copyToLocal8Bit(char* dest, int destLen) const
 	//UTF8Encoding::UTF8Encoder enc(false);
 	//size_t byteUsed = 0;
 	//size_t charUsed = 0;
-	//enc.ConvertFromUTF16(m_str + m_pos, m_len, (byte_t*)dest, destLen - 1, &byteUsed, &charUsed);
+	//enc.convertFromUTF16(m_str + m_pos, m_len, (byte_t*)dest, destLen - 1, &byteUsed, &charUsed);
 	//dest[byteUsed] = '\0';
 	//return byteUsed;
 #endif

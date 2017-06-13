@@ -25,13 +25,13 @@ public:
 
 public:
 	virtual size_t getByteCount() const { return m_byteCount; }
-	virtual IndexBufferFormat GetFormat() const { return m_format; }
+	virtual IndexBufferFormat getFormat() const { return m_format; }
 	virtual ResourceUsage GetUsage() const { return m_usage; }
-	virtual void SetSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes);
-	virtual void Lock(void** lockedBuffer, size_t* lockedSize);
-	virtual void Unlock();
-	virtual void OnLostDevice();
-	virtual void OnResetDevice();
+	virtual void setSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes);
+	virtual void lock(void** lockedBuffer, size_t* lockedSize);
+	virtual void unlock();
+	virtual void onLostDevice();
+	virtual void onResetDevice();
 
 private:
 	GLuint              m_indexBufferObject;

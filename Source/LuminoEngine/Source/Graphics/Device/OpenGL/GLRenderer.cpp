@@ -74,7 +74,7 @@ GLuint GLRenderer::GetVertexArrayObject()
 }
 
 ////------------------------------------------------------------------------------
-//void GLRenderer::SetRenderTarget(int index, ITexture* texture)
+//void GLRenderer::setRenderTarget(int index, ITexture* texture)
 //{
 //	if (texture != nullptr) {
 //		LN_THROW((texture->GetTextureType() == TextureType_RenderTarget), ArgumentException);
@@ -84,13 +84,13 @@ GLuint GLRenderer::GetVertexArrayObject()
 //}
 //
 ////------------------------------------------------------------------------------
-//ITexture* GLRenderer::GetRenderTarget(int index)
+//ITexture* GLRenderer::getRenderTarget(int index)
 //{
 //	return m_currentRenderTargets[index];
 //}
 //
 ////------------------------------------------------------------------------------
-//void GLRenderer::SetDepthBuffer(ITexture* texture)
+//void GLRenderer::setDepthBuffer(ITexture* texture)
 //{
 //	if (texture != nullptr)
 //	{
@@ -101,7 +101,7 @@ GLuint GLRenderer::GetVertexArrayObject()
 //}
 
 //------------------------------------------------------------------------------
-//ITexture* GLRenderer::GetDepthBuffer()
+//ITexture* GLRenderer::getDepthBuffer()
 //{
 //	LN_THROW(0, NotImplementedException);
 //	return 0;
@@ -467,7 +467,7 @@ void GLRenderer::OnDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex,
 	// 引数 start end には、本来であれば0～vertexCountまでのインデックスの中の最大、最小の値を渡す。
 	// http://wiki.livedoor.jp/mikk_ni3_92/d/glDrawRangeElements%A4%CB%A4%E8%A4%EB%C9%C1%B2%E8
 	// ただ、全範囲を渡しても特に問題なさそうなのでこのまま。
-	if (m_currentIndexBuffer->GetFormat() == IndexBufferFormat_UInt16)
+	if (m_currentIndexBuffer->getFormat() == IndexBufferFormat_UInt16)
 	{
 		glDrawElements(gl_prim, vertexCount, GL_UNSIGNED_SHORT, (GLvoid*)(sizeof(GLushort) * startIndex));
 	}

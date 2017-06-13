@@ -19,12 +19,12 @@ TEST_F(Test_UI_TextBlock, DefaultLayout)
 		となる。
 	*/
 
-	auto uiRoot = Engine::GetMainWindow();
+	auto uiRoot = Engine::getMainWindow();
 	auto textBlock1 = UITextBlock::create();
 	textBlock1->setText(_T("TextBlock"));
 	uiRoot->AddChild(textBlock1);
 
-	Engine::Update();
+	Engine::update();
 
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_TextBlock.Basic.png")));
 	uiRoot->RemoveChild(textBlock1);
@@ -49,11 +49,11 @@ TEST_F(Test_UI_Image, Basic)
 
 	// <Test> アルファブレンドは最初から有効
 	{
-		auto uiRoot = Engine::GetMainWindow();
+		auto uiRoot = Engine::getMainWindow();
 		auto image1 = UIImage::create(LN_LOCALFILE("../Graphics/TestData/Sprite2.png"));
 		uiRoot->AddChild(image1);
 
-		Engine::Update();
+		Engine::update();
 
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_Image.Basic1.png")));
 		uiRoot->RemoveChild(image1);

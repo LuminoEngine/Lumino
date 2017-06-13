@@ -64,11 +64,11 @@ SceneNode::~SceneNode()
 //------------------------------------------------------------------------------
 void SceneNode::initialize()
 {
-	m_manager = detail::EngineDomain::GetSceneGraphManager();
+	m_manager = detail::EngineDomain::getSceneGraphManager();
 }
 
 //------------------------------------------------------------------------------
-void SceneNode::SetName(const String& name)
+void SceneNode::setName(const String& name)
 {
 	if (m_name != name)
 	{
@@ -131,10 +131,10 @@ void SceneNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 	//	m_combinedGlobalMatrix = localMatrix;
 
 	//// Component
-	//WorldObject* owner = GetOwnerObject();
+	//WorldObject* owner = getOwnerObject();
 	//if (owner != nullptr)
 	//{
-	//	m_combinedGlobalMatrix *= owner->transform.GetTransformMatrix();
+	//	m_combinedGlobalMatrix *= owner->transform.getTransformMatrix();
 	//}
 
 	OnUpdateFrame(deltaTime);
@@ -164,9 +164,9 @@ void SceneNode::OnRender2(DrawList* renderer)
 }
 
 //------------------------------------------------------------------------------
-void SceneNode::OnUpdate()
+void SceneNode::onUpdate()
 {
-	Component::OnUpdate();
+	Component::onUpdate();
 }
 
 //==============================================================================

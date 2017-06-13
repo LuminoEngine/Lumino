@@ -1,6 +1,5 @@
 ﻿
 #include "../Internal.h"
-#include <windows.h>
 #include <process.h>
 #include <Lumino/Threading/Thread.h>
 
@@ -50,7 +49,7 @@ public:
 #endif
 	}
 
-	void Wait()
+	void wait()
 	{
 		if (mThread)
 		{
@@ -61,17 +60,17 @@ public:
 		mThreadID = 0;
 	}
 
-	intptr_t GetThreadId() const
+	intptr_t getThreadId() const
 	{
 		return mThreadID;
 	}
 
-	static void Sleep(int milliseconds)
+	static void sleep(int milliseconds)
 	{
 		::Sleep(milliseconds);
 	}
 
-	static intptr_t GetCurrentThreadId()
+	static intptr_t getCurrentThreadId()
 	{
 		return ::GetCurrentThreadId();
 	}

@@ -279,35 +279,35 @@ protected:
 
 
 //---------------------------------------------------------------------
-TEST_F(Test_Base_Event, AddHandler)
+TEST_F(Test_Base_Event, addHandler)
 {
 	Class1 c1;
 
 	Event01<int> ev01;
-	ev01.AddHandler(LN_CreateDelegate(&c1, &Class1::Callback01_1));
+	ev01.addHandler(LN_CreateDelegate(&c1, &Class1::Callback01_1));
 
 	Event02<int, int> ev02;
-	ev02.AddHandler(LN_CreateDelegate(&c1, &Class1::Callback02_1));
+	ev02.addHandler(LN_CreateDelegate(&c1, &Class1::Callback02_1));
 
 	Event03<int, int, int> ev03;
-	ev03.AddHandler(LN_CreateDelegate(&c1, &Class1::Callback03_1));
+	ev03.addHandler(LN_CreateDelegate(&c1, &Class1::Callback03_1));
 
 	Event04<int, int, int, int> ev04;
-	ev04.AddHandler(LN_CreateDelegate(&c1, &Class1::Callback04_1));
+	ev04.addHandler(LN_CreateDelegate(&c1, &Class1::Callback04_1));
 }
 
 //---------------------------------------------------------------------
-TEST_F(Test_Base_Event, RemoveHandler)
+TEST_F(Test_Base_Event, removeHandler)
 {
 	// <TEST> 同一 delegate だけ除外できること。
 	{
 		Class1 c1;
 		Event01<int> ev01;
-		ev01.AddHandler(LN_CreateDelegate(&c1, &Class1::Callback01_1));
+		ev01.addHandler(LN_CreateDelegate(&c1, &Class1::Callback01_1));
 		ASSERT_FALSE(ev01.isEmpty());
-		ev01.RemoveHandler(LN_CreateDelegate(&c1, &Class1::Callback01_2));
+		ev01.removeHandler(LN_CreateDelegate(&c1, &Class1::Callback01_2));
 		ASSERT_FALSE(ev01.isEmpty());	// 違う関数なので remove できない
-		ev01.RemoveHandler(LN_CreateDelegate(&c1, &Class1::Callback01_1));
+		ev01.removeHandler(LN_CreateDelegate(&c1, &Class1::Callback01_1));
 		ASSERT_TRUE(ev01.isEmpty());	// 同じ関数なので remove できる
 	}
 
@@ -316,11 +316,11 @@ TEST_F(Test_Base_Event, RemoveHandler)
 		Class1 c1;
 		Class1 c2;
 		Event02<int, int> ev02;
-		ev02.AddHandler(LN_CreateDelegate(&c1, &Class1::Callback02_1));
+		ev02.addHandler(LN_CreateDelegate(&c1, &Class1::Callback02_1));
 		ASSERT_FALSE(ev02.isEmpty());
-		ev02.RemoveHandler(LN_CreateDelegate(&c2, &Class1::Callback02_1));
+		ev02.removeHandler(LN_CreateDelegate(&c2, &Class1::Callback02_1));
 		ASSERT_FALSE(ev02.isEmpty());	// 違うインスタンスなので remove できない
-		ev02.RemoveHandler(LN_CreateDelegate(&c1, &Class1::Callback02_1));
+		ev02.removeHandler(LN_CreateDelegate(&c1, &Class1::Callback02_1));
 		ASSERT_TRUE(ev02.isEmpty());	// 同じインスタンスなので remove できる
 	}
 }

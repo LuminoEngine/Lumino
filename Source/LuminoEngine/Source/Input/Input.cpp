@@ -13,49 +13,49 @@ LN_NAMESPACE_BEGIN
 //------------------------------------------------------------------------------
 bool Input::IsPressed(const StringRef& buttonName)
 {
-	return detail::InputManager::GetInstance()->GetVirtualPad(0)->IsPressed(buttonName);
+	return detail::InputManager::getInstance()->GetVirtualPad(0)->IsPressed(buttonName);
 }
 
 //------------------------------------------------------------------------------
 bool Input::IsTriggered(const StringRef& buttonName)
 {
-	return detail::InputManager::GetInstance()->GetVirtualPad(0)->IsTriggered(buttonName);
+	return detail::InputManager::getInstance()->GetVirtualPad(0)->IsTriggered(buttonName);
 }
 
 //------------------------------------------------------------------------------
 bool Input::IsOffTriggered(const StringRef& buttonName)
 {
-	return detail::InputManager::GetInstance()->GetVirtualPad(0)->IsOffTriggered(buttonName);
+	return detail::InputManager::getInstance()->GetVirtualPad(0)->IsOffTriggered(buttonName);
 }
 
 //------------------------------------------------------------------------------
 bool Input::IsRepeated(const StringRef& buttonName)
 {
-	return detail::InputManager::GetInstance()->GetVirtualPad(0)->IsRepeated(buttonName);
+	return detail::InputManager::getInstance()->GetVirtualPad(0)->IsRepeated(buttonName);
 }
 
 //------------------------------------------------------------------------------
 float Input::GetAxisValue(const StringRef& buttonName)
 {
-	return detail::InputManager::GetInstance()->GetVirtualPad(0)->GetAxisValue(buttonName);
+	return detail::InputManager::getInstance()->GetVirtualPad(0)->GetAxisValue(buttonName);
 }
 
 //------------------------------------------------------------------------------
 void Input::AddButtonBinding(const StringRef& buttonName, InputBinding* binding)
 {
-	return detail::InputManager::GetInstance()->GetVirtualPad(0)->AddBinding(buttonName, binding);
+	return detail::InputManager::getInstance()->GetVirtualPad(0)->AddBinding(buttonName, binding);
 }
 
 //------------------------------------------------------------------------------
 void Input::RemoveBinding(InputBinding* binding)
 {
-	return detail::InputManager::GetInstance()->GetVirtualPad(0)->RemoveBinding(binding);
+	return detail::InputManager::getInstance()->GetVirtualPad(0)->RemoveBinding(binding);
 }
 
 //------------------------------------------------------------------------------
 void Input::ClearBindings()
 {
-	return detail::InputManager::GetInstance()->GetVirtualPad(0)->ClearBindings();
+	return detail::InputManager::getInstance()->GetVirtualPad(0)->ClearBindings();
 }
 
 

@@ -11,13 +11,13 @@ lnnvg__renderTriangles
 lnnvg__renderFlush
 	glnvg__fill
 		glnvg__setUniforms
-		DrawPrimitive
+		drawPrimitive
 	glnvg__convexFill
 		glnvg__setUniforms
-		DrawPrimitive
+		drawPrimitive
 	glnvg__stroke
 		glnvg__setUniforms
-		DrawPrimitive
+		drawPrimitive
 
 
 */
@@ -396,7 +396,7 @@ struct LNNVGcontext
 		memset(base, 0, sizeof(GLNVGcontext));
 
 
-		Driver::IGraphicsDevice* device = manager->GetGraphicsDevice();
+		Driver::IGraphicsDevice* device = manager->getGraphicsDevice();
 		
 		VertexElement elements[] =
 		{
@@ -406,14 +406,14 @@ struct LNNVGcontext
 		m_vertexDeclaration.attach(device->CreateVertexDeclaration(elements, 2), false);
 	}
 
-	Driver::IRenderer* GetRenderer()
+	Driver::IRenderer* getRenderer()
 	{
-		return manager->GetGraphicsDevice()->GetRenderer();
+		return manager->getGraphicsDevice()->getRenderer();
 	}
 
 	void ApplyVertexBuffer()
 	{
-		Driver::IGraphicsDevice* device = manager->GetGraphicsDevice();
+		Driver::IGraphicsDevice* device = manager->getGraphicsDevice();
 		size_t bufferSize = nverts * sizeof(NVGvertex);
 		if (m_vertexBuffer == nullptr || bufferSize > m_vertexBuffer->getByteCount())
 		{
@@ -421,10 +421,10 @@ struct LNNVGcontext
 		}
 		else
 		{
-			m_vertexBuffer->SetSubData(0, verts, bufferSize);
+			m_vertexBuffer->setSubData(0, verts, bufferSize);
 		}
 
-		Driver::IRenderer* renderer = device->GetRenderer();
+		Driver::IRenderer* renderer = device->getRenderer();
 		renderer->SetVertexDeclaration(m_vertexDeclaration);
 		renderer->SetVertexBuffer(0, m_vertexBuffer);
 	}
@@ -447,16 +447,16 @@ static void glnvg__setUniforms(GLNVGcontext* gl, int uniformOffset, int image)
 	glBindBufferRange(GL_UNIFORM_BUFFER, GLNVG_FRAG_BINDING, gl->fragBuf, uniformOffset, sizeof(GLNVGfragUniforms));
 #else
 	GLNVGfragUniforms* frag = nvg__fragUniformPtr(gl, uniformOffset);
-	lnc->varFrag->SetVectorArray((Vector4*)&(frag->uniformArray[0][0]), NANOVG_GL_UNIFORMARRAY_SIZE);
+	lnc->varFrag->setVectorArray((Vector4*)&(frag->uniformArray[0][0]), NANOVG_GL_UNIFORMARRAY_SIZE);
 
 	//glUniform4fv(gl->shader.loc[GLNVG_LOC_FRAG], NANOVG_GL_UNIFORMARRAY_SIZE, &(frag->uniformArray[0][0]));
 #endif
 
-	lnc->varViewSize->SetVector(Vector4(lnc->view[0], lnc->view[1], 0, 0));
+	lnc->varViewSize->setVector(Vector4(lnc->view[0], lnc->view[1], 0, 0));
 	if (image != 0)
-		lnc->varTex->SetTexture(LNNVGcontext_GetTexture(lnc, image));
+		lnc->varTex->setTexture(LNNVGcontext_GetTexture(lnc, image));
 	else
-		lnc->varTex->SetTexture(nullptr);
+		lnc->varTex->setTexture(nullptr);
 }
 
 static void glnvg__fill(LNNVGcontext* gl, GLNVGcall* call)
@@ -491,21 +491,21 @@ static void glnvg__fill(LNNVGcontext* gl, GLNVGcall* call)
 	glnvg__setUniforms(gl, call->uniformOffset + gl->fragSize, call->image);
 	glnvg__checkError(gl, "fill fill");
 
-	Driver::IRenderer* renderer = gl->GetRenderer();
-	renderer->SetShaderPass(gl->shaderPass);
+	Driver::IRenderer* renderer = gl->getRenderer();
+	renderer->setShaderPass(gl->shaderPass);
 
 	if (gl->flags & NVG_ANTIALIAS) {
 		//glnvg__stencilFunc(gl, GL_EQUAL, 0x00, 0xff);
 		//glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 		// Draw fringes
 		for (i = 0; i < npaths; i++)
-			renderer->DrawPrimitive(PrimitiveType_TriangleStrip, paths[i].strokeOffset, paths[i].strokeCount - 2);
+			renderer->drawPrimitive(PrimitiveType_TriangleStrip, paths[i].strokeOffset, paths[i].strokeCount - 2);
 	}
 
 	// Draw fill
 	//glnvg__stencilFunc(gl, GL_NOTEQUAL, 0x0, 0xff);	// ステンシルへの書き込み禁止
 	//glStencilOp(GL_ZERO, GL_ZERO, GL_ZERO);
-	renderer->DrawPrimitive(PrimitiveType_TriangleList, call->triangleOffset, call->triangleCount / 3);
+	renderer->drawPrimitive(PrimitiveType_TriangleList, call->triangleOffset, call->triangleCount / 3);
 
 	//glDisable(GL_STENCIL_TEST);
 }
@@ -518,16 +518,16 @@ static void glnvg__convexFill(LNNVGcontext* gl, GLNVGcall* call)
 	glnvg__setUniforms(gl, call->uniformOffset, call->image);
 	glnvg__checkError(gl, "convex fill");
 
-	Driver::IRenderer* renderer = gl->GetRenderer();
-	renderer->SetShaderPass(gl->shaderPass);
+	Driver::IRenderer* renderer = gl->getRenderer();
+	renderer->setShaderPass(gl->shaderPass);
 
 	for (i = 0; i < npaths; i++)
-		renderer->DrawPrimitive(PrimitiveType_TriangleFan, paths[i].fillOffset, paths[i].fillCount - 2);
+		renderer->drawPrimitive(PrimitiveType_TriangleFan, paths[i].fillOffset, paths[i].fillCount - 2);
 
 	if (gl->flags & NVG_ANTIALIAS) {
 		// Draw fringes
 		for (i = 0; i < npaths; i++)
-			renderer->DrawPrimitive(PrimitiveType_TriangleStrip, paths[i].strokeOffset, paths[i].strokeCount - 2);
+			renderer->drawPrimitive(PrimitiveType_TriangleStrip, paths[i].strokeOffset, paths[i].strokeCount - 2);
 	}
 }
 
@@ -536,8 +536,8 @@ static void glnvg__stroke(LNNVGcontext* gl, GLNVGcall* call)
 	GLNVGpath* paths = &gl->paths[call->pathOffset];
 	int npaths = call->pathCount, i;
 
-	Driver::IRenderer* renderer = gl->GetRenderer();
-	renderer->SetShaderPass(gl->shaderPass);
+	Driver::IRenderer* renderer = gl->getRenderer();
+	renderer->setShaderPass(gl->shaderPass);
 
 	if (gl->flags & NVG_STENCIL_STROKES) {
 #if 1
@@ -580,7 +580,7 @@ static void glnvg__stroke(LNNVGcontext* gl, GLNVGcall* call)
 		glnvg__checkError(gl, "stroke fill");
 		// Draw Strokes
 		for (i = 0; i < npaths; i++)
-			renderer->DrawPrimitive(PrimitiveType_TriangleStrip, paths[i].strokeOffset, paths[i].strokeCount - 2);
+			renderer->drawPrimitive(PrimitiveType_TriangleStrip, paths[i].strokeOffset, paths[i].strokeCount - 2);
 	}
 }
 
@@ -588,7 +588,7 @@ static void glnvg__stroke(LNNVGcontext* gl, GLNVGcall* call)
 static int lnnvg__renderCreate(void* uptr)
 {
 	LNNVGcontext* lnc = (LNNVGcontext*)uptr;
-	Driver::IGraphicsDevice* device = lnc->manager->GetGraphicsDevice();
+	Driver::IGraphicsDevice* device = lnc->manager->getGraphicsDevice();
 
 	// シェーダ
 	static const byte_t codeData[] =
@@ -596,13 +596,13 @@ static int lnnvg__renderCreate(void* uptr)
 #include "../Graphics/Resource/NanoVGShader.fx.h"
 	};
 	static const size_t codeLen = LN_ARRAY_SIZE_OF(codeData);
-	StringA code = lnc->manager->GetCommonShaderHeader();
+	StringA code = lnc->manager->getCommonShaderHeader();
 	code.append((const char*)codeData, codeLen);
 
 	ShaderCompileResult result;
 	lnc->shader.attach(device->CreateShader(code.c_str(), code.getLength(), &result), false);
 	LN_THROW(result.Level != ShaderCompileResultLevel_Error, CompilationException, result);
-	lnc->shaderPass = lnc->shader->GetTechnique(0)->GetPass(0);
+	lnc->shaderPass = lnc->shader->GetTechnique(0)->getPass(0);
 	lnc->varViewSize = lnc->shader->GetVariableByName(_T("viewSize"));
 	lnc->varFrag = lnc->shader->GetVariableByName(_T("frag"));
 	lnc->varTex = lnc->shader->GetVariableByName(_T("tex"));
@@ -749,7 +749,7 @@ static void lnnvg__renderFlush(void* uptr, NVGcompositeOperationState compositeO
 #endif
 	}
 
-	// Reset calls
+	// reset calls
 	gl->nverts = 0;
 	gl->npaths = 0;
 	gl->ncalls = 0;
@@ -974,16 +974,16 @@ void NanoVGRenderFeature::ExecuteCommand(NanoVGCommandList* commandList)
 		});
 }
 //------------------------------------------------------------------------------
-void NanoVGRenderFeature::OnSetState(const DrawElementBatch* state)
+void NanoVGRenderFeature::onSetState(const DrawElementBatch* state)
 {
-	NanoVGCommandHelper::ExpandState(state->GetTransfrom(), state->state.GetBrush(), state->state.GetPen(), &m_state);
+	NanoVGCommandHelper::ExpandState(state->GetTransfrom(), state->state.getBrush(), state->state.GetPen(), &m_state);
 }
 
 //------------------------------------------------------------------------------
 void NanoVGRenderFeature::ExecuteCommandInternal(const NanoVGState& state, NanoVGCommandList* commandList)
 {
-	Driver::IRenderer* renderer = m_manager->GetGraphicsDevice()->GetRenderer();
-	const SizeI& size = renderer->GetRenderTarget(0)->getSize();
+	Driver::IRenderer* renderer = m_manager->getGraphicsDevice()->getRenderer();
+	const SizeI& size = renderer->getRenderTarget(0)->getSize();
 
 	// 描画開始前にテクスチャテーブルをクリア
 	LNNVGcontext* lnc = (LNNVGcontext*)nvgInternalParams(m_nvgContext)->userPtr;
@@ -1005,7 +1005,7 @@ void NanoVGRenderFeature::PushCommandList(NanoVGCommandList* commandList)
 {
 	commandList->clear();
 
-	m_manager->GetNanoVGCommandListCache()->ReleaseCommandList(commandList);
+	m_manager->getNanoVGCommandListCache()->releaseCommandList(commandList);
 }
 
 //==============================================================================
@@ -1014,92 +1014,92 @@ void NanoVGRenderFeature::PushCommandList(NanoVGCommandList* commandList)
 void NanoVGCommandHelper::nvgBeginPath(NanoVGCommandList* ctx)
 {
 	float cmd[] = { (float)Cmd_nvgBeginPath };
-	ctx->AllocData(sizeof(cmd), cmd);
+	ctx->allocData(sizeof(cmd), cmd);
 }
 void NanoVGCommandHelper::nvgMoveTo(NanoVGCommandList* ctx, float x, float y)
 {
 	float cmd[] = { (float)Cmd_nvgMoveTo, x, y };
-	ctx->AllocData(sizeof(cmd), cmd);
+	ctx->allocData(sizeof(cmd), cmd);
 }
 void NanoVGCommandHelper::nvgLineTo(NanoVGCommandList* ctx, float x, float y)
 {
 	float cmd[] = { (float)Cmd_nvgLineTo, x, y };
-	ctx->AllocData(sizeof(cmd), cmd);
+	ctx->allocData(sizeof(cmd), cmd);
 }
 void NanoVGCommandHelper::nvgBezierTo(NanoVGCommandList* ctx, float c1x, float c1y, float c2x, float c2y, float x, float y)
 {
 	float cmd[] = { (float)Cmd_nvgBezierTo, c1x, c1y, c2x, c2y, x, y };
-	ctx->AllocData(sizeof(cmd), cmd);
+	ctx->allocData(sizeof(cmd), cmd);
 }
 void NanoVGCommandHelper::nvgQuadTo(NanoVGCommandList* ctx, float cx, float cy, float x, float y)
 {
 	float cmd[] = { (float)Cmd_nvgQuadTo, cx, cy, x, y };
-	ctx->AllocData(sizeof(cmd), cmd);
+	ctx->allocData(sizeof(cmd), cmd);
 }
 void NanoVGCommandHelper::nvgArcTo(NanoVGCommandList* ctx, float x1, float y1, float x2, float y2, float radius)
 {
 	float cmd[] = { (float)Cmd_nvgArcTo, x1, y1, x2, y2, radius };
-	ctx->AllocData(sizeof(cmd), cmd);
+	ctx->allocData(sizeof(cmd), cmd);
 }
 void NanoVGCommandHelper::nvgClosePath(NanoVGCommandList* ctx)
 {
 	float cmd[] = { (float)Cmd_nvgClosePath };
-	ctx->AllocData(sizeof(cmd), cmd);
+	ctx->allocData(sizeof(cmd), cmd);
 }
 void NanoVGCommandHelper::nvgPathWinding(NanoVGCommandList* ctx, int dir)
 {
 	float cmd[] = { (float)Cmd_nvgPathWinding,(float)dir };
-	ctx->AllocData(sizeof(cmd), cmd);
+	ctx->allocData(sizeof(cmd), cmd);
 }
 void NanoVGCommandHelper::nvgArc(NanoVGCommandList* ctx, float cx, float cy, float r, float a0, float a1, int dir)
 {
 	float cmd[] = { (float)Cmd_nvgArc, cx, cy, r, a0, a1, (float)dir };
-	ctx->AllocData(sizeof(cmd), cmd);
+	ctx->allocData(sizeof(cmd), cmd);
 }
 void NanoVGCommandHelper::nvgRect(NanoVGCommandList* ctx, float x, float y, float w, float h)
 {
 	float cmd[] = { (float)Cmd_nvgRect, x, y, w, h };
-	ctx->AllocData(sizeof(cmd), cmd);
+	ctx->allocData(sizeof(cmd), cmd);
 }
 void NanoVGCommandHelper::nvgRoundedRect(NanoVGCommandList* ctx, float x, float y, float w, float h, float r)
 {
 	float cmd[] = { (float)Cmd_nvgRoundedRect, x, y, w, h, r };
-	ctx->AllocData(sizeof(cmd), cmd);
+	ctx->allocData(sizeof(cmd), cmd);
 }
 void NanoVGCommandHelper::nvgRoundedRectVarying(NanoVGCommandList* ctx, float x, float y, float w, float h, float radTopLeft, float radTopRight, float radBottomRight, float radBottomLeft)
 {
 	float cmd[] = { (float)Cmd_nvgRoundedRectVarying, x, y, w, h, radTopLeft, radTopRight, radBottomRight, radBottomLeft };
-	ctx->AllocData(sizeof(cmd), cmd);
+	ctx->allocData(sizeof(cmd), cmd);
 }
 void NanoVGCommandHelper::nvgEllipse(NanoVGCommandList* ctx, float cx, float cy, float rx, float ry)
 {
 	float cmd[] = { (float)Cmd_nvgEllipse, cx, cy, rx, ry };
-	ctx->AllocData(sizeof(cmd), cmd);
+	ctx->allocData(sizeof(cmd), cmd);
 }
 void NanoVGCommandHelper::nvgCircle(NanoVGCommandList* ctx, float cx, float cy, float r)
 {
 	float cmd[] = { (float)Cmd_nvgCircle, cx, cy, r };
-	ctx->AllocData(sizeof(cmd), cmd);
+	ctx->allocData(sizeof(cmd), cmd);
 }
 void NanoVGCommandHelper::nvgFill(NanoVGCommandList* ctx)
 {
 	float cmd[] = { (float)Cmd_nvgFill };
-	ctx->AllocData(sizeof(cmd), cmd);
+	ctx->allocData(sizeof(cmd), cmd);
 }
 void NanoVGCommandHelper::nvgStroke(NanoVGCommandList* ctx)
 {
 	float cmd[] = { (float)Cmd_nvgStroke };
-	ctx->AllocData(sizeof(cmd), cmd);
+	ctx->allocData(sizeof(cmd), cmd);
 }
 void NanoVGCommandHelper::ExecuteCommand(NanoVGCommandList* commandList, NVGcontext* ctx)
 {
 	NVGparams* param = nvgInternalParams(ctx);
 	param->edgeAntiAlias = 0;
 
-	int count = commandList->GetDataCount();
+	int count = commandList->getDataCount();
 	for (int i = 0; i < count; i++)
 	{
-		float* cmd = (float*)commandList->GetDataByIndex(i);
+		float* cmd = (float*)commandList->getDataByIndex(i);
 		switch ((int)cmd[0])
 		{
 			case Cmd_nvgBeginPath:
@@ -1172,8 +1172,8 @@ void NanoVGCommandHelper::ExpandState(const Matrix& transform, Brush* brush, Pen
 	ExpandBrushState(brush, &outState->fillBrush);
 	if (pen != nullptr)
 	{
-		ExpandBrushState(pen->GetBrush(), &outState->strokeBrush);
-		outState->strokeWidth = pen->GetThickness();
+		ExpandBrushState(pen->getBrush(), &outState->strokeBrush);
+		outState->strokeWidth = pen->getThickness();
 		// TODO:
 		outState->miterLimit = 10.0f;
 		outState->lineCap = NVG_BUTT;
@@ -1194,18 +1194,18 @@ void NanoVGCommandHelper::ExpandBrushState(Brush* brush, NanoVGBrush* outBrush)
 {
 	if (brush != nullptr)
 	{
-		if (brush->IsSolidColor())
+		if (brush->isSolidColor())
 		{
 			Brush* b = brush;
 			outBrush->type = NanoVGBrushType::SolidColor;
-			outBrush->SolidColorInfo.color.r = brush->GetColor().r;
-			outBrush->SolidColorInfo.color.g = brush->GetColor().g;
-			outBrush->SolidColorInfo.color.b = brush->GetColor().b;
-			outBrush->SolidColorInfo.color.a = brush->GetColor().a;
+			outBrush->SolidColorInfo.color.r = brush->getColor().r;
+			outBrush->SolidColorInfo.color.g = brush->getColor().g;
+			outBrush->SolidColorInfo.color.b = brush->getColor().b;
+			outBrush->SolidColorInfo.color.a = brush->getColor().a;
 		}
 		else
 		{
-			Rect rc = static_cast<TextureBrush*>(brush)->GetActualSourceRect();
+			Rect rc = static_cast<TextureBrush*>(brush)->getActualSourceRect();
 			outBrush->type = NanoVGBrushType::ImagePattern;
 			outBrush->ImagePatternInfo.ox = rc.x;
 			outBrush->ImagePatternInfo.oy = rc.y;
@@ -1213,7 +1213,7 @@ void NanoVGCommandHelper::ExpandBrushState(Brush* brush, NanoVGBrush* outBrush)
 			outBrush->ImagePatternInfo.ey = rc.height;
 			outBrush->ImagePatternInfo.angle = 0;
 			outBrush->ImagePatternInfo.alpha = 1.0f;
-			outBrush->imagePatternTexture = brush->GetTexture()->ResolveDeviceObject();
+			outBrush->imagePatternTexture = brush->getTexture()->resolveDeviceObject();
 		}
 	}
 	else

@@ -24,8 +24,8 @@ public:
 
 	DX9ShaderPass* GetCurrentShaderPass() { return m_currentShaderPass; }
 	void SetCurrentShaderPass(DX9ShaderPass* pass);
-	void OnLostDevice();
-	void OnResetDevice();
+	void onLostDevice();
+	void onResetDevice();
 
 private:
 	void RestoreStatus();
@@ -48,7 +48,7 @@ private:
 	DX9ShaderPass*			m_currentShaderPass;
 
 	// OnEnterRenderState() 時点で IDirect3DDevice9 から取り出すフレームバッファ。
-	// SetRenderTarget() で nullptr が指定された場合、これを使用する。
+	// setRenderTarget() で nullptr が指定された場合、これを使用する。
 	// これはライブラリ外部で用意されたフレームバッファに書き込むための機能。
 	IDirect3DSurface9*		m_defaultRenderTargets[Graphics::MaxMultiRenderTargets];
 	IDirect3DSurface9*		m_defaultDepthBuffer;

@@ -19,7 +19,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Font, Object);
 FontPtr Font::create()
 {
 	auto ptr = FontPtr::makeRef();
-	ptr->initialize(detail::GraphicsManager::GetInstance(), nullptr);
+	ptr->initialize(detail::GraphicsManager::getInstance(), nullptr);
 	return ptr;
 }
 
@@ -27,7 +27,7 @@ FontPtr Font::create()
 FontPtr Font::create(const String& family)
 {
 	auto ptr = FontPtr::makeRef();
-	ptr->initialize(detail::GraphicsManager::GetInstance(), nullptr);
+	ptr->initialize(detail::GraphicsManager::getInstance(), nullptr);
 	ptr->SetFamily(family);
 	return ptr;
 }
@@ -36,22 +36,22 @@ FontPtr Font::create(const String& family)
 FontPtr Font::create(const String& family, float size)
 {
 	auto ptr = FontPtr::makeRef();
-	ptr->initialize(detail::GraphicsManager::GetInstance(), nullptr);
+	ptr->initialize(detail::GraphicsManager::getInstance(), nullptr);
 	ptr->SetFamily(family);
-	ptr->SetSize(size);
+	ptr->setSize(size);
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
 FontPtr Font::getDefault()
 {
-	return detail::GraphicsManager::GetInstance()->GetFontManager()->GetDefaultFont();
+	return detail::GraphicsManager::getInstance()->getFontManager()->GetDefaultFont();
 }
 
 //------------------------------------------------------------------------------
 FontPtr Font::GetBuiltin(BuiltinFontSize size)
 {
-	return detail::GraphicsManager::GetInstance()->GetFontManager()->GetBuiltinFont(size);
+	return detail::GraphicsManager::getInstance()->getFontManager()->GetBuiltinFont(size);
 }
 
 //------------------------------------------------------------------------------
@@ -96,7 +96,7 @@ const String& Font::GetFamily() const
 }
 
 //------------------------------------------------------------------------------
-void Font::SetSize(int size)
+void Font::setSize(int size)
 {
 	if (LN_CHECK_STATE(!m_builtin)) return;
 	m_fontInfo.Size = size;
@@ -175,7 +175,7 @@ RawFont* Font::ResolveRawFont()
 {
 	if (m_rawFont == nullptr)
 	{
-		m_rawFont = m_manager->GetFontManager()->LookupRawFont(m_fontInfo);
+		m_rawFont = m_manager->getFontManager()->LookupRawFont(m_fontInfo);
 	}
 	return m_rawFont;
 }
@@ -187,7 +187,7 @@ RawFont* Font::ResolveRawFont()
 //------------------------------------------------------------------------------
 RawFontPtr RawFont::GetDefaultFont()
 {
-	RawFontPtr font(detail::GraphicsManager::GetInstance()->GetFontManager()->GetDefaultRawFont(), true);
+	RawFontPtr font(detail::GraphicsManager::getInstance()->getFontManager()->GetDefaultRawFont(), true);
 	return font;
 }
 
@@ -208,7 +208,7 @@ RawFont::~RawFont()
 //------------------------------------------------------------------------------
 void RawFont::initialize()
 {
-	m_manager = detail::EngineDomain::GetGraphicsManager()->GetFontManager();
+	m_manager = detail::EngineDomain::getGraphicsManager()->getFontManager();
 	m_manager->AddFontResource_(this);
 }
 
@@ -231,11 +231,11 @@ void RawFont::Dispose_()
 //------------------------------------------------------------------------------
 SizeI RawFont::GetTextSize(const StringRef& text)
 {
-	auto* r = GetManager()->GetGraphicsManager()->GetBitmapTextRenderer();
+	auto* r = getManager()->getGraphicsManager()->getBitmapTextRenderer();
 	auto* gr = r->GetTempGlyphRun();
 	gr->SetFont(this);
 	gr->setText(text);
-	return gr->GetRenderSize();
+	return gr->getRenderSize();
 }
 
 //------------------------------------------------------------------------------
@@ -244,7 +244,7 @@ detail::FontGlyphTextureCache* RawFont::GetGlyphTextureCache()
 	if (m_glyphTextureCache == nullptr)
 	{
 		m_glyphTextureCache = LN_NEW detail::FontGlyphTextureCache();
-		m_glyphTextureCache->initialize(GetManager()->GetGraphicsManager(), this);
+		m_glyphTextureCache->initialize(getManager()->getGraphicsManager(), this);
 	}
 	return m_glyphTextureCache;
 }
@@ -255,7 +255,7 @@ detail::VectorFontGlyphCache* RawFont::GetVectorGlyphCache()
 	if (m_vectorGlyphCache == nullptr)
 	{
 		m_vectorGlyphCache = LN_NEW detail::VectorFontGlyphCache();
-		m_vectorGlyphCache->initialize(GetManager()->GetGraphicsManager(), this, 2048);	// TODO
+		m_vectorGlyphCache->initialize(getManager()->getGraphicsManager(), this, 2048);	// TODO
 	}
 	return m_vectorGlyphCache;
 }

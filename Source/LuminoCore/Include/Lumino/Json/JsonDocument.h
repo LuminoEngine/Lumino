@@ -400,7 +400,7 @@ public:
 		tr::JsonDocument2 doc;
 		doc.parse(json);
 		tr::Archive ar(&doc, tr::ArchiveMode::load, true);
-		auto t = NewObject<T>();
+		auto t = newObject<T>();
 		ar.load(t);
 		return t;
 	}

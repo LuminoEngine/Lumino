@@ -617,7 +617,7 @@ void GLShader::initialize(GLGraphicsDevice* device, const void* code_, size_t co
 			json.readAsStartArray();
 			while (json.read() && json.getTokenType() != tr::JsonToken::EndArray)
 			{
-				m_techniques.add(GLShaderTechnique::Deserialize(this, &json));
+				m_techniques.add(GLShaderTechnique::deserialize(this, &json));
 			}
 		}
 		// parameters
@@ -627,7 +627,7 @@ void GLShader::initialize(GLGraphicsDevice* device, const void* code_, size_t co
 			while (json.read() && json.getTokenType() != tr::JsonToken::EndArray)
 			{
 				bool overwrited = false;	//TODO: いらないかも
-				GLShaderVariable* v = GLShaderVariable::Deserialize(this, &json, &overwrited);
+				GLShaderVariable* v = GLShaderVariable::deserialize(this, &json, &overwrited);
 				//if (!overwrited)
 				//{
 				//	m_variables.Add(v);
@@ -662,9 +662,9 @@ GLShaderVariable* GLShader::FindShaderVariable(const String& name)
 {
 	for (GLShaderVariable* v : m_variables)
 	{
-		if (v->GetName() == name)
+		if (v->getName() == name)
 		{
-			//if (v->GetSemanticName() == semanticName) {
+			//if (v->getSemanticName() == semanticName) {
 			//	return v;
 			//}
 			//else {
@@ -721,13 +721,13 @@ IShaderTechnique* GLShader::GetTechnique(int index) const
 }
 
 //------------------------------------------------------------------------------
-void GLShader::OnLostDevice()
+void GLShader::onLostDevice()
 {
 	LN_THROW(0, NotImplementedException);
 }
 
 //------------------------------------------------------------------------------
-void GLShader::OnResetDevice()
+void GLShader::onResetDevice()
 {
 	LN_THROW(0, NotImplementedException);
 }
@@ -780,7 +780,7 @@ GLuint GLShader::GetFlagmentShader(const String& name)
 //==============================================================================
 
 //------------------------------------------------------------------------------
-GLShaderVariable* GLShaderVariable::Deserialize(GLShader* ownerShader, tr::JsonReader2* json, bool* outOverwrited)
+GLShaderVariable* GLShaderVariable::deserialize(GLShader* ownerShader, tr::JsonReader2* json, bool* outOverwrited)
 {
 	String name, semantic/*, samplerName*/;
 	bool shared;
@@ -832,7 +832,7 @@ GLShaderVariable* GLShaderVariable::Deserialize(GLShader* ownerShader, tr::JsonR
 				json->readAsStartArray();
 				while (json->read() && json->getTokenType() != tr::JsonToken::EndArray)
 				{
-					var->m_annotations.add(GLShaderAnnotation::Deserialize(json));
+					var->m_annotations.add(GLShaderAnnotation::deserialize(json));
 				}
 			}
 		}
@@ -869,14 +869,14 @@ void GLShaderVariable::initialize(GLShader* owner, ShaderVariableTypeDesc desc, 
 }
 
 //------------------------------------------------------------------------------
-void GLShaderVariable::Apply(int location, int textureStageIndex)
+void GLShaderVariable::apply(int location, int textureStageIndex)
 {
-	if (!m_value.IsValid()) {
+	if (!m_value.isValid()) {
 		return;		// 一度も set されていない変数や、ライブラリが認識できない型である。その場合は何も処理をせず、デフォルト値のままにする。
 	}
 
-	MemoryStream* tempBuffer = m_ownerShader->GetGraphicsDevice()->GetUniformTempBuffer();
-	BinaryWriter* tempWriter = m_ownerShader->GetGraphicsDevice()->GetUniformTempBufferWriter();
+	MemoryStream* tempBuffer = m_ownerShader->getGraphicsDevice()->GetUniformTempBuffer();
+	BinaryWriter* tempWriter = m_ownerShader->getGraphicsDevice()->GetUniformTempBufferWriter();
 	tempWriter->seek(0, SeekOrigin_Begin);
 
 	const Vector4* vec;
@@ -889,7 +889,7 @@ void GLShaderVariable::Apply(int location, int textureStageIndex)
 		break;
 	case ShaderVariableType_BoolArray:
 	{
-		const bool* begin = m_value.GetBoolArray();
+		const bool* begin = m_value.getBoolArray();
 		const bool* end = begin + m_desc.Elements;
 
 		std::for_each(begin, end, [&tempWriter](bool v) { GLint i = (v) ? 1 : 0; tempWriter->write(&i, sizeof(GLint)); });
@@ -906,7 +906,7 @@ void GLShaderVariable::Apply(int location, int textureStageIndex)
 		LN_FAIL_CHECK_GLERROR() return;
 		break;
 	case ShaderVariableType_Vector:
-		vec = &m_value.GetVector();
+		vec = &m_value.getVector();
 		if (m_desc.Columns == 2) {
 			glUniform2f(location, vec->x, vec->y);
 		}
@@ -920,7 +920,7 @@ void GLShaderVariable::Apply(int location, int textureStageIndex)
 		break;
 	case ShaderVariableType_VectorArray:
 	{
-		const Vector4* begin = m_value.GetVectorArray();
+		const Vector4* begin = m_value.getVectorArray();
 		const Vector4* end = begin + m_desc.Elements;
 
 		if (m_desc.Columns == 2)
@@ -937,7 +937,7 @@ void GLShaderVariable::Apply(int location, int textureStageIndex)
 		}
 		else if (m_desc.Columns == 4)
 		{
-			glUniform4fv(location, m_desc.Elements, (const GLfloat*)m_value.GetVectorArray());
+			glUniform4fv(location, m_desc.Elements, (const GLfloat*)m_value.getVectorArray());
 			LN_FAIL_CHECK_GLERROR() return;
 		}
 		else
@@ -948,20 +948,20 @@ void GLShaderVariable::Apply(int location, int textureStageIndex)
 	}
 	case ShaderVariableType_Matrix:
 	{
-		glUniformMatrix4fv(location, 1, GL_FALSE, (const GLfloat*)&m_value.GetMatrix());
+		glUniformMatrix4fv(location, 1, GL_FALSE, (const GLfloat*)&m_value.getMatrix());
 		LN_FAIL_CHECK_GLERROR();
 		break;
 	}
 	case ShaderVariableType_MatrixArray:
-		glUniformMatrix4fv(location, m_desc.Elements, GL_FALSE, (const GLfloat*)m_value.GetMatrixArray());
+		glUniformMatrix4fv(location, m_desc.Elements, GL_FALSE, (const GLfloat*)m_value.getMatrixArray());
 		break;
 	case ShaderVariableType_DeviceTexture:
 		// textureStageIndex のテクスチャステージにバインド
 		glActiveTexture(GL_TEXTURE0 + textureStageIndex);
 		LN_FAIL_CHECK_GLERROR() return;
 
-		if (m_value.GetDeviceTexture() != nullptr)
-			glBindTexture(GL_TEXTURE_2D, static_cast<GLTextureBase*>(m_value.GetDeviceTexture())->GetGLTexture());
+		if (m_value.getDeviceTexture() != nullptr)
+			glBindTexture(GL_TEXTURE_2D, static_cast<GLTextureBase*>(m_value.getDeviceTexture())->GetGLTexture());
 		else
 			glBindTexture(GL_TEXTURE_2D, 0);
 		LN_FAIL_CHECK_GLERROR();
@@ -1082,7 +1082,7 @@ void GLShaderVariable::ConvertVariableTypeGLToLN(const char* name, GLenum gl_typ
 //==============================================================================
 
 //------------------------------------------------------------------------------
-GLShaderAnnotation* GLShaderAnnotation::Deserialize(tr::JsonReader2* json)
+GLShaderAnnotation* GLShaderAnnotation::deserialize(tr::JsonReader2* json)
 {
 	auto anno = RefPtr<GLShaderAnnotation>::makeRef();
 	String type, name, value;
@@ -1154,7 +1154,7 @@ void GLShaderAnnotation::initialize(const String& type, const String& name, cons
 
 			desc.Type = ShaderVariableType_Vector;
 			ShaderVariableBase::initialize(desc, name, String::getEmpty());
-			ShaderVariableBase::SetVector(v);
+			ShaderVariableBase::setVector(v);
 		}
 		else
 		{
@@ -1169,7 +1169,7 @@ void GLShaderAnnotation::initialize(const String& type, const String& name, cons
 //==============================================================================
 
 //------------------------------------------------------------------------------
-GLShaderTechnique* GLShaderTechnique::Deserialize(GLShader* ownerShader, tr::JsonReader2* json)
+GLShaderTechnique* GLShaderTechnique::deserialize(GLShader* ownerShader, tr::JsonReader2* json)
 {
 	String name;
 	if (json->readAsPropertyName() == _T("name")) name = json->readAsString();
@@ -1181,7 +1181,7 @@ GLShaderTechnique* GLShaderTechnique::Deserialize(GLShader* ownerShader, tr::Jso
 		json->readAsStartArray();
 		while (json->read() && json->getTokenType() != tr::JsonToken::EndArray)
 		{
-			tech->m_passes.add(GLShaderPass::Deserialize(ownerShader, json));
+			tech->m_passes.add(GLShaderPass::deserialize(ownerShader, json));
 		}
 	}
 
@@ -1195,7 +1195,7 @@ GLShaderTechnique* GLShaderTechnique::Deserialize(GLShader* ownerShader, tr::Jso
 				json->readAsStartArray();
 				while (json->read() && json->getTokenType() != tr::JsonToken::EndArray)
 				{
-					tech->m_annotations.add(GLShaderAnnotation::Deserialize(json));
+					tech->m_annotations.add(GLShaderAnnotation::deserialize(json));
 				}
 			}
 		}
@@ -1230,7 +1230,7 @@ void GLShaderTechnique::initialize(GLShader* ownerShader, const String& name)
 }
 
 //------------------------------------------------------------------------------
-IShaderPass* GLShaderTechnique::GetPass(int index)
+IShaderPass* GLShaderTechnique::getPass(int index)
 {
 	return m_passes[index];
 }
@@ -1240,7 +1240,7 @@ IShaderPass* GLShaderTechnique::GetPass(int index)
 //==============================================================================
 
 //------------------------------------------------------------------------------
-GLShaderPass* GLShaderPass::Deserialize(GLShader* ownerShader, tr::JsonReader2* json)
+GLShaderPass* GLShaderPass::deserialize(GLShader* ownerShader, tr::JsonReader2* json)
 {
 	auto pass = RefPtr<GLShaderPass>::makeRef();
 	String name, vsName, psName;
@@ -1269,7 +1269,7 @@ GLShaderPass* GLShaderPass::Deserialize(GLShader* ownerShader, tr::JsonReader2* 
 				json->readAsStartArray();
 				while (json->read() && json->getTokenType() != tr::JsonToken::EndArray)
 				{
-					pass->m_annotations.add(GLShaderAnnotation::Deserialize(json));
+					pass->m_annotations.add(GLShaderAnnotation::deserialize(json));
 				}
 			}
 		}
@@ -1324,23 +1324,23 @@ int GLShaderPass::GetUsageAttributeIndex(VertexElementUsage usage, int index)
 }
 
 //------------------------------------------------------------------------------
-void GLShaderPass::Apply()
+void GLShaderPass::apply()
 {
 	glUseProgram(m_program); LN_CHECK_GLERROR();
 
 	for (GLShaderPassVariableInfo& v : m_passVarList)
 	{
-		v.Variable->Apply(v.Location, v.TextureStageIndex);
+		v.Variable->apply(v.Location, v.TextureStageIndex);
 	}
 
-	static_cast<GLRenderer*>(m_ownerShader->GetGraphicsDevice()->GetRenderer())->SetCurrentShaderPass(this);
+	static_cast<GLRenderer*>(m_ownerShader->getGraphicsDevice()->getRenderer())->SetCurrentShaderPass(this);
 }
 
 //------------------------------------------------------------------------------
-//void GLShaderPass::End()
+//void GLShaderPass::end()
 //{
 //	glUseProgram(NULL);
-//	static_cast<GLRenderer*>(m_ownerShader->GetGraphicsDevice()->GetRenderer())->SetCurrentShaderPass(NULL);
+//	static_cast<GLRenderer*>(m_ownerShader->getGraphicsDevice()->getRenderer())->SetCurrentShaderPass(NULL);
 //}
 
 //------------------------------------------------------------------------------

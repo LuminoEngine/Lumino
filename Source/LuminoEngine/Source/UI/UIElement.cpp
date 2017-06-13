@@ -94,11 +94,11 @@ UIElement::~UIElement()
 void UIElement::initialize()
 {
 	RuntimeResource::initialize();
-	m_manager = detail::EngineDomain::GetUIManager();
+	m_manager = detail::EngineDomain::getUIManager();
 	m_invalidateFlags |= detail::InvalidateFlags::Initializing;
 
 	// 要素名を覚えておく。末端のサブクラスの名前となる。
-	m_elementName = tr::TypeInfo::GetTypeInfo(this)->GetName();
+	m_elementName = tr::TypeInfo::getTypeInfo(this)->getName();
 
 	m_localStyle = RefPtr<detail::UIStylePropertyTableInstance>::makeRef();
 
@@ -108,26 +108,26 @@ void UIElement::initialize()
 
 //------------------------------------------------------------------------------
 void UIElement::SetLayoutColumn(int index) { m_gridLayoutInfo.layoutColumn = index; }
-int UIElement::GetLayoutColumn() const { return m_gridLayoutInfo.layoutColumn; }
+int UIElement::getLayoutColumn() const { return m_gridLayoutInfo.layoutColumn; }
 void UIElement::SetLayoutRow(int index) { m_gridLayoutInfo.layoutRow = index; }
-int UIElement::GetLayoutRow() const { return m_gridLayoutInfo.layoutRow; }
+int UIElement::getLayoutRow() const { return m_gridLayoutInfo.layoutRow; }
 void UIElement::SetLayoutColumnSpan(int span) { m_gridLayoutInfo.layoutColumnSpan = span; }
-int UIElement::GetLayoutColumnSpan() const { return m_gridLayoutInfo.layoutColumnSpan; }
+int UIElement::getLayoutColumnSpan() const { return m_gridLayoutInfo.layoutColumnSpan; }
 void UIElement::SetLayoutRowSpan(int span) { m_gridLayoutInfo.layoutRowSpan = span; }
-int UIElement::GetLayoutRowSpan() const { return m_gridLayoutInfo.layoutRowSpan; }
+int UIElement::getLayoutRowSpan() const { return m_gridLayoutInfo.layoutRowSpan; }
 
 //------------------------------------------------------------------------------
 void UIElement::SetBackground(Brush* value)
 {
 	m_localStyle->background = value;
-	//tr::PropertyInfo::SetPropertyValueDirect<BrushPtr>(this, backgroundId, value);
+	//tr::PropertyInfo::setPropertyValueDirect<BrushPtr>(this, backgroundId, value);
 }
 
 //------------------------------------------------------------------------------
 Brush* UIElement::GetBackground() const
 {
 	return m_localStyle->background.get();
-	//return tr::PropertyInfo::GetPropertyValueDirect<BrushPtr>(this, backgroundId);
+	//return tr::PropertyInfo::getPropertyValueDirect<BrushPtr>(this, backgroundId);
 }
 
 //------------------------------------------------------------------------------
@@ -155,7 +155,7 @@ UIVisualStateManager* UIElement::GetVisualStateManager()
 {
 	if (m_visualStateManager == nullptr)
 	{
-		m_visualStateManager = NewObject<UIVisualStateManager>();
+		m_visualStateManager = newObject<UIVisualStateManager>();
 	}
 	return m_visualStateManager;
 }
@@ -172,17 +172,17 @@ void UIElement::Focus()
 //------------------------------------------------------------------------------
 void UIElement::CaptureMouse()
 {
-	GetManager()->CaptureMouse(this);
+	getManager()->CaptureMouse(this);
 }
 
 //------------------------------------------------------------------------------
 void UIElement::ReleaseMouseCapture()
 {
-	GetManager()->ReleaseMouseCapture(this);
+	getManager()->ReleaseMouseCapture(this);
 }
 
 //------------------------------------------------------------------------------
-int UIElement::GetVisualChildrenCount() const
+int UIElement::getVisualChildrenCount() const
 {
 	if (m_visualChildren != nullptr)
 	{
@@ -193,7 +193,7 @@ int UIElement::GetVisualChildrenCount() const
 }
 
 //------------------------------------------------------------------------------
-ILayoutElement* UIElement::GetVisualChild(int index) const
+ILayoutElement* UIElement::getVisualChild(int index) const
 {
 	if (m_visualChildren != nullptr)
 	{
@@ -216,9 +216,9 @@ void UIElement::RaiseEvent(const UIEventInfo* ev, UIElement* sender, UIEventArgs
 }
 
 //------------------------------------------------------------------------------
-void UIElement::MeasureLayout(const Size& availableSize)
+void UIElement::measureLayout(const Size& availableSize)
 {
-	ILayoutElement::MeasureLayout(availableSize);
+	ILayoutElement::measureLayout(availableSize);
 
 	// フォントの無効フラグを落とす
 	// TODO: UITextElement へ移動した方が良いかも？
@@ -226,13 +226,13 @@ void UIElement::MeasureLayout(const Size& availableSize)
 }
 
 //------------------------------------------------------------------------------
-void UIElement::ArrangeLayout(const Rect& finalLocalRect)
+void UIElement::arrangeLayout(const Rect& finalLocalRect)
 {
-	const HAlignment* parentHAlign = (m_logicalParent != nullptr) ? m_logicalParent->GetLayoutContentHAlignment() : nullptr;
-	const VAlignment* parentVAlign = (m_logicalParent != nullptr) ? m_logicalParent->GetLayoutContentVAlignment() : nullptr;
+	const HAlignment* parentHAlign = (m_logicalParent != nullptr) ? m_logicalParent->getLayoutContentHAlignment() : nullptr;
+	const VAlignment* parentVAlign = (m_logicalParent != nullptr) ? m_logicalParent->getLayoutContentVAlignment() : nullptr;
 
 	Rect alignd = finalLocalRect;
-	Size ds = GetLayoutDesiredSize();
+	Size ds = getLayoutDesiredSize();
 	if (parentHAlign != nullptr)
 	{
 		detail::LayoutHelper::AdjustHorizontalAlignment(finalLocalRect.getSize(), ds, true, *parentHAlign, &alignd);
@@ -245,21 +245,21 @@ void UIElement::ArrangeLayout(const Rect& finalLocalRect)
 	}
 
 
-	ILayoutElement::ArrangeLayout(alignd/*finalLocalRect*/);
+	ILayoutElement::arrangeLayout(alignd/*finalLocalRect*/);
 
 	OnLayoutUpdated();
 }
 
 //------------------------------------------------------------------------------
-Size UIElement::MeasureOverride(const Size& constraint)
+Size UIElement::measureOverride(const Size& constraint)
 {
-	return ILayoutElement::MeasureOverride(constraint);
+	return ILayoutElement::measureOverride(constraint);
 }
 
 //------------------------------------------------------------------------------
-Size UIElement::ArrangeOverride(const Size& finalSize)
+Size UIElement::arrangeOverride(const Size& finalSize)
 {
-	return ILayoutElement::ArrangeOverride(finalSize);
+	return ILayoutElement::arrangeOverride(finalSize);
 }
 
 //------------------------------------------------------------------------------
@@ -273,15 +273,15 @@ void UIElement::OnLayoutUpdated()
 }
 
 //------------------------------------------------------------------------------
-void UIElement::OnRender(DrawingContext* g)
+void UIElement::onRender(DrawingContext* g)
 {
-	//g->SetBlendMode(BlendMode::Alpha);
+	//g->setBlendMode(BlendMode::Alpha);
 
 	//if (background.Get() != nullptr)
 	if (m_localStyle->background.get() != nullptr)
 	{
-		g->SetBrush(m_localStyle->background.get());
-		//g->SetOpacity(m_combinedOpacity);
+		g->setBrush(m_localStyle->background.get());
+		//g->setOpacity(m_combinedOpacity);
 		//g->DrawRectangle(Rect(0, 0, m_finalLocalRect.GetSize()));
 		g->DrawBoxBackground(Rect(0, 0, m_finalLocalRect.getSize()), m_localStyle->cornerRadius.get());
 
@@ -289,8 +289,8 @@ void UIElement::OnRender(DrawingContext* g)
 	}
 	if (decoratorBackground.get() != nullptr)
 	{
-		//g->SetBrush(decoratorBackground.Get());
-		////g->SetOpacity(m_combinedOpacity * m_decoratorOpacity);
+		//g->setBrush(decoratorBackground.Get());
+		////g->setOpacity(m_combinedOpacity * m_decoratorOpacity);
 		//g->DrawRectangle(Rect(0, 0, m_finalLocalRect.GetSize()));
 	}
 
@@ -303,7 +303,7 @@ void UIElement::OnRender(DrawingContext* g)
 		re->LayoutAndRender(g, m_finalGlobalRect.getSize());
 	}
 
-	if (!m_localStyle->borderThickness.get().IsZero())
+	if (!m_localStyle->borderThickness.get().isZero())
 	{
 		g->DrawBoxBorder(
 			Rect(0, 0, m_finalGlobalRect.getSize()), m_localStyle->borderThickness.get(), CornerRadius(),
@@ -385,10 +385,10 @@ UIElement* UIElement::CheckMouseHoverElement(const PointF& globalPt)
 {
 	// 後ろからループする。後のモノが上に描画されるので、この方が自然。
 	// TODO: Zオーダーは別のリストにしたほうがいい気がする・・・
-	int count = GetVisualChildrenCount();
+	int count = getVisualChildrenCount();
 	for (int i = count - 1; i >= 0; i--)
 	{
-		UIElement* e = static_cast<UIElement*>(GetVisualChild(i))->CheckMouseHoverElement(globalPt);
+		UIElement* e = static_cast<UIElement*>(getVisualChild(i))->CheckMouseHoverElement(globalPt);
 		if (e != nullptr) return e;
 	}
 
@@ -403,7 +403,7 @@ UIElement* UIElement::CheckMouseHoverElement(const PointF& globalPt)
 }
 
 //------------------------------------------------------------------------------
-bool UIElement::OnEvent(detail::UIInternalEventType type, UIEventArgs* args)
+bool UIElement::onEvent(detail::UIInternalEventType type, UIEventArgs* args)
 {
 	/* 今のところ、イベントを再帰で通知していく必要はない。
 	マウスイベントは Hover しているものへ Manager が直接送り込む。
@@ -414,10 +414,10 @@ bool UIElement::OnEvent(detail::UIInternalEventType type, UIEventArgs* args)
 	*/
 	// 後ろからループする。後のモノが上に描画されるので、この方が自然。
 	// TODO: Zオーダーは別のリストにしたほうがいい気がする・・・
-	//int count = GetVisualChildrenCount();
+	//int count = getVisualChildrenCount();
 	//for (int i = count - 1; i >= 0; i--)
 	//{
-	//	if (GetVisualChild(i)->OnEvent(type, args)) { return true; }
+	//	if (getVisualChild(i)->onEvent(type, args)) { return true; }
 	//}
 
 
@@ -464,7 +464,7 @@ bool UIElement::OnEvent(detail::UIInternalEventType type, UIEventArgs* args)
 //------------------------------------------------------------------------------
 // this でハンドリングしたいルーティングイベントが発生したとき、イベント経由ではなく
 // 通常の仮想関数で通知することで、パフォーマンスの向上を図る。
-// (UI要素作成時のイベントハンドラの new や AddHandler をする必要がなくなる)
+// (UI要素作成時のイベントハンドラの new や addHandler をする必要がなくなる)
 void UIElement::OnRoutedEvent(UIEventArgs* e)
 {
 	auto ev = e->getType();
@@ -525,7 +525,7 @@ void UIElement::CallOnLostFocus()
 //	/// この関数は必要なタイミングでレイアウトシステムから呼び出されます。通常、明示的に呼び出す必要はありません。
 //	///		というか、呼び出しちゃダメ。必ずルートから再帰的に更新しないと、もし親がまだ ApplyTemplate() してない状態でこれを呼ぶと
 //	///		ローカルリソースが正しく更新されない。
-//	///		TODO: もしかしたら、SetParent した瞬間にローカルリソースを更新したほうが良いかも？
+//	///		TODO: もしかしたら、setParent した瞬間にローカルリソースを更新したほうが良いかも？
 //	///		そうすればいつ ApplyTemplate() を呼び出しても良いが… 需要は無いか。
 //
 //
@@ -581,7 +581,7 @@ void UIElement::UpdateLocalStyleAndApplyProperties(UIStyleTable* styleTable, det
 		}
 		else
 		{
-			style = styleTable->FindStyle(tr::TypeInfo::GetTypeInfo(this)/*, GetStyleSubControlName()*/);
+			style = styleTable->FindStyle(tr::TypeInfo::getTypeInfo(this)/*, GetStyleSubControlName()*/);
 			if (style != nullptr)
 			{
 				invalidate |= style->MergeActiveStylePropertyTables(m_localStyle, vm->GetActiveStateNames());
@@ -605,13 +605,13 @@ void UIElement::UpdateLocalStyleAndApplyProperties(UIStyleTable* styleTable, det
 //------------------------------------------------------------------------------
 void UIElement::OnUpdateStyle(detail::UIStylePropertyTableInstance* localStyle, detail::InvalidateFlags invalidateFlags)
 {
-	localStyle->Apply(this, !m_invalidateFlags.TestFlag(detail::InvalidateFlags::Initializing));
+	localStyle->apply(this, !m_invalidateFlags.TestFlag(detail::InvalidateFlags::Initializing));
 	// TODO: UITextElement::OnUpdateStyle 参照
 	// TODO: アニメーション
 	//if (tr::Property::GetBaseValueSource(this, BackgroundProperty) <= tr::PropertySetSource::ByStyle)
-	//	tr::Property::SetPropertyValueDirect<BrushPtr>(this, BackgroundProperty, localStyle->m_background.value, tr::PropertySetSource::ByStyle);
+	//	tr::Property::setPropertyValueDirect<BrushPtr>(this, BackgroundProperty, localStyle->m_background.value, tr::PropertySetSource::ByStyle);
 	//if (tr::Property::GetBaseValueSource(this, ForegroundProperty) <= tr::PropertySetSource::ByStyle)
-	//	tr::Property::SetPropertyValueDirect<BrushPtr>(this, ForegroundProperty, localStyle->m_foreground.value, tr::PropertySetSource::ByStyle);
+	//	tr::Property::setPropertyValueDirect<BrushPtr>(this, ForegroundProperty, localStyle->m_foreground.value, tr::PropertySetSource::ByStyle);
 }
 
 //------------------------------------------------------------------------------
@@ -641,13 +641,13 @@ detail::SpcialUIElementType UIElement::GetSpcialUIElementType() const
 }
 
 //------------------------------------------------------------------------------
-void UIElement::UpdateTransformHierarchy(const Rect& parentGlobalRect)
+void UIElement::updateTransformHierarchy(const Rect& parentGlobalRect)
 {
 
 	//// 子要素
-	//UIHelper::ForEachVisualChildren(this, [](UIElement* child) { child->UpdateTransformHierarchy(); });
+	//UIHelper::ForEachVisualChildren(this, [](UIElement* child) { child->updateTransformHierarchy(); });
 
-	ILayoutElement::UpdateTransformHierarchy(parentGlobalRect);
+	ILayoutElement::updateTransformHierarchy(parentGlobalRect);
 
 	// 最初の更新おわり
 	m_invalidateFlags &= ~detail::InvalidateFlags::Initializing;
@@ -655,16 +655,16 @@ void UIElement::UpdateTransformHierarchy(const Rect& parentGlobalRect)
 }
 
 //------------------------------------------------------------------------------
-void UIElement::UpdateFrame()
+void UIElement::updateFrame()
 {
 	OnUpdateFrame();
 
 	// call children
-	UIHelper::ForEachVisualChildren(this, [](UIElement* child) { child->UpdateFrame(); });
+	UIHelper::ForEachVisualChildren(this, [](UIElement* child) { child->updateFrame(); });
 }
 
 //------------------------------------------------------------------------------
-void UIElement::Render(DrawingContext* g)
+void UIElement::render(DrawingContext* g)
 {
 	if (m_visualParent != nullptr)
 	{
@@ -684,10 +684,10 @@ void UIElement::Render(DrawingContext* g)
 
 	//g->DrawBoxBorder(Rect(50, 50, 300, 200), ThicknessF(10, 10, 10, 10), Color::Red, Color::Green, Color::Blue, Color::Cyan, 10, 10, 10, 10);	// TODO:
 	//g->DrawBoxShadow(Rect(10, 20, 300, 400), Color::Black, 5, 5, false);
-	OnRender(g);
+	onRender(g);
 
 	// 子要素
-	UIHelper::ForEachVisualChildren(this, [g](UIElement* child) { child->Render(g); });
+	UIHelper::ForEachVisualChildren(this, [g](UIElement* child) { child->render(g); });
 }
 
 //------------------------------------------------------------------------------
@@ -717,9 +717,9 @@ void UIElement::RaiseEventInternal(UIEventArgs* e)
 	OnRoutedEvent(e);
 	if (e->handled) return;
 
-	// this に AddHandler されているイベントハンドラを呼び出す
-	tr::TypeInfo* thisType = tr::TypeInfo::GetTypeInfo(this);
-	thisType->InvokeReflectionEvent(this, e->getType(), e);
+	// this に addHandler されているイベントハンドラを呼び出す
+	tr::TypeInfo* thisType = tr::TypeInfo::getTypeInfo(this);
+	thisType->invokeReflectionEvent(this, e->getType(), e);
 	if (e->handled) return;
 
 	// bubble
@@ -757,21 +757,21 @@ void UIElement::RemoveVisualChild(UIElement* element)
 }
 
 //------------------------------------------------------------------------------
-const PointF& UIElement::GetLayoutPosition() const { return position; }
-Size UIElement::GetLayoutSize() const { return Size(width, height); }
-const ThicknessF& UIElement::GetLayoutMargin() const { return margin; }
-const ThicknessF& UIElement::GetLayoutPadding() const { return padding; }
-AlignmentAnchor UIElement::GetLayoutAnchor() const { return anchor; }
-HAlignment UIElement::GetLayoutHAlignment() const { return hAlignment; }
-VAlignment UIElement::GetLayoutVAlignment() const { return vAlignment; }
-void UIElement::GetLayoutMinMaxInfo(Size* outMin, Size* outMax) const { *outMin = m_minSize; *outMax = m_maxSize; }
-ILayoutElement* UIElement::GetLayoutParent() const { return m_visualParent; }
-const HAlignment* UIElement::GetLayoutContentHAlignment() { return GetPriorityContentHAlignment(); }
-const VAlignment* UIElement::GetLayoutContentVAlignment() { return GetPriorityContentVAlignment(); }
-const Size& UIElement::GetLayoutDesiredSize() const { return m_desiredSize; }
-void UIElement::SetLayoutDesiredSize(const Size& size) { m_desiredSize = size; }
-void UIElement::SetLayoutFinalLocalRect(const Rect& rect) { m_finalLocalRect = rect; }
-const Rect& UIElement::GetLayoutFinalLocalRect() const { return m_finalLocalRect; }
-void UIElement::SetLayoutFinalGlobalRect(const Rect& rect) { m_finalGlobalRect = rect; }
+const PointF& UIElement::getLayoutPosition() const { return position; }
+Size UIElement::getLayoutSize() const { return Size(width, height); }
+const ThicknessF& UIElement::getLayoutMargin() const { return margin; }
+const ThicknessF& UIElement::getLayoutPadding() const { return padding; }
+AlignmentAnchor UIElement::getLayoutAnchor() const { return anchor; }
+HAlignment UIElement::getLayoutHAlignment() const { return hAlignment; }
+VAlignment UIElement::getLayoutVAlignment() const { return vAlignment; }
+void UIElement::getLayoutMinMaxInfo(Size* outMin, Size* outMax) const { *outMin = m_minSize; *outMax = m_maxSize; }
+ILayoutElement* UIElement::getLayoutParent() const { return m_visualParent; }
+const HAlignment* UIElement::getLayoutContentHAlignment() { return GetPriorityContentHAlignment(); }
+const VAlignment* UIElement::getLayoutContentVAlignment() { return GetPriorityContentVAlignment(); }
+const Size& UIElement::getLayoutDesiredSize() const { return m_desiredSize; }
+void UIElement::setLayoutDesiredSize(const Size& size) { m_desiredSize = size; }
+void UIElement::setLayoutFinalLocalRect(const Rect& rect) { m_finalLocalRect = rect; }
+const Rect& UIElement::getLayoutFinalLocalRect() const { return m_finalLocalRect; }
+void UIElement::setLayoutFinalGlobalRect(const Rect& rect) { m_finalGlobalRect = rect; }
 
 LN_NAMESPACE_END

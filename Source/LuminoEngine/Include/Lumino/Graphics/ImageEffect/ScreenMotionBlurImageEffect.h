@@ -24,14 +24,14 @@ public:
 	//void StartBlur(double duration, float power, float scale, const Vector3& center);
 
 	/** 画像内に残す前のフレームの量 (0.0～1.0)。値が高くなるほど、モーショントレイルが長くなります。*/
-	void SetAmount(float amount) { tr::PropertyInfo::SetPropertyValueDirect(this, AmountId, amount);/*m_amount = amount;*/ }
+	void setAmount(float amount) { tr::PropertyInfo::setPropertyValueDirect(this, AmountId, amount);/*m_amount = amount;*/ }
 
 	/** ブラーエフェクトを放射状に適用するための情報を設定します。*/
-	void SetRadialCenter(const Vector2& center) { m_center = center; }
+	void setRadialCenter(const Vector2& center) { m_center = center; }
 
-	void SetRadialScale(float scale) { m_scale = scale; }
+	void setRadialScale(float scale) { m_scale = scale; }
 
-	void SetBlurStatus(float amount, const Vector2& center, float scale, float duration = 0.0f);
+	void setBlurStatus(float amount, const Vector2& center, float scale, float duration = 0.0f);
 
 	//void StartBlurChange();
 
@@ -39,7 +39,7 @@ protected:
 	ScreenMotionBlurImageEffect();
 	virtual ~ScreenMotionBlurImageEffect();
 	void initialize(detail::GraphicsManager* manager);
-	virtual void OnRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
+	virtual void onRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
 	RefPtr<Material>		m_material;
 	RenderTargetTexture*	m_accumTexture;	// 前回の画面描画内容

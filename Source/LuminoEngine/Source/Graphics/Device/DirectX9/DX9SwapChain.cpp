@@ -30,7 +30,7 @@ DX9SwapChain::DX9SwapChain()
 //------------------------------------------------------------------------------
 DX9SwapChain::~DX9SwapChain()
 {
-	OnLostDevice();
+	onLostDevice();
 	LN_SAFE_RELEASE(m_backBuffer);
 	LN_SAFE_RELEASE(m_targetWindow);
 	LN_SAFE_RELEASE(m_graphicsDevice);
@@ -55,28 +55,28 @@ void DX9SwapChain::InitializeSub(DX9GraphicsDevice* device, PlatformWindow* wind
 {
 	InitializeDefault(device, window, backBufferSize);
 	m_isDefault = false;
-	PostInitialize();
+	postInitialize();
 }
 
 //------------------------------------------------------------------------------
-void DX9SwapChain::PostInitialize()
+void DX9SwapChain::postInitialize()
 {
-	OnResetDevice();
+	onResetDevice();
 }
 
 //------------------------------------------------------------------------------
-void DX9SwapChain::OnLostDevice()
+void DX9SwapChain::onLostDevice()
 {
 	// バックバッファ IDirect3DSurface9 の参照を外す
 	if (m_backBuffer) {
-		m_backBuffer->Reset(NULL);
+		m_backBuffer->reset(NULL);
 	}
 
 	LN_COM_SAFE_RELEASE(m_dxSwapChain);
 }
 
 //------------------------------------------------------------------------------
-void DX9SwapChain::OnResetDevice()
+void DX9SwapChain::onResetDevice()
 {
 	if (LN_CHECK_STATE(m_dxSwapChain == nullptr)) return;
 
@@ -95,9 +95,9 @@ void DX9SwapChain::OnResetDevice()
 
 	// バックバッファサーフェイスを保持
 	IDirect3DSurface9* surface;
-	//LN_COMCALL(m_graphicsDevice->GetIDirect3DDevice9()->GetRenderTarget(0, &surface));
+	//LN_COMCALL(m_graphicsDevice->GetIDirect3DDevice9()->getRenderTarget(0, &surface));
 	m_dxSwapChain->GetBackBuffer(0, D3DBACKBUFFER_TYPE_MONO, &surface);
-	m_backBuffer->Reset(surface);
+	m_backBuffer->reset(surface);
 	LN_COM_SAFE_RELEASE(surface);
 }
 
@@ -127,9 +127,9 @@ void DX9SwapChain::Present(ITexture* /*colorBuffer*/)
 	}
 
 	// ここでバックバッファに戻しておく
-	DX9Renderer* r = static_cast<DX9Renderer*>(m_graphicsDevice->GetRenderer());
-	r->SetRenderTarget(0, m_backBuffer);
-	r->SetDepthBuffer(NULL);
+	DX9Renderer* r = static_cast<DX9Renderer*>(m_graphicsDevice->getRenderer());
+	r->setRenderTarget(0, m_backBuffer);
+	r->setDepthBuffer(NULL);
 	
 
 	//IDirect3DDevice9* dxDevice = m_graphicsDevice->GetIDirect3DDevice9();
@@ -166,8 +166,8 @@ void DX9SwapChain::Present(ITexture* /*colorBuffer*/)
 	{
 		if (m_dirtySize)
 		{
-			OnLostDevice();
-			OnResetDevice();
+			onLostDevice();
+			onResetDevice();
 		}
 	}
 

@@ -21,14 +21,14 @@ TEST_F(Test_Text_DBCSEncoding, SJIS)
 
 	// MBCS → UTF16
 	EncodingConversionResult result;
-	ByteBuffer utf16Result = Encoding::Convert(sjisBuf.getData(), sjisBuf.getSize(), sjisEnc, Encoding::GetUTF16Encoding(), options, &result);
+	ByteBuffer utf16Result = Encoding::convert(sjisBuf.getData(), sjisBuf.getSize(), sjisEnc, Encoding::getUTF16Encoding(), options, &result);
 
 	int cmp = memcmp(utf16Buf.getData(), utf16Result.getData(), utf16Buf.getSize());
 	ASSERT_EQ(0, cmp);											// 内容一致
 	ASSERT_TRUE(utf16Buf.getSize() == utf16Result.getSize());	// バッファサイズ一致
 
 	// UTF16 → MBCS
-	ByteBuffer sjisResult = Encoding::Convert(utf16Result.getData(), utf16Result.getSize(), Encoding::GetUTF16Encoding(), sjisEnc, options, &result);
+	ByteBuffer sjisResult = Encoding::convert(utf16Result.getData(), utf16Result.getSize(), Encoding::getUTF16Encoding(), sjisEnc, options, &result);
 
 	cmp = memcmp(sjisBuf.getData(), sjisResult.getData(), sjisBuf.getSize());
 	ASSERT_EQ(0, cmp);											// 内容一致

@@ -10,7 +10,7 @@ LN_NAMESPACE_BEGIN
 	@details	要素の追加・削除は AddObject() と RemoveObject() で行います。
 				追加または削除されても直ちに配列本体を更新するわけではありません。
 				配列本体が別のスレッドでイテレート中であることに備え、追加または削除待ちリストに追加されます。
-				Commit() が呼ばれた時点で待ちリストを使用し、配列本体を更新します。
+				commit() が呼ばれた時点で待ちリストを使用し、配列本体を更新します。
 */
 template<typename TRefObj>
 class MultiThreadingRefObjectList
@@ -59,7 +59,7 @@ public:
 	}
 
 	/// 同期
-	void Commit()
+	void commit()
 	{
 		typename ObjectArray::iterator itr, end;
 
@@ -182,7 +182,7 @@ public:
 		MutexScopedLock lock(m_mutex);
 		// 追加リストに入れる
 		m_registerList.add(obj);
-		tr::ReflectionHelper::AddRefInternal(obj);
+		tr::ReflectionHelper::addRefInternal(obj);
 	}
 
 	/// 削除
@@ -205,12 +205,12 @@ public:
 
 		// 削除してほしいリストに入れる
 		m_unregisterList.add(obj);
-		//tr::ReflectionHelper::AddRefInternal(obj);
+		//tr::ReflectionHelper::addRefInternal(obj);
 	}
 
 	/// 同期
 	// 更新処理を呼ぶ前に実行する。更新スレッド用
-	void Commit(std::function<void(TRefObj* obj)> added, std::function<void(TRefObj* obj)> removed)
+	void commit(std::function<void(TRefObj* obj)> added, std::function<void(TRefObj* obj)> removed)
 	{
 		typename ObjectArray::iterator itr, end;
 
@@ -240,7 +240,7 @@ public:
 				typename ObjectArray::iterator pos = std::find(m_objectArray.begin(), m_objectArray.end(), (*itr));
 				if (pos != m_objectArray.end())
 				{
-					//tr::ReflectionHelper::ReleaseInternal(*pos);	// m_unregisterList から外す分
+					//tr::ReflectionHelper::releaseInternal(*pos);	// m_unregisterList から外す分
 					// 参照カウントはもうひとつ m_objectArray の分があるが、これはすぐ m_removingList に移すのでデクリメントしない
 					m_objectArray.erase(pos);
 					m_removingList.add(*pos);
@@ -256,7 +256,7 @@ public:
 			for (; itr != end;)
 			{
 				// このリストからしか削除されていないものを削除して欲しいオブジェクトリストへ移す
-				if ((*itr)->getReferenceCount() == 0 && tr::ReflectionHelper::GetInternalReferenceCount(*itr) == 1)
+				if ((*itr)->getReferenceCount() == 0 && tr::ReflectionHelper::getInternalReferenceCount(*itr) == 1)
 				{
 					m_removingList.add(*itr);
 					itr = m_objectArray.erase(itr);
@@ -278,7 +278,7 @@ public:
 
 		for (TRefObj* obj : m_removingList)
 		{
-			tr::ReflectionHelper::ReleaseInternal(obj);
+			tr::ReflectionHelper::releaseInternal(obj);
 		}
 		m_removingList.clear();
 
@@ -288,7 +288,7 @@ public:
 		//{
 		//	if ((*itr)->GetReferenceCount() == 0)
 		//	{
-		//		tr::ReflectionHelper::ReleaseInternal(*itr);
+		//		tr::ReflectionHelper::releaseInternal(*itr);
 		//		itr = m_objectArray.erase(itr);
 		//		end = m_objectArray.end();
 		//	}
@@ -316,18 +316,18 @@ public:
 
 		itr = m_registerList.begin();
 		end = m_registerList.end();
-		for (; itr != end; ++itr) tr::ReflectionHelper::ReleaseInternal(*itr);
+		for (; itr != end; ++itr) tr::ReflectionHelper::releaseInternal(*itr);
 		m_registerList.clear();
 		
 
 		itr = m_unregisterList.begin();
 		end = m_unregisterList.end();
-		for (; itr != end; ++itr) tr::ReflectionHelper::ReleaseInternal(*itr);
+		for (; itr != end; ++itr) tr::ReflectionHelper::releaseInternal(*itr);
 		m_unregisterList.clear();
 
 		itr = m_objectArray.begin();
 		end = m_objectArray.end();
-		for (; itr != end; ++itr) tr::ReflectionHelper::ReleaseInternal(*itr);
+		for (; itr != end; ++itr) tr::ReflectionHelper::releaseInternal(*itr);
 		m_objectArray.clear();
 	}
 };
@@ -361,7 +361,7 @@ public:
 		for (int i = getCount() - 1; i >= 0; i--)
 		{
 			TObject* ptr = getAt(i);
-			if (ptr->getReferenceCount() == 0 && tr::ReflectionHelper::GetInternalReferenceCount(ptr) == 1)
+			if (ptr->getReferenceCount() == 0 && tr::ReflectionHelper::getInternalReferenceCount(ptr) == 1)
 			{
 				removeAt(i);
 			}
@@ -373,14 +373,14 @@ private:
 	virtual void insertItem(int index, const value_type& item) override
 	{
 		Collection<TObject>::insertItem(index, item);
-		tr::ReflectionHelper::AddRefInternal(item);
+		tr::ReflectionHelper::addRefInternal(item);
 	}
 
 	virtual void clearItems() override
 	{
 		for (TObject* ptr : *this)
 		{
-			tr::ReflectionHelper::ReleaseInternal(ptr);
+			tr::ReflectionHelper::releaseInternal(ptr);
 		}
 
 		Collection<TObject>::clearItems();
@@ -388,14 +388,14 @@ private:
 
 	virtual void removeItem(int index) override
 	{
-		tr::ReflectionHelper::ReleaseInternal(getAt(index));
+		tr::ReflectionHelper::releaseInternal(getAt(index));
 		Collection<TObject>::removeItem(index);
 	}
 
 	virtual void setItem(int index, const value_type& item) override
 	{
 		Collection<TObject>::setItem(index, item);
-		tr::ReflectionHelper::AddRefInternal(item);
+		tr::ReflectionHelper::addRefInternal(item);
 	}
 };
 

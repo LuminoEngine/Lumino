@@ -48,18 +48,18 @@ void UITreeViewItem::SetHeader(UIElement* header)
 }
 
 //------------------------------------------------------------------------------
-Size UITreeViewItem::MeasureOverride(const Size& constraint)
+Size UITreeViewItem::measureOverride(const Size& constraint)
 {
 	Size desiredSize(16, 0);	// TODO: Branch の余白は後で考える http://doc.qt.io/qt-4.8/stylesheet-examples.html#customizing-qtreeview
 
 	// Measure Header
-	m_header->MeasureLayout(constraint);
-	Size headerSize = m_header->GetDesiredSize();
+	m_header->measureLayout(constraint);
+	Size headerSize = m_header->getDesiredSize();
 
 	// Measure Items
 	UILayoutPanel* itemsPanel = GetLayoutPanel();
-	itemsPanel->MeasureLayout(constraint);
-	Size panelSize = itemsPanel->GetDesiredSize();
+	itemsPanel->measureLayout(constraint);
+	Size panelSize = itemsPanel->getDesiredSize();
 
 	// 下方向に結合する
 	desiredSize.height += headerSize.height;
@@ -68,24 +68,24 @@ Size UITreeViewItem::MeasureOverride(const Size& constraint)
 
 	Size thisSize = ln::detail::LayoutHelper::MeasureElement(this, constraint);
 
-	return Size::Max(desiredSize, thisSize);
+	return Size::max(desiredSize, thisSize);
 
 	// ※GetLayoutPanel() で得られる UILayoutPanel の Measure をここで行うので 
 }
 
 //------------------------------------------------------------------------------
-Size UITreeViewItem::ArrangeOverride(const Size& finalSize)
+Size UITreeViewItem::arrangeOverride(const Size& finalSize)
 {
 	Size expanderSize(16, 16);	// TODO: Branch の余白は後で考える
 
 	// Header
-	Size headerSize = m_header->GetDesiredSize();
+	Size headerSize = m_header->getDesiredSize();
 	Rect headerRect(expanderSize.width, 0, finalSize.width - expanderSize.width, std::max(expanderSize.height, headerSize.height));
-	m_header->ArrangeLayout(headerRect);
+	m_header->arrangeLayout(headerRect);
 	
 	// Items
 	Rect itemsRect(expanderSize.width, headerRect.height, finalSize.width - expanderSize.width, finalSize.height - headerRect.height);
-	GetLayoutPanel()->ArrangeLayout(itemsRect);
+	GetLayoutPanel()->arrangeLayout(itemsRect);
 
 	return finalSize;
 }
@@ -132,7 +132,7 @@ void UITreeView::initialize()
 //UITreeViewItemPtr UITreeView::AddTextItem(const String& text)
 //{
 //	auto textBlock = RefPtr<UITextBlock>::MakeRef();
-//	textBlock->initialize(GetManager());
+//	textBlock->initialize(getManager());
 //	textBlock->SetText(text);
 //	return AddItem(textBlock);
 //}
@@ -143,7 +143,7 @@ void UITreeView::initialize()
 //
 //	// 受け取った item を UITreeViewItem でラップして、UITreeViewItem をリストに入れる
 //	auto listItem = RefPtr<UITreeViewItem>::MakeRef();
-//	listItem->initialize(GetManager());
+//	listItem->initialize(getManager());
 //	listItem->SetContent(item);
 //	GetItems()->Add(listItem);
 //	return listItem;

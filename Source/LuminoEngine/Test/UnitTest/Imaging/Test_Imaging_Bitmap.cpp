@@ -13,12 +13,12 @@ TEST_F(Test_Imaging_Bitmap, PngFile)
 	Bitmap bmp1(LN_LOCALFILE("TestData/img1_BYTE_R8G8B8A8.png"));
 
 	// png のデフォルトの読み取り
-	ASSERT_EQ(PixelFormat::R8G8B8A8, bmp1.GetPixelFormat());
+	ASSERT_EQ(PixelFormat::R8G8B8A8, bmp1.getPixelFormat());
 
 	ASSERT_EQ(32, bmp1.getSize().width);
 	ASSERT_EQ(32, bmp1.getSize().height);
 
-	byte_t* buf = bmp1.GetBitmapBuffer()->getData();
+	byte_t* buf = bmp1.getBitmapBuffer()->getData();
 	//printf("%X %X %X %X\n", buf[0], buf[1], buf[2], buf[3]);
 	ASSERT_EQ(0xFF, buf[0]);	// R
 	ASSERT_EQ(0x7F, buf[1]);	// G
@@ -54,11 +54,11 @@ TEST_F(Test_Imaging_Bitmap, save)
 }
 
 //------------------------------------------------------------------------------
-//TEST_F(Test_Imaging_Bitmap, BitBlt)
+//TEST_F(Test_Imaging_Bitmap, bitBlt)
 //{
 //	Bitmap bmp1(Size(32, 32), PixelFormat_BYTE_R8G8B8A8);
 //	Bitmap bmp2(LN_LOCALFILE("TestData/img2_BYTE_R8G8B8A8.png"));
-//	bmp1.BitBlt(Rect(0, 0, 32, 32), &bmp2, Rect(0, 0, 32, 32), Color::White, false);
+//	bmp1.bitBlt(Rect(0, 0, 32, 32), &bmp2, Rect(0, 0, 32, 32), Color::White, false);
 //	ASSERT_TRUE(TestEnv::EqualsBitmapFile(&bmp1, LN_LOCALFILE("TestData/img2_BYTE_R8G8B8A8.png")));
 //
 //}

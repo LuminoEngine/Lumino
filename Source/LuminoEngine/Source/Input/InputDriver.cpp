@@ -76,7 +76,7 @@ void InputDriver::PreUpdateFrame()
 }
 
 //------------------------------------------------------------------------------
-void InputDriver::OnEvent(const PlatformEventArgs& e)
+void InputDriver::onEvent(const PlatformEventArgs& e)
 {
 	switch (e.type)
 	{

@@ -52,8 +52,8 @@ public:
 protected:
 	// UIElement interface
 	virtual void OnRoutedEvent(UIEventArgs* e) override;
-	virtual Size MeasureOverride(const Size& constraint) override;
-	virtual Size ArrangeOverride(const Size& finalSize) override;
+	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
 
 	// UIRangeBase interface
 	virtual void OnValueChanged(float oldValue, float newValue) override;
@@ -67,7 +67,7 @@ LN_CONSTRUCT_ACCESS:
 	void initialize(float value, float minimum, float maximum);
 
 private:
-	void UpdateValue(float value);
+	void updateValue(float value);
 
 	RefPtr<UITrack>		m_track;
 	float				m_dragStartValue;

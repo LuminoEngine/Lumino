@@ -36,7 +36,7 @@ IRenderer::~IRenderer()
 }
 
 //------------------------------------------------------------------------------
-void IRenderer::Begin()
+void IRenderer::begin()
 {
 	if (LN_CHECK_STATE(!m_rendering)) return;
 	OnBeginRendering();
@@ -44,7 +44,7 @@ void IRenderer::Begin()
 }
 
 //------------------------------------------------------------------------------
-void IRenderer::End()
+void IRenderer::end()
 {
 	if (LN_CHECK_STATE(m_rendering)) return;
 	OnEndRendering();
@@ -52,7 +52,7 @@ void IRenderer::End()
 }
 
 //------------------------------------------------------------------------------
-void IRenderer::SetRenderTarget(int index, ITexture* target)
+void IRenderer::setRenderTarget(int index, ITexture* target)
 {
 	if (LN_CHECK_RANGE(index, 0, Graphics::MaxMultiRenderTargets)) return;
 	if (m_currentRenderTargets[index] != target)
@@ -63,14 +63,14 @@ void IRenderer::SetRenderTarget(int index, ITexture* target)
 }
 
 //------------------------------------------------------------------------------
-ITexture* IRenderer::GetRenderTarget(int index)
+ITexture* IRenderer::getRenderTarget(int index)
 {
 	if (LN_CHECK_RANGE(index, 0, Graphics::MaxMultiRenderTargets)) return nullptr;
 	return m_currentRenderTargets[index];
 }
 
 //------------------------------------------------------------------------------
-void IRenderer::SetDepthBuffer(ITexture* buffer)
+void IRenderer::setDepthBuffer(ITexture* buffer)
 {
 	if (m_currentDepthBuffer != buffer)
 	{
@@ -80,7 +80,7 @@ void IRenderer::SetDepthBuffer(ITexture* buffer)
 }
 
 //------------------------------------------------------------------------------
-ITexture* IRenderer::GetDepthBuffer()
+ITexture* IRenderer::getDepthBuffer()
 {
 	return m_currentDepthBuffer;
 }
@@ -131,9 +131,9 @@ void IRenderer::SetIndexBuffer(IIndexBuffer* indexBuffer)
 }
 
 //------------------------------------------------------------------------------
-void IRenderer::SetShaderPass(IShaderPass* pass)
+void IRenderer::setShaderPass(IShaderPass* pass)
 {
-	// ShaderPass はたとえ同じでも次の Draw で必ず Apply する。
+	// ShaderPass はたとえ同じでも次の Draw で必ず apply する。
 	m_currentShaderPass = pass;
 }
 
@@ -152,19 +152,19 @@ void IRenderer::clear(ClearFlags flags, const Color& color, float z, uint8_t ste
 }
 
 //------------------------------------------------------------------------------
-void IRenderer::DrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
+void IRenderer::drawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
 {
 	FlushStates();
 	OnDrawPrimitive(primitive, startVertex, primitiveCount);
-	if (m_diag != nullptr) m_diag->IncreaseGraphicsDeviceDrawCount();
+	if (m_diag != nullptr) m_diag->increaseGraphicsDeviceDrawCount();
 }
 
 //------------------------------------------------------------------------------
-void IRenderer::DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
+void IRenderer::drawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
 {
 	FlushStates();
 	OnDrawPrimitiveIndexed(primitive, startIndex, primitiveCount);
-	if (m_diag != nullptr) m_diag->IncreaseGraphicsDeviceDrawCount();
+	if (m_diag != nullptr) m_diag->increaseGraphicsDeviceDrawCount();
 }
 
 //------------------------------------------------------------------------------
@@ -198,7 +198,7 @@ void IRenderer::FlushStates()
 	// ShaderPass
 	if (m_currentShaderPass != nullptr)
 	{
-		m_currentShaderPass->Apply();
+		m_currentShaderPass->apply();
 	}
 
 	m_modifiedFlags = Modified_None;
@@ -240,7 +240,7 @@ IShaderVariable* IShader::GetVariableByName(const TCHAR* name) const
 	for (int i = 0; i < count; ++i)
 	{
 		IShaderVariable* v = GetVariable(i);
-		if (v->GetName() == name) {
+		if (v->getName() == name) {
 			return v;
 		}
 	}

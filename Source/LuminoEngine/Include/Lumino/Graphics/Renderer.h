@@ -18,7 +18,7 @@ public:
 	
 	/**
 		@brief		レンダリングを開始します。
-		@details	Application::UpdateFrame() を使用する場合、この関数を呼び出す必要はありません。
+		@details	Application::updateFrame() を使用する場合、この関数を呼び出す必要はありません。
 	*/
 	static void BeginRendering();
 	

@@ -19,8 +19,8 @@ public:
 		{
 			ILayoutElement* child = panel->GetLayoutChild(i);
 
-			child->MeasureLayout(constraint);
-			const Size& childDesiredSize = child->GetLayoutDesiredSize();
+			child->measureLayout(constraint);
+			const Size& childDesiredSize = child->getLayoutDesiredSize();
 
 			desiredSize.width = std::max(desiredSize.width, childDesiredSize.width);
 			desiredSize.height = std::max(desiredSize.height, childDesiredSize.height);
@@ -35,10 +35,10 @@ public:
 		for (int i = 0; i < childCount; i++)
 		{
 			ILayoutElement* child = panel->GetLayoutChild(i);
-			Size childDesiredSize = child->GetLayoutDesiredSize();
+			Size childDesiredSize = child->getLayoutDesiredSize();
 			childDesiredSize.width = std::max(finalSize.width, childDesiredSize.width);
 			childDesiredSize.height = std::max(finalSize.height, childDesiredSize.height);
-			child->ArrangeLayout(Rect(offset.x, offset.y, childDesiredSize));
+			child->arrangeLayout(Rect(offset.x, offset.y, childDesiredSize));
 		}
 		return finalSize;
 	}
@@ -64,9 +64,9 @@ public:
 		for (int i = 0; i < childCount; i++)
 		{
 			ILayoutElement* child = panel->GetLayoutChild(i);
-			child->MeasureLayout(size);
+			child->measureLayout(size);
 
-			const Size& childDesiredSize = child->GetLayoutDesiredSize();
+			const Size& childDesiredSize = child->getLayoutDesiredSize();
 			if (orientation == Orientation::Horizontal || orientation == Orientation::ReverseHorizontal)
 			{
 				desiredSize.width += childDesiredSize.width;
@@ -75,7 +75,7 @@ public:
 			else
 			{
 				desiredSize.width = std::max(desiredSize.width, childDesiredSize.width);
-				desiredSize.height += child->GetLayoutDesiredSize().height;
+				desiredSize.height += child->getLayoutDesiredSize().height;
 			}
 		}
 
@@ -86,7 +86,7 @@ public:
 	static Size UIStackPanel_ArrangeOverride(TPanel* panel, const Size& finalSize, Orientation orientation)
 	{
 		ILayoutPanel* basePanel = static_cast<ILayoutPanel*>(panel);
-		const ThicknessF& padding = static_cast<ILayoutElement*>(panel)->GetLayoutPadding();
+		const ThicknessF& padding = static_cast<ILayoutElement*>(panel)->getLayoutPadding();
 		Size childrenBoundSize(finalSize.width - (padding.Left + padding.Right), finalSize.height - (padding.Top + padding.Bottom));
 
 		float prevChildSize = 0;
@@ -96,7 +96,7 @@ public:
 		for (int i = 0; i < childCount; i++)
 		{
 			ILayoutElement* child = basePanel->GetLayoutChild(i);
-			const Size& childDesiredSize = child->GetLayoutDesiredSize();
+			const Size& childDesiredSize = child->getLayoutDesiredSize();
 
 			switch (orientation)
 			{
@@ -131,7 +131,7 @@ public:
 				break;
 			}
 
-			child->ArrangeLayout(childRect);
+			child->arrangeLayout(childRect);
 		}
 
 		return finalSize;
@@ -150,11 +150,11 @@ public:
 			ILayoutElement* child = basePanel->GetLayoutChild(i);
 
 			// まずは子を Measure
-			child->MeasureLayout(constraint);
+			child->measureLayout(constraint);
 
 			// child が配置されるべき column と row を探す
-			int colIdx = child->GetLayoutColumn();
-			int rowIdx = child->GetLayoutRow();
+			int colIdx = child->getLayoutColumn();
+			int rowIdx = child->getLayoutRow();
 
 			colIdx = (0 <= colIdx && colIdx < colDefCount) ? colIdx : 0;
 			rowIdx = (0 <= rowIdx && rowIdx < rowDefCount) ? rowIdx : 0;
@@ -163,7 +163,7 @@ public:
 			detail::GridDefinitionData* row = (rowIdx < rowDefCount) ? basePanel->GetLayoutGridRowDefinition(rowIdx) : nullptr;
 
 			// 子要素の DesiredSize (最低サイズ) を測るのは、セルのサイズ指定が "Auto" の時だけでよい。
-			const Size& childDesiredSize = child->GetLayoutDesiredSize();
+			const Size& childDesiredSize = child->getLayoutDesiredSize();
 			if (col != nullptr && col->type == GridLengthType::Auto)
 			{
 				col->desiredSize = std::max(col->desiredSize, childDesiredSize.width);
@@ -192,7 +192,7 @@ public:
 	static Size UIGridLayout_ArrangeOverride(TPanel* panel, const Size& finalSize)
 	{
 		ILayoutPanel* basePanel = static_cast<ILayoutPanel*>(panel);
-		const ThicknessF& padding = static_cast<ILayoutElement*>(panel)->GetLayoutPadding();
+		const ThicknessF& padding = static_cast<ILayoutElement*>(panel)->getLayoutPadding();
 		Size childrenBoundSize(finalSize.width - (padding.Left + padding.Right), finalSize.height - (padding.Top + padding.Bottom));
 
 		// "Auto" と "Pixel" 指定である Column/Row の最終サイズを確定させる。
@@ -273,10 +273,10 @@ public:
 		for (int i = 0; i < childCount; i++)
 		{
 			ILayoutElement* child = basePanel->GetLayoutChild(i);
-			int colIdx = child->GetLayoutColumn();
-			int rowIdx = child->GetLayoutRow();
-			int colSpan = child->GetLayoutColumnSpan();
-			int rowSpan = child->GetLayoutRowSpan();
+			int colIdx = child->getLayoutColumn();
+			int rowIdx = child->getLayoutRow();
+			int colSpan = child->getLayoutColumnSpan();
+			int rowSpan = child->getLayoutRowSpan();
 			colSpan = std::max(1, colSpan);	// 最低 1
 			rowSpan = std::max(1, rowSpan);	// 最低 1
 			colSpan = std::min(colSpan, colIdx + colDefCount);	// 最大値制限
@@ -310,7 +310,7 @@ public:
 			}
 
 			// Arrange
-			child->ArrangeLayout(rect);
+			child->arrangeLayout(rect);
 		}
 
 		return finalSize;

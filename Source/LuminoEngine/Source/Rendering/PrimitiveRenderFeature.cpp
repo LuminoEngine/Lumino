@@ -12,8 +12,8 @@
 #include "PrimitiveRenderFeature.h"
 
 #define LN_CALL_CORE_COMMAND(func, command, ...) \
-	if (m_manager->GetRenderingType() == GraphicsRenderingType::Threaded) { \
-		m_manager->GetPrimaryRenderingCommandList()->AddCommand<command>(m_core, __VA_ARGS__); \
+	if (m_manager->getRenderingType() == GraphicsRenderingType::Threaded) { \
+		m_manager->getPrimaryRenderingCommandList()->addCommand<command>(m_core, __VA_ARGS__); \
 	} \
 	else { \
 		m_core->func(__VA_ARGS__); \
@@ -105,8 +105,8 @@ void PrimitiveRendererCore::initialize(GraphicsManager* manager)
 	m_manager = manager;
 	const int DefaultFaceCount = 2048;
 
-	auto* device = m_manager->GetGraphicsDevice();
-	m_renderer = device->GetRenderer();
+	auto* device = m_manager->getGraphicsDevice();
+	m_renderer = device->getRenderer();
 	m_vertexBuffer = device->CreateVertexBuffer(sizeof(Vertex) * DefaultFaceCount * 4, nullptr, ResourceUsage::Dynamic);
 	m_indexBuffer = device->CreateIndexBuffer(DefaultFaceCount * 6, nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
 
@@ -148,35 +148,35 @@ void PrimitiveRendererCore::DrawSquare(const DrawSquareData& data)
 void PrimitiveRendererCore::flush()
 {
 	// サイズが足りなければ再作成
-	auto* device = m_manager->GetGraphicsDevice();
-	if (m_vertexBuffer->getByteCount() < m_vertexCache.GetBufferUsedByteCount())
+	auto* device = m_manager->getGraphicsDevice();
+	if (m_vertexBuffer->getByteCount() < m_vertexCache.getBufferUsedByteCount())
 	{
 		LN_SAFE_RELEASE(m_vertexBuffer);
-		m_vertexBuffer = device->CreateVertexBuffer(m_vertexCache.GetBufferUsedByteCount(), nullptr, ResourceUsage::Dynamic);
+		m_vertexBuffer = device->CreateVertexBuffer(m_vertexCache.getBufferUsedByteCount(), nullptr, ResourceUsage::Dynamic);
 	}
-	if (m_indexBuffer->getByteCount() < m_indexCache.GetBufferUsedByteCount())
+	if (m_indexBuffer->getByteCount() < m_indexCache.getBufferUsedByteCount())
 	{
 		LN_SAFE_RELEASE(m_indexBuffer);
-		m_indexBuffer = device->CreateIndexBuffer(m_indexCache.GetBufferUsedByteCount(), nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
+		m_indexBuffer = device->CreateIndexBuffer(m_indexCache.getBufferUsedByteCount(), nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
 	}
 
 	// 描画する
-	m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
-	m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
+	m_vertexBuffer->setSubData(0, m_vertexCache.getBuffer(), m_vertexCache.getBufferUsedByteCount());
+	m_indexBuffer->setSubData(0, m_indexCache.getBuffer(), m_indexCache.getBufferUsedByteCount());
 
 	{
 		if (m_mode == PrimitiveRendererMode::TriangleList)
 		{
-			m_renderer->SetVertexDeclaration(m_manager->GetDefaultVertexDeclaration()->GetDeviceObject());
+			m_renderer->SetVertexDeclaration(m_manager->getDefaultVertexDeclaration()->getDeviceObject());
 			m_renderer->SetVertexBuffer(0, m_vertexBuffer);
 			m_renderer->SetIndexBuffer(m_indexBuffer);
-			m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.getCount() / 3);
+			m_renderer->drawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.getCount() / 3);
 		}
 		else if (m_mode == PrimitiveRendererMode::LineList)
 		{
-			m_renderer->SetVertexDeclaration(m_manager->GetDefaultVertexDeclaration()->GetDeviceObject());
+			m_renderer->SetVertexDeclaration(m_manager->getDefaultVertexDeclaration()->getDeviceObject());
 			m_renderer->SetVertexBuffer(0, m_vertexBuffer);
-			m_renderer->DrawPrimitive(PrimitiveType_LineList, 0, m_vertexCache.getCount() / 2);
+			m_renderer->drawPrimitive(PrimitiveType_LineList, 0, m_vertexCache.getCount() / 2);
 		}
 	}
 
@@ -191,8 +191,8 @@ void PrimitiveRendererCore::RequestBuffers(int vertexCount, int indexCount, Vert
 	assert(vb != nullptr);
 	assert(ib != nullptr);
 	*outBeginVertexIndex = m_vertexCache.getCount();
-	*vb = m_vertexCache.Request(vertexCount);
-	*ib = m_indexCache.Request(indexCount);
+	*vb = m_vertexCache.request(vertexCount);
+	*ib = m_indexCache.request(indexCount);
 }
 
 //------------------------------------------------------------------------------
@@ -264,10 +264,10 @@ void PrimitiveRenderFeature::DrawSquare(
 //------------------------------------------------------------------------------
 void PrimitiveRenderFeature::DrawRectangle(const Rect& rect)
 {
-	float l = rect.GetLeft();
+	float l = rect.getLeft();
 	float t = rect.getTop();
 	float r = rect.getRight();
-	float b = rect.GetBottom();
+	float b = rect.getBottom();
 	DrawSquare(
 		Vector3(l, t, 0), Vector2(0, 0), Color::White,
 		Vector3(l, b, 0), Vector2(0, 1), Color::White,
@@ -280,8 +280,8 @@ void PrimitiveRenderFeature::flush()
 {
 	if (m_flushRequested)
 	{
-        if (m_manager->GetRenderingType() == GraphicsRenderingType::Threaded) {
-            m_manager->GetPrimaryRenderingCommandList()->AddCommand<PrimitiveRendererCore_FlushCommand>(m_core);
+        if (m_manager->getRenderingType() == GraphicsRenderingType::Threaded) {
+            m_manager->getPrimaryRenderingCommandList()->addCommand<PrimitiveRendererCore_FlushCommand>(m_core);
         }
         else {
             m_core->flush();
@@ -291,9 +291,9 @@ void PrimitiveRenderFeature::flush()
 }
 
 //------------------------------------------------------------------------------
-bool PrimitiveRenderFeature::IsStandaloneShader() const { return false; }
-void PrimitiveRenderFeature::OnActivated() { m_stateModified = true; }
-void PrimitiveRenderFeature::OnDeactivated() { flush(); }
+bool PrimitiveRenderFeature::isStandaloneShader() const { return false; }
+void PrimitiveRenderFeature::onActivated() { m_stateModified = true; }
+void PrimitiveRenderFeature::onDeactivated() { flush(); }
 
 //------------------------------------------------------------------------------
 void PrimitiveRenderFeature::SetPrimitiveRendererMode(PrimitiveRendererMode mode)
@@ -338,7 +338,7 @@ BlitRenderer::~BlitRenderer()
 void BlitRenderer::initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
-	auto* device = m_manager->GetGraphicsDevice();
+	auto* device = m_manager->getGraphicsDevice();
 
 	Vertex vertices[4] =
 	{
@@ -360,11 +360,11 @@ Material* BlitRenderer::GetCommonMaterial() const
 }
 
 //------------------------------------------------------------------------------
-void BlitRenderer::Blit()
+void BlitRenderer::blit()
 {
 	auto* _this = this;
 	LN_ENQUEUE_RENDER_COMMAND_1(
-		Blit, m_manager,
+		blit, m_manager,
 		BlitRenderer*, _this,
 		{
 			_this->BlitImpl();
@@ -374,18 +374,18 @@ void BlitRenderer::Blit()
 //------------------------------------------------------------------------------
 void BlitRenderer::BlitImpl()
 {
-	auto* device = m_manager->GetGraphicsDevice();
-	auto* renderer = device->GetRenderer();
-	renderer->SetVertexDeclaration(m_manager->GetDefaultVertexDeclaration()->GetDeviceObject());
+	auto* device = m_manager->getGraphicsDevice();
+	auto* renderer = device->getRenderer();
+	renderer->SetVertexDeclaration(m_manager->getDefaultVertexDeclaration()->getDeviceObject());
 	renderer->SetVertexBuffer(0, m_vertexBuffer);
-	renderer->DrawPrimitive(PrimitiveType_TriangleStrip, 0, 2);
+	renderer->drawPrimitive(PrimitiveType_TriangleStrip, 0, 2);
 }
 
 //------------------------------------------------------------------------------
-bool BlitRenderer::IsStandaloneShader() const { return false; }
+bool BlitRenderer::isStandaloneShader() const { return false; }
 void BlitRenderer::flush() {}
-void BlitRenderer::OnActivated() {}
-void BlitRenderer::OnDeactivated() {}
+void BlitRenderer::onActivated() {}
+void BlitRenderer::onDeactivated() {}
 
 } // namespace detail
 LN_NAMESPACE_GRAPHICS_END

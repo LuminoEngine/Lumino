@@ -34,7 +34,7 @@ public:
 	};
 
 public:
-	static AudioManager* GetInstance(AudioManager* priority = nullptr);
+	static AudioManager* getInstance(AudioManager* priority = nullptr);
 
 	AudioManager();
 	virtual ~AudioManager();
@@ -42,19 +42,19 @@ public:
 	void Finalize();
 
 	/// オンメモリorストリーミング自動選択の音声データバイト数閾値
-	void SetAutoPlayTypeSelectThreshold(uint32_t threshold) { m_onMemoryLimitSize = threshold; }
+	void setAutoPlayTypeSelectThreshold(uint32_t threshold) { m_onMemoryLimitSize = threshold; }
 
-	FileManager* GetFileManager() { return m_fileManager; }
-	GameAudioImpl* GetGameAudio() const { return m_gameAudio; }
-	AudioDevice* GetAudioDevice() const { return m_audioDevice; }
+	FileManager* getFileManager() { return m_fileManager; }
+	GameAudioImpl* getGameAudio() const { return m_gameAudio; }
+	AudioDevice* getAudioDevice() const { return m_audioDevice; }
 
-	AudioStream* CreateAudioStream(Stream* stream, const CacheKey& key, SoundLoadingMode loadingMode);
-	AudioPlayer* CreateAudioPlayer(AudioStream* stream, SoundPlayingMode mode, bool enable3D);		// 初期化完了済みの AudioStream を渡すこと
-	//Sound* CreateSound(Stream* stream, const CacheKey& key, SoundLoadingMode loadingMode);
-	void AddSound(Sound* sound);
+	AudioStream* createAudioStream(Stream* stream, const CacheKey& key, SoundLoadingMode loadingMode);
+	AudioPlayer* createAudioPlayer(AudioStream* stream, SoundPlayingMode mode, bool enable3D);		// 初期化完了済みの AudioStream を渡すこと
+	//Sound* createSound(Stream* stream, const CacheKey& key, SoundLoadingMode loadingMode);
+	void addSound(Sound* sound);
 
 private:
-	void Thread_Polling();
+	void thread_Polling();
 
 	FileManager*		m_fileManager;
 	AudioDevice*		m_audioDevice;		// PCM 再生用デバイスクラス

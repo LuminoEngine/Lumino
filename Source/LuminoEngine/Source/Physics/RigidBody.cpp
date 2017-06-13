@@ -78,7 +78,7 @@ void RigidBody::initialize(CollisionShape* collider, const ConfigData& configDat
 	m_btShapeManager.AddShape(collider);
 	m_data = configData;
 	m_modifiedFlags |= Modified_InitialUpdate;
-	detail::EngineDomain::GetPhysicsWorld3D()->AddPhysicsObject(this);
+	detail::EngineDomain::getPhysicsWorld3D()->AddPhysicsObject(this);
 }
 
 //------------------------------------------------------------------------------
@@ -95,7 +95,7 @@ void RigidBody::InitializeCore(CollisionShape* collider, const ConfigData& confi
 }
 
 //------------------------------------------------------------------------------
-void RigidBody::SetPosition(const Vector3& position)
+void RigidBody::setPosition(const Vector3& position)
 {
 	//m_btRigidBody->activate();
 
@@ -109,9 +109,9 @@ void RigidBody::SetPosition(const Vector3& position)
 
 	//if ( m_btRigidBody->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT )
 	//{
-	//	btTransform Transform = m_btRigidBody->getWorldTransform();
-	//	Transform.setOrigin( pos );
-	//	m_btRigidBody->setWorldTransform( Transform );
+	//	btTransform transform = m_btRigidBody->getWorldTransform();
+	//	transform.setOrigin( pos );
+	//	m_btRigidBody->setWorldTransform( transform );
 	//}
 	//else
 	//{
@@ -121,9 +121,9 @@ void RigidBody::SetPosition(const Vector3& position)
 
 	//m_btRigidBody->getWorldTransform().getOpenGLMatrix((btScalar*)&mWorldMatrix);
 }
-void RigidBody::SetPosition(float x, float y, float z)
+void RigidBody::setPosition(float x, float y, float z)
 {
-	SetPosition(Vector3(x, y, z));
+	setPosition(Vector3(x, y, z));
 }
 
 //------------------------------------------------------------------------------
@@ -288,12 +288,12 @@ void RigidBody::ClearForces()
 //------------------------------------------------------------------------------
 void RigidBody::OnBeforeStepSimulation()
 {
-	auto* transform = GetTransform();
+	auto* transform = getTransform();
 	if (transform != nullptr)
 	{
 		if (m_data.KinematicObject)
 		{
-			m_data.InitialTransform = transform->GetWorldMatrix();
+			m_data.InitialTransform = transform->getWorldMatrix();
 		}
 	}
 
@@ -430,7 +430,7 @@ void RigidBody::OnAfterStepSimulation()
 		}
 	}
 
-	auto* transform = GetTransform();
+	auto* transform = getTransform();
 	if (transform != nullptr)
 	{
 		if (m_data.KinematicObject)
@@ -482,9 +482,9 @@ void RigidBody::OnRemovedFromWorld()
 }
 
 //------------------------------------------------------------------------------
-void RigidBody::OnUpdate()
+void RigidBody::onUpdate()
 {
-	PhysicsObject::OnUpdate();
+	PhysicsObject::onUpdate();
 
 	
 }

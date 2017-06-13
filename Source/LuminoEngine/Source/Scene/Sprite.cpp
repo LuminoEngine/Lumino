@@ -35,50 +35,50 @@ void SpriteComponent::initialize()
 {
 	VisualComponent::initialize();
 	m_srcRect.set(0, 0, -1, -1);
-	SetSize(Size(-1, -1));
+	setSize(Size(-1, -1));
 
-	SetBlendMode(BlendMode::Alpha);
+	setBlendMode(BlendMode::Alpha);
 
-	m_material = NewObject<Material>();
+	m_material = newObject<Material>();
 
 	//owner->GetRootNode()->AddChild(this);
 	setAutoRemove(true);
 }
 
 //------------------------------------------------------------------------------
-void SpriteComponent::SetTexture(Texture* texture)
+void SpriteComponent::setTexture(Texture* texture)
 {
 	//if (LN_CHECK_ARG(m_materialList != nullptr)) return;
-	//m_materialList->GetAt(0)->SetMaterialTexture(texture);
+	//m_materialList->GetAt(0)->setMaterialTexture(texture);
 	m_texture = texture;
 	UpdateVertexData();
 }
 
 //------------------------------------------------------------------------------
-void SpriteComponent::SetSize(const Size& size)
+void SpriteComponent::setSize(const Size& size)
 {
 	m_size = size;
 }
 
 //------------------------------------------------------------------------------
-Texture* SpriteComponent::GetTexture() const
+Texture* SpriteComponent::getTexture() const
 {
 	//if (LN_CHECK_ARG(m_materialList != nullptr)) return nullptr;
-	//return m_materialList->GetAt(0)->GetMaterialTexture(nullptr);
+	//return m_materialList->GetAt(0)->getMaterialTexture(nullptr);
 	return m_texture;
 }
 
 //------------------------------------------------------------------------------
-void SpriteComponent::SetSourceRect(const Rect& rect)
+void SpriteComponent::setSourceRect(const Rect& rect)
 {
 	m_srcRect = rect;
 	UpdateVertexData();
 }
 
 //------------------------------------------------------------------------------
-void SpriteComponent::SetSourceRect(float x, float y, float width, float height)
+void SpriteComponent::setSourceRect(float x, float y, float width, float height)
 {
-	SetSourceRect(Rect(x, y, width, height));
+	setSourceRect(Rect(x, y, width, height));
 }
 
 //------------------------------------------------------------------------------
@@ -97,14 +97,14 @@ void SpriteComponent::SetAnchorPoint(float ratioX, float ratioY)
 void SpriteComponent::RenderSprite(DrawList* renderer, SpriteBaseDirection dir)
 {
 	//Material* mat = GetMainMaterial();
-	Color colorScale = GetColorScale();
-	colorScale.a *= GetOpacity();
-	renderer->SetTransform(GetOwnerObject()->transform.GetWorldMatrix());
+	Color colorScale = getColorScale();
+	colorScale.a *= getOpacity();
+	renderer->SetTransform(getOwnerObject()->transform.getWorldMatrix());
 	renderer->DrawSprite(
 		Vector3::Zero,
 		m_renderSize,
 		m_anchor,
-		GetTexture(),
+		getTexture(),
 		m_renderSourceRect,
 		colorScale,
 		dir,
@@ -116,7 +116,7 @@ void SpriteComponent::RenderSprite(DrawList* renderer, SpriteBaseDirection dir)
 void SpriteComponent::UpdateVertexData()
 {
 	// 転送元矩形が負値ならテクスチャ全体を転送する
-	Texture* tex = GetTexture();
+	Texture* tex = getTexture();
 	const SizeI& texSize = (tex != nullptr) ? tex->getSize() : SizeI::Zero;
 	m_renderSourceRect = m_srcRect;
 	if (m_renderSourceRect.width < 0 && m_renderSourceRect.height < 0)
@@ -157,7 +157,7 @@ Sprite2DComponentPtr Sprite2DComponent::create(const StringRef& filePath)
 Sprite2DComponentPtr Sprite2DComponent::create(Texture* texture)
 {
 	auto obj = create();
-	obj->SetTexture(texture);
+	obj->setTexture(texture);
 	return obj;
 }
 
@@ -181,7 +181,7 @@ void Sprite2DComponent::initialize()
 void Sprite2DComponent::initialize(Texture* texture)
 {
 	initialize();
-	SetTexture(texture);
+	setTexture(texture);
 }
 
 //------------------------------------------------------------------------------
@@ -209,7 +209,7 @@ Sprite3DComponentPtr Sprite3DComponent::create(float width, float height)
 {
 	auto obj = Sprite3DComponentPtr::makeRef();
 	obj->initialize();
-	obj->SetSize(Size(width, height));
+	obj->setSize(Size(width, height));
 	return obj;
 }
 
@@ -218,8 +218,8 @@ Sprite3DComponentPtr Sprite3DComponent::create(float width, float height, Textur
 {
 	auto obj = Sprite3DComponentPtr::makeRef();
 	obj->initialize();
-	obj->SetSize(Size(width, height));
-	obj->SetTexture(texture);
+	obj->setSize(Size(width, height));
+	obj->setTexture(texture);
 	return obj;
 }
 
@@ -269,33 +269,33 @@ void SpriteBase::initialize()
 }
 
 //------------------------------------------------------------------------------
-void SpriteBase::SetTexture(Texture* texture)
+void SpriteBase::setTexture(Texture* texture)
 {
-	GetSpriteComponent()->SetTexture(texture);
+	GetSpriteComponent()->setTexture(texture);
 }
 
 //------------------------------------------------------------------------------
-Texture* SpriteBase::GetTexture() const
+Texture* SpriteBase::getTexture() const
 {
-	return GetSpriteComponent()->GetTexture();
+	return GetSpriteComponent()->getTexture();
 }
 
 //------------------------------------------------------------------------------
-void SpriteBase::SetSourceRect(const Rect& rect)
+void SpriteBase::setSourceRect(const Rect& rect)
 {
-	GetSpriteComponent()->SetSourceRect(rect);
+	GetSpriteComponent()->setSourceRect(rect);
 }
 
 //------------------------------------------------------------------------------
-void SpriteBase::SetSourceRect(float x, float y, float width, float height)
+void SpriteBase::setSourceRect(float x, float y, float width, float height)
 {
-	GetSpriteComponent()->SetSourceRect(x, y, width, height);
+	GetSpriteComponent()->setSourceRect(x, y, width, height);
 }
 
 //------------------------------------------------------------------------------
-const Rect& SpriteBase::GetSourceRect() const
+const Rect& SpriteBase::getSourceRect() const
 {
-	return GetSpriteComponent()->GetSourceRect();
+	return GetSpriteComponent()->getSourceRect();
 }
 
 //------------------------------------------------------------------------------
@@ -318,19 +318,19 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sprite2D, SpriteBase);
 //------------------------------------------------------------------------------
 RefPtr<Sprite2D> Sprite2D::create()
 {
-	return NewObject<Sprite2D>();
+	return newObject<Sprite2D>();
 }
 
 //------------------------------------------------------------------------------
 RefPtr<Sprite2D> Sprite2D::create(const StringRef& filePath)
 {
-	return NewObject<Sprite2D>(filePath);
+	return newObject<Sprite2D>(filePath);
 }
 
 //------------------------------------------------------------------------------
 RefPtr<Sprite2D> Sprite2D::create(Texture* texture)
 {
-	return NewObject<Sprite2D>(texture);
+	return newObject<Sprite2D>(texture);
 }
 
 //------------------------------------------------------------------------------
@@ -351,7 +351,7 @@ void Sprite2D::initialize()
 	SpriteBase::initialize();
 	m_component = Sprite2DComponent::create();
 	AddComponent(m_component);
-	detail::EngineDomain::GetDefaultWorld2D()->AddWorldObject(this, true);
+	detail::EngineDomain::getDefaultWorld2D()->addWorldObject(this, true);
 }
 
 //------------------------------------------------------------------------------
@@ -360,7 +360,7 @@ void Sprite2D::initialize(const StringRef& filePath)
 	SpriteBase::initialize();
 	m_component = Sprite2DComponent::create(filePath);
 	AddComponent(m_component);
-	detail::EngineDomain::GetDefaultWorld2D()->AddWorldObject(this, true);
+	detail::EngineDomain::getDefaultWorld2D()->addWorldObject(this, true);
 }
 
 //------------------------------------------------------------------------------
@@ -369,7 +369,7 @@ void Sprite2D::initialize(Texture* texture)
 	SpriteBase::initialize();
 	m_component = Sprite2DComponent::create(texture);
 	AddComponent(m_component);
-	detail::EngineDomain::GetDefaultWorld2D()->AddWorldObject(this, true);
+	detail::EngineDomain::getDefaultWorld2D()->addWorldObject(this, true);
 }
 
 //------------------------------------------------------------------------------
@@ -393,13 +393,13 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sprite3D, SpriteBase);
 //------------------------------------------------------------------------------
 RefPtr<Sprite3D> Sprite3D::create()
 {
-	return NewObject<Sprite3D>();
+	return newObject<Sprite3D>();
 }
 
 //------------------------------------------------------------------------------
 RefPtr<Sprite3D> Sprite3D::create(float width, float height, Texture* texture)
 {
-	return NewObject<Sprite3D>(width, height, texture);
+	return newObject<Sprite3D>(width, height, texture);
 }
 
 //------------------------------------------------------------------------------
@@ -420,7 +420,7 @@ void Sprite3D::initialize()
 	SpriteBase::initialize();
 	m_component = Sprite3DComponent::create();
 	AddComponent(m_component);
-	detail::EngineDomain::GetDefaultWorld3D()->AddWorldObject(this, true);
+	detail::EngineDomain::getDefaultWorld3D()->addWorldObject(this, true);
 }
 
 //------------------------------------------------------------------------------
@@ -429,7 +429,7 @@ void Sprite3D::initialize(float width, float height, Texture* texture)
 	SpriteBase::initialize();
 	m_component = Sprite3DComponent::create(width, height, texture);
 	AddComponent(m_component);
-	detail::EngineDomain::GetDefaultWorld3D()->AddWorldObject(this, true);
+	detail::EngineDomain::getDefaultWorld3D()->addWorldObject(this, true);
 }
 
 //------------------------------------------------------------------------------

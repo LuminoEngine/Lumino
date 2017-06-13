@@ -32,11 +32,11 @@ World::~World()
 //------------------------------------------------------------------------------
 void World::initialize()
 {
-	m_renderer = NewObject<DrawList>(detail::EngineDomain::GetGraphicsManager());
-	m_insideWorldRenderer = NewObject<DrawList>(detail::EngineDomain::GetGraphicsManager());
-	m_debugRenderer = NewObject<DrawList>(detail::EngineDomain::GetGraphicsManager());
+	m_renderer = newObject<DrawList>(detail::EngineDomain::getGraphicsManager());
+	m_insideWorldRenderer = newObject<DrawList>(detail::EngineDomain::getGraphicsManager());
+	m_debugRenderer = newObject<DrawList>(detail::EngineDomain::getGraphicsManager());
 
-	m_debugRendererDefaultMaterial = NewObject<Material>();
+	m_debugRendererDefaultMaterial = newObject<Material>();
 
 	for (int i = 0; i < detail::MaxOffscreenId; i++)
 	{
@@ -45,7 +45,7 @@ void World::initialize()
 }
 
 //------------------------------------------------------------------------------
-DrawList* World::GetRenderer() const
+DrawList* World::getRenderer() const
 {
 	return m_renderer;
 }
@@ -70,7 +70,7 @@ void World::RemoveAllObjects()
 }
 
 //------------------------------------------------------------------------------
-void World::AddWorldObject(WorldObject* obj, bool autoRelease)
+void World::addWorldObject(WorldObject* obj, bool autoRelease)
 {
 	m_rootWorldObjectList.add(obj);
 	obj->m_world = this;
@@ -78,7 +78,7 @@ void World::AddWorldObject(WorldObject* obj, bool autoRelease)
 }
 
 //------------------------------------------------------------------------------
-void World::RemoveWorldObject(WorldObject* obj)
+void World::removeWorldObject(WorldObject* obj)
 {
 	if (LN_CHECK_ARG(obj != nullptr)) return;
 	if (LN_CHECK_STATE(obj->m_world == this)) return;
@@ -87,7 +87,7 @@ void World::RemoveWorldObject(WorldObject* obj)
 }
 
 //------------------------------------------------------------------------------
-void World::AddOffscreenWorldView(OffscreenWorldView* view)
+void World::addOffscreenWorldView(OffscreenWorldView* view)
 {
 	if (LN_CHECK_ARG(!m_offscreenIdStorage.isEmpty())) return;
 	m_offscreenWorldViewList.add(view);
@@ -98,7 +98,7 @@ void World::AddOffscreenWorldView(OffscreenWorldView* view)
 }
 
 //------------------------------------------------------------------------------
-void World::RemoveOffscreenWorldView(OffscreenWorldView* view)
+void World::removeOffscreenWorldView(OffscreenWorldView* view)
 {
 	m_offscreenWorldViewList.remove(view);
 
@@ -108,9 +108,9 @@ void World::RemoveOffscreenWorldView(OffscreenWorldView* view)
 }
 
 //------------------------------------------------------------------------------
-void World::BeginUpdateFrame()
+void World::reginUpdateFrame()
 {
-	// OnRender の外のデバッグ描画などでも使用するため、描画リストのクリアは SceneGraph の更新前でなければならない。
+	// onRender の外のデバッグ描画などでも使用するため、描画リストのクリアは SceneGraph の更新前でなければならない。
 	// また、出来上がった描画リストを、複数のビューやカメラが描画することを想定する。
 	if (m_renderer != nullptr)
 	{
@@ -119,22 +119,22 @@ void World::BeginUpdateFrame()
 	if (m_debugRenderer != nullptr)
 	{
 		m_debugRenderer->BeginMakeElements();
-		m_debugRendererDefaultMaterial->SetShader(detail::EngineDomain::GetGraphicsManager()->GetBuiltinShader(BuiltinShader::Sprite));
+		m_debugRendererDefaultMaterial->setShader(detail::EngineDomain::getGraphicsManager()->getBuiltinShader(BuiltinShader::Sprite));
 		m_debugRenderer->SetDefaultMaterial(m_debugRendererDefaultMaterial);
 	}
 }
 
 //------------------------------------------------------------------------------
-void World::UpdateFrame(float elapsedTime)
+void World::updateFrame(float elapsedTime)
 {
 	for (auto& obj : m_rootWorldObjectList)
 	{
-		obj->UpdateFrame();
+		obj->updateFrame();
 	}
 }
 
 //------------------------------------------------------------------------------
-void World::RenderRoot(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags, RenderView* mainRenderView)
+void World::renderRoot(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags, RenderView* mainRenderView)
 {
 	// pre render
 	for (auto& view : m_offscreenWorldViewList)
@@ -143,18 +143,18 @@ void World::RenderRoot(CameraComponent* camera, WorldDebugDrawFlags debugDrawFla
 	}
 
 	// main render
-	Render(GetRenderer(), camera, debugDrawFlags);
+	render(getRenderer(), camera, debugDrawFlags);
 }
 
 //------------------------------------------------------------------------------
-void World::Render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags, OffscreenWorldView* offscreen)
+void World::render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags, OffscreenWorldView* offscreen)
 {
 	for (auto& obj : m_rootWorldObjectList)
 	{
 		for (auto& c : obj->m_components)
 		{
 			VisualComponent* visual = nullptr;
-			if (c->GetSpecialComponentType() == SpecialComponentType::Visual)
+			if (c->getSpecialComponentType() == SpecialComponentType::Visual)
 			{
 				visual = static_cast<VisualComponent*>(c.get());
 
@@ -163,12 +163,12 @@ void World::Render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags deb
 
 				if (visible)
 				{
-					c->Render(g);
+					c->render(g);
 				}
 			}
 		}
 
-		obj->Render(g);
+		obj->render(g);
 	}
 
 	// reset status
@@ -176,16 +176,16 @@ void World::Render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags deb
 }
 
 //------------------------------------------------------------------------------
-void World::ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+void World::executeDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 }
 
 //------------------------------------------------------------------------------
-void World::OnUIEvent(UIEventArgs* e)
+void World::onUIEvent(UIEventArgs* e)
 {
 	for (auto& obj : m_rootWorldObjectList)
 	{
-		obj->OnUIEvent(e);
+		obj->onUIEvent(e);
 		if (e->handled) return;
 	}
 }
@@ -211,33 +211,33 @@ void World2D::initialize()
 	World::initialize();
 
 	m_sceneGraph = RefPtr<SceneGraph2D>::makeRef();
-	m_sceneGraph->CreateCore(EngineManager::GetInstance()->GetSceneGraphManager());
+	m_sceneGraph->createCore(EngineManager::getInstance()->getSceneGraphManager());
 
-	m_mainCamera = NewObject<Camera>(CameraProjection_2D);
+	m_mainCamera = newObject<Camera>(CameraProjection_2D);
 	m_mainCamera->SetSpecialObject(true);
-	AddWorldObject(m_mainCamera, true);
+	addWorldObject(m_mainCamera, true);
 }
 
 //------------------------------------------------------------------------------
 //SceneGraph* World2D::GetSceneGraph()
 //{
-//	return GetSceneGraph2D();
+//	return getSceneGraph2D();
 //}
 
 ////------------------------------------------------------------------------------
-//DrawList* World2D::GetRenderer() const
+//DrawList* World2D::getRenderer() const
 //{
-//	return GetSceneGraph2D()->GetRenderer();
+//	return getSceneGraph2D()->getRenderer();
 //}
 
 //------------------------------------------------------------------------------
-SceneGraph2D* World2D::GetSceneGraph2D() const
+SceneGraph2D* World2D::getSceneGraph2D() const
 {
 	return m_sceneGraph;
 }
 
 //------------------------------------------------------------------------------
-Camera* World2D::GetMainCamera() const
+Camera* World2D::getMainCamera() const
 {
 	return m_mainCamera;
 }
@@ -249,29 +249,29 @@ Camera* World2D::GetMainCamera() const
 //}
 
 //------------------------------------------------------------------------------
-void World2D::BeginUpdateFrame()
+void World2D::reginUpdateFrame()
 {
-	World::BeginUpdateFrame();
+	World::reginUpdateFrame();
 
 	//if (m_sceneGraph != nullptr) {
-	//	m_sceneGraph->BeginUpdateFrame();
+	//	m_sceneGraph->reginUpdateFrame();
 	//}
 }
 
 //------------------------------------------------------------------------------
-void World2D::UpdateFrame(float elapsedTime)
+void World2D::updateFrame(float elapsedTime)
 {
-	World::UpdateFrame(elapsedTime);
+	World::updateFrame(elapsedTime);
 
 	//if (m_sceneGraph != nullptr) {
-	//	m_sceneGraph->UpdateFrame(elapsedTime);
+	//	m_sceneGraph->updateFrame(elapsedTime);
 	//}
 }
 
 //------------------------------------------------------------------------------
-void World2D::Render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags, OffscreenWorldView* offscreen)
+void World2D::render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags, OffscreenWorldView* offscreen)
 {
-	World::Render(g, camera, debugDrawFlags, offscreen);
+	World::render(g, camera, debugDrawFlags, offscreen);
 }
 
 //==============================================================================
@@ -295,48 +295,48 @@ void World3D::initialize()
 {
 	World::initialize();
 
-	m_physicsWorld = NewObject<PhysicsWorld>();
+	m_physicsWorld = newObject<PhysicsWorld>();
 
 	m_sceneGraph = RefPtr<SceneGraph3D>::makeRef();
-	m_sceneGraph->CreateCore(EngineManager::GetInstance()->GetSceneGraphManager());
+	m_sceneGraph->createCore(EngineManager::getInstance()->getSceneGraphManager());
 
-	m_mainCamera = NewObject<Camera>(CameraProjection_3D);
+	m_mainCamera = newObject<Camera>(CameraProjection_3D);
 	m_mainCamera->SetSpecialObject(true);
-	AddWorldObject(m_mainCamera, true);
+	addWorldObject(m_mainCamera, true);
 
-	m_mainLight = NewObject<Light>();
+	m_mainLight = newObject<Light>();
 	m_mainLight->SetSpecialObject(true);
-	AddWorldObject(m_mainLight, true);
+	addWorldObject(m_mainLight, true);
 
-	CreateGridPlane();
+	createGridPlane();
 }
 
 //------------------------------------------------------------------------------
 //SceneGraph* World3D::GetSceneGraph()
 //{
-//	return GetSceneGraph3D();
+//	return getSceneGraph3D();
 //}
 
 ////------------------------------------------------------------------------------
-//DrawList* World3D::GetRenderer() const
+//DrawList* World3D::getRenderer() const
 //{
-//	return GetSceneGraph3D()->GetRenderer();
+//	return getSceneGraph3D()->getRenderer();
 //}
 //
 //------------------------------------------------------------------------------
-PhysicsWorld* World3D::GetPhysicsWorld3D() const
+PhysicsWorld* World3D::getPhysicsWorld3D() const
 {
 	return m_physicsWorld;
 }
 
 //------------------------------------------------------------------------------
-SceneGraph3D* World3D::GetSceneGraph3D() const
+SceneGraph3D* World3D::getSceneGraph3D() const
 {
 	return m_sceneGraph;
 }
 
 //------------------------------------------------------------------------------
-Camera* World3D::GetMainCamera() const
+Camera* World3D::getMainCamera() const
 {
 	return m_mainCamera;
 }
@@ -348,39 +348,39 @@ Camera* World3D::GetMainCamera() const
 //}
 
 //------------------------------------------------------------------------------
-void World3D::BeginUpdateFrame()
+void World3D::reginUpdateFrame()
 {
-	World::BeginUpdateFrame();
+	World::reginUpdateFrame();
 
 	//if (m_sceneGraph != nullptr)
 	//{
-	//	m_sceneGraph->BeginUpdateFrame();
+	//	m_sceneGraph->reginUpdateFrame();
 	//}
 }
 
 //------------------------------------------------------------------------------
-void World3D::UpdateFrame(float elapsedTime)
+void World3D::updateFrame(float elapsedTime)
 {
 	if (m_physicsWorld != nullptr)
 	{
 		m_physicsWorld->StepSimulation(elapsedTime);
 	}
 
-	World::UpdateFrame(elapsedTime);
+	World::updateFrame(elapsedTime);
 
 
 	//if (m_sceneGraph != nullptr)
 	//{
-	//	m_sceneGraph->UpdateFrame(elapsedTime);
+	//	m_sceneGraph->updateFrame(elapsedTime);
 	//}
 }
 
 //------------------------------------------------------------------------------
-void World3D::Render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags, OffscreenWorldView* offscreen)
+void World3D::render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags, OffscreenWorldView* offscreen)
 {
-	World::Render(g, camera, debugDrawFlags, offscreen);
+	World::render(g, camera, debugDrawFlags, offscreen);
 
-	RenderGridPlane(g, camera);
+	renderGridPlane(g, camera);
 
 	if (debugDrawFlags.TestFlag(WorldDebugDrawFlags::PhysicsInfo))
 	{
@@ -405,9 +405,9 @@ void World3D::Render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags d
 }
 
 //------------------------------------------------------------------------------
-void World3D::CreateGridPlane()
+void World3D::createGridPlane()
 {
-	detail::GraphicsManager* gm = detail::EngineDomain::GetGraphicsManager();
+	detail::GraphicsManager* gm = detail::EngineDomain::getGraphicsManager();
 
 	// 適当な四角形メッシュ
 	m_gridPlane = RefPtr<StaticMeshModel>::makeRef();
@@ -426,33 +426,33 @@ void World3D::CreateGridPlane()
 	static const size_t shaderCodeLen = LN_ARRAY_SIZE_OF(shaderCode);
 	auto shader = RefPtr<Shader>::makeRef();
 	shader->initialize(gm, shaderCode, shaderCodeLen);
-	m_gridPlane->GetMaterial(0)->SetShader(shader);
+	m_gridPlane->GetMaterial(0)->setShader(shader);
 
 	// 四方の辺に黒線を引いたテクスチャを作り、マテリアルにセットしておく
 	SizeI gridTexSize(512, 512);
-	auto gridTex = NewObject<Texture2D>(gridTexSize, TextureFormat::R8G8B8A8, true, ResourceUsage::Static);
+	auto gridTex = newObject<Texture2D>(gridTexSize, TextureFormat::R8G8B8A8, true, ResourceUsage::Static);
 	for (int x = 0; x < gridTexSize.width; ++x)
 	{
-		gridTex->SetPixel(x, 0, Color(0, 0, 0, 0.5));
-		gridTex->SetPixel(x, gridTexSize.width - 1, Color(0, 0, 0, 0.5));
+		gridTex->setPixel(x, 0, Color(0, 0, 0, 0.5));
+		gridTex->setPixel(x, gridTexSize.width - 1, Color(0, 0, 0, 0.5));
 	}
 	for (int y = 0; y < gridTexSize.height; ++y)
 	{
-		gridTex->SetPixel(0, y, Color(0, 0, 0, 0.5));
-		gridTex->SetPixel(gridTexSize.height - 1, y, Color(0, 0, 0, 0.5));
+		gridTex->setPixel(0, y, Color(0, 0, 0, 0.5));
+		gridTex->setPixel(gridTexSize.height - 1, y, Color(0, 0, 0, 0.5));
 	}
-	m_gridPlane->GetMaterial(0)->SetMaterialTexture(gridTex);
+	m_gridPlane->GetMaterial(0)->setMaterialTexture(gridTex);
 
-	m_gridPlane->GetMaterial(0)->SetBlendMode(BlendMode::Alpha);
-	m_gridPlane->GetMaterial(0)->SetDepthWriteEnabled(false);
+	m_gridPlane->GetMaterial(0)->setBlendMode(BlendMode::Alpha);
+	m_gridPlane->GetMaterial(0)->setDepthWriteEnabled(false);
 }
 
 //------------------------------------------------------------------------------
-void World3D::RenderGridPlane(DrawList* renderer, CameraComponent* camera)
+void World3D::renderGridPlane(DrawList* renderer, CameraComponent* camera)
 {
 	if (m_visibleGridPlane)
 	{
-		AdjustGridPlane(camera);
+		adjustGridPlane(camera);
 		renderer->SetTransform(Matrix::Identity);
 
 		DrawElementMetadata metadata;
@@ -464,7 +464,7 @@ void World3D::RenderGridPlane(DrawList* renderer, CameraComponent* camera)
 }
 
 //------------------------------------------------------------------------------
-void World3D::AdjustGridPlane(CameraComponent* camera)
+void World3D::adjustGridPlane(CameraComponent* camera)
 {
 	/*
 	カメラの視錐台と、グリッドを描画したい平面との衝突点から、四角形メッシュを作る。
@@ -480,7 +480,7 @@ void World3D::AdjustGridPlane(CameraComponent* camera)
 
 	auto& vf = camera->GetViewFrustum();
 	Vector3 points[8];
-	vf.GetCornerPoints(points);
+	vf.getCornerPoints(points);
 
 	Line lines[12] =
 	{
@@ -506,7 +506,7 @@ void World3D::AdjustGridPlane(CameraComponent* camera)
 	for (Line& li : lines)
 	{
 		Vector3 pt;
-		if (plane.Intersects(li.from, li.to, &pt))
+		if (plane.intersects(li.from, li.to, &pt))
 		{
 			hits.add(pt);
 		}
@@ -515,15 +515,15 @@ void World3D::AdjustGridPlane(CameraComponent* camera)
 	Vector3 minPos, maxPos;
 	for (Vector3& p : hits)
 	{
-		minPos = Vector3::Min(p, minPos);
-		maxPos = Vector3::Max(p, maxPos);
+		minPos = Vector3::min(p, minPos);
+		maxPos = Vector3::max(p, maxPos);
 	}
 
 	MeshResource* mesh = m_gridPlane->GetMeshResource(0);
-	mesh->SetPosition(0, Vector3(minPos.x, 0, maxPos.z));
-	mesh->SetPosition(1, Vector3(minPos.x, 0, minPos.z));
-	mesh->SetPosition(2, Vector3(maxPos.x, 0, maxPos.z));
-	mesh->SetPosition(3, Vector3(maxPos.x, 0, minPos.z));
+	mesh->setPosition(0, Vector3(minPos.x, 0, maxPos.z));
+	mesh->setPosition(1, Vector3(minPos.x, 0, minPos.z));
+	mesh->setPosition(2, Vector3(maxPos.x, 0, maxPos.z));
+	mesh->setPosition(3, Vector3(maxPos.x, 0, minPos.z));
 	mesh->SetUV(0, Vector2(-1.0f, 1.0f));
 	mesh->SetUV(1, Vector2(-1.0f, -1.0f));
 	mesh->SetUV(2, Vector2(1.0f, 1.0f));

@@ -28,37 +28,37 @@ void GameScene::initialize()
 }
 
 //------------------------------------------------------------------------------
-void GameScene::OnStart()
+void GameScene::onStart()
 {
 }
 
 //------------------------------------------------------------------------------
-void GameScene::OnUpdate()
+void GameScene::onUpdate()
 {
 	for (auto& ptr : m_gameObjectList)
 	{
-		ptr->OnUpdate();
+		ptr->onUpdate();
 	}
 }
 
 //------------------------------------------------------------------------------
-void GameScene::OnTerminate()
+void GameScene::onTerminate()
 {
 }
 
 //------------------------------------------------------------------------------
-void GameScene::AddGameObject(WorldObject* obj)
+void GameScene::addGameObject(WorldObject* obj)
 {
 	if (LN_CHECK_ARG(obj != nullptr)) return;
 	m_gameObjectList.add(obj);
 }
 
 //------------------------------------------------------------------------------
-void GameScene::Update()
+void GameScene::update()
 {
 
-	OnUpdate();
-	//tr::ReflectionHelper::GCObjectList(&m_gameObjectList);
+	onUpdate();
+	//tr::ReflectionHelper::gcObjectList(&m_gameObjectList);
 }
 
 
@@ -70,7 +70,7 @@ namespace detail {
 static GameSceneManager* g_gameSceneManager;
 
 //------------------------------------------------------------------------------
-GameSceneManager* GameSceneManager::GetInstance(GameSceneManager* priority)
+GameSceneManager* GameSceneManager::getInstance(GameSceneManager* priority)
 {
 	return (priority != nullptr) ? priority : g_gameSceneManager;
 }
@@ -90,11 +90,11 @@ GameSceneManager::~GameSceneManager()
 //------------------------------------------------------------------------------
 void GameSceneManager::Finalize()
 {
-	ReleaseAndTerminateAllRunningScenes();
+	releaseAndTerminateAllRunningScenes();
 }
 
 //------------------------------------------------------------------------------
-void GameSceneManager::GotoScene(GameScene* scene)
+void GameSceneManager::gotoScene(GameScene* scene)
 {
 	if (LN_CHECK_ARG(scene != nullptr)) return;
 	EventCommsnd c;
@@ -104,7 +104,7 @@ void GameSceneManager::GotoScene(GameScene* scene)
 }
 
 //------------------------------------------------------------------------------
-void GameSceneManager::CallScene(GameScene* scene)
+void GameSceneManager::callScene(GameScene* scene)
 {
 	if (LN_CHECK_ARG(scene != nullptr)) return;
 	EventCommsnd c;
@@ -114,7 +114,7 @@ void GameSceneManager::CallScene(GameScene* scene)
 }
 
 //------------------------------------------------------------------------------
-void GameSceneManager::ReturnScene()
+void GameSceneManager::returnScene()
 {
 	if (LN_CHECK_STATE(m_activeScene != nullptr)) return;
 	EventCommsnd c;
@@ -124,17 +124,17 @@ void GameSceneManager::ReturnScene()
 }
 
 //------------------------------------------------------------------------------
-void GameSceneManager::UpdateFrame()
+void GameSceneManager::updateFrame()
 {
-	ExecuteCommands();
+	executeCommands();
 	if (m_activeScene != nullptr)
 	{
-		m_activeScene->Update();
+		m_activeScene->update();
 	}
 }
 
 //------------------------------------------------------------------------------
-void GameSceneManager::ExecuteCommands()
+void GameSceneManager::executeCommands()
 {
 	while (!m_eventQueue.empty())
 	{
@@ -145,13 +145,13 @@ void GameSceneManager::ExecuteCommands()
 			/////////////// 直接遷移
 			case EventType::Goto:
 			{
-				// 現在の全てのシーンを解放 (OnTerminate() 呼び出し)
-				ReleaseAndTerminateAllRunningScenes();
+				// 現在の全てのシーンを解放 (onTerminate() 呼び出し)
+				releaseAndTerminateAllRunningScenes();
 
 				m_activeScene = cmd.scene;
 				if (m_activeScene != nullptr)
 				{
-					m_activeScene->OnStart();
+					m_activeScene->onStart();
 				}
 				break;
 			}
@@ -160,7 +160,7 @@ void GameSceneManager::ExecuteCommands()
 			{
 				m_sceneStack.push(m_activeScene);
 				m_activeScene = cmd.scene;
-				m_activeScene->OnStart();
+				m_activeScene->onStart();
 				break;
 			}
 			/////////////// 呼び出し元へ戻る
@@ -168,7 +168,7 @@ void GameSceneManager::ExecuteCommands()
 			{
 				RefPtr<GameScene> oldScene = m_activeScene;
 				m_activeScene = m_sceneStack.top();
-				oldScene->OnTerminate();
+				oldScene->onTerminate();
 				break;
 			}
 		}
@@ -178,17 +178,17 @@ void GameSceneManager::ExecuteCommands()
 }
 
 //------------------------------------------------------------------------------
-void GameSceneManager::ReleaseAndTerminateAllRunningScenes()
+void GameSceneManager::releaseAndTerminateAllRunningScenes()
 {
 	if (m_activeScene != nullptr)
 	{
-		m_activeScene->OnTerminate();
+		m_activeScene->onTerminate();
 		m_activeScene = nullptr;
 	}
 
 	while (!m_sceneStack.empty())
 	{
-		m_sceneStack.top()->OnTerminate();
+		m_sceneStack.top()->onTerminate();
 		m_sceneStack.pop();
 	}
 }

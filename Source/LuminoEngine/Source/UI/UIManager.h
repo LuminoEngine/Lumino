@@ -35,7 +35,7 @@ public:
 	static const float MouseButtonClickTimeout;
 
 public:
-	static UIManager* GetInstance(UIManager* priority = nullptr);
+	static UIManager* getInstance(UIManager* priority = nullptr);
 
 	UIManager();
 	virtual ~UIManager();
@@ -48,11 +48,11 @@ public:
 	EventArgsPool* GetEventArgsPool() const { return m_eventArgsPool; }
 	const RefPtr<Texture2D>& GetDefaultSkinTexture() const { return m_defaultSkinTexture; }
 	UIStyleTable* GetDefaultStyleTable() const { return m_defaultStyleTable; }
-	AnimationManager* GetAnimationManager() const { return m_animationManager; }
-	PlatformManager* GetPlatformManager() const { return m_platformManager; }
-	GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
+	AnimationManager* getAnimationManager() const { return m_animationManager; }
+	PlatformManager* getPlatformManager() const { return m_platformManager; }
+	GraphicsManager* getGraphicsManager() const { return m_graphicsManager; }
 	AssetsManager* GetAssetsManager() const { return m_assetsManager; }
-	UIMainWindow* GetMainWindow() const { return m_mainWindow; }
+	UIMainWindow* getMainWindow() const { return m_mainWindow; }
 
 	void CaptureMouse(UIElement* element);
 	void ReleaseMouseCapture(UIElement* element);
@@ -63,7 +63,7 @@ public:
 	void RemoveFrameWindow(UIFrameWindow* window) { m_windows.remove(window); }
 
 private:
-	void CreateGlobalObjects();
+	void createGlobalObjects();
 	void MakeDefaultStyle(UIStyleTable* table);
 
 	EventArgsPool*		m_eventArgsPool;

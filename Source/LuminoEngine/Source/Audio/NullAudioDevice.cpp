@@ -38,7 +38,7 @@ NullAudioDevice::~NullAudioDevice()
 }
 
 //------------------------------------------------------------------------------
-AudioPlayer* NullAudioDevice::CreateAudioPlayer(AudioStream* source, bool enable3d, SoundPlayingMode mode)
+AudioPlayer* NullAudioDevice::createAudioPlayer(AudioStream* source, bool enable3d, SoundPlayingMode mode)
 {
 	RefPtr<NullAudioPlayer> player(LN_NEW NullAudioPlayer(this), false);
 	player->initialize(source, enable3d);
@@ -46,12 +46,12 @@ AudioPlayer* NullAudioDevice::CreateAudioPlayer(AudioStream* source, bool enable
 }
 
 //------------------------------------------------------------------------------
-void NullAudioDevice::Update()
+void NullAudioDevice::update()
 {
 }
 
 //------------------------------------------------------------------------------
-void NullAudioDevice::SetMetreUnitDistance(float d)
+void NullAudioDevice::setMetreUnitDistance(float d)
 {
 }
 

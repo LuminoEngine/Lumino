@@ -23,7 +23,7 @@ LN_NAMESPACE_BEGIN
 //------------------------------------------------------------------------------
 UIContext* UIContext::GetMainContext()
 {
-	return detail::UIManager::GetInstance()->GetMainWindow()->GetMainUIContext();
+	return detail::UIManager::getInstance()->getMainWindow()->GetMainUIContext();
 }
 
 //------------------------------------------------------------------------------
@@ -50,7 +50,7 @@ void UIContext::initialize(detail::UIManager* manager)
 	LN_REFOBJ_SET(m_rootStyleTable, m_manager->GetDefaultStyleTable());
 
 	//m_mainWindowView = LN_NEW UILayoutView();
-	//m_mainWindowView->initialize(this, m_manager->GetMainWindow()->GetPlatformWindow());
+	//m_mainWindowView->initialize(this, m_manager->getMainWindow()->GetPlatformWindow());
 }
 
 //------------------------------------------------------------------------------
@@ -114,9 +114,9 @@ void UIContext::InjectElapsedTime(float elapsedTime)
 }
 
 //------------------------------------------------------------------------------
-//void UIContext::Render()
+//void UIContext::render()
 //{
-//	//auto* g = m_manager->GetGraphicsManager()->GetGraphicsContext();
+//	//auto* g = m_manager->getGraphicsManager()->GetGraphicsContext();
 //	//auto* d = g->BeginDrawingContext();
 //
 //	//d->SetViewProjection(Matrix::Identity, Matrix::Perspective2DLH(640, 480, 0, 1));

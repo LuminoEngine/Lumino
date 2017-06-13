@@ -28,7 +28,7 @@ DX9Renderer::DX9Renderer(DX9GraphicsDevice* device)
 
 	m_dxDevice = device->GetIDirect3DDevice9();
 
-	OnResetDevice();
+	onResetDevice();
 }
 
 //------------------------------------------------------------------------------
@@ -43,12 +43,12 @@ void DX9Renderer::SetCurrentShaderPass(DX9ShaderPass* pass)
 }
 
 //------------------------------------------------------------------------------
-void DX9Renderer::OnLostDevice()
+void DX9Renderer::onLostDevice()
 {
 }
 
 //------------------------------------------------------------------------------
-void DX9Renderer::OnResetDevice()
+void DX9Renderer::onResetDevice()
 {
 }
 
@@ -389,7 +389,7 @@ void DX9Renderer::OnClear(ClearFlags flags, const Color& color, float z, uint8_t
 	//LN_COMCALL(m_dxDevice->SetViewport(&vp));
 
 
-	bool hasDepth = (GetDepthBuffer() != nullptr || m_defaultDepthBuffer != nullptr);
+	bool hasDepth = (getDepthBuffer() != nullptr || m_defaultDepthBuffer != nullptr);
 
 	DWORD flag = 0;
 	if (flags.TestFlag(ClearFlags::Color)) flag |= D3DCLEAR_TARGET;

@@ -24,8 +24,8 @@ TEST_F(Test_Threading_Atomic, Basic)
 		{
 			for (int i = 0; i < 1000; i++)
 			{
-				value->Increment();
-				valueIncr->Increment();
+				value->increment();
+				valueIncr->increment();
 			}
 		}
 	};
@@ -39,8 +39,8 @@ TEST_F(Test_Threading_Atomic, Basic)
 		{
 			for (int i = 0; i < 1000; i++)
 			{
-				value->Decrement();
-				valueDecr->Decrement();
+				value->decrement();
+				valueDecr->decrement();
 			}
 		}
 	};
@@ -66,8 +66,8 @@ TEST_F(Test_Threading_Atomic, Basic)
 	// 終了待機
 	for (int i = 0; i < ThreadCount; i++)
 	{
-		incrThreads[i].Wait();
-		decrThreads[i].Wait();
+		incrThreads[i].wait();
+		decrThreads[i].wait();
 	}
 
 	ASSERT_EQ(10, value.get());

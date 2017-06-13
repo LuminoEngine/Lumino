@@ -17,17 +17,17 @@ public:
 
 public:
 	virtual void create(Stream* stream) override;
-	virtual StreamFormat GetSourceFormat() const override { return StreamFormat_Wave; }
-	virtual const WaveFormat* GetWaveFormat() const override { return &m_waveFormat; }
-	virtual uint32_t GetSourceDataSize() const override { return m_sourceDataSize; }
-	virtual uint32_t GetTotalUnits() const override { return m_totalSamples; }
-	virtual byte_t* GetOnmemoryPCMBuffer() const override { return m_onmemoryPCMBuffer; }
-	virtual uint32_t GetOnmemoryPCMBufferSize() const override { return m_onmemoryPCMBufferSize; }
-	virtual uint32_t GetBytesPerSec() const override { return m_waveFormat.avgBytesPerSec; }
-	virtual void GetLoopState(uint32_t* begin, uint32_t* length) const override { *begin = 0; *length = 0; }
-	virtual void FillOnmemoryBuffer() override;
+	virtual StreamFormat getSourceFormat() const override { return StreamFormat_Wave; }
+	virtual const WaveFormat* getWaveFormat() const override { return &m_waveFormat; }
+	virtual uint32_t getSourceDataSize() const override { return m_sourceDataSize; }
+	virtual uint32_t getTotalUnits() const override { return m_totalSamples; }
+	virtual byte_t* getOnmemoryPCMBuffer() const override { return m_onmemoryPCMBuffer; }
+	virtual uint32_t getOnmemoryPCMBufferSize() const override { return m_onmemoryPCMBufferSize; }
+	virtual uint32_t getBytesPerSec() const override { return m_waveFormat.avgBytesPerSec; }
+	virtual void setLoopState(uint32_t* begin, uint32_t* length) const override { *begin = 0; *length = 0; }
+	virtual void fillOnmemoryBuffer() override;
 	virtual void read(uint32_t seekPos, void* buffer, uint32_t bufferSize, uint32_t* outReadSize, uint32_t* outWriteSize) override;
-	virtual void Reset() override {}
+	virtual void reset() override {}
 
 private:
 	Stream*			m_stream;					// 入力ストリーム

@@ -241,6 +241,6 @@ public:
 
 public:
 	void InitializePredefineds();
-	TypeInfoPtr FindTypeInfo(StringRef typeName);
+	TypeInfoPtr findTypeInfo(StringRef typeName);
 };
 

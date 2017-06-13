@@ -402,7 +402,7 @@ void Win32JoystickDriver::StopVibration()
 }
 
 //------------------------------------------------------------------------------
-void Win32JoystickDriver::Update()
+void Win32JoystickDriver::update()
 {
 	// 振動終了の監視
 	if (mVibrationStartTime > 0)

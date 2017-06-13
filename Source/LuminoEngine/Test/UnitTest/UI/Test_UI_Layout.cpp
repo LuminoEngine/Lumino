@@ -36,10 +36,10 @@ protected:
 //------------------------------------------------------------------------------
 TEST_F(Test_UI_StackPanel, HorizontalAlignment)
 {
-	auto uiRoot = Engine::GetMainWindow();
+	auto uiRoot = Engine::getMainWindow();
 	auto panel = UIStackPanel::create();
 	panel->SetOrientation(Orientation::Vertical);
-	panel->SetSize(uiRoot->getSize());
+	panel->setSize(uiRoot->getSize());
 	panel->SetBackground(Brush::Blue);
 	uiRoot->AddChild(panel);
 
@@ -54,17 +54,17 @@ TEST_F(Test_UI_StackPanel, HorizontalAlignment)
 	button4->SetHAlignment(HAlignment::Center);
 	button5->SetHAlignment(HAlignment::Stretch);
 	button1->SetHeight(16);
-	button2->SetSize(Size(32, 16));
-	button3->SetSize(Size(32, 16));
-	button4->SetSize(Size(32, 16));
-	button5->SetSize(Size(32, 16));
+	button2->setSize(Size(32, 16));
+	button3->setSize(Size(32, 16));
+	button4->setSize(Size(32, 16));
+	button5->setSize(Size(32, 16));
 	panel->AddChild(button1);
 	panel->AddChild(button2);
 	panel->AddChild(button3);
 	panel->AddChild(button4);
 	panel->AddChild(button5);
 
-	Engine::Update();
+	Engine::update();
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_FlowLayout.HorizontalAlignment1.png")));
 
 	uiRoot->RemoveChild(panel);	// 後始末
@@ -73,10 +73,10 @@ TEST_F(Test_UI_StackPanel, HorizontalAlignment)
 //------------------------------------------------------------------------------
 TEST_F(Test_UI_StackPanel, VerticalAlignment)
 {
-	auto uiRoot = Engine::GetMainWindow();
+	auto uiRoot = Engine::getMainWindow();
 	auto panel = UIStackPanel::create();
 	panel->SetOrientation(Orientation::Horizontal);
-	panel->SetSize(uiRoot->getSize());
+	panel->setSize(uiRoot->getSize());
 	panel->SetBackground(Brush::Blue);
 	uiRoot->AddChild(panel);
 
@@ -91,17 +91,17 @@ TEST_F(Test_UI_StackPanel, VerticalAlignment)
 	button4->SetVAlignment(VAlignment::Center);
 	button5->SetVAlignment(VAlignment::Stretch);
 	button1->SetWidth(16);
-	button2->SetSize(Size(16, 32));
-	button3->SetSize(Size(16, 32));
-	button4->SetSize(Size(16, 32));
-	button5->SetSize(Size(16, 32));
+	button2->setSize(Size(16, 32));
+	button3->setSize(Size(16, 32));
+	button4->setSize(Size(16, 32));
+	button5->setSize(Size(16, 32));
 	panel->AddChild(button1);
 	panel->AddChild(button2);
 	panel->AddChild(button3);
 	panel->AddChild(button4);
 	panel->AddChild(button5);
 
-	Engine::Update();
+	Engine::update();
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_FlowLayout.VerticalAlignment1.png")));
 
 	uiRoot->RemoveChild(panel);	// 後始末
@@ -110,21 +110,21 @@ TEST_F(Test_UI_StackPanel, VerticalAlignment)
 //------------------------------------------------------------------------------
 TEST_F(Test_UI_StackPanel, ReverseHorizontal)
 {
-	auto uiRoot = Engine::GetMainWindow();
+	auto uiRoot = Engine::getMainWindow();
 	auto panel = UIStackPanel::create();
-	panel->SetSize(uiRoot->getSize());
+	panel->setSize(uiRoot->getSize());
 	panel->SetBackground(Brush::Blue);
 	panel->SetOrientation(Orientation::ReverseHorizontal);
 	uiRoot->AddChild(panel);
 
 	auto button1 = UIButton::create();
 	auto button2 = UIButton::create();
-	button1->SetSize(Size(20, 20));
-	button2->SetSize(Size(30, 30));
+	button1->setSize(Size(20, 20));
+	button2->setSize(Size(30, 30));
 	panel->AddChild(button1);
 	panel->AddChild(button2);
 
-	Engine::Update();
+	Engine::update();
 
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_FlowLayout.ReverseHorizontal1.png")));
 
@@ -134,9 +134,9 @@ TEST_F(Test_UI_StackPanel, ReverseHorizontal)
 //------------------------------------------------------------------------------
 TEST_F(Test_UI_StackPanel, Margin_Padding)
 {
-	auto uiRoot = Engine::GetMainWindow();
+	auto uiRoot = Engine::getMainWindow();
 	auto panel = UIStackPanel::create();
-	panel->SetSize(uiRoot->getSize());
+	panel->setSize(uiRoot->getSize());
 	panel->SetBackground(Brush::Blue);
 	uiRoot->AddChild(panel);
 
@@ -150,7 +150,7 @@ TEST_F(Test_UI_StackPanel, Margin_Padding)
 	panel->padding = ThicknessF(5, 10, 15, 20);
 	button2->margin = ThicknessF(5, 10, 15, 20);
 
-	Engine::Update();
+	Engine::update();
 
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_FlowLayout.Margin_Padding1.png")));
 
@@ -172,38 +172,38 @@ TEST_F(Test_UI_GridLayout, Basic)
 {
 	// <Test> インスタンス参照の関係
 	{
-		auto uiRoot = Engine::GetMainWindow();
+		auto uiRoot = Engine::getMainWindow();
 
 		auto grid = UIGridLayout::create();
 		grid->SetBackground(Brush::Blue);
 		uiRoot->AddChild(grid);
 
 		auto button = UIButton::create();
-		button->SetSize(Size(32, 32));
+		button->setSize(Size(32, 32));
 		grid->AddChild(button);
 
 		tr::WeakRefPtr<UIButton> ref = button;
 		UIGridLayout* gridPtr = grid;
 
-		Engine::Update();
+		Engine::update();
 		TestEnv::WaitRendering();
 
 		// button の参照を切ってもまだ生きている
 		button.safeRelease();
-		ASSERT_EQ(true, ref.IsAlive());
+		ASSERT_EQ(true, ref.isAlive());
 		// grid の参照を切ってもまだ生きている
 		grid.safeRelease();
-		ASSERT_EQ(true, ref.IsAlive());
+		ASSERT_EQ(true, ref.isAlive());
 		// root からの参照を切るとようやく削除される
 		uiRoot->RemoveChild(gridPtr);
-		ASSERT_EQ(false, ref.IsAlive());
+		ASSERT_EQ(false, ref.isAlive());
 	}
 
 	// <Test> GridLayout を SetLayoutPanel() で追加する場合、デフォルトでは画面いっぱいに広がる。
 	//        これは、オーナーの UIControl からそのサイズ (MainWindow ならクライアント領域サイズ) が与えられ、
 	//        また GridLayout(UIElement) のデフォルトの Alignment が Stretch であるため。
 	{
-		auto uiRoot = Engine::GetMainWindow();
+		auto uiRoot = Engine::getMainWindow();
 		RefPtr<UILayoutPanel> oldLayot = uiRoot->GetLayoutPanel();
 
 		auto grid = UIGridLayout::create();
@@ -211,10 +211,10 @@ TEST_F(Test_UI_GridLayout, Basic)
 		uiRoot->SetLayoutPanel(grid);
 
 		auto button = UIButton::create();
-		button->SetSize(Size(32, 32));
+		button->setSize(Size(32, 32));
 		uiRoot->AddChild(button);
 
-		Engine::Update();
+		Engine::update();
 
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_GridLayout.Basic1.png")));
 		uiRoot->SetLayoutPanel(oldLayot);
@@ -224,17 +224,17 @@ TEST_F(Test_UI_GridLayout, Basic)
 	//        これは、オーナーが AnchorLayout であり、デフォルト(アンカーなし)左上詰めであるため。
 	//        なお、AnchorLayout はアンカーなし子要素のサイズ調整は行わない。そのため Alignment が Stretch であっても DesirdSize となる。
 	{
-		auto uiRoot = Engine::GetMainWindow();
+		auto uiRoot = Engine::getMainWindow();
 
 		auto grid = UIGridLayout::create();
 		grid->SetBackground(Brush::Blue);
 		uiRoot->AddChild(grid);
 
 		auto button = UIButton::create();
-		button->SetSize(Size(32, 32));
+		button->setSize(Size(32, 32));
 		grid->AddChild(button);
 
-		Engine::Update();
+		Engine::update();
 
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_GridLayout.Basic2.png"), 99, true));
 		uiRoot->ClearChildren();
@@ -246,7 +246,7 @@ TEST_F(Test_UI_GridLayout, DefaultLayout)
 {
 	// <Test> GridLayout へサイズ指定無しの子要素を追加する場合、UIElement のデフォルトの Alignment(Stretch) に従い引き伸ばされる。
 	{
-		auto uiRoot = Engine::GetMainWindow();
+		auto uiRoot = Engine::getMainWindow();
 		RefPtr<UILayoutPanel> oldLayot = uiRoot->GetLayoutPanel();
 
 		auto grid1 = UIGridLayout::create();
@@ -255,7 +255,7 @@ TEST_F(Test_UI_GridLayout, DefaultLayout)
 		auto button1 = UIButton::create();
 		uiRoot->AddChild(button1);
 
-		Engine::Update();
+		Engine::update();
 
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_GridLayout.DefaultLayout1.png")));
 		uiRoot->ClearChildren();
@@ -266,7 +266,7 @@ TEST_F(Test_UI_GridLayout, DefaultLayout)
 //------------------------------------------------------------------------------
 TEST_F(Test_UI_GridLayout, Layout)
 {
-	auto uiRoot = Engine::GetMainWindow();
+	auto uiRoot = Engine::getMainWindow();
 	RefPtr<UILayoutPanel> oldLayot = uiRoot->GetLayoutPanel();
 
 	auto grid1 = UIGridLayout::create(4, 4);
@@ -320,7 +320,7 @@ TEST_F(Test_UI_GridLayout, Layout)
 	button9->SetLayoutRowSpan(2);
 	uiRoot->AddChild(button9);
 
-	Engine::Update();
+	Engine::update();
 
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_GridLayout.Layout1.png")));
 	uiRoot->ClearChildren();
@@ -330,7 +330,7 @@ TEST_F(Test_UI_GridLayout, Layout)
 //------------------------------------------------------------------------------
 TEST_F(Test_UI_GridLayout, TreeLayout)
 {
-	auto uiRoot = Engine::GetMainWindow();
+	auto uiRoot = Engine::getMainWindow();
 	RefPtr<UILayoutPanel> oldLayot = uiRoot->GetLayoutPanel();
 
 	auto grid1 = UIGridLayout::create(2, 2);
@@ -363,7 +363,7 @@ TEST_F(Test_UI_GridLayout, TreeLayout)
 	grids[2]->SetLayoutColumn(1);
 	grids[2]->SetLayoutRowSpan(2);
 
-	Engine::Update();
+	Engine::update();
 
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_GridLayout.TreeLayout1.png")));
 	uiRoot->ClearChildren();
@@ -373,7 +373,7 @@ TEST_F(Test_UI_GridLayout, TreeLayout)
 //------------------------------------------------------------------------------
 TEST_F(Test_UI_GridLayout, GridLength)
 {
-	auto uiRoot = Engine::GetMainWindow();
+	auto uiRoot = Engine::getMainWindow();
 	RefPtr<UILayoutPanel> oldLayot = uiRoot->GetLayoutPanel();
 
 	auto grid1 = UIGridLayout::create();
@@ -398,7 +398,7 @@ TEST_F(Test_UI_GridLayout, GridLength)
 	uiRoot->AddChild(button2);
 
 	auto button3 = UIButton::create();
-	button3->SetSize(Size(20, 20));
+	button3->setSize(Size(20, 20));
 	button3->SetLayoutColumn(2);
 	button3->SetLayoutRow(2);
 	uiRoot->AddChild(button3);
@@ -408,7 +408,7 @@ TEST_F(Test_UI_GridLayout, GridLength)
 	button4->SetLayoutRow(3);
 	uiRoot->AddChild(button4);
 
-	Engine::Update();
+	Engine::update();
 
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_GridLayout.GridLength1.png")));
 	uiRoot->ClearChildren();
@@ -418,7 +418,7 @@ TEST_F(Test_UI_GridLayout, GridLength)
 //------------------------------------------------------------------------------
 TEST_F(Test_UI_GridLayout, MinMax)
 {
-	auto uiRoot = Engine::GetMainWindow();
+	auto uiRoot = Engine::getMainWindow();
 	RefPtr<UILayoutPanel> oldLayot = uiRoot->GetLayoutPanel();
 
 	auto grid1 = UIGridLayout::create();
@@ -433,7 +433,7 @@ TEST_F(Test_UI_GridLayout, MinMax)
 	auto button1 = UIButton::create();
 	button1->SetLayoutColumn(0);
 	button1->SetLayoutRow(0);
-	button1->SetSize(Size(10, 10));
+	button1->setSize(Size(10, 10));
 	button1->SetHAlignment(HAlignment::Left);
 	button1->SetVAlignment(VAlignment::Top);
 	uiRoot->AddChild(button1);
@@ -441,7 +441,7 @@ TEST_F(Test_UI_GridLayout, MinMax)
 	auto button2 = UIButton::create();
 	button2->SetLayoutColumn(1);
 	button2->SetLayoutRow(1);
-	button2->SetSize(Size(40, 40));
+	button2->setSize(Size(40, 40));
 	button2->SetHAlignment(HAlignment::Left);
 	button2->SetVAlignment(VAlignment::Top);
 	uiRoot->AddChild(button2);
@@ -449,12 +449,12 @@ TEST_F(Test_UI_GridLayout, MinMax)
 	auto button3 = UIButton::create();
 	button3->SetLayoutColumn(2);
 	button3->SetLayoutRow(2);
-	button3->SetSize(Size(10, 10));
+	button3->setSize(Size(10, 10));
 	button3->SetHAlignment(HAlignment::Left);
 	button3->SetVAlignment(VAlignment::Top);
 	uiRoot->AddChild(button3);
 
-	Engine::Update();
+	Engine::update();
 
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_GridLayout.MinMax1.png")));
 	uiRoot->ClearChildren();

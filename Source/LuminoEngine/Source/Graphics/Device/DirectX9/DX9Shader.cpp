@@ -118,7 +118,7 @@ ShaderCompileResultLevel DX9Shader::create(DX9GraphicsDevice* device, const char
 	};
 
 	// シェーダプログラムのコンパイル
-	D3DXInclude dxInclude(device->GetFileManager());
+	D3DXInclude dxInclude(device->getFileManager());
 	ID3DXBuffer* buffer = NULL;
 	ID3DXEffect* dxEffect;
 	HRESULT hr = DX9Module::D3DXCreateEffect(
@@ -226,13 +226,13 @@ IShaderTechnique* DX9Shader::GetTechnique(int index) const
 }
 
 //------------------------------------------------------------------------------
-void DX9Shader::OnLostDevice()
+void DX9Shader::onLostDevice()
 {
 	LN_COMCALL(m_dxEffect->OnLostDevice());
 }
 
 //------------------------------------------------------------------------------
-void DX9Shader::OnResetDevice()
+void DX9Shader::onResetDevice()
 {
 	LN_COMCALL(m_dxEffect->OnResetDevice());
 }
@@ -242,7 +242,7 @@ void DX9Shader::OnResetDevice()
 //{
 //	for (DX9ShaderVariable* v : m_textureVariables)
 //	{
-//		DX9TextureBase* tex = static_cast<DX9TextureBase*>(v->GetTexture());
+//		DX9TextureBase* tex = static_cast<DX9TextureBase*>(v->getTexture());
 //		if (tex != nullptr && tex->GetIDirect3DBaseTexture9() == dxTexture)
 //		{
 //			return &tex->GetSamplerState();
@@ -323,7 +323,7 @@ void DX9ShaderVariable::getValue(ID3DXEffect* dxEffect, D3DXHANDLE handle, Shade
 		tmp2.resize(desc.Elements);
 		LN_COMCALL(dxEffect->GetBoolArray(handle, (BOOL*)&tmp1[0], desc.Elements));
 		for (int i = 0; i < desc.Elements; ++i) tmp2[i] = (tmp1[i] != FALSE);
-		outValue->SetBoolArray((bool*)&tmp2[0], desc.Elements);	
+		outValue->setBoolArray((bool*)&tmp2[0], desc.Elements);	
 		break;
 	}
 	case ShaderVariableType_Int:
@@ -342,40 +342,40 @@ void DX9ShaderVariable::getValue(ID3DXEffect* dxEffect, D3DXHANDLE handle, Shade
 	}
 	case ShaderVariableType_FloatArray:
 	{
-		outValue->SetFloatArray(NULL, desc.Elements);	// reserve
-		LN_COMCALL(dxEffect->GetFloatArray(handle, (FLOAT*)outValue->GetDataBuffer(), desc.Elements));
+		outValue->setFloatArray(NULL, desc.Elements);	// reserve
+		LN_COMCALL(dxEffect->GetFloatArray(handle, (FLOAT*)outValue->getDataBuffer(), desc.Elements));
 		break;
 	}
 	case ShaderVariableType_Vector:
 	{
 		Vector4 v;
 		LN_COMCALL(dxEffect->GetVector(handle, (D3DXVECTOR4*)&v));
-		outValue->SetVector(v);
+		outValue->setVector(v);
 		break;
 	}
 	case ShaderVariableType_VectorArray:
 	{
-		outValue->SetVectorArray(NULL, desc.Elements);	// reserve
-		LN_COMCALL(dxEffect->GetVectorArray(handle, (D3DXVECTOR4*)outValue->GetDataBuffer(), desc.Elements));
+		outValue->setVectorArray(NULL, desc.Elements);	// reserve
+		LN_COMCALL(dxEffect->GetVectorArray(handle, (D3DXVECTOR4*)outValue->getDataBuffer(), desc.Elements));
 		break;
 	}
 	case ShaderVariableType_Matrix:
 	{
 		Matrix v;
 		LN_COMCALL(dxEffect->GetMatrix(handle, (D3DXMATRIX*)&v));
-		outValue->SetMatrix(v);
+		outValue->setMatrix(v);
 		break;
 	}
 	case ShaderVariableType_MatrixArray:
 	{
-		outValue->SetMatrixArray(NULL, desc.Elements);	// reserve
-		LN_COMCALL(dxEffect->GetMatrixArray(handle, (D3DXMATRIX*)outValue->GetDataBuffer(), desc.Elements));
+		outValue->setMatrixArray(NULL, desc.Elements);	// reserve
+		LN_COMCALL(dxEffect->GetMatrixArray(handle, (D3DXMATRIX*)outValue->getDataBuffer(), desc.Elements));
 		break;
 	}
 	case ShaderVariableType_DeviceTexture:
 	{
 		// Texture 型の初期値は NULL。変数の型をセットするため、明示的にセットしておく。
-		outValue->SetDeviceTexture(NULL);
+		outValue->setDeviceTexture(NULL);
 		break;
 	}
 	case ShaderVariableType_String:
@@ -463,7 +463,7 @@ void DX9ShaderVariable::setBool(bool value)
 }
 
 //------------------------------------------------------------------------------
-void DX9ShaderVariable::SetBoolArray(const bool* values, int count)
+void DX9ShaderVariable::setBoolArray(const bool* values, int count)
 {
 	if (count > 0)
 	{
@@ -474,7 +474,7 @@ void DX9ShaderVariable::SetBoolArray(const bool* values, int count)
 		}
 		LN_COMCALL(m_dxEffect->SetBoolArray(m_handle, &m_temp[0], count));
 	}
-	ShaderVariableBase::SetBoolArray(values, count);
+	ShaderVariableBase::setBoolArray(values, count);
 }
 
 //------------------------------------------------------------------------------
@@ -492,42 +492,42 @@ void DX9ShaderVariable::setFloat(float value)
 }
 
 //------------------------------------------------------------------------------
-void DX9ShaderVariable::SetFloatArray(const float* values, int count)
+void DX9ShaderVariable::setFloatArray(const float* values, int count)
 {
 	LN_COMCALL(m_dxEffect->SetFloatArray(m_handle, values, count));
-	ShaderVariableBase::SetFloatArray(values, count);
+	ShaderVariableBase::setFloatArray(values, count);
 }
 
 //------------------------------------------------------------------------------
-void DX9ShaderVariable::SetVector(const Vector4& vec)
+void DX9ShaderVariable::setVector(const Vector4& vec)
 {
 	LN_COMCALL(m_dxEffect->SetVector(m_handle, (D3DXVECTOR4*)&vec));
-	ShaderVariableBase::SetVector(vec);
+	ShaderVariableBase::setVector(vec);
 }
 
 //------------------------------------------------------------------------------
-void DX9ShaderVariable::SetVectorArray(const Vector4* vectors, int count)
+void DX9ShaderVariable::setVectorArray(const Vector4* vectors, int count)
 {
 	LN_COMCALL(m_dxEffect->SetVectorArray(m_handle, (const D3DXVECTOR4*)vectors, count));
-	ShaderVariableBase::SetVectorArray(vectors, count);
+	ShaderVariableBase::setVectorArray(vectors, count);
 }
 
 //------------------------------------------------------------------------------
-void DX9ShaderVariable::SetMatrix(const Matrix& matrix)
+void DX9ShaderVariable::setMatrix(const Matrix& matrix)
 {
 	LN_COMCALL(m_dxEffect->SetMatrix(m_handle, (const D3DXMATRIX*)&matrix));
-	ShaderVariableBase::SetMatrix(matrix);
+	ShaderVariableBase::setMatrix(matrix);
 }
 
 //------------------------------------------------------------------------------
-void DX9ShaderVariable::SetMatrixArray(const Matrix* matrices, int count)
+void DX9ShaderVariable::setMatrixArray(const Matrix* matrices, int count)
 {
 	LN_COMCALL(m_dxEffect->SetMatrixArray(m_handle, (const D3DXMATRIX*)matrices, count));
-	ShaderVariableBase::SetMatrixArray(matrices, count);
+	ShaderVariableBase::setMatrixArray(matrices, count);
 }
 
 //------------------------------------------------------------------------------
-void DX9ShaderVariable::SetTexture(ITexture* texture)
+void DX9ShaderVariable::setTexture(ITexture* texture)
 {
 	if (texture != NULL) {
 		LN_COMCALL(m_dxEffect->SetTexture(m_handle, static_cast<DX9TextureBase*>(texture)->GetIDirect3DBaseTexture9()));
@@ -535,7 +535,7 @@ void DX9ShaderVariable::SetTexture(ITexture* texture)
 	else {
 		m_dxEffect->SetTexture(m_handle, NULL);
 	}
-	ShaderVariableBase::SetTexture(texture);
+	ShaderVariableBase::setTexture(texture);
 
 	m_texture = static_cast<DX9TextureBase*>(texture);
 }
@@ -605,7 +605,7 @@ DX9ShaderTechnique::~DX9ShaderTechnique()
 }
 
 //------------------------------------------------------------------------------
-IShaderPass* DX9ShaderTechnique::GetPass(int index)
+IShaderPass* DX9ShaderTechnique::getPass(int index)
 {
 	return m_passes[index];
 }
@@ -618,7 +618,7 @@ IShaderPass* DX9ShaderTechnique::GetPass(int index)
 //------------------------------------------------------------------------------
 DX9ShaderPass::DX9ShaderPass(DX9Shader* owner, D3DXHANDLE handle, int passIndex, D3DXHANDLE tech)
 	: m_owner(owner)
-	, m_renderer(static_cast<DX9Renderer*>(owner->GetGraphicsDevice()->GetRenderer()))
+	, m_renderer(static_cast<DX9Renderer*>(owner->getGraphicsDevice()->getRenderer()))
 	, m_dxEffect(owner->GetID3DXEffect())
 	, m_handle(handle)
 	, m_technique(tech)
@@ -668,7 +668,7 @@ DX9ShaderPass::~DX9ShaderPass()
 }
 
 //------------------------------------------------------------------------------
-void DX9ShaderPass::Apply()
+void DX9ShaderPass::apply()
 {
 //	m_renderer->TryBeginScene();
 	CommitSamplerStatus();
@@ -701,7 +701,7 @@ void DX9ShaderPass::EndPass()
 //------------------------------------------------------------------------------
 void DX9ShaderPass::CommitSamplerStatus()
 {
-	IDirect3DDevice9* dxDevice = m_owner->GetGraphicsDevice()->GetIDirect3DDevice9();
+	IDirect3DDevice9* dxDevice = m_owner->getGraphicsDevice()->GetIDirect3DDevice9();
 
 	// 最初の1回だけ、このパス内で、サンプラインデックスに対応する DX9ShaderVariable を探す。
 	// 描画スレッドを使っている場合は初期化時に行うことはできないため、ここで行っている。

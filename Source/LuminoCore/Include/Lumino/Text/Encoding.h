@@ -61,34 +61,34 @@ public:
 		@details	char 型のエンコーディングとみなすことができます。
 					Windows 環境では CP_THREAD_ACP が示すコードページエンコーディングです。それ以外の環境では UTF-8 となります。
 	*/
-	static Encoding* GetSystemMultiByteEncoding();
+	static Encoding* getSystemMultiByteEncoding();
 
 	/**
 		@brief		環境依存のワイド文字のエンコーディングを取得します。
 		@details	wchar_t 型のエンコーディングとみなすことができます。
 					wchar_t のサイズによって UTF-16 または UTF-32 となります。
 	*/
-	static Encoding* GetWideCharEncoding();
+	static Encoding* getWideCharEncoding();
 
 	/**
 		@brief		TCHAR 型文字のエンコーディングを取得します。
 	*/
-	static Encoding* GetTCharEncoding();
+	static Encoding* getTCharEncoding();
 
 	/**
 		@brief		UTF-8 (BOM 無し)エンコーディングを取得します。
 	*/
-	static Encoding* GetUTF8Encoding();
+	static Encoding* getUTF8Encoding();
 
 	/**
 		@brief		UTF-16 (Little) エンコーディングを取得します。
 	*/
-	static Encoding* GetUTF16Encoding();
+	static Encoding* getUTF16Encoding();
 
 	/**
-		@brief		UTF-16 (Little) エンコーディングを取得します。
+		@brief		UTF-32 (Little) エンコーディングを取得します。
 	*/
-	static Encoding* GetUTF32Encoding();
+	static Encoding* getUTF32Encoding();
 
 	/**
 		@brief		種類を指定してエンコーディングを取得します。
@@ -98,22 +98,22 @@ public:
 	/**
 		@brief		テンプレート引数によってエンコーディングを取得します。
 		@details	指定できる型は char または wchar_t です。
-					それぞれ GetSystemMultiByteEncoding()、GetWideCharEncoding() を返します。
+					それぞれ getSystemMultiByteEncoding()、getWideCharEncoding() を返します。
 	*/
 	template<typename TChar>
-	static Encoding* GetEncodingTemplate();
+	static Encoding* getEncodingTemplate();
 
 #ifdef LN_OS_WIN32
 	/**
 		@brief		現在のスレッドロケールに基づくデフォルトコードページの Encoding を取得します。
 	*/
-	static Encoding* GetWin32DefaultCodePageEncoding();
+	static Encoding* getWin32DefaultCodePageEncoding();
 #endif
 
 	/**
 		@brief		文字コードを from から to へ fromByteCount バイト分だけ変換する際に必要な、変換先バッファの最大バイト数を取得します。
 	*/
-	static size_t GetConversionRequiredByteCount(Encoding* from, Encoding* to, size_t fromByteCount);
+	static size_t getConversionRequiredByteCount(Encoding* from, Encoding* to, size_t fromByteCount);
 
 	/**
 		@brief		文字コードを変換する (不正シーケンスがあったら例外)
@@ -125,7 +125,7 @@ public:
 		@return		\0終端文字は付加されません。GetSize() により使用バイト数を確認できます。
 					使用後、Release() で開放する必要があります。
 	*/
-	static ByteBuffer Convert(
+	static ByteBuffer convert(
 		const void* src, size_t srcByteCount, const Encoding* srcEncoding,
 		const Encoding* targetEncoding,
 		const EncodingConversionOptions& options,
@@ -142,7 +142,7 @@ public:
 		@return		\0終端文字は付加されません。GetSize() により使用バイト数を確認できます。
 					使用後、Release() で開放する必要があります。
 	*/
-	static ByteBuffer Convert(
+	static ByteBuffer convert(
 		const void* src, size_t srcByteCount, Decoder* decoder,
 		Encoder* encoder,
 		const EncodingConversionOptions& options,
@@ -159,7 +159,7 @@ public:
 		@param[out]	result			: 変換の結果情報
 		@details	\0終端文字は付加されません。result.BytesUsed により使用バイト数を確認できます。
 	*/
-	static void Convert(
+	static void convert(
 		const void* src, size_t srcByteCount, Encoding* srcEncoding,
 		void* dest, size_t destByteCount, Encoding* destEncoding,
 		EncodingConversionResult* result);
@@ -176,7 +176,7 @@ public:
 		@details	指定された Encoder と Decoder は、変換ステータスを保持できる場合は保持します。
 					\0終端文字は付加されません。result.BytesUsed により使用バイト数を確認できます。
 	*/
-	static void Convert(
+	static void convert(
 		const void* src, size_t srcByteCount, Decoder* srcDecoder,
 		void* dest, size_t destByteCount, Encoder* destEncoder,
 		EncodingConversionResult* result);
@@ -188,63 +188,63 @@ public:
 		@details	名前は IANA 文字セット名です。(http://www.iana.org/assignments/character-sets/character-sets.xhtml)
 					Windows コードページによるエンコーディングを使用している場合、"cp437" のようなエイリアス名になることがあります。
 	*/
-	virtual const TCHAR* GetName() const = 0;
+	virtual const TCHAR* getName() const = 0;
 
 	/**
 		@brief		1 文字の最小バイト数を取得する
 	*/
-	virtual int GetMinByteCount() const = 0;
+	virtual int getMinByteCount() const = 0;
 
 	/**
 		@brief		1 文字の最大バイト数を取得する
 	*/
-	virtual int GetMaxByteCount() const = 0;
+	virtual int getMaxByteCount() const = 0;
 	
 	/**
 		@brief		デコードまたはエンコード先にマッピングできない文字が見つかった時に置換する文字の設定
 	*/
-	virtual void SetFallbackReplacementChar(uint32_t ch) { mFallbackReplacementChar = ch; }
+	virtual void setFallbackReplacementChar(uint32_t ch) { mFallbackReplacementChar = ch; }
 
 	/**
 		@brief		デコードまたはエンコード先にマッピングできない文字が見つかった時に置換する文字の取得
 	*/
-	virtual uint32_t GetFallbackReplacementChar() { return mFallbackReplacementChar; }
+	virtual uint32_t getFallbackReplacementChar() { return mFallbackReplacementChar; }
 
 	/**
 		@brief		バイトシーケンスを内部文字列へ変換するデコーダを作成する
 		@details	作成したオブジェクトは、使い終えたら削除する必要があります。
 	*/
-	virtual Decoder* CreateDecoder() const = 0;
+	virtual Decoder* createDecoder() const = 0;
 
 	/**
 		@brief		内部文字列をバイトシーケンスへ変換するエンコーダを作成する
 		@details	作成したオブジェクトは、使い終えたら削除する必要があります。
 	*/
-	virtual Encoder* CreateEncoder() const = 0;
+	virtual Encoder* createEncoder() const = 0;
 
 	/**
 		@brief		このエンコードを識別するための前文文字列 (BOM) を取得する
 		@return		NULL で終わるバイト列。BOM を持たないエンコードの場合は NULL
 	*/
-	virtual byte_t* GetPreamble() const = 0;
+	virtual byte_t* getPreamble() const = 0;
 
 	/**
 		@brief		指定されたバッファの先頭バイト列が、前文文字列 (BOM) と一致するかを確認します。
 		@return		一致した場合は前文文字列のバイト数を返します。そうでなければ 0 を返します。
 	*/
-	size_t CheckPreamble(const void* buffer, size_t bufferSize) const;
+	size_t checkPreamble(const void* buffer, size_t bufferSize) const;
 
 	/**
 		@brief		指定されたバッファをこのエンコーディングで表現した際の文字数を取得します。
 		@return		文字数。マルチバイトコードやサロゲートペアを考慮した文字数です。
 	*/
-	virtual int GetCharacterCount(const void* buffer, size_t bufferSize) const = 0;
+	virtual int getCharacterCount(const void* buffer, size_t bufferSize) const = 0;
 
 	/**
 		@brief		指定されたバッファの先頭がマルチバイトコードやサロゲートペアの先行文字である場合、追加で読むべき文字列長さを返します。
 		@return		追加で読むべき文字列長さ。先行文字ではない場合は 0。
 	*/
-	virtual int GetLeadExtraLength(const void* buffer, size_t bufferSize) const = 0;
+	virtual int getLeadExtraLength(const void* buffer, size_t bufferSize) const = 0;
 
 protected:
 	Encoding() : mFallbackReplacementChar((uint32_t)'?') {};
@@ -267,16 +267,16 @@ private:
 /**
 	@brief		エンコード済みバイトシーケンスから内部文字コード (UTF16) への変換を行うクラス
 
-	@details	Decoder は1つの文字列ストリームの変換中、任意の回数 ConvertToUTF16() を呼び出すことができます。
+	@details	Decoder は1つの文字列ストリームの変換中、任意の回数 convertToUTF16() を呼び出すことができます。
 				その間、変換ステータスを保存します。
 				つまり、バッファリングIO等で長大な文章を複数のメモリバッファに分割して読み取る場合に、
 				バッファの境界でマルチバイト文字が分かれてしまっても、継続して変換を行うことができます。
 
-				ただし、このステータス保存は CanRemain() が true を返す場合のみ使用可能です。
+				ただし、このステータス保存は canRemain() が true を返す場合のみ使用可能です。
 				false を返す場合はあらかじめ全てのソース文字列を1つの連続したメモリバッファに読み込み、
-				ConvertToUTF16() に渡す必要があります。
+				convertToUTF16() に渡す必要があります。
 
-				参考：.NET Decoder.Convert()
+				参考：.NET Decoder.convert()
 				http://msdn.microsoft.com/ja-jp/library/twte1yfs(v=vs.110).aspx
 */
 class Decoder
@@ -286,27 +286,27 @@ public:
 	/**
 		@brief		1 文字の最小バイト数を取得します。
 	*/
-	virtual int GetMinByteCount() = 0;
+	virtual int getMinByteCount() = 0;
 
 	/**
 		@brief		1 文字の最大バイト数を取得します。
 	*/
-	virtual int GetMaxByteCount() = 0;
+	virtual int getMaxByteCount() = 0;
 
 	/**
 		@brief		Decoder が変換状態を保持できるかを確認します。
 	*/
-	virtual bool CanRemain() = 0;
+	virtual bool canRemain() = 0;
 
 	/**
 		@brief		デコード先にマッピングできない文字が見つかった時に置換する文字の設定
 	*/
-	virtual void SetFallbackReplacementChar(uint32_t ch) { mFallbackReplacementChar = ch; }
+	virtual void setFallbackReplacementChar(uint32_t ch) { mFallbackReplacementChar = ch; }
 
 	/**
 		@brief		デコード先にマッピングできない文字が見つかった時に置換する文字の取得
 	*/
-	virtual uint32_t GetFallbackReplacementChar() { return mFallbackReplacementChar; }
+	virtual uint32_t getFallbackReplacementChar() { return mFallbackReplacementChar; }
 
 	/**
 		@brief		このエンコーディングで表現される文字列バッファを、UTF16 に変換する
@@ -317,22 +317,22 @@ public:
 		@param[out]	outBytesUsed		: 変換結果のバイト数を格納する変数
 		@param[out]	outCharsUsed		: 変換結果の文字数を格納する変数
 	*/
-	virtual void ConvertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, size_t* outBytesUsed, size_t* outCharsUsed) = 0;
+	virtual void convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, size_t* outBytesUsed, size_t* outCharsUsed) = 0;
 
 	/**
-		@brief	一連の ConvertToUTF16() の呼び出しの中で、変換できない文字を規定文字に変換した文字数を取得する
+		@brief	一連の convertToUTF16() の呼び出しの中で、変換できない文字を規定文字に変換した文字数を取得する
 	*/
-	virtual int UsedDefaultCharCount() = 0;	// TODO: Get～
+	virtual int usedDefaultCharCount() = 0;	// TODO: Get～
 
 	/**
-		@brief	最後の ConvertToUTF16() で、バッファ末尾でマルチバイト文字が途切れていなければ true を返す
+		@brief	最後の convertToUTF16() で、バッファ末尾でマルチバイト文字が途切れていなければ true を返す
 	*/
-	virtual bool Completed() = 0;
+	virtual bool completed() = 0;
 
 	/**
 		@brief	変換ステータスをクリアし、初期状態に戻す
 	*/
-	virtual void Reset() = 0;
+	virtual void reset() = 0;
 
 	virtual ~Decoder() {}
 
@@ -347,7 +347,7 @@ private:
 
 /**
 	@brief		内部文字コード (UTF16) をエンコードするクラス
-	@details	Decoder 同様、CanRemain() が true の場合は変換ステータスを保存します。
+	@details	Decoder 同様、canRemain() が true の場合は変換ステータスを保存します。
 */
 class Encoder
 {
@@ -356,27 +356,27 @@ public:
 	/**
 		@brief		1 文字の最小バイト数を取得します。
 	*/
-	virtual int GetMinByteCount() = 0;
+	virtual int getMinByteCount() = 0;
 
 	/**
 		@brief		1 文字の最大バイト数を取得します。
 	*/
-	virtual int GetMaxByteCount() = 0;
+	virtual int getMaxByteCount() = 0;
 
 	/**
 		@brief	Encoder が変換状態を保持できるかを確認します。
 	*/
-	virtual bool CanRemain() = 0;
+	virtual bool canRemain() = 0;
 
 	/**
 		@brief		エンコード先にマッピングできない文字が見つかった時に置換する文字の設定
 	*/
-	virtual void SetFallbackReplacementChar(uint32_t ch) { mFallbackReplacementChar = ch; }
+	virtual void setFallbackReplacementChar(uint32_t ch) { mFallbackReplacementChar = ch; }
 
 	/**
 		@brief		エンコード先にマッピングできない文字が見つかった時に置換する文字の取得
 	*/
-	virtual uint32_t GetFallbackReplacementChar() { return mFallbackReplacementChar; }
+	virtual uint32_t getFallbackReplacementChar() { return mFallbackReplacementChar; }
 
 	/**
 		@brief		UTF16 文字列を、このエンコーディングで表現される文字列に変換する
@@ -387,22 +387,22 @@ public:
 		@param[out]	outBytesUsed		: 変換結果のバイト数を格納する変数
 		@param[out]	outCharsUsed		: 変換結果の文字数を格納する変数
 	*/
-	virtual void ConvertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, size_t* outBytesUsed, size_t* outCharsUsed) = 0;
+	virtual void convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, size_t* outBytesUsed, size_t* outCharsUsed) = 0;
 
 	/**
-		@brief	一連の ConvertToUTF16() の呼び出しの中で、変換できない文字を規定文字に変換した文字数を取得する
+		@brief	一連の convertToUTF16() の呼び出しの中で、変換できない文字を規定文字に変換した文字数を取得する
 	*/
-	virtual int UsedDefaultCharCount() = 0;
+	virtual int usedDefaultCharCount() = 0;
 
 	/**
-		@brief	最後の ConvertToUTF16() で、バッファ末尾でマルチバイト文字が途切れていなければ true を返す
+		@brief	最後の convertToUTF16() で、バッファ末尾でマルチバイト文字が途切れていなければ true を返す
 	*/
-	virtual bool Completed() = 0;
+	virtual bool completed() = 0;
 
 	/**
 		@brief	変換ステータスをクリアし、初期状態に戻す
 	*/
-	virtual void Reset() = 0;
+	virtual void reset() = 0;
 
 	virtual ~Encoder() {}
 

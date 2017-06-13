@@ -23,10 +23,10 @@ public:
 	void DrawMesh(MeshResource* mesh, int startIndex, int primitiveCount, PrimitiveType primitiveType);
 
 protected:
-	virtual bool IsStandaloneShader() const { return false; }
+	virtual bool isStandaloneShader() const { return false; }
 	virtual void flush() override {}
-	virtual void OnActivated() override {}
-	virtual void OnDeactivated() override {}
+	virtual void onActivated() override {}
+	virtual void onDeactivated() override {}
 
 private:
 	struct DrawMeshCommandData

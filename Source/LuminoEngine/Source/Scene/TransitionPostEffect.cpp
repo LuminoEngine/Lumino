@@ -13,7 +13,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TransitionPostEffect, PostEffect);
 //------------------------------------------------------------------------------
 RefPtr<TransitionPostEffect> TransitionPostEffect::create()
 {
-	return NewObject<TransitionPostEffect>();
+	return newObject<TransitionPostEffect>();
 }
 
 //------------------------------------------------------------------------------
@@ -39,9 +39,9 @@ void TransitionPostEffect::initialize()
 		{
 #include "Resource/TransitionPostEffectWithoutMask.lnfx.h"
 		};
-		m_withoutMaskShader.shader = NewObject<Shader>(detail::EngineDomain::GetGraphicsManager(), ShaderData, LN_ARRAY_SIZE_OF(ShaderData), true);
-		m_withoutMaskShader.varFactor = m_withoutMaskShader.shader->FindVariable(_T("g_Factor"));
-		m_withoutMaskShader.varFreezedTexture = m_withoutMaskShader.shader->FindVariable(_T("g_FreezedTexture"));
+		m_withoutMaskShader.shader = newObject<Shader>(detail::EngineDomain::getGraphicsManager(), ShaderData, LN_ARRAY_SIZE_OF(ShaderData), true);
+		m_withoutMaskShader.varFactor = m_withoutMaskShader.shader->findVariable(_T("g_Factor"));
+		m_withoutMaskShader.varFreezedTexture = m_withoutMaskShader.shader->findVariable(_T("g_FreezedTexture"));
 	}
 
 	m_factor = 1.0f;
@@ -55,7 +55,7 @@ void TransitionPostEffect::Transition(float duration, Texture* mask, int vague)
 }
 
 //------------------------------------------------------------------------------
-void TransitionPostEffect::OnRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+void TransitionPostEffect::onRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
 	// TODO: time
 	m_factor += 0.016;
@@ -65,8 +65,8 @@ void TransitionPostEffect::OnRender(DrawList* context, RenderTargetTexture* sour
 	bool refreshed = false;
 	if (m_primaryTarget == nullptr)
 	{
-		m_primaryTarget = NewObject<RenderTargetTexture>(destination->getSize(), 1, TextureFormat::R8G8B8X8);
-		m_savedTarget = NewObject<RenderTargetTexture>(destination->getSize(), 1, TextureFormat::R8G8B8X8);
+		m_primaryTarget = newObject<RenderTargetTexture>(destination->getSize(), 1, TextureFormat::R8G8B8X8);
+		m_savedTarget = newObject<RenderTargetTexture>(destination->getSize(), 1, TextureFormat::R8G8B8X8);
 		refreshed = true;
 	}
 	else if (m_primaryTarget->getSize() != destination->getSize())
@@ -84,9 +84,9 @@ void TransitionPostEffect::OnRender(DrawList* context, RenderTargetTexture* sour
 			// 起動直後など、レンダリングターゲット作成後1回も描画していないのに遷移しようとしている。
 			// このときはビューの背景色を使う。
 
-			// TODO: scoped または Blit みたいに RT 直接指定の Clear
-			RefPtr<RenderTargetTexture> oldTarget = context->GetRenderTarget(0);
-			context->SetRenderTarget(0, m_savedTarget);
+			// TODO: scoped または blit みたいに RT 直接指定の Clear
+			RefPtr<RenderTargetTexture> oldTarget = context->getRenderTarget(0);
+			context->setRenderTarget(0, m_savedTarget);
 			context->clear(ClearFlags::Color, GetOwnerLayer()->GetOwnerViewport()->GetViewBackgroundColor());
 		}
 		else
@@ -108,20 +108,20 @@ void TransitionPostEffect::OnRender(DrawList* context, RenderTargetTexture* sour
 	{
 		// マスクテクスチャ不使用
 		m_withoutMaskShader.varFactor->setFloat(m_factor);
-		m_withoutMaskShader.varFreezedTexture->SetTexture(m_savedTarget);
+		m_withoutMaskShader.varFreezedTexture->setTexture(m_savedTarget);
 		shader = m_withoutMaskShader.shader;
 	}
 
 
 	// TODO: scoped
-	RefPtr<Shader> oldShader = context->GetShader();
-	context->SetShader(shader);
+	RefPtr<Shader> oldShader = context->getShader();
+	context->setShader(shader);
 
 	// エフェクト適用済みの描画結果を前回の描画結果として毎回覚えておく
-	context->Blit(source, m_primaryTarget, Matrix::Identity);
+	context->blit(source, m_primaryTarget, Matrix::Identity);
 
-	context->SetShader(oldShader);
-	context->Blit(m_primaryTarget, destination, Matrix::Identity);
+	context->setShader(oldShader);
+	context->blit(m_primaryTarget, destination, Matrix::Identity);
 }
 
 LN_NAMESPACE_END

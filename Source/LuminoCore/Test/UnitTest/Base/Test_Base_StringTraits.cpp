@@ -255,22 +255,22 @@ TEST_F(Test_Base_StringUtils, toInt8)
 	const TCHAR* end;
 	NumberConversionResult r;
 
-	// Min Overflow
+	// min Overflow
 	n = StringTraits::toInt8(_T("-129"), -1, 0, &end, &r);
 	ASSERT_EQ(-128, n);
 	ASSERT_EQ(NumberConversionResult::Overflow, r);
 
-	// Min Success
+	// min Success
 	n = StringTraits::toInt8(_T("-128"), -1, 0, &end, &r);
 	ASSERT_EQ(-128, n);
 	ASSERT_EQ(NumberConversionResult::Success, r);
 
-	// Max Success
+	// max Success
 	n = StringTraits::toInt8(_T("127"), -1, 0, &end, &r);
 	ASSERT_EQ(127, n);
 	ASSERT_EQ(NumberConversionResult::Success, r);
 
-	// Max Overflow
+	// max Overflow
 	n = StringTraits::toInt8(_T("128"), -1, 0, &end, &r);
 	ASSERT_EQ(127, n);
 	ASSERT_EQ(NumberConversionResult::Overflow, r);
@@ -288,17 +288,17 @@ TEST_F(Test_Base_StringUtils, toUInt8)
 	ASSERT_EQ(0xFF, n);
 	ASSERT_EQ(NumberConversionResult::Success, r);
 
-	// Min Success
+	// min Success
 	n = StringTraits::toUInt8(_T("0"), -1, 0, &end, &r);
 	ASSERT_EQ(0, n);
 	ASSERT_EQ(NumberConversionResult::Success, r);
 
-	// Max Success
+	// max Success
 	n = StringTraits::toUInt8(_T("255"), -1, 0, &end, &r);
 	ASSERT_EQ(255, n);
 	ASSERT_EQ(NumberConversionResult::Success, r);
 
-	// Max Overflow
+	// max Overflow
 	n = StringTraits::toUInt8(_T("256"), -1, 0, &end, &r);
 	ASSERT_EQ(255, n);
 	ASSERT_EQ(NumberConversionResult::Overflow, r);
@@ -311,22 +311,22 @@ TEST_F(Test_Base_StringUtils, toInt16)
 	const TCHAR* end;
 	NumberConversionResult r;
 
-	// Min Overflow
+	// min Overflow
 	n = StringTraits::toInt16(_T("-32769"), -1, 0, &end, &r);
 	ASSERT_EQ(-32768, n);
 	ASSERT_EQ(NumberConversionResult::Overflow, r);
 
-	// Min Success
+	// min Success
 	n = StringTraits::toInt16(_T("-32768"), -1, 0, &end, &r);
 	ASSERT_EQ(-32768, n);
 	ASSERT_EQ(NumberConversionResult::Success, r);
 
-	// Max Success
+	// max Success
 	n = StringTraits::toInt16(_T("32767"), -1, 0, &end, &r);
 	ASSERT_EQ(32767, n);
 	ASSERT_EQ(NumberConversionResult::Success, r);
 
-	// Max Overflow
+	// max Overflow
 	n = StringTraits::toInt16(_T("32768"), -1, 0, &end, &r);
 	ASSERT_EQ(32767, n);
 	ASSERT_EQ(NumberConversionResult::Overflow, r);
@@ -344,17 +344,17 @@ TEST_F(Test_Base_StringUtils, toUInt16)
 	ASSERT_EQ(0xFFFF, n);
 	ASSERT_EQ(NumberConversionResult::Success, r);
 
-	// Min Success
+	// min Success
 	n = StringTraits::toUInt16(_T("0"), -1, 0, &end, &r);
 	ASSERT_EQ(0, n);
 	ASSERT_EQ(NumberConversionResult::Success, r);
 
-	// Max Success
+	// max Success
 	n = StringTraits::toUInt16(_T("65535"), -1, 0, &end, &r);
 	ASSERT_EQ(65535, n);
 	ASSERT_EQ(NumberConversionResult::Success, r);
 
-	// Max Overflow
+	// max Overflow
 	n = StringTraits::toUInt16(_T("65536"), -1, 0, &end, &r);
 	ASSERT_EQ(65535, n);
 	ASSERT_EQ(NumberConversionResult::Overflow, r);
@@ -367,22 +367,22 @@ TEST_F(Test_Base_StringUtils, toInt32)
 	const TCHAR* end;
 	NumberConversionResult r;
 
-	// Min Overflow
+	// min Overflow
 	n = StringTraits::toInt32(_T("-2147483649"), -1, 0, &end, &r);
 	ASSERT_EQ(INT32_MIN, n);
 	ASSERT_EQ(NumberConversionResult::Overflow, r);
 
-	// Min Success
+	// min Success
 	n = StringTraits::toInt32(_T("-2147483648"), -1, 0, &end, &r);
 	ASSERT_EQ(INT32_MIN, n);
 	ASSERT_EQ(NumberConversionResult::Success, r);
 
-	// Max Success
+	// max Success
 	n = StringTraits::toInt32(_T("2147483647"), -1, 0, &end, &r);
 	ASSERT_EQ(INT32_MAX, n);
 	ASSERT_EQ(NumberConversionResult::Success, r);
 
-	// Max Overflow
+	// max Overflow
 	n = StringTraits::toInt32(_T("2147483648"), -1, 0, &end, &r);
 	ASSERT_EQ(INT32_MAX, n);
 	ASSERT_EQ(NumberConversionResult::Overflow, r);
@@ -400,17 +400,17 @@ TEST_F(Test_Base_StringUtils, toUInt32)
 	ASSERT_EQ(UINT32_MAX, n);
 	ASSERT_EQ(NumberConversionResult::Success, r);
 
-	// Min Success
+	// min Success
 	n = StringTraits::toUInt32(_T("0"), -1, 0, &end, &r);
 	ASSERT_EQ(0, n);
 	ASSERT_EQ(NumberConversionResult::Success, r);
 
-	// Max Success
+	// max Success
 	n = StringTraits::toUInt32(_T("4294967295"), -1, 0, &end, &r);
 	ASSERT_EQ(UINT32_MAX, n);
 	ASSERT_EQ(NumberConversionResult::Success, r);
 
-	// Max Overflow
+	// max Overflow
 	n = StringTraits::toUInt32(_T("4294967296"), -1, 0, &end, &r);
 	ASSERT_EQ(UINT32_MAX, n);
 	ASSERT_EQ(NumberConversionResult::Overflow, r);
@@ -423,22 +423,22 @@ TEST_F(Test_Base_StringUtils, toInt64)
 	const TCHAR* end;
 	NumberConversionResult r;
 
-	// Min Overflow
+	// min Overflow
 	n = StringTraits::toInt64(_T("-9223372036854775809"), -1, 0, &end, &r);
 	ASSERT_EQ(INT64_MIN, n);
 	ASSERT_EQ(NumberConversionResult::Overflow, r);
 
-	// Min Success
+	// min Success
 	n = StringTraits::toInt64(_T("-9223372036854775808"), -1, 0, &end, &r);
 	ASSERT_EQ(INT64_MIN, n);
 	ASSERT_EQ(NumberConversionResult::Success, r);
 
-	// Max Success
+	// max Success
 	n = StringTraits::toInt64(_T("9223372036854775807"), -1, 0, &end, &r);
 	ASSERT_EQ(INT64_MAX, n);
 	ASSERT_EQ(NumberConversionResult::Success, r);
 
-	// Max Overflow
+	// max Overflow
 	n = StringTraits::toInt64(_T("9223372036854775808"), -1, 0, &end, &r);
 	ASSERT_EQ(INT64_MAX, n);
 	ASSERT_EQ(NumberConversionResult::Overflow, r);
@@ -456,17 +456,17 @@ TEST_F(Test_Base_StringUtils, toUInt64)
 	ASSERT_EQ(UINT64_MAX, n);
 	ASSERT_EQ(NumberConversionResult::Success, r);
 
-	// Min Success
+	// min Success
 	n = StringTraits::toUInt64(_T("0"), -1, 0, &end, &r);
 	ASSERT_EQ(0, n);
 	ASSERT_EQ(NumberConversionResult::Success, r);
 
-	// Max Success
+	// max Success
 	n = StringTraits::toUInt64(_T("0xffffffffffffffff"), -1, 0, &end, &r);
 	ASSERT_EQ(UINT64_MAX, n);
 	ASSERT_EQ(NumberConversionResult::Success, r);
 
-	// Max Overflow
+	// max Overflow
 	n = StringTraits::toUInt64(_T("0xfffffffffffffffff"), -1, 0, &end, &r);
 	ASSERT_EQ(UINT64_MAX, n);
 	ASSERT_EQ(NumberConversionResult::Overflow, r);

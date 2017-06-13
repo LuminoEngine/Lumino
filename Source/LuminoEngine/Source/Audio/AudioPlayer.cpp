@@ -56,91 +56,91 @@ void AudioPlayer::initialize(AudioStream* audioStream, bool enable3d)
 { 
 	LN_THROW(audioStream, ArgumentException);
 	LN_REFOBJ_SET(m_audioStream, audioStream);
-	m_decoder = m_audioStream->GetDecoder();
+	m_decoder = m_audioStream->getDecoder();
 
     // ソースからループ位置を取得
     uint32_t loop_begin, loop_length;
-	m_decoder->GetLoopState(&loop_begin, &loop_length);
+	m_decoder->setLoopState(&loop_begin, &loop_length);
     mLoopBegin  = loop_begin;
 	mLoopLength = loop_length;
 }
 
 //------------------------------------------------------------------------------
-void AudioPlayer::CommitPlayerState(const detail::AudioPlayerState& newState)
+void AudioPlayer::commitPlayerState(const detail::AudioPlayerState& newState)
 {
-	if (newState.GetModifiedFlags() & detail::AudioPlayerState::ModifiedFlags_Volume)
+	if (newState.getModifiedFlags() & detail::AudioPlayerState::ModifiedFlags_Volume)
 	{
-		SetVolume(newState.GetVolume());
+		setVolume(newState.getVolume());
 	}
-	if (newState.GetModifiedFlags() & detail::AudioPlayerState::ModifiedFlags_Pitch)
+	if (newState.getModifiedFlags() & detail::AudioPlayerState::ModifiedFlags_Pitch)
 	{
-		SetPitch(newState.GetPitch());
+		setPitch(newState.getPitch());
 	}
-	if (newState.GetModifiedFlags() & detail::AudioPlayerState::ModifiedFlags_LoopEnabled)
+	if (newState.getModifiedFlags() & detail::AudioPlayerState::ModifiedFlags_LoopEnabled)
 	{
-		SetLoopEnabled(newState.IsLoopEnabled());
+		setLoopEnabled(newState.isLoopEnabled());
 	}
-	if ((newState.GetModifiedFlags() & detail::AudioPlayerState::ModifiedFlags_LoopBegin) ||
-		(newState.GetModifiedFlags() & detail::AudioPlayerState::ModifiedFlags_LoopLength))
+	if ((newState.getModifiedFlags() & detail::AudioPlayerState::ModifiedFlags_LoopBegin) ||
+		(newState.getModifiedFlags() & detail::AudioPlayerState::ModifiedFlags_LoopLength))
 	{
-		SetLoopState(newState.GetLoopBegin(), newState.GetLoopLength());
+		setLoopState(newState.getLoopBegin(), newState.getLoopLength());
 	}
-	if (newState.GetModifiedFlags() & detail::AudioPlayerState::ModifiedFlags_PlayingState)
+	if (newState.getModifiedFlags() & detail::AudioPlayerState::ModifiedFlags_PlayingState)
 	{
-		switch (newState.GetPlayingState())
+		switch (newState.getPlayingState())
 		{
 		case SoundPlayingState::Stopped:
-			Stop();
+			stop();
 			break;
 		case SoundPlayingState::Playing:
-			if (m_playerState.GetPlayingState() == SoundPlayingState::Pausing)
+			if (m_playerState.getPlayingState() == SoundPlayingState::Pausing)
 			{
-				Pause(false);
+				pause(false);
 			}
 			else
 			{
-				Play();
+				play();
 			}
 			break;
 		case SoundPlayingState::Pausing:
-			Pause(true);
+			pause(true);
 			break;
 		}
 	}
 
 	m_playerState = newState;
-	m_playerState.SetModifiedFlags(detail::AudioPlayerState::ModifiedFlags_None);	// 同期完了
+	m_playerState.setModifiedFlags(detail::AudioPlayerState::ModifiedFlags_None);	// 同期完了
 }
 
 //------------------------------------------------------------------------------
-void AudioPlayer::DoPolling()
+void AudioPlayer::doPolling()
 {
-	if (!Polling())
+	if (!polling())
 	{
-		m_playerState.SetPlayingState(SoundPlayingState::Stopped);
+		m_playerState.setPlayingState(SoundPlayingState::Stopped);
 	}
 }
 
 //------------------------------------------------------------------------------
-void AudioPlayer::SetVolume(float volume)
+void AudioPlayer::setVolume(float volume)
 {
 	mVolume = Math::clamp(volume, 0.0f, 1.0f);
 }
 
 //------------------------------------------------------------------------------
-void AudioPlayer::SetPitch(float pitch)
+void AudioPlayer::setPitch(float pitch)
 {
 	mPitch = Math::clamp(pitch, 0.5f, 2.0f);
 }
 
 //------------------------------------------------------------------------------
-void AudioPlayer::SetLoopState(uint32_t loop_begin, uint32_t loop_length)
+void AudioPlayer::setLoopState(uint32_t loop_begin, uint32_t loop_length)
 {
     if ( loop_begin == 0 && loop_length == 0 )
     {
         // ソースからループ位置を取得して設定する
 		uint32_t begin, length;
-		m_decoder->GetLoopState(&begin, &length);
+		m_decoder->setLoopState(&begin, &length);
         mLoopBegin  = begin;
 		mLoopLength = length;
     }

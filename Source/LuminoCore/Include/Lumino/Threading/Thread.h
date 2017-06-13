@@ -13,8 +13,8 @@ class Exception;
 	@details	使い方
 				①このクラスを継承した新しいクラスを作成し、Execute() を実装します。
 				②Start() でスレッドを開始します。
-				③Wait() で終了を待ちます。
-				  終了した際に Execute() で発生した例外がある場合、Wait() から際 throw されます。
+				③wait() で終了を待ちます。
+				  終了した際に Execute() で発生した例外がある場合、wait() から際 throw されます。
 				④インスタンスを破棄します。
 */
 class LUMINO_EXPORT Thread
@@ -42,17 +42,17 @@ public:
 		@details	スレッドがハンドルされない例外で終了した場合、
 					この関数はその例外を再throwします。
 	*/
-	void Wait();
+	void wait();
 
 	/**
 		@brief	終了しているかどうかの判定
 	*/
-	bool IsFinished();
+	bool isFinished();
 
 	/**
 		@brief	スレッド識別子の取得 (start() 後に呼ぶこと)
 	*/
-	intptr_t GetThreadId() const;
+	intptr_t getThreadId() const;
 
 public:
 
@@ -60,19 +60,19 @@ public:
 		@brief	指定した時間だけ現在のスレッドをスリープ
 		@param	milliseconds	: 待機時間 (ミリ秒)
 	*/
-	static void Sleep(int milliseconds);
+	static void sleep(int milliseconds);
 
 	/**
 		@brief	現在実行中のスレッドのIDを取得
 	*/
-	static intptr_t GetCurrentThreadId();
+	static intptr_t getCurrentThreadId();
 
 private:
 	LN_DISALLOW_COPY_AND_ASSIGN(Thread);
 
 	friend class detail::ThreadImpl;
 	void ExecuteInternal();
-	void Reset();
+	void reset();
 
 	detail::ThreadImpl*	m_impl;
 	ConditionFlag		mFinished;
@@ -92,7 +92,7 @@ private:
 					// 別のスレッドで実行されるメンバ関数
 				}
 			public:
-				void Run()
+				void run()
 				{
 					// スレッド起動
 					m_Thread.Start(CreateDelegate(this, &Test::ThreadFunc));

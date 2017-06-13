@@ -29,7 +29,7 @@ public:
 	void set(T x_, T y_) { x = x_; y = y_; }
 
 	/** 要素がすべて 0 であるかを判定します。*/
-	bool IsZero() const { return (x == 0 && y == 0); }
+	bool isZero() const { return (x == 0 && y == 0); }
 
 public:
 	bool operator == (const GenericPoint<T>& obj) const { return (x == obj.x && y == obj.y); }
@@ -80,20 +80,20 @@ public:
 	void set(float w, float h) { width = w; height = h; }
 
 	/** 要素がすべて 0 かを判定します。*/
-	bool IsZero() const { return (width == 0 && height == 0); }
+	bool isZero() const { return (width == 0 && height == 0); }
 
 	/** いずれかの要素が 0 かを判定します。*/
-	bool IsAnyZero() const { return (width == 0 || height == 0); }
+	bool isAnyZero() const { return (width == 0 || height == 0); }
 
 public:
-	static Size Min(const Size& size1, const Size& size2)
+	static Size min(const Size& size1, const Size& size2)
 	{
 		return Size(
 			(size1.width < size2.width) ? size1.width : size2.width,
 			(size1.height < size2.height) ? size1.height : size2.height);
 	}
 
-	static Size Max(const Size& size1, const Size& size2)
+	static Size max(const Size& size1, const Size& size2)
 	{
 		return Size(
 			(size1.width > size2.width) ? size1.width : size2.width,
@@ -118,11 +118,11 @@ public:
 	SizeI(int w, int h) { set(w, h); }
 	
 	void set(int w, int h) { width = w; height = h; }
-	bool IsZero() const { return (width == 0 && height == 0); }
-	bool IsAnyZero() const { return (width == 0 || height == 0); }
+	bool isZero() const { return (width == 0 && height == 0); }
+	bool isAnyZero() const { return (width == 0 || height == 0); }
 
-	Size ToFloatSize() const { return Size((float)width, (float)height); }
-	static SizeI FromFloatSize(const Size& size) { return SizeI((int)size.width, (int)size.height); }
+	Size toFloatSize() const { return Size((float)width, (float)height); }
+	static SizeI fromFloatSize(const Size& size) { return SizeI((int)size.width, (int)size.height); }
 
 	bool operator == (const SizeI& obj) const { return (width == obj.width && height == obj.height); }
 	bool operator != (const SizeI& obj) const { return !operator==(obj); }
@@ -135,12 +135,12 @@ class GeometryStructsHelper
 public:
 
 	template<typename TRect>
-	static void Clip(TRect* this_, const TRect& rect)
+	static void clip(TRect* this_, const TRect& rect)
 	{
 		auto l = (this_->x < rect.x) ? rect.x : this_->x;
 		auto t = (this_->y < rect.y) ? rect.y : this_->y;
 		auto r = (this_->getRight() > rect.getRight()) ? rect.getRight() : this_->getRight();
-		auto b = (this_->GetBottom() > rect.GetBottom()) ? rect.GetBottom() : this_->GetBottom();
+		auto b = (this_->getBottom() > rect.getBottom()) ? rect.getBottom() : this_->getBottom();
 		this_->x = l;
 		this_->y = t;
 		this_->width = r - l;
@@ -206,7 +206,7 @@ public:
 
 	/** 左辺の x 軸の値を取得します。*/
 	LN_METHOD()
-	float GetLeft() const { return x; }
+	float getLeft() const { return x; }
 
 	/** 上辺の y 軸の位置を取得します。*/
 	float getTop() const { return y; }
@@ -215,29 +215,29 @@ public:
 	float getRight() const { return x + width; }
 
 	/** 底辺の y 軸の値を取得します。*/
-	float GetBottom() const { return y + height; }
+	float getBottom() const { return y + height; }
 
 	/** 左上隅の位置を取得します。*/
-	PointF GetTopLeft() const { return PointF(GetLeft(), getTop()); }
+	PointF getTopLeft() const { return PointF(getLeft(), getTop()); }
 	
 	/** 右上隅の位置を取得します。*/
-	PointF GetTopRight() const { return PointF(getRight(), getTop()); }
+	PointF getTopRight() const { return PointF(getRight(), getTop()); }
 	
 	/** 左下隅の位置を取得します。*/
-	PointF GetBottomLeft() const { return PointF(GetLeft(), GetBottom()); }
+	PointF getBottomLeft() const { return PointF(getLeft(), getBottom()); }
 
 	/** 右下隅の位置を取得します。*/
-	PointF GetBottomRight() const { return PointF(getRight(), GetBottom()); }
+	PointF getBottomRight() const { return PointF(getRight(), getBottom()); }
 
 	/** 左上隅の位置を設定します。*/
-	void SetLocation(const PointF& pt) { x = pt.x; y = pt.y; }	// TODO: Pos?
+	void setLocation(const PointF& pt) { x = pt.x; y = pt.y; }	// TODO: Pos?
 
 	/** 左上隅の位置を取得します。*/
-	PointF GetLocation() const { return PointF(x, y); }
+	PointF setLocation() const { return PointF(x, y); }
 	
 	/** 幅と高さを設定します。*/
 	LN_METHOD(Property)
-	void SetSize(const Size& size) { width = size.width; height = size.height; }
+	void setSize(const Size& size) { width = size.width; height = size.height; }
 	
 	/** 幅と高さを取得します。*/
 	LN_METHOD(Property)
@@ -247,7 +247,7 @@ public:
 	bool isEmpty() const { return (width < 0 || height < 0); }
 
 	/** 要素がすべて 0 かを判定します。*/
-	bool IsZero() const { return (x == 0 && y == 0 && width == 0 && height == 0); }
+	bool isZero() const { return (x == 0 && y == 0 && width == 0 && height == 0); }
 
 	/** 矩形内に指定した点が含まれているかどうかを判定します。*/
 	bool contains(const PointF point) const { return contains(point.x, point.y); }
@@ -279,15 +279,15 @@ public:
 	/**
 		@brief	指定した矩形に収まるように、この矩形をクリッピングします。
 	*/
-	void Clip(const Rect& rect)
+	void clip(const Rect& rect)
 	{
-		GeometryStructsHelper::Clip(this, rect);
+		GeometryStructsHelper::clip(this, rect);
 	}
 
 	/**
 		@brief	四角形を拡大または縮小します。
 	*/
-	void Inflate(float width_, float height_)
+	void inflate(float width_, float height_)
 	{
 		x -= width_;
 		y -= height_;
@@ -322,15 +322,15 @@ public:
 	void set(int x_, int y_, const SizeI& size) { x = x_; y = y_; width = size.width; height = size.height; }
 
 	bool isEmpty() const { return (width < 0 || height < 0); }
-	int GetLeft() const { return x; }
+	int getLeft() const { return x; }
 	int getTop() const { return y; }
 	int getRight() const { return x + width; }
-	int GetBottom() const { return y + height; }
+	int getBottom() const { return y + height; }
 	SizeI getSize() const { return SizeI(width, height); }
 
-	void Clip(const RectI& rect) { GeometryStructsHelper::Clip(this, rect); }
+	void clip(const RectI& rect) { GeometryStructsHelper::clip(this, rect); }
 
-	static RectI FromFloatRect(const Rect& rect) { return RectI((float)rect.x, (float)rect.y, (float)rect.width, (float)rect.height); }
+	static RectI fromFloatRect(const Rect& rect) { return RectI((float)rect.x, (float)rect.y, (float)rect.width, (float)rect.height); }
 
 	bool operator == (const RectI& right) const { return (x == right.x && y == right.y && width == right.width && height == right.height); }
 	bool operator != (const RectI& right) const { return !operator==(right); }
@@ -424,10 +424,10 @@ public:
 	void set(float left, float top, float right, float bottom) { Left = left; Top = top; Right = right; Bottom = bottom; }
 
 	/** 要素がすべて 0 かを判定します。*/
-	bool IsZero() const { return (Left == 0 && Top == 0 && Right == 0 && Bottom == 0); }
+	bool isZero() const { return (Left == 0 && Top == 0 && Right == 0 && Bottom == 0); }
 
-	void ToArray(float* buf) const { buf[0] = Left; buf[1] = Top; buf[2] = Right; buf[3] = Bottom; }
-	static ThicknessF FromArray(const float* buf) { return ThicknessF(buf[0], buf[1], buf[2], buf[3]); }
+	void toArray(float* buf) const { buf[0] = Left; buf[1] = Top; buf[2] = Right; buf[3] = Bottom; }
+	static ThicknessF fromArray(const float* buf) { return ThicknessF(buf[0], buf[1], buf[2], buf[3]); }
 
 public:
 	bool operator == (const ThicknessF& obj) const { return (Left == obj.Left && Top == obj.Top && Right == obj.Right && Bottom == obj.Bottom); }

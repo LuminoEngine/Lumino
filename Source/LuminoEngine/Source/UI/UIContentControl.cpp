@@ -69,7 +69,7 @@ void UIContentControl::SetContent(UIElement* element)
 //	if (GetVisualTreeRoot() == nullptr)
 //	{
 //		auto panel = RefPtr<UIPanel>::MakeRef();
-//		panel->initialize(GetManager());
+//		panel->initialize(getManager());
 //
 //		// ContentAlignment 設定
 //		panel->SetVerticalAlignment(GetVerticalContentAlignment());

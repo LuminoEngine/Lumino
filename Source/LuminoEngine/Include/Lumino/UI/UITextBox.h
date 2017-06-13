@@ -35,9 +35,9 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual ~UITextBox();
 	void initialize();
 
-	virtual Size MeasureOverride(const Size& availableSize) override;
-	virtual Size ArrangeOverride(const Size& finalSize) override;
-	virtual void OnRender(DrawingContext* g) override;
+	virtual Size measureOverride(const Size& availableSize) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
+	virtual void onRender(DrawingContext* g) override;
 
 private:
 	//RefPtr<tr::Document>		m_document;
@@ -69,8 +69,8 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual ~UITextField();
 	void initialize();
 
-	virtual Size MeasureOverride(const Size& availableSize) override;
-	virtual Size ArrangeOverride(const Size& finalSize) override;
+	virtual Size measureOverride(const Size& availableSize) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
 
 private:
 	RefPtr<UISimpleTextArea>			m_textArea;

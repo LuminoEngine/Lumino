@@ -15,10 +15,10 @@ public:
 
 	//void SetVisible(bool visible) { m_isVisible = visible; }
 	//bool IsVisible() const { return m_isVisible; }
-	void SetDisplayMode(EngineDiagDisplayMode mode) { m_displayMode = mode; }
-	void ToggleDisplayMode();
-	void UpdateFrame();
-	//void Render(DrawingContext* g, const Vector2& viewSize);
+	void setDisplayMode(EngineDiagDisplayMode mode) { m_displayMode = mode; }
+	void toggleDisplayMode();
+	void updateFrame();
+	//void render(DrawingContext* g, const Vector2& viewSize);
 	
 private:
 	EngineDiagCore*			m_diagCore;

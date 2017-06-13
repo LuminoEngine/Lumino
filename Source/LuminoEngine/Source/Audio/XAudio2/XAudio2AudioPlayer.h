@@ -19,12 +19,12 @@ public:
 
 public:
 	virtual void			initialize(AudioStream* audioStream, bool enable3d) override;
-    virtual bool			Is3DSound() override { return ( mEmitterState != NULL ); }
+    virtual bool			is3DSound() override { return ( mEmitterState != NULL ); }
     virtual void			setPosition( const Vector3& pos ) override;
     virtual const Vector3&	getPosition() override { return mEmitterState->Position; }
     virtual void			setVelocity( const Vector3& v ) override;
-	virtual void			setEmitterDistance(float distance) override { if (mEmitterState) mEmitterState->Distance = distance; }
-	virtual float			getEmitterDistance() const override { return ( mEmitterState ) ? mEmitterState->Distance : 0; }
+	virtual void			setEmitterDistance(float distance) override { if (mEmitterState) mEmitterState->distance = distance; }
+	virtual float			getEmitterDistance() const override { return ( mEmitterState ) ? mEmitterState->distance : 0; }
 
 public:
 
@@ -49,13 +49,13 @@ public:
 
 public:
 	virtual void		initialize(AudioStream* audioStream, bool enable3d) override;
-	virtual void		SetVolume(float volume) override;
-	virtual void		SetPitch(float pitch) override;
-    virtual uint64_t	GetPlayedSamples() const override;
-	virtual void		Play() override;
-	virtual void		Stop() override;
-	virtual void		Pause( bool is_pause_ ) override;
-	virtual bool        Polling() override;
+	virtual void		setVolume(float volume) override;
+	virtual void		setPitch(float pitch) override;
+    virtual uint64_t	getPlayedSamples() const override;
+	virtual void		play() override;
+	virtual void		stop() override;
+	virtual void		pause( bool is_pause_ ) override;
+	virtual bool        polling() override;
 
 	// XAudio2AudioPlayerBase interface
     virtual IXAudio2SourceVoice* getXAudio2SourceVoice() const override { return mSourceVoice; }
@@ -80,13 +80,13 @@ public:
 
 public:
 	virtual void		initialize(AudioStream* audioStream, bool enable3d) override;
-	virtual void		SetVolume(float volume) override;
-	virtual void		SetPitch(float pitch) override;
-	virtual uint64_t	GetPlayedSamples() const override;
-	virtual void		Play() override;
-	virtual void		Stop() override;
-	virtual void		Pause( bool is_pause_ ) override;
-	virtual bool		Polling() override;
+	virtual void		setVolume(float volume) override;
+	virtual void		setPitch(float pitch) override;
+	virtual uint64_t	getPlayedSamples() const override;
+	virtual void		play() override;
+	virtual void		stop() override;
+	virtual void		pause( bool is_pause_ ) override;
+	virtual bool		polling() override;
 
 	// XAudio2AudioPlayerBase interface
     virtual IXAudio2SourceVoice* getXAudio2SourceVoice() const  override { return mSourceVoice; }

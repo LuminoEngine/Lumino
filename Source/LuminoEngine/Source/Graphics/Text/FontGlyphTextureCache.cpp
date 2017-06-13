@@ -54,7 +54,7 @@ void FontGlyphTextureCache::initialize(GraphicsManager* manager, RawFont* font)
 	int w = m_glyphWidthCount * m_font->GetLineSpacing();	//TODO ビットマップが収まるサイズは要チェック
 
 	// キャッシュ用テクスチャ作成
-	m_fillGlyphsTexture = NewObject<Texture2D>(SizeI(w, w), TextureFormat::R8G8B8A8, false, ResourceUsage::Dynamic);
+	m_fillGlyphsTexture = newObject<Texture2D>(SizeI(w, w), TextureFormat::R8G8B8A8, false, ResourceUsage::Dynamic);
 
 	// 検索に使う情報をリセット
 	m_curPrimUsedFlags.resize(m_maxCacheGlyphs);
@@ -111,8 +111,8 @@ void FontGlyphTextureCache::LookupGlyphInfo(UTF32 ch, CacheGlyphInfo* outInfo, b
 
 		// Fill
 		PointI pt(outInfo->srcRect.x + outInfo->outlineOffset, outInfo->srcRect.y + outInfo->outlineOffset);
-		m_fillGlyphsTexture->Blt(pt.x, pt.y, glyphBitmap->GlyphBitmap);
-		//m_lockedFillBitmap->BitBlt(dst, info->fillGlyphBitmap, src, Color::White, false);
+		m_fillGlyphsTexture->blt(pt.x, pt.y, glyphBitmap->GlyphBitmap);
+		//m_lockedFillBitmap->bitBlt(dst, info->fillGlyphBitmap, src, Color::White, false);
 	}
 
 	// 今回、cacheIndex を使うことをマーク
@@ -166,7 +166,7 @@ void FontGlyphTextureCache::CommitCacheGlyphInfo(CacheGlyphInfo* info, Rect* src
 //------------------------------------------------------------------------------
 Driver::ITexture* FontGlyphTextureCache::GetGlyphsFillTexture()
 {
-	return m_fillGlyphsTexture->ResolveDeviceObject();
+	return m_fillGlyphsTexture->resolveDeviceObject();
 }
 
 //------------------------------------------------------------------------------
@@ -209,14 +209,14 @@ FontGlyphTextureCache::FontGlyphTextureCache(GraphicsManager* manager, RawFont* 
 
 	// キャッシュ用テクスチャ作成
 	m_glyphCacheTexture = Texture2D::create(SizeI(w, w), TextureFormat_R8G8B8A8, 1);	// TODO: GraphicsManager?
-	//Driver::IGraphicsDevice* device = m_spriteRenderer->GetManager()->GetGraphicsDevice()->GetDeviceObject();
+	//Driver::IGraphicsDevice* device = m_spriteRenderer->getManager()->getGraphicsDevice()->getDeviceObject();
 	//m_glyphCacheTexture.Attach(device->CreateTexture(SizeI(w, w), 1, TextureFormat_R8G8B8A8));
 
 
-	//Device::IGraphicsDevice::ScopedLockContext lock(m_spriteRenderer->GetManager()->GetGraphicsDevice()->GetDeviceObject());
-	//BitmapPainter painter(m_glyphCacheTexture->GetDeviceObject()->Lock());
+	//Device::IGraphicsDevice::ScopedLockContext lock(m_spriteRenderer->getManager()->getGraphicsDevice()->getDeviceObject());
+	//BitmapPainter painter(m_glyphCacheTexture->getDeviceObject()->lock());
 	//painter.Clear(Color::Blue);
-	//m_glyphCacheTexture->GetDeviceObject()->Unlock();
+	//m_glyphCacheTexture->getDeviceObject()->unlock();
 
 	// 空きキャッシュインデックス作成
 	for (int i = 0; i < maxCharacters; i++) {
@@ -256,7 +256,7 @@ void FontGlyphTextureCache::LookupGlyph(UTF32 ch, int strokeThickness, Texture**
 		m_indexStack.pop();
 
 
-		// m_tmpBitmap へ BitBlt することで、アウトラインのビットマップと結合し、フォーマットをそろえる
+		// m_tmpBitmap へ bitBlt することで、アウトラインのビットマップと結合し、フォーマットをそろえる
 
 		if (glyphBitmap->OutlineBitmap != NULL)
 		{
@@ -284,7 +284,7 @@ void FontGlyphTextureCache::LookupGlyph(UTF32 ch, int strokeThickness, Texture**
 		//Rect srcRect(
 		//	0, 0,
 		//	glyhp->GlyphBitmap->GetSize());
-		//lock.GetBitmap()->BitBlt(destRect, glyhp->GlyphBitmap, srcRect, Color::White, false);
+		//lock.GetBitmap()->bitBlt(destRect, glyhp->GlyphBitmap, srcRect, Color::White, false);
 		//}
 
 		// キャッシュマップに登録
@@ -455,7 +455,7 @@ int VectorFontGlyphCache::GetVertexCount(Handle info)
 }
 
 //------------------------------------------------------------------------------
-int VectorFontGlyphCache::GetIndexCount(Handle info)
+int VectorFontGlyphCache::getIndexCount(Handle info)
 {
 	return m_gryphBufferDataList[info].triangleIndices.getCount();
 }
@@ -471,7 +471,7 @@ void VectorFontGlyphCache::GenerateMesh(Handle infoIndex, const Vector3& baselin
 		outVertices[i].position.y *= -1;
 		outVertices[i].color = Color(0.25, 0.25, 0.25, info->vertices[i].alpha);
 
-		if (!isIdent) outVertices[i].position.TransformCoord(transform);
+		if (!isIdent) outVertices[i].position.transformCoord(transform);
 		outVertices[i].position += baselineOrigin;
 	}
 	for (int i = 0; i < info->triangleIndices.getCount(); i++)
@@ -803,7 +803,7 @@ void TextRenderer::DrawChar(UTF32 ch)
 		//{
 		//	Device::ITexture::ScopedLock lock(m_glyphCacheTexture);
 
-		// m_tmpBitmap へ BitBlt することで、アウトラインのビットマップと結合し、フォーマットをそろえる
+		// m_tmpBitmap へ bitBlt することで、アウトラインのビットマップと結合し、フォーマットをそろえる
 
 		if (glyphBitmap->OutlineBitmap != NULL)
 		{
@@ -835,7 +835,7 @@ void TextRenderer::DrawChar(UTF32 ch)
 			//Rect srcRect(
 			//	0, 0,
 			//	glyhp->GlyphBitmap->GetSize());
-			//lock.GetBitmap()->BitBlt(destRect, glyhp->GlyphBitmap, srcRect, Color::White, false);
+			//lock.GetBitmap()->bitBlt(destRect, glyhp->GlyphBitmap, srcRect, Color::White, false);
 		//}
 
 		// キャッシュマップに登録
@@ -882,14 +882,14 @@ void TextRenderer::CheckResetCache()
 
 		// キャッシュ用テクスチャ作成
 		m_glyphCacheTexture.Attach(Texture::create(SizeI(w, w), TextureFormat_R8G8B8A8, 1, m_spriteRenderer->GetManager()));
-		//Device::IGraphicsDevice* device = m_spriteRenderer->GetManager()->GetGraphicsDevice()->GetDeviceObject();
+		//Device::IGraphicsDevice* device = m_spriteRenderer->getManager()->getGraphicsDevice()->getDeviceObject();
 		//m_glyphCacheTexture.Attach(device->CreateTexture(SizeI(w, w), 1, TextureFormat_R8G8B8A8));
 
 
-		//Device::IGraphicsDevice::ScopedLockContext lock(m_spriteRenderer->GetManager()->GetGraphicsDevice()->GetDeviceObject());
-		//BitmapPainter painter(m_glyphCacheTexture->GetDeviceObject()->Lock());
+		//Device::IGraphicsDevice::ScopedLockContext lock(m_spriteRenderer->getManager()->getGraphicsDevice()->getDeviceObject());
+		//BitmapPainter painter(m_glyphCacheTexture->getDeviceObject()->lock());
 		//painter.Clear(Color::Blue);
-		//m_glyphCacheTexture->GetDeviceObject()->Unlock();
+		//m_glyphCacheTexture->getDeviceObject()->unlock();
 
 		// 空きキャッシュインデックス作成
 		for (int i = 0; i < maxCharacters; i++) {

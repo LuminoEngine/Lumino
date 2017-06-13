@@ -218,8 +218,8 @@ void FontOutlineStroker::CalculateExtrusion()
 
 			//cur.pos.x += 0.5;
 
-			Vector2 d0 = Vector2::Normalize(cur.pos - prev.pos);//cur.pos - prev.pos;//
-			Vector2 d1 = Vector2::Normalize(next.pos - cur.pos);//next.pos - cur.pos;//
+			Vector2 d0 = Vector2::normalize(cur.pos - prev.pos);//cur.pos - prev.pos;//
+			Vector2 d1 = Vector2::normalize(next.pos - cur.pos);//next.pos - cur.pos;//
 			//Vector2 v = prev.pos.x * next.pos.y - next.pos.x * prev.pos.y;
 			//Vector2::clo
 			float dlx0, dly0, dlx1, dly1, dmr2, cross, limit;
@@ -231,11 +231,11 @@ void FontOutlineStroker::CalculateExtrusion()
 			// 進行方向の左側をさす
 			cur.extrusion.x = -(dlx0 + dlx1) * 0.5f;
 			cur.extrusion.y = -(dly0 + dly1) * 0.5f;
-			cur.extrusion.Normalize();
+			cur.extrusion.normalize();
 
 			cur.extrusion2 = cur.extrusion;
 			cur.extrusion2.y = 0;
-			//cur.extrusion2.Normalize();
+			//cur.extrusion2.normalize();
 			//cur.extrusion *= 0.5;
 		}
 	}

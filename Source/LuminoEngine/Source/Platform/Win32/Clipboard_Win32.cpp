@@ -13,7 +13,7 @@ LN_NAMESPACE_BEGIN
 //------------------------------------------------------------------------------
 void Clipboard::setText(PlatformWindow* window, const String& text)
 {
-	ByteBuffer wideStr = text.convertTo(Encoding::GetWideCharEncoding());
+	ByteBuffer wideStr = text.convertTo(Encoding::getWideCharEncoding());
 	int wideCount = (wideStr.getSize() + 1) * sizeof(WCHAR);
 
 	HGLOBAL hGlobal = ::GlobalAlloc(GMEM_MOVEABLE, wideCount);
@@ -64,7 +64,7 @@ String Clipboard::getText(PlatformWindow* window)
 	String str;
 	try
 	{
-		str.convertFrom(buf, len * sizeof(WCHAR), Encoding::GetWideCharEncoding());
+		str.convertFrom(buf, len * sizeof(WCHAR), Encoding::getWideCharEncoding());
 	}
 	catch (...)
 	{

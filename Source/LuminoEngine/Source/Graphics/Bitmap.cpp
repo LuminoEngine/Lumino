@@ -30,7 +30,7 @@ Bitmap::Bitmap(const SizeI& size, PixelFormat format, bool upFlow)
 	m_size = size;
 	m_depth = 1;
 	m_format = format;
-	m_bitmapData = ByteBuffer(GetPixelFormatByteCount(m_format, m_size, m_depth));
+	m_bitmapData = ByteBuffer(getPixelFormatByteCount(m_format, m_size, m_depth));
 	m_upFlow = upFlow;
 }
 
@@ -41,7 +41,7 @@ Bitmap::Bitmap(int width, int height, int depth, PixelFormat format, bool upFlow
 	m_size.set(width, height);
 	m_depth = depth;
 	m_format = format;
-	m_bitmapData = ByteBuffer(GetPixelFormatByteCount(m_format, m_size, m_depth));
+	m_bitmapData = ByteBuffer(getPixelFormatByteCount(m_format, m_size, m_depth));
 	m_upFlow = upFlow;
 }
 
@@ -105,7 +105,7 @@ Bitmap::Bitmap(void* buffer, const SizeI& size, PixelFormat format, bool upFlow)
 	m_size = size;
 	m_depth = 1;
 	m_format = format;
-	m_bitmapData.attach(buffer, GetPixelFormatByteCount(m_format, m_size, m_depth));
+	m_bitmapData.attach(buffer, getPixelFormatByteCount(m_format, m_size, m_depth));
 	m_upFlow = upFlow;
 }
 
@@ -116,7 +116,7 @@ Bitmap::Bitmap(void* buffer, int width, int height, int depth, PixelFormat forma
 	m_size.set(width, height);
 	m_depth = depth;
 	m_format = format;
-	m_bitmapData.attach(buffer, GetPixelFormatByteCount(m_format, m_size, m_depth));
+	m_bitmapData.attach(buffer, getPixelFormatByteCount(m_format, m_size, m_depth));
 }
 
 //------------------------------------------------------------------------------
@@ -179,15 +179,15 @@ void Bitmap::clear(const Color32& color)
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::BitBlt(const RectI& destRect, const Bitmap* srcBitmap, const RectI& srcRect, const Color32& mulColor, bool alphaBlend)
+void Bitmap::bitBlt(const RectI& destRect, const Bitmap* srcBitmap, const RectI& srcRect, const Color32& mulColor, bool alphaBlend)
 {
-	BitBltInternal(this, destRect, srcBitmap, srcRect, RGBA(mulColor.r, mulColor.g, mulColor.b, mulColor.a), alphaBlend);
+	bitBltInternal(this, destRect, srcBitmap, srcRect, RGBA(mulColor.r, mulColor.g, mulColor.b, mulColor.a), alphaBlend);
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::BitBlt(int x, int y, const Bitmap* srcBitmap, const RectI& srcRect, const Color32& mulColor, bool alphaBlend)
+void Bitmap::bitBlt(int x, int y, const Bitmap* srcBitmap, const RectI& srcRect, const Color32& mulColor, bool alphaBlend)
 {
-	BitBltInternal(this, RectI(x, y, INT_MAX, INT_MAX), srcBitmap, srcRect, RGBA(mulColor.r, mulColor.g, mulColor.b, mulColor.a), alphaBlend);
+	bitBltInternal(this, RectI(x, y, INT_MAX, INT_MAX), srcBitmap, srcRect, RGBA(mulColor.r, mulColor.g, mulColor.b, mulColor.a), alphaBlend);
 }
 
 //------------------------------------------------------------------------------
@@ -196,13 +196,13 @@ void Bitmap::save(const TCHAR* filePath)
 	// png に保存するときは RGBA
 	Bitmap bitmap(m_size, PixelFormat::R8G8B8A8);
 	bitmap.m_upFlow = m_upFlow;
-	ConvertPixelFormat(
+	convertPixelFormat(
 		m_bitmapData.getData(), m_bitmapData.getSize(), m_format,
 		bitmap.m_bitmapData.getData(), bitmap.m_bitmapData.getSize(), bitmap.m_format);
 
 	// アルファ無しフォーマットであれば、アルファを埋めてから出力する
 	if (m_format == PixelFormat::B8G8R8X8) {
-		bitmap.FillAlpha(0xFF);
+		bitmap.fillAlpha(0xFF);
 	}
 
 	PngFile pngFile;
@@ -222,9 +222,9 @@ bool Bitmap::equals(const Bitmap* bitmap) const
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::ConvertToDownFlow()
+void Bitmap::convertToDownFlow()
 {
-	int pixelSize = GetPixelFormatByteCount(m_format);
+	int pixelSize = getPixelFormatByteCount(m_format);
 	if (pixelSize == 1)
 	{
 		// XOR で工夫すると演算回数が少なくなるとか最適化の余地はあるけど、
@@ -251,7 +251,7 @@ void Bitmap::ConvertToDownFlow()
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::CopyRawData(const void* data, size_t byteCount)
+void Bitmap::copyRawData(const void* data, size_t byteCount)
 {
 	if (LN_CHECK_ARG(m_bitmapData.getSize() <= byteCount)) return;
 	m_bitmapData.copy(data, byteCount);
@@ -264,7 +264,7 @@ size_t Bitmap::getByteCount() const
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::SetPixel(int x, int y, int z, const Color32& color)
+void Bitmap::setPixel(int x, int y, int z, const Color32& color)
 {
 	if (LN_CHECK_RANGE(x, 0, m_size.width)) return;
 	if (LN_CHECK_RANGE(y, 0, m_size.height)) return;
@@ -303,7 +303,7 @@ void Bitmap::SetPixel(int x, int y, int z, const Color32& color)
 }
 
 //------------------------------------------------------------------------------
-Color32 Bitmap::GetPixel(int x, int y) const
+Color32 Bitmap::getPixel(int x, int y) const
 {
 	struct U32
 	{
@@ -326,7 +326,7 @@ Color32 Bitmap::GetPixel(int x, int y) const
 }
 
 //------------------------------------------------------------------------------
-size_t Bitmap::GetSerializeSize() const
+size_t Bitmap::getSerializeSize() const
 {
 	//return
 	//	sizeof(size_t) +
@@ -335,23 +335,23 @@ size_t Bitmap::GetSerializeSize() const
 	//	sizeof(m_pitch) +
 	//	sizeof(m_format) +
 	//	sizeof(m_upFlow);
-	return GetSerializeSize(RectI(0, 0, m_size));
+	return getSerializeSize(RectI(0, 0, m_size));
 }
 
 //------------------------------------------------------------------------------
-size_t Bitmap::GetSerializeSize(const RectI& rect) const
+size_t Bitmap::getSerializeSize(const RectI& rect) const
 {
 	RectI clipRect = rect;
-	clipRect.Clip(RectI(0, 0, m_size));
+	clipRect.clip(RectI(0, 0, m_size));
 	
 	return
-		GetPropertySerializeSize() +
+		getPropertySerializeSize() +
 		sizeof(size_t) +
-		GetPixelFormatByteCount(m_format, clipRect.getSize(), m_depth);
+		getPixelFormatByteCount(m_format, clipRect.getSize(), m_depth);
 }
 
 //------------------------------------------------------------------------------
-size_t Bitmap::GetPropertySerializeSize() const
+size_t Bitmap::getPropertySerializeSize() const
 {
 	return
 		sizeof(m_size) +
@@ -362,7 +362,7 @@ size_t Bitmap::GetPropertySerializeSize() const
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::Serialize(void* buffer)
+void Bitmap::serialize(void* buffer)
 {
 	//byte_t* b = (byte_t*)buffer;
 
@@ -383,14 +383,14 @@ void Bitmap::Serialize(void* buffer)
 
 	//*((bool*)b) = m_upFlow;
 	////b += sizeof(m_upFlow);
-	Serialize(buffer, RectI(0, 0, m_size));
+	serialize(buffer, RectI(0, 0, m_size));
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::Serialize(void* buffer, const RectI& rect)
+void Bitmap::serialize(void* buffer, const RectI& rect)
 {
 	RectI clipRect = rect;
-	clipRect.Clip(RectI(0, 0, m_size));
+	clipRect.clip(RectI(0, 0, m_size));
 	
 	byte_t* b = (byte_t*)buffer;
 
@@ -409,13 +409,13 @@ void Bitmap::Serialize(void* buffer, const RectI& rect)
 	*((bool*)b) = m_upFlow;
 	b += sizeof(m_upFlow);
 	
-	*((size_t*)b) = GetPixelFormatByteCount(m_format, clipRect.getSize(), m_depth);
+	*((size_t*)b) = getPixelFormatByteCount(m_format, clipRect.getSize(), m_depth);
 	b += sizeof(size_t);
 	
-	size_t pixelSize = GetPixelFormatByteCount(m_format);
+	size_t pixelSize = getPixelFormatByteCount(m_format);
 	size_t srcLineSize = pixelSize * m_size.width;
 	size_t dstLineSize = pixelSize * clipRect.width;
-	for (int y = clipRect.getTop(); y < clipRect.GetBottom(); ++y)
+	for (int y = clipRect.getTop(); y < clipRect.getBottom(); ++y)
 	{
 		const byte_t* srcLine = &(m_bitmapData.getConstData()[srcLineSize * y]);
 		byte_t* dstLine = &(b[dstLineSize * y]);
@@ -424,7 +424,7 @@ void Bitmap::Serialize(void* buffer, const RectI& rect)
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::SerializeProperty(void* buffer)
+void Bitmap::serializeProperty(void* buffer)
 {
 	byte_t* b = (byte_t*)buffer;
 
@@ -445,7 +445,7 @@ void Bitmap::SerializeProperty(void* buffer)
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::Deserialize(void* buffer, bool refMode)
+void Bitmap::deserialize(void* buffer, bool refMode)
 {
 	byte_t* b = (byte_t*)buffer;
 
@@ -480,7 +480,7 @@ void Bitmap::Deserialize(void* buffer, bool refMode)
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::DeserializePropertyAndRawData(const void* propData, void* rawData, size_t rawDataSize, bool refMode)
+void Bitmap::deserializePropertyAndRawData(const void* propData, void* rawData, size_t rawDataSize, bool refMode)
 {
 	const byte_t* b = (const byte_t*)propData;
 
@@ -507,7 +507,7 @@ void Bitmap::DeserializePropertyAndRawData(const void* propData, void* rawData, 
 }
 
 //------------------------------------------------------------------------------
-int Bitmap::GetPixelFormatByteCount(PixelFormat format)
+int Bitmap::getPixelFormatByteCount(PixelFormat format)
 {
 	const int table[] =
 	{
@@ -525,14 +525,14 @@ int Bitmap::GetPixelFormatByteCount(PixelFormat format)
 }
 
 //------------------------------------------------------------------------------
-int Bitmap::GetPixelFormatByteCount(PixelFormat format, const SizeI& size, int depth)
+int Bitmap::getPixelFormatByteCount(PixelFormat format, const SizeI& size, int depth)
 {
-	int c = GetPixelFormatByteCount(format);
+	int c = getPixelFormatByteCount(format);
 	return c * size.width * size.height * depth;
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::ConvertPixelFormat(
+void Bitmap::convertPixelFormat(
 	const byte_t* input, size_t inputSize, PixelFormat inputFormat,
 	byte_t* output, size_t outputSize, PixelFormat outputFormat)
 {
@@ -565,7 +565,7 @@ void Bitmap::ConvertPixelFormat(
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::FillAlpha(byte_t alpha)
+void Bitmap::fillAlpha(byte_t alpha)
 {
 	if (m_format == PixelFormat::R8G8B8A8 ||
 		m_format == PixelFormat::B8G8R8A8 ||
@@ -593,7 +593,7 @@ void Bitmap::FillAlpha(byte_t alpha)
 
 //------------------------------------------------------------------------------
 template<class TDestConverter, class TSrcConverter>
-void Bitmap::BitBltInternalTemplate(
+void Bitmap::bitBltInternalTemplate(
 	Bitmap* dest, const RectI& destRect,
 	const Bitmap* src, const RectI& srcRect,
 	ClColor mulColorRGBA, bool alphaBlend) throw()
@@ -605,26 +605,26 @@ void Bitmap::BitBltInternalTemplate(
 	{
 		for (int y = 0; y < srcRect.height; ++y)
 		{
-			dstBuf.SetLine(y);
-			srcBuf.SetLine(y);
+			dstBuf.setLine(y);
+			srcBuf.setLine(y);
 			for (int x = 0; x < srcRect.width; ++x)
 			{
-				ClColor src = srcBuf.GetPixel(x);
-				ClColor src_alpha = GetA(src);
+				ClColor src = srcBuf.getPixel(x);
+				ClColor src_alpha = getA(src);
 				if (src_alpha == 0) continue;     // フォントならコレでかなり高速化できるはず
 
 
-				uint32_t dest_color = dstBuf.GetPixel(x);
-				uint32_t dest_alpha = GetA(dest_color);
+				uint32_t dest_color = dstBuf.getPixel(x);
+				uint32_t dest_alpha = getA(dest_color);
 				uint32_t a, r, g, b;
 
 				a = src_alpha;
 
 				// まず、src と mul をまぜまぜ
-				r = (GetR(mulColorRGBA) * GetR(src)) >> 8;
-				g = (GetG(mulColorRGBA) * GetG(src)) >> 8;
-				b = (GetB(mulColorRGBA) * GetB(src)) >> 8;
-				a = (GetA(mulColorRGBA) * src_alpha) >> 8;
+				r = (getR(mulColorRGBA) * getR(src)) >> 8;
+				g = (getG(mulColorRGBA) * getG(src)) >> 8;
+				b = (getB(mulColorRGBA) * getB(src)) >> 8;
+				a = (getA(mulColorRGBA) * src_alpha) >> 8;
 
 				// photoshop 等のツール系の計算式ではやや時間がかかるため、
 				// DirectX 同様、dest のアルファは無視する方向で実装する。
@@ -635,13 +635,13 @@ void Bitmap::BitBltInternalTemplate(
 				// というわけで、dest_alpha == 0 なら src が 100% になるように細工している。
 				if (dest_alpha != 0)
 				{
-					r = ((GetR(dest_color) * (0xff - a)) >> 8) +
+					r = ((getR(dest_color) * (0xff - a)) >> 8) +
 						((r * a) >> 8);
 
-					g = ((GetG(dest_color) * (0xff - a)) >> 8) +
+					g = ((getG(dest_color) * (0xff - a)) >> 8) +
 						((g * a) >> 8);
 
-					b = ((GetB(dest_color) * (0xff - a)) >> 8) +
+					b = ((getB(dest_color) * (0xff - a)) >> 8) +
 						((b * a) >> 8);
 				}
 
@@ -652,7 +652,7 @@ void Bitmap::BitBltInternalTemplate(
 				a = (dest_alpha + a);
 				a = (a > 255) ? 255 : a;
 
-				dstBuf.SetPixel(x, RGBA(r, g, b, a));
+				dstBuf.setPixel(x, RGBA(r, g, b, a));
 			}
 		}
 	}
@@ -660,17 +660,17 @@ void Bitmap::BitBltInternalTemplate(
 	{
 		for (int y = 0; y < srcRect.height; ++y)
 		{
-			dstBuf.SetLine(y);
-			srcBuf.SetLine(y);
+			dstBuf.setLine(y);
+			srcBuf.setLine(y);
 			for (int x = 0; x < srcRect.width; ++x)
 			{
-				ClColor src = srcBuf.GetPixel(x);
+				ClColor src = srcBuf.getPixel(x);
 				ClColor c = RGBA(
-					(GetR(mulColorRGBA) * GetR(src)) >> 8,
-					(GetG(mulColorRGBA) * GetG(src)) >> 8,
-					(GetB(mulColorRGBA) * GetB(src)) >> 8,
-					(GetA(mulColorRGBA) * GetA(src)) >> 8);
-				dstBuf.SetPixel(x, c);
+					(getR(mulColorRGBA) * getR(src)) >> 8,
+					(getG(mulColorRGBA) * getG(src)) >> 8,
+					(getB(mulColorRGBA) * getB(src)) >> 8,
+					(getA(mulColorRGBA) * getA(src)) >> 8);
+				dstBuf.setPixel(x, c);
 			}
 		}
 	}
@@ -678,7 +678,7 @@ void Bitmap::BitBltInternalTemplate(
 
 //------------------------------------------------------------------------------
 template<class TDestConverter>
-void Bitmap::BitBltInternalTemplateHelper(
+void Bitmap::bitBltInternalTemplateHelper(
 	Bitmap* dest, const RectI& destRect,
 	const Bitmap* src, const RectI& srcRect,
 	ClColor mulColorRGBA, bool alphaBlend)
@@ -686,22 +686,22 @@ void Bitmap::BitBltInternalTemplateHelper(
 	switch (src->m_format)
 	{
 	case PixelFormat::A1:
-		BitBltInternalTemplate<TDestConverter, ConverterA1>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+		bitBltInternalTemplate<TDestConverter, ConverterA1>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
 		return;
 	case PixelFormat::A8:
-		BitBltInternalTemplate<TDestConverter, ConverterA8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+		bitBltInternalTemplate<TDestConverter, ConverterA8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
 		return;
 	case PixelFormat::R8G8B8A8:
-		BitBltInternalTemplate<TDestConverter, ConverterR8G8B8A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+		bitBltInternalTemplate<TDestConverter, ConverterR8G8B8A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
 		return;
 	case PixelFormat::R8G8B8X8:
-		BitBltInternalTemplate<TDestConverter, ConverterR8G8B8X8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+		bitBltInternalTemplate<TDestConverter, ConverterR8G8B8X8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
 		return;
 	case PixelFormat::B8G8R8A8:
-		BitBltInternalTemplate<TDestConverter, ConverterB8G8R8A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+		bitBltInternalTemplate<TDestConverter, ConverterB8G8R8A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
 		return;
 	case PixelFormat::B8G8R8X8:
-		BitBltInternalTemplate<TDestConverter, ConverterB8G8R8X8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+		bitBltInternalTemplate<TDestConverter, ConverterB8G8R8X8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
 		return;
 	//case PixelFormat_R32G32B32A32_Float:
 	//	return;
@@ -710,7 +710,7 @@ void Bitmap::BitBltInternalTemplateHelper(
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::BitBltInternal(
+void Bitmap::bitBltInternal(
 	Bitmap* dest, const RectI& destRect_,
 	const Bitmap* src, const RectI& srcRect_,
 	ClColor mulColorRGBA, bool alphaBlend)
@@ -719,30 +719,30 @@ void Bitmap::BitBltInternal(
 	// (拡縮はしない。srcRect が小さければ、余分な部分は何もしない)
 	RectI destRect = destRect_;
 	RectI srcRect = srcRect_;
-	destRect.Clip(RectI(0, 0, dest->m_size));
-	srcRect.Clip(RectI(0, 0, src->m_size));
+	destRect.clip(RectI(0, 0, dest->m_size));
+	srcRect.clip(RectI(0, 0, src->m_size));
 	srcRect.width = std::min(srcRect.width, destRect.width);
 	srcRect.height = std::min(srcRect.height, destRect.height);
 
 	switch (dest->m_format)
 	{
 	case PixelFormat::A1:
-		BitBltInternalTemplateHelper<ConverterA1>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+		bitBltInternalTemplateHelper<ConverterA1>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
 		return;
 	case PixelFormat::A8:
-		BitBltInternalTemplateHelper<ConverterA8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+		bitBltInternalTemplateHelper<ConverterA8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
 		return;
 	case PixelFormat::R8G8B8A8:
-		BitBltInternalTemplateHelper<ConverterR8G8B8A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+		bitBltInternalTemplateHelper<ConverterR8G8B8A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
 		return;
 	case PixelFormat::R8G8B8X8:
-		BitBltInternalTemplateHelper<ConverterR8G8B8X8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+		bitBltInternalTemplateHelper<ConverterR8G8B8X8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
 		return;
 	case PixelFormat::B8G8R8A8:
-		BitBltInternalTemplateHelper<ConverterB8G8R8A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+		bitBltInternalTemplateHelper<ConverterB8G8R8A8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
 		return;
 	case PixelFormat::B8G8R8X8:
-		BitBltInternalTemplateHelper<ConverterB8G8R8X8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
+		bitBltInternalTemplateHelper<ConverterB8G8R8X8>(dest, destRect, src, srcRect, mulColorRGBA, alphaBlend);
 		return;
 	//case PixelFormat_R32G32B32A32_Float:
 	//	return;

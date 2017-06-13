@@ -34,16 +34,16 @@ public:
 		m_hashDirty = true;
 	}
 
-	void Reset()
+	void reset()
 	{
-		SetShader(nullptr);
-		SetOpacity(1.0f);
-		SetColorScale(Color(1, 1, 1, 1));
-		SetBlendColor(Color(0, 0, 0, 0));
-		SetTone(ToneF(0, 0, 0, 0));
+		setShader(nullptr);
+		setOpacity(1.0f);
+		setColorScale(Color(1, 1, 1, 1));
+		setBlendColor(Color(0, 0, 0, 0));
+		setTone(ToneF(0, 0, 0, 0));
 	}
 
-	void SetShader(Shader* value)
+	void setShader(Shader* value)
 	{
 		if (m_shader != value)
 		{
@@ -52,12 +52,12 @@ public:
 		}
 	}
 
-	Shader* GetShader() const
+	Shader* getShader() const
 	{
 		return m_shader;
 	}
 
-	void SetOpacity(float value)
+	void setOpacity(float value)
 	{
 		if (m_opacity != value)
 		{
@@ -66,12 +66,12 @@ public:
 		}
 	}
 
-	float GetOpacity() const
+	float getOpacity() const
 	{
 		return m_opacity;
 	}
 
-	void SetColorScale(const Color& value)
+	void setColorScale(const Color& value)
 	{
 		if (m_colorScale != value)
 		{
@@ -80,12 +80,12 @@ public:
 		}
 	}
 
-	const Color& GetColorScale() const
+	const Color& getColorScale() const
 	{
 		return m_colorScale;
 	}
 
-	void SetBlendColor(const Color& value)
+	void setBlendColor(const Color& value)
 	{
 		if (m_blendColor != value)
 		{
@@ -94,12 +94,12 @@ public:
 		}
 	}
 
-	const Color& GetBlendColor() const
+	const Color& getBlendColor() const
 	{
 		return m_blendColor;
 	}
 
-	void SetTone(const ToneF& value)
+	void setTone(const ToneF& value)
 	{
 		if (m_tone != value)
 		{
@@ -108,7 +108,7 @@ public:
 		}
 	}
 
-	const ToneF& GetTone() const
+	const ToneF& getTone() const
 	{
 		return m_tone;
 	}
@@ -136,9 +136,9 @@ public:
 	{
 		*outData = local;
 		outData->m_opacity *= parent.m_opacity;
-		outData->m_colorScale.MultiplyClamp(parent.m_colorScale);
-		outData->m_blendColor.AddClamp(parent.m_blendColor);
-		outData->m_tone.AddClamp(parent.m_tone);
+		outData->m_colorScale.multiplyClamp(parent.m_colorScale);
+		outData->m_blendColor.addClamp(parent.m_blendColor);
+		outData->m_tone.addClamp(parent.m_tone);
 		outData->m_hashDirty = true;
 	}
 
@@ -173,16 +173,16 @@ public:
 	static MaterialPtr create();
 
 public:
-	void SetShader(Shader* shader);
-	Shader* GetShader() const;
+	void setShader(Shader* shader);
+	Shader* getShader() const;
 	
-	void SetIntParameter(const StringRef& name, int value);
-	void SetFloatParameter(const StringRef& name, float value);
-	void SetVectorParameter(const StringRef& name, const Vector4& value);
-	void SetMatrixParameter(const StringRef& name, const Matrix& value);
-	void SetTextureParameter(const StringRef& name, Texture* value);
-	void SetColorParameter(const StringRef& name, const Color& value);
-	void SetColorParameter(const StringRef& name, float r, float g, float b, float a);
+	void setIntParameter(const StringRef& name, int value);
+	void setFloatParameter(const StringRef& name, float value);
+	void setVectorParameter(const StringRef& name, const Vector4& value);
+	void setMatrixParameter(const StringRef& name, const Matrix& value);
+	void setTextureParameter(const StringRef& name, Texture* value);
+	void setColorParameter(const StringRef& name, const Color& value);
+	void setColorParameter(const StringRef& name, float r, float g, float b, float a);
 
 	//--------------------------------------------------------------------------
 	/** @name RenderState */
@@ -196,32 +196,32 @@ private:
 
 public:
 
-	void SetBlendMode(Nullable<BlendMode> mode);
-	Nullable<BlendMode> GetBlendMode() const { return blendMode; }
+	void setBlendMode(Nullable<BlendMode> mode);
+	Nullable<BlendMode> getBlendMode() const { return blendMode; }
 
-	void SetCullingMode(Nullable<CullingMode> mode);
-	Nullable<CullingMode> GetCullingMode() const { return cullingMode; }
+	void setCullingMode(Nullable<CullingMode> mode);
+	Nullable<CullingMode> getCullingMode() const { return cullingMode; }
 
-	void SetDepthTestEnabled(Nullable<bool> enabled);
-	Nullable<bool> IsDepthTestEnabled() const { return depthTestEnabled; }
+	void setDepthTestEnabled(Nullable<bool> enabled);
+	Nullable<bool> isDepthTestEnabled() const { return depthTestEnabled; }
 
-	void SetDepthWriteEnabled(Nullable<bool> enabled);
-	Nullable<bool> IsDepthWriteEnabled() const { return depthWriteEnabled; }
+	void setDepthWriteEnabled(Nullable<bool> enabled);
+	Nullable<bool> isDepthWriteEnabled() const { return depthWriteEnabled; }
 
 
 LN_INTERNAL_ACCESS:
 	Material();
 	virtual ~Material();
 	void initialize();
-	void Reset();
+	void reset();
 
-	void SetBuiltinIntParameter(const StringRef& name, int value);
-	void SetBuiltinFloatParameter(const StringRef& name, float value);
-	void SetBuiltinVectorParameter(const StringRef& name, const Vector4& value);
-	void SetBuiltinMatrixParameter(const StringRef& name, const Matrix& value);
-	void SetBuiltinTextureParameter(const StringRef& name, Texture* value);
-	void SetBuiltinColorParameter(const StringRef& name, const Color& value);
-	void SetBuiltinColorParameter(const StringRef& name, float r, float g, float b, float a);
+	void setBuiltinIntParameter(const StringRef& name, int value);
+	void setBuiltinFloatParameter(const StringRef& name, float value);
+	void setBuiltinVectorParameter(const StringRef& name, const Vector4& value);
+	void setBuiltinMatrixParameter(const StringRef& name, const Matrix& value);
+	void setBuiltinTextureParameter(const StringRef& name, Texture* value);
+	void setBuiltinColorParameter(const StringRef& name, const Color& value);
+	void setBuiltinColorParameter(const StringRef& name, float r, float g, float b, float a);
 
 LN_INTERNAL_ACCESS:
 	//using ShaderValuePtr = std::shared_ptr<ShaderValue>;
@@ -234,7 +234,7 @@ LN_INTERNAL_ACCESS:
 
 	//const List<ValuePair>& GetLinkedVariableList() { return m_linkedVariableList; }
 
-	RefPtr<Material> CopyShared() const;
+	RefPtr<Material> copyShared() const;
 
 	//void ResolveCombinedMaterial();
 	//detail::CombinedMaterial* GetCombinedMaterial() const;
@@ -242,26 +242,26 @@ LN_INTERNAL_ACCESS:
 public:	// TODO:
 
 	// TODO: 他の Builtin パラーメータを追い出したのでこれだけになってしまった。普通のメンバ変数でいいのでは？
-	void SetMaterialTexture(Texture* v);
-	Texture* GetMaterialTexture(Texture* defaultValue) const;
+	void setMaterialTexture(Texture* v);
+	Texture* getMaterialTexture(Texture* defaultValue) const;
 
-	//void SetOpacity(float v);
-	//float GetOpacity() const;
+	//void setOpacity(float v);
+	//float getOpacity() const;
 
-	//void SetColorScale(const Color& v);
-	//Color GetColorScale() const;
+	//void setColorScale(const Color& v);
+	//Color getColorScale() const;
 
-	//void SetBlendColor(const Color& v);
-	//Color GetBlendColor() const;
+	//void setBlendColor(const Color& v);
+	//Color getBlendColor() const;
 
-	//void SetTone(const ToneF& v);
-	//ToneF GetTone() const;
+	//void setTone(const ToneF& v);
+	//ToneF getTone() const;
 
-	//Matrix GetUVTransform() const { /*auto* v = FindShaderValueConst(_T("UVTransform")); return (v) ? v->GetMatrix() : */ return Matrix::Identity; }
+	//Matrix GetUVTransform() const { /*auto* v = FindShaderValueConst(_T("UVTransform")); return (v) ? v->getMatrix() : */ return Matrix::Identity; }
 
-	//Color GetColor(const StringRef& name, const Color& defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? Color(v->GetVector()) : defaultValue; }
+	//Color getColor(const StringRef& name, const Color& defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? Color(v->getVector()) : defaultValue; }
 	//float GetFloat(const StringRef& name, float defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? v->GetFloat() : defaultValue; }
-	//Texture* GetTexture(const StringRef& name, Texture* defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? v->GetManagedTexture() : defaultValue; }
+	//Texture* getTexture(const StringRef& name, Texture* defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? v->getManagedTexture() : defaultValue; }
 	//int GetInt(const StringRef& name, int defaultValue) const { auto* v = FindShaderValueConst(name); return (v) ? v->GetInt() : defaultValue; }
 
 
@@ -276,7 +276,7 @@ private:
 	//ShaderValue* FindShaderValue(const StringRef& name);
 	//ShaderValue* FindShaderValueConst(const StringRef& name) const;
 
-	static void OnRenderStateChanged(Object* obj);
+	static void onRenderStateChanged(Object* obj);
 	
 
 	std::unordered_map<uint32_t, ShaderValue>	m_userValueMap;
@@ -289,16 +289,16 @@ LN_INTERNAL_ACCESS:
 	uint32_t							m_hashCode;
 
 
-	const std::unordered_map<uint32_t, ShaderValue>& GetUserValueMap() const { return m_userValueMap; }
-	ShaderValue* FindAndCreateUserShaderValue(uint32_t hashKey);
-	const ShaderValue* FindUserShaderValueConst(uint32_t hashKey) const;
-	//const Color& GetColor(uint32_t hashKey, const Color& defaultValue) const { auto* v = FindUserShaderValueConst(hashKey); return (v) ? static_cast<const Color&>(v->GetVector()) : defaultValue; }
-	//float GetFloat(uint32_t hashKey, float defaultValue) const { auto* v = FindUserShaderValueConst(hashKey); return (v) ? v->GetFloat() : defaultValue; }
-	//Texture* GetTexture(uint32_t hashKey, Texture* defaultValue) const { auto* v = FindUserShaderValueConst(hashKey); return (v) ? v->GetManagedTexture() : defaultValue; }
+	const std::unordered_map<uint32_t, ShaderValue>& getUserValueMap() const { return m_userValueMap; }
+	ShaderValue* findAndCreateUserShaderValue(uint32_t hashKey);
+	const ShaderValue* findUserShaderValueConst(uint32_t hashKey) const;
+	//const Color& getColor(uint32_t hashKey, const Color& defaultValue) const { auto* v = findUserShaderValueConst(hashKey); return (v) ? static_cast<const Color&>(v->getVector()) : defaultValue; }
+	//float GetFloat(uint32_t hashKey, float defaultValue) const { auto* v = findUserShaderValueConst(hashKey); return (v) ? v->GetFloat() : defaultValue; }
+	//Texture* getTexture(uint32_t hashKey, Texture* defaultValue) const { auto* v = findUserShaderValueConst(hashKey); return (v) ? v->getManagedTexture() : defaultValue; }
 	
-	const Color& GetBuiltinColor(uint32_t hashKey, const Color& defaultValue) const { auto itr = m_builtinValueMap.find(hashKey); return (itr != m_builtinValueMap.end()) ? static_cast<const Color&>(itr->second.GetVector()) : defaultValue; }
-	float GetBuiltinFloat(uint32_t hashKey, float defaultValue) const { auto itr = m_builtinValueMap.find(hashKey); return (itr != m_builtinValueMap.end()) ? itr->second.getFloat() : defaultValue; }
-	Texture* GetBuiltinTexture(uint32_t hashKey, Texture* defaultValue) const { auto itr = m_builtinValueMap.find(hashKey); return (itr != m_builtinValueMap.end()) ? itr->second.GetManagedTexture() : defaultValue; }
+	const Color& getBuiltinColor(uint32_t hashKey, const Color& defaultValue) const { auto itr = m_builtinValueMap.find(hashKey); return (itr != m_builtinValueMap.end()) ? static_cast<const Color&>(itr->second.getVector()) : defaultValue; }
+	float getBuiltinFloat(uint32_t hashKey, float defaultValue) const { auto itr = m_builtinValueMap.find(hashKey); return (itr != m_builtinValueMap.end()) ? itr->second.getFloat() : defaultValue; }
+	Texture* getBuiltinTexture(uint32_t hashKey, Texture* defaultValue) const { auto itr = m_builtinValueMap.find(hashKey); return (itr != m_builtinValueMap.end()) ? itr->second.getManagedTexture() : defaultValue; }
 
 	
 	uint32_t getHashCode();
@@ -328,11 +328,11 @@ public:
 	static DiffuseMaterialPtr create();
 
 public:
-	void SetDiffuse(const Color& value);
-	void SetAmbient(const Color& value);
-	void SetSpecular(const Color& value);
-	void SetEmissive(const Color& value);
-	void SetSpecularPower(float value);
+	void setDiffuse(const Color& value);
+	void setAmbient(const Color& value);
+	void setSpecular(const Color& value);
+	void setEmissive(const Color& value);
+	void setSpecularPower(float value);
 
 LN_CONSTRUCT_ACCESS:
 	DiffuseMaterial();
@@ -368,13 +368,13 @@ public:
 	Nullable<bool>			m_depthWriteEnabled;
 
 	void combine(Material* owner, Material* ownerBase, const BuiltinEffectData& builtinEffectData);
-	void ApplyUserShaderValeues(Shader* targetShader);
+	void applyUserShaderValeues(Shader* targetShader);
 
-	uint32_t GetSourceHashCode() const { return m_lastSourceHashCode; }
+	uint32_t getSourceHashCode() const { return m_lastSourceHashCode; }
 
 private:
-	void CopyUserValueTable(Material* source);
-	void MergeUserValueTable(Material* source);
+	void copyUserValueTable(Material* source);
+	void mergeUserValueTable(Material* source);
 
 	struct ValuePair
 	{

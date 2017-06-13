@@ -20,20 +20,20 @@ AnimationCurve::~AnimationCurve()
 }
 
 //------------------------------------------------------------------------------
-void AnimationCurve::SetTime(double time)
+void AnimationCurve::getTime(double time)
 {
 	if (m_wrapMode == WrapMode_Once)
 	{
-		UpdateValue(time);
+		updateValue(time);
 	}
 	else if (m_wrapMode == WrapMode_Loop) 
 	{
-		double lastTime = GetLastFrameTime();
+		double lastTime = getLastFrameTime();
 		if (time > lastTime)
 		{
 			time = fmod(time, lastTime);
 		}
-		UpdateValue(time);
+		updateValue(time);
 	}
 	else
 	{
@@ -98,7 +98,7 @@ FloatAnimationCurve::~FloatAnimationCurve()
 }
 
 //------------------------------------------------------------------------------
-void FloatAnimationCurve::AddKeyFrame(const FloatKeyFrame& keyFrame)
+void FloatAnimationCurve::addKeyFrame(const FloatKeyFrame& keyFrame)
 {
 	// そのまま追加できる
 	if (m_keyFrameList.isEmpty() || m_keyFrameList.getLast().FrameTime <= keyFrame.FrameTime)
@@ -123,13 +123,13 @@ void FloatAnimationCurve::AddKeyFrame(const FloatKeyFrame& keyFrame)
 }
 
 //------------------------------------------------------------------------------
-void FloatAnimationCurve::AddKeyFrame(double frame_pos, float value, InterpolationMode mode)
+void FloatAnimationCurve::addKeyFrame(double frame_pos, float value, InterpolationMode mode)
 {
 	FloatKeyFrame key;
 	key.FrameTime = frame_pos;
 	key.Value = value;
 	key.Mode = mode;
-	AddKeyFrame(key);
+	addKeyFrame(key);
 }
 
 static int _cmpKey(const void* a_, const void* b_)
@@ -146,7 +146,7 @@ static int _cmpKey(const void* a_, const void* b_)
 }
 
 //------------------------------------------------------------------------------
-void FloatAnimationCurve::UpdateValue(double time)
+void FloatAnimationCurve::updateValue(double time)
 {
 	if (!m_keyFrameList.isEmpty())
 	{
@@ -236,7 +236,7 @@ void FloatAnimationCurve::UpdateValue(double time)
 }
 
 //------------------------------------------------------------------------------
-double FloatAnimationCurve::GetLastFrameTime() const
+double FloatAnimationCurve::getLastFrameTime() const
 {
 	if (m_keyFrameList.isEmpty()) return 0;
 	return m_keyFrameList.getLast().FrameTime;
@@ -270,7 +270,7 @@ double FloatAnimationCurve::GetLastFrameTime() const
 
 		for (int i = 1; i < YVAL_DIV_NUM; i++)
 		{
-			m_yValue[i] = GetYVal(fAddX * i, fPointX1, fPointY1, fPointX2, fPointY2);
+			m_yValue[i] = getYVal(fAddX * i, fPointX1, fPointY1, fPointX2, fPointY2);
 		}
 
 		m_isLinear = false;
@@ -278,7 +278,7 @@ double FloatAnimationCurve::GetLastFrameTime() const
 }
 
 //------------------------------------------------------------------------------
-	float VMDBezierTable::GetInterValue(float fX)
+	float VMDBezierTable::getInterValue(float fX)
 {
 	if (m_isLinear)	return fX;	// 線形補間
 
@@ -293,7 +293,7 @@ double FloatAnimationCurve::GetLastFrameTime() const
 }
 
 //------------------------------------------------------------------------------
-float VMDBezierTable::GetYVal(float fX, float fX1, float fY1, float fX2, float fY2)
+float VMDBezierTable::getYVal(float fX, float fX1, float fY1, float fX2, float fY2)
 {
 	float	fT = fX;
 	float	fInvT = 1.0f - fT;
@@ -332,7 +332,7 @@ VMDBezierAttitudeTransformAnimation::~VMDBezierAttitudeTransformAnimation()
 }
 
 //------------------------------------------------------------------------------
-void VMDBezierAttitudeTransformAnimation::AddKeyFrame(
+void VMDBezierAttitudeTransformAnimation::addKeyFrame(
 	double framePos, const Vector3& pos, const Quaternion& rot,
 	char* interpolation_x,
 	char* interpolation_y,
@@ -345,7 +345,7 @@ void VMDBezierAttitudeTransformAnimation::AddKeyFrame(
 	key.Time = framePos;
 	key.Position = pos;
 	key.Rotation = rot;
-	key.Rotation.Normalize();
+	key.Rotation.normalize();
 
 	key.PosXInterBezier.initialize(interpolation_x[0], interpolation_x[4], interpolation_x[8], interpolation_x[12]);
 	key.PosYInterBezier.initialize(interpolation_y[0], interpolation_y[4], interpolation_y[8], interpolation_y[12]);
@@ -354,7 +354,7 @@ void VMDBezierAttitudeTransformAnimation::AddKeyFrame(
 }
 
 //------------------------------------------------------------------------------
-void VMDBezierAttitudeTransformAnimation::SortKeyFrame()
+void VMDBezierAttitudeTransformAnimation::sortKeyFrame()
 {
 	struct
 	{
@@ -369,7 +369,7 @@ void VMDBezierAttitudeTransformAnimation::SortKeyFrame()
 }
 
 //------------------------------------------------------------------------------
-void VMDBezierAttitudeTransformAnimation::UpdateValue(double time)
+void VMDBezierAttitudeTransformAnimation::updateValue(double time)
 {
 	// フレーム数 1 個
 	if (m_keyFrameList.getCount() == 1)
@@ -423,21 +423,21 @@ void VMDBezierAttitudeTransformAnimation::UpdateValue(double time)
 	float rate = static_cast< float >((time - t0) / (t1 - t0));
 	float inter;
 
-	inter = k1.PosXInterBezier.GetInterValue(rate);
+	inter = k1.PosXInterBezier.getInterValue(rate);
 	m_transform.translation.x = k0.Position.x * (1.0f - inter) + k1.Position.x * inter;
 
-	inter = k1.PosYInterBezier.GetInterValue(rate);
+	inter = k1.PosYInterBezier.getInterValue(rate);
 	m_transform.translation.y = k0.Position.y * (1.0f - inter) + k1.Position.y * inter;
 
-	inter = k1.PosZInterBezier.GetInterValue(rate);
+	inter = k1.PosZInterBezier.getInterValue(rate);
 	m_transform.translation.z = k0.Position.z * (1.0f - inter) + k1.Position.z * inter;
 
-	inter = k1.RotInterBezier.GetInterValue(rate);
-	m_transform.rotation = Quaternion::Slerp(k0.Rotation, k1.Rotation, inter);
+	inter = k1.RotInterBezier.getInterValue(rate);
+	m_transform.rotation = Quaternion::slerp(k0.Rotation, k1.Rotation, inter);
 }
 
 //------------------------------------------------------------------------------
-double VMDBezierAttitudeTransformAnimation::GetLastFrameTime() const
+double VMDBezierAttitudeTransformAnimation::getLastFrameTime() const
 {
 	if (m_keyFrameList.isEmpty()) return 0;
 	return m_keyFrameList.getLast().Time;
@@ -456,7 +456,7 @@ VMDBezierSQTTransformAnimation2::~VMDBezierSQTTransformAnimation2()
 {
 
 }
-void VMDBezierSQTTransformAnimation2::SortKeyFrame()
+void VMDBezierSQTTransformAnimation2::sortKeyFrame()
 {
 	struct
 	{
@@ -469,7 +469,7 @@ void VMDBezierSQTTransformAnimation2::SortKeyFrame()
 	//std::stable_sort(m_keyFrameList.begin(), m_keyFrameList.end(), compare);
 	std::sort(m_keyFrameList.begin(), m_keyFrameList.end(), compare);
 }
-void VMDBezierSQTTransformAnimation2::UpdateValue(double time)
+void VMDBezierSQTTransformAnimation2::updateValue(double time)
 {
 	// フレーム数 1 個
 	if (m_keyFrameList.getCount() == 1)
@@ -520,7 +520,7 @@ void VMDBezierSQTTransformAnimation2::UpdateValue(double time)
 		(float)(time - k0.Time) / (float)(k1.Time - k0.Time); // 進行度
 	
 	float ss[4];
-	for (int i = 0; i < 4; ++i) ss[i] = k0.Curves[i].Evaluate(s);
+	for (int i = 0; i < 4; ++i) ss[i] = k0.Curves[i].evaluate(s);
 
 	// ボーンを更新する
 	Vector3 progress(ss[0], ss[1], ss[2]);
@@ -530,12 +530,12 @@ void VMDBezierSQTTransformAnimation2::UpdateValue(double time)
 			Math::lerp(k0.Position.z, k1.Position.z, progress.z));
 	
 	m_transform.rotation =
-		Quaternion::Slerp(k0.Rotation, k1.Rotation, ss[3]);
+		Quaternion::slerp(k0.Rotation, k1.Rotation, ss[3]);
 		//CGHelper.ComplementRotateQuaternion(k0, k1, ss[3]);
 }
 
 //------------------------------------------------------------------------------
-double VMDBezierSQTTransformAnimation2::GetLastFrameTime() const
+double VMDBezierSQTTransformAnimation2::getLastFrameTime() const
 {
 	if (m_keyFrameList.isEmpty()) return 0;
 	return m_keyFrameList.getLast().Time;

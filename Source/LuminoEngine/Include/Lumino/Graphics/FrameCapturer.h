@@ -16,10 +16,10 @@ public:
 	static FrameCapturerPtr create();
 
 public:
-	void SetCapturerTarget(RenderTargetTexture* renderTarget);
-	void StartRecording();
-	void StopRecording();
-	void Record();
+	void setCapturerTarget(RenderTargetTexture* renderTarget);
+	void startRecording();
+	void stopRecording();
+	void record();
 
 LN_INTERNAL_ACCESS:
 	FrameCapturer();

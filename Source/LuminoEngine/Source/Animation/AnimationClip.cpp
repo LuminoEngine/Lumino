@@ -18,15 +18,15 @@ AnimationClipPtr AnimationClip::create(const StringRef& filePath)
 	loader.load(stream);
 
 	auto ptr = AnimationClipPtr::makeRef();
-	for (VmdLoader::BoneAnimation& anim : loader.GetBoneAnimationList())
+	for (VmdLoader::BoneAnimation& anim : loader.getBoneAnimationList())
 	{
-		ptr->AddAnimationCurve(anim.TargetBoneName, anim.AnimationCurve);
+		ptr->addAnimationCurve(anim.TargetBoneName, anim.AnimationCurve);
 	}
-	for (VmdLoader::FaceAnimation& anim : loader.GetFaceAnimationList())
+	for (VmdLoader::FaceAnimation& anim : loader.getFaceAnimationList())
 	{
-		ptr->AddAnimationCurve(anim.TargetFaceName, anim.AnimationCurve);
+		ptr->addAnimationCurve(anim.TargetFaceName, anim.AnimationCurve);
 	}
-	ptr->m_lastFrameTime = loader.GetLastFramePosition();
+	ptr->m_lastFrameTime = loader.getLastFramePosition();
 	return ptr;
 }
 
@@ -48,7 +48,7 @@ AnimationClip::~AnimationClip()
 }
 
 //------------------------------------------------------------------------------
-void AnimationClip::AddAnimationCurve(const String& relativePath, AnimationCurve* curve)
+void AnimationClip::addAnimationCurve(const String& relativePath, AnimationCurve* curve)
 {
 	AnimationCurveEntry e;
 	e.RelativePath = relativePath;
@@ -58,7 +58,7 @@ void AnimationClip::AddAnimationCurve(const String& relativePath, AnimationCurve
 }
 
 //------------------------------------------------------------------------------
-//void AnimationClip::SetTime(double oldTime, double newTime)
+//void AnimationClip::getTime(double oldTime, double newTime)
 //{
 //}
 

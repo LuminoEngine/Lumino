@@ -48,18 +48,18 @@ SceneGraph::~SceneGraph()
 }
 
 //------------------------------------------------------------------------------
-void SceneGraph::CreateCore(SceneGraphManager* manager)
+void SceneGraph::createCore(SceneGraphManager* manager)
 {
 	LN_REFOBJ_SET(m_manager, manager);
 }
 
 //------------------------------------------------------------------------------
-void SceneGraph::BeginUpdateFrame()
+void SceneGraph::reginUpdateFrame()
 {
 }
 
 //------------------------------------------------------------------------------
-void SceneGraph::UpdateFrame(float deltaTime)
+void SceneGraph::updateFrame(float deltaTime)
 {
 	m_elapsedTime = deltaTime;
 	m_time += deltaTime;
@@ -67,7 +67,7 @@ void SceneGraph::UpdateFrame(float deltaTime)
 
 
 ////------------------------------------------------------------------------------
-//DrawList* SceneGraph::GetRenderer() const
+//DrawList* SceneGraph::getRenderer() const
 //{
 //	return m_renderer;
 //}
@@ -88,7 +88,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SceneGraph2D, SceneGraph);
 SceneGraph2DPtr SceneGraph2D::create()
 {
 	auto ptr = SceneGraph2DPtr::makeRef();
-	ptr->CreateCore(SceneGraphManager::Instance);
+	ptr->createCore(SceneGraphManager::Instance);
 	return ptr;
 }
 
@@ -111,9 +111,9 @@ SceneGraph2D::~SceneGraph2D()
 }
 
 //------------------------------------------------------------------------------
-void SceneGraph2D::CreateCore(SceneGraphManager* manager)
+void SceneGraph2D::createCore(SceneGraphManager* manager)
 {
-	SceneGraph::CreateCore(manager);
+	SceneGraph::createCore(manager);
 
 	m_defaultRoot = LN_NEW SceneNode();
 	m_defaultRoot->initialize();
@@ -129,9 +129,9 @@ void SceneGraph2D::CreateCore(SceneGraphManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void SceneGraph2D::UpdateFrame(float elapsedTime)
+void SceneGraph2D::updateFrame(float elapsedTime)
 {
-	SceneGraph::UpdateFrame(elapsedTime);
+	SceneGraph::updateFrame(elapsedTime);
 	m_defaultRoot->UpdateFrameHierarchy(nullptr, elapsedTime);
 }
 
@@ -157,9 +157,9 @@ SceneGraph3D::~SceneGraph3D()
 }
 
 //------------------------------------------------------------------------------
-void SceneGraph3D::CreateCore(SceneGraphManager* manager)
+void SceneGraph3D::createCore(SceneGraphManager* manager)
 {
-	SceneGraph::CreateCore(manager);
+	SceneGraph::createCore(manager);
 
 	m_defaultRoot = LN_NEW SceneNode();
 	m_defaultRoot->initialize();
@@ -177,9 +177,9 @@ void SceneGraph3D::CreateCore(SceneGraphManager* manager)
 //LightComponent* SceneGraph3D::GetMainLight() const { return m_defaultLight; }
 
 //------------------------------------------------------------------------------
-void SceneGraph3D::UpdateFrame(float elapsedTime)
+void SceneGraph3D::updateFrame(float elapsedTime)
 {
-	SceneGraph::UpdateFrame(elapsedTime);
+	SceneGraph::updateFrame(elapsedTime);
 	m_defaultRoot->UpdateFrameHierarchy(nullptr, elapsedTime);
 }
 

@@ -31,11 +31,11 @@ public:
 		return Vector3(dx, 0, dz);
 	}
 
-	static void Transform(Vertex* begin, Vertex* end, const Matrix& transform)
+	static void transform(Vertex* begin, Vertex* end, const Matrix& transform)
 	{
 		for (Vertex* v = begin; v < end; v++)
 		{
-			v->position.TransformCoord(transform);
+			v->position.transformCoord(transform);
 		}
 	}
 };
@@ -72,7 +72,7 @@ public:
 		return 4;
 	}
 
-	int GetIndexCount() const
+	int getIndexCount() const
 	{
 		return 6;
 	}
@@ -114,7 +114,7 @@ public:
 	{}
 
 	int GetVertexCount() const { return 4; }
-	int GetIndexCount() const { return 6; }
+	int getIndexCount() const { return 6; }
 
 	void Generate(Vertex* outVertices, uint16_t* outIndices)
 	{
@@ -190,7 +190,7 @@ public:
 	}
 
 	int GetVertexCount() const { return (m_sliceX + 1) * (m_sliceZ + 1); }
-	int GetIndexCount() const { return (m_sliceX * m_sliceZ * 2) * 3; }
+	int getIndexCount() const { return (m_sliceX * m_sliceZ * 2) * 3; }
 
 	void Generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
 	{
@@ -251,7 +251,7 @@ public:
 		}
 
 		if (!m_transform.isIdentity())
-			MeshHelper::Transform(outVertices, v, m_transform);
+			MeshHelper::transform(outVertices, v, m_transform);
 	}
 
 private:
@@ -273,7 +273,7 @@ public:
 		return 8;
 	}
 
-	int GetIndexCount() const
+	int getIndexCount() const
 	{
 		return 36;
 	}
@@ -351,7 +351,7 @@ public:
 		return 24;
 	}
 
-	int GetIndexCount() const
+	int getIndexCount() const
 	{
 		return 36;
 	}
@@ -423,7 +423,7 @@ public:
 		SetI(i, beginVertexIndex + 20);
 
 		if (!m_transform.isIdentity())
-			MeshHelper::Transform(outVertices, v, m_transform);
+			MeshHelper::transform(outVertices, v, m_transform);
 	}
 
 private:
@@ -462,7 +462,7 @@ public:
 		//return 2 + m_slices * (m_stacks - 1);	// (top と bottom の 2 点) + リングの頂点数 * 重ねる数
 	}
 
-	int GetIndexCount() const
+	int getIndexCount() const
 	{
 		return m_slices * m_stacks * 6;
 		//return 2 * m_slices + (m_stacks - 2) * (2 * m_slices);
@@ -556,7 +556,7 @@ public:
 		}
 
 		if (!m_transform.isIdentity())
-			MeshHelper::Transform(outVertices, v, m_transform);
+			MeshHelper::transform(outVertices, v, m_transform);
 	}
 
 	static uint16_t vertex_index(int slices, int slice, int stack)
@@ -618,7 +618,7 @@ public:
 		return (m_slices + 1) * (m_stacks + 3);
 	}
 
-	int GetIndexCount() const
+	int getIndexCount() const
 	{
 		return m_slices * (m_stacks + 2) * 6;
 	}
@@ -691,7 +691,7 @@ public:
 		}
 
 		if (!m_transform.isIdentity())
-			MeshHelper::Transform(outVertices, vb, m_transform);
+			MeshHelper::transform(outVertices, vb, m_transform);
 	}
 
 	static void AddVertex(Vertex** vb, const Vertex& v)
@@ -733,7 +733,7 @@ public:
 		return (m_slices + 1) * 3;
 	}
 
-	int GetIndexCount() const
+	int getIndexCount() const
 	{
 		return m_slices * 3 * 6;
 	}
@@ -796,7 +796,7 @@ public:
 		}
 
 		if (!m_transform.isIdentity())
-			MeshHelper::Transform(outVertices, vb, m_transform);
+			MeshHelper::transform(outVertices, vb, m_transform);
 	}
 
 	static void AddVertex(Vertex** vb, const Vertex& v)
@@ -841,7 +841,7 @@ public:
 		return (m_slices + 1) * 2;
 	}
 
-	int GetIndexCount() const
+	int getIndexCount() const
 	{
 		return m_slices * 6;
 	}
@@ -890,7 +890,7 @@ public:
 		}
 
 		if (!m_transform.isIdentity())
-			MeshHelper::Transform(outVertices, vb, m_transform);
+			MeshHelper::transform(outVertices, vb, m_transform);
 	}
 
 	static void AddVertex(Vertex** vb, const Vertex& v)
@@ -920,7 +920,7 @@ public:
 
 	int GetVertexCount() const;
 
-	int GetIndexCount() const;
+	int getIndexCount() const;
 
 	void Generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex);
 

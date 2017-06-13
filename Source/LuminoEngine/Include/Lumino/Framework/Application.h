@@ -14,7 +14,7 @@ class Application
 	: public RefObject
 {
 public:
-	PlatformWindow* GetNativeMainWindow();
+	PlatformWindow* getNativeMainWindow();
 
 protected:
 	Application();
@@ -60,7 +60,7 @@ public:
 		@brief		アプリケーションを実行します。
 	*/
 	LN_METHOD()
-	void Run(GameScene* initialScene = nullptr);
+	void run(GameScene* initialScene = nullptr);
 
 LN_INTERNAL_ACCESS:
 	LN_METHOD()

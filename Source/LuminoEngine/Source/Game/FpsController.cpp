@@ -14,9 +14,9 @@ LN_NAMESPACE_BEGIN
 //              1フレームの経過時間を調べたら、不定期で1フレーム70msかかる
 //              ものがあった。(ほんとに不定期。1秒(60回に0回だったり4回だったり。)
 //              他のフレームではほぼ0.016キープ)
-//              詳しく調べてみると、winAPI の Sleep がたまにすごく時間かかってた。
-//              Sleep( 16 ) で待機してるのに、さっきと同じく 70ms かかってたとか。
-//              Sleep() は確実に指定した時間だけ待ってくれる関数じゃない
+//              詳しく調べてみると、winAPI の sleep がたまにすごく時間かかってた。
+//              sleep( 16 ) で待機してるのに、さっきと同じく 70ms かかってたとか。
+//              sleep() は確実に指定した時間だけ待ってくれる関数じゃない
 //              ことはわかってたけど、環境によってここまで変わるとは
 //              (デスクトップの方では問題なかった)正直思わなかったので、
 //              もし今後似たようなことがあった場合はこの辺を参考にしてみる。
@@ -49,7 +49,7 @@ FpsController::FpsController()
 	, m_capaAverageTime(0.0)
 	, m_enableFpsTest(false)
 {
-	SetFrameRate(60);
+	setFrameRate(60);
 }
 
 //------------------------------------------------------------------------------
@@ -60,7 +60,7 @@ FpsController::~FpsController()
 }
 
 //------------------------------------------------------------------------------
-void FpsController::SetFrameRate(int frameRate)
+void FpsController::setFrameRate(int frameRate)
 {
 	if (LN_CHECK_ARG(frameRate >= 0)) return;
 
@@ -78,7 +78,7 @@ void FpsController::SetFrameRate(int frameRate)
 }
 
 //------------------------------------------------------------------------------
-void FpsController::RefreshSystemDelay()
+void FpsController::refreshSystemDelay()
 {
 	uint64_t currentTime = Environment::getTickCount();
 	m_lastTime = m_baseTime = m_capaFpsLastTime = (0.001f * (currentTime - m_startTime));// + m_frameRateRec;
@@ -108,7 +108,7 @@ void FpsController::process()
 	m_elapsedGameTime = m_currentTime - m_lastTime;
 	m_elapsedRealTime = m_currentTime - m_lastRealTime;
 
-	AddingToTotalTime();
+	addingToTotalTime();
 
 
 	// (frame_rate_)フレームの1回目なら
@@ -153,9 +153,9 @@ void FpsController::process()
 			*/
 		}
 
-		//::Sleep( 16 );
+		//::sleep( 16 );
 
-		Thread::Sleep(static_cast< uint32_t >(m_term * 1000));
+		Thread::sleep(static_cast< uint32_t >(m_term * 1000));
 	}
 
 	// 現在の時間
@@ -228,14 +228,14 @@ void FpsController::process()
 }
 
 //------------------------------------------------------------------------------
-void FpsController::ProcessForMeasure()
+void FpsController::processForMeasure()
 {
 	m_currentTime = 0.001f * (Environment::getTickCount() - m_startTime);
 
 	m_elapsedGameTime = m_currentTime - m_lastTime;
 	m_elapsedRealTime = m_currentTime - m_lastRealTime;
 
-	AddingToTotalTime();
+	addingToTotalTime();
 
 	// (frame_rate_)フレームの1回目なら
 	if (m_frameCount == 0)
@@ -337,7 +337,7 @@ void FpsController::ProcessForMeasure()
 }
 
 //------------------------------------------------------------------------------
-void FpsController::AddingToTotalTime()
+void FpsController::addingToTotalTime()
 {
 	m_totalGameTime += static_cast< uint32_t >(1000.0f * m_elapsedGameTime);
 	m_totalRealTime += static_cast< uint32_t >(1000.0f * m_elapsedRealTime);

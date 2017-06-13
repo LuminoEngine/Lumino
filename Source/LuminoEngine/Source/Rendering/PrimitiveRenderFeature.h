@@ -87,7 +87,7 @@ public:
 				Vertex* vb;
 				uint16_t* ib;
 				uint16_t beginVertexIndex;
-				m_core->RequestBuffers(factory.GetVertexCount(), factory.GetIndexCount(), &vb, &ib, &beginVertexIndex);
+				m_core->RequestBuffers(factory.GetVertexCount(), factory.getIndexCount(), &vb, &ib, &beginVertexIndex);
 				factory.Generate(vb, ib, beginVertexIndex);
 			});
 
@@ -95,10 +95,10 @@ public:
 	}
 
 
-	virtual bool IsStandaloneShader() const;
+	virtual bool isStandaloneShader() const;
 	virtual void flush() override;
-	virtual void OnActivated();
-	virtual void OnDeactivated();
+	virtual void onActivated();
+	virtual void onDeactivated();
 
 private:
 	void SetPrimitiveRendererMode(PrimitiveRendererMode mode);
@@ -122,13 +122,13 @@ public:
 	void initialize(GraphicsManager* manager);
 	Material* GetCommonMaterial() const;
 
-	void Blit();
+	void blit();
 
 protected:
-	virtual bool IsStandaloneShader() const;
+	virtual bool isStandaloneShader() const;
 	virtual void flush();
-	virtual void OnActivated();
-	virtual void OnDeactivated();
+	virtual void onActivated();
+	virtual void onDeactivated();
 
 private:
 	void BlitImpl();

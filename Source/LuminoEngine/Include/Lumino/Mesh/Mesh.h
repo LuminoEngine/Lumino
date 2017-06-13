@@ -42,19 +42,19 @@ public:
 
 public:
 	/** 名前を設定します。*/
-	void SetName(const StringRef& name) { m_name = name; }
+	void setName(const StringRef& name) { m_name = name; }
 
 	/** 名前を取得します。*/
-	const String& GetName() const { return m_name; }
+	const String& getName() const { return m_name; }
 
 	int GetVertexCount() const;
-	int GetIndexCount() const;
+	int getIndexCount() const;
 	int GetTriangleCount() const;
 
-	void SetPosition(int index, const Vector3& position);
+	void setPosition(int index, const Vector3& position);
 	void SetNormal(int index, const Vector3& normal);
 	void SetUV(int index, const Vector2& uv);
-	void SetColor(int index, const Color& color);
+	void setColor(int index, const Color& color);
 	const Vector3& getPosition(int index);
 
 
@@ -66,7 +66,7 @@ public:
 	void SetBlendIndices(int index, float v0, float v1, float v2, float v3);	// TODO: int
 	void GetBlendIndices(int index, int* out0, int* out1, int* out2, int* out3);
 
-	void SetIndex(int index, int vertexIndex);
+	void setIndex(int index, int vertexIndex);
 
 	// PMX
 	void SetAdditionalUV(int index, int additionalUVIndex, const Vector4& uv);
@@ -180,7 +180,7 @@ LN_INTERNAL_ACCESS:
 	//void SetIndexInternal(void* indexBuffer, int vertexIndex, int value);
 
 	int GetSubsetCount() const { return (m_attributes.isEmpty()) ? 1 : m_attributes.getCount(); }
-	//int GetIndexStride() const { return (m_indexBufferInfo.format == IndexBufferFormat_UInt16) ? 2 : 4; }
+	//int getIndexStride() const { return (m_indexBufferInfo.format == IndexBufferFormat_UInt16) ? 2 : 4; }
 
 	//void* TryLockVertexBuffer(VertexBufferType type);
 	//void* TryLockIndexBuffer();

@@ -141,7 +141,7 @@ RefPtr<ITexture> GLGraphicsDevice::CreateTextureImplement(const SizeI& size, boo
 {
 	RefPtr<GLTexture> obj(LN_NEW GLTexture(size, format, mipmap), false);
 	if (initialData != nullptr) {
-		obj->SetSubData(PointI(0, 0), initialData, Utils::GetTextureFormatByteCount(format) * size.width * size.height, size);
+		obj->setSubData(PointI(0, 0), initialData, Utils::getTextureFormatByteCount(format) * size.width * size.height, size);
     }
     return RefPtr<ITexture>::staticCast(obj);
 }
@@ -186,7 +186,7 @@ RefPtr<IShader> GLGraphicsDevice::CreateShaderImplement(const void* textData, si
 	//	AddDeviceResource(shader);
 	//}
 	/*
-		シェーダを作った直後、Shader の Apply() → DrawPrimitive() → Present() すると、
+		シェーダを作った直後、Shader の apply() → drawPrimitive() → Present() すると、
 		glFlush() とか wglMakeCurrent() とかでビジー状態になり、「ディスプレイドライバが応答しません」とか右下からエラー出た。
 		リソースをメインスレッドで作って、描画スレッドで ドライバに描画情報送るときに落ちたと思われるが、ホントの原因は不明。
 		SwapChain を 2 つ作ったりすると何故か正常に動作した。
@@ -216,18 +216,18 @@ RefPtr<ISwapChain> GLGraphicsDevice::CreateSwapChainImplement(PlatformWindow* wi
 //------------------------------------------------------------------------------
 void GLGraphicsDevice::ResetDevice()
 {
-	// 先に OnLostDevice() を呼ぶこと
+	// 先に onLostDevice() を呼ぶこと
 	LN_THROW(m_deviceState == DeviceState_Pausing, InvalidOperationException);
 }
 
 //------------------------------------------------------------------------------
-void GLGraphicsDevice::OnLostDevice()
+void GLGraphicsDevice::onLostDevice()
 {
 	m_deviceState = DeviceState_Pausing;
 }
 
 //------------------------------------------------------------------------------
-void GLGraphicsDevice::OnResetDevice()
+void GLGraphicsDevice::onResetDevice()
 {
 	m_deviceState = DeviceState_Enabled;
 }

@@ -82,9 +82,9 @@ bool PlatformWindow::SendPlatformEvent(const PlatformEventArgs& e)
 			case PlatformEventType::close:
 			{
 				// TODO
-				if (this == m_windowManager->GetMainWindow())
+				if (this == m_windowManager->getMainWindow())
 				{
-					m_windowManager->Exit();
+					m_windowManager->exit();
 					return true;
 				}
 				break;
@@ -127,7 +127,7 @@ bool PlatformWindow::SendEventToAllListener(const PlatformEventArgs& e)
 {
 	for (auto& listener : m_listenerEntryArray)
 	{
-		if (listener.second->OnEvent(e)) {
+		if (listener.second->onEvent(e)) {
 			return true;
 		}
 	}

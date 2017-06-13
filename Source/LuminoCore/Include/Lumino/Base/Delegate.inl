@@ -101,11 +101,11 @@ public:
 
 	~LN_DELEGATE_CLASS_NAME()
 	{
-		Reset();
+		reset();
 	}
 
 public:
-	void Reset()
+	void reset()
 	{
 		LN_SAFE_RELEASE( mDelegate );
 	}
@@ -153,7 +153,7 @@ public:
 
 	LN_DELEGATE_CLASS_NAME& operator = (const LN_DELEGATE_CLASS_NAME& obj)
 	{
-		Reset();
+		reset();
 		m_isStatic = obj.m_isStatic;
 		mDelegate = obj.mDelegate;
 		if ( mDelegate != NULL )

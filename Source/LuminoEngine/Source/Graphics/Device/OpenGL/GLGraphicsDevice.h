@@ -75,8 +75,8 @@ public:
 	// IGraphicsDevice interface
 	virtual void Finalize() override;
 	virtual bool IsStandalone() const override { return true; }
-	virtual GraphicsAPI GetGraphicsAPI() const override { return GraphicsAPI::OpenGL; }
-	virtual IRenderer* GetRenderer() override { return m_renderer; }
+	virtual GraphicsAPI getGraphicsAPI() const override { return GraphicsAPI::OpenGL; }
+	virtual IRenderer* getRenderer() override { return m_renderer; }
 	virtual ISwapChain* GetDefaultSwapChain() override;
 	virtual ISwapChain* CreateSwapChain(PlatformWindow* window) override;
 	virtual void AttachRenderingThread() override;
@@ -95,8 +95,8 @@ private:
 	virtual RefPtr<ISwapChain> CreateSwapChainImplement(PlatformWindow* window) override;
 	virtual DeviceState GetDeviceState() override { return m_deviceState; }
 	virtual void ResetDevice() override;
-	virtual void OnLostDevice() override;
-	virtual void OnResetDevice() override;
+	virtual void onLostDevice() override;
+	virtual void onResetDevice() override;
 	virtual void FlushResource() override;
 
 protected:

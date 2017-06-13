@@ -25,26 +25,26 @@ public:
 		@brief		スプライトが表示するテクスチャを設定します。
 	*/
 	LN_METHOD(Property)
-	void SetTexture(Texture* texture);
+	void setTexture(Texture* texture);
 	
 	/**
 		@brief		スプライトが表示するテクスチャを取得します。
 	*/
 	LN_METHOD(Property)
-	Texture* GetTexture() const;
+	Texture* getTexture() const;
 
 	/**
 		@brief		スプライトの大きさを設定します。
 	*/
-	void SetSize(const Size& size);
+	void setSize(const Size& size);
 
 	/**
 		@brief		テクスチャのどの部分を表示するかを示す転送矩形を設定します。(ピクセル単位)
 	*/
-	void SetSourceRect(const Rect& rect);
-	void SetSourceRect(float x, float y, float width, float height);	/**< @overload SetSourceRect */
+	void setSourceRect(const Rect& rect);
+	void setSourceRect(float x, float y, float width, float height);	/**< @overload setSourceRect */
 
-	const Rect& GetSourceRect() const { return m_srcRect; }
+	const Rect& getSourceRect() const { return m_srcRect; }
 
 	/** 
 		@brief		スプライトの原点を設定します。
@@ -92,7 +92,7 @@ class Sprite2DComponent
 public:
 	
 	/**
-		@brief		テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには SetTexture() を使用します。
+		@brief		テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには setTexture() を使用します。
 		@detail		作成されたスプライトは、デフォルトの 2D シーングラフ に追加されます。
 	*/
 	static Sprite2DComponentPtr create();
@@ -134,14 +134,14 @@ class Sprite3DComponent
 public:
 	
 	/**
-		@brief		テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには SetTexture() を使用します。
+		@brief		テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには setTexture() を使用します。
 		@detail		作成されたスプライトは、デフォルトの 3D シーングラフ に追加されます。
 	*/
 	static Sprite3DComponentPtr create();
 	
 	
 	/**
-		@brief		サイズを指定して、テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには SetTexture() を使用します。
+		@brief		サイズを指定して、テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには setTexture() を使用します。
 		@param[in]	width		: スプライトの幅
 		@param[in]	height		: スプライトの高さ
 		@detail		作成されたスプライトは、デフォルトの 3D シーングラフ に追加されます。
@@ -177,23 +177,23 @@ public:
 	
 	/** スプライトが表示するテクスチャを設定します。 */
 	LN_METHOD(Property)
-	void SetTexture(Texture* texture);
+	void setTexture(Texture* texture);
 	
 	/** スプライトが表示するテクスチャを取得します。 */
 	LN_METHOD(Property)
-	Texture* GetTexture() const;
+	Texture* getTexture() const;
 
 	/** テクスチャのどの部分を表示するかを示す転送矩形を設定します。(ピクセル単位) デフォルトは Rect::Empty で、テクスチャ全体を転送することを示します。 */
 	LN_METHOD(Property)
-	void SetSourceRect(const Rect& rect);
+	void setSourceRect(const Rect& rect);
 
-	/** @overload SetSourceRect */
+	/** @overload setSourceRect */
 	LN_METHOD()
-	void SetSourceRect(float x, float y, float width, float height);
+	void setSourceRect(float x, float y, float width, float height);
 
 	/** テクスチャのどの部分を表示するかを示す転送矩形を取得します。(ピクセル単位) */
 	LN_METHOD(Property)
-	const Rect& GetSourceRect() const;
+	const Rect& getSourceRect() const;
 	
 	/** 
 		@brief		スプライトの原点を設定します。
@@ -204,7 +204,7 @@ public:
 	LN_METHOD(Property)
 	void SetAnchorPoint(const Vector2& ratio);
 
-	/** @overload SetSourceRect */
+	/** @overload setSourceRect */
 	LN_METHOD()
 	void SetAnchorPoint(float ratioX, float ratioY);
 
@@ -230,7 +230,7 @@ class Sprite2D
 public:
 	
 	/**
-		@brief		テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには SetTexture() を使用します。
+		@brief		テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには setTexture() を使用します。
 		@detail		作成されたスプライトは、デフォルトの 2D シーングラフ に追加されます。
 	*/
 	static RefPtr<Sprite2D> create();
@@ -283,14 +283,14 @@ class Sprite3D
 public:
 	
 	/**
-		@brief		テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには SetTexture() を使用します。
+		@brief		テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには setTexture() を使用します。
 		@detail		作成されたスプライトは、デフォルトの 3D シーングラフ に追加されます。
 	*/
 	static RefPtr<Sprite3D> create();
 	
 	
 	/**
-		@brief		サイズを指定して、テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには SetTexture() を使用します。
+		@brief		サイズを指定して、テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには setTexture() を使用します。
 		@param[in]	width		: スプライトの幅
 		@param[in]	height		: スプライトの高さ
 		@detail		作成されたスプライトは、デフォルトの 3D シーングラフ に追加されます。

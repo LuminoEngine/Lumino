@@ -127,7 +127,7 @@ void OggDecoder::create(Stream* stream)
 }
 
 //------------------------------------------------------------------------------
-void OggDecoder::FillOnmemoryBuffer()
+void OggDecoder::fillOnmemoryBuffer()
 {
 	MutexScopedLock lock(m_mutex);
 

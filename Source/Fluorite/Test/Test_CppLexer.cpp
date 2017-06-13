@@ -241,21 +241,21 @@ TEST_F(Test_CppLexer, Example)
 	ctx.LexFile(file);
 	const TokenList& tokens = *file->GetTokenList();
 	tr::XmlFileWriter xml("test.html");
-	xml.WriteStartDocument();
-	xml.WriteStartElement(_T("body"));
+	xml.writeStartDocument();
+	xml.writeStartElement(_T("body"));
 	for (Token* t : tokens)
 	{
 		if (t->GetTokenGroup() == TokenGroup::Keyword)
 		{
-			xml.WriteStartElement(_T("b"));
+			xml.writeStartElement(_T("b"));
 			StringA str = t->getString(file);
 			xml.writeString(String::fromNativeCharString(str.c_str(), str.getLength()));
-			xml.WriteEndElement();
+			xml.writeEndElement();
 		}
 		else if(t->GetTokenGroup() == TokenGroup::NewLine)
 		{
-			xml.WriteStartElement(_T("br"));
-			xml.WriteEndElement();
+			xml.writeStartElement(_T("br"));
+			xml.writeEndElement();
 		}
 		else
 		{
@@ -263,6 +263,6 @@ TEST_F(Test_CppLexer, Example)
 			xml.writeString(String::fromNativeCharString(str.c_str(), str.getLength()));
 		}
 	}
-	xml.WriteEndElement();
-	xml.WriteEndDocument();
+	xml.writeEndElement();
+	xml.writeEndDocument();
 }

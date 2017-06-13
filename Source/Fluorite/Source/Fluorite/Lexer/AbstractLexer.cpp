@@ -72,7 +72,7 @@ ResultState AbstractLexer::Tokenize(const char* code, int length, TokenList* out
 	//m_tokenList->Clear();
 	//m_tokenList->Reserve(buffer->GetSize());
 
-	OnStart();
+	onStart();
 
 	// 解析メイン
 	Range r;
@@ -203,7 +203,7 @@ int AbstractLexer::ReadMBSSequence(const Range& buffer)
 	while (r.pos < r.end)
 	{
 		int extraCount = 0;
-		UnicodeUtils::CheckUTF8TrailingBytes((const UnicodeUtils::UTF8*)r.pos, (const UnicodeUtils::UTF8*)r.end, false, &extraCount);
+		UnicodeUtils::checkUTF8TrailingBytes((const UnicodeUtils::UTF8*)r.pos, (const UnicodeUtils::UTF8*)r.end, false, &extraCount);
 
 		// 追加バイトが無い = シングルバイト文字だった場合は終了
 		if (extraCount == 0) {
@@ -222,7 +222,7 @@ int AbstractLexer::ReadMBSSequence(const Range& buffer)
 }
 
 //------------------------------------------------------------------------------
-void AbstractLexer::OnStart()
+void AbstractLexer::onStart()
 {
 }
 

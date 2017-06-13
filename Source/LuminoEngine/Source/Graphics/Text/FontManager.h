@@ -1,8 +1,5 @@
 ﻿
 #pragma once
-#ifdef LN_OS_WIN32
-#include <Windows.h>
-#endif
 #include <map>
 #include <Lumino/Base/Hash.h>
 #include <Lumino/IO/FileManager.h>
@@ -37,7 +34,7 @@ public:
 	void initialize(FileManager* fileManager, GraphicsManager* graphicsManager);
 	void Dispose();
 
-	GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
+	GraphicsManager* getGraphicsManager() const { return m_graphicsManager; }
 
 	RefPtr<Font> GetDefaultFont() const { return m_defaultFont; }
 
@@ -55,8 +52,8 @@ public:
 
 	EncodingConverter* GetCharToUTF32Converter() { return &m_charToUTF32Converter; }
 	EncodingConverter* GetWCharToUTF32Converter() { return &m_wcharToUTF32Converter; }
-	EncodingConverter* GetTCharToUTF32Converter() { return &m_TCharToUTF32Converter; }
-	EncodingConverter* GetUTF32ToTCharConverter() { return &m_UTF32ToTCharConverter; }
+	EncodingConverter* getTCharToUTF32Converter() { return &m_TCharToUTF32Converter; }
+	EncodingConverter* getUTF32ToTCharConverter() { return &m_UTF32ToTCharConverter; }
 
 	RawFontPtr LookupRawFont(const detail::FontData& keyData);
 

@@ -11,7 +11,7 @@ class LNSound : public Sound
 {
 public:
 
-    void PostInitialize()
+    void postInitialize()
     {
 
     }
@@ -27,7 +27,7 @@ class LNTexture : public Texture
 {
 public:
 
-    void PostInitialize()
+    void postInitialize()
     {
 
     }
@@ -43,7 +43,7 @@ class LNTexture2D : public Texture2D
 {
 public:
 
-    void PostInitialize()
+    void postInitialize()
     {
 
     }
@@ -59,7 +59,7 @@ class LNGraphicsResourceObject : public GraphicsResourceObject
 {
 public:
 
-    void PostInitialize()
+    void postInitialize()
     {
 
     }
@@ -75,7 +75,7 @@ class LNSceneNode : public SceneNode
 {
 public:
 
-    void PostInitialize()
+    void postInitialize()
     {
 
     }
@@ -91,7 +91,7 @@ class LNVisualNode : public VisualComponent
 {
 public:
 
-    void PostInitialize()
+    void postInitialize()
     {
 
     }
@@ -107,7 +107,7 @@ class LNSprite : public SpriteComponent
 {
 public:
 
-    void PostInitialize()
+    void postInitialize()
     {
 
     }
@@ -123,7 +123,7 @@ class LNSprite2D : public Sprite2DComponent
 {
 public:
 
-    void PostInitialize()
+    void postInitialize()
     {
 
     }
@@ -139,7 +139,7 @@ class LNSprite3D : public Sprite3DComponent
 {
 public:
 
-    void PostInitialize()
+    void postInitialize()
     {
 
     }
@@ -155,7 +155,7 @@ class LNStaticMesh : public StaticMeshComponent
 {
 public:
 
-    void PostInitialize()
+    void postInitialize()
     {
 
     }
@@ -171,7 +171,7 @@ class LNComponent : public Component
 {
 public:
 
-    void PostInitialize()
+    void postInitialize()
     {
 
     }
@@ -187,7 +187,7 @@ class LNGameApplication : public GameApplication
 {
 public:
 
-    void PostInitialize()
+    void postInitialize()
     {
 
     }
@@ -203,7 +203,7 @@ class LNGameScene : public GameScene
 {
 public:
 
-    void PostInitialize()
+    void postInitialize()
     {
 
     }
@@ -213,14 +213,14 @@ public:
     static GameScene_OnStart_OverrideCaller m_OnStart_OverrideCaller;
 
 
-    virtual void OnStart() override
+    virtual void onStart() override
     {
         m_OnStart_OverrideCaller(LWIG_TO_HANDLE(this));
     }
     template<typename... TArgs>
     void OnStart_CallBase(TArgs... args)
     {
-        return GameScene::OnStart(args...);
+        return GameScene::onStart(args...);
     }
 
 };
@@ -230,7 +230,7 @@ class LNCollisionShape : public CollisionShape
 {
 public:
 
-    void PostInitialize()
+    void postInitialize()
     {
 
     }
@@ -246,7 +246,7 @@ class LNBoxCollisionShape : public BoxCollisionShape
 {
 public:
 
-    void PostInitialize()
+    void postInitialize()
     {
 
     }
@@ -262,7 +262,7 @@ class LNPhysicsObject : public PhysicsObject
 {
 public:
 
-    void PostInitialize()
+    void postInitialize()
     {
 
     }
@@ -278,7 +278,7 @@ class LNCollider : public CollisionBody
 {
 public:
 
-    void PostInitialize()
+    void postInitialize()
     {
         ConnectOnTriggerEnter(createDelegate(this, &LNCollider::ConnectOnTriggerEnter_EventCallback));
         ConnectOnTriggerLeave(createDelegate(this, &LNCollider::ConnectOnTriggerLeave_EventCallback));

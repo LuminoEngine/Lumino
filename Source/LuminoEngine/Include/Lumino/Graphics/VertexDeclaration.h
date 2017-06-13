@@ -23,7 +23,7 @@ public:
 	
 public:
 
-	void AddVertexElement(int streamIndex, VertexElementType type, VertexElementUsage usage, int usageIndex);
+	void addVertexElement(int streamIndex, VertexElementType type, VertexElementUsage usage, int usageIndex);
 
 protected:
 	virtual void Dispose() override;
@@ -33,11 +33,11 @@ LN_INTERNAL_ACCESS:
 	virtual ~VertexDeclaration();
 	void initialize(detail::GraphicsManager* manager);
 	void initialize(detail::GraphicsManager* manager, const VertexElement* elements, int count);
-	void TryUpdateResource();
-	Driver::IVertexDeclaration* GetDeviceObject();
+	void tryUpdateResource();
+	Driver::IVertexDeclaration* getDeviceObject();
 
 	// GraphicsResourceObject interface
-	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
+	virtual void onChangeDevice(Driver::IGraphicsDevice* device);
 
 private:
 	RefPtr<Driver::IVertexDeclaration>	m_deviceObj;		// TODO: これは RefPtr にしたくない。Driver 系の include が必要になってしまう。

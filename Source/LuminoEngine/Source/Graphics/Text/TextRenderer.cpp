@@ -54,7 +54,7 @@ void TextRendererCore::initialize(GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void TextRendererCore::OnChangeDevice(Driver::IGraphicsDevice* device)
+void TextRendererCore::onChangeDevice(Driver::IGraphicsDevice* device)
 {
 	if (device == nullptr)
 		ReleaseDeviceResources();
@@ -67,7 +67,7 @@ void TextRendererCore::CreateDeviceResources()
 {
 	const int DefaultFaceCount = 512;
 
-	auto* device = m_manager->GetGraphicsDevice();
+	auto* device = m_manager->getGraphicsDevice();
 	m_vertexDeclaration.attach(device->CreateVertexDeclaration(Vertex::Elements(), Vertex::ElementCount));
 	m_vertexBuffer = device->CreateVertexBuffer(sizeof(Vertex) * DefaultFaceCount * 4, nullptr, ResourceUsage::Dynamic);
 	m_indexBuffer = device->CreateIndexBuffer(DefaultFaceCount * 6, nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
@@ -79,7 +79,7 @@ void TextRendererCore::CreateDeviceResources()
 	m_shader.shader = device->CreateShader(g_TextRenderer_fx_Data, g_TextRenderer_fx_Len, &r);
 	LN_THROW(r.Level != ShaderCompileResultLevel_Error, CompilationException, r);
 	m_shader.technique = m_shader.shader->GetTechnique(0);
-	m_shader.pass = m_shader.technique->GetPass(0);
+	m_shader.pass = m_shader.technique->getPass(0);
 	m_shader.varWorldMatrix = m_shader.shader->GetVariableByName(_T("g_worldMatrix"));
 	m_shader.varViewProjMatrix = m_shader.shader->GetVariableByName(_T("g_viewProjMatrix"));
 	m_shader.varTone = m_shader.shader->GetVariableByName(_T("g_tone"));
@@ -99,19 +99,19 @@ void TextRendererCore::ReleaseDeviceResources()
 //------------------------------------------------------------------------------
 void TextRendererCore::SetState(const Matrix& world, const Matrix& viewProj, const SizeI& viewPixelSize)
 {
-	m_shader.varWorldMatrix->SetMatrix(world);
-	m_shader.varViewProjMatrix->SetMatrix(viewProj);
+	m_shader.varWorldMatrix->setMatrix(world);
+	m_shader.varViewProjMatrix->setMatrix(viewProj);
 	if (m_shader.varPixelStep != nullptr)
-		m_shader.varPixelStep->SetVector(Vector4(0.5f / viewPixelSize.width, 0.5f / viewPixelSize.height, 0, 0));
+		m_shader.varPixelStep->setVector(Vector4(0.5f / viewPixelSize.width, 0.5f / viewPixelSize.height, 0, 0));
 }
 
 //------------------------------------------------------------------------------
-void TextRendererCore::Render(const GlyphRunData* dataList, int dataCount, FontGlyphTextureCache* cache, Brush* fillBrush)
+void TextRendererCore::render(const GlyphRunData* dataList, int dataCount, FontGlyphTextureCache* cache, Brush* fillBrush)
 {
 	//Color color = Color::White;
 	//if (fillBrush != nullptr)
 	//{
-	Color color = fillBrush->GetColor();
+	Color color = fillBrush->getColor();
 	//}
 
 	Driver::ITexture* srcTexture = cache->GetGlyphsFillTexture();
@@ -138,10 +138,10 @@ void TextRendererCore::InternalDrawRectangle(const Matrix& transform, const Rect
 {
 	if (rect.isEmpty()) { return; }		// 矩形がつぶれているので書く必要はない
 
-	float lu = srcUVRect.GetLeft();
+	float lu = srcUVRect.getLeft();
 	float tv = srcUVRect.getTop();
 	float ru = srcUVRect.getRight();
-	float bv = srcUVRect.GetBottom();
+	float bv = srcUVRect.getBottom();
 
 	uint16_t i = m_vertexCache.getCount();
 	m_indexCache.add(i + 0);
@@ -153,17 +153,17 @@ void TextRendererCore::InternalDrawRectangle(const Matrix& transform, const Rect
 
 	Vertex v;
 	v.color = color;
-	v.position.set(rect.GetLeft(), rect.getTop(), 0);	v.uv.set(lu, tv);	// 左上
-	v.position.TransformCoord(transform);
+	v.position.set(rect.getLeft(), rect.getTop(), 0);	v.uv.set(lu, tv);	// 左上
+	v.position.transformCoord(transform);
 	m_vertexCache.add(v);
-	v.position.set(rect.GetLeft(), rect.GetBottom(), 0); v.uv.set(lu, bv);	// 左下
-	v.position.TransformCoord(transform);
+	v.position.set(rect.getLeft(), rect.getBottom(), 0); v.uv.set(lu, bv);	// 左下
+	v.position.transformCoord(transform);
 	m_vertexCache.add(v);
 	v.position.set(rect.getRight(), rect.getTop(), 0);	v.uv.set(ru, tv);	// 右上
-	v.position.TransformCoord(transform);
+	v.position.transformCoord(transform);
 	m_vertexCache.add(v);
-	v.position.set(rect.getRight(), rect.GetBottom(), 0); v.uv.set(ru, bv);	// 右下
-	v.position.TransformCoord(transform);
+	v.position.set(rect.getRight(), rect.getBottom(), 0); v.uv.set(ru, bv);	// 右下
+	v.position.transformCoord(transform);
 	m_vertexCache.add(v);
 }
 
@@ -172,37 +172,37 @@ void TextRendererCore::flush(FontGlyphTextureCache* cache)
 {
 	if (m_indexCache.getCount() == 0) { return; }
 
-	auto* renderer = m_manager->GetGraphicsDevice()->GetRenderer();
+	auto* renderer = m_manager->getGraphicsDevice()->getRenderer();
 
 	// ビットマップフォントからの描画なので、アルファブレンドONでなければ真っ白矩形になってしまう。
 	// ・・・が、TextRendererCore のような低レベルでステートを強制変更してしまうのはいかがなものか・・・。
-	RenderState oldState = renderer->GetRenderState();
+	RenderState oldState = renderer->getRenderState();
 	RenderState newState = oldState;
 	newState.alphaBlendEnabled = true;
 	newState.sourceBlend = BlendFactor::SourceAlpha;
 	newState.destinationBlend = BlendFactor::InverseSourceAlpha;
-	renderer->SetRenderState(newState);
+	renderer->setRenderState(newState);
 
 
 
 	// 描画する
-	m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
-	m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
-	m_shader.varTone->SetVector((Vector4&)m_tone);
-	m_shader.varTexture->SetTexture(cache->GetGlyphsFillTexture());
-	//m_shader.varGlyphMaskSampler->SetTexture(m_glyphsMaskTexture);
-	renderer->SetShaderPass(m_shader.pass);
+	m_vertexBuffer->setSubData(0, m_vertexCache.getBuffer(), m_vertexCache.getBufferUsedByteCount());
+	m_indexBuffer->setSubData(0, m_indexCache.getBuffer(), m_indexCache.getBufferUsedByteCount());
+	m_shader.varTone->setVector((Vector4&)m_tone);
+	m_shader.varTexture->setTexture(cache->GetGlyphsFillTexture());
+	//m_shader.varGlyphMaskSampler->setTexture(m_glyphsMaskTexture);
+	renderer->setShaderPass(m_shader.pass);
 	renderer->SetVertexDeclaration(m_vertexDeclaration);
 	renderer->SetVertexBuffer(0, m_vertexBuffer);
 	renderer->SetIndexBuffer(m_indexBuffer);
-	renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.getCount() / 3);
+	renderer->drawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.getCount() / 3);
 
 	// キャッシュクリア
 	m_vertexCache.clear();
 	m_indexCache.clear();
 
 	// 変更したステートを元に戻す
-	renderer->SetRenderState(oldState);
+	renderer->setRenderState(oldState);
 }
 
 
@@ -234,8 +234,8 @@ TextRenderer::~TextRenderer()
 void TextRenderer::initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
-	m_core = m_manager->GetTextRendererCore();
-	m_font = m_manager->GetFontManager()->GetDefaultRawFont();
+	m_core = m_manager->getTextRendererCore();
+	m_font = m_manager->getFontManager()->GetDefaultRawFont();
 }
 
 //------------------------------------------------------------------------------
@@ -279,7 +279,7 @@ void TextRenderer::DrawString(const Matrix& transform, const TCHAR* str, int len
 	length = (length < 0) ? StringTraits::tcslen(str) : length;
 
 	// UTF32 へ変換
-	const ByteBuffer& utf32Buf = m_manager->GetFontManager()->GetTCharToUTF32Converter()->Convert(str, sizeof(TCHAR) * length);
+	const ByteBuffer& utf32Buf = m_manager->getFontManager()->getTCharToUTF32Converter()->convert(str, sizeof(TCHAR) * length);
 
 	FontGlyphTextureCache* cache = m_font->GetGlyphTextureCache();
 
@@ -297,7 +297,7 @@ void TextRenderer::DrawString(const Matrix& transform, const TCHAR* str, int len
 	length = (length < 0) ? StringTraits::tcslen(str) : length;
 
 	// UTF32 へ変換
-	const ByteBuffer& utf32Buf = m_manager->GetFontManager()->GetTCharToUTF32Converter()->Convert(str, sizeof(TCHAR) * length);
+	const ByteBuffer& utf32Buf = m_manager->getFontManager()->getTCharToUTF32Converter()->convert(str, sizeof(TCHAR) * length);
 
 	FontGlyphTextureCache* cache = m_font->GetGlyphTextureCache();
 
@@ -323,7 +323,7 @@ void TextRenderer::DrawString(const Matrix& transform, const TCHAR* str, int len
 	TextLayoutResult result;
 	cache->GetTextLayoutEngine()->LayoutText((UTF32*)utf32Buf.getConstData(), utf32Buf.getSize() / sizeof(UTF32), LayoutTextOptions::All, &result);
 
-	DrawGlyphsInternal(transform, rect.GetTopLeft(), result.Items, cache);
+	DrawGlyphsInternal(transform, rect.getTopLeft(), result.Items, cache);
 }
 
 //------------------------------------------------------------------------------
@@ -336,7 +336,7 @@ void TextRenderer::DrawGlyphsInternal(const Matrix& transform, const PointF& pos
 	{
 		const TextLayoutResultItem& item = layoutItems[i];
 
-		// 必要なグリフを探す。LookupGlyphInfo() の中で、テクスチャにグリフビットマップが Blt される。
+		// 必要なグリフを探す。LookupGlyphInfo() の中で、テクスチャにグリフビットマップが blt される。
 		CacheGlyphInfo info;
 		bool flush;
 		cache->LookupGlyphInfo(item.Char, &info, &flush);
@@ -370,7 +370,7 @@ void TextRenderer::flush()
 }
 
 //------------------------------------------------------------------------------
-void TextRenderer::OnSetState(const DrawElementBatch* state)
+void TextRenderer::onSetState(const DrawElementBatch* state)
 {
 	if (state != nullptr)
 	{
@@ -385,9 +385,9 @@ void TextRenderer::OnSetState(const DrawElementBatch* state)
 			// TODO: 必要ないかも？
 			m_stateModified = true;
 		}
-		if (m_fillBrush != state->state.GetBrush())
+		if (m_fillBrush != state->state.getBrush())
 		{
-			m_fillBrush = state->state.GetBrush();
+			m_fillBrush = state->state.getBrush();
 
 			// TODO: 必要ないかも？
 			m_stateModified = true;
@@ -403,7 +403,7 @@ void TextRenderer::FlushInternal(FontGlyphTextureCache* cache)
 	int dataCount = m_glyphLayoutDataList.getCount();
 	RenderBulkData dataListData(&m_glyphLayoutDataList[0], sizeof(TextRendererCore::GlyphRunData) * dataCount);
 
-	// Texture::Blit で転送されるものを Flush する
+	// Texture::blit で転送されるものを Flush する
 	cache->GetGlyphsFillTexture();
 
 	LN_ENQUEUE_RENDER_COMMAND_5(
@@ -414,7 +414,7 @@ void TextRenderer::FlushInternal(FontGlyphTextureCache* cache)
 		RefPtr<FontGlyphTextureCache>, cache,
 		RefPtr<Brush>, m_fillBrush,	// TODO: Brush をそのまま描画スレッドに持ち込むのは危険。変更される。
 		{
-			m_core->Render(
+			m_core->render(
 				(TextRendererCore::GlyphRunData*)dataListData.getData(),
 				dataCount,
 				cache,
@@ -469,8 +469,8 @@ void VectorTextRendererCore::initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
 
-	auto* device = m_manager->GetGraphicsDevice();
-	m_renderer = device->GetRenderer();
+	auto* device = m_manager->getGraphicsDevice();
+	m_renderer = device->getRenderer();
 
 	m_vertexCache.reserve(4096);
 	m_indexCache.reserve(4096);
@@ -482,12 +482,12 @@ void VectorTextRendererCore::RequestBuffers(int vertexCount, int indexCount, Ver
 	assert(vb != nullptr);
 	assert(ib != nullptr);
 	*outBeginVertexIndex = m_vertexCache.getCount();
-	*vb = m_vertexCache.Request(vertexCount);
-	*ib = m_indexCache.Request(indexCount);
+	*vb = m_vertexCache.request(vertexCount);
+	*ib = m_indexCache.request(indexCount);
 }
 
 //------------------------------------------------------------------------------
-void VectorTextRendererCore::Render(const VectorGlyphData* dataList, int dataCount, VectorFontGlyphCache* cache, Brush* fillBrush)
+void VectorTextRendererCore::render(const VectorGlyphData* dataList, int dataCount, VectorFontGlyphCache* cache, Brush* fillBrush)
 {
 	for (int i = 0; i < dataCount; i++)
 	{
@@ -496,7 +496,7 @@ void VectorTextRendererCore::Render(const VectorGlyphData* dataList, int dataCou
 		uint16_t beginVertexIndex;
 		RequestBuffers(
 			cache->GetVertexCount(dataList[i].cacheGlyphInfoHandle),
-			cache->GetIndexCount(dataList[i].cacheGlyphInfoHandle),
+			cache->getIndexCount(dataList[i].cacheGlyphInfoHandle),
 			&vb, &ib, &beginVertexIndex);
 		cache->GenerateMesh(
 			dataList[i].cacheGlyphInfoHandle, Vector3(dataList[i].origin.x, dataList[i].origin.y, 0), dataList[i].transform,
@@ -506,27 +506,27 @@ void VectorTextRendererCore::Render(const VectorGlyphData* dataList, int dataCou
 	// TODO: このへん PrimitiveRenderFeature と同じ。共通にできないか？
 	{
 		// サイズが足りなければ再作成
-		auto* device = m_manager->GetGraphicsDevice();
-		if (m_vertexBuffer == nullptr || m_vertexBuffer->getByteCount() < m_vertexCache.GetBufferUsedByteCount())
+		auto* device = m_manager->getGraphicsDevice();
+		if (m_vertexBuffer == nullptr || m_vertexBuffer->getByteCount() < m_vertexCache.getBufferUsedByteCount())
 		{
 			LN_SAFE_RELEASE(m_vertexBuffer);
-			m_vertexBuffer = device->CreateVertexBuffer(m_vertexCache.GetBufferUsedByteCount(), nullptr, ResourceUsage::Dynamic);
+			m_vertexBuffer = device->CreateVertexBuffer(m_vertexCache.getBufferUsedByteCount(), nullptr, ResourceUsage::Dynamic);
 		}
-		if (m_indexBuffer == nullptr || m_indexBuffer->getByteCount() < m_indexCache.GetBufferUsedByteCount())
+		if (m_indexBuffer == nullptr || m_indexBuffer->getByteCount() < m_indexCache.getBufferUsedByteCount())
 		{
 			LN_SAFE_RELEASE(m_indexBuffer);
-			m_indexBuffer = device->CreateIndexBuffer(m_indexCache.GetBufferUsedByteCount(), nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
+			m_indexBuffer = device->CreateIndexBuffer(m_indexCache.getBufferUsedByteCount(), nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
 		}
 
 		// 描画する
-		m_vertexBuffer->SetSubData(0, m_vertexCache.GetBuffer(), m_vertexCache.GetBufferUsedByteCount());
-		m_indexBuffer->SetSubData(0, m_indexCache.GetBuffer(), m_indexCache.GetBufferUsedByteCount());
+		m_vertexBuffer->setSubData(0, m_vertexCache.getBuffer(), m_vertexCache.getBufferUsedByteCount());
+		m_indexBuffer->setSubData(0, m_indexCache.getBuffer(), m_indexCache.getBufferUsedByteCount());
 
 		{
-			m_renderer->SetVertexDeclaration(m_manager->GetDefaultVertexDeclaration()->GetDeviceObject());
+			m_renderer->SetVertexDeclaration(m_manager->getDefaultVertexDeclaration()->getDeviceObject());
 			m_renderer->SetVertexBuffer(0, m_vertexBuffer);
 			m_renderer->SetIndexBuffer(m_indexBuffer);
-			m_renderer->DrawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.getCount() / 3);
+			m_renderer->drawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.getCount() / 3);
 		}
 
 		// キャッシュクリア
@@ -617,7 +617,7 @@ void VectorTextRenderer::flush()
 			RefPtr<VectorFontGlyphCache>, glyphCache,
 			RefPtr<Brush>, m_fillBrush,
 			{
-				m_core->Render(
+				m_core->render(
 					(VectorGlyphData*)dataListData.getData(),
 					dataCount,
 					glyphCache,
@@ -629,7 +629,7 @@ void VectorTextRenderer::flush()
 }
 
 //------------------------------------------------------------------------------
-void VectorTextRenderer::OnSetState(const DrawElementBatch* state)
+void VectorTextRenderer::onSetState(const DrawElementBatch* state)
 {
 	if (state == nullptr) return;
 	if (state->state.GetFont() != nullptr)
@@ -640,7 +640,7 @@ void VectorTextRenderer::OnSetState(const DrawElementBatch* state)
 	{
 		m_currentFont = nullptr;
 	}
-	m_fillBrush = state->state.GetBrush();
+	m_fillBrush = state->state.getBrush();
 }
 
 } // namespace detail

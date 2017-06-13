@@ -37,8 +37,8 @@ public:
 
 protected:
 	virtual void OnRoutedEvent(UIEventArgs* e) override;
-	virtual Size ArrangeOverride(const Size& finalSize) override;
-	virtual void OnRender(DrawingContext* g) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
+	virtual void onRender(DrawingContext* g) override;
 
 	virtual UIElement* CheckMouseHoverElement(const PointF& globalPt) override;
 
@@ -79,8 +79,8 @@ protected:
 	virtual UIElement* HitTestUIElement(const PointF& globalPt);	// TODO: globalPt じゃなくて local のほうがやりやすい
 	virtual void OnRoutedEvent(UIEventArgs* e);
 	virtual void UpdateLayout(const Size& viewSize);
-	virtual void Render() = 0;
-	virtual void ExecuteDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) = 0;
+	virtual void render() = 0;
+	virtual void executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) = 0;
 
 private:
 	void PostRender(DrawList* context, RefPtr<RenderTargetTexture>* primaryLayerTarget, RefPtr<RenderTargetTexture>* secondaryLayerTarget);
@@ -110,8 +110,8 @@ protected:
 	virtual UIElement* HitTestUIElement(const PointF& globalPt) override;
 	virtual void OnRoutedEvent(UIEventArgs* e) override;
 	virtual void UpdateLayout(const Size& viewSize) override;
-	virtual void Render() override;
-	virtual void ExecuteDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
+	virtual void render() override;
+	virtual void executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 
 private:
 	RefPtr<UILayoutView>				m_root;
@@ -135,7 +135,7 @@ protected:
 	virtual ~PostEffect();
 	void initialize();
 
-	virtual void OnRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination) = 0;
+	virtual void onRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination) = 0;
 
 private:
 	UIViewportLayer*	m_ownerLayer;

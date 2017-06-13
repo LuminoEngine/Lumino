@@ -31,33 +31,33 @@ ConditionFlag::~ConditionFlag()
 }
 
 //------------------------------------------------------------------------------
-void ConditionFlag::SetTrue()
+void ConditionFlag::setTrue()
 {
-	m_impl->SetTrue();
+	m_impl->setTrue();
 }
 
 //------------------------------------------------------------------------------
-void ConditionFlag::SetFalse()
+void ConditionFlag::setFalse()
 {
-	m_impl->SetFalse();
+	m_impl->setFalse();
 }
 
 //------------------------------------------------------------------------------
-bool ConditionFlag::IsTrue() const
+bool ConditionFlag::isTrue() const
 {
-	return m_impl->IsTrue();
+	return m_impl->isTrue();
 }
 
 //------------------------------------------------------------------------------
-bool ConditionFlag::IsFalse() const
+bool ConditionFlag::isFalse() const
 {
-	return !IsTrue();
+	return !isTrue();
 }
 
 //------------------------------------------------------------------------------
-void ConditionFlag::Wait()
+void ConditionFlag::wait()
 {
-	m_impl->Wait();
+	m_impl->wait();
 }
 
 LN_NAMESPACE_END

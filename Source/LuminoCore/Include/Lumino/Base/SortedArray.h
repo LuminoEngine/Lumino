@@ -106,7 +106,7 @@ public:
 		@brief		指定したキーに値を設定します。
 		@details	キーが存在しない場合、指定したキーと値を持つ新しい要素を作成します。
 	*/
-	void SetValue(const TKey& key, const TValue& value)
+	void setValue(const TKey& key, const TValue& value)
 	{
 		int index = LowerBound(key);
 		if (index < getCount() && equals(m_vector[index].first, key)/*m_vector[index].first == key*/)

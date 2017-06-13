@@ -71,12 +71,12 @@ public:
 
 public:	// internal
 	EngineDiagCore* GetEngineDiag() const { return m_engineDiag; }
-	detail::PhysicsManager* GetPhysicsManager() { return m_physicsManager; }
-	detail::GraphicsManager* GetGraphicsManager() { return m_graphicsManager; }
+	detail::PhysicsManager* getPhysicsManager() { return m_physicsManager; }
+	detail::GraphicsManager* getGraphicsManager() { return m_graphicsManager; }
 	detail::EffectManager* GetEffectManager() { return m_effectManager; }
-	detail::ModelManager* GetModelManager() { return m_modelManager; }
-	detail::DocumentsManager* GetDocumentsManager() { return m_documentsManager; }
-	Texture2D* GetDummyWhiteTexture() { return m_dummyWhiteTexture; }
+	detail::ModelManager* getModelManager() { return m_modelManager; }
+	detail::DocumentsManager* getDocumentsManager() { return m_documentsManager; }
+	Texture2D* getDummyWhiteTexture() { return m_dummyWhiteTexture; }
 
 	void OnNodeRename(SceneNode* node, const String& oldName, const String& newName);
 

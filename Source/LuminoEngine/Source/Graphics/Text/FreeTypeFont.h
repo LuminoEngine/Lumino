@@ -62,9 +62,9 @@ public:
 	virtual void Dispose_() override;
 
 public:
-	virtual void SetName(const String& fontName) { m_fontData.Family = fontName; m_modified = true; }
-	virtual const String& GetName() const { return m_fontData.Family; }
-	virtual void SetSize(int size) { m_fontData.Size = size; m_modified = true; }
+	virtual void setName(const String& fontName) { m_fontData.Family = fontName; m_modified = true; }
+	virtual const String& getName() const { return m_fontData.Family; }
+	virtual void setSize(int size) { m_fontData.Size = size; m_modified = true; }
 	virtual int getSize() const  { return m_fontData.Size; }
 	//virtual void SetEdgeSize(int size) { m_fontData.EdgeSize = size; m_modified = true; }
 	//virtual int GetEdgeSize() const  { return m_fontData.EdgeSize; }
@@ -90,7 +90,7 @@ public:
 	virtual Vector2 GetKerning(UTF32 prev, UTF32 next) override;
 	virtual void GetGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics) override;
 
-	virtual FontManager* GetManager() const { return m_manager; }
+	virtual FontManager* getManager() const { return m_manager; }
 
 	FTC_FaceID GetFTCFaceId() const { return m_ftFaceID; }
 	FT_Face GetFTFace() const { return m_ftFace; }

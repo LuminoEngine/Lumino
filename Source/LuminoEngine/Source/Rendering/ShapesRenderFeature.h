@@ -98,7 +98,7 @@ private:
 		float	alpha;
 	};
 
-	void ReleaseCommandList(ShapesRendererCommandList* commandList);
+	void releaseCommandList(ShapesRendererCommandList* commandList);
 	void RequestBuffers(int vertexCount, int indexCount, Vertex** vb, uint16_t** ib, uint16_t* outBeginVertexIndex);
 	Path* AddPath(PathType type, const Color& color, PathWinding winding = PathWinding::CCW, PathAttribute attribute = PathAttribute::None);
 	void EndPath(Path* path);
@@ -136,11 +136,11 @@ public:
 	void ExecuteCommand(ShapesRendererCommandList* commandList);
 
 protected:
-	virtual bool IsStandaloneShader() const { return false; }
+	virtual bool isStandaloneShader() const { return false; }
 	virtual void flush() override {}
-	virtual void OnActivated() override {}
-	virtual void OnDeactivated() override { flush(); }
-	virtual void OnSetState(const DrawElementBatch* state);
+	virtual void onActivated() override {}
+	virtual void onDeactivated() override { flush(); }
+	virtual void onSetState(const DrawElementBatch* state);
 
 private:
 	GraphicsManager*				m_manager;

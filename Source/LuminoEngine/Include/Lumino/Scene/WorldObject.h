@@ -17,7 +17,7 @@ class WorldObject
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	Transform	transform;
+	transform	transform;
 
 public:
 	static WorldObjectPtr create();
@@ -28,11 +28,11 @@ public:
 
 	/** このオブジェクトの位置を設定します。 */
 	LN_METHOD(Property)
-	void SetPosition(const Vector3& pos) { transform.position = pos; }
+	void setPosition(const Vector3& pos) { transform.position = pos; }
 
 	/** このオブジェクトの位置を設定します。 */
 	LN_METHOD()
-	void SetPosition(float x, float y, float z = 0.0f) { SetPosition(Vector3(x, y, z)); }
+	void setPosition(float x, float y, float z = 0.0f) { setPosition(Vector3(x, y, z)); }
 
 	/** このオブジェクトの位置を位置を取得します。 */
 	LN_METHOD(Property)
@@ -44,7 +44,7 @@ public:
 
 	/** このオブジェクトの回転をオイラー角から設定します。(radian) */
 	LN_METHOD()
-	void SetEulerAngles(float x, float y, float z) { transform.rotation = Quaternion::MakeFromEulerAngles(Vector3(x, y, z)); }
+	void SetEulerAngles(float x, float y, float z) { transform.rotation = Quaternion::makeFromEulerAngles(Vector3(x, y, z)); }
 
 	/** このオブジェクトの回転を取得します。 */
 	LN_METHOD(Property)
@@ -84,19 +84,19 @@ public:
 
 
 	/// 開始処理
-	//virtual void OnStart();
+	//virtual void onStart();
 
 	/// フレーム更新
-	virtual void OnUpdate();
+	virtual void onUpdate();
 
 
-	virtual void OnRender(DrawList* context);
+	virtual void onRender(DrawList* context);
 
 	/// 終了処理
 	virtual void OnDestroy();
 
 protected:
-	virtual void OnUIEvent(UIEventArgs* e);
+	virtual void onUIEvent(UIEventArgs* e);
 
 LN_INTERNAL_ACCESS:
 	//const Matrix& GetCombinedGlobalMatrix() const { return m_combinedGlobalMatrix; }
@@ -105,8 +105,8 @@ LN_INTERNAL_ACCESS:
 	bool IsSpecialObject() const { return m_isSpecialObject; }
 
 private:
-	void UpdateFrame();
-	void Render(DrawList* context);
+	void updateFrame();
+	void render(DrawList* context);
 	void ReleaseComponents();
 
 	List<RefPtr<Component>>		m_components;

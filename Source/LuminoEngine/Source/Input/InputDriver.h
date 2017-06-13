@@ -55,7 +55,7 @@ public:
 	virtual int GetJoystickCount() = 0;
 	virtual void GetJoystickState(int joystickNumber, JoystickDeviceState* state) = 0;
 
-	virtual void OnEvent(const PlatformEventArgs& e);
+	virtual void onEvent(const PlatformEventArgs& e);
 
 
 

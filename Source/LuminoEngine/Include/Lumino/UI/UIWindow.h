@@ -17,7 +17,7 @@ public:
 protected:
 	virtual void OnRoutedEvent(UIEventArgs* e) override;
 	virtual void OnLayoutPanelChanged(UILayoutPanel* newPanel) override;
-	virtual void OnRender(DrawingContext* g) override;
+	virtual void onRender(DrawingContext* g) override;
 
 LN_CONSTRUCT_ACCESS:
 	UIWindow();

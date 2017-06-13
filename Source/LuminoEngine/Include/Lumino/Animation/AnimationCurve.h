@@ -18,9 +18,9 @@ public:
 	bool			isActive;			// true の場合、実際に再生する (古い再生を停止するときに false にする。本来はリストから delete しても良いのだが、メモリ効率的に。)
 
 public:
-	virtual bool ApplyPropertyAnimation(double time) = 0;
+	virtual bool applyPropertyAnimation(double time) = 0;
 	//virtual AnimatableObject* GetTargetObject() = 0;
-	virtual const tr::PropertyInfo* GetTargetPropertyInfo() = 0;
+	virtual const tr::PropertyInfo* getTargetPropertyInfo() = 0;
 };
 
 template<typename TValue> class ValueEasingCurve;
@@ -35,18 +35,18 @@ public:
 
 public:
 	/// 値の種類
-	virtual ValueType GetValueType() const = 0;
+	virtual ValueType getValueType() const = 0;
 
 	/// 時間の設定 (mTime をそのまま、mCurrentFramePos をループ考慮で設定する)
-	virtual void UpdateValue(double time) = 0;
+	virtual void updateValue(double time) = 0;
 
 	/// 終端フレーム位置の取得
-	virtual double GetLastFrameTime() const = 0;
+	virtual double getLastFrameTime() const = 0;
 
-	void SetWrapMode(WrapMode mode) { m_wrapMode = mode; }
-	WrapMode GetWrapMode() const { return m_wrapMode; }
+	void setWrapMode(WrapMode mode) { m_wrapMode = mode; }
+	WrapMode getWrapMode() const { return m_wrapMode; }
 
-	void SetTime(double time);
+	void getTime(double time);
 
 private:
 	WrapMode	m_wrapMode;
@@ -78,23 +78,23 @@ public:
 		isActive = true;
 	}
 
-	virtual bool ApplyPropertyAnimation(double time) override
+	virtual bool applyPropertyAnimation(double time) override
 	{
-		return ApplyPropertyAnimationInternal(time);
+		return applyPropertyAnimationInternal(time);
 	}
 
 	//virtual AnimatableObject* GetTargetObject() override
 	//{
-	//	return static_cast<AnimatableObject*>(m_targetProperty.GetOwenr().Get());
+	//	return static_cast<AnimatableObject*>(m_targetProperty.getOwenr().Get());
 	//}
 
-	virtual const tr::PropertyInfo* GetTargetPropertyInfo() override
+	virtual const tr::PropertyInfo* getTargetPropertyInfo() override
 	{
-		return m_targetProperty.GetPropertyInfo();
+		return m_targetProperty.getPropertyInfo();
 	}
 
 private:
-	bool ApplyPropertyAnimationInternal(double time);
+	bool applyPropertyAnimationInternal(double time);
 };
 
 } // namespace detail
@@ -107,9 +107,9 @@ class ValueEasingCurve
 public:
 
 	//static FloatEasing* create(const String& targetName, const String& targetProperty, float targetValue, float duration, Animation::EasingMode easingMode);
-	virtual ValueType GetValueType() const { return ValueType_Float; }
-	virtual void UpdateValue(double time) {}
-	virtual double GetLastFrameTime() const { return 0; }
+	virtual ValueType getValueType() const { return ValueType_Float; }
+	virtual void updateValue(double time) {}
+	virtual double getLastFrameTime() const { return 0; }
 
 public:
 	static RefPtr<ValueEasingCurve<TValue>> create(TValue targetValue, double duration, EasingMode easingMode)
@@ -123,31 +123,31 @@ public:
 		, m_easingMode(EasingMode::Linear)
 		, m_easingFunction()
 	{
-		SetEasingMode(easingMode);
+		setEasingMode(easingMode);
 	}
 
 	virtual ~ValueEasingCurve() {}
 
 	//void SetTargetName(const String& name) { m_targetName = name; }
 	//void SetTargetProperty(const Property* prop) { m_targetProperty = prop; }
-	void SetTargetValue(TValue value) { m_targetValue = value; }
-	void SetEasingMode(EasingMode easingMode)
+	void setTargetValue(TValue value) { m_targetValue = value; }
+	void setEasingMode(EasingMode easingMode)
 	{
 		m_easingMode = easingMode;
 		m_easingFunction = AnimationUtilities::SelectEasingFunction<TValue, double>(m_easingMode);
 	}
 
-	void SetDuration(double duration) { m_duration = duration; }
-	double GetDuration() const { return m_duration; }
+	void setDuration(double duration) { m_duration = duration; }
+	double getDuration() const { return m_duration; }
 
 
 
-	AnimationCurveInstanceBase* CreateAnimationCurveInstance(const tr::PropertyRef<TValue>& targetProperty, const TValue& startValue)
+	AnimationCurveInstanceBase* createAnimationCurveInstance(const tr::PropertyRef<TValue>& targetProperty, const TValue& startValue)
 	{
 		return LN_NEW detail::ValueEasingCurveInstance<TValue>(this, targetProperty, startValue, m_targetValue);
 	}
 	
-	const std::function< TValue(double, TValue, TValue, double) >& GetEasingFunction() const { return m_easingFunction; }
+	const std::function< TValue(double, TValue, TValue, double) >& getEasingFunction() const { return m_easingFunction; }
 
 private:
 	TValue		m_targetValue;
@@ -165,26 +165,26 @@ namespace detail {
 
 //------------------------------------------------------------------------------
 template<typename TValue>
-bool ValueEasingCurveInstance<TValue>::ApplyPropertyAnimationInternal(double time)
+bool ValueEasingCurveInstance<TValue>::applyPropertyAnimationInternal(double time)
 {
-	double duration = m_owner->GetDuration();
-	auto easingFunction = m_owner->GetEasingFunction();
+	double duration = m_owner->getDuration();
+	auto easingFunction = m_owner->getEasingFunction();
 
 	// 経過時間 0 の場合はそのままセットで良い。0除算対策の意味も込めて。
 	// また、時間が既に終端を超えていたり、比較関数が無い場合も直値セット。
 	if (duration == 0 || duration <= time || easingFunction == nullptr)
 	{
-		tr::PropertyInfo::SetPropertyValueDirect(m_targetProperty, m_targetValue, tr::PropertySetSource::ByAnimation);
+		tr::PropertyInfo::setPropertyValueDirect(m_targetProperty, m_targetValue, tr::PropertySetSource::ByAnimation);
 	}
 	// 時間が 0 以前の場合は初期値
 	else if (time <= 0)
 	{
-		tr::PropertyInfo::SetPropertyValueDirect<TValue>(m_targetProperty, m_startValue, tr::PropertySetSource::ByAnimation);
+		tr::PropertyInfo::setPropertyValueDirect<TValue>(m_targetProperty, m_startValue, tr::PropertySetSource::ByAnimation);
 	}
 	// 補間で求める
 	else
 	{
-		tr::PropertyInfo::SetPropertyValueDirect<TValue>(m_targetProperty, easingFunction(time, m_startValue, m_targetValue - m_startValue, duration), tr::PropertySetSource::ByAnimation);
+		tr::PropertyInfo::setPropertyValueDirect<TValue>(m_targetProperty, easingFunction(time, m_startValue, m_targetValue - m_startValue, duration), tr::PropertySetSource::ByAnimation);
 	}
 
 	return (time < duration);
@@ -229,19 +229,19 @@ public:
 public:
 
 	/// キーフレーム追加 (終端より前に追加した場合はソートを行う)
-	void AddKeyFrame(const FloatKeyFrame& keyFrame);
+	void addKeyFrame(const FloatKeyFrame& keyFrame);
 
 	/// キーフレーム追加 (線形補間のキーフレーム)
-	void AddKeyFrame(double frame_pos, float value, InterpolationMode mode = InterpolationMode_Linear);
+	void addKeyFrame(double frame_pos, float value, InterpolationMode mode = InterpolationMode_Linear);
 
-	/// 補間結果の取得 (SetTime() で更新される)
+	/// 補間結果の取得 (getTime() で更新される)
 	float getValue() const { return m_value; }
 
 public:
 	// override AnimationCurve
-	virtual ValueType GetValueType() const { return ValueType_Float; }
-	virtual void UpdateValue(double time);
-	virtual double GetLastFrameTime() const;
+	virtual ValueType getValueType() const { return ValueType_Float; }
+	virtual void updateValue(double time);
+	virtual double getLastFrameTime() const;
 
 private:
 	typedef List<FloatKeyFrame>	KeyFrameList;
@@ -258,10 +258,10 @@ public:
 	void initialize(float pt_x1, float pt_y1, float pt_x2, float pt_y2);
 
 	/// t = 0.0～1.0
-	float GetInterValue(float t);
+	float getInterValue(float t);
 
 private:
-	float GetYVal(float x, float x1, float y1, float x2, float y2);
+	float getYVal(float x, float x1, float y1, float x2, float y2);
 
 private:
 	static const int	YVAL_DIV_NUM = 16;
@@ -294,7 +294,7 @@ public:
 public:
 
 	/// キーフレーム追加
-	void AddKeyFrame(
+	void addKeyFrame(
 		double framePos, const Vector3& pos, const Quaternion& rot,
 		char* interpolation_x,
 		char* interpolation_y,
@@ -302,15 +302,15 @@ public:
 		char* interpolation_rot);
 
 	/// キーフレームのソート
-	void SortKeyFrame();
+	void sortKeyFrame();
 
-	/// 補間結果の取得 (SetTime() で更新される)
+	/// 補間結果の取得 (getTime() で更新される)
 	const AttitudeTransform& getValue() const { return m_transform; }
 
 public:
-	virtual ValueType GetValueType() const { return ValueType_SQTTransform; }
-	virtual void UpdateValue(double time);
-	virtual double GetLastFrameTime() const;
+	virtual ValueType getValueType() const { return ValueType_SQTTransform; }
+	virtual void updateValue(double time);
+	virtual double getLastFrameTime() const;
 
 private:
 	typedef List<KeyFrame>	KeyFrameList;
@@ -329,7 +329,7 @@ public:
 		Vector2 v1;
 		Vector2 v2;
 
-		float Evaluate(float Progress)
+		float evaluate(float Progress)
 		{
 			//ニュートン法による近似
 			float t = Math::clamp(Progress, 0, 1);
@@ -387,13 +387,13 @@ public:
 	virtual ~VMDBezierSQTTransformAnimation2();
 
 public:
-	void AddFrame(const BoneFrameData& frame) { m_keyFrameList.add(frame); }
-	void SortKeyFrame();
+	void addFrame(const BoneFrameData& frame) { m_keyFrameList.add(frame); }
+	void sortKeyFrame();
 
 public:
-	virtual ValueType GetValueType() const { return ValueType_SQTTransform; }
-	virtual void UpdateValue(double time);
-	virtual double GetLastFrameTime() const;
+	virtual ValueType getValueType() const { return ValueType_SQTTransform; }
+	virtual void updateValue(double time);
+	virtual double getLastFrameTime() const;
 
 private:
 	typedef List<BoneFrameData>	KeyFrameList;

@@ -16,7 +16,7 @@ LN_NAMESPACE_BEGIN
 //------------------------------------------------------------------------------
 InputController* InputController::GetController(int index)
 {
-	return detail::InputManager::GetInstance()->GetVirtualPad(index);
+	return detail::InputManager::getInstance()->GetVirtualPad(index);
 }
 
 //------------------------------------------------------------------------------
@@ -137,7 +137,7 @@ void InputController::SetRepeatInterval(int start, int step)
 }
 
 //------------------------------------------------------------------------------
-void InputController::UpdateFrame()
+void InputController::updateFrame()
 {
 	//SortedArray<String, InputState>::iterator itr = m_inputStatus.begin();
 	//SortedArray<String, InputState>::iterator end = m_inputStatus.end();

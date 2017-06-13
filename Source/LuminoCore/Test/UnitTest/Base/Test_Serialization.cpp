@@ -9,7 +9,7 @@ struct TkMVSoundData
 	ln::String		name;
 	int				volume;
 
-	void Serialize(ln::tr::Archive& ar, int version)
+	void serialize(ln::tr::Archive& ar, int version)
 	{
 		ar & ln::tr::makeNVP("name", name);
 		ar & ln::tr::makeNVP("volume", volume);
@@ -22,7 +22,7 @@ struct TkMVMapData1
 	TkMVSoundData	bgm;
 	ln::String		displayName;
 
-	void Serialize(ln::tr::Archive& ar, int version)
+	void serialize(ln::tr::Archive& ar, int version)
 	{
 		ar & ln::tr::makeNVP("autoplayBgm", autoplayBgm);
 		ar & ln::tr::makeNVP("bgm", bgm);
@@ -36,7 +36,7 @@ public:
 	ln::String		name;
 	int				volume;
 
-	virtual void Serialize(ln::tr::Archive& ar, int version)
+	virtual void serialize(ln::tr::Archive& ar, int version)
 	{
 		ar & ln::tr::makeNVP("name", name);
 		ar & ln::tr::makeNVP("volume", volume);
@@ -48,7 +48,7 @@ class TkMVEventData3 : public ln::Object
 public:
 	ln::String		id;
 
-	virtual void Serialize(ln::tr::Archive& ar, int version)
+	virtual void serialize(ln::tr::Archive& ar, int version)
 	{
 		ar & ln::tr::makeNVP("id", id);
 	}
@@ -61,7 +61,7 @@ struct TkMVMapData3 : public ln::Object
 	ln::String						displayName;
 	List<RefPtr<TkMVEventData3>>	events;
 
-	void Serialize(ln::tr::Archive& ar, int version)
+	void serialize(ln::tr::Archive& ar, int version)
 	{
 		ar & ln::tr::makeNVP("autoplayBgm", autoplayBgm);
 		ar & ln::tr::makeNVP("bgm", bgm);
@@ -75,7 +75,7 @@ struct TkMVEventCommand3 : public ln::Object
 	int					code;
 	List<tr::ScVariant>	params;
 
-	virtual void Serialize(ln::tr::Archive& ar, int version)
+	virtual void serialize(ln::tr::Archive& ar, int version)
 	{
 		ar & ln::tr::makeNVP("code", code);
 		ar & ln::tr::makeNVP("params", params);
@@ -87,7 +87,7 @@ struct TkMVMovementData3 : public ln::Object
 	bool	ignore;
 	List<RefPtr<TkMVEventCommand3>>	commands;
 
-	virtual void Serialize(ln::tr::Archive& ar, int version)
+	virtual void serialize(ln::tr::Archive& ar, int version)
 	{
 		ar & ln::tr::makeNVP("ignore", ignore);
 		ar & ln::tr::makeNVP("commands", commands);
@@ -150,7 +150,7 @@ TEST_F(Test_Serialization, SimpleObject)
 	ln::String json;
 	// save
 	{
-		auto t1 = NewObject<TkMVSoundData3>();
+		auto t1 = newObject<TkMVSoundData3>();
 		t1->name = _T("test");
 		t1->volume = 100;
 		json = tr::JsonSerializer::save(t1);
@@ -169,15 +169,15 @@ TEST_F(Test_Serialization, CommonObject)
 	ln::String json;
 	// save
 	{
-		auto t1 = NewObject<TkMVMapData3>();
+		auto t1 = newObject<TkMVMapData3>();
 		t1->autoplayBgm = true;
-		t1->bgm = NewObject<TkMVSoundData3>();
+		t1->bgm = newObject<TkMVSoundData3>();
 		t1->bgm->name = _T("test");
 		t1->bgm->volume = 100;
 		t1->displayName = _T("map1");
-		t1->events.add(NewObject<TkMVEventData3>());
+		t1->events.add(newObject<TkMVEventData3>());
 		t1->events.add(nullptr);
-		t1->events.add(NewObject<TkMVEventData3>());
+		t1->events.add(newObject<TkMVEventData3>());
 		t1->events[0]->id = _T("EV001");
 		t1->events[2]->id = _T("EV003");
 		json = tr::JsonSerializer::save(t1);
@@ -201,10 +201,10 @@ TEST_F(Test_Serialization, Variant)
 	ln::String json;
 	// save
 	{
-		auto t1 = NewObject<TkMVMovementData3>();
+		auto t1 = newObject<TkMVMovementData3>();
 		t1->ignore = true;
 		{
-			auto c1 = NewObject<TkMVEventCommand3>();
+			auto c1 = newObject<TkMVEventCommand3>();
 			c1->code = 100;
 			tr::ScVariant v1;
 			tr::ScVariant v2;
@@ -215,7 +215,7 @@ TEST_F(Test_Serialization, Variant)
 			t1->commands.add(c1);
 		}
 		{
-			auto c1 = NewObject<TkMVEventCommand3>();
+			auto c1 = newObject<TkMVEventCommand3>();
 			c1->code = 200;
 			tr::ScVariant v1;
 			tr::ScVariant v2;
@@ -410,7 +410,7 @@ TEST_F(Test_Serialization, List)
 //
 //
 ////template<typename T, typename isAbstract>
-////static Test_Factory GetFactory();
+////static Test_Factory getFactory();
 //
 //template<class TObject, class TIsAbstract> struct Test_GetFactory {};
 //
@@ -428,14 +428,14 @@ TEST_F(Test_Serialization, List)
 //
 //template<class TObject> struct Test_GetFactory<TObject, std::false_type>
 //{
-//	static Test_Factory GetFactory()
+//	static Test_Factory getFactory()
 //	{
-//		return []() { return RefPtr<Object>::StaticCast(NewObject<TObject>()); };
+//		return []() { return RefPtr<Object>::StaticCast(newObject<TObject>()); };
 //	}
 //};
 //template<class TObject> struct Test_GetFactory<TObject, std::true_type>
 //{
-//	static Test_Factory GetFactory()
+//	static Test_Factory getFactory()
 //	{
 //		return nullptr;
 //	}
@@ -449,7 +449,7 @@ TEST_F(Test_Serialization, List)
 //	Test_Factory m_factory;
 //
 //	Test_TypeInfo()
-//		: m_factory(Test_GetFactory<T, std::is_abstract<T>::type>::GetFactory())
+//		: m_factory(Test_GetFactory<T, std::is_abstract<T>::type>::getFactory())
 //	{
 //		printf("aa");
 //	}
@@ -460,13 +460,13 @@ TEST_F(Test_Serialization, List)
 //Test_TypeInfo<TestObject4> TestObject4::info;
 
 //template<>
-//static Test_Factory GetFactory<TestObject4, std::false_type::value>()
+//static Test_Factory getFactory<TestObject4, std::false_type::value>()
 //{
 //	return nullptr;
 //}
 //
 //template<>
-//static Test_Factory GetFactory<TestObject4, std::true_type::value>()
+//static Test_Factory getFactory<TestObject4, std::true_type::value>()
 //{
 //	return nullptr;
 //}

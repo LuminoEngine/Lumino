@@ -50,7 +50,7 @@ void UIElementCollection::clearItems()
 
 	tr::ChildCollectionChangedArgs e =
 	{
-		tr::NotifyCollectionChangedAction::Reset,
+		tr::NotifyCollectionChangedAction::reset,
 		m_newItemsCache, 0,
 		m_oldItemsCache, 0,
 	};

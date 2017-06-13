@@ -46,13 +46,13 @@ float Quaternion::getLength() const
 }
 
 //------------------------------------------------------------------------------
-float Quaternion::GetLengthSquared() const
+float Quaternion::getLengthSquared() const
 {
 	return (x * x) + (y * y) + (z * z) + (w * w);
 }
 
 //------------------------------------------------------------------------------
-void Quaternion::Normalize()
+void Quaternion::normalize()
 {
 	float t = 1.0f / getLength();
 	x *= t;
@@ -62,7 +62,7 @@ void Quaternion::Normalize()
 }
 
 //------------------------------------------------------------------------------
-void Quaternion::Multiply(const Quaternion& qua)
+void Quaternion::multiply(const Quaternion& qua)
 {
 	float lx = x;
 	float ly = y;
@@ -126,27 +126,27 @@ void Quaternion::rotateZ(float angle)
 void Quaternion::rotateAxis(const Vector3& axis, float r)
 {
 	// TODO: もうちょい最適化
-	Multiply(MakeFromRotationAxis(axis, r));
+	multiply(makeFromRotationAxis(axis, r));
 }
 
 //------------------------------------------------------------------------------
 Vector3 Quaternion::toEulerAngles(RotationOrder order, bool* locked) const
 {
 	// クォータニオン→行列
-	Matrix rot = Matrix::MakeRotationQuaternion(Quaternion::Normalize(*this));
+	Matrix rot = Matrix::makeRotationQuaternion(Quaternion::normalize(*this));
 	return rot.toEulerAngles(order, locked);
 }
 
 //------------------------------------------------------------------------------
-void Quaternion::ToAxisAngle(Vector3* axis, float* angle) const
+void Quaternion::toAxisAngle(Vector3* axis, float* angle) const
 {
-	Quaternion q = Quaternion::Normalize(*this);
+	Quaternion q = Quaternion::normalize(*this);
 	if (axis)
 	{
 		axis->x = q.x;
 		axis->y = q.y;
 		axis->z = q.z;
-		axis->Normalize();
+		axis->normalize();
 	}
 	if (angle)
 	{
@@ -175,7 +175,7 @@ void Quaternion::print(const char* format, FILE* stream) const
 //-------------------------------------------------------------------------
 // static
 //-------------------------------------------------------------------------
-Quaternion Quaternion::Normalize(const Quaternion& qua)
+Quaternion Quaternion::normalize(const Quaternion& qua)
 {
 	float length = 1.0f / qua.getLength();
 	return Quaternion(
@@ -188,7 +188,7 @@ Quaternion Quaternion::Normalize(const Quaternion& qua)
 //-------------------------------------------------------------------------
 // static
 //-------------------------------------------------------------------------
-Quaternion Quaternion::Conjugate(const Quaternion& qua)
+Quaternion Quaternion::conjugate(const Quaternion& qua)
 {
 	return Quaternion(
 		-qua.x,
@@ -200,7 +200,7 @@ Quaternion Quaternion::Conjugate(const Quaternion& qua)
 //-------------------------------------------------------------------------
 // static
 //-------------------------------------------------------------------------
-float Quaternion::Dot(const Quaternion& qua1, const Quaternion& qua2)
+float Quaternion::dot(const Quaternion& qua1, const Quaternion& qua2)
 {
 	return (qua1.x * qua2.x) + (qua1.y * qua2.y) + (qua1.z * qua2.z) + (qua1.w * qua2.w);
 }
@@ -208,7 +208,7 @@ float Quaternion::Dot(const Quaternion& qua1, const Quaternion& qua2)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Quaternion Quaternion::Multiply(const Quaternion& qua1, const Quaternion& qua2)
+Quaternion Quaternion::multiply(const Quaternion& qua1, const Quaternion& qua2)
 {
 	return Quaternion(
 		(qua2.x * qua1.w + qua1.x * qua2.w + qua2.y * qua1.z) - (qua2.z * qua1.y),
@@ -220,7 +220,7 @@ Quaternion Quaternion::Multiply(const Quaternion& qua1, const Quaternion& qua2)
 //-------------------------------------------------------------------------
 // static
 //-------------------------------------------------------------------------
-Quaternion Quaternion::MakeInverse(const Quaternion& qua)
+Quaternion Quaternion::makeInverse(const Quaternion& qua)
 {
 	float t = 1.0f / ((qua.x * qua.x) + (qua.y * qua.y) + (qua.z * qua.z) + (qua.w * qua.w));
 	return Quaternion(
@@ -233,7 +233,7 @@ Quaternion Quaternion::MakeInverse(const Quaternion& qua)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Quaternion Quaternion::MakeFromRotationAxis(const Vector3& axis, float r)
+Quaternion Quaternion::makeFromRotationAxis(const Vector3& axis, float r)
 {
 	float tx = axis.x;
 	float ty = axis.y;
@@ -261,7 +261,7 @@ Quaternion Quaternion::MakeFromRotationAxis(const Vector3& axis, float r)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Quaternion Quaternion::MakeFromRotationMatrix(const Matrix& mat)
+Quaternion Quaternion::makeFromRotationMatrix(const Matrix& mat)
 {
 	float t = mat.m11 + mat.m22 + mat.m33;
 
@@ -316,7 +316,7 @@ Quaternion Quaternion::MakeFromRotationMatrix(const Matrix& mat)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Quaternion Quaternion::MakeFromYawPitchRoll(float yaw, float pitch, float roll)
+Quaternion Quaternion::makeFromYawPitchRoll(float yaw, float pitch, float roll)
 {
 	float halfRoll = roll * 0.5f;
 	float sinRoll, cosRoll;
@@ -340,7 +340,7 @@ Quaternion Quaternion::MakeFromYawPitchRoll(float yaw, float pitch, float roll)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Quaternion Quaternion::MakeFromEulerAngles(const Vector3& angles, RotationOrder order)
+Quaternion Quaternion::makeFromEulerAngles(const Vector3& angles, RotationOrder order)
 {
 	Quaternion q;
 	switch (order)
@@ -364,7 +364,7 @@ Quaternion Quaternion::MakeFromEulerAngles(const Vector3& angles, RotationOrder 
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Quaternion Quaternion::Slerp(const Quaternion& qua1, const Quaternion& qua2, float t)
+Quaternion Quaternion::slerp(const Quaternion& qua1, const Quaternion& qua2, float t)
 {
 	float opposite;
 	float inverse;
@@ -399,11 +399,11 @@ Quaternion Quaternion::Slerp(const Quaternion& qua1, const Quaternion& qua2, flo
 }
 
 //------------------------------------------------------------------------------
-Quaternion Quaternion::LookRotation(const Vector3& forward_, const Vector3& up_)
+Quaternion Quaternion::lookRotation(const Vector3& forward_, const Vector3& up_)
 {
-	Vector3 forward = Vector3::Normalize(forward_);
-	Vector3 right = Vector3::Normalize(Vector3::Cross(up_, forward));
-	Vector3 up = Vector3::Cross(forward, right);
+	Vector3 forward = Vector3::normalize(forward_);
+	Vector3 right = Vector3::normalize(Vector3::cross(up_, forward));
+	Vector3 up = Vector3::cross(forward, right);
 	float m00 = right.x;
 	float m01 = right.y;
 	float m02 = right.z;

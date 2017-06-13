@@ -11,7 +11,7 @@ LN_NAMESPACE_BEGIN
 namespace detail
 {
 
-PhysicsManager* GetPhysicsManager(PhysicsManager* priority)
+PhysicsManager* getPhysicsManager(PhysicsManager* priority)
 {
 	if (priority != NULL) return priority;
 	return PhysicsManager::Instance;
@@ -89,9 +89,9 @@ void PhysicsManager::Finalize()
 //	}
 //
 //
-//	//m_collisionBodyList.Commit();
-//	m_rigidBodyList.Commit();
-//	m_jointList.Commit();
+//	//m_collisionBodyList.commit();
+//	m_rigidBodyList.commit();
+//	m_jointList.commit();
 //
 //	//---------------------------------------------------------
 //	// 剛体の姿勢を同期

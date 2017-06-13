@@ -21,7 +21,7 @@ public:	static const int MaxJoysticks = 4;
 		PlatformWindow*	mainWindow;
 	};
 	
-	static InputManager* GetInstance(InputManager* priority = nullptr);
+	static InputManager* getInstance(InputManager* priority = nullptr);
 
 public:
 	InputManager();
@@ -33,14 +33,14 @@ public:
 	InputController* GetVirtualPad(int index) { return m_defaultVirtualPads[index]; }
 
 	void PreUpdateFrame();
-	void UpdateFrame();
+	void updateFrame();
 
 	//InputDevice* GetInputDevice() { return m_inputDevice; }
 	//int GetButtonRepertFirstFrameCount() const { return 20; }
 	//int GetButtonRepertIntervalFrameCount()const { return 5; }
 	//const Matrix& GetMouseTransform() const { return m_mouseTransform; }
 
-	void OnEvent(const PlatformEventArgs& e);
+	void onEvent(const PlatformEventArgs& e);
 
 
 	float GetVirtualButtonState(InputBinding* binding, bool keyboard, bool mouse, int joyNumber);

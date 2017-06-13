@@ -30,28 +30,28 @@ public:
 	//LayerList* GetLayerList() { return &m_layerList; }
 
 	/// 現在の時間を取得する (秒)
-	double GetTime() const { return m_time; }
+	double getTime() const { return m_time; }
 
 	/// 前回フレームからの経過時間を取得する (秒)
 	float GetElapsedTime() const { return m_elapsedTime; }
 
-	SceneGraphManager* GetManager() const { return m_manager; }
-	virtual void UpdateFrame(float deltaTime);
+	SceneGraphManager* getManager() const { return m_manager; }
+	virtual void updateFrame(float deltaTime);
 	virtual SceneNode* GetRootNode() = 0;
-	//virtual CameraComponent* GetMainCamera() = 0;
+	//virtual CameraComponent* getMainCamera() = 0;
 
 
-	//DrawList* GetRenderer() const;
+	//DrawList* getRenderer() const;
 	//DrawList* GetDebugRenderer() const;
 
 protected:
 	SceneGraph();
 	virtual ~SceneGraph();
-	void CreateCore(SceneGraphManager* manager);
+	void createCore(SceneGraphManager* manager);
 
 LN_INTERNAL_ACCESS:
 
-	void BeginUpdateFrame();
+	void reginUpdateFrame();
 
 private:
 
@@ -100,15 +100,15 @@ public:
 
 public:
 
-	virtual void UpdateFrame(float elapsedTime);
+	virtual void updateFrame(float elapsedTime);
 	virtual SceneNode* GetRootNode() override { return m_defaultRoot; }
-	//virtual CameraComponent* GetMainCamera() override { return m_defaultCamera; }
+	//virtual CameraComponent* getMainCamera() override { return m_defaultCamera; }
 	//virtual List<RenderingPass*>* GetRenderingPasses() override { return &m_renderingPasses; }
 
 public:
 	SceneGraph2D();
 	virtual ~SceneGraph2D();
-	void CreateCore(SceneGraphManager* manager);
+	void createCore(SceneGraphManager* manager);
 
 private:
 	SceneNode*				m_defaultRoot;
@@ -127,16 +127,16 @@ public:
 	LN_TR_PROPERTY(bool, visibleGridPlane);
 	tr::Property<bool>	visibleGridPlane;
 
-	virtual void UpdateFrame(float elapsedTime);
+	virtual void updateFrame(float elapsedTime);
 	virtual SceneNode* GetRootNode() override { return m_defaultRoot; }
-	//virtual CameraComponent* GetMainCamera() override { return m_defaultCamera; }
+	//virtual CameraComponent* getMainCamera() override { return m_defaultCamera; }
 	//LightComponent* GetMainLight() const;
 	//virtual List<RenderingPass*>* GetRenderingPasses() override { return &m_renderingPasses; }
 
 public:
 	SceneGraph3D();
 	virtual ~SceneGraph3D();
-	void CreateCore(SceneGraphManager* manager);
+	void createCore(SceneGraphManager* manager);
 
 private:
 

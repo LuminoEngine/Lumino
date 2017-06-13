@@ -22,9 +22,9 @@ DirectMusicAudioDevice::DirectMusicAudioDevice()
 //------------------------------------------------------------------------------
 DirectMusicAudioDevice::~DirectMusicAudioDevice()
 {
-	if (DirectMusicManager::GetInstance())
+	if (DirectMusicManager::getInstance())
 	{
-		DirectMusicManager::GetInstance()->Finalize();
+		DirectMusicManager::getInstance()->Finalize();
 	}
 }
 
@@ -43,13 +43,13 @@ void DirectMusicAudioDevice::initialize( const ConfigData& configData )
 }
 
 //------------------------------------------------------------------------------
-AudioPlayer* DirectMusicAudioDevice::CreateAudioPlayer(AudioStream* source, bool enable3d, SoundPlayingMode mode)
+AudioPlayer* DirectMusicAudioDevice::createAudioPlayer(AudioStream* source, bool enable3d, SoundPlayingMode mode)
 {
 	RefPtr<DirectMusicAudioPlayer> audioPlayer;
 
 	if (mode == SoundPlayingMode::Midi)
     {
-		LN_THROW(DirectMusicManager::GetInstance(), InvalidOperationException);
+		LN_THROW(DirectMusicManager::getInstance(), InvalidOperationException);
 		audioPlayer.attach(LN_NEW DirectMusicAudioPlayer(this), false);
 		audioPlayer->initialize(source, enable3d);
     }
@@ -59,16 +59,16 @@ AudioPlayer* DirectMusicAudioDevice::CreateAudioPlayer(AudioStream* source, bool
 }
 
 //------------------------------------------------------------------------------
-void DirectMusicAudioDevice::Update()
+void DirectMusicAudioDevice::update()
 {
-    if ( DirectMusicManager::GetInstance() )
+    if ( DirectMusicManager::getInstance() )
     {
-        DirectMusicManager::GetInstance()->Polling();
+        DirectMusicManager::getInstance()->polling();
     }
 }
 
 //------------------------------------------------------------------------------
-void DirectMusicAudioDevice::SetMetreUnitDistance(float d)
+void DirectMusicAudioDevice::setMetreUnitDistance(float d)
 {
 }
 

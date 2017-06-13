@@ -57,7 +57,7 @@ public:
 	OutputBuffer& NewLine(int count = 1);
 	
 	/** 現在のインデントレベル分の空白を追加する */
-	void Indent();
+	void indent();
 	
 	/** String 取得 */
 	String toString() const;

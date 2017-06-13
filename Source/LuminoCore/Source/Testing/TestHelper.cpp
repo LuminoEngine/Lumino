@@ -13,14 +13,14 @@ String TestHelper::getFilePath(const char* baseSourceFilePath, const char* fileN
 }
 
 //------------------------------------------------------------------------------
-PathName TestHelper::GetDirPath(const char* baseFilePath)
+PathName TestHelper::getDirPath(const char* baseFilePath)
 {
 	PathName base(baseFilePath);
 	return base.getParent();
 }
 
 //------------------------------------------------------------------------------
-PathNameA TestHelper::GetFilePathA(const char* baseFilePath, const char* fileName)
+PathNameA TestHelper::getFilePathA(const char* baseFilePath, const char* fileName)
 {
 	PathNameA base(baseFilePath);
 	PathNameA path(base.getParent(), fileName);
@@ -28,7 +28,7 @@ PathNameA TestHelper::GetFilePathA(const char* baseFilePath, const char* fileNam
 }
 
 //------------------------------------------------------------------------------
-PathNameW TestHelper::GetFilePathW(const char* baseFilePath, const wchar_t* fileName)
+PathNameW TestHelper::getFilePathW(const char* baseFilePath, const wchar_t* fileName)
 {
 	PathNameW base(baseFilePath);
 	PathNameW path(base.getParent(), fileName);
@@ -36,7 +36,7 @@ PathNameW TestHelper::GetFilePathW(const char* baseFilePath, const wchar_t* file
 }
 
 //------------------------------------------------------------------------------
-bool TestHelper::CheckArrays(const void* ary1, const void* ary2, size_t count)
+bool TestHelper::checkArrays(const void* ary1, const void* ary2, size_t count)
 {
 	byte_t* b1 = (byte_t*)ary1;
 	byte_t* b2 = (byte_t*)ary2;
@@ -51,7 +51,7 @@ bool TestHelper::CheckArrays(const void* ary1, const void* ary2, size_t count)
 }
 
 //------------------------------------------------------------------------------
-bool TestHelper::EqualFiles(const PathName& filePath1, const PathName& filePath2)
+bool TestHelper::equalFiles(const PathName& filePath1, const PathName& filePath2)
 {
 	if (FileSystem::getFileSize(filePath1) != FileSystem::getFileSize(filePath2)) return false;
 	return FileSystem::readAllBytes(filePath1).equals(FileSystem::readAllBytes(filePath2));

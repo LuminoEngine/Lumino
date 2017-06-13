@@ -36,27 +36,27 @@ void DX9VertexBuffer::create(DX9GraphicsDevice* device, size_t bufferSize, const
 	m_bufferSize = bufferSize;
 	m_usage = usage;
 
-	OnResetDevice();
+	onResetDevice();
 
 	// 頂点として設定するデータがある場合
 	if (initialData != NULL)
 	{
-		void* v = Lock();
+		void* v = lock();
 		memcpy_s(v, m_bufferSize, initialData, m_bufferSize);
-		Unlock();
+		unlock();
 	}
 }
 
 //------------------------------------------------------------------------------
-void DX9VertexBuffer::SetSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes)
+void DX9VertexBuffer::setSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes)
 {
-	byte_t* buf = (byte_t*)Lock();
+	byte_t* buf = (byte_t*)lock();
 	memcpy(buf + offsetBytes, data, dataBytes);	// TOOD: IndexBuffer と同じサイズチェック
-	Unlock();
+	unlock();
 }
 
 //------------------------------------------------------------------------------
-void* DX9VertexBuffer::Lock()
+void* DX9VertexBuffer::lock()
 {
 	DWORD flags = 0;
 	if (m_usage == ResourceUsage::Dynamic)
@@ -70,13 +70,13 @@ void* DX9VertexBuffer::Lock()
 }
 
 //------------------------------------------------------------------------------
-void DX9VertexBuffer::Unlock()
+void DX9VertexBuffer::unlock()
 {
 	LN_COMCALL(m_vertexBuffer->Unlock());
 }
 
 //------------------------------------------------------------------------------
-void DX9VertexBuffer::OnLostDevice()
+void DX9VertexBuffer::onLostDevice()
 {
 	if (m_usage == ResourceUsage::Dynamic)
 	{
@@ -85,7 +85,7 @@ void DX9VertexBuffer::OnLostDevice()
 }
 
 //------------------------------------------------------------------------------
-void DX9VertexBuffer::OnResetDevice()
+void DX9VertexBuffer::onResetDevice()
 {
 	if (m_vertexBuffer == nullptr)
 	{

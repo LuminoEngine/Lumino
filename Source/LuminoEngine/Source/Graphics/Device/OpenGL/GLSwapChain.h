@@ -21,11 +21,11 @@ public:
 	void initialize(GLGraphicsDevice* device, GLContext* context, PlatformWindow* window);
 
 public:
-	virtual ITexture* GetBackBuffer() override { return m_renderTarget; }
+	virtual ITexture* getBackBuffer() override { return m_renderTarget; }
 	virtual void resize(const SizeI& size) override;
 	virtual void Present(ITexture* colorBuffer) override;
-	virtual void OnLostDevice() override;
-	virtual void OnResetDevice() override;
+	virtual void onLostDevice() override;
+	virtual void onResetDevice() override;
 
 protected:
 	void InternalPresent(ITexture* colorBuffer, GLRenderer* renderer/*GLuint rendererVAO*/);

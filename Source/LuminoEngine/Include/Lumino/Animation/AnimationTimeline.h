@@ -9,7 +9,7 @@ class AnimationClock;
 
 
 template<typename TValue>
-TValue LerpAnimationValue(TValue v1, TValue v2, float t)
+TValue lerpAnimationValue(TValue v1, TValue v2, float t)
 {
 	return v1 + ((v2 - v1) * t);
 }
@@ -27,10 +27,10 @@ public:
 public:
 
 	/// 終端フレーム位置の取得
-	virtual float GetLastTime() const = 0;
+	virtual float getLastTime() const = 0;
 
-	//void SetWrapMode(WrapMode mode) { m_wrapMode = mode; }
-	//WrapMode GetWrapMode() const { return m_wrapMode; }
+	//void setWrapMode(WrapMode mode) { m_wrapMode = mode; }
+	//WrapMode getWrapMode() const { return m_wrapMode; }
 
 private:
 	//WrapMode	m_wrapMode;
@@ -56,8 +56,8 @@ class ValueAnimationTimeline
 public:
 	ValueAnimationTimeline() = default;
 	virtual ~ValueAnimationTimeline() = default;
-	virtual float GetLastTime() const = 0;
-	virtual TValue Interpolate(const TValue& startValue, float time) = 0;
+	virtual float getLastTime() const = 0;
+	virtual TValue interpolate(const TValue& startValue, float time) = 0;
 };
 
 
@@ -73,7 +73,7 @@ public:
 	}
 
 
-	virtual float GetLastTime() const override { return m_duration; }
+	virtual float getLastTime() const override { return m_duration; }
 
 	RefPtr<AnimationClock> start(Object* targetObject, TValue* targetVariablePtr, const TValue& startValue, const Delegate<void(void)>& endCallback);
 
@@ -87,10 +87,10 @@ public:
 
 	virtual ~EasingAnimationTimeline() = default;
 
-	virtual TValue Interpolate(const TValue& startValue, float time) override
+	virtual TValue interpolate(const TValue& startValue, float time) override
 	{
 		float t = m_easingFunction(time, 0.0f, 1.0f, m_duration);
-		return LerpAnimationValue(startValue, m_targetValue, t);
+		return lerpAnimationValue(startValue, m_targetValue, t);
 	}
 
 private:

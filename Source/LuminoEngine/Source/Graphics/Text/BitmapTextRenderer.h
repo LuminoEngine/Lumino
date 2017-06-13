@@ -13,7 +13,7 @@ public:
 
 	void initialize(detail::GraphicsManager* manager);
 
-	GlyphRun* GetTempGlyphRun() { return m_tmpGlyphRun; }	// テクスチャの DrawText 等、ユーティリティ的に使いたいときに new を減らす
+	GlyphRun* GetTempGlyphRun() { return m_tmpGlyphRun; }	// テクスチャの drawText 等、ユーティリティ的に使いたいときに new を減らす
 
 	void SetRenderArea(const RectI& area) { m_renderArea = area; }
 	void SetTextAlignment(TextAlignment align) { m_textAlignment = align; }

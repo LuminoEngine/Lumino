@@ -69,7 +69,7 @@ void HugePlane::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 		*/
 		//auto& vf = dc->CurrentCamera->GetViewFrustum();
 		//Vector3 points[8];
-		//vf.GetCornerPoints(points);
+		//vf.getCornerPoints(points);
 
 		//Line lines[12] =
 		//{
@@ -94,7 +94,7 @@ void HugePlane::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 		//for (Line& li : lines)
 		//{
 		//	Vector3 pt;
-		//	if (plane.Intersects(li.from, li.to, &pt))
+		//	if (plane.intersects(li.from, li.to, &pt))
 		//	{
 		//		hits.Add(pt);
 		//	}
@@ -103,14 +103,14 @@ void HugePlane::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 		//Vector3 minPos, maxPos;
 		//for (Vector3& p : hits)
 		//{
-		//	minPos = Vector3::Min(p, minPos);
-		//	maxPos = Vector3::Max(p, maxPos);
+		//	minPos = Vector3::min(p, minPos);
+		//	maxPos = Vector3::max(p, maxPos);
 		//}
 
-		//m_mesh->SetPosition(0, Vector3(minPos.x, 0, maxPos.z));
-		//m_mesh->SetPosition(1, Vector3(minPos.x, 0, minPos.z));
-		//m_mesh->SetPosition(2, Vector3(maxPos.x, 0, maxPos.z));
-		//m_mesh->SetPosition(3, Vector3(maxPos.x, 0, minPos.z));
+		//m_mesh->setPosition(0, Vector3(minPos.x, 0, maxPos.z));
+		//m_mesh->setPosition(1, Vector3(minPos.x, 0, minPos.z));
+		//m_mesh->setPosition(2, Vector3(maxPos.x, 0, maxPos.z));
+		//m_mesh->setPosition(3, Vector3(maxPos.x, 0, minPos.z));
 		//m_mesh->SetUV(0, Vector2(-1.0f, 1.0f));
 		//m_mesh->SetUV(1, Vector2(-1.0f, -1.0f));
 		//m_mesh->SetUV(2, Vector2(1.0f, 1.0f));

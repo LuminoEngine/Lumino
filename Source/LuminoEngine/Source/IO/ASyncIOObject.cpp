@@ -45,7 +45,7 @@ void ASyncIOObject::InvokeIOProc(bool isASync, FileManager* fileManager)
 		m_ayncIOState = ASyncIOState_Processing;
 		try
 		{
-			OnASyncIOProc();
+			onASyncIOProc();
 		}
 		catch (...)
 		{

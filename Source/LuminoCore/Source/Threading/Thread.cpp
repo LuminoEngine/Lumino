@@ -27,7 +27,7 @@ Thread::~Thread()
 {
     if (m_impl != nullptr)
     {
-        Wait();
+        wait();
     }
 	LN_SAFE_DELETE(mLastException);
 	LN_SAFE_DELETE(m_impl);
@@ -36,14 +36,14 @@ Thread::~Thread()
 //------------------------------------------------------------------------------
 void Thread::start()
 {
-	Reset();
+	reset();
 	m_impl->start();
 }
 
 //------------------------------------------------------------------------------
-void Thread::Wait()
+void Thread::wait()
 {
-	m_impl->Wait();
+	m_impl->wait();
 
 	// スレッドで例外が発生していれば throw する
 	if (mLastException != nullptr)
@@ -53,36 +53,36 @@ void Thread::Wait()
 }
 
 //------------------------------------------------------------------------------
-bool Thread::IsFinished()
+bool Thread::isFinished()
 {
-	return mFinished.IsTrue();
+	return mFinished.isTrue();
 }
 
 //------------------------------------------------------------------------------
-intptr_t Thread::GetThreadId() const
+intptr_t Thread::getThreadId() const
 { 
-    return m_impl->GetThreadId();
+    return m_impl->getThreadId();
 }
 
 //------------------------------------------------------------------------------
-void Thread::Sleep(int milliseconds)
+void Thread::sleep(int milliseconds)
 {
-	detail::ThreadImpl::Sleep(milliseconds);
+	detail::ThreadImpl::sleep(milliseconds);
 }
 
 //------------------------------------------------------------------------------
-intptr_t Thread::GetCurrentThreadId()
+intptr_t Thread::getCurrentThreadId()
 {
-    return detail::ThreadImpl::GetCurrentThreadId();
+    return detail::ThreadImpl::getCurrentThreadId();
 }
 
 //------------------------------------------------------------------------------
-void Thread::Reset()
+void Thread::reset()
 {
 	// 前のが終了していない場合は待つ
-	Wait();
+	wait();
 	LN_SAFE_DELETE(mLastException);
-	mFinished.SetFalse();
+	mFinished.setFalse();
 }
 
 //------------------------------------------------------------------------------
@@ -102,7 +102,7 @@ void Thread::ExecuteInternal()
 	}
 
 	// 終了フラグを立てる
-	mFinished.SetTrue();
+	mFinished.setTrue();
 }
 
 //==============================================================================

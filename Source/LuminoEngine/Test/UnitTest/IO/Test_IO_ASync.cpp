@@ -13,7 +13,7 @@ class ASyncTest1
 	: public ASyncIOObject
 {
 public:
-	virtual void OnASyncIOProc()
+	virtual void onASyncIOProc()
 	{
 		++g_count;
 	}

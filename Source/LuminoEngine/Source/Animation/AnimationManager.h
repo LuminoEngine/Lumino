@@ -18,9 +18,9 @@ public:
 
 	void initialize();
 
-	void AdvanceTime(float deltaTime);
+	void advanceTime(float deltaTime);
 
-	void AddAnimationClock(AnimationClock* clock);
+	void addAnimationClock(AnimationClock* clock);
 
 	//AnimationClock* StartPropertyAnimation(AnimatableObject* targetObject/*AnimationClockArgs* list, int listCount*/)
 	//{

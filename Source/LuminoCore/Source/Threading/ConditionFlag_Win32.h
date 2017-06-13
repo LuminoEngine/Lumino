@@ -1,6 +1,5 @@
 ﻿
 #include "../Internal.h"
-#include <windows.h>
 
 LN_NAMESPACE_BEGIN
 namespace detail {
@@ -24,7 +23,7 @@ public:
 		}
 	}
 
-	void SetTrue()
+	void setTrue()
 	{
 		if (mHandle)
 		{
@@ -32,7 +31,7 @@ public:
 		}
 	}
 
-	void SetFalse()
+	void setFalse()
 	{
 		if (mHandle)
 		{
@@ -40,7 +39,7 @@ public:
 		}
 	}
 
-	bool IsTrue() const
+	bool isTrue() const
 	{
 		if (mHandle)
 		{
@@ -49,7 +48,7 @@ public:
 		return true;
 	}
 
-	void Wait()
+	void wait()
 	{
 		if (mHandle)
 		{

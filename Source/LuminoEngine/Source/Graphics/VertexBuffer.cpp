@@ -37,7 +37,7 @@ LN_NAMESPACE_BEGIN
 ////------------------------------------------------------------------------------
 //VertexBuffer* VertexBuffer::create(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data, DeviceResourceUsage usage)
 //{
-//	return create(GraphicsManager::GetInstance(), vertexElements, elementsCount, vertexCount, data, usage);
+//	return create(GraphicsManager::getInstance(), vertexElements, elementsCount, vertexCount, data, usage);
 //}
 //
 ////------------------------------------------------------------------------------
@@ -72,7 +72,7 @@ void VertexBuffer::initialize(detail::GraphicsManager* manager, size_t bufferSiz
 
 	if (sizeConst)
 	{
-		m_rhiObject = m_manager->GetGraphicsDevice()->CreateVertexBuffer(bufferSize, data, usage);
+		m_rhiObject = m_manager->getGraphicsDevice()->CreateVertexBuffer(bufferSize, data, usage);
 	}
 	else
 	{
@@ -96,7 +96,7 @@ int VertexBuffer::getSize() const
 //------------------------------------------------------------------------------
 void VertexBuffer::reserve(int size)
 {
-	if (LN_CHECK_STATE(!IsRHIDirect())) return;		// サイズ変更禁止
+	if (LN_CHECK_STATE(!isRHIDirect())) return;		// サイズ変更禁止
 
 	size_t newSize = static_cast<size_t>(size);
 	if (newSize != m_buffer.capacity())
@@ -108,7 +108,7 @@ void VertexBuffer::reserve(int size)
 //------------------------------------------------------------------------------
 void VertexBuffer::resize(int size)
 {
-	if (LN_CHECK_STATE(!IsRHIDirect())) return;		// サイズ変更禁止
+	if (LN_CHECK_STATE(!isRHIDirect())) return;		// サイズ変更禁止
 
 	size_t newSize = static_cast<size_t>(size);
 	if (newSize != m_buffer.size())
@@ -118,16 +118,16 @@ void VertexBuffer::resize(int size)
 }
 
 //------------------------------------------------------------------------------
-void* VertexBuffer::GetMappedData()
+void* VertexBuffer::getMappedData()
 {
 	if (m_usage == ResourceUsage::Static)
 	{
-		// sizeConst で、まだ1度も SetVertexBufferCommand に入っていない場合は直接 Lock で書き換えできる
+		// sizeConst で、まだ1度も SetVertexBufferCommand に入っていない場合は直接 lock で書き換えできる
 		if (m_initialUpdate && m_rhiObject != nullptr)
 		{
 			if (m_rhiLockedBuffer == nullptr)
 			{
-				m_rhiLockedBuffer = m_rhiObject->Lock();
+				m_rhiLockedBuffer = m_rhiObject->lock();
 			}
 			m_locked = true;
 			return m_rhiLockedBuffer;
@@ -139,13 +139,13 @@ void* VertexBuffer::GetMappedData()
 }
 
 //------------------------------------------------------------------------------
-void* VertexBuffer::RequestMappedData(int size)
+void* VertexBuffer::requestMappedData(int size)
 {
 	if (getSize() < size)
 	{
 		resize(size);
 	}
-	return GetMappedData();
+	return getMappedData();
 }
 
 //------------------------------------------------------------------------------
@@ -156,20 +156,20 @@ void VertexBuffer::clear()
 }
 
 //------------------------------------------------------------------------------
-Driver::IVertexBuffer* VertexBuffer::ResolveRHIObject()
+Driver::IVertexBuffer* VertexBuffer::resolveRHIObject()
 {
 	if (m_locked)
 	{
-		if (IsRHIDirect())
+		if (isRHIDirect())
 		{
-			m_rhiObject->Unlock();
+			m_rhiObject->unlock();
 		}
 		else
 		{
 			if (m_rhiObject == nullptr || m_rhiObject->getByteCount() != m_buffer.size())
 			{
 				LN_SAFE_RELEASE(m_rhiObject);
-				m_rhiObject = m_manager->GetGraphicsDevice()->CreateVertexBuffer(m_buffer.size(), m_buffer.data(), m_usage);
+				m_rhiObject = m_manager->getGraphicsDevice()->CreateVertexBuffer(m_buffer.size(), m_buffer.data(), m_usage);
 			}
 			else
 			{
@@ -180,7 +180,7 @@ Driver::IVertexBuffer* VertexBuffer::ResolveRHIObject()
 					RenderBulkData, data,
 					RefPtr<Driver::IVertexBuffer>, deviceObj,
 					{
-						deviceObj->SetSubData(0, data.getData(), data.getSize());
+						deviceObj->setSubData(0, data.getData(), data.getSize());
 					});
 			}
 		}
@@ -192,7 +192,7 @@ Driver::IVertexBuffer* VertexBuffer::ResolveRHIObject()
 }
 
 //------------------------------------------------------------------------------
-void VertexBuffer::OnChangeDevice(Driver::IGraphicsDevice* device)
+void VertexBuffer::onChangeDevice(Driver::IGraphicsDevice* device)
 {
 	if (device == nullptr)
 	{
@@ -200,8 +200,8 @@ void VertexBuffer::OnChangeDevice(Driver::IGraphicsDevice* device)
 		if (m_pool == GraphicsResourcePool::Managed)
 		{
 			m_buffer.resize(m_rhiObject->getByteCount());
-			memcpy(m_buffer.data(), m_rhiObject->Lock(), m_buffer.size());
-			m_rhiObject->Unlock();
+			memcpy(m_buffer.data(), m_rhiObject->lock(), m_buffer.size());
+			m_rhiObject->unlock();
 		}
 
 		// オブジェクト破棄
@@ -209,7 +209,7 @@ void VertexBuffer::OnChangeDevice(Driver::IGraphicsDevice* device)
 	}
 	else
 	{
-		// 復帰後は次の ResolveDeviceObject() で新しい RHI オブジェクトにセットされる
+		// 復帰後は次の resolveDeviceObject() で新しい RHI オブジェクトにセットされる
 		m_locked = true;
 	}
 }

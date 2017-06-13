@@ -91,10 +91,10 @@ TEST_F(IntegrationTest_Reflection_Variant, Basic)
 		Variant v2 = v1;	// copy
 		ASSERT_EQ(VariantType::Null, v1.getType());
 		ASSERT_EQ(VariantType::Null, v2.getType());
-        ASSERT_EQ(nullptr, Variant::Cast<std::nullptr_t>(v1));
-		ASSERT_EQ(nullptr, Variant::Cast<RefTest1*>(v2));	// ReflectionObject で Cast すると nullptr が返ってくる
-		ASSERT_EQ(nullptr, Variant::Cast<ArrayTest1*>(v2));	// ReflectionArrayObject で Cast すると nullptr が返ってくる
-		ASSERT_EQ(NULL, Variant::Cast<RefTest1*>(v2));
+        ASSERT_EQ(nullptr, Variant::cast<std::nullptr_t>(v1));
+		ASSERT_EQ(nullptr, Variant::cast<RefTest1*>(v2));	// ReflectionObject で cast すると nullptr が返ってくる
+		ASSERT_EQ(nullptr, Variant::cast<ArrayTest1*>(v2));	// ReflectionArrayObject で cast すると nullptr が返ってくる
+		ASSERT_EQ(NULL, Variant::cast<RefTest1*>(v2));
 	}
 	// <Test> Bool 型
 	{
@@ -104,9 +104,9 @@ TEST_F(IntegrationTest_Reflection_Variant, Basic)
 		ASSERT_EQ(VariantType::Bool, v1.getType());
 		ASSERT_EQ(VariantType::Bool, v2.getType());
 		ASSERT_EQ(VariantType::Bool, v3.getType());
-		ASSERT_EQ(true, Variant::Cast<bool>(v1));
-		ASSERT_EQ(false, Variant::Cast<bool>(v2));
-		ASSERT_EQ(false, Variant::Cast<bool>(v3));
+		ASSERT_EQ(true, Variant::cast<bool>(v1));
+		ASSERT_EQ(false, Variant::cast<bool>(v2));
+		ASSERT_EQ(false, Variant::cast<bool>(v3));
 	}
 	// <Test> int 型
 	{
@@ -115,8 +115,8 @@ TEST_F(IntegrationTest_Reflection_Variant, Basic)
 		Variant v2 = v1;	// copy
 		ASSERT_EQ(VariantType::Int32, v1.getType());
 		ASSERT_EQ(VariantType::Int32, v2.getType());
-		ASSERT_EQ(100, Variant::Cast<int>(v1));
-		ASSERT_EQ(100, Variant::Cast<int32_t>(v2));		// 算術型ならキャストできる
+		ASSERT_EQ(100, Variant::cast<int>(v1));
+		ASSERT_EQ(100, Variant::cast<int32_t>(v2));		// 算術型ならキャストできる
 	}
 	// <Test> uint32_t 型
 	{
@@ -125,8 +125,8 @@ TEST_F(IntegrationTest_Reflection_Variant, Basic)
 		Variant v2 = v1;	// copy
 		ASSERT_EQ(VariantType::UInt32, v1.getType());
 		ASSERT_EQ(VariantType::UInt32, v2.getType());
-		ASSERT_EQ(100, Variant::Cast<uint32_t>(v1));
-		ASSERT_EQ(100, Variant::Cast<int32_t>(v2));		// 算術型ならキャストできる
+		ASSERT_EQ(100, Variant::cast<uint32_t>(v1));
+		ASSERT_EQ(100, Variant::cast<int32_t>(v2));		// 算術型ならキャストできる
 	}
 	// <Test> float 型
 	{
@@ -135,8 +135,8 @@ TEST_F(IntegrationTest_Reflection_Variant, Basic)
 		Variant v2 = v1;	// copy
 		ASSERT_EQ(VariantType::Float, v1.getType());
 		ASSERT_EQ(VariantType::Float, v2.getType());
-		ASSERT_EQ(100, Variant::Cast<float>(v1));
-		ASSERT_EQ(100, Variant::Cast<int>(v2));			// 算術型ならキャストできる
+		ASSERT_EQ(100, Variant::cast<float>(v1));
+		ASSERT_EQ(100, Variant::cast<int>(v2));			// 算術型ならキャストできる
 	}
 	// <Test> double 型
 	{
@@ -145,8 +145,8 @@ TEST_F(IntegrationTest_Reflection_Variant, Basic)
 		Variant v2 = v1;	// copy
 		ASSERT_EQ(VariantType::Double, v1.getType());
 		ASSERT_EQ(VariantType::Double, v2.getType());
-		ASSERT_EQ(100, Variant::Cast<double>(v1));
-		ASSERT_EQ(100, Variant::Cast<float>(v2));		// 算術型ならキャストできる
+		ASSERT_EQ(100, Variant::cast<double>(v1));
+		ASSERT_EQ(100, Variant::cast<float>(v2));		// 算術型ならキャストできる
 	}
 	// <Test> TCHAR* 型
 	{
@@ -154,8 +154,8 @@ TEST_F(IntegrationTest_Reflection_Variant, Basic)
 		Variant v2 = v1;	// copy
 		ASSERT_EQ(VariantType::String, v1.getType());
 		ASSERT_EQ(VariantType::String, v2.getType());
-		ASSERT_EQ(_T("str"), Variant::Cast<String>(v1));
-		ASSERT_EQ(_T("str"), Variant::Cast<String>(v2));
+		ASSERT_EQ(_T("str"), Variant::cast<String>(v1));
+		ASSERT_EQ(_T("str"), Variant::cast<String>(v2));
 	}
 	// <Test> String 型
 	{
@@ -163,9 +163,9 @@ TEST_F(IntegrationTest_Reflection_Variant, Basic)
 		Variant v2 = v1;	// copy
 		ASSERT_EQ(VariantType::String, v1.getType());
 		ASSERT_EQ(VariantType::String, v2.getType());
-		ASSERT_EQ(_T("str"), Variant::Cast<String>(v1));
-		ASSERT_EQ(_T("str"), Variant::Cast<String>(v2));
-		//ASSERT_EQ(_T("str"), Variant::Cast<const String&>(v2));	// 参照文字列型はコンパイルエラーにする (static_assert)
+		ASSERT_EQ(_T("str"), Variant::cast<String>(v1));
+		ASSERT_EQ(_T("str"), Variant::cast<String>(v2));
+		//ASSERT_EQ(_T("str"), Variant::cast<const String&>(v2));	// 参照文字列型はコンパイルエラーにする (static_assert)
 	}
 	// <Test> Enum 型
 	{
@@ -176,9 +176,9 @@ TEST_F(IntegrationTest_Reflection_Variant, Basic)
 		ASSERT_EQ(VariantType::Enum, v1.getType());
 		ASSERT_EQ(VariantType::Enum, v2.getType());
 		ASSERT_EQ(VariantType::Enum, v3.getType());
-		ASSERT_EQ(VariantTestEnum1::Value1, Variant::Cast<VariantTestEnum1>(v1));
-		ASSERT_EQ(VariantTestEnum1::Value0, Variant::Cast<VariantTestEnum1>(v2));
-		ASSERT_EQ(VariantTestEnum1::Value0, Variant::Cast<VariantTestEnum1>(v3));
+		ASSERT_EQ(VariantTestEnum1::Value1, Variant::cast<VariantTestEnum1>(v1));
+		ASSERT_EQ(VariantTestEnum1::Value0, Variant::cast<VariantTestEnum1>(v2));
+		ASSERT_EQ(VariantTestEnum1::Value0, Variant::cast<VariantTestEnum1>(v3));
 	}
 	// <Test> 構造体 (POD)
 	{
@@ -188,9 +188,9 @@ TEST_F(IntegrationTest_Reflection_Variant, Basic)
 		Variant v2 = v1;	// copy
 		ASSERT_EQ(VariantType::Struct, v1.getType());
 		ASSERT_EQ(VariantType::Struct, v2.getType());
-		ASSERT_EQ(10, Variant::Cast<StructTest1>(v1).a);
-		ASSERT_EQ(20, Variant::Cast<StructTest1>(v2).b);
-		ASSERT_EQ(10, Variant::Cast<const StructTest1&>(v2).a);	// 参照で取り出せる
+		ASSERT_EQ(10, Variant::cast<StructTest1>(v1).a);
+		ASSERT_EQ(20, Variant::cast<StructTest1>(v2).b);
+		ASSERT_EQ(10, Variant::cast<const StructTest1&>(v2).a);	// 参照で取り出せる
 	}
 	// <Test> 構造体 (非POD)
 	{
@@ -201,10 +201,10 @@ TEST_F(IntegrationTest_Reflection_Variant, Basic)
 		ASSERT_EQ(VariantType::Struct, v1.getType());
 		ASSERT_EQ(VariantType::Struct, v2.getType());
 		ASSERT_EQ(VariantType::Struct, v3.getType());
-		ASSERT_EQ(10, Variant::Cast<Point>(v1).x);
-		ASSERT_EQ(20, Variant::Cast<Point>(v2).y);
-		ASSERT_EQ(10, Variant::Cast<const Point&>(v2).x);	// 参照で取り出せる
-		ASSERT_EQ(30, Variant::Cast<Point>(v3).x);
+		ASSERT_EQ(10, Variant::cast<Point>(v1).x);
+		ASSERT_EQ(20, Variant::cast<Point>(v2).y);
+		ASSERT_EQ(10, Variant::cast<const Point&>(v2).x);	// 参照で取り出せる
+		ASSERT_EQ(30, Variant::cast<Point>(v3).x);
 	}
 	// <Test> ReflectionObject 型
 	{
@@ -213,9 +213,9 @@ TEST_F(IntegrationTest_Reflection_Variant, Basic)
 		Variant v2 = v1;	// copy
 		ASSERT_EQ(VariantType::Object, v1.getType());
 		ASSERT_EQ(VariantType::Object, v2.getType());
-		ASSERT_EQ(obj1, Variant::Cast<RefTest1*>(v1));
-		ASSERT_EQ(obj1, Variant::Cast<ReflectionObject*>(v1));
-		ASSERT_EQ(obj1, Variant::Cast<RefTest1*>(v2));
+		ASSERT_EQ(obj1, Variant::cast<RefTest1*>(v1));
+		ASSERT_EQ(obj1, Variant::cast<ReflectionObject*>(v1));
+		ASSERT_EQ(obj1, Variant::cast<RefTest1*>(v2));
 		obj1->release();
 	}
 	// <Test> RefPtr 型
@@ -225,10 +225,10 @@ TEST_F(IntegrationTest_Reflection_Variant, Basic)
 		Variant v2 = v1;	// copy
 		ASSERT_EQ(VariantType::Object, v1.getType());
 		ASSERT_EQ(VariantType::Object, v2.getType());
-		ASSERT_EQ(obj1.get(), Variant::Cast<RefTest1*>(v1));
-		ASSERT_EQ(obj1.get(), Variant::Cast<ReflectionObject*>(v1));
-		ASSERT_EQ(obj1.get(), Variant::Cast<RefTest1*>(v2));
-		ASSERT_EQ(obj1, Variant::Cast<RefPtr<RefTest1>>(v2));
+		ASSERT_EQ(obj1.get(), Variant::cast<RefTest1*>(v1));
+		ASSERT_EQ(obj1.get(), Variant::cast<ReflectionObject*>(v1));
+		ASSERT_EQ(obj1.get(), Variant::cast<RefTest1*>(v2));
+		ASSERT_EQ(obj1, Variant::cast<RefPtr<RefTest1>>(v2));
 	}
 	// <Test> ReflectionArrayObject 型
 	{
@@ -237,10 +237,10 @@ TEST_F(IntegrationTest_Reflection_Variant, Basic)
 		Variant v2 = v1;	// copy
 		ASSERT_EQ(VariantType::ArrayObject, v1.getType());
 		ASSERT_EQ(VariantType::ArrayObject, v2.getType());
-		ASSERT_EQ(obj1, Variant::Cast<ArrayTest1*>(v1));
-		ASSERT_EQ(obj1, Variant::Cast<ReflectionArrayObject*>(v1));
-		ASSERT_EQ(obj1, Variant::Cast<ReflectionObject*>(v1));
-		ASSERT_EQ(obj1, Variant::Cast<ArrayTest1*>(v2));
+		ASSERT_EQ(obj1, Variant::cast<ArrayTest1*>(v1));
+		ASSERT_EQ(obj1, Variant::cast<ReflectionArrayObject*>(v1));
+		ASSERT_EQ(obj1, Variant::cast<ReflectionObject*>(v1));
+		ASSERT_EQ(obj1, Variant::cast<ArrayTest1*>(v2));
 		obj1->release();
 	}
 }

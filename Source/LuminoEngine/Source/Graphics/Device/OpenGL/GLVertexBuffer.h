@@ -40,11 +40,11 @@ public:
 public:
 	virtual size_t getByteCount() const { return m_byteCount; }
 	//virtual DeviceResourceUsage GetUsage() const { return m_format; }
-	virtual void SetSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes);
-	virtual void* Lock();
-	virtual void Unlock();
-	virtual void OnLostDevice();
-	virtual void OnResetDevice();
+	virtual void setSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes);
+	virtual void* lock();
+	virtual void unlock();
+	virtual void onLostDevice();
+	virtual void onResetDevice();
 
 private:
 	GLuint					m_glVertexBuffer;
@@ -78,8 +78,8 @@ public:
 	static void ConvertDeclTypeLNToGL(VertexElementType type, GLenum* gl_type, GLint* size, GLboolean* normalized);
 
 	// IDeviceObject interface
-	virtual void OnLostDevice() override {};
-	virtual void OnResetDevice() override {};
+	virtual void onLostDevice() override {};
+	virtual void onResetDevice() override {};
 
 private:
 	List<LNGLVertexElement>	m_vertexElements;

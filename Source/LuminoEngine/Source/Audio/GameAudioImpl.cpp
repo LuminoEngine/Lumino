@@ -39,10 +39,10 @@ GameAudioImpl::GameAudioImpl(AudioManager* mamager)
 //------------------------------------------------------------------------------
 GameAudioImpl::~GameAudioImpl()
 {
-	StopBGM(0);
-	StopBGS(0);
-	StopME();
-	StopSE();
+	stopBGM(0);
+	stopBGS(0);
+	stopME();
+	stopSE();
 
 	// 再生終了後の解放リストに入っているサウンドを解放
 	ReleaseAtPlayEndList::iterator itr = mReleaseAtPlayEndList.begin();
@@ -59,7 +59,7 @@ GameAudioImpl::~GameAudioImpl()
 }
 
 //------------------------------------------------------------------------------
-void GameAudioImpl::PlayBGM(const TCHAR* filePath, float volume, float pitch, double fadeTime)
+void GameAudioImpl::playBGM(const TCHAR* filePath, float volume, float pitch, double fadeTime)
 {
 	// 演奏再開チェック
 	//if ( !mBGMRestart && mBGM )
@@ -70,17 +70,17 @@ void GameAudioImpl::PlayBGM(const TCHAR* filePath, float volume, float pitch, do
 	//	}
 	//}
 
-	auto sound = CreateSound(filePath);
+	auto sound = createSound(filePath);
 	//mManager->createSound( filePath, SOUNDPLAYTYPE_STREAMING, false ) );
 
-	PlayBGMFromSound(sound, volume, pitch, fadeTime);
+	playBGMFromSound(sound, volume, pitch, fadeTime);
 
 	// ファイル名記憶
 	mBGMName = filePath;
 }
 
 //------------------------------------------------------------------------------
-void GameAudioImpl::PlayBGMFromSound(Sound* sound, float volume, float pitch, double fadeTime)
+void GameAudioImpl::playBGMFromSound(Sound* sound, float volume, float pitch, double fadeTime)
 {
 	if (LN_CHECK_ARG(sound != nullptr)) return;
 
@@ -102,8 +102,8 @@ void GameAudioImpl::PlayBGMFromSound(Sound* sound, float volume, float pitch, do
 		mBGM = sound;
 		LN_SAFE_ADDREF(mBGM);
 
-		mBGM->SetPitch(pitch);
-		mBGM->SetLoopEnabled(true);
+		mBGM->setPitch(pitch);
+		mBGM->setLoopEnabled(true);
 
 		mBGMVolume = volume;
 		mBGMPitch = pitch;
@@ -112,7 +112,7 @@ void GameAudioImpl::PlayBGMFromSound(Sound* sound, float volume, float pitch, do
 		bool me_not_play = true;
 		if (mME)
 		{
-			SoundPlayingState state = mME->GetPlayingState();
+			SoundPlayingState state = mME->getPlayingState();
 			if (state == SoundPlayingState::Playing)
 			{
 				me_not_play = false;
@@ -124,21 +124,21 @@ void GameAudioImpl::PlayBGMFromSound(Sound* sound, float volume, float pitch, do
 		{
 			if (fadeTime > 0)
 			{
-				mBGM->SetVolume(0);
-				mBGM->Play();
-				mBGM->FadeVolume(volume, fadeTime, SoundFadeBehavior::Continue);
+				mBGM->setVolume(0);
+				mBGM->play();
+				mBGM->fadeVolume(volume, fadeTime, SoundFadeBehavior::Continue);
 			}
 			else
 			{
-				mBGM->SetVolume(volume);
-				mBGM->Play();
+				mBGM->setVolume(volume);
+				mBGM->play();
 			}
 		}
 		// ME 再生中の場合は、一度再生するけどすぐに一時停止する ( ME 終了後に再開 )
 		else
 		{
-			mBGM->Play();
-			mBGM->Pause();
+			mBGM->play();
+			mBGM->pause();
 		}
 	}
 
@@ -149,9 +149,9 @@ void GameAudioImpl::PlayBGMFromSound(Sound* sound, float volume, float pitch, do
 		if (prev_bgm != nullptr)
 		{
 			// ひとつ前のBGMは、fade_time_ 後に停止、解放するようにする
-			prev_bgm->SetLoopEnabled(false);
-			prev_bgm->FadeVolume(0, fadeTime, SoundFadeBehavior::StopReset);
-			PushReleaseAtPlayEndList(prev_bgm);
+			prev_bgm->setLoopEnabled(false);
+			prev_bgm->fadeVolume(0, fadeTime, SoundFadeBehavior::StopReset);
+			pushReleaseAtPlayEndList(prev_bgm);
 		}
 	}
 	// フェード時間がない場合はすぐに停止
@@ -159,24 +159,24 @@ void GameAudioImpl::PlayBGMFromSound(Sound* sound, float volume, float pitch, do
 	{
 		if (prev_bgm != nullptr)
 		{
-			prev_bgm->Stop();
+			prev_bgm->stop();
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
-void GameAudioImpl::StopBGM(double fadeTime)
+void GameAudioImpl::stopBGM(double fadeTime)
 {
 	if (mBGM)
 	{
 		if (fadeTime > 0)
 		{
 			// フェード終了後に停止して、音量等を元に戻す
-			mBGM->FadeVolume(0, fadeTime, SoundFadeBehavior::StopReset);
+			mBGM->fadeVolume(0, fadeTime, SoundFadeBehavior::StopReset);
 		}
 		else
 		{
-			mBGM->Stop();
+			mBGM->stop();
 			LN_SAFE_RELEASE(mBGM);
 		}
 
@@ -185,7 +185,7 @@ void GameAudioImpl::StopBGM(double fadeTime)
 }
 
 //------------------------------------------------------------------------------
-void GameAudioImpl::PlayBGS(const TCHAR* filePath, float volume, float pitch, double fadeTime)
+void GameAudioImpl::playBGS(const TCHAR* filePath, float volume, float pitch, double fadeTime)
 {
 	// 演奏再開チェック
 	//if ( !mBGSRestart && mBGS )
@@ -196,16 +196,16 @@ void GameAudioImpl::PlayBGS(const TCHAR* filePath, float volume, float pitch, do
 	//	}
 	//}
 
-	auto sound = CreateSound(filePath);
+	auto sound = createSound(filePath);
 
-	PlayBGSFromSound(sound, volume, pitch, fadeTime);
+	playBGSFromSound(sound, volume, pitch, fadeTime);
 
 	// ファイル名記憶
 	mBGSName = filePath;
 }
 
 //------------------------------------------------------------------------------
-void GameAudioImpl::PlayBGSFromSound(Sound* sound, float volume, float pitch, double fadeTime)
+void GameAudioImpl::playBGSFromSound(Sound* sound, float volume, float pitch, double fadeTime)
 {
 	// 演奏再開チェック
 	//if ( !mBGSRestart && mBGS )
@@ -224,22 +224,22 @@ void GameAudioImpl::PlayBGSFromSound(Sound* sound, float volume, float pitch, do
 		mBGS = sound;
 		LN_SAFE_ADDREF(mBGS);
 
-		mBGS->SetPitch(pitch);
-		mBGS->SetLoopEnabled(true);
+		mBGS->setPitch(pitch);
+		mBGS->setLoopEnabled(true);
 
 		mBGSVolume = volume;
 		mBGSPitch = pitch;
 
 		if (fadeTime > 0)
 		{
-			mBGS->SetVolume(0);
-			mBGS->Play();
-			mBGS->FadeVolume(volume, fadeTime, SoundFadeBehavior::Continue);
+			mBGS->setVolume(0);
+			mBGS->play();
+			mBGS->fadeVolume(volume, fadeTime, SoundFadeBehavior::Continue);
 		}
 		else
 		{
-			mBGS->SetVolume(volume);
-			mBGS->Play();
+			mBGS->setVolume(volume);
+			mBGS->play();
 		}
 	}
 
@@ -249,9 +249,9 @@ void GameAudioImpl::PlayBGSFromSound(Sound* sound, float volume, float pitch, do
 		if (prev_bgs != nullptr)
 		{
 			// ひとつ前のBGSは、fade_time_ 後に停止、解放するようにする
-			prev_bgs->SetLoopEnabled(false);
-			prev_bgs->FadeVolume(0, fadeTime, SoundFadeBehavior::StopReset);
-			PushReleaseAtPlayEndList(prev_bgs);
+			prev_bgs->setLoopEnabled(false);
+			prev_bgs->fadeVolume(0, fadeTime, SoundFadeBehavior::StopReset);
+			pushReleaseAtPlayEndList(prev_bgs);
 		}
 	}
 	// フェード時間がない場合はすぐに停止
@@ -259,24 +259,24 @@ void GameAudioImpl::PlayBGSFromSound(Sound* sound, float volume, float pitch, do
 	{
 		if (prev_bgs != nullptr)
 		{
-			prev_bgs->Stop();
+			prev_bgs->stop();
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
-void GameAudioImpl::StopBGS(double fadeTime)
+void GameAudioImpl::stopBGS(double fadeTime)
 {
 	if (mBGS)
 	{
 		if (fadeTime > 0)
 		{
 			// フェード終了後に停止して、音量等を元に戻す
-			mBGS->FadeVolume(0, fadeTime, SoundFadeBehavior::StopReset);
+			mBGS->fadeVolume(0, fadeTime, SoundFadeBehavior::StopReset);
 		}
 		else
 		{
-			mBGS->Stop();
+			mBGS->stop();
 		}
 
 		mBGSName = _T("");
@@ -284,30 +284,30 @@ void GameAudioImpl::StopBGS(double fadeTime)
 }
 
 //------------------------------------------------------------------------------
-void GameAudioImpl::PlayME(const TCHAR* filePath, float volume, float pitch)
+void GameAudioImpl::playME(const TCHAR* filePath, float volume, float pitch)
 {
-	auto sound = CreateSound(filePath);
-	PlayMEFromSound(sound, volume, pitch);
+	auto sound = createSound(filePath);
+	playMEFromSound(sound, volume, pitch);
 }
 
 //------------------------------------------------------------------------------
-void GameAudioImpl::PlayMEFromSound(Sound* sound, float volume, float pitch)
+void GameAudioImpl::playMEFromSound(Sound* sound, float volume, float pitch)
 {
-	StopME();
+	stopME();
 
 	mME = sound;
 	LN_SAFE_ADDREF(mME);
 
-	mME->SetVolume(volume);
-	mME->SetPitch(pitch);
-	mME->SetLoopEnabled(false);
+	mME->setVolume(volume);
+	mME->setPitch(pitch);
+	mME->setLoopEnabled(false);
 
 	bool flag = false;  // BGM があり、再生されているかを示すフラグ
 
 						// BGM がある場合
 	if (mBGM)
 	{
-		SoundPlayingState state = mBGM->GetPlayingState();
+		SoundPlayingState state = mBGM->getPlayingState();
 
 		// 再生されている場合
 		if (state == SoundPlayingState::Playing)
@@ -323,39 +323,39 @@ void GameAudioImpl::PlayMEFromSound(Sound* sound, float volume, float pitch)
 		if (mBGMFadeOutTime > 0)
 		{
 			// フェードアウト後、一時停止する
-			mBGM->FadeVolume(0, mBGMFadeOutTime, SoundFadeBehavior::Pause);
+			mBGM->fadeVolume(0, mBGMFadeOutTime, SoundFadeBehavior::pause);
 		}
 		// フェードアウト時間がない場合
 		else
 		{
 			// すぐに一時停止
-			mBGM->Pause();
+			mBGM->pause();
 		}
 	}
 	// BGM がない場合はすぐ演奏開始
 	else
 	{
-		mME->Play();
+		mME->play();
 		mMEPlaying = true;
 	}
 }
 
 //------------------------------------------------------------------------------
-void GameAudioImpl::StopME()
+void GameAudioImpl::stopME()
 {
 	if (mME)
 	{
-		mME->Stop();
+		mME->stop();
 		LN_SAFE_RELEASE(mME);
 
 		// BGM があって、一時停止中の場合は再開
 		if (mBGM)
 		{
-			SoundPlayingState state = mBGM->GetPlayingState();
+			SoundPlayingState state = mBGM->getPlayingState();
 
 			if (state == SoundPlayingState::Playing)
 			{
-				mBGM->FadeVolume(mBGMVolume, mBGMFadeInTime, SoundFadeBehavior::Continue);
+				mBGM->fadeVolume(mBGMVolume, mBGMFadeInTime, SoundFadeBehavior::Continue);
 				mBGM->Resume();
 			}
 		}
@@ -365,88 +365,88 @@ void GameAudioImpl::StopME()
 }
 
 //------------------------------------------------------------------------------
-void GameAudioImpl::PlaySE(const TCHAR* filePath, float volume, float pitch)
+void GameAudioImpl::playSE(const TCHAR* filePath, float volume, float pitch)
 {
-	auto sound = CreateSound(filePath);
+	auto sound = createSound(filePath);
 	sound->SetPlayingMode(SoundPlayingMode::OnMemory);
 
 	// ボリューム・ピッチ設定
-	sound->SetVolume(volume);
-	sound->SetPitch(pitch);
+	sound->setVolume(volume);
+	sound->setPitch(pitch);
 
 	// 再生途中で解放されようとしても再生終了までは解放されない & SE として再生する
-	sound->SetGameAudioFlags(GameAudioFlags_SE);
-	PushReleaseAtPlayEndList(sound);
+	sound->setGameAudioFlags(GameAudioFlags_SE);
+	pushReleaseAtPlayEndList(sound);
 
 	// 再生
-	sound->SetLoopEnabled(false);
-	sound->Play();
+	sound->setLoopEnabled(false);
+	sound->play();
 }
 
 //------------------------------------------------------------------------------
-void GameAudioImpl::PlaySE3D(const TCHAR* filePath, const Vector3& position, float distance, float volume, float pitch)
+void GameAudioImpl::playSE3D(const TCHAR* filePath, const Vector3& position, float distance, float volume, float pitch)
 {
 	// サウンド作成
-	auto sound = CreateSound(filePath);
+	auto sound = createSound(filePath);
 	sound->SetPlayingMode(SoundPlayingMode::OnMemory);
-	sound->Set3DEnabled(true);
+	sound->set3DEnabled(true);
 
 	// 位置・ピッチ設定
-	sound->SetEmitterPosition(position);
-	sound->SetEmitterMaxDistance(distance);
-	sound->SetVolume(volume);
-	sound->SetPitch(pitch);
+	sound->setEmitterPosition(position);
+	sound->setEmitterMaxDistance(distance);
+	sound->setVolume(volume);
+	sound->setPitch(pitch);
 
 	// 再生途中で解放されようとしても再生終了までは解放されない & SE として再生する
-	sound->SetGameAudioFlags(GameAudioFlags_SE);
-	PushReleaseAtPlayEndList(sound);
+	sound->setGameAudioFlags(GameAudioFlags_SE);
+	pushReleaseAtPlayEndList(sound);
 
 	// 再生
-	sound->SetLoopEnabled(false);
-	sound->Play();
+	sound->setLoopEnabled(false);
+	sound->play();
 }
 
 //------------------------------------------------------------------------------
-void GameAudioImpl::PlaySEFromSound(Sound* srcSound, float volume, float pitch)
+void GameAudioImpl::playSEFromSound(Sound* srcSound, float volume, float pitch)
 {
 	// 受け取った Sound が持っているソースをもとに新しい Sound を作成
-	auto sound = CreateSound(srcSound->GetAudioStream());
+	auto sound = createSound(srcSound->getAudioStream());
 	sound->SetPlayingMode(SoundPlayingMode::OnMemory);
-	sound->Set3DEnabled(srcSound->Is3DEnabled());
+	sound->set3DEnabled(srcSound->is3DEnabled());
 
 	// 位置・ボリューム・ピッチ設定
-	sound->SetVolume(volume);
-	sound->SetPitch(pitch);
-	if (srcSound->Is3DEnabled())
+	sound->setVolume(volume);
+	sound->setPitch(pitch);
+	if (srcSound->is3DEnabled())
 	{
-		sound->SetEmitterPosition(srcSound->GetEmitterPosition());
+		sound->setEmitterPosition(srcSound->getEmitterPosition());
 	}
 
 	// 再生途中で解放されようとしても再生終了までは解放されない & SE として再生する
-	sound->SetGameAudioFlags(GameAudioFlags_SE);
-	PushReleaseAtPlayEndList(sound);
+	sound->setGameAudioFlags(GameAudioFlags_SE);
+	pushReleaseAtPlayEndList(sound);
 
 	// 再生
-	sound->SetLoopEnabled(false);
-	sound->Play();
+	sound->setLoopEnabled(false);
+	sound->play();
 }
 
 //------------------------------------------------------------------------------
-void GameAudioImpl::StopSE()
+void GameAudioImpl::stopSE()
 {
 	ReleaseAtPlayEndList::iterator itr = mReleaseAtPlayEndList.begin();
 	ReleaseAtPlayEndList::iterator end = mReleaseAtPlayEndList.end();
 	for (; itr != end; ++itr)
 	{
-		if ((*itr)->GetGameAudioFlags() & GameAudioFlags_SE)
+		if ((*itr)->getGameAudioFlags() & GameAudioFlags_SE)
 		{
-			(*itr)->Stop();
+			(*itr)->stop();
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
-void GameAudioImpl::SetMEFadeState(double begin, double end)
+void GameAudioImpl::setMEFadeState(double begin, double end)
 {
 	if (begin >= 0)
 	{
@@ -459,44 +459,44 @@ void GameAudioImpl::SetMEFadeState(double begin, double end)
 }
 
 //------------------------------------------------------------------------------
-void GameAudioImpl::SetBGMVolume(float volume, double fadeTime)
+void GameAudioImpl::setBGMVolume(float volume, double fadeTime)
 {
 	MutexScopedLock lock(mLock);
 
-	if (mBGM != NULL)// && !mBGM->IsVolumeFading())
+	if (mBGM != NULL)// && !mBGM->isVolumeFading())
 	{
 		mBGMVolume = volume;
-		mBGM->FadeVolume(volume, fadeTime, SoundFadeBehavior::Continue);
+		mBGM->fadeVolume(volume, fadeTime, SoundFadeBehavior::Continue);
 	}
 }
 
 //------------------------------------------------------------------------------
-void GameAudioImpl::SetBGSVolume(float volume, double fadeTime)
+void GameAudioImpl::setBGSVolume(float volume, double fadeTime)
 {
 	MutexScopedLock lock(mLock);
 
 	// GameAudioImpl 内では SOUNDFADE_STOP_RESET == フェードアウト中
-	if (mBGS != NULL)// && !mBGM->IsVolumeFading())
+	if (mBGS != NULL)// && !mBGM->isVolumeFading())
 	{
 		mBGSVolume = volume;
-		mBGS->FadeVolume(volume, fadeTime, SoundFadeBehavior::Continue);
+		mBGS->fadeVolume(volume, fadeTime, SoundFadeBehavior::Continue);
 	}
 }
 
 //------------------------------------------------------------------------------
-void GameAudioImpl::Polling()
+void GameAudioImpl::polling()
 {
 	MutexScopedLock lock(mLock);
 
 	// 演奏する ME がある場合
 	if (mME)
 	{
-		SoundPlayingState mestate = mME->GetPlayingState();
+		SoundPlayingState mestate = mME->getPlayingState();
 
 		// BGM がある場合
 		if (mBGM)
 		{
-			SoundPlayingState bgmstate = mBGM->GetPlayingState();
+			SoundPlayingState bgmstate = mBGM->getPlayingState();
 
 			// BGMのフェードアウトが終わって一時停止状態になっている場合
 			if (bgmstate == SoundPlayingState::Pausing)
@@ -504,8 +504,8 @@ void GameAudioImpl::Polling()
 				// ME 再生開始
 				if (!mMEPlaying)
 				{
-					mME->SetLoopEnabled(false);
-					mME->Play();
+					mME->setLoopEnabled(false);
+					mME->play();
 					mMEPlaying = true;
 				}
 				// ME の再生が終了した場合
@@ -514,7 +514,7 @@ void GameAudioImpl::Polling()
 					// ME 再生中に BGM がストップしたとかで解放されている場合はなにもしない
 					if (mBGM)
 					{
-						mBGM->FadeVolume(mBGMVolume, mBGMFadeInTime, SoundFadeBehavior::Continue);
+						mBGM->fadeVolume(mBGMVolume, mBGMFadeInTime, SoundFadeBehavior::Continue);
 						mBGM->Resume();
 					}
 					LN_SAFE_RELEASE(mME);
@@ -540,7 +540,7 @@ void GameAudioImpl::Polling()
 	ReleaseAtPlayEndList::iterator end = mReleaseAtPlayEndList.end();
 	for (; itr != end; )
 	{
-		SoundPlayingState state = (*itr)->GetPlayingState();
+		SoundPlayingState state = (*itr)->getPlayingState();
 		if (state != SoundPlayingState::Playing)
 		{
 			(*itr)->release();
@@ -555,7 +555,7 @@ void GameAudioImpl::Polling()
 }
 
 //------------------------------------------------------------------------------
-void GameAudioImpl::PushReleaseAtPlayEndList(Sound* sound)
+void GameAudioImpl::pushReleaseAtPlayEndList(Sound* sound)
 {
 	if (sound)
 	{
@@ -566,7 +566,7 @@ void GameAudioImpl::PushReleaseAtPlayEndList(Sound* sound)
 }
 
 //------------------------------------------------------------------------------
-SoundPtr GameAudioImpl::CreateSound(const StringRef& filePath)
+SoundPtr GameAudioImpl::createSound(const StringRef& filePath)
 {
 	auto ptr = SoundPtr::makeRef();
 	ptr->initialize(filePath);
@@ -574,7 +574,7 @@ SoundPtr GameAudioImpl::CreateSound(const StringRef& filePath)
 }
 
 //------------------------------------------------------------------------------
-SoundPtr GameAudioImpl::CreateSound(detail::AudioStream* audioStream)
+SoundPtr GameAudioImpl::createSound(detail::AudioStream* audioStream)
 {
 	auto ptr = SoundPtr::makeRef();
 	ptr->initialize(audioStream);

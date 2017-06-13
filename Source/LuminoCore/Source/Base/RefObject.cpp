@@ -37,13 +37,13 @@ int32_t RefObject::getReferenceCount() const
 //------------------------------------------------------------------------------
 int32_t RefObject::addRef()
 {
-	return m_referenceCount.Increment();
+	return m_referenceCount.increment();
 }
 
 //------------------------------------------------------------------------------
 int32_t RefObject::release()
 {
-    int32_t count = m_referenceCount.Decrement();
+    int32_t count = m_referenceCount.decrement();
 	int32_t count2 = m_internalReferenceCount;
 	if (count <= 0 && count2 <= 0)
 	{

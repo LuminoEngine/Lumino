@@ -32,10 +32,10 @@ MaterialList::~MaterialList()
 // Material
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Material, Object);
-//LN_TR_PROPERTY_IMPLEMENT(Material, BlendMode, blendMode, tr::PropertyMetadata(Material::OnRenderStateChanged));
-//LN_TR_PROPERTY_IMPLEMENT(Material, CullingMode, cullingMode, tr::PropertyMetadata(Material::OnRenderStateChanged));
-//LN_TR_PROPERTY_IMPLEMENT(Material, bool, depthTestEnabled, tr::PropertyMetadata(Material::OnRenderStateChanged));
-//LN_TR_PROPERTY_IMPLEMENT(Material, bool, depthWriteEnabled, tr::PropertyMetadata(Material::OnRenderStateChanged));
+//LN_TR_PROPERTY_IMPLEMENT(Material, BlendMode, blendMode, tr::PropertyMetadata(Material::onRenderStateChanged));
+//LN_TR_PROPERTY_IMPLEMENT(Material, CullingMode, cullingMode, tr::PropertyMetadata(Material::onRenderStateChanged));
+//LN_TR_PROPERTY_IMPLEMENT(Material, bool, depthTestEnabled, tr::PropertyMetadata(Material::onRenderStateChanged));
+//LN_TR_PROPERTY_IMPLEMENT(Material, bool, depthWriteEnabled, tr::PropertyMetadata(Material::onRenderStateChanged));
 
 const String Material::DiffuseParameter(_T("Diffuse"));
 const String Material::AmbientParameter(_T("Ambient"));
@@ -66,8 +66,8 @@ Material::Material()
 	, depthWriteEnabled(nullptr)
 	, m_revisionCount(0)
 {
-	InitializeProperties();
-	Reset();
+	initializeProperties();
+	reset();
 }
 
 //------------------------------------------------------------------------------
@@ -82,7 +82,7 @@ void Material::initialize()
 }
 
 //------------------------------------------------------------------------------
-void Material::Reset()
+void Material::reset()
 {
 	m_shader = nullptr;
 	// TODO: とりあえず
@@ -96,16 +96,16 @@ void Material::Reset()
 }
 
 //------------------------------------------------------------------------------
-void Material::SetBuiltinIntParameter(const StringRef& name, int value) { m_builtinValueMap[Hash::calcHash(name.getBegin(), name.getLength())].setInt(value); }
-void Material::SetBuiltinFloatParameter(const StringRef& name, float value) { m_builtinValueMap[Hash::calcHash(name.getBegin(), name.getLength())].setFloat(value); }
-void Material::SetBuiltinVectorParameter(const StringRef& name, const Vector4& value) { m_builtinValueMap[Hash::calcHash(name.getBegin(), name.getLength())].SetVector(value); }
-void Material::SetBuiltinMatrixParameter(const StringRef& name, const Matrix& value) { m_builtinValueMap[Hash::calcHash(name.getBegin(), name.getLength())].SetMatrix(value); }
-void Material::SetBuiltinTextureParameter(const StringRef& name, Texture* value) { m_builtinValueMap[Hash::calcHash(name.getBegin(), name.getLength())].SetManagedTexture(value); }
-void Material::SetBuiltinColorParameter(const StringRef& name, const Color& value) { SetBuiltinVectorParameter(name, value); }
-void Material::SetBuiltinColorParameter(const StringRef& name, float r, float g, float b, float a) { SetBuiltinVectorParameter(name, Color(r, g, b, a)); }
+void Material::setBuiltinIntParameter(const StringRef& name, int value) { m_builtinValueMap[Hash::calcHash(name.getBegin(), name.getLength())].setInt(value); }
+void Material::setBuiltinFloatParameter(const StringRef& name, float value) { m_builtinValueMap[Hash::calcHash(name.getBegin(), name.getLength())].setFloat(value); }
+void Material::setBuiltinVectorParameter(const StringRef& name, const Vector4& value) { m_builtinValueMap[Hash::calcHash(name.getBegin(), name.getLength())].setVector(value); }
+void Material::setBuiltinMatrixParameter(const StringRef& name, const Matrix& value) { m_builtinValueMap[Hash::calcHash(name.getBegin(), name.getLength())].setMatrix(value); }
+void Material::setBuiltinTextureParameter(const StringRef& name, Texture* value) { m_builtinValueMap[Hash::calcHash(name.getBegin(), name.getLength())].setManagedTexture(value); }
+void Material::setBuiltinColorParameter(const StringRef& name, const Color& value) { setBuiltinVectorParameter(name, value); }
+void Material::setBuiltinColorParameter(const StringRef& name, float r, float g, float b, float a) { setBuiltinVectorParameter(name, Color(r, g, b, a)); }
 
 //------------------------------------------------------------------------------
-RefPtr<Material> Material::CopyShared() const
+RefPtr<Material> Material::copyShared() const
 {
 	auto m = RefPtr<Material>::makeRef();
 	m->initialize();	// TODO: base
@@ -144,7 +144,7 @@ RefPtr<Material> Material::CopyShared() const
 //}
 
 //------------------------------------------------------------------------------
-void Material::SetShader(Shader* shader)
+void Material::setShader(Shader* shader)
 {
 	if (m_shader != shader)
 	{
@@ -154,114 +154,114 @@ void Material::SetShader(Shader* shader)
 }
 
 //------------------------------------------------------------------------------
-Shader* Material::GetShader() const
+Shader* Material::getShader() const
 {
 	return m_shader;
 }
 
 //------------------------------------------------------------------------------
-void Material::SetIntParameter(const StringRef& name, int value)
+void Material::setIntParameter(const StringRef& name, int value)
 {
 	uint32_t hashKey = Hash::calcHash(name.getBegin(), name.getLength());
-	FindAndCreateUserShaderValue(hashKey)->setInt(value);
+	findAndCreateUserShaderValue(hashKey)->setInt(value);
 	m_revisionCount++;
 }
 
 //------------------------------------------------------------------------------
-void Material::SetFloatParameter(const StringRef& name, float value)
+void Material::setFloatParameter(const StringRef& name, float value)
 {
 	uint32_t hashKey = Hash::calcHash(name.getBegin(), name.getLength());
-	FindAndCreateUserShaderValue(hashKey)->setFloat(value);
+	findAndCreateUserShaderValue(hashKey)->setFloat(value);
 	m_revisionCount++;
 }
 
 //------------------------------------------------------------------------------
-void Material::SetVectorParameter(const StringRef& name, const Vector4& value)
+void Material::setVectorParameter(const StringRef& name, const Vector4& value)
 {
 	uint32_t hashKey = Hash::calcHash(name.getBegin(), name.getLength());
-	FindAndCreateUserShaderValue(hashKey)->SetVector(value);
+	findAndCreateUserShaderValue(hashKey)->setVector(value);
 	m_revisionCount++;
 }
 
 //------------------------------------------------------------------------------
-void Material::SetMatrixParameter(const StringRef& name, const Matrix& value)
+void Material::setMatrixParameter(const StringRef& name, const Matrix& value)
 {
 	uint32_t hashKey = Hash::calcHash(name.getBegin(), name.getLength());
-	FindAndCreateUserShaderValue(hashKey)->SetMatrix(value);
+	findAndCreateUserShaderValue(hashKey)->setMatrix(value);
 	m_revisionCount++;
 }
 
 //------------------------------------------------------------------------------
-void Material::SetTextureParameter(const StringRef& name, Texture* value)
+void Material::setTextureParameter(const StringRef& name, Texture* value)
 {
 	uint32_t hashKey = Hash::calcHash(name.getBegin(), name.getLength());
-	FindAndCreateUserShaderValue(hashKey)->SetManagedTexture(value);
+	findAndCreateUserShaderValue(hashKey)->setManagedTexture(value);
 	m_revisionCount++;
 }
 
 //------------------------------------------------------------------------------
-void Material::SetColorParameter(const StringRef& name, const Color& value)
+void Material::setColorParameter(const StringRef& name, const Color& value)
 {
-	SetVectorParameter(name, value);
+	setVectorParameter(name, value);
 }
 
 //------------------------------------------------------------------------------
-void Material::SetColorParameter(const StringRef& name, float r, float g, float b, float a)
+void Material::setColorParameter(const StringRef& name, float r, float g, float b, float a)
 {
-	SetColorParameter(name, Color(r, g, b, a));
+	setColorParameter(name, Color(r, g, b, a));
 }
 
 //------------------------------------------------------------------------------
-void Material::SetBlendMode(Nullable<BlendMode> mode)
+void Material::setBlendMode(Nullable<BlendMode> mode)
 {
 	blendMode = mode;
 	m_revisionCount++;
 }
 
 //------------------------------------------------------------------------------
-void Material::SetCullingMode(Nullable<CullingMode> mode)
+void Material::setCullingMode(Nullable<CullingMode> mode)
 {
 	cullingMode = mode;
 	m_revisionCount++;
 }
 
 //------------------------------------------------------------------------------
-void Material::SetDepthTestEnabled(Nullable<bool> enabled)
+void Material::setDepthTestEnabled(Nullable<bool> enabled)
 {
 	depthTestEnabled = enabled;
 	m_revisionCount++;
 }
 
 //------------------------------------------------------------------------------
-void Material::SetDepthWriteEnabled(Nullable<bool> enabled)
+void Material::setDepthWriteEnabled(Nullable<bool> enabled)
 {
 	depthWriteEnabled = enabled;
 	m_revisionCount++;
 }
 
 ////------------------------------------------------------------------------------
-//void Material::SetBlendMode(BlendMode mode)
+//void Material::setBlendMode(BlendMode mode)
 //{
 //	m_builtin.blendMode = mode;
 //	m_revisionCount++;
 //}
 //
 ////------------------------------------------------------------------------------
-//void Material::SetCullingMode(CullingMode mode)
+//void Material::setCullingMode(CullingMode mode)
 //{
 //	m_builtin.cullingMode = mode;
 //	m_revisionCount++;
 //}
 //
 ////------------------------------------------------------------------------------
-//void Material::SetDepthTestEnabled(bool enabled)
+//void Material::setDepthTestEnabled(bool enabled)
 //{
 //	m_builtin.depthTestEnabled = enabled;
 //	m_revisionCount++;
 //}
 //
 ////------------------------------------------------------------------------------
-//void Material::SetDepthWriteEnabled(bool enabled)
+//void Material::setDepthWriteEnabled(bool enabled)
 //{
 //	m_builtin.depthWriteEnabled = enabled;
 //	m_revisionCount++;
@@ -278,7 +278,7 @@ void Material::SetDepthWriteEnabled(Nullable<bool> enabled)
 //}
 
 //------------------------------------------------------------------------------
-ShaderValue* Material::FindAndCreateUserShaderValue(uint32_t hashKey)
+ShaderValue* Material::findAndCreateUserShaderValue(uint32_t hashKey)
 {
 	auto itr = m_userValueMap.find(hashKey);
 	if (itr != m_userValueMap.end())
@@ -291,7 +291,7 @@ ShaderValue* Material::FindAndCreateUserShaderValue(uint32_t hashKey)
 }
 
 //------------------------------------------------------------------------------
-const ShaderValue* Material::FindUserShaderValueConst(uint32_t hashKey) const
+const ShaderValue* Material::findUserShaderValueConst(uint32_t hashKey) const
 {
 	auto itr = m_userValueMap.find(hashKey);
 	if (itr != m_userValueMap.end())
@@ -328,7 +328,7 @@ uint32_t Material::getHashCode()
 }
 
 //------------------------------------------------------------------------------
-void Material::OnRenderStateChanged(Object* obj)
+void Material::onRenderStateChanged(Object* obj)
 {
 	static_cast<Material*>(obj)->m_revisionCount++;
 }
@@ -348,40 +348,40 @@ static const uint32_t SpecularHash = Hash::calcHash(_T("Specular"));
 static const uint32_t EmissiveHash = Hash::calcHash(_T("Emissive"));
 static const uint32_t PowerHash = Hash::calcHash(_T("Power"));
 
-void Material::SetMaterialTexture(Texture* v)
+void Material::setMaterialTexture(Texture* v)
 {
-	m_builtinValueMap[MaterialTextureHash].SetManagedTexture(v);
+	m_builtinValueMap[MaterialTextureHash].setManagedTexture(v);
 	m_revisionCount++;
 }
-Texture* Material::GetMaterialTexture(Texture* defaultValue) const { auto itr = m_builtinValueMap.find(MaterialTextureHash); return (itr != m_builtinValueMap.end()) ? itr->second.GetManagedTexture() : defaultValue; }
+Texture* Material::getMaterialTexture(Texture* defaultValue) const { auto itr = m_builtinValueMap.find(MaterialTextureHash); return (itr != m_builtinValueMap.end()) ? itr->second.getManagedTexture() : defaultValue; }
 
-//void Material::SetOpacity(float v)
+//void Material::setOpacity(float v)
 //{
 //	m_builtinValueMap[OpacityHash].SetFloat(v);
 //	m_revisionCount++;
 //}
-//float Material::GetOpacity() const { auto itr = m_builtinValueMap.find(OpacityHash); return (itr != m_builtinValueMap.end()) ? itr->second.GetFloat() : 1.0f; }
+//float Material::getOpacity() const { auto itr = m_builtinValueMap.find(OpacityHash); return (itr != m_builtinValueMap.end()) ? itr->second.GetFloat() : 1.0f; }
 //
-//void Material::SetColorScale(const Color& v)
+//void Material::setColorScale(const Color& v)
 //{
-//	m_builtinValueMap[ColorScaleHash].SetVector(v);
+//	m_builtinValueMap[ColorScaleHash].setVector(v);
 //	m_revisionCount++;
 //}
-//Color Material::GetColorScale() const { auto itr = m_builtinValueMap.find(ColorScaleHash); return (itr != m_builtinValueMap.end()) ? Color(itr->second.GetVector()) : DefaultColorScale; }
+//Color Material::getColorScale() const { auto itr = m_builtinValueMap.find(ColorScaleHash); return (itr != m_builtinValueMap.end()) ? Color(itr->second.getVector()) : DefaultColorScale; }
 //
-//void Material::SetBlendColor(const Color& v)
+//void Material::setBlendColor(const Color& v)
 //{
-//	m_builtinValueMap[BlendColorHash].SetVector(v);
+//	m_builtinValueMap[BlendColorHash].setVector(v);
 //	m_revisionCount++;
 //}
-//Color Material::GetBlendColor() const { auto itr = m_builtinValueMap.find(BlendColorHash); return (itr != m_builtinValueMap.end()) ? Color(itr->second.GetVector()) : DefaultBlendColor; }
+//Color Material::getBlendColor() const { auto itr = m_builtinValueMap.find(BlendColorHash); return (itr != m_builtinValueMap.end()) ? Color(itr->second.getVector()) : DefaultBlendColor; }
 //
-//void Material::SetTone(const ToneF& v)
+//void Material::setTone(const ToneF& v)
 //{
-//	m_builtinValueMap[ToneHash].SetVector(v);
+//	m_builtinValueMap[ToneHash].setVector(v);
 //	m_revisionCount++;
 //}
-//ToneF Material::GetTone() const { auto itr = m_builtinValueMap.find(ToneHash); return (itr != m_builtinValueMap.end()) ? ToneF(itr->second.GetVector()) : DefaultTone; }
+//ToneF Material::getTone() const { auto itr = m_builtinValueMap.find(ToneHash); return (itr != m_builtinValueMap.end()) ? ToneF(itr->second.getVector()) : DefaultTone; }
 //
 
 //==============================================================================
@@ -414,33 +414,33 @@ void DiffuseMaterial::initialize()
 }
 
 //------------------------------------------------------------------------------
-void DiffuseMaterial::SetDiffuse(const Color& value)
+void DiffuseMaterial::setDiffuse(const Color& value)
 {
-	SetBuiltinColorParameter(Material::DiffuseParameter, value);
+	setBuiltinColorParameter(Material::DiffuseParameter, value);
 }
 
 //------------------------------------------------------------------------------
-void DiffuseMaterial::SetAmbient(const Color& value)
+void DiffuseMaterial::setAmbient(const Color& value)
 {
-	SetBuiltinColorParameter(Material::AmbientParameter, value);
+	setBuiltinColorParameter(Material::AmbientParameter, value);
 }
 
 //------------------------------------------------------------------------------
-void DiffuseMaterial::SetSpecular(const Color& value)
+void DiffuseMaterial::setSpecular(const Color& value)
 {
-	SetBuiltinColorParameter(Material::SpecularParameter, value);
+	setBuiltinColorParameter(Material::SpecularParameter, value);
 }
 
 //------------------------------------------------------------------------------
-void DiffuseMaterial::SetEmissive(const Color& value)
+void DiffuseMaterial::setEmissive(const Color& value)
 {
-	SetBuiltinColorParameter(Material::EmissiveParameter, value);
+	setBuiltinColorParameter(Material::EmissiveParameter, value);
 }
 
 //------------------------------------------------------------------------------
-void DiffuseMaterial::SetSpecularPower(float value)
+void DiffuseMaterial::setSpecularPower(float value)
 {
-	SetBuiltinFloatParameter(Material::PowerParameter, value);
+	setBuiltinFloatParameter(Material::PowerParameter, value);
 }
 
 
@@ -504,62 +504,62 @@ void CombinedMaterial::combine(Material* owner, Material* ownerBase, const Built
 
 		// source1
 		m_shader = source1->m_shader;
-		m_colorScale = builtinEffectData.GetColorScale();
-		m_colorScale.a *= builtinEffectData.GetOpacity();
-		m_blendColor = builtinEffectData.GetBlendColor();
-		m_tone = builtinEffectData.GetTone();
-		CopyUserValueTable(source1);
+		m_colorScale = builtinEffectData.getColorScale();
+		m_colorScale.a *= builtinEffectData.getOpacity();
+		m_blendColor = builtinEffectData.getBlendColor();
+		m_tone = builtinEffectData.getTone();
+		copyUserValueTable(source1);
 		// TODO
-		m_blendMode = source1->GetBlendMode();
-		m_cullingMode = source1->GetCullingMode();
-		m_depthTestEnabled = source1->IsDepthTestEnabled();
-		m_depthWriteEnabled = source1->IsDepthWriteEnabled();
+		m_blendMode = source1->getBlendMode();
+		m_cullingMode = source1->getCullingMode();
+		m_depthTestEnabled = source1->isDepthTestEnabled();
+		m_depthWriteEnabled = source1->isDepthWriteEnabled();
 
 		// source2 (base があるなら owner を後からマージ)
 		if (source2 != nullptr)
 		{
-			if (m_shader == nullptr) m_shader = source2->GetShader();
-			//m_colorScale.MultiplyClamp(source2->GetColorScale());
-			//m_colorScale.a *= source2->GetOpacity();
-			//m_blendColor.AddClamp(source2->GetBlendColor());
-			//m_tone.AddClamp(source2->GetTone());
-			MergeUserValueTable(source2);
+			if (m_shader == nullptr) m_shader = source2->getShader();
+			//m_colorScale.multiplyClamp(source2->getColorScale());
+			//m_colorScale.a *= source2->getOpacity();
+			//m_blendColor.addClamp(source2->getBlendColor());
+			//m_tone.addClamp(source2->getTone());
+			mergeUserValueTable(source2);
 		}
 
 		// parent
 		//if (parent != nullptr)
 		//{
-		//	if (m_shader == nullptr) m_shader = parent->GetShader();
-		//	m_colorScale.MultiplyClamp(parent->GetColorScale());
-		//	m_colorScale.a *= parent->GetOpacity();
-		//	m_blendColor.AddClamp(parent->GetBlendColor());
-		//	m_tone.AddClamp(parent->GetTone());
+		//	if (m_shader == nullptr) m_shader = parent->getShader();
+		//	m_colorScale.multiplyClamp(parent->getColorScale());
+		//	m_colorScale.a *= parent->getOpacity();
+		//	m_blendColor.addClamp(parent->getBlendColor());
+		//	m_tone.addClamp(parent->getTone());
 		//}
 
 		// Material params (from base only. not parent inherit)
 		// TODO: 文字列検索とかしまくっている。いろいろ最適化の余地ある
 		if (source2 != nullptr)
 		{
-			m_diffuse = source1->GetBuiltinColor(DiffuseHash, source2->GetBuiltinColor(DiffuseHash, Material::DefaultDiffuse));
-			m_ambient = source1->GetBuiltinColor(AmbientHash, source2->GetBuiltinColor(AmbientHash, Material::DefaultAmbient));
-			m_specular = source1->GetBuiltinColor(SpecularHash, source2->GetBuiltinColor(SpecularHash, Material::DefaultSpecular));
-			m_emissive = source1->GetBuiltinColor(EmissiveHash, source2->GetBuiltinColor(EmissiveHash, Material::DefaultEmissive));
-			m_power = source1->GetBuiltinFloat(PowerHash, source2->GetBuiltinFloat(PowerHash, Material::DefaultPower));
-			m_mainTexture = source1->GetMaterialTexture(source2->GetMaterialTexture(nullptr));
+			m_diffuse = source1->getBuiltinColor(DiffuseHash, source2->getBuiltinColor(DiffuseHash, Material::DefaultDiffuse));
+			m_ambient = source1->getBuiltinColor(AmbientHash, source2->getBuiltinColor(AmbientHash, Material::DefaultAmbient));
+			m_specular = source1->getBuiltinColor(SpecularHash, source2->getBuiltinColor(SpecularHash, Material::DefaultSpecular));
+			m_emissive = source1->getBuiltinColor(EmissiveHash, source2->getBuiltinColor(EmissiveHash, Material::DefaultEmissive));
+			m_power = source1->getBuiltinFloat(PowerHash, source2->getBuiltinFloat(PowerHash, Material::DefaultPower));
+			m_mainTexture = source1->getMaterialTexture(source2->getMaterialTexture(nullptr));
 		}
 		else
 		{
-			m_diffuse = source1->GetBuiltinColor(DiffuseHash, Material::DefaultDiffuse);
-			m_ambient = source1->GetBuiltinColor(AmbientHash, Material::DefaultAmbient);
-			m_specular = source1->GetBuiltinColor(SpecularHash, Material::DefaultSpecular);
-			m_emissive = source1->GetBuiltinColor(EmissiveHash, Material::DefaultEmissive);
-			m_power = source1->GetBuiltinFloat(PowerHash, Material::DefaultPower);
-			m_mainTexture = source1->GetMaterialTexture(nullptr);
+			m_diffuse = source1->getBuiltinColor(DiffuseHash, Material::DefaultDiffuse);
+			m_ambient = source1->getBuiltinColor(AmbientHash, Material::DefaultAmbient);
+			m_specular = source1->getBuiltinColor(SpecularHash, Material::DefaultSpecular);
+			m_emissive = source1->getBuiltinColor(EmissiveHash, Material::DefaultEmissive);
+			m_power = source1->getBuiltinFloat(PowerHash, Material::DefaultPower);
+			m_mainTexture = source1->getMaterialTexture(nullptr);
 		}
 
 		if (m_shader == nullptr)
 		{
-			m_shader = builtinEffectData.GetShader();
+			m_shader = builtinEffectData.getShader();
 		}
 
 		m_lastSourceHashCode = hashCode;
@@ -568,30 +568,30 @@ void CombinedMaterial::combine(Material* owner, Material* ownerBase, const Built
 }
 
 //------------------------------------------------------------------------------
-void CombinedMaterial::ApplyUserShaderValeues(Shader* targetShader)
+void CombinedMaterial::applyUserShaderValeues(Shader* targetShader)
 {
 	for (auto& pair : m_userValueTable)
 	{
-		targetShader->SetShaderValue(pair.nameHash, pair.value);
+		targetShader->setShaderValue(pair.nameHash, pair.value);
 	}
 }
 
 //------------------------------------------------------------------------------
-void CombinedMaterial::CopyUserValueTable(Material* source)
+void CombinedMaterial::copyUserValueTable(Material* source)
 {
 	assert(source != nullptr);
 	m_userValueTable.clear();
-	for (auto& pair : source->GetUserValueMap())
+	for (auto& pair : source->getUserValueMap())
 	{
 		m_userValueTable.add(ValuePair{ pair.first, pair.second });
 	}
 }
 
 //------------------------------------------------------------------------------
-void CombinedMaterial::MergeUserValueTable(Material* source)
+void CombinedMaterial::mergeUserValueTable(Material* source)
 {
 	assert(source != nullptr);
-	for (auto& pair : source->GetUserValueMap())
+	for (auto& pair : source->getUserValueMap())
 	{
 		uint32_t key = pair.first;
 		ValuePair* p = m_userValueTable.find([key](const ValuePair& p) { return p.nameHash == key; });

@@ -12,7 +12,7 @@ protected:
 TEST_F(Test_Json_JsonDocument, Basic)
 {
 	//const char* json = R"( { "hello" : "world", "t" : true , "f" : false, "n": null, "i":123, "pi": 3.1416, "a":[1, 2, 3, 4] } )";
-	////String str = FileSystem::ReadAllText(LN_LOCALFILE("TestData/ReaderTest1.txt"), Encoding::GetSystemMultiByteEncoding());
+	////String str = FileSystem::ReadAllText(LN_LOCALFILE("TestData/ReaderTest1.txt"), Encoding::getSystemMultiByteEncoding());
 	//tr::JsonDocument2 doc;
 
 	//////ElapsedTimer t;
@@ -53,7 +53,7 @@ TEST_F(Test_Json_JsonDocument, save)
 
 	doc.save(TEMPFILE("json.txt"), tr::JsonFormatting::Indented);
 
-	ASSERT_TRUE(TestHelper::EqualFiles(TEMPFILE("json.txt"), LN_LOCALFILE("TestData/Test_Json_JsonDocument_Save1.json")));
+	ASSERT_TRUE(TestHelper::equalFiles(TEMPFILE("json.txt"), LN_LOCALFILE("TestData/Test_Json_JsonDocument_Save1.json")));
 
 }
 

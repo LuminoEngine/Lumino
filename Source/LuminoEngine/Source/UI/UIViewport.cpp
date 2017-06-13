@@ -84,9 +84,9 @@ void UIViewport::OnRoutedEvent(UIEventArgs* e)
 }
 
 //------------------------------------------------------------------------------
-Size UIViewport::ArrangeOverride(const Size& finalSize)
+Size UIViewport::arrangeOverride(const Size& finalSize)
 {
-	Size renderSize = UIElement::ArrangeOverride(finalSize);
+	Size renderSize = UIElement::arrangeOverride(finalSize);
 
 
 	for (auto& layer : m_viewportLayerList)
@@ -111,13 +111,13 @@ UIElement* UIViewport::CheckMouseHoverElement(const PointF& globalPt)
 }
 
 //------------------------------------------------------------------------------
-void UIViewport::OnRender(DrawingContext* g)
+void UIViewport::onRender(DrawingContext* g)
 {
 	// バックバッファサイズの調整
 	{
 		SizeI bakcbufferSize;
 		if (m_placement == ViewportPlacement::AutoResize)
-			bakcbufferSize = SizeI::FromFloatSize(GetRenderSize());
+			bakcbufferSize = SizeI::fromFloatSize(getRenderSize());
 		else
 			bakcbufferSize = m_backbufferSize;
 
@@ -127,11 +127,11 @@ void UIViewport::OnRender(DrawingContext* g)
 
 	//TODO: state push/pop
 
-	RefPtr<RenderTargetTexture> oldRT = g->GetRenderTarget(0);
-	RefPtr<DepthBuffer> oldDB = g->GetDepthBuffer();
+	RefPtr<RenderTargetTexture> oldRT = g->getRenderTarget(0);
+	RefPtr<DepthBuffer> oldDB = g->getDepthBuffer();
 
-	g->SetRenderTarget(0, m_primaryLayerTarget);
-	g->SetDepthBuffer(m_depthBuffer);
+	g->setRenderTarget(0, m_primaryLayerTarget);
+	g->setDepthBuffer(m_depthBuffer);
 	g->clear(ClearFlags::All, m_backgroundColor, 1.0f, 0);
 
 
@@ -140,7 +140,7 @@ void UIViewport::OnRender(DrawingContext* g)
 
 	for (auto& layer : m_viewportLayerList)
 	{
-		layer->Render();
+		layer->render();
 	}
 
 	g->SetBuiltinEffectData(detail::BuiltinEffectData::DefaultData);
@@ -148,7 +148,7 @@ void UIViewport::OnRender(DrawingContext* g)
 	// 全てのレイヤーの描画リストを実行し m_primaryLayerTarget へ書き込む
 	for (auto& layer : m_viewportLayerList)
 	{
-		layer->ExecuteDrawListRendering(g, m_primaryLayerTarget, m_depthBuffer);
+		layer->executeDrawListRendering(g, m_primaryLayerTarget, m_depthBuffer);
 
 		// Posteffect
 		layer->PostRender(g, &m_primaryLayerTarget, &m_secondaryLayerTarget);
@@ -158,14 +158,14 @@ void UIViewport::OnRender(DrawingContext* g)
 
 
 
-	g->SetRenderTarget(0, oldRT);
-	g->SetDepthBuffer(oldDB);
-	g->Blit(m_primaryLayerTarget);	// TODO: 転送先指定
+	g->setRenderTarget(0, oldRT);
+	g->setDepthBuffer(oldDB);
+	g->blit(m_primaryLayerTarget);	// TODO: 転送先指定
 
-	// TODO: 暫定。Blit の中で深度書き込みしないようにしてほしいかも。
+	// TODO: 暫定。blit の中で深度書き込みしないようにしてほしいかも。
 	g->clear(ClearFlags::Depth, Color());
 
-	UIElement::OnRender(g);
+	UIElement::onRender(g);
 }
 
 //------------------------------------------------------------------------------
@@ -197,15 +197,15 @@ void UIViewport::UpdateFramebufferSizeIfNeeded(const SizeI& viewSize)
 		// TODO: できればこういうのは Resize 関数を作りたい。作り直したくない
 		// TODO: というか UE4 みたいにキャッシュしたい
 		m_primaryLayerTarget = RefPtr<RenderTargetTexture>::makeRef();
-		m_primaryLayerTarget->CreateImpl(GetManager()->GetGraphicsManager(), newSize, 1, TextureFormat::R8G8B8X8);
+		m_primaryLayerTarget->createImpl(getManager()->getGraphicsManager(), newSize, 1, TextureFormat::R8G8B8X8);
 		m_secondaryLayerTarget = RefPtr<RenderTargetTexture>::makeRef();
-		m_secondaryLayerTarget->CreateImpl(GetManager()->GetGraphicsManager(), newSize, 1, TextureFormat::R8G8B8X8);
+		m_secondaryLayerTarget->createImpl(getManager()->getGraphicsManager(), newSize, 1, TextureFormat::R8G8B8X8);
 
 		// DepthBuffer
 		m_depthBuffer = RefPtr<DepthBuffer>::makeRef();
-		m_depthBuffer->CreateImpl(GetManager()->GetGraphicsManager(), newSize, TextureFormat::D24S8);
+		m_depthBuffer->createImpl(getManager()->getGraphicsManager(), newSize, TextureFormat::D24S8);
 
-		m_viewSize = newSize.ToFloatSize();
+		m_viewSize = newSize.toFloatSize();
 	}
 }
 
@@ -314,7 +314,7 @@ void UIViewportLayer::PostRender(DrawList* context, RefPtr<RenderTargetTexture>*
 {
 	for (auto& e : m_postEffects)
 	{
-		e->OnRender(context, *primaryLayerTarget, *secondaryLayerTarget);
+		e->onRender(context, *primaryLayerTarget, *secondaryLayerTarget);
 		std::swap(*primaryLayerTarget, *secondaryLayerTarget);
 	}
 }
@@ -337,14 +337,14 @@ UILayoutLayer::~UILayoutLayer()
 void UILayoutLayer::initialize()
 {
 	UIViewportLayer::initialize();
-	m_root = NewObject<UILayoutView>(UIContext::GetMainContext(), nullptr);	// TODO: コンテキスト変更とか
+	m_root = newObject<UILayoutView>(UIContext::GetMainContext(), nullptr);	// TODO: コンテキスト変更とか
 
-	m_drawingContext = NewObject<DrawingContext>();
+	m_drawingContext = newObject<DrawingContext>();
 
 	// lighting disabled.
-	// TODO: NewObject
+	// TODO: newObject
 	auto internalRenderer = RefPtr<detail::NonShadingRenderer>::makeRef();
-	internalRenderer->initialize(detail::EngineDomain::GetGraphicsManager());
+	internalRenderer->initialize(detail::EngineDomain::getGraphicsManager());
 	m_internalRenderer = internalRenderer;
 
 	m_drawElementListSet = RefPtr<RenderView>::makeRef();
@@ -379,25 +379,25 @@ void UILayoutLayer::UpdateLayout(const Size& viewSize)
 }
 
 //------------------------------------------------------------------------------
-void UILayoutLayer::Render()
+void UILayoutLayer::render()
 {
 	m_drawingContext->BeginMakeElements();
-	m_drawingContext->SetBlendMode(BlendMode::Alpha);
+	m_drawingContext->setBlendMode(BlendMode::Alpha);
 	//m_drawingContext->Clear(ClearFlags::All, Color::Black);;	// TODO
-	m_root->Render(m_drawingContext);
+	m_root->render(m_drawingContext);
 }
 
 //------------------------------------------------------------------------------
-void UILayoutLayer::ExecuteDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+void UILayoutLayer::executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 	// TODO: float
-	Size viewPixelSize((float)renderTarget->GetWidth(), (float)renderTarget->GetHeight());
+	Size viewPixelSize((float)renderTarget->getWidth(), (float)renderTarget->getHeight());
 
 	m_drawElementListSet->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
 	m_drawElementListSet->m_cameraInfo.viewPixelSize = viewPixelSize;
 	m_drawElementListSet->m_cameraInfo.viewPosition = Vector3::Zero;
 	m_drawElementListSet->m_cameraInfo.viewMatrix = Matrix::Identity;
-	m_drawElementListSet->m_cameraInfo.projMatrix = Matrix::MakePerspective2DLH(m_drawElementListSet->m_cameraInfo.viewPixelSize.width, m_drawElementListSet->m_cameraInfo.viewPixelSize.height, 0, 1);
+	m_drawElementListSet->m_cameraInfo.projMatrix = Matrix::makePerspective2DLH(m_drawElementListSet->m_cameraInfo.viewPixelSize.width, m_drawElementListSet->m_cameraInfo.viewPixelSize.height, 0, 1);
 	m_drawElementListSet->m_cameraInfo.viewProjMatrix = m_drawElementListSet->m_cameraInfo.viewMatrix * m_drawElementListSet->m_cameraInfo.projMatrix;
 	m_drawElementListSet->m_cameraInfo.viewFrustum = ViewFrustum(m_drawElementListSet->m_cameraInfo.projMatrix);
 	m_drawElementListSet->m_cameraInfo.zSortDistanceBase = ZSortDistanceBase::NodeZ;

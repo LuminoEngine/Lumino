@@ -21,11 +21,11 @@ public:
 
 	// IVertexBuffer interface
 	virtual size_t getByteCount() const { return m_bufferSize; }
-	virtual void SetSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes);
-	virtual void* Lock();
-	virtual void Unlock();
-	virtual void OnLostDevice();
-	virtual void OnResetDevice();
+	virtual void setSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes);
+	virtual void* lock();
+	virtual void unlock();
+	virtual void onLostDevice();
+	virtual void onResetDevice();
 
 private:
 	DX9GraphicsDevice*			m_graphicsDevice;
@@ -48,8 +48,8 @@ public:
 
 
 	// IDeviceObject interface
-	virtual void OnLostDevice() override {};
-	virtual void OnResetDevice() override {};
+	virtual void onLostDevice() override {};
+	virtual void onResetDevice() override {};
 
 private:
 	IDirect3DVertexDeclaration9*	m_vertexDecl;

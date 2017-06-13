@@ -45,7 +45,7 @@ void MethodInfo::LinkParameters()
 
 	for (auto& paramInfo : parameters)
 	{
-		paramInfo->type = g_database.FindTypeInfo(paramInfo->typeRawName);
+		paramInfo->type = g_database.findTypeInfo(paramInfo->typeRawName);
 
 		// 今のところ、Class 型の 出力変数は許可しない
 		if (paramInfo->isOut && paramInfo->type->IsClass())
@@ -81,7 +81,7 @@ void MethodInfo::ExpandCAPIParameters()
 			{
 				auto info = std::make_shared<ParameterInfo>();
 				info->name = owner->name.toLower();
-				info->type = g_database.FindTypeInfo(owner->name);
+				info->type = g_database.findTypeInfo(owner->name);
 				info->isThis = true;
 				capiParameters.add(info);
 			}
@@ -100,7 +100,7 @@ void MethodInfo::ExpandCAPIParameters()
 			{
 				auto info = std::make_shared<ParameterInfo>();
 				info->name = owner->name.toLower();
-				info->type = g_database.FindTypeInfo(owner->name);
+				info->type = g_database.findTypeInfo(owner->name);
 				info->isThis = true;
 				capiParameters.add(info);
 			}
@@ -140,7 +140,7 @@ void MethodInfo::ExpandCAPIParameters()
 		{
 			auto info = std::make_shared<ParameterInfo>();
 			info->name = String::format(_T("out{0}"), owner->name);
-			info->type = g_database.FindTypeInfo(owner->name);
+			info->type = g_database.findTypeInfo(owner->name);
 			info->isReturn = true;
 			capiParameters.add(info);
 		}
@@ -193,7 +193,7 @@ void TypeInfo::Link()
 	// find base class
 	if (!baseClassRawName.isEmpty())
 	{
-		baseClass = g_database.FindTypeInfo(baseClassRawName);
+		baseClass = g_database.findTypeInfo(baseClassRawName);
 	}
 }
 
@@ -338,11 +338,11 @@ void SymbolDatabase::Link()
 	{
 		for (auto fieldInfo : structInfo->declaredFields)
 		{
-			fieldInfo->type = FindTypeInfo(fieldInfo->typeRawName);
+			fieldInfo->type = findTypeInfo(fieldInfo->typeRawName);
 		}
 		for (auto methodInfo : structInfo->declaredMethods)
 		{
-			methodInfo->returnType = FindTypeInfo(methodInfo->returnTypeRawName);
+			methodInfo->returnType = findTypeInfo(methodInfo->returnTypeRawName);
 
 			methodInfo->LinkParameters();
 			methodInfo->ExpandCAPIParameters();
@@ -356,7 +356,7 @@ void SymbolDatabase::Link()
 	{
 		for (auto methodInfo : classInfo->declaredMethods)
 		{
-			methodInfo->returnType = FindTypeInfo(methodInfo->returnTypeRawName);
+			methodInfo->returnType = findTypeInfo(methodInfo->returnTypeRawName);
 
 			methodInfo->LinkParameters();
 			methodInfo->ExpandCAPIParameters();
@@ -370,7 +370,7 @@ void SymbolDatabase::Link()
 	//{
 	//	for (auto constantInfo : enumInfo->declaredConstants)
 	//	{
-	//		constantInfo->type = FindTypeInfo(constantInfo->typeRawName);
+	//		constantInfo->type = findTypeInfo(constantInfo->typeRawName);
 	//	}
 	//}
 
@@ -379,7 +379,7 @@ void SymbolDatabase::Link()
 	{
 		for (auto methodInfo : classInfo->declaredMethods)
 		{
-			methodInfo->returnType = FindTypeInfo(methodInfo->returnTypeRawName);
+			methodInfo->returnType = findTypeInfo(methodInfo->returnTypeRawName);
 
 			methodInfo->LinkParameters();
 			methodInfo->ExpandCAPIParameters();
@@ -496,7 +496,7 @@ void SymbolDatabase::InitializePredefineds()
 	PredefinedTypes::EventConnectionType = predefineds.getLast();
 }
 
-TypeInfoPtr SymbolDatabase::FindTypeInfo(StringRef typeName)
+TypeInfoPtr SymbolDatabase::findTypeInfo(StringRef typeName)
 {
 	TypeInfoPtr* type;
 	

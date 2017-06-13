@@ -17,17 +17,17 @@ using namespace ln;
 #define SS_LOAD	1
 
 /// スクリーンショットの作成マクロ
-//#define SS_SAVE(fileName)	TestEnv::SaveScreenShot(LN_LOCALFILE(TestEnv::MakeScreenShotPath(fileName)))
+//#define SS_SAVE(fileName)	TestEnv::saveScreenShot(LN_LOCALFILE(TestEnv::MakeScreenShotPath(fileName)))
 
 /// スクリーンショットの比較マクロ
-#define SS_CHECK(mode, fileName) if (mode == SS_SAVE) { TestEnv::SaveScreenShot(LN_LOCALFILE(TestEnv::MakeScreenShotPath(fileName))); } else { ASSERT_TRUE(TestEnv::EqualsScreenShot(LOCALFILE(TestEnv::MakeScreenShotPath(fileName)))); }
+#define SS_CHECK(mode, fileName) if (mode == SS_SAVE) { TestEnv::saveScreenShot(LN_LOCALFILE(TestEnv::MakeScreenShotPath(fileName))); } else { ASSERT_TRUE(TestEnv::EqualsScreenShot(LOCALFILE(TestEnv::MakeScreenShotPath(fileName)))); }
 
 class TestEnv : public ::testing::Environment
 {
 public:
-	static void SaveScreenShot(const TCHAR* filePath);
+	static void saveScreenShot(const TCHAR* filePath);
 	static bool EqualsScreenShot(const TCHAR* filePath, int passRate = 90);
-	//static bool EqualsTexture(Texture* texture, const TCHAR* filePath);
+	//static bool equalsTexture(Texture* texture, const TCHAR* filePath);
 	static bool EqualsBitmapFile(Bitmap* bmp1, const TCHAR* filePath, int passRate);
 	static bool CheckScreenShot(const TCHAR* filePath, int passRate = 99, bool save = false);	// 基本的に 99% 一致していれば良い。グラボによって、色成分+-1 くらいの誤差がある (Radeon HD8490)
 	static void WaitRendering();
@@ -35,12 +35,12 @@ public:
 
 	static void BeginFrame()
 	{
-		Engine::UpdateFrame();
+		Engine::updateFrame();
 	}
 
 	static void EndFrame()
 	{
-		Engine::PresentFrame();
+		Engine::presentFrame();
 	}
 
 protected:
@@ -110,12 +110,12 @@ public:
 	{
 		camera = CameraComponent::GetMain3DCamera();
 		oldPos = camera->getPosition();
-		camera->SetPosition(x, y, z);
+		camera->setPosition(x, y, z);
 	}
 
 	~ScopedCameraPosition()
 	{
-		camera->SetPosition(oldPos);
+		camera->setPosition(oldPos);
 	}
 
 	CameraComponent*	camera;

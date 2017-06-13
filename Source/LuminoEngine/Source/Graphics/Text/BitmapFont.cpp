@@ -23,14 +23,14 @@ RefPtr<RawFont> RawFont::CreateBuiltInBitmapFontInternal2(int size)
 {
 	MemoryStream stream(g_BuiltInBitmapFont_size7_Data, g_BuiltInBitmapFont_size7_Len);
 	RefPtr<Bitmap> bitmap(LN_NEW Bitmap(&stream), false);
-	auto font = NewObject<detail::BitmapFont>(bitmap);
+	auto font = newObject<detail::BitmapFont>(bitmap);
 	return RefPtr<RawFont>::staticCast(font);
 }
 
 //------------------------------------------------------------------------------
 void RawFont::RegisterFontFile(const StringRef& filePath)
 {
-	detail::GraphicsManager::GetInstance()->GetFontManager()->RegisterFontFile(filePath);
+	detail::GraphicsManager::getInstance()->getFontManager()->RegisterFontFile(filePath);
 }
 
 namespace detail {
@@ -52,7 +52,7 @@ BitmapFont::BitmapFont()
 void BitmapFont::initialize(Bitmap* bitmap)
 {
 	RawFont::initialize();
-	m_manager = detail::EngineDomain::GetGraphicsManager()->GetFontManager();
+	m_manager = detail::EngineDomain::getGraphicsManager()->getFontManager();
 
 	m_name = String::sprintf(_T("%d"), rand());	// TODO: 名前がユーザー指定されていなければランダムに作る
 	m_fontBitmap = bitmap;
@@ -136,7 +136,7 @@ void BitmapFont::getTextSize(const wchar_t* text, int len, Geometry::RectI* rect
 //------------------------------------------------------------------------------
 RawFontPtr BitmapFont::copy() const
 {
-	auto ptr = NewObject<BitmapFont>(m_fontBitmap);
+	auto ptr = newObject<BitmapFont>(m_fontBitmap);
 	return RawFontPtr::staticCast(ptr);
 }
 
@@ -178,7 +178,7 @@ FontGlyphBitmap* BitmapFont::LookupGlyphBitmap(UTF32 utf32code, int strokeSize)
 	// 一時ビットマップへ転送してそれを返す
 	RectI dstRect(0, 0, m_charWidth, m_charHeight);
 	RectI srcRect((utf32code % 16) * m_charWidth, (utf32code / 16) * m_charHeight, m_charWidth, m_charHeight);
-	m_glyphBitmap->BitBlt(dstRect, m_fontBitmap, srcRect, Color32::White, false);
+	m_glyphBitmap->bitBlt(dstRect, m_fontBitmap, srcRect, Color32::White, false);
 
 	return &m_fontGlyphBitmap;
 }

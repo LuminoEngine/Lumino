@@ -49,7 +49,7 @@ OutputBuffer& OutputBuffer::NewLine(int count)
 	return *this;
 }
 
-void OutputBuffer::Indent()
+void OutputBuffer::indent()
 {
 	m_buffer.append(m_indent);
 }
@@ -63,7 +63,7 @@ void OutputBuffer::AppendInternal(const StringRef& str)
 {
 	if (m_state == State::LineHead)
 	{
-		Indent();
+		indent();
 		m_state = State::Text;
 	}
 	m_buffer.append(str);
@@ -71,7 +71,7 @@ void OutputBuffer::AppendInternal(const StringRef& str)
 
 void OutputBuffer::AppendLineInternal(const StringRef& str)
 {
-	Indent();
+	indent();
 	m_buffer.append(str);
 	NewLine();
 }
@@ -82,7 +82,7 @@ void OutputBuffer::AppendLinesInternal(const StringRef& str, const StringRef& li
 	List<String> lines = ns.split(_T("\n"));
 	for (int i = 0; i < lines.getCount(); i++)
 	{
-		if (lines[i].getLength() > 0) Indent();
+		if (lines[i].getLength() > 0) indent();
 		m_buffer.append(lineHeader);
 		m_buffer.append(lines[i]);
 

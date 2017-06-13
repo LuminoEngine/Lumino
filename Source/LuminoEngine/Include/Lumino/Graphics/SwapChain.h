@@ -23,7 +23,7 @@ public:
 	/**
 		@brief	バックバッファのレンダリングターゲットを取得します。
 	*/
-	RenderTargetTexture* GetBackBuffer();
+	RenderTargetTexture* getBackBuffer();
 
 
 
@@ -36,9 +36,9 @@ LN_INTERNAL_ACCESS:
 	SwapChain();
 	void InitializeDefault(detail::GraphicsManager* manager);
 	void InitializeSub(detail::GraphicsManager* manager, PlatformWindow* window);
-	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
+	virtual void onChangeDevice(Driver::IGraphicsDevice* device);
 
-	void PostInitialize();
+	void postInitialize();
 
 	void MightResizeAndDeviceReset(const SizeI& newSize);
 	void PresentInternal();

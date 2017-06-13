@@ -31,7 +31,7 @@ public:
 		@brief		シード値を変更します。疑似乱数生成器が初期状態にリセットされます。
 		@param[in]	seed	: シード値
 	*/
-	void SetSeed(int seed);
+	void setSeed(int seed);
 
 	/**
 		@brief		整数ランダム値を返します。
@@ -52,7 +52,7 @@ public:
 		@param[in]	maxValue	: 上限値
 		@return		minValue 以上で maxValue より小さい整数値
 	*/
-	int GetIntRange(int minValue, int maxValue);
+	int getIntRange(int minValue, int maxValue);
 
 	/**
 		@brief		指定した振れ幅の整数ランダム値を返します。(median-width <= 値 < median+width)
@@ -60,7 +60,7 @@ public:
 		@param[in]	width	: ±幅
 		@return		median-width 以上で median+width より小さい整数値
 	*/
-	int GetIntWidth(int median, int width);
+	int getIntWidth(int median, int width);
 
 	/**
 		@brief		実数ランダム値を返します。
@@ -81,7 +81,7 @@ public:
 		@param[in]	maxValue	: 上限値
 		@return		minValue 以上で maxValue より小さい実数値
 	*/
-	float GetFloatRange(float minValue, float maxValue);
+	float getFloatRange(float minValue, float maxValue);
 
 	/**
 		@brief		指定した振れ幅の実数ランダム値を返します。(median-width <= 値 < median+width)
@@ -89,7 +89,7 @@ public:
 		@param[in]	width	: ±幅
 		@return		median-width 以上で median+width より小さい実数値
 	*/
-	float GetFloatWidth(float median, float width);
+	float getFloatWidth(float median, float width);
 
 private:
 	unsigned int x, y, z, w;

@@ -354,7 +354,7 @@ void PhysicsWorld::GCPhysicsObjects()
 //------------------------------------------------------------------------------
 //void PhysicsWorld::StepSimulation(float elapsedTime)	// TODO: deltaTime? https://docs.unrealengine.com/latest/INT/API/Runtime/Engine/Engine/UWorld/Tick/index.html
 //{
-//	m_rigidBodyList.Commit(
+//	m_rigidBodyList.commit(
 //		[this](RigidBody* child) { m_impl->AddRigidBodyForMmd(child); },
 //		[this](RigidBody* child) { m_impl->remo(child); });
 //

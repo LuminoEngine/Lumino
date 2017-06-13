@@ -20,43 +20,43 @@ TEST_F(Test_Xml_XmlWriter, User)
 	StreamWriter file(TEMPFILE("xml/Test.xml"));
 	XmlWriter writer(&file);
 
-	writer.WriteStartElement(_T("ToolSettings"));
+	writer.writeStartElement(_T("ToolSettings"));
 	{
-		writer.WriteStartElement(_T("WorkingDirectory"));
+		writer.writeStartElement(_T("WorkingDirectory"));
 		writer.writeString(_T("C:\\workspace"));
-		writer.WriteEndElement();
+		writer.writeEndElement();
 
-		writer.WriteStartElement(_T("ProjectList"));
+		writer.writeStartElement(_T("ProjectList"));
 		{
-			writer.WriteStartElement(_T("Project"));
-			writer.WriteAttribute(_T("Repository"), _T("server1"));
+			writer.writeStartElement(_T("Project"));
+			writer.writeAttribute(_T("Repository"), _T("server1"));
 			{
-				writer.WriteStartElement(_T("Branch"));
-				writer.WriteAttribute(_T("Name"), _T("master"));
-				writer.WriteAttribute(_T("LastCommit"), _T("d0c5d2fd1e3c7a457776e1ca1290942374b8e0fc"));
-				writer.WriteEndElement();
+				writer.writeStartElement(_T("Branch"));
+				writer.writeAttribute(_T("Name"), _T("master"));
+				writer.writeAttribute(_T("LastCommit"), _T("d0c5d2fd1e3c7a457776e1ca1290942374b8e0fc"));
+				writer.writeEndElement();
 			}
-			writer.WriteEndElement();
+			writer.writeEndElement();
 
-			writer.WriteStartElement(_T("Project"));
-			writer.WriteAttribute(_T("Repository"), _T("server2"));
-			writer.WriteAttribute(_T("FilterExt"), _T(".c;.cpp;.h"));
+			writer.writeStartElement(_T("Project"));
+			writer.writeAttribute(_T("Repository"), _T("server2"));
+			writer.writeAttribute(_T("FilterExt"), _T(".c;.cpp;.h"));
 			{
-				writer.WriteStartElement(_T("Branch"));
-				writer.WriteAttribute(_T("Name"), _T("master"));
-				writer.WriteAttribute(_T("LastCommit"), _T("0c9fa5c4509bb5d1043c2d906d88b8507d6b7546"));
-				writer.WriteEndElement();
+				writer.writeStartElement(_T("Branch"));
+				writer.writeAttribute(_T("Name"), _T("master"));
+				writer.writeAttribute(_T("LastCommit"), _T("0c9fa5c4509bb5d1043c2d906d88b8507d6b7546"));
+				writer.writeEndElement();
 
-				writer.WriteStartElement(_T("Branch"));
-				writer.WriteAttribute(_T("Name"), _T("Custom"));
-				writer.WriteAttribute(_T("LastCommit"), _T("662a470c700fc6fa6bc95d0cab8b8ec39bc1cc23"));
-				writer.WriteEndElement();
+				writer.writeStartElement(_T("Branch"));
+				writer.writeAttribute(_T("Name"), _T("Custom"));
+				writer.writeAttribute(_T("LastCommit"), _T("662a470c700fc6fa6bc95d0cab8b8ec39bc1cc23"));
+				writer.writeEndElement();
 			}
-			writer.WriteEndElement();
+			writer.writeEndElement();
 		}
-		writer.WriteEndElement();
+		writer.writeEndElement();
 	}
-	writer.WriteEndElement();
+	writer.writeEndElement();
 
 	// TODO: ファイル比較
 }
@@ -82,75 +82,75 @@ TEST_F(Test_Xml_XmlWriter, UnitTest)
 {
 	//uint16_t r = jis_to_sjis(0x74, 0x26);
 
-	//	// <Unit> WriteStartDocument
+	//	// <Unit> writeStartDocument
 	//	{
 	//		StringWriter strWriter;
 	//		XmlWriter xmlWriter(&strWriter);
-	//		xmlWriter.WriteStartDocument();
-	//		xmlWriter.WriteEndDocument();
+	//		xmlWriter.writeStartDocument();
+	//		xmlWriter.writeEndDocument();
 	//#ifdef _WIN32
 	//		ASSERT_EQ(_T("<?xml version=\"1.0\" encoding=\"UTF-16\"?>"), strWriter.ToString());
 	//#else
 	//		ASSERT_EQ(_T("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"), strWriter.ToString());
 	//#endif
-	//		xmlWriter.WriteStartDocument();
-	//		ASSERT_THROW(xmlWriter.WriteStartDocument(), InvalidOperationException);
+	//		xmlWriter.writeStartDocument();
+	//		ASSERT_THROW(xmlWriter.writeStartDocument(), InvalidOperationException);
 	//	}
 
-	// <Unit> WriteStartElement
+	// <Unit> writeStartElement
 	{
 		StringWriter strWriter;
 		XmlWriter xmlWriter(&strWriter);
-		xmlWriter.WriteStartElement(_T("test"));
+		xmlWriter.writeStartElement(_T("test"));
 		ASSERT_EQ(_T("<test"), strWriter.toString());
 	}
 
-	// <Unit> WriteEndElement
+	// <Unit> writeEndElement
 	{
 		StringWriter strWriter;
 		XmlWriter xmlWriter(&strWriter);
-		xmlWriter.WriteStartElement(_T("test"));
-		xmlWriter.WriteEndElement();
+		xmlWriter.writeStartElement(_T("test"));
+		xmlWriter.writeEndElement();
 		ASSERT_EQ(_T("<test />"), strWriter.toString());
 	}
 
-	// <Unit> WriteAttribute
+	// <Unit> writeAttribute
 	{
 		StringWriter strWriter;
 		XmlWriter xmlWriter(&strWriter);
-		xmlWriter.WriteStartElement(_T("test"));
-		xmlWriter.WriteAttribute(_T("a1"), _T("v1"));
-		xmlWriter.WriteAttribute(_T("a2"), _T("&\""));
-		xmlWriter.WriteAttribute(_T("a3"), _T("v<v"));
-		xmlWriter.WriteAttribute(_T("a4"), _T(">v>"));
-		xmlWriter.WriteAttribute(_T("a5"), _T(">>v"));
-		xmlWriter.WriteAttribute(_T("a6"), _T("v<<"));
-		xmlWriter.WriteEndElement();
+		xmlWriter.writeStartElement(_T("test"));
+		xmlWriter.writeAttribute(_T("a1"), _T("v1"));
+		xmlWriter.writeAttribute(_T("a2"), _T("&\""));
+		xmlWriter.writeAttribute(_T("a3"), _T("v<v"));
+		xmlWriter.writeAttribute(_T("a4"), _T(">v>"));
+		xmlWriter.writeAttribute(_T("a5"), _T(">>v"));
+		xmlWriter.writeAttribute(_T("a6"), _T("v<<"));
+		xmlWriter.writeEndElement();
 		ASSERT_EQ(_T("<test a1=\"v1\" a2=\"&amp;&quot;\" a3=\"v&lt;v\" a4=\"&gt;v&gt;\" a5=\"&gt;&gt;v\" a6=\"v&lt;&lt;\" />"), strWriter.toString());
 	}
 
-	// <Unit> WriteComment
+	// <Unit> writeComment
 	{
 		StringWriter strWriter;
 		strWriter.setNewLine(_T("\n"));
 		XmlWriter xmlWriter(&strWriter);
-		xmlWriter.WriteStartElement(_T("test"));
-		xmlWriter.WriteComment(_T("comment1"));
-		ASSERT_THROW(xmlWriter.WriteComment(_T("comment2--")), ArgumentException);
-		xmlWriter.WriteComment(_T("comment3"));
-		xmlWriter.WriteEndElement();
+		xmlWriter.writeStartElement(_T("test"));
+		xmlWriter.writeComment(_T("comment1"));
+		ASSERT_THROW(xmlWriter.writeComment(_T("comment2--")), ArgumentException);
+		xmlWriter.writeComment(_T("comment3"));
+		xmlWriter.writeEndElement();
 		ASSERT_EQ(_T("<test>\n  <!--comment1-->\n  <!--comment3-->\n</test>"), strWriter.toString());
 	}
 
-	// <Unit> WriteCData
+	// <Unit> writeCData
 	{
 		StringWriter strWriter;
 		XmlWriter xmlWriter(&strWriter);
-		xmlWriter.WriteStartElement(_T("test"));
-		xmlWriter.WriteCData(_T("AAA && BBB"));
-		ASSERT_THROW(xmlWriter.WriteCData(_T("XX]]>")), ArgumentException);
-		xmlWriter.WriteCData(_T("CCC\nDDD"));
-		xmlWriter.WriteEndElement();
+		xmlWriter.writeStartElement(_T("test"));
+		xmlWriter.writeCData(_T("AAA && BBB"));
+		ASSERT_THROW(xmlWriter.writeCData(_T("XX]]>")), ArgumentException);
+		xmlWriter.writeCData(_T("CCC\nDDD"));
+		xmlWriter.writeEndElement();
 		ASSERT_EQ(_T("<test><![CDATA[AAA && BBB]]><![CDATA[CCC\nDDD]]></test>"), strWriter.toString());
 	}
 }
@@ -162,11 +162,11 @@ TEST_F(Test_Xml_XmlWriter, SystemTest)
 	{
 		XmlStringWriter writer;
 		writer.setNewLine(_T("\n"));
-		writer.WriteStartDocument();
-		writer.WriteStartElement(_T("EnvData"));
-		writer.WriteElementString(_T("ToolPath"), _T("path"));
-		writer.WriteEndElement();
-		writer.WriteEndDocument();
+		writer.writeStartDocument();
+		writer.writeStartElement(_T("EnvData"));
+		writer.writeElementString(_T("ToolPath"), _T("path"));
+		writer.writeEndElement();
+		writer.writeEndDocument();
 
 		String str = writer.toString();
 		String exp =
@@ -174,7 +174,7 @@ TEST_F(Test_Xml_XmlWriter, SystemTest)
 			_T("<EnvData>\n")
 			_T("  <ToolPath>path</ToolPath>\n")
 			_T("</EnvData>");
-		exp = exp.replace(_T("_ENC_"), Encoding::GetTCharEncoding()->GetName());
+		exp = exp.replace(_T("_ENC_"), Encoding::getTCharEncoding()->getName());
 		ASSERT_EQ(exp, str);
 
 	}
@@ -199,22 +199,22 @@ TEST_F(Test_Xml_XmlReader, User)
 	String output;
 	while (reader.read())
 	{
-		if (reader.GetNodeType() == XmlNodeType::Text) {
-			output += String::sprintf(_T("type:%s value:%s\n"), reader.GetNodeType().toString().c_str(), reader.getValue().c_str());
+		if (reader.getNodeType() == XmlNodeType::Text) {
+			output += String::sprintf(_T("type:%s value:%s\n"), reader.getNodeType().toString().c_str(), reader.getValue().c_str());
 		}
-		else if (reader.GetNodeType() == XmlNodeType::Whitespace) {
-			output += String::sprintf(_T("type:%s\n"), reader.GetNodeType().toString().c_str());
+		else if (reader.getNodeType() == XmlNodeType::Whitespace) {
+			output += String::sprintf(_T("type:%s\n"), reader.getNodeType().toString().c_str());
 		}
 		else {
-			output += String::sprintf(_T("type:%s name:%s\n"), reader.GetNodeType().toString().c_str(), reader.GetName().c_str());
+			output += String::sprintf(_T("type:%s name:%s\n"), reader.getNodeType().toString().c_str(), reader.getName().c_str());
 		}
 
-		if (reader.MoveToFirstAttribute())
+		if (reader.moveToFirstAttribute())
 		{
 			do {
-				output += String::sprintf(_T("type:%s name:%s value:%s\n"), reader.GetNodeType().toString().c_str(), reader.GetName().c_str(), reader.getValue().c_str());
+				output += String::sprintf(_T("type:%s name:%s value:%s\n"), reader.getNodeType().toString().c_str(), reader.getName().c_str(), reader.getValue().c_str());
 
-			} while (reader.MoveToNextAttribute());
+			} while (reader.moveToNextAttribute());
 		}
 	}
 
@@ -261,11 +261,11 @@ TEST_F(Test_Xml_XmlReader, User)
 // Element ノードのテスト
 TEST_F(Test_Xml_XmlReader, Element)
 {
-	// <Test> Read() の前に GetNodeType() すると None が返る。
+	// <Test> Read() の前に getNodeType() すると None が返る。
 	{
 		String xml = _T("<test />");
 		XmlReader reader(xml);
-		ASSERT_EQ(XmlNodeType::None, reader.GetNodeType());
+		ASSERT_EQ(XmlNodeType::None, reader.getNodeType());
 	}
 
 	// ・空要素
@@ -274,27 +274,27 @@ TEST_F(Test_Xml_XmlReader, Element)
 		XmlReader reader(xml);
 
 		ASSERT_TRUE(reader.read());
-		ASSERT_EQ(XmlNodeType::Element, reader.GetNodeType());
-		ASSERT_EQ(_T("test"), reader.GetName());
-		ASSERT_EQ(true, reader.IsEmptyElement());			// 空要素である
+		ASSERT_EQ(XmlNodeType::Element, reader.getNodeType());
+		ASSERT_EQ(_T("test"), reader.getName());
+		ASSERT_EQ(true, reader.isEmptyElement());			// 空要素である
 		ASSERT_EQ(false, reader.read());					// EOF
-		ASSERT_EQ(XmlNodeType::None, reader.GetNodeType());	// EOF の後は None
+		ASSERT_EQ(XmlNodeType::None, reader.getNodeType());	// EOF の後は None
 	}
 
-	// ・End Element
+	// ・end Element
 	{
 		String xml = _T("<test></test>");
 		XmlReader reader(xml);
 
 		ASSERT_TRUE(reader.read());
-		ASSERT_EQ(XmlNodeType::Element, reader.GetNodeType());
-		ASSERT_EQ(_T("test"), reader.GetName());
-		ASSERT_EQ(false, reader.IsEmptyElement());			// 空要素ではない
+		ASSERT_EQ(XmlNodeType::Element, reader.getNodeType());
+		ASSERT_EQ(_T("test"), reader.getName());
+		ASSERT_EQ(false, reader.isEmptyElement());			// 空要素ではない
 
 		ASSERT_TRUE(reader.read());
-		ASSERT_EQ(XmlNodeType::EndElement, reader.GetNodeType());
-		ASSERT_EQ(_T("test"), reader.GetName());
-		ASSERT_EQ(false, reader.IsEmptyElement());			// 空要素ではない
+		ASSERT_EQ(XmlNodeType::EndElement, reader.getNodeType());
+		ASSERT_EQ(_T("test"), reader.getName());
+		ASSERT_EQ(false, reader.isEmptyElement());			// 空要素ではない
 
 		ASSERT_EQ(false, reader.read());					// EOF
 	}
@@ -305,20 +305,20 @@ TEST_F(Test_Xml_XmlReader, Element)
 		XmlReader reader(xml);
 
 		ASSERT_TRUE(reader.read());
-		ASSERT_EQ(XmlNodeType::Element, reader.GetNodeType());
-		ASSERT_EQ(_T("n1"), reader.GetName());
-		ASSERT_FALSE(reader.IsEmptyElement());
+		ASSERT_EQ(XmlNodeType::Element, reader.getNodeType());
+		ASSERT_EQ(_T("n1"), reader.getName());
+		ASSERT_FALSE(reader.isEmptyElement());
 
 		ASSERT_TRUE(reader.read());
-		ASSERT_EQ(XmlNodeType::Element, reader.GetNodeType());
-		ASSERT_EQ(_T("n2"), reader.GetName());
-		ASSERT_TRUE(reader.IsEmptyElement());
+		ASSERT_EQ(XmlNodeType::Element, reader.getNodeType());
+		ASSERT_EQ(_T("n2"), reader.getName());
+		ASSERT_TRUE(reader.isEmptyElement());
 
 		ASSERT_TRUE(reader.read());
 		ASSERT_EQ(4, reader.m_textCache.getCount());
-		ASSERT_EQ(XmlNodeType::EndElement, reader.GetNodeType());
-		ASSERT_EQ(_T("n1"), reader.GetName());
-		ASSERT_FALSE(reader.IsEmptyElement());			// EndElement は空要素扱いではない
+		ASSERT_EQ(XmlNodeType::EndElement, reader.getNodeType());
+		ASSERT_EQ(_T("n1"), reader.getName());
+		ASSERT_FALSE(reader.isEmptyElement());			// EndElement は空要素扱いではない
 
 		ASSERT_FALSE(reader.read());						// EOF
 	}
@@ -329,12 +329,12 @@ TEST_F(Test_Xml_XmlReader, Element)
 		XmlReader reader(xml);
 
 		ASSERT_TRUE(reader.read());
-		ASSERT_EQ(XmlNodeType::Element, reader.GetNodeType());
-		ASSERT_EQ(_T("v:test"), reader.GetName());
+		ASSERT_EQ(XmlNodeType::Element, reader.getNodeType());
+		ASSERT_EQ(_T("v:test"), reader.getName());
 
 		ASSERT_TRUE(reader.read());
-		ASSERT_EQ(XmlNodeType::Element, reader.GetNodeType());
-		ASSERT_EQ(_T("b.n1"), reader.GetName());
+		ASSERT_EQ(XmlNodeType::Element, reader.getNodeType());
+		ASSERT_EQ(_T("b.n1"), reader.getName());
 
 		ASSERT_FALSE(reader.read());					// EOF
 	}
@@ -351,20 +351,20 @@ TEST_F(Test_Xml_XmlReader, Text)
 		XmlReader reader(xml);
 
 		ASSERT_TRUE(reader.read());
-		ASSERT_EQ(XmlNodeType::Element, reader.GetNodeType());
-		ASSERT_EQ(_T("test"), reader.GetName());
-		ASSERT_FALSE(reader.IsEmptyElement());			// 空要素ではない
+		ASSERT_EQ(XmlNodeType::Element, reader.getNodeType());
+		ASSERT_EQ(_T("test"), reader.getName());
+		ASSERT_FALSE(reader.isEmptyElement());			// 空要素ではない
 
 		ASSERT_TRUE(reader.read());
-		ASSERT_EQ(XmlNodeType::Text, reader.GetNodeType());
-		ASSERT_TRUE(reader.GetName().isEmpty());		// Text ノードの名前は空
+		ASSERT_EQ(XmlNodeType::Text, reader.getNodeType());
+		ASSERT_TRUE(reader.getName().isEmpty());		// Text ノードの名前は空
 		ASSERT_EQ(_T("Text"), reader.getValue());	// テキスト値
-		ASSERT_FALSE(reader.IsEmptyElement());			// 空要素ではない (というか要素ではない)
+		ASSERT_FALSE(reader.isEmptyElement());			// 空要素ではない (というか要素ではない)
 
 		ASSERT_TRUE(reader.read());
-		ASSERT_EQ(XmlNodeType::EndElement, reader.GetNodeType());
-		ASSERT_EQ(_T("test"), reader.GetName());
-		ASSERT_FALSE(reader.IsEmptyElement());			// 空要素ではない
+		ASSERT_EQ(XmlNodeType::EndElement, reader.getNodeType());
+		ASSERT_EQ(_T("test"), reader.getName());
+		ASSERT_FALSE(reader.isEmptyElement());			// 空要素ではない
 
 		ASSERT_FALSE(reader.read());					// EOF
 	}
@@ -376,7 +376,7 @@ TEST_F(Test_Xml_XmlReader, Text)
 		reader.read();
 
 		ASSERT_TRUE(reader.read());
-		ASSERT_EQ(XmlNodeType::Text, reader.GetNodeType());
+		ASSERT_EQ(XmlNodeType::Text, reader.getNodeType());
 		ASSERT_EQ(_T(" \nText\r\t"), reader.getValue());	// テキスト値
 
 		reader.read();
@@ -393,7 +393,7 @@ TEST_F(Test_Xml_XmlReader, Comment)
 		XmlReader reader(xml);
 
 		ASSERT_TRUE(reader.read());
-		ASSERT_EQ(XmlNodeType::Comment, reader.GetNodeType());
+		ASSERT_EQ(XmlNodeType::Comment, reader.getNodeType());
 		ASSERT_EQ(_T(" Comment "), reader.getValue());	// コメントの値
 
 		ASSERT_FALSE(reader.read());						// EOF
@@ -410,22 +410,22 @@ TEST_F(Test_Xml_XmlReader, Attribute)
 		XmlReader reader(xml);
 
 		ASSERT_TRUE(reader.read());
-		ASSERT_EQ(XmlNodeType::Element, reader.GetNodeType());
-		ASSERT_EQ(_T("test"), reader.GetName());
-		ASSERT_TRUE(reader.IsEmptyElement());
-		ASSERT_EQ(1, reader.GetAttributeCount());		// 属性1個
-		ASSERT_FALSE(reader.MoveToElement());			// 意味無し
+		ASSERT_EQ(XmlNodeType::Element, reader.getNodeType());
+		ASSERT_EQ(_T("test"), reader.getName());
+		ASSERT_TRUE(reader.isEmptyElement());
+		ASSERT_EQ(1, reader.getAttributeCount());		// 属性1個
+		ASSERT_FALSE(reader.moveToElement());			// 意味無し
 
-		ASSERT_TRUE(reader.MoveToFirstAttribute());
-		ASSERT_EQ(XmlNodeType::Attribute, reader.GetNodeType());
-		ASSERT_EQ(_T("a"), reader.GetName());
+		ASSERT_TRUE(reader.moveToFirstAttribute());
+		ASSERT_EQ(XmlNodeType::Attribute, reader.getNodeType());
+		ASSERT_EQ(_T("a"), reader.getName());
 		ASSERT_EQ(_T("10"), reader.getValue());
 
-		ASSERT_TRUE(reader.MoveToElement());	// Element に戻らないと、IsEmptyElement が機能しない
-		ASSERT_EQ(XmlNodeType::Element, reader.GetNodeType());
-		ASSERT_EQ(_T("test"), reader.GetName());
-		ASSERT_TRUE(reader.IsEmptyElement());
-		ASSERT_EQ(1, reader.GetAttributeCount());		// 属性1個
+		ASSERT_TRUE(reader.moveToElement());	// Element に戻らないと、isEmptyElement が機能しない
+		ASSERT_EQ(XmlNodeType::Element, reader.getNodeType());
+		ASSERT_EQ(_T("test"), reader.getName());
+		ASSERT_TRUE(reader.isEmptyElement());
+		ASSERT_EQ(1, reader.getAttributeCount());		// 属性1個
 
 		ASSERT_FALSE(reader.read());					// EOF
 	}
@@ -437,22 +437,22 @@ TEST_F(Test_Xml_XmlReader, Attribute)
 		XmlReader reader(xml);
 
 		ASSERT_TRUE(reader.read());
-		ASSERT_TRUE(reader.IsEmptyElement());
-		ASSERT_EQ(2, reader.GetAttributeCount());		// 属性2個
+		ASSERT_TRUE(reader.isEmptyElement());
+		ASSERT_EQ(2, reader.getAttributeCount());		// 属性2個
 
 		// v.a="10"
-		ASSERT_TRUE(reader.MoveToFirstAttribute());
-		ASSERT_EQ(XmlNodeType::Attribute, reader.GetNodeType());
-		ASSERT_EQ(_T("v.a"), reader.GetName());
+		ASSERT_TRUE(reader.moveToFirstAttribute());
+		ASSERT_EQ(XmlNodeType::Attribute, reader.getNodeType());
+		ASSERT_EQ(_T("v.a"), reader.getName());
 		ASSERT_EQ(_T("10"), reader.getValue());
 
 		// v:b="ABC"
-		ASSERT_TRUE(reader.MoveToNextAttribute());
-		ASSERT_EQ(XmlNodeType::Attribute, reader.GetNodeType());
-		ASSERT_EQ(_T("v:b"), reader.GetName());
+		ASSERT_TRUE(reader.moveToNextAttribute());
+		ASSERT_EQ(XmlNodeType::Attribute, reader.getNodeType());
+		ASSERT_EQ(_T("v:b"), reader.getName());
 		ASSERT_EQ(_T("ABC"), reader.getValue());
 
-		ASSERT_FALSE(reader.MoveToNextAttribute());		// 次は無い
+		ASSERT_FALSE(reader.moveToNextAttribute());		// 次は無い
 
 		ASSERT_FALSE(reader.read());					// EOF
 	}
@@ -462,13 +462,13 @@ TEST_F(Test_Xml_XmlReader, Attribute)
 		XmlReader reader(xml);
 
 		ASSERT_EQ(true, reader.read());
-		ASSERT_EQ(1, reader.GetAttributeCount());
+		ASSERT_EQ(1, reader.getAttributeCount());
 
-		reader.MoveToElement();
+		reader.moveToElement();
 		reader.read();
 
-		ASSERT_EQ(XmlNodeType::EndElement, reader.GetNodeType());
-		ASSERT_EQ(_T("test"), reader.GetName());
+		ASSERT_EQ(XmlNodeType::EndElement, reader.getNodeType());
+		ASSERT_EQ(_T("test"), reader.getName());
 	}
 }
 
@@ -485,35 +485,35 @@ TEST_F(Test_Xml_XmlReader, ReservedEntity)
 		ASSERT_TRUE(reader.read());	// <ch>
 
 		ASSERT_TRUE(reader.read());	// &lt;
-		ASSERT_EQ(XmlNodeType::Text, reader.GetNodeType());
+		ASSERT_EQ(XmlNodeType::Text, reader.getNodeType());
 		ASSERT_EQ(_T("<"), reader.getValue());
 
 		ASSERT_TRUE(reader.read());	// <ch/>
 		ASSERT_TRUE(reader.read());	// <ch>
 
 		ASSERT_TRUE(reader.read());	// &gt;
-		ASSERT_EQ(XmlNodeType::Text, reader.GetNodeType());
+		ASSERT_EQ(XmlNodeType::Text, reader.getNodeType());
 		ASSERT_EQ(_T(">"), reader.getValue());
 
 		ASSERT_TRUE(reader.read());	// <ch/>
 		ASSERT_TRUE(reader.read());	// <ch>
 
 		ASSERT_TRUE(reader.read());	// &amp;
-		ASSERT_EQ(XmlNodeType::Text, reader.GetNodeType());
+		ASSERT_EQ(XmlNodeType::Text, reader.getNodeType());
 		ASSERT_EQ(_T("&"), reader.getValue());
 
 		ASSERT_TRUE(reader.read());	// <ch/>
 		ASSERT_TRUE(reader.read());	// <ch>
 
 		ASSERT_TRUE(reader.read());	// &apos;
-		ASSERT_EQ(XmlNodeType::Text, reader.GetNodeType());
+		ASSERT_EQ(XmlNodeType::Text, reader.getNodeType());
 		ASSERT_EQ(_T("'"), reader.getValue());
 
 		ASSERT_TRUE(reader.read());	// <ch/>
 		ASSERT_TRUE(reader.read());	// <ch>
 
 		ASSERT_TRUE(reader.read());	// &quot;
-		ASSERT_EQ(XmlNodeType::Text, reader.GetNodeType());
+		ASSERT_EQ(XmlNodeType::Text, reader.getNodeType());
 		ASSERT_EQ(_T("\""), reader.getValue());
 
 		ASSERT_TRUE(reader.read());	// <ch/>
@@ -529,23 +529,23 @@ TEST_F(Test_Xml_XmlReader, ReservedEntity)
 		String xml = _T("<test a=\"&lt;\" b=\"&AAAA;\"  c=\"A&lt; \" />");
 		XmlReader reader(xml);
 		ASSERT_TRUE(reader.read());
-		ASSERT_EQ(XmlNodeType::Element, reader.GetNodeType());
-		ASSERT_TRUE(reader.IsEmptyElement());
-		ASSERT_EQ(3, reader.GetAttributeCount());		// 属性1個
+		ASSERT_EQ(XmlNodeType::Element, reader.getNodeType());
+		ASSERT_TRUE(reader.isEmptyElement());
+		ASSERT_EQ(3, reader.getAttributeCount());		// 属性1個
 
-		ASSERT_TRUE(reader.MoveToFirstAttribute());
-		ASSERT_EQ(XmlNodeType::Attribute, reader.GetNodeType());
-		ASSERT_EQ(_T("a"), reader.GetName());
+		ASSERT_TRUE(reader.moveToFirstAttribute());
+		ASSERT_EQ(XmlNodeType::Attribute, reader.getNodeType());
+		ASSERT_EQ(_T("a"), reader.getName());
 		ASSERT_EQ(_T("<"), reader.getValue());
 
-		ASSERT_TRUE(reader.MoveToNextAttribute());
-		ASSERT_EQ(XmlNodeType::Attribute, reader.GetNodeType());
-		ASSERT_EQ(_T("b"), reader.GetName());
+		ASSERT_TRUE(reader.moveToNextAttribute());
+		ASSERT_EQ(XmlNodeType::Attribute, reader.getNodeType());
+		ASSERT_EQ(_T("b"), reader.getName());
 		ASSERT_EQ(_T("&AAAA;"), reader.getValue());	// 認識できない Entity はエラーにせず、テキストとして返す
 
-		ASSERT_TRUE(reader.MoveToNextAttribute());
-		ASSERT_EQ(XmlNodeType::Attribute, reader.GetNodeType());
-		ASSERT_EQ(_T("c"), reader.GetName());
+		ASSERT_TRUE(reader.moveToNextAttribute());
+		ASSERT_EQ(XmlNodeType::Attribute, reader.getNodeType());
+		ASSERT_EQ(_T("c"), reader.getName());
 		ASSERT_EQ(_T("A< "), reader.getValue());
 
 		ASSERT_FALSE(reader.read());					// EOF
@@ -563,16 +563,16 @@ TEST_F(Test_Xml_XmlReader, EntityReference)
 		ASSERT_TRUE(reader.read());		// <a>
 
 		ASSERT_TRUE(reader.read());		// " A"
-		ASSERT_EQ(XmlNodeType::Text, reader.GetNodeType());
+		ASSERT_EQ(XmlNodeType::Text, reader.getNodeType());
 		ASSERT_EQ(_T(" A"), reader.getValue());
 
 		ASSERT_TRUE(reader.read());		// "&book;"
-		ASSERT_EQ(XmlNodeType::EntityReference, reader.GetNodeType());
-		ASSERT_EQ(_T("book"), reader.GetName());
+		ASSERT_EQ(XmlNodeType::EntityReference, reader.getNodeType());
+		ASSERT_EQ(_T("book"), reader.getName());
 		ASSERT_TRUE(reader.getValue().isEmpty());	// 値は空
 
 		ASSERT_TRUE(reader.read());		// " "
-		ASSERT_EQ(XmlNodeType::Whitespace, reader.GetNodeType());
+		ASSERT_EQ(XmlNodeType::Whitespace, reader.getNodeType());
 		ASSERT_EQ(_T(" "), reader.getValue());
 
 		ASSERT_TRUE(reader.read());		// </a>
@@ -584,7 +584,7 @@ TEST_F(Test_Xml_XmlReader, EntityReference)
 //---------------------------------------------------------------------
 TEST_F(Test_Xml_XmlReader, SystemTest)
 {
-	// <> ReadString
+	// <> readString
 	{
 		String xml =
 			_T("<root>\n")
@@ -595,12 +595,12 @@ TEST_F(Test_Xml_XmlReader, SystemTest)
 		List<XmlNodeType> types;
 		while (reader.read())
 		{
-			types.add(reader.GetNodeType());
-			if (reader.IsStartElement(_T("test")))
+			types.add(reader.getNodeType());
+			if (reader.isStartElement(_T("test")))
 			{
-				types.add(reader.GetNodeType());
-				ASSERT_EQ(_T("  AAA  "), reader.ReadString());
-				types.add(reader.GetNodeType());	// EndElement
+				types.add(reader.getNodeType());
+				ASSERT_EQ(_T("  AAA  "), reader.readString());
+				types.add(reader.getNodeType());	// EndElement
 			}
 		}
 		ASSERT_EQ(5, types.getCount());
@@ -609,7 +609,7 @@ TEST_F(Test_Xml_XmlReader, SystemTest)
 		ASSERT_EQ(XmlNodeType::Element, types[2]);
 		ASSERT_EQ(XmlNodeType::EndElement, types[3]);
 		ASSERT_EQ(XmlNodeType::Whitespace, types[4]);
-		//ASSERT_EQ(XmlNodeType::EndElement, types[5]);	最後のは IsStartElement で消費されるので出てこない
+		//ASSERT_EQ(XmlNodeType::EndElement, types[5]);	最後のは isStartElement で消費されるので出てこない
 	}
 }
 
@@ -621,7 +621,7 @@ TEST_F(Test_Xml_XmlReader, Issues)
 		XmlReader reader(xml);
 
 		reader.read();
-		ASSERT_EQ(true, reader.IsEmptyElement());
+		ASSERT_EQ(true, reader.isEmptyElement());
 
 
 	}
@@ -630,17 +630,17 @@ TEST_F(Test_Xml_XmlReader, Issues)
 	}
 
 	// <Issue> "<?xml" があると Read() に失敗する
-	// <Issue> Read() 後、GetNodeType() で XmlNodeType::Attribute が返されてしまうことがある
+	// <Issue> Read() 後、getNodeType() で XmlNodeType::Attribute が返されてしまうことがある
 	{
 		XmlFileReader reader(LN_LOCALFILE("TestData/Issue2.xml"));
 		String str;
 		while (reader.read())
 		{
-			if (reader.GetNodeType() == XmlNodeType::Element ||
-				reader.GetNodeType() == XmlNodeType::EndElement ||
-				reader.GetNodeType() == XmlNodeType::Attribute)		// Attribute は Read() ではカレントにならないはず。なのでこの条件があっても、str に "Name" とかは現れない
+			if (reader.getNodeType() == XmlNodeType::Element ||
+				reader.getNodeType() == XmlNodeType::EndElement ||
+				reader.getNodeType() == XmlNodeType::Attribute)		// Attribute は Read() ではカレントにならないはず。なのでこの条件があっても、str に "Name" とかは現れない
 			{
-				str += reader.GetName() + _T(".") + reader.getValue() + _T(".");
+				str += reader.getName() + _T(".") + reader.getValue() + _T(".");
 			}
 		}
 

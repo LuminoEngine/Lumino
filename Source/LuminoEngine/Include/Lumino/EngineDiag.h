@@ -18,11 +18,11 @@ class EngineDiag
 {
 public:
 
-	static void SetDisplayMode(EngineDiagDisplayMode mode);
+	static void setDisplayMode(EngineDiagDisplayMode mode);
 
-	static int GetGraphicsDeviceDrawCount();
+	static int getGraphicsDeviceDrawCount();
 
-	static int GetVisualNodeDrawCount();
+	static int getVisualNodeDrawCount();
 };
 
 LN_NAMESPACE_END

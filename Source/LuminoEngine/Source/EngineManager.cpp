@@ -1,8 +1,5 @@
 ﻿
 #include "Internal.h"
-#ifdef LN_OS_WIN32
-#include <Windows.h>
-#endif
 #include <Lumino/IO/Console.h>
 #include <Lumino/Profiler.h>
 #include "Animation/AnimationManager.h"
@@ -65,21 +62,21 @@ void RuntimeResource::Dispose()
 detail::EngineSettings detail::EngineSettings::instance;
 
 //------------------------------------------------------------------------------
-void EngineSettings::SetMainWindowSize(const SizeI& size)
+void EngineSettings::setMainWindowSize(const SizeI& size)
 {
 	detail::EngineSettings::instance.mainWindowSize = size;
 }
-void EngineSettings::SetMainWindowSize(int width, int height)
+void EngineSettings::setMainWindowSize(int width, int height)
 {
 	detail::EngineSettings::instance.mainWindowSize.set(width, height);
 }
 
 //------------------------------------------------------------------------------
-void EngineSettings::SetMainBackBufferSize(const SizeI& size)
+void EngineSettings::setMainBackBufferSize(const SizeI& size)
 {
 	detail::EngineSettings::instance.mainBackBufferSize = size;
 }
-void EngineSettings::SetMainBackBufferSize(int width, int height)
+void EngineSettings::setMainBackBufferSize(int width, int height)
 {
 	detail::EngineSettings::instance.mainBackBufferSize.set(width, height);
 }
@@ -146,7 +143,7 @@ EngineManager* EngineManager::Instance = nullptr;
 const TCHAR* EngineManager::LogFileName = _T("EngineLog.txt");
 
 //------------------------------------------------------------------------------
-EngineManager* EngineManager::GetInstance(EngineManager* priority)
+EngineManager* EngineManager::getInstance(EngineManager* priority)
 {
 	if (priority != nullptr)
 		return priority;
@@ -187,9 +184,9 @@ EngineManager::EngineManager(const detail::EngineSettings& configData)
 	, m_endRequested(false)
 	, m_comInitialized(false)
 {
-	m_fpsController.SetEnableFpsTest(true);
-	Profiler::Instance.SetBaseFrameRate(Profiler::Group_MainThread, 60.0f);	// TODO
-	Profiler::Instance.SetBaseFrameRate(Profiler::Group_RenderThread, 60.0f);
+	m_fpsController.setEnableFpsTest(true);
+	Profiler::Instance.setBaseFrameRate(Profiler::Group_MainThread, 60.0f);	// TODO
+	Profiler::Instance.setBaseFrameRate(Profiler::Group_RenderThread, 60.0f);
 
 
 #if defined(LN_OS_WIN32)
@@ -230,7 +227,7 @@ EngineManager::~EngineManager()
 
 	if (m_platformManager != nullptr)
 	{
-		m_platformManager->GetMainWindow()->DetachEventListener(this);
+		m_platformManager->getMainWindow()->DetachEventListener(this);
 		m_platformManager->Dispose();
 	}
 	if (m_sceneGraphManager != nullptr) {
@@ -243,7 +240,7 @@ EngineManager::~EngineManager()
 	}
 	if (m_effectManager != nullptr)
 	{
-		m_graphicsManager->RemoveDeviceResetListener(m_effectManager);
+		m_graphicsManager->removeDeviceResetListener(m_effectManager);
 		m_effectManager->Finalize();
 		LN_SAFE_RELEASE(m_effectManager);
 	}
@@ -287,31 +284,31 @@ EngineManager::~EngineManager()
 //------------------------------------------------------------------------------
 void EngineManager::initialize()
 {
-	InitializePlatformManager();
-	InitializeInputManager();
-	InitializeAudioManager();
-	InitializePhysicsManager();
-	InitializeGraphicsManager();
-	InitializeEffectManager();
-	InitializeModelManager();
-	InitializeUIManager();
-	InitializeSceneGraphManager();
-	InitializeAssetsManager();
+	initializePlatformManager();
+	initializeInputManager();
+	initializeAudioManager();
+	initializePhysicsManager();
+	initializeGraphicsManager();
+	initializeEffectManager();
+	initializeModelManager();
+	initializeUIManager();
+	initializeSceneGraphManager();
+	initializeAssetsManager();
 
 	EngineDiagCore::Instance.initialize(this);
 
-	m_defaultWorld2D = NewObject<World2D>();
-	m_defaultWorld3D = NewObject<World3D>();
+	m_defaultWorld2D = newObject<World2D>();
+	m_defaultWorld3D = newObject<World3D>();
 	m_uiManager->CreateGameModeMainFrame(m_defaultWorld2D, m_defaultWorld3D);
-	m_uiManager->GetMainWindow()->SetDelayedRenderingSkip(m_configData.delayedRenderingSkip);
+	m_uiManager->getMainWindow()->SetDelayedRenderingSkip(m_configData.delayedRenderingSkip);
 }
 
 //------------------------------------------------------------------------------
-void EngineManager::InitializeCommon()
+void EngineManager::initializeCommon()
 {
 	if (!m_commonInitied)
 	{
-		InternalResource::InitializeEngineResource();
+		InternalResource::initializeEngineResource();
 
 		// ログファイル出力
 		if (m_configData.engineLogEnabled)
@@ -327,7 +324,7 @@ void EngineManager::InitializeCommon()
 }
 
 //------------------------------------------------------------------------------
-void EngineManager::InitializeAnimationManager()
+void EngineManager::initializeAnimationManager()
 {
 	if (m_animationManager == nullptr)
 	{
@@ -337,7 +334,7 @@ void EngineManager::InitializeAnimationManager()
 }
 
 //------------------------------------------------------------------------------
-void EngineManager::InitializeFileManager()
+void EngineManager::initializeFileManager()
 {
 	if (m_fileManager == nullptr)
 	{
@@ -351,11 +348,11 @@ void EngineManager::InitializeFileManager()
 }
 
 //------------------------------------------------------------------------------
-void EngineManager::InitializePlatformManager()
+void EngineManager::initializePlatformManager()
 {
 	if (m_platformManager.isNull())
 	{
-		InitializeCommon();
+		initializeCommon();
 
 		PlatformManager::Settings data;
 		data.windowSystemAPI = m_configData.windowSystemAPI;
@@ -370,19 +367,19 @@ void EngineManager::InitializePlatformManager()
 		m_platformManager->initialize(data);
 
 		// イベントリスナー登録
-		m_platformManager->GetMainWindow()->AttachEventListener(this, 0);
+		m_platformManager->getMainWindow()->AttachEventListener(this, 0);
 	}
 }
 
 //------------------------------------------------------------------------------
-void EngineManager::InitializeInputManager()
+void EngineManager::initializeInputManager()
 {
 	if (m_inputManager == nullptr)
 	{
-		InitializePlatformManager();
+		initializePlatformManager();
 
 		detail::InputManager::Settings data;
-		data.mainWindow = m_platformManager->GetMainWindow();
+		data.mainWindow = m_platformManager->getMainWindow();
 
 		m_inputManager = LN_NEW detail::InputManager();
 		m_inputManager->initialize(data);
@@ -390,18 +387,18 @@ void EngineManager::InitializeInputManager()
 }
 
 //------------------------------------------------------------------------------
-void EngineManager::InitializeAudioManager()
+void EngineManager::initializeAudioManager()
 {
 	if (m_audioManager == nullptr)
 	{
-		InitializeCommon();
-		InitializeFileManager();
+		initializeCommon();
+		initializeFileManager();
 
 		// ユーザー定義のウィンドウハンドルが指定されている場合、
 		// ダミーウィンドウクラスを作るために PlatformManager の初期化が必要。
 		if (m_configData.userMainWindow != 0)
 		{
-			InitializePlatformManager();
+			initializePlatformManager();
 		}
 
 		detail::AudioManager::Settings settings;
@@ -410,7 +407,7 @@ void EngineManager::InitializeAudioManager()
 		settings.streamSourceCacheMemorySize = m_configData.soundCacheCapacity.memorySize;
 		settings.directMusicInitMode = m_configData.directMusicMode;
 #ifdef LN_OS_WIN32
-		settings.hWnd = (m_platformManager != nullptr) ? PlatformSupport::GetWindowHandle(m_platformManager->GetMainWindow()) : nullptr;
+		settings.hWnd = (m_platformManager != nullptr) ? PlatformSupport::GetWindowHandle(m_platformManager->getMainWindow()) : nullptr;
 #endif
 		settings.directMusicReverbLevel = m_configData.DirectMusicReverbLevel;
 		m_audioManager = LN_NEW detail::AudioManager();
@@ -419,31 +416,31 @@ void EngineManager::InitializeAudioManager()
 }
 
 //------------------------------------------------------------------------------
-void EngineManager::InitializePhysicsManager()
+void EngineManager::initializePhysicsManager()
 {
 	if (m_physicsManager.isNull())
 	{
-		InitializeCommon();
+		initializeCommon();
 		m_physicsManager = RefPtr<detail::PhysicsManager>::makeRef();
 		m_physicsManager->initialize();
 	}
 }
 
 //------------------------------------------------------------------------------
-void EngineManager::InitializeGraphicsManager()
+void EngineManager::initializeGraphicsManager()
 {
 	if (m_graphicsManager == nullptr)
 	{
-		InitializeCommon();
-		InitializeAnimationManager();
-		InitializeFileManager();
-		InitializePlatformManager();
-		InitializePhysicsManager();
+		initializeCommon();
+		initializeAnimationManager();
+		initializeFileManager();
+		initializePlatformManager();
+		initializePhysicsManager();
 
 		detail::GraphicsManager::ConfigData data;
 		data.graphicsAPI = m_configData.graphicsAPI;
 		data.renderingType = m_configData.renderingType;
-		data.mainWindow = m_platformManager->GetMainWindow();
+		data.mainWindow = m_platformManager->getMainWindow();
 		data.backBufferSize = m_configData.mainBackBufferSize;
 		data.animationManager = m_animationManager;
 		data.fileManager = m_fileManager;
@@ -462,12 +459,12 @@ void EngineManager::InitializeGraphicsManager()
 }
 
 //------------------------------------------------------------------------------
-void EngineManager::InitializeEffectManager()
+void EngineManager::initializeEffectManager()
 {
 	if (m_effectManager == nullptr)
 	{
-		InitializeCommon();
-		InitializeGraphicsManager();
+		initializeCommon();
+		initializeGraphicsManager();
 
 		detail::EffectManager::Settings data;
 		data.fileManager = m_fileManager;
@@ -476,18 +473,18 @@ void EngineManager::InitializeEffectManager()
 		m_effectManager = LN_NEW detail::EffectManager();
 		m_effectManager->initialize(data);
 
-		m_graphicsManager->AddDeviceResetListener(m_effectManager);
+		m_graphicsManager->addDeviceResetListener(m_effectManager);
 	}
 }
 
 //------------------------------------------------------------------------------
-void EngineManager::InitializeModelManager()
+void EngineManager::initializeModelManager()
 {
 	if (m_modelManager == nullptr)
 	{
-		InitializeCommon();
-		InitializeGraphicsManager();
-		InitializePhysicsManager();
+		initializeCommon();
+		initializeGraphicsManager();
+		initializePhysicsManager();
 
 		detail::ModelManager::ConfigData data;
 		data.fileManager = m_fileManager;
@@ -501,12 +498,12 @@ void EngineManager::InitializeModelManager()
 }
 
 //------------------------------------------------------------------------------
-void EngineManager::InitializeDocumentsManager()
+void EngineManager::initializeDocumentsManager()
 {
 	if (m_documentsManager == nullptr)
 	{
-		InitializeCommon();
-		InitializeGraphicsManager();
+		initializeCommon();
+		initializeGraphicsManager();
 
 		detail::DocumentsManager::ConfigData data;
 		data.graphicsManager = m_graphicsManager;
@@ -516,17 +513,17 @@ void EngineManager::InitializeDocumentsManager()
 }
 
 //------------------------------------------------------------------------------
-void EngineManager::InitializeUIManager()
+void EngineManager::initializeUIManager()
 {
 	if (m_uiManager == nullptr)
 	{
-		InitializeCommon();
-		InitializeFileManager();
-		InitializeAnimationManager();
-		InitializePlatformManager();
-		InitializeGraphicsManager();
-		InitializeDocumentsManager();
-		InitializeAssetsManager();
+		initializeCommon();
+		initializeFileManager();
+		initializeAnimationManager();
+		initializePlatformManager();
+		initializeGraphicsManager();
+		initializeDocumentsManager();
+		initializeAssetsManager();
 
 		detail::UIManager::Settings data;
 		data.fileManager = m_fileManager;
@@ -543,18 +540,18 @@ void EngineManager::InitializeUIManager()
 }
 
 //------------------------------------------------------------------------------
-void EngineManager::InitializeSceneGraphManager()
+void EngineManager::initializeSceneGraphManager()
 {
 	if (m_sceneGraphManager == nullptr)
 	{
-		InitializeCommon();
-		InitializeFileManager();
-		InitializeGraphicsManager();
-		InitializePhysicsManager();
-		InitializeEffectManager();
-		InitializeModelManager();
-		InitializeUIManager();
-		InitializeDocumentsManager();
+		initializeCommon();
+		initializeFileManager();
+		initializeGraphicsManager();
+		initializePhysicsManager();
+		initializeEffectManager();
+		initializeModelManager();
+		initializeUIManager();
+		initializeDocumentsManager();
 
 		SceneGraphManager::ConfigData data;
 		data.engineDiag = &EngineDiagCore::Instance;
@@ -571,7 +568,7 @@ void EngineManager::InitializeSceneGraphManager()
 }
 
 //------------------------------------------------------------------------------
-void EngineManager::InitializeAssetsManager()
+void EngineManager::initializeAssetsManager()
 {
 	if (m_assetsManager == nullptr)
 	{
@@ -581,26 +578,26 @@ void EngineManager::InitializeAssetsManager()
 }
 
 //------------------------------------------------------------------------------
-bool EngineManager::UpdateUnitily()
+bool EngineManager::updateUnitily()
 {
-	UpdateFrame();
+	updateFrame();
 	//if (BeginRendering())
 	{
-		RenderFrame();
-		PresentFrame();
+		renderFrame();
+		presentFrame();
 	}
-	return !IsEndRequested();
+	return !isEndRequested();
 }
 
 //------------------------------------------------------------------------------
-void EngineManager::UpdateFrame()
+void EngineManager::updateFrame()
 {
 	m_fpsController.process();
 
-	Profiler::Instance.SetMainFPS(m_fpsController.GetFps());
-	Profiler::Instance.SetMainFPSCapacity(m_fpsController.GetCapacityFps());
+	Profiler::Instance.setMainFPS(m_fpsController.getFps());
+	Profiler::Instance.setMainFPSCapacity(m_fpsController.getCapacityFps());
 
-	m_diagViewer->UpdateFrame();
+	m_diagViewer->updateFrame();
 
 
 
@@ -608,17 +605,17 @@ void EngineManager::UpdateFrame()
 	//float deltaTime = m_fixedDeltaTime;
 	//if (deltaTime == 0.0f)
 	//{
-	//	deltaTime = m_fpsController.GetElapsedGameTime();
+	//	deltaTime = m_fpsController.getElapsedGameTime();
 	//}
 
 	// select runtime notification time source
 	float deltaTime = 0.0f;
 	if (m_frameUpdateMode == FrameUpdateMode::Fixed)
-		deltaTime = 1.0f / m_fpsController.GetFrameRate();
+		deltaTime = 1.0f / m_fpsController.getFrameRate();
 	else if (m_frameUpdateMode == FrameUpdateMode::VariableOnGameTime)
-		deltaTime = m_fpsController.GetElapsedGameTime();
+		deltaTime = m_fpsController.getElapsedGameTime();
 	else if (m_frameUpdateMode == FrameUpdateMode::VariableOnRealTime)
-		deltaTime = m_fpsController.GetTotalRealTime();
+		deltaTime = m_fpsController.getTotalRealTime();
 
 
 
@@ -633,11 +630,11 @@ void EngineManager::UpdateFrame()
 
 	if (m_animationManager != nullptr)
 	{
-		m_animationManager->AdvanceTime(deltaTime);
+		m_animationManager->advanceTime(deltaTime);
 	}
 
 	if (m_inputManager != nullptr) {
-		m_inputManager->UpdateFrame();
+		m_inputManager->updateFrame();
 	}
 
 	if (m_sceneGraphManager != nullptr) {
@@ -646,13 +643,13 @@ void EngineManager::UpdateFrame()
 
 	if (m_defaultWorld2D != nullptr)
 	{
-		m_defaultWorld2D->BeginUpdateFrame();
-		m_defaultWorld2D->UpdateFrame(deltaTime);
+		m_defaultWorld2D->reginUpdateFrame();
+		m_defaultWorld2D->updateFrame(deltaTime);
 	}
 	if (m_defaultWorld3D != nullptr)
 	{
-		m_defaultWorld3D->BeginUpdateFrame();
-		m_defaultWorld3D->UpdateFrame(deltaTime);
+		m_defaultWorld3D->reginUpdateFrame();
+		m_defaultWorld3D->updateFrame(deltaTime);
 	}
 
 
@@ -661,15 +658,15 @@ void EngineManager::UpdateFrame()
 		for (auto& window : m_uiManager->GetWindows())
 		{
 			//window->InjectElapsedTime(deltaTime);
-			window->UpdateFrame();
+			window->updateFrame();
 
 			{	// プロファイリング範囲
 				ScopedProfilerSection prof(Profiler::Group_MainThread, Profiler::Section_MainThread_GUILayput);
-				//const SizeI& size = m_graphicsManager->GetMainSwapChain()->GetBackBuffer()->GetSize();
-				//m_uiManager->GetMainWindow()->UpdateLayout(Size(static_cast<float>(size.width), static_cast<float>(size.height)));
+				//const SizeI& size = m_graphicsManager->getMainSwapChain()->getBackBuffer()->GetSize();
+				//m_uiManager->getMainWindow()->UpdateLayout(Size(static_cast<float>(size.width), static_cast<float>(size.height)));
 
 				// TODO: 内部に閉じ込める
-				window->UpdateLayout(m_uiManager->GetMainWindow()->GetPlatformWindow()->getSize().ToFloatSize());
+				window->UpdateLayout(m_uiManager->getMainWindow()->GetPlatformWindow()->getSize().toFloatSize());
 			}
 		}
 
@@ -684,10 +681,10 @@ void EngineManager::UpdateFrame()
 //
 //	// 描画遅延の確認
 //	bool skip = false;
-//	if (m_graphicsManager->GetRenderingType() == GraphicsRenderingType::Threaded)
+//	if (m_graphicsManager->getRenderingType() == GraphicsRenderingType::Threaded)
 //	{
 //		if (m_configData.delayedRenderingSkip &&
-//			m_graphicsManager->GetRenderingThread()->IsRunning())
+//			m_graphicsManager->getRenderingThread()->isRunning())
 //		{
 //			skip = true;
 //		}
@@ -714,12 +711,12 @@ void EngineManager::UpdateFrame()
 //}
 
 //------------------------------------------------------------------------------
-void EngineManager::RenderFrame()
+void EngineManager::renderFrame()
 {
 	if (m_graphicsManager != nullptr)
 	{
-		EngineDiagCore::Instance.ResetGraphicsFrameReport();	// TODO: GameMode のみ？
-		EngineDiagCore::Instance.ResetVisualNodeDrawCount();	// TODO: GameMode のみ？
+		EngineDiagCore::Instance.resetGraphicsFrameReport();	// TODO: GameMode のみ？
+		EngineDiagCore::Instance.resetVisualNodeDrawCount();	// TODO: GameMode のみ？
 
 
 		for (auto& window : m_uiManager->GetWindows())
@@ -730,12 +727,12 @@ void EngineManager::RenderFrame()
 		//if (m_uiManager != nullptr) {
 		//	g->Clear(ClearFlags::Depth, ColorF::White);	// TODO
 		//	g->Set2DRenderingMode(-1, 1);	// TODO
-		//	m_uiManager->GetMainWindow()->RenderUI();
+		//	m_uiManager->getMainWindow()->RenderUI();
 		//}
 
 		if (m_diagViewer != nullptr)
 		{
-			//m_diagViewer->Render(g, Vector2(640, 480));	//TODO
+			//m_diagViewer->render(g, Vector2(640, 480));	//TODO
 		}
 
 		//g->PopState();
@@ -743,12 +740,12 @@ void EngineManager::RenderFrame()
 }
 
 //------------------------------------------------------------------------------
-void EngineManager::EndRendering()
+void EngineManager::endRendering()
 {
 }
 
 //------------------------------------------------------------------------------
-void EngineManager::PresentFrame()
+void EngineManager::presentFrame()
 {
 	if (m_graphicsManager == nullptr/* || m_frameRenderingSkip*/) return;
 
@@ -759,42 +756,42 @@ void EngineManager::PresentFrame()
 }
 
 //------------------------------------------------------------------------------
-void EngineManager::ResetFrameDelay()
+void EngineManager::resetFrameDelay()
 {
-	m_fpsController.RefreshSystemDelay();
+	m_fpsController.refreshSystemDelay();
 }
 
 //------------------------------------------------------------------------------
-void EngineManager::Exit()
+void EngineManager::exit()
 {
 	m_endRequested = true;
 }
 
 //------------------------------------------------------------------------------
-World2D* EngineManager::GetDefaultWorld2D() const
+World2D* EngineManager::getDefaultWorld2D() const
 {
 	return m_defaultWorld2D;
 }
 
 //------------------------------------------------------------------------------
-World3D* EngineManager::GetDefaultWorld3D() const
+World3D* EngineManager::getDefaultWorld3D() const
 {
 	return m_defaultWorld3D;
 }
 
 //------------------------------------------------------------------------------
-detail::PhysicsManager* EngineManager::GetPhysicsManager() const
+detail::PhysicsManager* EngineManager::getPhysicsManager() const
 {
 	return m_physicsManager;
 }
 
 //------------------------------------------------------------------------------
-bool EngineManager::OnEvent(const PlatformEventArgs& e)
+bool EngineManager::onEvent(const PlatformEventArgs& e)
 {
 	UILayoutView* uiView = nullptr;
 	if (m_uiManager != nullptr)
 	{
-		uiView = m_uiManager->GetMainWindow();
+		uiView = m_uiManager->getMainWindow();
 	}
 
 
@@ -839,7 +836,7 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 		//	m_configData.acceleratorKeys.toggleShowDiag->EqualKeyInput(e.key.keyCode, e.key.modifierKeys) &&
 		//	m_diagViewer != nullptr)
 		//{
-		//	m_diagViewer->ToggleDisplayMode();
+		//	m_diagViewer->toggleDisplayMode();
 		//}
 		break;
 	case PlatformEventType::KeyUp:
@@ -857,7 +854,7 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 	case PlatformEventType::WindowSizeChanged:
 		//if (m_graphicsManager != nullptr)
 		//{
-		//	m_graphicsManager->GetMainSwapChain()->Resize(SizeI(e.size.width, e.size.height));
+		//	m_graphicsManager->getMainSwapChain()->Resize(SizeI(e.size.width, e.size.height));
 		//}
 		//if (uiView != nullptr)
 		//{
@@ -869,26 +866,26 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 	}
 
 	if (m_inputManager != nullptr) {
-		m_inputManager->OnEvent(e);
+		m_inputManager->onEvent(e);
 	}
 	return false;
 }
 
 ////------------------------------------------------------------------------------
-//void EngineManager::OnLostDevice()
+//void EngineManager::onLostDevice()
 //{
 //	if (m_effectManager != nullptr)
 //	{
-//		m_effectManager->OnLostDevice();
+//		m_effectManager->onLostDevice();
 //	}
 //}
 //
 ////------------------------------------------------------------------------------
-//void EngineManager::OnResetDevice()
+//void EngineManager::onResetDevice()
 //{
 //	if (m_effectManager != nullptr)
 //	{
-//		m_effectManager->OnResetDevice();
+//		m_effectManager->onResetDevice();
 //	}
 //}
 
@@ -900,63 +897,63 @@ bool EngineManager::OnEvent(const PlatformEventArgs& e)
 namespace detail {
 
 //------------------------------------------------------------------------------
-PhysicsWorld* EngineDomain::GetPhysicsWorld3D()
+PhysicsWorld* EngineDomain::getPhysicsWorld3D()
 {
-	return EngineManager::GetInstance()->GetDefaultWorld3D()->GetPhysicsWorld3D();
+	return EngineManager::getInstance()->getDefaultWorld3D()->getPhysicsWorld3D();
 }
 
 //------------------------------------------------------------------------------
-AnimationManager* EngineDomain::GetAnimationManager()
+AnimationManager* EngineDomain::getAnimationManager()
 {
-	return EngineManager::GetInstance()->GetAnimationManager();
+	return EngineManager::getInstance()->getAnimationManager();
 }
 
 //------------------------------------------------------------------------------
-GraphicsManager* EngineDomain::GetGraphicsManager()
+GraphicsManager* EngineDomain::getGraphicsManager()
 {
-	return EngineManager::GetInstance()->GetGraphicsManager();
+	return EngineManager::getInstance()->getGraphicsManager();
 }
 
 //------------------------------------------------------------------------------
-ModelManager* EngineDomain::GetModelManager()
+ModelManager* EngineDomain::getModelManager()
 {
-	return EngineManager::GetInstance()->GetModelManager();
+	return EngineManager::getInstance()->getModelManager();
 }
 
 //------------------------------------------------------------------------------
-UIManager* EngineDomain::GetUIManager()
+UIManager* EngineDomain::getUIManager()
 {
-	return EngineManager::GetInstance()->GetUIManager();
+	return EngineManager::getInstance()->getUIManager();
 }
 
 //------------------------------------------------------------------------------
-SceneGraphManager* EngineDomain::GetSceneGraphManager()
+SceneGraphManager* EngineDomain::getSceneGraphManager()
 {
-	return EngineManager::GetInstance()->GetSceneGraphManager();
+	return EngineManager::getInstance()->getSceneGraphManager();
 }
 
 //------------------------------------------------------------------------------
-SceneGraph2D* EngineDomain::GetDefaultSceneGraph2D()
+SceneGraph2D* EngineDomain::getDefaultSceneGraph2D()
 {
-	return EngineManager::GetInstance()->GetDefaultWorld2D()->GetSceneGraph2D();
+	return EngineManager::getInstance()->getDefaultWorld2D()->getSceneGraph2D();
 }
 
 //------------------------------------------------------------------------------
-SceneGraph3D* EngineDomain::GetDefaultSceneGraph3D()
+SceneGraph3D* EngineDomain::getDefaultSceneGraph3D()
 {
-	return EngineManager::GetInstance()->GetDefaultWorld3D()->GetSceneGraph3D();
+	return EngineManager::getInstance()->getDefaultWorld3D()->getSceneGraph3D();
 }
 
 //------------------------------------------------------------------------------
-World2D* EngineDomain::GetDefaultWorld2D()
+World2D* EngineDomain::getDefaultWorld2D()
 {
-	return EngineManager::GetInstance()->GetDefaultWorld2D();
+	return EngineManager::getInstance()->getDefaultWorld2D();
 }
 
 //------------------------------------------------------------------------------
-World3D* EngineDomain::GetDefaultWorld3D()
+World3D* EngineDomain::getDefaultWorld3D()
 {
-	return EngineManager::GetInstance()->GetDefaultWorld3D();
+	return EngineManager::getInstance()->getDefaultWorld3D();
 }
 
 } // namespace detail

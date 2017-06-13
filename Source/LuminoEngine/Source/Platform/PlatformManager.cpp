@@ -65,7 +65,7 @@ PlatformEventArgs PlatformEventArgs::MakeMouseWheelEvent(PlatformWindow* sender,
 static PlatformManager* g_platformManager = nullptr;
 
 //------------------------------------------------------------------------------
-PlatformManager* PlatformManager::GetInstance(PlatformManager* priority)
+PlatformManager* PlatformManager::getInstance(PlatformManager* priority)
 {
 	return (priority != nullptr) ? priority : g_platformManager;
 }
@@ -141,19 +141,19 @@ void PlatformManager::initialize(const Settings& settings)
 	LN_THROW(m_windowManager != nullptr, ArgumentException);
 
 	if (m_useThread) {
-		m_mainWindowThreadInitFinished.SetFalse();
-		m_mainWindowThreadEndRequested.SetFalse();
+		m_mainWindowThreadInitFinished.setFalse();
+		m_mainWindowThreadEndRequested.setFalse();
 		m_mainWindowThread.start(createDelegate(this, &PlatformManager::Thread_MainWindow));
-		m_mainWindowThreadInitFinished.Wait();	// 初期化終了まで待機する
+		m_mainWindowThreadInitFinished.wait();	// 初期化終了まで待機する
 	}
 	else {
 		m_windowManager->CreateMainWindow(m_windowCreationSettings);
 	}
 
 	// MainWindow
-	//m_mainWindow = LN_NEW PlatformWindow(m_windowManager->GetMainWindow());
+	//m_mainWindow = LN_NEW PlatformWindow(m_windowManager->getMainWindow());
     
-    m_windowManager->GetMainWindow()->SetVisible(true);
+    m_windowManager->getMainWindow()->SetVisible(true);
 
 	if (g_platformManager == nullptr)
 	{
@@ -162,9 +162,9 @@ void PlatformManager::initialize(const Settings& settings)
 }
 
 //------------------------------------------------------------------------------
-PlatformWindow* PlatformManager::GetMainWindow()
+PlatformWindow* PlatformManager::getMainWindow()
 {
-	return m_windowManager->GetMainWindow();
+	return m_windowManager->getMainWindow();
 }
 
 //------------------------------------------------------------------------------
@@ -175,7 +175,7 @@ bool PlatformManager::DoEvents()
 		m_windowManager->DoEvents();
 	}
 
-	return !m_windowManager->IsEndRequested();
+	return !m_windowManager->isEndRequested();
 }
 
 //------------------------------------------------------------------------------
@@ -185,8 +185,8 @@ void PlatformManager::Dispose()
 	{
 		// 別スレッドでメッセージ処理していた場合異はスレッド終了待機
 		if (m_useThread) {
-			m_mainWindowThreadEndRequested.SetTrue();	// 終了要求だして、
-			m_mainWindowThread.Wait();					// 待つ
+			m_mainWindowThreadEndRequested.setTrue();	// 終了要求だして、
+			m_mainWindowThread.wait();					// 待つ
 		}
 		// メインスレッドでメッセージ処理していた場合はここで Destroy
 		else {
@@ -207,13 +207,13 @@ void PlatformManager::Thread_MainWindow()
 {
 	// 初期化
 	m_windowManager->CreateMainWindow(m_windowCreationSettings);
-	m_mainWindowThreadInitFinished.SetTrue();	// 初期化完了
+	m_mainWindowThreadInitFinished.setTrue();	// 初期化完了
 
 	// メッセージループ
-	while (!m_mainWindowThreadEndRequested.IsTrue())
+	while (!m_mainWindowThreadEndRequested.isTrue())
 	{
 		m_windowManager->DoEvents();
-		Thread::Sleep(10);
+		Thread::sleep(10);
 	}
 
 	// 終了処理

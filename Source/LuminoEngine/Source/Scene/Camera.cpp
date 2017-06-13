@@ -21,20 +21,20 @@ LN_NAMESPACE_SCENE_BEGIN
 //------------------------------------------------------------------------------
 CameraComponent* CameraComponent::GetMain3DCamera()
 {
-	return detail::EngineDomain::GetDefaultWorld3D()->GetMainCamera()->GetCameraComponent();
+	return detail::EngineDomain::getDefaultWorld3D()->getMainCamera()->GetCameraComponent();
 }
 
 //------------------------------------------------------------------------------
 CameraComponent* CameraComponent::GetMain2DCamera()
 {
-	return detail::EngineDomain::GetDefaultWorld2D()->GetMainCamera()->GetCameraComponent();
+	return detail::EngineDomain::getDefaultWorld2D()->getMainCamera()->GetCameraComponent();
 }
 
 //------------------------------------------------------------------------------
 CameraComponent::CameraComponent()
 	: SceneNode()
 	, m_projectionMode()
-	, m_directionMode(CameraDirection::LookAt)
+	, m_directionMode(CameraDirection::lookAt)
 	, m_upDirection(Vector3::UnitY)
 	, m_fovY(Math::PI / 3.0f)	// Unity based.
 	, m_nearClip(0.3f)			// Unity based.
@@ -63,14 +63,14 @@ void CameraComponent::initialize(CameraProjection proj)
 	{
 		m_nearClip = 0.0f;	// TODO
 		m_farClip = 1000.0f;
-		SetPosition(0, 0, 0);
+		setPosition(0, 0, 0);
 		m_zSortDistanceBase = ZSortDistanceBase::CameraScreenDistance;
 	}
 	else if (m_projectionMode == CameraProjection_3D)
 	{
 		m_nearClip = 0.3f;
 		m_farClip = 1000.0f;
-		SetPosition(0, 1.0f, -10.0f);	// Unity based.
+		setPosition(0, 1.0f, -10.0f);	// Unity based.
 		m_zSortDistanceBase = ZSortDistanceBase::CameraDistance;
 	}
 }
@@ -89,7 +89,7 @@ void CameraComponent::SetCameraBehavior(CameraBehavior* behavior)
 Vector3 CameraComponent::WorldToViewportPoint(const Vector3& position) const
 {
 	const Size& size = m_ownerLayer->GetViewSize();
-	return Vector3::Project(position, m_viewProjMatrix, 0.0f, 0.0f, size.width, size.height, m_nearClip, m_farClip);
+	return Vector3::project(position, m_viewProjMatrix, 0.0f, 0.0f, size.width, size.height, m_nearClip, m_farClip);
 }
 
 //------------------------------------------------------------------------------
@@ -100,32 +100,32 @@ Vector3 CameraComponent::ViewportToWorldPoint(const Vector3& position) const
 	v.x = (((position.x - 0) / size.width) * 2.0f) - 1.0f;
 	v.y = -((((position.y - 0) / size.height) * 2.0f) - 1.0f);
 	v.z = (position.z - m_nearClip) / (m_farClip - m_nearClip);
-	return Vector3::TransformCoord(v, m_viewProjMatrixI);
+	return Vector3::transformCoord(v, m_viewProjMatrixI);
 }
 
 //------------------------------------------------------------------------------
 void CameraComponent::UpdateMatrices(const Size& viewSize)
 {
-	const Matrix& worldMatrix = GetOwnerObject()->transform.GetWorldMatrix();
+	const Matrix& worldMatrix = getOwnerObject()->transform.getWorldMatrix();
 
 	// 2D モード
 	if (m_projectionMode == CameraProjection_2D)
 	{
 		// 正面方向
-		Vector3 direction = Vector3::TransformCoord(Vector3(0, 0, 1), worldMatrix);
+		Vector3 direction = Vector3::transformCoord(Vector3(0, 0, 1), worldMatrix);
 		m_direction = Vector4(direction, 0.0f);
 
 		m_viewMatrix = worldMatrix;
-		m_projMatrix = Matrix::MakePerspective2DLH(viewSize.width, viewSize.height, m_nearClip, m_farClip);
+		m_projMatrix = Matrix::makePerspective2DLH(viewSize.width, viewSize.height, m_nearClip, m_farClip);
 
 		
 		//Perspective2DLH(viewSize.width, viewSize.height, m_nearClip, m_farClip, &m_projMatrix);
 		m_viewProjMatrix = m_viewMatrix * m_projMatrix;
 
-		auto a1 = Vector3::TransformCoord(
+		auto a1 = Vector3::transformCoord(
 			Vector3(48, 0, 10), m_viewProjMatrix);
 		
-		auto a2 = Vector3::TransformCoord(
+		auto a2 = Vector3::transformCoord(
 			Vector3(48, 0, 100), m_viewProjMatrix);
 		a2 = Vector3(48, 0, 10);
 		//Matrix vp;
@@ -137,57 +137,57 @@ void CameraComponent::UpdateMatrices(const Size& viewSize)
 	{
 		// 注視点
 		Vector3 lookAt;
-		if (m_directionMode == CameraDirection::LookAt &&
+		if (m_directionMode == CameraDirection::lookAt &&
 			worldMatrix.getPosition() != m_lookAt)	// 位置と注視点が同じだと、Matrix::MakeLookAt で NAN になる
 		{
 			lookAt = m_lookAt;
 		}
 		else
 		{
-			lookAt = Vector3::TransformCoord(Vector3(0, 0, 1), worldMatrix);
+			lookAt = Vector3::transformCoord(Vector3(0, 0, 1), worldMatrix);
 		}
 
 		// ビュー行列
-		m_viewMatrix = Matrix::MakeLookAtLH(worldMatrix.getPosition(), lookAt, m_upDirection);
+		m_viewMatrix = Matrix::makeLookAtLH(worldMatrix.getPosition(), lookAt, m_upDirection);
 
 		if (m_reflectionPlane.Normal != Vector3::Zero)
 		{
-			m_viewMatrix = Matrix::MakeReflection(m_reflectionPlane) * m_viewMatrix;
+			m_viewMatrix = Matrix::makeReflection(m_reflectionPlane) * m_viewMatrix;
 		}
 
 		// プロジェクション行列の更新
 		// https://sites.google.com/site/mmereference/home/Annotations-and-Semantics-of-the-parameter/2-1-geometry-translation
-		m_projMatrix = Matrix::MakePerspectiveFovLH(m_fovY, viewSize.width / viewSize.height, m_nearClip, m_farClip);
+		m_projMatrix = Matrix::makePerspectiveFovLH(m_fovY, viewSize.width / viewSize.height, m_nearClip, m_farClip);
 
 		m_viewProjMatrix = m_viewMatrix * m_projMatrix;
 
 		// 正面方向
 		Vector3 d = lookAt - worldMatrix.getPosition();
-		d.Normalize();
+		d.normalize();
 		m_direction = Vector4(d, 0.0f);
 	}
 
 	m_viewFrustum = ViewFrustum(m_viewProjMatrix);
 
-	m_viewMatrixI = Matrix::MakeInverse(m_viewMatrix);
-	m_projMatrixI = Matrix::MakeInverse(m_projMatrix);
-	m_viewProjMatrixI = Matrix::MakeInverse(m_viewProjMatrix);
-	m_viewMatrixT = Matrix::MakeTranspose(m_viewMatrix);
-	m_projMatrixT = Matrix::MakeTranspose(m_projMatrix);
-	m_viewProjMatrixT = Matrix::MakeTranspose(m_viewProjMatrix);
-	m_viewMatrixIT = Matrix::MakeTranspose(m_viewMatrixI);
-	m_projMatrixIT = Matrix::MakeTranspose(m_projMatrixI);
-	m_viewProjMatrixIT = Matrix::MakeTranspose(m_viewProjMatrixI);
+	m_viewMatrixI = Matrix::makeInverse(m_viewMatrix);
+	m_projMatrixI = Matrix::makeInverse(m_projMatrix);
+	m_viewProjMatrixI = Matrix::makeInverse(m_viewProjMatrix);
+	m_viewMatrixT = Matrix::makeTranspose(m_viewMatrix);
+	m_projMatrixT = Matrix::makeTranspose(m_projMatrix);
+	m_viewProjMatrixT = Matrix::makeTranspose(m_viewProjMatrix);
+	m_viewMatrixIT = Matrix::makeTranspose(m_viewMatrixI);
+	m_projMatrixIT = Matrix::makeTranspose(m_projMatrixI);
+	m_viewProjMatrixIT = Matrix::makeTranspose(m_viewProjMatrixI);
 }
 
 //------------------------------------------------------------------------------
-void CameraComponent::OnUpdate()
+void CameraComponent::onUpdate()
 {
-	SceneNode::OnUpdate();
+	SceneNode::onUpdate();
 }
 
 //------------------------------------------------------------------------------
-void CameraComponent::OnUIEvent(UIEventArgs* e)
+void CameraComponent::onUIEvent(UIEventArgs* e)
 {
 	if (e->getType() == UIEvents::MouseDownEvent)
 	{
@@ -228,7 +228,7 @@ void CameraComponent::OnUIEvent(UIEventArgs* e)
 	}
 	else
 	{
-		Component::OnUIEvent(e);
+		Component::onUIEvent(e);
 	}
 }
 
@@ -286,7 +286,7 @@ void CameraViewportLayer::initialize(SceneGraphManager* manager, World* targetWo
 	}
 
 	//auto pass = RefPtr<detail::RenderingPass2>::MakeRef();
-	//pass->initialize(manager->GetGraphicsManager());
+	//pass->initialize(manager->getGraphicsManager());
 	//AddRenderingPass(pass);
 }
 
@@ -357,12 +357,12 @@ void CameraViewportLayer::ExecuteDrawListRendering(DrawList* parentDrawList, Ren
 		m_internalRenderer,
 		renderTarget,
 		depthBuffer);
-	//m_internalRenderer->Render(
-	//	m_hostingCamera->GetOwnerSceneGraph()->GetRenderer()->GetDrawElementList(),
+	//m_internalRenderer->render(
+	//	m_hostingCamera->GetOwnerSceneGraph()->getRenderer()->GetDrawElementList(),
 	//	cameraInfo,
 	//	renderTarget,
 	//	depthBuffer);
-	//m_internalRenderer->Render(
+	//m_internalRenderer->render(
 	//	m_hostingCamera->GetOwnerSceneGraph()->GetDebugRenderer()->GetDrawElementList(),
 	//	cameraInfo,
 	//	renderTarget,
@@ -437,19 +437,19 @@ void CameraViewportLayer2::initialize(World* targetWorld, CameraComponent* hosti
 	if (m_hostingCamera->GetProjectionMode() == CameraProjection_3D)
 	{
 		auto internalRenderer = RefPtr<detail::ForwardShadingRenderer>::makeRef();
-		internalRenderer->initialize(detail::EngineDomain::GetGraphicsManager());
+		internalRenderer->initialize(detail::EngineDomain::getGraphicsManager());
 		m_internalRenderer = internalRenderer;
 	}
 	else
 	{
 		auto internalRenderer = RefPtr<detail::NonShadingRenderer>::makeRef();
-		internalRenderer->initialize(detail::EngineDomain::GetGraphicsManager());
+		internalRenderer->initialize(detail::EngineDomain::getGraphicsManager());
 		m_internalRenderer = internalRenderer;
 	}
 
 	m_mainRenderView = RefPtr<RenderView>::makeRef();
-	m_mainRenderView->m_lists.add(m_targetWorld->GetInsideWorldRenderer()->GetDrawElementList());
-	m_mainRenderView->m_lists.add(m_targetWorld->GetRenderer()->GetDrawElementList());
+	m_mainRenderView->m_lists.add(m_targetWorld->getInsideWorldRenderer()->GetDrawElementList());
+	m_mainRenderView->m_lists.add(m_targetWorld->getRenderer()->GetDrawElementList());
 	m_mainRenderView->m_lists.add(m_targetWorld->GetDebugRenderer()->GetDrawElementList());
 }
 
@@ -472,31 +472,31 @@ void CameraViewportLayer2::SetDebugDrawFlags(WorldDebugDrawFlags flags)
 }
 
 //------------------------------------------------------------------------------
-void CameraViewportLayer2::Render()
+void CameraViewportLayer2::render()
 {
 	// TODO: やめよう
-	m_targetWorld->GetRenderer()->SetCurrentCamera(m_hostingCamera);
+	m_targetWorld->getRenderer()->SetCurrentCamera(m_hostingCamera);
 
-	m_targetWorld->GetRenderer()->clear(ClearFlags::Depth, Color::White);
+	m_targetWorld->getRenderer()->clear(ClearFlags::Depth, Color::White);
 
 	// カメラ行列の更新
 	m_hostingCamera->UpdateMatrices(GetOwnerViewport()->GetViewSize());
 	m_mainRenderView->SetViewSize(GetOwnerViewport()->GetViewSize());
 
-	m_targetWorld->RenderRoot(m_hostingCamera, m_debugDrawFlags, m_mainRenderView);
+	m_targetWorld->renderRoot(m_hostingCamera, m_debugDrawFlags, m_mainRenderView);
 }
 
 //------------------------------------------------------------------------------
-void CameraViewportLayer2::ExecuteDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+void CameraViewportLayer2::executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 	// TODO: float
-	Size targetSize((float)renderTarget->GetWidth(), (float)renderTarget->GetHeight());
+	Size targetSize((float)renderTarget->getWidth(), (float)renderTarget->getHeight());
 	m_hostingCamera->UpdateMatrices(targetSize);
 
 	//detail::CameraInfo cameraInfo;
 	m_mainRenderView->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera.get());
 	m_mainRenderView->m_cameraInfo.viewPixelSize = targetSize;
-	m_mainRenderView->m_cameraInfo.viewPosition = m_hostingCamera->GetTransform()->GetWorldMatrix().getPosition();
+	m_mainRenderView->m_cameraInfo.viewPosition = m_hostingCamera->getTransform()->getWorldMatrix().getPosition();
 	m_mainRenderView->m_cameraInfo.viewMatrix = m_hostingCamera->GetViewMatrix();
 	m_mainRenderView->m_cameraInfo.projMatrix = m_hostingCamera->GetProjectionMatrix();
 	m_mainRenderView->m_cameraInfo.viewProjMatrix = m_hostingCamera->GetViewProjectionMatrix();
@@ -512,7 +512,7 @@ void CameraViewportLayer2::ExecuteDrawListRendering(DrawList* parentDrawList, Re
 //------------------------------------------------------------------------------
 void CameraViewportLayer2::OnRoutedEvent(UIEventArgs* e)
 {
-	m_targetWorld->OnUIEvent(e);
+	m_targetWorld->onUIEvent(e);
 	if (e->handled) return;
 
 	UIViewportLayer::OnRoutedEvent(e);
@@ -587,8 +587,8 @@ bool CylinderMouseMoveCameraBehavior::InjectMouseMove(int x, int y)
 		//mat.rotateX(rotY);
 		//mat.rotateY(rotX);
 		//Vector3 newPos(0, 0, localPos.GetLength());
-		//newPos.TransformCoord(mat);
-		//camera->SetPosition(newPos);
+		//newPos.transformCoord(mat);
+		//camera->setPosition(newPos);
 
 		float s = 0.01f;
 		float dx = s * (x - m_prevPos.x);
@@ -596,10 +596,10 @@ bool CylinderMouseMoveCameraBehavior::InjectMouseMove(int x, int y)
 
 		CameraComponent* camera = GetTargetCamera();
 		Vector3 view;
-		Vector3 vup = camera->GetUpDirection();
-		Vector3 pos = camera->GetTransform()->position;
+		Vector3 vup = camera->getUpDirection();
+		Vector3 pos = camera->getTransform()->position;
 		Vector3 look_at = camera->GetLookAt();
-		vup.Normalize();
+		vup.normalize();
 
 		// 注視点中心回転
 		if (1)
@@ -631,16 +631,16 @@ bool CylinderMouseMoveCameraBehavior::InjectMouseMove(int x, int y)
 			//	D3DXMatrixRotationY( &m, D3DXToRadian(d) );
 
 			m.rotateY(d);
-			view.TransformCoord(m);
+			view.transformCoord(m);
 		}
 		if (dy != 0)
 		{
 			// 球タイプ
 			if (1)
 			{
-				Vector3 vaxis = Vector3::Cross(vup, view);
+				Vector3 vaxis = Vector3::cross(vup, view);
 				
-				vaxis.Normalize();
+				vaxis.normalize();
 				d = -(Math::PI * dy/* / height*/);
 
 
@@ -652,8 +652,8 @@ bool CylinderMouseMoveCameraBehavior::InjectMouseMove(int x, int y)
 				//}
 				//printf("%f\n", d);
 
-				m = Matrix::MakeRotationAxis(vaxis, d);
-				view.TransformCoord(m);
+				m = Matrix::makeRotationAxis(vaxis, d);
+				view.transformCoord(m);
 
 
 				//D3DXVec3Cross( &vaxis, &vup, &view );
@@ -693,9 +693,9 @@ bool CylinderMouseMoveCameraBehavior::InjectMouseMove(int x, int y)
 			pos += view;
 		}
 
-		camera->GetTransform()->position = pos;
+		camera->getTransform()->position = pos;
 
-		camera->GetTransform()->LookAt(look_at);	// TODO: tmp
+		camera->getTransform()->lookAt(look_at);	// TODO: tmp
 
 		m_prevPos.x = x;
 		m_prevPos.y = y;
@@ -716,12 +716,12 @@ bool CylinderMouseMoveCameraBehavior::InjectMouseMove(int x, int y)
 		// 注視点からカメラ位置までのベクトルをZ軸(正面方向)とする
 		zaxis = lookAt;
 		zaxis -= pos;
-		zaxis.Normalize();
+		zaxis.normalize();
 		// Z軸と上方向のベクトルの外積をとると右方向が分かる
-		xaxis = Vector3::Cross(Vector3::UnitY, zaxis);
-		xaxis.Normalize();
+		xaxis = Vector3::cross(Vector3::UnitY, zaxis);
+		xaxis.normalize();
 		// 2つの軸がわかったので、その2つの外積は残りの上方向になる
-		yaxis = Vector3::Cross(zaxis, xaxis);
+		yaxis = Vector3::cross(zaxis, xaxis);
 
 		// 横方向と縦方向にそれぞれ移動
 		xaxis *= -dx;
@@ -730,7 +730,7 @@ bool CylinderMouseMoveCameraBehavior::InjectMouseMove(int x, int y)
 		// 移動分を1つのベクトルにまとめて、位置と注視点を平行移動する
 		Vector3 offset;
 		offset = xaxis + yaxis;
-		camera->SetPosition(pos + offset);
+		camera->setPosition(pos + offset);
 		camera->SetLookAt(lookAt + offset);
 
 
@@ -743,9 +743,9 @@ bool CylinderMouseMoveCameraBehavior::InjectMouseMove(int x, int y)
 		//view.X = -dx * s;
 		//view.Y = dy * s;
 		//view.Z = 0.f;
-		//view.TransformCoord(mat);
+		//view.transformCoord(mat);
 
-		//camera->SetPosition(pos + view);
+		//camera->setPosition(pos + view);
 		//camera->SetLookAt(look_at + view);
 		return true;
 	}
@@ -799,14 +799,14 @@ bool CylinderMouseMoveCameraBehavior::InjectMouseButtonUp(MouseButtons button, i
 bool CylinderMouseMoveCameraBehavior::InjectMouseWheel(int delta)
 {
 	CameraComponent* camera = GetTargetCamera();
-	Vector3 view = camera->GetTransform()->position.get() - camera->GetLookAt();
+	Vector3 view = camera->getTransform()->position.get() - camera->GetLookAt();
 	if (delta >= 0) {
 		view *= 0.9f;
 	}
 	else {
 		view *= 1.1f;
 	}
-	camera->GetTransform()->position = (camera->GetLookAt() + view);
+	camera->getTransform()->position = (camera->GetLookAt() + view);
 	return true;
 }
 
@@ -832,7 +832,7 @@ Camera::~Camera()
 void Camera::initialize(CameraProjection proj)
 {
 	WorldObject::initialize();
-	m_component = NewObject<CameraComponent>(proj);
+	m_component = newObject<CameraComponent>(proj);
 	AddComponent(m_component);
 
 	if (proj == CameraProjection_2D)

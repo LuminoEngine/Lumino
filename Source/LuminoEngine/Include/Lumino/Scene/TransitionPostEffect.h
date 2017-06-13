@@ -16,7 +16,7 @@ public:
 	void Transition(float duration, Texture* mask, int vague);
 
 private:
-	virtual void OnRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
+	virtual void onRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
 LN_CONSTRUCT_ACCESS:
 	TransitionPostEffect();

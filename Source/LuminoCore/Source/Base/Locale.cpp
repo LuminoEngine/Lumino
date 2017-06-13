@@ -24,22 +24,19 @@
 		Windows:
 			_printf_l のように、_l が付いている関数はロケールを引数で指定できる。
 
-		Max:
+		max:
 			(実際に動かしてはいないが) Windows と同じく、printf_l のような関数が用意されているようだ。
 			ただし、Windows と違って先頭に _ が付かない。
 
 		Linux:
 			これも種類によって差が大きい。
-			FreeBSD は Max と同様らしい。
+			FreeBSD は max と同様らしい。
 			Ubuntu は _l が付く関数は無い。変わりに、uselocale を使うとスレッドのロケールを変更できる。
 			(__locale_raii でググるといろいろ出てくる)
 		
 */
 
 #include "../Internal.h"
-#if defined(LN_OS_WIN32)
-#include <windows.h>
-#endif
 #include <locale.h>
 #include <Lumino/Base/Locale.h>
 

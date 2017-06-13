@@ -39,7 +39,7 @@ float Vector4::getLength() const
 }
 
 //------------------------------------------------------------------------------
-float Vector4::GetLengthSquared() const
+float Vector4::getLengthSquared() const
 {
 	return x * x + y * y + z * z + w * w;
 }
@@ -83,7 +83,7 @@ void Vector4::print(const char* format, FILE* stream) const
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Vector4 Vector4::Normalize(const Vector4& vec)
+Vector4 Vector4::normalize(const Vector4& vec)
 {
 	float t = 1.0f / Asm::sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z + vec.w * vec.w);
 	return Vector4(
@@ -96,7 +96,7 @@ Vector4 Vector4::Normalize(const Vector4& vec)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-float Vector4::Dot(const Vector4& vec1, const Vector4& vec2)
+float Vector4::dot(const Vector4& vec1, const Vector4& vec2)
 {
 	return (vec1.x * vec2.x + vec1.y * vec2.y + vec1.z * vec2.z + vec1.w * vec2.w);
 }
@@ -104,7 +104,7 @@ float Vector4::Dot(const Vector4& vec1, const Vector4& vec2)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Vector4 Vector4::Min(const Vector4& vec1, const Vector4& vec2)
+Vector4 Vector4::min(const Vector4& vec1, const Vector4& vec2)
 {
 	return Vector4(
 		(vec1.x < vec2.x) ? vec1.x : vec2.x,
@@ -116,7 +116,7 @@ Vector4 Vector4::Min(const Vector4& vec1, const Vector4& vec2)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Vector4 Vector4::Max(const Vector4& vec1, const Vector4& vec2)
+Vector4 Vector4::max(const Vector4& vec1, const Vector4& vec2)
 {
 	return Vector4(
 		(vec1.x > vec2.x) ? vec1.x : vec2.x,
@@ -128,7 +128,7 @@ Vector4 Vector4::Max(const Vector4& vec1, const Vector4& vec2)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Vector4 Vector4::Transform(const Vector4& vec, const Matrix& mat)
+Vector4 Vector4::transform(const Vector4& vec, const Matrix& mat)
 {
 	return Vector4(
 		(vec.x * mat.m11) + (vec.y * mat.m21) + (vec.z * mat.m31) + (vec.w * mat.m41),

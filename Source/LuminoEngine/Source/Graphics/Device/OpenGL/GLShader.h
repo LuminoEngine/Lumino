@@ -60,7 +60,7 @@ public:
 	virtual ~GLShader();
 	void initialize(GLGraphicsDevice* device, const void* code, size_t codeByteCount);
 
-	GLGraphicsDevice* GetGraphicsDevice() { return m_device; }
+	GLGraphicsDevice* getGraphicsDevice() { return m_device; }
 	GLShaderVariable* FindShaderVariable(const String& name);
 	GLShaderVariable* CreateShaderVariable(ShaderVariableBase::ShaderVariableTypeDesc desc, const String& name, const String& semanticName);
 
@@ -69,8 +69,8 @@ public:
 	virtual IShaderVariable* GetVariable(int index) const;
 	virtual int GetTechniqueCount() const;
 	virtual IShaderTechnique* GetTechnique(int index) const;
-	virtual void OnLostDevice();
-	virtual void OnResetDevice();
+	virtual void onLostDevice();
+	virtual void onResetDevice();
 
 	ShaderDiag* GetDiag() { return &m_diag; }
 	GLuint GetVertexShader(const String& name);
@@ -96,7 +96,7 @@ class GLShaderVariable
 	: public ShaderVariableBase
 {
 public:
-	static GLShaderVariable* Deserialize(GLShader* ownerShader, tr::JsonReader2* json, bool* outOverwrited);
+	static GLShaderVariable* deserialize(GLShader* ownerShader, tr::JsonReader2* json, bool* outOverwrited);
 
 	GLShaderVariable();
 	virtual ~GLShaderVariable();
@@ -104,7 +104,7 @@ public:
 
 public:
 	/// 指定された GLSL Location に値を設定する
-	void Apply(int location, int textureStageIndex);
+	void apply(int location, int textureStageIndex);
 
 public:
 	virtual int GetAnnotationCount();
@@ -125,7 +125,7 @@ class GLShaderAnnotation
 	: public ShaderVariableBase
 {
 public:
-	static GLShaderAnnotation* Deserialize(tr::JsonReader2* json);
+	static GLShaderAnnotation* deserialize(tr::JsonReader2* json);
 
 	GLShaderAnnotation();
 	virtual ~GLShaderAnnotation();
@@ -134,11 +134,11 @@ public:
 	virtual void setBool(bool value) { LN_THROW(0, InvalidOperationException); }
 	virtual void setInt(int value) { LN_THROW(0, InvalidOperationException); }
 	virtual void setFloat(float value) { LN_THROW(0, InvalidOperationException); }
-	virtual void SetVector(const Vector4& vec) { LN_THROW(0, InvalidOperationException); }
-	virtual void SetVectorArray(const Vector4* vectors, int count) { LN_THROW(0, InvalidOperationException); }
-	virtual void SetMatrix(const Matrix& matrix) { LN_THROW(0, InvalidOperationException); }
-	virtual void SetMatrixArray(const Matrix* matrices, int count) { LN_THROW(0, InvalidOperationException); }
-	virtual void SetTexture(ITexture* texture) { LN_THROW(0, InvalidOperationException); }
+	virtual void setVector(const Vector4& vec) { LN_THROW(0, InvalidOperationException); }
+	virtual void setVectorArray(const Vector4* vectors, int count) { LN_THROW(0, InvalidOperationException); }
+	virtual void setMatrix(const Matrix& matrix) { LN_THROW(0, InvalidOperationException); }
+	virtual void setMatrixArray(const Matrix* matrices, int count) { LN_THROW(0, InvalidOperationException); }
+	virtual void setTexture(ITexture* texture) { LN_THROW(0, InvalidOperationException); }
 	virtual int GetAnnotationCount() { return 0; }
 	virtual IShaderVariable* GetAnnotation(int index) { return NULL; }
 };
@@ -148,7 +148,7 @@ class GLShaderTechnique
 	: public IShaderTechnique
 {
 public:
-	static GLShaderTechnique* Deserialize(GLShader* ownerShader, tr::JsonReader2* json);
+	static GLShaderTechnique* deserialize(GLShader* ownerShader, tr::JsonReader2* json);
 
 	GLShaderTechnique();
 	virtual ~GLShaderTechnique();
@@ -156,9 +156,9 @@ public:
 	void AddPass(GLShaderPass* pass) { m_passes.add(pass); }
 
 public:
-	virtual const TCHAR* GetName() const { return m_name.c_str(); }
+	virtual const TCHAR* getName() const { return m_name.c_str(); }
 	virtual int GetPassCount() const { return m_passes.getCount(); }
-	virtual IShaderPass* GetPass(int index);
+	virtual IShaderPass* getPass(int index);
 	virtual int GetAnnotationCount() { return m_annotations.getCount(); }
 	virtual IShaderVariable* GetAnnotation(int index) { return m_annotations[index]; }
 
@@ -177,7 +177,7 @@ public:
 	static const int MaxUsageIndex = 16;		///< UsageIndex の最大 (DX9 にあわせて最大の 16)
 
 public:
-	static GLShaderPass* Deserialize(GLShader* ownerShader, tr::JsonReader2* json);
+	static GLShaderPass* deserialize(GLShader* ownerShader, tr::JsonReader2* json);
 
 	GLShaderPass();
 	virtual ~GLShaderPass();
@@ -189,11 +189,11 @@ public:
 	int GetUsageAttributeIndex(VertexElementUsage usage, int index);
 
 public:
-	virtual const TCHAR* GetName() const { return m_name.c_str(); }
+	virtual const TCHAR* getName() const { return m_name.c_str(); }
 	virtual int GetAnnotationCount() { return m_annotations.getCount(); }
 	virtual IShaderVariable* GetAnnotation(int index) { return m_annotations[index]; }
-	virtual void Apply();
-	//virtual void End();
+	virtual void apply();
+	//virtual void end();
 
 private:
 	bool LinkShader(GLuint vertShader, GLuint fragShader, ShaderDiag* diag);

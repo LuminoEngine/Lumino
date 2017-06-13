@@ -67,7 +67,7 @@ public:
 	/**
 		@brief		このベクトルの X Y 要素を Vector2 として返します。
 	*/
-	const Vector2& GetXY() const;
+	const Vector2& getXY() const;
 
 	/**
 		@brief		ベクトルの長さを返します。
@@ -79,14 +79,14 @@ public:
 		@brief		ベクトルの長さの 2 乗を返します。
 	*/
 	LN_METHOD()
-	float GetLengthSquared() const;
+	float getLengthSquared() const;
 
 	/**
 		@brief		このベクトルを正規化します。
 		@details	ベクトルの長さが 0 の場合は正規化を行いません。
 	*/
 	LN_METHOD()
-    void Normalize();
+    void normalize();
 
 	/**
 		@brief		このベクトルを指定された最大値と最小値の範囲にクランプします。
@@ -101,7 +101,7 @@ public:
 		@param[in]	mat		: 処理の基になる行列
 		@details	ベクトルを (X, Y, Z, 1.0) として座標変換を行い、結果を w で除算します。
 	*/
-	void TransformCoord(const Matrix& mat);
+	void transformCoord(const Matrix& mat);
 	
 	/**
 		@brief		要素のいずれかが NaN または Inf かを判別します。
@@ -126,7 +126,7 @@ public:
 		@return		正規化されたベクトル
 	*/
 	LN_METHOD()
-	static Vector3 Normalize(float x, float y, float z);
+	static Vector3 normalize(float x, float y, float z);
 
 	/**
 		@brief		指定ベクトルを正規化したベクトルを返します。
@@ -134,13 +134,13 @@ public:
 		@return		正規化されたベクトル
 	*/
 	LN_METHOD()
-	static Vector3 Normalize(const Vector3& vec);
+	static Vector3 normalize(const Vector3& vec);
 
-	static Vector3 SafeNormalize(const Vector3& vec);
-	static Vector3 SafeNormalize(const Vector3& vec, const Vector3& alt);
+	static Vector3 safeNormalize(const Vector3& vec);
+	static Vector3 safeNormalize(const Vector3& vec, const Vector3& alt);
 
 	/** 指定した値をすべての要素に設定します。 */
-	static Vector3 Replicate(float value);
+	static Vector3 replicate(float value);
 	
 	/**
 		@brief		2つのベクトル間の距離を計算します。
@@ -148,7 +148,7 @@ public:
 		@param[in]	vec2	: 処理の基になるベクトル
 		@return		2つのベクトル間の距離
 	*/
-	static float Distance(const Vector3& vec1, const Vector3& vec2);
+	static float distance(const Vector3& vec1, const Vector3& vec2);
 	
 	/**
 		@brief		2つのベクトル間の距離の2乗を計算します。
@@ -156,7 +156,7 @@ public:
 		@param[in]	vec2	: 処理の基になるベクトル
 		@return		2つのベクトル間の距離の2乗
 	*/
-	static float DistanceSquared(const Vector3& vec1, const Vector3& vec2);
+	static float distanceSquared(const Vector3& vec1, const Vector3& vec2);
 	
 	/**
 		@brief		2つのベクトルの内積を計算します。
@@ -164,7 +164,7 @@ public:
 		@param[in]	vec2	: 処理の基になるベクトル
 		@return		2つのベクトルの内積
 	*/
-	static float Dot(const Vector3& vec1, const Vector3& vec2);
+	static float dot(const Vector3& vec1, const Vector3& vec2);
 
 	/**
 		@brief		2つのベクトルの外積を計算します。
@@ -172,7 +172,7 @@ public:
 		@param[in]	vec2	: 処理の基になるベクトル
 		@return		2つのベクトルの外積
 	*/
-	static Vector3 Cross(const Vector3& vec1, const Vector3& vec2);
+	static Vector3 cross(const Vector3& vec1, const Vector3& vec2);
 
 	/**
 		@brief		2つのベクトルの最小値で構成されるベクトルを返します。
@@ -180,7 +180,7 @@ public:
 		@param[in]	vec2	: 処理の基になるベクトル
 		@return		最小値から作成されたベクトル
 	*/
-	static Vector3 Min(const Vector3& vec1, const Vector3& vec2);
+	static Vector3 min(const Vector3& vec1, const Vector3& vec2);
 
 	/**
 		@brief		指定された複数のベクトルの最小値で構成されるベクトルを返します。
@@ -188,7 +188,7 @@ public:
 		@param[in]	count	: 処理の基になるベクトルの数
 		@return		最小値から作成されたベクトル
 	*/
-	static Vector3 Min(const Vector3* vectors, int count);
+	static Vector3 min(const Vector3* vectors, int count);
 
 	/**
 		@brief		2つのベクトルの最大値で構成されるベクトルを返します。
@@ -196,7 +196,7 @@ public:
 		@param[in]	vec2	: 処理の基になるベクトル
 		@return		最大値から作成されたベクトル
 	*/
-	static Vector3 Max(const Vector3& vec1, const Vector3& vec2);
+	static Vector3 max(const Vector3& vec1, const Vector3& vec2);
 
 	/**
 		@brief		指定された複数のベクトルの最大値で構成されるベクトルを返します。
@@ -204,7 +204,7 @@ public:
 		@param[in]	count	: 処理の基になるベクトルの数
 		@return		最大値から作成されたベクトル
 	*/
-	static Vector3 Max(const Vector3* vectors, int count);
+	static Vector3 max(const Vector3* vectors, int count);
 
 	/**
 		@brief		入射ベクトルと法線ベクトルから反射ベクトルを計算します。
@@ -212,7 +212,7 @@ public:
 		@param[in]	normal	: 法線ベクトル
 		@return		反射ベクトル
 	*/
-	static Vector3 Reflect(const Vector3& vec, const Vector3& normal);
+	static Vector3 reflect(const Vector3& vec, const Vector3& normal);
 
 	/**
 		@brief		入射ベクトルと法線ベクトルから滑りベクトルを計算します。
@@ -220,7 +220,7 @@ public:
 		@param[in]	normal	: 法線ベクトル
 		@return		滑りベクトル
 	*/
-	static Vector3 Slide(const Vector3& vec, const Vector3& normal);
+	static Vector3 slide(const Vector3& vec, const Vector3& normal);
 
 	/**
 		@brief		指定されたクォータニオンを使用してベクトルを座標変換します。
@@ -228,7 +228,7 @@ public:
 		@param[in]	qua		: 処理の基になるクォータニオン
 		@return		変換されたベクトル
 	*/
-	static Vector3 Transform(const Vector3& vec, const Quaternion& qua);
+	static Vector3 transform(const Vector3& vec, const Quaternion& qua);
 
 	/**
 		@brief		指定された行列を使用してベクトルを座標変換します。
@@ -236,7 +236,7 @@ public:
 		@param[in]	mat		: 処理の基になる行列
 		@return		変換されたベクトル
 	*/
-	static Vector4 Transform(const Vector3& vec, const Matrix& mat);
+	static Vector4 transform(const Vector3& vec, const Matrix& mat);
 
 	/**
 		@brief		指定された行列を使用してベクトルを座標変換します。
@@ -245,7 +245,7 @@ public:
 		@details	ベクトルを (X, Y, Z, 1.0) として座標変換を行い、結果を w で除算します。
 		@return		変換されたベクトル
 	*/
-	static Vector3 TransformCoord(const Vector3& vec, const Matrix& mat);
+	static Vector3 transformCoord(const Vector3& vec, const Matrix& mat);
 
 	/**
 		@brief		2 つのベクトル間の線形補間を行います。
@@ -292,7 +292,7 @@ public:
 		@param[in]	minZ			: ビューポートの最小深度
 		@param[in]	maxZ			: ビューポートの最大深度
 	*/
-	static Vector3 Project(const Vector3& point, const Matrix& worldViewProj, float x, float y, float width, float height, float minZ = 0.0f, float maxZ = 1.0f);
+	static Vector3 project(const Vector3& point, const Matrix& worldViewProj, float x, float y, float width, float height, float minZ = 0.0f, float maxZ = 1.0f);
 
 	/**
 		@brief		スクリーン空間(2D空間)のベクトルをオブジェクト空間(3D空間)のベクトルに変換する。
@@ -305,7 +305,7 @@ public:
 		@param[in]	minZ			: ビューポートの最小深度
 		@param[in]	maxZ			: ビューポートの最大深度
 	*/
-	static Vector3 Unproject(const Vector3& point, const Matrix& worldViewProj, float x, float y, float width, float height, float minZ = 0.0f, float maxZ = 1.0f);
+	static Vector3 unproject(const Vector3& point, const Matrix& worldViewProj, float x, float y, float width, float height, float minZ = 0.0f, float maxZ = 1.0f);
 
 	static bool nearEqual(const Vector3& value1, const Vector3& value2);
 

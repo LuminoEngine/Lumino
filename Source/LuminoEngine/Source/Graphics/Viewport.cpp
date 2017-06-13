@@ -121,7 +121,7 @@ void Viewport::initialize(detail::GraphicsManager* manager, const SizeI& viewSiz
 {
 	m_manager = manager;
 	//m_renderTarget = renderTarget;
-	//m_size.Set((float)m_renderTarget->GetWidth(), (float)m_renderTarget->GetHeight());
+	//m_size.Set((float)m_renderTarget->getWidth(), (float)m_renderTarget->getHeight());
 
 	m_renderer = RefPtr<DrawList>::makeRef();
 	m_renderer->initialize(manager);
@@ -230,7 +230,7 @@ void Viewport::Render(DrawList* parentDrawList, const SizeI& targetSize)
 	}
 
 	//BeginBlitRenderer();
-	//m_renderer->Blit(m_primaryLayerTarget, viewBoxTransform);
+	//m_renderer->blit(m_primaryLayerTarget, viewBoxTransform);
 	//FlushBlitRenderer(renderTarget);
 
 
@@ -238,7 +238,7 @@ void Viewport::Render(DrawList* parentDrawList, const SizeI& targetSize)
 	parentDrawList->SetDepthBuffer(oldDepthBuffer);
 	parentDrawList->Blit(m_primaryLayerTarget, viewBoxTransform);
 
-	// TODO: 暫定。Blit の中で深度書き込みしないようにしてほしいかも。
+	// TODO: 暫定。blit の中で深度書き込みしないようにしてほしいかも。
 	parentDrawList->Clear(ClearFlags::Depth, Color());
 
 }
@@ -388,13 +388,13 @@ void Viewport::FlushBlitRenderer(RenderTargetTexture* renderTarget)
 ////==============================================================================
 //
 ////------------------------------------------------------------------------------
-//ViewportLayer* MainViewport::GetDefault2DLayer()
+//ViewportLayer* MainViewport::getDefault2DLayer()
 //{
 //
 //}
 //
 ////------------------------------------------------------------------------------
-//ViewportLayer* MainViewport::GetDefault3DLayer()
+//ViewportLayer* MainViewport::getDefault3DLayer()
 //{
 //
 //}

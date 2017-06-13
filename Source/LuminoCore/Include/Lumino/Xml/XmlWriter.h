@@ -25,50 +25,50 @@ public:
 
 public:
 	/** XML 宣言を書き込みます。*/
-	void WriteStartDocument();
+	void writeStartDocument();
 
 	/** XML ドキュメントを閉じます。*/
-	void WriteEndDocument();
+	void writeEndDocument();
 
 	/** 要素の開始タグを書き込みます。*/
-	void WriteStartElement(const String& name);
+	void writeStartElement(const String& name);
 
 	/** 要素の終了タグを書き込みます。属性がひとつも無い場合は空要素タグ ("/>") となります。*/
-	void WriteEndElement();
+	void writeEndElement();
 
 	/** 指定した名前と文字列値の属性を書き込みます。*/
-	void WriteAttribute(const String& name, const String& value);
+	void writeAttribute(const String& name, const String& value);
 
 	/** 指定したテキストを書き込みます。*/
 	void writeString(const String& text);
 
 	/** コメントブロックを書き込みます。*/
-	void WriteComment(const String& text);
+	void writeComment(const String& text);
 
 	/** <![CDATA[...]]> ブロックを書き込みます。*/
-	void WriteCData(const String& text);
+	void writeCData(const String& text);
 
 	/** 
 		@brief		テキスト子要素を持つ要素を書き込みます。
 		@details	この関数は以下の操作と同じ結果になるユーティリティです。
 		@code
-					WriteStartElement(elementName);
+					writeStartElement(elementName);
 					WriteString(text);
-					WriteEndElement();
+					writeEndElement();
 		@endcode
 	*/
-	void WriteElementString(const String& elementName, const String& text);
+	void writeElementString(const String& elementName, const String& text);
 
 protected:
 	void initialize(TextWriter* textWriter);
 
 private:
-	void WriteStartAttribute(const String& name);
-	void WriteEndAttribute();
-	void WriteStringInternal(const TCHAR* str, int len, bool inAttribute);
-	void PreWrite(XmlNodeType type);
-	void WriteStartTagEnd(bool empty);
-	void Indent(bool beforeEndElement);
+	void writeStartAttribute(const String& name);
+	void writeEndAttribute();
+	void writeStringInternal(const TCHAR* str, int len, bool inAttribute);
+	void preWrite(XmlNodeType type);
+	void writeStartTagEnd(bool empty);
+	void indent(bool beforeEndElement);
 
 private:
 	enum State
@@ -98,9 +98,9 @@ private:
 	@brief		指定したファイルへ書き込みを行う XML ライターです。
 	@code
 				XmlFileWriter writer("test.xml");
-				writer.WriteStartElement(_T("EnvData"));
+				writer.writeStartElement(_T("EnvData"));
 				writer.WriteTextElement(_T("ToolPath"), _T("dir/app.exe"));
-				writer.WriteEndElement();
+				writer.writeEndElement();
 	@endcode
 */
 class XmlFileWriter
@@ -123,9 +123,9 @@ public:
 	@brief		XML 文字列を作成するための XML ライターです。
 	@code
 				XmlStringWriter writer;
-				writer.WriteStartElement(_T("EnvData"));
+				writer.writeStartElement(_T("EnvData"));
 				writer.WriteTextElement(_T("ToolPath"), _T("dir/app.exe"));
-				writer.WriteEndElement();
+				writer.writeEndElement();
 				String xmlText = writer.ToString();		// String として取り出す
 	@endcode
 */

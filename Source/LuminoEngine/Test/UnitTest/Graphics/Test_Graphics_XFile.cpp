@@ -31,9 +31,9 @@ TEST_F(Test_Graphics_XFile, Basic)
 
 
 	//auto sprite = Sprite3DComponent::create(1, 1);
-	//sprite->SetTexture(tex);
+	//sprite->setTexture(tex);
 
-	//while (Engine::UpdateFrame());
+	//while (Engine::updateFrame());
 
 	struct Line
 	{

@@ -81,10 +81,10 @@ Exception::Exception()
 	SimleBackTrace::MakeSymbolString(m_stackBuffer, m_stackBufferSize, m_symbolBuffer, LN_ARRAY_SIZE_OF(m_symbolBuffer));
 #else
 	// バックトレース記録
-	m_stackBufferSize = BackTrace::GetInstance()->Backtrace(m_stackBuffer, LN_ARRAY_SIZE_OF(m_stackBuffer));
+	m_stackBufferSize = BackTrace::getInstance()->Backtrace(m_stackBuffer, LN_ARRAY_SIZE_OF(m_stackBuffer));
 
 	// バックトレース文字列取得
-	BackTrace::GetInstance()->AddressToFullSymbolString(
+	BackTrace::getInstance()->AddressToFullSymbolString(
 		m_stackBuffer, 
 		std::min(m_stackBufferSize, 32),
 		m_symbolBuffer, 

@@ -551,7 +551,7 @@ static void FlipTriangleFronts(TIndex* indices, int count)
 //------------------------------------------------------------------------------
 RefPtr<StaticMeshModel> XFileLoader::load(ModelManager* manager, Stream* stream, const PathName& parentDir, bool isDynamic, ModelCreationFlag flags)
 {
-	Driver::DX9GraphicsDevice* device = dynamic_cast<Driver::DX9GraphicsDevice*>(manager->GetGraphicsManager()->GetGraphicsDevice());
+	Driver::DX9GraphicsDevice* device = dynamic_cast<Driver::DX9GraphicsDevice*>(manager->getGraphicsManager()->getGraphicsDevice());
 	LN_THROW(device != nullptr, ArgumentException);
 
 	AllocateHierarchy allocate_hierarchy;
@@ -590,8 +590,8 @@ RefPtr<StaticMeshModel> XFileLoader::load(ModelManager* manager, Stream* stream,
 	try
 	{
 		auto meshRes = RefPtr<MeshResource>::makeRef();
-		meshRes->initialize(manager->GetGraphicsManager(), MeshCreationFlags::None);
-		auto mesh1 = NewObject<StaticMeshModel>(manager->GetGraphicsManager(), meshRes);
+		meshRes->initialize(manager->getGraphicsManager(), MeshCreationFlags::None);
+		auto mesh1 = newObject<StaticMeshModel>(manager->getGraphicsManager(), meshRes);
 
 		// スキンメッシュではない場合
 		if (!dx_anim_controller)
@@ -617,12 +617,12 @@ RefPtr<StaticMeshModel> XFileLoader::load(ModelManager* manager, Stream* stream,
 			// 頂点バッファ、インデックスバッファ作成
 
 			// VertexDeclaration
-			meshRes->m_vertexDeclaration = manager->GetGraphicsManager()->GetDefaultVertexDeclaration();
+			meshRes->m_vertexDeclaration = manager->getGraphicsManager()->getDefaultVertexDeclaration();
 
 			// VertexBuffer
 			meshRes->m_vertexBufferInfos[0].buffer.attach(LN_NEW VertexBuffer());
 			meshRes->m_vertexBufferInfos[0].buffer->initialize(
-				manager->GetGraphicsManager(),
+				manager->getGraphicsManager(),
 				sizeof(Vertex) * all_vertex_num,
 				nullptr,
 				(isDynamic) ? ResourceUsage::Dynamic : ResourceUsage::Static, true);
@@ -725,7 +725,7 @@ RefPtr<StaticMeshModel> XFileLoader::load(ModelManager* manager, Stream* stream,
 						// テクスチャ名がある場合はテクスチャ作成
 						if (!c->TextureNames.isEmpty() && !c->TextureNames[i].isEmpty())
 						{
-							materials->getAt(mi)->SetTextureParameter(
+							materials->getAt(mi)->setTextureParameter(
 								Material::MaterialTextureParameter,
 								manager->CreateTexture(parentDir, c->TextureNames[i], flags));
 						}
@@ -817,35 +817,35 @@ RefPtr<StaticMeshModel> XFileLoader::load(ModelManager* manager, Stream* stream,
 //------------------------------------------------------------------------------
 void XFileLoader::DxMaterialToLnMaterial(const D3DMATERIAL9& dx_material, Material* material)
 {
-	material->SetColorParameter(
+	material->setColorParameter(
 		Material::DiffuseParameter,
 		dx_material.Diffuse.r,
 		dx_material.Diffuse.g,
 		dx_material.Diffuse.b,
 		dx_material.Diffuse.a);
 
-	material->SetColorParameter(
+	material->setColorParameter(
 		Material::AmbientParameter,
 		dx_material.Ambient.r,
 		dx_material.Ambient.g,
 		dx_material.Ambient.b,
 		dx_material.Ambient.a);
 
-	material->SetColorParameter(
+	material->setColorParameter(
 		Material::SpecularParameter,
 		dx_material.Specular.r,
 		dx_material.Specular.g,
 		dx_material.Specular.b,
 		dx_material.Specular.a);
 
-	material->SetColorParameter(
+	material->setColorParameter(
 		Material::EmissiveParameter,
 		dx_material.Emissive.r,
 		dx_material.Emissive.g,
 		dx_material.Emissive.b,
 		dx_material.Emissive.a);
 
-	material->SetFloatParameter(
+	material->setFloatParameter(
 		Material::PowerParameter,
 		dx_material.Power);
 }

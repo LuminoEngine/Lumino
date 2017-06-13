@@ -28,7 +28,7 @@ SceneGraphManager::SceneGraphManager(const ConfigData& configData)
 	, m_modelManager(configData.modelManager)
 	, m_documentsManager(configData.documentsManager)
 {
-	m_dummyWhiteTexture = m_graphicsManager->GetDummyWhiteTexture();
+	m_dummyWhiteTexture = m_graphicsManager->getDummyWhiteTexture();
 }
 
 //------------------------------------------------------------------------------

@@ -89,14 +89,14 @@ void Main()
 
 	//Engine::initialize();
 
-	//auto window = NewObject<UIFrameWindow>();
+	//auto window = newObject<UIFrameWindow>();
 
 
-	//while (Engine::Update())
+	//while (Engine::update())
 	//{
 	//}
 
-	//Engine::Terminate();
+	//Engine::terminate();
 
 	//return;
 
@@ -120,13 +120,13 @@ void Main()
 
 
 	Ray ray(Vector3(1, 0, 0), Vector3(0, 0, 1));
-	Matrix mat = Matrix::MakeScaling(2) * Matrix::MakeRotationY(Math::PI / 4)/* * Matrix::MakeTranslation(2, 0, 0)*/;
+	Matrix mat = Matrix::makeScaling(2) * Matrix::makeRotationY(Math::PI / 4)/* * Matrix::MakeTranslation(2, 0, 0)*/;
 	mat.inverse();
 
 	Ray ray2 = ray;
 	ray2.direction += ray2.origin;
-	ray2.origin.TransformCoord(mat);
-	ray2.direction.TransformCoord(mat);
+	ray2.origin.transformCoord(mat);
+	ray2.direction.transformCoord(mat);
 	ray2.direction -= ray2.origin;
 
 	std::function<void(int)> f = [ray](int a) {};
@@ -135,10 +135,10 @@ void Main()
 	//EngineSettings::SetGraphicsAPI(GraphicsAPI::OpenGL);
 	EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Threaded);//GraphicsRenderingType::Immediate);//
 	Engine::initialize();
-	//Engine::GetMainViewport()->SetBackgroundColor(Color32::Gray);
-	Engine::GetMainViewport()->SetPlacement(ViewportPlacement::AutoResize);
+	//Engine::getMainViewport()->SetBackgroundColor(Color32::Gray);
+	Engine::getMainViewport()->SetPlacement(ViewportPlacement::AutoResize);
 
-	//Engine::GetDefaultSceneGraph3D()->visibleGridPlane = true;
+	//Engine::getDefaultSceneGraph3D()->visibleGridPlane = true;
 
 	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::makeRef();
 	CameraComponent::GetMain3DCamera()->SetCameraBehavior(cb);
@@ -157,26 +157,26 @@ void Main()
 
 #if 0
 	auto blur = ScreenMotionBlurImageEffect::create();
-	//blur->SetAmount(0.5f);
-	//blur->SetRadialScale(1.05f);
+	//blur->setAmount(0.5f);
+	//blur->setRadialScale(1.05f);
 	CameraViewportLayer::GetDefault2D()->GetImageEffects()->Add(blur);
 
 	//auto tonePE23 = ToneImageEffect::create();
-	//tonePE23->SetTone(ToneF(1, 0,0, 1.0));
+	//tonePE23->setTone(ToneF(1, 0,0, 1.0));
 	//CameraViewportLayer::GetDefault2D()->GetImageEffects()->Add(tonePE23);
 
 	//auto tonePE2 = ToneImageEffect::create();
-	//tonePE2->SetTone(ToneF(0,0,1, 1.0));
+	//tonePE2->setTone(ToneF(0,0,1, 1.0));
 	//CameraViewportLayer::GetDefault2D()->GetImageEffects()->Add(tonePE2);
 
 	auto tonePE = ToneImageEffect::create();
-	//tonePE->SetTone(ToneF(0,0,1, 1.0));
+	//tonePE->setTone(ToneF(0,0,1, 1.0));
 	tonePE->ChangeTone(ToneF(1, 0, 1, 0), 5);
 	CameraViewportLayer::GetDefault2D()->GetImageEffects()->Add(tonePE);
 #endif
 
 #if 0
-	//Engine::GetMainLight3D()->SetPosition();
+	//Engine::GetMainLight3D()->setPosition();
 	auto mLogoSprite = Sprite2DComponent::create(_T("D:/Proj/Volkoff/Volkoff/Data/Graphics/Frontend/Logo_1.png"));
 
 	int map[5*5] =
@@ -213,7 +213,7 @@ void Main()
 	}
 #endif
 
-	EngineDiag::SetDisplayMode(EngineDiagDisplayMode::FpsSummary);
+	EngineDiag::setDisplayMode(EngineDiagDisplayMode::FpsSummary);
 
 	Input::AddButtonBinding(_T("AA"), KeyboardBinding::create(Keys::C));
 	Input::AddButtonBinding(_T("GG"), KeyboardBinding::create(Keys::A));
@@ -245,15 +245,15 @@ void Main()
 	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetEmissive(Color::White);
 	m->SetMaterial(material);
-	//m->SetTexture(Texture2D::create(LN_LOCALFILE("../Media/Spark1.png"), TextureFormat::R8G8B8A8, false));
+	//m->setTexture(Texture2D::create(LN_LOCALFILE("../Media/Spark1.png"), TextureFormat::R8G8B8A8, false));
 
 	auto particle1 = SpriteParticle::Create3D(m);
 	particle1->SetBlendMode(BlendMode::Add);
 	particle1->SetPosition(2, 0, 0);
 
 	//auto particle2 = SpriteParticle::Create3D(m);
-	//particle2->SetBlendMode(BlendMode::Subtract);
-	//particle2->SetPosition(3, 0, 0);
+	//particle2->setBlendMode(BlendMode::Subtract);
+	//particle2->setPosition(3, 0, 0);
 
 	//particle1->AddChild(particle2);
 #endif
@@ -512,15 +512,15 @@ void Main()
 	//listBox->AddTextItem(_T("fff"));
 	//uiRoot->SetContent(listBox);
 
-	//GameAudio::PlayBGM("D:/GameProjects/Materials/BGM/Windsphere/call.mp3");
+	//GameAudio::playBGM("D:/GameProjects/Materials/BGM/Windsphere/call.mp3");
 	
 
 
-	//auto gizmo = static_cast<CameraViewportLayer*>(Engine::GetDefault3DLayer())->CreateGizmo();
+	//auto gizmo = static_cast<CameraViewportLayer*>(Engine::getDefault3DLayer())->CreateGizmo();
 
 	//auto sp = Sprite3DComponent::create(2, 2, Texture2D::create(_T("D:/GameProjects/Chronicles/110220c_as019.jpg")));
-	//sp->SetTone(ToneF(0, 0, 1, 1.0));
-	//gizmo->Setup(Matrix::Identity, sp->GetTransform());//Matrix::MakeTranslation(1, 0, 0));
+	//sp->setTone(ToneF(0, 0, 1, 1.0));
+	//gizmo->Setup(Matrix::Identity, sp->getTransform());//Matrix::MakeTranslation(1, 0, 0));
 	//
 	//
 	//gizmo->AddOnTargetTransformChanged([sp](tr::GizmoModel* g)
@@ -540,12 +540,12 @@ void Main()
 	//auto box1 = StaticMeshComponent::create(_T("D:/Proj/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/MqoTest1.mqo"));
 	//auto box1 = StaticMeshComponent::create(_T("C:/Proj/FluoriteSolution/External/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/Plant1.mqo"));
 
-	//box1->GetMaterials()->GetAt(0)->SetMaterialTexture(tex1);
-	////box1->SetTone(ToneF(0, 0, 1, 1.0));
-	//gizmo->Setup(Matrix::Identity, box1->GetTransform());//Matrix::MakeTranslation(1, 0, 0));
+	//box1->GetMaterials()->GetAt(0)->setMaterialTexture(tex1);
+	////box1->setTone(ToneF(0, 0, 1, 1.0));
+	//gizmo->Setup(Matrix::Identity, box1->getTransform());//Matrix::MakeTranslation(1, 0, 0));
 
 	//auto mesh3 = StaticMeshComponent::CreatePlane(Vector2(3, 3), 1, 1);
-	//mesh3->SetPosition(-2, 0, 0);
+	//mesh3->setPosition(-2, 0, 0);
 
 #if 0
 	List<RefPtr<StaticMeshComponent>> boxList;
@@ -568,39 +568,39 @@ void Main()
 	auto body1 = RigidBody::create(col1);
 	body1->SetPosition(10, 0, 0);
 #endif
-	//static_cast<CameraViewportLayer*>(Engine::GetDefault3DLayer())->SetDebugDrawFlags(WorldDebugDrawFlags::PhysicsInfo);
+	//static_cast<CameraViewportLayer*>(Engine::getDefault3DLayer())->SetDebugDrawFlags(WorldDebugDrawFlags::PhysicsInfo);
 
-	auto uiRoot = Engine::GetMainWindow();
+	auto uiRoot = Engine::getMainWindow();
 	//auto thumb = UIThumb::create();
-	////thumb->SetPosition(PointF(100, 200));
-	//thumb->SetSize(Size(30,60));
+	////thumb->setPosition(PointF(100, 200));
+	//thumb->setSize(Size(30,60));
 	////thumb->SetBackground(ColorBrush::Red);
 	////textBlock1->SetText(_T("TextBlock"));
 	//uiRoot->SetContent(thumb);
 	auto track = UIScrollBar::create();
-	//track->SetSize(Size(200, NAN));
+	//track->setSize(Size(200, NAN));
 	track->SetMaximum(10);
-	track->SetValue(3);
+	track->setValue(3);
 	track->SetViewportSize(2);
 	uiRoot->AddChild(track);
 
 
-	while (!Engine::IsEndRequested())
+	while (!Engine::isEndRequested())
 	{
-		Engine::UpdateFrame();
+		Engine::updateFrame();
 		//if (Engine::BeginRendering())
 		{
-			Engine::RenderFrame();
+			Engine::renderFrame();
 
 
-			//Engine::GetDefaultSceneGraph3D()->GetRenderer()->DrawLinePrimitive(
+			//Engine::getDefaultSceneGraph3D()->getRenderer()->DrawLinePrimitive(
 			//	Vector3(0, 0, 0), Color::Red,
 			//	Vector3(5, 5, 5), Color::White);
 
 
-			//gizmo->Render(Engine::GetDefault3DLayer()->GetRenderer());
+			//gizmo->render(Engine::getDefault3DLayer()->getRenderer());
 
-			Engine::PresentFrame();
+			Engine::presentFrame();
 		}
 
 		//body1->GetWorldTransform().GetPosition().print();
@@ -616,18 +616,18 @@ void Main()
 		//}
 	}
 
-	//while (Engine::Update())
+	//while (Engine::update())
 	//{
 	//	//printf("----\n");
 	//	if (Input::IsTriggered(InputButtons::Cancel))
 	//	{
-	//		//tonePE->SetTone(ToneF(-1, -1, -1, 0));
-	//		//tonePE->ChangeTone(ToneF(1, 1, 1, 0), 0.5);
-	//		//blur->SetBlurStatus(0.5, Vector2::Zero, 1.05, 0.5);
+	//		//tonePE->setTone(ToneF(-1, -1, -1, 0));
+	//		//tonePE->changeTone(ToneF(1, 1, 1, 0), 0.5);
+	//		//blur->setBlurStatus(0.5, Vector2::Zero, 1.05, 0.5);
 
-	//		//Engine::GetMainWindow()->SetSize(SizeI(200, 100));
+	//		//Engine::getMainWindow()->setSize(SizeI(200, 100));
 	//	}
-	//	//blur->SetBlurStatus(0.9f, Vector2::Zero, 1.02);
+	//	//blur->setBlurStatus(0.9f, Vector2::Zero, 1.02);
 	//}
 }
 

@@ -25,31 +25,31 @@ static std::string g_eventLog;
 //------------------------------------------------------------------------------
 TEST_F(Test_UI_System, Focus)
 {
-	auto uiRoot = Engine::GetMainWindow();
+	auto uiRoot = Engine::getMainWindow();
 	uiRoot->SetLayoutPanel(UIStackPanel::create());
 
-	auto c1 = NewObject<UIControl>();
-	c1->SetSize(Size(64, 32));
+	auto c1 = newObject<UIControl>();
+	c1->setSize(Size(64, 32));
 	uiRoot->AddChild(c1);
 
-	auto c1_1 = NewObject<UIControl>();
-	c1_1->SetSize(Size(32, 32));
+	auto c1_1 = newObject<UIControl>();
+	c1_1->setSize(Size(32, 32));
 	c1->AddChild(c1_1);
 
-	auto c2 = NewObject<UIControl>();
-	c2->SetSize(Size(64, 32));
+	auto c2 = newObject<UIControl>();
+	c2->setSize(Size(64, 32));
 	uiRoot->AddChild(c2);
 
-	auto c2_1 = NewObject<UIControl>();
-	c2_1->SetSize(Size(16, 16));
+	auto c2_1 = newObject<UIControl>();
+	c2_1->setSize(Size(16, 16));
 	c2->AddChild(c2_1);
 
-	auto c2_2 = NewObject<UIControl>();
-	c2_2->SetSize(Size(32, 32));
+	auto c2_2 = newObject<UIControl>();
+	c2_2->setSize(Size(32, 32));
 	c2->AddChild(c2_2);
 
-	auto c2_3 = NewObject<UIControl>();
-	c2_3->SetSize(Size(48, 32));
+	auto c2_3 = newObject<UIControl>();
+	c2_3->setSize(Size(48, 32));
 	c2_2->AddChild(c2_3);
 
 	/*
@@ -91,7 +91,7 @@ TEST_F(Test_UI_System, Focus)
 	
 	//std::cout << g_eventLog << std::endl;
 
-	Engine::Update();
+	Engine::update();
 
 	uiRoot->RemoveChild(c1);
 	uiRoot->RemoveChild(c2);

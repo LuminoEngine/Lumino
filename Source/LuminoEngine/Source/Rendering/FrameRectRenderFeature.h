@@ -100,11 +100,11 @@ public:
 
 	void Draw(const Matrix& transform, const Rect& rect);
 
-	virtual bool IsStandaloneShader() const { return false; }
+	virtual bool isStandaloneShader() const { return false; }
 	virtual void flush() override;
-	virtual void OnActivated() { }
-	virtual void OnDeactivated() { flush(); }
-	virtual void OnSetState(const DrawElementBatch* state);
+	virtual void onActivated() { }
+	virtual void onDeactivated() { flush(); }
+	virtual void onSetState(const DrawElementBatch* state);
 
 private:
 	void SetState(Brush* brush, const Matrix& world, const Matrix& viewProj);

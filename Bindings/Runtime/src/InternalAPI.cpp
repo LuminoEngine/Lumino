@@ -32,7 +32,7 @@ LN_API LNResultCode LNObject_GetRefCount(LNHandle hadnleObject, int* count)
 LN_API LNUserData LNObject_GetBindingTypeData(LNHandle hadnleObject)
 {
 	auto* obj = LFManager::GetObjectEntry(hadnleObject)->Object;
-	return reinterpret_cast<LNUserData>(tr::TypeInfo::GetBindingTypeInfo(obj));
+	return reinterpret_cast<LNUserData>(tr::TypeInfo::getBindingTypeInfo(obj));
 }
 
 //------------------------------------------------------------------------------

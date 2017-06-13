@@ -16,7 +16,7 @@ LN_NAMESPACE_BEGIN
 static AssetsManager* g_managerInstance = nullptr;
 
 //------------------------------------------------------------------------------
-AssetsManager* AssetsManager::GetInstance(AssetsManager* priority)
+AssetsManager* AssetsManager::getInstance(AssetsManager* priority)
 {
 	return (priority == nullptr) ? g_managerInstance : priority;
 }
@@ -41,7 +41,7 @@ void AssetsManager::initialize(EngineManager* manager)
 {
 	m_engineManager = manager;
 
-	AddAssetsDirectory(PathName::getCurrentDirectory());
+	addAssetsDirectory(PathName::getCurrentDirectory());
 
 	m_textureCache = RefPtr<CacheManager>::makeRef(32, 0);	// TODO
 	m_fontCache = RefPtr<CacheManager>::makeRef(32, 0);	// TODO
@@ -60,7 +60,7 @@ void AssetsManager::Finalize()
 }
 
 //------------------------------------------------------------------------------
-void AssetsManager::AddAssetsDirectory(const StringRef& directoryPath)
+void AssetsManager::addAssetsDirectory(const StringRef& directoryPath)
 {
 	AssetsDirectory dir;
 	dir.path = PathName(directoryPath);
@@ -68,47 +68,47 @@ void AssetsManager::AddAssetsDirectory(const StringRef& directoryPath)
 }
 
 //------------------------------------------------------------------------------
-Texture2DPtr AssetsManager::LoadTexture(const StringRef& filePath)
+Texture2DPtr AssetsManager::loadTexture(const StringRef& filePath)
 {
 	// TODO: 暫定処置
-	MakeSearchPath(filePath);
-	auto* path = FindLocalFilePath();
+	makeSearchPath(filePath);
+	auto* path = findLocalFilePath();
 
 	CacheKey key(*path);
 	Texture2D* ptr = static_cast<Texture2D*>(m_textureCache->findObjectAddRef(key));
 	if (ptr != nullptr) { return Texture2DPtr(ptr, false); }
 
 	// TODO: mipmap ON にしたい。ただ、サンプラステートを変更しないとならないようなので動作確認してから。
-	auto ref = NewObject<Texture2D>(*path, TextureFormat::R8G8B8A8, false);
+	auto ref = newObject<Texture2D>(*path, TextureFormat::R8G8B8A8, false);
 
 	m_textureCache->registerCacheObject(key, ref);
 	return ref;
 }
 
 //------------------------------------------------------------------------------
-RefPtr<StaticMeshModel> AssetsManager::LoadMeshModel(const StringRef& filePath)
+RefPtr<StaticMeshModel> AssetsManager::loadMeshModel(const StringRef& filePath)
 {
 	// TODO: 暫定処置
-	MakeSearchPath(filePath);
-	auto* path = FindLocalFilePath();
+	makeSearchPath(filePath);
+	auto* path = findLocalFilePath();
 
 	// TODO: キャッシュ
-	return detail::EngineDomain::GetModelManager()->CreateStaticMeshModel(*path);
+	return detail::EngineDomain::getModelManager()->CreateStaticMeshModel(*path);
 }
 
 //------------------------------------------------------------------------------
-String AssetsManager::LoadText(const StringRef& filePath)
+String AssetsManager::loadText(const StringRef& filePath)
 {
-	MakeSearchPath(filePath);
-	auto* path = FindLocalFilePath();
+	makeSearchPath(filePath);
+	auto* path = findLocalFilePath();
 	return FileSystem::readAllText(*path);
 }
 
 //------------------------------------------------------------------------------
-RefPtr<Stream> AssetsManager::OpenFile(const StringRef& filePath)
+RefPtr<Stream> AssetsManager::openFile(const StringRef& filePath)
 {
-	MakeSearchPath(filePath);
-	auto* path = FindLocalFilePath();
+	makeSearchPath(filePath);
+	auto* path = findLocalFilePath();
 	//if (path == nullptr)
 	//{
 	//	LN_LOG_ERROR << _T("file not found: ") << filePath;
@@ -119,7 +119,7 @@ RefPtr<Stream> AssetsManager::OpenFile(const StringRef& filePath)
 }
 
 //------------------------------------------------------------------------------
-void AssetsManager::MakeSearchPath(const StringRef& path)
+void AssetsManager::makeSearchPath(const StringRef& path)
 {
 	if (PathTraits::isAbsolutePath(path.getBegin(), path.getLength()))
 	{
@@ -138,7 +138,7 @@ void AssetsManager::MakeSearchPath(const StringRef& path)
 }
 
 //------------------------------------------------------------------------------
-const PathName* AssetsManager::FindLocalFilePath()
+const PathName* AssetsManager::findLocalFilePath()
 {
 	for (AssetsDirectory& dir : m_assetsDirectories)
 	{
@@ -182,16 +182,16 @@ const PathName* AssetsManager::FindLocalFilePath()
 //	RawFontPtr ref;
 //	if (name.IsEmpty())
 //	{
-//		ref = m_engineManager->GetGraphicsManager()->GetFontManager()->GetDefaultFont()->Copy();
+//		ref = m_engineManager->getGraphicsManager()->getFontManager()->GetDefaultFont()->Copy();
 //	}
 //	else
 //	{
-//		auto ftFont = RefPtr<FreeTypeFont>::MakeRef(m_engineManager->GetGraphicsManager()->GetFontManager());
+//		auto ftFont = RefPtr<FreeTypeFont>::MakeRef(m_engineManager->getGraphicsManager()->getFontManager());
 //		ref = ftFont;
 //	}
 //
-//	ref->SetName(name);
-//	ref->SetSize(size);
+//	ref->setName(name);
+//	ref->setSize(size);
 //	ref->SetBold(isBold);
 //	ref->SetItalic(isItalic);
 //	ref->SetAntiAlias(isAntiAlias);
@@ -205,27 +205,27 @@ const PathName* AssetsManager::FindLocalFilePath()
 //==============================================================================
 
 //------------------------------------------------------------------------------
-void Assets::AddAssetsDirectory(const StringRef& directoryPath)
+void Assets::addAssetsDirectory(const StringRef& directoryPath)
 {
-	AssetsManager::GetInstance()->AddAssetsDirectory(directoryPath);
+	AssetsManager::getInstance()->addAssetsDirectory(directoryPath);
 }
 
 //------------------------------------------------------------------------------
-Texture2DPtr Assets::LoadTexture(const StringRef& filePath)
+Texture2DPtr Assets::loadTexture(const StringRef& filePath)
 {
-	return AssetsManager::GetInstance()->LoadTexture(filePath);
+	return AssetsManager::getInstance()->loadTexture(filePath);
 }
 
 //------------------------------------------------------------------------------
-RefPtr<StaticMeshModel> Assets::LoadMeshModel(const StringRef& filePath)
+RefPtr<StaticMeshModel> Assets::loadMeshModel(const StringRef& filePath)
 {
-	return AssetsManager::GetInstance()->LoadMeshModel(filePath);
+	return AssetsManager::getInstance()->loadMeshModel(filePath);
 }
 
 //------------------------------------------------------------------------------
-String Assets::LoadText(const StringRef& filePath)
+String Assets::loadText(const StringRef& filePath)
 {
-	return AssetsManager::GetInstance()->LoadText(filePath);
+	return AssetsManager::getInstance()->loadText(filePath);
 }
 
 LN_NAMESPACE_END

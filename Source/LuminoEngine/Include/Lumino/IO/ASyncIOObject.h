@@ -40,7 +40,7 @@ protected:
 		@details	この関数は直接呼び出さないでください。
 					RequestASyncIOProc() を呼び出すことで、必要なタイミングで実行されます。
 	*/
-	virtual void OnASyncIOProc() = 0;	// TODO: 同期的にも呼ばれる。"ASync" はよろしくない。
+	virtual void onASyncIOProc() = 0;	// TODO: 同期的にも呼ばれる。"ASync" はよろしくない。
 
 	/**
 		@brief		処理を実行します。

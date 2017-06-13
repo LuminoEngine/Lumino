@@ -66,9 +66,9 @@ public:
 	// 読み込み
 	bool load(Stream* stream);
 
-	double GetLastFramePosition() const { return m_lastFramePosition; }
-	BoneAnimationList& GetBoneAnimationList() { return m_boneAnimationList; }
-	FaceAnimationList& GetFaceAnimationList() { return m_faceAnimationList; }
+	double getLastFramePosition() const { return m_lastFramePosition; }
+	BoneAnimationList& getBoneAnimationList() { return m_boneAnimationList; }
+	FaceAnimationList& getFaceAnimationList() { return m_faceAnimationList; }
 
 private:
 	// こちらの検索キーは StringA。VMD ファイルから読み取ったキー名をそのまま比較できるようにするため。

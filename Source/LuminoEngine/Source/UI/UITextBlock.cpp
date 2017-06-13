@@ -44,9 +44,9 @@ void UITextBlock::setText(const StringRef& text)
 }
 
 //------------------------------------------------------------------------------
-Size UITextBlock::MeasureOverride(const Size& availableSize)
+Size UITextBlock::measureOverride(const Size& availableSize)
 {
-	Size size = UITextElement::MeasureOverride(availableSize);
+	Size size = UITextElement::measureOverride(availableSize);
 
 	if (m_font != nullptr)
 	{
@@ -59,16 +59,16 @@ Size UITextBlock::MeasureOverride(const Size& availableSize)
 }
 
 //------------------------------------------------------------------------------
-Size UITextBlock::ArrangeOverride(const Size& finalSize)
+Size UITextBlock::arrangeOverride(const Size& finalSize)
 {
-	return UITextElement::ArrangeOverride(finalSize);
+	return UITextElement::arrangeOverride(finalSize);
 }
 
 //------------------------------------------------------------------------------
-void UITextBlock::OnRender(DrawingContext* g)
+void UITextBlock::onRender(DrawingContext* g)
 {
 	g->SetFont(GetActiveFont());
-	g->SetBrush(GetForegroundInternal());
+	g->setBrush(GetForegroundInternal());
 	g->DrawText_(m_text, PointF());
 }
 

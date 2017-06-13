@@ -16,21 +16,21 @@ public:
 	virtual ~RenderingThread();
 
 public:
-	void Reset(Driver::IGraphicsDevice* device);
+	void reset(Driver::IGraphicsDevice* device);
 	void Dispose();
 
 	// 指定したコマンドリストの実行を直ちに開始する
-	void PushRenderingCommand(RenderingCommandList* commandList);
-	Exception* GetException() { return m_exception; }
+	void pushRenderingCommand(RenderingCommandList* commandList);
+	Exception* getException() { return m_exception; }
 
-	bool IsRunning() { return m_running.IsTrue(); }
+	bool isRunning() { return m_running.isTrue(); }
 
 	/// 描画スレッドへ一時停止を要求し、停止するまで待つ。
 	/// 描画スレッドは、現在実行中のコマンドリストの実行が終わってから一時停止する。
-	void RequestPauseAndWait();
+	void requestPauseAndWait();
 
 	/// 描画スレッドを再開する
-	void RequestResume();
+	void requestResume();
 
 protected:
 	/// スレッド関数

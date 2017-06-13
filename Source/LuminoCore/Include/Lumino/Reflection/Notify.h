@@ -24,8 +24,8 @@ public:
 	ReflectionEventInfo(TypeInfo* ownerClass, const TCHAR* name, RaiseEventFunc raiseEvent);
 	~ReflectionEventInfo();
 
-	const String& GetName() const { return m_name; }
-	void CallEvent(ReflectionObject* target, ReflectionEventArgs* e) const { m_raiseEvent(target, e); }
+	const String& getName() const { return m_name; }
+	void callEvent(ReflectionObject* target, ReflectionEventArgs* e) const { m_raiseEvent(target, e); }
 
 private:
 	friend class TypeInfo;
@@ -66,7 +66,7 @@ public:
 	/**
 		@brief	ƒ‹[ƒeƒBƒ“ƒOƒCƒxƒ“ƒg‚Ìƒnƒ“ƒhƒ‰‚ğ’Ç‰Á‚µ‚Ü‚·B
 	*/
-	void AddHandler(const Delegate<void(TArgs*)>& handler)
+	void addHandler(const Delegate<void(TArgs*)>& handler)
 	{
 		m_handlerList.add(handler);
 	}
@@ -74,7 +74,7 @@ public:
 	/**
 		@brief	w’è‚µ‚½ƒnƒ“ƒhƒ‰‚Éˆê’v‚·‚éƒnƒ“ƒhƒ‰‚ğA‚±‚ÌƒXƒƒbƒg‚©‚çíœ‚µ‚Ü‚·B
 	*/
-	void RemoveHandler(const Delegate<void(TArgs*)>& handler)
+	void removeHandler(const Delegate<void(TArgs*)>& handler)
 	{
 		m_handlerList.remove(handler);
 	}
@@ -84,7 +84,7 @@ public:
 	*/
 	//void operator += (const std::function<void(TArgs*)>& handler)
 	//{
-	//	AddHandler(handler);
+	//	addHandler(handler);
 	//}
 
 	void operator += (const Delegate<void(TArgs*)>& handler)
@@ -119,9 +119,9 @@ private:
 	private: static typeInfo	_init_##eventInfoVar;
 
 #define LN_REFLECTION_EVENT_IMPLEMENT_COMMON(typeInfo, ownerClass, eventArgs, eventInfoVar, name, ev) \
-	typeInfo					ownerClass::_init_##eventInfoVar(tr::TypeInfo::GetTypeInfo<ownerClass>(), _T(name), &ownerClass::_raise_##eventInfoVar); \
+	typeInfo					ownerClass::_init_##eventInfoVar(tr::TypeInfo::getTypeInfo<ownerClass>(), _T(name), &ownerClass::_raise_##eventInfoVar); \
 	const typeInfo*				ownerClass::eventInfoVar = &_init_##eventInfoVar; \
-	void						ownerClass::_raise_##eventInfoVar(tr::ReflectionObject* obj, tr::ReflectionEventArgs* e) { static_cast<ownerClass*>(obj)->RaiseReflectionEvent(static_cast<ownerClass*>(obj)->ev, static_cast<eventArgs*>(e)); }
+	void						ownerClass::_raise_##eventInfoVar(tr::ReflectionObject* obj, tr::ReflectionEventArgs* e) { static_cast<ownerClass*>(obj)->raiseReflectionEvent(static_cast<ownerClass*>(obj)->ev, static_cast<eventArgs*>(e)); }
 
 #define LN_REFLECTION_EVENT(eventArgs, eventInfoVar) \
 	LN_REFLECTION_EVENT_COMMON(tr::ReflectionEventInfo, eventArgs, eventInfoVar);
@@ -145,34 +145,34 @@ class DelegateEvent/*<void(TArgs...)>*/		// –ß‚è’l‚Í void ŒÅ’èBƒnƒ“ƒhƒ‰‚ª1‚Â‚à“
 public:
 	typedef Delegate<void(TArgs...)> DelegateType;
 
-	void AddHandler(const DelegateType& handler)
+	void addHandler(const DelegateType& handler)
 	{
 		m_handlerList.add(handler);
 	}
 
-	void AddHandler(const std::function<void(TArgs...)>& handler)	// void operator += (const DelegateType& handler) ‚¾‚¯‚¾‚ÆˆÃ–Ù•ÏŠ·‚ªŒø‚©‚¸ƒRƒ“ƒpƒCƒ‹ƒGƒ‰[‚Æ‚È‚Á‚Ä‚¢‚½‚½‚ß—pˆÓ
+	void addHandler(const std::function<void(TArgs...)>& handler)	// void operator += (const DelegateType& handler) ‚¾‚¯‚¾‚ÆˆÃ–Ù•ÏŠ·‚ªŒø‚©‚¸ƒRƒ“ƒpƒCƒ‹ƒGƒ‰[‚Æ‚È‚Á‚Ä‚¢‚½‚½‚ß—pˆÓ
 	{
-		AddHandler(DelegateType(handler));
+		addHandler(DelegateType(handler));
 	}
 
-	void RemoveHandler(const DelegateType& handler)
+	void removeHandler(const DelegateType& handler)
 	{
 		m_handlerList.remove(handler);
 	}
 
 	void operator += (const DelegateType& handler)
 	{
-		AddHandler(handler);
+		addHandler(handler);
 	}
 
 	//void operator += (const std::function<void(TArgs...)>& handler)	// void operator += (const DelegateType& handler) ‚¾‚¯‚¾‚ÆˆÃ–Ù•ÏŠ·‚ªŒø‚©‚¸ƒRƒ“ƒpƒCƒ‹ƒGƒ‰[‚Æ‚È‚Á‚Ä‚¢‚½‚½‚ß—pˆÓ
 	//{
-	//	AddHandler(DelegateType(handler));
+	//	addHandler(DelegateType(handler));
 	//}
 
 	void operator -= (const DelegateType& handler)
 	{
-		RemoveHandler(handler);
+		removeHandler(handler);
 	}
 
 private:

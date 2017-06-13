@@ -43,11 +43,11 @@ void VisualEffect::ReleaseInstance()
 }
 
 //------------------------------------------------------------------------------
-VisualEffectInstance* VisualEffect::Play()
+VisualEffectInstance* VisualEffect::play()
 {
 	if (m_overlapEffects)
 	{
-		Stop();
+		stop();
 	}
 
 	VisualEffectInstance* inst = PlayNewInstance();
@@ -56,21 +56,21 @@ VisualEffectInstance* VisualEffect::Play()
 }
 
 //------------------------------------------------------------------------------
-void VisualEffect::Stop()
+void VisualEffect::stop()
 {
 	for (auto* inst : m_instanceList)
 	{
-		inst->Stop();
+		inst->stop();
 	}
 	ReleaseInstance();
 }
 
 //------------------------------------------------------------------------------
-bool VisualEffect::IsPlaying() const
+bool VisualEffect::isPlaying() const
 {
 	for (auto* inst : m_instanceList)
 	{
-		if (inst->IsPlaying())
+		if (inst->isPlaying())
 		{
 			return true;
 		}

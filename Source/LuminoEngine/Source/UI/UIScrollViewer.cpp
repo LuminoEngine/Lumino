@@ -62,7 +62,7 @@ void UIThumb::OnRoutedEvent(UIEventArgs* e)
 			CaptureMouse();
 
 			// ドラッグ開始イベント
-			detail::EventArgsPool* pool = GetManager()->GetEventArgsPool();
+			detail::EventArgsPool* pool = getManager()->GetEventArgsPool();
 			RefPtr<UIDragDeltaEventArgs> args(pool->create<UIDragDeltaEventArgs>(DragStartedEventId), false);
 			args->horizontalChange = pos.x - m_lastScreenPosition.x;
 			args->verticalChange = pos.y - m_lastScreenPosition.y;
@@ -84,7 +84,7 @@ void UIThumb::OnRoutedEvent(UIEventArgs* e)
 
 			// ドラッグ終了イベント
 			// TODO: template 化
-			detail::EventArgsPool* pool = GetManager()->GetEventArgsPool();
+			detail::EventArgsPool* pool = getManager()->GetEventArgsPool();
 			RefPtr<UIDragDeltaEventArgs> args(pool->create<UIDragDeltaEventArgs>(DragCompletedEventId), false);
 			args->horizontalChange = pos.x - m_lastScreenPosition.x;
 			args->verticalChange = pos.y - m_lastScreenPosition.y;
@@ -102,7 +102,7 @@ void UIThumb::OnRoutedEvent(UIEventArgs* e)
 			PointF pos = mouseEvent->getPosition(GetVisualParent());
 
 			// ドラッグ中イベント
-			detail::EventArgsPool* pool = GetManager()->GetEventArgsPool();
+			detail::EventArgsPool* pool = getManager()->GetEventArgsPool();
 			RefPtr<UIDragDeltaEventArgs> args(pool->create<UIDragDeltaEventArgs>(DragDeltaEventId), false);
 			args->horizontalChange = pos.x - m_lastScreenPosition.x;
 			args->verticalChange = pos.y - m_lastScreenPosition.y;
@@ -162,12 +162,12 @@ void UITrack::initialize()
 	vsm->RegisterVisualState(OrientationStates, HorizontalState);
 	vsm->RegisterVisualState(OrientationStates, VerticalState);
 
-	m_decreaseButton = NewObject<UIButton>();
-	m_thumb = NewObject<UIThumb>();
-	m_increaseButton = NewObject<UIButton>();
+	m_decreaseButton = newObject<UIButton>();
+	m_thumb = newObject<UIThumb>();
+	m_increaseButton = newObject<UIButton>();
 
-	m_decreaseButton->SetStyleSubControlName(tr::TypeInfo::GetTypeInfo<UITrack>()->GetName(), _T("DecreaseButton"));
-	m_increaseButton->SetStyleSubControlName(tr::TypeInfo::GetTypeInfo<UITrack>()->GetName(), _T("IncreaseButton"));
+	m_decreaseButton->SetStyleSubControlName(tr::TypeInfo::getTypeInfo<UITrack>()->getName(), _T("DecreaseButton"));
+	m_increaseButton->SetStyleSubControlName(tr::TypeInfo::getTypeInfo<UITrack>()->getName(), _T("IncreaseButton"));
 
 	AddVisualChild(m_decreaseButton);
 	AddVisualChild(m_thumb);
@@ -229,16 +229,16 @@ UIThumb* UITrack::GetThumb() const
 }
 
 //------------------------------------------------------------------------------
-Size UITrack::MeasureOverride(const Size& constraint)
+Size UITrack::measureOverride(const Size& constraint)
 {
-	m_decreaseButton->MeasureLayout(constraint);
-	m_thumb->MeasureLayout(constraint);
-	m_increaseButton->MeasureLayout(constraint);
-	return UIElement::MeasureOverride(constraint);
+	m_decreaseButton->measureLayout(constraint);
+	m_thumb->measureLayout(constraint);
+	m_increaseButton->measureLayout(constraint);
+	return UIElement::measureOverride(constraint);
 }
 
 //------------------------------------------------------------------------------
-Size UITrack::ArrangeOverride(const Size& finalSize)
+Size UITrack::arrangeOverride(const Size& finalSize)
 {
 	float decreaseButtonLength;
 	float thumbLength;
@@ -264,21 +264,21 @@ Size UITrack::ArrangeOverride(const Size& finalSize)
 		{
 			rect.x = 0.0f;
 			rect.width = decreaseButtonLength;
-			m_decreaseButton->ArrangeLayout(rect);
+			m_decreaseButton->arrangeLayout(rect);
 		}
 		// Thumb
 		if (m_thumb != nullptr)
 		{
 			rect.x = decreaseButtonLength;
 			rect.width = thumbLength;
-			m_thumb->ArrangeLayout(rect);
+			m_thumb->arrangeLayout(rect);
 		}
 		// PageDown Button
 		if (m_increaseButton != nullptr)
 		{
 			rect.x = decreaseButtonLength + thumbLength;
 			rect.width = increaseButtonLength;
-			m_increaseButton->ArrangeLayout(rect);
+			m_increaseButton->arrangeLayout(rect);
 		}
 	}
 	else
@@ -290,21 +290,21 @@ Size UITrack::ArrangeOverride(const Size& finalSize)
 		{
 			rect.y = 0.0f;
 			rect.height = decreaseButtonLength;
-			m_decreaseButton->ArrangeLayout(rect);
+			m_decreaseButton->arrangeLayout(rect);
 		}
 		// Thumb
 		if (m_thumb != nullptr)
 		{
 			rect.y = decreaseButtonLength;
 			rect.height = thumbLength;
-			m_thumb->ArrangeLayout(rect);
+			m_thumb->arrangeLayout(rect);
 		}
 		// PageDown Button
 		if (m_increaseButton != nullptr)
 		{
 			rect.y = decreaseButtonLength + thumbLength;
 			rect.height = increaseButtonLength;
-			m_increaseButton->ArrangeLayout(rect);
+			m_increaseButton->arrangeLayout(rect);
 		}
 	}
 
@@ -342,12 +342,12 @@ void UITrack::CalcSliderComponentsSize(
 	if (isVertical)
 	{
 		trackLength = arrangeSize.height;
-		thumbLength = (m_thumb == nullptr) ? 0 : m_thumb->GetDesiredSize().height;
+		thumbLength = (m_thumb == nullptr) ? 0 : m_thumb->getDesiredSize().height;
 	}
 	else
 	{
 		trackLength = arrangeSize.width;
-		thumbLength = (m_thumb == nullptr) ? 0 : m_thumb->GetDesiredSize().width;
+		thumbLength = (m_thumb == nullptr) ? 0 : m_thumb->getDesiredSize().width;
 	}
 
 	CoerceLength(thumbLength, trackLength);
@@ -424,7 +424,7 @@ UIScrollEventArgsPtr UIScrollEventArgs::create(Object* sender, float newValue, S
 {
 	if (caching)
 	{
-		detail::EventArgsPool* pool = detail::UIManager::GetInstance()->GetEventArgsPool();
+		detail::EventArgsPool* pool = detail::UIManager::getInstance()->GetEventArgsPool();
 		RefPtr<UIScrollEventArgs> ptr(pool->create<UIScrollEventArgs>(sender, newValue, type), false);
 		return ptr;
 	}
@@ -497,19 +497,19 @@ void UIScrollBar::initialize()
 	vsm->RegisterVisualState(OrientationStates, HorizontalState);
 	vsm->RegisterVisualState(OrientationStates, VerticalState);
 
-	m_track = NewObject<UITrack>();
-	m_lineUpButton = NewObject<UIButton>();
-	m_lineDownButton = NewObject<UIButton>();
+	m_track = newObject<UITrack>();
+	m_lineUpButton = newObject<UIButton>();
+	m_lineDownButton = newObject<UIButton>();
 	AddVisualChild(m_track);
 	AddVisualChild(m_lineUpButton);
 	AddVisualChild(m_lineDownButton);
 
-	m_lineUpButton->SetStyleSubControlName(tr::TypeInfo::GetTypeInfo<UIScrollBar>()->GetName(), _T("LineUpButton"));
-	m_lineDownButton->SetStyleSubControlName(tr::TypeInfo::GetTypeInfo<UIScrollBar>()->GetName(), _T("LineDownButton"));
+	m_lineUpButton->SetStyleSubControlName(tr::TypeInfo::getTypeInfo<UIScrollBar>()->getName(), _T("LineUpButton"));
+	m_lineDownButton->SetStyleSubControlName(tr::TypeInfo::getTypeInfo<UIScrollBar>()->getName(), _T("LineDownButton"));
 
 	// TODO:
-	m_lineUpButton->SetSize(Size(16, 16));
-	m_lineDownButton->SetSize(Size(16, 16));
+	m_lineUpButton->setSize(Size(16, 16));
+	m_lineDownButton->setSize(Size(16, 16));
 
 	SetOrientation(Orientation::Horizontal);
 }
@@ -540,9 +540,9 @@ Orientation UIScrollBar::GetOrientation() const
 }
 
 //------------------------------------------------------------------------------
-void UIScrollBar::SetValue(float value)
+void UIScrollBar::setValue(float value)
 {
-	m_track->SetValue(value);
+	m_track->setValue(value);
 }
 
 //------------------------------------------------------------------------------
@@ -597,7 +597,7 @@ void UIScrollBar::OnRoutedEvent(UIEventArgs* e)
 	else if (e->getType() == UIThumb::DragDeltaEventId)
 	{
 		auto* e2 = static_cast<UIDragDeltaEventArgs*>(e);
-		UpdateValue(e2->horizontalChange, e2->verticalChange);
+		updateValue(e2->horizontalChange, e2->verticalChange);
 
 		auto args = UIScrollEventArgs::create(this, m_track->getValue(), ScrollEventType::ThumbTrack);
 		RaiseEvent(ScrollEventId, this, args);
@@ -625,16 +625,16 @@ void UIScrollBar::OnRoutedEvent(UIEventArgs* e)
 }
 
 //------------------------------------------------------------------------------
-Size UIScrollBar::MeasureOverride(const Size& constraint)
+Size UIScrollBar::measureOverride(const Size& constraint)
 {
-	m_track->MeasureLayout(constraint);
-	m_lineUpButton->MeasureLayout(constraint);
-	m_lineDownButton->MeasureLayout(constraint);
-	return UIControl::MeasureOverride(constraint);
+	m_track->measureLayout(constraint);
+	m_lineUpButton->measureLayout(constraint);
+	m_lineDownButton->measureLayout(constraint);
+	return UIControl::measureOverride(constraint);
 }
 
 //------------------------------------------------------------------------------
-Size UIScrollBar::ArrangeOverride(const Size& finalSize)
+Size UIScrollBar::arrangeOverride(const Size& finalSize)
 {
 	Size upSize;
 	Size downSize;
@@ -643,23 +643,23 @@ Size UIScrollBar::ArrangeOverride(const Size& finalSize)
 	switch (orientation)
 	{
 	case Orientation::Horizontal:
-		upSize = m_lineUpButton->GetDesiredSize();
-		downSize = m_lineUpButton->GetDesiredSize();
-		m_lineUpButton->ArrangeLayout(Rect(0, 0, upSize.width, finalSize.height));
-		m_lineDownButton->ArrangeLayout(Rect(finalSize.width - downSize.width, 0, downSize.width, finalSize.height));
-		m_track->ArrangeLayout(Rect(upSize.width, 0, finalSize.width - upSize.width - downSize.width, finalSize.height));
+		upSize = m_lineUpButton->getDesiredSize();
+		downSize = m_lineUpButton->getDesiredSize();
+		m_lineUpButton->arrangeLayout(Rect(0, 0, upSize.width, finalSize.height));
+		m_lineDownButton->arrangeLayout(Rect(finalSize.width - downSize.width, 0, downSize.width, finalSize.height));
+		m_track->arrangeLayout(Rect(upSize.width, 0, finalSize.width - upSize.width - downSize.width, finalSize.height));
 		break;
 	case Orientation::Vertical:
-		m_track->ArrangeLayout(Rect(0, 0, finalSize));
-		m_lineUpButton->ArrangeLayout(Rect(0, 0, finalSize.width, m_lineUpButton->GetDesiredSize().height));
-		m_lineDownButton->ArrangeLayout(Rect(0, finalSize.height - m_lineDownButton->GetDesiredSize().height, finalSize.width, m_lineDownButton->GetDesiredSize().height));
+		m_track->arrangeLayout(Rect(0, 0, finalSize));
+		m_lineUpButton->arrangeLayout(Rect(0, 0, finalSize.width, m_lineUpButton->getDesiredSize().height));
+		m_lineDownButton->arrangeLayout(Rect(0, finalSize.height - m_lineDownButton->getDesiredSize().height, finalSize.width, m_lineDownButton->getDesiredSize().height));
 		break;
 	default:
 		LN_NOTIMPLEMENTED();
 		break;
 	}
 
-	return UIControl::ArrangeOverride(finalSize);
+	return UIControl::arrangeOverride(finalSize);
 }
 
 //------------------------------------------------------------------------------
@@ -672,12 +672,12 @@ Size UIScrollBar::ArrangeOverride(const Size& finalSize)
 //}
 
 //------------------------------------------------------------------------------
-void UIScrollBar::UpdateValue(float horizontalDragDelta, float verticalDragDelta)
+void UIScrollBar::updateValue(float horizontalDragDelta, float verticalDragDelta)
 {
 	float valueDelta = m_track->ValueFromDistance(horizontalDragDelta, verticalDragDelta);
 
 	float newValue = m_dragStartValue + valueDelta;
-	m_track->SetValue(newValue);
+	m_track->setValue(newValue);
 
 	// TODO:
 	//RefPtr<ScrollEventArgs> args(m_manager->GetEventArgsPool()->Create<ScrollEventArgs>(newValue, ScrollEventType::ThumbTrack), false);
@@ -715,34 +715,34 @@ void UIScrollViewer::initialize()
 {
 	UIControl::initialize();
 
-	m_horizontalScrollBar = NewObject<UIScrollBar>();
+	m_horizontalScrollBar = newObject<UIScrollBar>();
 	m_horizontalScrollBar->SetOrientation(Orientation::Horizontal);
-	m_verticalScrollBar = NewObject<UIScrollBar>();
+	m_verticalScrollBar = newObject<UIScrollBar>();
 	m_verticalScrollBar->SetOrientation(Orientation::Vertical);
 	AddVisualChild(m_horizontalScrollBar);
 	AddVisualChild(m_verticalScrollBar);
 }
 
 //------------------------------------------------------------------------------
-Size UIScrollViewer::MeasureOverride(const Size& constraint)
+Size UIScrollViewer::measureOverride(const Size& constraint)
 {
-	Size desiredSize = UIControl::MeasureOverride(constraint);
+	Size desiredSize = UIControl::measureOverride(constraint);
 
-	desiredSize.width += m_verticalScrollBar->GetWidth();
-	desiredSize.height += m_horizontalScrollBar->GetHeight();
+	desiredSize.width += m_verticalScrollBar->getWidth();
+	desiredSize.height += m_horizontalScrollBar->getHeight();
 
 	return desiredSize;
 }
 
 //------------------------------------------------------------------------------
-Size UIScrollViewer::ArrangeOverride(const Size& finalSize)
+Size UIScrollViewer::arrangeOverride(const Size& finalSize)
 {
-	float barWidth = m_verticalScrollBar->GetWidth();
-	float barHeight = m_horizontalScrollBar->GetHeight();
+	float barWidth = m_verticalScrollBar->getWidth();
+	float barHeight = m_horizontalScrollBar->getHeight();
 
 
 	Size childArea(finalSize.width - barWidth, finalSize.height - barHeight);
-	Size actualSize = UIControl::ArrangeOverride(childArea);
+	Size actualSize = UIControl::arrangeOverride(childArea);
 
 
 	Rect rc;
@@ -751,13 +751,13 @@ Size UIScrollViewer::ArrangeOverride(const Size& finalSize)
 	rc.height = finalSize.height - barHeight;
 	rc.x = finalSize.width - barWidth;
 	rc.y = 0;
-	m_verticalScrollBar->ArrangeLayout(rc);
+	m_verticalScrollBar->arrangeLayout(rc);
 
 	rc.width = finalSize.width - barWidth;
 	rc.height = barHeight;
 	rc.x = 0;
 	rc.y = finalSize.height - barHeight;
-	m_horizontalScrollBar->ArrangeLayout(rc);
+	m_horizontalScrollBar->arrangeLayout(rc);
 
 	if (m_scrollTarget != nullptr)
 	{

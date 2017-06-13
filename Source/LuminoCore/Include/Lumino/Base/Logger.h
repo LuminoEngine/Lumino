@@ -14,7 +14,7 @@
 #define LN_FUNC_MACRO		__PRETTY_FUNCTION__
 #endif
 
-#define LN_LOG(level)		!(::ln::detail::Logger::GetInstance() && ::ln::detail::Logger::GetInstance()->CheckLevel(level)) ? (void)0 : (*::ln::detail::Logger::GetInstance()) += ::ln::detail::LogRecord(level, __FILE__, LN_FUNC_MACRO, __LINE__)
+#define LN_LOG(level)		!(::ln::detail::Logger::getInstance() && ::ln::detail::Logger::getInstance()->CheckLevel(level)) ? (void)0 : (*::ln::detail::Logger::getInstance()) += ::ln::detail::LogRecord(level, __FILE__, LN_FUNC_MACRO, __LINE__)
 #define LN_LOG_FATAL		LN_LOG(::ln::LogLevel::Fatal)
 #define LN_LOG_ERROR		LN_LOG(::ln::LogLevel::Error)
 #define LN_LOG_WARNING		LN_LOG(::ln::LogLevel::Warning)
@@ -86,13 +86,13 @@ class LogRecord
 {
 public:
 	LogRecord(LogLevel level, const char* file, const char* func, int line);
-	const LogTime& GetTime() const { return m_time; }
+	const LogTime& getTime() const { return m_time; }
 	LogLevel GetLevel() const { return m_level; }
 	const char* getMessage() const;
 	const char* GetFile() const { return m_file; }
 	const char* GetFunc() const { return m_func; }
 	int GetLine() const { return m_line; }
-	unsigned int GetThreadId() const { return m_threadId; }
+	unsigned int getThreadId() const { return m_threadId; }
 
 
 	LogRecord& operator<<(const wchar_t* str);
@@ -118,7 +118,7 @@ private:
 class Logger
 {
 public:
-	static Logger* GetInstance();
+	static Logger* getInstance();
 	bool CheckLevel(LogLevel level);
 	void operator+=(const LogRecord& record);
 };

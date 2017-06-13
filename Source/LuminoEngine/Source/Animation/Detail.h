@@ -9,8 +9,8 @@ namespace detail
 class IAnimationTargetAttribute
 {
 public:
-	virtual const String& GetAnimationTargetName() const = 0;
-	virtual void SetAnimationTargetValue(ValueType type, const void* value) = 0;
+	virtual const String& getAnimationTargetName() const = 0;
+	virtual void setAnimationTargetValue(ValueType type, const void* value) = 0;
 
 protected:
 	virtual ~IAnimationTargetAttribute() = default;
@@ -20,8 +20,8 @@ protected:
 class IAnimationTargetElement
 {
 public:
-	virtual int GetAnimationTargetAttributeCount() const = 0;
-	virtual IAnimationTargetAttribute* GetAnimationTargetAttribute(int index) = 0;
+	virtual int getAnimationTargetAttributeCount() const = 0;
+	virtual IAnimationTargetAttribute* getAnimationTargetAttribute(int index) = 0;
 
 protected:
 	virtual ~IAnimationTargetElement() = default;

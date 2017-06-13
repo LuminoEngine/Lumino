@@ -14,7 +14,7 @@ class UIRangeBase
 public:
 
 	/** スクロール位置に対する値を設定します。*/
-	void SetValue(float value);
+	void setValue(float value);
 
 	/** スクロール位置に対する値を取得します。規定値は 0 です。*/
 	float getValue() const;

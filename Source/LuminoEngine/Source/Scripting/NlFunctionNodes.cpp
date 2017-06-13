@@ -10,7 +10,7 @@ LN_NAMESPACE_BEGIN
 
 static void NlVariant_AddInt32(NlVariant* lhs, NlVariant* rhs, NlVariant* outResult)
 {
-	outResult->SetValue(lhs->getValue<int32_t>() + rhs->getValue<int32_t>());
+	outResult->setValue(lhs->getValue<int32_t>() + rhs->getValue<int32_t>());
 }
 
 using OpFunc = void(NlVariant* lhs, NlVariant* rhs, NlVariant* outResult);
@@ -31,8 +31,8 @@ NlNode_Add::NlNode_Add()
 //------------------------------------------------------------------------------
 void NlNode_Add::execute(NlContext* sc)
 {
-	NlVariant* lhs = sc->Evaluate(m_inputLhsPin);
-	NlVariant* rhs = sc->Evaluate(m_inputRhsPin);
+	NlVariant* lhs = sc->evaluate(m_inputLhsPin);
+	NlVariant* rhs = sc->evaluate(m_inputRhsPin);
 	NlVariant_AddInt32(lhs, rhs, m_outputPin->GetValueCache());
 }
 

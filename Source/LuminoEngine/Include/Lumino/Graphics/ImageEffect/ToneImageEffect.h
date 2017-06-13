@@ -21,15 +21,15 @@ public:
 public:
 	static ToneImageEffectPtr create();
 
-	void SetTone(const ToneF& tone);
+	void setTone(const ToneF& tone);
 
-	void ChangeTone(const ToneF& tone, double time);
+	void changeTone(const ToneF& tone, double time);
 
 protected:
 	ToneImageEffect();
 	virtual ~ToneImageEffect();
 	void initialize(detail::GraphicsManager* manager);
-	virtual void OnRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
+	virtual void onRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
 private:
 	RefPtr<Material>	m_material;

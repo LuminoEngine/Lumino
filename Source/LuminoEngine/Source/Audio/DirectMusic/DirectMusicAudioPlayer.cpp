@@ -37,46 +37,46 @@ DirectMusicAudioPlayer::~DirectMusicAudioPlayer()
 //------------------------------------------------------------------------------
 void DirectMusicAudioPlayer::initialize(AudioStream* audioStream, bool enable3d)
 {
-	m_midiDecoder = dynamic_cast<MidiDecoder*>(audioStream->GetDecoder());
+	m_midiDecoder = dynamic_cast<MidiDecoder*>(audioStream->getDecoder());
 	LN_THROW(m_midiDecoder != NULL, ArgumentException);
 
 	AudioPlayer::initialize(audioStream, enable3d);
 
 	// オンメモリ再生用に内部に持ってるバッファを埋める
-	m_midiDecoder->FillOnmemoryBuffer();
+	m_midiDecoder->fillOnmemoryBuffer();
 
-	if (DirectMusicManager::GetInstance()->IsInitialized() && !m_segment)
+	if (DirectMusicManager::getInstance()->isInitialized() && !m_segment)
 	{
 		m_segment = LN_NEW DirectMusicSegment(
-			DirectMusicManager::GetInstance(),
-			DirectMusicManager::GetInstance()->CreateDMPerformance(),
+			DirectMusicManager::getInstance(),
+			DirectMusicManager::getInstance()->createDMPerformance(),
 			m_midiDecoder);
 	}
 }
 
 //------------------------------------------------------------------------------
-void DirectMusicAudioPlayer::SetVolume(float volume)
+void DirectMusicAudioPlayer::setVolume(float volume)
 {
-	AudioPlayer::SetVolume(volume);
+	AudioPlayer::setVolume(volume);
 	if (m_segment) {
-		m_segment->SetVolume(mVolume);
+		m_segment->setVolume(mVolume);
 	}
 }
 
 //------------------------------------------------------------------------------
-void DirectMusicAudioPlayer::SetPitch(float pitch)
+void DirectMusicAudioPlayer::setPitch(float pitch)
 {
-	AudioPlayer::SetPitch(pitch);
+	AudioPlayer::setPitch(pitch);
 	if (m_segment) {
-		m_segment->SetPitch(mPitch);
+		m_segment->setPitch(mPitch);
 	}
 }
 
 //------------------------------------------------------------------------------
-uint64_t DirectMusicAudioPlayer::GetPlayedSamples() const
+uint64_t DirectMusicAudioPlayer::getPlayedSamples() const
 {
 	if (m_segment) {
-		return m_segment->GetPlayPosition();
+		return m_segment->getPlayPosition();
 	}
 	return 0;
 }
@@ -84,19 +84,19 @@ uint64_t DirectMusicAudioPlayer::GetPlayedSamples() const
 //------------------------------------------------------------------------------
 // 
 //------------------------------------------------------------------------------
-void DirectMusicAudioPlayer::SetLoopState(uint32_t loopBegin, uint32_t loopLength)
+void DirectMusicAudioPlayer::setLoopState(uint32_t loopBegin, uint32_t loopLength)
 {
 	mLoopBegin = loopBegin;
 	mLoopLength = loopLength;
 }
 
 //------------------------------------------------------------------------------
-void DirectMusicAudioPlayer::Play()
+void DirectMusicAudioPlayer::play()
 {
-	if (!DirectMusicManager::GetInstance()->IsInitialized())
+	if (!DirectMusicManager::getInstance()->isInitialized())
 	{
 		// 同じものは追加されないのでこのままで OK
-		DirectMusicManager::GetInstance()->AddPlayRequest(this);
+		DirectMusicManager::getInstance()->addPlayRequest(this);
 		return;
 	}
 
@@ -105,17 +105,17 @@ void DirectMusicAudioPlayer::Play()
 }
 
 //------------------------------------------------------------------------------
-void DirectMusicAudioPlayer::Stop()
+void DirectMusicAudioPlayer::stop()
 {
 	if (m_segment) {
-		m_segment->Stop();
+		m_segment->stop();
 	}
 	mIsPlaying = false;
 	mIsPausing = false;
 }
 
 //------------------------------------------------------------------------------
-void DirectMusicAudioPlayer::Pause(bool isPause)
+void DirectMusicAudioPlayer::pause(bool isPause)
 {
 	// 再生中の場合
 	if (mIsPlaying)
@@ -124,22 +124,22 @@ void DirectMusicAudioPlayer::Pause(bool isPause)
 		if (isPause && !mIsPausing)
 		{
 			// 現在の演奏位置を記憶して停止
-			m_pauseTime = m_segment->GetPlayPosition();
-			m_segment->Stop();
+			m_pauseTime = m_segment->getPlayPosition();
+			m_segment->stop();
 			mIsPausing = true;
 		}
 		else if (!isPause && mIsPausing)
 		{
 			// 一時停止した時の再生位置に移動
-			m_segment->SetPlayPosition(m_pauseTime);
-			m_segment->Play();
+			m_segment->setPlayPosition(m_pauseTime);
+			m_segment->play();
 			mIsPausing = false;
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
-bool DirectMusicAudioPlayer::Polling()
+bool DirectMusicAudioPlayer::polling()
 {
 	// 再生中ではない場合は中断
 	if (!mIsPlaying) {
@@ -159,9 +159,9 @@ bool DirectMusicAudioPlayer::Polling()
 			// TotalTime() も実際に音が鳴る長さよりも若干短くなってしまっている。
 			// (DirectMusic の仕様？というか、バグな気もする…)
 			// そのため、音が鳴っている事と、再生位置による二重判定を行う。
-			if (!m_segment->IsPlaying() && m_segment->GetPlayPosition() >= m_segment->GetTotalTime())
+			if (!m_segment->isPlaying() && m_segment->getPlayPosition() >= m_segment->getTotalTime())
 			{
-				Stop();
+				stop();
 				return false;
 			}
 		}
@@ -175,7 +175,7 @@ uint32_t DirectMusicAudioPlayer::getTotalTime() const
 {
 	if (m_segment) // 未初期化対策
 	{
-		return m_segment->GetTotalTime();
+		return m_segment->getTotalTime();
 	}
 	return 0;
 }
@@ -183,11 +183,11 @@ uint32_t DirectMusicAudioPlayer::getTotalTime() const
 //------------------------------------------------------------------------------
 void DirectMusicAudioPlayer::onFinishDMInit(IDirectMusicPerformance8* dmPerformance)
 {
-	m_segment = LN_NEW DirectMusicSegment(DirectMusicManager::GetInstance(), dmPerformance, m_midiDecoder);
+	m_segment = LN_NEW DirectMusicSegment(DirectMusicManager::getInstance(), dmPerformance, m_midiDecoder);
 
 	// 初期化中に設定されたパラメータを再設定する
-	SetVolume(mVolume);
-	SetPitch(mPitch);
+	setVolume(mVolume);
+	setPitch(mPitch);
 
 	_play();
 }
@@ -196,13 +196,13 @@ void DirectMusicAudioPlayer::onFinishDMInit(IDirectMusicPerformance8* dmPerforma
 void DirectMusicAudioPlayer::_play()
 {
 	// とりあえず停止
-	Stop();
+	stop();
 
 	if (!m_segment)
 	{
 		m_segment = LN_NEW DirectMusicSegment(
-			DirectMusicManager::GetInstance(),
-			DirectMusicManager::GetInstance()->CreateDMPerformance(),
+			DirectMusicManager::getInstance(),
+			DirectMusicManager::getInstance()->createDMPerformance(),
 			m_midiDecoder);
 
 		// ちなみに setAudioSource() で作成するのはダメ。
@@ -218,17 +218,17 @@ void DirectMusicAudioPlayer::_play()
 		// MIDI のループ位置計算は他のとはちょっと違うのでここで、mLoopBegin とかには格納せずここで計算してしまう
 		uint32_t cc111time;
 		uint32_t base_time;
-		m_midiDecoder->GetLoopState(&cc111time, &base_time);
+		m_midiDecoder->setLoopState(&cc111time, &base_time);
 
 		uint32_t begin = cc111time * LN_MUSIC_TIME_BASE / base_time;
-		m_segment->SetLoopState(true, begin, 0);	// length=0 で終端まで再生する
+		m_segment->setLoopState(true, begin, 0);	// length=0 で終端まで再生する
 	}
 	// ループ再生しない場合
 	else {
-		m_segment->SetLoopState(false, 0, 0);
+		m_segment->setLoopState(false, 0, 0);
 	}
 
-	m_segment->Play();
+	m_segment->play();
 
 	mIsPlaying = true;
 	mIsPausing = false;

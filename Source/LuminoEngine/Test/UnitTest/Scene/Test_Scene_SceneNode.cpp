@@ -16,7 +16,7 @@ TEST_F(Test_Scene_SceneNode, Visible)
 	{
 		// 1度書いて、初期状態のときの描画数を覚えておく
 		Engine::Update();
-		//int defaultCount = EngineDiag::GetVisualNodeDrawCount();
+		//int defaultCount = EngineDiag::getVisualNodeDrawCount();
 		int defaultCount = Engine::GetWorld2D()->GetRenderingProfiler().GetLastFrameData()->nodeDrawCount;
 
 		auto tex = Texture2D::create(LN_LOCALFILE("TestData/Sprite1.png"));
@@ -78,17 +78,17 @@ TEST_F(Test_Scene_SceneNode, DepthTest)
 //	auto sprite1 = Sprite2DComponent::create(tex);
 //	//auto sprite2 = Sprite2DComponent::create(tex);
 //
-//	sprite1->SetOpacity(0.25f);
+//	sprite1->setOpacity(0.25f);
 //
-//	//sprite2->SetPosition(10, 10);
+//	//sprite2->setPosition(10, 10);
 //
 //	Viewport::GetMainWindowViewport()->SetBackgroundColor(Color32::Gray);
-//	Engine::UpdateFrame();
-//	int defaultCount2 = EngineDiag::GetVisualNodeDrawCount();
+//	Engine::updateFrame();
+//	int defaultCount2 = EngineDiag::getVisualNodeDrawCount();
 //
 //
 //
 //	//ASSERT_TRUE(TestEnv::EqualsScreenShot(LN_LOCALFILE("TestData/IntegrateTest_Scene_Sprite.BlendMode.png")));
-//	TestEnv::SaveScreenShot(LN_LOCALFILE("test.png"));
+//	TestEnv::saveScreenShot(LN_LOCALFILE("test.png"));
 //}
 //

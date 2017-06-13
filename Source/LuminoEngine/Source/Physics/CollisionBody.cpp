@@ -65,14 +65,14 @@ btCollisionShape* BtShapeManager::GetBtCollisionShape()
 {
 	if (m_dirty)
 	{
-		Refresh();
+		refresh();
 		m_dirty = false;
 	}
 	return m_activeShape;
 }
 
 //------------------------------------------------------------------------------
-void BtShapeManager::Refresh()
+void BtShapeManager::refresh()
 {
 	btCollisionShape* shape;
 	if (m_collisionShape->GetCenter() != Vector3::Zero)
@@ -197,11 +197,11 @@ void CollisionBody::initialize()
 {
 	PhysicsObject::initialize();
 	m_initialUpdate = true;
-	detail::EngineDomain::GetPhysicsWorld3D()->AddPhysicsObject(this);
+	detail::EngineDomain::getPhysicsWorld3D()->AddPhysicsObject(this);
 }
 
 //------------------------------------------------------------------------------
-//const Matrix& CollisionBody::GetTransform() const
+//const Matrix& CollisionBody::getTransform() const
 //{
 //	return m_transform;
 //}
@@ -268,11 +268,11 @@ void CollisionBody::OnBeforeStepSimulation()
 	}
 	
 
-	auto* transform = GetTransform();
+	auto* transform = getTransform();
 	if (transform != nullptr)
 	{
 		btTransform t;
-		t.setFromOpenGLMatrix((btScalar*)&transform->GetWorldMatrix());
+		t.setFromOpenGLMatrix((btScalar*)&transform->getWorldMatrix());
 		m_btGhostObject->setWorldTransform(t);
 	}
 }

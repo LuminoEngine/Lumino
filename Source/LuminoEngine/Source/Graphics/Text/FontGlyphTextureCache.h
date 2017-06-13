@@ -110,7 +110,7 @@ public:
 
 	// callby rendering thread
 	int GetVertexCount(Handle info);
-	int GetIndexCount(Handle info);
+	int getIndexCount(Handle info);
 	void GenerateMesh(Handle info, const Vector3& baselineOrigin, const Matrix& transform, Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex);
 
 private:

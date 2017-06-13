@@ -57,7 +57,7 @@ struct ParticleData
 	bool IsActive() const { return spawnTime >= 0.0f && endTime >= 0.0f; }
 	bool IsSleep() const { return endTime <= lastTime; }
 
-	// Active かつ Sleep 状態はありえる。これは、ループ再生OFFで、既に再生が終わっている ParticleData を示す。
+	// Active かつ sleep 状態はありえる。これは、ループ再生OFFで、既に再生が終わっている ParticleData を示す。
 
 	void MakeTrailPointData(const ParticleData& src, float currentTime, float trailTime);
 };
@@ -173,15 +173,15 @@ public:
 
 	//void SetPositionRange(const Vector3& minValue, const Vector3& maxValue, ParticleRandomSource source = ParticleRandomSource::Self) { m_minPosition = minValue; m_maxPosition = maxValue; m_positionRandomSource = source; }
 
-	//void SetVelocity(const Vector3& value) { m_minVelocity = m_maxVelocity = value; }
+	//void setVelocity(const Vector3& value) { m_minVelocity = m_maxVelocity = value; }
 	//void SetAccel(const Vector3& value) { m_minAccel = m_maxAccel = value; }
 
-	void SetSize(float value) { m_minSize = value; m_maxSize = value; }
+	void setSize(float value) { m_minSize = value; m_maxSize = value; }
 
-	void SetSize(float minValue, float maxValue, ParticleRandomSource source = ParticleRandomSource::Self) { m_minSize = minValue; m_maxSize = maxValue; m_sizeRandomSource = source; }
+	void setSize(float minValue, float maxValue, ParticleRandomSource source = ParticleRandomSource::Self) { m_minSize = minValue; m_maxSize = maxValue; m_sizeRandomSource = source; }
 
 	/** パーティクル生成時に使用する乱数シードを設定します。(default: 現在の時間値) */
-	void SetRandomSeed(int seed) { m_rand.SetSeed(seed); }
+	void SetRandomSeed(int seed) { m_rand.setSeed(seed); }
 
 protected:
 	SpriteParticleModel();
@@ -189,13 +189,13 @@ protected:
 	void initialize(detail::GraphicsManager* manager);
 
 public: // TODO
-	void Commit();
+	void commit();
 	RefPtr<detail::SpriteParticleModelInstance> CreateInstane();
 	void UpdateInstance(detail::SpriteParticleModelInstance* instance, float deltaTime, const Matrix& emitterTransform);
 	//detail::ParticleData* GetNextFreeParticleData(float emitterTime);
 	void SpawnParticle(const Matrix& emitterTransform, detail::ParticleData* data, float spawnTime);
 	void SimulateOneParticle(detail::ParticleData* data, double time, const Vector3& viewPosition, const Vector3& viewDirection, detail::SpriteParticleModelInstance* instance);
-	void Render(DrawList* context, detail::SpriteParticleModelInstance* instance, const Matrix& emitterTransform, const Vector3& viewPosition, const Vector3& viewDirection, const Matrix& viewInv, Material* material);
+	void render(DrawList* context, detail::SpriteParticleModelInstance* instance, const Matrix& emitterTransform, const Vector3& viewPosition, const Vector3& viewDirection, const Matrix& viewInv, Material* material);
 
 public: // TODO
 	float MakeRandom(detail::ParticleData* data, float minValue, float maxValue, ParticleRandomSource source);

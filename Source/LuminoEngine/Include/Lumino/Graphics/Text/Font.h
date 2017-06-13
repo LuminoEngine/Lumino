@@ -81,7 +81,7 @@ public:
 	const String& GetFamily() const;
 
 	/** フォントサイズの有効設定 */
-	void SetSize(int size);
+	void setSize(int size);
 
 	/** フォントサイズの取得 */
 	int getSize() const;
@@ -220,23 +220,23 @@ public:
 public:
 
 	/// フォント名の設定
-	virtual void SetName(const String& fontName) = 0;	// TODO: FamiryName
+	virtual void setName(const String& fontName) = 0;	// TODO: FamiryName
 
 	/// フォント名の取得
-	virtual const String& GetName() const = 0;
+	virtual const String& getName() const = 0;
 
 	/// フォントサイズの設定
 	/** フォントサイズは相対的な値で、最終的なレンダリングサイズはフォントによって異なります。*/
-	virtual void SetSize(int size) = 0;
+	virtual void setSize(int size) = 0;
 
 	/// フォントサイズの取得
 	virtual int getSize() const = 0;
 
 	///// フォントカラーの設定
-	//virtual void SetColor(const Graphics::Color& color) = 0;
+	//virtual void setColor(const Graphics::Color& color) = 0;
 
 	///// フォントカラーの取得
-	//virtual const Graphics::Color& GetColor() const = 0;
+	//virtual const Graphics::Color& getColor() const = 0;
 
 	///// エッジカラーの設定
 	//virtual void SetEdgeColor(const Graphics::Color& color) = 0;
@@ -299,7 +299,7 @@ public:
 	virtual Vector2 GetKerning(UTF32 prev, UTF32 next) = 0;
 	virtual void GetGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics) = 0;
 
-	virtual detail::FontManager* GetManager() const = 0;
+	virtual detail::FontManager* getManager() const = 0;
 
 
 LN_CONSTRUCT_ACCESS:

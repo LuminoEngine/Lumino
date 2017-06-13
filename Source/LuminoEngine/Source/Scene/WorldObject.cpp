@@ -16,7 +16,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(WorldObject, Object);
 WorldObjectPtr WorldObject::create()
 {
 	auto ptr = WorldObjectPtr::makeRef();
-	//detail::GameSceneManager::GetInstance()->GetActiveScene()->AddGameObject(ptr);
+	//detail::GameSceneManager::getInstance()->getActiveScene()->addGameObject(ptr);
 	return ptr;
 }
 
@@ -62,26 +62,26 @@ void WorldObject::RemoveFromWorld()
 {
 	if (m_world != nullptr)
 	{
-		m_world->RemoveWorldObject(this);
+		m_world->removeWorldObject(this);
 	}
 }
 
 //------------------------------------------------------------------------------
-//void WorldObject::OnStart()
+//void WorldObject::onStart()
 //{
 //}
 
 //------------------------------------------------------------------------------
-void WorldObject::OnUpdate()
+void WorldObject::onUpdate()
 {
 	for (auto& c : m_components)
 	{
-		c->OnUpdate();
+		c->onUpdate();
 	}
 }
 
 //------------------------------------------------------------------------------
-void WorldObject::OnRender(DrawList* context)
+void WorldObject::onRender(DrawList* context)
 {
 
 }
@@ -92,19 +92,19 @@ void WorldObject::OnDestroy()
 }
 
 //------------------------------------------------------------------------------
-void WorldObject::OnUIEvent(UIEventArgs* e)
+void WorldObject::onUIEvent(UIEventArgs* e)
 {
 	for (auto& c : m_components)
 	{
-		c->OnUIEvent(e);
+		c->onUIEvent(e);
 		if (e->handled) return;
 	}
 }
 
 //------------------------------------------------------------------------------
-void WorldObject::UpdateFrame()
+void WorldObject::updateFrame()
 {
-	//Matrix localMatrix = transform.GetTransformMatrix();
+	//Matrix localMatrix = transform.getTransformMatrix();
 
 	//// グローバル行列結合
 	//if (m_parent != nullptr)
@@ -117,13 +117,13 @@ void WorldObject::UpdateFrame()
 	//}
 
 
-	OnUpdate();
+	onUpdate();
 
-	transform.UpdateWorldMatrix();
+	transform.updateWorldMatrix();
 
 	for (auto& c : m_components)
 	{
-		c->UpdateFrame();
+		c->updateFrame();
 	}
 
 	// 子ノード更新
@@ -131,7 +131,7 @@ void WorldObject::UpdateFrame()
 	for (int i = 0; i < count; )
 	{
 		WorldObject* obj = m_children.getAt(i);
-		obj->UpdateFrame();
+		obj->updateFrame();
 
 		if (obj->m_isAutoRelease && obj->getReferenceCount() == 1)
 		{
@@ -146,13 +146,13 @@ void WorldObject::UpdateFrame()
 }
 
 //------------------------------------------------------------------------------
-void WorldObject::Render(DrawList* context)
+void WorldObject::render(DrawList* context)
 {
-	OnRender(context);
+	onRender(context);
 
 	//for (auto& c : m_components)
 	//{
-	//	c->Render(context);
+	//	c->render(context);
 	//}
 }
 
@@ -184,7 +184,7 @@ WorldObject2D::~WorldObject2D()
 void WorldObject2D::initialize()
 {
 	WorldObject::initialize();
-	detail::EngineDomain::GetDefaultWorld2D()->AddWorldObject(this, true);
+	detail::EngineDomain::getDefaultWorld2D()->addWorldObject(this, true);
 }
 
 
@@ -207,7 +207,7 @@ WorldObject3D::~WorldObject3D()
 void WorldObject3D::initialize()
 {
 	WorldObject::initialize();
-	detail::EngineDomain::GetDefaultWorld3D()->AddWorldObject(this, true);
+	detail::EngineDomain::getDefaultWorld3D()->addWorldObject(this, true);
 }
 
 LN_NAMESPACE_END

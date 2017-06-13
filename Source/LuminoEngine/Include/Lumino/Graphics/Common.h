@@ -436,15 +436,15 @@ public:
 
 	void add(const T& value)
 	{
-		TryGlow(m_count + 1);
+		tryGlow(m_count + 1);
 		memcpy(&m_buffer[sizeof(T) * m_count], &value, sizeof(T));
 		m_count++;
 	}
 
-	T* Request(int count)
+	T* request(int count)
 	{
-		TryGlow(m_count + count);
-		size_t begin = GetBufferUsedByteCount();
+		tryGlow(m_count + count);
+		size_t begin = getBufferUsedByteCount();
 		m_count += count;
 		return reinterpret_cast<T*>(m_buffer.getData() + begin);
 	}
@@ -458,11 +458,11 @@ public:
 	T& getLast() { return getAt(m_count - 1); }
 
 	int getCount() const { return m_count; }
-	byte_t* GetBuffer() { return m_buffer.getData(); }
-	size_t GetBufferUsedByteCount() { return m_count * sizeof(T); }
+	byte_t* getBuffer() { return m_buffer.getData(); }
+	size_t getBufferUsedByteCount() { return m_count * sizeof(T); }
 
 private:
-	void TryGlow(int requestCount)
+	void tryGlow(int requestCount)
 	{
 		if (/*m_count + */requestCount > m_capacity)
 		{
@@ -486,11 +486,11 @@ public:
 
 	void reserve(size_t dataCount, size_t byteCount);
 	void clear();
-	DataHandle AllocData(size_t byteCount, const void* data = nullptr);
+	DataHandle allocData(size_t byteCount, const void* data = nullptr);
 	byte_t* getData(DataHandle handle);
 
-	int GetDataCount() const { return m_dataList.getCount(); }
-	byte_t* GetDataByIndex(int index) { return getData(m_dataList[index]); }
+	int getDataCount() const { return m_dataList.getCount(); }
+	byte_t* getDataByIndex(int index) { return getData(m_dataList[index]); }
 
 private:
 	List<DataHandle>		m_dataList;

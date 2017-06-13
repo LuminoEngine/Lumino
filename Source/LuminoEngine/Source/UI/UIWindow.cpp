@@ -14,7 +14,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIWindow, UIControl)
 //------------------------------------------------------------------------------
 RefPtr<UIWindow> UIWindow::create()
 {
-	return NewObject<UIWindow>();
+	return newObject<UIWindow>();
 }
 
 //------------------------------------------------------------------------------
@@ -76,7 +76,7 @@ void UIWindow::OnRoutedEvent(UIEventArgs* e)
 			auto mouseEvent = static_cast<UIMouseEventArgs*>(e);
 			Vector2 diff = mouseEvent->getPosition(GetVisualParent()) - m_dragStartLocalPosition;
 
-			SetPosition(m_dragStartWindowPosition + diff);
+			setPosition(m_dragStartWindowPosition + diff);
 			
 			
 
@@ -102,11 +102,11 @@ void UIWindow::OnLayoutPanelChanged(UILayoutPanel* newPanel)
 }
 
 //------------------------------------------------------------------------------
-void UIWindow::OnRender(DrawingContext* g)
+void UIWindow::onRender(DrawingContext* g)
 {
-	UIControl::OnRender(g);
-	//g->SetBlendMode(BlendMode::Alpha);
-	////g->SetBrush(Brush::White);
+	UIControl::onRender(g);
+	//g->setBlendMode(BlendMode::Alpha);
+	////g->setBrush(Brush::White);
 	//////g->DrawBoxBorder(
 	//////	RectF(10, 10, 300, 200), ThicknessF(3, 3, 3, 3), Color::Red, Color::Green, Color::Blue, Color::Cyan, 0, 10, 20, 30,
 	//////	Color::Gray, 5, 5, false);	// TODO:
@@ -139,7 +139,7 @@ void UIWindow::OnRender(DrawingContext* g)
 	//	RectF(10, 200, 300, 50), ThicknessF(1, 1, 1, 1),
 	//	Color::OrangeRed, Color::OrangeRed, Color::OrangeRed, Color::OrangeRed,
 	//	20, 20, 20, 20, BorderDirection::Inside,
-	//	Color::OrangeRed.WithAlpha(0.25), 5, 5, ShadowDirection::Outside);	// TODO:
+	//	Color::OrangeRed.withAlpha(0.25), 5, 5, ShadowDirection::Outside);	// TODO:
 
 	//g->DrawBoxBorder(
 	//	RectF(10, 70, 300, 50), ThicknessF(8, 2, 8, 8),

@@ -19,7 +19,7 @@ class TypeInfoManager
 {
 public:
 	// VS2017 で map や unordered_map を static 領域に置くと落ちてしまうようなので、インスタンスはヒープに置く
-	static TypeInfoManager* GetInstance()
+	static TypeInfoManager* getInstance()
 	{
 		//if (m_instance == nullptr)
 		//	m_instance = std::make_shared<TypeInfoManager>();
@@ -32,12 +32,12 @@ public:
 	{
 		//mp = std::make_shared<std::unordered_map<std::string, int>>();
 		//(*mp)["abc"] = 123;
-		//m_typeInfo.insert(std::pair<String, TypeInfo*>(typeInfo->GetName(), typeInfo));
-		m_typeInfo[typeInfo->GetName()] = typeInfo;
+		//m_typeInfo.insert(std::pair<String, TypeInfo*>(typeInfo->getName(), typeInfo));
+		m_typeInfo[typeInfo->getName()] = typeInfo;
 		//mp["abc"] = 123;
 	}
 
-	TypeInfo* FindTypeInfo(const StringRef& typeName)
+	TypeInfo* findTypeInfo(const StringRef& typeName)
 	{
 		auto itr = m_typeInfo.find(typeName);
 		return (itr != m_typeInfo.end()) ? itr->second : nullptr;
@@ -65,7 +65,7 @@ private:
 // ReflectionHelper
 //==============================================================================
 //------------------------------------------------------------------------------
-//void ReflectionHelper::RaiseReflectionEvent(ReflectionObject* obj, ReflectionEventBase* ev, ReflectionEventArgs* e)
+//void ReflectionHelper::raiseReflectionEvent(ReflectionObject* obj, ReflectionEventBase* ev, ReflectionEventArgs* e)
 //{
 //	ev->Raise(e);
 //}
@@ -87,9 +87,9 @@ private:
 */
 
 //------------------------------------------------------------------------------
-TypeInfo* TypeInfo::GetTypeInfo(const ReflectionObject* obj)
+TypeInfo* TypeInfo::getTypeInfo(const ReflectionObject* obj)
 {
-	return ReflectionHelper::GetTypeInfo(obj);
+	return ReflectionHelper::getTypeInfo(obj);
 }
 
 //------------------------------------------------------------------------------
@@ -109,24 +109,24 @@ TypeInfo::TypeInfo(
 	, m_serializeClassVersion(0)
 	, m_internalGroup(0)
 {
-	TypeInfoManager::GetInstance()->RegisterTypeInfo(this);
-	for (auto& arg : args) arg.m_arg.DoSet(this);
+	TypeInfoManager::getInstance()->RegisterTypeInfo(this);
+	for (auto& arg : args) arg.m_arg.doSet(this);
 }
 
 //------------------------------------------------------------------------------
-TypeInfo* TypeInfo::FindTypeInfo(const StringRef& name)
+TypeInfo* TypeInfo::findTypeInfo(const StringRef& name)
 {
-	return TypeInfoManager::GetInstance()->FindTypeInfo(name);
+	return TypeInfoManager::getInstance()->findTypeInfo(name);
 }
 
 //------------------------------------------------------------------------------
-const String& TypeInfo::GetName() const
+const String& TypeInfo::getName() const
 {
 	return m_name;
 }
 
 //------------------------------------------------------------------------------
-void TypeInfo::RegisterProperty(PropertyInfo* prop)
+void TypeInfo::registerProperty(PropertyInfo* prop)
 {
 	if (LN_CHECK_ARG(!prop->m_registerd)) return;
 	m_propertyList.add(prop);
@@ -134,7 +134,7 @@ void TypeInfo::RegisterProperty(PropertyInfo* prop)
 }
 
 //------------------------------------------------------------------------------
-PropertyInfo* TypeInfo::FindProperty(size_t memberOffset) const
+PropertyInfo* TypeInfo::findProperty(size_t memberOffset) const
 {
 	for (PropertyInfo* prop : m_propertyList)
 	{
@@ -147,7 +147,7 @@ PropertyInfo* TypeInfo::FindProperty(size_t memberOffset) const
 }
 
 //------------------------------------------------------------------------------
-void TypeInfo::RegisterReflectionEvent(ReflectionEventInfo* ev)
+void TypeInfo::registerReflectionEvent(ReflectionEventInfo* ev)
 {
 	if (LN_CHECK_ARG(!ev->m_registerd)) return;
 	m_routedEventList.add(ev);
@@ -155,14 +155,14 @@ void TypeInfo::RegisterReflectionEvent(ReflectionEventInfo* ev)
 }
 
 //------------------------------------------------------------------------------
-bool TypeInfo::InvokeReflectionEvent(ReflectionObject* target, const ReflectionEventInfo* ev, ReflectionEventArgs* e)
+bool TypeInfo::invokeReflectionEvent(ReflectionObject* target, const ReflectionEventInfo* ev, ReflectionEventArgs* e)
 {
 	for (ReflectionEventInfo* dynamicEvent : m_routedEventList)
 	{
 		if (dynamicEvent == ev)
 		{
-			// owner に AddHandler されているイベントハンドラを呼び出す。
-			dynamicEvent->CallEvent(target, e);
+			// owner に addHandler されているイベントハンドラを呼び出す。
+			dynamicEvent->callEvent(target, e);
 			return e->handled;	// ev と同じイベントは1つしかリスト内に無いはずなのですぐ return
 		}
 	}
@@ -170,37 +170,37 @@ bool TypeInfo::InvokeReflectionEvent(ReflectionObject* target, const ReflectionE
 	// ベースクラスがあれば、さらにベースクラスを見に行く
 	if (m_baseClass != nullptr)
 	{
-		return m_baseClass->InvokeReflectionEvent(target, ev, e);
+		return m_baseClass->invokeReflectionEvent(target, ev, e);
 	}
 	return false;
 }
 
 //------------------------------------------------------------------------------
-void TypeInfo::SetBindingTypeInfo(void* data)
+void TypeInfo::setBindingTypeInfo(void* data)
 {
 	m_bindingTypeInfoSetter(data);
 }
 
 //------------------------------------------------------------------------------
-void* TypeInfo::GetBindingTypeInfo(const ReflectionObject* obj)
+void* TypeInfo::getBindingTypeInfo(const ReflectionObject* obj)
 {
-	TypeInfo* type = GetTypeInfo(obj);
+	TypeInfo* type = getTypeInfo(obj);
 	return type->m_bindingTypeInfoGetter();
 }
 
 //------------------------------------------------------------------------------
-void TypeInfo::InitializeProperties(ReflectionObject* obj)
+void TypeInfo::initializeProperties(ReflectionObject* obj)
 {
 	for (PropertyInfo* info : m_propertyList)
 	{
-		PropertyBase* prop = info->GetPropertyBase(obj);
+		PropertyBase* prop = info->getPropertyBase(obj);
 		prop->m_owner = obj;
 		prop->m_propId = info;
 	}
 }
 
 //------------------------------------------------------------------------------
-RefPtr<Object> TypeInfo::CreateInstance()
+RefPtr<Object> TypeInfo::createInstance()
 {
 	if (LN_CHECK_STATE(m_factory != nullptr)) return nullptr;
 	return m_factory();

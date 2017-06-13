@@ -33,7 +33,7 @@ GLSwapChain::GLSwapChain()
 //------------------------------------------------------------------------------
 GLSwapChain::~GLSwapChain()
 {
-	OnLostDevice();
+	onLostDevice();
 	LN_SAFE_RELEASE(m_renderTarget);
 	LN_SAFE_RELEASE(m_context);
 	LN_SAFE_RELEASE(m_window);
@@ -51,18 +51,18 @@ void GLSwapChain::initialize(GLGraphicsDevice* device, GLContext* context, Platf
 	m_backBufferSize = m_window->getSize();
 	m_renderTarget = LN_NEW GLRenderTargetTexture(m_backBufferSize, TextureFormat::R8G8B8A8, 1);
 
-	OnResetDevice();
+	onResetDevice();
 }
 
 //------------------------------------------------------------------------------
-void GLSwapChain::OnLostDevice()
+void GLSwapChain::onLostDevice()
 {
 	glDeleteBuffers(1, &m_vertexBuffer);
 	glDeleteVertexArrays(1, &m_vertexArray);
 }
 
 //------------------------------------------------------------------------------
-void GLSwapChain::OnResetDevice()
+void GLSwapChain::onResetDevice()
 {
 	/*	仮のバックバッファを本物のバックバッファに丸ごと転送するため、
 		単に四角形を描画するためのシェーダと頂点バッファを作る。
@@ -126,7 +126,7 @@ void GLSwapChain::Present(ITexture* colorBuffer)
 		m_device->MakeCurrentContext(m_context);
 
 		// colorBuffer をバックバッファに描画する
-		InternalPresent(colorBuffer, static_cast<GLRenderer*>(m_device->GetRenderer()));
+		InternalPresent(colorBuffer, static_cast<GLRenderer*>(m_device->getRenderer()));
 
 		// バックバッファをフロントバッファに転送する
 		m_context->SwapBuffers();

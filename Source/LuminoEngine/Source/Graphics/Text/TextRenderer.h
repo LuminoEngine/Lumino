@@ -31,7 +31,7 @@ public:
 	void initialize(GraphicsManager* manager);
 
 	void SetState(const Matrix& world, const Matrix& viewProj, const SizeI& viewPixelSize);
-	void Render(const GlyphRunData* dataList, int dataCount, FontGlyphTextureCache* cache, Brush* fillBrush);
+	void render(const GlyphRunData* dataList, int dataCount, FontGlyphTextureCache* cache, Brush* fillBrush);
 
 private:
 
@@ -59,7 +59,7 @@ private:
 	void InternalDrawRectangle(const Matrix& transform, const Rect& rect, const Rect& srcUVRect, const Color& color);
 	void flush(FontGlyphTextureCache* cache);
 
-	virtual void OnChangeDevice(Driver::IGraphicsDevice* device) override;
+	virtual void onChangeDevice(Driver::IGraphicsDevice* device) override;
 	void CreateDeviceResources();
 	void ReleaseDeviceResources();
 
@@ -113,11 +113,11 @@ public:
 	void DrawString(const Matrix& transform, const TCHAR* str, int length, const PointF& position);
 	void DrawString(const Matrix& transform, const TCHAR* str, int length, const Rect& rect, StringFormatFlags flags);
 
-	virtual bool IsStandaloneShader() const { return true; }
+	virtual bool isStandaloneShader() const { return true; }
 	virtual void flush() override;
-	virtual void OnActivated() { m_stateModified = true; }
-	virtual void OnDeactivated() { flush(); }
-	virtual void OnSetState(const DrawElementBatch* state);
+	virtual void onActivated() { m_stateModified = true; }
+	virtual void onDeactivated() { flush(); }
+	virtual void onSetState(const DrawElementBatch* state);
 
 public:
 	// TODO: ↓いまは Flush でやるようなことをしている。後で変更したい。
@@ -160,7 +160,7 @@ public:
 	void initialize(GraphicsManager* manager);
 
 	void RequestBuffers(int vertexCount, int indexCount, Vertex** vb, uint16_t** ib, uint16_t* outBeginVertexIndex);
-	void Render(const VectorGlyphData* dataList, int dataCount, VectorFontGlyphCache* cache, Brush* fillBrush);
+	void render(const VectorGlyphData* dataList, int dataCount, VectorFontGlyphCache* cache, Brush* fillBrush);
 
 private:
 	GraphicsManager*		m_manager;
@@ -184,13 +184,13 @@ public:
 	void DrawString(const Matrix& transform, const UTF32* str, int length, const Rect& rect, TextLayoutOptions options);
 	void DrawChar(const Matrix& transform, UTF32 ch, const Rect& rect, TextLayoutOptions options);
 
-	virtual bool IsStandaloneShader() const { return false; }
+	virtual bool isStandaloneShader() const { return false; }
 	virtual void flush() override;
-	virtual void OnActivated() override {}
-	virtual void OnDeactivated() override { flush(); }
-	virtual void OnSetState(const DrawElementBatch* state);
+	virtual void onActivated() override {}
+	virtual void onDeactivated() override { flush(); }
+	virtual void onSetState(const DrawElementBatch* state);
 
-	GraphicsManager* GetManager() const { return m_manager; }
+	GraphicsManager* getManager() const { return m_manager; }
 
 private:
 	void DrawInternal(const Matrix& transform);

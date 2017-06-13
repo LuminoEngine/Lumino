@@ -11,10 +11,10 @@ public:
 
 	static void ForEachVisualChildren(UIElement* element, std::function<void(UIElement* child)> func)
 	{
-		int count = element->GetVisualChildrenCount();
+		int count = element->getVisualChildrenCount();
 		for (int i = 0; i < count; ++i)
 		{
-			func(static_cast<UIElement*>(element->GetVisualChild(i)));
+			func(static_cast<UIElement*>(element->getVisualChild(i)));
 		}
 	}
 

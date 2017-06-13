@@ -32,7 +32,7 @@ public:
 	*/
 	SizeI getSize() const { return m_clientSize; }
 
-	virtual void SetSize(const SizeI& size) = 0;
+	virtual void setSize(const SizeI& size) = 0;
 
 	virtual void SetVisible(bool visible) = 0;
 

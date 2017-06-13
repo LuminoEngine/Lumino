@@ -124,10 +124,10 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	UIElementCollection* GetChildren() const { return m_children; }
 
 	// UIElement interface
-	virtual int GetVisualChildrenCount() const override;
-	virtual UIElement* GetVisualChild(int index) const override;
-	virtual Size MeasureOverride(const Size& constraint) override;
-	virtual Size ArrangeOverride(const Size& finalSize) override;
+	virtual int getVisualChildrenCount() const override;
+	virtual UIElement* getVisualChild(int index) const override;
+	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
 
 	// IUIElementCollectionOwner interface
 	virtual void OnChildCollectionChanged(const tr::ChildCollectionChangedArgs& e) override;
@@ -175,8 +175,8 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	void initialize();
 
 	// UIElement interface
-	virtual Size MeasureOverride(const Size& constraint) override;
-	virtual Size ArrangeOverride(const Size& finalSize) override;
+	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
 
 private:
 	Orientation	m_orientation;
@@ -198,8 +198,8 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	void initialize();
 
 	// UIElement interface
-	virtual Size MeasureOverride(const Size& constraint) override;
-	virtual Size ArrangeOverride(const Size& finalSize) override;
+	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
 
 private:
 };
@@ -237,8 +237,8 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	void initialize();
 
 	// UIElement interface
-	virtual Size MeasureOverride(const Size& constraint) override;
-	virtual Size ArrangeOverride(const Size& finalSize) override;
+	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
 
 	// ILayoutPanel interface
 	virtual int GetLayoutGridColumnDefinitionCount() override;

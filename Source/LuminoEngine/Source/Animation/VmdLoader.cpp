@@ -73,20 +73,20 @@ bool VmdLoader::load(Stream* stream)
 
 			// アニメーション作成、キー追加
 			anim.AnimationCurve = RefPtr<VMDBezierSQTTransformAnimation2>::makeRef();
-			anim.AnimationCurve->AddFrame(frame);
+			anim.AnimationCurve->addFrame(frame);
 			m_boneAnimationList.add(anim);
 		}
 		// すでにあるボーン
 		else
 		{
-			m_boneAnimationList[(itr->second)].AnimationCurve->AddFrame(frame);
+			m_boneAnimationList[(itr->second)].AnimationCurve->addFrame(frame);
 		}
 	}
 
 	// キーフレーム順にソート
 	for (BoneAnimation& anim : m_boneAnimationList)
 	{
-		anim.AnimationCurve->SortKeyFrame();
+		anim.AnimationCurve->sortKeyFrame();
 	}
 
 	//-----------------------------------------------------
@@ -118,13 +118,13 @@ bool VmdLoader::load(Stream* stream)
 
 			// アニメーション作成、キー追加
 			anim.AnimationCurve = RefPtr<FloatAnimationCurve>::makeRef();
-			anim.AnimationCurve->AddKeyFrame(vmdFace.ulFrameNo, vmdFace.fFactor);
+			anim.AnimationCurve->addKeyFrame(vmdFace.ulFrameNo, vmdFace.fFactor);
 			m_faceAnimationList.add(anim);
 		}
 		// すでにある表情
 		else
 		{
-			m_faceAnimationList[(itr->second)].AnimationCurve->AddKeyFrame(
+			m_faceAnimationList[(itr->second)].AnimationCurve->addKeyFrame(
 				vmdFace.ulFrameNo, vmdFace.fFactor);
 		}
 	}
@@ -132,7 +132,7 @@ bool VmdLoader::load(Stream* stream)
 	// キーフレーム順にソート
 	//for (FaceAnimation& anim : m_faceAnimationList)
 	//{
-	//	anim.AnimationCurve->SortKeyFrame();
+	//	anim.AnimationCurve->sortKeyFrame();
 	//}
 	return true;
 }

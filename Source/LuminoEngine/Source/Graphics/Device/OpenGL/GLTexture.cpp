@@ -69,7 +69,7 @@ GLTexture::GLTexture(const SizeI& size, TextureFormat format, bool mipmap)
 	, m_pixelFormat(GL_NONE)
 	, m_elementType(GL_NONE)
 {
-	OnResetDevice();
+	onResetDevice();
 }
 
 //------------------------------------------------------------------------------
@@ -81,11 +81,11 @@ GLTexture::GLTexture(const SizeI& size, TextureFormat format, bool mipmap)
 //------------------------------------------------------------------------------
 GLTexture::~GLTexture()
 {
-	OnLostDevice();
+	onLostDevice();
 }
 
 //------------------------------------------------------------------------------
-void GLTexture::OnLostDevice()
+void GLTexture::onLostDevice()
 {
 	if (m_glTexture != 0)
 	{
@@ -95,7 +95,7 @@ void GLTexture::OnLostDevice()
 }
 
 //------------------------------------------------------------------------------
-void GLTexture::OnResetDevice()
+void GLTexture::onResetDevice()
 {
 	// http://marina.sys.wakayama-u.ac.jp/~tokoi/?date=20040914
 
@@ -127,14 +127,14 @@ void GLTexture::SetSamplerState(const SamplerState& state)
 }
 
 //------------------------------------------------------------------------------
-void GLTexture::SetSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize)
+void GLTexture::setSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize)
 {
-	//LN_THROW(point.IsZero(), NotImplementedException);
+	//LN_THROW(point.isZero(), NotImplementedException);
 
 	// ※同一フォーマットであることが前提
 
 	// フォーマットが同一ならそのまま転送すればよい
-	//if (bitmap->GetPixelFormat() == Utils::TranslatePixelFormat(m_format))
+	//if (bitmap->getPixelFormat() == Utils::translatePixelFormat(m_format))
 	{
 		// テクスチャフォーマット選択
 		GLenum internalFormat, pixelFormat, elementType;
@@ -179,16 +179,16 @@ void GLTexture::getData(const RectI& rect, void* outData)
 }
 
 //------------------------------------------------------------------------------
-Bitmap* GLTexture::Lock()
+Bitmap* GLTexture::lock()
 {
-	m_lockedTexture.attach(LN_NEW Bitmap(m_size, Utils::TranslatePixelFormat(m_format)));
+	m_lockedTexture.attach(LN_NEW Bitmap(m_size, Utils::translatePixelFormat(m_format)));
 	return m_lockedTexture;
 }
 
 //------------------------------------------------------------------------------
-void GLTexture::Unlock()
+void GLTexture::unlock()
 {
-	SetSubData(PointI(0, 0), m_lockedTexture->GetBitmapBuffer()->getConstData(), m_lockedTexture->GetBitmapBuffer()->getSize(), m_size);
+	setSubData(PointI(0, 0), m_lockedTexture->getBitmapBuffer()->getConstData(), m_lockedTexture->getBitmapBuffer()->getSize(), m_size);
 	m_lockedTexture.safeRelease();
 }
 
@@ -206,18 +206,18 @@ GLRenderTargetTexture::GLRenderTargetTexture(const SizeI& size, TextureFormat fo
 	, m_mipLevels(mipLevels)
 	, m_lockingBitmap(NULL)
 {
-	OnResetDevice();
+	onResetDevice();
 }
 
 //------------------------------------------------------------------------------
 GLRenderTargetTexture::~GLRenderTargetTexture()
 {
-	OnLostDevice();
+	onLostDevice();
 	LN_SAFE_DELETE(m_lockingBitmap);
 }
 
 //------------------------------------------------------------------------------
-void GLRenderTargetTexture::OnLostDevice()
+void GLRenderTargetTexture::onLostDevice()
 {
 	if (m_glTexture != 0) {
 		glDeleteTextures(1, &m_glTexture);
@@ -226,7 +226,7 @@ void GLRenderTargetTexture::OnLostDevice()
 }
 
 //------------------------------------------------------------------------------
-void GLRenderTargetTexture::OnResetDevice()
+void GLRenderTargetTexture::onResetDevice()
 {
 	if (m_glTexture == 0)
 	{        
@@ -273,20 +273,20 @@ void GLRenderTargetTexture::getData(const RectI& rect, void* outData)
 }
 
 //------------------------------------------------------------------------------
-Bitmap* GLRenderTargetTexture::Lock()
+Bitmap* GLRenderTargetTexture::lock()
 {
 	// ビットマップデータは上下逆になっていて、[0] は (0, height-1) を指す
-	m_lockingBitmap = LN_NEW Bitmap(m_size, Utils::TranslatePixelFormat(m_format), true);
+	m_lockingBitmap = LN_NEW Bitmap(m_size, Utils::translatePixelFormat(m_format), true);
 
 	glBindTexture(GL_TEXTURE_2D, m_glTexture); LN_CHECK_GLERROR();
-	glGetTexImage(GL_TEXTURE_2D, 0, m_pixelFormat, m_elementType, m_lockingBitmap->GetBitmapBuffer()->getData()); LN_CHECK_GLERROR();
+	glGetTexImage(GL_TEXTURE_2D, 0, m_pixelFormat, m_elementType, m_lockingBitmap->getBitmapBuffer()->getData()); LN_CHECK_GLERROR();
 	glBindTexture(GL_TEXTURE_2D, 0); LN_CHECK_GLERROR();
 
 	return m_lockingBitmap;
 }
 
 //------------------------------------------------------------------------------
-void GLRenderTargetTexture::Unlock()
+void GLRenderTargetTexture::unlock()
 {
 	LN_SAFE_DELETE(m_lockingBitmap);
 }
@@ -302,13 +302,13 @@ GLDepthBuffer::GLDepthBuffer(const SizeI& size, TextureFormat format)
 	, m_size(size)
 	, m_realSize(size)
 {
-	OnResetDevice();
+	onResetDevice();
 }
 
 //------------------------------------------------------------------------------
 GLDepthBuffer::~GLDepthBuffer()
 {
-	OnLostDevice();
+	onLostDevice();
 }
 
 //------------------------------------------------------------------------------
@@ -324,7 +324,7 @@ void GLDepthBuffer::getData(const RectI& rect, void* outData)
 }
 
 //------------------------------------------------------------------------------
-void GLDepthBuffer::OnLostDevice()
+void GLDepthBuffer::onLostDevice()
 {
 	if (m_glBuffer != 0) {
 		glDeleteRenderbuffers(1, &m_glBuffer);
@@ -333,7 +333,7 @@ void GLDepthBuffer::OnLostDevice()
 }
 
 //------------------------------------------------------------------------------
-void GLDepthBuffer::OnResetDevice()
+void GLDepthBuffer::onResetDevice()
 {
 	if (m_glBuffer == 0)
 	{

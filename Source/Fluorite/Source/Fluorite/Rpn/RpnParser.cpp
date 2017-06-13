@@ -75,7 +75,7 @@ struct RpnOperator
 	template<> static void UnaryMinus<uint32_t>(uint32_t /*lhs*/, uint32_t rhs, RpnOperand* out) { out->set((uint32_t)-((int32_t)rhs)); }	// 警告回避
 	template<> static void UnaryMinus<uint64_t>(uint64_t /*lhs*/, uint64_t rhs, RpnOperand* out) { out->set((uint64_t)-((int64_t)rhs)); }	// 警告回避
 
-	template<typename T> static void Multiply(T lhs, T rhs, RpnOperand* out)	{ out->set(lhs * rhs); }
+	template<typename T> static void multiply(T lhs, T rhs, RpnOperand* out)	{ out->set(lhs * rhs); }
 	template<typename T> static void Divide(T lhs, T rhs, RpnOperand* out)		{ out->set(lhs / rhs); }
 	template<typename T> static void Modulus(T lhs, T rhs, RpnOperand* out)		{ out->set(lhs % rhs); }
 	template<typename T> static void BinaryPlus(T lhs, T rhs, RpnOperand* out)	{ out->set(lhs + rhs); }
@@ -153,7 +153,7 @@ static TokenTypeTableItem g_tokenTypeTable[] =
 	{ RpnTokenGroup::Unknown,		RpnOperatorGroup::Unknown,		false,	LN_RPN_OPERATOR_DEFINE_NONE, },		// RPN_TT_OP_GroupEnd,				// )	※ 括弧はパースで取り除かれるので Unknown
 	{ RpnTokenGroup::Operator,		RpnOperatorGroup::Arithmetic,	true,	LN_RPN_OPERATOR_DEFINE(UnaryPlus),},			// RPN_TT_OP_UnaryPlus,			// + (Unary)
 	{ RpnTokenGroup::Operator,		RpnOperatorGroup::Arithmetic,	true,	LN_RPN_OPERATOR_DEFINE(UnaryMinus), },			// RPN_TT_OP_UnaryMinus,			// - (Unary)
-	{ RpnTokenGroup::Operator,		RpnOperatorGroup::Arithmetic,	false,	LN_RPN_OPERATOR_DEFINE(Multiply), },		// RPN_TT_OP_Multiply,				// *
+	{ RpnTokenGroup::Operator,		RpnOperatorGroup::Arithmetic,	false,	LN_RPN_OPERATOR_DEFINE(multiply), },		// RPN_TT_OP_Multiply,				// *
 	{ RpnTokenGroup::Operator,		RpnOperatorGroup::Arithmetic,	false,	LN_RPN_OPERATOR_DEFINE(Divide), },		// RPN_TT_OP_Divide,				// /
 	{ RpnTokenGroup::Operator,		RpnOperatorGroup::Arithmetic,	false,	LN_RPN_OPERATOR_DEFINE_INTEGER(Modulus), },		// RPN_TT_OP_Modulus,				// %
 	{ RpnTokenGroup::Operator,		RpnOperatorGroup::Arithmetic,	false,	LN_RPN_OPERATOR_DEFINE(BinaryPlus), },		// RPN_TT_OP_BinaryPlus,			// + (Binary)

@@ -20,7 +20,7 @@ protected:
 	virtual ~ImageEffect();
 	void initialize(detail::GraphicsManager* manager);
 
-	virtual void OnRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination) = 0;
+	virtual void onRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination) = 0;
 
 	friend class ViewportLayer;
 

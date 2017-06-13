@@ -37,7 +37,7 @@ public:
 	bool InjectMouseUp(int x, int y);
 	//bool InjectKeyDown(Keys keyCode, ModifierKeys modifierKeys);
 
-	void Render(DrawList* context);
+	void render(DrawList* context);
 
 	void AddOnTargetTransformChanged(const std::function<void(GizmoModel*)>& handler)
 	{
@@ -94,9 +94,9 @@ private:
 	GizmoType				m_gizmoType;
 	//Matrix					m_parentSpaceTransform;
 	AttitudeTransform					m_targetInitialTransform;
-	AttitudeTransform					m_targetTransform;	// Gizmo によって操作される Transform
+	AttitudeTransform					m_targetTransform;	// Gizmo によって操作される transform
 	Matrix					m_gizmoInitialTransform;
-	Matrix					m_gizmoTransform;	// Gizmo 自体の Transform (視点距離によるスケーリングは含まれない)
+	Matrix					m_gizmoTransform;	// Gizmo 自体の transform (視点距離によるスケーリングは含まれない)
 	Vector3					m_viewPosition;
 	Matrix					m_view;
 	Matrix					m_proj;

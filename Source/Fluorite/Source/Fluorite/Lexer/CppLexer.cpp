@@ -154,9 +154,9 @@ void CppLexer::PollingToken(Token* token)
 }
 
 //------------------------------------------------------------------------------
-void CppLexer::OnStart()
+void CppLexer::onStart()
 {
-	AbstractLexer::OnStart();
+	AbstractLexer::onStart();
 
 	// 初期状態は改行直後扱いとする。ファイル先頭に # ディレクティブがあることに備える。
 	m_seqPPDirective = PPDirectiveSeq::LineHead;

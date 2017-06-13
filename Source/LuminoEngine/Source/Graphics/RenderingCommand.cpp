@@ -53,7 +53,7 @@ const void* RenderBulkData::getData() const
 {
 	if (m_dataHandle)
 	{
-		return m_commandList->GetExtData(m_dataHandle);
+		return m_commandList->getExtData(m_dataHandle);
 	}
 	else
 	{
@@ -74,9 +74,9 @@ void* RenderBulkData::alloc(RenderingCommandList* commandList)
 	if (m_dataHandle == 0)
 	{
 		m_commandList = commandList;
-		m_dataHandle = m_commandList->AllocExtData(m_size, m_srcData);
+		m_dataHandle = m_commandList->allocExtData(m_size, m_srcData);
 	}
-	return m_commandList->GetExtData(m_dataHandle);
+	return m_commandList->getExtData(m_dataHandle);
 }
 
 
@@ -111,7 +111,7 @@ RenderingCommandList::~RenderingCommandList()
 }
 
 //------------------------------------------------------------------------------
-void RenderingCommandList::ClearCommands()
+void RenderingCommandList::clearCommands()
 {
 	m_commandList.clear();
 	m_commandDataBufferUsed = 0;
@@ -132,7 +132,7 @@ void RenderingCommandList::execute(Driver::IGraphicsDevice* device/*Driver::IRen
 	// この関数は描画スレッドから呼ばれる
 
 	m_currentDevice = device;
-	m_currentRenderer = device->GetRenderer();
+	m_currentRenderer = device->getRenderer();
 	for (size_t dataIdx : m_commandList)
 	{        
 		/*
@@ -144,7 +144,7 @@ void RenderingCommandList::execute(Driver::IGraphicsDevice* device/*Driver::IRen
 
 		※ウィンドウがアクティブになったときに起こりやすい？
 		*/
-		RenderingCommand* cmd = ((RenderingCommand*)GetCommand(dataIdx));
+		RenderingCommand* cmd = ((RenderingCommand*)getCommand(dataIdx));
 		cmd->execute();
 		cmd->~RenderingCommand();
 	}
@@ -152,13 +152,13 @@ void RenderingCommandList::execute(Driver::IGraphicsDevice* device/*Driver::IRen
 }
 
 //------------------------------------------------------------------------------
-void RenderingCommandList::PostExecute()
+void RenderingCommandList::postExecute()
 {
-	ClearCommands();
+	clearCommands();
 }
 
 //------------------------------------------------------------------------------
-RenderingCommandList::DataHandle RenderingCommandList::AllocCommand(size_t byteCount, const void* copyData)
+RenderingCommandList::DataHandle RenderingCommandList::allocCommand(size_t byteCount, const void* copyData)
 {
 	// バッファが足りなければ拡張する
 	if (m_commandDataBufferUsed + byteCount > m_commandDataBuffer.getSize())
@@ -181,7 +181,7 @@ RenderingCommandList::DataHandle RenderingCommandList::AllocCommand(size_t byteC
 }
 
 //------------------------------------------------------------------------------
-RenderingCommandList::DataHandle RenderingCommandList::AllocExtData(size_t byteCount, const void* copyData)
+RenderingCommandList::DataHandle RenderingCommandList::allocExtData(size_t byteCount, const void* copyData)
 {
 	// バッファが足りなければ拡張する
 	if (m_extDataBufferUsed + byteCount > m_extDataBuffer.getSize())
@@ -204,18 +204,18 @@ RenderingCommandList::DataHandle RenderingCommandList::AllocExtData(size_t byteC
 }
 
 //------------------------------------------------------------------------------
-void* RenderingCommandList::GetExtData(DataHandle bufferIndex)
+void* RenderingCommandList::getExtData(DataHandle bufferIndex)
 {
 	return &(m_extDataBuffer.getData()[bufferIndex]);
 }
 
 //------------------------------------------------------------------------------
-bool RenderingCommandList::CheckOnStandaloneRenderingThread()
+bool RenderingCommandList::checkOnStandaloneRenderingThread()
 {
-	RenderingThread* rt = m_manager->GetRenderingThread();
+	RenderingThread* rt = m_manager->getRenderingThread();
 	if (rt != nullptr)
 	{
-		if (Thread::GetCurrentThreadId() == rt->GetThreadId())
+		if (Thread::getCurrentThreadId() == rt->getThreadId())
 			return true;
 	}
 	return false;

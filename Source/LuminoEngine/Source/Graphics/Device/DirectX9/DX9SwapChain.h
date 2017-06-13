@@ -20,18 +20,18 @@ public:
 public:
 
 	/// この関数はデバイスが初期化された直後に呼ばれる
-	void PostInitialize();
+	void postInitialize();
 
 	/// バックバッファサイズの取得
 	const SizeI& GetBackBufferSize() const { return m_backBufferSize; }
 
 public:
 	// override IDeviceObject
-	virtual void OnLostDevice();
-	virtual void OnResetDevice();
+	virtual void onLostDevice();
+	virtual void onResetDevice();
 
 	// override ISwapChain
-	virtual ITexture* GetBackBuffer() { return m_backBuffer; }
+	virtual ITexture* getBackBuffer() { return m_backBuffer; }
 	virtual void resize(const SizeI& size);
 	virtual void Present(ITexture* colorBuffer);
 

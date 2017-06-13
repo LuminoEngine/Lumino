@@ -100,7 +100,7 @@ void ProfilerRenderer::Render(const Vector2& viewSize)
 
 
 	//Matrix proj = Matrix::Perspective2DLH(viewSize.X, viewSize.Y, 0.f, 1000.f);
-	//m_spriteRenderer->SetViewProjMatrix(Matrix::Identity, proj);
+	//m_spriteRenderer->setViewProjMatrix(Matrix::Identity, proj);
 	//m_spriteRenderer->SetViewPixelSize(Size(viewSize.X, viewSize.Y));		// TODO Vector2 の set があってもいいかも
 
 	//float WindowWidth = 256;

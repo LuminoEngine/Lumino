@@ -3,7 +3,7 @@ using namespace ln;
 
 void Main_Sprite2D()
 {
-	while (Engine::Update())
+	while (Engine::update())
 	{
 
 	}

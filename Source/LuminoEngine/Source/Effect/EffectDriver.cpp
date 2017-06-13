@@ -41,7 +41,7 @@ void EffectEngine::Finalize()
 //}
 
 //------------------------------------------------------------------------------
-//void EffectInstance::AdvanceTime(float deltaTime)
+//void EffectInstance::advanceTime(float deltaTime)
 //{
 //	m_deltaTime += deltaTime;
 //}

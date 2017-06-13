@@ -110,7 +110,7 @@ bool ProcessImpl::waitForExit(int timeoutMSec)
 			}
 		}
 		
-		Thread::Sleep(1);
+		Thread::sleep(1);
 		
 	} while(timeoutMSec == -1 || timer.GetElapsedTime() < timeoutMSec);
 	

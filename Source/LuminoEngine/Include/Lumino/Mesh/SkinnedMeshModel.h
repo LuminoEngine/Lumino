@@ -38,15 +38,15 @@ public:
 
 protected:
 	// IAnimationTargetElement interface
-	virtual int GetAnimationTargetAttributeCount() const override;
-	virtual detail::IAnimationTargetAttribute* GetAnimationTargetAttribute(int index) override;
+	virtual int getAnimationTargetAttributeCount() const override;
+	virtual detail::IAnimationTargetAttribute* getAnimationTargetAttribute(int index) override;
 
 LN_INTERNAL_ACCESS:
 	SkinnedMeshModel();
 	virtual ~SkinnedMeshModel();
 	void initialize(detail::GraphicsManager* manager, PmxSkinnedMeshResource* sharingMesh);
 
-	void SetWorldTransform(const Matrix& matrix) { m_worldTransform = matrix; m_worldTransformInverse = Matrix::MakeInverse(m_worldTransform); }
+	void SetWorldTransform(const Matrix& matrix) { m_worldTransform = matrix; m_worldTransformInverse = Matrix::makeInverse(m_worldTransform); }
 	const Matrix& GetWorldTransform() const { return m_worldTransform; }
 	const Matrix& GetWorldTransformInverse() const { return m_worldTransformInverse; }
 
@@ -125,7 +125,7 @@ LN_INTERNAL_ACCESS:
 	SkinnedMeshBone();
 	virtual ~SkinnedMeshBone();
 	void initialize(PmxBoneResource* boneResource);
-	void PostInitialize(SkinnedMeshModel* owner, int depth);
+	void postInitialize(SkinnedMeshModel* owner, int depth);
 
 	// PmxBoneResource の取得
 	PmxBoneResource* getCore() const;
@@ -146,8 +146,8 @@ LN_INTERNAL_ACCESS:
 
 protected:
 	// IAnimationTargetAttribute interface
-	virtual const String& GetAnimationTargetName() const override;
-	virtual void SetAnimationTargetValue(ValueType type, const void* value) override;
+	virtual const String& getAnimationTargetName() const override;
+	virtual void setAnimationTargetValue(ValueType type, const void* value) override;
 
 LN_INTERNAL_ACCESS:	// TODO
 	RefPtr<PmxBoneResource>	m_core;				// 共有データクラス

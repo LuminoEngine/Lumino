@@ -6,12 +6,12 @@ public:
 	typedef LN_EVENT_DELEGATE_CLASS_NAME<LN_EVENT_TEMPLATE_TYPES> DelegateType;
 
 public:
-	void AddHandler(const DelegateType& handler)
+	void addHandler(const DelegateType& handler)
 	{
 		m_handlerList.add(handler);
 	}
 
-	void RemoveHandler(const DelegateType& handler)
+	void removeHandler(const DelegateType& handler)
 	{
 		m_handlerList.remove(handler);
 	}
@@ -36,12 +36,12 @@ public:
 
 	void operator += (const DelegateType& handler)
 	{
-		AddHandler(handler);
+		addHandler(handler);
 	}
 
 	void operator -= (const DelegateType& handler)
 	{
-		RemoveHandler(handler);
+		removeHandler(handler);
 	}
 
 	void operator () (LN_EVENT_ARGS_DECL)

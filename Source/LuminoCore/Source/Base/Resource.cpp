@@ -33,23 +33,23 @@ void ResourceSet::LoadResourceFile(const String& filePath)
 	XmlFileReader reader(filePath);
 	while (reader.read())
 	{
-		if (reader.GetNodeType() == XmlNodeType::Element &&
-			reader.GetName() == _T("string"))
+		if (reader.getNodeType() == XmlNodeType::Element &&
+			reader.getName() == _T("string"))
 		{
-			if (reader.MoveToFirstAttribute())
+			if (reader.moveToFirstAttribute())
 			{
 				do {
-					if (reader.GetName() == _T("name")) { name = reader.getValue(); }
+					if (reader.getName() == _T("name")) { name = reader.getValue(); }
 
-				} while (reader.MoveToNextAttribute());
+				} while (reader.moveToNextAttribute());
 			}
 		}
-		if (reader.GetNodeType() == XmlNodeType::Text)
+		if (reader.getNodeType() == XmlNodeType::Text)
 		{
 			value = reader.getValue();
 		}
-		if (reader.GetNodeType() == XmlNodeType::EndElement &&
-			reader.GetName() == _T("string"))
+		if (reader.getNodeType() == XmlNodeType::EndElement &&
+			reader.getName() == _T("string"))
 		{
 			m_stringMap[name] = value;
 		}

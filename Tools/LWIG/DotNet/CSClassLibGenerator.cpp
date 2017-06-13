@@ -119,7 +119,7 @@ void CSClassLibGenerator::Generate()
 			m_eventsText.AppendLine("    this_.{0}({1});", MakeEventName(methodInfo), args.toString());
 			m_eventsText.AppendLine("}");
 
-			// PostInitialize
+			// postInitialize
 			m_posiInitializeText.AppendLine("API.{0}(Handle, {1});", methodInfo->GetCAPIFuncName(), MakeEventCallbackMethodName(methodInfo));
 		}
 

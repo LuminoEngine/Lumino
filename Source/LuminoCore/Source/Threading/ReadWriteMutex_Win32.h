@@ -1,6 +1,5 @@
 ﻿
 #include "../Internal.h"
-#include <windows.h>
 
 LN_NAMESPACE_BEGIN
 namespace detail {
@@ -29,7 +28,7 @@ public:
 		::DeleteCriticalSection(&mReaderCountLock);
 	}
 
-	void LockRead()
+	void lockRead()
 	{
 		::EnterCriticalSection(&mWriterLock);
 		::EnterCriticalSection(&mReaderCountLock);
@@ -44,7 +43,7 @@ public:
 		::LeaveCriticalSection(&mWriterLock);
 	}
 
-	void UnlockRead()
+	void unlockRead()
 	{
 		::EnterCriticalSection(&mReaderCountLock);
 		if (mReaderCount > 0)
@@ -61,7 +60,7 @@ public:
 		::LeaveCriticalSection(&mReaderCountLock);
 	}
 
-	void LockWrite()
+	void lockWrite()
 	{
 		::EnterCriticalSection(&mWriterLock);
 		if (mReaderCount > 0)
@@ -71,7 +70,7 @@ public:
 		}
 	}
 
-	void UnlockWrite()
+	void unlockWrite()
 	{
 		::LeaveCriticalSection(&mWriterLock);
 	}

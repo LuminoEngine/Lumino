@@ -125,7 +125,7 @@ void WaveDecoder::create(Stream* stream)
 }
 
 //------------------------------------------------------------------------------
-void WaveDecoder::FillOnmemoryBuffer()
+void WaveDecoder::fillOnmemoryBuffer()
 {
 	MutexScopedLock lock(m_mutex);
 

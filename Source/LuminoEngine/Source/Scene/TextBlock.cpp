@@ -59,11 +59,11 @@ void TextBlock2DComponent::initialize()
 //------------------------------------------------------------------------------
 void TextBlock2DComponent::setText(const StringRef& text)
 {
-	m_paragraph->ClearInlines();
-	auto run = RefPtr<detail::Run>::makeRef();
+	m_paragraph->clearInlines();
+	auto run = RefPtr<detail::run>::makeRef();
 	run->initialize();
 	run->setText(text);
-	m_paragraph->AddInline(run);
+	m_paragraph->addInline(run);
 }
 
 //------------------------------------------------------------------------------
@@ -83,8 +83,8 @@ void TextBlock2DComponent::UpdateFrameHierarchy(SceneNode* parent, float deltaTi
 {
 	VisualComponent::UpdateFrameHierarchy(parent, deltaTime);
 	m_paragraph->UpdateLayout(Size::MaxValue);
-	//m_paragraph->MeasureLayout(Size::MaxValue);
-	//m_paragraph->ArrangeLayout(RectF(0, 0, Size::MaxValue));
+	//m_paragraph->measureLayout(Size::MaxValue);
+	//m_paragraph->arrangeLayout(RectF(0, 0, Size::MaxValue));
 }
 
 //------------------------------------------------------------------------------
@@ -100,24 +100,24 @@ void TextBlock2DComponent::OnRender2(DrawList* renderer)
 	{
 		DrawList* renderer;
 
-		virtual void OnDrawGlyphRun(const Matrix& transform, Brush* forground, GlyphRun* glyphRun, const PointF& point) override
+		virtual void onDrawGlyphRun(const Matrix& transform, Brush* forground, GlyphRun* glyphRun, const PointF& point) override
 		{
 			renderer->SetTransform(transform);
-			renderer->SetBrush(forground);
+			renderer->setBrush(forground);
 			renderer->DrawGlyphRun(point, glyphRun);
 		}
 	} r;
 	r.renderer = renderer;
 
-	const Size& size = m_paragraph->GetRenderSize();
-	m_paragraph->Render(Matrix::MakeTranslation(-size.width * m_anchor.x, -size.height * m_anchor.y, 0) * GetOwnerObject()->transform.GetWorldMatrix(), &r);
+	const Size& size = m_paragraph->getRenderSize();
+	m_paragraph->render(Matrix::makeTranslation(-size.width * m_anchor.x, -size.height * m_anchor.y, 0) * getOwnerObject()->transform.getWorldMatrix(), &r);
 }
 
 //------------------------------------------------------------------------------
-//void TextBlock2DComponent::OnRender(SceneGraphRenderingContext* dc)
+//void TextBlock2DComponent::onRender(SceneGraphRenderingContext* dc)
 //{
-//	const Size& size = m_paragraph->GetRenderSize();
-//	m_paragraph->Render(Matrix::MakeTranslation(-size.width * m_anchor.x, -size.height * m_anchor.y, 0) * m_combinedGlobalMatrix, dc);
+//	const Size& size = m_paragraph->getRenderSize();
+//	m_paragraph->render(Matrix::MakeTranslation(-size.width * m_anchor.x, -size.height * m_anchor.y, 0) * m_combinedGlobalMatrix, dc);
 //}
 
 LN_NAMESPACE_SCENE_END

@@ -48,19 +48,19 @@ public:
 
 public:
 	// IDeviceObject interface
-	virtual void OnLostDevice() {}
-	virtual void OnResetDevice() {}
+	virtual void onLostDevice() {}
+	virtual void onResetDevice() {}
 
 	// ITexture interface
 	virtual TextureType GetTextureType() const { return TextureType_Normal; }
 	virtual TextureFormat GetTextureFormat() const { return m_format; }
 	virtual const SizeI& getSize() const { return m_size; }
 	virtual const SizeI& GetRealSize() const { return m_realSize; }
-	virtual void SetSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize);
+	virtual void setSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize);
 	virtual void SetSubData3D(const Box32& box, const void* data, size_t dataBytes);
 	virtual void getData(const RectI& rect, void* outData) override;
-	virtual Bitmap* Lock();
-	virtual void Unlock();
+	virtual Bitmap* lock();
+	virtual void unlock();
 
 	// DX9TextureBase interface
 	virtual IDirect3DBaseTexture9* GetIDirect3DBaseTexture9() { return m_dxTexture; }
@@ -84,18 +84,18 @@ public:
 	void initialize(int width, int height, int depth, TextureFormat format, uint32_t levels);
 
 	// IDeviceObject interface
-	virtual void OnLostDevice() {}
-	virtual void OnResetDevice() {}
+	virtual void onLostDevice() {}
+	virtual void onResetDevice() {}
 
 	// ITexture interface
 	virtual TextureType GetTextureType() const { return TextureType_Normal; }
 	virtual TextureFormat GetTextureFormat() const { return m_format; }
 	virtual const SizeI& getSize() const { return m_size; }
 	virtual const SizeI& GetRealSize() const { return m_realSize; }
-	virtual void SetSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize);
+	virtual void setSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize);
 	virtual void SetSubData3D(const Box32& box, const void* data, size_t dataBytes);
-	virtual Bitmap* Lock();
-	virtual void Unlock();
+	virtual Bitmap* lock();
+	virtual void unlock();
 
 	// DX9TextureBase interface
 	virtual IDirect3DBaseTexture9* GetIDirect3DBaseTexture9() { return m_dxTexture; }
@@ -120,18 +120,18 @@ public:
 
 public:
 	// IDeviceObject interface
-	virtual void OnLostDevice();
-	virtual void OnResetDevice();
+	virtual void onLostDevice();
+	virtual void onResetDevice();
 
 	// ITexture interface
 	virtual TextureType GetTextureType() const { return TextureType_RenderTarget; }
 	virtual TextureFormat GetTextureFormat() const { return m_format; }
 	virtual const SizeI& getSize() const { return m_size; }
 	virtual const SizeI& GetRealSize() const { return m_realSize; }
-	virtual void SetSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) { LN_THROW(0, InvalidOperationException); }
+	virtual void setSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) { LN_THROW(0, InvalidOperationException); }
 	virtual void SetSubData3D(const Box32& box, const void* data, size_t dataBytes);
-	virtual Bitmap* Lock();
-	virtual void Unlock();
+	virtual Bitmap* lock();
+	virtual void unlock();
 
 	// DX9TextureBase interface
 	virtual IDirect3DBaseTexture9* GetIDirect3DBaseTexture9() { return m_dxTexture; }
@@ -163,8 +163,8 @@ public:
 
 public:
 	// IDeviceObject interface
-	virtual void OnLostDevice();
-	virtual void OnResetDevice();
+	virtual void onLostDevice();
+	virtual void onResetDevice();
 
 	// ITexture interface
 	virtual TextureType GetTextureType() const { return TextureType_DepthBuffer; }
@@ -172,10 +172,10 @@ public:
 	virtual const SizeI& getSize() const { return m_size; }
 	virtual const SizeI& GetRealSize() const { return m_realSize; }
 	virtual void SetSamplerState(const SamplerState& state) { LN_THROW(0, InvalidOperationException); }
-	virtual void SetSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) { LN_THROW(0, InvalidOperationException); }
+	virtual void setSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) { LN_THROW(0, InvalidOperationException); }
 	virtual void SetSubData3D(const Box32& box, const void* data, size_t dataBytes);
-	virtual Bitmap* Lock() { LN_THROW(0, InvalidOperationException); }
-	virtual void Unlock() { LN_THROW(0, InvalidOperationException); }
+	virtual Bitmap* lock() { LN_THROW(0, InvalidOperationException); }
+	virtual void unlock() { LN_THROW(0, InvalidOperationException); }
 
 	// DX9TextureBase interface
 	virtual IDirect3DBaseTexture9* GetIDirect3DBaseTexture9() { return NULL; }
@@ -191,7 +191,7 @@ private:
 
 /// バックバッファ
 ///		このクラスは DirectX 側で自動的に作成されたサーフェイスをラップする。
-///		これは Renderer::SetRenderTarget に、他のレンダーターゲットと同じようにセットして使えるようにするため。
+///		これは Renderer::setRenderTarget に、他のレンダーターゲットと同じようにセットして使えるようにするため。
 class DX9BackBufferTexture
 	: public DX9TextureBase
 {
@@ -200,12 +200,12 @@ public:
 	virtual ~DX9BackBufferTexture();
 
 public:
-	void Reset(IDirect3DSurface9* backBufferSurface);
+	void reset(IDirect3DSurface9* backBufferSurface);
 
 public:
 	// IDeviceObject interface
-	virtual void OnLostDevice() {}
-	virtual void OnResetDevice() {}
+	virtual void onLostDevice() {}
+	virtual void onResetDevice() {}
 
 	// ITexture interface
 	virtual TextureType GetTextureType() const { return TextureType_RenderTarget; }
@@ -213,10 +213,10 @@ public:
 	virtual const SizeI& getSize() const { return m_realSize; }
 	virtual const SizeI& GetRealSize() const { return m_realSize; }
 	virtual void SetSamplerState(const SamplerState& state) { LN_THROW(0, InvalidOperationException); }
-	virtual void SetSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) { LN_THROW(0, InvalidOperationException); }
+	virtual void setSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) { LN_THROW(0, InvalidOperationException); }
 	virtual void SetSubData3D(const Box32& box, const void* data, size_t dataBytes);
-	virtual Bitmap* Lock();
-	virtual void Unlock();
+	virtual Bitmap* lock();
+	virtual void unlock();
 
 	// DX9TextureBase interface
 	virtual IDirect3DBaseTexture9* GetIDirect3DBaseTexture9() { return NULL; }

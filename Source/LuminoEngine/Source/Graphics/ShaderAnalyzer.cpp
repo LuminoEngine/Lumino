@@ -94,7 +94,7 @@ public:
 //==============================================================================
 
 //------------------------------------------------------------------------------
-void ShaderAnalyzer::AnalyzeLNFX(const char* code, int len)
+void ShaderAnalyzer::analyzeLNFX(const char* code, int len)
 {
 	m_code = code;
 	m_codeLength = len;
@@ -104,11 +104,11 @@ void ShaderAnalyzer::AnalyzeLNFX(const char* code, int len)
 	fl::DiagnosticsItemSet diag(PathNameA{});
 	file.SetDiag(&diag);	// TODO: InputFile の中でつくるべきな気がする
 	lexer.Tokenize(&file);
-	ParseSimpleShaderMacros(file.GetTokenList());
+	parseSimpleShaderMacros(file.GetTokenList());
 }
 
 //------------------------------------------------------------------------------
-void ShaderAnalyzer::ParseSimpleShaderMacros(const fl::TokenList* tokenList)
+void ShaderAnalyzer::parseSimpleShaderMacros(const fl::TokenList* tokenList)
 {
 	TokenPosition pos(tokenList, 0);
 	int lastTechniqueKWLoc = 0;
@@ -148,7 +148,7 @@ void ShaderAnalyzer::ParseSimpleShaderMacros(const fl::TokenList* tokenList)
 }
 
 //------------------------------------------------------------------------------
-std::vector<char> ShaderAnalyzer::MakeHLSLCode() const
+std::vector<char> ShaderAnalyzer::makeHLSLCode() const
 {
 	StringBuilderA newCode;
 	// Shader common header.

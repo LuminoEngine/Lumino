@@ -33,7 +33,7 @@ public:
 
 
 	/** 現在の姿勢を取得します。*/
-	//const Matrix& GetTransform() const;
+	//const Matrix& getTransform() const;
 
 	/** 衝突判定形状を追加します。*/
 	LN_METHOD()

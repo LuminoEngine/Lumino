@@ -32,7 +32,7 @@ public:
 
 	DrawingContext* GetDrawingContext() const;
 
-	//void SetSize(const SizeI& size);
+	//void setSize(const SizeI& size);
 
 	RenderDiag* GetRenderDiagnostic() const;
 
@@ -42,12 +42,12 @@ LN_CONSTRUCT_ACCESS:
 	void initialize(PlatformWindow* platformWindow, SwapChain* swapChain, UIContext* context);
 	void initialize();
 	virtual void Dispose();
-	virtual bool OnEvent(const PlatformEventArgs& e) override;
+	virtual bool onEvent(const PlatformEventArgs& e) override;
 	virtual void OnRenderContents();
 	virtual void OnPresentRenderingContexts();
 
 LN_INTERNAL_ACCESS:
-	detail::UIManager* GetManager() const { return m_manager; }
+	detail::UIManager* getManager() const { return m_manager; }
 	SwapChain* GetSwapChain() const;
 	void SetDelayedRenderingSkip(bool enabled) { m_delayedRenderingSkip = enabled; }
 
@@ -87,7 +87,7 @@ public:
 
 protected:
 	virtual void OnPresentRenderingContexts() override;
-	virtual Size ArrangeOverride(const Size& finalSize) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
 
 LN_INTERNAL_ACCESS:
 	UIMainWindow();
@@ -98,13 +98,13 @@ LN_INTERNAL_ACCESS:
 	void UpdateLayout(const Size& viewSize);	// TODO: ゆくゆくは SwapChain や Viewport も UIFrameWindow にもってくる。そのとき、この viewSize はいらなくなる
 	void RenderUI();
 
-	//virtual bool OnEvent(const PlatformEventArgs& e) override;
+	//virtual bool onEvent(const PlatformEventArgs& e) override;
 	virtual void OnRenderContents() override;
 	virtual void PresentRenderingContexts() override;
 
 	CameraViewportLayer2* GetDefaultCameraViewportLayer2D() const;
 	CameraViewportLayer2* GetDefaultCameraViewportLayer3D() const;
-	UILayoutLayer* GetDefaultUILayer() const;
+	UILayoutLayer* getDefaultUILayer() const;
 
 private:
 	void UpdateViewportTransform();
@@ -140,7 +140,7 @@ public:
 public:
 
 	/** ホストされたネイティブウィンドウへ描画を行います。*/
-	//void Render();
+	//void render();
 
 LN_INTERNAL_ACCESS:
 	UINativeHostWindow();

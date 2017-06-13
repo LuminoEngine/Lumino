@@ -324,14 +324,14 @@ LN_NAMESPACE_BEGIN
 	@code
 				class Test
 				{
-					void Run(Delegate01<int> func) {
+					void run(Delegate01<int> func) {
 						func.Call(10);
 					}
 					void Callback(int value) {
 						printf("%d", value);
 					}
 					void Main() {
-						Run(LN_CreateDelegate(this, &Test::Callback));
+						run(LN_CreateDelegate(this, &Test::Callback));
 					}
 				}
 	@endcode

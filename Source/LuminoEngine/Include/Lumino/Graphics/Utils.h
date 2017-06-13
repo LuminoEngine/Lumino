@@ -14,17 +14,17 @@ class Texture;
 class Utils
 {
 public:
-	static IndexBufferFormat GetIndexBufferFormat(int indexCount);
-	static int GetIndexStride(IndexBufferFormat format) { return (format == IndexBufferFormat_UInt16) ? 2 : 4; }
-	static int GetIndexBufferSize(IndexBufferFormat format, int indexCount) { return GetIndexStride(format) * indexCount; }
+	static IndexBufferFormat getIndexBufferFormat(int indexCount);
+	static int getIndexStride(IndexBufferFormat format) { return (format == IndexBufferFormat_UInt16) ? 2 : 4; }
+	static int getIndexBufferSize(IndexBufferFormat format, int indexCount) { return getIndexStride(format) * indexCount; }
 
-	static int GetTextureFormatByteCount(TextureFormat format);
-	static PixelFormat TranslatePixelFormat(TextureFormat format);
+	static int getTextureFormatByteCount(TextureFormat format);
+	static PixelFormat translatePixelFormat(TextureFormat format);
 	
-	static void SaveScreenShot(const TCHAR* filePath);
-	static void WaitSaveScreenShot();
+	static void saveScreenShot(const TCHAR* filePath);
+	static void waitSaveScreenShot();
 
-	static bool EqualsTexture(Texture* texture1, Texture* texture2);
+	static bool equalsTexture(Texture* texture1, Texture* texture2);
 };
 
 LN_NAMESPACE_GRAPHICS_END

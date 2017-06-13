@@ -24,7 +24,7 @@ public:
 	template<class TObject, typename ...TArgs>
 	TObject* create(TArgs... args)
 	{
-		TObject* obj = static_cast<TObject* >(FindFreeObject(tr::TypeInfo::GetTypeInfo<TObject>()));
+		TObject* obj = static_cast<TObject* >(FindFreeObject(tr::TypeInfo::getTypeInfo<TObject>()));
 		if (obj == nullptr) {
 			obj = LN_NEW TObject(args...);
 			Register(obj);
@@ -95,15 +95,15 @@ public:
 	template<class TEventArgs, typename ...TArgs>
 	TEventArgs* create(TArgs... args)
 	{
-		TEventArgs* e = static_cast<TEventArgs* >(find(tr::TypeInfo::GetTypeInfo<TEventArgs>()));
+		TEventArgs* e = static_cast<TEventArgs* >(find(tr::TypeInfo::getTypeInfo<TEventArgs>()));
 		if (e == nullptr) {
-			auto eRef = NewObject<TEventArgs>(args...);
+			auto eRef = newObject<TEventArgs>(args...);
 			Register(eRef);
 			e = eRef;
 		}
 		else {
 			static_cast<UIEventArgs*>(e)->~UIEventArgs();
-			PlacementNewObject<TEventArgs>(e, args...);
+			placementNewObject<TEventArgs>(e, args...);
 		}
 		e->handled = false;
 		e->addRef();
@@ -133,10 +133,10 @@ private:
 	void Register(UIEventArgs* e)
 	{
 		EventArgsList* list;
-		if (!m_pool.tryGetValue(tr::TypeInfo::GetTypeInfo(e), &list))
+		if (!m_pool.tryGetValue(tr::TypeInfo::getTypeInfo(e), &list))
 		{
 			list = LN_NEW EventArgsList();
-			m_pool.add(tr::TypeInfo::GetTypeInfo(e), list);
+			m_pool.add(tr::TypeInfo::getTypeInfo(e), list);
 			e->addRef();
 		}
 		list->add(e);

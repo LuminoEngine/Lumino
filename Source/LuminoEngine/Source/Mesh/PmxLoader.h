@@ -65,7 +65,7 @@ private:
 	void LoadRigidBodys(BinaryReader* reader);
 	void LoadJoints(BinaryReader* reader);
 
-	String ReadString(BinaryReader* reader);
+	String readString(BinaryReader* reader);
 	void CalcSDEFCorrection();
 
 private:

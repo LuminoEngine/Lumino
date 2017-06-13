@@ -34,7 +34,7 @@ inline void Vector4::set(float x_, float y_, float z_, float w_)
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-inline const Vector2& Vector4::GetXY() const
+inline const Vector2& Vector4::getXY() const
 {
 	return *reinterpret_cast<const Vector2*>(this);
 }

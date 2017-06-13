@@ -14,7 +14,7 @@ ASCIIEncoding::ASCIIEncoding()
 }
 
 //------------------------------------------------------------------------------
-void ASCIIEncoding::ASCIIDecoder::ConvertToUTF16(const byte_t* inBuffer, size_t inBufferByteCount, UTF16* outBuffer, size_t outBufferCharCount, size_t* outBytesUsed, size_t* outCharsUsed)
+void ASCIIEncoding::ASCIIDecoder::convertToUTF16(const byte_t* inBuffer, size_t inBufferByteCount, UTF16* outBuffer, size_t outBufferCharCount, size_t* outBytesUsed, size_t* outCharsUsed)
 {
 	for (size_t i = 0; i < inBufferByteCount; ++i)
 	{
@@ -39,7 +39,7 @@ void ASCIIEncoding::ASCIIDecoder::ConvertToUTF16(const byte_t* inBuffer, size_t 
 }
 
 //------------------------------------------------------------------------------
-void ASCIIEncoding::ASCIIEncoder::ConvertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, size_t* outBytesUsed, size_t* outCharsUsed)
+void ASCIIEncoding::ASCIIEncoder::convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, size_t* outBytesUsed, size_t* outCharsUsed)
 {
 	for (size_t i = 0; i < inputElementSize; ++i)
 	{

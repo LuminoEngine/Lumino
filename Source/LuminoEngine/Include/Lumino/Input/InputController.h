@@ -26,7 +26,7 @@ public:
 	void ClearBindings();
 	void SetRepeatInterval(int start, int step);
 
-	void UpdateFrame();
+	void updateFrame();
 
 	// TODO:
 	int GetJoyNumber() const;

@@ -48,23 +48,23 @@ void Brush::initialize()
 }
 
 //------------------------------------------------------------------------------
-void Brush::SetTexture(Texture* texture)
+void Brush::setTexture(Texture* texture)
 {
 	m_texture = texture;
 }
 
 //------------------------------------------------------------------------------
-Texture* Brush::GetTexture() const
+Texture* Brush::getTexture() const
 {
 	return m_texture;
 }
 
 //------------------------------------------------------------------------------
-void Brush::GetRawData(detail::BrushRawData* outData) const
+void Brush::getRawData(detail::BrushRawData* outData) const
 {
 	if (LN_CHECK_ARG(outData != nullptr)) return;
 	outData->color = m_color;
-	outData->texture = (m_texture != nullptr) ? m_texture->ResolveDeviceObject() : nullptr;
+	outData->texture = (m_texture != nullptr) ? m_texture->resolveDeviceObject() : nullptr;
 	outData->srcRect = m_srcRect;
 	outData->wrapMode = m_wrapMode;
 	outData->imageDrawMode = m_imageDrawMode;
@@ -78,13 +78,13 @@ void Brush::GetRawData(detail::BrushRawData* outData) const
 //------------------------------------------------------------------------------
 RefPtr<SolidColorBrush> SolidColorBrush::create(const Color& color)
 {
-	return NewObject<SolidColorBrush>(color);
+	return newObject<SolidColorBrush>(color);
 }
 
 //------------------------------------------------------------------------------
 RefPtr<SolidColorBrush> SolidColorBrush::create(const Color& rgb, float a)
 {
-	return NewObject<SolidColorBrush>(rgb, a);
+	return newObject<SolidColorBrush>(rgb, a);
 }
 
 //------------------------------------------------------------------------------
@@ -101,14 +101,14 @@ SolidColorBrush::~SolidColorBrush()
 void SolidColorBrush::initialize(const Color& color)
 {
 	Brush::initialize();
-	SetColor(color);
+	setColor(color);
 }
 
 //------------------------------------------------------------------------------
 void SolidColorBrush::initialize(const Color& rgb, float a)
 {
 	Brush::initialize();
-	SetColor(rgb.WithAlpha(a));
+	setColor(rgb.withAlpha(a));
 }
 
 //==============================================================================
@@ -118,23 +118,23 @@ void SolidColorBrush::initialize(const Color& rgb, float a)
 //------------------------------------------------------------------------------
 RefPtr<TextureBrush> TextureBrush::create(const StringRef& filePath)
 {
-	return NewObject<TextureBrush>(filePath);
+	return newObject<TextureBrush>(filePath);
 }
 
 //------------------------------------------------------------------------------
 RefPtr<TextureBrush> TextureBrush::create(Texture* texture)
 {
-	return NewObject<TextureBrush>(texture);
+	return newObject<TextureBrush>(texture);
 }
 
 //------------------------------------------------------------------------------
 RefPtr<TextureBrush> TextureBrush::create(Texture* texture, BrushImageDrawMode drawMode, const Rect& sourceRect, const ThicknessF& borderThickness, BrushWrapMode wrapMode)
 {
-	auto ptr = NewObject<TextureBrush>(texture);
-	ptr->SetImageDrawMode(drawMode);
-	ptr->SetSourceRect(sourceRect);
-	ptr->SetBorderThickness(borderThickness);
-	ptr->SetWrapMode(wrapMode);
+	auto ptr = newObject<TextureBrush>(texture);
+	ptr->getImageDrawMode(drawMode);
+	ptr->setSourceRect(sourceRect);
+	ptr->getBorderThickness(borderThickness);
+	ptr->setWrapMode(wrapMode);
 	return ptr;
 }
 
@@ -160,24 +160,24 @@ void TextureBrush::initialize(const StringRef& filePath)
 {
 	Brush::initialize();
 	auto texture = Texture2D::create(filePath, TextureFormat::R8G8B8A8, false);		//TODO: GraphicsManager?
-	SetTexture(texture);
+	setTexture(texture);
 }
 
 //------------------------------------------------------------------------------
 void TextureBrush::initialize(Texture* texture)
 {
 	Brush::initialize();
-	SetTexture(texture);
+	setTexture(texture);
 }
 
 //------------------------------------------------------------------------------
-Rect TextureBrush::GetActualSourceRect() const
+Rect TextureBrush::getActualSourceRect() const
 {
 	Size textureSize(0, 0);
-	Texture* texture = GetTexture();
-	if (texture != nullptr) textureSize = texture->getSize().ToFloatSize();
+	Texture* texture = getTexture();
+	if (texture != nullptr) textureSize = texture->getSize().toFloatSize();
 
-	const Rect& rc = GetSourceRect();
+	const Rect& rc = getSourceRect();
 	return Rect(
 		(Math::isNaNOrInf(rc.x)) ? 0.0f : rc.x,
 		(Math::isNaNOrInf(rc.y)) ? 0.0f : rc.y,
@@ -188,7 +188,7 @@ Rect TextureBrush::GetActualSourceRect() const
 //------------------------------------------------------------------------------
 Size TextureBrush::getSize() const
 {
-	return GetActualSourceRect().getSize();
+	return getActualSourceRect().getSize();
 }
 
 #if 0

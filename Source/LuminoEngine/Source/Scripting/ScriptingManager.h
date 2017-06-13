@@ -162,7 +162,7 @@ class NlContext
 public:
 	NlContext();
 
-	NlVariant* Evaluate(NlGraphPin* dataInputPin);
+	NlVariant* evaluate(NlGraphPin* dataInputPin);
 
 
 	// “à•”—p
@@ -170,7 +170,7 @@ public:
 
 	void Goto(NlGraphPin* nextFlowPin);
 
-	bool IsCompleted() const;
+	bool isCompleted() const;
 
 private:
 	void GotoNode(NlGraphNode* next);

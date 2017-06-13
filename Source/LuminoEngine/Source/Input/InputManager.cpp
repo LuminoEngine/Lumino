@@ -38,7 +38,7 @@ namespace detail
 
 static InputManager* g_inputManager = nullptr;
 	
-InputManager* InputManager::GetInstance(InputManager* priority)
+InputManager* InputManager::getInstance(InputManager* priority)
 {
 	return (priority != nullptr) ? priority : g_inputManager;
 }
@@ -121,21 +121,21 @@ void InputManager::PreUpdateFrame()
 }
 
 //------------------------------------------------------------------------------
-void InputManager::UpdateFrame()
+void InputManager::updateFrame()
 {
 	for (auto* pad : m_defaultVirtualPads)
 	{
 		if (pad != nullptr) {
-			pad->UpdateFrame();
+			pad->updateFrame();
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
-void InputManager::OnEvent(const PlatformEventArgs& e)
+void InputManager::onEvent(const PlatformEventArgs& e)
 {
 	if (m_inputDriver != nullptr) {
-		m_inputDriver->OnEvent(e);
+		m_inputDriver->onEvent(e);
 	}
 }
 
@@ -224,12 +224,12 @@ namespace Private
 //==============================================================================
 //
 //public:
-//	static InputManager& GetInstance();
+//	static InputManager& getInstance();
 //
 ////------------------------------------------------------------------------------
 ////
 ////------------------------------------------------------------------------------
-//InputManager& InputManager::GetInstance()
+//InputManager& InputManager::getInstance()
 //{
 //	static InputManager instance;
 //	return instance;

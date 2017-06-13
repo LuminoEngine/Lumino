@@ -106,7 +106,7 @@ TEST_F(Test_IO_Process, Issue)
 	{
 		Process proc;
 		proc.setRedirectStandardOutput(true);
-		proc.setStandardOutputEncoding(Encoding::GetUTF8Encoding());	// エンコーディングを明示することで回避する
+		proc.setStandardOutputEncoding(Encoding::getUTF8Encoding());	// エンコーディングを明示することで回避する
 		proc.start(_T("LuminoCore_Test"), _T("--proctest4_utf8"));
 		String str = proc.getStandardOutput()->readToEnd();
 		ASSERT_EQ(_T("あ"), str);

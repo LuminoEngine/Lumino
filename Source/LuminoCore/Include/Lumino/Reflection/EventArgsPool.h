@@ -43,7 +43,7 @@ public:
 	template<class TEventArgs, typename ...TArgs>
 	TEventArgs* create(TArgs... args)
 	{
-		TEventArgs* e = static_cast<TEventArgs* >(find(tr::TypeInfo::GetTypeInfo<TEventArgs>()));
+		TEventArgs* e = static_cast<TEventArgs* >(find(tr::TypeInfo::getTypeInfo<TEventArgs>()));
 		if (e == nullptr)
 		{
 			e = LN_NEW TEventArgs(args...);
@@ -82,10 +82,10 @@ private:
 	void Register(ReflectionEventArgs* e)
 	{
 		EventArgsList* list;
-		if (!m_pool.tryGetValue(tr::TypeInfo::GetTypeInfo(e), &list))
+		if (!m_pool.tryGetValue(tr::TypeInfo::getTypeInfo(e), &list))
 		{
 			list = LN_NEW EventArgsList();
-			m_pool.add(tr::TypeInfo::GetTypeInfo(e), list);
+			m_pool.add(tr::TypeInfo::getTypeInfo(e), list);
 		}
 		list->add(e);
 	}

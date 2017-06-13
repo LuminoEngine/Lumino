@@ -27,12 +27,12 @@ void LFManager::PreInitialize()
 }
 
 //------------------------------------------------------------------------------
-void LFManager::PostInitialize()
+void LFManager::postInitialize()
 {
 	// 文字コード変換器
 	TCharToUTF8Converter = LN_NEW EncodingConverter();
-	TCharToUTF8Converter->SetSourceEncoding(Encoding::GetTCharEncoding());
-	TCharToUTF8Converter->SetDestinationEncoding(Encoding::GetUTF8Encoding());
+	TCharToUTF8Converter->getSourceEncoding(Encoding::getTCharEncoding());
+	TCharToUTF8Converter->setDestinationEncoding(Encoding::getUTF8Encoding());
 
 	// オブジェクト管理配列
 	for (int i = 511; i >= 0; --i)
@@ -49,7 +49,7 @@ void LFManager::PostInitialize()
 }
 
 //------------------------------------------------------------------------------
-void LFManager::Terminate()
+void LFManager::terminate()
 {
 	// 残っているオブジェクトを全て削除
 	for (ObjectEntry& e : m_objectEntryList) {
@@ -74,9 +74,9 @@ LNHandle LFManager::CheckRegisterObject(tr::ReflectionObject* obj)
 	if (obj == nullptr) return NULL;
 
 	// 登録済みならハンドル (管理配列上のインデックス) を返す
-	if (obj->GetUserData() != NULL)
+	if (obj->getUserData() != NULL)
 	{
-		ObjectRegisterData* data = (ObjectRegisterData*)obj->GetUserData();
+		ObjectRegisterData* data = (ObjectRegisterData*)obj->getUserData();
 		//obj->AddRef();
 		return data->Index;
 	}
@@ -96,7 +96,7 @@ LNHandle LFManager::CheckRegisterObject(tr::ReflectionObject* obj)
 		// ユーザーデータ登録
 		ObjectRegisterData* data = LN_NEW ObjectRegisterData();
 		data->Index = e.Index;
-		obj->SetUserData(data);
+		obj->setUserData(data);
 
 		//obj->AddRef();
 		return e.Index;
@@ -118,7 +118,7 @@ LNHandle LFManager::CheckRegisterObject(tr::ReflectionObject* obj)
 		// ユーザーデータ登録
 		ObjectRegisterData* data = LN_NEW ObjectRegisterData();
 		data->Index = e.Index;
-		obj->SetUserData(data);
+		obj->setUserData(data);
 
 		//obj->AddRef();
 		return e.Index;

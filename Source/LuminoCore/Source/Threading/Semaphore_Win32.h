@@ -1,6 +1,5 @@
 
 #include "../Internal.h"
-#include <windows.h>
 
 LN_NAMESPACE_BEGIN
 namespace detail {
@@ -24,12 +23,12 @@ public:
 		}
 	}
 
-	void Lock()
+	void lock()
 	{
 		::WaitForSingleObject(m_handle, INFINITE);// == WAIT_OBJECT_0);
 	}
 
-	void Unlock()
+	void unlock()
 	{
 		LONG prev;
 		::ReleaseSemaphore(m_handle, 1, &prev);

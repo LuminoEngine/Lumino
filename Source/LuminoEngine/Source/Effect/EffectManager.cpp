@@ -115,34 +115,34 @@ void EffectManager::ReleaseEffectWorld(EffectEngine* world)
 //}
 //
 ////------------------------------------------------------------------------------
-//void EffectManager::Render()
+//void EffectManager::render()
 //{
 //	if (m_engine == nullptr) return;
 //
-//	if (m_graphicsManager->GetRenderingType() == GraphicsRenderingType::Threaded) {
-//		m_graphicsManager->GetPrimaryRenderingCommandList()->AddCommand<EffectEngine::RenderCommand>(m_engine, m_taskUpdateFrame);
+//	if (m_graphicsManager->getRenderingType() == GraphicsRenderingType::Threaded) {
+//		m_graphicsManager->getPrimaryRenderingCommandList()->addCommand<EffectEngine::RenderCommand>(m_engine, m_taskUpdateFrame);
 //	}
 //	else {
-//		m_taskUpdateFrame->Wait();
-//		m_engine->Render();
+//		m_taskUpdateFrame->wait();
+//		m_engine->render();
 //	}
 //}
 
 //------------------------------------------------------------------------------
-void EffectManager::OnLostDevice()
+void EffectManager::onLostDevice()
 {
 	for (EffectEngine* e : m_effectWorldList)
 	{
-		e->OnLostDevice();
+		e->onLostDevice();
 	}
 }
 
 //------------------------------------------------------------------------------
-void EffectManager::OnResetDevice()
+void EffectManager::onResetDevice()
 {
 	for (EffectEngine* e : m_effectWorldList)
 	{
-		e->OnResetDevice();
+		e->onResetDevice();
 	}
 }
 
@@ -150,7 +150,7 @@ void EffectManager::OnResetDevice()
 //void EffectManager::Thread_UpdateFrame()
 //{
 //	if (m_engine == nullptr) return;
-//	m_engine->UpdateFrame(0.016f);	// TODO: time
+//	m_engine->updateFrame(0.016f);	// TODO: time
 //}
 
 } // namespace detail

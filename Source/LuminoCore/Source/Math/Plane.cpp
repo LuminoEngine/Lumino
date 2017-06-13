@@ -44,21 +44,21 @@ Plane::Plane(const Vector3& normal)
 //------------------------------------------------------------------------------
 Plane::Plane(const Vector3& p1, const Vector3& normal)
 	: Normal(normal)
-	, D(-Vector3::Dot(normal, p1))
+	, D(-Vector3::dot(normal, p1))
 {
 }
 	
 //------------------------------------------------------------------------------
 Plane::Plane(const Vector3& point1, const Vector3& point2, const Vector3& point3)
 {
-	Normal = Vector3::Cross((point2 - point1), (point3 - point1));
-	Normal.Normalize();
+	Normal = Vector3::cross((point2 - point1), (point3 - point1));
+	Normal.normalize();
 
-	D = -Vector3::Dot(point1, Normal);
+	D = -Vector3::dot(point1, Normal);
 }
 
 //------------------------------------------------------------------------------
-void Plane::Normalize()
+void Plane::normalize()
 {
 	float t = 1.0f / Asm::sqrt((Normal.x * Normal.x) + (Normal.y * Normal.y) + (Normal.z * Normal.z));
 	Normal.x *= t;
@@ -68,13 +68,13 @@ void Plane::Normalize()
 }
 
 //------------------------------------------------------------------------------
-bool Plane::Intersects(const Vector3& start, const Vector3& end, Vector3* point) const
+bool Plane::intersects(const Vector3& start, const Vector3& end, Vector3* point) const
 {
 	Vector3 p = Vector3(Normal.x * D, Normal.y * D, Normal.z * D);
 	Vector3 pa = p - start;
 	Vector3 pb = p - end;
-	float dot_pa = Vector3::Dot(pa, Normal);
-	float dot_pb = Vector3::Dot(pb, Normal);
+	float dot_pa = Vector3::dot(pa, Normal);
+	float dot_pb = Vector3::dot(pb, Normal);
 
 	// 交差判定
 	if (dot_pa == 0.0 && dot_pb == 0.0)
@@ -97,22 +97,22 @@ bool Plane::Intersects(const Vector3& start, const Vector3& end, Vector3* point)
 	if (point != nullptr)
 	{
 		Vector3 direction = end - start;
-		float dot = Vector3::Dot(Normal, direction);
-		float t = (D + Vector3::Dot(Normal, start)) / dot;	// 交点とAの距離 : 交点とBの距離
+		float dot = Vector3::dot(Normal, direction);
+		float t = (D + Vector3::dot(Normal, start)) / dot;	// 交点とAの距離 : 交点とBの距離
 		(*point) = start - (t * direction);
 	}
 	return true;
 }
 
 //------------------------------------------------------------------------------
-bool Plane::Intersects(const Ray& ray, Vector3* point) const
+bool Plane::intersects(const Ray& ray, Vector3* point) const
 {
-	float dot = Vector3::Dot(Normal, ray.direction);
+	float dot = Vector3::dot(Normal, ray.direction);
 	if (std::abs(dot) > 0.0001f)
 	{
 		if (point != nullptr)
 		{
-			float t = (D + Vector3::Dot(Normal, ray.origin)) / dot;
+			float t = (D + Vector3::dot(Normal, ray.origin)) / dot;
 			//if (t >= 0) return true;	// 表面側なら +、裏面なら -
 			(*point) = ray.origin - (t * ray.direction);
 		}
@@ -122,13 +122,13 @@ bool Plane::Intersects(const Ray& ray, Vector3* point) const
 }
 
 //------------------------------------------------------------------------------
-void Plane::Transform(const Matrix& mat)
+void Plane::transform(const Matrix& mat)
 {
 	float x = Normal.x;
 	float y = Normal.y;
 	float z = Normal.z;
 	float d = D;
-	Matrix t = Matrix::MakeInverse(mat);
+	Matrix t = Matrix::makeInverse(mat);
 
 	Normal.x = (((x * t.m11) + (y * t.m12)) + (z * t.m13)) + (d * t.m14);
 	Normal.y = (((x * t.m21) + (y * t.m22)) + (z * t.m23)) + (d * t.m24);
@@ -149,7 +149,7 @@ void Plane::print(const char* format, FILE* stream) const
 }
 
 //------------------------------------------------------------------------------
-Plane Plane::Normalize(const Plane& plane)
+Plane Plane::normalize(const Plane& plane)
 {
 	float t = 1.0f / Asm::sqrt((plane.Normal.x * plane.Normal.x) + (plane.Normal.y * plane.Normal.y) + (plane.Normal.z * plane.Normal.z));
 	return Plane(
@@ -160,31 +160,31 @@ Plane Plane::Normalize(const Plane& plane)
 }
 
 //------------------------------------------------------------------------------
-float Plane::Dot(const Plane& plane, const Vector4& vec)
+float Plane::dot(const Plane& plane, const Vector4& vec)
 {
 	return (plane.Normal.x * vec.x) + (plane.Normal.y * vec.y) + (plane.Normal.z * vec.z) + (plane.D * vec.w);
 }
 
 //------------------------------------------------------------------------------
-float Plane::DotCoord(const Plane& plane, const Vector3& vec)
+float Plane::dotCoord(const Plane& plane, const Vector3& vec)
 {
 	return (plane.Normal.x * vec.x) + (plane.Normal.y * vec.y) + (plane.Normal.z * vec.z) + plane.D;
 }
 
 //------------------------------------------------------------------------------
-float Plane::DotNormal(const Plane& plane, const Vector3& vec)
+float Plane::dotNormal(const Plane& plane, const Vector3& vec)
 {
 	return (plane.Normal.x * vec.x) + (plane.Normal.y * vec.y) + (plane.Normal.z * vec.z);
 }
 
 //------------------------------------------------------------------------------
-Plane Plane::Transform(const Plane& plane, const Matrix& mat)
+Plane Plane::transform(const Plane& plane, const Matrix& mat)
 {
 	float x = plane.Normal.x;
 	float y = plane.Normal.y;
 	float z = plane.Normal.z;
 	float d = plane.D;
-	Matrix t = Matrix::MakeInverse(mat);
+	Matrix t = Matrix::makeInverse(mat);
 
 	return Plane(
 		(((x * t.m11) + (y * t.m12)) + (z * t.m13)) + (d * t.m14),

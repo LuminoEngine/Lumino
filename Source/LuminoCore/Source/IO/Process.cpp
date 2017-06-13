@@ -18,9 +18,9 @@ Process::Process()
 	, m_redirectStandardInput(false)
 	, m_redirectStandardOutput(false)
 	, m_redirectStandardError(false)
-	, m_standardInputEncoding(Encoding::GetSystemMultiByteEncoding())
-	, m_standardOutputEncoding(Encoding::GetSystemMultiByteEncoding())
-	, m_standardErrorEncoding(Encoding::GetSystemMultiByteEncoding())
+	, m_standardInputEncoding(Encoding::getSystemMultiByteEncoding())
+	, m_standardOutputEncoding(Encoding::getSystemMultiByteEncoding())
+	, m_standardErrorEncoding(Encoding::getSystemMultiByteEncoding())
 	, m_standardOutputExternalStream(nullptr)
 	, m_standardInputWriter()
 	, m_standardOutputReader()
@@ -225,12 +225,12 @@ void Process::disposeProcess()
 	if (m_runningReadThread)
 	{
 		m_runningReadThread = false;
-		m_readStdOutputThread.Wait();
+		m_readStdOutputThread.wait();
 	}
 	if (m_runningErrorReadThread)
 	{
 		m_runningErrorReadThread = false;
-		m_readStdErrorThread.Wait();
+		m_readStdErrorThread.wait();
 	}
 }
 

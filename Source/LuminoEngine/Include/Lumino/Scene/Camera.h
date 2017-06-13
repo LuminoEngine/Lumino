@@ -30,8 +30,8 @@ public:
 	void SetLookAt(const Vector3& position) { m_lookAt = position; }
 	const Vector3& GetLookAt() const { return m_lookAt; }
 
-	void SetUpDirection(const Vector3& up) { m_upDirection = up; }
-	const Vector3& GetUpDirection() const { return m_upDirection; }
+	void setUpDirection(const Vector3& up) { m_upDirection = up; }
+	const Vector3& getUpDirection() const { return m_upDirection; }
 
 	
 
@@ -96,8 +96,8 @@ public:	// internal
 protected:
 
 	// Component interface
-	virtual void OnUpdate() override;
-	virtual void OnUIEvent(UIEventArgs* e) override;
+	virtual void onUpdate() override;
+	virtual void onUIEvent(UIEventArgs* e) override;
 
 LN_INTERNAL_ACCESS:
 	CameraComponent();
@@ -151,8 +151,8 @@ class CameraViewportLayer2
 public:
 	void SetDebugDrawFlags(WorldDebugDrawFlags flags);
 
-	virtual void Render() override;
-	virtual void ExecuteDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
+	virtual void render() override;
+	virtual void executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 
 protected:
 	virtual void OnRoutedEvent(UIEventArgs* e) override;

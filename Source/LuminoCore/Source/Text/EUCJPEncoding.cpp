@@ -101,7 +101,7 @@ EUCJPEncoding::~EUCJPEncoding()
 }
 
 //------------------------------------------------------------------------------
-inline EUCJPEncoding::EUCGroup EUCJPEncoding::CheckEUCGroup(const byte_t* pos, int len)
+inline EUCJPEncoding::EUCGroup EUCJPEncoding::checkEUCGroup(const byte_t* pos, int len)
 {
 	// ASCII
 	if ((len >= 1) &&
@@ -137,14 +137,14 @@ inline EUCJPEncoding::EUCGroup EUCJPEncoding::CheckEUCGroup(const byte_t* pos, i
 }
 
 //------------------------------------------------------------------------------
-int EUCJPEncoding::GetCharacterCount(const void* buffer, size_t bufferSize) const
+int EUCJPEncoding::getCharacterCount(const void* buffer, size_t bufferSize) const
 {
 	int count = 0;
 	const byte_t* pos = (const byte_t*)buffer;
 	const byte_t* end = pos + bufferSize;
 	while (pos < end)
 	{
-		pos += g_eucLeadExtraLength[CheckEUCGroup(pos, end - pos)];
+		pos += g_eucLeadExtraLength[checkEUCGroup(pos, end - pos)];
 		pos++;
 		count++;
 	}
@@ -152,18 +152,18 @@ int EUCJPEncoding::GetCharacterCount(const void* buffer, size_t bufferSize) cons
 }
 
 //------------------------------------------------------------------------------
-int EUCJPEncoding::GetLeadExtraLength(const void* buffer, size_t bufferSize) const
+int EUCJPEncoding::getLeadExtraLength(const void* buffer, size_t bufferSize) const
 {
 	const byte_t* pos = (const byte_t*)buffer;
 	const byte_t* end = pos + bufferSize;
-	return g_eucLeadExtraLength[CheckEUCGroup(pos, end - pos)];
+	return g_eucLeadExtraLength[checkEUCGroup(pos, end - pos)];
 }
 
 //==============================================================================
 // EUCJPDecoder
 //==============================================================================
 //------------------------------------------------------------------------------
-void EUCJPEncoding::EUCJPDecoder::ConvertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, size_t* outBytesUsed, size_t* outCharsUsed)
+void EUCJPEncoding::EUCJPDecoder::convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, size_t* outBytesUsed, size_t* outCharsUsed)
 {
 	const byte_t* srcPos = input;
 	const byte_t* srcEnd = input + inputByteSize;
@@ -175,7 +175,7 @@ void EUCJPEncoding::EUCJPDecoder::ConvertToUTF16(const byte_t* input, size_t inp
 		// コードポイントの種類を調べる
 		if (m_currentGroup == EUCGroup_Unknown)
 		{
-			m_currentGroup = CheckEUCGroup(srcPos, srcEnd - srcPos);
+			m_currentGroup = checkEUCGroup(srcPos, srcEnd - srcPos);
 		}
 
 		switch (m_currentGroup)
@@ -250,7 +250,7 @@ void EUCJPEncoding::EUCJPDecoder::ConvertToUTF16(const byte_t* input, size_t inp
 // EUCJPEncoder
 //==============================================================================
 //------------------------------------------------------------------------------
-void EUCJPEncoding::EUCJPEncoder::ConvertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, size_t* outBytesUsed, size_t* outCharsUsed)
+void EUCJPEncoding::EUCJPEncoder::convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, size_t* outBytesUsed, size_t* outCharsUsed)
 {
 	// 入力が 0 文字の場合は何もしない (変換の必要なし)
 	if (inputElementSize == 0) { return; }
@@ -263,7 +263,7 @@ void EUCJPEncoding::EUCJPEncoder::ConvertFromUTF16(const UTF16* input, size_t in
 		UTF16 ch = input[inBufPos];
 
 		// サロゲートはエラー
-		if (UnicodeUtils::CheckUTF16HighSurrogate(ch) || UnicodeUtils::CheckUTF16LowSurrogate(ch)) {
+		if (UnicodeUtils::checkUTF16HighSurrogate(ch) || UnicodeUtils::checkUTF16LowSurrogate(ch)) {
 			LN_THROW(0, EncodingException);
 		}
 

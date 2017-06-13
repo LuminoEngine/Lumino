@@ -22,7 +22,7 @@ const float GizmoModel::BaseOpacity = 0.5f;
 GizmoModelPtr GizmoModel::create()
 {
 	auto ptr = GizmoModelPtr::makeRef();
-	ptr->initialize(ln::detail::GraphicsManager::GetInstance());
+	ptr->initialize(ln::detail::GraphicsManager::getInstance());
 	return ptr;
 }
 
@@ -45,8 +45,8 @@ void GizmoModel::initialize(ln::detail::GraphicsManager* manager)
 {
 	m_tmat = RefPtr<Material>::makeRef();
 	m_tmat->initialize();
-	m_tmat->SetBlendMode(BlendMode::Alpha);
-	m_tmat->SetCullingMode(CullingMode::None);
+	m_tmat->setBlendMode(BlendMode::Alpha);
+	m_tmat->setCullingMode(CullingMode::None);
 }
 
 //------------------------------------------------------------------------------
@@ -101,7 +101,7 @@ bool GizmoModel::InjectMouseDown(int x, int y)
 		m_operationType = GetDirectionOperationType(x, y, &m_draggingLocalPlane);
 		if (m_operationType != OperationType::None)
 		{
-			m_draggingLocalPlane.Intersects(MakeLocalRay(x, y), &m_draggingStartLocalPosition);
+			m_draggingLocalPlane.intersects(MakeLocalRay(x, y), &m_draggingStartLocalPosition);
 			m_draggingStartGizmoTransform = m_gizmoTransform;
 			m_draggingStartViewPixelPoint.set(x, y);
 			m_dragging = true;
@@ -117,7 +117,7 @@ bool GizmoModel::InjectMouseMove(int x, int y)
 	if (m_dragging)
 	{
 		Vector3 localOffaet;
-		m_draggingLocalPlane.Intersects(MakeLocalRay(x, y), &localOffaet);
+		m_draggingLocalPlane.intersects(MakeLocalRay(x, y), &localOffaet);
 		localOffaet -= m_draggingStartLocalPosition;
 
 		localOffaet *= m_screenFactor;
@@ -150,7 +150,7 @@ bool GizmoModel::InjectMouseMove(int x, int y)
 					break;
 				}
 
-				m_gizmoTransform = m_draggingStartGizmoTransform * Matrix::MakeTranslation(localOffaet);
+				m_gizmoTransform = m_draggingStartGizmoTransform * Matrix::makeTranslation(localOffaet);
 				m_targetTransform.translation = m_targetInitialTransform.translation + localOffaet;
 				break;
 			}
@@ -173,12 +173,12 @@ bool GizmoModel::InjectMouseMove(int x, int y)
 					Ray ray1 = MakeLocalRay(x + 1, y);
 					Ray ray2 = MakeLocalRay(x, y + 1);
 					Vector3 lp1, lp2;
-					m_draggingLocalPlane.Intersects(ray1, &lp1);
-					m_draggingLocalPlane.Intersects(ray2, &lp2);
+					m_draggingLocalPlane.intersects(ray1, &lp1);
+					m_draggingLocalPlane.intersects(ray2, &lp2);
 					lp1 -= m_draggingStartLocalPosition;
 					lp2 -= m_draggingStartLocalPosition;
-					Vector3 raxis = Vector3::Normalize(lp1 - localOffaet);
-					Vector3 taxis = Vector3::Normalize(lp2 - localOffaet);
+					Vector3 raxis = Vector3::normalize(lp1 - localOffaet);
+					Vector3 taxis = Vector3::normalize(lp2 - localOffaet);
 					rot.rotateAxis(raxis, (y - m_draggingStartViewPixelPoint.y) * -0.05);
 					rot.rotateAxis(taxis, (x - m_draggingStartViewPixelPoint.x) * 0.05);
 					break;
@@ -189,12 +189,12 @@ bool GizmoModel::InjectMouseMove(int x, int y)
 				}
 
 				m_gizmoTransform = rot * m_draggingStartGizmoTransform;
-				m_targetTransform.rotation = m_targetInitialTransform.rotation * Quaternion::MakeFromRotationMatrix(rot);
+				m_targetTransform.rotation = m_targetInitialTransform.rotation * Quaternion::makeFromRotationMatrix(rot);
 				break;
 			}
 			case ln::tr::GizmoType::Scaling:
 			{
-				float s = Vector3::Dot(localOffaet, Vector3::Ones);
+				float s = Vector3::dot(localOffaet, Vector3::Ones);
 				switch (m_operationType)
 				{
 				case ln::tr::GizmoModel::OperationType::X:
@@ -221,7 +221,7 @@ bool GizmoModel::InjectMouseMove(int x, int y)
 				}
 
 				//localOffaet += Vector3::Ones;
-				//m_gizmoTransform = Matrix::MakeScaling(localOffaet) * m_draggingStartGizmoTransform;
+				//m_gizmoTransform = Matrix::makeScaling(localOffaet) * m_draggingStartGizmoTransform;
 				m_targetTransform.scale = m_targetInitialTransform.scale + localOffaet;
 				break;
 			}
@@ -252,7 +252,7 @@ bool GizmoModel::InjectMouseUp(int x, int y)
 }
 
 //------------------------------------------------------------------------------
-void GizmoModel::Render(DrawList* context)
+void GizmoModel::render(DrawList* context)
 {
 	Matrix gizmoMat;
 	gizmoMat.scale(m_screenFactor);
@@ -275,18 +275,18 @@ void GizmoModel::Render(DrawList* context)
 
 			// X axis
 			c = (m_operationType == OperationType::X) ? Color::White : Color::Red;
-			context->DrawCylinder(r, d, 8, 1, c, Matrix::MakeRotationZ(-Math::PIDiv2) * Matrix::MakeTranslation(d / 2, 0, 0));
-			context->DrawCone(cr, r * 6, 8, c, Matrix::MakeRotationZ(-Math::PIDiv2) * Matrix::MakeTranslation(d + cr, 0, 0));
+			context->DrawCylinder(r, d, 8, 1, c, Matrix::makeRotationZ(-Math::PIDiv2) * Matrix::makeTranslation(d / 2, 0, 0));
+			context->DrawCone(cr, r * 6, 8, c, Matrix::makeRotationZ(-Math::PIDiv2) * Matrix::makeTranslation(d + cr, 0, 0));
 
 			// Y axis
 			c = (m_operationType == OperationType::Y) ? Color::White : Color::Green;
-			context->DrawCylinder(r, d, 8, 1, c, Matrix::MakeTranslation(0, d / 2, 0));
-			context->DrawCone(cr, r * 6, 8, c, Matrix::MakeTranslation(0, d + cr, 0));
+			context->DrawCylinder(r, d, 8, 1, c, Matrix::makeTranslation(0, d / 2, 0));
+			context->DrawCone(cr, r * 6, 8, c, Matrix::makeTranslation(0, d + cr, 0));
 
 			// Z axis
 			c = (m_operationType == OperationType::Z) ? Color::White : Color::Blue;
-			context->DrawCylinder(r, d, 8, 1, c, Matrix::MakeRotationX(Math::PIDiv2) * Matrix::MakeTranslation(0, 0, d / 2));
-			context->DrawCone(cr, r * 6, 8, c, Matrix::MakeRotationX(Math::PIDiv2) * Matrix::MakeTranslation(0, 0, d + cr));
+			context->DrawCylinder(r, d, 8, 1, c, Matrix::makeRotationX(Math::PIDiv2) * Matrix::makeTranslation(0, 0, d / 2));
+			context->DrawCone(cr, r * 6, 8, c, Matrix::makeRotationX(Math::PIDiv2) * Matrix::makeTranslation(0, 0, d + cr));
 
 			// center
 			c = (m_operationType == OperationType::XYZ) ? Color::White : Color::Yellow;
@@ -294,15 +294,15 @@ void GizmoModel::Render(DrawList* context)
 
 			// YZ plane
 			c = (m_operationType == OperationType::YZ) ? Color::White : Color(1, 0, 0, BaseOpacity);
-			context->DrawSquare(s, s, 1, 1, c, Matrix::MakeRotationZ(-Math::PIDiv2) * Matrix::MakeTranslation(0, s2, s2), m_tmat);
+			context->DrawSquare(s, s, 1, 1, c, Matrix::makeRotationZ(-Math::PIDiv2) * Matrix::makeTranslation(0, s2, s2), m_tmat);
 
 			// XZ plane
 			c = (m_operationType == OperationType::XZ) ? Color::White : Color(0, 1, 0, BaseOpacity);
-			context->DrawSquare(s, s, 1, 1, c, Matrix::MakeTranslation(s2, 0, s2), m_tmat);
+			context->DrawSquare(s, s, 1, 1, c, Matrix::makeTranslation(s2, 0, s2), m_tmat);
 
 			// XY plane
 			c = (m_operationType == OperationType::XY) ? Color::White : Color(0, 0, 1, BaseOpacity);
-			context->DrawSquare(s, s, 1, 1, c, Matrix::MakeRotationX(Math::PIDiv2) * Matrix::MakeTranslation(s2, s2, 0), m_tmat);
+			context->DrawSquare(s, s, 1, 1, c, Matrix::makeRotationX(Math::PIDiv2) * Matrix::makeTranslation(s2, s2, 0), m_tmat);
 
 			break;
 		}
@@ -317,7 +317,7 @@ void GizmoModel::Render(DrawList* context)
 
 			// X
 			c = (m_operationType == OperationType::X) ? Color::White : Color(1, 0, 0, BaseOpacity);
-			context->DrawArc(0, Math::PI2, i1, o1, 32, c, Matrix::MakeRotationZ(-Math::PIDiv2), m_tmat);
+			context->DrawArc(0, Math::PI2, i1, o1, 32, c, Matrix::makeRotationZ(-Math::PIDiv2), m_tmat);
 
 			// Y
 			c = (m_operationType == OperationType::Y) ? Color::White : Color(0, 1, 0, BaseOpacity);
@@ -325,16 +325,16 @@ void GizmoModel::Render(DrawList* context)
 
 			// Z
 			c = (m_operationType == OperationType::Z) ? Color::White : Color(0, 0, 1, BaseOpacity);
-			context->DrawArc(0, Math::PI2, i1, o1, 32, c, Matrix::MakeRotationX(Math::PIDiv2), m_tmat);
+			context->DrawArc(0, Math::PI2, i1, o1, 32, c, Matrix::makeRotationX(Math::PIDiv2), m_tmat);
 
-			Matrix viewInv = Matrix::MakeScaling(m_screenFactor) * Matrix::MakeInverse(m_view);
+			Matrix viewInv = Matrix::makeScaling(m_screenFactor) * Matrix::makeInverse(m_view);
 			viewInv.m41 = m_gizmoTransform.m41;
 			viewInv.m42 = m_gizmoTransform.m42; 
 			viewInv.m43 = m_gizmoTransform.m43;
 			context->SetTransform(viewInv);
 
 			c = (m_operationType == OperationType::ViewZ) ? Color::White : Color(1, 1, 0, BaseOpacity);
-			context->DrawArc(0, Math::PI2, RotationViewZRingInner, RotationViewZRingOuter, 32, c, Matrix::MakeRotationX(Math::PIDiv2), m_tmat);
+			context->DrawArc(0, Math::PI2, RotationViewZRingInner, RotationViewZRingOuter, 32, c, Matrix::makeRotationX(Math::PIDiv2), m_tmat);
 			break;
 		}
 		case ln::tr::GizmoType::Scaling:
@@ -344,18 +344,18 @@ void GizmoModel::Render(DrawList* context)
 
 			// X axis
 			c = (m_operationType == OperationType::X) ? Color::White : Color::Red;
-			context->DrawCylinder(r, d, 8, 1, c, Matrix::MakeRotationZ(-Math::PIDiv2) * Matrix::MakeTranslation(d / 2, 0, 0));
-			context->DrawBox(Box(CenterBoxSize), c, Matrix::MakeTranslation(d, 0, 0));
+			context->DrawCylinder(r, d, 8, 1, c, Matrix::makeRotationZ(-Math::PIDiv2) * Matrix::makeTranslation(d / 2, 0, 0));
+			context->DrawBox(Box(CenterBoxSize), c, Matrix::makeTranslation(d, 0, 0));
 
 			// Y axis
 			c = (m_operationType == OperationType::Y) ? Color::White : Color::Green;
-			context->DrawCylinder(r, d, 8, 1, c, Matrix::MakeTranslation(0, d / 2, 0));
-			context->DrawBox(Box(CenterBoxSize), c, Matrix::MakeTranslation(0, d, 0));
+			context->DrawCylinder(r, d, 8, 1, c, Matrix::makeTranslation(0, d / 2, 0));
+			context->DrawBox(Box(CenterBoxSize), c, Matrix::makeTranslation(0, d, 0));
 
 			// Z axis
 			c = (m_operationType == OperationType::Z) ? Color::White : Color::Blue;
-			context->DrawCylinder(r, d, 8, 1, c, Matrix::MakeRotationX(Math::PIDiv2) * Matrix::MakeTranslation(0, 0, d / 2));
-			context->DrawBox(Box(CenterBoxSize), c, Matrix::MakeTranslation(0, 0, d));
+			context->DrawCylinder(r, d, 8, 1, c, Matrix::makeRotationX(Math::PIDiv2) * Matrix::makeTranslation(0, 0, d / 2));
+			context->DrawBox(Box(CenterBoxSize), c, Matrix::makeTranslation(0, 0, d));
 
 			// center
 			c = (m_operationType == OperationType::XYZ) ? Color::White : Color::Yellow;
@@ -363,15 +363,15 @@ void GizmoModel::Render(DrawList* context)
 
 			// YZ plane
 			c = (m_operationType == OperationType::YZ) ? Color::White : Color(1, 0, 0, BaseOpacity);
-			context->DrawSquare(s, s, 1, 1, c, Matrix::MakeRotationZ(-Math::PIDiv2) * Matrix::MakeTranslation(0, s2, s2), m_tmat);
+			context->DrawSquare(s, s, 1, 1, c, Matrix::makeRotationZ(-Math::PIDiv2) * Matrix::makeTranslation(0, s2, s2), m_tmat);
 
 			// XZ plane
 			c = (m_operationType == OperationType::XZ) ? Color::White : Color(0, 1, 0, BaseOpacity);
-			context->DrawSquare(s, s, 1, 1, c, Matrix::MakeTranslation(s2, 0, s2), m_tmat);
+			context->DrawSquare(s, s, 1, 1, c, Matrix::makeTranslation(s2, 0, s2), m_tmat);
 
 			// XY plane
 			c = (m_operationType == OperationType::XY) ? Color::White : Color(0, 0, 1, BaseOpacity);
-			context->DrawSquare(s, s, 1, 1, c, Matrix::MakeRotationX(Math::PIDiv2) * Matrix::MakeTranslation(s2, s2, 0), m_tmat);
+			context->DrawSquare(s, s, 1, 1, c, Matrix::makeRotationX(Math::PIDiv2) * Matrix::makeTranslation(s2, s2, 0), m_tmat);
 
 			break;
 		}
@@ -388,7 +388,7 @@ void GizmoModel::SubmitEditing()
 	m_targetInitialTransform = m_targetTransform;
 	
 	// 拡大・回転をリセット
-	m_gizmoTransform = Matrix::MakeTranslation(m_gizmoTransform.getPosition());
+	m_gizmoTransform = Matrix::makeTranslation(m_gizmoTransform.getPosition());
 	m_gizmoInitialTransform = m_gizmoTransform;
 
 	m_dragging = false;
@@ -401,7 +401,7 @@ void GizmoModel::MakeScreenFactor()
 {
 	Matrix viewproj = m_view * m_proj;
 	Vector4 trf = Vector4(m_gizmoTransform.getPosition(), 1.0f);
-	trf = Vector4::Transform(trf, viewproj);
+	trf = Vector4::transform(trf, viewproj);
 	m_screenFactor = m_displayScale * 0.15f * trf.w;
 }
 
@@ -477,7 +477,7 @@ GizmoModel::OperationType GizmoModel::GetDirectionOperationType(int x, int y, Pl
 				if (outLocalPlane) *outLocalPlane = localPlane;
 
 				Vector3 pt;
-				localPlane.Intersects(localViewRay, &pt);
+				localPlane.intersects(localViewRay, &pt);
 				float d = pt.getLength();
 				if (RotationViewZRingInner <= d && d <= RotationViewZRingOuter) return OperationType::ViewZ;
 			}
@@ -512,18 +512,18 @@ Ray GizmoModel::MakeLocalRay(int x, int y)
 
 	Ray ray;
 	ray.origin = m_viewPosition;
-	ray.direction = Vector3::Unproject(Vector3(x, y, 0), viewproj, 0, 0, m_viewPixelSize.width, m_viewPixelSize.height);
+	ray.direction = Vector3::unproject(Vector3(x, y, 0), viewproj, 0, 0, m_viewPixelSize.width, m_viewPixelSize.height);
 	ray.direction = ray.direction - ray.origin;
 
 	// ray を gizmo のローカル空間へ変換する
-	Matrix gizmoInv = Matrix::MakeInverse(gizmoMat);
+	Matrix gizmoInv = Matrix::makeInverse(gizmoMat);
 	{
-		//ray.TransformCoord(gizmoInv);
+		//ray.transformCoord(gizmoInv);
 		ray.direction += ray.origin;
-		ray.origin.TransformCoord(gizmoInv);
-		ray.direction.TransformCoord(gizmoInv);
+		ray.origin.transformCoord(gizmoInv);
+		ray.direction.transformCoord(gizmoInv);
 		ray.direction -= ray.origin;
-		ray.direction.Normalize();
+		ray.direction.normalize();
 	}
 
 	return ray;
@@ -535,9 +535,9 @@ void GizmoModel::IntersectsLocalPlanes(int x, int y, bool* xz, Vector3* ptXZ, bo
 	Ray ray = MakeLocalRay(x, y);
 	
 	// 各軸平面と衝突判定
-	*xz = Plane(Vector3::UnitY).Intersects(ray, ptXZ);
-	*xy = Plane(Vector3::UnitZ).Intersects(ray, ptXY);
-	*yz = Plane(Vector3::UnitX).Intersects(ray, ptYZ);
+	*xz = Plane(Vector3::UnitY).intersects(ray, ptXZ);
+	*xy = Plane(Vector3::UnitZ).intersects(ray, ptXY);
+	*yz = Plane(Vector3::UnitX).intersects(ray, ptYZ);
 	
 	*localViewRay = ray;
 }

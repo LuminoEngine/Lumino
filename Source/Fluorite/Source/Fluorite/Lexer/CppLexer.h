@@ -227,7 +227,7 @@ public:
 
 	virtual int ReadToken(const Range& buffer) override;
 	virtual void PollingToken(Token* newToken) override;
-	virtual void OnStart();
+	virtual void onStart();
 
 
 	static int IsSpaceChar(const Range& r);

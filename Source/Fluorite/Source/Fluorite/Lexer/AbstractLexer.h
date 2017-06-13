@@ -53,7 +53,7 @@ protected:
 
 	int ReadMBSSequence(const Range& buffer);
 
-	virtual void OnStart();
+	virtual void onStart();
 
 private:
 	InputFile*			m_inputFile;

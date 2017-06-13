@@ -23,7 +23,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TileMap, VisualComponent);
 //TileMap* TileMap::create()
 //{
 //	RefPtr<TileMap> obj(LN_NEW TileMap(), false);
-//	obj->CreateCore(SceneGraphManager::Instance);
+//	obj->createCore(SceneGraphManager::Instance);
 //	obj.SafeAddRef();
 //	return obj;
 //}
@@ -82,7 +82,7 @@ void TileMap::OnRender2(DrawList* renderer)
 //{
 //	if (m_tileMap != nullptr)
 //	{
-//		//m_renderer->SetViewProjMatrix(dc->CurrentCamera->GetViewMatrix(), dc->CurrentCamera->GetProjectionMatrix());
+//		//m_renderer->setViewProjMatrix(dc->CurrentCamera->GetViewMatrix(), dc->CurrentCamera->GetProjectionMatrix());
 //		
 //		// TODO: WorldMatrix
 //		m_renderer->SetTransform(Matrix::Identity, dc->GetCurrentCamera()->GetViewProjectionMatrix());
@@ -96,7 +96,7 @@ void TileMap::OnRender2(DrawList* renderer)
 //	//dc->SetViewProjection(dc->CurrentCamera->GetViewMatrix(), dc->CurrentCamera->GetProjectionMatrix());
 //
 //	//RefPtr<Pen> pen(LN_NEW Pen(), false);
-//	//pen->SetBrush(ColorBrush::Green);
+//	//pen->setBrush(ColorBrush::Green);
 //
 //	//auto* d = dc->BeginDrawingContext();
 //

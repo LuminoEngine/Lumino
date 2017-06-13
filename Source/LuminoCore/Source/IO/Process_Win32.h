@@ -1,5 +1,4 @@
 ﻿#include "../Internal.h"
-#include <windows.h>
 
 LN_NAMESPACE_BEGIN
 namespace detail {

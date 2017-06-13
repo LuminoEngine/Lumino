@@ -19,28 +19,28 @@ TEST_F(Test_Base_Encoding_UTF8, Basic)
 
 	// 最小バイト数
 	{
-		Encoding* e = Encoding::GetUTF8Encoding();
-		ASSERT_EQ(1, e->GetMinByteCount());
+		Encoding* e = Encoding::getUTF8Encoding();
+		ASSERT_EQ(1, e->getMinByteCount());
 	}
 
 	// 最大バイト数
 	{
-		Encoding* e = Encoding::GetUTF8Encoding();
-		ASSERT_EQ(6, e->GetMaxByteCount());
+		Encoding* e = Encoding::getUTF8Encoding();
+		ASSERT_EQ(6, e->getMaxByteCount());
 	}
 	// UTF-8 → UTF-16
 	{
 		// "日本語" (UTF-8)
 		byte_t str1[] = { 0xE6, 0x97, 0xA5, 0xE6, 0x9C, 0xAC, 0xE8, 0xAA, 0x9E };
 
-		std::unique_ptr<Decoder> decoder(Encoding::GetUTF8Encoding()->CreateDecoder());
-		std::unique_ptr<Encoder> encoder(Encoding::GetUTF16Encoding()->CreateEncoder());
+		std::unique_ptr<Decoder> decoder(Encoding::getUTF8Encoding()->createDecoder());
+		std::unique_ptr<Encoder> encoder(Encoding::getUTF16Encoding()->createEncoder());
 
 		//size_t bytesUsed;
 		//size_t charsUsed;
 		//bool usedDefaultChar;
 		EncodingConversionResult info;
-		ByteBuffer buf1 = Encoding::Convert(str1, 9, decoder.get(), encoder.get(), options, &info);
+		ByteBuffer buf1 = Encoding::convert(str1, 9, decoder.get(), encoder.get(), options, &info);
 		
 		uint16_t* utf16str = (uint16_t*)buf1.getData();
 
@@ -56,14 +56,14 @@ TEST_F(Test_Base_Encoding_UTF8, Basic)
 		// "日本語" (UTF-16)
 		uint16_t utf16str[] = { 0x65E5, 0x672C, 0x8A9e };
 
-		std::unique_ptr<Decoder> decoder(Encoding::GetUTF16Encoding()->CreateDecoder());
-		std::unique_ptr<Encoder> encoder(Encoding::GetUTF8Encoding()->CreateEncoder());
+		std::unique_ptr<Decoder> decoder(Encoding::getUTF16Encoding()->createDecoder());
+		std::unique_ptr<Encoder> encoder(Encoding::getUTF8Encoding()->createEncoder());
 
 		//size_t bytesUsed;
 		//size_t charsUsed;
 		//bool usedDefaultChar;
 		EncodingConversionResult info;
-		ByteBuffer buf1 = Encoding::Convert(utf16str, 6, decoder.get(), encoder.get(), options, &info);
+		ByteBuffer buf1 = Encoding::convert(utf16str, 6, decoder.get(), encoder.get(), options, &info);
 
 		uint8_t* utf8str = (uint8_t*)buf1.getData();
 

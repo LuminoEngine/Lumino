@@ -33,7 +33,7 @@ LN_NAMESPACE_BEGIN
 ////------------------------------------------------------------------------------
 //IndexBuffer* IndexBuffer::create(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
 //{
-//	return create(GraphicsManager::GetInstance(), indexCount, initialData, format, usage);
+//	return create(GraphicsManager::getInstance(), indexCount, initialData, format, usage);
 //}
 //
 ////------------------------------------------------------------------------------
@@ -70,11 +70,11 @@ void IndexBuffer::initialize(detail::GraphicsManager* manager, int indexCount, c
 
 	if (sizeConst)
 	{
-		m_rhiObject.attach(m_manager->GetGraphicsDevice()->CreateIndexBuffer(indexCount, initialData, m_format, m_usage), false);
+		m_rhiObject.attach(m_manager->getGraphicsDevice()->CreateIndexBuffer(indexCount, initialData, m_format, m_usage), false);
 	}
 	else
 	{
-		m_buffer.resize(Utils::GetIndexBufferSize(m_format, indexCount));
+		m_buffer.resize(Utils::getIndexBufferSize(m_format, indexCount));
 	}
 }
 
@@ -86,17 +86,17 @@ void IndexBuffer::Dispose()
 }
 
 //------------------------------------------------------------------------------
-int IndexBuffer::GetIndexCount() const
+int IndexBuffer::getIndexCount() const
 {
-	return static_cast<int>(m_buffer.size() / Utils::GetIndexStride(m_format));
+	return static_cast<int>(m_buffer.size() / Utils::getIndexStride(m_format));
 }
 
 //------------------------------------------------------------------------------
 void IndexBuffer::reserve(int indexCount)
 {
-	if (LN_CHECK_STATE(!IsRHIDirect())) return;		// サイズ変更禁止
+	if (LN_CHECK_STATE(!isRHIDirect())) return;		// サイズ変更禁止
 
-	size_t newSize = static_cast<size_t>(indexCount * GetIndexStride());
+	size_t newSize = static_cast<size_t>(indexCount * getIndexStride());
 	if (newSize != m_buffer.capacity())
 	{
 		m_buffer.reserve(newSize);
@@ -106,10 +106,10 @@ void IndexBuffer::reserve(int indexCount)
 //------------------------------------------------------------------------------
 void IndexBuffer::resize(int indexCount)
 {
-	if (LN_CHECK_STATE(!IsRHIDirect())) return;		// サイズ変更禁止
+	if (LN_CHECK_STATE(!isRHIDirect())) return;		// サイズ変更禁止
 
-	UpdateFormat(indexCount);
-	size_t newSize = static_cast<size_t>(indexCount* GetIndexStride());
+	updateFormat(indexCount);
+	size_t newSize = static_cast<size_t>(indexCount* getIndexStride());
 	if (newSize != m_buffer.size())
 	{
 		m_buffer.resize(newSize);
@@ -117,17 +117,17 @@ void IndexBuffer::resize(int indexCount)
 }
 
 //------------------------------------------------------------------------------
-void* IndexBuffer::GetMappedData()
+void* IndexBuffer::getMappedData()
 {
 	if (m_usage == ResourceUsage::Static)
 	{
-		// sizeConst で、まだ1度も SetVertexBufferCommand に入っていない場合は直接 Lock で書き換えできる
+		// sizeConst で、まだ1度も SetVertexBufferCommand に入っていない場合は直接 lock で書き換えできる
 		if (m_initialUpdate && m_rhiObject != nullptr)
 		{
 			if (m_rhiLockedBuffer == nullptr)
 			{
 				size_t lockedSize;
-				m_rhiObject->Lock(&m_rhiLockedBuffer, &lockedSize);
+				m_rhiObject->lock(&m_rhiLockedBuffer, &lockedSize);
 			}
 			m_locked = true;
 			return m_rhiLockedBuffer;
@@ -139,13 +139,13 @@ void* IndexBuffer::GetMappedData()
 }
 
 //------------------------------------------------------------------------------
-void* IndexBuffer::RequestMappedData(int indexCount)
+void* IndexBuffer::requestMappedData(int indexCount)
 {
-	if (GetIndexCount() < indexCount)
+	if (getIndexCount() < indexCount)
 	{
 		resize(indexCount);
 	}
-	return GetMappedData();
+	return getMappedData();
 }
 
 //------------------------------------------------------------------------------
@@ -156,9 +156,9 @@ void IndexBuffer::clear()
 }
 
 //------------------------------------------------------------------------------
-void IndexBuffer::SetIndex(int index, int vertexIndex)
+void IndexBuffer::setIndex(int index, int vertexIndex)
 {
-	void* indexBuffer = GetMappedData();
+	void* indexBuffer = getMappedData();
 
 	if (m_format == IndexBufferFormat_UInt16)
 	{
@@ -177,19 +177,19 @@ void IndexBuffer::SetIndex(int index, int vertexIndex)
 }
 
 //------------------------------------------------------------------------------
-Driver::IIndexBuffer* IndexBuffer::ResolveRHIObject()
+Driver::IIndexBuffer* IndexBuffer::resolveRHIObject()
 {
 	if (m_locked)
 	{
-		if (IsRHIDirect())
+		if (isRHIDirect())
 		{
-			m_rhiObject->Unlock();
+			m_rhiObject->unlock();
 		}
 		else
 		{
 			if (m_rhiObject == nullptr || m_rhiObject->getByteCount() != m_buffer.size())
 			{
-				m_rhiObject.attach(m_manager->GetGraphicsDevice()->CreateIndexBuffer(GetIndexCount(), m_buffer.data(), m_format, m_usage), false);
+				m_rhiObject.attach(m_manager->getGraphicsDevice()->CreateIndexBuffer(getIndexCount(), m_buffer.data(), m_format, m_usage), false);
 			}
 			else
 			{
@@ -200,7 +200,7 @@ Driver::IIndexBuffer* IndexBuffer::ResolveRHIObject()
 					RenderBulkData, data,
 					RefPtr<Driver::IIndexBuffer>, deviceObj,
 					{
-						deviceObj->SetSubData(0, data.getData(), data.getSize());
+						deviceObj->setSubData(0, data.getData(), data.getSize());
 					});
 			}
 		}
@@ -210,13 +210,13 @@ Driver::IIndexBuffer* IndexBuffer::ResolveRHIObject()
 }
 
 //------------------------------------------------------------------------------
-int IndexBuffer::GetIndexStride() const
+int IndexBuffer::getIndexStride() const
 {
-	return Utils::GetIndexStride(m_format);
+	return Utils::getIndexStride(m_format);
 }
 
 //------------------------------------------------------------------------------
-void IndexBuffer::OnChangeDevice(Driver::IGraphicsDevice* device)
+void IndexBuffer::onChangeDevice(Driver::IGraphicsDevice* device)
 {
 	if (device == nullptr)
 	{
@@ -227,9 +227,9 @@ void IndexBuffer::OnChangeDevice(Driver::IGraphicsDevice* device)
 
 			void* buffer;
 			size_t size;
-			m_rhiObject->Lock(&buffer, &size);
+			m_rhiObject->lock(&buffer, &size);
 			memcpy(m_buffer.data(), buffer, m_buffer.size());
-			m_rhiObject->Unlock();
+			m_rhiObject->unlock();
 		}
 
 		// オブジェクト破棄
@@ -237,13 +237,13 @@ void IndexBuffer::OnChangeDevice(Driver::IGraphicsDevice* device)
 	}
 	else
 	{
-		// 復帰後は次の ResolveDeviceObject() で新しい RHI オブジェクトにセットされる
+		// 復帰後は次の resolveDeviceObject() で新しい RHI オブジェクトにセットされる
 		m_locked = true;
 	}
 }
 
 //------------------------------------------------------------------------------
-void IndexBuffer::UpdateFormat(int indexCount)
+void IndexBuffer::updateFormat(int indexCount)
 {
 	if (m_format == IndexBufferFormat_UInt16 && indexCount > 0xFFFF)
 	{

@@ -34,7 +34,7 @@ float Vector3::getLength() const
 }
 
 //------------------------------------------------------------------------------
-void Vector3::Normalize()
+void Vector3::normalize()
 {
 	float t = 1.0f / Asm::sqrt(x * x + y * y + z * z);
 	x *= t;
@@ -51,7 +51,7 @@ void Vector3::clamp(const Vector3& minVec, const Vector3& maxVec)
 }
 
 //------------------------------------------------------------------------------
-void Vector3::TransformCoord(const Matrix& mat)
+void Vector3::transformCoord(const Matrix& mat)
 {
 	float tx = x;
 	float ty = y;
@@ -83,7 +83,7 @@ void Vector3::print(const char* format, FILE* stream) const
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Vector3 Vector3::Normalize(float x, float y, float z)
+Vector3 Vector3::normalize(float x, float y, float z)
 {
 	float t = 1.0f / Asm::sqrt(x * x + y * y + z * z);
 	return Vector3(
@@ -95,7 +95,7 @@ Vector3 Vector3::Normalize(float x, float y, float z)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Vector3 Vector3::Normalize(const Vector3& vec)
+Vector3 Vector3::normalize(const Vector3& vec)
 {
 	float t = 1.0f / Asm::sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
 	return Vector3(
@@ -105,7 +105,7 @@ Vector3 Vector3::Normalize(const Vector3& vec)
 }
 
 //------------------------------------------------------------------------------
-Vector3 Vector3::SafeNormalize(const Vector3& vec)
+Vector3 Vector3::safeNormalize(const Vector3& vec)
 {
 	float len = Asm::sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
 	if (len == 0.0)
@@ -120,7 +120,7 @@ Vector3 Vector3::SafeNormalize(const Vector3& vec)
 }
 
 //------------------------------------------------------------------------------
-Vector3 Vector3::SafeNormalize(const Vector3& vec, const Vector3& alt)
+Vector3 Vector3::safeNormalize(const Vector3& vec, const Vector3& alt)
 {
 	float len = Asm::sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
 	if (len == 0.0)
@@ -135,13 +135,13 @@ Vector3 Vector3::SafeNormalize(const Vector3& vec, const Vector3& alt)
 }
 
 //------------------------------------------------------------------------------
-Vector3 Vector3::Replicate(float value)
+Vector3 Vector3::replicate(float value)
 {
 	return Vector3(value, value, value);
 }
 
 //------------------------------------------------------------------------------
-float Vector3::Distance(const Vector3& vec1, const Vector3& vec2)
+float Vector3::distance(const Vector3& vec1, const Vector3& vec2)
 {
 	float x = vec1.x - vec2.x;
 	float y = vec1.y - vec2.y;
@@ -150,7 +150,7 @@ float Vector3::Distance(const Vector3& vec1, const Vector3& vec2)
 }
 
 //------------------------------------------------------------------------------
-float Vector3::DistanceSquared(const Vector3& vec1, const Vector3& vec2)
+float Vector3::distanceSquared(const Vector3& vec1, const Vector3& vec2)
 {
 	float x = vec1.x - vec2.x;
 	float y = vec1.y - vec2.y;
@@ -161,7 +161,7 @@ float Vector3::DistanceSquared(const Vector3& vec1, const Vector3& vec2)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-float Vector3::Dot(const Vector3& vec1, const Vector3& vec2)
+float Vector3::dot(const Vector3& vec1, const Vector3& vec2)
 {
 	return (vec1.x * vec2.x + vec1.y * vec2.y + vec1.z * vec2.z);
 }
@@ -169,7 +169,7 @@ float Vector3::Dot(const Vector3& vec1, const Vector3& vec2)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Vector3 Vector3::Cross(const Vector3& vec1, const Vector3& vec2)
+Vector3 Vector3::cross(const Vector3& vec1, const Vector3& vec2)
 {
 	return Vector3(
 		(vec1.y * vec2.z) - (vec1.z * vec2.y),
@@ -178,7 +178,7 @@ Vector3 Vector3::Cross(const Vector3& vec1, const Vector3& vec2)
 }
 
 //------------------------------------------------------------------------------
-Vector3 Vector3::Min(const Vector3& vec1, const Vector3& vec2)
+Vector3 Vector3::min(const Vector3& vec1, const Vector3& vec2)
 {
 	return Vector3(
 		(vec1.x < vec2.x) ? vec1.x : vec2.x,
@@ -187,19 +187,19 @@ Vector3 Vector3::Min(const Vector3& vec1, const Vector3& vec2)
 }
 
 //------------------------------------------------------------------------------
-Vector3 Vector3::Min(const Vector3* vectors, int count)
+Vector3 Vector3::min(const Vector3* vectors, int count)
 {
 	if (count <= 0) return Vector3::Zero;
 	Vector3 out = vectors[0];
 	for (int i = 1; i < count; ++i)
 	{
-		out = Min(out, vectors[i]);
+		out = min(out, vectors[i]);
 	}
 	return out;
 }
 
 //------------------------------------------------------------------------------
-Vector3 Vector3::Max(const Vector3& vec1, const Vector3& vec2)
+Vector3 Vector3::max(const Vector3& vec1, const Vector3& vec2)
 {
 	return Vector3(
 		(vec1.x > vec2.x) ? vec1.x : vec2.x,
@@ -208,13 +208,13 @@ Vector3 Vector3::Max(const Vector3& vec1, const Vector3& vec2)
 }
 
 //------------------------------------------------------------------------------
-Vector3 Vector3::Max(const Vector3* vectors, int count)
+Vector3 Vector3::max(const Vector3* vectors, int count)
 {
 	if (count <= 0) return Vector3::Zero;
 	Vector3 out = vectors[0];
 	for (int i = 1; i < count; ++i)
 	{
-		out = Max(out, vectors[i]);
+		out = max(out, vectors[i]);
 	}
 	return out;
 }
@@ -222,7 +222,7 @@ Vector3 Vector3::Max(const Vector3* vectors, int count)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Vector3 Vector3::Reflect(const Vector3& vec, const Vector3& normal)
+Vector3 Vector3::reflect(const Vector3& vec, const Vector3& normal)
 {
 	float t = -( normal.x * vec.x + normal.y * vec.y + normal.z * vec.z ) / ( normal.x * normal.x + normal.y * normal.y + normal.z * normal.z );
 	return Vector3(
@@ -234,7 +234,7 @@ Vector3 Vector3::Reflect(const Vector3& vec, const Vector3& normal)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Vector3 Vector3::Slide(const Vector3& vec, const Vector3& normal)
+Vector3 Vector3::slide(const Vector3& vec, const Vector3& normal)
 {
 	float t = -(normal.x * vec.x + normal.y * vec.y + normal.z * vec.z) / (normal.x * normal.x + normal.y * normal.y + normal.z * normal.z);
 	return Vector3(
@@ -246,7 +246,7 @@ Vector3 Vector3::Slide(const Vector3& vec, const Vector3& normal)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Vector3 Vector3::Transform(const Vector3& vec, const Quaternion& qua)
+Vector3 Vector3::transform(const Vector3& vec, const Quaternion& qua)
 {
 	float x = qua.x + qua.x;
 	float y = qua.y + qua.y;
@@ -270,7 +270,7 @@ Vector3 Vector3::Transform(const Vector3& vec, const Quaternion& qua)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Vector4 Vector3::Transform(const Vector3& vec, const Matrix& mat)
+Vector4 Vector3::transform(const Vector3& vec, const Matrix& mat)
 {
 	return Vector4(
 		(((vec.x * mat.m11) + (vec.y * mat.m21)) + (vec.z * mat.m31)) + mat.m41,
@@ -282,7 +282,7 @@ Vector4 Vector3::Transform(const Vector3& vec, const Matrix& mat)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Vector3 Vector3::TransformCoord(const Vector3& vec, const Matrix& mat)
+Vector3 Vector3::transformCoord(const Vector3& vec, const Matrix& mat)
 {
 	float w = 1.0f / ((((vec.x * mat.m14) + (vec.y * mat.m24)) + (vec.z * mat.m34)) + mat.m44);
 	return Vector3(
@@ -327,9 +327,9 @@ Vector3 Vector3::catmullRom(const Vector3& vec1, const Vector3& vec2, const Vect
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Vector3 Vector3::Project(const Vector3& point, const Matrix& worldViewProj, float x, float y, float width, float height, float minZ, float maxZ)
+Vector3 Vector3::project(const Vector3& point, const Matrix& worldViewProj, float x, float y, float width, float height, float minZ, float maxZ)
 {
-	Vector3 v = Vector3::TransformCoord(point, worldViewProj);
+	Vector3 v = Vector3::transformCoord(point, worldViewProj);
 	return Vector3(
 		((1.0f + v.x) * 0.5f * width) + x, 
 		((1.0f - v.y) * 0.5f * height) + y, 
@@ -339,16 +339,16 @@ Vector3 Vector3::Project(const Vector3& point, const Matrix& worldViewProj, floa
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Vector3 Vector3::Unproject(const Vector3& point, const Matrix& worldViewProj, float x, float y, float width, float height, float minZ, float maxZ)
+Vector3 Vector3::unproject(const Vector3& point, const Matrix& worldViewProj, float x, float y, float width, float height, float minZ, float maxZ)
 {
 	Vector3 v;
-	Matrix inv = Matrix::MakeInverse(worldViewProj);
+	Matrix inv = Matrix::makeInverse(worldViewProj);
 
 	v.x = (((point.x - x) / width) * 2.0f) - 1.0f;
 	v.y = -((((point.y - y) / height) * 2.0f) - 1.0f);
 	v.z = (point.z - minZ) / (maxZ - minZ);
 
-	return Vector3::TransformCoord(v, inv);
+	return Vector3::transformCoord(v, inv);
 }
 
 //------------------------------------------------------------------------------
