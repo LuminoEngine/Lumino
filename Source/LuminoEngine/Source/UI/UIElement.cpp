@@ -102,56 +102,56 @@ void UIElement::initialize()
 
 	m_localStyle = RefPtr<detail::UIStylePropertyTableInstance>::makeRef();
 
-	//GoToVisualState(String::GetEmpty());
+	//goToVisualState(String::GetEmpty());
 	m_invalidateFlags |= detail::InvalidateFlags::VisualState;
 }
 
 //------------------------------------------------------------------------------
-void UIElement::SetLayoutColumn(int index) { m_gridLayoutInfo.layoutColumn = index; }
+void UIElement::setLayoutColumn(int index) { m_gridLayoutInfo.layoutColumn = index; }
 int UIElement::getLayoutColumn() const { return m_gridLayoutInfo.layoutColumn; }
-void UIElement::SetLayoutRow(int index) { m_gridLayoutInfo.layoutRow = index; }
+void UIElement::setLayoutRow(int index) { m_gridLayoutInfo.layoutRow = index; }
 int UIElement::getLayoutRow() const { return m_gridLayoutInfo.layoutRow; }
-void UIElement::SetLayoutColumnSpan(int span) { m_gridLayoutInfo.layoutColumnSpan = span; }
+void UIElement::setLayoutColumnSpan(int span) { m_gridLayoutInfo.layoutColumnSpan = span; }
 int UIElement::getLayoutColumnSpan() const { return m_gridLayoutInfo.layoutColumnSpan; }
-void UIElement::SetLayoutRowSpan(int span) { m_gridLayoutInfo.layoutRowSpan = span; }
+void UIElement::setLayoutRowSpan(int span) { m_gridLayoutInfo.layoutRowSpan = span; }
 int UIElement::getLayoutRowSpan() const { return m_gridLayoutInfo.layoutRowSpan; }
 
 //------------------------------------------------------------------------------
-void UIElement::SetBackground(Brush* value)
+void UIElement::setBackground(Brush* value)
 {
 	m_localStyle->background = value;
 	//tr::PropertyInfo::setPropertyValueDirect<BrushPtr>(this, backgroundId, value);
 }
 
 //------------------------------------------------------------------------------
-Brush* UIElement::GetBackground() const
+Brush* UIElement::getBackground() const
 {
 	return m_localStyle->background.get();
 	//return tr::PropertyInfo::getPropertyValueDirect<BrushPtr>(this, backgroundId);
 }
 
 //------------------------------------------------------------------------------
-EventConnection UIElement::ConnectOnGotFocus(UIEventHandler handler)
+EventConnection UIElement::connectOnGotFocus(UIEventHandler handler)
 {
 	return m_onGotFocus.connect(handler);
 }
 
 //------------------------------------------------------------------------------
-EventConnection UIElement::ConnectOnLostFocus(UIEventHandler handler)
+EventConnection UIElement::connectOnLostFocus(UIEventHandler handler)
 {
 	return m_onLostFocus.connect(handler);
 }
 
 //------------------------------------------------------------------------------
-void UIElement::GoToVisualState(const StringRef& stateName)
+void UIElement::goToVisualState(const StringRef& stateName)
 {
-	GetVisualStateManager()->GoToVisualState(stateName);
+	getVisualStateManager()->goToVisualState(stateName);
 	//m_currentVisualStateName = stateName;
 	m_invalidateFlags |= detail::InvalidateFlags::VisualState;
 }
 
 //------------------------------------------------------------------------------
-UIVisualStateManager* UIElement::GetVisualStateManager()
+UIVisualStateManager* UIElement::getVisualStateManager()
 {
 	if (m_visualStateManager == nullptr)
 	{
@@ -161,24 +161,24 @@ UIVisualStateManager* UIElement::GetVisualStateManager()
 }
 
 //------------------------------------------------------------------------------
-void UIElement::Focus()
+void UIElement::focus()
 {
-	if (IsFocusable())
+	if (isFocusable())
 	{
-		GetContext()->SetFocusElement(this);
+		getContext()->setFocusElement(this);
 	}
 }
 
 //------------------------------------------------------------------------------
-void UIElement::CaptureMouse()
+void UIElement::captureMouse()
 {
-	getManager()->CaptureMouse(this);
+	getManager()->captureMouse(this);
 }
 
 //------------------------------------------------------------------------------
-void UIElement::ReleaseMouseCapture()
+void UIElement::releaseMouseCapture()
 {
-	getManager()->ReleaseMouseCapture(this);
+	getManager()->releaseMouseCapture(this);
 }
 
 //------------------------------------------------------------------------------
@@ -205,13 +205,13 @@ ILayoutElement* UIElement::getVisualChild(int index) const
 }
 
 //------------------------------------------------------------------------------
-void UIElement::RaiseEvent(const UIEventInfo* ev, UIElement* sender, UIEventArgs* e)
+void UIElement::raiseEvent(const UIEventInfo* ev, UIElement* sender, UIEventArgs* e)
 {
 	//if (m_parent != nullptr)
 	{
 		e->sender = sender;
 		e->m_type = ev;
-		RaiseEventInternal(e);
+		raiseEventInternal(e);
 	}
 }
 
@@ -235,19 +235,19 @@ void UIElement::arrangeLayout(const Rect& finalLocalRect)
 	Size ds = getLayoutDesiredSize();
 	if (parentHAlign != nullptr)
 	{
-		detail::LayoutHelper::AdjustHorizontalAlignment(finalLocalRect.getSize(), ds, true, *parentHAlign, &alignd);
+		detail::LayoutHelper::adjustHorizontalAlignment(finalLocalRect.getSize(), ds, true, *parentHAlign, &alignd);
 		alignd.x += finalLocalRect.x;
 	}
 	if (parentVAlign != nullptr)
 	{
-		detail::LayoutHelper::AdjustVerticalAlignment(finalLocalRect.getSize(), ds, true, *parentVAlign, &alignd);
+		detail::LayoutHelper::adjustVerticalAlignment(finalLocalRect.getSize(), ds, true, *parentVAlign, &alignd);
 		alignd.y += finalLocalRect.y;
 	}
 
 
 	ILayoutElement::arrangeLayout(alignd/*finalLocalRect*/);
 
-	OnLayoutUpdated();
+	onLayoutUpdated();
 }
 
 //------------------------------------------------------------------------------
@@ -263,12 +263,12 @@ Size UIElement::arrangeOverride(const Size& finalSize)
 }
 
 //------------------------------------------------------------------------------
-void UIElement::OnUpdateFrame()
+void UIElement::onUpdateFrame()
 {
 }
 
 //------------------------------------------------------------------------------
-void UIElement::OnLayoutUpdated()
+void UIElement::onLayoutUpdated()
 {
 }
 
@@ -282,8 +282,8 @@ void UIElement::onRender(DrawingContext* g)
 	{
 		g->setBrush(m_localStyle->background.get());
 		//g->setOpacity(m_combinedOpacity);
-		//g->DrawRectangle(Rect(0, 0, m_finalLocalRect.GetSize()));
-		g->DrawBoxBackground(Rect(0, 0, m_finalLocalRect.getSize()), m_localStyle->cornerRadius.get());
+		//g->drawRectangle(Rect(0, 0, m_finalLocalRect.GetSize()));
+		g->drawBoxBackground(Rect(0, 0, m_finalLocalRect.getSize()), m_localStyle->cornerRadius.get());
 
 		
 	}
@@ -291,21 +291,21 @@ void UIElement::onRender(DrawingContext* g)
 	{
 		//g->setBrush(decoratorBackground.Get());
 		////g->setOpacity(m_combinedOpacity * m_decoratorOpacity);
-		//g->DrawRectangle(Rect(0, 0, m_finalLocalRect.GetSize()));
+		//g->drawRectangle(Rect(0, 0, m_finalLocalRect.GetSize()));
 	}
 
 	//if (m_localStyle->testDeco.get() != nullptr)
 	//{
-	//	m_localStyle->testDeco.get()->LayoutAndRender(g, m_finalGlobalRect.GetSize());
+	//	m_localStyle->testDeco.get()->layoutAndRender(g, m_finalGlobalRect.GetSize());
 	//}
 	for (auto& re : m_localStyle->m_availableRenderElements)
 	{
-		re->LayoutAndRender(g, m_finalGlobalRect.getSize());
+		re->layoutAndRender(g, m_finalGlobalRect.getSize());
 	}
 
 	if (!m_localStyle->borderThickness.get().isZero())
 	{
-		g->DrawBoxBorder(
+		g->drawBoxBorder(
 			Rect(0, 0, m_finalGlobalRect.getSize()), m_localStyle->borderThickness.get(), CornerRadius(),
 			Color::Gray, Color::Gray, Color::Gray, Color::Gray,
 			BorderDirection::Outside);
@@ -313,82 +313,82 @@ void UIElement::onRender(DrawingContext* g)
 }
 
 //------------------------------------------------------------------------------
-void UIElement::OnMouseMove(UIMouseEventArgs* e) { }
-void UIElement::OnMouseDown(UIMouseEventArgs* e)
+void UIElement::onMouseMove(UIMouseEventArgs* e) { }
+void UIElement::onMouseDown(UIMouseEventArgs* e)
 {
-	if (IsFocusable())
+	if (isFocusable())
 	{
-		Focus();
+		focus();
 
 		// フォーカスを持ている要素はここで処理済みとする。そうしないと、ルート要素までルーティングされてしまう。
 		e->handled = true;
 	}
 }
-void UIElement::OnMouseUp(UIMouseEventArgs* e) { }
-void UIElement::OnKeyDown(UIKeyEventArgs* e) { }
-void UIElement::OnKeyUp(UIKeyEventArgs* e) { }
-void UIElement::OnTextInput(UIKeyEventArgs* e) { }
-void UIElement::OnGotFocus(UIEventArgs* e)
+void UIElement::onMouseUp(UIMouseEventArgs* e) { }
+void UIElement::onKeyDown(UIKeyEventArgs* e) { }
+void UIElement::onKeyUp(UIKeyEventArgs* e) { }
+void UIElement::onTextInput(UIKeyEventArgs* e) { }
+void UIElement::onGotFocus(UIEventArgs* e)
 {
 	m_onGotFocus.raise(e);
 }
-void UIElement::OnLostFocus(UIEventArgs* e)
+void UIElement::onLostFocus(UIEventArgs* e)
 {
 	m_onLostFocus.raise(e);
 }
 
 //------------------------------------------------------------------------------
-void UIElement::OnMouseEnter(UIMouseEventArgs* e)
+void UIElement::onMouseEnter(UIMouseEventArgs* e)
 {
 	// 親にもマウスがはじめて乗ったのであれば親にも通知する
 	if (m_visualParent != nullptr && !m_visualParent->m_isMouseOver)
 	{
-		m_visualParent->OnMouseEnter(e);
+		m_visualParent->onMouseEnter(e);
 	}
 
 	m_isMouseOver = true;
 
-	//if (!e->handled) { RaiseEvent(MouseEnterEvent, this, e); }
+	//if (!e->handled) { raiseEvent(MouseEnterEvent, this, e); }
 }
 
 //------------------------------------------------------------------------------
-void UIElement::OnMouseLeave(UIMouseEventArgs* e)
+void UIElement::onMouseLeave(UIMouseEventArgs* e)
 {
 	// 親にもマウスが乗ったことになっていれば、ヒットテストをした上で通知する
 	if (m_visualParent != nullptr && m_visualParent->m_isMouseOver)
 	{
 		if (!m_visualParent->m_finalGlobalRect.contains(e->getPosition()))
 		{
-			m_visualParent->OnMouseLeave(e);
+			m_visualParent->onMouseLeave(e);
 		}
 	}
 
 	m_isMouseOver = false;
 
-	//if (!e->handled) { RaiseEvent(MouseLeaveEvent, this, e); }
+	//if (!e->handled) { raiseEvent(MouseLeaveEvent, this, e); }
 }
 
 //------------------------------------------------------------------------------
-void UIElement::SetLogicalParent(UIElement* parent)
+void UIElement::setLogicalParent(UIElement* parent)
 {
 	if (parent != nullptr)
 	{
 		// 既に親があるとき、新しい親をつけることはできない
-		LN_THROW(GetLogicalParent() == nullptr, InvalidOperationException, "the child elements of already other elements.");
+		LN_THROW(getLogicalParent() == nullptr, InvalidOperationException, "the child elements of already other elements.");
 	}
 
 	m_logicalParent = parent;
 }
 
 //------------------------------------------------------------------------------
-UIElement* UIElement::CheckMouseHoverElement(const PointF& globalPt)
+UIElement* UIElement::checkMouseHoverElement(const PointF& globalPt)
 {
 	// 後ろからループする。後のモノが上に描画されるので、この方が自然。
 	// TODO: Zオーダーは別のリストにしたほうがいい気がする・・・
 	int count = getVisualChildrenCount();
 	for (int i = count - 1; i >= 0; i--)
 	{
-		UIElement* e = static_cast<UIElement*>(getVisualChild(i))->CheckMouseHoverElement(globalPt);
+		UIElement* e = static_cast<UIElement*>(getVisualChild(i))->checkMouseHoverElement(globalPt);
 		if (e != nullptr) return e;
 	}
 
@@ -426,33 +426,33 @@ bool UIElement::onEvent(detail::UIInternalEventType type, UIEventArgs* args)
 	case detail::UIInternalEventType::Unknown:
 		break;
 	case detail::UIInternalEventType::MouseMove:
-		if (m_isEnabled) RaiseEvent(UIEvents::MouseMoveEvent, this, args);
+		if (m_isEnabled) raiseEvent(UIEvents::MouseMoveEvent, this, args);
 		break;
 	case detail::UIInternalEventType::MouseButtonDown:
-		if (m_isEnabled) RaiseEvent(UIEvents::MouseDownEvent, this, args);
+		if (m_isEnabled) raiseEvent(UIEvents::MouseDownEvent, this, args);
 		break;
 	case detail::UIInternalEventType::MouseButtonUp:
-		if (m_isEnabled) RaiseEvent(UIEvents::MouseUpEvent, this, args);
+		if (m_isEnabled) raiseEvent(UIEvents::MouseUpEvent, this, args);
 		break;
 	case detail::UIInternalEventType::MouseWheel:
-		if (m_isEnabled) RaiseEvent(UIEvents::MouseWheelEvent, this, args);
+		if (m_isEnabled) raiseEvent(UIEvents::MouseWheelEvent, this, args);
 		break;
 	case detail::UIInternalEventType::KeyDown:
-		if (m_isEnabled) RaiseEvent(UIEvents::KeyDownEvent, this, args);
+		if (m_isEnabled) raiseEvent(UIEvents::KeyDownEvent, this, args);
 		break;
 	case detail::UIInternalEventType::KeyUp:
-		if (m_isEnabled) RaiseEvent(UIEvents::KeyUpEvent, this, args);
+		if (m_isEnabled) raiseEvent(UIEvents::KeyUpEvent, this, args);
 		break;
 	case detail::UIInternalEventType::TextInput:
-		if (m_isEnabled) RaiseEvent(UIEvents::TextInputEvent, this, args);
+		if (m_isEnabled) raiseEvent(UIEvents::TextInputEvent, this, args);
 		break;
 	case detail::UIInternalEventType::ElapsedTime:
 		break;
 	case detail::UIInternalEventType::MouseEnter:	// TODO: 親領域
-		if (m_isEnabled) RaiseEvent(UIEvents::MouseEnterEvent, this, args);
+		if (m_isEnabled) raiseEvent(UIEvents::MouseEnterEvent, this, args);
 		break;
 	case detail::UIInternalEventType::MouseLeave:	// TODO: 親領域
-		if (m_isEnabled) RaiseEvent(UIEvents::MouseLeaveEvent, this, args);
+		if (m_isEnabled) raiseEvent(UIEvents::MouseLeaveEvent, this, args);
 		break;
 	default:
 		break; 
@@ -465,57 +465,57 @@ bool UIElement::onEvent(detail::UIInternalEventType type, UIEventArgs* args)
 // this でハンドリングしたいルーティングイベントが発生したとき、イベント経由ではなく
 // 通常の仮想関数で通知することで、パフォーマンスの向上を図る。
 // (UI要素作成時のイベントハンドラの new や addHandler をする必要がなくなる)
-void UIElement::OnRoutedEvent(UIEventArgs* e)
+void UIElement::onRoutedEvent(UIEventArgs* e)
 {
 	auto ev = e->getType();
 	if (ev == UIEvents::MouseMoveEvent)
 	{
-		OnMouseMove(static_cast<UIMouseEventArgs*>(e));
+		onMouseMove(static_cast<UIMouseEventArgs*>(e));
 	}
 	else if (ev == UIEvents::MouseDownEvent)
 	{
-		OnMouseDown(static_cast<UIMouseEventArgs*>(e));
+		onMouseDown(static_cast<UIMouseEventArgs*>(e));
 	}
 	else if (ev == UIEvents::MouseUpEvent)
 	{
-		OnMouseUp(static_cast<UIMouseEventArgs*>(e));
+		onMouseUp(static_cast<UIMouseEventArgs*>(e));
 	}
 	else if (ev == UIEvents::KeyDownEvent)
 	{
-		OnKeyDown(static_cast<UIKeyEventArgs*>(e));
+		onKeyDown(static_cast<UIKeyEventArgs*>(e));
 	}
 	else if (ev == UIEvents::KeyUpEvent)
 	{
-		OnKeyUp(static_cast<UIKeyEventArgs*>(e));
+		onKeyUp(static_cast<UIKeyEventArgs*>(e));
 	}
 	else if (ev == UIEvents::TextInputEvent)
 	{
-		OnTextInput(static_cast<UIKeyEventArgs*>(e));
+		onTextInput(static_cast<UIKeyEventArgs*>(e));
 	}
 	else if (ev == UIEvents::MouseEnterEvent)
 	{
-		OnMouseEnter(static_cast<UIMouseEventArgs*>(e));
+		onMouseEnter(static_cast<UIMouseEventArgs*>(e));
 	}
 	else if (ev == UIEvents::MouseLeaveEvent)
 	{
-		OnMouseLeave(static_cast<UIMouseEventArgs*>(e));
+		onMouseLeave(static_cast<UIMouseEventArgs*>(e));
 	}
 }
 
 //------------------------------------------------------------------------------
-void UIElement::CallOnGotFocus()
+void UIElement::callOnGotFocus()
 {
 	LN_ASSERT(!m_hasFocus);
 	m_hasFocus = true;
-	OnGotFocus(UIEventArgs::create(GotFocusEvent, this));
+	onGotFocus(UIEventArgs::create(GotFocusEvent, this));
 }
 
 //------------------------------------------------------------------------------
-void UIElement::CallOnLostFocus()
+void UIElement::callOnLostFocus()
 {
 	LN_ASSERT(m_hasFocus);
 	m_hasFocus = false;
-	OnLostFocus(UIEventArgs::create(LostFocusEvent, this));
+	onLostFocus(UIEventArgs::create(LostFocusEvent, this));
 }
 
 //------------------------------------------------------------------------------
@@ -537,23 +537,23 @@ void UIElement::CallOnLostFocus()
 //		m_invalidateFlags &= ~detail::InvalidateFlags::VisualState;
 //	}
 //
-//	ApplyTemplateHierarchy();
+//	applyTemplateHierarchy();
 //}
 
 //------------------------------------------------------------------------------
-void UIElement::ApplyTemplateHierarchy(UIStyleTable* styleTable, detail::UIStylePropertyTableInstance* parentStyle)
+void UIElement::applyTemplateHierarchy(UIStyleTable* styleTable, detail::UIStylePropertyTableInstance* parentStyle)
 {
 
 	// Style 更新
-	UpdateLocalStyleAndApplyProperties(styleTable, parentStyle);
+	updateLocalStyleAndApplyProperties(styleTable, parentStyle);
 
 	// 子要素
 	detail::UIStylePropertyTableInstance* localStyle = m_localStyle;
-	UIHelper::ForEachVisualChildren(this, [styleTable, localStyle](UIElement* child) { child->ApplyTemplateHierarchy(styleTable, localStyle); });
+	UIHelper::forEachVisualChildren(this, [styleTable, localStyle](UIElement* child) { child->applyTemplateHierarchy(styleTable, localStyle); });
 }
 
 //------------------------------------------------------------------------------
-void UIElement::UpdateLocalStyleAndApplyProperties(UIStyleTable* styleTable, detail::UIStylePropertyTableInstance* parentStyleInstance)
+void UIElement::updateLocalStyleAndApplyProperties(UIStyleTable* styleTable, detail::UIStylePropertyTableInstance* parentStyleInstance)
 {
 	if (LN_CHECK_STATE(m_localStyle != nullptr)) return;
 
@@ -563,28 +563,28 @@ void UIElement::UpdateLocalStyleAndApplyProperties(UIStyleTable* styleTable, det
 	// parent → state の順で local へマージする
 	// TODO: このへんのコピーが時間かかりそうならリビジョンカウント使うとか対策する。毎フレームやってるから多分重い。
 	detail::InvalidateFlags invalidate = detail::InvalidateFlags::None;
-	if (parentStyleInstance != nullptr)       invalidate |= m_localStyle->InheritParentElementStyle(parentStyleInstance);
+	if (parentStyleInstance != nullptr)       invalidate |= m_localStyle->inheritParentElementStyle(parentStyleInstance);
 
 
 
 	// VisualState の変更がある場合
 	if (m_invalidateFlags.TestFlag(detail::InvalidateFlags::VisualState))
 	{
-		m_localStyle->ClearAvailableRenderElements();
+		m_localStyle->clearAvailableRenderElements();
 
-		auto* vm = GetVisualStateManager();
+		auto* vm = getVisualStateManager();
 
-		UIStyle* style = styleTable->FindSubControlStyle(m_styleSubControlOwnerName, m_styleSubControlName);
+		UIStyle* style = styleTable->findSubControlStyle(m_styleSubControlOwnerName, m_styleSubControlName);
 		if (style != nullptr)
 		{
-			invalidate |= style->MergeActiveStylePropertyTables(m_localStyle, vm->GetActiveStateNames());
+			invalidate |= style->mergeActiveStylePropertyTables(m_localStyle, vm->getActiveStateNames());
 		}
 		else
 		{
-			style = styleTable->FindStyle(tr::TypeInfo::getTypeInfo(this)/*, GetStyleSubControlName()*/);
+			style = styleTable->findStyle(tr::TypeInfo::getTypeInfo(this)/*, GetStyleSubControlName()*/);
 			if (style != nullptr)
 			{
-				invalidate |= style->MergeActiveStylePropertyTables(m_localStyle, vm->GetActiveStateNames());
+				invalidate |= style->mergeActiveStylePropertyTables(m_localStyle, vm->getActiveStateNames());
 
 			}
 		}
@@ -597,16 +597,16 @@ void UIElement::UpdateLocalStyleAndApplyProperties(UIStyleTable* styleTable, det
 
 	if (invalidate != detail::InvalidateFlags::None)
 	{
-		OnUpdateStyle(m_localStyle, invalidate);
+		onUpdateStyle(m_localStyle, invalidate);
 	}
 
 }
 
 //------------------------------------------------------------------------------
-void UIElement::OnUpdateStyle(detail::UIStylePropertyTableInstance* localStyle, detail::InvalidateFlags invalidateFlags)
+void UIElement::onUpdateStyle(detail::UIStylePropertyTableInstance* localStyle, detail::InvalidateFlags invalidateFlags)
 {
 	localStyle->apply(this, !m_invalidateFlags.TestFlag(detail::InvalidateFlags::Initializing));
-	// TODO: UITextElement::OnUpdateStyle 参照
+	// TODO: UITextElement::onUpdateStyle 参照
 	// TODO: アニメーション
 	//if (tr::Property::GetBaseValueSource(this, BackgroundProperty) <= tr::PropertySetSource::ByStyle)
 	//	tr::Property::setPropertyValueDirect<BrushPtr>(this, BackgroundProperty, localStyle->m_background.value, tr::PropertySetSource::ByStyle);
@@ -615,27 +615,27 @@ void UIElement::OnUpdateStyle(detail::UIStylePropertyTableInstance* localStyle, 
 }
 
 //------------------------------------------------------------------------------
-void UIElement::OnUpdatingLayout()
+void UIElement::onUpdatingLayout()
 {
 	// 子要素
-	UIHelper::ForEachVisualChildren(this, [](UIElement* child) { child->OnUpdatingLayout(); });
+	UIHelper::forEachVisualChildren(this, [](UIElement* child) { child->onUpdatingLayout(); });
 }
 
 //------------------------------------------------------------------------------
-UIContext* UIElement::GetContext() const
+UIContext* UIElement::getContext() const
 {
 	return UIContext::getMainContext();// TODO
 }
 
 //------------------------------------------------------------------------------
-void UIElement::UpdateLayout(const Size& viewSize)
+void UIElement::updateLayout(const Size& viewSize)
 {
-	OnUpdatingLayout();
-	ILayoutElement::UpdateLayout(viewSize);
+	onUpdatingLayout();
+	ILayoutElement::updateLayout(viewSize);
 }
 
 //------------------------------------------------------------------------------
-detail::SpcialUIElementType UIElement::GetSpcialUIElementType() const
+detail::SpcialUIElementType UIElement::getSpcialUIElementType() const
 {
 	return detail::SpcialUIElementType::Common;
 }
@@ -645,7 +645,7 @@ void UIElement::updateTransformHierarchy(const Rect& parentGlobalRect)
 {
 
 	//// 子要素
-	//UIHelper::ForEachVisualChildren(this, [](UIElement* child) { child->updateTransformHierarchy(); });
+	//UIHelper::forEachVisualChildren(this, [](UIElement* child) { child->updateTransformHierarchy(); });
 
 	ILayoutElement::updateTransformHierarchy(parentGlobalRect);
 
@@ -657,10 +657,10 @@ void UIElement::updateTransformHierarchy(const Rect& parentGlobalRect)
 //------------------------------------------------------------------------------
 void UIElement::updateFrame()
 {
-	OnUpdateFrame();
+	onUpdateFrame();
 
 	// call children
-	UIHelper::ForEachVisualChildren(this, [](UIElement* child) { child->updateFrame(); });
+	UIHelper::forEachVisualChildren(this, [](UIElement* child) { child->updateFrame(); });
 }
 
 //------------------------------------------------------------------------------
@@ -678,26 +678,26 @@ void UIElement::render(DrawingContext* g)
 	Matrix mat;
 	mat.translate(m_finalGlobalRect.x, m_finalGlobalRect.y, 0);
 	g->setTransform(mat);
-	g->SetBuiltinEffectData(m_combinedBuiltinEffectData);
+	g->setBuiltinEffectData(m_combinedBuiltinEffectData);
 
 	
 
-	//g->DrawBoxBorder(Rect(50, 50, 300, 200), ThicknessF(10, 10, 10, 10), Color::Red, Color::Green, Color::Blue, Color::Cyan, 10, 10, 10, 10);	// TODO:
-	//g->DrawBoxShadow(Rect(10, 20, 300, 400), Color::Black, 5, 5, false);
+	//g->drawBoxBorder(Rect(50, 50, 300, 200), ThicknessF(10, 10, 10, 10), Color::Red, Color::Green, Color::Blue, Color::Cyan, 10, 10, 10, 10);	// TODO:
+	//g->drawBoxShadow(Rect(10, 20, 300, 400), Color::Black, 5, 5, false);
 	onRender(g);
 
 	// 子要素
-	UIHelper::ForEachVisualChildren(this, [g](UIElement* child) { child->render(g); });
+	UIHelper::forEachVisualChildren(this, [g](UIElement* child) { child->render(g); });
 }
 
 //------------------------------------------------------------------------------
-const HAlignment* UIElement::GetPriorityContentHAlignment()
+const HAlignment* UIElement::getPriorityContentHAlignment()
 {
 	return nullptr;
 }
 
 //------------------------------------------------------------------------------
-const VAlignment* UIElement::GetPriorityContentVAlignment()
+const VAlignment* UIElement::getPriorityContentVAlignment()
 {
 	return nullptr;
 }
@@ -709,12 +709,12 @@ const VAlignment* UIElement::GetPriorityContentVAlignment()
 //}
 
 //------------------------------------------------------------------------------
-void UIElement::RaiseEventInternal(UIEventArgs* e)
+void UIElement::raiseEventInternal(UIEventArgs* e)
 {
 	if (LN_CHECK_ARG(e != nullptr)) return;
 
 	// まずは this に通知
-	OnRoutedEvent(e);
+	onRoutedEvent(e);
 	if (e->handled) return;
 
 	// this に addHandler されているイベントハンドラを呼び出す
@@ -725,12 +725,12 @@ void UIElement::RaiseEventInternal(UIEventArgs* e)
 	// bubble
 	if (m_visualParent != nullptr)
 	{
-		m_visualParent->RaiseEventInternal(e);
+		m_visualParent->raiseEventInternal(e);
 	}
 }
 
 //------------------------------------------------------------------------------
-void UIElement::AddVisualChild(UIElement* element)
+void UIElement::addVisualChild(UIElement* element)
 {
 	if (LN_CHECK_ARG(element != nullptr)) return;
 	if (LN_CHECK_ARG(element->m_visualParent == nullptr)) return;
@@ -746,7 +746,7 @@ void UIElement::AddVisualChild(UIElement* element)
 }
 
 //------------------------------------------------------------------------------
-void UIElement::RemoveVisualChild(UIElement* element)
+void UIElement::removeVisualChild(UIElement* element)
 {
 	//LN_FAIL_CHECK_ARG(element != nullptr) return;
 	if (element == nullptr) return;
@@ -766,8 +766,8 @@ HAlignment UIElement::getLayoutHAlignment() const { return hAlignment; }
 VAlignment UIElement::getLayoutVAlignment() const { return vAlignment; }
 void UIElement::getLayoutMinMaxInfo(Size* outMin, Size* outMax) const { *outMin = m_minSize; *outMax = m_maxSize; }
 ILayoutElement* UIElement::getLayoutParent() const { return m_visualParent; }
-const HAlignment* UIElement::getLayoutContentHAlignment() { return GetPriorityContentHAlignment(); }
-const VAlignment* UIElement::getLayoutContentVAlignment() { return GetPriorityContentVAlignment(); }
+const HAlignment* UIElement::getLayoutContentHAlignment() { return getPriorityContentHAlignment(); }
+const VAlignment* UIElement::getLayoutContentVAlignment() { return getPriorityContentVAlignment(); }
 const Size& UIElement::getLayoutDesiredSize() const { return m_desiredSize; }
 void UIElement::setLayoutDesiredSize(const Size& size) { m_desiredSize = size; }
 void UIElement::setLayoutFinalLocalRect(const Rect& rect) { m_finalLocalRect = rect; }

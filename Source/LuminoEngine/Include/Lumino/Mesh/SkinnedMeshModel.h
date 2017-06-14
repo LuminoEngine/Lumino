@@ -34,7 +34,7 @@ class SkinnedMeshModel
 public:
 
 	// TODO: Unity では Mesh からは切り離された独立したコンポーネントである。そうしたほうがいいかな？
-	Animator* GetAnimator() const { return m_animator; }
+	Animator* getAnimator() const { return m_animator; }
 
 protected:
 	// IAnimationTargetElement interface
@@ -46,46 +46,46 @@ LN_INTERNAL_ACCESS:
 	virtual ~SkinnedMeshModel();
 	void initialize(detail::GraphicsManager* manager, PmxSkinnedMeshResource* sharingMesh);
 
-	void SetWorldTransform(const Matrix& matrix) { m_worldTransform = matrix; m_worldTransformInverse = Matrix::makeInverse(m_worldTransform); }
-	const Matrix& GetWorldTransform() const { return m_worldTransform; }
-	const Matrix& GetWorldTransformInverse() const { return m_worldTransformInverse; }
+	void setWorldTransform(const Matrix& matrix) { m_worldTransform = matrix; m_worldTransformInverse = Matrix::makeInverse(m_worldTransform); }
+	const Matrix& getWorldTransform() const { return m_worldTransform; }
+	const Matrix& getWorldTransformInverse() const { return m_worldTransformInverse; }
 
 
-	void PreUpdate();
+	void preUpdate();
 
-	void PostUpdate();
+	void postUpdate();
 
 
 
 	// ボーン行列を、ルートボーンから階層的に更新する
 	// (アニメーション適用後に呼び出す)
-	void UpdateBoneTransformHierarchy();
+	void updateBoneTransformHierarchy();
 
 	// スキニングに使用する最終ボーン行列の作成
-	void UpdateSkinningMatrices();
+	void updateSkinningMatrices();
 
 	// スキニング行列配列の取得 (要素数は要素数はボーン数。これをそのままスキニングテクスチャに書き込める)
 	//Matrix* GetSkinningMatrices() { return m_skinningMatrices; }
 
 	// スキニング行列配列を書き込んだテクスチャの取得
-	Texture* GetSkinningMatricesTexture() { return m_skinningMatricesTexture; }
+	Texture* getSkinningMatricesTexture() { return m_skinningMatricesTexture; }
 
 	// サブセット数の取得
-	//int GetSubsetCount() const;
+	//int getSubsetCount() const;
 
 	// マテリアル取得
-	//const Material& GetMaterial(int subsetIndex) const;
+	//const Material& getMaterial(int subsetIndex) const;
 
 	// サブセット描画
-	//void DrawSubset(int subsetIndex);
+	//void drawSubset(int subsetIndex);
 
 private:
-	void UpdateIK();
-	void UpdateBestow();
+	void updateIK();
+	void updateBestow();
 
 
 LN_INTERNAL_ACCESS:	// TODO:
-	// TODO: ↓このあたりは StaticMeshModel にして、Renderer::DrawMesh に渡せるようにしたい。LOD の選択はそちらで。
+	// TODO: ↓このあたりは StaticMeshModel にして、Renderer::drawMesh に渡せるようにしたい。LOD の選択はそちらで。
 	//RefPtr<PmxSkinnedMeshResource>	m_meshResource;
 	//RefPtr<MaterialList>			m_materials;
 	RefPtr<StaticMeshModel>			m_mesh;
@@ -131,18 +131,18 @@ LN_INTERNAL_ACCESS:
 	PmxBoneResource* getCore() const;
 
 	// 子ボーンの追加
-	void AddChildBone(SkinnedMeshBone* bone);
+	void addChildBone(SkinnedMeshBone* bone);
 
 	// ボーン行列を階層的に更新する
-	void UpdateGlobalTransform(bool hierarchical);
+	void updateGlobalTransform(bool hierarchical);
 
 	//  結合済み行列 (モデル内のグローバル行列) の取得
-	const Matrix& GetCombinedMatrix() const { return m_combinedMatrix; }
+	const Matrix& getCombinedMatrix() const { return m_combinedMatrix; }
 
 	// ローカル行列を初期値に戻す
-	void ResetLocalTransform() { m_localTransform = AttitudeTransform::Identity; }
+	void resetLocalTransform() { m_localTransform = AttitudeTransform::Identity; }
 
-	AttitudeTransform* GetLocalTransformPtr() { return &m_localTransform; }
+	AttitudeTransform* getLocalTransformPtr() { return &m_localTransform; }
 
 protected:
 	// IAnimationTargetAttribute interface
@@ -172,9 +172,9 @@ LN_INTERNAL_ACCESS:
 	virtual ~MmdSkinnedMeshRigidBody();
 	void initialize(SkinnedMeshModel* ownerModel, PmxRigidBodyResource* rigidBodyResource, float scale);
 
-	RigidBody* GetRigidBody() const;
-	void UpdateBeforePhysics();
-	void UpdateAfterPhysics();
+	RigidBody* getRigidBody() const;
+	void updateBeforePhysics();
+	void updateAfterPhysics();
 
 private:
 	SkinnedMeshModel*		m_ownerModel;

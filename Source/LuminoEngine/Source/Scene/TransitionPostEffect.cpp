@@ -48,7 +48,7 @@ void TransitionPostEffect::initialize()
 }
 
 //------------------------------------------------------------------------------
-void TransitionPostEffect::Transition(float duration, Texture* mask, int vague)
+void TransitionPostEffect::transition(float duration, Texture* mask, int vague)
 {
 	m_freezeRequested = true;
 	m_factor = 0;
@@ -87,7 +87,7 @@ void TransitionPostEffect::onRender(DrawList* context, RenderTargetTexture* sour
 			// TODO: scoped Ç‹ÇΩÇÕ blit Ç›ÇΩÇ¢Ç… RT íºê⁄éwíËÇÃ Clear
 			RefPtr<RenderTargetTexture> oldTarget = context->getRenderTarget(0);
 			context->setRenderTarget(0, m_savedTarget);
-			context->clear(ClearFlags::Color, GetOwnerLayer()->GetOwnerViewport()->GetViewBackgroundColor());
+			context->clear(ClearFlags::Color, GetOwnerLayer()->getOwnerViewport()->getViewBackgroundColor());
 		}
 		else
 		{

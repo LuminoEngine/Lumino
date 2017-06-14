@@ -37,10 +37,10 @@ public:
 	InputDriver();
 	virtual ~InputDriver();
 
-	bool QueryKeyState(Keys key);
-	bool QueryMouseState(MouseAction action);
+	bool queryKeyState(Keys key);
+	bool queryMouseState(MouseAction action);
 
-	void PreUpdateFrame();
+	void preUpdateFrame();
 
 
 
@@ -49,20 +49,20 @@ public:
 
 	//bool GetKeyState(Key key) const { return m_keyStatus[(int)key]; }
 	//bool GetMouseState(MouseButton button) const { return m_mouseStatus[(int)button]; }
-	const PointI& GetMousePoint() const { return m_mousePoint; }
-	int GetMouseWheel() const { return m_mouseWheel; }
+	const PointI& getMousePoint() const { return m_mousePoint; }
+	int getMouseWheel() const { return m_mouseWheel; }
 
-	virtual int GetJoystickCount() = 0;
-	virtual void GetJoystickState(int joystickNumber, JoystickDeviceState* state) = 0;
+	virtual int getJoystickCount() = 0;
+	virtual void getJoystickState(int joystickNumber, JoystickDeviceState* state) = 0;
 
 	virtual void onEvent(const PlatformEventArgs& e);
 
 
 
-	void OnKeyDown(Keys key);
-	void OnKeyUp(Keys key);
-	void OnMouseButtonDown(MouseButtons button);
-	void OnMouseButtonUp(MouseButtons button);
+	void onKeyDown(Keys key);
+	void onKeyUp(Keys key);
+	void onMouseButtonDown(MouseButtons button);
+	void onMouseButtonUp(MouseButtons button);
 
 
 

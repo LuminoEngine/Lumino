@@ -144,19 +144,19 @@ public:
 public:
 
 
-	virtual SceneNodeType GetSceneNodeType() const { return SceneNodeType_VisualNode; }
-	virtual void UpdateFrameHierarchy(SceneNode* parent, float deltaTime) override;
+	virtual SceneNodeType getSceneNodeType() const { return SceneNodeType_VisualNode; }
+	virtual void updateFrameHierarchy(SceneNode* parent, float deltaTime) override;
 
 	/// ノード単位の描画情報の更新。この後すぐ一連のサブセット描画が始まる
 	//virtual void UpdateNodeRenderingParams(MMEShader* priorityShader) {}
 
 
-	virtual detail::Sphere GetBoundingSphere();
+	virtual detail::Sphere getBoundingSphere();
 
 	//void DrawSubsetInternal(SceneGraphRenderingContext* dc, int subsetIndex, MMEShader* shader, ShaderPass* pass);
 
 	//virtual void onRender(SceneGraphRenderingContext* dc);
-	//virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) {}
+	//virtual void drawSubset(SceneGraphRenderingContext* dc, int subsetIndex) {}
 
 
 protected:
@@ -167,10 +167,10 @@ protected:
 LN_INTERNAL_ACCESS:
 	//MaterialList2* GetMaterialList() { return m_materialList; }
 	//Shader* GetPrimaryShader() const;
-	detail::OffscreenFilterInfo* GetOffscreenFilterInfo(int index) { return &m_offscreenFilterInfoList[index]; }
+	detail::OffscreenFilterInfo* getOffscreenFilterInfo(int index) { return &m_offscreenFilterInfoList[index]; }
 
 LN_PROTECTED_INTERNAL_ACCESS:
-	virtual detail::SceneNodeDefaultShaderClass GetShaderClass() { return detail::SceneNodeDefaultShaderClass_StaticMesh; }
+	virtual detail::SceneNodeDefaultShaderClass getShaderClass() { return detail::SceneNodeDefaultShaderClass_StaticMesh; }
 
 //protected:
 //	RefPtr<MaterialList2>	m_materialList;
@@ -278,7 +278,7 @@ public:
 
 
 protected:
-	virtual VisualComponent* GetMainVisualComponent() const = 0;
+	virtual VisualComponent* getMainVisualComponent() const = 0;
 
 LN_CONSTRUCT_ACCESS:
 	VisualObject();

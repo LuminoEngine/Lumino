@@ -28,7 +28,7 @@ struct ChildCollectionChangedArgs
 class IUIElementCollectionOwner
 {
 public:
-	virtual void OnChildCollectionChanged(const ChildCollectionChangedArgs& e) = 0;
+	virtual void onChildCollectionChanged(const ChildCollectionChangedArgs& e) = 0;
 };
 
 } // namespace tr

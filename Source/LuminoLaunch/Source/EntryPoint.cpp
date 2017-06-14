@@ -18,7 +18,7 @@ int EntryPoint()
 	}
 	catch (Exception& e)
 	{
-		PlatformSupport::ShowAlertMessageBox(e.getMessage());
+		PlatformSupport::showAlertMessageBox(e.getMessage());
 	}
 	Engine::terminate();
 	return 0;

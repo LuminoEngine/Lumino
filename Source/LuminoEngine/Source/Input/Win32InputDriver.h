@@ -14,20 +14,20 @@ public:
 
 	void initialize(HWND hWnd);
 
-	virtual int GetJoystickCount() override;
-	virtual void GetJoystickState(int joysticNumber, JoystickDeviceState* state) override;
+	virtual int getJoystickCount() override;
+	virtual void getJoystickState(int joysticNumber, JoystickDeviceState* state) override;
 
-	void StartVibration(int joysticNumber, int power, int time);
-	void StopVibration(int joysticNumber);
+	void startVibration(int joysticNumber, int power, int time);
+	void stopVibration(int joysticNumber);
 
 private:
 	void Finalize();
-	void RefreshDevice();
-	void ReleaseDevice();
+	void refreshDevice();
+	void releaseDevice();
 
 	static BOOL CALLBACK EnumJoysticksCallback(const DIDEVICEINSTANCE* instance, VOID* thisInputDevice);
 	void CreateJoysticksDevice(const DIDEVICEINSTANCE* instance);
-	static BOOL IsXInputDevice(const GUID* pGuidProductFromDirectInput);
+	static BOOL isXInputDevice(const GUID* pGuidProductFromDirectInput);
 
 private:
 	HWND						m_hWnd;

@@ -466,7 +466,7 @@ static void glnvg__fill(LNNVGcontext* gl, GLNVGcall* call)
 
 #if 0
 	{
-		// Draw shapes
+		// draw shapes
 		glEnable(GL_STENCIL_TEST);
 		glnvg__stencilMask(gl, 0xff);
 		glnvg__stencilFunc(gl, GL_ALWAYS, 0, 0xff);
@@ -485,7 +485,7 @@ static void glnvg__fill(LNNVGcontext* gl, GLNVGcall* call)
 	}
 #endif
 
-	// Draw anti-aliased pixels
+	// draw anti-aliased pixels
 	//glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
 	glnvg__setUniforms(gl, call->uniformOffset + gl->fragSize, call->image);
@@ -497,12 +497,12 @@ static void glnvg__fill(LNNVGcontext* gl, GLNVGcall* call)
 	if (gl->flags & NVG_ANTIALIAS) {
 		//glnvg__stencilFunc(gl, GL_EQUAL, 0x00, 0xff);
 		//glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-		// Draw fringes
+		// draw fringes
 		for (i = 0; i < npaths; i++)
 			renderer->drawPrimitive(PrimitiveType_TriangleStrip, paths[i].strokeOffset, paths[i].strokeCount - 2);
 	}
 
-	// Draw fill
+	// draw fill
 	//glnvg__stencilFunc(gl, GL_NOTEQUAL, 0x0, 0xff);	// ステンシルへの書き込み禁止
 	//glStencilOp(GL_ZERO, GL_ZERO, GL_ZERO);
 	renderer->drawPrimitive(PrimitiveType_TriangleList, call->triangleOffset, call->triangleCount / 3);
@@ -525,7 +525,7 @@ static void glnvg__convexFill(LNNVGcontext* gl, GLNVGcall* call)
 		renderer->drawPrimitive(PrimitiveType_TriangleFan, paths[i].fillOffset, paths[i].fillCount - 2);
 
 	if (gl->flags & NVG_ANTIALIAS) {
-		// Draw fringes
+		// draw fringes
 		for (i = 0; i < npaths; i++)
 			renderer->drawPrimitive(PrimitiveType_TriangleStrip, paths[i].strokeOffset, paths[i].strokeCount - 2);
 	}
@@ -554,7 +554,7 @@ static void glnvg__stroke(LNNVGcontext* gl, GLNVGcall* call)
 		for (i = 0; i < npaths; i++)
 			glDrawArrays(GL_TRIANGLE_STRIP, paths[i].strokeOffset, paths[i].strokeCount);
 
-		// Draw anti-aliased pixels.
+		// draw anti-aliased pixels.
 		glnvg__setUniforms(gl, call->uniformOffset, call->image);
 		glnvg__stencilFunc(gl, GL_EQUAL, 0x00, 0xff);
 		glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
@@ -578,7 +578,7 @@ static void glnvg__stroke(LNNVGcontext* gl, GLNVGcall* call)
 	else {
 		glnvg__setUniforms(gl, call->uniformOffset, call->image);
 		glnvg__checkError(gl, "stroke fill");
-		// Draw Strokes
+		// draw Strokes
 		for (i = 0; i < npaths; i++)
 			renderer->drawPrimitive(PrimitiveType_TriangleStrip, paths[i].strokeOffset, paths[i].strokeCount - 2);
 	}
@@ -669,7 +669,7 @@ static void lnnvg__renderFlush(void* uptr, NVGcompositeOperationState compositeO
 
 	if (gl->ncalls > 0) {
 #if 0
-		// Setup require GL state.
+		// setup require GL state.
 		glUseProgram(gl->shader.prog);
 
 		glnvg__blendCompositeOperation(compositeOperation);
@@ -813,7 +813,7 @@ static void lnnvg__renderFill(void* uptr, NVGpaint* paint, NVGscissor* scissor, 
 	glnvg__vset(&quad[4], bounds[2], bounds[1], 0.5f, 1.0f);
 	glnvg__vset(&quad[5], bounds[0], bounds[1], 0.5f, 1.0f);
 
-	// Setup uniforms for draw calls
+	// setup uniforms for draw calls
 	if (call->type == GLNVG_FILL) {
 		call->uniformOffset = glnvg__allocFragUniforms(gl, 2);
 		if (call->uniformOffset == -1) goto error;
@@ -959,28 +959,28 @@ void NanoVGRenderFeature::initialize(GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void NanoVGRenderFeature::ExecuteCommand(NanoVGCommandList* commandList)
+void NanoVGRenderFeature::executeCommand(NanoVGCommandList* commandList)
 {
 	if (LN_CHECK_ARG(commandList != nullptr)) return;
 
 	NanoVGRenderFeature* _this = this;
 	LN_ENQUEUE_RENDER_COMMAND_3(
-		ExecuteCommand, m_manager,
+		executeCommand, m_manager,
 		NanoVGRenderFeature*, _this,
 		NanoVGState, m_state,
 		RefPtr<NanoVGCommandList>, commandList,
 		{
-			_this->ExecuteCommandInternal(m_state, commandList);
+			_this->executeCommandInternal(m_state, commandList);
 		});
 }
 //------------------------------------------------------------------------------
 void NanoVGRenderFeature::onSetState(const DrawElementBatch* state)
 {
-	NanoVGCommandHelper::ExpandState(state->GetTransfrom(), state->state.getBrush(), state->state.GetPen(), &m_state);
+	NanoVGCommandHelper::expandState(state->getTransfrom(), state->state.getBrush(), state->state.getPen(), &m_state);
 }
 
 //------------------------------------------------------------------------------
-void NanoVGRenderFeature::ExecuteCommandInternal(const NanoVGState& state, NanoVGCommandList* commandList)
+void NanoVGRenderFeature::executeCommandInternal(const NanoVGState& state, NanoVGCommandList* commandList)
 {
 	Driver::IRenderer* renderer = m_manager->getGraphicsDevice()->getRenderer();
 	const SizeI& size = renderer->getRenderTarget(0)->getSize();
@@ -992,16 +992,16 @@ void NanoVGRenderFeature::ExecuteCommandInternal(const NanoVGState& state, NanoV
 	// 描画実行
 	float pxRatio = 1.0f;
 	nvgBeginFrame(m_nvgContext, size.width, size.height, pxRatio);
-	NanoVGCommandHelper::ApplyState(m_nvgContext, &state);
-	NanoVGCommandHelper::ExecuteCommand(commandList, m_nvgContext);
+	NanoVGCommandHelper::applyState(m_nvgContext, &state);
+	NanoVGCommandHelper::executeCommand(commandList, m_nvgContext);
 	nvgEndFrame(m_nvgContext);
 
 	// コマンドリストを使い終わった。返却する
-	PushCommandList(commandList);
+	pushCommandList(commandList);
 }
 
 //------------------------------------------------------------------------------
-void NanoVGRenderFeature::PushCommandList(NanoVGCommandList* commandList)
+void NanoVGRenderFeature::pushCommandList(NanoVGCommandList* commandList)
 {
 	commandList->clear();
 
@@ -1091,7 +1091,7 @@ void NanoVGCommandHelper::nvgStroke(NanoVGCommandList* ctx)
 	float cmd[] = { (float)Cmd_nvgStroke };
 	ctx->allocData(sizeof(cmd), cmd);
 }
-void NanoVGCommandHelper::ExecuteCommand(NanoVGCommandList* commandList, NVGcontext* ctx)
+void NanoVGCommandHelper::executeCommand(NanoVGCommandList* commandList, NVGcontext* ctx)
 {
 	NVGparams* param = nvgInternalParams(ctx);
 	param->edgeAntiAlias = 0;
@@ -1166,13 +1166,13 @@ void NanoVGCommandHelper::ExecuteCommand(NanoVGCommandList* commandList, NVGcont
 		}
 	}
 }
-void NanoVGCommandHelper::ExpandState(const Matrix& transform, Brush* brush, Pen* pen, NanoVGState* outState)
+void NanoVGCommandHelper::expandState(const Matrix& transform, Brush* brush, Pen* pen, NanoVGState* outState)
 {
 	outState->transform = transform;
-	ExpandBrushState(brush, &outState->fillBrush);
+	expandBrushState(brush, &outState->fillBrush);
 	if (pen != nullptr)
 	{
-		ExpandBrushState(pen->getBrush(), &outState->strokeBrush);
+		expandBrushState(pen->getBrush(), &outState->strokeBrush);
 		outState->strokeWidth = pen->getThickness();
 		// TODO:
 		outState->miterLimit = 10.0f;
@@ -1182,7 +1182,7 @@ void NanoVGCommandHelper::ExpandState(const Matrix& transform, Brush* brush, Pen
 	}
 	else
 	{
-		ExpandBrushState(nullptr, &outState->strokeBrush);
+		expandBrushState(nullptr, &outState->strokeBrush);
 		outState->strokeWidth = 0;
 		outState->miterLimit = 10.0f;
 		outState->lineCap = NVG_BUTT;
@@ -1190,7 +1190,7 @@ void NanoVGCommandHelper::ExpandState(const Matrix& transform, Brush* brush, Pen
 		outState->globalAlpha = 1.0f;
 	}
 }
-void NanoVGCommandHelper::ExpandBrushState(Brush* brush, NanoVGBrush* outBrush)
+void NanoVGCommandHelper::expandBrushState(Brush* brush, NanoVGBrush* outBrush)
 {
 	if (brush != nullptr)
 	{
@@ -1225,19 +1225,19 @@ void NanoVGCommandHelper::ExpandBrushState(Brush* brush, NanoVGBrush* outBrush)
 		outBrush->SolidColorInfo.color.a = 1;
 	}
 }
-void NanoVGCommandHelper::ApplyState(NVGcontext* ctx, const NanoVGState* state)
+void NanoVGCommandHelper::applyState(NVGcontext* ctx, const NanoVGState* state)
 {
 	// fill
 	if (state->fillBrush.type == NanoVGBrushType::SolidColor)
 		nvgFillColor(ctx, state->fillBrush.SolidColorInfo.color);
 	else
-		nvgFillPaint(ctx, GetNVGpaint(ctx, state->fillBrush));
+		nvgFillPaint(ctx, getNVGpaint(ctx, state->fillBrush));
 
 	// stroke
 	if (state->strokeBrush.type == NanoVGBrushType::SolidColor)
 		nvgStrokeColor(ctx, state->strokeBrush.SolidColorInfo.color);
 	else
-		nvgStrokePaint(ctx, GetNVGpaint(ctx, state->strokeBrush));
+		nvgStrokePaint(ctx, getNVGpaint(ctx, state->strokeBrush));
 
 	// stroke
 	nvgStrokeWidth(ctx, state->strokeWidth);
@@ -1250,7 +1250,7 @@ void NanoVGCommandHelper::ApplyState(NVGcontext* ctx, const NanoVGState* state)
 	const Matrix& m = state->transform;
 	nvgTransform(ctx, m.m11, m.m21, m.m12, m.m22, m.m41, m.m42);
 }
-NVGpaint NanoVGCommandHelper::GetNVGpaint(NVGcontext* ctx, const NanoVGBrush& brush)
+NVGpaint NanoVGCommandHelper::getNVGpaint(NVGcontext* ctx, const NanoVGBrush& brush)
 {
 	switch (brush.type)
 	{

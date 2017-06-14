@@ -14,7 +14,7 @@ class MeshHelper
 {
 public:
 
-	static Vector3 GetXZCirclePoint(int i, int slices)
+	static Vector3 getXZCirclePoint(int i, int slices)
 	{
 		float angle = i * Math::PI2 / slices;
 		float dx, dz;
@@ -22,7 +22,7 @@ public:
 		return Vector3(dx, 0, dz);
 	}
 
-	static Vector3 GetXZArcPoint(float startAngle, float endAngle, int i, int slices)
+	static Vector3 getXZArcPoint(float startAngle, float endAngle, int i, int slices)
 	{
 		float da = endAngle - startAngle;
 		float angle = (i * da / slices) + startAngle;
@@ -77,7 +77,7 @@ public:
 		return 6;
 	}
 
-	void Generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
+	void generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
 	{
 		Vector2 half = m_size / 2;
 		outVertices[0].position.set(-half.x, half.y, 0);
@@ -116,7 +116,7 @@ public:
 	int getVertexCount() const { return 4; }
 	int getIndexCount() const { return 6; }
 
-	void Generate(Vertex* outVertices, uint16_t* outIndices)
+	void generate(Vertex* outVertices, uint16_t* outIndices)
 	{
 		Vector2 half = m_size / 2;
 		if (m_front == Vector3::UnitY)
@@ -192,7 +192,7 @@ public:
 	int getVertexCount() const { return (m_sliceX + 1) * (m_sliceZ + 1); }
 	int getIndexCount() const { return (m_sliceX * m_sliceZ * 2) * 3; }
 
-	void Generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
+	void generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
 	{
 		Vector2 minPos = -m_size / 2;
 		Vector2 maxPos = m_size / 2;
@@ -278,7 +278,7 @@ public:
 		return 36;
 	}
 
-	void Generate(Vertex* outVertices, uint16_t* outIndices)
+	void generate(Vertex* outVertices, uint16_t* outIndices)
 	{
 		Vector3 minPos = -(m_size / 2);
 		Vector3 maxPos = (m_size / 2);
@@ -356,14 +356,14 @@ public:
 		return 36;
 	}
 
-	void SetV(Vertex* vertex, float x, float y, float z, float u, float v, const Vector3& normal)
+	void setV(Vertex* vertex, float x, float y, float z, float u, float v, const Vector3& normal)
 	{
 		vertex->position.set(x, y, z);
 		vertex->uv.set(u, v);
 		vertex->color = m_color;
 		vertex->normal = normal;
 	}
-	static void SetI(uint16_t* index, uint16_t begin)
+	static void setI(uint16_t* index, uint16_t begin)
 	{
 		index[0] = begin + 0;
 		index[1] = begin + 1;
@@ -373,7 +373,7 @@ public:
 		index[5] = begin + 3;
 	}
 
-	void Generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginVertexIndex)
+	void generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginVertexIndex)
 	{
 		Vector3 minPos = -(m_size / 2);
 		Vector3 maxPos = (m_size / 2);
@@ -381,46 +381,46 @@ public:
 		uint16_t* i = outIndices;
 
 		// 手前 (Z-)
-		SetV(v, minPos.x, maxPos.y, minPos.z, 0.0f, 0.0f, -Vector3::UnitZ); ++v;	// ┏
-		SetV(v, minPos.x, minPos.y, minPos.z, 0.0f, 1.0f, -Vector3::UnitZ); ++v;	// ┗
-		SetV(v, maxPos.x, maxPos.y, minPos.z, 1.0f, 0.0f, -Vector3::UnitZ); ++v;	// ┓
-		SetV(v, maxPos.x, minPos.y, minPos.z, 1.0f, 1.0f, -Vector3::UnitZ); ++v;	// ┛
-		SetI(i, beginVertexIndex + 0); i += 6;
+		setV(v, minPos.x, maxPos.y, minPos.z, 0.0f, 0.0f, -Vector3::UnitZ); ++v;	// ┏
+		setV(v, minPos.x, minPos.y, minPos.z, 0.0f, 1.0f, -Vector3::UnitZ); ++v;	// ┗
+		setV(v, maxPos.x, maxPos.y, minPos.z, 1.0f, 0.0f, -Vector3::UnitZ); ++v;	// ┓
+		setV(v, maxPos.x, minPos.y, minPos.z, 1.0f, 1.0f, -Vector3::UnitZ); ++v;	// ┛
+		setI(i, beginVertexIndex + 0); i += 6;
 
 		// 奥 (Z+)
-		SetV(v, maxPos.x, maxPos.y, maxPos.z, 0.0f, 0.0f, Vector3::UnitZ); ++v;	// ┏
-		SetV(v, maxPos.x, minPos.y, maxPos.z, 0.0f, 1.0f, Vector3::UnitZ); ++v;	// ┗
-		SetV(v, minPos.x, maxPos.y, maxPos.z, 1.0f, 0.0f, Vector3::UnitZ); ++v;	// ┓
-		SetV(v, minPos.x, minPos.y, maxPos.z, 1.0f, 1.0f, Vector3::UnitZ); ++v;	// ┛
-		SetI(i, beginVertexIndex + 4); i += 6;
+		setV(v, maxPos.x, maxPos.y, maxPos.z, 0.0f, 0.0f, Vector3::UnitZ); ++v;	// ┏
+		setV(v, maxPos.x, minPos.y, maxPos.z, 0.0f, 1.0f, Vector3::UnitZ); ++v;	// ┗
+		setV(v, minPos.x, maxPos.y, maxPos.z, 1.0f, 0.0f, Vector3::UnitZ); ++v;	// ┓
+		setV(v, minPos.x, minPos.y, maxPos.z, 1.0f, 1.0f, Vector3::UnitZ); ++v;	// ┛
+		setI(i, beginVertexIndex + 4); i += 6;
 
 		// 左 (X-)
-		SetV(v, minPos.x, maxPos.y, maxPos.z, 0.0f, 0.0f, -Vector3::UnitX); ++v;	// ┏
-		SetV(v, minPos.x, minPos.y, maxPos.z, 0.0f, 1.0f, -Vector3::UnitX); ++v;	// ┗
-		SetV(v, minPos.x, maxPos.y, minPos.z, 1.0f, 0.0f, -Vector3::UnitX); ++v;	// ┓
-		SetV(v, minPos.x, minPos.y, minPos.z, 1.0f, 1.0f, -Vector3::UnitX); ++v;	// ┛
-		SetI(i, beginVertexIndex + 8); i += 6;
+		setV(v, minPos.x, maxPos.y, maxPos.z, 0.0f, 0.0f, -Vector3::UnitX); ++v;	// ┏
+		setV(v, minPos.x, minPos.y, maxPos.z, 0.0f, 1.0f, -Vector3::UnitX); ++v;	// ┗
+		setV(v, minPos.x, maxPos.y, minPos.z, 1.0f, 0.0f, -Vector3::UnitX); ++v;	// ┓
+		setV(v, minPos.x, minPos.y, minPos.z, 1.0f, 1.0f, -Vector3::UnitX); ++v;	// ┛
+		setI(i, beginVertexIndex + 8); i += 6;
 
 		// 右 (X+)
-		SetV(v, maxPos.x, maxPos.y, minPos.z, 0.0f, 0.0f, Vector3::UnitX); ++v;	// ┏
-		SetV(v, maxPos.x, minPos.y, minPos.z, 0.0f, 1.0f, Vector3::UnitX); ++v;	// ┗
-		SetV(v, maxPos.x, maxPos.y, maxPos.z, 1.0f, 0.0f, Vector3::UnitX); ++v;	// ┓
-		SetV(v, maxPos.x, minPos.y, maxPos.z, 1.0f, 1.0f, Vector3::UnitX); ++v;	// ┛
-		SetI(i, beginVertexIndex + 12); i += 6;
+		setV(v, maxPos.x, maxPos.y, minPos.z, 0.0f, 0.0f, Vector3::UnitX); ++v;	// ┏
+		setV(v, maxPos.x, minPos.y, minPos.z, 0.0f, 1.0f, Vector3::UnitX); ++v;	// ┗
+		setV(v, maxPos.x, maxPos.y, maxPos.z, 1.0f, 0.0f, Vector3::UnitX); ++v;	// ┓
+		setV(v, maxPos.x, minPos.y, maxPos.z, 1.0f, 1.0f, Vector3::UnitX); ++v;	// ┛
+		setI(i, beginVertexIndex + 12); i += 6;
 
 		// 下 (Y-)(Z- がUVの上方向)
-		SetV(v, minPos.x, minPos.y, minPos.z, 0.0f, 0.0f, -Vector3::UnitY); ++v;	// ┏
-		SetV(v, minPos.x, minPos.y, maxPos.z, 0.0f, 1.0f, -Vector3::UnitY); ++v;	// ┗
-		SetV(v, maxPos.x, minPos.y, minPos.z, 1.0f, 0.0f, -Vector3::UnitY); ++v;	// ┓
-		SetV(v, maxPos.x, minPos.y, maxPos.z, 1.0f, 1.0f, -Vector3::UnitY); ++v;	// ┛
-		SetI(i, beginVertexIndex + 16); i += 6;
+		setV(v, minPos.x, minPos.y, minPos.z, 0.0f, 0.0f, -Vector3::UnitY); ++v;	// ┏
+		setV(v, minPos.x, minPos.y, maxPos.z, 0.0f, 1.0f, -Vector3::UnitY); ++v;	// ┗
+		setV(v, maxPos.x, minPos.y, minPos.z, 1.0f, 0.0f, -Vector3::UnitY); ++v;	// ┓
+		setV(v, maxPos.x, minPos.y, maxPos.z, 1.0f, 1.0f, -Vector3::UnitY); ++v;	// ┛
+		setI(i, beginVertexIndex + 16); i += 6;
 
 		// 上 (Y+)(Z+ がUVの上方向)
-		SetV(v, minPos.x, maxPos.y, maxPos.z, 0.0f, 0.0f, Vector3::UnitY); ++v;	// ┏
-		SetV(v, minPos.x, maxPos.y, minPos.z, 0.0f, 1.0f, Vector3::UnitY); ++v;	// ┗
-		SetV(v, maxPos.x, maxPos.y, maxPos.z, 1.0f, 0.0f, Vector3::UnitY); ++v;	// ┓
-		SetV(v, maxPos.x, maxPos.y, minPos.z, 1.0f, 1.0f, Vector3::UnitY); ++v;	// ┛
-		SetI(i, beginVertexIndex + 20);
+		setV(v, minPos.x, maxPos.y, maxPos.z, 0.0f, 0.0f, Vector3::UnitY); ++v;	// ┏
+		setV(v, minPos.x, maxPos.y, minPos.z, 0.0f, 1.0f, Vector3::UnitY); ++v;	// ┗
+		setV(v, maxPos.x, maxPos.y, maxPos.z, 1.0f, 0.0f, Vector3::UnitY); ++v;	// ┓
+		setV(v, maxPos.x, maxPos.y, minPos.z, 1.0f, 1.0f, Vector3::UnitY); ++v;	// ┛
+		setI(i, beginVertexIndex + 20);
 
 		if (!m_transform.isIdentity())
 			MeshHelper::transform(outVertices, v, m_transform);
@@ -450,7 +450,7 @@ public:
 		m_radius = radius;
 		m_slices = slices;
 		m_stacks = stacks;
-		MakeSinCosTable();
+		makeSinCosTable();
 		MeshFactoryBase::initialize(color, transform);
 	}
 
@@ -477,7 +477,7 @@ public:
 		float	cos;
 	};
 
-	void Generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
+	void generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
 	{
 		Vertex* v = outVertices;
 		uint16_t* i = (uint16_t*)outIndices;
@@ -564,7 +564,7 @@ public:
 		return stack*slices + slice + 1;
 	}
 
-	void MakeSinCosTable()
+	void makeSinCosTable()
 	{
 		float phi_start = Math::PI / 2.0f;
 		float phi_step = -2.0f * Math::PI / m_slices;
@@ -623,7 +623,7 @@ public:
 		return m_slices * (m_stacks + 2) * 6;
 	}
 
-	void Generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
+	void generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
 	{
 		Vertex* vb = outVertices;
 		uint16_t* ib = (uint16_t*)outIndices;
@@ -636,7 +636,7 @@ public:
 		//for (int iSlice = 0; iSlice < m_slices + 1; ++iSlice)
 		for (int iSlice = m_slices; iSlice >= 0; iSlice--)
 		{
-			Vector3 n = MeshHelper::GetXZCirclePoint(iSlice, m_slices);
+			Vector3 n = MeshHelper::getXZCirclePoint(iSlice, m_slices);
 			Vector3 xz = n * m_radius;
 
 			// upper base
@@ -645,7 +645,7 @@ public:
 				v.position.set(0, yu, 0);
 				v.normal = Vector3::UnitY;
 				v.color = m_color;
-				AddVertex(&vb, v);
+				addVertex(&vb, v);
 			}
 			// side
 			y = yu;
@@ -657,7 +657,7 @@ public:
 				v.position.z = xz.z;
 				v.normal = n;
 				v.color = m_color;
-				AddVertex(&vb, v);
+				addVertex(&vb, v);
 				y -= yStep;
 			}
 			// lower base
@@ -666,7 +666,7 @@ public:
 				v.position.set(0, yd, 0);
 				v.normal = -Vector3::UnitY;
 				v.color = m_color;
-				AddVertex(&vb, v);
+				addVertex(&vb, v);
 			}
 		}
 
@@ -694,7 +694,7 @@ public:
 			MeshHelper::transform(outVertices, vb, m_transform);
 	}
 
-	static void AddVertex(Vertex** vb, const Vertex& v)
+	static void addVertex(Vertex** vb, const Vertex& v)
 	{
 		*(*vb) = v;
 		(*vb)++;
@@ -738,14 +738,14 @@ public:
 		return m_slices * 3 * 6;
 	}
 
-	void Generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
+	void generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
 	{
 		Vertex* vb = outVertices;
 		uint16_t* ib = (uint16_t*)outIndices;
 
 		for (int iSlice = m_slices; iSlice >= 0; iSlice--)
 		{
-			Vector3 n = MeshHelper::GetXZCirclePoint(iSlice, m_slices);
+			Vector3 n = MeshHelper::getXZCirclePoint(iSlice, m_slices);
 			Vector3 xz = n * m_radius;
 
 			// top
@@ -754,7 +754,7 @@ public:
 				v.position.set(0, m_height / 2, 0);
 				v.normal = Vector3::UnitY;
 				v.color = m_color;
-				AddVertex(&vb, v);
+				addVertex(&vb, v);
 			}
 			// side
 			float y = -m_height / 2;
@@ -763,7 +763,7 @@ public:
 				v.position.set(xz.x, y, xz.z);
 				v.normal = n;
 				v.color = m_color;
-				AddVertex(&vb, v);
+				addVertex(&vb, v);
 			}
 			// lower base
 			{
@@ -771,7 +771,7 @@ public:
 				v.position.set(0, y, 0);
 				v.normal = -Vector3::UnitY;
 				v.color = m_color;
-				AddVertex(&vb, v);
+				addVertex(&vb, v);
 			}
 		}
 
@@ -799,7 +799,7 @@ public:
 			MeshHelper::transform(outVertices, vb, m_transform);
 	}
 
-	static void AddVertex(Vertex** vb, const Vertex& v)
+	static void addVertex(Vertex** vb, const Vertex& v)
 	{
 		*(*vb) = v;
 		(*vb)++;
@@ -846,14 +846,14 @@ public:
 		return m_slices * 6;
 	}
 
-	void Generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
+	void generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
 	{
 		Vertex* vb = outVertices;
 		uint16_t* ib = (uint16_t*)outIndices;
 
 		for (int iSlice = 0; iSlice < m_slices + 1; iSlice++)
 		{
-			Vector3 n = MeshHelper::GetXZArcPoint(m_startAngle, m_endAngle, iSlice, m_slices);
+			Vector3 n = MeshHelper::getXZArcPoint(m_startAngle, m_endAngle, iSlice, m_slices);
 
 			// outer
 			{
@@ -861,7 +861,7 @@ public:
 				v.position = n * m_outerRadius;
 				v.normal = Vector3::UnitY;
 				v.color = m_color;
-				AddVertex(&vb, v);
+				addVertex(&vb, v);
 			}
 			// inner
 			{
@@ -869,7 +869,7 @@ public:
 				v.position = n * m_innerRadius;
 				v.normal = Vector3::UnitY;
 				v.color = m_color;
-				AddVertex(&vb, v);
+				addVertex(&vb, v);
 			}
 		}
 
@@ -893,7 +893,7 @@ public:
 			MeshHelper::transform(outVertices, vb, m_transform);
 	}
 
-	static void AddVertex(Vertex** vb, const Vertex& v)
+	static void addVertex(Vertex** vb, const Vertex& v)
 	{
 		*(*vb) = v;
 		(*vb)++;
@@ -922,14 +922,14 @@ public:
 
 	int getIndexCount() const;
 
-	void Generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex);
+	void generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex);
 
 private:
-	void AddVertex(const Vector3& pos, const Vector3& normal, const Vector2& texUV);
-	void AddIndex(uint16_t index);
+	void addVertex(const Vector3& pos, const Vector3& normal, const Vector2& texUV);
+	void addIndex(uint16_t index);
 
-	void ComputeTeapot(float size, size_t tessellation/*, bool rhcoords*/);
-	void TessellatePatch(const TeapotPatch& patch, size_t tessellation, const Vector3& scale, bool isMirrored);
+	void computeTeapot(float size, size_t tessellation/*, bool rhcoords*/);
+	void tessellatePatch(const TeapotPatch& patch, size_t tessellation, const Vector3& scale, bool isMirrored);
 
 	float		m_size;
 	int			m_tessellation;

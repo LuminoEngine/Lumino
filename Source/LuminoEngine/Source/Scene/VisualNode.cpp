@@ -251,16 +251,16 @@ void VisualComponent::setDepthWriteEnabled(bool enabled) { m_depthWriteEnabled =
 //bool VisualComponent::isDepthWriteEnabled() const { return GetMainMaterial()->isDepthWriteEnabled(); }
 
 //------------------------------------------------------------------------------
-void VisualComponent::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
+void VisualComponent::updateFrameHierarchy(SceneNode* parent, float deltaTime)
 {
 	// TODO: 描画関係のデータは updateFrame でやるべきではないような気もする。
 	//m_materialList->UpdateMaterialInstances(m_ownerSceneGraph);
 
-	SceneNode::UpdateFrameHierarchy(parent, deltaTime);
+	SceneNode::updateFrameHierarchy(parent, deltaTime);
 }
 
 //------------------------------------------------------------------------------
-detail::Sphere VisualComponent::GetBoundingSphere()
+detail::Sphere VisualComponent::getBoundingSphere()
 {
 	const detail::Sphere s{ Vector3::Zero, -1 };
 	return s;
@@ -282,9 +282,9 @@ void VisualComponent::render(DrawList* context)
 		context->setCullingMode(m_cullingMode);
 		context->setDepthTestEnabled(m_depthTestEnabled);
 		context->setDepthWriteEnabled(m_depthWriteEnabled);
-		context->SetBuiltinEffectData(m_builtinEffectData);
+		context->setBuiltinEffectData(m_builtinEffectData);
 		onRender(context);
-		OnRender2(context);
+		onRender2(context);
 	}
 }
 
@@ -314,19 +314,19 @@ void VisualObject::initialize()
 //------------------------------------------------------------------------------
 void VisualObject::setOpacity(float value)
 {
-	GetMainVisualComponent()->setOpacity(value);
+	getMainVisualComponent()->setOpacity(value);
 }
 
 //------------------------------------------------------------------------------
 float VisualObject::getOpacity() const
 {
-	return GetMainVisualComponent()->getOpacity();
+	return getMainVisualComponent()->getOpacity();
 }
 
 //------------------------------------------------------------------------------
 void VisualObject::setColorScale(const Color& value)
 {
-	GetMainVisualComponent()->setColorScale(value);
+	getMainVisualComponent()->setColorScale(value);
 }
 
 //------------------------------------------------------------------------------
@@ -338,91 +338,91 @@ void VisualObject::setColorScale(float r, float g, float b, float a)
 //------------------------------------------------------------------------------
 const Color& VisualObject::getColorScale() const
 {
-	return GetMainVisualComponent()->getColorScale();
+	return getMainVisualComponent()->getColorScale();
 }
 
 //------------------------------------------------------------------------------
 void VisualObject::setBlendColor(const Color& value)
 {
-	GetMainVisualComponent()->setBlendColor(value);
+	getMainVisualComponent()->setBlendColor(value);
 }
 
 //------------------------------------------------------------------------------
 const Color& VisualObject::getBlendColor() const
 {
-	return GetMainVisualComponent()->getBlendColor();
+	return getMainVisualComponent()->getBlendColor();
 }
 
 //------------------------------------------------------------------------------
 void VisualObject::setTone(const ToneF& value)
 {
-	GetMainVisualComponent()->setTone(value);
+	getMainVisualComponent()->setTone(value);
 }
 
 //------------------------------------------------------------------------------
 const ToneF& VisualObject::getTone() const
 {
-	return GetMainVisualComponent()->getTone();
+	return getMainVisualComponent()->getTone();
 }
 
 //------------------------------------------------------------------------------
 void VisualObject::setShader(Shader* value)
 {
-	GetMainVisualComponent()->setShader(value);
+	getMainVisualComponent()->setShader(value);
 }
 
 //------------------------------------------------------------------------------
 Shader* VisualObject::getShader() const
 {
-	return GetMainVisualComponent()->getShader();
+	return getMainVisualComponent()->getShader();
 }
 
 //------------------------------------------------------------------------------
 void VisualObject::setBlendMode(BlendMode mode)
 {
-	GetMainVisualComponent()->setBlendMode(mode);
+	getMainVisualComponent()->setBlendMode(mode);
 }
 
 //------------------------------------------------------------------------------
 BlendMode VisualObject::getBlendMode() const
 {
-	return GetMainVisualComponent()->getBlendMode();
+	return getMainVisualComponent()->getBlendMode();
 }
 
 //------------------------------------------------------------------------------
 void VisualObject::setCullingMode(CullingMode mode)
 {
-	GetMainVisualComponent()->setCullingMode(mode);
+	getMainVisualComponent()->setCullingMode(mode);
 }
 
 //------------------------------------------------------------------------------
 CullingMode VisualObject::getCullingMode() const
 {
-	return GetMainVisualComponent()->getCullingMode();
+	return getMainVisualComponent()->getCullingMode();
 }
 
 //------------------------------------------------------------------------------
 void VisualObject::setDepthTestEnabled(bool enabled)
 {
-	GetMainVisualComponent()->setDepthTestEnabled(enabled);
+	getMainVisualComponent()->setDepthTestEnabled(enabled);
 }
 
 //------------------------------------------------------------------------------
 bool VisualObject::isDepthTestEnabled() const
 {
-	return GetMainVisualComponent()->isDepthTestEnabled();
+	return getMainVisualComponent()->isDepthTestEnabled();
 }
 
 //------------------------------------------------------------------------------
 void VisualObject::setDepthWriteEnabled(bool enabled)
 {
-	GetMainVisualComponent()->setDepthWriteEnabled(enabled);
+	getMainVisualComponent()->setDepthWriteEnabled(enabled);
 }
 
 //------------------------------------------------------------------------------
 bool VisualObject::isDepthWriteEnabled() const
 {
-	return GetMainVisualComponent()->isDepthWriteEnabled();
+	return getMainVisualComponent()->isDepthWriteEnabled();
 }
 
 LN_NAMESPACE_SCENE_END

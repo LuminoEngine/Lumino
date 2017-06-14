@@ -16,18 +16,18 @@ public:
 
 public:
 	//UILayoutView* GetMainWindowView() { return m_mainWindowView; }
-	UIStyleTable* GetRootStyleTable() { return m_rootStyleTable; }
+	UIStyleTable* getRootStyleTable() { return m_rootStyleTable; }
 
 LN_INTERNAL_ACCESS:
 	UIContext();
 	virtual ~UIContext();
 	void initialize(detail::UIManager* manager);
 
-	void SetFocusElement(UIElement* element);
-	UIElement* SetFocusElement() { return m_focusElement; }	// キーボードフォーカス
+	void setFocusElement(UIElement* element);
+	UIElement* setFocusElement() { return m_focusElement; }	// キーボードフォーカス
 
 
-	void InjectElapsedTime(float elapsedTime);
+	void injectElapsedTime(float elapsedTime);
 	//void AddElement(UIElement* element) { m_allElementList.Add(element); }
 	//void RemoveElement(UIElement* element) { m_allElementList.Remove(element); }
 	detail::UIManager* getManager() { return m_manager; }

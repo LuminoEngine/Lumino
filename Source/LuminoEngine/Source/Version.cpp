@@ -19,7 +19,7 @@ int Engine::GetMinor()
 }
 
 //------------------------------------------------------------------------------
-int Engine::GetRevision()
+int Engine::getRevision()
 {
 	return LUMINO_ENGINE_VERSION_REVISION;
 }

@@ -151,7 +151,7 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 private:
-	void LayoutAndRender(DrawingContext* context, const Size& parentRenderSize);
+	void layoutAndRender(DrawingContext* context, const Size& parentRenderSize);
 
 	friend class UIElement;
 };
@@ -229,9 +229,9 @@ class UIStylePropertyTableInstance
 	: public RefObject
 {
 public:
-	void ClearAvailableRenderElements();
-	detail::InvalidateFlags InheritParentElementStyle(UIStylePropertyTableInstance* parent);
-	detail::InvalidateFlags Merge(const UIStylePropertyTable* source, UIStyleAttributeInheritSourceType sourceType);
+	void clearAvailableRenderElements();
+	detail::InvalidateFlags inheritParentElementStyle(UIStylePropertyTableInstance* parent);
+	detail::InvalidateFlags merge(const UIStylePropertyTable* source, UIStyleAttributeInheritSourceType sourceType);
 	void apply(UIElement* targetElement, bool useTransitionAnimation);
 
 public:
@@ -299,17 +299,17 @@ public:
 	//void AddSubStateStyle(const StringRef& subStateName, UIStyle* style);
 	//UIStyle* FindSubStateStyle(const StringRef& subStateName);
 
-	UIStylePropertyTable* GetPropertyTable();
-	UIStylePropertyTable* GetPropertyTable(const StringRef& visualStateName);
+	UIStylePropertyTable* getPropertyTable();
+	UIStylePropertyTable* getPropertyTable(const StringRef& visualStateName);
 
-	void SetBaseOnStyle(UIStyle* style);
+	void setBaseOnStyle(UIStyle* style);
 
 LN_INTERNAL_ACCESS:
-	UIStylePropertyTable* FindStylePropertyTable(const String& visualStateName);
+	UIStylePropertyTable* findStylePropertyTable(const String& visualStateName);
 	//detail::InvalidateFlags UpdateInherit(UIStyle* parent);
 	//void apply(UIElement* targetElement);
 
-	detail::InvalidateFlags MergeActiveStylePropertyTables(detail::UIStylePropertyTableInstance* store, const List<String>& visualStateNames);
+	detail::InvalidateFlags mergeActiveStylePropertyTables(detail::UIStylePropertyTableInstance* store, const List<String>& visualStateNames);
 
 public:	// TODO:
 	using VisualStateStylePair = std::pair<String, RefPtr<UIStylePropertyTable>>;
@@ -350,16 +350,16 @@ public:
 	//void AddStyle(const tr::TypeInfo* targetType, const StringRef& subStateName, UIStyle* style);
 
 
-	UIStyle* GetStyle(const StringRef& typeName);
-	UIStyle* GetSubControlStyle(const StringRef& subControlOwnerName, const StringRef& subControlName);
-	//UIStyle* GetStyle(const tr::TypeInfo* targetType, const StringRef& subStateName);
+	UIStyle* getStyle(const StringRef& typeName);
+	UIStyle* getSubControlStyle(const StringRef& subControlOwnerName, const StringRef& subControlName);
+	//UIStyle* getStyle(const tr::TypeInfo* targetType, const StringRef& subStateName);
 
 LN_INTERNAL_ACCESS:
 
 	// 見つからなければ nullptr (ベースクラス情報も使用して検索する)
-	UIStyle* FindStyle(const tr::TypeInfo* targetType/*, const StringRef& subControlOwnerName, const StringRef& subControlName*/);
-	UIStyle* FindSubControlStyle(const StringRef& subControlOwnerName, const StringRef& subControlName);
-	//UIStyle* FindStyle(const tr::TypeInfo* targetType, const StringRef& subStateName);
+	UIStyle* findStyle(const tr::TypeInfo* targetType/*, const StringRef& subControlOwnerName, const StringRef& subControlName*/);
+	UIStyle* findSubControlStyle(const StringRef& subControlOwnerName, const StringRef& subControlName);
+	//UIStyle* findStyle(const tr::TypeInfo* targetType, const StringRef& subStateName);
 
 private:	
 	//typedef const tr::TypeInfo* StyleKey;

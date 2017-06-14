@@ -31,7 +31,7 @@ GLRenderer::~GLRenderer()
 }
 
 //------------------------------------------------------------------------------
-void GLRenderer::Activate()
+void GLRenderer::activate()
 {
 	// VAO はコンテキスト間で共有できないため、描画スレッド上で作る必要がある。
 	// なお、メインスレッドの MainContext で作った後、描画スレッドの Context に glBindVertexArray すると、
@@ -108,7 +108,7 @@ GLuint GLRenderer::getVertexArrayObject()
 //}
 
 ////------------------------------------------------------------------------------
-//void GLRenderer::SetViewport(const RectI& rect)
+//void GLRenderer::setViewport(const RectI& rect)
 //{
 //	const SizeI& scr = m_currentRenderTargets[0]->GetSize();
 //	glViewport(rect.x, scr.height - (rect.y + rect.height), rect.width, rect.height);

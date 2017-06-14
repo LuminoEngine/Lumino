@@ -21,7 +21,7 @@ struct ArchiveHeader
 			// 以下のようにすることで、Data.lna をフォルダのようにみなして file1.txt にアクセスできるアーカイブを作成できる
 			ArchiveMaker maker;
 			maker.Open("C:\\TestApp\\Data.lna", "password");
-			maker.AddFile("C:\\TestApp\\Data\\file1.txt", "file1.txt");
+			maker.addFile("C:\\TestApp\\Data\\file1.txt", "file1.txt");
 			maker.Close();
 	@endcode
 */
@@ -56,18 +56,18 @@ public:
 		@return		true=成功 / false=失敗
 		@details	デストラクタでも呼び出されます。
 	*/
-	bool AddFile(const PathName& filePath, String aliasPath);
+	bool addFile(const PathName& filePath, String aliasPath);
 
 private:
 
 	/// パディングを考慮して、開いているアーカイブファイルにデータを書き込む
-	void WritePadding16(const byte_t* data, uint32_t size);
+	void writePadding16(const byte_t* data, uint32_t size);
 
 	/// パディングを考慮して、整数を書き込む (ファイル名長さ、ファイルサイズ用)
-	void WriteU32Padding16(uint32_t v0, uint32_t v1);
+	void writeU32Padding16(uint32_t v0, uint32_t v1);
 
 	/// ディレクトリセパレータを / に変換する
-	void NormalizePath(StringW* path);
+	void normalizePath(StringW* path);
 
 private:
 

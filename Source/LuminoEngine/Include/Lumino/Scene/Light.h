@@ -26,47 +26,47 @@ public:
 	void setEnabled(bool enabled) { m_enabled = enabled; }
 
 	/// ライトの有効、無効を確認する
-	bool IsEnabled() const { return m_enabled; }
+	bool isEnabled() const { return m_enabled; }
 
 	/// ディフューズカラーの設定
-	void SetDiffuseColor(const Color& color) { m_lightInfo->m_diffuse = color; }
+	void setDiffuseColor(const Color& color) { m_lightInfo->m_diffuse = color; }
 
 	/// ディフューズカラーの取得
-	const Color& GetDiffuseColor() const { return m_lightInfo->m_diffuse; }
+	const Color& getDiffuseColor() const { return m_lightInfo->m_diffuse; }
 
 	/// アンビエントカラーの設定
-	void SetAmbientColor(const Color& color) { m_lightInfo->m_ambient = color; }
+	void setAmbientColor(const Color& color) { m_lightInfo->m_ambient = color; }
 
 	/// アンビエントカラーの取得
-	const Color& GetAmbientColor() const { return m_lightInfo->m_ambient; }
+	const Color& getAmbientColor() const { return m_lightInfo->m_ambient; }
 
 	/// スペキュラカラーの設定
-	void SetSpecularColor(const Color& color) { m_lightInfo->m_specular = color; }
+	void setSpecularColor(const Color& color) { m_lightInfo->m_specular = color; }
 
 	/// スペキュラカラーの取得
-	const Color& GetSpecularColor() const { return m_lightInfo->m_specular; }
+	const Color& getSpecularColor() const { return m_lightInfo->m_specular; }
 
 	/// スポットライトのコーン角度の設定 (ラジアン単位)
-	void SetSpotAngle(float angle) { m_spotAngle = angle; }
+	void setSpotAngle(float angle) { m_spotAngle = angle; }
 
 	/// スポットライトのコーン角度の取得 (ラジアン単位)
-	float GetSpotAngle() const { return m_spotAngle; }
+	float getSpotAngle() const { return m_spotAngle; }
 
 	/// [Advanced]
-	void SetShadowZFar(float z) { m_lightInfo->m_shadowZFar = z; }
+	void setShadowZFar(float z) { m_lightInfo->m_shadowZFar = z; }
 
 	/// [Advanced]
-	float GetShadowZFar() const { return m_lightInfo->m_shadowZFar; }
+	float getShadowZFar() const { return m_lightInfo->m_shadowZFar; }
 
 public:	// internal
 
-	/// 各行列を更新する (SceneNode::UpdateFrameHierarchy() の後で呼び出すこと)
-	void UpdateMatrices(/*const Size& viewSize*/);
+	/// 各行列を更新する (SceneNode::updateFrameHierarchy() の後で呼び出すこと)
+	void updateMatrices(/*const Size& viewSize*/);
 
-	// 向きの取得 (シェーダ設定用。UpdateMatrices() の後で呼び出すこと)
-	//const Vector4& GetDirectionInternal() const { return m_lightInfo->m_direction; }
+	// 向きの取得 (シェーダ設定用。updateMatrices() の後で呼び出すこと)
+	//const Vector4& getDirectionInternal() const { return m_lightInfo->m_direction; }
 
-	// 行列の取得 (シェーダ設定用。UpdateMatrices() の後で呼び出すこと)
+	// 行列の取得 (シェーダ設定用。updateMatrices() の後で呼び出すこと)
 	//const Matrix& GetWorldViewProj() const { return m_worldViewProjMatrix; }
 	//const Matrix& GetViewMatrix() const { return m_viewMatrix; }
 	//const Matrix& GetProjectionMatrix() const { return m_projMatrix; }

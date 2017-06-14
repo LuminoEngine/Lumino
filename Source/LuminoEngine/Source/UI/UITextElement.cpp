@@ -12,10 +12,10 @@ LN_NAMESPACE_BEGIN
 // UITextElement
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UITextElement, UIElement);
-LN_TR_PROPERTY_IMPLEMENT(UITextElement, String, FontFamily, tr::PropertyMetadata(UITextElement::OnFontPropertyChanged));
-LN_TR_PROPERTY_IMPLEMENT(UITextElement, int, FontSize, tr::PropertyMetadata(UITextElement::OnFontPropertyChanged));
-LN_TR_PROPERTY_IMPLEMENT(UITextElement, bool, isFontBold, tr::PropertyMetadata(UITextElement::OnFontPropertyChanged));
-LN_TR_PROPERTY_IMPLEMENT(UITextElement, bool, isFontItalic, tr::PropertyMetadata(UITextElement::OnFontPropertyChanged));
+LN_TR_PROPERTY_IMPLEMENT(UITextElement, String, FontFamily, tr::PropertyMetadata(UITextElement::onFontPropertyChanged));
+LN_TR_PROPERTY_IMPLEMENT(UITextElement, int, FontSize, tr::PropertyMetadata(UITextElement::onFontPropertyChanged));
+LN_TR_PROPERTY_IMPLEMENT(UITextElement, bool, isFontBold, tr::PropertyMetadata(UITextElement::onFontPropertyChanged));
+LN_TR_PROPERTY_IMPLEMENT(UITextElement, bool, isFontItalic, tr::PropertyMetadata(UITextElement::onFontPropertyChanged));
 
 
 //------------------------------------------------------------------------------
@@ -26,10 +26,10 @@ UITextElement::UITextElement()
 	, isFontItalic(false)
 	, m_invalidateFont(true)
 {
-	//m_fontFamily.setStaticListener(this, OnFontPropertyChanged);
-	//m_fontSize.setStaticListener(this, OnFontPropertyChanged);
-	//m_fontBold.setStaticListener(this, OnFontPropertyChanged);
-	//m_fontItalic.setStaticListener(this, OnFontPropertyChanged);
+	//m_fontFamily.setStaticListener(this, onFontPropertyChanged);
+	//m_fontSize.setStaticListener(this, onFontPropertyChanged);
+	//m_fontBold.setStaticListener(this, onFontPropertyChanged);
+	//m_fontItalic.setStaticListener(this, onFontPropertyChanged);
 }
 
 //------------------------------------------------------------------------------
@@ -45,7 +45,7 @@ Size UITextElement::measureOverride(const Size& constraint)
 	{
 		if (m_font == nullptr)
 		{
-			// TODO: GetActiveFont() でやったほうがいいかな
+			// TODO: getActiveFont() でやったほうがいいかな
 			m_font = RefPtr<Font>::makeRef();
 			m_font->initialize(getManager()->getGraphicsManager(), nullptr);
 		}
@@ -61,9 +61,9 @@ Size UITextElement::measureOverride(const Size& constraint)
 }
 
 //------------------------------------------------------------------------------
-void UITextElement::OnUpdateStyle(detail::UIStylePropertyTableInstance* localStyle, detail::InvalidateFlags invalidateFlags)
+void UITextElement::onUpdateStyle(detail::UIStylePropertyTableInstance* localStyle, detail::InvalidateFlags invalidateFlags)
 {
-	UIElement::OnUpdateStyle(localStyle, invalidateFlags);
+	UIElement::onUpdateStyle(localStyle, invalidateFlags);
 
 	// TODO: 本来はStyle 用の優先順位で設定するべき。
 	// https://msdn.microsoft.com/ja-jp/library/ms743230%28v=vs.110%29.aspx#Anchor_3
@@ -75,8 +75,8 @@ void UITextElement::OnUpdateStyle(detail::UIStylePropertyTableInstance* localSty
 }
 
 //------------------------------------------------------------------------------
-void UITextElement::OnFontPropertyChanged(Object* obj)
-//void UITextElement::OnFontPropertyChanged(tr::PropertyChangedEventArgs* e)
+void UITextElement::onFontPropertyChanged(Object* obj)
+//void UITextElement::onFontPropertyChanged(tr::PropertyChangedEventArgs* e)
 {
 	static_cast<UITextElement*>(obj)->m_invalidateFont = true;
 	// TODO: InvalidateMeasure

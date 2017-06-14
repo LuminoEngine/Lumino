@@ -25,7 +25,7 @@ public:
 	NSGLContext();
 	virtual ~NSGLContext();
 	void Initialize(NSGLGraphicsDevice* device, PlatformWindow* window, NSGLContext* parentContext);
-	id GetContext() const { return m_context; }
+	id getContext() const { return m_context; }
 
 	// GLContext interface
 	virtual void swapBuffers() override;

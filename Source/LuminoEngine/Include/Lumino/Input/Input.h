@@ -14,42 +14,42 @@ public:
 	/**
 		@brief		ボタンが現在押されているかを判定します。
 	*/
-	static bool IsPressed(const StringRef& buttonName);
+	static bool isPressed(const StringRef& buttonName);
 
 	/**
 		@brief		ボタンが新しく押された瞬間を判定します。
 	*/
-	static bool IsTriggered(const StringRef& buttonName);
+	static bool isTriggered(const StringRef& buttonName);
 
 	/**
 		@brief		ボタンが離された瞬間を判定します。
 	*/
-	static bool IsOffTriggered(const StringRef& buttonName);
+	static bool isOffTriggered(const StringRef& buttonName);
 
 	/**
 		@brief		ボタンが新しく押された瞬間とリピート状態を判定します。
 	*/
-	static bool IsRepeated(const StringRef& buttonName);
+	static bool isRepeated(const StringRef& buttonName);
 
 	/**
 		@brief		指定した軸のアナログ値を取得します。
 	*/
-	static float GetAxisValue(const StringRef& buttonName);
+	static float getAxisValue(const StringRef& buttonName);
 
 	/**
 		@brief		ボタンのアクションマッピングを追加します。
 	*/
-	static void AddButtonBinding(const StringRef& buttonName, InputBinding* binding);
+	static void addButtonBinding(const StringRef& buttonName, InputBinding* binding);
 
 	/**
 		@brief		アクションマッピングを除外します。
 	*/
-	static void RemoveBinding(InputBinding* binding);
+	static void removeBinding(InputBinding* binding);
 
 	/**
 		@brief		全てのアクションマッピングを削除します。
 	*/
-	static void ClearBindings();
+	static void clearBindings();
 
 private:
 };

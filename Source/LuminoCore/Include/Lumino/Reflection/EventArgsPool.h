@@ -47,7 +47,7 @@ public:
 		if (e == nullptr)
 		{
 			e = LN_NEW TEventArgs(args...);
-			Register(e);
+			registerObject(e);
 		}
 		else
 		{
@@ -79,7 +79,7 @@ private:
 		return NULL;
 	}
 
-	void Register(ReflectionEventArgs* e)
+	void registerObject(ReflectionEventArgs* e)
 	{
 		EventArgsList* list;
 		if (!m_pool.tryGetValue(tr::TypeInfo::getTypeInfo(e), &list))
@@ -93,7 +93,7 @@ private:
 
 
 	template<class T>
-	T FindFreeObject(const List<T>& pool)
+	T findFreeObject(const List<T>& pool)
 	{
 		LN_FOREACH(T a, pool)
 		{

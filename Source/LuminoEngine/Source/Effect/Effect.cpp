@@ -15,7 +15,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(VisualEffect, tr::ReflectionObject);
 //------------------------------------------------------------------------------
 //VisualEffectPtr VisualEffect::create(const StringRef& filePath)
 //{
-//	auto* manager = detail::GetEffectManager(nullptr);
+//	auto* manager = detail::getEffectManager(nullptr);
 //	auto* obj = manager->GetEffectEngine()->CreateEffectCore(PathName(filePath));
 //	return VisualEffectPtr(obj, false);
 //}

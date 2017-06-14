@@ -114,7 +114,7 @@ void Win32JoystickDriver::initialize( IDirectInputDevice8* device, HWND hwnd, in
 	//memset(mButtonState, 0, sizeof(mButtonState));
 	//memset(mAxisState, 0, sizeof(mAxisState));
 
-	if (!IsXInputDevice())
+	if (!isXInputDevice())
 	{
 		// ジョイスティックとしてデータフォーマットを設定
 		//hr = mDevice->SetDataFormat( &c_dfDIJoystick2 );	// もっといろんな情報がほしいとき
@@ -195,10 +195,10 @@ void Win32JoystickDriver::Dispose()
 }
 
 //------------------------------------------------------------------------------
-void Win32JoystickDriver::GetJoystickDeviceState(JoystickDeviceState* joyState)
+void Win32JoystickDriver::getJoystickDeviceState(JoystickDeviceState* joyState)
 {
 	// XInput
-	if (IsXInputDevice())
+	if (isXInputDevice())
 	{
 		XINPUT_STATE state;
 		if (XInputModule::XInputGetState(mXInputNo, &state) == ERROR_SUCCESS)
@@ -342,9 +342,9 @@ void Win32JoystickDriver::GetJoystickDeviceState(JoystickDeviceState* joyState)
 }
 
 //------------------------------------------------------------------------------
-void Win32JoystickDriver::StartVibration( int power, int time )
+void Win32JoystickDriver::startVibration( int power, int time )
 {
-	if (IsXInputDevice())
+	if (isXInputDevice())
 	{
 		XINPUT_VIBRATION vibration;
 		vibration.wLeftMotorSpeed = power * 65535 / 1000;
@@ -381,9 +381,9 @@ void Win32JoystickDriver::StartVibration( int power, int time )
 }
 
 //------------------------------------------------------------------------------
-void Win32JoystickDriver::StopVibration()
+void Win32JoystickDriver::stopVibration()
 {
-	if (IsXInputDevice())
+	if (isXInputDevice())
 	{
 		XINPUT_VIBRATION vibration;
 		vibration.wLeftMotorSpeed = 0;
@@ -409,7 +409,7 @@ void Win32JoystickDriver::update()
 	{
 		if (::GetTickCount() >= mVibrationStartTime + mVibrationTime)
 		{
-			StopVibration();
+			stopVibration();
 		}
 	}
 }

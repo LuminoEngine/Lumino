@@ -191,22 +191,22 @@ DepthBuffer* Renderer::getDepthBuffer() const
 }
 
 //------------------------------------------------------------------------------
-//void Renderer::SetViewport(const RectI& rect)
+//void Renderer::setViewport(const RectI& rect)
 //{
-//	//LN_CALL_RENDERER_COMMAND(SetViewport, SetViewportCommand, rect);
+//	//LN_CALL_RENDERER_COMMAND(setViewport, SetViewportCommand, rect);
 //	m_currentViewport = rect;
 //
 //	LN_ENQUEUE_RENDER_COMMAND_2(
-//		SetViewport, m_manager,
+//		setViewport, m_manager,
 //		Driver::IRenderer*, m_internal,
 //		RectI, rect,
 //		{
-//			m_internal->SetViewport(rect);
+//			m_internal->setViewport(rect);
 //		});
 //}
 
 ////------------------------------------------------------------------------------
-//const RectI& Renderer::GetViewport()
+//const RectI& Renderer::getViewport()
 //{
 //	return m_currentViewport;
 //}
@@ -333,7 +333,7 @@ void Renderer::flushState(const detail::ContextState& state)
 			setRenderTarget(i, state.getRenderTarget(i));
 		}
 		setDepthBuffer(state.depthBuffer);
-		//SetViewport(state.viewport);
+		//setViewport(state.viewport);
 		//setVertexBuffer(state.vertexBuffer);
 		//setIndexBuffer(state.indexBuffer);
 	}

@@ -268,7 +268,7 @@ void TextRenderer::drawGlyphRun(const Matrix& transform, const PointI& position,
 void TextRenderer::drawGlyphRun(const Matrix& transform, const PointF& position, GlyphRun* glyphRun)
 {
 	if (glyphRun == nullptr) return;
-	CheckUpdateState();
+	checkUpdateState();
 	m_font = glyphRun->getFont();
 	DrawGlyphsInternal(transform, position, glyphRun->requestLayoutItems(), glyphRun->lookupFontGlyphTextureCache());
 }
@@ -329,7 +329,7 @@ void TextRenderer::drawString(const Matrix& transform, const TCHAR* str, int len
 //------------------------------------------------------------------------------
 void TextRenderer::DrawGlyphsInternal(const Matrix& transform, const PointF& position, const List<TextLayoutResultItem>& layoutItems, FontGlyphTextureCache* cache)
 {
-	CheckUpdateState();
+	checkUpdateState();
 
 	int dataCount = layoutItems.getCount();
 	for (int i = 0; i < dataCount; ++i)
@@ -426,7 +426,7 @@ void TextRenderer::FlushInternal(FontGlyphTextureCache* cache)
 }
 
 //------------------------------------------------------------------------------
-void TextRenderer::CheckUpdateState()	// あらゆる Draw の直前にやりたいこと
+void TextRenderer::checkUpdateState()	// あらゆる draw の直前にやりたいこと
 {
 	if (m_stateModified)
 	{

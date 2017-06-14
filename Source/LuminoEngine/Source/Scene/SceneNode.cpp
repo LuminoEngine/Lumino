@@ -72,21 +72,21 @@ void SceneNode::setName(const String& name)
 {
 	if (m_name != name)
 	{
-		m_manager->OnNodeRename(this, m_name, name);
+		m_manager->onNodeRename(this, m_name, name);
 		m_name = name;
 	}
 }
 
 //------------------------------------------------------------------------------
-void SceneNode::AddChild(SceneNode* child)
+void SceneNode::addChild(SceneNode* child)
 {
 	if (LN_CHECK_ARG(child != nullptr)) return;
 
 	// 別のノードの子であれば外す
 	// ※ WPF などでは既に別ノードの子であれば例外するが、この SceneGraph ではしない。
-	//    ノードは作成と同時にツリーに追加されるため、別ノードに AddChild したいときは一度 Remove しなければならないがさすがに煩わしい。
+	//    ノードは作成と同時にツリーに追加されるため、別ノードに addChild したいときは一度 Remove しなければならないがさすがに煩わしい。
 	if (child->m_parentNode != nullptr) {
-		RemoveChild(child);
+		removeChild(child);
 	}
 
 	// 子として追加
@@ -95,7 +95,7 @@ void SceneNode::AddChild(SceneNode* child)
 }
 
 //------------------------------------------------------------------------------
-void SceneNode::RemoveChild(SceneNode* child)
+void SceneNode::removeChild(SceneNode* child)
 {
 	if (LN_CHECK_ARG(child != nullptr)) return;
 	if (child->m_parentNode == this)
@@ -106,7 +106,7 @@ void SceneNode::RemoveChild(SceneNode* child)
 }
 
 //------------------------------------------------------------------------------
-void SceneNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
+void SceneNode::updateFrameHierarchy(SceneNode* parent, float deltaTime)
 {
 	// ワールド行列の更新が必要な場合は再計算
 	//if (m_transformModified)
@@ -137,14 +137,14 @@ void SceneNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 	//	m_combinedGlobalMatrix *= owner->transform.getTransformMatrix();
 	//}
 
-	OnUpdateFrame(deltaTime);
+	onUpdateFrame(deltaTime);
 
 	// 子ノード更新
 	int count = m_children->getCount();
 	for (int i = 0; i < count; )
 	{
 		SceneNode* node = m_children->getAt(i);
-		node->UpdateFrameHierarchy(this, deltaTime);
+		node->updateFrameHierarchy(this, deltaTime);
 
 		if (node->isAutoRemove() && node->getReferenceCount() == 1)
 		{
@@ -159,7 +159,7 @@ void SceneNode::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
 }
 
 //------------------------------------------------------------------------------
-void SceneNode::OnRender2(DrawList* renderer)
+void SceneNode::onRender2(DrawList* renderer)
 {
 }
 

@@ -33,7 +33,7 @@ UIFrameWindow::UIFrameWindow()
 	, m_swapChain(nullptr)
 	, m_delayedRenderingSkip(false)
 {
-	SetSpecialElementType(UISpecialElementType::FrameWindow);
+	setSpecialElementType(UISpecialElementType::FrameWindow);
 }
 
 //------------------------------------------------------------------------------
@@ -50,9 +50,9 @@ void UIFrameWindow::initialize(PlatformWindow* platformWindow, SwapChain* swapCh
 	m_swapChain = swapChain;
 
 	UILayoutView::initialize(context, platformWindow);
-	m_platformWindow->AttachEventListener(this, 0);
-	Initialize_UIRenderer();
-	m_manager->AddFrameWindow(this);
+	m_platformWindow->attachEventListener(this, 0);
+	initialize_UIRenderer();
+	m_manager->addFrameWindow(this);
 }
 
 //------------------------------------------------------------------------------
@@ -61,7 +61,7 @@ void UIFrameWindow::initialize()
 	m_manager = detail::EngineDomain::getUIManager();
 
 	WindowCreationSettings ws;
-	RefPtr<PlatformWindow> window(m_manager->getPlatformManager()->GetWindowManager()->CreateSubWindow(ws), false);
+	RefPtr<PlatformWindow> window(m_manager->getPlatformManager()->getWindowManager()->createSubWindow(ws), false);
 	auto swapChain = RefPtr<SwapChain>::makeRef();
 	swapChain->initializeSub(m_manager->getGraphicsManager(), window);
 
@@ -73,28 +73,28 @@ void UIFrameWindow::Dispose()
 {
 	if (m_manager != nullptr)
 	{
-		m_platformWindow->DetachEventListener(this);
+		m_platformWindow->detachEventListener(this);
 		m_swapChain.safeRelease();
 		m_platformWindow.safeRelease();
-		m_manager->RemoveFrameWindow(this);
+		m_manager->removeFrameWindow(this);
 		m_manager = nullptr;
 	}
 }
 
 //------------------------------------------------------------------------------
-PlatformWindow* UIFrameWindow::GetPlatformWindow() const
+PlatformWindow* UIFrameWindow::getPlatformWindow() const
 {
 	return m_platformWindow;
 }
 
 //------------------------------------------------------------------------------
-SwapChain* UIFrameWindow::GetSwapChain() const
+SwapChain* UIFrameWindow::getSwapChain() const
 {
 	return m_swapChain;
 }
 
 //------------------------------------------------------------------------------
-DrawingContext* UIFrameWindow::GetDrawingContext() const
+DrawingContext* UIFrameWindow::getDrawingContext() const
 {
 	return m_drawingContext;
 }
@@ -112,14 +112,14 @@ bool UIFrameWindow::onEvent(const PlatformEventArgs& e)
 }
 
 //------------------------------------------------------------------------------
-void UIFrameWindow::OnRenderContents()
+void UIFrameWindow::onRenderContents()
 {
 }
 
 //------------------------------------------------------------------------------
-void UIFrameWindow::OnPresentRenderingContexts()
+void UIFrameWindow::onPresentRenderingContexts()
 {
-	ExecuteDrawList_UIRenderer();
+	executeDrawList_UIRenderer();
 }
 
 //------------------------------------------------------------------------------
@@ -130,20 +130,20 @@ void UIFrameWindow::OnPresentRenderingContexts()
 //}
 
 //------------------------------------------------------------------------------
-void UIFrameWindow::RenderContents()
+void UIFrameWindow::renderContents()
 {
-	Render_UIRenderer();
+	render_UIRenderer();
 }
 
 //------------------------------------------------------------------------------
-void UIFrameWindow::PresentRenderingContexts()
+void UIFrameWindow::presentRenderingContexts()
 {
 	// render
 	{
 		Details::Renderer* renderer = m_manager->getGraphicsManager()->getRenderer();
 		renderer->begin();
 
-		OnPresentRenderingContexts();
+		onPresentRenderingContexts();
 
 		m_manager->getGraphicsManager()->switchActiveContext(nullptr);
 		renderer->end();
@@ -180,9 +180,9 @@ void UIFrameWindow::PresentRenderingContexts()
 }
 
 //------------------------------------------------------------------------------
-void UIFrameWindow::Initialize_UIRenderer()
+void UIFrameWindow::initialize_UIRenderer()
 {
-	auto* manager = GetOwnerContext()->getManager();
+	auto* manager = getOwnerContext()->getManager();
 
 	m_drawingContext = newObject<DrawingContext>();
 
@@ -193,22 +193,22 @@ void UIFrameWindow::Initialize_UIRenderer()
 	m_internalRenderer = internalRenderer;
 
 	m_drawElementListSet = RefPtr<RenderView>::makeRef();
-	m_drawElementListSet->m_lists.add(m_drawingContext->GetDrawElementList());
+	m_drawElementListSet->m_lists.add(m_drawingContext->getDrawElementList());
 
 	m_renderDiag = newObject<RenderDiag>();
 }
 
 //------------------------------------------------------------------------------
-void UIFrameWindow::Render_UIRenderer()
+void UIFrameWindow::render_UIRenderer()
 {
-	m_drawingContext->BeginMakeElements();
+	m_drawingContext->beginMakeElements();
 	m_drawingContext->setBlendMode(BlendMode::Alpha);
-	OnRenderContents();
+	onRenderContents();
 	UILayoutView::render(m_drawingContext);
 }
 
 //------------------------------------------------------------------------------
-void UIFrameWindow::ExecuteDrawList_UIRenderer()
+void UIFrameWindow::executeDrawList_UIRenderer()
 {
 	RenderTargetTexture* renderTarget = nullptr;
 	DepthBuffer* depthBuffer = nullptr;
@@ -225,7 +225,7 @@ void UIFrameWindow::ExecuteDrawList_UIRenderer()
 		// 描画スレッドを使わないなら、Device から直接とっても良い。
 		// 描画スレッドを使うなら、Lumino を使用するフレームワークからサイズをもらわなければならない。
 		//		この時もらうサイズは、次の描画スレッドの描画で使用されるバックバッファのサイズである。
-		viewPixelSize = GetPlatformWindow()->getSize().toFloatSize();
+		viewPixelSize = getPlatformWindow()->getSize().toFloatSize();
 	}
 
 	m_renderDiag->clear();
@@ -241,7 +241,7 @@ void UIFrameWindow::ExecuteDrawList_UIRenderer()
 	m_drawElementListSet->m_cameraInfo.zSortDistanceBase = ZSortDistanceBase::NodeZ;
 	m_internalRenderer->render(
 		m_drawElementListSet,
-		//m_drawingContext->GetDrawElementList(),
+		//m_drawingContext->getDrawElementList(),
 		//m_drawElementListSet->m_cameraInfo,
 		renderTarget,
 		depthBuffer,
@@ -280,49 +280,49 @@ void UIMainWindow::initialize(PlatformWindow* platformWindow, World2D* defaultWo
 
 
 	// TODO: m_mainUIViewport を VisualTree の先頭に入れたい対策。InsertVisualTree とかほしいなぁ。。。
-	RefPtr<UILayoutPanel> panel = GetLayoutPanel();
-	SetLayoutPanel(nullptr);
+	RefPtr<UILayoutPanel> panel = getLayoutPanel();
+	setLayoutPanel(nullptr);
 
 	m_mainUIViewport = newObject<UIViewport>();
-	m_mainUIViewport->SetBackbufferSize(platformWindow->getSize().width, platformWindow->getSize().height);	// TODO: EngineSettings からもらう
-	AddVisualChild(m_mainUIViewport);
+	m_mainUIViewport->setBackbufferSize(platformWindow->getSize().width, platformWindow->getSize().height);	// TODO: EngineSettings からもらう
+	addVisualChild(m_mainUIViewport);
 
 	m_cameraViewportLayer3D = newObject<CameraViewportLayer2>(defaultWorld3D, defaultWorld3D->getMainCamera()->GetCameraComponent());
-	m_mainUIViewport->AddViewportLayer(m_cameraViewportLayer3D);
+	m_mainUIViewport->addViewportLayer(m_cameraViewportLayer3D);
 	m_cameraViewportLayer2D = newObject<CameraViewportLayer2>(defaultWorld2D, defaultWorld2D->getMainCamera()->GetCameraComponent());
-	m_mainUIViewport->AddViewportLayer(m_cameraViewportLayer2D);
+	m_mainUIViewport->addViewportLayer(m_cameraViewportLayer2D);
 	m_uiLayer = newObject<UILayoutLayer>();
-	m_mainUIViewport->AddViewportLayer(m_uiLayer);
+	m_mainUIViewport->addViewportLayer(m_uiLayer);
 
-	SetLayoutPanel(panel);
+	setLayoutPanel(panel);
 
 
-	SetSizeInternal(platformWindow->getSize().toFloatSize());
+	setSizeInternal(platformWindow->getSize().toFloatSize());
 
 	// SwapChain のサイズを Viewport へ通知
-	UpdateViewportTransform();
+	updateViewportTransform();
 }
 
 //------------------------------------------------------------------------------
-UIViewport* UIMainWindow::GetViewport() const
+UIViewport* UIMainWindow::getViewport() const
 {
 	return m_mainUIViewport;
 }
 
 //------------------------------------------------------------------------------
-//void UIMainWindow::InjectElapsedTime(float elapsedTime)
+//void UIMainWindow::injectElapsedTime(float elapsedTime)
 //{
-//	m_mainUIContext->InjectElapsedTime(elapsedTime);
+//	m_mainUIContext->injectElapsedTime(elapsedTime);
 //}
 
 //------------------------------------------------------------------------------
-void UIMainWindow::UpdateLayout(const Size& viewSize)
+void UIMainWindow::updateLayout(const Size& viewSize)
 {
-	UIFrameWindow::UpdateLayout(viewSize);
+	UIFrameWindow::updateLayout(viewSize);
 }
 
 //------------------------------------------------------------------------------
-void UIMainWindow::RenderUI()
+void UIMainWindow::renderUI()
 {
 }
 
@@ -336,49 +336,49 @@ Size UIMainWindow::arrangeOverride(const Size& finalSize)
 	return renderSize;
 }
 
-void UIMainWindow::OnRenderContents()
+void UIMainWindow::onRenderContents()
 {
 }
 
-void UIMainWindow::OnPresentRenderingContexts()
+void UIMainWindow::onPresentRenderingContexts()
 {
-	UIFrameWindow::OnPresentRenderingContexts();
+	UIFrameWindow::onPresentRenderingContexts();
 }
 
-void UIMainWindow::PresentRenderingContexts()
+void UIMainWindow::presentRenderingContexts()
 {
-	UIFrameWindow::PresentRenderingContexts();
+	UIFrameWindow::presentRenderingContexts();
 
 	// SwapChain のサイズを Viewport へ通知
 	// ※ SwapChain のサイズが「本当に」変わるタイミングは、描画コマンドが確定する present の後。
 	//    フレーム更新の最初で行ってもよいが、この時点で行ってもよい。
-	UpdateViewportTransform();
+	updateViewportTransform();
 }
 
-void UIMainWindow::UpdateViewportTransform()
+void UIMainWindow::updateViewportTransform()
 {
 	//Size viewSize;
 
-	//SwapChain* swapChain = GetSwapChain();
+	//SwapChain* swapChain = getSwapChain();
 	//if (swapChain != nullptr)
 	//{
-	//	const SizeI& bbSize = GetSwapChain()->getBackBuffer()->GetSize();
+	//	const SizeI& bbSize = getSwapChain()->getBackBuffer()->GetSize();
 	//	viewSize.width = bbSize;
 	//	viewSize.height = bbSize;
 	//}
 
-	//SizeI size = GetPlatformWindow()->GetSize();
+	//SizeI size = getPlatformWindow()->GetSize();
 	//m_mainViewport->UpdateLayersTransform(size.toFloatSize());
 }
 
 //------------------------------------------------------------------------------
-CameraViewportLayer2* UIMainWindow::GetDefaultCameraViewportLayer2D() const
+CameraViewportLayer2* UIMainWindow::getDefaultCameraViewportLayer2D() const
 {
 	return m_cameraViewportLayer2D;
 }
 
 //------------------------------------------------------------------------------
-CameraViewportLayer2* UIMainWindow::GetDefaultCameraViewportLayer3D() const
+CameraViewportLayer2* UIMainWindow::getDefaultCameraViewportLayer3D() const
 {
 	return m_cameraViewportLayer3D;
 }
@@ -426,7 +426,7 @@ void UINativeHostWindow::initialize(intptr_t windowHandle)
 	//bool	fullscreen = false;				// フルスクリーンモードで作成するかどうか
 	//bool	resizable = true;				// 可変ウィンドウとして作成するかどうか
 	ws.userWindow = windowHandle;
-	RefPtr<PlatformWindow> window(manager->getPlatformManager()->GetWindowManager()->CreateSubWindow(ws), false);
+	RefPtr<PlatformWindow> window(manager->getPlatformManager()->getWindowManager()->createSubWindow(ws), false);
 
 	auto swap = RefPtr<SwapChain>::makeRef();
 	swap->initializeSub(manager->getGraphicsManager(), window);

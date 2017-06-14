@@ -34,10 +34,10 @@ public:
 
 	virtual void setSize(const SizeI& size) = 0;
 
-	virtual void SetVisible(bool visible) = 0;
+	virtual void setVisible(bool visible) = 0;
 
-	virtual void SetTitleText(const StringRef& title) = 0;
-	virtual const String& GetTitleText() const = 0;
+	virtual void setTitleText(const StringRef& title) = 0;
+	virtual const String& getTitleText() const = 0;
 	
 	/**
 		@brief		フルスクリーンの有効フラグを設定します。
@@ -45,34 +45,34 @@ public:
 					この関数はウィンドウスタイルを変更して最大化するだけです。
 					ユーザー定義ウィンドウの場合はなにもしません。
 	*/
-	virtual void SetFullScreenEnabled(bool enabled) = 0;
+	virtual void setFullScreenEnabled(bool enabled) = 0;
 
 	/**
 		@brief		フルスクリーン状態かを判定します。
 	*/
-	virtual bool IsFullScreenEnabled() const = 0;
+	virtual bool isFullScreenEnabled() const = 0;
 
 	/**
 		@brief		ウィンドウがアクティブかどうかを示す値を取得します。
 	*/
-	bool IsActive() const { return m_isActive; }
+	bool isActive() const { return m_isActive; }
 
 	/**
 		@brief		マウスカーソルがクライアント領域上にある場合に表示するかを設定します。
 	*/
-	virtual void SetCursorVisible(bool visible);
+	virtual void setCursorVisible(bool visible);
 
 	/**
 		@brief		このウィンドウにイベントリスナーをアタッチします。(priority が大きいものが先に処理される。必ずデタッチすること)
 	*/
-	void AttachEventListener(IEventListener* listener, int priority);
+	void attachEventListener(IEventListener* listener, int priority);
 
 	/**
 		@brief		このウィンドウからイベントリスナーをデタッチします。
 	*/
-	void DetachEventListener(IEventListener* listener);
+	void detachEventListener(IEventListener* listener);
 
-	bool SendPlatformEvent(const PlatformEventArgs& e);
+	bool sendPlatformEvent(const PlatformEventArgs& e);
 
 protected:
 	PlatformWindow(WindowManagerBase* windowManager);
@@ -80,7 +80,7 @@ protected:
 	void initialize(const SizeI& clientSize);
     
 LN_INTERNAL_ACCESS:
-	virtual void OnPlatformEvent(const PlatformEventArgs& e);
+	virtual void onPlatformEvent(const PlatformEventArgs& e);
 
 	typedef List<std::pair<int, IEventListener*>>	EventListenerList;
 

@@ -9,7 +9,7 @@ const StringA wrapperIFClassTemplate =
 	"public:\n"
 	"};\n";
 
-void WrapperIFClassesGenerator::Generate()
+void WrapperIFClassesGenerator::generate()
 {
 	//// classes
 	//OutputBuffer wrapper;

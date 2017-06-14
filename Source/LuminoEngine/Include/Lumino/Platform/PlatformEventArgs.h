@@ -84,11 +84,11 @@ public:
 	PlatformEventArgs(PlatformEventType type_, PlatformWindow* sender_) { type = type_; sender = sender_; }
 	PlatformEventArgs() {}
 
-	static PlatformEventArgs MakeClosingEvent(PlatformWindow* sender);
-	static PlatformEventArgs MakeWindowSizeChangedEvent(PlatformWindow* sender, int width, int height);
-	static PlatformEventArgs MakeActivateChangedEvent(PlatformWindow* sender, bool active);
-	static PlatformEventArgs MakeKeyEvent(PlatformWindow* sender, PlatformEventType type, Keys keyCode, ModifierKeys modifierKeys, char keyChar);
-	static PlatformEventArgs MakeMouseWheelEvent(PlatformWindow* sender, int delta);
+	static PlatformEventArgs makeClosingEvent(PlatformWindow* sender);
+	static PlatformEventArgs makeWindowSizeChangedEvent(PlatformWindow* sender, int width, int height);
+	static PlatformEventArgs makeActivateChangedEvent(PlatformWindow* sender, bool active);
+	static PlatformEventArgs makeKeyEvent(PlatformWindow* sender, PlatformEventType type, Keys keyCode, ModifierKeys modifierKeys, char keyChar);
+	static PlatformEventArgs makeMouseWheelEvent(PlatformWindow* sender, int delta);
 };
 
 LN_NAMESPACE_END

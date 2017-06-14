@@ -32,7 +32,7 @@ WGLContext::WGLContext(WGLGraphicsDevice* device, PlatformWindow* window, WGLCon
 	, m_hDC(NULL)
 	, m_hGLRC(NULL)
 {
-	m_hWnd = PlatformSupport::GetWindowHandle(window);
+	m_hWnd = PlatformSupport::getWindowHandle(window);
 	m_hDC = ::GetDC(m_hWnd);
 
 	HGLRC share = NULL;
@@ -155,7 +155,7 @@ WGLGraphicsDevice::~WGLGraphicsDevice()
 //------------------------------------------------------------------------------
 RefPtr<GLContext> WGLGraphicsDevice::initializeMainContext(const ConfigData& configData)
 {
-	HWND hWnd = PlatformSupport::GetWindowHandle(configData.mainWindow);
+	HWND hWnd = PlatformSupport::getWindowHandle(configData.mainWindow);
 	HDC hDC = ::GetDC(hWnd);
 
 	// まずは wglCreateContext で適当にコンテキストを作る。

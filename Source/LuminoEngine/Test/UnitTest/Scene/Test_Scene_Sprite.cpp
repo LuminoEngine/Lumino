@@ -28,8 +28,8 @@ TEST_F(Test_Scene_Sprite, Basic)
 		Engine::update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_Sprite.Basic1.png")));
 
-		sprite1->RemoveFromWorld();
-		sprite2->RemoveFromWorld();
+		sprite1->removeFromWorld();
+		sprite2->removeFromWorld();
 	}
 }
 
@@ -73,22 +73,22 @@ TEST_F(Test_Scene_Sprite, Anchor)
 		// 左上原点
 		auto sprite1 = Sprite2D::create(tex);
 		sprite1->setPosition(0, 0);
-		sprite1->SetAnchorPoint(0, 0);
+		sprite1->setAnchorPoint(0, 0);
 
 		// 中央原点
 		auto sprite2 = Sprite2D::create(tex);
 		sprite2->setPosition(32, 32);
-		sprite2->SetAnchorPoint(Vector2(0.5, 0.5));
+		sprite2->setAnchorPoint(Vector2(0.5, 0.5));
 
 		// 右下原点
 		auto sprite3 = Sprite2D::create(tex);
 		sprite3->setPosition(64, 64);
-		sprite3->SetAnchorPoint(1, 1);
+		sprite3->setAnchorPoint(1, 1);
 
 		// 中央下原点
 		auto sprite4 = Sprite2D::create(tex);
 		sprite4->setPosition(32, 120);
-		sprite4->SetAnchorPoint(0.5, 1);
+		sprite4->setAnchorPoint(0.5, 1);
 
 		Engine::update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_Sprite.Anchor.png")));
@@ -264,27 +264,27 @@ TEST_F(Test_Scene_TextBlock2D, Basic)
 		auto text1 = TextBlock2DComponent::create();
 		text1->setText(_T("upper left"));
 		text1->setPosition(0, 0, 0);
-		text1->SetAnchorPoint(0, 0);
+		text1->setAnchorPoint(0, 0);
 
 		auto text2 = TextBlock2DComponent::create();
 		text2->setText(_T("upper right"));
 		text2->setPosition(160, 0, 0);
-		text2->SetAnchorPoint(1, 0);
+		text2->setAnchorPoint(1, 0);
 
 		auto text3 = TextBlock2DComponent::create();
 		text3->setText(_T("lower left"));
 		text3->setPosition(0, 120, 0);
-		text3->SetAnchorPoint(0, 1);
+		text3->setAnchorPoint(0, 1);
 
 		auto text4 = TextBlock2DComponent::create();
 		text4->setText(_T("lower right"));
 		text4->setPosition(160, 120, 0);
-		text4->SetAnchorPoint(1, 1);
+		text4->setAnchorPoint(1, 1);
 
 		auto text5 = TextBlock2DComponent::create();
 		text5->setText(_T("center"));
 		text5->setPosition(80, 60, 0);
-		text5->SetAnchorPoint(0.5, 0.5);
+		text5->setAnchorPoint(0.5, 0.5);
 
 		Engine::update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_TextBlock2D.Basic2.png"), 99, true));

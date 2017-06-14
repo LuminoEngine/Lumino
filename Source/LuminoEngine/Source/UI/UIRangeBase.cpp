@@ -8,7 +8,7 @@ LN_NAMESPACE_BEGIN
 // UIRangeBase
 //------------------------------------------------------------------------------
 /*
-	OnMaximumChanged, OnMinimumChanged は用意するが、対応する Changed イベントは
+	onMaximumChanged, onMinimumChanged は用意するが、対応する Changed イベントは
 	用意しない。WPF のインターフェイスと合わせたものだが、そもそもそれをハンドルする
 	ようなこともないだろうし、キャンセルされたときに困る。
 */
@@ -41,7 +41,7 @@ void UIRangeBase::setValue(float value)
 	m_value = value;
 	if (m_value != oldValue)
 	{
-		OnValueChanged(oldValue, m_value);
+		onValueChanged(oldValue, m_value);
 	}
 }
 
@@ -52,51 +52,51 @@ float UIRangeBase::getValue() const
 }
 
 //------------------------------------------------------------------------------
-void UIRangeBase::SetMinimum(float value)
+void UIRangeBase::setMinimum(float value)
 {
 	float oldValue = m_minimum;
 	m_minimum = value;
 	if (m_minimum != oldValue)
 	{
-		OnMinimumChanged(oldValue, m_minimum);
+		onMinimumChanged(oldValue, m_minimum);
 	}
 }
 
 //------------------------------------------------------------------------------
-float UIRangeBase::GetMinimum() const
+float UIRangeBase::getMinimum() const
 {
 	return m_minimum;
 }
 
 //------------------------------------------------------------------------------
-void UIRangeBase::SetMaximum(float value)
+void UIRangeBase::setMaximum(float value)
 {
 	float oldValue = m_maximum;
 	m_maximum = value;
 	if (m_maximum != oldValue)
 	{
-		OnMaximumChanged(oldValue, m_maximum);
+		onMaximumChanged(oldValue, m_maximum);
 	}
 }
 
 //------------------------------------------------------------------------------
-float UIRangeBase::GetMaximum() const
+float UIRangeBase::getMaximum() const
 {
 	return m_maximum;
 }
 
 //------------------------------------------------------------------------------
-void UIRangeBase::OnValueChanged(float oldValue, float newValue)
+void UIRangeBase::onValueChanged(float oldValue, float newValue)
 {
 }
 
 //------------------------------------------------------------------------------
-void UIRangeBase::OnMinimumChanged(float oldMinimum, float newMinimum)
+void UIRangeBase::onMinimumChanged(float oldMinimum, float newMinimum)
 {
 }
 
 //------------------------------------------------------------------------------
-void UIRangeBase::OnMaximumChanged(float oldMaximum, float newMaximum)
+void UIRangeBase::onMaximumChanged(float oldMaximum, float newMaximum)
 {
 }
 

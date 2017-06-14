@@ -93,7 +93,7 @@ RefPtr<StaticMeshModel> AssetsManager::loadMeshModel(const StringRef& filePath)
 	auto* path = findLocalFilePath();
 
 	// TODO: キャッシュ
-	return detail::EngineDomain::getModelManager()->CreateStaticMeshModel(*path);
+	return detail::EngineDomain::getModelManager()->createStaticMeshModel(*path);
 }
 
 //------------------------------------------------------------------------------
@@ -153,7 +153,7 @@ const PathName* AssetsManager::findLocalFilePath()
 //------------------------------------------------------------------------------
 // Note: isDeferring は今のところ Sound の遅延読み込み用のもの。
 // ディクス上のファイルから FileStream を作るときに使用する。
-//Stream* AssetsManager::CreateFileStream(const StringRef& filePath, bool isDeferring)
+//Stream* AssetsManager::createFileStream(const StringRef& filePath, bool isDeferring)
 //{
 //	// TODO: this は const にしたい。String::Replace とかと同じ。
 //	PathName absPath = filePath;
@@ -162,7 +162,7 @@ const PathName* AssetsManager::findLocalFilePath()
 //	RefPtr<Stream> stream;
 //	for (IArchive* archive : m_archiveList)
 //	{
-//		if (archive->TryCreateStream(absPath, &stream, isDeferring)) {
+//		if (archive->tryCreateStream(absPath, &stream, isDeferring)) {
 //			break;
 //		}
 //	}

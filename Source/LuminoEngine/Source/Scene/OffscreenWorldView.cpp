@@ -49,7 +49,7 @@ void OffscreenWorldView::initialize()
 
 	//m_renderView = RefPtr<RenderView>::MakeRef();
 	//m_renderView->
-	m_lists.add(m_renderer->GetDrawElementList());
+	m_lists.add(m_renderer->getDrawElementList());
 }
 
 //------------------------------------------------------------------------------
@@ -59,44 +59,44 @@ RenderTargetTexture* OffscreenWorldView::getRenderTarget() const
 }
 
 //------------------------------------------------------------------------------
-void OffscreenWorldView::HideVisual(VisualComponent* renderObject)
+void OffscreenWorldView::hideVisual(VisualComponent* renderObject)
 {
-	auto* filterInfo = UpdateRenderObjectFilterInfo(renderObject);
+	auto* filterInfo = updateRenderObjectFilterInfo(renderObject);
 	filterInfo->effectGroup = -1;
 }
 
 //------------------------------------------------------------------------------
-Matrix OffscreenWorldView::CalculateViewMatrix(CameraComponent* mainViewCamera)
+Matrix OffscreenWorldView::calculateViewMatrix(CameraComponent* mainViewCamera)
 {
-	return Matrix::makeReflection(Plane(Vector3::UnitY)) * mainViewCamera->GetViewMatrix();
+	return Matrix::makeReflection(Plane(Vector3::UnitY)) * mainViewCamera->getViewMatrix();
 }
 
 //------------------------------------------------------------------------------
-Matrix OffscreenWorldView::CalculateProjectionMatrix(CameraComponent* mainViewCamera)
+Matrix OffscreenWorldView::calculateProjectionMatrix(CameraComponent* mainViewCamera)
 {
-	return mainViewCamera->GetProjectionMatrix();;
+	return mainViewCamera->getProjectionMatrix();
 }
 
 //------------------------------------------------------------------------------
-void OffscreenWorldView::RenderWorld(World* world, CameraComponent* mainViewCamera, RenderView* mainRenderView)
+void OffscreenWorldView::renderWorld(World* world, CameraComponent* mainViewCamera, RenderView* mainRenderView)
 {
 	m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(mainViewCamera) + 1;
-	m_cameraInfo.viewPixelSize = mainRenderView->GetViewSize();
+	m_cameraInfo.viewPixelSize = mainRenderView->getViewSize();
 	m_cameraInfo.viewPosition = mainViewCamera->getTransform()->getWorldMatrix().getPosition();
-	m_cameraInfo.viewMatrix = CalculateViewMatrix(mainViewCamera);
-	m_cameraInfo.projMatrix = CalculateProjectionMatrix(mainViewCamera);
+	m_cameraInfo.viewMatrix = calculateViewMatrix(mainViewCamera);
+	m_cameraInfo.projMatrix = calculateProjectionMatrix(mainViewCamera);
 	m_cameraInfo.viewProjMatrix = m_cameraInfo.viewMatrix * m_cameraInfo.projMatrix;
-	m_cameraInfo.viewFrustum = mainViewCamera->GetViewFrustum();	// TODO: この View 独自処理にしたい
-	m_cameraInfo.zSortDistanceBase = mainViewCamera->GetZSortDistanceBase();
+	m_cameraInfo.viewFrustum = mainViewCamera->getViewFrustum();	// TODO: この View 独自処理にしたい
+	m_cameraInfo.zSortDistanceBase = mainViewCamera->getZSortDistanceBase();
 
 
 
 	// TODO: tmp
-	m_renderer->SetCurrentCamera(mainViewCamera);
+	m_renderer->setCurrentCamera(mainViewCamera);
 
 
 
-	m_renderer->BeginMakeElements();
+	m_renderer->beginMakeElements();
 
 
 
@@ -104,7 +104,7 @@ void OffscreenWorldView::RenderWorld(World* world, CameraComponent* mainViewCame
 
 	if (m_renderTarget == nullptr)
 	{
-		m_renderTarget = newObject<RenderTargetTexture>(SizeI::fromFloatSize(mainRenderView->GetViewSize()), 1, TextureFormat::R8G8B8X8);
+		m_renderTarget = newObject<RenderTargetTexture>(SizeI::fromFloatSize(mainRenderView->getViewSize()), 1, TextureFormat::R8G8B8X8);
 	}
 	//else if (m_renderTarget->GetSize() != backbuffer->GetSize())
 	//{
@@ -130,20 +130,20 @@ void OffscreenWorldView::RenderWorld(World* world, CameraComponent* mainViewCame
 	//OnUpdateRenderViewPoint(m_renderView);
 
 	DrawList* r = world->getRenderer();
-	r->RenderSubView(this);
+	r->renderSubView(this);
 }
 
 //------------------------------------------------------------------------------
-bool OffscreenWorldView::FilterRenderObject(VisualComponent* renderObject)
+bool OffscreenWorldView::filterRenderObject(VisualComponent* renderObject)
 {
-	auto* filterInfo = UpdateRenderObjectFilterInfo(renderObject);
+	auto* filterInfo = updateRenderObjectFilterInfo(renderObject);
 	return filterInfo->effectGroup >= 0;
 }
 
 //------------------------------------------------------------------------------
-detail::OffscreenFilterInfo* OffscreenWorldView::UpdateRenderObjectFilterInfo(VisualComponent* renderObject)
+detail::OffscreenFilterInfo* OffscreenWorldView::updateRenderObjectFilterInfo(VisualComponent* renderObject)
 {
-	auto* filterInfo = renderObject->GetOffscreenFilterInfo(m_id);
+	auto* filterInfo = renderObject->getOffscreenFilterInfo(m_id);
 
 	// オーナーが this ではない。再割り当てする。
 	// (renderObject が新しく作成されたオブジェクトであるか、前の Offscreen が解放され ID が返却された後、新たに作成された Offscreen が同じ ID を取得した場合)
@@ -193,13 +193,13 @@ void SkyComponent::initialize()
 }
 
 //------------------------------------------------------------------------------
-void SkyComponent::OnRender2(DrawList* renderer)
+void SkyComponent::onRender2(DrawList* renderer)
 {
 	{
-		auto* cam = renderer->GetCurrentCamera();
-		Vector3 frustumRayTL = Vector3::normalize(cam->ViewportToWorldPoint(Vector3(0, 0, 1)) - cam->ViewportToWorldPoint(Vector3(0, 0, 0)));
-		Vector3 frustumRayTR = Vector3::normalize(cam->ViewportToWorldPoint(Vector3(640, 0, 1)) - cam->ViewportToWorldPoint(Vector3(640, 0, 0)));
-		Vector3 frustumRayBL = Vector3::normalize(cam->ViewportToWorldPoint(Vector3(0, 480, 1)) - cam->ViewportToWorldPoint(Vector3(0, 480, 0)));
+		auto* cam = renderer->getCurrentCamera();
+		Vector3 frustumRayTL = Vector3::normalize(cam->viewportToWorldPoint(Vector3(0, 0, 1)) - cam->viewportToWorldPoint(Vector3(0, 0, 0)));
+		Vector3 frustumRayTR = Vector3::normalize(cam->viewportToWorldPoint(Vector3(640, 0, 1)) - cam->viewportToWorldPoint(Vector3(640, 0, 0)));
+		Vector3 frustumRayBL = Vector3::normalize(cam->viewportToWorldPoint(Vector3(0, 480, 1)) - cam->viewportToWorldPoint(Vector3(0, 480, 0)));
 		m_skyMaterial->setVectorParameter("frustumRayTL", Vector4(frustumRayTL, 0));
 		m_skyMaterial->setVectorParameter("frustumRayTR", Vector4(frustumRayTR, 0));
 		m_skyMaterial->setVectorParameter("frustumRayBL", Vector4(frustumRayBL, 0));
@@ -322,7 +322,7 @@ void MirrorComponent::initialize()
 
 	// TODO: Remove
 	detail::EngineDomain::getDefaultWorld3D()->addOffscreenWorldView(m_offscreen);
-	m_offscreen->HideVisual(this);
+	m_offscreen->hideVisual(this);
 
 	m_material = newObject<Material>();
 	//m_material->setMaterialTexture(Texture2D::getBlackTexture());
@@ -337,7 +337,7 @@ void MirrorComponent::initialize()
 }
 float g_time = 0;
 //------------------------------------------------------------------------------
-void MirrorComponent::OnRender2(DrawList* renderer)
+void MirrorComponent::onRender2(DrawList* renderer)
 {
 
 
@@ -345,11 +345,11 @@ void MirrorComponent::OnRender2(DrawList* renderer)
 
 	g_time += 0.001;
 	m_material->setMaterialTexture(m_offscreen->getRenderTarget());
-	m_material->setVectorParameter("xCamPos", Vector4(renderer->GetCurrentCamera()->getTransform()->position.get(), 1.0));
+	m_material->setVectorParameter("xCamPos", Vector4(renderer->getCurrentCamera()->getTransform()->position.get(), 1.0));
 	m_material->setFloatParameter("time", g_time);
 
 	// TODO: 法泉が入っていない？
-	renderer->DrawSquare(100, 100, 1, 1, Color::White, Matrix::Identity, m_material);
+	renderer->drawSquare(100, 100, 1, 1, Color::White, Matrix::Identity, m_material);
 }
 
 

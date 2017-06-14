@@ -48,7 +48,7 @@ protected:
 
 	virtual void drawLine(const btVector3& from, const btVector3& to, const btVector3& fromColor, const btVector3& toColor) override
 	{
-		m_debugRenderer->DrawLine(
+		m_debugRenderer->drawLine(
 			Vector3(from.getX(), from.getY(), from.getZ()),
 			Vector3(to.getX(), to.getY(), to.getZ()),
 			Vector3(fromColor.getX(), fromColor.getY(), fromColor.getZ()),
@@ -96,7 +96,7 @@ PhysicsWorld::PhysicsWorld()
 //------------------------------------------------------------------------------
 PhysicsWorld::~PhysicsWorld()
 {
-	GCPhysicsObjects();
+	gcPhysicsObjects();
 
 	LN_SAFE_DELETE(m_softBodyWorldInfo);
 	LN_SAFE_DELETE(m_btGhostPairCallback);
@@ -208,19 +208,19 @@ void PhysicsWorld::initialize()
 }
 
 //------------------------------------------------------------------------------
-void PhysicsWorld::SetGravity(const Vector3& gravity)
+void PhysicsWorld::setGravity(const Vector3& gravity)
 {
 	m_btWorld->setGravity(btVector3(gravity.x, gravity.y, gravity.z));
 }
 
 //------------------------------------------------------------------------------
-void PhysicsWorld::StepSimulation(float elapsedTime)
+void PhysicsWorld::stepSimulation(float elapsedTime)
 {
-	GCPhysicsObjects();
+	gcPhysicsObjects();
 
 	for (PhysicsObject* obj : m_physicsObjectList)
 	{
-		obj->OnBeforeStepSimulation();
+		obj->onBeforeStepSimulation();
 	}
 
 	const float internalUnit = 1.0f / 60.0f;
@@ -243,14 +243,14 @@ void PhysicsWorld::StepSimulation(float elapsedTime)
 
 	for (PhysicsObject* obj : m_physicsObjectList)
 	{
-		obj->OnAfterStepSimulation();
+		obj->onAfterStepSimulation();
 	}
 
-	GCPhysicsObjects();
+	gcPhysicsObjects();
 }
 
 //------------------------------------------------------------------------------
-void PhysicsWorld::DrawDebugShapes(IDebugRenderer* renderer)
+void PhysicsWorld::drawDebugShapes(IDebugRenderer* renderer)
 {
 	m_debugDrawer->SetDebugRenderer(renderer);
 	m_btWorld->getDebugDrawer()->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
@@ -258,46 +258,46 @@ void PhysicsWorld::DrawDebugShapes(IDebugRenderer* renderer)
 }
 
 //------------------------------------------------------------------------------
-void PhysicsWorld::AddPhysicsObject(PhysicsObject* physicsObject)
+void PhysicsWorld::addPhysicsObject(PhysicsObject* physicsObject)
 {
 	if (LN_CHECK_ARG(physicsObject != nullptr)) return;
 
 	// 別のワールドに属していれば除外する
-	if (physicsObject->GetOwnerWorld() != nullptr)
-		physicsObject->GetOwnerWorld()->RemovePhysicsObject(physicsObject);
+	if (physicsObject->getOwnerWorld() != nullptr)
+		physicsObject->getOwnerWorld()->removePhysicsObject(physicsObject);
 
 	m_physicsObjectList.add(physicsObject);
-	physicsObject->SetOwnerWorld(this);
+	physicsObject->setOwnerWorld(this);
 }
 
 //------------------------------------------------------------------------------
-void PhysicsWorld::AddJoint(Joint* joint)
+void PhysicsWorld::addJoint(Joint* joint)
 {
 	LN_ASSERT(joint != nullptr);
 	m_jointList.add(joint);
-	m_btWorld->addConstraint(joint->GetBtConstraint());
+	m_btWorld->addConstraint(joint->getBtConstraint());
 }
 
 //------------------------------------------------------------------------------
-void PhysicsWorld::RemovePhysicsObject(PhysicsObject* physicsObject)
+void PhysicsWorld::removePhysicsObject(PhysicsObject* physicsObject)
 {
 	if (LN_CHECK_ARG(physicsObject != nullptr)) return;
-	if (physicsObject->GetOwnerWorld() != this) return;
+	if (physicsObject->getOwnerWorld() != this) return;
 
 	m_physicsObjectList.remove(physicsObject);
-	physicsObject->OnRemovedFromWorld();
-	physicsObject->SetOwnerWorld(nullptr);
+	physicsObject->onRemovedFromWorld();
+	physicsObject->setOwnerWorld(nullptr);
 }
 
 //------------------------------------------------------------------------------
-void PhysicsWorld::GCPhysicsObjects()
+void PhysicsWorld::gcPhysicsObjects()
 {
 	// rigidBody
 	for (auto itr = m_physicsObjectList.begin(); itr != m_physicsObjectList.end();)
 	{
 		if ((*itr)->getReferenceCount() == 1)
 		{
-			(*itr)->OnRemovedFromWorld();
+			(*itr)->onRemovedFromWorld();
 			itr = m_physicsObjectList.erase(itr);
 		}
 		else
@@ -311,7 +311,7 @@ void PhysicsWorld::GCPhysicsObjects()
 	{
 		if ((*itr)->getReferenceCount() == 1)
 		{
-			m_btWorld->removeConstraint((*itr)->GetBtConstraint());
+			m_btWorld->removeConstraint((*itr)->getBtConstraint());
 			itr = m_jointList.erase(itr);
 		}
 		else
@@ -327,10 +327,10 @@ void PhysicsWorld::GCPhysicsObjects()
 //{
 //	LN_FAIL_CHECK_ARG(rigidBody != nullptr) return;
 //
-//	PhysicsWorld* otherOwner = rigidBody->GetOwnerWorld();
+//	PhysicsWorld* otherOwner = rigidBody->getOwnerWorld();
 //	if (otherOwner != nullptr) otherOwner->RemoveRigidBody(rigidBody);
 //	m_rigidBodyList.AddObject(rigidBody);
-//	rigidBody->SetOwnerWorld(this);
+//	rigidBody->setOwnerWorld(this);
 //}
 //
 ////------------------------------------------------------------------------------
@@ -338,10 +338,10 @@ void PhysicsWorld::GCPhysicsObjects()
 //{
 //	LN_FAIL_CHECK_ARG(rigidBody != nullptr) return;
 //
-//	if (rigidBody->GetOwnerWorld() == this)
+//	if (rigidBody->getOwnerWorld() == this)
 //	{
 //		m_rigidBodyList.RemoveObject(rigidBody);
-//		rigidBody->SetOwnerWorld(nullptr);
+//		rigidBody->setOwnerWorld(nullptr);
 //	}
 //}
 
@@ -352,13 +352,13 @@ void PhysicsWorld::GCPhysicsObjects()
 //}
 //
 //------------------------------------------------------------------------------
-//void PhysicsWorld::StepSimulation(float elapsedTime)	// TODO: deltaTime? https://docs.unrealengine.com/latest/INT/API/Runtime/Engine/Engine/UWorld/Tick/index.html
+//void PhysicsWorld::stepSimulation(float elapsedTime)	// TODO: deltaTime? https://docs.unrealengine.com/latest/INT/API/Runtime/Engine/Engine/UWorld/Tick/index.html
 //{
 //	m_rigidBodyList.commit(
 //		[this](RigidBody* child) { m_impl->AddRigidBodyForMmd(child); },
 //		[this](RigidBody* child) { m_impl->remo(child); });
 //
-//	m_impl->StepSimulation(elapsedTime);
+//	m_impl->stepSimulation(elapsedTime);
 //}
 //
 //------------------------------------------------------------------------------

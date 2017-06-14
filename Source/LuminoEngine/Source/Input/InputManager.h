@@ -30,9 +30,9 @@ public:
 	void initialize(const Settings& settings);
 	void Finalize();
 
-	InputController* GetVirtualPad(int index) { return m_defaultVirtualPads[index]; }
+	InputController* getVirtualPad(int index) { return m_defaultVirtualPads[index]; }
 
-	void PreUpdateFrame();
+	void preUpdateFrame();
 	void updateFrame();
 
 	//InputDevice* GetInputDevice() { return m_inputDevice; }
@@ -43,10 +43,10 @@ public:
 	void onEvent(const PlatformEventArgs& e);
 
 
-	float GetVirtualButtonState(InputBinding* binding, bool keyboard, bool mouse, int joyNumber);
+	float getVirtualButtonState(InputBinding* binding, bool keyboard, bool mouse, int joyNumber);
 
 private:
-	void RefreshDevices();
+	void refreshDevices();
 
 private:
 	static const int MaxVirtualPads = 1;

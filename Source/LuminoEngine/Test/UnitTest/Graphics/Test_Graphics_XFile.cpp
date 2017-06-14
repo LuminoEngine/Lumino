@@ -19,8 +19,8 @@ TEST_F(Test_Graphics_XFile, Basic)
 
 	//auto mesh = StaticMeshComponent::create(LN_LOCALFILE("TestData/Box_1.x"));
 	//auto mesh = StaticMeshComponent::create(_T("D:/tmp/box1.x"));
-	//auto mesh = StaticMeshComponent::CreateSphere(2, 32, 16);
-	//auto mesh = StaticMeshComponent::CreateScreenPlane();
+	//auto mesh = StaticMeshComponent::createSphere(2, 32, 16);
+	//auto mesh = StaticMeshComponent::createScreenPlane();
 	auto mesh = StaticMeshComponent::CreateSquarePlane(Vector2(1, 2), Vector3::UnitY, MeshCreationFlags::DynamicBuffers);
 	mesh->SetShader(shader);
 	mesh->GetMaterials()->GetAt(0)->SetTextureParameter(Material::MaterialTextureParameter, tex);

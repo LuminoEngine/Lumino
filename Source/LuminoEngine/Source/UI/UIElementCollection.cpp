@@ -36,7 +36,7 @@ void UIElementCollection::insertItem(int index, const value_type& item)
 		m_newItemsCache, index,
 		m_oldItemsCache, 0,
 	};
-	m_owner->OnChildCollectionChanged(e);
+	m_owner->onChildCollectionChanged(e);
 	m_newItemsCache.clear();
 }
 
@@ -54,7 +54,7 @@ void UIElementCollection::clearItems()
 		m_newItemsCache, 0,
 		m_oldItemsCache, 0,
 	};
-	m_owner->OnChildCollectionChanged(e);
+	m_owner->onChildCollectionChanged(e);
 }
 
 //------------------------------------------------------------------------------
@@ -72,7 +72,7 @@ void UIElementCollection::removeItem(int index)
 		m_newItemsCache, 0,
 		m_oldItemsCache, index,
 	};
-	m_owner->OnChildCollectionChanged(e);
+	m_owner->onChildCollectionChanged(e);
 	m_oldItemsCache.clear();
 }
 
@@ -92,7 +92,7 @@ void UIElementCollection::setItem(int index, const value_type& item)
 		m_newItemsCache, index,
 		m_oldItemsCache, index,
 	};
-	m_owner->OnChildCollectionChanged(e);
+	m_owner->onChildCollectionChanged(e);
 	m_newItemsCache.clear();
 	m_oldItemsCache.clear();
 }

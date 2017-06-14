@@ -11,13 +11,13 @@ public:
 	using BaseMeasureOverrideCallback = Size(*)(TPanel* panel, const Size& constraint);
 
 	//------------------------------------------------------------------------------
-	static Size UILayoutPanel_MeasureOverride(TPanel* panel, const Size& constraint, BaseMeasureOverrideCallback baseCallback)
+	static Size UILayoutPanel_measureOverride(TPanel* panel, const Size& constraint, BaseMeasureOverrideCallback baseCallback)
 	{
 		Size desiredSize = baseCallback(static_cast<TPanel*>(panel), constraint);
-		int childCount = panel->GetLayoutChildrenCount();
+		int childCount = panel->getLayoutChildrenCount();
 		for (int i = 0; i < childCount; i++)
 		{
-			ILayoutElement* child = panel->GetLayoutChild(i);
+			ILayoutElement* child = panel->getLayoutChild(i);
 
 			child->measureLayout(constraint);
 			const Size& childDesiredSize = child->getLayoutDesiredSize();
@@ -29,12 +29,12 @@ public:
 	}
 
 	//------------------------------------------------------------------------------
-	static Size UILayoutPanel_ArrangeOverride(TPanel* panel, const Vector2& offset, const Size& finalSize)
+	static Size UILayoutPanel_arrangeOverride(TPanel* panel, const Vector2& offset, const Size& finalSize)
 	{
-		int childCount = panel->GetLayoutChildrenCount();
+		int childCount = panel->getLayoutChildrenCount();
 		for (int i = 0; i < childCount; i++)
 		{
-			ILayoutElement* child = panel->GetLayoutChild(i);
+			ILayoutElement* child = panel->getLayoutChild(i);
 			Size childDesiredSize = child->getLayoutDesiredSize();
 			childDesiredSize.width = std::max(finalSize.width, childDesiredSize.width);
 			childDesiredSize.height = std::max(finalSize.height, childDesiredSize.height);
@@ -44,7 +44,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------------
-	static Size UIStackPanel_MeasureOverride(ILayoutPanel* panel, const Size& constraint, Orientation orientation)
+	static Size UIStackPanel_measureOverride(ILayoutPanel* panel, const Size& constraint, Orientation orientation)
 	{
 		Size size = constraint;
 
@@ -60,10 +60,10 @@ public:
 		}
 
 		Size desiredSize;
-		int childCount = panel->GetLayoutChildrenCount();
+		int childCount = panel->getLayoutChildrenCount();
 		for (int i = 0; i < childCount; i++)
 		{
-			ILayoutElement* child = panel->GetLayoutChild(i);
+			ILayoutElement* child = panel->getLayoutChild(i);
 			child->measureLayout(size);
 
 			const Size& childDesiredSize = child->getLayoutDesiredSize();
@@ -83,7 +83,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------------
-	static Size UIStackPanel_ArrangeOverride(TPanel* panel, const Size& finalSize, Orientation orientation)
+	static Size UIStackPanel_arrangeOverride(TPanel* panel, const Size& finalSize, Orientation orientation)
 	{
 		ILayoutPanel* basePanel = static_cast<ILayoutPanel*>(panel);
 		const ThicknessF& padding = static_cast<ILayoutElement*>(panel)->getLayoutPadding();
@@ -92,10 +92,10 @@ public:
 		float prevChildSize = 0;
 		float rPos = 0;
 		Rect childRect(padding.Left, padding.Top, 0, 0);
-		int childCount = basePanel->GetLayoutChildrenCount();
+		int childCount = basePanel->getLayoutChildrenCount();
 		for (int i = 0; i < childCount; i++)
 		{
-			ILayoutElement* child = basePanel->GetLayoutChild(i);
+			ILayoutElement* child = basePanel->getLayoutChild(i);
 			const Size& childDesiredSize = child->getLayoutDesiredSize();
 
 			switch (orientation)
@@ -138,16 +138,16 @@ public:
 	}
 
 	//------------------------------------------------------------------------------
-	static Size UIGridLayout_MeasureOverride(TPanel* panel, const Size& constraint, BaseMeasureOverrideCallback baseCallback)
+	static Size UIGridLayout_measureOverride(TPanel* panel, const Size& constraint, BaseMeasureOverrideCallback baseCallback)
 	{
 		ILayoutPanel* basePanel = static_cast<ILayoutPanel*>(panel);
-		int colDefCount = basePanel->GetLayoutGridColumnDefinitionCount();
-		int rowDefCount = basePanel->GetLayoutGridRowDefinitionCount();
+		int colDefCount = basePanel->getLayoutGridColumnDefinitionCount();
+		int rowDefCount = basePanel->getLayoutGridRowDefinitionCount();
 
-		int childCount = basePanel->GetLayoutChildrenCount();
+		int childCount = basePanel->getLayoutChildrenCount();
 		for (int i = 0; i < childCount; i++)
 		{
-			ILayoutElement* child = basePanel->GetLayoutChild(i);
+			ILayoutElement* child = basePanel->getLayoutChild(i);
 
 			// まずは子を measure
 			child->measureLayout(constraint);
@@ -159,8 +159,8 @@ public:
 			colIdx = (0 <= colIdx && colIdx < colDefCount) ? colIdx : 0;
 			rowIdx = (0 <= rowIdx && rowIdx < rowDefCount) ? rowIdx : 0;
 
-			detail::GridDefinitionData* col = (colIdx < colDefCount) ? basePanel->GetLayoutGridColumnDefinition(colIdx) : nullptr;
-			detail::GridDefinitionData* row = (rowIdx < rowDefCount) ? basePanel->GetLayoutGridRowDefinition(rowIdx) : nullptr;
+			detail::GridDefinitionData* col = (colIdx < colDefCount) ? basePanel->getLayoutGridColumnDefinition(colIdx) : nullptr;
+			detail::GridDefinitionData* row = (rowIdx < rowDefCount) ? basePanel->getLayoutGridRowDefinition(rowIdx) : nullptr;
 
 			// 子要素の DesiredSize (最低サイズ) を測るのは、セルのサイズ指定が "Auto" の時だけでよい。
 			const Size& childDesiredSize = child->getLayoutDesiredSize();
@@ -178,18 +178,18 @@ public:
 		Size desiredSize = baseCallback(panel, constraint);
 		for (int iCol = 0; iCol < colDefCount; iCol++)
 		{
-			desiredSize.width += basePanel->GetLayoutGridColumnDefinition(iCol)->GetAvailableDesiredSize();
+			desiredSize.width += basePanel->getLayoutGridColumnDefinition(iCol)->getAvailableDesiredSize();
 		}
 		for (int iRow = 0; iRow < rowDefCount; iRow++)
 		{
-			desiredSize.height += basePanel->GetLayoutGridRowDefinition(iRow)->GetAvailableDesiredSize();
+			desiredSize.height += basePanel->getLayoutGridRowDefinition(iRow)->getAvailableDesiredSize();
 		}
 
 		return desiredSize;
 	}
 
 	//------------------------------------------------------------------------------
-	static Size UIGridLayout_ArrangeOverride(TPanel* panel, const Size& finalSize)
+	static Size UIGridLayout_arrangeOverride(TPanel* panel, const Size& finalSize)
 	{
 		ILayoutPanel* basePanel = static_cast<ILayoutPanel*>(panel);
 		const ThicknessF& padding = static_cast<ILayoutElement*>(panel)->getLayoutPadding();
@@ -200,32 +200,32 @@ public:
 		Size totalActual = Size::Zero;
 		float starColCount = 0.0f;
 		float starRowCount = 0.0f;
-		int colDefCount = basePanel->GetLayoutGridColumnDefinitionCount();
-		int rowDefCount = basePanel->GetLayoutGridRowDefinitionCount();
+		int colDefCount = basePanel->getLayoutGridColumnDefinitionCount();
+		int rowDefCount = basePanel->getLayoutGridRowDefinitionCount();
 		for (int iCol = 0; iCol < colDefCount; iCol++)
 		{
-			auto* col = basePanel->GetLayoutGridColumnDefinition(iCol);
+			auto* col = basePanel->getLayoutGridColumnDefinition(iCol);
 			if (col->type == GridLengthType::Auto || col->type == GridLengthType::Pixel)
 			{
-				col->actualSize = col->GetAvailableDesiredSize();
+				col->actualSize = col->getAvailableDesiredSize();
 				totalActual.width += col->actualSize;
 			}
 			else
 			{
-				starColCount += col->GetRatioSize();
+				starColCount += col->getRatioSize();
 			}
 		}
 		for (int iRow = 0; iRow < rowDefCount; iRow++)
 		{
-			auto* row = basePanel->GetLayoutGridRowDefinition(iRow);
+			auto* row = basePanel->getLayoutGridRowDefinition(iRow);
 			if (row->type == GridLengthType::Auto || row->type == GridLengthType::Pixel)
 			{
-				row->actualSize = row->GetAvailableDesiredSize();
+				row->actualSize = row->getAvailableDesiredSize();
 				totalActual.height += row->actualSize;
 			}
 			else
 			{
-				starRowCount += row->GetRatioSize();
+				starRowCount += row->getRatioSize();
 			}
 		}
 
@@ -241,13 +241,13 @@ public:
 		PointF totalOffset;
 		for (int iCol = 0; iCol < colDefCount; iCol++)
 		{
-			auto* col = basePanel->GetLayoutGridColumnDefinition(iCol);
+			auto* col = basePanel->getLayoutGridColumnDefinition(iCol);
 			if (col->type == GridLengthType::Ratio)
 			{
-				col->actualSize = starUnit.width * col->GetRatioSize();
+				col->actualSize = starUnit.width * col->getRatioSize();
 			}
 
-			col->AdjustActualSize();
+			col->adjustActualSize();
 
 			// セルX座標確定
 			col->actualOffset = totalOffset.x;
@@ -255,13 +255,13 @@ public:
 		}
 		for (int iRow = 0; iRow < rowDefCount; iRow++)
 		{
-			auto* row = basePanel->GetLayoutGridRowDefinition(iRow);
+			auto* row = basePanel->getLayoutGridRowDefinition(iRow);
 			if (row->type == GridLengthType::Ratio)
 			{
-				row->actualSize = starUnit.height * row->GetRatioSize();
+				row->actualSize = starUnit.height * row->getRatioSize();
 			}
 
-			row->AdjustActualSize();
+			row->adjustActualSize();
 
 			// セルY座標確定
 			row->actualOffset = totalOffset.y;
@@ -269,10 +269,10 @@ public:
 		}
 
 		// 子要素の最終位置・サイズを確定させる
-		int childCount = basePanel->GetLayoutChildrenCount();
+		int childCount = basePanel->getLayoutChildrenCount();
 		for (int i = 0; i < childCount; i++)
 		{
-			ILayoutElement* child = basePanel->GetLayoutChild(i);
+			ILayoutElement* child = basePanel->getLayoutChild(i);
 			int colIdx = child->getLayoutColumn();
 			int rowIdx = child->getLayoutRow();
 			int colSpan = child->getLayoutColumnSpan();
@@ -290,10 +290,10 @@ public:
 			}
 			else
 			{
-				rect.x += basePanel->GetLayoutGridColumnDefinition(colIdx)->actualOffset;
+				rect.x += basePanel->getLayoutGridColumnDefinition(colIdx)->actualOffset;
 				for (int iCol = 0; iCol < colSpan; ++iCol)
 				{
-					rect.width += basePanel->GetLayoutGridColumnDefinition(colIdx + iCol)->actualSize;
+					rect.width += basePanel->getLayoutGridColumnDefinition(colIdx + iCol)->actualSize;
 				}
 			}
 			if (rowDefCount == 0)	// is empty
@@ -302,10 +302,10 @@ public:
 			}
 			else
 			{
-				rect.y += basePanel->GetLayoutGridRowDefinition(rowIdx)->actualOffset;
+				rect.y += basePanel->getLayoutGridRowDefinition(rowIdx)->actualOffset;
 				for (int iRow = 0; iRow < rowSpan; ++iRow)
 				{
-					rect.height += basePanel->GetLayoutGridRowDefinition(rowIdx + iRow)->actualSize;
+					rect.height += basePanel->getLayoutGridRowDefinition(rowIdx + iRow)->actualSize;
 				}
 			}
 

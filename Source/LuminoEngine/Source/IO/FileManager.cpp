@@ -28,7 +28,7 @@ FileManager::FileManager(const Settings& settings)
 	m_archiveList.add(m_dummyArchive);
 	m_dummyArchive->addRef();	// m_archiveList からの参照を示す
 
-	m_asyncProcThread.start(createDelegate(this, &FileManager::Thread_ASyncProc));
+	m_asyncProcThread.start(createDelegate(this, &FileManager::thread_ASyncProc));
 }
 
 //------------------------------------------------------------------------------
@@ -47,7 +47,7 @@ FileManager::~FileManager()
 }
 
 //------------------------------------------------------------------------------
-void FileManager::RegisterArchive(const PathName& filePath, const String& password)
+void FileManager::registerArchive(const PathName& filePath, const String& password)
 {
 	MutexScopedLock lock(m_mutex);
 
@@ -55,7 +55,7 @@ void FileManager::RegisterArchive(const PathName& filePath, const String& passwo
 	archive->open(filePath, password);
 	m_archiveList.add(archive);
 
-	RefreshArchiveList();
+	refreshArchiveList();
 }
 
 //------------------------------------------------------------------------------
@@ -83,29 +83,29 @@ bool FileManager::existsFile(const PathName& filePath)
 }
 
 //------------------------------------------------------------------------------
-Stream* FileManager::CreateFileStream(const char* filePath, bool isDeferring)
+Stream* FileManager::createFileStream(const char* filePath, bool isDeferring)
 {
-	return CreateFileStream(PathName(filePath), isDeferring);
+	return createFileStream(PathName(filePath), isDeferring);
 }
 
 //------------------------------------------------------------------------------
-Stream* FileManager::CreateFileStream(const wchar_t* filePath, bool isDeferring)
+Stream* FileManager::createFileStream(const wchar_t* filePath, bool isDeferring)
 {
-	return CreateFileStream(PathName(filePath), isDeferring);
+	return createFileStream(PathName(filePath), isDeferring);
 }
 
 //------------------------------------------------------------------------------
 // Note: isDeferring は今のところ Sound の遅延読み込み用のもの。
 // ディクス上のファイルから FileStream を作るときに使用する。
 //------------------------------------------------------------------------------
-Stream* FileManager::CreateFileStream(const PathName& filePath, bool isDeferring)
+Stream* FileManager::createFileStream(const PathName& filePath, bool isDeferring)
 {
 	PathName absPath = filePath.canonicalizePath();
 
 	RefPtr<Stream> stream;
 	for (IArchive* archive : m_archiveList)
 	{
-		if (archive->TryCreateStream(absPath, &stream, isDeferring)) {
+		if (archive->tryCreateStream(absPath, &stream, isDeferring)) {
 			break;
 		}
 	}
@@ -125,7 +125,7 @@ CaseSensitivity FileManager::getFileSystemCaseSensitivity() const
 }
 
 //------------------------------------------------------------------------------
-void FileManager::RequestASyncTask(ASyncIOObject* task)
+void FileManager::requestASyncTask(ASyncIOObject* task)
 {
 	if (m_endRequested.isTrue()) {
 		return;		// 終了要求が来ている場合は追加しない
@@ -143,13 +143,13 @@ void FileManager::RequestASyncTask(ASyncIOObject* task)
 }
 
 //------------------------------------------------------------------------------
-void FileManager::WaitForAllASyncTask()
+void FileManager::waitForAllASyncTask()
 {
 	m_isASyncTaskListEmpty.wait();
 }
 
 //------------------------------------------------------------------------------
-void FileManager::RefreshArchiveList()
+void FileManager::refreshArchiveList()
 {
 	// 一度ダミーをリストから外す
 	if (m_archiveList.contains(m_dummyArchive))
@@ -174,7 +174,7 @@ void FileManager::RefreshArchiveList()
 }
 
 //------------------------------------------------------------------------------
-void FileManager::Thread_ASyncProc()
+void FileManager::thread_ASyncProc()
 {
 	// 終了フラグが ON でも、リストに何か残っていればすべて処理する
 	while (m_endRequested.isFalse() || m_isASyncTaskListEmpty.isFalse())

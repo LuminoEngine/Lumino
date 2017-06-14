@@ -26,11 +26,11 @@ public:
 
 	//static void DrawTriangle(const Vector3& p1, const Color& p1Color, const Vector3& p2, const Color& p2Color, const Vector3& p3, const Color& p3Color);
 
-	//static void DrawRectangle(const RectF& rect);
+	//static void drawRectangle(const RectF& rect);
 
 	//static void DrawEllipse(const Vector3& center, const Vector2& radius);
 
-	//static void DrawTexture(const RectF& rect, Texture* texture, const RectI& srcRect, const Color& color);
+	//static void drawTexture(const RectF& rect, Texture* texture, const RectI& srcRect, const Color& color);
 
 	//static void drawText(const StringRef& text, const PointF& position);
 

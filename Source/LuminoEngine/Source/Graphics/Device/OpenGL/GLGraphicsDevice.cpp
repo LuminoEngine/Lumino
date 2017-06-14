@@ -335,7 +335,7 @@ void GLGraphicsDevice::attachRenderingThread()
 {
 	makeCurrentContext(getMainRenderingContext());
 	GraphicsDeviceBase::attachRenderingThread();
-	m_renderer->Activate();
+	m_renderer->activate();
 }
 
 //------------------------------------------------------------------------------

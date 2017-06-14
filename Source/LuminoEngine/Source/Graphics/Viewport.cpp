@@ -217,8 +217,8 @@ void Viewport::Render(DrawList* parentDrawList, const SizeI& targetSize)
 		layer->ExecuteDrawListRendering(parentDrawList, m_primaryLayerTarget, m_depthBuffer);
 
 		// TODO: Posteffect
-		//BeginBlitRenderer();
-		//layer->PostRender(m_renderer, &m_primaryLayerTarget, &m_secondaryLayerTarget);
+		//beginBlitRenderer();
+		//layer->postRender(m_renderer, &m_primaryLayerTarget, &m_secondaryLayerTarget);
 		//FlushBlitRenderer(renderTarget);
 	}
 
@@ -229,7 +229,7 @@ void Viewport::Render(DrawList* parentDrawList, const SizeI& targetSize)
 		MakeViewBoxTransform(targetSize, m_primaryLayerTarget->GetSize(), &viewBoxTransform);
 	}
 
-	//BeginBlitRenderer();
+	//beginBlitRenderer();
 	//m_renderer->blit(m_primaryLayerTarget, viewBoxTransform);
 	//FlushBlitRenderer(renderTarget);
 

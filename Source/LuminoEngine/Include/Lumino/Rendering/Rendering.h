@@ -110,27 +110,27 @@ public:
 
 	InternalContext();
 	void initialize(detail::GraphicsManager* manager);
-	Details::Renderer* GetRenderStateManager();
-	Details::Renderer* BeginBaseRenderer();
-	PrimitiveRenderFeature* BeginPrimitiveRenderer();
-	BlitRenderer* BeginBlitRenderer();
-	MeshRenderFeature* BeginMeshRenderer();
-	SpriteRenderFeature* BeginSpriteRenderer();
-	TextRenderer* BeginTextRenderer();
-	VectorTextRenderer* BeginVectorTextRenderer();
-	ShapesRenderFeature* BeginShapesRenderer();
-	NanoVGRenderFeature* BeginNanoVGRenderer();
-	FrameRectRenderFeature* BeginFrameRectRenderer();
+	Details::Renderer* getRenderStateManager();
+	Details::Renderer* beginBaseRenderer();
+	PrimitiveRenderFeature* beginPrimitiveRenderer();
+	BlitRenderer* beginBlitRenderer();
+	MeshRenderFeature* beginMeshRenderer();
+	SpriteRenderFeature* beginSpriteRenderer();
+	TextRenderer* beginTextRenderer();
+	VectorTextRenderer* beginVectorTextRenderer();
+	ShapesRenderFeature* beginShapesRenderer();
+	NanoVGRenderFeature* beginNanoVGRenderer();
+	FrameRectRenderFeature* beginFrameRectRenderer();
 
 	void setViewInfo(const Size& viewPixelSize, const Matrix& viewMatrix, const Matrix& projMatrix);
-	void ApplyStatus(DrawElementBatch* state, const DefaultStatus& defaultStatus);
-	DrawElementBatch* GetCurrentStatus() const { return m_currentStatePtr; }
-	detail::SpriteRenderFeature* GetSpriteRenderer();
+	void applyStatus(DrawElementBatch* state, const DefaultStatus& defaultStatus);
+	DrawElementBatch* getCurrentStatus() const { return m_currentStatePtr; }
+	detail::SpriteRenderFeature* getSpriteRenderer();
 
 	void flush();
 
 LN_INTERNAL_ACCESS:
-	void SwitchActiveRenderer(detail::IRenderFeature* renderer);
+	void switchActiveRenderer(detail::IRenderFeature* renderer);
 
 	IRenderFeature*					m_current;
 	Details::Renderer*				m_baseRenderer;
@@ -176,18 +176,18 @@ public:
 
 	const Matrix& getTransform(DrawElementList* oenerList) const;
 
-	virtual void MakeElementInfo(DrawElementList* oenerList, const CameraInfo& cameraInfo, ElementInfo* outInfo);
-	virtual void MakeSubsetInfo(DrawElementList* oenerList, CombinedMaterial* material, SubsetInfo* outInfo);
+	virtual void makeElementInfo(DrawElementList* oenerList, const CameraInfo& cameraInfo, ElementInfo* outInfo);
+	virtual void makeSubsetInfo(DrawElementList* oenerList, CombinedMaterial* material, SubsetInfo* outInfo);
 
-	virtual void DrawSubset(const DrawArgs& e) = 0;
-	const detail::Sphere& GetBoundingSphere() const { return boundingSphere; }
+	virtual void drawSubset(const DrawArgs& e) = 0;
+	const detail::Sphere& getBoundingSphere() const { return boundingSphere; }
 
 	// (ローカル座標系)
-	void MakeBoundingSphere(const Vector3& minPos, const Vector3& maxPos);
+	void makeBoundingSphere(const Vector3& minPos, const Vector3& maxPos);
 
-	virtual DynamicLightInfo** GetAffectedDynamicLightInfos();
+	virtual DynamicLightInfo** getAffectedDynamicLightInfos();
 
-	virtual void ReportDiag(RenderDiag* diag) = 0;
+	virtual void reportDiag(RenderDiag* diag) = 0;
 
 protected:
 	//void OnJoindDrawList(const Matrix& transform);
@@ -204,7 +204,7 @@ class LightingDrawElement
 public:
 	LightingDrawElement();
 	virtual ~LightingDrawElement() = default;
-	virtual DynamicLightInfo** GetAffectedDynamicLightInfos() { return m_affectedDynamicLightInfos; }
+	virtual DynamicLightInfo** getAffectedDynamicLightInfos() { return m_affectedDynamicLightInfos; }
 
 private:
 	DynamicLightInfo*	m_affectedDynamicLightInfos[DynamicLightInfo::MaxLights];
@@ -224,8 +224,8 @@ public:
 	void setDepthBuffer(DepthBuffer* depthBuffer);
 	DepthBuffer* getDepthBuffer() const { return m_depthBuffer; }
 
-	void SetScissorRect(const RectI& scissorRect);
-	const RectI& GetScissorRect() const { return m_scissorRect; }
+	void setScissorRect(const RectI& scissorRect);
+	const RectI& getScissorRect() const { return m_scissorRect; }
 
 	void setBlendMode(BlendMode mode);
 	BlendMode getBlendMode() const { return m_blendMode; }
@@ -243,17 +243,17 @@ public:
 	void setBrush(Brush* brush);
 	Brush* getBrush() const;
 
-	Pen* GetPen() const { return nullptr; }	// TODO
+	Pen* getPen() const { return nullptr; }	// TODO
 
 	void setFont(Font* font);
 	Font* getFont() const;		// not null (default font)
 								
 
 LN_INTERNAL_ACCESS:
-	void ApplyStatus(InternalContext* context, CombinedMaterial* combinedMaterial, const DefaultStatus& defaultStatus);
+	void applyStatus(InternalContext* context, CombinedMaterial* combinedMaterial, const DefaultStatus& defaultStatus);
 	uint32_t getHashCode() const;
 	void reset();
-	bool IsHashDirty() const { return m_hashDirty; }
+	bool isHashDirty() const { return m_hashDirty; }
 
 private:
 
@@ -277,11 +277,11 @@ class DrawElementBatch
 public:
 	DrawElementBatch();
 
-	void SetTransfrom(const Matrix& value);
-	const Matrix& GetTransfrom() const { return m_transfrom; }
+	void setTransfrom(const Matrix& value);
+	const Matrix& getTransfrom() const { return m_transfrom; }
 
-	void SetCombinedMaterial(CombinedMaterial* value);
-	CombinedMaterial* GetCombinedMaterial() const { return m_combinedMaterial; }
+	void setCombinedMaterial(CombinedMaterial* value);
+	CombinedMaterial* getCombinedMaterial() const { return m_combinedMaterial; }
 
 
 	void SetBuiltinEffect(const BuiltinEffectData& data);
@@ -291,9 +291,9 @@ public:
 
 	bool Equal(const BatchState& state, Material* material, const Matrix& transfrom, const BuiltinEffectData& effectData) const;
 	void reset();
-	void ApplyStatus(InternalContext* context, const DefaultStatus& defaultStatus);
+	void applyStatus(InternalContext* context, const DefaultStatus& defaultStatus);
 	size_t getHashCode() const;
-	size_t GetBuiltinEffectDataHashCode() const;
+	size_t getBuiltinEffectDataHashCode() const;
 
 	intptr_t				m_rendererId;
 
@@ -333,7 +333,7 @@ public:
 
 	int getElementCount() { return m_commandDataCache.getDataCount(); }
 	DrawElement* getElement(int index) { return reinterpret_cast<DrawElement*>(m_commandDataCache.getDataByIndex(index)); }
-	DrawElementBatch* GetBatch(int index) { return &m_batchList[index]; }
+	DrawElementBatch* getBatch(int index) { return &m_batchList[index]; }
 
 	void clearCommands();
 
@@ -342,7 +342,7 @@ public:
 	{
 		auto handle = m_commandDataCache.allocData(sizeof(T));
 		T* t = new (m_commandDataCache.getData(handle))T(args...);
-		PostAddCommandInternal(state, availableMaterial, transform, effectData, t);
+		postAddCommandInternal(state, availableMaterial, transform, effectData, t);
 		t->m_ownerDrawElementList = this;
 		return t;
 	}
@@ -353,18 +353,18 @@ public:
 
 	//void ResolveCombinedMaterials();
 
-	void AddDynamicLightInfo(DynamicLightInfo* lightInfo);
-	const List<RefPtr<DynamicLightInfo>>& GetDynamicLightList() const { return m_dynamicLightList; }
+	void addDynamicLightInfo(DynamicLightInfo* lightInfo);
+	const List<RefPtr<DynamicLightInfo>>& getDynamicLightList() const { return m_dynamicLightList; }
 
 
 	// default settings
-	void SetDefaultRenderTarget(RenderTargetTexture* value) { m_defaultRenderTarget = value; }
-	RenderTargetTexture* GetDefaultRenderTarget() const { return m_defaultRenderTarget; }
-	void SetDefaultDepthBuffer(DepthBuffer* value) { m_depthBuffer = value; }
-	DepthBuffer* GetDefaultDepthBuffer() const { return m_depthBuffer; }
+	void setDefaultRenderTarget(RenderTargetTexture* value) { m_defaultRenderTarget = value; }
+	RenderTargetTexture* getDefaultRenderTarget() const { return m_defaultRenderTarget; }
+	void setDefaultDepthBuffer(DepthBuffer* value) { m_depthBuffer = value; }
+	DepthBuffer* getDefaultDepthBuffer() const { return m_depthBuffer; }
 
 private:
-	void PostAddCommandInternal(const BatchState& state, Material* availableMaterial, const Matrix& transform, const BuiltinEffectData& effectData, DrawElement* element);
+	void postAddCommandInternal(const BatchState& state, Material* availableMaterial, const Matrix& transform, const BuiltinEffectData& effectData, DrawElement* element);
 
 	CommandDataCache		m_commandDataCache;
 	CommandDataCache		m_extDataCache;
@@ -399,7 +399,7 @@ public:
 		RenderDiag* diag);
 
 protected:
-	virtual void OnPreRender(DrawElementList* elementList);
+	virtual void onPreRender(DrawElementList* elementList);
 	void addPass(RenderingPass2* pass);
 
 private:
@@ -450,9 +450,9 @@ public:
 	virtual ~RenderingPass2();
 	//void initialize(GraphicsManager* manager);
 
-	virtual Shader* GetDefaultShader() const = 0;
+	virtual Shader* getDefaultShader() const = 0;
 
-	void SelectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy);
+	void selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy);
 
 	//virtual void RenderElement(DrawList* renderer, DrawElement* element);
 	//virtual void RenderElementSubset(DrawList* renderer, DrawElement* element, int subsetIndex);
@@ -478,7 +478,7 @@ public:
 	NonShadingRenderingPass();
 	virtual ~NonShadingRenderingPass();
 	void initialize(GraphicsManager* manager);
-	virtual Shader* GetDefaultShader() const override;
+	virtual Shader* getDefaultShader() const override;
 
 private:
 	RefPtr<Shader>	m_defaultShader;
@@ -495,12 +495,12 @@ public:
 	void initialize(GraphicsManager* manager);
 
 protected:
-	virtual void OnPreRender(DrawElementList* elementList);
+	virtual void onPreRender(DrawElementList* elementList);
 
 private:
-	void UpdateAffectLights(DrawElement* element, DrawElementList* elementList);
+	void updateAffectLights(DrawElement* element, DrawElementList* elementList);
 
-	List<DynamicLightInfo*>	m_selectingLights;	// UpdateAffectLights() の作業用変数
+	List<DynamicLightInfo*>	m_selectingLights;	// updateAffectLights() の作業用変数
 };
 
 
@@ -511,7 +511,7 @@ public:
 	ForwardShadingRenderingPass();
 	virtual ~ForwardShadingRenderingPass();
 	void initialize(GraphicsManager* manager);
-	virtual Shader* GetDefaultShader() const override;
+	virtual Shader* getDefaultShader() const override;
 
 private:
 	RefPtr<Shader>	m_defaultShader;
@@ -558,17 +558,17 @@ class RenderDiag
 public:
 	void clear();
 
-	void BeginRenderView();
-	void EndRenderView();
-	void BeginDrawList();
-	void EndDrawList();
-	void ChangeRenderStage();
-	void CallCommonElement(const TCHAR* typeName);
+	void beginRenderView();
+	void endRenderView();
+	void beginDrawList();
+	void endDrawList();
+	void changeRenderStage();
+	void callCommonElement(const TCHAR* typeName);
 
 	template<typename TDiagItem>
-	TDiagItem* CallElement(const TCHAR* typeName)
+	TDiagItem* callElement(const TCHAR* typeName)
 	{
-		return Instantiate<TDiagItem>(typeName);
+		return instantiate<TDiagItem>(typeName);
 	}
 
 	void print();
@@ -592,7 +592,7 @@ private:
 				m_storage.push_back(p);
 			m_using.clear();
 		}
-		T* Instantiate()
+		T* instantiate()
 		{
 			if (!m_storage.empty())
 			{
@@ -615,7 +615,7 @@ private:
 	};
 
 	template<typename T>
-	T* Instantiate(const char* typeName)
+	T* instantiate(const char* typeName)
 	{
 		assert(typeName != nullptr);
 
@@ -632,7 +632,7 @@ private:
 			cache = cachePtr.get();
 		}
 
-		T* obj = cache->Instantiate();
+		T* obj = cache->instantiate();
 		obj->m_name = typeName;
 		m_items.push_back(obj);
 		return obj;
@@ -684,10 +684,10 @@ public:
 	List<detail::DrawElement*>				m_renderingElementList;
 
 
-	const ln::Size& GetViewSize() const { return m_viewSize; }
+	const ln::Size& getViewSize() const { return m_viewSize; }
 
 LN_INTERNAL_ACCESS:
-	void SetViewSize(const ln::Size& size) { m_viewSize = size; }
+	void setViewSize(const ln::Size& size) { m_viewSize = size; }
 
 private:
 	ln::Size    m_viewSize;
@@ -722,10 +722,10 @@ public:
 	DepthBuffer* getDepthBuffer() const;
 
 	/** シザー領域を設定します。*/
-	void SetViewport(const RectI& rect);
+	void setViewport(const RectI& rect);
 
 	/** 現在設定されているシザー領域を取得します。*/
-	const RectI& GetViewport() const;
+	const RectI& getViewport() const;
 
 	/** @} */
 
@@ -766,7 +766,7 @@ public:
 		@param[in]	position2	: 終点の位置
 		@param[in]	color2		: 終点の色
 	*/
-	void DrawLinePrimitive(
+	void drawLinePrimitive(
 		const Vector3& position1, const Color& color1,
 		const Vector3& position2, const Color& color2);
 
@@ -774,7 +774,7 @@ public:
 		@brief
 		@details	デフォルトでは反時計回りが表面となります。
 	*/
-	void DrawSquarePrimitive(
+	void drawSquarePrimitive(
 		const Vector3& position1, const Vector2& uv1, const Color& color1,
 		const Vector3& position2, const Vector2& uv2, const Color& color2,
 		const Vector3& position3, const Vector2& uv3, const Color& color3,	// TODO: 順序
@@ -782,20 +782,20 @@ public:
 		ShaderPass* shaderPass*/);
 
 
-	void DrawSquare(float sizeX, float sizeZ, int slicesX, int slicesZ, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity, Material* material = nullptr);
+	void drawSquare(float sizeX, float sizeZ, int slicesX, int slicesZ, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity, Material* material = nullptr);
 	
-	void DrawArc(float startAngle, float endAngle, float innerRadius, float outerRadius, int slices, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity, Material* material = nullptr);
+	void drawArc(float startAngle, float endAngle, float innerRadius, float outerRadius, int slices, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity, Material* material = nullptr);
 
-	void DrawBox(const Box& box, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity, Material* material = nullptr);
+	void drawBox(const Box& box, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity, Material* material = nullptr);
 
-	void DrawSphere(float radius, int slices = 8, int stacks = 8, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity);
+	void drawSphere(float radius, int slices = 8, int stacks = 8, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity);
 
-	void DrawCylinder(float radius, float height, int slices = 8, int stacks = 1, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity);
+	void drawCylinder(float radius, float height, int slices = 8, int stacks = 1, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity);
 
-	void DrawCone(float radius, float height, int slices = 8, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity);
+	void drawCone(float radius, float height, int slices = 8, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity);
 
-	void DrawMesh(MeshResource* mesh, int subsetIndex, Material* material);
-	//void DrawMesh(StaticMeshModel* mesh, int subsetIndex, Material* material);
+	void drawMesh(MeshResource* mesh, int subsetIndex, Material* material);
+	//void drawMesh(StaticMeshModel* mesh, int subsetIndex, Material* material);
 
 	void blit(Texture* source);
 	void blit(Texture* source, const Matrix& transform);
@@ -804,13 +804,13 @@ public:
 
 	void drawGlyphRun(const PointF& position, GlyphRun* glyphRun);
 
-	void DrawText_(const StringRef& text, const PointF& position);
-	void DrawText_(const StringRef& text, const Rect& rect, StringFormatFlags flags);
+	void drawText_(const StringRef& text, const PointF& position);
+	void drawText_(const StringRef& text, const Rect& rect, StringFormatFlags flags);
 
 	void drawChar(TCHAR ch, const PointF& position);
-	void DrawText2(const StringRef& text, const Rect& rect);
+	void drawText2(const StringRef& text, const Rect& rect);
 
-	void DrawSprite(
+	void drawSprite(
 		const Vector3& position,
 		const Size& size,
 		const Vector2& anchor,
@@ -821,37 +821,37 @@ public:
 		BillboardType billboardType,
 		Material* material = nullptr);
 
-	void DrawRectangle(const Rect& rect);
+	void drawRectangle(const Rect& rect);
 
-	void DrawScreenRectangle();
+	void drawScreenRectangle();
 
 LN_INTERNAL_ACCESS:
 	DrawList();
 	virtual ~DrawList();
 	void initialize(detail::GraphicsManager* manager);
 	detail::GraphicsManager* getManager() const { return m_manager; }
-	detail::DrawElementList* GetDrawElementList() { return &m_drawElementList; }
-	void SetDefaultMaterial(Material* material);
-	void SetBuiltinEffectData(const detail::BuiltinEffectData& data);
-	void BeginMakeElements();
+	detail::DrawElementList* getDrawElementList() { return &m_drawElementList; }
+	void setDefaultMaterial(Material* material);
+	void setBuiltinEffectData(const detail::BuiltinEffectData& data);
+	void beginMakeElements();
 
 	const detail::BatchStateBlock& getState() const { return m_state; }
 	void setState(const detail::BatchStateBlock& state) { m_state = state; }
-	void AddDynamicLightInfo(detail::DynamicLightInfo* lightInfo);
-	void PushMetadata(const DrawElementMetadata* metadata);
+	void addDynamicLightInfo(detail::DynamicLightInfo* lightInfo);
+	void pushMetadata(const DrawElementMetadata* metadata);
 	const DrawElementMetadata* getMetadata();
-	void PopMetadata();
+	void popMetadata();
 
-	template<typename TElement> TElement* ResolveDrawElement(detail::DrawingSectionId sectionId, detail::IRenderFeature* renderer, Material* userMaterial);
-	void DrawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Material* material);
+	template<typename TElement> TElement* resolveDrawElement(detail::DrawingSectionId sectionId, detail::IRenderFeature* renderer, Material* userMaterial);
+	void drawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Material* material);
 	//void DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material);
-	void BlitInternal(Texture* source, RenderTargetTexture* dest, const Matrix& transform, Material* material);
-	void DrawFrameRectangle(const Rect& rect);
-	void RenderSubView(RenderView* listSet, detail::SceneRenderer* renderer = nullptr, RenderTargetTexture* defaultRenderTarget = nullptr, DepthBuffer* defaultDepthBuffer = nullptr);
+	void blitInternal(Texture* source, RenderTargetTexture* dest, const Matrix& transform, Material* material);
+	void drawFrameRectangle(const Rect& rect);
+	void renderSubView(RenderView* listSet, detail::SceneRenderer* renderer = nullptr, RenderTargetTexture* defaultRenderTarget = nullptr, DepthBuffer* defaultDepthBuffer = nullptr);
 
 	// TODO: 本質的に DrawList に持たせるべきではない。一応今は一時変数的な扱いでしかないので被害は少ないが・・・
-	void SetCurrentCamera(CameraComponent* camera) { m_camera = camera; }
-	CameraComponent* GetCurrentCamera() const { return m_camera; }
+	void setCurrentCamera(CameraComponent* camera) { m_camera = camera; }
+	CameraComponent* getCurrentCamera() const { return m_camera; }
 
 private:
 	detail::GraphicsManager*		m_manager;
@@ -903,7 +903,7 @@ private:
 
 //------------------------------------------------------------------------------
 template<typename TElement>
-inline TElement* DrawList::ResolveDrawElement(detail::DrawingSectionId sectionId, detail::IRenderFeature* renderer, Material* userMaterial)
+inline TElement* DrawList::resolveDrawElement(detail::DrawingSectionId sectionId, detail::IRenderFeature* renderer, Material* userMaterial)
 {
 	Material* availableMaterial = (userMaterial != nullptr) ? userMaterial : m_defaultMaterial.get();
 
@@ -921,13 +921,13 @@ inline TElement* DrawList::ResolveDrawElement(detail::DrawingSectionId sectionId
 		m_currentSectionTopElement->drawingSectionId == sectionId &&
 		m_currentSectionTopElement->metadata.equals(*metadata) &&
 		m_currentSectionTopElement->m_stateFence == m_currentStateFence &&
-		m_drawElementList.GetBatch(m_currentSectionTopElement->batchIndex)->Equal(m_state.state.state, availableMaterial, m_state.state.GetTransfrom(), m_builtinEffectData))
+		m_drawElementList.getBatch(m_currentSectionTopElement->batchIndex)->Equal(m_state.state.state, availableMaterial, m_state.state.getTransfrom(), m_builtinEffectData))
 	{
 		return static_cast<TElement*>(m_currentSectionTopElement);
 	}
 
 	// DrawElement を新しく作る
-	TElement* element = m_drawElementList.addCommand<TElement>(m_state.state.state, availableMaterial, m_state.state.GetTransfrom(), m_builtinEffectData);
+	TElement* element = m_drawElementList.addCommand<TElement>(m_state.state.state, availableMaterial, m_state.state.getTransfrom(), m_builtinEffectData);
 	//element->OnJoindDrawList(m_state.transfrom);
 	element->drawingSectionId = sectionId;
 	element->metadata = *metadata;

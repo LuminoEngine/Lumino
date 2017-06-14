@@ -42,14 +42,14 @@ void WorldObject::initialize()
 }
 
 //------------------------------------------------------------------------------
-World* WorldObject::GetWorld() const
+World* WorldObject::getWorld() const
 {
 	// TODO: m_world は持たないようにする。上へさかのぼって検索する。
 	return m_world;
 }
 
 //------------------------------------------------------------------------------
-void WorldObject::AddComponent(Component* component)
+void WorldObject::addComponent(Component* component)
 {
 	if (LN_CHECK_ARG(component != nullptr)) return;
 	if (LN_CHECK_ARG(component->m_owner == nullptr)) return;
@@ -58,7 +58,7 @@ void WorldObject::AddComponent(Component* component)
 }
 
 //------------------------------------------------------------------------------
-void WorldObject::RemoveFromWorld()
+void WorldObject::removeFromWorld()
 {
 	if (m_world != nullptr)
 	{
@@ -87,7 +87,7 @@ void WorldObject::onRender(DrawList* context)
 }
 
 //------------------------------------------------------------------------------
-void WorldObject::OnDestroy()
+void WorldObject::onDestroy()
 {
 }
 
@@ -157,7 +157,7 @@ void WorldObject::render(DrawList* context)
 }
 
 //------------------------------------------------------------------------------
-void WorldObject::ReleaseComponents()
+void WorldObject::releaseComponents()
 {
 	for (auto& c : m_components)
 		c->detach();

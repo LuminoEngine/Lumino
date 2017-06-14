@@ -50,13 +50,13 @@ public:
 protected:
 	UITextElement();
 	virtual ~UITextElement();
-	Font* GetActiveFont() const { return m_font; }
+	Font* getActiveFont() const { return m_font; }
 
 	virtual Size measureOverride(const Size& constraint) override;
-	virtual void OnUpdateStyle(detail::UIStylePropertyTableInstance* localStyle, detail::InvalidateFlags invalidateFlags) override;
+	virtual void onUpdateStyle(detail::UIStylePropertyTableInstance* localStyle, detail::InvalidateFlags invalidateFlags) override;
 
 LN_INTERNAL_ACCESS:
-	static void OnFontPropertyChanged(Object* obj);
+	static void onFontPropertyChanged(Object* obj);
 
 	//tr::Property<String>		m_fontFamily;
 	//tr::Property<int>			m_fontSize;

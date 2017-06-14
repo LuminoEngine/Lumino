@@ -134,11 +134,11 @@ public:
 	static void nvgCircle(NanoVGCommandList* ctx, float cx, float cy, float r);
 	static void nvgFill(NanoVGCommandList* ctx);
 	static void nvgStroke(NanoVGCommandList* ctx);
-	static void ExecuteCommand(NanoVGCommandList* commandList, NVGcontext* ctx);
-	static void ExpandState(const Matrix& transform, Brush* brush, Pen* pen, NanoVGState* outState);
-	static void ExpandBrushState(Brush* brush, NanoVGBrush* outBrush);
-	static void ApplyState(NVGcontext* ctx, const NanoVGState* state);
-	static NVGpaint GetNVGpaint(NVGcontext* ctx, const NanoVGBrush& brush);
+	static void executeCommand(NanoVGCommandList* commandList, NVGcontext* ctx);
+	static void expandState(const Matrix& transform, Brush* brush, Pen* pen, NanoVGState* outState);
+	static void expandBrushState(Brush* brush, NanoVGBrush* outBrush);
+	static void applyState(NVGcontext* ctx, const NanoVGState* state);
+	static NVGpaint getNVGpaint(NVGcontext* ctx, const NanoVGBrush& brush);
 };
 
 
@@ -158,7 +158,7 @@ public:
 	virtual ~NanoVGRenderFeature();
 	void initialize(GraphicsManager* manager);
 
-	void ExecuteCommand(NanoVGCommandList* commandList);
+	void executeCommand(NanoVGCommandList* commandList);
 
 protected:
 	virtual bool isStandaloneShader() const { return true; }
@@ -168,8 +168,8 @@ protected:
 	virtual void onSetState(const DrawElementBatch* state);
 
 private:
-	void ExecuteCommandInternal(const NanoVGState& state, NanoVGCommandList* commandList);
-	void PushCommandList(NanoVGCommandList* commandList);
+	void executeCommandInternal(const NanoVGState& state, NanoVGCommandList* commandList);
+	void pushCommandList(NanoVGCommandList* commandList);
 
 	GraphicsManager*				m_manager;
 	NVGcontext*						m_nvgContext;

@@ -27,12 +27,12 @@ void Main()
 
 
 	auto listBox1 = UIListBox::create();
-	listBox1->SetWidth(200);
-	mainWindow->AddChild(listBox1);
+	listBox1->setWidth(200);
+	mainWindow->addChild(listBox1);
 
 	for (int i = 0; i < LN_ARRAY_SIZE_OF(g_samples); i++)
 	{
-		listBox1->AddTextItem(g_samples[i].name);
+		listBox1->addTextItem(g_samples[i].name);
 	}
 
 

@@ -20,7 +20,7 @@ public:
 	~MeshRenderFeature();
 	void initialize(GraphicsManager* manager);
 
-	void DrawMesh(MeshResource* mesh, int startIndex, int primitiveCount, PrimitiveType primitiveType);
+	void drawMesh(MeshResource* mesh, int startIndex, int primitiveCount, PrimitiveType primitiveType);
 
 protected:
 	virtual bool isStandaloneShader() const { return false; }
@@ -40,7 +40,7 @@ private:
 		PrimitiveType						primitiveType;
 	};
 
-	void DrawMeshImpl(const DrawMeshCommandData& data);	// Threading
+	void drawMeshImpl(const DrawMeshCommandData& data);	// Threading
 
 	GraphicsManager*		m_manager;
 	Driver::IRenderer*		m_renderer;

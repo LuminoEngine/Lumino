@@ -15,7 +15,7 @@ TEST_F(Test_Physics_3D, Basic)
 		auto shape1 = BoxCollisionShape::create(1, 2, 3);
 		auto body1 = RigidBody::create(shape1);
 		for (int i = 0; i < 10; i++) Engine::update();
-		ASSERT_EQ(true, body1->GetWorldTransform().getPosition().y < 0);
+		ASSERT_EQ(true, body1->getWorldTransform().getPosition().y < 0);
 	}
 }
 
@@ -28,26 +28,26 @@ TEST_F(Test_Physics_3D, TriggerCollider)
 		auto col2 = BoxCollisionShape::create(1, 1, 1);
 		auto body1 = CollisionBody::create(col1);
 		auto body2 = CollisionBody::create(col2);
-		body1->SetTrigger(true);
-		body2->SetTrigger(true);
+		body1->setTrigger(true);
+		body2->setTrigger(true);
 
 		int count1 = 0;
 		int count2 = 0;
 		int count3 = 0;
-		body1->ConnectOnTriggerEnter([&count1](PhysicsObject* obj) { count1++; });
-		body2->ConnectOnTriggerEnter([&count1](PhysicsObject* obj) { count1++; });
-		body1->ConnectOnTriggerStay([&count2](PhysicsObject* obj) { count2++; });
-		body2->ConnectOnTriggerStay([&count2](PhysicsObject* obj) { count2++; });
-		body1->ConnectOnTriggerLeave([&count3](PhysicsObject* obj) { count3++; });
-		body2->ConnectOnTriggerLeave([&count3](PhysicsObject* obj) { count3++; });
+		body1->connectOnTriggerEnter([&count1](PhysicsObject* obj) { count1++; });
+		body2->connectOnTriggerEnter([&count1](PhysicsObject* obj) { count1++; });
+		body1->connectOnTriggerStay([&count2](PhysicsObject* obj) { count2++; });
+		body2->connectOnTriggerStay([&count2](PhysicsObject* obj) { count2++; });
+		body1->connectOnTriggerLeave([&count3](PhysicsObject* obj) { count3++; });
+		body2->connectOnTriggerLeave([&count3](PhysicsObject* obj) { count3++; });
 
 		for (int i = 0; i < 10; i++) Engine::update();
 
-		body1->GetOwnerWorld()->RemovePhysicsObject(body1);
-		body2->GetOwnerWorld()->RemovePhysicsObject(body2);
+		body1->getOwnerWorld()->removePhysicsObject(body1);
+		body2->getOwnerWorld()->removePhysicsObject(body2);
 
-		ASSERT_EQ(true, body1->GetPhysicsObjectTransform().isIdentity());
-		ASSERT_EQ(true, body2->GetPhysicsObjectTransform().isIdentity());
+		ASSERT_EQ(true, body1->getPhysicsObjectTransform().isIdentity());
+		ASSERT_EQ(true, body2->getPhysicsObjectTransform().isIdentity());
 
 		ASSERT_EQ(2, count1);	// 2回の接触開始
 		ASSERT_EQ(20, count2);	// 相互に10フレーム接触し続ける
@@ -58,12 +58,12 @@ TEST_F(Test_Physics_3D, TriggerCollider)
 //------------------------------------------------------------------------------
 TEST_F(Test_Physics_3D, MeshCollisionShape)
 {
-	//dynamic_cast<ln::CameraViewportLayer2*>(ln::Engine::getDefault3DLayer())->SetDebugDrawFlags(ln::WorldDebugDrawFlags::PhysicsInfo);
+	//dynamic_cast<ln::CameraViewportLayer2*>(ln::Engine::getDefault3DLayer())->setDebugDrawFlags(ln::WorldDebugDrawFlags::PhysicsInfo);
 
 	// <Test> YZ 平面で X+ 向きの 四角形 MeshSphere に、左右から剛体をぶつける → 裏表に関係なく、双方に跳ね返る
 	{
 		auto mesh = MeshResource::create();
-		mesh->AddSquare(
+		mesh->addSquare(
 			Vertex{ Vector3(0, 10, -10) },
 			Vertex{ Vector3(0, -10, -10) },
 			Vertex{ Vector3(0, -10, 10) },
@@ -75,15 +75,15 @@ TEST_F(Test_Physics_3D, MeshCollisionShape)
 		auto s2 = BoxCollisionShape::create(1, 1, 1);
 		auto b2 = RigidBody::create(s2);
 		b2->setPosition(3, 0, 5);
-		b2->ApplyImpulse(Vector3(-10, 0, 0));
+		b2->applyImpulse(Vector3(-10, 0, 0));
 
 		auto b3 = RigidBody::create(s2);
 		b3->setPosition(-3, 0, -5);
-		b3->ApplyImpulse(Vector3(10, 0, 0));
+		b3->applyImpulse(Vector3(10, 0, 0));
 
 		for (int i = 0; i < 60; i++)  Engine::update();
 
-		ASSERT_EQ(true, b2->GetWorldTransform().getPosition().x > 0);
-		ASSERT_EQ(true, b3->GetWorldTransform().getPosition().x < 0);
+		ASSERT_EQ(true, b2->getWorldTransform().getPosition().x > 0);
+		ASSERT_EQ(true, b3->getWorldTransform().getPosition().x < 0);
 	}
 }

@@ -322,7 +322,7 @@ void ContextInterface::switchActiveRendererPloxy(detail::IRenderFeature* rendere
 
 		if (m_activeRendererPloxy != nullptr)
 		{
-			m_activeRendererPloxy->onActivated();	// 新しいものを Activate
+			m_activeRendererPloxy->onActivated();	// 新しいものを activate
 		}
 	}
 }
@@ -336,7 +336,7 @@ void ContextInterface::setBasicContextState(const BasicContextState& state)
 	for (int i = 0; i < Graphics::MaxMultiRenderTargets; ++i)
 		m_baseRenderer->setRenderTarget(i, state.getRenderTarget(i));
 	m_baseRenderer->setDepthBuffer(state.depthBuffer);
-//	m_baseRenderer->SetViewport(state.viewport);
+//	m_baseRenderer->setViewport(state.viewport);
 }
 
 //------------------------------------------------------------------------------

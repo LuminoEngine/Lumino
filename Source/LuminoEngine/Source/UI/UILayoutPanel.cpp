@@ -25,26 +25,26 @@ UILayoutPanel::~UILayoutPanel()
 void UILayoutPanel::initialize()
 {
 	UIElement::initialize();
-	SetHitTestVisible(false);
+	setHitTestVisible(false);
 	m_children = RefPtr<UIElementCollection>::makeRef(this);
 
 	// Panel 系のデフォルトは Stretch
-	//SetHAlignment(HAlignment::Stretch);
-	//SetVAlignment(VAlignment::Stretch);
+	//setHAlignment(HAlignment::Stretch);
+	//setVAlignment(VAlignment::Stretch);
 }
 
 //------------------------------------------------------------------------------
-void UILayoutPanel::AddChild(UIElement* element)
+void UILayoutPanel::addChild(UIElement* element)
 {
 	m_children->add(element);
-	element->SetLogicalParent(this);
+	element->setLogicalParent(this);
 }
 
 //------------------------------------------------------------------------------
-void UILayoutPanel::RemoveChild(UIElement* element)
+void UILayoutPanel::removeChild(UIElement* element)
 {
 	m_children->remove(element);
-	element->SetLogicalParent(nullptr);
+	element->setLogicalParent(nullptr);
 }
 
 //------------------------------------------------------------------------------
@@ -62,7 +62,7 @@ UIElement* UILayoutPanel::getVisualChild(int index) const
 //------------------------------------------------------------------------------
 Size UILayoutPanel::measureOverride(const Size& constraint)
 {
-	return detail::LayoutImpl<UILayoutPanel>::UILayoutPanel_MeasureOverride(
+	return detail::LayoutImpl<UILayoutPanel>::UILayoutPanel_measureOverride(
 		this, constraint,
 		[](UILayoutPanel* panel, const Size& constraint){ return panel->UIElement::measureOverride(constraint); });
 }
@@ -72,11 +72,11 @@ Size UILayoutPanel::arrangeOverride(const Size& finalSize)
 {
 	Vector2 pixelOffset = -m_scrollOffset;
 
-	return detail::LayoutImpl<UILayoutPanel>::UILayoutPanel_ArrangeOverride(this, pixelOffset, finalSize);
+	return detail::LayoutImpl<UILayoutPanel>::UILayoutPanel_arrangeOverride(this, pixelOffset, finalSize);
 }
 
 //------------------------------------------------------------------------------
-void UILayoutPanel::OnChildCollectionChanged(const tr::ChildCollectionChangedArgs& e)
+void UILayoutPanel::onChildCollectionChanged(const tr::ChildCollectionChangedArgs& e)
 {
 	/*
 		ListBox や Button からコンテンツを追加する場合もこの関数が呼ばれる。
@@ -87,34 +87,34 @@ void UILayoutPanel::OnChildCollectionChanged(const tr::ChildCollectionChangedArg
 	for (UIElement* element : e.newItems)
 	{
 		//element->setParent(this);
-		AddVisualChild(element);
+		addVisualChild(element);
 	}
 
 	// 削除されたものたち
 	for (UIElement* element : e.oldItems)
 	{
 		//element->setParent(nullptr);
-		RemoveVisualChild(element);
+		removeVisualChild(element);
 	}
 }
 
 //------------------------------------------------------------------------------
-int UILayoutPanel::GetLayoutChildrenCount() { return m_children->getCount(); }
-ILayoutElement* UILayoutPanel::GetLayoutChild(int index) { return m_children->getAt(index); }
-int UILayoutPanel::GetLayoutGridColumnDefinitionCount() { return 0; }
-detail::GridDefinitionData* UILayoutPanel::GetLayoutGridColumnDefinition(int index) { return nullptr; }
-int UILayoutPanel::GetLayoutGridRowDefinitionCount() { return 0; }
-detail::GridDefinitionData* UILayoutPanel::GetLayoutGridRowDefinition(int index) { return nullptr; }
+int UILayoutPanel::getLayoutChildrenCount() { return m_children->getCount(); }
+ILayoutElement* UILayoutPanel::getLayoutChild(int index) { return m_children->getAt(index); }
+int UILayoutPanel::getLayoutGridColumnDefinitionCount() { return 0; }
+detail::GridDefinitionData* UILayoutPanel::getLayoutGridColumnDefinition(int index) { return nullptr; }
+int UILayoutPanel::getLayoutGridRowDefinitionCount() { return 0; }
+detail::GridDefinitionData* UILayoutPanel::getLayoutGridRowDefinition(int index) { return nullptr; }
 
 //------------------------------------------------------------------------------
-float UILayoutPanel::GetExtentWidth() const { return getDesiredSize().width; }
-float UILayoutPanel::GetExtentHeight() const { return getDesiredSize().height; }
-float UILayoutPanel::GetViewportWidth() const { return getRenderSize().width; }
-float UILayoutPanel::GetViewportHeight() const { return getRenderSize().height; }
-void UILayoutPanel::SetHorizontalOffset(float offset) { m_scrollOffset.x = offset; }
-float UILayoutPanel::GetHorizontalOffset() const { return m_scrollOffset.x; }
-void UILayoutPanel::SetVerticalOffset(float offset) { m_scrollOffset.y = offset; }
-float UILayoutPanel::GetVerticalOffset() const { return m_scrollOffset.y; }
+float UILayoutPanel::getExtentWidth() const { return getDesiredSize().width; }
+float UILayoutPanel::getExtentHeight() const { return getDesiredSize().height; }
+float UILayoutPanel::getViewportWidth() const { return getRenderSize().width; }
+float UILayoutPanel::getViewportHeight() const { return getRenderSize().height; }
+void UILayoutPanel::setHorizontalOffset(float offset) { m_scrollOffset.x = offset; }
+float UILayoutPanel::getHorizontalOffset() const { return m_scrollOffset.x; }
+void UILayoutPanel::setVerticalOffset(float offset) { m_scrollOffset.y = offset; }
+float UILayoutPanel::getVerticalOffset() const { return m_scrollOffset.y; }
 
 //==============================================================================
 // UIStackPanel
@@ -150,14 +150,14 @@ void UIStackPanel::initialize()
 Size UIStackPanel::measureOverride(const Size& constraint)
 {
 	return Size::max(
-		detail::LayoutImpl<UIStackPanel>::UIStackPanel_MeasureOverride(this, constraint, m_orientation),
+		detail::LayoutImpl<UIStackPanel>::UIStackPanel_measureOverride(this, constraint, m_orientation),
 		UIElement::measureOverride(constraint));
 }
 
 //------------------------------------------------------------------------------
 Size UIStackPanel::arrangeOverride(const Size& finalSize)
 {
-	return detail::LayoutImpl<UIStackPanel>::UIStackPanel_ArrangeOverride(this, finalSize, m_orientation);
+	return detail::LayoutImpl<UIStackPanel>::UIStackPanel_arrangeOverride(this, finalSize, m_orientation);
 }
 
 
@@ -199,11 +199,11 @@ Size UIAbsoluteLayout::measureOverride(const Size& constraint)
 	Size size = UIElement::measureOverride(constraint);
 
 	Size childMaxSize(0, 0);
-	for (UIElement* child : *GetChildren())
+	for (UIElement* child : *getChildren())
 	{
 		child->measureLayout(constraint);
 		const Size& desiredSize = child->getDesiredSize();
-		const PointF& pos = child->GetPositionInternal();
+		const PointF& pos = child->getPositionInternal();
 
 		childMaxSize.width  = std::max(childMaxSize.width,  pos.x + desiredSize.width);
 		childMaxSize.height = std::max(childMaxSize.height, pos.y + desiredSize.height);
@@ -214,11 +214,11 @@ Size UIAbsoluteLayout::measureOverride(const Size& constraint)
 	//if (Math::IsNaN(size.width)) size.width = 
 
 	//Size desiredSize = baseCallback(static_cast<TPanel*>(panel), constraint);
-	//int childCount = panel->GetLayoutChildrenCount();
+	//int childCount = panel->getLayoutChildrenCount();
 	//for (int i = 0; i < childCount; i++)
 	//{
-	//	ILayoutElement* child = panel->GetLayoutChild(i);
-	//	PointF pos = child->GetPositionInternal();
+	//	ILayoutElement* child = panel->getLayoutChild(i);
+	//	PointF pos = child->getPositionInternal();
 
 	//	child->measureLayout(constraint);
 	//	const Size& childDesiredSize = child->getLayoutDesiredSize();
@@ -231,7 +231,7 @@ Size UIAbsoluteLayout::measureOverride(const Size& constraint)
 
 	//Size size = UILayoutPanel::measureOverride(constraint);
 	//
-	//for (UIElement* child : *GetChildren())
+	//for (UIElement* child : *getChildren())
 	//{
 
 	//}
@@ -244,24 +244,24 @@ Size UIAbsoluteLayout::arrangeOverride(const Size& finalSize)
 {
 	//ThicknessF canvas;
 	
-	for (UIElement* child : *GetChildren())
+	for (UIElement* child : *getChildren())
 	{
-		//if (child->GetInvalidateFlags().TestFlag(detail::InvalidateFlags::ParentChangedUpdating))
+		//if (child->getInvalidateFlags().TestFlag(detail::InvalidateFlags::ParentChangedUpdating))
 		//{
 		//}
 		
 		const Size& desiredSize = child->getDesiredSize();
-		//Size layoutSize = child->GetSizeInternal();
+		//Size layoutSize = child->getSizeInternal();
 		Size size = desiredSize;
 		//size.width = Math::IsNaN(layoutSize.width) ? desiredSize.width : layoutSize.width;
 		//size.height = Math::IsNaN(layoutSize.height) ? desiredSize.height : layoutSize.height;
 
-		Rect childRect(child->GetPositionInternal(), size/*child->GetSizeInternal()*/);
-		AlignmentAnchor anchor = child->GetAnchorInternal();
+		Rect childRect(child->getPositionInternal(), size/*child->getSizeInternal()*/);
+		AlignmentAnchor anchor = child->getAnchorInternal();
 		
 		if (anchor != AlignmentAnchor::None)
 		{
-			const ThicknessF& margin = GetMargineInternal();
+			const ThicknessF& margin = getMargineInternal();
 			//float l = childRect.getLeft(), t = childRect.GetTop(), r = childRect.getRight(), b = childRect.getBottom();
 
 			//if (anchor.TestFlag(AlignmentAnchor::LeftOffsets))
@@ -390,7 +390,7 @@ public:
 
 	GridLengthType getType() const { return m_data.type; }
 
-	//float GetAvailableDesiredSize() const
+	//float getAvailableDesiredSize() const
 	//{
 	//	if (m_data.type == GridLengthType::Auto) {
 	//		return m_data.desiredSize;
@@ -408,7 +408,7 @@ public:
 	//	return (m_data.size == 0.0f) ? 1.0f : m_data.size;
 	//}
 
-	//void AdjustActualSize()
+	//void adjustActualSize()
 	//{
 	//	m_data.actualSize = Math::Clamp(m_data.actualSize, m_data.minSize, m_data.maxSize);
 	//}
@@ -442,13 +442,13 @@ public:
 	{
 	}
 
-	void SetWidth(float value, GridLengthType type = GridLengthType::Pixel) { m_data.size = value; m_data.type = type; }
+	void setWidth(float value, GridLengthType type = GridLengthType::Pixel) { m_data.size = value; m_data.type = type; }
 	float getWidth() const { return m_data.size; }
 
-	void SetMinWidth(float value) { m_data.minSize = value; }
+	void setMinWidth(float value) { m_data.minSize = value; }
 	float GetMinWidth() const { return m_data.minSize; }
 
-	void SetMaxWidth(float value) { m_data.maxSize = value; }
+	void setMaxWidth(float value) { m_data.maxSize = value; }
 	float GetMaxWidth() const { return m_data.maxSize; }
 };
 
@@ -468,13 +468,13 @@ public:
 	{
 	}
 
-	void SetHeight(float value, GridLengthType type = GridLengthType::Pixel) { m_data.size = value; m_data.type = type; }
+	void setHeight(float value, GridLengthType type = GridLengthType::Pixel) { m_data.size = value; m_data.type = type; }
 	float getHeight() const { return m_data.size; }
 
-	void SetMinHeight(float value) { m_data.minSize = value; }
+	void setMinHeight(float value) { m_data.minSize = value; }
 	float GetMinHeight() const { return m_data.minSize; }
 
-	void SetMaxHeight(float value) { m_data.maxSize = value; }
+	void setMaxHeight(float value) { m_data.maxSize = value; }
 	float GetMaxHeight() const { return m_data.maxSize; }
 };
 
@@ -496,7 +496,7 @@ UIGridLayoutPtr UIGridLayout::create(int columnCount, int rowCount)
 {
 	auto ptr = UIGridLayoutPtr::makeRef();
 	ptr->initialize();
-	ptr->SetGridSize(columnCount, rowCount);
+	ptr->setGridSize(columnCount, rowCount);
 	return ptr;
 }
 
@@ -519,7 +519,7 @@ void UIGridLayout::initialize()
 }
 
 //------------------------------------------------------------------------------
-void UIGridLayout::SetGridSize(int columnCount, int rowCount)
+void UIGridLayout::setGridSize(int columnCount, int rowCount)
 {
 	m_columnDefinitions.clear();
 	m_rowDefinitions.clear();
@@ -531,29 +531,29 @@ void UIGridLayout::SetGridSize(int columnCount, int rowCount)
 }
 
 //------------------------------------------------------------------------------
-void UIGridLayout::AddColumnDefinition(GridLengthType type, float width, float minWidth, float maxWidth)
+void UIGridLayout::addColumnDefinition(GridLengthType type, float width, float minWidth, float maxWidth)
 {
 	auto ptr = RefPtr<ColumnDefinition>::makeRef();
-	ptr->SetWidth(width, type);
-	ptr->SetMinWidth(minWidth);
-	ptr->SetMaxWidth(maxWidth);
+	ptr->setWidth(width, type);
+	ptr->setMinWidth(minWidth);
+	ptr->setMaxWidth(maxWidth);
 	m_columnDefinitions.add(ptr);
 }
 
 //------------------------------------------------------------------------------
-void UIGridLayout::AddRowDefinition(GridLengthType type, float height, float minHeight, float maxHeight)
+void UIGridLayout::addRowDefinition(GridLengthType type, float height, float minHeight, float maxHeight)
 {
 	auto ptr = RefPtr<RowDefinition>::makeRef();
-	ptr->SetHeight(height, type);
-	ptr->SetMinHeight(minHeight);
-	ptr->SetMaxHeight(maxHeight);
+	ptr->setHeight(height, type);
+	ptr->setMinHeight(minHeight);
+	ptr->setMaxHeight(maxHeight);
 	m_rowDefinitions.add(ptr);
 }
 
 //------------------------------------------------------------------------------
 Size UIGridLayout::measureOverride(const Size& constraint)
 {
-	return detail::LayoutImpl<UIGridLayout>::UIGridLayout_MeasureOverride(
+	return detail::LayoutImpl<UIGridLayout>::UIGridLayout_measureOverride(
 		this, constraint,
 		[](UIGridLayout* panel, const Size& constraint){ return panel->UILayoutPanel::measureOverride(constraint); });
 }
@@ -561,13 +561,13 @@ Size UIGridLayout::measureOverride(const Size& constraint)
 //------------------------------------------------------------------------------
 Size UIGridLayout::arrangeOverride(const Size& finalSize)
 {
-	return detail::LayoutImpl<UIGridLayout>::UIGridLayout_ArrangeOverride(this, finalSize);
+	return detail::LayoutImpl<UIGridLayout>::UIGridLayout_arrangeOverride(this, finalSize);
 }
 
 //------------------------------------------------------------------------------
-int UIGridLayout::GetLayoutGridColumnDefinitionCount() { return m_columnDefinitions.getCount(); }
-detail::GridDefinitionData* UIGridLayout::GetLayoutGridColumnDefinition(int index) { return &m_columnDefinitions[index]->m_data; }
-int UIGridLayout::GetLayoutGridRowDefinitionCount() { return m_rowDefinitions.getCount(); }
-detail::GridDefinitionData* UIGridLayout::GetLayoutGridRowDefinition(int index) { return &m_rowDefinitions[index]->m_data; }
+int UIGridLayout::getLayoutGridColumnDefinitionCount() { return m_columnDefinitions.getCount(); }
+detail::GridDefinitionData* UIGridLayout::getLayoutGridColumnDefinition(int index) { return &m_columnDefinitions[index]->m_data; }
+int UIGridLayout::getLayoutGridRowDefinitionCount() { return m_rowDefinitions.getCount(); }
+detail::GridDefinitionData* UIGridLayout::getLayoutGridRowDefinition(int index) { return &m_rowDefinitions[index]->m_data; }
 
 LN_NAMESPACE_END

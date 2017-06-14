@@ -25,13 +25,13 @@ public:
 	/**
 		@brief		非同期処理の状態を取得します。
 	*/
-	ASyncIOState GetASyncIOState() const;
+	ASyncIOState getASyncIOState() const;
 	
 	/**
 		@brief		処理終了後、例外が発生した場合はその例外を返します。
 		@return		例外が発生していなければ NULL を返します。
 	*/
-	Exception* GetASyncIOException() const;
+	Exception* getASyncIOException() const;
 
 protected:
 
@@ -45,7 +45,7 @@ protected:
 	/**
 		@brief		処理を実行します。
 	*/
-	void InvokeIOProc(bool isASync, FileManager* fileManager = NULL);
+	void invokeIOProc(bool isASync, FileManager* fileManager = NULL);
 
 private:
 	friend class FileManager;

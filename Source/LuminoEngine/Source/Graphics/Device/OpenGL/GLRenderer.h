@@ -23,7 +23,7 @@ public:
 	virtual ~GLRenderer();
 
 public:
-	void Activate();
+	void activate();
 	void Deactivate();
 
 	/// ShaderPass::begin から呼ばれる

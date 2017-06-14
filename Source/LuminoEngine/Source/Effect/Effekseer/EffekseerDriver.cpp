@@ -20,9 +20,9 @@
 
 	ManagerImplemented
 		Flip() で m_renderingDrawSets に DrawSet が入れられる。
-		Draw() で m_renderingDrawSets に入っている DrawSet を描画する。
+		draw() で m_renderingDrawSets に入っている DrawSet を描画する。
 		↓
-		Flip() と Draw() は並列実行できない。
+		Flip() と draw() は並列実行できない。
 
 	ManagerImplemented::play()
 		InstanceContainer を作って m_DrawSets に入れる。
@@ -33,34 +33,34 @@
 
 	まとめ
 		・play() と update() は並列実行できる。
-		・1フレームは {Flip()} → {update()} → {Draw()} の順で実行しなければならない。
-		・play() は update() または Draw() と並列で実行できる。Flip() とはできない。
+		・1フレームは {Flip()} → {update()} → {draw()} の順で実行しなければならない。
+		・play() は update() または draw() と並列で実行できる。Flip() とはできない。
 
 	対策
-		・update() は更新スレッドを新しく立て、Draw() は描画スレッドから呼びたい。
-		・update() が遅れているからと言って、Draw() しないのは無し。
+		・update() は更新スレッドを新しく立て、draw() は描画スレッドから呼びたい。
+		・update() が遅れているからと言って、draw() しないのは無し。
 
 		前提
-		・Lumino は、描画スレッドが遅れているなら Draw() は呼ばない。
+		・Lumino は、描画スレッドが遅れているなら draw() は呼ばない。
 
 		・2フレーム目以降で、
 										[更新スレッド]		[描画スレッド]
-			PreUpdateFrame Flip()	→	開始 ※1				↓
+			preUpdateFrame Flip()	→	開始 ※1				↓
 			updateFrame					・・・				↓
 			PostUpdateFrame				・・・				↓
 			PreDraw						終了					開始 ※2
-			Draw						
+			draw						
 			PostDraw				→						コマンド実行開始
 
-			※1 まずは Draw() が終わるまで待つ。
+			※1 まずは draw() が終わるまで待つ。
 			※2 まずは update() が終わるまで待つ。
 
 			↑もしこうすると、描画が遅れている時が問題になりそう。
-				更新スレッドの開始は、開始時点でまだ Draw 未実行だったら実行されるまで待つ。
+				更新スレッドの開始は、開始時点でまだ draw 未実行だったら実行されるまで待つ。
 				または、今回のフレームでは更新を行わない。
 				待つパターンでは、描画遅延がメインスレッドに響くのでやりたくない。
 				スキップする場合、スキップしたフレームで遅延が解消したとき、
-				次に Draw できるときは update 未実施。つまりエフェクトが止まって見える。
+				次に draw できるときは update 未実施。つまりエフェクトが止まって見える。
 				遅延中は何フレームか毎に遅延が発生するはずだから、
 				遅延→解消→遅延→解消・・・と続くと永遠に止まって見える。
 
@@ -73,10 +73,10 @@
 			・コマンド実行は更新が終わるまで待つ。
 			↓
 			つまり、updateFrame の終了 ～ 描画コマンドの実行開始 までを並列化するという方法。
-			あくまで描画の一環と考え、Draw() するべき時は必ずセットで更新開始する。
+			あくまで描画の一環と考え、draw() するべき時は必ずセットで更新開始する。
 
 			更新スレッドに開始を通知するのは、現在描画遅延しているかを判別し、描画することになった直後がベスト。
-			既に Draw は終わっているので待つことを考える必要はない。
+			既に draw は終わっているので待つことを考える必要はない。
 			また、別モジュールの描画開始前同期処理と並列化できる。
 
 */
@@ -107,7 +107,7 @@ EffekseerFileInterface::EffekseerFileInterface(FileManager* fileManager)
 //------------------------------------------------------------------------------
 ::Effekseer::FileReader* EffekseerFileInterface::OpenRead(const EFK_CHAR* path)
 {
-	return new EffekseerFileReader(m_fileManager->CreateFileStream((wchar_t*)path));
+	return new EffekseerFileReader(m_fileManager->createFileStream((wchar_t*)path));
 }
 
 //------------------------------------------------------------------------------
@@ -423,7 +423,7 @@ void EffekseerEffectInstance::updateFrame()
 }
 
 //------------------------------------------------------------------------------
-void EffekseerEffectInstance::Draw()
+void EffekseerEffectInstance::draw()
 {
 	//::Effekseer::Manager* efkManager = mEffectCore->getEffectEngine()->getEffekseerManager();
 	//::EffekseerRenderer::Renderer* r = mEffectCore->getEffectEngine()->getEffekseerRenderer();

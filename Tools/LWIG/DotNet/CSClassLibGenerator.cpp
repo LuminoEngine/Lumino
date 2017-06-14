@@ -13,7 +13,7 @@ static const String MethodBodyTemplate =
 	_T("    %ReturnStmt%\n")
 	_T("}\n");
 
-void CSClassLibGenerator::Generate()
+void CSClassLibGenerator::generate()
 {
 	OutputBuffer classesText(1);
 	OutputBuffer typeInfoRegistersText(3);

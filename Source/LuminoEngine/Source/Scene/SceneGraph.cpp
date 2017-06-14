@@ -120,7 +120,7 @@ void SceneGraph2D::createCore(SceneGraphManager* manager)
 
 	m_defaultCamera = LN_NEW CameraComponent();
 	m_defaultCamera->initialize(CameraProjection_2D);
-	m_defaultRoot->AddChild(m_defaultCamera);
+	m_defaultRoot->addChild(m_defaultCamera);
 
 	//auto pass = RefPtr<MMERenderingPass>::MakeRef(manager, MMD_PASS_object);
 	//pass->initialize();
@@ -132,7 +132,7 @@ void SceneGraph2D::createCore(SceneGraphManager* manager)
 void SceneGraph2D::updateFrame(float elapsedTime)
 {
 	SceneGraph::updateFrame(elapsedTime);
-	m_defaultRoot->UpdateFrameHierarchy(nullptr, elapsedTime);
+	m_defaultRoot->updateFrameHierarchy(nullptr, elapsedTime);
 }
 
 //==============================================================================
@@ -166,11 +166,11 @@ void SceneGraph3D::createCore(SceneGraphManager* manager)
 
 	m_defaultCamera = LN_NEW CameraComponent();
 	m_defaultCamera->initialize(CameraProjection_3D);
-	m_defaultRoot->AddChild(m_defaultCamera);
+	m_defaultRoot->addChild(m_defaultCamera);
 
 	m_defaultLight = RefPtr<LightComponent>::makeRef();
 	m_defaultLight->initialize(LightType_Directional);
-	m_defaultRoot->AddChild(m_defaultLight);
+	m_defaultRoot->addChild(m_defaultLight);
 }
 
 //------------------------------------------------------------------------------
@@ -180,7 +180,7 @@ void SceneGraph3D::createCore(SceneGraphManager* manager)
 void SceneGraph3D::updateFrame(float elapsedTime)
 {
 	SceneGraph::updateFrame(elapsedTime);
-	m_defaultRoot->UpdateFrameHierarchy(nullptr, elapsedTime);
+	m_defaultRoot->updateFrameHierarchy(nullptr, elapsedTime);
 }
 
 LN_NAMESPACE_SCENE_END

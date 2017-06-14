@@ -138,7 +138,7 @@ RefPtr<Material> Material::copyShared() const
 //}
 //
 ////------------------------------------------------------------------------------
-//detail::CombinedMaterial* Material::GetCombinedMaterial() const
+//detail::CombinedMaterial* Material::getCombinedMaterial() const
 //{
 //	return m_combinedMaterial;
 //}

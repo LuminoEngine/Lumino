@@ -22,7 +22,7 @@ enum class GridLengthType
 class ILayoutElement
 {
 public:
-	virtual void UpdateLayout(const Size& viewSize);
+	virtual void updateLayout(const Size& viewSize);
 	virtual void measureLayout(const Size& availableSize);
 	virtual void arrangeLayout(const Rect& finalLocalRect);
 
@@ -82,7 +82,7 @@ struct GridDefinitionData
 	float			actualOffset = 0.0f;	// 最終オフセット
 	float			actualSize = 0.0f;		// 最終サイズ
 
-	float GetAvailableDesiredSize() const
+	float getAvailableDesiredSize() const
 	{
 		if (type == GridLengthType::Auto) {
 			return desiredSize;
@@ -95,12 +95,12 @@ struct GridDefinitionData
 		}
 	}
 
-	float GetRatioSize() const
+	float getRatioSize() const
 	{
 		return (size == 0.0f) ? 1.0f : size;
 	}
 
-	void AdjustActualSize()
+	void adjustActualSize()
 	{
 		actualSize = Math::clamp(actualSize, minSize, maxSize);
 	}
@@ -109,14 +109,14 @@ struct GridDefinitionData
 class ILayoutPanel
 {
 protected:
-	virtual int GetLayoutChildrenCount() = 0;
-	virtual ILayoutElement* GetLayoutChild(int index) = 0;
+	virtual int getLayoutChildrenCount() = 0;
+	virtual ILayoutElement* getLayoutChild(int index) = 0;
 
 	// GridLayout properties
-	virtual int GetLayoutGridColumnDefinitionCount() = 0;
-	virtual GridDefinitionData* GetLayoutGridColumnDefinition(int index) = 0;
-	virtual int GetLayoutGridRowDefinitionCount() = 0;
-	virtual GridDefinitionData* GetLayoutGridRowDefinition(int index) = 0;
+	virtual int getLayoutGridColumnDefinitionCount() = 0;
+	virtual GridDefinitionData* getLayoutGridColumnDefinition(int index) = 0;
+	virtual int getLayoutGridRowDefinitionCount() = 0;
+	virtual GridDefinitionData* getLayoutGridRowDefinition(int index) = 0;
 
 protected:
 	virtual ~ILayoutPanel() = default;
@@ -137,9 +137,9 @@ class LayoutHelper
 public:
 
 	// 単純に element のサイズによった measure を行う。measureOverride() の中で使用することを想定している。
-	static Size MeasureElement(ILayoutElement* element, const Size& constraint);
+	static Size measureElement(ILayoutElement* element, const Size& constraint);
 
-	//static void ForEachVisualChildren(UIElement* element, std::function<void(UIElement* child)> func)
+	//static void forEachVisualChildren(UIElement* element, std::function<void(UIElement* child)> func)
 	//{
 	//	int count = element->getVisualChildrenCount();
 	//	for (int i = 0; i < count; ++i)
@@ -148,7 +148,7 @@ public:
 	//	}
 	//}
 
-	static void AdjustHorizontalAlignment(const Size& areaSize, const Size& desiredSize, bool widthNan, HAlignment align, Rect* outRect)
+	static void adjustHorizontalAlignment(const Size& areaSize, const Size& desiredSize, bool widthNan, HAlignment align, Rect* outRect)
 	{
 		switch (align)
 		{
@@ -182,7 +182,7 @@ public:
 		}
 	}
 
-	static void AdjustVerticalAlignment(const Size& areaSize, const Size& desiredSize, bool heightNan, VAlignment align, Rect* outRect)
+	static void adjustVerticalAlignment(const Size& areaSize, const Size& desiredSize, bool heightNan, VAlignment align, Rect* outRect)
 	{
 		switch (align)
 		{

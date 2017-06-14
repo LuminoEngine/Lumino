@@ -24,7 +24,7 @@ void Clipboard::setText(PlatformWindow* window, const String& text)
 	buf[wideCount - 1] = L'\0';
 	::GlobalUnlock(hGlobal);
 
-	HWND hWnd = PlatformSupport::GetWindowHandle(window);
+	HWND hWnd = PlatformSupport::getWindowHandle(window);
 	BOOL r = ::OpenClipboard(hWnd);
 	if (r == FALSE)
 	{
@@ -46,7 +46,7 @@ String Clipboard::getText(PlatformWindow* window)
 		return String::getEmpty();
 	}
 
-	HWND hWnd = PlatformSupport::GetWindowHandle(window);
+	HWND hWnd = PlatformSupport::getWindowHandle(window);
 	BOOL r = ::OpenClipboard(hWnd);
 	LN_THROW(r != FALSE, Win32Exception, ::GetLastError());
 

@@ -210,7 +210,7 @@ void GenericFileStream<TChar>::open() const
 	LN_THROW(err == 0, FileNotFoundException);
 }
 
-// Instantiate template
+// instantiate template
 template class GenericFileStream<char>;
 template class GenericFileStream<wchar_t>;
 

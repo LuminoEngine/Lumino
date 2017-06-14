@@ -42,11 +42,11 @@ void LightComponent::initialize(LightType type)
 	Quaternion rot;
 	rot.rotateX(Math::degreesToRadians(50));
 	rot.rotateY(Math::degreesToRadians(-30));
-	SetRotation(rot);
+	setRotation(rot);
 }
 
 //------------------------------------------------------------------------------
-void LightComponent::UpdateMatrices(/*const Size& viewSize*/)
+void LightComponent::updateMatrices(/*const Size& viewSize*/)
 {
 	const Matrix& worldMatrix = getOwnerObject()->transform.getWorldMatrix();
 
@@ -86,9 +86,9 @@ void LightComponent::onRender(DrawList* renderer)
 {
 	if (m_enabled)
 	{
-		UpdateMatrices();
+		updateMatrices();
 		m_lightInfo->transform = getOwnerObject()->transform.getWorldMatrix();
-		renderer->AddDynamicLightInfo(m_lightInfo);
+		renderer->addDynamicLightInfo(m_lightInfo);
 	}
 }
 
@@ -114,7 +114,7 @@ void Light::initialize()
 {
 	WorldObject::initialize();
 	m_component = newObject<LightComponent>(LightType_Directional);
-	AddComponent(m_component);
+	addComponent(m_component);
 }
 
 //------------------------------------------------------------------------------

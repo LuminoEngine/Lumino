@@ -204,7 +204,7 @@ EngineManager::~EngineManager()
 {
 	if (m_uiManager != nullptr)
 	{
-		m_uiManager->ReleaseGameModeMainFrame();
+		m_uiManager->releaseGameModeMainFrame();
 	}
 
 	m_defaultWorld2D.safeRelease();
@@ -227,11 +227,11 @@ EngineManager::~EngineManager()
 
 	if (m_platformManager != nullptr)
 	{
-		m_platformManager->getMainWindow()->DetachEventListener(this);
+		m_platformManager->getMainWindow()->detachEventListener(this);
 		m_platformManager->Dispose();
 	}
 	if (m_sceneGraphManager != nullptr) {
-		m_sceneGraphManager->ReleaseDefaultSceneGraph();
+		m_sceneGraphManager->releaseDefaultSceneGraph();
 		LN_SAFE_RELEASE(m_sceneGraphManager);
 	}
 	if (m_modelManager != nullptr) {
@@ -299,8 +299,8 @@ void EngineManager::initialize()
 
 	m_defaultWorld2D = newObject<World2D>();
 	m_defaultWorld3D = newObject<World3D>();
-	m_uiManager->CreateGameModeMainFrame(m_defaultWorld2D, m_defaultWorld3D);
-	m_uiManager->getMainWindow()->SetDelayedRenderingSkip(m_configData.delayedRenderingSkip);
+	m_uiManager->createGameModeMainFrame(m_defaultWorld2D, m_defaultWorld3D);
+	m_uiManager->getMainWindow()->setDelayedRenderingSkip(m_configData.delayedRenderingSkip);
 }
 
 //------------------------------------------------------------------------------
@@ -342,7 +342,7 @@ void EngineManager::initializeFileManager()
 		data.AccessMode = m_configData.FileAccessPriority;
 		m_fileManager = LN_NEW FileManager(data);
 		for (auto& e : m_configData.ArchiveFileEntryList) {
-			m_fileManager->RegisterArchive(e.filePath, e.password);
+			m_fileManager->registerArchive(e.filePath, e.password);
 		}
 	}
 }
@@ -367,7 +367,7 @@ void EngineManager::initializePlatformManager()
 		m_platformManager->initialize(data);
 
 		// イベントリスナー登録
-		m_platformManager->getMainWindow()->AttachEventListener(this, 0);
+		m_platformManager->getMainWindow()->attachEventListener(this, 0);
 	}
 }
 
@@ -407,7 +407,7 @@ void EngineManager::initializeAudioManager()
 		settings.streamSourceCacheMemorySize = m_configData.soundCacheCapacity.memorySize;
 		settings.directMusicInitMode = m_configData.directMusicMode;
 #ifdef LN_OS_WIN32
-		settings.hWnd = (m_platformManager != nullptr) ? PlatformSupport::GetWindowHandle(m_platformManager->getMainWindow()) : nullptr;
+		settings.hWnd = (m_platformManager != nullptr) ? PlatformSupport::getWindowHandle(m_platformManager->getMainWindow()) : nullptr;
 #endif
 		settings.directMusicReverbLevel = m_configData.DirectMusicReverbLevel;
 		m_audioManager = LN_NEW detail::AudioManager();
@@ -562,7 +562,7 @@ void EngineManager::initializeSceneGraphManager()
 		data.modelManager = m_modelManager;
 		data.documentsManager = m_documentsManager;
 		m_sceneGraphManager = LN_NEW SceneGraphManager(data);
-		m_sceneGraphManager->CreateDefaultSceneGraph();
+		m_sceneGraphManager->createDefaultSceneGraph();
 		SceneGraphManager::Instance = m_sceneGraphManager;
 	}
 }
@@ -620,10 +620,10 @@ void EngineManager::updateFrame()
 
 
 	if (m_inputManager != nullptr) {
-		m_inputManager->PreUpdateFrame();
+		m_inputManager->preUpdateFrame();
 	}
 
-	if (!m_platformManager->DoEvents())
+	if (!m_platformManager->doEvents())
 	{
 		m_endRequested = true;
 	}
@@ -638,7 +638,7 @@ void EngineManager::updateFrame()
 	}
 
 	if (m_sceneGraphManager != nullptr) {
-		m_sceneGraphManager->UpdateFrameDefaultSceneGraph(deltaTime);
+		m_sceneGraphManager->updateFrameDefaultSceneGraph(deltaTime);
 	}
 
 	if (m_defaultWorld2D != nullptr)
@@ -655,18 +655,18 @@ void EngineManager::updateFrame()
 
 	if (m_uiManager != nullptr)
 	{
-		for (auto& window : m_uiManager->GetWindows())
+		for (auto& window : m_uiManager->getWindows())
 		{
-			//window->InjectElapsedTime(deltaTime);
+			//window->injectElapsedTime(deltaTime);
 			window->updateFrame();
 
 			{	// プロファイリング範囲
 				ScopedProfilerSection prof(Profiler::Group_MainThread, Profiler::Section_MainThread_GUILayput);
 				//const SizeI& size = m_graphicsManager->getMainSwapChain()->getBackBuffer()->GetSize();
-				//m_uiManager->getMainWindow()->UpdateLayout(Size(static_cast<float>(size.width), static_cast<float>(size.height)));
+				//m_uiManager->getMainWindow()->updateLayout(Size(static_cast<float>(size.width), static_cast<float>(size.height)));
 
 				// TODO: 内部に閉じ込める
-				window->UpdateLayout(m_uiManager->getMainWindow()->GetPlatformWindow()->getSize().toFloatSize());
+				window->updateLayout(m_uiManager->getMainWindow()->getPlatformWindow()->getSize().toFloatSize());
 			}
 		}
 
@@ -719,15 +719,15 @@ void EngineManager::renderFrame()
 		EngineDiagCore::Instance.resetVisualNodeDrawCount();	// TODO: GameMode のみ？
 
 
-		for (auto& window : m_uiManager->GetWindows())
+		for (auto& window : m_uiManager->getWindows())
 		{
-			window->RenderContents();
+			window->renderContents();
 		}
 		//
 		//if (m_uiManager != nullptr) {
 		//	g->Clear(ClearFlags::Depth, ColorF::White);	// TODO
 		//	g->Set2DRenderingMode(-1, 1);	// TODO
-		//	m_uiManager->getMainWindow()->RenderUI();
+		//	m_uiManager->getMainWindow()->renderUI();
 		//}
 
 		if (m_diagViewer != nullptr)
@@ -749,9 +749,9 @@ void EngineManager::presentFrame()
 {
 	if (m_graphicsManager == nullptr/* || m_frameRenderingSkip*/) return;
 
-	for (auto& window : m_uiManager->GetWindows())
+	for (auto& window : m_uiManager->getWindows())
 	{
-		window->PresentRenderingContexts();
+		window->presentRenderingContexts();
 	}
 }
 
@@ -804,31 +804,31 @@ bool EngineManager::onEvent(const PlatformEventArgs& e)
 	case PlatformEventType::MouseDown:		// マウスボタンが押された
 		if (uiView != nullptr)
 		{
-			if (uiView->InjectMouseButtonDown(e.mouse.button, e.mouse.x, e.mouse.y)) { return true; }
+			if (uiView->injectMouseButtonDown(e.mouse.button, e.mouse.x, e.mouse.y)) { return true; }
 		}
 		break;
 	case PlatformEventType::MouseUp:			// マウスボタンが離された
 		if (uiView != nullptr)
 		{
-			if (uiView->InjectMouseButtonUp(e.mouse.button, e.mouse.x, e.mouse.y)) { return true; }
+			if (uiView->injectMouseButtonUp(e.mouse.button, e.mouse.x, e.mouse.y)) { return true; }
 		}
 		break;
 	case PlatformEventType::MouseMove:		// マウスが移動した
 		if (uiView != nullptr)
 		{
-			if (uiView->InjectMouseMove(e.mouse.x, e.mouse.y)) { return true; }
+			if (uiView->injectMouseMove(e.mouse.x, e.mouse.y)) { return true; }
 		}
 		break;
 	case PlatformEventType::MouseWheel:		// マウスホイールが操作された
 		if (uiView != nullptr)
 		{
-			if (uiView->InjectMouseWheel(e.wheel.delta)) { return true; }
+			if (uiView->injectMouseWheel(e.wheel.delta)) { return true; }
 		}
 		break;
 	case PlatformEventType::KeyDown:
 		if (uiView != nullptr)
 		{
-			if (uiView->InjectKeyDown(e.key.keyCode, e.key.modifierKeys)) { return true; }
+			if (uiView->injectKeyDown(e.key.keyCode, e.key.modifierKeys)) { return true; }
 		}
 
 		//// デバッグ表示切替
@@ -842,13 +842,13 @@ bool EngineManager::onEvent(const PlatformEventArgs& e)
 	case PlatformEventType::KeyUp:
 		if (uiView != nullptr)
 		{
-			if (uiView->InjectKeyUp(e.key.keyCode, e.key.modifierKeys/*, e.Key.keyChar*/)) { return true; }
+			if (uiView->injectKeyUp(e.key.keyCode, e.key.modifierKeys/*, e.Key.keyChar*/)) { return true; }
 		}
 		break;
 	case PlatformEventType::KeyChar:
 		if (uiView != nullptr)
 		{
-			if (uiView->InjectTextInput(e.key.keyChar)) { return true; }
+			if (uiView->injectTextInput(e.key.keyChar)) { return true; }
 		}
 		break;
 	case PlatformEventType::WindowSizeChanged:

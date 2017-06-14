@@ -44,21 +44,21 @@ public:
 public:
 
 	/** Slider の方向を指定します。*/
-	void SetOrientation(Orientation orientation);
+	void setOrientation(Orientation orientation);
 
 	/** Slider の方向を取得します。規定値は Orientation::Horizontal です。*/
-	Orientation GetOrientation() const;
+	Orientation getOrientation() const;
 
 protected:
 	// UIElement interface
-	virtual void OnRoutedEvent(UIEventArgs* e) override;
+	virtual void onRoutedEvent(UIEventArgs* e) override;
 	virtual Size measureOverride(const Size& constraint) override;
 	virtual Size arrangeOverride(const Size& finalSize) override;
 
 	// UIRangeBase interface
-	virtual void OnValueChanged(float oldValue, float newValue) override;
-	virtual void OnMinimumChanged(float oldMinimum, float newMinimum) override;
-	virtual void OnMaximumChanged(float oldMaximum, float newMaximum) override;
+	virtual void onValueChanged(float oldValue, float newValue) override;
+	virtual void onMinimumChanged(float oldMinimum, float newMinimum) override;
+	virtual void onMaximumChanged(float oldMaximum, float newMaximum) override;
 
 LN_CONSTRUCT_ACCESS:
 	UISlider();

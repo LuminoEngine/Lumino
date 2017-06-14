@@ -38,16 +38,16 @@ public:
 	void Dispose();
 
 	/// ジョイパッドの状態を取得する
-	void GetJoystickDeviceState(JoystickDeviceState* state);
+	void getJoystickDeviceState(JoystickDeviceState* state);
 
 	/// XInput デバイスかを判定する
-	bool IsXInputDevice() const { return mXInputNo >= 0; }
+	bool isXInputDevice() const { return mXInputNo >= 0; }
 
 	/// ジョイパッドの振動を開始する
-	void StartVibration(int power, int time);
+	void startVibration(int power, int time);
 
 	/// ジョイパッドの振動を停止する
-	void StopVibration();
+	void stopVibration();
 
 	/// フレーム更新
 	void update();

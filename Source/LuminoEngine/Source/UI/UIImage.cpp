@@ -105,13 +105,13 @@ void UIImage::initialize(const StringRef& filePath)
 //------------------------------------------------------------------------------
 Size UIImage::measureOverride(const Size& availableSize)
 {
-	return MeasureInternal(availableSize);
+	return measureInternal(availableSize);
 }
 
 //------------------------------------------------------------------------------
 Size UIImage::arrangeOverride(const Size& finalSize)
 {
-	return MeasureInternal(finalSize);
+	return measureInternal(finalSize);
 }
 
 //------------------------------------------------------------------------------
@@ -119,11 +119,11 @@ void UIImage::onRender(DrawingContext* g)
 {
 	UIElement::onRender(g);
 
-	g->DrawTexture(GetFinalGlobalRect(), m_texture, Rect(0, 0, 32, 32));	// TODO:
+	g->drawTexture(getFinalGlobalRect(), m_texture, Rect(0, 0, 32, 32));	// TODO:
 }
 
 //------------------------------------------------------------------------------
-Size UIImage::MeasureInternal(Size contentSize)
+Size UIImage::measureInternal(Size contentSize)
 {
 	if (m_texture == nullptr)
 	{

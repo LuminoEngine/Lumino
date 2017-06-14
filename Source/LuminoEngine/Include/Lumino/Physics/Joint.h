@@ -19,7 +19,7 @@ protected:
 	void initialize(btTypedConstraint* constraint);
 
 LN_INTERNAL_ACCESS:
-	btTypedConstraint* GetBtConstraint() { return m_btConstraint; }
+	btTypedConstraint* getBtConstraint() { return m_btConstraint; }
 
 private:
 	//detail::PhysicsWorld*	m_world;
@@ -28,24 +28,24 @@ private:
 
 /// DofSpringJoint
 ///		現状、set 系は初期値 set でしか使わないので遅延設定の対応は今のところ必要ない。
-///		代わりに、1度でも StepSimulation() した後に set しようとしたら例外になる。
+///		代わりに、1度でも stepSimulation() した後に set しようとしたら例外になる。
 class DofSpringJoint
 	: public Joint
 {
 public:
 
 	// 各 index は 0～5
-	void EnableSpring(int index, bool enabled);
-	void SetStiffness(int index, float stiffness);
-	void SetDamping(int index, float damping);
-	void SetEquilibriumPoint();
-	void SetEquilibriumPoint(int index);
+	void enableSpring(int index, bool enabled);
+	void setStiffness(int index, float stiffness);
+	void setDamping(int index, float damping);
+	void setEquilibriumPoint();
+	void setEquilibriumPoint(int index);
 
-	void SetLimit(int index, float low, float hi);
-	void SetLinearLowerLimit(const Vector3& linearLower);
-	void SetLinearUpperLimit(const Vector3& linearUpper);
-	void SetAngularLowerLimit(const Vector3& angularLower);
-	void SetAngularUpperLimit(const Vector3& angularUpper);
+	void setLimit(int index, float low, float hi);
+	void setLinearLowerLimit(const Vector3& linearLower);
+	void setLinearUpperLimit(const Vector3& linearUpper);
+	void setAngularLowerLimit(const Vector3& angularLower);
+	void setAngularUpperLimit(const Vector3& angularUpper);
 
 LN_INTERNAL_ACCESS:
 	DofSpringJoint();

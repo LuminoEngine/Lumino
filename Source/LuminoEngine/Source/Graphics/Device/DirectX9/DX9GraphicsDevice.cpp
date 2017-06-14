@@ -86,7 +86,7 @@ void DX9GraphicsDevice::initialize(const ConfigData& configData)
 		m_presentParameters.SwapEffect = D3DSWAPEFFECT_DISCARD;	// マルチサンプリングするにはコレ
 		m_presentParameters.PresentationInterval = (configData.EnableVSyncWait) ? D3DPRESENT_INTERVAL_ONE : D3DPRESENT_INTERVAL_IMMEDIATE;//D3DPRESENT_INTERVAL_IMMEDIATE(アダプタの更新間隔無視); // 	//D3DPRESENT_INTERVAL_DEFAULT(アダプタの更新間隔に合わせる);	// 画面の更新間隔
 		m_presentParameters.FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
-		m_presentParameters.hDeviceWindow = PlatformSupport::GetWindowHandle(m_mainWindow);
+		m_presentParameters.hDeviceWindow = PlatformSupport::getWindowHandle(m_mainWindow);
 		//m_presentParameters.Flags = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
 
 		// デバイス作成

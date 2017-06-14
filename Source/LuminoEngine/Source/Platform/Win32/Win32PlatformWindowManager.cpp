@@ -44,7 +44,7 @@ Win32WindowManager::Win32WindowManager(int IconResourceID)
 	WNDCLASSEX	wcex = {
 		sizeof(WNDCLASSEX),			    // この構造体のサイズ
 		NULL,							    // ウインドウのスタイル
-		StaticWndProc,					    // メッセージ処理関数
+		staticWndProc,					    // メッセージ処理関数
 		0, 0,							    // 通常は使わないので常に0
 		m_hInst,				                // インスタンスハンドル
 		m_hIcon,							    // アイコン
@@ -74,7 +74,7 @@ Win32WindowManager::~Win32WindowManager()
 }
 
 //------------------------------------------------------------------------------
-Win32PlatformWindow* Win32WindowManager::CreateNativeWindow(const NativeWindowCreationData& data)
+Win32PlatformWindow* Win32WindowManager::createNativeWindow(const NativeWindowCreationData& data)
 {
 	if (data.UserWindow == NULL)
 	{
@@ -114,8 +114,8 @@ Win32PlatformWindow* Win32WindowManager::CreateNativeWindow(const NativeWindowCr
 		//LN_THROW(hAccel, Win32Exception, GetLastError());
 
 		//// ウィンドウサイズをクライアント領域サイズから再設定
-		//SetWindowClientSize(hWnd, Size(data.Width, data.Height));
-		//AbjustLocationCentering(hWnd);
+		//setWindowClientSize(hWnd, Size(data.Width, data.Height));
+		//abjustLocationCentering(hWnd);
 
 		//// WM_PAINTが呼ばれないようにする
 		//::ValidateRect(hWnd, 0);
@@ -127,12 +127,12 @@ Win32PlatformWindow* Win32WindowManager::CreateNativeWindow(const NativeWindowCr
 		//BOOL r = ::SetProp(hWnd, PROP_WINPROC, window);
 		//LN_THROW((r != FALSE), Win32Exception, GetLastError());
 
-		////window->SetFullScreenEnabled(true);
-		//window->SetVisible(true);
+		////window->setFullScreenEnabled(true);
+		//window->setVisible(true);
 
 		RefPtr<Win32NativeWindow> window(LN_NEW Win32NativeWindow(this), false);
 		window->Initilaize(this, data.TitleText, data.Width, data.Height, data.Fullscreen, data.Resizable);
-		window->SetVisible(true);
+		window->setVisible(true);
 		window.safeAddRef();
 		return window;
 	}
@@ -143,7 +143,7 @@ Win32PlatformWindow* Win32WindowManager::CreateNativeWindow(const NativeWindowCr
 }
 
 //------------------------------------------------------------------------------
-LRESULT CALLBACK Win32WindowManager::StaticWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT CALLBACK Win32WindowManager::staticWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	//static int i = 0;
 	//printf( "%d %4x\n", i++, msg_ );
@@ -175,7 +175,7 @@ LRESULT CALLBACK Win32WindowManager::StaticWndProc(HWND hwnd, UINT msg, WPARAM w
 }
 
 //------------------------------------------------------------------------------
-void Win32WindowManager::SetWindowClientSize(HWND hWnd, const SizeI& clientSize)
+void Win32WindowManager::setWindowClientSize(HWND hWnd, const SizeI& clientSize)
 {
 	RECT rw, rc;
 	::GetWindowRect(hWnd, &rw);
@@ -189,7 +189,7 @@ void Win32WindowManager::SetWindowClientSize(HWND hWnd, const SizeI& clientSize)
 }
 
 //------------------------------------------------------------------------------
-void Win32WindowManager::AbjustLocationCentering(HWND hWnd)
+void Win32WindowManager::abjustLocationCentering(HWND hWnd)
 {
 	RECT rcWindow;
 	::GetWindowRect(hWnd, &rcWindow);
@@ -205,7 +205,7 @@ void Win32WindowManager::AbjustLocationCentering(HWND hWnd)
 }
 
 //------------------------------------------------------------------------------
-void Win32WindowManager::CreateMainWindow(const WindowCreationSettings& settings)
+void Win32WindowManager::createMainWindow(const WindowCreationSettings& settings)
 {
 	Win32WindowManager::NativeWindowCreationData data;
 	data.TitleText = settings.title;
@@ -214,7 +214,7 @@ void Win32WindowManager::CreateMainWindow(const WindowCreationSettings& settings
 	data.Fullscreen = settings.fullscreen;
 	data.Resizable = settings.resizable;
 	data.UserWindow = (HWND)settings.userWindow;
-	m_mainWindow.attach(CreateNativeWindow(data));
+	m_mainWindow.attach(createNativeWindow(data));
 }
 
 //------------------------------------------------------------------------------
@@ -224,7 +224,7 @@ PlatformWindow* Win32WindowManager::getMainWindow()
 }
 
 //------------------------------------------------------------------------------
-PlatformWindow* Win32WindowManager::CreateSubWindow(const WindowCreationSettings& settings)
+PlatformWindow* Win32WindowManager::createSubWindow(const WindowCreationSettings& settings)
 {
 	Win32WindowManager::NativeWindowCreationData data;
 	data.TitleText = settings.title;
@@ -233,11 +233,11 @@ PlatformWindow* Win32WindowManager::CreateSubWindow(const WindowCreationSettings
 	data.Fullscreen = settings.fullscreen;
 	data.Resizable = settings.resizable;
 	data.UserWindow = (HWND)settings.userWindow;
-	return CreateNativeWindow(data);
+	return createNativeWindow(data);
 }
 
 //------------------------------------------------------------------------------
-void Win32WindowManager::DoEvents()
+void Win32WindowManager::doEvents()
 {
 	MSG msg;
 	while (::PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE))

@@ -700,7 +700,7 @@ RefPtr<StaticMeshModel> XFileLoader::load(ModelManager* manager, Stream* stream,
 
 			// マテリアル数取得
 			uint32_t attr_num = allocate_hierarchy.getAllMaterialNum();
-			mesh1->AddMaterials(attr_num);
+			mesh1->addMaterials(attr_num);
 
 			// マテリアル、属性配列
 			MaterialList* materials = mesh1->m_materials;

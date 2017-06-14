@@ -71,19 +71,19 @@ void SpriteRenderFeature::setViewInfo(const Size& size, const Matrix& view, cons
 		Matrix, view,
 		Matrix, proj,
 		{
-			m_internal->SetViewPixelSize(size);
+			m_internal->setViewPixelSize(size);
 			m_internal->setViewProjMatrix(view, proj);
 		});
 }
 
 //------------------------------------------------------------------------------
-void SpriteRenderFeature::SetSortMode(SpriteSortMode flags, SortingDistanceBasis basis)
+void SpriteRenderFeature::setSortMode(SpriteSortMode flags, SortingDistanceBasis basis)
 {
 	m_spriteSortMode = flags;
 }
 
 //------------------------------------------------------------------------------
-void SpriteRenderFeature::DrawRequest2D(
+void SpriteRenderFeature::drawRequest2D(
 	const Vector3& position,
 	const Vector2& size,
 	const Vector2& anchorRatio,
@@ -105,12 +105,12 @@ void SpriteRenderFeature::DrawRequest2D(
 		SpriteColorTable, ct,
 		BillboardType, billboardType,
 		{
-			m_internal->DrawRequestInternal(position, size, anchorRatio, deviceTexture, srcRect, ct, SpriteBaseDirection::Basic2D, billboardType);
+			m_internal->drawRequestInternal(position, size, anchorRatio, deviceTexture, srcRect, ct, SpriteBaseDirection::Basic2D, billboardType);
 		});
 }
 
 //------------------------------------------------------------------------------
-void SpriteRenderFeature::DrawRequest(
+void SpriteRenderFeature::drawRequest(
 	const Vector3& position,
 	const Vector2& size,
 	const Vector2& anchorRatio,
@@ -142,7 +142,7 @@ void SpriteRenderFeature::DrawRequest(
 		SpriteColorTable, ct,
 		Options, opt,
 		{
-			m_internal->DrawRequestInternal(position, size, anchorRatio, deviceTexture, srcRect, ct, opt.baseDirection, opt.billboardType);
+			m_internal->drawRequestInternal(position, size, anchorRatio, deviceTexture, srcRect, ct, opt.baseDirection, opt.billboardType);
 		});
 }
 
@@ -159,7 +159,7 @@ void SpriteRenderFeature::flush()
 }
 
 //------------------------------------------------------------------------------
-void SpriteRenderFeature::MakeBoundingSphere(const Vector2& size, SpriteBaseDirection baseDir, detail::Sphere* sphere)
+void SpriteRenderFeature::makeBoundingSphere(const Vector2& size, SpriteBaseDirection baseDir, detail::Sphere* sphere)
 {
 	Vector2 half = 0.5f * size;
 	sphere->radius = half.getLength();
@@ -305,11 +305,11 @@ void SpriteRendererImpl::initialize(GraphicsManager* manager, int maxSpriteCount
 
 	//if (m_3DSystem) {
 	//	// 視点からの距離が大きいものを先に描画する
-	//	SetSortMode(SpriteSortMode_Texture | SpriteSortMode_DepthBackToFront, SortingDistanceBasis_ViewPont);
+	//	setSortMode(SpriteSortMode_Texture | SpriteSortMode_DepthBackToFront, SortingDistanceBasis_ViewPont);
 	//}
 	//else {
 	//	// スプライトの Z 値が小さいものを先に描画する
-	//	SetSortMode(SpriteSortMode_Texture | SpriteSortMode_DepthBackToFront, SortingDistanceBasis_RawZ);
+	//	setSortMode(SpriteSortMode_Texture | SpriteSortMode_DepthBackToFront, SortingDistanceBasis_RawZ);
 	//}
 
 	m_spriteRequestListUsedCount = 0;
@@ -332,7 +332,7 @@ void SpriteRendererImpl::setViewProjMatrix(const Matrix& view, const Matrix& pro
 }
 
 //------------------------------------------------------------------------------
-void SpriteRendererImpl::SetViewPixelSize(const Size& size)
+void SpriteRendererImpl::setViewPixelSize(const Size& size)
 {
 	m_viewPixelSize.set(size.width, size.height);
 }
@@ -356,13 +356,13 @@ void SpriteRendererImpl::setRenderState(const RenderState& state)
 }
 
 //------------------------------------------------------------------------------
-void SpriteRendererImpl::SetSortMode(uint32_t flags, SortingDistanceBasis basis)
+void SpriteRendererImpl::setSortMode(uint32_t flags, SortingDistanceBasis basis)
 {
 	m_sortingBasis = basis;
 }
 
 //------------------------------------------------------------------------------
-void SpriteRendererImpl::DrawRequestInternal(
+void SpriteRendererImpl::drawRequestInternal(
     const Vector3& position,
     const Vector2& size,
 	const Vector2& anchorRatio,

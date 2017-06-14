@@ -12,7 +12,7 @@ static const String MethodBodyTemplate =
 	_T("    %ReturnStmt%\n")
 	_T("}\n");
 
-void CSStructsGenerator::Generate()
+void CSStructsGenerator::generate()
 {
 	OutputBuffer structText(1);
 	for (auto& structInfo : g_database.structs)

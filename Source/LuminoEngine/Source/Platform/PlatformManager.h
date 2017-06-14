@@ -45,9 +45,9 @@ public:
 
 	void initialize(const Settings& settings);
 	PlatformWindow* getMainWindow();
-	bool DoEvents();
+	bool doEvents();
 
-	WindowManagerBase* GetWindowManager() const LN_NOEXCEPT { return m_windowManager; }
+	WindowManagerBase* getWindowManager() const LN_NOEXCEPT { return m_windowManager; }
 
 public:
 	void Dispose();
@@ -55,7 +55,7 @@ public:
 protected:
 
 private:
-	void Thread_MainWindow();
+	void thread_MainWindow();
 
 private:
 	bool						m_useThread;

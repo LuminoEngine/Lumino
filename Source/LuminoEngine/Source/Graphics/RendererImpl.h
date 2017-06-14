@@ -78,12 +78,12 @@ public:
 	///**
 	//	@brief	ビューポートを設定します。
 	//*/
-	//void SetViewport(const RectI& rect);
+	//void setViewport(const RectI& rect);
 
 	///**
 	//	@brief	現在設定されているビューポートを取得します。
 	//*/
-	//const RectI& GetViewport();
+	//const RectI& getViewport();
 
 	///**
 	//	@brief	頂点バッファを設定します。

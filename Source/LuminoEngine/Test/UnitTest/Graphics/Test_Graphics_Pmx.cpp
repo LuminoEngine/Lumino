@@ -68,7 +68,7 @@ TEST_F(Test_Graphics_Pmx, Skinning)
 		float w = (pos.x + 4.0f) / 8.0f;
 		res->SetBlendIndices(i, 0, 1, 0, 0);
 		res->SetBlendWeights(i, 1.0f - w, w, 0, 0);
-		//res->SetBlendWeights(i, 1.0f, 0, 0, 0);
+		//res->setBlendWeights(i, 1.0f, 0, 0, 0);
 	}
 
 	std::array<Matrix, 2> bones;

@@ -90,7 +90,7 @@ class InputBinding
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	float GetMinValidMThreshold() const { return m_minValidMThreshold; }
-	float GetScale() const { return 1.0f; }	// TODO
+	float getScale() const { return 1.0f; }	// TODO
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	InputBinding();
@@ -120,10 +120,10 @@ public:
 public:
 
 	/** 関連付けられるキー */
-	Keys GetKey() const { return m_key; }
+	Keys getKey() const { return m_key; }
 
 	/** 関連付けられる修飾キー */
-	ModifierKeys GetModifierKeys() const { return m_modifierKeys; }
+	ModifierKeys getModifierKeys() const { return m_modifierKeys; }
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	KeyboardBinding(Keys key, ModifierKeys modifierKeys);
@@ -154,10 +154,10 @@ public:
 public:
 
 	/** 関連付けられるマウス操作 */
-	MouseAction GetMouseAction() const { return m_mouseAction; }
+	MouseAction getMouseAction() const { return m_mouseAction; }
 
 	/** 関連付けられる修飾キー */
-	ModifierKeys GetModifierKeys() const { return m_modifierKeys; }
+	ModifierKeys getModifierKeys() const { return m_modifierKeys; }
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	MouseBinding(MouseAction mouseAction, ModifierKeys modifierKeys);

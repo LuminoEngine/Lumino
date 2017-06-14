@@ -100,7 +100,7 @@
 
 
 	MikuMikuFlex は…
-		BulletManager.StepSimulation() が呼ばれているのはメインスレッド。
+		BulletManager.stepSimulation() が呼ばれているのはメインスレッド。
 		しかもこれ、BulletManager は PMXPhysicsTransformManager 単位。
 		つまり、PMXモデル1つに付き1つの BulletWorld が用意されている。
 
@@ -240,25 +240,25 @@ void ModelManager::initialize(const ConfigData& configData)
 
 	m_unitBoxMeshResource = RefPtr<MeshResource>::makeRef();
 	m_unitBoxMeshResource->initialize(m_graphicsManager, MeshCreationFlags::None);
-	m_unitBoxMeshResource->AddBox(Vector3(1, 1, 1));
+	m_unitBoxMeshResource->addBox(Vector3(1, 1, 1));
 
 	m_unitBoxMeshResourceReverseFaces = RefPtr<MeshResource>::makeRef();
 	m_unitBoxMeshResourceReverseFaces->initialize(m_graphicsManager, MeshCreationFlags::None);
-	m_unitBoxMeshResourceReverseFaces->AddBox(Vector3(1, 1, 1));
-	m_unitBoxMeshResourceReverseFaces->ReverseFaces();
+	m_unitBoxMeshResourceReverseFaces->addBox(Vector3(1, 1, 1));
+	m_unitBoxMeshResourceReverseFaces->reverseFaces();
 
 	m_unitSphereMeshResource = RefPtr<MeshResource>::makeRef();
 	m_unitSphereMeshResource->initialize(m_graphicsManager, MeshCreationFlags::None);
-	m_unitSphereMeshResource->AddSphere(0.5, 16, 16);
+	m_unitSphereMeshResource->addSphere(0.5, 16, 16);
 
 	m_unitSphereMeshResourceReverseFaces = RefPtr<MeshResource>::makeRef();
 	m_unitSphereMeshResourceReverseFaces->initialize(m_graphicsManager, MeshCreationFlags::None);
-	m_unitSphereMeshResourceReverseFaces->AddSphere(0.5, 16, 16);
-	m_unitSphereMeshResourceReverseFaces->ReverseFaces();
+	m_unitSphereMeshResourceReverseFaces->addSphere(0.5, 16, 16);
+	m_unitSphereMeshResourceReverseFaces->reverseFaces();
 
 	m_unitTeapotMeshResource = RefPtr<MeshResource>::makeRef();
 	m_unitTeapotMeshResource->initialize(m_graphicsManager, MeshCreationFlags::None);
-	m_unitTeapotMeshResource->AddTeapot(1.0f, 8);
+	m_unitTeapotMeshResource->addTeapot(1.0f, 8);
 
 
 	if (g_modelManagerInstance == nullptr)
@@ -282,57 +282,57 @@ void ModelManager::Finalize()
 }
 
 //------------------------------------------------------------------------------
-Material* ModelManager::GetDefaultMaterial() const
+Material* ModelManager::getDefaultMaterial() const
 {
 	return m_defaultMaterial;
 }
 
 //------------------------------------------------------------------------------
-MeshResource* ModelManager::GetUnitBoxMeshResource(bool reverseFaces) const
+MeshResource* ModelManager::getUnitBoxMeshResource(bool reverseFaces) const
 {
 	return (reverseFaces) ? m_unitBoxMeshResourceReverseFaces : m_unitBoxMeshResource;
 }
 
 //------------------------------------------------------------------------------
-MeshResource* ModelManager::GetUnitSphereMeshResource(bool reverseFaces) const
+MeshResource* ModelManager::getUnitSphereMeshResource(bool reverseFaces) const
 {
 	return (reverseFaces) ? m_unitSphereMeshResourceReverseFaces : m_unitSphereMeshResource;
 }
 
 //------------------------------------------------------------------------------
-MeshResource* ModelManager::GetUnitTeapotMeshResource() const
+MeshResource* ModelManager::getUnitTeapotMeshResource() const
 {
 	return m_unitTeapotMeshResource;
 }
 
 //------------------------------------------------------------------------------
-Texture2D* ModelManager::GetMMDDefaultToonTexture(int index)
+Texture2D* ModelManager::getMMDDefaultToonTexture(int index)
 { 
 	return m_mmdDefaultToonTexture[index];
 }
 
 //------------------------------------------------------------------------------
-RefPtr<PmxSkinnedMeshResource> ModelManager::CreateSkinnedMeshResource(const PathName& filePath)
+RefPtr<PmxSkinnedMeshResource> ModelManager::createSkinnedMeshResource(const PathName& filePath)
 {
-	RefPtr<Stream> stream(m_fileManager->CreateFileStream(filePath), false);
+	RefPtr<Stream> stream(m_fileManager->createFileStream(filePath), false);
 	PmxLoader loader;
 	RefPtr<PmxSkinnedMeshResource> mesh = loader.load(this, stream, filePath.getParent(), true, ModelCreationFlag::None);
-	mesh->RefreshInitialValues();
+	mesh->refreshInitialValues();
 	return mesh;
 }
 
 //------------------------------------------------------------------------------
-RefPtr<StaticMeshModel> ModelManager::CreateStaticMeshModel(const PathName& filePath)
+RefPtr<StaticMeshModel> ModelManager::createStaticMeshModel(const PathName& filePath)
 {
 
 #if defined(LN_OS_WIN32)
 	RefPtr<StaticMeshModel> mesh;
-	RefPtr<Stream> stream(m_fileManager->CreateFileStream(filePath), false);
+	RefPtr<Stream> stream(m_fileManager->createFileStream(filePath), false);
 
 	PathName parentDir = filePath.getParent();
 	{
 		MqoImporter importer;
-		mesh = importer.Import(this, parentDir, stream);
+		mesh = importer.import(this, parentDir, stream);
 		if (mesh != nullptr) return mesh;
 		stream->seek(0, SeekOrigin_Begin);
 	}
@@ -343,7 +343,7 @@ RefPtr<StaticMeshModel> ModelManager::CreateStaticMeshModel(const PathName& file
 	XFileLoader loader;
 	mesh = loader.load(this, stream, parentDir, true, ModelCreationFlag::None);
 
-	//modelCore->RefreshInitialValues();
+	//modelCore->refreshInitialValues();
 	//modelCore.SafeAddRef();
 	return mesh;
 #else
@@ -358,9 +358,9 @@ RefPtr<StaticMeshModel> ModelManager::CreateStaticMeshModel(const PathName& file
 }
 
 //------------------------------------------------------------------------------
-RefPtr<SkinnedMeshModel> ModelManager::CreateSkinnedMeshModel(const PathName& filePath)
+RefPtr<SkinnedMeshModel> ModelManager::createSkinnedMeshModel(const PathName& filePath)
 {
-	auto meshResource = CreateSkinnedMeshResource(filePath);
+	auto meshResource = createSkinnedMeshResource(filePath);
 	auto mesh = RefPtr<SkinnedMeshModel>::makeRef();
 	mesh->initialize(m_graphicsManager, meshResource);
 	return mesh;

@@ -43,7 +43,7 @@ void UIRenderElement::initialize()
 }
 
 //------------------------------------------------------------------------------
-void UIRenderElement::LayoutAndRender(DrawingContext* context, const Size& parentRenderSize)
+void UIRenderElement::layoutAndRender(DrawingContext* context, const Size& parentRenderSize)
 {
 	Size areaSize;
 	areaSize.width = parentRenderSize.width - (m_margin.Left + m_margin.Right);
@@ -54,11 +54,11 @@ void UIRenderElement::LayoutAndRender(DrawingContext* context, const Size& paren
 	desiredSize.height = Math::isNaN(m_height) ? 0.0f : m_height;
 
 	Rect localRect;
-	detail::LayoutHelper::AdjustHorizontalAlignment(areaSize, desiredSize, Math::isNaN(m_width), m_hAlignment, &localRect);
-	detail::LayoutHelper::AdjustVerticalAlignment(areaSize, desiredSize, Math::isNaN(m_height), m_vAlignment, &localRect);
+	detail::LayoutHelper::adjustHorizontalAlignment(areaSize, desiredSize, Math::isNaN(m_width), m_hAlignment, &localRect);
+	detail::LayoutHelper::adjustVerticalAlignment(areaSize, desiredSize, Math::isNaN(m_height), m_vAlignment, &localRect);
 
 	context->setBrush(m_brush);
-	context->DrawBoxBackground(localRect, CornerRadius());
+	context->drawBoxBackground(localRect, CornerRadius());
 }
 
 //==============================================================================
@@ -71,7 +71,7 @@ UIStylePropertyTable::UIStylePropertyTable()
 	//: m_lastInheritedParent(nullptr)
 {
 	// 初期状態を ByInherit にしておく。
-	// こうすることで、MergeActiveStylePropertyTables() で 有効な VisualStyle が1つも無いときに各プロパティがデフォルト値に戻るようにする。
+	// こうすることで、mergeActiveStylePropertyTables() で 有効な VisualStyle が1つも無いときに各プロパティがデフォルト値に戻るようにする。
 	//background.setValueSource(tr::PropertySetSource::ByInherit);
 }
 
@@ -135,20 +135,20 @@ void UIStylePropertyTable::initialize(const StringRef& visualStateName)
 namespace detail {
 
 //------------------------------------------------------------------------------
-void UIStylePropertyTableInstance::ClearAvailableRenderElements()
+void UIStylePropertyTableInstance::clearAvailableRenderElements()
 {
 	m_availableRenderElements.clear();
 }
 
 //------------------------------------------------------------------------------
-detail::InvalidateFlags UIStylePropertyTableInstance::InheritParentElementStyle(UIStylePropertyTableInstance* parent)
+detail::InvalidateFlags UIStylePropertyTableInstance::inheritParentElementStyle(UIStylePropertyTableInstance* parent)
 {
 	// TODO: 親要素から継承するのはフォント情報だけ。
 	return detail::InvalidateFlags::None;
 }
 
 //------------------------------------------------------------------------------
-detail::InvalidateFlags UIStylePropertyTableInstance::Merge(const UIStylePropertyTable* source, UIStyleAttributeInheritSourceType sourceType)
+detail::InvalidateFlags UIStylePropertyTableInstance::merge(const UIStylePropertyTable* source, UIStyleAttributeInheritSourceType sourceType)
 {
 	detail::InvalidateFlags flags = detail::InvalidateFlags::None;
 	{
@@ -197,11 +197,11 @@ detail::InvalidateFlags UIStylePropertyTableInstance::Merge(const UIStylePropert
 void UIStylePropertyTableInstance::apply(UIElement* targetElement, bool useTransitionAnimation)
 {
 	if (width.hasValue())
-		targetElement->SetWidth(width);
+		targetElement->setWidth(width);
 	if (height.hasValue())
-		targetElement->SetHeight(height);
+		targetElement->setHeight(height);
 	//if (background.HasValue())
-	//	targetElement->SetBackground(background.value);
+	//	targetElement->setBackground(background.value);
 	//for (UIStyleAttribute& setter : m_attributes)
 	//{
 	//	ApplyInternal(targetElement, setter, useTransitionAnimation);
@@ -291,7 +291,7 @@ UIStyle::~UIStyle()
 ////------------------------------------------------------------------------------
 //void UIStyle::AddValue(const StringRef& visualStateName, const tr::PropertyInfo* targetProperty, const tr::Variant& value, double time, EasingMode easingMode)
 //{
-//	auto* table = GetPropertyTable(visualStateName);
+//	auto* table = getPropertyTable(visualStateName);
 //	table->AddValue(targetProperty, value, time, easingMode);
 //}
 
@@ -315,13 +315,13 @@ UIStyle::~UIStyle()
 //}
 
 //------------------------------------------------------------------------------
-UIStylePropertyTable* UIStyle::GetPropertyTable()
+UIStylePropertyTable* UIStyle::getPropertyTable()
 {
 	return m_basePropertyTable;
 }
 
 //------------------------------------------------------------------------------
-UIStylePropertyTable* UIStyle::GetPropertyTable(const StringRef& visualStateName)
+UIStylePropertyTable* UIStyle::getPropertyTable(const StringRef& visualStateName)
 {
 	auto* ptr = m_visualStatePropertyTableList.find([visualStateName](const VisualStateStylePair& pair) { return pair.first == visualStateName; });
 	if (ptr != nullptr)
@@ -338,13 +338,13 @@ UIStylePropertyTable* UIStyle::GetPropertyTable(const StringRef& visualStateName
 }
 
 //------------------------------------------------------------------------------
-void UIStyle::SetBaseOnStyle(UIStyle* style)
+void UIStyle::setBaseOnStyle(UIStyle* style)
 {
 	m_baseOn = style;
 }
 
 //------------------------------------------------------------------------------
-UIStylePropertyTable* UIStyle::FindStylePropertyTable(const String& visualStateName)
+UIStylePropertyTable* UIStyle::findStylePropertyTable(const String& visualStateName)
 {
 	auto* ptr = m_visualStatePropertyTableList.find([visualStateName](const VisualStateStylePair& pair) { return pair.first == visualStateName; });
 	if (ptr != nullptr)
@@ -358,17 +358,17 @@ UIStylePropertyTable* UIStyle::FindStylePropertyTable(const String& visualStateN
 }
 
 //------------------------------------------------------------------------------
-detail::InvalidateFlags UIStyle::MergeActiveStylePropertyTables(detail::UIStylePropertyTableInstance* store, const List<String>& visualStateNames)
+detail::InvalidateFlags UIStyle::mergeActiveStylePropertyTables(detail::UIStylePropertyTableInstance* store, const List<String>& visualStateNames)
 {
 	detail::InvalidateFlags invalidateFlags = detail::InvalidateFlags::None;
 
 	// 継承元に再帰
 	if (m_baseOn != nullptr)
 	{
-		invalidateFlags |= m_baseOn->MergeActiveStylePropertyTables(store, visualStateNames);
+		invalidateFlags |= m_baseOn->mergeActiveStylePropertyTables(store, visualStateNames);
 	}
 
-	invalidateFlags |= store->Merge(m_basePropertyTable, UIStyleAttributeInheritSourceType::BaseStyle);
+	invalidateFlags |= store->merge(m_basePropertyTable, UIStyleAttributeInheritSourceType::BaseStyle);
 
 	// このあたりの処理で、あとから追加されたスタイルが優先されることになる
 	UIStylePropertyTable* lastActiveStyle = nullptr;
@@ -377,7 +377,7 @@ detail::InvalidateFlags UIStyle::MergeActiveStylePropertyTables(detail::UIStyleP
 		const String& name = pair.first;
 		if (visualStateNames.contains(name))
 		{
-			invalidateFlags |= store->Merge(pair.second, UIStyleAttributeInheritSourceType::StyleLocal);
+			invalidateFlags |= store->merge(pair.second, UIStyleAttributeInheritSourceType::StyleLocal);
 		}
 	}
 	return invalidateFlags;
@@ -459,7 +459,7 @@ UIStyleTable::~UIStyleTable()
 //	(*s)->AddSubStateStyle(subStateName, style);
 //}
 //------------------------------------------------------------------------------
-UIStyle* UIStyleTable::GetStyle(const StringRef& typeName)
+UIStyle* UIStyleTable::getStyle(const StringRef& typeName)
 {
 	StyleKey key = typeName.getHashCode()/* + subControlName.GetHashCode()*/;
 	if (key == 0) return nullptr;
@@ -478,7 +478,7 @@ UIStyle* UIStyleTable::GetStyle(const StringRef& typeName)
 }
 
 //------------------------------------------------------------------------------
-UIStyle* UIStyleTable::GetSubControlStyle(const StringRef& subControlOwnerName, const StringRef& subControlName)
+UIStyle* UIStyleTable::getSubControlStyle(const StringRef& subControlOwnerName, const StringRef& subControlName)
 {
 	StyleKey key = subControlOwnerName.getHashCode() + subControlName.getHashCode();
 	if (key == 0) return nullptr;
@@ -498,12 +498,12 @@ UIStyle* UIStyleTable::GetSubControlStyle(const StringRef& subControlOwnerName, 
 
 
 //------------------------------------------------------------------------------
-//UIStyle* UIStyleTable::GetStyle(const tr::TypeInfo* targetType, const StringRef& subStateName)
+//UIStyle* UIStyleTable::getStyle(const tr::TypeInfo* targetType, const StringRef& subStateName)
 //{
 //}
 
 //------------------------------------------------------------------------------
-UIStyle* UIStyleTable::FindStyle(const tr::TypeInfo* targetType/*, const StringRef& subControlName*/)
+UIStyle* UIStyleTable::findStyle(const tr::TypeInfo* targetType/*, const StringRef& subControlName*/)
 {
 	if (LN_CHECK_ARG(targetType != nullptr)) return nullptr;
 
@@ -516,13 +516,13 @@ UIStyle* UIStyleTable::FindStyle(const tr::TypeInfo* targetType/*, const StringR
 	else if (targetType->getBaseClass() != nullptr)
 	{
 		// ベースクラスで再帰検索
-		return FindStyle(targetType->getBaseClass()/*, subControlName*/);
+		return findStyle(targetType->getBaseClass()/*, subControlName*/);
 	}
 	return nullptr;
 }
 
 //------------------------------------------------------------------------------
-UIStyle* UIStyleTable::FindSubControlStyle(const StringRef& subControlOwnerName, const StringRef& subControlName)
+UIStyle* UIStyleTable::findSubControlStyle(const StringRef& subControlOwnerName, const StringRef& subControlName)
 {
 	StyleKey key = subControlOwnerName.getHashCode() + subControlName.getHashCode();
 
@@ -534,9 +534,9 @@ UIStyle* UIStyleTable::FindSubControlStyle(const StringRef& subControlOwnerName,
 }
 
 //------------------------------------------------------------------------------
-//UIStyle* UIStyleTable::FindStyle(const tr::TypeInfo* targetType, const StringRef& subStateName)
+//UIStyle* UIStyleTable::findStyle(const tr::TypeInfo* targetType, const StringRef& subStateName)
 //{
-//	UIStyle* style = FindStyle(targetType);
+//	UIStyle* style = findStyle(targetType);
 //	return style;
 //	//if (style == nullptr) return nullptr;
 //	//if (subStateName.IsEmpty()) return style;

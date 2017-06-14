@@ -82,7 +82,7 @@ public:
 //	virtual bool IsPlaying() = 0;
 //
 //	virtual void updateFrame() = 0;	// 更新スレッド
-//	virtual void Draw() = 0;	// 描画スレッド
+//	virtual void draw() = 0;	// 描画スレッド
 //
 //protected:
 //	EffectManager*	m_manager = nullptr;

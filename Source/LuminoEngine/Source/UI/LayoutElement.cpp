@@ -19,7 +19,7 @@ ILayoutElement::~ILayoutElement()
 }
 
 //------------------------------------------------------------------------------
-void ILayoutElement::UpdateLayout(const Size& viewSize)
+void ILayoutElement::updateLayout(const Size& viewSize)
 {
 	Size itemSize = getLayoutSize();
 	Size size(
@@ -107,8 +107,8 @@ void ILayoutElement::arrangeLayout(const Rect& finalLocalRect)
 
 	Size layoutSize = getLayoutSize();
 	Rect arrangeRect;
-	detail::LayoutHelper::AdjustHorizontalAlignment(areaSize, ds, Math::isNaN(layoutSize.width), hAlign, &arrangeRect);
-	detail::LayoutHelper::AdjustVerticalAlignment(areaSize, ds, Math::isNaN(layoutSize.height), vAlign, &arrangeRect);
+	detail::LayoutHelper::adjustHorizontalAlignment(areaSize, ds, Math::isNaN(layoutSize.width), hAlign, &arrangeRect);
+	detail::LayoutHelper::adjustVerticalAlignment(areaSize, ds, Math::isNaN(layoutSize.height), vAlign, &arrangeRect);
 
 	// Margin を考慮する (0 以下には出来ない)
 	arrangeRect.width = std::max(arrangeRect.width - marginWidth, 0.0f);
@@ -131,7 +131,7 @@ Size ILayoutElement::measureOverride(const Size& constraint)
 	// ユーザー指定のサイズがある場合はそれを返す。
 	// ただし、constraint を超えることはできない。
 
-	return detail::LayoutHelper::MeasureElement(this, constraint);
+	return detail::LayoutHelper::measureElement(this, constraint);
 }
 
 //------------------------------------------------------------------------------
@@ -171,7 +171,7 @@ void ILayoutElement::updateTransformHierarchy(const Rect& parentGlobalRect)
 	}
 
 	// 子要素
-	//UIHelper::ForEachVisualChildren(this, [](UIElement* child) { child->updateTransformHierarchy(); });
+	//UIHelper::forEachVisualChildren(this, [](UIElement* child) { child->updateTransformHierarchy(); });
 
 }
 
@@ -183,7 +183,7 @@ void ILayoutElement::updateTransformHierarchy(const Rect& parentGlobalRect)
 namespace detail {
 
 //------------------------------------------------------------------------------
-Size LayoutHelper::MeasureElement(ILayoutElement* element, const Size& constraint)
+Size LayoutHelper::measureElement(ILayoutElement* element, const Size& constraint)
 {
 	Size size = element->getLayoutSize();
 	Size desiredSize;

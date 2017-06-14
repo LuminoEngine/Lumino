@@ -52,8 +52,8 @@ TileMapRenderer::TileMapRenderer(detail::GraphicsManager* manager)
 {
 	int tileCount = 20 * 20;
 	m_mesh = Object::makeRef<MeshResource>(manager, MeshCreationFlags::DynamicBuffers);
-	m_mesh->ResizeVertexBuffer(tileCount * 4);
-	m_mesh->ResizeIndexBuffer(tileCount * 6);
+	m_mesh->resizeVertexBuffer(tileCount * 4);
+	m_mesh->resizeIndexBuffer(tileCount * 6);
 	m_maxTileCount = 100 * 100;
 
 	m_shader.shader = LN_NEW Shader();
@@ -82,7 +82,7 @@ void TileMapRenderer::setTransform(const Matrix& world, const Matrix& viewProj)
 }
 
 //------------------------------------------------------------------------------
-void TileMapRenderer::Draw(DrawList* context, TileMapModel* tileMap, const Rect& boundingRect, const ViewFrustum& cameraFrustum, int priority)
+void TileMapRenderer::draw(DrawList* context, TileMapModel* tileMap, const Rect& boundingRect, const ViewFrustum& cameraFrustum, int priority)
 {
 	if (LN_CHECK_ARG(tileMap != nullptr)) return;
 	m_context = context;
@@ -192,7 +192,7 @@ void TileMapRenderer::end()
 //	Texture* texture,
 //	const RectI& srcRect)
 //{
-//	m_spriteRenderer->DrawRequest2D(position, Vector3::Zero, size, texture, srcRect, nullptr);
+//	m_spriteRenderer->drawRequest2D(position, Vector3::Zero, size, texture, srcRect, nullptr);
 //}
 
 //------------------------------------------------------------------------------
@@ -206,8 +206,8 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const Rect& boundingRect, Tile
 	int allocedTileCount = m_mesh->getVertexCount() / 4;
 	if (tileCount > allocedTileCount)
 	{
-		m_mesh->ResizeVertexBuffer(tileCount * 4);
-		m_mesh->ResizeIndexBuffer(tileCount * 6);
+		m_mesh->resizeVertexBuffer(tileCount * 4);
+		m_mesh->resizeIndexBuffer(tileCount * 6);
 
 		// インデックスバッファは途中で変わらないので先に埋めておく
 		for (int iTile = 0; iTile < tileCount; ++iTile)
@@ -289,7 +289,7 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const Rect& boundingRect, Tile
 				virtices[3].uv.set(tr, tt);
 				//plotCount += 4;
 
-				m_mesh->AddSquare(virtices);
+				m_mesh->addSquare(virtices);
 				plotCount++;
 
 				if (plotCount > m_maxTileCount) goto LOOP_EXIT;
@@ -340,9 +340,9 @@ LOOP_EXIT:
 	
 	DrawElementMetadata metadata;
 	metadata.priority = priority;
-	m_context->PushMetadata(&metadata);
-	m_context->DrawMesh(m_mesh, 0, tileSet->GetMaterial());
-	m_context->PopMetadata();
+	m_context->pushMetadata(&metadata);
+	m_context->drawMesh(m_mesh, 0, tileSet->getMaterial());
+	m_context->popMetadata();
 	//printf("%p\n", m_shader.pass);
 	//m_renderingContext->setVertexBuffer(nullptr);
 	//m_renderingContext->setIndexBuffer(nullptr);
@@ -361,7 +361,7 @@ LOOP_EXIT:
 //	: m_spriteRenderer(nullptr)
 //{
 //	m_spriteRenderer = SpriteRenderer::create(MaxSpriteCount, manager);
-//	m_spriteRenderer->SetViewPixelSize(SizeI(640, 480));	// TODO
+//	m_spriteRenderer->setViewPixelSize(SizeI(640, 480));	// TODO
 //}
 //
 ////------------------------------------------------------------------------------
@@ -420,7 +420,7 @@ LOOP_EXIT:
 //	Texture* texture,
 //	const RectI& srcRect)
 //{
-//	m_spriteRenderer->DrawRequest2D(position, Vector3::Zero, size, texture, srcRect, nullptr);
+//	m_spriteRenderer->drawRequest2D(position, Vector3::Zero, size, texture, srcRect, nullptr);
 //}
 
 

@@ -39,17 +39,17 @@ AudioStream::~AudioStream()
 //------------------------------------------------------------------------------
 void AudioStream::create(bool async)
 {
-	InvokeIOProc(async, m_manager->getFileManager());
+	invokeIOProc(async, m_manager->getFileManager());
 }
 
 //------------------------------------------------------------------------------
 bool AudioStream::checkCreated()
 {
-	if (GetASyncIOState() == ASyncIOState_Completed) {
+	if (getASyncIOState() == ASyncIOState_Completed) {
 		return true;
 	}
-	else if (GetASyncIOState() == ASyncIOState_Failed && GetASyncIOException() != NULL) {
-		throw *GetASyncIOException();
+	else if (getASyncIOState() == ASyncIOState_Failed && getASyncIOException() != NULL) {
+		throw *getASyncIOException();
 	}
 	return false;
 }

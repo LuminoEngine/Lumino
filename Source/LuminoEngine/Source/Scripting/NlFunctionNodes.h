@@ -15,9 +15,9 @@ public:
 
 	virtual ~NlNode_Add() = default;
 
-	NlGraphPin* GetDataInputLhsPin() const { return m_inputLhsPin; }
-	NlGraphPin* GetDataInputRhsPin() const { return m_inputRhsPin; }
-	NlGraphPin* GetDataOutputPin() const { return m_outputPin; }
+	NlGraphPin* getDataInputLhsPin() const { return m_inputLhsPin; }
+	NlGraphPin* getDataInputRhsPin() const { return m_inputRhsPin; }
+	NlGraphPin* getDataOutputPin() const { return m_outputPin; }
 
 protected:
 	virtual void execute(NlContext* sc) override;

@@ -15,21 +15,21 @@ public:
 	InputController(detail::InputManager* manager);
 	virtual ~InputController();
 
-	bool IsPressed(const StringRef& bindingName) const;
-	bool IsTriggered(const StringRef& bindingName) const;
-	bool IsOffTriggered(const StringRef& bindingName) const;
-	bool IsRepeated(const StringRef& bindingName) const;
-	float GetAxisValue(const StringRef& bindingName) const;
+	bool isPressed(const StringRef& bindingName) const;
+	bool isTriggered(const StringRef& bindingName) const;
+	bool isOffTriggered(const StringRef& bindingName) const;
+	bool isRepeated(const StringRef& bindingName) const;
+	float getAxisValue(const StringRef& bindingName) const;
 
-	void AddBinding(const StringRef& buttonName, InputBinding* binding);
-	void RemoveBinding(InputBinding* binding);
-	void ClearBindings();
-	void SetRepeatInterval(int start, int step);
+	void addBinding(const StringRef& buttonName, InputBinding* binding);
+	void removeBinding(InputBinding* binding);
+	void clearBindings();
+	void setRepeatInterval(int start, int step);
 
 	void updateFrame();
 
 	// TODO:
-	int GetJoyNumber() const;
+	int getJoyNumber() const;
 
 private:
 	struct BindingSlot

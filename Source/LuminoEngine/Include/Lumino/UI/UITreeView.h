@@ -18,7 +18,7 @@ class UITreeViewItem
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	void SetHeader(UIElement* header);
+	void setHeader(UIElement* header);
 
 protected:
 
@@ -46,7 +46,7 @@ public:
 	static UITreeViewPtr create();
 
 //public:
-//	UITreeViewItemPtr AddTextItem(const String& text);
+//	UITreeViewItemPtr addTextItem(const String& text);
 //	UITreeViewItemPtr AddItem(UIElement* item);
 //
 LN_PROTECTED_INTERNAL_ACCESS:

@@ -34,14 +34,14 @@ public:
 	void initialize(GraphicsManager* manager);
 
 	void setState(PrimitiveRendererMode mode);
-	void DrawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor);
-	void DrawSquare(const DrawSquareData& data);
+	void drawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor);
+	void drawSquare(const DrawSquareData& data);
 	void flush();
 
 	void requestBuffers(int vertexCount, int indexCount, Vertex** vb, uint16_t** ib, uint16_t* outBeginVertexIndex);
 
 private:
-	void AddVertex(const Vector3& pos, const Vector2& uv, const Color& color);
+	void addVertex(const Vector3& pos, const Vector2& uv, const Color& color);
 
 	GraphicsManager*		m_manager;
 	Driver::IRenderer*		m_renderer;
@@ -61,26 +61,26 @@ public:
 	~PrimitiveRenderFeature();
 	void initialize(GraphicsManager* manager);
 
-	void DrawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor);
+	void drawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor);
 
-	void DrawSquare(
+	void drawSquare(
 		const Vector3& position1, const Vector2& uv1, const Color& color1,
 		const Vector3& position2, const Vector2& uv2, const Color& color2,
 		const Vector3& position3, const Vector2& uv3, const Color& color3,
 		const Vector3& position4, const Vector2& uv4, const Color& color4);
 
-	void DrawRectangle(const Rect& rect);
+	void drawRectangle(const Rect& rect);
 
 
 	template<class TFactory>
-	void DrawMeshFromFactory(const TFactory& factory, PrimitiveRendererMode mode)
+	void drawMeshFromFactory(const TFactory& factory, PrimitiveRendererMode mode)
 	{
-		SetPrimitiveRendererMode(mode);
-		CheckUpdateState();
+		setPrimitiveRendererMode(mode);
+		checkUpdateState();
 		PrimitiveRendererCore::DrawSquareData data;
 
 		LN_ENQUEUE_RENDER_COMMAND_2(
-			DrawMeshFromFactory, m_manager,
+			drawMeshFromFactory, m_manager,
 			PrimitiveRendererCore*, m_core,
 			TFactory, factory,
 			{
@@ -88,7 +88,7 @@ public:
 				uint16_t* ib;
 				uint16_t beginVertexIndex;
 				m_core->requestBuffers(factory.getVertexCount(), factory.getIndexCount(), &vb, &ib, &beginVertexIndex);
-				factory.Generate(vb, ib, beginVertexIndex);
+				factory.generate(vb, ib, beginVertexIndex);
 			});
 
 		m_flushRequested = true;
@@ -101,8 +101,8 @@ public:
 	virtual void onDeactivated();
 
 private:
-	void SetPrimitiveRendererMode(PrimitiveRendererMode mode);
-	void CheckUpdateState();
+	void setPrimitiveRendererMode(PrimitiveRendererMode mode);
+	void checkUpdateState();
 
 	GraphicsManager*		m_manager;
 	PrimitiveRendererCore*	m_core;
@@ -120,7 +120,7 @@ public:
 	BlitRenderer();
 	virtual ~BlitRenderer();
 	void initialize(GraphicsManager* manager);
-	Material* GetCommonMaterial() const;
+	Material* getCommonMaterial() const;
 
 	void blit();
 
@@ -131,7 +131,7 @@ protected:
 	virtual void onDeactivated();
 
 private:
-	void BlitImpl();
+	void blitImpl();
 
 	GraphicsManager*					m_manager;
 	RefPtr<Driver::IVertexBuffer>		m_vertexBuffer;

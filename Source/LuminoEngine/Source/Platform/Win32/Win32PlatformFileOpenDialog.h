@@ -59,11 +59,11 @@ public:
 		CoUninitialize();
 	}
 
-	virtual bool ShowDialog(PlatformWindow* parent) override
+	virtual bool showDialog(PlatformWindow* parent) override
 	{
 		if (LN_CHECK_ARG(parent != nullptr)) return false;
 		auto* win32Window = static_cast<Win32PlatformWindow*>(parent);
-		HWND hParent = win32Window->GetWindowHandle();
+		HWND hParent = win32Window->getWindowHandle();
 		HRESULT hr = m_fileDialog->Show(hParent);
 		if (SUCCEEDED(hr))
 		{

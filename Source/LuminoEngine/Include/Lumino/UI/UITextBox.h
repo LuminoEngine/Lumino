@@ -26,9 +26,9 @@ public:
 	void setText(const StringRef& text);
 
 protected:
-	virtual void OnMouseDown(UIMouseEventArgs* e) override;
-	virtual void OnKeyDown(UIKeyEventArgs* e) override;
-	virtual void OnTextInput(UIKeyEventArgs* e) override;
+	virtual void onMouseDown(UIMouseEventArgs* e) override;
+	virtual void onKeyDown(UIKeyEventArgs* e) override;
+	virtual void onTextInput(UIKeyEventArgs* e) override;
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	UITextBox();

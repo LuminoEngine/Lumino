@@ -49,7 +49,7 @@ void TextBlock2DComponent::initialize()
 {
 	VisualComponent::initialize();
 
-	//owner->GetRootNode()->AddChild(this);
+	//owner->getRootNode()->addChild(this);
 	setAutoRemove(true);
 
 	m_paragraph = RefPtr<detail::Paragraph>::makeRef();
@@ -67,34 +67,34 @@ void TextBlock2DComponent::setText(const StringRef& text)
 }
 
 //------------------------------------------------------------------------------
-void TextBlock2DComponent::SetAnchorPoint(const Vector2& ratio)
+void TextBlock2DComponent::setAnchorPoint(const Vector2& ratio)
 {
 	m_anchor = ratio;
 }
 
 //------------------------------------------------------------------------------
-void TextBlock2DComponent::SetAnchorPoint(float ratioX, float ratioY)
+void TextBlock2DComponent::setAnchorPoint(float ratioX, float ratioY)
 {
 	m_anchor.set(ratioX, ratioY);
 }
 
 //------------------------------------------------------------------------------
-void TextBlock2DComponent::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
+void TextBlock2DComponent::updateFrameHierarchy(SceneNode* parent, float deltaTime)
 {
-	VisualComponent::UpdateFrameHierarchy(parent, deltaTime);
-	m_paragraph->UpdateLayout(Size::MaxValue);
+	VisualComponent::updateFrameHierarchy(parent, deltaTime);
+	m_paragraph->updateLayout(Size::MaxValue);
 	//m_paragraph->measureLayout(Size::MaxValue);
 	//m_paragraph->arrangeLayout(RectF(0, 0, Size::MaxValue));
 }
 
 //------------------------------------------------------------------------------
-detail::Sphere TextBlock2DComponent::GetBoundingSphere()
+detail::Sphere TextBlock2DComponent::getBoundingSphere()
 {
-	return VisualComponent::GetBoundingSphere();
+	return VisualComponent::getBoundingSphere();
 }
 
 //------------------------------------------------------------------------------
-void TextBlock2DComponent::OnRender2(DrawList* renderer)
+void TextBlock2DComponent::onRender2(DrawList* renderer)
 {
 	struct LocalRenderer : detail::IDocumentsRenderer
 	{

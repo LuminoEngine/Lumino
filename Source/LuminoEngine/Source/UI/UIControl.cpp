@@ -29,16 +29,16 @@ UIControl::~UIControl()
 void UIControl::initialize()
 {
 	UIElement::initialize();
-	SetFocusable(true);
+	setFocusable(true);
 
-	auto* vsm = GetVisualStateManager();
-	vsm->RegisterVisualState(UIVisualStates::CommonGroup, UIVisualStates::NormalState);
-	vsm->RegisterVisualState(UIVisualStates::CommonGroup, UIVisualStates::MouseOverState);
-	vsm->RegisterVisualState(UIVisualStates::CommonGroup, UIVisualStates::PressedState);
-	vsm->RegisterVisualState(UIVisualStates::CommonGroup, UIVisualStates::DisabledState);
-	vsm->RegisterVisualState(UIVisualStates::FocusGroup, UIVisualStates::UnfocusedState);
-	vsm->RegisterVisualState(UIVisualStates::FocusGroup, UIVisualStates::FocusedState);
-	GoToVisualState(UIVisualStates::NormalState);
+	auto* vsm = getVisualStateManager();
+	vsm->registerVisualState(UIVisualStates::CommonGroup, UIVisualStates::NormalState);
+	vsm->registerVisualState(UIVisualStates::CommonGroup, UIVisualStates::MouseOverState);
+	vsm->registerVisualState(UIVisualStates::CommonGroup, UIVisualStates::PressedState);
+	vsm->registerVisualState(UIVisualStates::CommonGroup, UIVisualStates::DisabledState);
+	vsm->registerVisualState(UIVisualStates::FocusGroup, UIVisualStates::UnfocusedState);
+	vsm->registerVisualState(UIVisualStates::FocusGroup, UIVisualStates::FocusedState);
+	goToVisualState(UIVisualStates::NormalState);
 
 	HContentAlignment = HAlignment::Stretch;
 	VContentAlignment = VAlignment::Stretch;
@@ -46,41 +46,41 @@ void UIControl::initialize()
 
 	m_items = RefPtr<UIElementCollection>::makeRef(this);
 	auto panel = newObject<UIAbsoluteLayout>();
-	SetLayoutPanel(panel);
+	setLayoutPanel(panel);
 }
 
 //------------------------------------------------------------------------------
-UIElementCollection* UIControl::GetItems() const
+UIElementCollection* UIControl::getItems() const
 {
 	return m_items;
 }
 
 //------------------------------------------------------------------------------
-void UIControl::AddChild(UIElement* element)
+void UIControl::addChild(UIElement* element)
 {
 	m_items->add(element);
-	element->SetLogicalParent(this);
+	element->setLogicalParent(this);
 }
 
 //------------------------------------------------------------------------------
-void UIControl::RemoveChild(UIElement* element)
+void UIControl::removeChild(UIElement* element)
 {
-	element->SetLogicalParent(nullptr);
+	element->setLogicalParent(nullptr);
 	m_items->remove(element);
 }
 
 //------------------------------------------------------------------------------
-void UIControl::ClearChildren()
+void UIControl::clearChildren()
 {
 	for (auto* c : *m_items)
 	{
-		c->SetLogicalParent(nullptr);
+		c->setLogicalParent(nullptr);
 	}
 	m_items->clear();
 }
 
 //------------------------------------------------------------------------------
-void UIControl::SetLayoutPanel(UILayoutPanel* newPanel)
+void UIControl::setLayoutPanel(UILayoutPanel* newPanel)
 {
 	if (newPanel != m_itemsHostPanel)
 	{
@@ -89,34 +89,34 @@ void UIControl::SetLayoutPanel(UILayoutPanel* newPanel)
 		{
 			for (auto* c : *m_items)
 			{
-				m_itemsHostPanel->GetChildren()->remove(c);
+				m_itemsHostPanel->getChildren()->remove(c);
 			}
 
-			RemoveVisualChild(m_itemsHostPanel);
+			removeVisualChild(m_itemsHostPanel);
 			m_itemsHostPanel = nullptr;
 		}
 
 		// 新しく保持する
 		if (newPanel != nullptr)
 		{
-			AddVisualChild(newPanel);
+			addVisualChild(newPanel);
 			m_itemsHostPanel = newPanel;
 
 			for (auto* c : *m_items)
 			{
-				m_itemsHostPanel->GetChildren()->add(c);
+				m_itemsHostPanel->getChildren()->add(c);
 			}
 		}
 
 		// 変更通知
-		OnLayoutPanelChanged(m_itemsHostPanel);
+		onLayoutPanelChanged(m_itemsHostPanel);
 
 		//m_invalidateItemsHostPanel = true;
 	}
 }
 
 //------------------------------------------------------------------------------
-UILayoutPanel* UIControl::GetLayoutPanel() const
+UILayoutPanel* UIControl::getLayoutPanel() const
 {
 	return m_itemsHostPanel;
 }
@@ -198,46 +198,46 @@ Size UIControl::arrangeOverride(const Size& finalSize)
 
 
 //------------------------------------------------------------------------------
-const HAlignment* UIControl::GetPriorityContentHAlignment()
+const HAlignment* UIControl::getPriorityContentHAlignment()
 {
 	if (HContentAlignment.get() == VAlignment::Stretch) return nullptr;
 	return &HContentAlignment.get();
 }
 //------------------------------------------------------------------------------
-const VAlignment* UIControl::GetPriorityContentVAlignment()
+const VAlignment* UIControl::getPriorityContentVAlignment()
 {
 	if (VContentAlignment.get() == VAlignment::Stretch) return nullptr;
 	return &VContentAlignment.get();
 }
 
 //------------------------------------------------------------------------------
-void UIControl::OnRoutedEvent(UIEventArgs* e)
+void UIControl::onRoutedEvent(UIEventArgs* e)
 {
 	// TODO: ここでやるべきではない。MFC なら PreTranslate 相当なので。On～で行う。
 	if (e->getType() == UIEvents::MouseEnterEvent)
 	{
-		GoToVisualState(UIVisualStates::MouseOverState);
+		goToVisualState(UIVisualStates::MouseOverState);
 	}
 	else if (e->getType() == UIEvents::MouseLeaveEvent)
 	{
-		GoToVisualState(UIVisualStates::NormalState);
+		goToVisualState(UIVisualStates::NormalState);
 	}
 
-	UIElement::OnRoutedEvent(e);
+	UIElement::onRoutedEvent(e);
 }
 
 //------------------------------------------------------------------------------
-void UIControl::OnGotFocus(UIEventArgs* e)
+void UIControl::onGotFocus(UIEventArgs* e)
 {
-	GoToVisualState(UIVisualStates::FocusedState);
-	UIElement::OnGotFocus(e);
+	goToVisualState(UIVisualStates::FocusedState);
+	UIElement::onGotFocus(e);
 }
 
 //------------------------------------------------------------------------------
-void UIControl::OnLostFocus(UIEventArgs* e)
+void UIControl::onLostFocus(UIEventArgs* e)
 {
-	GoToVisualState(UIVisualStates::UnfocusedState);
-	UIElement::OnLostFocus(e);
+	goToVisualState(UIVisualStates::UnfocusedState);
+	UIElement::onLostFocus(e);
 }
 
 
@@ -258,30 +258,30 @@ void UIControl::OnLostFocus(UIEventArgs* e)
 //}
 
 //------------------------------------------------------------------------------
-void UIControl::OnLayoutPanelChanged(UILayoutPanel* newPanel)
+void UIControl::onLayoutPanelChanged(UILayoutPanel* newPanel)
 {
 }
 
 //------------------------------------------------------------------------------
-void UIControl::OnChildCollectionChanged(const tr::ChildCollectionChangedArgs& e)
+void UIControl::onChildCollectionChanged(const tr::ChildCollectionChangedArgs& e)
 {
 	switch (e.action)
 	{
 	case tr::NotifyCollectionChangedAction::Add:
 		if (LN_CHECK_STATE(e.newItems.getCount() == 1)) return;	// TODO
-		m_itemsHostPanel->GetChildren()->insert(e.newStartingIndex, e.newItems.getAt(0));
+		m_itemsHostPanel->getChildren()->insert(e.newStartingIndex, e.newItems.getAt(0));
 		break;
 	case tr::NotifyCollectionChangedAction::Move:
 		LN_NOTIMPLEMENTED();
 		break;
 	case tr::NotifyCollectionChangedAction::Remove:
-		m_itemsHostPanel->GetChildren()->removeAt(e.oldStartingIndex);
+		m_itemsHostPanel->getChildren()->removeAt(e.oldStartingIndex);
 		break;
 	case tr::NotifyCollectionChangedAction::replace:
 		LN_NOTIMPLEMENTED();
 		break;
 	case tr::NotifyCollectionChangedAction::reset:
-		m_itemsHostPanel->GetChildren()->clear();
+		m_itemsHostPanel->getChildren()->clear();
 		break;
 	default:
 		break;

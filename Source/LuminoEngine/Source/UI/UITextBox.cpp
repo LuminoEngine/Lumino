@@ -37,15 +37,15 @@ LN_CONSTRUCT_ACCESS:
 	void initialize(const UTF32* text, int len, UTF32 lineDelim);
 
 LN_INTERNAL_ACCESS:
-	void RemoveInternal(int offset, int length);
-	void InsertText(int offset, const UTF32* text, int len);
+	void removeInternal(int offset, int length);
+	void insertText(int offset, const UTF32* text, int len);
 	//void AppendText(const UTF32* text, int len);
-	void SetLineDelimiter(LineDelimiter delim) { m_lineDelimiter = delim; }
-	UTF32 GetLineDelimiterCode() const { return m_text.c_str()[m_text.getLength() - 1]; }
+	void setLineDelimiter(LineDelimiter delim) { m_lineDelimiter = delim; }
+	UTF32 getLineDelimiterCode() const { return m_text.c_str()[m_text.getLength() - 1]; }
 	const UTF32* getText() const { return m_text.c_str(); }
-	int GetTextLength2() const { return m_text.getLength() - 1; }
+	int getTextLength2() const { return m_text.getLength() - 1; }
 	void clear();
-	int GetRevision() const { return m_revision; }
+	int getRevision() const { return m_revision; }
 
 private:
 	GenericStringBuilderCore<UTF32>	m_text;				// \n を含む
@@ -65,15 +65,15 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 LN_INTERNAL_ACCESS:
-	int GetRevision() const { return m_revision; }
+	int getRevision() const { return m_revision; }
 	const List<RefPtr<UITextDocumentLine>>& GetLines() const { return m_lines; }
 
 private:
 	void replaceInternal(int offset, int length, const UTF32* text, int len);
-	void RemoveInternal(int offset, int length);
-	void InsertInternal(int offset, const UTF32* text, int len);
-	int FindLineIndexFromOffset(int offset, int* outOffsetFromLineHead = nullptr);	// 0~
-	UITextDocumentLine* FindLineFromOffset(int offset);
+	void removeInternal(int offset, int length);
+	void insertInternal(int offset, const UTF32* text, int len);
+	int findLineIndexFromOffset(int offset, int* outOffsetFromLineHead = nullptr);	// 0~
+	UITextDocumentLine* findLineFromOffset(int offset);
 
 	detail::UIManager*					m_manager;
 	List<RefPtr<UITextDocumentLine>>	m_lines;		// 必ず1つ入っている。
@@ -97,7 +97,7 @@ class UITextVisualLine
 {
 public:
 	const Size& getRenderSize() const { return m_renderRect.getSize(); }
-	const Rect& GetRenderRect() const { return m_renderRect; }
+	const Rect& getRenderRect() const { return m_renderRect; }
 
 LN_CONSTRUCT_ACCESS:
 	UITextVisualLine();
@@ -105,14 +105,14 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 LN_INTERNAL_ACCESS:
-	void SetStartDocumentTextOffset(int offset) { m_startDocumentTextOffset = offset; }
-	int GetStartDocumentTextOffset() const { return  m_startDocumentTextOffset; }
-	void AddGlyphRun(GlyphRun* run);
-	void SetVisualLineIndex(int index) { m_visualLineIndex = index; }
-	void SetRenderPt(const PointF& pt) { m_renderRect.setLocation(pt); }
+	void setStartDocumentTextOffset(int offset) { m_startDocumentTextOffset = offset; }
+	int getStartDocumentTextOffset() const { return  m_startDocumentTextOffset; }
+	void addGlyphRun(GlyphRun* run);
+	void setVisualLineIndex(int index) { m_visualLineIndex = index; }
+	void setRenderPt(const PointF& pt) { m_renderRect.setLocation(pt); }
 	void render(DrawingContext* g);
-	Rect GetGlyphAreaGlobalRect(int column);	// 高さ=行高さ
-	bool TestHitFromGlobalPoint(const PointF& pt, UITextVisualPosition* outPos);
+	Rect getGlyphAreaGlobalRect(int column);	// 高さ=行高さ
+	bool testHitFromGlobalPoint(const PointF& pt, UITextVisualPosition* outPos);
 	int getTextLength() const { return m_textLength; }
 
 private:
@@ -130,17 +130,17 @@ class UITextVisualLineBlock
 	: public Object
 {
 public:
-	bool IsModified() const;
-	UITextDocumentLine* GetDocumentLine() const { return m_documentLine; }
+	bool isModified() const;
+	UITextDocumentLine* getDocumentLine() const { return m_documentLine; }
 
-	int GetVisualLinesCount() const { return m_visualLines.getCount(); }
-	UITextVisualLine* GetVisualLine(int index) const { return m_visualLines[index]; }
+	int getVisualLinesCount() const { return m_visualLines.getCount(); }
+	UITextVisualLine* getVisualLine(int index) const { return m_visualLines[index]; }
 
 	//float GetRenderTop() const { return m_renderTop; }
 	//float GetRenderHeight() const { return m_renderSize.width; }
-	const Rect& GetRenderRect() const { return m_renderRect; }
+	const Rect& getRenderRect() const { return m_renderRect; }
 
-	void BuildVisualLines(Font* font, int startDocumentTextOffset, int visualLineIndex, const PointF& renderPt);
+	void buildVisualLines(Font* font, int startDocumentTextOffset, int visualLineIndex, const PointF& renderPt);
 
 LN_CONSTRUCT_ACCESS:
 	UITextVisualLineBlock();
@@ -149,7 +149,7 @@ LN_CONSTRUCT_ACCESS:
 
 LN_INTERNAL_ACCESS:
 	void render(DrawingContext* g);
-	const List<RefPtr<UITextVisualLine>>& GetVisualLines() const { return m_visualLines; }
+	const List<RefPtr<UITextVisualLine>>& getVisualLines() const { return m_visualLines; }
 
 private:
 	RefPtr<UITextDocumentLine>		m_documentLine;
@@ -167,7 +167,7 @@ class UITextAreaCaret
 	: public Object
 {
 public:
-	void SetVisualPosition(const UITextVisualPosition& pos) { m_position = pos; }
+	void setVisualPosition(const UITextVisualPosition& pos) { m_position = pos; }
 
 LN_CONSTRUCT_ACCESS:
 	UITextAreaCaret();
@@ -175,9 +175,9 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 LN_INTERNAL_ACCESS:
-	const UITextVisualPosition& GetVisualPosition() const { return m_position; }
-	void SetRenderRectangle(const Rect& rect) { m_renderRectangle = rect; }
-	const Rect& GetRenderRectangle() const { return m_renderRectangle; }
+	const UITextVisualPosition& getVisualPosition() const { return m_position; }
+	void setRenderRectangle(const Rect& rect) { m_renderRectangle = rect; }
+	const Rect& getRenderRectangle() const { return m_renderRectangle; }
 
 private:
 	UITextVisualPosition	m_position;
@@ -190,8 +190,8 @@ class UITextArea
 {
 
 public:
-	UITextDocument* GetDocument() const { return m_document; }
-	UITextAreaCaret* GetCaret() const { return m_caret; }
+	UITextDocument* getDocument() const { return m_document; }
+	UITextAreaCaret* getCaret() const { return m_caret; }
 
 	Size measure(const Size& availableSize, Font* font);
 	Size Arrange(const Size& finalSize);
@@ -203,10 +203,10 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 LN_INTERNAL_ACCESS:
-	UITextVisualLine* FindVisualLine(int lineIndex);
-	Rect GetGlyphGlobalRectFromVisualPosition(const UITextVisualPosition& pos);
-	void GetVisualPositionFromRenderPosition(const PointF& pt, UITextVisualPosition* outPos);
-	int GetDocumentTextOffset(const UITextVisualPosition& pos);
+	UITextVisualLine* findVisualLine(int lineIndex);
+	Rect getGlyphGlobalRectFromVisualPosition(const UITextVisualPosition& pos);
+	void getVisualPositionFromRenderPosition(const PointF& pt, UITextVisualPosition* outPos);
+	int getDocumentTextOffset(const UITextVisualPosition& pos);
 
 private:
 	RefPtr<UITextDocument>				m_document;
@@ -250,7 +250,7 @@ void UITextDocumentLine::initialize(const UTF32* text, int len, UTF32 lineDelim)
 }
 
 //------------------------------------------------------------------------------
-void UITextDocumentLine::RemoveInternal(int offset, int length)
+void UITextDocumentLine::removeInternal(int offset, int length)
 {
 	// adjust range
 	int rangeBegin = offset;
@@ -264,7 +264,7 @@ void UITextDocumentLine::RemoveInternal(int offset, int length)
 }
 
 //------------------------------------------------------------------------------
-void UITextDocumentLine::InsertText(int offset, const UTF32* text, int len)
+void UITextDocumentLine::insertText(int offset, const UTF32* text, int len)
 {
 	m_text.replace(offset, 0, text, len);	// TODO: 普通に Insert 関数とか作ったほうがパフォーマンスよさそう
 	m_revision++;
@@ -320,15 +320,15 @@ void UITextDocument::replace(int offset, int length, const StringRef& text)
 //------------------------------------------------------------------------------
 void UITextDocument::replaceInternal(int offset, int length, const UTF32* text, int len)
 {
-	RemoveInternal(offset, length);
-	InsertInternal(offset, text, len);
+	removeInternal(offset, length);
+	insertInternal(offset, text, len);
 }
 
 //------------------------------------------------------------------------------
-void UITextDocument::RemoveInternal(int offset, int length)
+void UITextDocument::removeInternal(int offset, int length)
 {
 	int offsetFromLineHead;
-	int index = FindLineIndexFromOffset(offset, &offsetFromLineHead);
+	int index = findLineIndexFromOffset(offset, &offsetFromLineHead);
 	int beginOffset = offset;
 	int endOffset = offset + length;
 	while (beginOffset < endOffset)
@@ -336,7 +336,7 @@ void UITextDocument::RemoveInternal(int offset, int length)
 		int removeLength = endOffset - beginOffset;
 		removeLength = std::min(removeLength, m_lines[index]->getLength());
 
-		m_lines[index]->RemoveInternal(offsetFromLineHead, removeLength);
+		m_lines[index]->removeInternal(offsetFromLineHead, removeLength);
 
 		beginOffset += removeLength;
 		offsetFromLineHead = 0;
@@ -363,9 +363,9 @@ void UITextDocument::RemoveInternal(int offset, int length)
 }
 
 //------------------------------------------------------------------------------
-void UITextDocument::InsertInternal(int offset, const UTF32* text, int len)
+void UITextDocument::insertInternal(int offset, const UTF32* text, int len)
 {
-	//UITextDocumentLine* line = FindLineFromOffset(offset);
+	//UITextDocumentLine* line = findLineFromOffset(offset);
 	//if (line != nullptr)
 	//{
 	//	m_lines.Add(newObject<UITextDocumentLine>());	// TODO: cache
@@ -373,7 +373,7 @@ void UITextDocument::InsertInternal(int offset, const UTF32* text, int len)
 	//}
 
 	int offsetFromLineHead = 0;
-	int lineInsertIndex = FindLineIndexFromOffset(offset, &offsetFromLineHead);
+	int lineInsertIndex = findLineIndexFromOffset(offset, &offsetFromLineHead);
 	//if (lineInsertIndex < 0)
 	//{
 	//	m_lines.Add(newObject<UITextDocumentLine>());	// 空line。EOF。	// TODO: cache
@@ -382,7 +382,7 @@ void UITextDocument::InsertInternal(int offset, const UTF32* text, int len)
 	RefPtr<UITextDocumentLine> firstLine = m_lines[lineInsertIndex];
 
 	// まず全部 Insert する
-	firstLine->InsertText(offsetFromLineHead, text, len);
+	firstLine->insertText(offsetFromLineHead, text, len);
 	
 
 
@@ -392,7 +392,7 @@ void UITextDocument::InsertInternal(int offset, const UTF32* text, int len)
 
 	// 改行が含まれているか？
 	const UTF32* begin = firstLine->getText();
-	const UTF32* end = begin + firstLine->GetTextLength2() - 1;	// UITextDocumentLine 自体の Delim は含まない
+	const UTF32* end = begin + firstLine->getTextLength2() - 1;	// UITextDocumentLine 自体の Delim は含まない
 	int firstNLPos, nlLen;
 	if (StringTraits::indexOfNewLineSequence(begin, end, &firstNLPos, &nlLen))
 	{
@@ -426,7 +426,7 @@ void UITextDocument::InsertInternal(int offset, const UTF32* text, int len)
 
 			//if (lineBegin != end)
 			{
-				auto line = newObject<UITextDocumentLine>(lineBegin, end - lineBegin, firstLine->GetLineDelimiterCode());	// TODO: cache
+				auto line = newObject<UITextDocumentLine>(lineBegin, end - lineBegin, firstLine->getLineDelimiterCode());	// TODO: cache
 				m_lines.insert(lineInsertIndex, line);
 				lineInsertIndex++;
 			}
@@ -437,7 +437,7 @@ void UITextDocument::InsertInternal(int offset, const UTF32* text, int len)
 }
 
 //------------------------------------------------------------------------------
-int UITextDocument::FindLineIndexFromOffset(int offset, int* outOffsetFromLineHead)
+int UITextDocument::findLineIndexFromOffset(int offset, int* outOffsetFromLineHead)
 {
 	int prevLineOffset = 0;
 	int lineOffset = 0;
@@ -458,9 +458,9 @@ int UITextDocument::FindLineIndexFromOffset(int offset, int* outOffsetFromLineHe
 }
 
 //------------------------------------------------------------------------------
-UITextDocumentLine* UITextDocument::FindLineFromOffset(int offset)
+UITextDocumentLine* UITextDocument::findLineFromOffset(int offset)
 {
-	int index = FindLineIndexFromOffset(offset);
+	int index = findLineIndexFromOffset(offset);
 	if (index < 0) return nullptr;
 	return m_lines[index];
 }
@@ -490,7 +490,7 @@ void UITextVisualLine::initialize()
 }
 
 //------------------------------------------------------------------------------
-void UITextVisualLine::AddGlyphRun(GlyphRun* run)
+void UITextVisualLine::addGlyphRun(GlyphRun* run)
 {
 	m_glyphRuns.add(run);
 	m_textLength += run->getTextLength();
@@ -512,7 +512,7 @@ void UITextVisualLine::render(DrawingContext* g)
 }
 
 //------------------------------------------------------------------------------
-Rect UITextVisualLine::GetGlyphAreaGlobalRect(int column)
+Rect UITextVisualLine::getGlyphAreaGlobalRect(int column)
 {
 	Rect rect(0, m_renderRect.y, 0, m_renderRect.height);
 	int count = 0;
@@ -532,7 +532,7 @@ Rect UITextVisualLine::GetGlyphAreaGlobalRect(int column)
 }
 
 //------------------------------------------------------------------------------
-bool UITextVisualLine::TestHitFromGlobalPoint(const PointF& pt, UITextVisualPosition* outPos)
+bool UITextVisualLine::testHitFromGlobalPoint(const PointF& pt, UITextVisualPosition* outPos)
 {
 	if (m_renderRect.contains(pt))
 	{
@@ -582,13 +582,13 @@ void UITextVisualLineBlock::initialize(UITextDocumentLine* documentLine)
 }
 
 //------------------------------------------------------------------------------
-bool UITextVisualLineBlock::IsModified() const
+bool UITextVisualLineBlock::isModified() const
 {
-	return m_documentLine->GetRevision() != m_revision;
+	return m_documentLine->getRevision() != m_revision;
 }
 
 //------------------------------------------------------------------------------
-void UITextVisualLineBlock::BuildVisualLines(Font* font, int startDocumentTextOffset, int visualLineIndex, const PointF& renderPt)
+void UITextVisualLineBlock::buildVisualLines(Font* font, int startDocumentTextOffset, int visualLineIndex, const PointF& renderPt)
 {
 	m_visualLines.clear();
 	m_renderRect = Rect(renderPt, 0, 0);
@@ -597,17 +597,17 @@ void UITextVisualLineBlock::BuildVisualLines(Font* font, int startDocumentTextOf
 
 	auto run = newObject<GlyphRun>();	// TODO: cache
 	run->setFont(font->resolveRawFont());
-	run->setText(m_documentLine->getText(), m_documentLine->GetTextLength2());
+	run->setText(m_documentLine->getText(), m_documentLine->getTextLength2());
 
 	auto line = newObject<UITextVisualLine>();	// TODO: cache
-	line->SetStartDocumentTextOffset(startDocumentTextOffset);
-	line->AddGlyphRun(run);
-	line->SetVisualLineIndex(visualLineIndex);
-	line->SetRenderPt(renderPt);
+	line->setStartDocumentTextOffset(startDocumentTextOffset);
+	line->addGlyphRun(run);
+	line->setVisualLineIndex(visualLineIndex);
+	line->setRenderPt(renderPt);
 	m_visualLines.add(line);
 
 	// TODO: いまは物理行は1つしか作らないので
-	m_renderRect = line->GetRenderRect();
+	m_renderRect = line->getRenderRect();
 
 
 	// TODO: 折り返しの調整やハイライトはここで。
@@ -671,13 +671,13 @@ void UITextArea::initialize()
 Size UITextArea::measure(const Size& availableSize, Font* font)
 {
 	// 物理行リストの更新が必要？
-	if (m_revision != m_document->GetRevision())
+	if (m_revision != m_document->getRevision())
 	{
 		// この状態で revision に差があるものは一度削除する。
 		// 実際には削除されておらず変更されただけかもしれないが、簡略化のために一度削除する。
 		for (int i = m_visualLineBlocks.getCount() - 1; i >= 0; i--)
 		{
-			if (m_visualLineBlocks[i]->IsModified())
+			if (m_visualLineBlocks[i]->isModified())
 			{
 				m_visualLineBlocks.removeAt(i);
 			}
@@ -688,7 +688,7 @@ Size UITextArea::measure(const Size& availableSize, Font* font)
 		int iVisual = 0;
 		for (; iDoc < documentLines.getCount() && iVisual < m_visualLineBlocks.getCount(); )
 		{
-			if (documentLines[iDoc] == m_visualLineBlocks[iVisual]->GetDocumentLine())
+			if (documentLines[iDoc] == m_visualLineBlocks[iVisual]->getDocumentLine())
 			{
 				iDoc++;
 				iVisual++;
@@ -704,7 +704,7 @@ Size UITextArea::measure(const Size& availableSize, Font* font)
 			m_visualLineBlocks.add(newObject<UITextVisualLineBlock>(documentLines[iDoc]));
 		}
 
-		m_revision = m_document->GetRevision();
+		m_revision = m_document->getRevision();
 	}
 
 
@@ -716,11 +716,11 @@ Size UITextArea::measure(const Size& availableSize, Font* font)
 		PointF renderPt;
 		for (auto& block : m_visualLineBlocks)
 		{
-			block->BuildVisualLines(font, documentTextOffset, visualLineIndex, renderPt);
+			block->buildVisualLines(font, documentTextOffset, visualLineIndex, renderPt);
 
-			documentTextOffset += block->GetDocumentLine()->getLength();
-			visualLineIndex += block->GetVisualLinesCount();
-			renderPt.y += block->GetRenderRect().height;
+			documentTextOffset += block->getDocumentLine()->getLength();
+			visualLineIndex += block->getVisualLinesCount();
+			renderPt.y += block->getRenderRect().height;
 		}
 	}
 
@@ -744,23 +744,23 @@ void UITextArea::render(DrawingContext* g)
 
 
 	// TODO: 毎回検索するのも時間かかりそう・・・
-	Rect caretRect = GetGlyphGlobalRectFromVisualPosition(m_caret->GetVisualPosition());
+	Rect caretRect = getGlyphGlobalRectFromVisualPosition(m_caret->getVisualPosition());
 	caretRect.width = 1;
 
-	g->DrawRectangle(caretRect);
+	g->drawRectangle(caretRect);
 }
 
 //------------------------------------------------------------------------------
-UITextVisualLine* UITextArea::FindVisualLine(int lineIndex)
+UITextVisualLine* UITextArea::findVisualLine(int lineIndex)
 {
 	int lineOffset = 0;
 	for (int i = 0; i < m_visualLineBlocks.getCount(); i++)
 	{
-		int linesCount = m_visualLineBlocks[i]->GetVisualLinesCount();
+		int linesCount = m_visualLineBlocks[i]->getVisualLinesCount();
 		if (lineIndex < (lineOffset + linesCount))
 		{
 			int localIndex = lineIndex - lineOffset;
-			return m_visualLineBlocks[i]->GetVisualLine(localIndex);
+			return m_visualLineBlocks[i]->getVisualLine(localIndex);
 		}
 		lineOffset += linesCount;
 	}
@@ -768,23 +768,23 @@ UITextVisualLine* UITextArea::FindVisualLine(int lineIndex)
 }
 
 //------------------------------------------------------------------------------
-Rect UITextArea::GetGlyphGlobalRectFromVisualPosition(const UITextVisualPosition& pos)
+Rect UITextArea::getGlyphGlobalRectFromVisualPosition(const UITextVisualPosition& pos)
 {
-	auto* visualLine = FindVisualLine(pos.line);
-	return visualLine->GetGlyphAreaGlobalRect(pos.column);
+	auto* visualLine = findVisualLine(pos.line);
+	return visualLine->getGlyphAreaGlobalRect(pos.column);
 }
 
 //------------------------------------------------------------------------------
-void UITextArea::GetVisualPositionFromRenderPosition(const PointF& pt, UITextVisualPosition* outPos)
+void UITextArea::getVisualPositionFromRenderPosition(const PointF& pt, UITextVisualPosition* outPos)
 {
 	outPos->line = 0;
 	outPos->column = 0;
 
 	for (auto& block : m_visualLineBlocks)
 	{
-		for (auto& line : block->GetVisualLines())
+		for (auto& line : block->getVisualLines())
 		{
-			if (line->TestHitFromGlobalPoint(pt, outPos))
+			if (line->testHitFromGlobalPoint(pt, outPos))
 			{
 				return;
 			}
@@ -793,10 +793,10 @@ void UITextArea::GetVisualPositionFromRenderPosition(const PointF& pt, UITextVis
 }
 
 //------------------------------------------------------------------------------
-int UITextArea::GetDocumentTextOffset(const UITextVisualPosition& pos)
+int UITextArea::getDocumentTextOffset(const UITextVisualPosition& pos)
 {
-	auto* line = FindVisualLine(pos.line);
-	return line->GetStartDocumentTextOffset() + pos.column;
+	auto* line = findVisualLine(pos.line);
+	return line->getStartDocumentTextOffset() + pos.column;
 }
 
 
@@ -827,9 +827,9 @@ UITextBox::~UITextBox()
 void UITextBox::initialize()
 {
 	UITextElement::initialize();
-	SetFocusable(true);
-	//SetHAlignment(HAlignment::Center);
-	//SetVAlignment(VAlignment::Center);
+	setFocusable(true);
+	//setHAlignment(HAlignment::Center);
+	//setVAlignment(VAlignment::Center);
 
 	m_textArea = newObject<UITextArea>();
 
@@ -850,33 +850,33 @@ void UITextBox::initialize()
 //------------------------------------------------------------------------------
 void UITextBox::setText(const StringRef& text)
 {
-	m_textArea->GetDocument()->replace(0, 0, text);	// TODO:
+	m_textArea->getDocument()->replace(0, 0, text);	// TODO:
 }
 
 //------------------------------------------------------------------------------
-void UITextBox::OnMouseDown(UIMouseEventArgs* e)
+void UITextBox::onMouseDown(UIMouseEventArgs* e)
 {
 	UITextVisualPosition pos;
-	m_textArea->GetVisualPositionFromRenderPosition(e->getPosition(this), &pos);
-	m_textArea->GetCaret()->SetVisualPosition(pos);
+	m_textArea->getVisualPositionFromRenderPosition(e->getPosition(this), &pos);
+	m_textArea->getCaret()->setVisualPosition(pos);
 
-	UITextElement::OnMouseDown(e);
+	UITextElement::onMouseDown(e);
 }
 
 //------------------------------------------------------------------------------
-void UITextBox::OnKeyDown(UIKeyEventArgs* e)
+void UITextBox::onKeyDown(UIKeyEventArgs* e)
 {
 	
 
-	UITextElement::OnKeyDown(e);
+	UITextElement::onKeyDown(e);
 }
 
 //------------------------------------------------------------------------------
-void UITextBox::OnTextInput(UIKeyEventArgs* e)
+void UITextBox::onTextInput(UIKeyEventArgs* e)
 {
-	TCHAR ch = e->GetCharCode();
-	m_textArea->GetDocument()->replace(
-		m_textArea->GetDocumentTextOffset(m_textArea->GetCaret()->GetVisualPosition()),
+	TCHAR ch = e->getCharCode();
+	m_textArea->getDocument()->replace(
+		m_textArea->getDocumentTextOffset(m_textArea->getCaret()->getVisualPosition()),
 		0, StringRef(ch, 1));
 }
 
@@ -892,7 +892,7 @@ Size UITextBox::measureOverride(const Size& availableSize)
 		//size.height = std::max(size.height, textSize.height);
 	}
 
-	m_textArea->measure(availableSize, GetActiveFont());
+	m_textArea->measure(availableSize, getActiveFont());
 
 	return size;
 }
@@ -910,12 +910,12 @@ void UITextBox::onRender(DrawingContext* g)
 {
 	UITextElement::onRender(g);
 
-	g->setFont(GetActiveFont());	// TODO:
+	g->setFont(getActiveFont());	// TODO:
 	g->setBrush(Brush::Red);
 	m_textArea->render(g);
-	//g->setFont(GetActiveFont());
-	//g->setBrush(GetForegroundInternal());
-	//g->DrawText_(m_text, PointF::Zero);
+	//g->setFont(getActiveFont());
+	//g->setBrush(getForegroundInternal());
+	//g->drawText_(m_text, PointF::Zero);
 	//g->drawChar('g', PointF(0, 0));
 }
 
@@ -950,15 +950,15 @@ class UISimpleTextArea
 	: public UITextElement
 {
 public:
-	UITextAreaCaret* GetCaret() const { return m_caret; }
+	UITextAreaCaret* getCaret() const { return m_caret; }
 
 	void replace(int offset, int length, const StringRef& text);
 
 	Size measure(const Size& availableSize, Font* font, detail::UIManager* manager);
 
 protected:
-	virtual void OnMouseDown(UIMouseEventArgs* e) override;
-	virtual void OnTextInput(UIKeyEventArgs* e) override;
+	virtual void onMouseDown(UIMouseEventArgs* e) override;
+	virtual void onTextInput(UIKeyEventArgs* e) override;
 
 	virtual Size measureOverride(const Size& availableSize) override;
 	virtual Size arrangeOverride(const Size& finalSize) override;
@@ -968,10 +968,10 @@ LN_CONSTRUCT_ACCESS:
 	UISimpleTextArea();
 	virtual ~UISimpleTextArea();
 	void initialize();
-	//UITextVisualLine* FindVisualLine(int lineIndex);
-	//Rect GetGlyphGlobalRectFromVisualPosition(const UITextVisualPosition& pos);
-	//void GetVisualPositionFromRenderPosition(const PointF& pt, UITextVisualPosition* outPos);
-	//int GetDocumentTextOffset(const UITextVisualPosition& pos);
+	//UITextVisualLine* findVisualLine(int lineIndex);
+	//Rect getGlyphGlobalRectFromVisualPosition(const UITextVisualPosition& pos);
+	//void getVisualPositionFromRenderPosition(const PointF& pt, UITextVisualPosition* outPos);
+	//int getDocumentTextOffset(const UITextVisualPosition& pos);
 
 private:
 	void UpdateCaretRectangle();
@@ -1002,7 +1002,7 @@ UISimpleTextArea::~UISimpleTextArea()
 void UISimpleTextArea::initialize()
 {
 	UITextElement::initialize();
-	SetFocusable(true);
+	setFocusable(true);
 	m_glyphRun = newObject<GlyphRun>();
 	m_caret = newObject<UITextAreaCaret>();
 	m_caretBrush = Brush::Black;
@@ -1021,36 +1021,36 @@ void UISimpleTextArea::replace(int offset, int length, const StringRef& text)
 	m_invalidateGlyphRun = true;
 
 	UITextVisualPosition pos = { 0, offset + len };
-	m_caret->SetVisualPosition(pos);
+	m_caret->setVisualPosition(pos);
 }
 
 //------------------------------------------------------------------------------
-void UISimpleTextArea::OnMouseDown(UIMouseEventArgs* e)
+void UISimpleTextArea::onMouseDown(UIMouseEventArgs* e)
 {
 	//UITextVisualPosition pos;
-	//m_textArea->GetVisualPositionFromRenderPosition(e->GetPosition(this), &pos);
-	//m_textArea->GetCaret()->SetVisualPosition(pos);
+	//m_textArea->getVisualPositionFromRenderPosition(e->GetPosition(this), &pos);
+	//m_textArea->getCaret()->setVisualPosition(pos);
 
-	UITextElement::OnMouseDown(e);
+	UITextElement::onMouseDown(e);
 }
 
 //------------------------------------------------------------------------------
-void UISimpleTextArea::OnTextInput(UIKeyEventArgs* e)
+void UISimpleTextArea::onTextInput(UIKeyEventArgs* e)
 {
-	//m_textArea->GetDocument()->Replace(
-	//	m_textArea->GetDocumentTextOffset(m_textArea->GetCaret()->GetVisualPosition()),
+	//m_textArea->getDocument()->Replace(
+	//	m_textArea->getDocumentTextOffset(m_textArea->getCaret()->getVisualPosition()),
 	//	0, StringRef(&e->charCode, 1));
 
-	TCHAR ch = e->GetCharCode();
-	replace(m_caret->GetVisualPosition().column, 0, StringRef(&ch, 1));
-	UITextElement::OnTextInput(e);
+	TCHAR ch = e->getCharCode();
+	replace(m_caret->getVisualPosition().column, 0, StringRef(&ch, 1));
+	UITextElement::onTextInput(e);
 }
 
 //------------------------------------------------------------------------------
 Size UISimpleTextArea::measureOverride(const Size& availableSize)
 {
 	Size ds = UITextElement::measureOverride(availableSize);
-	return Size::max(ds, measure(availableSize, GetActiveFont(), getManager()));
+	return Size::max(ds, measure(availableSize, getActiveFont(), getManager()));
 }
 
 //------------------------------------------------------------------------------
@@ -1064,16 +1064,16 @@ void UISimpleTextArea::onRender(DrawingContext* g)
 {
 	UITextElement::onRender(g);
 
-	g->setFont(GetActiveFont());	// TODO:
+	g->setFont(getActiveFont());	// TODO:
 	g->setBrush(Brush::Red);
 
 	g->drawGlyphRun(PointF(0, 0), m_glyphRun);
 
 	g->setBrush(m_caretBrush);
-	g->DrawRectangle(m_caret->GetRenderRectangle());
-	//g->setFont(GetActiveFont());
-	//g->setBrush(GetForegroundInternal());
-	//g->DrawText_(m_text, PointF::Zero);
+	g->drawRectangle(m_caret->getRenderRectangle());
+	//g->setFont(getActiveFont());
+	//g->setBrush(getForegroundInternal());
+	//g->drawText_(m_text, PointF::Zero);
 	//g->drawChar('g', PointF(0, 0));
 }
 
@@ -1100,12 +1100,12 @@ void UISimpleTextArea::UpdateCaretRectangle()
 {
 	Rect rect(0, 0, 1, m_glyphRun->getRenderSize().height);
 	PointF pos;
-	if (m_glyphRun->getDistanceFromCharacterHit(m_caret->GetVisualPosition().column, &pos))
+	if (m_glyphRun->getDistanceFromCharacterHit(m_caret->getVisualPosition().column, &pos))
 	{
 		pos.x += 1;	// 少しだけ間を空けて見やすくする
 		rect.setLocation(pos);
 	}
-	m_caret->SetRenderRectangle(rect);
+	m_caret->setRenderRectangle(rect);
 }
 
 
@@ -1134,11 +1134,11 @@ UITextField::~UITextField()
 void UITextField::initialize()
 {
 	UIControl::initialize();
-	SetFocusable(true);
+	setFocusable(true);
 	m_textArea = newObject<UISimpleTextArea>();
 
-	m_textArea->SetBackground(Brush::Blue);
-	AddVisualChild(m_textArea);
+	m_textArea->setBackground(Brush::Blue);
+	addVisualChild(m_textArea);
 }
 
 //------------------------------------------------------------------------------

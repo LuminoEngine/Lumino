@@ -20,15 +20,16 @@ class CameraComponent
 	: public SceneNode
 {
 public:
-	static CameraComponent* GetMain3DCamera();
+	static CameraComponent* getMain3DCamera();
 
-	static CameraComponent* GetMain2DCamera();
+	static CameraComponent* getMain2DCamera();
 
 
 public:
 
-	void SetLookAt(const Vector3& position) { m_lookAt = position; }
-	const Vector3& GetLookAt() const { return m_lookAt; }
+	// TODO: tansform に任せたので必要ない
+	void setLookAt(const Vector3& position) { m_lookAt = position; }
+	const Vector3& getLookAt() const { return m_lookAt; }
 
 	void setUpDirection(const Vector3& up) { m_upDirection = up; }
 	const Vector3& getUpDirection() const { return m_upDirection; }
@@ -36,58 +37,58 @@ public:
 	
 
 	/// Y 方向視野角の設定
-	void SetFovY(float fov_y) { m_fovY = fov_y; }
+	void setFovY(float fov_y) { m_fovY = fov_y; }
 
 	/// Y 方向視野角の取得
-	float GetFovY() const { return m_fovY; }
+	float getFovY() const { return m_fovY; }
 
 	/// 最も近いビュープレーン位置の設定 (0.0 以下にしないこと)
-	void SetNearClip(float nearClip) { m_nearClip = nearClip; }
+	void setNearClip(float nearClip) { m_nearClip = nearClip; }
 
 	/// 最も近いビュープレーン位置の取得
-	float GetNearClip() const { return m_nearClip; }
+	float getNearClip() const { return m_nearClip; }
 
 	/// 最も遠いビュープレーン位置の設定
-	void SetFarClip(float farClip) { m_farClip = farClip; }
+	void setFarClip(float farClip) { m_farClip = farClip; }
 
 	/// 最も遠いビュープレーン位置の取得
-	float GetFarClip() const { return m_farClip; }
+	float getFarClip() const { return m_farClip; }
 
-	const ViewFrustum& GetViewFrustum() const { return m_viewFrustum; }
+	const ViewFrustum& getViewFrustum() const { return m_viewFrustum; }
 
 
-	void SetZSortDistanceBase(ZSortDistanceBase type) { m_zSortDistanceBase = type; }
-	ZSortDistanceBase GetZSortDistanceBase() const { return m_zSortDistanceBase; }
+	void setZSortDistanceBase(ZSortDistanceBase type) { m_zSortDistanceBase = type; }
+	ZSortDistanceBase getZSortDistanceBase() const { return m_zSortDistanceBase; }
 
-	void SetCameraBehavior(CameraBehavior* behavior);
-	CameraBehavior* GetCameraBehavior() const { return m_cameraBehavior; }
+	void setCameraBehavior(CameraBehavior* behavior);
+	CameraBehavior* getCameraBehavior() const { return m_cameraBehavior; }
 
 	// 3D→2D
-	Vector3 WorldToViewportPoint(const Vector3& position) const;
+	Vector3 worldToViewportPoint(const Vector3& position) const;
 	// 2D→3D
-	Vector3 ViewportToWorldPoint(const Vector3& position) const;
+	Vector3 viewportToWorldPoint(const Vector3& position) const;
 
 public:	// internal
 
-	/// 各行列を更新する (SceneNode::UpdateFrameHierarchy() の後で呼び出すこと)
-	void UpdateMatrices(const Size& viewSize);
+	/// 各行列を更新する (SceneNode::updateFrameHierarchy() の後で呼び出すこと)
+	void updateMatrices(const Size& viewSize);
 
-	// 向きの取得 (シェーダ設定用。UpdateMatrices() の後で呼び出すこと)
-	const Vector4& GetDirectionInternal() const { return m_direction; }
+	// 向きの取得 (シェーダ設定用。updateMatrices() の後で呼び出すこと)
+	const Vector4& getDirectionInternal() const { return m_direction; }
 
-	// 行列の取得 (シェーダ設定用。UpdateMatrices() の後で呼び出すこと)
-	const Matrix& GetViewMatrix() const { return m_viewMatrix; }
-	const Matrix& GetProjectionMatrix() const { return m_projMatrix; }
-	const Matrix& GetViewProjectionMatrix() const { return m_viewProjMatrix; }
-	const Matrix& GetViewMatrixI() const { return m_viewMatrixI; }
-	const Matrix& GetProjectionMatrixI() const { return m_projMatrixI; }
-	const Matrix& GetViewProjectionMatrixI() const { return m_viewProjMatrixI; }
-	const Matrix& GetViewMatrixT() const { return m_viewMatrixT; }
-	const Matrix& GetProjectionMatrixT() const { return m_projMatrixT; }
-	const Matrix& GetViewProjectionMatrixT() const { return m_viewProjMatrixT; }
-	const Matrix& GetViewMatrixIT() const { return m_viewMatrixIT; }
-	const Matrix& GetProjectionMatrixIT() const { return m_projMatrixIT; }
-	const Matrix& GetViewProjectionMatrixIT() const { return m_viewProjMatrixIT; }
+	// 行列の取得 (シェーダ設定用。updateMatrices() の後で呼び出すこと)
+	const Matrix& getViewMatrix() const { return m_viewMatrix; }
+	const Matrix& getProjectionMatrix() const { return m_projMatrix; }
+	const Matrix& getViewProjectionMatrix() const { return m_viewProjMatrix; }
+	const Matrix& getViewMatrixI() const { return m_viewMatrixI; }
+	const Matrix& getProjectionMatrixI() const { return m_projMatrixI; }
+	const Matrix& getViewProjectionMatrixI() const { return m_viewProjMatrixI; }
+	const Matrix& getViewMatrixT() const { return m_viewMatrixT; }
+	const Matrix& getProjectionMatrixT() const { return m_projMatrixT; }
+	const Matrix& getViewProjectionMatrixT() const { return m_viewProjMatrixT; }
+	const Matrix& getViewMatrixIT() const { return m_viewMatrixIT; }
+	const Matrix& getProjectionMatrixIT() const { return m_projMatrixIT; }
+	const Matrix& getViewProjectionMatrixIT() const { return m_viewProjMatrixIT; }
 
 	//void DoMouseMoveR(float dx, float dy, float width, float height);
 	//void DoMouseMoveM(float offsetX, float offsetY);
@@ -103,9 +104,9 @@ LN_INTERNAL_ACCESS:
 	CameraComponent();
 	virtual ~CameraComponent();
 	void initialize(CameraProjection proj);
-	CameraProjection GetProjectionMode() const { return m_projectionMode; }
+	CameraProjection getProjectionMode() const { return m_projectionMode; }
 
-	void SetReflectionPlane(const Plane& plane) { m_reflectionPlane = plane; }
+	void setReflectionPlane(const Plane& plane) { m_reflectionPlane = plane; }
 
 	CameraViewportLayer2*	m_ownerLayer;
 
@@ -149,19 +150,19 @@ class CameraViewportLayer2
 	: public UIViewportLayer
 {
 public:
-	void SetDebugDrawFlags(WorldDebugDrawFlags flags);
+	void setDebugDrawFlags(WorldDebugDrawFlags flags);
 
 	virtual void render() override;
 	virtual void executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 
 protected:
-	virtual void OnRoutedEvent(UIEventArgs* e) override;
+	virtual void onRoutedEvent(UIEventArgs* e) override;
 
 LN_INTERNAL_ACCESS:
 	CameraViewportLayer2();
 	virtual ~CameraViewportLayer2();
 	void initialize(World* targetWorld, CameraComponent* hostingCamera);
-	const Size& GetViewSize() const;
+	const Size& getViewSize() const;
 
 private:
 	World*								m_targetWorld;
@@ -181,13 +182,13 @@ public:
 	CameraBehavior();
 	virtual ~CameraBehavior();
 
-	void SetTargetCamera(CameraComponent* camera) { m_targetCamera = camera; }
-	CameraComponent* GetTargetCamera() const { return m_targetCamera; }
+	void setTargetCamera(CameraComponent* camera) { m_targetCamera = camera; }
+	CameraComponent* getTargetCamera() const { return m_targetCamera; }
 
-	virtual bool InjectMouseMove(int x, int y) = 0;
-	virtual bool InjectMouseButtonDown(MouseButtons button, int x, int y) = 0;
-	virtual bool InjectMouseButtonUp(MouseButtons button, int x, int y) = 0;
-	virtual bool InjectMouseWheel(int delta) = 0;
+	virtual bool injectMouseMove(int x, int y) = 0;
+	virtual bool injectMouseButtonDown(MouseButtons button, int x, int y) = 0;
+	virtual bool injectMouseButtonUp(MouseButtons button, int x, int y) = 0;
+	virtual bool injectMouseWheel(int delta) = 0;
 
 private:
 	CameraComponent* m_targetCamera;
@@ -203,10 +204,10 @@ public:
 	CylinderMouseMoveCameraBehavior();
 	virtual ~CylinderMouseMoveCameraBehavior();
 
-	virtual bool InjectMouseMove(int x, int y) override;
-	virtual bool InjectMouseButtonDown(MouseButtons button, int x, int y) override;
-	virtual bool InjectMouseButtonUp(MouseButtons button, int x, int y) override;
-	virtual bool InjectMouseWheel(int delta) override;
+	virtual bool injectMouseMove(int x, int y) override;
+	virtual bool injectMouseButtonDown(MouseButtons button, int x, int y) override;
+	virtual bool injectMouseButtonUp(MouseButtons button, int x, int y) override;
+	virtual bool injectMouseWheel(int delta) override;
 
 private:
 	PointI	m_prevPos;

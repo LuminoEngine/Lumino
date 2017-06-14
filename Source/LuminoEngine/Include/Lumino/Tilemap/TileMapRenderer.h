@@ -14,7 +14,7 @@ class TileMapRenderer
 {
 public:
 	void setTransform(const Matrix& world, const Matrix& viewProj);
-	void Draw(DrawList* context, TileMapModel* tileMap, const Rect& boundingRect, const ViewFrustum& cameraFrustum, int priority);
+	void draw(DrawList* context, TileMapModel* tileMap, const Rect& boundingRect, const ViewFrustum& cameraFrustum, int priority);
 
 protected:
 	void begin();

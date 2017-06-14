@@ -78,7 +78,7 @@ public:
 	void setEnabled(bool enabled) { m_enabled = enabled; }
 
 	/// 計測の有効設定
-	bool IsEnabled() const { return m_enabled; }
+	bool isEnabled() const { return m_enabled; }
 
 	/// メインスレッドの FPS
 	void setMainFPS(float fps) { m_mainFPS = fps; }

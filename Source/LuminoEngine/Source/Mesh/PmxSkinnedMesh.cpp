@@ -58,7 +58,7 @@ PmxBoneResource::PmxBoneResource(PmxSkinnedMeshResource* owner, int boneIndex)
 }
 
 //------------------------------------------------------------------------------
-void PmxBoneResource::RefreshInitialValues()
+void PmxBoneResource::refreshInitialValues()
 {
 	if (ParentBoneIndex >= 0)
 	{
@@ -82,11 +82,11 @@ PmxSkinnedMeshResource::~PmxSkinnedMeshResource()
 }
 
 //------------------------------------------------------------------------------
-void PmxSkinnedMeshResource::RefreshInitialValues()
+void PmxSkinnedMeshResource::refreshInitialValues()
 {
 	for (RefPtr<PmxBoneResource>& b : bones)
 	{
-		b->RefreshInitialValues();
+		b->refreshInitialValues();
 	}
 }
 

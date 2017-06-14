@@ -98,7 +98,7 @@ void Archive::open(const PathName& filePath, const String& key)
 
     // 終端から16バイト戻ってからそれを読むとファイル数
 	fseek(m_stream, -16, SEEK_END);
-	m_fileCount = ReadU32Padding16();
+	m_fileCount = readU32Padding16();
 
 	// ヘッダ読み込み
 	fseek( m_stream, 0, SEEK_SET );
@@ -115,7 +115,7 @@ void Archive::open(const PathName& filePath, const String& key)
 
 	// 内部キーのチェック (ユーザーキーは本当に正しいか？)
 	byte_t internalKey[16];
-	ReadPadding16(internalKey, 16);
+	readPadding16(internalKey, 16);
 	if (memcmp(internalKey, Archive::InternalKey, 16) != 0) {
 		LN_THROW(0, InvalidFormatException, "invalid archive key.");
 	}
@@ -126,11 +126,11 @@ void Archive::open(const PathName& filePath, const String& key)
 	for ( int i = 0; i < m_fileCount; ++i )
 	{
 		// ファイル名の長さとファイルサイズを読む
-		ReadU32Padding16(&name_len, &entry.Size);
+		readU32Padding16(&name_len, &entry.Size);
 
 		// ファイル名を読み込むバッファを確保して読み込む
 		ByteBuffer nameBuf(name_len * sizeof(UTF16));
-		ReadPadding16(nameBuf.getData(), name_len * sizeof(UTF16));
+		readPadding16(nameBuf.getData(), name_len * sizeof(UTF16));
 		String tmpName;
 		tmpName.convertFrom(nameBuf.getData(), nameBuf.getSize(), Encoding::getUTF16Encoding());
 		PathName name(m_virtualDirectoryPath, tmpName);	// 絶対パスにする
@@ -143,7 +143,7 @@ void Archive::open(const PathName& filePath, const String& key)
 		m_entriesMap.insert(EntriesPair(name, entry));
 
 		// ファイルポインタをデータサイズ分進めて、次のファイルへ
-		uint32_t ofs = Padding16(entry.Size);
+		uint32_t ofs = padding16(entry.Size);
 		fseek(m_stream, entry.Size + ofs, SEEK_CUR);
 	}
 }
@@ -178,7 +178,7 @@ bool Archive::existsFile(const PathName& fileFullPath)
 }
 
 //------------------------------------------------------------------------------
-bool Archive::TryCreateStream(const PathName& fileFullPath, RefPtr<Stream>* outStream, bool isDeferring)
+bool Archive::tryCreateStream(const PathName& fileFullPath, RefPtr<Stream>* outStream, bool isDeferring)
 {
 #if 1 // map のキーを絶対パスにしてみた。メモリ効率は悪いが、検索キー用に PathName を再度作らなくて良くなる。まぁ、携帯機に乗せるときに問題になるようなら改めて見直す…。
 	EntriesMap::iterator itr = m_entriesMap.find(fileFullPath);
@@ -208,7 +208,7 @@ bool Archive::TryCreateStream(const PathName& fileFullPath, RefPtr<Stream>* outS
 }
 
 //------------------------------------------------------------------------------
-size_t Archive::ReadArchiveStream(byte_t* buffer, size_t count, FILE* stream, uint64_t dataOffset, uint64_t seekPos)
+size_t Archive::readArchiveStream(byte_t* buffer, size_t count, FILE* stream, uint64_t dataOffset, uint64_t seekPos)
 {
 	MutexScopedLock lock(m_mutex);
 	byte_t tmpSrcBuf[16];	// 復号前データ
@@ -263,17 +263,17 @@ size_t Archive::ReadArchiveStream(byte_t* buffer, size_t count, FILE* stream, ui
 }
 
 //------------------------------------------------------------------------------
-uint32_t Archive::ReadU32Padding16()
+uint32_t Archive::readU32Padding16()
 {
 	uint32_t v0, v1;
-	ReadU32Padding16(&v0, &v1);
+	readU32Padding16(&v0, &v1);
 	return v0;
 }
 
 //------------------------------------------------------------------------------
 // 
 //------------------------------------------------------------------------------
-void Archive::ReadU32Padding16( uint32_t* v0, uint32_t* v1 )
+void Archive::readU32Padding16( uint32_t* v0, uint32_t* v1 )
 {
 	byte_t b[16] = { 0 };
 
@@ -312,7 +312,7 @@ void Archive::ReadU32Padding16( uint32_t* v0, uint32_t* v1 )
 }
 
 //------------------------------------------------------------------------------
-void Archive::ReadPadding16(byte_t* buffer, int count)
+void Archive::readPadding16(byte_t* buffer, int count)
 {
 	// 復号する場合
 	if (!m_key.isEmpty())
@@ -337,7 +337,7 @@ void Archive::ReadPadding16(byte_t* buffer, int count)
 	else
 	{
 		fread(buffer, 1, 16, m_stream);
-		fseek(m_stream, Padding16(count), SEEK_CUR);
+		fseek(m_stream, padding16(count), SEEK_CUR);
 	}
 }
 
@@ -366,7 +366,7 @@ ArchiveStream::~ArchiveStream()
 size_t ArchiveStream::read(void* buffer, size_t byteCount)
 {
     // 復号しながら読み込む
-	size_t validSize = m_archive->ReadArchiveStream((byte_t*)buffer, byteCount, m_stream, m_dataOffset, m_seekPoint);
+	size_t validSize = m_archive->readArchiveStream((byte_t*)buffer, byteCount, m_stream, m_dataOffset, m_seekPoint);
 
     // 読んだ分だけファイルポインタを移動
 	// ※テキスト形式の場合は、fread() が返すバイト数とシーク位置が異なるときがある。(CR+LF変換)
@@ -401,7 +401,7 @@ bool DummyArchive::existsFile(const PathName& fileFullPath)
 }
 
 //------------------------------------------------------------------------------
-bool DummyArchive::TryCreateStream(const PathName& fileFullPath, RefPtr<Stream>* outStream, bool isDeferring)
+bool DummyArchive::tryCreateStream(const PathName& fileFullPath, RefPtr<Stream>* outStream, bool isDeferring)
 {
 	if (!FileSystem::existsFile(fileFullPath)) {
 		return false;

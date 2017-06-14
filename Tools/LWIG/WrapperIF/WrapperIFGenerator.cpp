@@ -29,7 +29,7 @@ const StringA wrapperIFClassTemplate =
 	"};\n"
 	"%OverrideFuncPtrImpls%\n";
 
-void WrapperIFGenerator::Generate(SymbolDatabase* database)
+void WrapperIFGenerator::generate(SymbolDatabase* database)
 {
 	m_database = database;
 

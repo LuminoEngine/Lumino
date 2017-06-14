@@ -135,7 +135,7 @@ bool TestEnv::CheckScreenShot(const TCHAR* filePath, int passRate, bool save)
 //------------------------------------------------------------------------------
 void TestEnv::WaitRendering()
 {
-	Engine::getMainWindow()->GetSwapChain()->WaitForPresent();
+	Engine::getMainWindow()->getSwapChain()->WaitForPresent();
 }
 
 
@@ -159,22 +159,22 @@ void EngineInitalize()
 	RawFont::getDefaultFont()->setName(_T("VL Gothic"));
 
 	// 背景はグレーにしておくと加算合成のテストとか、いろいろ都合がよい
-	Engine::getMainViewport()->SetViewBackgroundColor(Color32::Gray);
+	Engine::getMainViewport()->setViewBackgroundColor(Color32::Gray);
 
 
 
 	{
-		auto buttonNormalBrush = TextureBrush::create(detail::UIManager::getInstance()->GetDefaultSkinTexture());
+		auto buttonNormalBrush = TextureBrush::create(detail::UIManager::getInstance()->getDefaultSkinTexture());
 		buttonNormalBrush->setSourceRect(0, 0, 32, 32);
 		buttonNormalBrush->getBorderThickness(8, 8, 8, 8);
 		buttonNormalBrush->getImageDrawMode(BrushImageDrawMode::BoxFrame);
 		buttonNormalBrush->setWrapMode(BrushWrapMode::Stretch);
 
-		auto* res = detail::UIManager::getInstance()->GetDefaultStyleTable();
-		auto* style = res->GetStyle(_T("UIButton"));
+		auto* res = detail::UIManager::getInstance()->getDefaultStyleTable();
+		auto* style = res->getStyle(_T("UIButton"));
 		// base
 		{
-			auto* props = style->GetPropertyTable();
+			auto* props = style->getPropertyTable();
 			props->background = RefPtr<Brush>::staticCast(buttonNormalBrush);
 			props->borderThickness = ThicknessF(0);
 		}

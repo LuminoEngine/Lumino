@@ -101,14 +101,14 @@ void ProfilerRenderer::Render(const Vector2& viewSize)
 
 	//Matrix proj = Matrix::Perspective2DLH(viewSize.X, viewSize.Y, 0.f, 1000.f);
 	//m_spriteRenderer->setViewProjMatrix(Matrix::Identity, proj);
-	//m_spriteRenderer->SetViewPixelSize(Size(viewSize.X, viewSize.Y));		// TODO Vector2 の set があってもいいかも
+	//m_spriteRenderer->setViewPixelSize(Size(viewSize.X, viewSize.Y));		// TODO Vector2 の set があってもいいかも
 
 	//float WindowWidth = 256;
 	//float WindowHeight = 256;
 	//Vector3 location(viewSize.X - 8 - WindowWidth, 8, 0);
 
 	//// ウィンドウ背景
-	//m_spriteRenderer->DrawRequest2D(
+	//m_spriteRenderer->drawRequest2D(
 	//	Vector3(location.X, location.Y, 0),
 	//	Vector3::Zero,
 	//	Vector2(WindowWidth, WindowHeight),

@@ -19,7 +19,7 @@ TEST_F(Test_Json_JsonDocument, Basic)
 	//////t.Start();
 	//doc.Parse(json);
 
-	////printf("%d", t.GetElapsedTime());
+	////printf("%d", t.getElapsedTime());
 
 	//printf("");
 }

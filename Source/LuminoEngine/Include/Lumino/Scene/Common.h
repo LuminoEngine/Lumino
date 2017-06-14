@@ -52,7 +52,7 @@ enum CameraProjection
 /** カメラの向きの指定方法 */
 enum class CameraDirection
 {
-	lookAt,					/**< SetLookAt() により注視点を指定する */
+	lookAt,					/**< setLookAt() により注視点を指定する */
 	transform,				/**< 姿勢の正面方向を向く */
 };
 

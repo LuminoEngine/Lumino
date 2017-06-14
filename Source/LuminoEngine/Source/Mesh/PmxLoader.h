@@ -54,19 +54,19 @@ private:
 	int getRigidBodyIndexSize() { return m_pmxHeader.Data[7]; }
 
 private:
-	void LoadModelInfo(BinaryReader* reader);
-	void LoadVertices(BinaryReader* reader);
-	void LoadIndices(BinaryReader* reader);
-	void LoadTextureTable(BinaryReader* reader, const PathName& baseDir);
-	void LoadMaterials(BinaryReader* reader);
-	void LoadBones(BinaryReader* reader);
-	void LoadMorphs(BinaryReader* reader);
-	void LoadDisplayFrame(BinaryReader* reader);
-	void LoadRigidBodys(BinaryReader* reader);
-	void LoadJoints(BinaryReader* reader);
+	void loadModelInfo(BinaryReader* reader);
+	void loadVertices(BinaryReader* reader);
+	void loadIndices(BinaryReader* reader);
+	void loadTextureTable(BinaryReader* reader, const PathName& baseDir);
+	void loadMaterials(BinaryReader* reader);
+	void loadBones(BinaryReader* reader);
+	void loadMorphs(BinaryReader* reader);
+	void loadDisplayFrame(BinaryReader* reader);
+	void loadRigidBodys(BinaryReader* reader);
+	void loadJoints(BinaryReader* reader);
 
 	String readString(BinaryReader* reader);
-	void CalcSDEFCorrection();
+	void calcSDEFCorrection();
 
 private:
 	detail::ModelManager*			m_manager;

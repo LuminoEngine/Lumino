@@ -79,7 +79,7 @@ Sound::~Sound()
 void Sound::initialize(const StringRef& filePath)
 {
 	detail::AudioManager* manager = detail::AudioManager::getInstance();
-	RefPtr<Stream> stream(manager->getFileManager()->CreateFileStream(filePath, true), false);
+	RefPtr<Stream> stream(manager->getFileManager()->createFileStream(filePath, true), false);
 	RefPtr<detail::AudioStream> audioStream(manager->createAudioStream(stream, CacheKey(PathName(filePath)), SoundLoadingMode::ASync), false);
 
 
@@ -98,7 +98,7 @@ void Sound::initialize(const StringRef& filePath)
 void Sound::initialize(Stream* stream, SoundLoadingMode loadingMode)
 {
 	detail::AudioManager* manager = detail::AudioManager::getInstance();
-	//RefPtr<Stream> stream(manager->getFileManager()->CreateFileStream(filePath, true), false);
+	//RefPtr<Stream> stream(manager->getFileManager()->createFileStream(filePath, true), false);
 	RefPtr<detail::AudioStream> audioStream(manager->createAudioStream(stream, CacheKey::Null, SoundLoadingMode::ASync), false);
 
 	//SoundPtr(manager->createSound(stream, CacheKey::Null, loadingMode), false);

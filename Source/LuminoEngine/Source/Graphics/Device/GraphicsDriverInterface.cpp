@@ -133,7 +133,7 @@ void IRenderer::setIndexBuffer(IIndexBuffer* indexBuffer)
 //------------------------------------------------------------------------------
 void IRenderer::setShaderPass(IShaderPass* pass)
 {
-	// ShaderPass はたとえ同じでも次の Draw で必ず apply する。
+	// ShaderPass はたとえ同じでも次の draw で必ず apply する。
 	m_currentShaderPass = pass;
 }
 

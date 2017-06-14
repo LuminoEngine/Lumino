@@ -17,7 +17,7 @@ UIEventArgsPtr UIEventArgs::create(UIEventType type, Object* sender, bool cachin
 {
 	if (caching)
 	{
-		detail::EventArgsPool* pool = detail::UIManager::getInstance()->GetEventArgsPool();
+		detail::EventArgsPool* pool = detail::UIManager::getInstance()->getEventArgsPool();
 		return UIEventArgsPtr(pool->create<UIEventArgs>(type), false);
 	}
 	else
@@ -56,7 +56,7 @@ RefPtr<UIMouseEventArgs> UIMouseEventArgs::create(UIEventType type, MouseButtons
 {
 	if (caching)
 	{
-		detail::EventArgsPool* pool = detail::UIManager::getInstance()->GetEventArgsPool();
+		detail::EventArgsPool* pool = detail::UIManager::getInstance()->getEventArgsPool();
 		RefPtr<UIMouseEventArgs> ptr(pool->create<UIMouseEventArgs>(type, button, x, y, clickCount), false);
 		return ptr;
 	}
@@ -93,7 +93,7 @@ void UIMouseEventArgs::initialize(UIEventType type, MouseButtons button, float x
 //------------------------------------------------------------------------------
 PointF UIMouseEventArgs::getPosition(UIElement* relativeTo) const
 {
-	const Rect& rc = relativeTo->GetFinalGlobalRect();
+	const Rect& rc = relativeTo->getFinalGlobalRect();
 	return PointF(m_position.x - rc.x, m_position.y - rc.y);
 }
 
@@ -107,7 +107,7 @@ RefPtr<UIKeyEventArgs> UIKeyEventArgs::create(UIEventType type, Keys keyCode, Mo
 {
 	if (caching)
 	{
-		detail::EventArgsPool* pool = detail::UIManager::getInstance()->GetEventArgsPool();
+		detail::EventArgsPool* pool = detail::UIManager::getInstance()->getEventArgsPool();
 		RefPtr<UIKeyEventArgs> ptr(pool->create<UIKeyEventArgs>(type, keyCode, modifierKeys, charCode), false);
 		return ptr;
 	}
@@ -150,7 +150,7 @@ RefPtr<UIMouseWheelEventArgs> UIMouseWheelEventArgs::create(UIEventType type, in
 {
 	if (caching)
 	{
-		detail::EventArgsPool* pool = detail::UIManager::getInstance()->GetEventArgsPool();
+		detail::EventArgsPool* pool = detail::UIManager::getInstance()->getEventArgsPool();
 		RefPtr<UIMouseWheelEventArgs> ptr(pool->create<UIMouseWheelEventArgs>(type, delta), false);
 		return ptr;
 	}

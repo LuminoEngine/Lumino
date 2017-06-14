@@ -29,7 +29,7 @@ TEST_F(Test_Scene_StaticMesh, BoxMesh)
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_StaticMesh.BoxMesh1.png"), 95));
 	}
 
-	// <Rest> ReverseFaces
+	// <Rest> reverseFaces
 	{
 		auto mesh1 = StaticMeshComponent::CreateBox(1, 1, 1);
 		mesh1->GetStaticMeshModel()->GetMeshResource()->ReverseFaces();
@@ -67,7 +67,7 @@ TEST_F(Test_Scene_StaticMesh, SphereMesh)
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_StaticMesh.SphereMesh1.png"), 95));
 	}
 
-	// <Rest> ReverseFaces
+	// <Rest> reverseFaces
 	{
 		auto mesh1 = StaticMeshComponent::CreateSphere(0.5);
 		mesh1->GetStaticMeshModel()->GetMeshResource()->ReverseFaces();

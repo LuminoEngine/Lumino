@@ -64,7 +64,7 @@ void TileSet::LookupTileImage(int id, Texture** outTexture, RectI* outSrcRect)
 }
 
 //------------------------------------------------------------------------------
-Material* TileSet::GetMaterial() const
+Material* TileSet::getMaterial() const
 {
 	return m_material;
 }

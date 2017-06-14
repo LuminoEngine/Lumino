@@ -34,7 +34,7 @@ void UIButtonBase::initialize()
 
 	// TODO: UIControl::initialize() の中でも作ってるから、そっちが無駄になる。
 	// UIControl では何も作らなくてもいいかも。null の場合、UILayoutPanel と同じレイアウトにするとか。
-	SetLayoutPanel(newObject<UIStackPanel>());
+	setLayoutPanel(newObject<UIStackPanel>());
 }
 
 //------------------------------------------------------------------------------
@@ -43,58 +43,58 @@ void UIButtonBase::setText(const StringRef& text)
 	auto textBlock = UITextBlockPtr::makeRef();
 	textBlock->initialize();
 	textBlock->setText(text);
-	AddChild(textBlock);
+	addChild(textBlock);
 }
 
 //------------------------------------------------------------------------------
-EventConnection UIButtonBase::ConnectOnGotFocus(UIEventHandler handler)
+EventConnection UIButtonBase::connectOnGotFocus(UIEventHandler handler)
 {
 	return m_onClick.connect(handler);
 }
 
 //------------------------------------------------------------------------------
-void UIButtonBase::OnClick(UIEventArgs* e)
+void UIButtonBase::onClick(UIEventArgs* e)
 {
 	m_onClick.raise(e);
-	//RaiseEvent(ClickEvent, this, UIEventArgs::create(this));
+	//raiseEvent(ClickEvent, this, UIEventArgs::create(this));
 }
 
 //------------------------------------------------------------------------------
-void UIButtonBase::OnMouseDown(UIMouseEventArgs* e)
+void UIButtonBase::onMouseDown(UIMouseEventArgs* e)
 {
 	if (m_clickMode == ClickMode::release)
 	{
 		m_isPressed = true;
-		Focus();
-		CaptureMouse();
-		GoToVisualState(UIVisualStates::PressedState);
+		focus();
+		captureMouse();
+		goToVisualState(UIVisualStates::PressedState);
 		e->handled = true;
 	}
 	else if (m_clickMode == ClickMode::Press)
 	{
-		OnClick(e);
+		onClick(e);
 		e->handled = true;
 	}
 
-	UIControl::OnMouseDown(e);
+	UIControl::onMouseDown(e);
 }
 
 //------------------------------------------------------------------------------
-void UIButtonBase::OnMouseUp(UIMouseEventArgs* e)
+void UIButtonBase::onMouseUp(UIMouseEventArgs* e)
 {
 	if (m_clickMode == ClickMode::release)
 	{
 		if (m_isPressed)
 		{
 			m_isPressed = false;
-			ReleaseMouseCapture();
-			GoToVisualState(UIVisualStates::MouseOverState);
-			OnClick(e);
+			releaseMouseCapture();
+			goToVisualState(UIVisualStates::MouseOverState);
+			onClick(e);
 			e->handled = true;
 		}
 	}
 
-	UIControl::OnMouseUp(e);
+	UIControl::onMouseUp(e);
 }
 
 //==============================================================================
@@ -135,8 +135,8 @@ void UIButton::initialize(const StringRef& text, float width, float height)
 {
 	UIButtonBase::initialize();
 	setText(text);
-	SetWidth(width);
-	SetHeight(height);
+	setWidth(width);
+	setHeight(height);
 }
 
 //==============================================================================
@@ -169,26 +169,26 @@ void UIToggleButton::initialize()
 {
 	UIButtonBase::initialize();
 
-	auto* vsm = GetVisualStateManager();
-	vsm->RegisterVisualState(UIVisualStates::CommonGroup, CheckedState);
-	vsm->RegisterVisualState(UIVisualStates::CommonGroup, UncheckedState);
+	auto* vsm = getVisualStateManager();
+	vsm->registerVisualState(UIVisualStates::CommonGroup, CheckedState);
+	vsm->registerVisualState(UIVisualStates::CommonGroup, UncheckedState);
 }
 
 //------------------------------------------------------------------------------
-void UIToggleButton::OnClick(UIEventArgs* e)
+void UIToggleButton::onClick(UIEventArgs* e)
 {
 	m_isChecked = !m_isChecked;
 
 	if (m_isChecked)
 	{
-		GoToVisualState(CheckedState);
+		goToVisualState(CheckedState);
 	}
 	else
 	{
-		GoToVisualState(UncheckedState);
+		goToVisualState(UncheckedState);
 	}
 
-	UIButtonBase::OnClick(e);
+	UIButtonBase::onClick(e);
 }
 
 

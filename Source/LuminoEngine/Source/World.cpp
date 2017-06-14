@@ -61,7 +61,7 @@ void World::RemoveAllObjects()
 {
 	for (int i = m_rootWorldObjectList.getCount() - 1; i >= 0; i--)
 	{
-		if (!m_rootWorldObjectList[i]->IsSpecialObject())
+		if (!m_rootWorldObjectList[i]->isSpecialObject())
 		{
 			m_rootWorldObjectList[i]->m_parent = nullptr;
 			m_rootWorldObjectList.removeAt(i);
@@ -93,7 +93,7 @@ void World::addOffscreenWorldView(OffscreenWorldView* view)
 	m_offscreenWorldViewList.add(view);
 
 	// assign Id
-	view->SetId(m_offscreenIdStorage.getLast());
+	view->setId(m_offscreenIdStorage.getLast());
 	m_offscreenIdStorage.removeLast();
 }
 
@@ -103,8 +103,8 @@ void World::removeOffscreenWorldView(OffscreenWorldView* view)
 	m_offscreenWorldViewList.remove(view);
 
 	// repay Id.
-	m_offscreenIdStorage.add(view->GetId());
-	view->SetId(0);
+	m_offscreenIdStorage.add(view->getId());
+	view->setId(0);
 }
 
 //------------------------------------------------------------------------------
@@ -114,13 +114,13 @@ void World::reginUpdateFrame()
 	// また、出来上がった描画リストを、複数のビューやカメラが描画することを想定する。
 	if (m_renderer != nullptr)
 	{
-		m_renderer->BeginMakeElements();
+		m_renderer->beginMakeElements();
 	}
 	if (m_debugRenderer != nullptr)
 	{
-		m_debugRenderer->BeginMakeElements();
+		m_debugRenderer->beginMakeElements();
 		m_debugRendererDefaultMaterial->setShader(detail::EngineDomain::getGraphicsManager()->getBuiltinShader(BuiltinShader::Sprite));
-		m_debugRenderer->SetDefaultMaterial(m_debugRendererDefaultMaterial);
+		m_debugRenderer->setDefaultMaterial(m_debugRendererDefaultMaterial);
 	}
 }
 
@@ -139,7 +139,7 @@ void World::renderRoot(CameraComponent* camera, WorldDebugDrawFlags debugDrawFla
 	// pre render
 	for (auto& view : m_offscreenWorldViewList)
 	{
-		view->RenderWorld(this, camera, mainRenderView);
+		view->renderWorld(this, camera, mainRenderView);
 	}
 
 	// main render
@@ -159,7 +159,7 @@ void World::render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags deb
 				visual = static_cast<VisualComponent*>(c.get());
 
 				bool visible = true;
-				if (offscreen != nullptr) visible = offscreen->FilterRenderObject(visual);
+				if (offscreen != nullptr) visible = offscreen->filterRenderObject(visual);
 
 				if (visible)
 				{
@@ -172,7 +172,7 @@ void World::render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags deb
 	}
 
 	// reset status
-	g->SetBuiltinEffectData(detail::BuiltinEffectData::DefaultData);
+	g->setBuiltinEffectData(detail::BuiltinEffectData::DefaultData);
 }
 
 //------------------------------------------------------------------------------
@@ -214,7 +214,7 @@ void World2D::initialize()
 	m_sceneGraph->createCore(EngineManager::getInstance()->getSceneGraphManager());
 
 	m_mainCamera = newObject<Camera>(CameraProjection_2D);
-	m_mainCamera->SetSpecialObject(true);
+	m_mainCamera->setSpecialObject(true);
 	addWorldObject(m_mainCamera, true);
 }
 
@@ -301,11 +301,11 @@ void World3D::initialize()
 	m_sceneGraph->createCore(EngineManager::getInstance()->getSceneGraphManager());
 
 	m_mainCamera = newObject<Camera>(CameraProjection_3D);
-	m_mainCamera->SetSpecialObject(true);
+	m_mainCamera->setSpecialObject(true);
 	addWorldObject(m_mainCamera, true);
 
 	m_mainLight = newObject<Light>();
-	m_mainLight->SetSpecialObject(true);
+	m_mainLight->setSpecialObject(true);
 	addWorldObject(m_mainLight, true);
 
 	createGridPlane();
@@ -363,7 +363,7 @@ void World3D::updateFrame(float elapsedTime)
 {
 	if (m_physicsWorld != nullptr)
 	{
-		m_physicsWorld->StepSimulation(elapsedTime);
+		m_physicsWorld->stepSimulation(elapsedTime);
 	}
 
 	World::updateFrame(elapsedTime);
@@ -391,15 +391,15 @@ void World3D::render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags d
 			public:
 				DrawList* renderer;
 
-				virtual void DrawLine(const Vector3& from, const Vector3& to, const Vector3& fromColor, const Vector3& toColor)
+				virtual void drawLine(const Vector3& from, const Vector3& to, const Vector3& fromColor, const Vector3& toColor)
 				{
-					renderer->DrawLinePrimitive(from, Color(fromColor, 1.0f), to, Color(toColor, 1.0f));
+					renderer->drawLinePrimitive(from, Color(fromColor, 1.0f), to, Color(toColor, 1.0f));
 				}
 			};
 			DebugRenderer r;
 			r.renderer = GetDebugRenderer();
 
-			m_physicsWorld->DrawDebugShapes(&r);
+			m_physicsWorld->drawDebugShapes(&r);
 		}
 	}
 }
@@ -411,13 +411,13 @@ void World3D::createGridPlane()
 
 	// 適当な四角形メッシュ
 	m_gridPlane = RefPtr<StaticMeshModel>::makeRef();
-	m_gridPlane->InitializeScreenPlane(gm, MeshCreationFlags::DynamicBuffers);
-	MeshResource* mesh = m_gridPlane->GetMeshResource(0);
-	mesh->AddSections(1);
-	mesh->GetSection(0)->MaterialIndex = 0;
-	mesh->GetSection(0)->StartIndex = 0;
-	mesh->GetSection(0)->PrimitiveNum = 2;
-	mesh->GetSection(0)->primitiveType = PrimitiveType_TriangleList;
+	m_gridPlane->initializeScreenPlane(gm, MeshCreationFlags::DynamicBuffers);
+	MeshResource* mesh = m_gridPlane->getMeshResource(0);
+	mesh->addSections(1);
+	mesh->getSection(0)->MaterialIndex = 0;
+	mesh->getSection(0)->StartIndex = 0;
+	mesh->getSection(0)->PrimitiveNum = 2;
+	mesh->getSection(0)->primitiveType = PrimitiveType_TriangleList;
 
 	static const byte_t shaderCode[] =
 	{
@@ -426,7 +426,7 @@ void World3D::createGridPlane()
 	static const size_t shaderCodeLen = LN_ARRAY_SIZE_OF(shaderCode);
 	auto shader = RefPtr<Shader>::makeRef();
 	shader->initialize(gm, shaderCode, shaderCodeLen);
-	m_gridPlane->GetMaterial(0)->setShader(shader);
+	m_gridPlane->getMaterial(0)->setShader(shader);
 
 	// 四方の辺に黒線を引いたテクスチャを作り、マテリアルにセットしておく
 	SizeI gridTexSize(512, 512);
@@ -441,10 +441,10 @@ void World3D::createGridPlane()
 		gridTex->setPixel(0, y, Color(0, 0, 0, 0.5));
 		gridTex->setPixel(gridTexSize.height - 1, y, Color(0, 0, 0, 0.5));
 	}
-	m_gridPlane->GetMaterial(0)->setMaterialTexture(gridTex);
+	m_gridPlane->getMaterial(0)->setMaterialTexture(gridTex);
 
-	m_gridPlane->GetMaterial(0)->setBlendMode(BlendMode::Alpha);
-	m_gridPlane->GetMaterial(0)->setDepthWriteEnabled(false);
+	m_gridPlane->getMaterial(0)->setBlendMode(BlendMode::Alpha);
+	m_gridPlane->getMaterial(0)->setDepthWriteEnabled(false);
 }
 
 //------------------------------------------------------------------------------
@@ -457,9 +457,9 @@ void World3D::renderGridPlane(DrawList* renderer, CameraComponent* camera)
 
 		DrawElementMetadata metadata;
 		metadata.priority = (int)DepthPriority::Foreground;
-		renderer->PushMetadata(&metadata);
-		renderer->DrawMesh(m_gridPlane->GetMeshResource(0), 0, m_gridPlane->GetMaterial(0));
-		renderer->PopMetadata();
+		renderer->pushMetadata(&metadata);
+		renderer->drawMesh(m_gridPlane->getMeshResource(0), 0, m_gridPlane->getMaterial(0));
+		renderer->popMetadata();
 	}
 }
 
@@ -478,7 +478,7 @@ void World3D::adjustGridPlane(CameraComponent* camera)
 		Vector3	to;
 	};
 
-	auto& vf = camera->GetViewFrustum();
+	auto& vf = camera->getViewFrustum();
 	Vector3 points[8];
 	vf.getCornerPoints(points);
 
@@ -519,15 +519,15 @@ void World3D::adjustGridPlane(CameraComponent* camera)
 		maxPos = Vector3::max(p, maxPos);
 	}
 
-	MeshResource* mesh = m_gridPlane->GetMeshResource(0);
+	MeshResource* mesh = m_gridPlane->getMeshResource(0);
 	mesh->setPosition(0, Vector3(minPos.x, 0, maxPos.z));
 	mesh->setPosition(1, Vector3(minPos.x, 0, minPos.z));
 	mesh->setPosition(2, Vector3(maxPos.x, 0, maxPos.z));
 	mesh->setPosition(3, Vector3(maxPos.x, 0, minPos.z));
-	mesh->SetUV(0, Vector2(-1.0f, 1.0f));
-	mesh->SetUV(1, Vector2(-1.0f, -1.0f));
-	mesh->SetUV(2, Vector2(1.0f, 1.0f));
-	mesh->SetUV(3, Vector2(1.0f, -1.0f));
+	mesh->setUV(0, Vector2(-1.0f, 1.0f));
+	mesh->setUV(1, Vector2(-1.0f, -1.0f));
+	mesh->setUV(2, Vector2(1.0f, 1.0f));
+	mesh->setUV(3, Vector2(1.0f, -1.0f));
 	mesh->m_attributes[0].PrimitiveNum = 2;
 }
 

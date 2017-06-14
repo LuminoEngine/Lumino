@@ -13,8 +13,8 @@ public:
 	~EngineDiagViewer();
 	void initialize(EngineManager* manager, EngineDiagCore* diagCore);
 
-	//void SetVisible(bool visible) { m_isVisible = visible; }
-	//bool IsVisible() const { return m_isVisible; }
+	//void setVisible(bool visible) { m_isVisible = visible; }
+	//bool isVisible() const { return m_isVisible; }
 	void setDisplayMode(EngineDiagDisplayMode mode) { m_displayMode = mode; }
 	void toggleDisplayMode();
 	void updateFrame();

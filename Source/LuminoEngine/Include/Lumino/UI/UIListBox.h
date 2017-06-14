@@ -41,7 +41,7 @@ public:
 	static UIListBoxPtr create();
 
 public:
-	UIListBoxItemPtr AddTextItem(const String& text);
+	UIListBoxItemPtr addTextItem(const String& text);
 	UIListBoxItemPtr addItem(UIElement* item);
 
 LN_PROTECTED_INTERNAL_ACCESS:

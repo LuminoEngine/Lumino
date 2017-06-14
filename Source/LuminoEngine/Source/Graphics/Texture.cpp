@@ -198,7 +198,7 @@ void Texture2D::initialize(int width, int height, TextureFormat format, bool mip
 //------------------------------------------------------------------------------
 void Texture2D::initialize(const StringRef& filePath, TextureFormat format, bool mipmap)
 {
-	RefPtr<Stream> stream(detail::GraphicsManager::getInstance()->getFileManager()->CreateFileStream(filePath), false);
+	RefPtr<Stream> stream(detail::GraphicsManager::getInstance()->getFileManager()->createFileStream(filePath), false);
 	initialize(stream, format, mipmap);
 }
 

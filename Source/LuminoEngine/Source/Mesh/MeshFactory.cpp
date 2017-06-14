@@ -191,7 +191,7 @@ namespace Bezier
 // TeapotMeshFactory
 //==============================================================================
 
-void TeapotMeshFactory::ComputeTeapot(float size, size_t tessellation/*, bool rhcoords*/)
+void TeapotMeshFactory::computeTeapot(float size, size_t tessellation/*, bool rhcoords*/)
 {
 	if (tessellation < 1)
 		throw std::out_of_range("tesselation parameter out of range");
@@ -209,8 +209,8 @@ void TeapotMeshFactory::ComputeTeapot(float size, size_t tessellation/*, bool rh
 		// Because the teapot is symmetrical from left to right, we only store
 		// data for one side, then tessellate each patch twice, mirroring in X.
 		// ティーポットは左から右に対称であるため、片側のみのデータを保存し、各パッチを2回テッセレーションしてXでミラーリングします。
-		TessellatePatch(patch, tessellation, scaleVector, false);
-		TessellatePatch(patch, tessellation, scaleNegateX, true);
+		tessellatePatch(patch, tessellation, scaleVector, false);
+		tessellatePatch(patch, tessellation, scaleNegateX, true);
 
 		if (patch.mirrorZ)
 		{
@@ -218,8 +218,8 @@ void TeapotMeshFactory::ComputeTeapot(float size, size_t tessellation/*, bool rh
 			// handle or spout) are also symmetrical from front to back, so
 			// we tessellate them four times, mirroring in Z as well as X.
 			// ティーポットの一部（ボディ、フタ、リム、しかしハンドルやスパウトではありません）も前から後に対称ですので、それらを4回テッセレーションし、ZとXをミラーリングします。
-			TessellatePatch(patch, tessellation, scaleNegateZ, true);
-			TessellatePatch(patch, tessellation, scaleNegateXZ, false);
+			tessellatePatch(patch, tessellation, scaleNegateZ, true);
+			tessellatePatch(patch, tessellation, scaleNegateXZ, false);
 		}
 	}
 
@@ -229,7 +229,7 @@ void TeapotMeshFactory::ComputeTeapot(float size, size_t tessellation/*, bool rh
 }
 
 //------------------------------------------------------------------------------
-void TeapotMeshFactory::TessellatePatch(const TeapotPatch& patch, size_t tessellation, const Vector3& scale, bool isMirrored)
+void TeapotMeshFactory::tessellatePatch(const TeapotPatch& patch, size_t tessellation, const Vector3& scale, bool isMirrored)
 {
 	// Look up the 16 control points for this patch.
 	Vector3 controlPoints[16];
@@ -243,7 +243,7 @@ void TeapotMeshFactory::TessellatePatch(const TeapotPatch& patch, size_t tessell
 	size_t vbase = m_vbPos - m_vbBegin;
 	Bezier::CreatePatchIndices(tessellation, isMirrored, [&](size_t index)
 	{
-		AddIndex(vbase + index);
+		addIndex(vbase + index);
 	});
 
 	// Create the vertex data.
@@ -252,7 +252,7 @@ void TeapotMeshFactory::TessellatePatch(const TeapotPatch& patch, size_t tessell
 		const Vector3& normal,
 		const Vector2& textureCoordinate)
 	{
-		AddVertex(position, normal, textureCoordinate);
+		addVertex(position, normal, textureCoordinate);
 	});
 }
 
@@ -308,18 +308,18 @@ int TeapotMeshFactory::getIndexCount() const
 }
 
 //------------------------------------------------------------------------------
-void TeapotMeshFactory::Generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
+void TeapotMeshFactory::generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
 {
 	m_vbBegin = outVertices;
 	m_vbPos = m_vbBegin;
 	m_ibPos = outIndices;
 	m_beginIndex = beginIndex;
 
-	ComputeTeapot(m_size, m_tessellation/*, rhcoords*/);
+	computeTeapot(m_size, m_tessellation/*, rhcoords*/);
 }
 
 //------------------------------------------------------------------------------
-void TeapotMeshFactory::AddVertex(const Vector3& pos, const Vector3& normal, const Vector2& texUV)
+void TeapotMeshFactory::addVertex(const Vector3& pos, const Vector3& normal, const Vector2& texUV)
 {
 	m_vbPos->position = pos;
 	m_vbPos->normal = normal;
@@ -329,7 +329,7 @@ void TeapotMeshFactory::AddVertex(const Vector3& pos, const Vector3& normal, con
 }
 
 //------------------------------------------------------------------------------
-void TeapotMeshFactory::AddIndex(uint16_t index)
+void TeapotMeshFactory::addIndex(uint16_t index)
 {
 	*m_ibPos = m_beginIndex + index;
 	m_ibPos++;

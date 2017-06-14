@@ -52,8 +52,8 @@ public:
 					デフォルトは (0,0) で、これはスプライトの左上が原点であることを意味します。
 					(0.5,0.5) はスプライトの中央、(1,1) は右下が原点となります。
 	*/
-	void SetAnchorPoint(const Vector2& ratio);
-	void SetAnchorPoint(float ratioX, float ratioY);					/**< @overload SetAnchorPoint */
+	void setAnchorPoint(const Vector2& ratio);
+	void setAnchorPoint(float ratioX, float ratioY);					/**< @overload setAnchorPoint */
 
 
 	/// 反転方法の設定
@@ -66,10 +66,10 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	SpriteComponent();
 	virtual ~SpriteComponent();
 	void initialize();
-	void RenderSprite(DrawList* renderer, SpriteBaseDirection dir);
+	void renderSprite(DrawList* renderer, SpriteBaseDirection dir);
 
 private:
-	void UpdateVertexData();
+	void updateVertexData();
 
 	Size				m_size;
 	Rect				m_srcRect;
@@ -120,7 +120,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	void initialize();
 	LN_METHOD()
 	void initialize(Texture* texture);
-	virtual void OnRender2(DrawList* renderer) override;
+	virtual void onRender2(DrawList* renderer) override;
 };
 
 /**
@@ -161,7 +161,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	Sprite3DComponent();
 	virtual ~Sprite3DComponent();
 	void initialize();
-	virtual void OnRender2(DrawList* renderer) override;
+	virtual void onRender2(DrawList* renderer) override;
 };
 
 
@@ -202,14 +202,14 @@ public:
 					(0.5,0.5) はスプライトの中央、(1,1) は右下が原点となります。
 	*/
 	LN_METHOD(Property)
-	void SetAnchorPoint(const Vector2& ratio);
+	void setAnchorPoint(const Vector2& ratio);
 
 	/** @overload setSourceRect */
 	LN_METHOD()
-	void SetAnchorPoint(float ratioX, float ratioY);
+	void setAnchorPoint(float ratioX, float ratioY);
 
 protected:
-	virtual SpriteComponent* GetSpriteComponent() const = 0;
+	virtual SpriteComponent* getSpriteComponent() const = 0;
 
 LN_CONSTRUCT_ACCESS:
 	SpriteBase();
@@ -252,8 +252,8 @@ public:
 	static RefPtr<Sprite2D> create(Texture* texture);
 
 protected:
-	virtual VisualComponent* GetMainVisualComponent() const override;
-	virtual SpriteComponent* GetSpriteComponent() const override;
+	virtual VisualComponent* getMainVisualComponent() const override;
+	virtual SpriteComponent* getSpriteComponent() const override;
 
 LN_CONSTRUCT_ACCESS:
 	Sprite2D();
@@ -308,8 +308,8 @@ public:
 
 
 protected:
-	virtual VisualComponent* GetMainVisualComponent() const override;
-	virtual SpriteComponent* GetSpriteComponent() const override;
+	virtual VisualComponent* getMainVisualComponent() const override;
+	virtual SpriteComponent* getSpriteComponent() const override;
 
 LN_CONSTRUCT_ACCESS:
 	Sprite3D();

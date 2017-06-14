@@ -23,7 +23,7 @@ LN_NAMESPACE_BEGIN
 //------------------------------------------------------------------------------
 UIContext* UIContext::getMainContext()
 {
-	return detail::UIManager::getInstance()->getMainWindow()->GetMainUIContext();
+	return detail::UIManager::getInstance()->getMainWindow()->getMainUIContext();
 }
 
 //------------------------------------------------------------------------------
@@ -47,46 +47,46 @@ void UIContext::initialize(detail::UIManager* manager)
 {
 	m_manager = manager;
 
-	LN_REFOBJ_SET(m_rootStyleTable, m_manager->GetDefaultStyleTable());
+	LN_REFOBJ_SET(m_rootStyleTable, m_manager->getDefaultStyleTable());
 
 	//m_mainWindowView = LN_NEW UILayoutView();
-	//m_mainWindowView->initialize(this, m_manager->getMainWindow()->GetPlatformWindow());
+	//m_mainWindowView->initialize(this, m_manager->getMainWindow()->getPlatformWindow());
 }
 
 //------------------------------------------------------------------------------
-void UIContext::SetFocusElement(UIElement* element)
+void UIContext::setFocusElement(UIElement* element)
 {
 	if (element != nullptr)
 	{
-		if (LN_CHECK_STATE(element->IsFocusable())) return;
+		if (LN_CHECK_STATE(element->isFocusable())) return;
 	}
 
-	UIElement* focusedBranchRoot = UIHelper::FindVisualAncestor(element, true, [](UIElement* e) { return e->HasFocus() || e->GetSpcialUIElementType() == detail::SpcialUIElementType::LayoutRoot; });
+	UIElement* focusedBranchRoot = UIHelper::findVisualAncestor(element, true, [](UIElement* e) { return e->hasFocus() || e->getSpcialUIElementType() == detail::SpcialUIElementType::LayoutRoot; });
 	if (LN_CHECK_STATE(focusedBranchRoot != nullptr)) return;
 	
 	if (m_focusElement != nullptr)
 	{
-		if (m_focusElement->IsFocusable() && m_focusElement->HasFocus()) m_focusElement->CallOnLostFocus();
-		UIHelper::FindVisualAncestor(m_focusElement, false, [focusedBranchRoot](UIElement* e)
+		if (m_focusElement->isFocusable() && m_focusElement->hasFocus()) m_focusElement->callOnLostFocus();
+		UIHelper::findVisualAncestor(m_focusElement, false, [focusedBranchRoot](UIElement* e)
 		{
 			if (e == focusedBranchRoot) return true;
-			if (e->IsFocusable() && e->HasFocus()) e->CallOnLostFocus();
+			if (e->isFocusable() && e->hasFocus()) e->callOnLostFocus();
 			return false;
 		});
 	}
 
-	if (element->IsFocusable() && !element->HasFocus()) element->CallOnGotFocus();
-	UIHelper::FindVisualAncestor(element, false, [focusedBranchRoot](UIElement* e)
+	if (element->isFocusable() && !element->hasFocus()) element->callOnGotFocus();
+	UIHelper::findVisualAncestor(element, false, [focusedBranchRoot](UIElement* e)
 	{
 		if (e == focusedBranchRoot) return true;
-		if (e->IsFocusable() && !e->HasFocus()) e->CallOnGotFocus();
+		if (e->isFocusable() && !e->hasFocus()) e->callOnGotFocus();
 		return false;
 	});
 
 	// 初回用
-	if (!focusedBranchRoot->HasFocus())
+	if (!focusedBranchRoot->hasFocus())
 	{
-		focusedBranchRoot->CallOnGotFocus();
+		focusedBranchRoot->callOnGotFocus();
 	}
 
 	m_focusElement = element;
@@ -96,20 +96,20 @@ void UIContext::SetFocusElement(UIElement* element)
 	//{
 	//	if (m_focusElement != nullptr)
 	//	{
-	//		m_focusElement->CallOnLostFocus();
+	//		m_focusElement->callOnLostFocus();
 	//	}
 
 	//	m_focusElement = element;
 
 	//	if (m_focusElement != nullptr)
 	//	{
-	//		m_focusElement->CallOnGotFocus();
+	//		m_focusElement->callOnGotFocus();
 	//	}
 	//}
 }
 
 //------------------------------------------------------------------------------
-void UIContext::InjectElapsedTime(float elapsedTime)
+void UIContext::injectElapsedTime(float elapsedTime)
 {
 }
 
@@ -121,7 +121,7 @@ void UIContext::InjectElapsedTime(float elapsedTime)
 //
 //	//d->SetViewProjection(Matrix::Identity, Matrix::Perspective2DLH(640, 480, 0, 1));
 //
-//	//d->DrawRectangle(RectF(10, 10, 20, 30), ColorF::Red);
+//	//d->drawRectangle(RectF(10, 10, 20, 30), ColorF::Red);
 //
 //	//g->Flush();
 //}

@@ -26,12 +26,12 @@ UIListBoxItem::~UIListBoxItem()
 void UIListBoxItem::initialize()
 {
 	UIControl::initialize();
-	SetHContentAlignment(HAlignment::Left);
-	SetHAlignment(HAlignment::Stretch);
-	GoToVisualState(UIVisualStates::NormalState);
+	setHContentAlignment(HAlignment::Left);
+	setHAlignment(HAlignment::Stretch);
+	goToVisualState(UIVisualStates::NormalState);
 
 	// TODO:
-	SetMinHeight(16);
+	setMinHeight(16);
 }
 
 //==============================================================================
@@ -63,18 +63,18 @@ UIListBox::~UIListBox()
 void UIListBox::initialize()
 {
 	UIControl::initialize();
-	SetHContentAlignment(HAlignment::Stretch);
+	setHContentAlignment(HAlignment::Stretch);
 
 	auto panel = RefPtr<UIStackPanel>::makeRef();
 	panel->initialize();
-	panel->SetHAlignment(HAlignment::Stretch);
-	panel->SetVAlignment(VAlignment::Stretch);
-	SetLayoutPanel(panel);
-	GoToVisualState(NormalState);
+	panel->setHAlignment(HAlignment::Stretch);
+	panel->setVAlignment(VAlignment::Stretch);
+	setLayoutPanel(panel);
+	goToVisualState(NormalState);
 }
 
 //------------------------------------------------------------------------------
-UIListBoxItemPtr UIListBox::AddTextItem(const String& text)
+UIListBoxItemPtr UIListBox::addTextItem(const String& text)
 {
 	auto textBlock = RefPtr<UITextBlock>::makeRef();
 	textBlock->initialize();
@@ -90,8 +90,8 @@ UIListBoxItemPtr UIListBox::addItem(UIElement* item)
 	// 受け取った item を UIListBoxItem でラップして、UIListBoxItem をリストに入れる
 	auto listItem = RefPtr<UIListBoxItem>::makeRef();
 	listItem->initialize();
-	listItem->AddChild(item);
-	AddChild(listItem);
+	listItem->addChild(item);
+	addChild(listItem);
 	return listItem;
 }
 

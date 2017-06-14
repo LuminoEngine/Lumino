@@ -41,7 +41,7 @@ void SpriteComponent::initialize()
 
 	m_material = newObject<Material>();
 
-	//owner->GetRootNode()->AddChild(this);
+	//owner->getRootNode()->addChild(this);
 	setAutoRemove(true);
 }
 
@@ -51,7 +51,7 @@ void SpriteComponent::setTexture(Texture* texture)
 	//if (LN_CHECK_ARG(m_materialList != nullptr)) return;
 	//m_materialList->GetAt(0)->setMaterialTexture(texture);
 	m_texture = texture;
-	UpdateVertexData();
+	updateVertexData();
 }
 
 //------------------------------------------------------------------------------
@@ -72,7 +72,7 @@ Texture* SpriteComponent::getTexture() const
 void SpriteComponent::setSourceRect(const Rect& rect)
 {
 	m_srcRect = rect;
-	UpdateVertexData();
+	updateVertexData();
 }
 
 //------------------------------------------------------------------------------
@@ -82,25 +82,25 @@ void SpriteComponent::setSourceRect(float x, float y, float width, float height)
 }
 
 //------------------------------------------------------------------------------
-void SpriteComponent::SetAnchorPoint(const Vector2& ratio)
+void SpriteComponent::setAnchorPoint(const Vector2& ratio)
 {
 	m_anchor = ratio;
 }
 
 //------------------------------------------------------------------------------
-void SpriteComponent::SetAnchorPoint(float ratioX, float ratioY)
+void SpriteComponent::setAnchorPoint(float ratioX, float ratioY)
 {
 	m_anchor.set(ratioX, ratioY);
 }
 
 //------------------------------------------------------------------------------
-void SpriteComponent::RenderSprite(DrawList* renderer, SpriteBaseDirection dir)
+void SpriteComponent::renderSprite(DrawList* renderer, SpriteBaseDirection dir)
 {
 	//Material* mat = GetMainMaterial();
 	Color colorScale = getColorScale();
 	colorScale.a *= getOpacity();
 	renderer->setTransform(getOwnerObject()->transform.getWorldMatrix());
-	renderer->DrawSprite(
+	renderer->drawSprite(
 		Vector3::Zero,
 		m_renderSize,
 		m_anchor,
@@ -108,12 +108,12 @@ void SpriteComponent::RenderSprite(DrawList* renderer, SpriteBaseDirection dir)
 		m_renderSourceRect,
 		colorScale,
 		dir,
-		GetBillboardType(),
+		getBillboardType(),
 		m_material);
 }
 
 //------------------------------------------------------------------------------
-void SpriteComponent::UpdateVertexData()
+void SpriteComponent::updateVertexData()
 {
 	// 転送元矩形が負値ならテクスチャ全体を転送する
 	Texture* tex = getTexture();
@@ -185,9 +185,9 @@ void Sprite2DComponent::initialize(Texture* texture)
 }
 
 //------------------------------------------------------------------------------
-void Sprite2DComponent::OnRender2(DrawList* renderer)
+void Sprite2DComponent::onRender2(DrawList* renderer)
 {
-	RenderSprite(renderer, SpriteBaseDirection::Basic2D);
+	renderSprite(renderer, SpriteBaseDirection::Basic2D);
 }
 
 
@@ -240,9 +240,9 @@ void Sprite3DComponent::initialize()
 }
 
 //------------------------------------------------------------------------------
-void Sprite3DComponent::OnRender2(DrawList* renderer)
+void Sprite3DComponent::onRender2(DrawList* renderer)
 {
-	RenderSprite(renderer, SpriteBaseDirection::ZMinus);
+	renderSprite(renderer, SpriteBaseDirection::ZMinus);
 }
 
 
@@ -271,43 +271,43 @@ void SpriteBase::initialize()
 //------------------------------------------------------------------------------
 void SpriteBase::setTexture(Texture* texture)
 {
-	GetSpriteComponent()->setTexture(texture);
+	getSpriteComponent()->setTexture(texture);
 }
 
 //------------------------------------------------------------------------------
 Texture* SpriteBase::getTexture() const
 {
-	return GetSpriteComponent()->getTexture();
+	return getSpriteComponent()->getTexture();
 }
 
 //------------------------------------------------------------------------------
 void SpriteBase::setSourceRect(const Rect& rect)
 {
-	GetSpriteComponent()->setSourceRect(rect);
+	getSpriteComponent()->setSourceRect(rect);
 }
 
 //------------------------------------------------------------------------------
 void SpriteBase::setSourceRect(float x, float y, float width, float height)
 {
-	GetSpriteComponent()->setSourceRect(x, y, width, height);
+	getSpriteComponent()->setSourceRect(x, y, width, height);
 }
 
 //------------------------------------------------------------------------------
 const Rect& SpriteBase::getSourceRect() const
 {
-	return GetSpriteComponent()->getSourceRect();
+	return getSpriteComponent()->getSourceRect();
 }
 
 //------------------------------------------------------------------------------
-void SpriteBase::SetAnchorPoint(const Vector2& ratio)
+void SpriteBase::setAnchorPoint(const Vector2& ratio)
 {
-	GetSpriteComponent()->SetAnchorPoint(ratio);
+	getSpriteComponent()->setAnchorPoint(ratio);
 }
 
 //------------------------------------------------------------------------------
-void SpriteBase::SetAnchorPoint(float ratioX, float ratioY)
+void SpriteBase::setAnchorPoint(float ratioX, float ratioY)
 {
-	GetSpriteComponent()->SetAnchorPoint(ratioX, ratioY);
+	getSpriteComponent()->setAnchorPoint(ratioX, ratioY);
 }
 
 //==============================================================================
@@ -350,7 +350,7 @@ void Sprite2D::initialize()
 {
 	SpriteBase::initialize();
 	m_component = Sprite2DComponent::create();
-	AddComponent(m_component);
+	addComponent(m_component);
 	detail::EngineDomain::getDefaultWorld2D()->addWorldObject(this, true);
 }
 
@@ -359,7 +359,7 @@ void Sprite2D::initialize(const StringRef& filePath)
 {
 	SpriteBase::initialize();
 	m_component = Sprite2DComponent::create(filePath);
-	AddComponent(m_component);
+	addComponent(m_component);
 	detail::EngineDomain::getDefaultWorld2D()->addWorldObject(this, true);
 }
 
@@ -368,18 +368,18 @@ void Sprite2D::initialize(Texture* texture)
 {
 	SpriteBase::initialize();
 	m_component = Sprite2DComponent::create(texture);
-	AddComponent(m_component);
+	addComponent(m_component);
 	detail::EngineDomain::getDefaultWorld2D()->addWorldObject(this, true);
 }
 
 //------------------------------------------------------------------------------
-VisualComponent* Sprite2D::GetMainVisualComponent() const
+VisualComponent* Sprite2D::getMainVisualComponent() const
 {
 	return m_component;
 }
 
 //------------------------------------------------------------------------------
-SpriteComponent* Sprite2D::GetSpriteComponent() const
+SpriteComponent* Sprite2D::getSpriteComponent() const
 {
 	return m_component;
 }
@@ -419,7 +419,7 @@ void Sprite3D::initialize()
 {
 	SpriteBase::initialize();
 	m_component = Sprite3DComponent::create();
-	AddComponent(m_component);
+	addComponent(m_component);
 	detail::EngineDomain::getDefaultWorld3D()->addWorldObject(this, true);
 }
 
@@ -428,18 +428,18 @@ void Sprite3D::initialize(float width, float height, Texture* texture)
 {
 	SpriteBase::initialize();
 	m_component = Sprite3DComponent::create(width, height, texture);
-	AddComponent(m_component);
+	addComponent(m_component);
 	detail::EngineDomain::getDefaultWorld3D()->addWorldObject(this, true);
 }
 
 //------------------------------------------------------------------------------
-VisualComponent* Sprite3D::GetMainVisualComponent() const
+VisualComponent* Sprite3D::getMainVisualComponent() const
 {
 	return m_component;
 }
 
 //------------------------------------------------------------------------------
-SpriteComponent* Sprite3D::GetSpriteComponent() const
+SpriteComponent* Sprite3D::getSpriteComponent() const
 {
 	return m_component;
 }

@@ -67,7 +67,7 @@ void HugePlane::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 			まず、視錐台の全ての辺について、m_direction を向く平面との交点を求める。
 			求めることができた全ての交点の中から、
 		*/
-		//auto& vf = dc->CurrentCamera->GetViewFrustum();
+		//auto& vf = dc->CurrentCamera->getViewFrustum();
 		//Vector3 points[8];
 		//vf.getCornerPoints(points);
 
@@ -111,10 +111,10 @@ void HugePlane::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 		//m_mesh->setPosition(1, Vector3(minPos.x, 0, minPos.z));
 		//m_mesh->setPosition(2, Vector3(maxPos.x, 0, maxPos.z));
 		//m_mesh->setPosition(3, Vector3(maxPos.x, 0, minPos.z));
-		//m_mesh->SetUV(0, Vector2(-1.0f, 1.0f));
-		//m_mesh->SetUV(1, Vector2(-1.0f, -1.0f));
-		//m_mesh->SetUV(2, Vector2(1.0f, 1.0f));
-		//m_mesh->SetUV(3, Vector2(1.0f, -1.0f));
+		//m_mesh->setUV(0, Vector2(-1.0f, 1.0f));
+		//m_mesh->setUV(1, Vector2(-1.0f, -1.0f));
+		//m_mesh->setUV(2, Vector2(1.0f, 1.0f));
+		//m_mesh->setUV(3, Vector2(1.0f, -1.0f));
 
 		dc->DrawMesh(m_mesh, m_mesh->m_attributes[subsetIndex].StartIndex, m_mesh->m_attributes[subsetIndex].PrimitiveNum);
 	}

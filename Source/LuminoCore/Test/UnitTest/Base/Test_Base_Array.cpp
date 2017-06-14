@@ -193,7 +193,7 @@ TEST_F(Test_Base_Array, isEmpty)
 	//	ElapsedTimer timer;
 	//	timer.Start();
 	//	for (int i = 0; i < testCount; ++i) { list1.push_back(i); }
-	//	printf("%7llu", timer.GetElapsedTime());
+	//	printf("%7llu", timer.getElapsedTime());
 	//}
 	//printf("\n");
 	for (int j = 0; j < 10; j++)
@@ -285,7 +285,7 @@ TEST_F(Test_Base_Array, isEmpty)
 	//		ary2 = StringTraits::Split2(str, _T(","));
 	//		List<String> a22 = ary2;
 	//	}
-	//	printf("t:%llu\n", timer.GetElapsedTime());
+	//	printf("t:%llu\n", timer.getElapsedTime());
 	//}
 #endif
 }

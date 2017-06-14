@@ -34,25 +34,25 @@ void UIViewport::initialize()
 }
 
 //------------------------------------------------------------------------------
-void UIViewport::SetViewBackgroundColor(const Color& color)
+void UIViewport::setViewBackgroundColor(const Color& color)
 {
 	m_backgroundColor = color;
 }
 
 //------------------------------------------------------------------------------
-void UIViewport::SetPlacement(ViewportPlacement placement)
+void UIViewport::setPlacement(ViewportPlacement placement)
 {
 	m_placement = placement;
 }
 
 //------------------------------------------------------------------------------
-void UIViewport::SetBackbufferSize(int width, int height)
+void UIViewport::setBackbufferSize(int width, int height)
 {
 	m_backbufferSize.set(width, height);
 }
 
 //------------------------------------------------------------------------------
-void UIViewport::AddViewportLayer(UIViewportLayer* layer)
+void UIViewport::addViewportLayer(UIViewportLayer* layer)
 {
 	m_viewportLayerList.add(layer);
 	layer->m_owner = this;
@@ -68,7 +68,7 @@ void UIViewport::AddViewportLayer(UIViewportLayer* layer)
 //}
 
 //------------------------------------------------------------------------------
-void UIViewport::OnRoutedEvent(UIEventArgs* e)
+void UIViewport::onRoutedEvent(UIEventArgs* e)
 {
 	// UI 要素は通常 UIViewport の上に張り付けられる。
 	// デフォルトの MainWindow などは全体に UILayoutPanel が乗るので、
@@ -76,11 +76,11 @@ void UIViewport::OnRoutedEvent(UIEventArgs* e)
 
 	for (auto& layer : m_viewportLayerList)
 	{
-		layer->OnRoutedEvent(e);
+		layer->onRoutedEvent(e);
 		if (e->handled) return;
 	}
 
-	return UIElement::OnRoutedEvent(e);
+	return UIElement::onRoutedEvent(e);
 }
 
 //------------------------------------------------------------------------------
@@ -91,7 +91,7 @@ Size UIViewport::arrangeOverride(const Size& finalSize)
 
 	for (auto& layer : m_viewportLayerList)
 	{
-		layer->UpdateLayout(finalSize);
+		layer->updateLayout(finalSize);
 	}
 
 
@@ -99,15 +99,15 @@ Size UIViewport::arrangeOverride(const Size& finalSize)
 }
 
 //------------------------------------------------------------------------------
-UIElement* UIViewport::CheckMouseHoverElement(const PointF& globalPt)
+UIElement* UIViewport::checkMouseHoverElement(const PointF& globalPt)
 {
 	for (auto& layer : m_viewportLayerList)
 	{
-		auto* element = layer->HitTestUIElement(globalPt);
+		auto* element = layer->hitTestUIElement(globalPt);
 		if (element != nullptr) return element;
 	}
 
-	return UIElement::CheckMouseHoverElement(globalPt);
+	return UIElement::checkMouseHoverElement(globalPt);
 }
 
 //------------------------------------------------------------------------------
@@ -121,7 +121,7 @@ void UIViewport::onRender(DrawingContext* g)
 		else
 			bakcbufferSize = m_backbufferSize;
 
-		UpdateFramebufferSizeIfNeeded(bakcbufferSize);
+		updateFramebufferSizeIfNeeded(bakcbufferSize);
 	}
 
 
@@ -143,7 +143,7 @@ void UIViewport::onRender(DrawingContext* g)
 		layer->render();
 	}
 
-	g->SetBuiltinEffectData(detail::BuiltinEffectData::DefaultData);
+	g->setBuiltinEffectData(detail::BuiltinEffectData::DefaultData);
 
 	// 全てのレイヤーの描画リストを実行し m_primaryLayerTarget へ書き込む
 	for (auto& layer : m_viewportLayerList)
@@ -151,7 +151,7 @@ void UIViewport::onRender(DrawingContext* g)
 		layer->executeDrawListRendering(g, m_primaryLayerTarget, m_depthBuffer);
 
 		// Posteffect
-		layer->PostRender(g, &m_primaryLayerTarget, &m_secondaryLayerTarget);
+		layer->postRender(g, &m_primaryLayerTarget, &m_secondaryLayerTarget);
 	}
 
 
@@ -169,7 +169,7 @@ void UIViewport::onRender(DrawingContext* g)
 }
 
 //------------------------------------------------------------------------------
-void UIViewport::UpdateFramebufferSizeIfNeeded(const SizeI& viewSize)
+void UIViewport::updateFramebufferSizeIfNeeded(const SizeI& viewSize)
 {
 	bool create = false;
 	SizeI newSize(0, 0);
@@ -210,7 +210,7 @@ void UIViewport::UpdateFramebufferSizeIfNeeded(const SizeI& viewSize)
 }
 
 //------------------------------------------------------------------------------
-void UIViewport::MakeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize, Matrix* mat)
+void UIViewport::makeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize, Matrix* mat)
 {
 	float sw = static_cast<float>(srcSize.width);   // 転送元
 	float sh = static_cast<float>(srcSize.height);
@@ -287,30 +287,30 @@ UIViewportLayer::~UIViewportLayer()
 }
 
 //------------------------------------------------------------------------------
-void UIViewportLayer::AddPostEffect(PostEffect* postEffect)
+void UIViewportLayer::addPostEffect(PostEffect* postEffect)
 {
 	m_postEffects.add(postEffect);
 	postEffect->m_ownerLayer = this;
 }
 
 //------------------------------------------------------------------------------
-UIElement* UIViewportLayer::HitTestUIElement(const PointF& globalPt)
+UIElement* UIViewportLayer::hitTestUIElement(const PointF& globalPt)
 {
 	return nullptr;
 }
 
 //------------------------------------------------------------------------------
-void UIViewportLayer::OnRoutedEvent(UIEventArgs* e)
+void UIViewportLayer::onRoutedEvent(UIEventArgs* e)
 {
 }
 
 //------------------------------------------------------------------------------
-void UIViewportLayer::UpdateLayout(const Size& viewSize)
+void UIViewportLayer::updateLayout(const Size& viewSize)
 {
 }
 
 //------------------------------------------------------------------------------
-void UIViewportLayer::PostRender(DrawList* context, RefPtr<RenderTargetTexture>* primaryLayerTarget, RefPtr<RenderTargetTexture>* secondaryLayerTarget)
+void UIViewportLayer::postRender(DrawList* context, RefPtr<RenderTargetTexture>* primaryLayerTarget, RefPtr<RenderTargetTexture>* secondaryLayerTarget)
 {
 	for (auto& e : m_postEffects)
 	{
@@ -348,7 +348,7 @@ void UILayoutLayer::initialize()
 	m_internalRenderer = internalRenderer;
 
 	m_drawElementListSet = RefPtr<RenderView>::makeRef();
-	m_drawElementListSet->m_lists.add(m_drawingContext->GetDrawElementList());
+	m_drawElementListSet->m_lists.add(m_drawingContext->getDrawElementList());
 
 }
 
@@ -359,29 +359,29 @@ UILayoutView* UILayoutLayer::GetLayoutView() const
 }
 
 //------------------------------------------------------------------------------
-UIElement* UILayoutLayer::HitTestUIElement(const PointF& globalPt)
+UIElement* UILayoutLayer::hitTestUIElement(const PointF& globalPt)
 {
-	auto* element = m_root->CheckMouseHoverElement(globalPt);
+	auto* element = m_root->checkMouseHoverElement(globalPt);
 	if (element != nullptr) return element;
-	return UIViewportLayer::HitTestUIElement(globalPt);
+	return UIViewportLayer::hitTestUIElement(globalPt);
 }
 
 //------------------------------------------------------------------------------
-void UILayoutLayer::OnRoutedEvent(UIEventArgs* e)
+void UILayoutLayer::onRoutedEvent(UIEventArgs* e)
 {
-	//m_root->RaiseEvent(e->GetType(), e->sender, e);
+	//m_root->raiseEvent(e->GetType(), e->sender, e);
 }
 
 //------------------------------------------------------------------------------
-void UILayoutLayer::UpdateLayout(const Size& viewSize)
+void UILayoutLayer::updateLayout(const Size& viewSize)
 {
-	m_root->UpdateLayout(viewSize);
+	m_root->updateLayout(viewSize);
 }
 
 //------------------------------------------------------------------------------
 void UILayoutLayer::render()
 {
-	m_drawingContext->BeginMakeElements();
+	m_drawingContext->beginMakeElements();
 	m_drawingContext->setBlendMode(BlendMode::Alpha);
 	//m_drawingContext->Clear(ClearFlags::All, Color::Black);;	// TODO
 	m_root->render(m_drawingContext);
@@ -401,7 +401,7 @@ void UILayoutLayer::executeDrawListRendering(DrawList* parentDrawList, RenderTar
 	m_drawElementListSet->m_cameraInfo.viewProjMatrix = m_drawElementListSet->m_cameraInfo.viewMatrix * m_drawElementListSet->m_cameraInfo.projMatrix;
 	m_drawElementListSet->m_cameraInfo.viewFrustum = ViewFrustum(m_drawElementListSet->m_cameraInfo.projMatrix);
 	m_drawElementListSet->m_cameraInfo.zSortDistanceBase = ZSortDistanceBase::NodeZ;
-	parentDrawList->RenderSubView(
+	parentDrawList->renderSubView(
 		m_drawElementListSet,
 		m_internalRenderer,
 		renderTarget,

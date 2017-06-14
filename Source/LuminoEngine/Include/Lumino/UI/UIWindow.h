@@ -15,8 +15,8 @@ public:
 	static RefPtr<UIWindow> create();
 
 protected:
-	virtual void OnRoutedEvent(UIEventArgs* e) override;
-	virtual void OnLayoutPanelChanged(UILayoutPanel* newPanel) override;
+	virtual void onRoutedEvent(UIEventArgs* e) override;
+	virtual void onLayoutPanelChanged(UILayoutPanel* newPanel) override;
 	virtual void onRender(DrawingContext* g) override;
 
 LN_CONSTRUCT_ACCESS:

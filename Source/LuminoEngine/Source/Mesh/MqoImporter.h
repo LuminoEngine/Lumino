@@ -108,12 +108,12 @@ public:
 	List<MqoFace>			m_mqoFaceList;
 
 	void Smoothing();
-	RefPtr<MeshResource> CreateMeshResource();
+	RefPtr<MeshResource> createMeshResource();
 
 private:
-	void MakeMqoFaceRefsAndEdge();
-	void MakeMqoFacePointNormals();
-	void MakeMqoFacePointGroup(MqoFacePoint* p0, MqoFacePoint* p1/*MqoEdge* edge*/);
+	void makeMqoFaceRefsAndEdge();
+	void makeMqoFacePointNormals();
+	void makeMqoFacePointGroup(MqoFacePoint* p0, MqoFacePoint* p1/*MqoEdge* edge*/);
 };
 
 class MqoImporter
@@ -122,20 +122,20 @@ public:
 	MqoImporter();
 	virtual ~MqoImporter() = default;
 
-	RefPtr<StaticMeshModel> Import(ModelManager* manager, const PathName& parentDir, Stream* stream);
+	RefPtr<StaticMeshModel> import(ModelManager* manager, const PathName& parentDir, Stream* stream);
 
 private:
 
-	void LoadMaterials(StreamReader* reader);
+	void loadMaterials(StreamReader* reader);
 	void loadObject(StreamReader* reader, const String& name);
-	void ReadVertexChunk(StreamReader* reader, MqoObject* mqoObject);
-	void ReadFaceChunk(StreamReader* reader, MqoObject* mqoObject);
-	static void ReadInts(const StringRef& str, int* values, int valuesCount);
-	static void ReadUInts(const StringRef& str, uint32_t* values, int valuesCount);
-	static void ReadFloats(const StringRef& str, float* values, int valuesCount);
+	void readVertexChunk(StreamReader* reader, MqoObject* mqoObject);
+	void readFaceChunk(StreamReader* reader, MqoObject* mqoObject);
+	static void readInts(const StringRef& str, int* values, int valuesCount);
+	static void readUInts(const StringRef& str, uint32_t* values, int valuesCount);
+	static void readFloats(const StringRef& str, float* values, int valuesCount);
 
 
-	void InitMqoFace(MqoFace* face);
+	void initMqoFace(MqoFace* face);
 	//int AddFaceIndices(MeshResource* mesh, int startIndexBufferIndex, int faceIndex);
 	//int PutVertexSource(int faceIndex, int pointIndex);
 	//bool EqualsFacePoint(const MqoFace* face1, int pointIndex1, const MqoFace* face2, int pointIndex2);

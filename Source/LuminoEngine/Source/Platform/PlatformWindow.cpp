@@ -15,7 +15,7 @@ LN_NAMESPACE_BEGIN
 //	data.clientSize = clientSize;
 //	data.fullscreen = false;
 //	data.resizable = resizable;
-//	return manager->m_windowManager->CreateSubWindow(data);
+//	return manager->m_windowManager->createSubWindow(data);
 //}
 
 //------------------------------------------------------------------------------
@@ -47,13 +47,13 @@ void PlatformWindow::initialize(const SizeI& clientSize)
 }
 
 //------------------------------------------------------------------------------
-void PlatformWindow::SetCursorVisible(bool visible)
+void PlatformWindow::setCursorVisible(bool visible)
 {
-	m_mouseCursorVisibility->SetMouseCursorVisibleState(visible, 0);
+	m_mouseCursorVisibility->setMouseCursorVisibleState(visible, 0);
 }
 
 //------------------------------------------------------------------------------
-void PlatformWindow::AttachEventListener(IEventListener* listener, int priority)
+void PlatformWindow::attachEventListener(IEventListener* listener, int priority)
 {
 	m_listenerEntryArray.add({ priority, listener });
 	std::stable_sort(
@@ -62,16 +62,16 @@ void PlatformWindow::AttachEventListener(IEventListener* listener, int priority)
 }
 
 //------------------------------------------------------------------------------
-void PlatformWindow::DetachEventListener(IEventListener* listener)
+void PlatformWindow::detachEventListener(IEventListener* listener)
 {
 	m_listenerEntryArray.removeIf(
 		[listener](const std::pair<int, IEventListener*>& i) { return i.second == listener; });
 }
 
 //------------------------------------------------------------------------------
-bool PlatformWindow::SendPlatformEvent(const PlatformEventArgs& e)
+bool PlatformWindow::sendPlatformEvent(const PlatformEventArgs& e)
 {
-	OnPlatformEvent(e);
+	onPlatformEvent(e);
 	bool handled = SendEventToAllListener(e);
 	if (!handled)
 	{
@@ -115,7 +115,7 @@ bool PlatformWindow::SendPlatformEvent(const PlatformEventArgs& e)
 }
 
 //------------------------------------------------------------------------------
-void PlatformWindow::OnPlatformEvent(const PlatformEventArgs& e)
+void PlatformWindow::onPlatformEvent(const PlatformEventArgs& e)
 {
 }
 

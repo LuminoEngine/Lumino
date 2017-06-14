@@ -17,12 +17,12 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 // PlatformEventArgs
 //==============================================================================
-PlatformEventArgs PlatformEventArgs::MakeClosingEvent(PlatformWindow* sender)
+PlatformEventArgs PlatformEventArgs::makeClosingEvent(PlatformWindow* sender)
 {
 	return PlatformEventArgs(PlatformEventType::close, sender);
 }
 
-PlatformEventArgs PlatformEventArgs::MakeWindowSizeChangedEvent(PlatformWindow* sender, int width, int height)
+PlatformEventArgs PlatformEventArgs::makeWindowSizeChangedEvent(PlatformWindow* sender, int width, int height)
 {
 	PlatformEventArgs e(PlatformEventType::WindowSizeChanged, sender);
 	e.size.width = width;
@@ -30,7 +30,7 @@ PlatformEventArgs PlatformEventArgs::MakeWindowSizeChangedEvent(PlatformWindow* 
 	return e;
 }
 
-PlatformEventArgs PlatformEventArgs::MakeActivateChangedEvent(PlatformWindow* sender, bool active)
+PlatformEventArgs PlatformEventArgs::makeActivateChangedEvent(PlatformWindow* sender, bool active)
 {
 	PlatformEventArgs e;
 	e.sender = sender;
@@ -38,7 +38,7 @@ PlatformEventArgs PlatformEventArgs::MakeActivateChangedEvent(PlatformWindow* se
 	return e;
 }
 
-PlatformEventArgs PlatformEventArgs::MakeKeyEvent(PlatformWindow* sender, PlatformEventType type, Keys keyCode, ModifierKeys modifierKeys, char keyChar)
+PlatformEventArgs PlatformEventArgs::makeKeyEvent(PlatformWindow* sender, PlatformEventType type, Keys keyCode, ModifierKeys modifierKeys, char keyChar)
 {
 	PlatformEventArgs e;
 	e.type = type;
@@ -49,7 +49,7 @@ PlatformEventArgs PlatformEventArgs::MakeKeyEvent(PlatformWindow* sender, Platfo
 	return e;
 }
 
-PlatformEventArgs PlatformEventArgs::MakeMouseWheelEvent(PlatformWindow* sender, int delta)
+PlatformEventArgs PlatformEventArgs::makeMouseWheelEvent(PlatformWindow* sender, int delta)
 {
 	PlatformEventArgs e;
 	e.type = PlatformEventType::MouseWheel;
@@ -143,17 +143,17 @@ void PlatformManager::initialize(const Settings& settings)
 	if (m_useThread) {
 		m_mainWindowThreadInitFinished.setFalse();
 		m_mainWindowThreadEndRequested.setFalse();
-		m_mainWindowThread.start(createDelegate(this, &PlatformManager::Thread_MainWindow));
+		m_mainWindowThread.start(createDelegate(this, &PlatformManager::thread_MainWindow));
 		m_mainWindowThreadInitFinished.wait();	// 初期化終了まで待機する
 	}
 	else {
-		m_windowManager->CreateMainWindow(m_windowCreationSettings);
+		m_windowManager->createMainWindow(m_windowCreationSettings);
 	}
 
 	// MainWindow
 	//m_mainWindow = LN_NEW PlatformWindow(m_windowManager->getMainWindow());
     
-    m_windowManager->getMainWindow()->SetVisible(true);
+    m_windowManager->getMainWindow()->setVisible(true);
 
 	if (g_platformManager == nullptr)
 	{
@@ -168,11 +168,11 @@ PlatformWindow* PlatformManager::getMainWindow()
 }
 
 //------------------------------------------------------------------------------
-bool PlatformManager::DoEvents()
+bool PlatformManager::doEvents()
 {
 	// メインスレッドでメッセージ処理する場合は InternalDoEvents
 	if (!m_useThread) {
-		m_windowManager->DoEvents();
+		m_windowManager->doEvents();
 	}
 
 	return !m_windowManager->isEndRequested();
@@ -203,16 +203,16 @@ void PlatformManager::Dispose()
 }
 
 //------------------------------------------------------------------------------
-void PlatformManager::Thread_MainWindow()
+void PlatformManager::thread_MainWindow()
 {
 	// 初期化
-	m_windowManager->CreateMainWindow(m_windowCreationSettings);
+	m_windowManager->createMainWindow(m_windowCreationSettings);
 	m_mainWindowThreadInitFinished.setTrue();	// 初期化完了
 
 	// メッセージループ
 	while (!m_mainWindowThreadEndRequested.isTrue())
 	{
-		m_windowManager->DoEvents();
+		m_windowManager->doEvents();
 		Thread::sleep(10);
 	}
 

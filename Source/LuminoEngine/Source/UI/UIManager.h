@@ -42,29 +42,29 @@ public:
 
 	void initialize(const Settings& settings);
 	void Finalize();
-	void CreateGameModeMainFrame(World2D* defaultWorld2D, World3D* defaultWorld3D);
+	void createGameModeMainFrame(World2D* defaultWorld2D, World3D* defaultWorld3D);
 	//void CreateWrapModeMainFrame(void* window, World2D* defaultWorld2D, World3D* defaultWorld3D);
-	void ReleaseGameModeMainFrame();
-	EventArgsPool* GetEventArgsPool() const { return m_eventArgsPool; }
-	const RefPtr<Texture2D>& GetDefaultSkinTexture() const { return m_defaultSkinTexture; }
-	UIStyleTable* GetDefaultStyleTable() const { return m_defaultStyleTable; }
+	void releaseGameModeMainFrame();
+	EventArgsPool* getEventArgsPool() const { return m_eventArgsPool; }
+	const RefPtr<Texture2D>& getDefaultSkinTexture() const { return m_defaultSkinTexture; }
+	UIStyleTable* getDefaultStyleTable() const { return m_defaultStyleTable; }
 	AnimationManager* getAnimationManager() const { return m_animationManager; }
 	PlatformManager* getPlatformManager() const { return m_platformManager; }
 	GraphicsManager* getGraphicsManager() const { return m_graphicsManager; }
-	AssetsManager* GetAssetsManager() const { return m_assetsManager; }
+	AssetsManager* getAssetsManager() const { return m_assetsManager; }
 	UIMainWindow* getMainWindow() const { return m_mainWindow; }
 
-	void CaptureMouse(UIElement* element);
-	void ReleaseMouseCapture(UIElement* element);
-	UIElement* GetMouseCapturedElement() const { return m_mouseCapturedElement; }
+	void captureMouse(UIElement* element);
+	void releaseMouseCapture(UIElement* element);
+	UIElement* getMouseCapturedElement() const { return m_mouseCapturedElement; }
 
-	const List<UIFrameWindow*>& GetWindows() const { return m_windows; }
-	void AddFrameWindow(UIFrameWindow* window) { m_windows.add(window); }
-	void RemoveFrameWindow(UIFrameWindow* window) { m_windows.remove(window); }
+	const List<UIFrameWindow*>& getWindows() const { return m_windows; }
+	void addFrameWindow(UIFrameWindow* window) { m_windows.add(window); }
+	void removeFrameWindow(UIFrameWindow* window) { m_windows.remove(window); }
 
 private:
 	void createGlobalObjects();
-	void MakeDefaultStyle(UIStyleTable* table);
+	void makeDefaultStyle(UIStyleTable* table);
 
 	EventArgsPool*		m_eventArgsPool;
 	FileManager*		m_fileManager;

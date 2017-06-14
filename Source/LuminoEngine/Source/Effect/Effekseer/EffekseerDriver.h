@@ -129,7 +129,7 @@ public:
 	virtual void SetWorldMatrix(const Matrix& matrix) override;
 
 	void updateFrame();	// 更新スレッド
-	void Draw();	// 描画スレッド
+	void draw();	// 描画スレッド
 
 	static void LNToEFKMatrix43(const Matrix& mat, ::Effekseer::Matrix43* efkMat);
 

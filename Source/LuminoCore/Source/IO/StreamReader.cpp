@@ -175,7 +175,7 @@ int GenericStreamReader<TChar>::readBuffer()
 	return m_charElementLen;
 }
 
-// Instantiate template
+// instantiate template
 template class GenericStreamReader<char>;
 template class GenericStreamReader<wchar_t>;
 

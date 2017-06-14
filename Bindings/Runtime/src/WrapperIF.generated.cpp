@@ -220,13 +220,13 @@ LN_API LNResultCode LNSceneNode_GetPosition(LNHandle scenenode, LNVector3* outRe
 LN_API LNResultCode LNSceneNode_SetVisible(LNHandle scenenode, bool visible)
 {
     LWIG_FUNC_TRY_BEGIN;
-    (LWIG_TO_OBJECT(LNSceneNode, scenenode)->SetVisible(visible));
+    (LWIG_TO_OBJECT(LNSceneNode, scenenode)->setVisible(visible));
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNSceneNode_IsVisible(LNHandle scenenode, bool* outReturn)
 {
     LWIG_FUNC_TRY_BEGIN;
-    *outReturn = (LWIG_TO_OBJECT(LNSceneNode, scenenode)->IsVisible());
+    *outReturn = (LWIG_TO_OBJECT(LNSceneNode, scenenode)->isVisible());
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API void LNSceneNode_SetBindingTypeInfo(void* data)
@@ -346,19 +346,19 @@ LN_API void LNPhysicsObject_SetBindingTypeInfo(void* data)
 LN_API LNResultCode LNCollider_AddShape(LNHandle collider, LNHandle shape)
 {
     LWIG_FUNC_TRY_BEGIN;
-    (LWIG_TO_OBJECT(LNCollider, collider)->AddShape(LWIG_TO_OBJECT(CollisionShape, shape)));
+    (LWIG_TO_OBJECT(LNCollider, collider)->addShape(LWIG_TO_OBJECT(CollisionShape, shape)));
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNCollider_SetTrigger(LNHandle collider, bool enabled)
 {
     LWIG_FUNC_TRY_BEGIN;
-    (LWIG_TO_OBJECT(LNCollider, collider)->SetTrigger(enabled));
+    (LWIG_TO_OBJECT(LNCollider, collider)->setTrigger(enabled));
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNCollider_IsTrigger(LNHandle collider, bool* outReturn)
 {
     LWIG_FUNC_TRY_BEGIN;
-    *outReturn = (LWIG_TO_OBJECT(LNCollider, collider)->IsTrigger());
+    *outReturn = (LWIG_TO_OBJECT(LNCollider, collider)->isTrigger());
     LWIG_FUNC_TRY_END_RETURN;
 }
 LN_API LNResultCode LNCollider_ConnectOnTriggerEnter(LNHandle self, LNCollisionEventHandler callback)

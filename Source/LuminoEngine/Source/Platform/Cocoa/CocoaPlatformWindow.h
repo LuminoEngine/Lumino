@@ -22,11 +22,11 @@ public:
     
 public:
 	// PlatformWindow interface
-    virtual void SetVisible(bool visible) override;
-    virtual void SetTitleText(const StringRef& title) override;
-    virtual const String& GetTitleText() const override;
-	virtual void SetFullScreenEnabled(bool enabled) override;
-	virtual bool IsFullScreenEnabled() const override;
+    virtual void setVisible(bool visible) override;
+    virtual void setTitleText(const StringRef& title) override;
+    virtual const String& getTitleText() const override;
+	virtual void setFullScreenEnabled(bool enabled) override;
+	virtual bool isFullScreenEnabled() const override;
 
 private:
 	id		m_window;

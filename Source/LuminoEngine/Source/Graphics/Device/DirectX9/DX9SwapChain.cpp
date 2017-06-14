@@ -41,7 +41,7 @@ void DX9SwapChain::initializeDefault(DX9GraphicsDevice* device, PlatformWindow* 
 {
 	LN_REFOBJ_SET(m_graphicsDevice, device);
 	LN_REFOBJ_SET(m_targetWindow, window);
-	m_targetHWnd = PlatformSupport::GetWindowHandle(m_targetWindow);
+	m_targetHWnd = PlatformSupport::getWindowHandle(m_targetWindow);
 	m_backBufferSize = backBufferSize;
 	m_isDefault = true;
 

@@ -395,7 +395,7 @@ InternalTextElementType LineBreak::getInternalTextElementType() const
 //void VisualGlyph::render(DrawList* renderer)
 //{
 //	renderer->setBrush(Brush::Red);
-//	renderer->DrawRectangle(m_localRect);
+//	renderer->drawRectangle(m_localRect);
 //}
 
 
@@ -422,7 +422,7 @@ void VisualTextFragment::initialize()
 void VisualTextFragment::render(DrawList* renderer)
 {
 	renderer->setBrush(Brush::Red);
-	//renderer->DrawRectangle(m_localRect);
+	//renderer->drawRectangle(m_localRect);
 	renderer->drawGlyphRun(PointF(), m_glyphRun);
 }
 

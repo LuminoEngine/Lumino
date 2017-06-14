@@ -136,12 +136,12 @@ void Main()
 	EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Threaded);//GraphicsRenderingType::Immediate);//
 	Engine::initialize();
 	//Engine::getMainViewport()->SetBackgroundColor(Color32::Gray);
-	Engine::getMainViewport()->SetPlacement(ViewportPlacement::AutoResize);
+	Engine::getMainViewport()->setPlacement(ViewportPlacement::AutoResize);
 
 	//Engine::getDefaultSceneGraph3D()->visibleGridPlane = true;
 
 	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::makeRef();
-	CameraComponent::GetMain3DCamera()->SetCameraBehavior(cb);
+	CameraComponent::getMain3DCamera()->setCameraBehavior(cb);
 
 	//auto mesh = SkinnedMeshComponent::create(_T("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
 
@@ -153,7 +153,7 @@ void Main()
 	//auto sprite5 = Sprite3DComponent::create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
 	//auto sprite6 = Sprite3DComponent::create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
 
-	//auto mesh = StaticMeshComponent::CreateSphere(2, 4, 4);
+	//auto mesh = StaticMeshComponent::createSphere(2, 4, 4);
 
 #if 0
 	auto blur = ScreenMotionBlurImageEffect::create();
@@ -215,8 +215,8 @@ void Main()
 
 	EngineDiag::setDisplayMode(EngineDiagDisplayMode::FpsSummary);
 
-	Input::AddButtonBinding(_T("AA"), KeyboardBinding::create(Keys::C));
-	Input::AddButtonBinding(_T("GG"), KeyboardBinding::create(Keys::A));
+	Input::addButtonBinding(_T("AA"), KeyboardBinding::create(Keys::C));
+	Input::addButtonBinding(_T("GG"), KeyboardBinding::create(Keys::A));
 
 	//auto spr1 = Sprite2DComponent::create(_T("D:/Proj/LuminoStudio/Engine/External/Lumino/test/UnitTest/Graphics/TestData/Sprite2.png"));
 
@@ -255,7 +255,7 @@ void Main()
 	//particle2->setBlendMode(BlendMode::Subtract);
 	//particle2->setPosition(3, 0, 0);
 
-	//particle1->AddChild(particle2);
+	//particle1->addChild(particle2);
 #endif
 
 #if 0
@@ -485,7 +485,7 @@ void Main()
 	auto particle1 = ParticleEmitter3D::create(m1);
 	particle1->SetBlendMode(BlendMode::Add);
 	particle1->SetPosition(0, 12, 0);
-	//particle1->SetAngles(Math::PI, 0, 0);
+	//particle1->setAngles(Math::PI, 0, 0);
 
 
 
@@ -506,11 +506,11 @@ void Main()
 	particle2->SetBlendMode(BlendMode::Add);
 #endif
 
-	//auto uiRoot = UIContext::getMainContext()->GetMainWindowView()->GetLayoutRoot();
+	//auto uiRoot = UIContext::getMainContext()->GetMainWindowView()->getLayoutRoot();
 	//auto listBox = tr::UIListBox::create();
-	//listBox->AddTextItem(_T("test"));
-	//listBox->AddTextItem(_T("fff"));
-	//uiRoot->SetContent(listBox);
+	//listBox->addTextItem(_T("test"));
+	//listBox->addTextItem(_T("fff"));
+	//uiRoot->setContent(listBox);
 
 	//GameAudio::playBGM("D:/GameProjects/Materials/BGM/Windsphere/call.mp3");
 	
@@ -520,14 +520,14 @@ void Main()
 
 	//auto sp = Sprite3DComponent::create(2, 2, Texture2D::create(_T("D:/GameProjects/Chronicles/110220c_as019.jpg")));
 	//sp->setTone(ToneF(0, 0, 1, 1.0));
-	//gizmo->Setup(Matrix::Identity, sp->getTransform());//Matrix::MakeTranslation(1, 0, 0));
+	//gizmo->setup(Matrix::Identity, sp->getTransform());//Matrix::MakeTranslation(1, 0, 0));
 	//
 	//
-	//gizmo->AddOnTargetTransformChanged([sp](tr::GizmoModel* g)
+	//gizmo->addOnTargetTransformChanged([sp](tr::GizmoModel* g)
 	//{
 	//	sp->setTransform(g->GetTargetTransform());
 	//});
-	//gizmo->AddOnSubmitEditing([sp](tr::GizmoModel* g)
+	//gizmo->addOnSubmitEditing([sp](tr::GizmoModel* g)
 	//{
 	//	//sp->setTransform(g->GetTargetTransform());
 	//});
@@ -535,16 +535,16 @@ void Main()
 
 	//auto tex1 = Texture2D::create(32, 32);
 	//tex1->Clear(Color32::Red);
-	//auto box1 = StaticMeshComponent::CreateBox(Vector3(5, 5, 5));
-	//auto box1 = StaticMeshComponent::CreateTeapot();
+	//auto box1 = StaticMeshComponent::createBox(Vector3(5, 5, 5));
+	//auto box1 = StaticMeshComponent::createTeapot();
 	//auto box1 = StaticMeshComponent::create(_T("D:/Proj/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/MqoTest1.mqo"));
 	//auto box1 = StaticMeshComponent::create(_T("C:/Proj/FluoriteSolution/External/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/Plant1.mqo"));
 
 	//box1->GetMaterials()->GetAt(0)->setMaterialTexture(tex1);
 	////box1->setTone(ToneF(0, 0, 1, 1.0));
-	//gizmo->Setup(Matrix::Identity, box1->getTransform());//Matrix::MakeTranslation(1, 0, 0));
+	//gizmo->setup(Matrix::Identity, box1->getTransform());//Matrix::MakeTranslation(1, 0, 0));
 
-	//auto mesh3 = StaticMeshComponent::CreatePlane(Vector2(3, 3), 1, 1);
+	//auto mesh3 = StaticMeshComponent::createPlane(Vector2(3, 3), 1, 1);
 	//mesh3->setPosition(-2, 0, 0);
 
 #if 0
@@ -568,21 +568,21 @@ void Main()
 	auto body1 = RigidBody::create(col1);
 	body1->SetPosition(10, 0, 0);
 #endif
-	//static_cast<CameraViewportLayer*>(Engine::getDefault3DLayer())->SetDebugDrawFlags(WorldDebugDrawFlags::PhysicsInfo);
+	//static_cast<CameraViewportLayer*>(Engine::getDefault3DLayer())->setDebugDrawFlags(WorldDebugDrawFlags::PhysicsInfo);
 
 	auto uiRoot = Engine::getMainWindow();
 	//auto thumb = UIThumb::create();
 	////thumb->setPosition(PointF(100, 200));
 	//thumb->setSize(Size(30,60));
-	////thumb->SetBackground(ColorBrush::Red);
+	////thumb->setBackground(ColorBrush::Red);
 	////textBlock1->SetText(_T("TextBlock"));
-	//uiRoot->SetContent(thumb);
+	//uiRoot->setContent(thumb);
 	auto track = UIScrollBar::create();
 	//track->setSize(Size(200, NAN));
-	track->SetMaximum(10);
+	track->setMaximum(10);
 	track->setValue(3);
-	track->SetViewportSize(2);
-	uiRoot->AddChild(track);
+	track->setViewportSize(2);
+	uiRoot->addChild(track);
 
 
 	while (!Engine::isEndRequested())
@@ -593,7 +593,7 @@ void Main()
 			Engine::renderFrame();
 
 
-			//Engine::getDefaultSceneGraph3D()->getRenderer()->DrawLinePrimitive(
+			//Engine::getDefaultSceneGraph3D()->getRenderer()->drawLinePrimitive(
 			//	Vector3(0, 0, 0), Color::Red,
 			//	Vector3(5, 5, 5), Color::White);
 
@@ -603,23 +603,23 @@ void Main()
 			Engine::presentFrame();
 		}
 
-		//body1->GetWorldTransform().GetPosition().print();
+		//body1->getWorldTransform().GetPosition().print();
 
 
-		//if (Input::IsTriggered(InputButtons::Ok))
+		//if (Input::isTriggered(InputButtons::Ok))
 		//{
-		//	gizmo->SetGizmoType(tr::GizmoType::Scaling);
+		//	gizmo->setGizmoType(tr::GizmoType::Scaling);
 		//}
-		//if (Input::IsTriggered(InputButtons::Cancel))
+		//if (Input::isTriggered(InputButtons::Cancel))
 		//{
-		//	gizmo->SetGizmoType(tr::GizmoType::Rotation);
+		//	gizmo->setGizmoType(tr::GizmoType::Rotation);
 		//}
 	}
 
 	//while (Engine::update())
 	//{
 	//	//printf("----\n");
-	//	if (Input::IsTriggered(InputButtons::Cancel))
+	//	if (Input::isTriggered(InputButtons::Cancel))
 	//	{
 	//		//tonePE->setTone(ToneF(-1, -1, -1, 0));
 	//		//tonePE->changeTone(ToneF(1, 1, 1, 0), 0.5);

@@ -386,7 +386,7 @@ void DX9Renderer::onClear(ClearFlags flags, const Color& color, float z, uint8_t
 {
 	//const SizeI& viewSize = m_currentRenderTargets[0]->GetSize();
 	//D3DVIEWPORT9 vp = { 0, 0, viewSize.width, viewSize.height, 0.0f, 1.0f };
-	//LN_COMCALL(m_dxDevice->SetViewport(&vp));
+	//LN_COMCALL(m_dxDevice->setViewport(&vp));
 
 
 	bool hasDepth = (getDepthBuffer() != nullptr || m_defaultDepthBuffer != nullptr);
@@ -411,7 +411,7 @@ void DX9Renderer::onDrawPrimitive(PrimitiveType primitive, int startVertex, int 
 {
 	//const SizeI& viewSize = m_currentRenderTargets[0]->GetSize();
 	//D3DVIEWPORT9 vp = { 0, 0, viewSize.width, viewSize.height, 0.0f, 1.0f };
-	//LN_COMCALL(m_dxDevice->SetViewport(&vp));
+	//LN_COMCALL(m_dxDevice->setViewport(&vp));
 
 	DX9VertexDeclaration* decl = static_cast<DX9VertexDeclaration*>(getVertexDeclaration());
 
@@ -447,7 +447,7 @@ void DX9Renderer::onDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex
 {
 	//const SizeI& viewSize = m_currentRenderTargets[0]->GetSize();
 	//D3DVIEWPORT9 vp = { 0, 0, viewSize.width, viewSize.height, 0.0f, 1.0f };
-	//LN_COMCALL(m_dxDevice->SetViewport(&vp));
+	//LN_COMCALL(m_dxDevice->setViewport(&vp));
 
 	DX9VertexDeclaration* decl = static_cast<DX9VertexDeclaration*>(getVertexDeclaration());
 
@@ -500,7 +500,7 @@ void DX9Renderer::onDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex
 //	viewport.MinZ = 0.0f;
 //	viewport.MaxZ = 1.0f;
 //
-//	LN_COMCALL(m_dxDevice->SetViewport(&viewport));
+//	LN_COMCALL(m_dxDevice->setViewport(&viewport));
 //	m_currentViewportRect = rect;
 //}
 

@@ -22,7 +22,7 @@ TEST_F(Test_Base_Version, Basic)
 	{
 		int major = Version::Engine::GetMajor();
 		int minor = Version::Engine::GetMinor();
-		int revison = Version::Engine::GetRevision();
+		int revison = Version::Engine::getRevision();
 		int build = Version::Engine::GetBuild();
 		const TCHAR* str = Version::Engine::getString();
 	}

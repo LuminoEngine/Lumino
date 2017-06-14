@@ -18,10 +18,10 @@ public:
 
 public:
 	// WindowManagerBase interface
-	virtual void CreateMainWindow(const WindowCreationSettings& settings) override;
+	virtual void createMainWindow(const WindowCreationSettings& settings) override;
 	virtual PlatformWindow* getMainWindow() override;
-	virtual PlatformWindow* CreateSubWindow(const WindowCreationSettings& settings) override;
-	virtual void DoEvents() override;
+	virtual PlatformWindow* createSubWindow(const WindowCreationSettings& settings) override;
+	virtual void doEvents() override;
 	virtual void Finalize() override;
 
 private:

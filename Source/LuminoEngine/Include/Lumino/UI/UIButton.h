@@ -26,18 +26,18 @@ class UIButtonBase
 public:
 	void setText(const StringRef& text);
 
-	/** OnClick イベントの通知を受け取るコールバックを登録します。*/
+	/** onClick イベントの通知を受け取るコールバックを登録します。*/
 	LN_METHOD(Event)
-	EventConnection ConnectOnGotFocus(UIEventHandler handler);
+	EventConnection connectOnGotFocus(UIEventHandler handler);
 
 protected:
 
 	/** ボタンがクリックされたときに呼び出されます。*/
-	virtual void OnClick(UIEventArgs* e);
+	virtual void onClick(UIEventArgs* e);
 
 	// UIElement interface
-	virtual void OnMouseDown(UIMouseEventArgs* e) override;
-	virtual void OnMouseUp(UIMouseEventArgs* e) override;
+	virtual void onMouseDown(UIMouseEventArgs* e) override;
+	virtual void onMouseUp(UIMouseEventArgs* e) override;
 
 LN_CONSTRUCT_ACCESS:
 	UIButtonBase();
@@ -84,7 +84,7 @@ public:
 	static RefPtr<UIToggleButton> create();
 
 protected:
-	virtual void OnClick(UIEventArgs* e);
+	virtual void onClick(UIEventArgs* e);
 
 LN_CONSTRUCT_ACCESS:
 	UIToggleButton();

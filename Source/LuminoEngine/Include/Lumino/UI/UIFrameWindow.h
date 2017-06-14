@@ -28,9 +28,9 @@ class UIFrameWindow
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
-	PlatformWindow* GetPlatformWindow() const;
+	PlatformWindow* getPlatformWindow() const;
 
-	DrawingContext* GetDrawingContext() const;
+	DrawingContext* getDrawingContext() const;
 
 	//void setSize(const SizeI& size);
 
@@ -43,22 +43,22 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 	virtual void Dispose();
 	virtual bool onEvent(const PlatformEventArgs& e) override;
-	virtual void OnRenderContents();
-	virtual void OnPresentRenderingContexts();
+	virtual void onRenderContents();
+	virtual void onPresentRenderingContexts();
 
 LN_INTERNAL_ACCESS:
 	detail::UIManager* getManager() const { return m_manager; }
-	SwapChain* GetSwapChain() const;
-	void SetDelayedRenderingSkip(bool enabled) { m_delayedRenderingSkip = enabled; }
+	SwapChain* getSwapChain() const;
+	void setDelayedRenderingSkip(bool enabled) { m_delayedRenderingSkip = enabled; }
 
-	void RenderContents();
-	virtual void PresentRenderingContexts();
+	void renderContents();
+	virtual void presentRenderingContexts();
 
 private:
-	void Initialize_UIRenderer();
-	void Render_UIRenderer();
-	void ExecuteDrawList_UIRenderer();
-	bool IsStandaloneSwapChain() const { return !m_swapChain.isNull(); }
+	void initialize_UIRenderer();
+	void render_UIRenderer();
+	void executeDrawList_UIRenderer();
+	bool isStandaloneSwapChain() const { return !m_swapChain.isNull(); }
 
 	detail::UIManager*		m_manager;
 	RefPtr<PlatformWindow>	m_platformWindow;
@@ -82,11 +82,11 @@ class UIMainWindow
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	UIContext* GetMainUIContext() const { return m_mainUIContext; }
-	UIViewport* GetViewport() const;
+	UIContext* getMainUIContext() const { return m_mainUIContext; }
+	UIViewport* getViewport() const;
 
 protected:
-	virtual void OnPresentRenderingContexts() override;
+	virtual void onPresentRenderingContexts() override;
 	virtual Size arrangeOverride(const Size& finalSize) override;
 
 LN_INTERNAL_ACCESS:
@@ -94,20 +94,20 @@ LN_INTERNAL_ACCESS:
 	virtual ~UIMainWindow();
 	void initialize(PlatformWindow* platformWindow, World2D* defaultWorld2D, World3D* defaultWorld3D);
 
-	//void InjectElapsedTime(float elapsedTime);
-	void UpdateLayout(const Size& viewSize);	// TODO: ゆくゆくは SwapChain や Viewport も UIFrameWindow にもってくる。そのとき、この viewSize はいらなくなる
-	void RenderUI();
+	//void injectElapsedTime(float elapsedTime);
+	void updateLayout(const Size& viewSize);	// TODO: ゆくゆくは SwapChain や Viewport も UIFrameWindow にもってくる。そのとき、この viewSize はいらなくなる
+	void renderUI();
 
 	//virtual bool onEvent(const PlatformEventArgs& e) override;
-	virtual void OnRenderContents() override;
-	virtual void PresentRenderingContexts() override;
+	virtual void onRenderContents() override;
+	virtual void presentRenderingContexts() override;
 
-	CameraViewportLayer2* GetDefaultCameraViewportLayer2D() const;
-	CameraViewportLayer2* GetDefaultCameraViewportLayer3D() const;
+	CameraViewportLayer2* getDefaultCameraViewportLayer2D() const;
+	CameraViewportLayer2* getDefaultCameraViewportLayer3D() const;
 	UILayoutLayer* getDefaultUILayer() const;
 
 private:
-	void UpdateViewportTransform();
+	void updateViewportTransform();
 
 	UIContext*						m_mainUIContext;
 	RefPtr<UIViewport>				m_mainUIViewport;

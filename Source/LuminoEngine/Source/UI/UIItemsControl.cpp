@@ -34,8 +34,8 @@ void UIItemsControl::initialize(detail::UIManager* manager)
 
 
 	// TODO:
-	//SetVContentAlignment(VAlignment::Stretch);
-	//SetHContentAlignment(HAlignment::Stretch);
+	//setVContentAlignment(VAlignment::Stretch);
+	//setHContentAlignment(HAlignment::Stretch);
 }
 
 //------------------------------------------------------------------------------

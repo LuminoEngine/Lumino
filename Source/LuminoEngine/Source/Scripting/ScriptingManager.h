@@ -42,7 +42,7 @@ public:
 protected:
 	virtual void execute(NlContext* sc) = 0;
 
-	NlGraphPin* CreatePin(NlGraphPinCategory category, NlGraphPinDirection direction, const StringRef& name);
+	NlGraphPin* createPin(NlGraphPinCategory category, NlGraphPinDirection direction, const StringRef& name);
 
 
 protected:
@@ -68,14 +68,14 @@ class NlGraphSimpleCommandNode
 public:
 	NlGraphSimpleCommandNode()
 	{
-		m_flowInput = CreatePin(NlGraphPinCategory::CommandFlow, NlGraphPinDirection::Input, _T("name"));
-		m_flowOutput = CreatePin(NlGraphPinCategory::CommandFlow, NlGraphPinDirection::Output, _T("name"));
+		m_flowInput = createPin(NlGraphPinCategory::CommandFlow, NlGraphPinDirection::Input, _T("name"));
+		m_flowOutput = createPin(NlGraphPinCategory::CommandFlow, NlGraphPinDirection::Output, _T("name"));
 	}
 
 	virtual ~NlGraphSimpleCommandNode() = default;
 
-	NlGraphPin* GetFlowInputPin() const { return m_flowInput; }
-	NlGraphPin* GetFlowOutputPin() const { return m_flowOutput; }
+	NlGraphPin* getFlowInputPin() const { return m_flowInput; }
+	NlGraphPin* getFlowOutputPin() const { return m_flowOutput; }
 
 protected:
 	//virtual void Execute(NlContext* sc);
@@ -92,8 +92,8 @@ class EntryPointNode
 	: public NlGraphNode
 {
 public:
-	const String& GetEntryPointName() const { return m_entryPointName; }
-	NlGraphPin* GetFlowOutputPin() const { return m_flowOutput; }
+	const String& getEntryPointName() const { return m_entryPointName; }
+	NlGraphPin* getFlowOutputPin() const { return m_flowOutput; }
 
 LN_INTERNAL_ACCESS:
 	EntryPointNode();
@@ -121,24 +121,24 @@ class NlGraphPin
 public:
 	virtual ~NlGraphPin() = default;
 	
-	NlGraphNode* GetOwnerNode() const { return m_ownerNode; }
+	NlGraphNode* getOwnerNode() const { return m_ownerNode; }
 
 	/** リンク先のノードを取得する。リンクされていなければ nullptr を返す。*/
-	NlGraphNode* GetLinkedToNode();
+	NlGraphNode* getLinkedToNode();
 
 	/** 指定したピンへのリンクを作成します。*/
-	void MakeLinkTo(NlGraphPin* toPin);
+	void makeLinkTo(NlGraphPin* toPin);
 
 	/** 指定したピンとのリンクを解除します。*/
-	void BreakLinkTo(NlGraphPin* toPin);
+	void breakLinkTo(NlGraphPin* toPin);
 
 	// 接続可否チェックは別関数で
 
-	NlVariant* GetValueCache() const;
+	NlVariant* getValueCache() const;
 
-	void SetInlineValue(NlVariant* value);
+	void setInlineValue(NlVariant* value);
 
-	NlVariant* GetInputValue() const;
+	NlVariant* getInputValue() const;
 
 LN_INTERNAL_ACCESS:
 	NlGraphPin();
@@ -166,9 +166,9 @@ public:
 
 
 	// 内部用
-	void CallInterface(NlGraphInterface* inter);
+	void callInterface(NlGraphInterface* inter);
 
-	void Goto(NlGraphPin* nextFlowPin);
+	void gotoPin(NlGraphPin* nextFlowPin);
 
 	bool isCompleted() const;
 
@@ -187,7 +187,7 @@ class NlGraph
 	: public Object
 {
 public:
-	void AddGraphNode(NlGraphNode* node);
+	void addGraphNode(NlGraphNode* node);
 
 private:
 	List<RefPtr<NlGraphNode>>	m_nodeList;
@@ -200,8 +200,8 @@ class NlGraphInterface
 	: public Object
 {
 public:
-	NlGraph* GetGraph() const { return m_graph; }
-	EntryPointNode* GetEntryPoint() const { return m_entryPoint; }
+	NlGraph* getGraph() const { return m_graph; }
+	EntryPointNode* getEntryPoint() const { return m_entryPoint; }
 
 LN_INTERNAL_ACCESS:
 	NlGraphInterface();
@@ -246,12 +246,12 @@ private:
 class NlHelper
 {
 public:
-	static void LinkPins(NlGraphPin* pin1, NlGraphPin* pin2)
+	static void linkPins(NlGraphPin* pin1, NlGraphPin* pin2)
 	{
 		if (LN_CHECK_ARG(pin1 != nullptr)) return;
 		if (LN_CHECK_ARG(pin2 != nullptr)) return;
 		// TODO: 接続可否チェック
-		pin1->MakeLinkTo(pin2);
+		pin1->makeLinkTo(pin2);
 	}
 };
 
@@ -267,7 +267,7 @@ public:
 	NlNode_Print();
 	virtual ~NlNode_Print() = default;
 
-	NlGraphPin* GetInputValuePin() const { return m_inputValuePin; }
+	NlGraphPin* getInputValuePin() const { return m_inputValuePin; }
 
 protected:
 	virtual void execute(NlContext* sc) override;

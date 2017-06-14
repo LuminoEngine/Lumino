@@ -39,21 +39,21 @@ public:
 	FileManager* getFileManager() const { return m_fileManager; }
 	detail::PhysicsManager* getPhysicsManager() { return m_physicsManager; }
 	GraphicsManager* getGraphicsManager() { return m_graphicsManager; }
-	Texture2D* GetMMDDefaultToonTexture(int index);
+	Texture2D* getMMDDefaultToonTexture(int index);
 
 	RefPtr<Texture> createTexture(const PathName& parentDir, const StringRef& filePath, ModelCreationFlag flags);
 	
 
-	RefPtr<StaticMeshModel> CreateStaticMeshModel(const PathName& filePath);
-	RefPtr<SkinnedMeshModel> CreateSkinnedMeshModel(const PathName& filePath);
+	RefPtr<StaticMeshModel> createStaticMeshModel(const PathName& filePath);
+	RefPtr<SkinnedMeshModel> createSkinnedMeshModel(const PathName& filePath);
 
-	Material* GetDefaultMaterial() const;
-	MeshResource* GetUnitBoxMeshResource(bool reverseFaces) const;
-	MeshResource* GetUnitSphereMeshResource(bool reverseFaces) const;
-	MeshResource* GetUnitTeapotMeshResource() const;
+	Material* getDefaultMaterial() const;
+	MeshResource* getUnitBoxMeshResource(bool reverseFaces) const;
+	MeshResource* getUnitSphereMeshResource(bool reverseFaces) const;
+	MeshResource* getUnitTeapotMeshResource() const;
 
 private:
-	RefPtr<PmxSkinnedMeshResource> CreateSkinnedMeshResource(const PathName& filePath);
+	RefPtr<PmxSkinnedMeshResource> createSkinnedMeshResource(const PathName& filePath);
 	//Animation::AnimationClip* CreateMotion(const PathName& filePath);
 
 	FileManager*			m_fileManager;

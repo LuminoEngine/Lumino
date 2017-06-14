@@ -16,7 +16,7 @@ LN_NAMESPACE_BEGIN
 //------------------------------------------------------------------------------
 InputController* InputController::GetController(int index)
 {
-	return detail::InputManager::getInstance()->GetVirtualPad(index);
+	return detail::InputManager::getInstance()->getVirtualPad(index);
 }
 
 //------------------------------------------------------------------------------
@@ -40,7 +40,7 @@ InputController::~InputController()
 }
 
 //------------------------------------------------------------------------------
-bool InputController::IsPressed(const StringRef& bindingName) const
+bool InputController::isPressed(const StringRef& bindingName) const
 {
 	auto* state = LockupState(bindingName);
 	LN_THROW(state != nullptr, KeyNotFoundException);
@@ -48,7 +48,7 @@ bool InputController::IsPressed(const StringRef& bindingName) const
 }
 
 //------------------------------------------------------------------------------
-bool InputController::IsTriggered(const StringRef& bindingName) const
+bool InputController::isTriggered(const StringRef& bindingName) const
 {
 	auto* state = LockupState(bindingName);
 	LN_THROW(state != nullptr, KeyNotFoundException);
@@ -56,7 +56,7 @@ bool InputController::IsTriggered(const StringRef& bindingName) const
 }
 
 //------------------------------------------------------------------------------
-bool InputController::IsOffTriggered(const StringRef& bindingName) const
+bool InputController::isOffTriggered(const StringRef& bindingName) const
 {
 	auto* state = LockupState(bindingName);
 	LN_THROW(state != nullptr, KeyNotFoundException);
@@ -64,7 +64,7 @@ bool InputController::IsOffTriggered(const StringRef& bindingName) const
 }
 
 //------------------------------------------------------------------------------
-bool InputController::IsRepeated(const StringRef& bindingName) const
+bool InputController::isRepeated(const StringRef& bindingName) const
 {
 	auto* state = LockupState(bindingName);
 	LN_THROW(state != nullptr, KeyNotFoundException);
@@ -73,7 +73,7 @@ bool InputController::IsRepeated(const StringRef& bindingName) const
 }
 
 //------------------------------------------------------------------------------
-float InputController::GetAxisValue(const StringRef& bindingName) const
+float InputController::getAxisValue(const StringRef& bindingName) const
 {
 	auto* state = m_inputStatus.find(bindingName);
 	LN_THROW(state != nullptr, KeyNotFoundException);
@@ -81,7 +81,7 @@ float InputController::GetAxisValue(const StringRef& bindingName) const
 }
 
 //------------------------------------------------------------------------------
-void InputController::AddBinding(const StringRef& buttonName, InputBinding* binding)
+void InputController::addBinding(const StringRef& buttonName, InputBinding* binding)
 {
 	BindingSlot slot = { buttonName, binding };
 	m_bindingSlots.add(slot);
@@ -103,7 +103,7 @@ void InputController::AddBinding(const StringRef& buttonName, InputBinding* bind
 }
 
 //------------------------------------------------------------------------------
-void InputController::RemoveBinding(InputBinding* binding)
+void InputController::removeBinding(InputBinding* binding)
 {
 	int index = m_bindingSlots.indexOf([binding](const BindingSlot& slot) { return slot.binding == binding; });
 	if (index < 0) return;
@@ -120,17 +120,17 @@ void InputController::RemoveBinding(InputBinding* binding)
 }
 
 //------------------------------------------------------------------------------
-void InputController::ClearBindings()
+void InputController::clearBindings()
 {
 	List<BindingSlot> list = m_bindingSlots;
 	for (int i = list.getCount() - 1; i >= 0; ++i)	// 後ろから回した方がちょっと削除の効率がいい
 	{
-		RemoveBinding(list[i].binding);
+		removeBinding(list[i].binding);
 	}
 }
 
 //------------------------------------------------------------------------------
-void InputController::SetRepeatInterval(int start, int step)
+void InputController::setRepeatInterval(int start, int step)
 {
 	m_repeatIntervalStart = start;
 	m_repeatIntervalStep = step;
@@ -154,15 +154,15 @@ void InputController::updateFrame()
 	{
 		InputBinding* binding = slot.binding;
 
-		float v = m_manager->GetVirtualButtonState(
+		float v = m_manager->getVirtualButtonState(
 			binding,
 			(m_attachedDevices & detail::InputDeviceID_Keyboard) != 0,
 			(m_attachedDevices & detail::InputDeviceID_Mouse) != 0,
-			GetJoyNumber());
+			getJoyNumber());
 		InputState* state = m_inputStatus.find(slot.name);
 		if (state != nullptr)
 		{
-			v *= binding->GetScale();
+			v *= binding->getScale();
 			if (v >= binding->GetMinValidMThreshold()) {
 				state->current = std::max(state->current, v);	// Binding が重複したとか、とりあえず大きい方を使う
 			}
@@ -183,7 +183,7 @@ void InputController::updateFrame()
 }
 
 //------------------------------------------------------------------------------
-int InputController::GetJoyNumber() const
+int InputController::getJoyNumber() const
 {
 	if (m_attachedDevices & detail::InputDeviceID_Joystick0) return 0;
 	if (m_attachedDevices & detail::InputDeviceID_Joystick1) return 1;

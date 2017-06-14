@@ -18,7 +18,7 @@ class UIPopup
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	void SetContent(UIElement* element);
+	void setContent(UIElement* element);
 
 	void open();
 
@@ -32,7 +32,7 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 LN_INTERNAL_ACCESS:
-	void UpdateLayoutForInPlacePopup(const Size& viewSize);
+	void updateLayoutForInPlacePopup(const Size& viewSize);
 
 private:
 	RefPtr<UIElement>	m_content;
@@ -65,11 +65,11 @@ public:
 	static UIComboBoxPtr create();
 
 public:
-	UIComboBoxItemPtr AddTextItem(const String& text);
+	UIComboBoxItemPtr addTextItem(const String& text);
 	UIComboBoxItemPtr addItem(UIElement* item);
 
 protected:
-	virtual void OnMouseDown(UIMouseEventArgs* e) override;
+	virtual void onMouseDown(UIMouseEventArgs* e) override;
 
 LN_CONSTRUCT_ACCESS:
 	UIComboBox();

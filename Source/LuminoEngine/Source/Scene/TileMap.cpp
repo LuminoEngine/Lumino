@@ -73,26 +73,26 @@ void TileMap::OnRender2(DrawList* renderer)
 	if (m_tileMap != nullptr)
 	{
 		// TODO: size
-		m_renderer->Draw(renderer, m_tileMap, RectF(0,0,3200,2400), GetOwnerSceneGraph()->GetMainCamera()->GetViewFrustum()/*dc->GetCurrentCamera()->GetViewFrustum()*/, (int)m_priority);
+		m_renderer->Draw(renderer, m_tileMap, RectF(0,0,3200,2400), GetOwnerSceneGraph()->GetMainCamera()->GetViewFrustum()/*dc->getCurrentCamera()->getViewFrustum()*/, (int)m_priority);
 	}
 }
 
 //------------------------------------------------------------------------------
-//void TileMap::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
+//void TileMap::drawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 //{
 //	if (m_tileMap != nullptr)
 //	{
 //		//m_renderer->setViewProjMatrix(dc->CurrentCamera->GetViewMatrix(), dc->CurrentCamera->GetProjectionMatrix());
 //		
 //		// TODO: WorldMatrix
-//		m_renderer->setTransform(Matrix::Identity, dc->GetCurrentCamera()->GetViewProjectionMatrix());
-//		m_renderer->Draw(dc, m_tileMap, RectF(0,0,3200,2400), dc->GetCurrentCamera()->GetViewFrustum());
+//		m_renderer->setTransform(Matrix::Identity, dc->getCurrentCamera()->GetViewProjectionMatrix());
+//		m_renderer->draw(dc, m_tileMap, RectF(0,0,3200,2400), dc->getCurrentCamera()->getViewFrustum());
 //	}
 //
 //	//dc->ResetState();
 //	//dc->SetProjection(Size(640, 480));
 //	//dc->SetSolidColor(ColorF::Red);
-//	//dc->DrawRectangle(RectF(0, 0, 1, 2));
+//	//dc->drawRectangle(RectF(0, 0, 1, 2));
 //	//dc->SetViewProjection(dc->CurrentCamera->GetViewMatrix(), dc->CurrentCamera->GetProjectionMatrix());
 //
 //	//RefPtr<Pen> pen(LN_NEW Pen(), false);
@@ -102,8 +102,8 @@ void TileMap::OnRender2(DrawList* renderer)
 //
 //	//d->SetPen(pen);
 //	//d->SetViewProjection(dc->CurrentCamera->GetViewMatrix(), dc->CurrentCamera->GetProjectionMatrix());
-//	//d->DrawLine(Vector3(0, 0, 0), Vector3(1, 1, 1), ColorF::Red);
-//	//d->DrawRectangle(RectF(0, 0, 1, 2), ColorF::Blue);
+//	//d->drawLine(Vector3(0, 0, 0), Vector3(1, 1, 1), ColorF::Red);
+//	//d->drawRectangle(RectF(0, 0, 1, 2), ColorF::Blue);
 //	//d->Flush();
 //
 //}

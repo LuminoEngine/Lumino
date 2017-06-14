@@ -18,7 +18,7 @@ public:
 	static PlatformFileOpenDialogPtr create();
 
 public:
-	virtual bool ShowDialog(PlatformWindow* parent) = 0;
+	virtual bool showDialog(PlatformWindow* parent) = 0;
 
 	virtual PathName getFilePath() = 0;
 

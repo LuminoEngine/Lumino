@@ -104,7 +104,7 @@ void EngineDiagViewer::initialize(EngineManager* manager, EngineDiagCore* diagCo
 	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_diagCore = diagCore;
 	m_mainWindow = manager->getPlatformManager()->getMainWindow();
-	m_originalMainWindowTitle = m_mainWindow->GetTitleText();
+	m_originalMainWindowTitle = m_mainWindow->getTitleText();
 
 	m_font = manager->getGraphicsManager()->getFontManager()->getBuiltinFont(BuiltinFontSize::XXSmall);
 	//m_windowRect.Set(640 - 8 - 300, 8, 300, 256);	// TODO
@@ -125,7 +125,7 @@ void EngineDiagViewer::updateFrame()
 	if (m_displayMode == EngineDiagDisplayMode::FpsSummary)
 	{
 		String str = String::format(_T("{0} - MainFPS:{1}/{2}"), m_originalMainWindowTitle, m_diagCore->getMainFPS(), m_diagCore->getMainFPSCapacity());
-		m_mainWindow->SetTitleText(str);
+		m_mainWindow->setTitleText(str);
 	}
 }
 
@@ -159,11 +159,11 @@ void EngineDiagViewer::Render(DrawingContext* g, const Vector2& viewSize)
 
 	//// ウィンドウ背景
 	//g->setBrush(ColorBrush::DimGray);
-	//g->DrawRectangle(m_windowRect);
+	//g->drawRectangle(m_windowRect);
 
 	//// キャプションバー
 	//g->setBrush(ColorBrush::Black);
-	//g->DrawRectangle(RectF(m_windowRect.getTopLeft(), m_windowRect.Width, 20));
+	//g->drawRectangle(RectF(m_windowRect.getTopLeft(), m_windowRect.Width, 20));
 
 
 	//g->setBrush(ColorBrush::White);

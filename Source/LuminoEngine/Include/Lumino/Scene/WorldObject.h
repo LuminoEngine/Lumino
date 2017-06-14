@@ -40,7 +40,7 @@ public:
 
 	/** このオブジェクトの回転を設定します。 */
 	LN_METHOD(Property)
-	void SetRotation(const Quaternion& rot) { transform.rotation = rot; }
+	void setRotation(const Quaternion& rot) { transform.rotation = rot; }
 
 	/** このオブジェクトの回転をオイラー角から設定します。(radian) */
 	LN_METHOD()
@@ -48,39 +48,39 @@ public:
 
 	/** このオブジェクトの回転を取得します。 */
 	LN_METHOD(Property)
-	const Quaternion& GetRotation() const { return transform.rotation; }
+	const Quaternion& getRotation() const { return transform.rotation; }
 
 	/** このオブジェクトの拡大率を設定します。 */
 	LN_METHOD(Property)
-	void SetScale(const Vector3& scale) { transform.scale = scale; }
+	void setScale(const Vector3& scale) { transform.scale = scale; }
 
 	/** このオブジェクトの拡大率を設定します。 */
 	LN_METHOD()
-	void SetScale(float xyz) { transform.scale = Vector3(xyz, xyz, xyz); }
+	void setScale(float xyz) { transform.scale = Vector3(xyz, xyz, xyz); }
 
 	/** このオブジェクトの拡大率を設定します。 */
 	LN_METHOD()
-	void SetScale(float x, float y, float z = 1.0f) { transform.scale = Vector3(x, y, z); }
+	void setScale(float x, float y, float z = 1.0f) { transform.scale = Vector3(x, y, z); }
 
 	/** このオブジェクトの拡大率を取得します。 */
 	LN_METHOD(Property)
-	const Vector3& GetScale() const { return transform.scale; }
+	const Vector3& getScale() const { return transform.scale; }
 
 	/** このオブジェクトにタグ文字列を設定します。 */
 	LN_METHOD()
-	void SetTag(const StringRef& tag) { m_tag = tag; }
+	void setTag(const StringRef& tag) { m_tag = tag; }
 
 	/** このオブジェクトのタグ文字列を取得します。 */
 	LN_METHOD(Property)
-	const String& GetTag() const { return m_tag; }
+	const String& getTag() const { return m_tag; }
 
 
-	World* GetWorld() const;
+	World* getWorld() const;
 
 
-	void AddComponent(Component* component);
+	void addComponent(Component* component);
 
-	void RemoveFromWorld();
+	void removeFromWorld();
 
 
 	/// 開始処理
@@ -93,21 +93,21 @@ public:
 	virtual void onRender(DrawList* context);
 
 	/// 終了処理
-	virtual void OnDestroy();
+	virtual void onDestroy();
 
 protected:
 	virtual void onUIEvent(UIEventArgs* e);
 
 LN_INTERNAL_ACCESS:
 	//const Matrix& GetCombinedGlobalMatrix() const { return m_combinedGlobalMatrix; }
-	const List<RefPtr<Component>>& GetComponents() const { return m_components; }
-	void SetSpecialObject(bool enalbed) { m_isSpecialObject = true; }
-	bool IsSpecialObject() const { return m_isSpecialObject; }
+	const List<RefPtr<Component>>& getComponents() const { return m_components; }
+	void setSpecialObject(bool enalbed) { m_isSpecialObject = true; }
+	bool isSpecialObject() const { return m_isSpecialObject; }
 
 private:
 	void updateFrame();
 	void render(DrawList* context);
-	void ReleaseComponents();
+	void releaseComponents();
 
 	List<RefPtr<Component>>		m_components;
 

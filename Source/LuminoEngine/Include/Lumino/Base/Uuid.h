@@ -10,7 +10,7 @@ class Uuid
 public:
 	
 	/** V‚µ‚¢ UUID ‚ğ¶¬‚µ‚Ü‚·B*/
-	static Uuid Generate();
+	static Uuid generate();
 
 	/** ‹ó‚Ì UUID ‚ğ¶¬‚µ‚Ü‚·B"{00000000-0000-0000-0000-000000000000}" */
 	Uuid();

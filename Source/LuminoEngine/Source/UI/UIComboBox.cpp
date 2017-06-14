@@ -32,7 +32,7 @@ void UIPopup::initialize()
 }
 
 //------------------------------------------------------------------------------
-void UIPopup::SetContent(UIElement* element)
+void UIPopup::setContent(UIElement* element)
 {
 	if (m_content == element) return;
 
@@ -41,14 +41,14 @@ void UIPopup::SetContent(UIElement* element)
 	// 既に持っていれば取り除いておく
 	if (m_content != nullptr)
 	{
-		RemoveVisualChild(m_content);
+		removeVisualChild(m_content);
 		m_content = nullptr;
 	}
 
 	// 新しく保持する
 	if (element != nullptr)
 	{
-		AddVisualChild(element);
+		addVisualChild(element);
 		m_content = element;
 	}
 }
@@ -56,11 +56,11 @@ void UIPopup::SetContent(UIElement* element)
 //------------------------------------------------------------------------------
 void UIPopup::open()
 {
-	UIElement* root = UIHelper::GetLayoutRoot(this);
+	UIElement* root = UIHelper::getLayoutRoot(this);
 	if (root != nullptr)
 	{
 		UILayoutView* rootView = static_cast<UILayoutView*>(root);
-		rootView->OpenPopup(this);
+		rootView->openPopup(this);
 	}
 }
 
@@ -80,9 +80,9 @@ Size UIPopup::arrangeOverride(const Size& finalSize)
 }
 
 //------------------------------------------------------------------------------
-void UIPopup::UpdateLayoutForInPlacePopup(const Size& viewSize)
+void UIPopup::updateLayoutForInPlacePopup(const Size& viewSize)
 {
-	m_content->UpdateLayout(viewSize);
+	m_content->updateLayout(viewSize);
 	//m_content->measureLayout(viewSize);
 
 	////TODO: このへんでchildの位置を決める
@@ -111,9 +111,9 @@ UIComboBoxItem::~UIComboBoxItem()
 void UIComboBoxItem::initialize()
 {
 	UIContentControl::initialize();
-	SetHContentAlignment(HAlignment::Left);
-	SetHAlignment(HAlignment::Stretch);
-	GoToVisualState(UIVisualStates::NormalState);
+	setHContentAlignment(HAlignment::Left);
+	setHAlignment(HAlignment::Stretch);
+	goToVisualState(UIVisualStates::NormalState);
 }
 
 //==============================================================================
@@ -146,26 +146,26 @@ void UIComboBox::initialize()
 	UIControl::initialize();
 
 	m_popup = newObject<UIPopup>();
-	AddVisualChild(m_popup);
+	addVisualChild(m_popup);
 
 	m_scrollViewer = newObject<UIScrollViewer>();
-	m_scrollViewer->SetWidth(100);	// TODO:
-	m_scrollViewer->SetHeight(30);
-	m_scrollViewer->SetBackground(Brush::Blue);
-	m_popup->SetContent(m_scrollViewer);
+	m_scrollViewer->setWidth(100);	// TODO:
+	m_scrollViewer->setHeight(30);
+	m_scrollViewer->setBackground(Brush::Blue);
+	m_popup->setContent(m_scrollViewer);
 
-	SetHContentAlignment(HAlignment::Stretch);
+	setHContentAlignment(HAlignment::Stretch);
 
 	auto panel = RefPtr<UIStackPanel>::makeRef();
 	panel->initialize();
-	panel->SetHAlignment(HAlignment::Stretch);
-	panel->SetVAlignment(VAlignment::Stretch);
-	SetLayoutPanel(panel);
-	GoToVisualState(UIVisualStates::NormalState);
+	panel->setHAlignment(HAlignment::Stretch);
+	panel->setVAlignment(VAlignment::Stretch);
+	setLayoutPanel(panel);
+	goToVisualState(UIVisualStates::NormalState);
 }
 
 //------------------------------------------------------------------------------
-//UIComboBoxItemPtr UIComboBox::AddTextItem(const String& text)
+//UIComboBoxItemPtr UIComboBox::addTextItem(const String& text)
 //{
 //	auto textBlock = RefPtr<UITextBlock>::MakeRef();
 //	textBlock->initialize(getManager());
@@ -181,16 +181,16 @@ void UIComboBox::initialize()
 //	// 受け取った item を UIComboBoxItem でラップして、UIComboBoxItem をリストに入れる
 //	auto listItem = RefPtr<UIComboBoxItem>::MakeRef();
 //	listItem->initialize(getManager());
-//	listItem->SetContent(item);
-//	GetItems()->Add(listItem);
+//	listItem->setContent(item);
+//	getItems()->Add(listItem);
 //	return listItem;
 //}
 
 //------------------------------------------------------------------------------
-void UIComboBox::OnMouseDown(UIMouseEventArgs* e)
+void UIComboBox::onMouseDown(UIMouseEventArgs* e)
 {
 	m_popup->open();
-	UIControl::OnMouseDown(e);
+	UIControl::onMouseDown(e);
 }
 
 LN_NAMESPACE_END

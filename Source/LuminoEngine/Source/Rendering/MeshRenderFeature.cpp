@@ -36,7 +36,7 @@ void MeshRenderFeature::initialize(GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void MeshRenderFeature::DrawMesh(MeshResource* mesh, int startIndex, int primitiveCount, PrimitiveType primitiveType)
+void MeshRenderFeature::drawMesh(MeshResource* mesh, int startIndex, int primitiveCount, PrimitiveType primitiveType)
 {
 	if (LN_CHECK_ARG(mesh != nullptr)) return;
 	auto* _this = this;
@@ -45,7 +45,7 @@ void MeshRenderFeature::DrawMesh(MeshResource* mesh, int startIndex, int primiti
 	VertexBuffer* vb[Driver::MaxVertexStreams] = {};
 	int vbCount;
 	IndexBuffer* ib;
-	mesh->CommitRenderData(&decls, vb, &vbCount, &ib);
+	mesh->commitRenderData(&decls, vb, &vbCount, &ib);
 
 	DrawMeshCommandData data;
 	data.vertexDeclaration = decls->getDeviceObject();
@@ -63,12 +63,12 @@ void MeshRenderFeature::DrawMesh(MeshResource* mesh, int startIndex, int primiti
 		MeshRenderFeature*, _this,
 		DrawMeshCommandData, data,
 		{
-			_this->DrawMeshImpl(data);
+			_this->drawMeshImpl(data);
 		});
 }
 
 //------------------------------------------------------------------------------
-void MeshRenderFeature::DrawMeshImpl(const DrawMeshCommandData& data)
+void MeshRenderFeature::drawMeshImpl(const DrawMeshCommandData& data)
 {
 	m_renderer->setVertexDeclaration(data.vertexDeclaration);
 	for (int i = 0; i < data.vertexBuffersCount; ++i)

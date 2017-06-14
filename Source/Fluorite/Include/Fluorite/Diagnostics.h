@@ -86,7 +86,7 @@ public:
 	DiagnosticsItemSet(const PathNameA& absFilePath);
 	~DiagnosticsItemSet() = default;
 
-	const List<DiagnosticsItem>* GetItems() { return &m_items; }
+	const List<DiagnosticsItem>* getItems() { return &m_items; }
 
 	bool hasError() const { return !m_items.isEmpty(); }
 

@@ -43,7 +43,7 @@ private:
 
 	void makeSearchPath(const StringRef& path);
 	const PathName* findLocalFilePath();
-	//Stream* CreateFileStream(const StringRef& filePath, bool isDeferring = false);
+	//Stream* createFileStream(const StringRef& filePath, bool isDeferring = false);
 
 	EngineManager*			m_engineManager;
 	List<AssetsDirectory>	m_assetsDirectories;

@@ -22,14 +22,14 @@ public:
 
 public:
 	// override Application
-	virtual void CreateMainWindow(const WindowCreationSettings& settings);
+	virtual void createMainWindow(const WindowCreationSettings& settings);
 	virtual Window* getMainWindow() { return m_mainWindow; }
-	virtual Window* CreateSubWindow(const WindowCreationSettings& settings);
-	virtual void DoEvents();
+	virtual Window* createSubWindow(const WindowCreationSettings& settings);
+	virtual void doEvents();
 	virtual void Finalize();
 	
 public:
-	Display* GetX11Display() { return m_x11Display; }
+	Display* getX11Display() { return m_x11Display; }
 	int GetX11DefaultScreen() { return m_x11DefaultScreen; }
 	::Window GetX11RootWindow() { return m_x11RootWindow; }
 	XContext GetX11Context() { return m_x11Context; }

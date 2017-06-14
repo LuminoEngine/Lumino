@@ -15,7 +15,7 @@ namespace detail { class ProcessImpl; }
 	@section	プロセスを起動し、終了を待つ
 	~~~~~~~~~~~~~~~{.cpp}
 	Process proc;
-	proc.Start("Merge", "file1.c", "file2.c");
+	proc.Start("merge", "file1.c", "file2.c");
 	proc.WaitForExit();
 	~~~~~~~~~~~~~~~
 */

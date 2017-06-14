@@ -44,7 +44,7 @@ void HexToCharPair(uint8_t hex, TCHAR* ch1, TCHAR* ch2)
 }
 
 //------------------------------------------------------------------------------
-Uuid Uuid::Generate()
+Uuid Uuid::generate()
 {
 #if defined(LN_OS_WIN32)
 	GUID guid;

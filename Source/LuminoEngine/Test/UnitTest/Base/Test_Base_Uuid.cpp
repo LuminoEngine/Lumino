@@ -34,8 +34,8 @@ TEST_F(Test_Base_Uuid, Basic)
 
 	// <Test> 新しい UUID を生成する
 	{
-		Uuid newId1 = Uuid::Generate();
-		Uuid newId2 = Uuid::Generate();
+		Uuid newId1 = Uuid::generate();
+		Uuid newId2 = Uuid::generate();
 		ASSERT_NE(newId1, newId2);
 		ASSERT_NE(empty1, newId1);
 		ASSERT_NE(empty1, newId2);

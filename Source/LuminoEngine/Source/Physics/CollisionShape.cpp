@@ -40,13 +40,13 @@ void CollisionShape::initialize(btCollisionShape* shape)
 }
 
 //------------------------------------------------------------------------------
-void CollisionShape::SetTrigger(bool enabled)
+void CollisionShape::setTrigger(bool enabled)
 {
 	m_isTrigger = enabled;
 }
 
 //------------------------------------------------------------------------------
-bool CollisionShape::IsTrigger() const
+bool CollisionShape::isTrigger() const
 {
 	return m_isTrigger;
 }
@@ -205,13 +205,13 @@ void MeshCollisionShape::initialize(MeshResource* mesh)
 	if (LN_CHECK_ARG(mesh != nullptr)) return;
 	if (LN_CHECK_STATE(m_btMeshData == nullptr)) return;
 
-	IndexBuffer* indexBuffer = mesh->GetIndexBuffer();
+	IndexBuffer* indexBuffer = mesh->getIndexBuffer();
 
 	void* vb = mesh->getVertexBuffer(MeshResource::VB_BasicVertices)->getMappedData();
 	void* ib = indexBuffer->getMappedData();
 
 	btIndexedMesh btMesh;
-	btMesh.m_numTriangles = mesh->GetTriangleCount();
+	btMesh.m_numTriangles = mesh->getTriangleCount();
 	btMesh.m_triangleIndexBase = (const unsigned char *)ib;
 	btMesh.m_triangleIndexStride = indexBuffer->getIndexStride() * 3;
 	btMesh.m_numVertices = mesh->getVertexCount();
@@ -222,7 +222,7 @@ void MeshCollisionShape::initialize(MeshResource* mesh)
 	m_btMeshData->addIndexedMesh(btMesh, (indexBuffer->getIndexStride() == 2) ? PHY_SHORT : PHY_INTEGER);
 
 	//m_btMeshData = new btTriangleIndexVertexArray(
-	//	mesh->GetTriangleCount(), (int*)ib, mesh->getIndexStride(),
+	//	mesh->getTriangleCount(), (int*)ib, mesh->getIndexStride(),
 	//	mesh->getVertexCount(), (btScalar*)vb, sizeof(Vertex));
 	
 	CollisionShape::initialize(new btBvhTriangleMeshShape(m_btMeshData, true));

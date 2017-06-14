@@ -16,8 +16,8 @@ public:
 	static RefPtr<UIImage> create(const StringRef& filePath);
 
 
-	void SetStretchType(StretchMode mode);
-	StretchMode GetStretchType();
+	void setStretchType(StretchMode mode);
+	StretchMode getStretchType();
 
 protected:
 	virtual Size measureOverride(const Size& availableSize) override;
@@ -31,7 +31,7 @@ LN_CONSTRUCT_ACCESS:
 	void initialize(const StringRef& filePath);
 
 private:
-	Size MeasureInternal(Size contentSize);
+	Size measureInternal(Size contentSize);
 
 	//RefPtr<TextureBrush>	m_brush;
 	RefPtr<Texture>			m_texture;

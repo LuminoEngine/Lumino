@@ -4,7 +4,7 @@
 class CSStructsGenerator
 {
 public:
-	void Generate();
+	void generate();
 
 private:
 	String MakeMethodBody(MethodInfoPtr methodInfo, bool isSetProperty);

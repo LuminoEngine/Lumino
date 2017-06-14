@@ -412,7 +412,7 @@ Shader::~Shader()
 //------------------------------------------------------------------------------
 void Shader::initialize(detail::GraphicsManager* manager, const StringRef& filePath, bool useTRSS)
 {
-	RefPtr<Stream> stream(manager->getFileManager()->CreateFileStream(filePath), false);
+	RefPtr<Stream> stream(manager->getFileManager()->createFileStream(filePath), false);
 	ByteBuffer buf((size_t)stream->getLength() + 1, false);
 	stream->read(buf.getData(), buf.getSize());
 	buf[(size_t)stream->getLength()] = 0x00;

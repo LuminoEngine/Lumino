@@ -20,27 +20,27 @@ public:
 	float getValue() const;
 
 	/** 指定可能な最小値を設定します。*/
-	void SetMinimum(float value);
+	void setMinimum(float value);
 
 	/** 指定可能な最小値を取得します。規定値は 0 です。*/
-	float GetMinimum() const;
+	float getMinimum() const;
 
 	/** 指定可能な最大値を設定します。*/
-	void SetMaximum(float value);
+	void setMaximum(float value);
 
 	/** 指定可能な最大値を取得します。規定値は 1 です。*/
-	float GetMaximum() const;
+	float getMaximum() const;
 
 protected:
 
 	/** 値が変更されたときに呼び出されます。*/
-	virtual void OnValueChanged(float oldValue, float newValue);
+	virtual void onValueChanged(float oldValue, float newValue);
 
 	/** 指定可能な最小値が変更されたときに呼び出されます。*/
-	virtual void OnMinimumChanged(float oldMinimum, float newMinimum);
+	virtual void onMinimumChanged(float oldMinimum, float newMinimum);
 
 	/** 指定可能な最大値が変更されたときに呼び出されます。*/
-	virtual void OnMaximumChanged(float oldMaximum, float newMaximum);
+	virtual void onMaximumChanged(float oldMaximum, float newMaximum);
 
 LN_CONSTRUCT_ACCESS:
 	UIRangeBase();

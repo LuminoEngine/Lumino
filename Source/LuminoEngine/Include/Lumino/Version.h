@@ -45,7 +45,7 @@ public:
 	/**
 		@brief	リビジョンバージョンを取得します。
 	*/
-	static int GetRevision();
+	static int getRevision();
 
 	/**
 		@brief	ビルドバージョンを取得します。

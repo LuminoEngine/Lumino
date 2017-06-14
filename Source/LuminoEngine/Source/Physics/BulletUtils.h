@@ -43,12 +43,12 @@ public:
 	}
 
 
-	static void DumpBtVector3(const btVector3& v)
+	static void dumpBtVector3(const btVector3& v)
 	{
 		printf("Vector3\n%f, %f, %f\n", v.x(), v.y(), v.z());
 	}
 
-	static void DumpBtTransform(const btTransform& t)
+	static void dumpBtTransform(const btTransform& t)
 	{
 		printf("btTransform\n%f, %f, %f\n%f, %f, %f\n%f, %f, %f\n%f, %f, %f\n",
 			t.getBasis().getRow(0).x(), t.getBasis().getRow(0).y(), t.getBasis().getRow(0).z(),

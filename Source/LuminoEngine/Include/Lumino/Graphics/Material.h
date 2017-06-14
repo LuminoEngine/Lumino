@@ -237,7 +237,7 @@ LN_INTERNAL_ACCESS:
 	RefPtr<Material> copyShared() const;
 
 	//void ResolveCombinedMaterial();
-	//detail::CombinedMaterial* GetCombinedMaterial() const;
+	//detail::CombinedMaterial* getCombinedMaterial() const;
 
 public:	// TODO:
 

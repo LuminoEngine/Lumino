@@ -123,7 +123,7 @@ public:
 	// TODO: ↓いまは Flush でやるようなことをしている。後で変更したい。
 	void DrawGlyphsInternal(const Matrix& transform, const PointF& position, const List<TextLayoutResultItem>& layoutItems, FontGlyphTextureCache* cache);
 	void FlushInternal(FontGlyphTextureCache* cache);
-	void CheckUpdateState();
+	void checkUpdateState();
 
 private:
 	GraphicsManager*	m_manager;

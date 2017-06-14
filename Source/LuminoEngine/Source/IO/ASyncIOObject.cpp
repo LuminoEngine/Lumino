@@ -23,22 +23,22 @@ ASyncIOObject::~ASyncIOObject()
 }
 
 //------------------------------------------------------------------------------
-ASyncIOState ASyncIOObject::GetASyncIOState() const
+ASyncIOState ASyncIOObject::getASyncIOState() const
 {
 	return m_ayncIOState;
 }
 
 //------------------------------------------------------------------------------
-Exception* ASyncIOObject::GetASyncIOException() const
+Exception* ASyncIOObject::getASyncIOException() const
 {
 	return m_ayncIOException;
 }
 
 //------------------------------------------------------------------------------
-void ASyncIOObject::InvokeIOProc(bool isASync, FileManager* fileManager)
+void ASyncIOObject::invokeIOProc(bool isASync, FileManager* fileManager)
 {
 	if (isASync) {
-		fileManager->RequestASyncTask(this);
+		fileManager->requestASyncTask(this);
 	}
 	else
 	{

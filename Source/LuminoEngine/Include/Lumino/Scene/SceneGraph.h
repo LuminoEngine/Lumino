@@ -33,11 +33,11 @@ public:
 	double getTime() const { return m_time; }
 
 	/// 前回フレームからの経過時間を取得する (秒)
-	float GetElapsedTime() const { return m_elapsedTime; }
+	float getElapsedTime() const { return m_elapsedTime; }
 
 	SceneGraphManager* getManager() const { return m_manager; }
 	virtual void updateFrame(float deltaTime);
-	virtual SceneNode* GetRootNode() = 0;
+	virtual SceneNode* getRootNode() = 0;
 	//virtual CameraComponent* getMainCamera() = 0;
 
 
@@ -62,7 +62,7 @@ private:
 		float	time = 0.0f;		// 最後にボタンが押されたときの時間（秒）
 		bool	isDown = false;		// 現在ボタンが押されているか
 
-		void ToVector4(const Size& viewSize, Vector4* v)
+		void toVector4(const Size& viewSize, Vector4* v)
 		{
 			v->x = (2.0f * ((float)position.x) / viewSize.width) - 1.0f;
 			v->y = (2.0f * ((float)position.y) / viewSize.height) - 1.0f;
@@ -101,7 +101,7 @@ public:
 public:
 
 	virtual void updateFrame(float elapsedTime);
-	virtual SceneNode* GetRootNode() override { return m_defaultRoot; }
+	virtual SceneNode* getRootNode() override { return m_defaultRoot; }
 	//virtual CameraComponent* getMainCamera() override { return m_defaultCamera; }
 	//virtual List<RenderingPass*>* GetRenderingPasses() override { return &m_renderingPasses; }
 
@@ -128,7 +128,7 @@ public:
 	tr::Property<bool>	visibleGridPlane;
 
 	virtual void updateFrame(float elapsedTime);
-	virtual SceneNode* GetRootNode() override { return m_defaultRoot; }
+	virtual SceneNode* getRootNode() override { return m_defaultRoot; }
 	//virtual CameraComponent* getMainCamera() override { return m_defaultCamera; }
 	//LightComponent* GetMainLight() const;
 	//virtual List<RenderingPass*>* GetRenderingPasses() override { return &m_renderingPasses; }

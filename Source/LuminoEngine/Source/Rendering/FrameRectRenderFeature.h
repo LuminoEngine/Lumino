@@ -29,15 +29,15 @@ public:
 	void initialize(GraphicsManager* manager);
 
 	void setState(const FrameRectRendererState& state);
-	void Draw(const Matrix& transform, const Rect& rect);
+	void draw(const Matrix& transform, const Rect& rect);
 
 private:
 	void requestBuffers(int faceCount);
 
-	void PutRectangleStretch(const Rect& rect, const Rect& srcUVRect);
-	void PutRectangleTiling(const Rect& rect, const RectI& srcPixelRect, const Rect& srcUVRect, Driver::ITexture* srcTexture);
-	void PutRectangle(const Rect& rect, const RectI& srcPixelRect, const Rect& srcUVRect, Driver::ITexture* srcTexture, BrushWrapMode wrapMode);
-	void PutFrameRectangle(const Rect& rect, const ThicknessF& borderThickness, Driver::ITexture* srcTexture, RectI srcRect, BrushWrapMode wrapMode);
+	void putRectangleStretch(const Rect& rect, const Rect& srcUVRect);
+	void putRectangleTiling(const Rect& rect, const RectI& srcPixelRect, const Rect& srcUVRect, Driver::ITexture* srcTexture);
+	void putRectangle(const Rect& rect, const RectI& srcPixelRect, const Rect& srcUVRect, Driver::ITexture* srcTexture, BrushWrapMode wrapMode);
+	void putFrameRectangle(const Rect& rect, const ThicknessF& borderThickness, Driver::ITexture* srcTexture, RectI srcRect, BrushWrapMode wrapMode);
 
 	//// TODO í∏ì_êÈåæÇ∆Ç©ÇÕäOïîÇ©ÇÁÇ‡ÇÁÇ§ÇÊÇ§Ç…ÇµÇΩÇ¢
 	//struct Vertex
@@ -98,7 +98,7 @@ public:
 	void setViewInfo(const Matrix& viewProj);
 	void setState(Brush* brush);
 
-	void Draw(const Matrix& transform, const Rect& rect);
+	void draw(const Matrix& transform, const Rect& rect);
 
 	virtual bool isStandaloneShader() const { return false; }
 	virtual void flush() override;

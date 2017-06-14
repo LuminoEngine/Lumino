@@ -48,25 +48,25 @@ void UIThumb::initialize()
 }
 
 //------------------------------------------------------------------------------
-void UIThumb::OnRoutedEvent(UIEventArgs* e)
+void UIThumb::onRoutedEvent(UIEventArgs* e)
 {
 	if (e->getType() == UIEvents::MouseDownEvent)
 	{
 		if (!m_isDragging)
 		{
 			auto mouseEvent = static_cast<UIMouseEventArgs*>(e);
-			PointF pos = mouseEvent->getPosition(GetVisualParent());
+			PointF pos = mouseEvent->getPosition(getVisualParent());
 
 			m_lastScreenPosition = pos;
 			m_isDragging = true;
-			CaptureMouse();
+			captureMouse();
 
 			// ドラッグ開始イベント
-			detail::EventArgsPool* pool = getManager()->GetEventArgsPool();
+			detail::EventArgsPool* pool = getManager()->getEventArgsPool();
 			RefPtr<UIDragDeltaEventArgs> args(pool->create<UIDragDeltaEventArgs>(DragStartedEventId), false);
 			args->horizontalChange = pos.x - m_lastScreenPosition.x;
 			args->verticalChange = pos.y - m_lastScreenPosition.y;
-			OnDragStarted(args);
+			onDragStarted(args);
 
 			e->handled = true;
 			return;
@@ -77,18 +77,18 @@ void UIThumb::OnRoutedEvent(UIEventArgs* e)
 		if (m_isDragging)
 		{
 			auto mouseEvent = static_cast<UIMouseEventArgs*>(e);
-			PointF pos = mouseEvent->getPosition(GetVisualParent());
+			PointF pos = mouseEvent->getPosition(getVisualParent());
 
 			m_isDragging = false;
-			ReleaseMouseCapture();
+			releaseMouseCapture();
 
 			// ドラッグ終了イベント
 			// TODO: template 化
-			detail::EventArgsPool* pool = getManager()->GetEventArgsPool();
+			detail::EventArgsPool* pool = getManager()->getEventArgsPool();
 			RefPtr<UIDragDeltaEventArgs> args(pool->create<UIDragDeltaEventArgs>(DragCompletedEventId), false);
 			args->horizontalChange = pos.x - m_lastScreenPosition.x;
 			args->verticalChange = pos.y - m_lastScreenPosition.y;
-			OnDragCompleted(args);
+			onDragCompleted(args);
 
 			e->handled = true;
 			return;
@@ -99,21 +99,21 @@ void UIThumb::OnRoutedEvent(UIEventArgs* e)
 		if (m_isDragging)
 		{
 			auto mouseEvent = static_cast<UIMouseEventArgs*>(e);
-			PointF pos = mouseEvent->getPosition(GetVisualParent());
+			PointF pos = mouseEvent->getPosition(getVisualParent());
 
 			// ドラッグ中イベント
-			detail::EventArgsPool* pool = getManager()->GetEventArgsPool();
+			detail::EventArgsPool* pool = getManager()->getEventArgsPool();
 			RefPtr<UIDragDeltaEventArgs> args(pool->create<UIDragDeltaEventArgs>(DragDeltaEventId), false);
 			args->horizontalChange = pos.x - m_lastScreenPosition.x;
 			args->verticalChange = pos.y - m_lastScreenPosition.y;
-			OnDragDelta(args);
+			onDragDelta(args);
 
 			e->handled = true;
 			return;
 		}
 	}
 
-	UIElement::OnRoutedEvent(e);
+	UIElement::onRoutedEvent(e);
 }
 
 //==============================================================================
@@ -158,36 +158,36 @@ void UITrack::initialize()
 	UIElement::initialize();
 
 	// register VisualState
-	auto* vsm = GetVisualStateManager();
-	vsm->RegisterVisualState(OrientationStates, HorizontalState);
-	vsm->RegisterVisualState(OrientationStates, VerticalState);
+	auto* vsm = getVisualStateManager();
+	vsm->registerVisualState(OrientationStates, HorizontalState);
+	vsm->registerVisualState(OrientationStates, VerticalState);
 
 	m_decreaseButton = newObject<UIButton>();
 	m_thumb = newObject<UIThumb>();
 	m_increaseButton = newObject<UIButton>();
 
-	m_decreaseButton->SetStyleSubControlName(tr::TypeInfo::getTypeInfo<UITrack>()->getName(), _T("DecreaseButton"));
-	m_increaseButton->SetStyleSubControlName(tr::TypeInfo::getTypeInfo<UITrack>()->getName(), _T("IncreaseButton"));
+	m_decreaseButton->setStyleSubControlName(tr::TypeInfo::getTypeInfo<UITrack>()->getName(), _T("DecreaseButton"));
+	m_increaseButton->setStyleSubControlName(tr::TypeInfo::getTypeInfo<UITrack>()->getName(), _T("IncreaseButton"));
 
-	AddVisualChild(m_decreaseButton);
-	AddVisualChild(m_thumb);
-	AddVisualChild(m_increaseButton);
+	addVisualChild(m_decreaseButton);
+	addVisualChild(m_thumb);
+	addVisualChild(m_increaseButton);
 
-	SetOrientation(Orientation::Horizontal);
+	setOrientation(Orientation::Horizontal);
 }
 
 //------------------------------------------------------------------------------
-void UITrack::SetOrientation(Orientation orientation)
+void UITrack::setOrientation(Orientation orientation)
 {
 	m_orientation = orientation;
 
 	switch (orientation)
 	{
 	case Orientation::Horizontal:
-		GoToVisualState(HorizontalState);
+		goToVisualState(HorizontalState);
 		break;
 	case Orientation::Vertical:
-		GoToVisualState(VerticalState);
+		goToVisualState(VerticalState);
 		break;
 	default:
 		LN_NOTIMPLEMENTED();
@@ -196,7 +196,7 @@ void UITrack::SetOrientation(Orientation orientation)
 }
 
 //------------------------------------------------------------------------------
-float UITrack::ValueFromDistance(float horizontal, float vertical)
+float UITrack::valueFromDistance(float horizontal, float vertical)
 {
 	float scale = 1;//IsDirectionReversed ? -1 : 1;
 
@@ -211,19 +211,19 @@ float UITrack::ValueFromDistance(float horizontal, float vertical)
 }
 
 //------------------------------------------------------------------------------
-UIButton* UITrack::GetDecreaseButton() const
+UIButton* UITrack::getDecreaseButton() const
 {
 	return m_decreaseButton;
 }
 
 //------------------------------------------------------------------------------
-UIButton* UITrack::GetIncreaseButton() const
+UIButton* UITrack::getIncreaseButton() const
 {
 	return m_increaseButton;
 }
 
 //------------------------------------------------------------------------------
-UIThumb* UITrack::GetThumb() const
+UIThumb* UITrack::getThumb() const
 {
 	return m_thumb;
 }
@@ -248,11 +248,11 @@ Size UITrack::arrangeOverride(const Size& finalSize)
 	if (Math::isNaN(m_viewportSize))
 	{
 		// ビューサイズが関係ない場合の計算。つまり、Slider コントロール用
-		CalcSliderComponentsSize(finalSize, (m_orientation == Orientation::Vertical), &decreaseButtonLength, &thumbLength, &increaseButtonLength);
+		calcSliderComponentsSize(finalSize, (m_orientation == Orientation::Vertical), &decreaseButtonLength, &thumbLength, &increaseButtonLength);
 	}
 	else
 	{
-		CalcScrollBarComponentsSize(trackLength, m_viewportSize, &decreaseButtonLength, &thumbLength, &increaseButtonLength);
+		calcScrollBarComponentsSize(trackLength, m_viewportSize, &decreaseButtonLength, &thumbLength, &increaseButtonLength);
 	}
 
 	if (m_orientation == Orientation::Horizontal)
@@ -312,7 +312,7 @@ Size UITrack::arrangeOverride(const Size& finalSize)
 }
 
 //------------------------------------------------------------------------------
-void UITrack::CoerceLength(float& componentLength, float trackLength)
+void UITrack::coerceLength(float& componentLength, float trackLength)
 {
 	if (componentLength < 0)
 	{
@@ -325,7 +325,7 @@ void UITrack::CoerceLength(float& componentLength, float trackLength)
 }
 
 //------------------------------------------------------------------------------
-void UITrack::CalcSliderComponentsSize(
+void UITrack::calcSliderComponentsSize(
 	const Size& arrangeSize,
 	bool isVertical,
 	float* outDecreaseButtonLength,
@@ -350,15 +350,15 @@ void UITrack::CalcSliderComponentsSize(
 		thumbLength = (m_thumb == nullptr) ? 0 : m_thumb->getDesiredSize().width;
 	}
 
-	CoerceLength(thumbLength, trackLength);
+	coerceLength(thumbLength, trackLength);
 
 	float remainingTrackLength = trackLength - thumbLength;
 
 	float decreaseButtonLength = remainingTrackLength * offset / range;
-	CoerceLength(decreaseButtonLength, remainingTrackLength);
+	coerceLength(decreaseButtonLength, remainingTrackLength);
 
 	float increaseButtonLength = remainingTrackLength - decreaseButtonLength;
-	CoerceLength(increaseButtonLength, remainingTrackLength);
+	coerceLength(increaseButtonLength, remainingTrackLength);
 
 
 	*outDecreaseButtonLength = decreaseButtonLength;
@@ -369,7 +369,7 @@ void UITrack::CalcSliderComponentsSize(
 }
 
 //------------------------------------------------------------------------------
-void UITrack::CalcScrollBarComponentsSize(
+void UITrack::calcScrollBarComponentsSize(
 	float trackLength,
 	float viewportSize,
 	float* outDecreaseButtonLength,
@@ -393,7 +393,7 @@ void UITrack::CalcScrollBarComponentsSize(
 
 	// Thumb サイズを計算する
 	float thumbLength = trackLength * viewportSize / extent;    // コンテンツ全体の内、どの部分を表示しているのか、その割合で Thumb の長さを作る
-	CoerceLength(thumbLength, trackLength);
+	coerceLength(thumbLength, trackLength);
 	thumbLength = std::max(thumbMinLength, thumbLength);
 
 	// 残りの部分のサイズ
@@ -401,11 +401,11 @@ void UITrack::CalcScrollBarComponentsSize(
 
 	// DecreaseButton
 	float decreaseButtonLength = remainingTrackLength * offset / range;
-	CoerceLength(decreaseButtonLength, remainingTrackLength);
+	coerceLength(decreaseButtonLength, remainingTrackLength);
 
 	// IncreaseButton
 	float increaseButtonLength = remainingTrackLength - decreaseButtonLength;
-	CoerceLength(increaseButtonLength, remainingTrackLength);
+	coerceLength(increaseButtonLength, remainingTrackLength);
 
 	*outDecreaseButtonLength = decreaseButtonLength;
 	*outThumbLength = thumbLength;
@@ -424,7 +424,7 @@ UIScrollEventArgsPtr UIScrollEventArgs::create(Object* sender, float newValue, S
 {
 	if (caching)
 	{
-		detail::EventArgsPool* pool = detail::UIManager::getInstance()->GetEventArgsPool();
+		detail::EventArgsPool* pool = detail::UIManager::getInstance()->getEventArgsPool();
 		RefPtr<UIScrollEventArgs> ptr(pool->create<UIScrollEventArgs>(sender, newValue, type), false);
 		return ptr;
 	}
@@ -493,39 +493,39 @@ void UIScrollBar::initialize()
 	UIControl::initialize();
 
 	// register VisualState
-	auto* vsm = GetVisualStateManager();
-	vsm->RegisterVisualState(OrientationStates, HorizontalState);
-	vsm->RegisterVisualState(OrientationStates, VerticalState);
+	auto* vsm = getVisualStateManager();
+	vsm->registerVisualState(OrientationStates, HorizontalState);
+	vsm->registerVisualState(OrientationStates, VerticalState);
 
 	m_track = newObject<UITrack>();
 	m_lineUpButton = newObject<UIButton>();
 	m_lineDownButton = newObject<UIButton>();
-	AddVisualChild(m_track);
-	AddVisualChild(m_lineUpButton);
-	AddVisualChild(m_lineDownButton);
+	addVisualChild(m_track);
+	addVisualChild(m_lineUpButton);
+	addVisualChild(m_lineDownButton);
 
-	m_lineUpButton->SetStyleSubControlName(tr::TypeInfo::getTypeInfo<UIScrollBar>()->getName(), _T("LineUpButton"));
-	m_lineDownButton->SetStyleSubControlName(tr::TypeInfo::getTypeInfo<UIScrollBar>()->getName(), _T("LineDownButton"));
+	m_lineUpButton->setStyleSubControlName(tr::TypeInfo::getTypeInfo<UIScrollBar>()->getName(), _T("LineUpButton"));
+	m_lineDownButton->setStyleSubControlName(tr::TypeInfo::getTypeInfo<UIScrollBar>()->getName(), _T("LineDownButton"));
 
 	// TODO:
 	m_lineUpButton->setSize(Size(16, 16));
 	m_lineDownButton->setSize(Size(16, 16));
 
-	SetOrientation(Orientation::Horizontal);
+	setOrientation(Orientation::Horizontal);
 }
 
 //------------------------------------------------------------------------------
-void UIScrollBar::SetOrientation(Orientation orientation)
+void UIScrollBar::setOrientation(Orientation orientation)
 {
-	m_track->SetOrientation(orientation);
+	m_track->setOrientation(orientation);
 
 	switch (orientation)
 	{
 	case Orientation::Horizontal:
-		GoToVisualState(HorizontalState);
+		goToVisualState(HorizontalState);
 		break;
 	case Orientation::Vertical:
-		GoToVisualState(VerticalState);
+		goToVisualState(VerticalState);
 		break;
 	default:
 		LN_NOTIMPLEMENTED();
@@ -534,9 +534,9 @@ void UIScrollBar::SetOrientation(Orientation orientation)
 }
 
 //------------------------------------------------------------------------------
-Orientation UIScrollBar::GetOrientation() const
+Orientation UIScrollBar::getOrientation() const
 {
-	return m_track->GetOrientation();
+	return m_track->getOrientation();
 }
 
 //------------------------------------------------------------------------------
@@ -552,43 +552,43 @@ float UIScrollBar::getValue() const
 }
 
 //------------------------------------------------------------------------------
-void UIScrollBar::SetMinimum(float value)
+void UIScrollBar::setMinimum(float value)
 {
-	m_track->SetMinimum(value);
+	m_track->setMinimum(value);
 }
 
 //------------------------------------------------------------------------------
-float UIScrollBar::GetMinimum() const
+float UIScrollBar::getMinimum() const
 {
-	return m_track->GetMinimum();
+	return m_track->getMinimum();
 }
 
 //------------------------------------------------------------------------------
-void UIScrollBar::SetMaximum(float value)
+void UIScrollBar::setMaximum(float value)
 {
-	m_track->SetMaximum(value);
+	m_track->setMaximum(value);
 }
 
 //------------------------------------------------------------------------------
-float UIScrollBar::GetMaximum() const
+float UIScrollBar::getMaximum() const
 {
-	return m_track->GetMaximum();
+	return m_track->getMaximum();
 }
 
 //------------------------------------------------------------------------------
-void UIScrollBar::SetViewportSize(float value)
+void UIScrollBar::setViewportSize(float value)
 {
-	m_track->SetViewportSize(value);
+	m_track->setViewportSize(value);
 }
 
 //------------------------------------------------------------------------------
-float UIScrollBar::GetViewportSize() const
+float UIScrollBar::getViewportSize() const
 {
-	return m_track->GetViewportSize();
+	return m_track->getViewportSize();
 }
 
 //------------------------------------------------------------------------------
-void UIScrollBar::OnRoutedEvent(UIEventArgs* e)
+void UIScrollBar::onRoutedEvent(UIEventArgs* e)
 {
 	if (e->getType() == UIThumb::DragStartedEventId)
 	{
@@ -600,9 +600,9 @@ void UIScrollBar::OnRoutedEvent(UIEventArgs* e)
 		updateValue(e2->horizontalChange, e2->verticalChange);
 
 		auto args = UIScrollEventArgs::create(this, m_track->getValue(), ScrollEventType::ThumbTrack);
-		RaiseEvent(ScrollEventId, this, args);
+		raiseEvent(ScrollEventId, this, args);
 
-		//switch (m_track->GetOrientation())
+		//switch (m_track->getOrientation())
 		//{
 		//case Orientation::Horizontal:
 
@@ -619,9 +619,9 @@ void UIScrollBar::OnRoutedEvent(UIEventArgs* e)
 	else if (e->getType() == UIThumb::DragCompletedEventId)
 	{
 		auto args = UIScrollEventArgs::create(this, m_track->getValue(), ScrollEventType::EndScroll);
-		RaiseEvent(ScrollEventId, this, args);
+		raiseEvent(ScrollEventId, this, args);
 	}
-	UIControl::OnRoutedEvent(e);
+	UIControl::onRoutedEvent(e);
 }
 
 //------------------------------------------------------------------------------
@@ -638,7 +638,7 @@ Size UIScrollBar::arrangeOverride(const Size& finalSize)
 {
 	Size upSize;
 	Size downSize;
-	Orientation orientation = GetOrientation();
+	Orientation orientation = getOrientation();
 
 	switch (orientation)
 	{
@@ -665,7 +665,7 @@ Size UIScrollBar::arrangeOverride(const Size& finalSize)
 //------------------------------------------------------------------------------
 //void UIScrollBar::GetStyleClassName(String* outSubStateName)
 //{
-//	if (m_track->GetOrientation() == Orientation::Horizontal)
+//	if (m_track->getOrientation() == Orientation::Horizontal)
 //		*outSubStateName = _T("Horizontal");
 //	else
 //		*outSubStateName = _T("Vertical");
@@ -674,14 +674,14 @@ Size UIScrollBar::arrangeOverride(const Size& finalSize)
 //------------------------------------------------------------------------------
 void UIScrollBar::updateValue(float horizontalDragDelta, float verticalDragDelta)
 {
-	float valueDelta = m_track->ValueFromDistance(horizontalDragDelta, verticalDragDelta);
+	float valueDelta = m_track->valueFromDistance(horizontalDragDelta, verticalDragDelta);
 
 	float newValue = m_dragStartValue + valueDelta;
 	m_track->setValue(newValue);
 
 	// TODO:
-	//RefPtr<ScrollEventArgs> args(m_manager->GetEventArgsPool()->Create<ScrollEventArgs>(newValue, ScrollEventType::ThumbTrack), false);
-	//RaiseEvent(ScrollEvent, this, args);
+	//RefPtr<ScrollEventArgs> args(m_manager->getEventArgsPool()->Create<ScrollEventArgs>(newValue, ScrollEventType::ThumbTrack), false);
+	//raiseEvent(ScrollEvent, this, args);
 }
 
 //==============================================================================
@@ -716,11 +716,11 @@ void UIScrollViewer::initialize()
 	UIControl::initialize();
 
 	m_horizontalScrollBar = newObject<UIScrollBar>();
-	m_horizontalScrollBar->SetOrientation(Orientation::Horizontal);
+	m_horizontalScrollBar->setOrientation(Orientation::Horizontal);
 	m_verticalScrollBar = newObject<UIScrollBar>();
-	m_verticalScrollBar->SetOrientation(Orientation::Vertical);
-	AddVisualChild(m_horizontalScrollBar);
-	AddVisualChild(m_verticalScrollBar);
+	m_verticalScrollBar->setOrientation(Orientation::Vertical);
+	addVisualChild(m_horizontalScrollBar);
+	addVisualChild(m_verticalScrollBar);
 }
 
 //------------------------------------------------------------------------------
@@ -761,30 +761,30 @@ Size UIScrollViewer::arrangeOverride(const Size& finalSize)
 
 	if (m_scrollTarget != nullptr)
 	{
-		m_horizontalScrollBar->SetMinimum(0.0f);
-		m_horizontalScrollBar->SetMaximum(m_scrollTarget->GetExtentWidth());
-		m_horizontalScrollBar->SetViewportSize(m_scrollTarget->GetViewportWidth());
-		m_verticalScrollBar->SetMinimum(0.0f);
-		m_verticalScrollBar->SetMaximum(m_scrollTarget->GetExtentHeight());
-		m_verticalScrollBar->SetViewportSize(m_scrollTarget->GetViewportHeight());
+		m_horizontalScrollBar->setMinimum(0.0f);
+		m_horizontalScrollBar->setMaximum(m_scrollTarget->getExtentWidth());
+		m_horizontalScrollBar->setViewportSize(m_scrollTarget->getViewportWidth());
+		m_verticalScrollBar->setMinimum(0.0f);
+		m_verticalScrollBar->setMaximum(m_scrollTarget->getExtentHeight());
+		m_verticalScrollBar->setViewportSize(m_scrollTarget->getViewportHeight());
 	}
 	else
 	{
-		m_horizontalScrollBar->SetMinimum(0.0f);
-		m_horizontalScrollBar->SetMaximum(0.0f);
-		m_horizontalScrollBar->SetViewportSize(0.0f);
-		m_verticalScrollBar->SetMinimum(0.0f);
-		m_verticalScrollBar->SetMaximum(0.0f);
-		m_verticalScrollBar->SetViewportSize(0.0f);
+		m_horizontalScrollBar->setMinimum(0.0f);
+		m_horizontalScrollBar->setMaximum(0.0f);
+		m_horizontalScrollBar->setViewportSize(0.0f);
+		m_verticalScrollBar->setMinimum(0.0f);
+		m_verticalScrollBar->setMaximum(0.0f);
+		m_verticalScrollBar->setViewportSize(0.0f);
 	}
 
 	return actualSize;
 }
 
 //------------------------------------------------------------------------------
-void UIScrollViewer::OnRoutedEvent(UIEventArgs* e)
+void UIScrollViewer::onRoutedEvent(UIEventArgs* e)
 {
-	UIControl::OnRoutedEvent(e);
+	UIControl::onRoutedEvent(e);
 
 	if (e->getType() == UIScrollBar::ScrollEventId)
 	{
@@ -794,18 +794,18 @@ void UIScrollViewer::OnRoutedEvent(UIEventArgs* e)
 		{
 			if (e->sender == m_horizontalScrollBar)
 			{
-				m_scrollTarget->SetHorizontalOffset(e2->newValue);
+				m_scrollTarget->setHorizontalOffset(e2->newValue);
 			}
 			else if (e->sender == m_verticalScrollBar)
 			{
-				m_scrollTarget->SetVerticalOffset(e2->newValue);
+				m_scrollTarget->setVerticalOffset(e2->newValue);
 			}
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
-void UIScrollViewer::OnLayoutPanelChanged(UILayoutPanel* newPanel)
+void UIScrollViewer::onLayoutPanelChanged(UILayoutPanel* newPanel)
 {
 	m_scrollTarget = newPanel;
 }

@@ -23,9 +23,9 @@ using OpFunc = void(NlVariant* lhs, NlVariant* rhs, NlVariant* outResult);
 //------------------------------------------------------------------------------
 NlNode_Add::NlNode_Add()
 {
-	m_inputLhsPin = CreatePin(NlGraphPinCategory::DataFlow, NlGraphPinDirection::Input, _T("left"));
-	m_inputRhsPin = CreatePin(NlGraphPinCategory::DataFlow, NlGraphPinDirection::Input, _T("right"));
-	m_outputPin = CreatePin(NlGraphPinCategory::DataFlow, NlGraphPinDirection::Output, _T("return"));
+	m_inputLhsPin = createPin(NlGraphPinCategory::DataFlow, NlGraphPinDirection::Input, _T("left"));
+	m_inputRhsPin = createPin(NlGraphPinCategory::DataFlow, NlGraphPinDirection::Input, _T("right"));
+	m_outputPin = createPin(NlGraphPinCategory::DataFlow, NlGraphPinDirection::Output, _T("return"));
 }
 
 //------------------------------------------------------------------------------
@@ -33,7 +33,7 @@ void NlNode_Add::execute(NlContext* sc)
 {
 	NlVariant* lhs = sc->evaluate(m_inputLhsPin);
 	NlVariant* rhs = sc->evaluate(m_inputRhsPin);
-	NlVariant_AddInt32(lhs, rhs, m_outputPin->GetValueCache());
+	NlVariant_AddInt32(lhs, rhs, m_outputPin->getValueCache());
 }
 
 LN_NAMESPACE_END

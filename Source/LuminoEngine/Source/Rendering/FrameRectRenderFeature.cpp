@@ -87,7 +87,7 @@ void FrameRectRendererCore::setState(const FrameRectRendererState& state)
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRendererCore::Draw(const Matrix& transform, const Rect& rect)
+void FrameRectRendererCore::draw(const Matrix& transform, const Rect& rect)
 {
 	if (rect.isEmpty()) return;
 
@@ -100,7 +100,7 @@ void FrameRectRendererCore::Draw(const Matrix& transform, const Rect& rect)
 	// 枠
 	{
 		// TODO: thickness が left しか対応できていない
-		PutFrameRectangle(rect, m_state.borderThickness, srcTexture, m_state.srcRect, m_state.wrapMode);
+		putFrameRectangle(rect, m_state.borderThickness, srcTexture, m_state.srcRect, m_state.wrapMode);
 	}
 
 	// Inner
@@ -123,7 +123,7 @@ void FrameRectRendererCore::Draw(const Matrix& transform, const Rect& rect)
 		texSize.height = 1.0f / texSize.height;
 		Rect uvSrcRect(srcRect.x * texSize.width, srcRect.y * texSize.height, srcRect.width * texSize.width, srcRect.height * texSize.height);
 
-		PutRectangle(dstRect, srcRect, uvSrcRect, srcTexture, m_state.wrapMode);
+		putRectangle(dstRect, srcRect, uvSrcRect, srcTexture, m_state.wrapMode);
 	}
 
 
@@ -171,7 +171,7 @@ void FrameRectRendererCore::requestBuffers(int faceCount)
 
 #if 0
 //------------------------------------------------------------------------------
-void FrameRectRendererCore::PutRectangleStretch(const Rect& rect, const Rect& srcUVRect)
+void FrameRectRendererCore::putRectangleStretch(const Rect& rect, const Rect& srcUVRect)
 {
 	if (rect.IsEmpty()) { return; }		// 矩形がつぶれているので書く必要はない
 
@@ -201,7 +201,7 @@ void FrameRectRendererCore::PutRectangleStretch(const Rect& rect, const Rect& sr
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRendererCore::PutRectangleTiling(const Rect& rect, const RectI& srcPixelRect, const Rect& srcUVRect, Driver::ITexture* srcTexture)
+void FrameRectRendererCore::putRectangleTiling(const Rect& rect, const RectI& srcPixelRect, const Rect& srcUVRect, Driver::ITexture* srcTexture)
 {
 	if (rect.IsEmpty()) return;		// 矩形がつぶれているので書く必要はない
 
@@ -237,7 +237,7 @@ void FrameRectRendererCore::PutRectangleTiling(const Rect& rect, const RectI& sr
 #endif
 
 //------------------------------------------------------------------------------
-void FrameRectRendererCore::PutRectangleStretch(const Rect& rect, const Rect& srcUVRect)
+void FrameRectRendererCore::putRectangleStretch(const Rect& rect, const Rect& srcUVRect)
 {
 	if (rect.isEmpty()) { return; }		// 矩形がつぶれているので書く必要はない
 
@@ -268,7 +268,7 @@ void FrameRectRendererCore::PutRectangleStretch(const Rect& rect, const Rect& sr
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRendererCore::PutRectangleTiling(const Rect& rect, const RectI& srcPixelRect, const Rect& srcUVRect, Driver::ITexture* srcTexture)
+void FrameRectRendererCore::putRectangleTiling(const Rect& rect, const RectI& srcPixelRect, const Rect& srcUVRect, Driver::ITexture* srcTexture)
 {
 	if (rect.isEmpty()) return;		// 矩形がつぶれているので書く必要はない
 
@@ -327,20 +327,20 @@ void FrameRectRendererCore::PutRectangleTiling(const Rect& rect, const RectI& sr
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRendererCore::PutRectangle(const Rect& rect, const RectI& srcPixelRect, const Rect& srcUVRect, Driver::ITexture* srcTexture, BrushWrapMode wrapMode)
+void FrameRectRendererCore::putRectangle(const Rect& rect, const RectI& srcPixelRect, const Rect& srcUVRect, Driver::ITexture* srcTexture, BrushWrapMode wrapMode)
 {
 	if (wrapMode == BrushWrapMode::Stretch)
 	{
-		PutRectangleStretch(rect, srcUVRect);
+		putRectangleStretch(rect, srcUVRect);
 	}
 	else if (wrapMode == BrushWrapMode::Tile)
 	{
-		PutRectangleTiling(rect, srcPixelRect, srcUVRect, srcTexture);
+		putRectangleTiling(rect, srcPixelRect, srcUVRect, srcTexture);
 	}
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRendererCore::PutFrameRectangle(const Rect& rect, const ThicknessF& borderThickness, Driver::ITexture* srcTexture, RectI srcRect, BrushWrapMode wrapMode)
+void FrameRectRendererCore::putFrameRectangle(const Rect& rect, const ThicknessF& borderThickness, Driver::ITexture* srcTexture, RectI srcRect, BrushWrapMode wrapMode)
 {
 	if (srcRect.isEmpty()) return;
 	assert(srcTexture != nullptr);
@@ -403,7 +403,7 @@ void FrameRectRendererCore::PutFrameRectangle(const Rect& rect, const ThicknessF
 	// 左上	■□□
 	//		□　□
 	//		□□□
-	PutRectangle(
+	putRectangle(
 		Rect(outerRect.getLeft(), outerRect.getTop(), dstFrame.Left, dstFrame.Top),
 		RectI(outerSrcRect.getLeft(), outerSrcRect.getTop(), srcFrame.Left, srcFrame.Top),
 		Rect(outerUVRect.getLeft(), outerUVRect.getTop(), uvFrame.Left, uvFrame.Top),
@@ -412,7 +412,7 @@ void FrameRectRendererCore::PutFrameRectangle(const Rect& rect, const ThicknessF
 	// 上	□■□
 	//		□　□
 	//		□□□
-	PutRectangle(
+	putRectangle(
 		Rect(innerRect.getLeft(), outerRect.getTop(), innerRect.width, dstFrame.Top),
 		RectI(innerSrcRect.getLeft(), outerSrcRect.getTop(), innerSrcRect.width, srcFrame.Top),
 		Rect(innerUVRect.getLeft(), outerUVRect.getTop(), innerUVRect.width, uvFrame.Top),
@@ -421,7 +421,7 @@ void FrameRectRendererCore::PutFrameRectangle(const Rect& rect, const ThicknessF
 	// 右上	□□■
 	//		□　□
 	//		□□□
-	PutRectangle(
+	putRectangle(
 		Rect(innerRect.getRight(), outerRect.getTop(), dstFrame.Right, dstFrame.Top),
 		RectI(innerSrcRect.getRight(), outerSrcRect.getTop(), srcFrame.Right, srcFrame.Top),
 		Rect(innerUVRect.getRight(), outerUVRect.getTop(), uvFrame.Right, uvFrame.Top),
@@ -430,7 +430,7 @@ void FrameRectRendererCore::PutFrameRectangle(const Rect& rect, const ThicknessF
 	// 右	□□□
 	//		□　■
 	//		□□□
-	PutRectangle(
+	putRectangle(
 		Rect(innerRect.getRight(), innerRect.getTop(), dstFrame.Right, innerRect.height),
 		RectI(innerSrcRect.getRight(), innerSrcRect.getTop(), srcFrame.Right, innerSrcRect.height),
 		Rect(innerUVRect.getRight(), innerUVRect.getTop(), uvFrame.Right, innerUVRect.height),
@@ -439,7 +439,7 @@ void FrameRectRendererCore::PutFrameRectangle(const Rect& rect, const ThicknessF
 	// 右下	□□□
 	//		□　□
 	//		□□■
-	PutRectangle(
+	putRectangle(
 		Rect(innerRect.getRight(), innerRect.getBottom(), dstFrame.Right, dstFrame.Bottom),
 		RectI(innerSrcRect.getRight(), innerSrcRect.getBottom(), srcFrame.Right, srcFrame.Bottom),
 		Rect(innerUVRect.getRight(), innerUVRect.getBottom(), uvFrame.Right, uvFrame.Bottom),
@@ -448,7 +448,7 @@ void FrameRectRendererCore::PutFrameRectangle(const Rect& rect, const ThicknessF
 	// 下	□□□
 	//		□　□
 	//		□■□
-	PutRectangle(
+	putRectangle(
 		Rect(innerRect.getLeft(), innerRect.getBottom(), innerRect.width, dstFrame.Bottom),
 		RectI(innerSrcRect.getLeft(), innerSrcRect.getBottom(), innerSrcRect.width, srcFrame.Bottom),
 		Rect(innerUVRect.getLeft(), innerUVRect.getBottom(), innerUVRect.width, uvFrame.Bottom),
@@ -457,7 +457,7 @@ void FrameRectRendererCore::PutFrameRectangle(const Rect& rect, const ThicknessF
 	// 左下	□□□
 	//		□　□
 	//		■□□
-	PutRectangle(
+	putRectangle(
 		Rect(outerRect.getLeft(), innerRect.getBottom(), dstFrame.Left, dstFrame.Bottom),
 		RectI(outerSrcRect.getLeft(), innerSrcRect.getBottom(), srcFrame.Left, srcFrame.Bottom),
 		Rect(outerUVRect.getLeft(), innerUVRect.getBottom(), uvFrame.Left, uvFrame.Bottom),
@@ -466,7 +466,7 @@ void FrameRectRendererCore::PutFrameRectangle(const Rect& rect, const ThicknessF
 	// 左	□□□
 	//		■　□
 	//		□□□
-	PutRectangle(
+	putRectangle(
 		Rect(outerRect.getLeft(), innerRect.getTop(), dstFrame.Left, innerRect.height),
 		RectI(outerSrcRect.getLeft(), innerSrcRect.getTop(), srcFrame.Left, innerSrcRect.height),
 		Rect(outerUVRect.getLeft(), innerUVRect.getTop(), uvFrame.Left, innerUVRect.height),
@@ -536,17 +536,17 @@ void FrameRectRenderFeature::setState(Brush* brush, const Matrix& world, const M
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRenderFeature::Draw(const Matrix& transform, const Rect& rect)
+void FrameRectRenderFeature::draw(const Matrix& transform, const Rect& rect)
 {
 	setState(m_brush, Matrix::Identity, m_viewProj);
 
 	LN_ENQUEUE_RENDER_COMMAND_3(
-		Draw, m_manager,
+		draw, m_manager,
 		FrameRectRendererCore*, m_core,
 		Matrix, transform,
 		Rect, rect,
 		{
-			m_core->Draw(transform, rect);
+			m_core->draw(transform, rect);
 		});
 }
 

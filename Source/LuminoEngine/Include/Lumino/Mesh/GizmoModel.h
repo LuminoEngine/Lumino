@@ -22,28 +22,28 @@ public:
 	static GizmoModelPtr create();
 
 public:
-	void SetGizmoType(GizmoType type);
+	void setGizmoType(GizmoType type);
 
-	void Setup(const Matrix& parentSpaceTransform, const AttitudeTransform& targetInitialTransform);
+	void setup(const Matrix& parentSpaceTransform, const AttitudeTransform& targetInitialTransform);
 	
 	//void SetTargetTransform(const Matrix& transform);
 	const AttitudeTransform& GetTargetTransform() const;
 	
 	void setViewInfo(const Vector3& viewPosition, const Matrix& view, const Matrix& proj, const SizeI& viewPixelSize);
-	void SetDisplayScale(float scale);
+	void setDisplayScale(float scale);
 	
-	bool InjectMouseDown(int x, int y);
-	bool InjectMouseMove(int x, int y);
-	bool InjectMouseUp(int x, int y);
-	//bool InjectKeyDown(Keys keyCode, ModifierKeys modifierKeys);
+	bool injectMouseDown(int x, int y);
+	bool injectMouseMove(int x, int y);
+	bool injectMouseUp(int x, int y);
+	//bool injectKeyDown(Keys keyCode, ModifierKeys modifierKeys);
 
 	void render(DrawList* context);
 
-	void AddOnTargetTransformChanged(const std::function<void(GizmoModel*)>& handler)
+	void addOnTargetTransformChanged(const std::function<void(GizmoModel*)>& handler)
 	{
 		m_onTargetTransformChanged.connect(handler);
 	}
-	void AddOnSubmitEditing(const std::function<void(GizmoModel*)>& handler)
+	void addOnSubmitEditing(const std::function<void(GizmoModel*)>& handler)
 	{
 		m_onSubmitEditing.connect(handler);
 	}
@@ -69,15 +69,15 @@ LN_INTERNAL_ACCESS:
 	virtual ~GizmoModel();
 	void initialize(ln::detail::GraphicsManager* manager);
 
-	void SubmitEditing();
+	void submitEditing();
 
-	void MakeScreenFactor();
+	void makeScreenFactor();
 	
-	OperationType GetDirectionOperationType(int x, int y, Plane* outLocalPlane = nullptr);	// translation or scaling
-	OperationType GetRotationOperationType(int x, int y);
+	OperationType getDirectionOperationType(int x, int y, Plane* outLocalPlane = nullptr);	// translation or scaling
+	OperationType getRotationOperationType(int x, int y);
 	
-	Ray MakeLocalRay(int x, int y);
-	void IntersectsLocalPlanes(int x, int y, bool* xz, Vector3* ptXZ, bool* xy, Vector3* ptXY, bool* yz, Vector3* ptYZ, Ray* localViewRay);
+	Ray makeLocalRay(int x, int y);
+	void intersectsLocalPlanes(int x, int y, bool* xz, Vector3* ptXZ, bool* xy, Vector3* ptXY, bool* yz, Vector3* ptYZ, Ray* localViewRay);
 
 private:
 	static const float CenterBoxSize;

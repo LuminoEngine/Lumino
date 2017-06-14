@@ -57,7 +57,7 @@ struct PrimitiveRendererCore_DrawLine : public RenderingCommand
 		m_to = to;
 		m_toColor = toColor;
 	}
-	void execute() { m_core->DrawLine(m_from, m_fromColor, m_to, m_toColor); }
+	void execute() { m_core->drawLine(m_from, m_fromColor, m_to, m_toColor); }
 };
 
 //==============================================================================
@@ -67,7 +67,7 @@ struct PrimitiveRendererCore_DrawSquare : public RenderingCommand
 	PrimitiveRendererCore::DrawSquareData	m_data;
 
 	void create(PrimitiveRendererCore* core, const PrimitiveRendererCore::DrawSquareData& data) { m_core = core; m_data = data; }
-	void execute() { m_core->DrawSquare(m_data); }
+	void execute() { m_core->drawSquare(m_data); }
 };
 
 //==============================================================================
@@ -121,14 +121,14 @@ void PrimitiveRendererCore::setState(PrimitiveRendererMode mode)
 }
 
 //------------------------------------------------------------------------------
-void PrimitiveRendererCore::DrawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor)
+void PrimitiveRendererCore::drawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor)
 {
-	AddVertex(from, Vector2::Zero, fromColor);
-	AddVertex(to, Vector2::Zero, toColor);
+	addVertex(from, Vector2::Zero, fromColor);
+	addVertex(to, Vector2::Zero, toColor);
 }
 
 //------------------------------------------------------------------------------
-void PrimitiveRendererCore::DrawSquare(const DrawSquareData& data)
+void PrimitiveRendererCore::drawSquare(const DrawSquareData& data)
 {
 	uint16_t i = m_vertexCache.getCount();
 	m_indexCache.add(i + 0);
@@ -138,10 +138,10 @@ void PrimitiveRendererCore::DrawSquare(const DrawSquareData& data)
 	m_indexCache.add(i + 1);
 	m_indexCache.add(i + 3);
 
-	AddVertex(data.pos[0], data.uv[0], data.color[0]);
-	AddVertex(data.pos[1], data.uv[1], data.color[1]);
-	AddVertex(data.pos[2], data.uv[2], data.color[2]);
-	AddVertex(data.pos[3], data.uv[3], data.color[3]);
+	addVertex(data.pos[0], data.uv[0], data.color[0]);
+	addVertex(data.pos[1], data.uv[1], data.color[1]);
+	addVertex(data.pos[2], data.uv[2], data.color[2]);
+	addVertex(data.pos[3], data.uv[3], data.color[3]);
 }
 
 //------------------------------------------------------------------------------
@@ -196,7 +196,7 @@ void PrimitiveRendererCore::requestBuffers(int vertexCount, int indexCount, Vert
 }
 
 //------------------------------------------------------------------------------
-void PrimitiveRendererCore::AddVertex(const Vector3& pos, const Vector2& uv, const Color& color)
+void PrimitiveRendererCore::addVertex(const Vector3& pos, const Vector2& uv, const Color& color)
 {
 	Vertex v;
 	v.position = pos;
@@ -235,40 +235,40 @@ void PrimitiveRenderFeature::initialize(GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void PrimitiveRenderFeature::DrawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor)
+void PrimitiveRenderFeature::drawLine(const Vector3& from, const Color& fromColor, const Vector3& to, const Color& toColor)
 {
-	SetPrimitiveRendererMode(PrimitiveRendererMode::LineList);
-	CheckUpdateState();
-	LN_CALL_CORE_COMMAND(DrawLine, PrimitiveRendererCore_DrawLine, from, fromColor, to, toColor);
+	setPrimitiveRendererMode(PrimitiveRendererMode::LineList);
+	checkUpdateState();
+	LN_CALL_CORE_COMMAND(drawLine, PrimitiveRendererCore_DrawLine, from, fromColor, to, toColor);
 	m_flushRequested = true;
 }
 
 //------------------------------------------------------------------------------
-void PrimitiveRenderFeature::DrawSquare(
+void PrimitiveRenderFeature::drawSquare(
 	const Vector3& position1, const Vector2& uv1, const Color& color1,
 	const Vector3& position2, const Vector2& uv2, const Color& color2,
 	const Vector3& position3, const Vector2& uv3, const Color& color3,
 	const Vector3& position4, const Vector2& uv4, const Color& color4)
 {
-	SetPrimitiveRendererMode(PrimitiveRendererMode::TriangleList);
-	CheckUpdateState();
+	setPrimitiveRendererMode(PrimitiveRendererMode::TriangleList);
+	checkUpdateState();
 	PrimitiveRendererCore::DrawSquareData data;
 	data.pos[0] = position1; data.uv[0] = uv1; data.color[0] = color1;
 	data.pos[1] = position2; data.uv[1] = uv2; data.color[1] = color2;
 	data.pos[2] = position3; data.uv[2] = uv3; data.color[2] = color3;
 	data.pos[3] = position4; data.uv[3] = uv4; data.color[3] = color4;
-	LN_CALL_CORE_COMMAND(DrawSquare, PrimitiveRendererCore_DrawSquare, data);
+	LN_CALL_CORE_COMMAND(drawSquare, PrimitiveRendererCore_DrawSquare, data);
 	m_flushRequested = true;
 }
 
 //------------------------------------------------------------------------------
-void PrimitiveRenderFeature::DrawRectangle(const Rect& rect)
+void PrimitiveRenderFeature::drawRectangle(const Rect& rect)
 {
 	float l = rect.getLeft();
 	float t = rect.getTop();
 	float r = rect.getRight();
 	float b = rect.getBottom();
-	DrawSquare(
+	drawSquare(
 		Vector3(l, t, 0), Vector2(0, 0), Color::White,
 		Vector3(l, b, 0), Vector2(0, 1), Color::White,
 		Vector3(r, t, 0), Vector2(1, 0), Color::White,
@@ -296,7 +296,7 @@ void PrimitiveRenderFeature::onActivated() { m_stateModified = true; }
 void PrimitiveRenderFeature::onDeactivated() { flush(); }
 
 //------------------------------------------------------------------------------
-void PrimitiveRenderFeature::SetPrimitiveRendererMode(PrimitiveRendererMode mode)
+void PrimitiveRenderFeature::setPrimitiveRendererMode(PrimitiveRendererMode mode)
 {
 	if (mode != m_mode)
 	{
@@ -306,7 +306,7 @@ void PrimitiveRenderFeature::SetPrimitiveRendererMode(PrimitiveRendererMode mode
 }
 
 //------------------------------------------------------------------------------
-void PrimitiveRenderFeature::CheckUpdateState()
+void PrimitiveRenderFeature::checkUpdateState()
 {
 	if (m_stateModified)
 	{
@@ -354,7 +354,7 @@ void BlitRenderer::initialize(GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-Material* BlitRenderer::GetCommonMaterial() const
+Material* BlitRenderer::getCommonMaterial() const
 {
 	return m_commonMaterial;
 }
@@ -367,12 +367,12 @@ void BlitRenderer::blit()
 		blit, m_manager,
 		BlitRenderer*, _this,
 		{
-			_this->BlitImpl();
+			_this->blitImpl();
 		});
 }
 
 //------------------------------------------------------------------------------
-void BlitRenderer::BlitImpl()
+void BlitRenderer::blitImpl()
 {
 	auto* device = m_manager->getGraphicsDevice();
 	auto* renderer = device->getRenderer();

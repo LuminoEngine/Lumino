@@ -24,10 +24,10 @@ public:
 	template<class TObject, typename ...TArgs>
 	TObject* create(TArgs... args)
 	{
-		TObject* obj = static_cast<TObject* >(FindFreeObject(tr::TypeInfo::getTypeInfo<TObject>()));
+		TObject* obj = static_cast<TObject* >(findFreeObject(tr::TypeInfo::getTypeInfo<TObject>()));
 		if (obj == nullptr) {
 			obj = LN_NEW TObject(args...);
-			Register(obj);
+			registerObject(obj);
 		}
 		else {
 			obj->~TObject();
@@ -42,7 +42,7 @@ private:
 	typedef List<tr::ReflectionObject*>	ObjectList;
 	ObjectList					m_poolList;
 
-	tr::ReflectionObject* FindFreeObject(tr::TypeInfo* typeId)
+	tr::ReflectionObject* findFreeObject(tr::TypeInfo* typeId)
 	{
 		for (auto* e : m_poolList)
 		{
@@ -53,7 +53,7 @@ private:
 		return nullptr;
 	}
 
-	void Register(tr::ReflectionObject* obj)
+	void registerObject(tr::ReflectionObject* obj)
 	{
 		m_poolList.add(obj);
 	}
@@ -98,7 +98,7 @@ public:
 		TEventArgs* e = static_cast<TEventArgs* >(find(tr::TypeInfo::getTypeInfo<TEventArgs>()));
 		if (e == nullptr) {
 			auto eRef = newObject<TEventArgs>(args...);
-			Register(eRef);
+			registerObject(eRef);
 			e = eRef;
 		}
 		else {
@@ -130,7 +130,7 @@ private:
 		return NULL;
 	}
 
-	void Register(UIEventArgs* e)
+	void registerObject(UIEventArgs* e)
 	{
 		EventArgsList* list;
 		if (!m_pool.tryGetValue(tr::TypeInfo::getTypeInfo(e), &list))
@@ -150,7 +150,7 @@ private:
 
 
 	template<class T>
-	T FindFreeObject(const List<T>& pool)
+	T findFreeObject(const List<T>& pool)
 	{
 		LN_FOREACH(T a, pool)
 		{

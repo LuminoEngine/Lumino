@@ -7,7 +7,7 @@ class SymbolDatabase;
 class WrapperIFGenerator
 {
 public:
-	void Generate(SymbolDatabase* database);
+	void generate(SymbolDatabase* database);
 
 private:
 	String GenerateOverrideCallerFuncPtrs();

@@ -8,7 +8,7 @@ static const String FuncDeclTempalte =
 	_T("[DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]\n")
 	_T("public extern static ResultCode %FuncName%(%Params%);\n");
 
-void DotNetPInvokeLibGenerator::Generate()
+void DotNetPInvokeLibGenerator::generate()
 {
 	// delegates
 	OutputBuffer delegatesText(1);

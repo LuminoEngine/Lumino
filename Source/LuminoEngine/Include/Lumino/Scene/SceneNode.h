@@ -52,84 +52,84 @@ public:
 	const Vector3& getPosition() const { return m_transform.translation; }
 
 	/// 回転の設定
-	void SetRotation(const Quaternion& rot) { m_transform.rotation = rot; }
-	void SetAngles(float x, float y, float z) { m_transform.rotation = Quaternion::makeFromEulerAngles(Vector3(x, y, z)); }
+	void setRotation(const Quaternion& rot) { m_transform.rotation = rot; }
+	void setAngles(float x, float y, float z) { m_transform.rotation = Quaternion::makeFromEulerAngles(Vector3(x, y, z)); }
 
 	/// 回転の取得
-	const Quaternion& GetRotation() const { return m_transform.rotation; }
+	const Quaternion& getRotation() const { return m_transform.rotation; }
 
 	/// 拡大率の設定
-	void SetScale(const Vector3& scale) { m_transform.scale = scale; }
-	void SetScale(float xyz) { m_transform.scale.set(xyz, xyz, xyz); }
-	void SetScale(float x, float y, float z = 0.0f) { m_transform.scale.set(x, y, z); }
+	void setScale(const Vector3& scale) { m_transform.scale = scale; }
+	void setScale(float xyz) { m_transform.scale.set(xyz, xyz, xyz); }
+	void setScale(float x, float y, float z = 0.0f) { m_transform.scale.set(x, y, z); }
 
 	/// 拡大率の取得
-	const Vector3& GetScale() const { return m_transform.scale; }
+	const Vector3& getScale() const { return m_transform.scale; }
 
 	/// 原点の設定
-	void SetCenter(const Vector3& center) { m_transformCenter = center; }
+	void setCenter(const Vector3& center) { m_transformCenter = center; }
 
-	void SetCenter(float x, float y, float z = 0.0f) { m_transformCenter.set(x, y, z); }
+	void setCenter(float x, float y, float z = 0.0f) { m_transformCenter.set(x, y, z); }
 
 	/// 原点の取得
-	const Vector3& GetCenter() const { return m_transformCenter; }
+	const Vector3& getCenter() const { return m_transformCenter; }
 
 	/** 可視状態を設定します。false の場合、ノードの描画自体行われません。(default: true) */
 	LN_METHOD(Property)
-	void SetVisible(bool visible) { m_isVisible = visible; }
+	void setVisible(bool visible) { m_isVisible = visible; }
 
 	/** 可視状態を取得します。*/
 	LN_METHOD(Property)
-	bool IsVisible() const { return m_isVisible; }
+	bool isVisible() const { return m_isVisible; }
 
 	/// 回転順序の設定
-	void SetRotateOrder(RotationOrder order) { m_rotOrder = order; }
+	void setRotateOrder(RotationOrder order) { m_rotOrder = order; }
 
 	/// 回転順序の取得
-	RotationOrder GetRotateOrder() const { return m_rotOrder; }
+	RotationOrder getRotateOrder() const { return m_rotOrder; }
 
 	/// 優先度の設定 (高い方から先に描画される)
-	void SetDepthPriority(DepthPriority priority) { m_priority = priority; }
+	void setDepthPriority(DepthPriority priority) { m_priority = priority; }
 
 	/// 優先度の取得
-	DepthPriority GetDepthPriority() const { return m_priority; }
+	DepthPriority getDepthPriority() const { return m_priority; }
 
 	/// ビルボード状態の設定
-	void SetBillboardType(BillboardType type) { m_billboardType = type; }
+	void setBillboardType(BillboardType type) { m_billboardType = type; }
 
 	/// ビルボード状態の取得
-	BillboardType GetBillboardType() const { return m_billboardType; }
+	BillboardType getBillboardType() const { return m_billboardType; }
 
 	/// 自動更新の有効設定
-	void SetEnableAutoUpdate(bool flag) { m_isAutoUpdate = flag; }
+	void setEnableAutoUpdate(bool flag) { m_isAutoUpdate = flag; }
 
 	/// 自動更新の有効判定
-	bool IsEnableAutoUpdate() const { return m_isAutoUpdate; }
+	bool isEnableAutoUpdate() const { return m_isAutoUpdate; }
 
-	/// 子ノードの追加 (WPF の StakPanel.Children みたいに Collection を返すのも良いけど、AddChild() はよく使うのでユーティリティとして定義s手置くのが良いかも)
-	void AddChild(SceneNode* child);
-	void RemoveChild(SceneNode* child);
+	/// 子ノードの追加 (WPF の StakPanel.Children みたいに Collection を返すのも良いけど、addChild() はよく使うのでユーティリティとして定義s手置くのが良いかも)
+	void addChild(SceneNode* child);
+	void removeChild(SceneNode* child);
 
-	SceneNodeRenderingMode GetRenderingMode() const { return m_renderingMode; }
-	void SetRenderingMode(SceneNodeRenderingMode mode) { m_renderingMode = mode; }
+	SceneNodeRenderingMode getRenderingMode() const { return m_renderingMode; }
+	void setRenderingMode(SceneNodeRenderingMode mode) { m_renderingMode = mode; }
 
-	SceneNodeList* GetChildren() const { return m_children; }
+	SceneNodeList* getChildren() const { return m_children; }
 
 public:
 
 	/// ノード種別の取得
-	virtual SceneNodeType GetSceneNodeType() const { return SceneNodeType_BaseNode; }
+	virtual SceneNodeType getSceneNodeType() const { return SceneNodeType_BaseNode; }
 
 	/// 1フレーム分の更新処理
-	virtual void OnUpdateFrame(float deltaTime) {}
+	virtual void onUpdateFrame(float deltaTime) {}
 
 	/// グローバル座標変換行列と各プロパティを階層的に更新する
 	///		この処理は1フレーム内で開始時に1度だけ呼ばれる。
 	///		座標変換行列を更新し、描画するべきノードであるかをフィルタリングする。
-	virtual void UpdateFrameHierarchy(SceneNode* parent, float deltaTime);
+	virtual void updateFrameHierarchy(SceneNode* parent, float deltaTime);
 
 
-	virtual void OnRender2(DrawList* renderer);
+	virtual void onRender2(DrawList* renderer);
 
 
 	// MME の CONTROLOBJECT アノテーション関係

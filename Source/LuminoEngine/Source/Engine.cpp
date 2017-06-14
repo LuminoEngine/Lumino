@@ -120,19 +120,19 @@ UIMainWindow* Engine::getMainWindow()
 //------------------------------------------------------------------------------
 UIViewport* Engine::getMainViewport()
 {
-	return EngineManager::Instance->getUIManager()->getMainWindow()->GetViewport();
+	return EngineManager::Instance->getUIManager()->getMainWindow()->getViewport();
 }
 
 //------------------------------------------------------------------------------
 UIViewportLayer* Engine::getDefault2DLayer()
 {
-	return EngineManager::Instance->getUIManager()->getMainWindow()->GetDefaultCameraViewportLayer2D();
+	return EngineManager::Instance->getUIManager()->getMainWindow()->getDefaultCameraViewportLayer2D();
 }
 
 //------------------------------------------------------------------------------
 UIViewportLayer* Engine::getDefault3DLayer()
 {
-	return EngineManager::Instance->getUIManager()->getMainWindow()->GetDefaultCameraViewportLayer3D();
+	return EngineManager::Instance->getUIManager()->getMainWindow()->getDefaultCameraViewportLayer3D();
 }
 
 //------------------------------------------------------------------------------

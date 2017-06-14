@@ -30,17 +30,17 @@ void UIContentControl::initialize()
 {
 	UIControl::initialize();
 
-	SetVContentAlignment(VAlignment::Stretch);
-	SetHContentAlignment(HAlignment::Stretch);
+	setVContentAlignment(VAlignment::Stretch);
+	setHContentAlignment(HAlignment::Stretch);
 }
 
 //------------------------------------------------------------------------------
-void UIContentControl::SetContent(UIElement* element)
+void UIContentControl::setContent(UIElement* element)
 {
 	// 既に content を持っていれば取り除いておく
 	if (m_contentElement != nullptr && m_contentElement != element)
 	{
-		RemoveVisualChild(m_contentElement);
+		removeVisualChild(m_contentElement);
 		LN_SAFE_RELEASE(m_contentElement);
 	}
 	m_contentElement = nullptr;
@@ -50,7 +50,7 @@ void UIContentControl::SetContent(UIElement* element)
 	//LN_NOTIMPLEMENTED();
 	if (element != nullptr)
 	{
-		AddVisualChild(element);
+		addVisualChild(element);
 		LN_REFOBJ_SET(m_contentElement, element);
 		m_contentElement = element;
 	}
@@ -61,7 +61,7 @@ void UIContentControl::SetContent(UIElement* element)
 }
 
 //------------------------------------------------------------------------------
-//void UIContentControl::OnUpdatingLayout()
+//void UIContentControl::onUpdatingLayout()
 //{
 //	// VisualTree が無ければ単なる Panel を作って m_contentHost として使う。
 //	// この時点で VisualTree が無いということは、Style を検索できなかったか、
@@ -82,14 +82,14 @@ void UIContentControl::SetContent(UIElement* element)
 //	// m_contentHost に m_contentElement を追加する
 //	if (m_contentElementModified)
 //	{
-//		m_contentHost->AddChild(m_contentElement);
+//		m_contentHost->addChild(m_contentElement);
 //
 //		// 要素ツリーに入ったのでスタイルを更新する
-//		//m_contentHost->ApplyTemplateHierarchy(GetOwnerLayoutView()->GetOwnerContext()->GetRootStyleTable(), GetLocalStyle());
+//		//m_contentHost->applyTemplateHierarchy(GetOwnerLayoutView()->getOwnerContext()->getRootStyleTable(), GetLocalStyle());
 //		m_contentElementModified = false;
 //	}
 //
-//	UIElement::OnUpdatingLayout();
+//	UIElement::onUpdatingLayout();
 //}
 
 LN_NAMESPACE_END

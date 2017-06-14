@@ -73,20 +73,20 @@ void MeshResource::initialize(detail::GraphicsManager* manager, MeshCreationFlag
 //------------------------------------------------------------------------------
 void MeshResource::reserve(int vertexCount, int indexCount)
 {
-	RequestVertexBuffer(VB_BasicVertices)->reserve(vertexCount);	// まずは VB_BasicVertices だけ。他は必要になったとき、これのサイズに合わせて確保される。
-	RequestIndexBuffer()->reserve(indexCount);
+	requestVertexBuffer(VB_BasicVertices)->reserve(vertexCount);	// まずは VB_BasicVertices だけ。他は必要になったとき、これのサイズに合わせて確保される。
+	requestIndexBuffer()->reserve(indexCount);
 }
 
 ////------------------------------------------------------------------------------
 //void MeshResource::Resize(int vertexCount)
 //{
-//	ResizeVertexBuffer(vertexCount);
+//	resizeVertexBuffer(vertexCount);
 //}
 
 //------------------------------------------------------------------------------
-void MeshResource::ResizeVertexBuffer(int vertexCount)
+void MeshResource::resizeVertexBuffer(int vertexCount)
 {
-	RequestVertexBuffer(VB_BasicVertices);
+	requestVertexBuffer(VB_BasicVertices);
 
 	for (auto& info : m_vertexBufferInfos)
 	{
@@ -98,13 +98,13 @@ void MeshResource::ResizeVertexBuffer(int vertexCount)
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::ResizeIndexBuffer(int indexCount)
+void MeshResource::resizeIndexBuffer(int indexCount)
 {
-	RequestIndexBuffer()->resize(indexCount);
+	requestIndexBuffer()->resize(indexCount);
 }
 
 //------------------------------------------------------------------------------
-//void MeshResource::ResizeIndexBuffer(int indexCount, IndexBufferFormat format)
+//void MeshResource::resizeIndexBuffer(int indexCount, IndexBufferFormat format)
 //{
 //	TryGlowIndexBuffer(indexCount);
 //	m_indexUsedCount = indexCount;
@@ -124,11 +124,11 @@ int MeshResource::getVertexCount() const
 int MeshResource::getIndexCount() const
 {
 	// TODO: has check
-	return GetIndexBuffer()->getIndexCount();
+	return getIndexBuffer()->getIndexCount();
 }
 
 //------------------------------------------------------------------------------
-int MeshResource::GetTriangleCount() const	// TODO: face count
+int MeshResource::getTriangleCount() const	// TODO: face count
 {
 	return getIndexCount() / 3;
 }
@@ -137,23 +137,23 @@ int MeshResource::GetTriangleCount() const	// TODO: face count
 void MeshResource::setPosition(int index, const Vector3& position)
 {
 	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return;
-	Vertex* v = (Vertex*)RequestVertexBuffer(VB_BasicVertices)->getMappedData();
+	Vertex* v = (Vertex*)requestVertexBuffer(VB_BasicVertices)->getMappedData();
 	v[index].position = position;
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::SetNormal(int index, const Vector3& normal)
+void MeshResource::setNormal(int index, const Vector3& normal)
 {
 	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return;
-	Vertex* v = (Vertex*)RequestVertexBuffer(VB_BasicVertices)->getMappedData();
+	Vertex* v = (Vertex*)requestVertexBuffer(VB_BasicVertices)->getMappedData();
 	v[index].normal = normal;
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::SetUV(int index, const Vector2& uv)
+void MeshResource::setUV(int index, const Vector2& uv)
 {
 	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return;
-	Vertex* v = (Vertex*)RequestVertexBuffer(VB_BasicVertices)->getMappedData();
+	Vertex* v = (Vertex*)requestVertexBuffer(VB_BasicVertices)->getMappedData();
 	v[index].uv = uv;
 }
 
@@ -161,7 +161,7 @@ void MeshResource::SetUV(int index, const Vector2& uv)
 void MeshResource::setColor(int index, const Color& color)
 {
 	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return;
-	Vertex* v = (Vertex*)RequestVertexBuffer(VB_BasicVertices)->getMappedData();
+	Vertex* v = (Vertex*)requestVertexBuffer(VB_BasicVertices)->getMappedData();
 	v[index].color = color;
 }
 
@@ -169,23 +169,23 @@ void MeshResource::setColor(int index, const Color& color)
 const Vector3& MeshResource::getPosition(int index)
 {
 	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return Vector3::Zero;
-	Vertex* v = (Vertex*)RequestVertexBuffer(VB_BasicVertices)->getMappedData();
+	Vertex* v = (Vertex*)requestVertexBuffer(VB_BasicVertices)->getMappedData();
 	return v[index].position;
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::SetBlendWeight(int index, int blendIndex, float value)
+void MeshResource::setBlendWeight(int index, int blendIndex, float value)
 {
 	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return;
-	BlendWeight* v = (BlendWeight*)RequestVertexBuffer(VB_BlendWeights)->getMappedData();
+	BlendWeight* v = (BlendWeight*)requestVertexBuffer(VB_BlendWeights)->getMappedData();
 	v[index].weights[blendIndex] = value;
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::SetBlendWeights(int index, float v0, float v1, float v2, float v3)
+void MeshResource::setBlendWeights(int index, float v0, float v1, float v2, float v3)
 {
 	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return;
-	BlendWeight* v = (BlendWeight*)RequestVertexBuffer(VB_BlendWeights)->getMappedData();
+	BlendWeight* v = (BlendWeight*)requestVertexBuffer(VB_BlendWeights)->getMappedData();
 	v[index].weights[0] = v0;
 	v[index].weights[1] = v1;
 	v[index].weights[2] = v2;
@@ -193,10 +193,10 @@ void MeshResource::SetBlendWeights(int index, float v0, float v1, float v2, floa
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::GetBlendWeights(int index, float* out0, float* out1, float* out2, float* out3)
+void MeshResource::getBlendWeights(int index, float* out0, float* out1, float* out2, float* out3)
 {
 	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return;
-	BlendWeight* v = (BlendWeight*)RequestVertexBuffer(VB_BlendWeights)->getMappedData();
+	BlendWeight* v = (BlendWeight*)requestVertexBuffer(VB_BlendWeights)->getMappedData();
 	if (out0 != nullptr) *out0 = v[index].weights[0];
 	if (out1 != nullptr) *out1 = v[index].weights[1];
 	if (out2 != nullptr) *out2 = v[index].weights[2];
@@ -204,18 +204,18 @@ void MeshResource::GetBlendWeights(int index, float* out0, float* out1, float* o
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::SetBlendIndex(int index, int blendIndex, float value)
+void MeshResource::setBlendIndex(int index, int blendIndex, float value)
 {
 	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return;
-	BlendWeight* v = (BlendWeight*)RequestVertexBuffer(VB_BlendWeights)->getMappedData();
+	BlendWeight* v = (BlendWeight*)requestVertexBuffer(VB_BlendWeights)->getMappedData();
 	v[index].indices[blendIndex] = value;
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::SetBlendIndices(int index, float v0, float v1, float v2, float v3)
+void MeshResource::setBlendIndices(int index, float v0, float v1, float v2, float v3)
 {
 	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return;
-	BlendWeight* v = (BlendWeight*)RequestVertexBuffer(VB_BlendWeights)->getMappedData();
+	BlendWeight* v = (BlendWeight*)requestVertexBuffer(VB_BlendWeights)->getMappedData();
 	v[index].indices[0] = v0;
 	v[index].indices[1] = v1;
 	v[index].indices[2] = v2;
@@ -223,10 +223,10 @@ void MeshResource::SetBlendIndices(int index, float v0, float v1, float v2, floa
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::GetBlendIndices(int index, int* out0, int* out1, int* out2, int* out3)
+void MeshResource::getBlendIndices(int index, int* out0, int* out1, int* out2, int* out3)
 {
 	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return;
-	BlendWeight* v = (BlendWeight*)RequestVertexBuffer(VB_BlendWeights)->getMappedData();
+	BlendWeight* v = (BlendWeight*)requestVertexBuffer(VB_BlendWeights)->getMappedData();
 	if (out0 != nullptr) *out0 = (int)v[index].indices[0];
 	if (out1 != nullptr) *out1 = (int)v[index].indices[1];
 	if (out2 != nullptr) *out2 = (int)v[index].indices[2];
@@ -240,83 +240,83 @@ void MeshResource::setIndex(int index, int vertexIndex)
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::SetAdditionalUV(int index, int additionalUVIndex, const Vector4& uv)
+void MeshResource::setAdditionalUV(int index, int additionalUVIndex, const Vector4& uv)
 {
 	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return;
-	AdditionalUVs* v = (AdditionalUVs*)RequestVertexBuffer(VB_AdditionalUVs)->getMappedData();
+	AdditionalUVs* v = (AdditionalUVs*)requestVertexBuffer(VB_AdditionalUVs)->getMappedData();
 	v[index].uv[additionalUVIndex] = uv;
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::SetSdefC(int index, const Vector4& value)
+void MeshResource::setSdefC(int index, const Vector4& value)
 {
 	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return;
-	SdefInfo* v = (SdefInfo*)RequestVertexBuffer(VB_SdefInfo)->getMappedData();
+	SdefInfo* v = (SdefInfo*)requestVertexBuffer(VB_SdefInfo)->getMappedData();
 	v[index].sdefC = value;
 }
 
 //------------------------------------------------------------------------------
-const Vector4& MeshResource::GetSdefC(int index)
+const Vector4& MeshResource::getSdefC(int index)
 {
 	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return Vector4::Zero;
-	SdefInfo* v = (SdefInfo*)RequestVertexBuffer(VB_SdefInfo)->getMappedData();
+	SdefInfo* v = (SdefInfo*)requestVertexBuffer(VB_SdefInfo)->getMappedData();
 	return v[index].sdefC;
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::SetSdefR0(int index, const Vector3& value)
+void MeshResource::setSdefR0(int index, const Vector3& value)
 {
 	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return;
-	SdefInfo* v = (SdefInfo*)RequestVertexBuffer(VB_SdefInfo)->getMappedData();
+	SdefInfo* v = (SdefInfo*)requestVertexBuffer(VB_SdefInfo)->getMappedData();
 	v[index].sdefR0 = value;
 }
 
 //------------------------------------------------------------------------------
-const Vector3& MeshResource::GetSdefR0(int index)
+const Vector3& MeshResource::getSdefR0(int index)
 {
 	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return Vector3::Zero;
-	SdefInfo* v = (SdefInfo*)RequestVertexBuffer(VB_SdefInfo)->getMappedData();
+	SdefInfo* v = (SdefInfo*)requestVertexBuffer(VB_SdefInfo)->getMappedData();
 	return v[index].sdefR0;
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::SetSdefR1(int index, const Vector3& value)
+void MeshResource::setSdefR1(int index, const Vector3& value)
 {
 	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return;
-	SdefInfo* v = (SdefInfo*)RequestVertexBuffer(VB_SdefInfo)->getMappedData();
+	SdefInfo* v = (SdefInfo*)requestVertexBuffer(VB_SdefInfo)->getMappedData();
 	v[index].sdefR1 = value;
 }
 
 //------------------------------------------------------------------------------
-const Vector3& MeshResource::GetSdefR1(int index)
+const Vector3& MeshResource::getSdefR1(int index)
 {
 	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return Vector3::Zero;
-	SdefInfo* v = (SdefInfo*)RequestVertexBuffer(VB_SdefInfo)->getMappedData();
+	SdefInfo* v = (SdefInfo*)requestVertexBuffer(VB_SdefInfo)->getMappedData();
 	return v[index].sdefR1;
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::SetEdgeWeight(int index, float weight)
+void MeshResource::setEdgeWeight(int index, float weight)
 {
 	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return;
-	MmdExtra* v = (MmdExtra*)RequestVertexBuffer(VB_MmdExtra)->getMappedData();
+	MmdExtra* v = (MmdExtra*)requestVertexBuffer(VB_MmdExtra)->getMappedData();
 	v[index].edgeWeight = weight;
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::AddMeshSection(const MeshAttribute& section)
+void MeshResource::addMeshSection(const MeshAttribute& section)
 {
 	m_attributes.add(section);
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::AddSections(int count)
+void MeshResource::addSections(int count)
 {
 	m_attributes.resize(m_attributes.getCount() + count);
 }
 
 //------------------------------------------------------------------------------
-MeshAttribute* MeshResource::GetSection(int index)
+MeshAttribute* MeshResource::getSection(int index)
 {
 	return &m_attributes[index];
 }
@@ -331,20 +331,20 @@ void MeshResource::clear()
 			info.buffer->clear();
 		}
 	}
-	if (GetIndexBuffer() != nullptr) GetIndexBuffer()->clear();
+	if (getIndexBuffer() != nullptr) getIndexBuffer()->clear();
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::AddSquare(const Vertex& v1, const Vertex& v2, const Vertex& v3, const Vertex& v4)
+void MeshResource::addSquare(const Vertex& v1, const Vertex& v2, const Vertex& v3, const Vertex& v4)
 {
 	int beginIndex = getVertexCount();
-	Vertex* v = (Vertex*)RequestVertexBufferForAdditional(4, VB_BasicVertices);
+	Vertex* v = (Vertex*)requestVertexBufferForAdditional(4, VB_BasicVertices);
 	v[0] = v1;
 	v[1] = v2;
 	v[2] = v3;
 	v[3] = v4;
 
-	uint16_t* i = RequestIndexBufferForAdditional(6);
+	uint16_t* i = requestIndexBufferForAdditional(6);
 	i[0] = beginIndex + 0;
 	i[1] = beginIndex + 1;
 	i[2] = beginIndex + 3;
@@ -354,23 +354,23 @@ void MeshResource::AddSquare(const Vertex& v1, const Vertex& v2, const Vertex& v
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::AddSquare(const Vertex* virtices)
+void MeshResource::addSquare(const Vertex* virtices)
 {
-	AddSquare(virtices[0], virtices[1], virtices[2], virtices[3]);
+	addSquare(virtices[0], virtices[1], virtices[2], virtices[3]);
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::AddLine(const Vertex& v1, const Vertex& v2)
+void MeshResource::addLine(const Vertex& v1, const Vertex& v2)
 {
 	if (LN_CHECK_STATE(!m_attributes.isEmpty())) return;
 	if (LN_CHECK_STATE(m_attributes.getLast().primitiveType == PrimitiveType_LineList)) return;
 
 	int beginIndex = getVertexCount();
-	Vertex* v = (Vertex*)RequestVertexBufferForAdditional(2, VB_BasicVertices);
+	Vertex* v = (Vertex*)requestVertexBufferForAdditional(2, VB_BasicVertices);
 	v[0] = v1;
 	v[1] = v2;
 
-	uint16_t* i = RequestIndexBufferForAdditional(2);
+	uint16_t* i = requestIndexBufferForAdditional(2);
 	i[0] = beginIndex + 0;
 	i[1] = beginIndex + 1;
 
@@ -378,7 +378,7 @@ void MeshResource::AddLine(const Vertex& v1, const Vertex& v2)
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::AddPlane(const Vector2& size, int sliceH, int sliceV)
+void MeshResource::addPlane(const Vector2& size, int sliceH, int sliceV)
 {
 	int startIndex = getVertexCount();
 	LN_VERIFY_STATE(startIndex <= UINT16_MAX);
@@ -388,13 +388,13 @@ void MeshResource::AddPlane(const Vector2& size, int sliceH, int sliceV)
 	factory.initialize(size, sliceH, sliceV, Color::White, Matrix::Identity);
 
 	// alloc buffers, generate mesh
-	Vertex* vb = (Vertex*)RequestVertexBufferForAdditional(factory.getVertexCount(), VB_BasicVertices);
-	uint16_t* ib = RequestIndexBufferForAdditional(factory.getIndexCount());
-	factory.Generate(vb, ib, (uint16_t)startIndex);
+	Vertex* vb = (Vertex*)requestVertexBufferForAdditional(factory.getVertexCount(), VB_BasicVertices);
+	uint16_t* ib = requestIndexBufferForAdditional(factory.getIndexCount());
+	factory.generate(vb, ib, (uint16_t)startIndex);
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::AddBox(const Vector3& size)
+void MeshResource::addBox(const Vector3& size)
 {
 	int startIndex = getVertexCount();
 	LN_VERIFY_STATE(startIndex <= UINT16_MAX);
@@ -404,13 +404,13 @@ void MeshResource::AddBox(const Vector3& size)
 	factory.initialize(size, Color::White, Matrix::Identity);
 
 	// alloc buffers, generate mesh
-	Vertex* vb = (Vertex*)RequestVertexBufferForAdditional(factory.getVertexCount(), VB_BasicVertices);
-	uint16_t* ib = RequestIndexBufferForAdditional(factory.getIndexCount());
-	factory.Generate(vb, ib, (uint16_t)startIndex);
+	Vertex* vb = (Vertex*)requestVertexBufferForAdditional(factory.getVertexCount(), VB_BasicVertices);
+	uint16_t* ib = requestIndexBufferForAdditional(factory.getIndexCount());
+	factory.generate(vb, ib, (uint16_t)startIndex);
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::AddSphere(float radius, int slices, int stacks)
+void MeshResource::addSphere(float radius, int slices, int stacks)
 {
 	int startIndex = getVertexCount();
 	LN_VERIFY_STATE(startIndex <= UINT16_MAX);
@@ -420,13 +420,13 @@ void MeshResource::AddSphere(float radius, int slices, int stacks)
 	factory.initialize(radius, slices, stacks, Color::White, Matrix::Identity);
 
 	// alloc buffers, generate mesh
-	Vertex* vb = (Vertex*)RequestVertexBufferForAdditional(factory.getVertexCount(), VB_BasicVertices);
-	uint16_t* ib = RequestIndexBufferForAdditional(factory.getIndexCount());
-	factory.Generate(vb, ib, (uint16_t)startIndex);
+	Vertex* vb = (Vertex*)requestVertexBufferForAdditional(factory.getVertexCount(), VB_BasicVertices);
+	uint16_t* ib = requestIndexBufferForAdditional(factory.getIndexCount());
+	factory.generate(vb, ib, (uint16_t)startIndex);
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::AddScreenPlane()
+void MeshResource::addScreenPlane()
 {
 	int startIndex = getVertexCount();
 	LN_VERIFY_STATE(startIndex <= UINT16_MAX);
@@ -435,13 +435,13 @@ void MeshResource::AddScreenPlane()
 	detail::PlaneMeshFactory factory(Vector2(2.0f, 2.0f));
 
 	// alloc buffers, generate mesh
-	Vertex* vb = (Vertex*)RequestVertexBufferForAdditional(factory.getVertexCount(), VB_BasicVertices);
-	uint16_t* ib = RequestIndexBufferForAdditional(factory.getIndexCount());
-	factory.Generate(vb, ib, (uint16_t)startIndex);
+	Vertex* vb = (Vertex*)requestVertexBufferForAdditional(factory.getVertexCount(), VB_BasicVertices);
+	uint16_t* ib = requestIndexBufferForAdditional(factory.getIndexCount());
+	factory.generate(vb, ib, (uint16_t)startIndex);
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::ReverseFaces()
+void MeshResource::reverseFaces()
 {
 	if (m_indexBufferInfo.buffer->getIndexStride() == 2)
 	{
@@ -455,7 +455,7 @@ void MeshResource::ReverseFaces()
 		}
 		
 		uint16_t* indices = (uint16_t*)ib;
-		int indexCount = GetIndexBuffer()->getIndexCount();
+		int indexCount = getIndexBuffer()->getIndexCount();
 		for (int i = 0; i < indexCount; i += 3)
 		{
 			std::swap(indices[i + 1], indices[i + 2]);
@@ -468,13 +468,13 @@ void MeshResource::ReverseFaces()
 }
 
 //------------------------------------------------------------------------------
-IndexBuffer* MeshResource::GetIndexBuffer() const
+IndexBuffer* MeshResource::getIndexBuffer() const
 {
 	return m_indexBufferInfo.buffer;
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::AddTeapot(float size, int tessellation)
+void MeshResource::addTeapot(float size, int tessellation)
 {
 	int startIndex = getVertexCount();
 	LN_VERIFY_STATE(startIndex <= UINT16_MAX);
@@ -484,9 +484,9 @@ void MeshResource::AddTeapot(float size, int tessellation)
 	factory.initialize(size, tessellation, Color::White, Matrix::Identity);
 
 	// alloc buffers, generate mesh
-	Vertex* vb = (Vertex*)RequestVertexBufferForAdditional(factory.getVertexCount(), VB_BasicVertices);
-	uint16_t* ib = RequestIndexBufferForAdditional(factory.getIndexCount());
-	factory.Generate(vb, ib, (uint16_t)startIndex);
+	Vertex* vb = (Vertex*)requestVertexBufferForAdditional(factory.getVertexCount(), VB_BasicVertices);
+	uint16_t* ib = requestIndexBufferForAdditional(factory.getIndexCount());
+	factory.generate(vb, ib, (uint16_t)startIndex);
 }
 
 ////------------------------------------------------------------------------------
@@ -602,22 +602,22 @@ void MeshResource::AddTeapot(float size, int tessellation)
 //}
 //
 //------------------------------------------------------------------------------
-void* MeshResource::RequestVertexBufferForAdditional(int additionalVertexCount, VertexBufferType type)
+void* MeshResource::requestVertexBufferForAdditional(int additionalVertexCount, VertexBufferType type)
 {
 	int begin = getVertexCount();
 	int newCount = begin + additionalVertexCount;
 	//TryGlowVertexBuffers(newCount);
 	//m_vertexUsedCount = newCount;
 
-	VertexBuffer* vertexBuffer = RequestVertexBuffer(type);
+	VertexBuffer* vertexBuffer = requestVertexBuffer(type);
 	Vertex* vb = (Vertex*)vertexBuffer->requestMappedData(newCount * vertexStrideTable[type]);
 	return vb + begin;
 }
 
 //------------------------------------------------------------------------------
-uint16_t* MeshResource::RequestIndexBufferForAdditional(int additionalIndexCount)
+uint16_t* MeshResource::requestIndexBufferForAdditional(int additionalIndexCount)
 {
-	int begin = (GetIndexBuffer() != nullptr) ? GetIndexBuffer()->getIndexCount() : 0;
+	int begin = (getIndexBuffer() != nullptr) ? getIndexBuffer()->getIndexCount() : 0;
 	int newCount = begin + additionalIndexCount;
 
 	if (LN_CHECK_STATE(m_indexBufferInfo.buffer == nullptr || m_indexBufferInfo.buffer->getIndexStride() == 2)) return nullptr;
@@ -626,7 +626,7 @@ uint16_t* MeshResource::RequestIndexBufferForAdditional(int additionalIndexCount
 	//TryGlowIndexBuffer(newCount);
 	//m_indexUsedCount = newCount;
 	
-	IndexBuffer* indexBuffer = RequestIndexBuffer();
+	IndexBuffer* indexBuffer = requestIndexBuffer();
 	uint16_t* ib = (uint16_t*)indexBuffer->requestMappedData(newCount);
 	return ib + begin;
 }
@@ -638,7 +638,7 @@ VertexBuffer* MeshResource::getVertexBuffer(VertexBufferType type) const
 }
 
 //------------------------------------------------------------------------------
-VertexBuffer* MeshResource::RequestVertexBuffer(VertexBufferType type)
+VertexBuffer* MeshResource::requestVertexBuffer(VertexBufferType type)
 {
 	if (m_vertexBufferInfos[type].buffer == nullptr)
 	{
@@ -649,7 +649,7 @@ VertexBuffer* MeshResource::RequestVertexBuffer(VertexBufferType type)
 }
 
 //------------------------------------------------------------------------------
-IndexBuffer* MeshResource::RequestIndexBuffer()
+IndexBuffer* MeshResource::requestIndexBuffer()
 {
 	if (m_indexBufferInfo.buffer == nullptr)
 	{
@@ -660,13 +660,13 @@ IndexBuffer* MeshResource::RequestIndexBuffer()
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::GetMeshAttribute(int subsetIndex, MeshAttribute* outAttr)
+void MeshResource::getMeshAttribute(int subsetIndex, MeshAttribute* outAttr)
 {
 	if (m_attributes.isEmpty())
 	{
 		outAttr->MaterialIndex = 0;
 		outAttr->StartIndex = 0;
-		outAttr->PrimitiveNum = GetIndexBuffer()->getIndexCount() / 3;	// triangle only
+		outAttr->PrimitiveNum = getIndexBuffer()->getIndexCount() / 3;	// triangle only
 		outAttr->primitiveType = PrimitiveType_TriangleList;
 	}
 	else
@@ -676,7 +676,7 @@ void MeshResource::GetMeshAttribute(int subsetIndex, MeshAttribute* outAttr)
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::CommitRenderData(VertexDeclaration** outDecl, VertexBuffer** outVBs, int* outVBCount, IndexBuffer** outIB)
+void MeshResource::commitRenderData(VertexDeclaration** outDecl, VertexBuffer** outVBs, int* outVBCount, IndexBuffer** outIB)
 {
 	LN_ASSERT(outDecl != nullptr);
 	LN_ASSERT(outVBs != nullptr);
@@ -772,7 +772,7 @@ void MeshResource::CommitRenderData(VertexDeclaration** outDecl, VertexBuffer** 
 //		vb[i].color = Color::White;
 //	}
 //
-//	if (flags.TestFlag(MeshCreationFlags::ReverseFaces))
+//	if (flags.TestFlag(MeshCreationFlags::reverseFaces))
 //	{
 //		if (m_indexBufferInfo.buffer->getIndexStride() == 2)
 //		{
@@ -840,64 +840,64 @@ void StaticMeshModel::initialize(detail::GraphicsManager* manager, MeshResource*
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::InitializeBox(detail::GraphicsManager* manager, const Vector3& size, MeshCreationFlags flags)
+void StaticMeshModel::initializeBox(detail::GraphicsManager* manager, const Vector3& size, MeshCreationFlags flags)
 {
 	auto res = RefPtr<MeshResource>::makeRef();
 	res->initialize(manager, flags);
-	res->AddBox(size);
-	if (flags.TestFlag(MeshCreationFlags::ReverseFaces)) res->ReverseFaces();
+	res->addBox(size);
+	if (flags.TestFlag(MeshCreationFlags::reverseFaces)) res->reverseFaces();
 	initialize(manager, res);
-	AddMaterials(1);
+	addMaterials(1);
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::InitializeSphere(detail::GraphicsManager* manager, float radius, int slices, int stacks, MeshCreationFlags flags)
+void StaticMeshModel::initializeSphere(detail::GraphicsManager* manager, float radius, int slices, int stacks, MeshCreationFlags flags)
 {
 	auto res = RefPtr<MeshResource>::makeRef();
 	res->initialize(manager, flags);
-	res->AddSphere(radius, slices, stacks);
-	if (flags.TestFlag(MeshCreationFlags::ReverseFaces)) res->ReverseFaces();
+	res->addSphere(radius, slices, stacks);
+	if (flags.TestFlag(MeshCreationFlags::reverseFaces)) res->reverseFaces();
 	initialize(manager, res);
-	AddMaterials(1);
+	addMaterials(1);
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::InitializePlane(detail::GraphicsManager* manager, const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags)
+void StaticMeshModel::initializePlane(detail::GraphicsManager* manager, const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags)
 {
 	auto res = RefPtr<MeshResource>::makeRef();
 	res->initialize(manager, flags);
-	res->AddPlane(size, sliceH, sliceV);
-	if (flags.TestFlag(MeshCreationFlags::ReverseFaces)) res->ReverseFaces();
+	res->addPlane(size, sliceH, sliceV);
+	if (flags.TestFlag(MeshCreationFlags::reverseFaces)) res->reverseFaces();
 	initialize(manager, res);
-	AddMaterials(1);
+	addMaterials(1);
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::InitializeScreenPlane(detail::GraphicsManager* manager, MeshCreationFlags flags)
+void StaticMeshModel::initializeScreenPlane(detail::GraphicsManager* manager, MeshCreationFlags flags)
 {
 	auto res = RefPtr<MeshResource>::makeRef();
 	res->initialize(manager, flags);
-	res->AddScreenPlane();
-	if (flags.TestFlag(MeshCreationFlags::ReverseFaces)) res->ReverseFaces();
+	res->addScreenPlane();
+	if (flags.TestFlag(MeshCreationFlags::reverseFaces)) res->reverseFaces();
 	initialize(manager, res);
-	AddMaterials(1);
+	addMaterials(1);
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::InitializeTeapot(detail::GraphicsManager* manager, float size, int tessellation, MeshCreationFlags flags)
+void StaticMeshModel::initializeTeapot(detail::GraphicsManager* manager, float size, int tessellation, MeshCreationFlags flags)
 {
 	auto res = RefPtr<MeshResource>::makeRef();
 	res->initialize(manager, flags);
-	res->AddTeapot(size, tessellation);
-	if (flags.TestFlag(MeshCreationFlags::ReverseFaces)) res->ReverseFaces();
+	res->addTeapot(size, tessellation);
+	if (flags.TestFlag(MeshCreationFlags::reverseFaces)) res->reverseFaces();
 	initialize(manager, res);
-	AddMaterials(1);
+	addMaterials(1);
 }
 
 //------------------------------------------------------------------------------
-//int StaticMeshModel::GetSubsetCount() const
+//int StaticMeshModel::getSubsetCount() const
 //{
-//	return m_meshResource->GetSubsetCount();
+//	return m_meshResource->getSubsetCount();
 //}
 
 //------------------------------------------------------------------------------
@@ -908,7 +908,7 @@ MeshResource* StaticMeshModel::FindMesh(const StringRef& name)
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::AddMaterials(int count)
+void StaticMeshModel::addMaterials(int count)
 {
 	int oldCount = m_materials->getCount();
 	int newCount = oldCount + count;
@@ -925,14 +925,14 @@ void StaticMeshModel::AddMaterials(int count)
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::AddMaterial(Material* material)
+void StaticMeshModel::addMaterial(Material* material)
 {
 	LN_VERIFY_STATE(m_materials != nullptr);
 	m_materials->add(material);
 }
 
 //------------------------------------------------------------------------------
-Material* StaticMeshModel::GetMaterial(int index) const
+Material* StaticMeshModel::getMaterial(int index) const
 {
 	return m_materials->getAt(index);
 }

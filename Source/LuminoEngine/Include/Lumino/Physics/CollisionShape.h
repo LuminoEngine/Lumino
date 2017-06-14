@@ -29,14 +29,14 @@ class CollisionShape
 public:
 
 	/** この CollisionShape が衝突判定のためのトリガーであるかを設定します。初期値は false です。*/
-	void SetTrigger(bool enabled);
+	void setTrigger(bool enabled);
 
 	/** この CollisionShape が衝突判定のためのトリガーであるかを取得します。*/
-	bool IsTrigger() const;
+	bool isTrigger() const;
 
-	void SetCenter(const Vector3& offset) { m_offset = offset; }
+	void setCenter(const Vector3& offset) { m_offset = offset; }
 
-	const Vector3& GetCenter() const { return m_offset; }
+	const Vector3& getCenter() const { return m_offset; }
 
 LN_CONSTRUCT_ACCESS:
 	CollisionShape();
@@ -44,7 +44,7 @@ LN_CONSTRUCT_ACCESS:
 	void initialize(btCollisionShape* shape);
 
 LN_INTERNAL_ACCESS:
-	btCollisionShape* GetBtCollisionShape() const { return m_shape; }
+	btCollisionShape* getBtCollisionShape() const { return m_shape; }
 		
 private:
 	btCollisionShape*	m_shape;

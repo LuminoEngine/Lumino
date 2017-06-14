@@ -33,8 +33,8 @@ UITextBlock::~UITextBlock()
 void UITextBlock::initialize()
 {
 	UITextElement::initialize();
-	//SetHAlignment(HAlignment::Center);
-	//SetVAlignment(VAlignment::Center);
+	//setHAlignment(HAlignment::Center);
+	//setVAlignment(VAlignment::Center);
 }
 
 //------------------------------------------------------------------------------
@@ -67,9 +67,9 @@ Size UITextBlock::arrangeOverride(const Size& finalSize)
 //------------------------------------------------------------------------------
 void UITextBlock::onRender(DrawingContext* g)
 {
-	g->setFont(GetActiveFont());
-	g->setBrush(GetForegroundInternal());
-	g->DrawText_(m_text, PointF());
+	g->setFont(getActiveFont());
+	g->setBrush(getForegroundInternal());
+	g->drawText_(m_text, PointF());
 }
 
 LN_NAMESPACE_END

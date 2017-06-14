@@ -188,10 +188,10 @@ public:
 
 
 	/// ビューポート矩形の設定
-	//virtual void SetViewport(const RectI& rect) = 0;
+	//virtual void setViewport(const RectI& rect) = 0;
 
 	/// ビューポート矩形の取得
-	//virtual const RectI& GetViewport() = 0;
+	//virtual const RectI& getViewport() = 0;
 
 	void setVertexDeclaration(IVertexDeclaration* vertexDeclaration);
 	IVertexDeclaration* getVertexDeclaration() const;

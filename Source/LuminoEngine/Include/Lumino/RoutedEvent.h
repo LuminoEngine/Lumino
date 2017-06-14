@@ -99,7 +99,7 @@ public:
 	typedef void(*RaiseEventFunc)(CoreObject* obj, RoutedEventArgs* e);
 
 public:
-	//TypedRoutedEvent(const String& name, RaiseEvent raiseEvent)
+	//TypedRoutedEvent(const String& name, raiseEvent raiseEvent)
 	//	: m_name(name)
 	//	, m_raiseEvent(raiseEvent)
 	//{}

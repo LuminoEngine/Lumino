@@ -37,7 +37,7 @@ namespace detail
 //==============================================================================
 static EffectManager* g_managerInstance = nullptr;
 
-EffectManager* GetEffectManager(EffectManager* priority)
+EffectManager* getEffectManager(EffectManager* priority)
 {
 	if (priority != NULL) return priority;
 	return g_managerInstance;

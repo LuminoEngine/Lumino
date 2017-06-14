@@ -280,9 +280,9 @@ public:
 
     void postInitialize()
     {
-        ConnectOnTriggerEnter(createDelegate(this, &LNCollider::ConnectOnTriggerEnter_EventCallback));
-        ConnectOnTriggerLeave(createDelegate(this, &LNCollider::ConnectOnTriggerLeave_EventCallback));
-        ConnectOnTriggerStay(createDelegate(this, &LNCollider::ConnectOnTriggerStay_EventCallback));
+        connectOnTriggerEnter(createDelegate(this, &LNCollider::ConnectOnTriggerEnter_EventCallback));
+        connectOnTriggerLeave(createDelegate(this, &LNCollider::ConnectOnTriggerLeave_EventCallback));
+        connectOnTriggerStay(createDelegate(this, &LNCollider::ConnectOnTriggerStay_EventCallback));
 
     }
 

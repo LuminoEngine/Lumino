@@ -21,23 +21,23 @@ TEST_F(Test_Scripting, Basic)
 	auto nlif = RefPtr<NlGraphInterface>::makeRef();
 	nlif->initialize();
 
-	auto epNode = nlif->GetEntryPoint();
+	auto epNode = nlif->getEntryPoint();
 
 	auto node1 = RefPtr<NlNode_Print>::makeRef();
 	auto node2 = RefPtr<NlNode_Add>::makeRef();
 
-	node2->GetDataInputLhsPin()->GetValueCache()->setValue(200);
-	node2->GetDataInputRhsPin()->GetValueCache()->setValue(300);
+	node2->getDataInputLhsPin()->getValueCache()->setValue(200);
+	node2->getDataInputRhsPin()->getValueCache()->setValue(300);
 
-	nlif->GetGraph()->AddGraphNode(node1);
-	nlif->GetGraph()->AddGraphNode(node2);
+	nlif->getGraph()->addGraphNode(node1);
+	nlif->getGraph()->addGraphNode(node2);
 
-	NlHelper::LinkPins(epNode->GetFlowOutputPin(), node1->GetFlowInputPin());
-	NlHelper::LinkPins(node1->GetInputValuePin(), node2->GetDataOutputPin());
+	NlHelper::linkPins(epNode->getFlowOutputPin(), node1->getFlowInputPin());
+	NlHelper::linkPins(node1->getInputValuePin(), node2->getDataOutputPin());
 
 	auto ctx = RefPtr<NlContext>::makeRef();
 	//ctx->initialize();
-	ctx->CallInterface(nlif);
+	ctx->callInterface(nlif);
 
 
 }
