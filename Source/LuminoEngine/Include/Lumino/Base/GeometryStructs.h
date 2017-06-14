@@ -122,7 +122,7 @@ public:
 	bool isAnyZero() const { return (width == 0 || height == 0); }
 
 	Size toFloatSize() const { return Size((float)width, (float)height); }
-	static SizeI fromFloatSize(const Size& size) { return SizeI((int)size.width, (int)size.height); }
+	static SizeI fromFloatSize(const Size& size);
 
 	bool operator == (const SizeI& obj) const { return (width == obj.width && height == obj.height); }
 	bool operator != (const SizeI& obj) const { return !operator==(obj); }

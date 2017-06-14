@@ -246,7 +246,7 @@ public:
 	const Size& getDesiredSize() const { return m_desiredSize; }
 
 	/** この要素の最終的な描画サイズを取得します。この値は Arrange() で確定します。*/
-	const Size& getRenderSize() const { return m_finalLocalRect.getSize(); }
+	Size getRenderSize() const { return m_finalLocalRect.getSize(); }
 
 	/** この要素へのフォーカスの取得を試みます。*/
 	void focus();

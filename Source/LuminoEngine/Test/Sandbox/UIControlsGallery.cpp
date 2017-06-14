@@ -22,6 +22,10 @@ void UIControlsGallery()
 	auto* uiRoot = Engine::getDefaultUILayer()->GetLayoutView();
 
 
+	auto grid1 = UIGridLayout::create();
+	grid1->addColumnDefinition(GridLengthType::Pixel, 400);
+	Engine::getMainWindow()->setLayoutPanel(grid1);
+
 	//auto listBox1 = UIListBox::create();
 	//listBox1->setWidth(200);
 	//uiRoot->addChild(listBox1);
@@ -42,6 +46,9 @@ void UIControlsGallery()
 	slider->setHeight(16);
 	//slider->setOrientation(Orientation::Vertical);
 	uiRoot->addChild(slider);
+
+
+
 
 	//auto sky = newObject<SkyComponent>();
 	//sky->setDepthTestEnabled(false);

@@ -49,7 +49,6 @@ CameraComponent::CameraComponent()
 CameraComponent::~CameraComponent()
 {
 	LN_SAFE_RELEASE(m_cameraBehavior);
-	m_manager->getAllCameraList()->remove(this);
 }
 
 //------------------------------------------------------------------------------
@@ -57,7 +56,6 @@ void CameraComponent::initialize(CameraProjection proj)
 {
 	SceneNode::initialize();
 	m_projectionMode = proj;
-	m_manager->getAllCameraList()->add(this);
 
 	if (m_projectionMode == CameraProjection_2D)
 	{

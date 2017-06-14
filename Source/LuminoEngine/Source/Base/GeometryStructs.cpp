@@ -22,7 +22,15 @@ const Size Size::Zero(0, 0);
 const Size Size::MinValue(std::numeric_limits<float>::min(), std::numeric_limits<float>::min());
 const Size Size::MaxValue(std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
 
+//==============================================================================
+// SizeI
+//==============================================================================
 const SizeI SizeI::Zero(0, 0);
+
+SizeI SizeI::fromFloatSize(const Size& size)
+{
+	return SizeI(static_cast<int>(size.width), static_cast<int>(size.height));
+}
 
 //==============================================================================
 // RectI

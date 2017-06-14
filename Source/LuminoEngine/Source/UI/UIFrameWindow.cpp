@@ -280,12 +280,13 @@ void UIMainWindow::initialize(PlatformWindow* platformWindow, World2D* defaultWo
 
 
 	// TODO: m_mainUIViewport を VisualTree の先頭に入れたい対策。InsertVisualTree とかほしいなぁ。。。
-	RefPtr<UILayoutPanel> panel = getLayoutPanel();
-	setLayoutPanel(nullptr);
+	//RefPtr<UILayoutPanel> panel = getLayoutPanel();
+	//setLayoutPanel(nullptr);
 
 	m_mainUIViewport = newObject<UIViewport>();
 	m_mainUIViewport->setBackbufferSize(platformWindow->getSize().width, platformWindow->getSize().height);	// TODO: EngineSettings からもらう
-	addVisualChild(m_mainUIViewport);
+	//addVisualChild(m_mainUIViewport);
+	addChild(m_mainUIViewport);
 
 	m_cameraViewportLayer3D = newObject<CameraViewportLayer2>(defaultWorld3D, defaultWorld3D->getMainCamera()->GetCameraComponent());
 	m_mainUIViewport->addViewportLayer(m_cameraViewportLayer3D);
@@ -294,7 +295,7 @@ void UIMainWindow::initialize(PlatformWindow* platformWindow, World2D* defaultWo
 	m_uiLayer = newObject<UILayoutLayer>();
 	m_mainUIViewport->addViewportLayer(m_uiLayer);
 
-	setLayoutPanel(panel);
+	//setLayoutPanel(panel);
 
 
 	setSizeInternal(platformWindow->getSize().toFloatSize());
@@ -331,7 +332,7 @@ Size UIMainWindow::arrangeOverride(const Size& finalSize)
 {
 	Size renderSize = UIFrameWindow::arrangeOverride(finalSize);
 
-	m_mainUIViewport->arrangeLayout(Rect(0, 0, renderSize));
+	//m_mainUIViewport->arrangeLayout(Rect(0, 0, renderSize));
 
 	return renderSize;
 }

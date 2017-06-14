@@ -17,7 +17,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIViewport, UIElement);
 UIViewport::UIViewport()
 	: UIElement()
 	, m_backbufferSize(0, 0)
-	, m_placement(ViewportPlacement::Stretch)
+	, m_placement(ViewportPlacement::ViewBox)
 	, m_backgroundColor(Color::White)
 {
 }
@@ -161,7 +161,11 @@ void UIViewport::onRender(DrawingContext* g)
 
 	g->setRenderTarget(0, oldRT);
 	g->setDepthBuffer(oldDB);
-	g->blit(m_primaryLayerTarget);	// TODO: 転送先指定
+
+	Matrix transform;
+	makeViewBoxTransform(SizeI::fromFloatSize(getRenderSize()), m_backbufferSize, &transform);
+
+	g->blit(m_primaryLayerTarget, transform);	// TODO: 転送先指定
 
 	// TODO: 暫定。blit の中で深度書き込みしないようにしてほしいかも。
 	g->clear(ClearFlags::Depth, Color());
@@ -259,13 +263,13 @@ void UIViewport::makeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize
 		}
 	}
 
-#if 1	// pxel based
+#if 0	// pxel based
 	* mat = Matrix::Identity;
 	mat->scale(new_w / sw, new_h / sh, 1.0f);
 	mat->translate(new_x, new_y, 0.0f);
 #else	// screen coord based
 	*mat = Matrix::Identity;
-	mat->Scale(new_w / dw, new_h / dh, 1.0f);
+	mat->scale(new_w / sw, new_h / sh, 1.0f);
 #endif
 }
 
