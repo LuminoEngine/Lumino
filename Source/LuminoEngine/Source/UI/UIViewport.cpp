@@ -31,6 +31,7 @@ UIViewport::~UIViewport()
 void UIViewport::initialize()
 {
 	UIElement::initialize();
+	setHitTestVisible(true);
 }
 
 //------------------------------------------------------------------------------
@@ -338,6 +339,10 @@ void UILayoutLayer::initialize()
 {
 	UIViewportLayer::initialize();
 	m_root = newObject<UILayoutView>(UIContext::getMainContext(), nullptr);	// TODO: コンテキスト変更とか
+
+	// このルート要素はビュー全体に広がるが、ヒットテストは行わない。
+	// 行ってしまうと、その後ろにあるシーンのビューにイベントが流れなくなる。
+	m_root->setHitTestVisible(false);
 
 	m_drawingContext = newObject<DrawingContext>();
 
