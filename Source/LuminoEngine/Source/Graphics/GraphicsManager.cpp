@@ -16,7 +16,7 @@
 #include "GraphicsManager.h"
 #include <Lumino/Graphics/Graphics.h>
 #include "Text/FreeTypeFont.h"
-#include "RendererImpl.h"
+#include "RHIRenderingContext.h"
 #include "Text/FontGlyphTextureCache.h"
 #include "RenderingThread.h"
 #include "../Rendering/ShapesRenderFeature.h"
@@ -225,7 +225,7 @@ void GraphicsManager::initialize(const ConfigData& configData)
 	renderer->setDiag(configData.diag);
 
 	// Renderer
-	m_renderer = LN_NEW Details::Renderer(this);
+	m_renderer = LN_NEW detail::RHIRenderingContext(this);
 
 	Driver::ISwapChain* deviceSwapChain = m_graphicsDevice->getDefaultSwapChain();
 	if (deviceSwapChain != nullptr) {

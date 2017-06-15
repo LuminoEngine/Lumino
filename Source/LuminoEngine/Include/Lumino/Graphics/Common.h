@@ -105,15 +105,13 @@ typedef tr::ReflectionObjectList<ImageEffect*>	ImageEffectList;
 
 struct TextLayoutResult;
 
-namespace Details
-{
-	class Renderer;
-}
 
 namespace detail
 {
-	class RenderingCommandList;
-	class RenderingThread;
+
+class RHIRenderingContext;
+class RenderingCommandList;
+class RenderingThread;
 
 } // namespace detail
 

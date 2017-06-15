@@ -173,7 +173,6 @@ set(LN_SOURCES_Graphics
 	Include/Lumino/Graphics/IndexBuffer.h
 	Include/Lumino/Graphics/Material.h
 	Include/Lumino/Graphics/PerlinNoise.h
-	Include/Lumino/Graphics/Renderer.h
 	Include/Lumino/Graphics/RenderingContext.h
 	Include/Lumino/Graphics/RenderState.h
 	Include/Lumino/Graphics/SamplerState.h
@@ -221,8 +220,6 @@ set(LN_SOURCES_Graphics
 	Source/Graphics/PngFile.h
 	Source/Graphics/ProfilerRenderer.cpp
 	Source/Graphics/ProfilerRenderer.h
-	Source/Graphics/Renderer.cpp
-	Source/Graphics/RendererImpl.h
 	Source/Graphics/RenderingCommand.cpp
 	Source/Graphics/RenderingCommand.h
 	Source/Graphics/RenderingContext.cpp
@@ -231,6 +228,8 @@ set(LN_SOURCES_Graphics
 	Source/Graphics/RenderState.cpp
 	Source/Graphics/RenderTargetTextureCache.cpp
 	Source/Graphics/RenderTargetTextureCache.h
+	Source/Graphics/RHIRenderingContext.cpp
+	Source/Graphics/RHIRenderingContext.h
 	Source/Graphics/SamplerState.cpp
 	Source/Graphics/Shader.cpp
 	Source/Graphics/ShaderAnalyzer.cpp

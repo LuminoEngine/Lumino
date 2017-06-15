@@ -7,6 +7,69 @@
 
 using namespace ln;
 
+
+class UIDiagnosticsWindow
+	: public UIFrameWindow
+{
+public:
+
+protected:
+	virtual void onRender(DrawingContext* context) override;
+
+LN_CONSTRUCT_ACCESS:
+	UIDiagnosticsWindow();
+	virtual ~UIDiagnosticsWindow() = default;
+	void initialize();
+
+private:
+	RefPtr<Font>	m_font;
+};
+
+
+//------------------------------------------------------------------------------
+UIDiagnosticsWindow::UIDiagnosticsWindow()
+	: UIFrameWindow()
+	, m_font(nullptr)
+{
+}
+
+//------------------------------------------------------------------------------
+void UIDiagnosticsWindow::initialize()
+{
+	UIFrameWindow::initialize();
+	m_font = Font::getBuiltin(BuiltinFontSize::XXSmall);
+}
+
+//------------------------------------------------------------------------------
+void UIDiagnosticsWindow::onRender(DrawingContext* context)
+{
+	UIFrameWindow::onRender(context);
+
+
+	Rect windowRect(8, 8, 100, 100);
+
+
+
+	// キャプションバー
+	//context->setOpacity(0.5f);
+	//context->setBrush(SolidColorBrush::DimGray);
+	//context->drawRectangle(Rect(windowRect.getTopLeft(), windowRect.width, 20));
+
+	//context->setOpacity(1.0f);
+	context->setFont(m_font);
+	context->setBrush(SolidColorBrush::Black);
+	context->drawText_(_T("Statistics"), PointF(10, 20));
+
+	//location.Y += 24;
+
+	auto time = Profiler2::getSection(ProfilingKeys::Engine_UpdateFrame)->getElapsedSeconds();
+	printf("%f\n", time);
+}
+
+
+
+
+
 void UIControlsGallery()
 {
 	Engine::initialize();
@@ -48,8 +111,8 @@ void UIControlsGallery()
 	uiRoot->addChild(slider);
 
 
-	auto window2 = newObject<UIFrameWindow>();
-	window2->setBackground(SolidColorBrush::White);
+	//auto window2 = newObject<UIDiagnosticsWindow>();
+	//window2->setBackground(SolidColorBrush::White);
 
 
 
@@ -301,7 +364,7 @@ void UIControlsGallery()
 
 		Engine::presentFrame();
 
-		printf("%f\n", slider->getValue());
+		//printf("%f\n", slider->getValue());
 
 
 		//printf("----------\n");

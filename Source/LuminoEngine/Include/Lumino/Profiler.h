@@ -7,10 +7,98 @@
 #include <Lumino/Threading/Mutex.h>
 
 LN_NAMESPACE_BEGIN
+class Profiler2;
+
+class ProfilingKey
+{
+public:
+	ProfilingKey(const StringRef& name);
+	ProfilingKey(ProfilingKey* parent, const StringRef& name);
+
+	//uint32_t GetHashCode() const { return m_keyHash; }
+
+private:
+	String			m_name;
+	//uint32_t		m_keyHash;
+	ProfilingKey*	m_parent;
+};
+
+class ProfilingKeys
+{
+public:
+	static const ProfilingKey* Engine_UpdateFrame;
+	static const ProfilingKey* Rendering_PresentDevice;
+};
+
+class ProfilingSection
+{
+public:
+	ProfilingSection();
+	void begin();
+	void end();
+
+	float getElapsedSeconds() const { return static_cast<float>(m_committedTime) * 0.000000001; }
+	uint64_t getElapsedNanoseconds() const { return m_committedTime; }
+
+private:
+	void commitFrame(int frameCount);
+
+	ElapsedTimer			m_timer;
+	std::atomic<uint64_t>	m_totalTime;
+	ConditionFlag			m_measuring;
+
+	int						m_committedFrameCount;
+	uint64_t				m_committedTime;
+
+	friend class Profiler2;
+};
+
+
+class Profiler2
+{
+public:
+	static void initializeGlobalSections();
+	static void finalizeGlobalSections();
+
+	static void registerProfilingSection(const ProfilingKey* key);
+
+	static ProfilingSection* getSection(const ProfilingKey* key);
+
+	static void commitFrame();
+};
+
+
+// RAII で計測範囲を制御する
+class ScopedProfilingSection2
+{
+public:
+	ScopedProfilingSection2(const ProfilingKey* key)
+	{
+		m_section = Profiler2::getSection(key);
+		if (m_section != nullptr)
+		{
+			m_section->begin();
+		}
+	}
+
+	~ScopedProfilingSection2()
+	{
+		if (m_section != nullptr)
+		{
+			m_section->end();
+		}
+	}
+
+private:
+	ProfilingSection*	m_section;
+};
+
+
 
 /**
 	@brief
 */
+// [obsolete]
 class Profiler
 {
 public:

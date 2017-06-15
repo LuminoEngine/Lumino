@@ -5,6 +5,129 @@
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
+// ProfilingKey
+//==============================================================================
+
+//------------------------------------------------------------------------------
+ProfilingKey::ProfilingKey(const StringRef& name)
+	: m_name(name)
+	//, m_keyHash(0)
+	, m_parent(nullptr)
+{
+	//m_keyHash = Hash::calcHash(m_name.c_str());
+}
+
+//------------------------------------------------------------------------------
+ProfilingKey::ProfilingKey(ProfilingKey* parent, const StringRef& name)
+	: ProfilingKey(name)
+{
+	m_parent = parent;
+	//m_keyHash += m_parent->m_keyHash;
+}
+
+//==============================================================================
+// ProfilingKeys
+//==============================================================================
+const ProfilingKey* ProfilingKeys::Engine_UpdateFrame = nullptr;
+const ProfilingKey* ProfilingKeys::Rendering_PresentDevice = nullptr;
+
+//==============================================================================
+// ProfilingSection
+//==============================================================================
+
+//------------------------------------------------------------------------------
+ProfilingSection::ProfilingSection()
+	: m_timer()
+	, m_totalTime(0)
+	, m_measuring()
+	, m_committedFrameCount(0)
+	, m_committedTime(0)
+{
+}
+
+//------------------------------------------------------------------------------
+void ProfilingSection::begin()
+{
+	m_measuring.setTrue();
+	m_timer.start();
+}
+
+//------------------------------------------------------------------------------
+void ProfilingSection::end()
+{
+	m_totalTime = m_timer.getElapsed();
+	m_measuring.setFalse();
+}
+
+//------------------------------------------------------------------------------
+void ProfilingSection::commitFrame(int frameCount)
+{
+	if (m_measuring.isFalse())
+	{
+		m_committedTime = m_totalTime;
+		m_committedFrameCount = frameCount;
+	}
+}
+
+
+//==============================================================================
+// Profiler
+//==============================================================================
+
+static std::vector<std::shared_ptr<ProfilingKey>>	g_globalKeys;
+static std::unordered_map<const ProfilingKey*, std::shared_ptr<ProfilingSection>>	g_sectionsMap;
+static int g_frameCount;
+static Mutex	g_mutex;
+
+//------------------------------------------------------------------------------
+void Profiler2::initializeGlobalSections()
+{
+	{
+		auto key = std::make_shared<ProfilingKey>(_T("Engine_UpdateFrame"));
+		g_globalKeys.push_back(key);
+		ProfilingKeys::Engine_UpdateFrame = key.get();
+		registerProfilingSection(key.get());
+	}
+	{
+		auto key = std::make_shared<ProfilingKey>(_T("Rendering_PresentDevice"));
+		g_globalKeys.push_back(key);
+		ProfilingKeys::Rendering_PresentDevice = key.get();
+		registerProfilingSection(key.get());
+	}
+}
+
+//------------------------------------------------------------------------------
+void Profiler2::finalizeGlobalSections()
+{
+	g_globalKeys.clear();
+}
+
+//------------------------------------------------------------------------------
+void Profiler2::registerProfilingSection(const ProfilingKey* key)
+{
+	if (LN_CHECK_ARG(key != nullptr)) return;
+	g_sectionsMap[key] = std::make_shared<ProfilingSection>();
+}
+
+//------------------------------------------------------------------------------
+ProfilingSection* Profiler2::getSection(const ProfilingKey* key)
+{
+	return g_sectionsMap[key].get();
+}
+
+//------------------------------------------------------------------------------
+void Profiler2::commitFrame()
+{
+	MutexScopedLock lock(g_mutex);
+	for (auto& section : g_sectionsMap)
+	{
+		section.second->commitFrame(g_frameCount);
+	}
+	g_frameCount++;
+}
+
+
+//==============================================================================
 // Profiler
 //==============================================================================
 

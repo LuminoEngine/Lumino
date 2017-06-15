@@ -11,7 +11,7 @@
 #include <Lumino/Graphics/VertexDeclaration.h>
 #include <Lumino/Rendering/Rendering.h>
 #include "../Device/GraphicsDriverInterface.h"
-#include "../RendererImpl.h"
+#include "../RHIRenderingContext.h"
 #include "../RenderingCommand.h"
 #include "TextRenderer.h"
 #include "FontManager.h"

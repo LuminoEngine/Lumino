@@ -6,7 +6,7 @@
 #include "Audio/AudioManager.h"
 #include <Lumino/Engine.h>
 #include <Lumino/World.h>
-#include "Graphics/RendererImpl.h"
+#include "Graphics/RHIRenderingContext.h"
 #include "Graphics/ProfilerRenderer.h"
 #include "Graphics/RenderingThread.h"
 #include "Scene/SceneGraphManager.h"

@@ -512,7 +512,7 @@ public:
 	ShaderVariable* findAnnotation(const String& name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const { return findAnnotation(name.c_str(), cs); }
 	
 private:
-	friend class Details::Renderer;
+	friend class detail::RHIRenderingContext;
 	void apply();
 
 protected:

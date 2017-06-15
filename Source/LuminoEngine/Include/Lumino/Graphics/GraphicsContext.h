@@ -42,7 +42,7 @@ class GraphicsContext
 {
 public:	// TODO
 	//RenderingPass*				Pass;
-	Details::Renderer*			Renderer;	// TODO 内部クラス
+	detail::RHIRenderingContext*			Renderer;	// TODO 内部クラス
 	//Camera*						CurrentCamera;
 	//MMEShader*					Shader;				// 本当に必要なシェーダ (VisualNode::render() 以下で使用可能)
 

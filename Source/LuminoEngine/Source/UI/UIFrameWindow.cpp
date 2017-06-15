@@ -14,7 +14,7 @@
 #include <Lumino/Scene/SceneGraph.h>
 #include "UIManager.h"
 #include "../Graphics/GraphicsManager.h"
-#include "../Graphics/RendererImpl.h"
+#include "../Graphics/RHIRenderingContext.h"
 #include "../Graphics/RenderingThread.h"
 #include "../Platform/PlatformManager.h"
 #include "../Platform/PlatformWindowManagerBase.h"
@@ -137,7 +137,7 @@ void UIFrameWindow::presentRenderingContexts()
 {
 	// render
 	{
-		Details::Renderer* renderer = m_manager->getGraphicsManager()->getRenderer();
+		detail::RHIRenderingContext* renderer = m_manager->getGraphicsManager()->getRenderer();
 		renderer->begin();
 
 		onPresentRenderingContexts();

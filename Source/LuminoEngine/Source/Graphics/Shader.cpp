@@ -9,7 +9,7 @@
 #include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/Material.h>
 #include <Lumino/Rendering/Rendering.h>	// TODO: for LightInfo
-#include "RendererImpl.h"
+#include "RHIRenderingContext.h"
 #include "RenderingCommand.h"
 #include "ShaderAnalyzer.h"
 

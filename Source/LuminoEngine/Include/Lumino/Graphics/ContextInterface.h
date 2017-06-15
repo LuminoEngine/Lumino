@@ -127,7 +127,7 @@ protected:
 	virtual void onShaderVariableModified(ShaderVariable* var);
 
 	void setBasicContextState(const BasicContextState& state);
-	Details::Renderer* getBaseRenderer() const { return m_baseRenderer; }
+	detail::RHIRenderingContext* getBaseRenderer() const { return m_baseRenderer; }
 
 
 public:
@@ -137,10 +137,10 @@ public:
 private:
 	void switchActiveRendererPloxy(detail::IRenderFeature* rendererPloxy);
 
-	GraphicsManager*		m_manager;
-	Details::Renderer*		m_baseRenderer;
-	detail::IRenderFeature*	m_activeRendererPloxy;
-	bool					m_stateChanged;
+	GraphicsManager*				m_manager;
+	detail::RHIRenderingContext*	m_baseRenderer;
+	detail::IRenderFeature*			m_activeRendererPloxy;
+	bool							m_stateChanged;
 
 	friend class GraphicsManager;
 	friend class ::ln::ShaderVariable;

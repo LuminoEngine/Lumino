@@ -11,19 +11,19 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 class SwapChain;
 
-namespace Details
+namespace detail
 {
 
 /**
 	@brief		
 */
-class Renderer
+class RHIRenderingContext
 	: public GraphicsResourceObject
 	, public detail::IRenderFeature
 {
 public:
-	Renderer(detail::GraphicsManager* manager);
-	~Renderer();
+	RHIRenderingContext(detail::GraphicsManager* manager);
+	~RHIRenderingContext();
 
 	/**
 		@brief	この Renderer による描画を開始します。
@@ -142,29 +142,6 @@ LN_INTERNAL_ACCESS:
 
 };
 
-} // namespace Details
-
-
-//namespace detail
-//{
-//
-//class VertexBufferRenderer
-//	: public RefObject
-//	, public detail::IRendererPloxy
-//{
-//public:
-//	void setVertexBuffer(VertexBuffer* vertexBuffer);
-//	void setIndexBuffer(IndexBuffer* indexBuffer);
-//	void drawPrimitive(VertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount);
-//	void drawPrimitiveIndexed(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount);
-//
-//
-//
-//private:
-//
-//};
-
-//} // namespace detail
-
+} // namespace detail
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

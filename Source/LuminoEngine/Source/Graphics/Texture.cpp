@@ -6,7 +6,7 @@
 #include "GraphicsManager.h"
 #include <Lumino/Graphics/Utils.h>
 #include <Lumino/Graphics/Text/GlyphRun.h>
-#include "RendererImpl.h"
+#include "RHIRenderingContext.h"
 #include "Internal.h"
 #include "RenderingCommand.h"
 #include "RenderingThread.h"

@@ -110,8 +110,8 @@ public:
 
 	InternalContext();
 	void initialize(detail::GraphicsManager* manager);
-	Details::Renderer* getRenderStateManager();
-	Details::Renderer* beginBaseRenderer();
+	detail::RHIRenderingContext* getRenderStateManager();
+	detail::RHIRenderingContext* beginBaseRenderer();
 	PrimitiveRenderFeature* beginPrimitiveRenderer();
 	BlitRenderer* beginBlitRenderer();
 	MeshRenderFeature* beginMeshRenderer();
@@ -133,7 +133,7 @@ LN_INTERNAL_ACCESS:
 	void switchActiveRenderer(detail::IRenderFeature* renderer);
 
 	IRenderFeature*					m_current;
-	Details::Renderer*				m_baseRenderer;
+	detail::RHIRenderingContext*	m_baseRenderer;
 	RefPtr<PrimitiveRenderFeature>	m_primitiveRenderer;
 	RefPtr<BlitRenderer>			m_blitRenderer;
 	RefPtr<MeshRenderFeature>		m_meshRenderer;

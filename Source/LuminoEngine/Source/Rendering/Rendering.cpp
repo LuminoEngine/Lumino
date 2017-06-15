@@ -7,7 +7,7 @@
 #include <Lumino/Mesh/Mesh.h>
 #include "../Graphics/Device/GraphicsDriverInterface.h"
 #include "../Graphics/GraphicsManager.h"
-#include "../Graphics/RendererImpl.h"
+#include "../Graphics/RHIRenderingContext.h"
 #include "../Graphics/Text/TextRenderer.h"
 #include "../Graphics/Text/FontManager.h"
 #include "../Mesh/MeshFactory.h"
@@ -144,13 +144,13 @@ void InternalContext::initialize(detail::GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-Details::Renderer* InternalContext::getRenderStateManager()
+detail::RHIRenderingContext* InternalContext::getRenderStateManager()
 {
 	return m_baseRenderer;
 }
 
 //------------------------------------------------------------------------------
-Details::Renderer* InternalContext::beginBaseRenderer()
+detail::RHIRenderingContext* InternalContext::beginBaseRenderer()
 {
 	switchActiveRenderer(m_baseRenderer);
 	return m_baseRenderer;

@@ -9,7 +9,7 @@
 #include "Audio/AudioManager.h"
 #include <Lumino/Engine.h>
 #include <Lumino/World.h>
-#include "Graphics/RendererImpl.h"
+#include "Graphics/RHIRenderingContext.h"
 #include "Graphics/RenderingThread.h"
 #include "Graphics/GraphicsManager.h"
 #include "Documents/DocumentsManager.h"
@@ -272,6 +272,8 @@ EngineManager::~EngineManager()
 	LN_SAFE_RELEASE(m_animationManager);
 
 
+	Profiler2::finalizeGlobalSections();
+
 #if defined(LN_OS_WIN32)
 	if (m_comInitialized)
 	{
@@ -284,6 +286,8 @@ EngineManager::~EngineManager()
 //------------------------------------------------------------------------------
 void EngineManager::initialize()
 {
+	Profiler2::initializeGlobalSections();
+
 	initializePlatformManager();
 	initializeInputManager();
 	initializeAudioManager();
@@ -600,6 +604,10 @@ void EngineManager::updateFrame()
 	m_diagViewer->updateFrame();
 
 
+	// フレームの始めで確定してみる
+	//Profiler2::commitFrame();
+
+	//ScopedProfilingSection2 section2(ProfilingKeys::Engine_UpdateFrame);
 
 
 	//float deltaTime = m_fixedDeltaTime;
