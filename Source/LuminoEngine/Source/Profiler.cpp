@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.h"
 #include <Lumino/Profiler.h>
+#include "EngineManager.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -22,14 +23,19 @@ ProfilingKey::ProfilingKey(ProfilingKey* parent, const StringRef& name)
 	: ProfilingKey(name)
 {
 	m_parent = parent;
+	m_parent->m_children.add(this);
 	//m_keyHash += m_parent->m_keyHash;
 }
 
 //==============================================================================
 // ProfilingKeys
 //==============================================================================
-const ProfilingKey* ProfilingKeys::Engine_UpdateFrame = nullptr;
-const ProfilingKey* ProfilingKeys::Rendering_PresentDevice = nullptr;
+ProfilingKey* ProfilingKeys::Engine = nullptr;
+ProfilingKey* ProfilingKeys::Engine_UpdateFrame = nullptr;
+ProfilingKey* ProfilingKeys::Engine_RenderFrame = nullptr;
+ProfilingKey* ProfilingKeys::Engine_PresentFrame = nullptr;
+ProfilingKey* ProfilingKeys::Rendering = nullptr;
+ProfilingKey* ProfilingKeys::Rendering_PresentDevice = nullptr;
 
 //==============================================================================
 // ProfilingSection
@@ -83,13 +89,37 @@ static Mutex	g_mutex;
 void Profiler2::initializeGlobalSections()
 {
 	{
-		auto key = std::make_shared<ProfilingKey>(_T("Engine_UpdateFrame"));
+		auto key = std::make_shared<ProfilingKey>(_T("Engine"));
+		g_globalKeys.push_back(key);
+		ProfilingKeys::Engine = key.get();
+		registerProfilingSection(key.get());
+	}
+	{
+		auto key = std::make_shared<ProfilingKey>(ProfilingKeys::Engine, _T("Engine_UpdateFrame"));
 		g_globalKeys.push_back(key);
 		ProfilingKeys::Engine_UpdateFrame = key.get();
 		registerProfilingSection(key.get());
 	}
 	{
-		auto key = std::make_shared<ProfilingKey>(_T("Rendering_PresentDevice"));
+		auto key = std::make_shared<ProfilingKey>(ProfilingKeys::Engine, _T("Engine_RenderFrame"));
+		g_globalKeys.push_back(key);
+		ProfilingKeys::Engine_RenderFrame = key.get();
+		registerProfilingSection(key.get());
+	}
+	{
+		auto key = std::make_shared<ProfilingKey>(ProfilingKeys::Engine, _T("Engine_PresentFrame"));
+		g_globalKeys.push_back(key);
+		ProfilingKeys::Engine_PresentFrame = key.get();
+		registerProfilingSection(key.get());
+	}
+	{
+		auto key = std::make_shared<ProfilingKey>(_T("Rendering"));
+		g_globalKeys.push_back(key);
+		ProfilingKeys::Rendering = key.get();
+		registerProfilingSection(key.get());
+	}
+	{
+		auto key = std::make_shared<ProfilingKey>(ProfilingKeys::Rendering, _T("Rendering_PresentDevice"));
 		g_globalKeys.push_back(key);
 		ProfilingKeys::Rendering_PresentDevice = key.get();
 		registerProfilingSection(key.get());
@@ -113,6 +143,18 @@ void Profiler2::registerProfilingSection(const ProfilingKey* key)
 ProfilingSection* Profiler2::getSection(const ProfilingKey* key)
 {
 	return g_sectionsMap[key].get();
+}
+
+//------------------------------------------------------------------------------
+float Profiler2::GetMainFps()
+{
+	return detail::EngineDomain::getEngineManager()->getFpsController().getFps();
+}
+
+//------------------------------------------------------------------------------
+float Profiler2::GetMainFpsCapacity()
+{
+	return detail::EngineDomain::getEngineManager()->getFpsController().getCapacityFps();
 }
 
 //------------------------------------------------------------------------------

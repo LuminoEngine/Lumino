@@ -17,17 +17,26 @@ public:
 
 	//uint32_t GetHashCode() const { return m_keyHash; }
 
+	const String& getName() const { return m_name; }
+	const List<ProfilingKey*>& getChildren() const { return m_children; }
+
 private:
-	String			m_name;
-	//uint32_t		m_keyHash;
-	ProfilingKey*	m_parent;
+	String				m_name;
+	//uint32_t			m_keyHash;
+	ProfilingKey*		m_parent;
+	List<ProfilingKey*>	m_children;
 };
 
 class ProfilingKeys
 {
 public:
-	static const ProfilingKey* Engine_UpdateFrame;
-	static const ProfilingKey* Rendering_PresentDevice;
+	static ProfilingKey* Engine;
+	static ProfilingKey* Engine_UpdateFrame;
+	static ProfilingKey* Engine_RenderFrame;
+	static ProfilingKey* Engine_PresentFrame;
+
+	static ProfilingKey* Rendering;
+	static ProfilingKey* Rendering_PresentDevice;
 };
 
 class ProfilingSection
@@ -63,6 +72,9 @@ public:
 	static void registerProfilingSection(const ProfilingKey* key);
 
 	static ProfilingSection* getSection(const ProfilingKey* key);
+
+	static float GetMainFps();
+	static float GetMainFpsCapacity();
 
 	static void commitFrame();
 };

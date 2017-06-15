@@ -30,6 +30,7 @@ class EngineDomain
 public:
 	static PhysicsWorld* getPhysicsWorld3D();
 
+	static EngineManager* getEngineManager();
 	static AnimationManager* getAnimationManager();
 	static GraphicsManager* getGraphicsManager();
 	static ModelManager* getModelManager();

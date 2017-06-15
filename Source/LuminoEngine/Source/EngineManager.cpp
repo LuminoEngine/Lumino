@@ -605,9 +605,9 @@ void EngineManager::updateFrame()
 
 
 	// フレームの始めで確定してみる
-	//Profiler2::commitFrame();
+	Profiler2::commitFrame();
 
-	//ScopedProfilingSection2 section2(ProfilingKeys::Engine_UpdateFrame);
+	ScopedProfilingSection2 section2(ProfilingKeys::Engine_UpdateFrame);
 
 
 	//float deltaTime = m_fixedDeltaTime;
@@ -723,6 +723,8 @@ void EngineManager::renderFrame()
 {
 	if (m_graphicsManager != nullptr)
 	{
+		ScopedProfilingSection2 section2(ProfilingKeys::Engine_RenderFrame);
+
 		EngineDiagCore::Instance.resetGraphicsFrameReport();	// TODO: GameMode のみ？
 		EngineDiagCore::Instance.resetVisualNodeDrawCount();	// TODO: GameMode のみ？
 
@@ -759,6 +761,7 @@ void EngineManager::presentFrame()
 
 	for (auto& window : m_uiManager->getWindows())
 	{
+		ScopedProfilingSection2 section2(ProfilingKeys::Engine_PresentFrame);
 		window->presentRenderingContexts();
 	}
 }
@@ -908,6 +911,12 @@ namespace detail {
 PhysicsWorld* EngineDomain::getPhysicsWorld3D()
 {
 	return EngineManager::getInstance()->getDefaultWorld3D()->getPhysicsWorld3D();
+}
+
+//------------------------------------------------------------------------------
+EngineManager* EngineDomain::getEngineManager()
+{
+	return EngineManager::getInstance();
 }
 
 //------------------------------------------------------------------------------

@@ -115,7 +115,10 @@ void RenderingThread::execute()
 			{
 				try
 				{
-					ScopedProfilerSection sec(Profiler::Group_RenderThread, Profiler::Section_RenderThread_CommandExecute);
+					//ScopedProfilerSection sec(Profiler::Group_RenderThread, Profiler::Section_RenderThread_CommandExecute);
+
+					ScopedProfilingSection2 section2(ProfilingKeys::Rendering_PresentDevice);
+
 
 					// コマンドリスト実行
 					commandList->execute(m_device);
