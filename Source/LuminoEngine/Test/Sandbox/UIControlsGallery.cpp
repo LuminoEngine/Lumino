@@ -68,6 +68,7 @@ void UIDiagnosticsWindow::onRender(DrawingContext* context)
 	context->setBrush(UIColors::getBrush(UIColorIndex::Grey, 8));
 	context->drawText_(_T("Statistics"), PointF(10, 20));
 
+
 	loc.y += 24;
 
 	//auto time = Profiler2::getSection(ProfilingKeys::Engine_UpdateFrame)->getElapsedSeconds();

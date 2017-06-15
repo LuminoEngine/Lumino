@@ -734,6 +734,7 @@ void MeshResource::commitRenderData(VertexDeclaration** outDecl, VertexBuffer** 
 			m_vertexDeclaration->addVertexElement(stream, VertexElementType_Float1, VertexElementUsage_PointSize, 15);
 			++stream;
 		}
+		m_vertexDeclarationModified = false;
 	}
 	*outDecl = m_vertexDeclaration;
 
