@@ -38,37 +38,37 @@ StringReader::~StringReader()
 }
 
 //------------------------------------------------------------------------------
-int StringReader::Peek()
+int StringReader::peek()
 {
-	if (m_pos >= m_range.GetLength()) {
+	if (m_pos >= m_range.getLength()) {
 		return -1;
 	}
 	return m_range[m_pos];
 }
 
 //------------------------------------------------------------------------------
-int StringReader::Read()
+int StringReader::read()
 {
-	if (m_pos >= m_range.GetLength()) {
+	if (m_pos >= m_range.getLength()) {
 		return -1;
 	}
 	return m_range[m_pos++];
 }
 
 //------------------------------------------------------------------------------
-bool StringReader::ReadLine(String* line)
+bool StringReader::readLine(String* line)
 {
 	int i = m_pos;
-	while (i < m_range.GetLength())
+	while (i < m_range.getLength())
 	{
 		TCHAR ch = m_range[i];
 		if (ch == '\r' || ch == '\n')
 		{
 			if (line != NULL) {
-				*line = m_range.Mid(m_pos, i - m_pos);
+				*line = m_range.mid(m_pos, i - m_pos);
 			}
 			m_pos = i + 1;
-			if (ch == '\r' && m_pos < m_range.GetLength() && m_range[m_pos] == '\n') m_pos++;
+			if (ch == '\r' && m_pos < m_range.getLength() && m_range[m_pos] == '\n') m_pos++;
 			return true;
 		}
 		i++;
@@ -78,7 +78,7 @@ bool StringReader::ReadLine(String* line)
 	if (i > m_pos)
 	{
 		if (line != NULL) {
-			*line = m_range.Mid(m_pos, i - m_pos);
+			*line = m_range.mid(m_pos, i - m_pos);
 		}
 		m_pos = i;
 		return true;
@@ -89,16 +89,16 @@ bool StringReader::ReadLine(String* line)
 }
 
 //------------------------------------------------------------------------------
-String StringReader::ReadToEnd()
+String StringReader::readToEnd()
 {
 	String s;
 	if (m_pos == 0) {
 		s = m_range;
 	}
 	else {
-		s = m_range.Mid(m_pos, m_range.GetLength() - m_pos);
+		s = m_range.mid(m_pos, m_range.getLength() - m_pos);
 	}
-	m_pos = m_range.GetLength();
+	m_pos = m_range.getLength();
 	return s;
 }
 
@@ -109,9 +109,9 @@ String StringReader::ReadToEnd()
 //}
 
 //------------------------------------------------------------------------------
-bool StringReader::IsEOF()
+bool StringReader::isEOF()
 {
-	return (m_pos >= m_range.GetLength());
+	return (m_pos >= m_range.getLength());
 }
 
 LN_NAMESPACE_END

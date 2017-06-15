@@ -28,10 +28,10 @@ public:
 
 	TextRendererCore();
 	~TextRendererCore();
-	void Initialize(GraphicsManager* manager);
+	void initialize(GraphicsManager* manager);
 
-	void SetState(const Matrix& world, const Matrix& viewProj, const SizeI& viewPixelSize);
-	void Render(const GlyphRunData* dataList, int dataCount, FontGlyphTextureCache* cache, Brush* fillBrush);
+	void setState(const Matrix& world, const Matrix& viewProj, const SizeI& viewPixelSize);
+	void render(const GlyphRunData* dataList, int dataCount, FontGlyphTextureCache* cache, Brush* fillBrush);
 
 private:
 
@@ -56,12 +56,12 @@ private:
 		static const int ElementCount = 3;
 	};
 
-	void InternalDrawRectangle(const Matrix& transform, const Rect& rect, const Rect& srcUVRect, const Color& color);
-	void Flush(FontGlyphTextureCache* cache);
+	void internalDrawRectangle(const Matrix& transform, const Rect& rect, const Rect& srcUVRect, const Color& color);
+	void flush(FontGlyphTextureCache* cache);
 
-	virtual void OnChangeDevice(Driver::IGraphicsDevice* device) override;
-	void CreateDeviceResources();
-	void ReleaseDeviceResources();
+	virtual void onChangeDevice(Driver::IGraphicsDevice* device) override;
+	void createDeviceResources();
+	void releaseDeviceResources();
 
 	//GraphicsManager*		m_manager;
 	//Driver::IRenderer*		m_renderer;
@@ -102,28 +102,28 @@ class TextRenderer
 public:
 	TextRenderer();
 	~TextRenderer();
-	void Initialize(GraphicsManager* manager);
+	void initialize(GraphicsManager* manager);
 
-	void SetTransform(const Matrix& matrix);
-	void SetViewInfo(const Matrix& viewProj, const SizeI& viewPixelSize);
+	void setTransform(const Matrix& matrix);
+	void setViewInfo(const Matrix& viewProj, const SizeI& viewPixelSize);
 
-	void DrawGlyphRun(const Matrix& transform, const PointI& position, GlyphRun* glyphRun);
-	void DrawGlyphRun(const Matrix& transform, const PointF& position, GlyphRun* glyphRun);	// SetFont 無視
+	void drawGlyphRun(const Matrix& transform, const PointI& position, GlyphRun* glyphRun);
+	void drawGlyphRun(const Matrix& transform, const PointF& position, GlyphRun* glyphRun);	// setFont 無視
 
-	void DrawString(const Matrix& transform, const TCHAR* str, int length, const PointF& position);
-	void DrawString(const Matrix& transform, const TCHAR* str, int length, const Rect& rect, StringFormatFlags flags);
+	void drawString(const Matrix& transform, const TCHAR* str, int length, const PointF& position);
+	void drawString(const Matrix& transform, const TCHAR* str, int length, const Rect& rect, StringFormatFlags flags);
 
-	virtual bool IsStandaloneShader() const { return true; }
-	virtual void Flush() override;
-	virtual void OnActivated() { m_stateModified = true; }
-	virtual void OnDeactivated() { Flush(); }
-	virtual void OnSetState(const DrawElementBatch* state);
+	virtual bool isStandaloneShader() const { return true; }
+	virtual void flush() override;
+	virtual void onActivated() { m_stateModified = true; }
+	virtual void onDeactivated() { flush(); }
+	virtual void onSetState(const DrawElementBatch* state);
 
 public:
 	// TODO: ↓いまは Flush でやるようなことをしている。後で変更したい。
 	void DrawGlyphsInternal(const Matrix& transform, const PointF& position, const List<TextLayoutResultItem>& layoutItems, FontGlyphTextureCache* cache);
 	void FlushInternal(FontGlyphTextureCache* cache);
-	void CheckUpdateState();
+	void checkUpdateState();
 
 private:
 	GraphicsManager*	m_manager;
@@ -157,10 +157,10 @@ class VectorTextRendererCore
 public:
 	VectorTextRendererCore();
 	virtual ~VectorTextRendererCore();
-	void Initialize(GraphicsManager* manager);
+	void initialize(GraphicsManager* manager);
 
-	void RequestBuffers(int vertexCount, int indexCount, Vertex** vb, uint16_t** ib, uint16_t* outBeginVertexIndex);
-	void Render(const VectorGlyphData* dataList, int dataCount, VectorFontGlyphCache* cache, Brush* fillBrush);
+	void requestBuffers(int vertexCount, int indexCount, Vertex** vb, uint16_t** ib, uint16_t* outBeginVertexIndex);
+	void render(const VectorGlyphData* dataList, int dataCount, VectorFontGlyphCache* cache, Brush* fillBrush);
 
 private:
 	GraphicsManager*		m_manager;
@@ -179,21 +179,21 @@ class VectorTextRenderer
 public:
 	VectorTextRenderer();
 	virtual ~VectorTextRenderer();
-	void Initialize(GraphicsManager* manager);
+	void initialize(GraphicsManager* manager);
 
-	void DrawString(const Matrix& transform, const UTF32* str, int length, const Rect& rect, TextLayoutOptions options);
-	void DrawChar(const Matrix& transform, UTF32 ch, const Rect& rect, TextLayoutOptions options);
+	void drawString(const Matrix& transform, const UTF32* str, int length, const Rect& rect, TextLayoutOptions options);
+	void drawChar(const Matrix& transform, UTF32 ch, const Rect& rect, TextLayoutOptions options);
 
-	virtual bool IsStandaloneShader() const { return false; }
-	virtual void Flush() override;
-	virtual void OnActivated() override {}
-	virtual void OnDeactivated() override { Flush(); }
-	virtual void OnSetState(const DrawElementBatch* state);
+	virtual bool isStandaloneShader() const { return false; }
+	virtual void flush() override;
+	virtual void onActivated() override {}
+	virtual void onDeactivated() override { flush(); }
+	virtual void onSetState(const DrawElementBatch* state);
 
-	GraphicsManager* GetManager() const { return m_manager; }
+	GraphicsManager* getManager() const { return m_manager; }
 
 private:
-	void DrawInternal(const Matrix& transform);
+	void drawInternal(const Matrix& transform);
 
 LN_INTERNAL_ACCESS:
 	GraphicsManager*				m_manager;

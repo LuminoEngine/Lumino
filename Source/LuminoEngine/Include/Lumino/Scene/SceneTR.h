@@ -13,7 +13,7 @@ class HugePlane
 	: public VisualComponent
 {
 public:
-	static HugePlanePtr Create(const Vector3& direction);
+	static HugePlanePtr create(const Vector3& direction);
 
 public:
 
@@ -22,7 +22,7 @@ public:
 LN_PROTECTED_INTERNAL_ACCESS:
 	HugePlane();
 	virtual ~HugePlane();
-	void Initialize(SceneGraph* sceneGraph, const Vector3& direction);
+	void initialize(SceneGraph* sceneGraph, const Vector3& direction);
 
 	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
 

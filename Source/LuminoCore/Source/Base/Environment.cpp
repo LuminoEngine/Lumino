@@ -22,21 +22,21 @@ LN_NAMESPACE_BEGIN
 //------------------------------------------------------------------------------
 #pragma push_macro("GetEnvironmentVariable")
 #undef GetEnvironmentVariable
-String Environment::GetEnvironmentVariable(const String& variableName)
+String Environment::getEnvironmentVariable(const String& variableName)
 {
-	return LN_AFX_FUNCNAME(GetEnvironmentVariable)(variableName);
+	return LN_AFX_FUNCNAME(getEnvironmentVariable)(variableName);
 }
-String Environment::LN_AFX_FUNCNAME(GetEnvironmentVariable)(const String& variableName)
+String Environment::LN_AFX_FUNCNAME(getEnvironmentVariable)(const String& variableName)
 {
 	String val;
-	bool r = TryGetEnvironmentVariable(variableName, &val);
+	bool r = tryGetEnvironmentVariable(variableName, &val);
 	LN_THROW(r, KeyNotFoundException);
 	return val;
 }
 #pragma pop_macro("GetEnvironmentVariable")
 
 //------------------------------------------------------------------------------
-bool Environment::TryGetEnvironmentVariable(const String& variableName, String* outValue)
+bool Environment::tryGetEnvironmentVariable(const String& variableName, String* outValue)
 {
 	String name = variableName;
 #ifdef LN_OS_WIN32
@@ -54,23 +54,23 @@ bool Environment::TryGetEnvironmentVariable(const String& variableName, String* 
 }
 
 //------------------------------------------------------------------------------
-ByteOrder Environment::GetByteOrder()
+ByteOrder Environment::getByteOrder()
 {
-	if (IsLittleEndian()) {
+	if (isLittleEndian()) {
 		return ByteOrder::Little;
 	}
 	return ByteOrder::Big;
 }
 
 //------------------------------------------------------------------------------
-bool Environment::IsLittleEndian()
+bool Environment::isLittleEndian()
 {
 	const unsigned short x = 1;   // 0x0001
 	return (*(unsigned char *)&x) != 0;
 }
 
 //------------------------------------------------------------------------------
-uint64_t Environment::GetTickCount()
+uint64_t Environment::getTickCount()
 {
 #ifdef _WIN32
 	// timeGetTime() は timeBeginPeriod() によって精度が変わるため、
@@ -89,7 +89,7 @@ uint64_t Environment::GetTickCount()
 }
 
 //------------------------------------------------------------------------------
-uint64_t Environment::GetTickCountNS()
+uint64_t Environment::getTickCountNS()
 {
 #ifdef _WIN32
 	static LARGE_INTEGER freq = {};
@@ -127,7 +127,7 @@ uint64_t Environment::GetTickCountNS()
 
 //------------------------------------------------------------------------------
 template<>
-const char* Environment::GetNewLine<char>()
+const char* Environment::getNewLine<char>()
 {
 #ifdef LN_OS_WIN32
 	return "\r\n";
@@ -136,7 +136,7 @@ const char* Environment::GetNewLine<char>()
 #endif
 }
 template<>
-const wchar_t* Environment::GetNewLine<wchar_t>()
+const wchar_t* Environment::getNewLine<wchar_t>()
 {
 #ifdef LN_OS_WIN32
 	return L"\r\n";
@@ -148,7 +148,7 @@ const wchar_t* Environment::GetNewLine<wchar_t>()
 //------------------------------------------------------------------------------
 #if defined(LN_OS_WIN32)
 template<>
-void Environment::GetSpecialFolderPath(SpecialFolder specialFolder, char* outPath)
+void Environment::getSpecialFolderPath(SpecialFolder specialFolder, char* outPath)
 {
 	if (outPath == NULL) { return; }
 	switch (specialFolder)
@@ -162,7 +162,7 @@ void Environment::GetSpecialFolderPath(SpecialFolder specialFolder, char* outPat
 	}
 }
 template<>
-void Environment::GetSpecialFolderPath(SpecialFolder specialFolder, wchar_t* outPath)
+void Environment::getSpecialFolderPath(SpecialFolder specialFolder, wchar_t* outPath)
 {
 	if (outPath == NULL) { return; }
 	switch (specialFolder)
@@ -177,7 +177,7 @@ void Environment::GetSpecialFolderPath(SpecialFolder specialFolder, wchar_t* out
 }
 #elif defined(LN_OS_LINUX)
 template<typename TChar>
-void Environment::GetSpecialFolderPath(SpecialFolder specialFolder, TChar* outPath)
+void Environment::getSpecialFolderPath(SpecialFolder specialFolder, TChar* outPath)
 {
 	if (outPath == NULL) { return; }
 
@@ -214,13 +214,13 @@ void Environment::GetSpecialFolderPath(SpecialFolder specialFolder, TChar* outPa
 	}
 	LN_THROW(0, InvalidOperationException);
 }
-template void Environment::GetSpecialFolderPath(SpecialFolder specialFolder, char* outPath);
-template void Environment::GetSpecialFolderPath(SpecialFolder specialFolder, wchar_t* outPath);
+template void Environment::getSpecialFolderPath(SpecialFolder specialFolder, char* outPath);
+template void Environment::getSpecialFolderPath(SpecialFolder specialFolder, wchar_t* outPath);
 
 #elif defined(LN_OS_MAC)
 
 template<typename TChar>
-void Environment::GetSpecialFolderPath(SpecialFolder specialFolder, TChar* outPath)
+void Environment::getSpecialFolderPath(SpecialFolder specialFolder, TChar* outPath)
 {
 	short domain = kOnAppropriateDisk;
 
@@ -254,8 +254,8 @@ void Environment::GetSpecialFolderPath(SpecialFolder specialFolder, TChar* outPa
 	path.AssignCStr((const char*)buf.GetConstData(), buf.GetSize());
 	StringTraits::tstrcpy(outPath, LN_MAX_PATH, path.c_str());
 }
-template void Environment::GetSpecialFolderPath(SpecialFolder specialFolder, char* outPath);
-template void Environment::GetSpecialFolderPath(SpecialFolder specialFolder, wchar_t* outPath);
+template void Environment::getSpecialFolderPath(SpecialFolder specialFolder, char* outPath);
+template void Environment::getSpecialFolderPath(SpecialFolder specialFolder, wchar_t* outPath);
 
 #else
 #endif

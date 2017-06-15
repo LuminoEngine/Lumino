@@ -16,11 +16,11 @@ ViewFrustum::ViewFrustum()
 //------------------------------------------------------------------------------
 ViewFrustum::ViewFrustum(const Matrix& viewProjMatrix)
 {
-	SetViewProjMatrix(viewProjMatrix);
+	setViewProjMatrix(viewProjMatrix);
 }
 
 //------------------------------------------------------------------------------
-void ViewFrustum::SetViewProjMatrix(const Matrix& mat)
+void ViewFrustum::setViewProjMatrix(const Matrix& mat)
 {
 	m_planes[static_cast<int>(FrustumPlane::Near)] = Plane(-mat.m13, -mat.m23, -mat.m33, -mat.m43);
 	m_planes[static_cast<int>(FrustumPlane::Far)] = Plane(-mat.m14 + mat.m13, -mat.m24 + mat.m23, -mat.m34 + mat.m33, -mat.m44 + mat.m43);
@@ -31,18 +31,18 @@ void ViewFrustum::SetViewProjMatrix(const Matrix& mat)
 
 	for (int i = 0; i < FrustumPlane_Max; ++i)
 	{
-		m_planes[i].Normalize();
+		m_planes[i].normalize();
 	}
 
 	m_viewProjMatrix = mat;
 }
 
 //------------------------------------------------------------------------------
-bool ViewFrustum::Intersects(const Vector3& point) const
+bool ViewFrustum::intersects(const Vector3& point) const
 {
 	for (int i = 0; i < FrustumPlane_Max; ++i)
 	{
-		if (!m_planes[i].CheckInsideLower(point)) {
+		if (!m_planes[i].checkInsideLower(point)) {
 			return false;
 		}
 	}
@@ -50,11 +50,11 @@ bool ViewFrustum::Intersects(const Vector3& point) const
 }
 
 //------------------------------------------------------------------------------
-bool ViewFrustum::Intersects(const Vector3& center, float radius) const
+bool ViewFrustum::intersects(const Vector3& center, float radius) const
 {
 	for (int i = 0; i < FrustumPlane_Max; ++i)
 	{
-		if (!m_planes[i].CheckInside(center, radius)) {
+		if (!m_planes[i].checkInside(center, radius)) {
 			return false;
 		}
 	}
@@ -62,27 +62,27 @@ bool ViewFrustum::Intersects(const Vector3& center, float radius) const
 }
 
 //------------------------------------------------------------------------------
-void ViewFrustum::GetCornerPoints(Vector3* points) const
+void ViewFrustum::getCornerPoints(Vector3* points) const
 {
 	if (points == nullptr) return;
 
 	// Near
-	points[0].Set(-1, 1, 0);
-	points[1].Set(-1, -1, 0);
-	points[2].Set(1, -1, 0);
-	points[3].Set(1, 1, 0);
+	points[0].set(-1, 1, 0);
+	points[1].set(-1, -1, 0);
+	points[2].set(1, -1, 0);
+	points[3].set(1, 1, 0);
 
 	// Far
-	points[4].Set(-1, 1, 1);
-	points[5].Set(-1, -1, 1);
-	points[6].Set(1, -1, 1);
-	points[7].Set(1, 1, 1);
+	points[4].set(-1, 1, 1);
+	points[5].set(-1, -1, 1);
+	points[6].set(1, -1, 1);
+	points[7].set(1, 1, 1);
 
 	// Transfrom
-	Matrix inv = Matrix::MakeInverse(m_viewProjMatrix);
+	Matrix inv = Matrix::makeInverse(m_viewProjMatrix);
 	for (int i = 0; i < 8; ++i)
 	{
-		points[i].TransformCoord(inv);
+		points[i].transformCoord(inv);
 	}
 }
 

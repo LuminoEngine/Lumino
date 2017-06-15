@@ -5,7 +5,7 @@
 class DotNetCommon
 {
 public:
-	static void Initialize();
+	static void initialize();
 	static String MakePInvokeTypeName(TypeInfoPtr typeInfo);
 	static String MakeTypeName(TypeInfoPtr typeInfo);
 	static String MakeParamTypeName(ParameterInfoPtr paramInfo);

@@ -24,58 +24,58 @@ PhysicsObject::~PhysicsObject()
 }
 
 //------------------------------------------------------------------------------
-void PhysicsObject::Initialize()
+void PhysicsObject::initialize()
 {
 }
 
 //------------------------------------------------------------------------------
-void PhysicsObject::SetOwnerWorld(PhysicsWorld* owner)
+void PhysicsObject::setOwnerWorld(PhysicsWorld* owner)
 {
 	m_ownerWorld = owner;
 }
 
 //------------------------------------------------------------------------------
-PhysicsWorld* PhysicsObject::GetOwnerWorld() const
+PhysicsWorld* PhysicsObject::getOwnerWorld() const
 {
 	return m_ownerWorld;
 }
 
 //------------------------------------------------------------------------------
-void PhysicsObject::SetCollisionFilterGroup(uint16_t flags)
+void PhysicsObject::setCollisionFilterGroup(uint16_t flags)
 {
 	m_collisionFilterGroup = flags;
 }
 
 //------------------------------------------------------------------------------
-uint16_t PhysicsObject::GetCollisionFilterGroup() const
+uint16_t PhysicsObject::getCollisionFilterGroup() const
 {
 	return m_collisionFilterGroup;
 }
 
 //------------------------------------------------------------------------------
-void PhysicsObject::SetCollisionFilterMask(uint16_t flags)
+void PhysicsObject::setCollisionFilterMask(uint16_t flags)
 {
 	m_collisionFilterMask = flags;
 }
 
 //------------------------------------------------------------------------------
-uint16_t PhysicsObject::GetCollisionFilterMask() const
+uint16_t PhysicsObject::getCollisionFilterMask() const
 {
 	return m_collisionFilterMask;
 }
 
 //------------------------------------------------------------------------------
-void PhysicsObject::OnBeforeStepSimulation()
+void PhysicsObject::onBeforeStepSimulation()
 {
 }
 
 //------------------------------------------------------------------------------
-void PhysicsObject::OnAfterStepSimulation()
+void PhysicsObject::onAfterStepSimulation()
 {
 }
 
 //------------------------------------------------------------------------------
-void PhysicsObject::OnRemovedFromWorld()
+void PhysicsObject::onRemovedFromWorld()
 {
 }
 
@@ -109,7 +109,7 @@ BodyBase::~BodyBase()
 }
 
 //------------------------------------------------------------------------------
-void BodyBase::Initialize(btCollisionObject* obj)
+void BodyBase::initialize(btCollisionObject* obj)
 {
 	obj->setUserPointer(this);
 }

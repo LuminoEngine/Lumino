@@ -11,20 +11,20 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
-void Clipboard::SetText(PlatformWindow* window, const String& text)
+void Clipboard::setText(PlatformWindow* window, const String& text)
 {
-	ByteBuffer wideStr = text.ConvertTo(Encoding::GetWideCharEncoding());
-	int wideCount = (wideStr.GetSize() + 1) * sizeof(WCHAR);
+	ByteBuffer wideStr = text.convertTo(Encoding::getWideCharEncoding());
+	int wideCount = (wideStr.getSize() + 1) * sizeof(WCHAR);
 
 	HGLOBAL hGlobal = ::GlobalAlloc(GMEM_MOVEABLE, wideCount);
 	LN_THROW(hGlobal != NULL, Win32Exception, ::GetLastError());
 
 	WCHAR* buf = (WCHAR*)::GlobalLock(hGlobal);
-	memcpy(buf, wideStr.GetConstData(), wideCount);
+	memcpy(buf, wideStr.getConstData(), wideCount);
 	buf[wideCount - 1] = L'\0';
 	::GlobalUnlock(hGlobal);
 
-	HWND hWnd = PlatformSupport::GetWindowHandle(window);
+	HWND hWnd = PlatformSupport::getWindowHandle(window);
 	BOOL r = ::OpenClipboard(hWnd);
 	if (r == FALSE)
 	{
@@ -39,14 +39,14 @@ void Clipboard::SetText(PlatformWindow* window, const String& text)
 }
 
 //------------------------------------------------------------------------------
-String Clipboard::GetText(PlatformWindow* window)
+String Clipboard::getText(PlatformWindow* window)
 {
 	// クリップボードのデータ形式チェック
 	if (!IsClipboardFormatAvailable(CF_UNICODETEXT)) {
-		return String::GetEmpty();
+		return String::getEmpty();
 	}
 
-	HWND hWnd = PlatformSupport::GetWindowHandle(window);
+	HWND hWnd = PlatformSupport::getWindowHandle(window);
 	BOOL r = ::OpenClipboard(hWnd);
 	LN_THROW(r != FALSE, Win32Exception, ::GetLastError());
 
@@ -64,7 +64,7 @@ String Clipboard::GetText(PlatformWindow* window)
 	String str;
 	try
 	{
-		str.ConvertFrom(buf, len * sizeof(WCHAR), Encoding::GetWideCharEncoding());
+		str.convertFrom(buf, len * sizeof(WCHAR), Encoding::getWideCharEncoding());
 	}
 	catch (...)
 	{

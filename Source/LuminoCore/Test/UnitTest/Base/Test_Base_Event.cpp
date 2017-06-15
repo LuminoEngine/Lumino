@@ -153,22 +153,22 @@ TEST_F(Test_Base_EventConnection, Basic)
 	g_Value = 0;
 
 	Event<void(int)> ev01;
-	ev01.Connect(CreateDelegate(&c1, &Class1::Callback01_1));
-	ev01.Raise(5);
+	ev01.connect(createDelegate(&c1, &Class1::Callback01_1));
+	ev01.raise(5);
 	ASSERT_EQ(5, g_Value);
 
-	EventConnection conn = ev01.Connect(CreateDelegate(&c2, &Class1::Callback01_2));
-	ev01.Raise(5);
+	EventConnection conn = ev01.connect(createDelegate(&c2, &Class1::Callback01_2));
+	ev01.raise(5);
 	ASSERT_EQ(60, g_Value);
 
 	conn.Disconnect();
 
-	ev01.Raise(5);
+	ev01.raise(5);
 	ASSERT_EQ(65, g_Value);
 
 	// <Test> Clear 後に Dissconnetct してみる → 特に何も起こらない
-	ev01.Clear();
-	ev01.Raise(5);
+	ev01.clear();
+	ev01.raise(5);
 	ASSERT_EQ(65, g_Value);
 	conn.Disconnect();
 }
@@ -180,28 +180,28 @@ TEST_F(Test_Base_EventConnection, MultiArgs)
 	g_Value = 0;
 
 	Event<void(int)> ev01;
-	ev01.Connect(CreateDelegate(&c1, &Class1::Callback01_1));
-	ev01.Raise(5);
+	ev01.connect(createDelegate(&c1, &Class1::Callback01_1));
+	ev01.raise(5);
 	ASSERT_EQ(5, g_Value);
 
 	Event<void(int, int)> ev02;
-	ev02.Connect(CreateDelegate(&c1, &Class1::Callback02_1));
-	ev02.Raise(6, 6);
+	ev02.connect(createDelegate(&c1, &Class1::Callback02_1));
+	ev02.raise(6, 6);
 	ASSERT_EQ(11, g_Value);
 
 	Event<void(int, int, int)> ev03;
-	ev03.Connect(CreateDelegate(&c1, &Class1::Callback03_1));
-	ev03.Raise(7, 7, 7);
+	ev03.connect(createDelegate(&c1, &Class1::Callback03_1));
+	ev03.raise(7, 7, 7);
 	ASSERT_EQ(18, g_Value);
 
 	Event<void(int, int, int, int)> ev04;
-	ev04.Connect(CreateDelegate(&c1, &Class1::Callback04_1));
-	ev04.Raise(8, 8, 8, 8);
+	ev04.connect(createDelegate(&c1, &Class1::Callback04_1));
+	ev04.raise(8, 8, 8, 8);
 	ASSERT_EQ(26, g_Value);
 }
 
 //---------------------------------------------------------------------
-TEST_F(Test_Base_EventConnection, Raise)
+TEST_F(Test_Base_EventConnection, raise)
 {
 	g_Value = 0;
 	Class1 c1;
@@ -210,14 +210,14 @@ TEST_F(Test_Base_EventConnection, Raise)
 
 	// <Test> 1つのイベントハンドラを呼び出せること。
 	{
-		conn = ev01.Connect(CreateDelegate(&c1, &Class1::Callback01_1));
-		ev01.Raise(2);
+		conn = ev01.connect(createDelegate(&c1, &Class1::Callback01_1));
+		ev01.raise(2);
 		ASSERT_EQ(2, g_Value);
 	}
 
 	// <Test> 複数のイベントハンドラを呼び出せること。
 	{
-		ev01 += CreateDelegate(&c1, &Class1::Callback01_2);	// operator += で追加してみる
+		ev01 += createDelegate(&c1, &Class1::Callback01_2);	// operator += で追加してみる
 		ev01(2);	// operator() で呼んでみる。
 		ASSERT_EQ(24, g_Value);
 	}
@@ -225,7 +225,7 @@ TEST_F(Test_Base_EventConnection, Raise)
 	// <Test> イベントハンドラを1つ除外した後、残りを呼び出せること。
 	{
 		conn.Disconnect();
-		ev01.Raise(2);
+		ev01.raise(2);
 		ASSERT_EQ(44, g_Value);
 	}
 }
@@ -279,36 +279,36 @@ protected:
 
 
 //---------------------------------------------------------------------
-TEST_F(Test_Base_Event, AddHandler)
+TEST_F(Test_Base_Event, addHandler)
 {
 	Class1 c1;
 
 	Event01<int> ev01;
-	ev01.AddHandler(LN_CreateDelegate(&c1, &Class1::Callback01_1));
+	ev01.addHandler(LN_CreateDelegate(&c1, &Class1::Callback01_1));
 
 	Event02<int, int> ev02;
-	ev02.AddHandler(LN_CreateDelegate(&c1, &Class1::Callback02_1));
+	ev02.addHandler(LN_CreateDelegate(&c1, &Class1::Callback02_1));
 
 	Event03<int, int, int> ev03;
-	ev03.AddHandler(LN_CreateDelegate(&c1, &Class1::Callback03_1));
+	ev03.addHandler(LN_CreateDelegate(&c1, &Class1::Callback03_1));
 
 	Event04<int, int, int, int> ev04;
-	ev04.AddHandler(LN_CreateDelegate(&c1, &Class1::Callback04_1));
+	ev04.addHandler(LN_CreateDelegate(&c1, &Class1::Callback04_1));
 }
 
 //---------------------------------------------------------------------
-TEST_F(Test_Base_Event, RemoveHandler)
+TEST_F(Test_Base_Event, removeHandler)
 {
 	// <TEST> 同一 delegate だけ除外できること。
 	{
 		Class1 c1;
 		Event01<int> ev01;
-		ev01.AddHandler(LN_CreateDelegate(&c1, &Class1::Callback01_1));
-		ASSERT_FALSE(ev01.IsEmpty());
-		ev01.RemoveHandler(LN_CreateDelegate(&c1, &Class1::Callback01_2));
-		ASSERT_FALSE(ev01.IsEmpty());	// 違う関数なので remove できない
-		ev01.RemoveHandler(LN_CreateDelegate(&c1, &Class1::Callback01_1));
-		ASSERT_TRUE(ev01.IsEmpty());	// 同じ関数なので remove できる
+		ev01.addHandler(LN_CreateDelegate(&c1, &Class1::Callback01_1));
+		ASSERT_FALSE(ev01.isEmpty());
+		ev01.removeHandler(LN_CreateDelegate(&c1, &Class1::Callback01_2));
+		ASSERT_FALSE(ev01.isEmpty());	// 違う関数なので remove できない
+		ev01.removeHandler(LN_CreateDelegate(&c1, &Class1::Callback01_1));
+		ASSERT_TRUE(ev01.isEmpty());	// 同じ関数なので remove できる
 	}
 
 	// <TEST> 同一 delegate だけ除外できること。
@@ -316,17 +316,17 @@ TEST_F(Test_Base_Event, RemoveHandler)
 		Class1 c1;
 		Class1 c2;
 		Event02<int, int> ev02;
-		ev02.AddHandler(LN_CreateDelegate(&c1, &Class1::Callback02_1));
-		ASSERT_FALSE(ev02.IsEmpty());
-		ev02.RemoveHandler(LN_CreateDelegate(&c2, &Class1::Callback02_1));
-		ASSERT_FALSE(ev02.IsEmpty());	// 違うインスタンスなので remove できない
-		ev02.RemoveHandler(LN_CreateDelegate(&c1, &Class1::Callback02_1));
-		ASSERT_TRUE(ev02.IsEmpty());	// 同じインスタンスなので remove できる
+		ev02.addHandler(LN_CreateDelegate(&c1, &Class1::Callback02_1));
+		ASSERT_FALSE(ev02.isEmpty());
+		ev02.removeHandler(LN_CreateDelegate(&c2, &Class1::Callback02_1));
+		ASSERT_FALSE(ev02.isEmpty());	// 違うインスタンスなので remove できない
+		ev02.removeHandler(LN_CreateDelegate(&c1, &Class1::Callback02_1));
+		ASSERT_TRUE(ev02.isEmpty());	// 同じインスタンスなので remove できる
 	}
 }
 
 //---------------------------------------------------------------------
-TEST_F(Test_Base_Event, Raise)
+TEST_F(Test_Base_Event, raise)
 {
 	g_Value = 0;
 	Class1 c1;
@@ -335,7 +335,7 @@ TEST_F(Test_Base_Event, Raise)
 	// <TEST> 1つのイベントハンドラを呼び出せること。
 	{
 		ev01 += LN_CreateDelegate(&c1, &Class1::Callback01_1);
-		ev01.Raise(2);
+		ev01.raise(2);
 		ASSERT_EQ(2, g_Value);
 	}
 
@@ -349,7 +349,7 @@ TEST_F(Test_Base_Event, Raise)
 	// <TEST> イベントハンドラを1つ除外した後、残りを呼び出せること。
 	{
 		ev01 -= LN_CreateDelegate(&c1, &Class1::Callback01_1);
-		ev01.Raise(2);
+		ev01.raise(2);
 		ASSERT_EQ(44, g_Value);
 	}
 }

@@ -3,7 +3,7 @@
 
 std::unordered_map<TypeInfoPtr, String>	DotNetCommon::primitiveTypesMap;
 
-void DotNetCommon::Initialize()
+void DotNetCommon::initialize()
 {
 	primitiveTypesMap[PredefinedTypes::voidType] = "void";
 	primitiveTypesMap[PredefinedTypes::boolType] = "bool";
@@ -44,39 +44,39 @@ String DotNetCommon::MakeXmlDocument(DocumentInfoPtr doc)
 	OutputBuffer buffer;
 	if (doc != nullptr)
 	{
-		buffer.Append("/// <summary>").NewLine();
+		buffer.append("/// <summary>").NewLine();
 		buffer.AppendLinesHeaderd(doc->summary, "/// ").NewLine();
-		buffer.Append("/// </summary>").NewLine();
+		buffer.append("/// </summary>").NewLine();
 
 		for (auto& param : doc->params)
 		{
-			buffer.Append("/// <param name=\"{0}\">", param->name).NewLine();
+			buffer.append("/// <param name=\"{0}\">", param->name).NewLine();
 			buffer.AppendLinesHeaderd(param->description, "/// ").NewLine();
-			buffer.Append("/// </param>").NewLine();
+			buffer.append("/// </param>").NewLine();
 		}
 
-		if (!doc->returns.IsEmpty())
+		if (!doc->returns.isEmpty())
 		{
-			buffer.Append("/// <returns>").NewLine();
+			buffer.append("/// <returns>").NewLine();
 			buffer.AppendLinesHeaderd(doc->returns, "/// ").NewLine();
-			buffer.Append("/// </returns>").NewLine();
+			buffer.append("/// </returns>").NewLine();
 		}
 
-		if (!doc->details.IsEmpty())
+		if (!doc->details.isEmpty())
 		{
-			buffer.Append("/// <remarks>").NewLine();
+			buffer.append("/// <remarks>").NewLine();
 			buffer.AppendLinesHeaderd(doc->details, "/// ").NewLine();
-			buffer.Append("/// </remarks>").NewLine();
+			buffer.append("/// </remarks>").NewLine();
 		}
 	}
-	return buffer.ToString();
+	return buffer.toString();
 }
 
 String DotNetCommon::MakeLiteral(ConstantInfoPtr constantInfo)
 {
 	if (constantInfo->type == PredefinedTypes::boolType)
 	{
-		if (tr::Variant::Cast<bool>(constantInfo->value))
+		if (tr::Variant::cast<bool>(constantInfo->value))
 			return "true";
 		else
 			return "false";
@@ -91,11 +91,11 @@ String DotNetCommon::MakeLiteral(ConstantInfoPtr constantInfo)
 	}
 	if (constantInfo->type == PredefinedTypes::intType)
 	{
-		return String::Format("{0}", tr::Variant::Cast<int>(constantInfo->value));
+		return String::format("{0}", tr::Variant::cast<int>(constantInfo->value));
 	}
 	if (constantInfo->type == PredefinedTypes::floatType)
 	{
-		return String::Format("{0}f", tr::Variant::Cast<float>(constantInfo->value));
+		return String::format("{0}f", tr::Variant::cast<float>(constantInfo->value));
 	}
 	return "";
 }

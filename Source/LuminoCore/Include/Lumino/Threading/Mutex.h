@@ -13,9 +13,9 @@ namespace detail { class MutexImpl; }
 	@code
 		Mutex	m_Mutex;
 		・・・
-		m_Mutex.Lock();
+		m_Mutex.lock();
 		// クリティカルセクション
-		m_Mutex.Unlock();
+		m_Mutex.unlock();
 	@endcode
 */
 
@@ -24,9 +24,9 @@ namespace detail { class MutexImpl; }
 	@code
 			Mutex	m_Mutex;
 			・・・
-			m_Mutex.Lock();
+			m_Mutex.lock();
 			// クリティカルセクション
-			m_Mutex.Unlock();
+			m_Mutex.unlock();
 	@endcode
  */
 class LUMINO_EXPORT Mutex
@@ -36,10 +36,10 @@ public:
     ~Mutex();
 	
 	/** ロック */
-    void Lock();
+    void lock();
 
 	/** アンロック */
-    void Unlock();
+    void unlock();
 
 private:
 	LN_DISALLOW_COPY_AND_ASSIGN(Mutex);
@@ -55,7 +55,7 @@ private:
 				ScopedLock lock(m_Mutex);
 				// クリティカルセクション内で return や throw しても
 
-				// スコープ終端で Unlock される
+				// スコープ終端で unlock される
 
 				throw 0;
 			}
@@ -70,12 +70,12 @@ public:
     MutexScopedLock( Mutex& mutex )
         : m_Mutex( mutex )
     {
-        m_Mutex.Lock();
+        m_Mutex.lock();
     }
 
     ~MutexScopedLock()
     {
-        m_Mutex.Unlock();
+        m_Mutex.unlock();
     }
 
 private:

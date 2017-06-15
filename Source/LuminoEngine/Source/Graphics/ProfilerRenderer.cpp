@@ -15,8 +15,8 @@ ProfilerRenderer::ProfilerRenderer(detail::GraphicsManager* manager, Profiler* p
 	: m_manager(manager)
 	, m_profiler(profiler)
 {
-	m_font = RawFont::CreateBuiltInBitmapFontInternal2(7);
-	m_windowRect.Set(640 - 8 - 300, 8, 300, 256);	// TODO
+	m_font = RawFont::createBuiltInBitmapFontInternal2(7);
+	m_windowRect.set(640 - 8 - 300, 8, 300, 256);	// TODO
 }
 
 //------------------------------------------------------------------------------
@@ -100,15 +100,15 @@ void ProfilerRenderer::Render(const Vector2& viewSize)
 
 
 	//Matrix proj = Matrix::Perspective2DLH(viewSize.X, viewSize.Y, 0.f, 1000.f);
-	//m_spriteRenderer->SetViewProjMatrix(Matrix::Identity, proj);
-	//m_spriteRenderer->SetViewPixelSize(Size(viewSize.X, viewSize.Y));		// TODO Vector2 の set があってもいいかも
+	//m_spriteRenderer->setViewProjMatrix(Matrix::Identity, proj);
+	//m_spriteRenderer->setViewPixelSize(Size(viewSize.X, viewSize.Y));		// TODO Vector2 の set があってもいいかも
 
 	//float WindowWidth = 256;
 	//float WindowHeight = 256;
 	//Vector3 location(viewSize.X - 8 - WindowWidth, 8, 0);
 
 	//// ウィンドウ背景
-	//m_spriteRenderer->DrawRequest2D(
+	//m_spriteRenderer->drawRequest2D(
 	//	Vector3(location.X, location.Y, 0),
 	//	Vector3::Zero,
 	//	Vector2(WindowWidth, WindowHeight),

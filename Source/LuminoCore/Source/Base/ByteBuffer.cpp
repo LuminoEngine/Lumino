@@ -28,15 +28,15 @@ ByteBuffer::ByteBufferCore::~ByteBufferCore()
 		LN_SAFE_DELETE_ARRAY(m_buffer);
 	}
 }
-bool ByteBuffer::ByteBufferCore::IsShared() const
+bool ByteBuffer::ByteBufferCore::isShared() const
 {
 	return (m_refCount > 1);
 }
-void ByteBuffer::ByteBufferCore::AddRef()
+void ByteBuffer::ByteBufferCore::addRef()
 {
 	++m_refCount;
 }
-void ByteBuffer::ByteBufferCore::Release()
+void ByteBuffer::ByteBufferCore::release()
 {
 	--m_refCount;
 	if (m_refCount <= 0)
@@ -74,7 +74,7 @@ ByteBuffer::ByteBuffer(size_t size, bool zeroClear)
 	, m_size(0)
 {
 	LN_REFOBJ_SET(m_core, &SharedCoreEmpty);
-	Resize(size, zeroClear);
+	resize(size, zeroClear);
 }
 
 //------------------------------------------------------------------------------
@@ -84,7 +84,7 @@ ByteBuffer::ByteBuffer(const void* data, size_t size)
 	, m_size(0)
 {
 	LN_REFOBJ_SET(m_core, &SharedCoreEmpty);
-	Alloc(data, size);
+	alloc(data, size);
 }
 
 //------------------------------------------------------------------------------
@@ -95,10 +95,10 @@ ByteBuffer::ByteBuffer(void* data, size_t size, bool refMode)
 {
 	LN_REFOBJ_SET(m_core, &SharedCoreEmpty);
 	if (refMode) {
-		Attach(data, size);
+		attach(data, size);
 	}
 	else {
-		Alloc(data, size);
+		alloc(data, size);
 	}
 }
 
@@ -109,7 +109,7 @@ ByteBuffer::ByteBuffer(const char* str)
 	, m_size(0)
 {
 	LN_REFOBJ_SET(m_core, &SharedCoreEmpty);
-	Alloc(str, sizeof(char) * strlen(str));		// 終端 NULL はコピーしない (QByteArray と同じ動作)
+	alloc(str, sizeof(char) * strlen(str));		// 終端 NULL はコピーしない (QByteArray と同じ動作)
 }
 
 //------------------------------------------------------------------------------
@@ -119,7 +119,7 @@ ByteBuffer::ByteBuffer(const wchar_t* str)
 	, m_size(0)
 {
 	LN_REFOBJ_SET(m_core, &SharedCoreEmpty);
-	Alloc(str, sizeof(wchar_t) * wcslen(str));
+	alloc(str, sizeof(wchar_t) * wcslen(str));
 }
 
 //------------------------------------------------------------------------------
@@ -134,13 +134,13 @@ ByteBuffer::ByteBuffer(const ByteBuffer& buffer)
 //------------------------------------------------------------------------------
 ByteBuffer::~ByteBuffer()
 {
-	Dispose();
+	free();
 }
 
 //------------------------------------------------------------------------------
-void ByteBuffer::Alloc(size_t size, bool zeroClear)
+void ByteBuffer::alloc(size_t size, bool zeroClear)
 {
-	Dispose();
+	free();
 	if (size == 0) {
 		m_core = &SharedCoreEmpty;
 	}
@@ -157,20 +157,20 @@ void ByteBuffer::Alloc(size_t size, bool zeroClear)
 }
 
 //------------------------------------------------------------------------------
-void ByteBuffer::Alloc(const void* data, size_t size)
+void ByteBuffer::alloc(const void* data, size_t size)
 {
 	if (LN_CHECK_ARG(data != nullptr)) return;
 
-	Alloc(size, false);
+	alloc(size, false);
 	memcpy_s(m_core->m_buffer, size, data, size);
 }
 
 //------------------------------------------------------------------------------
-void ByteBuffer::Resize(size_t size, bool zeroClear)
+void ByteBuffer::resize(size_t size, bool zeroClear)
 {
 	if (m_core == &SharedCoreEmpty)	// 未割り当てなら new するだけ。
 	{
-		Alloc(size, zeroClear);
+		alloc(size, zeroClear);
 	}
 	else
 	{
@@ -178,7 +178,7 @@ void ByteBuffer::Resize(size_t size, bool zeroClear)
 		size_t newSize = size;
 		size_t newCapacity = m_capacity;
 		if (size > m_capacity ||	// サイズが capacity より大きくなるようであれば再確保
-			m_core->IsShared())		// 共有している場合も再確保
+			m_core->isShared())		// 共有している場合も再確保
 		{
 			newBuf = LN_NEW ByteBufferCore(size);
 			newCapacity = size;
@@ -192,7 +192,7 @@ void ByteBuffer::Resize(size_t size, bool zeroClear)
 		if (newBuf != m_core)
 		{
 			memcpy_s(newBuf->m_buffer, size, m_core->m_buffer, std::min(size, m_size));
-			Dispose();
+			free();
 		}
 
 		// 新しいバッファに差し替え
@@ -203,67 +203,69 @@ void ByteBuffer::Resize(size_t size, bool zeroClear)
 }
 
 //------------------------------------------------------------------------------
-void ByteBuffer::Attach(void* buffer, size_t size)
+void ByteBuffer::attach(void* buffer, size_t size)
 {
-	Dispose();
+	free();
 	m_core = LN_NEW ByteBufferCore((byte_t*)buffer);	// 参照モード
 	m_capacity = size;
 	m_size = size;
 }
 
 //------------------------------------------------------------------------------
-void ByteBuffer::Copy(const void* data, size_t size)
+void ByteBuffer::copy(const void* data, size_t size)
 {
 	LN_THROW(size <= m_size, ArgumentException);
-	CheckDetachShared();
+	checkDetachShared();
 	memcpy_s(m_core->m_buffer, m_size, data, size);
 }
 
 //------------------------------------------------------------------------------
-void ByteBuffer::Copy(size_t offset, const void* data, size_t size)
+void ByteBuffer::copy(size_t offset, const void* data, size_t size)
 {
 	LN_THROW(offset + size <= m_size, ArgumentException);
-	CheckDetachShared();
+	checkDetachShared();
 	memcpy_s(m_core->m_buffer + offset, m_size - offset, data, size);
 }
 
 //------------------------------------------------------------------------------
-void ByteBuffer::Clear()
+void ByteBuffer::clear()
 {
-	CheckDetachShared();
+	checkDetachShared();
 	memset(m_core->m_buffer, 0, m_size);
 }
 
 //------------------------------------------------------------------------------
-void ByteBuffer::Release()
+void ByteBuffer::free()
 {
-	Dispose();
+	LN_SAFE_RELEASE(m_core);
+	m_capacity = 0;
+	m_size = 0;
 }
 
 //------------------------------------------------------------------------------
-bool ByteBuffer::Equals(const ByteBuffer& buffer) const
+bool ByteBuffer::equals(const ByteBuffer& buffer) const
 {
 	//if (m_core != buffer.m_core) return false;
-	if (Compare(*this, buffer.GetConstData(), buffer.GetSize()) != 0) return false;
+	if (compare(*this, buffer.getConstData(), buffer.getSize()) != 0) return false;
 	return true;
 }
 
 //------------------------------------------------------------------------------
-int ByteBuffer::Compare(const ByteBuffer& buf1, const void* buf2, size_t buf2Size, int count)
+int ByteBuffer::compare(const ByteBuffer& buf1, const void* buf2, size_t buf2Size, int count)
 {
 	// TODO: いろいろだめ。
 	if (count >= 0)
 	{
-		if (buf1.GetSize() < count) return -1;
+		if (buf1.getSize() < count) return -1;
 		if (buf2Size < count) return 1;
 		//if (buf1.GetSize() > count) return 1;
 		//if (buf1.GetSize() == 0) return 0;			// 両方 0
 	}
 	else
 	{
-		count = buf1.GetSize();
+		count = buf1.getSize();
 	}
-	return memcmp(buf1.GetConstData(), buf2, count);
+	return memcmp(buf1.getConstData(), buf2, count);
 }
 
 //------------------------------------------------------------------------------
@@ -279,7 +281,7 @@ ByteBuffer& ByteBuffer::operator = (const ByteBuffer& right)
 byte_t& ByteBuffer::operator[] (size_t index)
 {
 	LN_THROW(index < m_size, ArgumentException);
-	CheckDetachShared();
+	checkDetachShared();
 	return m_core->m_buffer[index];
 }
 const byte_t& ByteBuffer::operator[](size_t index) const
@@ -289,25 +291,17 @@ const byte_t& ByteBuffer::operator[](size_t index) const
 }
 
 //------------------------------------------------------------------------------
-void ByteBuffer::Dispose()
-{
-	LN_SAFE_RELEASE(m_core);
-	m_capacity = 0;
-	m_size = 0;
-}
-
-//------------------------------------------------------------------------------
-void ByteBuffer::CheckDetachShared()
+void ByteBuffer::checkDetachShared()
 {
 	// TODO ↓これおかしい気がする・・・
 	if (m_core == &SharedCoreEmpty) { return; }	// 空バッファなら処理する必要は無い
 
-	if (m_core->IsShared())
+	if (m_core->isShared())
 	{
 		ByteBufferCore* newCore = LN_NEW ByteBufferCore(m_capacity);
 		memcpy_s(newCore->m_buffer, m_capacity, m_core->m_buffer, m_size);	// copy するのは m_size 分だけでよい。余計な部分までする必要は無い
 		LN_REFOBJ_SET(m_core, newCore);
-		newCore->Release();
+		newCore->release();
 	}
 }
 

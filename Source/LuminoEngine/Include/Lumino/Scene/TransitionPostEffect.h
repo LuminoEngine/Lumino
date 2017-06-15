@@ -12,16 +12,16 @@ class TransitionPostEffect
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	static RefPtr<TransitionPostEffect> Create();
-	void Transition(float duration, Texture* mask, int vague);
+	static RefPtr<TransitionPostEffect> create();
+	void transition(float duration, Texture* mask, int vague);
 
 private:
-	virtual void OnRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
+	virtual void onRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
 LN_CONSTRUCT_ACCESS:
 	TransitionPostEffect();
 	virtual ~TransitionPostEffect();
-	void Initialize();
+	void initialize();
 
 private:
 	RefPtr<RenderTargetTexture>	m_primaryTarget;

@@ -14,7 +14,7 @@ namespace detail
 //==============================================================================
 
 //------------------------------------------------------------------------------
-void EffectEngine::Initialize(EffectManager* manager, int cacheObjectCount, size_t cacheMemorySize)
+void EffectEngine::initialize(EffectManager* manager, int cacheObjectCount, size_t cacheMemorySize)
 {
 	m_manager = manager;
 	m_effectCoreCache = LN_NEW CacheManager(cacheObjectCount, cacheMemorySize);
@@ -24,7 +24,7 @@ void EffectEngine::Initialize(EffectManager* manager, int cacheObjectCount, size
 void EffectEngine::Finalize()
 {
 	if (m_effectCoreCache != NULL) {
-		m_effectCoreCache->FinalizeCache();
+		m_effectCoreCache->finalizeCache();
 		LN_SAFE_RELEASE(m_effectCoreCache);
 	}
 }
@@ -35,13 +35,13 @@ void EffectEngine::Finalize()
 //==============================================================================
 
 //------------------------------------------------------------------------------
-//void EffectInstance::Initialize(EffectManager* manager)
+//void EffectInstance::initialize(EffectManager* manager)
 //{
 //	m_manager = manager;
 //}
 
 //------------------------------------------------------------------------------
-//void EffectInstance::AdvanceTime(float deltaTime)
+//void EffectInstance::advanceTime(float deltaTime)
 //{
 //	m_deltaTime += deltaTime;
 //}

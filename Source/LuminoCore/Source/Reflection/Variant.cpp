@@ -23,92 +23,92 @@ Variant::Variant()
 }
 
 //------------------------------------------------------------------------------
-void Variant::SetNullPtr(std::nullptr_t value)
+void Variant::setNullPtr(std::nullptr_t value)
 {
-	Release();
+	release();
 }
-std::nullptr_t Variant::GetNullPtr() const
+std::nullptr_t Variant::getNullPtr() const
 {
 	if (LN_CHECK_STATE(m_type == VariantType::Null)) return nullptr;
 	return nullptr;
 }
-void Variant::SetBool(bool value)
+void Variant::setBool(bool value)
 {
-	Release();
+	release();
 	m_type = VariantType::Bool;
 	m_bool = value;
 }
-bool Variant::GetBool() const
+bool Variant::getBool() const
 {
 	if (LN_CHECK_STATE(m_type == VariantType::Bool)) return false;
 	return m_bool;
 }
-void Variant::SetArithmetic(int32_t value)
+void Variant::setArithmetic(int32_t value)
 {
-	Release();
+	release();
 	m_type = VariantType::Int32;
 	m_int32 = value;
 }
-void Variant::SetArithmetic(uint32_t value)
+void Variant::setArithmetic(uint32_t value)
 {
-	Release();
+	release();
 	m_type = VariantType::UInt32;
 	m_uint32 = value;
 }
-//void Variant::GetArithmetic(int32_t* value) const
+//void Variant::getArithmetic(int32_t* value) const
 //{
 //	LN_CHECK_STATE_RETURNV(m_type == VariantType::Int32);
 //	*value = m_int32;
 //}
-void Variant::SetArithmetic(float value)
+void Variant::setArithmetic(float value)
 {
-	Release();
+	release();
 	m_type = VariantType::Float;
 	m_float = value;
 }
-//void Variant::GetArithmetic(float* value) const
+//void Variant::getArithmetic(float* value) const
 //{
 //	LN_CHECK_STATE_RETURNV(m_type == VariantType::Float);
 //	*value = m_float;
 //}
-void Variant::SetArithmetic(double value)
+void Variant::setArithmetic(double value)
 {
-	Release();
+	release();
 	m_type = VariantType::Double;
 	m_double = value;
 }
-void Variant::SetString(const TCHAR* value)
+void Variant::setString(const TCHAR* value)
 {
-	Release();
+	release();
 	m_type = VariantType::String;
 	m_string = LN_NEW ln::detail::GenericStringCore<TCHAR>();
 	m_string->assign(value);
 }
-void Variant::SetString(const String& value)
+void Variant::setString(const String& value)
 {
-	Release();
+	release();
 	m_type = VariantType::String;
 	LN_REFOBJ_SET(m_string, value.m_string);
 }
-String Variant::GetString() const
+String Variant::getString() const
 {
-	if (LN_CHECK_STATE(m_type == VariantType::String)) return String::GetEmpty();
+	if (LN_CHECK_STATE(m_type == VariantType::String)) return String::getEmpty();
 	String str;
-	str.Attach(m_string);
+	str.attach(m_string);
 	return str;
 }
-void Variant::SetEnumValue(EnumValueType value)
+void Variant::setEnumValue(EnumValueType value)
 {
-	Release();
+	release();
 	m_type = VariantType::Enum;
 	m_enum = value;
 }
-EnumValueType Variant::GetEnumValue() const
+EnumValueType Variant::getEnumValue() const
 {
 	if (LN_CHECK_STATE(m_type == VariantType::Enum)) return 0;
 	return m_enum;
 }
-void Variant::SetStruct(const void* value, size_t size, const std::type_info& typeInfo)
+void Variant::setStruct(const void* value, size_t size, const std::type_info& typeInfo)
 {
 	if (LN_CHECK_ARG(size <= sizeof(m_struct))) return;
 	m_type = VariantType::Struct;
@@ -116,30 +116,30 @@ void Variant::SetStruct(const void* value, size_t size, const std::type_info& ty
 	m_structSize = size;
 	m_typeInfo = &typeInfo;
 }
-const void* Variant::GetStruct() const
+const void* Variant::getStruct() const
 {
 	if (LN_CHECK_STATE(m_type == VariantType::Struct)) return nullptr;
 	return (const void*)m_struct;
 }
-void Variant::SetReflectionObject(ReflectionObject* obj)
+void Variant::setReflectionObject(ReflectionObject* obj)
 {
-	Release();
+	release();
 	m_type = VariantType::Object;
 	LN_REFOBJ_SET(m_object, obj);
 }
-ReflectionObject* Variant::GetReflectionObject() const
+ReflectionObject* Variant::getReflectionObject() const
 {
 	if (m_type == VariantType::Null) return nullptr;
 	if (LN_CHECK_STATE(m_type == VariantType::Object || m_type == VariantType::ArrayObject)) return nullptr;	// List も Object の一部。
 	return m_object;
 }
-void Variant::SetReflectionArrayObject(ReflectionArrayObject* obj)
+void Variant::setReflectionArrayObject(ReflectionArrayObject* obj)
 {
-	Release();
+	release();
 	m_type = VariantType::ArrayObject;
 	LN_REFOBJ_SET(m_arrayObject, obj);
 }
-ReflectionArrayObject* Variant::GetReflectionArrayObject() const
+ReflectionArrayObject* Variant::getReflectionArrayObject() const
 {
 	if (m_type == VariantType::Null) return nullptr;
 	if (LN_CHECK_STATE(m_type == VariantType::ArrayObject)) return nullptr;
@@ -147,7 +147,7 @@ ReflectionArrayObject* Variant::GetReflectionArrayObject() const
 }
 
 //------------------------------------------------------------------------------
-bool Variant::Equals(const Variant& obj) const
+bool Variant::equals(const Variant& obj) const
 {
 	if (m_type != obj.m_type) return false;
 	switch (m_type)
@@ -183,9 +183,9 @@ bool Variant::Equals(const Variant& obj) const
 }
 
 //------------------------------------------------------------------------------
-void Variant::Copy(const Variant& obj)
+void Variant::copy(const Variant& obj)
 {
-	Release();
+	release();
 	m_type = obj.m_type;
 	switch (m_type)
 	{
@@ -229,7 +229,7 @@ void Variant::Copy(const Variant& obj)
 }
 
 //------------------------------------------------------------------------------
-void Variant::Release()
+void Variant::release()
 {
 	if (m_type == VariantType::String) {
 		LN_SAFE_RELEASE(m_string);

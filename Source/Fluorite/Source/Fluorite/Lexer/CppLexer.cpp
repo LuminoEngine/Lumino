@@ -110,7 +110,7 @@ void CppLexer::PollingToken(Token* token)
 	else if (m_seqPPDirective == PPDirectiveSeq::LineHead)
 	{
 		if (token->GetTokenGroup() == TokenGroup::Operator &&
-			token->GetTokenType() == TT_CppOP_Sharp)
+			token->getTokenType() == TT_CppOP_Sharp)
 		{
 			m_seqPPDirective = PPDirectiveSeq::FoundSharp;	// "#" を見つけた
 		}
@@ -154,9 +154,9 @@ void CppLexer::PollingToken(Token* token)
 }
 
 //------------------------------------------------------------------------------
-void CppLexer::OnStart()
+void CppLexer::onStart()
 {
-	AbstractLexer::OnStart();
+	AbstractLexer::onStart();
 
 	// 初期状態は改行直後扱いとする。ファイル先頭に # ディレクティブがあることに備える。
 	m_seqPPDirective = PPDirectiveSeq::LineHead;
@@ -284,7 +284,7 @@ int CppLexer::IsKeyword(const Range& buffer, int* langTokenType)
 	for (int i = 0; i < len; ++i) 
 	{
 		if (wordList[i].word[0] == buffer.pos[0] &&		// まずは先頭文字を調べて
-			StringTraits::StrNCmp(wordList[i].word, buffer.pos, wordList[i].length) == 0)	// 先頭が一致したら残りを調べる
+			StringTraits::strncmp(wordList[i].word, buffer.pos, wordList[i].length) == 0)	// 先頭が一致したら残りを調べる
 		{ 
 			type = (int)wordList[i].type;
 			keyLen = wordList[i].length;
@@ -763,7 +763,7 @@ int CppLexer::ReadBlockComment(const Range& buffer)
 	{
 		if (notFoundEndToken)
 		{
-			GetDiag()->Report(DiagnosticsCode::UnexpectedEOFInBlockComment);
+			getDiag()->Report(DiagnosticsCode::UnexpectedEOFInBlockComment);
 			return 0;
 		}
 		AddToken(TokenGroup::Comment, buffer.pos, buffer.pos + len);
@@ -912,7 +912,7 @@ int CppLexer::IsOperator(const Range& buffer, int* langTokenType)
 		for (int i = 0; i < count; ++i)
 		{
 			if (wordList[i].word[0] == buffer.pos[0] &&		// まずは先頭文字を調べて
-				StringTraits::StrNCmp(wordList[i].word, buffer.pos, wordList[i].length) == 0)	// 先頭が一致したら残りを調べる
+				StringTraits::strncmp(wordList[i].word, buffer.pos, wordList[i].length) == 0)	// 先頭が一致したら残りを調べる
 			{
 				*langTokenType = (int)wordList[i].type;
 				return wordList[i].length;

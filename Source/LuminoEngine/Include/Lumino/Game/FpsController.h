@@ -17,64 +17,64 @@ public:
 	/**
 		@brief		現在の FPS 値を取得します。
 	*/
-	float GetFps() const { return (m_averageTime > 0) ? (1.0f / m_averageTime) : 0; }
+	float getFps() const { return (m_averageTime > 0) ? (1.0f / m_averageTime) : 0; }
 
 	/**
 		@brief		前回のフレームから経過したゲーム時間 (秒) を取得します。
 	*/
-	float GetElapsedGameTime() const { return m_elapsedGameTime; }	// TODO: double にしたい
+	float getElapsedGameTime() const { return m_elapsedGameTime; }	// TODO: double にしたい
 
 	/**
 		@brief		前回のフレームから経過した実時間 (秒) を取得します。
 	*/
-	float GetElapsedRealTime() const { return m_elapsedRealTime; }
+	float getElapsedRealTime() const { return m_elapsedRealTime; }
 
 	/**
 		@brief		開始からの総ゲーム時間 (秒) を取得します。
 	*/
-	float GetTotalGameTime() const { return 0.001f * m_totalGameTime; }
+	float getTotalGameTime() const { return 0.001f * m_totalGameTime; }
 
 	/**
 		@brief		開始からの総実時間 (秒) を取得します。
 	*/
-	float GetTotalRealTime() const { return 0.001f * m_totalRealTime; }
+	float getTotalRealTime() const { return 0.001f * m_totalRealTime; }
 
 	/**
 		@brief		最大 FPS 値を取得します。
 		@details	処理にどれだけ余裕があるかを示す値を取得します。
 					この値がフレームレートの値よりも大きいほど、処理に余裕があります。<br>
-					この関数で値を取得できるようにするには、SetEnableFpsTest() に true を設定してください。
+					この関数で値を取得できるようにするには、setEnableFpsTest() に true を設定してください。
 	*/
-	float GetCapacityFps() const { return m_capacityFps; }
+	float getCapacityFps() const { return m_capacityFps; }
 
 	/**
 		@brief		フレームレートを設定します。初期値は 60 です。
 		@param[in]	frameRate	: フレームレート
 	*/
-	void SetFrameRate(int frameRate);
+	void setFrameRate(int frameRate);
 
 	/**
 		@brief		フレームレートを取得します。
 	*/
-    int GetFrameRate() const { return m_frameRate; }
+    int getFrameRate() const { return m_frameRate; }
 
 	/**
 		@brief		Fps 余裕度を測定するかを設定します。初期値は false です。
 	*/
-	void SetEnableFpsTest(bool enabled) { m_enableFpsTest = enabled; }
+	void setEnableFpsTest(bool enabled) { m_enableFpsTest = enabled; }
 
 	/**
 		@brief		フレームレート分のフレームが経過した瞬間を判定します。
 		@details	フレームレートが 60 であれば、60 フレームに 1 度の間 true を返します。
 	*/
-	bool IsRoundFrame() const { return (m_frameCount == 0); }
+	bool isRoundFrame() const { return (m_frameCount == 0); }
 
 	/**
 		@brief		遅延が発生しているかを確認します。
 		@details	この関数が true を返した場合、前回のフレームは フレームレート以内の時間で
 					完了しなかったことを表します。
 	*/
-	bool IsFrameDelay() const { return (m_term <= 0); }
+	bool isFrameDelay() const { return (m_term <= 0); }
 
 	/**
 		@brief		遅延をリセットします。
@@ -83,15 +83,15 @@ public:
 					その間はアプリケーションが非常に高速に動作しているように見えてしまします。
 					これを回避するため、時間のかかる処理の直後でこの関数を呼ぶことで、FPS 制御に遅延が発生していないことを伝えます。
 	*/
-	void RefreshSystemDelay();
+	void refreshSystemDelay();
 
 private:	// internal
 	LN_DISALLOW_COPY_AND_ASSIGN(FpsController);
 
 	friend class EngineManager;
-	void Process();
-    void ProcessForMeasure();	// ウェイトは取らず、測定のみ行う (ツール用)
-	void AddingToTotalTime();
+	void process();
+    void processForMeasure();	// ウェイトは取らず、測定のみ行う (ツール用)
+	void addingToTotalTime();
 
 private:
 	int			m_frameRate;		///< フレームレート

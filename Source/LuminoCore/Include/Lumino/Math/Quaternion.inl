@@ -24,7 +24,7 @@ inline Quaternion::Quaternion(float x_, float y_, float z_, float w_)
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-inline void Quaternion::Set(float x_, float y_, float z_, float w_)
+inline void Quaternion::set(float x_, float y_, float z_, float w_)
 {
 	x = x_;
 	y = y_;
@@ -35,7 +35,7 @@ inline void Quaternion::Set(float x_, float y_, float z_, float w_)
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-inline bool Quaternion::IsIdentity() const
+inline bool Quaternion::isIdentity() const
 {
 	return (x == 0.0f && y == 0.0f && z == 0.0f && w == 1.0f);
 }
@@ -93,7 +93,7 @@ inline Quaternion& Quaternion::operator -= (float v)
 //-------------------------------------------------------------------------
 inline Quaternion& Quaternion::operator *= (const Quaternion& v)
 {
-	this->Multiply(v);
+	this->multiply(v);
 	return (*this);
 }
 
@@ -199,7 +199,7 @@ inline Quaternion operator - (float v1, const Quaternion& v2)
 //-------------------------------------------------------------------------
 inline Quaternion operator * (const Quaternion& v1, const Quaternion& v2)
 {
-	return Quaternion::Multiply(v1, v2);
+	return Quaternion::multiply(v1, v2);
 }
 
 //-------------------------------------------------------------------------

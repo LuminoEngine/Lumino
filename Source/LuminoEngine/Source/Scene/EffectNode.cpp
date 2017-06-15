@@ -3,7 +3,7 @@
 エフェクトのバッチ (というかほかのスプライトやモデルのバッチにも当てはまるかも) について。
 
 半透明オブジェクトは後から描画するのが鉄則。
-エフェクトに関してはほとんどのケースでPostRender なタイミングでのバッチになる。
+エフェクトに関してはほとんどのケースでpostRender なタイミングでのバッチになる。
 
 シーン内オブジェクトの松明とかはゲームオブジェクトとして扱うのが直感的だが、
 中身的にはこれもバッチ描画としたい。
@@ -15,8 +15,8 @@ EffectNode という1つのクラスでバッチON/OFFのフラグを持たせ�
 （エフェクトは基本Postなので、他のバッチ描画用）
 → Pre/Post だけだと不足な気がする。優先度や子ノード化とかでタイミングを制御できるように SceneNode 扱いにしたいかも。
 	BatchedEffectRenderer。
-	EffectNode は Draw() オーバーライドで、BatchedEffectRenderer に対して書き込んでいく。
-	→ コレだけだと BatchedEffectRenderer::Draw の後に呼ばれた EffectNode::Draw() が実際は描かれないことになる。
+	EffectNode は draw() オーバーライドで、BatchedEffectRenderer に対して書き込んでいく。
+	→ コレだけだと BatchedEffectRenderer::draw の後に呼ばれた EffectNode::draw() が実際は描かれないことになる。
 		EffectNode::PreDraw() で描くのがいいかも。
 
 

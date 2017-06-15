@@ -24,17 +24,17 @@ static const byte_t g_ToneImageEffect_fx_Data[] =
 static const size_t g_ToneImageEffect_fx_Len = LN_ARRAY_SIZE_OF(g_ToneImageEffect_fx_Data);
 
 //------------------------------------------------------------------------------
-ToneImageEffectPtr ToneImageEffect::Create()
+ToneImageEffectPtr ToneImageEffect::create()
 {
 	ToneImageEffectPtr obj(LN_NEW ToneImageEffect(), false);
-	obj->Initialize(detail::GraphicsManager::GetInstance());
+	obj->initialize(detail::GraphicsManager::getInstance());
 	return obj;
 }
 
 //------------------------------------------------------------------------------
 ToneImageEffect::ToneImageEffect()
 {
-	InitializeProperties();
+	initializeProperties();
 }
 
 //------------------------------------------------------------------------------
@@ -43,49 +43,49 @@ ToneImageEffect::~ToneImageEffect()
 }
 
 //------------------------------------------------------------------------------
-void ToneImageEffect::Initialize(detail::GraphicsManager* manager)
+void ToneImageEffect::initialize(detail::GraphicsManager* manager)
 {
-	ImageEffect::Initialize(manager);
+	ImageEffect::initialize(manager);
 
-	m_material = Object::MakeRef<Material>();
-	m_material->SetShader(Object::MakeRef<Shader>(m_manager, g_ToneImageEffect_fx_Data, g_ToneImageEffect_fx_Len));
+	m_material = Object::makeRef<Material>();
+	m_material->setShader(Object::makeRef<Shader>(m_manager, g_ToneImageEffect_fx_Data, g_ToneImageEffect_fx_Len));
 
 	//m_shader.shader = LN_NEW Shader();
-	//m_shader.shader->Initialize(m_manager, g_ToneImageEffect_fx_Data, g_ToneImageEffect_fx_Len);
-	//m_shader.varTone = m_shader.shader->FindVariable(_T("Tone"));
-	//m_shader.varScreenTexture = m_shader.shader->FindVariable(_T("ScreenTexture"));
+	//m_shader.shader->initialize(m_manager, g_ToneImageEffect_fx_Data, g_ToneImageEffect_fx_Len);
+	//m_shader.varTone = m_shader.shader->findVariable(_T("Tone"));
+	//m_shader.varScreenTexture = m_shader.shader->findVariable(_T("ScreenTexture"));
 
 
-	//printf("%p %p\n", m_material.Get(), m_material->GetShader());
+	//printf("%p %p\n", m_material.Get(), m_material->getShader());
 }
 
 //------------------------------------------------------------------------------
-void ToneImageEffect::SetTone(const ToneF& tone)
+void ToneImageEffect::setTone(const ToneF& tone)
 {
 	Tone = tone;
 }
 
 //------------------------------------------------------------------------------
-void ToneImageEffect::ChangeTone(const ToneF& tone, double time)
+void ToneImageEffect::changeTone(const ToneF& tone, double time)
 {
 	LN_NOTIMPLEMENTED();
-	//auto anim = ValueEasingCurve<Vector4>::Create(tone, time, EasingMode::Linear);
-	//AnimationClock* ac = m_manager->GetAnimationManager()->StartPropertyAnimation(this);
-	//ac->AddAnimationCurve(anim.Get(), this, ToneImageEffect::ToneId, Tone.Get());
+	//auto anim = ValueEasingCurve<Vector4>::create(tone, time, EasingMode::Linear);
+	//AnimationClock* ac = m_manager->getAnimationManager()->StartPropertyAnimation(this);
+	//ac->addAnimationCurve(anim.Get(), this, ToneImageEffect::ToneId, Tone.Get());
 }
 
 //------------------------------------------------------------------------------
-void ToneImageEffect::OnRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+void ToneImageEffect::onRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
 	//if (Tone != Vector4::Zero)
 	{
-		//printf("ToneImageEffect::OnRender %p > %p\n", source, destination);
-		m_material->SetVectorParameter(_T("_Tone"), Tone.Get());
-		context->Blit(source, destination, m_material);
+		//printf("ToneImageEffect::onRender %p > %p\n", source, destination);
+		m_material->setVectorParameter(_T("_Tone"), Tone.get());
+		context->blit(source, destination, m_material);
 
-		//m_shader.varTone->SetVector(Tone.Get());
-		//m_shader.varScreenTexture->SetTexture(source);
-		//context->Blit(nullptr, destination, m_shader.shader);
+		//m_shader.varTone->setVector(Tone.Get());
+		//m_shader.varScreenTexture->setTexture(source);
+		//context->blit(nullptr, destination, m_shader.shader);
 	}
 }
 

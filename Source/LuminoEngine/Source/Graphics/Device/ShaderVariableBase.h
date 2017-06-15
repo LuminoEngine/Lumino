@@ -29,32 +29,32 @@ protected:
     virtual ~ShaderVariableBase();
 
 protected:
-	void Initialize(ShaderVariableTypeDesc desc, const String& name, const String& semanticName);	// TODO: semanticName 消しとく
-	void SetSemanticName(const String& semanticName) { m_semanticName = semanticName; }
-	void MakeInitialValue();
+	void initialize(ShaderVariableTypeDesc desc, const String& name, const String& semanticName);	// TODO: semanticName 消しとく
+	void setSemanticName(const String& semanticName) { m_semanticName = semanticName; }
+	void makeInitialValue();
 
 public:
 	// IShaderVariable
-	virtual ShaderVariableType GetType() const override { return m_desc.Type; }
-	virtual const String& GetName() const override { return m_name; }
-	virtual const String& GetSemanticName() const override { return m_semanticName; }
-	virtual int GetMatrixRows() const override { return m_desc.Rows; }
-	virtual int GetMatrixColumns() const override { return m_desc.Columns; }
-	virtual int GetArrayElements() const override { return m_desc.Elements; }
-	virtual void SetBool(bool value) override;
-	virtual void SetBoolArray(const bool* values, int count) override;
-	virtual void SetInt(int value) override;
-	virtual void SetFloat(float value) override;
-	virtual void SetFloatArray(const float* values, int count) override;
-	virtual void SetVector(const Vector4& vec) override;
-	virtual void SetVectorArray(const Vector4* vectors, int count) override;
-	virtual void SetMatrix(const Matrix& matrix) override;
-	virtual void SetMatrixArray(const Matrix* matrices, int count) override;
-	virtual void SetTexture(ITexture* texture) override;
-	virtual const ShaderValue& GetValue() const override { return m_value; }
+	virtual ShaderVariableType getType() const override { return m_desc.Type; }
+	virtual const String& getName() const override { return m_name; }
+	virtual const String& getSemanticName() const override { return m_semanticName; }
+	virtual int getMatrixRows() const override { return m_desc.Rows; }
+	virtual int getMatrixColumns() const override { return m_desc.Columns; }
+	virtual int getArrayElements() const override { return m_desc.Elements; }
+	virtual void setBool(bool value) override;
+	virtual void setBoolArray(const bool* values, int count) override;
+	virtual void setInt(int value) override;
+	virtual void setFloat(float value) override;
+	virtual void setFloatArray(const float* values, int count) override;
+	virtual void setVector(const Vector4& vec) override;
+	virtual void setVectorArray(const Vector4* vectors, int count) override;
+	virtual void setMatrix(const Matrix& matrix) override;
+	virtual void setMatrixArray(const Matrix* matrices, int count) override;
+	virtual void setTexture(ITexture* texture) override;
+	virtual const ShaderValue& getValue() const override { return m_value; }
 
-	void SetString(const char* str);
-	void SetString(const String& str);
+	void setString(const char* str);
+	void setString(const String& str);
   
 protected:
 	ShaderVariableTypeDesc	m_desc;

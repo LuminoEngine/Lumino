@@ -16,7 +16,7 @@ namespace detail
 //==============================================================================
 
 //------------------------------------------------------------------------------
-SpriteRenderFeature* SpriteRenderFeature::Create(int maxSpriteCount, GraphicsManager* manager)
+SpriteRenderFeature* SpriteRenderFeature::create(int maxSpriteCount, GraphicsManager* manager)
 {
 	return LN_NEW SpriteRenderFeature(manager, maxSpriteCount);
 }
@@ -28,7 +28,7 @@ SpriteRenderFeature::SpriteRenderFeature(GraphicsManager* manager, int maxSprite
 	, m_spriteSortMode(/*SpriteSortMode::Texture | */SpriteSortMode::DepthBackToFront)
 {
 	m_internal = LN_NEW SpriteRendererImpl();
-	m_internal->Initialize(manager, maxSpriteCount);
+	m_internal->initialize(manager, maxSpriteCount);
 }
 
 //------------------------------------------------------------------------------
@@ -38,31 +38,31 @@ SpriteRenderFeature::~SpriteRenderFeature()
 }
 
 //------------------------------------------------------------------------------
-void SpriteRenderFeature::SetTransform(const Matrix& matrix)
+void SpriteRenderFeature::setTransform(const Matrix& matrix)
 {
 	LN_ENQUEUE_RENDER_COMMAND_2(
 		SpriteRenderer_SetTransform, m_manager,
 		SpriteRendererImpl*, m_internal,
 		Matrix, matrix,
 		{
-			m_internal->SetTransform(matrix);
+			m_internal->setTransform(matrix);
 		});
 }
 
 //------------------------------------------------------------------------------
-void SpriteRenderFeature::SetState(const RenderState& renderState)
+void SpriteRenderFeature::setState(const RenderState& renderState)
 {
 	LN_ENQUEUE_RENDER_COMMAND_2(
 		SpriteRenderer_SetTransform, m_manager,
 		SpriteRendererImpl*, m_internal,
 		RenderState, renderState,
 		{
-			m_internal->SetRenderState(renderState);
+			m_internal->setRenderState(renderState);
 		});
 }
 
 //------------------------------------------------------------------------------
-void SpriteRenderFeature::SetViewInfo(const Size& size, const Matrix& view, const Matrix& proj)
+void SpriteRenderFeature::setViewInfo(const Size& size, const Matrix& view, const Matrix& proj)
 {
 	LN_ENQUEUE_RENDER_COMMAND_4(
 		SpriteRenderer_SetTransform, m_manager,
@@ -71,19 +71,19 @@ void SpriteRenderFeature::SetViewInfo(const Size& size, const Matrix& view, cons
 		Matrix, view,
 		Matrix, proj,
 		{
-			m_internal->SetViewPixelSize(size);
-			m_internal->SetViewProjMatrix(view, proj);
+			m_internal->setViewPixelSize(size);
+			m_internal->setViewProjMatrix(view, proj);
 		});
 }
 
 //------------------------------------------------------------------------------
-void SpriteRenderFeature::SetSortMode(SpriteSortMode flags, SortingDistanceBasis basis)
+void SpriteRenderFeature::setSortMode(SpriteSortMode flags, SortingDistanceBasis basis)
 {
 	m_spriteSortMode = flags;
 }
 
 //------------------------------------------------------------------------------
-void SpriteRenderFeature::DrawRequest2D(
+void SpriteRenderFeature::drawRequest2D(
 	const Vector3& position,
 	const Vector2& size,
 	const Vector2& anchorRatio,
@@ -93,7 +93,7 @@ void SpriteRenderFeature::DrawRequest2D(
 	BillboardType billboardType)
 {
 	SpriteColorTable ct = { { color, color, color, color } };
-	Driver::ITexture* deviceTexture = (texture != nullptr) ? texture->ResolveDeviceObject() : nullptr;
+	Driver::ITexture* deviceTexture = (texture != nullptr) ? texture->resolveDeviceObject() : nullptr;
 	LN_ENQUEUE_RENDER_COMMAND_8(
 		SpriteRenderer_SetTransform, m_manager,
 		SpriteRendererImpl*, m_internal,
@@ -105,12 +105,12 @@ void SpriteRenderFeature::DrawRequest2D(
 		SpriteColorTable, ct,
 		BillboardType, billboardType,
 		{
-			m_internal->DrawRequestInternal(position, size, anchorRatio, deviceTexture, srcRect, ct, SpriteBaseDirection::Basic2D, billboardType);
+			m_internal->drawRequestInternal(position, size, anchorRatio, deviceTexture, srcRect, ct, SpriteBaseDirection::Basic2D, billboardType);
 		});
 }
 
 //------------------------------------------------------------------------------
-void SpriteRenderFeature::DrawRequest(
+void SpriteRenderFeature::drawRequest(
 	const Vector3& position,
 	const Vector2& size,
 	const Vector2& anchorRatio,
@@ -121,7 +121,7 @@ void SpriteRenderFeature::DrawRequest(
 	BillboardType billboardType)
 {
 	SpriteColorTable ct = { { color, color, color, color } };
-	Driver::ITexture* deviceTexture = (texture != nullptr) ? texture->ResolveDeviceObject() : nullptr;
+	Driver::ITexture* deviceTexture = (texture != nullptr) ? texture->resolveDeviceObject() : nullptr;
 
 	struct Options
 	{
@@ -142,31 +142,31 @@ void SpriteRenderFeature::DrawRequest(
 		SpriteColorTable, ct,
 		Options, opt,
 		{
-			m_internal->DrawRequestInternal(position, size, anchorRatio, deviceTexture, srcRect, ct, opt.baseDirection, opt.billboardType);
+			m_internal->drawRequestInternal(position, size, anchorRatio, deviceTexture, srcRect, ct, opt.baseDirection, opt.billboardType);
 		});
 }
 
 //------------------------------------------------------------------------------
-void SpriteRenderFeature::Flush()
+void SpriteRenderFeature::flush()
 {
 	LN_ENQUEUE_RENDER_COMMAND_2(
 		SpriteRenderer_Flush, m_manager,
 		SpriteRendererImpl*, m_internal,
 		SpriteSortMode, m_spriteSortMode,
 		{
-			m_internal->Flush(m_spriteSortMode);
+			m_internal->flush(m_spriteSortMode);
 		});
 }
 
 //------------------------------------------------------------------------------
-void SpriteRenderFeature::MakeBoundingSphere(const Vector2& size, SpriteBaseDirection baseDir, detail::Sphere* sphere)
+void SpriteRenderFeature::makeBoundingSphere(const Vector2& size, SpriteBaseDirection baseDir, detail::Sphere* sphere)
 {
 	Vector2 half = 0.5f * size;
-	sphere->radius = half.GetLength();
+	sphere->radius = half.getLength();
 
 	if (baseDir == SpriteBaseDirection::Basic2D)
 	{
-		sphere->center.Set(half.x, half.y, 0);
+		sphere->center.set(half.x, half.y, 0);
 	}
 	else
 	{
@@ -212,7 +212,7 @@ SpriteRendererImpl::~SpriteRendererImpl()
 }
 
 ////------------------------------------------------------------------------------
-//void SpriteRendererImpl::OnChangeDevice(Driver::IGraphicsDevice* device)
+//void SpriteRendererImpl::onChangeDevice(Driver::IGraphicsDevice* device)
 //{
 //	if (device == NULL)
 //	{
@@ -227,21 +227,21 @@ SpriteRendererImpl::~SpriteRendererImpl()
 //}
 
 //------------------------------------------------------------------------------
-void SpriteRendererImpl::Initialize(GraphicsManager* manager, int maxSpriteCount)
+void SpriteRendererImpl::initialize(GraphicsManager* manager, int maxSpriteCount)
 {
 	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_manager = manager;
 	m_maxSprites = maxSpriteCount;
-	auto* device = manager->GetGraphicsDevice();
+	auto* device = manager->getGraphicsDevice();
 
 	//-----------------------------------------------------
 	// 頂点バッファとインデックスバッファ
-	m_vertexDeclaration.Attach(device->CreateVertexDeclaration(BatchSpriteVertex::Elements(), BatchSpriteVertex::ElementCount));
-	m_vertexBuffer.Attach(device->CreateVertexBuffer(sizeof(BatchSpriteVertex) * m_maxSprites * 4, NULL, ResourceUsage::Dynamic));
+	m_vertexDeclaration.attach(device->createVertexDeclaration(BatchSpriteVertex::Elements(), BatchSpriteVertex::ElementCount));
+	m_vertexBuffer.attach(device->createVertexBuffer(sizeof(BatchSpriteVertex) * m_maxSprites * 4, NULL, ResourceUsage::Dynamic));
 
 #if 1
 	ByteBuffer indexBuf(sizeof(uint16_t) * m_maxSprites * 6, false);
-	uint16_t* ib = (uint16_t*)indexBuf.GetData();
+	uint16_t* ib = (uint16_t*)indexBuf.getData();
 	int idx = 0;
 	int i2 = 0;
 	for (int i = 0; i < m_maxSprites; ++i)
@@ -255,7 +255,7 @@ void SpriteRendererImpl::Initialize(GraphicsManager* manager, int maxSpriteCount
 		ib[i2 + 4] = idx + 1;
 		ib[i2 + 5] = idx + 3;
 	}
-	m_indexBuffer.Attach(device->CreateIndexBuffer(
+	m_indexBuffer.attach(device->createIndexBuffer(
 		m_maxSprites * 6, ib, IndexBufferFormat_UInt16, ResourceUsage::Dynamic));
 #else
 	m_indexBuffer.Attach(device->CreateIndexBuffer(
@@ -285,31 +285,31 @@ void SpriteRendererImpl::Initialize(GraphicsManager* manager, int maxSpriteCount
 	// シェーダ
 
 	ShaderCompileResult r;
-	m_shader.Shader.Attach(device->CreateShader(g_SpriteRenderer_fx_Data, g_SpriteRenderer_fx_Len, &r));
+	m_shader.Shader.attach(device->createShader(g_SpriteRenderer_fx_Data, g_SpriteRenderer_fx_Len, &r));
 	LN_THROW(r.Level != ShaderCompileResultLevel_Error, CompilationException, r);
 
-	m_shader.varTexture = m_shader.Shader->GetVariableByName(_T("gMaterialTexture"));
-	m_shader.varViewProjMatrix = m_shader.Shader->GetVariableByName(_T("gViewProjMatrix"));
-	m_shader.varViewPixelSize = m_shader.Shader->GetVariableByName(_T("gViewportSize"));
-	m_shader.varTexture = m_shader.Shader->GetVariableByName(_T("gMaterialTexture"));
-	m_shader.techMainDraw = m_shader.Shader->GetTechnique(0);
+	m_shader.varTexture = m_shader.Shader->getVariableByName(_T("gMaterialTexture"));
+	m_shader.varViewProjMatrix = m_shader.Shader->getVariableByName(_T("gViewProjMatrix"));
+	m_shader.varViewPixelSize = m_shader.Shader->getVariableByName(_T("gViewportSize"));
+	m_shader.varTexture = m_shader.Shader->getVariableByName(_T("gMaterialTexture"));
+	m_shader.techMainDraw = m_shader.Shader->getTechnique(0);
 
 	//-----------------------------------------------------
 	// メモリ確保と各種初期値
 
-	m_spriteRequestList.Resize(m_maxSprites);
-	m_spriteIndexList.Resize(m_maxSprites);
+	m_spriteRequestList.resize(m_maxSprites);
+	m_spriteIndexList.resize(m_maxSprites);
 
 	// ステートにはデフォルトをひとつ詰めておく
-	m_renderStateList.Add(RenderState());
+	m_renderStateList.add(RenderState());
 
 	//if (m_3DSystem) {
 	//	// 視点からの距離が大きいものを先に描画する
-	//	SetSortMode(SpriteSortMode_Texture | SpriteSortMode_DepthBackToFront, SortingDistanceBasis_ViewPont);
+	//	setSortMode(SpriteSortMode_Texture | SpriteSortMode_DepthBackToFront, SortingDistanceBasis_ViewPont);
 	//}
 	//else {
 	//	// スプライトの Z 値が小さいものを先に描画する
-	//	SetSortMode(SpriteSortMode_Texture | SpriteSortMode_DepthBackToFront, SortingDistanceBasis_RawZ);
+	//	setSortMode(SpriteSortMode_Texture | SpriteSortMode_DepthBackToFront, SortingDistanceBasis_RawZ);
 	//}
 
 	m_spriteRequestListUsedCount = 0;
@@ -317,31 +317,31 @@ void SpriteRendererImpl::Initialize(GraphicsManager* manager, int maxSpriteCount
 }
 
 //------------------------------------------------------------------------------
-void SpriteRendererImpl::SetTransform(const Matrix& matrix)
+void SpriteRendererImpl::setTransform(const Matrix& matrix)
 {
 	m_transformMatrix = matrix;
 }
 
 //------------------------------------------------------------------------------
-void SpriteRendererImpl::SetViewProjMatrix(const Matrix& view, const Matrix& proj)
+void SpriteRendererImpl::setViewProjMatrix(const Matrix& view, const Matrix& proj)
 {
-	m_viewDirection.Set(view.m[0][2], view.m[1][2], view.m[2][2]);
-	m_viewInverseMatrix = Matrix::MakeInverse(view);
-	m_viewPosition = m_viewInverseMatrix.GetPosition();
+	m_viewDirection.set(view.m[0][2], view.m[1][2], view.m[2][2]);
+	m_viewInverseMatrix = Matrix::makeInverse(view);
+	m_viewPosition = m_viewInverseMatrix.getPosition();
 	m_viewProjMatrix = (view * proj);
 }
 
 //------------------------------------------------------------------------------
-void SpriteRendererImpl::SetViewPixelSize(const Size& size)
+void SpriteRendererImpl::setViewPixelSize(const Size& size)
 {
-	m_viewPixelSize.Set(size.width, size.height);
+	m_viewPixelSize.set(size.width, size.height);
 }
 
 //------------------------------------------------------------------------------
-void SpriteRendererImpl::SetRenderState(const RenderState& state)
+void SpriteRendererImpl::setRenderState(const RenderState& state)
 {
 	// 同じものがあればカレントに
-	size_t count = m_renderStateList.GetCount();
+	size_t count = m_renderStateList.getCount();
 	for (size_t i = 0; i < count; ++i)
 	{
 		if (state == m_renderStateList[i]) {
@@ -351,18 +351,18 @@ void SpriteRendererImpl::SetRenderState(const RenderState& state)
 	}
 
 	// 見つからなかったら登録
-	m_renderStateList.Add(state);
+	m_renderStateList.add(state);
 	m_currentRenderStateIndex = count;
 }
 
 //------------------------------------------------------------------------------
-void SpriteRendererImpl::SetSortMode(uint32_t flags, SortingDistanceBasis basis)
+void SpriteRendererImpl::setSortMode(uint32_t flags, SortingDistanceBasis basis)
 {
 	m_sortingBasis = basis;
 }
 
 //------------------------------------------------------------------------------
-void SpriteRendererImpl::DrawRequestInternal(
+void SpriteRendererImpl::drawRequestInternal(
     const Vector3& position,
     const Vector2& size,
 	const Vector2& anchorRatio,
@@ -399,40 +399,40 @@ void SpriteRendererImpl::DrawRequestInternal(
 		switch (baseDir)
 		{
 			case SpriteBaseDirection::XPlus:
-				sprite.Vertices[0].Position.Set(LN_WRITE_V3(0, t, l));     // 左上
-				sprite.Vertices[1].Position.Set(LN_WRITE_V3(0, b, l));     // 左下
-				sprite.Vertices[2].Position.Set(LN_WRITE_V3(0, t, r));     // 右上
-				sprite.Vertices[3].Position.Set(LN_WRITE_V3(0, b, r));     // 右下
+				sprite.Vertices[0].Position.set(LN_WRITE_V3(0, t, l));     // 左上
+				sprite.Vertices[1].Position.set(LN_WRITE_V3(0, b, l));     // 左下
+				sprite.Vertices[2].Position.set(LN_WRITE_V3(0, t, r));     // 右上
+				sprite.Vertices[3].Position.set(LN_WRITE_V3(0, b, r));     // 右下
 				break;
 			case SpriteBaseDirection::YPlus:
-				sprite.Vertices[0].Position.Set(LN_WRITE_V3(l, 0, t));
-				sprite.Vertices[1].Position.Set(LN_WRITE_V3(l, 0, b));
-				sprite.Vertices[2].Position.Set(LN_WRITE_V3(r, 0, t));
-				sprite.Vertices[3].Position.Set(LN_WRITE_V3(r, 0, b));
+				sprite.Vertices[0].Position.set(LN_WRITE_V3(l, 0, t));
+				sprite.Vertices[1].Position.set(LN_WRITE_V3(l, 0, b));
+				sprite.Vertices[2].Position.set(LN_WRITE_V3(r, 0, t));
+				sprite.Vertices[3].Position.set(LN_WRITE_V3(r, 0, b));
 				break;
 			case SpriteBaseDirection::ZPlus:
-				sprite.Vertices[0].Position.Set(LN_WRITE_V3(r, t, 0));
-				sprite.Vertices[1].Position.Set(LN_WRITE_V3(r, b, 0));
-				sprite.Vertices[2].Position.Set(LN_WRITE_V3(l, t, 0));
-				sprite.Vertices[3].Position.Set(LN_WRITE_V3(l, b, 0));
+				sprite.Vertices[0].Position.set(LN_WRITE_V3(r, t, 0));
+				sprite.Vertices[1].Position.set(LN_WRITE_V3(r, b, 0));
+				sprite.Vertices[2].Position.set(LN_WRITE_V3(l, t, 0));
+				sprite.Vertices[3].Position.set(LN_WRITE_V3(l, b, 0));
 				break;
 			case SpriteBaseDirection::XMinus:
-				sprite.Vertices[0].Position.Set(LN_WRITE_V3(0, t, r));
-				sprite.Vertices[1].Position.Set(LN_WRITE_V3(0, b, r));
-				sprite.Vertices[2].Position.Set(LN_WRITE_V3(0, t, l));
-				sprite.Vertices[3].Position.Set(LN_WRITE_V3(0, b, l));
+				sprite.Vertices[0].Position.set(LN_WRITE_V3(0, t, r));
+				sprite.Vertices[1].Position.set(LN_WRITE_V3(0, b, r));
+				sprite.Vertices[2].Position.set(LN_WRITE_V3(0, t, l));
+				sprite.Vertices[3].Position.set(LN_WRITE_V3(0, b, l));
 				break;
 			case SpriteBaseDirection::YMinus:
-				sprite.Vertices[0].Position.Set(LN_WRITE_V3(r, 0, t));
-				sprite.Vertices[1].Position.Set(LN_WRITE_V3(r, 0, b));
-				sprite.Vertices[2].Position.Set(LN_WRITE_V3(l, 0, t));
-				sprite.Vertices[3].Position.Set(LN_WRITE_V3(l, 0, b));
+				sprite.Vertices[0].Position.set(LN_WRITE_V3(r, 0, t));
+				sprite.Vertices[1].Position.set(LN_WRITE_V3(r, 0, b));
+				sprite.Vertices[2].Position.set(LN_WRITE_V3(l, 0, t));
+				sprite.Vertices[3].Position.set(LN_WRITE_V3(l, 0, b));
 				break;
 			case SpriteBaseDirection::ZMinus:
-				sprite.Vertices[0].Position.Set(LN_WRITE_V3(l, t, 0));
-				sprite.Vertices[1].Position.Set(LN_WRITE_V3(l, b, 0));
-				sprite.Vertices[2].Position.Set(LN_WRITE_V3(r, t, 0));
-				sprite.Vertices[3].Position.Set(LN_WRITE_V3(r, b, 0));
+				sprite.Vertices[0].Position.set(LN_WRITE_V3(l, t, 0));
+				sprite.Vertices[1].Position.set(LN_WRITE_V3(l, b, 0));
+				sprite.Vertices[2].Position.set(LN_WRITE_V3(r, t, 0));
+				sprite.Vertices[3].Position.set(LN_WRITE_V3(r, b, 0));
 				break;
 		}
 #undef LN_WRITE_V3
@@ -441,21 +441,21 @@ void SpriteRendererImpl::DrawRequestInternal(
 	else
 	{
 		Vector2 origin(-center);
-		sprite.Vertices[0].Position.Set(origin.x, origin.y, 0);
-		sprite.Vertices[1].Position.Set(origin.x, origin.y + size.y, 0);
-		sprite.Vertices[2].Position.Set(origin.x + size.x, origin.y, 0);
-		sprite.Vertices[3].Position.Set(origin.x + size.x, origin.y + size.y, 0);
+		sprite.Vertices[0].Position.set(origin.x, origin.y, 0);
+		sprite.Vertices[1].Position.set(origin.x, origin.y + size.y, 0);
+		sprite.Vertices[2].Position.set(origin.x + size.x, origin.y, 0);
+		sprite.Vertices[3].Position.set(origin.x + size.x, origin.y + size.y, 0);
 	}
 
-	Matrix mat = m_transformMatrix.GetRotationMatrix();
+	Matrix mat = m_transformMatrix.getRotationMatrix();
 
 
 	// ビルボード
 	if (billboardType == BillboardType::ToCameraPoint)
 	{
-		Vector3 f = Vector3::Normalize(m_viewPosition - position);
-		Vector3 r = Vector3::Normalize(Vector3::Cross(Vector3::UnitY, f));
-		Vector3 u = Vector3::Cross(f, r);
+		Vector3 f = Vector3::normalize(m_viewPosition - position);
+		Vector3 r = Vector3::normalize(Vector3::cross(Vector3::UnitY, f));
+		Vector3 u = Vector3::cross(f, r);
 		mat = Matrix(
 			r.x, r.y, r.z, 0.0f,
 			u.x, u.y, u.z, 0.0f,
@@ -467,12 +467,12 @@ void SpriteRendererImpl::DrawRequestInternal(
 		// ↑がカメラ位置を基準にするのに対し、こちらはビュー平面に垂直に交差する点を基準とする。
 
 		// ビュー平面との距離
-		float d = Vector3::Dot(position - m_viewPosition, m_viewDirection);
+		float d = Vector3::dot(position - m_viewPosition, m_viewDirection);
 
 		// left-hand coord
-		Vector3 f = Vector3::Normalize(m_viewDirection * d);
-		Vector3 r = Vector3::Normalize(Vector3::Cross(Vector3::UnitY, f));
-		Vector3 u = Vector3::Cross(f, r);
+		Vector3 f = Vector3::normalize(m_viewDirection * d);
+		Vector3 r = Vector3::normalize(Vector3::cross(Vector3::UnitY, f));
+		Vector3 u = Vector3::cross(f, r);
 		mat = Matrix(
 			r.x, r.y, r.z, 0.0f,
 			u.x, u.y, u.z, 0.0f,
@@ -484,7 +484,7 @@ void SpriteRendererImpl::DrawRequestInternal(
 	{
 		if (m_viewDirection.x > 0.0f)
 		{
-			mat.RotateY(-atanf(m_viewDirection.z / m_viewDirection.x) + Math::PI / 2);
+			mat.rotateY(-atanf(m_viewDirection.z / m_viewDirection.x) + Math::PI / 2);
 		}
 		else if (m_viewDirection.x == 0.0f)
 		{
@@ -492,7 +492,7 @@ void SpriteRendererImpl::DrawRequestInternal(
 		}
 		else
 		{
-			mat.RotateY(-atanf(m_viewDirection.z / m_viewDirection.x) - Math::PI / 2);
+			mat.rotateY(-atanf(m_viewDirection.z / m_viewDirection.x) - Math::PI / 2);
 		}
 
 	}
@@ -501,14 +501,14 @@ void SpriteRendererImpl::DrawRequestInternal(
 	{
 	}
 
-	mat.Translate(position);
-	mat.Translate(m_transformMatrix.GetPosition());
+	mat.translate(position);
+	mat.translate(m_transformMatrix.getPosition());
 
 	// 座標変換
-	sprite.Vertices[0].Position.TransformCoord(mat);
-	sprite.Vertices[1].Position.TransformCoord(mat);
-	sprite.Vertices[2].Position.TransformCoord(mat);
-	sprite.Vertices[3].Position.TransformCoord(mat);
+	sprite.Vertices[0].Position.transformCoord(mat);
+	sprite.Vertices[1].Position.transformCoord(mat);
+	sprite.Vertices[2].Position.transformCoord(mat);
+	sprite.Vertices[3].Position.transformCoord(mat);
 
 	// 色
 	sprite.Vertices[0].Color = colorTable.colors[0];
@@ -520,7 +520,7 @@ void SpriteRendererImpl::DrawRequestInternal(
 	if (texture != nullptr)
 	{
 		// テクスチャ座標
-		const SizeI& texSize = texture->GetRealSize();
+		const SizeI& texSize = texture->getRealSize();
 		Vector2 texSizeInv(1.0f / texSize.width, 1.0f / texSize.height);
 		Rect sr(srcRect);
 		float l = sr.x * texSizeInv.x;
@@ -549,12 +549,12 @@ void SpriteRendererImpl::DrawRequestInternal(
 		sprite.Vertices[2].TexUV.y = 0;
 		sprite.Vertices[3].TexUV.x = 1;
 		sprite.Vertices[3].TexUV.y = 1;
-		sprite.Texture = m_manager->GetDummyDeviceTexture();
+		sprite.Texture = m_manager->getDummyDeviceTexture();
 	}
 
 	// カメラからの距離をソート用Z値にする場合
 	if (m_sortingBasis == SortingDistanceBasis_ViewPont) {
-		sprite.Depth = (m_viewPosition - position).GetLengthSquared();
+		sprite.Depth = (m_viewPosition - position).getLengthSquared();
 	}
 	else {
 		sprite.Depth = position.z;
@@ -578,8 +578,8 @@ public:
 
 	bool operator()(int l_, int r_)
 	{
-		const BatchSpriteData& lsp = spriteList->GetAt(l_);
-		const BatchSpriteData& rsp = spriteList->GetAt(r_);
+		const BatchSpriteData& lsp = spriteList->getAt(l_);
+		const BatchSpriteData& rsp = spriteList->getAt(r_);
 
 		if (lsp.Priority == rsp.Priority)
 		{
@@ -610,8 +610,8 @@ public:
 
 	bool operator()(int l_, int r_)
 	{
-		const BatchSpriteData& lsp = spriteList->GetAt(l_);
-		const BatchSpriteData& rsp = spriteList->GetAt(r_);
+		const BatchSpriteData& lsp = spriteList->getAt(l_);
+		const BatchSpriteData& rsp = spriteList->getAt(r_);
 
 		if (lsp.Priority == rsp.Priority)
 		{
@@ -642,8 +642,8 @@ public:
 
 	bool operator()(int l_, int r_)
 	{
-		const BatchSpriteData& lsp = spriteList->GetAt(l_);
-		const BatchSpriteData& rsp = spriteList->GetAt(r_);
+		const BatchSpriteData& lsp = spriteList->getAt(l_);
+		const BatchSpriteData& rsp = spriteList->getAt(r_);
 
 		if (lsp.Priority == rsp.Priority)
 		{
@@ -674,8 +674,8 @@ public:
 
 	bool operator()(int l_, int r_)
 	{
-		const BatchSpriteData& lsp = spriteList->GetAt(l_);
-		const BatchSpriteData& rsp = spriteList->GetAt(r_);
+		const BatchSpriteData& lsp = spriteList->getAt(l_);
+		const BatchSpriteData& rsp = spriteList->getAt(r_);
 
 		if (lsp.Priority == rsp.Priority)
 		{
@@ -699,7 +699,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-void SpriteRendererImpl::Flush(SpriteSortMode sortFlags)
+void SpriteRendererImpl::flush(SpriteSortMode sortFlags)
 {
 	int spriteCount = m_spriteRequestListUsedCount;	// 描画するスプライトの数
 	if (spriteCount == 0) { return; }				// 0 個ならなにもしない
@@ -744,7 +744,7 @@ void SpriteRendererImpl::Flush(SpriteSortMode sortFlags)
 
 	int si = 0;     // Sprite Index (m_spriteIndexList)
 	int vi = 0;     // Vertex Index
-	int ri = 0;     // Request Index (m_spriteRequestList)
+	int ri = 0;     // request Index (m_spriteRequestList)
 	int start_idx = 0;
 	int prim_num = 0;
 	Driver::ITexture* current_tex = m_spriteRequestList[m_spriteIndexList[0]].Texture;
@@ -753,7 +753,7 @@ void SpriteRendererImpl::Flush(SpriteSortMode sortFlags)
 	//-----------------------------------------------------
 	// 属性リストを作る
 
-	m_attributeList.Clear();
+	m_attributeList.clear();
 	while (true)
 	{
 		while (true)
@@ -782,7 +782,7 @@ void SpriteRendererImpl::Flush(SpriteSortMode sortFlags)
 		attr.PrimitiveNum = prim_num * 2;
 		attr.Texture = current_tex;
 		attr.RenderStateIndex = currnetRenderStateIndex;
-		m_attributeList.Add(attr);
+		m_attributeList.add(attr);
 
 		if (si >= spriteCount)
 		{
@@ -798,7 +798,7 @@ void SpriteRendererImpl::Flush(SpriteSortMode sortFlags)
 	//-----------------------------------------------------
 	// 頂点データをコピー
 
-	BatchSpriteVertex* vb = static_cast< BatchSpriteVertex* >(m_vertexBuffer->Lock());
+	BatchSpriteVertex* vb = static_cast< BatchSpriteVertex* >(m_vertexBuffer->lock());
 	si = 0;
 	vi = 0;
 	for (; si < spriteCount; ++si)
@@ -807,42 +807,42 @@ void SpriteRendererImpl::Flush(SpriteSortMode sortFlags)
 		memcpy(&vb[vi], m_spriteRequestList[ri].Vertices, sizeof(m_spriteRequestList[0].Vertices));
 		vi += 4;
 	}
-	m_vertexBuffer->Unlock();
+	m_vertexBuffer->unlock();
 
 	//-----------------------------------------------------
 	// 描画
 
-	auto* r = m_manager->GetGraphicsDevice()->GetRenderer();
-	m_shader.varViewProjMatrix->SetMatrix(m_viewProjMatrix);
+	auto* r = m_manager->getGraphicsDevice()->getRenderer();
+	m_shader.varViewProjMatrix->setMatrix(m_viewProjMatrix);
 	if (m_shader.varViewPixelSize != nullptr)
-		m_shader.varViewPixelSize->SetVector(Vector4(m_viewPixelSize.x, m_viewPixelSize.y, 0, 0));
+		m_shader.varViewPixelSize->setVector(Vector4(m_viewPixelSize.x, m_viewPixelSize.y, 0, 0));
 
-	Driver::IShaderPass* pass = m_shader.techMainDraw->GetPass(0);
+	Driver::IShaderPass* pass = m_shader.techMainDraw->getPass(0);
 
 	AttributeList::iterator itr = m_attributeList.begin();
 	AttributeList::iterator end = m_attributeList.end();
 	for (; itr != end; ++itr)
 	{
 		//r->SetRenderState(m_renderStateList[itr->RenderStateIndex]);
-		m_shader.varTexture->SetTexture(itr->Texture);
-		r->SetShaderPass(pass);
-		r->SetVertexDeclaration(m_vertexDeclaration);
-		r->SetVertexBuffer(0, m_vertexBuffer);
-		r->SetIndexBuffer(m_indexBuffer);
-		r->DrawPrimitiveIndexed(PrimitiveType_TriangleList, itr->StartIndex, itr->PrimitiveNum);
+		m_shader.varTexture->setTexture(itr->Texture);
+		r->setShaderPass(pass);
+		r->setVertexDeclaration(m_vertexDeclaration);
+		r->setVertexBuffer(0, m_vertexBuffer);
+		r->setIndexBuffer(m_indexBuffer);
+		r->drawPrimitiveIndexed(PrimitiveType_TriangleList, itr->StartIndex, itr->PrimitiveNum);
 	}
 
 	//-----------------------------------------------------
 	// クリーンアップ
 
-	Clear();
+	clear();
 }
 
 //------------------------------------------------------------------------------
-void SpriteRendererImpl::Clear()
+void SpriteRendererImpl::clear()
 {
-	m_renderStateList.Clear();
-	m_renderStateList.Add(RenderState());
+	m_renderStateList.clear();
+	m_renderStateList.add(RenderState());
 	m_currentRenderStateIndex = 0;
 	m_spriteRequestListUsedCount = 0;
 }

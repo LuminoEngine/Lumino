@@ -9,13 +9,13 @@ namespace detail {
 class ShaderAnalyzer
 {
 public:
-	void AnalyzeLNFX(const char* code, int len);
-	void AnalyzeLNFXC(const char* code, int len);
+	void analyzeLNFX(const char* code, int len);
+	void analyzeLNFXC(const char* code, int len);
 
-	std::vector<char> MakeHLSLCode() const;
+	std::vector<char> makeHLSLCode() const;
 
 private:
-	void ParseSimpleShaderMacros(const fl::TokenList* tokenList);
+	void parseSimpleShaderMacros(const fl::TokenList* tokenList);
 
 	enum class ShaderCodeType
 	{

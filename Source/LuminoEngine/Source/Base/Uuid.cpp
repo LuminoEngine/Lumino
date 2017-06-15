@@ -44,7 +44,7 @@ void HexToCharPair(uint8_t hex, TCHAR* ch1, TCHAR* ch2)
 }
 
 //------------------------------------------------------------------------------
-Uuid Uuid::Generate()
+Uuid Uuid::generate()
 {
 #if defined(LN_OS_WIN32)
 	GUID guid;
@@ -92,7 +92,7 @@ Uuid::Uuid(const StringRef& uuidText)
 	bool lookingCh1 = true;
 
 	// parse UUID text
-	for (int i = 0; i < uuidText.GetLength(); i++)
+	for (int i = 0; i < uuidText.getLength(); i++)
 	{
 		TCHAR ch = uuidText[i];
 		if (ch == _T('-') || ch == _T('{') || ch == _T('}')) continue;
@@ -143,7 +143,7 @@ bool Uuid::operator!=(const Uuid& other) const
 }
 
 //------------------------------------------------------------------------------
-String Uuid::ToString() const
+String Uuid::toString() const
 {
 	TCHAR str[] = _T("{00000000-0000-0000-0000-000000000000}");
 

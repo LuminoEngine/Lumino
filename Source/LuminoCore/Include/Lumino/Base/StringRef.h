@@ -30,22 +30,22 @@ public:
 		: GenericStringRef()
 	{
 		m_str = str.c_str();
-		m_len = str.GetLength();
-		m_string = str.GetCore();
+		m_len = str.getLength();
+		m_string = str.getCore();
 	}
 	GenericStringRef(const GenericString<TChar>& str, int startIndex)
 		: GenericStringRef()
 	{
 		m_str = str.c_str() + startIndex;
-		m_len = str.GetLength() - startIndex;
-		m_string = str.GetCore();
+		m_len = str.getLength() - startIndex;
+		m_string = str.getCore();
 	}
 	GenericStringRef(const GenericString<TChar>& str, int startIndex, int length)
 		: GenericStringRef()
 	{
 		m_str = str.c_str() + startIndex;
 		m_len = length;
-		m_string = str.GetCore();
+		m_string = str.getCore();
 	}
 	GenericStringRef(const TChar* begin, const TChar* end)
 		: GenericStringRef()
@@ -65,8 +65,8 @@ public:
 	GenericStringRef(const GenericPathName<TChar>& path)
 		: GenericStringRef()
 	{
-		m_str = path.GetString().c_str();
-		m_len = path.GetString().GetLength();
+		m_str = path.getString().c_str();
+		m_len = path.getString().getLength();
 	}
 
 
@@ -76,33 +76,33 @@ public:
 	//GenericStringRef& operator =(GenericStringRef&&) = default;
 	~GenericStringRef() = default;
 
-	const TChar* GetBegin() const { return m_str + m_pos; }
-	const TChar* GetEnd() const { return m_str + m_pos + m_len; }
+	const TChar* getBegin() const { return m_str + m_pos; }
+	const TChar* getEnd() const { return m_str + m_pos + m_len; }
 
 	bool IsNullOrEmpty() const { return (m_str == nullptr || m_len <= 0); }
-	bool IsEmpty() const { return m_len <= 0; }
-	int GetLength() const { return m_len; }
+	bool isEmpty() const { return m_len <= 0; }
+	int getLength() const { return m_len; }
 
-	int Compare(const TChar* str, int count = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const { return StringTraits::Compare(GetBegin(), m_len, str, -1, count, cs); }
+	int compare(const TChar* str, int count = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const { return StringTraits::compare(getBegin(), m_len, str, -1, count, cs); }
 
 	const TChar& operator[](int index) const  { return *(m_str + m_pos + index); }
 	
-	bool Equals(const GenericStringRef<TChar>& str) const { return Compare(str.GetBegin(), str.GetLength()) == 0; }
+	bool equals(const GenericStringRef<TChar>& str) const { return compare(str.getBegin(), str.getLength()) == 0; }
 	
-	void Detach() LN_NOEXCEPT
+	void detach() LN_NOEXCEPT
 	{
 		m_str = nullptr;
 		m_pos = 0;
 		m_len = 0;
 	}
-	void Attach(const TChar* str, int pos, int len) LN_NOEXCEPT
+	void attach(const TChar* str, int pos, int len) LN_NOEXCEPT
 	{
 		m_str = str;
 		m_pos = pos;
 		m_len = len;
 	}
 
-	int CopyTo(TChar* dest, int destLen) const
+	int copyTo(TChar* dest, int destLen) const
 	{
 		LN_THROW(destLen > m_len, OutOfRangeException);
 		StringTraits::tstrcpy(dest, destLen, m_str + m_pos);
@@ -110,17 +110,17 @@ public:
 		return m_len;
 	}
 
-	int CopyToLocal8Bit(char* dest, int destLen) const;
+	int copyToLocal8Bit(char* dest, int destLen) const;
 
-	GenericString<TChar> Mid(int start, int count) const
+	GenericString<TChar> mid(int start, int count) const
 	{
-		return StringTraits::Mid(GetBegin(), start, count);
+		return StringTraits::mid(getBegin(), start, count);
 	}
 
 	/** この文字列参照のコピーを持つ文字列を作成します。*/
-	GenericString<TChar> ToString() const;
+	GenericString<TChar> toString() const;
 
-	size_t GetHashCode() const;
+	size_t getHashCode() const;
 
 private:
 	const TChar*						m_str;
@@ -133,30 +133,30 @@ private:
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-GenericString<TChar> GenericStringRef<TChar>::ToString() const
+GenericString<TChar> GenericStringRef<TChar>::toString() const
 {
-	return GenericString<TChar>(GetBegin(), GetLength());
+	return GenericString<TChar>(getBegin(), getLength());
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
 inline bool operator==(const TChar* left, const GenericStringRef<TChar>& right)
 {
-	return right.Equals(left);
+	return right.equals(left);
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
 inline bool operator==(const GenericStringRef<TChar>& left, const TChar* right)
 {
-	return left.Equals(right);
+	return left.equals(right);
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
 inline bool operator!=(const GenericStringRef<TChar>& left, const GenericStringRef<TChar>& right)
 {
-	return !right.Equals(left);
+	return !right.equals(left);
 }
 
 

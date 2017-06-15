@@ -14,28 +14,28 @@ class IndexBuffer
 public:
 
 	/** インデックスの数を取得します。 */
-	int GetIndexCount() const;
+	int getIndexCount() const;
 
 	/** インデックスバッファの容量を確保します。 */
-	void Reserve(int indexCount);
+	void reserve(int indexCount);
 
 	/** インデックスバッファのサイズを変更します。 */
-	void Resize(int indexCount);
+	void resize(int indexCount);
 
 	/** インデックスバッファが保持するデータにアクセスします。 */
-	void* GetMappedData();
+	void* getMappedData();
 
 	/** インデックスバッファが保持するデータにアクセスします。サイズが indexCount より小さい場合はバッファを拡張します。 */
-	void* RequestMappedData(int indexCount);
+	void* requestMappedData(int indexCount);
 
 	/** インデックスバッファをクリアします。 */
-	void Clear();
+	void clear();
 
 	/** インデックスバッファのフォーマットを取得します。 */
-	IndexBufferFormat GetIndexFormat() const { return m_format; }
+	IndexBufferFormat getIndexFormat() const { return m_format; }
 
 	/** インデックスの値を設定します。 */
-	void SetIndex(int index, int vertexIndex);
+	void setIndex(int index, int vertexIndex);
 
 protected:
 	virtual void Dispose() override;
@@ -43,15 +43,15 @@ protected:
 LN_INTERNAL_ACCESS:
 	IndexBuffer();
 	virtual ~IndexBuffer();
-	void Initialize(detail::GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage, bool sizeConst);
-	int GetIndexStride() const;
-	Driver::IIndexBuffer* ResolveRHIObject();
-	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
-	void SetFormat(IndexBufferFormat format) { m_format = format; }
+	void initialize(detail::GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage, bool sizeConst);
+	int getIndexStride() const;
+	Driver::IIndexBuffer* resolveRHIObject();
+	virtual void onChangeDevice(Driver::IGraphicsDevice* device);
+	void setFormat(IndexBufferFormat format) { m_format = format; }
 
 private:
-	void UpdateFormat(int indexCount);
-	bool IsRHIDirect() const { return m_initialUpdate && !m_rhiObject.IsNull(); }
+	void updateFormat(int indexCount);
+	bool isRHIDirect() const { return m_initialUpdate && !m_rhiObject.isNull(); }
 
 	RefPtr<Driver::IIndexBuffer>	m_rhiObject;
 	IndexBufferFormat				m_format;

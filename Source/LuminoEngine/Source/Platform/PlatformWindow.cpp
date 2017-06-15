@@ -8,14 +8,14 @@
 LN_NAMESPACE_BEGIN
 
 //------------------------------------------------------------------------------
-//PlatformWindow* PlatformWindow::Create(const String& title, const Size& clientSize, bool resizable, PlatformManager* manager)
+//PlatformWindow* PlatformWindow::create(const String& title, const Size& clientSize, bool resizable, PlatformManager* manager)
 //{
 //	WindowCreationSettings data;
 //	data.title = title;
 //	data.clientSize = clientSize;
 //	data.fullscreen = false;
 //	data.resizable = resizable;
-//	return manager->m_windowManager->CreateSubWindow(data);
+//	return manager->m_windowManager->createSubWindow(data);
 //}
 
 //------------------------------------------------------------------------------
@@ -41,37 +41,37 @@ PlatformWindow::~PlatformWindow()
 }
 
 //------------------------------------------------------------------------------
-void PlatformWindow::Initialize(const SizeI& clientSize)
+void PlatformWindow::initialize(const SizeI& clientSize)
 {
 	m_clientSize = clientSize;
 }
 
 //------------------------------------------------------------------------------
-void PlatformWindow::SetCursorVisible(bool visible)
+void PlatformWindow::setCursorVisible(bool visible)
 {
-	m_mouseCursorVisibility->SetMouseCursorVisibleState(visible, 0);
+	m_mouseCursorVisibility->setMouseCursorVisibleState(visible, 0);
 }
 
 //------------------------------------------------------------------------------
-void PlatformWindow::AttachEventListener(IEventListener* listener, int priority)
+void PlatformWindow::attachEventListener(IEventListener* listener, int priority)
 {
-	m_listenerEntryArray.Add({ priority, listener });
+	m_listenerEntryArray.add({ priority, listener });
 	std::stable_sort(
 		m_listenerEntryArray.begin(), m_listenerEntryArray.end(),
 		[](const std::pair<int, IEventListener*>& lhs, const std::pair<int, IEventListener*>& rhs) { return lhs.first < rhs.first; });
 }
 
 //------------------------------------------------------------------------------
-void PlatformWindow::DetachEventListener(IEventListener* listener)
+void PlatformWindow::detachEventListener(IEventListener* listener)
 {
-	m_listenerEntryArray.RemoveIf(
+	m_listenerEntryArray.removeIf(
 		[listener](const std::pair<int, IEventListener*>& i) { return i.second == listener; });
 }
 
 //------------------------------------------------------------------------------
-bool PlatformWindow::SendPlatformEvent(const PlatformEventArgs& e)
+bool PlatformWindow::sendPlatformEvent(const PlatformEventArgs& e)
 {
-	OnPlatformEvent(e);
+	onPlatformEvent(e);
 	bool handled = SendEventToAllListener(e);
 	if (!handled)
 	{
@@ -79,12 +79,12 @@ bool PlatformWindow::SendPlatformEvent(const PlatformEventArgs& e)
 
 		switch (e.type)
 		{
-			case PlatformEventType::Close:
+			case PlatformEventType::close:
 			{
 				// TODO
-				if (this == m_windowManager->GetMainWindow())
+				if (this == m_windowManager->getMainWindow())
 				{
-					m_windowManager->Exit();
+					m_windowManager->exit();
 					return true;
 				}
 				break;
@@ -92,7 +92,7 @@ bool PlatformWindow::SendPlatformEvent(const PlatformEventArgs& e)
 			case PlatformEventType::WindowSizeChanged:
 			{
 				// ウィンドウサイズを拾っておく
-				m_clientSize.Set(e.size.width, e.size.height);
+				m_clientSize.set(e.size.width, e.size.height);
 				break;
 			}
 			case PlatformEventType::WindowActivate:
@@ -115,7 +115,7 @@ bool PlatformWindow::SendPlatformEvent(const PlatformEventArgs& e)
 }
 
 //------------------------------------------------------------------------------
-void PlatformWindow::OnPlatformEvent(const PlatformEventArgs& e)
+void PlatformWindow::onPlatformEvent(const PlatformEventArgs& e)
 {
 }
 
@@ -127,7 +127,7 @@ bool PlatformWindow::SendEventToAllListener(const PlatformEventArgs& e)
 {
 	for (auto& listener : m_listenerEntryArray)
 	{
-		if (listener.second->OnEvent(e)) {
+		if (listener.second->onEvent(e)) {
 			return true;
 		}
 	}

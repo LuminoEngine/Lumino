@@ -34,10 +34,10 @@ public:
 	EffekseerFileReader(Stream* stream) : m_stream(stream, false) {}
 	virtual ~EffekseerFileReader() = default;
 
-	virtual size_t Read(void* buffer, size_t size) override { return m_stream->Read(buffer, size); }
-	virtual void Seek(int position) override { m_stream->Seek(position, SeekOrigin_Begin); }
-	virtual int GetPosition() override { return (int)m_stream->GetPosition(); }
-	virtual size_t GetLength() override { return (size_t)m_stream->GetLength(); }
+	virtual size_t Read(void* buffer, size_t size) override { return m_stream->read(buffer, size); }
+	virtual void Seek(int position) override { m_stream->seek(position, SeekOrigin_Begin); }
+	virtual int GetPosition() override { return (int)m_stream->getPosition(); }
+	virtual size_t GetLength() override { return (size_t)m_stream->getLength(); }
 
 private:
 	RefPtr<Stream>	m_stream;
@@ -65,7 +65,7 @@ public:
 	EffekseerEffectEngine();
 	virtual ~EffekseerEffectEngine();
 
-	void Initialize(EffectManager* manager, int cacheObjectCount, size_t cacheMemorySize, int maxSpriteCount);
+	void initialize(EffectManager* manager, int cacheObjectCount, size_t cacheMemorySize, int maxSpriteCount);
 	void Finalize();
 	void SetViewProjection(const Matrix& view, const Matrix& proj);
 	void UpdateRenderContents();
@@ -76,10 +76,10 @@ public:
 	virtual VisualEffect* CreateEffectCore(const PathName& filePath) override;
 
 	virtual void SetViewProjectin(const Matrix& view, const Matrix& proj) override;
-	virtual void UpdateFrame(float elapsedTime) override;
-	virtual void Render() override;
-	virtual void OnLostDevice() override;
-	virtual void OnResetDevice() override;
+	virtual void updateFrame(float elapsedTime) override;
+	virtual void render() override;
+	virtual void onLostDevice() override;
+	virtual void onResetDevice() override;
 
 public:
 	::Effekseer::Manager* GetEffekseerManager() { return m_efkManager; }
@@ -123,13 +123,13 @@ public:
 
 	EffekseerEffectCore* GetEffectCore() { return m_ownerEffectCore; }
 
-	//virtual void Play(bool overlap) override;
-	virtual void Stop() override;
-	virtual bool IsPlaying() override;
+	//virtual void play(bool overlap) override;
+	virtual void stop() override;
+	virtual bool isPlaying() override;
 	virtual void SetWorldMatrix(const Matrix& matrix) override;
 
-	void UpdateFrame();	// 更新スレッド
-	void Draw();	// 描画スレッド
+	void updateFrame();	// 更新スレッド
+	void draw();	// 描画スレッド
 
 	static void LNToEFKMatrix43(const Matrix& mat, ::Effekseer::Matrix43* efkMat);
 

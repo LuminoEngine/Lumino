@@ -25,7 +25,7 @@ LN_NAMESPACE_BEGIN
 //static const size_t CommonMaxBytes = 6;	///< 全Encoding中、最大の文字バイト数 (UTF8)
 
 //------------------------------------------------------------------------------
-Encoding* Encoding::GetSystemMultiByteEncoding()
+Encoding* Encoding::getSystemMultiByteEncoding()
 {
 #ifdef LN_OS_WIN32
 	static Win32CodePageEncoding systemEncoding(CP_THREAD_ACP);
@@ -37,7 +37,7 @@ Encoding* Encoding::GetSystemMultiByteEncoding()
 }
 
 //------------------------------------------------------------------------------
-Encoding* Encoding::GetWideCharEncoding()
+Encoding* Encoding::getWideCharEncoding()
 {
 #if defined(LN_WCHAR_16)
 	static UTF16Encoding wideEncoding(false, false);
@@ -51,38 +51,38 @@ Encoding* Encoding::GetWideCharEncoding()
 }
 
 //------------------------------------------------------------------------------
-Encoding* Encoding::GetTCharEncoding()
+Encoding* Encoding::getTCharEncoding()
 {
 #ifdef LN_UNICODE
 	return GetWideCharEncoding();
 #else
-	return GetSystemMultiByteEncoding();
+	return getSystemMultiByteEncoding();
 #endif
 }
 
 //------------------------------------------------------------------------------
-Encoding* Encoding::GetUTF8Encoding()
+Encoding* Encoding::getUTF8Encoding()
 {
 	static UTF8Encoding encoding(false);
 	return &encoding;
 }
 
 //------------------------------------------------------------------------------
-Encoding* Encoding::GetUTF16Encoding()
+Encoding* Encoding::getUTF16Encoding()
 {
 	static UTF16Encoding encoding(false, false);
 	return &encoding;
 }
 
 //------------------------------------------------------------------------------
-Encoding* Encoding::GetUTF32Encoding()
+Encoding* Encoding::getUTF32Encoding()
 {
 	static UTF32Encoding encoding(false, false);
 	return &encoding;
 }
 
 //------------------------------------------------------------------------------
-Encoding* Encoding::GetEncoding(EncodingType type)
+Encoding* Encoding::getEncoding(EncodingType type)
 {
 	switch (type)
 	{
@@ -127,19 +127,19 @@ Encoding* Encoding::GetEncoding(EncodingType type)
 
 //------------------------------------------------------------------------------
 template<>
-Encoding* Encoding::GetEncodingTemplate<char>()
+Encoding* Encoding::getEncodingTemplate<char>()
 {
-	return GetSystemMultiByteEncoding();
+	return getSystemMultiByteEncoding();
 }
 template<>
-Encoding* Encoding::GetEncodingTemplate<wchar_t>()
+Encoding* Encoding::getEncodingTemplate<wchar_t>()
 {
-	return GetWideCharEncoding();
+	return getWideCharEncoding();
 }
 
 //------------------------------------------------------------------------------
 #ifdef LN_OS_WIN32
-Encoding* Encoding::GetWin32DefaultCodePageEncoding()
+Encoding* Encoding::getWin32DefaultCodePageEncoding()
 {
 	static Win32CodePageEncoding encoding(CP_THREAD_ACP);
 	return &encoding;
@@ -147,33 +147,33 @@ Encoding* Encoding::GetWin32DefaultCodePageEncoding()
 #endif
 
 //------------------------------------------------------------------------------
-size_t Encoding::GetConversionRequiredByteCount(Encoding* from, Encoding* to, size_t fromByteCount)
+size_t Encoding::getConversionRequiredByteCount(Encoding* from, Encoding* to, size_t fromByteCount)
 {
 	LN_THROW(from != NULL, ArgumentException);
 	LN_THROW(to != NULL, ArgumentException);
 
 	// from に入っている最悪パターンの文字数
-	size_t srcMaxCharCount = fromByteCount / from->GetMinByteCount();
+	size_t srcMaxCharCount = fromByteCount / from->getMinByteCount();
 	srcMaxCharCount += 1;	// Decoder・Encoder の状態保存により前回の余り文字が1つ追加されるかもしれない
 
 	// 出力バッファに必要な最大バイト数
-	return srcMaxCharCount * to->GetMaxByteCount();
+	return srcMaxCharCount * to->getMaxByteCount();
 }
 
 //------------------------------------------------------------------------------
-ByteBuffer Encoding::Convert(
+ByteBuffer Encoding::convert(
 	const void* src, size_t srcByteCount, const Encoding* srcEncoding,
 	const Encoding* targetEncoding,
 	const EncodingConversionOptions& options,
 	EncodingConversionResult* result)
 {
-	std::unique_ptr<Decoder> decoder(srcEncoding->CreateDecoder());
-	std::unique_ptr<Encoder> encoder(targetEncoding->CreateEncoder());
-	return Convert(src, srcByteCount, decoder.get(), encoder.get(), options, result);
+	std::unique_ptr<Decoder> decoder(srcEncoding->createDecoder());
+	std::unique_ptr<Encoder> encoder(targetEncoding->createEncoder());
+	return convert(src, srcByteCount, decoder.get(), encoder.get(), options, result);
 }
 
 //------------------------------------------------------------------------------
-ByteBuffer Encoding::Convert(
+ByteBuffer Encoding::convert(
 	const void* src, size_t srcByteCount, Decoder* decoder,
 	Encoder* encoder,
 	const EncodingConversionOptions& options,
@@ -184,7 +184,7 @@ ByteBuffer Encoding::Convert(
 	LN_THROW(encoder != NULL, ArgumentException);
 
 	// src に入っている最悪パターンの文字数
-	size_t srcMaxCharCount = srcByteCount / decoder->GetMinByteCount();
+	size_t srcMaxCharCount = srcByteCount / decoder->getMinByteCount();
 	srcMaxCharCount += 1;									// Decoder・Encoder の状態保存により前回の余り文字が1つ追加されるかもしれない
 	if (options.NullTerminated) { srcMaxCharCount += 1; }	// \0 の分
 
@@ -192,39 +192,39 @@ ByteBuffer Encoding::Convert(
 	size_t utf16MaxByteCount = srcMaxCharCount * 4;	// UTF16 は1文字最大4バイト
 
 	// 出力バッファに必要な最大バイト数
-	size_t outputMaxByteCount = srcMaxCharCount * encoder->GetMaxByteCount();
+	size_t outputMaxByteCount = srcMaxCharCount * encoder->getMaxByteCount();
 
 	// 中間バッファ作成
 	ByteBuffer tmpBuf(utf16MaxByteCount + sizeof(uint16_t), false);	// 終端 \0 考慮 (mbstowcs_s は \0 を書き込もうとする)
 
 	// 変換先バッファを、最大要素数で確保
-	ByteBuffer targetBuf(outputMaxByteCount + encoder->GetMaxByteCount(), false);	// 終端 \0 考慮 (mbstowcs_s は \0 を書き込もうとする)
+	ByteBuffer targetBuf(outputMaxByteCount + encoder->getMaxByteCount(), false);	// 終端 \0 考慮 (mbstowcs_s は \0 を書き込もうとする)
 
 	// 変換実行
 	size_t bytesUsed;
 	size_t charsUsed;
 	// ソースフォーマットから中間フォーマットへ
-	decoder->ConvertToUTF16(
+	decoder->convertToUTF16(
 		(const byte_t*)src,
 		srcByteCount,
-		(UTF16*)tmpBuf.GetData(),
+		(UTF16*)tmpBuf.getData(),
 		utf16MaxByteCount / sizeof(UTF16),			// \0 強制格納に備え、1文字分余裕のあるサイズを指定する
 		&bytesUsed,
 		&charsUsed);
 	// 中間フォーマットからターゲットフォーマットへ
-	encoder->ConvertFromUTF16(
-		(const UTF16*)tmpBuf.GetData(),
+	encoder->convertFromUTF16(
+		(const UTF16*)tmpBuf.getData(),
 		bytesUsed / sizeof(UTF16),
-		(byte_t*)targetBuf.GetData(),
-		targetBuf.GetSize(),		// \0 強制格納に備え、1文字分余裕のあるサイズを指定する
+		(byte_t*)targetBuf.getData(),
+		targetBuf.getSize(),		// \0 強制格納に備え、1文字分余裕のあるサイズを指定する
 		&bytesUsed,
 		&charsUsed);
 
 	// \0 終端文字
 	if (options.NullTerminated)
 	{
-		size_t nullBytes = encoder->GetMinByteCount();
-		byte_t* buf = (byte_t*)targetBuf.GetData();
+		size_t nullBytes = encoder->getMinByteCount();
+		byte_t* buf = (byte_t*)targetBuf.getData();
 		for (size_t i = 0; i < nullBytes; ++i) {
 			buf[bytesUsed + i] = 0x00;
 		}
@@ -235,34 +235,34 @@ ByteBuffer Encoding::Convert(
 	{
 		result->BytesUsed = bytesUsed;
 		result->CharsUsed = charsUsed;
-		result->UsedDefaultChar = (decoder->UsedDefaultCharCount() > 0 || encoder->UsedDefaultCharCount() > 0);
+		result->UsedDefaultChar = (decoder->usedDefaultCharCount() > 0 || encoder->usedDefaultCharCount() > 0);
 	}
-	targetBuf.Resize(bytesUsed);	// 出力バッファの見かけ上のサイズを、実際に使用したバイト数にする
+	targetBuf.resize(bytesUsed);	// 出力バッファの見かけ上のサイズを、実際に使用したバイト数にする
 	return targetBuf;
 }
 
 //------------------------------------------------------------------------------
-void Encoding::Convert(
+void Encoding::convert(
 	const void* src, size_t srcByteCount, Encoding* srcEncoding,
 	void* dest, size_t destByteCount, Encoding* destEncoding,
 	EncodingConversionResult* result)
 {
 	// TODO: できればメモリ確保はしたくないが…
-	std::unique_ptr<Decoder> decoder(srcEncoding->CreateDecoder());
-	std::unique_ptr<Encoder> encoder(destEncoding->CreateEncoder());
-	return Convert(src, srcByteCount, decoder.get(), dest, destByteCount, encoder.get(), result);
+	std::unique_ptr<Decoder> decoder(srcEncoding->createDecoder());
+	std::unique_ptr<Encoder> encoder(destEncoding->createEncoder());
+	return convert(src, srcByteCount, decoder.get(), dest, destByteCount, encoder.get(), result);
 }
 
 //------------------------------------------------------------------------------
-void Encoding::Convert(
+void Encoding::convert(
 	const void* src_, size_t srcByteCount, Decoder* srcDecoder,
 	void* dest_, size_t destByteCount, Encoder* destEncoder,
 	EncodingConversionResult* result)
 {
 	if (LN_CHECK_ARG(srcDecoder != nullptr)) return;
-	if (LN_CHECK_ARG(srcDecoder->CanRemain())) return;
+	if (LN_CHECK_ARG(srcDecoder->canRemain())) return;
 	if (LN_CHECK_ARG(destEncoder != nullptr)) return;
-	if (LN_CHECK_ARG(destEncoder->CanRemain())) return;
+	if (LN_CHECK_ARG(destEncoder->canRemain())) return;
 
 	const size_t BufferingElements = 512;
 	UTF16 utf16[BufferingElements];
@@ -283,7 +283,7 @@ void Encoding::Convert(
 
 		// UTF16 へ
 		size_t srcBytes = std::min(srcByteCount - srcPos, BufferingElements);
-		srcDecoder->ConvertToUTF16(
+		srcDecoder->convertToUTF16(
 			&src[srcPos],
 			srcBytes,
 			utf16,
@@ -293,7 +293,7 @@ void Encoding::Convert(
 		srcPos += srcBytes;
 
 		// UTF16 文字をターゲットへ
-		destEncoder->ConvertFromUTF16(
+		destEncoder->convertFromUTF16(
 			utf16,
 			bytesUsed / sizeof(UTF16),
 			&dest[destPos],
@@ -310,16 +310,16 @@ void Encoding::Convert(
 	{
 		result->BytesUsed = totalBytesUsed;
 		result->CharsUsed = totalCharsUsed;
-		result->UsedDefaultChar = (srcDecoder->UsedDefaultCharCount() > 0 || destEncoder->UsedDefaultCharCount() > 0);
+		result->UsedDefaultChar = (srcDecoder->usedDefaultCharCount() > 0 || destEncoder->usedDefaultCharCount() > 0);
 	}
 }
 
 //------------------------------------------------------------------------------
-size_t Encoding::CheckPreamble(const void* buffer, size_t bufferSize) const
+size_t Encoding::checkPreamble(const void* buffer, size_t bufferSize) const
 {
 	if (LN_CHECK_ARG(buffer == nullptr)) return 0;
 
-	const char* bom = (const char*)GetPreamble();
+	const char* bom = (const char*)getPreamble();
 	size_t bomLen = strlen(bom);
 	if (bufferSize < bomLen) {
 		return 0;

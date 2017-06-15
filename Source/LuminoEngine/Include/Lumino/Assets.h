@@ -12,13 +12,13 @@ class Assets
 {
 public:
 
-	static void AddAssetsDirectory(const StringRef& directoryPath);
+	static void addAssetsDirectory(const StringRef& directoryPath);
 
-	static Texture2DPtr LoadTexture(const StringRef& filePath);
+	static Texture2DPtr loadTexture(const StringRef& filePath);
 
-	static RefPtr<StaticMeshModel> LoadMeshModel(const StringRef& filePath);
+	static RefPtr<StaticMeshModel> loadMeshModel(const StringRef& filePath);
 
-	static String LoadText(const StringRef& filePath);
+	static String loadText(const StringRef& filePath);
 
 };
 

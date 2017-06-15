@@ -7,7 +7,7 @@ namespace detail
 {
 class EffectManager;
 
-EffectManager* GetEffectManager(EffectManager* priority);
+EffectManager* getEffectManager(EffectManager* priority);
 
 } // namespace detail
 LN_NAMESPACE_END

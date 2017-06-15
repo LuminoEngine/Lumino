@@ -34,7 +34,7 @@ public:
 		//void*					ExternalMainWindow;		/**< ユーザー定義のウィンドウハンドル (windows の場合は HWND、X11 は Window*。ただし、X11 は未対応) */
 	};
 
-	static PlatformManager* GetInstance(PlatformManager* priority = nullptr);
+	static PlatformManager* getInstance(PlatformManager* priority = nullptr);
 
 public:
 	PlatformManager();
@@ -43,11 +43,11 @@ public:
 
 public:
 
-	void Initialize(const Settings& settings);
-	PlatformWindow* GetMainWindow();
-	bool DoEvents();
+	void initialize(const Settings& settings);
+	PlatformWindow* getMainWindow();
+	bool doEvents();
 
-	WindowManagerBase* GetWindowManager() const LN_NOEXCEPT { return m_windowManager; }
+	WindowManagerBase* getWindowManager() const LN_NOEXCEPT { return m_windowManager; }
 
 public:
 	void Dispose();
@@ -55,7 +55,7 @@ public:
 protected:
 
 private:
-	void Thread_MainWindow();
+	void thread_MainWindow();
 
 private:
 	bool						m_useThread;

@@ -26,15 +26,15 @@ Mutex::~Mutex()
 }
 
 //------------------------------------------------------------------------------
-void Mutex::Lock()
+void Mutex::lock()
 {
-	m_impl->Lock();
+	m_impl->lock();
 }
 
 //------------------------------------------------------------------------------
-void Mutex::Unlock()
+void Mutex::unlock()
 {
-	m_impl->Unlock();
+	m_impl->unlock();
 }
 
 LN_NAMESPACE_END

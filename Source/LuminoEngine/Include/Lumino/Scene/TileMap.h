@@ -21,7 +21,7 @@ public:
 	/**
 		@brief		
 	*/
-	static TileMapPtr Create();
+	static TileMapPtr create();
 
 	/**
 		@brief
@@ -36,7 +36,7 @@ protected:
 	virtual ~TileMap();
 	void Create3DCore(SceneGraph* owner);
 	virtual void OnRender2(DrawList* renderer) override;
-	//virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex);
+	//virtual void drawSubset(SceneGraphRenderingContext* dc, int subsetIndex);
 
 private:
 	TileMapRenderer*	m_renderer;

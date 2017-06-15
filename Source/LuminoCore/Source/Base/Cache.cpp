@@ -1,4 +1,5 @@
 ﻿
+#include "../Internal.h"
 #include <Lumino/Base/Common.h>
 #include <Lumino/Base/Stack.h>
 #include <Lumino/Base/Cache.h>
@@ -114,7 +115,7 @@ bool CacheKey::operator < (const CacheKey& key) const
 
 
 //------------------------------------------------------------------------------
-bool CacheKey::IsNull() const
+bool CacheKey::isNull() const
 {
 	return (m_keyType == Type_Null);
 }
@@ -136,19 +137,19 @@ public:
 
 	~CacheUnusedList()
 	{
-		Clear();
+		clear();
 		LN_SAFE_DELETE_ARRAY(mNodes);
 	}
 
 public:
 
 	/// 最大要素数の取得
-	int GetCapacity() const { return m_internalCapacity - 1; }
+	int getCapacity() const { return m_internalCapacity - 1; }
 
 	/// 領域の確保
 	void SetCapacity(int capacityCount, size_t maxMemorySize)
 	{
-		Clear();
+		clear();
 		LN_SAFE_DELETE_ARRAY(mNodes);
 
 		if (capacityCount == 0)
@@ -167,10 +168,10 @@ public:
 		mNodes = LN_NEW Node[m_internalCapacity + 1];	// ダミーノードの分の +1 (mNodes[m_internalCapacity] がダミーノード)
 
 		// 空き番号スタック
-		mIndexStack.Reserve(m_internalCapacity);
+		mIndexStack.reserve(m_internalCapacity);
 		for (int i = 0; i < m_internalCapacity; ++i)
 		{
-			mIndexStack.Push(i);
+			mIndexStack.push(i);
 		}
 
 		// m_internalCapacity 番は最初の要素の前かつ最後の要素の後にあるダミー要素
@@ -178,7 +179,7 @@ public:
 	}
 
 	/// クリア (全 delete 呼び出し)
-	void Clear()
+	void clear()
 	{
 		if (mNodes && m_internalCapacity > 0)
 		{
@@ -194,7 +195,7 @@ public:
 					break;
 				}
 				// 削除
-				m_manager->DeleteCachedObject(mNodes[index].value);
+				m_manager->deleteCachedObject(mNodes[index].value);
 				// 次へ
 				index = mNodes[index].next;
 
@@ -204,10 +205,10 @@ public:
 			mNodeMap.clear();
 
 			// 空き番号スタック
-			mIndexStack.Clear();
+			mIndexStack.clear();
 			for (int i = 0; i < m_internalCapacity; ++i)
 			{
-				mIndexStack.Push(i);
+				mIndexStack.push(i);
 			}
 
 			// ノードは new とかしてるわけじゃないので、ダミーの前後だけ付け変えておけばリストは空の状態になる
@@ -218,11 +219,11 @@ public:
 	}
 
 	/// オブジェクトを追加する (メモリサイズの都合などで追加できなかった場合は false)
-	bool AddObject(ICacheObject* obj)
+	bool addObject(ICacheObject* obj)
 	{
-		ICacheObject::CacheObjectInfo& info = obj->GetCacheObjectInfo();
+		ICacheObject::CacheObjectInfo& info = obj->getCacheObjectInfo();
 
-		if (obj && !info.key.IsNull() && m_internalCapacity > 0)
+		if (obj && !info.key.isNull() && m_internalCapacity > 0)
 		{
 			// すでに追加されているか調べる
 			if (info.inCacheList) {
@@ -233,8 +234,8 @@ public:
 				return false;
 			}
 
-			int idx = mIndexStack.GetTop();
-			mIndexStack.Pop();
+			int idx = mIndexStack.getTop();
+			mIndexStack.pop();
 
 			Node* dummy = &mNodes[m_internalCapacity];	    // ダミーノード
 			Node* prev = &mNodes[dummy->prev];	// ダミーのひとつ前 ( 最後 )
@@ -281,7 +282,7 @@ public:
 			mNodes[n->prev].next = n->next;
 
 			// 空きインデックスを戻す
-			mIndexStack.Push(idx);
+			mIndexStack.push(idx);
 
 			ICacheObject* v = itr->second->value;
 
@@ -290,7 +291,7 @@ public:
 			--mSize;
 
 			// 使用中にする
-			v->GetCacheObjectInfo().inCacheList = false;
+			v->getCacheObjectInfo().inCacheList = false;
 
 			return v;
 		}
@@ -317,20 +318,20 @@ private:
 			mNodes[front->next].prev = m_internalCapacity;
 
 			// 空いたインデックスをスタックに積む
-			mIndexStack.Push(front_index);
+			mIndexStack.push(front_index);
 
 			// Map からも削除
-			mNodeMap.erase(front->value->GetCacheObjectInfo().key);
+			mNodeMap.erase(front->value->getCacheObjectInfo().key);
 
 			--mSize;
 
 			// キャッシュ内メモリサイズを減らす
-			m_usedMemorySize -= front->value->GetCacheObjectInfo().cacheMemorySize;
+			m_usedMemorySize -= front->value->getCacheObjectInfo().cacheMemorySize;
 
 			// ないと思うけど、一応 front がダミーじゃないかチェックしてから解放
 			if (front != dummy)
 			{
-				m_manager->DeleteCachedObject(front->value);
+				m_manager->deleteCachedObject(front->value);
 			}
 		}
 	}
@@ -393,47 +394,47 @@ CacheManager::CacheManager(int capacityCount, size_t maxMemorySize)
 //------------------------------------------------------------------------------
 CacheManager::~CacheManager()
 {
-	FinalizeCache();
+	finalizeCache();
 }
 
 //------------------------------------------------------------------------------
-void CacheManager::FinalizeCache()
+void CacheManager::finalizeCache()
 {
-	ClearCache();
+	clearCache();
 	LN_SAFE_DELETE(m_cacheUnusedList);
 }
 
 //------------------------------------------------------------------------------
-void CacheManager::RegisterCacheObject(const CacheKey& key, ICacheObject* obj)
+void CacheManager::registerCacheObject(const CacheKey& key, ICacheObject* obj)
 {
 	MutexScopedLock lock(m_mutex);
 
-	ICacheObject::CacheObjectInfo& info = obj->GetCacheObjectInfo();
+	ICacheObject::CacheObjectInfo& info = obj->getCacheObjectInfo();
 
-	LN_ASSERT(!key.IsNull());					// キーは中身が無ければならない
-	LN_ASSERT(info.key.IsNull());		// 既にキーが割り当てられている obj は登録済みなのでエラー
+	LN_ASSERT(!key.isNull());					// キーは中身が無ければならない
+	LN_ASSERT(info.key.isNull());		// 既にキーが割り当てられている obj は登録済みなのでエラー
 	if (m_cacheUnusedList == NULL) { return; }	// 初期化されていなければ何もしない
 
 	m_cacheUsingMap.insert(CacheUsingPair(key, obj));
 	info.manager = this;
-	info.manager->AddRef();
+	info.manager->addRef();
 	info.key = key;
 }
 
 //------------------------------------------------------------------------------
-ICacheObject* CacheManager::FindObjectAddRef(const CacheKey& key)
+ICacheObject* CacheManager::findObjectAddRef(const CacheKey& key)
 {
 	MutexScopedLock lock(m_mutex);
 
 	ICacheObject* obj = NULL;
-	if (!key.IsNull() && m_cacheUnusedList != NULL)
+	if (!key.isNull() && m_cacheUnusedList != NULL)
 	{
 		// まずは今使ってる物を検索
 		CacheUsingMap::iterator itr = m_cacheUsingMap.find(key);
 		if (itr != m_cacheUsingMap.end())
 		{
 			obj = itr->second;
-			obj->AddRef();
+			obj->addRef();
 		}
 		// キャッシュリストを検索
 		else
@@ -442,8 +443,8 @@ ICacheObject* CacheManager::FindObjectAddRef(const CacheKey& key)
 			if (obj != NULL)
 			{
 				// 使用中オブジェクトマップに入れておく
-				m_cacheUsingMap.insert(CacheUsingPair(obj->GetCacheObjectInfo().key, obj));
-				obj->AddRef();
+				m_cacheUsingMap.insert(CacheUsingPair(obj->getCacheObjectInfo().key, obj));
+				obj->addRef();
 			}
 		}
 	}
@@ -451,16 +452,16 @@ ICacheObject* CacheManager::FindObjectAddRef(const CacheKey& key)
 }
 
 //------------------------------------------------------------------------------
-void CacheManager::ClearCache()
+void CacheManager::clearCache()
 {
 	MutexScopedLock lock(m_mutex);
 	if (m_cacheUnusedList != NULL) {	// Finalize() 済みチェック
-		m_cacheUnusedList->Clear();
+		m_cacheUnusedList->clear();
 	}
 }
 
 //------------------------------------------------------------------------------
-void CacheManager::AddCacheUnusedList(ICacheObject* obj)
+void CacheManager::addCacheUnusedList(ICacheObject* obj)
 {
 	LN_ASSERT(obj != NULL);
 	bool addedObj = false;
@@ -468,32 +469,32 @@ void CacheManager::AddCacheUnusedList(ICacheObject* obj)
 		/*	この関数の最後で DeleteCachedObject を呼び出すが、
 			obj がこの CacheManager を参照する最後のオブジェクトである場合
 			delete したとき、CacheManager も delete される。
-			その状態で MutexScopedLock が Unlock すると解放済みのオブジェクトを操作することになるので NG。
+			その状態で MutexScopedLock が unlock すると解放済みのオブジェクトを操作することになるので NG。
 			DeleteCachedObject() は排他処理したくないので、ブロックをひとつ下げて逃げる。
 		*/
 		MutexScopedLock lock(m_mutex);
 
 		if (m_cacheUnusedList != NULL)	// Finalize() 済みチェック
 		{
-			m_cacheUsingMap.erase(obj->GetCacheObjectInfo().key);
-			addedObj = m_cacheUnusedList->AddObject(obj);
+			m_cacheUsingMap.erase(obj->getCacheObjectInfo().key);
+			addedObj = m_cacheUnusedList->addObject(obj);
 		}
 	}
 
 	// 追加できなかったら、参照カウント 0 なのにキャッシュに入れなかったということ。delete する
 	if (!addedObj) {
-		DeleteCachedObject(obj);
+		deleteCachedObject(obj);
 	}
 }
 
 //------------------------------------------------------------------------------
-void CacheManager::DeleteCachedObject(ICacheObject* obj)
+void CacheManager::deleteCachedObject(ICacheObject* obj)
 {
 	// この関数は AddCacheUnusedList() => m_cacheUnusedList->AddObject 経由で呼ばれるので、
 	// ロックするような仕様が必要になったときは注意すること。
 
 	LN_ASSERT(obj != NULL);
-	LN_ASSERT(obj->GetCacheObjectInfo().manager != NULL);
+	LN_ASSERT(obj->getCacheObjectInfo().manager != NULL);
 
 	delete obj;
 }

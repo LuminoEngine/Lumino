@@ -20,47 +20,47 @@ public:
 	/**
 		@brief		変換先テキストのエンコーディングを設定します。
 	*/
-	void SetDestinationEncoding(Encoding* encoding);
+	void setDestinationEncoding(Encoding* encoding);
 
 	/**
 		@brief		変換先テキストのエンコーディングを取得します。
 	*/
-	Encoding* GetDestinationEncoding() const;
+	Encoding* getDestinationEncoding() const;
 
 	/**
 		@brief		変換元テキストのエンコーディングを設定します。
 	*/
-	void SetSourceEncoding(Encoding* encoding);
+	void getSourceEncoding(Encoding* encoding);
 
 	/**
 		@brief		変換元テキストのエンコーディングを取得します。
 	*/
-	Encoding* GetSourceEncoding() const;
+	Encoding* getSourceEncoding() const;
 
 	/**
 		@brief		変換のオプションを設定します。
 	*/
-	void SetConversionOptions(const EncodingConversionOptions& options);
+	void setConversionOptions(const EncodingConversionOptions& options);
 
 	/**
 		@brief		テキストを変換します。
 	*/
-	const ByteBuffer& Convert(const void* data, size_t byteCount, EncodingConversionResult* outResult = NULL);
+	const ByteBuffer& convert(const void* data, size_t byteCount, EncodingConversionResult* outResult = NULL);
 
 	/**
-		@brief		最後に呼び出した Convert() で変換されたバッファを取得します。これは Convert() の戻り値と同一です。
+		@brief		最後に呼び出した convert() で変換されたバッファを取得します。これは convert() の戻り値と同一です。
 	*/
-	const ByteBuffer& GetLastBuffer() const;
+	const ByteBuffer& getLastBuffer() const;
 
 	/**
-		@brief		最後に呼び出した Convert() の EncodingConversionResult を取得します。
+		@brief		最後に呼び出した convert() の EncodingConversionResult を取得します。
 	*/
-	const EncodingConversionResult& GetLastResult() const;
+	const EncodingConversionResult& getLastResult() const;
 
 private:
-	void CheckUpdateEncoderDecoder();
+	void checkUpdateEncoderDecoder();
 
-	void ConvertDecoderRemain(
+	void convertDecoderRemain(
 		const void* src_, size_t srcByteCount, Decoder* srcDecoder,
 		void* dest_, size_t destByteCount, Encoder* destEncoder,
 		EncodingConversionResult* outResult);

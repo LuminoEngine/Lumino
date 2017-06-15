@@ -26,66 +26,66 @@ UITreeViewItem::~UITreeViewItem()
 }
 
 //------------------------------------------------------------------------------
-void UITreeViewItem::Initialize()
+void UITreeViewItem::initialize()
 {
-	UIControl::Initialize();
-	SetHContentAlignment(HAlignment::Left);
-	SetHAlignment(HAlignment::Stretch);
-	GoToVisualState(UIVisualStates::NormalState);
+	UIControl::initialize();
+	setHContentAlignment(HAlignment::Left);
+	setHAlignment(HAlignment::Stretch);
+	goToVisualState(UIVisualStates::NormalState);
 }
 
 //------------------------------------------------------------------------------
-void UITreeViewItem::SetHeader(UIElement* header)
+void UITreeViewItem::setHeader(UIElement* header)
 {
-	RemoveVisualChild(m_header);
+	removeVisualChild(m_header);
 
 	m_header = header;
-	m_header->SetBackground(Brush::Black);
-	m_header->SetHeight(16);	// TODO:
+	m_header->setBackground(Brush::Black);
+	m_header->setHeight(16);	// TODO:
 
 	if (m_header != nullptr)
-		AddVisualChild(m_header);
+		addVisualChild(m_header);
 }
 
 //------------------------------------------------------------------------------
-Size UITreeViewItem::MeasureOverride(const Size& constraint)
+Size UITreeViewItem::measureOverride(const Size& constraint)
 {
 	Size desiredSize(16, 0);	// TODO: Branch の余白は後で考える http://doc.qt.io/qt-4.8/stylesheet-examples.html#customizing-qtreeview
 
-	// Measure Header
-	m_header->MeasureLayout(constraint);
-	Size headerSize = m_header->GetDesiredSize();
+	// measure Header
+	m_header->measureLayout(constraint);
+	Size headerSize = m_header->getDesiredSize();
 
-	// Measure Items
-	UILayoutPanel* itemsPanel = GetLayoutPanel();
-	itemsPanel->MeasureLayout(constraint);
-	Size panelSize = itemsPanel->GetDesiredSize();
+	// measure Items
+	UILayoutPanel* itemsPanel = getLayoutPanel();
+	itemsPanel->measureLayout(constraint);
+	Size panelSize = itemsPanel->getDesiredSize();
 
 	// 下方向に結合する
 	desiredSize.height += headerSize.height;
 	desiredSize.height += panelSize.height;
 	desiredSize.width = std::max(headerSize.width, panelSize.width);
 
-	Size thisSize = ln::detail::LayoutHelper::MeasureElement(this, constraint);
+	Size thisSize = ln::detail::LayoutHelper::measureElement(this, constraint);
 
-	return Size::Max(desiredSize, thisSize);
+	return Size::max(desiredSize, thisSize);
 
-	// ※GetLayoutPanel() で得られる UILayoutPanel の Measure をここで行うので 
+	// ※getLayoutPanel() で得られる UILayoutPanel の measure をここで行うので 
 }
 
 //------------------------------------------------------------------------------
-Size UITreeViewItem::ArrangeOverride(const Size& finalSize)
+Size UITreeViewItem::arrangeOverride(const Size& finalSize)
 {
 	Size expanderSize(16, 16);	// TODO: Branch の余白は後で考える
 
 	// Header
-	Size headerSize = m_header->GetDesiredSize();
+	Size headerSize = m_header->getDesiredSize();
 	Rect headerRect(expanderSize.width, 0, finalSize.width - expanderSize.width, std::max(expanderSize.height, headerSize.height));
-	m_header->ArrangeLayout(headerRect);
+	m_header->arrangeLayout(headerRect);
 	
 	// Items
 	Rect itemsRect(expanderSize.width, headerRect.height, finalSize.width - expanderSize.width, finalSize.height - headerRect.height);
-	GetLayoutPanel()->ArrangeLayout(itemsRect);
+	getLayoutPanel()->arrangeLayout(itemsRect);
 
 	return finalSize;
 }
@@ -97,10 +97,10 @@ Size UITreeViewItem::ArrangeOverride(const Size& finalSize)
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UITreeView, UIControl)
 
 //------------------------------------------------------------------------------
-UITreeViewPtr UITreeView::Create()
+UITreeViewPtr UITreeView::create()
 {
-	auto ptr = UITreeViewPtr::MakeRef();
-	ptr->Initialize();
+	auto ptr = UITreeViewPtr::makeRef();
+	ptr->initialize();
 	return ptr;
 }
 
@@ -115,24 +115,24 @@ UITreeView::~UITreeView()
 }
 
 //------------------------------------------------------------------------------
-void UITreeView::Initialize()
+void UITreeView::initialize()
 {
-	UIControl::Initialize();
-	SetHContentAlignment(HAlignment::Stretch);
+	UIControl::initialize();
+	setHContentAlignment(HAlignment::Stretch);
 
-	auto panel = RefPtr<UIStackPanel>::MakeRef();
-	panel->Initialize();
-	panel->SetHAlignment(HAlignment::Stretch);
-	panel->SetVAlignment(VAlignment::Stretch);
-	SetLayoutPanel(panel);
-	GoToVisualState(UIVisualStates::NormalState);
+	auto panel = RefPtr<UIStackPanel>::makeRef();
+	panel->initialize();
+	panel->setHAlignment(HAlignment::Stretch);
+	panel->setVAlignment(VAlignment::Stretch);
+	setLayoutPanel(panel);
+	goToVisualState(UIVisualStates::NormalState);
 }
 
 ////------------------------------------------------------------------------------
-//UITreeViewItemPtr UITreeView::AddTextItem(const String& text)
+//UITreeViewItemPtr UITreeView::addTextItem(const String& text)
 //{
 //	auto textBlock = RefPtr<UITextBlock>::MakeRef();
-//	textBlock->Initialize(GetManager());
+//	textBlock->initialize(getManager());
 //	textBlock->SetText(text);
 //	return AddItem(textBlock);
 //}
@@ -143,9 +143,9 @@ void UITreeView::Initialize()
 //
 //	// 受け取った item を UITreeViewItem でラップして、UITreeViewItem をリストに入れる
 //	auto listItem = RefPtr<UITreeViewItem>::MakeRef();
-//	listItem->Initialize(GetManager());
-//	listItem->SetContent(item);
-//	GetItems()->Add(listItem);
+//	listItem->initialize(getManager());
+//	listItem->setContent(item);
+//	getItems()->Add(listItem);
 //	return listItem;
 //}
 

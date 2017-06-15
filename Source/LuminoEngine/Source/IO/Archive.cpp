@@ -71,23 +71,23 @@ Archive::~Archive()
 }
 
 //------------------------------------------------------------------------------
-void Archive::Open(const PathName& filePath, const String& key)
+void Archive::open(const PathName& filePath, const String& key)
 {
 	m_key = key;
 	m_fileCount = 0;
 
 	// このアーカイブファイルをディレクトリに見立てたときのパスを作る
 	// (絶対パスにして、拡張子を取り除く)
-	PathName fullPath = filePath.CanonicalizePath();
-	m_virtualDirectoryPath = fullPath.GetWithoutExtension();
+	PathName fullPath = filePath.canonicalizePath();
+	m_virtualDirectoryPath = fullPath.getWithoutExtension();
 
     // 拡張キーの初期化
 	memset(m_keyTable, 0, sizeof(m_keyTable));
-	if (!m_key.IsEmpty())
+	if (!m_key.isEmpty())
 	{
-		StringA k = m_key.ToStringA();
+		StringA k = m_key.toStringA();
 		byte_t key_buf[KEY_SIZE] = { 0 };
-		memcpy(key_buf, k.c_str(), k.GetLength());
+		memcpy(key_buf, k.c_str(), k.getLength());
 		memset(m_keyTable, 0, sizeof(m_keyTable));
 		Camellia_Ekeygen(KEY_SIZE, key_buf, m_keyTable);
     }
@@ -98,7 +98,7 @@ void Archive::Open(const PathName& filePath, const String& key)
 
     // 終端から16バイト戻ってからそれを読むとファイル数
 	fseek(m_stream, -16, SEEK_END);
-	m_fileCount = ReadU32Padding16();
+	m_fileCount = readU32Padding16();
 
 	// ヘッダ読み込み
 	fseek( m_stream, 0, SEEK_SET );
@@ -115,7 +115,7 @@ void Archive::Open(const PathName& filePath, const String& key)
 
 	// 内部キーのチェック (ユーザーキーは本当に正しいか？)
 	byte_t internalKey[16];
-	ReadPadding16(internalKey, 16);
+	readPadding16(internalKey, 16);
 	if (memcmp(internalKey, Archive::InternalKey, 16) != 0) {
 		LN_THROW(0, InvalidFormatException, "invalid archive key.");
 	}
@@ -126,15 +126,15 @@ void Archive::Open(const PathName& filePath, const String& key)
 	for ( int i = 0; i < m_fileCount; ++i )
 	{
 		// ファイル名の長さとファイルサイズを読む
-		ReadU32Padding16(&name_len, &entry.Size);
+		readU32Padding16(&name_len, &entry.Size);
 
 		// ファイル名を読み込むバッファを確保して読み込む
 		ByteBuffer nameBuf(name_len * sizeof(UTF16));
-		ReadPadding16(nameBuf.GetData(), name_len * sizeof(UTF16));
+		readPadding16(nameBuf.getData(), name_len * sizeof(UTF16));
 		String tmpName;
-		tmpName.ConvertFrom(nameBuf.GetData(), nameBuf.GetSize(), Encoding::GetUTF16Encoding());
+		tmpName.convertFrom(nameBuf.getData(), nameBuf.getSize(), Encoding::getUTF16Encoding());
 		PathName name(m_virtualDirectoryPath, tmpName);	// 絶対パスにする
-		name = name.CanonicalizePath();
+		name = name.canonicalizePath();
 			
 		// ここでのファイルポインタがデータ本体の位置
 		entry.Offset = ftell( m_stream );
@@ -143,13 +143,13 @@ void Archive::Open(const PathName& filePath, const String& key)
 		m_entriesMap.insert(EntriesPair(name, entry));
 
 		// ファイルポインタをデータサイズ分進めて、次のファイルへ
-		uint32_t ofs = Padding16(entry.Size);
+		uint32_t ofs = padding16(entry.Size);
 		fseek(m_stream, entry.Size + ofs, SEEK_CUR);
 	}
 }
 
 //------------------------------------------------------------------------------
-bool Archive::ExistsFile(const PathName& fileFullPath)
+bool Archive::existsFile(const PathName& fileFullPath)
 {
 #if 1 // map のキーを絶対パスにしてみた。メモリ効率は悪いが、検索キー用に PathName を再度作らなくて良くなる。まぁ、携帯機に乗せるときに問題になるようなら改めて見直す…。
 	EntriesMap::iterator itr = m_entriesMap.find(fileFullPath);
@@ -160,10 +160,10 @@ bool Archive::ExistsFile(const PathName& fileFullPath)
 #else
 	// まず、パスの先頭が m_virtualDirectoryPath と一致するかを確認する
 	CaseSensitivity cs = FileManager::GetInstance().GetFileSystemCaseSensitivity();
-	if (StringUtils::Compare(fileFullPath.c_str(), m_virtualDirectoryPath.GetCStr(), m_virtualDirectoryPath.GetString().GetLength(), cs) == 0)
+	if (StringUtils::Compare(fileFullPath.c_str(), m_virtualDirectoryPath.GetCStr(), m_virtualDirectoryPath.getString().getLength(), cs) == 0)
 	{
 		// internalPath は m_virtualDirectoryPath の後ろの部分の開始位置
-		const TCHAR* internalPath = fileFullPath.c_str() + m_virtualDirectoryPath.GetString().GetLength();
+		const TCHAR* internalPath = fileFullPath.c_str() + m_virtualDirectoryPath.getString().getLength();
 		if (*internalPath != _T('\0'))
 		{
 			// 検索
@@ -178,7 +178,7 @@ bool Archive::ExistsFile(const PathName& fileFullPath)
 }
 
 //------------------------------------------------------------------------------
-bool Archive::TryCreateStream(const PathName& fileFullPath, RefPtr<Stream>* outStream, bool isDeferring)
+bool Archive::tryCreateStream(const PathName& fileFullPath, RefPtr<Stream>* outStream, bool isDeferring)
 {
 #if 1 // map のキーを絶対パスにしてみた。メモリ効率は悪いが、検索キー用に PathName を再度作らなくて良くなる。まぁ、携帯機に乗せるときに問題になるようなら改めて見直す…。
 	EntriesMap::iterator itr = m_entriesMap.find(fileFullPath);
@@ -186,18 +186,18 @@ bool Archive::TryCreateStream(const PathName& fileFullPath, RefPtr<Stream>* outS
 		return false;
 	}
 
-	outStream->Attach(LN_NEW ArchiveStream(this, m_stream, itr->second.Offset, itr->second.Size), false);
+	outStream->attach(LN_NEW ArchiveStream(this, m_stream, itr->second.Offset, itr->second.Size), false);
 	return true;
 #else
 	// まず、パスの先頭が m_virtualDirectoryPath と一致するかを確認する
 	CaseSensitivity cs = FileManager::GetInstance().GetFileSystemCaseSensitivity();
-	if (StringUtils::Compare(fileFullPath.c_str(), m_virtualDirectoryPath.GetCStr(), m_virtualDirectoryPath.GetString().GetLength(), cs) != 0)
+	if (StringUtils::Compare(fileFullPath.c_str(), m_virtualDirectoryPath.GetCStr(), m_virtualDirectoryPath.getString().getLength(), cs) != 0)
 	{
 		LN_THROW(0, FileNotFoundException, fileFullPath);
 	}
 
 	// internalPath は m_virtualDirectoryPath の後ろの部分の開始位置
-	const TCHAR* internalPath = fileFullPath.c_str() + m_virtualDirectoryPath.GetString().GetLength();
+	const TCHAR* internalPath = fileFullPath.c_str() + m_virtualDirectoryPath.getString().getLength();
 	LN_THROW((*internalPath != _T('\0')), FileNotFoundException, fileFullPath);	// ファイル名が空だった
 
 	EntriesMap::iterator itr = m_entriesMap.find(internalPath);
@@ -208,7 +208,7 @@ bool Archive::TryCreateStream(const PathName& fileFullPath, RefPtr<Stream>* outS
 }
 
 //------------------------------------------------------------------------------
-size_t Archive::ReadArchiveStream(byte_t* buffer, size_t count, FILE* stream, uint64_t dataOffset, uint64_t seekPos)
+size_t Archive::readArchiveStream(byte_t* buffer, size_t count, FILE* stream, uint64_t dataOffset, uint64_t seekPos)
 {
 	MutexScopedLock lock(m_mutex);
 	byte_t tmpSrcBuf[16];	// 復号前データ
@@ -263,22 +263,22 @@ size_t Archive::ReadArchiveStream(byte_t* buffer, size_t count, FILE* stream, ui
 }
 
 //------------------------------------------------------------------------------
-uint32_t Archive::ReadU32Padding16()
+uint32_t Archive::readU32Padding16()
 {
 	uint32_t v0, v1;
-	ReadU32Padding16(&v0, &v1);
+	readU32Padding16(&v0, &v1);
 	return v0;
 }
 
 //------------------------------------------------------------------------------
 // 
 //------------------------------------------------------------------------------
-void Archive::ReadU32Padding16( uint32_t* v0, uint32_t* v1 )
+void Archive::readU32Padding16( uint32_t* v0, uint32_t* v1 )
 {
 	byte_t b[16] = { 0 };
 
 	// 復号する場合
-	if (!m_key.IsEmpty())
+	if (!m_key.isEmpty())
 	{
 		byte_t buf[16];
 		fread(buf, 1, 16, m_stream);
@@ -290,7 +290,7 @@ void Archive::ReadU32Padding16( uint32_t* v0, uint32_t* v1 )
 		fread(b, 1, 16, m_stream);
 	}
 
-	if (Environment::IsLittleEndian())
+	if (Environment::isLittleEndian())
 	{
 		*v0 = *((uint32_t*)(b + 0));
 		*v1 = *((uint32_t*)(b + 4));
@@ -312,10 +312,10 @@ void Archive::ReadU32Padding16( uint32_t* v0, uint32_t* v1 )
 }
 
 //------------------------------------------------------------------------------
-void Archive::ReadPadding16(byte_t* buffer, int count)
+void Archive::readPadding16(byte_t* buffer, int count)
 {
 	// 復号する場合
-	if (!m_key.IsEmpty())
+	if (!m_key.isEmpty())
 	{
 		while (count > 0)
 		{
@@ -337,7 +337,7 @@ void Archive::ReadPadding16(byte_t* buffer, int count)
 	else
 	{
 		fread(buffer, 1, 16, m_stream);
-		fseek(m_stream, Padding16(count), SEEK_CUR);
+		fseek(m_stream, padding16(count), SEEK_CUR);
 	}
 }
 
@@ -363,10 +363,10 @@ ArchiveStream::~ArchiveStream()
 }
 
 //------------------------------------------------------------------------------
-size_t ArchiveStream::Read(void* buffer, size_t byteCount)
+size_t ArchiveStream::read(void* buffer, size_t byteCount)
 {
     // 復号しながら読み込む
-	size_t validSize = m_archive->ReadArchiveStream((byte_t*)buffer, byteCount, m_stream, m_dataOffset, m_seekPoint);
+	size_t validSize = m_archive->readArchiveStream((byte_t*)buffer, byteCount, m_stream, m_dataOffset, m_seekPoint);
 
     // 読んだ分だけファイルポインタを移動
 	// ※テキスト形式の場合は、fread() が返すバイト数とシーク位置が異なるときがある。(CR+LF変換)
@@ -385,9 +385,9 @@ size_t ArchiveStream::Read(void* buffer, size_t byteCount)
 }
 
 //------------------------------------------------------------------------------
-void ArchiveStream::Seek(int64_t offset, SeekOrigin origin)
+void ArchiveStream::seek(int64_t offset, SeekOrigin origin)
 {
-	m_seekPoint = FileSystem::CalcSeekPoint(m_seekPoint, m_dataSize, offset, origin);
+	m_seekPoint = FileSystem::calcSeekPoint(m_seekPoint, m_dataSize, offset, origin);
 }
 
 //==============================================================================
@@ -395,21 +395,21 @@ void ArchiveStream::Seek(int64_t offset, SeekOrigin origin)
 //==============================================================================
 
 //------------------------------------------------------------------------------
-bool DummyArchive::ExistsFile(const PathName& fileFullPath)
+bool DummyArchive::existsFile(const PathName& fileFullPath)
 {
-	return FileSystem::ExistsFile(fileFullPath);
+	return FileSystem::existsFile(fileFullPath);
 }
 
 //------------------------------------------------------------------------------
-bool DummyArchive::TryCreateStream(const PathName& fileFullPath, RefPtr<Stream>* outStream, bool isDeferring)
+bool DummyArchive::tryCreateStream(const PathName& fileFullPath, RefPtr<Stream>* outStream, bool isDeferring)
 {
-	if (!FileSystem::ExistsFile(fileFullPath)) {
+	if (!FileSystem::existsFile(fileFullPath)) {
 		return false;
 	}
 
-	FileOpenMode mode = FileOpenMode::Read;
+	FileOpenMode mode = FileOpenMode::read;
 	if (isDeferring) { mode |= FileOpenMode::Deferring; }
-	RefPtr<FileStream> file = FileStream::Create(fileFullPath, mode);
+	RefPtr<FileStream> file = FileStream::create(fileFullPath, mode);
 	*outStream = file;
 	return true;
 }

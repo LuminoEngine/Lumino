@@ -21,7 +21,7 @@ inline Vector2::Vector2(float x_, float y_)
 //-------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------
-inline void Vector2::Set(float x_, float y_)
+inline void Vector2::set(float x_, float y_)
 {
 	x = x_;
 	y = y_;

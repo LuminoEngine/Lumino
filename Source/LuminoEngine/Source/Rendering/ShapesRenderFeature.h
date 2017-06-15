@@ -24,17 +24,17 @@ public:
 		Cmd_DrawBoxShadow,
 	};
 
-	void AddDrawBoxBackground(const Rect& rect, const CornerRadius& cornerRadius);
-	void AddDrawBoxBorder(float x, float y, float w, float h, float l, float t, float r, float b, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, float ltRad, float rtRad, float lbRad, float rbRad, const Color& shadowColor, float shadowBlur, float shadowWidth, bool shadowInset, bool borderInset);
-	void AddDrawBoxBorder2(const Rect& rect, const ThicknessF& thickness, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const CornerRadius& cornerRadius, bool borderInset);
-	void AddDrawBoxShadow(const Rect& rect, const CornerRadius& cornerRadius, const Color& color, float blur, float width, bool inset);
+	void addDrawBoxBackground(const Rect& rect, const CornerRadius& cornerRadius);
+	void addDrawBoxBorder(float x, float y, float w, float h, float l, float t, float r, float b, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, float ltRad, float rtRad, float lbRad, float rbRad, const Color& shadowColor, float shadowBlur, float shadowWidth, bool shadowInset, bool borderInset);
+	void addDrawBoxBorder2(const Rect& rect, const ThicknessF& thickness, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const CornerRadius& cornerRadius, bool borderInset);
+	void addDrawBoxShadow(const Rect& rect, const CornerRadius& cornerRadius, const Color& color, float blur, float width, bool inset);
 };
 
 class ShapesRendererCommandListCache
 	: public SimpleOneTimeObjectCache<ShapesRendererCommandList>
 {
 protected:
-	virtual RefPtr<ShapesRendererCommandList> CreateObject() override;
+	virtual RefPtr<ShapesRendererCommandList> createObject() override;
 };
 
 class ShapesRendererCore
@@ -43,9 +43,9 @@ class ShapesRendererCore
 public:
 	ShapesRendererCore();
 	virtual ~ShapesRendererCore();
-	void Initialize(GraphicsManager* manager);
+	void initialize(GraphicsManager* manager);
 
-	void RenderCommandList(ShapesRendererCommandList* commandList, detail::BrushRawData* fillBrush);
+	void renderCommandList(ShapesRendererCommandList* commandList, detail::BrushRawData* fillBrush);
 
 private:
 	enum class PathType
@@ -98,21 +98,21 @@ private:
 		float	alpha;
 	};
 
-	void ReleaseCommandList(ShapesRendererCommandList* commandList);
-	void RequestBuffers(int vertexCount, int indexCount, Vertex** vb, uint16_t** ib, uint16_t* outBeginVertexIndex);
-	Path* AddPath(PathType type, const Color& color, PathWinding winding = PathWinding::CCW, PathAttribute attribute = PathAttribute::None);
-	void EndPath(Path* path);
-	void ExtractBasePoints(ShapesRendererCommandList* commandList);
-	void MakeBasePointsAndBorderComponent(const Rect& rect, const ThicknessF& thickness, const CornerRadius& cornerRadius, BorderComponent components[4]);
-	void CalcExtrudedDirection();
-	void ExpandVertices(const Path& path);
-	void ExpandFill(const Path& path);
-	void ExpandStrip2PointStroke(const Path& path);
-	void ExpandStrip3PointStroke(const Path& path);
-	void ExpandAntiAliasStroke(const Path& path, int startIndex);
-	void PlotCornerBasePointsBezier(const Vector2& first, const Vector2& firstCpDir, const Vector2& last, const Vector2& lastCpDir, float firstT, float lastT, const Vector2& center);
-	Vector2 GetExtPos(const BasePoint& pt, float borderExtSign, float widht) const { return (pt.exDirect) ? pt.pos + pt.exDir * borderExtSign : pt.pos + pt.exDir * borderExtSign * widht; }
-	Vector2 GetAAExtDir(const BasePoint& pt) const { return (pt.enabledAA) ? pt.exDir : Vector2::Zero; }
+	void releaseCommandList(ShapesRendererCommandList* commandList);
+	void requestBuffers(int vertexCount, int indexCount, Vertex** vb, uint16_t** ib, uint16_t* outBeginVertexIndex);
+	Path* addPath(PathType type, const Color& color, PathWinding winding = PathWinding::CCW, PathAttribute attribute = PathAttribute::None);
+	void endPath(Path* path);
+	void extractBasePoints(ShapesRendererCommandList* commandList);
+	void makeBasePointsAndBorderComponent(const Rect& rect, const ThicknessF& thickness, const CornerRadius& cornerRadius, BorderComponent components[4]);
+	void calcExtrudedDirection();
+	void expandVertices(const Path& path);
+	void expandFill(const Path& path);
+	void expandStrip2PointStroke(const Path& path);
+	void expandStrip3PointStroke(const Path& path);
+	void expandAntiAliasStroke(const Path& path, int startIndex);
+	void plotCornerBasePointsBezier(const Vector2& first, const Vector2& firstCpDir, const Vector2& last, const Vector2& lastCpDir, float firstT, float lastT, const Vector2& center);
+	Vector2 getExtPos(const BasePoint& pt, float borderExtSign, float widht) const { return (pt.exDirect) ? pt.pos + pt.exDir * borderExtSign : pt.pos + pt.exDir * borderExtSign * widht; }
+	Vector2 getAAExtDir(const BasePoint& pt) const { return (pt.enabledAA) ? pt.exDir : Vector2::Zero; }
 
 	GraphicsManager*			m_manager;
 	Driver::IVertexBuffer*		m_vertexBuffer;
@@ -131,16 +131,16 @@ class ShapesRenderFeature
 public:
 	ShapesRenderFeature();
 	virtual ~ShapesRenderFeature();
-	void Initialize(GraphicsManager* manager);
+	void initialize(GraphicsManager* manager);
 
-	void ExecuteCommand(ShapesRendererCommandList* commandList);
+	void executeCommand(ShapesRendererCommandList* commandList);
 
 protected:
-	virtual bool IsStandaloneShader() const { return false; }
-	virtual void Flush() override {}
-	virtual void OnActivated() override {}
-	virtual void OnDeactivated() override { Flush(); }
-	virtual void OnSetState(const DrawElementBatch* state);
+	virtual bool isStandaloneShader() const { return false; }
+	virtual void flush() override {}
+	virtual void onActivated() override {}
+	virtual void onDeactivated() override { flush(); }
+	virtual void onSetState(const DrawElementBatch* state);
 
 private:
 	GraphicsManager*				m_manager;

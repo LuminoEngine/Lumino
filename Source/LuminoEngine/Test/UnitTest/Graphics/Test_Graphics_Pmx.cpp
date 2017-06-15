@@ -16,11 +16,11 @@ protected:
 //-----------------------------------------------------------------------------
 TEST_F(Test_Graphics_Pmx, Basic)
 {
-	auto mesh = SkinnedMeshComponent::Create(_T("D:/MMD/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
-	//auto clip = AnimationClip::Create(_T("D:/MMD/モーション/Love&Joy/love&joyお面無しver.vmd"));
-	//auto clip = AnimationClip::Create(_T("D:/MMD/モーション/Zigg-Zagg/ZZ-MikuV2.vmd"));
-	auto clip1 = AnimationClip::Create(_T("D:/MMD/モーション/走歩スv2.2full/歩く/A01_SO_女の子歩き_s591_p40.vmd"));
-	auto clip2 = AnimationClip::Create(_T("D:/MMD/モーション/ln/Idle.vmd"));
+	auto mesh = SkinnedMeshComponent::create(_T("D:/MMD/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
+	//auto clip = AnimationClip::create(_T("D:/MMD/モーション/Love&Joy/love&joyお面無しver.vmd"));
+	//auto clip = AnimationClip::create(_T("D:/MMD/モーション/Zigg-Zagg/ZZ-MikuV2.vmd"));
+	auto clip1 = AnimationClip::create(_T("D:/MMD/モーション/走歩スv2.2full/歩く/A01_SO_女の子歩き_s591_p40.vmd"));
+	auto clip2 = AnimationClip::create(_T("D:/MMD/モーション/ln/Idle.vmd"));
 	clip1->SetName(_T("walk"));
 	clip2->SetName(_T("idle"));
 	auto model = mesh->GetSkinnedMeshModel();
@@ -29,7 +29,7 @@ TEST_F(Test_Graphics_Pmx, Basic)
 	animator->AddAnimationClip(clip2);
 	animator->Play(clip2->GetName().c_str());
 	
-	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
+	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::makeRef();
 	Camera::GetMain3DCamera()->SetCameraBehavior(cb);
 
 	Viewport::GetMainViewport()->SetBackgroundColor(Color::White);
@@ -57,8 +57,8 @@ TEST_F(Test_Graphics_Pmx, Basic)
 //-----------------------------------------------------------------------------
 TEST_F(Test_Graphics_Pmx, Skinning)
 {
-	auto shader = MMEShader::Create(LN_LOCALFILE("../../../src/Scene/Resource/ForwardRenderingSkinnedMesh3D.fx"));
-	//auto shader = MMEShader::Create(LN_LOCALFILE("TestData/BasicForwardRendering.fx"));
+	auto shader = MMEShader::create(LN_LOCALFILE("../../../src/Scene/Resource/ForwardRenderingSkinnedMesh3D.fx"));
+	//auto shader = MMEShader::create(LN_LOCALFILE("TestData/BasicForwardRendering.fx"));
 	auto mesh = StaticMeshComponent::CreatePlane(Vector2(8, 8), 8, 8);
 	auto res = mesh->GetStaticMeshModel()->GetMeshResource();
 
@@ -68,13 +68,13 @@ TEST_F(Test_Graphics_Pmx, Skinning)
 		float w = (pos.x + 4.0f) / 8.0f;
 		res->SetBlendIndices(i, 0, 1, 0, 0);
 		res->SetBlendWeights(i, 1.0f - w, w, 0, 0);
-		//res->SetBlendWeights(i, 1.0f, 0, 0, 0);
+		//res->setBlendWeights(i, 1.0f, 0, 0, 0);
 	}
 
 	std::array<Matrix, 2> bones;
 	bones[0] = Matrix::Identity;//Matrix(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);//Matrix(FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX);//Matrix::Identity;//
 	bones[1] = Matrix::MakeRotationY(Math::PI / 2) * Matrix::MakeTranslation(10, 0, 0); //Matrix(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);//
-	auto skinnedTex = Texture2D::Create(SizeI(4, 2), TextureFormat::R32G32B32A32_Float, false);
+	auto skinnedTex = Texture2D::create(SizeI(4, 2), TextureFormat::R32G32B32A32_Float, false);
 	skinnedTex->SetSubData(PointI::Zero, &bones[0]);
 	
 	mesh->SetShader(shader);
@@ -99,7 +99,7 @@ TEST_F(Test_Graphics_Pmx, Skinning)
 	}
 
 
-	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
+	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::makeRef();
 	Camera::GetMain3DCamera()->SetCameraBehavior(cb);
 
 	while (Engine::UpdateFrame())

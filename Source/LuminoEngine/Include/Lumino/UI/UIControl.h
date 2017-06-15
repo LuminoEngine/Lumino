@@ -32,50 +32,50 @@ public:
 
 public:
 	
-	void SetHContentAlignment(HAlignment value) { tr::PropertyInfo::SetPropertyValueDirect<HAlignment>(this, HContentAlignmentId, value); }
-	HAlignment GetHContentAlignment() const { return tr::PropertyInfo::GetPropertyValueDirect<HAlignment>(this, HContentAlignmentId); }
+	void setHContentAlignment(HAlignment value) { tr::PropertyInfo::setPropertyValueDirect<HAlignment>(this, HContentAlignmentId, value); }
+	HAlignment getHContentAlignment() const { return tr::PropertyInfo::getPropertyValueDirect<HAlignment>(this, HContentAlignmentId); }
 
-	void SetVContentAlignment(VAlignment value) { tr::PropertyInfo::SetPropertyValueDirect<VAlignment>(this, VContentAlignmentId, value); }
-	VAlignment GetVContentAlignment() const { return tr::PropertyInfo::GetPropertyValueDirect<VAlignment>(this, VContentAlignmentId); }
+	void setVContentAlignment(VAlignment value) { tr::PropertyInfo::setPropertyValueDirect<VAlignment>(this, VContentAlignmentId, value); }
+	VAlignment getVContentAlignment() const { return tr::PropertyInfo::getPropertyValueDirect<VAlignment>(this, VContentAlignmentId); }
 	
 
 
-	UIElementCollection* GetItems() const;
+	UIElementCollection* getItems() const;
 
-	void AddChild(UIElement* element);
-	void RemoveChild(UIElement* element);
-	void ClearChildren();
+	void addChild(UIElement* element);
+	void removeChild(UIElement* element);
+	void clearChildren();
 
-	void SetLayoutPanel(UILayoutPanel* panel);
-	UILayoutPanel* GetLayoutPanel() const;
+	void setLayoutPanel(UILayoutPanel* panel);
+	UILayoutPanel* getLayoutPanel() const;
 
 
 protected:
 	// UIElement interface
-	//virtual int GetVisualChildrenCount() const override;
-	//virtual ILayoutElement* GetVisualChild(int index) const override;
-	virtual Size MeasureOverride(const Size& constraint) override;
-	virtual Size ArrangeOverride(const Size& finalSize) override;
-	virtual const VAlignment* GetPriorityContentVAlignment() override;
-	virtual const HAlignment* GetPriorityContentHAlignment() override;
-	virtual void OnRoutedEvent(UIEventArgs* e) override;
-	virtual void OnGotFocus(UIEventArgs* e) override;
-	virtual void OnLostFocus(UIEventArgs* e) override;
+	//virtual int getVisualChildrenCount() const override;
+	//virtual ILayoutElement* getVisualChild(int index) const override;
+	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
+	virtual const VAlignment* getPriorityContentVAlignment() override;
+	virtual const HAlignment* getPriorityContentHAlignment() override;
+	virtual void onRoutedEvent(UIEventArgs* e) override;
+	virtual void onGotFocus(UIEventArgs* e) override;
+	virtual void onLostFocus(UIEventArgs* e) override;
 
 
-	virtual void OnLayoutPanelChanged(UILayoutPanel* newPanel);
+	virtual void onLayoutPanelChanged(UILayoutPanel* newPanel);
 
 	// IUIElementCollectionOwner interface
-	virtual void OnChildCollectionChanged(const tr::ChildCollectionChangedArgs& e) override;
+	virtual void onChildCollectionChanged(const tr::ChildCollectionChangedArgs& e) override;
 
 LN_CONSTRUCT_ACCESS:
 	UIControl();
 	virtual ~UIControl();
-	void Initialize();
+	void initialize();
 
 LN_INTERNAL_ACCESS:
-	int GetLayoutChildrenCount() const { return GetVisualChildrenCount(); }
-	ILayoutElement* GetLayoutChild(int index) const { return GetVisualChild(index); }
+	int getLayoutChildrenCount() const { return getVisualChildrenCount(); }
+	ILayoutElement* getLayoutChild(int index) const { return getVisualChild(index); }
 
 	//void SetVisualTreeRoot(UIElement* element);
 	//UIElement* GetVisualTreeRoot() { return m_visualTreeRoot; }

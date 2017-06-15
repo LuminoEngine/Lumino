@@ -27,7 +27,7 @@ public:
 #ifdef _WIN32
 	typedef timeb Time;
 
-	static void GetTime(Time* t)
+	static void getTime(Time* t)
 	{
 		::ftime(t);
 	}
@@ -69,18 +69,18 @@ public:
 		, m_file(file)
 		, m_func(func)
 		, m_line(line)
-		, m_threadId(Thread::GetCurrentThreadId())
+		, m_threadId(Thread::getCurrentThreadId())
 	{
-		LogHelper::GetTime(&m_time);
+		LogHelper::getTime(&m_time);
 	}
 
-	void SetMessage(const StringRefA& message) { m_message = message; }
+	void setMessage(const StringRefA& message) { m_message = message; }
 
-	LogHelper::Time& GetTime() { return m_time; }
+	LogHelper::Time& getTime() { return m_time; }
 
 	LogLevel GetLevel() const { return m_level; }
 
-	const StringA& GetMessage() const { return m_message; }
+	const StringA& getMessage() const { return m_message; }
 
 	const char* GetFile() const { return m_file; }
 
@@ -88,7 +88,7 @@ public:
 
 	int GetLine() const { return m_line; }
 
-	unsigned int GetThreadId() const { return m_threadId; }
+	unsigned int getThreadId() const { return m_threadId; }
 
 private:
 	LogHelper::Time	m_time;
@@ -113,7 +113,7 @@ public:
 
 	~LogFile()
 	{
-		Close();
+		close();
 	}
 
 	bool IsOpend() const
@@ -122,23 +122,23 @@ public:
 	}
 
 #ifdef _WIN32
-	void Open(const char* filePath)
+	void open(const char* filePath)
 	{
-		Close();
+		close();
 		::_sopen_s(&m_file, filePath, _O_CREAT | _O_TRUNC | _O_WRONLY | _O_BINARY, _SH_DENYWR, _S_IREAD | _S_IWRITE);
 	}
 
-	int Write(const void* buf, size_t count)
+	int write(const void* buf, size_t count)
 	{
 		return (m_file != -1) ? ::_write(m_file, buf, static_cast<unsigned int>(count)) : -1;
 	}
 
-	off_t Seek(off_t offset, int whence)
+	off_t seek(off_t offset, int whence)
 	{
 		return (m_file != -1) ? ::_lseek(m_file, offset, whence) : -1;
 	}
 
-	void Close()
+	void close()
 	{
 		if (m_file != -1)
 		{
@@ -218,7 +218,7 @@ public:
 static FileClose g_fileClose;
 
 //------------------------------------------------------------------------------
-bool Logger::Initialize(const TCHAR* filePath) throw()
+bool Logger::initialize(const TCHAR* filePath) throw()
 {
 	//if (log_dir)
 	//{
@@ -266,7 +266,7 @@ bool Logger::Initialize(const TCHAR* filePath) throw()
 
 	fclose(stream);
 
-	g_logStartTime = Environment::GetTickCount();
+	g_logStartTime = Environment::getTickCount();
 	return true;
 }
 
@@ -283,7 +283,7 @@ static const char* GetInfoString(Logger::Level level)
 }
 
 //------------------------------------------------------------------------------
-void Logger::WriteLine(Level level, const char* format, ...) throw()
+void Logger::writeLine(Level level, const char* format, ...) throw()
 {
 	if (g_logFilePath[0] == '\0') {
 		return;
@@ -295,10 +295,10 @@ void Logger::WriteLine(Level level, const char* format, ...) throw()
 
 		va_list args;
 		va_start(args, format);
-		StringTraits::VSPrintf(buf, TEMP_BUFFER_SIZE, format, args);
+		StringTraits::vsprintf(buf, TEMP_BUFFER_SIZE, format, args);
 		va_end(args);
 
-		fprintf(stream, "%llu %s: ", Environment::GetTickCount() - g_logStartTime, GetInfoString(level));
+		fprintf(stream, "%llu %s: ", Environment::getTickCount() - g_logStartTime, GetInfoString(level));
 		fprintf(stream, "%s\n", buf);
 
 		fclose(stream);
@@ -306,7 +306,7 @@ void Logger::WriteLine(Level level, const char* format, ...) throw()
 }
 
 //------------------------------------------------------------------------------
-void Logger::WriteLine(Level level, const wchar_t* format, ...) throw()
+void Logger::writeLine(Level level, const wchar_t* format, ...) throw()
 {
 	if (g_logFilePath[0] == '\0') {
 		return;
@@ -318,10 +318,10 @@ void Logger::WriteLine(Level level, const wchar_t* format, ...) throw()
 
 		va_list args;
 		va_start(args, format);
-		StringTraits::VSPrintf(buf, TEMP_BUFFER_SIZE, format, args);
+		StringTraits::vsprintf(buf, TEMP_BUFFER_SIZE, format, args);
 		va_end(args);
 
-		fprintf(stream, "%llu %s: ", Environment::GetTickCount() - g_logStartTime, GetInfoString(level));
+		fprintf(stream, "%llu %s: ", Environment::getTickCount() - g_logStartTime, GetInfoString(level));
 		fwprintf(stream, L"%s\n", buf);
 
 		fclose(stream);
@@ -329,7 +329,7 @@ void Logger::WriteLine(Level level, const wchar_t* format, ...) throw()
 
 }
 //------------------------------------------------------------------------------
-void Logger::WriteLine(const char* format, ...) throw()
+void Logger::writeLine(const char* format, ...) throw()
 {
 	if (g_logFilePath[0] == '\0') {
 		return;
@@ -341,10 +341,10 @@ void Logger::WriteLine(const char* format, ...) throw()
 
 		va_list args;
 		va_start(args, format);
-		StringTraits::VSPrintf(buf, TEMP_BUFFER_SIZE, format, args);
+		StringTraits::vsprintf(buf, TEMP_BUFFER_SIZE, format, args);
 		va_end(args);
 
-		fprintf(stream, "%llu %s: ", Environment::GetTickCount() - g_logStartTime, GetInfoString(Level::Info));
+		fprintf(stream, "%llu %s: ", Environment::getTickCount() - g_logStartTime, GetInfoString(Level::Info));
 		fprintf(stream, "%s\n", buf);
 
 		fclose(stream);
@@ -352,7 +352,7 @@ void Logger::WriteLine(const char* format, ...) throw()
 }
 
 //------------------------------------------------------------------------------
-void Logger::WriteLine(const wchar_t* format, ...) throw()
+void Logger::writeLine(const wchar_t* format, ...) throw()
 {
 	if (g_logFilePath[0] == '\0') {
 		return;
@@ -364,10 +364,10 @@ void Logger::WriteLine(const wchar_t* format, ...) throw()
 
 		va_list args;
 		va_start(args, format);
-		StringTraits::VSPrintf(buf, TEMP_BUFFER_SIZE, format, args);
+		StringTraits::vsprintf(buf, TEMP_BUFFER_SIZE, format, args);
 		va_end(args);
 
-		fprintf(stream, "%llu %s: ", Environment::GetTickCount() - g_logStartTime, GetInfoString(Level::Info));
+		fprintf(stream, "%llu %s: ", Environment::getTickCount() - g_logStartTime, GetInfoString(Level::Info));
 		fwprintf(stream, L"%s\n", buf);
 
 		fclose(stream);
@@ -395,13 +395,13 @@ LogRecord::LogRecord(LogLevel level, const char* file, const char* func, int lin
 	, m_file(file)
 	, m_func(func)
 	, m_line(line)
-	, m_threadId(Thread::GetCurrentThreadId())
+	, m_threadId(Thread::getCurrentThreadId())
 {
-	LogHelper::GetTime(&m_time);
+	LogHelper::getTime(&m_time);
 }
 
 //------------------------------------------------------------------------------
-const char* LogRecord::GetMessage() const
+const char* LogRecord::getMessage() const
 {
 	m_messageStr = m_message.str();
 	return m_messageStr.c_str();
@@ -410,7 +410,7 @@ const char* LogRecord::GetMessage() const
 //------------------------------------------------------------------------------
 LogRecord& LogRecord::operator<<(const wchar_t* str)
 {
-	StringA s = StringA::FromNativeCharString(str);
+	StringA s = StringA::fromNativeCharString(str);
 	m_message << s.c_str();
 	return *this;
 }
@@ -446,7 +446,7 @@ static const char* GetLogLevelString(LogLevel level)
 }
 
 //------------------------------------------------------------------------------
-Logger* Logger::GetInstance()
+Logger* Logger::getInstance()
 {
 	if (!g_logEnabled) return nullptr;
 	return &g_logger;
@@ -463,24 +463,24 @@ void Logger::operator+=(const LogRecord& record)
 {
 	if (!g_logFile.IsOpend())
 	{
-		g_logFile.Open(g_logFilePath.c_str());
+		g_logFile.open(g_logFilePath.c_str());
 	}
 
 	tm t;
 	char date[64];
-	LogHelper::GetLocalTime(&t, &record.GetTime().time);
+	LogHelper::GetLocalTime(&t, &record.getTime().time);
 	strftime(date, sizeof(date), "%Y/%m/%d %H:%M:%S", &t);
 
 	g_logSS.str("");							// バッファをクリアする。
 	g_logSS.clear(std::stringstream::goodbit);	// ストリームの状態をクリアする。この行がないと意図通りに動作しない
 	g_logSS << date << " ";
 	g_logSS << std::setw(5) << std::left << GetLogLevelString(record.GetLevel()) << " ";
-	g_logSS << "[" << record.GetThreadId() << "]";
+	g_logSS << "[" << record.getThreadId() << "]";
 	g_logSS << "[" << record.GetFunc() << "(" << record.GetLine() << ")] ";
-	g_logSS << record.GetMessage() << std::endl;
+	g_logSS << record.getMessage() << std::endl;
 
 	auto str = g_logSS.str();
-	g_logFile.Write(str.c_str(), str.length());
+	g_logFile.write(str.c_str(), str.length());
 }
 
 

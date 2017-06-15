@@ -31,7 +31,7 @@ public:
 	/**
 		@brief		UISlider を作成します。
 	*/
-	static RefPtr<UISlider> Create();
+	static RefPtr<UISlider> create();
 
 	/**
 		@brief		UISlider を作成します。
@@ -39,35 +39,35 @@ public:
 		@param[in]	minimum	: 最小値
 		@param[in]	maximum	: 最大値
 	*/
-	static RefPtr<UISlider> Create(float value, float minimum = 0.0f, float maximum = 1.0f);
+	static RefPtr<UISlider> create(float value, float minimum = 0.0f, float maximum = 1.0f);
 
 public:
 
 	/** Slider の方向を指定します。*/
-	void SetOrientation(Orientation orientation);
+	void setOrientation(Orientation orientation);
 
 	/** Slider の方向を取得します。規定値は Orientation::Horizontal です。*/
-	Orientation GetOrientation() const;
+	Orientation getOrientation() const;
 
 protected:
 	// UIElement interface
-	virtual void OnRoutedEvent(UIEventArgs* e) override;
-	virtual Size MeasureOverride(const Size& constraint) override;
-	virtual Size ArrangeOverride(const Size& finalSize) override;
+	virtual void onRoutedEvent(UIEventArgs* e) override;
+	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
 
 	// UIRangeBase interface
-	virtual void OnValueChanged(float oldValue, float newValue) override;
-	virtual void OnMinimumChanged(float oldMinimum, float newMinimum) override;
-	virtual void OnMaximumChanged(float oldMaximum, float newMaximum) override;
+	virtual void onValueChanged(float oldValue, float newValue) override;
+	virtual void onMinimumChanged(float oldMinimum, float newMinimum) override;
+	virtual void onMaximumChanged(float oldMaximum, float newMaximum) override;
 
 LN_CONSTRUCT_ACCESS:
 	UISlider();
 	virtual ~UISlider();
-	void Initialize();
-	void Initialize(float value, float minimum, float maximum);
+	void initialize();
+	void initialize(float value, float minimum, float maximum);
 
 private:
-	void UpdateValue(float value);
+	void updateValue(float value);
 
 	RefPtr<UITrack>		m_track;
 	float				m_dragStartValue;

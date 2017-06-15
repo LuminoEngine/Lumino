@@ -22,14 +22,14 @@ DirectMusicAudioDevice::DirectMusicAudioDevice()
 //------------------------------------------------------------------------------
 DirectMusicAudioDevice::~DirectMusicAudioDevice()
 {
-	if (DirectMusicManager::GetInstance())
+	if (DirectMusicManager::getInstance())
 	{
-		DirectMusicManager::GetInstance()->Finalize();
+		DirectMusicManager::getInstance()->Finalize();
 	}
 }
 
 //------------------------------------------------------------------------------
-void DirectMusicAudioDevice::Initialize( const ConfigData& configData )
+void DirectMusicAudioDevice::initialize( const ConfigData& configData )
 {
     // DirectMusic を初期化する場合
 	if (configData.DMInitMode != DirectMusicMode::NotUse)
@@ -38,37 +38,37 @@ void DirectMusicAudioDevice::Initialize( const ConfigData& configData )
         dm_data.DMInitMode		= configData.DMInitMode;
 		dm_data.WindowHandle	= configData.hWnd;
 		dm_data.ReverbLevel		= configData.ReverbLevel;
-        DirectMusicManager::Initialize(dm_data);
+        DirectMusicManager::initialize(dm_data);
     }
 }
 
 //------------------------------------------------------------------------------
-AudioPlayer* DirectMusicAudioDevice::CreateAudioPlayer(AudioStream* source, bool enable3d, SoundPlayingMode mode)
+AudioPlayer* DirectMusicAudioDevice::createAudioPlayer(AudioStream* source, bool enable3d, SoundPlayingMode mode)
 {
 	RefPtr<DirectMusicAudioPlayer> audioPlayer;
 
 	if (mode == SoundPlayingMode::Midi)
     {
-		LN_THROW(DirectMusicManager::GetInstance(), InvalidOperationException);
-		audioPlayer.Attach(LN_NEW DirectMusicAudioPlayer(this), false);
-		audioPlayer->Initialize(source, enable3d);
+		LN_THROW(DirectMusicManager::getInstance(), InvalidOperationException);
+		audioPlayer.attach(LN_NEW DirectMusicAudioPlayer(this), false);
+		audioPlayer->initialize(source, enable3d);
     }
 
-	audioPlayer.SafeAddRef();
+	audioPlayer.safeAddRef();
 	return audioPlayer;
 }
 
 //------------------------------------------------------------------------------
-void DirectMusicAudioDevice::Update()
+void DirectMusicAudioDevice::update()
 {
-    if ( DirectMusicManager::GetInstance() )
+    if ( DirectMusicManager::getInstance() )
     {
-        DirectMusicManager::GetInstance()->Polling();
+        DirectMusicManager::getInstance()->polling();
     }
 }
 
 //------------------------------------------------------------------------------
-void DirectMusicAudioDevice::SetMetreUnitDistance(float d)
+void DirectMusicAudioDevice::setMetreUnitDistance(float d)
 {
 }
 

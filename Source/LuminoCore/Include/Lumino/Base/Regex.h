@@ -21,46 +21,46 @@ public:
     using StringRefT = GenericStringRef<TChar>;
 
 	GenericRegex(const StringRefT& pattern)
-    : m_regex(pattern.GetBegin(), pattern.GetLength(), std::basic_regex<TChar>::ECMAScript)
+		: m_regex(pattern.getBegin(), pattern.getLength(), std::basic_regex<TChar>::ECMAScript)
 	{
 	}
 	
-	bool Match(const StringRefT& input, GenericMatchResult<TChar>* outResult = nullptr) const
+	bool match(const StringRefT& input, GenericMatchResult<TChar>* outResult = nullptr) const
 	{
 		if (outResult != nullptr) {
-			return std::regex_match(input.GetBegin(), input.GetEnd(), outResult->m_matchResults, m_regex, std::regex_constants::match_default);
+			return std::regex_match(input.getBegin(), input.getEnd(), outResult->m_matchResults, m_regex, std::regex_constants::match_default);
 		}
 		else {
-			return std::regex_match(input.GetBegin(), input.GetEnd(), m_regex, std::regex_constants::match_default);
+			return std::regex_match(input.getBegin(), input.getEnd(), m_regex, std::regex_constants::match_default);
 		}
 	}
 	
-	bool Search(const StringRefT& input, GenericMatchResult<TChar>* outResult = nullptr) const
+	bool search(const StringRefT& input, GenericMatchResult<TChar>* outResult = nullptr) const
 	{
 		if (outResult != nullptr) {
-			return std::regex_search(input.GetBegin(), input.GetEnd(), outResult->m_matchResults, m_regex, std::regex_constants::match_default);
+			return std::regex_search(input.getBegin(), input.getEnd(), outResult->m_matchResults, m_regex, std::regex_constants::match_default);
 		}
 		else {
-			return std::regex_search(input.GetBegin(), input.GetEnd(), m_regex, std::regex_constants::match_default);
+			return std::regex_search(input.getBegin(), input.getEnd(), m_regex, std::regex_constants::match_default);
 		}
 	}
 
 	/** 
 		@brief	対象の文字列が、正規表現パターンで表現できているかを調べます。（完全一致）
 	*/
-	static bool Match(const StringRefT& input, const StringRefT& pattern, GenericMatchResult<TChar>* outResult = nullptr)
+	static bool match(const StringRefT& input, const StringRefT& pattern, GenericMatchResult<TChar>* outResult = nullptr)
 	{
 		GenericRegex re(pattern);
-		return re.Search(input, outResult);
+		return re.search(input, outResult);
 	}
 
 	/**
 		@brief	文字列の中から、正規表現パターンに該当する文字列があるかを調べます。（検索, 部分一致）
 	*/
-	static bool Search(const StringRefT& input, const StringRefT& pattern, GenericMatchResult<TChar>* outResult = nullptr)
+	static bool search(const StringRefT& input, const StringRefT& pattern, GenericMatchResult<TChar>* outResult = nullptr)
 	{
 		GenericRegex re(pattern);
-		return re.Search(input, outResult);
+		return re.search(input, outResult);
 	}
 
 private:
@@ -79,20 +79,20 @@ public:
 	typedef GenericStringRef<TChar>	StringRefT;
 
 	/** マッチ範囲の先頭インデックスを返します。*/
-	int GetIndex() const { return static_cast<int>(m_matchResults.position()); }
+	int getIndex() const { return static_cast<int>(m_matchResults.position()); }
 
 	/** マッチ範囲の文字数を返します。*/
-	int GetLength() const { return static_cast<int>(m_matchResults.length()); }
+	int getLength() const { return static_cast<int>(m_matchResults.length()); }
 
-	StringRefT GetValue() const
+	StringRefT getValue() const
 	{
-		return GetGroup(0);
+		return getGroup(0);
 	}
 	
-	int GetGroupCount() const { return (int)m_matchResults.size(); }
+	int getGroupCount() const { return (int)m_matchResults.size(); }
 	
 	// index=0 はマッチした全体を返す
-	StringRefT GetGroup(int index) const
+	StringRefT getGroup(int index) const
 	{
 		LN_THROW(0 <= index && index < (int)m_matchResults.size(), OutOfRangeException);
 		return StringRef(m_matchResults[index].first, m_matchResults[index].second);
@@ -100,7 +100,7 @@ public:
 	
 	StringRefT operator[](int index) const
 	{
-		return GetGroup(index);
+		return getGroup(index);
 	}
 
 private:

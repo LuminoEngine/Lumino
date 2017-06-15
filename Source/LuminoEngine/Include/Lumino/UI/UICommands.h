@@ -12,12 +12,12 @@ class UIRoutedCommand
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	static RefPtr<UIRoutedCommand> Create();
+	static RefPtr<UIRoutedCommand> create();
 
 LN_CONSTRUCT_ACCESS:
 	UIRoutedCommand();
 	virtual ~UIRoutedCommand();
-	void Initialize();
+	void initialize();
 
 private:
 };

@@ -7,7 +7,7 @@
 #include <assert.h>
 
 // exp の条件が満たされなかった場合、type に指定した例外を throw する
-#define LN_THROW( exp, type, ... )	{ if (!(exp)) { type e = type(__VA_ARGS__); e.SetSourceLocationInfo(__FILE__, __LINE__); throw e; } }
+#define LN_THROW( exp, type, ... )	{ if (!(exp)) { type e = type(__VA_ARGS__); e.setSourceLocationInfo(__FILE__, __LINE__); throw e; } }
 
 // HRESULT を返す関数の呼び出しユーティリティ (Win32 用)
 #define LN_COMCALL(exp)				{ HRESULT hr = (exp); if (FAILED(hr)) { LN_THROW(0, COMException, hr); } }
@@ -23,20 +23,20 @@
 #define LN_EXCEPTION_BASIC_CONSTRUCTOR_IMPLEMENT(className, captionStringId) \
 	className::className() \
 	{ \
-		SetMessage(InternalResource::GetString(captionStringId).c_str()); \
+		setMessage(InternalResource::getString(captionStringId).c_str()); \
 	} \
 	className::className(const char* message, ...) \
 	{ \
 		va_list args; \
 		va_start(args, message); \
-		SetMessage(InternalResource::GetString(captionStringId).c_str(), message, args); \
+		setMessage(InternalResource::getString(captionStringId).c_str(), message, args); \
 		va_end(args); \
 	} \
 	className::className(const wchar_t* message, ...) \
 	{ \
 		va_list args; \
 		va_start(args, message); \
-		SetMessage(InternalResource::GetString(captionStringId).c_str(), message, args); \
+		setMessage(InternalResource::getString(captionStringId).c_str(), message, args); \
 		va_end(args); \
 	} \
 	className::~className() throw() \
@@ -85,9 +85,9 @@
 	}
 */
 #if defined(LN_DO_CHECK_ASSERT)
-#define LN_CHECK(expression, exception, ...)		((!(expression)) && ln::detail::NotifyAssert([](){ assert(!#expression); }))
+#define LN_CHECK(expression, exception, ...)		((!(expression)) && ln::detail::notifyAssert([](){ assert(!#expression); }))
 #elif defined(LN_DO_CHECK_THROW)
-#define LN_CHECK(expression, exception, ...)		(!(expression)) && ln::detail::NotifyException<exception>(__FILE__, __LINE__, __VA_ARGS__)
+#define LN_CHECK(expression, exception, ...)		(!(expression)) && ln::detail::notifyException<exception>(__FILE__, __LINE__, __VA_ARGS__)
 #else
 #define LN_FAIL_CHECK(expression, exception)		(!(expression))
 #endif
@@ -97,11 +97,11 @@
 #define LN_CHECK_FORMAT(expression, ...)			LN_CHECK(expression, ::ln::InvalidFormatException, __VA_ARGS__)
 #define LN_CHECK_RANGE(value, begin, end)			LN_CHECK(begin <= value && value < end, ::ln::OutOfRangeException)
 
-#define LN_FATAL(expression, message)				{ if (!(expression)) ln::detail::NotifyFatalError(__FILE__, __LINE__, message); }
-#define LN_VERIFY(expression, exception, ...)		{ if (!(expression)) ln::detail::NotifyException<exception>(__FILE__, __LINE__, __VA_ARGS__); }
-#define LN_VERIFY_ARG(expression, ...)				{ if (!(expression)) ln::detail::NotifyException<::ln::ArgumentException>(__FILE__, __LINE__, __VA_ARGS__); }
-#define LN_VERIFY_STATE(expression, ...)			{ if (!(expression)) ln::detail::NotifyException<::ln::InvalidOperationException>(__FILE__, __LINE__, __VA_ARGS__); }
-#define LN_VERIFY_FORMAT(expression, ...)			{ if (!(expression)) ln::detail::NotifyException<::ln::InvalidFormatException>(__FILE__, __LINE__, __VA_ARGS__); }
+#define LN_FATAL(expression, message)				{ if (!(expression)) ln::detail::notifyFatalError(__FILE__, __LINE__, message); }
+#define LN_VERIFY(expression, exception, ...)		{ if (!(expression)) ln::detail::notifyException<exception>(__FILE__, __LINE__, __VA_ARGS__); }
+#define LN_VERIFY_ARG(expression, ...)				{ if (!(expression)) ln::detail::notifyException<::ln::ArgumentException>(__FILE__, __LINE__, __VA_ARGS__); }
+#define LN_VERIFY_STATE(expression, ...)			{ if (!(expression)) ln::detail::notifyException<::ln::InvalidOperationException>(__FILE__, __LINE__, __VA_ARGS__); }
+#define LN_VERIFY_FORMAT(expression, ...)			{ if (!(expression)) ln::detail::notifyException<::ln::InvalidFormatException>(__FILE__, __LINE__, __VA_ARGS__); }
 
 #define LN_UNREACHABLE()							LN_VERIFY(0, ::ln::InvalidOperationException)
 #define LN_NOTIMPLEMENTED()							LN_VERIFY(0, ln::NotImplementedException)
@@ -116,34 +116,34 @@ public:
 	using NotifyVerificationHandler = bool(*)(const Exception& e);
 	using NotifyFataiErrorHandler = bool(*)(const char* file, int line, const char* message);
 
-	static void SetNotifyVerificationHandler(NotifyVerificationHandler handler);
-	static NotifyVerificationHandler GetNotifyVerificationHandler();
+	static void setNotifyVerificationHandler(NotifyVerificationHandler handler);
+	static NotifyVerificationHandler getNotifyVerificationHandler();
 
-	static void SetNotifyFataiErrorHandler(NotifyFataiErrorHandler handler);
-	static NotifyFataiErrorHandler GetNotifyFataiErrorHandler();
+	static void setNotifyFataiErrorHandler(NotifyFataiErrorHandler handler);
+	static NotifyFataiErrorHandler getNotifyFataiErrorHandler();
 };
 
 namespace detail
 {
 template<typename TAssert>
-inline bool NotifyAssert(TAssert callback)
+inline bool notifyAssert(TAssert callback)
 {
 	callback();
 	return true;	// TODO: ユーザー通知
 }
 
 template<class TException, typename... TArgs>
-inline bool NotifyException(const char* file, int line, TArgs... args)
+inline bool notifyException(const char* file, int line, TArgs... args)
 {
 	TException e(args...);
-	e.SetSourceLocationInfo(file, line);
-	auto h = Assertion::GetNotifyVerificationHandler();
+	e.setSourceLocationInfo(file, line);
+	auto h = Assertion::getNotifyVerificationHandler();
 	if (h != nullptr && h(e)) return true;
 	throw e;
 	return true;
 }
 
-bool NotifyFatalError(const char* file, int line, const char* message = nullptr);
+bool notifyFatalError(const char* file, int line, const char* message = nullptr);
 
 } // namespace detail
 
@@ -159,17 +159,17 @@ class LUMINO_EXPORT Exception : public std::exception
 public:
 	Exception();
 	virtual ~Exception() throw();
-	Exception& SetSourceLocationInfo( const char* filePath, int fileLine );
+	Exception& setSourceLocationInfo( const char* filePath, int fileLine );
 
 public:
 	
 #pragma push_macro("GetMessage")
-#undef GetMessage
+#undef getMessage
 	/**
 		@brief	例外の詳細メッセージを取得します。
 	*/
-	const TCHAR* GetMessage() const;
-	const TCHAR* LN_AFX_FUNCNAME(GetMessage)() const;
+	const TCHAR* getMessage() const;
+	const TCHAR* LN_AFX_FUNCNAME(getMessage)() const;
 #pragma pop_macro("GetMessage")
 
 	/**
@@ -179,29 +179,29 @@ public:
 		@details	指定されたパスで、ファイルを新規作成します。
 					以降、この例外クラスのコンストラクタが呼ばれるたびに、詳細情報が追記されます。
 	*/
-	static bool InitDumpFile(const char* filePath);
+	static bool initDumpFile(const char* filePath);
 
 	/**
 		@brief		例外のコピーを作成する
 		@note		別スレッドで発生した例外を保持するために使用する。
 	*/
-	virtual Exception* Copy() const { return LN_NEW Exception( *this ); }
+	virtual Exception* copy() const { return LN_NEW Exception( *this ); }
 
 public:
 	// override std::exception
 	virtual const char* what() const  throw() { return m_symbolBuffer; }
 
 protected:
-	void SetMessage(const TCHAR* caption);
-	void SetMessage(const TCHAR* caption, const char* format, va_list args);
-	void SetMessage(const TCHAR* caption, const wchar_t* format, va_list args);
-	void SetMessage(const TCHAR* caption, const char* format, ...);
-	void SetMessage(const TCHAR* caption, const wchar_t* format, ...);
-	virtual const TCHAR* GetMessageOverride() const;
+	void setMessage(const TCHAR* caption);
+	void setMessage(const TCHAR* caption, const char* format, va_list args);
+	void setMessage(const TCHAR* caption, const wchar_t* format, va_list args);
+	void setMessage(const TCHAR* caption, const char* format, ...);
+	void setMessage(const TCHAR* caption, const wchar_t* format, ...);
+	virtual const TCHAR* getMessageOverride() const;
 
 private:
-	void AppendMessage(const char* message, size_t len);
-	void AppendMessage(const wchar_t* message, size_t len);
+	void appendMessage(const char* message, size_t len);
+	void appendMessage(const wchar_t* message, size_t len);
 
 private:
 	static const int MaxMessageBufferSize = 1024;
@@ -225,7 +225,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW VerifyException(*this); }
+	virtual Exception* copy() const { return LN_NEW VerifyException(*this); }
 };
 
 /**
@@ -239,7 +239,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW ArgumentException( *this ); }
+	virtual Exception* copy() const { return LN_NEW ArgumentException( *this ); }
 };
 
 /**
@@ -253,7 +253,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW InvalidOperationException(*this); }
+	virtual Exception* copy() const { return LN_NEW InvalidOperationException(*this); }
 };
 
 /**
@@ -267,7 +267,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW NotImplementedException( *this ); }
+	virtual Exception* copy() const { return LN_NEW NotImplementedException( *this ); }
 };
 
 /**
@@ -281,7 +281,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW OutOfMemoryException( *this ); }
+	virtual Exception* copy() const { return LN_NEW OutOfMemoryException( *this ); }
 };
 
 /**
@@ -295,7 +295,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW OutOfRangeException(*this); }
+	virtual Exception* copy() const { return LN_NEW OutOfRangeException(*this); }
 };
 
 /**
@@ -309,7 +309,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW KeyNotFoundException(*this); }
+	virtual Exception* copy() const { return LN_NEW KeyNotFoundException(*this); }
 };
 
 /**
@@ -323,7 +323,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW OverflowException(*this); }
+	virtual Exception* copy() const { return LN_NEW OverflowException(*this); }
 };
 
 /**
@@ -338,7 +338,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW IOException( *this ); }
+	virtual Exception* copy() const { return LN_NEW IOException( *this ); }
 };
 
 /**
@@ -352,7 +352,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW FileNotFoundException(*this); }
+	virtual Exception* copy() const { return LN_NEW FileNotFoundException(*this); }
 };
 
 /**
@@ -366,7 +366,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW DirectoryNotFoundException(*this); }
+	virtual Exception* copy() const { return LN_NEW DirectoryNotFoundException(*this); }
 };
 
 /**
@@ -380,7 +380,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW InvalidFormatException(*this); }
+	virtual Exception* copy() const { return LN_NEW InvalidFormatException(*this); }
 };
 
 /**
@@ -394,7 +394,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW EndOfStreamException(*this); }
+	virtual Exception* copy() const { return LN_NEW EndOfStreamException(*this); }
 };
 
 /**
@@ -408,7 +408,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW EncodingException(*this); }
+	virtual Exception* copy() const { return LN_NEW EncodingException(*this); }
 };
 
 /**
@@ -422,7 +422,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW RuntimeException(*this); }
+	virtual Exception* copy() const { return LN_NEW RuntimeException(*this); }
 };
 
 /**
@@ -436,12 +436,12 @@ public:
 	virtual ~Win32Exception() throw() {}
 
 public:
-	uint32_t/*DWORD*/			GetLastErrorCode() const { return m_dwLastErrorCode; }
-	const TCHAR*	GetFormatMessage() const { return m_pFormatMessage; }
+	uint32_t/*DWORD*/			getLastErrorCode() const { return m_dwLastErrorCode; }
+	const TCHAR*	getFormatMessage() const { return m_pFormatMessage; }
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW Win32Exception( *this ); }
+	virtual Exception* copy() const { return LN_NEW Win32Exception( *this ); }
 
 private:
 	uint32_t/*DWORD*/	m_dwLastErrorCode;
@@ -458,11 +458,11 @@ public:
 	COMException(uint32_t hresult);
 	virtual ~COMException() throw();
 
-	uint32_t GetHRESULT() const { return m_HRESULT; }
+	uint32_t getHRESULT() const { return m_HRESULT; }
 
 public:
 	// override Exception
-	virtual Exception* Copy() const;
+	virtual Exception* copy() const;
 
 private:
 	uint32_t	m_HRESULT;

@@ -32,25 +32,25 @@ public:
 public:
 
 	/// 初期化 (xinputNumber は XInput 用コントローラの割り当て番号。XInput 以外のものは -1 を渡すこと)
-	void Initialize(IDirectInputDevice8* device, HWND hwnd, int xinputNumber, bool forcefeedback);
+	void initialize(IDirectInputDevice8* device, HWND hwnd, int xinputNumber, bool forcefeedback);
 
 	/// 解放
 	void Dispose();
 
 	/// ジョイパッドの状態を取得する
-	void GetJoystickDeviceState(JoystickDeviceState* state);
+	void getJoystickDeviceState(JoystickDeviceState* state);
 
 	/// XInput デバイスかを判定する
-	bool IsXInputDevice() const { return mXInputNo >= 0; }
+	bool isXInputDevice() const { return mXInputNo >= 0; }
 
 	/// ジョイパッドの振動を開始する
-	void StartVibration(int power, int time);
+	void startVibration(int power, int time);
 
 	/// ジョイパッドの振動を停止する
-	void StopVibration();
+	void stopVibration();
 
 	/// フレーム更新
-	void Update();
+	void update();
 
 private:
 
@@ -86,7 +86,7 @@ class XInputModule
 public:
 
 	/// 初期化
-	static void Initialize();
+	static void initialize();
 
 public:
 

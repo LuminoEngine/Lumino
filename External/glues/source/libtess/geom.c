@@ -188,7 +188,7 @@ int __gl_vertCCW(GLUvertex* u, GLUvertex* v, GLUvertex* w)
                     : (y+(x-y)*(b/(a+b)))))
 
 #ifndef FOR_TRITE_TEST_PROGRAM
-   #define Interpolate(a, x, b, y) RealInterpolate(a, x, b, y)
+   #define interpolate(a, x, b, y) RealInterpolate(a, x, b, y)
 #else
 
 /* Claim: the ONLY property the sweep algorithm relies on is that
@@ -262,7 +262,7 @@ void __gl_edgeIntersect(GLUvertex* o1, GLUvertex* d1,
          {
             z1=-z1; z2=-z2;
          }
-         v->s=Interpolate(z1, o2->s, z2, d1->s);
+         v->s=interpolate(z1, o2->s, z2, d1->s);
       }
       else
       {
@@ -273,7 +273,7 @@ void __gl_edgeIntersect(GLUvertex* o1, GLUvertex* d1,
          {
             z1=-z1; z2=-z2;
          }
-         v->s=Interpolate(z1, o2->s, z2, d2->s);
+         v->s=interpolate(z1, o2->s, z2, d2->s);
       }
    }
 
@@ -308,7 +308,7 @@ void __gl_edgeIntersect(GLUvertex* o1, GLUvertex* d1,
          {
             z1=-z1; z2=-z2;
          }
-         v->t=Interpolate(z1, o2->t, z2, d1->t);
+         v->t=interpolate(z1, o2->t, z2, d1->t);
       }
       else
       {
@@ -319,7 +319,7 @@ void __gl_edgeIntersect(GLUvertex* o1, GLUvertex* d1,
          {
             z1=-z1; z2=-z2;
          }
-         v->t=Interpolate(z1, o2->t, z2, d2->t);
+         v->t=interpolate(z1, o2->t, z2, d2->t);
       }
    }
 }

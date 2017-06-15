@@ -47,44 +47,44 @@ int main()
 
 		g_database.Link();
 
-		DotNetCommon::Initialize();
+		DotNetCommon::initialize();
 
 		{
 			WrapperIFGenerator gen;
-			gen.Generate(&g_database);
+			gen.generate(&g_database);
 		}
 		{
 			WrapperIFClassesGenerator gen;
-			gen.Generate();
+			gen.generate();
 		}
 		{
 			DotNetPInvokeLibGenerator g;
-			g.Generate();
+			g.generate();
 		}
 		{
 			CSStructsGenerator g;
-			g.Generate();
+			g.generate();
 		}
 		{
 			CSClassLibGenerator g;
-			g.Generate();
+			g.generate();
 		}
 
 		//
 		//
 		//{
 		//	DotNetPInvokeLibGenerator gen;
-		//	gen.Generate(&database);
+		//	gen.generate(&database);
 		//}
 		//
 		//{
 		//	DotNetClassLibGenerator gen;
-		//	gen.Generate(&database);
+		//	gen.generate(&database);
 		//}
 	}
 	catch (Exception& e)
 	{
-		Console::WriteLine(e.GetMessage());
+		Console::writeLine(e.getMessage());
 	}
 	
 	return 0;

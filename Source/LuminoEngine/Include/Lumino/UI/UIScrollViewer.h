@@ -39,19 +39,19 @@ public:
     LN_ROUTED_EVENT2(UIDragDeltaEventArgs, DragCanceledEvent);		/**< マウスドラッグを中断したときに発生するイベントを表します。*/
 
 public:
-	static RefPtr<UIThumb> Create();
+	static RefPtr<UIThumb> create();
 
 LN_CONSTRUCT_ACCESS:
 	UIThumb();
 	virtual ~UIThumb();
-	void Initialize();
+	void initialize();
 
 protected:
-	virtual void OnRoutedEvent(UIEventArgs* e) override;
-	virtual void OnDragStarted(UIDragDeltaEventArgs* e) { if (!e->handled) { RaiseEvent(DragStartedEventId, this, e); } }
-	virtual void OnDragDelta(UIDragDeltaEventArgs* e) { if (!e->handled) { RaiseEvent(DragDeltaEventId, this, e); } }
-	virtual void OnDragCompleted(UIDragDeltaEventArgs* e) { if (!e->handled) { RaiseEvent(DragCompletedEventId, this, e); } }
-	virtual void OnDragCanceled(UIDragDeltaEventArgs* e) { if (!e->handled) { RaiseEvent(DragCanceledEventId, this, e); } }
+	virtual void onRoutedEvent(UIEventArgs* e) override;
+	virtual void onDragStarted(UIDragDeltaEventArgs* e) { if (!e->handled) { raiseEvent(DragStartedEventId, this, e); } }
+	virtual void onDragDelta(UIDragDeltaEventArgs* e) { if (!e->handled) { raiseEvent(DragDeltaEventId, this, e); } }
+	virtual void onDragCompleted(UIDragDeltaEventArgs* e) { if (!e->handled) { raiseEvent(DragCompletedEventId, this, e); } }
+	virtual void onDragCanceled(UIDragDeltaEventArgs* e) { if (!e->handled) { raiseEvent(DragCanceledEventId, this, e); } }
 
 private:
 	PointF	m_lastScreenPosition;
@@ -78,66 +78,66 @@ public:
 	static const String VerticalState;
 
 
-	static RefPtr<UITrack> Create();
+	static RefPtr<UITrack> create();
 public:
 
 	/** Track の方向を指定します。*/
-	void SetOrientation(Orientation orientation);
+	void setOrientation(Orientation orientation);
 
 	/** Track の方向を取得します。規定値は Orientation::Horizontal です。*/
-	Orientation GetOrientation() const { return m_orientation; }
+	Orientation getOrientation() const { return m_orientation; }
 
 	/** スクロール位置に対する値を設定します。*/
-	void SetValue(float value) { m_value = value; }
+	void setValue(float value) { m_value = value; }
 
 	/** スクロール位置に対する値を取得します。規定値は 0 です。*/
-	float GetValue() const { return m_value; }
+	float getValue() const { return m_value; }
 
 	/** 指定可能な最小値を設定します。*/
-	void SetMinimum(float value) { m_minimum = value; }
+	void setMinimum(float value) { m_minimum = value; }
 
 	/** 指定可能な最小値を取得します。規定値は 0 です。*/
-	float GetMinimum() const { return m_minimum; }
+	float getMinimum() const { return m_minimum; }
 
 	/** 指定可能な最大値を設定します。*/
-	void SetMaximum(float value) { m_maximum = value; }
+	void setMaximum(float value) { m_maximum = value; }
 
 	/** 指定可能な最大値を取得します。規定値は 1 です。*/
-	float GetMaximum() const { return m_maximum; }
+	float getMaximum() const { return m_maximum; }
 
 	/** スクロール可能なコンテンツの中で表示される部分のサイズを設定します。*/
-	void SetViewportSize(float value) { m_viewportSize = value; }
+	void setViewportSize(float value) { m_viewportSize = value; }
 
 	/** スクロール可能なコンテンツの中で表示される部分のサイズを取得します。*/
-	float GetViewportSize() const { return m_viewportSize; }
+	float getViewportSize() const { return m_viewportSize; }
 
 	/** 距離を値に変換します。*/
-	float ValueFromDistance(float horizontal, float vertical);
+	float valueFromDistance(float horizontal, float vertical);
 
-	UIThumb* GetThumb() const;
-	UIButton* GetDecreaseButton() const;
-	UIButton* GetIncreaseButton() const;
+	UIThumb* getThumb() const;
+	UIButton* getDecreaseButton() const;
+	UIButton* getIncreaseButton() const;
 
 LN_CONSTRUCT_ACCESS:
 
 	UITrack();
 	virtual ~UITrack();
-	void Initialize();
+	void initialize();
 
 protected:
 	// UIElement interface
-	virtual Size MeasureOverride(const Size& constraint) override;
-	virtual Size ArrangeOverride(const Size& finalSize) override;
+	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
 
 private:
-	void CoerceLength(float& componentLength, float trackLength);
-	void CalcSliderComponentsSize(
+	void coerceLength(float& componentLength, float trackLength);
+	void calcSliderComponentsSize(
 		const Size& arrangeSize,
 		bool isVertical,
 		float* outDecreaseButtonLength,
 		float* outThumbLength,
 		float* outIncreaseButtonLength);
-	void CalcScrollBarComponentsSize(
+	void calcScrollBarComponentsSize(
 		float trackLength,
 		float viewportSize,
 		float* outDecreaseButtonLength,
@@ -175,11 +175,11 @@ class UIScrollEventArgs
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	static UIScrollEventArgsPtr Create(Object* sender, float newValue, ScrollEventType type, bool caching = true);
+	static UIScrollEventArgsPtr create(Object* sender, float newValue, ScrollEventType type, bool caching = true);
 
 	UIScrollEventArgs();
 	virtual ~UIScrollEventArgs();
-	void Initialize(Object* sender, float newValue_, ScrollEventType type_);
+	void initialize(Object* sender, float newValue_, ScrollEventType type_);
 
 public:
 	float			newValue;	/** 新しい値 */
@@ -204,54 +204,54 @@ public:
 
 
 
-	static RefPtr<UIScrollBar> Create();
+	static RefPtr<UIScrollBar> create();
 	// TODO:↓後で RangeBase に移すかも
 
 
 	/** ScrollBar の方向を指定します。*/
-	void SetOrientation(Orientation orientation);
+	void setOrientation(Orientation orientation);
 
 	/** ScrollBar の方向を取得します。規定値は Orientation::Horizontal です。*/
-	Orientation GetOrientation() const;
+	Orientation getOrientation() const;
 
 	/** スクロール位置に対する値を設定します。*/
-	void SetValue(float value);
+	void setValue(float value);
 
 	/** スクロール位置に対する値を取得します。規定値は 0 です。*/
-	float GetValue() const;
+	float getValue() const;
 
 	/** 指定可能な最小値を設定します。*/
-	void SetMinimum(float value);
+	void setMinimum(float value);
 
 	/** 指定可能な最小値を取得します。規定値は 0 です。*/
-	float GetMinimum() const;
+	float getMinimum() const;
 
 	/** 指定可能な最大値を設定します。*/
-	void SetMaximum(float value);
+	void setMaximum(float value);
 
 	/** 指定可能な最大値を取得します。規定値は 1 です。*/
-	float GetMaximum() const;
+	float getMaximum() const;
 
 	/** スクロール可能なコンテンツの中で表示される部分のサイズを設定します。*/
-	void SetViewportSize(float value);
+	void setViewportSize(float value);
 
 	/** スクロール可能なコンテンツの中で表示される部分のサイズを取得します。*/
-	float GetViewportSize() const;
+	float getViewportSize() const;
 
 LN_CONSTRUCT_ACCESS:
 	UIScrollBar();
 	virtual ~UIScrollBar();
-	void Initialize();
+	void initialize();
 
 protected:
 	// UIElement interface
-	virtual void OnRoutedEvent(UIEventArgs* e) override;
-	virtual Size MeasureOverride(const Size& constraint) override;
-	virtual Size ArrangeOverride(const Size& finalSize) override;
+	virtual void onRoutedEvent(UIEventArgs* e) override;
+	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
 	//virtual void GetStyleClassName(String* outSubStateName);
 
 private:
-	void UpdateValue(float horizontalDragDelta, float verticalDragDelta);
+	void updateValue(float horizontalDragDelta, float verticalDragDelta);
 
 	RefPtr<UITrack>		m_track;
 	RefPtr<UIButton>	m_lineUpButton;
@@ -268,21 +268,21 @@ class UIScrollViewer
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
-	static RefPtr<UIScrollViewer> Create();
+	static RefPtr<UIScrollViewer> create();
 
 LN_CONSTRUCT_ACCESS:
 	UIScrollViewer();
 	virtual ~UIScrollViewer();
-	void Initialize();
+	void initialize();
 
 protected:
 	// UIElement interface
-	virtual Size MeasureOverride(const Size& constraint) override;
-	virtual Size ArrangeOverride(const Size& finalSize) override;
-	virtual void OnRoutedEvent(UIEventArgs* e) override;
+	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
+	virtual void onRoutedEvent(UIEventArgs* e) override;
 
 	// UIControl interface
-	virtual void OnLayoutPanelChanged(UILayoutPanel* newPanel) override;
+	virtual void onLayoutPanelChanged(UILayoutPanel* newPanel) override;
 
 private:
 	RefPtr<UIScrollBar>			m_horizontalScrollBar;

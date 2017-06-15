@@ -16,7 +16,7 @@ TEST_F(Test_Plane, Basic)
 		ASSERT_PLANE_NEAR(0, 0, 0, 0, pl1);
 		Plane pl2(1, 2, 3, 4);
 		ASSERT_PLANE_NEAR(1, 2, 3, 4, pl2);
-		Plane pl3(Vector3(1, 2, 3), Vector3::Normalize(4, 5, 6));
+		Plane pl3(Vector3(1, 2, 3), Vector3::normalize(4, 5, 6));
 		ASSERT_PLANE_NEAR(0.455842, 0.569803, 0.683764, -3.646739, pl3);
 		Plane pl4(Vector3(1, 2, 3), Vector3(4, 5, 6), Vector3(-7, -8, -9));
 		ASSERT_PLANE_NEAR(-0.408248, 0.816497, -0.408248, -0.000000, pl4);
@@ -26,24 +26,24 @@ TEST_F(Test_Plane, Basic)
 		Plane pl5(Vector3(0, 0, 0), Vector3(0, 0, 1), Vector3(1, 0, 0));
 		ASSERT_PLANE_NEAR(0, 1, 0, 0, pl5);
 	}
-	// this->Normalize
+	// this->normalize
 	{
 		Plane pl1(10, 20, 30, 40);
-		pl1.Normalize();
+		pl1.normalize();
 		ASSERT_PLANE_NEAR(0.267261, 0.534522, 0.801784, 1.069045, pl1);
 	}
-	// this->CheckInside
+	// this->checkInside
 	{
 		Plane pl1(Vector3(0, 0, 0), Vector3(0, 1, 0));
-		ASSERT_FALSE(pl1.CheckInside(Vector3(0, 10, 0)));	// 上の方
-		ASSERT_TRUE(pl1.CheckInside(Vector3(0, -10, 0)));	// 下の方
+		ASSERT_FALSE(pl1.checkInside(Vector3(0, 10, 0)));	// 上の方
+		ASSERT_TRUE(pl1.checkInside(Vector3(0, -10, 0)));	// 下の方
 
-		ASSERT_FALSE(pl1.CheckInside(Vector3(0, 10, 0), 5));	// 上の方
-		ASSERT_TRUE(pl1.CheckInside(Vector3(0, -10, 0), 5));	// 下の方
-		ASSERT_TRUE(pl1.CheckInside(Vector3(0, -10, 0), 15));	// 中心は内側。上が少しはみ出てる
-		ASSERT_TRUE(pl1.CheckInside(Vector3(0, 10, 0), 15));	// 中心は外側。下が少しめり込んでる
+		ASSERT_FALSE(pl1.checkInside(Vector3(0, 10, 0), 5));	// 上の方
+		ASSERT_TRUE(pl1.checkInside(Vector3(0, -10, 0), 5));	// 下の方
+		ASSERT_TRUE(pl1.checkInside(Vector3(0, -10, 0), 15));	// 中心は内側。上が少しはみ出てる
+		ASSERT_TRUE(pl1.checkInside(Vector3(0, 10, 0), 15));	// 中心は外側。下が少しめり込んでる
 	}
-	// this->Intersects
+	// this->intersects
 	{
 		Plane pl1(
 			Vector3(1, 2, 3),
@@ -53,7 +53,7 @@ TEST_F(Test_Plane, Basic)
 		Vector3 v5(-10, -10, -20);
 
 		Vector3 v6;
-		bool r = pl1.Intersects(v4, v5, &v6);
+		bool r = pl1.intersects(v4, v5, &v6);
 		ASSERT_TRUE(r);
 		ASSERT_VEC3_NEAR(-7.184465, -4.368931, -8.737862, v6);
 		
@@ -61,57 +61,57 @@ TEST_F(Test_Plane, Basic)
 		Plane pl2(Vector3(0, 0, 0), Vector3(0, 1, 0));
 		Vector3 start(1, 1, 1);
 		Vector3 end(2, 1, 2);
-		r = pl2.Intersects(start, end, &v6);
+		r = pl2.intersects(start, end, &v6);
 		ASSERT_FALSE(r);
 	}
-	// this->Intersects
+	// this->intersects
 	{
 		Plane pl1(Vector3(2, 3, 4), Vector3::UnitX);
 
 		Vector3 v;
 		bool r;
-		ASSERT_EQ(true, pl1.Intersects(Ray(Vector3(0, 0, 0), Vector3(1, 0, 0)), &v));	// 直行
+		ASSERT_EQ(true, pl1.intersects(Ray(Vector3(0, 0, 0), Vector3(1, 0, 0)), &v));	// 直行
 		ASSERT_VEC3_NEAR(2, 0, 0, v);
-		ASSERT_EQ(false, pl1.Intersects(Ray(Vector3(0, 0, 0), Vector3(0, 1, 0)), &v));	// 平行
-		ASSERT_EQ(false, pl1.Intersects(Ray(Vector3(0, 0, 0), Vector3(0, 0, 1)), &v));	// 平行
+		ASSERT_EQ(false, pl1.intersects(Ray(Vector3(0, 0, 0), Vector3(0, 1, 0)), &v));	// 平行
+		ASSERT_EQ(false, pl1.intersects(Ray(Vector3(0, 0, 0), Vector3(0, 0, 1)), &v));	// 平行
 
-		ASSERT_EQ(true, pl1.Intersects(Ray(Vector3(0, 0, 1), Vector3::Normalize(1, 0, -1)), &v));
+		ASSERT_EQ(true, pl1.intersects(Ray(Vector3(0, 0, 1), Vector3::normalize(1, 0, -1)), &v));
 		ASSERT_VEC3_NEAR(2, 0, -1, v);
 	}
-	// this->Transform
+	// this->transform
 	{
 		Vector3 v1(10, 0.5, -30);
-		Vector3 v2 = Vector3::Normalize(4, 5, 6);
+		Vector3 v2 = Vector3::normalize(4, 5, 6);
 		Plane pl1(v1, v2);
 
-		Matrix mat = Matrix::MakeRotationZ(Math::PI / 2);
-		pl1.Transform(mat);
+		Matrix mat = Matrix::makeRotationZ(Math::PI / 2);
+		pl1.transform(mat);
 		ASSERT_PLANE_NEAR(-0.569803, 0.455842, 0.683764, 15.669580, pl1);
 	}
 
-	// Plane::Normalize
+	// Plane::normalize
 	{
-		Plane pl1 = Plane::Normalize(Plane(10, 20, 30, 40));
+		Plane pl1 = Plane::normalize(Plane(10, 20, 30, 40));
 		ASSERT_PLANE_NEAR(0.267261, 0.534522, 0.801784, 1.069045, pl1);
 	}
-	// Plane::Dot / DotCoord / DotNormal
+	// Plane::dot / dotCoord / dotNormal
 	{
 		Plane pl1(Vector3(1, 2, 3), Vector3(4, -5, 6), Vector3(-7, -8, -9));
-		float v1 = Plane::Dot(pl1, Vector4(0, 10, 20, 0.5f));
-		float v2 = Plane::DotCoord(pl1, Vector3(0, 10, 20));
-		float v3 = Plane::DotNormal(pl1, Vector3(0, 10, 20));
+		float v1 = Plane::dot(pl1, Vector4(0, 10, 20, 0.5f));
+		float v2 = Plane::dotCoord(pl1, Vector3(0, 10, 20));
+		float v3 = Plane::dotNormal(pl1, Vector3(0, 10, 20));
 		ASSERT_NEAR(-10.746395, v1, 0.000001);
 		ASSERT_NEAR(-10.327704, v2, 0.000001);
 		ASSERT_NEAR(-11.165086, v3, 0.000001);
 	}
-	// Plane::Transform
+	// Plane::transform
 	{
 		Vector3 v1(10, 0.5, -30);
-		Vector3 v2 = Vector3::Normalize(4, 5, 6);
+		Vector3 v2 = Vector3::normalize(4, 5, 6);
 		Plane pl1(v1, v2);
 
-		Matrix mat = Matrix::MakeRotationZ(Math::PI / 2);
-		Plane pl2 = Plane::Transform(pl1, mat);
+		Matrix mat = Matrix::makeRotationZ(Math::PI / 2);
+		Plane pl2 = Plane::transform(pl1, mat);
 		ASSERT_PLANE_NEAR(-0.569803, 0.455842, 0.683764, 15.669580, pl2);
 	}
 

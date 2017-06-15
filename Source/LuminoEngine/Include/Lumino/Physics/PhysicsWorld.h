@@ -20,30 +20,30 @@ public:
 	//void AddRigidBody(RigidBody* rigidBody);
 	//void RemoveRigidBody(RigidBody* rigidBody);
 
-	void SetGravity(const Vector3& gravity);
+	void setGravity(const Vector3& gravity);
 
 
 LN_CONSTRUCT_ACCESS:
 	PhysicsWorld();
 	virtual ~PhysicsWorld();
-	void Initialize();
+	void initialize();
 
 LN_INTERNAL_ACCESS:
 	class IDebugRenderer
 	{
 	public:
 
-		virtual void DrawLine(const Vector3& from, const Vector3& to, const Vector3& fromColor, const Vector3& toColor) = 0;
+		virtual void drawLine(const Vector3& from, const Vector3& to, const Vector3& fromColor, const Vector3& toColor) = 0;
 	};
 
-	btDiscreteDynamicsWorld* GetBtWorld() { return m_btWorld; }
-	void StepSimulation(float elapsedTime);
-	void DrawDebugShapes(IDebugRenderer* renderer);
+	btDiscreteDynamicsWorld* getBtWorld() { return m_btWorld; }
+	void stepSimulation(float elapsedTime);
+	void drawDebugShapes(IDebugRenderer* renderer);
 
-	void AddPhysicsObject(PhysicsObject* physicsObject);
-	void AddJoint(Joint* joint);
-	void RemovePhysicsObject(PhysicsObject* physicsObject);
-	void GCPhysicsObjects();
+	void addPhysicsObject(PhysicsObject* physicsObject);
+	void addJoint(Joint* joint);
+	void removePhysicsObject(PhysicsObject* physicsObject);
+	void gcPhysicsObjects();
 
 	// AutoAdd interface
 	//void AutoAddChild(RigidBody* child);

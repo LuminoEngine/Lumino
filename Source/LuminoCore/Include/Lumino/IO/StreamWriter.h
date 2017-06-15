@@ -10,7 +10,7 @@ LN_NAMESPACE_BEGIN
 	@brief		文字列を特定のエンコーディングでストリームに書き込むための TextWriter の実装です。
 	@section	ファイルに1行ずつ書き込み、UTF-8 として保存する
 	~~~~~~~~~~~~~~~{.cpp}
-	StreamWriter writer(_T("file"), Encoding::GetUTF8Encoding());
+	StreamWriter writer(_T("file"), Encoding::getUTF8Encoding());
 	writer.WriteLine(_T("text"));
 	writer.WriteLine(10);
 	writer.WriteLine(3.14);
@@ -41,9 +41,9 @@ public:
 	virtual ~StreamWriter();
 	
 private:
-	void Init(Stream* stream, Encoding* encoding);
-	virtual void Flash();
-	virtual void WriteOverride(const void* data, size_t byteCount);
+	void init(Stream* stream, Encoding* encoding);
+	virtual void flash();
+	virtual void writeOverride(const void* data, size_t byteCount);
 
 private:
 	RefPtr<Stream>	m_stream;

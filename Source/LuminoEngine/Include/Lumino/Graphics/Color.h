@@ -189,9 +189,9 @@ public:
 	/**
 		@brief	各要素を設定します。
 	*/
-	void Set(uint8_t r_, uint8_t g_, uint8_t b_, uint8_t a_ = 255) { r = r_; g = g_; b = b_; a = a_; }
+	void set(uint8_t r_, uint8_t g_, uint8_t b_, uint8_t a_ = 255) { r = r_; g = g_; b = b_; a = a_; }
 
-	static Color32 FromString(const StringRef& str);
+	static Color32 fromString(const StringRef& str);
 
 public:
 	bool operator == (const Color32& color) const { return (memcmp(this, &color, sizeof(Color32)) == 0); }
@@ -396,19 +396,19 @@ public:
 	/**
 		@brief	各要素を設定します。
 	*/
-	void Set(float r_, float g_, float b_, float a_ = 1.0f) { r = r_; g = g_; b = b_; a = a_; }
+	void set(float r_, float g_, float b_, float a_ = 1.0f) { r = r_; g = g_; b = b_; a = a_; }
 
 	/**
 		@brief	この色に指定した色を加算します。0.0～1.0 を超える場合はクランプします。
 	*/
-	void AddClamp(const Color& color);
+	void addClamp(const Color& color);
 
 	/**
 		@brief	この色に指定した色を乗算します。0.0～1.0 を超える場合はクランプします。
 	*/
-	void MultiplyClamp(const Color& color);
+	void multiplyClamp(const Color& color);
 
-	static Color Lerp(const Color& color1, const Color& color2, float t);
+	static Color lerp(const Color& color1, const Color& color2, float t);
 
 	//----------------------------------------------------------------------
 	///**
@@ -431,11 +431,11 @@ public:
 
 	//void dump(const char* str_ = NULL) const;
 
-	Color32 To32BitColor() const;
+	Color32 to32BitColor() const;
 
-	static Color FromString(const StringRef& str);
+	static Color fromString(const StringRef& str);
 
-	Color WithAlpha(float alpha) const { return Color(r, g, b, alpha); }
+	Color withAlpha(float alpha) const { return Color(r, g, b, alpha); }
 
 public:
 	//ColorF& operator = (const ColorF& src) { r = src.r; g = src.g; b = src.b; a = src.a; return *this; }
@@ -489,12 +489,12 @@ public:
 	/**
 		@brief	各要素を設定します。
 	*/
-	void Set(float r_, float g_, float b_, float gs_) { r = r_; g = g_; b = b_; gray = gs_; }
+	void set(float r_, float g_, float b_, float gs_) { r = r_; g = g_; b = b_; gray = gs_; }
 
 	/**
 		@brief	この色調に指定した色調を加算します。0.0～1.0 を超える場合はクランプします。
 	*/
-	void AddClamp(const ToneF& tone);
+	void addClamp(const ToneF& tone);
 
 
 public:
@@ -568,17 +568,17 @@ public:
 	/**
 		@brief	各要素を設定します。
 	*/
-	void Set(uint32_t h, uint32_t s, uint32_t v, uint32_t a_) { H = h; S = s; V = v; a = a_; }
+	void set(uint32_t h, uint32_t s, uint32_t v, uint32_t a_) { H = h; S = s; V = v; a = a_; }
 
 	/**
 		@brief	Color32 型に変換します。
 	*/
-	Color32 ToColor() const;
+	Color32 toColor() const;
 	
 	/**
 		@brief	ColorF 型に変換します。
 	*/
-	Color ToColorF() const;
+	Color toColorF() const;
 
 public:
 	bool operator == (const Color32& color) const { return (memcmp(this, &color, sizeof(Color32)) == 0); }

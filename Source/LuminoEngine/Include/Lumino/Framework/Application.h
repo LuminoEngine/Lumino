@@ -14,14 +14,14 @@ class Application
 	: public RefObject
 {
 public:
-	PlatformWindow* GetNativeMainWindow();
+	PlatformWindow* getNativeMainWindow();
 
 protected:
 	Application();
 	virtual ~Application();
 
 LN_INTERNAL_ACCESS:
-	void Initialize(EngineManager* engineManager);
+	void initialize(EngineManager* engineManager);
 
 private:
 	EngineManager*	m_engineManager;
@@ -60,11 +60,11 @@ public:
 		@brief		アプリケーションを実行します。
 	*/
 	LN_METHOD()
-	void Run(GameScene* initialScene = nullptr);
+	void run(GameScene* initialScene = nullptr);
 
 LN_INTERNAL_ACCESS:
 	LN_METHOD()
-	void Initialize();
+	void initialize();
 
 private:
 	RefPtr<detail::GameSceneManager>	m_gameSceneManager;

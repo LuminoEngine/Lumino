@@ -11,14 +11,14 @@ class EngineDiagViewer
 public:
 	EngineDiagViewer();
 	~EngineDiagViewer();
-	void Initialize(EngineManager* manager, EngineDiagCore* diagCore);
+	void initialize(EngineManager* manager, EngineDiagCore* diagCore);
 
-	//void SetVisible(bool visible) { m_isVisible = visible; }
-	//bool IsVisible() const { return m_isVisible; }
-	void SetDisplayMode(EngineDiagDisplayMode mode) { m_displayMode = mode; }
-	void ToggleDisplayMode();
-	void UpdateFrame();
-	//void Render(DrawingContext* g, const Vector2& viewSize);
+	//void setVisible(bool visible) { m_isVisible = visible; }
+	//bool isVisible() const { return m_isVisible; }
+	void setDisplayMode(EngineDiagDisplayMode mode) { m_displayMode = mode; }
+	void toggleDisplayMode();
+	void updateFrame();
+	//void render(DrawingContext* g, const Vector2& viewSize);
 	
 private:
 	EngineDiagCore*			m_diagCore;

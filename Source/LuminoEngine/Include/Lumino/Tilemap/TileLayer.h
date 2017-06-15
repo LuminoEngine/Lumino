@@ -15,13 +15,13 @@ class TileLayer
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	static TileLayerPtr Create();
+	static TileLayerPtr create();
 
 	TileLayer();
 	virtual ~TileLayer();
 	
-	void Resize(int width, int height);
-	const SizeI& GetSize() const { return m_size; }
+	void resize(int width, int height);
+	const SizeI& getSize() const { return m_size; }
 
 	void SetTileId(int x, int y, int id);
 	int GetTileId(int x, int y);

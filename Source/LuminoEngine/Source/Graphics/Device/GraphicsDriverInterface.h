@@ -53,10 +53,10 @@ class IDeviceObject
 {
 public:
 	/// デバイス消失時の処理
-	virtual void OnLostDevice() = 0;
+	virtual void onLostDevice() = 0;
 
 	/// デバイス復帰時の処理
-	virtual void OnResetDevice() = 0;
+	virtual void onResetDevice() = 0;
 
 protected:
 	virtual ~IDeviceObject() {}
@@ -72,67 +72,67 @@ public:
 	virtual void Finalize() = 0;
 	
 	/// グラフィックスデバイスをライブラリ内部で生成したかを確認する
-	virtual bool IsStandalone() const = 0;
+	virtual bool isStandalone() const = 0;
 
 	/// API 種類の取得
-	virtual GraphicsAPI GetGraphicsAPI() const = 0;
+	virtual GraphicsAPI getGraphicsAPI() const = 0;
 
 	/// デフォルトのスワップチェインの取得
-	virtual ISwapChain* GetDefaultSwapChain() = 0;
+	virtual ISwapChain* getDefaultSwapChain() = 0;
 	
 	/// 描画インターフェイスの取得
 	/// 保持してはなりません。
-	virtual IRenderer* GetRenderer() = 0;
+	virtual IRenderer* getRenderer() = 0;
 
-	virtual IVertexDeclaration* CreateVertexDeclaration(const VertexElement* elements, int elementsCount) = 0;
+	virtual IVertexDeclaration* createVertexDeclaration(const VertexElement* elements, int elementsCount) = 0;
 
 	/// 頂点バッファの作成
-	virtual IVertexBuffer* CreateVertexBuffer(size_t bufferSize, const void* data, ResourceUsage usage) = 0;
+	virtual IVertexBuffer* createVertexBuffer(size_t bufferSize, const void* data, ResourceUsage usage) = 0;
 
-	/// インデックスバッファの作成 (initialData を受け取るようにすれば、後で Lock 用にメモリ確保する必要がなくなる)
-	virtual IIndexBuffer* CreateIndexBuffer(int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage) = 0;
+	/// インデックスバッファの作成 (initialData を受け取るようにすれば、後で lock 用にメモリ確保する必要がなくなる)
+	virtual IIndexBuffer* createIndexBuffer(int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage) = 0;
 
 	/// テクスチャの作成
 	/// initialData : 初期データまたは NULL
-	virtual ITexture* CreateTexture(const SizeI& size, bool mipmap, TextureFormat format, const void* initialData) = 0;
+	virtual ITexture* createTexture(const SizeI& size, bool mipmap, TextureFormat format, const void* initialData) = 0;
 
 	/// テクスチャの作成 (環境依存の画像ファイル読み込み)
-	virtual ITexture* CreateTexturePlatformLoading(Stream* stream, bool mipmap, TextureFormat format) = 0;
+	virtual ITexture* createTexturePlatformLoading(Stream* stream, bool mipmap, TextureFormat format) = 0;
 
-	virtual ITexture* CreateTexture3D(int width, int height, int depth, uint32_t mipLevels, TextureFormat format, ResourceUsage usage, const void* initialData) = 0;
+	virtual ITexture* createTexture3D(int width, int height, int depth, uint32_t mipLevels, TextureFormat format, ResourceUsage usage, const void* initialData) = 0;
 
 	/// レンダーターゲットテクスチャの作成
-	virtual ITexture* CreateRenderTarget(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format) = 0;
+	virtual ITexture* createRenderTarget(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format) = 0;
 
 	/// 深度バッファの作成
-	virtual ITexture* CreateDepthBuffer(uint32_t width, uint32_t height, TextureFormat format) = 0;
+	virtual ITexture* createDepthBuffer(uint32_t width, uint32_t height, TextureFormat format) = 0;
 
 	/// シェーダの作成 (エラーの場合、インスタンスは作成されない)
-	virtual IShader* CreateShader(const void* textData, size_t size, ShaderCompileResult* result) = 0;
+	virtual IShader* createShader(const void* textData, size_t size, ShaderCompileResult* result) = 0;
 
 	/// スワップチェインの作成
-	virtual ISwapChain* CreateSwapChain(PlatformWindow* window) = 0;
+	virtual ISwapChain* createSwapChain(PlatformWindow* window) = 0;
 
 	/// デバイスの状態を取得する
-	virtual DeviceState GetDeviceState() = 0;
+	virtual DeviceState getDeviceState() = 0;
 
 	/// デバイスをリセットする
-	virtual void ResetDevice() = 0;
+	virtual void resetDevice() = 0;
 
 	/// デバイスを停止する
-	virtual void OnLostDevice() = 0;
+	virtual void onLostDevice() = 0;
 
 	/// デバイスを再開する
-	virtual void OnResetDevice() = 0;
+	virtual void onResetDevice() = 0;
 
 	/// 呼び出したスレッドを描画スレッドとして使用できるようにする (描画スレッドを使う場合のみ使用する)
-	virtual void AttachRenderingThread() = 0;
+	virtual void attachRenderingThread() = 0;
 
 	/// 描画スレッドの終了処理
-	virtual void DetachRenderingThread() = 0;
+	virtual void detachRenderingThread() = 0;
 
 
-	virtual void FlushResource() = 0;
+	virtual void flushResource() = 0;
 
 protected:
 	virtual ~IGraphicsDevice() {}
@@ -145,18 +145,18 @@ class ISwapChain
 public:
 
 	/// バックバッファを示すレンダリングターゲット
-	virtual ITexture* GetBackBuffer() = 0;
+	virtual ITexture* getBackBuffer() = 0;
 
 	/// バックバッファサイズを変更する
-	virtual void Resize(const SizeI& size) = 0;
+	virtual void resize(const SizeI& size) = 0;
 
 	/// バックバッファの内容をウィンドウへ転送する
 	///		colorBuffer を本物のバックバッファへ一度コピーしてからウィンドウに Swap する。
 	///		なぜこうしているのかというと、DX9 や OpenGL がデフォルトで作成するバックバッファは細かいフォーマットの制御が効かないため。
-	///		さらに、OpenGL はバックバッファを Renderer::SetRenderTarget したいときはテクスチャ番号 0 をフレームバッファにアタッチする必要がある。
+	///		さらに、OpenGL はバックバッファを Renderer::setRenderTarget したいときはテクスチャ番号 0 をフレームバッファにアタッチする必要がある。
 	///		これはカレントコンテキストに依存するため、複数ウィンドウへの描画を行いたいときに余計な制限をユーザに課すことになる。
 	///		TODO: でも、今は colorBuffer は Graphics::Texture に持っているけど、Driver::SwapChain に持たせてもいいかも。
-	virtual void Present(ITexture* colorBuffer) = 0;
+	virtual void present(ITexture* colorBuffer) = 0;
 
 protected:
 	virtual ~ISwapChain() {}
@@ -169,72 +169,72 @@ class IRenderer
 public:
 
 
-	void EnterRenderState();
-	void LeaveRenderState();
+	void enterRenderState();
+	void leaveRenderState();
 
-	void Begin();
-	void End();
+	void begin();
+	void end();
 
 
-	void SetRenderTarget(int index, ITexture* target);
-	ITexture* GetRenderTarget(int index);
-	void SetDepthBuffer(ITexture* buffer);
-	ITexture* GetDepthBuffer();
+	void setRenderTarget(int index, ITexture* target);
+	ITexture* getRenderTarget(int index);
+	void setDepthBuffer(ITexture* buffer);
+	ITexture* getDepthBuffer();
 
-	void SetRenderState(const RenderState& state) { m_requestedRenderState = state; }
-	const RenderState& GetRenderState() { return m_requestedRenderState; }
-	virtual void SetDepthStencilState(const DepthStencilState& state) { m_requestedDepthStencilState = state; }
-	const DepthStencilState& GetDepthStencilState() { return m_requestedDepthStencilState; }
+	void setRenderState(const RenderState& state) { m_requestedRenderState = state; }
+	const RenderState& getRenderState() { return m_requestedRenderState; }
+	virtual void setDepthStencilState(const DepthStencilState& state) { m_requestedDepthStencilState = state; }
+	const DepthStencilState& getDepthStencilState() { return m_requestedDepthStencilState; }
 
 
 	/// ビューポート矩形の設定
-	//virtual void SetViewport(const RectI& rect) = 0;
+	//virtual void setViewport(const RectI& rect) = 0;
 
 	/// ビューポート矩形の取得
-	//virtual const RectI& GetViewport() = 0;
+	//virtual const RectI& getViewport() = 0;
 
-	void SetVertexDeclaration(IVertexDeclaration* vertexDeclaration);
-	IVertexDeclaration* GetVertexDeclaration() const;
+	void setVertexDeclaration(IVertexDeclaration* vertexDeclaration);
+	IVertexDeclaration* getVertexDeclaration() const;
 
 	/// 頂点バッファの設定
-	void SetVertexBuffer(int streamIndex, IVertexBuffer* vertexBuffer);
-	IVertexBuffer* GetVertexBuffer(int streamIndex);
+	void setVertexBuffer(int streamIndex, IVertexBuffer* vertexBuffer);
+	IVertexBuffer* getVertexBuffer(int streamIndex);
 
 	/// インデックスバッファの設定
-	void SetIndexBuffer(IIndexBuffer* indexBuffer);
+	void setIndexBuffer(IIndexBuffer* indexBuffer);
 
-	void SetShaderPass(IShaderPass* pass);
+	void setShaderPass(IShaderPass* pass);
 
 
 	/// 設定されている各種バッファをクリアする
-	void Clear(ClearFlags flags, const Color& color, float z = 1.0f, uint8_t stencil = 0x00);
+	void clear(ClearFlags flags, const Color& color, float z = 1.0f, uint8_t stencil = 0x00);
 
 	/// プリミティブ描画
-	void DrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount);
+	void drawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount);
 
 	/// プリミティブ描画 (インデックス付き。頂点、インデックスの両方のバッファのdynamic、static が一致している必要がある)
-	void DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount);
+	void drawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount);
 
-	void SetDiag(EngineDiagCore* diag) { m_diag = diag; }
+	void setDiag(EngineDiagCore* diag) { m_diag = diag; }
 
 protected:
 	IRenderer();
 	virtual ~IRenderer();
 
-	virtual void OnEnterRenderState() = 0;
-	virtual void OnLeaveRenderState() = 0;
-	virtual void OnBeginRendering() = 0;
-	virtual void OnEndRendering() = 0;
-	virtual void OnUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, ITexture* depthBuffer) = 0;
-	virtual	void OnUpdateRenderState(const RenderState& newState, const RenderState& oldState, bool reset) = 0;
-	virtual	void OnUpdateDepthStencilState(const DepthStencilState& newState, const DepthStencilState& oldState, bool reset) = 0;
-	virtual void OnUpdatePrimitiveData(IVertexDeclaration* decls, const List<RefPtr<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer) = 0;
-	virtual void OnClear(ClearFlags flags, const Color& color, float z, uint8_t stencil) = 0;
-	virtual void OnDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount) = 0;
-	virtual void OnDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount) = 0;
+	virtual void onEnterRenderState() = 0;
+	virtual void onLeaveRenderState() = 0;
+	virtual void onBeginRendering() = 0;
+	virtual void onEndRendering() = 0;
+	virtual void onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, ITexture* depthBuffer) = 0;
+	virtual	void onUpdateRenderState(const RenderState& newState, const RenderState& oldState, bool reset) = 0;
+	virtual	void onUpdateDepthStencilState(const DepthStencilState& newState, const DepthStencilState& oldState, bool reset) = 0;
+	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, const List<RefPtr<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer) = 0;
+	virtual void onClear(ClearFlags flags, const Color& color, float z, uint8_t stencil) = 0;
+	virtual void onDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount) = 0;
+	virtual void onDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount) = 0;
 
 private:
-	void FlushStates();
+	void flushStates();
 
 	enum ModifiedFlags
 	{
@@ -277,19 +277,19 @@ class IVertexBuffer
 public:
 
 	/// 頂点データのバイト数の取得
-	virtual size_t GetByteCount() const = 0;
+	virtual size_t getByteCount() const = 0;
 
 	///// 頂点バッファリソースの使用方法の取得
-	//virtual DeviceResourceUsage GetUsage() const = 0;
+	//virtual DeviceResourceUsage getUsage() const = 0;
 
 	/// データを転送する
-	virtual void SetSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes) = 0;
+	virtual void setSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes) = 0;
 
 	/// ロック
-	virtual void* Lock() = 0;
+	virtual void* lock() = 0;
 
 	/// アンロック
-	virtual void Unlock() = 0;
+	virtual void unlock() = 0;
 
 protected:
 	virtual ~IVertexBuffer() {};
@@ -300,22 +300,22 @@ class IIndexBuffer
 	: public IDeviceObject
 {
 public:
-	virtual size_t GetByteCount() const = 0;
+	virtual size_t getByteCount() const = 0;
 
 	/// インデックスバッファのフォーマットの取得　
-	virtual IndexBufferFormat GetFormat() const = 0;
+	virtual IndexBufferFormat getFormat() const = 0;
 
 	/// リソースの使用方法の取得
-	virtual ResourceUsage GetUsage() const = 0;
+	virtual ResourceUsage getUsage() const = 0;
 
 	/// データを転送する
-	virtual void SetSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes) = 0;
+	virtual void setSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes) = 0;
 
 	/// ロック
-	virtual void Lock(void** lockedBuffer, size_t* lockedSize) = 0;
+	virtual void lock(void** lockedBuffer, size_t* lockedSize) = 0;
 
 	/// アンロック
-	virtual void Unlock() = 0;
+	virtual void unlock() = 0;
 
 protected:
 	virtual ~IIndexBuffer() {};
@@ -329,39 +329,39 @@ public:
 
 	//void Clear(const Color& color);
 
-	void SetSubData(const PointI& point, Bitmap* bitmap);
+	void setSubData(const PointI& point, Bitmap* bitmap);
 
 
 
 	/// テクスチャの種類の取得
-	virtual TextureType GetTextureType() const = 0;
+	virtual TextureType getTextureType() const = 0;
 
 	/// サーフェイスフォーマットの取得
-	virtual TextureFormat GetTextureFormat() const = 0;
+	virtual TextureFormat getTextureFormat() const = 0;
 
 	/// サイズの取得
-    virtual const SizeI& GetSize() const = 0;
+    virtual const SizeI& getSize() const = 0;
 
 	/// 実際のサイズの取得 (デバイス依存により2のべき乗倍に拡張されたサイズ)
-	virtual const SizeI& GetRealSize() const = 0;
+	virtual const SizeI& getRealSize() const = 0;
 
 	/// サンプラステートの設定
-	virtual void SetSamplerState(const SamplerState& state) = 0;
+	virtual void setSamplerState(const SamplerState& state) = 0;
 
 	/// データ転送 (TODO:部分更新は未実装…)
 	// data に渡されるイメージデータは上下が反転している状態。
-	virtual void SetSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) = 0;
+	virtual void setSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) = 0;
 
-	virtual void SetSubData3D(const Box32& box, const void* data, size_t dataBytes) = 0;
+	virtual void setSubData3D(const Box32& box, const void* data, size_t dataBytes) = 0;
 
 	// (得られるデータは上下反転)
-	virtual void GetData(const RectI& rect, void* outData) = 0;
+	virtual void getData(const RectI& rect, void* outData) = 0;
 
 	/// ロック
-	virtual Bitmap* Lock() = 0;
+	virtual Bitmap* lock() = 0;
 
 	/// アンロック
-	virtual void Unlock() = 0;
+	virtual void unlock() = 0;
 
 protected:
 	virtual ~ITexture();
@@ -373,11 +373,11 @@ public:
 		ScopedLock(ITexture* obj)
 		{
 			m_obj = obj;
-			m_bitmap = m_obj->Lock();
+			m_bitmap = m_obj->lock();
 		}
 		~ScopedLock()
 		{
-			m_obj->Unlock();
+			m_obj->unlock();
 		}
 		Bitmap* GetBitmap()
 		{
@@ -414,21 +414,21 @@ class IShader
 public:
 
 	/// 変数の数を取得する (GL は uniform 変数)
-	virtual int GetVariableCount() const = 0;
+	virtual int getVariableCount() const = 0;
 
 	/// 変数を取得する
-	virtual IShaderVariable* GetVariable(int index) const = 0;
+	virtual IShaderVariable* getVariable(int index) const = 0;
 
 	/// テクニックの数を取得する
-	virtual int GetTechniqueCount() const = 0;
+	virtual int getTechniqueCount() const = 0;
 
 	/// テクニックを取得する
-	virtual IShaderTechnique* GetTechnique(int index) const = 0;
+	virtual IShaderTechnique* getTechnique(int index) const = 0;
 
 public:
 
 	/// 名前を指定して変数を取得する (見つからなければ NULL を返す)
-	IShaderVariable* GetVariableByName(const TCHAR* name) const;
+	IShaderVariable* getVariableByName(const TCHAR* name) const;
 
 protected:
 	virtual ~IShader() {}
@@ -443,85 +443,85 @@ class IShaderVariable
 public:
 
 	/// 変数の型の取得
-	virtual ShaderVariableType GetType() const = 0;
+	virtual ShaderVariableType getType() const = 0;
 
 	/// 変数名の取得
-	virtual const String& GetName() const = 0;
+	virtual const String& getName() const = 0;
 
 	/// セマンティクス名の取得 (無い場合は NULL)
-	virtual const String& GetSemanticName() const = 0;
+	virtual const String& getSemanticName() const = 0;
 
 	/// 行列型の場合の行の数を取得する
-	virtual int GetMatrixRows() const = 0;
+	virtual int getMatrixRows() const = 0;
 
 	/// 行列型の場合の列の数を取得する
-	virtual int GetMatrixColumns() const = 0;
+	virtual int getMatrixColumns() const = 0;
 
 	/// 配列型の場合の要素数を取得する (0 の場合は配列ではない)
-	virtual int GetArrayElements() const = 0;
+	virtual int getArrayElements() const = 0;
 
 	/// ブール値の設定
-	virtual void SetBool(bool value) = 0;
+	virtual void setBool(bool value) = 0;
 
 	/// ブール値の取得
 	//virtual bool GetBool() = 0;
 
-	virtual void SetBoolArray(const bool* values, int count) = 0;
+	virtual void setBoolArray(const bool* values, int count) = 0;
 
 	/// 整数値の設定
-	virtual void SetInt(int value) = 0;
+	virtual void setInt(int value) = 0;
 
 	/// 整数値の取得
 	//virtual int GetInt() = 0;
 
 	/// 実数値の設定
-	virtual void SetFloat(float value) = 0;
+	virtual void setFloat(float value) = 0;
 
 	/// 実数値の取得
 	//virtual float GetFloat() = 0;
 
-	virtual void SetFloatArray(const float* values, int count) = 0;
+	virtual void setFloatArray(const float* values, int count) = 0;
 
 	/// ベクトルの設定
-	virtual void SetVector(const Vector4& vec) = 0;
+	virtual void setVector(const Vector4& vec) = 0;
 
 	/// ベクトルの取得
-	//virtual const Vector4& GetVector() = 0;
+	//virtual const Vector4& getVector() = 0;
 
 	/// ベクトル配列の設定
-	virtual void SetVectorArray(const Vector4* vectors, int count) = 0;
+	virtual void setVectorArray(const Vector4* vectors, int count) = 0;
 
 	/// ベクトル配列の取得
-	//virtual const Vector4* GetVectorArray() = 0;
+	//virtual const Vector4* getVectorArray() = 0;
 
 	/// 行列の設定
-	virtual void SetMatrix(const Matrix& matrix) = 0;
+	virtual void setMatrix(const Matrix& matrix) = 0;
 
 	/// 行列の取得
-	//virtual const Matrix& GetMatrix() = 0;
+	//virtual const Matrix& getMatrix() = 0;
 
 	/// 行列の配列の設定
-	virtual void SetMatrixArray(const Matrix* matrices, int count) = 0;
+	virtual void setMatrixArray(const Matrix* matrices, int count) = 0;
 
 	/// 行列の配列の取得
-	//virtual const Matrix* GetMatrixArray() = 0;
+	//virtual const Matrix* getMatrixArray() = 0;
 
 	/// テクスチャの設定
-	virtual void SetTexture(ITexture* texture) = 0;
+	virtual void setTexture(ITexture* texture) = 0;
 
 	/// テクスチャの設定
-	//virtual ITexture* GetTexture() = 0;
+	//virtual ITexture* getTexture() = 0;
 
 	/// 文字列の取得
 	//virtual const TCHAR* GetString() = 0;
 
-	virtual const ShaderValue& GetValue() const = 0;
+	virtual const ShaderValue& getValue() const = 0;
 
 	/// アノテーションの数を取得する
-	virtual int GetAnnotationCount() = 0;
+	virtual int getAnnotationCount() = 0;
 
 	/// アノテーションを取得する
-	virtual IShaderVariable* GetAnnotation(int index) = 0;
+	virtual IShaderVariable* getAnnotation(int index) = 0;
 
 protected:
 	virtual ~IShaderVariable() {}
@@ -534,19 +534,19 @@ class IShaderTechnique
 public:
 
 	/// テクニックの名前を取得する
-	virtual const TCHAR* GetName() const = 0;
+	virtual const TCHAR* getName() const = 0;
 
 	/// テクニック内のパスの数を取得する
-	virtual int GetPassCount() const = 0;
+	virtual int getPassCount() const = 0;
 
 	/// パスを取得する
-	virtual IShaderPass* GetPass(int index) = 0;
+	virtual IShaderPass* getPass(int index) = 0;
 
 	/// アノテーションの数を取得する
-	virtual int GetAnnotationCount() = 0;
+	virtual int getAnnotationCount() = 0;
 
 	/// アノテーションを取得する
-	virtual IShaderVariable* GetAnnotation(int index) = 0;
+	virtual IShaderVariable* getAnnotation(int index) = 0;
 
 protected:
 	virtual ~IShaderTechnique() {}
@@ -559,21 +559,21 @@ class IShaderPass
 public:
 
 	/// パスの名前を取得する
-	virtual const TCHAR* GetName() const = 0;
+	virtual const TCHAR* getName() const = 0;
 
 	/// アノテーションの数を取得する
-	virtual int GetAnnotationCount() = 0;
+	virtual int getAnnotationCount() = 0;
 
 	/// アノテーションを取得する
-	virtual IShaderVariable* GetAnnotation(int index) = 0;
+	virtual IShaderVariable* getAnnotation(int index) = 0;
 
 protected:
 	friend class IRenderer;
 	/// パスを適用する (CommitChanges するときも再コール)
-	virtual void Apply() = 0;
+	virtual void apply() = 0;
 
 	/// パスの適用を終了する
-	//virtual void End() = 0;
+	//virtual void end() = 0;
 
 protected:
 	virtual ~IShaderPass() {}

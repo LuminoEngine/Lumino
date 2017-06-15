@@ -33,7 +33,7 @@ static UIManager* g_uiManager = nullptr;
 const float UIManager::MouseButtonClickTimeout = 0.3f;
 
 //------------------------------------------------------------------------------
-UIManager* UIManager::GetInstance(UIManager* priority)
+UIManager* UIManager::getInstance(UIManager* priority)
 {
 	return (priority != nullptr) ? priority : g_uiManager;
 }
@@ -58,7 +58,7 @@ UIManager::~UIManager()
 }
 
 //------------------------------------------------------------------------------
-void UIManager::Initialize(const Settings& settings)
+void UIManager::initialize(const Settings& settings)
 {
 	if (LN_CHECK_ARG(settings.fileManager != nullptr)) return;
 	if (LN_CHECK_ARG(settings.animationManager != nullptr)) return;
@@ -74,30 +74,30 @@ void UIManager::Initialize(const Settings& settings)
 	m_assetsManager = settings.assetsManager;
 
 	// default UI skin
-	if (settings.defaultSkinFilePath.IsEmpty())
+	if (settings.defaultSkinFilePath.isEmpty())
 	{
 		static const byte_t defaultSkin_data[] =
 		{
 #include "Resource/DefaultSkin.png.h"
 		};
 		MemoryStream defaultSkinStream(defaultSkin_data, LN_ARRAY_SIZE_OF(defaultSkin_data));
-		m_defaultSkinTexture = RefPtr<Texture2D>::MakeRef();
-		m_defaultSkinTexture = NewObject<Texture2D>(&defaultSkinStream, TextureFormat::R8G8B8A8, false);
+		m_defaultSkinTexture = RefPtr<Texture2D>::makeRef();
+		m_defaultSkinTexture = newObject<Texture2D>(&defaultSkinStream, TextureFormat::R8G8B8A8, false);
 	}
 	else
 	{
-		m_defaultSkinTexture = NewObject<Texture2D>(settings.defaultSkinFilePath, TextureFormat::R8G8B8A8, false);
+		m_defaultSkinTexture = newObject<Texture2D>(settings.defaultSkinFilePath, TextureFormat::R8G8B8A8, false);
 	}
 
 	m_defaultStyleTable = LN_NEW UIStyleTable();
-	MakeDefaultStyle(m_defaultStyleTable);
+	makeDefaultStyle(m_defaultStyleTable);
 
 	if (g_uiManager == nullptr)
 	{
 		g_uiManager = this;
 	}
 
-	CreateGlobalObjects();
+	createGlobalObjects();
 }
 
 //------------------------------------------------------------------------------
@@ -120,12 +120,12 @@ void UIManager::Finalize()
 }
 
 //------------------------------------------------------------------------------
-void UIManager::CreateGameModeMainFrame(World2D* defaultWorld2D, World3D* defaultWorld3D)
+void UIManager::createGameModeMainFrame(World2D* defaultWorld2D, World3D* defaultWorld3D)
 {
 	if (LN_CHECK_STATE(m_mainWindow == nullptr)) return;
 
 	m_mainWindow = LN_NEW UIMainWindow();
-	m_mainWindow->Initialize(m_platformManager->GetMainWindow(), defaultWorld2D, defaultWorld3D);
+	m_mainWindow->initialize(m_platformManager->getMainWindow(), defaultWorld2D, defaultWorld3D);
 }
 
 //------------------------------------------------------------------------------
@@ -134,30 +134,30 @@ void UIManager::CreateGameModeMainFrame(World2D* defaultWorld2D, World3D* defaul
 //	if (LN_CHECK_STATE(m_mainWindow == nullptr)) return;
 //
 //	m_mainWindow = LN_NEW UINativeHostWindow();
-//	m_mainWindow->Initialize(this, )
+//	m_mainWindow->initialize(this, )
 //}
 
 //------------------------------------------------------------------------------
-void UIManager::ReleaseGameModeMainFrame()
+void UIManager::releaseGameModeMainFrame()
 {
 	// TODO: MainWindow は UIManager の中で作るのではなく Engine のほうがいい気がしてきた。
 	LN_SAFE_RELEASE(m_mainWindow);
 }
 
 //------------------------------------------------------------------------------
-void UIManager::CaptureMouse(UIElement* element)
+void UIManager::captureMouse(UIElement* element)
 {
 	m_mouseCapturedElement = element;
 }
 
 //------------------------------------------------------------------------------
-void UIManager::ReleaseMouseCapture(UIElement* element)
+void UIManager::releaseMouseCapture(UIElement* element)
 {
 	m_mouseCapturedElement = nullptr;
 }
 
 //------------------------------------------------------------------------------
-void UIManager::CreateGlobalObjects()
+void UIManager::createGlobalObjects()
 {
 	UIEvents::MouseMoveEvent = UIEventManager::RegisterEvent();
 	UIEvents::MouseDownEvent = UIEventManager::RegisterEvent();
@@ -169,94 +169,94 @@ void UIManager::CreateGlobalObjects()
 	UIEvents::KeyUpEvent = UIEventManager::RegisterEvent();
 	UIEvents::TextInputEvent = UIEventManager::RegisterEvent();
 
-	auto cmd = NewObject<UIRoutedCommand>();
-	m_allGlobalCommands.Add(cmd);
+	auto cmd = newObject<UIRoutedCommand>();
+	m_allGlobalCommands.add(cmd);
 	UIApplicationCommands::Paste = cmd;
 }
 
 //------------------------------------------------------------------------------
-void UIManager::MakeDefaultStyle(UIStyleTable* table)
+void UIManager::makeDefaultStyle(UIStyleTable* table)
 {
 	//{
-	//	auto test = UIStyle::Create();
+	//	auto test = UIStyle::create();
 	//	test->AddValue(_T(""), UITextBlock::FontSizeId, 20);
 	//	test->AddValue(_T(""), UITextBlock::foregroundId, Brush::Black);
-	//	table->AddStyle(tr::TypeInfo::GetTypeInfo<UITextBlock>(), test);
+	//	table->AddStyle(tr::TypeInfo::getTypeInfo<UITextBlock>(), test);
 	//}
 
-	auto containerBackground = SolidColorBrush::Create(Color::White, 0.3);
-	auto containerItemMouseOver = SolidColorBrush::Create(UIColors::GetColor(UIColorIndex::LightGreen, 5), 0.5f);
+	auto containerBackground = SolidColorBrush::create(Color::White, 0.3);
+	auto containerItemMouseOver = SolidColorBrush::create(UIColors::getColor(UIColorIndex::LightGreen, 5), 0.5f);
 
-	auto boarderNormalBrush = TextureBrush::Create(m_defaultSkinTexture);
-	boarderNormalBrush->SetSourceRect(0, 32, 32, 32);
-	boarderNormalBrush->SetBorderThickness(8, 8, 8, 8);
-	boarderNormalBrush->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
-	boarderNormalBrush->SetWrapMode(BrushWrapMode::Stretch);
+	auto boarderNormalBrush = TextureBrush::create(m_defaultSkinTexture);
+	boarderNormalBrush->setSourceRect(0, 32, 32, 32);
+	boarderNormalBrush->getBorderThickness(8, 8, 8, 8);
+	boarderNormalBrush->getImageDrawMode(BrushImageDrawMode::BoxFrame);
+	boarderNormalBrush->setWrapMode(BrushWrapMode::Stretch);
 
 
 	// UIButton
 	{
-		auto buttonNormalBrush = TextureBrush::Create(m_defaultSkinTexture);
-		buttonNormalBrush->SetSourceRect(0, 0, 32, 32);
-		buttonNormalBrush->SetBorderThickness(8, 8, 8, 8);
-		buttonNormalBrush->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
-		buttonNormalBrush->SetWrapMode(BrushWrapMode::Stretch);
+		auto buttonNormalBrush = TextureBrush::create(m_defaultSkinTexture);
+		buttonNormalBrush->setSourceRect(0, 0, 32, 32);
+		buttonNormalBrush->getBorderThickness(8, 8, 8, 8);
+		buttonNormalBrush->getImageDrawMode(BrushImageDrawMode::BoxFrame);
+		buttonNormalBrush->setWrapMode(BrushWrapMode::Stretch);
 
-		auto buttonMouseOverBrush = TextureBrush::Create(m_defaultSkinTexture);
-		buttonMouseOverBrush->SetSourceRect(32, 0, 32, 32);
-		buttonMouseOverBrush->SetBorderThickness(8, 8, 8, 8);
-		buttonMouseOverBrush->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
-		buttonMouseOverBrush->SetWrapMode(BrushWrapMode::Stretch);
+		auto buttonMouseOverBrush = TextureBrush::create(m_defaultSkinTexture);
+		buttonMouseOverBrush->setSourceRect(32, 0, 32, 32);
+		buttonMouseOverBrush->getBorderThickness(8, 8, 8, 8);
+		buttonMouseOverBrush->getImageDrawMode(BrushImageDrawMode::BoxFrame);
+		buttonMouseOverBrush->setWrapMode(BrushWrapMode::Stretch);
 
-		auto buttonFocusedBrush = TextureBrush::Create(m_defaultSkinTexture);
-		buttonFocusedBrush->SetSourceRect(64, 0, 32, 32);
-		buttonFocusedBrush->SetBorderThickness(8, 8, 8, 8);
-		buttonFocusedBrush->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
-		buttonFocusedBrush->SetWrapMode(BrushWrapMode::Stretch);
+		auto buttonFocusedBrush = TextureBrush::create(m_defaultSkinTexture);
+		buttonFocusedBrush->setSourceRect(64, 0, 32, 32);
+		buttonFocusedBrush->getBorderThickness(8, 8, 8, 8);
+		buttonFocusedBrush->getImageDrawMode(BrushImageDrawMode::BoxFrame);
+		buttonFocusedBrush->setWrapMode(BrushWrapMode::Stretch);
 
-		auto buttonPressedBrush = TextureBrush::Create(m_defaultSkinTexture);
-		buttonPressedBrush->SetSourceRect(96, 0, 32, 32);
-		buttonPressedBrush->SetBorderThickness(8, 8, 8, 8);
-		buttonPressedBrush->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
-		buttonPressedBrush->SetWrapMode(BrushWrapMode::Stretch);
+		auto buttonPressedBrush = TextureBrush::create(m_defaultSkinTexture);
+		buttonPressedBrush->setSourceRect(96, 0, 32, 32);
+		buttonPressedBrush->getBorderThickness(8, 8, 8, 8);
+		buttonPressedBrush->getImageDrawMode(BrushImageDrawMode::BoxFrame);
+		buttonPressedBrush->setWrapMode(BrushWrapMode::Stretch);
 
-		auto* s = table->GetStyle(tr::TypeInfo::GetTypeInfo<UIButton>()->GetName());
+		auto* s = table->getStyle(tr::TypeInfo::getTypeInfo<UIButton>()->getName());
 		// base
 		{
-			auto* props = s->GetPropertyTable();
+			auto* props = s->getPropertyTable();
 			//st->background = RefPtr<Brush>::StaticCast(buttonNormalBrush);
 			props->borderThickness = ThicknessF(1);
 		}
 		// UIButton.Focused
 		{
-			auto* st = s->GetPropertyTable(UIVisualStates::FocusedState);
-			st->background = RefPtr<Brush>::StaticCast(buttonFocusedBrush);
+			auto* st = s->getPropertyTable(UIVisualStates::FocusedState);
+			st->background = RefPtr<Brush>::staticCast(buttonFocusedBrush);
 		}
 		// UIButton.MouseOver
 		{
-			auto* st = s->GetPropertyTable(UIVisualStates::MouseOverState);
-			st->background = RefPtr<Brush>::StaticCast(buttonMouseOverBrush);
+			auto* st = s->getPropertyTable(UIVisualStates::MouseOverState);
+			st->background = RefPtr<Brush>::staticCast(buttonMouseOverBrush);
 		}
 		// UIButton.Pressed
 		{
-			auto* st = s->GetPropertyTable(UIVisualStates::PressedState);
-			st->background = RefPtr<Brush>::StaticCast(buttonPressedBrush);
+			auto* st = s->getPropertyTable(UIVisualStates::PressedState);
+			st->background = RefPtr<Brush>::staticCast(buttonPressedBrush);
 		}
 	}
 
 	// UIToggleButton : UIButton
 	{
-		auto* style = table->GetStyle(_T("UIToggleButton"));
-		style->SetBaseOnStyle(table->GetStyle(_T("UIButton")));
+		auto* style = table->getStyle(_T("UIToggleButton"));
+		style->setBaseOnStyle(table->getStyle(_T("UIButton")));
 
 		// UIToggleButton.Checked
 		{
-			auto* props = style->GetPropertyTable(UIToggleButton::CheckedState);
+			auto* props = style->getPropertyTable(UIToggleButton::CheckedState);
 			props->background = Brush::Blue;
 		}
 		// UIToggleButton.Unchecked
 		{
-			auto* props = style->GetPropertyTable(UIToggleButton::UncheckedState);
+			auto* props = style->getPropertyTable(UIToggleButton::UncheckedState);
 			props->background = Brush::Red;
 		}
 	}
@@ -264,241 +264,241 @@ void UIManager::MakeDefaultStyle(UIStyleTable* table)
 
 	// UIThumb
 	{
-		auto thumbBrush = TextureBrush::Create(m_defaultSkinTexture);
-		thumbBrush->SetSourceRect(32, 64, 32, 32);
-		thumbBrush->SetBorderThickness(8, 8, 8, 8);
-		thumbBrush->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
-		thumbBrush->SetWrapMode(BrushWrapMode::Stretch);
+		auto thumbBrush = TextureBrush::create(m_defaultSkinTexture);
+		thumbBrush->setSourceRect(32, 64, 32, 32);
+		thumbBrush->getBorderThickness(8, 8, 8, 8);
+		thumbBrush->getImageDrawMode(BrushImageDrawMode::BoxFrame);
+		thumbBrush->setWrapMode(BrushWrapMode::Stretch);
 
-		auto* style = table->GetStyle(tr::TypeInfo::GetTypeInfo<UIThumb>()->GetName());
+		auto* style = table->getStyle(tr::TypeInfo::getTypeInfo<UIThumb>()->getName());
 		// base
 		{
-			auto* props = style->GetPropertyTable();
-			props->background = RefPtr<Brush>::StaticCast(thumbBrush);
+			auto* props = style->getPropertyTable();
+			props->background = RefPtr<Brush>::staticCast(thumbBrush);
 		}
 	}
 
 	// UITrack
 	{
-		auto* style = table->GetStyle(_T("UITrack"));
+		auto* style = table->getStyle(_T("UITrack"));
 		// base
 		{
-			auto* props = style->GetPropertyTable();
+			auto* props = style->getPropertyTable();
 			props->background = Brush::DimGray;
 		}
 	}
 	// UITrack::DecreaseButton
 	{
-		auto* style = table->GetSubControlStyle(_T("UITrack"), _T("DecreaseButton"));
+		auto* style = table->getSubControlStyle(_T("UITrack"), _T("DecreaseButton"));
 		// base
 		{
-			auto* props = style->GetPropertyTable();
+			auto* props = style->getPropertyTable();
 			props->background = nullptr;	// transparency
 		}
 	}
 	// UITrack::IncreaseButton
 	{
-		auto* style = table->GetSubControlStyle(_T("UITrack"), _T("IncreaseButton"));
+		auto* style = table->getSubControlStyle(_T("UITrack"), _T("IncreaseButton"));
 		// base
 		{
-			auto* props = style->GetPropertyTable();
+			auto* props = style->getPropertyTable();
 			props->background = nullptr;	// transparency
 		}
 	}
 
 	// UIScrollBar
 	{
-		auto* style = table->GetStyle(tr::TypeInfo::GetTypeInfo<UIScrollBar>()->GetName());
+		auto* style = table->getStyle(tr::TypeInfo::getTypeInfo<UIScrollBar>()->getName());
 		// UIScrollBar
 		{
-			auto* props = style->GetPropertyTable();
+			auto* props = style->getPropertyTable();
 			props->background = Brush::DimGray;
 		}
 		// UIScrollBar.Horizontal
 		{
-			auto* props = style->GetPropertyTable(UIScrollBar::HorizontalState);
+			auto* props = style->getPropertyTable(UIScrollBar::HorizontalState);
 			props->height = 16.0f;
 			//props->background = Brush::Blue;
 		}
 		// UIScrollBar.Vertical
 		{
-			auto* props = style->GetPropertyTable(UIScrollBar::VerticalState);
+			auto* props = style->getPropertyTable(UIScrollBar::VerticalState);
 			props->width = 16.0f;
 			//props->background = Brush::Black;
 		}
 	}
 	// UIScrollBar::LineUpButton
 	{
-		auto buttonNormalBrush = TextureBrush::Create(m_defaultSkinTexture);
-		buttonNormalBrush->SetSourceRect(0, 32, 32, 32);
-		buttonNormalBrush->SetBorderThickness(8, 8, 8, 8);
-		buttonNormalBrush->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
+		auto buttonNormalBrush = TextureBrush::create(m_defaultSkinTexture);
+		buttonNormalBrush->setSourceRect(0, 32, 32, 32);
+		buttonNormalBrush->getBorderThickness(8, 8, 8, 8);
+		buttonNormalBrush->getImageDrawMode(BrushImageDrawMode::BoxFrame);
 
-		auto buttonMouseOverBrush = TextureBrush::Create(m_defaultSkinTexture);
-		buttonMouseOverBrush->SetSourceRect(32, 32, 32, 32);
-		buttonMouseOverBrush->SetBorderThickness(8, 8, 8, 8);
-		buttonMouseOverBrush->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
+		auto buttonMouseOverBrush = TextureBrush::create(m_defaultSkinTexture);
+		buttonMouseOverBrush->setSourceRect(32, 32, 32, 32);
+		buttonMouseOverBrush->getBorderThickness(8, 8, 8, 8);
+		buttonMouseOverBrush->getImageDrawMode(BrushImageDrawMode::BoxFrame);
 
-		auto* style = table->GetSubControlStyle(_T("UIScrollBar"), _T("LineUpButton"));
+		auto* style = table->getSubControlStyle(_T("UIScrollBar"), _T("LineUpButton"));
 		// base
 		{
-			auto* props = style->GetPropertyTable();
-			props->background = RefPtr<Brush>::StaticCast(buttonNormalBrush);
+			auto* props = style->getPropertyTable();
+			props->background = RefPtr<Brush>::staticCast(buttonNormalBrush);
 		}
 		// UIScrollBar::LineUpButton.MouseOver
 		{
-			auto* props = style->GetPropertyTable(UIVisualStates::MouseOverState);
-			props->background = RefPtr<Brush>::StaticCast(buttonMouseOverBrush);
+			auto* props = style->getPropertyTable(UIVisualStates::MouseOverState);
+			props->background = RefPtr<Brush>::staticCast(buttonMouseOverBrush);
 		}
 	}
 	// UIScrollBar::LineDownButton
 	{
-		auto* style = table->GetSubControlStyle(_T("UIScrollBar"), _T("LineDownButton"));
+		auto* style = table->getSubControlStyle(_T("UIScrollBar"), _T("LineDownButton"));
 		// base
 		{
-			auto* props = style->GetPropertyTable();
+			auto* props = style->getPropertyTable();
 			props->background = nullptr;
 		}
 	}
 	// UIListBox
 	{
-		auto* style = table->GetStyle(_T("UIListBox"));
+		auto* style = table->getStyle(_T("UIListBox"));
 		// base
 		{
-			auto* props = style->GetPropertyTable();
-			props->background = RefPtr<Brush>::StaticCast(containerBackground);
+			auto* props = style->getPropertyTable();
+			props->background = RefPtr<Brush>::staticCast(containerBackground);
 			props->borderThickness = ThicknessF(1);
 		}
 		// UIListBox.MouseOver
 		//{
-		//	auto* props = style->GetPropertyTable(UIVisualStates::MouseOverState);
+		//	auto* props = style->getPropertyTable(UIVisualStates::MouseOverState);
 		//	props->background = RefPtr<Brush>::StaticCast(containerItemMouseOver);
 		//}
 	}
 	// UIListBoxItem
 	{
-		auto* style = table->GetStyle(_T("UIListBoxItem"));
+		auto* style = table->getStyle(_T("UIListBoxItem"));
 		// base
 		{
-			auto* props = style->GetPropertyTable();
+			auto* props = style->getPropertyTable();
 		}
 		// UIListBoxItem.MouseOver
 		{
-			auto* props = style->GetPropertyTable(UIVisualStates::MouseOverState);
-			props->background = RefPtr<Brush>::StaticCast(containerItemMouseOver);
+			auto* props = style->getPropertyTable(UIVisualStates::MouseOverState);
+			props->background = RefPtr<Brush>::staticCast(containerItemMouseOver);
 		}
 	}
 
 	// UITextField
 	{
-		auto* style = table->GetStyle(_T("UITextField"));
+		auto* style = table->getStyle(_T("UITextField"));
 		// base
 		{
-			auto* props = style->GetPropertyTable();
-			props->background = RefPtr<Brush>::StaticCast(boarderNormalBrush);
+			auto* props = style->getPropertyTable();
+			props->background = RefPtr<Brush>::staticCast(boarderNormalBrush);
 		}
 	}
 	// UIWindow
 	{
-		auto* style = table->GetStyle(_T("UIWindow"));
+		auto* style = table->getStyle(_T("UIWindow"));
 		// base
 		{
-			auto* props = style->GetPropertyTable();
-			props->background = RefPtr<Brush>::StaticCast(boarderNormalBrush);
+			auto* props = style->getPropertyTable();
+			props->background = RefPtr<Brush>::staticCast(boarderNormalBrush);
 		}
 	}
 	// UIWindow::LineDownButton
 	{
-		auto* style = table->GetSubControlStyle(_T("UIWindow"), _T("ContentHost"));
+		auto* style = table->getSubControlStyle(_T("UIWindow"), _T("ContentHost"));
 		// base
 		{
-			auto* props = style->GetPropertyTable();
+			auto* props = style->getPropertyTable();
 			//props->background = nullptr;
 		}
 	}
 
 	// UISlider
 	{
-		auto* style = table->GetStyle(_T("UISlider"));
+		auto* style = table->getStyle(_T("UISlider"));
 		// base
 		{
-			auto* props = style->GetPropertyTable();
+			auto* props = style->getPropertyTable();
 			//props->background = SolidColorBrush::Blue;
 		}
 	}
 	// UISlider::Track
 	{
-		auto* style = table->GetSubControlStyle(_T("UISlider"), _T("Track"));
+		auto* style = table->getSubControlStyle(_T("UISlider"), _T("Track"));
 		// base
 		{
-			auto* props = style->GetPropertyTable();
+			auto* props = style->getPropertyTable();
 			//props->background = SolidColorBrush::Gray;
 		}
 		// UISlider::Track.Horizontal
 		{
-			auto* props = style->GetPropertyTable("Horizontal");
+			auto* props = style->getPropertyTable("Horizontal");
 			//props->height = 4.0f;
 		}
 	}
 	// UISlider::DecreaseButton
 	{
-		auto* style = table->GetSubControlStyle(_T("UISlider"), _T("Thumb"));
+		auto* style = table->getSubControlStyle(_T("UISlider"), _T("Thumb"));
 		// base
 		{
-			auto* props = style->GetPropertyTable();
+			auto* props = style->getPropertyTable();
 			props->width = 16;
 			props->height = 16;
 			props->cornerRadius = 8;
-			props->background = UIColors::GetBrush(UIColorIndex::LightGreen);
+			props->background = UIColors::getBrush(UIColorIndex::LightGreen);
 		}
 	}
 	// UISlider::DecreaseButton
 	{
-		auto* style = table->GetSubControlStyle(_T("UISlider"), _T("DecreaseButton"));
+		auto* style = table->getSubControlStyle(_T("UISlider"), _T("DecreaseButton"));
 		// base
 		{
-			auto* props = style->GetPropertyTable();
+			auto* props = style->getPropertyTable();
 
-			auto r1 = NewObject<UIRenderElement>();
+			auto r1 = newObject<UIRenderElement>();
 			r1->m_height = 2.0f;
-			r1->m_brush = UIColors::GetBrush(UIColorIndex::LightGreen);
-			props->m_renderElements.Add(r1);
+			r1->m_brush = UIColors::getBrush(UIColorIndex::LightGreen);
+			props->m_renderElements.add(r1);
 		}
 	}
 	// UISlider::IncreaseButton
 	{
-		auto* style = table->GetSubControlStyle(_T("UISlider"), _T("IncreaseButton"));
+		auto* style = table->getSubControlStyle(_T("UISlider"), _T("IncreaseButton"));
 		// base
 		{
-			auto* props = style->GetPropertyTable();
+			auto* props = style->getPropertyTable();
 
-			auto r1 = NewObject<UIRenderElement>();
+			auto r1 = newObject<UIRenderElement>();
 			r1->m_height = 2.0f;
-			r1->m_brush = UIColors::GetBrush(UIColorIndex::Grey);
-			props->m_renderElements.Add(r1);
+			r1->m_brush = UIColors::getBrush(UIColorIndex::Grey);
+			props->m_renderElements.add(r1);
 		}
 	}
 
 	
 
 	//{
-	//	auto brush = TextureBrush::Create(m_defaultSkinTexture);
-	//	brush->SetSourceRect(0, 32, 32, 32);
-	//	brush->SetBorderThickness(8, 8, 8, 8);
-	//	brush->SetImageDrawMode(BrushImageDrawMode::BoxFrame);
-	//	brush->SetWrapMode(BrushWrapMode::Stretch);
+	//	auto brush = TextureBrush::create(m_defaultSkinTexture);
+	//	brush->setSourceRect(0, 32, 32, 32);
+	//	brush->getBorderThickness(8, 8, 8, 8);
+	//	brush->getImageDrawMode(BrushImageDrawMode::BoxFrame);
+	//	brush->setWrapMode(BrushWrapMode::Stretch);
 
-	//	auto style = UIStyle::Create();
+	//	auto style = UIStyle::create();
 	//	style->AddValue(tr::UIListBox::NormalState, UIElement::backgroundId, brush);
-	//	table->AddStyle(tr::TypeInfo::GetTypeInfo<tr::UIListBox>(), style);
+	//	table->AddStyle(tr::TypeInfo::getTypeInfo<tr::UIListBox>(), style);
 	//}
 
 	//{
-	//	auto style = UIStyle::Create();
+	//	auto style = UIStyle::create();
  //          		style->AddValue(tr::UIListBoxItem::NormalState, UIElement::decoratorBackgroundId, Brush::Green);
 	//	style->AddValue(tr::UIListBoxItem::NormalState, UIElement::decoratorOpacityId, 0.0f, 0.3);
 	//	style->AddValue(tr::UIListBoxItem::MouseOverState, UIElement::decoratorOpacityId, 1.0f, 0.3);
-	//	table->AddStyle(tr::TypeInfo::GetTypeInfo<tr::UIListBoxItem>(), style);
+	//	table->AddStyle(tr::TypeInfo::getTypeInfo<tr::UIListBoxItem>(), style);
 	//}
 	//
 	

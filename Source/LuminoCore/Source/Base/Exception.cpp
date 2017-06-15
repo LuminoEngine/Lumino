@@ -22,9 +22,9 @@ LN_NAMESPACE_BEGIN
 
 namespace detail {
 
-bool NotifyFatalError(const char* file, int line, const char* message)
+bool notifyFatalError(const char* file, int line, const char* message)
 {
-	auto h = Assertion::GetNotifyFataiErrorHandler();
+	auto h = Assertion::getNotifyFataiErrorHandler();
 	if (h != nullptr && h(file, line, message)) return true;
 	printf("%s : %s(%d)", message, file, line);
 	*reinterpret_cast<int*>(0) = 0;
@@ -40,22 +40,22 @@ bool NotifyFatalError(const char* file, int line, const char* message)
 static Assertion::NotifyVerificationHandler	g_notifyVerificationHandler = nullptr;
 static Assertion::NotifyFataiErrorHandler	g_notifyFataiErrorHandler = nullptr;
 
-void Assertion::SetNotifyVerificationHandler(NotifyVerificationHandler handler)
+void Assertion::setNotifyVerificationHandler(NotifyVerificationHandler handler)
 {
 	g_notifyVerificationHandler = handler;
 }
 
-Assertion::NotifyVerificationHandler Assertion::GetNotifyVerificationHandler()
+Assertion::NotifyVerificationHandler Assertion::getNotifyVerificationHandler()
 {
 	return g_notifyVerificationHandler;
 }
 
-void Assertion::SetNotifyFataiErrorHandler(NotifyFataiErrorHandler handler)
+void Assertion::setNotifyFataiErrorHandler(NotifyFataiErrorHandler handler)
 {
 	g_notifyFataiErrorHandler = handler;
 }
 
-Assertion::NotifyFataiErrorHandler Assertion::GetNotifyFataiErrorHandler()
+Assertion::NotifyFataiErrorHandler Assertion::getNotifyFataiErrorHandler()
 {
 	return g_notifyFataiErrorHandler;
 }
@@ -81,10 +81,10 @@ Exception::Exception()
 	SimleBackTrace::MakeSymbolString(m_stackBuffer, m_stackBufferSize, m_symbolBuffer, LN_ARRAY_SIZE_OF(m_symbolBuffer));
 #else
 	// バックトレース記録
-	m_stackBufferSize = BackTrace::GetInstance()->Backtrace(m_stackBuffer, LN_ARRAY_SIZE_OF(m_stackBuffer));
+	m_stackBufferSize = BackTrace::getInstance()->Backtrace(m_stackBuffer, LN_ARRAY_SIZE_OF(m_stackBuffer));
 
 	// バックトレース文字列取得
-	BackTrace::GetInstance()->AddressToFullSymbolString(
+	BackTrace::getInstance()->AddressToFullSymbolString(
 		m_stackBuffer, 
 		std::min(m_stackBufferSize, 32),
 		m_symbolBuffer, 
@@ -117,13 +117,13 @@ Exception::~Exception() throw()
 
 //------------------------------------------------------------------------------
 #pragma push_macro("GetMessage")
-#undef GetMessage
-const TCHAR* Exception::GetMessage() const { return LN_AFX_FUNCNAME(GetMessage)(); }
-const TCHAR* Exception::LN_AFX_FUNCNAME(GetMessage)() const { return GetMessageOverride(); }
+#undef getMessage
+const TCHAR* Exception::getMessage() const { return LN_AFX_FUNCNAME(getMessage)(); }
+const TCHAR* Exception::LN_AFX_FUNCNAME(getMessage)() const { return getMessageOverride(); }
 #pragma pop_macro("GetMessage")
 
 //------------------------------------------------------------------------------
-Exception& Exception::SetSourceLocationInfo(const char* filePath, int fileLine)
+Exception& Exception::setSourceLocationInfo(const char* filePath, int fileLine)
 {
 	// もしバックトレースが取れていなかったらそれ用の文字列バッファに入れてしまう
 	if (m_symbolBuffer[0] == 0x00)
@@ -148,7 +148,7 @@ Exception& Exception::SetSourceLocationInfo(const char* filePath, int fileLine)
 }
 
 //------------------------------------------------------------------------------
-bool Exception::InitDumpFile(const char* filePath)
+bool Exception::initDumpFile(const char* filePath)
 {
 	// ファイルパス保持
 	memset(gDumpFilePath, 0, sizeof(gDumpFilePath));
@@ -164,9 +164,9 @@ bool Exception::InitDumpFile(const char* filePath)
 }
 
 //------------------------------------------------------------------------------
-void Exception::SetMessage(const TCHAR* caption)
+void Exception::setMessage(const TCHAR* caption)
 {
-	AppendMessage(caption, _tcslen(caption));
+	appendMessage(caption, _tcslen(caption));
 	//int captionLen = _tcslen(caption);
 	//_tcscpy_s(m_message, MaxMessageBufferSize, caption);
 
@@ -178,17 +178,17 @@ void Exception::SetMessage(const TCHAR* caption)
 }
 
 //------------------------------------------------------------------------------
-void Exception::SetMessage(const TCHAR* caption, const char* format, va_list args)
+void Exception::setMessage(const TCHAR* caption, const char* format, va_list args)
 {
-	AppendMessage(caption, _tcslen(caption));
+	appendMessage(caption, _tcslen(caption));
 
 	static const int BUFFER_SIZE = MaxMessageBufferSize;
 	char buf[BUFFER_SIZE];
 	//int captionLen = _tcslen(caption) + 1;	// +1 は'\n' の分
 	//int detailsLen = BUFFER_SIZE - captionLen;
 
-	int len = StringTraits::VSPrintf(buf, BUFFER_SIZE, format, args);
-	AppendMessage(buf, len);
+	int len = StringTraits::vsprintf(buf, BUFFER_SIZE, format, args);
+	appendMessage(buf, len);
 	//if (len >= detailsLen)
 	//{
 	//	// バッファに収まりきらない場合は終端を ... にして切る
@@ -213,17 +213,17 @@ void Exception::SetMessage(const TCHAR* caption, const char* format, va_list arg
 }
 
 //------------------------------------------------------------------------------
-void Exception::SetMessage(const TCHAR* caption, const wchar_t* format, va_list args)
+void Exception::setMessage(const TCHAR* caption, const wchar_t* format, va_list args)
 {
-	AppendMessage(caption, _tcslen(caption));
+	appendMessage(caption, _tcslen(caption));
 
 	static const int BUFFER_SIZE = MaxMessageBufferSize;
 	wchar_t buf[BUFFER_SIZE];
 	//int captionLen = _tcslen(caption) + 1;	// +1 は'\n' の分
 	//int detailsLen = BUFFER_SIZE - captionLen;
 
-	int len = StringTraits::VSPrintf(buf, BUFFER_SIZE, format, args);
-	AppendMessage(buf, len);
+	int len = StringTraits::vsprintf(buf, BUFFER_SIZE, format, args);
+	appendMessage(buf, len);
 //	if (len >= detailsLen)
 //	{
 //		// バッファに収まりきらない場合は終端を ... にして切る
@@ -248,32 +248,32 @@ void Exception::SetMessage(const TCHAR* caption, const wchar_t* format, va_list 
 }
 
 //------------------------------------------------------------------------------
-void Exception::SetMessage(const TCHAR* caption, const char* format, ...)
+void Exception::setMessage(const TCHAR* caption, const char* format, ...)
 {
 	va_list args;
 	va_start(args, format);
-	SetMessage(caption, format, args);
+	setMessage(caption, format, args);
 	va_end(args);
 }
 
 //------------------------------------------------------------------------------
-void Exception::SetMessage(const TCHAR* caption, const wchar_t* format, ...)
+void Exception::setMessage(const TCHAR* caption, const wchar_t* format, ...)
 {
 	va_list args;
 	va_start(args, format);
-	SetMessage(caption, format, args);
+	setMessage(caption, format, args);
 	va_end(args);
 }
 
 //------------------------------------------------------------------------------
 // GetMessage() を直接オーバーライドすると、windows.h と使うときに A/W を考慮せねばならず煩雑になる。それを回避するために用意した。
-const TCHAR* Exception::GetMessageOverride() const
+const TCHAR* Exception::getMessageOverride() const
 {
 	return m_message;
 }
 
 //------------------------------------------------------------------------------
-void Exception::AppendMessage(const char* message, size_t len)
+void Exception::appendMessage(const char* message, size_t len)
 {
 	size_t curLen = _tcslen(m_message);
 	size_t remainLen = (MaxMessageBufferSize - curLen) - 2;	// -2 は "\r\0"
@@ -292,7 +292,7 @@ void Exception::AppendMessage(const char* message, size_t len)
 }
 
 //------------------------------------------------------------------------------
-void Exception::AppendMessage(const wchar_t* message, size_t len)
+void Exception::appendMessage(const wchar_t* message, size_t len)
 {
 	size_t curLen = _tcslen(m_message);
 	size_t remainLen = (MaxMessageBufferSize - curLen) - 2;	// -2 は "\r\0"
@@ -419,7 +419,7 @@ COMException::~COMException() throw()
 }
 
 //------------------------------------------------------------------------------
-Exception* COMException::Copy() const
+Exception* COMException::copy() const
 {
 	return LN_NEW COMException(*this);
 }

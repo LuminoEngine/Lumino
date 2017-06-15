@@ -36,23 +36,23 @@ IRenderer::~IRenderer()
 }
 
 //------------------------------------------------------------------------------
-void IRenderer::Begin()
+void IRenderer::begin()
 {
 	if (LN_CHECK_STATE(!m_rendering)) return;
-	OnBeginRendering();
+	onBeginRendering();
 	m_rendering = true;
 }
 
 //------------------------------------------------------------------------------
-void IRenderer::End()
+void IRenderer::end()
 {
 	if (LN_CHECK_STATE(m_rendering)) return;
-	OnEndRendering();
+	onEndRendering();
 	m_rendering = false;
 }
 
 //------------------------------------------------------------------------------
-void IRenderer::SetRenderTarget(int index, ITexture* target)
+void IRenderer::setRenderTarget(int index, ITexture* target)
 {
 	if (LN_CHECK_RANGE(index, 0, Graphics::MaxMultiRenderTargets)) return;
 	if (m_currentRenderTargets[index] != target)
@@ -63,14 +63,14 @@ void IRenderer::SetRenderTarget(int index, ITexture* target)
 }
 
 //------------------------------------------------------------------------------
-ITexture* IRenderer::GetRenderTarget(int index)
+ITexture* IRenderer::getRenderTarget(int index)
 {
 	if (LN_CHECK_RANGE(index, 0, Graphics::MaxMultiRenderTargets)) return nullptr;
 	return m_currentRenderTargets[index];
 }
 
 //------------------------------------------------------------------------------
-void IRenderer::SetDepthBuffer(ITexture* buffer)
+void IRenderer::setDepthBuffer(ITexture* buffer)
 {
 	if (m_currentDepthBuffer != buffer)
 	{
@@ -80,13 +80,13 @@ void IRenderer::SetDepthBuffer(ITexture* buffer)
 }
 
 //------------------------------------------------------------------------------
-ITexture* IRenderer::GetDepthBuffer()
+ITexture* IRenderer::getDepthBuffer()
 {
 	return m_currentDepthBuffer;
 }
 
 //------------------------------------------------------------------------------
-void IRenderer::SetVertexDeclaration(IVertexDeclaration* vertexDeclaration)
+void IRenderer::setVertexDeclaration(IVertexDeclaration* vertexDeclaration)
 {
 	if (m_currentVertexDeclaration != vertexDeclaration)
 	{
@@ -96,16 +96,16 @@ void IRenderer::SetVertexDeclaration(IVertexDeclaration* vertexDeclaration)
 }
 
 //------------------------------------------------------------------------------
-IVertexDeclaration* IRenderer::GetVertexDeclaration() const
+IVertexDeclaration* IRenderer::getVertexDeclaration() const
 {
 	return m_currentVertexDeclaration;
 }
 
 //------------------------------------------------------------------------------
-void IRenderer::SetVertexBuffer(int streamIndex, IVertexBuffer* vertexBuffer)
+void IRenderer::setVertexBuffer(int streamIndex, IVertexBuffer* vertexBuffer)
 {
-	if (m_currentVertexBuffers.GetCount() <= streamIndex)
-		m_currentVertexBuffers.Resize(streamIndex + 1);		// 配列が小さいので増やす
+	if (m_currentVertexBuffers.getCount() <= streamIndex)
+		m_currentVertexBuffers.resize(streamIndex + 1);		// 配列が小さいので増やす
 
 	if (m_currentVertexBuffers[streamIndex] != vertexBuffer)
 	{
@@ -115,13 +115,13 @@ void IRenderer::SetVertexBuffer(int streamIndex, IVertexBuffer* vertexBuffer)
 }
 
 //------------------------------------------------------------------------------
-IVertexBuffer* IRenderer::GetVertexBuffer(int streamIndex)
+IVertexBuffer* IRenderer::getVertexBuffer(int streamIndex)
 {
 	return m_currentVertexBuffers[streamIndex];
 }
 
 //------------------------------------------------------------------------------
-void IRenderer::SetIndexBuffer(IIndexBuffer* indexBuffer)
+void IRenderer::setIndexBuffer(IIndexBuffer* indexBuffer)
 {
 	if (m_currentIndexBuffer != indexBuffer)
 	{
@@ -131,60 +131,60 @@ void IRenderer::SetIndexBuffer(IIndexBuffer* indexBuffer)
 }
 
 //------------------------------------------------------------------------------
-void IRenderer::SetShaderPass(IShaderPass* pass)
+void IRenderer::setShaderPass(IShaderPass* pass)
 {
-	// ShaderPass はたとえ同じでも次の Draw で必ず Apply する。
+	// ShaderPass はたとえ同じでも次の draw で必ず apply する。
 	m_currentShaderPass = pass;
 }
 
 //------------------------------------------------------------------------------
-void IRenderer::Clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
+void IRenderer::clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
 	// ※レンダリングターゲットと深度バッファのサイズが一致している必要がある。
 	//   していない場合、エラーとならないがクリアされない。
 	if (m_currentDepthBuffer != nullptr)
 	{
-		if (LN_CHECK_STATE(m_currentRenderTargets[0]->GetSize() == m_currentDepthBuffer->GetSize())) return;
+		if (LN_CHECK_STATE(m_currentRenderTargets[0]->getSize() == m_currentDepthBuffer->getSize())) return;
 	}
 
-	FlushStates();
-	OnClear(flags, color, z, stencil);
+	flushStates();
+	onClear(flags, color, z, stencil);
 }
 
 //------------------------------------------------------------------------------
-void IRenderer::DrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
+void IRenderer::drawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
 {
-	FlushStates();
-	OnDrawPrimitive(primitive, startVertex, primitiveCount);
-	if (m_diag != nullptr) m_diag->IncreaseGraphicsDeviceDrawCount();
+	flushStates();
+	onDrawPrimitive(primitive, startVertex, primitiveCount);
+	if (m_diag != nullptr) m_diag->increaseGraphicsDeviceDrawCount();
 }
 
 //------------------------------------------------------------------------------
-void IRenderer::DrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
+void IRenderer::drawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
 {
-	FlushStates();
-	OnDrawPrimitiveIndexed(primitive, startIndex, primitiveCount);
-	if (m_diag != nullptr) m_diag->IncreaseGraphicsDeviceDrawCount();
+	flushStates();
+	onDrawPrimitiveIndexed(primitive, startIndex, primitiveCount);
+	if (m_diag != nullptr) m_diag->increaseGraphicsDeviceDrawCount();
 }
 
 //------------------------------------------------------------------------------
-void IRenderer::FlushStates()
+void IRenderer::flushStates()
 {
 	if (m_modifiedFlags & Modified_FrameBuffer)
 	{
 		ITexture* renderTargets[Graphics::MaxMultiRenderTargets];
 		for (int i = 0; i < Graphics::MaxMultiRenderTargets; i++) renderTargets[i] = m_currentRenderTargets[i];
-		OnUpdateFrameBuffers(renderTargets, Graphics::MaxMultiRenderTargets, m_currentDepthBuffer);
+		onUpdateFrameBuffers(renderTargets, Graphics::MaxMultiRenderTargets, m_currentDepthBuffer);
 	}
 
-	if (!m_requestedRenderState.Equals(m_currentRenderState))
+	if (!m_requestedRenderState.equals(m_currentRenderState))
 	{
-		OnUpdateRenderState(m_requestedRenderState, m_currentRenderState, false);
+		onUpdateRenderState(m_requestedRenderState, m_currentRenderState, false);
 		m_currentRenderState = m_requestedRenderState;
 	}
-	if (!m_requestedDepthStencilState.Equals(m_currentDepthStencilState))
+	if (!m_requestedDepthStencilState.equals(m_currentDepthStencilState))
 	{
-		OnUpdateDepthStencilState(m_requestedDepthStencilState, m_currentDepthStencilState, false);
+		onUpdateDepthStencilState(m_requestedDepthStencilState, m_currentDepthStencilState, false);
 		m_currentDepthStencilState = m_requestedDepthStencilState;
 	}
 
@@ -192,31 +192,31 @@ void IRenderer::FlushStates()
 	if (m_modifiedFlags & Modified_VertexBuffer ||
 		m_modifiedFlags & Modified_IndexBuffer)
 	{
-		OnUpdatePrimitiveData(m_currentVertexDeclaration, m_currentVertexBuffers, m_currentIndexBuffer);
+		onUpdatePrimitiveData(m_currentVertexDeclaration, m_currentVertexBuffers, m_currentIndexBuffer);
 	}
 
 	// ShaderPass
 	if (m_currentShaderPass != nullptr)
 	{
-		m_currentShaderPass->Apply();
+		m_currentShaderPass->apply();
 	}
 
 	m_modifiedFlags = Modified_None;
 }
 
 //------------------------------------------------------------------------------
-void IRenderer::EnterRenderState()
+void IRenderer::enterRenderState()
 {
 	m_modifiedFlags = Modified_All;
-	OnEnterRenderState();
-	OnUpdateRenderState(m_requestedRenderState, m_currentRenderState, true);
-	OnUpdateDepthStencilState(m_requestedDepthStencilState, m_currentDepthStencilState, true);
+	onEnterRenderState();
+	onUpdateRenderState(m_requestedRenderState, m_currentRenderState, true);
+	onUpdateDepthStencilState(m_requestedDepthStencilState, m_currentDepthStencilState, true);
 }
 
 //------------------------------------------------------------------------------
-void IRenderer::LeaveRenderState()
+void IRenderer::leaveRenderState()
 {
-	OnLeaveRenderState();
+	onLeaveRenderState();
 }
 
 //==============================================================================
@@ -234,13 +234,13 @@ ITexture::~ITexture()
 //==============================================================================
 
 //------------------------------------------------------------------------------
-IShaderVariable* IShader::GetVariableByName(const TCHAR* name) const
+IShaderVariable* IShader::getVariableByName(const TCHAR* name) const
 {
-	int count = GetVariableCount();
+	int count = getVariableCount();
 	for (int i = 0; i < count; ++i)
 	{
-		IShaderVariable* v = GetVariable(i);
-		if (v->GetName() == name) {
+		IShaderVariable* v = getVariable(i);
+		if (v->getName() == name) {
 			return v;
 		}
 	}

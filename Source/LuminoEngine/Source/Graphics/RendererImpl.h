@@ -28,99 +28,99 @@ public:
 	/**
 		@brief	この Renderer による描画を開始します。
 	*/
-	void Begin();
+	void begin();
 
 	/**
 		@brief	この Renderer による描画を終了します。
 	*/
-	void End();
+	void end();
 
 	/**
 		@brief	レンダリングステートを設定します。
 	*/
-	void SetRenderState(const RenderState& state);
+	void setRenderState(const RenderState& state);
 
 	/**
 		@brief	現在設定されているレンダリングステートを取得します。
 	*/
-	const RenderState& GetRenderState() const;
+	const RenderState& getRenderState() const;
 
 	/**
 		@brief	深度テスト及びステンシルテストステートを設定します。
 	*/
-	void SetDepthStencilState(const DepthStencilState& state);
+	void setDepthStencilState(const DepthStencilState& state);
 	
 	/**
 		@brief	深度テスト及びステンシルテストステートを取得します。
 	*/
-	const DepthStencilState& GetDepthStencilState() const;
+	const DepthStencilState& getDepthStencilState() const;
 
 	/**
 		@brief	レンダリングターゲットを設定します。
 	*/
-	void SetRenderTarget(int index, Texture* texture);
+	void setRenderTarget(int index, Texture* texture);
 
 	/**
 		@brief	現在設定されているレンダリングターゲットを取得します。
 	*/
-	Texture* GetRenderTarget(int index) const;
+	Texture* getRenderTarget(int index) const;
 
 	/**
 		@brief	深度バッファを設定します。
 	*/
-	void SetDepthBuffer(DepthBuffer* depthBuffer);
+	void setDepthBuffer(DepthBuffer* depthBuffer);
 
 	/**
 		@brief	現在設定されている深度バッファを取得します。
 	*/
-	DepthBuffer* GetDepthBuffer() const;
+	DepthBuffer* getDepthBuffer() const;
 
 	///**
 	//	@brief	ビューポートを設定します。
 	//*/
-	//void SetViewport(const RectI& rect);
+	//void setViewport(const RectI& rect);
 
 	///**
 	//	@brief	現在設定されているビューポートを取得します。
 	//*/
-	//const RectI& GetViewport();
+	//const RectI& getViewport();
 
 	///**
 	//	@brief	頂点バッファを設定します。
 	//*/
-	//void SetVertexBuffer(VertexBuffer* vertexBuffer);
+	//void setVertexBuffer(VertexBuffer* vertexBuffer);
 
 	///**
 	//	@brief	インデックスバッファを設定します。
 	//*/
-	//void SetIndexBuffer(IndexBuffer* indexBuffer);
+	//void setIndexBuffer(IndexBuffer* indexBuffer);
 	
 	/**
 		@brief	
 	*/
-	void SetShaderPass(ShaderPass* pass);
+	void setShaderPass(ShaderPass* pass);
 
 	/**
 		@brief	現在設定されているレンダリングターゲット、深度バッファをクリアします。
 	*/
-	void Clear(ClearFlags flags, const Color& color, float z = 1.0f, uint8_t stencil = 0x00);
+	void clear(ClearFlags flags, const Color& color, float z = 1.0f, uint8_t stencil = 0x00);
 
 	/**
 	*/
-	void DrawPrimitive(VertexDeclaration* vertexDeclaration, VertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount);
+	void drawPrimitive(VertexDeclaration* vertexDeclaration, VertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount);
 
 	/**
 	*/
-	void DrawPrimitiveIndexed(VertexDeclaration* vertexDeclaration, VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount);
+	void drawPrimitiveIndexed(VertexDeclaration* vertexDeclaration, VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount);
 
-	void FlushState(const detail::ContextState& state);
-	virtual bool IsStandaloneShader() const { return false; }
-	virtual void Flush() override;
-	virtual void OnActivated() {}
-	virtual void OnDeactivated() { }
+	void flushState(const detail::ContextState& state);
+	virtual bool isStandaloneShader() const { return false; }
+	virtual void flush() override;
+	virtual void onActivated() {}
+	virtual void onDeactivated() { }
 
 protected:
-	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
+	virtual void onChangeDevice(Driver::IGraphicsDevice* device);
 
 LN_INTERNAL_ACCESS:
 	friend class Helper;
@@ -128,11 +128,11 @@ LN_INTERNAL_ACCESS:
 	friend class ShaderPass;
 	friend class Texture;
 	friend class ShaderVariable;
-	void PresentCommandList(SwapChain* swapChain);	// m_primaryCommandList をバックグラウンドへ送る
-	void VerifyFrameBuffers();
+	void presentCommandList(SwapChain* swapChain);	// m_primaryCommandList をバックグラウンドへ送る
+	void verifyFrameBuffers();
 
 	Driver::IRenderer*		m_internal;
-	RenderingCommandList*	m_primaryCommandList;
+	detail::RenderingCommandList*	m_primaryCommandList;
 
 	RenderState				m_currentRenderState;
 	DepthStencilState		m_currentDepthStencilState;
@@ -153,10 +153,10 @@ LN_INTERNAL_ACCESS:
 //	, public detail::IRendererPloxy
 //{
 //public:
-//	void SetVertexBuffer(VertexBuffer* vertexBuffer);
-//	void SetIndexBuffer(IndexBuffer* indexBuffer);
-//	void DrawPrimitive(VertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount);
-//	void DrawPrimitiveIndexed(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount);
+//	void setVertexBuffer(VertexBuffer* vertexBuffer);
+//	void setIndexBuffer(IndexBuffer* indexBuffer);
+//	void drawPrimitive(VertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount);
+//	void drawPrimitiveIndexed(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount);
 //
 //
 //

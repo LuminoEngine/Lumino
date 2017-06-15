@@ -33,7 +33,7 @@ HRESULT XAudio2Module::XAudio2Create(__deref_out IXAudio2** ppXAudio2, UINT32 Fl
 }
 
 //------------------------------------------------------------------------------
-bool XAudio2Module::Initialize()
+bool XAudio2Module::initialize()
 {
 	// Windows10
 	if (IsWindowsVersionOrGreater(10, 0, 0))

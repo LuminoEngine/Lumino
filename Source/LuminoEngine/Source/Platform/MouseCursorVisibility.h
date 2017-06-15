@@ -22,25 +22,25 @@ public:
 public:
 
 	/// この関数が false を返している間は非表示にする (ワーカースレッドでチェック)
-	bool CheckVisible() const
+	bool checkVisible() const
 	{
 		if (m_requestForced) return true;
 		if (m_visibleMouseCursor) return true;
 		if (m_mouseVisibleTime == 0) return false;
-		return ((Environment::GetTickCount() - m_startTime) < m_mouseVisibleTime);
+		return ((Environment::getTickCount() - m_startTime) < m_mouseVisibleTime);
 	}
 
 	/// マウスカーソルの表示設定 (count は マウスカーソル放置時、消すまでの時間(ms)。0 で常に消す)
-	void SetMouseCursorVisibleState(bool visible, int time)
+	void setMouseCursorVisibleState(bool visible, int time)
 	{
 		m_visibleMouseCursor = visible;
 		m_mouseVisibleTime = std::max(0, time);
-		m_startTime = Environment::GetTickCount();
+		m_startTime = Environment::getTickCount();
 		m_requestForced = false;
 	}
 
 	/// マウスカーソルの操作後に呼ぶこと
-	void OnMoveCursor(bool on_client_area)
+	void onMoveCursor(bool on_client_area)
 	{
 		// 表示しない場合
 		//if (!m_visibleMouseCursor && m_mouseVisibleTime == 0)
@@ -51,7 +51,7 @@ public:
 		{
 			if (on_client_area)
 			{
-				m_startTime = Environment::GetTickCount();
+				m_startTime = Environment::getTickCount();
 				m_requestForced = false;
 			}
 			else

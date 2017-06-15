@@ -18,12 +18,12 @@ LN_NAMESPACE_BEGIN
 // 
 //------------------------------------------------------------------------------
 template<>
-int GenericStringRef<char>::CopyToLocal8Bit(char* dest, int destLen) const
+int GenericStringRef<char>::copyToLocal8Bit(char* dest, int destLen) const
 {
-	return CopyTo(dest, destLen);
+	return copyTo(dest, destLen);
 }
 template<>
-int GenericStringRef<wchar_t>::CopyToLocal8Bit(char* dest, int destLen) const
+int GenericStringRef<wchar_t>::copyToLocal8Bit(char* dest, int destLen) const
 {
 #ifdef LN_OS_WIN32
 	CPINFOEX cpInfo;
@@ -32,7 +32,7 @@ int GenericStringRef<wchar_t>::CopyToLocal8Bit(char* dest, int destLen) const
 	Win32CodePageEncoding::Win32CodePageEncoder enc(cpInfo);
 	size_t byteUsed = 0;
 	size_t charUsed = 0;
-	enc.ConvertFromUTF16(m_str + m_pos, m_len, (byte_t*)dest, destLen - 1, &byteUsed, &charUsed);
+	enc.convertFromUTF16(m_str + m_pos, m_len, (byte_t*)dest, destLen - 1, &byteUsed, &charUsed);
 	dest[byteUsed] = '\0';
 	return byteUsed;
 #else
@@ -47,7 +47,7 @@ int GenericStringRef<wchar_t>::CopyToLocal8Bit(char* dest, int destLen) const
 	//UTF8Encoding::UTF8Encoder enc(false);
 	//size_t byteUsed = 0;
 	//size_t charUsed = 0;
-	//enc.ConvertFromUTF16(m_str + m_pos, m_len, (byte_t*)dest, destLen - 1, &byteUsed, &charUsed);
+	//enc.convertFromUTF16(m_str + m_pos, m_len, (byte_t*)dest, destLen - 1, &byteUsed, &charUsed);
 	//dest[byteUsed] = '\0';
 	//return byteUsed;
 #endif
@@ -62,10 +62,10 @@ int GenericStringRef<wchar_t>::CopyToLocal8Bit(char* dest, int destLen) const
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-size_t GenericStringRef<TChar>::GetHashCode() const
+size_t GenericStringRef<TChar>::getHashCode() const
 {
 	if (m_str == nullptr || m_len == 0) return 0;
-	return Hash::CalcHash(GetBegin(), GetLength());
+	return Hash::calcHash(getBegin(), getLength());
 }
 
 // テンプレートのインスタンス化

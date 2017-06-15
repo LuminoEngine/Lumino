@@ -16,21 +16,21 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
-void EngineDiag::SetDisplayMode(EngineDiagDisplayMode mode)
+void EngineDiag::setDisplayMode(EngineDiagDisplayMode mode)
 {
-	EngineManager::GetInstance()->GetEngineDiagViewer()->SetDisplayMode(mode);
+	EngineManager::getInstance()->getEngineDiagViewer()->setDisplayMode(mode);
 }
 
 //------------------------------------------------------------------------------
-int EngineDiag::GetGraphicsDeviceDrawCount()
+int EngineDiag::getGraphicsDeviceDrawCount()
 {
-	return EngineDiagCore::Instance.GetGraphicsDeviceDrawCount();
+	return EngineDiagCore::Instance.getGraphicsDeviceDrawCount();
 }
 
 //------------------------------------------------------------------------------
-int EngineDiag::GetVisualNodeDrawCount()
+int EngineDiag::getVisualNodeDrawCount()
 {
-	return EngineDiagCore::Instance.GetVisualNodeDrawCount();
+	return EngineDiagCore::Instance.getVisualNodeDrawCount();
 }
 
 //==============================================================================
@@ -51,30 +51,30 @@ EngineDiagCore::~EngineDiagCore()
 }
 
 //------------------------------------------------------------------------------
-void EngineDiagCore::Initialize(EngineManager* manager)
+void EngineDiagCore::initialize(EngineManager* manager)
 {
 	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_manager = manager;
 }
 
 //------------------------------------------------------------------------------
-void EngineDiagCore::ReportCapability(int indent, const char* name, const char* value)
+void EngineDiagCore::reportCapability(int indent, const char* name, const char* value)
 {
 	StringA str(indent, '\t');
-	str = StringA::Format("{0}{1} : {2}", str, name, value);
-	Logger::WriteLine(str.c_str());
+	str = StringA::format("{0}{1} : {2}", str, name, value);
+	Logger::writeLine(str.c_str());
 }
 
 //------------------------------------------------------------------------------
-float EngineDiagCore::GetMainFPS() const
+float EngineDiagCore::getMainFPS() const
 {
-	return m_manager->GetFpsController().GetFps();
+	return m_manager->getFpsController().getFps();
 }
 
 //------------------------------------------------------------------------------
-float EngineDiagCore::GetMainFPSCapacity() const
+float EngineDiagCore::getMainFPSCapacity() const
 {
-	return m_manager->GetFpsController().GetCapacityFps();
+	return m_manager->getFpsController().getCapacityFps();
 }
 
 //==============================================================================
@@ -99,20 +99,20 @@ EngineDiagViewer::~EngineDiagViewer()
 }
 
 //------------------------------------------------------------------------------
-void EngineDiagViewer::Initialize(EngineManager* manager, EngineDiagCore* diagCore)
+void EngineDiagViewer::initialize(EngineManager* manager, EngineDiagCore* diagCore)
 {
 	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_diagCore = diagCore;
-	m_mainWindow = manager->GetPlatformManager()->GetMainWindow();
-	m_originalMainWindowTitle = m_mainWindow->GetTitleText();
+	m_mainWindow = manager->getPlatformManager()->getMainWindow();
+	m_originalMainWindowTitle = m_mainWindow->getTitleText();
 
-	m_font = manager->GetGraphicsManager()->GetFontManager()->GetBuiltinFont(BuiltinFontSize::XXSmall);
+	m_font = manager->getGraphicsManager()->getFontManager()->getBuiltinFont(BuiltinFontSize::XXSmall);
 	//m_windowRect.Set(640 - 8 - 300, 8, 300, 256);	// TODO
-	m_windowRect.Set(8, 8, 300, 300);
+	m_windowRect.set(8, 8, 300, 300);
 }
 
 //------------------------------------------------------------------------------
-void EngineDiagViewer::ToggleDisplayMode()
+void EngineDiagViewer::toggleDisplayMode()
 {
 	int d = (int)m_displayMode;
 	d = (d + 1) % DisplayModeCycle;
@@ -120,12 +120,12 @@ void EngineDiagViewer::ToggleDisplayMode()
 }
 
 //------------------------------------------------------------------------------
-void EngineDiagViewer::UpdateFrame()
+void EngineDiagViewer::updateFrame()
 {
 	if (m_displayMode == EngineDiagDisplayMode::FpsSummary)
 	{
-		String str = String::Format(_T("{0} - MainFPS:{1}/{2}"), m_originalMainWindowTitle, m_diagCore->GetMainFPS(), m_diagCore->GetMainFPSCapacity());
-		m_mainWindow->SetTitleText(str);
+		String str = String::format(_T("{0} - MainFPS:{1}/{2}"), m_originalMainWindowTitle, m_diagCore->getMainFPS(), m_diagCore->getMainFPSCapacity());
+		m_mainWindow->setTitleText(str);
 	}
 }
 
@@ -139,7 +139,7 @@ void EngineDiagViewer::Render(DrawingContext* g, const Vector2& viewSize)
 	g->SetOpacity(0.5f);
 	g->SetFont(m_font);
 
-	//g->SetBrush(ColorBrush::DimGray);
+	//g->setBrush(ColorBrush::DimGray);
 
 	// ウィンドウ背景
 	g->DrawRectangle(m_windowRect);
@@ -154,21 +154,21 @@ void EngineDiagViewer::Render(DrawingContext* g, const Vector2& viewSize)
 
 	//LocalPainter painter(Size(viewSize.X, viewSize.Y), m_manager);
 	////g->SetProjection(Size(viewSize.X, viewSize.Y), 0, 1000);
-	//g->SetOpacity(0.5f);
-	//g->SetFont(m_font);
+	//g->setOpacity(0.5f);
+	//g->setFont(m_font);
 
 	//// ウィンドウ背景
-	//g->SetBrush(ColorBrush::DimGray);
-	//g->DrawRectangle(m_windowRect);
+	//g->setBrush(ColorBrush::DimGray);
+	//g->drawRectangle(m_windowRect);
 
 	//// キャプションバー
-	//g->SetBrush(ColorBrush::Black);
-	//g->DrawRectangle(RectF(m_windowRect.GetTopLeft(), m_windowRect.Width, 20));
+	//g->setBrush(ColorBrush::Black);
+	//g->drawRectangle(RectF(m_windowRect.getTopLeft(), m_windowRect.Width, 20));
 
 
-	//g->SetBrush(ColorBrush::White);
-	//g->SetOpacity(1.0f);
-	//g->DrawString(_T("Statistics"), -1, m_windowRect, StringFormatFlags::CenterAlignment);
+	//g->setBrush(ColorBrush::White);
+	//g->setOpacity(1.0f);
+	//g->drawString(_T("Statistics"), -1, m_windowRect, StringFormatFlags::CenterAlignment);
 
 	location.y += 24;
 
@@ -180,12 +180,12 @@ void EngineDiagViewer::Render(DrawingContext* g, const Vector2& viewSize)
 
 	TCHAR text[256] = { 0 };
 
-	//StringTraits::SPrintf(text, 256, _T("Graphics API    : %s"), m_manager->GetGraphicsAPI().ToString().c_str());
-	//g->DrawText(text, -1, location);
+	//StringTraits::SPrintf(text, 256, _T("Graphics API    : %s"), m_manager->getGraphicsAPI().ToString().c_str());
+	//g->drawText(text, -1, location);
 	location.y += 16;
 
-	//StringTraits::SPrintf(text, 256, _T("Rendering type  : %s"), m_manager->GetRenderingType().ToString().c_str());
-	//g->DrawText(text, -1, location);
+	//StringTraits::SPrintf(text, 256, _T("Rendering type  : %s"), m_manager->getRenderingType().ToString().c_str());
+	//g->drawText(text, -1, location);
 	location.y += 16;
 
 	StringTraits::SPrintf(text, 256, _T("Average FPS     : %.1f"), m_diagCore->GetMainFPS());
@@ -195,12 +195,12 @@ void EngineDiagViewer::Render(DrawingContext* g, const Vector2& viewSize)
 	g->DrawText(text, PointF(location.x + 150, location.y));
 	location.y += 16;
 
-	//StringTraits::SPrintf(text, 256, _T("Window Size     : %d x %d"), m_profiler->GetCommitedMainWindowSize().Width, m_profiler->GetCommitedMainWindowSize().Height);
-	//g->DrawText(text, -1, location);
+	//StringTraits::SPrintf(text, 256, _T("Window Size     : %d x %d"), m_profiler->getCommitedMainWindowSize().Width, m_profiler->getCommitedMainWindowSize().Height);
+	//g->drawText(text, -1, location);
 	//location.Y += 16;
 
-	//StringTraits::SPrintf(text, 256, _T("Backbuffer Size : %d x %d"), m_profiler->GetCommitedMainBackbufferSize().Width, m_profiler->GetCommitedMainBackbufferSize().Height);
-	//g->DrawText(text, -1, location);
+	//StringTraits::SPrintf(text, 256, _T("Backbuffer Size : %d x %d"), m_profiler->getCommitedMainBackbufferSize().Width, m_profiler->getCommitedMainBackbufferSize().Height);
+	//g->drawText(text, -1, location);
 	//location.Y += 24;
 	//location.X -= 16;
 

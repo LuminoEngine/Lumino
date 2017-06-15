@@ -9,17 +9,17 @@ class UIHelper
 {
 public:
 
-	static void ForEachVisualChildren(UIElement* element, std::function<void(UIElement* child)> func)
+	static void forEachVisualChildren(UIElement* element, std::function<void(UIElement* child)> func)
 	{
-		int count = element->GetVisualChildrenCount();
+		int count = element->getVisualChildrenCount();
 		for (int i = 0; i < count; ++i)
 		{
-			func(static_cast<UIElement*>(element->GetVisualChild(i)));
+			func(static_cast<UIElement*>(element->getVisualChild(i)));
 		}
 	}
 
 	template<typename TPred>
-	static UIElement* FindVisualAncestor(UIElement* element, bool self, TPred pred)
+	static UIElement* findVisualAncestor(UIElement* element, bool self, TPred pred)
 	{
 		if (LN_CHECK_ARG(element != nullptr)) return nullptr;
 
@@ -34,7 +34,7 @@ public:
 
 		while (true)
 		{
-			element = element->GetVisualParent();
+			element = element->getVisualParent();
 			if (element == nullptr)
 			{
 				break;
@@ -48,28 +48,28 @@ public:
 		return nullptr;
 	}
 
-	static UIElement* GetLayoutRoot(UIElement* element)
+	static UIElement* getLayoutRoot(UIElement* element)
 	{
 		while (element != nullptr)
 		{
-			if (element->GetSpcialUIElementType() == detail::SpcialUIElementType::LayoutRoot)
+			if (element->getSpcialUIElementType() == detail::SpcialUIElementType::LayoutRoot)
 			{
 				return element;
 			}
-			element = element->GetVisualParent();
+			element = element->getVisualParent();
 		}
 		return nullptr;
 	}
 
-	static UIElement* FindSpcialElementAncestor(UIElement* element, UISpecialElementType type)
+	static UIElement* findSpcialElementAncestor(UIElement* element, UISpecialElementType type)
 	{
 		while (element != nullptr)
 		{
-			if (element->GetSpecialElementType2() == type)
+			if (element->getSpecialElementType2() == type)
 			{
 				return element;
 			}
-			element = element->GetVisualParent();
+			element = element->getVisualParent();
 		}
 		return nullptr;
 	}

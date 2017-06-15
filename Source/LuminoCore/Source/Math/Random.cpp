@@ -18,17 +18,17 @@ Randomizer Random;
 //------------------------------------------------------------------------------
 Randomizer::Randomizer()
 {
-	SetSeed((int)::time(NULL));
+	setSeed((int)::time(NULL));
 }
 
 //------------------------------------------------------------------------------
 Randomizer::Randomizer(int seed)
 {
-	SetSeed(seed);
+	setSeed(seed);
 }
 
 //------------------------------------------------------------------------------
-void Randomizer::SetSeed(int seed)
+void Randomizer::setSeed(int seed)
 {
 	x = DEFAULT_X;
 	y = DEFAULT_Y;
@@ -37,7 +37,7 @@ void Randomizer::SetSeed(int seed)
 }
 
 //------------------------------------------------------------------------------
-int Randomizer::GetInt()
+int Randomizer::getInt()
 {
 	unsigned t = x ^ (x << 11);
 	x = y;
@@ -48,60 +48,60 @@ int Randomizer::GetInt()
 }
 
 //------------------------------------------------------------------------------
-int Randomizer::GetInt(int maxValue)
+int Randomizer::getInt(int maxValue)
 {
 	if (maxValue == 0) { return 0; }
-	int r = GetInt();
+	int r = getInt();
 	r %= maxValue;
 	return r;
 }
 
 //------------------------------------------------------------------------------
-int Randomizer::GetIntRange(int minValue, int maxValue)
+int Randomizer::getIntRange(int minValue, int maxValue)
 {
 	if (maxValue - minValue == 0) { return 0; }
-	int r = GetInt();
+	int r = getInt();
 	r %= maxValue - minValue;
 	r += minValue;
 	return r;
 }
 
 //------------------------------------------------------------------------------
-int Randomizer::GetIntWidth(int median, int width)
+int Randomizer::getIntWidth(int median, int width)
 {
-	return GetIntRange(median - width, median + width);
+	return getIntRange(median - width, median + width);
 }
 
 //------------------------------------------------------------------------------
-float Randomizer::GetFloat()
+float Randomizer::getFloat()
 {
-	int r = GetInt();
+	int r = getInt();
 	r = (r & 0x007fffff) | 0x3f800000;			// 0x3f800000 は指数部が 1111111で、これは指数1を示す。r & 0x007fffff で仮数部を適当に決めている。
 	float f = *reinterpret_cast<float*>(&r);
 	return f - 1.f;
 }
 
 //------------------------------------------------------------------------------
-float Randomizer::GetFloat(float maxValue)
+float Randomizer::getFloat(float maxValue)
 {
-	float r = GetFloat();
+	float r = getFloat();
 	r *= maxValue;
 	return r;
 }
 
 //------------------------------------------------------------------------------
-float Randomizer::GetFloatRange(float minValue, float maxValue)
+float Randomizer::getFloatRange(float minValue, float maxValue)
 {
-	float r = GetFloat();
+	float r = getFloat();
 	r *= (maxValue - minValue);
 	r += minValue;
 	return r;
 }
 
 //------------------------------------------------------------------------------
-float Randomizer::GetFloatWidth(float median, float width)
+float Randomizer::getFloatWidth(float median, float width)
 {
-	return GetFloatRange(median - width, median + width);
+	return getFloatRange(median - width, median + width);
 }
 
 LN_NAMESPACE_END

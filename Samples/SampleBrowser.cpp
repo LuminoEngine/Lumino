@@ -20,27 +20,27 @@ int g_samplesIndex = 0;
 
 void Main()
 {
-	Engine::Initialize();
+	Engine::initialize();
 
 
-	auto* mainWindow = Engine::GetMainWindow();
+	auto* mainWindow = Engine::getMainWindow();
 
 
-	auto listBox1 = UIListBox::Create();
-	listBox1->SetWidth(200);
-	mainWindow->AddChild(listBox1);
+	auto listBox1 = UIListBox::create();
+	listBox1->setWidth(200);
+	mainWindow->addChild(listBox1);
 
 	for (int i = 0; i < LN_ARRAY_SIZE_OF(g_samples); i++)
 	{
-		listBox1->AddTextItem(g_samples[i].name);
+		listBox1->addTextItem(g_samples[i].name);
 	}
 
 
-	while (!Engine::IsEndRequested() && g_samplesIndex >= 0)
+	while (!Engine::isEndRequested() && g_samplesIndex >= 0)
 	{
 		g_samples[g_samplesIndex].mainFunc();
 	}
 
-	Engine::Terminate();
+	Engine::terminate();
 }
 

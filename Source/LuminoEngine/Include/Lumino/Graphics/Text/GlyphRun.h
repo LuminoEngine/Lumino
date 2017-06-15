@@ -33,31 +33,31 @@ class GlyphRun
 	: public Object
 {
 public:
-	void SetFont(RawFont* font);
-	RawFont* GetFont() const;
-	void SetText(const UTF32* str, int len);	// TODO: internal
-	void SetText(const StringRef& text);
-	void SetTextAlignment(TextAlignment align);	// TODO: Run に持たせるべき？
-	const SizeI& GetRenderSize();
+	void setFont(RawFont* font);
+	RawFont* getFont() const;
+	void setText(const UTF32* str, int len);	// TODO: internal
+	void setText(const StringRef& text);
+	void setTextAlignment(TextAlignment align);	// TODO: run に持たせるべき？
+	const SizeI& getRenderSize();
 
 	/** 行頭からの指定した距離に対応する文字ヒットを取得します。*/
-	bool GetCharacterHitFromDistance(const PointF& pos, GlyphHit* outResult);
+	bool getCharacterHitFromDistance(const PointF& pos, GlyphHit* outResult);
 	
 	/** 行頭から指定した文字までの距離を取得します。*/
-	bool GetDistanceFromCharacterHit(int index, PointF* outPos);
+	bool getDistanceFromCharacterHit(int index, PointF* outPos);
 
 LN_INTERNAL_ACCESS:
 	GlyphRun();
 	virtual ~GlyphRun();
-	void Initialize();
-	void Initialize(detail::GraphicsManager* manager);
-	const List<TextLayoutResultItem>& RequestLayoutItems();
-	detail::FontGlyphTextureCache* LookupFontGlyphTextureCache();
-	const UTF32* GetText() const { return m_utf32Text.c_str(); }
-	int GetTextLength() const { return m_utf32Text.GetLength(); }
+	void initialize();
+	void initialize(detail::GraphicsManager* manager);
+	const List<TextLayoutResultItem>& requestLayoutItems();
+	detail::FontGlyphTextureCache* lookupFontGlyphTextureCache();
+	const UTF32* getText() const { return m_utf32Text.c_str(); }
+	int getTextLength() const { return m_utf32Text.getLength(); }
 
 private:
-	void UpdateTextLayoutItem();
+	void updateTextLayoutItem();
 
 	friend class Helper;
 	detail::GraphicsManager*			m_manager;

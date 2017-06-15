@@ -18,7 +18,7 @@ public:
 	
 	/**
 		@brief		レンダリングを開始します。
-		@details	Application::UpdateFrame() を使用する場合、この関数を呼び出す必要はありません。
+		@details	Application::updateFrame() を使用する場合、この関数を呼び出す必要はありません。
 	*/
 	static void BeginRendering();
 	
@@ -80,12 +80,12 @@ public:
 	///**
 	//	@brief	頂点バッファを設定します。
 	//*/
-	//static void SetVertexBuffer(VertexBuffer* vertexBuffer);
+	//static void setVertexBuffer(VertexBuffer* vertexBuffer);
 
 	///**
 	//	@brief	インデックスバッファを設定します。
 	//*/
-	//static void SetIndexBuffer(IndexBuffer* indexBuffer);
+	//static void setIndexBuffer(IndexBuffer* indexBuffer);
 
 	/**
 		@brief	現在設定されているレンダリングターゲット、深度バッファをクリアします。

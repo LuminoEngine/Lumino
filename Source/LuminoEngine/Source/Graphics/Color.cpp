@@ -209,10 +209,10 @@ static int ParseHexChar(int c)
 static bool ParseHexColor(const StringRef& str, Color32* outColor)
 {
 	uint8_t r, g, b, a;
-	if (str.GetLength() >= 3 && str[0] == _T('#'))
+	if (str.getLength() >= 3 && str[0] == _T('#'))
 	{
 		// #FFFFFFFF
-		if (str.GetLength() >= 9)
+		if (str.getLength() >= 9)
 		{
 			a = ParseHexChar(str[1]) * 16 + ParseHexChar(str[2]);
 			r = ParseHexChar(str[3]) * 16 + ParseHexChar(str[4]);
@@ -220,7 +220,7 @@ static bool ParseHexColor(const StringRef& str, Color32* outColor)
 			b = ParseHexChar(str[7]) * 16 + ParseHexChar(str[8]);
 		}
 		// #FFFFFF
-		else if (str.GetLength() >= 7)
+		else if (str.getLength() >= 7)
 		{
 			a = 255;
 			r = ParseHexChar(str[1]) * 16 + ParseHexChar(str[2]);
@@ -228,7 +228,7 @@ static bool ParseHexColor(const StringRef& str, Color32* outColor)
 			b = ParseHexChar(str[5]) * 16 + ParseHexChar(str[6]);
 		}
 		// #FFFF
-		else if (str.GetLength() >= 5)
+		else if (str.getLength() >= 5)
 		{
 			a = ParseHexChar(str[1]);
 			a = a + a * 16;
@@ -240,7 +240,7 @@ static bool ParseHexColor(const StringRef& str, Color32* outColor)
 			b = b + b * 16;
 		}
         // #FFF
-		else if (str.GetLength() >= 4)
+		else if (str.getLength() >= 4)
 		{
 			r = ParseHexChar(str[1]);
 			r = r + r * 16;
@@ -255,14 +255,14 @@ static bool ParseHexColor(const StringRef& str, Color32* outColor)
 			return false;
 		}
 
-		outColor->Set(r, g, b, a);
+		outColor->set(r, g, b, a);
 		return true;
 	}
 	return false;
 }
 
 //------------------------------------------------------------------------------
-Color32 Color32::FromString(const StringRef& str)
+Color32 Color32::fromString(const StringRef& str)
 {
 	Color32 c;
 	if (!ParseHexColor(str, &c))
@@ -463,25 +463,25 @@ Color::Color(const Vector4& vec)
 }
 
 //------------------------------------------------------------------------------
-void Color::AddClamp(const Color& color)
+void Color::addClamp(const Color& color)
 {
-	r = Math::Clamp(r + color.r, 0.0f, 1.0f);
-	g = Math::Clamp(g + color.g, 0.0f, 1.0f);
-	b = Math::Clamp(b + color.b, 0.0f, 1.0f);
-	a = Math::Clamp(a + color.a, 0.0f, 1.0f);
+	r = Math::clamp(r + color.r, 0.0f, 1.0f);
+	g = Math::clamp(g + color.g, 0.0f, 1.0f);
+	b = Math::clamp(b + color.b, 0.0f, 1.0f);
+	a = Math::clamp(a + color.a, 0.0f, 1.0f);
 }
 
 //------------------------------------------------------------------------------
-void Color::MultiplyClamp(const Color& color)
+void Color::multiplyClamp(const Color& color)
 {
-	r = Math::Clamp(r * color.r, 0.0f, 1.0f);
-	g = Math::Clamp(g * color.g, 0.0f, 1.0f);
-	b = Math::Clamp(b * color.b, 0.0f, 1.0f);
-	a = Math::Clamp(a * color.a, 0.0f, 1.0f);
+	r = Math::clamp(r * color.r, 0.0f, 1.0f);
+	g = Math::clamp(g * color.g, 0.0f, 1.0f);
+	b = Math::clamp(b * color.b, 0.0f, 1.0f);
+	a = Math::clamp(a * color.a, 0.0f, 1.0f);
 }
 
 //------------------------------------------------------------------------------
-Color32 Color::To32BitColor() const
+Color32 Color::to32BitColor() const
 {
 	return Color32(
 		static_cast<uint8_t>(r * 255),
@@ -491,22 +491,22 @@ Color32 Color::To32BitColor() const
 }
 
 //------------------------------------------------------------------------------
-Color Color::FromString(const StringRef& str)
+Color Color::fromString(const StringRef& str)
 {
-	Color32 c = Color32::FromString(str);
+	Color32 c = Color32::fromString(str);
 	return Color(c);
 }
 
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Color Color::Lerp(const Color& color1, const Color& color2, float t)
+Color Color::lerp(const Color& color1, const Color& color2, float t)
 {
 	return Color(
-		Math::Lerp(color1.r, color2.r, t),
-		Math::Lerp(color1.g, color2.g, t),
-		Math::Lerp(color1.b, color2.b, t),
-		Math::Lerp(color1.a, color2.a, t));
+		Math::lerp(color1.r, color2.r, t),
+		Math::lerp(color1.g, color2.g, t),
+		Math::lerp(color1.b, color2.b, t),
+		Math::lerp(color1.a, color2.a, t));
 }
 
 //==============================================================================
@@ -516,12 +516,12 @@ Color Color::Lerp(const Color& color1, const Color& color2, float t)
 const ToneF ToneF::Zero(0, 0, 0, 0);
 
 //------------------------------------------------------------------------------
-void ToneF::AddClamp(const ToneF& tone)
+void ToneF::addClamp(const ToneF& tone)
 {
-	r = Math::Clamp(r + tone.r, 0.0f, 1.0f);
-	g = Math::Clamp(g + tone.g, 0.0f, 1.0f);
-	b = Math::Clamp(b + tone.b, 0.0f, 1.0f);
-	gray = Math::Clamp(gray + tone.gray, 0.0f, 1.0f);
+	r = Math::clamp(r + tone.r, 0.0f, 1.0f);
+	g = Math::clamp(g + tone.g, 0.0f, 1.0f);
+	b = Math::clamp(b + tone.b, 0.0f, 1.0f);
+	gray = Math::clamp(gray + tone.gray, 0.0f, 1.0f);
 }
 
 
@@ -530,7 +530,7 @@ void ToneF::AddClamp(const ToneF& tone)
 //==============================================================================
 
 //------------------------------------------------------------------------------
-Color32 HSVColor::ToColor() const
+Color32 HSVColor::toColor() const
 {
 	unsigned char c1, c2, c3;
 	if (S == 0)
@@ -557,9 +557,9 @@ Color32 HSVColor::ToColor() const
 }
 
 //------------------------------------------------------------------------------
-Color HSVColor::ToColorF() const
+Color HSVColor::toColorF() const
 {
-	Color32 c = ToColor();
+	Color32 c = toColor();
 	return Color(c);
 }
 

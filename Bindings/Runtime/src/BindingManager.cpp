@@ -21,18 +21,18 @@ void LFManager::PreInitialize()
 {
 	if (Engine == nullptr)
 	{
-		Engine = EngineManager::Create(ConfigData);
+		Engine = EngineManager::create(ConfigData);
 		IsSystemInitialized = true;
 	}
 }
 
 //------------------------------------------------------------------------------
-void LFManager::PostInitialize()
+void LFManager::postInitialize()
 {
 	// 文字コード変換器
 	TCharToUTF8Converter = LN_NEW EncodingConverter();
-	TCharToUTF8Converter->SetSourceEncoding(Encoding::GetTCharEncoding());
-	TCharToUTF8Converter->SetDestinationEncoding(Encoding::GetUTF8Encoding());
+	TCharToUTF8Converter->getSourceEncoding(Encoding::getTCharEncoding());
+	TCharToUTF8Converter->setDestinationEncoding(Encoding::getUTF8Encoding());
 
 	// オブジェクト管理配列
 	for (int i = 511; i >= 0; --i)
@@ -40,16 +40,16 @@ void LFManager::PostInitialize()
 		ObjectEntry e;
 		e.Object = NULL;
 		e.Index = i;
-		m_objectEntryList.Add(e);
+		m_objectEntryList.add(e);
 
 		if (i > 0) {  // 0 は NULL 扱い。欠番にする。
-			m_objectIndexStack.Push(i);
+			m_objectIndexStack.push(i);
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
-void LFManager::Terminate()
+void LFManager::terminate()
 {
 	// 残っているオブジェクトを全て削除
 	for (ObjectEntry& e : m_objectEntryList) {
@@ -74,29 +74,29 @@ LNHandle LFManager::CheckRegisterObject(tr::ReflectionObject* obj)
 	if (obj == nullptr) return NULL;
 
 	// 登録済みならハンドル (管理配列上のインデックス) を返す
-	if (obj->GetUserData() != NULL)
+	if (obj->getUserData() != NULL)
 	{
-		ObjectRegisterData* data = (ObjectRegisterData*)obj->GetUserData();
+		ObjectRegisterData* data = (ObjectRegisterData*)obj->getUserData();
 		//obj->AddRef();
 		return data->Index;
 	}
 
 	// 管理配列がすべて埋まっている場合
-	if (m_objectIndexStack.IsEmpty())
+	if (m_objectIndexStack.isEmpty())
 	{
 		// 末尾に追加する
 		ObjectEntry e;
 		e.Object = obj;
-		obj->AddRef();
+		obj->addRef();
 		//e.Interface = obj;
-		e.Index = m_objectEntryList.GetCount();
+		e.Index = m_objectEntryList.getCount();
 		e.RefCount = 1;
-		m_objectEntryList.Add(e);
+		m_objectEntryList.add(e);
 
 		// ユーザーデータ登録
 		ObjectRegisterData* data = LN_NEW ObjectRegisterData();
 		data->Index = e.Index;
-		obj->SetUserData(data);
+		obj->setUserData(data);
 
 		//obj->AddRef();
 		return e.Index;
@@ -104,21 +104,21 @@ LNHandle LFManager::CheckRegisterObject(tr::ReflectionObject* obj)
 	else
 	{
 		// 空き場所を取得
-		int newPos = m_objectIndexStack.GetTop();
-		m_objectIndexStack.Pop();
+		int newPos = m_objectIndexStack.getTop();
+		m_objectIndexStack.pop();
 
 		// 格納
 		ObjectEntry& e = m_objectEntryList[newPos];
 
 		e.Object = obj;
-		obj->AddRef();
+		obj->addRef();
 		e.Index = newPos;
 		e.RefCount = 1;
 
 		// ユーザーデータ登録
 		ObjectRegisterData* data = LN_NEW ObjectRegisterData();
 		data->Index = e.Index;
-		obj->SetUserData(data);
+		obj->setUserData(data);
 
 		//obj->AddRef();
 		return e.Index;
@@ -134,7 +134,7 @@ ResultCode LFManager::ProcException(Exception* e)
 
 	// 最後に発生した例外として覚えておく
 	LN_SAFE_DELETE(LastException);
-	LastException = e->Copy();
+	LastException = e->copy();
 
 #define ERROR_DEF(exceptionType, code) \
 	{ \
@@ -182,7 +182,7 @@ void LFManager::ReleaseObject(LNHandle handle)
 			LN_SAFE_RELEASE(e.Object);
 
 			// Index 返却
-			m_objectIndexStack.Push(index);
+			m_objectIndexStack.push(index);
 		}
 	}
 }
@@ -206,5 +206,5 @@ ObjectEntry* LFManager::GetObjectEntry(LNHandle handle)
 //------------------------------------------------------------------------------
 int LFManager::GetHandleCount()
 {
-	return m_objectEntryList.GetCount() - m_objectIndexStack.GetCount();
+	return m_objectEntryList.getCount() - m_objectIndexStack.getCount();
 }

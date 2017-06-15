@@ -44,7 +44,7 @@ protected:
 	void AddToken(TokenGroup group, const char* bufBegin, const char* bufEnd, int tokenType = 0);
 	Token* GetLastToken();
 	bool EqualsString(Token* token, const char* str, int length) const;
-	DiagnosticsItemSet* GetDiag() const { return m_diag; }
+	DiagnosticsItemSet* getDiag() const { return m_diag; }
 
 	static AlphaNumTypeFlags GetAlphaNumType(int ch);
 
@@ -53,7 +53,7 @@ protected:
 
 	int ReadMBSSequence(const Range& buffer);
 
-	virtual void OnStart();
+	virtual void onStart();
 
 private:
 	InputFile*			m_inputFile;

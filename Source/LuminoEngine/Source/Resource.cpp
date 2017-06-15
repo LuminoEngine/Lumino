@@ -9,9 +9,9 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 const String InternalResource::DirectXNotInstalledError(_T("DirectXNotInstalledError"));
 
-void InternalResource::InitializeEngineResource()
+void InternalResource::initializeEngineResource()
 {
-	SetString(DirectXNotInstalledError, _T("%s が見つかりませんでした。\nDirectX エンドユーザーランタイム をインストールしてください。\nhttps://www.microsoft.com/ja-jp/download/details.aspx?id=35&"));
+	setString(DirectXNotInstalledError, _T("%s が見つかりませんでした。\nDirectX エンドユーザーランタイム をインストールしてください。\nhttps://www.microsoft.com/ja-jp/download/details.aspx?id=35&"));
 }
 
 LN_NAMESPACE_END

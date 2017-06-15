@@ -55,36 +55,35 @@ public:
 public:
 
 	// TODO: SceneGraphManager はホントに単純なシーングラフ管理だけにとどめておいて、MMD 用のシーン構築は別クラスにしてもいいかも
-	void CreateDefaultSceneGraph();
-	void ReleaseDefaultSceneGraph();
+	void createDefaultSceneGraph();
+	void releaseDefaultSceneGraph();
 	//CameraViewportLayer* GetDefault2DCameraViewportLayer() { return m_default2DCameraViewportLayer; }
 	//CameraViewportLayer* GetDefault3DCameraViewportLayer() { return m_default3DCameraViewportLayer; }
-	void UpdateFrameDefaultSceneGraph(float elapsedTime);
+	void updateFrameDefaultSceneGraph(float elapsedTime);
 	//void RenderDefaultSceneGraph(Texture* renderTarget);
 
 	
 
 
 	/// 名前を指定してノードを検索する (同名ノードの場合は最初のノード)
-	SceneNode* FindNodeFirst(const String& name);
+	SceneNode* findNodeFirst(const String& name);
 
 
 public:	// internal
-	EngineDiagCore* GetEngineDiag() const { return m_engineDiag; }
-	detail::PhysicsManager* GetPhysicsManager() { return m_physicsManager; }
-	detail::GraphicsManager* GetGraphicsManager() { return m_graphicsManager; }
-	detail::EffectManager* GetEffectManager() { return m_effectManager; }
-	detail::ModelManager* GetModelManager() { return m_modelManager; }
-	detail::DocumentsManager* GetDocumentsManager() { return m_documentsManager; }
-	Texture2D* GetDummyWhiteTexture() { return m_dummyWhiteTexture; }
+	EngineDiagCore* getEngineDiag() const { return m_engineDiag; }
+	detail::PhysicsManager* getPhysicsManager() { return m_physicsManager; }
+	detail::GraphicsManager* getGraphicsManager() { return m_graphicsManager; }
+	detail::EffectManager* getEffectManager() { return m_effectManager; }
+	detail::ModelManager* getModelManager() { return m_modelManager; }
+	detail::DocumentsManager* getDocumentsManager() { return m_documentsManager; }
+	Texture2D* getDummyWhiteTexture() { return m_dummyWhiteTexture; }
 
-	void OnNodeRename(SceneNode* node, const String& oldName, const String& newName);
+	void onNodeRename(SceneNode* node, const String& oldName, const String& newName);
 
-	void AddLight(LightComponent* light);
-	List<CameraComponent*>* GetAllCameraList() { return &m_allCameraList; }
+	void addLight(LightComponent* light);
 
 	/// 指定した座標に近いライトを取得する (取得する数は outList の要素数。あらかじめ Resize() しておくこと)
-	void SelectLight(Vector3* pos, LightNodeList* outList);
+	void selectLight(Vector3* pos, LightNodeList* outList);
 
 private:
 	typedef std::multimap<String, SceneNode*>	NodeNameMap;
@@ -105,7 +104,6 @@ private:
 	NodeNameMap							m_nodeNameMap;			///< ノードを名前で検索するためのマップ
 	LightNodeList						m_lightNodeList;		///< 全ての LightComponent のリスト
 
-	List<CameraComponent*>	m_allCameraList;
 
 
 	//CameraViewportLayer*	m_default2DCameraViewportLayer;

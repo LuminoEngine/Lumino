@@ -37,18 +37,18 @@ public:
 		GLint		length;
 	};
 
-	static ShaderCompileResultLevel MakeShaderProgram(const char* vsCode, size_t vsCodeLen, const char* fsCode, size_t fsCodeLen, GLuint* outProgram, StringA* outMessage);
+	static ShaderCompileResultLevel makeShaderProgram(const char* vsCode, size_t vsCodeLen, const char* fsCode, size_t fsCodeLen, GLuint* outProgram, StringA* outMessage);
 
-	static void AnalyzeLNBasicShaderCode(const char* code, size_t codeLen, GLuint type, const char* entryName, CodeRange* outCode);
-
-	// return: shader object
-	static GLuint CompileShader2(GLuint type, int codeCount, const char** codes, const GLint* sizes, ShaderDiag* diag);
+	static void analyzeLNBasicShaderCode(const char* code, size_t codeLen, GLuint type, const char* entryName, CodeRange* outCode);
 
 	// return: shader object
-	static GLuint CompileShader3(GLuint type, const char* code, GLint codeLen, const char* entryName, ShaderDiag* diag);
+	static GLuint compileShader2(GLuint type, int codeCount, const char** codes, const GLint* sizes, ShaderDiag* diag);
+
+	// return: shader object
+	static GLuint compileShader3(GLuint type, const char* code, GLint codeLen, const char* entryName, ShaderDiag* diag);
 
 	// return: Program object
-	static GLuint LinkShader(GLuint vertShader, GLuint fragShader, ShaderDiag* diag);
+	static GLuint linkShader(GLuint vertShader, GLuint fragShader, ShaderDiag* diag);
 };
 
 /// OpenGL 用の IShader の実装
@@ -58,26 +58,26 @@ class GLShader
 public:
 	GLShader();
 	virtual ~GLShader();
-	void Initialize(GLGraphicsDevice* device, const void* code, size_t codeByteCount);
+	void initialize(GLGraphicsDevice* device, const void* code, size_t codeByteCount);
 
-	GLGraphicsDevice* GetGraphicsDevice() { return m_device; }
-	GLShaderVariable* FindShaderVariable(const String& name);
-	GLShaderVariable* CreateShaderVariable(ShaderVariableBase::ShaderVariableTypeDesc desc, const String& name, const String& semanticName);
+	GLGraphicsDevice* getGraphicsDevice() { return m_device; }
+	GLShaderVariable* findShaderVariable(const String& name);
+	GLShaderVariable* createShaderVariable(ShaderVariableBase::ShaderVariableTypeDesc desc, const String& name, const String& semanticName);
 
 public:
-	virtual int GetVariableCount() const;
-	virtual IShaderVariable* GetVariable(int index) const;
-	virtual int GetTechniqueCount() const;
-	virtual IShaderTechnique* GetTechnique(int index) const;
-	virtual void OnLostDevice();
-	virtual void OnResetDevice();
+	virtual int getVariableCount() const;
+	virtual IShaderVariable* getVariable(int index) const;
+	virtual int getTechniqueCount() const;
+	virtual IShaderTechnique* getTechnique(int index) const;
+	virtual void onLostDevice();
+	virtual void onResetDevice();
 
-	ShaderDiag* GetDiag() { return &m_diag; }
-	GLuint GetVertexShader(const String& name);
-	GLuint GetFlagmentShader(const String& name);
+	ShaderDiag* getDiag() { return &m_diag; }
+	GLuint getVertexShader(const String& name);
+	GLuint getFlagmentShader(const String& name);
 
 private:
-	GLuint CompileShader(const char* code, size_t codeLen, const char* entryName, GLuint type);
+	GLuint compileShader(const char* code, size_t codeLen, const char* entryName, GLuint type);
 
 	GLGraphicsDevice*				m_device;
 	//GLuint							m_glProgram;
@@ -96,22 +96,22 @@ class GLShaderVariable
 	: public ShaderVariableBase
 {
 public:
-	static GLShaderVariable* Deserialize(GLShader* ownerShader, tr::JsonReader2* json, bool* outOverwrited);
+	static GLShaderVariable* deserialize(GLShader* ownerShader, tr::JsonReader2* json, bool* outOverwrited);
 
 	GLShaderVariable();
 	virtual ~GLShaderVariable();
-	void Initialize(GLShader* owner, ShaderVariableTypeDesc desc, const String& name, const String& semanticName, GLint location);
+	void initialize(GLShader* owner, ShaderVariableTypeDesc desc, const String& name, const String& semanticName, GLint location);
 
 public:
 	/// 指定された GLSL Location に値を設定する
-	void Apply(int location, int textureStageIndex);
+	void apply(int location, int textureStageIndex);
 
 public:
-	virtual int GetAnnotationCount();
-	virtual IShaderVariable* GetAnnotation(int index);
+	virtual int getAnnotationCount();
+	virtual IShaderVariable* getAnnotation(int index);
 
 public:
-	static void ConvertVariableTypeGLToLN(const char* name, GLenum gl_type, GLsizei gl_var_size, ShaderVariableBase::ShaderVariableTypeDesc* desc);
+	static void convertVariableTypeGLToLN(const char* name, GLenum gl_type, GLsizei gl_var_size, ShaderVariableBase::ShaderVariableTypeDesc* desc);
 
 private:
 	GLShader*					m_ownerShader;
@@ -125,22 +125,22 @@ class GLShaderAnnotation
 	: public ShaderVariableBase
 {
 public:
-	static GLShaderAnnotation* Deserialize(tr::JsonReader2* json);
+	static GLShaderAnnotation* deserialize(tr::JsonReader2* json);
 
 	GLShaderAnnotation();
 	virtual ~GLShaderAnnotation();
-	void Initialize(const String& type, const String& name, const String& value);
+	void initialize(const String& type, const String& name, const String& value);
 
-	virtual void SetBool(bool value) { LN_THROW(0, InvalidOperationException); }
-	virtual void SetInt(int value) { LN_THROW(0, InvalidOperationException); }
-	virtual void SetFloat(float value) { LN_THROW(0, InvalidOperationException); }
-	virtual void SetVector(const Vector4& vec) { LN_THROW(0, InvalidOperationException); }
-	virtual void SetVectorArray(const Vector4* vectors, int count) { LN_THROW(0, InvalidOperationException); }
-	virtual void SetMatrix(const Matrix& matrix) { LN_THROW(0, InvalidOperationException); }
-	virtual void SetMatrixArray(const Matrix* matrices, int count) { LN_THROW(0, InvalidOperationException); }
-	virtual void SetTexture(ITexture* texture) { LN_THROW(0, InvalidOperationException); }
-	virtual int GetAnnotationCount() { return 0; }
-	virtual IShaderVariable* GetAnnotation(int index) { return NULL; }
+	virtual void setBool(bool value) { LN_THROW(0, InvalidOperationException); }
+	virtual void setInt(int value) { LN_THROW(0, InvalidOperationException); }
+	virtual void setFloat(float value) { LN_THROW(0, InvalidOperationException); }
+	virtual void setVector(const Vector4& vec) { LN_THROW(0, InvalidOperationException); }
+	virtual void setVectorArray(const Vector4* vectors, int count) { LN_THROW(0, InvalidOperationException); }
+	virtual void setMatrix(const Matrix& matrix) { LN_THROW(0, InvalidOperationException); }
+	virtual void setMatrixArray(const Matrix* matrices, int count) { LN_THROW(0, InvalidOperationException); }
+	virtual void setTexture(ITexture* texture) { LN_THROW(0, InvalidOperationException); }
+	virtual int getAnnotationCount() { return 0; }
+	virtual IShaderVariable* getAnnotation(int index) { return NULL; }
 };
 
 // Technique
@@ -148,19 +148,19 @@ class GLShaderTechnique
 	: public IShaderTechnique
 {
 public:
-	static GLShaderTechnique* Deserialize(GLShader* ownerShader, tr::JsonReader2* json);
+	static GLShaderTechnique* deserialize(GLShader* ownerShader, tr::JsonReader2* json);
 
 	GLShaderTechnique();
 	virtual ~GLShaderTechnique();
-	void Initialize(GLShader* ownerShader, const String& name);
-	void AddPass(GLShaderPass* pass) { m_passes.Add(pass); }
+	void initialize(GLShader* ownerShader, const String& name);
+	void addPass(GLShaderPass* pass) { m_passes.add(pass); }
 
 public:
-	virtual const TCHAR* GetName() const { return m_name.c_str(); }
-	virtual int GetPassCount() const { return m_passes.GetCount(); }
-	virtual IShaderPass* GetPass(int index);
-	virtual int GetAnnotationCount() { return m_annotations.GetCount(); }
-	virtual IShaderVariable* GetAnnotation(int index) { return m_annotations[index]; }
+	virtual const TCHAR* getName() const { return m_name.c_str(); }
+	virtual int getPassCount() const { return m_passes.getCount(); }
+	virtual IShaderPass* getPass(int index);
+	virtual int getAnnotationCount() { return m_annotations.getCount(); }
+	virtual IShaderVariable* getAnnotation(int index) { return m_annotations[index]; }
 
 private:
 	GLShader*					m_ownerShader;
@@ -177,27 +177,27 @@ public:
 	static const int MaxUsageIndex = 16;		///< UsageIndex の最大 (DX9 にあわせて最大の 16)
 
 public:
-	static GLShaderPass* Deserialize(GLShader* ownerShader, tr::JsonReader2* json);
+	static GLShaderPass* deserialize(GLShader* ownerShader, tr::JsonReader2* json);
 
 	GLShaderPass();
 	virtual ~GLShaderPass();
-	void Initialize(GLShader* ownerShader, const String& name, GLuint vertShader, GLuint fragShader);
-	void Initialize(GLShader* ownerShader, const String& name, const String& vertShaderName, const String& fragShaderName);
+	void initialize(GLShader* ownerShader, const String& name, GLuint vertShader, GLuint fragShader);
+	void initialize(GLShader* ownerShader, const String& name, const String& vertShaderName, const String& fragShaderName);
 
 public:
 	/// glVertexAttribPointer() に指定する attribute インデックスを取得する (-1 の場合は存在しないことを示す)
-	int GetUsageAttributeIndex(VertexElementUsage usage, int index);
+	int getUsageAttributeIndex(VertexElementUsage usage, int index);
 
 public:
-	virtual const TCHAR* GetName() const { return m_name.c_str(); }
-	virtual int GetAnnotationCount() { return m_annotations.GetCount(); }
-	virtual IShaderVariable* GetAnnotation(int index) { return m_annotations[index]; }
-	virtual void Apply();
-	//virtual void End();
+	virtual const TCHAR* getName() const { return m_name.c_str(); }
+	virtual int getAnnotationCount() { return m_annotations.getCount(); }
+	virtual IShaderVariable* getAnnotation(int index) { return m_annotations[index]; }
+	virtual void apply();
+	//virtual void end();
 
 private:
-	bool LinkShader(GLuint vertShader, GLuint fragShader, ShaderDiag* diag);
-	void Build();
+	bool linkShader(GLuint vertShader, GLuint fragShader, ShaderDiag* diag);
+	void build();
 	
 	GLShader*						m_ownerShader;
 	GLuint							m_program;

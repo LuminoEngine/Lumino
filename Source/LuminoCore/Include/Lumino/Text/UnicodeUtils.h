@@ -65,7 +65,7 @@ public:
 		@param[in]		targetLength	: 変換結果を格納するバッファの長さ (文字単位(targetStartの要素数))
 		@param[in,out]	options			: 変換の追加情報
 	*/
-	static UTFConversionResult ConvertUTF8toUTF16(
+	static UTFConversionResult convertUTF8toUTF16(
 		const UTF8*				sourceStart, 
 		size_t					sourceLength,		// 終端 \0 等は含まない
 		UTF16*					targetStart,
@@ -80,7 +80,7 @@ public:
 		@param[in]		targetLength	: 変換結果を格納するバッファの長さ (文字単位(targetStartの要素数))
 		@param[in,out]	options			: 変換の追加情報
 	*/
-	static UTFConversionResult ConvertUTF8toUTF32(
+	static UTFConversionResult convertUTF8toUTF32(
 		const UTF8*				sourceStart,
 		size_t					sourceLength,
 		UTF32*					targetStart,
@@ -95,7 +95,7 @@ public:
 		@param[in]		targetLength	: 変換結果を格納するバッファの長さ (文字単位(targetStartの要素数))
 		@param[in,out]	options			: 変換の追加情報
 	*/
-	static UTFConversionResult ConvertUTF16toUTF8(
+	static UTFConversionResult convertUTF16toUTF8(
 		const UTF16*			sourceStart, 
 		size_t					sourceLength,
 		UTF8*					targetStart, 
@@ -110,7 +110,7 @@ public:
 		@param[in]		targetLength	: 変換結果を格納するバッファの長さ (文字単位(targetStartの要素数))
 		@param[in,out]	options			: 変換の追加情報
 	*/
-	static UTFConversionResult ConvertUTF16toUTF32(
+	static UTFConversionResult convertUTF16toUTF32(
 		const UTF16*			sourceStart, 
 		size_t					sourceLength,
 		UTF32*					targetStart, 
@@ -125,7 +125,7 @@ public:
 		@param[in]		targetLength	: 変換結果を格納するバッファの長さ (文字単位(targetStartの要素数))
 		@param[in,out]	options			: 変換の追加情報
 	*/
-	static UTFConversionResult ConvertUTF32toUTF8(
+	static UTFConversionResult convertUTF32toUTF8(
 		const UTF32*			sourceStart, 
 		size_t					sourceLength,
 		UTF8*					targetStart, 
@@ -140,7 +140,7 @@ public:
 		@param[in]		targetLength	: 変換結果を格納するバッファの長さ (文字単位(targetStartの要素数))
 		@param[in,out]	options			: 変換の追加情報
 	*/
-	static UTFConversionResult ConvertUTF32toUTF16(
+	static UTFConversionResult convertUTF32toUTF16(
 		const UTF32*			sourceStart, 
 		size_t					sourceLength,
 		UTF16*					targetStart, 
@@ -152,7 +152,7 @@ public:
 		@param[in]		sourceStart		: カウント元のバッファの先頭アドレス
 		@param[in]		sourceLength	: カウント元のバッファの長さ (文字単位(sourceStartの要素数)。終端 \0 は含まないようにすること)
 	*/
-	static UTFConversionResult GetUTF8CharCount(
+	static UTFConversionResult getUTF8CharCount(
 		const UTF8*				sourceStart,
 		size_t					sourceLength,
 		bool					isStrict,
@@ -163,7 +163,7 @@ public:
 		@param[in]		sourceStart		: カウント元のバッファの先頭アドレス
 		@param[in]		sourceLength	: カウント元のバッファの長さ (文字単位(sourceStartの要素数)。終端 \0 は含まないようにすること)
 	*/
-	static UTFConversionResult GetUTF16CharCount(
+	static UTFConversionResult getUTF16CharCount(
 		const UTF16*			sourceStart,
 		size_t					sourceLength,
 		bool					isStrict,
@@ -177,7 +177,7 @@ public:
 		@param[out]		outExtraByteCount	: 後続バイト数 (ASCII 文字等、後続が無い場合は 0 が格納される)
 		@details		戻り値がエラーでも、outExtraByteCount には後続バイト数が格納されます。
 	*/
-	static UTFConversionResult CheckUTF8TrailingBytes(const UTF8* sourceStart, const UTF8* sourceEnd, bool strict, int* outExtraByteCount);
+	static UTFConversionResult checkUTF8TrailingBytes(const UTF8* sourceStart, const UTF8* sourceEnd, bool strict, int* outExtraByteCount);
 
 	/**
 		@brief			UTF16 のサロゲートペアであるかを確認する
@@ -186,38 +186,38 @@ public:
 		@param[in]		strict			: true の場合、不正文字のチェックを行う (不正文字が見つかった場合は UTFConversionResult_SourceIllegal を返す)
 		@param[out]		outSurrogate	: true が格納された場合、sourceStart と その次の文字はサロゲートペアである
 	*/
-	static UTFConversionResult CheckUTF16Surrogate(const UTF16* sourceStart, const UTF16* sourceEnd, bool strict, bool* outSurrogate);
+	static UTFConversionResult checkUTF16Surrogate(const UTF16* sourceStart, const UTF16* sourceEnd, bool strict, bool* outSurrogate);
 
 	/// ワードが、UTF16 の上位サロゲートであるかを確認する
-	static bool CheckUTF16HighSurrogate(UTF16 ch) { return (SurrogateHighStart <= ch && ch <= SurrogateHighEnd); }
+	static bool checkUTF16HighSurrogate(UTF16 ch) { return (SurrogateHighStart <= ch && ch <= SurrogateHighEnd); }
 
 	/// ワードが、UTF16 の下位サロゲートであるかを確認する
-	static bool CheckUTF16LowSurrogate(UTF16 ch) { return (SurrogateLowStart <= ch && ch <= SurrogateLowEnd); }
+	static bool checkUTF16LowSurrogate(UTF16 ch) { return (SurrogateLowStart <= ch && ch <= SurrogateLowEnd); }
 
 
 	/// 1文字分の変換 (UTF8 → UTF32)
-	static UTFConversionResult ConvertCharUTF8toUTF32(
+	static UTFConversionResult convertCharUTF8toUTF32(
 		const UTF8**			sourceStart,
 		const UTF8*				sourceEnd,
 		UTFConversionOptions*	options,
 		UTF32*					outChar);
 
 	/// 1文字分の変換 (UTF32 → UTF8)
-	static UTFConversionResult ConvertCharUTF32toUTF8(
+	static UTFConversionResult convertCharUTF32toUTF8(
 		UTF32					ch,
 		UTF8**					targetStart, 
 		UTF8*					targetEnd,
 		UTFConversionOptions*	options);
 
 	/// 1文字分の変換 (UTF16 → UTF32)
-	static UTFConversionResult ConvertCharUTF16toUTF32(
+	static UTFConversionResult convertCharUTF16toUTF32(
 		const UTF16**			sourceStart,
 		const UTF16*			sourceEnd,
 		UTFConversionOptions*	options,
 		UTF32*					outChar);
 
 	/// 1文字分の変換 (UTF32 → UTF16)
-	static UTFConversionResult ConvertCharUTF32toUTF16(
+	static UTFConversionResult convertCharUTF32toUTF16(
 		UTF32					ch,
 		UTF16**					targetStart, 
 		UTF16*					targetEnd, 
@@ -226,10 +226,10 @@ public:
 private:
 
 	/// 正規の UTF8 バイト列かをチェックする
-	static bool IsLegalUTF8(const UTF8 *source, size_t length);
+	static bool isLegalUTF8(const UTF8 *source, size_t length);
 
 	/// 不正文字を許容するか？
-	static bool IsStrictConversion(const UTFConversionOptions* options) { return (options->ReplacementChar == 0); }
+	static bool isStrictConversion(const UTFConversionOptions* options) { return (options->ReplacementChar == 0); }
 
 };
 

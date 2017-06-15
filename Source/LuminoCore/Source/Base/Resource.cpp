@@ -16,9 +16,9 @@ public:
 	~ResourceSet() {}
 
 	void LoadResourceFile(const String& filePath);
-	const String& GetString(const String& name);
-	const String& GetString(const String& name, const String& defaultValue);
-	void SetString(const String& name, const String& value);
+	const String& getString(const String& name);
+	const String& getString(const String& name, const String& defaultValue);
+	void setString(const String& name, const String& value);
 
 private:
 	LN_DISALLOW_COPY_AND_ASSIGN(ResourceSet);
@@ -31,25 +31,25 @@ void ResourceSet::LoadResourceFile(const String& filePath)
 	String name;
 	String value;
 	XmlFileReader reader(filePath);
-	while (reader.Read())
+	while (reader.read())
 	{
-		if (reader.GetNodeType() == XmlNodeType::Element &&
-			reader.GetName() == _T("string"))
+		if (reader.getNodeType() == XmlNodeType::Element &&
+			reader.getName() == _T("string"))
 		{
-			if (reader.MoveToFirstAttribute())
+			if (reader.moveToFirstAttribute())
 			{
 				do {
-					if (reader.GetName() == _T("name")) { name = reader.GetValue(); }
+					if (reader.getName() == _T("name")) { name = reader.getValue(); }
 
-				} while (reader.MoveToNextAttribute());
+				} while (reader.moveToNextAttribute());
 			}
 		}
-		if (reader.GetNodeType() == XmlNodeType::Text)
+		if (reader.getNodeType() == XmlNodeType::Text)
 		{
-			value = reader.GetValue();
+			value = reader.getValue();
 		}
-		if (reader.GetNodeType() == XmlNodeType::EndElement &&
-			reader.GetName() == _T("string"))
+		if (reader.getNodeType() == XmlNodeType::EndElement &&
+			reader.getName() == _T("string"))
 		{
 			m_stringMap[name] = value;
 		}
@@ -57,7 +57,7 @@ void ResourceSet::LoadResourceFile(const String& filePath)
 }
 
 //------------------------------------------------------------------------------
-const String& ResourceSet::GetString(const String& name)
+const String& ResourceSet::getString(const String& name)
 {
 	std::map<String, String>::iterator itr = m_stringMap.find(name);
 	LN_THROW(itr != m_stringMap.end(), KeyNotFoundException, _T("Not found resource key."));
@@ -65,7 +65,7 @@ const String& ResourceSet::GetString(const String& name)
 }
 
 //------------------------------------------------------------------------------
-const String& ResourceSet::GetString(const String& name, const String& defaultValue)
+const String& ResourceSet::getString(const String& name, const String& defaultValue)
 {
 	std::map<String, String>::iterator itr = m_stringMap.find(name);
 	if (itr == m_stringMap.end()) return defaultValue;
@@ -73,7 +73,7 @@ const String& ResourceSet::GetString(const String& name, const String& defaultVa
 }
 
 //------------------------------------------------------------------------------
-void ResourceSet::SetString(const String& name, const String& value)
+void ResourceSet::setString(const String& name, const String& value)
 {
 	m_stringMap[name] = value;
 }
@@ -87,28 +87,28 @@ public:
 
 	InternalResourceSet()
 	{
-		SetString(InternalResource::UnknownError, _T("不明なエラーが発生しました。"));
-		SetString(InternalResource::VerifyError, _T("前提条件の検証エラーです。"));
-		SetString(InternalResource::ArgumentError, _T("引数に無効な値が渡されました。"));
-		SetString(InternalResource::InvalidOperationError, _T("オブジェクトの状態に対して無効な呼び出しが行われました。"));
-		SetString(InternalResource::NotImplementedError, _T("未実装の機能を呼び出しました。"));
-		SetString(InternalResource::OutOfMemoryError, _T("十分なメモリ領域がありません。"));
-		SetString(InternalResource::OutOfRangeError, _T("値が有効な範囲にありません。"));
-		SetString(InternalResource::KeyNotFoundError, _T("指定されたキーは存在しませんでした。"));
-		SetString(InternalResource::OverflowError, _T("数値演算によるオーバーフローが発生しました。"));
-		SetString(InternalResource::IOError, _T("I/Oエラーが発生しました。"));
-		SetString(InternalResource::FileNotFoundError, _T("指定されたファイルが見つかりません。"));
-		SetString(InternalResource::DirectoryNotFoundError, _T("指定されたディレクトリが見つかりません。"));
-		SetString(InternalResource::InvalidFormatError, _T("入力データの形式が不正、あるいはサポートされていません。"));
-		SetString(InternalResource::EndOfStreamError, _T("ストリームの末尾を越えてアクセスしようとしました。"));
-		SetString(InternalResource::EncodingError, _T("マッピングできない文字または不正シーケンスが見つかりました。"));
-		SetString(InternalResource::RuntimeError, _T("ランタイム機能の呼び出しで予期しないエラーが発生しました。"));
-		SetString(InternalResource::Win32Error, _T("WindowsAPI の呼び出しでエラーが発生しました。"));
-		SetString(InternalResource::ComError, _T("COM の呼び出しでエラーが発生しました。"));
-		SetString(InternalResource::OpenGLError, _T("OpenGL の呼び出しでエラーが発生しました。"));
+		setString(InternalResource::UnknownError, _T("不明なエラーが発生しました。"));
+		setString(InternalResource::VerifyError, _T("前提条件の検証エラーです。"));
+		setString(InternalResource::ArgumentError, _T("引数に無効な値が渡されました。"));
+		setString(InternalResource::InvalidOperationError, _T("オブジェクトの状態に対して無効な呼び出しが行われました。"));
+		setString(InternalResource::NotImplementedError, _T("未実装の機能を呼び出しました。"));
+		setString(InternalResource::OutOfMemoryError, _T("十分なメモリ領域がありません。"));
+		setString(InternalResource::OutOfRangeError, _T("値が有効な範囲にありません。"));
+		setString(InternalResource::KeyNotFoundError, _T("指定されたキーは存在しませんでした。"));
+		setString(InternalResource::OverflowError, _T("数値演算によるオーバーフローが発生しました。"));
+		setString(InternalResource::IOError, _T("I/Oエラーが発生しました。"));
+		setString(InternalResource::FileNotFoundError, _T("指定されたファイルが見つかりません。"));
+		setString(InternalResource::DirectoryNotFoundError, _T("指定されたディレクトリが見つかりません。"));
+		setString(InternalResource::InvalidFormatError, _T("入力データの形式が不正、あるいはサポートされていません。"));
+		setString(InternalResource::EndOfStreamError, _T("ストリームの末尾を越えてアクセスしようとしました。"));
+		setString(InternalResource::EncodingError, _T("マッピングできない文字または不正シーケンスが見つかりました。"));
+		setString(InternalResource::RuntimeError, _T("ランタイム機能の呼び出しで予期しないエラーが発生しました。"));
+		setString(InternalResource::Win32Error, _T("WindowsAPI の呼び出しでエラーが発生しました。"));
+		setString(InternalResource::ComError, _T("COM の呼び出しでエラーが発生しました。"));
+		setString(InternalResource::OpenGLError, _T("OpenGL の呼び出しでエラーが発生しました。"));
 
-		SetString(InternalResource::XmlException, _T("不正な XML フォーマットです。"));
-		SetString(InternalResource::Xml_TagMismatch, _T("開始タグ '{0}' と終了タグ '{1}' が対応していません。"));
+		setString(InternalResource::XmlException, _T("不正な XML フォーマットです。"));
+		setString(InternalResource::Xml_TagMismatch, _T("開始タグ '{0}' と終了タグ '{1}' が対応していません。"));
 	}
 };
 
@@ -142,15 +142,15 @@ const String InternalResource::Xml_TagMismatch(_T("Xml_TagMismatch"));
 static InternalResourceSet g_internalResource;
 
 //------------------------------------------------------------------------------
-const String& InternalResource::GetString(const String& name)
+const String& InternalResource::getString(const String& name)
 {
-	return g_internalResource.GetString(name);
+	return g_internalResource.getString(name);
 }
 
 //------------------------------------------------------------------------------
-void InternalResource::SetString(const String& name, const String& value)
+void InternalResource::setString(const String& name, const String& value)
 {
-	g_internalResource.SetString(name, value);
+	g_internalResource.setString(name, value);
 }
 
 LN_NAMESPACE_END

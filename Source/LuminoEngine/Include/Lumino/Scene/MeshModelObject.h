@@ -13,20 +13,20 @@ class SkinnedMeshComponent
 	: public VisualComponent
 {
 public:
-	static RefPtr<SkinnedMeshComponent> Create(const StringRef& filePath);
+	static RefPtr<SkinnedMeshComponent> create(const StringRef& filePath);
 
 public:
-	SkinnedMeshModel* GetSkinnedMeshModel() const;
+	SkinnedMeshModel* getSkinnedMeshModel() const;
 
 LN_INTERNAL_ACCESS:
 	SkinnedMeshComponent();
 	virtual ~SkinnedMeshComponent();
-	void Initialize(SkinnedMeshModel* meshModel);
-	virtual void OnUpdateFrame(float elapsedTime) override;
-	virtual void OnRender2(DrawList* renderer) override;
+	void initialize(SkinnedMeshModel* meshModel);
+	virtual void onUpdateFrame(float elapsedTime) override;
+	virtual void onRender2(DrawList* renderer) override;
 
 LN_PROTECTED_INTERNAL_ACCESS:
-	virtual detail::SceneNodeDefaultShaderClass GetShaderClass() override { return detail::SceneNodeDefaultShaderClass_SkinnedMesh; }
+	virtual detail::SceneNodeDefaultShaderClass getShaderClass() override { return detail::SceneNodeDefaultShaderClass_SkinnedMesh; }
 
 private:
 	RefPtr<SkinnedMeshModel>	m_meshModel;
@@ -46,7 +46,7 @@ LN_NAMESPACE_END
 //	: public VisualComponent
 //{
 //public:
-//	static RefPtr<MeshModelObject> Create(const StringRef& filePath);
+//	static RefPtr<MeshModelObject> create(const StringRef& filePath);
 //
 //public:
 //
@@ -54,16 +54,16 @@ LN_NAMESPACE_END
 //
 //
 //	/// このモデルに対するアニメーションを行うクラスの取得
-//	Animator* GetAnimator() { return m_model->GetAnimator(); }
+//	Animator* getAnimator() { return m_model->getAnimator(); }
 //
 //protected:
 //	MeshModelObject();
 //	virtual ~MeshModelObject();
-//	void Initialize(SceneGraph* owner, const StringRef& filePath);
+//	void initialize(SceneGraph* owner, const StringRef& filePath);
 //
-//	virtual void OnUpdateFrame(float elapsedTime) override;
+//	virtual void onUpdateFrame(float elapsedTime) override;
 //	virtual void UpdateNodeRenderingParams(MMEShader* priorityShader) override;
-//	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
+//	virtual void drawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
 //
 //private:
 //	RefPtr<Model>	m_model;

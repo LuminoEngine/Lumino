@@ -19,18 +19,18 @@ static const byte_t g_BuiltInBitmapFont_size7_Data[] =
 static const size_t g_BuiltInBitmapFont_size7_Len = LN_ARRAY_SIZE_OF(g_BuiltInBitmapFont_size7_Data);
 
 //------------------------------------------------------------------------------
-RefPtr<RawFont> RawFont::CreateBuiltInBitmapFontInternal2(int size)
+RefPtr<RawFont> RawFont::createBuiltInBitmapFontInternal2(int size)
 {
 	MemoryStream stream(g_BuiltInBitmapFont_size7_Data, g_BuiltInBitmapFont_size7_Len);
 	RefPtr<Bitmap> bitmap(LN_NEW Bitmap(&stream), false);
-	auto font = NewObject<detail::BitmapFont>(bitmap);
-	return RefPtr<RawFont>::StaticCast(font);
+	auto font = newObject<detail::BitmapFont>(bitmap);
+	return RefPtr<RawFont>::staticCast(font);
 }
 
 //------------------------------------------------------------------------------
-void RawFont::RegisterFontFile(const StringRef& filePath)
+void RawFont::registerFontFile(const StringRef& filePath)
 {
-	detail::GraphicsManager::GetInstance()->GetFontManager()->RegisterFontFile(filePath);
+	detail::GraphicsManager::getInstance()->getFontManager()->registerFontFile(filePath);
 }
 
 namespace detail {
@@ -49,19 +49,19 @@ BitmapFont::BitmapFont()
 }
 
 //------------------------------------------------------------------------------
-void BitmapFont::Initialize(Bitmap* bitmap)
+void BitmapFont::initialize(Bitmap* bitmap)
 {
-	RawFont::Initialize();
-	m_manager = detail::EngineDomain::GetGraphicsManager()->GetFontManager();
+	RawFont::initialize();
+	m_manager = detail::EngineDomain::getGraphicsManager()->getFontManager();
 
-	m_name = String::SPrintf(_T("%d"), rand());	// TODO: 名前がユーザー指定されていなければランダムに作る
+	m_name = String::sprintf(_T("%d"), rand());	// TODO: 名前がユーザー指定されていなければランダムに作る
 	m_fontBitmap = bitmap;
 
-	m_charWidth = m_fontBitmap->GetSize().width / 16;
-	m_charHeight = m_fontBitmap->GetSize().height / 16;
+	m_charWidth = m_fontBitmap->getSize().width / 16;
+	m_charHeight = m_fontBitmap->getSize().height / 16;
 
 	// グリフ用の一時ビットマップ
-	m_glyphBitmap.Attach(LN_NEW Bitmap(SizeI(m_charWidth, m_charHeight), PixelFormat::R8G8B8A8));
+	m_glyphBitmap.attach(LN_NEW Bitmap(SizeI(m_charWidth, m_charHeight), PixelFormat::R8G8B8A8));
 
 	m_fontGlyphBitmap.GlyphBitmap = m_glyphBitmap;
 	m_fontGlyphBitmap.OutlineBitmap = NULL;
@@ -134,14 +134,14 @@ void BitmapFont::getTextSize(const wchar_t* text, int len, Geometry::RectI* rect
 #endif
 
 //------------------------------------------------------------------------------
-RawFontPtr BitmapFont::Copy() const
+RawFontPtr BitmapFont::copy() const
 {
-	auto ptr = NewObject<BitmapFont>(m_fontBitmap);
-	return RawFontPtr::StaticCast(ptr);
+	auto ptr = newObject<BitmapFont>(m_fontBitmap);
+	return RawFontPtr::staticCast(ptr);
 }
 
 //------------------------------------------------------------------------------
-FontGlyphLocation* BitmapFont::AdvanceKerning(UTF32 utf32code, int strokeSize, FontGlyphLocation* prevData)
+FontGlyphLocation* BitmapFont::advanceKerning(UTF32 utf32code, int strokeSize, FontGlyphLocation* prevData)
 {
 	FontGlyphLocation* locData;
 
@@ -162,13 +162,13 @@ FontGlyphLocation* BitmapFont::AdvanceKerning(UTF32 utf32code, int strokeSize, F
 		m_fontGlyphLocation.OuterTopLeftPosition = PointI::Zero;
 		locData = &m_fontGlyphLocation;
 	}
-	locData->BitmapSize.Set(m_charWidth, m_charHeight);
+	locData->BitmapSize.set(m_charWidth, m_charHeight);
 
 	return locData;
 }
 
 //------------------------------------------------------------------------------
-FontGlyphBitmap* BitmapFont::LookupGlyphBitmap(UTF32 utf32code, int strokeSize)
+FontGlyphBitmap* BitmapFont::lookupGlyphBitmap(UTF32 utf32code, int strokeSize)
 {
 	// ASCII 部分だけグリフに出来る。それ以外は '?'
 	if (utf32code > 0xFF) {
@@ -178,13 +178,13 @@ FontGlyphBitmap* BitmapFont::LookupGlyphBitmap(UTF32 utf32code, int strokeSize)
 	// 一時ビットマップへ転送してそれを返す
 	RectI dstRect(0, 0, m_charWidth, m_charHeight);
 	RectI srcRect((utf32code % 16) * m_charWidth, (utf32code / 16) * m_charHeight, m_charWidth, m_charHeight);
-	m_glyphBitmap->BitBlt(dstRect, m_fontBitmap, srcRect, Color32::White, false);
+	m_glyphBitmap->bitBlt(dstRect, m_fontBitmap, srcRect, Color32::White, false);
 
 	return &m_fontGlyphBitmap;
 }
 
 //------------------------------------------------------------------------------
-void BitmapFont::GetGlobalMetrics(FontGlobalMetrics* outMetrics)
+void BitmapFont::getGlobalMetrics(FontGlobalMetrics* outMetrics)
 {
 	if (LN_CHECK_ARG(outMetrics != nullptr)) return;
 	outMetrics->ascender = m_charHeight;
@@ -193,7 +193,7 @@ void BitmapFont::GetGlobalMetrics(FontGlobalMetrics* outMetrics)
 }
 
 //------------------------------------------------------------------------------
-void BitmapFont::GetGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics)
+void BitmapFont::getGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics)
 {
 	if (LN_CHECK_ARG(outMetrics != nullptr)) return;
 	outMetrics->advance.x = m_charWidth;

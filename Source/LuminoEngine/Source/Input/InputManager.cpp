@@ -38,7 +38,7 @@ namespace detail
 
 static InputManager* g_inputManager = nullptr;
 	
-InputManager* InputManager::GetInstance(InputManager* priority)
+InputManager* InputManager::getInstance(InputManager* priority)
 {
 	return (priority != nullptr) ? priority : g_inputManager;
 }
@@ -56,11 +56,11 @@ InputManager::~InputManager()
 }
 
 //------------------------------------------------------------------------------
-void InputManager::Initialize(const Settings& settings)
+void InputManager::initialize(const Settings& settings)
 {
 #if defined(LN_OS_WIN32)
 	RefPtr<Win32InputDriver> driver(LN_NEW Win32InputDriver());
-	driver->Initialize(PlatformSupport::GetWindowHandle(settings.mainWindow));
+	driver->initialize(PlatformSupport::getWindowHandle(settings.mainWindow));
 	m_inputDriver = driver;
 #elif defined(LN_OS_MAC)
 	RefPtr<CocoaInputDriver> driver(LN_NEW CocoaInputDriver());
@@ -70,28 +70,28 @@ void InputManager::Initialize(const Settings& settings)
 	LN_THROW(m_inputDriver != nullptr, NotImplementedException);
 
 	// TODO: 今は1つだけ
-	auto pad = RefPtr<InputController>::MakeRef(this);
+	auto pad = RefPtr<InputController>::makeRef(this);
 	m_defaultVirtualPads[0] = pad;
-	m_defaultVirtualPads[0]->AddRef();
+	m_defaultVirtualPads[0]->addRef();
 
-	pad->AddBinding(InputButtons::Left,		KeyboardBinding::Create(Keys::Left));
-	pad->AddBinding(InputButtons::Right,	KeyboardBinding::Create(Keys::Right));
-	pad->AddBinding(InputButtons::Up,		KeyboardBinding::Create(Keys::Up));
-	pad->AddBinding(InputButtons::Down,		KeyboardBinding::Create(Keys::Down));
-	pad->AddBinding(InputButtons::OK,		KeyboardBinding::Create(Keys::Z));
-	pad->AddBinding(InputButtons::Cancel,	KeyboardBinding::Create(Keys::X));
+	pad->addBinding(InputButtons::Left,		KeyboardBinding::create(Keys::Left));
+	pad->addBinding(InputButtons::Right,	KeyboardBinding::create(Keys::Right));
+	pad->addBinding(InputButtons::Up,		KeyboardBinding::create(Keys::Up));
+	pad->addBinding(InputButtons::Down,		KeyboardBinding::create(Keys::Down));
+	pad->addBinding(InputButtons::OK,		KeyboardBinding::create(Keys::Z));
+	pad->addBinding(InputButtons::Cancel,	KeyboardBinding::create(Keys::X));
 
-	pad->AddBinding(InputButtons::Left,		GamepadBinding::Create(GamepadElement::PovLeft));
-	pad->AddBinding(InputButtons::Right,	GamepadBinding::Create(GamepadElement::PovRight));
-	pad->AddBinding(InputButtons::Up,		GamepadBinding::Create(GamepadElement::PovUp));
-	pad->AddBinding(InputButtons::Down,		GamepadBinding::Create(GamepadElement::PovDown));
+	pad->addBinding(InputButtons::Left,		GamepadBinding::create(GamepadElement::PovLeft));
+	pad->addBinding(InputButtons::Right,	GamepadBinding::create(GamepadElement::PovRight));
+	pad->addBinding(InputButtons::Up,		GamepadBinding::create(GamepadElement::PovUp));
+	pad->addBinding(InputButtons::Down,		GamepadBinding::create(GamepadElement::PovDown));
 
-	pad->AddBinding(InputButtons::Left,		GamepadBinding::Create(GamepadElement::Axis1Minus));
-	pad->AddBinding(InputButtons::Right,	GamepadBinding::Create(GamepadElement::Axis1Plus));
-	pad->AddBinding(InputButtons::Up,		GamepadBinding::Create(GamepadElement::Axis2Minus));
-	pad->AddBinding(InputButtons::Down,		GamepadBinding::Create(GamepadElement::Axis2Plus));
-	pad->AddBinding(InputButtons::OK,		GamepadBinding::Create(GamepadElement::Button1));
-	pad->AddBinding(InputButtons::Cancel,	GamepadBinding::Create(GamepadElement::Button2));
+	pad->addBinding(InputButtons::Left,		GamepadBinding::create(GamepadElement::Axis1Minus));
+	pad->addBinding(InputButtons::Right,	GamepadBinding::create(GamepadElement::Axis1Plus));
+	pad->addBinding(InputButtons::Up,		GamepadBinding::create(GamepadElement::Axis2Minus));
+	pad->addBinding(InputButtons::Down,		GamepadBinding::create(GamepadElement::Axis2Plus));
+	pad->addBinding(InputButtons::OK,		GamepadBinding::create(GamepadElement::Button1));
+	pad->addBinding(InputButtons::Cancel,	GamepadBinding::create(GamepadElement::Button2));
 
 	if (g_inputManager == nullptr) {
 		g_inputManager = this;
@@ -115,61 +115,61 @@ void InputManager::Finalize()
 }
 
 //------------------------------------------------------------------------------
-void InputManager::PreUpdateFrame()
+void InputManager::preUpdateFrame()
 {
-	m_inputDriver->PreUpdateFrame();
+	m_inputDriver->preUpdateFrame();
 }
 
 //------------------------------------------------------------------------------
-void InputManager::UpdateFrame()
+void InputManager::updateFrame()
 {
 	for (auto* pad : m_defaultVirtualPads)
 	{
 		if (pad != nullptr) {
-			pad->UpdateFrame();
+			pad->updateFrame();
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
-void InputManager::OnEvent(const PlatformEventArgs& e)
+void InputManager::onEvent(const PlatformEventArgs& e)
 {
 	if (m_inputDriver != nullptr) {
-		m_inputDriver->OnEvent(e);
+		m_inputDriver->onEvent(e);
 	}
 }
 
 //------------------------------------------------------------------------------
-float InputManager::GetVirtualButtonState(InputBinding* binding, bool keyboard, bool mouse, int joyNumber)
+float InputManager::getVirtualButtonState(InputBinding* binding, bool keyboard, bool mouse, int joyNumber)
 {
 	// キーボード
-	if (keyboard && binding->GetType() == detail::InputBindingType::Keyboard)
+	if (keyboard && binding->getType() == detail::InputBindingType::Keyboard)
 	{
 		auto* b = static_cast<KeyboardBinding*>(binding);
-		if (b->GetModifierKeys() != ModifierKeys::None) { LN_NOTIMPLEMENTED(); }
-		return m_inputDriver->QueryKeyState(b->GetKey()) ? 1.0f : 0.0f;
+		if (b->getModifierKeys() != ModifierKeys::None) { LN_NOTIMPLEMENTED(); }
+		return m_inputDriver->queryKeyState(b->getKey()) ? 1.0f : 0.0f;
 	}
 	// マウス
-	if (mouse && binding->GetType() == detail::InputBindingType::Mouse)
+	if (mouse && binding->getType() == detail::InputBindingType::Mouse)
 	{
 		auto* b = static_cast<MouseBinding*>(binding);
-		if (b->GetModifierKeys() != ModifierKeys::None) { LN_NOTIMPLEMENTED(); }
-		return m_inputDriver->QueryMouseState(b->GetMouseAction()) ? 1.0f : 0.0f;
+		if (b->getModifierKeys() != ModifierKeys::None) { LN_NOTIMPLEMENTED(); }
+		return m_inputDriver->queryMouseState(b->getMouseAction()) ? 1.0f : 0.0f;
 	}
 
 	// ゲームパッド
-	if (binding->GetType() == detail::InputBindingType::Gamepad)
+	if (binding->getType() == detail::InputBindingType::Gamepad)
 	{
-		if (joyNumber >= m_inputDriver->GetJoystickCount()) return 0.0f;
+		if (joyNumber >= m_inputDriver->getJoystickCount()) return 0.0f;
 
 		auto b = static_cast<GamepadBinding*>(binding);
-		int e = (int)b->GetElement();
+		int e = (int)b->getElement();
 		// ボタン
 		if ((int)GamepadElement::Button1 <= e && e <= (int)GamepadElement::Button16)
 		{
 			int number = e - (int)GamepadElement::Button1;
 			JoystickDeviceState state;
-			m_inputDriver->GetJoystickState(joyNumber, &state);
+			m_inputDriver->getJoystickState(joyNumber, &state);
 			if (LN_CHECK_RANGE(number, 0, JoystickDeviceState::MaxButtons)) return 0.0f;
 			return state.Buttons[number] ? 1.0f : 0.0f;
 		}
@@ -177,11 +177,11 @@ float InputManager::GetVirtualButtonState(InputBinding* binding, bool keyboard, 
 		if ((int)GamepadElement::PovLeft <= e && e <= (int)GamepadElement::PovDown)
 		{
 			JoystickDeviceState state;
-			m_inputDriver->GetJoystickState(joyNumber, &state);
-			if (b->GetElement() == GamepadElement::PovLeft && (state.POV & PovDirFlags::Left)) return 1.0;
-			if (b->GetElement() == GamepadElement::PovRight && (state.POV & PovDirFlags::Right)) return 1.0;
-			if (b->GetElement() == GamepadElement::PovUp && (state.POV & PovDirFlags::Up)) return 1.0;
-			if (b->GetElement() == GamepadElement::PovDown && (state.POV & PovDirFlags::Down)) return 1.0;
+			m_inputDriver->getJoystickState(joyNumber, &state);
+			if (b->getElement() == GamepadElement::PovLeft && (state.POV & PovDirFlags::Left)) return 1.0;
+			if (b->getElement() == GamepadElement::PovRight && (state.POV & PovDirFlags::Right)) return 1.0;
+			if (b->getElement() == GamepadElement::PovUp && (state.POV & PovDirFlags::Up)) return 1.0;
+			if (b->getElement() == GamepadElement::PovDown && (state.POV & PovDirFlags::Down)) return 1.0;
 			return 0.0f;
 		}
 		// Axis -1.0 .. 1.0
@@ -189,7 +189,7 @@ float InputManager::GetVirtualButtonState(InputBinding* binding, bool keyboard, 
 		{
 			int number = e - (int)GamepadElement::Axis1;
 			JoystickDeviceState state;
-			m_inputDriver->GetJoystickState(joyNumber, &state);
+			m_inputDriver->getJoystickState(joyNumber, &state);
 			if (LN_CHECK_RANGE(number, 0, JoystickDeviceState::MaxAxis)) return 0.0f;
 			return state.Axes[number];
 		}
@@ -200,7 +200,7 @@ float InputManager::GetVirtualButtonState(InputBinding* binding, bool keyboard, 
 			int sign = ((e - (int)GamepadElement::Axis1Minus) % 2 == 0) ? -1.0f : 1.0f;
 
 			JoystickDeviceState state;
-			m_inputDriver->GetJoystickState(joyNumber, &state);
+			m_inputDriver->getJoystickState(joyNumber, &state);
 			if (LN_CHECK_RANGE(number, 0, JoystickDeviceState::MaxAxis)) return 0.0f;
 			return state.Axes[number] * sign;
 		}
@@ -224,19 +224,19 @@ namespace Private
 //==============================================================================
 //
 //public:
-//	static InputManager& GetInstance();
+//	static InputManager& getInstance();
 //
 ////------------------------------------------------------------------------------
 ////
 ////------------------------------------------------------------------------------
-//InputManager& InputManager::GetInstance()
+//InputManager& InputManager::getInstance()
 //{
 //	static InputManager instance;
 //	return instance;
 //}
 
 //------------------------------------------------------------------------------
-InputManager* InputManager::Create(void* hWnd)
+InputManager* InputManager::create(void* hWnd)
 {
 	return LN_NEW InputManager(hWnd);
 }
@@ -258,7 +258,7 @@ InputManager::InputManager(void* hWnd)
 		m_joypadList.Add(LN_NEW Joypad(this));
 	}
 
-	RefreshDevices();
+	refreshDevices();
 }
 
 //------------------------------------------------------------------------------
@@ -289,7 +289,7 @@ void InputManager::UpdateFrame()
 }
 
 //------------------------------------------------------------------------------
-void InputManager::RefreshDevices()
+void InputManager::refreshDevices()
 {
 	// 認識済みジョイパッドの番号を割り振っていく
 	int joyCount = m_inputDevice->GetJoypadCount();

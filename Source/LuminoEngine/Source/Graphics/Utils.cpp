@@ -12,14 +12,14 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
-IndexBufferFormat Utils::GetIndexBufferFormat(int indexCount)
+IndexBufferFormat Utils::getIndexBufferFormat(int indexCount)
 {
 	if (indexCount > USHRT_MAX) return IndexBufferFormat_UInt32;
 	return IndexBufferFormat_UInt16;
 }
 
 //------------------------------------------------------------------------------
-int Utils::GetTextureFormatByteCount(TextureFormat format)
+int Utils::getTextureFormatByteCount(TextureFormat format)
 {
 	static const std::array<int, 10> table =
 	{
@@ -38,7 +38,7 @@ int Utils::GetTextureFormatByteCount(TextureFormat format)
 }
 
 //------------------------------------------------------------------------------
-PixelFormat Utils::TranslatePixelFormat(TextureFormat format)
+PixelFormat Utils::translatePixelFormat(TextureFormat format)
 {
 	static const std::array<PixelFormat, 10> table =
 	{
@@ -60,12 +60,12 @@ PixelFormat Utils::TranslatePixelFormat(TextureFormat format)
 }
 
 //------------------------------------------------------------------------------
-bool Utils::EqualsTexture(Texture* texture1, Texture* texture2)
+bool Utils::equalsTexture(Texture* texture1, Texture* texture2)
 {
 	if (texture1 != texture2) return false;
 	if (texture1 != nullptr)
 	{
-		if (texture1->GetDeviceObjectConst() != texture2->GetDeviceObjectConst()) return false;
+		if (texture1->getDeviceObjectConst() != texture2->getDeviceObjectConst()) return false;
 	}
 	return true;
 }

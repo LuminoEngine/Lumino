@@ -17,7 +17,7 @@ public:
 protected:
 	GpuParticle();
 	virtual ~GpuParticle();
-	void Initialize(SceneGraphManager* manager);
+	void initialize(SceneGraphManager* manager);
 };
 
 LN_NAMESPACE_SCENE_END

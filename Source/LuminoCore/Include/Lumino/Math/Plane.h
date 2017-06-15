@@ -59,7 +59,7 @@ public:
 		@brief		この平面を正規化します。
 		@details	面法線 Normal を正規化し、それに使用した係数を D にも適用します。
 	*/
-	void Normalize();
+	void normalize();
 
 	/**
 		@brief		点がこの平面の裏側にあるかを判定します。点が面上にある場合は表側と判定します。
@@ -67,14 +67,14 @@ public:
 		@return		true の場合、裏側にある
 		@details	面は法線が伸びている方が表側です。
 	*/
-	bool CheckInside(const Vector3& point) const;
+	bool checkInside(const Vector3& point) const;
 
 	/**
 		@brief		点がこの平面の裏側にあるかを判定します。点が面上にある場合も裏側と判定します。
 		@param[in]	point	: 判定する点の座標
 		@return		true の場合、裏側にある
 	*/
-	bool CheckInsideLower(const Vector3& point) const;
+	bool checkInsideLower(const Vector3& point) const;
 
 	/**
 		@brief		球がこの平面の裏側にあるかを判定します。
@@ -83,7 +83,7 @@ public:
 		@return		true の場合、裏側にある (接触している場合も true)
 		@details	面は法線が伸びている方が表側です。
 	*/
-	bool CheckInside(const Vector3& point, float radius) const;
+	bool checkInside(const Vector3& point, float radius) const;
 
 	/**
 		@brief		この平面と線分が交差するかを判定します。
@@ -92,7 +92,7 @@ public:
 		@param[in]	point	: 交点の座標を格納するベクトルのポインタ
 		@return		交差する場合は true、平行な場合は false
 	*/
-	bool Intersects(const Vector3& start, const Vector3& end, Vector3* point = nullptr) const;
+	bool intersects(const Vector3& start, const Vector3& end, Vector3* point = nullptr) const;
 
 	/**
 		@brief		この平面とレイが交差するかを判定します。
@@ -100,14 +100,14 @@ public:
 		@param[in]	point	: 交点の座標を格納するベクトルのポインタ
 		@return		交差する場合は true、平行な場合は false
 	*/
-	bool Intersects(const Ray& ray, Vector3* point = nullptr) const;
+	bool intersects(const Ray& ray, Vector3* point = nullptr) const;
 
 	/**
 		@brief		指定された行列を使用してこの平面を座標変換します。
 		@param[in]	mat		: 処理の基になる行列
 		@return		変換された平面
 	*/
-	void Transform(const Matrix& mat);
+	void transform(const Matrix& mat);
 
 	/**
 		@brief		デバッグ用に文字列を標準出力します。
@@ -115,7 +115,7 @@ public:
 		@param[in]	stream	: 出力先ストリーム
 		@details	format が NULL の場合、書式は "%f, %f, %f, %f\n" を使用します。
 	*/
-	void Print(const char* format = NULL, FILE* stream = NULL) const;
+	void print(const char* format = NULL, FILE* stream = NULL) const;
 
 public:
 
@@ -125,14 +125,14 @@ public:
 		@return		正規化された平面
 		@details	面法線 Normal を正規化し、それに使用した係数を D にも適用します。
 	*/
-	static Plane Normalize(const Plane& plane);
+	static Plane normalize(const Plane& plane);
 
 	/**
 		@brief		平面と 4D ベクトルの内積を計算します。
 		@param[in]	plane	: 処理の基になる平面
 		@param[in]	vec		: 処理の基になるベクトル
 	*/
-	static float Dot(const Plane& plane, const Vector4& vec);
+	static float dot(const Plane& plane, const Vector4& vec);
 
 	/**
 		@brief		平面と 3D ベクトルの内積を計算します。(ベクトルの W を 1.0 として計算する)
@@ -140,14 +140,14 @@ public:
 		@param[in]	vec		: 処理の基になるベクトル
 		@note		戻り値が正の値である場合、点は平面の表側になります。
 	*/
-	static float DotCoord(const Plane& plane, const Vector3& vec);
+	static float dotCoord(const Plane& plane, const Vector3& vec);
 
 	/**
 		@brief		平面と 3D ベクトルの内積を計算します。(ベクトルの W を 0.0 として計算する)
 		@param[in]	plane	: 処理の基になる平面
 		@param[in]	vec		: 処理の基になるベクトル
 	*/
-	static float DotNormal(const Plane& plane, const Vector3& vec);
+	static float dotNormal(const Plane& plane, const Vector3& vec);
 
 	/**
 		@brief		指定された行列を使用して平面を座標変換します。
@@ -155,7 +155,7 @@ public:
 		@param[in]	mat		: 処理の基になる行列
 		@return		変換された平面
 	*/
-	static Plane Transform(const Plane& plane, const Matrix& mat);
+	static Plane transform(const Plane& plane, const Matrix& mat);
 
 };
 

@@ -143,7 +143,7 @@ enum NVGimageFlags {
 	NVG_IMAGE_PREMULTIPLIED		= 1<<4,		// Image data has premultiplied alpha.
 };
 
-// Begin drawing a new frame
+// begin drawing a new frame
 // Calls to nanovg drawing API should be wrapped in nvgBeginFrame() & nvgEndFrame()
 // nvgBeginFrame() defines the size of the window to render to in relation currently
 // set viewport (i.e. glViewport on GL backends). Device pixel ration allows to
@@ -426,7 +426,7 @@ NVGpaint nvgImagePattern(NVGcontext* ctx, float ox, float oy, float ex, float ey
 // The scissor rectangle is transformed by the current transform.
 void nvgScissor(NVGcontext* ctx, float x, float y, float w, float h);
 
-// Intersects current scissor rectangle with the specified rectangle.
+// intersects current scissor rectangle with the specified rectangle.
 // The scissor rectangle is transformed by the current transform.
 // Note: in case the rotation of previous scissor rect differs from
 // the current one, the intersection will be done between the specified

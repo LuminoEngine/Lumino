@@ -19,7 +19,7 @@ int Engine::GetMinor()
 }
 
 //------------------------------------------------------------------------------
-int Engine::GetRevision()
+int Engine::getRevision()
 {
 	return LUMINO_ENGINE_VERSION_REVISION;
 }
@@ -31,7 +31,7 @@ int Engine::GetBuild()
 }
 
 //------------------------------------------------------------------------------
-const TCHAR* Engine::GetString()
+const TCHAR* Engine::getString()
 {
 	return LUMINO_ENGINE_VERSION_STRING;
 }

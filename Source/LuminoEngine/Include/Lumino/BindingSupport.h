@@ -15,19 +15,19 @@ class RefObjectList
 {
 public:
 	RefObjectList() {}
-	virtual ~RefObjectList() { Clear(); }
+	virtual ~RefObjectList() { clear(); }
 
 public:
 
 	/// 要素数を取得する
-	int GetCount() const { return m_list.GetCount(); }
+	int getCount() const { return m_list.getCount(); }
 
 	/// 指定インデックスに要素を格納する
 	void SetAtBase(int index, RefObject* item)
 	{
 		//if (OnItemAdding(item))
 		{
-			m_list.SetAt(index, item);
+			m_list.getAt(index, item);
 			LN_SAFE_ADDREF(item);
 			OnItemAdded(item);
 		}
@@ -36,45 +36,45 @@ public:
 	/// 指定インデックスの要素を取得する
 	RefObject* GetAtBase(int index) const
 	{
-		return m_list.GetAt(index);
+		return m_list.getAt(index);
 	}
 
 	/// 要素を末尾に追加する
-	void Add(RefObject* item)
+	void add(RefObject* item)
 	{
 		//if (OnItemAdding(item))
 		{
-			m_list.Add(item);
+			m_list.add(item);
 			LN_SAFE_ADDREF(item);
 			OnItemAdded(item);
 		}
 	}
 
 	/// 全ての要素を削除する
-	void Clear()
+	void clear()
 	{
 		for (RefObject* item : m_list) {
 			OnItemRemoved(item);	// TODO: erase しながらひとつずつ呼ぶべきかも
 			LN_SAFE_RELEASE(item);
 		}
-		m_list.Clear();
+		m_list.clear();
 	}
 
 	/// 指定したインデックスの位置に要素を挿入する
-	void Insert(int index, RefObject* item)
+	void insert(int index, RefObject* item)
 	{
 		//if (OnItemAdding(item))
 		{
-			m_list.Insert(index, item);
+			m_list.insert(index, item);
 			LN_SAFE_ADDREF(item);
 			OnItemAdded(item);
 		}
 	}
 
 	/// item と一致する最初の要素を削除する
-	void Remove(RefObject* item)
+	void remove(RefObject* item)
 	{
-		bool b = m_list.Remove(item);
+		bool b = m_list.remove(item);
 		if (b) {
 			OnItemRemoved(item);
 			LN_SAFE_RELEASE(item);
@@ -82,10 +82,10 @@ public:
 	}
 
 	/// 指定したインデックスの要素を削除する
-	void RemoveAt(int index)
+	void removeAt(int index)
 	{
-		RefObject* item = m_list.GetAt(index);
-		m_list.RemoveAt(index);
+		RefObject* item = m_list.getAt(index);
+		m_list.removeAt(index);
 		OnItemRemoved(item);
 		LN_SAFE_RELEASE(item);
 	}
@@ -100,12 +100,12 @@ protected:
 };
 
 #define LN_REF_OBJECT_LIST_DECL(itemType) \
-	void SetAt(int index, itemType* item); \
-	itemType* GetAt(int index) const;
+	void getAt(int index, itemType* item); \
+	itemType* getAt(int index) const;
 
 #define LN_REF_OBJECT_LIST_IMPL(listType, itemType) \
-	void listType::SetAt(int index, itemType* item) { RefObjectList::SetAtBase(index, item); } \
-	itemType* listType::GetAt(int index) const { return static_cast<itemType*>(RefObjectList::GetAtBase(index)); }
+	void listType::getAt(int index, itemType* item) { RefObjectList::SetAtBase(index, item); } \
+	itemType* listType::getAt(int index) const { return static_cast<itemType*>(RefObjectList::GetAtBase(index)); }
 
 
 template<class TRefObj>
@@ -199,8 +199,8 @@ public:
 	RefObjectListBase() {}
 	virtual ~RefObjectListBase() {}
 
-	void SetAt(int index, TRefObj* item) { RefObjectList::SetAtBase(index, item); }
-	TRefObj* GetAt(int index) const { return static_cast<TRefObj*>(RefObjectList::GetAtBase(index)); }
+	void getAt(int index, TRefObj* item) { RefObjectList::SetAtBase(index, item); }
+	TRefObj* getAt(int index) const { return static_cast<TRefObj*>(RefObjectList::GetAtBase(index)); }
 
 	iterator		begin()			{ return iterator(m_list.begin()); }
 	const_iterator	begin() const	{ return const_iterator(m_list.begin()); }
@@ -252,47 +252,47 @@ public:
 
 	virtual ~ObjectList()
 	{
-		Collection<T>::Clear();
+		Collection<T>::clear();
 	}
 
 protected:
-	virtual void InsertItem(int index, const value_type& item) override
+	virtual void insertItem(int index, const value_type& item) override
 	{
-		Collection<T>::InsertItem(index, item);
+		Collection<T>::insertItem(index, item);
 		LN_SAFE_ADDREF(item);
 	}
-	virtual void ClearItems() override
+	virtual void clearItems() override
 	{
 		for (auto* item : *this) {
 			LN_SAFE_RELEASE(item);
 		}
-		Collection<T>::ClearItems();
+		Collection<T>::clearItems();
 	}
-	virtual void RemoveItem(int index) override
+	virtual void removeItem(int index) override
 	{
-		if (Collection<T>::GetAt(index) != nullptr) {
-			Collection<T>::GetAt(index)->Release();
+		if (Collection<T>::getAt(index) != nullptr) {
+			Collection<T>::getAt(index)->release();
 		}
-		Collection<T>::RemoveItem(index);
+		Collection<T>::removeItem(index);
 	}
-	virtual void SetItem(int index, const value_type& item) override
+	virtual void setItem(int index, const value_type& item) override
 	{
 		LN_SAFE_ADDREF(item);
-		if (Collection<T>::GetAt(index) != nullptr) {
-			Collection<T>::GetAt(index)->Release();
+		if (Collection<T>::getAt(index) != nullptr) {
+			Collection<T>::getAt(index)->release();
 		}
-		Collection<T>::SetItem(index, item);
+		Collection<T>::setItem(index, item);
 	}
 
 	// IObjectListObject interface
-	virtual int GetCount_Object() override { return Collection<T>::GetCount(); }
-	virtual void SetAt_Object(int index, Object* item) override { Collection<T>::SetAt(index, static_cast<T>(item)); }
-	virtual Object* GetAt_Object(int index) override { return Collection<T>::GetAt(index); }
-	virtual void Add_Object(Object* item) override { Collection<T>::Add(static_cast<T>(item)); }
-	virtual void Clear_Object() override { Collection<T>::Clear(); }
-	virtual void Insert_Object(int index, Object* item) override { auto t = static_cast<T>(item); Collection<T>::Insert(index, t); }
-	virtual bool Remove_Object(Object* item) override { return Collection<T>::Remove(static_cast<T>(item)); }
-	virtual void RemoveAt_Object(int index) override { Collection<T>::RemoveAt(index); }
+	virtual int GetCount_Object() override { return Collection<T>::getCount(); }
+	virtual void SetAt_Object(int index, Object* item) override { Collection<T>::getAt(index, static_cast<T>(item)); }
+	virtual Object* GetAt_Object(int index) override { return Collection<T>::getAt(index); }
+	virtual void Add_Object(Object* item) override { Collection<T>::add(static_cast<T>(item)); }
+	virtual void Clear_Object() override { Collection<T>::clear(); }
+	virtual void Insert_Object(int index, Object* item) override { auto t = static_cast<T>(item); Collection<T>::insert(index, t); }
+	virtual bool Remove_Object(Object* item) override { return Collection<T>::remove(static_cast<T>(item)); }
+	virtual void RemoveAt_Object(int index) override { Collection<T>::removeAt(index); }
 
 private:
 };

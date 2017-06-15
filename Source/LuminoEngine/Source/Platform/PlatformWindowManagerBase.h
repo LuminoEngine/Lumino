@@ -32,17 +32,17 @@ protected:
 	virtual ~WindowManagerBase() {}
 
 public:
-	virtual void CreateMainWindow(const WindowCreationSettings& settings) = 0;
-	virtual PlatformWindow* GetMainWindow() = 0;
-	virtual PlatformWindow* CreateSubWindow(const WindowCreationSettings& settings) = 0;
-	virtual void DoEvents() = 0;
+	virtual void createMainWindow(const WindowCreationSettings& settings) = 0;
+	virtual PlatformWindow* getMainWindow() = 0;
+	virtual PlatformWindow* createSubWindow(const WindowCreationSettings& settings) = 0;
+	virtual void doEvents() = 0;
 	virtual void Finalize() = 0;
 
 public:
-	void AddWindow(PlatformWindow* window) { m_windowArray.Add(window); }
-	void RemoveWindow(PlatformWindow* window) { m_windowArray.Remove(window); }
-	bool IsEndRequested() const { return m_endRequested; }
-	void Exit() { m_endRequested = true; }
+	void addWindow(PlatformWindow* window) { m_windowArray.add(window); }
+	void removeWindow(PlatformWindow* window) { m_windowArray.remove(window); }
+	bool isEndRequested() const { return m_endRequested; }
+	void exit() { m_endRequested = true; }
 
 protected:
 	List<PlatformWindow*>	m_windowArray;

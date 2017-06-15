@@ -116,7 +116,7 @@ void fonsSetFont(FONScontext* s, int font);
 // Draw text
 float fonsDrawText(FONScontext* s, float x, float y, const char* string, const char* end);
 
-// Measure text
+// measure text
 float fonsTextBounds(FONScontext* s, float x, float y, const char* string, const char* end, float* bounds);
 void fonsLineBounds(FONScontext* s, float y, float* miny, float* maxy);
 void fonsVertMetrics(FONScontext* s, float* ascender, float* descender, float* lineh);

@@ -22,7 +22,7 @@ ImageEffect::~ImageEffect()
 }
 
 //------------------------------------------------------------------------------
-void ImageEffect::Initialize(detail::GraphicsManager* manager)
+void ImageEffect::initialize(detail::GraphicsManager* manager)
 {
 	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_manager = manager;

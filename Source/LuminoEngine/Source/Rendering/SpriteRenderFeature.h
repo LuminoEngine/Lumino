@@ -20,22 +20,22 @@ class SpriteRendererImpl
 public:
 	SpriteRendererImpl();
 	virtual ~SpriteRendererImpl();
-	void Initialize(GraphicsManager* manager, int maxSpriteCount);
+	void initialize(GraphicsManager* manager, int maxSpriteCount);
 
 public:
-	void SetTransform(const Matrix& matrix);
-	void SetViewProjMatrix(const Matrix& view, const Matrix& proj);
-	void SetViewPixelSize(const Size& size);
+	void setTransform(const Matrix& matrix);
+	void setViewProjMatrix(const Matrix& view, const Matrix& proj);
+	void setViewPixelSize(const Size& size);
 
-	void SetRenderState(const RenderState& state);
+	void setRenderState(const RenderState& state);
 
-	void SetSortMode(uint32_t flags, SortingDistanceBasis basis);
+	void setSortMode(uint32_t flags, SortingDistanceBasis basis);
 
-	void Flush(SpriteSortMode sortFlags);
+	void flush(SpriteSortMode sortFlags);
 
-	void Clear();
+	void clear();
 
-	void DrawRequestInternal(
+	void drawRequestInternal(
 		const Vector3& position,
 		const Vector2& size,
 		const Vector2& anchorRatio,
@@ -108,7 +108,7 @@ private:
 	int								m_spriteRequestListUsedCount;
 	List<int>						m_spriteIndexList;			///< Flash() 内で使用する。m_spriteRequestList をソートするのは構造体コピーを伴うため速度面で心配。なのでインデックスをソートする。
 	RenderStateList					m_renderStateList;
-	int								m_currentRenderStateIndex;	///< 次の Draw でに適用される RenderState がある m_renderStateList 内のインデックス
+	int								m_currentRenderStateIndex;	///< 次の draw でに適用される RenderState がある m_renderStateList 内のインデックス
 	AttributeList					m_attributeList;
 
 	Matrix							m_transformMatrix;
@@ -141,24 +141,24 @@ class SpriteRenderFeature
 {
 public:
 
-	static SpriteRenderFeature* Create(int maxSpriteCount, GraphicsManager* manager);
+	static SpriteRenderFeature* create(int maxSpriteCount, GraphicsManager* manager);
 
 public:
 
 	/**
 		@brief		座標変換行列を設定します。
 		@param[in]	matrix		: 座標変換行列
-		@details	次の DrawRequest2D または DrawRequest3D で描画要求されるスプライトに対して適用する座標変換行列です。
+		@details	次の drawRequest2D または DrawRequest3D で描画要求されるスプライトに対して適用する座標変換行列です。
 	*/
-	void SetTransform(const Matrix& matrix);
+	void setTransform(const Matrix& matrix);
 
-	void SetState(const RenderState& renderState);
+	void setState(const RenderState& renderState);
 
-	void SetViewInfo(const Size& size, const Matrix& view, const Matrix& proj);
+	void setViewInfo(const Size& size, const Matrix& view, const Matrix& proj);
 
 	/**
 		@brief		レンダリングステートを設定します。
-		@details	次の DrawRequest2D または DrawRequest3D で描画要求されるスプライトに対して適用するレンダリングステートです。
+		@details	次の drawRequest2D または DrawRequest3D で描画要求されるスプライトに対して適用するレンダリングステートです。
 	*/
 	//void SetRenderState(const RenderState& state);
 
@@ -168,7 +168,7 @@ public:
 		@param[in]	basis		: ソートの基準
 		@details	この設定は次の Flash で使用します。
 	*/
-	void SetSortMode(SpriteSortMode flags, SortingDistanceBasis basis);
+	void setSortMode(SpriteSortMode flags, SortingDistanceBasis basis);
 
 	/**
 		@brief		スプライトの描画を要求します。
@@ -179,7 +179,7 @@ public:
 		@param[in]	srcRect		: 
 		@param[in]	color		: 
 	*/
-	void DrawRequest2D(
+	void drawRequest2D(
 		const Vector3& position,
 		const Vector2& size,
 		const Vector2& anchorRatio,
@@ -188,7 +188,7 @@ public:
 		const Color& color,
 		BillboardType billboardType);
 
-	void DrawRequest(
+	void drawRequest(
 		const Vector3& position,
 		const Vector2& anchorRatio,
 		const Vector2& size,
@@ -198,14 +198,14 @@ public:
 		SpriteBaseDirection baseDirection,
 		BillboardType billboardType);
 
-	virtual bool IsStandaloneShader() const { return true; }
-	virtual void Flush() override;
-	virtual void OnActivated() override {}
-	virtual void OnDeactivated() override { Flush(); }
+	virtual bool isStandaloneShader() const { return true; }
+	virtual void flush() override;
+	virtual void onActivated() override {}
+	virtual void onDeactivated() override { flush(); }
 
-	GraphicsManager* GetManager() const { return m_manager; }
+	GraphicsManager* getManager() const { return m_manager; }
 
-	static void MakeBoundingSphere(const Vector2& size, SpriteBaseDirection baseDir, detail::Sphere* sphere);
+	static void makeBoundingSphere(const Vector2& size, SpriteBaseDirection baseDir, detail::Sphere* sphere);
 
 LN_INTERNAL_ACCESS:
 	SpriteRenderFeature(GraphicsManager* manager, int maxSpriteCount);

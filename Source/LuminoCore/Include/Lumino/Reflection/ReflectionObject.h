@@ -22,10 +22,10 @@ namespace tr
 		ln::tr::LocalValueHavingFlags			lnref_localValueHavingFlags; \
 		virtual typeInfo*						lnref_GetThisTypeInfo() const override; \
 		static void*							lnref_bindingTypeInfo; \
-		inline void								InitializeProperties() { lnref_typeInfo.InitializeProperties(this); }
+		inline void								initializeProperties() { lnref_typeInfo.initializeProperties(this); }
 
 #define LN_TR_REFLECTION_TYPEINFO_IMPLEMENT_COMMON(typeInfo, classType, baseClassType, ...) \
-	typeInfo						classType::lnref_typeInfo(_T(#classType), ln::tr::ReflectionHelper::GetClassTypeInfo<baseClassType>(), &ln::tr::ReflectionHelper::GetLocalValueHavingFlags<classType>, &ln::tr::ReflectionHelper::SetBindingTypeInfo<classType>, &ln::tr::ReflectionHelper::GetBindingTypeInfo<classType>, {__VA_ARGS__}); \
+	typeInfo						classType::lnref_typeInfo(_T(#classType), ln::tr::ReflectionHelper::getClassTypeInfo<baseClassType>(), &ln::tr::ReflectionHelper::GetLocalValueHavingFlags<classType>, &ln::tr::ReflectionHelper::setBindingTypeInfo<classType>, &ln::tr::ReflectionHelper::getBindingTypeInfo<classType>, {__VA_ARGS__}); \
 	typeInfo*						classType::lnref_GetThisTypeInfo() const { return &lnref_typeInfo; } \
 	void*							classType::lnref_bindingTypeInfo = nullptr;
 
@@ -57,27 +57,27 @@ private:
 public:
 	ReflectionObject();
 	virtual ~ReflectionObject();
-	void Initialize() {}
+	void initialize() {}
 
-	void SetUserData(void* data) { m_userData = data; }
-	void* GetUserData() const { return m_userData; }
+	void setUserData(void* data) { m_userData = data; }
+	void* getUserData() const { return m_userData; }
 
 
 protected:
 	friend class PropertyInfo;
-	void RaiseReflectionEvent(const ReflectionEventBase& ev, ReflectionEventArgs* args);
-	virtual void OnPropertyChanged(PropertyChangedEventArgs* e);
+	void raiseReflectionEvent(const ReflectionEventBase& ev, ReflectionEventArgs* args);
+	virtual void onPropertyChanged(PropertyChangedEventArgs* e);
 
 	template<typename... TArgs>
-	void RaiseDelegateEvent(DelegateEvent<TArgs...>& ev, TArgs... args) { ev.Raise(args...); }
+	void raiseDelegateEvent(DelegateEvent<TArgs...>& ev, TArgs... args) { ev.raise(args...); }
 
 private:
-	void SetPropertyValueInternal(const PropertyInfo* prop, const Variant& value, bool reset, PropertySetSource source);
+	void setPropertyValueInternal(const PropertyInfo* prop, const Variant& value, bool reset, PropertySetSource source);
 
 	void*	m_userData;
 
 	friend class ReflectionHelper;
-	detail::WeakRefInfo* RequestWeakRefInfo();
+	detail::WeakRefInfo* requestWeakRefInfo();
 
 	detail::WeakRefInfo*	m_weakRefInfo;
 	Mutex					m_weakRefInfoMutex;
@@ -88,10 +88,10 @@ private:
 LN_INTERNAL_ACCESS:
 
 	template<class T, typename... TArgs>
-	static RefPtr<T> MakeRef(TArgs... args)
+	static RefPtr<T> makeRef(TArgs... args)
 	{
 		auto ptr = RefPtr<T>(LN_NEW T(), false);
-		ptr->Initialize(args...);
+		ptr->initialize(args...);
 		return ptr;
 	}
 };
@@ -99,18 +99,18 @@ LN_INTERNAL_ACCESS:
 /**
 	@brief
 	@details
-		監視しているオブジェクトにアクセスする場合は IsAlive() と Resolve() を併用しないでください。
+		監視しているオブジェクトにアクセスする場合は isAlive() と resolve() を併用しないでください。
 		マルチスレッドプログラムで不正アクセスの危険があります。
 		次のコードは間違いです。
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		WeakRefPtr<MyClass> weak(obj);
-		if (weak.IsAlive())
-			weak->Resolve()->Func();
+		if (weak.isAlive())
+			weak->resolve()->Func();
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		正しいコードは次の通りです。
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		WeakRefPtr<MyClass> weak(obj);
-		RefPtr<MyClass> ptr = weak.Resolve();
+		RefPtr<MyClass> ptr = weak.resolve();
 		if (ptr != nullptr)
 			ptr->Func();
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -129,32 +129,32 @@ public:
 	WeakRefPtr(T* obj)
 		: m_weakRefInfo(nullptr)
 	{
-		Set(ReflectionHelper::RequestWeakRefInfo(obj));
+		set(ReflectionHelper::requestWeakRefInfo(obj));
 	}
 
 	/** コピーコンストラクタ */
 	WeakRefPtr(const WeakRefPtr<T>& obj)
 		: m_weakRefInfo(nullptr)
 	{
-		Set(obj.m_weakRefInfo);
+		set(obj.m_weakRefInfo);
 	}
 
 	/** デストラクタ */
 	virtual ~WeakRefPtr()
 	{
-		Release();
+		release();
 	}
 
 	/** 監視しているオブジェクトが削除されておらず、使用できるかを確認します。*/
-	bool IsAlive() const
+	bool isAlive() const
 	{
 		return (m_weakRefInfo != nullptr && m_weakRefInfo->owner != nullptr);
 	}
 
 	/** 監視しているオブジェクトへの RefPtr を取得します。*/
-	RefPtr<T> Resolve() const
+	RefPtr<T> resolve() const
 	{
-		if (!IsAlive())
+		if (!isAlive())
 		{
 			return RefPtr<T>();
 		}
@@ -164,34 +164,34 @@ public:
 	/** */
 	WeakRefPtr<T>& operator =(const WeakRefPtr<T>& obj)
 	{
-		Set(obj.m_weakRefInfo);
+		set(obj.m_weakRefInfo);
 		return *this;
 	}
 
 	/** */
 	WeakRefPtr<T>& operator =(T* obj)
 	{
-		Set(ReflectionHelper::RequestWeakRefInfo(obj));
+		set(ReflectionHelper::requestWeakRefInfo(obj));
 		return *this;
 	}
 
 private:
 	
-	void Set(detail::WeakRefInfo* info)
+	void set(detail::WeakRefInfo* info)
 	{
-		Release();
+		release();
 		m_weakRefInfo = info;
 		if (m_weakRefInfo != nullptr)
 		{
-			m_weakRefInfo->AddRef();
+			m_weakRefInfo->addRef();
 		}
 	}
 	
-	void Release()
+	void release()
 	{
 		if (m_weakRefInfo != nullptr)
 		{
-			m_weakRefInfo->Release();
+			m_weakRefInfo->release();
 			m_weakRefInfo = nullptr;
 		}
 	}
@@ -216,36 +216,36 @@ public:
 
 	virtual ~ReflectionObjectList()
 	{
-		Collection<T>::Clear();
+		Collection<T>::clear();
 	}
 
 protected:
-	virtual void InsertItem(int index, const value_type& item) override
+	virtual void insertItem(int index, const value_type& item) override
 	{
-		Collection<T>::InsertItem(index, item);
+		Collection<T>::insertItem(index, item);
 		LN_SAFE_ADDREF(item);
 	}
-	virtual void ClearItems() override
+	virtual void clearItems() override
 	{
 		for (auto* item : *this) {
 			LN_SAFE_RELEASE(item);
 		}
-		Collection<T>::ClearItems();
+		Collection<T>::clearItems();
 	}
-	virtual void RemoveItem(int index) override
+	virtual void removeItem(int index) override
 	{
-		if (Collection<T>::GetAt(index) != nullptr) {
-			Collection<T>::GetAt(index)->Release();
+		if (Collection<T>::getAt(index) != nullptr) {
+			Collection<T>::getAt(index)->release();
 		}
-		Collection<T>::RemoveItem(index);
+		Collection<T>::removeItem(index);
 	}
-	virtual void SetItem(int index, const value_type& item) override
+	virtual void setItem(int index, const value_type& item) override
 	{
 		LN_SAFE_ADDREF(item);
-		if (Collection<T>::GetAt(index) != nullptr) {
-			Collection<T>::GetAt(index)->Release();
+		if (Collection<T>::getAt(index) != nullptr) {
+			Collection<T>::getAt(index)->release();
 		}
-		Collection<T>::SetItem(index, item);
+		Collection<T>::setItem(index, item);
 	}
 
 private:
@@ -257,18 +257,18 @@ typedef tr::ReflectionObject Object;
 
 
 template<class T, typename... TArgs>
-RefPtr<T> NewObject(TArgs&&... args)
+RefPtr<T> newObject(TArgs&&... args)
 {
 	auto ptr = RefPtr<T>(new T(), false);
-	ptr->Initialize(std::forward<TArgs>(args)...);
+	ptr->initialize(std::forward<TArgs>(args)...);
 	return ptr;
 }
 
 template<class T, typename... TArgs>
-void PlacementNewObject(void* ptr, TArgs&&... args)
+void placementNewObject(void* ptr, TArgs&&... args)
 {
 	new (ptr)T();
-	static_cast<T*>(ptr)->Initialize(std::forward<TArgs>(args)...);
+	static_cast<T*>(ptr)->initialize(std::forward<TArgs>(args)...);
 }
 
 LN_NAMESPACE_END

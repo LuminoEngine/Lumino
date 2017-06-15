@@ -8,7 +8,7 @@ namespace InternalResource
 {
 	extern const String DirectXNotInstalledError;
 
-	extern void InitializeEngineResource();
+	extern void initializeEngineResource();
 };
 
 LN_NAMESPACE_END

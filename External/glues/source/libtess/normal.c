@@ -256,7 +256,7 @@ void __gl_projectPolygon(GLUtesselator* tess)
    tUnit[2]=norm[0]*sUnit[1]-norm[1]*sUnit[0];
    Normalize(tUnit);
 #else /* FOR_TRITE_TEST_PROGRAM || TRUE_PROJECT */
-   /* Project perpendicular to a coordinate axis -- better numerically */
+   /* project perpendicular to a coordinate axis -- better numerically */
    sUnit[i]=0;
    sUnit[(i+1)%3]=S_UNIT_X;
    sUnit[(i+2)%3]=S_UNIT_Y;
@@ -266,7 +266,7 @@ void __gl_projectPolygon(GLUtesselator* tess)
    tUnit[(i+2)%3]=(norm[i]>0) ?  S_UNIT_X : -S_UNIT_X;
 #endif /* FOR_TRITE_TEST_PROGRAM || TRUE_PROJECT */
 
-   /* Project the vertices onto the sweep plane */
+   /* project the vertices onto the sweep plane */
    for (v=vHead->next; v!=vHead; v=v->next)
    {
       v->s=Dot(v->coords, sUnit);

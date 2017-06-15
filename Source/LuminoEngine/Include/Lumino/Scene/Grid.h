@@ -22,7 +22,7 @@ public:
 protected:
 	Grid();
 	virtual ~Grid();
-	void Initialize(SceneGraph* owner);
+	void initialize(SceneGraph* owner);
 
 	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
 

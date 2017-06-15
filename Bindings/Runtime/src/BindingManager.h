@@ -39,10 +39,10 @@ public:
 	static void PreInitialize();
 
 	/// Engine 初期化後処理
-	static void PostInitialize();
+	static void postInitialize();
 
 	/// 終了処理
-	static void Terminate();
+	static void terminate();
 
 	/// obj の Handle を返す。obj がこのクラスに登録済みかを確認し、登録されていなければ新しく登録する。
 	static LNHandle CheckRegisterObject(tr::ReflectionObject* obj);

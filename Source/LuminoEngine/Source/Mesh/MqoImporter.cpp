@@ -18,8 +18,8 @@ Vector3 TriangleNormal(const Vector3& p0, const Vector3& p1, const Vector3& p2)
 {
 	Vector3 v10 = p1 - p0;
 	Vector3 v20 = p2 - p0;
-	Vector3 nor = Vector3::Cross(v20, v10);
-	return Vector3::Normalize(nor);
+	Vector3 nor = Vector3::cross(v20, v10);
+	return Vector3::normalize(nor);
 }
 
 float DotAngleTo01Angle(float angle)
@@ -38,7 +38,7 @@ void MqoObject::Smoothing()
 	// 先に三角形化しなければならない
 	// 面法線を求める
 	// 頂点に、それを参照している面をつめる
-	for (int i = 0; i < m_mqoFaceList.GetCount(); i++)
+	for (int i = 0; i < m_mqoFaceList.getCount(); i++)
 	{
 		MqoFace* face = &m_mqoFaceList[i];
 		if (face->vertexCount == 3)
@@ -60,7 +60,7 @@ void MqoObject::Smoothing()
 			newFace.colors[0] = face->colors[0];
 			newFace.colors[1] = face->colors[2];
 			newFace.colors[2] = face->colors[3];
-			m_mqoFaceList.Add(newFace);
+			m_mqoFaceList.add(newFace);
 			face = &m_mqoFaceList[i];	// 再配置に備える
 		}
 		else
@@ -84,7 +84,7 @@ void MqoObject::Smoothing()
 	}
 
 
-	for (int i = 0; i < m_mqoFaceList.GetCount(); i++)
+	for (int i = 0; i < m_mqoFaceList.getCount(); i++)
 	{
 		MqoFace* face = &m_mqoFaceList[i];
 		face->points[0].face = face;
@@ -93,8 +93,8 @@ void MqoObject::Smoothing()
 	}
 
 
-	MakeMqoFaceRefsAndEdge();
-	MakeMqoFacePointNormals();
+	makeMqoFaceRefsAndEdge();
+	makeMqoFacePointNormals();
 
 	// マテリアルインデックスでソート
 	// (MqoVertex::referencedFaceIndices はもう使えなくなる)
@@ -103,17 +103,17 @@ void MqoObject::Smoothing()
 }
 
 //------------------------------------------------------------------------------
-RefPtr<MeshResource> MqoObject::CreateMeshResource()
+RefPtr<MeshResource> MqoObject::createMeshResource()
 {
-	auto mesh = RefPtr<MeshResource>::MakeRef();
-	mesh->Initialize(EngineDomain::GetGraphicsManager(), MeshCreationFlags::None);
-	mesh->SetName(m_name);
+	auto mesh = RefPtr<MeshResource>::makeRef();
+	mesh->initialize(EngineDomain::getGraphicsManager(), MeshCreationFlags::None);
+	mesh->setName(m_name);
 
 	// 頂点バッファを作る
 	// (頂点バッファにつめる頂点はグループが基点となる)
-	mesh->ResizeVertexBuffer(m_mqoFaceList.GetCount() * 3);
+	mesh->resizeVertexBuffer(m_mqoFaceList.getCount() * 3);
 	int iVertex = 0;
-	for (int iFace = 0; iFace < m_mqoFaceList.GetCount(); iFace++)
+	for (int iFace = 0; iFace < m_mqoFaceList.getCount(); iFace++)
 	{
 		MqoFace* mqoFace = &m_mqoFaceList[iFace];
 		LN_ASSERT(mqoFace->vertexCount == 3);
@@ -128,10 +128,10 @@ RefPtr<MeshResource> MqoObject::CreateMeshResource()
 				//if (m_flipZCoord) normal.z *= -1.0f;
 
 
-				mesh->SetPosition(iVertex, v.position);
-				mesh->SetNormal(iVertex, normal);
-				mesh->SetUV(iVertex, mqoFace->uv[iPoint]);
-				mesh->SetColor(iVertex, Color::White);	// TODO: 頂点色
+				mesh->setPosition(iVertex, v.position);
+				mesh->setNormal(iVertex, normal);
+				mesh->setUV(iVertex, mqoFace->uv[iPoint]);
+				mesh->setColor(iVertex, Color::White);	// TODO: 頂点色
 				group->outputVertexIndex = iVertex;
 				iVertex++;
 			}
@@ -139,10 +139,10 @@ RefPtr<MeshResource> MqoObject::CreateMeshResource()
 	}
 
 	// インデックスバッファを作る
-	mesh->ResizeIndexBuffer(m_mqoFaceList.GetCount() * 3);
+	mesh->resizeIndexBuffer(m_mqoFaceList.getCount() * 3);
 	int iIndex = 0;
-	auto* firstGroup = &m_importer->m_mqoFacePointGroupBuffer.GetAt(0);
-	for (int iFace = 0; iFace < m_mqoFaceList.GetCount(); iFace++)
+	auto* firstGroup = &m_importer->m_mqoFacePointGroupBuffer.getAt(0);
+	for (int iFace = 0; iFace < m_mqoFaceList.getCount(); iFace++)
 	{
 		MqoFace* mqoFace = &m_mqoFaceList[iFace];
 		LN_ASSERT(mqoFace->vertexCount == 3);
@@ -151,14 +151,14 @@ RefPtr<MeshResource> MqoObject::CreateMeshResource()
 			int i = mqoFace->points[iPoint].group->outputVertexIndex;//mqoFace->points[iPoint].group - firstGroup;
 			LN_ASSERT(i >= 0);
 
-			mesh->SetIndex(iIndex, i/* iFace * 3 + iPoint*/);
+			mesh->setIndex(iIndex, i/* iFace * 3 + iPoint*/);
 			iIndex++;
 		}
 	}
 
 
 
-	//mesh->ResizeVertexBuffer(m_mqoFacePointGroupBuffer.GetCount());
+	//mesh->resizeVertexBuffer(m_mqoFacePointGroupBuffer.GetCount());
 	//for (int iGroup = 0; iGroup < m_mqoFacePointGroupBuffer.GetCount(); iGroup++)
 	//{
 	//	auto& group = m_mqoFacePointGroupBuffer.GetAt(iGroup);
@@ -167,23 +167,23 @@ RefPtr<MeshResource> MqoObject::CreateMeshResource()
 	//	Vector3 normal = group.normal;
 	//	if (m_flipZCoord) normal.z *= -1.0f;
 
-	//	mesh->SetPosition(group.vertexIndex, v.position);
-	//	mesh->SetNormal(group.vertexIndex, normal);
-	//	mesh->SetUV(group.vertexIndex, m_mqoFaceList[ref.faceIndex].uv[ref.pointIndex]);
-	//	mesh->SetColor(group.vertexIndex, Color::White);	// TODO: 頂点色
+	//	mesh->setPosition(group.vertexIndex, v.position);
+	//	mesh->setNormal(group.vertexIndex, normal);
+	//	mesh->setUV(group.vertexIndex, m_mqoFaceList[ref.faceIndex].uv[ref.pointIndex]);
+	//	mesh->setColor(group.vertexIndex, Color::White);	// TODO: 頂点色
 
 	//	//Vector3& normal = m_mqoFaceList[ref.faceIndex].vertexNormals[ref.pointIndex];
 	////		//if (m_flipZCoord) normal.z *= -1.0f;
 
-	////		mesh->SetPosition(ref.meshVertexNumber, vertex.position);
-	////		mesh->SetNormal(ref.meshVertexNumber, Vector3::UnitY/*normal*/);
-	////		mesh->SetUV(ref.meshVertexNumber, m_mqoFaceList[ref.faceIndex].uv[ref.pointIndex]);
+	////		mesh->setPosition(ref.meshVertexNumber, vertex.position);
+	////		mesh->setNormal(ref.meshVertexNumber, Vector3::UnitY/*normal*/);
+	////		mesh->setUV(ref.meshVertexNumber, m_mqoFaceList[ref.faceIndex].uv[ref.pointIndex]);
 	////		// TODO: 頂点色
-	////		mesh->SetColor(ref.meshVertexNumber, Color::White);
+	////		mesh->setColor(ref.meshVertexNumber, Color::White);
 	//}
 
 	// インデックスバッファを作る
-	//mesh->ResizeIndexBuffer(m_meshIndexCount);
+	//mesh->resizeIndexBuffer(m_meshIndexCount);
 
 	//// インデックスバッファを作りつつ、MqoVertex::referenced を作る
 	{
@@ -194,12 +194,12 @@ RefPtr<MeshResource> MqoObject::CreateMeshResource()
 		sec.primitiveType = PrimitiveType_TriangleList;
 
 		int next = 0;
-		for (int iFace = 0; iFace < m_mqoFaceList.GetCount(); iFace++)
+		for (int iFace = 0; iFace < m_mqoFaceList.getCount(); iFace++)
 		{
 			const MqoFace& face = m_mqoFaceList[iFace];
 			if (face.materialIndex != sec.MaterialIndex)
 			{
-				mesh->AddMeshSection(sec);
+				mesh->addMeshSection(sec);
 				sec.MaterialIndex = face.materialIndex;
 				sec.StartIndex = next;
 				sec.PrimitiveNum = 0;
@@ -208,11 +208,11 @@ RefPtr<MeshResource> MqoObject::CreateMeshResource()
 			//next += AddFaceIndices(mesh, next, iFace);
 			sec.PrimitiveNum += face.vertexCount - 2;
 		}
-		mesh->AddMeshSection(sec);
+		mesh->addMeshSection(sec);
 	}
 
 	//// 頂点バッファを作る
-	//mesh->ResizeVertexBuffer(m_meshVertexCount);
+	//mesh->resizeVertexBuffer(m_meshVertexCount);
 	//for (MqoVertex& vertex : m_mqoVertexList)
 	//{
 	//	if (m_flipZCoord) vertex.position.z *= -1.0f;
@@ -222,11 +222,11 @@ RefPtr<MeshResource> MqoObject::CreateMeshResource()
 	//		//Vector3& normal = m_mqoFaceList[ref.faceIndex].vertexNormals[ref.pointIndex];
 	//		//if (m_flipZCoord) normal.z *= -1.0f;
 
-	//		mesh->SetPosition(ref.meshVertexNumber, vertex.position);
-	//		mesh->SetNormal(ref.meshVertexNumber, Vector3::UnitY/*normal*/);
-	//		mesh->SetUV(ref.meshVertexNumber, m_mqoFaceList[ref.faceIndex].uv[ref.pointIndex]);
+	//		mesh->setPosition(ref.meshVertexNumber, vertex.position);
+	//		mesh->setNormal(ref.meshVertexNumber, Vector3::UnitY/*normal*/);
+	//		mesh->setUV(ref.meshVertexNumber, m_mqoFaceList[ref.faceIndex].uv[ref.pointIndex]);
 	//		// TODO: 頂点色
-	//		mesh->SetColor(ref.meshVertexNumber, Color::White);
+	//		mesh->setColor(ref.meshVertexNumber, Color::White);
 	//	}
 	//}
 
@@ -234,17 +234,17 @@ RefPtr<MeshResource> MqoObject::CreateMeshResource()
 }
 
 //------------------------------------------------------------------------------
-void MqoObject::MakeMqoFaceRefsAndEdge()
+void MqoObject::makeMqoFaceRefsAndEdge()
 {
 	// 各面3頂点として MqoFaceRef,MqoEdge を作っておく
-	m_importer->m_mqoFaceRefBuffer.Resize(m_mqoFaceList.GetCount() * 3);
-	m_importer->m_mqoEdgeBuffer.Resize(m_mqoFaceList.GetCount() * 3);
-	m_importer->m_mqoFacePointGroupBuffer.Reserve(m_mqoFaceList.GetCount() * 3);
+	m_importer->m_mqoFaceRefBuffer.resize(m_mqoFaceList.getCount() * 3);
+	m_importer->m_mqoEdgeBuffer.resize(m_mqoFaceList.getCount() * 3);
+	m_importer->m_mqoFacePointGroupBuffer.reserve(m_mqoFaceList.getCount() * 3);
 	int mqoFaceRefBufferUsed = 0;
 	int mqoEdgeBufferUsed = 0;
 
 	// 各 MqoVertex に、その頂点を参照する面を示す MqoFaceRef を詰めていく
-	for (int iFace = 0; iFace < m_mqoFaceList.GetCount(); iFace++)
+	for (int iFace = 0; iFace < m_mqoFaceList.getCount(); iFace++)
 	{
 		MqoFace* mqoFace = &m_mqoFaceList[iFace];
 
@@ -289,7 +289,7 @@ void MqoObject::MakeMqoFaceRefsAndEdge()
 	}
 
 	// 隣接辺を検索する
-	for (int iEdge = 0; iEdge < m_importer->m_mqoEdgeBuffer.GetCount(); iEdge++)
+	for (int iEdge = 0; iEdge < m_importer->m_mqoEdgeBuffer.getCount(); iEdge++)
 	{
 		MqoEdge* edge = &m_importer->m_mqoEdgeBuffer[iEdge];
 
@@ -352,13 +352,13 @@ void MqoObject::MakeMqoFaceRefsAndEdge()
 }
 
 //------------------------------------------------------------------------------
-void MqoObject::MakeMqoFacePointNormals()
+void MqoObject::makeMqoFacePointNormals()
 {
 	//float smoothThr = Math::DegreesToRadians(90.0f);
 	float freq = 59.5;
 	float smoothThr = (-1.0 * (freq / 90.0)) + 1.0f;	// 0～180 を、1～-1と考える
 
-	for (int iEdge = 0; iEdge < m_importer->m_mqoEdgeBuffer.GetCount(); iEdge++)
+	for (int iEdge = 0; iEdge < m_importer->m_mqoEdgeBuffer.getCount(); iEdge++)
 	{
 		MqoEdge* edge = &m_importer->m_mqoEdgeBuffer[iEdge];
 
@@ -366,13 +366,13 @@ void MqoObject::MakeMqoFacePointNormals()
 		if (edge->adjacent != nullptr)
 		{
 
-			float d = Vector3::Dot(edge->ownerFace->normal, edge->adjacent->ownerFace->normal);
+			float d = Vector3::dot(edge->ownerFace->normal, edge->adjacent->ownerFace->normal);
 			//if (DotAngleTo01Angle(d) < smoothThr)
 			if (d >= smoothThr)
 			{
 				// スムージングする。エッジ両端の点に対してグループを作る
-				MakeMqoFacePointGroup(edge->point0, edge->adjacentPoint0);
-				MakeMqoFacePointGroup(edge->point1, edge->adjacentPoint1);
+				makeMqoFacePointGroup(edge->point0, edge->adjacentPoint0);
+				makeMqoFacePointGroup(edge->point1, edge->adjacentPoint1);
 				smoothing = true;
 			}
 		}
@@ -381,25 +381,25 @@ void MqoObject::MakeMqoFacePointNormals()
 			// スムージングされない。独立した法線となる。
 			if (edge->point0->group == nullptr)
 			{
-				edge->point0->group = m_importer->m_mqoFacePointGroupBuffer.Request(1);
+				edge->point0->group = m_importer->m_mqoFacePointGroupBuffer.request(1);
 				edge->point0->group->vertexIndex = edge->point0->vertexIndex;
 				//edge->point0->group->normal = edge->ownerFace->normal;
 				edge->point0->group->pointsCount = 1;
-				//edge->point0->group->points = m_mqoFacePointRefBuffer_ForGroup.Request(1);
+				//edge->point0->group->points = m_mqoFacePointRefBuffer_ForGroup.request(1);
 				edge->point0->group->points = edge->point0;
 			}
 			if (edge->point1->group == nullptr)
 			{
-				edge->point1->group = m_importer->m_mqoFacePointGroupBuffer.Request(1);
+				edge->point1->group = m_importer->m_mqoFacePointGroupBuffer.request(1);
 				edge->point1->group->vertexIndex = edge->point1->vertexIndex;
 				//edge->point1->group->normal = edge->ownerFace->normal;
 				edge->point1->group->pointsCount = 1;
-				//edge->point1->group->points = m_mqoFacePointRefBuffer_ForGroup.Request(1);
+				//edge->point1->group->points = m_mqoFacePointRefBuffer_ForGroup.request(1);
 				edge->point1->group->points = edge->point1;
 			}
 
-			//edge->ownerFace->points[edge->index0]->group = m_mqoFacePointGroupBuffer.Request(1);
-			//edge->ownerFace->groups[edge->index1] = m_mqoFacePointGroupBuffer.Request(1);
+			//edge->ownerFace->points[edge->index0]->group = m_mqoFacePointGroupBuffer.request(1);
+			//edge->ownerFace->groups[edge->index1] = m_mqoFacePointGroupBuffer.request(1);
 			//edge->ownerFace->groups[edge->index0]->normal = edge->ownerFace->normal;
 			//edge->ownerFace->groups[edge->index1]->normal = edge->ownerFace->normal;
 			//edge->ownerFace->vertexNormals[edge->index0] += edge->ownerFace->normal;
@@ -407,9 +407,9 @@ void MqoObject::MakeMqoFacePointNormals()
 		}
 	}
 
-	for (int iGroup = 0; iGroup < m_importer->m_mqoFacePointGroupBuffer.GetCount(); iGroup++)
+	for (int iGroup = 0; iGroup < m_importer->m_mqoFacePointGroupBuffer.getCount(); iGroup++)
 	{
-		MqoFacePointGroup& g = m_importer->m_mqoFacePointGroupBuffer.GetAt(iGroup);
+		MqoFacePointGroup& g = m_importer->m_mqoFacePointGroupBuffer.getAt(iGroup);
 		if (g.points != nullptr)
 		{
 			int count = 0;
@@ -424,7 +424,7 @@ void MqoObject::MakeMqoFacePointNormals()
 			LN_ASSERT(count > 0);
 
 			g.normal = normal / count;
-			g.normal.Normalize();
+			g.normal.normalize();
 
 
 		}
@@ -437,15 +437,15 @@ void MqoObject::MakeMqoFacePointNormals()
 	//for (int iFace = 0; iFace < m_mqoFaceList.GetCount(); iFace++)
 	//{
 	//	MqoFace* mqoFace = &m_mqoFaceList[iFace];
-	//	mqoFace->vertexNormals[0].Normalize();
-	//	mqoFace->vertexNormals[1].Normalize();
-	//	mqoFace->vertexNormals[2].Normalize();
+	//	mqoFace->vertexNormals[0].normalize();
+	//	mqoFace->vertexNormals[1].normalize();
+	//	mqoFace->vertexNormals[2].normalize();
 	//}
 }
 
 //------------------------------------------------------------------------------
 // edge と 対となる edge の両端の点をグループ化する
-void MqoObject::MakeMqoFacePointGroup(MqoFacePoint* p0, MqoFacePoint* p1/*MqoEdge* edge*/)
+void MqoObject::makeMqoFacePointGroup(MqoFacePoint* p0, MqoFacePoint* p1/*MqoEdge* edge*/)
 {
 	{
 		//MqoFacePoint* p0 = edge->point0;
@@ -455,12 +455,12 @@ void MqoObject::MakeMqoFacePointGroup(MqoFacePoint* p0, MqoFacePoint* p1/*MqoEdg
 		{
 			// どちらもまだグループに属していない。2点をまとめる1つのグループを作る
 
-			MqoFacePointGroup* g = m_importer->m_mqoFacePointGroupBuffer.Request(1);
+			MqoFacePointGroup* g = m_importer->m_mqoFacePointGroupBuffer.request(1);
 			g->vertexIndex = p0->vertexIndex;
 			g->pointsCount = 2;
 
-			//MqoFacePointRef2* ref0 = m_mqoFacePointRefBuffer_ForGroup.Request(1);
-			//MqoFacePointRef2* ref1 = m_mqoFacePointRefBuffer_ForGroup.Request(1);
+			//MqoFacePointRef2* ref0 = m_mqoFacePointRefBuffer_ForGroup.request(1);
+			//MqoFacePointRef2* ref1 = m_mqoFacePointRefBuffer_ForGroup.request(1);
 			//ref0->point = p0;
 			//ref1->point = p1;
 
@@ -552,7 +552,7 @@ void MqoObject::MakeMqoFacePointGroup(MqoFacePoint* p0, MqoFacePoint* p1/*MqoEdg
 		//if (g == nullptr) g = edge->point0->group;	// まだ作られていなければもう片方を見る
 		//if (g == nullptr)									// どちらも作られていなければ新しくグループを作る
 		//{
-		//	g = m_mqoFacePointGroupBuffer.Request(1);
+		//	g = m_mqoFacePointGroupBuffer.request(1);
 		//	g->vertexIndex = edge->point0->vertexIndex;
 		//	g->pointsCount = 1;	// 初回の追加では両端の2つが関連付けられる。もうひとつは↓で++
 		//}
@@ -568,7 +568,7 @@ void MqoObject::MakeMqoFacePointGroup(MqoFacePoint* p0, MqoFacePoint* p1/*MqoEdg
 		//if (g == nullptr) g = edge->point1->group;	// まだ作られていなければもう片方を見る
 		//if (g == nullptr)									// どちらも作られていなければ新しくグループを作る
 		//{
-		//	g = m_mqoFacePointGroupBuffer.Request(1);
+		//	g = m_mqoFacePointGroupBuffer.request(1);
 		//	g->vertexIndex = edge->point1->vertexIndex;
 		//	g->pointsCount = 1;	// 初回の追加では両端の2つが関連付けられる。もうひとつは↓で++
 		//}
@@ -596,11 +596,11 @@ MqoImporter::MqoImporter()
 double AngleOf2Vector(Vector3 A, Vector3 B)
 {
 	//ベクトルAとBの長さを計算する
-	double length_A = A.GetLength();
-	double length_B = B.GetLength();
+	double length_A = A.getLength();
+	double length_B = B.getLength();
 
 	//内積とベクトル長さを使ってcosθを求める
-	double cos_sita = Vector3::Dot(A, B) / (length_A * length_B);
+	double cos_sita = Vector3::dot(A, B) / (length_A * length_B);
 
 	//cosθからθを求める
 	double sita = acos(cos_sita);
@@ -612,49 +612,49 @@ double AngleOf2Vector(Vector3 A, Vector3 B)
 }
 
 //------------------------------------------------------------------------------
-RefPtr<StaticMeshModel> MqoImporter::Import(ModelManager* manager, const PathName& parentDir, Stream* stream)
+RefPtr<StaticMeshModel> MqoImporter::import(ModelManager* manager, const PathName& parentDir, Stream* stream)
 {
 	if (LN_CHECK_ARG(manager != nullptr)) return nullptr;
 
 	m_parentDir = parentDir;
 
-	//RefPtr<Stream> stream(file, false); //manager->GetFileManager()->CreateFileStream(filePath)
+	//RefPtr<Stream> stream(file, false); //manager->getFileManager()->createFileStream(filePath)
 
-	m_model = RefPtr<StaticMeshModel>::MakeRef();
-	m_model->Initialize(manager->GetGraphicsManager());
+	m_model = RefPtr<StaticMeshModel>::makeRef();
+	m_model->initialize(manager->getGraphicsManager());
 
 	// Metasequoia4 で出力される .mqo ファイルの文字コードは Shift_JIS だった
-	StreamReader reader(stream, Encoding::GetEncoding(EncodingType::SJIS));
+	StreamReader reader(stream, Encoding::getEncoding(EncodingType::SJIS));
 
 	String line;
-	while (reader.ReadLine(&line))
+	while (reader.readLine(&line))
 	{
 		// Material
-		int index = line.IndexOf(_T("Material"));
+		int index = line.indexOf(_T("Material"));
 		if (index > -1)
 		{
 			//int count = StringTraits::ToInt32(line.c_str() + index + 9);
-			LoadMaterials(&reader);
+			loadMaterials(&reader);
 		}
 
 		// Object
-		index = line.IndexOf(_T("Object"));
+		index = line.indexOf(_T("Object"));
 		if (index > -1)
 		{
 			//int count = StringTraits::ToInt32(line.c_str() + index + 7);
 
-			int nameBegin = line.IndexOf(_T('"'), index + 6) + 1;
-			int nameEnd = line.IndexOf(_T('"'), nameBegin);
+			int nameBegin = line.indexOf(_T('"'), index + 6) + 1;
+			int nameEnd = line.indexOf(_T('"'), nameBegin);
 
 
-			LoadObject(&reader, line.Mid(nameBegin, nameEnd - nameBegin));
+			loadObject(&reader, line.mid(nameBegin, nameEnd - nameBegin));
 		}
 	}
 
 	for (auto& obj : m_mqoObjectList)
 	{
 		obj->Smoothing();
-		m_model->AddMeshResource(obj->CreateMeshResource());
+		m_model->addMeshResource(obj->createMeshResource());
 	}
 
 
@@ -663,19 +663,19 @@ RefPtr<StaticMeshModel> MqoImporter::Import(ModelManager* manager, const PathNam
 }
 
 //------------------------------------------------------------------------------
-void MqoImporter::LoadMaterials(StreamReader* reader)
+void MqoImporter::loadMaterials(StreamReader* reader)
 {
 	String line;
-	while (reader->ReadLine(&line))
+	while (reader->readLine(&line))
 	{
-		if (line.IndexOf(_T("}")) > -1) break;
+		if (line.indexOf(_T("}")) > -1) break;
 
 		// マテリアル1つの情報は、\s 区切りの１行になっている。
 		// 最初のデータはマテリアル名。これは飛ばす。
 		int dataHead = 0;
 		{
-			int first = line.IndexOf('"');
-			int second = line.IndexOf('"', first + 1);
+			int first = line.indexOf('"');
+			int second = line.indexOf('"', first + 1);
 			dataHead = second + 2;
 		}
 
@@ -687,49 +687,49 @@ void MqoImporter::LoadMaterials(StreamReader* reader)
 		float power = 1.0f;
 		RefPtr<Texture> texture;
 
-		while (dataHead < line.GetLength())
+		while (dataHead < line.getLength())
 		{
-			int numHead = line.IndexOf('(', dataHead) + 1;
-			int numEnd = line.IndexOf(')', dataHead);
+			int numHead = line.indexOf('(', dataHead) + 1;
+			int numEnd = line.indexOf(')', dataHead);
 			int dataEnd = numEnd + 1;
 			if (line[numHead] == '"')	// tex("ファイル名") に備える
 			{
 				numHead++;
-				numEnd = line.IndexOf(_T("\")"), dataHead);
+				numEnd = line.indexOf(_T("\")"), dataHead);
 			}
 
 			//if (line.IndexOf(_T("shader"), dataHead, CaseSensitivity::CaseInsensitive)
 			//if (line.IndexOf(_T("vcol"), dataHead, CaseSensitivity::CaseInsensitive)	頂点カラー
 			//if (line.IndexOf(_T("dbls"), dataHead, CaseSensitivity::CaseInsensitive)	両面表示
-			if (line.IndexOf(_T("col"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	色（ＲＧＢ）、不透明度
+			if (line.indexOf(_T("col"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	色（ＲＧＢ）、不透明度
 			{
-				ReadFloats(StringRef(line.c_str() + numHead, line.c_str() + numEnd), reinterpret_cast<float*>(&color), 4);
+				readFloats(StringRef(line.c_str() + numHead, line.c_str() + numEnd), reinterpret_cast<float*>(&color), 4);
 			}
-			if (line.IndexOf(_T("dif"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	拡散光	0～1
+			if (line.indexOf(_T("dif"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	拡散光	0～1
 			{
-				diffuse = StringTraits::ToFloat(line.c_str() + numHead, dataEnd - numHead);
+				diffuse = StringTraits::toFloat(line.c_str() + numHead, dataEnd - numHead);
 			}
-			if (line.IndexOf(_T("amb"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	周囲光	0～1
+			if (line.indexOf(_T("amb"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	周囲光	0～1
 			{
-				ambient = StringTraits::ToFloat(line.c_str() + numHead, dataEnd - numHead);
+				ambient = StringTraits::toFloat(line.c_str() + numHead, dataEnd - numHead);
 			}
-			if (line.IndexOf(_T("emi"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	自己照明	0～1
+			if (line.indexOf(_T("emi"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	自己照明	0～1
 			{
-				emissive = StringTraits::ToFloat(line.c_str() + numHead, dataEnd - numHead);
+				emissive = StringTraits::toFloat(line.c_str() + numHead, dataEnd - numHead);
 			}
-			if (line.IndexOf(_T("spc"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	反射光	0～1
+			if (line.indexOf(_T("spc"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	反射光	0～1
 			{
-				specular = StringTraits::ToFloat(line.c_str() + numHead, dataEnd - numHead);
+				specular = StringTraits::toFloat(line.c_str() + numHead, dataEnd - numHead);
 			}
-			if (line.IndexOf(_T("power"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	反射光の強さ	0～100
+			if (line.indexOf(_T("power"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	反射光の強さ	0～100
 			{
-				power = StringTraits::ToFloat(line.c_str() + numHead, dataEnd - numHead);
+				power = StringTraits::toFloat(line.c_str() + numHead, dataEnd - numHead);
 			}
 			//if (line.IndexOf(_T("reflect"), dataHead, CaseSensitivity::CaseInsensitive)	鏡面反射 （Ver4.0以降)	0～1
 			//if (line.IndexOf(_T("refract"), dataHead, CaseSensitivity::CaseInsensitive)	屈折率 （Ver4.0以降)	1～5
-			if (line.IndexOf(_T("tex"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	模様マッピング名	相対パスまたは絶対パスで記述
+			if (line.indexOf(_T("tex"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	模様マッピング名	相対パスまたは絶対パスで記述
 			{
-				texture = m_manager->CreateTexture(m_parentDir, StringRef(line.c_str() + numHead, line.c_str() + numEnd), ModelCreationFlag::IgnoreTextureNotFound);
+				texture = m_manager->createTexture(m_parentDir, StringRef(line.c_str() + numHead, line.c_str() + numEnd), ModelCreationFlag::IgnoreTextureNotFound);
 			}
 			//if (line.IndexOf(_T("aplane"), dataHead, CaseSensitivity::CaseInsensitive)	透明マッピング名	相対パスまたは絶対パスで記述
 			//if (line.IndexOf(_T("bump"), dataHead, CaseSensitivity::CaseInsensitive)	凹凸マッピング名	相対パスまたは絶対パスで記述
@@ -744,96 +744,96 @@ void MqoImporter::LoadMaterials(StreamReader* reader)
 		Color c;
 		c.a = color.a;
 
-		auto material = NewObject<DiffuseMaterial>();
+		auto material = newObject<DiffuseMaterial>();
 
 		c.r = diffuse * color.r;
 		c.g = diffuse * color.g;
 		c.b = diffuse * color.b;
-		material->SetDiffuse(c);
+		material->setDiffuse(c);
 
 		c.r = ambient * color.r;
 		c.g = ambient * color.g;
 		c.b = ambient * color.b;
-		material->SetAmbient(c);
+		material->setAmbient(c);
 
 		c.r = emissive * color.r;
 		c.g = emissive * color.g;
 		c.b = emissive * color.b;
-		material->SetEmissive(c);
+		material->setEmissive(c);
 
 		c.r = specular * color.r;
 		c.g = specular * color.g;
 		c.b = specular * color.b;
-		material->SetSpecular(c);
+		material->setSpecular(c);
 
-		material->SetSpecularPower(power);
+		material->setSpecularPower(power);
 
-		m_model->AddMaterial(material);
+		m_model->addMaterial(material);
 	}
 }
 
 //------------------------------------------------------------------------------
-void MqoImporter::LoadObject(StreamReader* reader, const String& name)
+void MqoImporter::loadObject(StreamReader* reader, const String& name)
 {
-	auto mqoObject = RefPtr<MqoObject>::MakeRef();
+	auto mqoObject = RefPtr<MqoObject>::makeRef();
 	mqoObject->m_importer = this;
 	mqoObject->m_name = name;
 
 	//int vertexIndexOffset = m_mqoVertexList.GetCount();	// この Object チャンクに含まれる Vertex は、全体の何番目から始まるか？
 	int index;
 	String line;
-	while (reader->ReadLine(&line))
+	while (reader->readLine(&line))
 	{
-		if (line.IndexOf(_T("}")) > -1) break;
+		if (line.indexOf(_T("}")) > -1) break;
 
-		if ((index = line.IndexOf(_T("vertex "))) >= 0)
+		if ((index = line.indexOf(_T("vertex "))) >= 0)
 		{
-			int count = StringTraits::ToInt32(line.c_str() + index + 7);
-			mqoObject->m_mqoVertexList.Reserve(count);
-			ReadVertexChunk(reader, mqoObject);
+			int count = StringTraits::toInt32(line.c_str() + index + 7);
+			mqoObject->m_mqoVertexList.reserve(count);
+			readVertexChunk(reader, mqoObject);
 		}
-		else if ((index = line.IndexOf(_T("BVertex "))) >= 0)
+		else if ((index = line.indexOf(_T("BVertex "))) >= 0)
 		{
 			LN_NOTIMPLEMENTED();
 		}
-		else if ((index = line.IndexOf(_T("face "))) >= 0)
+		else if ((index = line.indexOf(_T("face "))) >= 0)
 		{
-			int count = StringTraits::ToInt32(line.c_str() + index + 5);
-			mqoObject->m_mqoFaceList.Reserve(count);
-			ReadFaceChunk(reader, mqoObject);
+			int count = StringTraits::toInt32(line.c_str() + index + 5);
+			mqoObject->m_mqoFaceList.reserve(count);
+			readFaceChunk(reader, mqoObject);
 		}
 	}
 
-	m_mqoObjectList.Add(mqoObject);
+	m_mqoObjectList.add(mqoObject);
 }
 
 //------------------------------------------------------------------------------
-void MqoImporter::ReadVertexChunk(StreamReader* reader, MqoObject* mqoObject)
+void MqoImporter::readVertexChunk(StreamReader* reader, MqoObject* mqoObject)
 {
 	String line;
-	while (reader->ReadLine(&line))
+	while (reader->readLine(&line))
 	{
-		if (line.IndexOf(_T("}")) > -1) break;
+		if (line.indexOf(_T("}")) > -1) break;
 
 		MqoVertex v;
-		ReadFloats(StringRef(line, 2), reinterpret_cast<float*>(&v.position), 3);
-		mqoObject->m_mqoVertexList.Add(v);
+		readFloats(StringRef(line, 2), reinterpret_cast<float*>(&v.position), 3);
+		mqoObject->m_mqoVertexList.add(v);
 	}
 }
 
 //------------------------------------------------------------------------------
-void MqoImporter::ReadFaceChunk(StreamReader* reader, MqoObject* mqoObject)
+void MqoImporter::readFaceChunk(StreamReader* reader, MqoObject* mqoObject)
 {
 	String line;
-	while (reader->ReadLine(&line))
+	while (reader->readLine(&line))
 	{
-		if (line.IndexOf(_T("}")) > -1) break;
+		if (line.indexOf(_T("}")) > -1) break;
 
 		MqoFace face;
-		InitMqoFace(&face);
+		initMqoFace(&face);
 
 		int dataHead = 2;	// 行頭 tab
-		face.vertexCount = StringTraits::ToInt32(line.c_str() + dataHead);
+		face.vertexCount = StringTraits::toInt32(line.c_str() + dataHead);
 
 		//if (face.vertexCount == 3) m_meshIndexCount += 3;
 		//else if (face.vertexCount == 4) m_meshIndexCount += 6;
@@ -841,37 +841,37 @@ void MqoImporter::ReadFaceChunk(StreamReader* reader, MqoObject* mqoObject)
 
 		dataHead += 2;		// 頂点数, space
 
-		while (dataHead < line.GetLength())
+		while (dataHead < line.getLength())
 		{
-			int numHead = line.IndexOf('(', dataHead) + 1;
-			int numEnd = line.IndexOf(')', dataHead);
+			int numHead = line.indexOf('(', dataHead) + 1;
+			int numEnd = line.indexOf(')', dataHead);
 			int dataEnd = numEnd + 1;
 			if (line[numHead] == '"')	// tex("ファイル名") に備える
 			{
 				numHead++;
-				numEnd = line.IndexOf(_T("\")"), dataHead);
+				numEnd = line.indexOf(_T("\")"), dataHead);
 			}
 
 			// V(%d ...)	頂点インデックス
-			else if (StringTraits::Compare(line.c_str() + dataHead, _T("V"), 1, CaseSensitivity::CaseInsensitive) == 0)
+			else if (StringTraits::compare(line.c_str() + dataHead, _T("V"), 1, CaseSensitivity::CaseInsensitive) == 0)
 			{
-				ReadInts(StringRef(line, numHead, numEnd - numHead), face.vertexIndices, face.vertexCount);
+				readInts(StringRef(line, numHead, numEnd - numHead), face.vertexIndices, face.vertexCount);
 				//for (int i = 0; i < face.vertexCount; i++) face.vertexIndices[i] += vertexIndexOffset;
 			}
 			// M(%d)	材質インデックス
-			else if (StringTraits::Compare(line.c_str() + dataHead, _T("M"), 1, CaseSensitivity::CaseInsensitive) == 0)
+			else if (StringTraits::compare(line.c_str() + dataHead, _T("M"), 1, CaseSensitivity::CaseInsensitive) == 0)
 			{
-				face.materialIndex = StringTraits::ToInt32(line.c_str() + numHead, numEnd - numHead);
+				face.materialIndex = StringTraits::toInt32(line.c_str() + numHead, numEnd - numHead);
 			}
 			// UV(%.5f %.5f ...)	ＵＶ値
-			else if (StringTraits::Compare(line.c_str() + dataHead, _T("UV"), 2, CaseSensitivity::CaseInsensitive) == 0)
+			else if (StringTraits::compare(line.c_str() + dataHead, _T("UV"), 2, CaseSensitivity::CaseInsensitive) == 0)
 			{
-				ReadFloats(StringRef(line, numHead, numEnd - numHead), reinterpret_cast<float*>(face.uv), face.vertexCount * 2);
+				readFloats(StringRef(line, numHead, numEnd - numHead), reinterpret_cast<float*>(face.uv), face.vertexCount * 2);
 			}
 			// COL(%u)	頂点カラー
-			else if (StringTraits::Compare(line.c_str() + dataHead, _T("COL"), 3, CaseSensitivity::CaseInsensitive) == 0)
+			else if (StringTraits::compare(line.c_str() + dataHead, _T("COL"), 3, CaseSensitivity::CaseInsensitive) == 0)
 			{
-				ReadUInts(StringRef(line, numHead, numEnd - numHead), face.colors, face.vertexCount);
+				readUInts(StringRef(line, numHead, numEnd - numHead), face.colors, face.vertexCount);
 			}
 			// CRS(%f ...)	Catmull-Clark/OpenSubdiv曲面用のエッジの折れ目
 			//else if (line.Compare(_T("CRS"), 3, CaseSensitivity::CaseInsensitive) == 0)
@@ -882,53 +882,53 @@ void MqoImporter::ReadFaceChunk(StreamReader* reader, MqoObject* mqoObject)
 		}
 
 
-		mqoObject->m_mqoFaceList.Add(face);
+		mqoObject->m_mqoFaceList.add(face);
 	}
 }
 
 //------------------------------------------------------------------------------
-void MqoImporter::ReadInts(const StringRef& str, int* values, int valuesCount)
+void MqoImporter::readInts(const StringRef& str, int* values, int valuesCount)
 {
 	int* valuesEnd = values + valuesCount;
 	StringTraits::SplitHelper(
-		str.GetBegin(), str.GetEnd(), _T(" "), 1, StringSplitOptions::RemoveEmptyEntries, CaseSensitivity::CaseSensitive,
+		str.getBegin(), str.getEnd(), _T(" "), 1, StringSplitOptions::RemoveEmptyEntries, CaseSensitivity::CaseSensitive,
 		[&values, &valuesEnd](const TCHAR* begin, const TCHAR* end)
 		{
 			if (values < valuesEnd)
 			{
-				*values = StringTraits::ToInt32(begin, end - begin);
+				*values = StringTraits::toInt32(begin, end - begin);
 				values++;
 			}
 		});
 }
 
 //------------------------------------------------------------------------------
-void MqoImporter::ReadUInts(const StringRef& str, uint32_t* values, int valuesCount)
+void MqoImporter::readUInts(const StringRef& str, uint32_t* values, int valuesCount)
 {
 	uint32_t* valuesEnd = values + valuesCount;
 	StringTraits::SplitHelper(
-		str.GetBegin(), str.GetEnd(), _T(" "), 1, StringSplitOptions::RemoveEmptyEntries, CaseSensitivity::CaseSensitive,
+		str.getBegin(), str.getEnd(), _T(" "), 1, StringSplitOptions::RemoveEmptyEntries, CaseSensitivity::CaseSensitive,
 		[&values, &valuesEnd](const TCHAR* begin, const TCHAR* end)
 	{
 		if (values < valuesEnd)
 		{
-			*values = StringTraits::ToUInt32(begin, end - begin);
+			*values = StringTraits::toUInt32(begin, end - begin);
 			values++;
 		}
 	});
 }
 
 //------------------------------------------------------------------------------
-void MqoImporter::ReadFloats(const StringRef& str, float* values, int valuesCount)
+void MqoImporter::readFloats(const StringRef& str, float* values, int valuesCount)
 {
 	float* valuesEnd = values + valuesCount;
 	StringTraits::SplitHelper(
-		str.GetBegin(), str.GetEnd(), _T(" "), 1, StringSplitOptions::RemoveEmptyEntries, CaseSensitivity::CaseSensitive,
+		str.getBegin(), str.getEnd(), _T(" "), 1, StringSplitOptions::RemoveEmptyEntries, CaseSensitivity::CaseSensitive,
 		[&values, &valuesEnd](const TCHAR* begin, const TCHAR* end)
 		{
 			if (values < valuesEnd)
 			{
-				*values = StringTraits::ToFloat(begin, end - begin);
+				*values = StringTraits::toFloat(begin, end - begin);
 				values++;
 			}
 		});
@@ -936,7 +936,7 @@ void MqoImporter::ReadFloats(const StringRef& str, float* values, int valuesCoun
 
 
 //------------------------------------------------------------------------------
-void MqoImporter::InitMqoFace(MqoFace* face)
+void MqoImporter::initMqoFace(MqoFace* face)
 {
 	memset(face, 0, sizeof(MqoFace));
 	face->colors[0] = face->colors[1] = face->colors[2] = face->colors[3] = 0xFFFFFFFF;
@@ -953,15 +953,15 @@ void MqoImporter::InitMqoFace(MqoFace* face)
 //		int i2 = PutVertexSource(faceIndex, 2);
 //		if (m_flipZCoord)
 //		{
-//			mesh->SetIndex(startIndexBufferIndex + 0, i0);
-//			mesh->SetIndex(startIndexBufferIndex + 1, i2);
-//			mesh->SetIndex(startIndexBufferIndex + 2, i1);
+//			mesh->setIndex(startIndexBufferIndex + 0, i0);
+//			mesh->setIndex(startIndexBufferIndex + 1, i2);
+//			mesh->setIndex(startIndexBufferIndex + 2, i1);
 //		}
 //		else
 //		{
-//			mesh->SetIndex(startIndexBufferIndex + 0, i0);
-//			mesh->SetIndex(startIndexBufferIndex + 1, i1);
-//			mesh->SetIndex(startIndexBufferIndex + 2, i2);
+//			mesh->setIndex(startIndexBufferIndex + 0, i0);
+//			mesh->setIndex(startIndexBufferIndex + 1, i1);
+//			mesh->setIndex(startIndexBufferIndex + 2, i2);
 //		}
 //		return 3;
 //	}
@@ -971,12 +971,12 @@ void MqoImporter::InitMqoFace(MqoFace* face)
 //	//	int i1 = PutVertexSource(faceIndex, 1);
 //	//	int i2 = PutVertexSource(faceIndex, 2);
 //	//	int i3 = PutVertexSource(faceIndex, 3);
-//	//	mesh->SetIndex(startIndexBufferIndex + 0, i0);
-//	//	mesh->SetIndex(startIndexBufferIndex + 1, i1);
-//	//	mesh->SetIndex(startIndexBufferIndex + 2, i3);
-//	//	mesh->SetIndex(startIndexBufferIndex + 3, i3);
-//	//	mesh->SetIndex(startIndexBufferIndex + 4, i1);
-//	//	mesh->SetIndex(startIndexBufferIndex + 5, i2);
+//	//	mesh->setIndex(startIndexBufferIndex + 0, i0);
+//	//	mesh->setIndex(startIndexBufferIndex + 1, i1);
+//	//	mesh->setIndex(startIndexBufferIndex + 2, i3);
+//	//	mesh->setIndex(startIndexBufferIndex + 3, i3);
+//	//	mesh->setIndex(startIndexBufferIndex + 4, i1);
+//	//	mesh->setIndex(startIndexBufferIndex + 5, i2);
 //	//	return 6;
 //	//}
 //	else

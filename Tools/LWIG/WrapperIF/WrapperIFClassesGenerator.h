@@ -7,7 +7,7 @@ class SymbolDatabase;
 class WrapperIFClassesGenerator
 {
 public:
-	void Generate();
+	void generate();
 
 private:
 };

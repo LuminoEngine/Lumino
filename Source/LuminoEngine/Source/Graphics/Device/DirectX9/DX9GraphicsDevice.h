@@ -39,50 +39,50 @@ public:
 
 public:
 	/// 描画を行うスレッドで初期化する必要がある
-	void Initialize(const ConfigData& configData);
+	void initialize(const ConfigData& configData);
 
 	/// FileManager
-	FileManager* GetFileManager() { return m_fileManager; }
+	FileManager* getFileManager() { return m_fileManager; }
 
 	/// IDirect3DDevice9 取得
-	IDirect3DDevice9* GetIDirect3DDevice9() { return m_dxDevice; }
+	IDirect3DDevice9* getIDirect3DDevice9() { return m_dxDevice; }
 
 	/// ID3DXEffectPool 取得
-	ID3DXEffectPool* GetD3DXEffectPool() { return m_d3dxEffectPool; }
+	ID3DXEffectPool* getD3DXEffectPool() { return m_d3dxEffectPool; }
 
 	/// デバイスロスト状態を通知する
-	void SetDeviceLostFlag() { m_deviceState = DeviceState_Lost; }
+	void setDeviceLostFlag() { m_deviceState = DeviceState_Lost; }
 
-	const D3DPRESENT_PARAMETERS& GetPresentParameters() const { return m_presentParameters; }
+	const D3DPRESENT_PARAMETERS& getPresentParameters() const { return m_presentParameters; }
 
-	const List<IDirect3DTexture9*>& GetDummyTextures() const { return m_dummyTextures; }
+	const List<IDirect3DTexture9*>& getDummyTextures() const { return m_dummyTextures; }
 
 public:
 	virtual void Finalize() override;
-	virtual bool IsStandalone() const override { return m_direct3D != NULL; }
-	virtual GraphicsAPI GetGraphicsAPI() const override { return GraphicsAPI::DirectX9; }
-	virtual ISwapChain* GetDefaultSwapChain() override;
-	virtual IRenderer* GetRenderer() override { return m_renderer; }
-	virtual RefPtr<IVertexDeclaration> CreateVertexDeclarationImplement(const VertexElement* elements, int elementsCount) override;
-	virtual RefPtr<IVertexBuffer> CreateVertexBufferImplement(size_t bufferSize, const void* data, ResourceUsage usage) override;
-	virtual RefPtr<IIndexBuffer> CreateIndexBufferImplement(int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage) override;
-	virtual RefPtr<ITexture> CreateTextureImplement(const SizeI& size, bool mipmap, TextureFormat format, const void* initialData) override;
-	virtual RefPtr<ITexture> CreateTexturePlatformLoadingImplement(Stream* stream, bool mipmap, TextureFormat format) override;
-	virtual RefPtr<ITexture> CreateTexture3DImplement(int width, int height, int depth, uint32_t mipLevels, TextureFormat format, ResourceUsage usage, const void* initialData) override;
-	virtual RefPtr<ITexture> CreateRenderTargetImplement(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format) override;
-	virtual RefPtr<ITexture> CreateDepthBufferImplement(uint32_t width, uint32_t height, TextureFormat format) override;
-	virtual RefPtr<IShader> CreateShaderImplement(const void* textData, size_t size, ShaderCompileResult* result) override;
-	virtual RefPtr<ISwapChain> CreateSwapChainImplement(PlatformWindow* window) override;
-	virtual DeviceState GetDeviceState()  override { return m_deviceState; }
-	virtual void ResetDevice() override;
-	virtual void OnLostDevice() override;
-	virtual void OnResetDevice() override;
-	virtual void FlushResource() override {}
+	virtual bool isStandalone() const override { return m_direct3D != NULL; }
+	virtual GraphicsAPI getGraphicsAPI() const override { return GraphicsAPI::DirectX9; }
+	virtual ISwapChain* getDefaultSwapChain() override;
+	virtual IRenderer* getRenderer() override { return m_renderer; }
+	virtual RefPtr<IVertexDeclaration> createVertexDeclarationImplement(const VertexElement* elements, int elementsCount) override;
+	virtual RefPtr<IVertexBuffer> createVertexBufferImplement(size_t bufferSize, const void* data, ResourceUsage usage) override;
+	virtual RefPtr<IIndexBuffer> createIndexBufferImplement(int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage) override;
+	virtual RefPtr<ITexture> createTextureImplement(const SizeI& size, bool mipmap, TextureFormat format, const void* initialData) override;
+	virtual RefPtr<ITexture> createTexturePlatformLoadingImplement(Stream* stream, bool mipmap, TextureFormat format) override;
+	virtual RefPtr<ITexture> createTexture3DImplement(int width, int height, int depth, uint32_t mipLevels, TextureFormat format, ResourceUsage usage, const void* initialData) override;
+	virtual RefPtr<ITexture> ceateRenderTargetImplement(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format) override;
+	virtual RefPtr<ITexture> createDepthBufferImplement(uint32_t width, uint32_t height, TextureFormat format) override;
+	virtual RefPtr<IShader> createShaderImplement(const void* textData, size_t size, ShaderCompileResult* result) override;
+	virtual RefPtr<ISwapChain> createSwapChainImplement(PlatformWindow* window) override;
+	virtual DeviceState getDeviceState()  override { return m_deviceState; }
+	virtual void resetDevice() override;
+	virtual void onLostDevice() override;
+	virtual void onResetDevice() override;
+	virtual void flushResource() override {}
 
 private:
-	void CheckDeviceInformation();
-	void ResetDevice(bool fullscreen);
-	void SetPresentParameters(const SizeI& backbufferSize, bool fullscreen);
+	void checkDeviceInformation();
+	void resetDevice(bool fullscreen);
+	void setPresentParameters(const SizeI& backbufferSize, bool fullscreen);
 
 private:
 	FileManager*				m_fileManager;

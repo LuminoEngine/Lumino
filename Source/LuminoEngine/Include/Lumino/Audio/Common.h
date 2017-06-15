@@ -81,9 +81,9 @@ enum class SoundPlayingState
 enum class SoundFadeBehavior
 {
 	Continue = 0,		/**< 再生を継続する */
-	Stop,				/**< 停止する */
+	stop,				/**< 停止する */
 	StopReset,			/**< 停止して、次の再生に備えてサウンドの音量を元の値に戻す */
-	Pause,				/**< 一時停止する */
+	pause,				/**< 一時停止する */
 	PauseReset,			/**< 一時停止して、次の再生に備えてサウンドの音量を元の値に戻す */
 
 	TERMINATOR,

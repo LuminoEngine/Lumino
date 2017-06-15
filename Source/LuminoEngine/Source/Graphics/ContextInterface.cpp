@@ -42,7 +42,7 @@ ContextState::~ContextState()
 }
 
 //------------------------------------------------------------------------------
-void ContextState::SetRenderTarget(int index, Texture* texture)
+void ContextState::setRenderTarget(int index, Texture* texture)
 {
 	if (index == 0 && texture == nullptr)
 	{
@@ -56,8 +56,8 @@ void ContextState::SetRenderTarget(int index, Texture* texture)
 
 		if (index == 0)
 		{
-			auto& size = texture->GetSize();
-			viewport.Set(0, 0, size.width, size.height);
+			auto& size = texture->getSize();
+			viewport.set(0, 0, size.width, size.height);
 		}
 
 		modifiedFlags |= ContextStateFlags::CommonState;
@@ -65,19 +65,19 @@ void ContextState::SetRenderTarget(int index, Texture* texture)
 }
 
 //------------------------------------------------------------------------------
-Texture* ContextState::GetRenderTarget(int index) const
+Texture* ContextState::getRenderTarget(int index) const
 {
 	return m_renderTargets[index];
 }
 
 //------------------------------------------------------------------------------
-void ContextState::SetShaderPass(ShaderPass* pass)
+void ContextState::setShaderPass(ShaderPass* pass)
 {
-	if (m_shaderPass != pass || (pass != nullptr && pass->GetOwnerShader()->IsModifiedVariables()))
+	if (m_shaderPass != pass || (pass != nullptr && pass->getOwnerShader()->isModifiedVariables()))
 	{
 		if (pass != nullptr)
 		{
-			LN_REFOBJ_SET(m_ownerShader, pass->GetOwnerShader());
+			LN_REFOBJ_SET(m_ownerShader, pass->getOwnerShader());
 			m_shaderPass = pass;
 		}
 		else
@@ -90,14 +90,14 @@ void ContextState::SetShaderPass(ShaderPass* pass)
 }
 
 //------------------------------------------------------------------------------
-void ContextState::SetFillBrush(Brush* brush)
+void ContextState::setFillBrush(Brush* brush)
 {
 	LN_REFOBJ_SET(m_fillBrush, brush);
 	modifiedFlags |= ContextStateFlags::CommonState;
 }
 
 //------------------------------------------------------------------------------
-void ContextState::Copy(const ContextState& obj)
+void ContextState::copy(const ContextState& obj)
 {
 
 	renderState = obj.renderState;
@@ -131,7 +131,7 @@ void ContextState::Copy(const ContextState& obj)
 
 
 //------------------------------------------------------------------------------
-void BasicContextState::SetRenderTarget(int index, Texture* texture)
+void BasicContextState::setRenderTarget(int index, Texture* texture)
 {
 	if (index == 0 && texture == nullptr)
 	{
@@ -152,19 +152,19 @@ void BasicContextState::SetRenderTarget(int index, Texture* texture)
 }
 
 //------------------------------------------------------------------------------
-Texture* BasicContextState::GetRenderTarget(int index) const
+Texture* BasicContextState::getRenderTarget(int index) const
 {
 	return m_renderTargets[index];
 }
 
 //------------------------------------------------------------------------------
-void BasicContextState::SetShaderPass(ShaderPass* pass)
+void BasicContextState::setShaderPass(ShaderPass* pass)
 {
-	if (m_shaderPass != pass || (pass != nullptr && pass->GetOwnerShader()->IsModifiedVariables()))
+	if (m_shaderPass != pass || (pass != nullptr && pass->getOwnerShader()->isModifiedVariables()))
 	{
 		if (pass != nullptr)
 		{
-			m_ownerShader = pass->GetOwnerShader();
+			m_ownerShader = pass->getOwnerShader();
 			m_shaderPass = pass;
 		}
 		else
@@ -176,14 +176,14 @@ void BasicContextState::SetShaderPass(ShaderPass* pass)
 }
 
 //------------------------------------------------------------------------------
-bool BasicContextState::Equals(const BasicContextState& s) const
+bool BasicContextState::equals(const BasicContextState& s) const
 {
 	if (renderState != s.renderState) return false;
 	if (depthStencilState != s.depthStencilState) return false;
 	if (depthBuffer != s.depthBuffer) return false;
 	for (int i = 0; i < Graphics::MaxMultiRenderTargets; ++i)
 	{
-		if (!Utils::EqualsTexture(m_renderTargets[i], s.m_renderTargets[i])) return false;
+		if (!Utils::equalsTexture(m_renderTargets[i], s.m_renderTargets[i])) return false;
 	}
 	if (m_ownerShader != s.m_ownerShader) return false;
 	if (m_shaderPass != s.m_shaderPass) return false;
@@ -191,7 +191,7 @@ bool BasicContextState::Equals(const BasicContextState& s) const
 }
 
 //------------------------------------------------------------------------------
-void BasicContextState::Copy(const BasicContextState& s)
+void BasicContextState::copy(const BasicContextState& s)
 {
 	renderState = s.renderState;
 	depthStencilState = s.depthStencilState;
@@ -221,126 +221,126 @@ ContextInterface::~ContextInterface()
 }
 
 //------------------------------------------------------------------------------
-void ContextInterface::Initialize(GraphicsManager* manager)
+void ContextInterface::initialize(GraphicsManager* manager)
 {
 	assert(manager != nullptr);
 	m_manager = manager;
-	m_baseRenderer = m_manager->GetRenderer();
+	m_baseRenderer = m_manager->getRenderer();
 	m_stateChanged = true;
 }
 
 //------------------------------------------------------------------------------
-void ContextInterface::NorityStateChanging()
+void ContextInterface::norityStateChanging()
 {
-	m_manager->SwitchActiveContext(this);
+	m_manager->switchActiveContext(this);
 	m_stateChanged = true;
 }
 
 //------------------------------------------------------------------------------
-void ContextInterface::NorityStartDrawing(detail::IRenderFeature* rendererPloxy)
+void ContextInterface::norityStartDrawing(detail::IRenderFeature* rendererPloxy)
 {
-	m_manager->SwitchActiveContext(this);
+	m_manager->switchActiveContext(this);
 
 	bool forceStateFlush = (m_activeRendererPloxy != rendererPloxy);
 
 	// アクティブな Renderer の切り替え
-	SwitchActiveRendererPloxy(rendererPloxy);
+	switchActiveRendererPloxy(rendererPloxy);
 
 	if (m_stateChanged || forceStateFlush)
 	{
-		if (OnCheckStateChanged() || forceStateFlush)
+		if (onCheckStateChanged() || forceStateFlush)
 		{
-			OnPrimitiveFlush();
-			OnStateFlush(m_activeRendererPloxy);
+			onPrimitiveFlush();
+			onStateFlush(m_activeRendererPloxy);
 		}
 		m_stateChanged = false;
 	}
 }
 
 //------------------------------------------------------------------------------
-void ContextInterface::FlushImplemented()
+void ContextInterface::flushImplemented()
 {
-	m_manager->SwitchActiveContext(this);
+	m_manager->switchActiveContext(this);
 
 	if (m_activeRendererPloxy != nullptr)
 	{
 		if (m_stateChanged)
 		{
-			if (OnCheckStateChanged())
+			if (onCheckStateChanged())
 			{
-				OnStateFlush(m_activeRendererPloxy);
+				onStateFlush(m_activeRendererPloxy);
 			}
 			m_stateChanged = false;
 		}
-		OnPrimitiveFlush();
+		onPrimitiveFlush();
 	}
 }
 
 //------------------------------------------------------------------------------
-void ContextInterface::OnActivated()
+void ContextInterface::onActivated()
 {
 	m_stateChanged = true;
 }
 
 //------------------------------------------------------------------------------
-void ContextInterface::OnDeactivated()
+void ContextInterface::onDeactivated()
 {
-	FlushImplemented();
-	SwitchActiveRendererPloxy(nullptr);
+	flushImplemented();
+	switchActiveRendererPloxy(nullptr);
 }
 
 //------------------------------------------------------------------------------
-void ContextInterface::OnStateFlush(detail::IRenderFeature* activeRenderer)
+void ContextInterface::onStateFlush(detail::IRenderFeature* activeRenderer)
 {
 }
 
 //------------------------------------------------------------------------------
-void ContextInterface::OnPrimitiveFlush()
+void ContextInterface::onPrimitiveFlush()
 {
 	if (m_activeRendererPloxy != nullptr)
 	{
-		m_activeRendererPloxy->Flush();
+		m_activeRendererPloxy->flush();
 	}
 }
 
 //------------------------------------------------------------------------------
-void ContextInterface::OnShaderVariableModified(ShaderVariable* var)
+void ContextInterface::onShaderVariableModified(ShaderVariable* var)
 {
 }
 
 //------------------------------------------------------------------------------
-void ContextInterface::SwitchActiveRendererPloxy(detail::IRenderFeature* rendererPloxy)
+void ContextInterface::switchActiveRendererPloxy(detail::IRenderFeature* rendererPloxy)
 {
 	if (rendererPloxy != m_activeRendererPloxy)
 	{
 		if (m_activeRendererPloxy != nullptr)
 		{
-			m_activeRendererPloxy->OnDeactivated();	// 古いものを Deactivate
+			m_activeRendererPloxy->onDeactivated();	// 古いものを Deactivate
 		}
 
 		m_activeRendererPloxy = rendererPloxy;
 
 		if (m_activeRendererPloxy != nullptr)
 		{
-			m_activeRendererPloxy->OnActivated();	// 新しいものを Activate
+			m_activeRendererPloxy->onActivated();	// 新しいものを activate
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
-// サブクラスの OnStateFlush() で呼び出す
-void ContextInterface::SetBasicContextState(const BasicContextState& state)
+// サブクラスの onStateFlush() で呼び出す
+void ContextInterface::setBasicContextState(const BasicContextState& state)
 {
-	m_baseRenderer->SetRenderState(state.renderState);
-	m_baseRenderer->SetDepthStencilState(state.depthStencilState);
+	m_baseRenderer->setRenderState(state.renderState);
+	m_baseRenderer->setDepthStencilState(state.depthStencilState);
 	for (int i = 0; i < Graphics::MaxMultiRenderTargets; ++i)
-		m_baseRenderer->SetRenderTarget(i, state.GetRenderTarget(i));
-	m_baseRenderer->SetDepthBuffer(state.depthBuffer);
-//	m_baseRenderer->SetViewport(state.viewport);
+		m_baseRenderer->setRenderTarget(i, state.getRenderTarget(i));
+	m_baseRenderer->setDepthBuffer(state.depthBuffer);
+//	m_baseRenderer->setViewport(state.viewport);
 }
 
 //------------------------------------------------------------------------------
-void ContextInterface::MakeBlendMode(BlendMode mode, RenderState* state)
+void ContextInterface::makeBlendMode(BlendMode mode, RenderState* state)
 {
 	switch (mode)
 	{

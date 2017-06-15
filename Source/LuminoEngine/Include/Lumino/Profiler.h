@@ -60,46 +60,46 @@ public:
 
 public:
 	/// グループを作成する
-	int RegisterGroup(const TCHAR* name);
+	int registerGroup(const TCHAR* name);
 
 	/// セクションを作成する
-	int RegisterSection(int parentGroupIndex, const TCHAR* name);
+	int registerSection(int parentGroupIndex, const TCHAR* name);
 
 	/// グループの測定基準となるフレームレートを設定する
-	void SetBaseFrameRate(int group, float baseFrameRate);
+	void setBaseFrameRate(int group, float baseFrameRate);
 
 	/// 計測開始 (区間のネストはできない)
-	void StartSection(int groupIndex, int sectionIndex);
+	void startSection(int groupIndex, int sectionIndex);
 
 	/// 計測終了
-	void EndSection(int groupIndex, int sectionIndex);
+	void endSection(int groupIndex, int sectionIndex);
 
 	/// 計測の有効設定
-	void SetEnabled(bool enabled) { m_enabled = enabled; }
+	void setEnabled(bool enabled) { m_enabled = enabled; }
 
 	/// 計測の有効設定
-	bool IsEnabled() const { return m_enabled; }
+	bool isEnabled() const { return m_enabled; }
 
 	/// メインスレッドの FPS
-	void SetMainFPS(float fps) { m_mainFPS = fps; }
+	void setMainFPS(float fps) { m_mainFPS = fps; }
 
 	/// メインスレッドの FPS 余裕度
-	void SetMainFPSCapacity(float fps) { m_mainFPSCapacity = fps; }
+	void setMainFPSCapacity(float fps) { m_mainFPSCapacity = fps; }
 
 	/// メインウィンドウのサイズ
-	void SetMainWindowSize(const SizeI& size) { m_mainWindowSize = size; }
+	void setMainWindowSize(const SizeI& size) { m_mainWindowSize = size; }
 
 	/// メインバックバッファのサイズ
-	void SetMainBackBufferSize(const SizeI& size) { m_mainBackbufferSize = size; }
+	void setMainBackBufferSize(const SizeI& size) { m_mainBackbufferSize = size; }
 
 
-	void Commit();
+	void commit();
 
-	const List<CommitedGroup>& GetCommitedGroups() const { return m_commitedGroups; }
-	float GetCommitedMainFPS() const { return m_commitedMainFPS; }
-	float GetCommitedMainFPSCapacity() const { return m_commitedMainFPSCapacity; }
-	const SizeI& GetCommitedMainWindowSize() const { return m_commitedMainWindowSize; }
-	const SizeI& GetCommitedMainBackbufferSize() const { return m_commitedMainBackbufferSize; }
+	const List<CommitedGroup>& getCommitedGroups() const { return m_commitedGroups; }
+	float getCommitedMainFPS() const { return m_commitedMainFPS; }
+	float getCommitedMainFPSCapacity() const { return m_commitedMainFPSCapacity; }
+	const SizeI& getCommitedMainWindowSize() const { return m_commitedMainWindowSize; }
+	const SizeI& getCommitedMainBackbufferSize() const { return m_commitedMainBackbufferSize; }
 
 private:
 	List< std::shared_ptr<Group> >			m_groups;
@@ -125,12 +125,12 @@ public:
 		: m_group(group)
 		, m_section(section)
 	{
-		Profiler::Instance.StartSection(m_group, m_section);
+		Profiler::Instance.startSection(m_group, m_section);
 	}
 
 	~ScopedProfilerSection()
 	{
-		Profiler::Instance.EndSection(m_group, m_section);
+		Profiler::Instance.endSection(m_group, m_section);
 	}
 
 private:

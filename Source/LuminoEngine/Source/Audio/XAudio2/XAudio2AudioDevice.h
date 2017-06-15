@@ -17,14 +17,14 @@ public:
 public:
     Vector3		Position;
     Vector3		Velocity;
-    float		Distance; 
+    float		distance; 
 
 public:
 	EmitterState(uint32_t input_channels_);
 	~EmitterState();
 
 	/// Position から X3DAUDIO_EMITTER に正しい座標を設定する
-	void UpdateXAudioEmitter(float scale);
+	void updateXAudioEmitter(float scale);
 
 public:
     X3DAUDIO_EMITTER		Emitter;
@@ -41,17 +41,17 @@ class XAudio2AudioDevice
 public:
 	XAudio2AudioDevice();
 	virtual ~XAudio2AudioDevice();
-    bool Initialize();
+    bool initialize();
     void Finalize();
 
-	IXAudio2* GetXAudio2() const { return m_XAudio; }
-	IXAudio2MasteringVoice* GetMasteringVoice() { return m_masteringVoice; }
-	void CalcEmitterState(EmitterState* emitter);
+	IXAudio2* getXAudio2() const { return m_XAudio; }
+	IXAudio2MasteringVoice* getMasteringVoice() { return m_masteringVoice; }
+	void calcEmitterState(EmitterState* emitter);
 
 public:
-	virtual AudioPlayer* CreateAudioPlayer(AudioStream* source, bool enable3d, SoundPlayingMode mode) override;
-    virtual void Update() override;
-    virtual void SetMetreUnitDistance( float d ) override { m_metreUnitDistanceInv = 1.0f / d; }
+	virtual AudioPlayer* createAudioPlayer(AudioStream* source, bool enable3d, SoundPlayingMode mode) override;
+    virtual void update() override;
+    virtual void setMetreUnitDistance( float d ) override { m_metreUnitDistanceInv = 1.0f / d; }
 
 private:
 	XAudio2Module				m_module;

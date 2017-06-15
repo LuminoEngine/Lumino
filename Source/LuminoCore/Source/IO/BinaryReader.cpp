@@ -24,22 +24,22 @@ BinaryReader::~BinaryReader()
 }
 
 //------------------------------------------------------------------------------
-int8_t BinaryReader::ReadInt8()
+int8_t BinaryReader::readInt8()
 {
 	int8_t buffer;
-	m_stream->Read(&buffer, 1);
+	m_stream->read(&buffer, 1);
 	return buffer;
 }
 
 //------------------------------------------------------------------------------
-int16_t BinaryReader::ReadInt16(ByteOrder dataByteOrder)
+int16_t BinaryReader::readInt16(ByteOrder dataByteOrder)
 {
 	byte_t buffer[2];
-	size_t count = m_stream->Read(&buffer, 2);
+	size_t count = m_stream->read(&buffer, 2);
 	LN_THROW(count == 2, EndOfStreamException);
 
 	// 現在の環境と同じエンディアンであればそのまま返す
-	if (dataByteOrder == Environment::GetByteOrder()) {
+	if (dataByteOrder == Environment::getByteOrder()) {
 		return *((int16_t*)buffer);
 	}
 	// 異なるエンディアンであれば swap
@@ -53,14 +53,14 @@ int16_t BinaryReader::ReadInt16(ByteOrder dataByteOrder)
 }
 
 //------------------------------------------------------------------------------
-int32_t BinaryReader::ReadInt32(ByteOrder dataByteOrder)
+int32_t BinaryReader::readInt32(ByteOrder dataByteOrder)
 {
 	byte_t buffer[4];
-	size_t count = m_stream->Read(&buffer, 4);
+	size_t count = m_stream->read(&buffer, 4);
 	LN_THROW(count == 4, EndOfStreamException);
 
 	// 現在の環境と同じエンディアンであればそのまま返す
-	if (dataByteOrder == Environment::GetByteOrder()) {
+	if (dataByteOrder == Environment::getByteOrder()) {
 		return *((int32_t*)buffer);
 	}
 	// 異なるエンディアンであれば swap
@@ -76,14 +76,14 @@ int32_t BinaryReader::ReadInt32(ByteOrder dataByteOrder)
 }
 
 //------------------------------------------------------------------------------
-int64_t BinaryReader::ReadInt64(ByteOrder dataByteOrder)
+int64_t BinaryReader::readInt64(ByteOrder dataByteOrder)
 {
 	byte_t buffer[8];
-	size_t count = m_stream->Read(&buffer, 8);
+	size_t count = m_stream->read(&buffer, 8);
 	LN_THROW(count == 8, EndOfStreamException);
 
 	// 現在の環境と同じエンディアンであればそのまま返す
-	if (dataByteOrder == Environment::GetByteOrder()) {
+	if (dataByteOrder == Environment::getByteOrder()) {
 		return *((int64_t*)buffer);
 	}
 	// 異なるエンディアンであれば swap
@@ -103,22 +103,22 @@ int64_t BinaryReader::ReadInt64(ByteOrder dataByteOrder)
 }
 
 //------------------------------------------------------------------------------
-uint8_t BinaryReader::ReadUInt8()
+uint8_t BinaryReader::readUInt8()
 {
 	uint8_t buffer;
-	m_stream->Read(&buffer, 1);
+	m_stream->read(&buffer, 1);
 	return buffer;
 }
 
 //------------------------------------------------------------------------------
-uint16_t BinaryReader::ReadUInt16(ByteOrder dataByteOrder)
+uint16_t BinaryReader::readUInt16(ByteOrder dataByteOrder)
 {
 	byte_t buffer[2];
-	size_t count = m_stream->Read(&buffer, 2);
+	size_t count = m_stream->read(&buffer, 2);
 	LN_THROW(count == 2, EndOfStreamException);
 
 	// 現在の環境と同じエンディアンであればそのまま返す
-	if (dataByteOrder == Environment::GetByteOrder()) {
+	if (dataByteOrder == Environment::getByteOrder()) {
 		return *((uint16_t*)buffer);
 	}
 	// 異なるエンディアンであれば swap
@@ -132,14 +132,14 @@ uint16_t BinaryReader::ReadUInt16(ByteOrder dataByteOrder)
 }
 
 //------------------------------------------------------------------------------
-uint32_t BinaryReader::ReadUInt32(ByteOrder dataByteOrder)
+uint32_t BinaryReader::readUInt32(ByteOrder dataByteOrder)
 {
 	byte_t buffer[4];
-	size_t count = m_stream->Read(&buffer, 4);
+	size_t count = m_stream->read(&buffer, 4);
 	LN_THROW(count == 4, EndOfStreamException);
 
 	// 現在の環境と同じエンディアンであればそのまま返す
-	if (dataByteOrder == Environment::GetByteOrder()) {
+	if (dataByteOrder == Environment::getByteOrder()) {
 		return *((uint32_t*)buffer);
 	}
 	// 異なるエンディアンであれば swap
@@ -155,14 +155,14 @@ uint32_t BinaryReader::ReadUInt32(ByteOrder dataByteOrder)
 }
 
 //------------------------------------------------------------------------------
-uint64_t BinaryReader::ReadUInt64(ByteOrder dataByteOrder)
+uint64_t BinaryReader::readUInt64(ByteOrder dataByteOrder)
 {
 	byte_t buffer[8];
-	size_t count = m_stream->Read(&buffer, 8);
+	size_t count = m_stream->read(&buffer, 8);
 	LN_THROW(count == 8, EndOfStreamException);
 
 	// 現在の環境と同じエンディアンであればそのまま返す
-	if (dataByteOrder == Environment::GetByteOrder()) {
+	if (dataByteOrder == Environment::getByteOrder()) {
 		return *((uint64_t*)buffer);
 	}
 	// 異なるエンディアンであれば swap
@@ -182,75 +182,75 @@ uint64_t BinaryReader::ReadUInt64(ByteOrder dataByteOrder)
 }
 
 //------------------------------------------------------------------------------
-int64_t BinaryReader::ReadInt(int byteCount, ByteOrder dataByteOrder)
+int64_t BinaryReader::readInt(int byteCount, ByteOrder dataByteOrder)
 {
 	switch (byteCount)
 	{
-	case 1: return ReadInt8();
-	case 2: return ReadInt16(dataByteOrder);
-	case 4: return ReadInt32(dataByteOrder);
-	case 8: return ReadInt64(dataByteOrder);
+	case 1: return readInt8();
+	case 2: return readInt16(dataByteOrder);
+	case 4: return readInt32(dataByteOrder);
+	case 8: return readInt64(dataByteOrder);
 	}
 	LN_THROW(0, ArgumentException);
 	return 0;
 }
 
 //------------------------------------------------------------------------------
-uint64_t BinaryReader::ReadUInt(int byteCount, ByteOrder dataByteOrder)
+uint64_t BinaryReader::readUInt(int byteCount, ByteOrder dataByteOrder)
 {
 	switch (byteCount)
 	{
-	case 1: return ReadUInt8();
-	case 2: return ReadUInt16(dataByteOrder);
-	case 4: return ReadUInt32(dataByteOrder);
-	case 8: return ReadUInt64(dataByteOrder);
+	case 1: return readUInt8();
+	case 2: return readUInt16(dataByteOrder);
+	case 4: return readUInt32(dataByteOrder);
+	case 8: return readUInt64(dataByteOrder);
 	}
 	LN_THROW(0, ArgumentException);
 	return 0;
 }
 
 //------------------------------------------------------------------------------
-float BinaryReader::ReadFloat()
+float BinaryReader::readFloat()
 {
 	float buffer;
-	m_stream->Read(&buffer, 4);
+	m_stream->read(&buffer, 4);
 	return buffer;
 }
 
 //------------------------------------------------------------------------------
-double BinaryReader::ReadDouble()
+double BinaryReader::readDouble()
 {
 	double buffer;
-	m_stream->Read(&buffer, 8);
+	m_stream->read(&buffer, 8);
 	return buffer;
 }
 
 //------------------------------------------------------------------------------
-size_t BinaryReader::Read(void* buffer, size_t count)
+size_t BinaryReader::read(void* buffer, size_t count)
 {
 	LN_ASSERT(m_stream != NULL);	// コンストラクタで必ず入力が必要なのでありえないはず
-	return m_stream->Read(buffer, count);
+	return m_stream->read(buffer, count);
 }
 
 //------------------------------------------------------------------------------
-void BinaryReader::Seek(int offset)
+void BinaryReader::seek(int offset)
 {
 	LN_ASSERT(m_stream != NULL);	// コンストラクタで必ず入力が必要なのでありえないはず
-	m_stream->Seek(offset, SeekOrigin_Current);
+	m_stream->seek(offset, SeekOrigin_Current);
 }
 
 //------------------------------------------------------------------------------
-int64_t BinaryReader::GetPosition() const
+int64_t BinaryReader::getPosition() const
 {
 	LN_ASSERT(m_stream != NULL);	// コンストラクタで必ず入力が必要なのでありえないはず
-	return m_stream->GetPosition();
+	return m_stream->getPosition();
 }
 
 //------------------------------------------------------------------------------
-bool BinaryReader::IsEOF() const
+bool BinaryReader::isEOF() const
 {
 	LN_ASSERT(m_stream != NULL);	// コンストラクタで必ず入力が必要なのでありえないはず
-	return (m_stream->GetPosition() >= m_stream->GetLength());
+	return (m_stream->getPosition() >= m_stream->getLength());
 }
 
 LN_NAMESPACE_END

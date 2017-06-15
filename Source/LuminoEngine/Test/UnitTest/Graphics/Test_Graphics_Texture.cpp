@@ -20,11 +20,11 @@ TEST_F(Test_Graphics_Texture, SetSubData)
 	RefPtr<RawFont> font(RawFont::CreateBuiltInBitmapFontInternal(detail::GraphicsManager::GetInstance()->GetFontManager(), 7));
 	FontGlyphBitmap* fb = font->LookupGlyphBitmap('S', 0);
 
-	auto texture = Texture2D::Create(32, 32);
-	//texture->Blt(0, 0, fb->GlyphBitmap);
+	auto texture = Texture2D::create(32, 32);
+	//texture->blt(0, 0, fb->GlyphBitmap);
 	texture->Blt(28, 0, fb->GlyphBitmap);
 
-	auto sprite = Sprite2DComponent::Create(texture);
+	auto sprite = Sprite2DComponent::create(texture);
 
 
 

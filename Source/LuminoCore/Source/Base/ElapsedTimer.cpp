@@ -1,8 +1,7 @@
 ﻿#include "../Internal.h"
 #if defined(LN_OS_WIN32)
-#include <windows.h>
 #else
-#include <sys/time.h>
+	#include <sys/time.h>
 #endif
 #include <Lumino/Base/ElapsedTimer.h>
 
@@ -36,7 +35,7 @@ ElapsedTimer::~ElapsedTimer()
 
 #if defined(LN_OS_WIN32)
 //------------------------------------------------------------------------------
-void ElapsedTimer::Start()
+void ElapsedTimer::start()
 {
 	LARGE_INTEGER freq;
 	LARGE_INTEGER counter;
@@ -47,7 +46,7 @@ void ElapsedTimer::Start()
 }
 
 //------------------------------------------------------------------------------
-uint64_t ElapsedTimer::GetElapsed() const LN_NOEXCEPT
+uint64_t ElapsedTimer::getElapsed() const LN_NOEXCEPT
 {
 	if (m_freq == 0) return 0;
 	LARGE_INTEGER counter;
@@ -58,7 +57,7 @@ uint64_t ElapsedTimer::GetElapsed() const LN_NOEXCEPT
 #else
 
 //------------------------------------------------------------------------------
-void ElapsedTimer::Start()
+void ElapsedTimer::start()
 {
 	timeval t;
 	gettimeofday(&t, NULL);	// 第2引数は廃止予定 http://linuxjm.osdn.jp/html/LDP_man-pages/man2/gettimeofday.2.html

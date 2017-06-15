@@ -15,10 +15,10 @@ namespace tr
 //==============================================================================
 
 //------------------------------------------------------------------------------
-HugePlanePtr HugePlane::Create(const Vector3& direction)
+HugePlanePtr HugePlane::create(const Vector3& direction)
 {
-	auto ptr = HugePlanePtr::MakeRef();
-	ptr->Initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph(), direction);
+	auto ptr = HugePlanePtr::makeRef();
+	ptr->initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph(), direction);
 	return ptr;
 }
 
@@ -34,14 +34,14 @@ HugePlane::~HugePlane()
 }
 
 //------------------------------------------------------------------------------
-void HugePlane::Initialize(SceneGraph* sceneGraph, const Vector3& direction)
+void HugePlane::initialize(SceneGraph* sceneGraph, const Vector3& direction)
 {
-	VisualComponent::Initialize(sceneGraph, 1);
+	VisualComponent::initialize(sceneGraph, 1);
 	sceneGraph->GetRootNode()->AddChild(this);
 	SetAutoRemove(true);
 
-	m_mesh = RefPtr<MeshResource>::MakeRef();
-	m_mesh->Initialize(sceneGraph->GetManager()->GetGraphicsManager());
+	m_mesh = RefPtr<MeshResource>::makeRef();
+	m_mesh->initialize(sceneGraph->GetManager()->GetGraphicsManager());
 	m_mesh->CreateSquarePlane(Vector2(1, 1), direction, MeshCreationFlags::DynamicBuffers);
 
 }
@@ -67,9 +67,9 @@ void HugePlane::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 			まず、視錐台の全ての辺について、m_direction を向く平面との交点を求める。
 			求めることができた全ての交点の中から、
 		*/
-		//auto& vf = dc->CurrentCamera->GetViewFrustum();
+		//auto& vf = dc->CurrentCamera->getViewFrustum();
 		//Vector3 points[8];
-		//vf.GetCornerPoints(points);
+		//vf.getCornerPoints(points);
 
 		//Line lines[12] =
 		//{
@@ -94,7 +94,7 @@ void HugePlane::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 		//for (Line& li : lines)
 		//{
 		//	Vector3 pt;
-		//	if (plane.Intersects(li.from, li.to, &pt))
+		//	if (plane.intersects(li.from, li.to, &pt))
 		//	{
 		//		hits.Add(pt);
 		//	}
@@ -103,18 +103,18 @@ void HugePlane::DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex)
 		//Vector3 minPos, maxPos;
 		//for (Vector3& p : hits)
 		//{
-		//	minPos = Vector3::Min(p, minPos);
-		//	maxPos = Vector3::Max(p, maxPos);
+		//	minPos = Vector3::min(p, minPos);
+		//	maxPos = Vector3::max(p, maxPos);
 		//}
 
-		//m_mesh->SetPosition(0, Vector3(minPos.x, 0, maxPos.z));
-		//m_mesh->SetPosition(1, Vector3(minPos.x, 0, minPos.z));
-		//m_mesh->SetPosition(2, Vector3(maxPos.x, 0, maxPos.z));
-		//m_mesh->SetPosition(3, Vector3(maxPos.x, 0, minPos.z));
-		//m_mesh->SetUV(0, Vector2(-1.0f, 1.0f));
-		//m_mesh->SetUV(1, Vector2(-1.0f, -1.0f));
-		//m_mesh->SetUV(2, Vector2(1.0f, 1.0f));
-		//m_mesh->SetUV(3, Vector2(1.0f, -1.0f));
+		//m_mesh->setPosition(0, Vector3(minPos.x, 0, maxPos.z));
+		//m_mesh->setPosition(1, Vector3(minPos.x, 0, minPos.z));
+		//m_mesh->setPosition(2, Vector3(maxPos.x, 0, maxPos.z));
+		//m_mesh->setPosition(3, Vector3(maxPos.x, 0, minPos.z));
+		//m_mesh->setUV(0, Vector2(-1.0f, 1.0f));
+		//m_mesh->setUV(1, Vector2(-1.0f, -1.0f));
+		//m_mesh->setUV(2, Vector2(1.0f, 1.0f));
+		//m_mesh->setUV(3, Vector2(1.0f, -1.0f));
 
 		dc->DrawMesh(m_mesh, m_mesh->m_attributes[subsetIndex].StartIndex, m_mesh->m_attributes[subsetIndex].PrimitiveNum);
 	}

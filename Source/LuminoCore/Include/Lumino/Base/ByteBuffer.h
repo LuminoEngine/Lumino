@@ -78,14 +78,14 @@ public:
 		@brief		バッファの再割り当てを行います。
 		@param[in]	size		: バッファのバイト数
 	*/
-	void Alloc(size_t size, bool zeroClear = true);
+	void alloc(size_t size, bool zeroClear = true);
 
 	/**
 		@brief		バッファの再割り当てを行い、指定されたデータをコピーします。
 		@param[in]	data		: コピー元のデータ
 		@param[in]	size		: コピーするバイト数
 	*/
-	void Alloc(const void* data, size_t size);
+	void alloc(const void* data, size_t size);
 
 	/**
 		@brief		バッファのサイズを変更します。
@@ -95,7 +95,7 @@ public:
 					その際、縮退する場合は末尾の余剰データは切り捨てられ、
 					伸長する場合は zeroClear 引数に従い 0 クリアを行います。
 	*/
-	void Resize(size_t size, bool zeroClear = true);
+	void resize(size_t size, bool zeroClear = true);
 
 	/**
 		@brief		指定したメモリアドレスをデータストアとして参照します。
@@ -116,14 +116,14 @@ public:
 					delete[] data;
 		@endcode
 	*/
-	void Attach(void* buffer, size_t size);
+	void attach(void* buffer, size_t size);
 
 	/**
 		@brief		指定したバッファからこのバッファにデータをコピーします。
 		@param[in]	data		: コピー元バッファ
 		@param[in]	size		: コピーするバイト数
 	*/
-	void Copy(const void* data, size_t size);
+	void copy(const void* data, size_t size);
 
 	/**
 		@brief		指定したコピー先位置に、指定したバッファからこのバッファにデータをコピーします。
@@ -131,37 +131,37 @@ public:
 		@param[in]	data		: コピー元バッファ
 		@param[in]	size		: コピーするバイト数
 	*/
-	void Copy(size_t offset, const void* data, size_t size);
+	void copy(size_t offset, const void* data, size_t size);
 
 	/**
 		@brief		バッファ全体を 0 でクリアします。
 	*/
-	void Clear();
+	void clear();
 
 	/**
 		@brief		バッファの先頭アドレスを取得します。
 	*/
-	byte_t* GetData() { CheckDetachShared(); return m_core->m_buffer; }
-	const byte_t* GetData() const { return m_core->m_buffer; }			/** @overload GetData */
+	byte_t* getData() { checkDetachShared(); return m_core->m_buffer; }
+	const byte_t* getData() const { return m_core->m_buffer; }			/** @overload GetData */
 
 	/**
 		@brief		バッファの先頭アドレスを取得します。メモリの再割り当ては行われません。
 	*/
-	const byte_t* GetConstData() const { return m_core->m_buffer; }
+	const byte_t* getConstData() const { return m_core->m_buffer; }
 
 	/**
 		@brief		バッファのサイズ (バイト数) を取得します。
 	*/
-	size_t GetSize() const { return m_size; }
+	size_t getSize() const { return m_size; }
 	
 	/**
 		@brief		メモリを解放します。
 		@details	コピーオンライト用にメモリを共有している場合は参照を外します。
 					Clear() とは異なり、メモリそのものを解放します。
 	*/
-	void Release();
+	void free();
 
-	bool Equals(const ByteBuffer& buffer) const;
+	bool equals(const ByteBuffer& buffer) const;
 
 public:
 
@@ -170,7 +170,7 @@ public:
 		@return		負の値: buf1<buf2  0:buf1==buf2  正の値:buf1>buf2
 		@details	部分比較はできません。buf1.GetSize() と buf2Size が一致しなければ不一致となります。
 	*/
-	static int Compare(const ByteBuffer& buf1, const void* buf2, size_t buf2Size, int count = -1);
+	static int compare(const ByteBuffer& buf1, const void* buf2, size_t buf2Size, int count = -1);
 
 public:
 	ByteBuffer& operator=(const ByteBuffer& right);
@@ -178,8 +178,7 @@ public:
 	const byte_t& operator[] (size_t index) const;
 
 private:
-	void Dispose();
-	void CheckDetachShared();
+	void checkDetachShared();
 
 private:
 	class ByteBufferCore
@@ -188,9 +187,9 @@ private:
 		ByteBufferCore(size_t size);
 		ByteBufferCore(byte_t* sharedBuffer);
 		~ByteBufferCore();
-		inline bool IsShared() const;
-		inline void AddRef();
-		inline void Release();
+		inline bool isShared() const;
+		inline void addRef();
+		inline void release();
 
 		byte_t*		m_buffer;
 

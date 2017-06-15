@@ -21,17 +21,17 @@ public:
 	/**
 		@brief		
 	*/
-	static TextBlock2DComponentPtr Create();
+	static TextBlock2DComponentPtr create();
 
 	/**
 		@brief		
 	*/
-	static TextBlock2DComponentPtr Create(const StringRef& text);
+	static TextBlock2DComponentPtr create(const StringRef& text);
 
 public:
 
 	/** 表示する文字列を設定します。*/
-	void SetText(const StringRef& text);
+	void setText(const StringRef& text);
 
 	/** 
 		@brief		テキストの表示の原点を設定します。
@@ -39,17 +39,17 @@ public:
 					デフォルトは (0,0) で、これはテキストの左上が原点であることを意味します。
 					(0.5,0.5) はテキストの中央、(1,1) は右下が原点となります。
 	*/
-	void SetAnchorPoint(const Vector2& ratio);
-	void SetAnchorPoint(float ratioX, float ratioY);		/**< @overload SetAnchorPoint */
+	void setAnchorPoint(const Vector2& ratio);
+	void setAnchorPoint(float ratioX, float ratioY);		/**< @overload setAnchorPoint */
 
 protected:
 	TextBlock2DComponent();
 	virtual ~TextBlock2DComponent();
-	void Initialize();
+	void initialize();
 
-	virtual void UpdateFrameHierarchy(SceneNode* parent, float deltaTime) override;
-	virtual detail::Sphere GetBoundingSphere() override;
-	virtual void OnRender2(DrawList* renderer) override;
+	virtual void updateFrameHierarchy(SceneNode* parent, float deltaTime) override;
+	virtual detail::Sphere getBoundingSphere() override;
+	virtual void onRender2(DrawList* renderer) override;
 
 protected:
 	Vector2	m_anchor;

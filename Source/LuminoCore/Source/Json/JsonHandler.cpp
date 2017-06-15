@@ -44,7 +44,7 @@ JsonDOMHandler::JsonDOMHandler(JsonDocument* document)
 	, m_writer(&m_valueRawData)
 {
 	if (LN_CHECK_ARG(document != nullptr)) return;
-	m_valueRawData.Initialize(2048);
+	m_valueRawData.initialize(2048);
 }
 
 //------------------------------------------------------------------------------
@@ -53,135 +53,135 @@ JsonDOMHandler::~JsonDOMHandler()
 }
 
 //------------------------------------------------------------------------------
-bool JsonDOMHandler::OnNull()
+bool JsonDOMHandler::onNull()
 {
-	m_writer.WriteUInt8(JsonType::Null);
+	m_writer.writeUInt8(JsonType::Null);
 	return true;
 }
 
 //------------------------------------------------------------------------------
-bool JsonDOMHandler::OnBool(bool value)
+bool JsonDOMHandler::onBool(bool value)
 {
-	m_writer.WriteUInt8(JsonType::Bool);
-	m_writer.WriteUInt8(value ? 1 : 0);
+	m_writer.writeUInt8(JsonType::Bool);
+	m_writer.writeUInt8(value ? 1 : 0);
 	return true;
 }
 
 //------------------------------------------------------------------------------
-bool JsonDOMHandler::OnDouble(double value)
+bool JsonDOMHandler::onDouble(double value)
 {
-	m_writer.WriteUInt8(JsonType::Double);
-	m_writer.WriteDouble(value);
+	m_writer.writeUInt8(JsonType::Double);
+	m_writer.writeDouble(value);
 	return true;
 }
 
 //------------------------------------------------------------------------------
-bool JsonDOMHandler::OnString(const TCHAR* str, int len)
+bool JsonDOMHandler::onString(const TCHAR* str, int len)
 {
-	m_writer.WriteUInt8(JsonType::String);
-	m_writer.WriteInt32(len);
-	m_writer.Write(str, sizeof(TCHAR) * len);
+	m_writer.writeUInt8(JsonType::String);
+	m_writer.writeInt32(len);
+	m_writer.write(str, sizeof(TCHAR) * len);
 	return true;
 }
 
 //------------------------------------------------------------------------------
-bool JsonDOMHandler::OnStartArray()
+bool JsonDOMHandler::onStartArray()
 {
-	m_writer.WriteUInt8(JsonType::Array);
-	m_startIndexStack.Push((size_t)m_writer.GetPosition());	// 現在位置を Array の開始点として覚えておく
-	m_writer.WriteUInt32(0);						// 要素数 (ダミー)
+	m_writer.writeUInt8(JsonType::Array);
+	m_startIndexStack.push((size_t)m_writer.getPosition());	// 現在位置を Array の開始点として覚えておく
+	m_writer.writeUInt32(0);						// 要素数 (ダミー)
 	return true;
 }
 
 //------------------------------------------------------------------------------
-bool JsonDOMHandler::OnEndArray(int elementCount)
+bool JsonDOMHandler::onEndArray(int elementCount)
 {
 	size_t index;
-	m_startIndexStack.Pop(&index);
+	m_startIndexStack.pop(&index);
 
-	size_t curPos = (size_t)m_writer.GetPosition();
-	m_writer.Seek(index, SeekOrigin_Begin);
-	m_writer.WriteUInt32(elementCount);				// ダミーとして確保していた場所に要素数を書く
-	m_writer.Seek(curPos, SeekOrigin_Begin);
+	size_t curPos = (size_t)m_writer.getPosition();
+	m_writer.seek(index, SeekOrigin_Begin);
+	m_writer.writeUInt32(elementCount);				// ダミーとして確保していた場所に要素数を書く
+	m_writer.seek(curPos, SeekOrigin_Begin);
 	return true;
 }
 
 //------------------------------------------------------------------------------
-bool JsonDOMHandler::OnStartObject()
+bool JsonDOMHandler::onStartObject()
 {
-	m_writer.WriteUInt8(JsonType::Object);
-	m_startIndexStack.Push((size_t)m_writer.GetPosition());	// 現在位置を Object の開始点として覚えておく
-	m_writer.WriteUInt32(0);						// 要素数 (ダミー)
+	m_writer.writeUInt8(JsonType::Object);
+	m_startIndexStack.push((size_t)m_writer.getPosition());	// 現在位置を Object の開始点として覚えておく
+	m_writer.writeUInt32(0);						// 要素数 (ダミー)
 	return true;
 }
 
 //------------------------------------------------------------------------------
-bool JsonDOMHandler::OnKey(const TCHAR* str, int len)
+bool JsonDOMHandler::onKey(const TCHAR* str, int len)
 {
-	m_writer.WriteUInt8(0x80 | JsonType::String);		// キーであることを示すために最上位 bit を立てておく
-	m_writer.WriteInt32(len);
-	m_writer.Write(str, sizeof(TCHAR) * len);
+	m_writer.writeUInt8(0x80 | JsonType::String);		// キーであることを示すために最上位 bit を立てておく
+	m_writer.writeInt32(len);
+	m_writer.write(str, sizeof(TCHAR) * len);
 	return true;
 }
 
 //------------------------------------------------------------------------------
-bool JsonDOMHandler::OnEndObject(int memberCount)
+bool JsonDOMHandler::onEndObject(int memberCount)
 {
 	size_t index;
-	m_startIndexStack.Pop(&index);
+	m_startIndexStack.pop(&index);
 
-	size_t curPos = (size_t)m_writer.GetPosition();
-	m_writer.Seek(index, SeekOrigin_Begin);
-	m_writer.WriteUInt32(memberCount);				// ダミーとして確保していた場所に要素数を書く
-	m_writer.Seek(curPos, SeekOrigin_Begin);
+	size_t curPos = (size_t)m_writer.getPosition();
+	m_writer.seek(index, SeekOrigin_Begin);
+	m_writer.writeUInt32(memberCount);				// ダミーとして確保していた場所に要素数を書く
+	m_writer.seek(curPos, SeekOrigin_Begin);
 	return true;
 }
 
 //------------------------------------------------------------------------------
-void JsonDOMHandler::Build()
+void JsonDOMHandler::build()
 {
-	m_valueRawData.Seek(0, SeekOrigin_Begin);
+	m_valueRawData.seek(0, SeekOrigin_Begin);
 	BinaryReader reader(&m_valueRawData);
-	BuildValue(&reader, m_document);
+	buildValue(&reader, m_document);
 }
 
 //------------------------------------------------------------------------------
-void JsonDOMHandler::BuildValue(BinaryReader* reader, JsonValue* v)
+void JsonDOMHandler::buildValue(BinaryReader* reader, JsonValue* v)
 {
-	uint8_t type = reader->ReadUInt8();
+	uint8_t type = reader->readUInt8();
 	switch (type)
 	{
 	case JsonType::Null:
-		v->SetNull();
+		v->setNull();
 		break;
 	case JsonType::Bool:
-		v->SetBool(reader->ReadUInt8() != 0);
+		v->setBool(reader->readUInt8() != 0);
 		break;
 	case JsonType::Double:
-		v->SetDouble(reader->ReadDouble());
+		v->setDouble(reader->readDouble());
 		break;
 	case JsonType::String:
 	{
-		int len = reader->ReadInt32();
-		v->SetString(String((TCHAR*)m_valueRawData.GetBuffer((size_t)m_valueRawData.GetPosition()), len));	// 生メモリから文字列を生成
-		m_valueRawData.Seek(len * sizeof(TCHAR), SeekOrigin_Current);								// 直接メモリを読んだので自分で進める
+		int len = reader->readInt32();
+		v->setString(String((TCHAR*)m_valueRawData.getBuffer((size_t)m_valueRawData.getPosition()), len));	// 生メモリから文字列を生成
+		m_valueRawData.seek(len * sizeof(TCHAR), SeekOrigin_Current);								// 直接メモリを読んだので自分で進める
 		break;
 	}
 	case JsonType::Array:
-		v->SetArray();
-		v->ResizeValueList(reader->ReadUInt32());	// 次の uint32 が要素数
-		for (int i = 0; i < v->GetItemCount(); i++)
+		v->setArray();
+		v->resizeValueList(reader->readUInt32());	// 次の uint32 が要素数
+		for (int i = 0; i < v->getItemCount(); i++)
 		{
-			BuildValue(reader, &v->GetAtValue(i));
+			buildValue(reader, &v->getAtValue(i));
 		}
 		break;
 	case JsonType::Object:
 	{
-		v->SetObject();
-		v->ResizeMemberList(reader->ReadUInt32());	// 次の uint32 が要素数
-		for (int i = 0; i < v->GetMemberCount(); i++)
+		v->setObject();
+		v->resizeMemberList(reader->readUInt32());	// 次の uint32 が要素数
+		for (int i = 0; i < v->getMemberCount(); i++)
 		{
-			BuildMember(reader, &v->GetAtMember(i));
+			buildMember(reader, &v->getAtMember(i));
 		}
 		break;
 	}
@@ -192,20 +192,20 @@ void JsonDOMHandler::BuildValue(BinaryReader* reader, JsonValue* v)
 }
 
 //------------------------------------------------------------------------------
-void JsonDOMHandler::BuildMember(BinaryReader* reader, JsonMember* m)
+void JsonDOMHandler::buildMember(BinaryReader* reader, JsonMember* m)
 {
 	//LN_ASSERT(reader->ReadUInt8() == (0x80 | JsonType::String));	// 種別は必ず Key であるはず
 
 	// キー文字列
-	uint8_t type = reader->ReadUInt8();
+	uint8_t type = reader->readUInt8();
 	assert(type == (0x80 | JsonType::String));	// 種別は必ず Key であるはず
 
-	int len = reader->ReadInt32();
-	m->Name = String((TCHAR*)m_valueRawData.GetBuffer((size_t)m_valueRawData.GetPosition()), len);	// 生メモリから文字列を生成
-	m_valueRawData.Seek(len * sizeof(TCHAR), SeekOrigin_Current);							// 直接メモリを読んだので自分で進める
+	int len = reader->readInt32();
+	m->Name = String((TCHAR*)m_valueRawData.getBuffer((size_t)m_valueRawData.getPosition()), len);	// 生メモリから文字列を生成
+	m_valueRawData.seek(len * sizeof(TCHAR), SeekOrigin_Current);							// 直接メモリを読んだので自分で進める
 
 	// 値
-	BuildValue(reader, &m->Value);
+	buildValue(reader, &m->Value);
 }
 
 } // namespace tr

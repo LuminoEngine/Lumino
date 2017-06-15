@@ -18,9 +18,9 @@ LN_NAMESPACE_SCENE_BEGIN
 //
 //public:
 //
-//	virtual void DrawLine(const Vector3& from, const Vector3& to, const Vector3& fromColor, const Vector3& toColor) override
+//	virtual void drawLine(const Vector3& from, const Vector3& to, const Vector3& fromColor, const Vector3& toColor) override
 //	{
-//		m_context->DrawLinePrimitive(from, Color(fromColor, 1.0f), to, Color(toColor, 1.0f));
+//		m_context->drawLinePrimitive(from, Color(fromColor, 1.0f), to, Color(toColor, 1.0f));
 //		a++;
 //	}
 //

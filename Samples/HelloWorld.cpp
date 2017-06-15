@@ -3,7 +3,7 @@ using namespace ln;
 
 void Main_HelloWorld()
 {
-	while (Engine::Update())
+	while (Engine::update())
 	{
 
 	}

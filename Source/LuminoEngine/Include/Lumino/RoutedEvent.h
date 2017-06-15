@@ -91,7 +91,7 @@ class StaticTypedRoutedEvent : public RoutedEvent
 {
 public:
 	//typedef void (TClass::*CallEventHandler)(CoreObject* sender, TEventArgs*);
-	//typedef void (TClass::*OnEvent)(TEventArgs*);
+	//typedef void (TClass::*onEvent)(TEventArgs*);
 
 	// Event を直接参照してはならない。このクラスは Property と同じく、複数の UIElement で共有される。状態を持ってはならない。
 	// なので、イベントを Raise する関数ポインタを参照する。
@@ -99,11 +99,11 @@ public:
 	typedef void(*RaiseEventFunc)(CoreObject* obj, RoutedEventArgs* e);
 
 public:
-	//TypedRoutedEvent(const String& name, RaiseEvent raiseEvent)
+	//TypedRoutedEvent(const String& name, raiseEvent raiseEvent)
 	//	: m_name(name)
 	//	, m_raiseEvent(raiseEvent)
 	//{}
-	//StaticTypedRoutedEvent(const String& name/*, OnEvent onEvent*/, std::function< void(TOwnerClass*, /*CoreObject*, */TEventArgs*) > callEventHandler/*CallEventHandler callEventHandler*/)
+	//StaticTypedRoutedEvent(const String& name/*, onEvent onEvent*/, std::function< void(TOwnerClass*, /*CoreObject*, */TEventArgs*) > callEventHandler/*CallEventHandler callEventHandler*/)
 	StaticTypedRoutedEvent(const String& name, RaiseEventFunc raiseEvent)
 		: m_name(name)
 		, m_raiseEvent(raiseEvent)
@@ -111,13 +111,13 @@ public:
 		//, m_callEventHandler(callEventHandler)
 		//, m_onEvent(onEvent)
 	{
-		//TOwnerClass::GetClassTypeInfo()->RegisterRoutedEvent(this);
+		//TOwnerClass::getClassTypeInfo()->RegisterRoutedEvent(this);
 	}
 
 
 	virtual ~StaticTypedRoutedEvent() {}
 
-	//virtual TypeInfo* GetOwnerClassTypeInfo() const { return TOwnerClass::GetClassTypeInfo(); }
+	//virtual TypeInfo* GetOwnerClassTypeInfo() const { return TOwnerClass::getClassTypeInfo(); }
 
 	virtual const String& GetName() const { return m_name; }	// TODO: virtual にする必要ないかも
 
@@ -151,7 +151,7 @@ private:
 	RaiseEventFunc	m_raiseEvent;
 	//CallEventHandler	m_callEventHandler;
 	//std::function< void(TOwnerClass*, /*CoreObject*, */TEventArgs*) >	m_callEventHandler;
-	//OnEvent	m_onEvent;
+	//onEvent	m_onEvent;
 };
 
 //template<typename TValue>
@@ -177,7 +177,7 @@ private:
 //
 //#define LN_ROUTED_EVENT_IMPLEMENT(ownerClass, eventArgs, eventVar, name, slot) \
 //	StaticTypedRoutedEvent	ownerClass::_init_##eventVar(_T(name), &ownerClass::_raise_##eventVar); \
-//	const RoutedEvent*		ownerClass::eventVar = StaticTypedRoutedEvent::RegisterRoutedEvent(ownerClass::GetClassTypeInfo(), &_init_##eventVar); \
+//	const RoutedEvent*		ownerClass::eventVar = StaticTypedRoutedEvent::RegisterRoutedEvent(ownerClass::getClassTypeInfo(), &_init_##eventVar); \
 //	void					ownerClass::_raise_##eventVar(CoreObject* obj, RoutedEventArgs* e) { static_cast<ownerClass*>(obj)->EmitEventSlot(static_cast<ownerClass*>(obj)->slot, static_cast<eventArgs*>(e)); }
 	
 

@@ -22,7 +22,7 @@ public:
 	virtual ~ProfilerRenderer();
 
 public:
-	void Render(const Vector2& viewSize);
+	void render(const Vector2& viewSize);
 
 private:
 #if 0

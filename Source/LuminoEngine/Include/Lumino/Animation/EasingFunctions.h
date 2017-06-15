@@ -14,14 +14,14 @@ class EasingFunctions
 public:
 	/// simple linear tweening - no easing, no acceleration 
 	template<typename TValue, typename TTime>
-	static TValue LinearTween(TTime t, TValue b, TValue c, TTime d)
+	static TValue linearTween(TTime t, TValue b, TValue c, TTime d)
 	{
 		return c * (t / d) + b;
 	};
 
 	/// quadratic easing in - accelerating from zero velocity 
 	template<typename TValue, typename TTime>
-	static TValue EaseInQuad(TTime t, TValue b, TValue c, TTime d)
+	static TValue easeInQuad(TTime t, TValue b, TValue c, TTime d)
 	{
 		t /= d;
 		return c*t*t + b;
@@ -29,7 +29,7 @@ public:
 
 	/// quadratic easing out - decelerating to zero velocity
 	template<typename TValue, typename TTime>
-	static TValue EaseOutQuad(TTime t, TValue b, TValue c, TTime d)
+	static TValue easeOutQuad(TTime t, TValue b, TValue c, TTime d)
 	{
 		t /= d;
 		return -c * t*(t - 2) + b;
@@ -37,7 +37,7 @@ public:
 
 	/// quadratic easing in/out - acceleration until halfway, then deceleration
 	template<typename TValue, typename TTime>
-	static TValue EaseInOutQuad(TTime t, TValue b, TValue c, TTime d)
+	static TValue easeInOutQuad(TTime t, TValue b, TValue c, TTime d)
 	{
 		t /= d / 2;
 		if (t < 1) return c / 2 * t*t + b;
@@ -47,7 +47,7 @@ public:
 
 	/// cubic easing in - accelerating from zero velocity 
 	template<typename TValue, typename TTime>
-	static TValue EaseInCubic(TTime t, TValue b, TValue c, TTime d)
+	static TValue easeInCubic(TTime t, TValue b, TValue c, TTime d)
 	{
 		t /= d;
 		return c*t*t*t + b;
@@ -55,7 +55,7 @@ public:
 
 	/// cubic easing out - decelerating to zero velocity 
 	template<typename TValue, typename TTime>
-	static TValue EaseOutCubic(TTime t, TValue b, TValue c, TTime d)
+	static TValue easeOutCubic(TTime t, TValue b, TValue c, TTime d)
 	{
 		t /= d;
 		t--;
@@ -64,7 +64,7 @@ public:
 
 	/// cubic easing in/out - acceleration until halfway, then deceleration 
 	template<typename TValue, typename TTime>
-	static TValue EaseInOutCubic(TTime t, TValue b, TValue c, TTime d)
+	static TValue easeInOutCubic(TTime t, TValue b, TValue c, TTime d)
 	{
 		t /= d / 2;
 		if (t < 1) return c / 2 * t*t*t + b;
@@ -74,7 +74,7 @@ public:
 
 	/// quartic easing in - accelerating from zero velocity 
 	template<typename TValue, typename TTime>
-	static TValue EaseInQuart(TTime t, TValue b, TValue c, TTime d)
+	static TValue easeInQuart(TTime t, TValue b, TValue c, TTime d)
 	{
 		t /= d;
 		return c*t*t*t*t + b;
@@ -82,7 +82,7 @@ public:
 
 	/// quartic easing out - decelerating to zero velocity 
 	template<typename TValue, typename TTime>
-	static TValue EaseOutQuart(TTime t, TValue b, TValue c, TTime d)
+	static TValue easeOutQuart(TTime t, TValue b, TValue c, TTime d)
 	{
 		t /= d;
 		t--;
@@ -91,7 +91,7 @@ public:
 
 	/// quartic easing in/out - acceleration until halfway, then deceleration
 	template<typename TValue, typename TTime>
-	static TValue EaseInOutQuart(TTime t, TValue b, TValue c, TTime d)
+	static TValue easeInOutQuart(TTime t, TValue b, TValue c, TTime d)
 	{
 		t /= d / 2;
 		if (t < 1) return c / 2 * t*t*t*t + b;
@@ -101,7 +101,7 @@ public:
 
 	/// quintic easing in - accelerating from zero velocity 
 	template<typename TValue, typename TTime>
-	static TValue EaseInQuint(TTime t, TValue b, TValue c, TTime d)
+	static TValue easeInQuint(TTime t, TValue b, TValue c, TTime d)
 	{
 		t /= d;
 		return c*t*t*t*t*t + b;
@@ -109,7 +109,7 @@ public:
 
 	/// quintic easing out - decelerating to zero velocity
 	template<typename TValue, typename TTime>
-	static TValue EaseOutQuint(TTime t, TValue b, TValue c, TTime d)
+	static TValue easeOutQuint(TTime t, TValue b, TValue c, TTime d)
 	{
 		t /= d;
 		t--;
@@ -118,7 +118,7 @@ public:
 
 	/// quintic easing in/out - acceleration until halfway, then deceleration 
 	template<typename TValue, typename TTime>
-	static TValue EaseInOutQuint(TTime t, TValue b, TValue c, TTime d)
+	static TValue easeInOutQuint(TTime t, TValue b, TValue c, TTime d)
 	{
 		t /= d / 2;
 		if (t < 1) return c / 2 * t*t*t*t*t + b;
@@ -128,42 +128,42 @@ public:
 
 	/// sinusoidal easing in - accelerating from zero velocity 
 	template<typename TValue, typename TTime>
-	static TValue EaseInSine(TTime t, TValue b, TValue c, TTime d)
+	static TValue easeInSine(TTime t, TValue b, TValue c, TTime d)
 	{
 		return -c * std::cos(t / d * ((3.14159265358979323846f) / 2.0f)) + c + b;
 	};
 
 	/// sinusoidal easing out - decelerating to zero velocity
 	template<typename TValue, typename TTime>
-	static TValue EaseOutSine(TTime t, TValue b, TValue c, TTime d)
+	static TValue easeOutSine(TTime t, TValue b, TValue c, TTime d)
 	{
 		return c * std::sin(t / d * ((3.14159265358979323846f) / 2.0f)) + b;
 	};
 
 	/// sinusoidal easing in/out - accelerating until halfway, then decelerating
 	template<typename TValue, typename TTime>
-	static TValue EaseInOutSine(TTime t, TValue b, TValue c, TTime d)
+	static TValue easeInOutSine(TTime t, TValue b, TValue c, TTime d)
 	{
 		return -c / 2.0 * (std::cos((3.14159265358979323846f) *t / d) - 1) + b;
 	};
 
 	/// exponential easing in - accelerating from zero velocity 
 	template<typename TValue, typename TTime>
-	static TValue EaseInExpo(TTime t, TValue b, TValue c, TTime d)
+	static TValue easeInExpo(TTime t, TValue b, TValue c, TTime d)
 	{
 		return c * std::pow(2.0, 10.0 * (t / d - 1)) + b;
 	};
 
 	/// exponential easing out - decelerating to zero velocity
 	template<typename TValue, typename TTime>
-	static TValue EaseOutExpo(TTime t, TValue b, TValue c, TTime d)
+	static TValue easeOutExpo(TTime t, TValue b, TValue c, TTime d)
 	{
 		return c * (-std::pow(2, -10 * t / d) + 1) + b;
 	};
 
 	/// exponential easing in/out - accelerating until halfway, then decelerating 
 	template<typename TValue, typename TTime>
-	static TValue EaseInOutExpo(TTime t, TValue b, TValue c, TTime d)
+	static TValue easeInOutExpo(TTime t, TValue b, TValue c, TTime d)
 	{
 		t /= d / 2;
 		if (t < 1) return c / 2 * std::pow(2, 10 * (t - 1)) + b;
@@ -173,7 +173,7 @@ public:
 
 	/// circular easing in - accelerating from zero velocity
 	template<typename TValue, typename TTime>
-	static TValue EaseInCirc(TTime t, TValue b, TValue c, TTime d)
+	static TValue easeInCirc(TTime t, TValue b, TValue c, TTime d)
 	{
 		t /= d;
 		return -c * (std::sqrt(1 - t*t) - 1) + b;
@@ -181,7 +181,7 @@ public:
 
 	/// circular easing out - decelerating to zero velocity
 	template<typename TValue, typename TTime>
-	static TValue EaseOutCirc(TTime t, TValue b, TValue c, TTime d)
+	static TValue easeOutCirc(TTime t, TValue b, TValue c, TTime d)
 	{
 		t /= d;
 		t--;
@@ -190,7 +190,7 @@ public:
 
 	/// circular easing in/out - acceleration until halfway, then deceleration
 	template<typename TValue, typename TTime>
-	static TValue EaseInOutCirc(TTime t, TValue b, TValue c, TTime d)
+	static TValue easeInOutCirc(TTime t, TValue b, TValue c, TTime d)
 	{
 		t /= d / 2;
 		if (t < 1) return -c / 2 * (std::sqrt(1 - t*t) - 1) + b;

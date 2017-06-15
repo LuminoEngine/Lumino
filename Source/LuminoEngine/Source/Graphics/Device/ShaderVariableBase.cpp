@@ -23,7 +23,7 @@ ShaderVariableBase::~ShaderVariableBase()
 }
 
 //------------------------------------------------------------------------------
-void ShaderVariableBase::Initialize(ShaderVariableTypeDesc desc, const String& name, const String& semanticName)
+void ShaderVariableBase::initialize(ShaderVariableTypeDesc desc, const String& name, const String& semanticName)
 {
 	m_desc = desc;
 	m_name = name;
@@ -32,63 +32,63 @@ void ShaderVariableBase::Initialize(ShaderVariableTypeDesc desc, const String& n
 }
 
 //------------------------------------------------------------------------------
-void ShaderVariableBase::MakeInitialValue()
+void ShaderVariableBase::makeInitialValue()
 {
 	switch (m_desc.Type)
 	{
 		case ShaderVariableType_Bool:
 		{
-			SetBool(false);
+			setBool(false);
 			break;
 		}
 		case ShaderVariableType_BoolArray:
 		{
-			SetBoolArray(nullptr, m_desc.Elements);
+			setBoolArray(nullptr, m_desc.Elements);
 			break;
 		}
 		case ShaderVariableType_Int:
 		{
-			SetInt(0);
+			setInt(0);
 			break;
 		}
 		case ShaderVariableType_Float:
 		{
-			SetFloat(0.0f);
+			setFloat(0.0f);
 			break;
 		}
 		case ShaderVariableType_FloatArray:
 		{
-			SetFloatArray(nullptr, m_desc.Elements);
+			setFloatArray(nullptr, m_desc.Elements);
 			break;
 		}
 		case ShaderVariableType_Vector:
 		{
-			SetVector(Vector4::Zero);
+			setVector(Vector4::Zero);
 			break;
 		}
 		case ShaderVariableType_VectorArray:
 		{
-			SetVectorArray(nullptr, m_desc.Elements);
+			setVectorArray(nullptr, m_desc.Elements);
 			break;
 		}
 		case ShaderVariableType_Matrix:
 		{
-			SetMatrix(Matrix::Identity);
+			setMatrix(Matrix::Identity);
 			break;
 		}
 		case ShaderVariableType_MatrixArray:
 		{
-			SetMatrixArray(nullptr, m_desc.Elements);
+			setMatrixArray(nullptr, m_desc.Elements);
 			break;
 		}
 		case ShaderVariableType_DeviceTexture:
 		{
-			SetTexture(nullptr);
+			setTexture(nullptr);
 			break;
 		}
 		case ShaderVariableType_String:
 		{
-			SetString(String::GetEmpty());
+			setString(String::getEmpty());
 			break;
 		}
 		default:
@@ -98,86 +98,86 @@ void ShaderVariableBase::MakeInitialValue()
 }
 
 //------------------------------------------------------------------------------
-void ShaderVariableBase::SetBool(bool value)
+void ShaderVariableBase::setBool(bool value)
 {
-	m_value.SetBool(value);
+	m_value.setBool(value);
 	m_modifid = true;
 }
 
 //------------------------------------------------------------------------------
-void ShaderVariableBase::SetBoolArray(const bool* values, int count)
+void ShaderVariableBase::setBoolArray(const bool* values, int count)
 {
-	m_value.SetBoolArray(values, count);
+	m_value.setBoolArray(values, count);
 	m_modifid = true;
 }
 
 //------------------------------------------------------------------------------
-void ShaderVariableBase::SetInt(int value)
+void ShaderVariableBase::setInt(int value)
 {
-	m_value.SetInt(value);
+	m_value.setInt(value);
 	m_modifid = true;
 }
 
 //------------------------------------------------------------------------------
-void ShaderVariableBase::SetFloat(float value)
+void ShaderVariableBase::setFloat(float value)
 {
-	m_value.SetFloat(value);
+	m_value.setFloat(value);
 	m_modifid = true;
 }
 
 //------------------------------------------------------------------------------
-void ShaderVariableBase::SetFloatArray(const float* values, int count)
+void ShaderVariableBase::setFloatArray(const float* values, int count)
 {
-	m_value.SetFloatArray(values, count);
+	m_value.setFloatArray(values, count);
 	m_modifid = true;
 }
 
 //------------------------------------------------------------------------------
-void ShaderVariableBase::SetVector(const Vector4& vec)
+void ShaderVariableBase::setVector(const Vector4& vec)
 {
-	m_value.SetVector(vec);
+	m_value.setVector(vec);
 	m_modifid = true;
 }
 
 //------------------------------------------------------------------------------
-void ShaderVariableBase::SetVectorArray(const Vector4* vectors, int count)
+void ShaderVariableBase::setVectorArray(const Vector4* vectors, int count)
 {
-	m_value.SetVectorArray(vectors, count);
+	m_value.setVectorArray(vectors, count);
 	m_modifid = true;
 }
 
 //------------------------------------------------------------------------------
-void ShaderVariableBase::SetMatrix(const Matrix& matrix)
+void ShaderVariableBase::setMatrix(const Matrix& matrix)
 {
-	m_value.SetMatrix(matrix);
+	m_value.setMatrix(matrix);
 	m_modifid = true;
 }
 
 //------------------------------------------------------------------------------
-void ShaderVariableBase::SetMatrixArray(const Matrix* matrices, int count)
+void ShaderVariableBase::setMatrixArray(const Matrix* matrices, int count)
 {
-	m_value.SetMatrixArray(matrices, count);
+	m_value.setMatrixArray(matrices, count);
 	m_modifid = true;
 }
 
 //------------------------------------------------------------------------------
-void ShaderVariableBase::SetTexture(ITexture* texture)
+void ShaderVariableBase::setTexture(ITexture* texture)
 {
-	m_value.SetDeviceTexture(texture);
+	m_value.setDeviceTexture(texture);
 	m_modifid = true;
 }
 
 //------------------------------------------------------------------------------
-void ShaderVariableBase::SetString(const char* str)
+void ShaderVariableBase::setString(const char* str)
 {
-	m_value.SetString(str);
+	m_value.setString(str);
 	m_modifid = true;
 }
 
 //------------------------------------------------------------------------------
-void ShaderVariableBase::SetString(const String& str)
+void ShaderVariableBase::setString(const String& str)
 {
-	m_value.SetString(str);
+	m_value.setString(str);
 	m_modifid = true;
 }
 

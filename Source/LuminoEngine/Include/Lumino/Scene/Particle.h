@@ -54,12 +54,12 @@ struct ParticleData
 
 	bool		m_isTrailPoint = false;
 
-	bool IsActive() const { return spawnTime >= 0.0f && endTime >= 0.0f; }
+	bool isActive() const { return spawnTime >= 0.0f && endTime >= 0.0f; }
 	bool IsSleep() const { return endTime <= lastTime; }
 
-	// Active かつ Sleep 状態はありえる。これは、ループ再生OFFで、既に再生が終わっている ParticleData を示す。
+	// Active かつ sleep 状態はありえる。これは、ループ再生OFFで、既に再生が終わっている ParticleData を示す。
 
-	void MakeTrailPointData(const ParticleData& src, float currentTime, float trailTime);
+	void makeTrailPointData(const ParticleData& src, float currentTime, float trailTime);
 };
 
 struct SpriteParticleModelInstance
@@ -77,14 +77,14 @@ struct SpriteParticleModelInstance
 	int							m_inactiveFindIndex;
 	int							m_mayActiveCount;
 
-	//virtual void DrawSubset(InternalContext* context) override;
+	//virtual void drawSubset(InternalContext* context) override;
 
 	// 1フレーム分の更新開始。最初に時間を確定させ、更新範囲を決める必要がある。
-	void BeginUpdate(float deltaTime);
+	void beginUpdate(float deltaTime);
 
-	detail::ParticleData* GetNextFreeParticleData();
+	detail::ParticleData* getNextFreeParticleData();
 
-	void SpawnTrailPoint(detail::ParticleData* sourceData);
+	void spawnTrailPoint(detail::ParticleData* sourceData);
 };
 
 } // namespace detail
@@ -150,57 +150,57 @@ class SpriteParticleModel
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	static SpriteParticleModelPtr Create();
+	static SpriteParticleModelPtr create();
 
-	void SetMaterial(Material* material);
-	Material* GetMaterial() const;
+	void setMaterial(Material* material);
+	Material* getMaterial() const;
 
 	void SetSubParticle(SpriteParticleModel* particle);
 
 	/** 同時に表示できるパーティクルの最大数を設定します。(default: 100) */
-	void SetMaxParticles(int count) { m_maxParticles = count; }
+	void setMaxParticles(int count) { m_maxParticles = count; }
 
 	/** 1秒間に放出するパーティクルの数を設定します。(default: 1) */
-	void SetSpawnRate(float rate) { m_spawnRate = rate; }
+	void setSpawnRate(float rate) { m_spawnRate = rate; }
 
 	/** パーティクルの生存時間を設定します。(default: 1.0) */
-	void SetLifeTime(float time) { m_minLifeTime = m_maxLifeTime = time; }
+	void setLifeTime(float time) { m_minLifeTime = m_maxLifeTime = time; }
 
-	void SetAutoFadeTime(float fadeInRatio, float fadeOutRatio) { m_fadeInRatio = fadeInRatio; m_fadeOutRatio = fadeOutRatio; }
+	void setAutoFadeTime(float fadeInRatio, float fadeOutRatio) { m_fadeInRatio = fadeInRatio; m_fadeOutRatio = fadeOutRatio; }
 
 	// 0.0f～1.0f
-	void SetRandomBaseValueRange(float minValue, float maxValue) { m_minRandomBaseValue = minValue; m_maxRandomBaseValue = maxValue; }
+	void setRandomBaseValueRange(float minValue, float maxValue) { m_minRandomBaseValue = minValue; m_maxRandomBaseValue = maxValue; }
 
 	//void SetPositionRange(const Vector3& minValue, const Vector3& maxValue, ParticleRandomSource source = ParticleRandomSource::Self) { m_minPosition = minValue; m_maxPosition = maxValue; m_positionRandomSource = source; }
 
-	//void SetVelocity(const Vector3& value) { m_minVelocity = m_maxVelocity = value; }
+	//void setVelocity(const Vector3& value) { m_minVelocity = m_maxVelocity = value; }
 	//void SetAccel(const Vector3& value) { m_minAccel = m_maxAccel = value; }
 
-	void SetSize(float value) { m_minSize = value; m_maxSize = value; }
+	void setSize(float value) { m_minSize = value; m_maxSize = value; }
 
-	void SetSize(float minValue, float maxValue, ParticleRandomSource source = ParticleRandomSource::Self) { m_minSize = minValue; m_maxSize = maxValue; m_sizeRandomSource = source; }
+	void setSize(float minValue, float maxValue, ParticleRandomSource source = ParticleRandomSource::Self) { m_minSize = minValue; m_maxSize = maxValue; m_sizeRandomSource = source; }
 
 	/** パーティクル生成時に使用する乱数シードを設定します。(default: 現在の時間値) */
-	void SetRandomSeed(int seed) { m_rand.SetSeed(seed); }
+	void setRandomSeed(int seed) { m_rand.setSeed(seed); }
 
 protected:
 	SpriteParticleModel();
 	virtual ~SpriteParticleModel();
-	void Initialize(detail::GraphicsManager* manager);
+	void initialize(detail::GraphicsManager* manager);
 
 public: // TODO
-	void Commit();
-	RefPtr<detail::SpriteParticleModelInstance> CreateInstane();
-	void UpdateInstance(detail::SpriteParticleModelInstance* instance, float deltaTime, const Matrix& emitterTransform);
-	//detail::ParticleData* GetNextFreeParticleData(float emitterTime);
-	void SpawnParticle(const Matrix& emitterTransform, detail::ParticleData* data, float spawnTime);
-	void SimulateOneParticle(detail::ParticleData* data, double time, const Vector3& viewPosition, const Vector3& viewDirection, detail::SpriteParticleModelInstance* instance);
-	void Render(DrawList* context, detail::SpriteParticleModelInstance* instance, const Matrix& emitterTransform, const Vector3& viewPosition, const Vector3& viewDirection, const Matrix& viewInv, Material* material);
+	void commit();
+	RefPtr<detail::SpriteParticleModelInstance> createInstane();
+	void updateInstance(detail::SpriteParticleModelInstance* instance, float deltaTime, const Matrix& emitterTransform);
+	//detail::ParticleData* getNextFreeParticleData(float emitterTime);
+	void spawnParticle(const Matrix& emitterTransform, detail::ParticleData* data, float spawnTime);
+	void simulateOneParticle(detail::ParticleData* data, double time, const Vector3& viewPosition, const Vector3& viewDirection, detail::SpriteParticleModelInstance* instance);
+	void render(DrawList* context, detail::SpriteParticleModelInstance* instance, const Matrix& emitterTransform, const Vector3& viewPosition, const Vector3& viewDirection, const Matrix& viewInv, Material* material);
 
 public: // TODO
-	float MakeRandom(detail::ParticleData* data, float minValue, float maxValue, ParticleRandomSource source);
-	float MakeRandom(detail::ParticleData* data, const RadomRangeValue<float>& value);
-	Vector3 MakeRandom(detail::ParticleData* data, const RadomRangeValue<Vector3>& value);
+	float makeRandom(detail::ParticleData* data, float minValue, float maxValue, ParticleRandomSource source);
+	float makeRandom(detail::ParticleData* data, const RadomRangeValue<float>& value);
+	Vector3 makeRandom(detail::ParticleData* data, const RadomRangeValue<Vector3>& value);
 	
 	detail::GraphicsManager*	m_manager;
 	RefPtr<MeshResource>		m_mesh;		// TODO: このあたりは Manager に置いて、全体で共有した方がメモリ効率よいかも？
@@ -338,10 +338,10 @@ class ParticleEmitterComponent
 protected:
 	ParticleEmitterComponent();
 	virtual ~ParticleEmitterComponent();
-	void Initialize(SpriteParticleModel* model);
+	void initialize(SpriteParticleModel* model);
 
-	virtual void OnUpdateFrame(float deltaTime) override;
-	virtual void OnRender2(DrawList* renderer) override;
+	virtual void onUpdateFrame(float deltaTime) override;
+	virtual void onRender2(DrawList* renderer) override;
 
 private:
 	RefPtr<SpriteParticleModel>					m_model;
@@ -355,7 +355,7 @@ class ParticleEmitter3DComponent
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	static RefPtr<ParticleEmitter3DComponent> Create(SpriteParticleModel* model);
+	static RefPtr<ParticleEmitter3DComponent> create(SpriteParticleModel* model);
 
 protected:
 	ParticleEmitter3DComponent();

@@ -37,7 +37,7 @@ BtShapeManager::~BtShapeManager()
 }
 
 //------------------------------------------------------------------------------
-void BtShapeManager::AddShape(CollisionShape* shape)
+void BtShapeManager::addShape(CollisionShape* shape)
 {
 	if (LN_CHECK_ARG(shape != nullptr)) return;
 
@@ -55,27 +55,27 @@ void BtShapeManager::AddShape(CollisionShape* shape)
 }
 
 //------------------------------------------------------------------------------
-bool BtShapeManager::IsEmpty() const
+bool BtShapeManager::isEmpty() const
 {
 	return m_collisionShape == nullptr;
 }
 
 //------------------------------------------------------------------------------
-btCollisionShape* BtShapeManager::GetBtCollisionShape()
+btCollisionShape* BtShapeManager::getBtCollisionShape()
 {
 	if (m_dirty)
 	{
-		Refresh();
+		refresh();
 		m_dirty = false;
 	}
 	return m_activeShape;
 }
 
 //------------------------------------------------------------------------------
-void BtShapeManager::Refresh()
+void BtShapeManager::refresh()
 {
 	btCollisionShape* shape;
-	if (m_collisionShape->GetCenter() != Vector3::Zero)
+	if (m_collisionShape->getCenter() != Vector3::Zero)
 	{
 		if (m_btCompoundShape == nullptr)
 		{
@@ -91,14 +91,14 @@ void BtShapeManager::Refresh()
 
 		btTransform t;
 		t.setBasis(btMatrix3x3::getIdentity());
-		t.setOrigin(BulletUtil::LNVector3ToBtVector3(m_collisionShape->GetCenter()));
-		m_btCompoundShape->addChildShape(t, m_collisionShape->GetBtCollisionShape());
+		t.setOrigin(BulletUtil::LNVector3ToBtVector3(m_collisionShape->getCenter()));
+		m_btCompoundShape->addChildShape(t, m_collisionShape->getBtCollisionShape());
 
 		shape = m_btCompoundShape;
 	}
 	else
 	{
-		shape = m_collisionShape->GetBtCollisionShape();
+		shape = m_collisionShape->getBtCollisionShape();
 	}
 
 	m_activeShape = shape;
@@ -135,10 +135,10 @@ public:
 			m_overlappingObjects.push_back(otherObject);
 
 			// 通知
-			if (m_owner->IsTrigger() && otherObject->getUserPointer() != nullptr)
+			if (m_owner->isTrigger() && otherObject->getUserPointer() != nullptr)
 			{
-				m_owner->m_contactObjects.Add(reinterpret_cast<PhysicsObject*>(otherObject->getUserPointer()));
-				m_owner->OnTriggerEnter(reinterpret_cast<PhysicsObject*>(otherObject->getUserPointer()));
+				m_owner->m_contactObjects.add(reinterpret_cast<PhysicsObject*>(otherObject->getUserPointer()));
+				m_owner->onTriggerEnter(reinterpret_cast<PhysicsObject*>(otherObject->getUserPointer()));
 			}
 		}
 	}
@@ -154,10 +154,10 @@ public:
 			m_overlappingObjects.pop_back();
 
 			// 通知
-			if (m_owner->IsTrigger() && otherObject->getUserPointer() != nullptr)
+			if (m_owner->isTrigger() && otherObject->getUserPointer() != nullptr)
 			{
-				m_owner->m_contactObjects.Remove(reinterpret_cast<PhysicsObject*>(otherObject->getUserPointer()));
-				m_owner->OnTriggerLeave(reinterpret_cast<PhysicsObject*>(otherObject->getUserPointer()));
+				m_owner->m_contactObjects.remove(reinterpret_cast<PhysicsObject*>(otherObject->getUserPointer()));
+				m_owner->onTriggerLeave(reinterpret_cast<PhysicsObject*>(otherObject->getUserPointer()));
 			}
 		}
 	}
@@ -169,11 +169,11 @@ public:
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(CollisionBody, PhysicsObject);
 
 //------------------------------------------------------------------------------
-RefPtr<CollisionBody> CollisionBody::Create(CollisionShape* shape)
+RefPtr<CollisionBody> CollisionBody::create(CollisionShape* shape)
 {
-	auto ptr = RefPtr<CollisionBody>::MakeRef();
-	ptr->Initialize();
-	ptr->AddShape(shape);
+	auto ptr = RefPtr<CollisionBody>::makeRef();
+	ptr->initialize();
+	ptr->addShape(shape);
 	return ptr;
 }
 
@@ -189,66 +189,66 @@ CollisionBody::CollisionBody()
 //------------------------------------------------------------------------------
 CollisionBody::~CollisionBody()
 {
-	DeleteInternalObject();
+	deleteInternalObject();
 }
 
 //------------------------------------------------------------------------------
-void CollisionBody::Initialize()
+void CollisionBody::initialize()
 {
-	PhysicsObject::Initialize();
+	PhysicsObject::initialize();
 	m_initialUpdate = true;
-	detail::EngineDomain::GetPhysicsWorld3D()->AddPhysicsObject(this);
+	detail::EngineDomain::getPhysicsWorld3D()->addPhysicsObject(this);
 }
 
 //------------------------------------------------------------------------------
-//const Matrix& CollisionBody::GetTransform() const
+//const Matrix& CollisionBody::getTransform() const
 //{
 //	return m_transform;
 //}
 
 //------------------------------------------------------------------------------
-void CollisionBody::AddShape(CollisionShape* shape)
+void CollisionBody::addShape(CollisionShape* shape)
 {
-	m_btShapeManager.AddShape(shape);
+	m_btShapeManager.addShape(shape);
 }
 
 //------------------------------------------------------------------------------
-void CollisionBody::SetTrigger(bool enabled)
+void CollisionBody::setTrigger(bool enabled)
 {
 	m_isTrigger = enabled;
 }
 
 //------------------------------------------------------------------------------
-bool CollisionBody::IsTrigger() const
+bool CollisionBody::isTrigger() const
 {
 	return m_isTrigger;
 }
 
 
 //------------------------------------------------------------------------------
-EventConnection CollisionBody::ConnectOnTriggerEnter(CollisionEventHandler handler)
+EventConnection CollisionBody::connectOnTriggerEnter(CollisionEventHandler handler)
 {
-	return onTriggerEnter.Connect(handler);
+	return m_onTriggerEnter.connect(handler);
 }
 
 //------------------------------------------------------------------------------
-EventConnection CollisionBody::ConnectOnTriggerLeave(CollisionEventHandler handler)
+EventConnection CollisionBody::connectOnTriggerLeave(CollisionEventHandler handler)
 {
-	return onTriggerLeave.Connect(handler);
+	return m_onTriggerLeave.connect(handler);
 }
 
 //------------------------------------------------------------------------------
-EventConnection CollisionBody::ConnectOnTriggerStay(CollisionEventHandler handler)
+EventConnection CollisionBody::connectOnTriggerStay(CollisionEventHandler handler)
 {
-	return onTriggerStay.Connect(handler);
+	return m_onTriggerStay.connect(handler);
 }
 
 //------------------------------------------------------------------------------
-void CollisionBody::OnBeforeStepSimulation()
+void CollisionBody::onBeforeStepSimulation()
 {
 	if (m_initialUpdate)
 	{
-		CreateInternalObject();
+		createInternalObject();
 		m_initialUpdate = false;
 	}
 
@@ -261,85 +261,85 @@ void CollisionBody::OnBeforeStepSimulation()
 		flags & ~btCollisionObject::CF_NO_CONTACT_RESPONSE);
 
 	// set shape
-	btCollisionShape* shape = m_btShapeManager.GetBtCollisionShape();
+	btCollisionShape* shape = m_btShapeManager.getBtCollisionShape();
 	if (m_btGhostObject->getCollisionShape() != shape)
 	{
 		m_btGhostObject->setCollisionShape(shape);
 	}
 	
 
-	auto* transform = GetTransform();
+	auto* transform = getTransform();
 	if (transform != nullptr)
 	{
 		btTransform t;
-		t.setFromOpenGLMatrix((btScalar*)&transform->GetWorldMatrix());
+		t.setFromOpenGLMatrix((btScalar*)&transform->getWorldMatrix());
 		m_btGhostObject->setWorldTransform(t);
 	}
 }
 
 //------------------------------------------------------------------------------
-void CollisionBody::OnAfterStepSimulation()
+void CollisionBody::onAfterStepSimulation()
 {
 	// get transform
 	m_btGhostObject->getWorldTransform().getOpenGLMatrix((btScalar*)&m_transform);
 
-	// notify OnTriggerStay
-	if (IsTrigger())
+	// notify onTriggerStay
+	if (isTrigger())
 	{
 		int count = m_btGhostObject->getNumOverlappingObjects();
 		for (int i = 0; i < count; i++)
 		{
 			btCollisionObject* btObj = m_btGhostObject->getOverlappingObject(i);
-			OnTriggerStay(reinterpret_cast<PhysicsObject*>(btObj->getUserPointer()));
+			onTriggerStay(reinterpret_cast<PhysicsObject*>(btObj->getUserPointer()));
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
-void CollisionBody::OnRemovedFromWorld()
+void CollisionBody::onRemovedFromWorld()
 {
 	// Bullet の World に追加するのはこのクラスの役目なので、除外もここで行う。
 	if (m_btGhostObject != nullptr)
 	{
-		GetOwnerWorld()->GetBtWorld()->removeCollisionObject(m_btGhostObject);
+		getOwnerWorld()->getBtWorld()->removeCollisionObject(m_btGhostObject);
 	}
 }
 
 //------------------------------------------------------------------------------
-void CollisionBody::OnTriggerEnter(PhysicsObject* otherObject)
+void CollisionBody::onTriggerEnter(PhysicsObject* otherObject)
 {
-	onTriggerEnter.Raise(otherObject);
+	m_onTriggerEnter.raise(otherObject);
 }
 
 //------------------------------------------------------------------------------
-void CollisionBody::OnTriggerLeave(PhysicsObject* otherObject)
+void CollisionBody::onTriggerLeave(PhysicsObject* otherObject)
 {
-	onTriggerLeave.Raise(otherObject);
+	m_onTriggerLeave.raise(otherObject);
 }
 
 //------------------------------------------------------------------------------
-void CollisionBody::OnTriggerStay(PhysicsObject* otherObject)
+void CollisionBody::onTriggerStay(PhysicsObject* otherObject)
 {
-	onTriggerStay.Raise(otherObject);
+	m_onTriggerStay.raise(otherObject);
 }
 
 //------------------------------------------------------------------------------
-void CollisionBody::CreateInternalObject()
+void CollisionBody::createInternalObject()
 {
-	DeleteInternalObject();
+	deleteInternalObject();
 
 	// 現状、この時点で必ず m_shape が無ければならない。
-	LN_ASSERT(!m_btShapeManager.IsEmpty());
+	LN_ASSERT(!m_btShapeManager.isEmpty());
 
 	m_btGhostObject = new LocalGhostObject(this);
-	m_btGhostObject->setCollisionShape(m_btShapeManager.GetBtCollisionShape());
+	m_btGhostObject->setCollisionShape(m_btShapeManager.getBtCollisionShape());
 	m_btGhostObject->setUserPointer(this);
 
-	GetOwnerWorld()->GetBtWorld()->addCollisionObject(m_btGhostObject, GetCollisionFilterGroup(), GetCollisionFilterMask());
+	getOwnerWorld()->getBtWorld()->addCollisionObject(m_btGhostObject, getCollisionFilterGroup(), getCollisionFilterMask());
 }
 
 //------------------------------------------------------------------------------
-void CollisionBody::DeleteInternalObject()
+void CollisionBody::deleteInternalObject()
 {
 	LN_SAFE_DELETE(m_btGhostObject);
 }

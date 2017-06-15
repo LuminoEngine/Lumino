@@ -11,13 +11,13 @@ public:
 	BitmapTextRenderer();
 	virtual ~BitmapTextRenderer();
 
-	void Initialize(detail::GraphicsManager* manager);
+	void initialize(detail::GraphicsManager* manager);
 
-	GlyphRun* GetTempGlyphRun() { return m_tmpGlyphRun; }	// テクスチャの DrawText 等、ユーティリティ的に使いたいときに new を減らす
+	GlyphRun* getTempGlyphRun() { return m_tmpGlyphRun; }	// テクスチャの drawText 等、ユーティリティ的に使いたいときに new を減らす
 
-	void SetRenderArea(const RectI& area) { m_renderArea = area; }
-	void SetTextAlignment(TextAlignment align) { m_textAlignment = align; }
-	void DrawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const Color32& fillColor, const Color32& strokeColor, int strokeThickness);
+	void setRenderArea(const RectI& area) { m_renderArea = area; }
+	void setTextAlignment(TextAlignment align) { m_textAlignment = align; }
+	void drawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const Color32& fillColor, const Color32& strokeColor, int strokeThickness);
 
 private:
 	detail::GraphicsManager*	m_manager;

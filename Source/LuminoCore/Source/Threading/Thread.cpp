@@ -27,23 +27,23 @@ Thread::~Thread()
 {
     if (m_impl != nullptr)
     {
-        Wait();
+        wait();
     }
 	LN_SAFE_DELETE(mLastException);
 	LN_SAFE_DELETE(m_impl);
 }
 
 //------------------------------------------------------------------------------
-void Thread::Start()
+void Thread::start()
 {
-	Reset();
-	m_impl->Start();
+	reset();
+	m_impl->start();
 }
 
 //------------------------------------------------------------------------------
-void Thread::Wait()
+void Thread::wait()
 {
-	m_impl->Wait();
+	m_impl->wait();
 
 	// スレッドで例外が発生していれば throw する
 	if (mLastException != nullptr)
@@ -53,36 +53,36 @@ void Thread::Wait()
 }
 
 //------------------------------------------------------------------------------
-bool Thread::IsFinished()
+bool Thread::isFinished()
 {
-	return mFinished.IsTrue();
+	return mFinished.isTrue();
 }
 
 //------------------------------------------------------------------------------
-intptr_t Thread::GetThreadId() const
+intptr_t Thread::getThreadId() const
 { 
-    return m_impl->GetThreadId();
+    return m_impl->getThreadId();
 }
 
 //------------------------------------------------------------------------------
-void Thread::Sleep(int milliseconds)
+void Thread::sleep(int milliseconds)
 {
-	detail::ThreadImpl::Sleep(milliseconds);
+	detail::ThreadImpl::sleep(milliseconds);
 }
 
 //------------------------------------------------------------------------------
-intptr_t Thread::GetCurrentThreadId()
+intptr_t Thread::getCurrentThreadId()
 {
-    return detail::ThreadImpl::GetCurrentThreadId();
+    return detail::ThreadImpl::getCurrentThreadId();
 }
 
 //------------------------------------------------------------------------------
-void Thread::Reset()
+void Thread::reset()
 {
 	// 前のが終了していない場合は待つ
-	Wait();
+	wait();
 	LN_SAFE_DELETE(mLastException);
-	mFinished.SetFalse();
+	mFinished.setFalse();
 }
 
 //------------------------------------------------------------------------------
@@ -90,11 +90,11 @@ void Thread::ExecuteInternal()
 {
 	try
 	{
-		Execute();
+		execute();
 	}
 	catch (Exception& e)
 	{
-		mLastException = e.Copy();
+		mLastException = e.copy();
 	}
 	catch (...)
 	{
@@ -102,7 +102,7 @@ void Thread::ExecuteInternal()
 	}
 
 	// 終了フラグを立てる
-	mFinished.SetTrue();
+	mFinished.setTrue();
 }
 
 //==============================================================================
@@ -111,24 +111,24 @@ void Thread::ExecuteInternal()
 
 //------------------------------------------------------------------------------
 #ifdef LN_CPP11
-void DelegateThread::Start(Delegate<void()> func)
+void DelegateThread::start(Delegate<void()> func)
 {
 	m_ThreadFunc = func;
-	Thread::Start();
+	Thread::start();
 }
 #else
-void DelegateThread::Start(Delegate00 func)
+void DelegateThread::start(Delegate00 func)
 {
 	m_ThreadFunc = func;
-	Thread::Start();
+	Thread::start();
 }
 #endif
 
 //------------------------------------------------------------------------------
-void DelegateThread::Execute()
+void DelegateThread::execute()
 {
-	if (!m_ThreadFunc.IsEmpty()) {
-		m_ThreadFunc.Call();
+	if (!m_ThreadFunc.isEmpty()) {
+		m_ThreadFunc.call();
 	}
 }
 

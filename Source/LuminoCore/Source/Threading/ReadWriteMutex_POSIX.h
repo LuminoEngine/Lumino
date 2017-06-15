@@ -26,7 +26,7 @@ public:
 		pthread_cond_destroy(&mWrite);
 	}
 
-	void LockRead()
+	void lockRead()
 	{
 		pthread_mutex_lock(&mLock);
 		if (mWriters || mWriteWaiters)
@@ -41,7 +41,7 @@ public:
 		pthread_mutex_unlock(&mLock);
 	}
 
-	void UnlockRead()
+	void unlockRead()
 	{
 		pthread_mutex_lock(&mLock);
 		--mReaders;
@@ -51,7 +51,7 @@ public:
 		pthread_mutex_unlock(&mLock);
 	}
 
-	void LockWrite()
+	void lockWrite()
 	{
 		pthread_mutex_lock(&mLock);
 		if (mReaders || mWriters)
@@ -66,7 +66,7 @@ public:
 		pthread_mutex_unlock(&mLock);
 	}
 
-	void UnlockWrite()
+	void unlockWrite()
 	{
 		pthread_mutex_lock(&mLock);
 		mWriters = 0;

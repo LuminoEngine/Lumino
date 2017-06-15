@@ -41,7 +41,7 @@ private:
 				this->DllInstance = NULL;
 			}
 		}
-		bool Load(const char* inDLLName)
+		bool load(const char* inDLLName)
 		{
 			if (this->DllInstance != NULL)
 			{
@@ -105,7 +105,7 @@ private:
 
 public:
 
-	static const BackTrace* GetInstance()
+	static const BackTrace* getInstance()
 	{
 		static BackTrace s;
 		return &s;
@@ -118,10 +118,10 @@ public:
 		// プロセスを記録
 		m_process = ::GetCurrentProcess();
 
-		if (!mKernel32Librsry.Load("kernel32.dll")) {
+		if (!mKernel32Librsry.load("kernel32.dll")) {
 			return;
 		}
-		if (!mDbgHelpLibrsry.Load("dbghelp.dll")) {
+		if (!mDbgHelpLibrsry.load("dbghelp.dll")) {
 			return;
 		}
 

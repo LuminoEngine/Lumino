@@ -27,10 +27,10 @@ TokenStore::~TokenStore()
 }
 
 //------------------------------------------------------------------------------
-void TokenStore::Reserve(int count)
+void TokenStore::reserve(int count)
 {
-	if (LN_CHECK_STATE(m_tokenStore.IsEmpty())) return;
-	m_tokenStore.Reserve(count);
+	if (LN_CHECK_STATE(m_tokenStore.isEmpty())) return;
+	m_tokenStore.reserve(count);
 }
 
 //------------------------------------------------------------------------------
@@ -38,7 +38,7 @@ Token* TokenStore::CreateToken()
 {
 	// TODO: ちゃんとバッファをキャッシュしたい。これだと doxygen みたいにすごく重い。
 	Token* t = LN_NEW Token();
-	m_tokenStore.Add(t);
+	m_tokenStore.add(t);
 	return t;
 }
 
@@ -72,7 +72,7 @@ void InputFile::ReadFile()
 	if (!m_codeRead)
 	{
 		// TODO: 文字コード変換
-		m_code = FileSystem::ReadAllBytes(m_filePath);
+		m_code = FileSystem::readAllBytes(m_filePath);
 		m_codeRead = true;
 	}
 }
@@ -88,13 +88,13 @@ ByteBuffer* InputFile::GetCodeBuffer()
 Token* InputFile::CreateToken()
 {
 	// 初回、最大のパターンで容量確保
-	if (m_tokenList.IsEmpty())
+	if (m_tokenList.isEmpty())
 	{
-		m_tokenStore.Reserve(m_code.GetSize());
+		m_tokenStore.reserve(m_code.getSize());
 	}
 
 	Token* t = m_tokenStore.CreateToken();
-	m_tokenList.Add(t);
+	m_tokenList.add(t);
 	return t;
 }
 
@@ -105,7 +105,7 @@ Token* InputFile::CreateToken()
 //------------------------------------------------------------------------------
 AnalyzerContext::AnalyzerContext()
 {
-	m_diagnosticsManager = RefPtr<DiagnosticsManager>::MakeRef();
+	m_diagnosticsManager = RefPtr<DiagnosticsManager>::makeRef();
 }
 
 //------------------------------------------------------------------------------
@@ -116,8 +116,8 @@ AnalyzerContext::~AnalyzerContext()
 //------------------------------------------------------------------------------
 InputFile* AnalyzerContext::RegisterInputFile(const PathNameA& filePath)
 {
-	auto ptr = RefPtr<InputFile>::MakeRef(filePath);
-	m_inputFileList.Add(ptr);
+	auto ptr = RefPtr<InputFile>::makeRef(filePath);
+	m_inputFileList.add(ptr);
 	return ptr;
 }
 
@@ -125,15 +125,15 @@ InputFile* AnalyzerContext::RegisterInputFile(const PathNameA& filePath)
 InputFile* AnalyzerContext::RegisterInputMemoryCode(const PathNameA& filePath, const char* code, int length)
 {
 	if (LN_CHECK_ARG(code != nullptr)) return nullptr;
-	auto ptr = RefPtr<InputFile>::MakeRef(filePath, code, length);
-	m_inputFileList.Add(ptr);
+	auto ptr = RefPtr<InputFile>::makeRef(filePath, code, length);
+	m_inputFileList.add(ptr);
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
 void AnalyzerContext::RemoveAllInputFile()
 {
-	m_inputFileList.Clear();
+	m_inputFileList.clear();
 }
 
 //------------------------------------------------------------------------------
@@ -175,13 +175,13 @@ void AnalyzerContext::PreprocessFile(InputFile* file)
 //------------------------------------------------------------------------------
 void AnalyzerContext::ResetFileDiagnostics(InputFile* file)
 {
-	if (file->GetDiag() != nullptr)
+	if (file->getDiag() != nullptr)
 	{
-		file->GetDiag()->ClearItems();
+		file->getDiag()->clearItems();
 	}
 	else
 	{
-		file->SetDiag(m_diagnosticsManager->CreateItemSet(file->GetRelativeFilePath()));
+		file->setDiag(m_diagnosticsManager->CreateItemSet(file->GetRelativeFilePath()));
 	}
 }
 
@@ -191,7 +191,7 @@ RefPtr<AbstractLexer> AnalyzerContext::CreateLexer(InputFile* file)
 	switch (file->GetLanguage())
 	{
 	case Language::Cpp11:
-		return RefPtr<AbstractLexer>::StaticCast(RefPtr<CppLexer>::MakeRef());
+		return RefPtr<AbstractLexer>::staticCast(RefPtr<CppLexer>::makeRef());
 	default:
 		assert(0);
 		break;

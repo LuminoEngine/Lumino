@@ -15,7 +15,7 @@ namespace detail
 #if defined(_WIN32)
 
 //------------------------------------------------------------------------------
-void AudioUtils::ConvertLNWaveFormatToWAVEFORMATEX(const WaveFormat& lnFmt, WAVEFORMATEX* wavFmt)
+void AudioUtils::convertLNWaveFormatToWAVEFORMATEX(const WaveFormat& lnFmt, WAVEFORMATEX* wavFmt)
 {
     wavFmt->wFormatTag       = lnFmt.formatTag;
     wavFmt->nChannels        = lnFmt.channels;
@@ -27,7 +27,7 @@ void AudioUtils::ConvertLNWaveFormatToWAVEFORMATEX(const WaveFormat& lnFmt, WAVE
 }
 
 //------------------------------------------------------------------------------
-void AudioUtils::ConvertWAVEFORMATEXToLNWaveFormat(const WAVEFORMATEX& wavFmt, WaveFormat* lnFmt)
+void AudioUtils::convertWAVEFORMATEXToLNWaveFormat(const WAVEFORMATEX& wavFmt, WaveFormat* lnFmt)
 {
     lnFmt->formatTag      = wavFmt.wFormatTag;
     lnFmt->channels       = wavFmt.nChannels;
@@ -39,7 +39,7 @@ void AudioUtils::ConvertWAVEFORMATEXToLNWaveFormat(const WAVEFORMATEX& wavFmt, W
 }   
 
 //------------------------------------------------------------------------------
-void AudioUtils::PrintWAVEFORMATEX(const WAVEFORMATEX& wavFmt, const char* str)
+void AudioUtils::printWAVEFORMATEX(const WAVEFORMATEX& wavFmt, const char* str)
 {
     if ( str )
 	{
@@ -61,21 +61,21 @@ void AudioUtils::PrintWAVEFORMATEX(const WAVEFORMATEX& wavFmt, const char* str)
 #endif
 
 //------------------------------------------------------------------------------
-StreamFormat AudioUtils::CheckFormat(Stream* stream)
+StreamFormat AudioUtils::checkFormat(Stream* stream)
 {
-	if (!stream || stream->GetLength() < 4) {
+	if (!stream || stream->getLength() < 4) {
 		return StreamFormat_Unknown;
 	}
 
 	StreamFormat format = StreamFormat_Unknown;
 
 	byte_t head[4];
-	stream->Read(head, 4);
+	stream->read(head, 4);
 	if (memcmp(head, "RIFF", 4) == 0)
 	{
-		stream->Seek(4, SeekOrigin_Current);
+		stream->seek(4, SeekOrigin_Current);
 		byte_t wave[4];
-		stream->Read(wave, 4);
+		stream->read(wave, 4);
 		if (memcmp(wave, "WAVE", 4) == 0)
 		{
 			format = StreamFormat_Wave;
@@ -104,9 +104,9 @@ StreamFormat AudioUtils::CheckFormat(Stream* stream)
 		}
 		else
 		{
-			stream->Seek(-128, SeekOrigin_End);
+			stream->seek(-128, SeekOrigin_End);
 			char data[3];
-			stream->Read(data, 3);
+			stream->read(data, 3);
 			if (data[0] == 'T' && data[1] == 'A' && data[2] == 'G')
 			{
 				format = StreamFormat_Mp3;
@@ -114,15 +114,15 @@ StreamFormat AudioUtils::CheckFormat(Stream* stream)
 		}
 	}
 
-	stream->Seek(0, SeekOrigin_Begin);
+	stream->seek(0, SeekOrigin_Begin);
 	return format;
 }
 
 //------------------------------------------------------------------------------
-SoundPlayingMode AudioUtils::CheckAudioPlayType(SoundPlayingMode type, AudioStream* audioStream, uint32_t limitSize)
+SoundPlayingMode AudioUtils::checkAudioPlayType(SoundPlayingMode type, AudioStream* audioStream, uint32_t limitSize)
 {
 	// 作成するオーディオプレイヤーの種類を決めていく
-	if (audioStream->GetDecoder()->GetSourceFormat() == StreamFormat_Midi)
+	if (audioStream->getDecoder()->getSourceFormat() == StreamFormat_Midi)
 	{
 		type = SoundPlayingMode::Midi;
 	}
@@ -130,7 +130,7 @@ SoundPlayingMode AudioUtils::CheckAudioPlayType(SoundPlayingMode type, AudioStre
 	{
 		if (type == SoundPlayingMode::Unknown)
 		{
-			if (audioStream->GetDecoder()->GetOnmemoryPCMBufferSize() > limitSize)
+			if (audioStream->getDecoder()->getOnmemoryPCMBufferSize() > limitSize)
 			{
 				type = SoundPlayingMode::Streaming;
 			}

@@ -62,7 +62,7 @@ public:
 	String							copydocMethodName;
 	String							copydocSignature;
 
-	bool IsCopyDoc() const { return !copydocMethodName.IsEmpty(); }
+	bool IsCopyDoc() const { return !copydocMethodName.isEmpty(); }
 };
 
 class MetadataInfo
@@ -197,9 +197,9 @@ public:
 	TypeInfo() {}
 	TypeInfo(StringRef name_) : name(name_) {}
 
-	bool IsValueType() const { return isStruct || isPrimitive || isEnum; }
-	bool IsStatic() const { return metadata->HasKey(_T("Static")); }
-	bool IsClass() const { return !IsValueType() && !isVoid; }
+	bool isValueType() const { return isStruct || isPrimitive || isEnum; }
+	bool isStatic() const { return metadata->HasKey(_T("Static")); }
+	bool IsClass() const { return !isValueType() && !isVoid; }
 
 	void Link();
 
@@ -241,6 +241,6 @@ public:
 
 public:
 	void InitializePredefineds();
-	TypeInfoPtr FindTypeInfo(StringRef typeName);
+	TypeInfoPtr findTypeInfo(StringRef typeName);
 };
 

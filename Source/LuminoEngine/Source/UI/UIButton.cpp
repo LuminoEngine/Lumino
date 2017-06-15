@@ -14,7 +14,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIButtonBase, UIControl);
 
 //------------------------------------------------------------------------------
 UIButtonBase::UIButtonBase()
-	: m_clickMode(ClickMode::Release)
+	: m_clickMode(ClickMode::release)
 	, m_isPressed(false)
 {
 }
@@ -25,76 +25,76 @@ UIButtonBase::~UIButtonBase()
 }
 
 //------------------------------------------------------------------------------
-void UIButtonBase::Initialize()
+void UIButtonBase::initialize()
 {
-	UIControl::Initialize();
+	UIControl::initialize();
 
 	HContentAlignment = HAlignment::Center;
 	VContentAlignment = VAlignment::Center;
 
-	// TODO: UIControl::Initialize() の中でも作ってるから、そっちが無駄になる。
+	// TODO: UIControl::initialize() の中でも作ってるから、そっちが無駄になる。
 	// UIControl では何も作らなくてもいいかも。null の場合、UILayoutPanel と同じレイアウトにするとか。
-	SetLayoutPanel(NewObject<UIStackPanel>());
+	setLayoutPanel(newObject<UIStackPanel>());
 }
 
 //------------------------------------------------------------------------------
-void UIButtonBase::SetText(const StringRef& text)
+void UIButtonBase::setText(const StringRef& text)
 {
-	auto textBlock = UITextBlockPtr::MakeRef();
-	textBlock->Initialize();
-	textBlock->SetText(text);
-	AddChild(textBlock);
+	auto textBlock = UITextBlockPtr::makeRef();
+	textBlock->initialize();
+	textBlock->setText(text);
+	addChild(textBlock);
 }
 
 //------------------------------------------------------------------------------
-EventConnection UIButtonBase::ConnectOnGotFocus(UIEventHandler handler)
+EventConnection UIButtonBase::connectOnGotFocus(UIEventHandler handler)
 {
-	return m_onClick.Connect(handler);
+	return m_onClick.connect(handler);
 }
 
 //------------------------------------------------------------------------------
-void UIButtonBase::OnClick(UIEventArgs* e)
+void UIButtonBase::onClick(UIEventArgs* e)
 {
-	m_onClick.Raise(e);
-	//RaiseEvent(ClickEvent, this, UIEventArgs::Create(this));
+	m_onClick.raise(e);
+	//raiseEvent(ClickEvent, this, UIEventArgs::create(this));
 }
 
 //------------------------------------------------------------------------------
-void UIButtonBase::OnMouseDown(UIMouseEventArgs* e)
+void UIButtonBase::onMouseDown(UIMouseEventArgs* e)
 {
-	if (m_clickMode == ClickMode::Release)
+	if (m_clickMode == ClickMode::release)
 	{
 		m_isPressed = true;
-		Focus();
-		CaptureMouse();
-		GoToVisualState(UIVisualStates::PressedState);
+		focus();
+		captureMouse();
+		goToVisualState(UIVisualStates::PressedState);
 		e->handled = true;
 	}
 	else if (m_clickMode == ClickMode::Press)
 	{
-		OnClick(e);
+		onClick(e);
 		e->handled = true;
 	}
 
-	UIControl::OnMouseDown(e);
+	UIControl::onMouseDown(e);
 }
 
 //------------------------------------------------------------------------------
-void UIButtonBase::OnMouseUp(UIMouseEventArgs* e)
+void UIButtonBase::onMouseUp(UIMouseEventArgs* e)
 {
-	if (m_clickMode == ClickMode::Release)
+	if (m_clickMode == ClickMode::release)
 	{
 		if (m_isPressed)
 		{
 			m_isPressed = false;
-			ReleaseMouseCapture();
-			GoToVisualState(UIVisualStates::MouseOverState);
-			OnClick(e);
+			releaseMouseCapture();
+			goToVisualState(UIVisualStates::MouseOverState);
+			onClick(e);
 			e->handled = true;
 		}
 	}
 
-	UIControl::OnMouseUp(e);
+	UIControl::onMouseUp(e);
 }
 
 //==============================================================================
@@ -103,15 +103,15 @@ void UIButtonBase::OnMouseUp(UIMouseEventArgs* e)
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIButton, UIButtonBase);
 
 //------------------------------------------------------------------------------
-RefPtr<UIButton> UIButton::Create()
+RefPtr<UIButton> UIButton::create()
 {
-	return NewObject<UIButton>();
+	return newObject<UIButton>();
 }
 
 //------------------------------------------------------------------------------
-RefPtr<UIButton> UIButton::Create(const StringRef& text, float width, float height)
+RefPtr<UIButton> UIButton::create(const StringRef& text, float width, float height)
 {
-	return NewObject<UIButton>(text, width, height);
+	return newObject<UIButton>(text, width, height);
 }
 
 //------------------------------------------------------------------------------
@@ -125,18 +125,18 @@ UIButton::~UIButton()
 }
 
 //------------------------------------------------------------------------------
-void UIButton::Initialize()
+void UIButton::initialize()
 {
-	UIButtonBase::Initialize();
+	UIButtonBase::initialize();
 }
 
 //------------------------------------------------------------------------------
-void UIButton::Initialize(const StringRef& text, float width, float height)
+void UIButton::initialize(const StringRef& text, float width, float height)
 {
-	UIButtonBase::Initialize();
-	SetText(text);
-	SetWidth(width);
-	SetHeight(height);
+	UIButtonBase::initialize();
+	setText(text);
+	setWidth(width);
+	setHeight(height);
 }
 
 //==============================================================================
@@ -148,9 +148,9 @@ const String UIToggleButton::CheckedState = _T("Checked");
 const String UIToggleButton::UncheckedState = _T("Unchecked");
 
 //------------------------------------------------------------------------------
-RefPtr<UIToggleButton> UIToggleButton::Create()
+RefPtr<UIToggleButton> UIToggleButton::create()
 {
-	return NewObject<UIToggleButton>();
+	return newObject<UIToggleButton>();
 }
 
 //------------------------------------------------------------------------------
@@ -165,30 +165,30 @@ UIToggleButton::~UIToggleButton()
 }
 
 //------------------------------------------------------------------------------
-void UIToggleButton::Initialize()
+void UIToggleButton::initialize()
 {
-	UIButtonBase::Initialize();
+	UIButtonBase::initialize();
 
-	auto* vsm = GetVisualStateManager();
-	vsm->RegisterVisualState(UIVisualStates::CommonGroup, CheckedState);
-	vsm->RegisterVisualState(UIVisualStates::CommonGroup, UncheckedState);
+	auto* vsm = getVisualStateManager();
+	vsm->registerVisualState(UIVisualStates::CommonGroup, CheckedState);
+	vsm->registerVisualState(UIVisualStates::CommonGroup, UncheckedState);
 }
 
 //------------------------------------------------------------------------------
-void UIToggleButton::OnClick(UIEventArgs* e)
+void UIToggleButton::onClick(UIEventArgs* e)
 {
 	m_isChecked = !m_isChecked;
 
 	if (m_isChecked)
 	{
-		GoToVisualState(CheckedState);
+		goToVisualState(CheckedState);
 	}
 	else
 	{
-		GoToVisualState(UncheckedState);
+		goToVisualState(UncheckedState);
 	}
 
-	UIButtonBase::OnClick(e);
+	UIButtonBase::onClick(e);
 }
 
 

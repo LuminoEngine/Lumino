@@ -14,8 +14,8 @@ public:
 	RenderTargetTextureCache(GraphicsManager* manager);
 	virtual ~RenderTargetTextureCache();
 
-	RefPtr<RenderTargetTexture> RequestRenderTarget(const SizeI& size, TextureFormat format, int mipLevel);
-	void GCRenderTargets();
+	RefPtr<RenderTargetTexture> requestRenderTarget(const SizeI& size, TextureFormat format, int mipLevel);
+	void gcRenderTargets();
 
 private:
 	typedef std::vector<RenderTargetTexture*>	RenderTargetList;

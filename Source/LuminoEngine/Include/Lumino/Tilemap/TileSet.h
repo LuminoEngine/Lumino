@@ -16,7 +16,7 @@ class TileSet
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	static TileSetPtr Create();
+	static TileSetPtr create();
 
 public:
 	TileSet();
@@ -34,9 +34,9 @@ public:
 	//void SetImageFilePath(const PathName& filePath);
 
 LN_PROTECTED_INTERNAL_ACCESS:
-	void Initialize(detail::GraphicsManager* manager);
+	void initialize(detail::GraphicsManager* manager);
 	virtual void LookupTileImage(int id, Texture** outTexture, RectI* outSrcRect);
-	Material* GetMaterial() const;
+	Material* getMaterial() const;
 
 private:
 	struct TileInfo
@@ -61,7 +61,7 @@ private:
 //public:
 //	RGSS1TileSet();
 //	virtual ~RGSS1TileSet();
-//	void CreateCore();
+//	void createCore();
 //
 //
 //protected:

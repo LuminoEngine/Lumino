@@ -12,7 +12,6 @@ class EngineDiagCore;
 class FileManager;
 
 LN_NAMESPACE_GRAPHICS_BEGIN
-class RenderingThread;
 class GraphicsContext;
 class TextRenderer;
 class BitmapTextRenderer;
@@ -40,12 +39,12 @@ class ShaderVariableCommitSerializeHelper
 public:
 	ShaderVariableCommitSerializeHelper();
 
-	void BeginSerialize();
-	void WriteValue(Driver::IShaderVariable* targetVariable, const ShaderValue& value);
-	void* GetSerializeData();
-	size_t GetSerializeDataLength();
+	void beginSerialize();
+	void writeValue(Driver::IShaderVariable* targetVariable, const ShaderValue& value);
+	void* getSerializeData();
+	size_t getSerializeDataLength();
 
-	void Deserialize(const void* data, size_t length);
+	void deserialize(const void* data, size_t length);
 
 private:
 	MemoryStreamPtr			m_writerBuffer;
@@ -56,8 +55,8 @@ private:
 class IDeviceResetListener
 {
 public:
-	virtual void OnLostDevice() = 0;
-	virtual void OnResetDevice() = 0;
+	virtual void onLostDevice() = 0;
+	virtual void onResetDevice() = 0;
 
 protected:
 	virtual ~IDeviceResetListener() = default;
@@ -84,78 +83,78 @@ public:
 		EngineDiagCore*				diag = nullptr;
 	};
 
-	static GraphicsManager*	GetInstance(GraphicsManager* priority = nullptr);
+	static GraphicsManager*	getInstance(GraphicsManager* priority = nullptr);
 
 public:
 	GraphicsManager();
 	virtual ~GraphicsManager();
 
-	void Initialize(const ConfigData& configData);
+	void initialize(const ConfigData& configData);
 	void Dispose();
 
 	/** 現在のグラフィックスシステムが使用している API の種類を確認します。*/
-	GraphicsAPI GetGraphicsAPI() const;
+	GraphicsAPI getGraphicsAPI() const;
 
 	/** 現在のグラフィックスシステムのレンダリング方法を確認します。*/
-	GraphicsRenderingType GetRenderingType() const { return m_renderingType; }
+	GraphicsRenderingType getRenderingType() const { return m_renderingType; }
 
 	/** グラフィックスシステムのメイン Renderer を取得します。*/
-	Details::Renderer* GetRenderer() const { return m_renderer; }
+	Details::Renderer* getRenderer() const { return m_renderer; }
 
-	/** メインの SwapChain を取得します。これは Create() で指定されたメインウィンドウへのスワップチェインです。*/
-	SwapChain* GetMainSwapChain() { return m_mainSwapChain; }
+	/** メインの SwapChain を取得します。これは create() で指定されたメインウィンドウへのスワップチェインです。*/
+	SwapChain* getMainSwapChain() { return m_mainSwapChain; }
 
 
-	AnimationManager* GetAnimationManager() const { return m_animationManager; }
+	AnimationManager* getAnimationManager() const { return m_animationManager; }
 
 	/** 関連付けられている FileManager を取得します。*/
-	FileManager* GetFileManager() const { return m_fileManager; }
+	FileManager* getFileManager() const { return m_fileManager; }
 
-	PlatformWindow* GetMainWindow() const { return m_mainWindow; }
+	PlatformWindow* getMainWindow() const { return m_mainWindow; }
 
 	/** 関連付けられている FontManager を取得します。*/
-	FontManager* GetFontManager() const { return m_fontManager; }
+	FontManager* getFontManager() const { return m_fontManager; }
 	
-	BitmapTextRenderer* GetBitmapTextRenderer() const { return m_bitmapTextRenderer; }
+	BitmapTextRenderer* getBitmapTextRenderer() const { return m_bitmapTextRenderer; }
 
-	void AddDeviceResetListener(IDeviceResetListener* listener) { m_deviceResetListenerList.Add(listener); }
-	void RemoveDeviceResetListener(IDeviceResetListener* listener) { m_deviceResetListenerList.Remove(listener); }
+	void addDeviceResetListener(IDeviceResetListener* listener) { m_deviceResetListenerList.add(listener); }
+	void removeDeviceResetListener(IDeviceResetListener* listener) { m_deviceResetListenerList.remove(listener); }
 
 	/// TODO: (GraphicsDevice を作成したスレッドと同じスレッドで呼び出す)
-	void PauseDevice();
+	void pauseDevice();
 	/// TODO: (GraphicsDevice を作成したスレッドと同じスレッドで呼び出す)
-	void ResumeDevice();
+	void resumeDevice();
 
-	void ChangeDevice(Driver::IGraphicsDevice* device);
+	void changeDevice(Driver::IGraphicsDevice* device);
 
-	void SwitchActiveContext(ContextInterface* context);
-	ContextInterface* GetActiveContext() const { return m_activeContext; }
+	void switchActiveContext(ContextInterface* context);
+	ContextInterface* getActiveContext() const { return m_activeContext; }
 
 public:
-	void AddResourceObject(GraphicsResourceObject* obj);
-	void RemoveResourceObject(GraphicsResourceObject* obj);
-	PhysicsManager* GetPhysicsManager() const { return m_physicsManager; }
-	Driver::IGraphicsDevice* GetGraphicsDevice() { return m_graphicsDevice; }
-	RenderingThread* GetRenderingThread() { return m_renderingThread; }
-	bool IsPlatformTextureLoading() { return m_platformTextureLoading; }
-	RenderingCommandList* GetPrimaryRenderingCommandList();
-	TextRendererCore* GetTextRendererCore() { return m_textRendererCore; }
-	const RefPtr<ShapesRendererCommandListCache>& GetShapesRendererCommandListCache() const { return m_shapesRendererCommandListCache; }
-	const RefPtr<NanoVGCommandListCache>& GetNanoVGCommandListCache() const { return m_nanoVGCommandListCache; }
-	Driver::ITexture* GetDummyDeviceTexture() { return m_dummyDeviceTexture; }
-	const RefPtr<Texture2D>& GetDummyBlackTexture() const { return m_dymmyBlackTexture; }
-	const RefPtr<Texture2D>& GetDummyWhiteTexture() const { return m_dymmyWhiteTexture; }
-	VertexDeclaration* GetDefaultVertexDeclaration() const { return m_defaultVertexDeclaration; }
-	ShaderVariableCommitSerializeHelper* GetShaderVariableCommitSerializeHelper() { return &m_shaderVariableCommitSerializeHelper; }
-	InternalContext* GetInternalContext() const;
+	void addResourceObject(GraphicsResourceObject* obj);
+	void removeResourceObject(GraphicsResourceObject* obj);
+	PhysicsManager* getPhysicsManager() const { return m_physicsManager; }
+	Driver::IGraphicsDevice* getGraphicsDevice() { return m_graphicsDevice; }
+	RenderingThread* getRenderingThread() { return m_renderingThread; }
+	bool isPlatformTextureLoading() { return m_platformTextureLoading; }
+	RenderingCommandList* getPrimaryRenderingCommandList();
+	TextRendererCore* getTextRendererCore() { return m_textRendererCore; }
+	const RefPtr<ShapesRendererCommandListCache>& getShapesRendererCommandListCache() const { return m_shapesRendererCommandListCache; }
+	const RefPtr<NanoVGCommandListCache>& getNanoVGCommandListCache() const { return m_nanoVGCommandListCache; }
+	Driver::ITexture* getDummyDeviceTexture() { return m_dummyDeviceTexture; }
+	const RefPtr<Texture2D>& getDummyBlackTexture() const { return m_dymmyBlackTexture; }
+	const RefPtr<Texture2D>& getDummyWhiteTexture() const { return m_dymmyWhiteTexture; }
+	VertexDeclaration* getDefaultVertexDeclaration() const { return m_defaultVertexDeclaration; }
+	ShaderVariableCommitSerializeHelper* getShaderVariableCommitSerializeHelper() { return &m_shaderVariableCommitSerializeHelper; }
+	InternalContext* getInternalContext() const;
 
-	const StringA& GetCommonShaderHeader() const { return m_commonShaderHeader; }
-	const RefPtr<Shader>& GetBuiltinShader(BuiltinShader shader) const;
+	const StringA& getCommonShaderHeader() const { return m_commonShaderHeader; }
+	const RefPtr<Shader>& getBuiltinShader(BuiltinShader shader) const;
 
-	void PresentSwapChain(SwapChain* swapChain);
+	void presentSwapChain(SwapChain* swapChain);
 
 private:
-	void CreateGlobalObjects();
+	void createGlobalObjects();
 
 	AnimationManager*				m_animationManager;
 	FileManager*					m_fileManager;

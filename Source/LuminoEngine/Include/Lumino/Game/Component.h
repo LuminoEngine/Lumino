@@ -5,7 +5,7 @@
 LN_NAMESPACE_BEGIN
 class DrawList;
 class WorldObject;
-class Transform;
+class transform;
 class VisualComponent;
 class UIEventArgs;
 
@@ -24,31 +24,31 @@ class Component
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	Transform*	transfotm;		/**< アタッチされた WorldObject の transform へのポインタ */
+	transform*	transfotm;		/**< アタッチされた WorldObject の transform へのポインタ */
 
 public:
 	Component();
 	virtual ~Component();
-	WorldObject* GetOwnerObject() const;
-	Transform* GetTransform() const;
+	WorldObject* getOwnerObject() const;
+	transform* getTransform() const;
 
-	virtual void OnAttached();
-	virtual void OnDetaching();
-	virtual void OnUpdate();
-	virtual void OnRender(DrawList* context);
+	virtual void onAttached();
+	virtual void onDetaching();
+	virtual void onUpdate();
+	virtual void onRender(DrawList* context);
 
 protected:
-	virtual void OnUIEvent(UIEventArgs* e);
+	virtual void onUIEvent(UIEventArgs* e);
 
 private:
-	void Attach(WorldObject* owner);
-	void Detach();
-	void UpdateFrame();
+	void attach(WorldObject* owner);
+	void detach();
+	void updateFrame();
 
 LN_INTERNAL_ACCESS:
-	virtual void Render(DrawList* context);
-	void SetSpecialComponentType(SpecialComponentType type) { m_specialComponentType = type; }
-	SpecialComponentType GetSpecialComponentType() const { return m_specialComponentType; }
+	virtual void render(DrawList* context);
+	void setSpecialComponentType(SpecialComponentType type) { m_specialComponentType = type; }
+	SpecialComponentType getSpecialComponentType() const { return m_specialComponentType; }
 
 private:
 	WorldObject*	m_owner;
@@ -61,7 +61,7 @@ private:
 /**
 	@brief		
 */
-class Transform	// TODO: name TransformComponent
+class transform	// TODO: name TransformComponent
 	: public Component
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
@@ -76,33 +76,33 @@ public:
 	tr::Property<Vector3>		center;
 
 public:
-	Transform();
-	virtual ~Transform();
+	transform();
+	virtual ~transform();
 
-	Vector3 GetFront() const;
+	Vector3 getFront() const;
 
 	/** 指定した方向と距離に移動します。*/
-	void Translate(const Vector3& translation);
-	void Translate(float x, float y, float z = 0.0f);
+	void translate(const Vector3& translation);
+	void translate(float x, float y, float z = 0.0f);
 
-	void LookAt(const Vector3& target, const Vector3& up = Vector3::UnitY);
+	void lookAt(const Vector3& target, const Vector3& up = Vector3::UnitY);
 
-	Matrix GetTransformMatrix() const;
+	Matrix getTransformMatrix() const;
 
 	/**
 		@brief		ワールド行列を取得します。
 		@details	ローカルおよび親トランスフォームから各フレームで自動的に再計算されます。
-					UpdateWorldMatrix（）を使用すると、次のフレームの前に強制的に更新することができます。
+					updateWorldMatrix（）を使用すると、次のフレームの前に強制的に更新することができます。
 	*/
-	const Matrix& GetWorldMatrix() const { return m_worldMatrix; }
+	const Matrix& getWorldMatrix() const { return m_worldMatrix; }
 	
 	/**
 		@brief		ワールド行列を更新します。
 	*/
-	void UpdateWorldMatrix();
+	void updateWorldMatrix();
 
 private:
-	Transform*	m_parent;
+	transform*	m_parent;
 	Matrix		m_worldMatrix;
 };
 

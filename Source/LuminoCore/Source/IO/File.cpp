@@ -27,88 +27,88 @@ File::File(const String& filePath)
 //------------------------------------------------------------------------------
 File::~File()
 {
-	Close();
+	close();
 }
 
 //------------------------------------------------------------------------------
-void File::Open(FileOpenMode openMode)
+void File::open(FileOpenMode openMode)
 {
 	LN_THROW(m_fileStream == nullptr, InvalidOperationException);	// すでにファイルが開かれている
-	m_fileStream = FileStream::Create(m_filePath.c_str(), openMode);
+	m_fileStream = FileStream::create(m_filePath.c_str(), openMode);
 }
 
 //------------------------------------------------------------------------------
-void File::Close()
+void File::close()
 {
-	m_fileStream.SafeRelease();
+	m_fileStream.safeRelease();
 }
 
 //------------------------------------------------------------------------------
-PathName File::GetFilePath() const
+PathName File::getFilePath() const
 {
-	return m_filePath.CanonicalizePath();
+	return m_filePath.canonicalizePath();
 }
 
 //------------------------------------------------------------------------------
-String File::GetFileName() const
+String File::getFileName() const
 {
-	return m_filePath.GetFileName();
+	return m_filePath.getFileName();
 }
 
 //------------------------------------------------------------------------------
-bool File::CanRead() const
-{
-	LN_THROW(m_fileStream, InvalidOperationException);
-	return m_fileStream->CanRead();
-}
-
-//------------------------------------------------------------------------------
-bool File::CanWrite() const
+bool File::canRead() const
 {
 	LN_THROW(m_fileStream, InvalidOperationException);
-	return m_fileStream->CanWrite();
+	return m_fileStream->canRead();
 }
 
 //------------------------------------------------------------------------------
-int64_t File::GetLength() const
+bool File::canWrite() const
 {
 	LN_THROW(m_fileStream, InvalidOperationException);
-	return m_fileStream->GetLength();
+	return m_fileStream->canWrite();
 }
 
 //------------------------------------------------------------------------------
-int64_t File::GetPosition() const
+int64_t File::getLength() const
 {
 	LN_THROW(m_fileStream, InvalidOperationException);
-	return m_fileStream->GetPosition();
+	return m_fileStream->getLength();
 }
 
 //------------------------------------------------------------------------------
-size_t File::Read(void* buffer, size_t readCount)
+int64_t File::getPosition() const
 {
 	LN_THROW(m_fileStream, InvalidOperationException);
-	return m_fileStream->Read(buffer, readCount);
+	return m_fileStream->getPosition();
 }
 
 //------------------------------------------------------------------------------
-void File::Write(const void* data, size_t byteCount)
+size_t File::read(void* buffer, size_t readCount)
 {
 	LN_THROW(m_fileStream, InvalidOperationException);
-	m_fileStream->Write(data, byteCount);
+	return m_fileStream->read(buffer, readCount);
 }
 
 //------------------------------------------------------------------------------
-void File::Seek(int64_t offset, SeekOrigin origin)
+void File::write(const void* data, size_t byteCount)
 {
 	LN_THROW(m_fileStream, InvalidOperationException);
-	m_fileStream->Seek(offset, origin);
+	m_fileStream->write(data, byteCount);
 }
 
 //------------------------------------------------------------------------------
-void File::Flush()
+void File::seek(int64_t offset, SeekOrigin origin)
 {
 	LN_THROW(m_fileStream, InvalidOperationException);
-	m_fileStream->Flush();
+	m_fileStream->seek(offset, origin);
+}
+
+//------------------------------------------------------------------------------
+void File::flush()
+{
+	LN_THROW(m_fileStream, InvalidOperationException);
+	m_fileStream->flush();
 }
 
 
@@ -118,7 +118,7 @@ void File::Flush()
 
 //------------------------------------------------------------------------------
 TemporaryFile::TemporaryFile()
-	: File(PathName::GetUniqueFilePathInDirectory(PathName::GetSpecialFolderPath(SpecialFolder::Temporary), nullptr, nullptr))
+	: File(PathName::getUniqueFilePathInDirectory(PathName::getSpecialFolderPath(SpecialFolder::Temporary), nullptr, nullptr))
 	, m_autoRemove(true)
 {
 }
@@ -126,18 +126,18 @@ TemporaryFile::TemporaryFile()
 //------------------------------------------------------------------------------
 TemporaryFile::~TemporaryFile()
 {
-	Close();
+	close();
 
 	if (m_autoRemove)
 	{
-		FileSystem::Delete(GetFilePath());
+		FileSystem::deleteFile(getFilePath());
 	}
 }
 
 //------------------------------------------------------------------------------
-void TemporaryFile::Open()
+void TemporaryFile::open()
 {
-	File::Open(FileOpenMode::ReadWrite | FileOpenMode::Truncate);
+	File::open(FileOpenMode::ReadWrite | FileOpenMode::Truncate);
 }
 
 LN_NAMESPACE_END

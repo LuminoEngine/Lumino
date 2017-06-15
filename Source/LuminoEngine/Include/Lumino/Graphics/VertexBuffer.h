@@ -14,22 +14,22 @@ class VertexBuffer
 public:
 
 	/** 頂点バッファのバイトサイズを取得します。 */
-	int GetSize() const;
+	int getSize() const;
 
 	/** 頂点バッファの容量を確保します。 */
-	void Reserve(int size);
+	void reserve(int size);
 
 	/** 頂点バッファのサイズを変更します。 */
-	void Resize(int size);
+	void resize(int size);
 
 	/** 頂点バッファが保持するデータにアクセスします。 */
-	void* GetMappedData();
+	void* getMappedData();
 
 	/** 頂点が保持するデータにアクセスします。サイズが size より小さい場合はバッファを拡張します。 */
-	void* RequestMappedData(int size);
+	void* requestMappedData(int size);
 
 	/** 頂点バッファをクリアします。 */
-	void Clear();
+	void clear();
 
 protected:
 	virtual void Dispose() override;
@@ -37,12 +37,12 @@ protected:
 LN_INTERNAL_ACCESS:
 	VertexBuffer();
 	virtual ~VertexBuffer();
-	void Initialize(detail::GraphicsManager* manager, size_t bufferSize, const void* data, ResourceUsage usage, bool sizeConst);
-	Driver::IVertexBuffer* ResolveRHIObject();
-	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
+	void initialize(detail::GraphicsManager* manager, size_t bufferSize, const void* data, ResourceUsage usage, bool sizeConst);
+	Driver::IVertexBuffer* resolveRHIObject();
+	virtual void onChangeDevice(Driver::IGraphicsDevice* device);
 
 private:
-	bool IsRHIDirect() const { return m_initialUpdate && m_rhiObject != nullptr; }
+	bool isRHIDirect() const { return m_initialUpdate && m_rhiObject != nullptr; }
 
 	// TODO
 	friend struct SetVertexBufferCommand;

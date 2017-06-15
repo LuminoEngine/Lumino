@@ -90,12 +90,12 @@ class InputBinding
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	float GetMinValidMThreshold() const { return m_minValidMThreshold; }
-	float GetScale() const { return 1.0f; }	// TODO
+	float getScale() const { return 1.0f; }	// TODO
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	InputBinding();
 	virtual ~InputBinding();
-	virtual detail::InputBindingType GetType() const = 0;
+	virtual detail::InputBindingType getType() const = 0;
 
 private:
 	float						m_minValidMThreshold;
@@ -115,20 +115,20 @@ public:
 		@param[in]	key				: 関連付けられるキー
 		@param[in]	modifierKeys	: 関連付けられる修飾キー
 	*/
-	static KeyboardBindingPtr Create(Keys key, ModifierKeys modifierKeys = ModifierKeys::None);
+	static KeyboardBindingPtr create(Keys key, ModifierKeys modifierKeys = ModifierKeys::None);
 
 public:
 
 	/** 関連付けられるキー */
-	Keys GetKey() const { return m_key; }
+	Keys getKey() const { return m_key; }
 
 	/** 関連付けられる修飾キー */
-	ModifierKeys GetModifierKeys() const { return m_modifierKeys; }
+	ModifierKeys getModifierKeys() const { return m_modifierKeys; }
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	KeyboardBinding(Keys key, ModifierKeys modifierKeys);
 	virtual ~KeyboardBinding();
-	virtual detail::InputBindingType GetType() const override;
+	virtual detail::InputBindingType getType() const override;
 
 private:
 	Keys			m_key;
@@ -149,20 +149,20 @@ public:
 		@param[in]	mouseAction		: 関連付けられるマウス操作
 		@param[in]	modifierKeys	: 関連付けられる修飾キー
 	*/
-	static MouseBindingPtr Create(MouseAction mouseAction, ModifierKeys modifierKeys = ModifierKeys::None);
+	static MouseBindingPtr create(MouseAction mouseAction, ModifierKeys modifierKeys = ModifierKeys::None);
 
 public:
 
 	/** 関連付けられるマウス操作 */
-	MouseAction GetMouseAction() const { return m_mouseAction; }
+	MouseAction getMouseAction() const { return m_mouseAction; }
 
 	/** 関連付けられる修飾キー */
-	ModifierKeys GetModifierKeys() const { return m_modifierKeys; }
+	ModifierKeys getModifierKeys() const { return m_modifierKeys; }
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	MouseBinding(MouseAction mouseAction, ModifierKeys modifierKeys);
 	virtual ~MouseBinding();
-	virtual detail::InputBindingType GetType() const override;
+	virtual detail::InputBindingType getType() const override;
 
 private:
 	MouseAction		m_mouseAction;
@@ -182,17 +182,17 @@ public:
 		@brief		GamepadBinding オブジェクトを作成します。
 		@param[in]	element		: 関連付けられるゲームパッド操作
 	*/
-	static GamepadBindingPtr Create(GamepadElement element);
+	static GamepadBindingPtr create(GamepadElement element);
 
 public:
 
 	/** 関連付けられるゲームパッド操作 */
-	GamepadElement GetElement() const { return m_element; }
+	GamepadElement getElement() const { return m_element; }
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	GamepadBinding(GamepadElement element);
 	virtual ~GamepadBinding();
-	virtual detail::InputBindingType GetType() const override;
+	virtual detail::InputBindingType getType() const override;
 
 private:
 	GamepadElement		m_element;

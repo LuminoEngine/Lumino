@@ -24,11 +24,11 @@ TEST_F(Test_Base_Point, Basic)
 	PointI pt2(1, 2);
 	ASSERT_EQ_POINT(1, 2, pt2);
 
-	pt2.Set(3, 4);
+	pt2.set(3, 4);
 	ASSERT_EQ_POINT(3, 4, pt2);
 
-	ASSERT_TRUE(pt1.IsZero());
-	ASSERT_FALSE(pt2.IsZero());
+	ASSERT_TRUE(pt1.isZero());
+	ASSERT_FALSE(pt2.isZero());
 
 	PointI pt3(3, 4);
 	ASSERT_TRUE(pt2 == pt3);
@@ -45,11 +45,11 @@ TEST_F(Test_Base_Point, Float)
 	PointF pt2(0.5f, 0.75f);
 	ASSERT_EQ_POINT_FLOAT(0.5f, 0.75f, pt2);
 
-	pt2.Set(3.5f, 4.25f);
+	pt2.set(3.5f, 4.25f);
 	ASSERT_EQ_POINT_FLOAT(3.5f, 4.25f, pt2);
 
-	ASSERT_TRUE(pt1.IsZero());
-	ASSERT_FALSE(pt2.IsZero());
+	ASSERT_TRUE(pt1.isZero());
+	ASSERT_FALSE(pt2.isZero());
 
 	PointF pt3(3.5f, 4.25f);
 	ASSERT_TRUE(pt2 == pt3);
@@ -84,20 +84,20 @@ protected:
 //	RectI rc4(rc3);
 //	ASSERT_EQ_RECT(5, 6, 7, 8, rc4);
 //
-//	ASSERT_EQ(5, rc4.GetLeft());
+//	ASSERT_EQ(5, rc4.getLeft());
 //	ASSERT_EQ(6, rc4.GetTop());
-//	ASSERT_EQ(12, rc4.GetRight());
-//	ASSERT_EQ(14, rc4.GetBottom());
+//	ASSERT_EQ(12, rc4.getRight());
+//	ASSERT_EQ(14, rc4.getBottom());
 //
-//	ASSERT_EQ(PointI(5, 6), rc4.GetTopLeft());
-//	ASSERT_EQ(PointI(12, 6), rc4.GetTopRight());
-//	ASSERT_EQ(PointI(5, 14), rc4.GetBottomLeft());
-//	ASSERT_EQ(PointI(12, 14), rc4.GetBottomRight());
+//	ASSERT_EQ(PointI(5, 6), rc4.getTopLeft());
+//	ASSERT_EQ(PointI(12, 6), rc4.getTopRight());
+//	ASSERT_EQ(PointI(5, 14), rc4.getBottomLeft());
+//	ASSERT_EQ(PointI(12, 14), rc4.getBottomRight());
 //
-//	rc3.SetLocation(PointI(10, 20));
-//	ASSERT_EQ(PointI(10, 20), rc3.GetLocation());
+//	rc3.setLocation(PointI(10, 20));
+//	ASSERT_EQ(PointI(10, 20), rc3.setLocation());
 //
-//	rc3.SetSize(SizeI(30, 40));
+//	rc3.setSize(SizeI(30, 40));
 //	ASSERT_EQ(SizeI(30, 40), rc3.GetSize());
 //
 //	RectI rc5(0, 0, -1, -2);
@@ -105,8 +105,8 @@ protected:
 //	ASSERT_FALSE(rc1.IsEmpty());
 //	ASSERT_FALSE(rc3.IsEmpty());
 //
-//	ASSERT_TRUE(rc1.IsZero());
-//	ASSERT_FALSE(rc5.IsZero());
+//	ASSERT_TRUE(rc1.isZero());
+//	ASSERT_FALSE(rc5.isZero());
 //
 //
 //	ASSERT_TRUE(RectI(0, 1, 2, 3) == RectI(0, 1, 2, 3));
@@ -116,31 +116,31 @@ protected:
 //}
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Base_Rect, Contains)
+TEST_F(Test_Base_Rect, contains)
 {
 	Rect rc1(10, 20, 30, 40);
-	ASSERT_TRUE(rc1.Contains(10, 20));
-	ASSERT_TRUE(rc1.Contains(PointF(30, 40)));
+	ASSERT_TRUE(rc1.contains(10, 20));
+	ASSERT_TRUE(rc1.contains(PointF(30, 40)));
 
 	// 同じサイズ → true
 	Rect rc2(10, 20, 30, 40);
-	ASSERT_TRUE(rc1.Contains(rc2));
+	ASSERT_TRUE(rc1.contains(rc2));
 
 	// 内部 → true
 	Rect rc3(15, 25, 5, 6);
-	ASSERT_TRUE(rc1.Contains(rc3));
+	ASSERT_TRUE(rc1.contains(rc3));
 
 	// 1px 大きい → false
 	Rect rc4(10, 20, 30, 40 + 1);
-	ASSERT_FALSE(rc1.Contains(rc4));
+	ASSERT_FALSE(rc1.contains(rc4));
 
 	// 1px ずれ → false
 	Rect rc5(10, 20 - 1, 30, 40);
-	ASSERT_FALSE(rc1.Contains(rc5));
+	ASSERT_FALSE(rc1.contains(rc5));
 
 	// rc1 全体を囲む → false
 	Rect rc6(0, 1, 100, 200);
-	ASSERT_FALSE(rc1.Contains(rc6));
+	ASSERT_FALSE(rc1.contains(rc6));
 
 }
 
@@ -176,11 +176,11 @@ TEST_F(Test_Base_Size, Basic)
 	SizeI s2(1, 2);
 	ASSERT_EQ_SIZE(1, 2, s2);
 
-	s2.Set(3, 4);
+	s2.set(3, 4);
 	ASSERT_EQ_SIZE(3, 4, s2);
 
-	ASSERT_TRUE(s1.IsZero());
-	ASSERT_FALSE(s2.IsZero());
+	ASSERT_TRUE(s1.isZero());
+	ASSERT_FALSE(s2.isZero());
 
 	SizeI s3(3, 4);
 	ASSERT_TRUE(s2 == s3);
@@ -188,10 +188,10 @@ TEST_F(Test_Base_Size, Basic)
 	ASSERT_FALSE(s2 != s3);
 	ASSERT_TRUE(s1 != s2);
 
-	ASSERT_TRUE(Size(0, 0).IsAnyZero());
-	ASSERT_TRUE(Size(1, 0).IsAnyZero());
-	ASSERT_TRUE(Size(0, 1).IsAnyZero());
-	ASSERT_FALSE(Size(1, 1).IsAnyZero());
+	ASSERT_TRUE(Size(0, 0).isAnyZero());
+	ASSERT_TRUE(Size(1, 0).isAnyZero());
+	ASSERT_TRUE(Size(0, 1).isAnyZero());
+	ASSERT_FALSE(Size(1, 1).isAnyZero());
 }
 
 //------------------------------------------------------------------------------
@@ -202,11 +202,11 @@ TEST_F(Test_Base_Size, Float)
 	Size s2(0.5f, 0.75f);
 	ASSERT_EQ_SIZE_FLOAT(0.5f, 0.75f, s2);
 
-	s2.Set(3.5f, 4.25f);
+	s2.set(3.5f, 4.25f);
 	ASSERT_EQ_SIZE_FLOAT(3.5f, 4.25f, s2);
 
-	ASSERT_TRUE(s1.IsZero());
-	ASSERT_FALSE(s2.IsZero());
+	ASSERT_TRUE(s1.isZero());
+	ASSERT_FALSE(s2.isZero());
 
 	Size s3(3.5f, 4.25f);
 	ASSERT_TRUE(s2 == s3);
@@ -214,9 +214,9 @@ TEST_F(Test_Base_Size, Float)
 	ASSERT_FALSE(s2 != s3);
 	ASSERT_TRUE(s1 != s2);
 
-	ASSERT_TRUE(Size(0.0f, 0.0f).IsAnyZero());
-	ASSERT_TRUE(Size(1.0f, 0.0f).IsAnyZero());
-	ASSERT_TRUE(Size(0.0f, 1.0f).IsAnyZero());
-	ASSERT_FALSE(Size(1.0f, 1.0f).IsAnyZero());
+	ASSERT_TRUE(Size(0.0f, 0.0f).isAnyZero());
+	ASSERT_TRUE(Size(1.0f, 0.0f).isAnyZero());
+	ASSERT_TRUE(Size(0.0f, 1.0f).isAnyZero());
+	ASSERT_FALSE(Size(1.0f, 1.0f).isAnyZero());
 }
 

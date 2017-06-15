@@ -35,7 +35,7 @@ class World
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
-	DrawList* GetRenderer() const;
+	DrawList* getRenderer() const;
 	DrawList* GetDebugRenderer() const;
 
 	void RemoveAllObjects();
@@ -46,20 +46,20 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	World();
 	virtual ~World();
-	void Initialize();
+	void initialize();
 
 LN_INTERNAL_ACCESS:
-	const RefPtr<DrawList>& GetInsideWorldRenderer() const { return m_insideWorldRenderer; }
-	void AddWorldObject(WorldObject* obj, bool autoRelease /*= false*/);
-	void RemoveWorldObject(WorldObject* obj);
-	void AddOffscreenWorldView(OffscreenWorldView* view);
-	void RemoveOffscreenWorldView(OffscreenWorldView* view);
-	virtual void BeginUpdateFrame();
-	virtual void UpdateFrame(float elapsedTime);
-	void RenderRoot(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags, RenderView* mainRenderView);
-	virtual void Render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags, OffscreenWorldView* offscreen = nullptr);
-	void ExecuteDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
-	virtual void OnUIEvent(UIEventArgs* e);
+	const RefPtr<DrawList>& getInsideWorldRenderer() const { return m_insideWorldRenderer; }
+	void addWorldObject(WorldObject* obj, bool autoRelease /*= false*/);
+	void removeWorldObject(WorldObject* obj);
+	void addOffscreenWorldView(OffscreenWorldView* view);
+	void removeOffscreenWorldView(OffscreenWorldView* view);
+	virtual void reginUpdateFrame();
+	virtual void updateFrame(float elapsedTime);
+	void renderRoot(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags, RenderView* mainRenderView);
+	virtual void render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags, OffscreenWorldView* offscreen = nullptr);
+	void executeDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
+	virtual void onUIEvent(UIEventArgs* e);
 
 	List<RefPtr<WorldObject>>			m_rootWorldObjectList;
 	RefPtr<DrawList>					m_renderer;
@@ -78,7 +78,7 @@ class World2D
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	//virtual DrawList* GetRenderer() const override;
+	//virtual DrawList* getRenderer() const override;
 
 
 protected:
@@ -86,14 +86,14 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	World2D();
 	virtual ~World2D();
-	void Initialize();
+	void initialize();
 
 LN_INTERNAL_ACCESS:
-	SceneGraph2D* GetSceneGraph2D() const;
-	Camera* GetMainCamera() const;
-	virtual void BeginUpdateFrame() override;
-	virtual void UpdateFrame(float elapsedTime) override;
-	virtual void Render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags, OffscreenWorldView* offscreen) override;
+	SceneGraph2D* getSceneGraph2D() const;
+	Camera* getMainCamera() const;
+	virtual void reginUpdateFrame() override;
+	virtual void updateFrame(float elapsedTime) override;
+	virtual void render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags, OffscreenWorldView* offscreen) override;
 
 private:
 	RefPtr<SceneGraph2D>		m_sceneGraph;
@@ -109,7 +109,7 @@ class World3D
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 	void SetVisibleGridPlane(bool visible) { m_visibleGridPlane = visible; }
-	//virtual DrawList* GetRenderer() const override;
+	//virtual DrawList* getRenderer() const override;
 
 protected:
 	//virtual SceneGraph* GetSceneGraph() override;
@@ -117,20 +117,20 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	World3D();
 	virtual ~World3D();
-	void Initialize();
+	void initialize();
 
 LN_INTERNAL_ACCESS:
-	PhysicsWorld* GetPhysicsWorld3D() const;
-	SceneGraph3D* GetSceneGraph3D() const;
-	Camera* GetMainCamera() const;
-	virtual void BeginUpdateFrame() override;
-	virtual void UpdateFrame(float elapsedTime) override;
-	virtual void Render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags, OffscreenWorldView* offscreen) override;
+	PhysicsWorld* getPhysicsWorld3D() const;
+	SceneGraph3D* getSceneGraph3D() const;
+	Camera* getMainCamera() const;
+	virtual void reginUpdateFrame() override;
+	virtual void updateFrame(float elapsedTime) override;
+	virtual void render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags, OffscreenWorldView* offscreen) override;
 
 private:
-	void CreateGridPlane();
-	void RenderGridPlane(DrawList* renderer, CameraComponent* camera);
-	void AdjustGridPlane(CameraComponent* camera);
+	void createGridPlane();
+	void renderGridPlane(DrawList* renderer, CameraComponent* camera);
+	void adjustGridPlane(CameraComponent* camera);
 
 	RefPtr<PhysicsWorld>		m_physicsWorld;
 	RefPtr<SceneGraph3D>		m_sceneGraph;

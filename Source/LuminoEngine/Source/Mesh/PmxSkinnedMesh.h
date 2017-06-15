@@ -23,7 +23,7 @@ LN_ENUM_FLAGS(BoneType)
 	LinkTargetByBoneIndex = 1,
 	Rotate,
 	XYZ = 4,
-	Draw = 8,
+	draw = 8,
 	Operatable = 16,
 	IK = 32,
 	IK_Child = 64,
@@ -135,13 +135,13 @@ public:
 
 	PmxMaterialResource()
 	{
-		Diffuse.Set(1.0f, 1.0f, 1.0f, 1.0f);
-		Ambient.Set(0.0f, 0.0f, 0.0f, 0.0f);
-		Specular.Set(0.5f, 0.5f, 0.5f, 0.5f);
-		Emissive.Set(0.0f, 0.0f, 0.0f, 0.0f);
+		Diffuse.set(1.0f, 1.0f, 1.0f, 1.0f);
+		Ambient.set(0.0f, 0.0f, 0.0f, 0.0f);
+		Specular.set(0.5f, 0.5f, 0.5f, 0.5f);
+		Emissive.set(0.0f, 0.0f, 0.0f, 0.0f);
 		Power = 50.0f;
-		ToonColor.Set(1.0f, 1.0f, 1.0f, 1.0f);
-		EdgeColor.Set(0.0f, 0.0f, 0.0f, 1.0f);
+		ToonColor.set(1.0f, 1.0f, 1.0f, 1.0f);
+		EdgeColor.set(0.0f, 0.0f, 0.0f, 1.0f);
 		EdgeSize = 0.0f;
 		SphereMode = SphereMode_Disable;
 		DrawingFlags = 0;
@@ -156,10 +156,10 @@ class PmxBoneResource
 {
 public:
 	PmxBoneResource(PmxSkinnedMeshResource* owner, int boneIndex);
-	void RefreshInitialValues();
-	int GetBoneIndex() const { return m_boneIndex; }
-	const Vector3& GetOffsetFromParent() const { return m_offsetFromParent; }
-	const Matrix& GetInitialTranstormInv() const { return m_initialTranstormInv; }
+	void refreshInitialValues();
+	int getBoneIndex() const { return m_boneIndex; }
+	const Vector3& getOffsetFromParent() const { return m_offsetFromParent; }
+	const Matrix& getInitialTranstormInv() const { return m_initialTranstormInv; }
 
 public:
 	String				Name;						///< ボーン名
@@ -172,7 +172,7 @@ public:
 	BoneConnectType		BoneConnect;				///< 接続先(PMD子ボーン指定)表示方法 -> 0:座標オフセットで指定 1:ボーンで指定
 	bool				CanRotate;					///< 回転可能
 	bool				CanMove;					///< 移動可能
-	bool				IsVisible;					///< 表示
+	bool				isVisible;					///< 表示
 	bool				CanOperate;					///< 操作可
 	bool				IsIK;						///< IK
 	LocalProvideType	LocalProvide;				///< ローカル付与 | 付与対象 0:ユーザー変形値／IKリンク／多重付与 1:親のローカル変形量
@@ -197,8 +197,8 @@ public:
 private:
 	PmxSkinnedMeshResource*	m_owner;
 	int						m_boneIndex;
-	Vector3					m_offsetFromParent;			///< (RefreshInitialValues() で設定される) 親ボーンのからの相対位置 (親OrgPosition - OrgPosition)
-	Matrix					m_initialTranstormInv;		///< (RefreshInitialValues() で設定される) モデル座標系内の初期姿勢の逆行列
+	Vector3					m_offsetFromParent;			///< (refreshInitialValues() で設定される) 親ボーンのからの相対位置 (親OrgPosition - OrgPosition)
+	Matrix					m_initialTranstormInv;		///< (refreshInitialValues() で設定される) モデル座標系内の初期姿勢の逆行列
 };
 
 
@@ -395,7 +395,7 @@ class PmxSkinnedMeshResource
 	LN_CACHE_OBJECT_DECL;
 public:
 	virtual ~PmxSkinnedMeshResource();
-	void RefreshInitialValues();
+	void refreshInitialValues();
 
 public:
 	ModelFormat				Format;

@@ -20,21 +20,21 @@ TEST_F(IntegrateTest_Threading_Semaphore, Basic)
 	DelegateThread thr1, thr2, thr3, thr4;
 	
 	g_value = 0;
-	auto func = [&sem, &flag](){ sem.Lock(); g_value++; flag.Wait(); sem.Unlock(); };
+	auto func = [&sem, &flag](){ sem.lock(); g_value++; flag.wait(); sem.unlock(); };
 
-	thr1.Start(Delegate<void()>(func));
-	thr2.Start(Delegate<void()>(func));
-	thr3.Start(Delegate<void()>(func));
-	thr4.Start(Delegate<void()>(func));
+	thr1.start(Delegate<void()>(func));
+	thr2.start(Delegate<void()>(func));
+	thr3.start(Delegate<void()>(func));
+	thr4.start(Delegate<void()>(func));
 
-	Thread::Sleep(100);
+	Thread::sleep(100);
 
-	// この時点で2つはLock()で止まっている
+	// この時点で2つはlock()で止まっている
 	ASSERT_EQ(2, g_value);
 
-	// 先に flag.Wait() で待っているものを動かす→Unlock()にたどり着く
-	flag.SetTrue();
+	// 先に flag.wait() で待っているものを動かす→unlock()にたどり着く
+	flag.setTrue();
 
-	Thread::Sleep(100);
+	Thread::sleep(100);
 	ASSERT_EQ(4, g_value);
 }

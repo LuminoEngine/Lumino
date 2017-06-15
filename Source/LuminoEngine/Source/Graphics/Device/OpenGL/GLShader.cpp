@@ -14,7 +14,7 @@
 #include "GLShader.h"
 
 #if defined(LN_DO_CHECK_THROW)
-#define	LN_FAIL_CHECK_GLERROR()		for (GLenum lnglerr = glGetError(); lnglerr != GL_NO_ERROR && ln::detail::NotifyException<OpenGLException>(__FILE__, __LINE__, lnglerr); lnglerr = GL_NO_ERROR)
+#define	LN_FAIL_CHECK_GLERROR()		for (GLenum lnglerr = glGetError(); lnglerr != GL_NO_ERROR && ln::detail::notifyException<OpenGLException>(__FILE__, __LINE__, lnglerr); lnglerr = GL_NO_ERROR)
 #else
 #error no implemented
 #define LN_FAIL_CHECK_GLERROR()		for (GLenum lnglerr = glGetError(); lnglerr != GL_NO_ERROR; lnglerr = GL_NO_ERROR)//{ GLenum lnglerr = glGetError(); LN_THROW(lnglerr == GL_NO_ERROR , OpenGLException, lnglerr); }
@@ -186,7 +186,7 @@ enum class RenderStateId
 //ShaderCompileResultLevel GLSLUtils::Build(GLGraphicsDevice* device, const void* code, size_t codeByteCount, GLShader** outShader, StringA* outMessage)
 //{
 //	GLuint program;
-//	ShaderCompileResultLevel resultLevel = MakeShaderProgram(code, codeByteCount, &program, outMessage);
+//	ShaderCompileResultLevel resultLevel = makeShaderProgram(code, codeByteCount, &program, outMessage);
 //	if (resultLevel == ShaderCompileResultLevel_Error) {
 //		return resultLevel;
 //	}
@@ -210,7 +210,7 @@ enum class RenderStateId
 //
 //		// 変数情報作成
 //		ShaderVariableBase::ShaderVariableTypeDesc desc;
-//		GLShaderVariable::ConvertVariableTypeGLToLN(var_type, var_size, &desc);
+//		GLShaderVariable::convertVariableTypeGLToLN(var_type, var_size, &desc);
 //
 //		// 名前を String 化
 //		String tname;
@@ -326,10 +326,10 @@ enum class RenderStateId
 //}
 
 //------------------------------------------------------------------------------
-ShaderCompileResultLevel GLSLUtils::MakeShaderProgram(const char* vsCode, size_t vsCodeLen, const char* fsCode, size_t fsCodeLen, GLuint* outProgram, StringA* outMessage)
+ShaderCompileResultLevel GLSLUtils::makeShaderProgram(const char* vsCode, size_t vsCodeLen, const char* fsCode, size_t fsCodeLen, GLuint* outProgram, StringA* outMessage)
 {
 	*outProgram = NULL;
-	outMessage->Clear();
+	outMessage->clear();
 
 	// 頂点シェーダコード
 	const char* vs_codes[] =
@@ -364,8 +364,8 @@ ShaderCompileResultLevel GLSLUtils::MakeShaderProgram(const char* vsCode, size_t
 		//LN_CHECK_GLERROR();
 
 		// シェーダオブジェクトのコンパイル
-		vertexShader = CompileShader2(GL_VERTEX_SHADER, 1, vs_codes, vs_sizes, &diag);
-		fragmentShader = CompileShader2(GL_FRAGMENT_SHADER, 1, fs_codes, fs_sizes, &diag);
+		vertexShader = compileShader2(GL_VERTEX_SHADER, 1, vs_codes, vs_sizes, &diag);
+		fragmentShader = compileShader2(GL_FRAGMENT_SHADER, 1, fs_codes, fs_sizes, &diag);
 		if (vertexShader == 0 || fragmentShader == 0)
 		{
 			// コンパイルエラー
@@ -421,7 +421,7 @@ ShaderCompileResultLevel GLSLUtils::MakeShaderProgram(const char* vsCode, size_t
 		glDeleteShader(fragmentShader);
 
 		*outProgram = program;
-		if (outMessage->IsEmpty()) {
+		if (outMessage->isEmpty()) {
 			return ShaderCompileResultLevel_Success;
 		}
 		else {
@@ -441,7 +441,7 @@ ShaderCompileResultLevel GLSLUtils::MakeShaderProgram(const char* vsCode, size_t
 }
 
 //------------------------------------------------------------------------------
-void GLSLUtils::AnalyzeLNBasicShaderCode(const char* code, size_t codeLen, GLuint type, const char* entryName, CodeRange* outCode)
+void GLSLUtils::analyzeLNBasicShaderCode(const char* code, size_t codeLen, GLuint type, const char* entryName, CodeRange* outCode)
 {
 	if (LN_CHECK_ARG(code != nullptr)) return;
 	if (LN_CHECK_ARG(entryName != nullptr)) return;
@@ -454,24 +454,24 @@ void GLSLUtils::AnalyzeLNBasicShaderCode(const char* code, size_t codeLen, GLuin
 	StringA endKey;
 	if (type == GL_VERTEX_SHADER)
 	{
-		ifdef = StringA::Format("#ifdef LN_GLSL_VERTEX_{0}", entryName);
-		endKey = StringA::Format("#endif LN_GLSL_VERTEX_{0}", entryName);
+		ifdef = StringA::format("#ifdef LN_GLSL_VERTEX_{0}", entryName);
+		endKey = StringA::format("#endif LN_GLSL_VERTEX_{0}", entryName);
 	}
 	else if (type == GL_FRAGMENT_SHADER)
 	{
-		ifdef = StringA::Format("#ifdef LN_GLSL_FRAGMENT_{0}", entryName);
-		endKey = StringA::Format("#endif LN_GLSL_FRAGMENT_{0}", entryName);
+		ifdef = StringA::format("#ifdef LN_GLSL_FRAGMENT_{0}", entryName);
+		endKey = StringA::format("#endif LN_GLSL_FRAGMENT_{0}", entryName);
 	}
 
 	// find begin - end
-	int codeBegin = StringTraits::IndexOf(code, codeLen, ifdef.c_str(), -1);
+	int codeBegin = StringTraits::indexOf(code, codeLen, ifdef.c_str(), -1);
 	if (LN_CHECK_FORMAT(codeBegin >= 0)) return;
 	//int codeEnd = StringTraits::IndexOf(code, codeLen, "LN_GLSL_END", 11, codeBegin);
-	int codeEnd = StringTraits::IndexOf(code, codeLen, endKey.c_str(), endKey.GetLength(), codeBegin);
+	int codeEnd = StringTraits::indexOf(code, codeLen, endKey.c_str(), endKey.getLength(), codeBegin);
 	if (LN_CHECK_FORMAT(codeEnd >= 0)) return;
 
 	// make range
-	const char* begin = code + codeBegin + ifdef.GetLength();
+	const char* begin = code + codeBegin + ifdef.getLength();
 	const char* end = code + codeEnd;
 
 	// output
@@ -480,7 +480,7 @@ void GLSLUtils::AnalyzeLNBasicShaderCode(const char* code, size_t codeLen, GLuin
 }
 
 //------------------------------------------------------------------------------
-GLuint GLSLUtils::CompileShader2(GLuint type, int codeCount, const char** codes, const GLint* sizes, ShaderDiag* diag)
+GLuint GLSLUtils::compileShader2(GLuint type, int codeCount, const char** codes, const GLint* sizes, ShaderDiag* diag)
 {
 	GLuint shader = glCreateShader(type);
 	LN_FAIL_CHECK_GLERROR() return 0;
@@ -501,9 +501,9 @@ GLuint GLSLUtils::CompileShader2(GLuint type, int codeCount, const char** codes,
 	{
 		ByteBuffer buf(logSize);
 		int length;
-		glGetShaderInfoLog(shader, logSize, &length, (GLchar*)buf.GetData());
+		glGetShaderInfoLog(shader, logSize, &length, (GLchar*)buf.getData());
 		diag->message += "Compile info:\n";
-		diag->message += (const char*)buf.GetConstData();
+		diag->message += (const char*)buf.getConstData();
 		diag->level = ShaderCompileResultLevel_Warning;
 	}
 
@@ -518,17 +518,17 @@ GLuint GLSLUtils::CompileShader2(GLuint type, int codeCount, const char** codes,
 }
 
 //------------------------------------------------------------------------------
-GLuint GLSLUtils::CompileShader3(GLuint type, const char* code, GLint codeLen, const char* entryName, ShaderDiag* diag)
+GLuint GLSLUtils::compileShader3(GLuint type, const char* code, GLint codeLen, const char* entryName, ShaderDiag* diag)
 {
 	// make keyword
 	StringA ifdef;
 	if (type == GL_VERTEX_SHADER)
 	{
-		ifdef = StringA::Format("#define LN_GLSL_VERTEX_{0}\n", entryName);
+		ifdef = StringA::format("#define LN_GLSL_VERTEX_{0}\n", entryName);
 	}
 	else if (type == GL_FRAGMENT_SHADER)
 	{
-		ifdef = StringA::Format("#define LN_GLSL_FRAGMENT_{0}\n", entryName);
+		ifdef = StringA::format("#define LN_GLSL_FRAGMENT_{0}\n", entryName);
 	}
 
 	const char* codes[] =
@@ -540,11 +540,11 @@ GLuint GLSLUtils::CompileShader3(GLuint type, const char* code, GLint codeLen, c
 	GLint codeLens[] =
 	{
 		strlen(codes[0]),
-		ifdef.GetLength(),
+		ifdef.getLength(),
 		codeLen,
 	};
 
-	return CompileShader2(type, 3, codes, codeLens, diag);
+	return compileShader2(type, 3, codes, codeLens, diag);
 }
 
 //==============================================================================
@@ -578,56 +578,56 @@ GLShader::~GLShader()
 }
 
 //------------------------------------------------------------------------------
-void GLShader::Initialize(GLGraphicsDevice* device, const void* code_, size_t codeByteCount)
+void GLShader::initialize(GLGraphicsDevice* device, const void* code_, size_t codeByteCount)
 {
 	m_device = device;
 
 	const char* code = (const char*)code_;
 	if (memcmp(code, "#ifdef LN_FXC_METADATA", 22) == 0)
 	{
-		int index = StringTraits::IndexOf(code, codeByteCount, "#endif", 6);
+		int index = StringTraits::indexOf(code, codeByteCount, "#endif", 6);
 		LN_THROW(index >= 0, InvalidFormatException);
-		StringReader reader(String::FromNativeCharString(code + 22, index - 22));
+		StringReader reader(String::fromNativeCharString(code + 22, index - 22));
 		tr::JsonReader2 json(&reader);
-		json.ReadAsStartObject();
+		json.readAsStartObject();
 
 		// vertexShaders
-		if (json.ReadAsPropertyName() == _T("vertexShaders"))
+		if (json.readAsPropertyName() == _T("vertexShaders"))
 		{
-			json.ReadAsStartArray();
-			while (json.Read() && json.GetTokenType() != tr::JsonToken::EndArray)
+			json.readAsStartArray();
+			while (json.read() && json.getTokenType() != tr::JsonToken::EndArray)
 			{
-				String entry = json.GetValue();
-				m_glVertexShaderEntryMap[entry] = CompileShader(code, codeByteCount, entry.ToStringA().c_str(), GL_VERTEX_SHADER);
+				String entry = json.getValue();
+				m_glVertexShaderEntryMap[entry] = compileShader(code, codeByteCount, entry.toStringA().c_str(), GL_VERTEX_SHADER);
 			}
 		}
 		// pixelShaders
-		if (json.ReadAsPropertyName() == _T("pixelShaders"))
+		if (json.readAsPropertyName() == _T("pixelShaders"))
 		{
-			json.ReadAsStartArray();
-			while (json.Read() && json.GetTokenType() != tr::JsonToken::EndArray)
+			json.readAsStartArray();
+			while (json.read() && json.getTokenType() != tr::JsonToken::EndArray)
 			{
-				String entry = json.GetValue();
-				m_glPixelShaderEntryMap[entry] = CompileShader(code, codeByteCount, entry.ToStringA().c_str(), GL_FRAGMENT_SHADER);
+				String entry = json.getValue();
+				m_glPixelShaderEntryMap[entry] = compileShader(code, codeByteCount, entry.toStringA().c_str(), GL_FRAGMENT_SHADER);
 			}
 		}
 		// techniques
-		if (json.ReadAsPropertyName() == _T("techniques"))
+		if (json.readAsPropertyName() == _T("techniques"))
 		{
-			json.ReadAsStartArray();
-			while (json.Read() && json.GetTokenType() != tr::JsonToken::EndArray)
+			json.readAsStartArray();
+			while (json.read() && json.getTokenType() != tr::JsonToken::EndArray)
 			{
-				m_techniques.Add(GLShaderTechnique::Deserialize(this, &json));
+				m_techniques.add(GLShaderTechnique::deserialize(this, &json));
 			}
 		}
 		// parameters
-		if (json.ReadAsPropertyName() == _T("parameters"))
+		if (json.readAsPropertyName() == _T("parameters"))
 		{
-			json.ReadAsStartArray();
-			while (json.Read() && json.GetTokenType() != tr::JsonToken::EndArray)
+			json.readAsStartArray();
+			while (json.read() && json.getTokenType() != tr::JsonToken::EndArray)
 			{
 				bool overwrited = false;	//TODO: いらないかも
-				GLShaderVariable* v = GLShaderVariable::Deserialize(this, &json, &overwrited);
+				GLShaderVariable* v = GLShaderVariable::deserialize(this, &json, &overwrited);
 				//if (!overwrited)
 				//{
 				//	m_variables.Add(v);
@@ -635,36 +635,36 @@ void GLShader::Initialize(GLGraphicsDevice* device, const void* code_, size_t co
 			}
 		}
 
-		json.ReadAsEndObject();
+		json.readAsEndObject();
 	}
 	else
 	{
-		GLuint vertShader = CompileShader(code, codeByteCount, "Main", GL_VERTEX_SHADER);
-		GLuint fragShader = CompileShader(code, codeByteCount, "Main", GL_FRAGMENT_SHADER);
+		GLuint vertShader = compileShader(code, codeByteCount, "Main", GL_VERTEX_SHADER);
+		GLuint fragShader = compileShader(code, codeByteCount, "Main", GL_FRAGMENT_SHADER);
 		m_glVertexShaderEntryMap[_T("Main")] = vertShader;	// delete のため
 		m_glPixelShaderEntryMap[_T("Main")] = fragShader;	// delete のため
 		auto* tech = LN_NEW GLShaderTechnique();
-		tech->Initialize(this, _T("Main"));
-		m_techniques.Add(tech);
+		tech->initialize(this, _T("Main"));
+		m_techniques.add(tech);
 		auto* pass = LN_NEW GLShaderPass();
-		pass->Initialize(this, _T("Main"), vertShader, fragShader);
-		tech->AddPass(pass);
+		pass->initialize(this, _T("Main"), vertShader, fragShader);
+		tech->addPass(pass);
 	}
 }
 
 //------------------------------------------------------------------------------
-//void GLShader::Create()
+//void GLShader::create()
 //{
 //}
 
 //------------------------------------------------------------------------------
-GLShaderVariable* GLShader::FindShaderVariable(const String& name)
+GLShaderVariable* GLShader::findShaderVariable(const String& name)
 {
 	for (GLShaderVariable* v : m_variables)
 	{
-		if (v->GetName() == name)
+		if (v->getName() == name)
 		{
-			//if (v->GetSemanticName() == semanticName) {
+			//if (v->getSemanticName() == semanticName) {
 			//	return v;
 			//}
 			//else {
@@ -678,11 +678,11 @@ GLShaderVariable* GLShader::FindShaderVariable(const String& name)
 }
 
 //------------------------------------------------------------------------------
-GLShaderVariable* GLShader::CreateShaderVariable(ShaderVariableBase::ShaderVariableTypeDesc desc, const String& name, const String& semanticName)
+GLShaderVariable* GLShader::createShaderVariable(ShaderVariableBase::ShaderVariableTypeDesc desc, const String& name, const String& semanticName)
 {
 	GLShaderVariable* v = LN_NEW GLShaderVariable();
-	v->Initialize(this, desc, name, semanticName, 0);
-	m_variables.Add(v);
+	v->initialize(this, desc, name, semanticName, 0);
+	m_variables.add(v);
 	return v;
 }
 
@@ -697,46 +697,46 @@ GLShaderVariable* GLShader::CreateShaderVariable(ShaderVariableBase::ShaderVaria
 //}
 //
 //------------------------------------------------------------------------------
-int GLShader::GetVariableCount() const
+int GLShader::getVariableCount() const
 {
-	return m_variables.GetCount();
+	return m_variables.getCount();
 }
 
 //------------------------------------------------------------------------------
-IShaderVariable* GLShader::GetVariable(int index) const
+IShaderVariable* GLShader::getVariable(int index) const
 {
 	return m_variables[index];
 }
 
 //------------------------------------------------------------------------------
-int GLShader::GetTechniqueCount() const
+int GLShader::getTechniqueCount() const
 {
-	return m_techniques.GetCount();
+	return m_techniques.getCount();
 }
 
 //------------------------------------------------------------------------------
-IShaderTechnique* GLShader::GetTechnique(int index) const
+IShaderTechnique* GLShader::getTechnique(int index) const
 {
 	return m_techniques[index];
 }
 
 //------------------------------------------------------------------------------
-void GLShader::OnLostDevice()
+void GLShader::onLostDevice()
 {
 	LN_THROW(0, NotImplementedException);
 }
 
 //------------------------------------------------------------------------------
-void GLShader::OnResetDevice()
+void GLShader::onResetDevice()
 {
 	LN_THROW(0, NotImplementedException);
 }
 
 //------------------------------------------------------------------------------
-GLuint GLShader::CompileShader(const char* code, size_t codeLen, const char* entryName, GLuint type)
+GLuint GLShader::compileShader(const char* code, size_t codeLen, const char* entryName, GLuint type)
 {
 	//GLSLUtils::CodeRange codeRange;
-	//GLSLUtils::AnalyzeLNBasicShaderCode(code, codeLen, type, entryName, &codeRange);
+	//GLSLUtils::analyzeLNBasicShaderCode(code, codeLen, type, entryName, &codeRange);
 
 	//const char* codes[] =
 	//{
@@ -749,8 +749,8 @@ GLuint GLShader::CompileShader(const char* code, size_t codeLen, const char* ent
 	//	strlen(codes[1]),
 	//};
 
-	//GLuint shader = GLSLUtils::CompileShader2(type, 2, codes, codeLens, &m_diag);
-	GLuint shader = GLSLUtils::CompileShader3(type, code, codeLen, entryName, &m_diag);
+	//GLuint shader = GLSLUtils::compileShader2(type, 2, codes, codeLens, &m_diag);
+	GLuint shader = GLSLUtils::compileShader3(type, code, codeLen, entryName, &m_diag);
 	if (shader == 0)	// TODO: エラーメッセージとか
 	{
 		glDeleteShader(shader);
@@ -760,7 +760,7 @@ GLuint GLShader::CompileShader(const char* code, size_t codeLen, const char* ent
 }
 
 //------------------------------------------------------------------------------
-GLuint GLShader::GetVertexShader(const String& name)
+GLuint GLShader::getVertexShader(const String& name)
 {
 	auto itr = m_glVertexShaderEntryMap.find(name);
 	LN_THROW(itr != m_glVertexShaderEntryMap.end(), KeyNotFoundException);
@@ -768,7 +768,7 @@ GLuint GLShader::GetVertexShader(const String& name)
 }
 
 //------------------------------------------------------------------------------
-GLuint GLShader::GetFlagmentShader(const String& name)
+GLuint GLShader::getFlagmentShader(const String& name)
 {
 	auto itr = m_glPixelShaderEntryMap.find(name);
 	LN_THROW(itr != m_glPixelShaderEntryMap.end(), KeyNotFoundException);
@@ -780,18 +780,18 @@ GLuint GLShader::GetFlagmentShader(const String& name)
 //==============================================================================
 
 //------------------------------------------------------------------------------
-GLShaderVariable* GLShaderVariable::Deserialize(GLShader* ownerShader, tr::JsonReader2* json, bool* outOverwrited)
+GLShaderVariable* GLShaderVariable::deserialize(GLShader* ownerShader, tr::JsonReader2* json, bool* outOverwrited)
 {
 	String name, semantic/*, samplerName*/;
 	bool shared;
-	if (json->ReadAsPropertyName() == _T("name")) name = json->ReadAsString();
+	if (json->readAsPropertyName() == _T("name")) name = json->readAsString();
 
-	GLShaderVariable* var = ownerShader->FindShaderVariable(name);
+	GLShaderVariable* var = ownerShader->findShaderVariable(name);
 	if (var == nullptr)
 	{
 		// TODO: ダミーのままでいいものか・・・
 		ShaderVariableTypeDesc dummy{};
-		var = ownerShader->CreateShaderVariable(dummy, name, String());
+		var = ownerShader->createShaderVariable(dummy, name, String());
 		*outOverwrited = false;
 	}
 	else
@@ -800,22 +800,22 @@ GLShaderVariable* GLShaderVariable::Deserialize(GLShader* ownerShader, tr::JsonR
 	}
 	//RefPtr<GLShaderVariable> var = ownerShader->TryCreateShaderVariable(dummy, name, String(), 0);	// TODO:この loc はいらない
 
-	while (json->Read())
+	while (json->read())
 	{
-		if (json->GetTokenType() == tr::JsonToken::EndObject) break;
-		if (json->GetTokenType() == tr::JsonToken::PropertyName)
+		if (json->getTokenType() == tr::JsonToken::EndObject) break;
+		if (json->getTokenType() == tr::JsonToken::PropertyName)
 		{
-			const String& prop = json->GetValue();
-			if (prop == _T("semantic")) var->SetSemanticName(json->ReadAsString());
+			const String& prop = json->getValue();
+			if (prop == _T("semantic")) var->setSemanticName(json->readAsString());
 			//else if (prop == _T("samplerName")) samplerName = json->ReadAsString();
-			else if (prop == _T("shared")) shared = json->ReadAsBool();
+			else if (prop == _T("shared")) shared = json->readAsBool();
 			else if (prop == _T("samplerStatus"))
 			{
-				json->ReadAsStartObject();
-				while (json->Read() && json->GetTokenType() != tr::JsonToken::EndObject)
+				json->readAsStartObject();
+				while (json->read() && json->getTokenType() != tr::JsonToken::EndObject)
 				{
-					String stateName = json->GetValue();
-					String stateValue = json->ReadAsString();
+					String stateName = json->getValue();
+					String stateValue = json->readAsString();
 					//if (json->ReadAsPropertyName() == _T("stateName")) stateName = json->ReadAsString();
 					//if (json->ReadAsPropertyName() == _T("value")) stateValue = json->ReadAsString();
 
@@ -829,16 +829,16 @@ GLShaderVariable* GLShaderVariable::Deserialize(GLShader* ownerShader, tr::JsonR
 			}
 			else if (prop == _T("annotations"))
 			{
-				json->ReadAsStartArray();
-				while (json->Read() && json->GetTokenType() != tr::JsonToken::EndArray)
+				json->readAsStartArray();
+				while (json->read() && json->getTokenType() != tr::JsonToken::EndArray)
 				{
-					var->m_annotations.Add(GLShaderAnnotation::Deserialize(json));
+					var->m_annotations.add(GLShaderAnnotation::deserialize(json));
 				}
 			}
 		}
 	}
 
-	//var->Initialize(ownerShader, , name, semantic, 0);
+	//var->initialize(ownerShader, , name, semantic, 0);
 	//json->ReadAsEndObject();
 	return var;
 }
@@ -855,58 +855,58 @@ GLShaderVariable::~GLShaderVariable()
 {
 	for (GLShaderAnnotation* anno : m_annotations)
 	{
-		anno->Release();
+		anno->release();
 	}
 }
 
 //------------------------------------------------------------------------------
-void GLShaderVariable::Initialize(GLShader* owner, ShaderVariableTypeDesc desc, const String& name, const String& semanticName, GLint location)
+void GLShaderVariable::initialize(GLShader* owner, ShaderVariableTypeDesc desc, const String& name, const String& semanticName, GLint location)
 {
 	m_ownerShader = owner;
 	m_glUniformLocation = location;
-	ShaderVariableBase::Initialize(desc, name, semanticName);
-	MakeInitialValue();
+	ShaderVariableBase::initialize(desc, name, semanticName);
+	makeInitialValue();
 }
 
 //------------------------------------------------------------------------------
-void GLShaderVariable::Apply(int location, int textureStageIndex)
+void GLShaderVariable::apply(int location, int textureStageIndex)
 {
-	if (!m_value.IsValid()) {
+	if (!m_value.isValid()) {
 		return;		// 一度も set されていない変数や、ライブラリが認識できない型である。その場合は何も処理をせず、デフォルト値のままにする。
 	}
 
-	MemoryStream* tempBuffer = m_ownerShader->GetGraphicsDevice()->GetUniformTempBuffer();
-	BinaryWriter* tempWriter = m_ownerShader->GetGraphicsDevice()->GetUniformTempBufferWriter();
-	tempWriter->Seek(0, SeekOrigin_Begin);
+	MemoryStream* tempBuffer = m_ownerShader->getGraphicsDevice()->getUniformTempBuffer();
+	BinaryWriter* tempWriter = m_ownerShader->getGraphicsDevice()->getUniformTempBufferWriter();
+	tempWriter->seek(0, SeekOrigin_Begin);
 
 	const Vector4* vec;
 
 	switch (m_desc.Type)
 	{
 	case ShaderVariableType_Bool:
-		glUniform1i(location, m_value.GetBool());
+		glUniform1i(location, m_value.getBool());
 		LN_FAIL_CHECK_GLERROR() return;
 		break;
 	case ShaderVariableType_BoolArray:
 	{
-		const bool* begin = m_value.GetBoolArray();
+		const bool* begin = m_value.getBoolArray();
 		const bool* end = begin + m_desc.Elements;
 
-		std::for_each(begin, end, [&tempWriter](bool v) { GLint i = (v) ? 1 : 0; tempWriter->Write(&i, sizeof(GLint)); });
-		glUniform1iv(location, m_desc.Elements, (const GLint*)tempBuffer->GetBuffer());
+		std::for_each(begin, end, [&tempWriter](bool v) { GLint i = (v) ? 1 : 0; tempWriter->write(&i, sizeof(GLint)); });
+		glUniform1iv(location, m_desc.Elements, (const GLint*)tempBuffer->getBuffer());
 		LN_FAIL_CHECK_GLERROR() return;
 		break;
 	}
 	case ShaderVariableType_Int:
-		glUniform1i(location, m_value.GetInt());
+		glUniform1i(location, m_value.getInt());
 		LN_FAIL_CHECK_GLERROR() return;
 		break;
 	case ShaderVariableType_Float:
-		glUniform1f(location, m_value.GetFloat());
+		glUniform1f(location, m_value.getFloat());
 		LN_FAIL_CHECK_GLERROR() return;
 		break;
 	case ShaderVariableType_Vector:
-		vec = &m_value.GetVector();
+		vec = &m_value.getVector();
 		if (m_desc.Columns == 2) {
 			glUniform2f(location, vec->x, vec->y);
 		}
@@ -920,24 +920,24 @@ void GLShaderVariable::Apply(int location, int textureStageIndex)
 		break;
 	case ShaderVariableType_VectorArray:
 	{
-		const Vector4* begin = m_value.GetVectorArray();
+		const Vector4* begin = m_value.getVectorArray();
 		const Vector4* end = begin + m_desc.Elements;
 
 		if (m_desc.Columns == 2)
 		{
-			std::for_each(begin, end, [&tempWriter](const Vector4& v) { tempWriter->Write(&v, sizeof(float) * 2); });
-			glUniform2fv(location, m_desc.Elements, (const GLfloat*)tempBuffer->GetBuffer());
+			std::for_each(begin, end, [&tempWriter](const Vector4& v) { tempWriter->write(&v, sizeof(float) * 2); });
+			glUniform2fv(location, m_desc.Elements, (const GLfloat*)tempBuffer->getBuffer());
 			LN_FAIL_CHECK_GLERROR() return;
 		}
 		else if (m_desc.Columns == 3)
 		{
-			std::for_each(begin, end, [&tempWriter](const Vector4& v) { tempWriter->Write(&v, sizeof(float) * 3); });
-			glUniform3fv(location, m_desc.Elements, (const GLfloat*)tempBuffer->GetBuffer());
+			std::for_each(begin, end, [&tempWriter](const Vector4& v) { tempWriter->write(&v, sizeof(float) * 3); });
+			glUniform3fv(location, m_desc.Elements, (const GLfloat*)tempBuffer->getBuffer());
 			LN_FAIL_CHECK_GLERROR() return;
 		}
 		else if (m_desc.Columns == 4)
 		{
-			glUniform4fv(location, m_desc.Elements, (const GLfloat*)m_value.GetVectorArray());
+			glUniform4fv(location, m_desc.Elements, (const GLfloat*)m_value.getVectorArray());
 			LN_FAIL_CHECK_GLERROR() return;
 		}
 		else
@@ -948,20 +948,20 @@ void GLShaderVariable::Apply(int location, int textureStageIndex)
 	}
 	case ShaderVariableType_Matrix:
 	{
-		glUniformMatrix4fv(location, 1, GL_FALSE, (const GLfloat*)&m_value.GetMatrix());
+		glUniformMatrix4fv(location, 1, GL_FALSE, (const GLfloat*)&m_value.getMatrix());
 		LN_FAIL_CHECK_GLERROR();
 		break;
 	}
 	case ShaderVariableType_MatrixArray:
-		glUniformMatrix4fv(location, m_desc.Elements, GL_FALSE, (const GLfloat*)m_value.GetMatrixArray());
+		glUniformMatrix4fv(location, m_desc.Elements, GL_FALSE, (const GLfloat*)m_value.getMatrixArray());
 		break;
 	case ShaderVariableType_DeviceTexture:
 		// textureStageIndex のテクスチャステージにバインド
 		glActiveTexture(GL_TEXTURE0 + textureStageIndex);
 		LN_FAIL_CHECK_GLERROR() return;
 
-		if (m_value.GetDeviceTexture() != nullptr)
-			glBindTexture(GL_TEXTURE_2D, static_cast<GLTextureBase*>(m_value.GetDeviceTexture())->GetGLTexture());
+		if (m_value.getDeviceTexture() != nullptr)
+			glBindTexture(GL_TEXTURE_2D, static_cast<GLTextureBase*>(m_value.getDeviceTexture())->getGLTexture());
 		else
 			glBindTexture(GL_TEXTURE_2D, 0);
 		LN_FAIL_CHECK_GLERROR();
@@ -986,19 +986,19 @@ void GLShaderVariable::Apply(int location, int textureStageIndex)
 }
 
 //------------------------------------------------------------------------------
-int GLShaderVariable::GetAnnotationCount()
+int GLShaderVariable::getAnnotationCount()
 {
-	return m_annotations.GetCount();
+	return m_annotations.getCount();
 }
 
 //------------------------------------------------------------------------------
-IShaderVariable* GLShaderVariable::GetAnnotation(int index)
+IShaderVariable* GLShaderVariable::getAnnotation(int index)
 {
 	return m_annotations[index];
 }
 
 //------------------------------------------------------------------------------
-void GLShaderVariable::ConvertVariableTypeGLToLN(const char* name, GLenum gl_type, GLsizei gl_var_size, ShaderVariableBase::ShaderVariableTypeDesc* desc)
+void GLShaderVariable::convertVariableTypeGLToLN(const char* name, GLenum gl_type, GLsizei gl_var_size, ShaderVariableBase::ShaderVariableTypeDesc* desc)
 {
 	desc->Elements = 0;
 	desc->Shared = false;
@@ -1052,7 +1052,7 @@ void GLShaderVariable::ConvertVariableTypeGLToLN(const char* name, GLenum gl_typ
 	}
 
 	// check array type (e.g. "list[0]")
-	if (StringTraits::IndexOf(name, -1, "[", 1) >= 0)
+	if (StringTraits::indexOf(name, -1, "[", 1) >= 0)
 	{
 		desc->Elements = gl_var_size;
 
@@ -1082,16 +1082,16 @@ void GLShaderVariable::ConvertVariableTypeGLToLN(const char* name, GLenum gl_typ
 //==============================================================================
 
 //------------------------------------------------------------------------------
-GLShaderAnnotation* GLShaderAnnotation::Deserialize(tr::JsonReader2* json)
+GLShaderAnnotation* GLShaderAnnotation::deserialize(tr::JsonReader2* json)
 {
-	auto anno = RefPtr<GLShaderAnnotation>::MakeRef();
+	auto anno = RefPtr<GLShaderAnnotation>::makeRef();
 	String type, name, value;
-	if (json->ReadAsPropertyName() == _T("type")) type = json->ReadAsString();
-	if (json->ReadAsPropertyName() == _T("name")) name = json->ReadAsString();
-	if (json->ReadAsPropertyName() == _T("value")) value = json->ReadAsString();
-	json->ReadAsEndObject();
-	anno->Initialize(type, name, value);
-	return anno.DetachMove();
+	if (json->readAsPropertyName() == _T("type")) type = json->readAsString();
+	if (json->readAsPropertyName() == _T("name")) name = json->readAsString();
+	if (json->readAsPropertyName() == _T("value")) value = json->readAsString();
+	json->readAsEndObject();
+	anno->initialize(type, name, value);
+	return anno.detachMove();
 }
 
 //------------------------------------------------------------------------------
@@ -1105,7 +1105,7 @@ GLShaderAnnotation::~GLShaderAnnotation()
 }
 
 //------------------------------------------------------------------------------
-void GLShaderAnnotation::Initialize(const String& type, const String& name, const String& value)
+void GLShaderAnnotation::initialize(const String& type, const String& name, const String& value)
 {
 	ShaderVariableTypeDesc desc;
 	desc.Type = ShaderVariableType_Unknown;
@@ -1114,47 +1114,47 @@ void GLShaderAnnotation::Initialize(const String& type, const String& name, cons
 	desc.Elements = 0;		// 配列はサポートしていない
 	desc.Shared = false;	// annotation に shared はつかない
 
-	if (type.IndexOf(_T("bool")) == 0)
+	if (type.indexOf(_T("bool")) == 0)
 	{
 		desc.Type = ShaderVariableType_Bool;
-		ShaderVariableBase::Initialize(desc, name, String::GetEmpty());
-		ShaderVariableBase::SetBool(value[0] == 't');	// "true"?
+		ShaderVariableBase::initialize(desc, name, String::getEmpty());
+		ShaderVariableBase::setBool(value[0] == 't');	// "true"?
 	}
-	else if (type.IndexOf(_T("int")) == 0)
+	else if (type.indexOf(_T("int")) == 0)
 	{
 		desc.Type = ShaderVariableType_Int;
-		ShaderVariableBase::Initialize(desc, name, String::GetEmpty());
-		ShaderVariableBase::SetInt(value.ToInt32());
+		ShaderVariableBase::initialize(desc, name, String::getEmpty());
+		ShaderVariableBase::setInt(value.toInt32());
 	}
-	else if (type.IndexOf(_T("string")) == 0)
+	else if (type.indexOf(_T("string")) == 0)
 	{
 		desc.Type = ShaderVariableType_Int;
-		ShaderVariableBase::Initialize(desc, name, String::GetEmpty());
-		ShaderVariableBase::SetString(value.c_str());
+		ShaderVariableBase::initialize(desc, name, String::getEmpty());
+		ShaderVariableBase::setString(value.c_str());
 	}
-	else if (type.IndexOf(_T("float")) == 0)
+	else if (type.indexOf(_T("float")) == 0)
 	{
-		if (type.GetLength() == 5)
+		if (type.getLength() == 5)
 		{
 			desc.Type = ShaderVariableType_Float;
-			ShaderVariableBase::Initialize(desc, name, String::GetEmpty());
-			ShaderVariableBase::SetFloat((float)StringTraits::ToDouble(value.c_str(), value.GetLength()));
+			ShaderVariableBase::initialize(desc, name, String::getEmpty());
+			ShaderVariableBase::setFloat((float)StringTraits::toDouble(value.c_str(), value.getLength()));
 		}
-		else if (type.GetLength() == 6)
+		else if (type.getLength() == 6)
 		{
 			// vector
 			desc.Columns = (type[6] - '0');
 
-			StringArray tokens = value.Split(_T(","));
+			StringArray tokens = value.split(_T(","));
 			Vector4 v;
-			v.x = (float)((tokens.GetCount() >= 1) ? StringTraits::ToDouble(tokens[0].c_str(), tokens[0].GetLength()) : 0);
-			v.y = (float)((tokens.GetCount() >= 2) ? StringTraits::ToDouble(tokens[1].c_str(), tokens[1].GetLength()) : 0);
-			v.z = (float)((tokens.GetCount() >= 3) ? StringTraits::ToDouble(tokens[2].c_str(), tokens[2].GetLength()) : 0);
-			v.w = (float)((tokens.GetCount() >= 4) ? StringTraits::ToDouble(tokens[3].c_str(), tokens[3].GetLength()) : 0);
+			v.x = (float)((tokens.getCount() >= 1) ? StringTraits::toDouble(tokens[0].c_str(), tokens[0].getLength()) : 0);
+			v.y = (float)((tokens.getCount() >= 2) ? StringTraits::toDouble(tokens[1].c_str(), tokens[1].getLength()) : 0);
+			v.z = (float)((tokens.getCount() >= 3) ? StringTraits::toDouble(tokens[2].c_str(), tokens[2].getLength()) : 0);
+			v.w = (float)((tokens.getCount() >= 4) ? StringTraits::toDouble(tokens[3].c_str(), tokens[3].getLength()) : 0);
 
 			desc.Type = ShaderVariableType_Vector;
-			ShaderVariableBase::Initialize(desc, name, String::GetEmpty());
-			ShaderVariableBase::SetVector(v);
+			ShaderVariableBase::initialize(desc, name, String::getEmpty());
+			ShaderVariableBase::setVector(v);
 		}
 		else
 		{
@@ -1169,39 +1169,39 @@ void GLShaderAnnotation::Initialize(const String& type, const String& name, cons
 //==============================================================================
 
 //------------------------------------------------------------------------------
-GLShaderTechnique* GLShaderTechnique::Deserialize(GLShader* ownerShader, tr::JsonReader2* json)
+GLShaderTechnique* GLShaderTechnique::deserialize(GLShader* ownerShader, tr::JsonReader2* json)
 {
 	String name;
-	if (json->ReadAsPropertyName() == _T("name")) name = json->ReadAsString();
-	auto tech = RefPtr<GLShaderTechnique>::MakeRef();
-	tech->Initialize(ownerShader, name);
+	if (json->readAsPropertyName() == _T("name")) name = json->readAsString();
+	auto tech = RefPtr<GLShaderTechnique>::makeRef();
+	tech->initialize(ownerShader, name);
 
-	if (json->ReadAsPropertyName() == _T("passes"))
+	if (json->readAsPropertyName() == _T("passes"))
 	{
-		json->ReadAsStartArray();
-		while (json->Read() && json->GetTokenType() != tr::JsonToken::EndArray)
+		json->readAsStartArray();
+		while (json->read() && json->getTokenType() != tr::JsonToken::EndArray)
 		{
-			tech->m_passes.Add(GLShaderPass::Deserialize(ownerShader, json));
+			tech->m_passes.add(GLShaderPass::deserialize(ownerShader, json));
 		}
 	}
 
-	while (json->Read())
+	while (json->read())
 	{
-		if (json->GetTokenType() == tr::JsonToken::EndObject) break;
-		if (json->GetTokenType() == tr::JsonToken::PropertyName)
+		if (json->getTokenType() == tr::JsonToken::EndObject) break;
+		if (json->getTokenType() == tr::JsonToken::PropertyName)
 		{
-			if (json->ReadAsPropertyName() == _T("annotations"))
+			if (json->readAsPropertyName() == _T("annotations"))
 			{
-				json->ReadAsStartArray();
-				while (json->Read() && json->GetTokenType() != tr::JsonToken::EndArray)
+				json->readAsStartArray();
+				while (json->read() && json->getTokenType() != tr::JsonToken::EndArray)
 				{
-					tech->m_annotations.Add(GLShaderAnnotation::Deserialize(json));
+					tech->m_annotations.add(GLShaderAnnotation::deserialize(json));
 				}
 			}
 		}
 	}
 
-	return tech.DetachMove();
+	return tech.detachMove();
 }
 
 //------------------------------------------------------------------------------
@@ -1218,19 +1218,19 @@ GLShaderTechnique::~GLShaderTechnique()
 	}
 	for (GLShaderAnnotation* anno : m_annotations)
 	{
-		anno->Release();
+		anno->release();
 	}
 }
 
 //------------------------------------------------------------------------------
-void GLShaderTechnique::Initialize(GLShader* ownerShader, const String& name)
+void GLShaderTechnique::initialize(GLShader* ownerShader, const String& name)
 {
 	m_ownerShader = ownerShader;
 	m_name = name;
 }
 
 //------------------------------------------------------------------------------
-IShaderPass* GLShaderTechnique::GetPass(int index)
+IShaderPass* GLShaderTechnique::getPass(int index)
 {
 	return m_passes[index];
 }
@@ -1240,42 +1240,42 @@ IShaderPass* GLShaderTechnique::GetPass(int index)
 //==============================================================================
 
 //------------------------------------------------------------------------------
-GLShaderPass* GLShaderPass::Deserialize(GLShader* ownerShader, tr::JsonReader2* json)
+GLShaderPass* GLShaderPass::deserialize(GLShader* ownerShader, tr::JsonReader2* json)
 {
-	auto pass = RefPtr<GLShaderPass>::MakeRef();
+	auto pass = RefPtr<GLShaderPass>::makeRef();
 	String name, vsName, psName;
 
-	if (json->ReadAsPropertyName() == _T("name")) name = json->ReadAsString();
-	if (json->ReadAsPropertyName() == _T("vertexShader")) vsName = json->ReadAsString();
-	if (json->ReadAsPropertyName() == _T("pixelShader")) psName = json->ReadAsString();
+	if (json->readAsPropertyName() == _T("name")) name = json->readAsString();
+	if (json->readAsPropertyName() == _T("vertexShader")) vsName = json->readAsString();
+	if (json->readAsPropertyName() == _T("pixelShader")) psName = json->readAsString();
 
-	pass->Initialize(ownerShader, name, vsName, psName);
+	pass->initialize(ownerShader, name, vsName, psName);
 
-	while (json->Read())
+	while (json->read())
 	{
-		if (json->GetTokenType() == tr::JsonToken::EndObject) break;
-		if (json->GetTokenType() == tr::JsonToken::PropertyName)
+		if (json->getTokenType() == tr::JsonToken::EndObject) break;
+		if (json->getTokenType() == tr::JsonToken::PropertyName)
 		{
-			if (json->GetValue() == _T("status"))
+			if (json->getValue() == _T("status"))
 			{
-				json->ReadAsStartArray();
-				while (json->Read() && json->GetTokenType() != tr::JsonToken::EndArray)
+				json->readAsStartArray();
+				while (json->read() && json->getTokenType() != tr::JsonToken::EndArray)
 				{
 					// TODO:
 				}
 			}
-			else if (json->ReadAsPropertyName() == _T("annotations"))
+			else if (json->readAsPropertyName() == _T("annotations"))
 			{
-				json->ReadAsStartArray();
-				while (json->Read() && json->GetTokenType() != tr::JsonToken::EndArray)
+				json->readAsStartArray();
+				while (json->read() && json->getTokenType() != tr::JsonToken::EndArray)
 				{
-					pass->m_annotations.Add(GLShaderAnnotation::Deserialize(json));
+					pass->m_annotations.add(GLShaderAnnotation::deserialize(json));
 				}
 			}
 		}
 	}
 
-	return pass.DetachMove();
+	return pass.detachMove();
 }
 
 //------------------------------------------------------------------------------
@@ -1289,7 +1289,7 @@ GLShaderPass::~GLShaderPass()
 {
 	for (GLShaderAnnotation* anno : m_annotations)
 	{
-		anno->Release();
+		anno->release();
 	}
 	if (m_program != 0)
 	{
@@ -1299,52 +1299,52 @@ GLShaderPass::~GLShaderPass()
 }
 
 //------------------------------------------------------------------------------
-void GLShaderPass::Initialize(GLShader* ownerShader, const String& name, GLuint vertShader, GLuint fragShader)
+void GLShaderPass::initialize(GLShader* ownerShader, const String& name, GLuint vertShader, GLuint fragShader)
 {
 	m_ownerShader = ownerShader;
 	m_name = name;
-	if (LinkShader(vertShader, fragShader, m_ownerShader->GetDiag()))
+	if (linkShader(vertShader, fragShader, m_ownerShader->getDiag()))
 	{
-		Build();
+		build();
 	}
 }
 
 //------------------------------------------------------------------------------
-void GLShaderPass::Initialize(GLShader* ownerShader, const String& name, const String& vertShaderName, const String& fragShaderName)
+void GLShaderPass::initialize(GLShader* ownerShader, const String& name, const String& vertShaderName, const String& fragShaderName)
 {
-	GLuint vertShader = ownerShader->GetVertexShader(vertShaderName);
-	GLuint fragShader = ownerShader->GetFlagmentShader(fragShaderName);
-	Initialize(ownerShader, name, vertShader, fragShader);
+	GLuint vertShader = ownerShader->getVertexShader(vertShaderName);
+	GLuint fragShader = ownerShader->getFlagmentShader(fragShaderName);
+	initialize(ownerShader, name, vertShader, fragShader);
 }
 
 //------------------------------------------------------------------------------
-int GLShaderPass::GetUsageAttributeIndex(VertexElementUsage usage, int index)
+int GLShaderPass::getUsageAttributeIndex(VertexElementUsage usage, int index)
 {
 	return m_usageAttrIndexTable[usage][index];
 }
 
 //------------------------------------------------------------------------------
-void GLShaderPass::Apply()
+void GLShaderPass::apply()
 {
 	glUseProgram(m_program); LN_CHECK_GLERROR();
 
 	for (GLShaderPassVariableInfo& v : m_passVarList)
 	{
-		v.Variable->Apply(v.Location, v.TextureStageIndex);
+		v.Variable->apply(v.Location, v.TextureStageIndex);
 	}
 
-	static_cast<GLRenderer*>(m_ownerShader->GetGraphicsDevice()->GetRenderer())->SetCurrentShaderPass(this);
+	static_cast<GLRenderer*>(m_ownerShader->getGraphicsDevice()->getRenderer())->setCurrentShaderPass(this);
 }
 
 //------------------------------------------------------------------------------
-//void GLShaderPass::End()
+//void GLShaderPass::end()
 //{
 //	glUseProgram(NULL);
-//	static_cast<GLRenderer*>(m_ownerShader->GetGraphicsDevice()->GetRenderer())->SetCurrentShaderPass(NULL);
+//	static_cast<GLRenderer*>(m_ownerShader->getGraphicsDevice()->getRenderer())->setCurrentShaderPass(NULL);
 //}
 
 //------------------------------------------------------------------------------
-bool GLShaderPass::LinkShader(GLuint vertShader, GLuint fragShader, ShaderDiag* diag)
+bool GLShaderPass::linkShader(GLuint vertShader, GLuint fragShader, ShaderDiag* diag)
 {
 	// 最初に失敗扱いにしておく
 	diag->level = ShaderCompileResultLevel_Error;
@@ -1399,7 +1399,7 @@ bool GLShaderPass::LinkShader(GLuint vertShader, GLuint fragShader, ShaderDiag* 
 }
 
 //------------------------------------------------------------------------------
-void GLShaderPass::Build()
+void GLShaderPass::build()
 {
 	int textureVarCount = 0;
 
@@ -1419,25 +1419,25 @@ void GLShaderPass::Build()
 
 		// 変数情報作成
 		ShaderVariableBase::ShaderVariableTypeDesc desc;
-		GLShaderVariable::ConvertVariableTypeGLToLN(name, var_type, var_size, &desc);
+		GLShaderVariable::convertVariableTypeGLToLN(name, var_type, var_size, &desc);
 
 		// 名前を String 化
 		String tname;
-		tname.AssignCStr(name);
-		tname = tname.Replace(_T("[0]"), _T(""));
+		tname.assignCStr(name);
+		tname = tname.replace(_T("[0]"), _T(""));
 
 		// Location
 		passVar.Location = glGetUniformLocation(m_program, name); LN_CHECK_GLERROR();
 
 		// ShaderVariable を作る
-		passVar.Variable = m_ownerShader->FindShaderVariable(tname);
+		passVar.Variable = m_ownerShader->findShaderVariable(tname);
 		if (passVar.Variable == nullptr)
 		{
-			passVar.Variable = m_ownerShader->CreateShaderVariable(desc, tname, String());
+			passVar.Variable = m_ownerShader->createShaderVariable(desc, tname, String());
 		}
 
 		// テクスチャ型の変数にステージ番号を振っていく。
-		if (passVar.Variable->GetType() == ShaderVariableType_DeviceTexture)
+		if (passVar.Variable->getType() == ShaderVariableType_DeviceTexture)
 		{
 			passVar.TextureStageIndex = textureVarCount;
 			textureVarCount++;
@@ -1448,7 +1448,7 @@ void GLShaderPass::Build()
 		}
 
 		// 格納
-		m_passVarList.Add(passVar);
+		m_passVarList.add(passVar);
 	}
 	
 	//---------------------------------------------------------

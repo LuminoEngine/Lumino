@@ -13,10 +13,10 @@ LN_NAMESPACE_BEGIN
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(WorldObject, Object);
 
 //------------------------------------------------------------------------------
-WorldObjectPtr WorldObject::Create()
+WorldObjectPtr WorldObject::create()
 {
-	auto ptr = WorldObjectPtr::MakeRef();
-	//detail::GameSceneManager::GetInstance()->GetActiveScene()->AddGameObject(ptr);
+	auto ptr = WorldObjectPtr::makeRef();
+	//detail::GameSceneManager::getInstance()->getActiveScene()->addGameObject(ptr);
 	return ptr;
 }
 
@@ -37,74 +37,74 @@ WorldObject::~WorldObject()
 }
 
 //------------------------------------------------------------------------------
-void WorldObject::Initialize()
+void WorldObject::initialize()
 {
 }
 
 //------------------------------------------------------------------------------
-World* WorldObject::GetWorld() const
+World* WorldObject::getWorld() const
 {
 	// TODO: m_world は持たないようにする。上へさかのぼって検索する。
 	return m_world;
 }
 
 //------------------------------------------------------------------------------
-void WorldObject::AddComponent(Component* component)
+void WorldObject::addComponent(Component* component)
 {
 	if (LN_CHECK_ARG(component != nullptr)) return;
 	if (LN_CHECK_ARG(component->m_owner == nullptr)) return;
-	component->Attach(this);
-	m_components.Add(component);
+	component->attach(this);
+	m_components.add(component);
 }
 
 //------------------------------------------------------------------------------
-void WorldObject::RemoveFromWorld()
+void WorldObject::removeFromWorld()
 {
 	if (m_world != nullptr)
 	{
-		m_world->RemoveWorldObject(this);
+		m_world->removeWorldObject(this);
 	}
 }
 
 //------------------------------------------------------------------------------
-//void WorldObject::OnStart()
+//void WorldObject::onStart()
 //{
 //}
 
 //------------------------------------------------------------------------------
-void WorldObject::OnUpdate()
+void WorldObject::onUpdate()
 {
 	for (auto& c : m_components)
 	{
-		c->OnUpdate();
+		c->onUpdate();
 	}
 }
 
 //------------------------------------------------------------------------------
-void WorldObject::OnRender(DrawList* context)
+void WorldObject::onRender(DrawList* context)
 {
 
 }
 
 //------------------------------------------------------------------------------
-void WorldObject::OnDestroy()
+void WorldObject::onDestroy()
 {
 }
 
 //------------------------------------------------------------------------------
-void WorldObject::OnUIEvent(UIEventArgs* e)
+void WorldObject::onUIEvent(UIEventArgs* e)
 {
 	for (auto& c : m_components)
 	{
-		c->OnUIEvent(e);
+		c->onUIEvent(e);
 		if (e->handled) return;
 	}
 }
 
 //------------------------------------------------------------------------------
-void WorldObject::UpdateFrame()
+void WorldObject::updateFrame()
 {
-	//Matrix localMatrix = transform.GetTransformMatrix();
+	//Matrix localMatrix = transform.getTransformMatrix();
 
 	//// グローバル行列結合
 	//if (m_parent != nullptr)
@@ -117,26 +117,26 @@ void WorldObject::UpdateFrame()
 	//}
 
 
-	OnUpdate();
+	onUpdate();
 
-	transform.UpdateWorldMatrix();
+	transform.updateWorldMatrix();
 
 	for (auto& c : m_components)
 	{
-		c->UpdateFrame();
+		c->updateFrame();
 	}
 
 	// 子ノード更新
-	int count = m_children.GetCount();
+	int count = m_children.getCount();
 	for (int i = 0; i < count; )
 	{
-		WorldObject* obj = m_children.GetAt(i);
-		obj->UpdateFrame();
+		WorldObject* obj = m_children.getAt(i);
+		obj->updateFrame();
 
-		if (obj->m_isAutoRelease && obj->GetReferenceCount() == 1)
+		if (obj->m_isAutoRelease && obj->getReferenceCount() == 1)
 		{
-			m_children.RemoveAt(i);
-			count = m_children.GetCount();
+			m_children.removeAt(i);
+			count = m_children.getCount();
 		}
 		else
 		{
@@ -146,22 +146,22 @@ void WorldObject::UpdateFrame()
 }
 
 //------------------------------------------------------------------------------
-void WorldObject::Render(DrawList* context)
+void WorldObject::render(DrawList* context)
 {
-	OnRender(context);
+	onRender(context);
 
 	//for (auto& c : m_components)
 	//{
-	//	c->Render(context);
+	//	c->render(context);
 	//}
 }
 
 //------------------------------------------------------------------------------
-void WorldObject::ReleaseComponents()
+void WorldObject::releaseComponents()
 {
 	for (auto& c : m_components)
-		c->Detach();
-	m_components.Clear();
+		c->detach();
+	m_components.clear();
 }
 
 
@@ -181,10 +181,10 @@ WorldObject2D::~WorldObject2D()
 }
 
 //------------------------------------------------------------------------------
-void WorldObject2D::Initialize()
+void WorldObject2D::initialize()
 {
-	WorldObject::Initialize();
-	detail::EngineDomain::GetDefaultWorld2D()->AddWorldObject(this, true);
+	WorldObject::initialize();
+	detail::EngineDomain::getDefaultWorld2D()->addWorldObject(this, true);
 }
 
 
@@ -204,10 +204,10 @@ WorldObject3D::~WorldObject3D()
 }
 
 //------------------------------------------------------------------------------
-void WorldObject3D::Initialize()
+void WorldObject3D::initialize()
 {
-	WorldObject::Initialize();
-	detail::EngineDomain::GetDefaultWorld3D()->AddWorldObject(this, true);
+	WorldObject::initialize();
+	detail::EngineDomain::getDefaultWorld3D()->addWorldObject(this, true);
 }
 
 LN_NAMESPACE_END

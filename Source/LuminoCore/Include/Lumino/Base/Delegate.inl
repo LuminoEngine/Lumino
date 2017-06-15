@@ -9,7 +9,7 @@ private:
 	{
 	public:
 		virtual void call(LN_DELEGATE_ARGS_DECL) const = 0;
-		virtual bool Equals(const DelegateHolderBase* p) const = 0;	// pの実態は サブクラスと同じ型であることが前提
+		virtual bool equals(const DelegateHolderBase* p) const = 0;	// pの実態は サブクラスと同じ型であることが前提
 	};
 
 	/// DelegateHolderStatic (static 関数呼び出し時の実体)
@@ -32,7 +32,7 @@ private:
 			mFunction( LN_DELEGATE_CALL_ARGS );
 		}
 
-		virtual bool Equals(const DelegateHolderBase* p) const
+		virtual bool equals(const DelegateHolderBase* p) const
 		{
 			return (mFunction == static_cast<const DelegateHolderStatic*>(p)->mFunction);
 		}
@@ -61,7 +61,7 @@ private:
 			(mObjPtr->*mMethod)( LN_DELEGATE_CALL_ARGS );
 		}
 
-		virtual bool Equals(const DelegateHolderBase* p) const
+		virtual bool equals(const DelegateHolderBase* p) const
 		{
 			return (mObjPtr == static_cast<const DelegateHolderDynamics*>(p)->mObjPtr &&
 				mMethod == static_cast<const DelegateHolderDynamics*>(p)->mMethod);
@@ -101,21 +101,21 @@ public:
 
 	~LN_DELEGATE_CLASS_NAME()
 	{
-		Reset();
+		reset();
 	}
 
 public:
-	void Reset()
+	void reset()
 	{
 		LN_SAFE_RELEASE( mDelegate );
 	}
 
-	bool IsEmpty() const
+	bool isEmpty() const
 	{
 		return mDelegate == NULL;
 	}
 
-	void Call( LN_DELEGATE_ARGS_DECL ) const
+	void call( LN_DELEGATE_ARGS_DECL ) const
 	{
 		if ( mDelegate != NULL )
 		{
@@ -123,7 +123,7 @@ public:
 		}
 	}
 
-	bool Equals(const LN_DELEGATE_CLASS_NAME& obj) const
+	bool equals(const LN_DELEGATE_CLASS_NAME& obj) const
 	{
 		if (m_isStatic != obj.m_isStatic) { return false; }
 		if (mDelegate == NULL &&  obj.mDelegate == NULL) { return true; }
@@ -131,7 +131,7 @@ public:
 
 		if (mDelegate != NULL && obj.mDelegate != NULL)
 		{
-			return mDelegate->Equals(obj.mDelegate);
+			return mDelegate->equals(obj.mDelegate);
 			/*
 			if (m_isStatic) { 
 				return static_cast<DelegateHolderStatic*>(mDelegate)->Equals(*static_cast<DelegateHolderStatic*>(obj.mDelegate));
@@ -148,22 +148,22 @@ public:
 
 	void operator ()( LN_DELEGATE_ARGS_DECL ) const
 	{
-		Call( LN_DELEGATE_CALL_ARGS );
+		call( LN_DELEGATE_CALL_ARGS );
 	}
 
 	LN_DELEGATE_CLASS_NAME& operator = (const LN_DELEGATE_CLASS_NAME& obj)
 	{
-		Reset();
+		reset();
 		m_isStatic = obj.m_isStatic;
 		mDelegate = obj.mDelegate;
 		if ( mDelegate != NULL )
-			mDelegate->AddRef();
+			mDelegate->addRef();
 
 		return *this;
 	}
 
-	bool operator == (const LN_DELEGATE_CLASS_NAME& obj) const { return Equals(obj); }
-	bool operator != (const LN_DELEGATE_CLASS_NAME& obj) const { return !Equals(obj); }
+	bool operator == (const LN_DELEGATE_CLASS_NAME& obj) const { return equals(obj); }
+	bool operator != (const LN_DELEGATE_CLASS_NAME& obj) const { return !equals(obj); }
 };
 
 template < typename T, LN_DELEGATE_TEMPLATE_ARGS >

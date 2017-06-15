@@ -13,9 +13,9 @@ TEST_F(Test_Matrix, Basic)
 	// Matrix::Matrix(const AttitudeTransform&)
 	{
 		AttitudeTransform t;
-		t.scale.Set(1, 2, 3);
-		t.rotation = Quaternion::MakeFromYawPitchRoll(0.5, 0.75, 1.0);
-		t.translation.Set(5, 6, 7);
+		t.scale.set(1, 2, 3);
+		t.rotation = Quaternion::makeFromYawPitchRoll(0.5, 0.75, 1.0);
+		t.translation.set(5, 6, 7);
 
 		Matrix m(t);
 		ASSERT_MAT_NEAR(
@@ -24,55 +24,55 @@ TEST_F(Test_Matrix, Basic)
 			1.052371, -2.044916, 1.926352, 0.000000,
 			5.000000, 6.000000, 7.000000, 1.000000,
 			m);
-		//(Matrix::Scaling(1, 2, 3) * Matrix::RotationYawPitchRoll(0.5, 0.75, 1.0) * Matrix::Translation(5, 6, 7)).Print();
+		//(Matrix::Scaling(1, 2, 3) * Matrix::RotationYawPitchRoll(0.5, 0.75, 1.0) * Matrix::Translation(5, 6, 7)).print();
 	}
 	// this->Set
 	{
 		Matrix m;
-		m.Set(
+		m.set(
 			0, 1, 2, 3,
 			4, 5, 6, 7,
 			8, 9, 10, 11,
 			12, 13, 14, 15);
-		ASSERT_VEC4_NEAR(0, 1, 2, 3, m.GetRow(0));
-		ASSERT_VEC4_NEAR(4, 5, 6, 7, m.GetRow(1));
-		ASSERT_VEC4_NEAR(8, 9, 10, 11, m.GetRow(2));
-		ASSERT_VEC4_NEAR(12, 13, 14, 15, m.GetRow(3));
+		ASSERT_VEC4_NEAR(0, 1, 2, 3, m.getRow(0));
+		ASSERT_VEC4_NEAR(4, 5, 6, 7, m.getRow(1));
+		ASSERT_VEC4_NEAR(8, 9, 10, 11, m.getRow(2));
+		ASSERT_VEC4_NEAR(12, 13, 14, 15, m.getRow(3));
 	}
 	// this->IsIdentity
 	{
 		Matrix m;
-		ASSERT_EQ(true, m.IsIdentity());
+		ASSERT_EQ(true, m.isIdentity());
 
 		Matrix m2 = Matrix::Identity;
-		ASSERT_EQ(true, m2.IsIdentity());
+		ASSERT_EQ(true, m2.isIdentity());
 	}
-	// this->GetRight/GetUp/GetFront/GetPosition
+	// this->getRight/getUp/GetFront/GetPosition
 	{
 		Matrix m;
 		m.m[3][0] = 5;
-		ASSERT_VEC3_NEAR(1, 0, 0, m.GetRight());
-		ASSERT_VEC3_NEAR(0, 1, 0, m.GetUp());
-		ASSERT_VEC3_NEAR(0, 0, 1, m.GetFront());
-		ASSERT_VEC3_NEAR(5, 0, 0, m.GetPosition());
+		ASSERT_VEC3_NEAR(1, 0, 0, m.getRight());
+		ASSERT_VEC3_NEAR(0, 1, 0, m.getUp());
+		ASSERT_VEC3_NEAR(0, 0, 1, m.getFront());
+		ASSERT_VEC3_NEAR(5, 0, 0, m.getPosition());
 	}
-	// this->SetRow/GetRow
+	// this->setRow/getRow
 	{
 		Matrix m;
-		m.SetRow(0, Vector4(0, 1, 2, 3));
-		m.SetRow(1, Vector4(4, 5, 6, 7));
-		m.SetRow(2, Vector4(8, 9, 10, 11));
-		m.SetRow(3, Vector4(12, 13, 14, 15));
-		ASSERT_VEC4_NEAR(0, 1, 2, 3, m.GetRow(0));
-		ASSERT_VEC4_NEAR(4, 5, 6, 7, m.GetRow(1));
-		ASSERT_VEC4_NEAR(8, 9, 10, 11, m.GetRow(2));
-		ASSERT_VEC4_NEAR(12, 13, 14, 15, m.GetRow(3));
+		m.setRow(0, Vector4(0, 1, 2, 3));
+		m.setRow(1, Vector4(4, 5, 6, 7));
+		m.setRow(2, Vector4(8, 9, 10, 11));
+		m.setRow(3, Vector4(12, 13, 14, 15));
+		ASSERT_VEC4_NEAR(0, 1, 2, 3, m.getRow(0));
+		ASSERT_VEC4_NEAR(4, 5, 6, 7, m.getRow(1));
+		ASSERT_VEC4_NEAR(8, 9, 10, 11, m.getRow(2));
+		ASSERT_VEC4_NEAR(12, 13, 14, 15, m.getRow(3));
 	}
-	// this->Translate
+	// this->translate
 	{
 		Matrix m;
-		m.Translate(Vector3(1, 2, 3));
-		m.Translate(1, 2, 3);
+		m.translate(Vector3(1, 2, 3));
+		m.translate(1, 2, 3);
 		ASSERT_MAT_NEAR(
 			1.000000, 0.000000, 0.000000, 0.000000,
 			0.000000, 1.000000, 0.000000, 0.000000,
@@ -80,11 +80,11 @@ TEST_F(Test_Matrix, Basic)
 			2.000000, 4.000000, 6.000000, 1.000000,
 			m);
 	}
-	// this->RotateX
+	// this->rotateX
 	{
 		Matrix m;
-		m.Translate(Vector3(1, 2, 3));
-		m.RotateX(2);
+		m.translate(Vector3(1, 2, 3));
+		m.rotateX(2);
 		ASSERT_MAT_NEAR(
 			1.000000, -0.000000, 0.000000, 0.000000,
 			0.000000, -0.416147, 0.909297, 0.000000,
@@ -92,11 +92,11 @@ TEST_F(Test_Matrix, Basic)
 			1.000000, -3.560186, 0.570154, 1.000000,
 			m);
 	}
-	// this->RotateY
+	// this->rotateY
 	{
 		Matrix m;
-		m.Translate(Vector3(1, 2, 3));
-		m.RotateY(2);
+		m.translate(Vector3(1, 2, 3));
+		m.rotateY(2);
 		ASSERT_MAT_NEAR(
 			-0.416147, 0.000000, -0.909297, 0.000000,
 			0.000000, 1.000000, -0.000000, 0.000000,
@@ -104,11 +104,11 @@ TEST_F(Test_Matrix, Basic)
 			2.311745, 2.000000, -2.157738, 1.000000,
 			m);
 	}
-	// this->RotateZ
+	// this->rotateZ
 	{
 		Matrix m;
-		m.Translate(Vector3(1, 2, 3));
-		m.RotateZ(2);
+		m.translate(Vector3(1, 2, 3));
+		m.rotateZ(2);
 		ASSERT_MAT_NEAR(
 			-0.416147, 0.909297, 0.000000, 0.000000,
 			-0.909297, -0.416147, 0.000000, 0.000000,
@@ -119,7 +119,7 @@ TEST_F(Test_Matrix, Basic)
 	// Matrix::RotationEulerAngles
 	{
 		Matrix m;
-		m.RotateEulerAngles(Vector3(0.5, 1.0, 1.5), RotationOrder::XYZ);
+		m.rotateEulerAngles(Vector3(0.5, 1.0, 1.5), RotationOrder::XYZ);
 		ASSERT_MAT_NEAR(
 			0.038219, 0.538949, -0.841471, 0.000000,
 			-0.846847, 0.464490, 0.259035, 0.000000,
@@ -136,7 +136,7 @@ TEST_F(Test_Matrix, Basic)
 		//	m);
 		
 		m = Matrix::Identity;
-		m.RotateEulerAngles(Vector3(0.5, 1.0, 1.5), RotationOrder::YZX);
+		m.rotateEulerAngles(Vector3(0.5, 1.0, 1.5), RotationOrder::YZX);
 		ASSERT_MAT_NEAR(
 			0.038219, 0.876395, -0.480074, 0.000000,
 			-0.997495, 0.062078, 0.033913, 0.000000,
@@ -145,7 +145,7 @@ TEST_F(Test_Matrix, Basic)
 			m);
 
 		m = Matrix::Identity;
-		m.RotateEulerAngles(Vector3(0.5, 1.0, 1.5), RotationOrder::ZXY);
+		m.rotateEulerAngles(Vector3(0.5, 1.0, 1.5), RotationOrder::ZXY);
 		ASSERT_MAT_NEAR(
 			0.440632, 0.875384, 0.198863, 0.000000,
 			-0.510412, 0.062078, 0.857686, 0.000000,
@@ -155,7 +155,7 @@ TEST_F(Test_Matrix, Basic)
 
 		// デフォルト引数の順序は YawPitchRoll と一致する
 		m = Matrix::Identity;
-		m.RotateEulerAngles(Vector3(0.5, 1.0, 1.5));
+		m.rotateEulerAngles(Vector3(0.5, 1.0, 1.5));
 		ASSERT_MAT_NEAR(
 			0.440632, 0.875384, 0.198863, 0.000000,
 			-0.510412, 0.062078, 0.857686, 0.000000,
@@ -164,7 +164,7 @@ TEST_F(Test_Matrix, Basic)
 			m);
 
 		m = Matrix::Identity;
-		m.RotateEulerAngles(0.5, 1.0, 1.5);
+		m.rotateEulerAngles(0.5, 1.0, 1.5);
 		ASSERT_MAT_NEAR(
 			0.440632, 0.875384, 0.198863, 0.000000,
 			-0.510412, 0.062078, 0.857686, 0.000000,
@@ -172,12 +172,12 @@ TEST_F(Test_Matrix, Basic)
 			0.000000, 0.000000, 0.000000, 1.000000,
 			m);
 	}
-	// this->RotateAxis
+	// this->rotateAxis
 	{
-		Matrix m1 = Matrix::MakeTranslation(Vector3(5, 6, 7));
-		Matrix m2 = Matrix::MakeRotationYawPitchRoll(1, 2, 3);
-		Matrix m3 = Matrix::Multiply(m1, m2);
-		m3.RotateAxis(Vector3(1, 2, 3), 2);
+		Matrix m1 = Matrix::makeTranslation(Vector3(5, 6, 7));
+		Matrix m2 = Matrix::makeRotationYawPitchRoll(1, 2, 3);
+		Matrix m3 = Matrix::multiply(m1, m2);
+		m3.rotateAxis(Vector3(1, 2, 3), 2);
 		ASSERT_MAT_NEAR(
 			0.877841, -0.068563, 0.474019, 0.000000,
 			-0.244635, -0.915048, 0.320689, 0.000000,
@@ -185,13 +185,13 @@ TEST_F(Test_Matrix, Basic)
 			5.803734, -8.615429, -1.446045, 1.000000,
 			m3);
 	}
-	// this->RotateQuaternion
+	// this->rotateQuaternion
 	{
-		Matrix m1 = Matrix::MakeTranslation(Vector3(5, 6, 7));
-		Matrix m2 = Matrix::MakeRotationYawPitchRoll(1, 2, 3);
-		Matrix m3 = Matrix::Multiply(m1, m2);
-		Quaternion q = Quaternion::MakeFromYawPitchRoll(0.5, 0.75, 1.0);
-		m3.RotateQuaternion(q);
+		Matrix m1 = Matrix::makeTranslation(Vector3(5, 6, 7));
+		Matrix m2 = Matrix::makeRotationYawPitchRoll(1, 2, 3);
+		Matrix m3 = Matrix::multiply(m1, m2);
+		Quaternion q = Quaternion::makeFromYawPitchRoll(0.5, 0.75, 1.0);
+		m3.rotateQuaternion(q);
 		ASSERT_MAT_NEAR(
 			0.029720, -0.901166, 0.432454, 0.000000,
 			-0.985044, -0.099867, -0.140410, 0.000000,
@@ -199,12 +199,12 @@ TEST_F(Test_Matrix, Basic)
 			-4.573622, -8.057723, -4.914780, 1.000000,
 			m3);
 	}
-	// this->Scale
+	// this->scale
 	{
-		Matrix m = Matrix::MakeRotationYawPitchRoll(0.75f, 0.5f, 1.0f);
-		m.Scale(1, 2, 3);
-		m.Scale(Vector3(3, 2, 1));
-		m.Scale(2);
+		Matrix m = Matrix::makeRotationYawPitchRoll(0.75f, 0.5f, 1.0f);
+		m.scale(1, 2, 3);
+		m.scale(Vector3(3, 2, 1));
+		m.scale(2);
 		ASSERT_MAT_NEAR(
 			4.021930, 5.907682, -0.438667, 0.000000,
 			-2.634761, 3.793279, 4.578672, 0.000000,
@@ -212,12 +212,12 @@ TEST_F(Test_Matrix, Basic)
 			0.000000, 0.000000, 0.000000, 1.000000,
 			m);
 	}
-	// this->Inverse
+	// this->inverse
 	{
 		Matrix m;
-		m = Matrix::Multiply(m, Matrix::MakeTranslation(Vector3(5, 6, 7)));
-		m = Matrix::Multiply(m, Matrix::MakeRotationYawPitchRoll(1, 2, 3));
-		m.Inverse();
+		m = Matrix::multiply(m, Matrix::makeTranslation(Vector3(5, 6, 7)));
+		m = Matrix::multiply(m, Matrix::makeRotationYawPitchRoll(1, 2, 3));
+		m.inverse();
 		ASSERT_MAT_NEAR(
 			-0.426918, -0.833738, -0.350176, 0.000000,
 			-0.058727, 0.411982, -0.909297, 0.000000,
@@ -225,12 +225,12 @@ TEST_F(Test_Matrix, Basic)
 			-5.000000, -5.999999, -6.999999, 1.000000,
 			m);
 	}
-	// this->Transpose
+	// this->transpose
 	{
 		Matrix m;
-		m = Matrix::Multiply(m, Matrix::MakeTranslation(Vector3(5, 6, 7)));
-		m = Matrix::Multiply(m, Matrix::MakeRotationYawPitchRoll(1, 2, 3));
-		m.Transpose();
+		m = Matrix::multiply(m, Matrix::makeTranslation(Vector3(5, 6, 7)));
+		m = Matrix::multiply(m, Matrix::makeRotationYawPitchRoll(1, 2, 3));
+		m.transpose();
 		ASSERT_MAT_NEAR(
 			-0.426918, -0.833738, -0.350176, -9.588243,
 			-0.058727, 0.411982, -0.909297, -4.186821,
@@ -238,81 +238,81 @@ TEST_F(Test_Matrix, Basic)
 			0.000000, 0.000000, 0.000000, 1.000000,
 			m);
 	}
-	// this->Decompose
+	// this->decompose
 	{
-		Matrix mS = Matrix::MakeScaling(2, 3, 4);
-		Matrix mT = Matrix::MakeTranslation(Vector3(5, 6, 7));
-		Matrix mR = Matrix::MakeRotationYawPitchRoll(0.5, 0.75, 1.0);
-		Matrix m = Matrix::Multiply(mS, mR);
-		m = Matrix::Multiply(m, mT);
+		Matrix mS = Matrix::makeScaling(2, 3, 4);
+		Matrix mT = Matrix::makeTranslation(Vector3(5, 6, 7));
+		Matrix mR = Matrix::makeRotationYawPitchRoll(0.5, 0.75, 1.0);
+		Matrix m = Matrix::multiply(mS, mR);
+		m = Matrix::multiply(m, mT);
 
 		Vector3 s;
 		Quaternion q;
 		Vector3 t;
-		m.Decompose(&s, &q, &t);
+		m.decompose(&s, &q, &t);
 		ASSERT_VEC3_NEAR(2.000000, 3.000000, 4.000000, s);
 		ASSERT_QUA_NEAR(0.421811, 0.031888, 0.352717, 0.834655, q);
 		ASSERT_VEC3_NEAR(5.000000, 6.000000, 7.000000, t);
 	}
-	// this->ToEulerAngles
+	// this->toEulerAngles
 	{
 		// デフォルト引数ではこの回転順序
 		Matrix m;
-		m = Matrix::Multiply(m, Matrix::MakeRotationZ(1.0));
-		m = Matrix::Multiply(m, Matrix::MakeRotationX(0.5));
-		m = Matrix::Multiply(m, Matrix::MakeRotationY(0.75));
-		Vector3 angles = m.ToEulerAngles();
+		m = Matrix::multiply(m, Matrix::makeRotationZ(1.0));
+		m = Matrix::multiply(m, Matrix::makeRotationX(0.5));
+		m = Matrix::multiply(m, Matrix::makeRotationY(0.75));
+		Vector3 angles = m.toEulerAngles();
 		ASSERT_VEC3_NEAR(0.5, 0.75, 1.0, angles);
 
 		// デフォルト引数で YawPitchRoll したものが取り出せる
-		m = Matrix::MakeRotationYawPitchRoll(0.75f, 0.5f, 1.0f);
-		angles = m.ToEulerAngles();
+		m = Matrix::makeRotationYawPitchRoll(0.75f, 0.5f, 1.0f);
+		angles = m.toEulerAngles();
 		ASSERT_VEC3_NEAR(0.5, 0.75, 1.0, angles);
 
 		// XYZ
-		m = Matrix::MakeRotationEulerAngles(Vector3(0.5, 0.75, 1.0), RotationOrder::XYZ);
+		m = Matrix::makeRotationEulerAngles(Vector3(0.5, 0.75, 1.0), RotationOrder::XYZ);
 		bool locked;
-		angles = m.ToEulerAngles(RotationOrder::XYZ, &locked);
+		angles = m.toEulerAngles(RotationOrder::XYZ, &locked);
 		ASSERT_EQ(false, locked);	// ジンバルロックしない
 		ASSERT_VEC3_NEAR(0.5, 0.75, 1.0, angles);
 
 		// YZX
-		m = Matrix::MakeRotationEulerAngles(Vector3(0.5, 0.75, 1.0), RotationOrder::YZX);
-		angles = m.ToEulerAngles(RotationOrder::YZX);
+		m = Matrix::makeRotationEulerAngles(Vector3(0.5, 0.75, 1.0), RotationOrder::YZX);
+		angles = m.toEulerAngles(RotationOrder::YZX);
 		ASSERT_VEC3_NEAR(0.5, 0.75, 1.0, angles);
 
 		// ZXY
-		m = Matrix::MakeRotationEulerAngles(Vector3(0.5, 0.75, 1.0), RotationOrder::ZXY);
-		angles = m.ToEulerAngles(RotationOrder::ZXY);
+		m = Matrix::makeRotationEulerAngles(Vector3(0.5, 0.75, 1.0), RotationOrder::ZXY);
+		angles = m.toEulerAngles(RotationOrder::ZXY);
 		ASSERT_VEC3_NEAR(0.5, 0.75, 1.0, angles);
 	}
-	// this->GetRotationMatrix
+	// this->getRotationMatrix
 	{
 		Matrix m1(
 			Vector4(0, 1, 2, 3),
 			Vector4(4, 5, 6, 7),
 			Vector4(8, 9, 10, 11),
 			Vector4(12, 13, 14, 15));
-		Matrix m2 = m1.GetRotationMatrix();
-		ASSERT_VEC4_NEAR(0, 1, 2, 0, m2.GetRow(0));
-		ASSERT_VEC4_NEAR(4, 5, 6, 0, m2.GetRow(1));
-		ASSERT_VEC4_NEAR(8, 9, 10, 0, m2.GetRow(2));
-		ASSERT_VEC4_NEAR(0, 0, 0, 1, m2.GetRow(3));
+		Matrix m2 = m1.getRotationMatrix();
+		ASSERT_VEC4_NEAR(0, 1, 2, 0, m2.getRow(0));
+		ASSERT_VEC4_NEAR(4, 5, 6, 0, m2.getRow(1));
+		ASSERT_VEC4_NEAR(8, 9, 10, 0, m2.getRow(2));
+		ASSERT_VEC4_NEAR(0, 0, 0, 1, m2.getRow(3));
 	}
 	// IsNaNOrInf
 	{
-		Matrix m = Matrix::MakeTranslation(5, 6, 7) * Matrix::MakeRotationYawPitchRoll(1, 2, 3);
-		ASSERT_FALSE(m.IsNaNOrInf());
+		Matrix m = Matrix::makeTranslation(5, 6, 7) * Matrix::makeRotationYawPitchRoll(1, 2, 3);
+		ASSERT_FALSE(m.isNaNOrInf());
 		volatile  float d = 0.0f;
 		m.m[3][2] /= d;
-		ASSERT_TRUE(m.IsNaNOrInf());
+		ASSERT_TRUE(m.isNaNOrInf());
 	}
 
 	// Matrix::Multiply
 	{
-		Matrix mT = Matrix::MakeTranslation(Vector3(5, 6, 7));
-		Matrix mR = Matrix::MakeRotationYawPitchRoll(1, 2, 3);
-		Matrix m = Matrix::Multiply(mT, mR);
+		Matrix mT = Matrix::makeTranslation(Vector3(5, 6, 7));
+		Matrix mR = Matrix::makeRotationYawPitchRoll(1, 2, 3);
+		Matrix m = Matrix::multiply(mT, mR);
 		ASSERT_MAT_NEAR(
 			-0.426918, -0.058727, 0.902382, 0.000000,
 			-0.833738, 0.411982, -0.367630, 0.000000,
@@ -322,7 +322,7 @@ TEST_F(Test_Matrix, Basic)
 	}
 	// Matrix::MakeTranslation
 	{
-		Matrix m = Matrix::MakeTranslation(Vector3(5, 6, 7));
+		Matrix m = Matrix::makeTranslation(Vector3(5, 6, 7));
 		ASSERT_MAT_NEAR(
 			1.000000, 0.000000, 0.000000, 0.000000,
 			0.000000, 1.000000, 0.000000, 0.000000,
@@ -330,9 +330,9 @@ TEST_F(Test_Matrix, Basic)
 			5.000000, 6.000000, 7.000000, 1.000000,
 			m);
 	}
-	// Matrix::MakeRotationX
+	// Matrix::makeRotationX
 	{
-		Matrix m = Matrix::MakeRotationX(2);
+		Matrix m = Matrix::makeRotationX(2);
 		ASSERT_MAT_NEAR(
 			1.000000, 0.000000, 0.000000, 0.000000,
 			0.000000, -0.416147, 0.909297, 0.000000,
@@ -340,9 +340,9 @@ TEST_F(Test_Matrix, Basic)
 			0.000000, 0.000000, 0.000000, 1.000000,
 			m);
 	}
-	// Matrix::MakeRotationY
+	// Matrix::makeRotationY
 	{
-		Matrix m = Matrix::MakeRotationY(2);
+		Matrix m = Matrix::makeRotationY(2);
 		ASSERT_MAT_NEAR(
 			-0.416147, 0.000000, -0.909297, 0.000000,
 			0.000000, 1.000000, 0.000000, 0.000000,
@@ -350,9 +350,9 @@ TEST_F(Test_Matrix, Basic)
 			0.000000, 0.000000, 0.000000, 1.000000,
 			m);
 	}
-	// Matrix::MakeRotationZ
+	// Matrix::makeRotationZ
 	{
-		Matrix m = Matrix::MakeRotationZ(2);
+		Matrix m = Matrix::makeRotationZ(2);
 		ASSERT_MAT_NEAR(
 			-0.416147, 0.909297, 0.000000, 0.000000,
 			-0.909297, -0.416147, 0.000000, 0.000000,
@@ -360,9 +360,9 @@ TEST_F(Test_Matrix, Basic)
 			0.000000, 0.000000, 0.000000, 1.000000,
 			m);
 	}
-	// Matrix::MakeRotationAxis
+	// Matrix::makeRotationAxis
 	{
-		Matrix m = Matrix::MakeRotationAxis(Vector3(1, 2, 3), 2);
+		Matrix m = Matrix::makeRotationAxis(Vector3(1, 2, 3), 2);
 		ASSERT_MAT_NEAR(
 			-0.314994, 0.931367, -0.182580, 0.000000,
 			-0.526753, -0.011533, 0.849940, 0.000000,
@@ -370,10 +370,10 @@ TEST_F(Test_Matrix, Basic)
 			0.000000, 0.000000, 0.000000, 1.000000,
 			m);
 	}
-	// Matrix::MakeRotationQuaternion
+	// Matrix::makeRotationQuaternion
 	{
-		Quaternion q = Quaternion::MakeFromYawPitchRoll(1, 2, 3);
-		Matrix m = Matrix::MakeRotationQuaternion(q);
+		Quaternion q = Quaternion::makeFromYawPitchRoll(1, 2, 3);
+		Matrix m = Matrix::makeRotationQuaternion(q);
 		ASSERT_MAT_NEAR(
 			-0.426918, -0.058727, 0.902382, 0.000000,
 			-0.833738, 0.411982, -0.367630, 0.000000,
@@ -381,10 +381,10 @@ TEST_F(Test_Matrix, Basic)
 			0.000000, 0.000000, 0.000000, 1.000000,
 			m);
 	}
-	// Matrix::MakeRotationEulerAngles
+	// Matrix::makeRotationEulerAngles
 	{
 		Matrix m;
-		m = Matrix::MakeRotationEulerAngles(Vector3(0.5, 1.0, 1.5), RotationOrder::XYZ);
+		m = Matrix::makeRotationEulerAngles(Vector3(0.5, 1.0, 1.5), RotationOrder::XYZ);
 		ASSERT_MAT_NEAR(
 			0.038219, 0.538949, -0.841471, 0.000000,
 			-0.846847, 0.464490, 0.259035, 0.000000,
@@ -400,7 +400,7 @@ TEST_F(Test_Matrix, Basic)
 		//	0.000000, 0.000000, 0.000000, 1.000000,
 		//	m);
 
-		m = Matrix::MakeRotationEulerAngles(Vector3(0.5, 1.0, 1.5), RotationOrder::YZX);
+		m = Matrix::makeRotationEulerAngles(Vector3(0.5, 1.0, 1.5), RotationOrder::YZX);
 		ASSERT_MAT_NEAR(
 			0.038219, 0.876395, -0.480074, 0.000000,
 			-0.997495, 0.062078, 0.033913, 0.000000,
@@ -408,7 +408,7 @@ TEST_F(Test_Matrix, Basic)
 			0.000000, 0.000000, 0.000000, 1.000000,
 			m);
 
-		m = Matrix::MakeRotationEulerAngles(Vector3(0.5, 1.0, 1.5), RotationOrder::ZXY);
+		m = Matrix::makeRotationEulerAngles(Vector3(0.5, 1.0, 1.5), RotationOrder::ZXY);
 		ASSERT_MAT_NEAR(
 			0.440632, 0.875384, 0.198863, 0.000000,
 			-0.510412, 0.062078, 0.857686, 0.000000,
@@ -417,14 +417,14 @@ TEST_F(Test_Matrix, Basic)
 			m);
 
 		// デフォルト引数の順序は YawPitchRoll と一致する
-		m = Matrix::MakeRotationEulerAngles(Vector3(0.5, 1.0, 1.5));
+		m = Matrix::makeRotationEulerAngles(Vector3(0.5, 1.0, 1.5));
 		ASSERT_MAT_NEAR(
 			0.440632, 0.875384, 0.198863, 0.000000,
 			-0.510412, 0.062078, 0.857686, 0.000000,
 			0.738460, -0.479426, 0.474160, 0.000000,
 			0.000000, 0.000000, 0.000000, 1.000000,
 			m);
-		m = Matrix::MakeRotationYawPitchRoll(1.0, 0.5, 1.5);
+		m = Matrix::makeRotationYawPitchRoll(1.0, 0.5, 1.5);
 		ASSERT_MAT_NEAR(
 			0.440632, 0.875384, 0.198863, 0.000000,
 			-0.510412, 0.062078, 0.857686, 0.000000,
@@ -432,7 +432,7 @@ TEST_F(Test_Matrix, Basic)
 			0.000000, 0.000000, 0.000000, 1.000000,
 			m);
 
-		m = Matrix::MakeRotationEulerAngles(0.5, 1.0, 1.5);
+		m = Matrix::makeRotationEulerAngles(0.5, 1.0, 1.5);
 		ASSERT_MAT_NEAR(
 			0.440632, 0.875384, 0.198863, 0.000000,
 			-0.510412, 0.062078, 0.857686, 0.000000,
@@ -440,9 +440,9 @@ TEST_F(Test_Matrix, Basic)
 			0.000000, 0.000000, 0.000000, 1.000000,
 			m);
 	}
-	// Matrix::MakeRotationYawPitchRoll
+	// Matrix::makeRotationYawPitchRoll
 	{
-		Matrix m = Matrix::MakeRotationYawPitchRoll(0.75f, 0.5f, 1.0f);
+		Matrix m = Matrix::makeRotationYawPitchRoll(0.75f, 0.5f, 1.0f);
 		ASSERT_MAT_NEAR(
 			0.670322, 0.738460, -0.073111, 0.000000,
 			-0.439127, 0.474160, 0.763112, 0.000000,
@@ -450,11 +450,11 @@ TEST_F(Test_Matrix, Basic)
 			0.000000, 0.000000, 0.000000, 1.000000,
 			m);
 	}
-	// Matrix::MakeScaling
+	// Matrix::makeScaling
 	{
-		Matrix m1 = Matrix::MakeScaling(1, 2, 3);
-		Matrix m2 = Matrix::MakeScaling(Vector3(4, 5, 6));
-		Matrix m3 = Matrix::MakeScaling(2);
+		Matrix m1 = Matrix::makeScaling(1, 2, 3);
+		Matrix m2 = Matrix::makeScaling(Vector3(4, 5, 6));
+		Matrix m3 = Matrix::makeScaling(2);
 		ASSERT_MAT_NEAR(
 			1.000000, 0.000000, 0.000000, 0.000000,
 			0.000000, 2.000000, 0.000000, 0.000000,
@@ -474,12 +474,12 @@ TEST_F(Test_Matrix, Basic)
 			0.000000, 0.000000, 0.000000, 1.000000,
 			m3);
 	}
-	// Matrix::MakeInverse
+	// Matrix::makeInverse
 	{
 		Matrix m;
-		m = Matrix::Multiply(m, Matrix::MakeTranslation(Vector3(5, 6, 7)));
-		m = Matrix::Multiply(m, Matrix::MakeRotationYawPitchRoll(1, 2, 3));
-		m = Matrix::MakeInverse(m);
+		m = Matrix::multiply(m, Matrix::makeTranslation(Vector3(5, 6, 7)));
+		m = Matrix::multiply(m, Matrix::makeRotationYawPitchRoll(1, 2, 3));
+		m = Matrix::makeInverse(m);
 		ASSERT_MAT_NEAR(
 			-0.426918, -0.833738, -0.350176, 0.000000,
 			-0.058727, 0.411982, -0.909297, 0.000000,
@@ -487,12 +487,12 @@ TEST_F(Test_Matrix, Basic)
 			-5.000000, -5.999999, -6.999999, 1.000000,
 			m);
 	}
-	// Matrix::MakeTranspose
+	// Matrix::makeTranspose
 	{
 		Matrix m;
-		m = Matrix::Multiply(m, Matrix::MakeTranslation(Vector3(5, 6, 7)));
-		m = Matrix::Multiply(m, Matrix::MakeRotationYawPitchRoll(1, 2, 3));
-		m = Matrix::MakeTranspose(m);
+		m = Matrix::multiply(m, Matrix::makeTranslation(Vector3(5, 6, 7)));
+		m = Matrix::multiply(m, Matrix::makeRotationYawPitchRoll(1, 2, 3));
+		m = Matrix::makeTranspose(m);
 		ASSERT_MAT_NEAR(
 			-0.426918, -0.833738, -0.350176, -9.588243,
 			-0.058727, 0.411982, -0.909297, -4.186821,
@@ -500,13 +500,13 @@ TEST_F(Test_Matrix, Basic)
 			0.000000, 0.000000, 0.000000, 1.000000,
 			m);
 	}
-	// Matrix::MakeReflection
+	// Matrix::makeReflection
 	{
 		Vector3 v1(1, 2, 3);
 		Vector3 v2(-4, -5, -6);
 		Vector3 v3(0.1f, 0.2f, 0.3f);
 		Plane pl(v1, v2, v3);
-		Matrix m = Matrix::MakeReflection(pl);
+		Matrix m = Matrix::makeReflection(pl);
 		ASSERT_MAT_NEAR(
 			0.666667, 0.666667, -0.333333, 0.000000,
 			0.666667, -0.333333, 0.666667, 0.000000,
@@ -514,13 +514,13 @@ TEST_F(Test_Matrix, Basic)
 			0.000000, -0.000000, 0.000000, 1.000000,
 			m);
 	}
-	// Matrix::MakeLookAtLH / Matrix::MakeLookAtRH
+	// Matrix::makeLookAtLH / Matrix::makeLookAtRH
 	{
 		Vector3 pos(-10, -20, -30);
 		Vector3 at(40, 50, 60);
 		Vector3 up(0, 1, 0);
 
-		Matrix mat1 = Matrix::MakeLookAtLH(pos, at, up);
+		Matrix mat1 = Matrix::makeLookAtLH(pos, at, up);
 		ASSERT_MAT_NEAR(
 			0.874157, -0.273054, 0.401610, 0.000000,
 			0.000000, 0.826965, 0.562254, 0.000000,
@@ -528,7 +528,7 @@ TEST_F(Test_Matrix, Basic)
 			-5.827715, -0.936188, 36.948090, 1.000000,
 			mat1);
 
-		Matrix mat2 = Matrix::MakeLookAtRH(pos, at, up);
+		Matrix mat2 = Matrix::makeLookAtRH(pos, at, up);
 		ASSERT_MAT_NEAR(
 			-0.874157, -0.273054, -0.401610, 0.000000,
 			0.000000, 0.826965, -0.562254, 0.000000,
@@ -536,9 +536,9 @@ TEST_F(Test_Matrix, Basic)
 			5.827715, -0.936188, -36.948090, 1.000000,
 			mat2);
 	}
-	// Matrix::MakePerspectiveFovLH / Matrix::MakePerspectiveFovRH
+	// Matrix::makePerspectiveFovLH / Matrix::makePerspectiveFovRH
 	{
-		Matrix mat1 = Matrix::MakePerspectiveFovLH(0.7f, 1.33f, 1.0, 1000.0);
+		Matrix mat1 = Matrix::makePerspectiveFovLH(0.7f, 1.33f, 1.0, 1000.0);
 		ASSERT_MAT_NEAR(
 			2.059783, 0.000000, 0.000000, 0.000000,
 			0.000000, 2.739512, 0.000000, 0.000000,
@@ -546,7 +546,7 @@ TEST_F(Test_Matrix, Basic)
 			0.000000, 0.000000, -1.001001, 0.000000,
 			mat1);
 
-		Matrix mat2 = Matrix::MakePerspectiveFovRH(0.7f, 1.33f, 1.0, 1000.0);
+		Matrix mat2 = Matrix::makePerspectiveFovRH(0.7f, 1.33f, 1.0, 1000.0);
 		ASSERT_MAT_NEAR(
 			2.059783, 0.000000, 0.000000, 0.000000,
 			0.000000, 2.739512, 0.000000, 0.000000,
@@ -554,9 +554,9 @@ TEST_F(Test_Matrix, Basic)
 			0.000000, 0.000000, -1.001001, 0.000000,
 			mat2);
 	}
-	// Matrix::MakeOrthoLH / Matrix::MakeOrthoRH
+	// Matrix::makeOrthoLH / Matrix::makeOrthoRH
 	{
-		Matrix mat1 = Matrix::MakeOrthoLH(640, 480, 10, 1000);
+		Matrix mat1 = Matrix::makeOrthoLH(640, 480, 10, 1000);
 		ASSERT_MAT_NEAR(
 			0.003125, 0.000000, 0.000000, 0.000000,
 			0.000000, 0.004167, 0.000000, 0.000000,
@@ -564,7 +564,7 @@ TEST_F(Test_Matrix, Basic)
 			0.000000, 0.000000, 0.010101, 1.000000,
 			mat1);
 
-		Matrix mat2 = Matrix::MakeOrthoRH(640, 480, 10, 1000);
+		Matrix mat2 = Matrix::makeOrthoRH(640, 480, 10, 1000);
 		ASSERT_MAT_NEAR(
 			0.003125, 0.000000, 0.000000, 0.000000,
 			0.000000, 0.004167, 0.000000, 0.000000,
@@ -572,12 +572,12 @@ TEST_F(Test_Matrix, Basic)
 			0.000000, 0.000000, -0.010101, 1.000000,
 			mat2);
 	}
-	// Matrix::MakeAffineTransformation
+	// Matrix::makeAffineTransformation
 	{
 		Vector3 center(2, 3, 4);
-		Quaternion q = Quaternion::MakeFromYawPitchRoll(0.5, 0.75, 1.0);
+		Quaternion q = Quaternion::makeFromYawPitchRoll(0.5, 0.75, 1.0);
 		Vector3 trans(5, 6, 7);
-		Matrix m = Matrix::MakeAffineTransformation(Vector3(3.0f, 3.0f, 3.0f), center, q, trans);
+		Matrix m = Matrix::makeAffineTransformation(Vector3(3.0f, 3.0f, 3.0f), center, q, trans);
 		ASSERT_MAT_NEAR(
 			2.247445, 1.847085, 0.732985, 0.000000,
 			-1.685677, 1.185999, 2.179885, 0.000000,
@@ -587,8 +587,8 @@ TEST_F(Test_Matrix, Basic)
 	}
 	// operator
 	{
-		Matrix m = Matrix::MakeTranslation(5, 6, 7);
-		m *= Matrix::MakeRotationYawPitchRoll(1, 2, 3);
+		Matrix m = Matrix::makeTranslation(5, 6, 7);
+		m *= Matrix::makeRotationYawPitchRoll(1, 2, 3);
 		ASSERT_MAT_NEAR(
 			-0.426918, -0.058727, 0.902382, 0.000000,
 			-0.833738, 0.411982, -0.367630, 0.000000,
@@ -596,8 +596,8 @@ TEST_F(Test_Matrix, Basic)
 			-9.588243, -4.186821, 0.732209, 1.000000,
 			m);
 
-		Matrix m2 = Matrix::MakeTranslation(5, 6, 7);
-		m2 = m2 * Matrix::MakeRotationYawPitchRoll(1, 2, 3);
+		Matrix m2 = Matrix::makeTranslation(5, 6, 7);
+		m2 = m2 * Matrix::makeRotationYawPitchRoll(1, 2, 3);
 		ASSERT_MAT_NEAR(
 			-0.426918, -0.058727, 0.902382, 0.000000,
 			-0.833738, 0.411982, -0.367630, 0.000000,
@@ -733,7 +733,7 @@ TEST_F(Test_Matrix, Basic)
 
 		Vector3 a = ((Matrix*)&dxm)->ToEulerAngles();
 		ASSERT_VEC3_NEAR(0.5, 0.75, 1.0, a);
-		//a.Print();
+		//a.print();
 	}
 	{
 		D3DXMATRIX  dxm;

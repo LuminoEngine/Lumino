@@ -12,8 +12,8 @@ class VisualEffectInstance
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	virtual void Stop() = 0;
-	virtual bool IsPlaying() = 0;
+	virtual void stop() = 0;
+	virtual bool isPlaying() = 0;
 	virtual void SetWorldMatrix(const Matrix& matrix) = 0;
 
 private:

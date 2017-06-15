@@ -18,7 +18,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ViewportLayer, Object);
 //------------------------------------------------------------------------------
 ViewportLayer::ViewportLayer()
 	: m_owner(nullptr)
-	, m_imageEffects(RefPtr<ImageEffectList>::MakeRef())
+	, m_imageEffects(RefPtr<ImageEffectList>::makeRef())
 	, m_zIndex(0)
 {
 }
@@ -103,7 +103,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Viewport, Object);
 Viewport::Viewport()
 	: m_manager(nullptr)
 	, m_placement(ViewportPlacement::Stretch)
-	, m_viewportLayerList(RefPtr<ViewportLayerList>::MakeRef())
+	, m_viewportLayerList(RefPtr<ViewportLayerList>::makeRef())
 	, m_backgroundColor(Color::White)
 	, m_primaryLayerTarget(nullptr)
 	, m_secondaryLayerTarget(nullptr)
@@ -117,21 +117,21 @@ Viewport::~Viewport()
 }
 
 //------------------------------------------------------------------------------
-void Viewport::Initialize(detail::GraphicsManager* manager, const SizeI& viewSize)
+void Viewport::initialize(detail::GraphicsManager* manager, const SizeI& viewSize)
 {
 	m_manager = manager;
 	//m_renderTarget = renderTarget;
-	//m_size.Set((float)m_renderTarget->GetWidth(), (float)m_renderTarget->GetHeight());
+	//m_size.Set((float)m_renderTarget->getWidth(), (float)m_renderTarget->getHeight());
 
-	m_renderer = RefPtr<DrawList>::MakeRef();
-	m_renderer->Initialize(manager);
+	m_renderer = RefPtr<DrawList>::makeRef();
+	m_renderer->initialize(manager);
 
-	auto internalRenderer = RefPtr<detail::NonShadingRenderer>::MakeRef();
-	internalRenderer->Initialize(manager);
+	auto internalRenderer = RefPtr<detail::NonShadingRenderer>::makeRef();
+	internalRenderer->initialize(manager);
 	m_internalRenderer = internalRenderer;
 
 	//m_pass = RefPtr<detail::RenderingPass2>::MakeRef();
-	//m_pass->Initialize(manager);
+	//m_pass->initialize(manager);
 
 	TryRemakeLayerTargets(viewSize);
 }
@@ -217,8 +217,8 @@ void Viewport::Render(DrawList* parentDrawList, const SizeI& targetSize)
 		layer->ExecuteDrawListRendering(parentDrawList, m_primaryLayerTarget, m_depthBuffer);
 
 		// TODO: Posteffect
-		//BeginBlitRenderer();
-		//layer->PostRender(m_renderer, &m_primaryLayerTarget, &m_secondaryLayerTarget);
+		//beginBlitRenderer();
+		//layer->postRender(m_renderer, &m_primaryLayerTarget, &m_secondaryLayerTarget);
 		//FlushBlitRenderer(renderTarget);
 	}
 
@@ -229,8 +229,8 @@ void Viewport::Render(DrawList* parentDrawList, const SizeI& targetSize)
 		MakeViewBoxTransform(targetSize, m_primaryLayerTarget->GetSize(), &viewBoxTransform);
 	}
 
-	//BeginBlitRenderer();
-	//m_renderer->Blit(m_primaryLayerTarget, viewBoxTransform);
+	//beginBlitRenderer();
+	//m_renderer->blit(m_primaryLayerTarget, viewBoxTransform);
 	//FlushBlitRenderer(renderTarget);
 
 
@@ -238,7 +238,7 @@ void Viewport::Render(DrawList* parentDrawList, const SizeI& targetSize)
 	parentDrawList->SetDepthBuffer(oldDepthBuffer);
 	parentDrawList->Blit(m_primaryLayerTarget, viewBoxTransform);
 
-	// TODO: 暫定。Blit の中で深度書き込みしないようにしてほしいかも。
+	// TODO: 暫定。blit の中で深度書き込みしないようにしてほしいかも。
 	parentDrawList->Clear(ClearFlags::Depth, Color());
 
 }
@@ -279,13 +279,13 @@ void Viewport::TryRemakeLayerTargets(const SizeI& ownerViewPixelSize)
 		// RenderTargetTexture
 		// TODO: できればこういうのは Resize 関数を作りたい。作り直したくない
 		// TODO: というか UE4 みたいにキャッシュしたい
-		m_primaryLayerTarget = RefPtr<RenderTargetTexture>::MakeRef();
+		m_primaryLayerTarget = RefPtr<RenderTargetTexture>::makeRef();
 		m_primaryLayerTarget->CreateImpl(GetManager(), newSize, 1, TextureFormat::R8G8B8X8);
-		m_secondaryLayerTarget = RefPtr<RenderTargetTexture>::MakeRef();
+		m_secondaryLayerTarget = RefPtr<RenderTargetTexture>::makeRef();
 		m_secondaryLayerTarget->CreateImpl(GetManager(), newSize, 1, TextureFormat::R8G8B8X8);
 
 		// DepthBuffer
-		m_depthBuffer = RefPtr<DepthBuffer>::MakeRef();
+		m_depthBuffer = RefPtr<DepthBuffer>::makeRef();
 		m_depthBuffer->CreateImpl(GetManager(), newSize, TextureFormat::D24S8);
 	}
 }
@@ -388,13 +388,13 @@ void Viewport::FlushBlitRenderer(RenderTargetTexture* renderTarget)
 ////==============================================================================
 //
 ////------------------------------------------------------------------------------
-//ViewportLayer* MainViewport::GetDefault2DLayer()
+//ViewportLayer* MainViewport::getDefault2DLayer()
 //{
 //
 //}
 //
 ////------------------------------------------------------------------------------
-//ViewportLayer* MainViewport::GetDefault3DLayer()
+//ViewportLayer* MainViewport::getDefault3DLayer()
 //{
 //
 //}

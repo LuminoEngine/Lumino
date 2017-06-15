@@ -14,7 +14,7 @@ class EffectBatchRendererNode
 public:
 	EffectBatchRendererNode();
 	virtual ~EffectBatchRendererNode();
-	void Initialize(SceneGraph* owner, detail::EffectManager* effectManager);
+	void initialize(SceneGraph* owner, detail::EffectManager* effectManager);
 
 protected:
 

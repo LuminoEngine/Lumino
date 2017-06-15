@@ -106,13 +106,13 @@ Matrix::Matrix(const AttitudeTransform& transform)
 	m[2][0] = m[2][1] = m[2][3] = 0.0f;
 	m[3][0] = m[3][1] = m[3][2] = 0.0f;
 
-	Scale(transform.scale);
-	RotateQuaternion(transform.rotation);
-	Translate(transform.translation);
+	scale(transform.scale);
+	rotateQuaternion(transform.rotation);
+	translate(transform.translation);
 }
 
 //------------------------------------------------------------------------------
-void Matrix::Set(
+void Matrix::set(
 	float m11, float m12, float m13, float m14,
 	float m21, float m22, float m23, float m24,
 	float m31, float m32, float m33, float m34,
@@ -125,7 +125,7 @@ void Matrix::Set(
 }
 
 //------------------------------------------------------------------------------
-void Matrix::Translate(float x, float y, float z)
+void Matrix::translate(float x, float y, float z)
 {
 	m[3][0] += x;
 	m[3][1] += y;
@@ -133,7 +133,7 @@ void Matrix::Translate(float x, float y, float z)
 }
 
 //------------------------------------------------------------------------------
-void Matrix::Translate(const Vector3& vec)
+void Matrix::translate(const Vector3& vec)
 {
 	m[3][0] += vec.x;
 	m[3][1] += vec.y;
@@ -141,7 +141,7 @@ void Matrix::Translate(const Vector3& vec)
 }
 
 //------------------------------------------------------------------------------
-void Matrix::RotateX(float r)
+void Matrix::rotateX(float r)
 {
 	float c, s;
 	Asm::sincos(r, &s, &c);
@@ -277,7 +277,7 @@ void Matrix::RotateX(float r)
 }
 
 //------------------------------------------------------------------------------
-void Matrix::RotateY(float r)
+void Matrix::rotateY(float r)
 {
 	float c, s;
 	Asm::sincos(r, &s, &c);
@@ -413,7 +413,7 @@ void Matrix::RotateY(float r)
 }
 
 //------------------------------------------------------------------------------
-void Matrix::RotateZ(float r)
+void Matrix::rotateZ(float r)
 {
 	float c, s;
 	Asm::sincos(r, &s, &c);
@@ -543,22 +543,22 @@ void Matrix::RotateZ(float r)
 }
 
 //------------------------------------------------------------------------------
-void Matrix::RotateEulerAngles(float x, float y, float z, RotationOrder order)
+void Matrix::rotateEulerAngles(float x, float y, float z, RotationOrder order)
 {
-	RotateEulerAngles(Vector3(x, y, z), order);
+	rotateEulerAngles(Vector3(x, y, z), order);
 }
 
 //------------------------------------------------------------------------------
-void Matrix::RotateEulerAngles(const Vector3& angles, RotationOrder order)
+void Matrix::rotateEulerAngles(const Vector3& angles, RotationOrder order)
 {
 	switch (order)
 	{
 		case RotationOrder::XYZ:
-			RotateX(angles.x); RotateY(angles.y); RotateZ(angles.z); break;
+			rotateX(angles.x); rotateY(angles.y); rotateZ(angles.z); break;
 		case RotationOrder::YZX:
-			RotateY(angles.y); RotateZ(angles.z); RotateX(angles.x); break;
+			rotateY(angles.y); rotateZ(angles.z); rotateX(angles.x); break;
 		case RotationOrder::ZXY:
-			RotateZ(angles.z); RotateX(angles.x); RotateY(angles.y); break;	// RotationYawPitchRoll
+			rotateZ(angles.z); rotateX(angles.x); rotateY(angles.y); break;	// RotationYawPitchRoll
 		default:
 			assert(0);
 			break;
@@ -566,11 +566,11 @@ void Matrix::RotateEulerAngles(const Vector3& angles, RotationOrder order)
 }
 
 //------------------------------------------------------------------------------
-void Matrix::RotateAxis(const Vector3& axis_, float r)
+void Matrix::rotateAxis(const Vector3& axis_, float r)
 {
 	Vector3 axis = axis_;
-	if (axis.GetLengthSquared() != 1.0f) {
-		axis.Normalize();
+	if (axis.getLengthSquared() != 1.0f) {
+		axis.normalize();
 	}
 
 	float s, c;
@@ -720,7 +720,7 @@ void Matrix::RotateAxis(const Vector3& axis_, float r)
 }
 
 //------------------------------------------------------------------------------
-void Matrix::RotateQuaternion(const Quaternion& q)
+void Matrix::rotateQuaternion(const Quaternion& q)
 {
 	float xx = q.x * q.x;
 	float yy = q.y * q.y;
@@ -771,7 +771,7 @@ void Matrix::RotateQuaternion(const Quaternion& q)
 }
 
 //------------------------------------------------------------------------------
-void Matrix::Scale(float x, float y, float z)
+void Matrix::scale(float x, float y, float z)
 {
 	m[0][0] *= x;
 	m[0][1] *= y;
@@ -787,52 +787,52 @@ void Matrix::Scale(float x, float y, float z)
 	m[3][2] *= z;
 }
 
-void Matrix::Scale(const Vector3& vec)
+void Matrix::scale(const Vector3& vec)
 {
-	Scale(vec.x, vec.y, vec.z);
+	scale(vec.x, vec.y, vec.z);
 }
 
-void Matrix::Scale(float xyz)
+void Matrix::scale(float xyz)
 {
-	Scale(xyz, xyz, xyz);
-}
-
-//------------------------------------------------------------------------------
-void Matrix::Inverse()
-{
-	(*this) = Matrix::MakeInverse(*this);
+	scale(xyz, xyz, xyz);
 }
 
 //------------------------------------------------------------------------------
-void  Matrix::Transpose()
+void Matrix::inverse()
 {
-	(*this) = Matrix::MakeTranspose(*this);
+	(*this) = Matrix::makeInverse(*this);
 }
 
 //------------------------------------------------------------------------------
-void Matrix::Decompose(Vector3* scale, Quaternion* rot, Vector3* trans) const
+void  Matrix::transpose()
+{
+	(*this) = Matrix::makeTranspose(*this);
+}
+
+//------------------------------------------------------------------------------
+void Matrix::decompose(Vector3* scale, Quaternion* rot, Vector3* trans) const
 {
 	Matrix scaleMat;
 	Matrix rotMat;
 	Matrix transMat;
-	DecomposeMatrices(&scaleMat, &rotMat, &transMat);
+	decomposeMatrices(&scaleMat, &rotMat, &transMat);
 	if (scale) {
-		scale->Set(scaleMat.m[0][0], scaleMat.m[1][1], scaleMat.m[2][2]);
+		scale->set(scaleMat.m[0][0], scaleMat.m[1][1], scaleMat.m[2][2]);
 	}
 	if (rot) {
-		*rot = Quaternion::MakeFromRotationMatrix(rotMat);
+		*rot = Quaternion::makeFromRotationMatrix(rotMat);
 	}
 	if (trans) {
-		trans->Set(transMat.m[3][0], transMat.m[3][1], transMat.m[3][2]);
+		trans->set(transMat.m[3][0], transMat.m[3][1], transMat.m[3][2]);
 	}
 }
 
 //------------------------------------------------------------------------------
-void Matrix::DecomposeMatrices(Matrix* scale, Matrix* rot, Matrix* trans) const
+void Matrix::decomposeMatrices(Matrix* scale, Matrix* rot, Matrix* trans) const
 {
 	if (trans)
 	{
-		*trans = Matrix::MakeTranslation(GetPosition());
+		*trans = Matrix::makeTranslation(getPosition());
 	}
 
 	Vector3 sc(
@@ -841,7 +841,7 @@ void Matrix::DecomposeMatrices(Matrix* scale, Matrix* rot, Matrix* trans) const
 		sqrtf(m[2][0] * m[2][0] + m[2][1] * m[2][1] + m[2][2] * m[2][2]));
 	if (scale)
 	{
-		*scale = Matrix::MakeScaling(sc);
+		*scale = Matrix::makeScaling(sc);
 	}
 
 	if (rot)
@@ -866,7 +866,7 @@ void Matrix::DecomposeMatrices(Matrix* scale, Matrix* rot, Matrix* trans) const
 	}
 }
 #if 0
-void Matrix::Decompose(Vector3* scale, Matrix* rot, Vector3* trans)
+void Matrix::decompose(Vector3* scale, Matrix* rot, Vector3* trans)
 {
 	if (trans)
 	{
@@ -903,23 +903,23 @@ void Matrix::Decompose(Vector3* scale, Matrix* rot, Vector3* trans)
 	}
 }
 
-void Matrix::Decompose(Vector3* scale, Quaternion* rot, Vector3* trans) const
+void Matrix::decompose(Vector3* scale, Quaternion* rot, Vector3* trans) const
 {
 	if (rot)
 	{
 		Matrix rotMat;
-		Decompose(scale, &rotMat, trans);
+		decompose(scale, &rotMat, trans);
 		*rot =
 	}
 	else
 	{
-		Decompose(scale, NULL, trans);
+		decompose(scale, NULL, trans);
 	}
 }
 #endif
 
 //------------------------------------------------------------------------------
-void Matrix::Print(const char* format, FILE* stream) const
+void Matrix::print(const char* format, FILE* stream) const
 {
 	if (!format) {
 		format = "%f, %f, %f, %f,\n%f, %f, %f, %f,\n%f, %f, %f, %f,\n%f, %f, %f, %f\n";
@@ -951,7 +951,7 @@ static bool EulerAnglesXYZ(const Matrix& mat, float* xRot, float* yRot, float* z
 	*yRot = -asinf(mat.m[0][2]);
 	*xRot = asinf(mat.m[1][2] / cosf(*yRot));
 
-	if (Math::IsNaN(*xRot))	// ジンバルロック判定
+	if (Math::isNaN(*xRot))	// ジンバルロック判定
 	{
 		*xRot = 0.0f;
 		*yRot = (mat.m[0][2] < 0 ? Math::PIDiv2 : -Math::PIDiv2);
@@ -982,7 +982,7 @@ static bool EulerAnglesYZX(const Matrix& mat, float* xRot, float* yRot, float* z
 	*zRot = -asinf(mat.m[1][0]);
 	*yRot = asinf(mat.m[2][0] / cosf(*zRot));
 
-	if (Math::IsNaN(*yRot))	// ジンバルロック判定
+	if (Math::isNaN(*yRot))	// ジンバルロック判定
 	{
 		*xRot = -atan2f(-mat.m[2][1], mat.m[2][2]);
 		*yRot = 0.0f;
@@ -1014,7 +1014,7 @@ static bool EulerAnglesZXY(const Matrix& mat, float* xRot, float* yRot, float* z
 	*xRot = -(float)asinf(mat.m[2][1]);
 	*zRot = (float)asinf(mat.m[0][1] / cosf(*xRot));
 
-	if (Math::IsNaN(*zRot))	// ジンバルロック判定
+	if (Math::isNaN(*zRot))	// ジンバルロック判定
 	{
 		*xRot = (mat.m[2][1] < 0 ? Math::PIDiv2 : -Math::PIDiv2);
 		*yRot = (float)atan2f(-mat.m[0][2], mat.m[0][0]);
@@ -1032,7 +1032,7 @@ static bool EulerAnglesZXY(const Matrix& mat, float* xRot, float* yRot, float* z
 	return true;
 }
 
-Vector3 Matrix::ToEulerAngles(RotationOrder order, bool* locked_) const
+Vector3 Matrix::toEulerAngles(RotationOrder order, bool* locked_) const
 {
 	bool locked;
 	float xRot, yRot, zRot;
@@ -1060,7 +1060,7 @@ Vector3 Matrix::ToEulerAngles(RotationOrder order, bool* locked_) const
 }
 
 //------------------------------------------------------------------------------
-Matrix Matrix::GetRotationMatrix() const
+Matrix Matrix::getRotationMatrix() const
 {
 	return Matrix(
 		m[0][0], m[0][1], m[0][2], 0.0f,
@@ -1070,19 +1070,19 @@ Matrix Matrix::GetRotationMatrix() const
 }
 
 //------------------------------------------------------------------------------
-bool Matrix::IsNaNOrInf() const
+bool Matrix::isNaNOrInf() const
 {
 	return
-		Math::IsNaNOrInf(m[0][0]) || Math::IsNaNOrInf(m[0][1]) || Math::IsNaNOrInf(m[0][2]) || Math::IsNaNOrInf(m[0][3]) ||
-		Math::IsNaNOrInf(m[1][0]) || Math::IsNaNOrInf(m[1][1]) || Math::IsNaNOrInf(m[1][2]) || Math::IsNaNOrInf(m[1][3]) ||
-		Math::IsNaNOrInf(m[2][0]) || Math::IsNaNOrInf(m[2][1]) || Math::IsNaNOrInf(m[2][2]) || Math::IsNaNOrInf(m[2][3]) ||
-		Math::IsNaNOrInf(m[3][0]) || Math::IsNaNOrInf(m[3][1]) || Math::IsNaNOrInf(m[3][2]) || Math::IsNaNOrInf(m[3][3]);
+		Math::isNaNOrInf(m[0][0]) || Math::isNaNOrInf(m[0][1]) || Math::isNaNOrInf(m[0][2]) || Math::isNaNOrInf(m[0][3]) ||
+		Math::isNaNOrInf(m[1][0]) || Math::isNaNOrInf(m[1][1]) || Math::isNaNOrInf(m[1][2]) || Math::isNaNOrInf(m[1][3]) ||
+		Math::isNaNOrInf(m[2][0]) || Math::isNaNOrInf(m[2][1]) || Math::isNaNOrInf(m[2][2]) || Math::isNaNOrInf(m[2][3]) ||
+		Math::isNaNOrInf(m[3][0]) || Math::isNaNOrInf(m[3][1]) || Math::isNaNOrInf(m[3][2]) || Math::isNaNOrInf(m[3][3]);
 }
 
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Matrix Matrix::Multiply(const Matrix& mat1, const Matrix& mat2)
+Matrix Matrix::multiply(const Matrix& mat1, const Matrix& mat2)
 {
 	Matrix out;
 
@@ -1112,7 +1112,7 @@ Matrix Matrix::Multiply(const Matrix& mat1, const Matrix& mat2)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Matrix Matrix::MakeTranslation(float x, float y, float z)
+Matrix Matrix::makeTranslation(float x, float y, float z)
 {
 	return Matrix(
 		1.0f, 0.0f, 0.0f, 0.0f,
@@ -1124,7 +1124,7 @@ Matrix Matrix::MakeTranslation(float x, float y, float z)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Matrix Matrix::MakeTranslation(const Vector3& vec)
+Matrix Matrix::makeTranslation(const Vector3& vec)
 {
 	return Matrix(
 		1.0f, 0.0f, 0.0f, 0.0f,
@@ -1136,7 +1136,7 @@ Matrix Matrix::MakeTranslation(const Vector3& vec)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Matrix Matrix::MakeRotationX(float r)
+Matrix Matrix::makeRotationX(float r)
 {
 	float c, s;
 	Asm::sincos(r, &s, &c);
@@ -1150,7 +1150,7 @@ Matrix Matrix::MakeRotationX(float r)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Matrix Matrix::MakeRotationY(float r)
+Matrix Matrix::makeRotationY(float r)
 {
 	float c, s;
 	Asm::sincos(r, &s, &c);
@@ -1164,7 +1164,7 @@ Matrix Matrix::MakeRotationY(float r)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Matrix Matrix::MakeRotationZ(float r)
+Matrix Matrix::makeRotationZ(float r)
 {
 	float c, s;
 	Asm::sincos(r, &s, &c);
@@ -1178,11 +1178,11 @@ Matrix Matrix::MakeRotationZ(float r)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Matrix Matrix::MakeRotationAxis(const Vector3& axis_, float r)
+Matrix Matrix::makeRotationAxis(const Vector3& axis_, float r)
 {
 	Vector3 axis = axis_;
-	if (axis.GetLengthSquared() != 1.0f) {
-		axis.Normalize();
+	if (axis.getLengthSquared() != 1.0f) {
+		axis.normalize();
 	}
 
 	float s, c;
@@ -1199,7 +1199,7 @@ Matrix Matrix::MakeRotationAxis(const Vector3& axis_, float r)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Matrix Matrix::MakeRotationQuaternion(const Quaternion& qua)
+Matrix Matrix::makeRotationQuaternion(const Quaternion& qua)
 {
 	float xx = qua.x * qua.x;
 	float yy = qua.y * qua.y;
@@ -1221,23 +1221,23 @@ Matrix Matrix::MakeRotationQuaternion(const Quaternion& qua)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Matrix Matrix::MakeRotationEulerAngles(const Vector3& angles, RotationOrder order)
+Matrix Matrix::makeRotationEulerAngles(const Vector3& angles, RotationOrder order)
 {
 	Matrix m;
 	switch (order)
 	{
 		case RotationOrder::XYZ:
-			m.RotateX(angles.x); m.RotateY(angles.y); m.RotateZ(angles.z); break;
+			m.rotateX(angles.x); m.rotateY(angles.y); m.rotateZ(angles.z); break;
 		//case RotationOrder_XZY:
-		//	m.RotateX(angles.X); m.RotateZ(angles.Z); m.RotateY(angles.Y); break;
+		//	m.rotateX(angles.X); m.rotateZ(angles.Z); m.rotateY(angles.Y); break;
 		//case RotationOrder_YXZ:
-		//	m.RotateY(angles.Y); m.RotateX(angles.X); m.RotateZ(angles.Z); break;
+		//	m.rotateY(angles.Y); m.rotateX(angles.X); m.rotateZ(angles.Z); break;
 		case RotationOrder::YZX:
-			m.RotateY(angles.y); m.RotateZ(angles.z); m.RotateX(angles.x); break;
+			m.rotateY(angles.y); m.rotateZ(angles.z); m.rotateX(angles.x); break;
 		case RotationOrder::ZXY:
-			m.RotateZ(angles.z); m.RotateX(angles.x); m.RotateY(angles.y); break;	// RotationYawPitchRoll
+			m.rotateZ(angles.z); m.rotateX(angles.x); m.rotateY(angles.y); break;	// RotationYawPitchRoll
 		//case RotationOrder_ZYX:
-		//	m.RotateZ(angles.Z); m.RotateY(angles.Y); m.RotateX(angles.X); break;
+		//	m.rotateZ(angles.Z); m.rotateY(angles.Y); m.rotateX(angles.X); break;
 		default:
 			assert(0);
 			return m;
@@ -1248,17 +1248,17 @@ Matrix Matrix::MakeRotationEulerAngles(const Vector3& angles, RotationOrder orde
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Matrix Matrix::MakeRotationEulerAngles(float x, float y, float z, RotationOrder order)
+Matrix Matrix::makeRotationEulerAngles(float x, float y, float z, RotationOrder order)
 {
 	Matrix m;
 	switch (order)
 	{
 		case RotationOrder::XYZ:
-			m.RotateX(x); m.RotateY(y); m.RotateZ(z); break;
+			m.rotateX(x); m.rotateY(y); m.rotateZ(z); break;
 		case RotationOrder::YZX:
-			m.RotateY(y); m.RotateZ(z); m.RotateX(y); break;
+			m.rotateY(y); m.rotateZ(z); m.rotateX(y); break;
 		case RotationOrder::ZXY:
-			m.RotateZ(z); m.RotateX(x); m.RotateY(y); break;	// RotationYawPitchRoll
+			m.rotateZ(z); m.rotateX(x); m.rotateY(y); break;	// RotationYawPitchRoll
 		default:
 			assert(0);
 			return m;
@@ -1269,16 +1269,16 @@ Matrix Matrix::MakeRotationEulerAngles(float x, float y, float z, RotationOrder 
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Matrix Matrix::MakeRotationYawPitchRoll(float yaw, float pitch, float roll)
+Matrix Matrix::makeRotationYawPitchRoll(float yaw, float pitch, float roll)
 {
-	Quaternion q = Quaternion::MakeFromYawPitchRoll(yaw, pitch, roll);
-	return Matrix::MakeRotationQuaternion(q);
+	Quaternion q = Quaternion::makeFromYawPitchRoll(yaw, pitch, roll);
+	return Matrix::makeRotationQuaternion(q);
 }
 
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Matrix Matrix::MakeScaling(float x, float y, float z)
+Matrix Matrix::makeScaling(float x, float y, float z)
 {
 	return Matrix(
 		x, 0.0f, 0.0f, 0.0f,
@@ -1290,7 +1290,7 @@ Matrix Matrix::MakeScaling(float x, float y, float z)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Matrix Matrix::MakeScaling(const Vector3& vec)
+Matrix Matrix::makeScaling(const Vector3& vec)
 {
 	return Matrix(
 		vec.x, 0.0f, 0.0f, 0.0f,
@@ -1302,7 +1302,7 @@ Matrix Matrix::MakeScaling(const Vector3& vec)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Matrix Matrix::MakeScaling(float xyz)
+Matrix Matrix::makeScaling(float xyz)
 {
 	return Matrix(
 		xyz, 0.0f, 0.0f, 0.0f,
@@ -1314,7 +1314,7 @@ Matrix Matrix::MakeScaling(float xyz)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Matrix Matrix::MakeInverse(const Matrix& mat)
+Matrix Matrix::makeInverse(const Matrix& mat)
 {
 #if 1	// 速度は D3DXMatrixInverse の 2～3倍 (100000 回で 3000us。コンストラクタとかが足引っ張ってそうな気がする…)
 	float coef00 = mat.m[2][2] * mat.m[3][3] - mat.m[3][2] * mat.m[2][3];
@@ -1474,7 +1474,7 @@ Matrix Matrix::MakeInverse(const Matrix& mat)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Matrix Matrix::MakeTranspose(const Matrix& mat)
+Matrix Matrix::makeTranspose(const Matrix& mat)
 {
 	return Matrix(
 		mat.m[0][0], mat.m[1][0], mat.m[2][0], mat.m[3][0],
@@ -1486,9 +1486,9 @@ Matrix Matrix::MakeTranspose(const Matrix& mat)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Matrix Matrix::MakeReflection(const Plane& plane_)
+Matrix Matrix::makeReflection(const Plane& plane_)
 {
-	Plane plane = Plane::Normalize(plane_);
+	Plane plane = Plane::normalize(plane_);
 	float x = plane.Normal.x;
 	float y = plane.Normal.y;
 	float z = plane.Normal.z;
@@ -1506,18 +1506,18 @@ Matrix Matrix::MakeReflection(const Plane& plane_)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Matrix Matrix::MakeLookAtLH(const Vector3& position, const Vector3& lookAt, const Vector3& up)
+Matrix Matrix::makeLookAtLH(const Vector3& position, const Vector3& lookAt, const Vector3& up)
 {
 	Vector3 xaxis, yaxis, zaxis;
 	// 注視点からカメラ位置までのベクトルをZ軸とする
 	zaxis = lookAt;
 	zaxis -= position;
-	zaxis.Normalize();
+	zaxis.normalize();
 	// Z軸と上方向のベクトルの外積をとるとX軸が分かる
-	xaxis = Vector3::Cross(up, zaxis);
-	xaxis.Normalize();
+	xaxis = Vector3::cross(up, zaxis);
+	xaxis.normalize();
 	// 2つの軸がわかったので、その2つの外積は残りの軸(Y軸)になる
-	yaxis = Vector3::Cross(zaxis, xaxis);
+	yaxis = Vector3::cross(zaxis, xaxis);
 
 	return Matrix(
 		xaxis.x, yaxis.x, zaxis.x, 0.0f,
@@ -1532,18 +1532,18 @@ Matrix Matrix::MakeLookAtLH(const Vector3& position, const Vector3& lookAt, cons
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Matrix Matrix::MakeLookAtRH(const Vector3& position, const Vector3& lookAt, const Vector3& up)
+Matrix Matrix::makeLookAtRH(const Vector3& position, const Vector3& lookAt, const Vector3& up)
 {
 	Vector3 xaxis, yaxis, zaxis;
 	// 注視点からカメラ位置までのベクトルをZ軸とする
 	zaxis = position;
 	zaxis -= lookAt;
-	zaxis.Normalize();
+	zaxis.normalize();
 	// Z軸と上方向のベクトルの外積をとるとX軸が分かる
-	xaxis = Vector3::Cross(up, zaxis);
-	xaxis.Normalize();
+	xaxis = Vector3::cross(up, zaxis);
+	xaxis.normalize();
 	// 2つの軸がわかったので、その2つの外積は残りの軸(Y軸)になる
-	yaxis = Vector3::Cross(zaxis, xaxis);
+	yaxis = Vector3::cross(zaxis, xaxis);
 
 	return Matrix(
 		xaxis.x, yaxis.x, zaxis.x, 0.0f,
@@ -1558,7 +1558,7 @@ Matrix Matrix::MakeLookAtRH(const Vector3& position, const Vector3& lookAt, cons
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Matrix Matrix::MakePerspectiveFovLH(float fovY, float aspect, float nearZ, float farZ)
+Matrix Matrix::makePerspectiveFovLH(float fovY, float aspect, float nearZ, float farZ)
 {
 	float h = 1.f / tanf(fovY * 0.5f);	// cot(fovY/2)
 	return Matrix(
@@ -1571,7 +1571,7 @@ Matrix Matrix::MakePerspectiveFovLH(float fovY, float aspect, float nearZ, float
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Matrix Matrix::MakePerspectiveFovRH(float fovY, float aspect, float nearZ, float farZ)
+Matrix Matrix::makePerspectiveFovRH(float fovY, float aspect, float nearZ, float farZ)
 {
 	float h = 1.f / tanf(fovY * 0.5f);	// cot(fovY/2)
 	return Matrix(
@@ -1584,7 +1584,7 @@ Matrix Matrix::MakePerspectiveFovRH(float fovY, float aspect, float nearZ, float
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Matrix Matrix::MakeOrthoLH(float width, float height, float nearZ, float farZ)
+Matrix Matrix::makeOrthoLH(float width, float height, float nearZ, float farZ)
 {
 	return Matrix(
 		2.0f / width, 0.0f, 0.0f, 0.0f,
@@ -1596,7 +1596,7 @@ Matrix Matrix::MakeOrthoLH(float width, float height, float nearZ, float farZ)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Matrix Matrix::MakeOrthoRH(float width, float height, float nearZ, float farZ)
+Matrix Matrix::makeOrthoRH(float width, float height, float nearZ, float farZ)
 {
 	return Matrix(
 		2.0f / width, 0.0f, 0.0f, 0.0f,
@@ -1608,7 +1608,7 @@ Matrix Matrix::MakeOrthoRH(float width, float height, float nearZ, float farZ)
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Matrix Matrix::MakePerspective2DLH(float width, float height, float nearZ, float farZ)
+Matrix Matrix::makePerspective2DLH(float width, float height, float nearZ, float farZ)
 {
 	return Matrix(
 		2.0f / width, 0.0f, 0.0f, 0.0f,
@@ -1620,7 +1620,7 @@ Matrix Matrix::MakePerspective2DLH(float width, float height, float nearZ, float
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Matrix Matrix::MakePerspective2DRH(float width, float height, float nearZ, float farZ)
+Matrix Matrix::makePerspective2DRH(float width, float height, float nearZ, float farZ)
 {
 	return Matrix(
 		2.0f / width, 0.0f, 0.0f, 0.0f,
@@ -1632,13 +1632,13 @@ Matrix Matrix::MakePerspective2DRH(float width, float height, float nearZ, float
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Matrix Matrix::MakeAffineTransformation(const Vector3& scaling, const Vector3& rotationCenter, const Quaternion& rotation, const Vector3& translation)
+Matrix Matrix::makeAffineTransformation(const Vector3& scaling, const Vector3& rotationCenter, const Quaternion& rotation, const Vector3& translation)
 {
-	Matrix m = Matrix::MakeScaling(scaling);
-	m.Translate(-rotationCenter);
-	m.RotateQuaternion(rotation);
-	m.Translate(rotationCenter);
-	m.Translate(translation);
+	Matrix m = Matrix::makeScaling(scaling);
+	m.translate(-rotationCenter);
+	m.rotateQuaternion(rotation);
+	m.translate(rotationCenter);
+	m.translate(translation);
 	return m;
 }
 
@@ -1679,7 +1679,7 @@ Matrix& Matrix::operator *= (const Matrix& matrix)
 //------------------------------------------------------------------------------
 Matrix operator * (const Matrix& mat1, const Matrix& mat2)
 {
-	return Matrix::Multiply(mat1, mat2);
+	return Matrix::multiply(mat1, mat2);
 }
 
 //------------------------------------------------------------------------------
@@ -1693,7 +1693,7 @@ Matrix operator * (const Matrix& mat1, float v)
 }
 
 //------------------------------------------------------------------------------
-static bool Equals(const Matrix& value1, const Matrix& value2)
+static bool equals(const Matrix& value1, const Matrix& value2)
 {
 	return (
 		value1.m11 == value2.m11 && value1.m12 == value2.m12 && value1.m13 == value2.m13 && value1.m14 == value2.m14 &&
@@ -1705,13 +1705,13 @@ static bool Equals(const Matrix& value1, const Matrix& value2)
 //------------------------------------------------------------------------------
 bool Matrix::operator == (const Matrix& mat) const
 {
-	return Equals(*this, mat);
+	return equals(*this, mat);
 }
 
 //------------------------------------------------------------------------------
 bool Matrix::operator != (const Matrix& mat) const
 {
-	return !Equals(*this, mat);
+	return !equals(*this, mat);
 }
 
 LN_NAMESPACE_END

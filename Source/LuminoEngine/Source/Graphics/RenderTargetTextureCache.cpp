@@ -1,7 +1,7 @@
 ﻿/*
 	Manager に持たせて、1つの Cache をたくさんのビューが共有すると、GC のタイミングが難しくなる。
 	なので、少し無駄はでるけど Viewport 単位で持つ。
-	そうしておけば、Viewport::Render() の最後で GC すれば良くなる。
+	そうしておけば、Viewport::render() の最後で GC すれば良くなる。
 
 
 	キャッシュの容量と解放タイミングについて
@@ -35,7 +35,7 @@ RenderTargetTextureCache::~RenderTargetTextureCache()
 }
 
 //------------------------------------------------------------------------------
-RefPtr<RenderTargetTexture> RenderTargetTextureCache::RequestRenderTarget(const SizeI& size, TextureFormat format, int mipLevel)
+RefPtr<RenderTargetTexture> RenderTargetTextureCache::requestRenderTarget(const SizeI& size, TextureFormat format, int mipLevel)
 {
 	LN_NOTIMPLEMENTED();
 
@@ -53,7 +53,7 @@ RefPtr<RenderTargetTexture> RenderTargetTextureCache::RequestRenderTarget(const 
 	{
 		for (RenderTargetTexture* rt : itr->second)
 		{
-			if (rt->GetReferenceCount() == 1)	// Cache からしか参照されていない？
+			if (rt->getReferenceCount() == 1)	// Cache からしか参照されていない？
 			{
 				renderTarget = rt;
 				break;
@@ -64,9 +64,9 @@ RefPtr<RenderTargetTexture> RenderTargetTextureCache::RequestRenderTarget(const 
 	// 見つからなかったら新しく作って map に追加する
 	if (renderTarget == nullptr)
 	{
-		auto rt = RefPtr<RenderTargetTexture>::MakeRef();
-		rt->CreateImpl(m_manager, size, mipLevel, format);
-		renderTarget = rt.DetachMove();
+		auto rt = RefPtr<RenderTargetTexture>::makeRef();
+		rt->createImpl(m_manager, size, mipLevel, format);
+		renderTarget = rt.detachMove();
 
 		m_renderTargetMap[key].push_back(renderTarget);
 	}
@@ -78,7 +78,7 @@ RefPtr<RenderTargetTexture> RenderTargetTextureCache::RequestRenderTarget(const 
 }
 
 //------------------------------------------------------------------------------
-void RenderTargetTextureCache::GCRenderTargets()
+void RenderTargetTextureCache::gcRenderTargets()
 {
 	LN_NOTIMPLEMENTED();
 }

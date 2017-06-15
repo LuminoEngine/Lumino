@@ -20,15 +20,15 @@ public:
 	virtual ~JsonHandler();
 
 public:
-	virtual bool OnNull() = 0;
-	virtual bool OnBool(bool value) = 0;
-	virtual bool OnDouble(double value) = 0;
-	virtual bool OnString(const TCHAR* str, int len) = 0;
-	virtual bool OnStartArray() = 0;
-	virtual bool OnEndArray(int elementCount) = 0;
-	virtual bool OnStartObject() = 0;
-	virtual bool OnKey(const TCHAR* str, int len) = 0;
-	virtual bool OnEndObject(int memberCount) = 0;
+	virtual bool onNull() = 0;
+	virtual bool onBool(bool value) = 0;
+	virtual bool onDouble(double value) = 0;
+	virtual bool onString(const TCHAR* str, int len) = 0;
+	virtual bool onStartArray() = 0;
+	virtual bool onEndArray(int elementCount) = 0;
+	virtual bool onStartObject() = 0;
+	virtual bool onKey(const TCHAR* str, int len) = 0;
+	virtual bool onEndObject(int memberCount) = 0;
 };
 
 /**
@@ -42,21 +42,21 @@ public:
 	virtual ~JsonDOMHandler();
 
 public:
-	virtual bool OnNull();
-	virtual bool OnBool(bool value);
-	virtual bool OnDouble(double value);
-	virtual bool OnString(const TCHAR* str, int len);
-	virtual bool OnStartArray();
-	virtual bool OnEndArray(int elementCount);
-	virtual bool OnStartObject();
-	virtual bool OnKey(const TCHAR* str, int len);
-	virtual bool OnEndObject(int memberCount);
+	virtual bool onNull();
+	virtual bool onBool(bool value);
+	virtual bool onDouble(double value);
+	virtual bool onString(const TCHAR* str, int len);
+	virtual bool onStartArray();
+	virtual bool onEndArray(int elementCount);
+	virtual bool onStartObject();
+	virtual bool onKey(const TCHAR* str, int len);
+	virtual bool onEndObject(int memberCount);
 
-	void Build();	// Parse が終わった後に呼び出す
+	void build();	// Parse が終わった後に呼び出す
 
 private:
-	void BuildValue(BinaryReader* reader, JsonValue* v);
-	void BuildMember(BinaryReader* reader, JsonMember* m);
+	void buildValue(BinaryReader* reader, JsonValue* v);
+	void buildMember(BinaryReader* reader, JsonMember* m);
 
 private:
 	JsonDocument*	m_document;

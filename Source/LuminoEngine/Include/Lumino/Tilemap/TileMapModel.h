@@ -17,7 +17,7 @@ class TileMapModel
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 
 public:
-	static TileMapModelPtr Create();
+	static TileMapModelPtr create();
 
 public:
 	TileMapModel();

@@ -37,12 +37,12 @@ OggDecoder::~OggDecoder()
 }
 
 //------------------------------------------------------------------------------
-void OggDecoder::Create(Stream* stream)
+void OggDecoder::create(Stream* stream)
 {
 	if (LN_CHECK_ARG(stream != nullptr)) return;
 	
 	LN_REFOBJ_SET(m_stream, stream);
-	m_stream->Seek(0, SeekOrigin_Begin);
+	m_stream->seek(0, SeekOrigin_Begin);
 
 	// コールバック関数
 	ov_callbacks callbacks = {
@@ -127,7 +127,7 @@ void OggDecoder::Create(Stream* stream)
 }
 
 //------------------------------------------------------------------------------
-void OggDecoder::FillOnmemoryBuffer()
+void OggDecoder::fillOnmemoryBuffer()
 {
 	MutexScopedLock lock(m_mutex);
 
@@ -166,7 +166,7 @@ void OggDecoder::FillOnmemoryBuffer()
 }
 
 //------------------------------------------------------------------------------
-void OggDecoder::Read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uint32_t* out_read_size, uint32_t* out_write_size)
+void OggDecoder::read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uint32_t* out_read_size, uint32_t* out_write_size)
 {
     ov_pcm_seek(&m_oggVorbisFile, (seekPos / (WORD_SIZE * m_waveFormat.channels)));
 
@@ -214,7 +214,7 @@ void OggDecoder::Read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uint
 size_t OggDecoder::readOggCallback(void* buffer, size_t element_size, size_t count, void* stream)
 {
 	Stream* file = (Stream*)stream;
-	size_t read_size = file->Read(buffer, element_size * count);
+	size_t read_size = file->read(buffer, element_size * count);
 	return read_size;
 }
 	
@@ -223,7 +223,7 @@ int OggDecoder::seekOggCallback(void* stream, ogg_int64_t offset, int whence)
 {
 	if (stream == NULL) return -1; // 異常の時は 0 以外の値を返す
 	Stream* file = (Stream*)stream;
-	file->Seek(static_cast< int >(offset), (SeekOrigin)whence);
+	file->seek(static_cast< int >(offset), (SeekOrigin)whence);
 	return 0;
 }
 	
@@ -237,7 +237,7 @@ int OggDecoder::closeOggCallback(void* stream)
 long OggDecoder::tellOggCallback(void* stream)
 {
 	Stream* file = (Stream*)stream;
-	return (int)file->GetPosition();
+	return (int)file->getPosition();
 }
 
 } // namespace detail

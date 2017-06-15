@@ -26,17 +26,17 @@ MeshRenderFeature::~MeshRenderFeature()
 }
 
 //------------------------------------------------------------------------------
-void MeshRenderFeature::Initialize(GraphicsManager* manager)
+void MeshRenderFeature::initialize(GraphicsManager* manager)
 {
 	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_manager = manager;
 
-	Driver::IGraphicsDevice* device = m_manager->GetGraphicsDevice();
-	m_renderer = device->GetRenderer();
+	Driver::IGraphicsDevice* device = m_manager->getGraphicsDevice();
+	m_renderer = device->getRenderer();
 }
 
 //------------------------------------------------------------------------------
-void MeshRenderFeature::DrawMesh(MeshResource* mesh, int startIndex, int primitiveCount, PrimitiveType primitiveType)
+void MeshRenderFeature::drawMesh(MeshResource* mesh, int startIndex, int primitiveCount, PrimitiveType primitiveType)
 {
 	if (LN_CHECK_ARG(mesh != nullptr)) return;
 	auto* _this = this;
@@ -45,38 +45,38 @@ void MeshRenderFeature::DrawMesh(MeshResource* mesh, int startIndex, int primiti
 	VertexBuffer* vb[Driver::MaxVertexStreams] = {};
 	int vbCount;
 	IndexBuffer* ib;
-	mesh->CommitRenderData(&decls, vb, &vbCount, &ib);
+	mesh->commitRenderData(&decls, vb, &vbCount, &ib);
 
 	DrawMeshCommandData data;
-	data.vertexDeclaration = decls->GetDeviceObject();
+	data.vertexDeclaration = decls->getDeviceObject();
 	for (int i = 0; i < vbCount; ++i)
 	{
-		data.vertexBuffers[i] = vb[i]->ResolveRHIObject();
+		data.vertexBuffers[i] = vb[i]->resolveRHIObject();
 	}
 	data.vertexBuffersCount = vbCount;
-	data.indexBuffer = ib->ResolveRHIObject();
+	data.indexBuffer = ib->resolveRHIObject();
 	data.startIndex = startIndex;
 	data.primitiveCount = primitiveCount;
 	data.primitiveType = primitiveType;
 	LN_ENQUEUE_RENDER_COMMAND_2(
-		FlushState, m_manager,
+		flushState, m_manager,
 		MeshRenderFeature*, _this,
 		DrawMeshCommandData, data,
 		{
-			_this->DrawMeshImpl(data);
+			_this->drawMeshImpl(data);
 		});
 }
 
 //------------------------------------------------------------------------------
-void MeshRenderFeature::DrawMeshImpl(const DrawMeshCommandData& data)
+void MeshRenderFeature::drawMeshImpl(const DrawMeshCommandData& data)
 {
-	m_renderer->SetVertexDeclaration(data.vertexDeclaration);
+	m_renderer->setVertexDeclaration(data.vertexDeclaration);
 	for (int i = 0; i < data.vertexBuffersCount; ++i)
 	{
-		m_renderer->SetVertexBuffer(i, data.vertexBuffers[i]);
+		m_renderer->setVertexBuffer(i, data.vertexBuffers[i]);
 	}
-	m_renderer->SetIndexBuffer(data.indexBuffer);
-	m_renderer->DrawPrimitiveIndexed(data.primitiveType, data.startIndex, data.primitiveCount);
+	m_renderer->setIndexBuffer(data.indexBuffer);
+	m_renderer->drawPrimitiveIndexed(data.primitiveType, data.startIndex, data.primitiveCount);
 }
 
 } // namespace detail

@@ -24,31 +24,31 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
-void Engine::Initialize()
+void Engine::initialize()
 {
 	if (LN_CHECK_STATE(EngineManager::Instance == nullptr)) return;
-	EngineManager::Instance = EngineManager::Create(detail::EngineSettings::instance);
-	EngineManager::Instance->Initialize();
+	EngineManager::Instance = EngineManager::create(detail::EngineSettings::instance);
+	EngineManager::Instance->initialize();
 }
 
 //------------------------------------------------------------------------------
-void Engine::Terminate()
+void Engine::terminate()
 {
 	LN_SAFE_RELEASE(EngineManager::Instance);
 }
 
 //------------------------------------------------------------------------------
-bool Engine::Update()
+bool Engine::update()
 {
 	if (LN_CHECK_STATE(EngineManager::Instance != nullptr)) return false;
-	return EngineManager::Instance->UpdateUnitily();
+	return EngineManager::Instance->updateUnitily();
 }
 
 //------------------------------------------------------------------------------
-void Engine::UpdateFrame()
+void Engine::updateFrame()
 {
 	if (LN_CHECK_STATE(EngineManager::Instance != nullptr)) return;
-	EngineManager::Instance->UpdateFrame();
+	EngineManager::Instance->updateFrame();
 }
 
 //------------------------------------------------------------------------------
@@ -58,105 +58,105 @@ void Engine::UpdateFrame()
 //}
 
 //------------------------------------------------------------------------------
-void Engine::RenderFrame()
+void Engine::renderFrame()
 {
-	EngineManager::Instance->RenderFrame();
+	EngineManager::Instance->renderFrame();
 }
 
 //------------------------------------------------------------------------------
-void Engine::PresentFrame()
+void Engine::presentFrame()
 {
-	EngineManager::Instance->PresentFrame();
+	EngineManager::Instance->presentFrame();
 }
 
 //------------------------------------------------------------------------------
-bool Engine::IsEndRequested()
+bool Engine::isEndRequested()
 {
-	return EngineManager::Instance->IsEndRequested();
+	return EngineManager::Instance->isEndRequested();
 }
 
 //------------------------------------------------------------------------------
-void Engine::Exit()
+void Engine::exit()
 {
-	EngineManager::Instance->Exit();
+	EngineManager::Instance->exit();
 }
 
 //------------------------------------------------------------------------------
-void Engine::SetFrameUpdateMode(FrameUpdateMode mode)
+void Engine::setFrameUpdateMode(FrameUpdateMode mode)
 {
-	EngineManager::Instance->SetFrameUpdateMode(mode);
+	EngineManager::Instance->setFrameUpdateMode(mode);
 }
 
 //------------------------------------------------------------------------------
-void Engine::ResetFrameDelay()
+void Engine::resetFrameDelay()
 {
-	EngineManager::Instance->ResetFrameDelay();
+	EngineManager::Instance->resetFrameDelay();
 }
 
 //------------------------------------------------------------------------------
-World2D* Engine::GetWorld2D()
+World2D* Engine::getWorld2D()
 {
-	return EngineManager::Instance->GetDefaultWorld2D();
+	return EngineManager::Instance->getDefaultWorld2D();
 }
 
 //------------------------------------------------------------------------------
-World3D* Engine::GetWorld3D()
+World3D* Engine::getWorld3D()
 {
-	return EngineManager::Instance->GetDefaultWorld3D();
+	return EngineManager::Instance->getDefaultWorld3D();
 }
 
 //------------------------------------------------------------------------------
-Camera* Engine::GetCamera3D()
+Camera* Engine::getCamera3D()
 {
-	return EngineManager::Instance->GetDefaultWorld3D()->GetMainCamera();
+	return EngineManager::Instance->getDefaultWorld3D()->getMainCamera();
 }
 
 //------------------------------------------------------------------------------
-UIMainWindow* Engine::GetMainWindow()
+UIMainWindow* Engine::getMainWindow()
 {
-	return EngineManager::Instance->GetUIManager()->GetMainWindow();
+	return EngineManager::Instance->getUIManager()->getMainWindow();
 }
 
 //------------------------------------------------------------------------------
-UIViewport* Engine::GetMainViewport()
+UIViewport* Engine::getMainViewport()
 {
-	return EngineManager::Instance->GetUIManager()->GetMainWindow()->GetViewport();
+	return EngineManager::Instance->getUIManager()->getMainWindow()->getViewport();
 }
 
 //------------------------------------------------------------------------------
-UIViewportLayer* Engine::GetDefault2DLayer()
+UIViewportLayer* Engine::getDefault2DLayer()
 {
-	return EngineManager::Instance->GetUIManager()->GetMainWindow()->GetDefaultCameraViewportLayer2D();
+	return EngineManager::Instance->getUIManager()->getMainWindow()->getDefaultCameraViewportLayer2D();
 }
 
 //------------------------------------------------------------------------------
-UIViewportLayer* Engine::GetDefault3DLayer()
+UIViewportLayer* Engine::getDefault3DLayer()
 {
-	return EngineManager::Instance->GetUIManager()->GetMainWindow()->GetDefaultCameraViewportLayer3D();
+	return EngineManager::Instance->getUIManager()->getMainWindow()->getDefaultCameraViewportLayer3D();
 }
 
 //------------------------------------------------------------------------------
-UILayoutLayer* Engine::GetDefaultUILayer()
+UILayoutLayer* Engine::getDefaultUILayer()
 {
-	return EngineManager::Instance->GetUIManager()->GetMainWindow()->GetDefaultUILayer();
+	return EngineManager::Instance->getUIManager()->getMainWindow()->getDefaultUILayer();
 }
 
 ////------------------------------------------------------------------------------
-//SceneGraph2D* Engine::GetDefaultSceneGraph2D()
+//SceneGraph2D* Engine::getDefaultSceneGraph2D()
 //{
-//	return EngineManager::Instance->GetDefaultWorld2D()->GetSceneGraph2D();
+//	return EngineManager::Instance->getDefaultWorld2D()->getSceneGraph2D();
 //}
 //
 ////------------------------------------------------------------------------------
-//SceneGraph3D* Engine::GetDefaultSceneGraph3D()
+//SceneGraph3D* Engine::getDefaultSceneGraph3D()
 //{
-//	return EngineManager::Instance->GetDefaultWorld3D()->GetSceneGraph3D();
+//	return EngineManager::Instance->getDefaultWorld3D()->getSceneGraph3D();
 //}
 
 //------------------------------------------------------------------------------
 //LightComponent* Engine::GetMainLight3D()
 //{
-//	return EngineManager::Instance->GetDefaultWorld3D()->GetSceneGraph3D()->GetMainLight();
+//	return EngineManager::Instance->getDefaultWorld3D()->getSceneGraph3D()->GetMainLight();
 //}
 
 LN_NAMESPACE_END

@@ -23,10 +23,10 @@ public:
 	ProcessImpl();
 	~ProcessImpl();
 	
-	void Start(const ProcessStartInfo& startInfo, ProcessStartResult* outResult);
-	bool WaitForExit(int timeoutMSec);
-	ProcessStatus GetState();
-	int GetExitCode();
+	void start(const ProcessStartInfo& startInfo, ProcessStartResult* outResult);
+	bool waitForExit(int timeoutMSec);
+	ProcessStatus getState();
+	int getExitCode();
 	void TryGetExitCode();
 	void Dispose();
 	
@@ -53,24 +53,24 @@ ProcessImpl::~ProcessImpl()
 }
 
 //------------------------------------------------------------------------------
-void ProcessImpl::Start(const ProcessStartInfo& startInfo, ProcessStartResult* outResult)
+void ProcessImpl::start(const ProcessStartInfo& startInfo, ProcessStartResult* outResult)
 {
 	pid_t pid = fork();
 	if (pid == 0)
 	{
 		// 子プロセス側はこの if に入る
 		StringA utf8Path;
-		utf8Path.AssignCStr(startInfo.program.c_str());
+		utf8Path.assignCStr(startInfo.program.c_str());
 		
-		StringA utf8Args = startInfo.args.ToStringA();
-		List<StringA> argList = utf8Args.Split(" ");
+		StringA utf8Args = startInfo.args.toStringA();
+		List<StringA> argList = utf8Args.split(" ");
 		
-		char** argv = new char *[argList.GetCount() + 2];
+		char** argv = new char *[argList.getCount() + 2];
 		argv[0] = ::strdup(utf8Path.c_str());     // 書き込み可能なポインタを渡さなければならないので strdup
-		for (int i = 0; i < argList.GetCount(); ++i) {
+		for (int i = 0; i < argList.getCount(); ++i) {
 			argv[i + 1] = ::strdup(argList[i].c_str());
 		}
-		argv[argList.GetCount() + 1] = NULL;
+		argv[argList.getCount() + 1] = NULL;
 		
 		execve(argv[0], argv, environ);
 		
@@ -84,7 +84,7 @@ void ProcessImpl::Start(const ProcessStartInfo& startInfo, ProcessStartResult* o
 }
 
 //------------------------------------------------------------------------------
-bool ProcessImpl::WaitForExit(int timeoutMSec)
+bool ProcessImpl::waitForExit(int timeoutMSec)
 {
 	ElapsedTimer timer;
 	bool exit = false;
@@ -110,9 +110,9 @@ bool ProcessImpl::WaitForExit(int timeoutMSec)
 			}
 		}
 		
-		Thread::Sleep(1);
+		Thread::sleep(1);
 		
-	} while(timeoutMSec == -1 || timer.GetElapsedTime() < timeoutMSec);
+	} while(timeoutMSec == -1 || timer.getElapsedTime() < timeoutMSec);
 	
 	if (exit)
 	{
@@ -126,14 +126,14 @@ bool ProcessImpl::WaitForExit(int timeoutMSec)
 }
 
 //------------------------------------------------------------------------------
-ProcessStatus ProcessImpl::GetState()
+ProcessStatus ProcessImpl::getState()
 {
 	LN_NOTIMPLEMENTED();
 	return ProcessStatus::Finished;
 }
 
 //------------------------------------------------------------------------------
-int ProcessImpl::GetExitCode()
+int ProcessImpl::getExitCode()
 {
 	return m_exitCode;
 }
@@ -165,20 +165,20 @@ void ProcessImpl::Dispose()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Process::Start(const PathName& program, const String& args)
+void process::start(const PathName& program, const String& args)
 {}
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool Process::WaitForExit(int timeoutMSec)
+bool process::WaitForExit(int timeoutMSec)
 {
 }
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-ProcessStatus Process::GetState()
+ProcessStatus process::GetState()
 {
 	// ※ http://linuxjm.osdn.jp/html/LDP_man-pages/man2/wait.2.html には wait を実行しないとゾンビ状態になる、とあるが、
 	//    mono のソースを見る限りだと waitpid でも大丈夫なようだ。（TODO: 要動作確認）
@@ -207,7 +207,7 @@ ProcessStatus Process::GetState()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Process::TryGetExitCode()
+void process::TryGetExitCode()
 {
 	//GetState();
 }
@@ -215,7 +215,7 @@ void Process::TryGetExitCode()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void Process::Dispose()
+void process::Dispose()
 {
 	if (!m_disposed)
 	{

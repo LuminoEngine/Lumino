@@ -5,7 +5,6 @@
 		関数ポインタ : 400ms
 		微々たる差だが、関数ポインタが少しだけ有利。
 */
-#pragma once
 
 #include "../Internal.h"
 #include "Device/GraphicsDriverInterface.h"
@@ -15,7 +14,7 @@
 #include "RenderingThread.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
+namespace detail {
 
 //==============================================================================
 // RenderBulkData
@@ -49,11 +48,11 @@ RenderBulkData::RenderBulkData(const void* srcData, size_t size)
 }
 
 //------------------------------------------------------------------------------
-const void* RenderBulkData::GetData() const
+const void* RenderBulkData::getData() const
 {
 	if (m_dataHandle)
 	{
-		return m_commandList->GetExtData(m_dataHandle);
+		return m_commandList->getExtData(m_dataHandle);
 	}
 	else
 	{
@@ -62,21 +61,21 @@ const void* RenderBulkData::GetData() const
 }
 
 //------------------------------------------------------------------------------
-void* RenderBulkData::Alloc(RenderingCommandList* commandList, size_t size)
+void* RenderBulkData::alloc(RenderingCommandList* commandList, size_t size)
 {
 	m_size = size;
-	return Alloc(commandList);
+	return alloc(commandList);
 }
 
 //------------------------------------------------------------------------------
-void* RenderBulkData::Alloc(RenderingCommandList* commandList)
+void* RenderBulkData::alloc(RenderingCommandList* commandList)
 {
 	if (m_dataHandle == 0)
 	{
 		m_commandList = commandList;
-		m_dataHandle = m_commandList->AllocExtData(m_size, m_srcData);
+		m_dataHandle = m_commandList->allocExtData(m_size, m_srcData);
 	}
-	return m_commandList->GetExtData(m_dataHandle);
+	return m_commandList->getExtData(m_dataHandle);
 }
 
 
@@ -85,8 +84,9 @@ void* RenderBulkData::Alloc(RenderingCommandList* commandList)
 //==============================================================================
 
 //------------------------------------------------------------------------------
-RenderingCommandList::RenderingCommandList(detail::GraphicsManager* manager)
+RenderingCommandList::RenderingCommandList(detail::GraphicsManager* manager, intptr_t mainThreadId)
 	: m_manager(manager)
+	, m_mainThreadId(mainThreadId)
 	, m_commandList()
 	, m_commandDataBuffer()
 	, m_commandDataBufferUsed(0)
@@ -98,10 +98,10 @@ RenderingCommandList::RenderingCommandList(detail::GraphicsManager* manager)
 	, m_running(false)
 	, m_idling(true)
 {
-	m_commandList.Reserve(DataBufferReserve);	// 適当に
-	m_commandDataBuffer.Resize(DataBufferReserve, false);
+	m_commandList.reserve(DataBufferReserve);	// 適当に
+	m_commandDataBuffer.resize(DataBufferReserve, false);
 	m_commandDataBufferUsed = 0;
-	m_extDataBuffer.Resize(DataBufferReserve, false);
+	m_extDataBuffer.resize(DataBufferReserve, false);
 	m_extDataBufferUsed = sizeof(intptr_t);	// ポインタサイズ分予約済みにしておく (null チェックで 0 を使いたい)
 }
 
@@ -111,30 +111,36 @@ RenderingCommandList::~RenderingCommandList()
 }
 
 //------------------------------------------------------------------------------
-void RenderingCommandList::ClearCommands()
+void RenderingCommandList::clearCommands()
 {
-	m_commandList.Clear();
+	// コマンド(とリソース)のクリアはメインスレッドからのみ許可する。
+	// レンダリングスレッドでもできないことは無いが複雑になる。
+	// そもそも、特に OpenGL リソースはマルチスレッドでの振る舞いが怪しい。確保と解放のスレッドは統一しておく。
+	if (LN_CHECK_STATE(Thread::getCurrentThreadId() == m_mainThreadId)) return;
+
+	m_commandList.clear();
 	m_commandDataBufferUsed = 0;
 	m_extDataBufferUsed = sizeof(intptr_t);	// ポインタサイズ分予約済みにしておく (null チェックで 0 を使いたい)
 
 	// コマンド内のリソースの参照をクリア
 	for (RefObject* obj : m_markGCList)
 	{
-		obj->Release();
+		obj->release();
 	}
-	m_markGCList.Clear();
+	m_markGCList.clear();
 }
 
 //------------------------------------------------------------------------------
-void RenderingCommandList::Execute(Driver::IGraphicsDevice* device/*Driver::IRenderer* renderer*/)
+void RenderingCommandList::execute(Driver::IGraphicsDevice* device/*Driver::IRenderer* renderer*/)
 {
-	LN_RC_TRACE("RenderingCommandList::Execute() s %p %d\n", this, m_commandList.GetCount());
+	LN_RC_TRACE("RenderingCommandList::Execute() s %p %d\n", this, m_commandList.getCount());
 	// この関数は描画スレッドから呼ばれる
 
+
 	m_currentDevice = device;
-	m_currentRenderer = device->GetRenderer();
+	m_currentRenderer = device->getRenderer();
 	for (size_t dataIdx : m_commandList)
-	{        
+	{
 		/*
 		-        cmd    0x14e21ea0 {m_commandList=0xfeeefeee {m_manager=??? m_commandList={m_data=??? } m_commandDataBuffer=...} }    ln::RenderingCommand *
 		+        __vfptr    0xfeeefeee {???, ???}    void * *
@@ -144,33 +150,33 @@ void RenderingCommandList::Execute(Driver::IGraphicsDevice* device/*Driver::IRen
 
 		※ウィンドウがアクティブになったときに起こりやすい？
 		*/
-		RenderingCommand* cmd = ((RenderingCommand*)GetCommand(dataIdx));
-		cmd->Execute();
+		RenderingCommand* cmd = ((RenderingCommand*)getCommand(dataIdx));
+		cmd->execute();
 		cmd->~RenderingCommand();
 	}
 	LN_RC_TRACE("RenderingCommandList::Execute() e %p\n", this);
 }
 
 //------------------------------------------------------------------------------
-void RenderingCommandList::PostExecute()
-{
-	ClearCommands();
-}
+//void RenderingCommandList::postExecute()
+//{
+//	clearCommands();
+//}
 
 //------------------------------------------------------------------------------
-RenderingCommandList::DataHandle RenderingCommandList::AllocCommand(size_t byteCount, const void* copyData)
+RenderingCommandList::DataHandle RenderingCommandList::allocCommand(size_t byteCount, const void* copyData)
 {
 	// バッファが足りなければ拡張する
-	if (m_commandDataBufferUsed + byteCount > m_commandDataBuffer.GetSize())
+	if (m_commandDataBufferUsed + byteCount > m_commandDataBuffer.getSize())
 	{
-		size_t newSize = m_commandDataBuffer.GetSize() + std::max(m_commandDataBuffer.GetSize(), byteCount);	// 最低でも byteCount 分を拡張する
-		m_commandDataBuffer.Resize(newSize, false);
+		size_t newSize = m_commandDataBuffer.getSize() + std::max(m_commandDataBuffer.getSize(), byteCount);	// 最低でも byteCount 分を拡張する
+		m_commandDataBuffer.resize(newSize, false);
 	}
 
 	if (copyData != nullptr)
 	{
-		byte_t* ptr = &(m_commandDataBuffer.GetData()[m_commandDataBufferUsed]);
-		size_t size = m_commandDataBuffer.GetSize() - m_commandDataBufferUsed;
+		byte_t* ptr = &(m_commandDataBuffer.getData()[m_commandDataBufferUsed]);
+		size_t size = m_commandDataBuffer.getSize() - m_commandDataBufferUsed;
 		memcpy_s(ptr, size, copyData, byteCount);
 	}
 
@@ -181,19 +187,19 @@ RenderingCommandList::DataHandle RenderingCommandList::AllocCommand(size_t byteC
 }
 
 //------------------------------------------------------------------------------
-RenderingCommandList::DataHandle RenderingCommandList::AllocExtData(size_t byteCount, const void* copyData)
+RenderingCommandList::DataHandle RenderingCommandList::allocExtData(size_t byteCount, const void* copyData)
 {
 	// バッファが足りなければ拡張する
-	if (m_extDataBufferUsed + byteCount > m_extDataBuffer.GetSize())
+	if (m_extDataBufferUsed + byteCount > m_extDataBuffer.getSize())
 	{
-		size_t newSize = m_extDataBuffer.GetSize() + std::max(m_extDataBuffer.GetSize(), byteCount);	// 最低でも byteCount 分を拡張する
-		m_extDataBuffer.Resize(newSize, false);
+		size_t newSize = m_extDataBuffer.getSize() + std::max(m_extDataBuffer.getSize(), byteCount);	// 最低でも byteCount 分を拡張する
+		m_extDataBuffer.resize(newSize, false);
 	}
 
 	if (copyData != nullptr)
 	{
-		byte_t* ptr = &(m_extDataBuffer.GetData()[m_extDataBufferUsed]);
-		size_t size = m_extDataBuffer.GetSize() - m_extDataBufferUsed;
+		byte_t* ptr = &(m_extDataBuffer.getData()[m_extDataBufferUsed]);
+		size_t size = m_extDataBuffer.getSize() - m_extDataBufferUsed;
 		memcpy_s(ptr, size, copyData, byteCount);
 	}
 
@@ -204,22 +210,22 @@ RenderingCommandList::DataHandle RenderingCommandList::AllocExtData(size_t byteC
 }
 
 //------------------------------------------------------------------------------
-void* RenderingCommandList::GetExtData(DataHandle bufferIndex)
+void* RenderingCommandList::getExtData(DataHandle bufferIndex)
 {
-	return &(m_extDataBuffer.GetData()[bufferIndex]);
+	return &(m_extDataBuffer.getData()[bufferIndex]);
 }
 
 //------------------------------------------------------------------------------
-bool RenderingCommandList::CheckOnStandaloneRenderingThread()
+bool RenderingCommandList::checkOnStandaloneRenderingThread()
 {
-	RenderingThread* rt = m_manager->GetRenderingThread();
+	RenderingThread* rt = m_manager->getRenderingThread();
 	if (rt != nullptr)
 	{
-		if (Thread::GetCurrentThreadId() == rt->GetThreadId())
+		if (Thread::getCurrentThreadId() == rt->getThreadId())
 			return true;
 	}
 	return false;
 }
 
-LN_NAMESPACE_GRAPHICS_END
+} // namespace detail
 LN_NAMESPACE_END

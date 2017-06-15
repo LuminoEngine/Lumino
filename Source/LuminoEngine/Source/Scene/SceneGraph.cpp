@@ -48,18 +48,18 @@ SceneGraph::~SceneGraph()
 }
 
 //------------------------------------------------------------------------------
-void SceneGraph::CreateCore(SceneGraphManager* manager)
+void SceneGraph::createCore(SceneGraphManager* manager)
 {
 	LN_REFOBJ_SET(m_manager, manager);
 }
 
 //------------------------------------------------------------------------------
-void SceneGraph::BeginUpdateFrame()
+void SceneGraph::reginUpdateFrame()
 {
 }
 
 //------------------------------------------------------------------------------
-void SceneGraph::UpdateFrame(float deltaTime)
+void SceneGraph::updateFrame(float deltaTime)
 {
 	m_elapsedTime = deltaTime;
 	m_time += deltaTime;
@@ -67,7 +67,7 @@ void SceneGraph::UpdateFrame(float deltaTime)
 
 
 ////------------------------------------------------------------------------------
-//DrawList* SceneGraph::GetRenderer() const
+//DrawList* SceneGraph::getRenderer() const
 //{
 //	return m_renderer;
 //}
@@ -85,10 +85,10 @@ void SceneGraph::UpdateFrame(float deltaTime)
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SceneGraph2D, SceneGraph);
 
 //------------------------------------------------------------------------------
-SceneGraph2DPtr SceneGraph2D::Create()
+SceneGraph2DPtr SceneGraph2D::create()
 {
-	auto ptr = SceneGraph2DPtr::MakeRef();
-	ptr->CreateCore(SceneGraphManager::Instance);
+	auto ptr = SceneGraph2DPtr::makeRef();
+	ptr->createCore(SceneGraphManager::Instance);
 	return ptr;
 }
 
@@ -111,28 +111,28 @@ SceneGraph2D::~SceneGraph2D()
 }
 
 //------------------------------------------------------------------------------
-void SceneGraph2D::CreateCore(SceneGraphManager* manager)
+void SceneGraph2D::createCore(SceneGraphManager* manager)
 {
-	SceneGraph::CreateCore(manager);
+	SceneGraph::createCore(manager);
 
 	m_defaultRoot = LN_NEW SceneNode();
-	m_defaultRoot->Initialize();
+	m_defaultRoot->initialize();
 
 	m_defaultCamera = LN_NEW CameraComponent();
-	m_defaultCamera->Initialize(CameraProjection_2D);
-	m_defaultRoot->AddChild(m_defaultCamera);
+	m_defaultCamera->initialize(CameraProjection_2D);
+	m_defaultRoot->addChild(m_defaultCamera);
 
 	//auto pass = RefPtr<MMERenderingPass>::MakeRef(manager, MMD_PASS_object);
-	//pass->Initialize();
+	//pass->initialize();
 	//m_renderingPasses.Add(pass);
 	//pass->AddRef();
 }
 
 //------------------------------------------------------------------------------
-void SceneGraph2D::UpdateFrame(float elapsedTime)
+void SceneGraph2D::updateFrame(float elapsedTime)
 {
-	SceneGraph::UpdateFrame(elapsedTime);
-	m_defaultRoot->UpdateFrameHierarchy(nullptr, elapsedTime);
+	SceneGraph::updateFrame(elapsedTime);
+	m_defaultRoot->updateFrameHierarchy(nullptr, elapsedTime);
 }
 
 //==============================================================================
@@ -157,30 +157,30 @@ SceneGraph3D::~SceneGraph3D()
 }
 
 //------------------------------------------------------------------------------
-void SceneGraph3D::CreateCore(SceneGraphManager* manager)
+void SceneGraph3D::createCore(SceneGraphManager* manager)
 {
-	SceneGraph::CreateCore(manager);
+	SceneGraph::createCore(manager);
 
 	m_defaultRoot = LN_NEW SceneNode();
-	m_defaultRoot->Initialize();
+	m_defaultRoot->initialize();
 
 	m_defaultCamera = LN_NEW CameraComponent();
-	m_defaultCamera->Initialize(CameraProjection_3D);
-	m_defaultRoot->AddChild(m_defaultCamera);
+	m_defaultCamera->initialize(CameraProjection_3D);
+	m_defaultRoot->addChild(m_defaultCamera);
 
-	m_defaultLight = RefPtr<LightComponent>::MakeRef();
-	m_defaultLight->Initialize(LightType_Directional);
-	m_defaultRoot->AddChild(m_defaultLight);
+	m_defaultLight = RefPtr<LightComponent>::makeRef();
+	m_defaultLight->initialize(LightType_Directional);
+	m_defaultRoot->addChild(m_defaultLight);
 }
 
 //------------------------------------------------------------------------------
 //LightComponent* SceneGraph3D::GetMainLight() const { return m_defaultLight; }
 
 //------------------------------------------------------------------------------
-void SceneGraph3D::UpdateFrame(float elapsedTime)
+void SceneGraph3D::updateFrame(float elapsedTime)
 {
-	SceneGraph::UpdateFrame(elapsedTime);
-	m_defaultRoot->UpdateFrameHierarchy(nullptr, elapsedTime);
+	SceneGraph::updateFrame(elapsedTime);
+	m_defaultRoot->updateFrameHierarchy(nullptr, elapsedTime);
 }
 
 LN_NAMESPACE_SCENE_END

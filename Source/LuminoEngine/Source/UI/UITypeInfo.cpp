@@ -18,7 +18,7 @@ LN_NAMESPACE_BEGIN
 //	BindingTypeInfoGetter bindingTypeInfoGetter)
 //	: tr::TypeInfo(className, baseClass, getter, bindingTypeInfoSetter, bindingTypeInfoGetter)
 //{
-//	SetInternalGroup(UITypeInfo_InternalGroup);
+//	setInternalGroup(UITypeInfo_InternalGroup);
 //}
 //
 ////------------------------------------------------------------------------------
@@ -40,16 +40,16 @@ LN_NAMESPACE_BEGIN
 //	{
 //		if (dynamicEvent == ev)
 //		{
-//			// owner に AddHandler されているイベントハンドラを呼び出す。
-//			dynamicEvent->CallEvent(owner, e);
+//			// owner に addHandler されているイベントハンドラを呼び出す。
+//			dynamicEvent->callEvent(owner, e);
 //			return e->handled;	// ev と同じイベントは1つしかリスト内に無いはずなのですぐ return
 //		}
 //	}
 //
 //	// ベースクラスが UITypeInfo なら、さらにベースクラスを見に行く
-//	if (GetBaseClass()->GetInternalGroup() == 1)
+//	if (getBaseClass()->getInternalGroup() == 1)
 //	{
-//		return static_cast<UITypeInfo*>(GetBaseClass())->InvokeRoutedEvent(owner, ev, e);
+//		return static_cast<UITypeInfo*>(getBaseClass())->InvokeRoutedEvent(owner, ev, e);
 //	}
 //	return false;
 //}

@@ -10,7 +10,7 @@ using UIButtonPtr = RefPtr<UIButton>;
 enum class ClickMode
 {
 	/** ボタンを離したときにイベントを発生させます。*/
-	Release,
+	release,
 
 	/** ボタンを押したときにイベントを発生させます。*/
 	Press,
@@ -24,25 +24,25 @@ class UIButtonBase
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	void SetText(const StringRef& text);
+	void setText(const StringRef& text);
 
-	/** OnClick イベントの通知を受け取るコールバックを登録します。*/
+	/** onClick イベントの通知を受け取るコールバックを登録します。*/
 	LN_METHOD(Event)
-	EventConnection ConnectOnGotFocus(UIEventHandler handler);
+	EventConnection connectOnGotFocus(UIEventHandler handler);
 
 protected:
 
 	/** ボタンがクリックされたときに呼び出されます。*/
-	virtual void OnClick(UIEventArgs* e);
+	virtual void onClick(UIEventArgs* e);
 
 	// UIElement interface
-	virtual void OnMouseDown(UIMouseEventArgs* e) override;
-	virtual void OnMouseUp(UIMouseEventArgs* e) override;
+	virtual void onMouseDown(UIMouseEventArgs* e) override;
+	virtual void onMouseUp(UIMouseEventArgs* e) override;
 
 LN_CONSTRUCT_ACCESS:
 	UIButtonBase();
 	virtual ~UIButtonBase();
-	void Initialize();
+	void initialize();
 
 private:
 	ClickMode	m_clickMode;
@@ -59,14 +59,14 @@ class UIButton
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	static RefPtr<UIButton> Create();
-	static RefPtr<UIButton> Create(const StringRef& text, float width, float height);
+	static RefPtr<UIButton> create();
+	static RefPtr<UIButton> create(const StringRef& text, float width, float height);
 
 LN_CONSTRUCT_ACCESS:
 	UIButton();
 	virtual ~UIButton();
-	void Initialize();
-	void Initialize(const StringRef& text, float width, float height);
+	void initialize();
+	void initialize(const StringRef& text, float width, float height);
 };
 
 
@@ -81,15 +81,15 @@ public:
 	static const String CheckedState;
 	static const String UncheckedState;
 
-	static RefPtr<UIToggleButton> Create();
+	static RefPtr<UIToggleButton> create();
 
 protected:
-	virtual void OnClick(UIEventArgs* e);
+	virtual void onClick(UIEventArgs* e);
 
 LN_CONSTRUCT_ACCESS:
 	UIToggleButton();
 	virtual ~UIToggleButton();
-	void Initialize();
+	void initialize();
 
 private:
 	bool	m_isChecked;

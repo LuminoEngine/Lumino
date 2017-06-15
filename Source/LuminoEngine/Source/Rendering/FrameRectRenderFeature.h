@@ -26,18 +26,18 @@ class FrameRectRendererCore
 public:
 	FrameRectRendererCore();
 	~FrameRectRendererCore();
-	void Initialize(GraphicsManager* manager);
+	void initialize(GraphicsManager* manager);
 
-	void SetState(const FrameRectRendererState& state);
-	void Draw(const Matrix& transform, const Rect& rect);
+	void setState(const FrameRectRendererState& state);
+	void draw(const Matrix& transform, const Rect& rect);
 
 private:
-	void RequestBuffers(int faceCount);
+	void requestBuffers(int faceCount);
 
-	void PutRectangleStretch(const Rect& rect, const Rect& srcUVRect);
-	void PutRectangleTiling(const Rect& rect, const RectI& srcPixelRect, const Rect& srcUVRect, Driver::ITexture* srcTexture);
-	void PutRectangle(const Rect& rect, const RectI& srcPixelRect, const Rect& srcUVRect, Driver::ITexture* srcTexture, BrushWrapMode wrapMode);
-	void PutFrameRectangle(const Rect& rect, const ThicknessF& borderThickness, Driver::ITexture* srcTexture, RectI srcRect, BrushWrapMode wrapMode);
+	void putRectangleStretch(const Rect& rect, const Rect& srcUVRect);
+	void putRectangleTiling(const Rect& rect, const RectI& srcPixelRect, const Rect& srcUVRect, Driver::ITexture* srcTexture);
+	void putRectangle(const Rect& rect, const RectI& srcPixelRect, const Rect& srcUVRect, Driver::ITexture* srcTexture, BrushWrapMode wrapMode);
+	void putFrameRectangle(const Rect& rect, const ThicknessF& borderThickness, Driver::ITexture* srcTexture, RectI srcRect, BrushWrapMode wrapMode);
 
 	//// TODO í∏ì_êÈåæÇ∆Ç©ÇÕäOïîÇ©ÇÁÇ‡ÇÁÇ§ÇÊÇ§Ç…ÇµÇΩÇ¢
 	//struct Vertex
@@ -93,21 +93,21 @@ class FrameRectRenderFeature
 public:
 	FrameRectRenderFeature();
 	~FrameRectRenderFeature();
-	void Initialize(GraphicsManager* manager);
+	void initialize(GraphicsManager* manager);
 
-	void SetViewInfo(const Matrix& viewProj);
-	void SetState(Brush* brush);
+	void setViewInfo(const Matrix& viewProj);
+	void setState(Brush* brush);
 
-	void Draw(const Matrix& transform, const Rect& rect);
+	void draw(const Matrix& transform, const Rect& rect);
 
-	virtual bool IsStandaloneShader() const { return false; }
-	virtual void Flush() override;
-	virtual void OnActivated() { }
-	virtual void OnDeactivated() { Flush(); }
-	virtual void OnSetState(const DrawElementBatch* state);
+	virtual bool isStandaloneShader() const { return false; }
+	virtual void flush() override;
+	virtual void onActivated() { }
+	virtual void onDeactivated() { flush(); }
+	virtual void onSetState(const DrawElementBatch* state);
 
 private:
-	void SetState(Brush* brush, const Matrix& world, const Matrix& viewProj);
+	void setState(Brush* brush, const Matrix& world, const Matrix& viewProj);
 
 	GraphicsManager*		m_manager;
 	FrameRectRendererCore*	m_core;

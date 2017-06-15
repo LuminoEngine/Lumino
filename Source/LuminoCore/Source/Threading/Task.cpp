@@ -14,17 +14,17 @@ namespace tr
 //==============================================================================
 
 //------------------------------------------------------------------------------
-TaskPtr Task::Create(const Delegate<void()>& action)
+TaskPtr Task::create(const Delegate<void()>& action)
 {
 	TaskPtr task(LN_NEW Task(action), false);
 	return task;
 }
 
 //------------------------------------------------------------------------------
-TaskPtr Task::Run(const Delegate<void()>& action)
+TaskPtr Task::run(const Delegate<void()>& action)
 {
 	TaskPtr task(LN_NEW Task(action), false);
-	task->Start();
+	task->start();
 	return task;
 }
 
@@ -44,56 +44,56 @@ Task::~Task()
 }
 
 //------------------------------------------------------------------------------
-void Task::Start()
+void Task::start()
 {
 	LN_SAFE_DELETE(m_exception);
-	m_waiting.SetFalse();
-	TaskScheduler::GetDefault()->QueueTask(this);
+	m_waiting.setFalse();
+	TaskScheduler::getDefault()->queueTask(this);
 }
 
 //------------------------------------------------------------------------------
-void Task::Wait()
+void Task::wait()
 {
-	m_waiting.Wait();
+	m_waiting.wait();
 }
 
 //------------------------------------------------------------------------------
-TaskStatus Task::GetStatus() const
+TaskStatus Task::getStatus() const
 {
 	return m_status;
 }
 
 //------------------------------------------------------------------------------
-bool Task::IsCompleted() const
+bool Task::isCompleted() const
 {
 	// TODO: メモリフェンス張ったほうがいい？
-	return m_status == TaskStatus::Completed;
+	return m_status == TaskStatus::completed;
 }
 
 //------------------------------------------------------------------------------
-bool Task::IsFaulted() const
+bool Task::isFaulted() const
 {
 	return m_status == TaskStatus::Faulted;
 }
 
 //------------------------------------------------------------------------------
-Exception* Task::GetException() const
+Exception* Task::getException() const
 {
 	return m_exception;
 }
 
 //------------------------------------------------------------------------------
-void Task::Execute()
+void Task::execute()
 {
 	m_status = TaskStatus::Running;
 	try
 	{
-		m_action.Call();
-		m_status = TaskStatus::Completed;
+		m_action.call();
+		m_status = TaskStatus::completed;
 	}
 	catch (Exception& e)
 	{
-		m_exception = e.Copy();
+		m_exception = e.copy();
 		m_status = TaskStatus::Faulted;
 	}
 	catch (...)
@@ -101,7 +101,7 @@ void Task::Execute()
 		m_exception = LN_NEW ThreadException();
 		m_status = TaskStatus::Faulted;
 	}
-	m_waiting.SetTrue();
+	m_waiting.setTrue();
 }
 
 } // namespace tr

@@ -12,9 +12,9 @@ LN_NAMESPACE_BEGIN
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TileLayer, tr::ReflectionObject);
 
 //------------------------------------------------------------------------------
-TileLayerPtr TileLayer::Create()
+TileLayerPtr TileLayer::create()
 {
-	TileLayerPtr ptr = TileLayerPtr::MakeRef();
+	TileLayerPtr ptr = TileLayerPtr::makeRef();
 	return ptr;
 }
 
@@ -29,10 +29,10 @@ TileLayer::~TileLayer()
 }
 
 //------------------------------------------------------------------------------
-void TileLayer::Resize(int width, int height)
+void TileLayer::resize(int width, int height)
 {
-	m_size.Set(width, height);
-	m_data.Resize(width * height);
+	m_size.set(width, height);
+	m_data.resize(width * height);
 }
 
 //------------------------------------------------------------------------------

@@ -28,60 +28,60 @@ EncodingConverter::~EncodingConverter()
 }
 
 //------------------------------------------------------------------------------
-void EncodingConverter::SetDestinationEncoding(Encoding* encoding)
+void EncodingConverter::setDestinationEncoding(Encoding* encoding)
 {
 	m_dstEncoding = encoding;
 	m_encodingModified = true;
 }
 
 //------------------------------------------------------------------------------
-Encoding* EncodingConverter::GetDestinationEncoding() const
+Encoding* EncodingConverter::getDestinationEncoding() const
 {
 	return m_dstEncoding;
 }
 
 //------------------------------------------------------------------------------
-void EncodingConverter::SetSourceEncoding(Encoding* encoding)
+void EncodingConverter::getSourceEncoding(Encoding* encoding)
 {
 	m_srcEncoding = encoding;
 	m_encodingModified = true;
 }
 
 //------------------------------------------------------------------------------
-Encoding* EncodingConverter::GetSourceEncoding() const
+Encoding* EncodingConverter::getSourceEncoding() const
 {
 	return m_srcEncoding;
 }
 
 //------------------------------------------------------------------------------
-void EncodingConverter::SetConversionOptions(const EncodingConversionOptions& options)
+void EncodingConverter::setConversionOptions(const EncodingConversionOptions& options)
 {
 	m_options = options;
 }
 
 //------------------------------------------------------------------------------
-const ByteBuffer& EncodingConverter::Convert(const void* data, size_t byteCount, EncodingConversionResult* outResult)
+const ByteBuffer& EncodingConverter::convert(const void* data, size_t byteCount, EncodingConversionResult* outResult)
 {
-	CheckUpdateEncoderDecoder();
+	checkUpdateEncoderDecoder();
 
 	// 変換するのに必要なバイト数で領域確保
-	size_t size = Encoding::GetConversionRequiredByteCount(m_srcEncoding, m_dstEncoding, byteCount);
+	size_t size = Encoding::getConversionRequiredByteCount(m_srcEncoding, m_dstEncoding, byteCount);
 	if (m_options.NullTerminated) {
-		size += m_dstEncoding->GetMinByteCount();
+		size += m_dstEncoding->getMinByteCount();
 	}
-	m_outputBuffer.Resize(size, false);
+	m_outputBuffer.resize(size, false);
 
 	if (m_options.NullTerminated) {
-		m_outputBuffer.Clear();
+		m_outputBuffer.clear();
 	}
 
-	if (m_srcDecoder->CanRemain())
+	if (m_srcDecoder->canRemain())
 	{
 		//EncodingConversionResult localResult;
 		//if (outResult == NULL) { outResult = &localResult; }	// outResult が NULL でも結果を受け取りたい
 
-		ConvertDecoderRemain(data, byteCount, m_srcDecoder, m_outputBuffer.GetData(), size, m_dstEncoder, &m_lastResult);
-		m_outputBuffer.Resize(m_lastResult.BytesUsed);	// 余分に確保されているので、見かけ上のサイズを実際に文字のあるサイズにする
+		convertDecoderRemain(data, byteCount, m_srcDecoder, m_outputBuffer.getData(), size, m_dstEncoder, &m_lastResult);
+		m_outputBuffer.resize(m_lastResult.BytesUsed);	// 余分に確保されているので、見かけ上のサイズを実際に文字のあるサイズにする
 
 		if (outResult != NULL) { *outResult = m_lastResult; }
 	}
@@ -89,26 +89,26 @@ const ByteBuffer& EncodingConverter::Convert(const void* data, size_t byteCount,
 	else
 	{
 		// TCHAR を UTF16 へ全部変換するのに必要なバイト数で一時メモリ確保
-		size_t totalByteCount = Encoding::GetConversionRequiredByteCount(m_srcEncoding, m_dstEncoding, byteCount);
-		m_tmpBuffer.Resize(totalByteCount);
+		size_t totalByteCount = Encoding::getConversionRequiredByteCount(m_srcEncoding, m_dstEncoding, byteCount);
+		m_tmpBuffer.resize(totalByteCount);
 
 		// 後のコードがキャストだらけにならないように
-		UTF16* utf16Buf = (UTF16*)m_tmpBuffer.GetData();
-		int utf16ElementCount = m_tmpBuffer.GetSize() / sizeof(UTF16);
+		UTF16* utf16Buf = (UTF16*)m_tmpBuffer.getData();
+		int utf16ElementCount = m_tmpBuffer.getSize() / sizeof(UTF16);
 
 		// TCHAR を中間コード(UTF16) へ
 		size_t outBytesUsed, outCharsUsed;
-		m_srcDecoder->ConvertToUTF16((const byte_t*)data, byteCount, utf16Buf, utf16ElementCount, &outBytesUsed, &outCharsUsed);
+		m_srcDecoder->convertToUTF16((const byte_t*)data, byteCount, utf16Buf, utf16ElementCount, &outBytesUsed, &outCharsUsed);
 
 		// 中間コード(UTF16)を出力コードへ
-		m_dstEncoder->ConvertFromUTF16(utf16Buf, outCharsUsed, m_outputBuffer.GetData(), m_outputBuffer.GetSize(), &outBytesUsed, &outCharsUsed);
+		m_dstEncoder->convertFromUTF16(utf16Buf, outCharsUsed, m_outputBuffer.getData(), m_outputBuffer.getSize(), &outBytesUsed, &outCharsUsed);
 
 		// 余分に確保されているので、見かけ上のサイズを実際に文字のあるサイズにする
-		m_outputBuffer.Resize(outBytesUsed);
+		m_outputBuffer.resize(outBytesUsed);
 
 		m_lastResult.BytesUsed = outBytesUsed;
 		m_lastResult.CharsUsed = outCharsUsed;
-		m_lastResult.UsedDefaultChar = (m_srcDecoder->UsedDefaultCharCount() > 0 || m_dstEncoder->UsedDefaultCharCount() > 0);
+		m_lastResult.UsedDefaultChar = (m_srcDecoder->usedDefaultCharCount() > 0 || m_dstEncoder->usedDefaultCharCount() > 0);
 		if (outResult != NULL) 
 		{
 			outResult->BytesUsed = m_lastResult.BytesUsed;
@@ -120,19 +120,19 @@ const ByteBuffer& EncodingConverter::Convert(const void* data, size_t byteCount,
 }
 
 //------------------------------------------------------------------------------
-const ByteBuffer& EncodingConverter::GetLastBuffer() const
+const ByteBuffer& EncodingConverter::getLastBuffer() const
 {
 	return m_outputBuffer;
 }
 
 //------------------------------------------------------------------------------
-const EncodingConversionResult& EncodingConverter::GetLastResult() const
+const EncodingConversionResult& EncodingConverter::getLastResult() const
 {
 	return m_lastResult;
 }
 
 //------------------------------------------------------------------------------
-void EncodingConverter::CheckUpdateEncoderDecoder()
+void EncodingConverter::checkUpdateEncoderDecoder()
 {
 	if (m_encodingModified)
 	{
@@ -142,20 +142,20 @@ void EncodingConverter::CheckUpdateEncoderDecoder()
 		LN_SAFE_DELETE(m_dstEncoder);
 		LN_SAFE_DELETE(m_srcDecoder);
 
-		m_dstEncoder = m_dstEncoding->CreateEncoder();
-		m_srcDecoder = m_srcEncoding->CreateDecoder();
+		m_dstEncoder = m_dstEncoding->createEncoder();
+		m_srcDecoder = m_srcEncoding->createDecoder();
 		m_encodingModified = false;
 	}
 }
 
 //------------------------------------------------------------------------------
-void EncodingConverter::ConvertDecoderRemain(
+void EncodingConverter::convertDecoderRemain(
 	const void* src_, size_t srcByteCount, Decoder* srcDecoder,
 	void* dest_, size_t destByteCount, Encoder* destEncoder,
 	EncodingConversionResult* outResult)
 {
 	if (LN_CHECK_ARG(srcDecoder != nullptr)) return;
-	if (LN_CHECK_ARG(srcDecoder->CanRemain())) return;
+	if (LN_CHECK_ARG(srcDecoder->canRemain())) return;
 	if (LN_CHECK_ARG(destEncoder != nullptr)) return;
 
 	const size_t BufferingElements = 512;
@@ -177,7 +177,7 @@ void EncodingConverter::ConvertDecoderRemain(
 
 		// UTF16 へ
 		size_t srcBytes = std::min(srcByteCount - srcPos, BufferingElements);
-		srcDecoder->ConvertToUTF16(
+		srcDecoder->convertToUTF16(
 			&src[srcPos],
 			srcBytes,
 			utf16,
@@ -187,7 +187,7 @@ void EncodingConverter::ConvertDecoderRemain(
 		srcPos += srcBytes;
 
 		// UTF16 文字をターゲットへ
-		destEncoder->ConvertFromUTF16(
+		destEncoder->convertFromUTF16(
 			utf16,
 			bytesUsed / sizeof(UTF16),
 			&dest[destPos],
@@ -204,7 +204,7 @@ void EncodingConverter::ConvertDecoderRemain(
 	{
 		outResult->BytesUsed = totalBytesUsed;
 		outResult->CharsUsed = totalCharsUsed;
-		outResult->UsedDefaultChar = (srcDecoder->UsedDefaultCharCount() > 0 || destEncoder->UsedDefaultCharCount() > 0);
+		outResult->UsedDefaultChar = (srcDecoder->usedDefaultCharCount() > 0 || destEncoder->usedDefaultCharCount() > 0);
 	}
 }
 

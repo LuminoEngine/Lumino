@@ -1,7 +1,6 @@
 ﻿
 #include "../Internal.h"
 #if defined(LN_THREAD_WIN32)
-#include <windows.h>
 #else
 #include <pthread.h>
 #endif
@@ -25,25 +24,25 @@ Atomic::~Atomic()
 }
 
 //------------------------------------------------------------------------------
-int32_t Atomic::Get() const
+int32_t Atomic::get() const
 {
 	return ::InterlockedExchangeAdd( const_cast< volatile LONG* >( &m_value ), 0 );
 }
 
 //------------------------------------------------------------------------------
-void Atomic::Set( int32_t nValue )
+void Atomic::set( int32_t nValue )
 {
     ::InterlockedExchange( &m_value, nValue );
 }
 
 //------------------------------------------------------------------------------
-int32_t Atomic::Increment()
+int32_t Atomic::increment()
 {
     return ::InterlockedIncrement( &m_value );
 }
 
 //------------------------------------------------------------------------------
-int32_t Atomic::Decrement()
+int32_t Atomic::decrement()
 {
     return ::InterlockedDecrement( &m_value );
 }
@@ -69,7 +68,7 @@ Atomic::~Atomic()
 }
 
 //------------------------------------------------------------------------------
-int32_t Atomic::Get() const
+int32_t Atomic::get() const
 {
 	pthread_mutex_lock( &m_mutex );
     int32_t v = m_value;
@@ -86,7 +85,7 @@ void Atomic::Set( int32_t value_ )
 }
 
 //------------------------------------------------------------------------------
-int32_t Atomic::Increment()
+int32_t Atomic::increment()
 {
     pthread_mutex_lock( &m_mutex );
     ++m_value;
@@ -96,7 +95,7 @@ int32_t Atomic::Increment()
 }
 
 //------------------------------------------------------------------------------
-int32_t Atomic::Decrement()
+int32_t Atomic::decrement()
 {
     pthread_mutex_lock( &m_mutex );
     --m_value;

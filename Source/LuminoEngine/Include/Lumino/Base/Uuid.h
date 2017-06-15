@@ -10,7 +10,7 @@ class Uuid
 public:
 	
 	/** 新しい UUID を生成します。*/
-	static Uuid Generate();
+	static Uuid generate();
 
 	/** 空の UUID を生成します。"{00000000-0000-0000-0000-000000000000}" */
 	Uuid();
@@ -22,7 +22,7 @@ public:
 	Uuid(const uint8_t* bytes);
 
 	/** 文字列に変換します。*/
-	String ToString() const;
+	String toString() const;
 
 	// copy
 	Uuid(const Uuid &other);

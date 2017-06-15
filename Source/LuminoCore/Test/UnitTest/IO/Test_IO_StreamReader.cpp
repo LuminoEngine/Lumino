@@ -10,7 +10,7 @@ protected:
 };
 
 //------------------------------------------------------------------------------
-TEST_F(Test_IO_StreamReader, ReadLine)
+TEST_F(Test_IO_StreamReader, readLine)
 {
 #if 0
 	StreamReader reader(LN_LOCALFILE("TestData/Text_SJIS_CRLF.txt"), nullptr);
@@ -42,16 +42,16 @@ TEST_F(Test_IO_StreamReader, ReadLine)
 		tcharBuf[StreamReader::DefaultBufferSize + 0] = _T('\n');
 		tcharBuf[StreamReader::DefaultBufferSize + 1] = _T('a');
 
-		MemoryStreamPtr mem = MemoryStream::Create(asciiBuf, LN_ARRAY_SIZE_OF(asciiBuf));
-		StreamReader reader(mem, Encoding::GetEncoding(EncodingType::SJIS));
+		MemoryStreamPtr mem = MemoryStream::create(asciiBuf, LN_ARRAY_SIZE_OF(asciiBuf));
+		StreamReader reader(mem, Encoding::getEncoding(EncodingType::SJIS));
 
 		String line1, line2, line3;
-		ASSERT_TRUE(reader.ReadLine(&line1));
-		ASSERT_TRUE(reader.ReadLine(&line2));
-		ASSERT_FALSE(reader.ReadLine(&line3));
+		ASSERT_TRUE(reader.readLine(&line1));
+		ASSERT_TRUE(reader.readLine(&line2));
+		ASSERT_FALSE(reader.readLine(&line3));
 
-		ASSERT_EQ(StreamReader::DefaultBufferSize - 1, line1.GetLength());
-		ASSERT_EQ(0, line1.Compare(tcharBuf, StreamReader::DefaultBufferSize - 1));
-		ASSERT_EQ(0, line2.Compare(_T("a")));
+		ASSERT_EQ(StreamReader::DefaultBufferSize - 1, line1.getLength());
+		ASSERT_EQ(0, line1.compare(tcharBuf, StreamReader::DefaultBufferSize - 1));
+		ASSERT_EQ(0, line2.compare(_T("a")));
 	}
 }

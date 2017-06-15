@@ -46,58 +46,58 @@ public:
 
 
 	/** 不透明度を設定します。(default: 1.0) */
-	void SetOpacity(float value);
+	void setOpacity(float value);
 
 	/** 不透明度を取得します。 */
-	float GetOpacity() const;
+	float getOpacity() const;
 
 	/** カラースケールを設定します。(default: Color(1, 1, 1, 1)) */
-	void SetColorScale(const Color& value);
+	void setColorScale(const Color& value);
 
 	/** カラースケールを取得します。 */
-	const Color& GetColorScale() const;
+	const Color& getColorScale() const;
 
 	/** ブレンドカラーを設定します。(default: Color(0, 0, 0, 0)) */
-	void SetBlendColor(const Color& value);
+	void setBlendColor(const Color& value);
 
 	/** ブレンドカラーを取得します。 */
-	const Color& GetBlendColor() const;
+	const Color& getBlendColor() const;
 
 	/** 色調を設定します。(default: Tone(0, 0, 0, 0)) */
-	void SetTone(const ToneF& value);
+	void setTone(const ToneF& value);
 
 	/** 色調を取得します。 */
-	const ToneF& GetTone() const;
+	const ToneF& getTone() const;
 
 	/** シェーダを設定します。(default: nullptr) */
-	void SetShader(Shader* value);
+	void setShader(Shader* value);
 
 	/** シェーダを取得します。 */
-	Shader* GetShader() const;
+	Shader* getShader() const;
 
 
 
 
 
 	///** メインマテリアルの不透明度を設定します。(default: 1.0)*/
-	//void SetOpacity(float value, int subsetIndex = -1);
-	//float GetOpacity() const;
+	//void setOpacity(float value, int subsetIndex = -1);
+	//float getOpacity() const;
 
 
 	///** メインマテリアルのカラースケールを設定します。(default: )*/
 	///// 乗算色の設定TODO: Color32
-	//void SetColorScale(const Color& value, int subsetIndex = -1);
-	//void SetColorScale(float r, float g, float b, float a = 1.0f, int subsetIndex = -1);
-	//const Color& GetColorScale() const;
+	//void setColorScale(const Color& value, int subsetIndex = -1);
+	//void setColorScale(float r, float g, float b, float a = 1.0f, int subsetIndex = -1);
+	//const Color& getColorScale() const;
 
-	//void SetColor(const Color32& value);
-	//void SetColor(int r, int g, int b, int a = 255);
+	//void setColor(const Color32& value);
+	//void setColor(int r, int g, int b, int a = 255);
 
 	///// ブレンドカラーの設定 TODO: Color32
-	//void SetBlendColor(const Color& value, int subsetIndex = -1);
+	//void setBlendColor(const Color& value, int subsetIndex = -1);
 
 	///// 色調の設定 TODO: Tone32
-	//void SetTone(const ToneF& value, int subsetIndex = -1);
+	//void setTone(const ToneF& value, int subsetIndex = -1);
 
 
 	/////// UV 変換行列の設定
@@ -107,7 +107,7 @@ public:
 	////const Matrix& GetUVTransform(int subsetIndex = -1)  const { return m_visualNodeParams.GetSubsetParams(subsetIndex).UVTransform; }
 
 	///// シェーダの設定
-	//void SetShader(Shader* value, int subsetIndex = -1);
+	//void setShader(Shader* value, int subsetIndex = -1);
 
 	/** @} */
 
@@ -116,67 +116,67 @@ public:
 	/** @{ */
 
 	/** このノードを描画する際の合成方法を設定します。デフォルトは BlendMode::Normal です。*/
-	void SetBlendMode(BlendMode mode);
+	void setBlendMode(BlendMode mode);
 
 	/** このノードを描画する際の合成方法を取得します。*/
-	BlendMode GetBlendMode() const { return m_blendMode; }
+	BlendMode getBlendMode() const { return m_blendMode; }
 
 	/** このノードを描画する際のカリング方法を設定します。デフォルトは CullingMode::Back です。*/
-	void SetCullingMode(CullingMode mode);
+	void setCullingMode(CullingMode mode);
 
 	/** このノードを描画する際のカリング方法を取得します。*/
-	CullingMode GetCullingMode() const { return m_cullingMode; }
+	CullingMode getCullingMode() const { return m_cullingMode; }
 
 	/** このノードを描画する際の深度テストの有無を設定します。デフォルトは true です。*/
-	void SetDepthTestEnabled(bool enabled);
+	void setDepthTestEnabled(bool enabled);
 
 	/** このノードを描画する際の深度テストの有無を取得します。*/
-	bool IsDepthTestEnabled() const { return m_depthTestEnabled; }
+	bool isDepthTestEnabled() const { return m_depthTestEnabled; }
 
 	/** このノードを描画する際の深度書き込みの有無を設定します。デフォルトは true です。*/
-	void SetDepthWriteEnabled(bool enabled);
+	void setDepthWriteEnabled(bool enabled);
 
 	/** このノードを描画する際の深度書き込みの有無を取得します。*/
-	bool IsDepthWriteEnabled() const { return m_depthWriteEnabled; }
+	bool isDepthWriteEnabled() const { return m_depthWriteEnabled; }
 
 	/** @} */
 
 public:
 
 
-	virtual SceneNodeType GetSceneNodeType() const { return SceneNodeType_VisualNode; }
-	virtual void UpdateFrameHierarchy(SceneNode* parent, float deltaTime) override;
+	virtual SceneNodeType getSceneNodeType() const { return SceneNodeType_VisualNode; }
+	virtual void updateFrameHierarchy(SceneNode* parent, float deltaTime) override;
 
 	/// ノード単位の描画情報の更新。この後すぐ一連のサブセット描画が始まる
 	//virtual void UpdateNodeRenderingParams(MMEShader* priorityShader) {}
 
 
-	virtual detail::Sphere GetBoundingSphere();
+	virtual detail::Sphere getBoundingSphere();
 
 	//void DrawSubsetInternal(SceneGraphRenderingContext* dc, int subsetIndex, MMEShader* shader, ShaderPass* pass);
 
-	//virtual void OnRender(SceneGraphRenderingContext* dc);
-	//virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) {}
+	//virtual void onRender(SceneGraphRenderingContext* dc);
+	//virtual void drawSubset(SceneGraphRenderingContext* dc, int subsetIndex) {}
 
 
 protected:
 	VisualComponent();
 	virtual ~VisualComponent();
-	void Initialize();
+	void initialize();
 
 LN_INTERNAL_ACCESS:
 	//MaterialList2* GetMaterialList() { return m_materialList; }
 	//Shader* GetPrimaryShader() const;
-	detail::OffscreenFilterInfo* GetOffscreenFilterInfo(int index) { return &m_offscreenFilterInfoList[index]; }
+	detail::OffscreenFilterInfo* getOffscreenFilterInfo(int index) { return &m_offscreenFilterInfoList[index]; }
 
 LN_PROTECTED_INTERNAL_ACCESS:
-	virtual detail::SceneNodeDefaultShaderClass GetShaderClass() { return detail::SceneNodeDefaultShaderClass_StaticMesh; }
+	virtual detail::SceneNodeDefaultShaderClass getShaderClass() { return detail::SceneNodeDefaultShaderClass_StaticMesh; }
 
 //protected:
 //	RefPtr<MaterialList2>	m_materialList;
 
 private:
-	void Render(DrawList* context) override;
+	void render(DrawList* context) override;
 
 	// TODO: Renderer への設定がまだ
 	BlendMode	m_blendMode;
@@ -200,8 +200,8 @@ public:
 LN_INTERNAL_ACCESS:
 	MaterialList2();
 	virtual ~MaterialList2();
-	void Initialize(int subMaterialCount, bool createMainMaterial);
-	void CopyShared(MaterialList* srcList, bool createMainMaterial);
+	void initialize(int subMaterialCount, bool createMainMaterial);
+	void copyShared(MaterialList* srcList, bool createMainMaterial);
 	
 LN_INTERNAL_ACCESS:
 	RefPtr<Material>				m_mainMaterial;
@@ -220,70 +220,70 @@ class VisualObject
 public:
 
 	/** 不透明度を設定します。(default: 1.0) */
-	void SetOpacity(float value);
+	void setOpacity(float value);
 
 	/** 不透明度を取得します。 */
-	float GetOpacity() const;
+	float getOpacity() const;
 
 	/** カラースケールを設定します。(default: Color(1, 1, 1, 1)) */
-	void SetColorScale(const Color& value);
+	void setColorScale(const Color& value);
 
 	/** カラースケールを設定します。(default: Color(1, 1, 1, 1)) */
-	void SetColorScale(float r, float g, float b, float a = 1.0f);
+	void setColorScale(float r, float g, float b, float a = 1.0f);
 
 	/** カラースケールを取得します。 */
-	const Color& GetColorScale() const;
+	const Color& getColorScale() const;
 
 	/** ブレンドカラーを設定します。(default: Color(0, 0, 0, 0)) */
-	void SetBlendColor(const Color& value);
+	void setBlendColor(const Color& value);
 
 	/** ブレンドカラーを取得します。 */
-	const Color& GetBlendColor() const;
+	const Color& getBlendColor() const;
 
 	/** 色調を設定します。(default: Tone(0, 0, 0, 0)) */
-	void SetTone(const ToneF& value);
+	void setTone(const ToneF& value);
 
 	/** 色調を取得します。 */
-	const ToneF& GetTone() const;
+	const ToneF& getTone() const;
 
 	/** シェーダを設定します。(default: nullptr) */
-	void SetShader(Shader* value);
+	void setShader(Shader* value);
 
 	/** シェーダを取得します。 */
-	Shader* GetShader() const;
+	Shader* getShader() const;
 
 	/** このノードを描画する際の合成方法を設定します。デフォルトは BlendMode::Normal です。*/
-	void SetBlendMode(BlendMode mode);
+	void setBlendMode(BlendMode mode);
 
 	/** このノードを描画する際の合成方法を取得します。*/
-	BlendMode GetBlendMode() const;
+	BlendMode getBlendMode() const;
 
 	/** このノードを描画する際のカリング方法を設定します。デフォルトは CullingMode::Back です。*/
-	void SetCullingMode(CullingMode mode);
+	void setCullingMode(CullingMode mode);
 
 	/** このノードを描画する際のカリング方法を取得します。*/
-	CullingMode GetCullingMode() const;
+	CullingMode getCullingMode() const;
 
 	/** このノードを描画する際の深度テストの有無を設定します。デフォルトは true です。*/
-	void SetDepthTestEnabled(bool enabled);
+	void setDepthTestEnabled(bool enabled);
 
 	/** このノードを描画する際の深度テストの有無を取得します。*/
-	bool IsDepthTestEnabled() const;
+	bool isDepthTestEnabled() const;
 
 	/** このノードを描画する際の深度書き込みの有無を設定します。デフォルトは true です。*/
-	void SetDepthWriteEnabled(bool enabled);
+	void setDepthWriteEnabled(bool enabled);
 
 	/** このノードを描画する際の深度書き込みの有無を取得します。*/
-	bool IsDepthWriteEnabled() const;
+	bool isDepthWriteEnabled() const;
 
 
 protected:
-	virtual VisualComponent* GetMainVisualComponent() const = 0;
+	virtual VisualComponent* getMainVisualComponent() const = 0;
 
 LN_CONSTRUCT_ACCESS:
 	VisualObject();
 	virtual ~VisualObject();
-	void Initialize();
+	void initialize();
 };
 
 LN_NAMESPACE_SCENE_END

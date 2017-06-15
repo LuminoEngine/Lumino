@@ -17,12 +17,12 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 // PlatformEventArgs
 //==============================================================================
-PlatformEventArgs PlatformEventArgs::MakeClosingEvent(PlatformWindow* sender)
+PlatformEventArgs PlatformEventArgs::makeClosingEvent(PlatformWindow* sender)
 {
-	return PlatformEventArgs(PlatformEventType::Close, sender);
+	return PlatformEventArgs(PlatformEventType::close, sender);
 }
 
-PlatformEventArgs PlatformEventArgs::MakeWindowSizeChangedEvent(PlatformWindow* sender, int width, int height)
+PlatformEventArgs PlatformEventArgs::makeWindowSizeChangedEvent(PlatformWindow* sender, int width, int height)
 {
 	PlatformEventArgs e(PlatformEventType::WindowSizeChanged, sender);
 	e.size.width = width;
@@ -30,7 +30,7 @@ PlatformEventArgs PlatformEventArgs::MakeWindowSizeChangedEvent(PlatformWindow* 
 	return e;
 }
 
-PlatformEventArgs PlatformEventArgs::MakeActivateChangedEvent(PlatformWindow* sender, bool active)
+PlatformEventArgs PlatformEventArgs::makeActivateChangedEvent(PlatformWindow* sender, bool active)
 {
 	PlatformEventArgs e;
 	e.sender = sender;
@@ -38,18 +38,18 @@ PlatformEventArgs PlatformEventArgs::MakeActivateChangedEvent(PlatformWindow* se
 	return e;
 }
 
-PlatformEventArgs PlatformEventArgs::MakeKeyEvent(PlatformWindow* sender, PlatformEventType type, Keys keyCode, ModifierKeys modifierKeys, char keyChar)
+PlatformEventArgs PlatformEventArgs::makeKeyEvent(PlatformWindow* sender, PlatformEventType type, Keys keyCode, ModifierKeys modifierKeys, char keyChar)
 {
 	PlatformEventArgs e;
 	e.type = type;
 	e.sender = sender;
 	e.key.keyCode = keyCode;
-	e.key.modifierKeys = (ModifierKeys::value_type)modifierKeys.GetValue();
+	e.key.modifierKeys = (ModifierKeys::value_type)modifierKeys.getValue();
 	e.key.keyChar = keyChar;
 	return e;
 }
 
-PlatformEventArgs PlatformEventArgs::MakeMouseWheelEvent(PlatformWindow* sender, int delta)
+PlatformEventArgs PlatformEventArgs::makeMouseWheelEvent(PlatformWindow* sender, int delta)
 {
 	PlatformEventArgs e;
 	e.type = PlatformEventType::MouseWheel;
@@ -65,7 +65,7 @@ PlatformEventArgs PlatformEventArgs::MakeMouseWheelEvent(PlatformWindow* sender,
 static PlatformManager* g_platformManager = nullptr;
 
 //------------------------------------------------------------------------------
-PlatformManager* PlatformManager::GetInstance(PlatformManager* priority)
+PlatformManager* PlatformManager::getInstance(PlatformManager* priority)
 {
 	return (priority != nullptr) ? priority : g_platformManager;
 }
@@ -82,7 +82,7 @@ PlatformManager::PlatformManager(const Settings& settings)
 	: m_useThread(false)
 	, m_windowManager(NULL)
 {
-	Initialize(settings);
+	initialize(settings);
 }
 
 //------------------------------------------------------------------------------
@@ -92,7 +92,7 @@ PlatformManager::~PlatformManager()
 }
 
 //------------------------------------------------------------------------------
-void PlatformManager::Initialize(const Settings& settings)
+void PlatformManager::initialize(const Settings& settings)
 {
 	m_windowCreationSettings = settings.mainWindowSettings;
 	m_useThread = settings.useInternalUIThread;
@@ -108,8 +108,8 @@ void PlatformManager::Initialize(const Settings& settings)
 	// create window manager
 	if (api == WindowSystemAPI::Win32API)
 	{
-		auto m = RefPtr<Win32WindowManager>::MakeRef(0);
-		m_windowManager = m.DetachMove();
+		auto m = RefPtr<Win32WindowManager>::makeRef(0);
+		m_windowManager = m.detachMove();
     }
 #elif defined(LN_OS_MAC)
     // select default
@@ -120,9 +120,9 @@ void PlatformManager::Initialize(const Settings& settings)
     // create window manager
     if (api == WindowSystemAPI::Cocoa)
     {
-        auto m = RefPtr<CocoaPlatformWindowManager>::MakeRef();
-        m->Initialize();
-        m_windowManager = m.DetachMove();
+        auto m = RefPtr<CocoaPlatformWindowManager>::makeRef();
+        m->initialize();
+        m_windowManager = m.detachMove();
     }
 
 #elif defined(LN_X11)
@@ -134,26 +134,26 @@ void PlatformManager::Initialize(const Settings& settings)
 	// create window manager
 	if (api == WindowSystemAPI::X11)
 	{
-		auto m = RefPtr<X11WindowManager>::MakeRef();
-		m_windowManager = m.DetachMove();
+		auto m = RefPtr<X11WindowManager>::makeRef();
+		m_windowManager = m.detachMove();
 	}
 #endif
 	LN_THROW(m_windowManager != nullptr, ArgumentException);
 
 	if (m_useThread) {
-		m_mainWindowThreadInitFinished.SetFalse();
-		m_mainWindowThreadEndRequested.SetFalse();
-		m_mainWindowThread.Start(CreateDelegate(this, &PlatformManager::Thread_MainWindow));
-		m_mainWindowThreadInitFinished.Wait();	// 初期化終了まで待機する
+		m_mainWindowThreadInitFinished.setFalse();
+		m_mainWindowThreadEndRequested.setFalse();
+		m_mainWindowThread.start(createDelegate(this, &PlatformManager::thread_MainWindow));
+		m_mainWindowThreadInitFinished.wait();	// 初期化終了まで待機する
 	}
 	else {
-		m_windowManager->CreateMainWindow(m_windowCreationSettings);
+		m_windowManager->createMainWindow(m_windowCreationSettings);
 	}
 
 	// MainWindow
-	//m_mainWindow = LN_NEW PlatformWindow(m_windowManager->GetMainWindow());
+	//m_mainWindow = LN_NEW PlatformWindow(m_windowManager->getMainWindow());
     
-    m_windowManager->GetMainWindow()->SetVisible(true);
+    m_windowManager->getMainWindow()->setVisible(true);
 
 	if (g_platformManager == nullptr)
 	{
@@ -162,20 +162,20 @@ void PlatformManager::Initialize(const Settings& settings)
 }
 
 //------------------------------------------------------------------------------
-PlatformWindow* PlatformManager::GetMainWindow()
+PlatformWindow* PlatformManager::getMainWindow()
 {
-	return m_windowManager->GetMainWindow();
+	return m_windowManager->getMainWindow();
 }
 
 //------------------------------------------------------------------------------
-bool PlatformManager::DoEvents()
+bool PlatformManager::doEvents()
 {
 	// メインスレッドでメッセージ処理する場合は InternalDoEvents
 	if (!m_useThread) {
-		m_windowManager->DoEvents();
+		m_windowManager->doEvents();
 	}
 
-	return !m_windowManager->IsEndRequested();
+	return !m_windowManager->isEndRequested();
 }
 
 //------------------------------------------------------------------------------
@@ -185,8 +185,8 @@ void PlatformManager::Dispose()
 	{
 		// 別スレッドでメッセージ処理していた場合異はスレッド終了待機
 		if (m_useThread) {
-			m_mainWindowThreadEndRequested.SetTrue();	// 終了要求だして、
-			m_mainWindowThread.Wait();					// 待つ
+			m_mainWindowThreadEndRequested.setTrue();	// 終了要求だして、
+			m_mainWindowThread.wait();					// 待つ
 		}
 		// メインスレッドでメッセージ処理していた場合はここで Destroy
 		else {
@@ -203,17 +203,17 @@ void PlatformManager::Dispose()
 }
 
 //------------------------------------------------------------------------------
-void PlatformManager::Thread_MainWindow()
+void PlatformManager::thread_MainWindow()
 {
 	// 初期化
-	m_windowManager->CreateMainWindow(m_windowCreationSettings);
-	m_mainWindowThreadInitFinished.SetTrue();	// 初期化完了
+	m_windowManager->createMainWindow(m_windowCreationSettings);
+	m_mainWindowThreadInitFinished.setTrue();	// 初期化完了
 
 	// メッセージループ
-	while (!m_mainWindowThreadEndRequested.IsTrue())
+	while (!m_mainWindowThreadEndRequested.isTrue())
 	{
-		m_windowManager->DoEvents();
-		Thread::Sleep(10);
+		m_windowManager->doEvents();
+		Thread::sleep(10);
 	}
 
 	// 終了処理

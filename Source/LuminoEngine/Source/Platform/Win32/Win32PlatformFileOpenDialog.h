@@ -13,8 +13,8 @@ class Win32PlatformFileOpenDialog
 public:
 	enum class Type
 	{
-		Open,
-		Save,
+		open,
+		save,
 	};
 
 	Win32PlatformFileOpenDialog()
@@ -27,12 +27,12 @@ public:
 		Finalize();
 	}
 
-	void Initialize(Type type)
+	void initialize(Type type)
 	{
 		if (SUCCEEDED(CoInitializeEx(NULL, COINIT_APARTMENTTHREADED)))	// multi-threaded is not supported
 		{
 			HRESULT hr;
-			if (type == Type::Open)
+			if (type == Type::open)
 			{
 				hr = CoCreateInstance(
 					CLSID_FileOpenDialog,
@@ -59,11 +59,11 @@ public:
 		CoUninitialize();
 	}
 
-	virtual bool ShowDialog(PlatformWindow* parent) override
+	virtual bool showDialog(PlatformWindow* parent) override
 	{
 		if (LN_CHECK_ARG(parent != nullptr)) return false;
 		auto* win32Window = static_cast<Win32PlatformWindow*>(parent);
-		HWND hParent = win32Window->GetWindowHandle();
+		HWND hParent = win32Window->getWindowHandle();
 		HRESULT hr = m_fileDialog->Show(hParent);
 		if (SUCCEEDED(hr))
 		{
@@ -72,12 +72,12 @@ public:
 		return false;
 	}
 
-	virtual PathName GetFilePath() override
+	virtual PathName getFilePath() override
 	{
 		LPWSTR wcFileName;
 		HRESULT hr = m_fileDialog->GetFileName(&wcFileName);
 		ln::detail::StaticallyLocalPath path(wcFileName);
-		return path.GetPath();
+		return path.getPath();
 	}
 
 private:

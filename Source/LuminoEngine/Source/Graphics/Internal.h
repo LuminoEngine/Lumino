@@ -3,29 +3,25 @@
 #include "../Internal.h"
 #include <Lumino/Graphics/Common.h>
 
-#ifdef LN_OS_WIN32
-#include <Windows.h>
-#endif
-
 #define LN_CALL_COMMAND(func, command, ...) \
-	if (m_manager->GetRenderingType() == GraphicsRenderingType::Threaded) { \
-		m_manager->GetPrimaryRenderingCommandList()->AddCommand<command>(m_internal, __VA_ARGS__); \
+	if (m_manager->getRenderingType() == GraphicsRenderingType::Threaded) { \
+		m_manager->getPrimaryRenderingCommandList()->addCommand<command>(m_internal, __VA_ARGS__); \
 	} \
 	else { \
 		m_internal->func(__VA_ARGS__); \
 	}
 	
 #define LN_CALL_RENDERER_COMMAND(func, command, ...) \
-	if (m_manager->GetRenderingType() == GraphicsRenderingType::Threaded) { \
-		m_primaryCommandList->AddCommand<command>(__VA_ARGS__); \
+	if (m_manager->getRenderingType() == GraphicsRenderingType::Threaded) { \
+		m_primaryCommandList->addCommand<command>(__VA_ARGS__); \
 	} \
 	else { \
 		m_internal->func(__VA_ARGS__); \
 	}
 
 #define LN_CALL_TEXTURE_COMMAND(func, command, ...) \
-	if (m_manager->GetRenderingType() == GraphicsRenderingType::Threaded) { \
-		m_manager->GetRenderer()->m_primaryCommandList->AddCommand<command>(m_deviceObj, __VA_ARGS__); \
+	if (m_manager->getRenderingType() == GraphicsRenderingType::Threaded) { \
+		m_manager->getRenderer()->m_primaryCommandList->addCommand<command>(m_deviceObj, __VA_ARGS__); \
 	} \
 	else { \
 		m_deviceObj->func(__VA_ARGS__); \

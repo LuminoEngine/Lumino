@@ -50,47 +50,47 @@ public:
 	static Brush*	DimGray;
 
 public:
-	//static RefPtr<Brush> Create(const StringRef& filePath);
+	//static RefPtr<Brush> create(const StringRef& filePath);
 
 
 
 
-	void SetColor(const Color& color) { m_color = color; }
-	const Color& GetColor() const { return m_color; }
+	void setColor(const Color& color) { m_color = color; }
+	const Color& getColor() const { return m_color; }
 
 
 
 
 
-	void SetTexture(Texture* texture);
-	Texture* GetTexture() const;
+	void setTexture(Texture* texture);
+	Texture* getTexture() const;
 
 	/** ピクセル単位で指定します。規定値は NaN です。これは、テクスチャ全体を転送することを示します。*/
-	void SetSourceRect(const Rect& rect) { m_srcRect = rect; }
-	void SetSourceRect(float x, float y, float width, float height) { m_srcRect.Set(x, y, width, height); }
-	const Rect& GetSourceRect() const { return m_srcRect; }
+	void setSourceRect(const Rect& rect) { m_srcRect = rect; }
+	void setSourceRect(float x, float y, float width, float height) { m_srcRect.set(x, y, width, height); }
+	const Rect& getSourceRect() const { return m_srcRect; }
 
 
-	void SetWrapMode(BrushWrapMode mode) { m_wrapMode = mode; }	// TODO: name: ImageWrapMode
-	BrushWrapMode GetWrapMode() const { return m_wrapMode; }
+	void setWrapMode(BrushWrapMode mode) { m_wrapMode = mode; }	// TODO: name: ImageWrapMode
+	BrushWrapMode getWrapMode() const { return m_wrapMode; }
 
-	void SetImageDrawMode(BrushImageDrawMode mode) { m_imageDrawMode = mode; }
-	BrushImageDrawMode GetImageDrawMode() const { return m_imageDrawMode; }
+	void getImageDrawMode(BrushImageDrawMode mode) { m_imageDrawMode = mode; }
+	BrushImageDrawMode getImageDrawMode() const { return m_imageDrawMode; }
 
-	void SetBorderThickness(const ThicknessF& thickness) { m_borderThickness = thickness; }
-	void SetBorderThickness(float left, float top, float right, float bottom) { m_borderThickness.Set(left, top, right, bottom); }
-	const ThicknessF& GetBorderThickness() const { return m_borderThickness; }
+	void getBorderThickness(const ThicknessF& thickness) { m_borderThickness = thickness; }
+	void getBorderThickness(float left, float top, float right, float bottom) { m_borderThickness.set(left, top, right, bottom); }
+	const ThicknessF& getBorderThickness() const { return m_borderThickness; }
 
 LN_CONSTRUCT_ACCESS:
 	Brush();
 	Brush(const Color& color);
 	virtual ~Brush();
-	void Initialize();
+	void initialize();
 
 LN_INTERNAL_ACCESS:
-	bool IsSolidColor() const { return m_texture.IsNull(); }
-	bool IsTextureBrush() const { return !m_texture.IsNull(); }
-	void GetRawData(detail::BrushRawData* outData) const;
+	bool isSolidColor() const { return m_texture.isNull(); }
+	bool isTextureBrush() const { return !m_texture.isNull(); }
+	void getRawData(detail::BrushRawData* outData) const;
 
 private:
 	Color				m_color;
@@ -108,14 +108,14 @@ class SolidColorBrush
 	: public Brush
 {
 public:
-	static RefPtr<SolidColorBrush> Create(const Color& color);
-	static RefPtr<SolidColorBrush> Create(const Color& rgb, float a);
+	static RefPtr<SolidColorBrush> create(const Color& color);
+	static RefPtr<SolidColorBrush> create(const Color& rgb, float a);
 
 LN_CONSTRUCT_ACCESS:
 	SolidColorBrush();
 	virtual ~SolidColorBrush();
-	void Initialize(const Color& color);
-	void Initialize(const Color& rgb, float a);
+	void initialize(const Color& color);
+	void initialize(const Color& rgb, float a);
 };
 
 /**
@@ -125,20 +125,20 @@ class TextureBrush
 	: public Brush
 {
 public:
-	static RefPtr<TextureBrush> Create(const StringRef& filePath);
-	static RefPtr<TextureBrush> Create(Texture* texture);
-	static RefPtr<TextureBrush> Create(Texture* texture, BrushImageDrawMode drawMode, const Rect& sourceRect, const ThicknessF& borderThickness, BrushWrapMode wrapMode);
+	static RefPtr<TextureBrush> create(const StringRef& filePath);
+	static RefPtr<TextureBrush> create(Texture* texture);
+	static RefPtr<TextureBrush> create(Texture* texture, BrushImageDrawMode drawMode, const Rect& sourceRect, const ThicknessF& borderThickness, BrushWrapMode wrapMode);
 
 LN_CONSTRUCT_ACCESS:
 	TextureBrush();
 	virtual ~TextureBrush();
-	void Initialize();
-	void Initialize(const StringRef& filePath);
-	void Initialize(Texture* texture);
+	void initialize();
+	void initialize(const StringRef& filePath);
+	void initialize(Texture* texture);
 
 LN_INTERNAL_ACCESS:
-	Rect GetActualSourceRect() const;
-	Size GetSize() const;
+	Rect getActualSourceRect() const;
+	Size getSize() const;
 };
 
 
@@ -159,7 +159,7 @@ public:
 
 public:
 
-	virtual BrushType GetType() const { return BrushType_SolidColor; }
+	virtual BrushType getType() const { return BrushType_SolidColor; }
 
 private:
 };
@@ -170,18 +170,18 @@ class TextureBrush
 {
 public:
 
-	static RefPtr<TextureBrush> Create(const StringRef& filePath);
+	static RefPtr<TextureBrush> create(const StringRef& filePath);
 
 public:
 	TextureBrush();
 	virtual ~TextureBrush();
 
 public:
-	void Create(const TCHAR* filePath, detail::GraphicsManager* manager);
-	void Create(Texture* texture);
+	void create(const TCHAR* filePath, detail::GraphicsManager* manager);
+	void create(Texture* texture);
 	
 
-	virtual BrushType GetType() const { return BrushType_Texture; }
+	virtual BrushType getType() const { return BrushType_Texture; }
 
 private:
 };
@@ -198,11 +198,11 @@ public:
 		: m_thickness(0)
 	{}
 
-	void SetBrush(Brush* brush) { m_brush = brush; }
-	Brush* GetBrush() const { return m_brush; }
+	void setBrush(Brush* brush) { m_brush = brush; }
+	Brush* getBrush() const { return m_brush; }
 
-	void SetThickness(float thickness) { m_thickness = thickness; }
-	float GetThickness() const { return m_thickness; }
+	void setThickness(float thickness) { m_thickness = thickness; }
+	float getThickness() const { return m_thickness; }
 
 private:
 	RefPtr<Brush>	m_brush;

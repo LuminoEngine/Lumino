@@ -25,23 +25,23 @@ GLIndexBuffer::GLIndexBuffer()
 //------------------------------------------------------------------------------
 GLIndexBuffer::~GLIndexBuffer()
 {
-	OnLostDevice();
+	onLostDevice();
 }
 
 //------------------------------------------------------------------------------
-void GLIndexBuffer::Create(int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage)
+void GLIndexBuffer::create(int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage)
 {
 	m_format = format;
 	int stride = (format == IndexBufferFormat_UInt16) ? 2 : 4;
 	m_byteCount = stride * indexCount;
-	OnResetDevice();
+	onResetDevice();
 	if (initialData != NULL) {
-		SetSubData(0, initialData, m_byteCount);
+		setSubData(0, initialData, m_byteCount);
 	}
 }
 
 //------------------------------------------------------------------------------
-void GLIndexBuffer::SetSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes)
+void GLIndexBuffer::setSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes)
 {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBufferObject); LN_CHECK_GLERROR();
 	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offsetBytes, dataBytes, data); LN_CHECK_GLERROR();
@@ -50,26 +50,26 @@ void GLIndexBuffer::SetSubData(uint32_t offsetBytes, const void* data, uint32_t 
 
 
 //------------------------------------------------------------------------------
-void GLIndexBuffer::Lock(void** lockedBuffer, size_t* lockedSize)
+void GLIndexBuffer::lock(void** lockedBuffer, size_t* lockedSize)
 {
 	LN_THROW(0, NotImplementedException);
 }
 
 //------------------------------------------------------------------------------
-void GLIndexBuffer::Unlock()
+void GLIndexBuffer::unlock()
 {
 	LN_THROW(0, NotImplementedException);
 }
 
 //------------------------------------------------------------------------------
-void GLIndexBuffer::OnLostDevice()
+void GLIndexBuffer::onLostDevice()
 {
 	glDeleteBuffers(1, &m_indexBufferObject); LN_CHECK_GLERROR();
 	m_indexBufferObject = 0;
 }
 
 //------------------------------------------------------------------------------
-void GLIndexBuffer::OnResetDevice()
+void GLIndexBuffer::onResetDevice()
 {
 	GLenum gl_usage = (m_usage == ResourceUsage::Static) ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW;
 	glGenBuffers(1, &m_indexBufferObject); LN_CHECK_GLERROR();

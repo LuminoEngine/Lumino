@@ -25,7 +25,7 @@ TextLayoutEngine::~TextLayoutEngine()
 }
 
 //------------------------------------------------------------------------------
-void TextLayoutEngine::ResetSettings()
+void TextLayoutEngine::resetSettings()
 {
 	m_strokeSize = 0;
 	m_textAlignment = TextAlignment::Left;
@@ -35,14 +35,14 @@ void TextLayoutEngine::ResetSettings()
 }
 
 //------------------------------------------------------------------------------
-void TextLayoutEngine::LayoutText(const UTF32* text, int length, LayoutTextOptions options, TextLayoutResult* outResult/*, bool takeOverKerning*/)
+void TextLayoutEngine::layoutText(const UTF32* text, int length, LayoutTextOptions options, TextLayoutResult* outResult/*, bool takeOverKerning*/)
 {
 	m_result = outResult;
 	m_layoutTextOptions = options;
 
 	if (m_flowDirection == FlowDirection::LeftToRight)
 	{
-		LayoutTextHorizontal(text, length);
+		layoutTextHorizontal(text, length);
 	}
 	else if (m_flowDirection == FlowDirection::RightToLeft)
 	{
@@ -55,13 +55,13 @@ void TextLayoutEngine::LayoutText(const UTF32* text, int length, LayoutTextOptio
 }
 
 //------------------------------------------------------------------------------
-void TextLayoutEngine::LayoutTextHorizontal(const UTF32* text, int length)
+void TextLayoutEngine::layoutTextHorizontal(const UTF32* text, int length)
 {
 	m_result->AreaSize = SizeI::Zero;
 
 	if (m_layoutTextOptions == LayoutTextOptions::All)
 	{
-		m_result->Items.Clear();
+		m_result->Items.clear();
 	}
 
 	RectI rc = m_drawingArea;
@@ -73,7 +73,7 @@ void TextLayoutEngine::LayoutTextHorizontal(const UTF32* text, int length)
 		// LF
 		if (text[i] == 0x0A)
 		{
-			LayoutLineHorizontal(&text[begin], i - begin, rc, &lineSize);
+			layoutLineHorizontal(&text[begin], i - begin, rc, &lineSize);
 			rc.y += lineSize.height;
 			rc.height -= lineSize.height;
 			begin = i + 1;
@@ -85,7 +85,7 @@ void TextLayoutEngine::LayoutTextHorizontal(const UTF32* text, int length)
 			// CR + LF
 			if (i < length - 1 && text[i + 1] == 0x0A)
 			{
-				LayoutLineHorizontal(&text[begin], i - begin, rc, &lineSize);
+				layoutLineHorizontal(&text[begin], i - begin, rc, &lineSize);
 				rc.y += lineSize.height;
 				rc.height -= lineSize.height;
 				i++;
@@ -96,7 +96,7 @@ void TextLayoutEngine::LayoutTextHorizontal(const UTF32* text, int length)
 			// CR
 			else
 			{
-				LayoutLineHorizontal(&text[begin], i - begin, rc, &lineSize);
+				layoutLineHorizontal(&text[begin], i - begin, rc, &lineSize);
 				rc.y += lineSize.height;
 				rc.height -= lineSize.height;
 				begin = i;
@@ -108,22 +108,22 @@ void TextLayoutEngine::LayoutTextHorizontal(const UTF32* text, int length)
 	}
 	if (begin != i)
 	{
-		LayoutLineHorizontal(&text[begin], i - begin, rc, &lineSize);
+		layoutLineHorizontal(&text[begin], i - begin, rc, &lineSize);
 		m_result->AreaSize.width = std::max(m_result->AreaSize.width, lineSize.width);
 		m_result->AreaSize.height += lineSize.height;
 	}
 
 	// TODO: アンチエイリアス有効だと、↑の方法では1px 足りないことがあった。
 	// とりあえずここで強制設定している。
-	m_result->AreaSize.height = m_font->GetLineSpacing();
+	m_result->AreaSize.height = m_font->getLineSpacing();
 }
 
 //------------------------------------------------------------------------------
 // lineArea : 行を描画できる領域。Y は左上の Y 座標。Bottom は描画領域の下端。
 //------------------------------------------------------------------------------
-void TextLayoutEngine::LayoutLineHorizontal(const UTF32* text, int length, const RectI& lineArea, SizeI* outLineSize)
+void TextLayoutEngine::layoutLineHorizontal(const UTF32* text, int length, const RectI& lineArea, SizeI* outLineSize)
 {
-	outLineSize->Set(0, 0);
+	outLineSize->set(0, 0);
 
 	// 描く必要がない
 	if (length == 0) { return; }
@@ -134,7 +134,7 @@ void TextLayoutEngine::LayoutLineHorizontal(const UTF32* text, int length, const
 	TextLayoutResultItem item;
 	for (int i = 0; i < length; ++i)
 	{
-		prevInfo = m_font->AdvanceKerning(text[i], m_strokeSize, prevInfo);
+		prevInfo = m_font->advanceKerning(text[i], m_strokeSize, prevInfo);
 		//planeWidth += prevInfo->BitmapSize.Width;
 		outLineSize->height = std::max(outLineSize->height, prevInfo->BitmapSize.height);
 
@@ -144,7 +144,7 @@ void TextLayoutEngine::LayoutLineHorizontal(const UTF32* text, int length, const
 
 		if (m_layoutTextOptions == LayoutTextOptions::All)
 		{
-			m_result->Items.Add(item);
+			m_result->Items.add(item);
 		}
 	}
 
@@ -177,7 +177,7 @@ void TextLayoutEngine::LayoutLineHorizontal(const UTF32* text, int length, const
 		}
 		case TextAlignment::Right:
 		{
-			int offset = lineArea.GetRight() - planeWidth;
+			int offset = lineArea.getRight() - planeWidth;
 			for (TextLayoutResultItem & item : m_result->Items) {
 				item.Location.BitmapTopLeftPosition.x += offset;
 				item.Location.OutlineBitmapTopLeftPosition.x += offset;
@@ -213,28 +213,28 @@ void TextLayoutEngine::LayoutLineHorizontal(const UTF32* text, int length, const
 // AbstractTextLayoutEngine
 //==============================================================================
 //------------------------------------------------------------------------------
-void AbstractTextLayoutEngine::Layout(RawFont* font, const UTF32* text, int length, const Rect& layoutArea, TextLayoutOptions options)
+void AbstractTextLayoutEngine::layout(RawFont* font, const UTF32* text, int length, const Rect& layoutArea, TextLayoutOptions options)
 {
 	m_font = font;
 	m_options = options;
 
-	m_font->GetGlobalMetrics(&m_globalMetrics);
+	m_font->getGlobalMetrics(&m_globalMetrics);
 	m_currentLineBaseline = m_globalMetrics.ascender;
 
-	LayoutTextHorizontal(text, length);
+	layoutTextHorizontal(text, length);
 }
 
 //------------------------------------------------------------------------------
-void AbstractTextLayoutEngine::LayoutTextHorizontal(const UTF32* text, int length)
+void AbstractTextLayoutEngine::layoutTextHorizontal(const UTF32* text, int length)
 {
 	const UTF32* lineBegin = text;
 	const UTF32* end = text + length;
 	while (lineBegin < end)
 	{
 		int nlPos, nlLen;
-		if (StringTraits::IndexOfNewLineSequence(lineBegin, end, &nlPos, &nlLen))
+		if (StringTraits::indexOfNewLineSequence(lineBegin, end, &nlPos, &nlLen))
 		{
-			LayoutLineHorizontal(lineBegin, nlPos);
+			layoutLineHorizontal(lineBegin, nlPos);
 			lineBegin += nlPos + nlLen;
 			m_currentLineBaseline += m_globalMetrics.ascender;
 		}
@@ -245,12 +245,12 @@ void AbstractTextLayoutEngine::LayoutTextHorizontal(const UTF32* text, int lengt
 	}
 	if (lineBegin != end)
 	{
-		LayoutLineHorizontal(lineBegin, end - lineBegin);
+		layoutLineHorizontal(lineBegin, end - lineBegin);
 	}
 }
 
 //------------------------------------------------------------------------------
-void AbstractTextLayoutEngine::LayoutLineHorizontal(const UTF32* text, int length)
+void AbstractTextLayoutEngine::layoutLineHorizontal(const UTF32* text, int length)
 {
 	ResultItem item;
 	const UTF32* prev = nullptr;
@@ -259,17 +259,17 @@ void AbstractTextLayoutEngine::LayoutLineHorizontal(const UTF32* text, int lengt
 	{
 		if (prev != nullptr)
 		{
-			Vector2 delta = m_font->GetKerning(*prev, text[i]);
+			Vector2 delta = m_font->getKerning(*prev, text[i]);
 			x -= delta.x;
 		}
 
 		item.ch = text[i];
 		item.columnBaseline = x;
 		item.lineBaseline = m_currentLineBaseline;
-		OnPlacementChar(item);
+		onPlacementChar(item);
 
 		FontGlyphMetrics metrics;
-		m_font->GetGlyphMetrics(text[i], &metrics);
+		m_font->getGlyphMetrics(text[i], &metrics);
 		x += metrics.advance.x;
 
 		prev = text + i;
@@ -280,18 +280,18 @@ void AbstractTextLayoutEngine::LayoutLineHorizontal(const UTF32* text, int lengt
 // TextLayoutEngine2
 //==============================================================================
 //------------------------------------------------------------------------------
-void TextLayoutEngine2::Layout(RawFont* font, const UTF32* text, int length, const Rect& layoutArea, TextLayoutOptions options, ResultData* outResult)
+void TextLayoutEngine2::layout(RawFont* font, const UTF32* text, int length, const Rect& layoutArea, TextLayoutOptions options, ResultData* outResult)
 {
 	m_result = outResult;
 	m_result->areaSize = Size::Zero;
-	m_result->items.Clear();
-	AbstractTextLayoutEngine::Layout(font, text, length, layoutArea, options);
+	m_result->items.clear();
+	AbstractTextLayoutEngine::layout(font, text, length, layoutArea, options);
 }
 
 //------------------------------------------------------------------------------
-void TextLayoutEngine2::OnPlacementChar(const ResultItem& item)
+void TextLayoutEngine2::onPlacementChar(const ResultItem& item)
 {
-	m_result->items.Add(item);
+	m_result->items.add(item);
 }
 
 } // namespace detail

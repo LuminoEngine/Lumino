@@ -22,14 +22,14 @@ public:
 		@return		EOF に到達しているかエラーが発生した場合は -1 を返します。
 					戻り値が -1 かをチェックした後、TCHAR にキャストすることで文字として使用できます。
 	*/
-	virtual int Peek() = 0;
+	virtual int peek() = 0;
 
 	/**
 		@brief		現在位置の文字を取得し、現在位置を次の文字に移動します。
 		@return		EOF に到達しているかエラーが発生した場合は -1 を返します。
 					戻り値が -1 かをチェックした後、TCHAR にキャストすることで文字として使用できます。
 	*/
-	virtual int Read() = 0;
+	virtual int read() = 0;
 
 	/**
 		@brief		現在位置から 1 行分の文字列を読み取り、現在位置を移動します。
@@ -38,18 +38,18 @@ public:
 		@details	CRLF("\r\n") は1つの改行とみなします。 
 					line が NULL の場合は現在位置を 1 行すすめるだけで、文字列を返しません。
 	*/
-	virtual bool ReadLine(GenericString<TChar>* line) = 0;
+	virtual bool readLine(GenericString<TChar>* line) = 0;
 	
 	/**
 		@brief		現在位置から全ての文字列を読み取ります。
 		@return		読み取った文字列
 	*/
-	virtual GenericString<TChar> ReadToEnd() = 0;
+	virtual GenericString<TChar> readToEnd() = 0;
 
 	/**
 		@brief		現在位置が EOF に到達しているかを確認します。
 	*/
-	virtual bool IsEOF() = 0;
+	virtual bool isEOF() = 0;
 
 };
 

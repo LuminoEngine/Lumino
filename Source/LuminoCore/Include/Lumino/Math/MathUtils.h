@@ -21,42 +21,42 @@ public:
 public:
 
 	/// 度をラジアンに変換します。
-	static inline float DegreesToRadians(float d) { return d * 0.017453292519943295769236907684886f; }	// 0.017… は180 の逆数 * PI
+	static inline float degreesToRadians(float d) { return d * 0.017453292519943295769236907684886f; }	// 0.017… は180 の逆数 * PI
 
 	/// ラジアンを度に変換します。
-	static inline float RadiansToDegrees(float r) { return r * 57.295779513082320876798154814105f; }	// 57.29… はPI の逆数 * 180
+	static inline float radiansToDegrees(float r) { return r * 57.295779513082320876798154814105f; }	// 57.29… はPI の逆数 * 180
 
 	/// 値を指定された範囲内に制限します。
-	static inline float Clamp(float value, float minValue, float maxValue) { return (value > maxValue) ? maxValue : (value < minValue) ? minValue : value; }
+	static inline float clamp(float value, float minValue, float maxValue) { return (value > maxValue) ? maxValue : (value < minValue) ? minValue : value; }
 
 	/// 値を0.0～1.0の範囲内に制限します。
-	static inline float Clamp01(float value) { return Clamp(value, 0.0f, 1.0f); }
+	static inline float clamp01(float value) { return clamp(value, 0.0f, 1.0f); }
 
 	/// 指定値以上の最小の 2 のべき乗数を返します。
-	static unsigned int NextPow2(unsigned int value);
+	static unsigned int nextPow2(unsigned int value);
 
-	static void SinCos(float value, float* outSin, float* outCos);
+	static void sinCos(float value, float* outSin, float* outCos);
 
 	/// 誤差を考慮し、浮動小数点の比較を行います。
-	static bool NearEqual(float value1, float value2);
+	static bool nearEqual(float value1, float value2);
 
 	/// 値が NaN(非数) かを判定します。
-	static bool IsNaN(float value);
+	static bool isNaN(float value);
 
 	/// 値が NaN(非数) かを判定します。
-	static bool IsNaN(double value);
+	static bool isNaN(double value);
 
 	/// 値が無限大かを判定します。
-	static bool IsInf(float value);
+	static bool isInf(float value);
 
 	/// 値が無限大かを判定します。
-	static bool IsInf(double value);
+	static bool isInf(double value);
 
 	/// 値が NaN(非数) または 無限大 かを判定します。
-	static bool IsNaNOrInf(float value) { return (IsNaN(value) || IsInf(value)); }
+	static bool isNaNOrInf(float value) { return (isNaN(value) || isInf(value)); }
 
 	/// 値が NaN(非数) または 無限大 かを判定します。
-	static bool IsNaNOrInf(double value) { return (IsNaN(value) || IsInf(value)); }
+	static bool isNaNOrInf(double value) { return (isNaN(value) || isInf(value)); }
 
 	/**
 		@brief		等加速度運動の式で値を計算します。
@@ -66,7 +66,7 @@ public:
 		@param[in]	t	: 時間
 		@return		計算結果
 	*/
-	static float QuadAccel(float p, float v, float a, float t);
+	static float quadAccel(float p, float v, float a, float t);
 
 	/**
 		@brief		2つの値の間を線形補完します。
@@ -76,7 +76,7 @@ public:
 		@return		補間結果の値
 		@details	t は通常、0.0～1.0 を指定します。
 	*/
-	static float Lerp(float v1, float v2, float t);
+	static float lerp(float v1, float v2, float t);
 
 	/**
 		@brief		エルミートスプライン補間を実行します。
@@ -88,7 +88,7 @@ public:
 		@return		補間結果の値
 		@details	t は通常、0.0～1.0 を指定します。
 	*/
-	static float Hermite(float v1, float a1, float v2, float a2, float t);
+	static float hermite(float v1, float a1, float v2, float a2, float t);
 
 	/**
 		@brief		Catmull-Rom 補間を実行します。
@@ -100,7 +100,7 @@ public:
 		@return		補間結果の値
 		@details	t は通常、0.0～1.0 を指定します。
 	*/
-	static float CatmullRom(float v1, float v2, float v3, float v4, float t);
+	static float catmullRom(float v1, float v2, float v3, float v4, float t);
 	
 	/**
 		@brief		3次ベジェ 補間を実行します。
@@ -112,7 +112,7 @@ public:
 		@return		補間結果の値
 		@details	t は通常、0.0～1.0 を指定します。
 	*/
-	static float CubicBezier(float v1, float v2, float v3, float v4, float t);
+	static float cubicBezier(float v1, float v2, float v3, float v4, float t);
 };
 
 LN_NAMESPACE_END

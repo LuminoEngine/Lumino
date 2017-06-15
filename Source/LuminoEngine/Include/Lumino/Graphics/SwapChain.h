@@ -23,31 +23,31 @@ public:
 	/**
 		@brief	バックバッファのレンダリングターゲットを取得します。
 	*/
-	RenderTargetTexture* GetBackBuffer();
+	RenderTargetTexture* getBackBuffer();
 
 
 
 	/**
 		@brief	バックバッファのレンダリング結果をフロントバッファに転送します。
 	*/
-	void Present();
+	void present();
 
 LN_INTERNAL_ACCESS:
 	SwapChain();
-	void InitializeDefault(detail::GraphicsManager* manager);
-	void InitializeSub(detail::GraphicsManager* manager, PlatformWindow* window);
-	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
+	void initializeDefault(detail::GraphicsManager* manager);
+	void initializeSub(detail::GraphicsManager* manager, PlatformWindow* window);
+	virtual void onChangeDevice(Driver::IGraphicsDevice* device);
 
-	void PostInitialize();
+	void postInitialize();
 
 	void MightResizeAndDeviceReset(const SizeI& newSize);
 	void PresentInternal();
 	void WaitForPresent();
 
-	Driver::ISwapChain*			m_deviceObj;
-	RenderingCommandList*		m_commandList;
-	ConditionFlag				m_waiting;		// コマンド実行していない
-	RenderTargetTexture*		m_backColorBuffer;
+	Driver::ISwapChain*				m_deviceObj;
+	detail::RenderingCommandList*	m_commandList;
+	ConditionFlag					m_waiting;		// コマンド実行していない
+	RenderTargetTexture*			m_backColorBuffer;
 };
 
 LN_NAMESPACE_GRAPHICS_END

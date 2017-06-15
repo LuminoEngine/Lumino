@@ -18,18 +18,18 @@ class UITreeViewItem
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	void SetHeader(UIElement* header);
+	void setHeader(UIElement* header);
 
 protected:
 
 	// UIElement interface
-	virtual Size MeasureOverride(const Size& constraint) override;
-	virtual Size ArrangeOverride(const Size& finalSize) override;
+	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
 
 LN_CONSTRUCT_ACCESS:
 	UITreeViewItem();
 	virtual ~UITreeViewItem();
-	void Initialize();
+	void initialize();
 
 private:
 	RefPtr<UIElement>	m_header;
@@ -43,16 +43,16 @@ class UITreeView
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	static UITreeViewPtr Create();
+	static UITreeViewPtr create();
 
 //public:
-//	UITreeViewItemPtr AddTextItem(const String& text);
+//	UITreeViewItemPtr addTextItem(const String& text);
 //	UITreeViewItemPtr AddItem(UIElement* item);
 //
 LN_PROTECTED_INTERNAL_ACCESS:
 	UITreeView();
 	virtual ~UITreeView();
-	void Initialize();
+	void initialize();
 
 private:
 };

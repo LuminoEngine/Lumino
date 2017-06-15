@@ -103,9 +103,9 @@ Win32JoystickDriver::~Win32JoystickDriver()
 }
 
 //------------------------------------------------------------------------------
-void Win32JoystickDriver::Initialize( IDirectInputDevice8* device, HWND hwnd, int xinputNumber, bool forcefeedback )
+void Win32JoystickDriver::initialize( IDirectInputDevice8* device, HWND hwnd, int xinputNumber, bool forcefeedback )
 {
-	XInputModule::Initialize();
+	XInputModule::initialize();
 	Dispose();
 
 	mDevice = device;
@@ -114,7 +114,7 @@ void Win32JoystickDriver::Initialize( IDirectInputDevice8* device, HWND hwnd, in
 	//memset(mButtonState, 0, sizeof(mButtonState));
 	//memset(mAxisState, 0, sizeof(mAxisState));
 
-	if (!IsXInputDevice())
+	if (!isXInputDevice())
 	{
 		// ジョイスティックとしてデータフォーマットを設定
 		//hr = mDevice->SetDataFormat( &c_dfDIJoystick2 );	// もっといろんな情報がほしいとき
@@ -183,22 +183,22 @@ void Win32JoystickDriver::Dispose()
     if ( mDeviceEffect )
     {
         mDeviceEffect->Unload();
-        LN_SAFE_RELEASE( mDeviceEffect );
+		LN_COM_SAFE_RELEASE( mDeviceEffect );
     }
 
     // 入力を停止してジョイスティックデバイスを解放
 	if ( mDevice )
 	{
 		mDevice->Unacquire();
-		LN_SAFE_RELEASE(mDevice);
+		LN_COM_SAFE_RELEASE(mDevice);
 	}
 }
 
 //------------------------------------------------------------------------------
-void Win32JoystickDriver::GetJoystickDeviceState(JoystickDeviceState* joyState)
+void Win32JoystickDriver::getJoystickDeviceState(JoystickDeviceState* joyState)
 {
 	// XInput
-	if (IsXInputDevice())
+	if (isXInputDevice())
 	{
 		XINPUT_STATE state;
 		if (XInputModule::XInputGetState(mXInputNo, &state) == ERROR_SUCCESS)
@@ -342,9 +342,9 @@ void Win32JoystickDriver::GetJoystickDeviceState(JoystickDeviceState* joyState)
 }
 
 //------------------------------------------------------------------------------
-void Win32JoystickDriver::StartVibration( int power, int time )
+void Win32JoystickDriver::startVibration( int power, int time )
 {
-	if (IsXInputDevice())
+	if (isXInputDevice())
 	{
 		XINPUT_VIBRATION vibration;
 		vibration.wLeftMotorSpeed = power * 65535 / 1000;
@@ -381,9 +381,9 @@ void Win32JoystickDriver::StartVibration( int power, int time )
 }
 
 //------------------------------------------------------------------------------
-void Win32JoystickDriver::StopVibration()
+void Win32JoystickDriver::stopVibration()
 {
-	if (IsXInputDevice())
+	if (isXInputDevice())
 	{
 		XINPUT_VIBRATION vibration;
 		vibration.wLeftMotorSpeed = 0;
@@ -402,14 +402,14 @@ void Win32JoystickDriver::StopVibration()
 }
 
 //------------------------------------------------------------------------------
-void Win32JoystickDriver::Update()
+void Win32JoystickDriver::update()
 {
 	// 振動終了の監視
 	if (mVibrationStartTime > 0)
 	{
 		if (::GetTickCount() >= mVibrationStartTime + mVibrationTime)
 		{
-			StopVibration();
+			stopVibration();
 		}
 	}
 }
@@ -445,23 +445,23 @@ XInputModule::MD_XInputSetState	XInputModule::XInputSetState;
 DllLoader						XInputModule::m_XInputModule;
 
 //------------------------------------------------------------------------------
-void XInputModule::Initialize()
+void XInputModule::initialize()
 {
 	if (!XInputGetState)
 	{
 #if(_WIN32_WINNT >= _WIN32_WINNT_WIN8)	// XINPUT_DLL が "xinput1_4.dll" なのに、見つからないことがあった。 
 		// がんばって探す
-		if (DllLoader::Exists(XINPUT_DLL)) {
-			m_XInputModule.Load(XINPUT_DLL);
+		if (DllLoader::exists(XINPUT_DLL)) {
+			m_XInputModule.load(XINPUT_DLL);
 		}
-		else if (DllLoader::Exists(_T("xinput1_3.dll"))) {
-			m_XInputModule.Load(_T("xinput1_3.dll"));
+		else if (DllLoader::exists(_T("xinput1_3.dll"))) {
+			m_XInputModule.load(_T("xinput1_3.dll"));
 		}
-		else if (DllLoader::Exists(_T("xinput1_2.dll"))) {
-			m_XInputModule.Load(_T("xinput1_2.dll"));
+		else if (DllLoader::exists(_T("xinput1_2.dll"))) {
+			m_XInputModule.load(_T("xinput1_2.dll"));
 		}
-		else if (DllLoader::Exists(_T("xinput1_1.dll"))) {
-			m_XInputModule.Load(_T("xinput1_1.dll"));
+		else if (DllLoader::exists(_T("xinput1_1.dll"))) {
+			m_XInputModule.load(_T("xinput1_1.dll"));
 		}
 		else {
 			LN_THROW(0, FileNotFoundException);
@@ -469,8 +469,8 @@ void XInputModule::Initialize()
 #else
 		m_XInputModule.Load(XINPUT_DLL);
 #endif
-		XInputGetState = reinterpret_cast<MD_XInputGetState>(m_XInputModule.GetProcAddress("XInputGetState"));
-		XInputSetState = reinterpret_cast<MD_XInputSetState>(m_XInputModule.GetProcAddress("XInputSetState"));
+		XInputGetState = reinterpret_cast<MD_XInputGetState>(m_XInputModule.getProcAddress("XInputGetState"));
+		XInputSetState = reinterpret_cast<MD_XInputSetState>(m_XInputModule.getProcAddress("XInputSetState"));
 	}
 }
 

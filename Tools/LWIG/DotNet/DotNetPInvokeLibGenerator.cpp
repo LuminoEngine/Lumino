@@ -8,7 +8,7 @@ static const String FuncDeclTempalte =
 	_T("[DllImport(DLLName, CharSet = DLLCharSet, CallingConvention = DefaultCallingConvention)]\n")
 	_T("public extern static ResultCode %FuncName%(%Params%);\n");
 
-void DotNetPInvokeLibGenerator::Generate()
+void DotNetPInvokeLibGenerator::generate()
 {
 	// delegates
 	OutputBuffer delegatesText(1);
@@ -17,15 +17,15 @@ void DotNetPInvokeLibGenerator::Generate()
 		{
 			if (methodInfo->isVirtual)
 			{
-				delegatesText.Append("[UnmanagedFunctionPointer(CallingConvention.Cdecl)]").NewLine();
-				delegatesText.Append("public delegate ResultCode {0}({1});", methodInfo->GetCApiSetOverrideCallbackTypeName(), MakePInvokeMethodDeclParamList(methodInfo)).NewLine();
+				delegatesText.append("[UnmanagedFunctionPointer(CallingConvention.Cdecl)]").NewLine();
+				delegatesText.append("public delegate ResultCode {0}({1});", methodInfo->GetCApiSetOverrideCallbackTypeName(), MakePInvokeMethodDeclParamList(methodInfo)).NewLine();
 			}
 		}
 
 		for (auto& delegateInfo : g_database.delegates)
 		{
-			delegatesText.Append("[UnmanagedFunctionPointer(CallingConvention.Cdecl)]").NewLine();
-			delegatesText.Append("public delegate void LN{0}({1});", delegateInfo->name, MakePInvokeMethodDeclParamList(delegateInfo->declaredMethods[0])).NewLine();
+			delegatesText.append("[UnmanagedFunctionPointer(CallingConvention.Cdecl)]").NewLine();
+			delegatesText.append("public delegate void LN{0}({1});", delegateInfo->name, MakePInvokeMethodDeclParamList(delegateInfo->declaredMethods[0])).NewLine();
 		}
 	}
 
@@ -41,7 +41,7 @@ void DotNetPInvokeLibGenerator::Generate()
 			for (auto& constantInfo : enumInfo->declaredConstants)
 			{
 				enumsText.AppendLines(DotNetCommon::MakeXmlDocument(constantInfo->document));
-				enumsText.AppendLine("{0} = {1},", constantInfo->name, tr::Variant::Cast<int>(constantInfo->value)).NewLine();
+				enumsText.AppendLine("{0} = {1},", constantInfo->name, tr::Variant::cast<int>(constantInfo->value)).NewLine();
 			}
 			enumsText.DecreaseIndent();
 			enumsText.AppendLine("}").NewLine();
@@ -62,11 +62,11 @@ void DotNetPInvokeLibGenerator::Generate()
 
 	// output
 	{
-		String src = FileSystem::ReadAllText(PathName(g_templateDir, "DotNet/DotNetPInvoke.template.cs"));
-		src = src.Replace("%DelegateList%", delegatesText.ToString());
-		src = src.Replace("%EnumList%", enumsText.ToString());
-		src = src.Replace("%APIList%", funcsText.ToString());
-		FileSystem::WriteAllText(PathName(g_csOutputDir, "DotNetPInvoke.generated.cs"), src);
+		String src = FileSystem::readAllText(PathName(g_templateDir, "DotNet/DotNetPInvoke.template.cs"));
+		src = src.replace("%DelegateList%", delegatesText.toString());
+		src = src.replace("%EnumList%", enumsText.toString());
+		src = src.replace("%APIList%", funcsText.toString());
+		FileSystem::writeAllText(PathName(g_csOutputDir, "DotNetPInvoke.generated.cs"), src);
 	}
 }
 
@@ -76,17 +76,17 @@ String DotNetPInvokeLibGenerator::MakePInvokeMethodDecl(MethodInfoPtr methodInfo
 
 	// DLLImport・型名・関数名
 	String declText = FuncDeclTempalte;
-	declText = declText.Replace("%FuncName%", methodInfo->GetCAPIFuncName() + suffix);
+	declText = declText.replace("%FuncName%", methodInfo->GetCAPIFuncName() + suffix);
 
 	// params
-	return declText.Replace("%Params%", MakePInvokeMethodDeclParamList(methodInfo));
+	return declText.replace("%Params%", MakePInvokeMethodDeclParamList(methodInfo));
 }
 
 String DotNetPInvokeLibGenerator::MakePInvokeMethodDeclSetOverrideCallback(MethodInfoPtr methodInfo)
 {
 	return FuncDeclTempalte
-		.Replace("%FuncName%", methodInfo->GetCApiSetOverrideCallbackFuncName())
-		.Replace("%Params%", methodInfo->GetCApiSetOverrideCallbackTypeName() + " func");
+		.replace("%FuncName%", methodInfo->GetCApiSetOverrideCallbackFuncName())
+		.replace("%Params%", methodInfo->GetCApiSetOverrideCallbackTypeName() + " func");
 }
 
 String DotNetPInvokeLibGenerator::MakePInvokeMethodDeclParamList(MethodInfoPtr methodInfo)
@@ -96,7 +96,7 @@ String DotNetPInvokeLibGenerator::MakePInvokeMethodDeclParamList(MethodInfoPtr m
 	{
 		params.AppendCommad("{0} {1}", MakeParamTypeName(paramInfo), paramInfo->name);
 	}
-	return params.ToString();
+	return params.toString();
 }
 
 String DotNetPInvokeLibGenerator::MakeParamTypeName(ParameterInfoPtr paramInfo)

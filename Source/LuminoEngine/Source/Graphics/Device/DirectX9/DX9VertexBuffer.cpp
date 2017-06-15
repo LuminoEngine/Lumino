@@ -25,38 +25,38 @@ DX9VertexBuffer::DX9VertexBuffer()
 //------------------------------------------------------------------------------
 DX9VertexBuffer::~DX9VertexBuffer()
 {
-	LN_SAFE_RELEASE(m_vertexBuffer);
+	LN_COM_SAFE_RELEASE(m_vertexBuffer);
 	LN_SAFE_RELEASE(m_graphicsDevice);
 }
 
 //------------------------------------------------------------------------------
-void DX9VertexBuffer::Create(DX9GraphicsDevice* device, size_t bufferSize, const void* initialData, ResourceUsage usage)
+void DX9VertexBuffer::create(DX9GraphicsDevice* device, size_t bufferSize, const void* initialData, ResourceUsage usage)
 {
 	LN_REFOBJ_SET(m_graphicsDevice, device);
 	m_bufferSize = bufferSize;
 	m_usage = usage;
 
-	OnResetDevice();
+	onResetDevice();
 
 	// 頂点として設定するデータがある場合
 	if (initialData != NULL)
 	{
-		void* v = Lock();
+		void* v = lock();
 		memcpy_s(v, m_bufferSize, initialData, m_bufferSize);
-		Unlock();
+		unlock();
 	}
 }
 
 //------------------------------------------------------------------------------
-void DX9VertexBuffer::SetSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes)
+void DX9VertexBuffer::setSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes)
 {
-	byte_t* buf = (byte_t*)Lock();
+	byte_t* buf = (byte_t*)lock();
 	memcpy(buf + offsetBytes, data, dataBytes);	// TOOD: IndexBuffer と同じサイズチェック
-	Unlock();
+	unlock();
 }
 
 //------------------------------------------------------------------------------
-void* DX9VertexBuffer::Lock()
+void* DX9VertexBuffer::lock()
 {
 	DWORD flags = 0;
 	if (m_usage == ResourceUsage::Dynamic)
@@ -70,26 +70,26 @@ void* DX9VertexBuffer::Lock()
 }
 
 //------------------------------------------------------------------------------
-void DX9VertexBuffer::Unlock()
+void DX9VertexBuffer::unlock()
 {
 	LN_COMCALL(m_vertexBuffer->Unlock());
 }
 
 //------------------------------------------------------------------------------
-void DX9VertexBuffer::OnLostDevice()
+void DX9VertexBuffer::onLostDevice()
 {
 	if (m_usage == ResourceUsage::Dynamic)
 	{
-		LN_SAFE_RELEASE(m_vertexBuffer);
+		LN_COM_SAFE_RELEASE(m_vertexBuffer);
 	}
 }
 
 //------------------------------------------------------------------------------
-void DX9VertexBuffer::OnResetDevice()
+void DX9VertexBuffer::onResetDevice()
 {
 	if (m_vertexBuffer == nullptr)
 	{
-		IDirect3DDevice9* dxDevice = m_graphicsDevice->GetIDirect3DDevice9();
+		IDirect3DDevice9* dxDevice = m_graphicsDevice->getIDirect3DDevice9();
 
 		D3DPOOL pool = D3DPOOL_MANAGED;
 		DWORD dxUsage = D3DUSAGE_WRITEONLY;
@@ -122,18 +122,18 @@ DX9VertexDeclaration::DX9VertexDeclaration()
 //------------------------------------------------------------------------------
 DX9VertexDeclaration::~DX9VertexDeclaration()
 {
-	LN_SAFE_RELEASE(m_vertexDecl);
+	LN_COM_SAFE_RELEASE(m_vertexDecl);
 }
 
 //------------------------------------------------------------------------------
-void DX9VertexDeclaration::Initialize(DX9GraphicsDevice* device, const VertexElement* elements, int elementsCount)
+void DX9VertexDeclaration::initialize(DX9GraphicsDevice* device, const VertexElement* elements, int elementsCount)
 {
 	if (LN_CHECK_ARG(device != nullptr)) return;
 	if (LN_CHECK_ARG(elements != nullptr)) return;
 	if (LN_CHECK_ARG(elementsCount >= 0)) return;
 	memset(m_vertexStrides, 0, sizeof(m_vertexStrides));
 
-	IDirect3DDevice9* dxDevice = device->GetIDirect3DDevice9();
+	IDirect3DDevice9* dxDevice = device->getIDirect3DDevice9();
 
 	// D3DVERTEXELEMENT9 を作成して、elements から DirectX用の頂点宣言を作る
 	D3DVERTEXELEMENT9* dxelem = LN_NEW D3DVERTEXELEMENT9[elementsCount + 1];

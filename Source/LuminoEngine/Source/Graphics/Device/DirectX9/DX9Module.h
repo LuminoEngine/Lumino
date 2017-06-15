@@ -119,7 +119,7 @@ public:
 public:
 
 	/// 初期化
-    static void Initialize();
+    static void initialize();
 
 	static MD_Direct3DCreate9						Direct3DCreate9;
 	static MD_D3DXCreateTextureFromFileInMemoryEx	D3DXCreateTextureFromFileInMemoryEx;
@@ -167,7 +167,7 @@ public:
 	static TextureFormat TranslateFormatDxToLN(D3DFORMAT dx_format);
 
 	/// デバッグ用。IUnknown の参照カウントの確認
-	static int GetReferenceCount( IUnknown* obj )
+	static int getReferenceCount( IUnknown* obj )
 	{
 		if ( obj == NULL ) {
 			return 0;

@@ -2901,7 +2901,7 @@ class TestEventRepeater : public TestEventListener {
   TestEventRepeater() : forwarding_enabled_(true) {}
   virtual ~TestEventRepeater();
   void Append(TestEventListener *listener);
-  TestEventListener* Release(TestEventListener* listener);
+  TestEventListener* release(TestEventListener* listener);
 
   // Controls whether events will be forwarded to listeners_. Set to false
   // in death test child processes.
@@ -2941,7 +2941,7 @@ void TestEventRepeater::Append(TestEventListener *listener) {
 }
 
 // TODO(vladl@google.com): Factor the search functionality into Vector::Find.
-TestEventListener* TestEventRepeater::Release(TestEventListener *listener) {
+TestEventListener* TestEventRepeater::release(TestEventListener *listener) {
   for (size_t i = 0; i < listeners_.size(); ++i) {
     if (listeners_[i] == listener) {
       listeners_.erase(listeners_.begin() + i);
@@ -3580,7 +3580,7 @@ TestEventListener* TestEventListeners::Release(TestEventListener* listener) {
     default_result_printer_ = NULL;
   else if (listener == default_xml_generator_)
     default_xml_generator_ = NULL;
-  return repeater_->Release(listener);
+  return repeater_->release(listener);
 }
 
 // Returns repeater that broadcasts the TestEventListener events to all

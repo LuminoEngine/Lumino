@@ -24,16 +24,16 @@ Application::~Application()
 }
 
 //------------------------------------------------------------------------------
-void Application::Initialize(EngineManager* engineManager)
+void Application::initialize(EngineManager* engineManager)
 {
 	if (LN_CHECK_ARG(engineManager != nullptr)) return;
 	m_engineManager = engineManager;
 }
 
 //------------------------------------------------------------------------------
-PlatformWindow* Application::GetNativeMainWindow()
+PlatformWindow* Application::getNativeMainWindow()
 {
-	return m_engineManager->GetPlatformManager()->GetMainWindow();
+	return m_engineManager->getPlatformManager()->getMainWindow();
 }
 
 //==============================================================================
@@ -44,7 +44,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(GameApplication, Object);
 //------------------------------------------------------------------------------
 GameApplication::GameApplication()
 {
-	m_gameSceneManager = RefPtr<detail::GameSceneManager>::MakeRef();
+	m_gameSceneManager = RefPtr<detail::GameSceneManager>::makeRef();
 }
 
 //------------------------------------------------------------------------------
@@ -54,7 +54,7 @@ GameApplication::~GameApplication()
 }
 
 //------------------------------------------------------------------------------
-void GameApplication::Initialize()
+void GameApplication::initialize()
 {
 
 }
@@ -65,24 +65,24 @@ void GameApplication::OnConfigure()
 }
 
 //------------------------------------------------------------------------------
-void GameApplication::Run(GameScene* initialScene)
+void GameApplication::run(GameScene* initialScene)
 {
 	//OnConfigure();
 
-	//Engine::Initialize();
+	//Engine::initialize();
 
 	if (initialScene == nullptr)
-		m_gameSceneManager->GotoScene(RefPtr<GameScene>::MakeRef());
+		m_gameSceneManager->gotoScene(RefPtr<GameScene>::makeRef());
 	else
-		m_gameSceneManager->GotoScene(initialScene);
+		m_gameSceneManager->gotoScene(initialScene);
 
 	do
 	{
-		m_gameSceneManager->UpdateFrame();
+		m_gameSceneManager->updateFrame();
 
-	} while (Engine::Update());
+	} while (Engine::update());
 
-	//Engine::Terminate();
+	//Engine::terminate();
 }
 
 LN_NAMESPACE_END

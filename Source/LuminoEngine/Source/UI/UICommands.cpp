@@ -20,7 +20,7 @@ UIRoutedCommand::~UIRoutedCommand()
 }
 
 //------------------------------------------------------------------------------
-void UIRoutedCommand::Initialize()
+void UIRoutedCommand::initialize()
 {
 }
 

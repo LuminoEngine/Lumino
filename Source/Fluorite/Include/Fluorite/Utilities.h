@@ -22,7 +22,7 @@ public:
 	{
 	}
 
-	void Initialize(int reserved)
+	void initialize(int reserved)
 	{
 		Glow(reserved);
 	}
@@ -30,20 +30,20 @@ public:
 	int AllocIndex()
 	{
 		// ŠÇ—”z—ñ‚ª‚·‚×‚Ä–„‚Ü‚Á‚Ä‚¢‚éê‡‚Í—Ìˆæ‚ð‘‚â‚·
-		if (m_indexStack.IsEmpty())
+		if (m_indexStack.isEmpty())
 		{
-			Glow(m_cache.GetCount());
+			Glow(m_cache.getCount());
 		}
 
 		// ‹ó‚«êŠ‚ðŽæ“¾
-		int newIndex = m_indexStack.GetTop();
-		m_indexStack.Pop();
+		int newIndex = m_indexStack.getTop();
+		m_indexStack.pop();
 		return newIndex;
 	}
 
 	void FreeIndex(int index)
 	{
-		m_indexStack.Push(index);
+		m_indexStack.push(index);
 	}
 
 	T& GetObject(int index)
@@ -54,12 +54,12 @@ public:
 private:
 	void Glow(int count)
 	{
-		int last = m_cache.GetCount();
+		int last = m_cache.getCount();
 		for (int i = count - 1; i >= 0; --i)
 		{
-			m_indexStack.Push(last + i);
+			m_indexStack.push(last + i);
 		}
-		m_indexStack.Resize(last + count);
+		m_indexStack.resize(last + count);
 	}
 	
 	Array<T>	m_cache;

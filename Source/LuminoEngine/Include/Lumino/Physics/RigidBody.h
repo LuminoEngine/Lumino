@@ -62,7 +62,7 @@ public:
 		bool			AdditionalDamping;	///< 減衰の有効
 		bool			KinematicObject;	///< Kinematicオブジェクトとする (質量が 0.0 として扱われ、MotionState の getWorldTransform() が呼ばれるようになる)
 
-		float			Scale;				///< (*Mass に乗算するスケール値)
+		float			scale;				///< (*Mass に乗算するスケール値)
 
 		ConfigData()
 		{
@@ -76,7 +76,7 @@ public:
 			//InitialTransform = NULL;
 			AdditionalDamping = false;
 			KinematicObject = false;
-			Scale = 1.0f;
+			scale = 1.0f;
 		}
 	};
 
@@ -84,22 +84,22 @@ public:
 		@brief		RigidBody オブジェクトを作成します。
 		@param[in]	collider	: 衝突判定形状
 	*/
-	static RefPtr<RigidBody> Create(CollisionShape* collider);
+	static RefPtr<RigidBody> create(CollisionShape* collider);
 
 
 public:
 
 
 	/// 位置の設定
-	void SetPosition(const Vector3& position);
-	void SetPosition(float x, float y, float z);
+	void setPosition(const Vector3& position);
+	void setPosition(float x, float y, float z);
 
-	void SetLinearVelocity(const Vector3& velocity);
-	void SetAngularVelocity(const Vector3& velocity);
+	void setLinearVelocity(const Vector3& velocity);
+	void setAngularVelocity(const Vector3& velocity);
 
 
 	/** 物理演算による各軸への影響を受けるかどうかを設定します。*/
-	void SetConstraints(RigidbodyConstraintFlags flags);
+	void setConstraints(RigidbodyConstraintFlags flags);
 
 #if 0
 	/// 回転の設定
@@ -130,54 +130,54 @@ public:
 	void setKinematicAlignmentMatrix( const Matrix& matrix );
 #endif
 
-	void SetMass(float mass);
+	void setMass(float mass);
 
 
-	void ApplyForce(const Vector3& force);
+	void applyForce(const Vector3& force);
 
 
 	/**
 		瞬間的な力を加えます。
 		@param[in]	force	: 力のベクトル
 	*/
-	void ApplyImpulse(const Vector3& force);
+	void applyImpulse(const Vector3& force);
 
 
-	// ApplyForce は、力を与える間毎フレーム継続的に呼び出す必要がある。
+	// applyForce は、力を与える間毎フレーム継続的に呼び出す必要がある。
 	// そのフレームで与えられたトータルの力を更新する。そのフレームのシミュレーションが終了すれば 0 にリセットされる。
-	// ApplyImpulse() は、直ちに速度を更新する。
-	// ApplyForce のように継続的に呼び出す必要はない。
+	// applyImpulse() は、直ちに速度を更新する。
+	// applyForce のように継続的に呼び出す必要はない。
 
 	/// 剛体の sleep 状態を解除する (公開する必要は無いかも？)
-	void Activate();
+	void activate();
 
 	/// ワールド変換行列の設定
-	void SetWorldTransform(const Matrix& matrix);
+	void setWorldTransform(const Matrix& matrix);
 
 	/// ワールド変換行列の取得
-	const Matrix& GetWorldTransform() const;
+	const Matrix& getWorldTransform() const;
 
-	void ClearForces();
+	void clearForces();
 
 	/// 指定の姿勢を強制的に設定する (速度が 0 にリセットされる)
 	//void SetWorldTransformForced(const Matrix& matrix);
 	//void moveToForced(const Matrix& matrix);
 
 	/// 物理演算の対象であるか (false の場合、衝突判定のみ対象)
-	bool IsContactResponse() const { return true; }
+	bool isContactResponse() const { return true; }
 
 
 LN_INTERNAL_ACCESS:
 	RigidBody();
 	virtual ~RigidBody();
-	void Initialize(CollisionShape* collider, const ConfigData& configData);
+	void initialize(CollisionShape* collider, const ConfigData& configData);
 
 	/// 初期化 (剛体を受け取ってワールドに追加する) (現行PMD用にpublic。後で protected にする)
 	///		shape		: (BodyBase  削除時に delete される)
-	void InitializeCore(CollisionShape* collider, const ConfigData& configData, float scale);
+	void initializeCore(CollisionShape* collider, const ConfigData& configData, float scale);
 
-	//void SetOwnerWorld(PhysicsWorld* owner);
-	//PhysicsWorld* GetOwnerWorld() const;
+	//void setOwnerWorld(PhysicsWorld* owner);
+	//PhysicsWorld* getOwnerWorld() const;
 	btRigidBody* GetBtRigidBody() { return m_btRigidBody; }
 
 	//void RefreshRootBtShapes();
@@ -185,21 +185,21 @@ LN_INTERNAL_ACCESS:
 	//btCollisionObject* GetBtPrimaryObject() const;
 
 
-	void SetTransformFromMotionState(const btTransform& transform);
+	void setTransformFromMotionState(const btTransform& transform);
 
-	void MarkMMDDynamic();
+	void markMMDDynamic();
 
 
-	virtual void OnBeforeStepSimulation() override;
-	virtual void OnAfterStepSimulation() override;
-	virtual void OnRemovedFromWorld() override;
+	virtual void onBeforeStepSimulation() override;
+	virtual void onAfterStepSimulation() override;
+	virtual void onRemovedFromWorld() override;
 
 
 	// Component interface
-	virtual void OnUpdate();
+	virtual void onUpdate();
 
 private:
-	void CreateBtRigidBody();
+	void createBtRigidBody();
 
 	enum ModifiedFlags
 	{

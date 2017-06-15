@@ -99,16 +99,16 @@ public:
 	}
 
 public:
-	const Variant& GetDefaultValue() const { return m_defaultValue; }
+	const Variant& getDefaultValue() const { return m_defaultValue; }
 	//void CallPropertyChangedCallback(ReflectionObject* obj, PropertyChangedEventArgs* e)
 	//{
 	//	if (m_propertyChangedCallback == nullptr) return;
 	//	return m_propertyChangedCallback->Call(obj, e);
 	//}
-	PropertyOptions GetPropertyOptions() const { return m_options; }
-	PropertyInfo* GetInheritanceTarget() const { return m_inheritanceTarget; }
+	PropertyOptions getPropertyOptions() const { return m_options; }
+	PropertyInfo* getInheritanceTarget() const { return m_inheritanceTarget; }
 
-	void CallStaticPropertyChanged(ReflectionObject* obj) const
+	void callStaticPropertyChanged(ReflectionObject* obj) const
 	{
 		if (m_staticPropertyChangedCallback != nullptr)
 			m_staticPropertyChangedCallback(obj);

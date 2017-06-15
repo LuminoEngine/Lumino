@@ -20,7 +20,7 @@ UTF16Encoding::UTF16Encoding(bool bigEndian, bool byteOrderMark)
 }
 
 //------------------------------------------------------------------------------
-byte_t* UTF16Encoding::GetPreamble() const
+byte_t* UTF16Encoding::getPreamble() const
 {
 	static byte_t bom[] = { 0x00 };
 	LN_THROW(0, NotImplementedException);
@@ -28,25 +28,25 @@ byte_t* UTF16Encoding::GetPreamble() const
 };
 
 //------------------------------------------------------------------------------
-int UTF16Encoding::GetLeadExtraLength(const void* buffer, size_t bufferSize) const
+int UTF16Encoding::getLeadExtraLength(const void* buffer, size_t bufferSize) const
 {
 	bool s;
-	UTFConversionResult result = UnicodeUtils::CheckUTF16Surrogate((const UTF16*)buffer, ((const UTF16*)buffer) + bufferSize / sizeof(UTF16), true, &s);
+	UTFConversionResult result = UnicodeUtils::checkUTF16Surrogate((const UTF16*)buffer, ((const UTF16*)buffer) + bufferSize / sizeof(UTF16), true, &s);
 	LN_THROW(result == UTFConversionResult_Success, EncodingException);
 	return (s) ? 1 : 0;
 }
 
 //------------------------------------------------------------------------------
-int UTF16Encoding::GetCharacterCount(const void* buffer, size_t bufferSize) const
+int UTF16Encoding::getCharacterCount(const void* buffer, size_t bufferSize) const
 {
 	int count;
-	UTFConversionResult result = UnicodeUtils::GetUTF16CharCount((const UTF16*)buffer, bufferSize / sizeof(UTF16), true, &count);
+	UTFConversionResult result = UnicodeUtils::getUTF16CharCount((const UTF16*)buffer, bufferSize / sizeof(UTF16), true, &count);
 	LN_THROW(result == UTFConversionResult_Success, EncodingException);
 	return count;
 }
 
 //------------------------------------------------------------------------------
-void UTF16Encoding::UTF16Decoder::ConvertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, size_t* outBytesUsed, size_t* outCharsUsed)
+void UTF16Encoding::UTF16Decoder::convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, size_t* outBytesUsed, size_t* outCharsUsed)
 {
 	/* バイトストリームの UTF-16 から、内部文字コードの UTF-16 への変換となる。
 	 * バイトストリームは、UTF-16 文字がバッファ終端で途切れる場合も考慮しなければならない。
@@ -88,7 +88,7 @@ void UTF16Encoding::UTF16Decoder::ConvertToUTF16(const byte_t* input, size_t inp
 		// 上位サロゲート未発見状態の場合
 		if (m_lastLeadWord == 0x0000)
 		{
-			if (UnicodeUtils::CheckUTF16HighSurrogate(ch)) {
+			if (UnicodeUtils::checkUTF16HighSurrogate(ch)) {
 				m_lastLeadWord = ch;	// 上位サロゲート発見状態にする
 			}
 			else {
@@ -102,7 +102,7 @@ void UTF16Encoding::UTF16Decoder::ConvertToUTF16(const byte_t* input, size_t inp
 		else
 		{
 			// 下位サロゲートが見つかれば格納
-			if (UnicodeUtils::CheckUTF16LowSurrogate(ch)) 
+			if (UnicodeUtils::checkUTF16LowSurrogate(ch)) 
 			{
 				output[outWordPos++] = m_lastLeadWord;
 				output[outWordPos++] = ch;
@@ -132,7 +132,7 @@ void UTF16Encoding::UTF16Decoder::ConvertToUTF16(const byte_t* input, size_t inp
 }
 
 //------------------------------------------------------------------------------
-void UTF16Encoding::UTF16Encoder::ConvertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, size_t* outBytesUsed, size_t* outCharsUsed)
+void UTF16Encoding::UTF16Encoder::convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, size_t* outBytesUsed, size_t* outCharsUsed)
 {
 	/* 内部文字コードの UTF-16 から、バイトストリームの UTF-16 への変換となる。
 	 * 内部文字コードは、必ず 2byte 単位であり、バッファ終端がバイト単位で途切れることは無い。
@@ -144,7 +144,7 @@ void UTF16Encoding::UTF16Encoder::ConvertFromUTF16(const UTF16* input, size_t in
 
 	// 文字数はカウントする
 	int count;
-	UTFConversionResult r = UnicodeUtils::GetUTF16CharCount((UnicodeUtils::UTF16*)input, inputElementSize, true, &count);
+	UTFConversionResult r = UnicodeUtils::getUTF16CharCount((UnicodeUtils::UTF16*)input, inputElementSize, true, &count);
 	LN_THROW(r == UTFConversionResult_Success, EncodingException);
 
 	*outBytesUsed = inputElementSize * sizeof(UTF16);

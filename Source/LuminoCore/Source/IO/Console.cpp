@@ -1,7 +1,4 @@
 #include "../Internal.h"
-#if defined(LN_OS_WIN32)
-#include <windows.h>
-#endif
 #include <Lumino/Base/Environment.h>
 #include <Lumino/IO/Console.h>
 
@@ -28,7 +25,7 @@ public:
 		Free();
 	}
 
-	void Alloc()
+	void alloc()
 	{
 		// コンソールアプリとして実行している場合はこの if に入ることはない
 		if (!m_consoleAlloced && ::AllocConsole())
@@ -69,9 +66,9 @@ private:
 static ConsoleInternal g_console;
 
 //------------------------------------------------------------------------------
-void Console::Alloc()
+void Console::alloc()
 {
-	g_console.Alloc();
+	g_console.alloc();
 }
 
 //------------------------------------------------------------------------------
@@ -83,56 +80,56 @@ void Console::Free()
 #endif
 
 //------------------------------------------------------------------------------
-void Console::WriteLine()
+void Console::writeLine()
 {
-	WriteInternal(Environment::GetNewLine<char>());
+	writeInternal(Environment::getNewLine<char>());
 }
 
 //------------------------------------------------------------------------------
-void Console::WriteLine(const StringRefA& str)
+void Console::writeLine(const StringRefA& str)
 {
 	StringA s(str);
-	WriteInternal(s.c_str());
-	WriteLine();
+	writeInternal(s.c_str());
+	writeLine();
 }
 
 //------------------------------------------------------------------------------
-void Console::WriteLine(const StringRefW& str)
+void Console::writeLine(const StringRefW& str)
 {
 	StringW s(str);
-	WriteInternal(s.c_str());
-	WriteLine();
+	writeInternal(s.c_str());
+	writeLine();
 }
 
 //------------------------------------------------------------------------------
-void Console::WriteLineError()
+void Console::writeLineError()
 {
-	WriteInternalError(Environment::GetNewLine<char>());
+	writeInternalError(Environment::getNewLine<char>());
 }
 
 //------------------------------------------------------------------------------
-void Console::WriteInternal(const char* str)
+void Console::writeInternal(const char* str)
 {
 	if (LN_CHECK_ARG(str != nullptr)) return;
 	fprintf(stdout, "%s", str);
 }
 
 //------------------------------------------------------------------------------
-void Console::WriteInternal(const wchar_t* str)
+void Console::writeInternal(const wchar_t* str)
 {
 	if (LN_CHECK_ARG(str != nullptr)) return;
 	fwprintf(stdout, L"%s", str);
 }
 
 //------------------------------------------------------------------------------
-void Console::WriteInternalError(const char* str)
+void Console::writeInternalError(const char* str)
 {
 	if (LN_CHECK_ARG(str != nullptr)) return;
 	fprintf(stderr, "%s", str);
 }
 
 //------------------------------------------------------------------------------
-void Console::WriteInternalError(const wchar_t* str)
+void Console::writeInternalError(const wchar_t* str)
 {
 	if (LN_CHECK_ARG(str != nullptr)) return;
 	fwprintf(stderr, L"%s", str);

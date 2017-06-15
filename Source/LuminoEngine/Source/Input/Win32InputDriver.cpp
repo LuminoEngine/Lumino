@@ -28,7 +28,7 @@ Win32InputDriver::~Win32InputDriver()
 }
 
 //------------------------------------------------------------------------------
-void Win32InputDriver::Initialize(HWND hWnd)
+void Win32InputDriver::initialize(HWND hWnd)
 {
 	m_hWnd = hWnd;
 
@@ -36,44 +36,44 @@ void Win32InputDriver::Initialize(HWND hWnd)
 	LN_COMCALL(CoCreateInstance(CLSID_DirectInput8, NULL, CLSCTX_ALL, IID_IDirectInput8, (void**)&m_directInput));
 	LN_COMCALL(m_directInput->Initialize(::GetModuleHandle(NULL), DIRECTINPUT_VERSION));
 
-	RefreshDevice();
+	refreshDevice();
 }
 
 //------------------------------------------------------------------------------
 void Win32InputDriver::Finalize()
 {
-	ReleaseDevice();
-	LN_SAFE_RELEASE(m_directInput);
+	releaseDevice();
+	LN_COM_SAFE_RELEASE(m_directInput);
 }
 
 //------------------------------------------------------------------------------
-int Win32InputDriver::GetJoystickCount()
+int Win32InputDriver::getJoystickCount()
 {
-	return m_joystickList.GetCount();
+	return m_joystickList.getCount();
 }
 
 //------------------------------------------------------------------------------
-void Win32InputDriver::GetJoystickState(int joystickNumber, JoystickDeviceState* state)
+void Win32InputDriver::getJoystickState(int joystickNumber, JoystickDeviceState* state)
 {
-	m_joystickList[joystickNumber]->GetJoystickDeviceState(state);
+	m_joystickList[joystickNumber]->getJoystickDeviceState(state);
 }
 
 //------------------------------------------------------------------------------
-void Win32InputDriver::StartVibration(int joystickNumber, int power, int time)
+void Win32InputDriver::startVibration(int joystickNumber, int power, int time)
 {
-	m_joystickList[joystickNumber]->StartVibration(power, time);
+	m_joystickList[joystickNumber]->startVibration(power, time);
 }
 
 //------------------------------------------------------------------------------
-void Win32InputDriver::StopVibration(int joystickNumber)
+void Win32InputDriver::stopVibration(int joystickNumber)
 {
-	m_joystickList[joystickNumber]->StopVibration();
+	m_joystickList[joystickNumber]->stopVibration();
 }
 
 //------------------------------------------------------------------------------
-void Win32InputDriver::RefreshDevice()
+void Win32InputDriver::refreshDevice()
 {
-	ReleaseDevice();
+	releaseDevice();
 
 	// 接続済みのゲームコントローラーデバイスを列挙する
 	m_XInputDeviceCount = 0;
@@ -87,12 +87,12 @@ void Win32InputDriver::RefreshDevice()
 }
 
 //------------------------------------------------------------------------------
-void Win32InputDriver::ReleaseDevice()
+void Win32InputDriver::releaseDevice()
 {
 	for (Win32JoystickDriver* joy : m_joystickList) {
-		joy->Release();
+		joy->release();
 	}
-	m_joystickList.Clear();
+	m_joystickList.clear();
 	m_XInputDeviceCount = 0;
 }
 
@@ -107,7 +107,7 @@ BOOL CALLBACK Win32InputDriver::EnumJoysticksCallback(const DIDEVICEINSTANCE* in
 //------------------------------------------------------------------------------
 void Win32InputDriver::CreateJoysticksDevice(const DIDEVICEINSTANCE* instance)
 {
-	if (IsXInputDevice(&instance->guidProduct))
+	if (isXInputDevice(&instance->guidProduct))
 	{
 		// デバイスの情報を取得するため、一度デバイスを作る
 		IDirectInputDevice8* device = NULL;
@@ -118,11 +118,11 @@ void Win32InputDriver::CreateJoysticksDevice(const DIDEVICEINSTANCE* instance)
 			device->GetDeviceInfo(&di);
 			//printf( "XInput Device  No:%d Name:%s\n", mXInputNo, di.tszInstanceName );
 		}
-		LN_SAFE_RELEASE(device);
+		LN_COM_SAFE_RELEASE(device);
 
 		Win32JoystickDriver* joystick = LN_NEW Win32JoystickDriver();
-		joystick->Initialize(NULL, m_hWnd, m_XInputDeviceCount, true);
-		m_joystickList.Add(joystick);
+		joystick->initialize(NULL, m_hWnd, m_XInputDeviceCount, true);
+		m_joystickList.add(joystick);
 		++m_XInputDeviceCount;
 	}
 	else
@@ -140,8 +140,8 @@ void Win32InputDriver::CreateJoysticksDevice(const DIDEVICEINSTANCE* instance)
 				//DXST_ERRORLOGFMT_ADDA(( "デバイスの登録名:%s" , State.tszInstanceName )) ;
 				//DXST_ERRORLOGFMT_ADDA(( "デバイスの製品登録名:%s" , State.tszProductName )) ;
 				Win32JoystickDriver* joystick = LN_NEW Win32JoystickDriver();
-				joystick->Initialize(device, m_hWnd, -1, (caps.dwFlags & DIDC_FORCEFEEDBACK) != 0);
-				m_joystickList.Add(joystick);
+				joystick->initialize(device, m_hWnd, -1, (caps.dwFlags & DIDC_FORCEFEEDBACK) != 0);
+				m_joystickList.add(joystick);
 			}
 		}
 	}
@@ -174,7 +174,7 @@ void Win32InputDriver::CreateJoysticksDevice(const DIDEVICEINSTANCE* instance)
 // http://msdn.microsoft.com/ja-jp/library/bb173051(v=vs.85).aspx
 #pragma warning(disable:4996)
 
-BOOL Win32InputDriver::IsXInputDevice(const GUID* pGuidProductFromDirectInput)
+BOOL Win32InputDriver::isXInputDevice(const GUID* pGuidProductFromDirectInput)
 {
 	IWbemLocator*           pIWbemLocator = NULL;
 	IEnumWbemClassObject*   pEnumDevices = NULL;
@@ -259,7 +259,7 @@ BOOL Win32InputDriver::IsXInputDevice(const GUID* pGuidProductFromDirectInput)
 					}
 				}
 			}
-			LN_SAFE_RELEASE(pDevices[iDevice]);
+			LN_COM_SAFE_RELEASE(pDevices[iDevice]);
 		}
 	}
 
@@ -271,10 +271,10 @@ LCleanup:
 	if (bstrClassName)
 		SysFreeString(bstrClassName);
 	for (iDevice = 0; iDevice<20; iDevice++)
-		LN_SAFE_RELEASE(pDevices[iDevice]);
-	LN_SAFE_RELEASE(pEnumDevices);
-	LN_SAFE_RELEASE(pIWbemLocator);
-	LN_SAFE_RELEASE(pIWbemServices);
+		LN_COM_SAFE_RELEASE(pDevices[iDevice]);
+	LN_COM_SAFE_RELEASE(pEnumDevices);
+	LN_COM_SAFE_RELEASE(pIWbemLocator);
+	LN_COM_SAFE_RELEASE(pIWbemServices);
 
 	if (bCleanupCOM)
 		CoUninitialize();

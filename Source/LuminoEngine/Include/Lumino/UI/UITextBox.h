@@ -20,24 +20,24 @@ class UITextBox
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
-	static UITextBoxPtr Create();
+	static UITextBoxPtr create();
 
 public:
-	void SetText(const StringRef& text);
+	void setText(const StringRef& text);
 
 protected:
-	virtual void OnMouseDown(UIMouseEventArgs* e) override;
-	virtual void OnKeyDown(UIKeyEventArgs* e) override;
-	virtual void OnTextInput(UIKeyEventArgs* e) override;
+	virtual void onMouseDown(UIMouseEventArgs* e) override;
+	virtual void onKeyDown(UIKeyEventArgs* e) override;
+	virtual void onTextInput(UIKeyEventArgs* e) override;
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	UITextBox();
 	virtual ~UITextBox();
-	void Initialize();
+	void initialize();
 
-	virtual Size MeasureOverride(const Size& availableSize) override;
-	virtual Size ArrangeOverride(const Size& finalSize) override;
-	virtual void OnRender(DrawingContext* g) override;
+	virtual Size measureOverride(const Size& availableSize) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
+	virtual void onRender(DrawingContext* g) override;
 
 private:
 	//RefPtr<tr::Document>		m_document;
@@ -56,10 +56,10 @@ class UITextField
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
-	static RefPtr<UITextField> Create();
+	static RefPtr<UITextField> create();
 
 public:
-	void SetText(const StringRef& text);
+	void setText(const StringRef& text);
 
 
 protected:
@@ -67,10 +67,10 @@ protected:
 LN_PROTECTED_INTERNAL_ACCESS:
 	UITextField();
 	virtual ~UITextField();
-	void Initialize();
+	void initialize();
 
-	virtual Size MeasureOverride(const Size& availableSize) override;
-	virtual Size ArrangeOverride(const Size& finalSize) override;
+	virtual Size measureOverride(const Size& availableSize) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
 
 private:
 	RefPtr<UISimpleTextArea>			m_textArea;

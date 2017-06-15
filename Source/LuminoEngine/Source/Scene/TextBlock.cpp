@@ -16,19 +16,19 @@ LN_NAMESPACE_SCENE_BEGIN
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TextBlock2DComponent, VisualComponent);
 
 //------------------------------------------------------------------------------
-TextBlock2DComponentPtr TextBlock2DComponent::Create()
+TextBlock2DComponentPtr TextBlock2DComponent::create()
 {
-	auto ptr = TextBlock2DComponentPtr::MakeRef();
-	ptr->Initialize();
+	auto ptr = TextBlock2DComponentPtr::makeRef();
+	ptr->initialize();
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
-TextBlock2DComponentPtr TextBlock2DComponent::Create(const StringRef& text)
+TextBlock2DComponentPtr TextBlock2DComponent::create(const StringRef& text)
 {
-	auto ptr = TextBlock2DComponentPtr::MakeRef();
-	ptr->Initialize();
-	ptr->SetText(text);
+	auto ptr = TextBlock2DComponentPtr::makeRef();
+	ptr->initialize();
+	ptr->setText(text);
 	return ptr;
 }
 
@@ -45,79 +45,79 @@ TextBlock2DComponent::~TextBlock2DComponent()
 }
 
 //------------------------------------------------------------------------------
-void TextBlock2DComponent::Initialize()
+void TextBlock2DComponent::initialize()
 {
-	VisualComponent::Initialize();
+	VisualComponent::initialize();
 
-	//owner->GetRootNode()->AddChild(this);
-	SetAutoRemove(true);
+	//owner->getRootNode()->addChild(this);
+	setAutoRemove(true);
 
-	m_paragraph = RefPtr<detail::Paragraph>::MakeRef();
-	m_paragraph->Initialize();
+	m_paragraph = RefPtr<detail::Paragraph>::makeRef();
+	m_paragraph->initialize();
 }
 
 //------------------------------------------------------------------------------
-void TextBlock2DComponent::SetText(const StringRef& text)
+void TextBlock2DComponent::setText(const StringRef& text)
 {
-	m_paragraph->ClearInlines();
-	auto run = RefPtr<detail::Run>::MakeRef();
-	run->Initialize();
-	run->SetText(text);
-	m_paragraph->AddInline(run);
+	m_paragraph->clearInlines();
+	auto run = RefPtr<detail::run>::makeRef();
+	run->initialize();
+	run->setText(text);
+	m_paragraph->addInline(run);
 }
 
 //------------------------------------------------------------------------------
-void TextBlock2DComponent::SetAnchorPoint(const Vector2& ratio)
+void TextBlock2DComponent::setAnchorPoint(const Vector2& ratio)
 {
 	m_anchor = ratio;
 }
 
 //------------------------------------------------------------------------------
-void TextBlock2DComponent::SetAnchorPoint(float ratioX, float ratioY)
+void TextBlock2DComponent::setAnchorPoint(float ratioX, float ratioY)
 {
-	m_anchor.Set(ratioX, ratioY);
+	m_anchor.set(ratioX, ratioY);
 }
 
 //------------------------------------------------------------------------------
-void TextBlock2DComponent::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
+void TextBlock2DComponent::updateFrameHierarchy(SceneNode* parent, float deltaTime)
 {
-	VisualComponent::UpdateFrameHierarchy(parent, deltaTime);
-	m_paragraph->UpdateLayout(Size::MaxValue);
-	//m_paragraph->MeasureLayout(Size::MaxValue);
-	//m_paragraph->ArrangeLayout(RectF(0, 0, Size::MaxValue));
+	VisualComponent::updateFrameHierarchy(parent, deltaTime);
+	m_paragraph->updateLayout(Size::MaxValue);
+	//m_paragraph->measureLayout(Size::MaxValue);
+	//m_paragraph->arrangeLayout(RectF(0, 0, Size::MaxValue));
 }
 
 //------------------------------------------------------------------------------
-detail::Sphere TextBlock2DComponent::GetBoundingSphere()
+detail::Sphere TextBlock2DComponent::getBoundingSphere()
 {
-	return VisualComponent::GetBoundingSphere();
+	return VisualComponent::getBoundingSphere();
 }
 
 //------------------------------------------------------------------------------
-void TextBlock2DComponent::OnRender2(DrawList* renderer)
+void TextBlock2DComponent::onRender2(DrawList* renderer)
 {
 	struct LocalRenderer : detail::IDocumentsRenderer
 	{
 		DrawList* renderer;
 
-		virtual void OnDrawGlyphRun(const Matrix& transform, Brush* forground, GlyphRun* glyphRun, const PointF& point) override
+		virtual void onDrawGlyphRun(const Matrix& transform, Brush* forground, GlyphRun* glyphRun, const PointF& point) override
 		{
-			renderer->SetTransform(transform);
-			renderer->SetBrush(forground);
-			renderer->DrawGlyphRun(point, glyphRun);
+			renderer->setTransform(transform);
+			renderer->setBrush(forground);
+			renderer->drawGlyphRun(point, glyphRun);
 		}
 	} r;
 	r.renderer = renderer;
 
-	const Size& size = m_paragraph->GetRenderSize();
-	m_paragraph->Render(Matrix::MakeTranslation(-size.width * m_anchor.x, -size.height * m_anchor.y, 0) * GetOwnerObject()->transform.GetWorldMatrix(), &r);
+	const Size& size = m_paragraph->getRenderSize();
+	m_paragraph->render(Matrix::makeTranslation(-size.width * m_anchor.x, -size.height * m_anchor.y, 0) * getOwnerObject()->transform.getWorldMatrix(), &r);
 }
 
 //------------------------------------------------------------------------------
-//void TextBlock2DComponent::OnRender(SceneGraphRenderingContext* dc)
+//void TextBlock2DComponent::onRender(SceneGraphRenderingContext* dc)
 //{
-//	const Size& size = m_paragraph->GetRenderSize();
-//	m_paragraph->Render(Matrix::MakeTranslation(-size.width * m_anchor.x, -size.height * m_anchor.y, 0) * m_combinedGlobalMatrix, dc);
+//	const Size& size = m_paragraph->getRenderSize();
+//	m_paragraph->render(Matrix::MakeTranslation(-size.width * m_anchor.x, -size.height * m_anchor.y, 0) * m_combinedGlobalMatrix, dc);
 //}
 
 LN_NAMESPACE_SCENE_END

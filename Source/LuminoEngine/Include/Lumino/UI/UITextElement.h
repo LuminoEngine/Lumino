@@ -14,49 +14,49 @@ class UITextElement
 public:
 	LN_TR_PROPERTY(String, FontFamily);		/**< FontFamily プロパティの識別子 */
 	LN_TR_PROPERTY(int, FontSize);			/**< FontSize プロパティの識別子 */
-	LN_TR_PROPERTY(bool, IsFontBold);		/**< IsFontBold プロパティの識別子 */
-	LN_TR_PROPERTY(bool, IsFontItalic);		/**< IsFontItalic プロパティの識別子 */
+	LN_TR_PROPERTY(bool, isFontBold);		/**< isFontBold プロパティの識別子 */
+	LN_TR_PROPERTY(bool, isFontItalic);		/**< isFontItalic プロパティの識別子 */
 	tr::Property<String>	FontFamily;
 	tr::Property<int>		FontSize;
-	tr::Property<bool>		IsFontBold;
-	tr::Property<bool>		IsFontItalic;
+	tr::Property<bool>		isFontBold;
+	tr::Property<bool>		isFontItalic;
 
 public:
 
 	/** フォントファミリ名を設定します。*/
-	void SetFontFamily(const String& value) { tr::PropertyInfo::SetPropertyValueDirect<String>(this, FontFamilyId, value); }
+	void setFontFamily(const String& value) { tr::PropertyInfo::setPropertyValueDirect<String>(this, FontFamilyId, value); }
 
 	/** フォントファミリ名を取得します。*/
-	String GetFontFamily() const { return tr::PropertyInfo::GetPropertyValueDirect<String>(this, FontFamilyId); }
+	String getFontFamily() const { return tr::PropertyInfo::getPropertyValueDirect<String>(this, FontFamilyId); }
 
 	/** フォントサイズを設定します。*/
-	void SetFontSize(int value) { tr::PropertyInfo::SetPropertyValueDirect<int>(this, FontSizeId, value); }
+	void setFontSize(int value) { tr::PropertyInfo::setPropertyValueDirect<int>(this, FontSizeId, value); }
 
 	/** フォントサイズを取得します。*/
-	int GetFontSize() const { return tr::PropertyInfo::GetPropertyValueDirect<int>(this, FontSizeId); }
+	int getFontSize() const { return tr::PropertyInfo::getPropertyValueDirect<int>(this, FontSizeId); }
 
 	/** フォントの太字有無を設定します。*/
-	void SetFontBold(bool value) { tr::PropertyInfo::SetPropertyValueDirect<bool>(this, IsFontBoldId, value); }
+	void setFontBold(bool value) { tr::PropertyInfo::setPropertyValueDirect<bool>(this, isFontBoldId, value); }
 
 	/** フォントの太字有無を取得します。*/
-	//bool IsFontBold() const { return tr::PropertyInfo::GetPropertyValueDirect<bool>(this, IsFontBoldId); }
+	//bool isFontBold() const { return tr::PropertyInfo::getPropertyValueDirect<bool>(this, IsFontBoldId); }
 
 	/** フォントのイタリック体有無を設定します。*/
-	void SetFontItalic(bool value) { tr::PropertyInfo::SetPropertyValueDirect<bool>(this, IsFontItalicId, value); }
+	void setFontItalic(bool value) { tr::PropertyInfo::setPropertyValueDirect<bool>(this, isFontItalicId, value); }
 
 	/** フォントのイタリック体有無を取得します。*/
-	//bool IsFontItalic() const { return tr::PropertyInfo::GetPropertyValueDirect<bool>(this, IsFontItalicId); }
+	//bool isFontItalic() const { return tr::PropertyInfo::getPropertyValueDirect<bool>(this, IsFontItalicId); }
 
 protected:
 	UITextElement();
 	virtual ~UITextElement();
-	Font* GetActiveFont() const { return m_font; }
+	Font* getActiveFont() const { return m_font; }
 
-	virtual Size MeasureOverride(const Size& constraint) override;
-	virtual void OnUpdateStyle(detail::UIStylePropertyTableInstance* localStyle, detail::InvalidateFlags invalidateFlags) override;
+	virtual Size measureOverride(const Size& constraint) override;
+	virtual void onUpdateStyle(detail::UIStylePropertyTableInstance* localStyle, detail::InvalidateFlags invalidateFlags) override;
 
 LN_INTERNAL_ACCESS:
-	static void OnFontPropertyChanged(Object* obj);
+	static void onFontPropertyChanged(Object* obj);
 
 	//tr::Property<String>		m_fontFamily;
 	//tr::Property<int>			m_fontSize;

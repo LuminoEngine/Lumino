@@ -76,7 +76,7 @@ DBCSEncoding::DBCSEncoding(EncodingType type)
 }
 
 //------------------------------------------------------------------------------
-int DBCSEncoding::GetCharacterCount(const void* buffer, size_t bufferSize) const
+int DBCSEncoding::getCharacterCount(const void* buffer, size_t bufferSize) const
 {
 	int count = 0;
 	const byte_t* pos = (const byte_t*)buffer;
@@ -94,13 +94,13 @@ int DBCSEncoding::GetCharacterCount(const void* buffer, size_t bufferSize) const
 }
 
 //------------------------------------------------------------------------------
-int DBCSEncoding::GetLeadExtraLength(const void* buffer, size_t bufferSize) const
+int DBCSEncoding::getLeadExtraLength(const void* buffer, size_t bufferSize) const
 {
 	return (CheckDBCSLeadByte(&Tables[(int)m_encodingType], *((const byte_t*)buffer))) ? 1 : 0;
 }
 
 //------------------------------------------------------------------------------
-void DBCSEncoding::DBCSDecoder::ConvertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, size_t* outBytesUsed, size_t* outCharsUsed)
+void DBCSEncoding::DBCSDecoder::convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, size_t* outBytesUsed, size_t* outCharsUsed)
 {
 	if (outputElementSize > 0) { output[0] = '\0'; }
 	*outBytesUsed = 0;
@@ -156,7 +156,7 @@ void DBCSEncoding::DBCSDecoder::ConvertToUTF16(const byte_t* input, size_t input
 }
 
 //------------------------------------------------------------------------------
-void DBCSEncoding::DBCSEncoder::ConvertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, size_t* outBytesUsed, size_t* outCharsUsed)
+void DBCSEncoding::DBCSEncoder::convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, size_t* outBytesUsed, size_t* outCharsUsed)
 {
 	if (outputByteSize > 0) { output[0] = '\0'; }
 	*outBytesUsed = 0;
@@ -173,7 +173,7 @@ void DBCSEncoding::DBCSEncoder::ConvertFromUTF16(const UTF16* input, size_t inpu
 		UTF16 ch = input[inBufPos];
 
 		// サロゲートはエラー
-		if (UnicodeUtils::CheckUTF16HighSurrogate(ch) || UnicodeUtils::CheckUTF16LowSurrogate(ch)) {
+		if (UnicodeUtils::checkUTF16HighSurrogate(ch) || UnicodeUtils::checkUTF16LowSurrogate(ch)) {
 			LN_THROW(0, EncodingException);
 		}
 

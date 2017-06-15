@@ -29,22 +29,22 @@ class CollisionShape
 public:
 
 	/** この CollisionShape が衝突判定のためのトリガーであるかを設定します。初期値は false です。*/
-	void SetTrigger(bool enabled);
+	void setTrigger(bool enabled);
 
 	/** この CollisionShape が衝突判定のためのトリガーであるかを取得します。*/
-	bool IsTrigger() const;
+	bool isTrigger() const;
 
-	void SetCenter(const Vector3& offset) { m_offset = offset; }
+	void setCenter(const Vector3& offset) { m_offset = offset; }
 
-	const Vector3& GetCenter() const { return m_offset; }
+	const Vector3& getCenter() const { return m_offset; }
 
 LN_CONSTRUCT_ACCESS:
 	CollisionShape();
 	virtual ~CollisionShape();
-	void Initialize(btCollisionShape* shape);
+	void initialize(btCollisionShape* shape);
 
 LN_INTERNAL_ACCESS:
-	btCollisionShape* GetBtCollisionShape() const { return m_shape; }
+	btCollisionShape* getBtCollisionShape() const { return m_shape; }
 		
 private:
 	btCollisionShape*	m_shape;
@@ -65,12 +65,12 @@ public:
 		@brief		PlaneCollisionShape オブジェクトを作成します。
 		@param[in]	direction	: 面の正面方向 (省略した場合は Y+ 方向)
 	*/
-	static PlaneCollisionShapePtr Create(const Vector3& direction = Vector3::UnitY);
+	static PlaneCollisionShapePtr create(const Vector3& direction = Vector3::UnitY);
 	
 LN_INTERNAL_ACCESS:
 	PlaneCollisionShape();
 	virtual ~PlaneCollisionShape();
-	void Initialize(const Vector3& direction);
+	void initialize(const Vector3& direction);
 };
 
 /**
@@ -87,20 +87,20 @@ public:
 		@brief		BoxCollisionShape オブジェクトを作成します。
 		@param[in]	size	: 各辺の幅
 	*/
-	static BoxCollisionShapePtr Create(const Vector3& size);
+	static BoxCollisionShapePtr create(const Vector3& size);
 	
 	/**
 		@brief		BoxCollisionShape オブジェクトを作成します。
 		@param[in]	x, y, z	: 各辺の幅
 	*/
-	static BoxCollisionShapePtr Create(float x, float y, float z);
+	static BoxCollisionShapePtr create(float x, float y, float z);
 
 LN_CONSTRUCT_ACCESS:
 	BoxCollisionShape();
 	virtual ~BoxCollisionShape();
 
 	LN_METHOD()
-	void Initialize(const Vector3& size);
+	void initialize(const Vector3& size);
 };
 
 /**
@@ -116,12 +116,12 @@ public:
 		@brief		CapsuleCollisionShape オブジェクトを作成します。
 		@param[in]	radius	: 半径
 	*/
-	static SphereCollisionShapePtr Create(float radius);
+	static SphereCollisionShapePtr create(float radius);
 
 LN_CONSTRUCT_ACCESS:
 	SphereCollisionShape();
 	virtual ~SphereCollisionShape();
-	void Initialize(float radius);
+	void initialize(float radius);
 };
 
 /**
@@ -138,12 +138,12 @@ public:
 		@param[in]	radius	: 半径
 		@param[in]	height	: 高さ
 	*/
-	static CapsuleCollisionShapePtr Create(float radius, float height);
+	static CapsuleCollisionShapePtr create(float radius, float height);
 
 LN_CONSTRUCT_ACCESS:
 	CapsuleCollisionShape();
 	virtual ~CapsuleCollisionShape();
-	void Initialize(float radius, float height);
+	void initialize(float radius, float height);
 };
 
 
@@ -159,12 +159,12 @@ public:
 	/**
 		@brief		MeshCollisionShape オブジェクトを作成します。
 	*/
-	static MeshCollisionShapePtr Create(MeshResource* mesh);
+	static MeshCollisionShapePtr create(MeshResource* mesh);
 
 LN_CONSTRUCT_ACCESS:
 	MeshCollisionShape();
 	virtual ~MeshCollisionShape();
-	void Initialize(MeshResource* mesh);
+	void initialize(MeshResource* mesh);
 
 private:
 	btTriangleIndexVertexArray* m_btMeshData;

@@ -15,7 +15,7 @@ public:
 	FontOutlineTessellator();
 	~FontOutlineTessellator();
 
-	void Tessellate(RawFont::VectorGlyphInfo* info);
+	void tessellate(RawFont::VectorGlyphInfo* info);
 
 private:
 	typedef void (APIENTRYP GLUTessCallback)();
@@ -42,11 +42,11 @@ private:
 		List<Contour>				contourList;
 	};
 
-	static void APIENTRY BeginCallback(GLenum primitiveType, TessellatingState* state);
-	static void APIENTRY EndCallback(TessellatingState* state);
-	static void APIENTRY VertexDataCallback(void* vertexData, TessellatingState* state);
-	static void APIENTRY CombineCallback(GLfloat coords[3], void* vertex_data[4], GLfloat weight[4], void** out_data, TessellatingState* state);
-	static void APIENTRY ErrorCallback(GLenum error_code);
+	static void APIENTRY beginCallback(GLenum primitiveType, TessellatingState* state);
+	static void APIENTRY endCallback(TessellatingState* state);
+	static void APIENTRY vertexDataCallback(void* vertexData, TessellatingState* state);
+	static void APIENTRY combineCallback(GLfloat coords[3], void* vertex_data[4], GLfloat weight[4], void** out_data, TessellatingState* state);
+	static void APIENTRY errorCallback(GLenum error_code);
 
 	GLUtesselator*		m_gluTesselator;
 };
@@ -55,11 +55,11 @@ class FontOutlineStroker
 {
 public:
 
-	void MakeStroke(RawFont::VectorGlyphInfo* info);
+	void makeStroke(RawFont::VectorGlyphInfo* info);
 
 private:
-	void CalculateExtrusion();
-	void MakeAntiAliasStroke();
+	void calculateExtrusion();
+	void makeAntiAliasStroke();
 	
 	RawFont::VectorGlyphInfo* m_info;
 };

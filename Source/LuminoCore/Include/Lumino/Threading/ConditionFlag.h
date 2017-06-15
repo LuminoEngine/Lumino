@@ -23,19 +23,19 @@ public:
 public:
 
     /** 値を true にする */
-	void SetTrue();
+	void setTrue();
 
 	/** 値を false にする */
-	void SetFalse();
+	void setFalse();
 
 	/** 値が true かを判定する */
-	bool IsTrue() const;
+	bool isTrue() const;
 
 	/** 値が false かを判定する */
-	bool IsFalse() const;
+	bool isFalse() const;
 
 	/** 値が true になるまで待機する */
-    void Wait();
+    void wait();
 
 private:
 	LN_DISALLOW_COPY_AND_ASSIGN(ConditionFlag);

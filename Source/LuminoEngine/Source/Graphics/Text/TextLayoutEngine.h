@@ -44,28 +44,28 @@ public:
 	~TextLayoutEngine();
 
 public:
-	void SetFont(RawFont* font) { m_font = font; }
-	RawFont* GetFont() const { return m_font; }
+	void setFont(RawFont* font) { m_font = font; }
+	RawFont* getFont() const { return m_font; }
 	//void SetForeColor(Graphics::Color color) { m_foreColor = color; }
 	//void SetStrokeColor(Graphics::Color color) { m_strokeColor = color; }
-	void SetStrokeSize(int size) { m_strokeSize = size; }
-	int GetStrokeSize() const { return m_strokeSize; }
-	void SetTextAlignment(TextAlignment align) { m_textAlignment = align; }
-	void SetTextTrimming(TextTrimming triming) { m_textTrimming = triming; }
-	void SetFlowDirection(FlowDirection dir) { m_flowDirection = dir; }
-	void SetDrawingArea(const RectI& area) { m_drawingArea = area; }
+	void setStrokeSize(int size) { m_strokeSize = size; }
+	int getStrokeSize() const { return m_strokeSize; }
+	void setTextAlignment(TextAlignment align) { m_textAlignment = align; }
+	void setTextTrimming(TextTrimming triming) { m_textTrimming = triming; }
+	void setFlowDirection(FlowDirection dir) { m_flowDirection = dir; }
+	void setDrawingArea(const RectI& area) { m_drawingArea = area; }
 
-	void ResetSettings();
+	void resetSettings();
 
-	void LayoutText(const UTF32* text, int length, LayoutTextOptions options, TextLayoutResult* outResult/*, bool takeOverKerning*/);
+	void layoutText(const UTF32* text, int length, LayoutTextOptions options, TextLayoutResult* outResult/*, bool takeOverKerning*/);
 
 protected:
 	/// ptLeftTop:DrawingArea の左上を原点とした、グリフの配置先左上座標 (配置方法によってはマイナス値になることもある)
 	//virtual void OnPlaceChar(UTF32 ch, PointI ptLeftTop) = 0;
 
 private:
-	void LayoutTextHorizontal(const UTF32* text, int length);
-	void LayoutLineHorizontal(const UTF32* text, int length, const RectI& lineArea, SizeI* outLineSize);
+	void layoutTextHorizontal(const UTF32* text, int length);
+	void layoutLineHorizontal(const UTF32* text, int length, const RectI& lineArea, SizeI* outLineSize);
 
 private:
 	RawFont*			m_font;
@@ -106,12 +106,12 @@ public:
 	};
 
 protected:
-	void Layout(RawFont* font, const UTF32* text, int length, const Rect& layoutArea, TextLayoutOptions options);
-	virtual void OnPlacementChar(const ResultItem& item) = 0;
+	void layout(RawFont* font, const UTF32* text, int length, const Rect& layoutArea, TextLayoutOptions options);
+	virtual void onPlacementChar(const ResultItem& item) = 0;
 
 private:
-	void LayoutTextHorizontal(const UTF32* text, int length);
-	void LayoutLineHorizontal(const UTF32* text, int length);
+	void layoutTextHorizontal(const UTF32* text, int length);
+	void layoutLineHorizontal(const UTF32* text, int length);
 
 	RawFont*			m_font;
 	FontGlobalMetrics	m_globalMetrics;
@@ -123,10 +123,10 @@ private:
 class TextLayoutEngine2 : public AbstractTextLayoutEngine
 {
 public:
-	void Layout(RawFont* font, const UTF32* text, int length, const Rect& layoutArea, TextLayoutOptions options, ResultData* outResult);
+	void layout(RawFont* font, const UTF32* text, int length, const Rect& layoutArea, TextLayoutOptions options, ResultData* outResult);
 
 protected:
-	virtual void OnPlacementChar(const ResultItem& item);
+	virtual void onPlacementChar(const ResultItem& item);
 
 private:
 	ResultData*			m_result;

@@ -39,8 +39,8 @@ enum _##enumName
 		typedef _##enumName value_type; \
 		enumName() { m_value = (enum_type)(0); } \
 		enumName(enum_type v) { m_value = v; } \
-		virtual void SetValue(EnumValueType value) override { m_value = (enum_type)value; } \
-		virtual EnumValueType GetValue() const override { return m_value; } \
+		virtual void setValue(EnumValueType value) override { m_value = (enum_type)value; } \
+		virtual EnumValueType getValue() const override { return m_value; } \
 		inline bool operator==(enumName right) const { return m_value == right.m_value; } \
 		inline bool operator==(enum_type right) const { return m_value == right; } \
 		inline bool operator!=(enumName right) const { return !operator==(right); } \
@@ -53,12 +53,12 @@ enum _##enumName
 */
 #define LN_ENUM_REFLECTION(enumName, ...) \
 private: \
-	struct LocalEnumParser : public EnumParser <_##enumName> { LocalEnumParser() { _##enumName values[] = { __VA_ARGS__ };  Init(values, LN_ARRAY_SIZE_OF(values), #__VA_ARGS__); } }; \
+	struct LocalEnumParser : public EnumParser <_##enumName> { LocalEnumParser() { _##enumName values[] = { __VA_ARGS__ };  init(values, LN_ARRAY_SIZE_OF(values), #__VA_ARGS__); } }; \
 	static LocalEnumParser& GetEnumParser() { static LocalEnumParser parser; return parser; } \
 public: \
-	static int GetMemberCount() { return GetEnumParser().GetMemberList().GetCount(); } \
-	String ToString() const { return GetEnumParser().ToString(m_value); } \
-	static enumName Parse(const TCHAR* str) { return GetEnumParser().Parse(str); }; \
+	static int getMemberCount() { return GetEnumParser().GetMemberList().getCount(); } \
+	String toString() const { return GetEnumParser().toString(m_value); } \
+	static enumName parse(const TCHAR* str) { return GetEnumParser().parse(str); }; \
 	static bool TryParse(const TCHAR* str, enumName* outValue) { return GetEnumParser().TryParse(str, (outValue) ? (int*)&outValue->m_value : NULL); }
 
 /**
@@ -83,8 +83,8 @@ enum _##enumName
 		typedef _##enumName value_type; \
 		enumName() { m_value = 0; } \
 		enumName(enum_type v) { m_value = v; } \
-		virtual void SetValue(EnumValueType value) override { m_value = (enum_type)value; } \
-		virtual EnumValueType GetValue() const override { return m_value; } \
+		virtual void setValue(EnumValueType value) override { m_value = (enum_type)value; } \
+		virtual EnumValueType getValue() const override { return m_value; } \
 		inline bool TestFlag(enum_type f) const throw() { return (m_value & f) == f && (f != 0 || m_value == f); } \
         inline explicit operator int() const { return m_value; } \
 		inline bool operator==(enumName right) const { return m_value == right.m_value; } \
@@ -126,11 +126,11 @@ enum _##enumName
 */
 #define LN_ENUM_FLAGS_REFLECTION(enumName, ...) \
 private: \
-	struct LocalEnumParser : public EnumFlagsParser <_##enumName> { LocalEnumParser() { _##enumName values[] = { __VA_ARGS__ };  Init(values, LN_ARRAY_SIZE_OF(values), #__VA_ARGS__); } }; \
+	struct LocalEnumParser : public EnumFlagsParser <_##enumName> { LocalEnumParser() { _##enumName values[] = { __VA_ARGS__ };  init(values, LN_ARRAY_SIZE_OF(values), #__VA_ARGS__); } }; \
 	static LocalEnumParser& GetEnumParser() { static LocalEnumParser parser; return parser; } \
 public: \
-	String ToString(const TCHAR* separator = _T("|")) const { return GetEnumParser().ToString(m_value, separator); } \
-	static enumName Parse(const TCHAR* str, TCHAR separator = '|') { return GetEnumParser().Parse(str, separator); }; \
+	String toString(const TCHAR* separator = _T("|")) const { return GetEnumParser().toString(m_value, separator); } \
+	static enumName parse(const TCHAR* str, TCHAR separator = '|') { return GetEnumParser().parse(str, separator); }; \
 	static bool TryParse(const TCHAR* str, enumName* outValue, TCHAR separator = '|') { return GetEnumParser().TryParse(str, (outValue) ? &outValue->m_value : NULL, separator); }
 
 
@@ -149,8 +149,8 @@ protected:
 public:
 	//inline operator int() const { return m_value; }
 
-	virtual void SetValue(EnumValueType value) {}
-	virtual EnumValueType GetValue() const { return 0; }
+	virtual void setValue(EnumValueType value) {}
+	virtual EnumValueType getValue() const { return 0; }
 
 	// C++ operators
 	// https://en.wikipedia.org/wiki/Operators_in_C_and_C++
@@ -168,23 +168,23 @@ public:
 		{
 			static PairList members; return members;	// ヘッダ include だけで済ますため、static 変数は関数内に閉じ込めておく
 		}
-		void Init(const TEnum* values, int valuesCount, const char* argNames)
+		void init(const TEnum* values, int valuesCount, const char* argNames)
 		{
 			PairList& members = GetMemberList();
-			String names = String::FromNativeCharString(argNames);
-			List<String> tokens = names.Split(_T(","));
+			String names = String::fromNativeCharString(argNames);
+			List<String> tokens = names.split(_T(","));
 			for (int i = 0; i < valuesCount; ++i)
 			{
 				Pair p;
-				p.name = tokens[i].Trim();
+				p.name = tokens[i].trim();
 				p.value = values[i];
-				members.Add(p);
+				members.add(p);
 			}
 		}
-		static String ToString(int value)
+		static String toString(int value)
 		{
 			PairList& members = GetMemberList();
-			for (int i = 0; i < members.GetCount(); ++i)
+			for (int i = 0; i < members.getCount(); ++i)
 			{
 				if (members[i].value == value) {
 					return members[i].name;
@@ -193,7 +193,7 @@ public:
 			LN_ASSERT(0);
 			return String();
 		}
-		static TEnum Parse(const TCHAR* str)
+		static TEnum parse(const TCHAR* str)
 		{
 			int value;
 			if (TryParse(str, &value)) {
@@ -205,7 +205,7 @@ public:
 		static bool TryParse(const TCHAR* str, int* outValue)
 		{
 			PairList& members = GetMemberList();
-			for (int i = 0; i < members.GetCount(); ++i)
+			for (int i = 0; i < members.getCount(); ++i)
 			{
 				if (members[i].name == str)
 				{
@@ -224,11 +224,11 @@ public:
 		typedef typename EnumParser<TEnum>::Pair Pair;
 		typedef typename EnumParser<TEnum>::PairListReference PairListReference;
 
-		static String ToString(int value, const TCHAR* separator)
+		static String toString(int value, const TCHAR* separator)
 		{
 			PairListReference members = EnumParser<TEnum>::GetMemberList();
 			// 先に完全一致を探す (White=Red|Green|Blue のようなパターン用)
-			for (int i = 0; i < members.GetCount(); ++i)
+			for (int i = 0; i < members.getCount(); ++i)
 			{
 				if (members[i].value == value) {
 					return members[i].name;
@@ -236,19 +236,19 @@ public:
 			}
 			// 完全一致が無ければ複数のフラグを結合する
 			String out;
-			for (int i = 0; i < members.GetCount(); ++i)
+			for (int i = 0; i < members.getCount(); ++i)
 			{
 				TEnum f = members[i].value;
 				if ((value & f) == f && (f != 0 || value == f))
 				{
-					if (!out.IsEmpty()) { out += separator; }
+					if (!out.isEmpty()) { out += separator; }
 					out += members[i].name;
 				}
 			}
-			LN_THROW(!out.IsEmpty(), ArgumentException);
+			LN_THROW(!out.isEmpty(), ArgumentException);
 			return out;
 		}
-		static TEnum Parse(const TCHAR* str, TCHAR separator)
+		static TEnum parse(const TCHAR* str, TCHAR separator)
 		{
 			int value;
 			if (TryParse(str, &value, separator)) {
@@ -334,9 +334,9 @@ public:
 		static bool TryParseInternal(const TCHAR* str, int len, int* outValue)
 		{
 			PairListReference members = EnumParser<TEnum>::GetMemberList();
-			for (int i = 0; i < members.GetCount(); ++i)
+			for (int i = 0; i < members.getCount(); ++i)
 			{
-				if (members[i].name.Compare(str, len) == 0)
+				if (members[i].name.compare(str, len) == 0)
 				{
 					*outValue = members[i].value;
 					return true;

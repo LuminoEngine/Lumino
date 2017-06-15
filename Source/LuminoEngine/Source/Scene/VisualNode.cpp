@@ -26,40 +26,40 @@ MaterialList2::~MaterialList2()
 }
 
 //------------------------------------------------------------------------------
-void MaterialList2::Initialize(int subMaterialCount, bool createMainMaterial)
+void MaterialList2::initialize(int subMaterialCount, bool createMainMaterial)
 {
-	Resize(subMaterialCount);
+	resize(subMaterialCount);
 	for (int i = 0; i < subMaterialCount; ++i)
 	{
-		auto m = RefPtr<Material>::MakeRef();	// TODO
-		SetAt(i, m);
+		auto m = RefPtr<Material>::makeRef();	// TODO
+		getAt(i, m);
 	}
 
 	if (createMainMaterial)
 	{
-		m_mainMaterial = RefPtr<Material>::MakeRef();	// TODO
+		m_mainMaterial = RefPtr<Material>::makeRef();	// TODO
 	}
 }
 
 //------------------------------------------------------------------------------
-void MaterialList2::CopyShared(MaterialList* srcList, bool createMainMaterial)
+void MaterialList2::copyShared(MaterialList* srcList, bool createMainMaterial)
 {
 	if (LN_CHECK_ARG(srcList != nullptr)) return;
 
-	Resize(srcList->GetCount());
-	for (int i = 0; i < srcList->GetCount(); ++i)
+	resize(srcList->getCount());
+	for (int i = 0; i < srcList->getCount(); ++i)
 	{
-		SetAt(i, srcList->GetAt(i));
+		getAt(i, srcList->getAt(i));
 	}
 
 
 	if (createMainMaterial)
 	{
-		m_mainMaterial = RefPtr<Material>::MakeRef();
+		m_mainMaterial = RefPtr<Material>::makeRef();
 	}
-	else if (GetCount() > 0)
+	else if (getCount() > 0)
 	{
-		m_mainMaterial = GetAt(0);
+		m_mainMaterial = getAt(0);
 	}
 }
 
@@ -82,7 +82,7 @@ VisualComponent::VisualComponent()
 	, m_depthTestEnabled(true)
 	, m_depthWriteEnabled(true)
 {
-	SetSpecialComponentType(SpecialComponentType::Visual);
+	setSpecialComponentType(SpecialComponentType::Visual);
 }
 
 //------------------------------------------------------------------------------
@@ -91,9 +91,9 @@ VisualComponent::~VisualComponent()
 }
 
 //------------------------------------------------------------------------------
-void VisualComponent::Initialize()
+void VisualComponent::initialize()
 {
-	SceneNode::Initialize();
+	SceneNode::initialize();
 }
 
 ////------------------------------------------------------------------------------
@@ -109,158 +109,158 @@ void VisualComponent::Initialize()
 //}
 
 //------------------------------------------------------------------------------
-void VisualComponent::SetOpacity(float value)
+void VisualComponent::setOpacity(float value)
 {
-	m_builtinEffectData.SetOpacity(value);
+	m_builtinEffectData.setOpacity(value);
 }
 
 //------------------------------------------------------------------------------
-float VisualComponent::GetOpacity() const
+float VisualComponent::getOpacity() const
 {
-	return m_builtinEffectData.GetOpacity();
+	return m_builtinEffectData.getOpacity();
 }
 
 //------------------------------------------------------------------------------
-void VisualComponent::SetColorScale(const Color& value)
+void VisualComponent::setColorScale(const Color& value)
 {
-	m_builtinEffectData.SetColorScale(value);
+	m_builtinEffectData.setColorScale(value);
 }
 
 //------------------------------------------------------------------------------
-const Color& VisualComponent::GetColorScale() const
+const Color& VisualComponent::getColorScale() const
 {
-	return m_builtinEffectData.GetColorScale();
+	return m_builtinEffectData.getColorScale();
 }
 
 //------------------------------------------------------------------------------
-void VisualComponent::SetBlendColor(const Color& value)
+void VisualComponent::setBlendColor(const Color& value)
 {
-	m_builtinEffectData.SetBlendColor(value);
+	m_builtinEffectData.setBlendColor(value);
 }
 
 //------------------------------------------------------------------------------
-const Color& VisualComponent::GetBlendColor() const
+const Color& VisualComponent::getBlendColor() const
 {
-	return m_builtinEffectData.GetBlendColor();
+	return m_builtinEffectData.getBlendColor();
 }
 
 //------------------------------------------------------------------------------
-void VisualComponent::SetTone(const ToneF& value)
+void VisualComponent::setTone(const ToneF& value)
 {
-	m_builtinEffectData.SetTone(value);
+	m_builtinEffectData.setTone(value);
 }
 
 //------------------------------------------------------------------------------
-const ToneF& VisualComponent::GetTone() const
+const ToneF& VisualComponent::getTone() const
 {
-	return m_builtinEffectData.GetTone();
+	return m_builtinEffectData.getTone();
 }
 
 //------------------------------------------------------------------------------
-void VisualComponent::SetShader(Shader* value)
+void VisualComponent::setShader(Shader* value)
 {
-	m_builtinEffectData.SetShader(value);
+	m_builtinEffectData.setShader(value);
 }
 
 //------------------------------------------------------------------------------
-Shader* VisualComponent::GetShader() const
+Shader* VisualComponent::getShader() const
 {
-	return m_builtinEffectData.GetShader();
+	return m_builtinEffectData.getShader();
 }
 
 ////------------------------------------------------------------------------------
-//void VisualComponent::SetOpacity(float value, int subsetIndex)
+//void VisualComponent::setOpacity(float value, int subsetIndex)
 //{
 //	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
 //	// TODO: サブマテリアルの設定
-//	//m_materialList->GetMainMaterial()->SetOpacity(opacity);
-//	m_builtinEffectData.SetOpacity(value);
+//	//m_materialList->GetMainMaterial()->setOpacity(opacity);
+//	m_builtinEffectData.setOpacity(value);
 //}
-//float VisualComponent::GetOpacity() const
+//float VisualComponent::getOpacity() const
 //{
-//	return m_builtinEffectData.GetOpacity();
+//	return m_builtinEffectData.getOpacity();
 //}
 //
-//void VisualComponent::SetColorScale(const Color& value, int subsetIndex)
+//void VisualComponent::setColorScale(const Color& value, int subsetIndex)
 //{
 //	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
 //	// TODO: サブマテリアルの設定
-//	//m_materialList->GetMainMaterial()->SetColorScale(color);
-//	m_builtinEffectData.SetColorScale(value);
+//	//m_materialList->GetMainMaterial()->setColorScale(color);
+//	m_builtinEffectData.setColorScale(value);
 //}
-//void VisualComponent::SetColorScale(float r, float g, float b, float a, int subsetIndex)
+//void VisualComponent::setColorScale(float r, float g, float b, float a, int subsetIndex)
 //{
-//	SetColorScale(Color(r, g, b, a));
+//	setColorScale(Color(r, g, b, a));
 //}
-//void VisualComponent::SetColor(const Color32& color)
+//void VisualComponent::setColor(const Color32& color)
 //{
-//	SetColorScale(Color(color));
+//	setColorScale(Color(color));
 //}
-//void VisualComponent::SetColor(int r, int g, int b, int a)
+//void VisualComponent::setColor(int r, int g, int b, int a)
 //{
-//	SetColor(Color32(r, g, b, a));
+//	setColor(Color32(r, g, b, a));
 //}
-//const Color& VisualComponent::GetColorScale() const
+//const Color& VisualComponent::getColorScale() const
 //{
-//	return m_builtinEffectData.GetColorScale();
+//	return m_builtinEffectData.getColorScale();
 //}
-//void VisualComponent::SetBlendColor(const Color& color, int subsetIndex)
-//{
-//	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
-//	// TODO: サブマテリアルの設定
-//	//m_materialList->GetMainMaterial()->SetBlendColor(color);
-//	m_builtinEffectData.SetBlendColor(color);
-//}
-//void VisualComponent::SetTone(const ToneF& tone, int subsetIndex)
+//void VisualComponent::setBlendColor(const Color& color, int subsetIndex)
 //{
 //	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
 //	// TODO: サブマテリアルの設定
-//	//m_materialList->GetMainMaterial()->SetTone(tone);
-//	m_builtinEffectData.SetTone(tone);
+//	//m_materialList->GetMainMaterial()->setBlendColor(color);
+//	m_builtinEffectData.setBlendColor(color);
 //}
-//void VisualComponent::SetShader(Shader* value, int subsetIndex)
+//void VisualComponent::setTone(const ToneF& tone, int subsetIndex)
 //{
 //	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
 //	// TODO: サブマテリアルの設定
-//	//m_materialList->GetMainMaterial()->SetShader(shader);
-//	m_builtinEffectData.SetShader(value);
+//	//m_materialList->GetMainMaterial()->setTone(tone);
+//	m_builtinEffectData.setTone(tone);
+//}
+//void VisualComponent::setShader(Shader* value, int subsetIndex)
+//{
+//	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
+//	// TODO: サブマテリアルの設定
+//	//m_materialList->GetMainMaterial()->setShader(shader);
+//	m_builtinEffectData.setShader(value);
 //}
 
 //------------------------------------------------------------------------------
-void VisualComponent::SetBlendMode(BlendMode mode) { m_blendMode = mode; }
+void VisualComponent::setBlendMode(BlendMode mode) { m_blendMode = mode; }
 
 //------------------------------------------------------------------------------
-//BlendMode VisualComponent::GetBlendMode() const { return GetMainMaterial()->GetBlendMode(); }
+//BlendMode VisualComponent::getBlendMode() const { return GetMainMaterial()->getBlendMode(); }
 
 //------------------------------------------------------------------------------
-void VisualComponent::SetCullingMode(CullingMode mode) { m_cullingMode = mode; }
+void VisualComponent::setCullingMode(CullingMode mode) { m_cullingMode = mode; }
 
 //------------------------------------------------------------------------------
-//CullingMode VisualComponent::GetCullingMode() const { return GetMainMaterial()->GetCullingMode(); }
+//CullingMode VisualComponent::getCullingMode() const { return GetMainMaterial()->getCullingMode(); }
 
 //------------------------------------------------------------------------------
-void VisualComponent::SetDepthTestEnabled(bool enabled) { m_depthTestEnabled = enabled; }
+void VisualComponent::setDepthTestEnabled(bool enabled) { m_depthTestEnabled = enabled; }
 
 //------------------------------------------------------------------------------
-//bool VisualComponent::IsDepthTestEnabled() const { return GetMainMaterial()->IsDepthTestEnabled(); }
+//bool VisualComponent::isDepthTestEnabled() const { return GetMainMaterial()->isDepthTestEnabled(); }
 
 //------------------------------------------------------------------------------
-void VisualComponent::SetDepthWriteEnabled(bool enabled) { m_depthWriteEnabled = enabled; }
+void VisualComponent::setDepthWriteEnabled(bool enabled) { m_depthWriteEnabled = enabled; }
 
 //------------------------------------------------------------------------------
-//bool VisualComponent::IsDepthWriteEnabled() const { return GetMainMaterial()->IsDepthWriteEnabled(); }
+//bool VisualComponent::isDepthWriteEnabled() const { return GetMainMaterial()->isDepthWriteEnabled(); }
 
 //------------------------------------------------------------------------------
-void VisualComponent::UpdateFrameHierarchy(SceneNode* parent, float deltaTime)
+void VisualComponent::updateFrameHierarchy(SceneNode* parent, float deltaTime)
 {
-	// TODO: 描画関係のデータは UpdateFrame でやるべきではないような気もする。
+	// TODO: 描画関係のデータは updateFrame でやるべきではないような気もする。
 	//m_materialList->UpdateMaterialInstances(m_ownerSceneGraph);
 
-	SceneNode::UpdateFrameHierarchy(parent, deltaTime);
+	SceneNode::updateFrameHierarchy(parent, deltaTime);
 }
 
 //------------------------------------------------------------------------------
-detail::Sphere VisualComponent::GetBoundingSphere()
+detail::Sphere VisualComponent::getBoundingSphere()
 {
 	const detail::Sphere s{ Vector3::Zero, -1 };
 	return s;
@@ -270,21 +270,21 @@ detail::Sphere VisualComponent::GetBoundingSphere()
 //Shader* VisualComponent::GetPrimaryShader() const
 //{
 //	// TODO: main が無ければ [0] のをつかう
-//	return m_materialList->GetMainMaterial()->GetShader();
+//	return m_materialList->GetMainMaterial()->getShader();
 //}
 
 //------------------------------------------------------------------------------
-void VisualComponent::Render(DrawList* context)
+void VisualComponent::render(DrawList* context)
 {
 	if (m_isVisible)
 	{
-		context->SetBlendMode(m_blendMode);
-		context->SetCullingMode(m_cullingMode);
-		context->SetDepthTestEnabled(m_depthTestEnabled);
-		context->SetDepthWriteEnabled(m_depthWriteEnabled);
-		context->SetBuiltinEffectData(m_builtinEffectData);
-		OnRender(context);
-		OnRender2(context);
+		context->setBlendMode(m_blendMode);
+		context->setCullingMode(m_cullingMode);
+		context->setDepthTestEnabled(m_depthTestEnabled);
+		context->setDepthWriteEnabled(m_depthWriteEnabled);
+		context->setBuiltinEffectData(m_builtinEffectData);
+		onRender(context);
+		onRender2(context);
 	}
 }
 
@@ -306,123 +306,123 @@ VisualObject::~VisualObject()
 }
 
 //------------------------------------------------------------------------------
-void VisualObject::Initialize()
+void VisualObject::initialize()
 {
-	WorldObject::Initialize();
+	WorldObject::initialize();
 }
 
 //------------------------------------------------------------------------------
-void VisualObject::SetOpacity(float value)
+void VisualObject::setOpacity(float value)
 {
-	GetMainVisualComponent()->SetOpacity(value);
+	getMainVisualComponent()->setOpacity(value);
 }
 
 //------------------------------------------------------------------------------
-float VisualObject::GetOpacity() const
+float VisualObject::getOpacity() const
 {
-	return GetMainVisualComponent()->GetOpacity();
+	return getMainVisualComponent()->getOpacity();
 }
 
 //------------------------------------------------------------------------------
-void VisualObject::SetColorScale(const Color& value)
+void VisualObject::setColorScale(const Color& value)
 {
-	GetMainVisualComponent()->SetColorScale(value);
+	getMainVisualComponent()->setColorScale(value);
 }
 
 //------------------------------------------------------------------------------
-void VisualObject::SetColorScale(float r, float g, float b, float a)
+void VisualObject::setColorScale(float r, float g, float b, float a)
 {
-	SetColorScale(Color(r, g, b, a));
+	setColorScale(Color(r, g, b, a));
 }
 
 //------------------------------------------------------------------------------
-const Color& VisualObject::GetColorScale() const
+const Color& VisualObject::getColorScale() const
 {
-	return GetMainVisualComponent()->GetColorScale();
+	return getMainVisualComponent()->getColorScale();
 }
 
 //------------------------------------------------------------------------------
-void VisualObject::SetBlendColor(const Color& value)
+void VisualObject::setBlendColor(const Color& value)
 {
-	GetMainVisualComponent()->SetBlendColor(value);
+	getMainVisualComponent()->setBlendColor(value);
 }
 
 //------------------------------------------------------------------------------
-const Color& VisualObject::GetBlendColor() const
+const Color& VisualObject::getBlendColor() const
 {
-	return GetMainVisualComponent()->GetBlendColor();
+	return getMainVisualComponent()->getBlendColor();
 }
 
 //------------------------------------------------------------------------------
-void VisualObject::SetTone(const ToneF& value)
+void VisualObject::setTone(const ToneF& value)
 {
-	GetMainVisualComponent()->SetTone(value);
+	getMainVisualComponent()->setTone(value);
 }
 
 //------------------------------------------------------------------------------
-const ToneF& VisualObject::GetTone() const
+const ToneF& VisualObject::getTone() const
 {
-	return GetMainVisualComponent()->GetTone();
+	return getMainVisualComponent()->getTone();
 }
 
 //------------------------------------------------------------------------------
-void VisualObject::SetShader(Shader* value)
+void VisualObject::setShader(Shader* value)
 {
-	GetMainVisualComponent()->SetShader(value);
+	getMainVisualComponent()->setShader(value);
 }
 
 //------------------------------------------------------------------------------
-Shader* VisualObject::GetShader() const
+Shader* VisualObject::getShader() const
 {
-	return GetMainVisualComponent()->GetShader();
+	return getMainVisualComponent()->getShader();
 }
 
 //------------------------------------------------------------------------------
-void VisualObject::SetBlendMode(BlendMode mode)
+void VisualObject::setBlendMode(BlendMode mode)
 {
-	GetMainVisualComponent()->SetBlendMode(mode);
+	getMainVisualComponent()->setBlendMode(mode);
 }
 
 //------------------------------------------------------------------------------
-BlendMode VisualObject::GetBlendMode() const
+BlendMode VisualObject::getBlendMode() const
 {
-	return GetMainVisualComponent()->GetBlendMode();
+	return getMainVisualComponent()->getBlendMode();
 }
 
 //------------------------------------------------------------------------------
-void VisualObject::SetCullingMode(CullingMode mode)
+void VisualObject::setCullingMode(CullingMode mode)
 {
-	GetMainVisualComponent()->SetCullingMode(mode);
+	getMainVisualComponent()->setCullingMode(mode);
 }
 
 //------------------------------------------------------------------------------
-CullingMode VisualObject::GetCullingMode() const
+CullingMode VisualObject::getCullingMode() const
 {
-	return GetMainVisualComponent()->GetCullingMode();
+	return getMainVisualComponent()->getCullingMode();
 }
 
 //------------------------------------------------------------------------------
-void VisualObject::SetDepthTestEnabled(bool enabled)
+void VisualObject::setDepthTestEnabled(bool enabled)
 {
-	GetMainVisualComponent()->SetDepthTestEnabled(enabled);
+	getMainVisualComponent()->setDepthTestEnabled(enabled);
 }
 
 //------------------------------------------------------------------------------
-bool VisualObject::IsDepthTestEnabled() const
+bool VisualObject::isDepthTestEnabled() const
 {
-	return GetMainVisualComponent()->IsDepthTestEnabled();
+	return getMainVisualComponent()->isDepthTestEnabled();
 }
 
 //------------------------------------------------------------------------------
-void VisualObject::SetDepthWriteEnabled(bool enabled)
+void VisualObject::setDepthWriteEnabled(bool enabled)
 {
-	GetMainVisualComponent()->SetDepthWriteEnabled(enabled);
+	getMainVisualComponent()->setDepthWriteEnabled(enabled);
 }
 
 //------------------------------------------------------------------------------
-bool VisualObject::IsDepthWriteEnabled() const
+bool VisualObject::isDepthWriteEnabled() const
 {
-	return GetMainVisualComponent()->IsDepthWriteEnabled();
+	return getMainVisualComponent()->isDepthWriteEnabled();
 }
 
 LN_NAMESPACE_SCENE_END

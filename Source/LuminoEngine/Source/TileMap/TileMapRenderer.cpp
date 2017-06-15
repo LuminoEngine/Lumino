@@ -51,18 +51,18 @@ TileMapRenderer::TileMapRenderer(detail::GraphicsManager* manager)
 	//, m_indexBuffer(nullptr)
 {
 	int tileCount = 20 * 20;
-	m_mesh = Object::MakeRef<MeshResource>(manager, MeshCreationFlags::DynamicBuffers);
-	m_mesh->ResizeVertexBuffer(tileCount * 4);
-	m_mesh->ResizeIndexBuffer(tileCount * 6);
+	m_mesh = Object::makeRef<MeshResource>(manager, MeshCreationFlags::DynamicBuffers);
+	m_mesh->resizeVertexBuffer(tileCount * 4);
+	m_mesh->resizeIndexBuffer(tileCount * 6);
 	m_maxTileCount = 100 * 100;
 
 	m_shader.shader = LN_NEW Shader();
-	m_shader.shader->Initialize(m_graphicsManager, g_TileMapRenderer_fx_Data, g_TileMapRenderer_fx_Len);
-	m_shader.pass = m_shader.shader->GetTechniques()[0]->GetPasses()[0];
-	m_shader.varWorldMatrix = m_shader.shader->FindVariable(_T("g_worldMatrix"));
-	m_shader.varViewProjMatrix = m_shader.shader->FindVariable(_T("g_viewProjMatrix"));
-	m_shader.varTexture = m_shader.shader->FindVariable(_T("g_texture"));
-	//m_shader.varPixelStep = m_shader.shader->FindVariable(_T("g_pixelStep"));
+	m_shader.shader->initialize(m_graphicsManager, g_TileMapRenderer_fx_Data, g_TileMapRenderer_fx_Len);
+	m_shader.pass = m_shader.shader->getTechniques()[0]->getPasses()[0];
+	m_shader.varWorldMatrix = m_shader.shader->findVariable(_T("g_worldMatrix"));
+	m_shader.varViewProjMatrix = m_shader.shader->findVariable(_T("g_viewProjMatrix"));
+	m_shader.varTexture = m_shader.shader->findVariable(_T("g_texture"));
+	//m_shader.varPixelStep = m_shader.shader->findVariable(_T("g_pixelStep"));
 }
 
 //------------------------------------------------------------------------------
@@ -74,15 +74,15 @@ TileMapRenderer::~TileMapRenderer()
 }
 
 //------------------------------------------------------------------------------
-void TileMapRenderer::SetTransform(const Matrix& world, const Matrix& viewProj)
+void TileMapRenderer::setTransform(const Matrix& world, const Matrix& viewProj)
 {
-	m_shader.varWorldMatrix->SetMatrix(world);
-	m_shader.varViewProjMatrix->SetMatrix(viewProj);
+	m_shader.varWorldMatrix->setMatrix(world);
+	m_shader.varViewProjMatrix->setMatrix(viewProj);
 	m_viewProj = viewProj;
 }
 
 //------------------------------------------------------------------------------
-void TileMapRenderer::Draw(DrawList* context, TileMapModel* tileMap, const Rect& boundingRect, const ViewFrustum& cameraFrustum, int priority)
+void TileMapRenderer::draw(DrawList* context, TileMapModel* tileMap, const Rect& boundingRect, const ViewFrustum& cameraFrustum, int priority)
 {
 	if (LN_CHECK_ARG(tileMap != nullptr)) return;
 	m_context = context;
@@ -92,13 +92,13 @@ void TileMapRenderer::Draw(DrawList* context, TileMapModel* tileMap, const Rect&
 	Plane plane(Vector3(0, 0, 0), Vector3(0, 0, -1));
 	Vector3 corners[8];
 	Vector3 pt;
-	cameraFrustum.GetCornerPoints(corners);
+	cameraFrustum.getCornerPoints(corners);
 
 	// TileMap の平面とカメラの視錐台から描画するべき範囲を求める
 	float l, t, r, b;
 	for (int i = 0; i < 4; ++i)
 	{
-		plane.Intersects(corners[i], corners[i+4], &pt);
+		plane.intersects(corners[i], corners[i+4], &pt);
 		if (i == 0)
 		{
 			l = pt.x;
@@ -145,20 +145,20 @@ void TileMapRenderer::Draw(DrawList* context, TileMapModel* tileMap, const Rect&
 	//renderRange.Height = renderRange.Y - ((int)b / tileSize.Height);
 
 
-	Begin();
+	begin();
 	for (TileLayer* layer : *tileMap->GetLayers())
 	{
 		BoundingRect clipd = renderRange;
 		// TODO: 3D で Y0 を下端とする
-		clipd.top = layer->GetSize().height - clipd.top;
-		clipd.bottom = layer->GetSize().height - clipd.bottom;
+		clipd.top = layer->getSize().height - clipd.top;
+		clipd.bottom = layer->getSize().height - clipd.bottom;
 		//clipd.Y = layer->GetSize().Height + clipd.Y;
 
 		// ループしない
 		// TODO:
 		if (1)
 		{
-			const SizeI& size = layer->GetSize();
+			const SizeI& size = layer->getSize();
 			if (clipd.left < 0) clipd.left = 0;
 			if (clipd.top < 0) clipd.top = 0;
 			if (clipd.right > size.width) clipd.right = size.width;		// 描画したいところ +1
@@ -166,21 +166,21 @@ void TileMapRenderer::Draw(DrawList* context, TileMapModel* tileMap, const Rect&
 		}
 
 
-		//printf("%d %d %d %d \n", renderRange.GetLeft(), renderRange.GetTop(), renderRange.GetRight(), renderRange.GetBottom());
+		//printf("%d %d %d %d \n", renderRange.getLeft(), renderRange.GetTop(), renderRange.getRight(), renderRange.getBottom());
 		//printf("%d %d %d %d \n", clipd.left, clipd.top, clipd.right, clipd.bottom);
 
 		DrawLayer(layer, boundingRect, tileMap->GetTileSet(), clipd, priority);
 	}
-	End();
+	end();
 }
 
 //------------------------------------------------------------------------------
-void TileMapRenderer::Begin()
+void TileMapRenderer::begin()
 {
 }
 
 //------------------------------------------------------------------------------
-void TileMapRenderer::End()
+void TileMapRenderer::end()
 {
 	//m_spriteRenderer->Flush();
 }
@@ -192,7 +192,7 @@ void TileMapRenderer::End()
 //	Texture* texture,
 //	const RectI& srcRect)
 //{
-//	m_spriteRenderer->DrawRequest2D(position, Vector3::Zero, size, texture, srcRect, nullptr);
+//	m_spriteRenderer->drawRequest2D(position, Vector3::Zero, size, texture, srcRect, nullptr);
 //}
 
 //------------------------------------------------------------------------------
@@ -203,23 +203,23 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const Rect& boundingRect, Tile
 
 	int tileCount = (renderRange.right - renderRange.left) * (renderRange.bottom - renderRange.top);
 	tileCount = std::min(tileCount, m_maxTileCount);
-	int allocedTileCount = m_mesh->GetVertexCount() / 4;
+	int allocedTileCount = m_mesh->getVertexCount() / 4;
 	if (tileCount > allocedTileCount)
 	{
-		m_mesh->ResizeVertexBuffer(tileCount * 4);
-		m_mesh->ResizeIndexBuffer(tileCount * 6);
+		m_mesh->resizeVertexBuffer(tileCount * 4);
+		m_mesh->resizeIndexBuffer(tileCount * 6);
 
 		// インデックスバッファは途中で変わらないので先に埋めておく
 		for (int iTile = 0; iTile < tileCount; ++iTile)
 		{
 			int i = iTile * 6;
 			int v = iTile * 4;
-			m_mesh->SetIndex(i + 0, v + 0);
-			m_mesh->SetIndex(i + 1, v + 1);
-			m_mesh->SetIndex(i + 2, v + 2);
-			m_mesh->SetIndex(i + 3, v + 2);
-			m_mesh->SetIndex(i + 4, v + 1);
-			m_mesh->SetIndex(i + 5, v + 3);
+			m_mesh->setIndex(i + 0, v + 0);
+			m_mesh->setIndex(i + 1, v + 1);
+			m_mesh->setIndex(i + 2, v + 2);
+			m_mesh->setIndex(i + 3, v + 2);
+			m_mesh->setIndex(i + 4, v + 1);
+			m_mesh->setIndex(i + 5, v + 3);
 		}
 	}
 
@@ -238,19 +238,19 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const Rect& boundingRect, Tile
 
 	Texture* tileSetTexture = tileSet->GetImageSource();
 	Size invSize(
-		1.0f / tileSetTexture->GetSize().width,
-		1.0f / tileSetTexture->GetSize().height);
+		1.0f / tileSetTexture->getSize().width,
+		1.0f / tileSetTexture->getSize().height);
 
 	Vector3 pos;
 	Vector2 size;
 	Texture* texture;
 	RectI srcRect;
-	const SizeI& layerSize = layer->GetSize();
+	const SizeI& layerSize = layer->getSize();
 
-	//ByteBuffer* buf = m_vertexBuffer->Lock();
+	//ByteBuffer* buf = m_vertexBuffer->lock();
 	//TileMapVertex* vb = (TileMapVertex*)buf->GetData();
 
-	m_mesh->Clear();
+	m_mesh->clear();
 
 	Vertex virtices[4];
 	for (Vertex& v : virtices) { v.normal = Vector3::UnitZ, v.color = Color::White; }
@@ -272,24 +272,24 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const Rect& boundingRect, Tile
 				//float pt = (float)y;
 				//float pr = (float)x + tileSize.Width;
 				//float pb = (float)y + tileSize.Height;
-				float tl = ((float)srcRect.GetLeft()) * invSize.width + delta;
-				float tt = ((float)srcRect.GetTop()) * invSize.height + delta;
-				float tr = ((float)srcRect.GetRight()) * invSize.width + delta;
-				float tb = ((float)srcRect.GetBottom()) * invSize.height + delta;
+				float tl = ((float)srcRect.getLeft()) * invSize.width + delta;
+				float tt = ((float)srcRect.getTop()) * invSize.height + delta;
+				float tr = ((float)srcRect.getRight()) * invSize.width + delta;
+				float tb = ((float)srcRect.getBottom()) * invSize.height + delta;
 				//pos.Set(x * tileSize.Width, y * tileSize.Height, 0);
 				//size.Set(srcRect.Width, srcRect.Height);
 				//DrawTile(pos, size, texture, srcRect);
 				virtices[0].position = pos;
-				virtices[0].uv.Set(tl, tt);
+				virtices[0].uv.set(tl, tt);
 				virtices[1].position = pos + stepY;
-				virtices[1].uv.Set(tl, tb);
+				virtices[1].uv.set(tl, tb);
 				virtices[2].position = pos + stepX + stepY;
-				virtices[2].uv.Set(tr, tb);
+				virtices[2].uv.set(tr, tb);
 				virtices[3].position = pos + stepX;
-				virtices[3].uv.Set(tr, tt);
+				virtices[3].uv.set(tr, tt);
 				//plotCount += 4;
 
-				m_mesh->AddSquare(virtices);
+				m_mesh->addSquare(virtices);
 				plotCount++;
 
 				if (plotCount > m_maxTileCount) goto LOOP_EXIT;
@@ -310,12 +310,12 @@ void TileMapRenderer::DrawLayer(TileLayer* layer, const Rect& boundingRect, Tile
 LOOP_EXIT:
 
 	//printf("---\n");
-	//Vector3::Transform(vb[0].Position, m_viewProj).Print();
-	//Vector3::Transform(vb[1].Position, m_viewProj).Print();
-	//Vector3::Transform(vb[2].Position, m_viewProj).Print();
-	//Vector3::Transform(vb[3].Position, m_viewProj).Print();
+	//Vector3::transform(vb[0].Position, m_viewProj).print();
+	//Vector3::transform(vb[1].Position, m_viewProj).print();
+	//Vector3::transform(vb[2].Position, m_viewProj).print();
+	//Vector3::transform(vb[3].Position, m_viewProj).print();
 
-	//m_vertexBuffer->Unlock();
+	//m_vertexBuffer->unlock();
 
 
 
@@ -325,28 +325,28 @@ LOOP_EXIT:
 
 
 	// TODO: 複数テクスチャ
-	// (と言っても、実際は1layerに1テクスチャでいいと思う。RGSSが少し特殊なだけ。最初に BitBlt で1つのテクスチャにまとめてしまってもいいかも)
-	//m_shader.varTexture->SetTexture(tileSetTexture);
-	//m_shader.varViewProjMatrix->SetMatrix(m_viewProj);
+	// (と言っても、実際は1layerに1テクスチャでいいと思う。RGSSが少し特殊なだけ。最初に bitBlt で1つのテクスチャにまとめてしまってもいいかも)
+	//m_shader.varTexture->setTexture(tileSetTexture);
+	//m_shader.varViewProjMatrix->setMatrix(m_viewProj);
 
 
 
-	//RenderState s = m_renderingContext->GetRenderState();
+	//RenderState s = m_renderingContext->getRenderState();
 	//s.Culling = CullingMode_None;
-	//m_renderingContext->SetRenderState(s);
+	//m_renderingContext->setRenderState(s);
 
-	//m_context->SetShaderPass(m_shader.pass);
-	//m_context->DrawPrimitiveIndexed(m_vertexDeclaration, m_vertexBuffer, m_indexBuffer, PrimitiveType_TriangleList, 0, plotCount / 2);
+	//m_context->setShaderPass(m_shader.pass);
+	//m_context->drawPrimitiveIndexed(m_vertexDeclaration, m_vertexBuffer, m_indexBuffer, PrimitiveType_TriangleList, 0, plotCount / 2);
 	
 	DrawElementMetadata metadata;
 	metadata.priority = priority;
-	m_context->PushMetadata(&metadata);
-	m_context->DrawMesh(m_mesh, 0, tileSet->GetMaterial());
-	m_context->PopMetadata();
+	m_context->pushMetadata(&metadata);
+	m_context->drawMesh(m_mesh, 0, tileSet->getMaterial());
+	m_context->popMetadata();
 	//printf("%p\n", m_shader.pass);
-	//m_renderingContext->SetVertexBuffer(nullptr);
-	//m_renderingContext->SetIndexBuffer(nullptr);
-	//m_renderingContext->SetShaderPass(nullptr);
+	//m_renderingContext->setVertexBuffer(nullptr);
+	//m_renderingContext->setIndexBuffer(nullptr);
+	//m_renderingContext->setShaderPass(nullptr);
 
 }
 //
@@ -360,8 +360,8 @@ LOOP_EXIT:
 //SpriteTileMapRenderer::SpriteTileMapRenderer(GraphicsManager* manager)
 //	: m_spriteRenderer(nullptr)
 //{
-//	m_spriteRenderer = SpriteRenderer::Create(MaxSpriteCount, manager);
-//	m_spriteRenderer->SetViewPixelSize(SizeI(640, 480));	// TODO
+//	m_spriteRenderer = SpriteRenderer::create(MaxSpriteCount, manager);
+//	m_spriteRenderer->setViewPixelSize(SizeI(640, 480));	// TODO
 //}
 //
 ////------------------------------------------------------------------------------
@@ -375,38 +375,38 @@ LOOP_EXIT:
 ////------------------------------------------------------------------------------
 ////
 ////------------------------------------------------------------------------------
-//void SpriteTileMapRenderer::SetTransform(const Matrix& matrix)
+//void SpriteTileMapRenderer::setTransform(const Matrix& matrix)
 //{
-//	m_spriteRenderer->SetTransform(matrix);
+//	m_spriteRenderer->setTransform(matrix);
 //}
 //
 ////------------------------------------------------------------------------------
 ////
 ////------------------------------------------------------------------------------
-//void SpriteTileMapRenderer::SetViewProjMatrix(const Matrix& view, const Matrix& proj)
+//void SpriteTileMapRenderer::setViewProjMatrix(const Matrix& view, const Matrix& proj)
 //{
-//	m_spriteRenderer->SetViewProjMatrix(view, proj);
+//	m_spriteRenderer->setViewProjMatrix(view, proj);
 //}
 //
 ////------------------------------------------------------------------------------
 ////
 ////------------------------------------------------------------------------------
-//void SpriteTileMapRenderer::SetRenderState(const RenderState& state)
+//void SpriteTileMapRenderer::setRenderState(const RenderState& state)
 //{
-//	m_spriteRenderer->SetRenderState(state);
+//	m_spriteRenderer->setRenderState(state);
 //}
 //
 ////------------------------------------------------------------------------------
 ////
 ////------------------------------------------------------------------------------
-//void SpriteTileMapRenderer::Begin()
+//void SpriteTileMapRenderer::begin()
 //{
 //}
 //
 ////------------------------------------------------------------------------------
 ////
 ////------------------------------------------------------------------------------
-//void SpriteTileMapRenderer::End()
+//void SpriteTileMapRenderer::end()
 //{
 //	m_spriteRenderer->Flush();
 //}
@@ -420,7 +420,7 @@ LOOP_EXIT:
 //	Texture* texture,
 //	const RectI& srcRect)
 //{
-//	m_spriteRenderer->DrawRequest2D(position, Vector3::Zero, size, texture, srcRect, nullptr);
+//	m_spriteRenderer->drawRequest2D(position, Vector3::Zero, size, texture, srcRect, nullptr);
 //}
 
 

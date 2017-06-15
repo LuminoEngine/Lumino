@@ -18,15 +18,15 @@ class MeshRenderFeature
 public:
 	MeshRenderFeature();
 	~MeshRenderFeature();
-	void Initialize(GraphicsManager* manager);
+	void initialize(GraphicsManager* manager);
 
-	void DrawMesh(MeshResource* mesh, int startIndex, int primitiveCount, PrimitiveType primitiveType);
+	void drawMesh(MeshResource* mesh, int startIndex, int primitiveCount, PrimitiveType primitiveType);
 
 protected:
-	virtual bool IsStandaloneShader() const { return false; }
-	virtual void Flush() override {}
-	virtual void OnActivated() override {}
-	virtual void OnDeactivated() override {}
+	virtual bool isStandaloneShader() const { return false; }
+	virtual void flush() override {}
+	virtual void onActivated() override {}
+	virtual void onDeactivated() override {}
 
 private:
 	struct DrawMeshCommandData
@@ -40,7 +40,7 @@ private:
 		PrimitiveType						primitiveType;
 	};
 
-	void DrawMeshImpl(const DrawMeshCommandData& data);	// Threading
+	void drawMeshImpl(const DrawMeshCommandData& data);	// Threading
 
 	GraphicsManager*		m_manager;
 	Driver::IRenderer*		m_renderer;

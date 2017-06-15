@@ -9,7 +9,7 @@ protected:
 };
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Base_UnicodeUtils, GetUTF16CharCount)
+TEST_F(Test_Base_UnicodeUtils, getUTF16CharCount)
 {
 	// UTF16 文字数チェック
 	{
@@ -21,7 +21,7 @@ TEST_F(Test_Base_UnicodeUtils, GetUTF16CharCount)
 			0x0041,			// 'A'
 		};
 		int count;
-		UTFConversionResult r = UnicodeUtils::GetUTF16CharCount(utf16Buf, sizeof(utf16Buf) / sizeof(UnicodeUtils::UTF16), true, &count);
+		UTFConversionResult r = UnicodeUtils::getUTF16CharCount(utf16Buf, sizeof(utf16Buf) / sizeof(UnicodeUtils::UTF16), true, &count);
 		ASSERT_EQ(UTFConversionResult_Success, r);
 		ASSERT_EQ(4, count);
 	}
@@ -41,12 +41,12 @@ TEST_F(Test_Base_UnicodeUtils, GetUTF16CharCount)
 
 		// 不正チェックなし
 
-		UTFConversionResult r = UnicodeUtils::GetUTF16CharCount(utf16Buf, sizeof(utf16Buf) / sizeof(UnicodeUtils::UTF16), false, &count);
+		UTFConversionResult r = UnicodeUtils::getUTF16CharCount(utf16Buf, sizeof(utf16Buf) / sizeof(UnicodeUtils::UTF16), false, &count);
 		ASSERT_EQ(UTFConversionResult_Success, r);
 		ASSERT_EQ(5, count);
 
 		// 不正チェックあり
-		r = UnicodeUtils::GetUTF16CharCount(utf16Buf, sizeof(utf16Buf) / sizeof(UnicodeUtils::UTF16), true, &count);
+		r = UnicodeUtils::getUTF16CharCount(utf16Buf, sizeof(utf16Buf) / sizeof(UnicodeUtils::UTF16), true, &count);
 		ASSERT_EQ(UTFConversionResult_SourceIllegal, r);
 	}
 
@@ -56,7 +56,7 @@ TEST_F(Test_Base_UnicodeUtils, GetUTF16CharCount)
 			0xD867,			// 上位サロゲートだけでバッファ終端
 		};
 		int count;
-		UTFConversionResult r = UnicodeUtils::GetUTF16CharCount(utf16Buf, sizeof(utf16Buf) / sizeof(UnicodeUtils::UTF16), true, &count);
+		UTFConversionResult r = UnicodeUtils::getUTF16CharCount(utf16Buf, sizeof(utf16Buf) / sizeof(UnicodeUtils::UTF16), true, &count);
 		ASSERT_EQ(UTFConversionResult_SourceExhausted, r);
 	}
 
@@ -67,7 +67,7 @@ TEST_F(Test_Base_UnicodeUtils, GetUTF16CharCount)
 
 		};
 		int count;
-		UTFConversionResult r = UnicodeUtils::GetUTF16CharCount(utf16Buf, sizeof(utf16Buf) / sizeof(UnicodeUtils::UTF16), true, &count);
+		UTFConversionResult r = UnicodeUtils::getUTF16CharCount(utf16Buf, sizeof(utf16Buf) / sizeof(UnicodeUtils::UTF16), true, &count);
 		ASSERT_EQ(UTFConversionResult_SourceIllegal, r);
 	}
 }

@@ -1,5 +1,4 @@
 ﻿
-#include <windows.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "../Internal.h"
@@ -42,12 +41,12 @@ static void Win32IOErrorToExceptionThrow(DWORD errorCode, const TChar* message)
 }
 
 //------------------------------------------------------------------------------
-bool FileSystem::ExistsFile(const StringRefA& filePath)
+bool FileSystem::existsFile(const StringRefA& filePath)
 {
 	if (filePath.IsNullOrEmpty()) return false;
 
 	char tmpPath[MAX_PATH];
-	filePath.CopyTo(tmpPath, MAX_PATH);
+	filePath.copyTo(tmpPath, MAX_PATH);
 
 	// ※fopen によるチェックはNG。ファイルが排他ロックで開かれていた時に失敗する。
 	DWORD attr = ::GetFileAttributesA(tmpPath);
@@ -58,12 +57,12 @@ bool FileSystem::ExistsFile(const StringRefA& filePath)
 			(attr & FILE_ATTRIBUTE_DIRECTORY) == 0);
 }
 
-bool FileSystem::ExistsFile(const StringRefW& filePath)
+bool FileSystem::existsFile(const StringRefW& filePath)
 {
 	if (filePath.IsNullOrEmpty()) return false;
 
 	wchar_t tmpPath[MAX_PATH];
-	filePath.CopyTo(tmpPath, MAX_PATH);
+	filePath.copyTo(tmpPath, MAX_PATH);
 
 	DWORD attr = ::GetFileAttributesW(tmpPath);
 	return ((attr != -1) &&
@@ -71,7 +70,7 @@ bool FileSystem::ExistsFile(const StringRefW& filePath)
 }
 
 //------------------------------------------------------------------------------
-void FileSystem::SetAttribute(const char* filePath, FileAttribute attr)
+void FileSystem::setAttribute(const char* filePath, FileAttribute attr)
 {
 	DWORD dwAttr = 0;
 	if (attr.TestFlag(FileAttribute::Directory)) dwAttr |= FILE_ATTRIBUTE_DIRECTORY;
@@ -81,7 +80,7 @@ void FileSystem::SetAttribute(const char* filePath, FileAttribute attr)
 	if (r == FALSE) { Win32IOErrorToExceptionThrow(::GetLastError(), filePath); }
 }
 
-void FileSystem::SetAttribute(const wchar_t* filePath, FileAttribute attr)
+void FileSystem::setAttribute(const wchar_t* filePath, FileAttribute attr)
 {
 	DWORD dwAttr = 0;
 	if (attr.TestFlag(FileAttribute::Directory)) dwAttr |= FILE_ATTRIBUTE_DIRECTORY;
@@ -92,7 +91,7 @@ void FileSystem::SetAttribute(const wchar_t* filePath, FileAttribute attr)
 }
 
 //------------------------------------------------------------------------------
-void FileSystem::Copy(const char* sourceFileName, const char* destFileName, bool overwrite)
+void FileSystem::copy(const char* sourceFileName, const char* destFileName, bool overwrite)
 {
 	BOOL bRes = ::CopyFileA(sourceFileName, destFileName, (overwrite) ? FALSE : TRUE);
 	if (bRes == FALSE) {
@@ -101,7 +100,7 @@ void FileSystem::Copy(const char* sourceFileName, const char* destFileName, bool
 	}
 }
 
-void FileSystem::Copy(const wchar_t* sourceFileName, const wchar_t* destFileName, bool overwrite)
+void FileSystem::copy(const wchar_t* sourceFileName, const wchar_t* destFileName, bool overwrite)
 {
 	BOOL bRes = ::CopyFileW(sourceFileName, destFileName, (overwrite) ? FALSE : TRUE);
 	if (bRes == FALSE) {
@@ -111,14 +110,14 @@ void FileSystem::Copy(const wchar_t* sourceFileName, const wchar_t* destFileName
 }
 
 //------------------------------------------------------------------------------
-void FileSystem::Delete(const char* filePath)
+void FileSystem::deleteFile(const char* filePath)
 {
 	BOOL r = ::DeleteFileA(filePath);
 	if (r == FALSE) {
 		Win32IOErrorToExceptionThrow(::GetLastError(), filePath);
 	}
 }
-void FileSystem::Delete(const wchar_t* filePath)
+void FileSystem::deleteFile(const wchar_t* filePath)
 {
 	BOOL r = ::DeleteFileW(filePath);
 	if (r == FALSE) {
@@ -197,7 +196,7 @@ static void RemoveDirectoryImpl(LPCWSTR lpPathName)
 //}
 
 //------------------------------------------------------------------------------
-uint64_t FileSystem::GetFileSize(const TCHAR* filePath)
+uint64_t FileSystem::getFileSize(const TCHAR* filePath)
 {
 	if (LN_CHECK_ARG(filePath != nullptr)) return 0;
 	struct _stat stat_buf;
@@ -207,7 +206,7 @@ uint64_t FileSystem::GetFileSize(const TCHAR* filePath)
 }
 
 //------------------------------------------------------------------------------
-uint64_t FileSystem::GetFileSize(FILE* stream)
+uint64_t FileSystem::getFileSize(FILE* stream)
 {
 	struct _stat stbuf;
 	int handle = _fileno( stream );
@@ -242,7 +241,7 @@ bool FileSystem::mkdir(const wchar_t* path)
 	return ::CreateDirectoryW(path, NULL) != FALSE;
 }
 //------------------------------------------------------------------------------
-bool FileSystem::GetAttributeInternal(const char* path, FileAttribute* outAttr)
+bool FileSystem::getAttributeInternal(const char* path, FileAttribute* outAttr)
 {
 	DWORD attr = ::GetFileAttributesA(path);
 	if (attr == -1) { return false; }
@@ -254,7 +253,7 @@ bool FileSystem::GetAttributeInternal(const char* path, FileAttribute* outAttr)
 	*outAttr = flags;
 	return true;
 }
-bool FileSystem::GetAttributeInternal(const wchar_t* path, FileAttribute* outAttr)
+bool FileSystem::getAttributeInternal(const wchar_t* path, FileAttribute* outAttr)
 {
 	DWORD attr = ::GetFileAttributesW(path);
 	if (attr == -1) { return false; }

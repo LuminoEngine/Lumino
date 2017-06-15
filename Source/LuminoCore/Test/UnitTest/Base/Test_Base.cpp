@@ -28,7 +28,7 @@ TEST_F(Test_Measurement, Basic)
 	{
 		std::cout << "  vector:" << '\n';
 		ElapsedTimer t;
-		t.Start();
+		t.start();
 		for (int i = 0; i < DATA_COUNT; ++i)
 		{
 			vec.push_back(mt());
@@ -38,7 +38,7 @@ TEST_F(Test_Measurement, Basic)
 	{
 		std::cout << "  list:" << '\n';
 		ElapsedTimer t;
-		t.Start();
+		t.start();
 		for (int i = 0; i < DATA_COUNT; ++i)
 		{
 			lis.push_back(mt());
@@ -48,7 +48,7 @@ TEST_F(Test_Measurement, Basic)
 	{
 		std::cout << "  deque:" << '\n';
 		ElapsedTimer t;
-		t.Start();
+		t.start();
 		for (int i = 0; i < DATA_COUNT; ++i)
 		{
 			deq.push_back(mt());
@@ -61,7 +61,7 @@ TEST_F(Test_Measurement, Basic)
 	{
 		std::cout << "  vector:" << '\n';
 		ElapsedTimer t;
-		t.Start();
+		t.start();
 		for (int i = 0; i < DATA_COUNT; ++i)
 		{
 			vec.insert(vec.begin() + i, mt());
@@ -71,7 +71,7 @@ TEST_F(Test_Measurement, Basic)
 	{
 		std::cout << "  list:" << '\n';
 		ElapsedTimer t;
-		t.Start();
+		t.start();
 		for (int i = 0; i < DATA_COUNT; ++i)
 		{
 			lis.insert(lis.begin(), mt());
@@ -81,7 +81,7 @@ TEST_F(Test_Measurement, Basic)
 	{
 		std::cout << "  deque:" << '\n';
 		ElapsedTimer t;
-		t.Start();
+		t.start();
 		for (int i = 0; i < DATA_COUNT; ++i)
 		{
 			deq.insert(deq.begin() + i, mt());
@@ -93,7 +93,7 @@ TEST_F(Test_Measurement, Basic)
 	{
 		std::cout << "  vector:" << '\n';
 		ElapsedTimer t;
-		t.Start();
+		t.start();
 		for (int i = 0; i < DATA_COUNT; ++i)
 		{
 			vec.erase(vec.begin() + i);
@@ -103,7 +103,7 @@ TEST_F(Test_Measurement, Basic)
 	{
 		std::cout << "  list:" << '\n';
 		ElapsedTimer t;
-		t.Start();
+		t.start();
 		for (int i = 0; i < DATA_COUNT; ++i)
 		{
 			lis.erase(lis.begin());
@@ -113,7 +113,7 @@ TEST_F(Test_Measurement, Basic)
 	{
 		std::cout << "  deque:" << '\n';
 		ElapsedTimer t;
-		t.Start();
+		t.start();
 		for (int i = 0; i < DATA_COUNT; ++i)
 		{
 			deq.erase(deq.begin() + i);
@@ -135,8 +135,8 @@ class Test_Base_ElapsedTimer : public ::testing::Test
 TEST_F(Test_Base_ElapsedTimer, Basic)
 {
 	ElapsedTimer timer;
-	timer.Start();
-	Thread::Sleep(100);
-	uint64_t t = timer.GetElapsed();
+	timer.start();
+	Thread::sleep(100);
+	uint64_t t = timer.getElapsed();
 	ASSERT_EQ(true, t >= 98 * 1000 * 1000);		// 微妙に早く終わることを考慮する
 }

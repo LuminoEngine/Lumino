@@ -15,7 +15,7 @@ JsonWriter::JsonWriter(TextWriter* textWriter)
 	, m_textWriter(textWriter)
 {
 	if (LN_CHECK_ARG(m_textWriter != nullptr)) return;
-	m_levelStack.Reserve(32);
+	m_levelStack.reserve(32);
 }
 
 //------------------------------------------------------------------------------
@@ -24,161 +24,161 @@ JsonWriter::~JsonWriter()
 }
 
 //------------------------------------------------------------------------------
-void JsonWriter::SetFormatting(JsonFormatting formatting)
+void JsonWriter::setFormatting(JsonFormatting formatting)
 {
 	m_formatting = formatting;
 }
 
 //------------------------------------------------------------------------------
-void JsonWriter::WriteStartObject()
+void JsonWriter::writeStartObject()
 {
-	AutoComplete(JsonToken::StartObject);
-	m_levelStack.Push(Level(false));
-	OnStartObject();
+	autoComplete(JsonToken::StartObject);
+	m_levelStack.push(Level(false));
+	onStartObject();
 }
 
 //------------------------------------------------------------------------------
-void JsonWriter::WriteEndObject()
+void JsonWriter::writeEndObject()
 {
-	if (LN_CHECK_ARG(m_levelStack.GetCount() >= 1)) return;
-	if (LN_CHECK_ARG(!m_levelStack.GetTop().inArray)) return;
+	if (LN_CHECK_ARG(m_levelStack.getCount() >= 1)) return;
+	if (LN_CHECK_ARG(!m_levelStack.getTop().inArray)) return;
 
-	AutoComplete(JsonToken::EndObject);
-	m_levelStack.Pop();
-	OnEndObject();
+	autoComplete(JsonToken::EndObject);
+	m_levelStack.pop();
+	onEndObject();
 
-	if (!m_levelStack.IsEmpty())	// ルート要素のクローズに備える
+	if (!m_levelStack.isEmpty())	// ルート要素のクローズに備える
 	{
-		m_levelStack.GetTop().valueCount++;
-		m_levelStack.GetTop().justSawContainerEnd = true;
+		m_levelStack.getTop().valueCount++;
+		m_levelStack.getTop().justSawContainerEnd = true;
 	}
 }
 
 //------------------------------------------------------------------------------
-void JsonWriter::WriteStartArray()
+void JsonWriter::writeStartArray()
 {
-	AutoComplete(JsonToken::StartArray);
-	m_levelStack.Push(Level(true));
-	OnStartArray();
+	autoComplete(JsonToken::StartArray);
+	m_levelStack.push(Level(true));
+	onStartArray();
 }
 
 //------------------------------------------------------------------------------
-void JsonWriter::WriteEndArray()
+void JsonWriter::writeEndArray()
 {
-	if (LN_CHECK_ARG(m_levelStack.GetCount() >= 2)) return;
-	if (LN_CHECK_ARG(m_levelStack.GetTop().inArray)) return;
+	if (LN_CHECK_ARG(m_levelStack.getCount() >= 2)) return;
+	if (LN_CHECK_ARG(m_levelStack.getTop().inArray)) return;
 
-	AutoComplete(JsonToken::EndArray);
-	m_levelStack.Pop();
-	OnEndArray();
-	m_levelStack.GetTop().valueCount++;
-	m_levelStack.GetTop().justSawContainerEnd = true;
+	autoComplete(JsonToken::EndArray);
+	m_levelStack.pop();
+	onEndArray();
+	m_levelStack.getTop().valueCount++;
+	m_levelStack.getTop().justSawContainerEnd = true;
 }
 
 //------------------------------------------------------------------------------
-void JsonWriter::WritePropertyName(const TCHAR* str, int length)
+void JsonWriter::writePropertyName(const TCHAR* str, int length)
 {
-	if (LN_CHECK_ARG(m_levelStack.GetCount() >= 1)) return;
+	if (LN_CHECK_ARG(m_levelStack.getCount() >= 1)) return;
 	length = (length <= -1) ? (int)StringTraits::tcslen(str) : length;
 
-	AutoComplete(JsonToken::PropertyName);
-	OnKey(str, length);
-	m_levelStack.GetTop().justSawKey = true;
+	autoComplete(JsonToken::PropertyName);
+	onKey(str, length);
+	m_levelStack.getTop().justSawKey = true;
 }
 
 //------------------------------------------------------------------------------
-void JsonWriter::WriteNull()
+void JsonWriter::writeNull()
 {
-	if (LN_CHECK_ARG(m_levelStack.GetCount() >= 1)) return;
+	if (LN_CHECK_ARG(m_levelStack.getCount() >= 1)) return;
 
-	AutoComplete(JsonToken::Null);
-	OnNull();
-	m_levelStack.GetTop().valueCount++;
+	autoComplete(JsonToken::Null);
+	onNull();
+	m_levelStack.getTop().valueCount++;
 }
 
 //------------------------------------------------------------------------------
-void JsonWriter::WriteBool(bool value)
+void JsonWriter::writeBool(bool value)
 {
-	if (LN_CHECK_ARG(m_levelStack.GetCount() >= 1)) return;
+	if (LN_CHECK_ARG(m_levelStack.getCount() >= 1)) return;
 
-	AutoComplete(JsonToken::Boolean);
-	OnBool(value);
-	m_levelStack.GetTop().valueCount++;
+	autoComplete(JsonToken::Boolean);
+	onBool(value);
+	m_levelStack.getTop().valueCount++;
 }
 
 //------------------------------------------------------------------------------
-void JsonWriter::WriteInt32(int32_t value)
+void JsonWriter::writeInt32(int32_t value)
 {
-	if (LN_CHECK_ARG(m_levelStack.GetCount() >= 1)) return;
-	AutoComplete(JsonToken::Double);
-	OnInt32(value);
-	m_levelStack.GetTop().valueCount++;
+	if (LN_CHECK_ARG(m_levelStack.getCount() >= 1)) return;
+	autoComplete(JsonToken::Double);
+	onInt32(value);
+	m_levelStack.getTop().valueCount++;
 }
 
 //------------------------------------------------------------------------------
-void JsonWriter::WriteInt64(int64_t value)
+void JsonWriter::writeInt64(int64_t value)
 {
-	if (LN_CHECK_ARG(m_levelStack.GetCount() >= 1)) return;
-	AutoComplete(JsonToken::Double);
-	OnInt64(value);
-	m_levelStack.GetTop().valueCount++;
+	if (LN_CHECK_ARG(m_levelStack.getCount() >= 1)) return;
+	autoComplete(JsonToken::Double);
+	onInt64(value);
+	m_levelStack.getTop().valueCount++;
 }
 
 //------------------------------------------------------------------------------
-void JsonWriter::WriteFloat(float value)
+void JsonWriter::writeFloat(float value)
 {
-	if (LN_CHECK_ARG(m_levelStack.GetCount() >= 1)) return;
-	AutoComplete(JsonToken::Double);
-	OnFloat(value);
-	m_levelStack.GetTop().valueCount++;
+	if (LN_CHECK_ARG(m_levelStack.getCount() >= 1)) return;
+	autoComplete(JsonToken::Double);
+	onFloat(value);
+	m_levelStack.getTop().valueCount++;
 }
 
 //------------------------------------------------------------------------------
-void JsonWriter::WriteDouble(double value)
+void JsonWriter::writeDouble(double value)
 {
-	if (LN_CHECK_ARG(m_levelStack.GetCount() >= 1)) return;
+	if (LN_CHECK_ARG(m_levelStack.getCount() >= 1)) return;
 
-	AutoComplete(JsonToken::Double);
-	OnDouble(value);
-	m_levelStack.GetTop().valueCount++;
+	autoComplete(JsonToken::Double);
+	onDouble(value);
+	m_levelStack.getTop().valueCount++;
 }
 
 //------------------------------------------------------------------------------
-void JsonWriter::WriteString(const TCHAR* str, int length)	// TODO: StringRef
+void JsonWriter::writeString(const TCHAR* str, int length)	// TODO: StringRef
 {
-	if (LN_CHECK_ARG(m_levelStack.GetCount() >= 1)) return;
+	if (LN_CHECK_ARG(m_levelStack.getCount() >= 1)) return;
 	length = (length <= -1) ? (int)StringTraits::tcslen(str) : length;
 
-	AutoComplete(JsonToken::String);
-	OnString(str, length);
-	m_levelStack.GetTop().valueCount++;
+	autoComplete(JsonToken::String);
+	onString(str, length);
+	m_levelStack.getTop().valueCount++;
 }
 
 //------------------------------------------------------------------------------
-bool JsonWriter::IsComplete() const
+bool JsonWriter::isComplete() const
 {
-	return m_levelStack.IsEmpty();
+	return m_levelStack.isEmpty();
 }
 
 //------------------------------------------------------------------------------
-void JsonWriter::AutoComplete(JsonToken token)
+void JsonWriter::autoComplete(JsonToken token)
 {
-	if (!m_levelStack.IsEmpty())
+	if (!m_levelStack.isEmpty())
 	{
-		Level& level = m_levelStack.GetTop();
+		Level& level = m_levelStack.getTop();
 
 		if (token != JsonToken::EndObject && token != JsonToken::EndArray)
 		{
 			if (level.justSawKey) {
-				OnPrefix(PrefixType_Key, level.valueCount);
+				onPrefix(PrefixType_Key, level.valueCount);
 			}
 			else if (level.valueCount > 0)
 			{
 				if (level.inArray) {
-					OnPrefix(PrefixType_Array, level.valueCount);
+					onPrefix(PrefixType_Array, level.valueCount);
 				}
 				else {
-					OnPrefix(PrefixType_Object, level.valueCount);
+					onPrefix(PrefixType_Object, level.valueCount);
 				}
 			}
 		}
@@ -187,27 +187,27 @@ void JsonWriter::AutoComplete(JsonToken token)
 		{
 			if (level.justSawKey)
 			{
-				m_textWriter->Write(_T(' '));	// : after space
+				m_textWriter->write(_T(' '));	// : after space
 			}
 
 			if (!level.justSawKey)
 			{
 				if (token == JsonToken::StartObject || token == JsonToken::StartArray || token == JsonToken::PropertyName)
 				{
-					m_textWriter->WriteLine();
-					for (int i = 0; i < m_levelStack.GetCount(); i++)
+					m_textWriter->writeLine();
+					for (int i = 0; i < m_levelStack.getCount(); i++)
 					{
-						m_textWriter->Write(_T(' '));
-						m_textWriter->Write(_T(' '));
+						m_textWriter->write(_T(' '));
+						m_textWriter->write(_T(' '));
 					}
 				}
 				else if (token == JsonToken::EndObject || (token == JsonToken::EndArray && level.justSawContainerEnd))
 				{
-					m_textWriter->WriteLine();
-					for (int i = 0; i < m_levelStack.GetCount() - 1; i++)
+					m_textWriter->writeLine();
+					for (int i = 0; i < m_levelStack.getCount() - 1; i++)
 					{
-						m_textWriter->Write(_T(' '));
-						m_textWriter->Write(_T(' '));
+						m_textWriter->write(_T(' '));
+						m_textWriter->write(_T(' '));
 					}
 				}
 			}
@@ -219,95 +219,95 @@ void JsonWriter::AutoComplete(JsonToken token)
 }
 
 //------------------------------------------------------------------------------
-void JsonWriter::OnPrefix(PrefixType type, int valueCount)
+void JsonWriter::onPrefix(PrefixType type, int valueCount)
 {
 	if (type == PrefixType_Array || type == PrefixType_Object) {
 		if (valueCount > 0) {
-			m_textWriter->Write(_T(','));
+			m_textWriter->write(_T(','));
 		}
 	}
 	else {
-		m_textWriter->Write(_T(':'));
+		m_textWriter->write(_T(':'));
 	}
 }
 
 //------------------------------------------------------------------------------
-void JsonWriter::OnStartObject()
+void JsonWriter::onStartObject()
 {
-	m_textWriter->Write(_T('{'));
+	m_textWriter->write(_T('{'));
 }
 
 //------------------------------------------------------------------------------
-void JsonWriter::OnEndObject()
+void JsonWriter::onEndObject()
 {
-	m_textWriter->Write(_T('}'));
+	m_textWriter->write(_T('}'));
 }
 
 //------------------------------------------------------------------------------
-void JsonWriter::OnStartArray()
+void JsonWriter::onStartArray()
 {
-	m_textWriter->Write(_T('['));
+	m_textWriter->write(_T('['));
 }
 
 //------------------------------------------------------------------------------
-void JsonWriter::OnEndArray()
+void JsonWriter::onEndArray()
 {
-	m_textWriter->Write(_T(']'));
+	m_textWriter->write(_T(']'));
 }
 
 //------------------------------------------------------------------------------
-void JsonWriter::OnKey(const TCHAR* str, int length)
+void JsonWriter::onKey(const TCHAR* str, int length)
 {
-	OnString(str, length);
+	onString(str, length);
 }
 
 //------------------------------------------------------------------------------
-void JsonWriter::OnNull()
+void JsonWriter::onNull()
 {
-	m_textWriter->Write(_T("null"), 4);
+	m_textWriter->write(_T("null"), 4);
 }
 
 //------------------------------------------------------------------------------
-void JsonWriter::OnBool(bool value)
+void JsonWriter::onBool(bool value)
 {
 	if (value) {
-		m_textWriter->Write(_T("true"), 4);
+		m_textWriter->write(_T("true"), 4);
 	}
 	else {
-		m_textWriter->Write(_T("false"), 5);
+		m_textWriter->write(_T("false"), 5);
 	}
 }
 
 //------------------------------------------------------------------------------
-void JsonWriter::OnInt32(int32_t value)
+void JsonWriter::onInt32(int32_t value)
 {
-	m_textWriter->Write(value);
+	m_textWriter->write(value);
 }
 
 //------------------------------------------------------------------------------
-void JsonWriter::OnInt64(int64_t value)
+void JsonWriter::onInt64(int64_t value)
 {
-	m_textWriter->Write(value);
+	m_textWriter->write(value);
 }
 
 //------------------------------------------------------------------------------
-void JsonWriter::OnFloat(float value)
+void JsonWriter::onFloat(float value)
 {
-	m_textWriter->Write(value);
+	m_textWriter->write(value);
 }
 
 //------------------------------------------------------------------------------
-void JsonWriter::OnDouble(double value)
+void JsonWriter::onDouble(double value)
 {
-	m_textWriter->Write(value);
+	m_textWriter->write(value);
 }
 
 //------------------------------------------------------------------------------
-void JsonWriter::OnString(const TCHAR* str, int length)
+void JsonWriter::onString(const TCHAR* str, int length)
 {
-	m_textWriter->Write(_T("\""), 1);
-	m_textWriter->Write(str, length);
-	m_textWriter->Write(_T("\""), 1);
+	m_textWriter->write(_T("\""), 1);
+	m_textWriter->write(str, length);
+	m_textWriter->write(_T("\""), 1);
 }
 
 //------------------------------------------------------------------------------

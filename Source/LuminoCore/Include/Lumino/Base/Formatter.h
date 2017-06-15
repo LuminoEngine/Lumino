@@ -95,7 +95,7 @@ public:
 	{}
 
 	const FormatArg<TChar>& GetArg(int index) const { return m_argList[index]; }
-	int GetCount() const { return m_count; }
+	int getCount() const { return m_count; }
 
 private:
 	const FormatArg<TChar>* m_argList;
@@ -220,7 +220,7 @@ struct Formatter<TChar, detail::FormatArgType::KindPointer, /*const*/ TChar[N]>	
 {
 	static GenericString<TChar> Format(const std::locale& locale, const GenericStringRef<TChar>& format, const GenericStringRef<TChar>& formatParam, const TChar value[N])
 	{
-		LN_THROW(format.IsEmpty(), InvalidFormatException);
+		LN_THROW(format.isEmpty(), InvalidFormatException);
 		return GenericString<TChar>(value);
 	}
 };
@@ -231,7 +231,7 @@ struct Formatter<TChar, detail::FormatArgType::KindPointer, const TChar[N]>		// 
 {
 	static GenericString<TChar> Format(const std::locale& locale, const GenericStringRef<TChar>& format, const GenericStringRef<TChar>& formatParam, const TChar value[N])
 	{
-		LN_THROW(format.IsEmpty(), InvalidFormatException);
+		LN_THROW(format.isEmpty(), InvalidFormatException);
 		return GenericString<TChar>(value);
 	}
 };
@@ -242,7 +242,7 @@ struct Formatter<TChar, detail::FormatArgType::KindPointer, TChar*>
 {
 	static GenericString<TChar> Format(const std::locale& locale, const GenericStringRef<TChar>& format, const GenericStringRef<TChar>& formatParam, TChar* value)
 	{
-		LN_THROW(format.IsEmpty(), InvalidFormatException);
+		LN_THROW(format.isEmpty(), InvalidFormatException);
 		return GenericString<TChar>(value);
 	}
 };
@@ -253,7 +253,7 @@ struct Formatter<TChar, detail::FormatArgType::KindPointer, const TChar*>
 {
 	static GenericString<TChar> Format(const std::locale& locale, const GenericStringRef<TChar>& format, const GenericStringRef<TChar>& formatParam, const TChar* value)
 	{
-		LN_THROW(format.IsEmpty(), InvalidFormatException);
+		LN_THROW(format.isEmpty(), InvalidFormatException);
 		return GenericString<TChar>(value);
 	}
 };
@@ -310,18 +310,18 @@ struct Formatter<TChar, detail::FormatArgType::KindArithmetic, TValue>
 		os.imbue(locale);
 
 		int32_t precision = -1;
-		if (!formatParam.IsEmpty())
+		if (!formatParam.isEmpty())
 		{
 			NumberConversionResult result;
 			const TChar* dummy;
-			precision = StringTraits::ToInt32(formatParam.GetBegin(), formatParam.GetLength(), 10, &dummy, &result);
+			precision = StringTraits::toInt32(formatParam.getBegin(), formatParam.getLength(), 10, &dummy, &result);
 			LN_THROW(result == NumberConversionResult::Success, InvalidFormatException);
 		}
 
-		if (format.IsEmpty())
+		if (format.isEmpty())
 		{
 		}
-		else if (format.GetLength() == 1)
+		else if (format.getLength() == 1)
 		{
 			if (format[0] == 'd' || format[0] == 'D')
 			{

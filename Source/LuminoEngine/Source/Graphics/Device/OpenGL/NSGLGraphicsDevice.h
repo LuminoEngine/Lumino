@@ -25,10 +25,10 @@ public:
 	NSGLContext();
 	virtual ~NSGLContext();
 	void Initialize(NSGLGraphicsDevice* device, PlatformWindow* window, NSGLContext* parentContext);
-	id GetContext() const { return m_context; }
+	id getContext() const { return m_context; }
 
 	// GLContext interface
-	virtual void SwapBuffers() override;
+	virtual void swapBuffers() override;
 
 private:
     id	m_pixelFormat;
@@ -45,13 +45,13 @@ public:
 	void Initialize(const ConfigData& configData);
 
 	// GLGraphicsDevice interface
-	virtual void MakeCurrentContext(GLContext* context) override;
-	virtual GLContext* GetMainContext() override;
-	virtual GLContext* GetMainRenderingContext() override;
+	virtual void makeCurrentContext(GLContext* context) override;
+	virtual GLContext* getMainContext() override;
+	virtual GLContext* getMainRenderingContext() override;
 
 	// IGraphicsDevice interface
-	virtual ISwapChain* GetDefaultSwapChain() override;
-	virtual ISwapChain* CreateSwapChain(PlatformWindow* window) override;
+	virtual ISwapChain* getDefaultSwapChain() override;
+	virtual ISwapChain* createSwapChain(PlatformWindow* window) override;
     
     void* GetProcAddress(const char* procname);
     

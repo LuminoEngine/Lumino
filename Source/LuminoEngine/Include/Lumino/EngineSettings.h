@@ -14,12 +14,12 @@ class EngineSettings
 public:
 
 	/** メインウィンドウのクライアント領域の幅と高さを設定します。(default: 640x480) */
-	static void SetMainWindowSize(const SizeI& size);
-	static void SetMainWindowSize(int width, int height);		/**< @overload SetMainWindowSize */
+	static void setMainWindowSize(const SizeI& size);
+	static void setMainWindowSize(int width, int height);		/**< @overload setMainWindowSize */
 
 	/** メインウィンドウに対して作成されるバックバッファのサイズを設定します。(default: 640x480) */
-	static void SetMainBackBufferSize(const SizeI& size);
-	static void SetMainBackBufferSize(int width, int height);	/**< @overload SetMainBackBufferSize */
+	static void setMainBackBufferSize(const SizeI& size);
+	static void setMainBackBufferSize(int width, int height);	/**< @overload setMainBackBufferSize */
 
 	/** メインウィンドウのタイトル文字列を設定します。*/
 	static void SetMainWindowTitle(const StringRef& title);

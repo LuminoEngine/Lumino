@@ -23,9 +23,9 @@ FontData::FontData()
 	: Family()
 	, Size(16)
 	//, EdgeSize(0)
-	, IsBold(false)
-	, IsItalic(false)
-	, IsAntiAlias(true)
+	, isBold(false)
+	, isItalic(false)
+	, isAntiAlias(true)
 {}
 
 //------------------------------------------------------------------------------
@@ -37,28 +37,28 @@ bool FontData::operator < (const FontData& right)
 	if (Size > right.Size) { return false; }
 	//if (EdgeSize < right.EdgeSize) { return true; }
 	//if (EdgeSize > right.EdgeSize) { return false; }
-	if (IsBold < right.IsBold) { return true; }
-	if (IsBold > right.IsBold) { return false; }
-	if (IsItalic < right.IsItalic) { return true; }
-	if (IsItalic > right.IsItalic) { return false; }
-	if (IsAntiAlias < right.IsAntiAlias) { return true; }
-	if (IsAntiAlias > right.IsAntiAlias) { return false; }
+	if (isBold < right.isBold) { return true; }
+	if (isBold > right.isBold) { return false; }
+	if (isItalic < right.isItalic) { return true; }
+	if (isItalic > right.isItalic) { return false; }
+	if (isAntiAlias < right.isAntiAlias) { return true; }
+	if (isAntiAlias > right.isAntiAlias) { return false; }
 	return false;
 }
 
 //------------------------------------------------------------------------------
-uint64_t FontData::CalcHash() const
+uint64_t FontData::calcHash() const
 {
 	uint32_t v[2];
-	v[0] = Hash::CalcHash(Family.c_str());
+	v[0] = Hash::calcHash(Family.c_str());
 
 	uint8_t* v2 = (uint8_t*)&v[1];
 	v2[0] = Size;
 	//v2[1] = fontData.EdgeSize;
 	v2[3] =
-		(((IsBold) ? 1 : 0)) |
-		(((IsItalic) ? 1 : 0) << 1) |
-		(((IsAntiAlias) ? 1 : 0) << 2);
+		(((isBold) ? 1 : 0)) |
+		(((isItalic) ? 1 : 0) << 1) |
+		(((isAntiAlias) ? 1 : 0) << 2);
 
 	return *((uint64_t*)&v);
 }
@@ -68,9 +68,9 @@ uint64_t FontData::CalcHash() const
 //	uint32_t v = Hash::CalcHash(Family.c_str());
 //	v += Size;
 //	//v += 10 * EdgeSize;
-//	v += 100 * (int)IsBold;
-//	v += 1000 * (int)IsItalic;
-//	v += 10000 * (int)IsAntiAlias;
+//	v += 100 * (int)isBold;
+//	v += 1000 * (int)isItalic;
+//	v += 10000 * (int)isAntiAlias;
 //	return v;
 //}
 
@@ -91,19 +91,19 @@ FontManager::~FontManager()
 }
 
 //------------------------------------------------------------------------------
-void FontManager::Initialize(FileManager* fileManager, GraphicsManager* graphicsManager)
+void FontManager::initialize(FileManager* fileManager, GraphicsManager* graphicsManager)
 {
 	m_fileManager = fileManager;
 	m_graphicsManager = graphicsManager;
-	m_charToUTF32Converter.SetDestinationEncoding(Encoding::GetUTF32Encoding());
-	m_charToUTF32Converter.SetSourceEncoding(Encoding::GetSystemMultiByteEncoding());
-	m_wcharToUTF32Converter.SetDestinationEncoding(Encoding::GetUTF32Encoding());
-	m_wcharToUTF32Converter.SetSourceEncoding(Encoding::GetWideCharEncoding());
+	m_charToUTF32Converter.setDestinationEncoding(Encoding::getUTF32Encoding());
+	m_charToUTF32Converter.getSourceEncoding(Encoding::getSystemMultiByteEncoding());
+	m_wcharToUTF32Converter.setDestinationEncoding(Encoding::getUTF32Encoding());
+	m_wcharToUTF32Converter.getSourceEncoding(Encoding::getWideCharEncoding());
 
-	m_TCharToUTF32Converter.SetDestinationEncoding(Encoding::GetUTF32Encoding());
-	m_TCharToUTF32Converter.SetSourceEncoding(Encoding::GetTCharEncoding());
-	m_UTF32ToTCharConverter.SetDestinationEncoding(Encoding::GetTCharEncoding());
-	m_UTF32ToTCharConverter.SetSourceEncoding(Encoding::GetUTF32Encoding());
+	m_TCharToUTF32Converter.setDestinationEncoding(Encoding::getUTF32Encoding());
+	m_TCharToUTF32Converter.getSourceEncoding(Encoding::getTCharEncoding());
+	m_UTF32ToTCharConverter.setDestinationEncoding(Encoding::getTCharEncoding());
+	m_UTF32ToTCharConverter.getSourceEncoding(Encoding::getUTF32Encoding());
 
 	// FreeType 初期化
 	FT_Error err = FT_Init_FreeType(&m_ftLibrary);
@@ -113,7 +113,7 @@ void FontManager::Initialize(FileManager* fileManager, GraphicsManager* graphics
 	err = FTC_Manager_New(
 		m_ftLibrary,
 		0, 0, 0,
-		CallbackFaceRequester,
+		callbackFaceRequester,
 		this,
 		&m_ftCacheManager);
 	LN_THROW(err == 0, InvalidOperationException, "failed initialize font cache manager : %d\n", err);
@@ -127,27 +127,27 @@ void FontManager::Initialize(FileManager* fileManager, GraphicsManager* graphics
 	LN_THROW(err == 0, InvalidOperationException, "failed initialize font image cache : %d\n", err);
 
 	// デフォルトフォント
-	m_defaultFont = RefPtr<Font>::MakeRef();
-	m_defaultFont->Initialize(m_graphicsManager, nullptr);
-	m_defaultFont->SetFamily(m_defaultFontName);
-	m_defaultFont->SetAntiAlias(true);
+	m_defaultFont = RefPtr<Font>::makeRef();
+	m_defaultFont->initialize(m_graphicsManager, nullptr);
+	m_defaultFont->setFamily(m_defaultFontName);
+	m_defaultFont->setAntiAlias(true);
 
 
-	m_defaultRawFont = NewObject<FreeTypeFont>();
-	m_defaultRawFont->SetName(m_defaultFontName);
-	m_defaultRawFont->SetSize(12);
-	m_defaultRawFont->SetAntiAlias(true);
+	m_defaultRawFont = newObject<FreeTypeFont>();
+	m_defaultRawFont->setName(m_defaultFontName);
+	m_defaultRawFont->setSize(12);
+	m_defaultRawFont->setAntiAlias(true);
 	//m_defaultFont = RawFont::CreateBuiltInBitmapFontInternal(this, 7);
 
 	// キャッシュ
-	m_rawFontCache = RefPtr<CacheManager>::MakeRef(32, 0);
+	m_rawFontCache = RefPtr<CacheManager>::makeRef(32, 0);
 
 	// 組み込みフォント
-	m_builtinFontList.Resize(1);
+	m_builtinFontList.resize(1);
 	{
-		RefPtr<RawFont> raw = RawFont::CreateBuiltInBitmapFontInternal2(7);
-		RefPtr<Font> font = RefPtr<Font>::MakeRef();
-		font->Initialize(m_graphicsManager, raw);
+		RefPtr<RawFont> raw = RawFont::createBuiltInBitmapFontInternal2(7);
+		RefPtr<Font> font = RefPtr<Font>::makeRef();
+		font->initialize(m_graphicsManager, raw);
 		m_builtinFontList[(int)BuiltinFontSize::XXSmall] = font;
 	}
 }
@@ -161,13 +161,13 @@ void FontManager::Dispose()
 		font->Dispose_();
 	}
 
-	m_builtinFontList.Clear();
+	m_builtinFontList.clear();
 	//LN_SAFE_RELEASE();
 	//m_defaultRawFont = nullptr;
 	m_defaultFont = nullptr;
 
-	m_rawFontCache->FinalizeCache();
-	m_defaultRawFont.SafeRelease();
+	m_rawFontCache->finalizeCache();
+	m_defaultRawFont.safeRelease();
 
 	// 登録したTTFファイルのメモリバッファをすべて解放
 	//TTFDataEntryMap::iterator itr = m_ttfDataEntryMap.begin();
@@ -193,19 +193,19 @@ void FontManager::Dispose()
 }
 
 //------------------------------------------------------------------------------
-void FontManager::RegisterFontFile(const String& fontFilePath)
+void FontManager::registerFontFile(const String& fontFilePath)
 {
 	// ファイルから全てのデータを読み込む
-	RefPtr<Stream> file(m_fileManager->CreateFileStream(fontFilePath), false);
-	ByteBuffer buffer((size_t)file->GetLength(), false);
-	file->Read(buffer.GetData(), buffer.GetSize());
+	RefPtr<Stream> file(m_fileManager->createFileStream(fontFilePath), false);
+	ByteBuffer buffer((size_t)file->getLength(), false);
+	file->read(buffer.getData(), buffer.getSize());
 
 	// Face 作成 (ファミリ名・Face 数を調べるため。すぐ削除する)
 	FT_Face face;
 	FT_Error err = FT_New_Memory_Face(
 		m_ftLibrary,
-		(const FT_Byte*)buffer.GetData(),
-		buffer.GetSize(),
+		(const FT_Byte*)buffer.getData(),
+		buffer.getSize(),
 		0,
 		&face);
 	LN_THROW(err == FT_Err_Ok, InvalidOperationException, "failed FT_New_Memory_Face : %d\n", err);
@@ -214,7 +214,7 @@ void FontManager::RegisterFontFile(const String& fontFilePath)
 	if (face->num_faces == 1)
 	{
 		String familyName(face->family_name);
-		uint32_t key = Hash::CalcHash(familyName.c_str());
+		uint32_t key = Hash::calcHash(familyName.c_str());
 		if (m_ttfDataEntryMap.find(key) == m_ttfDataEntryMap.end())
 		{
 			TTFDataEntry e;
@@ -223,11 +223,11 @@ void FontManager::RegisterFontFile(const String& fontFilePath)
 			e.CollectionIndex = 0;
 			m_ttfDataEntryMap.insert(TTFDataEntryPair(key, e));
 
-			ln::Logger::WriteLine("Registered font file. [%s]", face->family_name);
+			ln::Logger::writeLine("Registered font file. [%s]", face->family_name);
 
 			//// 初回登録の場合はデフォルトフォント名として登録する
 			//if (m_ttfDataEntryMap.size() == 1) {
-			//	m_defaultFont->SetName(familyName);
+			//	m_defaultFont->setName(familyName);
 			//}
 		}
 		FT_Done_Face(face);
@@ -244,14 +244,14 @@ void FontManager::RegisterFontFile(const String& fontFilePath)
 		{
 			err = FT_New_Memory_Face(
 				m_ftLibrary,
-				(const FT_Byte*)buffer.GetData(),
-				buffer.GetSize(),
+				(const FT_Byte*)buffer.getData(),
+				buffer.getSize(),
 				i,
 				&face);
 			LN_THROW(err == FT_Err_Ok, InvalidOperationException, "failed FT_New_Memory_Face : %d\n", err);
 
 			String familyName(face->family_name);
-			uint32_t key = Hash::CalcHash(familyName.c_str());
+			uint32_t key = Hash::calcHash(familyName.c_str());
 			if (m_ttfDataEntryMap.find(key) == m_ttfDataEntryMap.end())
 			{
 				TTFDataEntry e;
@@ -260,11 +260,11 @@ void FontManager::RegisterFontFile(const String& fontFilePath)
 				e.CollectionIndex = i;
 				m_ttfDataEntryMap.insert(TTFDataEntryPair(key, e));
 
-				ln::Logger::WriteLine("Registered font file. [%s]", face->family_name);
+				ln::Logger::writeLine("Registered font file. [%s]", face->family_name);
 
 				//// 初回登録の場合はデフォルトフォント名として登録する
 				//if (m_ttfDataEntryMap.size() == 1) {
-				//	m_defaultFont->SetName(familyName);
+				//	m_defaultFont->setName(familyName);
 				//}
 			}
 			FT_Done_Face(face);
@@ -277,47 +277,47 @@ void FontManager::RegisterFontFile(const String& fontFilePath)
 }
 
 //------------------------------------------------------------------------------
-void FontManager::SetDefaultRawFont(RawFont* font)
+void FontManager::setDefaultRawFont(RawFont* font)
 {
 	LN_REFOBJ_SET(m_defaultRawFont, font);
 }
 
 //------------------------------------------------------------------------------
-FontPtr FontManager::GetBuiltinFont(BuiltinFontSize size) const
+FontPtr FontManager::getBuiltinFont(BuiltinFontSize size) const
 {
 	return m_builtinFontList[(int)size];
 }
 
 //------------------------------------------------------------------------------
-RawFontPtr FontManager::LookupRawFont(const detail::FontData& keyData)
+RawFontPtr FontManager::lookupRawFont(const detail::FontData& keyData)
 {
-	CacheKey key(keyData.CalcHash());
-	RawFont* ptr = static_cast<RawFont*>(m_rawFontCache->FindObjectAddRef(key));
+	CacheKey key(keyData.calcHash());
+	RawFont* ptr = static_cast<RawFont*>(m_rawFontCache->findObjectAddRef(key));
 	if (ptr != nullptr) return RawFontPtr(ptr, false);	// found
 
 	RawFontPtr ref;
-	if (keyData.Family.IsEmpty())
+	if (keyData.Family.isEmpty())
 	{
-		ref = GetDefaultRawFont()->Copy();
+		ref = getDefaultRawFont()->copy();
 	}
 	else
 	{
-		auto ftFont = NewObject<FreeTypeFont>();
+		auto ftFont = newObject<FreeTypeFont>();
 		ref = ftFont;
 	}
 
-	ref->SetName(keyData.Family);
-	ref->SetSize(keyData.Size);
-	ref->SetBold(keyData.IsBold);
-	ref->SetItalic(keyData.IsItalic);
-	ref->SetAntiAlias(keyData.IsAntiAlias);
+	ref->setName(keyData.Family);
+	ref->setSize(keyData.Size);
+	ref->setBold(keyData.isBold);
+	ref->setItalic(keyData.isItalic);
+	ref->setAntiAlias(keyData.isAntiAlias);
 
-	m_rawFontCache->RegisterCacheObject(key, ref);
-	return RawFontPtr::StaticCast(ref);
+	m_rawFontCache->registerCacheObject(key, ref);
+	return RawFontPtr::staticCast(ref);
 }
 
 //------------------------------------------------------------------------------
-FT_Error FontManager::FaceRequester(
+FT_Error FontManager::faceRequester(
 	FTC_FaceID face_id,
 	FT_Library library,
 	FT_Pointer request_data,
@@ -336,8 +336,8 @@ FT_Error FontManager::FaceRequester(
 		FT_Face face;
 		FT_Error err = FT_New_Memory_Face(
 			m_ftLibrary,
-			(const FT_Byte*)itr->second.DataBuffer.GetConstData(),
-			itr->second.DataBuffer.GetSize(),
+			(const FT_Byte*)itr->second.DataBuffer.getConstData(),
+			itr->second.DataBuffer.getSize(),
 			itr->second.CollectionIndex,
 			&face);
 		LN_THROW(err == FT_Err_Ok, InvalidOperationException, "failed FT_New_Memory_Face : %d\n", err);
@@ -356,7 +356,7 @@ FT_Error FontManager::FaceRequester(
 	else if (m_requesterFaceName != NULL)
 	{
 		// 名前からシステムフォント検索
-		TSystemFontData* systemFont = GetWindowsSystemFontData(m_requesterFaceName);
+		TSystemFontData* systemFont = getWindowsSystemFontData(m_requesterFaceName);
 		m_requesterFaceName = NULL;
 		if (systemFont == NULL){
 			return FT_Err_Cannot_Open_Resource;
@@ -365,16 +365,16 @@ FT_Error FontManager::FaceRequester(
 		// リソースロック
 		size_t size = 0;
 		int index = 0;
-		byte_t* data = LockWindowsSystemFontData(systemFont, &size, &index);
+		byte_t* data = lockWindowsSystemFontData(systemFont, &size, &index);
 		if (data == NULL){
-			FreeWindowsSystemFontData(systemFont);
+			freeWindowsSystemFontData(systemFont);
 			return FT_Err_Cannot_Open_Resource;
 		}
 
 		// FreeType の読み取りストリーム
 		FT_Stream stream = (FT_Stream)malloc(sizeof(FT_StreamRec));
 		if (stream == NULL){
-			FreeWindowsSystemFontData(systemFont);
+			freeWindowsSystemFontData(systemFont);
 			return FT_Err_Out_Of_Memory;
 		}
 		memset(stream, 0, sizeof(FT_StreamRec));
@@ -383,8 +383,8 @@ FT_Error FontManager::FaceRequester(
 		stream->pos = 0;
 		stream->descriptor.pointer = systemFont;
 		stream->pathname.pointer = NULL;
-		stream->read = StreamIoFunc;
-		stream->close = StreamCloseFunc;
+		stream->read = streamIoFunc;
+		stream->close = streamCloseFunc;
 
 		FT_Open_Args args;
 		memset(&args, 0, sizeof(args));
@@ -416,13 +416,13 @@ FT_Error FontManager::FaceRequester(
 }
 
 //------------------------------------------------------------------------------
-FT_Error FontManager::CallbackFaceRequester(
+FT_Error FontManager::callbackFaceRequester(
 	FTC_FaceID face_id,
 	FT_Library library,
 	FT_Pointer request_data,
 	FT_Face* aface)
 {
-	return ((FontManager*)request_data)->FaceRequester(face_id, library, request_data, aface);
+	return ((FontManager*)request_data)->faceRequester(face_id, library, request_data, aface);
 }
 
 
@@ -432,7 +432,7 @@ FT_Error FontManager::CallbackFaceRequester(
 #define TVP_TT_TABLE_name  (('n' << 0) + ('a' << 8) + ('m' << 16) + ('e' << 24))
 
 //------------------------------------------------------------------------------
-FontManager::TSystemFontData* FontManager::GetWindowsSystemFontData(LPCTSTR name)
+FontManager::TSystemFontData* FontManager::getWindowsSystemFontData(LPCTSTR name)
 {
 	DWORD result;
 	TSystemFontData *p = (TSystemFontData*)malloc(sizeof(TSystemFontData));
@@ -475,7 +475,7 @@ FontManager::TSystemFontData* FontManager::GetWindowsSystemFontData(LPCTSTR name
 }
 
 //------------------------------------------------------------------------------
-unsigned char* FontManager::LockWindowsSystemFontData(TSystemFontData *fnt, size_t *size, int *index)
+unsigned char* FontManager::lockWindowsSystemFontData(TSystemFontData *fnt, size_t *size, int *index)
 {
 	unsigned char *name_content = NULL; // Windows から取得した name タグの内容
 	unsigned char *name_content_ft = NULL; // FreeType から取得した name タグの内容
@@ -601,7 +601,7 @@ unsigned char* FontManager::LockWindowsSystemFontData(TSystemFontData *fnt, size
 }
 
 //------------------------------------------------------------------------------
-void FontManager::FreeWindowsSystemFontData(TSystemFontData *fnt)
+void FontManager::freeWindowsSystemFontData(TSystemFontData *fnt)
 {
 	if (fnt == NULL){
 		return;
@@ -616,7 +616,7 @@ void FontManager::FreeWindowsSystemFontData(TSystemFontData *fnt)
 }
 
 //------------------------------------------------------------------------------
-unsigned long FontManager::StreamIoFunc(
+unsigned long FontManager::streamIoFunc(
 	FT_Stream stream,
 	unsigned long offset,
 	unsigned char* buffer,
@@ -643,9 +643,9 @@ unsigned long FontManager::StreamIoFunc(
 }
 
 //------------------------------------------------------------------------------
-void FontManager::StreamCloseFunc(FT_Stream stream)
+void FontManager::streamCloseFunc(FT_Stream stream)
 {
-	FreeWindowsSystemFontData((TSystemFontData*)stream->descriptor.pointer);
+	freeWindowsSystemFontData((TSystemFontData*)stream->descriptor.pointer);
 	free(stream);
 }
 #endif

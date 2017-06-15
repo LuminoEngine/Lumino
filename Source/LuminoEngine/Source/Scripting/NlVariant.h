@@ -22,17 +22,17 @@ public:
 	NlVariant();
 	~NlVariant();
 	
-	NlVariantType GetType() const { return m_type; }
+	NlVariantType getType() const { return m_type; }
 
 
-	void SetValue(int32_t value) { m_type = NlVariantType::Int32; m_int32 = value; }
+	void setValue(int32_t value) { m_type = NlVariantType::Int32; m_int32 = value; }
 
 
 	template<typename T>
-	T GetValue() { return T(); }
+	T getValue() { return T(); }
 
 	template<>
-	int32_t GetValue<int32_t>() { return m_int32; }
+	int32_t getValue<int32_t>() { return m_int32; }
 
 	//NlVariant(const NlVariant& other);
 

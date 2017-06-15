@@ -20,30 +20,30 @@ AnimationManager::~AnimationManager()
 {
 	//for (auto& ac : m_clockList)
 	//{
-	//	auto obj = ac->GetTargetObject().Resolve();
+	//	auto obj = ac->GetTargetObject().resolve();
 	//	if (!obj.IsNull())
 	//	{
-	//		auto* data = tr::ReflectionHelper::RequestAnimationData<Object, detail::RefrectionObjectAnimationData>(obj);
+	//		auto* data = tr::ReflectionHelper::requestAnimationData<Object, detail::RefrectionObjectAnimationData>(obj);
 	//		data->playingAnimationClockList.Remove(ac);
 	//	}
 	//}
 }
 
 //------------------------------------------------------------------------------
-void AnimationManager::Initialize()
+void AnimationManager::initialize()
 {
 }
 
 //------------------------------------------------------------------------------
-void AnimationManager::AdvanceTime(float deltaTime)
+void AnimationManager::advanceTime(float deltaTime)
 {
 	auto itr = m_clockList.begin();
 	auto end = m_clockList.end();
 	while (itr != end)
 	{
-		if (!(*itr)->IsFinished())
+		if (!(*itr)->isFinished())
 		{
-			(*itr)->AdvanceTime(deltaTime);
+			(*itr)->advanceTime(deltaTime);
 			++itr;
 		}
 		else
@@ -55,16 +55,16 @@ void AnimationManager::AdvanceTime(float deltaTime)
 }
 
 //------------------------------------------------------------------------------
-void AnimationManager::AddAnimationClock(AnimationClock* clock)
+void AnimationManager::addAnimationClock(AnimationClock* clock)
 {
-	m_clockList.Add(clock);
+	m_clockList.add(clock);
 }
 
 //------------------------------------------------------------------------------
 //AnimationClock* AnimationManager::StartPropertyAnimation(AnimationClockArgs* list, int listCount)
 //{
 //	auto ac = RefPtr<AnimationClock>::MakeRef();
-//	ac->Initialize(list, listCount);
+//	ac->initialize(list, listCount);
 //	m_clockList.Add(ac);
 //	return ac;
 //}

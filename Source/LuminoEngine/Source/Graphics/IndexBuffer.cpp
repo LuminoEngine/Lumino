@@ -17,7 +17,7 @@ LN_NAMESPACE_BEGIN
 @param[in]	format			: インデックスバッファのフォーマット
 @param[in]	usage			: インデックスバッファリソースの使用方法
 */
-//static IndexBuffer* Create(int indexCount, const void* initialData = NULL, IndexBufferFormat format = IndexBufferFormat_UInt16, DeviceResourceUsage usage = DeviceResourceUsage_Static);
+//static IndexBuffer* create(int indexCount, const void* initialData = NULL, IndexBufferFormat format = IndexBufferFormat_UInt16, DeviceResourceUsage usage = DeviceResourceUsage_Static);
 
 /**
 @brief		インデックスバッファを作成します。
@@ -28,16 +28,16 @@ LN_NAMESPACE_BEGIN
 @param[in]	usage			: インデックスバッファリソースの使用方法
 @details	この関数はデフォルト以外の GraphicsManager を指定して作成する場合に使用します。
 */
-//static IndexBuffer* Create(GraphicsManager* manager, int indexCount, const void* initialData = NULL, IndexBufferFormat format = IndexBufferFormat_UInt16, DeviceResourceUsage usage = DeviceResourceUsage_Static);
+//static IndexBuffer* create(GraphicsManager* manager, int indexCount, const void* initialData = NULL, IndexBufferFormat format = IndexBufferFormat_UInt16, DeviceResourceUsage usage = DeviceResourceUsage_Static);
 
 ////------------------------------------------------------------------------------
-//IndexBuffer* IndexBuffer::Create(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
+//IndexBuffer* IndexBuffer::create(int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
 //{
-//	return Create(GraphicsManager::GetInstance(), indexCount, initialData, format, usage);
+//	return create(GraphicsManager::getInstance(), indexCount, initialData, format, usage);
 //}
 //
 ////------------------------------------------------------------------------------
-//IndexBuffer* IndexBuffer::Create(GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
+//IndexBuffer* IndexBuffer::create(GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, DeviceResourceUsage usage)
 //{
 //	LN_THROW(manager != NULL, ArgumentException);
 //	return LN_NEW IndexBuffer(manager, indexCount, initialData, format, usage);
@@ -62,41 +62,41 @@ IndexBuffer::~IndexBuffer()
 }
 
 //------------------------------------------------------------------------------
-void IndexBuffer::Initialize(detail::GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage, bool sizeConst)
+void IndexBuffer::initialize(detail::GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage, bool sizeConst)
 {
-	GraphicsResourceObject::Initialize();
+	GraphicsResourceObject::initialize();
 	m_format = format;
 	m_usage = usage;
 
 	if (sizeConst)
 	{
-		m_rhiObject.Attach(m_manager->GetGraphicsDevice()->CreateIndexBuffer(indexCount, initialData, m_format, m_usage), false);
+		m_rhiObject.attach(m_manager->getGraphicsDevice()->createIndexBuffer(indexCount, initialData, m_format, m_usage), false);
 	}
 	else
 	{
-		m_buffer.resize(Utils::GetIndexBufferSize(m_format, indexCount));
+		m_buffer.resize(Utils::getIndexBufferSize(m_format, indexCount));
 	}
 }
 
 //------------------------------------------------------------------------------
 void IndexBuffer::Dispose()
 {
-	m_rhiObject.SafeRelease();
+	m_rhiObject.safeRelease();
 	GraphicsResourceObject::Dispose();
 }
 
 //------------------------------------------------------------------------------
-int IndexBuffer::GetIndexCount() const
+int IndexBuffer::getIndexCount() const
 {
-	return static_cast<int>(m_buffer.size() / Utils::GetIndexStride(m_format));
+	return static_cast<int>(m_buffer.size() / Utils::getIndexStride(m_format));
 }
 
 //------------------------------------------------------------------------------
-void IndexBuffer::Reserve(int indexCount)
+void IndexBuffer::reserve(int indexCount)
 {
-	if (LN_CHECK_STATE(!IsRHIDirect())) return;		// サイズ変更禁止
+	if (LN_CHECK_STATE(!isRHIDirect())) return;		// サイズ変更禁止
 
-	size_t newSize = static_cast<size_t>(indexCount * GetIndexStride());
+	size_t newSize = static_cast<size_t>(indexCount * getIndexStride());
 	if (newSize != m_buffer.capacity())
 	{
 		m_buffer.reserve(newSize);
@@ -104,12 +104,12 @@ void IndexBuffer::Reserve(int indexCount)
 }
 
 //------------------------------------------------------------------------------
-void IndexBuffer::Resize(int indexCount)
+void IndexBuffer::resize(int indexCount)
 {
-	if (LN_CHECK_STATE(!IsRHIDirect())) return;		// サイズ変更禁止
+	if (LN_CHECK_STATE(!isRHIDirect())) return;		// サイズ変更禁止
 
-	UpdateFormat(indexCount);
-	size_t newSize = static_cast<size_t>(indexCount* GetIndexStride());
+	updateFormat(indexCount);
+	size_t newSize = static_cast<size_t>(indexCount* getIndexStride());
 	if (newSize != m_buffer.size())
 	{
 		m_buffer.resize(newSize);
@@ -117,17 +117,17 @@ void IndexBuffer::Resize(int indexCount)
 }
 
 //------------------------------------------------------------------------------
-void* IndexBuffer::GetMappedData()
+void* IndexBuffer::getMappedData()
 {
 	if (m_usage == ResourceUsage::Static)
 	{
-		// sizeConst で、まだ1度も SetVertexBufferCommand に入っていない場合は直接 Lock で書き換えできる
+		// sizeConst で、まだ1度も SetVertexBufferCommand に入っていない場合は直接 lock で書き換えできる
 		if (m_initialUpdate && m_rhiObject != nullptr)
 		{
 			if (m_rhiLockedBuffer == nullptr)
 			{
 				size_t lockedSize;
-				m_rhiObject->Lock(&m_rhiLockedBuffer, &lockedSize);
+				m_rhiObject->lock(&m_rhiLockedBuffer, &lockedSize);
 			}
 			m_locked = true;
 			return m_rhiLockedBuffer;
@@ -139,26 +139,26 @@ void* IndexBuffer::GetMappedData()
 }
 
 //------------------------------------------------------------------------------
-void* IndexBuffer::RequestMappedData(int indexCount)
+void* IndexBuffer::requestMappedData(int indexCount)
 {
-	if (GetIndexCount() < indexCount)
+	if (getIndexCount() < indexCount)
 	{
-		Resize(indexCount);
+		resize(indexCount);
 	}
-	return GetMappedData();
+	return getMappedData();
 }
 
 //------------------------------------------------------------------------------
-void IndexBuffer::Clear()
+void IndexBuffer::clear()
 {
 	m_buffer.clear();
 	m_locked = true;
 }
 
 //------------------------------------------------------------------------------
-void IndexBuffer::SetIndex(int index, int vertexIndex)
+void IndexBuffer::setIndex(int index, int vertexIndex)
 {
-	void* indexBuffer = GetMappedData();
+	void* indexBuffer = getMappedData();
 
 	if (m_format == IndexBufferFormat_UInt16)
 	{
@@ -177,30 +177,30 @@ void IndexBuffer::SetIndex(int index, int vertexIndex)
 }
 
 //------------------------------------------------------------------------------
-Driver::IIndexBuffer* IndexBuffer::ResolveRHIObject()
+Driver::IIndexBuffer* IndexBuffer::resolveRHIObject()
 {
 	if (m_locked)
 	{
-		if (IsRHIDirect())
+		if (isRHIDirect())
 		{
-			m_rhiObject->Unlock();
+			m_rhiObject->unlock();
 		}
 		else
 		{
-			if (m_rhiObject == nullptr || m_rhiObject->GetByteCount() != m_buffer.size())
+			if (m_rhiObject == nullptr || m_rhiObject->getByteCount() != m_buffer.size())
 			{
-				m_rhiObject.Attach(m_manager->GetGraphicsDevice()->CreateIndexBuffer(GetIndexCount(), m_buffer.data(), m_format, m_usage), false);
+				m_rhiObject.attach(m_manager->getGraphicsDevice()->createIndexBuffer(getIndexCount(), m_buffer.data(), m_format, m_usage), false);
 			}
 			else
 			{
-				RenderBulkData data(m_buffer.data(), m_buffer.size());
+				detail::RenderBulkData data(m_buffer.data(), m_buffer.size());
 				Driver::IIndexBuffer* deviceObj = m_rhiObject;
 				LN_ENQUEUE_RENDER_COMMAND_2(
 					VertexBuffer_SetSubData, m_manager,
-					RenderBulkData, data,
+					detail::RenderBulkData, data,
 					RefPtr<Driver::IIndexBuffer>, deviceObj,
 					{
-						deviceObj->SetSubData(0, data.GetData(), data.GetSize());
+						deviceObj->setSubData(0, data.getData(), data.getSize());
 					});
 			}
 		}
@@ -210,40 +210,40 @@ Driver::IIndexBuffer* IndexBuffer::ResolveRHIObject()
 }
 
 //------------------------------------------------------------------------------
-int IndexBuffer::GetIndexStride() const
+int IndexBuffer::getIndexStride() const
 {
-	return Utils::GetIndexStride(m_format);
+	return Utils::getIndexStride(m_format);
 }
 
 //------------------------------------------------------------------------------
-void IndexBuffer::OnChangeDevice(Driver::IGraphicsDevice* device)
+void IndexBuffer::onChangeDevice(Driver::IGraphicsDevice* device)
 {
 	if (device == nullptr)
 	{
 		// 必要があればデータを保存する
 		if (m_pool == GraphicsResourcePool::Managed)
 		{
-			m_buffer.resize(m_rhiObject->GetByteCount());
+			m_buffer.resize(m_rhiObject->getByteCount());
 
 			void* buffer;
 			size_t size;
-			m_rhiObject->Lock(&buffer, &size);
+			m_rhiObject->lock(&buffer, &size);
 			memcpy(m_buffer.data(), buffer, m_buffer.size());
-			m_rhiObject->Unlock();
+			m_rhiObject->unlock();
 		}
 
 		// オブジェクト破棄
-		m_rhiObject.SafeRelease();
+		m_rhiObject.safeRelease();
 	}
 	else
 	{
-		// 復帰後は次の ResolveDeviceObject() で新しい RHI オブジェクトにセットされる
+		// 復帰後は次の resolveDeviceObject() で新しい RHI オブジェクトにセットされる
 		m_locked = true;
 	}
 }
 
 //------------------------------------------------------------------------------
-void IndexBuffer::UpdateFormat(int indexCount)
+void IndexBuffer::updateFormat(int indexCount)
 {
 	if (m_format == IndexBufferFormat_UInt16 && indexCount > 0xFFFF)
 	{

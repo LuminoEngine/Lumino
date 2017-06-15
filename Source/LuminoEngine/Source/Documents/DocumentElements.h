@@ -38,16 +38,16 @@ class Document
 public:
 	Document();
 	virtual ~Document();
-	void Initialize();
+	void initialize();
 
 	// 現在の内容をすべて破棄して、新しい1つの Paragraph を作る
-	void SetText(const StringRef& text);
+	void setText(const StringRef& text);
 
 LN_INTERNAL_ACCESS:
-	void Replace(int offset, int length, const StringRef& text);
+	void replace(int offset, int length, const StringRef& text);
 
 private:
-	void Replace(int offset, int length, const UTF32* text, int len);
+	void replace(int offset, int length, const UTF32* text, int len);
 
 	DocumentsManager*		m_manager;
 	List<RefPtr<Block>>		m_blockList;
@@ -63,82 +63,82 @@ class TextElement
 public:
 
 	/** フォントファミリ名を設定します。*/
-	void SetFontFamily(const StringRef& value) { m_fontData.Family = value; m_fontDataModified = true; }
+	void setFontFamily(const StringRef& value) { m_fontData.Family = value; m_fontDataModified = true; }
 
 	/** フォントファミリ名を取得します。*/
-	const String& GetFontFamily() const { return m_fontData.Family; }
+	const String& getFontFamily() const { return m_fontData.Family; }
 
 	/** フォントサイズを設定します。*/
-	void SetFontSize(int value) { m_fontData.Size = value; m_fontDataModified = true; }
+	void setFontSize(int value) { m_fontData.Size = value; m_fontDataModified = true; }
 
 	/** フォントサイズを取得します。*/
-	int GetFontSize() const { return m_fontData.Size; }
+	int getFontSize() const { return m_fontData.Size; }
 
 	/** フォントの太字有無を設定します。*/
-	void SetFontBold(bool value) { m_fontData.IsBold = value; m_fontDataModified = true; }
+	void setFontBold(bool value) { m_fontData.isBold = value; m_fontDataModified = true; }
 
 	/** フォントの太字有無を取得します。*/
-	bool IsFontBold() const { return m_fontData.IsBold; }
+	bool isFontBold() const { return m_fontData.isBold; }
 
 	/** フォントのイタリック体有無を設定します。*/
-	void SetFontItalic(bool value) { m_fontData.IsItalic = value; m_fontDataModified = true; }
+	void setFontItalic(bool value) { m_fontData.isItalic = value; m_fontDataModified = true; }
 
 	/** フォントのイタリック体有無を取得します。*/
-	bool IsFontItalic() const { return m_fontData.IsItalic; }
+	bool isFontItalic() const { return m_fontData.isItalic; }
 
 	/** フォントのアンチエイリアス有無を設定します。*/
-	void SetFontAntiAlias(bool value) { m_fontData.IsAntiAlias = value; m_fontDataModified = true; }
+	void setFontAntiAlias(bool value) { m_fontData.isAntiAlias = value; m_fontDataModified = true; }
 
 	/** フォントのアンチエイリアス有無を取得します。*/
-	bool IsFontAntiAlias() const { return m_fontData.IsAntiAlias; }
+	bool isFontAntiAlias() const { return m_fontData.isAntiAlias; }
 
-	Brush* GetForeground() const;
+	Brush* getForeground() const;
 
 
-	virtual void Render(const Matrix& transform, IDocumentsRenderer* renderer);
+	virtual void render(const Matrix& transform, IDocumentsRenderer* renderer);
 
 LN_PROTECTED_INTERNAL_ACCESS:
-	virtual void OnFontDataChanged(const FontData& newData);
+	virtual void onFontDataChanged(const FontData& newData);
 
 	// ILayoutElement interface
-	virtual const PointF& GetLayoutPosition() const override;
-	virtual Size GetLayoutSize() const override;
-	virtual const ThicknessF& GetLayoutMargin() const override;
-	virtual const ThicknessF& GetLayoutPadding() const override;
-	virtual AlignmentAnchor GetLayoutAnchor() const override;
-	virtual HAlignment GetLayoutHAlignment() const override;
-	virtual VAlignment GetLayoutVAlignment() const override;
-	virtual void GetLayoutMinMaxInfo(Size* outMin, Size* outMax) const override;
-	virtual ILayoutElement* GetLayoutParent() const override;
-	virtual const HAlignment* GetLayoutContentHAlignment() override;
-	virtual const VAlignment* GetLayoutContentVAlignment() override;
-	virtual const Size& GetLayoutDesiredSize() const override;
-	virtual void SetLayoutDesiredSize(const Size& size) override;
-	virtual void SetLayoutFinalLocalRect(const Rect& rect) override;
-	virtual const Rect& GetLayoutFinalLocalRect() const override;
-	virtual void SetLayoutFinalGlobalRect(const Rect& rect) override;
-	virtual int GetVisualChildrenCount() const override;
-	virtual ILayoutElement* GetVisualChild(int index) const override;
-	virtual int GetLayoutColumn() const override;
-	virtual int GetLayoutRow() const override;
-	virtual int GetLayoutColumnSpan() const override;
-	virtual int GetLayoutRowSpan() const override;
+	virtual const PointF& getLayoutPosition() const override;
+	virtual Size getLayoutSize() const override;
+	virtual const ThicknessF& getLayoutMargin() const override;
+	virtual const ThicknessF& getLayoutPadding() const override;
+	virtual AlignmentAnchor getLayoutAnchor() const override;
+	virtual HAlignment getLayoutHAlignment() const override;
+	virtual VAlignment getLayoutVAlignment() const override;
+	virtual void getLayoutMinMaxInfo(Size* outMin, Size* outMax) const override;
+	virtual ILayoutElement* getLayoutParent() const override;
+	virtual const HAlignment* getLayoutContentHAlignment() override;
+	virtual const VAlignment* getLayoutContentVAlignment() override;
+	virtual const Size& getLayoutDesiredSize() const override;
+	virtual void setLayoutDesiredSize(const Size& size) override;
+	virtual void setLayoutFinalLocalRect(const Rect& rect) override;
+	virtual const Rect& getLayoutFinalLocalRect() const override;
+	virtual void setLayoutFinalGlobalRect(const Rect& rect) override;
+	virtual int getVisualChildrenCount() const override;
+	virtual ILayoutElement* getVisualChild(int index) const override;
+	virtual int getLayoutColumn() const override;
+	virtual int getLayoutRow() const override;
+	virtual int getLayoutColumnSpan() const override;
+	virtual int getLayoutRowSpan() const override;
 
 	// ILayoutElement interface
-	virtual Size MeasureOverride(const Size& constraint) override;
+	virtual Size measureOverride(const Size& constraint) override;
 
 LN_CONSTRUCT_ACCESS:
 	TextElement();
 	virtual ~TextElement();
-	void Initialize();
+	void initialize();
 
 LN_INTERNAL_ACCESS:
-	DocumentsManager* GetManager() const { return m_manager; }
-	virtual InternalTextElementType GetInternalTextElementType() const;
-	void SetParent(TextElement* parent) { m_parent = parent; }
-	TextElement* GetParent() const { return m_parent; }
-	const Size& GetDesiredSize() const { return m_desiredSize; }
-	const Size& GetRenderSize() const { return m_finalLocalRect.GetSize(); }
+	DocumentsManager* getManager() const { return m_manager; }
+	virtual InternalTextElementType getInternalTextElementType() const;
+	void setParent(TextElement* parent) { m_parent = parent; }
+	TextElement* getParent() const { return m_parent; }
+	const Size& getDesiredSize() const { return m_desiredSize; }
+	const Size& getRenderSize() const { return m_finalLocalRect.getSize(); }
 
 private:
 	DocumentsManager*		m_manager;
@@ -170,20 +170,20 @@ class Block
 public:
 	Block();
 	virtual ~Block();
-	void Initialize();
+	void initialize();
 
-	void AddInline(Inline* inl);
-	void ClearInlines();
+	void addInline(Inline* inl);
+	void clearInlines();
 
-	virtual void Render(const Matrix& transform, IDocumentsRenderer* renderer);
+	virtual void render(const Matrix& transform, IDocumentsRenderer* renderer);
 
 protected:
-	virtual Size MeasureOverride(const Size& constraint) override;
-	virtual Size ArrangeOverride(const Size& finalSize) override;
+	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
 
 LN_INTERNAL_ACCESS:
-	void InsertInlines(int index, const List<RefPtr<Inline>>& inlines);
-	const List<RefPtr<Inline>>& GetInlines() const { return m_inlines; }
+	void insertInlines(int index, const List<RefPtr<Inline>>& inlines);
+	const List<RefPtr<Inline>>& getInlines() const { return m_inlines; }
 
 private:
 	List<RefPtr<Inline>>	m_inlines;
@@ -198,7 +198,7 @@ class Paragraph
 public:
 	Paragraph();
 	virtual ~Paragraph();
-	void Initialize();
+	void initialize();
 
 
 private:
@@ -213,7 +213,7 @@ class Inline
 public:
 	Inline();
 	virtual ~Inline();
-	void Initialize();
+	void initialize();
 
 private:
 };
@@ -221,24 +221,24 @@ private:
 /**
 	@brief
 */
-class Run
+class run
 	: public Inline
 {
 public:
-	Run();
-	virtual ~Run();
-	void Initialize();
-	void Initialize(const UTF32* str, int len);
+	run();
+	virtual ~run();
+	void initialize();
+	void initialize(const UTF32* str, int len);
 
-	void SetText(const StringRef& text);
+	void setText(const StringRef& text);
 
 protected:
 	// TextElement interface
-	virtual void OnFontDataChanged(const FontData& newData) override;
-	virtual void Render(const Matrix& transform, IDocumentsRenderer* renderer) override;
+	virtual void onFontDataChanged(const FontData& newData) override;
+	virtual void render(const Matrix& transform, IDocumentsRenderer* renderer) override;
 
 	// ILayoutElement interface
-	virtual Size MeasureOverride(const Size& constraint);
+	virtual Size measureOverride(const Size& constraint);
 
 private:
 	GenericStringBuilderCore<UTF32>	m_text;
@@ -254,7 +254,7 @@ class Span
 public:
 	Span();
 	virtual ~Span();
-	void Initialize();
+	void initialize();
 
 private:
 	// Inline List
@@ -270,10 +270,10 @@ class LineBreak
 public:
 	LineBreak();
 	virtual ~LineBreak();
-	void Initialize();
+	void initialize();
 
 private:
-	virtual InternalTextElementType GetInternalTextElementType() const;
+	virtual InternalTextElementType getInternalTextElementType() const;
 };
 
 
@@ -310,10 +310,10 @@ class VisualBlock
 	: public Object
 {
 public:
-	void SetParagraph(Paragraph* paragraph);
+	void setParagraph(Paragraph* paragraph);
 
 private:
-	void RebuildVisualLineList();
+	void rebuildVisualLineList();
 
 	RefPtr<Paragraph>			m_paragraph;
 	List<RefPtr<VisualLine>>	m_visualLineList;
@@ -326,7 +326,7 @@ class DocumentView
 public:
 
 private:
-	void Initialize(Document* document);
+	void initialize(Document* document);
 
 	Document*	m_document;
 };
