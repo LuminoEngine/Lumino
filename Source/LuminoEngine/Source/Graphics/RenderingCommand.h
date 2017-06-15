@@ -1,6 +1,5 @@
 ﻿
 #pragma once
-
 #include <vector>
 #include <Lumino/Base/Delegate.h>
 #include <Lumino/Base/GeometryStructs.h>
@@ -16,12 +15,13 @@
 #define LN_RC_TRACE /*printf*/
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 class SwapChain;
 class Texture;
 class VertexBuffer;
 class IndexBuffer;
 class ShaderPass;
+
+namespace detail {
 class RenderingCommandList;
 class RenderBulkData;
 
@@ -138,7 +138,7 @@ class RenderingCommandList
 public:
 	typedef size_t	DataHandle;
 
-	RenderingCommandList(detail::GraphicsManager* manager);
+	RenderingCommandList(detail::GraphicsManager* manager, intptr_t mainThreadId);
 	virtual ~RenderingCommandList();
 
 public:
@@ -148,7 +148,7 @@ public:
 	void execute(Driver::IGraphicsDevice* device/*, Device::IRenderer* renderer*/);
 
 	/// 後処理 (描画スレッドから呼ばれる)
-	void postExecute();
+	//void postExecute();
 
 	/// 描画キューに入っているか
 	bool isRunning() { return m_running.isTrue(); }
@@ -158,9 +158,9 @@ public:
 
 
 private:
-
 	static const size_t DataBufferReserve = 20;	// TODO: デバッグ用。もっと大きくて良い
 
+	void presentRHIAndEndExecute();
 
 private:
 	DataHandle allocCommand(size_t byteCount, const void* copyData);
@@ -210,8 +210,8 @@ public:
 public:
 	DataHandle allocExtData(size_t byteCount, const void* copyData);
 	void* getExtData(DataHandle bufferIndex);
-	void markGC(RefObject* obj) 
-	{ 
+	void markGC(RefObject* obj)
+	{
 		if (obj != NULL)	// テクスチャを解除したりするときは NULL が渡されてくる
 		{
 			obj->addRef();
@@ -221,6 +221,7 @@ public:
 
 private:
 	detail::GraphicsManager*	m_manager;
+	intptr_t					m_mainThreadId;		// for inspection
 	List<size_t>			m_commandList;
 	ByteBuffer				m_commandDataBuffer;
 	size_t					m_commandDataBufferUsed;
@@ -247,7 +248,7 @@ inline Driver::IRenderer* RenderingCommand::getRenderer() const
 	return m_commandList->m_currentRenderer;
 }
 inline RenderingCommand::DataHandle RenderingCommand::allocExtData(size_t byteCount, const void* copyData)
-{ 
+{
 	return m_commandList->allocExtData(byteCount, copyData);
 }
 inline void* RenderingCommand::getExtData(DataHandle handle)
@@ -268,6 +269,8 @@ inline void RenderingCommand::markBulkData<RenderBulkData>(RenderingCommandList*
 	value.alloc(commandList);
 }
 
+} // namespace detail
+
 #define LN_ENQUEUE_RENDER_COMMAND_PARAM(type, param) type param
 
 #define LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, commandName, ...) \
@@ -280,7 +283,7 @@ inline void RenderingCommand::markBulkData<RenderBulkData>(RenderingCommandList*
 	}
 
 #define LN_ENQUEUE_RENDER_COMMAND_1(name, manager, type1, param1, code) \
-	class RenderCommand_##name : public RenderingCommand \
+	class RenderCommand_##name : public ln::detail::RenderingCommand \
 	{ \
 	public: \
 		type1 param1; \
@@ -288,7 +291,7 @@ inline void RenderingCommand::markBulkData<RenderBulkData>(RenderingCommandList*
 			LN_ENQUEUE_RENDER_COMMAND_PARAM(type1, in_##param1)) \
 			: param1(in_##param1) \
 		{} \
-		void OnEnqueued(RenderingCommandList* commandList) \
+		void OnEnqueued(ln::detail::RenderingCommandList* commandList) \
 		{ \
 			RenderingCommand::markBulkData(commandList, param1); \
 		} \
@@ -300,7 +303,7 @@ inline void RenderingCommand::markBulkData<RenderBulkData>(RenderingCommandList*
 	LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, RenderCommand_##name, param1);
 
 #define LN_ENQUEUE_RENDER_COMMAND_2(name, manager, type1, param1, type2, param2, code) \
-	class RenderCommand_##name : public RenderingCommand \
+	class RenderCommand_##name : public ln::detail::RenderingCommand \
 	{ \
 	public: \
 		type1 param1; \
@@ -311,7 +314,7 @@ inline void RenderingCommand::markBulkData<RenderBulkData>(RenderingCommandList*
 			: param1(in_##param1) \
 			, param2(in_##param2) \
 		{} \
-		void OnEnqueued(RenderingCommandList* commandList) \
+		void OnEnqueued(ln::detail::RenderingCommandList* commandList) \
 		{ \
 			RenderingCommand::markBulkData(commandList, param1); \
 			RenderingCommand::markBulkData(commandList, param2); \
@@ -324,7 +327,7 @@ inline void RenderingCommand::markBulkData<RenderBulkData>(RenderingCommandList*
 	LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, RenderCommand_##name, param1, param2);
 
 #define LN_ENQUEUE_RENDER_COMMAND_3(name, manager, type1, param1, type2, param2, type3, param3, code) \
-	class RenderCommand_##name : public RenderingCommand \
+	class RenderCommand_##name : public ln::detail::RenderingCommand \
 	{ \
 	public: \
 		type1 param1; \
@@ -338,7 +341,7 @@ inline void RenderingCommand::markBulkData<RenderBulkData>(RenderingCommandList*
 			, param2(in_##param2) \
 			, param3(in_##param3) \
 		{} \
-		void OnEnqueued(RenderingCommandList* commandList) \
+		void OnEnqueued(ln::detail::RenderingCommandList* commandList) \
 		{ \
 			RenderingCommand::markBulkData(commandList, param1); \
 			RenderingCommand::markBulkData(commandList, param2); \
@@ -352,7 +355,7 @@ inline void RenderingCommand::markBulkData<RenderBulkData>(RenderingCommandList*
 	LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, RenderCommand_##name, param1, param2, param3);
 
 #define LN_ENQUEUE_RENDER_COMMAND_4(name, manager, type1, param1, type2, param2, type3, param3, type4, param4, code) \
-	class RenderCommand_##name : public RenderingCommand \
+	class RenderCommand_##name : public ln::detail::RenderingCommand \
 	{ \
 	public: \
 		type1 param1; \
@@ -369,7 +372,7 @@ inline void RenderingCommand::markBulkData<RenderBulkData>(RenderingCommandList*
 			, param3(in_##param3) \
 			, param4(in_##param4) \
 		{} \
-		void OnEnqueued(RenderingCommandList* commandList) \
+		void OnEnqueued(ln::detail::RenderingCommandList* commandList) \
 		{ \
 			RenderingCommand::markBulkData(commandList, param1); \
 			RenderingCommand::markBulkData(commandList, param2); \
@@ -384,7 +387,7 @@ inline void RenderingCommand::markBulkData<RenderBulkData>(RenderingCommandList*
 	LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, RenderCommand_##name, param1, param2, param3, param4);
 
 #define LN_ENQUEUE_RENDER_COMMAND_5(name, manager, type1, param1, type2, param2, type3, param3, type4, param4, type5, param5, code) \
-	class RenderCommand_##name : public RenderingCommand \
+	class RenderCommand_##name : public ln::detail::RenderingCommand \
 	{ \
 	public: \
 		type1 param1; \
@@ -404,7 +407,7 @@ inline void RenderingCommand::markBulkData<RenderBulkData>(RenderingCommandList*
 			, param4(in_##param4) \
 			, param5(in_##param5) \
 		{} \
-		void OnEnqueued(RenderingCommandList* commandList) \
+		void OnEnqueued(ln::detail::RenderingCommandList* commandList) \
 		{ \
 			RenderingCommand::markBulkData(commandList, param1); \
 			RenderingCommand::markBulkData(commandList, param2); \
@@ -420,7 +423,7 @@ inline void RenderingCommand::markBulkData<RenderBulkData>(RenderingCommandList*
 	LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, RenderCommand_##name, param1, param2, param3, param4, param5);
 
 #define LN_ENQUEUE_RENDER_COMMAND_6(name, manager, type1, param1, type2, param2, type3, param3, type4, param4, type5, param5, type6, param6, code) \
-	class RenderCommand_##name : public RenderingCommand \
+	class RenderCommand_##name : public ln::detail::RenderingCommand \
 	{ \
 	public: \
 		type1 param1; \
@@ -443,7 +446,7 @@ inline void RenderingCommand::markBulkData<RenderBulkData>(RenderingCommandList*
 			, param5(in_##param5) \
 			, param6(in_##param6) \
 		{} \
-		void OnEnqueued(RenderingCommandList* commandList) \
+		void OnEnqueued(ln::detail::RenderingCommandList* commandList) \
 		{ \
 			RenderingCommand::markBulkData(commandList, param1); \
 			RenderingCommand::markBulkData(commandList, param2); \
@@ -460,7 +463,7 @@ inline void RenderingCommand::markBulkData<RenderBulkData>(RenderingCommandList*
 	LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, RenderCommand_##name, param1, param2, param3, param4, param5, param6);
 
 #define LN_ENQUEUE_RENDER_COMMAND_7(name, manager, type1, param1, type2, param2, type3, param3, type4, param4, type5, param5, type6, param6, type7, param7, code) \
-	class RenderCommand_##name : public RenderingCommand \
+	class RenderCommand_##name : public ln::detail::RenderingCommand \
 	{ \
 	public: \
 		type1 param1; \
@@ -486,7 +489,7 @@ inline void RenderingCommand::markBulkData<RenderBulkData>(RenderingCommandList*
 			, param6(in_##param6) \
 			, param7(in_##param7) \
 		{} \
-		void OnEnqueued(RenderingCommandList* commandList) \
+		void OnEnqueued(ln::detail::RenderingCommandList* commandList) \
 		{ \
 			RenderingCommand::markBulkData(commandList, param1); \
 			RenderingCommand::markBulkData(commandList, param2); \
@@ -504,7 +507,7 @@ inline void RenderingCommand::markBulkData<RenderBulkData>(RenderingCommandList*
 	LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, RenderCommand_##name, param1, param2, param3, param4, param5, param6, param7);
 
 #define LN_ENQUEUE_RENDER_COMMAND_8(name, manager, type1, param1, type2, param2, type3, param3, type4, param4, type5, param5, type6, param6, type7, param7, type8, param8, code) \
-	class RenderCommand_##name : public RenderingCommand \
+	class RenderCommand_##name : public ln::detail::RenderingCommand \
 	{ \
 	public: \
 		type1 param1; \
@@ -533,7 +536,7 @@ inline void RenderingCommand::markBulkData<RenderBulkData>(RenderingCommandList*
 			, param7(in_##param7) \
 			, param8(in_##param8) \
 		{} \
-		void OnEnqueued(RenderingCommandList* commandList) \
+		void OnEnqueued(ln::detail::RenderingCommandList* commandList) \
 		{ \
 			RenderingCommand::markBulkData(commandList, param1); \
 			RenderingCommand::markBulkData(commandList, param2); \
@@ -553,7 +556,7 @@ inline void RenderingCommand::markBulkData<RenderBulkData>(RenderingCommandList*
 
 
 //==============================================================================
-struct SetSamplerStateCommand : public RenderingCommand
+struct SetSamplerStateCommand : public ln::detail::RenderingCommand
 {
 	Driver::ITexture* m_targetTexture;
 	SamplerState m_state;
@@ -570,7 +573,7 @@ struct SetSamplerStateCommand : public RenderingCommand
 };
 
 //==============================================================================
-struct SetShaderVariableCommand : public RenderingCommand
+struct SetShaderVariableCommand : public ln::detail::RenderingCommand
 {
 	union
 	{
@@ -678,7 +681,7 @@ struct SetShaderVariableCommand : public RenderingCommand
 		case ShaderVariableType_DeviceTexture:
 			m_target->setTexture(Texture);
 			break;
-		//case ShaderVariableType_String:
+			//case ShaderVariableType_String:
 		default:
 			break;
 		}
@@ -686,7 +689,7 @@ struct SetShaderVariableCommand : public RenderingCommand
 };
 
 //==============================================================================
-struct ApplyShaderPassCommand : public RenderingCommand
+struct ApplyShaderPassCommand : public ln::detail::RenderingCommand
 {
 	Driver::IShaderPass* m_pass;
 	void create(Driver::IShaderPass* pass)
@@ -698,7 +701,7 @@ struct ApplyShaderPassCommand : public RenderingCommand
 };
 
 //==============================================================================
-struct PresentCommand : public RenderingCommand
+struct PresentCommand : public ln::detail::RenderingCommand
 {
 	SwapChain* m_targetSwapChain;
 
@@ -713,9 +716,9 @@ struct PresentCommand : public RenderingCommand
 		m_targetSwapChain->PresentInternal();
 	}
 };
-	
+
 //==============================================================================
-struct SetSubDataTextureCommand : public RenderingCommand
+struct SetSubDataTextureCommand : public ln::detail::RenderingCommand
 {
 	Driver::ITexture*		m_targetTexture;
 	PointI					m_offset;
@@ -741,7 +744,7 @@ struct SetSubDataTextureCommand : public RenderingCommand
 };
 
 //==============================================================================
-struct ReadLockTextureCommand : public RenderingCommand
+struct ReadLockTextureCommand : public ln::detail::RenderingCommand
 {
 	Texture*	m_targetTexture;
 	void create(Texture* texture)
@@ -758,7 +761,7 @@ struct ReadLockTextureCommand : public RenderingCommand
 };
 
 //==============================================================================
-struct ReadUnlockTextureCommand : public RenderingCommand
+struct ReadUnlockTextureCommand : public ln::detail::RenderingCommand
 {
 	Texture*	m_targetTexture;
 	void create(Texture* texture)
@@ -775,5 +778,4 @@ struct ReadUnlockTextureCommand : public RenderingCommand
 	}
 };
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

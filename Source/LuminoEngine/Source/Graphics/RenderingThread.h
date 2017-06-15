@@ -6,7 +6,7 @@
 #include "RenderingCommand.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
+namespace detail {
 
 class RenderingThread
 	: public Thread
@@ -46,5 +46,5 @@ private:
 	Exception*							m_exception;
 };
 
-LN_NAMESPACE_GRAPHICS_END
+} // namespace detail
 LN_NAMESPACE_END

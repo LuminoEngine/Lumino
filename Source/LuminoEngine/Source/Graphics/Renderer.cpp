@@ -43,7 +43,7 @@ Renderer::Renderer(detail::GraphicsManager* manager)
 	GraphicsResourceObject::initialize();
 
 	//if (m_manager->getRenderingType() == GraphicsRenderingType::Deferred) {
-	m_primaryCommandList = LN_NEW RenderingCommandList(manager);
+	m_primaryCommandList = LN_NEW detail::RenderingCommandList(manager, Thread::getCurrentThreadId());
 	//}
 }
 
@@ -52,7 +52,7 @@ Renderer::~Renderer()
 {
 	if (m_primaryCommandList != NULL)
 	{
-		m_primaryCommandList->postExecute();	// present される前に解放されることの対策
+		m_primaryCommandList->clearCommands();	// present される前に解放されることの対策
 		LN_SAFE_RELEASE(m_primaryCommandList);
 	}
 
@@ -372,9 +372,11 @@ void Renderer::presentCommandList(SwapChain* swapChain)
 	renderingThread->pushRenderingCommand(m_primaryCommandList);
 
 	// swapChain の持っているコマンドリストとスワップ。それをプライマリにする。
-	RenderingCommandList* t = swapChain->m_commandList;
+	auto* t = swapChain->m_commandList;
 	swapChain->m_commandList = m_primaryCommandList;
 	m_primaryCommandList = t;
+
+	m_primaryCommandList->clearCommands();
 }
 
 //------------------------------------------------------------------------------

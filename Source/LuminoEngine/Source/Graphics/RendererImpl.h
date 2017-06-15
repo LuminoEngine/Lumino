@@ -132,7 +132,7 @@ LN_INTERNAL_ACCESS:
 	void verifyFrameBuffers();
 
 	Driver::IRenderer*		m_internal;
-	RenderingCommandList*	m_primaryCommandList;
+	detail::RenderingCommandList*	m_primaryCommandList;
 
 	RenderState				m_currentRenderState;
 	DepthStencilState		m_currentDepthStencilState;

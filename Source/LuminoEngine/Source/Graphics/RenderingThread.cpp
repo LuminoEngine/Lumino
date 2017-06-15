@@ -1,13 +1,11 @@
 ﻿
-#pragma once
-
 #include "../Internal.h"
 #include <Lumino/Profiler.h>
 #include "Device/GraphicsDriverInterface.h"
 #include "RenderingThread.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
+namespace detail {
 
 //------------------------------------------------------------------------------
 RenderingThread::RenderingThread()
@@ -42,7 +40,7 @@ void RenderingThread::Dispose()
 	MutexScopedLock lock(m_mutex);
 	for (RenderingCommandList* c : m_commandListQueue)
 	{
-		c->postExecute();		// TODO: デストラクタでやるべきかも？
+		c->clearCommands();		// TODO: デストラクタでやるべきかも？
 		c->m_running.setFalse();
 		c->m_idling.setTrue();
 		c->release();
@@ -127,7 +125,7 @@ void RenderingThread::execute()
 					m_exception = e.copy();
 				}
 			}
-			commandList->postExecute();
+			//commandList->postExecute();
 			//commandList->m_running.setFalse();
 			commandList->m_idling.setTrue();
 			commandList->release();
@@ -144,5 +142,5 @@ void RenderingThread::execute()
 	m_device->detachRenderingThread();
 }
 
-LN_NAMESPACE_GRAPHICS_END
+} // namespace detail
 LN_NAMESPACE_END

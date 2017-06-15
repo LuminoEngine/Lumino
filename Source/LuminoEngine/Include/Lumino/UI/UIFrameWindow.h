@@ -43,7 +43,6 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 	virtual void Dispose();
 	virtual bool onEvent(const PlatformEventArgs& e) override;
-	virtual void onRenderContents();
 	virtual void onPresentRenderingContexts();
 
 LN_INTERNAL_ACCESS:
@@ -56,7 +55,6 @@ LN_INTERNAL_ACCESS:
 
 private:
 	void initialize_UIRenderer();
-	void render_UIRenderer();
 	void executeDrawList_UIRenderer();
 	bool isStandaloneSwapChain() const { return !m_swapChain.isNull(); }
 
@@ -97,9 +95,6 @@ LN_INTERNAL_ACCESS:
 	//void injectElapsedTime(float elapsedTime);
 	void updateLayout(const Size& viewSize);	// TODO: ゆくゆくは SwapChain や Viewport も UIFrameWindow にもってくる。そのとき、この viewSize はいらなくなる
 	void renderUI();
-
-	//virtual bool onEvent(const PlatformEventArgs& e) override;
-	virtual void onRenderContents() override;
 	virtual void presentRenderingContexts() override;
 
 	CameraViewportLayer2* getDefaultCameraViewportLayer2D() const;

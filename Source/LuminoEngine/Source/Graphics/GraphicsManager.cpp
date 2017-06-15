@@ -468,7 +468,7 @@ void GraphicsManager::presentSwapChain(SwapChain* swapChain)
 		swapChain->PresentInternal();
 
 		// 一時メモリの解放とかをやっておく
-		getPrimaryRenderingCommandList()->postExecute();
+		getPrimaryRenderingCommandList()->clearCommands();
 	}
 	else
 	{

@@ -241,7 +241,7 @@ protected:
 	virtual void onChangeDevice(Driver::IGraphicsDevice* device);
 
 LN_INTERNAL_ACCESS:
-	friend class RenderingCommandList;
+	friend class detail::RenderingCommandList;
 	Shader();
 	void initialize(detail::GraphicsManager* manager, const StringRef& filePath, bool useTRSS = false);
 	void initialize(detail::GraphicsManager* manager, const void* code, int length, bool useTRSS = false);
@@ -523,7 +523,7 @@ LN_INTERNAL_ACCESS:
 	Shader* getOwnerShader() { return m_owner; }
 
 private:
-	friend class RenderingCommandList;
+	friend class detail::RenderingCommandList;
 	friend class ShaderTechnique;
 	ShaderPass(Shader* owner, Driver::IShaderPass* deviceObj);
 

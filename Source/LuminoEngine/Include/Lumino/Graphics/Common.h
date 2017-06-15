@@ -91,8 +91,6 @@ class ShaderPass;
 class GlyphRun;
 
 class Helper;
-class RenderingCommandList;
-class RenderingThread;
 
 class Brush;
 typedef RefPtr<Brush>				BrushPtr;
@@ -111,6 +109,13 @@ namespace Details
 {
 	class Renderer;
 }
+
+namespace detail
+{
+	class RenderingCommandList;
+	class RenderingThread;
+
+} // namespace detail
 
 /// グラフィックス API
 LN_ENUM(GraphicsAPI)

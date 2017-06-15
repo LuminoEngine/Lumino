@@ -518,7 +518,7 @@ void Shader::tryCommitChanges()
 		serializer->writeValue(v->getDeviceObject(), v->m_value);
 	}
 
-	RenderBulkData varsData(serializer->getSerializeData(), serializer->getSerializeDataLength());
+	detail::RenderBulkData varsData(serializer->getSerializeData(), serializer->getSerializeDataLength());
 
 	auto* cmdList = getManager()->getPrimaryRenderingCommandList();
 	byte_t* data = (byte_t*)varsData.alloc(cmdList);
@@ -528,7 +528,7 @@ void Shader::tryCommitChanges()
 	LN_ENQUEUE_RENDER_COMMAND_3(
 		CommitChanges, getManager(),
 		detail::GraphicsManager*, manager,
-		RenderBulkData, varsData,
+		detail::RenderBulkData, varsData,
 		RefPtr<Shader>, _this,
 		{
 			auto* serializer = manager->getShaderVariableCommitSerializeHelper();

@@ -162,10 +162,10 @@ void UIViewport::onRender(DrawingContext* g)
 	g->setRenderTarget(0, oldRT);
 	g->setDepthBuffer(oldDB);
 
-	Matrix transform;
-	makeViewBoxTransform(SizeI::fromFloatSize(getRenderSize()), m_backbufferSize, &transform);
+	//Matrix transform;
+	//makeViewBoxTransform(SizeI::fromFloatSize(getRenderSize()), m_backbufferSize, &transform);
 
-	g->blit(m_primaryLayerTarget, transform);	// TODO: 転送先指定
+	g->blit(m_primaryLayerTarget/*, transform*/);	// TODO: 転送先指定
 
 	// TODO: 暫定。blit の中で深度書き込みしないようにしてほしいかも。
 	g->clear(ClearFlags::Depth, Color());

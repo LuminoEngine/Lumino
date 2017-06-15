@@ -301,8 +301,8 @@ void Texture2D::applyModifies()
 		SizeI bmpSize = m_primarySurface2->getSize();
 
 		// 上下反転した一時ビットマップを作ってそれを転送する
-		RenderingCommandList* cmdList = m_manager->getPrimaryRenderingCommandList();
-		RenderBulkData bmpRawData;
+		auto* cmdList = m_manager->getPrimaryRenderingCommandList();
+		detail::RenderBulkData bmpRawData;
 		void* bmpRawDataBuf = bmpRawData.alloc(cmdList, bmpData->getSize());
 		Bitmap bmpTmp(bmpRawDataBuf, bmpSize, m_primarySurface2->getPixelFormat(), true);
 		bmpTmp.bitBlt(0, 0, m_primarySurface2, RectI(0, 0, bmpSize), Color32::White, false);
@@ -323,7 +323,7 @@ void Texture2D::applyModifies()
 			Driver::ITexture* deviceTexture = m_deviceObj;
 			LN_ENQUEUE_RENDER_COMMAND_3(
 				Texture3D_ApplyModifies, m_manager,
-				RenderBulkData, bmpRawData,
+				detail::RenderBulkData, bmpRawData,
 				SizeI, bmpSize,
 				RefPtr<Driver::ITexture>, deviceTexture,
 				{
@@ -543,11 +543,11 @@ void Texture3D::applyModifies()
 		}
 		else
 		{
-			RenderBulkData bmpRawData(bmpData->getConstData(), bmpData->getSize());
+			ln::detail::RenderBulkData bmpRawData(bmpData->getConstData(), bmpData->getSize());
 			Driver::ITexture* deviceTexture = m_deviceObj;
 			LN_ENQUEUE_RENDER_COMMAND_2(
 				Texture3D_ApplyModifies, m_manager,
-				RenderBulkData, bmpRawData,
+				ln::detail::RenderBulkData, bmpRawData,
 				RefPtr<Driver::ITexture>, deviceTexture,
 				{
 					deviceTexture->setSubData3D(Box32::Zero, bmpRawData.getData(), bmpRawData.getSize());
@@ -661,7 +661,7 @@ Bitmap* RenderTargetTexture::lock()
 {
 	if (m_manager->getRenderingType() == GraphicsRenderingType::Threaded)
 	{
-		RenderingCommandList* cmdList = m_manager->getRenderer()->m_primaryCommandList;
+		auto* cmdList = m_manager->getRenderer()->m_primaryCommandList;
 		cmdList->addCommand<ReadLockTextureCommand>(this);
 
 		// ここでたまっているコマンドをすべて実行する。
@@ -683,7 +683,7 @@ void RenderTargetTexture::unlock()
 {
 	if (m_manager->getRenderingType() == GraphicsRenderingType::Threaded)
 	{
-		RenderingCommandList* cmdList = m_manager->getRenderer()->m_primaryCommandList;
+		auto* cmdList = m_manager->getRenderer()->m_primaryCommandList;
 		cmdList->addCommand<ReadUnlockTextureCommand>(this);
 		//ReadUnlockTextureCommand::addCommand(cmdList, this);
 		//cmdList->ReadUnlockTexture(this);

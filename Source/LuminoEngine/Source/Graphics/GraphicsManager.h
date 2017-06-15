@@ -12,7 +12,6 @@ class EngineDiagCore;
 class FileManager;
 
 LN_NAMESPACE_GRAPHICS_BEGIN
-class RenderingThread;
 class GraphicsContext;
 class TextRenderer;
 class BitmapTextRenderer;

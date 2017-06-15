@@ -112,11 +112,6 @@ bool UIFrameWindow::onEvent(const PlatformEventArgs& e)
 }
 
 //------------------------------------------------------------------------------
-void UIFrameWindow::onRenderContents()
-{
-}
-
-//------------------------------------------------------------------------------
 void UIFrameWindow::onPresentRenderingContexts()
 {
 	executeDrawList_UIRenderer();
@@ -132,7 +127,9 @@ void UIFrameWindow::onPresentRenderingContexts()
 //------------------------------------------------------------------------------
 void UIFrameWindow::renderContents()
 {
-	render_UIRenderer();
+	m_drawingContext->beginMakeElements();
+	m_drawingContext->setBlendMode(BlendMode::Alpha);
+	UILayoutView::render(m_drawingContext);
 }
 
 //------------------------------------------------------------------------------
@@ -196,15 +193,6 @@ void UIFrameWindow::initialize_UIRenderer()
 	m_drawElementListSet->m_lists.add(m_drawingContext->getDrawElementList());
 
 	m_renderDiag = newObject<RenderDiag>();
-}
-
-//------------------------------------------------------------------------------
-void UIFrameWindow::render_UIRenderer()
-{
-	m_drawingContext->beginMakeElements();
-	m_drawingContext->setBlendMode(BlendMode::Alpha);
-	onRenderContents();
-	UILayoutView::render(m_drawingContext);
 }
 
 //------------------------------------------------------------------------------
@@ -285,7 +273,8 @@ void UIMainWindow::initialize(PlatformWindow* platformWindow, World2D* defaultWo
 
 	m_mainUIViewport = newObject<UIViewport>();
 	m_mainUIViewport->setBackbufferSize(platformWindow->getSize().width, platformWindow->getSize().height);	// TODO: EngineSettings からもらう
-	//addVisualChild(m_mainUIViewport);
+	m_mainUIViewport->setAnchor(AlignmentAnchor::LeftOffsets | AlignmentAnchor::TopOffsets | AlignmentAnchor::RightOffsets | AlignmentAnchor::BottomOffsets);
+																											//addVisualChild(m_mainUIViewport);
 	addChild(m_mainUIViewport);
 
 	m_cameraViewportLayer3D = newObject<CameraViewportLayer2>(defaultWorld3D, defaultWorld3D->getMainCamera()->GetCameraComponent());
@@ -335,10 +324,6 @@ Size UIMainWindow::arrangeOverride(const Size& finalSize)
 	//m_mainUIViewport->arrangeLayout(Rect(0, 0, renderSize));
 
 	return renderSize;
-}
-
-void UIMainWindow::onRenderContents()
-{
 }
 
 void UIMainWindow::onPresentRenderingContexts()

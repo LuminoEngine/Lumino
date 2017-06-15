@@ -22,9 +22,9 @@ void UIControlsGallery()
 	auto* uiRoot = Engine::getDefaultUILayer()->GetLayoutView();
 
 
-	auto grid1 = UIGridLayout::create();
-	grid1->addColumnDefinition(GridLengthType::Pixel, 400);
-	Engine::getMainWindow()->setLayoutPanel(grid1);
+	//auto grid1 = UIGridLayout::create();
+	//grid1->addColumnDefinition(GridLengthType::Pixel, 400);
+	//Engine::getMainWindow()->setLayoutPanel(grid1);
 
 	//auto listBox1 = UIListBox::create();
 	//listBox1->setWidth(200);
@@ -47,6 +47,9 @@ void UIControlsGallery()
 	//slider->setOrientation(Orientation::Vertical);
 	uiRoot->addChild(slider);
 
+
+	auto window2 = newObject<UIFrameWindow>();
+	window2->setBackground(SolidColorBrush::White);
 
 
 

@@ -54,6 +54,7 @@ void SwapChain::Dispose()
 
 		m_backColorBuffer->detachDefaultBackBuffer();
 
+		m_commandList->clearCommands();
 		LN_SAFE_RELEASE(m_commandList);
 		LN_SAFE_RELEASE(m_backColorBuffer);
 		LN_SAFE_RELEASE(m_deviceObj);
@@ -65,7 +66,7 @@ void SwapChain::Dispose()
 //------------------------------------------------------------------------------
 void SwapChain::postInitialize()
 {
-	m_commandList = LN_NEW RenderingCommandList(m_manager);
+	m_commandList = LN_NEW detail::RenderingCommandList(m_manager, Thread::getCurrentThreadId());
 
 	// TODO: デフォルトのバックバッファという仕組みは入らない気がする。
 	// こちら側でレンダリングターゲット作って、present で全体転送してもらえばいいし。
@@ -139,7 +140,7 @@ void SwapChain::MightResizeAndDeviceReset(const SizeI& newSize)
 	}
 	else
 	{
-		RenderingThread* thread = m_manager->getRenderingThread();
+		auto* thread = m_manager->getRenderingThread();
 
 		// デバイスロストのチェック
 		if (device->getDeviceState() == Driver::DeviceState_Lost)

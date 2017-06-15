@@ -5,7 +5,6 @@
 		関数ポインタ : 400ms
 		微々たる差だが、関数ポインタが少しだけ有利。
 */
-#pragma once
 
 #include "../Internal.h"
 #include "Device/GraphicsDriverInterface.h"
@@ -15,7 +14,7 @@
 #include "RenderingThread.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
+namespace detail {
 
 //==============================================================================
 // RenderBulkData
@@ -85,8 +84,9 @@ void* RenderBulkData::alloc(RenderingCommandList* commandList)
 //==============================================================================
 
 //------------------------------------------------------------------------------
-RenderingCommandList::RenderingCommandList(detail::GraphicsManager* manager)
+RenderingCommandList::RenderingCommandList(detail::GraphicsManager* manager, intptr_t mainThreadId)
 	: m_manager(manager)
+	, m_mainThreadId(mainThreadId)
 	, m_commandList()
 	, m_commandDataBuffer()
 	, m_commandDataBufferUsed(0)
@@ -113,6 +113,11 @@ RenderingCommandList::~RenderingCommandList()
 //------------------------------------------------------------------------------
 void RenderingCommandList::clearCommands()
 {
+	// コマンド(とリソース)のクリアはメインスレッドからのみ許可する。
+	// レンダリングスレッドでもできないことは無いが複雑になる。
+	// そもそも、特に OpenGL リソースはマルチスレッドでの振る舞いが怪しい。確保と解放のスレッドは統一しておく。
+	if (LN_CHECK_STATE(Thread::getCurrentThreadId() == m_mainThreadId)) return;
+
 	m_commandList.clear();
 	m_commandDataBufferUsed = 0;
 	m_extDataBufferUsed = sizeof(intptr_t);	// ポインタサイズ分予約済みにしておく (null チェックで 0 を使いたい)
@@ -131,10 +136,11 @@ void RenderingCommandList::execute(Driver::IGraphicsDevice* device/*Driver::IRen
 	LN_RC_TRACE("RenderingCommandList::Execute() s %p %d\n", this, m_commandList.getCount());
 	// この関数は描画スレッドから呼ばれる
 
+
 	m_currentDevice = device;
 	m_currentRenderer = device->getRenderer();
 	for (size_t dataIdx : m_commandList)
-	{        
+	{
 		/*
 		-        cmd    0x14e21ea0 {m_commandList=0xfeeefeee {m_manager=??? m_commandList={m_data=??? } m_commandDataBuffer=...} }    ln::RenderingCommand *
 		+        __vfptr    0xfeeefeee {???, ???}    void * *
@@ -152,10 +158,10 @@ void RenderingCommandList::execute(Driver::IGraphicsDevice* device/*Driver::IRen
 }
 
 //------------------------------------------------------------------------------
-void RenderingCommandList::postExecute()
-{
-	clearCommands();
-}
+//void RenderingCommandList::postExecute()
+//{
+//	clearCommands();
+//}
 
 //------------------------------------------------------------------------------
 RenderingCommandList::DataHandle RenderingCommandList::allocCommand(size_t byteCount, const void* copyData)
@@ -221,5 +227,5 @@ bool RenderingCommandList::checkOnStandaloneRenderingThread()
 	return false;
 }
 
-LN_NAMESPACE_GRAPHICS_END
+} // namespace detail
 LN_NAMESPACE_END

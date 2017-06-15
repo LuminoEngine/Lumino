@@ -173,11 +173,11 @@ Driver::IVertexBuffer* VertexBuffer::resolveRHIObject()
 			}
 			else
 			{
-				RenderBulkData data(m_buffer.data(), m_buffer.size());
+				detail::RenderBulkData data(m_buffer.data(), m_buffer.size());
 				Driver::IVertexBuffer* deviceObj = m_rhiObject;
 				LN_ENQUEUE_RENDER_COMMAND_2(
 					VertexBuffer_SetSubData, m_manager,
-					RenderBulkData, data,
+					detail::RenderBulkData, data,
 					RefPtr<Driver::IVertexBuffer>, deviceObj,
 					{
 						deviceObj->setSubData(0, data.getData(), data.getSize());

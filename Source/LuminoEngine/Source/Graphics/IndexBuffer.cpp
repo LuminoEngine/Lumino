@@ -193,11 +193,11 @@ Driver::IIndexBuffer* IndexBuffer::resolveRHIObject()
 			}
 			else
 			{
-				RenderBulkData data(m_buffer.data(), m_buffer.size());
+				detail::RenderBulkData data(m_buffer.data(), m_buffer.size());
 				Driver::IIndexBuffer* deviceObj = m_rhiObject;
 				LN_ENQUEUE_RENDER_COMMAND_2(
 					VertexBuffer_SetSubData, m_manager,
-					RenderBulkData, data,
+					detail::RenderBulkData, data,
 					RefPtr<Driver::IIndexBuffer>, deviceObj,
 					{
 						deviceObj->setSubData(0, data.getData(), data.getSize());

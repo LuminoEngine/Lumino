@@ -44,10 +44,10 @@ LN_INTERNAL_ACCESS:
 	void PresentInternal();
 	void WaitForPresent();
 
-	Driver::ISwapChain*			m_deviceObj;
-	RenderingCommandList*		m_commandList;
-	ConditionFlag				m_waiting;		// コマンド実行していない
-	RenderTargetTexture*		m_backColorBuffer;
+	Driver::ISwapChain*				m_deviceObj;
+	detail::RenderingCommandList*	m_commandList;
+	ConditionFlag					m_waiting;		// コマンド実行していない
+	RenderTargetTexture*			m_backColorBuffer;
 };
 
 LN_NAMESPACE_GRAPHICS_END
