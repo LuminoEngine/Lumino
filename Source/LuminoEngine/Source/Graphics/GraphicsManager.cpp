@@ -22,7 +22,8 @@
 #include "../Rendering/ShapesRenderFeature.h"
 #include "../Rendering/NanoVGRenderFeature.h"
 #include "Text/FontManager.h"
-#include "Text/TextRenderer.h"
+#include "Text/SpriteTextRenderFeature.h"
+#include "Text/VectorTextRenderFeature.h"
 #include "Text/BitmapTextRenderer.h"
 #include <Lumino/Graphics/Viewport.h>
 #include <Lumino/Graphics/GraphicsContext.h>
@@ -106,7 +107,6 @@ GraphicsManager::GraphicsManager()
 	, m_dymmyWhiteTexture(nullptr)
 	, m_renderer(nullptr)
 	, m_renderingThread(nullptr)
-	, m_lockPresentCommandList()
 	, m_internalContext(nullptr)
 	, m_activeContext(nullptr)
 	, m_textRendererCore(nullptr)
@@ -458,41 +458,6 @@ InternalContext* GraphicsManager::getInternalContext() const
 const RefPtr<Shader>& GraphicsManager::getBuiltinShader(BuiltinShader shader) const
 {
 	return m_builtinShaders[(int)shader];
-}
-
-//------------------------------------------------------------------------------
-void GraphicsManager::presentSwapChain(SwapChain* swapChain)
-{
-	if (getRenderingType() == GraphicsRenderingType::Immediate)
-	{
-		swapChain->PresentInternal();
-
-		// 一時メモリの解放とかをやっておく
-		getPrimaryRenderingCommandList()->clearCommands();
-	}
-	else
-	{
-		// ごく稀に RenderingCommandList::Execute() でイテレータアクセス assert する問題があった。
-		// この assert が発生する原因は、イテレート中に他のスレッドから Add とかされた時。
-		// でも、パッと見原因になりそうなところが見つからなかったので、もしかしたら
-		// キャッシュにリストのポインタが残っていたことが原因かもしれない。
-		// 念のためここでキャッシュをフラッシュし、様子を見る。
-		MutexScopedLock lock(m_lockPresentCommandList);
-
-		// 前回この SwapChain から発行したコマンドリストがまだ処理中である。待ち状態になるまで待機する。
-		swapChain->WaitForPresent();
-
-		// 実行状態にする。present コマンドが実行された後、コマンドリストクラスから True がセットされる。
-		// ※ presentCommandList() の前に false にしておかないとダメ。
-		//    後で false にすると、presentCommandList() と同時に全部のコマンドが実行されて、描画スレッドから
-		//    true がセットされるのに、その後 false をセットしてしまうことがある。
-		swapChain->m_waiting.setFalse();
-
-		getGraphicsDevice()->flushResource();
-
-		// Primary コマンドリストの末尾に present を追加し、キューへ追加する
-		getRenderer()->presentCommandList(swapChain);
-	}
 }
 
 //------------------------------------------------------------------------------

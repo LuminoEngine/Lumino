@@ -99,7 +99,7 @@ RenderTargetTexture* SwapChain::getBackBuffer()
 //------------------------------------------------------------------------------
 void SwapChain::present()
 {
-	m_manager->presentSwapChain(this);
+	m_manager->getRenderer()->presentSwapChain(this);
 }
 
 //------------------------------------------------------------------------------

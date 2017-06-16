@@ -20,7 +20,7 @@ public:
 	void Dispose();
 
 	// 指定したコマンドリストの実行を直ちに開始する
-	void pushRenderingCommand(RenderingCommandList* commandList);
+	void pushRenderingCommand(RenderingCommandList* commandList, SwapChain* publisher = nullptr);
 	Exception* getException() { return m_exception; }
 
 	bool isRunning() { return m_running.isTrue(); }

@@ -236,6 +236,7 @@ private:
 	friend struct RenderingCommand;
 	ConditionFlag	m_running;	///< 描画キューに入っているか
 	ConditionFlag	m_idling;
+	RefPtr<SwapChain> m_publisher;
 };
 
 
@@ -701,21 +702,21 @@ struct ApplyShaderPassCommand : public ln::detail::RenderingCommand
 };
 
 //==============================================================================
-struct PresentCommand : public ln::detail::RenderingCommand
-{
-	SwapChain* m_targetSwapChain;
-
-	void create(SwapChain* swapChain)
-	{
-		m_targetSwapChain = swapChain;
-		markGC(swapChain);
-	}
-
-	void execute()
-	{
-		m_targetSwapChain->PresentInternal();
-	}
-};
+//struct PresentCommand : public ln::detail::RenderingCommand
+//{
+//	SwapChain* m_targetSwapChain;
+//
+//	void create(SwapChain* swapChain)
+//	{
+//		m_targetSwapChain = swapChain;
+//		markGC(swapChain);
+//	}
+//
+//	void execute()
+//	{
+//		m_targetSwapChain->PresentInternal();
+//	}
+//};
 
 //==============================================================================
 struct SetSubDataTextureCommand : public ln::detail::RenderingCommand

@@ -34,6 +34,7 @@ namespace detail
 RHIRenderingContext::RHIRenderingContext(detail::GraphicsManager* manager)
 	: m_internal(manager->getGraphicsDevice()->getRenderer())
 	, m_primaryCommandList(NULL)
+	, m_lockPresentCommandList()
 	, m_currentRenderState()
 	, m_currentDepthStencilState()
 	, m_currentDepthBuffer(NULL)
@@ -362,18 +363,57 @@ void RHIRenderingContext::onChangeDevice(Driver::IGraphicsDevice* device)
 }
 
 //------------------------------------------------------------------------------
+void RHIRenderingContext::presentSwapChain(SwapChain* swapChain)
+{
+	if (m_manager->getRenderingType() == GraphicsRenderingType::Immediate)
+	{
+		swapChain->PresentInternal();
+
+		// コマンドは使っていないが一時メモリは使うので解放とかをやっておく
+		m_primaryCommandList->clearCommands();
+		//getPrimaryRenderingCommandList()->clearCommands();
+	}
+	else
+	{
+		// ごく稀に RenderingCommandList::Execute() でイテレータアクセス assert する問題があった。
+		// この assert が発生する原因は、イテレート中に他のスレッドから Add とかされた時。
+		// でも、パッと見原因になりそうなところが見つからなかったので、もしかしたら
+		// キャッシュにリストのポインタが残っていたことが原因かもしれない。
+		// 念のためここでキャッシュをフラッシュし、様子を見る。
+		MutexScopedLock lock(m_lockPresentCommandList);
+
+		// 前回この SwapChain から発行したコマンドリストがまだ処理中である。待ち状態になるまで待機する。
+		swapChain->WaitForPresent();
+
+		// 実行状態にする。present コマンドが実行された後、コマンドリストクラスから True がセットされる。
+		// ※ presentCommandList() の前に false にしておかないとダメ。
+		//    後で false にすると、presentCommandList() と同時に全部のコマンドが実行されて、描画スレッドから
+		//    true がセットされるのに、その後 false をセットしてしまうことがある。
+		swapChain->m_waiting.setFalse();
+
+		m_manager->getGraphicsDevice()->flushResource();
+
+		// Primary コマンドリストの末尾に present を追加し、キューへ追加する
+		/*getRenderer()->*/presentCommandList(swapChain);
+	}
+}
+
+//------------------------------------------------------------------------------
 void RHIRenderingContext::presentCommandList(SwapChain* swapChain)
 {
+	//m_primaryCommandList->addCommand<PresentCommand>(swapChain);
 
-	m_primaryCommandList->addCommand<PresentCommand>(swapChain);
-	
-	auto* renderingThread = m_manager->getRenderingThread();
-	renderingThread->pushRenderingCommand(m_primaryCommandList);
+	auto* cur = m_primaryCommandList;
 
 	// swapChain の持っているコマンドリストとスワップ。それをプライマリにする。
 	auto* t = swapChain->m_commandList;
 	swapChain->m_commandList = m_primaryCommandList;
 	m_primaryCommandList = t;
+
+	
+	auto* renderingThread = m_manager->getRenderingThread();
+	renderingThread->pushRenderingCommand(cur, swapChain);
+
 
 	m_primaryCommandList->clearCommands();
 }

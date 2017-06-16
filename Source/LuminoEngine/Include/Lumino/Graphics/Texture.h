@@ -170,7 +170,7 @@ LN_INTERNAL_ACCESS:
 protected:
 	virtual void applyModifies() override;
 
-	friend struct PresentCommand;
+	//friend struct PresentCommand;
 	bool			m_mipmap;
 	bool			m_isPlatformLoaded;
 	ResourceUsage	m_usage;

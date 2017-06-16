@@ -128,11 +128,13 @@ LN_INTERNAL_ACCESS:
 	friend class ShaderPass;
 	friend class Texture;
 	friend class ShaderVariable;
+	void presentSwapChain(SwapChain* swapChain);
 	void presentCommandList(SwapChain* swapChain);	// m_primaryCommandList をバックグラウンドへ送る
 	void verifyFrameBuffers();
 
 	Driver::IRenderer*		m_internal;
 	detail::RenderingCommandList*	m_primaryCommandList;
+	Mutex							m_lockPresentCommandList;
 
 	RenderState				m_currentRenderState;
 	DepthStencilState		m_currentDepthStencilState;

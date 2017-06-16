@@ -49,12 +49,15 @@ void RenderingThread::Dispose()
 }
 
 //------------------------------------------------------------------------------
-void RenderingThread::pushRenderingCommand(RenderingCommandList* commandList)
+void RenderingThread::pushRenderingCommand(RenderingCommandList* commandList, SwapChain* publisher)
 {
+	if (LN_CHECK_STATE(commandList->m_publisher == nullptr)) return;
+
 	MutexScopedLock lock(m_mutex);
 	m_commandListQueue.push_back(commandList);
 	commandList->m_running.setTrue();
 	commandList->m_idling.setFalse();
+	commandList->m_publisher = publisher;
 	commandList->addRef();
 	m_running.setTrue();
 

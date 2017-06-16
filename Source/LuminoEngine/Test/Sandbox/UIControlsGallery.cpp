@@ -26,10 +26,14 @@ private:
 	static const int SafeAreaWidth = 160;
 	static const int rowHeight = 32;
 
+	void drawStatistics(DrawingContext* context,const Rect& windowRect);
 	void drawGroupList(DrawingContext* context, const Rect& listRect);
 	void drawSectionGraphBar(DrawingContext* context, ProfilingKey* key, float x, float y, const Rect& listRect, float* totalElapsed);
+
 	RefPtr<Font>	m_font;
 	float			m_limitElapsedTime = 1.0f / 60.0f;	// TODO: FPS
+
+	RefPtr<UIButton>	m_recordButton;
 };
 
 
@@ -45,16 +49,21 @@ void UIDiagnosticsWindow::initialize()
 {
 	UIFrameWindow::initialize();
 	m_font = Font::getBuiltin(BuiltinFontSize::XXSmall);
+
+	m_recordButton = UIButton::create(_T("Record"), 80, 24);
+	addChild(m_recordButton);
 }
 
 //------------------------------------------------------------------------------
 void UIDiagnosticsWindow::onRender(DrawingContext* context)
 {
 	UIFrameWindow::onRender(context);
+	//drawStatistics(context, Rect(640 - 8 - 300, 8, 300, 256));
+}
 
-
-	Rect windowRect(640 - 8 - 300, 8, 300, 256);
-
+//------------------------------------------------------------------------------
+void UIDiagnosticsWindow::drawStatistics(DrawingContext* context, const Rect& windowRect)
+{
 	PointF loc(windowRect.x, windowRect.y);
 
 
@@ -103,7 +112,7 @@ void UIDiagnosticsWindow::onRender(DrawingContext* context)
 
 	//StringTraits::sprintf(text, 256, _T("Backbuffer Size : %d x %d"), m_profiler->GetCommitedMainBackbufferSize().Width, m_profiler->GetCommitedMainBackbufferSize().Height);
 	//context->drawText_(text, loc);
-	
+
 	loc.y += 16;
 	loc.x -= 16;
 

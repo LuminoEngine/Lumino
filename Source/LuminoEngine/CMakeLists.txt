@@ -285,10 +285,12 @@ set(LN_SOURCES_Graphics_Text
 	Source/Graphics/Text/FreeTypeFont.cpp
 	Source/Graphics/Text/FreeTypeFont.h
 	Source/Graphics/Text/GlyphRun.cpp
+	Source/Graphics/Text/SpriteTextRenderFeature.cpp
+	Source/Graphics/Text/SpriteTextRenderFeature.h
 	Source/Graphics/Text/TextLayoutEngine.cpp
 	Source/Graphics/Text/TextLayoutEngine.h
-	Source/Graphics/Text/TextRenderer.cpp
-	Source/Graphics/Text/TextRenderer.h
+	Source/Graphics/Text/VectorTextRenderFeature.cpp
+	Source/Graphics/Text/VectorTextRenderFeature.h
 )
 
 set(LN_SOURCES_Rendering

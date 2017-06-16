@@ -151,7 +151,7 @@ public:
 	const StringA& getCommonShaderHeader() const { return m_commonShaderHeader; }
 	const RefPtr<Shader>& getBuiltinShader(BuiltinShader shader) const;
 
-	void presentSwapChain(SwapChain* swapChain);
+	
 
 private:
 	void createGlobalObjects();
@@ -169,7 +169,6 @@ private:
 	SwapChain*						m_mainSwapChain;
 	detail::RHIRenderingContext*	m_renderer;
 	RenderingThread*				m_renderingThread;
-	Mutex							m_lockPresentCommandList;
 
 	ContextInterface*				m_activeContext;
 

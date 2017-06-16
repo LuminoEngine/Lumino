@@ -226,6 +226,9 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 			auto* props = s->getPropertyTable();
 			//st->background = RefPtr<Brush>::StaticCast(buttonNormalBrush);
 			props->borderThickness = ThicknessF(1);
+			props->cornerRadius = 4;
+
+			//props->background = UIColors::getBrush(UIColorIndex::LightGreen);
 		}
 		// UIButton.Focused
 		{

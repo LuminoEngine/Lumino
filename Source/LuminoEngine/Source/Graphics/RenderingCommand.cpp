@@ -128,6 +128,7 @@ void RenderingCommandList::clearCommands()
 		obj->release();
 	}
 	m_markGCList.clear();
+	m_publisher = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -136,24 +137,20 @@ void RenderingCommandList::execute(Driver::IGraphicsDevice* device/*Driver::IRen
 	LN_RC_TRACE("RenderingCommandList::Execute() s %p %d\n", this, m_commandList.getCount());
 	// この関数は描画スレッドから呼ばれる
 
-
 	m_currentDevice = device;
 	m_currentRenderer = device->getRenderer();
 	for (size_t dataIdx : m_commandList)
 	{
-		/*
-		-        cmd    0x14e21ea0 {m_commandList=0xfeeefeee {m_manager=??? m_commandList={m_data=??? } m_commandDataBuffer=...} }    ln::RenderingCommand *
-		+        __vfptr    0xfeeefeee {???, ???}    void * *
-		+        m_commandList    0xfeeefeee {m_manager=??? m_commandList={m_data=??? } m_commandDataBuffer={m_core=??? m_capacity=??? ...} ...}    ln::RenderingCommandList *
-		dataIdx    2024    unsigned int
-		※m_commandList は正しい。cmd->m_commandList がおかしい。
-
-		※ウィンドウがアクティブになったときに起こりやすい？
-		*/
 		RenderingCommand* cmd = ((RenderingCommand*)getCommand(dataIdx));
 		cmd->execute();
 		cmd->~RenderingCommand();
 	}
+
+	if (m_publisher != nullptr)
+	{
+		m_publisher->PresentInternal();
+	}
+
 	LN_RC_TRACE("RenderingCommandList::Execute() e %p\n", this);
 }
 
