@@ -3,6 +3,7 @@
 #include <Lumino/Graphics/Brush.h>
 #include <Lumino/Graphics/Vertex.h>
 #include <Lumino/Graphics/ContextInterface.h>
+#include <Lumino/Rendering/Common.h>
 
 LN_NAMESPACE_BEGIN
 namespace detail {

@@ -208,6 +208,8 @@ set(LN_SOURCES_Graphics
 	Source/Graphics/Brush.cpp
 	Source/Graphics/Color.cpp
 	Source/Graphics/ContextInterface.cpp
+	Source/Graphics/CoreGraphicsRenderFeature.cpp
+	Source/Graphics/CoreGraphicsRenderFeature.h
 	Source/Graphics/FrameCapturer.cpp
 	Source/Graphics/Graphics.cpp
 	Source/Graphics/GraphicsException.cpp
@@ -228,8 +230,6 @@ set(LN_SOURCES_Graphics
 	Source/Graphics/RenderState.cpp
 	Source/Graphics/RenderTargetTextureCache.cpp
 	Source/Graphics/RenderTargetTextureCache.h
-	Source/Graphics/RHIRenderingContext.cpp
-	Source/Graphics/RHIRenderingContext.h
 	Source/Graphics/SamplerState.cpp
 	Source/Graphics/Shader.cpp
 	Source/Graphics/ShaderAnalyzer.cpp
@@ -297,6 +297,7 @@ set(LN_SOURCES_Rendering
 	Include/Lumino/Rendering/Common.h
 	Include/Lumino/Rendering/DrawingContext.h
 	Include/Lumino/Rendering/Rendering.h
+	Include/Lumino/Rendering/SceneRenderer.h
 	Source/Rendering/DrawingContext.cpp
 	Source/Rendering/FrameRectRenderFeature.cpp
 	Source/Rendering/FrameRectRenderFeature.h
@@ -308,6 +309,7 @@ set(LN_SOURCES_Rendering
 	Source/Rendering/PrimitiveRenderFeature.cpp
 	Source/Rendering/PrimitiveRenderFeature.h
 	Source/Rendering/Rendering.cpp
+	Source/Rendering/SceneRenderer.cpp
 	Source/Rendering/ShapesRenderFeature.cpp
 	Source/Rendering/ShapesRenderFeature.h
 	Source/Rendering/SpriteRenderFeature.cpp

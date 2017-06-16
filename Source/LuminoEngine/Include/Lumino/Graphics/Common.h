@@ -109,7 +109,7 @@ struct TextLayoutResult;
 namespace detail
 {
 
-class RHIRenderingContext;
+class CoreGraphicsRenderFeature;
 class RenderingCommandList;
 class RenderingThread;
 

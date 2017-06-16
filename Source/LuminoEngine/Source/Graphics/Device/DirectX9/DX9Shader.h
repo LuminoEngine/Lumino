@@ -147,6 +147,7 @@ public:
 
 public:
 	// override IShaderPass
+	virtual IShader* getShader() const { return m_owner; }
 	virtual const TCHAR* getName() const { return m_name.c_str(); }
 	virtual int getAnnotationCount() { return m_annotations.getCount(); }
 	virtual IShaderVariable* getAnnotation(int index) { return m_annotations[index]; }

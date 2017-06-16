@@ -1,6 +1,7 @@
 ﻿
 #include "../Internal.h"
 #include "SceneGraphManager.h"
+#include <Lumino/Rendering/SceneRenderer.h>
 #include <Lumino/Mesh/GizmoModel.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/Camera.h>

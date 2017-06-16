@@ -8,7 +8,7 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 namespace detail {
 class RenderTargetTextureCache;
-class DrawElementBatch;
+class IRenderFeature;
 
 LN_ENUM_FLAGS(ContextStateFlags)
 {
@@ -67,17 +67,6 @@ private:
 	Brush*		m_fillBrush;
 };
 
-class IRenderFeature
-{
-public:
-	virtual bool isStandaloneShader() const = 0;
-	virtual void flush() = 0;
-	virtual void onActivated() = 0;
-	virtual void onDeactivated() = 0;
-
-	virtual void onSetState(const DrawElementBatch* state) {}
-};
-
 
 struct BasicContextState
 {
@@ -127,7 +116,7 @@ protected:
 	virtual void onShaderVariableModified(ShaderVariable* var);
 
 	void setBasicContextState(const BasicContextState& state);
-	detail::RHIRenderingContext* getBaseRenderer() const { return m_baseRenderer; }
+	detail::CoreGraphicsRenderFeature* getBaseRenderer() const { return m_baseRenderer; }
 
 
 public:
@@ -138,7 +127,7 @@ private:
 	void switchActiveRendererPloxy(detail::IRenderFeature* rendererPloxy);
 
 	GraphicsManager*				m_manager;
-	detail::RHIRenderingContext*	m_baseRenderer;
+	detail::CoreGraphicsRenderFeature*	m_baseRenderer;
 	detail::IRenderFeature*			m_activeRendererPloxy;
 	bool							m_stateChanged;
 

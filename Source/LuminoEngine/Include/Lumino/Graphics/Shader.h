@@ -20,6 +20,7 @@ enum class ZSortDistanceBase
 namespace detail {
 class CombinedMaterial;
 class DynamicLightInfo;
+class CoreGraphicsRenderFeature;
 	
 // シェーダ変数セマンティクス
 LN_ENUM(BuiltinSemantics)
@@ -512,7 +513,7 @@ public:
 	ShaderVariable* findAnnotation(const String& name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const { return findAnnotation(name.c_str(), cs); }
 	
 private:
-	friend class detail::RHIRenderingContext;
+	friend class detail::CoreGraphicsRenderFeature;
 	void apply();
 
 protected:

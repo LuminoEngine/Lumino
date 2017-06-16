@@ -3,7 +3,7 @@
 #include <Lumino/Graphics/SwapChain.h>
 #include <Lumino/Graphics/Texture.h>
 #include "GraphicsManager.h"
-#include "RHIRenderingContext.h"
+#include "CoreGraphicsRenderFeature.h"
 #include "RenderingThread.h"
 #include "RenderingCommand.h"
 

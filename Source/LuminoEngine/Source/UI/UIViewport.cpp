@@ -4,6 +4,7 @@
 #include <Lumino/UI/UILayoutView.h>
 #include <Lumino/UI/UIContext.h>
 #include <Lumino/Rendering/DrawingContext.h>
+#include <Lumino/Rendering/SceneRenderer.h>
 #include "UIManager.h"
 
 LN_NAMESPACE_BEGIN

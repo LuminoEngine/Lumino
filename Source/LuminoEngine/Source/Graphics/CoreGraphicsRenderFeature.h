@@ -6,6 +6,7 @@
 #include <Lumino/Graphics/Color.h>
 #include <Lumino/Graphics/GraphicsResourceObject.h>
 #include <Lumino/Graphics/ContextInterface.h>
+#include <Lumino/Rendering/Common.h>
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
@@ -17,13 +18,13 @@ namespace detail
 /**
 	@brief		
 */
-class RHIRenderingContext
+class CoreGraphicsRenderFeature
 	: public GraphicsResourceObject
 	, public detail::IRenderFeature
 {
 public:
-	RHIRenderingContext(detail::GraphicsManager* manager);
-	~RHIRenderingContext();
+	CoreGraphicsRenderFeature(detail::GraphicsManager* manager);
+	virtual ~CoreGraphicsRenderFeature();
 
 	/**
 		@brief	この Renderer による描画を開始します。

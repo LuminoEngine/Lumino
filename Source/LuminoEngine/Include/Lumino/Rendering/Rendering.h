@@ -110,8 +110,8 @@ public:
 
 	InternalContext();
 	void initialize(detail::GraphicsManager* manager);
-	detail::RHIRenderingContext* getRenderStateManager();
-	detail::RHIRenderingContext* beginBaseRenderer();
+	detail::CoreGraphicsRenderFeature* getRenderStateManager();
+	detail::CoreGraphicsRenderFeature* beginBaseRenderer();
 	PrimitiveRenderFeature* beginPrimitiveRenderer();
 	BlitRenderer* beginBlitRenderer();
 	MeshRenderFeature* beginMeshRenderer();
@@ -133,7 +133,7 @@ LN_INTERNAL_ACCESS:
 	void switchActiveRenderer(detail::IRenderFeature* renderer);
 
 	IRenderFeature*					m_current;
-	detail::RHIRenderingContext*	m_baseRenderer;
+	detail::CoreGraphicsRenderFeature*	m_baseRenderer;
 	RefPtr<PrimitiveRenderFeature>	m_primitiveRenderer;
 	RefPtr<BlitRenderer>			m_blitRenderer;
 	RefPtr<MeshRenderFeature>		m_meshRenderer;
@@ -295,7 +295,7 @@ public:
 	size_t getHashCode() const;
 	size_t getBuiltinEffectDataHashCode() const;
 
-	intptr_t				m_rendererId;
+	IRenderFeature*			m_renderFeature;
 
 	BatchState				state;
 
@@ -310,18 +310,6 @@ private:
 
 	BuiltinEffectData		m_builtinEffectData;
 
-};
-
-class BatchStateBlock
-{
-public:
-	DrawElementBatch	state;
-
-	void reset()
-	{
-		state.reset();
-		//transfrom = Matrix::Identity;
-	}
 };
 
 class DrawElementList
@@ -376,158 +364,6 @@ private:
 	RefPtr<RenderTargetTexture>		m_defaultRenderTarget;
 	RefPtr<DepthBuffer>				m_depthBuffer;
 };
-
-
-
-/**
-	@brief	シーンの描画方法を定義し、描画コマンドを実行します。
-*/
-class SceneRenderer
-	: public RefObject
-{
-public:
-	SceneRenderer();
-	virtual ~SceneRenderer();
-	void initialize(GraphicsManager* manager);
-
-	void render(
-		RenderView* drawElementListSet,
-		//DrawElementList* elementList,
-		//const detail::CameraInfo& cameraInfo,
-		RenderTargetTexture* defaultRenderTarget,
-		DepthBuffer* defaultDepthBuffer,
-		RenderDiag* diag);
-
-protected:
-	virtual void onPreRender(DrawElementList* elementList);
-	void addPass(RenderingPass2* pass);
-
-private:
-	GraphicsManager*				m_manager;
-	List<RefPtr<RenderingPass2>>	m_renderingPassList;
-};
-
-
-class ScopedStateBlock2
-{
-public:
-	ScopedStateBlock2(DrawList* renderer);
-	~ScopedStateBlock2();
-	void apply();
-
-private:
-	DrawList*		m_renderer;
-	BatchStateBlock	m_state;
-};
-
-//class DrawingSection
-//{
-//public:
-//	virtual ~DrawingSection() = default;
-//
-//	DrawElementBatch*	stateInSection;
-//};
-//
-//class DrawingSection_Line
-//{
-//public:
-//	virtual ~DrawingSection_Line() = default;
-//
-//
-//};
-
-struct ElementRenderingPolicy
-{
-	Shader*	shader;		// null もありえる。Clear など。
-	bool	visible;
-};
-
-class RenderingPass2
-	: public Object
-{
-public:
-	RenderingPass2();
-	virtual ~RenderingPass2();
-	//void initialize(GraphicsManager* manager);
-
-	virtual Shader* getDefaultShader() const = 0;
-
-	void selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy);
-
-	//virtual void RenderElement(DrawList* renderer, DrawElement* element);
-	//virtual void RenderElementSubset(DrawList* renderer, DrawElement* element, int subsetIndex);
-
-private:
-};
-
-class NonShadingRenderer
-	: public SceneRenderer
-{
-public:
-	NonShadingRenderer();
-	virtual ~NonShadingRenderer();
-	void initialize(GraphicsManager* manager);
-
-private:
-};
-
-class NonShadingRenderingPass
-	: public RenderingPass2
-{
-public:
-	NonShadingRenderingPass();
-	virtual ~NonShadingRenderingPass();
-	void initialize(GraphicsManager* manager);
-	virtual Shader* getDefaultShader() const override;
-
-private:
-	RefPtr<Shader>	m_defaultShader;
-};
-
-
-
-class ForwardShadingRenderer
-	: public SceneRenderer
-{
-public:
-	ForwardShadingRenderer();
-	virtual ~ForwardShadingRenderer();
-	void initialize(GraphicsManager* manager);
-
-protected:
-	virtual void onPreRender(DrawElementList* elementList);
-
-private:
-	void updateAffectLights(DrawElement* element, DrawElementList* elementList);
-
-	List<DynamicLightInfo*>	m_selectingLights;	// updateAffectLights() の作業用変数
-};
-
-
-class ForwardShadingRenderingPass
-	: public RenderingPass2
-{
-public:
-	ForwardShadingRenderingPass();
-	virtual ~ForwardShadingRenderingPass();
-	void initialize(GraphicsManager* manager);
-	virtual Shader* getDefaultShader() const override;
-
-private:
-	RefPtr<Shader>	m_defaultShader;
-};
-
-
-class InfomationRenderingPass
-	: public NonShadingRenderingPass
-{
-public:
-	InfomationRenderingPass();
-	virtual ~InfomationRenderingPass();
-	void initialize(GraphicsManager* manager);
-};
-
-
 
 } // namespace detail
 
@@ -835,14 +671,14 @@ LN_INTERNAL_ACCESS:
 	void setBuiltinEffectData(const detail::BuiltinEffectData& data);
 	void beginMakeElements();
 
-	const detail::BatchStateBlock& getState() const { return m_state; }
-	void setState(const detail::BatchStateBlock& state) { m_state = state; }
+	//const detail::BatchStateBlock& getState() const { return m_state; }
+	//void setState(const detail::BatchStateBlock& state) { m_state = state; }
 	void addDynamicLightInfo(detail::DynamicLightInfo* lightInfo);
 	void pushMetadata(const DrawElementMetadata* metadata);
 	const DrawElementMetadata* getMetadata();
 	void popMetadata();
 
-	template<typename TElement> TElement* resolveDrawElement(detail::DrawingSectionId sectionId, detail::IRenderFeature* renderer, Material* userMaterial);
+	template<typename TElement> TElement* resolveDrawElement(detail::DrawingSectionId sectionId, detail::IRenderFeature* renderFeature, Material* userMaterial);
 	void drawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Material* material);
 	//void DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material);
 	void blitInternal(Texture* source, RenderTargetTexture* dest, const Matrix& transform, Material* material);
@@ -856,7 +692,8 @@ LN_INTERNAL_ACCESS:
 private:
 	detail::GraphicsManager*		m_manager;
 	
-	detail::BatchStateBlock			m_state;
+	//detail::BatchStateBlock			m_state;
+	detail::DrawElementBatch	m_state;
 	RefPtr<Material>				m_defaultMaterial;
 
 	detail::BuiltinEffectData		m_builtinEffectData;
@@ -903,14 +740,14 @@ private:
 
 //------------------------------------------------------------------------------
 template<typename TElement>
-inline TElement* DrawList::resolveDrawElement(detail::DrawingSectionId sectionId, detail::IRenderFeature* renderer, Material* userMaterial)
+inline TElement* DrawList::resolveDrawElement(detail::DrawingSectionId sectionId, detail::IRenderFeature* renderFeature, Material* userMaterial)
 {
 	Material* availableMaterial = (userMaterial != nullptr) ? userMaterial : m_defaultMaterial.get();
 
 	// これを決定してから比較を行う
-	m_state.state.SetStandaloneShaderRenderer(renderer->isStandaloneShader());
+	m_state.SetStandaloneShaderRenderer(renderFeature->isStandaloneShader());
 
-	m_state.state.m_rendererId = reinterpret_cast<intptr_t>(renderer);
+	m_state.m_renderFeature = renderFeature;
 
 	const DrawElementMetadata* userMetadata = getMetadata();
 	const DrawElementMetadata* metadata = (userMetadata != nullptr) ? userMetadata : &DrawElementMetadata::Default;
@@ -921,13 +758,13 @@ inline TElement* DrawList::resolveDrawElement(detail::DrawingSectionId sectionId
 		m_currentSectionTopElement->drawingSectionId == sectionId &&
 		m_currentSectionTopElement->metadata.equals(*metadata) &&
 		m_currentSectionTopElement->m_stateFence == m_currentStateFence &&
-		m_drawElementList.getBatch(m_currentSectionTopElement->batchIndex)->Equal(m_state.state.state, availableMaterial, m_state.state.getTransfrom(), m_builtinEffectData))
+		m_drawElementList.getBatch(m_currentSectionTopElement->batchIndex)->Equal(m_state.state, availableMaterial, m_state.getTransfrom(), m_builtinEffectData))
 	{
 		return static_cast<TElement*>(m_currentSectionTopElement);
 	}
 
 	// DrawElement を新しく作る
-	TElement* element = m_drawElementList.addCommand<TElement>(m_state.state.state, availableMaterial, m_state.state.getTransfrom(), m_builtinEffectData);
+	TElement* element = m_drawElementList.addCommand<TElement>(m_state.state, availableMaterial, m_state.getTransfrom(), m_builtinEffectData);
 	//element->OnJoindDrawList(m_state.transfrom);
 	element->drawingSectionId = sectionId;
 	element->metadata = *metadata;

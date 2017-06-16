@@ -205,6 +205,8 @@ public:
 
 	void setShaderPass(IShaderPass* pass);
 
+	IShaderPass* getShaderPass() const;
+
 
 	/// 設定されている各種バッファをクリアする
 	void clear(ClearFlags flags, const Color& color, float z = 1.0f, uint8_t stencil = 0x00);
@@ -557,6 +559,8 @@ class IShaderPass
 	: public RefObject
 {
 public:
+
+	virtual IShader* getShader() const = 0;
 
 	/// パスの名前を取得する
 	virtual const TCHAR* getName() const = 0;

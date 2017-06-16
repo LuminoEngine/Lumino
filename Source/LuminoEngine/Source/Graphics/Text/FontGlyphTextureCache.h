@@ -40,13 +40,9 @@ public:
 	// 描画コマンド用の一時メモリにコピーしてか渡さなければならない。
 	void lookupGlyphInfo(UTF32 ch, CacheGlyphInfo* outInfo, bool* outFlush);
 
-	// 次に描画スレッドで、LookupFillGlyph() によって取得して CacheGlyphInfo を指定する。
-	// LookupFillGlyph() の呼び出し回数と対応させなければならない。
-	// 同時に、得られた srcRect で頂点バッファを作る。
-	//void CommitCacheGlyphInfo(CacheGlyphInfo* info, RectI* srcFillRect, RectI* srcOutlineRect);
-
-	// 最後に、描画するときにこのテクスチャを使う。
-	Driver::ITexture* getGlyphsFillTexture();
+	// 描画するときにこのテクスチャを使う。
+	//Driver::ITexture* getGlyphsFillTexture();
+	Texture2D* getGlyphsFillTexture();
 
 	// メインスレッドで Flush したときにはこれを呼ぶ
 	void onFlush();

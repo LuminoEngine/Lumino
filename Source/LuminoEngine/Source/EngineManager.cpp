@@ -9,7 +9,7 @@
 #include "Audio/AudioManager.h"
 #include <Lumino/Engine.h>
 #include <Lumino/World.h>
-#include "Graphics/RHIRenderingContext.h"
+#include "Graphics/CoreGraphicsRenderFeature.h"
 #include "Graphics/RenderingThread.h"
 #include "Graphics/GraphicsManager.h"
 #include "Documents/DocumentsManager.h"

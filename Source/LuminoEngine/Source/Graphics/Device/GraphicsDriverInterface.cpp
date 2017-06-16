@@ -138,6 +138,12 @@ void IRenderer::setShaderPass(IShaderPass* pass)
 }
 
 //------------------------------------------------------------------------------
+IShaderPass* IRenderer::getShaderPass() const
+{
+	return m_currentShaderPass;
+}
+
+//------------------------------------------------------------------------------
 void IRenderer::clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
 	// ※レンダリングターゲットと深度バッファのサイズが一致している必要がある。

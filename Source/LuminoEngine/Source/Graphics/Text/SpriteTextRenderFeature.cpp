@@ -11,7 +11,7 @@
 #include <Lumino/Graphics/VertexDeclaration.h>
 #include <Lumino/Rendering/Rendering.h>
 #include "../Device/GraphicsDriverInterface.h"
-#include "../RHIRenderingContext.h"
+#include "../CoreGraphicsRenderFeature.h"
 #include "../RenderingCommand.h"
 #include "SpriteTextRenderFeature.h"
 #include "FontManager.h"
@@ -105,7 +105,7 @@ void TextRendererCore::setState(const Matrix& world, const Matrix& viewProj, con
 }
 
 //------------------------------------------------------------------------------
-void TextRendererCore::render(const GlyphRunData* dataList, int dataCount, FontGlyphTextureCache* cache, Brush* fillBrush)
+void TextRendererCore::render(const GlyphRunData* dataList, int dataCount, Driver::ITexture* glyphsTexture, Brush* fillBrush)
 {
 	//Color color = Color::White;
 	//if (fillBrush != nullptr)
@@ -113,7 +113,7 @@ void TextRendererCore::render(const GlyphRunData* dataList, int dataCount, FontG
 	Color color = fillBrush->getColor();
 	//}
 
-	Driver::ITexture* srcTexture = cache->getGlyphsFillTexture();
+	Driver::ITexture* srcTexture = glyphsTexture;// cache->getGlyphsFillTexture();
 	Size texSizeInv(1.0f / srcTexture->getRealSize().width, 1.0f / srcTexture->getRealSize().height);
 	for (int i = 0; i < dataCount; ++i)
 	{
@@ -129,7 +129,7 @@ void TextRendererCore::render(const GlyphRunData* dataList, int dataCount, FontG
 		internalDrawRectangle(data.transform, dstRect, uvSrcRect, color);
 	}
 
-	flush(cache);
+	flush(glyphsTexture);
 }
 
 //------------------------------------------------------------------------------
@@ -167,7 +167,7 @@ void TextRendererCore::internalDrawRectangle(const Matrix& transform, const Rect
 }
 
 //------------------------------------------------------------------------------
-void TextRendererCore::flush(FontGlyphTextureCache* cache)
+void TextRendererCore::flush(Driver::ITexture* glyphsTexture)
 {
 	if (m_indexCache.getCount() == 0) { return; }
 
@@ -188,9 +188,20 @@ void TextRendererCore::flush(FontGlyphTextureCache* cache)
 	m_vertexBuffer->setSubData(0, m_vertexCache.getBuffer(), m_vertexCache.getBufferUsedByteCount());
 	m_indexBuffer->setSubData(0, m_indexCache.getBuffer(), m_indexCache.getBufferUsedByteCount());
 	m_shader.varTone->setVector((Vector4&)m_tone);
-	m_shader.varTexture->setTexture(cache->getGlyphsFillTexture());
+	m_shader.varTexture->setTexture(glyphsTexture/*cache->getGlyphsFillTexture()*/);
 	//m_shader.varGlyphMaskSampler->setTexture(m_glyphsMaskTexture);
-	renderer->setShaderPass(m_shader.pass);
+
+
+
+	//renderer->setShaderPass(m_shader.pass);
+
+	// シェーダのメインテクスチャをオーバーライドする
+	auto* pass = renderer->getShaderPass();
+	auto* shader = pass->getShader();
+	auto* var = shader->getVariableByName("ln_MaterialTexture");	// TODO: 定数
+	if (var) var->setTexture(glyphsTexture/*cache->getGlyphsFillTexture()*/);
+
+
 	renderer->setVertexDeclaration(m_vertexDeclaration);
 	renderer->setVertexBuffer(0, m_vertexBuffer);
 	renderer->setIndexBuffer(m_indexBuffer);
@@ -403,20 +414,20 @@ void TextRenderer::FlushInternal(FontGlyphTextureCache* cache)
 	RenderBulkData dataListData(&m_glyphLayoutDataList[0], sizeof(TextRendererCore::GlyphRunData) * dataCount);
 
 	// Texture::blit で転送されるものを Flush する
-	cache->getGlyphsFillTexture();
+	Driver::ITexture* glyphsTexture = cache->getGlyphsFillTexture()->resolveDeviceObject();
 
 	LN_ENQUEUE_RENDER_COMMAND_5(
 		TextRenderer_Flush, m_manager,
 		TextRendererCore*, m_core,
 		RenderBulkData, dataListData,
 		int, dataCount,
-		RefPtr<FontGlyphTextureCache>, cache,
+		RefPtr<Driver::ITexture>, glyphsTexture,
 		RefPtr<Brush>, m_fillBrush,	// TODO: Brush をそのまま描画スレッドに持ち込むのは危険。変更される。
 		{
 			m_core->render(
 				(TextRendererCore::GlyphRunData*)dataListData.getData(),
 				dataCount,
-				cache,
+				glyphsTexture,
 				m_fillBrush);
 		});
 

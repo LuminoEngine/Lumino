@@ -6,7 +6,7 @@
 #include <Lumino/Graphics/VertexDeclaration.h>
 #include <Lumino/Graphics/Material.h>
 #include "../Graphics/Device/GraphicsDriverInterface.h"
-#include "../Graphics/RHIRenderingContext.h"
+#include "../Graphics/CoreGraphicsRenderFeature.h"
 #include "../Graphics/RenderingCommand.h"
 #include "../Graphics/GraphicsManager.h"
 #include "PrimitiveRenderFeature.h"

@@ -4,7 +4,7 @@
 #include <Lumino/Graphics/VertexDeclaration.h>
 #include <Lumino/Graphics/SwapChain.h>
 #include <Lumino/Graphics/Shader.h>
-#include "RHIRenderingContext.h"
+#include "CoreGraphicsRenderFeature.h"
 #include "Internal.h"
 #include "RenderingCommand.h"
 #include "RenderingThread.h"
@@ -16,7 +16,7 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
-static detail::RHIRenderingContext* getRenderer()
+static detail::CoreGraphicsRenderFeature* getRenderer()
 {
 	return detail::GraphicsManager::getInstance()->getRenderer();
 }
@@ -31,7 +31,7 @@ namespace detail
 {
 
 //------------------------------------------------------------------------------
-RHIRenderingContext::RHIRenderingContext(detail::GraphicsManager* manager)
+CoreGraphicsRenderFeature::CoreGraphicsRenderFeature(detail::GraphicsManager* manager)
 	: m_internal(manager->getGraphicsDevice()->getRenderer())
 	, m_primaryCommandList(NULL)
 	, m_lockPresentCommandList()
@@ -48,7 +48,7 @@ RHIRenderingContext::RHIRenderingContext(detail::GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-RHIRenderingContext::~RHIRenderingContext()
+CoreGraphicsRenderFeature::~CoreGraphicsRenderFeature()
 {
 	if (m_primaryCommandList != NULL)
 	{
@@ -63,7 +63,7 @@ RHIRenderingContext::~RHIRenderingContext()
 }
 
 //------------------------------------------------------------------------------
-void RHIRenderingContext::begin()
+void CoreGraphicsRenderFeature::begin()
 {
 	bool isStandalone = m_manager->getGraphicsDevice()->isStandalone();
 
@@ -85,7 +85,7 @@ void RHIRenderingContext::begin()
 }
 
 //------------------------------------------------------------------------------
-void RHIRenderingContext::end()
+void CoreGraphicsRenderFeature::end()
 {
 	bool isStandalone = m_manager->getGraphicsDevice()->isStandalone();
 
@@ -107,7 +107,7 @@ void RHIRenderingContext::end()
 }
 
 //------------------------------------------------------------------------------
-void RHIRenderingContext::setRenderState(const RenderState& state)
+void CoreGraphicsRenderFeature::setRenderState(const RenderState& state)
 {
 	m_currentRenderState = state;
 
@@ -121,13 +121,13 @@ void RHIRenderingContext::setRenderState(const RenderState& state)
 }
 
 //------------------------------------------------------------------------------
-const RenderState& RHIRenderingContext::getRenderState() const
+const RenderState& CoreGraphicsRenderFeature::getRenderState() const
 {
 	return m_currentRenderState;
 }
 
 //------------------------------------------------------------------------------
-void RHIRenderingContext::setDepthStencilState(const DepthStencilState& state)
+void CoreGraphicsRenderFeature::setDepthStencilState(const DepthStencilState& state)
 {
 	m_currentDepthStencilState = state;
 
@@ -141,13 +141,13 @@ void RHIRenderingContext::setDepthStencilState(const DepthStencilState& state)
 }
 
 //------------------------------------------------------------------------------
-const DepthStencilState& RHIRenderingContext::getDepthStencilState() const
+const DepthStencilState& CoreGraphicsRenderFeature::getDepthStencilState() const
 {
 	return m_currentDepthStencilState;
 }
 
 //------------------------------------------------------------------------------
-void RHIRenderingContext::setRenderTarget(int index, Texture* texture)
+void CoreGraphicsRenderFeature::setRenderTarget(int index, Texture* texture)
 {
 	Driver::ITexture* t = (texture != NULL) ? texture->resolveDeviceObject() : NULL;
 	LN_REFOBJ_SET(m_currentRenderTargets[index], texture);
@@ -163,14 +163,14 @@ void RHIRenderingContext::setRenderTarget(int index, Texture* texture)
 }
 
 //------------------------------------------------------------------------------
-Texture* RHIRenderingContext::getRenderTarget(int index) const
+Texture* CoreGraphicsRenderFeature::getRenderTarget(int index) const
 {
 	LN_THROW(0 <= index && index < Graphics::MaxMultiRenderTargets, ArgumentException);
 	return m_currentRenderTargets[index];
 }
 
 //------------------------------------------------------------------------------
-void RHIRenderingContext::setDepthBuffer(DepthBuffer* depthBuffer)
+void CoreGraphicsRenderFeature::setDepthBuffer(DepthBuffer* depthBuffer)
 {
 	Driver::ITexture* t = (depthBuffer != nullptr) ? depthBuffer->resolveDeviceObject() : nullptr;
 	LN_REFOBJ_SET(m_currentDepthBuffer, depthBuffer);
@@ -185,13 +185,13 @@ void RHIRenderingContext::setDepthBuffer(DepthBuffer* depthBuffer)
 }
 
 //------------------------------------------------------------------------------
-DepthBuffer* RHIRenderingContext::getDepthBuffer() const
+DepthBuffer* CoreGraphicsRenderFeature::getDepthBuffer() const
 {
 	return m_currentDepthBuffer;
 }
 
 //------------------------------------------------------------------------------
-//void RHIRenderingContext::setViewport(const RectI& rect)
+//void CoreGraphicsRenderFeature::setViewport(const RectI& rect)
 //{
 //	//LN_CALL_RENDERER_COMMAND(setViewport, SetViewportCommand, rect);
 //	m_currentViewport = rect;
@@ -206,7 +206,7 @@ DepthBuffer* RHIRenderingContext::getDepthBuffer() const
 //}
 
 ////------------------------------------------------------------------------------
-//const RectI& RHIRenderingContext::getViewport()
+//const RectI& CoreGraphicsRenderFeature::getViewport()
 //{
 //	return m_currentViewport;
 //}
@@ -214,7 +214,7 @@ DepthBuffer* RHIRenderingContext::getDepthBuffer() const
 ////------------------------------------------------------------------------------
 ////
 ////------------------------------------------------------------------------------
-//void RHIRenderingContext::setVertexBuffer(VertexBuffer* vertexBuffer)
+//void CoreGraphicsRenderFeature::setVertexBuffer(VertexBuffer* vertexBuffer)
 //{
 //	Driver::IVertexBuffer* t = (vertexBuffer != NULL) ? Helper::getDeviceObject(vertexBuffer) : NULL;
 //	//LN_CALL_RENDERER_COMMAND(setVertexBuffer, SetVertexBufferCommand, t);
@@ -231,7 +231,7 @@ DepthBuffer* RHIRenderingContext::getDepthBuffer() const
 ////------------------------------------------------------------------------------
 ////
 ////------------------------------------------------------------------------------
-//void RHIRenderingContext::setIndexBuffer(IndexBuffer* indexBuffer)
+//void CoreGraphicsRenderFeature::setIndexBuffer(IndexBuffer* indexBuffer)
 //{
 //	Driver::IIndexBuffer* t = (indexBuffer != NULL) ? Helper::getDeviceObject(indexBuffer) : NULL;
 //	//LN_CALL_RENDERER_COMMAND(setIndexBuffer, SetIndexBufferCommand, t);
@@ -246,14 +246,14 @@ DepthBuffer* RHIRenderingContext::getDepthBuffer() const
 //}
 
 //------------------------------------------------------------------------------
-void RHIRenderingContext::setShaderPass(ShaderPass* pass)
+void CoreGraphicsRenderFeature::setShaderPass(ShaderPass* pass)
 {
 	if (pass != nullptr)
 		pass->apply();
 }
 
 //------------------------------------------------------------------------------
-void RHIRenderingContext::clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
+void CoreGraphicsRenderFeature::clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
 	verifyFrameBuffers();
 
@@ -272,7 +272,7 @@ void RHIRenderingContext::clear(ClearFlags flags, const Color& color, float z, u
 }
 
 //------------------------------------------------------------------------------
-void RHIRenderingContext::drawPrimitive(VertexDeclaration* vertexDeclaration, VertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount)
+void CoreGraphicsRenderFeature::drawPrimitive(VertexDeclaration* vertexDeclaration, VertexBuffer* vertexBuffer, PrimitiveType primitive, int startVertex, int primitiveCount)
 {
 	verifyFrameBuffers();
 
@@ -296,7 +296,7 @@ void RHIRenderingContext::drawPrimitive(VertexDeclaration* vertexDeclaration, Ve
 }
 
 //------------------------------------------------------------------------------
-void RHIRenderingContext::drawPrimitiveIndexed(VertexDeclaration* vertexDeclaration, VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount)
+void CoreGraphicsRenderFeature::drawPrimitiveIndexed(VertexDeclaration* vertexDeclaration, VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount)
 {
 	verifyFrameBuffers();
 
@@ -322,7 +322,7 @@ void RHIRenderingContext::drawPrimitiveIndexed(VertexDeclaration* vertexDeclarat
 }
 
 //------------------------------------------------------------------------------
-void RHIRenderingContext::flushState(const detail::ContextState& state)
+void CoreGraphicsRenderFeature::flushState(const detail::ContextState& state)
 {
 	// TODO: 1つのコマンドで一括設定したい
 	if (state.modifiedFlags.TestFlag(detail::ContextStateFlags::CommonState))
@@ -347,13 +347,13 @@ void RHIRenderingContext::flushState(const detail::ContextState& state)
 }
 
 //------------------------------------------------------------------------------
-void RHIRenderingContext::flush()
+void CoreGraphicsRenderFeature::flush()
 {
 
 }
 
 //------------------------------------------------------------------------------
-void RHIRenderingContext::onChangeDevice(Driver::IGraphicsDevice* device)
+void CoreGraphicsRenderFeature::onChangeDevice(Driver::IGraphicsDevice* device)
 {
 	if (device == NULL) {
 	}
@@ -363,7 +363,7 @@ void RHIRenderingContext::onChangeDevice(Driver::IGraphicsDevice* device)
 }
 
 //------------------------------------------------------------------------------
-void RHIRenderingContext::presentSwapChain(SwapChain* swapChain)
+void CoreGraphicsRenderFeature::presentSwapChain(SwapChain* swapChain)
 {
 	if (m_manager->getRenderingType() == GraphicsRenderingType::Immediate)
 	{
@@ -399,7 +399,7 @@ void RHIRenderingContext::presentSwapChain(SwapChain* swapChain)
 }
 
 //------------------------------------------------------------------------------
-void RHIRenderingContext::presentCommandList(SwapChain* swapChain)
+void CoreGraphicsRenderFeature::presentCommandList(SwapChain* swapChain)
 {
 	//m_primaryCommandList->addCommand<PresentCommand>(swapChain);
 
@@ -419,7 +419,7 @@ void RHIRenderingContext::presentCommandList(SwapChain* swapChain)
 }
 
 //------------------------------------------------------------------------------
-void RHIRenderingContext::verifyFrameBuffers()
+void CoreGraphicsRenderFeature::verifyFrameBuffers()
 {
 	// レンダリングターゲットと深度バッファのサイズが一致している必要がある。
 	if (m_currentDepthBuffer != nullptr)

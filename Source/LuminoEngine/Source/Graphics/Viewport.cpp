@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.h"
 #include "GraphicsManager.h"
-#include "RHIRenderingContext.h"
+#include "CoreGraphicsRenderFeature.h"
 #include "../UI/UIManager.h"
 #include <Lumino/Graphics/Viewport.h>
 #include <Lumino/Rendering/Rendering.h>

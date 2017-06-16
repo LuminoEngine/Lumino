@@ -189,6 +189,7 @@ public:
 	int getUsageAttributeIndex(VertexElementUsage usage, int index);
 
 public:
+	virtual IShader* getShader() const { return m_ownerShader; }
 	virtual const TCHAR* getName() const { return m_name.c_str(); }
 	virtual int getAnnotationCount() { return m_annotations.getCount(); }
 	virtual IShaderVariable* getAnnotation(int index) { return m_annotations[index]; }

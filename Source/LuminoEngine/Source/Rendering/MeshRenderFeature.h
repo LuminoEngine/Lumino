@@ -2,6 +2,7 @@
 #pragma once
 #include <Lumino/Graphics/Common.h>
 #include <Lumino/Graphics/ContextInterface.h>
+#include <Lumino/Rendering/Common.h>
 #include "../Graphics/Device/GraphicsDriverInterface.h"
 
 LN_NAMESPACE_BEGIN

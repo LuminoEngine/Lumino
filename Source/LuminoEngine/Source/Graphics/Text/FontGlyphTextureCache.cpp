@@ -164,10 +164,16 @@ void FontGlyphTextureCache::CommitCacheGlyphInfo(CacheGlyphInfo* info, Rect* src
 #endif
 
 //------------------------------------------------------------------------------
-Driver::ITexture* FontGlyphTextureCache::getGlyphsFillTexture()
+Texture2D* FontGlyphTextureCache::getGlyphsFillTexture()
 {
-	return m_fillGlyphsTexture->resolveDeviceObject();
+	return m_fillGlyphsTexture;
 }
+
+////------------------------------------------------------------------------------
+//Driver::ITexture* FontGlyphTextureCache::getGlyphsFillTexture()
+//{
+//	return m_fillGlyphsTexture->resolveDeviceObject();
+//}
 
 //------------------------------------------------------------------------------
 void FontGlyphTextureCache::onFlush()

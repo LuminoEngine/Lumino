@@ -99,7 +99,7 @@ public:
 	GraphicsRenderingType getRenderingType() const { return m_renderingType; }
 
 	/** グラフィックスシステムのメイン Renderer を取得します。*/
-	detail::RHIRenderingContext* getRenderer() const { return m_renderer; }
+	detail::CoreGraphicsRenderFeature* getRenderer() const { return m_renderer; }
 
 	/** メインの SwapChain を取得します。これは create() で指定されたメインウィンドウへのスワップチェインです。*/
 	SwapChain* getMainSwapChain() { return m_mainSwapChain; }
@@ -167,7 +167,7 @@ private:
 	
 	Driver::IGraphicsDevice*		m_graphicsDevice;
 	SwapChain*						m_mainSwapChain;
-	detail::RHIRenderingContext*	m_renderer;
+	detail::CoreGraphicsRenderFeature*	m_renderer;
 	RenderingThread*				m_renderingThread;
 
 	ContextInterface*				m_activeContext;

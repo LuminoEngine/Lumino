@@ -31,7 +31,7 @@ public:
 	void initialize(GraphicsManager* manager);
 
 	void setState(const Matrix& world, const Matrix& viewProj, const SizeI& viewPixelSize);
-	void render(const GlyphRunData* dataList, int dataCount, FontGlyphTextureCache* cache, Brush* fillBrush);
+	void render(const GlyphRunData* dataList, int dataCount, Driver::ITexture* glyphsTexture, Brush* fillBrush);
 
 private:
 
@@ -57,7 +57,7 @@ private:
 	};
 
 	void internalDrawRectangle(const Matrix& transform, const Rect& rect, const Rect& srcUVRect, const Color& color);
-	void flush(FontGlyphTextureCache* cache);
+	void flush(Driver::ITexture* glyphsTexture);
 
 	virtual void onChangeDevice(Driver::IGraphicsDevice* device) override;
 	void createDeviceResources();

@@ -4,6 +4,7 @@
 #include <Lumino/Graphics/SwapChain.h>
 #include <Lumino/Graphics/Viewport.h>
 #include <Lumino/Rendering/DrawingContext.h>
+#include <Lumino/Rendering/SceneRenderer.h>
 #include <Lumino/UI/UIContext.h>
 #include <Lumino/UI/UILayoutView.h>
 #include <Lumino/UI/UIFrameWindow.h>
@@ -14,7 +15,7 @@
 #include <Lumino/Scene/SceneGraph.h>
 #include "UIManager.h"
 #include "../Graphics/GraphicsManager.h"
-#include "../Graphics/RHIRenderingContext.h"
+#include "../Graphics/CoreGraphicsRenderFeature.h"
 #include "../Graphics/RenderingThread.h"
 #include "../Platform/PlatformManager.h"
 #include "../Platform/PlatformWindowManagerBase.h"
@@ -137,7 +138,7 @@ void UIFrameWindow::presentRenderingContexts()
 {
 	// render
 	{
-		detail::RHIRenderingContext* renderer = m_manager->getGraphicsManager()->getRenderer();
+		detail::CoreGraphicsRenderFeature* renderer = m_manager->getGraphicsManager()->getRenderer();
 		renderer->begin();
 
 		onPresentRenderingContexts();

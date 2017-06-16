@@ -8,7 +8,7 @@
 #include <Lumino/Graphics/ContextInterface.h>
 #include <Lumino/Graphics/Brush.h>
 #include <Lumino/Graphics/Utils.h>
-#include "RHIRenderingContext.h"
+#include "CoreGraphicsRenderFeature.h"
 #include "GraphicsManager.h"
 #include "Device/GraphicsDriverInterface.h"
 
