@@ -30,7 +30,6 @@ public:
 	~TextRendererCore();
 	void initialize(GraphicsManager* manager);
 
-	void setState(const Matrix& world, const Matrix& viewProj, const SizeI& viewPixelSize);
 	void render(const GlyphRunData* dataList, int dataCount, Driver::ITexture* glyphsTexture, Brush* fillBrush);
 
 private:
@@ -77,21 +76,6 @@ private:
 	//Driver::ITexture*		m_glyphsMaskTexture;
 
 	Bitmap					m_tmpBitmap;
-
-	struct
-	{
-		Driver::IShader*			shader;
-		Driver::IShaderTechnique*	technique;
-		Driver::IShaderPass*		pass;
-		Driver::IShaderVariable*	varWorldMatrix;
-		Driver::IShaderVariable*	varViewProjMatrix;
-		Driver::IShaderVariable*	varTone;
-		Driver::IShaderVariable*	varTexture;
-		//Driver::IShaderVariable*	varGlyphMaskSampler;
-		Driver::IShaderVariable*	varPixelStep;
-
-	} m_shader;
-
 	TextRenderer*			m_activeRenderer;
 };
 
@@ -104,18 +88,15 @@ public:
 	~TextRenderer();
 	void initialize(GraphicsManager* manager);
 
-	void setTransform(const Matrix& matrix);
-	void setViewInfo(const Matrix& viewProj, const SizeI& viewPixelSize);
-
 	void drawGlyphRun(const Matrix& transform, const PointI& position, GlyphRun* glyphRun);
 	void drawGlyphRun(const Matrix& transform, const PointF& position, GlyphRun* glyphRun);	// setFont 無視
 
 	void drawString(const Matrix& transform, const TCHAR* str, int length, const PointF& position);
 	void drawString(const Matrix& transform, const TCHAR* str, int length, const Rect& rect, StringFormatFlags flags);
 
-	virtual bool isStandaloneShader() const { return true; }
+	virtual bool isStandaloneShader() const { return false; }
 	virtual void flush() override;
-	virtual void onActivated() { m_stateModified = true; }
+	virtual void onActivated() { }
 	virtual void onDeactivated() { flush(); }
 	virtual void onSetState(const DrawElementBatch* state);
 
@@ -123,19 +104,14 @@ public:
 	// TODO: ↓いまは Flush でやるようなことをしている。後で変更したい。
 	void DrawGlyphsInternal(const Matrix& transform, const PointF& position, const List<TextLayoutResultItem>& layoutItems, FontGlyphTextureCache* cache);
 	void FlushInternal(FontGlyphTextureCache* cache);
-	void checkUpdateState();
 
 private:
 	GraphicsManager*	m_manager;
 	TextRendererCore*	m_core;
 	List<TextRendererCore::GlyphRunData>	m_glyphLayoutDataList;
 
-	Matrix				m_transform;
-	Matrix				m_viewProj;
-	SizeI				m_viewPixelSize;
 	RefPtr<RawFont>		m_font;
 	RefPtr<Brush>		m_fillBrush;
-	bool				m_stateModified;
 	bool				m_flushRequested;
 };
 

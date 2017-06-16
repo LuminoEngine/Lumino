@@ -228,7 +228,6 @@ FrameRectRenderFeature* InternalContext::beginFrameRectRenderer()
 void InternalContext::setViewInfo(const Size& viewPixelSize, const Matrix& viewMatrix, const Matrix& projMatrix)
 {
 	m_spriteRenderer->setViewInfo(viewPixelSize, viewMatrix, projMatrix);
-	m_textRenderer->setViewInfo(viewMatrix * projMatrix, SizeI(viewPixelSize.width, viewPixelSize.height));
 	m_frameRectRenderer->setViewInfo(viewMatrix * projMatrix);
 }
 

@@ -58,7 +58,7 @@ void UIDiagnosticsWindow::initialize()
 void UIDiagnosticsWindow::onRender(DrawingContext* context)
 {
 	UIFrameWindow::onRender(context);
-	//drawStatistics(context, Rect(640 - 8 - 300, 8, 300, 256));
+	drawStatistics(context, Rect(640 - 8 - 300, 8, 300, 256));
 }
 
 //------------------------------------------------------------------------------

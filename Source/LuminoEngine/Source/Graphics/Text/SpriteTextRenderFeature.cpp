@@ -26,12 +26,6 @@ namespace detail {
 // TextRendererCore
 //==============================================================================
 
-static const byte_t g_TextRenderer_fx_Data[] =
-{
-#include "../Resource/TextRenderer.fx.h"
-};
-static const size_t g_TextRenderer_fx_Len = LN_ARRAY_SIZE_OF(g_TextRenderer_fx_Data);
-
 //------------------------------------------------------------------------------
 TextRendererCore::TextRendererCore()
 	: m_vertexBuffer(nullptr)
@@ -73,35 +67,13 @@ void TextRendererCore::createDeviceResources()
 
 	m_vertexCache.reserve(DefaultFaceCount * 4);
 	m_indexCache.reserve(DefaultFaceCount * 6);
-
-	ShaderCompileResult r;
-	m_shader.shader = device->createShader(g_TextRenderer_fx_Data, g_TextRenderer_fx_Len, &r);
-	LN_THROW(r.Level != ShaderCompileResultLevel_Error, CompilationException, r);
-	m_shader.technique = m_shader.shader->getTechnique(0);
-	m_shader.pass = m_shader.technique->getPass(0);
-	m_shader.varWorldMatrix = m_shader.shader->getVariableByName(_T("g_worldMatrix"));
-	m_shader.varViewProjMatrix = m_shader.shader->getVariableByName(_T("g_viewProjMatrix"));
-	m_shader.varTone = m_shader.shader->getVariableByName(_T("g_tone"));
-	m_shader.varTexture = m_shader.shader->getVariableByName(_T("g_texture"));
-	//m_shader.varGlyphMaskSampler = m_shader.shader->getVariableByName(_T("g_glyphMaskTexture"));
-	m_shader.varPixelStep = m_shader.shader->getVariableByName(_T("g_pixelStep"));
 }
 
 //------------------------------------------------------------------------------
 void TextRendererCore::releaseDeviceResources()
 {
-	LN_SAFE_RELEASE(m_shader.shader);
 	LN_SAFE_RELEASE(m_vertexBuffer);
 	LN_SAFE_RELEASE(m_indexBuffer);
-}
-
-//------------------------------------------------------------------------------
-void TextRendererCore::setState(const Matrix& world, const Matrix& viewProj, const SizeI& viewPixelSize)
-{
-	m_shader.varWorldMatrix->setMatrix(world);
-	m_shader.varViewProjMatrix->setMatrix(viewProj);
-	if (m_shader.varPixelStep != nullptr)
-		m_shader.varPixelStep->setVector(Vector4(0.5f / viewPixelSize.width, 0.5f / viewPixelSize.height, 0, 0));
 }
 
 //------------------------------------------------------------------------------
@@ -182,25 +154,15 @@ void TextRendererCore::flush(Driver::ITexture* glyphsTexture)
 	newState.destinationBlend = BlendFactor::InverseSourceAlpha;
 	renderer->setRenderState(newState);
 
-
-
 	// 描画する
 	m_vertexBuffer->setSubData(0, m_vertexCache.getBuffer(), m_vertexCache.getBufferUsedByteCount());
 	m_indexBuffer->setSubData(0, m_indexCache.getBuffer(), m_indexCache.getBufferUsedByteCount());
-	m_shader.varTone->setVector((Vector4&)m_tone);
-	m_shader.varTexture->setTexture(glyphsTexture/*cache->getGlyphsFillTexture()*/);
-	//m_shader.varGlyphMaskSampler->setTexture(m_glyphsMaskTexture);
-
-
-
-	//renderer->setShaderPass(m_shader.pass);
 
 	// シェーダのメインテクスチャをオーバーライドする
 	auto* pass = renderer->getShaderPass();
 	auto* shader = pass->getShader();
 	auto* var = shader->getVariableByName("ln_MaterialTexture");	// TODO: 定数
 	if (var) var->setTexture(glyphsTexture/*cache->getGlyphsFillTexture()*/);
-
 
 	renderer->setVertexDeclaration(m_vertexDeclaration);
 	renderer->setVertexBuffer(0, m_vertexBuffer);
@@ -225,12 +187,8 @@ TextRenderer::TextRenderer()
 	: m_manager(nullptr)
 	, m_core(nullptr)
 	, m_glyphLayoutDataList()
-	, m_transform()
-	, m_viewProj()
-	, m_viewPixelSize()
 	, m_font(nullptr)
 	, m_fillBrush(nullptr)
-	, m_stateModified(false)
 	, m_flushRequested(false)
 {
 }
@@ -249,28 +207,6 @@ void TextRenderer::initialize(GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void TextRenderer::setTransform(const Matrix& matrix)
-{
-	m_transform = matrix;
-	m_stateModified = true;
-}
-
-//------------------------------------------------------------------------------
-void TextRenderer::setViewInfo(const Matrix& viewProj, const SizeI& viewPixelSize)
-{
-	if (m_viewProj != viewProj)
-	{
-		m_viewProj = viewProj;
-		m_stateModified = true;
-	}
-	if (m_viewPixelSize != viewPixelSize)
-	{
-		m_viewPixelSize = viewPixelSize;
-		m_stateModified = true;
-	}
-}
-
-//------------------------------------------------------------------------------
 void TextRenderer::drawGlyphRun(const Matrix& transform, const PointI& position, GlyphRun* glyphRun)
 {
 	drawGlyphRun(transform, PointF((float)position.x, (float)position.y), glyphRun);
@@ -278,7 +214,6 @@ void TextRenderer::drawGlyphRun(const Matrix& transform, const PointI& position,
 void TextRenderer::drawGlyphRun(const Matrix& transform, const PointF& position, GlyphRun* glyphRun)
 {
 	if (glyphRun == nullptr) return;
-	checkUpdateState();
 	m_font = glyphRun->getFont();
 	DrawGlyphsInternal(transform, position, glyphRun->requestLayoutItems(), glyphRun->lookupFontGlyphTextureCache());
 }
@@ -339,8 +274,6 @@ void TextRenderer::drawString(const Matrix& transform, const TCHAR* str, int len
 //------------------------------------------------------------------------------
 void TextRenderer::DrawGlyphsInternal(const Matrix& transform, const PointF& position, const List<TextLayoutResultItem>& layoutItems, FontGlyphTextureCache* cache)
 {
-	checkUpdateState();
-
 	int dataCount = layoutItems.getCount();
 	for (int i = 0; i < dataCount; ++i)
 	{
@@ -391,16 +324,10 @@ void TextRenderer::onSetState(const DrawElementBatch* state)
 		if (m_font != rawFont)
 		{
 			m_font = rawFont;
-
-			// TODO: 必要ないかも？
-			m_stateModified = true;
 		}
 		if (m_fillBrush != state->state.getBrush())
 		{
 			m_fillBrush = state->state.getBrush();
-
-			// TODO: 必要ないかも？
-			m_stateModified = true;
 		}
 
 		LN_ASSERT(m_fillBrush != nullptr);
@@ -433,25 +360,6 @@ void TextRenderer::FlushInternal(FontGlyphTextureCache* cache)
 
 	m_glyphLayoutDataList.clear();
 	m_flushRequested = false;
-}
-
-//------------------------------------------------------------------------------
-void TextRenderer::checkUpdateState()	// あらゆる draw の直前にやりたいこと
-{
-	if (m_stateModified)
-	{
-		LN_ENQUEUE_RENDER_COMMAND_4(
-			TextRenderer_Flush, m_manager,
-			TextRendererCore*, m_core,
-			Matrix, m_transform,
-			Matrix, m_viewProj,
-			SizeI, m_viewPixelSize,
-			{
-				m_core->setState(m_transform, m_viewProj, m_viewPixelSize);
-			});
-
-		m_stateModified = false;
-	}
 }
 
 } // namespace detail
