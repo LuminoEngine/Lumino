@@ -94,8 +94,11 @@ struct ElementInfo
 // サブセット単位のデータに関する情報
 struct SubsetInfo
 {
-	CombinedMaterial*	combinedMaterial;
-	Texture*			materialTexture;		// TODO: これやめたい。blit で使っているが・・・
+	const CombinedMaterial*	combinedMaterial;
+
+	// TODO: これやめたい。blit で使っているが・・・ → オーバーライドするにはRenderingCommand にする前にセットが必要。
+	//TextRendererCore の中でステートを変更したら復元も気を付けなければならないし、変更が頻繁になる。メインスレッドで頑張った意味がなくなる。
+	Texture*			materialTexture;
 };
 
 // セマンティクスが関係するシェーダ変数の管理

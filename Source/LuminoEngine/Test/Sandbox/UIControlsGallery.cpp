@@ -58,6 +58,7 @@ void UIDiagnosticsWindow::initialize()
 void UIDiagnosticsWindow::onRender(DrawingContext* context)
 {
 	UIFrameWindow::onRender(context);
+	//context->clear(ClearFlags::All, Color::AliceBlue);
 	drawStatistics(context, Rect(640 - 8 - 300, 8, 300, 256));
 }
 
@@ -77,7 +78,7 @@ void UIDiagnosticsWindow::drawStatistics(DrawingContext* context, const Rect& wi
 	context->setBrush(UIColors::getBrush(UIColorIndex::Grey, 8));
 	context->drawText_(_T("Statistics"), PointF(10, 20));
 
-
+	return;
 	loc.y += 24;
 
 	//auto time = Profiler2::getSection(ProfilingKeys::Engine_UpdateFrame)->getElapsedSeconds();
@@ -272,6 +273,8 @@ void UIControlsGallery()
 
 	auto window2 = newObject<UIDiagnosticsWindow>();
 	window2->setBackground(SolidColorBrush::White);
+
+
 
 
 
@@ -527,7 +530,7 @@ void UIControlsGallery()
 
 
 		//printf("----------\n");
-		//Engine::getMainWindow()->GetRenderDiagnostic()->print();
+		//window2->GetRenderDiagnostic()->print();
 	}
 
 	//while (Engine::update())

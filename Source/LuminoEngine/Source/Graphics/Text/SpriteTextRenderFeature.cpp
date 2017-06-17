@@ -147,22 +147,22 @@ void TextRendererCore::flush(Driver::ITexture* glyphsTexture)
 
 	// ビットマップフォントからの描画なので、アルファブレンドONでなければ真っ白矩形になってしまう。
 	// ・・・が、TextRendererCore のような低レベルでステートを強制変更してしまうのはいかがなものか・・・。
-	RenderState oldState = renderer->getRenderState();
-	RenderState newState = oldState;
-	newState.alphaBlendEnabled = true;
-	newState.sourceBlend = BlendFactor::SourceAlpha;
-	newState.destinationBlend = BlendFactor::InverseSourceAlpha;
-	renderer->setRenderState(newState);
+	//RenderState oldState = renderer->getRenderState();
+	//RenderState newState = oldState;
+	//newState.alphaBlendEnabled = true;
+	//newState.sourceBlend = BlendFactor::SourceAlpha;
+	//newState.destinationBlend = BlendFactor::InverseSourceAlpha;
+	//renderer->setRenderState(newState);
 
 	// 描画する
 	m_vertexBuffer->setSubData(0, m_vertexCache.getBuffer(), m_vertexCache.getBufferUsedByteCount());
 	m_indexBuffer->setSubData(0, m_indexCache.getBuffer(), m_indexCache.getBufferUsedByteCount());
 
 	// シェーダのメインテクスチャをオーバーライドする
-	auto* pass = renderer->getShaderPass();
-	auto* shader = pass->getShader();
-	auto* var = shader->getVariableByName("ln_MaterialTexture");	// TODO: 定数
-	if (var) var->setTexture(glyphsTexture/*cache->getGlyphsFillTexture()*/);
+	//auto* pass = renderer->getShaderPass();
+	//auto* shader = pass->getShader();
+	//auto* var = shader->getVariableByName("ln_MaterialTexture");	// TODO: 定数
+	//if (var) var->setTexture(glyphsTexture/*cache->getGlyphsFillTexture()*/);
 
 	renderer->setVertexDeclaration(m_vertexDeclaration);
 	renderer->setVertexBuffer(0, m_vertexBuffer);
@@ -174,7 +174,7 @@ void TextRendererCore::flush(Driver::ITexture* glyphsTexture)
 	m_indexCache.clear();
 
 	// 変更したステートを元に戻す
-	renderer->setRenderState(oldState);
+	//renderer->setRenderState(oldState);
 }
 
 

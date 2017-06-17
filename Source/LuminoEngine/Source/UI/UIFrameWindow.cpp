@@ -129,6 +129,7 @@ void UIFrameWindow::onPresentRenderingContexts()
 void UIFrameWindow::renderContents()
 {
 	m_drawingContext->beginMakeElements();
+	m_drawingContext->clear(ClearFlags::Depth | ClearFlags::Stencil, Color::Transparency);
 	m_drawingContext->setBlendMode(BlendMode::Alpha);
 	UILayoutView::render(m_drawingContext);
 }

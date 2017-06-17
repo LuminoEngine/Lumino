@@ -12,6 +12,7 @@
 #include "../Graphics/Text/SpriteTextRenderFeature.h"
 #include "../Graphics/Text/VectorTextRenderFeature.h"
 #include "../Graphics/Text/FontManager.h"
+#include "../Graphics/Text/FontGlyphTextureCache.h"
 #include "../Mesh/MeshFactory.h"
 #include "PrimitiveRenderFeature.h"
 #include "MeshRenderFeature.h"
@@ -720,9 +721,9 @@ void DrawElementList::clearCommands()
 }
 
 //------------------------------------------------------------------------------
-void DrawElementList::postAddCommandInternal(const BatchState& state, Material* availableMaterial, const Matrix& transform, const BuiltinEffectData& effectData, DrawElement* element)
+void DrawElementList::postAddCommandInternal(const BatchState& state, Material* availableMaterial, const Matrix& transform, const BuiltinEffectData& effectData, bool forceStateChange, DrawElement* element)
 {
-	if (m_batchList.isEmpty() || !m_batchList.getLast().Equal(state, availableMaterial, transform, effectData))
+	if (forceStateChange || m_batchList.isEmpty() || !m_batchList.getLast().Equal(state, availableMaterial, transform, effectData))
 	{
 		// CombinedMaterial を作る
 		CombinedMaterial* cm = m_combinedMaterialCache.queryCommandList();
@@ -1026,7 +1027,7 @@ void DrawList::setTransform(const Matrix& transform)
 //------------------------------------------------------------------------------
 void DrawList::clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
-	auto* ptr = m_drawElementList.addCommand<detail::ClearElement>(m_state.state, m_defaultMaterial, Matrix::Identity, m_builtinEffectData);
+	auto* ptr = m_drawElementList.addCommand<detail::ClearElement>(m_state.state, m_defaultMaterial, Matrix::Identity, m_builtinEffectData, false);
 	ptr->flags = flags;
 	ptr->color = color;
 	ptr->z = z;
@@ -1296,6 +1297,14 @@ void DrawList::drawText_(const StringRef& text, const Rect& rect, StringFormatFl
 		Rect rect;
 		StringFormatFlags flags;
 
+		//virtual void makeSubsetInfo(detail::DrawElementList* oenerList, detail::CombinedMaterial* material, detail::SubsetInfo* outInfo) override
+		//{
+		//	DrawElement::makeSubsetInfo(oenerList, material, outInfo);
+
+		//	// MaterialTexture を上書きする
+		//	outInfo->materialTexture = oenerList->getBatch(batchIndex)->state.getFont()->resolveRawFont()->GetGlyphTextureCache()->getGlyphsFillTexture();
+		//}
+
 		virtual void drawSubset(const DrawArgs& e) override
 		{
 			e.context->beginTextRenderer()->drawString(getTransform(e.oenerList), text.c_str(), text.getLength(), rect, flags);
@@ -1303,11 +1312,15 @@ void DrawList::drawText_(const StringRef& text, const Rect& rect, StringFormatFl
 		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement("DrawText"); }
 	};
 
+	//m_defaultMaterial->setMaterialTexture(m_state.state.getFont()->resolveRawFont()->GetGlyphTextureCache()->getGlyphsFillTexture());
+
 	auto* e = resolveDrawElement<DrawElement_DrawText>(detail::DrawingSectionId::None, m_manager->getInternalContext()->m_textRenderer, nullptr);
 	e->text = text;
 	e->rect = rect;
 	e->flags = flags;
 	//e->boundingSphere = ;	// TODO
+
+	m_drawElementList.getBatch(e->batchIndex)->getCombinedMaterial()->m_mainTexture = m_state.state.getFont()->resolveRawFont()->GetGlyphTextureCache()->getGlyphsFillTexture();
 }
 
 //------------------------------------------------------------------------------
