@@ -1161,7 +1161,7 @@ void DrawList::drawBox(const Box& box, const Color& color, const Matrix& localTr
 }
 
 //------------------------------------------------------------------------------
-void DrawList::drawSphere(float radius, int slices, int stacks, const Color& color, const Matrix& localTransform)
+void DrawList::drawSphere(float radius, int slices, int stacks, const Color& color, const Matrix& localTransform, Material* material)
 {
 	class DrawSphereElement : public detail::LightingDrawElement	// TODO: LightingDrawElement は忘れやすい。デフォルトありでいいと思う
 	{
@@ -1175,7 +1175,7 @@ void DrawList::drawSphere(float radius, int slices, int stacks, const Color& col
 		}
 		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement("DrawSphereElement"); }
 	};
-	auto* e = resolveDrawElement<DrawSphereElement>(detail::DrawingSectionId::None, m_manager->getInternalContext()->m_primitiveRenderer, nullptr);
+	auto* e = resolveDrawElement<DrawSphereElement>(detail::DrawingSectionId::None, m_manager->getInternalContext()->m_primitiveRenderer, material);
 	e->factory.initialize(radius, slices, stacks, color, localTransform);
 	e->boundingSphere.center = Vector3::Zero;
 	e->boundingSphere.radius = radius;

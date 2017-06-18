@@ -8,6 +8,36 @@
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
+// LayerMask
+//==============================================================================
+
+//------------------------------------------------------------------------------
+int LayerMask::GetLayer(BuiltinLayers builtinLayer)
+{
+	switch (builtinLayer)
+	{
+	case ln::BuiltinLayers::Background:
+		return 1;
+	case ln::BuiltinLayers::Layer2:
+		return 2;
+	case ln::BuiltinLayers::Layer3:
+		return 3;
+	case ln::BuiltinLayers::Layer4:
+		return 4;
+	case ln::BuiltinLayers::Layer5:
+		return 5;
+	case ln::BuiltinLayers::Layer6:
+		return 6;
+	case ln::BuiltinLayers::Layer7:
+		return 7;
+	default:
+		LN_CHECK_ARG(0);
+		break;
+	}
+	return 0;
+}
+
+//==============================================================================
 // WorldObject
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(WorldObject, Object);
@@ -25,6 +55,8 @@ WorldObject::WorldObject()
 	: m_world(nullptr)
 	, m_children()
 	, m_parent(nullptr)
+	, m_tag()
+	, m_layer(0)
 	//, m_combinedGlobalMatrix()
 	, m_isAutoRelease(false)
 	, m_isSpecialObject(false)

@@ -278,6 +278,10 @@ void VisualComponent::render(DrawList* context)
 {
 	if (m_isVisible)
 	{
+		DrawElementMetadata metadata;
+		metadata.priority = (getOrderInLayer() + (-(SHRT_MIN))) + ((getLayer() + 1) *  USHRT_MAX);
+		context->pushMetadata(&metadata);
+
 		context->setBlendMode(m_blendMode);
 		context->setCullingMode(m_cullingMode);
 		context->setDepthTestEnabled(m_depthTestEnabled);
@@ -285,6 +289,8 @@ void VisualComponent::render(DrawList* context)
 		context->setBuiltinEffectData(m_builtinEffectData);
 		onRender(context);
 		onRender2(context);
+
+		context->popMetadata();
 	}
 }
 

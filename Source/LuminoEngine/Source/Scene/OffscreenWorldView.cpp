@@ -182,7 +182,8 @@ SkyComponent::~SkyComponent()
 void SkyComponent::initialize()
 {
 	VisualComponent::initialize();
-
+	setLayer(LayerMask::GetLayer(BuiltinLayers::Background));
+	setOrderInLayer(SHRT_MIN);
 
 	{
 
@@ -208,7 +209,10 @@ void SkyComponent::onRender2(DrawList* renderer)
 
 		Vector3 cameraPos = Vector3(0, 997, 0);// = cam->getTransform()->position.Get();
 											   //cameraPos.normalize();
-		Vector3 lightPos = 1.0f * Vector3::normalize(1, -0, -1);//sunDirection.normalized();
+		//Vector3 cameraPos = Vector3(0, 0, 10);
+		//Vector3 lightPos = 1.0f * Vector3::normalize(1, -0, -1);//sunDirection.normalized();
+		//Vector3 lightPos = Vector3::normalize(Vector3(0.3, -0.1, 1));
+		Vector3 lightPos = Vector3::normalize(Vector3(0, 1, 0));
 
 		float fCameraHeight = cameraPos.getLength();
 		float fCameraHeight2 = fCameraHeight * fCameraHeight;
@@ -290,6 +294,12 @@ void SkyComponent::onRender2(DrawList* renderer)
 		*/
 
 		renderer->blit(nullptr, nullptr, m_skyMaterial);
+
+		//renderer->setCullingMode(CullingMode::None);
+		//Matrix tt;
+		////tt.scale(-1, -1, -1);
+		//renderer->drawSphere(100, 8, 8, Color::White, tt, m_skyMaterial);
+		//renderer->setCullingMode(CullingMode::Back);
 	}
 
 

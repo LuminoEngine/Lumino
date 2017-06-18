@@ -78,7 +78,7 @@ void UIDiagnosticsWindow::drawStatistics(DrawingContext* context, const Rect& wi
 	context->setBrush(UIColors::getBrush(UIColorIndex::Grey, 8));
 	context->drawText_(_T("Statistics"), PointF(10, 20));
 
-	return;
+	//return;
 	loc.y += 24;
 
 	//auto time = Profiler2::getSection(ProfilingKeys::Engine_UpdateFrame)->getElapsedSeconds();
@@ -278,7 +278,8 @@ void UIControlsGallery()
 
 
 
-	//auto sky = newObject<SkyComponent>();
+	auto sky = newObject<SkyComponent>();
+	Engine::getCamera3D()->addComponent(sky);
 	//sky->setDepthTestEnabled(false);
 	//sky->setDepthWriteEnabled(false);
 	//auto skyObj = ln::newObject<ln::WorldObject3D>();

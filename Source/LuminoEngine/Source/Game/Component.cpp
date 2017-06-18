@@ -16,6 +16,8 @@ Component::Component()
 	: transfotm(nullptr)
 	, m_owner(nullptr)
 	, m_specialComponentType(SpecialComponentType::None)
+	, m_layer(0)
+	, m_orderInLayer(0)
 {
 }
 

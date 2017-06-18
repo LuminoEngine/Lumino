@@ -125,8 +125,6 @@ float4 PSBasic(PSInput input) : COLOR0
 	float fScaledLength = fSampleLength * fScale;
 	float3 v3SampleRay = v3Ray * fSampleLength;
 	float3 v3SamplePoint = v3Start + v3SampleRay * 0.5;
-	
-	v3LightPos = normalize(float3(0.3, -0.1, 1));
 
 	// Now loop through the sample rays
 	float3 v3FrontColor = float3(0.0, 0.0, 0.0);

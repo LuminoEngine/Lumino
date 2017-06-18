@@ -9,6 +9,24 @@ class World;
 class WorldObject;
 using WorldObjectPtr = RefPtr<WorldObject>;
 
+enum class BuiltinLayers
+{
+	Background,
+	Layer2,
+	Layer3,
+	Layer4,
+	Layer5,
+	Layer6,
+	Layer7,
+};
+
+struct LayerMask
+{
+	static const int MaxLayers = 32;
+
+	static int GetLayer(BuiltinLayers builtinLayer);
+};
+
 /**
 	@brief		
 */
@@ -74,6 +92,13 @@ public:
 	LN_METHOD(Property)
 	const String& getTag() const { return m_tag; }
 
+	/** このオブジェクトが属するレイヤーを設定します。 */
+	LN_METHOD()
+	void setLayer(int layer) { m_layer = layer; }
+
+	/** このオブジェクトが属するレイヤーを取得します。 */
+	LN_METHOD(Property)
+	int getLayer() const { return m_layer; }
 
 	World* getWorld() const;
 
@@ -115,6 +140,7 @@ private:
 	List<RefPtr<WorldObject>>	m_children;
 	WorldObject*				m_parent;
 	String						m_tag;
+	int							m_layer;
 	//Matrix						m_combinedGlobalMatrix;
 	bool						m_isAutoRelease;
 	bool						m_isSpecialObject;	// World 内で特殊な扱いをされるオブジェクト。今はデフォルトのカメラとライトで、RemoveObjects で除外されない。

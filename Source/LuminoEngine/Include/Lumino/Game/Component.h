@@ -32,6 +32,22 @@ public:
 	WorldObject* getOwnerObject() const;
 	transform* getTransform() const;
 
+	/** このコンポーネントが属するレイヤーを設定します。 */
+	LN_METHOD()
+	void setLayer(int layer) { m_layer = layer; }
+
+	/** このコンポーネントが属するレイヤーを取得します。 */
+	LN_METHOD(Property)
+	int getLayer() const { return m_layer; }
+
+	/** レイヤーの中での前後関係を設定します。小さい番号ほど先に描画され、大きい番号が後から前面に描画されます。 */
+	LN_METHOD()
+	void setOrderInLayer(short order) { m_orderInLayer = order; }
+
+	/** レイヤーの中での前後関係を取得します。 */
+	LN_METHOD(Property)
+	int getOrderInLayer() const { return m_orderInLayer; }
+
 	virtual void onAttached();
 	virtual void onDetaching();
 	virtual void onUpdate();
@@ -51,8 +67,10 @@ LN_INTERNAL_ACCESS:
 	SpecialComponentType getSpecialComponentType() const { return m_specialComponentType; }
 
 private:
-	WorldObject*	m_owner;
+	WorldObject*			m_owner;
 	SpecialComponentType	m_specialComponentType;
+	int						m_layer;
+	short					m_orderInLayer;
 
 	friend class WorldObject;
 	friend class VisualComponent;
