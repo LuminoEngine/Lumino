@@ -279,7 +279,7 @@ void VisualComponent::render(DrawList* context)
 	if (m_isVisible)
 	{
 		DrawElementMetadata metadata;
-		metadata.priority = (getOrderInLayer() + (-(SHRT_MIN))) + ((getLayer() + 1) *  USHRT_MAX);
+		metadata.priority = ((LayerMask::GetRenderOrder(getLayer()) + 1) *  USHRT_MAX) + (getOrderInLayer() + (-(SHRT_MIN)));
 		context->pushMetadata(&metadata);
 
 		context->setBlendMode(m_blendMode);

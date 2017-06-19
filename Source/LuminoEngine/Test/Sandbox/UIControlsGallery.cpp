@@ -286,29 +286,29 @@ void UIControlsGallery()
 	//skyObj->addComponent(sky);
 	//skyObj->setPosition(10, 0, 0);
 
-	////auto mirror = newObject<MirrorComponent>();
-	////mirror->setDepthTestEnabled(false);
-	////mirror->setDepthWriteEnabled(false);
-	////auto mirrorObj = ln::newObject<ln::WorldObject3D>();
-	////mirrorObj->addComponent(mirror);
-	////mirrorObj->setPosition(10, 0, 0);
+	auto mirror = newObject<MirrorComponent>();
+	mirror->setDepthTestEnabled(false);
+	mirror->setDepthWriteEnabled(false);
+	auto mirrorObj = ln::newObject<ln::WorldObject3D>();
+	mirrorObj->addComponent(mirror);
+	mirrorObj->setPosition(10, 0, 0);
 
 
 
-	////auto meshModel = ln::StaticMeshModel::
-	//auto mesh = ln::StaticMeshComponent::createSphere(1);
-	////mesh->getStaticMeshModel()->
-	//auto material = mesh->getStaticMeshModel()->getMaterial(0);
-	//material->setMaterialTexture(ln::Assets::loadTexture(_T("D:/GameProjects/Chronicles/sky/incskies_024_png8/incskies_024_8k_.png")));
-	////material->setMaterialTexture(Texture2D::getBlackTexture());
-	//auto m_map = ln::newObject<ln::WorldObject3D>();
-	//m_map->addComponent(mesh);
-	//mesh->setBlendMode(BlendMode::Normal);
-	//mesh->setShader(Shader::getBuiltinShader(BuiltinShader::Sprite));
-	//m_map->setScale(-1.5, 1.5, 1.5);
-	////m_map->setScale(-10, 10, 10);
-	//m_map->setPosition(0, 2, 0);
-	////mesh->setVisible(false);
+	//auto meshModel = ln::StaticMeshModel::
+	auto mesh = ln::StaticMeshComponent::createSphere(1);
+	//mesh->getStaticMeshModel()->
+	auto material = mesh->getStaticMeshModel()->getMaterial(0);
+	material->setMaterialTexture(ln::Assets::loadTexture(_T("D:/GameProjects/Chronicles/sky/incskies_024_png8/incskies_024_8k_.png")));
+	//material->setMaterialTexture(Texture2D::getBlackTexture());
+	auto m_map = ln::newObject<ln::WorldObject3D>();
+	m_map->addComponent(mesh);
+	mesh->setBlendMode(BlendMode::Normal);
+	mesh->setShader(Shader::getBuiltinShader(BuiltinShader::Sprite));
+	m_map->setScale(-1.5, 1.5, 1.5);
+	//m_map->setScale(-10, 10, 10);
+	m_map->setPosition(0, 2, 0);
+	//mesh->setVisible(false);
 
 
 	//CameraComponent::getMain3DCamera()->setReflectionPlane(Plane(Vector3::UnitY));

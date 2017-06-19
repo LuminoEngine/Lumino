@@ -30,6 +30,7 @@ LN_NAMESPACE_BEGIN
 	グループ -1 は非表示を表す。
 */
 //==============================================================================
+static bool g_ofs = false;
 //------------------------------------------------------------------------------
 OffscreenWorldView::OffscreenWorldView()
 	: m_id(0)
@@ -116,9 +117,10 @@ void OffscreenWorldView::renderWorld(World* world, CameraComponent* mainViewCame
 	//g->setDepthBuffer(m_depthBuffer);
 	m_renderer->clear(ClearFlags::All, Color::White, 1.0f, 0);
 	
-
+	g_ofs = true;
 	world->render(m_renderer, mainViewCamera, WorldDebugDrawFlags::None, this);	// TODO: debugdraw の指定
 
+	g_ofs = false;
 
 	// 戻す
 	m_renderer->setRenderTarget(0, backbuffer);
@@ -196,6 +198,8 @@ void SkyComponent::initialize()
 //------------------------------------------------------------------------------
 void SkyComponent::onRender2(DrawList* renderer)
 {
+	//
+
 	{
 		auto* cam = renderer->getCurrentCamera();
 		Vector3 frustumRayTL = Vector3::normalize(cam->viewportToWorldPoint(Vector3(0, 0, 1)) - cam->viewportToWorldPoint(Vector3(0, 0, 0)));
@@ -205,6 +209,12 @@ void SkyComponent::onRender2(DrawList* renderer)
 		m_skyMaterial->setVectorParameter("frustumRayTR", Vector4(frustumRayTR, 0));
 		m_skyMaterial->setVectorParameter("frustumRayBL", Vector4(frustumRayBL, 0));
 
+		Matrix ref;
+		if (g_ofs)
+		{
+			ref = Matrix::makeReflection(Plane(Vector3::UnitY));
+		}
+		m_skyMaterial->setMatrixParameter("_refrect", ref);
 
 
 		Vector3 cameraPos = Vector3(0, 997, 0);// = cam->getTransform()->position.Get();
@@ -212,7 +222,8 @@ void SkyComponent::onRender2(DrawList* renderer)
 		//Vector3 cameraPos = Vector3(0, 0, 10);
 		//Vector3 lightPos = 1.0f * Vector3::normalize(1, -0, -1);//sunDirection.normalized();
 		//Vector3 lightPos = Vector3::normalize(Vector3(0.3, -0.1, 1));
-		Vector3 lightPos = Vector3::normalize(Vector3(0, 1, 0));
+		//Vector3 lightPos = Vector3::normalize(Vector3(0, 1, 0));
+		Vector3 lightPos = Vector3::normalize(Vector3(0, 0.05, 1));
 
 		float fCameraHeight = cameraPos.getLength();
 		float fCameraHeight2 = fCameraHeight * fCameraHeight;
@@ -293,6 +304,8 @@ void SkyComponent::onRender2(DrawList* renderer)
 		float exposure;
 		*/
 
+		renderer->setDepthTestEnabled(false);
+		renderer->setDepthWriteEnabled(false);
 		renderer->blit(nullptr, nullptr, m_skyMaterial);
 
 		//renderer->setCullingMode(CullingMode::None);
@@ -359,7 +372,7 @@ void MirrorComponent::onRender2(DrawList* renderer)
 	m_material->setFloatParameter("time", g_time);
 
 	// TODO: 法泉が入っていない？
-	renderer->drawSquare(100, 100, 1, 1, Color::White, Matrix::Identity, m_material);
+	renderer->drawSquare(20, 20, 1, 1, Color::White, Matrix::Identity, m_material);
 }
 
 

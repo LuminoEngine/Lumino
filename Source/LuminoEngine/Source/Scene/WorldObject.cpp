@@ -16,25 +16,40 @@ int LayerMask::GetLayer(BuiltinLayers builtinLayer)
 {
 	switch (builtinLayer)
 	{
+	case ln::BuiltinLayers::Default:
+		return 0;
 	case ln::BuiltinLayers::Background:
 		return 1;
-	case ln::BuiltinLayers::Layer2:
-		return 2;
 	case ln::BuiltinLayers::Layer3:
-		return 3;
+		return 2;
 	case ln::BuiltinLayers::Layer4:
-		return 4;
+		return 3;
 	case ln::BuiltinLayers::Layer5:
-		return 5;
+		return 4;
 	case ln::BuiltinLayers::Layer6:
-		return 6;
+		return 5;
 	case ln::BuiltinLayers::Layer7:
-		return 7;
+		return 6;
 	default:
 		LN_CHECK_ARG(0);
 		break;
 	}
 	return 0;
+}
+
+//------------------------------------------------------------------------------
+int LayerMask::GetRenderOrder(int layerId)
+{
+	const int sortingLayers[MaxLayers] =
+	{
+		1,	// Background
+		0,
+		2, 3, 4, 5, 6, 7, 8, 9, 10,
+		11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+		21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+		31,
+	};
+	return sortingLayers[layerId];
 }
 
 //==============================================================================

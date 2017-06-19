@@ -32,7 +32,7 @@ float g;
 float exposure;
 
 
-
+float4x4 _refrect;
 
 struct LN_VSInput
 {
@@ -56,11 +56,16 @@ struct PSInput
 VSOutput VSBasic(LN_VSInput v)
 {
 	VSOutput o;
+	
+	//float4x4 mat = ln_WorldViewProjection;
+	
 	o.Pos	= mul(float4(v.Pos, 1.0), ln_WorldViewProjection);
+	//o.Pos.xy *= -1;
 	o.ScreenPos = o.Pos;
 	
 	
 	o.tmpUV	= mul(float4(0, 1, 0, 1), ln_WorldViewProjection);
+	o.Pos.z = 0.0;
 	return o;
 }
 
@@ -92,26 +97,38 @@ float4 PSBasic(PSInput input) : COLOR0
 	float3 deltaX = (frustumRayTR - frustumRayTL)*uv.x;
 	float3 deltaY = (frustumRayBL - frustumRayTL)*uv.y;
 	float3 ray = normalize((frustumRayTL + deltaX + deltaY).xyz);
+	
+	
+	//float3 cameraPos = v3CameraPos.xyz;
+	//cameraPos.y *= -1;
+	float3 cameraPos = mul(float4(v3CameraPos, 1.0), _refrect).xyz;
+	
+	//float3 lightPos = v3LightPos;
+	//lightPos.y *= -1;
+	float3 lightPos = mul(float4(v3LightPos, 1.0), _refrect).xyz;
+	
 
-	float3 skyPos = IntersectionPos(v3CameraPos.xyz, ray, fOuterRadius);
+	float3 skyPos = IntersectionPos(cameraPos, ray, fOuterRadius);
 	if (skyPos.x == 0)
 	{
 		//Camera is out of celestial sphere.
 		clip(-1);
 	}
-	
+	//skyPos.y *= -1;
 	//return float4(skyPos.xyz, 1);
 	//return float4(uv.xy, 0, 1);
+	
+	//skyPos.y *= -1;
 
 	float3 invWavelength = v3InvWavelength;
 
 	float3 v3Pos = skyPos;
-	float3 v3Ray = v3Pos - v3CameraPos.xyz;
+	float3 v3Ray = v3Pos - cameraPos;
 	float fFar = length(v3Ray);
 	v3Ray /= fFar;
 
 	// Calculate the ray's starting position, then calculate its scattering offset
-	float3 v3Start = v3CameraPos;
+	float3 v3Start = cameraPos;
 	float fHeight = length(v3Start);
 	float fDepth = exp(fScaleOverScaleDepth * (fInnerRadius - fCameraHeight));
 	float fStartAngle = dot(v3Ray, v3Start) / fHeight;
@@ -132,7 +149,7 @@ float4 PSBasic(PSInput input) : COLOR0
 	{
 		float fHeight = length(v3SamplePoint);
 		float fDepth = exp(fScaleOverScaleDepth * (fInnerRadius - fHeight));
-		float fLightAngle = dot(v3LightPos, v3SamplePoint) / fHeight;
+		float fLightAngle = dot(lightPos, v3SamplePoint) / fHeight;
 		float fCameraAngle = dot(v3Ray, v3SamplePoint) / fHeight;
 		float fScatter = (fStartOffset + fDepth*(IntegralApproximation(fLightAngle) - IntegralApproximation(fCameraAngle)));
 		float3 v3Attenuate = exp(-fScatter * (invWavelength * fKr4PI + fKm4PI));
@@ -144,9 +161,9 @@ float4 PSBasic(PSInput input) : COLOR0
 	float4 primaryColor = float4(v3FrontColor * (invWavelength * fKrESun), 1.0);
 	
 	float4 secondaryColor = float4(v3FrontColor * fKmESun, 1.0);
-	float3 v3Direction = v3CameraPos - v3Pos;
+	float3 v3Direction = cameraPos - v3Pos;
 
-	float fCos = dot(v3LightPos, v3Direction) / length(v3Direction);
+	float fCos = dot(lightPos, v3Direction) / length(v3Direction);
 	float fRayPhase = 0.75 * (1.0 + fCos * fCos);
 
 	const float g2 = g*g;

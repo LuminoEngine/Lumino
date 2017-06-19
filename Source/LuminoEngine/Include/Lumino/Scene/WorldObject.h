@@ -11,8 +11,8 @@ using WorldObjectPtr = RefPtr<WorldObject>;
 
 enum class BuiltinLayers
 {
+	Default,
 	Background,
-	Layer2,
 	Layer3,
 	Layer4,
 	Layer5,
@@ -25,6 +25,8 @@ struct LayerMask
 	static const int MaxLayers = 32;
 
 	static int GetLayer(BuiltinLayers builtinLayer);
+
+	static int GetRenderOrder(int layerId);
 };
 
 /**

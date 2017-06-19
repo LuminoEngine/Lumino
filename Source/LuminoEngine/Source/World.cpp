@@ -151,6 +151,8 @@ void World::render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags deb
 {
 	for (auto& obj : m_rootWorldObjectList)
 	{
+		obj->render(g);
+
 		for (auto& c : obj->m_components)
 		{
 			VisualComponent* visual = nullptr;
@@ -168,7 +170,6 @@ void World::render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags deb
 			}
 		}
 
-		obj->render(g);
 	}
 
 	// reset status
