@@ -268,7 +268,7 @@ void UIControlsGallery()
 	slider->setWidth(300);
 	slider->setHeight(16);
 	//slider->setOrientation(Orientation::Vertical);
-	uiRoot->addChild(slider);
+	//uiRoot->addChild(slider);
 
 
 	auto window2 = newObject<UIDiagnosticsWindow>();
@@ -303,12 +303,21 @@ void UIControlsGallery()
 	//material->setMaterialTexture(Texture2D::getBlackTexture());
 	auto m_map = ln::newObject<ln::WorldObject3D>();
 	m_map->addComponent(mesh);
-	mesh->setBlendMode(BlendMode::Normal);
+#if 1
+	mesh->setBlendMode(BlendMode::Add);
+	mesh->setOpacity(0.75);
 	mesh->setShader(Shader::getBuiltinShader(BuiltinShader::Sprite));
-	m_map->setScale(-1.5, 1.5, 1.5);
+	m_map->setScale(-10.5, 10.5, 10.5);
+	m_map->setPosition(0, -3, 0);
+#else
+	mesh->setBlendMode(BlendMode::Add);
+	mesh->setOpacity(0.75);
+	mesh->setShader(Shader::getBuiltinShader(BuiltinShader::Sprite));
+	m_map->setScale(-10.5, 10.5, 10.5);
 	//m_map->setScale(-10, 10, 10);
 	m_map->setPosition(0, 2, 0);
 	//mesh->setVisible(false);
+#endif
 
 
 	//CameraComponent::getMain3DCamera()->setReflectionPlane(Plane(Vector3::UnitY));

@@ -173,7 +173,6 @@ set(LN_SOURCES_Graphics
 	Include/Lumino/Graphics/IndexBuffer.h
 	Include/Lumino/Graphics/Material.h
 	Include/Lumino/Graphics/PerlinNoise.h
-	Include/Lumino/Graphics/RenderingContext.h
 	Include/Lumino/Graphics/RenderState.h
 	Include/Lumino/Graphics/SamplerState.h
 	Include/Lumino/Graphics/Shader.h
@@ -224,7 +223,6 @@ set(LN_SOURCES_Graphics
 	Source/Graphics/ProfilerRenderer.h
 	Source/Graphics/RenderingCommand.cpp
 	Source/Graphics/RenderingCommand.h
-	Source/Graphics/RenderingContext.cpp
 	Source/Graphics/RenderingThread.cpp
 	Source/Graphics/RenderingThread.h
 	Source/Graphics/RenderState.cpp
@@ -297,6 +295,7 @@ set(LN_SOURCES_Rendering
 	Include/Lumino/Rendering/Common.h
 	Include/Lumino/Rendering/DrawingContext.h
 	Include/Lumino/Rendering/Rendering.h
+	Include/Lumino/Rendering/RenderingContext.h
 	Include/Lumino/Rendering/SceneRenderer.h
 	Source/Rendering/DrawingContext.cpp
 	Source/Rendering/FrameRectRenderFeature.cpp
@@ -309,6 +308,7 @@ set(LN_SOURCES_Rendering
 	Source/Rendering/PrimitiveRenderFeature.cpp
 	Source/Rendering/PrimitiveRenderFeature.h
 	Source/Rendering/Rendering.cpp
+	Source/Rendering/RenderingContext.cpp
 	Source/Rendering/SceneRenderer.cpp
 	Source/Rendering/ShapesRenderFeature.cpp
 	Source/Rendering/ShapesRenderFeature.h

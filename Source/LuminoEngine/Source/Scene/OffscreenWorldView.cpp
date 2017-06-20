@@ -69,7 +69,10 @@ void OffscreenWorldView::hideVisual(VisualComponent* renderObject)
 //------------------------------------------------------------------------------
 Matrix OffscreenWorldView::calculateViewMatrix(CameraComponent* mainViewCamera)
 {
-	return Matrix::makeReflection(Plane(Vector3::UnitY)) * mainViewCamera->getViewMatrix();
+	//const Matrix& worldMatrix = mainViewCamera->getOwnerObject()->transform.getWorldMatrix();
+	//Matrix viewMatrix = Matrix::makeLookAtLH(worldMatrix.getPosition(), Vector3(0, 0, 0), -Vector3::UnitY);
+
+	return Matrix::makeReflection(Plane(Vector3::UnitY)) * mainViewCamera->getViewMatrix(); //viewMatrix;// 
 }
 
 //------------------------------------------------------------------------------
@@ -201,29 +204,41 @@ void SkyComponent::onRender2(DrawList* renderer)
 	//
 
 	{
-		auto* cam = renderer->getCurrentCamera();
-		Vector3 frustumRayTL = Vector3::normalize(cam->viewportToWorldPoint(Vector3(0, 0, 1)) - cam->viewportToWorldPoint(Vector3(0, 0, 0)));
-		Vector3 frustumRayTR = Vector3::normalize(cam->viewportToWorldPoint(Vector3(640, 0, 1)) - cam->viewportToWorldPoint(Vector3(640, 0, 0)));
-		Vector3 frustumRayBL = Vector3::normalize(cam->viewportToWorldPoint(Vector3(0, 480, 1)) - cam->viewportToWorldPoint(Vector3(0, 480, 0)));
-		m_skyMaterial->setVectorParameter("frustumRayTL", Vector4(frustumRayTL, 0));
-		m_skyMaterial->setVectorParameter("frustumRayTR", Vector4(frustumRayTR, 0));
-		m_skyMaterial->setVectorParameter("frustumRayBL", Vector4(frustumRayBL, 0));
-
 		Matrix ref;
+		//m_skyMaterial->setMatrixParameter("_refrect", ref);
 		if (g_ofs)
 		{
 			ref = Matrix::makeReflection(Plane(Vector3::UnitY));
 		}
-		m_skyMaterial->setMatrixParameter("_refrect", ref);
+
+		auto* cam = renderer->getCurrentCamera();
+		Matrix refVP = ref * cam->getViewProjectionMatrix();
+		auto vtow = [refVP](const Vector3& pos) { return Vector3::unproject(pos, refVP, 0, 0, 640, 480, 0.3f, 1000); };
+
+#if 0
+		Vector3 frustumRayTL = Vector3::normalize(cam->viewportToWorldPoint(Vector3(0, 0, 1)) - cam->viewportToWorldPoint(Vector3(0, 0, 0)));
+		Vector3 frustumRayTR = Vector3::normalize(cam->viewportToWorldPoint(Vector3(640, 0, 1)) - cam->viewportToWorldPoint(Vector3(640, 0, 0)));
+		Vector3 frustumRayBL = Vector3::normalize(cam->viewportToWorldPoint(Vector3(0, 480, 1)) - cam->viewportToWorldPoint(Vector3(0, 480, 0)));
+#else
+		Vector3 frustumRayTL = Vector3::normalize(vtow(Vector3(0, 0, 1)) - vtow(Vector3(0, 0, 0))/*cam->viewportToWorldPoint(Vector3(0, 0, 0))*/);
+		Vector3 frustumRayTR = Vector3::normalize(vtow(Vector3(640, 0, 1)) - vtow(Vector3(640, 0, 0))/*cam->viewportToWorldPoint(Vector3(640, 0, 0))*/);
+		Vector3 frustumRayBL = Vector3::normalize(vtow(Vector3(0, 480, 1)) - vtow(Vector3(0, 480, 0))/*cam->viewportToWorldPoint(Vector3(0, 480, 0))*/);
+#endif
+		m_skyMaterial->setVectorParameter("frustumRayTL", Vector4(frustumRayTL, 0));
+		m_skyMaterial->setVectorParameter("frustumRayTR", Vector4(frustumRayTR, 0));
+		m_skyMaterial->setVectorParameter("frustumRayBL", Vector4(frustumRayBL, 0));
 
 
-		Vector3 cameraPos = Vector3(0, 997, 0);// = cam->getTransform()->position.Get();
+		static const float EARTH_RADIUS = 6370997.0f;
+		static const float EARTH_ATMOSPHERE_RADIUS = EARTH_RADIUS * 1.025f;
+
+		Vector3 cameraPos = Vector3(0, EARTH_RADIUS/*997*/, 0);// = cam->getTransform()->position.Get();
 											   //cameraPos.normalize();
 		//Vector3 cameraPos = Vector3(0, 0, 10);
 		//Vector3 lightPos = 1.0f * Vector3::normalize(1, -0, -1);//sunDirection.normalized();
 		//Vector3 lightPos = Vector3::normalize(Vector3(0.3, -0.1, 1));
 		//Vector3 lightPos = Vector3::normalize(Vector3(0, 1, 0));
-		Vector3 lightPos = Vector3::normalize(Vector3(0, 0.05, 1));
+		Vector3 lightPos = Vector3::normalize(Vector3(0, -0.15, 1));
 
 		float fCameraHeight = cameraPos.getLength();
 		float fCameraHeight2 = fCameraHeight * fCameraHeight;
@@ -235,10 +250,12 @@ void SkyComponent::onRender2(DrawList* renderer)
 
 		Vector3 invWavelength = Vector3(invWav(red), invWav(green), invWav(blue));
 
-		float fInnerRadius = 1000.0f;
+
+
+		float fInnerRadius = EARTH_RADIUS;
 		float fInnerRadius2 = fInnerRadius * fInnerRadius;
 
-		float fOuterRadius = 1025.0f;
+		float fOuterRadius = EARTH_ATMOSPHERE_RADIUS;
 		float fOuterRadius2 = fOuterRadius * fOuterRadius;
 
 		float fScale = 1.0f / (fOuterRadius - fInnerRadius);

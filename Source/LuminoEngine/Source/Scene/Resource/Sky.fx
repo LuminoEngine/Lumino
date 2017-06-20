@@ -32,8 +32,6 @@ float g;
 float exposure;
 
 
-float4x4 _refrect;
-
 struct LN_VSInput
 {
 	float3	Pos		: POSITION;		// 位置
@@ -99,13 +97,13 @@ float4 PSBasic(PSInput input) : COLOR0
 	float3 ray = normalize((frustumRayTL + deltaX + deltaY).xyz);
 	
 	
-	//float3 cameraPos = v3CameraPos.xyz;
+	float3 cameraPos = v3CameraPos.xyz;
 	//cameraPos.y *= -1;
-	float3 cameraPos = mul(float4(v3CameraPos, 1.0), _refrect).xyz;
+	//float3 cameraPos = mul(float4(v3CameraPos, 1.0), _refrect).xyz;
 	
-	//float3 lightPos = v3LightPos;
+	float3 lightPos = v3LightPos;
 	//lightPos.y *= -1;
-	float3 lightPos = mul(float4(v3LightPos, 1.0), _refrect).xyz;
+	//float3 lightPos = mul(float4(v3LightPos, 1.0), _refrect).xyz;
 	
 
 	float3 skyPos = IntersectionPos(cameraPos, ray, fOuterRadius);

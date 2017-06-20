@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.h"
 #include <Lumino/Physics/PhysicsWorld.h>
-#include <Lumino/Rendering/Rendering.h>
+#include <Lumino/Rendering/RenderingContext.h>
 #include <Lumino/Mesh/Mesh.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/Camera.h>
@@ -32,8 +32,8 @@ World::~World()
 //------------------------------------------------------------------------------
 void World::initialize()
 {
-	m_renderer = newObject<DrawList>(detail::EngineDomain::getGraphicsManager());
-	m_insideWorldRenderer = newObject<DrawList>(detail::EngineDomain::getGraphicsManager());
+	m_renderer = newObject<RenderingContext>();
+	//m_insideWorldRenderer = newObject<DrawList>(detail::EngineDomain::getGraphicsManager());
 	m_debugRenderer = newObject<DrawList>(detail::EngineDomain::getGraphicsManager());
 
 	m_debugRendererDefaultMaterial = newObject<Material>();

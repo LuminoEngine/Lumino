@@ -17,6 +17,7 @@ class WorldObject;
 class UIEventArgs;
 class OffscreenWorldView;
 class RenderView;
+class RenderingContext;
 
 /** */
 LN_ENUM_FLAGS(WorldDebugDrawFlags)
@@ -49,7 +50,7 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 LN_INTERNAL_ACCESS:
-	const RefPtr<DrawList>& getInsideWorldRenderer() const { return m_insideWorldRenderer; }
+	//const RefPtr<DrawList>& getInsideWorldRenderer() const { return m_insideWorldRenderer; }
 	void addWorldObject(WorldObject* obj, bool autoRelease /*= false*/);
 	void removeWorldObject(WorldObject* obj);
 	void addOffscreenWorldView(OffscreenWorldView* view);
@@ -62,8 +63,8 @@ LN_INTERNAL_ACCESS:
 	virtual void onUIEvent(UIEventArgs* e);
 
 	List<RefPtr<WorldObject>>			m_rootWorldObjectList;
-	RefPtr<DrawList>					m_renderer;
-	RefPtr<DrawList>					m_insideWorldRenderer;
+	RefPtr<RenderingContext>			m_renderer;
+	//RefPtr<DrawList>					m_insideWorldRenderer;
 	RefPtr<DrawList>					m_debugRenderer;
 	RefPtr<Material>					m_debugRendererDefaultMaterial;	// TODO: DebugDrawList みたいに派生させてまとめたほうがいいかな・・・
 	List<RefPtr<OffscreenWorldView>>	m_offscreenWorldViewList;
