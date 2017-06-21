@@ -194,7 +194,7 @@ void SkyComponent::initialize()
 
 	{
 
-		auto shader = ln::Shader::create("C:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Scene/Resource/Sky.fx");
+		auto shader = ln::Shader::create("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Scene/Resource/Sky.fx");
 		m_skyMaterial = newObject<Material>();
 		m_skyMaterial->setShader(shader);
 	}
@@ -210,7 +210,7 @@ void SkyComponent::onRender2(RenderingContext* renderer)
 		//m_skyMaterial->setMatrixParameter("_refrect", ref);
 		if (g_ofs)
 		{
-			ref = Matrix::makeReflection(Plane(Vector3::UnitY));
+			//ref = Matrix::makeReflection(Plane(Vector3::UnitY));
 		}
 
 		//auto* cam = renderer->getCurrentCamera();
@@ -371,7 +371,7 @@ void MirrorComponent::initialize()
 	//m_material->setMaterialTexture(Texture2D::getBlackTexture());
 	//m_material->setMaterialTexture(Texture2D::getWhiteTexture());
 	//m_material->setShader(Shader::getBuiltinShader(BuiltinShader::Sprite));
-	auto shader = ln::Shader::create("C:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Scene/Resource/Mirror.fx");
+	auto shader = ln::Shader::create("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Scene/Resource/Mirror.fx");
 	m_material->setShader(shader);
 
 	//auto tex = ln::Texture2D::create("C:/Proj/LN/HC1/Assets/Data/waterbump.png");

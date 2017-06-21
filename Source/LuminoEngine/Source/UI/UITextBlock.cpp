@@ -67,6 +67,7 @@ Size UITextBlock::arrangeOverride(const Size& finalSize)
 //------------------------------------------------------------------------------
 void UITextBlock::onRender(DrawingContext* g)
 {
+	UITextElement::onRender(g);
 	g->setFont(getActiveFont());
 	g->setBrush(getForegroundInternal());
 	g->drawText_(m_text, PointF());

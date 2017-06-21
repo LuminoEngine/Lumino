@@ -1297,6 +1297,16 @@ void DrawList::drawText_(const StringRef& text, const Rect& rect, StringFormatFl
 		Rect rect;
 		StringFormatFlags flags;
 
+		virtual void makeElementInfo(detail::DrawElementList* oenerList, const detail::CameraInfo& cameraInfo, detail::ElementInfo* outInfo) override
+		{
+			// ワールド行列は作らない。一連の Glyphs を描画する方に任せる。
+			// (スプライトと同じく、できるだけ一度に描画する)
+			outInfo->viewProjMatrix = &cameraInfo.viewProjMatrix;
+			outInfo->WorldMatrix = Matrix::Identity;//getTransform(oenerList);
+			outInfo->WorldViewProjectionMatrix = cameraInfo.viewMatrix * cameraInfo.projMatrix;// outInfo->WorldMatrix * cameraInfo.viewMatrix * cameraInfo.projMatrix;	// TODO: viewProj はまとめたい
+			outInfo->affectedLights = getAffectedDynamicLightInfos();
+		}
+
 		//virtual void makeSubsetInfo(detail::DrawElementList* oenerList, detail::CombinedMaterial* material, detail::SubsetInfo* outInfo) override
 		//{
 		//	DrawElement::makeSubsetInfo(oenerList, material, outInfo);
