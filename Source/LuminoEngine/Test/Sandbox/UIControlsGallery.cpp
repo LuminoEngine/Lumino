@@ -299,24 +299,22 @@ void UIControlsGallery()
 	auto mesh = ln::StaticMeshComponent::createSphere(1);
 	//mesh->getStaticMeshModel()->
 	auto material = mesh->getStaticMeshModel()->getMaterial(0);
-	material->setMaterialTexture(ln::Assets::loadTexture(_T("D:/GameProjects/Chronicles/sky/incskies_024_png8/incskies_024_8k_.png")));
-	//material->setMaterialTexture(Texture2D::getBlackTexture());
+	//material->setMaterialTexture(ln::Assets::loadTexture(_T("D:/GameProjects/Chronicles/sky/incskies_024_png8/incskies_024_8k_.png")));
+	material->setMaterialTexture(Texture2D::getBlackTexture());
 	auto m_map = ln::newObject<ln::WorldObject3D>();
 	m_map->addComponent(mesh);
-#if 1
+#if 0
 	mesh->setBlendMode(BlendMode::Add);
 	mesh->setOpacity(0.75);
 	mesh->setShader(Shader::getBuiltinShader(BuiltinShader::Sprite));
 	m_map->setScale(-10.5, 10.5, 10.5);
 	m_map->setPosition(0, -3, 0);
 #else
-	mesh->setBlendMode(BlendMode::Add);
+	mesh->setBlendMode(BlendMode::Normal);
 	mesh->setOpacity(0.75);
 	mesh->setShader(Shader::getBuiltinShader(BuiltinShader::Sprite));
-	m_map->setScale(-10.5, 10.5, 10.5);
-	//m_map->setScale(-10, 10, 10);
+	m_map->setScale(-1.5, 1.5, 1.5);
 	m_map->setPosition(0, 2, 0);
-	//mesh->setVisible(false);
 #endif
 
 

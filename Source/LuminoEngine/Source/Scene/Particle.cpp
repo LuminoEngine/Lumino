@@ -9,6 +9,7 @@
 #include <math.h>
 #include <Lumino/Graphics/VertexBuffer.h>
 #include <Lumino/Graphics/IndexBuffer.h>
+#include <Lumino/Rendering/RenderingContext.h>
 #include <Lumino/Mesh/Mesh.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/Camera.h>
@@ -746,17 +747,16 @@ void ParticleEmitterComponent::onUpdateFrame(float deltaTime)
 }
 
 //------------------------------------------------------------------------------
-void ParticleEmitterComponent::onRender2(DrawList* renderer)
+void ParticleEmitterComponent::onRender2(RenderingContext* renderer)
 {
-	// TODO: name RenderInstance
-	Vector4 dir = renderer->getCurrentCamera()->getDirectionInternal();
+	Vector3 dir = renderer->getRenderView()->m_cameraInfo.viewDirection;//->getCurrentCamera()->getDirectionInternal();
 	m_model->render(
 		renderer,
 		m_instance,
 		getOwnerObject()->transform.getWorldMatrix(),
-		renderer->getCurrentCamera()->getPosition(),
-		dir.GetXYZ(),
-		renderer->getCurrentCamera()->getViewMatrixI(),
+		renderer->getRenderView()->m_cameraInfo.viewPosition,
+		dir,
+		Matrix::makeInverse(renderer->getRenderView()->m_cameraInfo.viewMatrix),
 		m_material);
 }
 

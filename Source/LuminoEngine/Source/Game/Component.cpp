@@ -1,5 +1,6 @@
 
 #include "../Internal.h"
+#include <Lumino/Rendering/RenderingContext.h>
 #include <Lumino/Game/Component.h>
 #include <Lumino/Framework/GameScene.h>
 #include <Lumino/Scene/WorldObject.h>
@@ -86,7 +87,7 @@ void Component::updateFrame()
 }
 
 //------------------------------------------------------------------------------
-void Component::render(DrawList* context)
+void Component::render(RenderingContext* context)
 {
 	onRender(context);
 }

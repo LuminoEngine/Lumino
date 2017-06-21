@@ -23,7 +23,7 @@ LN_INTERNAL_ACCESS:
 	virtual ~SkinnedMeshComponent();
 	void initialize(SkinnedMeshModel* meshModel);
 	virtual void onUpdateFrame(float elapsedTime) override;
-	virtual void onRender2(DrawList* renderer) override;
+	virtual void onRender2(RenderingContext* renderer) override;
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	virtual detail::SceneNodeDefaultShaderClass getShaderClass() override { return detail::SceneNodeDefaultShaderClass_SkinnedMesh; }

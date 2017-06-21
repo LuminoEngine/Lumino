@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.h"
+#include <Lumino/Rendering/RenderingContext.h>
 #include <Lumino/World.h>
 #include <Lumino/Scene/Camera.h>
 #include <Lumino/Scene/OffscreenWorldView.h>
@@ -46,7 +47,7 @@ OffscreenWorldView::~OffscreenWorldView()
 void OffscreenWorldView::initialize()
 {
 	RenderView::initialize();
-	m_renderer = newObject<DrawList>(detail::EngineDomain::getGraphicsManager());
+	m_renderer = newObject<RenderingContext>();
 
 	//m_renderView = RefPtr<RenderView>::MakeRef();
 	//m_renderView->
@@ -67,36 +68,37 @@ void OffscreenWorldView::hideVisual(VisualComponent* renderObject)
 }
 
 //------------------------------------------------------------------------------
-Matrix OffscreenWorldView::calculateViewMatrix(CameraComponent* mainViewCamera)
+Matrix OffscreenWorldView::calculateViewMatrix(RenderView* mainRenderView)
 {
 	//const Matrix& worldMatrix = mainViewCamera->getOwnerObject()->transform.getWorldMatrix();
 	//Matrix viewMatrix = Matrix::makeLookAtLH(worldMatrix.getPosition(), Vector3(0, 0, 0), -Vector3::UnitY);
 
-	return Matrix::makeReflection(Plane(Vector3::UnitY)) * mainViewCamera->getViewMatrix(); //viewMatrix;// 
+	return Matrix::makeReflection(Plane(Vector3::UnitY)) * mainRenderView->m_cameraInfo.viewMatrix;//mainViewCamera->getViewMatrix(); //viewMatrix;// 
 }
 
 //------------------------------------------------------------------------------
-Matrix OffscreenWorldView::calculateProjectionMatrix(CameraComponent* mainViewCamera)
+Matrix OffscreenWorldView::calculateProjectionMatrix(RenderView* mainRenderView)
 {
-	return mainViewCamera->getProjectionMatrix();
+	return mainRenderView->m_cameraInfo.projMatrix; //mainViewCamera->getProjectionMatrix();
 }
 
 //------------------------------------------------------------------------------
-void OffscreenWorldView::renderWorld(World* world, CameraComponent* mainViewCamera, RenderView* mainRenderView)
+void OffscreenWorldView::renderWorld(World* world, RenderView* mainRenderView)
 {
-	m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(mainViewCamera) + 1;
+	m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(mainRenderView) + 1;
 	m_cameraInfo.viewPixelSize = mainRenderView->getViewSize();
-	m_cameraInfo.viewPosition = mainViewCamera->getTransform()->getWorldMatrix().getPosition();
-	m_cameraInfo.viewMatrix = calculateViewMatrix(mainViewCamera);
-	m_cameraInfo.projMatrix = calculateProjectionMatrix(mainViewCamera);
+	m_cameraInfo.viewPosition = mainRenderView->m_cameraInfo.viewPosition;//mainViewCamera->getTransform()->getWorldMatrix().getPosition();
+	m_cameraInfo.viewDirection = mainRenderView->m_cameraInfo.viewDirection;	// TODO: Mirror 考慮
+	m_cameraInfo.viewMatrix = calculateViewMatrix(mainRenderView);
+	m_cameraInfo.projMatrix = calculateProjectionMatrix(mainRenderView);
 	m_cameraInfo.viewProjMatrix = m_cameraInfo.viewMatrix * m_cameraInfo.projMatrix;
-	m_cameraInfo.viewFrustum = mainViewCamera->getViewFrustum();	// TODO: この View 独自処理にしたい
-	m_cameraInfo.zSortDistanceBase = mainViewCamera->getZSortDistanceBase();
+	m_cameraInfo.viewFrustum = mainRenderView->m_cameraInfo.viewFrustum;//mainViewCamera->getViewFrustum();	// TODO: この View 独自処理にしたい
+	m_cameraInfo.zSortDistanceBase = mainRenderView->m_cameraInfo.zSortDistanceBase;
 
 
 
-	// TODO: tmp
-	m_renderer->setCurrentCamera(mainViewCamera);
+	// TODO: ↑のm_cameraInfoを渡す
+	//m_renderer->setCurrentCamera(mainViewCamera);
 
 
 
@@ -121,7 +123,7 @@ void OffscreenWorldView::renderWorld(World* world, CameraComponent* mainViewCame
 	m_renderer->clear(ClearFlags::All, Color::White, 1.0f, 0);
 	
 	g_ofs = true;
-	world->render(m_renderer, mainViewCamera, WorldDebugDrawFlags::None, this);	// TODO: debugdraw の指定
+	world->render(m_renderer, this, WorldDebugDrawFlags::None, this);	// TODO: debugdraw の指定
 
 	g_ofs = false;
 
@@ -192,14 +194,14 @@ void SkyComponent::initialize()
 
 	{
 
-		auto shader = ln::Shader::create("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Scene/Resource/Sky.fx");
+		auto shader = ln::Shader::create("C:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Scene/Resource/Sky.fx");
 		m_skyMaterial = newObject<Material>();
 		m_skyMaterial->setShader(shader);
 	}
 }
 
 //------------------------------------------------------------------------------
-void SkyComponent::onRender2(DrawList* renderer)
+void SkyComponent::onRender2(RenderingContext* renderer)
 {
 	//
 
@@ -211,8 +213,9 @@ void SkyComponent::onRender2(DrawList* renderer)
 			ref = Matrix::makeReflection(Plane(Vector3::UnitY));
 		}
 
-		auto* cam = renderer->getCurrentCamera();
-		Matrix refVP = ref * cam->getViewProjectionMatrix();
+		//auto* cam = renderer->getCurrentCamera();
+		const auto& cam = renderer->getRenderView()->m_cameraInfo;
+		Matrix refVP = ref * cam.viewProjMatrix;// ->getViewProjectionMatrix();
 		auto vtow = [refVP](const Vector3& pos) { return Vector3::unproject(pos, refVP, 0, 0, 640, 480, 0.3f, 1000); };
 
 #if 0
@@ -237,8 +240,8 @@ void SkyComponent::onRender2(DrawList* renderer)
 		//Vector3 cameraPos = Vector3(0, 0, 10);
 		//Vector3 lightPos = 1.0f * Vector3::normalize(1, -0, -1);//sunDirection.normalized();
 		//Vector3 lightPos = Vector3::normalize(Vector3(0.3, -0.1, 1));
-		//Vector3 lightPos = Vector3::normalize(Vector3(0, 1, 0));
-		Vector3 lightPos = Vector3::normalize(Vector3(0, -0.15, 1));
+		Vector3 lightPos = Vector3::normalize(Vector3(0, 1, 0));
+		//Vector3 lightPos = Vector3::normalize(Vector3(0, -0.15, 1));
 
 		float fCameraHeight = cameraPos.getLength();
 		float fCameraHeight2 = fCameraHeight * fCameraHeight;
@@ -368,16 +371,16 @@ void MirrorComponent::initialize()
 	//m_material->setMaterialTexture(Texture2D::getBlackTexture());
 	//m_material->setMaterialTexture(Texture2D::getWhiteTexture());
 	//m_material->setShader(Shader::getBuiltinShader(BuiltinShader::Sprite));
-	auto shader = ln::Shader::create("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Scene/Resource/Mirror.fx");
+	auto shader = ln::Shader::create("C:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Scene/Resource/Mirror.fx");
 	m_material->setShader(shader);
 
-	auto tex = ln::Texture2D::create("D:/Proj/LN/HC1/Assets/Data/waterbump.png");
-	m_material->setTextureParameter(_T("xWaterBumpMap"), tex);
+	//auto tex = ln::Texture2D::create("C:/Proj/LN/HC1/Assets/Data/waterbump.png");
+	//m_material->setTextureParameter(_T("xWaterBumpMap"), tex);
 
 }
 float g_time = 0;
 //------------------------------------------------------------------------------
-void MirrorComponent::onRender2(DrawList* renderer)
+void MirrorComponent::onRender2(RenderingContext* renderer)
 {
 
 
@@ -385,7 +388,7 @@ void MirrorComponent::onRender2(DrawList* renderer)
 
 	g_time += 0.001;
 	m_material->setMaterialTexture(m_offscreen->getRenderTarget());
-	m_material->setVectorParameter("xCamPos", Vector4(renderer->getCurrentCamera()->getTransform()->position.get(), 1.0));
+	m_material->setVectorParameter("xCamPos", Vector4(renderer->getRenderView()->m_cameraInfo.viewPosition,/*  getCurrentCamera()->getTransform()->position.get(),*/ 1.0));
 	m_material->setFloatParameter("time", g_time);
 
 	// TODO: 法泉が入っていない？

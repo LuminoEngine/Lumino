@@ -96,7 +96,7 @@ void SceneRenderer::render(
 				case ZSortDistanceBase::CameraScreenDistance:
 					element->zDistance = Vector3::dot(
 						transform.getPosition() - cameraInfo.viewPosition,
-						transform.getFront());		// 平面と点の距離
+						cameraInfo.viewDirection);		// 平面と点の距離
 													// TODO: ↑第2引数違くない？要確認
 					break;
 				default:

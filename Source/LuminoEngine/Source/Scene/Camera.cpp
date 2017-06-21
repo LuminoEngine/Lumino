@@ -473,16 +473,14 @@ void CameraViewportLayer2::setDebugDrawFlags(WorldDebugDrawFlags flags)
 //------------------------------------------------------------------------------
 void CameraViewportLayer2::render()
 {
-	// TODO: やめよう
-	m_targetWorld->getRenderer()->setCurrentCamera(m_hostingCamera);
-
 	m_targetWorld->getRenderer()->clear(ClearFlags::Depth, Color::White);
 
 	// カメラ行列の更新
 	m_hostingCamera->updateMatrices(getOwnerViewport()->getViewSize());
 	m_mainRenderView->setViewSize(getOwnerViewport()->getViewSize());
 
-	m_targetWorld->renderRoot(m_hostingCamera, m_debugDrawFlags, m_mainRenderView);
+	//m_targetWorld->renderRoot(m_hostingCamera, m_debugDrawFlags, m_mainRenderView);
+	m_targetWorld->renderRoot(m_mainRenderView, m_debugDrawFlags);
 }
 
 //------------------------------------------------------------------------------
@@ -496,6 +494,7 @@ void CameraViewportLayer2::executeDrawListRendering(DrawList* parentDrawList, Re
 	m_mainRenderView->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera.get());
 	m_mainRenderView->m_cameraInfo.viewPixelSize = targetSize;
 	m_mainRenderView->m_cameraInfo.viewPosition = m_hostingCamera->getTransform()->getWorldMatrix().getPosition();
+	m_mainRenderView->m_cameraInfo.viewDirection = m_hostingCamera->getDirectionInternal().GetXYZ();
 	m_mainRenderView->m_cameraInfo.viewMatrix = m_hostingCamera->getViewMatrix();
 	m_mainRenderView->m_cameraInfo.projMatrix = m_hostingCamera->getProjectionMatrix();
 	m_mainRenderView->m_cameraInfo.viewProjMatrix = m_hostingCamera->getViewProjectionMatrix();

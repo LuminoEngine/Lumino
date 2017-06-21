@@ -2,7 +2,7 @@
 #pragma once
 #include "../Internal.h"
 #include <Lumino/Mesh/SkinnedMeshModel.h>
-#include <Lumino/Rendering/Rendering.h>
+#include <Lumino/Rendering/RenderingContext.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/MeshModelObject.h>
 #include "../Mesh/PmxSkinnedMesh.h"
@@ -108,7 +108,7 @@ void SkinnedMeshComponent::onUpdateFrame(float elapsedTime)
 //}
 
 //------------------------------------------------------------------------------
-void SkinnedMeshComponent::onRender2(DrawList* renderer)
+void SkinnedMeshComponent::onRender2(RenderingContext* renderer)
 {
 	StaticMeshModel* mesh = m_meshModel->m_mesh;
 

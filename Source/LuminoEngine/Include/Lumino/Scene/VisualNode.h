@@ -176,7 +176,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 //	RefPtr<MaterialList2>	m_materialList;
 
 private:
-	void render(DrawList* context) override;
+	void render(RenderingContext* context) override;
 
 	// TODO: Renderer への設定がまだ
 	BlendMode	m_blendMode;

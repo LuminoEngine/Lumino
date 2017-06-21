@@ -134,24 +134,27 @@ void World::updateFrame(float elapsedTime)
 }
 
 //------------------------------------------------------------------------------
-void World::renderRoot(CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags, RenderView* mainRenderView)
+void World::renderRoot(RenderView* renderView, WorldDebugDrawFlags debugDrawFlags)
 {
 	// pre render
 	for (auto& view : m_offscreenWorldViewList)
 	{
-		view->renderWorld(this, camera, mainRenderView);
+		view->renderWorld(this, renderView);
 	}
 
 	// main render
-	render(getRenderer(), camera, debugDrawFlags);
+	render(m_renderer, renderView, debugDrawFlags);
 }
 
 //------------------------------------------------------------------------------
-void World::render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags, OffscreenWorldView* offscreen)
+void World::render(RenderingContext* context, RenderView* renderView, WorldDebugDrawFlags debugDrawFlags, OffscreenWorldView* offscreen)
 {
+	LN_ASSERT(context->getRenderView() == nullptr);	// render 下はネスト禁止
+	context->setRenderView(renderView);
+	
 	for (auto& obj : m_rootWorldObjectList)
 	{
-		obj->render(g);
+		obj->render(context);
 
 		for (auto& c : obj->m_components)
 		{
@@ -165,7 +168,7 @@ void World::render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags deb
 
 				if (visible)
 				{
-					c->render(g);
+					c->render(context);
 				}
 			}
 		}
@@ -173,7 +176,9 @@ void World::render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags deb
 	}
 
 	// reset status
-	g->setBuiltinEffectData(detail::BuiltinEffectData::DefaultData);
+	context->setBuiltinEffectData(detail::BuiltinEffectData::DefaultData);
+
+	context->setRenderView(nullptr);
 }
 
 //------------------------------------------------------------------------------
@@ -270,9 +275,9 @@ void World2D::updateFrame(float elapsedTime)
 }
 
 //------------------------------------------------------------------------------
-void World2D::render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags, OffscreenWorldView* offscreen)
+void World2D::render(RenderingContext* context, RenderView* renderView, WorldDebugDrawFlags debugDrawFlags, OffscreenWorldView* offscreen)
 {
-	World::render(g, camera, debugDrawFlags, offscreen);
+	World::render(context, renderView, debugDrawFlags, offscreen);
 }
 
 //==============================================================================
@@ -377,11 +382,11 @@ void World3D::updateFrame(float elapsedTime)
 }
 
 //------------------------------------------------------------------------------
-void World3D::render(DrawList* g, CameraComponent* camera, WorldDebugDrawFlags debugDrawFlags, OffscreenWorldView* offscreen)
+void World3D::render(RenderingContext* context, RenderView* renderView, WorldDebugDrawFlags debugDrawFlags, OffscreenWorldView* offscreen)
 {
-	World::render(g, camera, debugDrawFlags, offscreen);
+	World::render(context, renderView, debugDrawFlags, offscreen);
 
-	renderGridPlane(g, camera);
+	renderGridPlane(context, renderView);
 
 	if (debugDrawFlags.TestFlag(WorldDebugDrawFlags::PhysicsInfo))
 	{
@@ -449,11 +454,11 @@ void World3D::createGridPlane()
 }
 
 //------------------------------------------------------------------------------
-void World3D::renderGridPlane(DrawList* renderer, CameraComponent* camera)
+void World3D::renderGridPlane(DrawList* renderer, RenderView* renderView)
 {
 	if (m_visibleGridPlane)
 	{
-		adjustGridPlane(camera);
+		adjustGridPlane(renderView);
 		renderer->setTransform(Matrix::Identity);
 
 		DrawElementMetadata metadata;
@@ -465,7 +470,7 @@ void World3D::renderGridPlane(DrawList* renderer, CameraComponent* camera)
 }
 
 //------------------------------------------------------------------------------
-void World3D::adjustGridPlane(CameraComponent* camera)
+void World3D::adjustGridPlane(RenderView* renderView)
 {
 	/*
 	カメラの視錐台と、グリッドを描画したい平面との衝突点から、四角形メッシュを作る。
@@ -479,7 +484,7 @@ void World3D::adjustGridPlane(CameraComponent* camera)
 		Vector3	to;
 	};
 
-	auto& vf = camera->getViewFrustum();
+	auto& vf = renderView->m_cameraInfo.viewFrustum;
 	Vector3 points[8];
 	vf.getCornerPoints(points);
 

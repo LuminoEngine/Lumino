@@ -1,7 +1,7 @@
 ﻿
 #include "../Internal.h"
 #include <Lumino/Graphics/GraphicsContext.h>	// TODO: いらない
-#include <Lumino/Rendering/Rendering.h>
+#include <Lumino/Rendering/RenderingContext.h>
 #include "SceneGraphManager.h"
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/Sprite.h>
@@ -94,7 +94,7 @@ void SpriteComponent::setAnchorPoint(float ratioX, float ratioY)
 }
 
 //------------------------------------------------------------------------------
-void SpriteComponent::renderSprite(DrawList* renderer, SpriteBaseDirection dir)
+void SpriteComponent::renderSprite(RenderingContext* renderer, SpriteBaseDirection dir)
 {
 	//Material* mat = GetMainMaterial();
 	Color colorScale = getColorScale();
@@ -185,7 +185,7 @@ void Sprite2DComponent::initialize(Texture* texture)
 }
 
 //------------------------------------------------------------------------------
-void Sprite2DComponent::onRender2(DrawList* renderer)
+void Sprite2DComponent::onRender2(RenderingContext* renderer)
 {
 	renderSprite(renderer, SpriteBaseDirection::Basic2D);
 }
@@ -240,7 +240,7 @@ void Sprite3DComponent::initialize()
 }
 
 //------------------------------------------------------------------------------
-void Sprite3DComponent::onRender2(DrawList* renderer)
+void Sprite3DComponent::onRender2(RenderingContext* renderer)
 {
 	renderSprite(renderer, SpriteBaseDirection::ZMinus);
 }

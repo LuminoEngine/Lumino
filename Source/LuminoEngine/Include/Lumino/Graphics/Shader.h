@@ -72,6 +72,7 @@ struct CameraInfo
 	intptr_t	dataSourceId;
 	Size		viewPixelSize;
 	Vector3		viewPosition;
+	Vector3		viewDirection;
 	Matrix		viewMatrix;
 	Matrix		projMatrix;
 	Matrix		viewProjMatrix;

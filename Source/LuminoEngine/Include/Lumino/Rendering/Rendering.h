@@ -686,8 +686,8 @@ LN_INTERNAL_ACCESS:
 	void renderSubView(RenderView* listSet, detail::SceneRenderer* renderer = nullptr, RenderTargetTexture* defaultRenderTarget = nullptr, DepthBuffer* defaultDepthBuffer = nullptr);
 
 	// TODO: 本質的に DrawList に持たせるべきではない。一応今は一時変数的な扱いでしかないので被害は少ないが・・・
-	void setCurrentCamera(CameraComponent* camera) { m_camera = camera; }
-	CameraComponent* getCurrentCamera() const { return m_camera; }
+	//void setCurrentCamera(CameraComponent* camera) { m_camera = camera; }
+	//CameraComponent* getCurrentCamera() const { return m_camera; }
 
 private:
 	detail::GraphicsManager*		m_manager;

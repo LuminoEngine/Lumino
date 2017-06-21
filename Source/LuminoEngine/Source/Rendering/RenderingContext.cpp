@@ -10,6 +10,7 @@ LN_NAMESPACE_BEGIN
 
 //------------------------------------------------------------------------------
 RenderingContext::RenderingContext()
+	: m_currentRenderView(nullptr)
 {
 }
 

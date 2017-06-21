@@ -67,7 +67,7 @@ LN_INTERNAL_ACCESS:
 	StaticMeshComponent();
 	virtual ~StaticMeshComponent();
 	void initialize(StaticMeshModel* meshModel);
-	virtual void onRender2(DrawList* renderer) override;
+	virtual void onRender2(RenderingContext* renderer) override;
 
 private:
 	RefPtr<StaticMeshModel>	m_mesh;
@@ -92,7 +92,7 @@ LN_CONSTRUCT_ACCESS:
 	Rectangle();
 	virtual ~Rectangle();
 	void initialize(const Rect& rect);
-	virtual void onRender2(DrawList* renderer) override;
+	virtual void onRender2(RenderingContext* renderer) override;
 
 private:
 	Rect	m_rect;

@@ -1,6 +1,6 @@
 ﻿
 #include "../Internal.h"
-#include <Lumino/Rendering/Rendering.h>
+#include <Lumino/Rendering/RenderingContext.h>
 #include <Lumino/Scene/StaticMesh.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include "SceneGraphManager.h"
@@ -154,7 +154,7 @@ void StaticMeshComponent::initialize(StaticMeshModel* meshModel)
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshComponent::onRender2(DrawList* renderer)
+void StaticMeshComponent::onRender2(RenderingContext* renderer)
 {
 	renderer->setTransform(getOwnerObject()->transform.getWorldMatrix());
 
@@ -204,7 +204,7 @@ void Rectangle::initialize(const Rect& rect)
 }
 
 //------------------------------------------------------------------------------
-void Rectangle::onRender2(DrawList* renderer)
+void Rectangle::onRender2(RenderingContext* renderer)
 {
 	renderer->drawSquarePrimitive(
 		Vector3(m_rect.getTopLeft(), 0), Vector2(0, 0), Color::White,

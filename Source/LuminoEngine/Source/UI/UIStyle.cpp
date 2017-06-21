@@ -160,13 +160,13 @@ detail::InvalidateFlags UIStylePropertyTableInstance::merge(const UIStylePropert
 	{
 		bool changed = false;
 		changed |= background.inherit(source->background, sourceType);
-		changed |= borderThickness.inherit(source->borderThickness);
-		changed |= cornerRadius.inherit(source->cornerRadius);
-		changed |= leftBorderColor.inherit(source->leftBorderColor);
-		changed |= topBorderColor.inherit(source->topBorderColor);
-		changed |= rightBorderColor.inherit(source->rightBorderColor);
-		changed |= bottomBorderColor.inherit(source->bottomBorderColor);
-		changed |= borderDirection.inherit(source->borderDirection);
+		changed |= borderThickness.inherit(source->borderThickness, sourceType);
+		changed |= cornerRadius.inherit(source->cornerRadius, sourceType);
+		changed |= leftBorderColor.inherit(source->leftBorderColor, sourceType);
+		changed |= topBorderColor.inherit(source->topBorderColor, sourceType);
+		changed |= rightBorderColor.inherit(source->rightBorderColor, sourceType);
+		changed |= bottomBorderColor.inherit(source->bottomBorderColor, sourceType);
+		changed |= borderDirection.inherit(source->borderDirection, sourceType);
 		if (changed) flags |= detail::InvalidateFlags::Rendering;
 	}
 

@@ -159,7 +159,7 @@ void SceneNode::updateFrameHierarchy(SceneNode* parent, float deltaTime)
 }
 
 //------------------------------------------------------------------------------
-void SceneNode::onRender2(DrawList* renderer)
+void SceneNode::onRender2(RenderingContext* renderer)
 {
 }
 

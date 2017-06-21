@@ -10,7 +10,7 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
-class DrawList;
+class RenderingContext;
 class SceneNodeList;
 
 enum class DepthPriority
@@ -129,7 +129,7 @@ public:
 	virtual void updateFrameHierarchy(SceneNode* parent, float deltaTime);
 
 
-	virtual void onRender2(DrawList* renderer);
+	virtual void onRender2(RenderingContext* renderer);
 
 
 	// MME の CONTROLOBJECT アノテーション関係

@@ -341,7 +341,7 @@ protected:
 	void initialize(SpriteParticleModel* model);
 
 	virtual void onUpdateFrame(float deltaTime) override;
-	virtual void onRender2(DrawList* renderer) override;
+	virtual void onRender2(RenderingContext* renderer) override;
 
 private:
 	RefPtr<SpriteParticleModel>					m_model;

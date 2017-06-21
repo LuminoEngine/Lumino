@@ -1,7 +1,7 @@
 ﻿
 #include "../Internal.h"
 #include <Lumino/Graphics/GraphicsContext.h>
-#include <Lumino/Rendering/Rendering.h>
+#include <Lumino/Rendering/RenderingContext.h>
 #include "SceneGraphManager.h"
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/TextBlock.h>
@@ -94,7 +94,7 @@ detail::Sphere TextBlock2DComponent::getBoundingSphere()
 }
 
 //------------------------------------------------------------------------------
-void TextBlock2DComponent::onRender2(DrawList* renderer)
+void TextBlock2DComponent::onRender2(RenderingContext* renderer)
 {
 	struct LocalRenderer : detail::IDocumentsRenderer
 	{

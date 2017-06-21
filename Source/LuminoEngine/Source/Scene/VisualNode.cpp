@@ -1,6 +1,7 @@
 ﻿
 #include "../Internal.h"
 #include <Lumino/Graphics/GraphicsContext.h>
+#include <Lumino/Rendering/RenderingContext.h>
 #include <Lumino/Scene/Camera.h>
 #include <Lumino/Scene/Light.h>
 #include <Lumino/Scene/VisualNode.h>
@@ -274,7 +275,7 @@ detail::Sphere VisualComponent::getBoundingSphere()
 //}
 
 //------------------------------------------------------------------------------
-void VisualComponent::render(DrawList* context)
+void VisualComponent::render(RenderingContext* context)
 {
 	if (m_isVisible)
 	{

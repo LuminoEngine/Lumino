@@ -66,7 +66,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	SpriteComponent();
 	virtual ~SpriteComponent();
 	void initialize();
-	void renderSprite(DrawList* renderer, SpriteBaseDirection dir);
+	void renderSprite(RenderingContext* renderer, SpriteBaseDirection dir);
 
 private:
 	void updateVertexData();
@@ -120,7 +120,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	void initialize();
 	LN_METHOD()
 	void initialize(Texture* texture);
-	virtual void onRender2(DrawList* renderer) override;
+	virtual void onRender2(RenderingContext* renderer) override;
 };
 
 /**
@@ -161,7 +161,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	Sprite3DComponent();
 	virtual ~Sprite3DComponent();
 	void initialize();
-	virtual void onRender2(DrawList* renderer) override;
+	virtual void onRender2(RenderingContext* renderer) override;
 };
 
 

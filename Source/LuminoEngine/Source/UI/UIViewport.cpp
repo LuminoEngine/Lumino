@@ -406,6 +406,7 @@ void UILayoutLayer::executeDrawListRendering(DrawList* parentDrawList, RenderTar
 	m_drawElementListSet->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
 	m_drawElementListSet->m_cameraInfo.viewPixelSize = viewPixelSize;
 	m_drawElementListSet->m_cameraInfo.viewPosition = Vector3::Zero;
+	m_drawElementListSet->m_cameraInfo.viewDirection = Vector3::UnitZ;
 	m_drawElementListSet->m_cameraInfo.viewMatrix = Matrix::Identity;
 	m_drawElementListSet->m_cameraInfo.projMatrix = Matrix::makePerspective2DLH(m_drawElementListSet->m_cameraInfo.viewPixelSize.width, m_drawElementListSet->m_cameraInfo.viewPixelSize.height, 0, 1);
 	m_drawElementListSet->m_cameraInfo.viewProjMatrix = m_drawElementListSet->m_cameraInfo.viewMatrix * m_drawElementListSet->m_cameraInfo.projMatrix;

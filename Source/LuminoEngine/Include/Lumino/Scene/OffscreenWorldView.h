@@ -18,8 +18,8 @@ public:
 	void hideVisual(VisualComponent* renderObject);
 
 protected:
-	virtual Matrix calculateViewMatrix(CameraComponent* mainViewCamera);
-	virtual Matrix calculateProjectionMatrix(CameraComponent* mainViewCamera);
+	virtual Matrix calculateViewMatrix(RenderView* mainRenderView);
+	virtual Matrix calculateProjectionMatrix(RenderView* mainRenderView);
 
 LN_INTERNAL_ACCESS:
 	OffscreenWorldView();
@@ -27,13 +27,13 @@ LN_INTERNAL_ACCESS:
 	void initialize();
 	void setId(int id) { m_id = id; }
 	int getId() const { return m_id; }
-	void renderWorld(World* world, CameraComponent* mainViewCamera, RenderView* mainRenderView);
+	void renderWorld(World* world, RenderView* mainRenderView);
 	bool filterRenderObject(VisualComponent* renderObject);
 	detail::OffscreenFilterInfo* updateRenderObjectFilterInfo(VisualComponent* renderObject);
 
 private:
 	RefPtr<RenderTargetTexture>	m_renderTarget;
-	RefPtr<DrawList>			m_renderer;
+	RefPtr<RenderingContext>	m_renderer;
 	int							m_id;
 };
 
@@ -45,7 +45,7 @@ class SkyComponent
 public:
 
 protected:
-	virtual void onRender2(DrawList* renderer) override;
+	virtual void onRender2(RenderingContext* renderer) override;
 
 LN_INTERNAL_ACCESS:
 	SkyComponent();
@@ -63,7 +63,7 @@ class MirrorComponent
 public:
 
 protected:
-	virtual void onRender2(DrawList* renderer) override;
+	virtual void onRender2(RenderingContext* renderer) override;
 
 LN_INTERNAL_ACCESS:
 	MirrorComponent();

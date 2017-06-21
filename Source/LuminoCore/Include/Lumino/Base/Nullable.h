@@ -7,10 +7,27 @@ template<typename T>
 class Nullable
 {
 public:
-	Nullable() : m_value(), m_isSet(false) {}
-	Nullable(std::nullptr_t) : m_value(), m_isSet(false) {}
-    Nullable(const T& value) : m_value(value), m_isSet(true) {} 
-    Nullable(const Nullable& other) : m_value(other.m_value), m_isSet(other.m_isSet) {}
+	LN_CONSTEXPR Nullable() LN_NOEXCEPT
+		: m_value(), m_isSet(false)
+	{}
+
+	LN_CONSTEXPR Nullable(std::nullptr_t) LN_NOEXCEPT
+		: m_value(), m_isSet(false)
+	{}
+
+	Nullable(const Nullable& other)
+		: m_value(other.m_value), m_isSet(other.m_isSet)
+	{}
+
+	Nullable(Nullable&& other) LN_NOEXCEPT
+		: m_value(std::move(other.m_value)), m_isSet(other.m_isSet)
+	{
+		other.reset();
+	}
+
+	Nullable(const T& value)
+		: m_value(value), m_isSet(true)
+	{}
 
     friend void swap(Nullable& a, Nullable& b)
     {
@@ -50,7 +67,7 @@ public:
 	bool isSet() const { return m_isSet; }	// TODO: hasValue
 	bool isNull() const { return !m_isSet; }
 
-    void reset() { m_isSet = false; m_value = T(); }
+    void reset() LN_NOEXCEPT { m_isSet = false; m_value = T(); }
 
 
 	uint32_t getHashCode() const

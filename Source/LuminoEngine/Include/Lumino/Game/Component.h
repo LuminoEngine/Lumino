@@ -4,6 +4,7 @@
 
 LN_NAMESPACE_BEGIN
 class DrawList;
+class RenderingContext;
 class WorldObject;
 class transform;
 class VisualComponent;
@@ -62,7 +63,7 @@ private:
 	void updateFrame();
 
 LN_INTERNAL_ACCESS:
-	virtual void render(DrawList* context);
+	virtual void render(RenderingContext* context);
 	void setSpecialComponentType(SpecialComponentType type) { m_specialComponentType = type; }
 	SpecialComponentType getSpecialComponentType() const { return m_specialComponentType; }
 
