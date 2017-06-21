@@ -382,10 +382,6 @@ float g_time = 0;
 //------------------------------------------------------------------------------
 void MirrorComponent::onRender2(RenderingContext* renderer)
 {
-
-
-
-
 	g_time += 0.001;
 	m_material->setMaterialTexture(m_offscreen->getRenderTarget());
 	m_material->setVectorParameter("xCamPos", Vector4(renderer->getRenderView()->m_cameraInfo.viewPosition,/*  getCurrentCamera()->getTransform()->position.get(),*/ 1.0));

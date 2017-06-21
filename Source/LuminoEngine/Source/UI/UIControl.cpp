@@ -288,4 +288,31 @@ void UIControl::onChildCollectionChanged(const tr::ChildCollectionChangedArgs& e
 	}
 }
 
+//==============================================================================
+// UIUserControl
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIUserControl, UIControl);
+
+//------------------------------------------------------------------------------
+RefPtr<UIUserControl> UIUserControl::create()
+{
+	return newObject<UIUserControl>();
+}
+
+//------------------------------------------------------------------------------
+UIUserControl::UIUserControl()
+{
+}
+
+//------------------------------------------------------------------------------
+UIUserControl::~UIUserControl()
+{
+}
+
+//------------------------------------------------------------------------------
+void UIUserControl::initialize()
+{
+	UIControl::initialize();
+}
+
 LN_NAMESPACE_END

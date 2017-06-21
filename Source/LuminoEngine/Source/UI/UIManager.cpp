@@ -168,6 +168,8 @@ void UIManager::createGlobalObjects()
 	UIEvents::KeyDownEvent = UIEventManager::RegisterEvent();
 	UIEvents::KeyUpEvent = UIEventManager::RegisterEvent();
 	UIEvents::TextInputEvent = UIEventManager::RegisterEvent();
+	UIEvents::CheckedEvent = UIEventManager::RegisterEvent();
+	UIEvents::UncheckedEvent = UIEventManager::RegisterEvent();
 
 	auto cmd = newObject<UIRoutedCommand>();
 	m_allGlobalCommands.add(cmd);

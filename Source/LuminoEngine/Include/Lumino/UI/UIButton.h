@@ -5,12 +5,13 @@
 LN_NAMESPACE_BEGIN
 class UIButton;
 using UIButtonPtr = RefPtr<UIButton>;
+class UITextBlock;
 
 /** ボタンのクリックイベントを発生させるタイミングを表します。*/
 enum class ClickMode
 {
 	/** ボタンを離したときにイベントを発生させます。*/
-	release,
+	Release,
 
 	/** ボタンを押したときにイベントを発生させます。*/
 	Press,
@@ -45,8 +46,9 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 private:
-	ClickMode	m_clickMode;
-	bool		m_isPressed;
+	ClickMode			m_clickMode;
+	bool				m_isPressed;
+	RefPtr<UITextBlock>	m_textContent;
 
 	UIEventHandler::EventType	m_onClick;
 };
@@ -82,6 +84,14 @@ public:
 	static const String UncheckedState;
 
 	static RefPtr<UIToggleButton> create();
+	
+	/** Checked イベントの通知を受け取るコールバックを登録します。*/
+	LN_METHOD(Event)
+	EventConnection connectOnChecked(UIEventHandler handler);
+
+	/** Unchecked イベントの通知を受け取るコールバックを登録します。*/
+	LN_METHOD(Event)
+	EventConnection connectOnUnchecked(UIEventHandler handler);
 
 protected:
 	virtual void onClick(UIEventArgs* e);
@@ -92,7 +102,13 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 private:
-	bool	m_isChecked;
+	void checkChanged();
+
+	bool						m_isChecked;
+	UIEventHandler::EventType	m_onChecked;
+	UIEventHandler::EventType	m_onUnchecked;
+	//Nullable<bool>			m_isChecked;
+	//UIEventHandler::EventType	m_onIndeterminate; 
 };
 
 LN_NAMESPACE_END

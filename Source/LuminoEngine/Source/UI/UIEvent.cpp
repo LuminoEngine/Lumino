@@ -54,6 +54,8 @@ UIEventType	UIEvents::MouseLeaveEvent = 0;
 UIEventType	UIEvents::KeyDownEvent = 0;
 UIEventType	UIEvents::KeyUpEvent = 0;
 UIEventType	UIEvents::TextInputEvent = 0;
+UIEventType	UIEvents::CheckedEvent = 0;
+UIEventType	UIEvents::UncheckedEvent = 0;
 
 
 LN_NAMESPACE_END

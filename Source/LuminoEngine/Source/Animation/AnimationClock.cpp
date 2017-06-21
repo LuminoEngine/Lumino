@@ -83,7 +83,7 @@ void AnimationTimelineInstance::advanceTime(float deltaTime)
 	m_currentTime += deltaTime;
 	updateTime(0, m_currentTime);
 
-	if (endFrame && m_endCallback != nullptr)
+	if (endFrame && !m_endCallback.isEmpty())
 	{
 		m_endCallback();
 	}

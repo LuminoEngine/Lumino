@@ -120,7 +120,7 @@ public:
 
 	using EventType = Event<TRet(TArgs...)>;
 
-	/** デフォルトコンストラクタ */
+	/** Default constructor */
 	Delegate()
 		: m_holder(nullptr)
 		, m_type(HolderType::Static)
@@ -153,7 +153,12 @@ public:
 		, m_type(HolderType::FuncObj)
 	{}
 
-	/** コピーコンストラクタ */
+	/** nullptr constructor */
+	Delegate(std::nullptr_t)
+		: Delegate()
+	{}
+
+	/** Copy constructor */
 	Delegate(const Delegate& d)
 		: Delegate()
 	{

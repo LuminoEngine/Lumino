@@ -90,4 +90,24 @@ private:
 };
 
 
+/**
+	@brief	複数のコントロールを組み合わせたコントロールを作成するためのクラスです。
+*/
+class UIUserControl
+	: public UIControl
+{
+	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	
+public:
+
+	/** UIUserControl のインスタンスを作成します。 */
+	static RefPtr<UIUserControl> create();
+
+LN_CONSTRUCT_ACCESS:
+	UIUserControl();
+	virtual ~UIUserControl();
+	void initialize();
+};
+
+
 LN_NAMESPACE_END

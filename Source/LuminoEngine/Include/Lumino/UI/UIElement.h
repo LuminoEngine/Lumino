@@ -20,19 +20,6 @@ enum class UISpecialElementType
 	FrameWindow,
 };
 
-/**
-	@brief		特定のイベントデータを持たない、UIイベントを処理するハンドラです。
-	@param[in]	e		: イベントのデータ
-*/
-LN_DELEGATE()
-using UIEventHandler = Delegate<void(UIEventArgs* e)>;
-
-/**
-	@brief		特定のイベントデータを持たない、UIイベントを処理するハンドラです。
-	@param[in]	e		: イベントのデータ
-*/
-LN_DELEGATE()
-using UIMouseEventHandler = Delegate<void(UIMouseEventArgs* e)>;
 
 class UIVisualStateManager
 	: public Object

@@ -14,7 +14,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIButtonBase, UIControl);
 
 //------------------------------------------------------------------------------
 UIButtonBase::UIButtonBase()
-	: m_clickMode(ClickMode::release)
+	: m_clickMode(ClickMode::Release)
 	, m_isPressed(false)
 {
 }
@@ -40,10 +40,12 @@ void UIButtonBase::initialize()
 //------------------------------------------------------------------------------
 void UIButtonBase::setText(const StringRef& text)
 {
-	auto textBlock = UITextBlockPtr::makeRef();
-	textBlock->initialize();
-	textBlock->setText(text);
-	addChild(textBlock);
+	if (m_textContent == nullptr)
+	{
+		m_textContent = newObject<UITextBlock>();
+		addChild(m_textContent);
+	}
+	m_textContent->setText(text);
 }
 
 //------------------------------------------------------------------------------
@@ -62,7 +64,7 @@ void UIButtonBase::onClick(UIEventArgs* e)
 //------------------------------------------------------------------------------
 void UIButtonBase::onMouseDown(UIMouseEventArgs* e)
 {
-	if (m_clickMode == ClickMode::release)
+	if (m_clickMode == ClickMode::Release)
 	{
 		m_isPressed = true;
 		focus();
@@ -82,7 +84,7 @@ void UIButtonBase::onMouseDown(UIMouseEventArgs* e)
 //------------------------------------------------------------------------------
 void UIButtonBase::onMouseUp(UIMouseEventArgs* e)
 {
-	if (m_clickMode == ClickMode::release)
+	if (m_clickMode == ClickMode::Release)
 	{
 		if (m_isPressed)
 		{
@@ -175,6 +177,18 @@ void UIToggleButton::initialize()
 }
 
 //------------------------------------------------------------------------------
+EventConnection UIToggleButton::connectOnChecked(UIEventHandler handler)
+{
+	return m_onChecked.connect(handler);
+}
+
+//------------------------------------------------------------------------------
+EventConnection UIToggleButton::connectOnUnchecked(UIEventHandler handler)
+{
+	return m_onUnchecked.connect(handler);
+}
+
+//------------------------------------------------------------------------------
 void UIToggleButton::onClick(UIEventArgs* e)
 {
 	m_isChecked = !m_isChecked;
@@ -188,8 +202,22 @@ void UIToggleButton::onClick(UIEventArgs* e)
 		goToVisualState(UncheckedState);
 	}
 
+	checkChanged();
+
 	UIButtonBase::onClick(e);
 }
 
+//------------------------------------------------------------------------------
+void UIToggleButton::checkChanged()
+{
+	if (m_isChecked)
+	{
+		m_onChecked.raise(UIEventArgs::create(UIEvents::CheckedEvent, this));
+	}
+	else
+	{
+		m_onUnchecked.raise(UIEventArgs::create(UIEvents::UncheckedEvent, this));
+	}
+}
 
 LN_NAMESPACE_END

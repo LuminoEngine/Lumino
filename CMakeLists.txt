@@ -64,6 +64,8 @@ add_subdirectory(Source/Fluorite)
 
 add_subdirectory(Source/LuminoEngine)
 
+add_subdirectory(Source/LuminoExperimental)
+
 add_subdirectory(Source/LuminoLaunch)
 
 add_subdirectory(Samples)

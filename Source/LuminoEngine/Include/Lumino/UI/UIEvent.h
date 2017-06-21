@@ -196,6 +196,28 @@ public:
 
 	/** TextInputEvent イベントの識別子 (UIKeyEventArgs) */
 	static UIEventType	TextInputEvent;
+
+	/** Checked イベントの識別子 (UIEventArgs) */
+	static UIEventType	CheckedEvent;
+
+	/** Unchecked イベントの識別子 (UIEventArgs) */
+	static UIEventType	UncheckedEvent;
 };
+
+/**
+	@brief		特定のイベントデータを持たない、UIイベントを処理するハンドラです。
+	@param[in]	e		: イベントのデータ
+*/
+LN_DELEGATE()
+using UIEventHandler = Delegate<void(UIEventArgs* e)>;
+
+/**
+	@brief		マウス操作が関係する UIイベントを処理するハンドラです。
+	@param[in]	e		: イベントのデータ
+*/
+LN_DELEGATE()
+using UIMouseEventHandler = Delegate<void(UIMouseEventArgs* e)>;
+
+
 
 LN_NAMESPACE_END
