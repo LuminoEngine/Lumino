@@ -118,7 +118,7 @@ public:
 	void writeLine(const StringRef& str) { writeInternal(str.getBegin(), str.getLength()); writeLine(); }
 
 	template<typename... TArgs>
-	void writeLine(const StringRef& str, const TArgs&... args) { String s = String::Format(str, args...); writeInternal(s.c_str(), s.getLength()); writeLine(); }
+	void writeLine(const StringRef& str, const TArgs&... args) { String s = String::format(str, args...); writeInternal(s.c_str(), s.getLength()); writeLine(); }
 
 	/**
 		@brief		バッファリングデータを全てストリームに書き出します。

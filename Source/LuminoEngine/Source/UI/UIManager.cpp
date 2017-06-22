@@ -445,7 +445,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 			//props->height = 4.0f;
 		}
 	}
-	// UISlider::DecreaseButton
+	// UISlider::Thumb
 	{
 		auto* style = table->getSubControlStyle(_T("UISlider"), _T("Thumb"));
 		// base

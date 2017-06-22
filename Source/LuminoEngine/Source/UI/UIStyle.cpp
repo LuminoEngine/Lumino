@@ -377,7 +377,8 @@ detail::InvalidateFlags UIStyle::mergeActiveStylePropertyTables(detail::UIStyleP
 		const String& name = pair.first;
 		if (visualStateNames.contains(name))
 		{
-			invalidateFlags |= store->merge(pair.second, UIStyleAttributeInheritSourceType::StyleLocal);
+			invalidateFlags |= store->merge(pair.second, UIStyleAttributeInheritSourceType::BaseStyle);
+			//invalidateFlags |= store->merge(pair.second, UIStyleAttributeInheritSourceType::StyleLocal);
 		}
 	}
 	return invalidateFlags;
