@@ -276,17 +276,22 @@ void UIElement::onLayoutUpdated()
 void UIElement::onRender(DrawingContext* g)
 {
 	//g->setBlendMode(BlendMode::Alpha);
+	//g->setDepthTestEnabled(false);
+	//g->setDepthWriteEnabled(false);
 
 	//if (background.Get() != nullptr)
 	if (m_localStyle->background.get() != nullptr)
 	{
 		g->setBrush(m_localStyle->background.get());
-		//g->setOpacity(m_combinedOpacity);
-		//g->drawRectangle(Rect(0, 0, m_finalLocalRect.GetSize()));
+		//g->drawRectangle(Rect(0, 0, m_finalLocalRect.getSize()));
 		g->drawBoxBackground(Rect(0, 0, m_finalLocalRect.getSize()), m_localStyle->cornerRadius.get());
-
-		
 	}
+	//else
+	//{
+	//	g->setBrush(SolidColorBrush::create(Color(0.5, 0.5, 0.5, 0.5)));
+	//	g->drawRectangle(Rect(0, 0, m_finalLocalRect.getSize()));
+	//	//g->drawBoxBackground(Rect(0, 0, m_finalLocalRect.getSize()), m_localStyle->cornerRadius.get());
+	//}
 	if (decoratorBackground.get() != nullptr)
 	{
 		//g->setBrush(decoratorBackground.Get());
@@ -563,7 +568,7 @@ void UIElement::updateLocalStyleAndApplyProperties(UIStyleTable* styleTable, det
 	// parent → state の順で local へマージする
 	// TODO: このへんのコピーが時間かかりそうならリビジョンカウント使うとか対策する。毎フレームやってるから多分重い。
 	detail::InvalidateFlags invalidate = detail::InvalidateFlags::None;
-	if (parentStyleInstance != nullptr)       invalidate |= m_localStyle->inheritParentElementStyle(parentStyleInstance);
+	//if (parentStyleInstance != nullptr)       invalidate |= m_localStyle->inheritParentElementStyle(parentStyleInstance);
 
 
 
@@ -571,6 +576,7 @@ void UIElement::updateLocalStyleAndApplyProperties(UIStyleTable* styleTable, det
 	if (m_invalidateFlags.TestFlag(detail::InvalidateFlags::VisualState))
 	{
 		m_localStyle->clearAvailableRenderElements();
+		m_localStyle->readyMergeProcess();
 
 		auto* vm = getVisualStateManager();
 

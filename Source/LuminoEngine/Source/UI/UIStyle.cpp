@@ -148,25 +148,25 @@ detail::InvalidateFlags UIStylePropertyTableInstance::inheritParentElementStyle(
 }
 
 //------------------------------------------------------------------------------
-detail::InvalidateFlags UIStylePropertyTableInstance::merge(const UIStylePropertyTable* source, UIStyleAttributeInheritSourceType sourceType)
+detail::InvalidateFlags UIStylePropertyTableInstance::merge(const UIStylePropertyTable* source/*, UIStyleAttributeInheritSourceType sourceType*/)
 {
 	detail::InvalidateFlags flags = detail::InvalidateFlags::None;
 	{
 		bool changed = false;
-		changed |= width.inherit(source->width, sourceType);
-		changed |= height.inherit(source->height, sourceType);
+		changed |= width.inherit(source->width);
+		changed |= height.inherit(source->height);
 		if (changed) flags |= detail::InvalidateFlags::layout;
 	}
 	{
 		bool changed = false;
-		changed |= background.inherit(source->background, sourceType);
-		changed |= borderThickness.inherit(source->borderThickness, sourceType);
-		changed |= cornerRadius.inherit(source->cornerRadius, sourceType);
-		changed |= leftBorderColor.inherit(source->leftBorderColor, sourceType);
-		changed |= topBorderColor.inherit(source->topBorderColor, sourceType);
-		changed |= rightBorderColor.inherit(source->rightBorderColor, sourceType);
-		changed |= bottomBorderColor.inherit(source->bottomBorderColor, sourceType);
-		changed |= borderDirection.inherit(source->borderDirection, sourceType);
+		changed |= background.inherit(source->background);
+		changed |= borderThickness.inherit(source->borderThickness);
+		changed |= cornerRadius.inherit(source->cornerRadius);
+		changed |= leftBorderColor.inherit(source->leftBorderColor);
+		changed |= topBorderColor.inherit(source->topBorderColor);
+		changed |= rightBorderColor.inherit(source->rightBorderColor);
+		changed |= bottomBorderColor.inherit(source->bottomBorderColor);
+		changed |= borderDirection.inherit(source->borderDirection);
 		if (changed) flags |= detail::InvalidateFlags::Rendering;
 	}
 
@@ -362,6 +362,26 @@ detail::InvalidateFlags UIStyle::mergeActiveStylePropertyTables(detail::UIStyleP
 {
 	detail::InvalidateFlags invalidateFlags = detail::InvalidateFlags::None;
 
+
+	for (int i = m_visualStatePropertyTableList.getCount() - 1; i >= 0; i--)
+	{
+		const auto& pair = m_visualStatePropertyTableList[i];
+		const String& name = pair.first;
+		if (visualStateNames.contains(name))
+		{
+			invalidateFlags |= store->merge(pair.second/*, UIStyleAttributeInheritSourceType::BaseStyle*/);
+			//invalidateFlags |= store->merge(pair.second, UIStyleAttributeInheritSourceType::StyleLocal);
+		}
+	}
+
+	invalidateFlags |= store->merge(m_basePropertyTable/*, UIStyleAttributeInheritSourceType::BaseStyle*/);
+
+	// 継承元に再帰
+	if (m_baseOn != nullptr)
+	{
+		invalidateFlags |= m_baseOn->mergeActiveStylePropertyTables(store, visualStateNames);
+	}
+#if 0
 	// 継承元に再帰
 	if (m_baseOn != nullptr)
 	{
@@ -381,6 +401,7 @@ detail::InvalidateFlags UIStyle::mergeActiveStylePropertyTables(detail::UIStyleP
 			//invalidateFlags |= store->merge(pair.second, UIStyleAttributeInheritSourceType::StyleLocal);
 		}
 	}
+#endif
 	return invalidateFlags;
 }
 

@@ -13,21 +13,22 @@ class DrawingContext;
 
 enum class UIStyleAttributeValueSource
 {
+	InMerging,		// not set
 	Default,		// not set
-	InheritParent,	// 親 UIElement の Style から継承していることを示す
-	InheritBaseOn,
-	InheritBase,	// VisualState に対応するスタイルは、共通の基準スタイルを持つ (HTML の a:hover は a が基準スタイル)。その基準スタイルから継承しているか
-	StyleLocal,		// VisualState ごとのスタイルから継承しているか
-	UserLocal,		// 直接設定された値であるか
+	//InheritParent,	// 親 UIElement の Style から継承していることを示す
+	//InheritBaseOn,
+	//InheritBase,	// VisualState に対応するスタイルは、共通の基準スタイルを持つ (HTML の a:hover は a が基準スタイル)。その基準スタイルから継承しているか
+	ByStyleInherit,		// VisualState ごとのスタイルから継承しているか
+	ByUserLocal,		// 直接設定された値であるか
 };
 
-enum class UIStyleAttributeInheritSourceType
-{
-	ParentElement,
-	BaseOnStyle,
-	BaseStyle,
-	StyleLocal,
-};
+//enum class UIStyleAttributeInheritSourceType
+//{
+//	ParentElement,
+//	BaseOnStyle,
+//	BaseStyle,
+//	StyleLocal,
+//};
 
 template<typename T>
 class UIStyleAttribute
@@ -37,6 +38,12 @@ public:
 		: m_value()
 		, m_source(UIStyleAttributeValueSource::Default)
 	{}
+
+	void reset()
+	{
+		m_value = T();
+		m_source = UIStyleAttributeValueSource::Default;
+	}
 
 	operator const T&() const
 	{
@@ -52,7 +59,7 @@ public:
 	void set(const T& v)
 	{
 		m_value = v;
-		m_source = UIStyleAttributeValueSource::UserLocal;
+		m_source = UIStyleAttributeValueSource::ByUserLocal;
 	}
 	const T& get() const
 	{
@@ -64,65 +71,66 @@ public:
 		return m_source != UIStyleAttributeValueSource::Default;
 	}
 
-	bool inherit(const UIStyleAttribute& parent, UIStyleAttributeInheritSourceType sourceType)
+	bool inherit(const UIStyleAttribute& parent/*, UIStyleAttributeInheritSourceType sourceType*/)
 	{
 		// そもそも parent が値を持っていなければ何もする必要はない
 		if (parent.m_source == UIStyleAttributeValueSource::Default) return false;
 		// Local 値を持っているので継承する必要はない
-		if (m_source == UIStyleAttributeValueSource::UserLocal) return false;
+		if (m_source == UIStyleAttributeValueSource::ByUserLocal) return false;
 
-		bool inherit = false;
-		if (m_source == UIStyleAttributeValueSource::Default)
-		{
-			inherit = true;
-		}
-		else if (m_source == UIStyleAttributeValueSource::InheritParent)
-		{
-			if (sourceType == UIStyleAttributeInheritSourceType::ParentElement ||
-				sourceType == UIStyleAttributeInheritSourceType::BaseOnStyle ||
-				sourceType == UIStyleAttributeInheritSourceType::BaseStyle ||
-				sourceType == UIStyleAttributeInheritSourceType::StyleLocal)
-			{
-				inherit = true;
-			}
-		}
-		else if (m_source == UIStyleAttributeValueSource::InheritBaseOn)
-		{
-			if (sourceType == UIStyleAttributeInheritSourceType::BaseOnStyle ||
-				sourceType == UIStyleAttributeInheritSourceType::BaseStyle ||
-				sourceType == UIStyleAttributeInheritSourceType::StyleLocal)
-			{
-				inherit = true;
-			}
-		}
-		else if (m_source == UIStyleAttributeValueSource::InheritBase)
-		{
-			if (sourceType == UIStyleAttributeInheritSourceType::BaseStyle ||
-				sourceType == UIStyleAttributeInheritSourceType::StyleLocal)
-			{
-				inherit = true;
-			}
-		}
-		else if (m_source == UIStyleAttributeValueSource::StyleLocal)
-		{
-			if (sourceType == UIStyleAttributeInheritSourceType::StyleLocal)
-			{
-				inherit = true;
-			}
-		}
+		bool inherit = ((int)m_source < ((int)parent.m_source - 1));
+		//bool inherit = false;
+		//if (m_source == UIStyleAttributeValueSource::Default)
+		//{
+		//	inherit = true;
+		//}
+		//else if (m_source == UIStyleAttributeValueSource::InheritParent)
+		//{
+		//	if (sourceType == UIStyleAttributeInheritSourceType::ParentElement ||
+		//		sourceType == UIStyleAttributeInheritSourceType::BaseOnStyle ||
+		//		sourceType == UIStyleAttributeInheritSourceType::BaseStyle ||
+		//		sourceType == UIStyleAttributeInheritSourceType::StyleLocal)
+		//	{
+		//		inherit = true;
+		//	}
+		//}
+		//else if (m_source == UIStyleAttributeValueSource::InheritBaseOn)
+		//{
+		//	if (sourceType == UIStyleAttributeInheritSourceType::BaseOnStyle ||
+		//		sourceType == UIStyleAttributeInheritSourceType::BaseStyle ||
+		//		sourceType == UIStyleAttributeInheritSourceType::StyleLocal)
+		//	{
+		//		inherit = true;
+		//	}
+		//}
+		//else if (m_source == UIStyleAttributeValueSource::InheritBase)
+		//{
+		//	if (sourceType == UIStyleAttributeInheritSourceType::BaseStyle ||
+		//		sourceType == UIStyleAttributeInheritSourceType::StyleLocal)
+		//	{
+		//		inherit = true;
+		//	}
+		//}
+		//else if (m_source == UIStyleAttributeValueSource::StyleLocal)
+		//{
+		//	if (sourceType == UIStyleAttributeInheritSourceType::StyleLocal)
+		//	{
+		//		inherit = true;
+		//	}
+		//}
 
 		bool changed = false;
 		if (inherit)
 		{
-			if (sourceType == UIStyleAttributeInheritSourceType::ParentElement)
-				m_source = UIStyleAttributeValueSource::InheritParent;
-			else if (sourceType == UIStyleAttributeInheritSourceType::BaseOnStyle)
-				m_source = UIStyleAttributeValueSource::InheritBaseOn;
-			else if (sourceType == UIStyleAttributeInheritSourceType::BaseStyle)
-				m_source = UIStyleAttributeValueSource::InheritBase;
-			else
-				m_source = UIStyleAttributeValueSource::StyleLocal;
-
+			//if (sourceType == UIStyleAttributeInheritSourceType::ParentElement)
+			//	m_source = UIStyleAttributeValueSource::InheritParent;
+			//else if (sourceType == UIStyleAttributeInheritSourceType::BaseOnStyle)
+			//	m_source = UIStyleAttributeValueSource::InheritBaseOn;
+			//else if (sourceType == UIStyleAttributeInheritSourceType::BaseStyle)
+			//	m_source = UIStyleAttributeValueSource::InheritBase;
+			//else
+			//	m_source = UIStyleAttributeValueSource::StyleLocal;
+			m_source = UIStyleAttributeValueSource::ByStyleInherit;
 			changed = (m_value != parent.m_value);
 			m_value = parent.m_value;
 		}
@@ -230,7 +238,7 @@ class UIStylePropertyTableInstance
 public:
 	void clearAvailableRenderElements();
 	detail::InvalidateFlags inheritParentElementStyle(UIStylePropertyTableInstance* parent);
-	detail::InvalidateFlags merge(const UIStylePropertyTable* source, UIStyleAttributeInheritSourceType sourceType);
+	detail::InvalidateFlags merge(const UIStylePropertyTable* source/*, UIStyleAttributeInheritSourceType sourceType*/);
 	void apply(UIElement* targetElement, bool useTransitionAnimation);
 
 public:
@@ -269,6 +277,23 @@ public:
 	UIStyleAttribute<BorderDirection>	borderDirection;
 
 	List<RefPtr<UIRenderElement>>	m_availableRenderElements;
+
+public:
+	void readyMergeProcess()
+	{
+		width.reset();
+		height.reset();
+		background.reset();
+		borderThickness.reset();
+		cornerRadius.reset();
+		leftBorderColor.reset();
+		topBorderColor.reset();
+		rightBorderColor.reset();
+		bottomBorderColor.reset();
+		borderDirection.reset();
+	}
+
+	friend class UIStyle;
 };
 
 } // namespace detail

@@ -83,6 +83,7 @@ void Main()
 	while (!Engine::isEndRequested() && g_samplesIndex >= 0)
 	{
 		g_samples[g_samplesIndex].mainFunc();
+
 	}
 
 	Engine::terminate();

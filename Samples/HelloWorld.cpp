@@ -5,7 +5,6 @@ void Main_HelloWorld()
 {
 	while (Engine::update())
 	{
-
 	}
 }
 
