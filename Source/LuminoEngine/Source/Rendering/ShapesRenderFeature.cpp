@@ -147,12 +147,14 @@ void ShapesRendererCore::requestBuffers(int vertexCount, int indexCount, Vertex*
 	////*ib = m_indexCache.request(indexCount);
 }
 
+int g_g_calls = 0;
 //------------------------------------------------------------------------------
 void ShapesRendererCore::renderCommandList(ShapesRendererCommandList* commandList, detail::BrushRawData* fillBrush)
 {
+	//printf("col:%f %f %f\n", fillBrush->color.r, fillBrush->color.g, fillBrush->color.b);
+
 	extractBasePoints(commandList);
 	calcExtrudedDirection();
-
 
 	for (int iPath = 0; iPath < m_pathes.getCount(); iPath++)
 	{
@@ -161,6 +163,9 @@ void ShapesRendererCore::renderCommandList(ShapesRendererCommandList* commandLis
 		if (path.attribute == PathAttribute::Background)
 		{
 			path.color *= fillBrush->color;
+
+			//path.color.r = 0.5;
+			//printf("%f\n", fillBrush->color.r);
 		}
 
 		switch (path.type)
@@ -220,6 +225,9 @@ void ShapesRendererCore::renderCommandList(ShapesRendererCommandList* commandLis
 		}
 	}
 
+	//printf("%d %d\n", m_vertexCache.getCount(), m_indexCache.getCount());
+
+	g_g_calls++;
 	// キャッシュクリア
 	m_vertexCache.clear();
 	m_indexCache.clear();
@@ -252,6 +260,7 @@ void ShapesRendererCore::endPath(Path* path)
 void ShapesRendererCore::extractBasePoints(ShapesRendererCommandList* commandList)
 {
 	int count = commandList->getDataCount();
+	//printf("c:%d %p", count, commandList);
 	for (int i = 0; i < count; i++)
 	{
 		float* cmd = (float*)commandList->getDataByIndex(i);
@@ -266,6 +275,8 @@ void ShapesRendererCore::extractBasePoints(ShapesRendererCommandList* commandLis
 					ThicknessF(0, 0, 0, 0),
 					CornerRadius(cmd[5], cmd[6], cmd[7], cmd[8]),
 					components);
+
+				//printf("rc:%f %f %f %f\n", cmd[1], cmd[2], cmd[3], cmd[4]);
 
 				// center box
 				{
@@ -858,6 +869,8 @@ void ShapesRendererCore::expandVertices(const Path& path)
 		v.color = path.color;
 		v.color.a *= pt.alpha;
 		m_vertexCache.add(v);
+
+		//printf("%f %f\n", v.color.a, v.position.y);
 	}
 }
 

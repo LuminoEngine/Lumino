@@ -723,7 +723,7 @@ void DrawElementList::clearCommands()
 //------------------------------------------------------------------------------
 void DrawElementList::postAddCommandInternal(const BatchState& state, Material* availableMaterial, const Matrix& transform, const BuiltinEffectData& effectData, bool forceStateChange, DrawElement* element)
 {
-	if (forceStateChange || m_batchList.isEmpty() || !m_batchList.getLast().Equal(state, availableMaterial, transform, effectData))
+	//if (forceStateChange || m_batchList.isEmpty() || !m_batchList.getLast().Equal(state, availableMaterial, transform, effectData))
 	{
 		// CombinedMaterial を作る
 		CombinedMaterial* cm = m_combinedMaterialCache.queryCommandList();

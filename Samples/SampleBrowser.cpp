@@ -51,7 +51,7 @@ void Main()
 
 	auto listWindow = UIUserControl::create();
 	listWindow->setWidth(220);
-	listWindow->setBackground(SolidColorBrush::Blue);
+	//listWindow->setBackground(SolidColorBrush::Blue);
 	listWindow->setAnchor(AlignmentAnchor::TopOffsets | AlignmentAnchor::BottomOffsets);	// TODO: UIAnchor ‚Å‚¢‚¢‚Æ‚¨‚à‚¤
 	listWindow->addChild(listBox1);
 	mainWindow->addChild(listWindow);
@@ -73,7 +73,7 @@ void Main()
 	});
 	button1->setText(_T(">"));
 	button1->setBackground(SolidColorBrush::White);
-	mainWindow->addChild(button1);
+	//mainWindow->addChild(button1);
 
 
 

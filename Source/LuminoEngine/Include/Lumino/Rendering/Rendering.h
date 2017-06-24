@@ -689,7 +689,7 @@ LN_INTERNAL_ACCESS:
 	//void setCurrentCamera(CameraComponent* camera) { m_camera = camera; }
 	//CameraComponent* getCurrentCamera() const { return m_camera; }
 
-private:
+protected:
 	detail::GraphicsManager*		m_manager;
 	
 	//detail::BatchStateBlock			m_state;
@@ -755,15 +755,15 @@ inline TElement* DrawList::resolveDrawElement(detail::DrawingSectionId sectionId
 	const DrawElementMetadata* metadata = (userMetadata != nullptr) ? userMetadata : &DrawElementMetadata::Default;
 
 	// 何か前回追加された DrawElement があり、それと DrawingSectionId、State が一致するならそれに対して追記できる
-	if (sectionId != detail::DrawingSectionId::None &&
-		m_currentSectionTopElement != nullptr &&
-		m_currentSectionTopElement->drawingSectionId == sectionId &&
-		m_currentSectionTopElement->metadata.equals(*metadata) &&
-		m_currentSectionTopElement->m_stateFence == m_currentStateFence &&
-		m_drawElementList.getBatch(m_currentSectionTopElement->batchIndex)->Equal(m_state.state, availableMaterial, m_state.getTransfrom(), m_builtinEffectData))
-	{
-		return static_cast<TElement*>(m_currentSectionTopElement);
-	}
+	//if (sectionId != detail::DrawingSectionId::None &&
+	//	m_currentSectionTopElement != nullptr &&
+	//	m_currentSectionTopElement->drawingSectionId == sectionId &&
+	//	m_currentSectionTopElement->metadata.equals(*metadata) &&
+	//	m_currentSectionTopElement->m_stateFence == m_currentStateFence &&
+	//	m_drawElementList.getBatch(m_currentSectionTopElement->batchIndex)->Equal(m_state.state, availableMaterial, m_state.getTransfrom(), m_builtinEffectData))
+	//{
+	//	return static_cast<TElement*>(m_currentSectionTopElement);
+	//}
 
 	// DrawElement を新しく作る
 	TElement* element = m_drawElementList.addCommand<TElement>(m_state.state, availableMaterial, m_state.getTransfrom(), m_builtinEffectData, forceStateChange);

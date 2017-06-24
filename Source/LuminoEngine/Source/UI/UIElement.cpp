@@ -275,17 +275,34 @@ void UIElement::onLayoutUpdated()
 //------------------------------------------------------------------------------
 void UIElement::onRender(DrawingContext* g)
 {
-	//g->setBlendMode(BlendMode::Alpha);
+	//g->setBlendMode(BlendMode::Normal);
 	//g->setDepthTestEnabled(false);
 	//g->setDepthWriteEnabled(false);
 
+	g->setBrush(SolidColorBrush::Gray);
+	g->drawBoxBackground(Rect(m_finalGlobalRect.getTopLeft(), m_finalLocalRect.getSize()), m_localStyle->cornerRadius.get());
+	//g->drawRectangle(Rect(0, 0, m_finalLocalRect.getSize()));
+	//g->setBrush(SolidColorBrush::Red);
 	//if (background.Get() != nullptr)
 	if (m_localStyle->background.get() != nullptr)
 	{
 		g->setBrush(m_localStyle->background.get());
-		//g->drawRectangle(Rect(0, 0, m_finalLocalRect.getSize()));
-		g->drawBoxBackground(Rect(0, 0, m_finalLocalRect.getSize()), m_localStyle->cornerRadius.get());
+		//g->setBrush(SolidColorBrush::Red);
+		//g->drawRectangle(Rect(m_finalGlobalRect.getTopLeft(), m_finalLocalRect.getSize()));
+		//g->setBrush(SolidColorBrush::Green);
+		g->drawBoxBackground(Rect(m_finalGlobalRect.getTopLeft(), m_finalLocalRect.getSize()), m_localStyle->cornerRadius.get());
+
 	}
+	//g->setBrush(SolidColorBrush::Blue);
+	////g->drawRectangle(Rect(0, 0, m_finalLocalRect.getSize()));
+	//g->drawBoxBackground(Rect(m_finalGlobalRect.getTopLeft(), m_finalLocalRect.getSize()), m_localStyle->cornerRadius.get());
+
+
+	//g->setBrush(SolidColorBrush::Green);
+	////g->drawRectangle(Rect(0, 0, m_finalLocalRect.getSize()));
+	//g->drawBoxBackground(Rect(0, 0, m_finalLocalRect.getSize()), m_localStyle->cornerRadius.get());
+		//g->drawRectangle(Rect(0, 0, m_finalLocalRect.getSize()));
+		//g->drawBoxBackground(Rect(0, 0, 20, 20), 0);
 	//else
 	//{
 	//	g->setBrush(SolidColorBrush::create(Color(0.5, 0.5, 0.5, 0.5)));
@@ -310,11 +327,22 @@ void UIElement::onRender(DrawingContext* g)
 
 	if (!m_localStyle->borderThickness.get().isZero())
 	{
-		g->drawBoxBorder(
-			Rect(0, 0, m_finalGlobalRect.getSize()), m_localStyle->borderThickness.get(), m_localStyle->cornerRadius.get(),
-			Color::Gray, Color::Gray, Color::Gray, Color::Gray,
-			BorderDirection::Outside);
+		//g->setBrush(nullptr);
+		//g->drawBoxBorder(
+		//	Rect(0, 0, m_finalGlobalRect.getSize()), m_localStyle->borderThickness.get(), m_localStyle->cornerRadius.get(),
+		//	Color::Gray, Color::Gray, Color::Gray, Color::Gray,
+		//	BorderDirection::Outside);
+		//printf("border %f %f %f %f\n",
+		//	m_localStyle->borderThickness.get().Left,
+		//	m_localStyle->borderThickness.get().Top,
+		//	m_localStyle->borderThickness.get().Right,
+		//	m_localStyle->borderThickness.get().Bottom);
 	}
+	//g->setBrush(Brush::Red);
+	//g->drawBoxBorder(
+	//	Rect(0, 0, m_finalGlobalRect.getSize()), ThicknessF(1), m_localStyle->cornerRadius.get(),
+	//	Color::Gray, Color::Gray, Color::Gray, Color::Gray,
+	//	BorderDirection::Inside);
 }
 
 //------------------------------------------------------------------------------
@@ -683,8 +711,8 @@ void UIElement::render(DrawingContext* g)
 
 	Matrix mat;
 	mat.translate(m_finalGlobalRect.x, m_finalGlobalRect.y, 0);
-	g->setTransform(mat);
-	g->setBuiltinEffectData(m_combinedBuiltinEffectData);
+	//g->setTransform(mat);
+	//g->setBuiltinEffectData(m_combinedBuiltinEffectData);
 
 	
 

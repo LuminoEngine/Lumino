@@ -2,6 +2,7 @@
 #include "../Internal.h"
 #include <Lumino/Rendering/Rendering.h>
 #include <Lumino/Rendering/SceneRenderer.h>
+#include <Lumino/Graphics/Brush.h>
 #include "../Graphics/GraphicsManager.h"
 #include "../Graphics/CoreGraphicsRenderFeature.h"
 
@@ -160,6 +161,12 @@ void SceneRenderer::render(
 				currentState = batch;
 				context->applyStatus(currentState, { defaultRenderTarget, defaultDepthBuffer });
 				if (diag != nullptr) diag->changeRenderStage();
+				printf("rc:%f %f %f %f\n", 
+					currentState->state.getBrush()->getColor().r,
+					currentState->state.getBrush()->getColor().g,
+					currentState->state.getBrush()->getColor().b,
+					currentState->state.getBrush()->getColor().a);
+				
 			}
 
 			// 固定の内部シェーダを使わない場合はいろいろ設定する

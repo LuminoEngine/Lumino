@@ -281,16 +281,16 @@ public:
 public:
 	void readyMergeProcess()
 	{
-		width.reset();
-		height.reset();
-		background.reset();
-		borderThickness.reset();
-		cornerRadius.reset();
-		leftBorderColor.reset();
-		topBorderColor.reset();
-		rightBorderColor.reset();
-		bottomBorderColor.reset();
-		borderDirection.reset();
+		if (width.m_source != UIStyleAttributeValueSource::ByUserLocal) width.reset();
+		if (height.m_source != UIStyleAttributeValueSource::ByUserLocal) height.reset();
+		if (background.m_source != UIStyleAttributeValueSource::ByUserLocal) background.reset();
+		if (borderThickness.m_source != UIStyleAttributeValueSource::ByUserLocal) borderThickness.reset();
+		if (cornerRadius.m_source != UIStyleAttributeValueSource::ByUserLocal) cornerRadius.reset();
+		if (leftBorderColor.m_source != UIStyleAttributeValueSource::ByUserLocal) leftBorderColor.reset();
+		if (topBorderColor.m_source != UIStyleAttributeValueSource::ByUserLocal) topBorderColor.reset();
+		if (rightBorderColor.m_source != UIStyleAttributeValueSource::ByUserLocal) rightBorderColor.reset();
+		if (bottomBorderColor.m_source != UIStyleAttributeValueSource::ByUserLocal) bottomBorderColor.reset();
+		if (borderDirection.m_source != UIStyleAttributeValueSource::ByUserLocal) borderDirection.reset();
 	}
 
 	friend class UIStyle;

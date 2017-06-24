@@ -417,7 +417,7 @@ private:
 	virtual void setLayoutFinalGlobalRect(const Rect& rect) override;
 
 
-private:
+protected:
 	void updateLocalStyleAndApplyProperties(UIStyleTable* styleTable, detail::UIStylePropertyTableInstance* parentStyleInstance);
 
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する

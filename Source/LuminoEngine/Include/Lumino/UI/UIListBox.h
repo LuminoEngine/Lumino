@@ -21,10 +21,7 @@ class UIListBoxItem
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 
-	virtual void onRender(DrawingContext* g) override
-	{
-		UIControl::onRender(g);
-	}
+	virtual void onRender(DrawingContext* g) override;
 LN_PROTECTED_INTERNAL_ACCESS:
 	UIListBoxItem();
 	virtual ~UIListBoxItem();

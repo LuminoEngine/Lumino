@@ -187,7 +187,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 	//}
 
 	auto containerBackground = SolidColorBrush::create(Color::White, 0.3);
-	auto containerItemMouseOver = SolidColorBrush::create(UIColors::getColor(UIColorIndex::LightGreen, 5), 0.5f);
+	auto containerItemMouseOver = SolidColorBrush::create(UIColors::getColor(UIColorIndex::LightGreen, 5)/*, 0.5f*/);
 
 	auto boarderNormalBrush = TextureBrush::create(m_defaultSkinTexture);
 	boarderNormalBrush->setSourceRect(0, 32, 32, 32);
