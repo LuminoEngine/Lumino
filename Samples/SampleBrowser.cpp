@@ -34,13 +34,13 @@ RefPtr<AnimationClock>	g_clock;
 void showListWindow()
 {
 	g_pinButton->setText(_T("<"));
-	g_clock->start(g_listWindow->getPosition().x, 0, 1.0, EasingMode::EaseOutQuad, [](float v) {g_listWindow->setPosition(PointF(v, 0)); }, nullptr);
+	g_clock->start(g_listWindow->getPosition().x, 0, 0.5, EasingMode::EaseOutExpo, [](float v) {g_listWindow->setPosition(PointF(v, 0)); }, nullptr);
 }
 
 void closeListWindow()
 {
 	g_pinButton->setText(_T(">"));
-	g_clock->start(g_listWindow->getPosition().x, -200, 1.0, EasingMode::EaseOutQuad, [](float v) {g_listWindow->setPosition(PointF(v, 0)); }, nullptr);
+	g_clock->start(g_listWindow->getPosition().x, -200, 0.5, EasingMode::EaseOutExpo, [](float v) {g_listWindow->setPosition(PointF(v, 0)); }, nullptr);
 }
 
 void Main()
@@ -77,6 +77,8 @@ void Main()
 	g_pinButton->setBackground(SolidColorBrush::White);
 	mainWindow->addChild(g_pinButton);
 
+	//g_pinButton->setChecked(false);
+	closeListWindow();
 
 	//showListWindow();
 

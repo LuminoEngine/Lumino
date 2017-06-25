@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "UIControl.h"
 
@@ -7,14 +7,21 @@ class UIButton;
 using UIButtonPtr = RefPtr<UIButton>;
 class UITextBlock;
 
-/** ƒ{ƒ^ƒ“‚ÌƒNƒŠƒbƒNƒCƒxƒ“ƒg‚ğ”­¶‚³‚¹‚éƒ^ƒCƒ~ƒ“ƒO‚ğ•\‚µ‚Ü‚·B*/
+/** ãƒœã‚¿ãƒ³ã®ã‚¯ãƒªãƒƒã‚¯ã‚¤ãƒ™ãƒ³ãƒˆã‚’ç™ºç”Ÿã•ã›ã‚‹ã‚¿ã‚¤ãƒŸãƒ³ã‚°ã‚’è¡¨ã—ã¾ã™ã€‚*/
 enum class ClickMode
 {
-	/** ƒ{ƒ^ƒ“‚ğ—£‚µ‚½‚Æ‚«‚ÉƒCƒxƒ“ƒg‚ğ”­¶‚³‚¹‚Ü‚·B*/
+	/** ãƒœã‚¿ãƒ³ã‚’é›¢ã—ãŸã¨ãã«ã‚¤ãƒ™ãƒ³ãƒˆã‚’ç™ºç”Ÿã•ã›ã¾ã™ã€‚*/
 	Release,
 
-	/** ƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½‚Æ‚«‚ÉƒCƒxƒ“ƒg‚ğ”­¶‚³‚¹‚Ü‚·B*/
+	/** ãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ãŸã¨ãã«ã‚¤ãƒ™ãƒ³ãƒˆã‚’ç™ºç”Ÿã•ã›ã¾ã™ã€‚*/
 	Press,
+};
+
+enum class UICheckState
+{
+	Unchecked,
+	Indeterminate,
+	Checked,
 };
 
 /**
@@ -27,13 +34,13 @@ class UIButtonBase
 public:
 	void setText(const StringRef& text);
 
-	/** onClick ƒCƒxƒ“ƒg‚Ì’Ê’m‚ğó‚¯æ‚éƒR[ƒ‹ƒoƒbƒN‚ğ“o˜^‚µ‚Ü‚·B*/
+	/** onClick ã‚¤ãƒ™ãƒ³ãƒˆã®é€šçŸ¥ã‚’å—ã‘å–ã‚‹ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã‚’ç™»éŒ²ã—ã¾ã™ã€‚*/
 	LN_METHOD(Event)
 	EventConnection connectOnGotFocus(UIEventHandler handler);
 
 protected:
 
-	/** ƒ{ƒ^ƒ“‚ªƒNƒŠƒbƒN‚³‚ê‚½‚Æ‚«‚ÉŒÄ‚Ño‚³‚ê‚Ü‚·B*/
+	/** ãƒœã‚¿ãƒ³ãŒã‚¯ãƒªãƒƒã‚¯ã•ã‚ŒãŸã¨ãã«å‘¼ã³å‡ºã•ã‚Œã¾ã™ã€‚*/
 	virtual void onClick(UIEventArgs* e);
 
 	// UIElement interface
@@ -84,12 +91,15 @@ public:
 	static const String UncheckedState;
 
 	static RefPtr<UIToggleButton> create();
-	
-	/** Checked ƒCƒxƒ“ƒg‚Ì’Ê’m‚ğó‚¯æ‚éƒR[ƒ‹ƒoƒbƒN‚ğ“o˜^‚µ‚Ü‚·B*/
+
+	void setChecked(bool checked);
+	bool isChecked() const;
+
+	/** Checked ã‚¤ãƒ™ãƒ³ãƒˆã®é€šçŸ¥ã‚’å—ã‘å–ã‚‹ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã‚’ç™»éŒ²ã—ã¾ã™ã€‚*/
 	LN_METHOD(Event)
 	EventConnection connectOnChecked(UIEventHandler handler);
 
-	/** Unchecked ƒCƒxƒ“ƒg‚Ì’Ê’m‚ğó‚¯æ‚éƒR[ƒ‹ƒoƒbƒN‚ğ“o˜^‚µ‚Ü‚·B*/
+	/** Unchecked ã‚¤ãƒ™ãƒ³ãƒˆã®é€šçŸ¥ã‚’å—ã‘å–ã‚‹ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã‚’ç™»éŒ²ã—ã¾ã™ã€‚*/
 	LN_METHOD(Event)
 	EventConnection connectOnUnchecked(UIEventHandler handler);
 
@@ -104,7 +114,7 @@ LN_CONSTRUCT_ACCESS:
 private:
 	void checkChanged();
 
-	bool						m_isChecked;
+	UICheckState				m_checkState;
 	UIEventHandler::EventType	m_onChecked;
 	UIEventHandler::EventType	m_onUnchecked;
 	//Nullable<bool>			m_isChecked;

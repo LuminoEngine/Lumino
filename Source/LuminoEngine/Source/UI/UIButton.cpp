@@ -157,7 +157,7 @@ RefPtr<UIToggleButton> UIToggleButton::create()
 
 //------------------------------------------------------------------------------
 UIToggleButton::UIToggleButton()
-	: m_isChecked(false)
+	: m_checkState(UICheckState::Unchecked)
 {
 }
 
@@ -177,6 +177,23 @@ void UIToggleButton::initialize()
 }
 
 //------------------------------------------------------------------------------
+void UIToggleButton::setChecked(bool checked)
+{
+	UICheckState newState = (checked) ? UICheckState::Checked : UICheckState::Unchecked;
+	if (newState != m_checkState)
+	{
+		m_checkState = newState;
+		checkChanged();
+	}
+}
+
+//------------------------------------------------------------------------------
+bool UIToggleButton::isChecked() const
+{
+	return m_checkState != UICheckState::Unchecked;
+}
+
+//------------------------------------------------------------------------------
 EventConnection UIToggleButton::connectOnChecked(UIEventHandler handler)
 {
 	return m_onChecked.connect(handler);
@@ -191,15 +208,13 @@ EventConnection UIToggleButton::connectOnUnchecked(UIEventHandler handler)
 //------------------------------------------------------------------------------
 void UIToggleButton::onClick(UIEventArgs* e)
 {
-	m_isChecked = !m_isChecked;
-
-	if (m_isChecked)
+	if (m_checkState != UICheckState::Checked)
 	{
-		goToVisualState(CheckedState);
+		m_checkState = UICheckState::Checked;
 	}
 	else
 	{
-		goToVisualState(UncheckedState);
+		m_checkState = UICheckState::Unchecked;
 	}
 
 	checkChanged();
@@ -210,13 +225,20 @@ void UIToggleButton::onClick(UIEventArgs* e)
 //------------------------------------------------------------------------------
 void UIToggleButton::checkChanged()
 {
-	if (m_isChecked)
+	switch (m_checkState)
 	{
-		m_onChecked.raise(UIEventArgs::create(UIEvents::CheckedEvent, this));
-	}
-	else
-	{
+	case ln::UICheckState::Unchecked:
 		m_onUnchecked.raise(UIEventArgs::create(UIEvents::UncheckedEvent, this));
+		goToVisualState(UncheckedState);
+		break;
+	case ln::UICheckState::Indeterminate:
+		break;
+	case ln::UICheckState::Checked:
+		m_onChecked.raise(UIEventArgs::create(UIEvents::CheckedEvent, this));
+		goToVisualState(CheckedState);
+		break;
+	default:
+		break;
 	}
 }
 

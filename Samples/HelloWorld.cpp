@@ -3,6 +3,8 @@ using namespace ln;
 
 void Main_HelloWorld()
 {
+	//auto text = TextBlock2DComponent::
+
 	while (Engine::update())
 	{
 	}
