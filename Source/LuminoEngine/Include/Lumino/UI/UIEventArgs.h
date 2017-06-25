@@ -15,7 +15,7 @@ using UIEventType = const UIEventInfo*;
 class UIEventArgs
 	: public tr::ReflectionEventArgs
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	static UIEventArgsPtr create(UIEventType type, Object* sender, bool caching = true);
 
@@ -40,7 +40,7 @@ private:
 class UIMouseEventArgs
 	: public UIEventArgs
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 	/** UIMouseEventArgs のインスタンスを作成します。*/
@@ -75,7 +75,7 @@ private:
 class UIKeyEventArgs
 	: public UIEventArgs
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 	/** UIKeyEventArgs のインスタンスを作成します。 */
@@ -107,7 +107,7 @@ private:
 class UIMouseWheelEventArgs
 	: public UIEventArgs
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 	/** UIMouseWheelEventArgs のインスタンスを作成します。 */

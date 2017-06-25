@@ -144,7 +144,7 @@ public:
 class UIRenderElement
 	: public Object
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	float			m_width;
 	float			m_height;
@@ -172,7 +172,7 @@ private:
 class UIStylePropertyTable
 	: public Object
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	//void AddValue(const tr::PropertyInfo* targetProperty, const tr::Variant& value, double time = 0.0, EasingMode easingMode = EasingMode::Linear);
 
@@ -304,7 +304,7 @@ public:
 class UIStyle
 	: public Object
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	static UIStylePtr create();
 
@@ -364,7 +364,7 @@ public:	// TODO:
 class UIStyleTable
 	: public Object
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	UIStyleTable();
 	virtual ~UIStyleTable();

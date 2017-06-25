@@ -44,7 +44,7 @@ enum class BuiltinFontSize
 class Font
 	: public Object
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 	/**

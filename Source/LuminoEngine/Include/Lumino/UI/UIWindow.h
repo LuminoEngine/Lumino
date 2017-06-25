@@ -10,7 +10,7 @@ LN_NAMESPACE_BEGIN
 class UIWindow
 	: public UIControl
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	static RefPtr<UIWindow> create();
 

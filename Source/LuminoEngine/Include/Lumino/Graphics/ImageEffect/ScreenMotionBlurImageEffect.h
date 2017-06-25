@@ -11,11 +11,9 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 class ScreenMotionBlurImageEffect
 	: public ImageEffect
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
-	LN_TR_PROPERTY(float, Amount);
-	tr::Property<float>	Amount;
-
+	float	m_amount;
 
 public:
 	static ScreenMotionBlurImageEffectPtr create();
@@ -24,7 +22,7 @@ public:
 	//void StartBlur(double duration, float power, float scale, const Vector3& center);
 
 	/** 画像内に残す前のフレームの量 (0.0～1.0)。値が高くなるほど、モーショントレイルが長くなります。*/
-	void setAmount(float amount) { tr::PropertyInfo::setPropertyValueDirect(this, AmountId, amount);/*m_amount = amount;*/ }
+	void setAmount(float amount) { m_amount = amount; }
 
 	/** ブラーエフェクトを放射状に適用するための情報を設定します。*/
 	void setRadialCenter(const Vector2& center) { m_center = center; }

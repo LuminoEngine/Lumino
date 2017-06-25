@@ -24,7 +24,7 @@ LN_CLASS()
 class Texture
 	: public GraphicsResourceObject
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 	/**
@@ -74,7 +74,7 @@ class Texture2D
 	, public ICacheObject
 {
 	LN_CACHE_OBJECT_DECL;
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 	/**
@@ -264,7 +264,7 @@ class Texture3D
 	, public ICacheObject
 {
 	LN_CACHE_OBJECT_DECL;
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 	/**

@@ -23,7 +23,7 @@ enum class ClickMode
 class UIButtonBase
 	: public UIControl
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	void setText(const StringRef& text);
 
@@ -59,7 +59,7 @@ private:
 class UIButton
 	: public UIButtonBase
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	static RefPtr<UIButton> create();
 	static RefPtr<UIButton> create(const StringRef& text, float width, float height);
@@ -78,7 +78,7 @@ LN_CONSTRUCT_ACCESS:
 class UIToggleButton
 	: public UIButtonBase
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	static const String CheckedState;
 	static const String UncheckedState;

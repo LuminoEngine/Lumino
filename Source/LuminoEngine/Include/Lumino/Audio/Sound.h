@@ -18,7 +18,7 @@ LN_CLASS()
 class Sound
     : public Object
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 

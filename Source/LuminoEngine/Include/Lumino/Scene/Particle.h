@@ -148,7 +148,7 @@ struct RadomRangeValue
 class SpriteParticleModel
 	: public Object
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	static SpriteParticleModelPtr create();
 
@@ -334,7 +334,7 @@ class ParticleEmitter3DComponent;
 class ParticleEmitterComponent
 	: public VisualComponent
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 protected:
 	ParticleEmitterComponent();
 	virtual ~ParticleEmitterComponent();
@@ -353,7 +353,7 @@ private:
 class ParticleEmitter3DComponent
 	: public ParticleEmitterComponent
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	static RefPtr<ParticleEmitter3DComponent> create(SpriteParticleModel* model);
 

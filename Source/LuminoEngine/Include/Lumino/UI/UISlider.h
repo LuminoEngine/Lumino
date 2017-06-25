@@ -25,7 +25,7 @@ class UITrack;
 class UISlider
 	: public UIRangeBase
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 	/**

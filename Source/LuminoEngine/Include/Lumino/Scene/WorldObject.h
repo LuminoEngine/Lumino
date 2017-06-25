@@ -35,7 +35,7 @@ struct LayerMask
 class WorldObject
 	: public Object
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	transform	transform;
 
@@ -157,7 +157,7 @@ private:
 class WorldObject2D
 	: public WorldObject
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 LN_CONSTRUCT_ACCESS:
@@ -173,7 +173,7 @@ LN_CONSTRUCT_ACCESS:
 class WorldObject3D
 	: public WorldObject
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 LN_CONSTRUCT_ACCESS:

@@ -15,7 +15,7 @@ class TileMapRenderer;
 class TileMap
 	: public VisualComponent
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 	/**

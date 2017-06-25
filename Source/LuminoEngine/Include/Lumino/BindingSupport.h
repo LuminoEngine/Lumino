@@ -213,7 +213,7 @@ public:
 class ListObject	// TODO: detail
 	: public Object
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 protected:
 	virtual ~ListObject() = default;
 

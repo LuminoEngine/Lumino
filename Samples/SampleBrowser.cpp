@@ -26,7 +26,22 @@ static SampleInfo g_samples[] =
 	{ _T("Sprite2D"), Main_Sprite2D },
 };
 
-int g_samplesIndex = 0;
+int						g_samplesIndex = 0;
+RefPtr<UIToggleButton>	g_pinButton;
+RefPtr<UIUserControl>	g_listWindow;
+RefPtr<AnimationClock>	g_clock;
+
+void showListWindow()
+{
+	g_pinButton->setText(_T("<"));
+	g_clock->start(g_listWindow->getPosition().x, 0, 1.0, EasingMode::EaseOutQuad, [](float v) {g_listWindow->setPosition(PointF(v, 0)); }, nullptr);
+}
+
+void closeListWindow()
+{
+	g_pinButton->setText(_T(">"));
+	g_clock->start(g_listWindow->getPosition().x, -200, 1.0, EasingMode::EaseOutQuad, [](float v) {g_listWindow->setPosition(PointF(v, 0)); }, nullptr);
+}
 
 void Main()
 {
@@ -36,9 +51,7 @@ void Main()
 	auto* mainWindow = Engine::getMainWindow();
 
 
-
-
-	auto clock = AnimationClock::create();
+	g_clock = AnimationClock::create();
 
 	auto listBox1 = UIListBox::create();
 	listBox1->setWidth(200);
@@ -49,33 +62,23 @@ void Main()
 	}
 
 
-	auto listWindow = UIUserControl::create();
-	listWindow->setWidth(220);
-	listWindow->setBackground(SolidColorBrush::Blue);
-	listWindow->setAnchor(AlignmentAnchor::TopOffsets | AlignmentAnchor::BottomOffsets);	// TODO: UIAnchor ‚Å‚¢‚¢‚Æ‚¨‚à‚¤
-	listWindow->addChild(listBox1);
-	mainWindow->addChild(listWindow);
+	g_listWindow = UIUserControl::create();
+	g_listWindow->setWidth(220);
+	g_listWindow->setBackground(SolidColorBrush::Blue);
+	g_listWindow->setAnchor(AlignmentAnchor::TopOffsets | AlignmentAnchor::BottomOffsets);	// TODO: UIAnchor ‚Å‚¢‚¢‚Æ‚¨‚à‚¤
+	g_listWindow->addChild(listBox1);
+	mainWindow->addChild(g_listWindow);
 
 
-	auto button1 = UIToggleButton::create();
-	button1->setSize(Size(32, 32));
-	button1->connectOnChecked([&](UIEventArgs* e)
-	{
-		// open
-		button1->setText(_T("<"));
-		clock->start(listWindow->getPosition().x, 0, 1.0, EasingMode::EaseOutQuad, [listWindow](float v) {listWindow->setPosition(PointF(v, 0)); }, nullptr);
-	});
-	button1->connectOnUnchecked([&](UIEventArgs* e)
-	{
-		// close
-		button1->setText(_T(">"));
-		clock->start(listWindow->getPosition().x, -200, 1.0, EasingMode::EaseOutQuad, [listWindow](float v) {listWindow->setPosition(PointF(v, 0)); }, nullptr);
-	});
-	button1->setText(_T(">"));
-	button1->setBackground(SolidColorBrush::White);
-	mainWindow->addChild(button1);
+	g_pinButton = UIToggleButton::create();
+	g_pinButton->setSize(Size(32, 32));
+	g_pinButton->connectOnChecked([&](UIEventArgs* e) { showListWindow(); });
+	g_pinButton->connectOnUnchecked([&](UIEventArgs* e) { closeListWindow(); });
+	g_pinButton->setBackground(SolidColorBrush::White);
+	mainWindow->addChild(g_pinButton);
 
 
+	//showListWindow();
 
 
 	Engine::resetFrameDelay();

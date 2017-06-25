@@ -14,7 +14,7 @@ typedef RefPtr<TileSet> TileSetPtr;
 class TileSet
 	: public tr::ReflectionObject
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	static TileSetPtr create();
 
@@ -57,7 +57,7 @@ private:
 //class RGSS1TileSet
 //	: public tr::ReflectionObject
 //{
-//	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+//	LN_OBJECT();
 //public:
 //	RGSS1TileSet();
 //	virtual ~RGSS1TileSet();

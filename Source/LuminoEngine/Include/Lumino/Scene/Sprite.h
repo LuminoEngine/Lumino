@@ -18,7 +18,7 @@ LN_CLASS()
 class SpriteComponent
 	: public VisualComponent
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 	/**
@@ -88,7 +88,7 @@ LN_CLASS()
 class Sprite2DComponent
 	: public SpriteComponent
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	
 	/**
@@ -130,7 +130,7 @@ LN_CLASS()
 class Sprite3DComponent
 	: public SpriteComponent
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	
 	/**
@@ -172,7 +172,7 @@ LN_CLASS()
 class SpriteBase
 	: public VisualObject
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	
 	/** スプライトが表示するテクスチャを設定します。 */
@@ -226,7 +226,7 @@ LN_CLASS()
 class Sprite2D
 	: public SpriteBase
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	
 	/**
@@ -279,7 +279,7 @@ LN_CLASS()
 class Sprite3D
 	: public SpriteBase
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	
 	/**

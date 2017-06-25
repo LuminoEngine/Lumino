@@ -36,7 +36,7 @@ typedef List<MeshAttribute>		MeshAttributeList;
 class MeshResource
 	: public Object
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	static MeshResourcePtr create();
 
@@ -227,7 +227,7 @@ LN_INTERNAL_ACCESS:	// TODO:
 class StaticMeshModel
 	: public Object
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 	//void SetMeshResource(MeshResource* meshResource) { m_meshResource = meshResource; }

@@ -96,9 +96,6 @@ void Component::render(RenderingContext* context)
 // transform
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(transform, Component);
-LN_TR_PROPERTY_IMPLEMENT(transform, Vector3, position, tr::PropertyMetadata());
-LN_TR_PROPERTY_IMPLEMENT(transform, Quaternion, rotation, tr::PropertyMetadata());
-LN_TR_PROPERTY_IMPLEMENT(transform, Vector3, scale, tr::PropertyMetadata());
 
 //------------------------------------------------------------------------------
 transform::transform()
@@ -118,13 +115,13 @@ transform::~transform()
 //------------------------------------------------------------------------------
 Vector3 transform::getFront() const
 {
-	return Vector3::transform(Vector3::UnitZ, rotation.get());
+	return Vector3::transform(Vector3::UnitZ, rotation);
 }
 
 //------------------------------------------------------------------------------
 void transform::translate(const Vector3& translation)
 {
-	position = position.get() + translation;
+	position = position + translation;
 }
 
 //------------------------------------------------------------------------------
@@ -136,10 +133,10 @@ void transform::translate(float x, float y, float z)
 //------------------------------------------------------------------------------
 void transform::lookAt(const Vector3& target, const Vector3& up)
 {
-	if (target == position.get()) return;
+	if (target == position) return;
 
 	// left-hand coord
-	Vector3 f = Vector3::normalize(target - position.get());
+	Vector3 f = Vector3::normalize(target - position);
 	Vector3 s = Vector3::normalize(Vector3::cross(up, f));
 	Vector3 u = Vector3::cross(f, s);
 	Matrix mat(

@@ -15,7 +15,7 @@ using TextBlock2DComponentPtr = RefPtr<TextBlock2DComponent>;
 class TextBlock2DComponent
 	: public VisualComponent
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	
 	/**

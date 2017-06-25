@@ -12,10 +12,6 @@ LN_NAMESPACE_BEGIN
 // UITextElement
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UITextElement, UIElement);
-LN_TR_PROPERTY_IMPLEMENT(UITextElement, String, FontFamily, tr::PropertyMetadata(UITextElement::onFontPropertyChanged));
-LN_TR_PROPERTY_IMPLEMENT(UITextElement, int, FontSize, tr::PropertyMetadata(UITextElement::onFontPropertyChanged));
-LN_TR_PROPERTY_IMPLEMENT(UITextElement, bool, isFontBold, tr::PropertyMetadata(UITextElement::onFontPropertyChanged));
-LN_TR_PROPERTY_IMPLEMENT(UITextElement, bool, isFontItalic, tr::PropertyMetadata(UITextElement::onFontPropertyChanged));
 
 
 //------------------------------------------------------------------------------
@@ -30,6 +26,7 @@ UITextElement::UITextElement()
 	//m_fontSize.setStaticListener(this, onFontPropertyChanged);
 	//m_fontBold.setStaticListener(this, onFontPropertyChanged);
 	//m_fontItalic.setStaticListener(this, onFontPropertyChanged);
+	printf("call onFontPropertyChanged not implemented.");
 }
 
 //------------------------------------------------------------------------------

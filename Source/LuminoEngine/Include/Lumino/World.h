@@ -33,7 +33,7 @@ LN_ENUM_FLAGS_DECLARE(WorldDebugDrawFlags)
 class World
 	: public Object
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 	DrawList* getRenderer() const;
@@ -77,7 +77,7 @@ LN_INTERNAL_ACCESS:
 class World2D
 	: public World
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	//virtual DrawList* getRenderer() const override;
 
@@ -107,7 +107,7 @@ private:
 class World3D
 	: public World
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	void SetVisibleGridPlane(bool visible) { m_visibleGridPlane = visible; }
 	//virtual DrawList* getRenderer() const override;

@@ -10,39 +10,35 @@ LN_NAMESPACE_BEGIN
 class UITextElement
 	: public UIElement
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
-	LN_TR_PROPERTY(String, FontFamily);		/**< FontFamily プロパティの識別子 */
-	LN_TR_PROPERTY(int, FontSize);			/**< FontSize プロパティの識別子 */
-	LN_TR_PROPERTY(bool, isFontBold);		/**< isFontBold プロパティの識別子 */
-	LN_TR_PROPERTY(bool, isFontItalic);		/**< isFontItalic プロパティの識別子 */
-	tr::Property<String>	FontFamily;
-	tr::Property<int>		FontSize;
-	tr::Property<bool>		isFontBold;
-	tr::Property<bool>		isFontItalic;
+	String	FontFamily;
+	int		FontSize;
+	bool		isFontBold;
+	bool		isFontItalic;
 
 public:
 
 	/** フォントファミリ名を設定します。*/
-	void setFontFamily(const String& value) { tr::PropertyInfo::setPropertyValueDirect<String>(this, FontFamilyId, value); }
+	void setFontFamily(const String& value) { FontFamily = value; }
 
 	/** フォントファミリ名を取得します。*/
-	String getFontFamily() const { return tr::PropertyInfo::getPropertyValueDirect<String>(this, FontFamilyId); }
+	String getFontFamily() const { return FontFamily; }
 
 	/** フォントサイズを設定します。*/
-	void setFontSize(int value) { tr::PropertyInfo::setPropertyValueDirect<int>(this, FontSizeId, value); }
+	void setFontSize(int value) { FontSize = value; }
 
 	/** フォントサイズを取得します。*/
-	int getFontSize() const { return tr::PropertyInfo::getPropertyValueDirect<int>(this, FontSizeId); }
+	int getFontSize() const { return FontSize; }
 
 	/** フォントの太字有無を設定します。*/
-	void setFontBold(bool value) { tr::PropertyInfo::setPropertyValueDirect<bool>(this, isFontBoldId, value); }
+	void setFontBold(bool value) { isFontBold = value; }
 
 	/** フォントの太字有無を取得します。*/
-	//bool isFontBold() const { return tr::PropertyInfo::getPropertyValueDirect<bool>(this, IsFontBoldId); }
+	//bool isFontBold() const { return tr::PropertyInfo::getPropertyValueDirect<bool>(this, IsFontBoldId; }
 
 	/** フォントのイタリック体有無を設定します。*/
-	void setFontItalic(bool value) { tr::PropertyInfo::setPropertyValueDirect<bool>(this, isFontItalicId, value); }
+	void setFontItalic(bool value) { isFontItalic = value; }
 
 	/** フォントのイタリック体有無を取得します。*/
 	//bool isFontItalic() const { return tr::PropertyInfo::getPropertyValueDirect<bool>(this, IsFontItalicId); }
@@ -58,10 +54,10 @@ protected:
 LN_INTERNAL_ACCESS:
 	static void onFontPropertyChanged(Object* obj);
 
-	//tr::Property<String>		m_fontFamily;
-	//tr::Property<int>			m_fontSize;
-	//tr::Property<bool>			m_fontBold;
-	//tr::Property<bool>			m_fontItalic;
+	//String		m_fontFamily;
+	//int			m_fontSize;
+	//bool			m_fontBold;
+	//bool			m_fontItalic;
 
 	FontPtr			m_font;
 	bool			m_invalidateFont;

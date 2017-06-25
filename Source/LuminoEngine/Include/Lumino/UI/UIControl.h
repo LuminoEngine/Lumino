@@ -14,12 +14,10 @@ class UIControl
 	: public UIElement
 	, public tr::IUIElementCollectionOwner
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
-	LN_TR_PROPERTY(HAlignment,	HContentAlignment);		/**< HContentAlignment プロパティの識別子 */
-	LN_TR_PROPERTY(VAlignment,	VContentAlignment);		/**< VContentAlignment プロパティの識別子 */
-	tr::Property<HAlignment>	HContentAlignment;
-	tr::Property<VAlignment>	VContentAlignment;
+	HAlignment	HContentAlignment;
+	VAlignment	VContentAlignment;
 
 	//static const String NormalState;
 	//static const String MouseOverState;
@@ -32,11 +30,11 @@ public:
 
 public:
 	
-	void setHContentAlignment(HAlignment value) { tr::PropertyInfo::setPropertyValueDirect<HAlignment>(this, HContentAlignmentId, value); }
-	HAlignment getHContentAlignment() const { return tr::PropertyInfo::getPropertyValueDirect<HAlignment>(this, HContentAlignmentId); }
+	void setHContentAlignment(HAlignment value) { HContentAlignment = value; }
+	HAlignment getHContentAlignment() const { return HContentAlignment; }
 
-	void setVContentAlignment(VAlignment value) { tr::PropertyInfo::setPropertyValueDirect<VAlignment>(this, VContentAlignmentId, value); }
-	VAlignment getVContentAlignment() const { return tr::PropertyInfo::getPropertyValueDirect<VAlignment>(this, VContentAlignmentId); }
+	void setVContentAlignment(VAlignment value) { VContentAlignment = value; }
+	VAlignment getVContentAlignment() const { return VContentAlignment; }
 	
 
 
@@ -96,7 +94,7 @@ private:
 class UIUserControl
 	: public UIControl
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 	
 public:
 

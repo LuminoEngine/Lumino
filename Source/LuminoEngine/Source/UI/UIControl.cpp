@@ -10,19 +10,17 @@ LN_NAMESPACE_BEGIN
 // UIControl
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIControl, UIElement);
-LN_TR_PROPERTY_IMPLEMENT(UIControl, HAlignment, HContentAlignment, tr::PropertyMetadata());
-LN_TR_PROPERTY_IMPLEMENT(UIControl, VAlignment, VContentAlignment, tr::PropertyMetadata());
 
 //------------------------------------------------------------------------------
 UIControl::UIControl()
-	//: m_visualTreeRoot(nullptr)
+	: HContentAlignment(HAlignment::Stretch)
+	, VContentAlignment(VAlignment::Stretch)
 {
 }
 
 //------------------------------------------------------------------------------
 UIControl::~UIControl()
 {
-	//LN_SAFE_RELEASE(m_visualTreeRoot);
 }
 
 //------------------------------------------------------------------------------
@@ -200,14 +198,14 @@ Size UIControl::arrangeOverride(const Size& finalSize)
 //------------------------------------------------------------------------------
 const HAlignment* UIControl::getPriorityContentHAlignment()
 {
-	if (HContentAlignment.get() == VAlignment::Stretch) return nullptr;
-	return &HContentAlignment.get();
+	if (HContentAlignment == VAlignment::Stretch) return nullptr;
+	return &HContentAlignment;
 }
 //------------------------------------------------------------------------------
 const VAlignment* UIControl::getPriorityContentVAlignment()
 {
-	if (VContentAlignment.get() == VAlignment::Stretch) return nullptr;
-	return &VContentAlignment.get();
+	if (VContentAlignment == VAlignment::Stretch) return nullptr;
+	return &VContentAlignment;
 }
 
 //------------------------------------------------------------------------------
