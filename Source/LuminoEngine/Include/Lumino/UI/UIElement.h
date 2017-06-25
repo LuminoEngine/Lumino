@@ -107,43 +107,31 @@ class UIElement
 	: public RuntimeResource
 	, public ILayoutElement
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 
 public:
-	LN_TR_PROPERTY(PointF,				position);				/**< Position プロパティの識別子 */
-	LN_TR_PROPERTY(float,				width);
-	LN_TR_PROPERTY(float,				height);
-	LN_TR_PROPERTY(ThicknessF,			margin);
-	LN_TR_PROPERTY(ThicknessF,			padding);
-	LN_TR_PROPERTY(AlignmentAnchor,		anchor);				/**< Anchor プロパティの識別子 */
-	LN_TR_PROPERTY(HAlignment,			hAlignment);			/**< HAlignment プロパティの識別子 */
-	LN_TR_PROPERTY(VAlignment,			vAlignment);			/**< VAlignment プロパティの識別子 */
-	//LN_TR_PROPERTY(BrushPtr,			background);			/**< Background プロパティの識別子 */
-	LN_TR_PROPERTY(BrushPtr,			foreground);			/**< Foreground プロパティの識別子 */
-	LN_TR_PROPERTY(BrushPtr,			decoratorBackground);	/**< DecoratorBackground プロパティの識別子 */
-	LN_TR_PROPERTY(float,				decoratorOpacity);		/**< Foreground プロパティの識別子 */
-	tr::Property<PointF>				position;
-	tr::Property<float>					width;
-	tr::Property<float>					height;
-	tr::Property<ThicknessF>			margin;
-	tr::Property<ThicknessF>			padding;
-	tr::Property<AlignmentAnchor>		anchor;
+	PointF				position;
+	float					width;
+	float					height;
+	ThicknessF		margin;
+	ThicknessF			padding;
+	AlignmentAnchor		anchor;
 
-	tr::Property<HAlignment>			hAlignment;
-	tr::Property<VAlignment>			vAlignment;
-	//tr::Property<BrushPtr>				background;
-	tr::Property<BrushPtr>				foreground;
-	tr::Property<BrushPtr>				decoratorBackground;
-	tr::Property<float>					decoratorOpacity;
+	HAlignment			hAlignment;
+	VAlignment			vAlignment;
+	//BrushPtr				background;
+	BrushPtr				foreground;
+	BrushPtr				decoratorBackground;
+	float					decoratorOpacity;
 
 	// Border
-	//tr::Property<ThicknessF>			borderThickness;
-	//tr::Property<CornerRadius>			cornerRadius;
-	//tr::Property<Color>					leftBorderColor;
-	//tr::Property<Color>					topBorderColor;
-	//tr::Property<Color>					rightBorderColor;
-	//tr::Property<Color>					bottomBorderColor;
-	//tr::Property<BorderDirection>		borderDirection;
+	//ThicknessF			borderThickness;
+	//CornerRadius		cornerRadius;
+	//Color					leftBorderColor;
+	//Color					topBorderColor;
+	//Color					rightBorderColor;
+	//Color					bottomBorderColor;
+	//BorderDirection		borderDirection;
 
 	LN_ROUTED_EVENT(UIEventArgs, GotFocusEvent);
 	LN_ROUTED_EVENT(UIEventArgs, LostFocusEvent);
@@ -170,14 +158,14 @@ public:
 	/** @name Properties */
 	/** @{ */
 
-	void setPosition(const PointF& value) { tr::PropertyInfo::setPropertyValueDirect<PointF>(this, positionId, value); }
-	const PointF& getPosition() const { return tr::PropertyInfo::getPropertyValueDirect<PointF>(this, positionId); }
+	void setPosition(const PointF& value) { position = value; }
+	const PointF& getPosition() const { return position; }
 
-	void setWidth(float value) { tr::PropertyInfo::setPropertyValueDirect<float>(this, widthId, value); }
-	float getWidth() const { return tr::PropertyInfo::getPropertyValueDirect<float>(this, widthId); }
+	void setWidth(float value) { width = value; }
+	float getWidth() const { return width; }
 
-	void setHeight(float value) { tr::PropertyInfo::setPropertyValueDirect<float>(this, heightId, value); }
-	float getHeight() const { return tr::PropertyInfo::getPropertyValueDirect<float>(this, heightId); }
+	void setHeight(float value) { height = value; }
+	float getHeight() const { return height; }
 
 	void setSize(const Size& value) { setWidth(value.width); setHeight(value.height); }
 	Size getSize() const { return Size(width, height); }
@@ -190,14 +178,14 @@ public:
 
 	void setMaxHeight(float value) { m_maxSize.height = value; }
 
-	void setAnchor(AlignmentAnchor value) { tr::PropertyInfo::setPropertyValueDirect<AlignmentAnchor>(this, anchorId, value); }
-	AlignmentAnchor getAnchor() const { return tr::PropertyInfo::getPropertyValueDirect<AlignmentAnchor>(this, anchorId); }
+	void setAnchor(AlignmentAnchor value) { anchor = value; }
+	AlignmentAnchor getAnchor() const { return anchor; }
 
-	void setHAlignment(HAlignment value) { tr::PropertyInfo::setPropertyValueDirect<HAlignment>(this, hAlignmentId, value); }
-	HAlignment getHAlignment() const { return tr::PropertyInfo::getPropertyValueDirect<HAlignment>(this, hAlignmentId); }
+	void setHAlignment(HAlignment value) { hAlignment = value; }
+	HAlignment getHAlignment() const { return hAlignment; }
 
-	void setVAlignment(VAlignment value) { tr::PropertyInfo::setPropertyValueDirect<VAlignment>(this, vAlignmentId, value); }
-	VAlignment getVAlignment() const { return tr::PropertyInfo::getPropertyValueDirect<VAlignment>(this, vAlignmentId); }
+	void setVAlignment(VAlignment value) { vAlignment = value; }
+	VAlignment getVAlignment() const { return vAlignment; }
 
 	void setBackground(Brush* value);
 	Brush* getBackground() const;
@@ -443,29 +431,10 @@ private:
 	UIElement*                m_visualParent;
 	std::shared_ptr<List<RefPtr<UIElement>>>    m_visualChildren;
 
-	// Property
-	//		これらには直接値を設定しないこと。Property::setValueDirect() を使う。
-	//		これによって必要にアニメーションを止めたりできる。
-	//tr::Property<PointF>	m_position;
-	//tr::Property<Size>		m_size;
-	//tr::Property<AlignmentAnchor>	m_anchor;
-	//tr::Property<HAlignment>		m_horizontalAlignment;
-	//tr::Property<VAlignment>		m_verticalAlignment;
 	detail::GridLayoutInfo	m_gridLayoutInfo;
 
-	//tr::Property<BrushPtr>			m_background;
-	//tr::Property<BrushPtr>			m_foreground;
-	//detail::BorderInfo				m_border;
-
-
-
-	//float							m_opacity;
-	//ToneF							m_tone;
 	detail::BuiltinEffectData			m_builtinEffectData;
 	detail::BuiltinEffectData			m_combinedBuiltinEffectData;
-
-	//tr::Property<BrushPtr>				m_decoratorBackground;
-	//tr::Property<float>					m_decoratorOpacity;
 
 	UISpecialElementType			m_specialElementType;
 

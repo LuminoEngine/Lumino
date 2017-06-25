@@ -17,7 +17,7 @@ class UISimpleTextArea;
 class UITextBox
 	: public UITextElement
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 	static UITextBoxPtr create();
@@ -54,7 +54,7 @@ private:
 class UITextField
 	: public UIControl
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	static RefPtr<UITextField> create();
 

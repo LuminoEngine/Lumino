@@ -13,7 +13,7 @@ namespace tr
 class ReflectionEventArgs
 	: public tr::ReflectionObject
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	ReflectionEventArgs();
 	virtual ~ReflectionEventArgs();
@@ -28,7 +28,7 @@ public:
 class PropertyChangedEventArgs
 	: public ReflectionEventArgs
 {
-	//LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	//LN_OBJECT();
 public:
 	PropertyChangedEventArgs(const PropertyInfo* prop, PropertySetSource cause);
 	virtual ~PropertyChangedEventArgs();

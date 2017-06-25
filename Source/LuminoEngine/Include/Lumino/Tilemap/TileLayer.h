@@ -13,7 +13,7 @@ typedef RefPtr<TileLayer> TileLayerPtr;
 class TileLayer
 	: public tr::ReflectionObject
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	static TileLayerPtr create();
 

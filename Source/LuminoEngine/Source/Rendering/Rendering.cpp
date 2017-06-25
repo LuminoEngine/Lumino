@@ -1322,7 +1322,10 @@ void DrawList::drawText_(const StringRef& text, const Rect& rect, StringFormatFl
 		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement("DrawText"); }
 	};
 
-	//m_defaultMaterial->setMaterialTexture(m_state.state.getFont()->resolveRawFont()->GetGlyphTextureCache()->getGlyphsFillTexture());
+	// TODO: オーバーライドされる場合の動作はちゃんと考えておこう。
+	// 3bd204b あたりの問題だけど、CombinedMaterial は 元 material のハッシュ値を覚えているので、それも変える必要がある。
+	RefPtr<Texture> old = m_defaultMaterial->getMaterialTexture(nullptr);
+	m_defaultMaterial->setMaterialTexture(m_state.state.getFont()->resolveRawFont()->GetGlyphTextureCache()->getGlyphsFillTexture());
 
 	auto* e = resolveDrawElement<DrawElement_DrawText>(detail::DrawingSectionId::None, m_manager->getInternalContext()->m_textRenderer, nullptr);
 	e->text = text;
@@ -1330,7 +1333,7 @@ void DrawList::drawText_(const StringRef& text, const Rect& rect, StringFormatFl
 	e->flags = flags;
 	//e->boundingSphere = ;	// TODO
 
-	m_drawElementList.getBatch(e->batchIndex)->getCombinedMaterial()->m_mainTexture = m_state.state.getFont()->resolveRawFont()->GetGlyphTextureCache()->getGlyphsFillTexture();
+	m_defaultMaterial->setMaterialTexture(old);
 }
 
 //------------------------------------------------------------------------------

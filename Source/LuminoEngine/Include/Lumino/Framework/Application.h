@@ -46,7 +46,7 @@ LN_CLASS()
 class GameApplication
 	: public Object
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	GameApplication();
 	virtual ~GameApplication();

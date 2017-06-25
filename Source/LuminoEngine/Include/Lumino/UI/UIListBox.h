@@ -18,7 +18,7 @@ using UIListBoxPtr = RefPtr<UIListBox>;
 class UIListBoxItem
 	: public UIControl
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 	virtual void onRender(DrawingContext* g) override
@@ -37,7 +37,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 class UIListBox
 	: public UIControl
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	static const String NormalState;
 

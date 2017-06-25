@@ -15,7 +15,7 @@ using GridPtr = RefPtr<Grid>;
 class Grid
 	: public VisualComponent		// TODO: Visual である必要ない気もするが・・・
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	static GridPtr Create3D();
 

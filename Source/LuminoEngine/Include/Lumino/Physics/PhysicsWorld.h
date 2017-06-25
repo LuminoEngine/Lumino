@@ -14,7 +14,7 @@ class PhysicsDebugDrawer;
 class PhysicsWorld
 	: public Object
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 	//void AddRigidBody(RigidBody* rigidBody);

@@ -123,7 +123,7 @@ private:
 class Light
 	: public WorldObject
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	LightComponent* GetLightComponent() const;
 

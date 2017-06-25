@@ -40,9 +40,9 @@ public:
 	virtual Variant getValue(const ReflectionObject* target) const { LN_THROW(0, InvalidOperationException); }
 	virtual void addItem(ReflectionObject* target, const Variant& value) const { LN_THROW(0, InvalidOperationException); }
 
-	virtual bool isReadable() const { return false; }
-	virtual bool isWritable() const { return false; }
-	virtual bool isList() const { return false; }
+	//virtual bool isReadable() const { return false; }
+	//virtual bool isWritable() const { return false; }
+	//virtual bool isList() const { return false; }
 
 	TypeInfo* getOwnerClassType() const { return m_ownerClassType; }
 	bool isStored() const { return m_stored; }
@@ -146,8 +146,8 @@ public:
 	//	auto list = m_getter(target);
 	//	AddItemInternal(list, value);
 	//}
-	virtual bool isReadable() const { return m_getter != nullptr; }	// TODO: virtual やめたほうが高速化できる。
-	virtual bool isWritable() const { return m_getter != nullptr; }
+	//virtual bool isReadable() const { return m_getter != nullptr; }	// TODO: virtual やめたほうが高速化できる。
+	//virtual bool isWritable() const { return m_getter != nullptr; }
 
 	void setValueDirect(ReflectionObject* target, const TValue& value, PropertySetSource source) const
 	{

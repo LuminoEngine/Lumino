@@ -15,7 +15,6 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 // ToneImageEffect
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ToneImageEffect, ImageEffect);
-LN_TR_PROPERTY_IMPLEMENT(ToneImageEffect, Vector4, Tone, tr::PropertyMetadata());
 
 static const byte_t g_ToneImageEffect_fx_Data[] =
 {
@@ -62,7 +61,7 @@ void ToneImageEffect::initialize(detail::GraphicsManager* manager)
 //------------------------------------------------------------------------------
 void ToneImageEffect::setTone(const ToneF& tone)
 {
-	Tone = tone;
+	m_tone = tone;
 }
 
 //------------------------------------------------------------------------------
@@ -80,7 +79,7 @@ void ToneImageEffect::onRender(DrawList* context, RenderTargetTexture* source, R
 	//if (Tone != Vector4::Zero)
 	{
 		//printf("ToneImageEffect::onRender %p > %p\n", source, destination);
-		m_material->setVectorParameter(_T("_Tone"), Tone.get());
+		m_material->setVectorParameter(_T("_Tone"), m_tone);
 		context->blit(source, destination, m_material);
 
 		//m_shader.varTone->setVector(Tone.Get());

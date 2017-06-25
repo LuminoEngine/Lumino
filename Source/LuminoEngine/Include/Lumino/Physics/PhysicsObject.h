@@ -14,7 +14,7 @@ LN_CLASS()
 class PhysicsObject
 	: public Component
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 
 public:
 	void setOwnerWorld(PhysicsWorld* owner);
@@ -65,7 +65,7 @@ struct ContactInfo
 class BodyBase
 	: public Object
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	typedef List<ContactInfo>	ContactInfoList;
 

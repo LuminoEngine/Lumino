@@ -159,7 +159,7 @@ LN_CLASS()
 class RuntimeResource
 	: public Object
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 protected:
 	RuntimeResource();
 	virtual ~RuntimeResource();

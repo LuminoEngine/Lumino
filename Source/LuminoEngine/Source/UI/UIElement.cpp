@@ -37,20 +37,6 @@ const String UIVisualStates::VerticalState = _T("Vertical");
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIElement, RuntimeResource);
 
-// Property definition
-LN_TR_PROPERTY_IMPLEMENT(UIElement, PointF, position, tr::PropertyMetadata());
-LN_TR_PROPERTY_IMPLEMENT(UIElement, float, width, tr::PropertyMetadata());
-LN_TR_PROPERTY_IMPLEMENT(UIElement, float, height, tr::PropertyMetadata());
-LN_TR_PROPERTY_IMPLEMENT(UIElement, ThicknessF, margin, tr::PropertyMetadata());
-LN_TR_PROPERTY_IMPLEMENT(UIElement, ThicknessF, padding, tr::PropertyMetadata());
-LN_TR_PROPERTY_IMPLEMENT(UIElement, AlignmentAnchor, anchor, tr::PropertyMetadata());
-LN_TR_PROPERTY_IMPLEMENT(UIElement, HAlignment, hAlignment, tr::PropertyMetadata());
-LN_TR_PROPERTY_IMPLEMENT(UIElement, VAlignment, vAlignment, tr::PropertyMetadata());
-//LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, background, tr::PropertyMetadata());
-LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, foreground, tr::PropertyMetadata());
-LN_TR_PROPERTY_IMPLEMENT(UIElement, BrushPtr, decoratorBackground, tr::PropertyMetadata());
-LN_TR_PROPERTY_IMPLEMENT(UIElement, float, decoratorOpacity, tr::PropertyMetadata());
-
 // Event definition
 LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIEventArgs, GotFocusEvent, "GotFocus", GotFocus);
 LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIEventArgs, LostFocusEvent, "LostFocus", LostFocus);
@@ -614,10 +600,6 @@ void UIElement::onUpdateStyle(detail::UIStylePropertyTableInstance* localStyle, 
 	localStyle->apply(this, !m_invalidateFlags.TestFlag(detail::InvalidateFlags::Initializing));
 	// TODO: UITextElement::onUpdateStyle 参照
 	// TODO: アニメーション
-	//if (tr::Property::GetBaseValueSource(this, BackgroundProperty) <= tr::PropertySetSource::ByStyle)
-	//	tr::Property::setPropertyValueDirect<BrushPtr>(this, BackgroundProperty, localStyle->m_background.value, tr::PropertySetSource::ByStyle);
-	//if (tr::Property::GetBaseValueSource(this, ForegroundProperty) <= tr::PropertySetSource::ByStyle)
-	//	tr::Property::setPropertyValueDirect<BrushPtr>(this, ForegroundProperty, localStyle->m_foreground.value, tr::PropertySetSource::ByStyle);
 }
 
 //------------------------------------------------------------------------------

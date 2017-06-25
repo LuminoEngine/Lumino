@@ -32,6 +32,9 @@ namespace tr
 #define LN_TR_REFLECTION_TYPEINFO_DECLARE() \
 	LN_TR_REFLECTION_TYPEINFO_DECLARE_COMMON(ln::tr::TypeInfo)
 
+#define LN_OBJECT() \
+	LN_TR_REFLECTION_TYPEINFO_DECLARE_COMMON(ln::tr::TypeInfo)
+
 #define LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(classType, baseClassType, ...) \
 	LN_TR_REFLECTION_TYPEINFO_IMPLEMENT_COMMON(ln::tr::TypeInfo, classType, baseClassType, __VA_ARGS__)
 
@@ -40,7 +43,7 @@ namespace tr
 
 
 /**
-	@brief		
+	@brief	Lumino が提供するオブジェクトのベースクラスです。
 */
 class ReflectionObject
 	: public RefObject

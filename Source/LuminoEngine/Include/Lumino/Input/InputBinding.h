@@ -87,7 +87,7 @@ enum class GamepadElement
 class InputBinding
 	: public Object
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	float GetMinValidMThreshold() const { return m_minValidMThreshold; }
 	float getScale() const { return 1.0f; }	// TODO
@@ -107,7 +107,7 @@ private:
 class KeyboardBinding
 	: public InputBinding
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 	/**
@@ -141,7 +141,7 @@ private:
 class MouseBinding
 	: public InputBinding
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 	/**
@@ -175,7 +175,7 @@ private:
 class GamepadBinding
 	: public InputBinding
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 	/**

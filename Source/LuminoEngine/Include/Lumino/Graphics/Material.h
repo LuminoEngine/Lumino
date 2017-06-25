@@ -160,7 +160,7 @@ private:
 class Material
 	: public Object
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	static const String DiffuseParameter;
 	static const String AmbientParameter;
@@ -323,7 +323,7 @@ LN_INTERNAL_ACCESS:
 class DiffuseMaterial
 	: public Material
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	static DiffuseMaterialPtr create();
 

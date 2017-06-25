@@ -22,7 +22,7 @@ LN_CLASS()
 class CollisionBody
 	: public PhysicsObject
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 	/**

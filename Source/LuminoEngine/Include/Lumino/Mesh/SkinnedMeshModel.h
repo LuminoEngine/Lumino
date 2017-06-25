@@ -30,7 +30,7 @@ class SkinnedMeshModel
 	: public Object
 	, public detail::IAnimationTargetElement
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 	// TODO: Unity では Mesh からは切り離された独立したコンポーネントである。そうしたほうがいいかな？
@@ -117,7 +117,7 @@ class SkinnedMeshBone
 	: public Object
 	, public detail::IAnimationTargetAttribute
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	SkinnedMeshBone* getParent() const { return m_parent; }
 

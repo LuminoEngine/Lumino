@@ -223,7 +223,7 @@ private:
 class Camera
 	: public WorldObject
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	CameraComponent* GetCameraComponent() const;
 

@@ -15,7 +15,7 @@ LN_CLASS()
 class GameScene
 	: public Object
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 protected:
 
 	/** 開始処理 */

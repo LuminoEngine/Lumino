@@ -23,7 +23,7 @@ using SceneGraph3DPtr = RefPtr<SceneGraph3D>;
 class SceneGraph
 	: public Object
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 	/// レイヤーリストの取得
@@ -94,7 +94,7 @@ private:
 class SceneGraph2D
 	: public SceneGraph
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	static SceneGraph2DPtr create();
 
@@ -122,10 +122,9 @@ private:
 class SceneGraph3D
 	: public SceneGraph
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
-	LN_TR_PROPERTY(bool, visibleGridPlane);
-	tr::Property<bool>	visibleGridPlane;
+	bool	visibleGridPlane;
 
 	virtual void updateFrame(float elapsedTime);
 	virtual SceneNode* getRootNode() override { return m_defaultRoot; }

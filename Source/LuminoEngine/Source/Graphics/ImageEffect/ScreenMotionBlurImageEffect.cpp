@@ -15,7 +15,6 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 // ScreenMotionBlurImageEffect
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ScreenMotionBlurImageEffect, ImageEffect);
-LN_TR_PROPERTY_IMPLEMENT(ScreenMotionBlurImageEffect, float, Amount, tr::PropertyMetadata());
 
 static const byte_t g_ScreenMotionBlurImageEffect_fx_Data[] =
 {
@@ -34,7 +33,7 @@ ScreenMotionBlurImageEffectPtr ScreenMotionBlurImageEffect::create()
 //------------------------------------------------------------------------------
 ScreenMotionBlurImageEffect::ScreenMotionBlurImageEffect()
 	: m_accumTexture(nullptr)
-	, Amount(0)
+	, m_amount(0)
 	, m_center(0, 0)
 	, m_scale(1.0)
 {
@@ -81,7 +80,7 @@ void ScreenMotionBlurImageEffect::setBlurStatus(float amount, const Vector2& cen
 //------------------------------------------------------------------------------
 void ScreenMotionBlurImageEffect::onRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
-	if (Amount == 0.0f)
+	if (m_amount == 0.0f)
 	{
 		context->blit(source, destination, Matrix::Identity);
 		return;
@@ -102,7 +101,7 @@ void ScreenMotionBlurImageEffect::onRender(DrawList* context, RenderTargetTextur
 	blurMatrix.scale(m_scale);
 	blurMatrix.translate(m_center.x, m_center.y, 0);
 
-	m_material->setVectorParameter(_T("_BlurColor"), Vector4(1, 1, 1, Amount.get()));
+	m_material->setVectorParameter(_T("_BlurColor"), Vector4(1, 1, 1, m_amount));
 	m_material->setMatrixParameter(_T("_BlurMatrix"), blurMatrix);
 
 	//// m_accumTexture > source

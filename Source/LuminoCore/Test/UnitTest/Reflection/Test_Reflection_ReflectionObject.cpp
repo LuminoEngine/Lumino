@@ -4,6 +4,8 @@
 #include <Lumino/Reflection/ReflectionObject.h>
 #include <Lumino/Reflection/Property.h>
 
+#if 0
+
 // テスト用
 class Point
 {
@@ -412,5 +414,199 @@ TEST_F(Test_Reflection_Property, NonMetadataProperty)
 	t1.V5.clearValue();
 	ASSERT_EQ(5, t1.V5);
 }
+#endif
 
+//==============================================================================================================================================================
+#if 0
+
+namespace tr2 {
+class PropertyInfo;
+class Object;
+
+namespace detail {
+
+enum class PropertyMapEntryType
+{
+	End,
+	Register,
+};
+
+struct PropertyMapEntry
+{
+	PropertyMapEntryType type;
+	const PropertyInfo* (*getPropertyInfo)();
+};
+
+struct PropertyMap
+{
+	//const PropertyMap* base;
+	const PropertyMap* (*getBaseMap)();
+	const PropertyMapEntry* entries;
+};
+
+class TypeInfoManager
+{
+public:
+	
+
+private:
+};
+
+} // namespace detail
+
+
+ //
+class PropertyMetadata
+{
+public:
+	typedef void(*ChangedCallback)(Object* obj);
+
+	PropertyMetadata()
+		: m_changedCallback(nullptr)
+	{}
+
+	PropertyMetadata(ChangedCallback changedCallback)
+		: m_changedCallback(changedCallback)
+	{}
+
+private:
+	ChangedCallback	m_changedCallback;
+};
+
+class TypeInfo
+{
+public:
+
+private:
+};
+
+
+
+//
+class PropertyInfo
+{
+
+};
+
+//
+template<typename TValue>
+class TypedPropertyInfo
+	: public PropertyInfo
+{
+public:
+	typedef void(*SetterFunc)(Object* obj, const TValue& value);
+	typedef const TValue&(*GetterFunc)(Object* obj);
+
+	TypedPropertyInfo(SetterFunc setter, GetterFunc getter, PropertyMetadata metadata)
+		: m_setter(setter)
+		, m_getter(getter)
+		, m_metadata(metadata)
+	{}
+
+private:
+	SetterFunc			m_setter;
+	GetterFunc			m_getter;
+	PropertyMetadata	m_metadata;
+};
+
+// 
+class Object
+{
+public:
+
+protected:
+	void initialize();
+	static const tr2::detail::PropertyMap* lnrs_getThisPropertyMap() { return nullptr; }
+	virtual const detail::PropertyMap* lnrs_getPropertyMap() const { return nullptr; }
+
+private:
+};
+
+class PropertyBase
+{
+protected:
+
+};
+
+//
+template<typename TValue>
+class Property
+	: public PropertyBase
+{
+public:
+	void set(const TValue& value) { m_value = value; }
+	const TValue& get() const { return m_value; }
+
+private:
+	TValue	m_value;
+};
+
+} // namespace tr2
+
+//-----------------------------------------------------------------------------
+
+
+class TR2ObjTest1 : tr2::Object
+{
+public:
+
+	//// MACRO begin
+protected:
+	static const tr2::detail::PropertyMap* lnrs_getThisPropertyMap();
+	virtual const tr2::detail::PropertyMap* lnrs_getPropertyMap() const override;
+	//// MACRO end
+
+private:
+	tr::Property<int> m_value1;
+
+	static void Value1Changed(Object* obj)
+	{
+		printf("changed\n");
+	}
+};
+
+
+//// MACRO begin
+const tr2::detail::PropertyMap* TR2ObjTest1::lnrs_getPropertyMap() const
+{
+	return lnrs_getThisPropertyMap();
+}
+const tr2::detail::PropertyMap* TR2ObjTest1::lnrs_getThisPropertyMap()
+{
+	static const tr2::detail::PropertyMapEntry localEntries[] =
+	{
+//// MACRO end
+
+		{ tr2::detail::PropertyMapEntryType::Register,[]() -> const tr2::PropertyInfo* { static tr2::TypedPropertyInfo<int> info([](tr2::Object* obj, const int& value) { static_cast<TR2ObjTest1*>(obj)->m_value1.set(value); }, [](tr2::Object* obj) -> const int& { return static_cast<TR2ObjTest1*>(obj)->m_value1.get(); }, tr2::PropertyMetadata()); return &info; } },
+
+//// MACRO begin
+		{ tr2::detail::PropertyMapEntryType::End },
+	};
+	static const tr2::detail::PropertyMap localMap = { &tr2::Object::lnrs_getThisPropertyMap, &localEntries[0] };
+	return &localMap;
+}
+//// MACRO end
+
+// WPF...
+//		PropInfo: 型、変数名、公開名、初期値
+//		MEtadata: get, set, changed, validate, corace
+
+
+
+class Test_Reflection_ReflectionObject2 : public ::testing::Test
+{
+protected:
+	virtual void SetUp() {}
+	virtual void TearDown() {}
+};
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Reflection_ReflectionObject2, Basic)
+{
+	TR2ObjTest1 obj1;
+	obj1.initialize();
+}
+
+
+#endif
 

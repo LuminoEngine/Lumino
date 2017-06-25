@@ -797,7 +797,7 @@ bool CylinderMouseMoveCameraBehavior::injectMouseButtonUp(MouseButtons button, i
 bool CylinderMouseMoveCameraBehavior::injectMouseWheel(int delta)
 {
 	CameraComponent* camera = getTargetCamera();
-	Vector3 view = camera->getTransform()->position.get() - camera->getLookAt();
+	Vector3 view = camera->getTransform()->position - camera->getLookAt();
 	if (delta >= 0) {
 		view *= 0.9f;
 	}

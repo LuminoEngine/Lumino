@@ -14,7 +14,7 @@ using TileMapModelPtr = RefPtr<TileMapModel>;
 class TileMapModel
 	: public tr::ReflectionObject
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 
 public:
 	static TileMapModelPtr create();

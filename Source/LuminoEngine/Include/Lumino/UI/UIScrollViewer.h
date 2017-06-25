@@ -15,7 +15,7 @@ using UIScrollEventArgsPtr = RefPtr<UIScrollEventArgs>;
 class UIDragDeltaEventArgs
 	: public UIEventArgs
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	UIDragDeltaEventArgs() = default;
 	virtual ~UIDragDeltaEventArgs() = default;
@@ -31,7 +31,7 @@ public:
 class UIThumb
 	: public UIElement
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	LN_ROUTED_EVENT2(UIDragDeltaEventArgs, DragStartedEvent);		/**< マウスドラッグを開始したときに発生するイベントを表します。*/
     LN_ROUTED_EVENT2(UIDragDeltaEventArgs, DragDeltaEvent);			/**< マウスドラッグ中に発生するイベントを表します。*/
@@ -69,7 +69,7 @@ private:
 class UITrack
 	: public UIElement
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 	// TODO: 別途、UIScrollBarStyle 見たいなクラスに分けたほうがいいかも
@@ -173,7 +173,7 @@ enum class ScrollEventType
 class UIScrollEventArgs
 	: public UIEventArgs
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	static UIScrollEventArgsPtr create(Object* sender, float newValue, ScrollEventType type, bool caching = true);
 
@@ -192,7 +192,7 @@ public:
 class UIScrollBar
 	: public UIControl
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	LN_ROUTED_EVENT2(UIScrollEventArgs, ScrollEvent);
 
@@ -265,7 +265,7 @@ private:
 class UIScrollViewer
 	: public UIControl
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 	static RefPtr<UIScrollViewer> create();
