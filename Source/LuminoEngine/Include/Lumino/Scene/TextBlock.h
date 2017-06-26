@@ -57,5 +57,45 @@ protected:
 	Size		m_renderSize;
 };
 
+
+/**
+	@brief	
+*/
+LN_CLASS()
+class TextBlock2D
+	: public VisualObject
+{
+	LN_OBJECT();
+public:
+	
+	/**
+		@brief		
+	*/
+	static RefPtr<TextBlock2D> create();
+	
+	/**
+		@brief		
+	*/
+	static RefPtr<TextBlock2D> create(const StringRef& text);
+
+	void setText(const StringRef& text);
+
+protected:
+	virtual VisualComponent* getMainVisualComponent() const override;
+
+LN_CONSTRUCT_ACCESS:
+	TextBlock2D();
+	virtual ~TextBlock2D();
+
+	LN_METHOD()
+	void initialize();
+
+	LN_METHOD()
+	void initialize(const StringRef& text);
+
+private:
+	RefPtr<TextBlock2DComponent>	m_component;
+};
+
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END

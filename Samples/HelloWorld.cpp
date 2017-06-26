@@ -3,7 +3,7 @@ using namespace ln;
 
 void Main_HelloWorld()
 {
-	//auto text = TextBlock2DComponent::
+	auto text = TextBlock2D::create("Hello, Lumino!");
 
 	while (Engine::update())
 	{

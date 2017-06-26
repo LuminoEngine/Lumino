@@ -1267,6 +1267,16 @@ void DrawList::drawGlyphRun(const PointF& position, GlyphRun* glyphRun)
 	public:
 		RefPtr<GlyphRun>	glyphRun;
 		PointF position;
+		//virtual void makeElementInfo(detail::DrawElementList* oenerList, const detail::CameraInfo& cameraInfo, detail::ElementInfo* outInfo) override
+		//{
+		//	// ワールド行列は作らない。一連の Glyphs を描画する方に任せる。
+		//	// (スプライトと同じく、できるだけ一度に描画する)
+		//	outInfo->viewProjMatrix = &cameraInfo.viewProjMatrix;
+		//	outInfo->WorldMatrix = Matrix::Identity;//getTransform(oenerList);
+		//	outInfo->WorldViewProjectionMatrix = cameraInfo.viewMatrix * cameraInfo.projMatrix;// outInfo->WorldMatrix * cameraInfo.viewMatrix * cameraInfo.projMatrix;	// TODO: viewProj はまとめたい
+		//	outInfo->affectedLights = getAffectedDynamicLightInfos();
+		//}
+
 
 		virtual void drawSubset(const DrawArgs& e) override
 		{
@@ -1275,10 +1285,20 @@ void DrawList::drawGlyphRun(const PointF& position, GlyphRun* glyphRun)
 		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement("DrawGlyphRun"); }
 	};
 
+
+	// TODO: オーバーライドされる場合の動作はちゃんと考えておこう。
+	// 3bd204b あたりの問題だけど、CombinedMaterial は 元 material のハッシュ値を覚えているので、それも変える必要がある。
+	//RefPtr<Texture> old = m_defaultMaterial->getMaterialTexture(nullptr);
+	//m_defaultMaterial->setMaterialTexture(m_state.state.getFont()->resolveRawFont()->GetGlyphTextureCache()->getGlyphsFillTexture());
+
+
 	auto* e = resolveDrawElement<DrawElement_DrawGlyphRun>(detail::DrawingSectionId::None, m_manager->getInternalContext()->m_textRenderer, nullptr);
 	e->glyphRun = glyphRun;
 	e->position = position;
 	//e->boundingSphere = ;	// TODO
+
+
+	//m_defaultMaterial->setMaterialTexture(old);
 }
 
 //------------------------------------------------------------------------------
