@@ -277,6 +277,20 @@ class DrawElementBatch
 public:
 	DrawElementBatch();
 
+	// list に入った後は freeze フラグつけておいたほうがいいかも。
+
+
+
+
+
+
+
+
+
+
+
+
+
 	void setTransfrom(const Matrix& value);
 	const Matrix& getTransfrom() const { return m_transfrom; }
 
@@ -289,7 +303,7 @@ public:
 	void SetStandaloneShaderRenderer(bool enabled);
 	bool IsStandaloneShaderRenderer() const;
 
-	bool Equal(const BatchState& state, Material* material, const Matrix& transfrom, const BuiltinEffectData& effectData) const;
+	bool Equal(const DrawElementBatch& state, Material* material, const BuiltinEffectData& effectData) const;
 	void reset();
 	void applyStatus(InternalContext* context, const DefaultStatus& defaultStatus);
 	size_t getHashCode() const;
@@ -326,11 +340,11 @@ public:
 	void clearCommands();
 
 	template<typename T, typename... TArgs>
-	T* addCommand(const BatchState& state, Material* availableMaterial, const Matrix& transform, const BuiltinEffectData& effectData, bool forceStateChange, TArgs... args)
+	T* addCommand(const DrawElementBatch& state, Material* availableMaterial, const BuiltinEffectData& effectData, bool forceStateChange, TArgs... args)
 	{
 		auto handle = m_commandDataCache.allocData(sizeof(T));
 		T* t = new (m_commandDataCache.getData(handle))T(args...);
-		postAddCommandInternal(state, availableMaterial, transform, effectData, forceStateChange, t);
+		postAddCommandInternal(state, availableMaterial, effectData, forceStateChange, t);
 		t->m_ownerDrawElementList = this;
 		return t;
 	}
@@ -352,7 +366,7 @@ public:
 	DepthBuffer* getDefaultDepthBuffer() const { return m_depthBuffer; }
 
 private:
-	void postAddCommandInternal(const BatchState& state, Material* availableMaterial, const Matrix& transform, const BuiltinEffectData& effectData, bool forceStateChange, DrawElement* element);
+	void postAddCommandInternal(const DrawElementBatch& state, Material* availableMaterial, const BuiltinEffectData& effectData, bool forceStateChange, DrawElement* element);
 
 	CommandDataCache		m_commandDataCache;
 	CommandDataCache		m_extDataCache;
@@ -760,13 +774,13 @@ inline TElement* DrawList::resolveDrawElement(detail::DrawingSectionId sectionId
 		m_currentSectionTopElement->drawingSectionId == sectionId &&
 		m_currentSectionTopElement->metadata.equals(*metadata) &&
 		m_currentSectionTopElement->m_stateFence == m_currentStateFence &&
-		m_drawElementList.getBatch(m_currentSectionTopElement->batchIndex)->Equal(m_state.state, availableMaterial, m_state.getTransfrom(), m_builtinEffectData))
+		m_drawElementList.getBatch(m_currentSectionTopElement->batchIndex)->Equal(m_state, availableMaterial, m_builtinEffectData))
 	{
 		return static_cast<TElement*>(m_currentSectionTopElement);
 	}
 
 	// DrawElement を新しく作る
-	TElement* element = m_drawElementList.addCommand<TElement>(m_state.state, availableMaterial, m_state.getTransfrom(), m_builtinEffectData, forceStateChange);
+	TElement* element = m_drawElementList.addCommand<TElement>(m_state, availableMaterial, m_builtinEffectData, forceStateChange);
 	//element->OnJoindDrawList(m_state.transfrom);
 	element->drawingSectionId = sectionId;
 	element->metadata = *metadata;

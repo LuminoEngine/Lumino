@@ -541,13 +541,13 @@ bool DrawElementBatch::IsStandaloneShaderRenderer() const
 }
 
 //------------------------------------------------------------------------------
-bool DrawElementBatch::Equal(const BatchState& state_, Material* material, const Matrix& transfrom, const BuiltinEffectData& effectData) const
+bool DrawElementBatch::Equal(const DrawElementBatch& state_, Material* material, const BuiltinEffectData& effectData) const
 {
 	assert(m_combinedMaterial != nullptr);
 	return
-		state.getHashCode() == state_.getHashCode() &&
+		state.getHashCode() == state_.state.getHashCode() &&
 		m_combinedMaterial->getSourceHashCode() == material->getHashCode() &&
-		m_transfrom == transfrom &&
+		m_transfrom == state_.m_transfrom &&
 		m_builtinEffectData.getHashCode() == effectData.getHashCode();
 //#if 1
 //	return GetHashCode() == obj.GetHashCode();
@@ -721,9 +721,9 @@ void DrawElementList::clearCommands()
 }
 
 //------------------------------------------------------------------------------
-void DrawElementList::postAddCommandInternal(const BatchState& state, Material* availableMaterial, const Matrix& transform, const BuiltinEffectData& effectData, bool forceStateChange, DrawElement* element)
+void DrawElementList::postAddCommandInternal(const DrawElementBatch& state, Material* availableMaterial, const BuiltinEffectData& effectData, bool forceStateChange, DrawElement* element)
 {
-	if (forceStateChange || m_batchList.isEmpty() || !m_batchList.getLast().Equal(state, availableMaterial, transform, effectData))
+	if (forceStateChange || m_batchList.isEmpty() || !m_batchList.getLast().Equal(state, availableMaterial, effectData))
 	{
 		// CombinedMaterial を作る
 		CombinedMaterial* cm = m_combinedMaterialCache.queryCommandList();
@@ -731,9 +731,9 @@ void DrawElementList::postAddCommandInternal(const BatchState& state, Material* 
 
 		// 新しく DrawElementBatch を作る
 		m_batchList.add(DrawElementBatch());
-		m_batchList.getLast().state = state;
+		m_batchList.getLast().state = state.state;
 		m_batchList.getLast().setCombinedMaterial(cm);
-		m_batchList.getLast().setTransfrom(transform);
+		m_batchList.getLast().setTransfrom(state.getTransfrom());
 		m_batchList.getLast().SetBuiltinEffect(effectData);
 	}
 	element->batchIndex = m_batchList.getCount() - 1;
@@ -1027,7 +1027,7 @@ void DrawList::setTransform(const Matrix& transform)
 //------------------------------------------------------------------------------
 void DrawList::clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
-	auto* ptr = m_drawElementList.addCommand<detail::ClearElement>(m_state.state, m_defaultMaterial, Matrix::Identity, m_builtinEffectData, false);
+	auto* ptr = m_drawElementList.addCommand<detail::ClearElement>(m_state, m_defaultMaterial, m_builtinEffectData, false);
 	ptr->flags = flags;
 	ptr->color = color;
 	ptr->z = z;
