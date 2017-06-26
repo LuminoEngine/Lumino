@@ -33,6 +33,8 @@ public:
 	/** 表示する文字列を設定します。*/
 	void setText(const StringRef& text);
 
+	
+
 	/** 
 		@brief		テキストの表示の原点を設定します。
 		@details	値は (0,0) から (1,1) の間で指定します。
@@ -52,9 +54,12 @@ protected:
 	virtual void onRender2(RenderingContext* renderer) override;
 
 protected:
-	Vector2	m_anchor;
-	RefPtr<detail::Paragraph>	m_paragraph;
-	Size		m_renderSize;
+	Vector2			m_anchor;
+	RefPtr<Font>	m_font;
+	String			m_text;
+	Size			m_renderSize;
+	//RefPtr<detail::Paragraph>	m_paragraph;
+	//Size			m_renderSize;
 };
 
 

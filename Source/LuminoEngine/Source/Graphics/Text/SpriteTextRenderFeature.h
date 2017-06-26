@@ -34,26 +34,26 @@ public:
 
 private:
 
-	struct Vertex
-	{
-	public:
-		Vector3	position;
-		Vector4	color;
-		Vector2	uv;
+	//struct Vertex
+	//{
+	//public:
+	//	Vector3	position;
+	//	Vector4	color;
+	//	Vector2	uv;
 
-		// 頂点レイアウト
-		static VertexElement* Elements()
-		{
-			static VertexElement elements[] =
-			{
-				{ 0, VertexElementType_Float3, VertexElementUsage_Position, 0 },
-				{ 0, VertexElementType_Float4, VertexElementUsage_Color, 0 },
-				{ 0, VertexElementType_Float2, VertexElementUsage_TexCoord, 0 },
-			};
-			return elements;
-		}
-		static const int ElementCount = 3;
-	};
+	//	// 頂点レイアウト
+	//	static VertexElement* Elements()
+	//	{
+	//		static VertexElement elements[] =
+	//		{
+	//			{ 0, VertexElementType_Float3, VertexElementUsage_Position, 0 },
+	//			{ 0, VertexElementType_Float4, VertexElementUsage_Color, 0 },
+	//			{ 0, VertexElementType_Float2, VertexElementUsage_TexCoord, 0 },
+	//		};
+	//		return elements;
+	//	}
+	//	static const int ElementCount = 3;
+	//};
 
 	void internalDrawRectangle(const Matrix& transform, const Rect& rect, const Rect& srcUVRect, const Color& color);
 	void flush(Driver::ITexture* glyphsTexture);
@@ -64,7 +64,7 @@ private:
 
 	//GraphicsManager*		m_manager;
 	//Driver::IRenderer*		m_renderer;
-	RefPtr<Driver::IVertexDeclaration>	m_vertexDeclaration;
+	//RefPtr<Driver::IVertexDeclaration>	m_vertexDeclaration;
 	Driver::IVertexBuffer*	m_vertexBuffer;
 	Driver::IIndexBuffer*	m_indexBuffer;
 	CacheBuffer<Vertex>		m_vertexCache;

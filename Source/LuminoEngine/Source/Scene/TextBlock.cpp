@@ -1,5 +1,6 @@
 ﻿
 #include "../Internal.h"
+#include <Lumino/Graphics/Brush.h>
 #include <Lumino/Graphics/GraphicsContext.h>
 #include <Lumino/Rendering/RenderingContext.h>
 #include "SceneGraphManager.h"
@@ -36,7 +37,7 @@ TextBlock2DComponentPtr TextBlock2DComponent::create(const StringRef& text)
 //------------------------------------------------------------------------------
 TextBlock2DComponent::TextBlock2DComponent()
 	: VisualComponent()
-	, m_paragraph(nullptr)
+	//, m_paragraph(nullptr)
 {
 }
 
@@ -53,20 +54,22 @@ void TextBlock2DComponent::initialize()
 	//owner->getRootNode()->addChild(this);
 	setAutoRemove(true);
 
-	m_paragraph = RefPtr<detail::Paragraph>::makeRef();
-	m_paragraph->initialize();
+	//m_paragraph = RefPtr<detail::Paragraph>::makeRef();
+	//m_paragraph->initialize();
 
-	//setBlendMode(BlendMode::Alpha);
+	setBlendMode(BlendMode::Alpha);
 }
 
 //------------------------------------------------------------------------------
 void TextBlock2DComponent::setText(const StringRef& text)
 {
-	m_paragraph->clearInlines();
-	auto run = RefPtr<detail::run>::makeRef();
-	run->initialize();
-	run->setText(text);
-	m_paragraph->addInline(run);
+	//m_paragraph->clearInlines();
+	//auto run = RefPtr<detail::run>::makeRef();
+	//run->initialize();
+	//run->setText(text);
+	//m_paragraph->addInline(run);
+	m_text = text;
+	m_renderSize.set(-1, -1);	// recalc flag
 }
 
 //------------------------------------------------------------------------------
@@ -85,7 +88,7 @@ void TextBlock2DComponent::setAnchorPoint(float ratioX, float ratioY)
 void TextBlock2DComponent::updateFrameHierarchy(SceneNode* parent, float deltaTime)
 {
 	VisualComponent::updateFrameHierarchy(parent, deltaTime);
-	m_paragraph->updateLayout(Size::MaxValue);
+	//m_paragraph->updateLayout(Size::MaxValue);
 	//m_paragraph->measureLayout(Size::MaxValue);
 	//m_paragraph->arrangeLayout(RectF(0, 0, Size::MaxValue));
 }
@@ -99,24 +102,35 @@ detail::Sphere TextBlock2DComponent::getBoundingSphere()
 //------------------------------------------------------------------------------
 void TextBlock2DComponent::onRender2(RenderingContext* renderer)
 {
-	struct LocalRenderer : detail::IDocumentsRenderer
+	if (m_renderSize.width < 0)
 	{
-		DrawList* renderer;
+		auto font = (m_font != nullptr) ? m_font : Font::getDefault();
+		m_renderSize = font->measureRenderSize(m_text);
+	}
 
-		virtual void onDrawGlyphRun(const Matrix& transform, Brush* forground, GlyphRun* glyphRun, const PointF& point) override
-		{
-			// TODO: ここで強制設定よりは VisualComponent::setBlendMode がいいか？
-			renderer->setBlendMode(BlendMode::Alpha);
-			renderer->setTransform(transform);
-			renderer->setBrush(forground);
-			renderer->drawGlyphRun(point, glyphRun);
-		}
-	} r;
-	r.renderer = renderer;
+	//renderer->setTransform(transform);
+	//renderer->setBlendMode(BlendMode::Alpha);
+	//renderer->setBrush(SolidColorBrush::Red);
+	renderer->drawText_(m_text, PointF());
+
+	//struct LocalRenderer : detail::IDocumentsRenderer
+	//{
+	//	DrawList* renderer;
+
+	//	virtual void onDrawGlyphRun(const Matrix& transform, Brush* forground, GlyphRun* glyphRun, const PointF& point) override
+	//	{
+	//		// TODO: ここで強制設定よりは VisualComponent::setBlendMode がいいか？
+	//		renderer->setBlendMode(BlendMode::Alpha);
+	//		renderer->setTransform(transform);
+	//		renderer->setBrush(forground);
+	//		renderer->drawGlyphRun(point, glyphRun);
+	//	}
+	//} r;
+	//r.renderer = renderer;
 
 
-	const Size& size = m_paragraph->getRenderSize();
-	m_paragraph->render(Matrix::makeTranslation(-size.width * m_anchor.x, -size.height * m_anchor.y, 0) * getOwnerObject()->transform.getWorldMatrix(), &r);
+	//const Size& size = m_paragraph->getRenderSize();
+	//m_paragraph->render(Matrix::makeTranslation(-size.width * m_anchor.x, -size.height * m_anchor.y, 0) * getOwnerObject()->transform.getWorldMatrix(), &r);
 }
 
 //------------------------------------------------------------------------------

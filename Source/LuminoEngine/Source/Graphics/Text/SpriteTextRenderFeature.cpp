@@ -61,7 +61,7 @@ void TextRendererCore::createDeviceResources()
 	const int DefaultFaceCount = 512;
 
 	auto* device = m_manager->getGraphicsDevice();
-	m_vertexDeclaration.attach(device->createVertexDeclaration(Vertex::Elements(), Vertex::ElementCount));
+	//m_vertexDeclaration.attach(device->createVertexDeclaration(Vertex::Elements(), Vertex::ElementCount));
 	m_vertexBuffer = device->createVertexBuffer(sizeof(Vertex) * DefaultFaceCount * 4, nullptr, ResourceUsage::Dynamic);
 	m_indexBuffer = device->createIndexBuffer(DefaultFaceCount * 6, nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
 
@@ -154,6 +154,8 @@ void TextRendererCore::flush(Driver::ITexture* glyphsTexture)
 	//newState.destinationBlend = BlendFactor::InverseSourceAlpha;
 	//renderer->setRenderState(newState);
 
+	//auto* old = renderer->getVertexDeclaration();
+
 	// 描画する
 	m_vertexBuffer->setSubData(0, m_vertexCache.getBuffer(), m_vertexCache.getBufferUsedByteCount());
 	m_indexBuffer->setSubData(0, m_indexCache.getBuffer(), m_indexCache.getBufferUsedByteCount());
@@ -164,7 +166,8 @@ void TextRendererCore::flush(Driver::ITexture* glyphsTexture)
 	//auto* var = shader->getVariableByName("ln_MaterialTexture");	// TODO: 定数
 	//if (var) var->setTexture(glyphsTexture/*cache->getGlyphsFillTexture()*/);
 
-	renderer->setVertexDeclaration(m_vertexDeclaration);
+	//renderer->setVertexDeclaration(m_vertexDeclaration);
+	renderer->setVertexDeclaration(m_manager->getDefaultVertexDeclaration()->getDeviceObject());	// TODO
 	renderer->setVertexBuffer(0, m_vertexBuffer);
 	renderer->setIndexBuffer(m_indexBuffer);
 	renderer->drawPrimitiveIndexed(PrimitiveType_TriangleList, 0, m_indexCache.getCount() / 3);
@@ -175,6 +178,7 @@ void TextRendererCore::flush(Driver::ITexture* glyphsTexture)
 
 	// 変更したステートを元に戻す
 	//renderer->setRenderState(oldState);
+	//renderer->setVertexDeclaration(old);
 }
 
 

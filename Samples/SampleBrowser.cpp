@@ -67,7 +67,7 @@ void Main()
 	g_listWindow->setBackground(SolidColorBrush::Blue);
 	g_listWindow->setAnchor(AlignmentAnchor::TopOffsets | AlignmentAnchor::BottomOffsets);	// TODO: UIAnchor ‚Å‚¢‚¢‚Æ‚¨‚à‚¤
 	g_listWindow->addChild(listBox1);
-	mainWindow->addChild(g_listWindow);
+	//mainWindow->addChild(g_listWindow);
 
 
 	g_pinButton = UIToggleButton::create();
@@ -75,7 +75,7 @@ void Main()
 	g_pinButton->connectOnChecked([&](UIEventArgs* e) { showListWindow(); });
 	g_pinButton->connectOnUnchecked([&](UIEventArgs* e) { closeListWindow(); });
 	g_pinButton->setBackground(SolidColorBrush::White);
-	mainWindow->addChild(g_pinButton);
+	//mainWindow->addChild(g_pinButton);
 
 	//g_pinButton->setChecked(false);
 	closeListWindow();
