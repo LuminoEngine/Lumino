@@ -175,10 +175,14 @@ void SceneRenderer::render(
 					Shader* shader = policy.shader;
 
 					ElementInfo elementInfo;
-					element->makeElementInfo(element->m_ownerDrawElementList, cameraInfo, &elementInfo);
+					element->makeElementInfo(element->m_ownerDrawElementList, cameraInfo, currentState->m_priorityState, &elementInfo);
 
 					SubsetInfo subsetInfo;
 					element->makeSubsetInfo(element->m_ownerDrawElementList, material, &subsetInfo);
+					if (currentState->m_priorityState.mainTexture != nullptr)
+					{
+						subsetInfo.materialTexture = currentState->m_priorityState.mainTexture;
+					}
 
 					shader->getSemanticsManager()->updateCameraVariables(cameraInfo);
 					shader->getSemanticsManager()->updateElementVariables(elementInfo);

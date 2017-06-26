@@ -268,9 +268,10 @@ void TextRenderer::drawString(const Matrix& transform, const TCHAR* str, int len
 
 	cache->getTextLayoutEngine()->setDrawingArea(RectI(0, 0, (int)rect.width, (int)rect.height));
 
-
 	TextLayoutResult result;
 	cache->getTextLayoutEngine()->layoutText((UTF32*)utf32Buf.getConstData(), utf32Buf.getSize() / sizeof(UTF32), LayoutTextOptions::All, &result);
+
+
 
 	DrawGlyphsInternal(transform, rect.getTopLeft(), result.Items, cache);
 }
@@ -279,6 +280,7 @@ void TextRenderer::drawString(const Matrix& transform, const TCHAR* str, int len
 void TextRenderer::DrawGlyphsInternal(const Matrix& transform, const PointF& position, const List<TextLayoutResultItem>& layoutItems, FontGlyphTextureCache* cache)
 {
 	int dataCount = layoutItems.getCount();
+
 	for (int i = 0; i < dataCount; ++i)
 	{
 		const TextLayoutResultItem& item = layoutItems[i];

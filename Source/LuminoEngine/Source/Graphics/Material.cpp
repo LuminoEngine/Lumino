@@ -480,7 +480,7 @@ CombinedMaterial::~CombinedMaterial()
 }
 
 //------------------------------------------------------------------------------
-void CombinedMaterial::combine(Material* owner, Material* ownerBase, const BuiltinEffectData& builtinEffectData)
+void CombinedMaterial::combine(/*Material* owner, */Material* ownerBase, const BuiltinEffectData& builtinEffectData)
 {
 	//bool modified = false;
 	//if (owner == nullptr || owner != owner || owner->m_modifiedForMaterialInstance)
@@ -493,14 +493,14 @@ void CombinedMaterial::combine(Material* owner, Material* ownerBase, const Built
 	//}
 
 	uint32_t hashCode = 0;
-	if (owner != nullptr)		hashCode |= owner->getHashCode();
+	//if (owner != nullptr)		hashCode |= owner->getHashCode();
 	if (ownerBase != nullptr)	hashCode |= ownerBase->getHashCode();
 
 	if (m_lastSourceHashCode != hashCode ||
 		m_lastBuiltinEffectHashCode != builtinEffectData.getHashCode())
 	{
-		Material* source1 = (ownerBase != nullptr) ? ownerBase : owner;
-		Material* source2 = (ownerBase != nullptr) ? owner : nullptr;
+		Material* source1 = ownerBase;//(ownerBase != nullptr) ? ownerBase : owner;
+		Material* source2 = nullptr;//(ownerBase != nullptr) ? owner : nullptr;
 
 		// source1
 		m_shader = source1->m_shader;

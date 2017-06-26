@@ -176,7 +176,7 @@ class RawFont
 {
 	LN_CACHE_OBJECT_DECL;
 public:
-	static const int DefaultSize = 20;
+	static const int DefaultSize = 16;
 
 	// POD
 	struct OutlineInfo

@@ -58,6 +58,8 @@ class CombinedMaterial;
 class DrawElementList;
 class SceneRenderer;
 
+
+
 struct DefaultStatus
 {
 	RenderTargetTexture*	defaultRenderTarget;
@@ -148,6 +150,19 @@ LN_INTERNAL_ACCESS:
 	friend class ::ln::DrawList;
 };
 
+struct PriorityBatchState
+{
+	Nullable<Matrix>	worldTransform;
+	RefPtr<Texture>		mainTexture;
+
+	static PriorityBatchState defaultState;
+
+	bool equals(const PriorityBatchState& rhs) const
+	{
+		return worldTransform == rhs.worldTransform && mainTexture == rhs.mainTexture;
+	}
+};
+
 class DrawElement
 {
 public:
@@ -176,7 +191,7 @@ public:
 
 	const Matrix& getTransform(DrawElementList* oenerList) const;
 
-	virtual void makeElementInfo(DrawElementList* oenerList, const CameraInfo& cameraInfo, ElementInfo* outInfo);
+	virtual void makeElementInfo(DrawElementList* oenerList, const CameraInfo& cameraInfo, const PriorityBatchState& priorityState, ElementInfo* outInfo);
 	virtual void makeSubsetInfo(DrawElementList* oenerList, CombinedMaterial* material, SubsetInfo* outInfo);
 
 	virtual void drawSubset(const DrawArgs& e) = 0;
@@ -209,6 +224,8 @@ public:
 private:
 	DynamicLightInfo*	m_affectedDynamicLightInfos[DynamicLightInfo::MaxLights];
 };
+
+
 
 
 class BatchState
@@ -303,7 +320,7 @@ public:
 	void SetStandaloneShaderRenderer(bool enabled);
 	bool IsStandaloneShaderRenderer() const;
 
-	bool Equal(const DrawElementBatch& state, Material* material, const BuiltinEffectData& effectData) const;
+	bool Equal(const DrawElementBatch& state, Material* material, const BuiltinEffectData& effectData, const PriorityBatchState& priorityState) const;
 	void reset();
 	void applyStatus(InternalContext* context, const DefaultStatus& defaultStatus);
 	size_t getHashCode() const;
@@ -313,7 +330,7 @@ public:
 
 	BatchState				state;
 
-
+	PriorityBatchState		m_priorityState;
 
 private:
 	Matrix					m_transfrom;			// WorldTransform. 変わったらシェーダの ln_World* も変える必要がある。
@@ -340,11 +357,11 @@ public:
 	void clearCommands();
 
 	template<typename T, typename... TArgs>
-	T* addCommand(const DrawElementBatch& state, Material* availableMaterial, const BuiltinEffectData& effectData, bool forceStateChange, TArgs... args)
+	T* addCommand(const DrawElementBatch& state, Material* availableMaterial, const BuiltinEffectData& effectData, bool forceStateChange, const detail::PriorityBatchState& priorityState, TArgs... args)
 	{
 		auto handle = m_commandDataCache.allocData(sizeof(T));
 		T* t = new (m_commandDataCache.getData(handle))T(args...);
-		postAddCommandInternal(state, availableMaterial, effectData, forceStateChange, t);
+		postAddCommandInternal(state, availableMaterial, effectData, forceStateChange, priorityState, t);
 		t->m_ownerDrawElementList = this;
 		return t;
 	}
@@ -366,7 +383,7 @@ public:
 	DepthBuffer* getDefaultDepthBuffer() const { return m_depthBuffer; }
 
 private:
-	void postAddCommandInternal(const DrawElementBatch& state, Material* availableMaterial, const BuiltinEffectData& effectData, bool forceStateChange, DrawElement* element);
+	void postAddCommandInternal(const DrawElementBatch& state, Material* availableMaterial, const BuiltinEffectData& effectData, bool forceStateChange, const detail::PriorityBatchState& priorityState, DrawElement* element);
 
 	CommandDataCache		m_commandDataCache;
 	CommandDataCache		m_extDataCache;
@@ -692,7 +709,7 @@ LN_INTERNAL_ACCESS:
 	const DrawElementMetadata* getMetadata();
 	void popMetadata();
 
-	template<typename TElement> TElement* resolveDrawElement(detail::DrawingSectionId sectionId, detail::IRenderFeature* renderFeature, Material* userMaterial);
+	template<typename TElement> TElement* resolveDrawElement(detail::DrawingSectionId sectionId, detail::IRenderFeature* renderFeature, Material* userMaterial, const detail::PriorityBatchState* priorityState = nullptr);
 	void drawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Material* material);
 	//void DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material);
 	void blitInternal(Texture* source, RenderTargetTexture* dest, const Matrix& transform, Material* material);
@@ -707,7 +724,8 @@ private:
 	detail::GraphicsManager*		m_manager;
 	
 	//detail::BatchStateBlock			m_state;
-	detail::DrawElementBatch	m_state;
+	detail::DrawElementBatch		m_state;
+	
 	RefPtr<Material>				m_defaultMaterial;
 
 	detail::BuiltinEffectData		m_builtinEffectData;
@@ -754,7 +772,7 @@ private:
 
 //------------------------------------------------------------------------------
 template<typename TElement>
-inline TElement* DrawList::resolveDrawElement(detail::DrawingSectionId sectionId, detail::IRenderFeature* renderFeature, Material* userMaterial)
+inline TElement* DrawList::resolveDrawElement(detail::DrawingSectionId sectionId, detail::IRenderFeature* renderFeature, Material* userMaterial, const detail::PriorityBatchState* priorityState)
 {
 	Material* availableMaterial = (userMaterial != nullptr) ? userMaterial : m_defaultMaterial.get();
 
@@ -767,6 +785,8 @@ inline TElement* DrawList::resolveDrawElement(detail::DrawingSectionId sectionId
 
 	const DrawElementMetadata* userMetadata = getMetadata();
 	const DrawElementMetadata* metadata = (userMetadata != nullptr) ? userMetadata : &DrawElementMetadata::Default;
+	const detail::PriorityBatchState& availablePriorityState = (priorityState != nullptr) ? *priorityState : detail::PriorityBatchState::defaultState;
+
 
 	// 何か前回追加された DrawElement があり、それと DrawingSectionId、State が一致するならそれに対して追記できる
 	if (sectionId != detail::DrawingSectionId::None &&
@@ -774,13 +794,13 @@ inline TElement* DrawList::resolveDrawElement(detail::DrawingSectionId sectionId
 		m_currentSectionTopElement->drawingSectionId == sectionId &&
 		m_currentSectionTopElement->metadata.equals(*metadata) &&
 		m_currentSectionTopElement->m_stateFence == m_currentStateFence &&
-		m_drawElementList.getBatch(m_currentSectionTopElement->batchIndex)->Equal(m_state, availableMaterial, m_builtinEffectData))
+		m_drawElementList.getBatch(m_currentSectionTopElement->batchIndex)->Equal(m_state, availableMaterial, m_builtinEffectData, availablePriorityState))
 	{
 		return static_cast<TElement*>(m_currentSectionTopElement);
 	}
 
 	// DrawElement を新しく作る
-	TElement* element = m_drawElementList.addCommand<TElement>(m_state, availableMaterial, m_builtinEffectData, forceStateChange);
+	TElement* element = m_drawElementList.addCommand<TElement>(m_state, availableMaterial, m_builtinEffectData, forceStateChange, availablePriorityState);
 	//element->OnJoindDrawList(m_state.transfrom);
 	element->drawingSectionId = sectionId;
 	element->metadata = *metadata;

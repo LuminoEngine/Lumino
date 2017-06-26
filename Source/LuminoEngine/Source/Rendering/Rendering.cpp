@@ -30,6 +30,8 @@ const DrawElementMetadata DrawElementMetadata::Default;
 
 namespace detail {
 
+PriorityBatchState PriorityBatchState::defaultState;
+
 //==============================================================================
 // DynamicLightInfo
 //==============================================================================
@@ -541,15 +543,16 @@ bool DrawElementBatch::IsStandaloneShaderRenderer() const
 }
 
 //------------------------------------------------------------------------------
-bool DrawElementBatch::Equal(const DrawElementBatch& state_, Material* material, const BuiltinEffectData& effectData) const
+bool DrawElementBatch::Equal(const DrawElementBatch& state_, Material* material, const BuiltinEffectData& effectData, const PriorityBatchState& priorityState) const
 {
 	assert(m_combinedMaterial != nullptr);
 	return
 		state.getHashCode() == state_.state.getHashCode() &&
 		m_combinedMaterial->getSourceHashCode() == material->getHashCode() &&
 		m_transfrom == state_.m_transfrom &&
-		m_builtinEffectData.getHashCode() == effectData.getHashCode();
-//#if 1
+		m_builtinEffectData.getHashCode() == effectData.getHashCode() &&
+		m_priorityState.equals(priorityState);
+//#if 
 //	return GetHashCode() == obj.GetHashCode();
 //#else
 //	if (m_rendererId != obj.m_rendererId) return false;
@@ -645,10 +648,11 @@ const Matrix& DrawElement::getTransform(DrawElementList* oenerList) const
 }
 
 //------------------------------------------------------------------------------
-void DrawElement::makeElementInfo(DrawElementList* oenerList, const CameraInfo& cameraInfo, ElementInfo* outInfo)
+void DrawElement::makeElementInfo(DrawElementList* oenerList, const CameraInfo& cameraInfo, const PriorityBatchState& priorityState, ElementInfo* outInfo)
 {
+	auto& matrix = (priorityState.worldTransform.isNull()) ? getTransform(oenerList) : priorityState.worldTransform.get();
 	outInfo->viewProjMatrix = &cameraInfo.viewProjMatrix;
-	outInfo->WorldMatrix = getTransform(oenerList);
+	outInfo->WorldMatrix = matrix;
 	outInfo->WorldViewProjectionMatrix = outInfo->WorldMatrix * cameraInfo.viewMatrix * cameraInfo.projMatrix;	// TODO: viewProj はまとめたい
 	outInfo->affectedLights = getAffectedDynamicLightInfos();
 }
@@ -721,17 +725,19 @@ void DrawElementList::clearCommands()
 }
 
 //------------------------------------------------------------------------------
-void DrawElementList::postAddCommandInternal(const DrawElementBatch& state, Material* availableMaterial, const BuiltinEffectData& effectData, bool forceStateChange, DrawElement* element)
+void DrawElementList::postAddCommandInternal(const DrawElementBatch& state, Material* availableMaterial, const BuiltinEffectData& effectData, bool forceStateChange, const detail::PriorityBatchState& priorityState, DrawElement* element)
 {
-	if (forceStateChange || m_batchList.isEmpty() || !m_batchList.getLast().Equal(state, availableMaterial, effectData))
+	if (forceStateChange || m_batchList.isEmpty() ||
+		!m_batchList.getLast().Equal(state, availableMaterial, effectData, priorityState))
 	{
 		// CombinedMaterial を作る
 		CombinedMaterial* cm = m_combinedMaterialCache.queryCommandList();
-		cm->combine(nullptr, availableMaterial, effectData);	// TODO
+		cm->combine(/*nullptr, */availableMaterial, effectData);	// TODO
 
 		// 新しく DrawElementBatch を作る
 		m_batchList.add(DrawElementBatch());
 		m_batchList.getLast().state = state.state;
+		m_batchList.getLast().m_priorityState = priorityState;
 		m_batchList.getLast().setCombinedMaterial(cm);
 		m_batchList.getLast().setTransfrom(state.getTransfrom());
 		m_batchList.getLast().SetBuiltinEffect(effectData);
@@ -937,7 +943,6 @@ Brush* DrawList::getBrush() const
 void DrawList::setFont(Font* font)
 {
 	font = (font != nullptr) ? font : m_manager->getFontManager()->getDefaultFont();
-
 	m_state.state.setFont(font);
 }
 
@@ -1027,7 +1032,7 @@ void DrawList::setTransform(const Matrix& transform)
 //------------------------------------------------------------------------------
 void DrawList::clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
-	auto* ptr = m_drawElementList.addCommand<detail::ClearElement>(m_state, m_defaultMaterial, m_builtinEffectData, false);
+	auto* ptr = m_drawElementList.addCommand<detail::ClearElement>(m_state, m_defaultMaterial, m_builtinEffectData, false, detail::PriorityBatchState::defaultState);
 	ptr->flags = flags;
 	ptr->color = color;
 	ptr->z = z;
@@ -1317,15 +1322,15 @@ void DrawList::drawText_(const StringRef& text, const Rect& rect, StringFormatFl
 		Rect rect;
 		StringFormatFlags flags;
 
-		virtual void makeElementInfo(detail::DrawElementList* oenerList, const detail::CameraInfo& cameraInfo, detail::ElementInfo* outInfo) override
-		{
-			// ワールド行列は作らない。一連の Glyphs を描画する方に任せる。
-			// (スプライトと同じく、できるだけ一度に描画する)
-			outInfo->viewProjMatrix = &cameraInfo.viewProjMatrix;
-			outInfo->WorldMatrix = Matrix::Identity;//getTransform(oenerList);
-			outInfo->WorldViewProjectionMatrix = cameraInfo.viewMatrix * cameraInfo.projMatrix;// outInfo->WorldMatrix * cameraInfo.viewMatrix * cameraInfo.projMatrix;	// TODO: viewProj はまとめたい
-			outInfo->affectedLights = getAffectedDynamicLightInfos();
-		}
+		//virtual void makeElementInfo(detail::DrawElementList* oenerList, const detail::CameraInfo& cameraInfo, detail::ElementInfo* outInfo) override
+		//{
+		//	// ワールド行列は作らない。一連の Glyphs を描画する方に任せる。
+		//	// (スプライトと同じく、できるだけ一度に描画する)
+		//	outInfo->viewProjMatrix = &cameraInfo.viewProjMatrix;
+		//	outInfo->WorldMatrix = Matrix::Identity;//getTransform(oenerList);
+		//	outInfo->WorldViewProjectionMatrix = cameraInfo.viewMatrix * cameraInfo.projMatrix;// outInfo->WorldMatrix * cameraInfo.viewMatrix * cameraInfo.projMatrix;	// TODO: viewProj はまとめたい
+		//	outInfo->affectedLights = getAffectedDynamicLightInfos();
+		//}
 
 		//virtual void makeSubsetInfo(detail::DrawElementList* oenerList, detail::CombinedMaterial* material, detail::SubsetInfo* outInfo) override
 		//{
@@ -1344,16 +1349,20 @@ void DrawList::drawText_(const StringRef& text, const Rect& rect, StringFormatFl
 
 	// TODO: オーバーライドされる場合の動作はちゃんと考えておこう。
 	// 3bd204b あたりの問題だけど、CombinedMaterial は 元 material のハッシュ値を覚えているので、それも変える必要がある。
-	RefPtr<Texture> old = m_defaultMaterial->getMaterialTexture(nullptr);
-	m_defaultMaterial->setMaterialTexture(m_state.state.getFont()->resolveRawFont()->GetGlyphTextureCache()->getGlyphsFillTexture());
+	//RefPtr<Texture> old = m_defaultMaterial->getMaterialTexture(nullptr);
+	//m_defaultMaterial->setMaterialTexture(m_state.state.getFont()->resolveRawFont()->GetGlyphTextureCache()->getGlyphsFillTexture());
 
-	auto* e = resolveDrawElement<DrawElement_DrawText>(detail::DrawingSectionId::None, m_manager->getInternalContext()->m_textRenderer, nullptr);
+	detail::PriorityBatchState priorityState;
+	priorityState.worldTransform = Matrix::Identity;
+	priorityState.mainTexture = m_state.state.getFont()->resolveRawFont()->GetGlyphTextureCache()->getGlyphsFillTexture();
+
+	auto* e = resolveDrawElement<DrawElement_DrawText>(detail::DrawingSectionId::None, m_manager->getInternalContext()->m_textRenderer, nullptr, &priorityState);
 	e->text = text;
 	e->rect = rect;
 	e->flags = flags;
 	//e->boundingSphere = ;	// TODO
 
-	m_defaultMaterial->setMaterialTexture(old);
+	//m_defaultMaterial->setMaterialTexture(old);
 }
 
 //------------------------------------------------------------------------------
@@ -1645,9 +1654,9 @@ void DrawList::blitInternal(Texture* source, RenderTargetTexture* dest, const Ma
 		Matrix			overrideTransform;
 		RefPtr<Texture>	source;
 
-		virtual void makeElementInfo(detail::DrawElementList* oenerList, const detail::CameraInfo& cameraInfo, detail::ElementInfo* outInfo) override
+		virtual void makeElementInfo(detail::DrawElementList* oenerList, const detail::CameraInfo& cameraInfo, const detail::PriorityBatchState& priorityState, detail::ElementInfo* outInfo) override
 		{
-			DrawElement::makeElementInfo(oenerList, cameraInfo, outInfo);
+			DrawElement::makeElementInfo(oenerList, cameraInfo, priorityState, outInfo);
 			outInfo->WorldViewProjectionMatrix = overrideTransform;
 		}
 		virtual void makeSubsetInfo(detail::DrawElementList* oenerList, detail::CombinedMaterial* material, detail::SubsetInfo* outInfo) override

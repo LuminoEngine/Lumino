@@ -367,7 +367,7 @@ public:
 	Nullable<bool>			m_depthTestEnabled;
 	Nullable<bool>			m_depthWriteEnabled;
 
-	void combine(Material* owner, Material* ownerBase, const BuiltinEffectData& builtinEffectData);
+	void combine(/*Material* owner, */Material* ownerBase, const BuiltinEffectData& builtinEffectData);
 	void applyUserShaderValeues(Shader* targetShader);
 
 	uint32_t getSourceHashCode() const { return m_lastSourceHashCode; }
