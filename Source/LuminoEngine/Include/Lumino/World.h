@@ -58,7 +58,7 @@ LN_INTERNAL_ACCESS:
 	virtual void reginUpdateFrame();
 	virtual void updateFrame(float elapsedTime);
 	void renderRoot(RenderView* renderView, WorldDebugDrawFlags debugDrawFlags);
-	virtual void render(RenderingContext* context, RenderView* renderView, WorldDebugDrawFlags debugDrawFlags, OffscreenWorldView* offscreen = nullptr);
+	virtual void render(RenderingContext* context, RenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen = nullptr);
 	void executeDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
 	virtual void onUIEvent(UIEventArgs* e);
 
@@ -94,7 +94,7 @@ LN_INTERNAL_ACCESS:
 	Camera* getMainCamera() const;
 	virtual void reginUpdateFrame() override;
 	virtual void updateFrame(float elapsedTime) override;
-	virtual void render(RenderingContext* context, RenderView* renderView, WorldDebugDrawFlags debugDrawFlags, OffscreenWorldView* offscreen) override;
+	virtual void render(RenderingContext* context, RenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen) override;
 
 private:
 	RefPtr<SceneGraph2D>		m_sceneGraph;
@@ -126,7 +126,7 @@ LN_INTERNAL_ACCESS:
 	Camera* getMainCamera() const;
 	virtual void reginUpdateFrame() override;
 	virtual void updateFrame(float elapsedTime) override;
-	virtual void render(RenderingContext* context, RenderView* renderView, WorldDebugDrawFlags debugDrawFlags, OffscreenWorldView* offscreen) override;
+	virtual void render(RenderingContext* context, RenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen) override;
 
 private:
 	void createGridPlane();

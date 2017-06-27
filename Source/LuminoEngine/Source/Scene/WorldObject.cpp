@@ -16,13 +16,13 @@ int LayerMask::GetLayer(BuiltinLayers builtinLayer)
 {
 	switch (builtinLayer)
 	{
-	case ln::BuiltinLayers::Default:
+	case ln::BuiltinLayers::Default2D:
 		return 0;
-	case ln::BuiltinLayers::Background:
+	case ln::BuiltinLayers::Default3D:
 		return 1;
-	case ln::BuiltinLayers::Layer3:
+	case ln::BuiltinLayers::Background2D:
 		return 2;
-	case ln::BuiltinLayers::Layer4:
+	case ln::BuiltinLayers::Background3D:
 		return 3;
 	case ln::BuiltinLayers::Layer5:
 		return 4;
@@ -42,14 +42,26 @@ int LayerMask::GetRenderOrder(int layerId)
 {
 	const int sortingLayers[MaxLayers] =
 	{
-		1,	// Background
-		0,
-		2, 3, 4, 5, 6, 7, 8, 9, 10,
+		3,//Default2D,
+		2,//Default3D,
+		1,//Background2D,
+		0,//Background3D,
+		//1,	// Background
+		//0,
+		//2, 3,
+		4, 5, 6, 7, 8, 9, 10,
 		11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
 		21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
 		31,
 	};
 	return sortingLayers[layerId];
+}
+
+//------------------------------------------------------------------------------
+bool LayerMask::filterComponent(Component* obj, uint32_t layerMask)
+{
+	uint32_t layerFlag = (1 << obj->getLayer());
+	return (layerMask & layerFlag) != 0;
 }
 
 //==============================================================================
