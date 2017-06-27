@@ -350,6 +350,7 @@ void Sprite2D::initialize()
 {
 	SpriteBase::initialize();
 	m_component = Sprite2DComponent::create();
+	m_component->setLayer(LayerMask::GetLayer(BuiltinLayers::Default2D));
 	addComponent(m_component);
 	detail::EngineDomain::getDefaultWorld2D()->addWorldObject(this, true);
 }
@@ -419,6 +420,7 @@ void Sprite3D::initialize()
 {
 	SpriteBase::initialize();
 	m_component = Sprite3DComponent::create();
+	m_component->setLayer(LayerMask::GetLayer(BuiltinLayers::Default3D));
 	addComponent(m_component);
 	detail::EngineDomain::getDefaultWorld3D()->addWorldObject(this, true);
 }

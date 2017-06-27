@@ -553,12 +553,19 @@ public:
 
 	const ln::Size& getViewSize() const { return m_viewSize; }
 
+	void setLayerCullingMask(uint32_t mask) { m_layerCullingMask = mask; }
+	uint32_t getLayerCullingMask() const { return m_layerCullingMask; }
+	
+LN_CONSTRUCT_ACCESS:
+	RenderView();
+	virtual ~RenderView();
+
 LN_INTERNAL_ACCESS:
 	void setViewSize(const ln::Size& size) { m_viewSize = size; }
 
 private:
 	ln::Size    m_viewSize;
-
+	uint32_t	m_layerCullingMask;
 };
 
 

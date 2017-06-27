@@ -8,12 +8,14 @@ class DrawList;
 class World;
 class WorldObject;
 using WorldObjectPtr = RefPtr<WorldObject>;
+class Component;
 
 enum class BuiltinLayers
 {
-	Default,
-	Background,
-	Layer3,
+	Default2D,
+	Default3D,
+	Background2D,
+	Background3D,
 	Layer4,
 	Layer5,
 	Layer6,
@@ -23,10 +25,13 @@ enum class BuiltinLayers
 struct LayerMask
 {
 	static const int MaxLayers = 32;
+	static const uint32_t All = 0xFFFFFFFF;
 
 	static int GetLayer(BuiltinLayers builtinLayer);
 
 	static int GetRenderOrder(int layerId);
+
+	static bool filterComponent(Component* obj, uint32_t layerMask);
 };
 
 /**

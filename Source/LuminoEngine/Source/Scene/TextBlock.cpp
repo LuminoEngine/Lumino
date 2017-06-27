@@ -174,6 +174,7 @@ void TextBlock2D::initialize()
 {
 	VisualObject::initialize();
 	m_component = TextBlock2DComponent::create();
+	m_component->setLayer(LayerMask::GetLayer(BuiltinLayers::Default2D));
 	addComponent(m_component);
 	detail::EngineDomain::getDefaultWorld2D()->addWorldObject(this, true);
 }

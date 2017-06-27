@@ -143,11 +143,11 @@ void World::renderRoot(RenderView* renderView, WorldDebugDrawFlags debugDrawFlag
 	}
 
 	// main render
-	render(m_renderer, renderView, debugDrawFlags);
+	render(m_renderer, renderView, debugDrawFlags, LayerMask::All);
 }
 
 //------------------------------------------------------------------------------
-void World::render(RenderingContext* context, RenderView* renderView, WorldDebugDrawFlags debugDrawFlags, OffscreenWorldView* offscreen)
+void World::render(RenderingContext* context, RenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen)
 {
 	LN_ASSERT(context->getRenderView() == nullptr);	// render 下はネスト禁止
 	context->setRenderView(renderView);
@@ -163,8 +163,8 @@ void World::render(RenderingContext* context, RenderView* renderView, WorldDebug
 			{
 				visual = static_cast<VisualComponent*>(c.get());
 
-				bool visible = true;
-				if (offscreen != nullptr) visible = offscreen->filterRenderObject(visual);
+				bool visible = LayerMask::filterComponent(c.get(), layerMask);
+				if (visible && offscreen != nullptr) visible = offscreen->filterRenderObject(visual);
 
 				if (visible)
 				{
@@ -275,9 +275,9 @@ void World2D::updateFrame(float elapsedTime)
 }
 
 //------------------------------------------------------------------------------
-void World2D::render(RenderingContext* context, RenderView* renderView, WorldDebugDrawFlags debugDrawFlags, OffscreenWorldView* offscreen)
+void World2D::render(RenderingContext* context, RenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen)
 {
-	World::render(context, renderView, debugDrawFlags, offscreen);
+	World::render(context, renderView, debugDrawFlags, layerMask, offscreen);
 }
 
 //==============================================================================
@@ -382,9 +382,9 @@ void World3D::updateFrame(float elapsedTime)
 }
 
 //------------------------------------------------------------------------------
-void World3D::render(RenderingContext* context, RenderView* renderView, WorldDebugDrawFlags debugDrawFlags, OffscreenWorldView* offscreen)
+void World3D::render(RenderingContext* context, RenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen)
 {
-	World::render(context, renderView, debugDrawFlags, offscreen);
+	World::render(context, renderView, debugDrawFlags, layerMask, offscreen);
 
 	renderGridPlane(context, renderView);
 

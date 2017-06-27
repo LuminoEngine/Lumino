@@ -123,7 +123,7 @@ void OffscreenWorldView::renderWorld(World* world, RenderView* mainRenderView)
 	m_renderer->clear(ClearFlags::All, Color::White, 1.0f, 0);
 	
 	g_ofs = true;
-	world->render(m_renderer, this, WorldDebugDrawFlags::None, this);	// TODO: debugdraw の指定
+	world->render(m_renderer, this, WorldDebugDrawFlags::None, LayerMask::All, this);	// TODO: LayerMask, debugdraw の指定
 
 	g_ofs = false;
 
@@ -189,7 +189,7 @@ SkyComponent::~SkyComponent()
 void SkyComponent::initialize()
 {
 	VisualComponent::initialize();
-	setLayer(LayerMask::GetLayer(BuiltinLayers::Background));
+	setLayer(LayerMask::GetLayer(BuiltinLayers::Background3D));
 	setOrderInLayer(SHRT_MIN);
 
 	{
