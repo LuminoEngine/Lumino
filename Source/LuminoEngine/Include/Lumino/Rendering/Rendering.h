@@ -720,15 +720,35 @@ LN_INTERNAL_ACCESS:
 	//void setCurrentCamera(CameraComponent* camera) { m_camera = camera; }
 	//CameraComponent* getCurrentCamera() const { return m_camera; }
 
+	void pushState();
+	void popState();
+
 private:
+
+	class StagingState : public RefObject
+	{
+	public:
+		detail::DrawElementBatch		m_state;
+		RefPtr<Material>				m_material;		// TODO: これは内容を書き換えないようにしたほうがよさそう。今の使い方てきに。
+		detail::BuiltinEffectData		m_builtinEffectData;
+		RefPtr<Shader>					m_defaultMaterialShader;
+
+		StagingState();
+
+		void reset();
+		void copyFrom(const StagingState* state);
+
+	private:
+		LN_DISALLOW_COPY_AND_ASSIGN(StagingState);
+	};
+
+	StagingState* getCurrentState() const { return m_aliveStateStack.getLast(); }
+
 	detail::GraphicsManager*		m_manager;
-	
-	//detail::BatchStateBlock			m_state;
-	detail::DrawElementBatch		m_state;
-	
+	List<RefPtr<StagingState>>		m_freeStateStack;
+	List<RefPtr<StagingState>>		m_aliveStateStack;	// size >= 1
 	RefPtr<Material>				m_defaultMaterial;
 
-	detail::BuiltinEffectData		m_builtinEffectData;
 
 	detail::DrawElementList			m_drawElementList;
 
@@ -774,14 +794,19 @@ private:
 template<typename TElement>
 inline TElement* DrawList::resolveDrawElement(detail::DrawingSectionId sectionId, detail::IRenderFeature* renderFeature, Material* userMaterial, const detail::PriorityBatchState* priorityState)
 {
-	Material* availableMaterial = (userMaterial != nullptr) ? userMaterial : m_defaultMaterial.get();
+	//Material* availableMaterial = m_defaultMaterial;// = (userMaterial != nullptr) ? userMaterial : getCurrentState()->m_defaultMaterial.get();
+	//if (getCurrentState()->m_defaultMaterial != nullptr) availableMaterial = getCurrentState()->m_defaultMaterial;
+	Material* availableMaterial = userMaterial;
+	if (availableMaterial == nullptr) availableMaterial = getCurrentState()->m_material;
+	if (availableMaterial == nullptr) availableMaterial = m_defaultMaterial;
+
 
 	// これを決定してから比較を行う
-	m_state.SetStandaloneShaderRenderer(renderFeature->isStandaloneShader());
+	getCurrentState()->m_state.SetStandaloneShaderRenderer(renderFeature->isStandaloneShader());
 
-	bool forceStateChange = (m_state.m_renderFeature != renderFeature);
+	bool forceStateChange = (getCurrentState()->m_state.m_renderFeature != renderFeature);
 
-	m_state.m_renderFeature = renderFeature;
+	getCurrentState()->m_state.m_renderFeature = renderFeature;
 
 	const DrawElementMetadata* userMetadata = getMetadata();
 	const DrawElementMetadata* metadata = (userMetadata != nullptr) ? userMetadata : &DrawElementMetadata::Default;
@@ -794,13 +819,13 @@ inline TElement* DrawList::resolveDrawElement(detail::DrawingSectionId sectionId
 		m_currentSectionTopElement->drawingSectionId == sectionId &&
 		m_currentSectionTopElement->metadata.equals(*metadata) &&
 		m_currentSectionTopElement->m_stateFence == m_currentStateFence &&
-		m_drawElementList.getBatch(m_currentSectionTopElement->batchIndex)->Equal(m_state, availableMaterial, m_builtinEffectData, availablePriorityState))
+		m_drawElementList.getBatch(m_currentSectionTopElement->batchIndex)->Equal(getCurrentState()->m_state, availableMaterial, getCurrentState()->m_builtinEffectData, availablePriorityState))
 	{
 		return static_cast<TElement*>(m_currentSectionTopElement);
 	}
 
 	// DrawElement を新しく作る
-	TElement* element = m_drawElementList.addCommand<TElement>(m_state, availableMaterial, m_builtinEffectData, forceStateChange, availablePriorityState);
+	TElement* element = m_drawElementList.addCommand<TElement>(getCurrentState()->m_state, availableMaterial, getCurrentState()->m_builtinEffectData, forceStateChange, availablePriorityState);
 	//element->OnJoindDrawList(m_state.transfrom);
 	element->drawingSectionId = sectionId;
 	element->metadata = *metadata;

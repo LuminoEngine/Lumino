@@ -663,6 +663,8 @@ void UIElement::render(DrawingContext* g)
 		m_combinedBuiltinEffectData = m_builtinEffectData;
 	}
 
+	g->pushState();
+
 	Matrix mat;
 	mat.translate(m_finalGlobalRect.x, m_finalGlobalRect.y, 0);
 	g->setTransform(mat);
@@ -676,6 +678,8 @@ void UIElement::render(DrawingContext* g)
 
 	// 子要素
 	UIHelper::forEachVisualChildren(this, [g](UIElement* child) { child->render(g); });
+
+	g->popState();	// TODO: scoped
 }
 
 //------------------------------------------------------------------------------

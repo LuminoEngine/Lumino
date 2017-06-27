@@ -894,126 +894,180 @@ void DrawList::initialize(detail::GraphicsManager* manager)
 {
 	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_manager = manager;
-	m_state.reset();
+	//m_state.reset();
 
-	m_defaultMaterial = RefPtr<Material>::makeRef();
-	m_defaultMaterial->initialize();
+	m_defaultMaterial = newObject<Material>();
+
+	// とりあえず 10 個くらい
+	for (int i = 0; i < 10; i++)
+	{
+		m_freeStateStack.add(RefPtr<StagingState>::makeRef());
+	}
+	//m_aliveStateStack.add(RefPtr<StagingState>::makeRef());
+}
+
+//------------------------------------------------------------------------------
+void DrawList::pushState()
+{
+	RefPtr<StagingState> state;
+	if (m_freeStateStack.isEmpty())
+	{
+		state = RefPtr<StagingState>::makeRef();
+	}
+	else
+	{
+		state = m_freeStateStack.getLast();
+		m_freeStateStack.removeLast();
+	}
+
+	if (m_aliveStateStack.isEmpty())
+	{
+		// ルート用
+	}
+	else
+	{
+		// 親ステートの値をコピーしてくる
+		state->copyFrom(m_aliveStateStack.getLast());
+	}
+
+	m_aliveStateStack.add(state);
+}
+
+//------------------------------------------------------------------------------
+void DrawList::popState()
+{
+	auto state = m_aliveStateStack.getLast();
+	m_aliveStateStack.removeLast();
+	m_freeStateStack.add(state);
+
+	m_defaultMaterial->setShader(m_aliveStateStack.getLast()->m_defaultMaterialShader);
 }
 
 //------------------------------------------------------------------------------
 void DrawList::setRenderTarget(int index, RenderTargetTexture* renderTarget)
 {
-	m_state.state.setRenderTarget(index, renderTarget);
+	getCurrentState()->m_state.state.setRenderTarget(index, renderTarget);
 	m_currentStateFence++;
 }
 
 //------------------------------------------------------------------------------
 RenderTargetTexture* DrawList::getRenderTarget(int index) const
 {
-	return m_state.state.getRenderTarget(index);
+	return getCurrentState()->m_state.state.getRenderTarget(index);
 }
 
 //------------------------------------------------------------------------------
 void DrawList::setDepthBuffer(DepthBuffer* depthBuffer)
 {
-	m_state.state.setDepthBuffer(depthBuffer);
+	getCurrentState()->m_state.state.setDepthBuffer(depthBuffer);
 	m_currentStateFence++;
 }
 
 //------------------------------------------------------------------------------
 DepthBuffer* DrawList::getDepthBuffer() const
 {
-	return m_state.state.getDepthBuffer();
+	return getCurrentState()->m_state.state.getDepthBuffer();
 }
 
 //------------------------------------------------------------------------------
 void DrawList::setBrush(Brush* brush)
 {
 	brush = (brush != nullptr) ? brush : Brush::Black;
-	m_state.state.setBrush(brush);
+	getCurrentState()->m_state.state.setBrush(brush);
 }
 
 //------------------------------------------------------------------------------
 Brush* DrawList::getBrush() const
 {
-	return m_state.state.getBrush();
+	return getCurrentState()->m_state.state.getBrush();
 }
 
 //------------------------------------------------------------------------------
 void DrawList::setFont(Font* font)
 {
 	font = (font != nullptr) ? font : m_manager->getFontManager()->getDefaultFont();
-	m_state.state.setFont(font);
+	getCurrentState()->m_state.state.setFont(font);
 }
 
 //------------------------------------------------------------------------------
 void DrawList::setShader(Shader* shader)
 {
+	getCurrentState()->m_defaultMaterialShader = shader;
 	m_defaultMaterial->setShader(shader);
 }
 
 //------------------------------------------------------------------------------
 Shader* DrawList::getShader() const
 {
-	return m_defaultMaterial->getShader();
+	return getCurrentState()->m_defaultMaterialShader;
 }
 
 //------------------------------------------------------------------------------
 void DrawList::setBlendMode(BlendMode mode)
 {
-	m_state.state.setBlendMode(mode);
+	getCurrentState()->m_state.state.setBlendMode(mode);
 }
 
 //------------------------------------------------------------------------------
 void DrawList::setCullingMode(CullingMode mode)
 {
-	m_state.state.setCullingMode(mode);
+	getCurrentState()->m_state.state.setCullingMode(mode);
 }
 
 //------------------------------------------------------------------------------
 //void DrawList::setOpacity(float opacity)
 //{
-//	m_state.state.
+//	getCurrentState()->m_state.state.
 //}
 
 //------------------------------------------------------------------------------
 void DrawList::setDepthTestEnabled(bool enabled)
 {
-	m_state.state.setDepthTestEnabled(enabled);
+	getCurrentState()->m_state.state.setDepthTestEnabled(enabled);
 }
 
 //------------------------------------------------------------------------------
 void DrawList::setDepthWriteEnabled(bool enabled)
 {
-	m_state.state.setDepthWriteEnabled(enabled);
+	getCurrentState()->m_state.state.setDepthWriteEnabled(enabled);
 }
 
 //------------------------------------------------------------------------------
 void DrawList::setDefaultMaterial(Material* material)
 {
 	if (LN_CHECK_ARG(material != nullptr)) return;
-	m_defaultMaterial = material;
+	getCurrentState()->m_material = material;
 }
 
 //------------------------------------------------------------------------------
 void DrawList::setBuiltinEffectData(const detail::BuiltinEffectData& data)
 {
-	m_builtinEffectData = data;
+	getCurrentState()->m_builtinEffectData = data;
 }
 
 //------------------------------------------------------------------------------
 void DrawList::beginMakeElements()
 {
 	m_drawElementList.clearCommands();
-	m_state.reset();
-	setBrush(nullptr);
-	setFont(nullptr);
-	//m_state.state.state.setFont(m_manager->getFontManager()->getDefaultFont());
+
+	for (auto s : m_aliveStateStack)
+	{
+		m_freeStateStack.add(s);
+	}
+	m_aliveStateStack.clear();
+	pushState();	// 1つスタックに積んでおく。コレがルートのステート
+	getCurrentState()->reset();
+
 	m_defaultMaterial->reset();
-	m_builtinEffectData.reset();
+	//getCurrentState()->m_state.reset();
+	//m_state.state.state.setFont(m_manager->getFontManager()->getDefaultFont());
+	//m_defaultMaterial->reset();
+	//m_builtinEffectData.reset();
 	//m_defaultMaterial->cullingMode = CullingMode::None;
 	m_currentSectionTopElement = nullptr;
 	m_currentStateFence = 0;
+	setBrush(nullptr);
+	setFont(nullptr);
 }
 
 ////------------------------------------------------------------------------------
@@ -1026,13 +1080,14 @@ void DrawList::beginMakeElements()
 //------------------------------------------------------------------------------
 void DrawList::setTransform(const Matrix& transform)
 {
-	m_state.setTransfrom(transform);
+	getCurrentState()->m_state.setTransfrom(transform);
 }
 
 //------------------------------------------------------------------------------
 void DrawList::clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
-	auto* ptr = m_drawElementList.addCommand<detail::ClearElement>(m_state, m_defaultMaterial, m_builtinEffectData, false, detail::PriorityBatchState::defaultState);
+	// TODO: これだけ他と独立していて変更が反映されない
+	auto* ptr = m_drawElementList.addCommand<detail::ClearElement>(getCurrentState()->m_state, m_defaultMaterial, getCurrentState()->m_builtinEffectData, false, detail::PriorityBatchState::defaultState);
 	ptr->flags = flags;
 	ptr->color = color;
 	ptr->z = z;
@@ -1354,7 +1409,7 @@ void DrawList::drawText_(const StringRef& text, const Rect& rect, StringFormatFl
 
 	detail::PriorityBatchState priorityState;
 	priorityState.worldTransform = Matrix::Identity;
-	priorityState.mainTexture = m_state.state.getFont()->resolveRawFont()->GetGlyphTextureCache()->getGlyphsFillTexture();
+	priorityState.mainTexture = getCurrentState()->m_state.state.getFont()->resolveRawFont()->GetGlyphTextureCache()->getGlyphsFillTexture();
 
 	auto* e = resolveDrawElement<DrawElement_DrawText>(detail::DrawingSectionId::None, m_manager->getInternalContext()->m_textRenderer, nullptr, &priorityState);
 	e->text = text;
@@ -1465,7 +1520,7 @@ void DrawList::drawSprite(
 	ptr->baseDirection = baseDirection;
 	ptr->billboardType = billboardType;
 	detail::SpriteRenderFeature::makeBoundingSphere(ptr->size, baseDirection, &ptr->boundingSphere);
-	ptr->boundingSphere.center += m_state.getTransfrom().getPosition();	// TODO: 他と共通化
+	ptr->boundingSphere.center += getCurrentState()->m_state.getTransfrom().getPosition();	// TODO: 他と共通化
 }
 
 
@@ -1498,8 +1553,8 @@ public:
 
 void DrawList::drawRectangle(const Rect& rect)
 {
-	if (m_state.state.getBrush() != nullptr &&
-		(m_state.state.getBrush()->getImageDrawMode() == BrushImageDrawMode::BoxFrame || m_state.state.getBrush()->getImageDrawMode() == BrushImageDrawMode::BorderFrame))
+	if (getCurrentState()->m_state.state.getBrush() != nullptr &&
+		(getCurrentState()->m_state.state.getBrush()->getImageDrawMode() == BrushImageDrawMode::BoxFrame || getCurrentState()->m_state.state.getBrush()->getImageDrawMode() == BrushImageDrawMode::BorderFrame))
 	{
 		drawFrameRectangle(rect);
 		return;
@@ -1748,6 +1803,36 @@ void DrawList::renderSubView(RenderView* listSet, detail::SceneRenderer* rendere
 	e->renderer = renderer;
 	e->defaultRenderTarget = defaultRenderTarget;
 	e->defaultDepthBuffer = defaultDepthBuffer;
+}
+
+
+//==============================================================================
+// StagingState
+//==============================================================================
+//------------------------------------------------------------------------------
+DrawList::StagingState::StagingState()
+{
+	//m_defaultMaterial = RefPtr<Material>::makeRef();
+	//m_defaultMaterial->initialize();
+	reset();
+}
+
+//------------------------------------------------------------------------------
+void DrawList::StagingState::reset()
+{
+	m_state.reset();
+	m_material = nullptr;//->reset();
+	m_builtinEffectData.reset();
+	m_defaultMaterialShader = nullptr;
+}
+
+//------------------------------------------------------------------------------
+void DrawList::StagingState::copyFrom(const StagingState* state)
+{
+	m_state = state->m_state;
+	m_material = state->m_material;
+	m_builtinEffectData = state->m_builtinEffectData;
+	m_defaultMaterialShader = state->m_defaultMaterialShader;
 }
 
 LN_NAMESPACE_END

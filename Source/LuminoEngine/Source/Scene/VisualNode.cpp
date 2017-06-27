@@ -281,6 +281,7 @@ void VisualComponent::render(RenderingContext* context)
 	{
 		DrawElementMetadata metadata;
 		metadata.priority = ((LayerMask::GetRenderOrder(getLayer()) + 1) *  USHRT_MAX) + (getOrderInLayer() + (-(SHRT_MIN)));
+		context->pushState();
 		context->pushMetadata(&metadata);
 
 		context->setBlendMode(m_blendMode);
@@ -292,6 +293,7 @@ void VisualComponent::render(RenderingContext* context)
 		onRender2(context);
 
 		context->popMetadata();
+		context->popState();	// TODO: scoped
 	}
 }
 
