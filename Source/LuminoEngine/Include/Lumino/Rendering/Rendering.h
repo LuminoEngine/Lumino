@@ -552,13 +552,16 @@ public:
 
 
 	const ln::Size& getViewSize() const { return m_viewSize; }
+	
+LN_CONSTRUCT_ACCESS:
+	RenderView();
+	virtual ~RenderView();
 
 LN_INTERNAL_ACCESS:
 	void setViewSize(const ln::Size& size) { m_viewSize = size; }
 
 private:
 	ln::Size    m_viewSize;
-
 };
 
 

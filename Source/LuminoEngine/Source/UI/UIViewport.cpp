@@ -357,7 +357,7 @@ void UILayoutLayer::initialize()
 	internalRenderer->initialize(detail::EngineDomain::getGraphicsManager());
 	m_internalRenderer = internalRenderer;
 
-	m_drawElementListSet = RefPtr<RenderView>::makeRef();
+	m_drawElementListSet = newObject<RenderView>();
 	m_drawElementListSet->m_lists.add(m_drawingContext->getDrawElementList());
 
 }

@@ -15,6 +15,20 @@
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
+// WorldRenderView
+//==============================================================================
+//------------------------------------------------------------------------------
+WorldRenderView::WorldRenderView()
+	: m_layerCullingMask(0)
+{
+}
+
+//------------------------------------------------------------------------------
+WorldRenderView::~WorldRenderView()
+{
+}
+
+//==============================================================================
 // World
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(World, Object);
@@ -134,7 +148,7 @@ void World::updateFrame(float elapsedTime)
 }
 
 //------------------------------------------------------------------------------
-void World::renderRoot(RenderView* renderView, WorldDebugDrawFlags debugDrawFlags)
+void World::renderRoot(WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags)
 {
 	// pre render
 	for (auto& view : m_offscreenWorldViewList)
@@ -143,11 +157,11 @@ void World::renderRoot(RenderView* renderView, WorldDebugDrawFlags debugDrawFlag
 	}
 
 	// main render
-	render(m_renderer, renderView, debugDrawFlags, LayerMask::All);
+	render(m_renderer, renderView, debugDrawFlags, renderView->getLayerCullingMask());
 }
 
 //------------------------------------------------------------------------------
-void World::render(RenderingContext* context, RenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen)
+void World::render(RenderingContext* context, WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen)
 {
 	LN_ASSERT(context->getRenderView() == nullptr);	// render 下はネスト禁止
 	context->setRenderView(renderView);
@@ -172,7 +186,6 @@ void World::render(RenderingContext* context, RenderView* renderView, WorldDebug
 				}
 			}
 		}
-
 	}
 
 	// reset status
@@ -275,7 +288,7 @@ void World2D::updateFrame(float elapsedTime)
 }
 
 //------------------------------------------------------------------------------
-void World2D::render(RenderingContext* context, RenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen)
+void World2D::render(RenderingContext* context, WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen)
 {
 	World::render(context, renderView, debugDrawFlags, layerMask, offscreen);
 }
@@ -382,7 +395,7 @@ void World3D::updateFrame(float elapsedTime)
 }
 
 //------------------------------------------------------------------------------
-void World3D::render(RenderingContext* context, RenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen)
+void World3D::render(RenderingContext* context, WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen)
 {
 	World::render(context, renderView, debugDrawFlags, layerMask, offscreen);
 

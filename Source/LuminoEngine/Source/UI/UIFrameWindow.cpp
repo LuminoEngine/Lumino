@@ -191,7 +191,7 @@ void UIFrameWindow::initialize_UIRenderer()
 	internalRenderer->initialize(manager->getGraphicsManager());
 	m_internalRenderer = internalRenderer;
 
-	m_drawElementListSet = RefPtr<RenderView>::makeRef();
+	m_drawElementListSet = newObject<RenderView>();
 	m_drawElementListSet->m_lists.add(m_drawingContext->getDrawElementList());
 
 	m_renderDiag = newObject<RenderDiag>();
