@@ -46,12 +46,14 @@ OffscreenWorldView::~OffscreenWorldView()
 //------------------------------------------------------------------------------
 void OffscreenWorldView::initialize()
 {
-	RenderView::initialize();
+	WorldRenderView::initialize();
 	m_renderer = newObject<RenderingContext>();
 
 	//m_renderView = RefPtr<RenderView>::MakeRef();
 	//m_renderView->
 	m_lists.add(m_renderer->getDrawElementList());
+
+	setLayerCullingMask(0xFFFFFFFF);	// TODO
 }
 
 //------------------------------------------------------------------------------
@@ -123,7 +125,7 @@ void OffscreenWorldView::renderWorld(World* world, RenderView* mainRenderView)
 	m_renderer->clear(ClearFlags::All, Color::White, 1.0f, 0);
 	
 	g_ofs = true;
-	world->render(m_renderer, this, WorldDebugDrawFlags::None, LayerMask::All, this);	// TODO: LayerMask, debugdraw の指定
+	world->render(m_renderer, this, WorldDebugDrawFlags::None, getLayerCullingMask(), this);	// TODO: LayerMask, debugdraw の指定
 
 	g_ofs = false;
 

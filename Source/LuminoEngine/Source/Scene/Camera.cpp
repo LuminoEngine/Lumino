@@ -446,7 +446,8 @@ void CameraViewportLayer2::initialize(World* targetWorld, CameraComponent* hosti
 		m_internalRenderer = internalRenderer;
 	}
 
-	m_mainRenderView = RefPtr<RenderView>::makeRef();
+	m_mainRenderView = newObject<WorldRenderView>();
+	m_mainRenderView->setLayerCullingMask(0xFFFFFFFF);	// TODO:
 	//m_mainRenderView->m_lists.add(m_targetWorld->getInsideWorldRenderer()->getDrawElementList());
 	m_mainRenderView->m_lists.add(m_targetWorld->getRenderer()->getDrawElementList());
 	m_mainRenderView->m_lists.add(m_targetWorld->GetDebugRenderer()->getDrawElementList());

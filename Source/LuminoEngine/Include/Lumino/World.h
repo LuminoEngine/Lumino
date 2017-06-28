@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include "Rendering/Rendering.h"	// TODO: for WorldRenderView
 
 LN_NAMESPACE_BEGIN
 namespace detail { class SceneGraphRenderingProfilerInterface; }
@@ -26,6 +27,24 @@ LN_ENUM_FLAGS(WorldDebugDrawFlags)
 	PhysicsInfo = 0x0001,
 };
 LN_ENUM_FLAGS_DECLARE(WorldDebugDrawFlags)
+
+/**
+	@brief	
+*/
+class WorldRenderView
+	: public RenderView
+{
+public:
+	void setLayerCullingMask(uint32_t mask) { m_layerCullingMask = mask; }
+	uint32_t getLayerCullingMask() const { return m_layerCullingMask; }
+	
+LN_CONSTRUCT_ACCESS:
+	WorldRenderView();
+	virtual ~WorldRenderView();
+
+private:
+	uint32_t	m_layerCullingMask;
+};
 
 /**
 	@brief		
@@ -57,8 +76,8 @@ LN_INTERNAL_ACCESS:
 	void removeOffscreenWorldView(OffscreenWorldView* view);
 	virtual void reginUpdateFrame();
 	virtual void updateFrame(float elapsedTime);
-	void renderRoot(RenderView* renderView, WorldDebugDrawFlags debugDrawFlags);
-	virtual void render(RenderingContext* context, RenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen = nullptr);
+	void renderRoot(WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags);
+	virtual void render(RenderingContext* context, WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen = nullptr);
 	void executeDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
 	virtual void onUIEvent(UIEventArgs* e);
 
@@ -94,7 +113,7 @@ LN_INTERNAL_ACCESS:
 	Camera* getMainCamera() const;
 	virtual void reginUpdateFrame() override;
 	virtual void updateFrame(float elapsedTime) override;
-	virtual void render(RenderingContext* context, RenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen) override;
+	virtual void render(RenderingContext* context, WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen) override;
 
 private:
 	RefPtr<SceneGraph2D>		m_sceneGraph;
@@ -126,7 +145,7 @@ LN_INTERNAL_ACCESS:
 	Camera* getMainCamera() const;
 	virtual void reginUpdateFrame() override;
 	virtual void updateFrame(float elapsedTime) override;
-	virtual void render(RenderingContext* context, RenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen) override;
+	virtual void render(RenderingContext* context, WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen) override;
 
 private:
 	void createGridPlane();

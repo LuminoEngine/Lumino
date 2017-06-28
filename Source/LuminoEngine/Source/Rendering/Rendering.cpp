@@ -1813,7 +1813,6 @@ void DrawList::renderSubView(RenderView* listSet, detail::SceneRenderer* rendere
 //------------------------------------------------------------------------------
 RenderView::RenderView()
 	: m_viewSize()
-	, m_layerCullingMask(0)
 {
 }
 
