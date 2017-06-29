@@ -8,8 +8,6 @@
 
 LN_NAMESPACE_BEGIN
 
-class EngineManager;
-
 /** マウスボタン */
 enum class MouseButtons
 {

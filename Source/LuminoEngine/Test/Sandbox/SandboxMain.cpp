@@ -136,7 +136,7 @@ void Main()
 	EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Threaded);//GraphicsRenderingType::Immediate);//
 	Engine::initialize();
 	//Engine::getMainViewport()->SetBackgroundColor(Color32::Gray);
-	Engine::getMainViewport()->setPlacement(ViewportPlacement::AutoResize);
+	UIViewport::getMain()->setPlacement(ViewportPlacement::AutoResize);
 
 	//Engine::getDefaultSceneGraph3D()->visibleGridPlane = true;
 
@@ -570,7 +570,7 @@ void Main()
 #endif
 	//static_cast<CameraViewportLayer*>(Engine::getDefault3DLayer())->setDebugDrawFlags(WorldDebugDrawFlags::PhysicsInfo);
 
-	auto uiRoot = Engine::getMainWindow();
+	auto uiRoot = Application::getMainWindow();
 	//auto thumb = UIThumb::create();
 	////thumb->setPosition(PointF(100, 200));
 	//thumb->setSize(Size(30,60));

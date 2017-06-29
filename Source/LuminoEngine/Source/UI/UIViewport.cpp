@@ -3,8 +3,10 @@
 #include <Lumino/UI/UIViewport.h>
 #include <Lumino/UI/UILayoutView.h>
 #include <Lumino/UI/UIContext.h>
+#include <Lumino/UI/UIFrameWindow.h>
 #include <Lumino/Rendering/DrawingContext.h>
 #include <Lumino/Rendering/SceneRenderer.h>
+#include "../EngineManager.h"
 #include "UIManager.h"
 
 LN_NAMESPACE_BEGIN
@@ -13,6 +15,12 @@ LN_NAMESPACE_BEGIN
 // UIViewport
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIViewport, UIElement);
+
+//------------------------------------------------------------------------------
+UIViewport* UIViewport::getMain()
+{
+	return EngineManager::Instance->getUIManager()->getMainWindow()->getViewport();
+}
 
 //------------------------------------------------------------------------------
 UIViewport::UIViewport()
@@ -90,12 +98,10 @@ Size UIViewport::arrangeOverride(const Size& finalSize)
 {
 	Size renderSize = UIElement::arrangeOverride(finalSize);
 
-
 	for (auto& layer : m_viewportLayerList)
 	{
 		layer->updateLayout(finalSize);
 	}
-
 
 	return renderSize;
 }

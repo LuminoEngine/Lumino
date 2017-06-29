@@ -5,12 +5,19 @@
 #include <Lumino/Framework/GameScene.h>
 #include "GameSceneManager.h"
 #include "../EngineManager.h"
+#include "../UI/UIManager.h"
 
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
 // Application
 //==============================================================================
+
+//------------------------------------------------------------------------------
+UIMainWindow* Application::getMainWindow()
+{
+	return EngineManager::Instance->getUIManager()->getMainWindow();
+}
 
 //------------------------------------------------------------------------------
 Application::Application()

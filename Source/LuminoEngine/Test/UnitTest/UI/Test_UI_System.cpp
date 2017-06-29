@@ -25,7 +25,7 @@ static std::string g_eventLog;
 //------------------------------------------------------------------------------
 TEST_F(Test_UI_System, focus)
 {
-	auto uiRoot = Engine::getMainWindow();
+	auto uiRoot = Application::getMainWindow();
 	uiRoot->setLayoutPanel(UIStackPanel::create());
 
 	auto c1 = newObject<UIControl>();

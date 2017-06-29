@@ -71,14 +71,9 @@ public:
 	static World3D* getWorld3D();
 	static Camera* getCamera3D();
 
-	static UIMainWindow* getMainWindow();
-	static UIViewport* getMainViewport();
 	static UIViewportLayer* getDefault2DLayer();
 	static UIViewportLayer* getDefault3DLayer();
 	static UILayoutLayer* getDefaultUILayer();		// TODO: name Builtin
-	//static SceneGraph2D* getDefaultSceneGraph2D();
-	//static SceneGraph3D* getDefaultSceneGraph3D();
-	//static LightComponent* GetMainLight3D();
 };
 
 LN_NAMESPACE_END

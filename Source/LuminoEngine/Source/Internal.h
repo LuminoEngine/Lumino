@@ -18,6 +18,7 @@ class SceneGraph2D;
 class SceneGraph3D;
 class World2D;
 class World3D;
+class EngineManager;
 
 namespace detail {
 class AnimationManager;

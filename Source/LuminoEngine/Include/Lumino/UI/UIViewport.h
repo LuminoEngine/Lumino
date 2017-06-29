@@ -21,6 +21,9 @@ class UIViewport
 	LN_OBJECT();
 public:
 
+	/** アプリケーションのメイン UIViewport を取得します。 */
+	static UIViewport* getMain();
+
 	/** */
 	const Size& getViewSize() const { return m_viewSize; }
 

@@ -4,8 +4,10 @@
 #include "../EngineSettings.h"
 
 LN_NAMESPACE_BEGIN
+class EngineManager;
 class GameScene;
 namespace detail { class GameSceneManager; }
+class UIMainWindow;
 
 /**
 	@brief		アプリケーションを表します。
@@ -14,6 +16,11 @@ class Application
 	: public RefObject
 {
 public:
+
+	/** アプリケーションのメインウィンドウを取得します。 */
+	static UIMainWindow* getMainWindow();
+
+
 	PlatformWindow* getNativeMainWindow();
 
 protected:

@@ -305,6 +305,10 @@ void EngineManager::initialize()
 	m_defaultWorld3D = newObject<World3D>();
 	m_uiManager->createGameModeMainFrame(m_defaultWorld2D, m_defaultWorld3D);
 	m_uiManager->getMainWindow()->setDelayedRenderingSkip(m_configData.delayedRenderingSkip);
+
+	// for UIViewport::getViewSize() immediately after initialize
+	auto* mainWindow = m_uiManager->getMainWindow();
+	mainWindow->updateLayout(mainWindow->getPlatformWindow()->getSize().toFloatSize());
 }
 
 //------------------------------------------------------------------------------
@@ -539,7 +543,6 @@ void EngineManager::initializeUIManager()
 		data.defaultSkinFilePath = m_configData.defaultSkinFilePath;
 		m_uiManager = LN_NEW detail::UIManager();
 		m_uiManager->initialize(data);
-
 	}
 }
 
@@ -674,7 +677,7 @@ void EngineManager::updateFrame()
 				//m_uiManager->getMainWindow()->updateLayout(Size(static_cast<float>(size.width), static_cast<float>(size.height)));
 
 				// TODO: 内部に閉じ込める
-				window->updateLayout(m_uiManager->getMainWindow()->getPlatformWindow()->getSize().toFloatSize());
+				window->updateLayout(window->getPlatformWindow()->getSize().toFloatSize());
 			}
 		}
 

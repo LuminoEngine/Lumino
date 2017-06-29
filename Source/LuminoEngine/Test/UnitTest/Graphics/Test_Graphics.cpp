@@ -43,7 +43,7 @@ class Test_Graphics_Viewport : public ::testing::Test {};
 TEST_F(Test_Graphics_Viewport, Basic)
 {
 	Size size;
-	size = Engine::getMainViewport()->getViewSize();
+	size = UIViewport::getMain()->getViewSize();
 	ASSERT_EQ(160, size.width);
 	ASSERT_EQ(120, size.height);
 }
@@ -557,7 +557,7 @@ TEST_F(Test_Graphics_DrawingContext, drawText_)
 	{
 		LN_TEST_BEGIN_FRAME;
 		Engine::renderFrame();
-		auto* dc = Engine::getMainWindow()->getDrawingContext();
+		auto* dc = Application::getMainWindow()->getDrawingContext();
 		dc->clear(ClearFlags::Color, Color::White);
 		dc->setBrush(Brush::Gray);
 		//dc->setFont(f);

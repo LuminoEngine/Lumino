@@ -135,7 +135,7 @@ bool TestEnv::CheckScreenShot(const TCHAR* filePath, int passRate, bool save)
 //------------------------------------------------------------------------------
 void TestEnv::WaitRendering()
 {
-	Engine::getMainWindow()->getSwapChain()->WaitForPresent();
+	Application::getMainWindow()->getSwapChain()->WaitForPresent();
 }
 
 
@@ -159,7 +159,7 @@ void EngineInitalize()
 	RawFont::getDefaultFont()->setName(_T("VL Gothic"));
 
 	// 背景はグレーにしておくと加算合成のテストとか、いろいろ都合がよい
-	Engine::getMainViewport()->setViewBackgroundColor(Color32::Gray);
+	UIViewport::getMain()->setViewBackgroundColor(Color32::Gray);
 
 
 
