@@ -392,7 +392,7 @@ UIElement* UIElement::checkMouseHoverElement(const PointF& globalPt)
 			localPoint.y -= m_visualParent->m_finalGlobalRect.y;
 		}
 
-		if (onHitTest(globalPt)) {
+		if (onHitTest(localPoint)) {
 			return this;
 		}
 	}

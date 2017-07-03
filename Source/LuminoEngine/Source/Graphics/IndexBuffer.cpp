@@ -134,6 +134,7 @@ void* IndexBuffer::getMappedData()
 		}
 	}
 
+	m_initialUpdate = false;
 	m_locked = true;
 	return m_buffer.data();
 }

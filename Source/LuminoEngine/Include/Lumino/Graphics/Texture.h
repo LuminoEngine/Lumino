@@ -204,6 +204,7 @@ LN_INTERNAL_ACCESS:
 	void createCore(detail::GraphicsManager* manager, bool isDefaultBackBuffer);
 	void attachDefaultBackBuffer(Driver::ITexture* deviceObj);
 	void detachDefaultBackBuffer();
+	//Bitmap* readSurface();
 	Bitmap* lock();
 	void unlock();
 	virtual void onChangeDevice(Driver::IGraphicsDevice* device);

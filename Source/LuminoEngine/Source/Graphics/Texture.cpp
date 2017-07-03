@@ -656,6 +656,35 @@ void RenderTargetTexture::onChangeDevice(Driver::IGraphicsDevice* device)
 	}
 }
 
+////------------------------------------------------------------------------------
+//Bitmap* RenderTargetTexture::readSurface()
+//{
+//	if (m_manager->getRenderingType() == GraphicsRenderingType::Threaded)
+//	{
+//		Bitmap* surface = nullptr;
+//		Bitmap** surfacePtr = &surface;
+//		Mutex localMutex;
+//		Mutex* localMutexPtr = &localMutex;
+//
+//		LN_ENQUEUE_RENDER_COMMAND_3(
+//			readSurface, m_manager,
+//			Driver::ITexture*, m_deviceObj,
+//			Bitmap**, surfacePtr,
+//			Mutex*, localMutexPtr,
+//			{
+//				MutexScopedLock lock(*localMutexPtr);
+//				*surfacePtr = m_deviceObj->lock();
+//			});
+//
+//		MutexScopedLock lock(*localMutexPtr);
+//		return *surfacePtr;
+//	}
+//	else
+//	{
+//		return m_deviceObj->lock();
+//	}
+//}
+
 //------------------------------------------------------------------------------
 Bitmap* RenderTargetTexture::lock()
 {
@@ -669,6 +698,7 @@ Bitmap* RenderTargetTexture::lock()
 		// ロックしたビットマップがセットされる。
 		m_manager->getRenderingThread()->pushRenderingCommand(cmdList);
 		cmdList->waitForIdle();
+		cmdList->clearCommands();
 
 		return m_primarySurface;
 	}
@@ -689,6 +719,7 @@ void RenderTargetTexture::unlock()
 		//cmdList->ReadUnlockTexture(this);
 		m_manager->getRenderingThread()->pushRenderingCommand(cmdList);
 		cmdList->waitForIdle();
+		cmdList->clearCommands();
 	}
 	else
 	{

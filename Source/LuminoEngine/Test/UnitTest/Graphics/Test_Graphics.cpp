@@ -534,6 +534,7 @@ protected:
 	virtual void TearDown() {}
 };
 
+#if 0
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_DrawingContext, drawChar)
 {
@@ -567,6 +568,7 @@ TEST_F(Test_Graphics_DrawingContext, drawText_)
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_DrawingContext.DrawText1.png"), 90, true));
 	}
 }
+#endif
 
 //==============================================================================
 class Test_Graphics_Texture : public ::testing::Test
