@@ -336,12 +336,17 @@ protected:
 	virtual void onUpdateStyle(detail::UIStylePropertyTableInstance* localStyle, detail::InvalidateFlags invalidateFlags);
 	virtual void onUpdatingLayout();
 
+	virtual bool onHitTest(const PointF& localPoint);
+
 	//UIStylePropertyTable* GetLocalStyle() const { return m_localStyle; }
 
 	virtual bool onEvent(detail::UIInternalEventType type, UIEventArgs* args);
 	virtual void onRoutedEvent(UIEventArgs* e);
 	virtual void updateLayout(const Size& viewSize) override;
 	virtual detail::SpcialUIElementType getSpcialUIElementType() const;
+
+public:
+	virtual UIElement* checkMouseHoverElement(const PointF& globalPt);
 
 LN_INTERNAL_ACCESS:
 	detail::UIManager* getManager() const { return m_manager; }
@@ -359,7 +364,6 @@ LN_INTERNAL_ACCESS:
 	//const String& GetCurrentVisualStateName() const { return m_currentVisualStateName; }
 	//AnchorInfo* GetAnchorInfo() {return &m_anchorInfo; }
 	detail::InvalidateFlags getInvalidateFlags() const { return m_invalidateFlags; }
-	virtual UIElement* checkMouseHoverElement(const PointF& globalPt);
 	void callOnGotFocus();
 	void callOnLostFocus();
 	const Rect& getFinalGlobalRect() const { return m_finalGlobalRect; }

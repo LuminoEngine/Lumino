@@ -385,7 +385,14 @@ UIElement* UIElement::checkMouseHoverElement(const PointF& globalPt)
 
 	if (m_isHitTestVisible)
 	{
-		if (m_finalGlobalRect.contains(globalPt)) {
+		PointF localPoint = globalPt;
+		if (m_visualParent != nullptr)
+		{
+			localPoint.x -= m_visualParent->m_finalGlobalRect.x;
+			localPoint.y -= m_visualParent->m_finalGlobalRect.y;
+		}
+
+		if (onHitTest(globalPt)) {
 			return this;
 		}
 	}
@@ -607,6 +614,12 @@ void UIElement::onUpdatingLayout()
 {
 	// 子要素
 	UIHelper::forEachVisualChildren(this, [](UIElement* child) { child->onUpdatingLayout(); });
+}
+
+//------------------------------------------------------------------------------s
+bool UIElement::onHitTest(const PointF& localPoint)
+{
+	return m_finalLocalRect.contains(localPoint);
 }
 
 //------------------------------------------------------------------------------
