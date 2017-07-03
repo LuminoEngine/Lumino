@@ -6,7 +6,7 @@ using System.Text;
 using System.ComponentModel;
 using System.IO.Compression;
 
-namespace LuminoBuildTool
+namespace LuminoBuild
 {
 	class Builder
     {

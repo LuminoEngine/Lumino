@@ -1,6 +1,7 @@
 using System;
 using System.IO;
-using LuminoBuildTool;
+using System.Linq;
+using LuminoBuild;
 
 class CMakeTargetInfo
 {
@@ -20,19 +21,19 @@ class LuminoEngineRule : ModuleRule
         new CMakeTargetInfo { DirName = "Build_MSVC120x86_MT", VSTarget = "Visual Studio 12", Unicode = "OFF", Platform="Win32", MSVCStaticRuntime = "ON" },
         //new CMakeTargetInfo { DirName = "Build_MSVC120x86U_MT", VSTarget = "Visual Studio 12", Unicode = "ON", Platform="Win32", MSVCStaticRuntime = "ON" },
         //new CMakeTargetInfo { DirName = "Build_MSVC120x86_MD", VSTarget = "Visual Studio 12", Unicode = "OFF", Platform="Win32", MSVCStaticRuntime = "OFF" },
-        //new CMakeTargetInfo { DirName = "Build_MSVC120x86U_MD", VSTarget = "Visual Studio 12", Unicode = "ON", Platform="Win32", MSVCStaticRuntime = "OFF" },
+        new CMakeTargetInfo { DirName = "Build_MSVC120x86U_MD", VSTarget = "Visual Studio 12", Unicode = "ON", Platform="Win32", MSVCStaticRuntime = "OFF" },
         //new { DirName = "build_msvc120x64_MT", VSTarget = "Visual Studio 12 Win64", Unicode = "OFF" },
         //new { DirName = "build_msvc120x64u_MT", VSTarget = "Visual Studio 12 Win64", Unicode = "ON" },
         new CMakeTargetInfo { DirName = "Build_MSVC140x86_MT", VSTarget = "Visual Studio 14", Unicode = "OFF", Platform="Win32", MSVCStaticRuntime = "ON" },
         //new CMakeTargetInfo { DirName = "Build_MSVC140x86U_MT", VSTarget = "Visual Studio 14", Unicode = "ON", Platform="Win32", MSVCStaticRuntime = "ON" },
         //new CMakeTargetInfo { DirName = "Build_MSVC140x86_MD", VSTarget = "Visual Studio 14", Unicode = "OFF", Platform="Win32", MSVCStaticRuntime = "OFF" },
-        //new CMakeTargetInfo { DirName = "Build_MSVC140x86U_MD", VSTarget = "Visual Studio 14", Unicode = "ON", Platform="Win32", MSVCStaticRuntime = "OFF" },
+        new CMakeTargetInfo { DirName = "Build_MSVC140x86U_MD", VSTarget = "Visual Studio 14", Unicode = "ON", Platform="Win32", MSVCStaticRuntime = "OFF" },
         //new { DirName = "build_msvc140x64_MT", VSTarget = "Visual Studio 14 Win64", Unicode = "OFF" },
         //new { DirName = "build_msvc140x64u_MT", VSTarget = "Visual Studio 14 Win64", Unicode = "ON" },
         new CMakeTargetInfo { DirName = "Build_MSVC150x86_MT", VSTarget = "Visual Studio 15", Unicode = "OFF", Platform="Win32", MSVCStaticRuntime = "ON" },
         //new CMakeTargetInfo { DirName = "Build_MSVC150x86U_MT", VSTarget = "Visual Studio 15", Unicode = "ON", Platform="Win32", MSVCStaticRuntime = "ON" },
         //new CMakeTargetInfo { DirName = "Build_MSVC150x86_MD", VSTarget = "Visual Studio 15", Unicode = "OFF", Platform="Win32", MSVCStaticRuntime = "OFF" },
-        //new CMakeTargetInfo { DirName = "Build_MSVC150x86U_MD", VSTarget = "Visual Studio 15", Unicode = "ON", Platform="Win32", MSVCStaticRuntime = "OFF" },
+        new CMakeTargetInfo { DirName = "Build_MSVC150x86U_MD", VSTarget = "Visual Studio 15", Unicode = "ON", Platform="Win32", MSVCStaticRuntime = "OFF" },
     };
 
     /// <summary>
@@ -77,9 +78,10 @@ class LuminoEngineRule : ModuleRule
 
         if (Utils.IsWin32)
         {
+            var list = targets.Where(t => t.DirName.Contains("x86_MT"));
 
             // cmake で .sln を作ってビルドする
-            foreach (var t in targets)
+            foreach (var t in list)
             {
                 Directory.CreateDirectory(builder.LuminoBuildDir + t.DirName);
                 Directory.SetCurrentDirectory(builder.LuminoBuildDir + t.DirName);

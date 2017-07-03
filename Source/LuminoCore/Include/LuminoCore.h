@@ -68,3 +68,5 @@
 #include "Lumino/Threading/Thread.h"
 #include "Lumino/Threading/Task.h"
 #include "Lumino/Threading/TaskScheduler.h"
+
+#include "LuminoMath.h"

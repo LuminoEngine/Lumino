@@ -54,7 +54,7 @@ Encoding* Encoding::getWideCharEncoding()
 Encoding* Encoding::getTCharEncoding()
 {
 #ifdef LN_UNICODE
-	return GetWideCharEncoding();
+	return getWideCharEncoding();
 #else
 	return getSystemMultiByteEncoding();
 #endif

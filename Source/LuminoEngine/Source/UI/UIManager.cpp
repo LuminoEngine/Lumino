@@ -441,7 +441,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 		}
 		// UISlider::Track.Horizontal
 		{
-			auto* props = style->getPropertyTable("Horizontal");
+			auto* props = style->getPropertyTable(_T("Horizontal"));
 			//props->height = 4.0f;
 		}
 	}

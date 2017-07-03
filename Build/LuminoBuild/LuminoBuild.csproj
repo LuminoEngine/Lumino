@@ -34,48 +34,23 @@
     <Reference Include="System.IO.Compression.FileSystem" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\CPackage.Build.cs">
-      <Link>Rules\CPackage.Build.cs</Link>
-    </Compile>
-    <Compile Include="..\HSPPackage.Build.cs">
-      <Link>Rules\HSPPackage.Build.cs</Link>
-    </Compile>
-    <Compile Include="..\LuminoC.Build.cs">
-      <Link>Rules\LuminoC.Build.cs</Link>
-    </Compile>
-    <Compile Include="..\LuminoHSP.Build.cs">
-      <Link>Rules\LuminoHSP.Build.cs</Link>
-    </Compile>
-    <Compile Include="..\LuminoRuby.Build.cs">
-      <Link>Rules\LuminoRuby.Build.cs</Link>
-    </Compile>
-    <Compile Include="..\MakeInstaller.Build.cs">
-      <Link>Rules\MakeInstaller.Build.cs</Link>
-    </Compile>
-    <Compile Include="..\MakeVSProjects.Build.cs">
-      <Link>Rules\MakeVSProjects.Build.cs</Link>
-    </Compile>
-    <Compile Include="..\RubyPackage.Build.cs">
-      <Link>Rules\RubyPackage.Build.cs</Link>
-    </Compile>
-    <Compile Include="..\SetupDependencies.Build.cs">
-      <Link>Rules\SetupDependencies.Build.cs</Link>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="LuminoBuildTool.cs" />
-    <Compile Include="..\LuminoEngine.Build.cs">
-      <Link>Rules\LuminoEngine.Build.cs</Link>
-    </Compile>
-    <Compile Include="..\CppPackage.Build.cs">
-      <Link>Rules\CppPackage.Build.cs</Link>
-    </Compile>
-    <Compile Include="..\LuminoDotNet.Build.cs">
-      <Link>Rules\LuminoDotNet.Build.cs</Link>
-    </Compile>
-    <Compile Include="..\DotNetPackage.Build.cs">
-      <Link>Rules\DotNetPackage.Build.cs</Link>
-    </Compile>
+    <Compile Include="Rules\BuildEngine_MSVCUnicodeMD.cs" />
+    <Compile Include="Rules\CPackage.Build.cs" />
+    <Compile Include="Rules\CppPackage.Build.cs" />
+    <Compile Include="Rules\DotNetPackage.Build.cs" />
+    <Compile Include="Rules\HSPPackage.Build.cs" />
+    <Compile Include="Rules\LuminoC.Build.cs" />
+    <Compile Include="Rules\LuminoDotNet.Build.cs" />
+    <Compile Include="Rules\LuminoEngine.Build.cs" />
+    <Compile Include="Rules\LuminoHSP.Build.cs" />
+    <Compile Include="Rules\LuminoRuby.Build.cs" />
+    <Compile Include="Rules\MakeInstaller.Build.cs" />
+    <Compile Include="Rules\MakeVSProjects.Build.cs" />
+    <Compile Include="Rules\RubyPackage.Build.cs" />
+    <Compile Include="Rules\SetupDependencies.Build.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

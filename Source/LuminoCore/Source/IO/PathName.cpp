@@ -129,12 +129,12 @@ GenericStringRef<TChar> GenericPathName<TChar>::getExtension(bool withDot) const
 //------------------------------------------------------------------------------
 #if defined(LN_UNICODE)
 template<>
-GenericString<TCHAR> GenericPathName<char>::ToString() const
+GenericString<TCHAR> GenericPathName<char>::toString() const
 {
-	return GenericString<TCHAR>::FromNativeCharString(m_path.c_str(), m_path.getLength());
+	return GenericString<TCHAR>::fromNativeCharString(m_path.c_str(), m_path.getLength());
 }
 template<>
-GenericString<TCHAR> GenericPathName<wchar_t>::ToString() const
+GenericString<TCHAR> GenericPathName<wchar_t>::toString() const
 {
 	return m_path;
 }

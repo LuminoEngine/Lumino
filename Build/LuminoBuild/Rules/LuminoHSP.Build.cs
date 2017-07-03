@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using LuminoBuildTool;
+using LuminoBuild;
 using System.Text.RegularExpressions;
 
 class LuminoHSPRule : ModuleRule
