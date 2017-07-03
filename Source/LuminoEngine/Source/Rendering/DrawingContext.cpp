@@ -28,7 +28,7 @@ public:
 		r->executeCommand(m_commandList);
 		m_commandList = nullptr;
 	}
-	virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement("DrawShapesRendererCommandList"); }
+	virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("DrawShapesRendererCommandList")); }
 };
 
 //==============================================================================

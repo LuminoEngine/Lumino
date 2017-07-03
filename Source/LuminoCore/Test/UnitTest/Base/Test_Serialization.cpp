@@ -11,8 +11,8 @@ struct TkMVSoundData
 
 	void serialize(ln::tr::Archive& ar, int version)
 	{
-		ar & ln::tr::makeNVP("name", name);
-		ar & ln::tr::makeNVP("volume", volume);
+		ar & ln::tr::makeNVP(_T("name"), name);
+		ar & ln::tr::makeNVP(_T("volume"), volume);
 	}
 };
 
@@ -24,9 +24,9 @@ struct TkMVMapData1
 
 	void serialize(ln::tr::Archive& ar, int version)
 	{
-		ar & ln::tr::makeNVP("autoplayBgm", autoplayBgm);
-		ar & ln::tr::makeNVP("bgm", bgm);
-		ar & ln::tr::makeNVP("displayName", displayName);
+		ar & ln::tr::makeNVP(_T("autoplayBgm"), autoplayBgm);
+		ar & ln::tr::makeNVP(_T("bgm"), bgm);
+		ar & ln::tr::makeNVP(_T("displayName"), displayName);
 	}
 };
 
@@ -38,8 +38,8 @@ public:
 
 	virtual void serialize(ln::tr::Archive& ar, int version)
 	{
-		ar & ln::tr::makeNVP("name", name);
-		ar & ln::tr::makeNVP("volume", volume);
+		ar & ln::tr::makeNVP(_T("name"), name);
+		ar & ln::tr::makeNVP(_T("volume"), volume);
 	}
 };
 
@@ -50,7 +50,7 @@ public:
 
 	virtual void serialize(ln::tr::Archive& ar, int version)
 	{
-		ar & ln::tr::makeNVP("id", id);
+		ar & ln::tr::makeNVP(_T("id"), id);
 	}
 };
 
@@ -63,10 +63,10 @@ struct TkMVMapData3 : public ln::Object
 
 	void serialize(ln::tr::Archive& ar, int version)
 	{
-		ar & ln::tr::makeNVP("autoplayBgm", autoplayBgm);
-		ar & ln::tr::makeNVP("bgm", bgm);
-		ar & ln::tr::makeNVP("displayName", displayName);
-		ar & ln::tr::makeNVP("events", events);
+		ar & ln::tr::makeNVP(_T("autoplayBgm"), autoplayBgm);
+		ar & ln::tr::makeNVP(_T("bgm"), bgm);
+		ar & ln::tr::makeNVP(_T("displayName"), displayName);
+		ar & ln::tr::makeNVP(_T("events"), events);
 	}
 };
 
@@ -77,8 +77,8 @@ struct TkMVEventCommand3 : public ln::Object
 
 	virtual void serialize(ln::tr::Archive& ar, int version)
 	{
-		ar & ln::tr::makeNVP("code", code);
-		ar & ln::tr::makeNVP("params", params);
+		ar & ln::tr::makeNVP(_T("code"), code);
+		ar & ln::tr::makeNVP(_T("params"), params);
 	}
 };
 
@@ -89,8 +89,8 @@ struct TkMVMovementData3 : public ln::Object
 
 	virtual void serialize(ln::tr::Archive& ar, int version)
 	{
-		ar & ln::tr::makeNVP("ignore", ignore);
-		ar & ln::tr::makeNVP("commands", commands);
+		ar & ln::tr::makeNVP(_T("ignore"), ignore);
+		ar & ln::tr::makeNVP(_T("commands"), commands);
 	}
 };
 

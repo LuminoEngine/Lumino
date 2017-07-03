@@ -482,7 +482,7 @@ private:
 	};
 
 	template<typename T>
-	T* instantiate(const char* typeName)
+	T* instantiate(const TCHAR* typeName)
 	{
 		assert(typeName != nullptr);
 
@@ -505,7 +505,7 @@ private:
 		return obj;
 	}
 
-	std::unordered_map<std::string, std::shared_ptr<IDataCatch>>	m_cacheMap;
+	std::unordered_map<String, std::shared_ptr<IDataCatch>>	m_cacheMap;
 	std::vector<RenderDiagItem*>									m_items;
 };
 

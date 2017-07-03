@@ -196,7 +196,7 @@ void SkyComponent::initialize()
 
 	{
 
-		auto shader = ln::Shader::create("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Scene/Resource/Sky.fx");
+		auto shader = ln::Shader::create(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Scene/Resource/Sky.fx"));
 		m_skyMaterial = newObject<Material>();
 		m_skyMaterial->setShader(shader);
 	}
@@ -229,9 +229,9 @@ void SkyComponent::onRender2(RenderingContext* renderer)
 		Vector3 frustumRayTR = Vector3::normalize(vtow(Vector3(640, 0, 1)) - vtow(Vector3(640, 0, 0))/*cam->viewportToWorldPoint(Vector3(640, 0, 0))*/);
 		Vector3 frustumRayBL = Vector3::normalize(vtow(Vector3(0, 480, 1)) - vtow(Vector3(0, 480, 0))/*cam->viewportToWorldPoint(Vector3(0, 480, 0))*/);
 #endif
-		m_skyMaterial->setVectorParameter("frustumRayTL", Vector4(frustumRayTL, 0));
-		m_skyMaterial->setVectorParameter("frustumRayTR", Vector4(frustumRayTR, 0));
-		m_skyMaterial->setVectorParameter("frustumRayBL", Vector4(frustumRayBL, 0));
+		m_skyMaterial->setVectorParameter(_T("frustumRayTL"), Vector4(frustumRayTL, 0));
+		m_skyMaterial->setVectorParameter(_T("frustumRayTR"), Vector4(frustumRayTR, 0));
+		m_skyMaterial->setVectorParameter(_T("frustumRayBL"), Vector4(frustumRayBL, 0));
 
 
 		static const float EARTH_RADIUS = 6370997.0f;
@@ -281,24 +281,24 @@ void SkyComponent::onRender2(RenderingContext* renderer)
 		float exposure = 0.05 + 0.03;// static_cast<float>(gui.slider(L"Exposure").value);
 
 
-		m_skyMaterial->setVectorParameter("v3CameraPos", Vector4(cameraPos, 0));
-		m_skyMaterial->setFloatParameter("fCameraHeight", fCameraHeight);
-		m_skyMaterial->setVectorParameter("v3LightPos", Vector4(lightPos, 0));
-		m_skyMaterial->setFloatParameter("fCameraHeight2", fCameraHeight2);
-		m_skyMaterial->setVectorParameter("v3InvWavelength", Vector4(invWavelength, 0));
-		m_skyMaterial->setFloatParameter("fScale", fScale);
-		m_skyMaterial->setFloatParameter("fOuterRadius", fOuterRadius);
-		m_skyMaterial->setFloatParameter("fOuterRadius2", fOuterRadius2);
-		m_skyMaterial->setFloatParameter("fInnerRadius", fInnerRadius);
-		m_skyMaterial->setFloatParameter("fInnerRadius2", fInnerRadius2);
-		m_skyMaterial->setFloatParameter("fKrESun", fKrESun);
-		m_skyMaterial->setFloatParameter("fKmESun", fKmESun);
-		m_skyMaterial->setFloatParameter("fKr4PI", fKr4PI);
-		m_skyMaterial->setFloatParameter("fKm4PI", fKm4PI);
-		m_skyMaterial->setFloatParameter("fScaleDepth", fScaleDepth);
-		m_skyMaterial->setFloatParameter("fScaleOverScaleDepth", fScaleOverScaleDepth);
-		m_skyMaterial->setFloatParameter("g", g);
-		m_skyMaterial->setFloatParameter("exposure", exposure);
+		m_skyMaterial->setVectorParameter(_T("v3CameraPos"), Vector4(cameraPos, 0));
+		m_skyMaterial->setFloatParameter(_T("fCameraHeight"), fCameraHeight);
+		m_skyMaterial->setVectorParameter(_T("v3LightPos"), Vector4(lightPos, 0));
+		m_skyMaterial->setFloatParameter(_T("fCameraHeight2"), fCameraHeight2);
+		m_skyMaterial->setVectorParameter(_T("v3InvWavelength"), Vector4(invWavelength, 0));
+		m_skyMaterial->setFloatParameter(_T("fScale"), fScale);
+		m_skyMaterial->setFloatParameter(_T("fOuterRadius"), fOuterRadius);
+		m_skyMaterial->setFloatParameter(_T("fOuterRadius2"), fOuterRadius2);
+		m_skyMaterial->setFloatParameter(_T("fInnerRadius"), fInnerRadius);
+		m_skyMaterial->setFloatParameter(_T("fInnerRadius2"), fInnerRadius2);
+		m_skyMaterial->setFloatParameter(_T("fKrESun"), fKrESun);
+		m_skyMaterial->setFloatParameter(_T("fKmESun"), fKmESun);
+		m_skyMaterial->setFloatParameter(_T("fKr4PI"), fKr4PI);
+		m_skyMaterial->setFloatParameter(_T("fKm4PI"), fKm4PI);
+		m_skyMaterial->setFloatParameter(_T("fScaleDepth"), fScaleDepth);
+		m_skyMaterial->setFloatParameter(_T("fScaleOverScaleDepth"), fScaleOverScaleDepth);
+		m_skyMaterial->setFloatParameter(_T("g"), g);
+		m_skyMaterial->setFloatParameter(_T("exposure"), exposure);
 		/*
 
 		float3 v3CameraPos;		// The camera's current position
@@ -373,11 +373,11 @@ void MirrorComponent::initialize()
 	//m_material->setMaterialTexture(Texture2D::getBlackTexture());
 	//m_material->setMaterialTexture(Texture2D::getWhiteTexture());
 	//m_material->setShader(Shader::getBuiltinShader(BuiltinShader::Sprite));
-	auto shader = ln::Shader::create("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Scene/Resource/Mirror.fx");
+	auto shader = ln::Shader::create(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Scene/Resource/Mirror.fx"));
 	m_material->setShader(shader);
 
-	//auto tex = ln::Texture2D::create("C:/Proj/LN/HC1/Assets/Data/waterbump.png");
-	//m_material->setTextureParameter(_T("xWaterBumpMap"), tex);
+	//auto tex = ln::Texture2D::create(_T("C:/Proj/LN/HC1/Assets/Data/waterbump.png");
+	//m_material->setTextureParameter(_T(_T("xWaterBumpMap"), tex);
 
 }
 float g_time = 0;
@@ -386,8 +386,8 @@ void MirrorComponent::onRender2(RenderingContext* renderer)
 {
 	g_time += 0.001;
 	m_material->setMaterialTexture(m_offscreen->getRenderTarget());
-	m_material->setVectorParameter("xCamPos", Vector4(renderer->getRenderView()->m_cameraInfo.viewPosition,/*  getCurrentCamera()->getTransform()->position.get(),*/ 1.0));
-	m_material->setFloatParameter("time", g_time);
+	m_material->setVectorParameter(_T("xCamPos"), Vector4(renderer->getRenderView()->m_cameraInfo.viewPosition,/*  getCurrentCamera()->getTransform()->position.get(),*/ 1.0));
+	m_material->setFloatParameter(_T("time"), g_time);
 
 	// TODO: 法泉が入っていない？
 	renderer->drawSquare(20, 20, 1, 1, Color::White, Matrix::Identity, m_material);

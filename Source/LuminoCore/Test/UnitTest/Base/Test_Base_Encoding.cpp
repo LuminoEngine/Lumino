@@ -19,9 +19,9 @@ TEST_F(Test_Base_Encoding, Basic)
 	{
 #ifdef LN_UNICODE
 #ifdef _WIN32
-		ASSERT_TRUE(dynamic_cast<UTF16Encoding*>(Encoding::GetTCharEncoding()) != NULL);
+		ASSERT_TRUE(dynamic_cast<UTF16Encoding*>(Encoding::getTCharEncoding()) != NULL);
 #else
-		ASSERT_TRUE(dynamic_cast<UTF32Encoding*>(Encoding::GetTCharEncoding()) != NULL);
+		ASSERT_TRUE(dynamic_cast<UTF32Encoding*>(Encoding::getTCharEncoding()) != NULL);
 #endif
 #else
 		// TODO
