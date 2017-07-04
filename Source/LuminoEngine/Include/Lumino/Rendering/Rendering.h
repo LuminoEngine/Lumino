@@ -674,6 +674,7 @@ public:
 
 	void drawGlyphRun(const PointF& position, GlyphRun* glyphRun);
 
+	// 描画時、アルファブレンド無効であれば有効として描画される。
 	void drawText_(const StringRef& text, const PointF& position);
 	void drawText_(const StringRef& text, const Rect& rect, StringFormatFlags flags);
 

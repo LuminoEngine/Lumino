@@ -140,8 +140,7 @@ void Main()
 
 	//Engine::getDefaultSceneGraph3D()->visibleGridPlane = true;
 
-	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::makeRef();
-	CameraComponent::getMain3DCamera()->setCameraBehavior(cb);
+	Engine::getCamera3D()->addComponent(newObject<CameraMouseMoveBehavior>());
 
 	//auto mesh = SkinnedMeshComponent::create(_T("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
 

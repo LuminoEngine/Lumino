@@ -1402,6 +1402,13 @@ void DrawList::drawText_(const StringRef& text, const Rect& rect, StringFormatFl
 		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("DrawText")); }
 	};
 
+	BlendMode oldBlendMode = getCurrentState()->m_state.state.getBlendMode();
+	if (oldBlendMode == BlendMode::Normal)
+	{
+		setBlendMode(BlendMode::Alpha);
+	}
+
+
 	// TODO: オーバーライドされる場合の動作はちゃんと考えておこう。
 	// 3bd204b あたりの問題だけど、CombinedMaterial は 元 material のハッシュ値を覚えているので、それも変える必要がある。
 	//RefPtr<Texture> old = m_defaultMaterial->getMaterialTexture(nullptr);
@@ -1418,6 +1425,9 @@ void DrawList::drawText_(const StringRef& text, const Rect& rect, StringFormatFl
 	//e->boundingSphere = ;	// TODO
 
 	//m_defaultMaterial->setMaterialTexture(old);
+
+
+	setBlendMode(oldBlendMode);
 }
 
 //------------------------------------------------------------------------------

@@ -194,26 +194,26 @@ private:
 	CameraComponent* m_targetCamera;
 };
 
-/**
-	@brief
-*/
-class CylinderMouseMoveCameraBehavior
-	: public CameraBehavior
-{
-public:
-	CylinderMouseMoveCameraBehavior();
-	virtual ~CylinderMouseMoveCameraBehavior();
-
-	virtual bool injectMouseMove(int x, int y) override;
-	virtual bool injectMouseButtonDown(MouseButtons button, int x, int y) override;
-	virtual bool injectMouseButtonUp(MouseButtons button, int x, int y) override;
-	virtual bool injectMouseWheel(int delta) override;
-
-private:
-	PointI	m_prevPos;
-	bool	m_RDrag;
-	bool	m_MDrag;
-};
+///**
+//	@brief
+//*/
+//class CylinderMouseMoveCameraBehavior
+//	: public CameraBehavior
+//{
+//public:
+//	CylinderMouseMoveCameraBehavior();
+//	virtual ~CylinderMouseMoveCameraBehavior();
+//
+//	virtual bool injectMouseMove(int x, int y) override;
+//	virtual bool injectMouseButtonDown(MouseButtons button, int x, int y) override;
+//	virtual bool injectMouseButtonUp(MouseButtons button, int x, int y) override;
+//	virtual bool injectMouseWheel(int delta) override;
+//
+//private:
+//	PointI	m_prevPos;
+//	bool	m_RDrag;
+//	bool	m_MDrag;
+//};
 
 
 /**

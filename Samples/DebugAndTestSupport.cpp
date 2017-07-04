@@ -9,8 +9,8 @@ void Main_DebugAndTestSupport()
 	//auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::makeRef();
 	//CameraComponent::getMain3DCamera()->setCameraBehavior(cb);
 
-	//auto b = newObject<CameraMouseMoveBehavior>();
-	//Engine::getCamera3D()->addComponent(b);
+	auto b = newObject<CameraMouseMoveBehavior>();
+	Engine::getCamera3D()->addComponent(b);
 
 
 	while (Engine::update())

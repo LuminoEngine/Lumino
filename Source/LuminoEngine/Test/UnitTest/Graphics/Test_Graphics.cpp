@@ -149,7 +149,7 @@ TEST_F(Test_Graphics_Rendering, drawSquarePrimitive)
 			Vector3(50, 0, 0), Vector2(1, 0), Color::Blue,
 			Vector3(50, 50, 0), Vector2(1, 1), Color::White);
 		LN_TEST_END_FRAME;
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawSquarePrimitive1_.png"), 95, true));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawSquarePrimitive1.png"), 95));
 	}
 }
 
@@ -517,8 +517,8 @@ TEST_F(Test_Graphics_Rendering, drawFrameRectangle)
 TEST_F(Test_Graphics_Rendering, ZSort)
 {
 	auto t1 = Texture2D::create(LN_LOCALFILE("TestData/Sprite2.png"));
-	auto s1 = Sprite3DComponent::create(5, 5, t1);
-	auto s2 = Sprite3DComponent::create(8, 2, t1);
+	auto s1 = Sprite3D::create(5, 5, t1);
+	auto s2 = Sprite3D::create(8, 2, t1);
 	s1->setPosition(0, 0, 0);	// 手前
 	s2->setPosition(0, 0, 1);	// 奥
 	Engine::update();
