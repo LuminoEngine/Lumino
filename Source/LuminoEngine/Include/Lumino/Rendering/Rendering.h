@@ -91,13 +91,6 @@ public:
 	static const int MaxLights = 3;		// MMD based
 };
 
-enum class DrawingSectionId
-{
-	None,
-	NanoVG,
-};
-
-
 class CombinedMaterialCache
 	: public SimpleOneTimeObjectCache<CombinedMaterial>
 {
@@ -177,7 +170,6 @@ public:
 	};
 
 	int					batchIndex;
-	DrawingSectionId	drawingSectionId;
 	detail::Sphere		boundingSphere;		// 位置はワールド座標
 	int					subsetIndex;
 	float				zDistance;
@@ -713,7 +705,7 @@ LN_INTERNAL_ACCESS:
 	const DrawElementMetadata* getMetadata();
 	void popMetadata();
 
-	template<typename TElement> TElement* resolveDrawElement(detail::DrawingSectionId sectionId, detail::IRenderFeature* renderFeature, Material* userMaterial, const detail::PriorityBatchState* priorityState = nullptr);
+	template<typename TElement> TElement* resolveDrawElement(detail::IRenderFeature* renderFeature, Material* userMaterial, const detail::PriorityBatchState* priorityState = nullptr);
 	void drawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Material* material);
 	//void DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material);
 	void blitInternal(Texture* source, RenderTargetTexture* dest, const Matrix& transform, Material* material);
@@ -796,7 +788,7 @@ private:
 
 //------------------------------------------------------------------------------
 template<typename TElement>
-inline TElement* DrawList::resolveDrawElement(detail::DrawingSectionId sectionId, detail::IRenderFeature* renderFeature, Material* userMaterial, const detail::PriorityBatchState* priorityState)
+inline TElement* DrawList::resolveDrawElement(detail::IRenderFeature* renderFeature, Material* userMaterial, const detail::PriorityBatchState* priorityState)
 {
 	//Material* availableMaterial = m_defaultMaterial;// = (userMaterial != nullptr) ? userMaterial : getCurrentState()->m_defaultMaterial.get();
 	//if (getCurrentState()->m_defaultMaterial != nullptr) availableMaterial = getCurrentState()->m_defaultMaterial;
@@ -808,7 +800,8 @@ inline TElement* DrawList::resolveDrawElement(detail::DrawingSectionId sectionId
 	// これを決定してから比較を行う
 	getCurrentState()->m_state.SetStandaloneShaderRenderer(renderFeature->isStandaloneShader());
 
-	bool forceStateChange = (getCurrentState()->m_state.m_renderFeature != renderFeature);
+	auto cf = getCurrentState()->m_state.m_renderFeature;
+	bool forceStateChange = (cf != renderFeature);
 
 	getCurrentState()->m_state.m_renderFeature = renderFeature;
 
@@ -818,9 +811,7 @@ inline TElement* DrawList::resolveDrawElement(detail::DrawingSectionId sectionId
 
 
 	// 何か前回追加された DrawElement があり、それと DrawingSectionId、State が一致するならそれに対して追記できる
-	if (sectionId != detail::DrawingSectionId::None &&
-		m_currentSectionTopElement != nullptr &&
-		m_currentSectionTopElement->drawingSectionId == sectionId &&
+	if (m_currentSectionTopElement != nullptr &&
 		m_currentSectionTopElement->metadata.equals(*metadata) &&
 		m_currentSectionTopElement->m_stateFence == m_currentStateFence &&
 		m_drawElementList.getBatch(m_currentSectionTopElement->batchIndex)->Equal(getCurrentState()->m_state, availableMaterial, getCurrentState()->m_builtinEffectData, availablePriorityState))
@@ -830,8 +821,6 @@ inline TElement* DrawList::resolveDrawElement(detail::DrawingSectionId sectionId
 
 	// DrawElement を新しく作る
 	TElement* element = m_drawElementList.addCommand<TElement>(getCurrentState()->m_state, availableMaterial, getCurrentState()->m_builtinEffectData, forceStateChange, availablePriorityState);
-	//element->OnJoindDrawList(m_state.transfrom);
-	element->drawingSectionId = sectionId;
 	element->metadata = *metadata;
 	element->m_stateFence = m_currentStateFence;
 	m_currentSectionTopElement = element;

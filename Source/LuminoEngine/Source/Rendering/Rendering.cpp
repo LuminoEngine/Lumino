@@ -626,7 +626,6 @@ size_t DrawElementBatch::getHashCode() const
 DrawElement::DrawElement()
 	: /*m_transform()
 	, */batchIndex(-1)
-	, drawingSectionId(DrawingSectionId::None)
 	, subsetIndex(0)
 	//, zSortDistanceBase(ZSortDistanceBase::CameraDistance)
 	, zDistance(0.0f)
@@ -1114,7 +1113,7 @@ void DrawList::drawLinePrimitive(
 		}
 		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("DrawLine")); }
 	};
-	auto* ptr = resolveDrawElement<DrawElement_DrawLine>(detail::DrawingSectionId::None, m_manager->getInternalContext()->m_primitiveRenderer, nullptr);
+	auto* ptr = resolveDrawElement<DrawElement_DrawLine>(m_manager->getInternalContext()->m_primitiveRenderer, nullptr);
 	ptr->position1 = position1; ptr->color1 = color1;
 	ptr->position2 = position2; ptr->color2 = color2;
 	ptr->makeBoundingSphere(Vector3::min(position1, position2), Vector3::max(position1, position2));
@@ -1145,7 +1144,7 @@ void DrawList::drawSquarePrimitive(
 		}
 		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("DrawSquarePrimitive")); }
 	};
-	auto* e = resolveDrawElement<DrawSquarePrimitiveElement>(detail::DrawingSectionId::None, m_manager->getInternalContext()->m_primitiveRenderer, nullptr);
+	auto* e = resolveDrawElement<DrawSquarePrimitiveElement>(m_manager->getInternalContext()->m_primitiveRenderer, nullptr);
 	e->position[0] = position1; e->uv[0] = uv1; e->color[0] = color1;
 	e->position[1] = position2; e->uv[1] = uv2; e->color[1] = color2;
 	e->position[2] = position3; e->uv[2] = uv3; e->color[2] = color3;
@@ -1168,7 +1167,7 @@ void DrawList::drawSquare(float sizeX, float sizeZ, int slicesX, int slicesZ, co
 		}
 		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("DrawCylinderElement")); }
 	};
-	auto* e = resolveDrawElement<DrawCylinderElement>(detail::DrawingSectionId::None, m_manager->getInternalContext()->m_primitiveRenderer, material);
+	auto* e = resolveDrawElement<DrawCylinderElement>(m_manager->getInternalContext()->m_primitiveRenderer, material);
 	e->factory.initialize(Vector2(sizeX, sizeZ), slicesX, slicesZ, color, localTransform);
 	e->boundingSphere.center = Vector3::Zero;
 	e->boundingSphere.radius = Vector3(sizeX, sizeZ, 0).getLength();
@@ -1189,7 +1188,7 @@ void DrawList::drawArc(float startAngle, float endAngle, float innerRadius, floa
 		}
 		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("DrawArcElement")); }
 	};
-	auto* e = resolveDrawElement<DrawArcElement>(detail::DrawingSectionId::None, m_manager->getInternalContext()->m_primitiveRenderer, material);
+	auto* e = resolveDrawElement<DrawArcElement>(m_manager->getInternalContext()->m_primitiveRenderer, material);
 	e->factory.initialize(startAngle, endAngle, innerRadius, outerRadius, slices, color, localTransform);
 	e->boundingSphere.center = Vector3::Zero;
 	e->boundingSphere.radius = outerRadius;
@@ -1212,7 +1211,7 @@ void DrawList::drawBox(const Box& box, const Color& color, const Matrix& localTr
 		}
 		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("DrawBoxElement")); }
 	};
-	auto* e = resolveDrawElement<DrawBoxElement>(detail::DrawingSectionId::None, m_manager->getInternalContext()->m_primitiveRenderer, material);
+	auto* e = resolveDrawElement<DrawBoxElement>(m_manager->getInternalContext()->m_primitiveRenderer, material);
 	e->factory.initialize(Vector3(box.width, box.height, box.depth), color, localTransform);
 
 	Vector3 min, max;
@@ -1235,7 +1234,7 @@ void DrawList::drawSphere(float radius, int slices, int stacks, const Color& col
 		}
 		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("DrawSphereElement")); }
 	};
-	auto* e = resolveDrawElement<DrawSphereElement>(detail::DrawingSectionId::None, m_manager->getInternalContext()->m_primitiveRenderer, material);
+	auto* e = resolveDrawElement<DrawSphereElement>(m_manager->getInternalContext()->m_primitiveRenderer, material);
 	e->factory.initialize(radius, slices, stacks, color, localTransform);
 	e->boundingSphere.center = Vector3::Zero;
 	e->boundingSphere.radius = radius;
@@ -1256,7 +1255,7 @@ void DrawList::drawCylinder(float radius, float	height, int slices, int stacks, 
 		}
 		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("DrawCylinder")); }
 	};
-	auto* e = resolveDrawElement<DrawCylinderElement>(detail::DrawingSectionId::None, m_manager->getInternalContext()->m_primitiveRenderer, nullptr);
+	auto* e = resolveDrawElement<DrawCylinderElement>(m_manager->getInternalContext()->m_primitiveRenderer, nullptr);
 	e->factory.initialize(radius, height, slices, stacks, color, localTransform);
 	e->boundingSphere.center = Vector3::Zero;
 	e->boundingSphere.radius = Vector3(radius, height, 0).getLength();
@@ -1277,7 +1276,7 @@ void DrawList::drawCone(float radius, float height, int slices, const Color& col
 		}
 		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("DrawCone")); }
 	};
-	auto* e = resolveDrawElement<DrawConeElement>(detail::DrawingSectionId::None, m_manager->getInternalContext()->m_primitiveRenderer, nullptr);
+	auto* e = resolveDrawElement<DrawConeElement>(m_manager->getInternalContext()->m_primitiveRenderer, nullptr);
 	e->factory.initialize(radius, height, slices, color, localTransform);
 	e->boundingSphere.center = Vector3::Zero;
 	e->boundingSphere.radius = Vector3(radius, height, 0).getLength();
@@ -1352,7 +1351,7 @@ void DrawList::drawGlyphRun(const PointF& position, GlyphRun* glyphRun)
 	//m_defaultMaterial->setMaterialTexture(m_state.state.getFont()->resolveRawFont()->GetGlyphTextureCache()->getGlyphsFillTexture());
 
 
-	auto* e = resolveDrawElement<DrawElement_DrawGlyphRun>(detail::DrawingSectionId::None, m_manager->getInternalContext()->m_textRenderer, nullptr);
+	auto* e = resolveDrawElement<DrawElement_DrawGlyphRun>(m_manager->getInternalContext()->m_textRenderer, nullptr);
 	e->glyphRun = glyphRun;
 	e->position = position;
 	//e->boundingSphere = ;	// TODO
@@ -1418,7 +1417,7 @@ void DrawList::drawText_(const StringRef& text, const Rect& rect, StringFormatFl
 	priorityState.worldTransform = Matrix::Identity;
 	priorityState.mainTexture = getCurrentState()->m_state.state.getFont()->resolveRawFont()->GetGlyphTextureCache()->getGlyphsFillTexture();
 
-	auto* e = resolveDrawElement<DrawElement_DrawText>(detail::DrawingSectionId::None, m_manager->getInternalContext()->m_textRenderer, nullptr, &priorityState);
+	auto* e = resolveDrawElement<DrawElement_DrawText>(m_manager->getInternalContext()->m_textRenderer, nullptr, &priorityState);
 	e->text = text;
 	e->rect = rect;
 	e->flags = flags;
@@ -1448,7 +1447,7 @@ void DrawList::drawChar(TCHAR ch, const PointF& position)
 
 	// TODO: UTF32 変換
 
-	auto* e = resolveDrawElement<DrawElement_DrawChar>(detail::DrawingSectionId::None, m_manager->getInternalContext()->m_vectorTextRenderer, nullptr);
+	auto* e = resolveDrawElement<DrawElement_DrawChar>(m_manager->getInternalContext()->m_vectorTextRenderer, nullptr);
 	e->ch = ch;
 	e->position = position;
 	//e->boundingSphere = ;	// TODO
@@ -1478,7 +1477,7 @@ void DrawList::drawText2(const StringRef& text, const Rect& rect)
 
 	const ByteBuffer& utf32Data = m_manager->getFontManager()->getTCharToUTF32Converter()->convert(text.getBegin(), text.getLength() * sizeof(TCHAR));
 
-	auto* e = resolveDrawElement<DrawElement_DrawString>(detail::DrawingSectionId::None, m_manager->getInternalContext()->m_vectorTextRenderer, nullptr);
+	auto* e = resolveDrawElement<DrawElement_DrawString>(m_manager->getInternalContext()->m_vectorTextRenderer, nullptr);
 	e->utf32DataHandle = m_drawElementList.allocExtData(utf32Data.getSize());
 	e->length = utf32Data.getSize() / sizeof(UTF32);
 	e->rect = rect;
@@ -1520,7 +1519,7 @@ void DrawList::drawSprite(
 		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("DrawSprite")); }
 	};
 
-	auto* ptr = resolveDrawElement<DrawElement_DrawSprite>(detail::DrawingSectionId::None, m_manager->getInternalContext()->m_spriteRenderer, material);
+	auto* ptr = resolveDrawElement<DrawElement_DrawSprite>(m_manager->getInternalContext()->m_spriteRenderer, material);
 	ptr->position = position;
 	ptr->size.set(size.width, size.height);
 	ptr->anchorRatio = anchor;
@@ -1570,7 +1569,7 @@ void DrawList::drawRectangle(const Rect& rect)
 		return;
 	}
 
-	auto* ptr = resolveDrawElement<DrawElement_DrawNanoVGCommands>(detail::DrawingSectionId::NanoVG, m_manager->getInternalContext()->m_nanoVGRenderer, nullptr);
+	auto* ptr = resolveDrawElement<DrawElement_DrawNanoVGCommands>(m_manager->getInternalContext()->m_nanoVGRenderer, nullptr);
 	auto* list = ptr->GetGCommandList(this);
 	detail::NanoVGCommandHelper::nvgBeginPath(list);
 	detail::NanoVGCommandHelper::nvgRect(list, rect.x, rect.y, rect.width, rect.height);
@@ -1666,7 +1665,7 @@ void DrawList::drawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Mat
 	mesh->getMeshAttribute(subsetIndex, &attr);
 	if (attr.PrimitiveNum == 0) return;		// not need draw
 
-	auto* e = resolveDrawElement<DrawElement_DrawMeshResourceInternal>(detail::DrawingSectionId::None, m_manager->getInternalContext()->m_meshRenderer, material);
+	auto* e = resolveDrawElement<DrawElement_DrawMeshResourceInternal>(m_manager->getInternalContext()->m_meshRenderer, material);
 	e->subsetIndex = subsetIndex;
 	e->mesh = mesh;
 	e->startIndex = attr.StartIndex;
@@ -1700,7 +1699,7 @@ void DrawList::drawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Mat
 //	mesh->getMeshResource()->getMeshAttribute(subsetIndex, &attr);
 //	if (attr.PrimitiveNum == 0) return;		// not need draw
 //
-//	auto* e = resolveDrawElement<DrawElement_DrawMeshInternal>(detail::DrawingSectionId::None, m_manager->getInternalContext()->m_meshRenderer, material);
+//	auto* e = resolveDrawElement<DrawElement_DrawMeshInternal>(m_manager->getInternalContext()->m_meshRenderer, material);
 //	e->subsetIndex = subsetIndex;
 //	e->mesh = mesh;
 //	e->startIndex = attr.StartIndex;
@@ -1744,7 +1743,7 @@ void DrawList::blitInternal(Texture* source, RenderTargetTexture* dest, const Ma
 		setRenderTarget(0, dest);
 	}
 
-	auto* e = resolveDrawElement<DrawElement_BlitInternal>(detail::DrawingSectionId::None, m_manager->getInternalContext()->m_blitRenderer, material);
+	auto* e = resolveDrawElement<DrawElement_BlitInternal>(m_manager->getInternalContext()->m_blitRenderer, material);
 	e->overrideTransform = transform;
 	e->source = source;
 }
@@ -1771,7 +1770,7 @@ void DrawList::drawFrameRectangle(const Rect& rect)
 		}
 		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("DrawFrameRectangle")); }
 	};
-	auto* ptr = resolveDrawElement<DrawElement_DrawFrameRectangle>(detail::DrawingSectionId::None, m_manager->getInternalContext()->m_frameRectRenderer, nullptr);
+	auto* ptr = resolveDrawElement<DrawElement_DrawFrameRectangle>(m_manager->getInternalContext()->m_frameRectRenderer, nullptr);
 	ptr->rect = rect;
 	// TODO: カリング
 }
@@ -1806,7 +1805,7 @@ void DrawList::renderSubView(RenderView* listSet, detail::SceneRenderer* rendere
 	};
 
 	// TODO: m_frameRectRenderer は違う気がする・・・
-	auto* e = resolveDrawElement<DrawElement_RenderSubView>(detail::DrawingSectionId::None, m_manager->getInternalContext()->m_frameRectRenderer, nullptr);
+	auto* e = resolveDrawElement<DrawElement_RenderSubView>(m_manager->getInternalContext()->m_frameRectRenderer, nullptr);
 	//e->elementList = listSet->m_lists[0];
 	//e->cameraInfo = listSet->m_cameraInfo;
 	e->listSet = listSet;
