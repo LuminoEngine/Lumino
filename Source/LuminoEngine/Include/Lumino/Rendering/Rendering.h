@@ -318,7 +318,6 @@ public:
 	size_t getHashCode() const;
 	size_t getBuiltinEffectDataHashCode() const;
 
-	IRenderFeature*			m_renderFeature;
 
 	BatchState				state;
 
@@ -752,6 +751,7 @@ private:
 	//detail::DrawElementBatch		m_stateInSection;
 	const DrawElementMetadata*		m_metadata;
 	int								m_currentStateFence;
+	detail::IRenderFeature*			m_lastRenderFeature;
 
 	CameraComponent*							m_camera;
 
@@ -800,15 +800,14 @@ inline TElement* DrawList::resolveDrawElement(detail::IRenderFeature* renderFeat
 	// これを決定してから比較を行う
 	getCurrentState()->m_state.SetStandaloneShaderRenderer(renderFeature->isStandaloneShader());
 
-	auto cf = getCurrentState()->m_state.m_renderFeature;
-	bool forceStateChange = (cf != renderFeature);
+	bool forceStateChange = (m_lastRenderFeature != renderFeature);
 
-	getCurrentState()->m_state.m_renderFeature = renderFeature;
 
 	const DrawElementMetadata* userMetadata = getMetadata();
 	const DrawElementMetadata* metadata = (userMetadata != nullptr) ? userMetadata : &DrawElementMetadata::Default;
 	const detail::PriorityBatchState& availablePriorityState = (priorityState != nullptr) ? *priorityState : detail::PriorityBatchState::defaultState;
 
+	m_lastRenderFeature = renderFeature;
 
 	// 何か前回追加された DrawElement があり、それと DrawingSectionId、State が一致するならそれに対して追記できる
 	if (m_currentSectionTopElement != nullptr &&
@@ -818,6 +817,7 @@ inline TElement* DrawList::resolveDrawElement(detail::IRenderFeature* renderFeat
 	{
 		return static_cast<TElement*>(m_currentSectionTopElement);
 	}
+
 
 	// DrawElement を新しく作る
 	TElement* element = m_drawElementList.addCommand<TElement>(getCurrentState()->m_state, availableMaterial, getCurrentState()->m_builtinEffectData, forceStateChange, availablePriorityState);
