@@ -36,7 +36,7 @@ public:
 	float getElapsedTime() const { return m_elapsedTime; }
 
 	SceneGraphManager* getManager() const { return m_manager; }
-	virtual void updateFrame(float deltaTime);
+	//virtual void updateFrame(float deltaTime);
 	virtual SceneNode* getRootNode() = 0;
 	//virtual CameraComponent* getMainCamera() = 0;
 
@@ -100,7 +100,7 @@ public:
 
 public:
 
-	virtual void updateFrame(float elapsedTime);
+	//virtual void updateFrame(float elapsedTime);
 	virtual SceneNode* getRootNode() override { return m_defaultRoot; }
 	//virtual CameraComponent* getMainCamera() override { return m_defaultCamera; }
 	//virtual List<RenderingPass*>* GetRenderingPasses() override { return &m_renderingPasses; }
@@ -126,7 +126,7 @@ class SceneGraph3D
 public:
 	bool	visibleGridPlane;
 
-	virtual void updateFrame(float elapsedTime);
+	//virtual void updateFrame(float elapsedTime);
 	virtual SceneNode* getRootNode() override { return m_defaultRoot; }
 	//virtual CameraComponent* getMainCamera() override { return m_defaultCamera; }
 	//LightComponent* GetMainLight() const;
@@ -141,7 +141,7 @@ private:
 
 	SceneNode*				m_defaultRoot;
 	CameraComponent*					m_defaultCamera;
-	RefPtr<LightComponent>			m_defaultLight;
+	//RefPtr<LightComponent>			m_defaultLight;
 
 };
 

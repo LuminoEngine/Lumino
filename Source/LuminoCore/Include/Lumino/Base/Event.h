@@ -36,7 +36,7 @@ public:
 	{}
 
 	/** イベントハンドラとイベントを切断します。*/
-	void Disconnect()
+	void disconnect()
 	{
 		if (m_internalData != nullptr)
 		{

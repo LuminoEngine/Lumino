@@ -1,12 +1,14 @@
 ﻿
 #pragma once
 #include "../Common.h"
+#include "../Game/Component.h"
 
 LN_NAMESPACE_BEGIN
 class DrawList;
 class RenderingContext;
+class World;
 class WorldObject;
-class transform;
+class Transform;
 class VisualComponent;
 class UIEventArgs;
 
@@ -25,13 +27,13 @@ class Component
 {
 	LN_OBJECT();
 public:
-	transform*	transfotm;		/**< アタッチされた WorldObject の transform へのポインタ */
+	Transform*	transfotm;		/**< アタッチされた WorldObject の transform へのポインタ */
 
 public:
 	Component();
 	virtual ~Component();
 	WorldObject* getOwnerObject() const;
-	transform* getTransform() const;
+	Transform* getTransform() const;
 
 	/** このコンポーネントが属するレイヤーを設定します。 */
 	LN_METHOD()
@@ -52,7 +54,11 @@ public:
 	virtual void onAttached();
 	virtual void onDetaching();
 	virtual void onUpdate();
+	virtual void onPreRender(DrawList* context);	// 全てのオブジェクトに対して、レンダリングフェーズの開始を通知する
 	virtual void onRender(DrawList* context);
+
+	virtual void onAttachedWorld(World* world);
+	virtual void onDetachedWorld(World* world);
 
 protected:
 	virtual void onUIEvent(UIEventArgs* e);
@@ -80,7 +86,22 @@ private:
 /**
 	@brief		
 */
-class transform	// TODO: name TransformComponent
+class Behavior
+	: public Component
+{
+	LN_OBJECT();
+public:
+
+LN_CONSTRUCT_ACCESS:
+	Behavior();
+	virtual ~Behavior();
+	void initialize();
+};
+
+/**
+	@brief		
+*/
+class Transform	// TODO: name TransformComponent
 	: public Component
 {
 	LN_OBJECT();
@@ -91,8 +112,8 @@ public:
 	Vector3		center;
 
 public:
-	transform();
-	virtual ~transform();
+	Transform();
+	virtual ~Transform();
 
 	Vector3 getFront() const;
 
@@ -117,7 +138,7 @@ public:
 	void updateWorldMatrix();
 
 private:
-	transform*	m_parent;
+	Transform*	m_parent;
 	Matrix		m_worldMatrix;
 };
 

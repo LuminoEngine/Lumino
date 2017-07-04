@@ -235,7 +235,7 @@ void UIControlsGallery()
 	Engine::initialize();
 
 
-	Engine::getWorld3D()->SetVisibleGridPlane(true);
+	Engine::getWorld3D()->setVisibleGridPlane(true);
 
 	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::makeRef();
 	CameraComponent::getMain3DCamera()->setCameraBehavior(cb);

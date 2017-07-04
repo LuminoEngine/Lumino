@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include "Rendering/Rendering.h"	// TODO: for WorldRenderView
+#include "UI/UIEvent.h"
 
 LN_NAMESPACE_BEGIN
 namespace detail { class SceneGraphRenderingProfilerInterface; }
@@ -80,7 +81,10 @@ LN_INTERNAL_ACCESS:
 	void renderRoot(WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags);
 	virtual void render(RenderingContext* context, WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen = nullptr);
 	void executeDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
-	virtual void onUIEvent(UIEventArgs* e);
+	virtual void onUIEvent(UIEventArgs* e);	// この World をホストする UIViewport のイベントが流れてくる
+
+	EventConnection connectOnUIEvent(UIEventHandler handler);
+
 
 	List<RefPtr<WorldObject>>			m_rootWorldObjectList;
 	RefPtr<RenderingContext>			m_renderer;
@@ -89,6 +93,8 @@ LN_INTERNAL_ACCESS:
 	RefPtr<Material>					m_debugRendererDefaultMaterial;	// TODO: DebugDrawList みたいに派生させてまとめたほうがいいかな・・・
 	List<RefPtr<OffscreenWorldView>>	m_offscreenWorldViewList;
 	List<int>							m_offscreenIdStorage;
+
+	UIEventHandler::EventType			m_onEvent;
 };
 
 /**
@@ -129,7 +135,7 @@ class World3D
 {
 	LN_OBJECT();
 public:
-	void SetVisibleGridPlane(bool visible) { m_visibleGridPlane = visible; }
+	void setVisibleGridPlane(bool visible) { m_visibleGridPlane = visible; }
 	//virtual DrawList* getRenderer() const override;
 
 protected:

@@ -1,9 +1,10 @@
 
 set(LN_SOURCES_SampleBrowser
+	DebugAndTestSupport.cpp
+	HelloWorld.cpp
+	SampleBrowser.cpp
 	SampleBrowser.PCH.cpp
 	SampleBrowser.PCH.h
-	SampleBrowser.cpp
-	HelloWorld.cpp
 	Sprite2D.cpp
 )
 

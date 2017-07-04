@@ -108,7 +108,7 @@ class ScopedCameraPosition
 public:
 	ScopedCameraPosition(float x, float y, float z)
 	{
-		camera = CameraComponent::getMain3DCamera();
+		camera = Engine::getWorld3D()->getMainCamera();//CameraComponent::getMain3DCamera();
 		oldPos = camera->getPosition();
 		camera->setPosition(x, y, z);
 	}
@@ -118,7 +118,7 @@ public:
 		camera->setPosition(oldPos);
 	}
 
-	CameraComponent*	camera;
+	Camera*	camera;
 	Vector3 oldPos;
 };
 

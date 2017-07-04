@@ -42,7 +42,7 @@ class WorldObject
 {
 	LN_OBJECT();
 public:
-	transform	transform;
+	Transform	transform;
 
 public:
 	static WorldObjectPtr create();
@@ -126,6 +126,9 @@ public:
 
 	/// 終了処理
 	virtual void onDestroy();
+
+	virtual void onAttachedWorld(World* world);
+	virtual void onDetachedWorld(World* world);
 
 protected:
 	virtual void onUIEvent(UIEventArgs* e);

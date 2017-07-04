@@ -37,12 +37,6 @@ void LightComponent::initialize(LightType type)
 	m_lightInfo->m_ambient.set(1.0f, 1.0f, 1.0f, 1.0f);
 	m_lightInfo->m_specular.set(1.0f, 1.0f, 1.0f, 1.0f);
 	m_lightInfo->m_shadowZFar = 1000.0f;
-
-	// Unity Default
-	Quaternion rot;
-	rot.rotateX(Math::degreesToRadians(50));
-	rot.rotateY(Math::degreesToRadians(-30));
-	setRotation(rot);
 }
 
 //------------------------------------------------------------------------------
@@ -82,13 +76,13 @@ void LightComponent::updateMatrices(/*const Size& viewSize*/)
 }
 
 //------------------------------------------------------------------------------
-void LightComponent::onRender(DrawList* renderer)
+void LightComponent::onPreRender(DrawList* context)
 {
 	if (m_enabled)
 	{
 		updateMatrices();
 		m_lightInfo->transform = getOwnerObject()->transform.getWorldMatrix();
-		renderer->addDynamicLightInfo(m_lightInfo);
+		context->addDynamicLightInfo(m_lightInfo);
 	}
 }
 
@@ -115,6 +109,12 @@ void Light::initialize()
 	WorldObject::initialize();
 	m_component = newObject<LightComponent>(LightType_Directional);
 	addComponent(m_component);
+
+	// Unity Default
+	Quaternion rot;
+	rot.rotateX(Math::degreesToRadians(50));
+	rot.rotateY(Math::degreesToRadians(-30));
+	setRotation(rot);
 }
 
 //------------------------------------------------------------------------------

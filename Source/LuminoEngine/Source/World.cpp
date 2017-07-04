@@ -89,6 +89,7 @@ void World::addWorldObject(WorldObject* obj, bool autoRelease)
 	m_rootWorldObjectList.add(obj);
 	obj->m_world = this;
 	obj->m_isAutoRelease = autoRelease;
+	obj->onAttachedWorld(this);
 }
 
 //------------------------------------------------------------------------------
@@ -98,6 +99,7 @@ void World::removeWorldObject(WorldObject* obj)
 	if (LN_CHECK_STATE(obj->m_world == this)) return;
 	m_rootWorldObjectList.remove(obj);
 	obj->m_parent = nullptr;
+	obj->onDetachedWorld(this);
 }
 
 //------------------------------------------------------------------------------
@@ -172,6 +174,8 @@ void World::render(RenderingContext* context, WorldRenderView* renderView, World
 
 		for (auto& c : obj->m_components)
 		{
+			c->onPreRender(context);
+
 			VisualComponent* visual = nullptr;
 			if (c->getSpecialComponentType() == SpecialComponentType::Visual)
 			{
@@ -207,6 +211,14 @@ void World::onUIEvent(UIEventArgs* e)
 		obj->onUIEvent(e);
 		if (e->handled) return;
 	}
+
+	m_onEvent.raise(e);
+}
+
+//------------------------------------------------------------------------------
+EventConnection World::connectOnUIEvent(UIEventHandler handler)
+{
+	return m_onEvent.connect(handler);
 }
 
 //==============================================================================

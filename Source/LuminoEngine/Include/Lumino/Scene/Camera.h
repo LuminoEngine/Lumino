@@ -216,6 +216,38 @@ private:
 };
 
 
+/**
+	@brief
+*/
+class CameraMouseMoveBehavior
+	: public Behavior
+{
+	LN_OBJECT();
+LN_CONSTRUCT_ACCESS:
+	CameraMouseMoveBehavior();
+	virtual ~CameraMouseMoveBehavior();
+	void initialize();
+
+protected:
+	virtual void onAttached() override;
+	virtual void onDetaching() override;
+	virtual void onAttachedWorld(World* world) override;
+	virtual void onDetachedWorld(World* world) override;
+
+private:
+	void World_onUIEvent(UIEventArgs* e);
+	bool injectMouseMove(int x, int y);
+	bool injectMouseButtonDown(MouseButtons button, int x, int y);
+	bool injectMouseButtonUp(MouseButtons button, int x, int y);
+	bool injectMouseWheel(int delta);
+
+	Camera*			m_targetCamera;
+	EventConnection	m_onUIEventConnection;
+	PointI			m_prevPos;
+	bool			m_RDrag;
+	bool			m_MDrag;
+};
+
 
 /**
 	@brief
@@ -225,7 +257,7 @@ class Camera
 {
 	LN_OBJECT();
 public:
-	CameraComponent* GetCameraComponent() const;
+	CameraComponent* getCameraComponent() const;
 
 LN_CONSTRUCT_ACCESS:
 	Camera();

@@ -34,7 +34,7 @@ WorldObject* Component::getOwnerObject() const
 }
 
 //------------------------------------------------------------------------------
-transform* Component::getTransform() const
+Transform* Component::getTransform() const
 {
 	return (m_owner != nullptr) ? &m_owner->transform : nullptr;
 }
@@ -55,7 +55,22 @@ void Component::onUpdate()
 }
 
 //------------------------------------------------------------------------------
+void Component::onPreRender(DrawList* context)
+{
+}
+
+//------------------------------------------------------------------------------
 void Component::onRender(DrawList* context)
+{
+}
+
+//------------------------------------------------------------------------------
+void Component::onAttachedWorld(World* world)
+{
+}
+
+//------------------------------------------------------------------------------
+void Component::onDetachedWorld(World* world)
 {
 }
 
@@ -93,12 +108,33 @@ void Component::render(RenderingContext* context)
 }
 
 //==============================================================================
-// transform
+// Behavior
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(transform, Component);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Behavior, Component);
 
 //------------------------------------------------------------------------------
-transform::transform()
+Behavior::Behavior()
+{
+}
+
+//------------------------------------------------------------------------------
+Behavior::~Behavior()
+{
+}
+
+//------------------------------------------------------------------------------
+void Behavior::initialize()
+{
+	Component::initialize();
+}
+
+//==============================================================================
+// Transform
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Transform, Component);
+
+//------------------------------------------------------------------------------
+Transform::Transform()
 	: position(Vector3::Zero)
 	, rotation(Quaternion::Identity)
 	, scale(Vector3::Ones)
@@ -108,30 +144,30 @@ transform::transform()
 }
 
 //------------------------------------------------------------------------------
-transform::~transform()
+Transform::~Transform()
 {
 }
 
 //------------------------------------------------------------------------------
-Vector3 transform::getFront() const
+Vector3 Transform::getFront() const
 {
 	return Vector3::transform(Vector3::UnitZ, rotation);
 }
 
 //------------------------------------------------------------------------------
-void transform::translate(const Vector3& translation)
+void Transform::translate(const Vector3& translation)
 {
 	position = position + translation;
 }
 
 //------------------------------------------------------------------------------
-void transform::translate(float x, float y, float z)
+void Transform::translate(float x, float y, float z)
 {
 	translate(Vector3(x, y, z));
 }
 
 //------------------------------------------------------------------------------
-void transform::lookAt(const Vector3& target, const Vector3& up)
+void Transform::lookAt(const Vector3& target, const Vector3& up)
 {
 	if (target == position) return;
 
@@ -148,13 +184,13 @@ void transform::lookAt(const Vector3& target, const Vector3& up)
 }
 
 //------------------------------------------------------------------------------
-Matrix transform::getTransformMatrix() const
+Matrix Transform::getTransformMatrix() const
 {
 	return Matrix::makeAffineTransformation(scale, center, rotation, position);
 }
 
 //------------------------------------------------------------------------------
-void transform::updateWorldMatrix()
+void Transform::updateWorldMatrix()
 {
 	Matrix localMatrix = Matrix::makeAffineTransformation(scale, center, rotation, position);
 

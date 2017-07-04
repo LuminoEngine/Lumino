@@ -161,7 +161,7 @@ TEST_F(Test_Base_EventConnection, Basic)
 	ev01.raise(5);
 	ASSERT_EQ(60, g_Value);
 
-	conn.Disconnect();
+	conn.disconnect();
 
 	ev01.raise(5);
 	ASSERT_EQ(65, g_Value);
@@ -170,7 +170,7 @@ TEST_F(Test_Base_EventConnection, Basic)
 	ev01.clear();
 	ev01.raise(5);
 	ASSERT_EQ(65, g_Value);
-	conn.Disconnect();
+	conn.disconnect();
 }
 
 //---------------------------------------------------------------------
@@ -224,7 +224,7 @@ TEST_F(Test_Base_EventConnection, raise)
 
 	// <Test> イベントハンドラを1つ除外した後、残りを呼び出せること。
 	{
-		conn.Disconnect();
+		conn.disconnect();
 		ev01.raise(2);
 		ASSERT_EQ(44, g_Value);
 	}

@@ -82,7 +82,7 @@ public:	// internal
 	//const Matrix& GetViewProjectionMatrixIT() const { return m_viewProjMatrixIT; }
 
 protected:
-	virtual void onRender(DrawList* renderer) override;
+	virtual void onPreRender(DrawList* context) override;
 
 private:
 	friend class VisualComponent;

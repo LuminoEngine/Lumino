@@ -13,6 +13,7 @@ using namespace ln;
 
 void Main_HelloWorld();
 void Main_Sprite2D();
+void Main_DebugAndTestSupport();
 
 struct SampleInfo
 {
@@ -24,9 +25,10 @@ static SampleInfo g_samples[] =
 {
 	{ _T("HelloWorld"), Main_HelloWorld },
 	{ _T("Sprite2D"), Main_Sprite2D },
+	{ _T("DebugAndTestSupport"), Main_DebugAndTestSupport },
 };
 
-int						g_samplesIndex = 0;
+int						g_samplesIndex = 2;
 RefPtr<UIToggleButton>	g_pinButton;
 RefPtr<UIUserControl>	g_listWindow;
 RefPtr<AnimationClock>	g_clock;

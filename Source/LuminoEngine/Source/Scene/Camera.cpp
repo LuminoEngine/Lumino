@@ -22,13 +22,13 @@ LN_NAMESPACE_SCENE_BEGIN
 //------------------------------------------------------------------------------
 CameraComponent* CameraComponent::getMain3DCamera()
 {
-	return detail::EngineDomain::getDefaultWorld3D()->getMainCamera()->GetCameraComponent();
+	return detail::EngineDomain::getDefaultWorld3D()->getMainCamera()->getCameraComponent();
 }
 
 //------------------------------------------------------------------------------
 CameraComponent* CameraComponent::getMain2DCamera()
 {
-	return detail::EngineDomain::getDefaultWorld2D()->getMainCamera()->GetCameraComponent();
+	return detail::EngineDomain::getDefaultWorld2D()->getMainCamera()->getCameraComponent();
 }
 
 //------------------------------------------------------------------------------
@@ -229,6 +229,359 @@ void CameraComponent::onUIEvent(UIEventArgs* e)
 	{
 		Component::onUIEvent(e);
 	}
+}
+
+//==============================================================================
+// CameraMouseMoveBehavior
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(CameraMouseMoveBehavior, Behavior);
+
+//------------------------------------------------------------------------------
+CameraMouseMoveBehavior::CameraMouseMoveBehavior()
+	: m_targetCamera(nullptr)
+	, m_onUIEventConnection()
+	, m_prevPos()
+	, m_RDrag(false)
+	, m_MDrag(false)
+{
+}
+
+//------------------------------------------------------------------------------
+CameraMouseMoveBehavior::~CameraMouseMoveBehavior()
+{
+}
+
+//------------------------------------------------------------------------------
+void CameraMouseMoveBehavior::initialize()
+{
+	Behavior::initialize();
+}
+
+//------------------------------------------------------------------------------
+void CameraMouseMoveBehavior::onAttached()
+{
+	m_targetCamera = dynamic_cast<Camera*>(getOwnerObject());
+	LN_ASSERT(m_targetCamera != nullptr);	// TODO: この辺はアタッチ前に TypeInfo とかでチェックしたい。そうしないとエディタで使えない。
+}
+
+//------------------------------------------------------------------------------
+void CameraMouseMoveBehavior::onDetaching()
+{
+	m_targetCamera = nullptr;
+}
+
+//------------------------------------------------------------------------------
+void CameraMouseMoveBehavior::onAttachedWorld(World* world)
+{
+	m_onUIEventConnection = world->connectOnUIEvent(createDelegate(this, &CameraMouseMoveBehavior::World_onUIEvent));
+}
+
+//------------------------------------------------------------------------------
+void CameraMouseMoveBehavior::onDetachedWorld(World* world)
+{
+	m_onUIEventConnection.disconnect();
+}
+
+//------------------------------------------------------------------------------
+void CameraMouseMoveBehavior::World_onUIEvent(UIEventArgs* e)
+{
+	if (e->getType() == UIEvents::MouseDownEvent)
+	{
+		auto* me = static_cast<UIMouseEventArgs*>(e);
+		auto pos = me->getPosition(me->sender);
+		injectMouseButtonDown(me->getMouseButtons(), pos.x, pos.y);
+	}
+	else if (e->getType() == UIEvents::MouseUpEvent)
+	{
+		auto* me = static_cast<UIMouseEventArgs*>(e);
+		auto pos = me->getPosition(me->sender);
+		injectMouseButtonUp(me->getMouseButtons(), pos.x, pos.y);
+	}
+	else if (e->getType() == UIEvents::MouseMoveEvent)
+	{
+		auto* me = static_cast<UIMouseEventArgs*>(e);
+		auto pos = me->getPosition(me->sender);
+		injectMouseMove(pos.x, pos.y);
+	}
+	else if (e->getType() == UIEvents::MouseMoveEvent)
+	{
+		auto* me = static_cast<UIMouseWheelEventArgs*>(e);
+		injectMouseWheel(me->getDelta());
+	}
+	else
+	{
+		Component::onUIEvent(e);
+	}
+}
+
+//------------------------------------------------------------------------------
+bool CameraMouseMoveBehavior::injectMouseMove(int x, int y)
+{
+	if (m_RDrag)
+	{
+		//Camera* camera = getTargetCamera();
+		//Vector3 pos = camera->GetPosition();
+		//Vector3 lookAt = camera->getLookAt();
+		//Vector3 localPos = pos - lookAt;
+
+		//Matrix m = Matrix::LookAtLH(pos, lookAt, Vector3::UnitY);
+		//Vector3 r = m.toEulerAngles(RotationOrder_XYZ);
+
+		//float lenXZ = Vector2(localPos.X, localPos.Z).GetLength();
+		//float rotX = atan2f(localPos.Z, localPos.X);
+		//float rotY = atan2f(localPos.Y, lenXZ);
+
+		//rotX = r.X;
+		//rotY = r.Y;
+		//rotX += 0.0001f * (x - m_prevPos.X);
+		//rotY += 0.0001f * (y - m_prevPos.Y);
+
+		//while (rotX >= Math::PI) {
+		//	rotX -= Math::PI * 2.0f;
+		//}
+		//while (rotX <= -Math::PI) {
+		//	rotX += Math::PI * 2.0f;
+		//}
+		//if (rotY > Math::PI / 2.0f) {
+		//	rotY = Math::PI / 2.0f;
+		//}
+		//if (rotY < -Math::PI / 2.0f) {
+		//	rotY = -Math::PI / 2.0f;
+		//}
+
+		//Matrix mat;// = Matrix::RotationYawPitchRoll(rotX, rotY, 0);
+		//mat.rotateX(rotY);
+		//mat.rotateY(rotX);
+		//Vector3 newPos(0, 0, localPos.GetLength());
+		//newPos.transformCoord(mat);
+		//camera->setPosition(newPos);
+
+		float s = 0.01f;
+		float dx = s * (x - m_prevPos.x);
+		float dy = s * (y - m_prevPos.y);
+
+		//CameraComponent* camera = getTargetCamera();
+
+		CameraComponent* cameraComponent = m_targetCamera->getCameraComponent();
+		Vector3 view;
+		Vector3 vup = cameraComponent->getUpDirection();
+		Vector3 pos = m_targetCamera->getPosition();//camera->getTransform()->position;
+		Vector3 look_at = cameraComponent->getLookAt();
+		vup.normalize();
+
+		// 注視点中心回転
+		if (1)
+		{
+			view = pos - look_at;
+		}
+		// 視点中心回転
+		else
+		{
+			view = look_at - pos;
+		}
+
+		Matrix m;
+		float d;
+
+		if (dx != 0)
+		{
+			d = Math::PI * dx;// / width;
+							  // Y 軸周りの回転を逆にする場合 (右手系)
+			if (0) // CAMTYPE_REV_ROT_Y
+			{
+				d = -d;
+			}
+
+			// vup を軸にする場合
+			//if ( m_type & CAMTYPE_AROUND_UP )
+			//	D3DXMatrixRotationAxis( &m, &vup, D3DXToRadian(d) );
+			//else
+			//	D3DXMatrixRotationY( &m, D3DXToRadian(d) );
+
+			m.rotateY(d);
+			view.transformCoord(m);
+		}
+		if (dy != 0)
+		{
+			// 球タイプ
+			if (1)
+			{
+				Vector3 vaxis = Vector3::cross(vup, view);
+
+				vaxis.normalize();
+				d = -(Math::PI * dy/* / height*/);
+
+
+				//if (d > Math::PI / 2.0f) {
+				//	d = Math::PI / 2.0f;
+				//}
+				//if (d < -Math::PI / 2.0f) {
+				//	d = -Math::PI / 2.0f;
+				//}
+				//printf("%f\n", d);
+
+				m = Matrix::makeRotationAxis(vaxis, d);
+				view.transformCoord(m);
+
+
+				//D3DXVec3Cross( &vaxis, &vup, &view );
+				//D3DXVec3Normalize( &vaxis, &vaxis );
+				//d = (float)180.0 * (float)dy / (float)prc->bottom;
+				//D3DXMatrixRotationAxis( &m, &vaxis, D3DXToRadian(d) );
+				//D3DXVec3TransformNormal( &view, &view, &m );
+			}
+			else
+			{
+				//if( m_type & CAMTYPE_AROUND_UP )
+				//	view += ( vup * (float)dy );
+				//else
+				//	view.y += (float)dy;
+			}
+		}
+
+		// 注視点中心回転
+		if (1)
+		{
+			Vector3 old = pos;
+
+			pos = look_at + view;
+
+			// 上または下にドラッグし続けた場合、中天を通り過ぎたところで
+			// XZ上の反対側の象限にカメラが移動して画面がちらちらするのを防ぐ処理
+			//if (((old.X < 0 && pos.X > 0) || (old.X > 0 && pos.X < 0)) &&
+			//	((old.Z < 0 && pos.Z > 0) || (old.Z > 0 && pos.Z < 0)))
+			//{
+			//	pos = old;
+			//}
+
+		}
+		// 視点中心回転
+		else
+		{
+			pos += view;
+		}
+
+		//camera->getTransform()->position = pos;
+
+		//camera->getTransform()->lookAt(look_at);	// TODO: tmp
+
+		m_targetCamera->setPosition(pos);
+		m_targetCamera->transform.lookAt(look_at);	// TODO: tmp
+
+		m_prevPos.x = x;
+		m_prevPos.y = y;
+		return true;
+	}
+	if (m_MDrag)
+	{
+		//CameraComponent* camera = getTargetCamera();
+		//Vector3 pos = camera->getPosition();
+		//Vector3 lookAt = camera->getLookAt();
+		CameraComponent* cameraComponent = m_targetCamera->getCameraComponent();
+		Vector3 pos = m_targetCamera->getPosition();
+		Vector3 lookAt = cameraComponent->getLookAt();
+
+		// 1px に付きどの程度移動するか
+		float s = 0.00175f * (pos - lookAt).getLength();
+		float dx = s * (x - m_prevPos.x);
+		float dy = s * (y - m_prevPos.y);
+
+		Vector3 xaxis, yaxis, zaxis;
+		// 注視点からカメラ位置までのベクトルをZ軸(正面方向)とする
+		zaxis = lookAt;
+		zaxis -= pos;
+		zaxis.normalize();
+		// Z軸と上方向のベクトルの外積をとると右方向が分かる
+		xaxis = Vector3::cross(Vector3::UnitY, zaxis);
+		xaxis.normalize();
+		// 2つの軸がわかったので、その2つの外積は残りの上方向になる
+		yaxis = Vector3::cross(zaxis, xaxis);
+
+		// 横方向と縦方向にそれぞれ移動
+		xaxis *= -dx;
+		yaxis *= dy;
+
+		// 移動分を1つのベクトルにまとめて、位置と注視点を平行移動する
+		Vector3 offset;
+		offset = xaxis + yaxis;
+		m_targetCamera->setPosition(pos + offset);
+		cameraComponent->setLookAt(lookAt + offset);
+
+
+		m_prevPos.x = x;
+		m_prevPos.y = y;
+
+		//Vector3 view;
+		//Matrix mat = Matrix::inverse(getTargetCamera()->GetViewMatrix());
+		//mat.M41 = mat.M42 = mat.M43 = 0.0f;
+		//view.X = -dx * s;
+		//view.Y = dy * s;
+		//view.Z = 0.f;
+		//view.transformCoord(mat);
+
+		//camera->setPosition(pos + view);
+		//camera->setLookAt(look_at + view);
+		return true;
+	}
+
+	return false;
+}
+
+//------------------------------------------------------------------------------
+bool CameraMouseMoveBehavior::injectMouseButtonDown(MouseButtons button, int x, int y)
+{
+	// 右ボタン
+	if (button == MouseButtons::Right)
+	{
+		m_RDrag = true;
+		m_prevPos.x = x;
+		m_prevPos.y = y;
+		return true;
+
+	}
+	// 中ボタン
+	else if (button == MouseButtons::Middle)
+	{
+		m_MDrag = true;
+		m_prevPos.x = x;
+		m_prevPos.y = y;
+		return true;
+	}
+	return false;
+}
+
+//------------------------------------------------------------------------------
+bool CameraMouseMoveBehavior::injectMouseButtonUp(MouseButtons button, int x, int y)
+{
+	// 右ボタン
+	if (button == MouseButtons::Right)
+	{
+		m_RDrag = false;
+		return true;
+
+	}
+	// 中ボタン
+	else if (button == MouseButtons::Middle)
+	{
+		m_MDrag = false;
+		return true;
+	}
+	return false;
+}
+
+//------------------------------------------------------------------------------
+bool CameraMouseMoveBehavior::injectMouseWheel(int delta)
+{
+	//CameraComponent* cameraComponent = m_targetCamera->getCameraComponent();
+	//Vector3 view = m_targetCamera->getReferenceCount() - camera->getLookAt();
+	//if (delta >= 0) {
+	//	view *= 0.9f;
+	//}
+	//else {
+	//	view *= 1.1f;
+	//}
+	//camera->getTransform()->position = (camera->getLookAt() + view);
+	return true;
 }
 
 #if 0
@@ -845,7 +1198,7 @@ void Camera::initialize(CameraProjection proj)
 }
 
 //------------------------------------------------------------------------------
-CameraComponent* Camera::GetCameraComponent() const
+CameraComponent* Camera::getCameraComponent() const
 {
 	return m_component;
 }

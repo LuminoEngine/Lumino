@@ -114,6 +114,13 @@ void WorldObject::addComponent(Component* component)
 	if (LN_CHECK_ARG(component->m_owner == nullptr)) return;
 	component->attach(this);
 	m_components.add(component);
+
+	// if alraady added, onAttachedWorld
+	World* world = getWorld();
+	if (world != nullptr)
+	{
+		component->onAttachedWorld(world);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -148,6 +155,32 @@ void WorldObject::onRender(DrawList* context)
 //------------------------------------------------------------------------------
 void WorldObject::onDestroy()
 {
+}
+
+//------------------------------------------------------------------------------
+void WorldObject::onAttachedWorld(World* world)
+{
+	for (auto& c : m_components)
+	{
+		c->onAttachedWorld(world);
+	}
+	for (auto& c : m_children)
+	{
+		c->onAttachedWorld(world);
+	}
+}
+
+//------------------------------------------------------------------------------
+void WorldObject::onDetachedWorld(World* world)
+{
+	for (auto& c : m_children)
+	{
+		c->onDetachedWorld(world);
+	}
+	for (auto& c : m_components)
+	{
+		c->onDetachedWorld(world);
+	}
 }
 
 //------------------------------------------------------------------------------

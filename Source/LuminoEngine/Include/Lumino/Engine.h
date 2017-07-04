@@ -63,12 +63,12 @@ public:
 	*/
 	static void resetFrameDelay();
 
-
-
-
-
+	/** エンジンによって作成されるデフォルトの World2D を取得します。 */
 	static World2D* getWorld2D();
+
+	/** エンジンによって作成されるデフォルトの World3D を取得します。 */
 	static World3D* getWorld3D();
+
 	static Camera* getCamera3D();
 
 	static UIViewportLayer* getDefault2DLayer();

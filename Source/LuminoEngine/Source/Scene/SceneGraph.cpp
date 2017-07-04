@@ -59,11 +59,11 @@ void SceneGraph::reginUpdateFrame()
 }
 
 //------------------------------------------------------------------------------
-void SceneGraph::updateFrame(float deltaTime)
-{
-	m_elapsedTime = deltaTime;
-	m_time += deltaTime;
-}
+//void SceneGraph::updateFrame(float deltaTime)
+//{
+//	m_elapsedTime = deltaTime;
+//	m_time += deltaTime;
+//}
 
 
 ////------------------------------------------------------------------------------
@@ -129,11 +129,11 @@ void SceneGraph2D::createCore(SceneGraphManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void SceneGraph2D::updateFrame(float elapsedTime)
-{
-	SceneGraph::updateFrame(elapsedTime);
-	m_defaultRoot->updateFrameHierarchy(nullptr, elapsedTime);
-}
+//void SceneGraph2D::updateFrame(float elapsedTime)
+//{
+//	SceneGraph::updateFrame(elapsedTime);
+//	m_defaultRoot->updateFrameHierarchy(nullptr, elapsedTime);
+//}
 
 //==============================================================================
 // SceneGraph3D
@@ -167,20 +167,20 @@ void SceneGraph3D::createCore(SceneGraphManager* manager)
 	m_defaultCamera->initialize(CameraProjection_3D);
 	m_defaultRoot->addChild(m_defaultCamera);
 
-	m_defaultLight = RefPtr<LightComponent>::makeRef();
-	m_defaultLight->initialize(LightType_Directional);
-	m_defaultRoot->addChild(m_defaultLight);
+	//m_defaultLight = RefPtr<LightComponent>::makeRef();
+	//m_defaultLight->initialize(LightType_Directional);
+	//m_defaultRoot->addChild(m_defaultLight);
 }
 
 //------------------------------------------------------------------------------
 //LightComponent* SceneGraph3D::GetMainLight() const { return m_defaultLight; }
 
 //------------------------------------------------------------------------------
-void SceneGraph3D::updateFrame(float elapsedTime)
-{
-	SceneGraph::updateFrame(elapsedTime);
-	m_defaultRoot->updateFrameHierarchy(nullptr, elapsedTime);
-}
+//void SceneGraph3D::updateFrame(float elapsedTime)
+//{
+//	SceneGraph::updateFrame(elapsedTime);
+//	m_defaultRoot->updateFrameHierarchy(nullptr, elapsedTime);
+//}
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END
