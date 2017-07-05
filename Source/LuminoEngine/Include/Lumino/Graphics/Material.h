@@ -209,10 +209,12 @@ public:
 	Nullable<bool> isDepthWriteEnabled() const { return depthWriteEnabled; }
 
 
-LN_INTERNAL_ACCESS:
+LN_CONSTRUCT_ACCESS:
 	Material();
 	virtual ~Material();
 	void initialize();
+
+LN_INTERNAL_ACCESS:
 	void reset();
 
 	void setBuiltinIntParameter(const StringRef& name, int value);

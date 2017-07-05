@@ -30,6 +30,12 @@ struct MeshAttribute	// TODO: Section
 };
 typedef List<MeshAttribute>		MeshAttributeList;
 
+enum class UnitMeshSide
+{
+	Outward,
+	Inward,
+};
+
 /**
 	@brief
 */
@@ -39,6 +45,8 @@ class MeshResource
 	LN_OBJECT();
 public:
 	static MeshResourcePtr create();
+
+	static RefPtr<MeshResource> getUnitSphere(UnitMeshSide side = UnitMeshSide::Outward);
 
 public:
 	/** 名前を設定します。*/

@@ -349,8 +349,7 @@ void BlitRenderer::initialize(GraphicsManager* manager)
 	};
 	m_vertexBuffer.attach(device->createVertexBuffer(sizeof(vertices), vertices, ResourceUsage::Static), false);
 
-	m_commonMaterial = RefPtr<Material>::makeRef();
-	m_commonMaterial->initialize();
+	m_commonMaterial = newObject<Material>();
 }
 
 //------------------------------------------------------------------------------

@@ -38,6 +38,7 @@
 #include "Lumino/Graphics/ImageEffect/ToneImageEffect.h"
 #include "Lumino/Graphics/ImageEffect/ScreenMotionBlurImageEffect.h"
 
+#include "Lumino/Rendering/RenderingContext.h"
 #include "Lumino/Rendering/DrawingContext.h"
 
 #include "Lumino/Effect/VisualEffect.h"

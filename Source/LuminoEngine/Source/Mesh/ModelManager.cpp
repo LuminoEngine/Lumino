@@ -235,8 +235,7 @@ void ModelManager::initialize(const ConfigData& configData)
 	MemoryStream data10(toon10Data, toon10DataLen);
 	m_mmdDefaultToonTexture[9] = newObject<Texture2D>(&data10, TextureFormat::R8G8B8A8, false);
 
-	m_defaultMaterial = RefPtr<Material>::makeRef();
-	m_defaultMaterial->initialize();
+	m_defaultMaterial = newObject<Material>();
 
 	m_unitBoxMeshResource = RefPtr<MeshResource>::makeRef();
 	m_unitBoxMeshResource->initialize(m_graphicsManager, MeshCreationFlags::None);

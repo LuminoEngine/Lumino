@@ -11,6 +11,7 @@
 #include <Lumino/Mesh/Mesh.h>
 #include <Lumino/Graphics/Utils.h>
 #include "../Graphics/GraphicsManager.h"
+#include "ModelManager.h"
 #include "MeshFactory.h"
 
 LN_NAMESPACE_BEGIN
@@ -40,6 +41,12 @@ MeshResourcePtr MeshResource::create()
 	auto ptr = MeshResourcePtr::makeRef();
 	ptr->initialize(detail::GraphicsManager::getInstance(), MeshCreationFlags::DynamicBuffers);
 	return ptr;
+}
+
+//------------------------------------------------------------------------------
+RefPtr<MeshResource> MeshResource::getUnitSphere(UnitMeshSide side)
+{
+	return detail::ModelManager::getInstance()->getUnitSphereMeshResource(side == UnitMeshSide::Inward);
 }
 
 //------------------------------------------------------------------------------
@@ -918,8 +925,7 @@ void StaticMeshModel::addMaterials(int count)
 	{
 		for (int i = oldCount; i < newCount; ++i)
 		{
-			auto m = RefPtr<Material>::makeRef();
-			m->initialize();
+			auto m = newObject<Material>();
 			m_materials->getAt(i, m);
 		}
 	}

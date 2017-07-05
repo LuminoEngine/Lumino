@@ -43,8 +43,7 @@ GizmoModel::~GizmoModel()
 //------------------------------------------------------------------------------
 void GizmoModel::initialize(ln::detail::GraphicsManager* manager)
 {
-	m_tmat = RefPtr<Material>::makeRef();
-	m_tmat->initialize();
+	m_tmat = newObject<Material>();
 	m_tmat->setBlendMode(BlendMode::Alpha);
 	m_tmat->setCullingMode(CullingMode::None);
 }
