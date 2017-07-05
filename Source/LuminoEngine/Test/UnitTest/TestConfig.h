@@ -52,6 +52,10 @@ protected:
 #define LN_TEST_BEGIN_FRAME		TestEnv::BeginFrame()
 #define LN_TEST_END_FRAME		TestEnv::EndFrame()
 
+#define LN_TEST_CLEAN_SCENE \
+	Engine::getWorld2D()->RemoveAllObjects(); \
+	Engine::getWorld3D()->RemoveAllObjects();
+
 
 inline PathName Test_GetTempFilePath(const TCHAR* fileName)
 {
@@ -120,5 +124,14 @@ public:
 
 	Camera*	camera;
 	Vector3 oldPos;
+};
+
+// テストフィクスチャ終了時のクリーンアップ
+class LuminoGraphicsTest : public ::testing::Test
+{
+	virtual void TearDown() override
+	{
+		LN_TEST_CLEAN_SCENE;
+	}
 };
 

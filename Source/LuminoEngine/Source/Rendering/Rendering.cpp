@@ -1569,7 +1569,7 @@ void DrawList::drawRectangle(const Rect& rect)
 		return;
 	}
 
-	auto* ptr = resolveDrawElement<DrawElement_DrawNanoVGCommands>(m_manager->getInternalContext()->m_nanoVGRenderer, nullptr);
+	auto* ptr = resolveDrawElement<DrawElement_DrawNanoVGCommands>(m_manager->getInternalContext()->m_nanoVGRenderer, nullptr, nullptr, true);
 	auto* list = ptr->GetGCommandList(this);
 	detail::NanoVGCommandHelper::nvgBeginPath(list);
 	detail::NanoVGCommandHelper::nvgRect(list, rect.x, rect.y, rect.width, rect.height);

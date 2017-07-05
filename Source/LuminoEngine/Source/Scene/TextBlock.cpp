@@ -111,7 +111,7 @@ void TextBlock2DComponent::onRender2(RenderingContext* renderer)
 	//renderer->setTransform(transform);
 	//renderer->setBlendMode(BlendMode::Alpha);
 	//renderer->setBrush(SolidColorBrush::Red);
-	renderer->drawText_(m_text, PointF());
+	renderer->drawText_(m_text, PointF(-m_renderSize.width * m_anchor.x, -m_renderSize.height * m_anchor.y));
 
 	//struct LocalRenderer : detail::IDocumentsRenderer
 	//{
@@ -190,6 +190,18 @@ void TextBlock2D::initialize(const StringRef& text)
 void TextBlock2D::setText(const StringRef& text)
 {
 	m_component->setText(text);
+}
+
+//------------------------------------------------------------------------------
+void TextBlock2D::setAnchorPoint(const Vector2& ratio)
+{
+	m_component->setAnchorPoint(ratio);
+}
+
+//------------------------------------------------------------------------------
+void TextBlock2D::setAnchorPoint(float ratioX, float ratioY)
+{
+	m_component->setAnchorPoint(ratioX, ratioY);
 }
 
 //------------------------------------------------------------------------------

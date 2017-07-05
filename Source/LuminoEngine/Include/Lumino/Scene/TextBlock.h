@@ -85,6 +85,16 @@ public:
 
 	void setText(const StringRef& text);
 
+	
+	/** 
+		@brief		テキストの表示の原点を設定します。
+		@details	値は (0,0) から (1,1) の間で指定します。
+					デフォルトは (0,0) で、これはテキストの左上が原点であることを意味します。
+					(0.5,0.5) はテキストの中央、(1,1) は右下が原点となります。
+	*/
+	void setAnchorPoint(const Vector2& ratio);
+	void setAnchorPoint(float ratioX, float ratioY);		/**< @overload setAnchorPoint */
+
 protected:
 	virtual VisualComponent* getMainVisualComponent() const override;
 

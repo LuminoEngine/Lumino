@@ -2,12 +2,7 @@
 #include <Lumino/Scene/TextBlock.h>
 
 //==============================================================================
-class Test_Scene_Sprite : public ::testing::Test
-{
-protected:
-	virtual void SetUp() {}
-	virtual void TearDown() {}
-};
+class Test_Scene_Sprite : public LuminoGraphicsTest {};
 
 //------------------------------------------------------------------------------
 TEST_F(Test_Scene_Sprite, Basic)
@@ -165,12 +160,7 @@ TEST_F(Test_Scene_Sprite, Issues_Volkoff)
 
 
 //==============================================================================
-class Test_Scene_Sprite3D : public ::testing::Test
-{
-protected:
-	virtual void SetUp() {}
-	virtual void TearDown() {}
-};
+class Test_Scene_Sprite3D : public LuminoGraphicsTest {};
 
 //------------------------------------------------------------------------------
 TEST_F(Test_Scene_Sprite3D, Basic)
@@ -228,7 +218,7 @@ TEST_F(Test_Scene_Sprite3D, ViewFrustumCulling)
 		int count1 = EngineDiag::getGraphicsDeviceDrawCount();
 
 		auto tex1 = Texture2D::create(32, 32);
-		auto sprite1 = Sprite3DComponent::create(1, 1, tex1);
+		auto sprite1 = Sprite3D::create(1, 1, tex1);
 		Engine::update();
 		TestEnv::WaitRendering();
 		int count2= EngineDiag::getGraphicsDeviceDrawCount();
@@ -245,49 +235,49 @@ TEST_F(Test_Scene_Sprite3D, ViewFrustumCulling)
 #if 1
 
 //==============================================================================
-class Test_Scene_TextBlock2D : public ::testing::Test
-{
-protected:
-	virtual void SetUp() {}
-	virtual void TearDown() {}
-};
+class Test_Scene_TextBlock2D : public LuminoGraphicsTest {};
 
 //------------------------------------------------------------------------------
 TEST_F(Test_Scene_TextBlock2D, Basic)
 {
 	{
-		auto text = TextBlock2DComponent::create(_T("Lumino"));
+		auto text = TextBlock2D::create(_T("Lumino"));
 		Engine::update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_TextBlock2D.Basic1.png")));
 	}
+}
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Scene_TextBlock2D, AnchorPoint)
+{
 	{
-		auto text1 = TextBlock2DComponent::create();
-		text1->setText(_T("upper left"));
+		auto text1 = TextBlock2D::create();
+		text1->setText(_T("U-L"));
 		text1->setPosition(0, 0, 0);
 		text1->setAnchorPoint(0, 0);
 
-		auto text2 = TextBlock2DComponent::create();
-		text2->setText(_T("upper right"));
+		auto text2 = TextBlock2D::create();
+		text2->setText(_T("U-R"));
 		text2->setPosition(160, 0, 0);
 		text2->setAnchorPoint(1, 0);
 
-		auto text3 = TextBlock2DComponent::create();
-		text3->setText(_T("lower left"));
+		auto text3 = TextBlock2D::create();
+		text3->setText(_T("L-L"));
 		text3->setPosition(0, 120, 0);
 		text3->setAnchorPoint(0, 1);
 
-		auto text4 = TextBlock2DComponent::create();
-		text4->setText(_T("lower right"));
+		auto text4 = TextBlock2D::create();
+		text4->setText(_T("L-R"));
 		text4->setPosition(160, 120, 0);
 		text4->setAnchorPoint(1, 1);
 
-		auto text5 = TextBlock2DComponent::create();
-		text5->setText(_T("center"));
+		auto text5 = TextBlock2D::create();
+		text5->setText(_T("C"));
 		text5->setPosition(80, 60, 0);
 		text5->setAnchorPoint(0.5, 0.5);
 
 		Engine::update();
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_TextBlock2D.Basic2.png"), 99, true));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_TextBlock2D.AnchorPoint1.png")));
 	}
 }
 #endif

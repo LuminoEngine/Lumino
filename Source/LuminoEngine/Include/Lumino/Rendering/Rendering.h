@@ -704,7 +704,7 @@ LN_INTERNAL_ACCESS:
 	const DrawElementMetadata* getMetadata();
 	void popMetadata();
 
-	template<typename TElement> TElement* resolveDrawElement(detail::IRenderFeature* renderFeature, Material* userMaterial, const detail::PriorityBatchState* priorityState = nullptr);
+	template<typename TElement> TElement* resolveDrawElement(detail::IRenderFeature* renderFeature, Material* userMaterial, const detail::PriorityBatchState* priorityState = nullptr, bool append = false);
 	void drawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Material* material);
 	//void DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material);
 	void blitInternal(Texture* source, RenderTargetTexture* dest, const Matrix& transform, Material* material);
@@ -788,7 +788,7 @@ private:
 
 //------------------------------------------------------------------------------
 template<typename TElement>
-inline TElement* DrawList::resolveDrawElement(detail::IRenderFeature* renderFeature, Material* userMaterial, const detail::PriorityBatchState* priorityState)
+inline TElement* DrawList::resolveDrawElement(detail::IRenderFeature* renderFeature, Material* userMaterial, const detail::PriorityBatchState* priorityState, bool append)
 {
 	//Material* availableMaterial = m_defaultMaterial;// = (userMaterial != nullptr) ? userMaterial : getCurrentState()->m_defaultMaterial.get();
 	//if (getCurrentState()->m_defaultMaterial != nullptr) availableMaterial = getCurrentState()->m_defaultMaterial;
@@ -811,6 +811,7 @@ inline TElement* DrawList::resolveDrawElement(detail::IRenderFeature* renderFeat
 
 	// 何か前回追加された DrawElement があり、それと DrawingSectionId、State が一致するならそれに対して追記できる
 	if (m_currentSectionTopElement != nullptr &&
+		append &&
 		m_currentSectionTopElement->metadata.equals(*metadata) &&
 		m_currentSectionTopElement->m_stateFence == m_currentStateFence &&
 		m_drawElementList.getBatch(m_currentSectionTopElement->batchIndex)->Equal(getCurrentState()->m_state, availableMaterial, getCurrentState()->m_builtinEffectData, availablePriorityState))

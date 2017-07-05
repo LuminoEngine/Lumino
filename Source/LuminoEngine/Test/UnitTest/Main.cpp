@@ -157,6 +157,9 @@ void EngineInitalize()
 
 	RawFont::registerFontFile(LN_LOCALFILE("../../../../Tools/VLGothic/VL-Gothic-Regular.ttf"));
 	RawFont::getDefaultFont()->setName(_T("VL Gothic"));
+	RawFont::getDefaultFont()->setSize(20);
+	Font::getDefault()->setFamily(_T("VL Gothic"));
+	Font::getDefault()->setSize(20);
 
 	// 背景はグレーにしておくと加算合成のテストとか、いろいろ都合がよい
 	UIViewport::getMain()->setViewBackgroundColor(Color32::Gray);
@@ -192,7 +195,7 @@ GTEST_API_ int main(int argc, char **argv)
 #if 1	// 部分的にテストを実行したりする
 	char* testArgs[] = {
 		argv[0],
-		"--gtest_filter=Test_Scene_Sprite.DrawCallCount"
+		"--gtest_filter=Test_UI_GridLayout.Basic"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);

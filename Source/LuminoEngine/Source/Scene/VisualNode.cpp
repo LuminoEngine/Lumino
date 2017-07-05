@@ -284,6 +284,7 @@ void VisualComponent::render(RenderingContext* context)
 		context->pushState();
 		context->pushMetadata(&metadata);
 
+		context->setTransform(getOwnerObject()->transform.getWorldMatrix());
 		context->setBlendMode(m_blendMode);
 		context->setCullingMode(m_cullingMode);
 		context->setDepthTestEnabled(m_depthTestEnabled);

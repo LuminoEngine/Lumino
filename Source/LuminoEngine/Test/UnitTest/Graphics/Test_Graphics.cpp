@@ -49,7 +49,7 @@ TEST_F(Test_Graphics_Viewport, Basic)
 }
 
 //==============================================================================
-class Test_Graphics_Rendering : public ::testing::Test {};
+class Test_Graphics_Rendering : public LuminoGraphicsTest {};
 
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_Rendering, Basic)
@@ -527,12 +527,7 @@ TEST_F(Test_Graphics_Rendering, ZSort)
 
 
 //==============================================================================
-class Test_Graphics_DrawingContext : public ::testing::Test
-{
-protected:
-	virtual void SetUp() {}
-	virtual void TearDown() {}
-};
+class Test_Graphics_DrawingContext : public LuminoGraphicsTest {};
 
 #if 0
 //------------------------------------------------------------------------------
@@ -571,12 +566,7 @@ TEST_F(Test_Graphics_DrawingContext, drawText_)
 #endif
 
 //==============================================================================
-class Test_Graphics_Texture : public ::testing::Test
-{
-protected:
-	virtual void SetUp() {}
-	virtual void TearDown() {}
-};
+class Test_Graphics_Texture : public LuminoGraphicsTest {};
 
 //-----------------------------------------------------------------------------
 TEST_F(Test_Graphics_Texture, blit)

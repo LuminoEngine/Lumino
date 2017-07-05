@@ -99,7 +99,6 @@ void SpriteComponent::renderSprite(RenderingContext* renderer, SpriteBaseDirecti
 	//Material* mat = GetMainMaterial();
 	Color colorScale = getColorScale();
 	colorScale.a *= getOpacity();
-	renderer->setTransform(getOwnerObject()->transform.getWorldMatrix());
 	renderer->drawSprite(
 		Vector3::Zero,
 		m_renderSize,
