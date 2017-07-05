@@ -165,27 +165,30 @@ class Test_Scene_Sprite3D : public LuminoGraphicsTest {};
 //------------------------------------------------------------------------------
 TEST_F(Test_Scene_Sprite3D, Basic)
 {
+	ScopedCameraPosition camera(0, 0, -10);
 	// <Test> 普通の描画
 	{
 		auto tex = Texture2D::create(LN_LOCALFILE("TestData/Sprite1.png"));
-		auto sprite1 = Sprite3DComponent::create(1, 1, tex);
+		auto sprite1 = Sprite3D::create(5, 5, tex);
 		Engine::update();
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_Sprite3D.Basic1.png")));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_Sprite3D.Basic1.png"), 95));
+		LN_TEST_CLEAN_SCENE;
 	}
 	// <Test> 不透明度の設定
 	{
 		auto tex = Texture2D::create(LN_LOCALFILE("TestData/Sprite1.png"));
-		auto sprite1 = Sprite3DComponent::create(1, 1, tex);
-		sprite1->setPosition(-1, 0, 0);
+		auto sprite1 = Sprite3D::create(5, 5, tex);
+		sprite1->setPosition(-5, 0, 0);
 		sprite1->setOpacity(0.25f);
-		auto sprite2 = Sprite3DComponent::create(1, 1, tex);
+		auto sprite2 = Sprite3D::create(5, 5, tex);
 		sprite2->setPosition(0, 0, 0);
 		sprite2->setOpacity(0.5f);
-		auto sprite3 = Sprite3DComponent::create(1, 1, tex);
-		sprite3->setPosition(1, 0, 0);
+		auto sprite3 = Sprite3D::create(5, 5, tex);
+		sprite3->setPosition(5, 0, 0);
 		sprite3->setOpacity(0.75f);
 		Engine::update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_Sprite3D.Basic2.png"), 95));
+		LN_TEST_CLEAN_SCENE;
 	}
 	// <Test> 普通の描画
 	// <Test> 不透明度の設定
