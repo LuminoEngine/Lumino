@@ -36,9 +36,9 @@ SceneNode::SceneNode()
 	: m_manager(nullptr)
 	, m_name()
 	//, m_localMatrix()
-	, m_transform()
-	, m_transformCenter()
-	, m_rotOrder(RotationOrder::XYZ)
+	//, m_transform()
+	//, m_transformCenter()
+	//, m_rotOrder(RotationOrder::XYZ)
 	, m_priority(DepthPriority::Normal)
 	, m_billboardType(BillboardType::None)
 	, m_renderingMode(SceneNodeRenderingMode::Visible)
@@ -118,11 +118,11 @@ void SceneNode::updateFrameHierarchy(SceneNode* parent, float deltaTime)
 	//	m_localMatrix.translate(m_transform.translation);
 	//	m_transformModified = false;
 	//}
-	Matrix localMatrix;
-	localMatrix.translate(-m_transformCenter.x, -m_transformCenter.y, -m_transformCenter.z);
-	localMatrix.scale(m_transform.scale);
-	localMatrix.rotateQuaternion(m_transform.rotation);
-	localMatrix.translate(m_transform.translation);
+	//Matrix localMatrix;
+	//localMatrix.translate(-m_transformCenter.x, -m_transformCenter.y, -m_transformCenter.z);
+	//localMatrix.scale(m_transform.scale);
+	//localMatrix.rotateQuaternion(m_transform.rotation);
+	//localMatrix.translate(m_transform.translation);
 
 	// グローバル行列結合
 	//if (parent != nullptr)

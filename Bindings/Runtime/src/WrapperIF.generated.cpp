@@ -205,18 +205,18 @@ LN_API void LNGraphicsResourceObject_SetBindingTypeInfo(void* data)
 {
     tr::TypeInfo::getTypeInfo<GraphicsResourceObject>()->setBindingTypeInfo(data);
 }
-LN_API LNResultCode LNSceneNode_SetPosition(LNHandle scenenode, const LNVector3* pos)
-{
-    LWIG_FUNC_TRY_BEGIN;
-    (LWIG_TO_OBJECT(LNSceneNode, scenenode)->setPosition(*reinterpret_cast<const Vector3*>(pos)));
-    LWIG_FUNC_TRY_END_RETURN;
-}
-LN_API LNResultCode LNSceneNode_GetPosition(LNHandle scenenode, LNVector3* outReturn)
-{
-    LWIG_FUNC_TRY_BEGIN;
-    *outReturn = reinterpret_cast<const LNVector3&>(LWIG_TO_OBJECT(LNSceneNode, scenenode)->getPosition());
-    LWIG_FUNC_TRY_END_RETURN;
-}
+//LN_API LNResultCode LNSceneNode_SetPosition(LNHandle scenenode, const LNVector3* pos)
+//{
+//    LWIG_FUNC_TRY_BEGIN;
+//    (LWIG_TO_OBJECT(LNSceneNode, scenenode)->setPosition(*reinterpret_cast<const Vector3*>(pos)));
+//    LWIG_FUNC_TRY_END_RETURN;
+//}
+//LN_API LNResultCode LNSceneNode_GetPosition(LNHandle scenenode, LNVector3* outReturn)
+//{
+//    LWIG_FUNC_TRY_BEGIN;
+//    *outReturn = reinterpret_cast<const LNVector3&>(LWIG_TO_OBJECT(LNSceneNode, scenenode)->getPosition());
+//    LWIG_FUNC_TRY_END_RETURN;
+//}
 LN_API LNResultCode LNSceneNode_SetVisible(LNHandle scenenode, bool visible)
 {
     LWIG_FUNC_TRY_BEGIN;

@@ -62,14 +62,12 @@ void CameraComponent::initialize(CameraProjection proj)
 	{
 		m_nearClip = 0.0f;	// TODO
 		m_farClip = 1000.0f;
-		setPosition(0, 0, 0);
 		m_zSortDistanceBase = ZSortDistanceBase::CameraScreenDistance;
 	}
 	else if (m_projectionMode == CameraProjection_3D)
 	{
 		m_nearClip = 0.3f;
 		m_farClip = 1000.0f;
-		setPosition(0, 1.0f, -10.0f);	// Unity based.
 		m_zSortDistanceBase = ZSortDistanceBase::CameraDistance;
 	}
 }

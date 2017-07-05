@@ -37,42 +37,42 @@ public:
 	const String& getName() const { return m_name; }
 
 	/// ワールド変換行列の設定
-	void setTransform(const AttitudeTransform& transform) { m_transform = transform; }
+	//void setTransform(const AttitudeTransform& transform) { m_transform = transform; }
 
 	/// ワールド変換行列の取得
 	//const AttitudeTransform& getTransform() const { return m_transform; }
 
-	/** 位置を設定します。*/
-	LN_METHOD(Property)
-	void setPosition(const Vector3& pos) { m_transform.translation = pos; }
-	void setPosition(float x, float y, float z = 0.0f) { m_transform.translation.set(x, y, z); }
+	///** 位置を設定します。*/
+	//LN_METHOD(Property)
+	//void setPosition(const Vector3& pos) { m_transform.translation = pos; }
+	//void setPosition(float x, float y, float z = 0.0f) { m_transform.translation.set(x, y, z); }
 
-	/** 位置を取得します。*/
-	LN_METHOD(Property)
-	const Vector3& getPosition() const { return m_transform.translation; }
+	///** 位置を取得します。*/
+	//LN_METHOD(Property)
+	//const Vector3& getPosition() const { return m_transform.translation; }
 
-	/// 回転の設定
-	void setRotation(const Quaternion& rot) { m_transform.rotation = rot; }
-	void setAngles(float x, float y, float z) { m_transform.rotation = Quaternion::makeFromEulerAngles(Vector3(x, y, z)); }
+	///// 回転の設定
+	//void setRotation(const Quaternion& rot) { m_transform.rotation = rot; }
+	//void setAngles(float x, float y, float z) { m_transform.rotation = Quaternion::makeFromEulerAngles(Vector3(x, y, z)); }
 
-	/// 回転の取得
-	const Quaternion& getRotation() const { return m_transform.rotation; }
+	///// 回転の取得
+	//const Quaternion& getRotation() const { return m_transform.rotation; }
 
-	/// 拡大率の設定
-	void setScale(const Vector3& scale) { m_transform.scale = scale; }
-	void setScale(float xyz) { m_transform.scale.set(xyz, xyz, xyz); }
-	void setScale(float x, float y, float z = 0.0f) { m_transform.scale.set(x, y, z); }
+	///// 拡大率の設定
+	//void setScale(const Vector3& scale) { m_transform.scale = scale; }
+	//void setScale(float xyz) { m_transform.scale.set(xyz, xyz, xyz); }
+	//void setScale(float x, float y, float z = 0.0f) { m_transform.scale.set(x, y, z); }
 
-	/// 拡大率の取得
-	const Vector3& getScale() const { return m_transform.scale; }
+	///// 拡大率の取得
+	//const Vector3& getScale() const { return m_transform.scale; }
 
-	/// 原点の設定
-	void setCenter(const Vector3& center) { m_transformCenter = center; }
+	///// 原点の設定
+	//void setCenter(const Vector3& center) { m_transformCenter = center; }
 
-	void setCenter(float x, float y, float z = 0.0f) { m_transformCenter.set(x, y, z); }
+	//void setCenter(float x, float y, float z = 0.0f) { m_transformCenter.set(x, y, z); }
 
-	/// 原点の取得
-	const Vector3& getCenter() const { return m_transformCenter; }
+	///// 原点の取得
+	//const Vector3& getCenter() const { return m_transformCenter; }
 
 	/** 可視状態を設定します。false の場合、ノードの描画自体行われません。(default: true) */
 	LN_METHOD(Property)
@@ -82,11 +82,11 @@ public:
 	LN_METHOD(Property)
 	bool isVisible() const { return m_isVisible; }
 
-	/// 回転順序の設定
-	void setRotateOrder(RotationOrder order) { m_rotOrder = order; }
+	///// 回転順序の設定
+	//void setRotateOrder(RotationOrder order) { m_rotOrder = order; }
 
-	/// 回転順序の取得
-	RotationOrder getRotateOrder() const { return m_rotOrder; }
+	///// 回転順序の取得
+	//RotationOrder getRotateOrder() const { return m_rotOrder; }
 
 	/// 優先度の設定 (高い方から先に描画される)
 	void setDepthPriority(DepthPriority priority) { m_priority = priority; }
@@ -159,9 +159,9 @@ protected:
 	SceneGraphManager*	m_manager;	// TODO: いらない
 	String				m_name;
 	//Matrix				m_localMatrix;
-	AttitudeTransform		m_transform;
-	Vector3				m_transformCenter;
-	RotationOrder		m_rotOrder;
+	//AttitudeTransform		m_transform;
+	//Vector3				m_transformCenter;
+	//RotationOrder		m_rotOrder;
 	DepthPriority		m_priority;
 	BillboardType		m_billboardType;
 	SceneNodeRenderingMode	m_renderingMode;
