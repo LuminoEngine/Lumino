@@ -1,6 +1,12 @@
 ﻿#include <TestConfig.h>
 #include <Lumino/UI/UILayoutPanel.h>
 
+static UILayoutView* GetUIRoot()
+{
+	return Engine::getDefaultUILayer()->GetLayoutView();
+	//auto uiRoot = Application::getMainWindow();
+}
+
 #if 0
 class Test_UI_Button : public ::testing::Test
 {
@@ -36,7 +42,7 @@ protected:
 //------------------------------------------------------------------------------
 TEST_F(Test_UI_StackPanel, HorizontalAlignment)
 {
-	auto uiRoot = Application::getMainWindow();
+	auto uiRoot = GetUIRoot();
 	auto panel = UIStackPanel::create();
 	panel->setOrientation(Orientation::Vertical);
 	panel->setSize(uiRoot->getSize());
@@ -73,7 +79,7 @@ TEST_F(Test_UI_StackPanel, HorizontalAlignment)
 //------------------------------------------------------------------------------
 TEST_F(Test_UI_StackPanel, VerticalAlignment)
 {
-	auto uiRoot = Application::getMainWindow();
+	auto uiRoot = GetUIRoot();
 	auto panel = UIStackPanel::create();
 	panel->setOrientation(Orientation::Horizontal);
 	panel->setSize(uiRoot->getSize());
@@ -110,7 +116,7 @@ TEST_F(Test_UI_StackPanel, VerticalAlignment)
 //------------------------------------------------------------------------------
 TEST_F(Test_UI_StackPanel, ReverseHorizontal)
 {
-	auto uiRoot = Application::getMainWindow();
+	auto uiRoot = GetUIRoot();
 	auto panel = UIStackPanel::create();
 	panel->setSize(uiRoot->getSize());
 	panel->setBackground(Brush::Blue);
@@ -134,7 +140,7 @@ TEST_F(Test_UI_StackPanel, ReverseHorizontal)
 //------------------------------------------------------------------------------
 TEST_F(Test_UI_StackPanel, Margin_Padding)
 {
-	auto uiRoot = Application::getMainWindow();
+	auto uiRoot = GetUIRoot();
 	auto panel = UIStackPanel::create();
 	panel->setSize(uiRoot->getSize());
 	panel->setBackground(Brush::Blue);
@@ -168,11 +174,11 @@ protected:
 };
 
 //------------------------------------------------------------------------------
-TEST_F(Test_UI_GridLayout, Basic)
+TEST_F(Test_UI_GridLayout, LifeCycle)
 {
 	// <Test> インスタンス参照の関係
 	{
-		auto uiRoot = Application::getMainWindow();
+		auto uiRoot = GetUIRoot();
 
 		auto grid = UIGridLayout::create();
 		grid->setBackground(Brush::Blue);
@@ -198,12 +204,16 @@ TEST_F(Test_UI_GridLayout, Basic)
 		uiRoot->removeChild(gridPtr);
 		ASSERT_EQ(false, ref.isAlive());
 	}
+}
 
+//------------------------------------------------------------------------------
+TEST_F(Test_UI_GridLayout, Basic)
+{
 	// <Test> GridLayout を setLayoutPanel() で追加する場合、デフォルトでは画面いっぱいに広がる。
 	//        これは、オーナーの UIControl からそのサイズ (MainWindow ならクライアント領域サイズ) が与えられ、
 	//        また GridLayout(UIElement) のデフォルトの Alignment が Stretch であるため。
 	{
-		auto uiRoot = Application::getMainWindow();
+		auto uiRoot = GetUIRoot();
 		RefPtr<UILayoutPanel> oldLayot = uiRoot->getLayoutPanel();
 
 		auto grid = UIGridLayout::create();
@@ -224,7 +234,7 @@ TEST_F(Test_UI_GridLayout, Basic)
 	//        これは、オーナーが AnchorLayout であり、デフォルト(アンカーなし)左上詰めであるため。
 	//        なお、AnchorLayout はアンカーなし子要素のサイズ調整は行わない。そのため Alignment が Stretch であっても DesirdSize となる。
 	{
-		auto uiRoot = Application::getMainWindow();
+		auto uiRoot = GetUIRoot();
 
 		auto grid = UIGridLayout::create();
 		grid->setBackground(Brush::Blue);
@@ -236,7 +246,7 @@ TEST_F(Test_UI_GridLayout, Basic)
 
 		Engine::update();
 
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_GridLayout.Basic2.png"), 99, true));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_UI_GridLayout.Basic2.png"), 99));
 		uiRoot->clearChildren();
 	}
 }
@@ -246,7 +256,7 @@ TEST_F(Test_UI_GridLayout, DefaultLayout)
 {
 	// <Test> GridLayout へサイズ指定無しの子要素を追加する場合、UIElement のデフォルトの Alignment(Stretch) に従い引き伸ばされる。
 	{
-		auto uiRoot = Application::getMainWindow();
+		auto uiRoot = GetUIRoot();
 		RefPtr<UILayoutPanel> oldLayot = uiRoot->getLayoutPanel();
 
 		auto grid1 = UIGridLayout::create();
@@ -266,7 +276,7 @@ TEST_F(Test_UI_GridLayout, DefaultLayout)
 //------------------------------------------------------------------------------
 TEST_F(Test_UI_GridLayout, layout)
 {
-	auto uiRoot = Application::getMainWindow();
+	auto uiRoot = GetUIRoot();
 	RefPtr<UILayoutPanel> oldLayot = uiRoot->getLayoutPanel();
 
 	auto grid1 = UIGridLayout::create(4, 4);
@@ -330,7 +340,7 @@ TEST_F(Test_UI_GridLayout, layout)
 //------------------------------------------------------------------------------
 TEST_F(Test_UI_GridLayout, TreeLayout)
 {
-	auto uiRoot = Application::getMainWindow();
+	auto uiRoot = GetUIRoot();
 	RefPtr<UILayoutPanel> oldLayot = uiRoot->getLayoutPanel();
 
 	auto grid1 = UIGridLayout::create(2, 2);
@@ -373,7 +383,7 @@ TEST_F(Test_UI_GridLayout, TreeLayout)
 //------------------------------------------------------------------------------
 TEST_F(Test_UI_GridLayout, GridLength)
 {
-	auto uiRoot = Application::getMainWindow();
+	auto uiRoot = GetUIRoot();
 	RefPtr<UILayoutPanel> oldLayot = uiRoot->getLayoutPanel();
 
 	auto grid1 = UIGridLayout::create();
@@ -418,7 +428,7 @@ TEST_F(Test_UI_GridLayout, GridLength)
 //------------------------------------------------------------------------------
 TEST_F(Test_UI_GridLayout, MinMax)
 {
-	auto uiRoot = Application::getMainWindow();
+	auto uiRoot = GetUIRoot();
 	RefPtr<UILayoutPanel> oldLayot = uiRoot->getLayoutPanel();
 
 	auto grid1 = UIGridLayout::create();

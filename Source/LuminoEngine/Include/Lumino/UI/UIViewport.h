@@ -33,7 +33,7 @@ public:
 	/** ビューポートの配置方法を設定します。*/
 	void setPlacement(ViewportPlacement placement);
 
-	/** Placement が AutoResize ではない場合に使用されるビューサイズを設定します。 */
+	/** Placement が Stretch または ViewBox である場合に使用されるビューサイズを設定します。 */
 	void setBackbufferSize(int width, int height);
 
 	void addViewportLayer(UIViewportLayer* layer);
@@ -51,7 +51,7 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 private:
-	void updateFramebufferSizeIfNeeded(const SizeI& viewSize);
+	void updateFramebufferSizeIfNeeded();
 	void makeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize, Matrix* mat);
 
 	SizeI							m_backbufferSize;

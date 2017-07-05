@@ -28,7 +28,7 @@ static SampleInfo g_samples[] =
 	{ _T("DebugAndTestSupport"), Main_DebugAndTestSupport },
 };
 
-int						g_samplesIndex = 2;
+int						g_samplesIndex = 0;
 RefPtr<UIToggleButton>	g_pinButton;
 RefPtr<UIUserControl>	g_listWindow;
 RefPtr<AnimationClock>	g_clock;

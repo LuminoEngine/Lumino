@@ -103,6 +103,14 @@ Size UIViewport::arrangeOverride(const Size& finalSize)
 		layer->updateLayout(finalSize);
 	}
 
+	// バックバッファサイズの調整
+	{
+		if (m_placement == ViewportPlacement::AutoResize)
+			m_viewSize = getRenderSize();
+		else
+			m_viewSize = m_backbufferSize.toFloatSize();
+	}
+
 	return renderSize;
 }
 
@@ -121,17 +129,7 @@ UIElement* UIViewport::checkMouseHoverElement(const PointF& globalPt)
 //------------------------------------------------------------------------------
 void UIViewport::onRender(DrawingContext* g)
 {
-	// バックバッファサイズの調整
-	{
-		SizeI bakcbufferSize;
-		if (m_placement == ViewportPlacement::AutoResize)
-			bakcbufferSize = SizeI::fromFloatSize(getRenderSize());
-		else
-			bakcbufferSize = m_backbufferSize;
-
-		updateFramebufferSizeIfNeeded(bakcbufferSize);
-	}
-
+	updateFramebufferSizeIfNeeded();
 
 	//TODO: state push/pop
 
@@ -181,29 +179,12 @@ void UIViewport::onRender(DrawingContext* g)
 }
 
 //------------------------------------------------------------------------------
-void UIViewport::updateFramebufferSizeIfNeeded(const SizeI& viewSize)
+void UIViewport::updateFramebufferSizeIfNeeded()
 {
-	bool create = false;
-	SizeI newSize(0, 0);
+	const SizeI& newSize = SizeI::fromFloatSize(m_viewSize);
 
-	// 初回、まだ作成されていなければ作りたい
-	if (m_primaryLayerTarget == nullptr)
-	{
-		create = true;
-		newSize = viewSize;
-	}
-
-	// 自動リサイズONで、描画先とサイズが異なるなら再作成
-	if (m_placement == ViewportPlacement::AutoResize)
-	{
-		if (m_primaryLayerTarget != nullptr && viewSize != m_primaryLayerTarget->getSize())
-		{
-			create = true;
-		}
-		newSize = viewSize;
-	}
-
-	if (create)
+	if (m_primaryLayerTarget == nullptr || 
+		(m_primaryLayerTarget != nullptr && newSize != m_primaryLayerTarget->getSize()))
 	{
 		// RenderTargetTexture
 		// TODO: できればこういうのは Resize 関数を作りたい。作り直したくない
@@ -216,8 +197,6 @@ void UIViewport::updateFramebufferSizeIfNeeded(const SizeI& viewSize)
 		// DepthBuffer
 		m_depthBuffer = RefPtr<DepthBuffer>::makeRef();
 		m_depthBuffer->createImpl(getManager()->getGraphicsManager(), newSize, TextureFormat::D24S8);
-
-		m_viewSize = newSize.toFloatSize();
 	}
 }
 
