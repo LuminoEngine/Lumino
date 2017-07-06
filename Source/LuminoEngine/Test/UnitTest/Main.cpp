@@ -162,7 +162,7 @@ void EngineInitalize()
 	Font::getDefault()->setSize(20);
 
 	// 背景はグレーにしておくと加算合成のテストとか、いろいろ都合がよい
-	UIViewport::getMain()->setViewBackgroundColor(Color32::Gray);
+	Engine::getMainViewport()->setViewBackgroundColor(Color32::Gray);
 
 
 

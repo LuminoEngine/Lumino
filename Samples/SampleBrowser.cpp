@@ -1,14 +1,26 @@
 #include <Lumino.h>
 using namespace ln;
 
+namespace sample {
 
-//class UISampleListButton : public UIButton
-//{
-//public:
-//
-//private:
-//};
+struct SampleInfo
+{
+	String			caption;
+	SampleMainFunc	main;
+};
 
+List<SampleInfo>	g_samples;
+
+SampleMainFunc registerSample(const char* name, SampleMainFunc func)
+{
+	SampleInfo info;
+	info.caption = String::fromNativeCharString(name);
+	info.main = func;
+	g_samples.add(info);
+	return func;
+}
+
+} // namespace sample
 
 
 void Main_HelloWorld();

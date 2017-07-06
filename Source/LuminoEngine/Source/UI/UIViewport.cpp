@@ -17,12 +17,6 @@ LN_NAMESPACE_BEGIN
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIViewport, UIElement);
 
 //------------------------------------------------------------------------------
-UIViewport* UIViewport::getMain()
-{
-	return EngineManager::Instance->getUIManager()->getMainWindow()->getViewport();
-}
-
-//------------------------------------------------------------------------------
 UIViewport::UIViewport()
 	: UIElement()
 	, m_backbufferSize(0, 0)

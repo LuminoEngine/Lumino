@@ -71,6 +71,12 @@ public:
 
 	static Camera* getCamera3D();
 
+
+	/** エンジンによって作成されるデフォルトの UIViewport を取得します。 */
+	static UIViewport* getMainViewport();
+
+
+
 	static UIViewportLayer* getDefault2DLayer();
 	static UIViewportLayer* getDefault3DLayer();
 	static UILayoutLayer* getDefaultUILayer();		// TODO: name Builtin

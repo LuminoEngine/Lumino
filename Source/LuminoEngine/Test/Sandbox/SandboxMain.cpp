@@ -136,7 +136,7 @@ void Main()
 	EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Threaded);//GraphicsRenderingType::Immediate);//
 	Engine::initialize();
 	//Engine::getMainViewport()->SetBackgroundColor(Color32::Gray);
-	UIViewport::getMain()->setPlacement(ViewportPlacement::AutoResize);
+	Engine::getMainViewport()->setPlacement(ViewportPlacement::AutoResize);
 
 	//Engine::getDefaultSceneGraph3D()->visibleGridPlane = true;
 

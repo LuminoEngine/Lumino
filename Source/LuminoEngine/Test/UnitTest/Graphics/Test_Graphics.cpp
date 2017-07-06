@@ -43,7 +43,7 @@ class Test_Graphics_Viewport : public ::testing::Test {};
 TEST_F(Test_Graphics_Viewport, Basic)
 {
 	Size size;
-	size = UIViewport::getMain()->getViewSize();
+	size = Engine::getMainViewport()->getViewSize();
 	ASSERT_EQ(160, size.width);
 	ASSERT_EQ(120, size.height);
 }

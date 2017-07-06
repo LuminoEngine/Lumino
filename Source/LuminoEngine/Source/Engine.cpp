@@ -112,6 +112,12 @@ Camera* Engine::getCamera3D()
 }
 
 //------------------------------------------------------------------------------
+UIViewport* Engine::getMainViewport()
+{
+	return EngineManager::Instance->getUIManager()->getMainWindow()->getViewport();
+}
+
+//------------------------------------------------------------------------------
 UIViewportLayer* Engine::getDefault2DLayer()
 {
 	return EngineManager::Instance->getUIManager()->getMainWindow()->getDefaultCameraViewportLayer2D();
