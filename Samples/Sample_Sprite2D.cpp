@@ -1,7 +1,7 @@
 #include <Lumino.h>
 using namespace ln;
 
-void Main_Sprite2D()
+LN_SAMPLE_MAIN(Sprite2D)
 {
 	while (Engine::update())
 	{

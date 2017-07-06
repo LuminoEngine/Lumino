@@ -1,7 +1,7 @@
 
 set(LN_SOURCES_SampleBrowser
-	Sample_DebugAndTestSupport.cpp
 	Sample_HelloWorld.cpp
+	Sample_DebugAndTestSupport.cpp
 	Sample_Sprite2D.cpp
 	SampleBrowser.cpp
 	SampleBrowser.PCH.cpp

@@ -3,13 +3,16 @@
 #include <Lumino.h>
 
 #define LN_SAMPLE_INITIALIZE
-#define LN_SAMOLE_TERMINATE
+#define LN_SAMPLE_TERMINATE
+#define LN_SAMPLE_UPDATE		(Engine::update() && !sample::g_sceneChanging)
 
 namespace sample {
 
 using SampleMainFunc = void(*)();
 
 SampleMainFunc registerSample(const char* name, SampleMainFunc func);
+
+extern bool g_sceneChanging;
 
 } // namespace sample
 

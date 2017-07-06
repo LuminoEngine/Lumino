@@ -1,7 +1,7 @@
 #include <Lumino.h>
 using namespace ln;
 
-void Main_DebugAndTestSupport()
+LN_SAMPLE_MAIN(DebugAndTestSupport)
 {
 	Engine::getWorld3D()->setVisibleGridPlane(true);
 
@@ -13,7 +13,7 @@ void Main_DebugAndTestSupport()
 	Engine::getCamera3D()->addComponent(b);
 
 
-	while (Engine::update())
+	while (LN_SAMPLE_UPDATE)
 	{
 		//printf("----\n");
 	}

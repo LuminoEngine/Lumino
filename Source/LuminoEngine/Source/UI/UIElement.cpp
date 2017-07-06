@@ -299,7 +299,7 @@ void UIElement::onRender(DrawingContext* g)
 		g->drawBoxBorder(
 			Rect(0, 0, m_finalGlobalRect.getSize()), m_localStyle->borderThickness.get(), m_localStyle->cornerRadius.get(),
 			Color::Gray, Color::Gray, Color::Gray, Color::Gray,
-			BorderDirection::Outside);
+			BorderDirection::Inside);
 	}
 }
 

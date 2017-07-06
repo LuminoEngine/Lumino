@@ -1,44 +1,47 @@
 #include <Lumino.h>
 using namespace ln;
 
-namespace sample {
-
 struct SampleInfo
 {
 	String			caption;
-	SampleMainFunc	main;
+	sample::SampleMainFunc	mainFunc;
 };
 
-List<SampleInfo>	g_samples;
+class SampleManager
+{
+public:
+	// VS2017 ではグローバル変数で std::vector や ln::List を作ると main 始まる前にデストラクタが呼ばれて空っぽになってしまった。バグかな？
+	// ローカルの static 変数なら大丈夫なので、gtest と同じ仕組みでシングルトンを実装する。
+	static SampleManager* getInstance();
+
+public:
+	std::vector<SampleInfo>	m_samples;
+};
+
+
+SampleManager* SampleManager::getInstance()
+{
+	static SampleManager instance;
+	return &instance;
+}
+
+
+
+
+namespace sample {
+bool g_sceneChanging = false;
+
 
 SampleMainFunc registerSample(const char* name, SampleMainFunc func)
 {
 	SampleInfo info;
 	info.caption = String::fromNativeCharString(name);
-	info.main = func;
-	g_samples.add(info);
+	info.mainFunc = func;
+	SampleManager::getInstance()->m_samples.push_back(info);
 	return func;
 }
 
 } // namespace sample
-
-
-void Main_HelloWorld();
-void Main_Sprite2D();
-void Main_DebugAndTestSupport();
-
-struct SampleInfo
-{
-	String				name;
-	Delegate<void()>	mainFunc;
-};
-
-static SampleInfo g_samples[] =
-{
-	{ _T("HelloWorld"), Main_HelloWorld },
-	{ _T("Sprite2D"), Main_Sprite2D },
-	{ _T("DebugAndTestSupport"), Main_DebugAndTestSupport },
-};
 
 int						g_samplesIndex = 0;
 RefPtr<UIToggleButton>	g_pinButton;
@@ -69,16 +72,16 @@ void Main()
 
 	auto listBox1 = UIListBox::create();
 	listBox1->setWidth(200);
-	listBox1->margin = ThicknessF(0, 32, 0, 0);
-	for (int i = 0; i < LN_ARRAY_SIZE_OF(g_samples); i++)
+	//listBox1->margin = ThicknessF(0, 32, 0, 0);
+	for (int i = 0; i < SampleManager::getInstance()->m_samples.size(); i++)
 	{
-		listBox1->addTextItem(g_samples[i].name);
+		listBox1->addTextItem(SampleManager::getInstance()->m_samples[i].caption);
 	}
 
 
 	g_listWindow = UIUserControl::create();
-	g_listWindow->setWidth(220);
-	g_listWindow->setBackground(SolidColorBrush::Blue);
+	//g_listWindow->setWidth(220);
+	g_listWindow->setBackground(UIColors::getBrush(UIColorIndex::Grey, 3));
 	g_listWindow->setAnchor(AlignmentAnchor::TopOffsets | AlignmentAnchor::BottomOffsets);	// TODO: UIAnchor でいいとおもう
 	g_listWindow->addChild(listBox1);
 	mainWindow->addChild(g_listWindow);
@@ -101,7 +104,7 @@ void Main()
 
 	while (!Engine::isEndRequested() && g_samplesIndex >= 0)
 	{
-		g_samples[g_samplesIndex].mainFunc();
+		SampleManager::getInstance()->m_samples[g_samplesIndex].mainFunc();
 
 	}
 
