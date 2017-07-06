@@ -14,7 +14,11 @@ public:
 
 	static void addAssetsDirectory(const StringRef& directoryPath);
 
+	/** アセットフォルダからテクスチャを読み込みます。 */
 	static Texture2DPtr loadTexture(const StringRef& filePath);
+
+	/** アセットフォルダからシェーダを読み込みます。 */
+	static RefPtr<Shader> loadShader(const StringRef& filePath);
 
 	static RefPtr<StaticMeshModel> loadMeshModel(const StringRef& filePath);
 

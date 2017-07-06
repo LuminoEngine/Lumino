@@ -43,8 +43,9 @@ void AssetsManager::initialize(EngineManager* manager)
 
 	addAssetsDirectory(PathName::getCurrentDirectory());
 
-	m_textureCache = RefPtr<CacheManager>::makeRef(32, 0);	// TODO
-	m_fontCache = RefPtr<CacheManager>::makeRef(32, 0);	// TODO
+	m_textureCache = RefPtr<CacheManager>::makeRef(32, 0);
+	//m_shaderCache = RefPtr<CacheManager>::makeRef(32, 0);
+	m_fontCache = RefPtr<CacheManager>::makeRef(32, 0);
 
 	if (g_managerInstance == nullptr)
 	{
@@ -56,6 +57,7 @@ void AssetsManager::initialize(EngineManager* manager)
 void AssetsManager::Finalize()
 {
 	m_textureCache->finalizeCache();
+	//m_shaderCache->finalizeCache();
 	m_fontCache->finalizeCache();
 }
 
@@ -83,6 +85,16 @@ Texture2DPtr AssetsManager::loadTexture(const StringRef& filePath)
 
 	m_textureCache->registerCacheObject(key, ref);
 	return ref;
+}
+
+//------------------------------------------------------------------------------
+RefPtr<Shader> AssetsManager::loadShader(const StringRef& filePath)
+{
+	// TODO: 暫定処置
+	makeSearchPath(filePath);
+	auto* path = findLocalFilePath();
+
+	return Shader::create(*path);
 }
 
 //------------------------------------------------------------------------------
@@ -214,6 +226,12 @@ void Assets::addAssetsDirectory(const StringRef& directoryPath)
 Texture2DPtr Assets::loadTexture(const StringRef& filePath)
 {
 	return AssetsManager::getInstance()->loadTexture(filePath);
+}
+
+//------------------------------------------------------------------------------
+RefPtr<Shader> Assets::loadShader(const StringRef& filePath)
+{
+	return AssetsManager::getInstance()->loadShader(filePath);
 }
 
 //------------------------------------------------------------------------------

@@ -25,6 +25,7 @@ public:
 	void addAssetsDirectory(const StringRef& directoryPath);
 
 	Texture2DPtr loadTexture(const StringRef& filePath);
+	RefPtr<Shader> loadShader(const StringRef& filePath);
 
 	RefPtr<StaticMeshModel> loadMeshModel(const StringRef& filePath);
 
@@ -48,6 +49,7 @@ private:
 	EngineManager*			m_engineManager;
 	List<AssetsDirectory>	m_assetsDirectories;
 	RefPtr<CacheManager>	m_textureCache;
+	//RefPtr<CacheManager>	m_shaderCache;
 	RefPtr<CacheManager>	m_fontCache;
 };
 
