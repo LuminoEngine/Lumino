@@ -152,7 +152,7 @@ class CameraViewportLayer2
 public:
 	void setDebugDrawFlags(WorldDebugDrawFlags flags);
 
-	virtual void render() override;
+	virtual void render(bool clearColorBuffer) override;
 	virtual void executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 
 protected:

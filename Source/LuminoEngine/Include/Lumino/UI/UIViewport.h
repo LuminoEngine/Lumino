@@ -79,7 +79,7 @@ protected:
 	virtual UIElement* hitTestUIElement(const PointF& globalPt);	// TODO: globalPt じゃなくて local のほうがやりやすい
 	virtual void onRoutedEvent(UIEventArgs* e);
 	virtual void updateLayout(const Size& viewSize);
-	virtual void render() = 0;
+	virtual void render(bool clearColorBuffer) = 0;
 	virtual void executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) = 0;
 
 private:
@@ -110,7 +110,7 @@ protected:
 	virtual UIElement* hitTestUIElement(const PointF& globalPt) override;
 	virtual void onRoutedEvent(UIEventArgs* e) override;
 	virtual void updateLayout(const Size& viewSize) override;
-	virtual void render() override;
+	virtual void render(bool clearColorBuffer) override;
 	virtual void executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 
 private:

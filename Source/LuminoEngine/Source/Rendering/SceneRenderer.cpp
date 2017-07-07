@@ -49,6 +49,13 @@ void SceneRenderer::render(
 	DepthBuffer* defaultDepthBuffer,
 	RenderDiag* diag)
 {
+
+	detail::CoreGraphicsRenderFeature* coreRenderer = m_manager->getRenderer();
+	coreRenderer->begin();
+
+
+
+
 	if (diag != nullptr) diag->beginRenderView();
 	if (diag != nullptr) diag->beginDrawList();
 
@@ -214,6 +221,8 @@ void SceneRenderer::render(
 
 	if (diag != nullptr) diag->endDrawList();
 	if (diag != nullptr) diag->endRenderView();
+
+	coreRenderer->end();
 }
 
 

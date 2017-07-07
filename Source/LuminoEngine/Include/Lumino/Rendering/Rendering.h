@@ -709,7 +709,7 @@ LN_INTERNAL_ACCESS:
 	//void DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material);
 	void blitInternal(Texture* source, RenderTargetTexture* dest, const Matrix& transform, Material* material);
 	void drawFrameRectangle(const Rect& rect);
-	void renderSubView(RenderView* listSet, detail::SceneRenderer* renderer = nullptr, RenderTargetTexture* defaultRenderTarget = nullptr, DepthBuffer* defaultDepthBuffer = nullptr);
+	//void renderSubView(RenderView* listSet, detail::SceneRenderer* renderer = nullptr, RenderTargetTexture* defaultRenderTarget = nullptr, DepthBuffer* defaultDepthBuffer = nullptr);
 
 	// TODO: 本質的に DrawList に持たせるべきではない。一応今は一時変数的な扱いでしかないので被害は少ないが・・・
 	//void setCurrentCamera(CameraComponent* camera) { m_camera = camera; }

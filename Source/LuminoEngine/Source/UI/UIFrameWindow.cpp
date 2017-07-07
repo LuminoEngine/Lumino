@@ -139,13 +139,13 @@ void UIFrameWindow::presentRenderingContexts()
 {
 	// render
 	{
-		detail::CoreGraphicsRenderFeature* renderer = m_manager->getGraphicsManager()->getRenderer();
-		renderer->begin();
+		//detail::CoreGraphicsRenderFeature* renderer = m_manager->getGraphicsManager()->getRenderer();
+		//renderer->begin();
 
 		onPresentRenderingContexts();
 
 		m_manager->getGraphicsManager()->switchActiveContext(nullptr);
-		renderer->end();
+		//renderer->end();
 	}
 
 	// present

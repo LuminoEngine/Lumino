@@ -130,17 +130,18 @@ void UIViewport::onRender(DrawingContext* g)
 	RefPtr<RenderTargetTexture> oldRT = g->getRenderTarget(0);
 	RefPtr<DepthBuffer> oldDB = g->getDepthBuffer();
 
-	g->setRenderTarget(0, m_primaryLayerTarget);
-	g->setDepthBuffer(m_depthBuffer);
-	g->clear(ClearFlags::All, m_backgroundColor, 1.0f, 0);
+	//g->setRenderTarget(0, m_primaryLayerTarget);
+	//g->setDepthBuffer(m_depthBuffer);
+	//g->clear(ClearFlags::All, m_backgroundColor, 1.0f, 0);
 
 
 
 
-
+	bool clearColorBuffer = true;
 	for (auto& layer : m_viewportLayerList)
 	{
-		layer->render();
+		layer->render(clearColorBuffer);
+		clearColorBuffer = false;
 	}
 
 	g->setBuiltinEffectData(detail::BuiltinEffectData::DefaultData);
@@ -158,8 +159,8 @@ void UIViewport::onRender(DrawingContext* g)
 
 
 
-	g->setRenderTarget(0, oldRT);
-	g->setDepthBuffer(oldDB);
+	//g->setRenderTarget(0, oldRT);
+	//g->setDepthBuffer(oldDB);
 
 	//Matrix transform;
 	//makeViewBoxTransform(SizeI::fromFloatSize(getRenderSize()), m_backbufferSize, &transform);
@@ -368,7 +369,7 @@ void UILayoutLayer::updateLayout(const Size& viewSize)
 }
 
 //------------------------------------------------------------------------------
-void UILayoutLayer::render()
+void UILayoutLayer::render(bool clearColorBuffer)
 {
 	m_drawingContext->beginMakeElements();
 	m_drawingContext->setBlendMode(BlendMode::Alpha);
@@ -391,11 +392,12 @@ void UILayoutLayer::executeDrawListRendering(DrawList* parentDrawList, RenderTar
 	m_drawElementListSet->m_cameraInfo.viewProjMatrix = m_drawElementListSet->m_cameraInfo.viewMatrix * m_drawElementListSet->m_cameraInfo.projMatrix;
 	m_drawElementListSet->m_cameraInfo.viewFrustum = ViewFrustum(m_drawElementListSet->m_cameraInfo.projMatrix);
 	m_drawElementListSet->m_cameraInfo.zSortDistanceBase = ZSortDistanceBase::NodeZ;
-	parentDrawList->renderSubView(
-		m_drawElementListSet,
-		m_internalRenderer,
-		renderTarget,
-		depthBuffer);
+	m_internalRenderer->render(m_drawElementListSet, renderTarget, depthBuffer, nullptr);	// TODO: diag
+	//parentDrawList->renderSubView(
+	//	m_drawElementListSet,
+	//	m_internalRenderer,
+	//	renderTarget,
+	//	depthBuffer);
 }
 
 //==============================================================================

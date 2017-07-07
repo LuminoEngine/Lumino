@@ -823,9 +823,10 @@ void CameraViewportLayer2::setDebugDrawFlags(WorldDebugDrawFlags flags)
 }
 
 //------------------------------------------------------------------------------
-void CameraViewportLayer2::render()
+void CameraViewportLayer2::render(bool clearColorBuffer)
 {
-	m_targetWorld->getRenderer()->clear(ClearFlags::Depth, Color::White);
+	
+	m_targetWorld->getRenderer()->clear(clearColorBuffer ? (ClearFlags::All) : ClearFlags::Depth, getOwnerViewport()->getViewBackgroundColor());
 
 	// カメラ行列の更新
 	m_hostingCamera->updateMatrices(getOwnerViewport()->getViewSize());
@@ -852,11 +853,12 @@ void CameraViewportLayer2::executeDrawListRendering(DrawList* parentDrawList, Re
 	m_mainRenderView->m_cameraInfo.viewProjMatrix = m_hostingCamera->getViewProjectionMatrix();
 	m_mainRenderView->m_cameraInfo.viewFrustum = m_hostingCamera->getViewFrustum();
 	m_mainRenderView->m_cameraInfo.zSortDistanceBase = m_hostingCamera->getZSortDistanceBase();
-	parentDrawList->renderSubView(
-		m_mainRenderView,
-		m_internalRenderer,
-		renderTarget,
-		depthBuffer);
+	m_internalRenderer->render(m_mainRenderView, renderTarget, depthBuffer, nullptr);	// TODO: diag
+	//parentDrawList->renderSubView(
+	//	m_mainRenderView,
+	//	m_internalRenderer,
+	//	renderTarget,
+	//	depthBuffer);
 }
 
 //------------------------------------------------------------------------------
