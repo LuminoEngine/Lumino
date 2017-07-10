@@ -7,6 +7,7 @@ LN_NAMESPACE_BEGIN
 class UIViewportLayer;
 class PostEffect;
 namespace detail { class SceneRenderer; }
+namespace detail { class NonShadingRenderer; }
 class RenderView;
 
 /**
@@ -59,6 +60,11 @@ private:
 	RefPtr<RenderTargetTexture>		m_primaryLayerTarget;
 	RefPtr<RenderTargetTexture>		m_secondaryLayerTarget;
 	RefPtr<DepthBuffer>				m_depthBuffer;
+
+	// TODO: RenderView
+	RefPtr<DrawingContext>				m_drawingContext;
+	RefPtr<detail::NonShadingRenderer>	m_sceneRenderer;
+	RefPtr<RenderView>					m_renderView;
 };
 
 /**
@@ -80,7 +86,7 @@ protected:
 	virtual void onRoutedEvent(UIEventArgs* e);
 	virtual void updateLayout(const Size& viewSize);
 	virtual void render(bool clearColorBuffer) = 0;
-	virtual void executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) = 0;
+	virtual void executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, bool clearColorBuffer) = 0;
 
 private:
 	void postRender(DrawList* context, RefPtr<RenderTargetTexture>* primaryLayerTarget, RefPtr<RenderTargetTexture>* secondaryLayerTarget);
@@ -111,7 +117,7 @@ protected:
 	virtual void onRoutedEvent(UIEventArgs* e) override;
 	virtual void updateLayout(const Size& viewSize) override;
 	virtual void render(bool clearColorBuffer) override;
-	virtual void executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
+	virtual void executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, bool clearColorBuffer) override;
 
 private:
 	RefPtr<UILayoutView>				m_root;

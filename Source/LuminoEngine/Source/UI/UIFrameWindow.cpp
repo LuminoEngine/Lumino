@@ -236,7 +236,9 @@ void UIFrameWindow::executeDrawList_UIRenderer()
 		//m_drawElementListSet->m_cameraInfo,
 		renderTarget,
 		depthBuffer,
-		m_renderDiag);
+		m_renderDiag,
+		false,
+		Color::White);
 }
 
 

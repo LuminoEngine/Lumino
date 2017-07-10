@@ -47,12 +47,21 @@ void SceneRenderer::render(
 	//const detail::CameraInfo& cameraInfo,
 	RenderTargetTexture* defaultRenderTarget,
 	DepthBuffer* defaultDepthBuffer,
-	RenderDiag* diag)
+	RenderDiag* diag,
+	bool clearColorBuffer,
+	const Color& clearColor)
 {
 
 	detail::CoreGraphicsRenderFeature* coreRenderer = m_manager->getRenderer();
 	coreRenderer->begin();
 
+
+	if (clearColorBuffer)
+	{
+		coreRenderer->setRenderTarget(0, defaultRenderTarget);
+		coreRenderer->setDepthBuffer(defaultDepthBuffer);
+		coreRenderer->clear(ClearFlags::All, clearColor);
+	}
 
 
 

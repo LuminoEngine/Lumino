@@ -826,7 +826,7 @@ void CameraViewportLayer2::setDebugDrawFlags(WorldDebugDrawFlags flags)
 void CameraViewportLayer2::render(bool clearColorBuffer)
 {
 	
-	m_targetWorld->getRenderer()->clear(clearColorBuffer ? (ClearFlags::All) : ClearFlags::Depth, getOwnerViewport()->getViewBackgroundColor());
+	//m_targetWorld->getRenderer()->clear(clearColorBuffer ? (ClearFlags::All) : ClearFlags::Depth, getOwnerViewport()->getViewBackgroundColor());
 
 	// カメラ行列の更新
 	m_hostingCamera->updateMatrices(getOwnerViewport()->getViewSize());
@@ -837,7 +837,7 @@ void CameraViewportLayer2::render(bool clearColorBuffer)
 }
 
 //------------------------------------------------------------------------------
-void CameraViewportLayer2::executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+void CameraViewportLayer2::executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, bool clearColorBuffer)
 {
 	// TODO: float
 	Size targetSize((float)renderTarget->getWidth(), (float)renderTarget->getHeight());
@@ -853,7 +853,7 @@ void CameraViewportLayer2::executeDrawListRendering(DrawList* parentDrawList, Re
 	m_mainRenderView->m_cameraInfo.viewProjMatrix = m_hostingCamera->getViewProjectionMatrix();
 	m_mainRenderView->m_cameraInfo.viewFrustum = m_hostingCamera->getViewFrustum();
 	m_mainRenderView->m_cameraInfo.zSortDistanceBase = m_hostingCamera->getZSortDistanceBase();
-	m_internalRenderer->render(m_mainRenderView, renderTarget, depthBuffer, nullptr);	// TODO: diag
+	m_internalRenderer->render(m_mainRenderView, renderTarget, depthBuffer, nullptr, clearColorBuffer, getOwnerViewport()->getViewBackgroundColor());	// TODO: diag
 	//parentDrawList->renderSubView(
 	//	m_mainRenderView,
 	//	m_internalRenderer,
