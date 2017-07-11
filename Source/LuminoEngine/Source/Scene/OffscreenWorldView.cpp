@@ -138,8 +138,9 @@ void OffscreenWorldView::renderWorld(World* world, RenderView* mainRenderView)
 	// user override
 	//OnUpdateRenderViewPoint(m_renderView);
 
-	DrawList* r = world->getRenderer();
-	r->renderSubView(this);
+	//DrawList* r = world->getRenderer();
+	//r->renderSubView(this);
+	LN_NOTIMPLEMENTED();
 }
 
 //------------------------------------------------------------------------------

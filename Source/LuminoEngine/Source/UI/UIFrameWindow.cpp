@@ -139,13 +139,13 @@ void UIFrameWindow::presentRenderingContexts()
 {
 	// render
 	{
-		detail::CoreGraphicsRenderFeature* renderer = m_manager->getGraphicsManager()->getRenderer();
-		renderer->begin();
+		//detail::CoreGraphicsRenderFeature* renderer = m_manager->getGraphicsManager()->getRenderer();
+		//renderer->begin();
 
 		onPresentRenderingContexts();
 
 		m_manager->getGraphicsManager()->switchActiveContext(nullptr);
-		renderer->end();
+		//renderer->end();
 	}
 
 	// present
@@ -236,7 +236,9 @@ void UIFrameWindow::executeDrawList_UIRenderer()
 		//m_drawElementListSet->m_cameraInfo,
 		renderTarget,
 		depthBuffer,
-		m_renderDiag);
+		m_renderDiag,
+		false,
+		Color::White);
 }
 
 

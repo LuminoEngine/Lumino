@@ -1776,43 +1776,43 @@ void DrawList::drawFrameRectangle(const Rect& rect)
 }
 
 //------------------------------------------------------------------------------
-void DrawList::renderSubView(RenderView* listSet, detail::SceneRenderer* renderer, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer)
-{
-	class DrawElement_RenderSubView : public detail::DrawElement
-	{
-	public:
-		RenderView* listSet;
-		detail::SceneRenderer* renderer;
-		RefPtr<RenderTargetTexture>	defaultRenderTarget;
-		RefPtr<DepthBuffer> defaultDepthBuffer;
-
-		virtual void drawSubset(const DrawArgs& e) override
-		{
-			// それぞれ、省略されていれば親のを使う
-			detail::SceneRenderer* primRenderer = (renderer != nullptr) ? renderer : e.renderer;
-			RenderTargetTexture* primRenderTarget = (defaultRenderTarget != nullptr) ? defaultRenderTarget : e.defaultRenderTarget;
-			DepthBuffer* primDepthBuffer = (defaultDepthBuffer != nullptr) ? defaultDepthBuffer : e.defaultDepthBuffer;
-
-			// TODO: scoped change block
-			auto* status = e.context->getCurrentStatus();
-
-			primRenderer->render(listSet, primRenderTarget, primDepthBuffer, e.diag);
-
-			// ステート復帰
-			e.context->applyStatus(status, { e.defaultRenderTarget, e.defaultDepthBuffer });
-		}
-		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("RenderSubView")); }
-	};
-
-	// TODO: m_frameRectRenderer は違う気がする・・・
-	auto* e = resolveDrawElement<DrawElement_RenderSubView>(m_manager->getInternalContext()->m_frameRectRenderer, nullptr);
-	//e->elementList = listSet->m_lists[0];
-	//e->cameraInfo = listSet->m_cameraInfo;
-	e->listSet = listSet;
-	e->renderer = renderer;
-	e->defaultRenderTarget = defaultRenderTarget;
-	e->defaultDepthBuffer = defaultDepthBuffer;
-}
+//void DrawList::renderSubView(RenderView* listSet, detail::SceneRenderer* renderer, RenderTargetTexture* defaultRenderTarget, DepthBuffer* defaultDepthBuffer)
+//{
+//	class DrawElement_RenderSubView : public detail::DrawElement
+//	{
+//	public:
+//		RenderView* listSet;
+//		detail::SceneRenderer* renderer;
+//		RefPtr<RenderTargetTexture>	defaultRenderTarget;
+//		RefPtr<DepthBuffer> defaultDepthBuffer;
+//
+//		virtual void drawSubset(const DrawArgs& e) override
+//		{
+//			// それぞれ、省略されていれば親のを使う
+//			detail::SceneRenderer* primRenderer = (renderer != nullptr) ? renderer : e.renderer;
+//			RenderTargetTexture* primRenderTarget = (defaultRenderTarget != nullptr) ? defaultRenderTarget : e.defaultRenderTarget;
+//			DepthBuffer* primDepthBuffer = (defaultDepthBuffer != nullptr) ? defaultDepthBuffer : e.defaultDepthBuffer;
+//
+//			// TODO: scoped change block
+//			auto* status = e.context->getCurrentStatus();
+//
+//			primRenderer->render(listSet, primRenderTarget, primDepthBuffer, e.diag);
+//
+//			// ステート復帰
+//			e.context->applyStatus(status, { e.defaultRenderTarget, e.defaultDepthBuffer });
+//		}
+//		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("RenderSubView")); }
+//	};
+//
+//	// TODO: m_frameRectRenderer は違う気がする・・・
+//	auto* e = resolveDrawElement<DrawElement_RenderSubView>(m_manager->getInternalContext()->m_frameRectRenderer, nullptr);
+//	//e->elementList = listSet->m_lists[0];
+//	//e->cameraInfo = listSet->m_cameraInfo;
+//	e->listSet = listSet;
+//	e->renderer = renderer;
+//	e->defaultRenderTarget = defaultRenderTarget;
+//	e->defaultDepthBuffer = defaultDepthBuffer;
+//}
 
 
 

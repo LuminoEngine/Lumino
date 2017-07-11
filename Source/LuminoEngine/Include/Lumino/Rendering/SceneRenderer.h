@@ -34,7 +34,9 @@ public:
 		//const detail::CameraInfo& cameraInfo,
 		RenderTargetTexture* defaultRenderTarget,
 		DepthBuffer* defaultDepthBuffer,
-		RenderDiag* diag);
+		RenderDiag* diag,
+		bool clearColorBuffer,
+		const Color& clearColor);
 
 protected:
 	virtual void onPreRender(DrawElementList* elementList);

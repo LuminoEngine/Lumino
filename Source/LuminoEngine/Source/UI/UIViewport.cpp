@@ -35,6 +35,12 @@ void UIViewport::initialize()
 {
 	UIElement::initialize();
 	setHitTestVisible(true);
+
+	m_drawingContext = newObject<DrawingContext>();
+	m_sceneRenderer = RefPtr<detail::NonShadingRenderer>::makeRef();
+	m_sceneRenderer->initialize(detail::EngineDomain::getGraphicsManager());
+	m_renderView = newObject<RenderView>();
+	m_renderView->m_lists.add(m_drawingContext->getDrawElementList());
 }
 
 //------------------------------------------------------------------------------
@@ -127,28 +133,31 @@ void UIViewport::onRender(DrawingContext* g)
 
 	//TODO: state push/pop
 
-	RefPtr<RenderTargetTexture> oldRT = g->getRenderTarget(0);
-	RefPtr<DepthBuffer> oldDB = g->getDepthBuffer();
+	//RefPtr<RenderTargetTexture> oldRT = g->getRenderTarget(0);
+	//RefPtr<DepthBuffer> oldDB = g->getDepthBuffer();
 
-	g->setRenderTarget(0, m_primaryLayerTarget);
-	g->setDepthBuffer(m_depthBuffer);
-	g->clear(ClearFlags::All, m_backgroundColor, 1.0f, 0);
-
-
+	//g->setRenderTarget(0, m_primaryLayerTarget);
+	//g->setDepthBuffer(m_depthBuffer);
+	//g->clear(ClearFlags::All, m_backgroundColor, 1.0f, 0);
 
 
 
+
+	bool clearColorBuffer = true;
 	for (auto& layer : m_viewportLayerList)
 	{
-		layer->render();
+		layer->render(clearColorBuffer);
+		clearColorBuffer = false;
 	}
 
 	g->setBuiltinEffectData(detail::BuiltinEffectData::DefaultData);
 
 	// 全てのレイヤーの描画リストを実行し m_primaryLayerTarget へ書き込む
+	clearColorBuffer = true;
 	for (auto& layer : m_viewportLayerList)
 	{
-		layer->executeDrawListRendering(g, m_primaryLayerTarget, m_depthBuffer);
+		layer->executeDrawListRendering(g, m_primaryLayerTarget, m_depthBuffer, clearColorBuffer);
+		clearColorBuffer = false;
 
 		// Posteffect
 		layer->postRender(g, &m_primaryLayerTarget, &m_secondaryLayerTarget);
@@ -158,8 +167,8 @@ void UIViewport::onRender(DrawingContext* g)
 
 
 
-	g->setRenderTarget(0, oldRT);
-	g->setDepthBuffer(oldDB);
+	//g->setRenderTarget(0, oldRT);
+	//g->setDepthBuffer(oldDB);
 
 	//Matrix transform;
 	//makeViewBoxTransform(SizeI::fromFloatSize(getRenderSize()), m_backbufferSize, &transform);
@@ -368,7 +377,7 @@ void UILayoutLayer::updateLayout(const Size& viewSize)
 }
 
 //------------------------------------------------------------------------------
-void UILayoutLayer::render()
+void UILayoutLayer::render(bool clearColorBuffer)
 {
 	m_drawingContext->beginMakeElements();
 	m_drawingContext->setBlendMode(BlendMode::Alpha);
@@ -377,7 +386,7 @@ void UILayoutLayer::render()
 }
 
 //------------------------------------------------------------------------------
-void UILayoutLayer::executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+void UILayoutLayer::executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, bool clearColorBuffer)
 {
 	// TODO: float
 	Size viewPixelSize((float)renderTarget->getWidth(), (float)renderTarget->getHeight());
@@ -391,11 +400,12 @@ void UILayoutLayer::executeDrawListRendering(DrawList* parentDrawList, RenderTar
 	m_drawElementListSet->m_cameraInfo.viewProjMatrix = m_drawElementListSet->m_cameraInfo.viewMatrix * m_drawElementListSet->m_cameraInfo.projMatrix;
 	m_drawElementListSet->m_cameraInfo.viewFrustum = ViewFrustum(m_drawElementListSet->m_cameraInfo.projMatrix);
 	m_drawElementListSet->m_cameraInfo.zSortDistanceBase = ZSortDistanceBase::NodeZ;
-	parentDrawList->renderSubView(
-		m_drawElementListSet,
-		m_internalRenderer,
-		renderTarget,
-		depthBuffer);
+	m_internalRenderer->render(m_drawElementListSet, renderTarget, depthBuffer, nullptr, clearColorBuffer, getOwnerViewport()->getViewBackgroundColor());	// TODO: diag
+	//parentDrawList->renderSubView(
+	//	m_drawElementListSet,
+	//	m_internalRenderer,
+	//	renderTarget,
+	//	depthBuffer);
 }
 
 //==============================================================================
