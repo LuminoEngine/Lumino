@@ -13,8 +13,7 @@ namespace LuminoBuild
             string exeDir = Path.GetDirectoryName(thisAssembly.Location);
             
             var builder = new LuminoBuild.Builder();
-
-
+            
             builder.MajorVersion = 0;
             builder.MinorVersion = 3;
             builder.RevisionVersion = 0;
@@ -35,50 +34,52 @@ namespace LuminoBuild
             builder.LuminoPackageReleaseDir = builder.LuminoRootDir + "Package/Release/Lumino/";
             builder.LuminoDependenciesDir = builder.LuminoRootDir + "External/LuminoDependencies/";
 
-            builder.Rules = new List<LuminoBuild.ModuleRule>();
-            builder.Rules.Add(new SetupDependencies());
-            builder.Rules.Add(new Rules.MakeVersionHeader());
-            builder.Rules.Add(new MakeVSProjectsRule());
-            builder.Rules.Add(new LuminoEngineRule());
-            builder.Rules.Add(new CppPackageRule());
-            builder.Rules.Add(new LuminoDotNetRule());
-            builder.Rules.Add(new DotNetPackageRule());
-            builder.Rules.Add(new LuminoRubyRule());
-            builder.Rules.Add(new RubyPackageRule());
-            builder.Rules.Add(new LuminoCRule());
-            builder.Rules.Add(new CPackageRule());
-            builder.Rules.Add(new MakeInstaller());
-            builder.Rules.Add(new Rules.BuildEngine_MSVCUnicodeMD());
-            if (Utils.IsWin32) builder.Rules.Add(new LuminoHSPRule());
-            if (Utils.IsWin32) builder.Rules.Add(new HSPPackageRule());
+            builder.Tasks = new List<LuminoBuild.BuildTask>();
+            builder.Tasks.Add(new SetupDependencies());
+            builder.Tasks.Add(new Tasks.MakeVersionHeader());
+            builder.Tasks.Add(new MakeVSProjectsRule());
+            builder.Tasks.Add(new LuminoEngineRule());
+            builder.Tasks.Add(new CppPackageRule());
+            builder.Tasks.Add(new LuminoDotNetRule());
+            builder.Tasks.Add(new DotNetPackageRule());
+            builder.Tasks.Add(new LuminoRubyRule());
+            builder.Tasks.Add(new RubyPackageRule());
+            builder.Tasks.Add(new LuminoCRule());
+            builder.Tasks.Add(new CPackageRule());
+            builder.Tasks.Add(new MakeInstaller());
+            builder.Tasks.Add(new Tasks.BuildEngine_MSVCUnicodeMD());
+            if (Utils.IsWin32) builder.Tasks.Add(new LuminoHSPRule());
+            if (Utils.IsWin32) builder.Tasks.Add(new HSPPackageRule());
 
-            while (true)
+            builder.Rules.Add(new Rules.MakeProjects());
+
+            if (args.Length >= 1)
             {
-                Console.WriteLine("----------------------------------------");
-                Console.WriteLine("{0,-8}   {1}", "Command", "Description");
-                foreach (var rule in builder.Rules)
+                builder.DoTaskOrRule(args[0]);
+            }
+            else
+            {
+                while (true)
                 {
-                    Console.WriteLine("{0,-8} : {1}", rule.CommandName, rule.Description);
-                }
-                Console.WriteLine("all      : Build all.");
-                Console.WriteLine("exit     : Exit.");
-                Console.WriteLine("----------------------------------------");
-                Console.Write("Enter commands:");
-                string commands = Console.ReadLine();
+                    Console.WriteLine("----------------------------------------");
+                    Console.WriteLine("{0,-8}   {1}", "Command", "Description");
+                    foreach (var rule in builder.Tasks)
+                    {
+                        Console.WriteLine("{0,-8} : {1}", rule.CommandName, rule.Description);
+                    }
+                    Console.WriteLine("all      : Build all.");
+                    Console.WriteLine("exit     : Exit.");
+                    Console.WriteLine("----------------------------------------");
+                    Console.Write("Enter commands:");
+                    string commands = Console.ReadLine();
 
-                if (commands == "exit") break;
+                    if (commands == "exit") break;
 
-                try
-                {
-                    builder.Execute(commands);
-                }
-                catch (Exception e)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine(e.ToString());
-                    Console.ResetColor(); // 色のリセット
+                    builder.DoTaskOrRule(commands);
                 }
             }
         }
+
+        
     }
 }

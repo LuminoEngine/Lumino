@@ -3,7 +3,7 @@ using System.IO;
 using LuminoBuild;
 using System.Text.RegularExpressions;
 
-class LuminoHSPRule : ModuleRule
+class LuminoHSPRule : BuildTask
 {
     private string _msbuild;
 

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.IO;
 
-namespace LuminoBuild.Rules
+namespace LuminoBuild.Tasks
 {
-    class MakeVersionHeader : ModuleRule
+    class MakeVersionHeader : BuildTask
     {
         /// <summary>
         /// ルールを実行するためのコマンド名

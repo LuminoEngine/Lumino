@@ -263,7 +263,6 @@ set(LN_SOURCES_Math
 	Include/Lumino/Math/Plane.h
 	Include/Lumino/Math/Plane.inl
 	Include/Lumino/Math/Quaternion.h
-	Include/Lumino/Math/Version.h
 	Include/Lumino/Math/ViewFrustum.h
 	Source/Math/Geometries.cpp
 	Source/Math/Random.cpp

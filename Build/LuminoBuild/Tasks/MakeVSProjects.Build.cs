@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using LuminoBuild;
 
-class MakeVSProjectsRule : ModuleRule
+class MakeVSProjectsRule : BuildTask
 {
     /// <summary>
     /// ルールを実行するためのコマンド名

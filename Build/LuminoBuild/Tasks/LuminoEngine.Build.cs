@@ -12,7 +12,7 @@ class CMakeTargetInfo
     public string MSVCStaticRuntime;
 }
 
-class LuminoEngineRule : ModuleRule
+class LuminoEngineRule : BuildTask
 {
     public string _msbuild;
 

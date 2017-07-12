@@ -3,7 +3,7 @@ using System.IO;
 using LuminoBuild;
 using System.Text;
 
-class HSPPackageRule : ModuleRule
+class HSPPackageRule : BuildTask
 {
     /// <summary>
     /// ルールを実行するためのコマンド名
