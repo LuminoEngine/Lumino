@@ -14,7 +14,12 @@ namespace LuminoBuild
             
             var builder = new LuminoBuild.Builder();
 
-            builder.VersionString = "0.3.0";
+
+            builder.MajorVersion = 0;
+            builder.MinorVersion = 3;
+            builder.RevisionVersion = 0;
+            builder.BuildVersion = 0;
+            builder.VersionString = string.Format("{0}.{1}.{2}", builder.MajorVersion, builder.MinorVersion, builder.RevisionVersion);
             builder.InstallerProductGUID_MSVC2013 = "174BEA6E-BE1D-46B1-B363-EAA03ABED741";
             builder.InstallerProductGUID_MSVC2015 = "499FDE66-FE07-4180-94E8-5A7BF690BEEF";
             builder.InstallerProductGUID_MSVC2017 = "6F45F9FB-9E6D-4751-A98D-9D0942639E7C";
@@ -32,6 +37,7 @@ namespace LuminoBuild
 
             builder.Rules = new List<LuminoBuild.ModuleRule>();
             builder.Rules.Add(new SetupDependencies());
+            builder.Rules.Add(new Rules.MakeVersionHeader());
             builder.Rules.Add(new MakeVSProjectsRule());
             builder.Rules.Add(new LuminoEngineRule());
             builder.Rules.Add(new CppPackageRule());

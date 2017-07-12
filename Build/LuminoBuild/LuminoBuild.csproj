@@ -48,6 +48,7 @@
     <Compile Include="Rules\LuminoHSP.Build.cs" />
     <Compile Include="Rules\LuminoRuby.Build.cs" />
     <Compile Include="Rules\MakeInstaller.Build.cs" />
+    <Compile Include="Rules\MakeVersionHeader.cs" />
     <Compile Include="Rules\MakeVSProjects.Build.cs" />
     <Compile Include="Rules\RubyPackage.Build.cs" />
     <Compile Include="Rules\SetupDependencies.Build.cs" />

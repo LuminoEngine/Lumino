@@ -10,6 +10,10 @@ namespace LuminoBuild
 {
 	class Builder
     {
+        public int MajorVersion;
+        public int MinorVersion;
+        public int RevisionVersion;
+        public int BuildVersion;
         public string VersionString;
         public string InstallerProductGUID_MSVC2013;
         public string InstallerProductGUID_MSVC2015;
