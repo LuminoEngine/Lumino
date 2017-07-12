@@ -31,31 +31,31 @@ MidiDecoder::~MidiDecoder()
 }
 
 //------------------------------------------------------------------------------
-void MidiDecoder::Create(Stream* stream)
+void MidiDecoder::create(Stream* stream)
 {
 	LN_REFOBJ_SET(m_stream, stream);
-	m_volumeEntryList.Clear();
+	m_volumeEntryList.clear();
 
-	SearchData();
+	searchData();
 }
 
 //------------------------------------------------------------------------------
-void MidiDecoder::GetLoopState(uint32_t* cc111time, uint32_t* base_time) const
+void MidiDecoder::setLoopState(uint32_t* cc111time, uint32_t* base_time) const
 {
 	*cc111time = m_cc111Time;
 	*base_time = m_baseTime;
 }
 
 //------------------------------------------------------------------------------
-void MidiDecoder::FillOnmemoryBuffer()
+void MidiDecoder::fillOnmemoryBuffer()
 {
 	MutexScopedLock lock(m_mutex);
 
 	if (m_stream != NULL)
 	{
-		m_midiFileData.Resize((size_t)m_stream->GetLength(), false);
-		m_stream->Seek(0, SeekOrigin_Begin);
-		m_stream->Read(m_midiFileData.GetData(), m_midiFileData.GetSize());
+		m_midiFileData.resize((size_t)m_stream->getLength(), false);
+		m_stream->seek(0, SeekOrigin_Begin);
+		m_stream->read(m_midiFileData.getData(), m_midiFileData.getSize());
 
 		if (m_volumeNormalize)
 		{
@@ -79,32 +79,32 @@ void MidiDecoder::FillOnmemoryBuffer()
 }
 
 //------------------------------------------------------------------------------
-void MidiDecoder::Read(uint32_t seekPos, void* buffer, uint32_t bufferSize, uint32_t* outReadSize, uint32_t* outWriteSize)
+void MidiDecoder::read(uint32_t seekPos, void* buffer, uint32_t bufferSize, uint32_t* outReadSize, uint32_t* outWriteSize)
 {
 	LN_THROW(0, InvalidOperationException);
 }
 
 //------------------------------------------------------------------------------
-void MidiDecoder::Reset()
+void MidiDecoder::reset()
 {
 	LN_THROW(0, InvalidOperationException);
 }
 	
 //------------------------------------------------------------------------------
-void MidiDecoder::SearchData()
+void MidiDecoder::searchData()
 {
 	// ファイルポインタを先頭に戻しておく
-	m_stream->Seek(0, SeekOrigin_Begin);
+	m_stream->seek(0, SeekOrigin_Begin);
 
 	BinaryReader reader(m_stream);
 
 	// Midi ファイルのヘッダ読み込み
 	MidiHeader header;
-	reader.Read(&(header.chunktype), 4);
-	header.length = reader.ReadUInt32(ByteOrder::Big);
-	header.format = reader.ReadUInt16(ByteOrder::Big);
-	header.numtrack = reader.ReadUInt16(ByteOrder::Big);
-	header.timebase = reader.ReadUInt16(ByteOrder::Big);
+	reader.read(&(header.chunktype), 4);
+	header.length = reader.readUInt32(ByteOrder::Big);
+	header.format = reader.readUInt16(ByteOrder::Big);
+	header.numtrack = reader.readUInt16(ByteOrder::Big);
+	header.timebase = reader.readUInt16(ByteOrder::Big);
 
 	// ベースタイム格納
 	m_baseTime = header.timebase;
@@ -115,7 +115,7 @@ void MidiDecoder::SearchData()
 	// トラックの数だけループして、cc111 とボリュームチェンジを探す
 	for (int i = 0; i < header.numtrack; ++i)
 	{
-		SearchTrack(reader, &cc111time);
+		searchTrack(reader, &cc111time);
 
 		if (m_cc111Time == 0)
 		{
@@ -125,13 +125,13 @@ void MidiDecoder::SearchData()
 }
 	
 //------------------------------------------------------------------------------
-uint32_t MidiDecoder::ReadDelta(BinaryReader& reader)
+uint32_t MidiDecoder::readDelta(BinaryReader& reader)
 {
 	uint8_t t;
 	uint32_t dtime = 0;
 	for (int i = 0; i < sizeof(uint32_t); ++i)
 	{
-		reader.Read(&t, sizeof(uint8_t));
+		reader.read(&t, sizeof(uint8_t));
 		dtime = (dtime << 7) | (t & 0x7f);
 
 		// MSBが立っていないならば、次のバイトはデルタタイムではないので抜ける
@@ -141,17 +141,17 @@ uint32_t MidiDecoder::ReadDelta(BinaryReader& reader)
 }
 	
 //------------------------------------------------------------------------------
-bool MidiDecoder::SearchTrack(BinaryReader& reader, uint32_t* cc111_time)
+bool MidiDecoder::searchTrack(BinaryReader& reader, uint32_t* cc111_time)
 {
 	// トラックチャンクのチェック
 	uint8_t chunk[4];
-	size_t read_size = reader.Read(chunk, 4);
+	size_t read_size = reader.read(chunk, 4);
 	LN_THROW(read_size == 4, InvalidFormatException);
 	LN_THROW(memcmp(chunk, "MTrk", 4) == 0, InvalidFormatException);
 
 	// トラックの長さ読み込み
 	uint32_t   track_length;
-	track_length = reader.ReadUInt32(ByteOrder::Big);
+	track_length = reader.readUInt32(ByteOrder::Big);
 
 	uint8_t prev_state = 0; // ひとつ前のイベントのステータスバイトを記憶する変数
 	uint8_t state;
@@ -162,10 +162,10 @@ bool MidiDecoder::SearchTrack(BinaryReader& reader, uint32_t* cc111_time)
 	while (1)
 	{
 		// デルタタイムを読み込む
-		track_time += ReadDelta(reader);
+		track_time += readDelta(reader);
 
 		// ステータスバイトを読み込む
-		read_size = reader.Read(&state, sizeof(uint8_t));
+		read_size = reader.read(&state, sizeof(uint8_t));
 		LN_THROW(read_size == sizeof(uint8_t), InvalidFormatException);
 
 		// ランニングステータスの場合
@@ -174,7 +174,7 @@ bool MidiDecoder::SearchTrack(BinaryReader& reader, uint32_t* cc111_time)
 			// 一つ前のイベントのステータスバイトを代入
 			state = prev_state;
 			// ファイルポインタを一つ戻す
-			reader.Seek(-1);
+			reader.seek(-1);
 		}
 
 		// ステータスバイトを基にどのイベントか判別
@@ -185,14 +185,14 @@ bool MidiDecoder::SearchTrack(BinaryReader& reader, uint32_t* cc111_time)
 		case 0x90:	// ノートオン
 		case 0xA0:	// ポリフォニック・キー・プレッシャ
 		case 0xE0:	// ピッチベンド
-			reader.Seek(2);
+			reader.seek(2);
 			break;
 
 		case 0xB0:	// コントロールチェンジ
-			read_size = reader.Read(&data1, sizeof(uint8_t));
+			read_size = reader.read(&data1, sizeof(uint8_t));
 			LN_THROW(read_size == sizeof(uint8_t), InvalidFormatException);
 
-			read_size = reader.Read(&data2, sizeof(uint8_t));
+			read_size = reader.read(&data2, sizeof(uint8_t));
 			LN_THROW(read_size == sizeof(uint8_t), InvalidFormatException);
 
 			// cc111
@@ -205,16 +205,16 @@ bool MidiDecoder::SearchTrack(BinaryReader& reader, uint32_t* cc111_time)
 			{
 				// データの位置とボリュームをキューに入れて保存
 				VolumeEntry entry;
-				entry.position = (uint32_t)reader.GetPosition() - 1;
+				entry.position = (uint32_t)reader.getPosition() - 1;
 				entry.volume = data2;
-				m_volumeEntryList.Add(entry);
+				m_volumeEntryList.add(entry);
 			}
 			break;
 
 			// データバイトが 1 バイトのイベント
 		case 0xC0:	// プログラムチェンジ
 		case 0xD0:	// チャンネルプレッシャ
-			reader.Seek(1);
+			reader.seek(1);
 			break;
 
 			// データバイトが可変長のイベント
@@ -224,10 +224,10 @@ bool MidiDecoder::SearchTrack(BinaryReader& reader, uint32_t* cc111_time)
 			{
 				int data_length = 0;
 				// データ長読み込み
-				read_size = reader.Read(&data_length, sizeof(uint8_t));
+				read_size = reader.read(&data_length, sizeof(uint8_t));
 				LN_THROW(read_size == sizeof(uint8_t), InvalidFormatException);
 
-				reader.Seek(data_length);
+				reader.seek(data_length);
 			}
 			// メタイベント
 			else if (state == 0xFF)
@@ -235,7 +235,7 @@ bool MidiDecoder::SearchTrack(BinaryReader& reader, uint32_t* cc111_time)
 				uint8_t type;
 
 				// typeの取得
-				read_size = reader.Read(&type, sizeof(uint8_t));
+				read_size = reader.read(&type, sizeof(uint8_t));
 				LN_THROW(read_size == sizeof(uint8_t), InvalidFormatException);
 
 				uint32_t data_length = -1;
@@ -279,7 +279,7 @@ bool MidiDecoder::SearchTrack(BinaryReader& reader, uint32_t* cc111_time)
 				// データ長が固定の場合
 				if (data_length != -1)
 				{
-					data_length = ReadDelta(reader);
+					data_length = readDelta(reader);
 					if (data_length != temp)
 					{
 						LN_THROW(0, InvalidFormatException, "invalid meta event data lendth.");
@@ -289,10 +289,10 @@ bool MidiDecoder::SearchTrack(BinaryReader& reader, uint32_t* cc111_time)
 				else
 				{
 					// 任意のデータ長を取得
-					data_length = ReadDelta(reader);
+					data_length = readDelta(reader);
 				}
 
-				reader.Seek(data_length);
+				reader.seek(data_length);
 
 				// トラックの終端が見つかった場合は終了
 				if (type == 0x2F)

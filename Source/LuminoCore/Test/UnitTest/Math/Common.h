@@ -8,7 +8,7 @@ using namespace ln;
 
 // float の演算方法がコンパイラによって異なり、結果が微妙に違くなる。
 // その差を吸収するため、比較する桁数を指定する。
-// (具体的にどう異なるのかは調査中。VS2010 と VS2013 では Vector3::Project() の誤差が一番大きかった)
+// (具体的にどう異なるのかは調査中。VS2010 と VS2013 では Vector3::project() の誤差が一番大きかった)
 #define LN_FLOAT_THRESHOLD 0.0001/*0.000001*/
 
 #define ASSERT_VEC2_NEAR(x_, y_, v) \

@@ -5,38 +5,38 @@
 LN_NAMESPACE_BEGIN
 
 //------------------------------------------------------------------------------
-String TestHelper::GetFilePath(const char* baseSourceFilePath, const char* fileName)
+String TestHelper::getFilePath(const char* baseSourceFilePath, const char* fileName)
 {
 	PathName base(baseSourceFilePath);
-	PathName path(base.GetParent(), fileName);
+	PathName path(base.getParent(), fileName);
 	return String(path.c_str());
 }
 
 //------------------------------------------------------------------------------
-PathName TestHelper::GetDirPath(const char* baseFilePath)
+PathName TestHelper::getDirPath(const char* baseFilePath)
 {
 	PathName base(baseFilePath);
-	return base.GetParent();
+	return base.getParent();
 }
 
 //------------------------------------------------------------------------------
-PathNameA TestHelper::GetFilePathA(const char* baseFilePath, const char* fileName)
+PathNameA TestHelper::getFilePathA(const char* baseFilePath, const char* fileName)
 {
 	PathNameA base(baseFilePath);
-	PathNameA path(base.GetParent(), fileName);
+	PathNameA path(base.getParent(), fileName);
 	return path;
 }
 
 //------------------------------------------------------------------------------
-PathNameW TestHelper::GetFilePathW(const char* baseFilePath, const wchar_t* fileName)
+PathNameW TestHelper::getFilePathW(const char* baseFilePath, const wchar_t* fileName)
 {
 	PathNameW base(baseFilePath);
-	PathNameW path(base.GetParent(), fileName);
+	PathNameW path(base.getParent(), fileName);
 	return path;
 }
 
 //------------------------------------------------------------------------------
-bool TestHelper::CheckArrays(const void* ary1, const void* ary2, size_t count)
+bool TestHelper::checkArrays(const void* ary1, const void* ary2, size_t count)
 {
 	byte_t* b1 = (byte_t*)ary1;
 	byte_t* b2 = (byte_t*)ary2;
@@ -51,10 +51,10 @@ bool TestHelper::CheckArrays(const void* ary1, const void* ary2, size_t count)
 }
 
 //------------------------------------------------------------------------------
-bool TestHelper::EqualFiles(const PathName& filePath1, const PathName& filePath2)
+bool TestHelper::equalFiles(const PathName& filePath1, const PathName& filePath2)
 {
-	if (FileSystem::GetFileSize(filePath1) != FileSystem::GetFileSize(filePath2)) return false;
-	return FileSystem::ReadAllBytes(filePath1).Equals(FileSystem::ReadAllBytes(filePath2));
+	if (FileSystem::getFileSize(filePath1) != FileSystem::getFileSize(filePath2)) return false;
+	return FileSystem::readAllBytes(filePath1).equals(FileSystem::readAllBytes(filePath2));
 }
 
 LN_NAMESPACE_END

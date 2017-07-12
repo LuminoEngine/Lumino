@@ -7,10 +7,10 @@
 	・ボーンのグローバル行列更新	MMDModel.BoneUpdate()
 	・<ボーン位置合わせ>			MMDXでは対応していない	http://www10.atwiki.jp/mmdphysics/pages/14.html
 	・IK更新						MMDModel.BoneUpdate()
-	・物理更新(相互反映)			MMDModel.SkinUpdate()	PhysicsManager.Update() -> motionState.Flush()
+	・物理更新(相互反映)			MMDModel.SkinUpdate()	PhysicsManager.update() -> motionState.Flush()
 	・物理更新						stepSimulation()
 	・物理更新(※フレーム落ち対策)	PhysicsManager.DropFrame() -> motionState.FlushFD()
-	・表情更新						MMDModel.SkinUpdate()	MMDFaceManager.Update()
+	・表情更新						MMDModel.SkinUpdate()	MMDFaceManager.update()
 	・表情頂点更新					MMDModel.SkinUpdate()
 	・スキン行列更新				MMDModel.SkinUpdate()
 	・頂点更新						MMDModel.SkinUpdate()
@@ -67,12 +67,12 @@
 		剛体の姿勢は m_graphicsWorldTrans。
 		これは virtual メソッド setWorldTransform getWorldTransform により Bullet に渡る。
 
-	MMDCore.Update()
-		PhysicsThreadManager.Update()	メインスレッド。マルチスレッド有効の時は、物理スレッドの更新完了を待ってから Sync を呼んでいる。
+	MMDCore.update()
+		PhysicsThreadManager.update()	メインスレッド。マルチスレッド有効の時は、物理スレッドの更新完了を待ってから Sync を呼んでいる。
 										もし遅れていた場合はDropFrameを呼ぶ。
 			PhysicsThreadManager.Sync()
 				PhysicsThreadManager.Instanse.Synchronize event
-					PhysicsManager.Update()
+					PhysicsManager.update()
 						MMDMotionState.Flash()
 
 	物理スレッドは PhysicsThreadManager.threadFunc()。
@@ -100,7 +100,7 @@
 
 
 	MikuMikuFlex は…
-		BulletManager.StepSimulation() が呼ばれているのはメインスレッド。
+		BulletManager.stepSimulation() が呼ばれているのはメインスレッド。
 		しかもこれ、BulletManager は PMXPhysicsTransformManager 単位。
 		つまり、PMXモデル1つに付き1つの BulletWorld が用意されている。
 
@@ -191,7 +191,7 @@ static const size_t toon10DataLen = LN_ARRAY_SIZE_OF(toon10Data);
 static ModelManager* g_modelManagerInstance = nullptr;
 
 //------------------------------------------------------------------------------
-ModelManager* ModelManager::GetInstance(ModelManager* priority)
+ModelManager* ModelManager::getInstance(ModelManager* priority)
 {
 	if (priority != nullptr) return priority;
 	return g_modelManagerInstance;
@@ -208,57 +208,56 @@ ModelManager::~ModelManager()
 }
 
 //------------------------------------------------------------------------------
-void ModelManager::Initialize(const ConfigData& configData)
+void ModelManager::initialize(const ConfigData& configData)
 {
 	m_fileManager = configData.fileManager;
 	m_physicsManager = configData.physicsManager;
 	m_graphicsManager = configData.graphicsManager;
 
 	MemoryStream data1(toon01Data, toon01DataLen);
-	m_mmdDefaultToonTexture[0] = NewObject<Texture2D>(&data1, TextureFormat::R8G8B8A8, false);
+	m_mmdDefaultToonTexture[0] = newObject<Texture2D>(&data1, TextureFormat::R8G8B8A8, false);
 	MemoryStream data2(toon02Data, toon02DataLen);
-	m_mmdDefaultToonTexture[1] = NewObject<Texture2D>(&data2, TextureFormat::R8G8B8A8, false);
+	m_mmdDefaultToonTexture[1] = newObject<Texture2D>(&data2, TextureFormat::R8G8B8A8, false);
 	MemoryStream data3(toon03Data, toon03DataLen);
-	m_mmdDefaultToonTexture[2] = NewObject<Texture2D>(&data3, TextureFormat::R8G8B8A8, false);
+	m_mmdDefaultToonTexture[2] = newObject<Texture2D>(&data3, TextureFormat::R8G8B8A8, false);
 	MemoryStream data4(toon04Data, toon04DataLen);
-	m_mmdDefaultToonTexture[3] = NewObject<Texture2D>(&data4, TextureFormat::R8G8B8A8, false);
+	m_mmdDefaultToonTexture[3] = newObject<Texture2D>(&data4, TextureFormat::R8G8B8A8, false);
 	MemoryStream data5(toon05Data, toon05DataLen);
-	m_mmdDefaultToonTexture[4] = NewObject<Texture2D>(&data5, TextureFormat::R8G8B8A8, false);
+	m_mmdDefaultToonTexture[4] = newObject<Texture2D>(&data5, TextureFormat::R8G8B8A8, false);
 	MemoryStream data6(toon06Data, toon06DataLen);
-	m_mmdDefaultToonTexture[5] = NewObject<Texture2D>(&data6, TextureFormat::R8G8B8A8, false);
+	m_mmdDefaultToonTexture[5] = newObject<Texture2D>(&data6, TextureFormat::R8G8B8A8, false);
 	MemoryStream data7(toon07Data, toon07DataLen);
-	m_mmdDefaultToonTexture[6] = NewObject<Texture2D>(&data7, TextureFormat::R8G8B8A8, false);
+	m_mmdDefaultToonTexture[6] = newObject<Texture2D>(&data7, TextureFormat::R8G8B8A8, false);
 	MemoryStream data8(toon08Data, toon08DataLen);
-	m_mmdDefaultToonTexture[7] = NewObject<Texture2D>(&data8, TextureFormat::R8G8B8A8, false);
+	m_mmdDefaultToonTexture[7] = newObject<Texture2D>(&data8, TextureFormat::R8G8B8A8, false);
 	MemoryStream data9(toon09Data, toon09DataLen);
-	m_mmdDefaultToonTexture[8] = NewObject<Texture2D>(&data9, TextureFormat::R8G8B8A8, false);
+	m_mmdDefaultToonTexture[8] = newObject<Texture2D>(&data9, TextureFormat::R8G8B8A8, false);
 	MemoryStream data10(toon10Data, toon10DataLen);
-	m_mmdDefaultToonTexture[9] = NewObject<Texture2D>(&data10, TextureFormat::R8G8B8A8, false);
+	m_mmdDefaultToonTexture[9] = newObject<Texture2D>(&data10, TextureFormat::R8G8B8A8, false);
 
-	m_defaultMaterial = RefPtr<Material>::MakeRef();
-	m_defaultMaterial->Initialize();
+	m_defaultMaterial = newObject<Material>();
 
-	m_unitBoxMeshResource = RefPtr<MeshResource>::MakeRef();
-	m_unitBoxMeshResource->Initialize(m_graphicsManager, MeshCreationFlags::None);
-	m_unitBoxMeshResource->AddBox(Vector3(1, 1, 1));
+	m_unitBoxMeshResource = RefPtr<MeshResource>::makeRef();
+	m_unitBoxMeshResource->initialize(m_graphicsManager, MeshCreationFlags::None);
+	m_unitBoxMeshResource->addBox(Vector3(1, 1, 1));
 
-	m_unitBoxMeshResourceReverseFaces = RefPtr<MeshResource>::MakeRef();
-	m_unitBoxMeshResourceReverseFaces->Initialize(m_graphicsManager, MeshCreationFlags::None);
-	m_unitBoxMeshResourceReverseFaces->AddBox(Vector3(1, 1, 1));
-	m_unitBoxMeshResourceReverseFaces->ReverseFaces();
+	m_unitBoxMeshResourceReverseFaces = RefPtr<MeshResource>::makeRef();
+	m_unitBoxMeshResourceReverseFaces->initialize(m_graphicsManager, MeshCreationFlags::None);
+	m_unitBoxMeshResourceReverseFaces->addBox(Vector3(1, 1, 1));
+	m_unitBoxMeshResourceReverseFaces->reverseFaces();
 
-	m_unitSphereMeshResource = RefPtr<MeshResource>::MakeRef();
-	m_unitSphereMeshResource->Initialize(m_graphicsManager, MeshCreationFlags::None);
-	m_unitSphereMeshResource->AddSphere(0.5, 16, 16);
+	m_unitSphereMeshResource = RefPtr<MeshResource>::makeRef();
+	m_unitSphereMeshResource->initialize(m_graphicsManager, MeshCreationFlags::None);
+	m_unitSphereMeshResource->addSphere(0.5, 16, 16);
 
-	m_unitSphereMeshResourceReverseFaces = RefPtr<MeshResource>::MakeRef();
-	m_unitSphereMeshResourceReverseFaces->Initialize(m_graphicsManager, MeshCreationFlags::None);
-	m_unitSphereMeshResourceReverseFaces->AddSphere(0.5, 16, 16);
-	m_unitSphereMeshResourceReverseFaces->ReverseFaces();
+	m_unitSphereMeshResourceReverseFaces = RefPtr<MeshResource>::makeRef();
+	m_unitSphereMeshResourceReverseFaces->initialize(m_graphicsManager, MeshCreationFlags::None);
+	m_unitSphereMeshResourceReverseFaces->addSphere(0.5, 16, 16);
+	m_unitSphereMeshResourceReverseFaces->reverseFaces();
 
-	m_unitTeapotMeshResource = RefPtr<MeshResource>::MakeRef();
-	m_unitTeapotMeshResource->Initialize(m_graphicsManager, MeshCreationFlags::None);
-	m_unitTeapotMeshResource->AddTeapot(1.0f, 8);
+	m_unitTeapotMeshResource = RefPtr<MeshResource>::makeRef();
+	m_unitTeapotMeshResource->initialize(m_graphicsManager, MeshCreationFlags::None);
+	m_unitTeapotMeshResource->addTeapot(1.0f, 8);
 
 
 	if (g_modelManagerInstance == nullptr)
@@ -272,7 +271,7 @@ void ModelManager::Finalize()
 {
 	for (auto tex : m_mmdDefaultToonTexture)
 	{
-		tex.SafeRelease();
+		tex.safeRelease();
 	}
 
 	if (g_modelManagerInstance == this)
@@ -282,68 +281,68 @@ void ModelManager::Finalize()
 }
 
 //------------------------------------------------------------------------------
-Material* ModelManager::GetDefaultMaterial() const
+Material* ModelManager::getDefaultMaterial() const
 {
 	return m_defaultMaterial;
 }
 
 //------------------------------------------------------------------------------
-MeshResource* ModelManager::GetUnitBoxMeshResource(bool reverseFaces) const
+MeshResource* ModelManager::getUnitBoxMeshResource(bool reverseFaces) const
 {
 	return (reverseFaces) ? m_unitBoxMeshResourceReverseFaces : m_unitBoxMeshResource;
 }
 
 //------------------------------------------------------------------------------
-MeshResource* ModelManager::GetUnitSphereMeshResource(bool reverseFaces) const
+MeshResource* ModelManager::getUnitSphereMeshResource(bool reverseFaces) const
 {
 	return (reverseFaces) ? m_unitSphereMeshResourceReverseFaces : m_unitSphereMeshResource;
 }
 
 //------------------------------------------------------------------------------
-MeshResource* ModelManager::GetUnitTeapotMeshResource() const
+MeshResource* ModelManager::getUnitTeapotMeshResource() const
 {
 	return m_unitTeapotMeshResource;
 }
 
 //------------------------------------------------------------------------------
-Texture2D* ModelManager::GetMMDDefaultToonTexture(int index)
+Texture2D* ModelManager::getMMDDefaultToonTexture(int index)
 { 
 	return m_mmdDefaultToonTexture[index];
 }
 
 //------------------------------------------------------------------------------
-RefPtr<PmxSkinnedMeshResource> ModelManager::CreateSkinnedMeshResource(const PathName& filePath)
+RefPtr<PmxSkinnedMeshResource> ModelManager::createSkinnedMeshResource(const PathName& filePath)
 {
-	RefPtr<Stream> stream(m_fileManager->CreateFileStream(filePath), false);
+	RefPtr<Stream> stream(m_fileManager->createFileStream(filePath), false);
 	PmxLoader loader;
-	RefPtr<PmxSkinnedMeshResource> mesh = loader.Load(this, stream, filePath.GetParent(), true, ModelCreationFlag::None);
-	mesh->RefreshInitialValues();
+	RefPtr<PmxSkinnedMeshResource> mesh = loader.load(this, stream, filePath.getParent(), true, ModelCreationFlag::None);
+	mesh->refreshInitialValues();
 	return mesh;
 }
 
 //------------------------------------------------------------------------------
-RefPtr<StaticMeshModel> ModelManager::CreateStaticMeshModel(const PathName& filePath)
+RefPtr<StaticMeshModel> ModelManager::createStaticMeshModel(const PathName& filePath)
 {
 
 #if defined(LN_OS_WIN32)
 	RefPtr<StaticMeshModel> mesh;
-	RefPtr<Stream> stream(m_fileManager->CreateFileStream(filePath), false);
+	RefPtr<Stream> stream(m_fileManager->createFileStream(filePath), false);
 
-	PathName parentDir = filePath.GetParent();
+	PathName parentDir = filePath.getParent();
 	{
 		MqoImporter importer;
-		mesh = importer.Import(this, parentDir, stream);
+		mesh = importer.import(this, parentDir, stream);
 		if (mesh != nullptr) return mesh;
-		stream->Seek(0, SeekOrigin_Begin);
+		stream->seek(0, SeekOrigin_Begin);
 	}
 
 	//PMXLoader loader;
 	//RefPtr<ModelCore> modelCore(loader.Load(this, stream, filePath.GetParent(), true));
 
 	XFileLoader loader;
-	mesh = loader.Load(this, stream, parentDir, true, ModelCreationFlag::None);
+	mesh = loader.load(this, stream, parentDir, true, ModelCreationFlag::None);
 
-	//modelCore->RefreshInitialValues();
+	//modelCore->refreshInitialValues();
 	//modelCore.SafeAddRef();
 	return mesh;
 #else
@@ -353,16 +352,16 @@ RefPtr<StaticMeshModel> ModelManager::CreateStaticMeshModel(const PathName& file
 
 	//auto meshResource = CreateModelCore(filePath);
 	//auto mesh = RefPtr<StaticMeshModel>::MakeRef();
-	//mesh->Initialize(m_graphicsManager, meshResource);
+	//mesh->initialize(m_graphicsManager, meshResource);
 	//return mesh;
 }
 
 //------------------------------------------------------------------------------
-RefPtr<SkinnedMeshModel> ModelManager::CreateSkinnedMeshModel(const PathName& filePath)
+RefPtr<SkinnedMeshModel> ModelManager::createSkinnedMeshModel(const PathName& filePath)
 {
-	auto meshResource = CreateSkinnedMeshResource(filePath);
-	auto mesh = RefPtr<SkinnedMeshModel>::MakeRef();
-	mesh->Initialize(m_graphicsManager, meshResource);
+	auto meshResource = createSkinnedMeshResource(filePath);
+	auto mesh = RefPtr<SkinnedMeshModel>::makeRef();
+	mesh->initialize(m_graphicsManager, meshResource);
 	return mesh;
 }
 
@@ -386,26 +385,26 @@ Animation::AnimationClip* ModelManager::CreateMotion(const PathName& filePath)
 	{
 		clip->AddAnimationCurve(anim.TargetFaceName, anim.AnimationCurve);
 	}
-	clip.SafeAddRef();
+	clip.safeAddRef();
 	return clip;
 }
 #endif
 
 //------------------------------------------------------------------------------
-RefPtr<Texture> ModelManager::CreateTexture(const PathName& parentDir, const StringRef& filePath, ModelCreationFlag flags)
+RefPtr<Texture> ModelManager::createTexture(const PathName& parentDir, const StringRef& filePath, ModelCreationFlag flags)
 {
-	PathName path(parentDir, filePath.GetBegin());	// TODO GetBegin
+	PathName path(parentDir, filePath.getBegin());	// TODO GetBegin
 
 	// FileNotFound を無視する場合
 	if (flags.TestFlag(ModelCreationFlag::IgnoreTextureNotFound))
 	{
-		if (!m_fileManager->ExistsFile(path)) {	// TODO: PathName へ変換するときメモリ確保が走る
+		if (!m_fileManager->existsFile(path)) {	// TODO: PathName へ変換するときメモリ確保が走る
 			return nullptr;
 		}
 	}
 
 	// TODO: キャッシュが効かない
-	auto tex = NewObject<Texture2D>(path, TextureFormat::B8G8R8A8, false);	// TODO: mipmap
+	auto tex = newObject<Texture2D>(path, TextureFormat::B8G8R8A8, false);	// TODO: mipmap
 	return tex;
 }
 

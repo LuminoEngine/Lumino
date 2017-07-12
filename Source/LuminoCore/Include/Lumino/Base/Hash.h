@@ -15,8 +15,8 @@ public:
 	/**
 		@brief		指定した文字列のハッシュ値を求めます。
 	*/
-	static uint32_t CalcHash(const char* str, int len = -1);
-	static uint32_t CalcHash(const wchar_t* str, int len = -1);
+	static uint32_t calcHash(const char* str, int len = -1);
+	static uint32_t calcHash(const wchar_t* str, int len = -1);
 };
 
 LN_NAMESPACE_END

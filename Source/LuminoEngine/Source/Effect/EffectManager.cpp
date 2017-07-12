@@ -37,7 +37,7 @@ namespace detail
 //==============================================================================
 static EffectManager* g_managerInstance = nullptr;
 
-EffectManager* GetEffectManager(EffectManager* priority)
+EffectManager* getEffectManager(EffectManager* priority)
 {
 	if (priority != NULL) return priority;
 	return g_managerInstance;
@@ -61,7 +61,7 @@ EffectManager::~EffectManager()
 }
 
 //------------------------------------------------------------------------------
-void EffectManager::Initialize(const Settings& settings)
+void EffectManager::initialize(const Settings& settings)
 {
 	m_fileManager = settings.fileManager;
 	m_graphicsManager = settings.graphicsManager;
@@ -69,7 +69,7 @@ void EffectManager::Initialize(const Settings& settings)
 
 
 	//m_threadUpdateFrame.Start(CreateDelegate(this, &EffectManager::Thread_UpdateFrame));
-	//m_taskUpdateFrame = tr::Task::Create(CreateDelegate(this, &EffectManager::Thread_UpdateFrame));
+	//m_taskUpdateFrame = tr::Task::create(CreateDelegate(this, &EffectManager::Thread_UpdateFrame));
 
 	if (g_managerInstance == nullptr) {
 		g_managerInstance = this;
@@ -88,11 +88,11 @@ void EffectManager::Finalize()
 EffectEngine* EffectManager::CreateEffectWorld()
 {
 #ifdef LN_USE_EXTERNAL_Effekseer
-	auto engine = RefPtr<EffekseerEffectEngine>::MakeRef();
-	engine->Initialize(this, 32, 0, 2000);	// TODO
+	auto engine = RefPtr<EffekseerEffectEngine>::makeRef();
+	engine->initialize(this, 32, 0, 2000);	// TODO
 
-	auto basePtr = RefPtr<EffectEngine>::StaticCast(engine);
-	m_effectWorldList.Add(basePtr);
+	auto basePtr = RefPtr<EffectEngine>::staticCast(engine);
+	m_effectWorldList.add(basePtr);
 	return basePtr;
 #else
 	LN_NOTIMPLEMENTED();
@@ -105,7 +105,7 @@ void EffectManager::ReleaseEffectWorld(EffectEngine* world)
 {
 	assert(world != nullptr);
 	world->Finalize();
-	m_effectWorldList.Remove(RefPtr<EffectEngine>(world));
+	m_effectWorldList.remove(RefPtr<EffectEngine>(world));
 }
 
 ////------------------------------------------------------------------------------
@@ -115,34 +115,34 @@ void EffectManager::ReleaseEffectWorld(EffectEngine* world)
 //}
 //
 ////------------------------------------------------------------------------------
-//void EffectManager::Render()
+//void EffectManager::render()
 //{
 //	if (m_engine == nullptr) return;
 //
-//	if (m_graphicsManager->GetRenderingType() == GraphicsRenderingType::Threaded) {
-//		m_graphicsManager->GetPrimaryRenderingCommandList()->AddCommand<EffectEngine::RenderCommand>(m_engine, m_taskUpdateFrame);
+//	if (m_graphicsManager->getRenderingType() == GraphicsRenderingType::Threaded) {
+//		m_graphicsManager->getPrimaryRenderingCommandList()->addCommand<EffectEngine::RenderCommand>(m_engine, m_taskUpdateFrame);
 //	}
 //	else {
-//		m_taskUpdateFrame->Wait();
-//		m_engine->Render();
+//		m_taskUpdateFrame->wait();
+//		m_engine->render();
 //	}
 //}
 
 //------------------------------------------------------------------------------
-void EffectManager::OnLostDevice()
+void EffectManager::onLostDevice()
 {
 	for (EffectEngine* e : m_effectWorldList)
 	{
-		e->OnLostDevice();
+		e->onLostDevice();
 	}
 }
 
 //------------------------------------------------------------------------------
-void EffectManager::OnResetDevice()
+void EffectManager::onResetDevice()
 {
 	for (EffectEngine* e : m_effectWorldList)
 	{
-		e->OnResetDevice();
+		e->onResetDevice();
 	}
 }
 
@@ -150,7 +150,7 @@ void EffectManager::OnResetDevice()
 //void EffectManager::Thread_UpdateFrame()
 //{
 //	if (m_engine == nullptr) return;
-//	m_engine->UpdateFrame(0.016f);	// TODO: time
+//	m_engine->updateFrame(0.016f);	// TODO: time
 //}
 
 } // namespace detail

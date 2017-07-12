@@ -16,16 +16,16 @@ public:
 	DX9VertexBuffer();
 	virtual ~DX9VertexBuffer();
 
-	void Create(DX9GraphicsDevice* device, size_t bufferSize, const void* initialData, ResourceUsage usage);
-	IDirect3DVertexBuffer9* GetDxVertexBuffer() { return m_vertexBuffer; }
+	void create(DX9GraphicsDevice* device, size_t bufferSize, const void* initialData, ResourceUsage usage);
+	IDirect3DVertexBuffer9* getDxVertexBuffer() { return m_vertexBuffer; }
 
 	// IVertexBuffer interface
-	virtual size_t GetByteCount() const { return m_bufferSize; }
-	virtual void SetSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes);
-	virtual void* Lock();
-	virtual void Unlock();
-	virtual void OnLostDevice();
-	virtual void OnResetDevice();
+	virtual size_t getByteCount() const { return m_bufferSize; }
+	virtual void setSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes);
+	virtual void* lock();
+	virtual void unlock();
+	virtual void onLostDevice();
+	virtual void onResetDevice();
 
 private:
 	DX9GraphicsDevice*			m_graphicsDevice;
@@ -41,15 +41,15 @@ class DX9VertexDeclaration
 public:
 	DX9VertexDeclaration();
 	virtual ~DX9VertexDeclaration();
-	void Initialize(DX9GraphicsDevice* device, const VertexElement* elements, int elementsCount);
+	void initialize(DX9GraphicsDevice* device, const VertexElement* elements, int elementsCount);
 
-	IDirect3DVertexDeclaration9* GetDxVertexDeclaration() const { return m_vertexDecl; }
-	int GetVertexStride(int streamIndex) const { return m_vertexStrides[streamIndex]; }
+	IDirect3DVertexDeclaration9* getDxVertexDeclaration() const { return m_vertexDecl; }
+	int getVertexStride(int streamIndex) const { return m_vertexStrides[streamIndex]; }
 
 
 	// IDeviceObject interface
-	virtual void OnLostDevice() override {};
-	virtual void OnResetDevice() override {};
+	virtual void onLostDevice() override {};
+	virtual void onResetDevice() override {};
 
 private:
 	IDirect3DVertexDeclaration9*	m_vertexDecl;

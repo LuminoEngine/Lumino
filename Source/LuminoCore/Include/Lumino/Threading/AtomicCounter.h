@@ -16,16 +16,16 @@ public:
 public:
 
     /// 値を取得する
-	int32_t Get() const;
+	int32_t get() const;
 
     /// 値を設定する
-    void Set( int32_t value );
+    void set( int32_t value );
 
     /// 値をインクリメントする (インクリメント後の値 を返す)
-    int32_t Increment();
+    int32_t increment();
 
     /// 値をデクリメントする (デクリメント後の値 を返す)
-    int32_t Decrement();
+    int32_t decrement();
 
 private:
 	LN_DISALLOW_COPY_AND_ASSIGN(Atomic);

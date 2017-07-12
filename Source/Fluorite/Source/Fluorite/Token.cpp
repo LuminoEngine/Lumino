@@ -52,37 +52,37 @@ Token::~Token()
 }
 
 //------------------------------------------------------------------------------
-const flChar* Token::GetBegin() const
+const flChar* Token::getBegin() const
 {
 	if (LN_CHECK_STATE(m_ownerFile != nullptr)) return nullptr;
-	const flChar* begin = (const flChar*)m_ownerFile->GetCodeBuffer()->GetConstData();
+	const flChar* begin = (const flChar*)m_ownerFile->GetCodeBuffer()->getConstData();
 	return begin + m_locBegin;
 }
 
 //------------------------------------------------------------------------------
-const flChar* Token::GetEnd() const
+const flChar* Token::getEnd() const
 {
-	return GetBegin() + GetLength();
+	return getBegin() + getLength();
 }
 
 //------------------------------------------------------------------------------
 const flChar* Token::GetCStr(InputFile* file) const
 {
-	const flChar* begin = (const flChar*)file->GetCodeBuffer()->GetConstData();
+	const flChar* begin = (const flChar*)file->GetCodeBuffer()->getConstData();
 	return begin + m_locBegin;
 }
 
 //------------------------------------------------------------------------------
-StringA Token::GetString(InputFile* file) const
+StringA Token::getString(InputFile* file) const
 {
-	const flChar* begin = (const flChar*)file->GetCodeBuffer()->GetConstData();
+	const flChar* begin = (const flChar*)file->GetCodeBuffer()->getConstData();
 	return StringA(begin + m_locBegin, m_locEnd - m_locBegin);
 }
 
 //------------------------------------------------------------------------------
-flString Token::GetString() const
+flString Token::getString() const
 {
-	const flChar* begin = (const flChar*)m_ownerFile->GetCodeBuffer()->GetConstData();
+	const flChar* begin = (const flChar*)m_ownerFile->GetCodeBuffer()->getConstData();
 	return flString(begin + m_locBegin, m_locEnd - m_locBegin);
 }
 
@@ -90,15 +90,15 @@ flString Token::GetString() const
 bool Token::EqualString(const char* str, int len) const
 {
 	len = (len < 0) ? strlen(str) : len;
-	if (GetLength() != len) return false;
-	return StringTraits::StrNCmp(GetBegin(), str, len) == 0;	// TODO: Case
+	if (getLength() != len) return false;
+	return StringTraits::strncmp(getBegin(), str, len) == 0;	// TODO: Case
 }
 
 //------------------------------------------------------------------------------
 bool Token::EqualChar(char ch) const
 {
-	if (GetLength() != 1) return false;
-	return *GetBegin() == ch;	// TODO: Case
+	if (getLength() != 1) return false;
+	return *getBegin() == ch;	// TODO: Case
 }
 
 //------------------------------------------------------------------------------

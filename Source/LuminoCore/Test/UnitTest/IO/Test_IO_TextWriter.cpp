@@ -15,17 +15,17 @@ protected:
 TEST_F(Test_IO_TextWriter, Basic)
 {
 	{
-		StreamWriter writer(TEMPFILE("Test1.txt"), Encoding::GetUTF8Encoding());
-		writer.Write(32);
+		StreamWriter writer(TEMPFILE("Test1.txt"), Encoding::getUTF8Encoding());
+		writer.write(32);
 	}
 
-	String str = FileSystem::ReadAllText(TEMPFILE("Test1.txt"));
+	String str = FileSystem::readAllText(TEMPFILE("Test1.txt"));
 	ASSERT_EQ(_T("32"), str);
 }
 
 
 //------------------------------------------------------------------------------
-TEST_F(Test_IO_TextWriter, Write)
+TEST_F(Test_IO_TextWriter, write)
 {
 	{
 		int16_t v_int16_t = INT16_MAX;
@@ -38,25 +38,25 @@ TEST_F(Test_IO_TextWriter, Write)
 		double v_double = 100;
 
 		StringWriter writer;
-		writer.Write(_T("ab"));
-		writer.Write(String("def"));
-		writer.Write(_T('g'));
-		writer.Write(v_int16_t);
-		writer.Write(v_int32_t);
-		writer.Write(v_int64_t);
-		writer.Write(v_uint16_t);
-		writer.Write(v_uint32_t);
-		writer.Write(v_uint64_t);
-		writer.Write(v_float);
-		writer.Write(v_double);
+		writer.write(_T("ab"));
+		writer.write(String("def"));
+		writer.write(_T('g'));
+		writer.write(v_int16_t);
+		writer.write(v_int32_t);
+		writer.write(v_int64_t);
+		writer.write(v_uint16_t);
+		writer.write(v_uint32_t);
+		writer.write(v_uint64_t);
+		writer.write(v_float);
+		writer.write(v_double);
 
-		String s = writer.ToString();
+		String s = writer.toString();
 		ASSERT_EQ(_T("abdefg327672147483647922337203685477580765535429496729518446744073709551615100.000000100.000000"), s);
 	}
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_IO_TextWriter, WriteLine)
+TEST_F(Test_IO_TextWriter, writeLine)
 {
 	{
 		int16_t v_int16_t = INT16_MAX;
@@ -69,20 +69,20 @@ TEST_F(Test_IO_TextWriter, WriteLine)
 		double v_double = 100;
 
 		StringWriter writer;
-		writer.SetNewLine(_T("\n"));
-		writer.WriteLine(StringRef(_T("abc"), 2));
-		writer.WriteLine(String("def"));
-		writer.WriteLine(_T('g'));
-		writer.WriteLine(v_int16_t);
-		writer.WriteLine(v_int32_t);
-		writer.WriteLine(v_int64_t);
-		writer.WriteLine(v_uint16_t);
-		writer.WriteLine(v_uint32_t);
-		writer.WriteLine(v_uint64_t);
-		writer.WriteLine(v_float);
-		writer.WriteLine(v_double);
+		writer.setNewLine(_T("\n"));
+		writer.writeLine(StringRef(_T("abc"), 2));
+		writer.writeLine(String("def"));
+		writer.writeLine(_T('g'));
+		writer.writeLine(v_int16_t);
+		writer.writeLine(v_int32_t);
+		writer.writeLine(v_int64_t);
+		writer.writeLine(v_uint16_t);
+		writer.writeLine(v_uint32_t);
+		writer.writeLine(v_uint64_t);
+		writer.writeLine(v_float);
+		writer.writeLine(v_double);
 
-		String s = writer.ToString();
+		String s = writer.toString();
 		ASSERT_EQ(_T("ab\ndef\ng\n32767\n2147483647\n9223372036854775807\n65535\n4294967295\n18446744073709551615\n100.000000\n100.000000\n"), s);
 	}
 }

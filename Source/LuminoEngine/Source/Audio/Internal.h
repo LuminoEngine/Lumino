@@ -11,6 +11,7 @@
 #include <Lumino/Base/Exception.h>
 
 #if defined(LN_OS_WIN32)
+	#define NOMINMAX
 	#include <windows.h>
 	#include <mmreg.h>
 	#include <mmiscapi.h>

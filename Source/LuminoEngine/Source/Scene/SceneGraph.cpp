@@ -48,117 +48,26 @@ SceneGraph::~SceneGraph()
 }
 
 //------------------------------------------------------------------------------
-void SceneGraph::CreateCore(SceneGraphManager* manager)
+void SceneGraph::createCore(SceneGraphManager* manager)
 {
 	LN_REFOBJ_SET(m_manager, manager);
 }
 
 //------------------------------------------------------------------------------
-void SceneGraph::BeginUpdateFrame()
+void SceneGraph::reginUpdateFrame()
 {
 }
 
 //------------------------------------------------------------------------------
-void SceneGraph::UpdateFrame(float deltaTime)
-{
-	m_elapsedTime = deltaTime;
-	m_time += deltaTime;
-}
+//void SceneGraph::updateFrame(float deltaTime)
+//{
+//	m_elapsedTime = deltaTime;
+//	m_time += deltaTime;
+//}
 
-//------------------------------------------------------------------------------
-bool SceneGraph::InjectMouseMove(int x, int y)
-{
-	// シェーダ系
-	m_mousePosition.Set(x, y);
-
-	// カメラ
-	for (CameraComponent* camera : m_allCameraList) {
-		if (camera->GetCameraBehavior() != nullptr) {
-			camera->GetCameraBehavior()->InjectMouseMove(x, y);
-		}
-	}
-	return false;
-}
-
-//------------------------------------------------------------------------------
-bool SceneGraph::InjectMouseButtonDown(MouseButtons button, int x, int y)
-{
-	// TODO: マウス位置はSceneGraphよりも Viewport(CameraLayer)に付くようにしたい。
-	// プレビュー用のUIElementに描きたいときどうするの？という話。
-	// なお、offscreenrendertarget については特にサポートしない。というか無理。
-	
-	// シェーダ系
-	switch (button)
-	{
-	case MouseButtons::Left:
-		m_leftMouseState.position = m_mousePosition;
-		m_leftMouseState.time = static_cast<float>(m_time);
-		m_leftMouseState.isDown = true;
-		break;
-	case MouseButtons::Right:
-		m_rightMouseState.position = m_mousePosition;
-		m_rightMouseState.time = static_cast<float>(m_time);
-		m_rightMouseState.isDown = true;
-		break;
-	case MouseButtons::Middle:
-		m_middleMouseState.position = m_mousePosition;
-		m_middleMouseState.time = static_cast<float>(m_time);
-		m_middleMouseState.isDown = true;
-		break;
-	default:
-		break;
-	}
-
-	// カメラ
-	for (CameraComponent* camera : m_allCameraList) {
-		if (camera->GetCameraBehavior() != nullptr) {
-			camera->GetCameraBehavior()->InjectMouseButtonDown(button, x, y);
-		}
-	}
-	return false;
-}
-
-//------------------------------------------------------------------------------
-bool SceneGraph::InjectMouseButtonUp(MouseButtons button, int x, int y)
-{
-	// シェーダ系
-	switch (button)
-	{
-	case MouseButtons::Left:
-		m_leftMouseState.isDown = false;
-		break;
-	case MouseButtons::Right:
-		m_leftMouseState.isDown = false;
-		break;
-	case MouseButtons::Middle:
-		m_leftMouseState.isDown = false;
-		break;
-	default:
-		break;
-	}
-	
-	// カメラ
-	for (CameraComponent* camera : m_allCameraList) {
-		if (camera->GetCameraBehavior() != nullptr) {
-			camera->GetCameraBehavior()->InjectMouseButtonUp(button, x, y);
-		}
-	}
-	return false;
-}
-
-//------------------------------------------------------------------------------
-bool SceneGraph::InjectMouseWheel(int delta)
-{
-	for (CameraComponent* camera : m_allCameraList) {
-		if (camera->GetCameraBehavior() != nullptr) {
-			camera->GetCameraBehavior()->InjectMouseWheel(delta);
-		}
-	}
-	return false;
-}
 
 ////------------------------------------------------------------------------------
-//DrawList* SceneGraph::GetRenderer() const
+//DrawList* SceneGraph::getRenderer() const
 //{
 //	return m_renderer;
 //}
@@ -176,10 +85,10 @@ bool SceneGraph::InjectMouseWheel(int delta)
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SceneGraph2D, SceneGraph);
 
 //------------------------------------------------------------------------------
-SceneGraph2DPtr SceneGraph2D::Create()
+SceneGraph2DPtr SceneGraph2D::create()
 {
-	auto ptr = SceneGraph2DPtr::MakeRef();
-	ptr->CreateCore(SceneGraphManager::Instance);
+	auto ptr = SceneGraph2DPtr::makeRef();
+	ptr->createCore(SceneGraphManager::Instance);
 	return ptr;
 }
 
@@ -202,35 +111,34 @@ SceneGraph2D::~SceneGraph2D()
 }
 
 //------------------------------------------------------------------------------
-void SceneGraph2D::CreateCore(SceneGraphManager* manager)
+void SceneGraph2D::createCore(SceneGraphManager* manager)
 {
-	SceneGraph::CreateCore(manager);
+	SceneGraph::createCore(manager);
 
 	m_defaultRoot = LN_NEW SceneNode();
-	m_defaultRoot->Initialize(this);
+	m_defaultRoot->initialize();
 
 	m_defaultCamera = LN_NEW CameraComponent();
-	m_defaultCamera->Initialize(this, CameraProjection_2D);
-	m_defaultRoot->AddChild(m_defaultCamera);
+	m_defaultCamera->initialize(CameraProjection_2D);
+	m_defaultRoot->addChild(m_defaultCamera);
 
 	//auto pass = RefPtr<MMERenderingPass>::MakeRef(manager, MMD_PASS_object);
-	//pass->Initialize();
+	//pass->initialize();
 	//m_renderingPasses.Add(pass);
 	//pass->AddRef();
 }
 
 //------------------------------------------------------------------------------
-void SceneGraph2D::UpdateFrame(float elapsedTime)
-{
-	SceneGraph::UpdateFrame(elapsedTime);
-	m_defaultRoot->UpdateFrameHierarchy(nullptr, elapsedTime);
-}
+//void SceneGraph2D::updateFrame(float elapsedTime)
+//{
+//	SceneGraph::updateFrame(elapsedTime);
+//	m_defaultRoot->updateFrameHierarchy(nullptr, elapsedTime);
+//}
 
 //==============================================================================
 // SceneGraph3D
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SceneGraph3D, SceneGraph);
-LN_TR_PROPERTY_IMPLEMENT(SceneGraph3D, bool, visibleGridPlane, tr::PropertyMetadata());
 
 //------------------------------------------------------------------------------
 SceneGraph3D::SceneGraph3D()
@@ -248,31 +156,31 @@ SceneGraph3D::~SceneGraph3D()
 }
 
 //------------------------------------------------------------------------------
-void SceneGraph3D::CreateCore(SceneGraphManager* manager)
+void SceneGraph3D::createCore(SceneGraphManager* manager)
 {
-	SceneGraph::CreateCore(manager);
+	SceneGraph::createCore(manager);
 
 	m_defaultRoot = LN_NEW SceneNode();
-	m_defaultRoot->Initialize(this);
+	m_defaultRoot->initialize();
 
 	m_defaultCamera = LN_NEW CameraComponent();
-	m_defaultCamera->Initialize(this, CameraProjection_3D);
-	m_defaultRoot->AddChild(m_defaultCamera);
+	m_defaultCamera->initialize(CameraProjection_3D);
+	m_defaultRoot->addChild(m_defaultCamera);
 
-	m_defaultLight = RefPtr<LightComponent>::MakeRef();
-	m_defaultLight->Initialize(this, LightType_Directional);
-	m_defaultRoot->AddChild(m_defaultLight);
+	//m_defaultLight = RefPtr<LightComponent>::makeRef();
+	//m_defaultLight->initialize(LightType_Directional);
+	//m_defaultRoot->addChild(m_defaultLight);
 }
 
 //------------------------------------------------------------------------------
 //LightComponent* SceneGraph3D::GetMainLight() const { return m_defaultLight; }
 
 //------------------------------------------------------------------------------
-void SceneGraph3D::UpdateFrame(float elapsedTime)
-{
-	SceneGraph::UpdateFrame(elapsedTime);
-	m_defaultRoot->UpdateFrameHierarchy(nullptr, elapsedTime);
-}
+//void SceneGraph3D::updateFrame(float elapsedTime)
+//{
+//	SceneGraph::updateFrame(elapsedTime);
+//	m_defaultRoot->updateFrameHierarchy(nullptr, elapsedTime);
+//}
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END

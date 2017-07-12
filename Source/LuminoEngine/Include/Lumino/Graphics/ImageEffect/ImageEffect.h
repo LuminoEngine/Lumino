@@ -12,15 +12,15 @@ class DrawList;
 class ImageEffect
 	: public Object
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 protected:
 	ImageEffect();
 	virtual ~ImageEffect();
-	void Initialize(detail::GraphicsManager* manager);
+	void initialize(detail::GraphicsManager* manager);
 
-	virtual void OnRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination) = 0;
+	virtual void onRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination) = 0;
 
 	friend class ViewportLayer;
 

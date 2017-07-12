@@ -26,13 +26,13 @@ UIPopup::~UIPopup()
 }
 
 //------------------------------------------------------------------------------
-void UIPopup::Initialize()
+void UIPopup::initialize()
 {
-	UIElement::Initialize();
+	UIElement::initialize();
 }
 
 //------------------------------------------------------------------------------
-void UIPopup::SetContent(UIElement* element)
+void UIPopup::setContent(UIElement* element)
 {
 	if (m_content == element) return;
 
@@ -41,31 +41,31 @@ void UIPopup::SetContent(UIElement* element)
 	// 既に持っていれば取り除いておく
 	if (m_content != nullptr)
 	{
-		RemoveVisualChild(m_content);
+		removeVisualChild(m_content);
 		m_content = nullptr;
 	}
 
 	// 新しく保持する
 	if (element != nullptr)
 	{
-		AddVisualChild(element);
+		addVisualChild(element);
 		m_content = element;
 	}
 }
 
 //------------------------------------------------------------------------------
-void UIPopup::Open()
+void UIPopup::open()
 {
-	UIElement* root = UIHelper::GetLayoutRoot(this);
+	UIElement* root = UIHelper::getLayoutRoot(this);
 	if (root != nullptr)
 	{
 		UILayoutView* rootView = static_cast<UILayoutView*>(root);
-		rootView->OpenPopup(this);
+		rootView->openPopup(this);
 	}
 }
 
 //------------------------------------------------------------------------------
-Size UIPopup::MeasureOverride(const Size& constraint)
+Size UIPopup::measureOverride(const Size& constraint)
 {
 	// Popup は常にサイズ 0 となる。
 	// また、子要素のレイアウトは行わない。
@@ -74,21 +74,21 @@ Size UIPopup::MeasureOverride(const Size& constraint)
 }
 
 //------------------------------------------------------------------------------
-Size UIPopup::ArrangeOverride(const Size& finalSize)
+Size UIPopup::arrangeOverride(const Size& finalSize)
 {
-	return UIElement::ArrangeOverride(finalSize);
+	return UIElement::arrangeOverride(finalSize);
 }
 
 //------------------------------------------------------------------------------
-void UIPopup::UpdateLayoutForInPlacePopup(const Size& viewSize)
+void UIPopup::updateLayoutForInPlacePopup(const Size& viewSize)
 {
-	m_content->UpdateLayout(viewSize);
-	//m_content->MeasureLayout(viewSize);
+	m_content->updateLayout(viewSize);
+	//m_content->measureLayout(viewSize);
 
 	////TODO: このへんでchildの位置を決める
 
-	//m_content->ArrangeLayout(RectF(0, 0, viewSize));
-	//m_content->UpdateTransformHierarchy(RectF(0, 0, viewSize));
+	//m_content->arrangeLayout(RectF(0, 0, viewSize));
+	//m_content->updateTransformHierarchy(RectF(0, 0, viewSize));
 }
 
 
@@ -108,12 +108,12 @@ UIComboBoxItem::~UIComboBoxItem()
 }
 
 //------------------------------------------------------------------------------
-void UIComboBoxItem::Initialize()
+void UIComboBoxItem::initialize()
 {
-	UIContentControl::Initialize();
-	SetHContentAlignment(HAlignment::Left);
-	SetHAlignment(HAlignment::Stretch);
-	GoToVisualState(UIVisualStates::NormalState);
+	UIContentControl::initialize();
+	setHContentAlignment(HAlignment::Left);
+	setHAlignment(HAlignment::Stretch);
+	goToVisualState(UIVisualStates::NormalState);
 }
 
 //==============================================================================
@@ -123,10 +123,10 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIComboBox, UIControl)
 
 
 //------------------------------------------------------------------------------
-UIComboBoxPtr UIComboBox::Create()
+UIComboBoxPtr UIComboBox::create()
 {
-	auto ptr = UIComboBoxPtr::MakeRef();
-	ptr->Initialize();
+	auto ptr = UIComboBoxPtr::makeRef();
+	ptr->initialize();
 	return ptr;
 }
 
@@ -141,34 +141,34 @@ UIComboBox::~UIComboBox()
 }
 
 //------------------------------------------------------------------------------
-void UIComboBox::Initialize()
+void UIComboBox::initialize()
 {
-	UIControl::Initialize();
+	UIControl::initialize();
 
-	m_popup = NewObject<UIPopup>();
-	AddVisualChild(m_popup);
+	m_popup = newObject<UIPopup>();
+	addVisualChild(m_popup);
 
-	m_scrollViewer = NewObject<UIScrollViewer>();
-	m_scrollViewer->SetWidth(100);	// TODO:
-	m_scrollViewer->SetHeight(30);
-	m_scrollViewer->SetBackground(Brush::Blue);
-	m_popup->SetContent(m_scrollViewer);
+	m_scrollViewer = newObject<UIScrollViewer>();
+	m_scrollViewer->setWidth(100);	// TODO:
+	m_scrollViewer->setHeight(30);
+	m_scrollViewer->setBackground(Brush::Blue);
+	m_popup->setContent(m_scrollViewer);
 
-	SetHContentAlignment(HAlignment::Stretch);
+	setHContentAlignment(HAlignment::Stretch);
 
-	auto panel = RefPtr<UIStackPanel>::MakeRef();
-	panel->Initialize();
-	panel->SetHAlignment(HAlignment::Stretch);
-	panel->SetVAlignment(VAlignment::Stretch);
-	SetLayoutPanel(panel);
-	GoToVisualState(UIVisualStates::NormalState);
+	auto panel = RefPtr<UIStackPanel>::makeRef();
+	panel->initialize();
+	panel->setHAlignment(HAlignment::Stretch);
+	panel->setVAlignment(VAlignment::Stretch);
+	setLayoutPanel(panel);
+	goToVisualState(UIVisualStates::NormalState);
 }
 
 //------------------------------------------------------------------------------
-//UIComboBoxItemPtr UIComboBox::AddTextItem(const String& text)
+//UIComboBoxItemPtr UIComboBox::addTextItem(const String& text)
 //{
 //	auto textBlock = RefPtr<UITextBlock>::MakeRef();
-//	textBlock->Initialize(GetManager());
+//	textBlock->initialize(getManager());
 //	textBlock->SetText(text);
 //	return AddItem(textBlock);
 //}
@@ -180,17 +180,17 @@ void UIComboBox::Initialize()
 //
 //	// 受け取った item を UIComboBoxItem でラップして、UIComboBoxItem をリストに入れる
 //	auto listItem = RefPtr<UIComboBoxItem>::MakeRef();
-//	listItem->Initialize(GetManager());
-//	listItem->SetContent(item);
-//	GetItems()->Add(listItem);
+//	listItem->initialize(getManager());
+//	listItem->setContent(item);
+//	getItems()->Add(listItem);
 //	return listItem;
 //}
 
 //------------------------------------------------------------------------------
-void UIComboBox::OnMouseDown(UIMouseEventArgs* e)
+void UIComboBox::onMouseDown(UIMouseEventArgs* e)
 {
-	m_popup->Open();
-	UIControl::OnMouseDown(e);
+	m_popup->open();
+	UIControl::onMouseDown(e);
 }
 
 LN_NAMESPACE_END

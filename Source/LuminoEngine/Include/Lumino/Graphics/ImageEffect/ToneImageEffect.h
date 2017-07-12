@@ -13,23 +13,22 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 class ToneImageEffect
 	: public ImageEffect
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
-	LN_TR_PROPERTY(Vector4, Tone);
-	tr::Property<Vector4>	Tone;
+	Vector4	m_tone;
 
 public:
-	static ToneImageEffectPtr Create();
+	static ToneImageEffectPtr create();
 
-	void SetTone(const ToneF& tone);
+	void setTone(const ToneF& tone);
 
-	void ChangeTone(const ToneF& tone, double time);
+	void changeTone(const ToneF& tone, double time);
 
 protected:
 	ToneImageEffect();
 	virtual ~ToneImageEffect();
-	void Initialize(detail::GraphicsManager* manager);
-	virtual void OnRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
+	void initialize(detail::GraphicsManager* manager);
+	virtual void onRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
 private:
 	RefPtr<Material>	m_material;

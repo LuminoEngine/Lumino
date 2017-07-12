@@ -17,17 +17,17 @@ using namespace ln;
 #define SS_LOAD	1
 
 /// スクリーンショットの作成マクロ
-//#define SS_SAVE(fileName)	TestEnv::SaveScreenShot(LN_LOCALFILE(TestEnv::MakeScreenShotPath(fileName)))
+//#define SS_SAVE(fileName)	TestEnv::saveScreenShot(LN_LOCALFILE(TestEnv::MakeScreenShotPath(fileName)))
 
 /// スクリーンショットの比較マクロ
-#define SS_CHECK(mode, fileName) if (mode == SS_SAVE) { TestEnv::SaveScreenShot(LN_LOCALFILE(TestEnv::MakeScreenShotPath(fileName))); } else { ASSERT_TRUE(TestEnv::EqualsScreenShot(LOCALFILE(TestEnv::MakeScreenShotPath(fileName)))); }
+#define SS_CHECK(mode, fileName) if (mode == SS_SAVE) { TestEnv::saveScreenShot(LN_LOCALFILE(TestEnv::MakeScreenShotPath(fileName))); } else { ASSERT_TRUE(TestEnv::EqualsScreenShot(LOCALFILE(TestEnv::MakeScreenShotPath(fileName)))); }
 
 class TestEnv : public ::testing::Environment
 {
 public:
-	static void SaveScreenShot(const TCHAR* filePath);
+	static void saveScreenShot(const TCHAR* filePath);
 	static bool EqualsScreenShot(const TCHAR* filePath, int passRate = 90);
-	//static bool EqualsTexture(Texture* texture, const TCHAR* filePath);
+	//static bool equalsTexture(Texture* texture, const TCHAR* filePath);
 	static bool EqualsBitmapFile(Bitmap* bmp1, const TCHAR* filePath, int passRate);
 	static bool CheckScreenShot(const TCHAR* filePath, int passRate = 99, bool save = false);	// 基本的に 99% 一致していれば良い。グラボによって、色成分+-1 くらいの誤差がある (Radeon HD8490)
 	static void WaitRendering();
@@ -35,12 +35,12 @@ public:
 
 	static void BeginFrame()
 	{
-		Engine::UpdateFrame();
+		Engine::updateFrame();
 	}
 
 	static void EndFrame()
 	{
-		Engine::PresentFrame();
+		Engine::presentFrame();
 	}
 
 protected:
@@ -52,14 +52,18 @@ protected:
 #define LN_TEST_BEGIN_FRAME		TestEnv::BeginFrame()
 #define LN_TEST_END_FRAME		TestEnv::EndFrame()
 
+#define LN_TEST_CLEAN_SCENE \
+	Engine::getWorld2D()->RemoveAllObjects(); \
+	Engine::getWorld3D()->RemoveAllObjects();
+
 
 inline PathName Test_GetTempFilePath(const TCHAR* fileName)
 {
 	PathName base(__FILE__);
-	PathName tempDir(base.GetParent(), _T("../../"));
-	tempDir.Append(_T("tmp"));
+	PathName tempDir(base.getParent(), _T("../../"));
+	tempDir.append(_T("tmp"));
 	PathName path(tempDir, fileName);
-	FileSystem::CreateDirectory(path.GetParent());
+	FileSystem::createDirectory(path.getParent());
 	return PathName(path.c_str());
 }
 
@@ -108,17 +112,26 @@ class ScopedCameraPosition
 public:
 	ScopedCameraPosition(float x, float y, float z)
 	{
-		camera = CameraComponent::GetMain3DCamera();
-		oldPos = camera->GetPosition();
-		camera->SetPosition(x, y, z);
+		camera = Engine::getWorld3D()->getMainCamera();//CameraComponent::getMain3DCamera();
+		oldPos = camera->getPosition();
+		camera->setPosition(x, y, z);
 	}
 
 	~ScopedCameraPosition()
 	{
-		camera->SetPosition(oldPos);
+		camera->setPosition(oldPos);
 	}
 
-	CameraComponent*	camera;
+	Camera*	camera;
 	Vector3 oldPos;
+};
+
+// テストフィクスチャ終了時のクリーンアップ
+class LuminoGraphicsTest : public ::testing::Test
+{
+	virtual void TearDown() override
+	{
+		LN_TEST_CLEAN_SCENE;
+	}
 };
 

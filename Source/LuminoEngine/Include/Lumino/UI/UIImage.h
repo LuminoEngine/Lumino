@@ -10,28 +10,28 @@ LN_NAMESPACE_BEGIN
 class UIImage
 	: public UIElement
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
-	static RefPtr<UIImage> Create();
-	static RefPtr<UIImage> Create(const StringRef& filePath);
+	static RefPtr<UIImage> create();
+	static RefPtr<UIImage> create(const StringRef& filePath);
 
 
-	void SetStretchType(StretchMode mode);
-	StretchMode GetStretchType();
+	void setStretchType(StretchMode mode);
+	StretchMode getStretchType();
 
 protected:
-	virtual Size MeasureOverride(const Size& availableSize) override;
-	virtual Size ArrangeOverride(const Size& finalSize) override;
-	virtual void OnRender(DrawingContext* g) override;
+	virtual Size measureOverride(const Size& availableSize) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
+	virtual void onRender(DrawingContext* g) override;
 
 LN_CONSTRUCT_ACCESS:
 	UIImage();
 	virtual ~UIImage();
-	void Initialize();
-	void Initialize(const StringRef& filePath);
+	void initialize();
+	void initialize(const StringRef& filePath);
 
 private:
-	Size MeasureInternal(Size contentSize);
+	Size measureInternal(Size contentSize);
 
 	//RefPtr<TextureBrush>	m_brush;
 	RefPtr<Texture>			m_texture;

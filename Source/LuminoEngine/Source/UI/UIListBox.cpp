@@ -23,15 +23,15 @@ UIListBoxItem::~UIListBoxItem()
 }
 
 //------------------------------------------------------------------------------
-void UIListBoxItem::Initialize()
+void UIListBoxItem::initialize()
 {
-	UIControl::Initialize();
-	SetHContentAlignment(HAlignment::Left);
-	SetHAlignment(HAlignment::Stretch);
-	GoToVisualState(UIVisualStates::NormalState);
+	UIControl::initialize();
+	setHContentAlignment(HAlignment::Left);
+	setHAlignment(HAlignment::Stretch);
+	goToVisualState(UIVisualStates::NormalState);
 
 	// TODO:
-	SetMinHeight(16);
+	setMinHeight(16);
 }
 
 //==============================================================================
@@ -42,10 +42,10 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIListBox, UIControl)
 const String UIListBox::NormalState = _T("Normal");
 
 //------------------------------------------------------------------------------
-UIListBoxPtr UIListBox::Create()
+UIListBoxPtr UIListBox::create()
 {
-	auto ptr = UIListBoxPtr::MakeRef();
-	ptr->Initialize();
+	auto ptr = UIListBoxPtr::makeRef();
+	ptr->initialize();
 	return ptr;
 }
 
@@ -60,38 +60,38 @@ UIListBox::~UIListBox()
 }
 
 //------------------------------------------------------------------------------
-void UIListBox::Initialize()
+void UIListBox::initialize()
 {
-	UIControl::Initialize();
-	SetHContentAlignment(HAlignment::Stretch);
+	UIControl::initialize();
+	setHContentAlignment(HAlignment::Stretch);
 
-	auto panel = RefPtr<UIStackPanel>::MakeRef();
-	panel->Initialize();
-	panel->SetHAlignment(HAlignment::Stretch);
-	panel->SetVAlignment(VAlignment::Stretch);
-	SetLayoutPanel(panel);
-	GoToVisualState(NormalState);
+	auto panel = RefPtr<UIStackPanel>::makeRef();
+	panel->initialize();
+	panel->setHAlignment(HAlignment::Stretch);
+	panel->setVAlignment(VAlignment::Stretch);
+	setLayoutPanel(panel);
+	goToVisualState(NormalState);
 }
 
 //------------------------------------------------------------------------------
-UIListBoxItemPtr UIListBox::AddTextItem(const String& text)
+UIListBoxItemPtr UIListBox::addTextItem(const String& text)
 {
-	auto textBlock = RefPtr<UITextBlock>::MakeRef();
-	textBlock->Initialize();
-	textBlock->SetText(text);
-	return AddItem(textBlock);
+	auto textBlock = RefPtr<UITextBlock>::makeRef();
+	textBlock->initialize();
+	textBlock->setText(text);
+	return addItem(textBlock);
 }
 
 //------------------------------------------------------------------------------
-UIListBoxItemPtr UIListBox::AddItem(UIElement* item)
+UIListBoxItemPtr UIListBox::addItem(UIElement* item)
 {
 	if (LN_CHECK_ARG(item != nullptr)) return nullptr;
 
 	// 受け取った item を UIListBoxItem でラップして、UIListBoxItem をリストに入れる
-	auto listItem = RefPtr<UIListBoxItem>::MakeRef();
-	listItem->Initialize();
-	listItem->AddChild(item);
-	AddChild(listItem);
+	auto listItem = RefPtr<UIListBoxItem>::makeRef();
+	listItem->initialize();
+	listItem->addChild(item);
+	addChild(listItem);
 	return listItem;
 }
 

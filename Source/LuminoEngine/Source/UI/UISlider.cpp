@@ -7,94 +7,20 @@
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
-// UIRangeBase
-//==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIRangeBase, UIControl);
-
-//------------------------------------------------------------------------------
-UIRangeBase::UIRangeBase()
-	: m_value(0.0f)
-	, m_minimum(0.0f)
-	, m_maximum(1.0f)
-{
-}
-
-//------------------------------------------------------------------------------
-UIRangeBase::~UIRangeBase()
-{
-}
-
-//------------------------------------------------------------------------------
-void UIRangeBase::Initialize()
-{
-	UIControl::Initialize();
-}
-
-//------------------------------------------------------------------------------
-void UIRangeBase::SetValue(float value)
-{
-	float oldValue = m_value;
-	m_value = value;
-	OnValueChanged(oldValue, m_value);
-}
-
-//------------------------------------------------------------------------------
-float UIRangeBase::GetValue() const
-{
-	return m_value;
-}
-
-//------------------------------------------------------------------------------
-void UIRangeBase::SetMinimum(float value)
-{
-	float oldValue = m_minimum;
-	m_minimum = value;
-	OnMaximumChanged(oldValue, m_minimum);
-}
-
-//------------------------------------------------------------------------------
-float UIRangeBase::GetMinimum() const
-{
-	return m_minimum;
-}
-
-//------------------------------------------------------------------------------
-void UIRangeBase::SetMaximum(float value)
-{
-	float oldValue = m_maximum;
-	m_maximum = value;
-	OnMinimumChanged(oldValue, m_maximum);
-}
-
-//------------------------------------------------------------------------------
-float UIRangeBase::GetMaximum() const
-{
-	return m_maximum;
-}
-
-//------------------------------------------------------------------------------
-void UIRangeBase::OnValueChanged(float oldValue, float newValue)
-{
-}
-
-//------------------------------------------------------------------------------
-void UIRangeBase::OnMaximumChanged(float oldMaximum, float newMaximum)
-{
-}
-//------------------------------------------------------------------------------
-void UIRangeBase::OnMinimumChanged(float oldMinimum, float newMinimum)
-{
-}
-
-//==============================================================================
 // UISlider
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UISlider, UIRangeBase);
 
 //------------------------------------------------------------------------------
-RefPtr<UISlider> UISlider::Create()
+RefPtr<UISlider> UISlider::create()
 {
-	return NewObject<UISlider>();
+	return newObject<UISlider>();
+}
+
+//------------------------------------------------------------------------------
+RefPtr<UISlider> UISlider::create(float value, float minimum, float maximum)
+{
+	return newObject<UISlider>(value, minimum, maximum);
 }
 
 //------------------------------------------------------------------------------
@@ -109,35 +35,45 @@ UISlider::~UISlider()
 }
 
 //------------------------------------------------------------------------------
-void UISlider::Initialize()
+void UISlider::initialize()
 {
-	UIRangeBase::Initialize();
+	UIRangeBase::initialize();
 
 	// register VisualState
-	auto* vsm = GetVisualStateManager();
-	vsm->RegisterVisualState(UIVisualStates::OrientationGroup, UIVisualStates::HorizontalState);
-	vsm->RegisterVisualState(UIVisualStates::OrientationGroup, UIVisualStates::VerticalState);
+	auto* vsm = getVisualStateManager();
+	vsm->registerVisualState(UIVisualStates::OrientationGroup, UIVisualStates::HorizontalState);
+	vsm->registerVisualState(UIVisualStates::OrientationGroup, UIVisualStates::VerticalState);
 
-	m_track = NewObject<UITrack>();
-	m_track->SetBackground(Brush::Red);		// TODO:
-	m_track->GetThumb()->SetSize(Size(16, 20));
-	m_track->GetThumb()->SetBackground(Brush::Green);
-	//m_track->SetViewportSize(Math::NaN);
-	AddVisualChild(m_track);
+	m_track = newObject<UITrack>();
+	m_track->setStyleSubControlName(_T("UISlider"), _T("Track"));
+	m_track->getThumb()->setStyleSubControlName(_T("UISlider"), _T("Thumb"));
+	m_track->getDecreaseButton()->setStyleSubControlName(_T("UISlider"), _T("DecreaseButton"));
+	m_track->getIncreaseButton()->setStyleSubControlName(_T("UISlider"), _T("IncreaseButton"));
+	m_track->setViewportSize(Math::NaN);	// 値の計算に slider モードを使用する
+	addVisualChild(m_track);
 }
 
 //------------------------------------------------------------------------------
-void UISlider::SetOrientation(Orientation orientation)
+void UISlider::initialize(float value, float minimum, float maximum)
 {
-	m_track->SetOrientation(orientation);
+	initialize();
+	setValue(value);
+	setMinimum(minimum);
+	setMaximum(maximum);
+}
+
+//------------------------------------------------------------------------------
+void UISlider::setOrientation(Orientation orientation)
+{
+	m_track->setOrientation(orientation);
 
 	switch (orientation)
 	{
 	case Orientation::Horizontal:
-		GoToVisualState(UIVisualStates::HorizontalState);
+		goToVisualState(UIVisualStates::HorizontalState);
 		break;
 	case Orientation::Vertical:
-		GoToVisualState(UIVisualStates::VerticalState);
+		goToVisualState(UIVisualStates::VerticalState);
 		break;
 	default:
 		LN_NOTIMPLEMENTED();
@@ -146,88 +82,81 @@ void UISlider::SetOrientation(Orientation orientation)
 }
 
 //------------------------------------------------------------------------------
-Orientation UISlider::GetOrientation() const
+Orientation UISlider::getOrientation() const
 {
-	return m_track->GetOrientation();
+	return m_track->getOrientation();
 }
 
 //------------------------------------------------------------------------------
-void UISlider::OnRoutedEvent(UIEventArgs* e)
+void UISlider::onRoutedEvent(UIEventArgs* e)
 {
-	if (e->GetType() == UIThumb::DragStartedEventId)
+	if (e->getType() == UIThumb::DragStartedEventId)
 	{
-		m_dragStartValue = m_track->GetValue();
+		m_dragStartValue = m_track->getValue();
 	}
-	else if (e->GetType() == UIThumb::DragDeltaEventId)
+	else if (e->getType() == UIThumb::DragDeltaEventId)
 	{
 		auto* e2 = static_cast<UIDragDeltaEventArgs*>(e);
-		float newValue = m_dragStartValue + m_track->ValueFromDistance(e2->horizontalChange, e2->verticalChange);
-		UpdateValue(newValue);
-		//auto* e2 = static_cast<UIDragDeltaEventArgs*>(e);
-		//UpdateValue(e2->horizontalChange, e2->verticalChange);
-
-		//auto args = UIScrollEventArgs::Create(this, m_track->GetValue(), ScrollEventType::ThumbTrack);
-		//RaiseEvent(ScrollEventId, this, args);
-
-		//switch (m_track->GetOrientation())
-		//{
-		//case Orientation::Horizontal:
-
-		//	break;
-		//case Orientation::Vertical:
-		//	break;
-		//case Orientation::ReverseHorizontal:
-		//case Orientation::ReverseVertical:
-		//default:
-		//	LN_NOTIMPLEMENTED();
-		//	break;
-		//}
+		float newValue = m_dragStartValue + m_track->valueFromDistance(e2->horizontalChange, e2->verticalChange);
+		updateValue(Math::clamp(newValue, getMinimum(), getMaximum()));
 	}
-	else if (e->GetType() == UIThumb::DragCompletedEventId)
+	else if (e->getType() == UIThumb::DragCompletedEventId)
 	{
-		//auto args = UIScrollEventArgs::Create(this, m_track->GetValue(), ScrollEventType::EndScroll);
-		//RaiseEvent(ScrollEventId, this, args);
 	}
-	UIControl::OnRoutedEvent(e);
+	UIControl::onRoutedEvent(e);
 }
 
 //------------------------------------------------------------------------------
-Size UISlider::MeasureOverride(const Size& constraint)
+Size UISlider::measureOverride(const Size& constraint)
 {
-	m_track->MeasureLayout(constraint);
-	return UIControl::MeasureOverride(constraint);
+	m_track->measureLayout(constraint);
+	return UIControl::measureOverride(constraint);
 }
 
 //------------------------------------------------------------------------------
-Size UISlider::ArrangeOverride(const Size& finalSize)
+Size UISlider::arrangeOverride(const Size& finalSize)
 {
-	Orientation orientation = GetOrientation();
+	Orientation orientation = getOrientation();
 
 	switch (orientation)
 	{
 	case Orientation::Horizontal:
-		m_track->ArrangeLayout(Rect(0, 0, finalSize));
+		m_track->arrangeLayout(Rect(0, 0, finalSize));
 		break;
 	case Orientation::Vertical:
-		m_track->ArrangeLayout(Rect(0, 0, finalSize));
+		m_track->arrangeLayout(Rect(0, 0, finalSize));
 		break;
 	default:
 		LN_NOTIMPLEMENTED();
 		break;
 	}
 
-	return UIControl::ArrangeOverride(finalSize);
+	return UIControl::arrangeOverride(finalSize);
 }
 
 //------------------------------------------------------------------------------
-void UISlider::UpdateValue(float value)
+void UISlider::onValueChanged(float oldValue, float newValue)
 {
-	float snappedValue = value;// SnapToTick(value);
-	//float valueDelta = m_track->ValueFromDistance(horizontalDragDelta, verticalDragDelta);
+	m_track->setValue(newValue);
+}
 
-	//float newValue = m_dragStartValue + valueDelta;
-	SetValue(snappedValue);
-	m_track->SetValue(snappedValue);
+//------------------------------------------------------------------------------
+void UISlider::onMinimumChanged(float oldMinimum, float newMinimum)
+{
+	m_track->setMinimum(newMinimum);
+}
+
+//------------------------------------------------------------------------------
+void UISlider::onMaximumChanged(float oldMaximum, float newMaximum)
+{
+	m_track->setMaximum(newMaximum);
+}
+
+//------------------------------------------------------------------------------
+void UISlider::updateValue(float value)
+{
+	float snappedValue = value;
+	setValue(snappedValue);
 }
 
 LN_NAMESPACE_END

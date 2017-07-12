@@ -11,7 +11,7 @@ LN_NAMESPACE_BEGIN
 namespace detail
 {
 
-PhysicsManager* GetPhysicsManager(PhysicsManager* priority)
+PhysicsManager* getPhysicsManager(PhysicsManager* priority)
 {
 	if (priority != NULL) return priority;
 	return PhysicsManager::Instance;
@@ -39,7 +39,7 @@ PhysicsManager::~PhysicsManager()
 }
 
 //------------------------------------------------------------------------------
-void PhysicsManager::Initialize()
+void PhysicsManager::initialize()
 {
 	if (Instance == nullptr) {
 		Instance = this;
@@ -56,7 +56,7 @@ void PhysicsManager::Finalize()
 //{
 //	for (PhysicsWorldCore* world : m_worldList)
 //	{
-//		world->DrawDebugShapes(renderer);
+//		world->drawDebugShapes(renderer);
 //	}
 //}
 
@@ -85,13 +85,13 @@ void PhysicsManager::Finalize()
 //	// Joint
 //	LN_FOREACH(Joint* obj, m_jointList.GetRegistOrderObjectArray())
 //	{
-//		m_btWorld->addConstraint(obj->GetBtConstraint());
+//		m_btWorld->addConstraint(obj->getBtConstraint());
 //	}
 //
 //
-//	//m_collisionBodyList.Commit();
-//	m_rigidBodyList.Commit();
-//	m_jointList.Commit();
+//	//m_collisionBodyList.commit();
+//	m_rigidBodyList.commit();
+//	m_jointList.commit();
 //
 //	//---------------------------------------------------------
 //	// 剛体の姿勢を同期
@@ -104,7 +104,7 @@ void PhysicsManager::Finalize()
 //}
 //
 ////------------------------------------------------------------------------------
-//void PhysicsManager::StepSimulation(float elapsedTime)
+//void PhysicsManager::stepSimulation(float elapsedTime)
 //{
 //	SyncBeforeStepSimulation();
 //
@@ -128,7 +128,7 @@ void PhysicsManager::Finalize()
 //}
 //
 ////------------------------------------------------------------------------------
-//void PhysicsManager::AddJoint(Joint* joint)
+//void PhysicsManager::addJoint(Joint* joint)
 //{
 //	m_jointList.AddObject(joint);
 //}

@@ -17,7 +17,7 @@ class MemoryStream
 {
 public:
 
-	static MemoryStreamPtr Create();
+	static MemoryStreamPtr create();
 
 	/**
 		@brief		既存のバッファを指定して、サイズ変更できないメモリストリームを作成します。
@@ -25,7 +25,7 @@ public:
 		@param		size	: サイズ(バイト数)
 		@details	buffer に指定したバッファは、このクラスのインスタンスが存在する間は開放しないでください。
 	*/
-	static MemoryStreamPtr Create(void* buffer, size_t size);
+	static MemoryStreamPtr create(void* buffer, size_t size);
 	
 	/**
 		@brief		既存のバッファを指定して、サイズ変更できない読み取り専用のメモリストリームを作成します。
@@ -33,34 +33,34 @@ public:
 		@param		size	: サイズ(バイト数)
 		@details	buffer に指定したバッファは、このクラスのインスタンスが存在する間は開放しないでください。
 	*/
-	static MemoryStreamPtr Create(const void* buffer, size_t size, bool copy = false);
+	static MemoryStreamPtr create(const void* buffer, size_t size, bool copy = false);
 
 public:
 
 	/**
 		@brief		データの読み書き先バイト配列の先頭アドレスを取得します。
 	*/
-	void* GetBuffer(size_t index = 0);
+	void* getBuffer(size_t index = 0);
 
 public:
 	// override Stream
-	virtual bool CanRead() const;
-	virtual bool CanWrite() const;
-	virtual int64_t GetLength() const;
-	virtual int64_t GetPosition() const;
-	virtual size_t Read(void* buffer, size_t byteCount);
-	virtual void Write(const void* data, size_t byteCount);
-	virtual void Seek(int64_t offset, SeekOrigin origin);
-	virtual void Flush() {}		// Write が直接メモリに書きこむので不要
+	virtual bool canRead() const;
+	virtual bool canWrite() const;
+	virtual int64_t getLength() const;
+	virtual int64_t getPosition() const;
+	virtual size_t read(void* buffer, size_t byteCount);
+	virtual void write(const void* data, size_t byteCount);
+	virtual void seek(int64_t offset, SeekOrigin origin);
+	virtual void flush() {}		// Write が直接メモリに書きこむので不要
 
 public:	// TODO: スタックでも使いたい
 	MemoryStream();
 	MemoryStream(void* buffer, size_t size);
 	MemoryStream(const void* buffer, size_t size, bool copy = false);
 	~MemoryStream();
-	void Initialize(size_t size);	// TODO: Resize 
-	void Initialize(void* buffer, size_t size);
-	void Initialize(const void* buffer, size_t size, bool copy = false);
+	void initialize(size_t size);	// TODO: Resize 
+	void initialize(void* buffer, size_t size);
+	void initialize(const void* buffer, size_t size, bool copy = false);
 
 private:
 	std::vector<byte_t>	m_buffer;			///< 可変長の場合はこのバッファを使う

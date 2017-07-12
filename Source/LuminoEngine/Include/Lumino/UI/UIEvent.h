@@ -48,9 +48,9 @@ public:
 //public:
 //
 //	/**
-//		@brief	ルーティングイベントのハンドラを追加します。
+//		@brief	イベントのハンドラを追加します。
 //	*/
-//	void AddHandler(const Delegate<void(TArgs*)>& handler)
+//	void addHandler(const Delegate<void(TArgs*)>& handler)
 //	{
 //		m_handlerList.Add(handler);
 //	}
@@ -58,17 +58,17 @@ public:
 //	/**
 //		@brief	指定したハンドラに一致するハンドラを、このスロットから削除します。
 //	*/
-//	void RemoveHandler(const Delegate<void(TArgs*)>& handler)
+//	void removeHandler(const Delegate<void(TArgs*)>& handler)
 //	{
 //		m_handlerList.Remove(handler);
 //	}
 //	
 //	/**
-//		@brief	ルーティングイベントのハンドラを追加します。
+//		@brief	イベントのハンドラを追加します。
 //	*/
 //	void operator += (const std::function<void(TArgs*)>& handler)
 //	{
-//		AddHandler(handler);
+//		addHandler(handler);
 //	}
 //
 //	void operator += (const Delegate<void(TArgs*)>& handler)
@@ -117,9 +117,9 @@ public:
 //	~UIEvent();
 //
 //public:
-//	//const String& GetName() const { return m_name; }
+//	//const String& getName() const { return m_name; }
 //
-//	//void CallEvent(UIElement* target, UIEventArgs* e) const
+//	//void callEvent(UIElement* target, UIEventArgs* e) const
 //	//{
 //	//	m_raiseEvent(target, e);
 //	//}
@@ -137,7 +137,7 @@ public:
 //	private: static UIEvent _init_##eventVar;
 //
 //#define LN_ROUTED_EVENT_IMPLEMENT(ownerClass, eventArgs, eventVar, name, slot) \
-//	UIEvent					ownerClass::_init_##eventVar(static_cast<UITypeInfo*>(tr::TypeInfo::GetTypeInfo<ownerClass>()), name, &ownerClass::_raise_##eventVar); \
+//	UIEvent					ownerClass::_init_##eventVar(static_cast<UITypeInfo*>(tr::TypeInfo::getTypeInfo<ownerClass>()), name, &ownerClass::_raise_##eventVar); \
 //	const UIEvent*			ownerClass::eventVar = &_init_##eventVar; \
 //	void					ownerClass::_raise_##eventVar(UIElement* obj, UIEventArgs* e) { static_cast<ownerClass*>(obj)->EmitEventSlot(static_cast<ownerClass*>(obj)->slot, static_cast<eventArgs*>(e)); }
 //
@@ -156,7 +156,7 @@ using UIEventId = UIEventInfo*;
     static const UIEventId eventVar##Id;
 
 #define LN_ROUTED_EVENT_IMPLEMENT2(ownerClass, eventArgs, eventVar) \
-    const UIEventId ownerClass::eventVar##Id = reinterpret_cast<UIEventId>(ln::Hash::CalcHash(#eventVar));
+    const UIEventId ownerClass::eventVar##Id = reinterpret_cast<UIEventId>(ln::Hash::calcHash(#eventVar));
 
 
 /** */
@@ -170,17 +170,54 @@ public:
 class UIEvents
 {
 public:
-	/** MouseMove ルーティングイベントの識別子 (UIMouseEventArgs) */
+	/** MouseMove イベントの識別子 (UIMouseEventArgs) */
 	static UIEventType	MouseMoveEvent;
 
-	/** MouseDown ルーティングイベントの識別子 (UIMouseEventArgs) */
+	/** MouseDown イベントの識別子 (UIMouseEventArgs) */
 	static UIEventType	MouseDownEvent;
 
-	/** MouseUp ルーティングイベントの識別子 (UIMouseEventArgs) */
+	/** MouseUp イベントの識別子 (UIMouseEventArgs) */
 	static UIEventType	MouseUpEvent;
 
-	/** MouseWheel ルーティングイベントの識別子 (UIMouseWheelEventArgs) */
+	/** MouseWheel イベントの識別子 (UIMouseWheelEventArgs) */
 	static UIEventType	MouseWheelEvent;
+
+	/** MouseEnterEvent イベントの識別子 (UIMouseEventArgs) */
+	static UIEventType	MouseEnterEvent;
+
+	/** MouseLeaveEvent イベントの識別子 (UIMouseEventArgs) */
+	static UIEventType	MouseLeaveEvent;
+
+	/** KeyDownEvent イベントの識別子 (UIKeyEventArgs) */
+	static UIEventType	KeyDownEvent;
+
+	/** KeyUpEvent イベントの識別子 (UIKeyEventArgs) */
+	static UIEventType	KeyUpEvent;
+
+	/** TextInputEvent イベントの識別子 (UIKeyEventArgs) */
+	static UIEventType	TextInputEvent;
+
+	/** Checked イベントの識別子 (UIEventArgs) */
+	static UIEventType	CheckedEvent;
+
+	/** Unchecked イベントの識別子 (UIEventArgs) */
+	static UIEventType	UncheckedEvent;
 };
+
+/**
+	@brief		特定のイベントデータを持たない、UIイベントを処理するハンドラです。
+	@param[in]	e		: イベントのデータ
+*/
+LN_DELEGATE()
+using UIEventHandler = Delegate<void(UIEventArgs* e)>;
+
+/**
+	@brief		マウス操作が関係する UIイベントを処理するハンドラです。
+	@param[in]	e		: イベントのデータ
+*/
+LN_DELEGATE()
+using UIMouseEventHandler = Delegate<void(UIMouseEventArgs* e)>;
+
+
 
 LN_NAMESPACE_END

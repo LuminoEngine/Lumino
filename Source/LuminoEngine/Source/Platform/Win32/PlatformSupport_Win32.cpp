@@ -7,15 +7,15 @@
 LN_NAMESPACE_BEGIN
 
 //------------------------------------------------------------------------------
-void PlatformSupport::ShowAlertMessageBox(const TCHAR* message) LN_NOEXCEPT
+void PlatformSupport::showAlertMessageBox(const TCHAR* message) LN_NOEXCEPT
 {
 	HWND owner = NULL;
-	PlatformManager* manager = PlatformManager::GetInstance();
+	PlatformManager* manager = PlatformManager::getInstance();
 	if (manager != nullptr)
 	{
 		try
 		{
-			owner = GetWindowHandle(manager->GetMainWindow());
+			owner = getWindowHandle(manager->getMainWindow());
 		}
 		catch (...)
 		{
@@ -26,11 +26,11 @@ void PlatformSupport::ShowAlertMessageBox(const TCHAR* message) LN_NOEXCEPT
 }
 
 //------------------------------------------------------------------------------
-HWND PlatformSupport::GetWindowHandle(PlatformWindow* window)
+HWND PlatformSupport::getWindowHandle(PlatformWindow* window)
 {
 	Win32PlatformWindow* w = dynamic_cast<Win32PlatformWindow*>(window);
 	LN_THROW(w, ArgumentException);
-	return w->GetWindowHandle();
+	return w->getWindowHandle();
 }
 
 LN_NAMESPACE_END

@@ -24,7 +24,7 @@ private:
 	
 public:
 
-	static const BackTrace* GetInstance()
+	static const BackTrace* getInstance()
 	{
 		static BackTrace s;
 		return &s;

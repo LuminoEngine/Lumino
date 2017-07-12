@@ -51,7 +51,7 @@ TEST_F(Test_Base_String, Constructor)
 	for (int j = 0; j < 10; j++)
 	{
 		ElapsedTimer timer;
-		timer.Start();
+		timer.start();
 		for (int i = 0; i < 1000000; ++i)
 		{
 			str1 = GetTest1();
@@ -63,7 +63,7 @@ TEST_F(Test_Base_String, Constructor)
 	for (int j = 0; j < 10; j++)
 	{
 		ElapsedTimer timer;
-		timer.Start();
+		timer.start();
 		for (int i = 0; i < 1000000; ++i)
 		{
 			str2 = GetTest2();
@@ -87,9 +87,9 @@ TEST_F(Test_Base_String, Constructor)
 
 	{
 		StringA strA((char*)NULL);
-		ASSERT_TRUE(strA.IsEmpty());
+		ASSERT_TRUE(strA.isEmpty());
 		StringW strW((wchar_t*)NULL);
-		ASSERT_TRUE(strW.IsEmpty());
+		ASSERT_TRUE(strW.isEmpty());
 	}
 
 }
@@ -138,8 +138,8 @@ TEST_F(Test_Base_String, Operators)
 	{
 		strA = ((char*)NULL);
 		strW = ((wchar_t*)NULL);
-		ASSERT_TRUE(strA.IsEmpty());
-		ASSERT_TRUE(strW.IsEmpty());
+		ASSERT_TRUE(strA.isEmpty());
+		ASSERT_TRUE(strW.isEmpty());
 	}
 	// <Test> operator= (自己代入)
 	{
@@ -330,18 +330,18 @@ TEST_F(Test_Base_String, XYChar)
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Base_String, AssignCStr)
+TEST_F(Test_Base_String, assignCStr)
 {
 	// char、wchar_t の相互変換
 	{ 
 		StringA str1;
-		str1.AssignCStr("test");
+		str1.assignCStr("test");
 		StringA str2;
-		str2.AssignCStr(L"test");
+		str2.assignCStr(L"test");
 		StringW wstr1;
-		wstr1.AssignCStr("test");
+		wstr1.assignCStr("test");
 		StringW wstr2;
-		wstr2.AssignCStr(L"test");
+		wstr2.assignCStr(L"test");
 
 		ASSERT_STREQ("test", str1.c_str());
 		ASSERT_STREQ("test", str2.c_str());
@@ -349,38 +349,38 @@ TEST_F(Test_Base_String, AssignCStr)
 		ASSERT_STREQ(L"test", wstr2.c_str());
 
 		StringW tstr3;
-		tstr3.AssignCStr("f");
+		tstr3.assignCStr("f");
 		ASSERT_EQ(L"f", tstr3);
 	}
 
 	// 部分変換
 	{
 		StringA str1;
-		str1.AssignCStr("test", 0, 2);
+		str1.assignCStr("test", 0, 2);
 		ASSERT_EQ("te", str1);
 
 		StringA str2;
-		str2.AssignCStr(L"test", 0, 2);
+		str2.assignCStr(L"test", 0, 2);
 		ASSERT_EQ("te", str1);
 
 		StringW wstr1;
-		wstr1.AssignCStr("test", 0, 2);
+		wstr1.assignCStr("test", 0, 2);
 		ASSERT_EQ(L"te", wstr1);
 
 		StringW wstr2;
-		wstr2.AssignCStr(L"test", 0, 2);
+		wstr2.assignCStr(L"test", 0, 2);
 		ASSERT_EQ(L"te", wstr1);
 	}
 
 	// 同型の NULL ポインタを指定する => 空文字が設定される
 	{
 		StringA strA;
-		strA.AssignCStr((char*)NULL, 1, 1);
-		ASSERT_TRUE(strA.IsEmpty());
+		strA.assignCStr((char*)NULL, 1, 1);
+		ASSERT_TRUE(strA.isEmpty());
 
 		StringW strW;
-		strW.AssignCStr((wchar_t*)NULL, 1, 1);
-		ASSERT_TRUE(strA.IsEmpty());
+		strW.assignCStr((wchar_t*)NULL, 1, 1);
+		ASSERT_TRUE(strA.isEmpty());
 	}
 
 	//// 例外
@@ -397,16 +397,16 @@ TEST_F(Test_Base_String, AssignCStr)
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Base_String, SPrintf)
+TEST_F(Test_Base_String, sprintf)
 {
-	// StringA Max 文字数チェック
+	// StringA max 文字数チェック
 	{
 		char buf1[2048 + 1] = { 0 };
 		for (int i = 0; i < 2048; i++) {
 			buf1[i] = 'a';
 		}
 
-		StringA str1 = StringA::SPrintf("%s", buf1);
+		StringA str1 = StringA::sprintf("%s", buf1);
 		ASSERT_EQ(str1, buf1);	// 同じ文字ができていればOK
 		
 #if 0	// 制限撤廃
@@ -425,14 +425,14 @@ TEST_F(Test_Base_String, SPrintf)
 //	}
 //#endif
 
-	// StringW Max 文字数チェック
+	// StringW max 文字数チェック
 	{
 		wchar_t buf1[2048 + 1] = { 0 };
 		for (int i = 0; i < 2048; i++) {
 			buf1[i] = L'a';
 		}
 
-		StringW str1 = StringW::SPrintf(L"%s", buf1);
+		StringW str1 = StringW::sprintf(L"%s", buf1);
 		ASSERT_TRUE(str1 == buf1);	// 同じ文字ができていればOK
 		
 #if 0	// 制限撤廃
@@ -444,13 +444,13 @@ TEST_F(Test_Base_String, SPrintf)
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Base_String, ConvertTo)
+TEST_F(Test_Base_String, convertTo)
 {
 	{
 		StringA str1("test");
-		ByteBuffer buf = str1.ConvertTo(Encoding::GetWideCharEncoding());
-		wchar_t* wstr = (wchar_t*)buf.GetData();
-		ASSERT_EQ(sizeof(wchar_t) * 5, buf.GetSize());
+		ByteBuffer buf = str1.convertTo(Encoding::getWideCharEncoding());
+		wchar_t* wstr = (wchar_t*)buf.getData();
+		ASSERT_EQ(sizeof(wchar_t) * 5, buf.getSize());
 		ASSERT_EQ(L't', wstr[0]);
 		ASSERT_EQ(L'e', wstr[1]);
 		ASSERT_EQ(L's', wstr[2]);
@@ -460,9 +460,9 @@ TEST_F(Test_Base_String, ConvertTo)
 
 	{
 		StringW str1(L"test");
-		ByteBuffer buf = str1.ConvertTo(Encoding::GetSystemMultiByteEncoding());
-		char* astr = (char*)buf.GetData();
-		ASSERT_EQ(5, buf.GetSize());
+		ByteBuffer buf = str1.convertTo(Encoding::getSystemMultiByteEncoding());
+		char* astr = (char*)buf.getData();
+		ASSERT_EQ(5, buf.getSize());
 		ASSERT_EQ('t', astr[0]);
 		ASSERT_EQ('e', astr[1]);
 		ASSERT_EQ('s', astr[2]);
@@ -472,111 +472,111 @@ TEST_F(Test_Base_String, ConvertTo)
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Base_String, IndexOf)
+TEST_F(Test_Base_String, indexOf)
 {
 	String str1(_T("abcdef"));
-	ASSERT_EQ(1, str1.IndexOf(_T("bcd")));
-	ASSERT_EQ(4, str1.IndexOf(_T('e')));
+	ASSERT_EQ(1, str1.indexOf(_T("bcd")));
+	ASSERT_EQ(4, str1.indexOf(_T('e')));
 
-	ASSERT_EQ(1, str1.IndexOf(String(_T("bcd"))));
+	ASSERT_EQ(1, str1.indexOf(String(_T("bcd"))));
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Base_String, LastIndexOf)
+TEST_F(Test_Base_String, lastIndexOf)
 {
 	{
 		String str = _T("abcdef");
-		ASSERT_EQ(3, str.LastIndexOf(_T("de")));
-		ASSERT_EQ(1, str.LastIndexOf(_T("bc"), 2));
-		ASSERT_EQ(-1, str.LastIndexOf(_T("cd"), 2));
-		ASSERT_EQ(2, str.LastIndexOf(_T("cd"), 4, 3));
-		ASSERT_EQ(-1, str.LastIndexOf(_T("bc"), 4, 3));
+		ASSERT_EQ(3, str.lastIndexOf(_T("de")));
+		ASSERT_EQ(1, str.lastIndexOf(_T("bc"), 2));
+		ASSERT_EQ(-1, str.lastIndexOf(_T("cd"), 2));
+		ASSERT_EQ(2, str.lastIndexOf(_T("cd"), 4, 3));
+		ASSERT_EQ(-1, str.lastIndexOf(_T("bc"), 4, 3));
 	}
 	// .NET の System.String.LastIndexOf() と同様の動作
 	{
 		String str = _T("crazy azimuths");
 		String se = _T("");
-		ASSERT_EQ(6, str.LastIndexOf(_T("az")));       // 6
-		ASSERT_EQ(2, str.LastIndexOf(_T("az"), 6));    // 2 ("crazy a")
-		ASSERT_EQ(6, str.LastIndexOf(_T("az"), 7));    // 6 ("crazy az")
-		ASSERT_EQ(0, str.LastIndexOf(_T("cr"), 6));    // 0
-		ASSERT_EQ(-1, str.LastIndexOf(_T("cr"), 6, 4));    // -1
-		ASSERT_EQ(-1, str.LastIndexOf(_T("cr"), 6, 6));    // -1
-		ASSERT_EQ(0, str.LastIndexOf(_T("cr"), 6, 7));    // 0
-		ASSERT_EQ(5, str.LastIndexOf(_T(""), 5, 2));    // 5
-		ASSERT_EQ(3, str.LastIndexOf(_T(""), 3, 0));
-		ASSERT_EQ(0, se.LastIndexOf(_T("")));
+		ASSERT_EQ(6, str.lastIndexOf(_T("az")));       // 6
+		ASSERT_EQ(2, str.lastIndexOf(_T("az"), 6));    // 2 ("crazy a")
+		ASSERT_EQ(6, str.lastIndexOf(_T("az"), 7));    // 6 ("crazy az")
+		ASSERT_EQ(0, str.lastIndexOf(_T("cr"), 6));    // 0
+		ASSERT_EQ(-1, str.lastIndexOf(_T("cr"), 6, 4));    // -1
+		ASSERT_EQ(-1, str.lastIndexOf(_T("cr"), 6, 6));    // -1
+		ASSERT_EQ(0, str.lastIndexOf(_T("cr"), 6, 7));    // 0
+		ASSERT_EQ(5, str.lastIndexOf(_T(""), 5, 2));    // 5
+		ASSERT_EQ(3, str.lastIndexOf(_T(""), 3, 0));
+		ASSERT_EQ(0, se.lastIndexOf(_T("")));
 	}
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Base_String, Trim)
+TEST_F(Test_Base_String, trim)
 {
 	// 前後
 	{
 		String str1(_T(" abc def "));
-		String t = str1.Trim();
+		String t = str1.trim();
 		ASSERT_EQ(_T("abc def"), t);
 	}
 	// 前だけ
 	{
 		String str1(_T(" abc def"));
-		String t = str1.Trim();
+		String t = str1.trim();
 		ASSERT_EQ(_T("abc def"), t);
 	}
 	// 後ろだけ
 	{
 		String str1(_T("abc def "));
-		String t = str1.Trim();
+		String t = str1.trim();
 		ASSERT_EQ(_T("abc def"), t);
 	}
 	// 空文字
 	{
 		String str1(_T(""));
-		String t = str1.Trim();
+		String t = str1.trim();
 		ASSERT_EQ(_T(""), t);
 	}
 	// 空白だけ
 	{
 		String str1(_T(" "));
-		String t = str1.Trim();
+		String t = str1.trim();
 		ASSERT_EQ(_T(""), t);
 	}
 	// 空白だけ * 2
 	{
 		String str1(_T("  "));
-		String t = str1.Trim();
+		String t = str1.trim();
 		ASSERT_EQ(_T(""), t);
 	}
 	// 空白だけ * 3
 	{
 		String str1(_T("   "));
-		String t = str1.Trim();
+		String t = str1.trim();
 		ASSERT_EQ(_T(""), t);
 	}
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Base_String, Remove)
+TEST_F(Test_Base_String, remove)
 {
 	String str1(_T("abcdef"));
 
-	String str2 = str1.Remove(_T('c'));
+	String str2 = str1.remove(_T('c'));
 	ASSERT_EQ(_T("abdef"), str2);
 
 	// 大文字小文字を区別しない
-	String str3 = str2.Remove(_T('D'), CaseSensitivity::CaseInsensitive);
+	String str3 = str2.remove(_T('D'), CaseSensitivity::CaseInsensitive);
 	ASSERT_EQ(_T("abef"), str3);
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Base_String, Replace)
+TEST_F(Test_Base_String, replace)
 {
 	// <Test> 部分一致を置換できること。
 	// <Test> TCHAR* を渡せること。
 	{
 		StringA str1("test");
-		StringA str2 = str1.Replace("es", "b");
+		StringA str2 = str1.replace("es", "b");
 		ASSERT_EQ('t', str2[0]);
 		ASSERT_EQ('b', str2[1]);
 		ASSERT_EQ('t', str2[2]);
@@ -585,14 +585,14 @@ TEST_F(Test_Base_String, Replace)
 	// <Test> 破壊的変更にならないこと。
 	{
 		String str1(_T("aaa"));
-		String str2 = str1.Replace(String(_T("a")), String(_T("b")));
+		String str2 = str1.replace(String(_T("a")), String(_T("b")));
 		ASSERT_EQ(_T("bbb"), str2);
 		ASSERT_EQ(_T("aaa"), str1);
 	}
 	// <Test> String を渡せること。
 	{
 		String str1(_T("a"));
-		String str2 = str1.Replace(String(_T("a")), String(_T("b")));
+		String str2 = str1.replace(String(_T("a")), String(_T("b")));
 		ASSERT_EQ(_T("b"), str2);
 	}
 	// <Test> StringRef を渡せること。
@@ -600,7 +600,7 @@ TEST_F(Test_Base_String, Replace)
 		String str1(_T("reabcdef"));
 		TCHAR buf1[] = _T("abc");
 		TCHAR buf2[] = _T("def");
-		String str2 = str1.Replace(StringRef(buf1, buf1 + 2), StringRef(buf2, buf2 + 2));
+		String str2 = str1.replace(StringRef(buf1, buf1 + 2), StringRef(buf2, buf2 + 2));
 		ASSERT_EQ(_T("redecdef"), str2);
 	}
 	// <Test> 文字列を置換する
@@ -608,31 +608,31 @@ TEST_F(Test_Base_String, Replace)
 		String str1 = _T("abcdcd");
 
 		// "ab" を "12" に置き換える
-		str1 = str1.Replace(_T("ab"), _T("12"));
+		str1 = str1.replace(_T("ab"), _T("12"));
 
 		// "cd" を "345" に置き換える
 		String from = _T("cd");
 		String to = _T("345");
-		str1 = str1.Replace(from, to);
+		str1 = str1.replace(from, to);
 
 		ASSERT_EQ(_T("12345345"), str1);
 	}
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Base_String, Equals)
+TEST_F(Test_Base_String, equals)
 {
 	// <Issue> 文字列の先頭が同じだけで一致判定にならないこと。
 	{
 		String str1("abc");
 		String str2("abcd");
-		ASSERT_FALSE(str1.Equals(str2));
-		ASSERT_FALSE(str2.Equals(str1));
+		ASSERT_FALSE(str1.equals(str2));
+		ASSERT_FALSE(str2.equals(str1));
 	}
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Base_String, Compare)
+TEST_F(Test_Base_String, compare)
 {
 	int a1 = strcmp("abc", "abcd");
 	int a2 = strcmp("bbb", "aaaa");
@@ -641,9 +641,9 @@ TEST_F(Test_Base_String, Compare)
 
 	{
 		String str1("abc");
-		EXPECT_EQ(0, str1.Compare(_T("abc")));
-		EXPECT_LE(0, str1.Compare(_T("ab")));	// v1 < v2
-		EXPECT_GT(0, str1.Compare(_T("abd")));	// v1 > v2
+		EXPECT_EQ(0, str1.compare(_T("abc")));
+		EXPECT_LE(0, str1.compare(_T("ab")));	// v1 < v2
+		EXPECT_GT(0, str1.compare(_T("abd")));	// v1 > v2
 	}
 
 	{
@@ -677,40 +677,40 @@ TEST_F(Test_Base_String, Compare)
 
 	// <Test> 比較
 	{
-		ASSERT_LE(0, StringTraits::Compare(_T("abcd"), 4, _T("abc"), 3, 4));	// 0 < result (1)
-		ASSERT_GT(0, StringTraits::Compare(_T("abc"), 3, _T("abcd"), 4, 4));	// result < 0 (-1)
+		ASSERT_LE(0, StringTraits::compare(_T("abcd"), 4, _T("abc"), 3, 4));	// 0 < result (1)
+		ASSERT_GT(0, StringTraits::compare(_T("abc"), 3, _T("abcd"), 4, 4));	// result < 0 (-1)
 	}
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Base_String, Left)
+TEST_F(Test_Base_String, left)
 {
 	String str1(_T("abcdef"));
-	ASSERT_EQ(_T("ab"), str1.Left(2));
+	ASSERT_EQ(_T("ab"), str1.left(2));
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Base_String, Right)
+TEST_F(Test_Base_String, right)
 {
 	String str1(_T("abcdef"));
-	ASSERT_EQ(_T("ef"), str1.Right(2));
+	ASSERT_EQ(_T("ef"), str1.right(2));
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Base_String, Mid)
+TEST_F(Test_Base_String, mid)
 {
 	String str1(_T("abcdef"));
-	ASSERT_EQ(_T("cde"), str1.Mid(2, 3));
+	ASSERT_EQ(_T("cde"), str1.mid(2, 3));
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Base_String, Split)
+TEST_F(Test_Base_String, split)
 {
 	// 普通の分割
 	{
 		String str(_T("a,b,c"));
-		List<String> lines = str.Split(_T(","), StringSplitOptions::None);
-		ASSERT_EQ(3, lines.GetCount());
+		List<String> lines = str.split(_T(","), StringSplitOptions::None);
+		ASSERT_EQ(3, lines.getCount());
 		ASSERT_EQ(_T("a"), lines[0]);
 		ASSERT_EQ(_T("b"), lines[1]);
 		ASSERT_EQ(_T("c"), lines[2]);
@@ -719,37 +719,37 @@ TEST_F(Test_Base_String, Split)
 	// 空文字
 	{
 		String str = _T("");
-		List<String> lines = str.Split(_T(","), StringSplitOptions::None);
-		ASSERT_EQ(1, lines.GetCount());
+		List<String> lines = str.split(_T(","), StringSplitOptions::None);
+		ASSERT_EQ(1, lines.getCount());
 	}
 
 	// 空文字の RemoveEmptyEntries
 	{
 		String str = _T("");
-		List<String> lines = str.Split(_T(","), StringSplitOptions::RemoveEmptyEntries);
-		ASSERT_EQ(0, lines.GetCount());
+		List<String> lines = str.split(_T(","), StringSplitOptions::RemoveEmptyEntries);
+		ASSERT_EQ(0, lines.getCount());
 	}
 
 	// 区切り無し
 	{
 		String str = _T("abc");
-		List<String> lines = str.Split(_T(","), StringSplitOptions::None);
-		ASSERT_EQ(1, lines.GetCount());
+		List<String> lines = str.split(_T(","), StringSplitOptions::None);
+		ASSERT_EQ(1, lines.getCount());
 		ASSERT_EQ(_T("abc"), lines[0]);
 	}
 
 	// 区切り無し RemoveEmptyEntries
 	{
 		String str = _T("abc");
-		List<String> lines = str.Split(_T(","), StringSplitOptions::RemoveEmptyEntries);
-		ASSERT_EQ(1, lines.GetCount());
+		List<String> lines = str.split(_T(","), StringSplitOptions::RemoveEmptyEntries);
+		ASSERT_EQ(1, lines.getCount());
 	}
 
 	// トークン無し
 	{
 		String str = _T(",");
-		List<String> lines = str.Split(_T(","), StringSplitOptions::None);
-		ASSERT_EQ(2, lines.GetCount());
+		List<String> lines = str.split(_T(","), StringSplitOptions::None);
+		ASSERT_EQ(2, lines.getCount());
 		ASSERT_EQ(_T(""), lines[0]);
 		ASSERT_EQ(_T(""), lines[1]);
 	}
@@ -757,29 +757,29 @@ TEST_F(Test_Base_String, Split)
 	// トークン無し RemoveEmptyEntries
 	{
 		String str = _T(",");
-		List<String> lines = str.Split(_T(","), StringSplitOptions::RemoveEmptyEntries);
-		ASSERT_EQ(0, lines.GetCount());
+		List<String> lines = str.split(_T(","), StringSplitOptions::RemoveEmptyEntries);
+		ASSERT_EQ(0, lines.getCount());
 	}
 
 	// トークン無し 2
 	{
 		String str = _T(",,");
-		List<String> lines = str.Split(_T(","), StringSplitOptions::None);
-		ASSERT_EQ(3, lines.GetCount());
+		List<String> lines = str.split(_T(","), StringSplitOptions::None);
+		ASSERT_EQ(3, lines.getCount());
 	}
 
 	// トークン無し 2 RemoveEmptyEntries
 	{
 		String str = _T(",,");
-		List<String> lines = str.Split(_T(","), StringSplitOptions::RemoveEmptyEntries);
-		ASSERT_EQ(0, lines.GetCount());
+		List<String> lines = str.split(_T(","), StringSplitOptions::RemoveEmptyEntries);
+		ASSERT_EQ(0, lines.getCount());
 	}
 
 	// 空要素付き
 	{
 		String str = _T("a,,c");
-		List<String> lines = str.Split(_T(","), StringSplitOptions::None);
-		ASSERT_EQ(3, lines.GetCount());
+		List<String> lines = str.split(_T(","), StringSplitOptions::None);
+		ASSERT_EQ(3, lines.getCount());
 		ASSERT_EQ(_T("a"), lines[0]);
 		ASSERT_EQ(_T(""), lines[1]);
 		ASSERT_EQ(_T("c"), lines[2]);
@@ -788,8 +788,8 @@ TEST_F(Test_Base_String, Split)
 	// 空要素付き RemoveEmptyEntries
 	{
 		String str = _T("a,,c");
-		List<String> lines = str.Split(_T(","), StringSplitOptions::RemoveEmptyEntries);
-		ASSERT_EQ(2, lines.GetCount());
+		List<String> lines = str.split(_T(","), StringSplitOptions::RemoveEmptyEntries);
+		ASSERT_EQ(2, lines.getCount());
 		ASSERT_EQ(_T("a"), lines[0]);
 		ASSERT_EQ(_T("c"), lines[1]);
 	}
@@ -797,8 +797,8 @@ TEST_F(Test_Base_String, Split)
 	// 先頭空要素付き
 	{
 		String str = _T(",b,c");
-		List<String> lines = str.Split(_T(","), StringSplitOptions::None);
-		ASSERT_EQ(3, lines.GetCount());
+		List<String> lines = str.split(_T(","), StringSplitOptions::None);
+		ASSERT_EQ(3, lines.getCount());
 		ASSERT_EQ(_T(""), lines[0]);
 		ASSERT_EQ(_T("b"), lines[1]);
 		ASSERT_EQ(_T("c"), lines[2]);
@@ -807,8 +807,8 @@ TEST_F(Test_Base_String, Split)
 	// 先頭空要素付き RemoveEmptyEntries
 	{
 		String str = _T(",b,c");
-		List<String> lines = str.Split(_T(","), StringSplitOptions::RemoveEmptyEntries);
-		ASSERT_EQ(2, lines.GetCount());
+		List<String> lines = str.split(_T(","), StringSplitOptions::RemoveEmptyEntries);
+		ASSERT_EQ(2, lines.getCount());
 		ASSERT_EQ(_T("b"), lines[0]);
 		ASSERT_EQ(_T("c"), lines[1]);
 	}
@@ -816,8 +816,8 @@ TEST_F(Test_Base_String, Split)
 	// 終端空要素付き
 	{
 		String str = _T("a,b,");
-		List<String> lines = str.Split(_T(","), StringSplitOptions::None);
-		ASSERT_EQ(3, lines.GetCount());
+		List<String> lines = str.split(_T(","), StringSplitOptions::None);
+		ASSERT_EQ(3, lines.getCount());
 		ASSERT_EQ(_T("a"), lines[0]);
 		ASSERT_EQ(_T("b"), lines[1]);
 		ASSERT_EQ(_T(""), lines[2]);
@@ -826,8 +826,8 @@ TEST_F(Test_Base_String, Split)
 	// 終端空要素付き RemoveEmptyEntries
 	{
 		String str = _T("a,b,");
-		List<String> lines = str.Split(_T(","), StringSplitOptions::RemoveEmptyEntries);
-		ASSERT_EQ(2, lines.GetCount());
+		List<String> lines = str.split(_T(","), StringSplitOptions::RemoveEmptyEntries);
+		ASSERT_EQ(2, lines.getCount());
 		ASSERT_EQ(_T("a"), lines[0]);
 		ASSERT_EQ(_T("b"), lines[1]);
 	}
@@ -835,8 +835,8 @@ TEST_F(Test_Base_String, Split)
 	// 両端空要素付き
 	{
 		String str = _T(",b,");
-		List<String> lines = str.Split(_T(","), StringSplitOptions::None);
-		ASSERT_EQ(3, lines.GetCount());
+		List<String> lines = str.split(_T(","), StringSplitOptions::None);
+		ASSERT_EQ(3, lines.getCount());
 		ASSERT_EQ(_T(""), lines[0]);
 		ASSERT_EQ(_T("b"), lines[1]);
 		ASSERT_EQ(_T(""), lines[2]);
@@ -845,15 +845,15 @@ TEST_F(Test_Base_String, Split)
 	// 両端空要素付き RemoveEmptyEntries
 	{
 		String str = _T(",b,");
-		List<String> lines = str.Split(_T(","), StringSplitOptions::RemoveEmptyEntries);
-		ASSERT_EQ(1, lines.GetCount());
+		List<String> lines = str.split(_T(","), StringSplitOptions::RemoveEmptyEntries);
+		ASSERT_EQ(1, lines.getCount());
 		ASSERT_EQ(_T("b"), lines[0]);
 	}
 	// 長さ2以上のデリミタ
 	{
 		String str = _T("a::b");
-		List<String> lines = str.Split(_T("::"), StringSplitOptions::None);
-		ASSERT_EQ(2, lines.GetCount());
+		List<String> lines = str.split(_T("::"), StringSplitOptions::None);
+		ASSERT_EQ(2, lines.getCount());
 		ASSERT_EQ(_T("a"), lines[0]);
 		ASSERT_EQ(_T("b"), lines[1]);
 	}
@@ -863,17 +863,17 @@ TEST_F(Test_Base_String, Split)
 TEST_F(Test_Base_String, NewLine)
 {
 #ifdef _WIN32
-	const char* nl = StringA::GetNewLine().c_str();
+	const char* nl = StringA::getNewLine().c_str();
 	ASSERT_EQ('\r', nl[0]);
 	ASSERT_EQ('\n', nl[1]);
 	ASSERT_EQ('\0', nl[2]);
 
-	const wchar_t* wnl = StringW::GetNewLine().c_str();
+	const wchar_t* wnl = StringW::getNewLine().c_str();
 	ASSERT_EQ(L'\r', wnl[0]);
 	ASSERT_EQ(L'\n', wnl[1]);
 	ASSERT_EQ(L'\0', wnl[2]);
 
-	const TCHAR* tnl = String::GetNewLine().c_str();
+	const TCHAR* tnl = String::getNewLine().c_str();
 	ASSERT_EQ(_T('\r'), tnl[0]);
 	ASSERT_EQ(_T('\n'), tnl[1]);
 	ASSERT_EQ(_T('\0'), tnl[2]);
@@ -896,20 +896,20 @@ TEST_F(Test_Base_String, NewLine)
 TEST_F(Test_Base_String, ToInt)
 {
 	// 実行できるか
-	ASSERT_EQ(10, String(_T("10")).ToInt8());
-	ASSERT_EQ(10, String(_T("10")).ToInt16());
-	ASSERT_EQ(10, String(_T("10")).ToInt32());
-	ASSERT_EQ(10, String(_T("10")).ToInt64());
-	ASSERT_EQ(10, String(_T("10")).ToUInt8());
-	ASSERT_EQ(10, String(_T("10")).ToUInt16());
-	ASSERT_EQ(10, String(_T("10")).ToUInt32());
-	ASSERT_EQ(10, String(_T("10")).ToUInt64());
+	ASSERT_EQ(10, String(_T("10")).toInt8());
+	ASSERT_EQ(10, String(_T("10")).toInt16());
+	ASSERT_EQ(10, String(_T("10")).toInt32());
+	ASSERT_EQ(10, String(_T("10")).toInt64());
+	ASSERT_EQ(10, String(_T("10")).toUInt8());
+	ASSERT_EQ(10, String(_T("10")).toUInt16());
+	ASSERT_EQ(10, String(_T("10")).toUInt32());
+	ASSERT_EQ(10, String(_T("10")).toUInt64());
 
 	// 異常系
-	ASSERT_THROW(String(_T("10")).ToInt8(1), ArgumentException);
-	ASSERT_THROW(String(_T("-")).ToInt8(), InvalidFormatException);
-	ASSERT_THROW(String(_T("qwer")).ToInt8(), InvalidFormatException);
-	ASSERT_THROW(String(_T("0xfffffffffffffffff")).ToInt8(), OverflowException);
+	ASSERT_THROW(String(_T("10")).toInt8(1), ArgumentException);
+	ASSERT_THROW(String(_T("-")).toInt8(), InvalidFormatException);
+	ASSERT_THROW(String(_T("qwer")).toInt8(), InvalidFormatException);
+	ASSERT_THROW(String(_T("0xfffffffffffffffff")).toInt8(), OverflowException);
 }
 
 //------------------------------------------------------------------------------
@@ -918,64 +918,64 @@ TEST_F(Test_Base_String, TryToInt)
 	// 実行できるか
 	{
 		int8_t v;
-		ASSERT_TRUE(String(_T("10")).TryToInt8(&v));
+		ASSERT_TRUE(String(_T("10")).tryToInt8(&v));
 		ASSERT_EQ(10, v);
 	}
 	{
 		int16_t v;
-		ASSERT_TRUE(String(_T("10")).TryToInt16(&v));
+		ASSERT_TRUE(String(_T("10")).tryToInt16(&v));
 		ASSERT_EQ(10, v);
 	}
 	{
 		int32_t v;
-		ASSERT_TRUE(String(_T("10")).TryToInt32(&v));
+		ASSERT_TRUE(String(_T("10")).tryToInt32(&v));
 		ASSERT_EQ(10, v);
 	}
 	{
 		int64_t v;
-		ASSERT_TRUE(String(_T("10")).TryToInt64(&v));
+		ASSERT_TRUE(String(_T("10")).tryToInt64(&v));
 		ASSERT_EQ(10, v);
 	}
 	{
 		uint8_t v;
-		ASSERT_TRUE(String(_T("10")).TryToUInt8(&v));
+		ASSERT_TRUE(String(_T("10")).tryToUInt8(&v));
 		ASSERT_EQ(10, v);
 	}
 	{
 		uint16_t v;
-		ASSERT_TRUE(String(_T("10")).TryToUInt16(&v));
+		ASSERT_TRUE(String(_T("10")).tryToUInt16(&v));
 		ASSERT_EQ(10, v);
 	}
 	{
 		uint32_t v;
-		ASSERT_TRUE(String(_T("10")).TryToUInt32(&v));
+		ASSERT_TRUE(String(_T("10")).tryToUInt32(&v));
 		ASSERT_EQ(10, v);
 	}
 	{
 		uint64_t v;
-		ASSERT_TRUE(String(_T("10")).TryToUInt64(&v));
+		ASSERT_TRUE(String(_T("10")).tryToUInt64(&v));
 		ASSERT_EQ(10, v);
 	}
 
 	// 異常系
 	int8_t v;
-	ASSERT_FALSE(String(_T("10")).TryToInt8(&v, 1));
-	ASSERT_FALSE(String(_T("-")).TryToInt8(&v));
-	ASSERT_FALSE(String(_T("qwer")).TryToInt8(&v));
-	ASSERT_FALSE(String(_T("0xfffffffffffffffff")).TryToInt8(&v));
+	ASSERT_FALSE(String(_T("10")).tryToInt8(&v, 1));
+	ASSERT_FALSE(String(_T("-")).tryToInt8(&v));
+	ASSERT_FALSE(String(_T("qwer")).tryToInt8(&v));
+	ASSERT_FALSE(String(_T("0xfffffffffffffffff")).tryToInt8(&v));
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Base_String, FromNativeCharString)
+TEST_F(Test_Base_String, fromNativeCharString)
 {
-	String str = String::FromNativeCharString("abc");
+	String str = String::fromNativeCharString("abc");
 	ASSERT_EQ(_T("abc"), str);
 }
 
 //------------------------------------------------------------------------------
 TEST_F(Test_Base_String, FromNativeWCharString)
 {
-	String str = String::FromNativeCharString(L"abc");
+	String str = String::fromNativeCharString(L"abc");
 	ASSERT_EQ(_T("abc"), str);
 }
 
@@ -1046,23 +1046,23 @@ TEST_F(Test_Base_String, Concat)
 		String str2 = _T("56");
 		str1 = str1 + _T("34");
 		str1 += str2;
-		str1.Append(_T("78"));
+		str1.append(_T("78"));
 		ASSERT_EQ(_T("12345678"), str1);
 	}
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Base_String, ToUpper)
+TEST_F(Test_Base_String, toUpper)
 {
 	String str1 = _T("AbCd");
-	ASSERT_EQ(_T("ABCD"), str1.ToUpper());
+	ASSERT_EQ(_T("ABCD"), str1.toUpper());
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Base_String, ToLower)
+TEST_F(Test_Base_String, toLower)
 {
 	String str1 = _T("AbCd");
-	ASSERT_EQ(_T("abcd"), str1.ToLower());
+	ASSERT_EQ(_T("abcd"), str1.toLower());
 }
 
 //------------------------------------------------------------------------------

@@ -18,16 +18,16 @@ public:
 	EffectEngine() = default;
 	virtual ~EffectEngine() = default;
 
-	void Initialize(EffectManager* manager, int cacheObjectCount, size_t cacheMemorySize);
+	void initialize(EffectManager* manager, int cacheObjectCount, size_t cacheMemorySize);
 	virtual void Finalize();
 	virtual VisualEffect* CreateEffectCore(const PathName& filePath) = 0;
 	virtual void SetViewProjectin(const Matrix& view, const Matrix& proj) = 0;
-	virtual void UpdateFrame(float elapsedTime) = 0;
-	virtual void Render() = 0;
-	virtual void OnLostDevice() = 0;
-	virtual void OnResetDevice() = 0;
+	virtual void updateFrame(float elapsedTime) = 0;
+	virtual void render() = 0;
+	virtual void onLostDevice() = 0;
+	virtual void onResetDevice() = 0;
 
-	// Render() は、
+	// render() は、
 	// Deferred 描画		: 描画コマンドから実行される
 	// Immediate 描画	: 直接実行される
 
@@ -41,15 +41,15 @@ public:
 	{
 		EffectEngine*	m_engine;
 		tr::Task* m_updateTask;
-		void Create(EffectEngine* engine, tr::Task* updateTask)
+		void create(EffectEngine* engine, tr::Task* updateTask)
 		{
 			m_engine = engine;
 			m_updateTask = updateTask;
 		}
-		void Execute()
+		void execute()
 		{
-			m_updateTask->Wait();
-			m_engine->Render();
+			m_updateTask->wait();
+			m_engine->render();
 		}
 	};
 };
@@ -73,16 +73,16 @@ public:
 //	EffectInstance() = default;
 //	virtual ~EffectInstance() = default;
 //
-//	void Initialize(EffectManager* manager);
+//	void initialize(EffectManager* manager);
 //	void SetWorldMatrix(const Matrix& matrix) { m_worldMatrix = matrix; }
-//	//void AdvanceTime(float deltaTime);
+//	//void advanceTime(float deltaTime);
 //
-//	//virtual void Play(bool overlap) = 0;
-//	virtual void Stop() = 0;
+//	//virtual void play(bool overlap) = 0;
+//	virtual void stop() = 0;
 //	virtual bool IsPlaying() = 0;
 //
-//	virtual void UpdateFrame() = 0;	// 更新スレッド
-//	virtual void Draw() = 0;	// 描画スレッド
+//	virtual void updateFrame() = 0;	// 更新スレッド
+//	virtual void draw() = 0;	// 描画スレッド
 //
 //protected:
 //	EffectManager*	m_manager = nullptr;

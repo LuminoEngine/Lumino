@@ -12,7 +12,7 @@ LN_NAMESPACE_BEGIN
 //------------------------------------------------------------------------------
 StreamWriter::StreamWriter(Stream* stream, Encoding* encoding)
 {
-	Init(stream, encoding);
+	init(stream, encoding);
 }
 
 //------------------------------------------------------------------------------
@@ -21,14 +21,14 @@ StreamWriter::StreamWriter(const PathName& filePath, Encoding* encoding, FileWri
 	// モード選択
 	FileOpenMode openMode;
 	if (mode == FileWriteMode_Truncate) {
-		openMode = FileOpenMode::Write | FileOpenMode::Truncate;
+		openMode = FileOpenMode::write | FileOpenMode::Truncate;
 	}
 	else {
-		openMode = FileOpenMode::Write | FileOpenMode::Append;
+		openMode = FileOpenMode::write | FileOpenMode::append;
 	}
 
-	RefPtr<FileStream> stream = FileStream::Create(filePath, openMode);
-	Init(stream, encoding);
+	RefPtr<FileStream> stream = FileStream::create(filePath, openMode);
+	init(stream, encoding);
 }
 
 //------------------------------------------------------------------------------
@@ -37,27 +37,27 @@ StreamWriter::~StreamWriter()
 }
 
 //------------------------------------------------------------------------------
-void StreamWriter::Init(Stream* stream, Encoding* encoding)
+void StreamWriter::init(Stream* stream, Encoding* encoding)
 {
 	// encoding 未指定であれば UTF8 とする
 	if (encoding == NULL) {
-		encoding = Encoding::GetUTF8Encoding();
+		encoding = Encoding::getUTF8Encoding();
 	}
 
 	m_stream = stream;
-	SetEncoding(encoding);
+	setEncoding(encoding);
 }
 
 //------------------------------------------------------------------------------
-void StreamWriter::Flash()
+void StreamWriter::flash()
 {
-	m_stream->Flush();
+	m_stream->flush();
 }
 
 //------------------------------------------------------------------------------
-void StreamWriter::WriteOverride(const void* data, size_t byteCount)
+void StreamWriter::writeOverride(const void* data, size_t byteCount)
 {
-	m_stream->Write(data, byteCount);
+	m_stream->write(data, byteCount);
 }
 
 LN_NAMESPACE_END

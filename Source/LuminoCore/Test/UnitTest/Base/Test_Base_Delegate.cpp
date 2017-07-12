@@ -62,13 +62,13 @@ TEST_F(Test_Base_Delegate, Constructor)
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Base_Delegate, IsEmpty)
+TEST_F(Test_Base_Delegate, isEmpty)
 {
 	Delegate<void()> d1;
-	ASSERT_TRUE(d1.IsEmpty());
+	ASSERT_TRUE(d1.isEmpty());
 
 	Delegate<void()> d2(&Class1::Func1);
-	ASSERT_FALSE(d2.IsEmpty());
+	ASSERT_FALSE(d2.isEmpty());
 }
 
 //------------------------------------------------------------------------------
@@ -121,12 +121,12 @@ TEST_F(Test_Base_Delegate, Operator_Eq)
 
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Base_Delegate, CreateDelegate)
+TEST_F(Test_Base_Delegate, createDelegate)
 {
 	g_Value = 0;
 	Class1 t;
-	Delegate<void()> d1 = CreateDelegate(&Class1::Func1);
-	Delegate<void()> d2 = CreateDelegate(&t, &Class1::Func2);
+	Delegate<void()> d1 = createDelegate(&Class1::Func1);
+	Delegate<void()> d2 = createDelegate(&t, &Class1::Func2);
 	//Delegate<void()> d3 = CreateDelegate([&t](){ t.m_value = 100; });
 	//Delegate<void()> d4 = CreateDelegate([](){ g_Value = 100; });
 }

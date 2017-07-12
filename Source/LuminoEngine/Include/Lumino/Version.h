@@ -45,7 +45,7 @@ public:
 	/**
 		@brief	リビジョンバージョンを取得します。
 	*/
-	static int GetRevision();
+	static int getRevision();
 
 	/**
 		@brief	ビルドバージョンを取得します。
@@ -55,7 +55,7 @@ public:
 	/**
 		@brief	バージョン文字列の取得を取得します。
 	*/
-	static const TCHAR* GetString();
+	static const TCHAR* getString();
 
 	/**
 		@brief	指定したバージョン番号と、ライブラリファイルのコンパイルバージョン番号を比較します。

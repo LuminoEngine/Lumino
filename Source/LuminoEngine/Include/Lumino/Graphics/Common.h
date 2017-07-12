@@ -91,8 +91,6 @@ class ShaderPass;
 class GlyphRun;
 
 class Helper;
-class RenderingCommandList;
-class RenderingThread;
 
 class Brush;
 typedef RefPtr<Brush>				BrushPtr;
@@ -107,10 +105,15 @@ typedef tr::ReflectionObjectList<ImageEffect*>	ImageEffectList;
 
 struct TextLayoutResult;
 
-namespace Details
+
+namespace detail
 {
-	class Renderer;
-}
+
+class CoreGraphicsRenderFeature;
+class RenderingCommandList;
+class RenderingThread;
+
+} // namespace detail
 
 /// グラフィックス API
 LN_ENUM(GraphicsAPI)
@@ -407,13 +410,13 @@ public:
 	String	Family;
 	int		Size;
 	//int		EdgeSize;
-	bool	IsBold;
-	bool	IsItalic;
-	bool	IsAntiAlias;
+	bool	isBold;
+	bool	isItalic;
+	bool	isAntiAlias;
 
 	FontData();
 	bool operator < (const FontData& right);
-	uint64_t CalcHash() const;
+	uint64_t calcHash() const;
 };
 
 
@@ -428,45 +431,45 @@ public:
 	{
 	}
 
-	void Reserve(int count)
+	void reserve(int count)
 	{
-		m_buffer.Resize(sizeof(T) * count, false);
+		m_buffer.resize(sizeof(T) * count, false);
 		m_capacity = count;
 	}
 
-	void Add(const T& value)
+	void add(const T& value)
 	{
-		TryGlow(m_count + 1);
+		tryGlow(m_count + 1);
 		memcpy(&m_buffer[sizeof(T) * m_count], &value, sizeof(T));
 		m_count++;
 	}
 
-	T* Request(int count)
+	T* request(int count)
 	{
-		TryGlow(m_count + count);
-		size_t begin = GetBufferUsedByteCount();
+		tryGlow(m_count + count);
+		size_t begin = getBufferUsedByteCount();
 		m_count += count;
-		return reinterpret_cast<T*>(m_buffer.GetData() + begin);
+		return reinterpret_cast<T*>(m_buffer.getData() + begin);
 	}
 
-	void Clear()
+	void clear()
 	{
 		m_count = 0;
 	}
 
-	T& GetAt(int index) { return ((T*)(m_buffer.GetData()))[index]; }
-	T& GetLast() { return GetAt(m_count - 1); }
+	T& getAt(int index) { return ((T*)(m_buffer.getData()))[index]; }
+	T& getLast() { return getAt(m_count - 1); }
 
-	int GetCount() const { return m_count; }
-	byte_t* GetBuffer() { return m_buffer.GetData(); }
-	size_t GetBufferUsedByteCount() { return m_count * sizeof(T); }
+	int getCount() const { return m_count; }
+	byte_t* getBuffer() { return m_buffer.getData(); }
+	size_t getBufferUsedByteCount() { return m_count * sizeof(T); }
 
 private:
-	void TryGlow(int requestCount)
+	void tryGlow(int requestCount)
 	{
 		if (/*m_count + */requestCount > m_capacity)
 		{
-			Reserve(m_capacity * 2);
+			reserve(m_capacity * 2);
 		}
 	}
 
@@ -484,13 +487,13 @@ public:
 	CommandDataCache();
 	virtual ~CommandDataCache();
 
-	void Reserve(size_t dataCount, size_t byteCount);
-	void Clear();
-	DataHandle AllocData(size_t byteCount, const void* data = nullptr);
-	byte_t* GetData(DataHandle handle);
+	void reserve(size_t dataCount, size_t byteCount);
+	void clear();
+	DataHandle allocData(size_t byteCount, const void* data = nullptr);
+	byte_t* getData(DataHandle handle);
 
-	int GetDataCount() const { return m_dataList.GetCount(); }
-	byte_t* GetDataByIndex(int index) { return GetData(m_dataList[index]); }
+	int getDataCount() const { return m_dataList.getCount(); }
+	byte_t* getDataByIndex(int index) { return getData(m_dataList[index]); }
 
 private:
 	List<DataHandle>		m_dataList;

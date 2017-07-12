@@ -13,7 +13,7 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
-EncodingType EncodingDetector::Detect(const void* bytes, size_t bytesSize)
+EncodingType EncodingDetector::detect(const void* bytes, size_t bytesSize)
 {
 	if (bytes == NULL || bytesSize == 0) {
 		m_type = EncodingType::Unknown;
@@ -23,14 +23,14 @@ EncodingType EncodingDetector::Detect(const void* bytes, size_t bytesSize)
 	m_bufferSize = bytesSize;
 
 	// UTF 系の BOM チェック
-	EncodingType type = CheckUTFBom();
+	EncodingType type = checkUTFBom();
 	if (type != EncodingType::Unknown) {
 		m_type = type;
 		return m_type;
 	}
 
 	// ASCII チェック
-	if (CheckASCII()) {
+	if (checkASCII()) {
 		m_type = EncodingType::ASCII;
 		return m_type;
 	}
@@ -45,7 +45,7 @@ EncodingType EncodingDetector::Detect(const void* bytes, size_t bytesSize)
 	const int mbsDetectorsCount = LN_ARRAY_SIZE_OF(mbsDetectors);
 	for (int i = 0; i < mbsDetectorsCount; ++i)
 	{
-		mbsDetectors[i]->Detect(true);
+		mbsDetectors[i]->detect(true);
 	}
 
 	// 有効 Detector の中で一番スコアの大きいものを選択する
@@ -53,7 +53,7 @@ EncodingType EncodingDetector::Detect(const void* bytes, size_t bytesSize)
 	IMBSCodeDetector* maxScoreDetector = NULL;
 	for (int i = 0; i < mbsDetectorsCount; ++i)
 	{
-		if (mbsDetectors[i]->GetUnMatchCount() == 0)
+		if (mbsDetectors[i]->getUnMatchCount() == 0)
 		{
 			// まだひとつも見つかっていなければ、とりあえずマッチしたものを保持する
 			if (maxScoreDetector == NULL)
@@ -61,14 +61,14 @@ EncodingType EncodingDetector::Detect(const void* bytes, size_t bytesSize)
 				maxScoreDetector = mbsDetectors[i];
 			}
 			// 現在保持しているものよりスコアが大きければそれを保持する
-			else if (mbsDetectors[i]->GetScore() > maxScoreDetector->GetScore())
+			else if (mbsDetectors[i]->getScore() > maxScoreDetector->getScore())
 			{
 				maxScoreDetector = mbsDetectors[i];
 			}
 		}
 	}
 	if (maxScoreDetector != NULL) {
-		m_type = maxScoreDetector->GetEncodingType();
+		m_type = maxScoreDetector->getEncodingType();
 		return m_type;
 	}
 
@@ -77,7 +77,7 @@ EncodingType EncodingDetector::Detect(const void* bytes, size_t bytesSize)
 }
 
 //------------------------------------------------------------------------------
-bool EncodingDetector::CheckASCII() const
+bool EncodingDetector::checkASCII() const
 {
 	const Byte* bufferEnd = m_buffer + m_bufferSize;
 	for (size_t pos = 0; pos < m_bufferSize; ++pos)
@@ -85,7 +85,7 @@ bool EncodingDetector::CheckASCII() const
 		byte_t b1 = m_buffer[pos];
 		if (b1 <= 0x7F)	// ASCII (0x00-0x7F)
 		{
-			int n = StringTraits::CheckNewLineSequence(&m_buffer[pos], bufferEnd);
+			int n = StringTraits::checkNewLineSequence(&m_buffer[pos], bufferEnd);
 			if (n > 0) {
 				pos += n - 1;
 			}
@@ -99,7 +99,7 @@ bool EncodingDetector::CheckASCII() const
 }
 
 //------------------------------------------------------------------------------
-EncodingType EncodingDetector::CheckUTFBom()
+EncodingType EncodingDetector::checkUTFBom()
 {
 	/* UTF8		: 0xEF, 0xBB, 0xBF
 	 * UTF16	: 0xFF, 0xFE
@@ -151,7 +151,7 @@ UTF8NDetector::UTF8NDetector(const void* bytes, size_t bytesSize)
 }
 
 //------------------------------------------------------------------------------
-void UTF8NDetector::Detect(bool untilUnmatch)
+void UTF8NDetector::detect(bool untilUnmatch)
 {
 	byte_t* bufferEnd = m_buffer + m_bufferSize;
 	for (; m_pos < m_bufferSize; ++m_pos)
@@ -159,7 +159,7 @@ void UTF8NDetector::Detect(bool untilUnmatch)
 		byte_t b1 = m_buffer[m_pos];
 		if (b1 <= 0x7F)	// ASCII (0x00-0x7F)
 		{
-			int n = StringTraits::CheckNewLineSequence(&m_buffer[m_pos], bufferEnd);
+			int n = StringTraits::checkNewLineSequence(&m_buffer[m_pos], bufferEnd);
 			if (n > 0) {
 				m_pos += n - 1;
 				++m_lineNum;
@@ -168,7 +168,7 @@ void UTF8NDetector::Detect(bool untilUnmatch)
 		else
 		{
 			int extra;	// 追加で読むべきバイト数。pos の分は含まない
-			if (UnicodeUtils::CheckUTF8TrailingBytes(&m_buffer[m_pos], bufferEnd, true, &extra) == UTFConversionResult_Success)
+			if (UnicodeUtils::checkUTF8TrailingBytes(&m_buffer[m_pos], bufferEnd, true, &extra) == UTFConversionResult_Success)
 			{
 				m_pos += extra;
 				m_score += 1 + extra;
@@ -199,7 +199,7 @@ SJISDetector::SJISDetector(const void* bytes, size_t bytesSize)
 }
 
 //------------------------------------------------------------------------------
-void SJISDetector::Detect(bool untilUnmatch)
+void SJISDetector::detect(bool untilUnmatch)
 {
 	for (; m_pos < m_bufferSize; ++m_pos)
 	{
@@ -211,7 +211,7 @@ void SJISDetector::Detect(bool untilUnmatch)
 			b1 == 0xFE ||	// cp932
 			b1 == 0xFF)		// cp932
 		{
-			int n = StringTraits::CheckNewLineSequence(&m_buffer[m_pos], m_buffer + m_bufferSize);
+			int n = StringTraits::checkNewLineSequence(&m_buffer[m_pos], m_buffer + m_bufferSize);
 			if (n > 0) {
 				m_pos += n - 1;
 				++m_lineNum;

@@ -22,24 +22,24 @@ public:
 	DX9Renderer(DX9GraphicsDevice* device);
 	virtual ~DX9Renderer();
 
-	DX9ShaderPass* GetCurrentShaderPass() { return m_currentShaderPass; }
-	void SetCurrentShaderPass(DX9ShaderPass* pass);
-	void OnLostDevice();
-	void OnResetDevice();
+	DX9ShaderPass* getCurrentShaderPass() { return m_currentShaderPass; }
+	void setCurrentShaderPass(DX9ShaderPass* pass);
+	void onLostDevice();
+	void onResetDevice();
 
 private:
-	void RestoreStatus();
-	virtual void OnEnterRenderState() override;
-	virtual void OnLeaveRenderState() override;
-	virtual void OnBeginRendering() override;
-	virtual void OnEndRendering() override;
-	virtual void OnUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, ITexture* depthBuffer) override;
-	virtual	void OnUpdateRenderState(const RenderState& newState, const RenderState& oldState, bool reset) override;
-	virtual	void OnUpdateDepthStencilState(const DepthStencilState& newState, const DepthStencilState& oldState, bool reset) override;
-	virtual void OnUpdatePrimitiveData(IVertexDeclaration* decls, const List<RefPtr<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer) override;
-	virtual void OnClear(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
-	virtual void OnDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount) override;
-	virtual void OnDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount) override;
+	void restoreStatus();
+	virtual void onEnterRenderState() override;
+	virtual void onLeaveRenderState() override;
+	virtual void onBeginRendering() override;
+	virtual void onEndRendering() override;
+	virtual void onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, ITexture* depthBuffer) override;
+	virtual	void onUpdateRenderState(const RenderState& newState, const RenderState& oldState, bool reset) override;
+	virtual	void onUpdateDepthStencilState(const DepthStencilState& newState, const DepthStencilState& oldState, bool reset) override;
+	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, const List<RefPtr<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer) override;
+	virtual void onClear(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
+	virtual void onDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount) override;
+	virtual void onDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount) override;
 
 private:
 	DX9GraphicsDevice*		m_owner;
@@ -47,8 +47,8 @@ private:
 	//RectI					m_currentViewportRect;
 	DX9ShaderPass*			m_currentShaderPass;
 
-	// OnEnterRenderState() 時点で IDirect3DDevice9 から取り出すフレームバッファ。
-	// SetRenderTarget() で nullptr が指定された場合、これを使用する。
+	// onEnterRenderState() 時点で IDirect3DDevice9 から取り出すフレームバッファ。
+	// setRenderTarget() で nullptr が指定された場合、これを使用する。
 	// これはライブラリ外部で用意されたフレームバッファに書き込むための機能。
 	IDirect3DSurface9*		m_defaultRenderTargets[Graphics::MaxMultiRenderTargets];
 	IDirect3DSurface9*		m_defaultDepthBuffer;

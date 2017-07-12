@@ -13,10 +13,10 @@ LN_NAMESPACE_BEGIN
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TileSet, tr::ReflectionObject);
 
 //------------------------------------------------------------------------------
-TileSetPtr TileSet::Create()
+TileSetPtr TileSet::create()
 {
-	TileSetPtr ptr = TileSetPtr::MakeRef();
-	ptr->Initialize(detail::GraphicsManager::GetInstance());
+	TileSetPtr ptr = TileSetPtr::makeRef();
+	ptr->initialize(detail::GraphicsManager::getInstance());
 	return ptr;
 }
 
@@ -34,18 +34,18 @@ TileSet::~TileSet()
 }
 
 //------------------------------------------------------------------------------
-void TileSet::Initialize(detail::GraphicsManager* manager)
+void TileSet::initialize(detail::GraphicsManager* manager)
 {
-	m_material = Object::MakeRef<Material>();
+	m_material = Object::makeRef<Material>();
 	// TODO:自己照明
-	m_material->SetBuiltinColorParameter(Material::AmbientParameter, Color::White);
+	m_material->setBuiltinColorParameter(Material::AmbientParameter, Color::White);
 }
 
 //------------------------------------------------------------------------------
 void TileSet::SetImageSource(Texture* texture)
 {
 	LN_REFOBJ_SET(m_imageSource, texture);
-	m_material->SetMaterialTexture(texture);
+	m_material->setMaterialTexture(texture);
 }
 
 //------------------------------------------------------------------------------
@@ -59,12 +59,12 @@ void TileSet::LookupTileImage(int id, Texture** outTexture, RectI* outSrcRect)
 {
 	int x = id % m_tileCountH;
 	int y = id / m_tileCountH;
-	outSrcRect->Set(x * m_tileSize.width, y * m_tileSize.height, m_tileSize.width, m_tileSize.height);
+	outSrcRect->set(x * m_tileSize.width, y * m_tileSize.height, m_tileSize.width, m_tileSize.height);
 	*outTexture = m_imageSource;
 }
 
 //------------------------------------------------------------------------------
-Material* TileSet::GetMaterial() const
+Material* TileSet::getMaterial() const
 {
 	return m_material;
 }

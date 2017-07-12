@@ -15,12 +15,12 @@ class PlatformFileOpenDialog
 	: public Object
 {
 public:
-	static PlatformFileOpenDialogPtr Create();
+	static PlatformFileOpenDialogPtr create();
 
 public:
-	virtual bool ShowDialog(PlatformWindow* parent) = 0;
+	virtual bool showDialog(PlatformWindow* parent) = 0;
 
-	virtual PathName GetFilePath() = 0;
+	virtual PathName getFilePath() = 0;
 
 protected:
 	PlatformFileOpenDialog();

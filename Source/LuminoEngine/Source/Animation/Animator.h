@@ -23,13 +23,13 @@ public:
 public:
 
 	/// 作成
-	void Create(detail::IAnimationTargetElement* element);
+	void create(detail::IAnimationTargetElement* element);
 
 	/// 再生中であるかを確認する
-	bool IsPlaying() const;
+	bool isPlaying() const;
 
 	/// 再生
-	void Play(const TCHAR* name, float duration = 0.3f/*, PlayMode mode = PlayMode_StopSameLayer*/);
+	void play(const TCHAR* name, float duration = 0.3f/*, PlayMode mode = PlayMode_StopSameLayer*/);
 
 	///// ブレンド (アニメーションの再生には影響しない。停止中のアニメーションがこの関数によって再生開始されることはない)
 	//void Blend(const lnKeyChar* animName, lnFloat targetWeight, lnFloat fadeLength);
@@ -47,18 +47,18 @@ public:
 	//void SyncLayer(int layer);
 
 	/// アニメーションを進める
-	void AdvanceTime(double elapsedTime);
+	void advanceTime(double elapsedTime);
 
 public:
 
 	/// アニメーションクリップの追加
-	void AddAnimationClip(AnimationClip* animationClip, int layer = 0);
+	void addAnimationClip(AnimationClip* animationClip, int layer = 0);
 
 	/// アニメーションクリップの削除
-	void RemoveAnimationClip(AnimationClip* animationClip, int layer = 0);
+	void removeAnimationClip(AnimationClip* animationClip, int layer = 0);
 
 	/// AnimationTargetEntity の検索 (見つからなければ NULL)
-	detail::AnimationTargetAttributeEntity* FindAnimationTargetAttributeEntity(const String& name);
+	detail::AnimationTargetAttributeEntity* findAnimationTargetAttributeEntity(const String& name);
 
 
 	/// AnimationApplyTarget の追加 (できるだけ AnimationController 作成直後に設定すること。重複禁止)
@@ -98,11 +98,11 @@ public:
 	AnimationStateList	m_animationStateList;
 
 	AnimationLayer(Animator* owner);
-	void CreateStateAndAttachClip(AnimationClip* animationClip);
-	void RemoveStateByClip(AnimationClip* animationClip);
-	void TransitionState(const StringRef& name, float duration);
-	void AdvanceTime(float elapsedTime);
-	AnimationState* FindAnimationState(const StringRef& clipName);
+	void createStateAndAttachClip(AnimationClip* animationClip);
+	void removeStateByClip(AnimationClip* animationClip);
+	void transitionState(const StringRef& name, float duration);
+	void advanceTime(float elapsedTime);
+	AnimationState* findAnimationState(const StringRef& clipName);
 };
 
 } // namespace detail

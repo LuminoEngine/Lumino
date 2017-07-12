@@ -22,61 +22,61 @@ UILayoutPanel::~UILayoutPanel()
 }
 
 //------------------------------------------------------------------------------
-void UILayoutPanel::Initialize()
+void UILayoutPanel::initialize()
 {
-	UIElement::Initialize();
-	SetHitTestVisible(false);
-	m_children = RefPtr<UIElementCollection>::MakeRef(this);
+	UIElement::initialize();
+	setHitTestVisible(false);
+	m_children = RefPtr<UIElementCollection>::makeRef(this);
 
 	// Panel 系のデフォルトは Stretch
-	//SetHAlignment(HAlignment::Stretch);
-	//SetVAlignment(VAlignment::Stretch);
+	//setHAlignment(HAlignment::Stretch);
+	//setVAlignment(VAlignment::Stretch);
 }
 
 //------------------------------------------------------------------------------
-void UILayoutPanel::AddChild(UIElement* element)
+void UILayoutPanel::addChild(UIElement* element)
 {
-	m_children->Add(element);
-	element->SetLogicalParent(this);
+	m_children->add(element);
+	element->setLogicalParent(this);
 }
 
 //------------------------------------------------------------------------------
-void UILayoutPanel::RemoveChild(UIElement* element)
+void UILayoutPanel::removeChild(UIElement* element)
 {
-	m_children->Remove(element);
-	element->SetLogicalParent(nullptr);
+	m_children->remove(element);
+	element->setLogicalParent(nullptr);
 }
 
 //------------------------------------------------------------------------------
-int UILayoutPanel::GetVisualChildrenCount() const
+int UILayoutPanel::getVisualChildrenCount() const
 {
-	return m_children->GetCount();
+	return m_children->getCount();
 }
 
 //------------------------------------------------------------------------------
-UIElement* UILayoutPanel::GetVisualChild(int index) const
+UIElement* UILayoutPanel::getVisualChild(int index) const
 {
-	return m_children->GetAt(index);
+	return m_children->getAt(index);
 }
 
 //------------------------------------------------------------------------------
-Size UILayoutPanel::MeasureOverride(const Size& constraint)
+Size UILayoutPanel::measureOverride(const Size& constraint)
 {
-	return detail::LayoutImpl<UILayoutPanel>::UILayoutPanel_MeasureOverride(
+	return detail::LayoutImpl<UILayoutPanel>::UILayoutPanel_measureOverride(
 		this, constraint,
-		[](UILayoutPanel* panel, const Size& constraint){ return panel->UIElement::MeasureOverride(constraint); });
+		[](UILayoutPanel* panel, const Size& constraint){ return panel->UIElement::measureOverride(constraint); });
 }
 
 //------------------------------------------------------------------------------
-Size UILayoutPanel::ArrangeOverride(const Size& finalSize)
+Size UILayoutPanel::arrangeOverride(const Size& finalSize)
 {
 	Vector2 pixelOffset = -m_scrollOffset;
 
-	return detail::LayoutImpl<UILayoutPanel>::UILayoutPanel_ArrangeOverride(this, pixelOffset, finalSize);
+	return detail::LayoutImpl<UILayoutPanel>::UILayoutPanel_arrangeOverride(this, pixelOffset, finalSize);
 }
 
 //------------------------------------------------------------------------------
-void UILayoutPanel::OnChildCollectionChanged(const tr::ChildCollectionChangedArgs& e)
+void UILayoutPanel::onChildCollectionChanged(const tr::ChildCollectionChangedArgs& e)
 {
 	/*
 		ListBox や Button からコンテンツを追加する場合もこの関数が呼ばれる。
@@ -86,35 +86,35 @@ void UILayoutPanel::OnChildCollectionChanged(const tr::ChildCollectionChangedArg
 	// 新しく追加されたものたち
 	for (UIElement* element : e.newItems)
 	{
-		//element->SetParent(this);
-		AddVisualChild(element);
+		//element->setParent(this);
+		addVisualChild(element);
 	}
 
 	// 削除されたものたち
 	for (UIElement* element : e.oldItems)
 	{
-		//element->SetParent(nullptr);
-		RemoveVisualChild(element);
+		//element->setParent(nullptr);
+		removeVisualChild(element);
 	}
 }
 
 //------------------------------------------------------------------------------
-int UILayoutPanel::GetLayoutChildrenCount() { return m_children->GetCount(); }
-ILayoutElement* UILayoutPanel::GetLayoutChild(int index) { return m_children->GetAt(index); }
-int UILayoutPanel::GetLayoutGridColumnDefinitionCount() { return 0; }
-detail::GridDefinitionData* UILayoutPanel::GetLayoutGridColumnDefinition(int index) { return nullptr; }
-int UILayoutPanel::GetLayoutGridRowDefinitionCount() { return 0; }
-detail::GridDefinitionData* UILayoutPanel::GetLayoutGridRowDefinition(int index) { return nullptr; }
+int UILayoutPanel::getLayoutChildrenCount() { return m_children->getCount(); }
+ILayoutElement* UILayoutPanel::getLayoutChild(int index) { return m_children->getAt(index); }
+int UILayoutPanel::getLayoutGridColumnDefinitionCount() { return 0; }
+detail::GridDefinitionData* UILayoutPanel::getLayoutGridColumnDefinition(int index) { return nullptr; }
+int UILayoutPanel::getLayoutGridRowDefinitionCount() { return 0; }
+detail::GridDefinitionData* UILayoutPanel::getLayoutGridRowDefinition(int index) { return nullptr; }
 
 //------------------------------------------------------------------------------
-float UILayoutPanel::GetExtentWidth() const { return GetDesiredSize().width; }
-float UILayoutPanel::GetExtentHeight() const { return GetDesiredSize().height; }
-float UILayoutPanel::GetViewportWidth() const { return GetRenderSize().width; }
-float UILayoutPanel::GetViewportHeight() const { return GetRenderSize().height; }
-void UILayoutPanel::SetHorizontalOffset(float offset) { m_scrollOffset.x = offset; }
-float UILayoutPanel::GetHorizontalOffset() const { return m_scrollOffset.x; }
-void UILayoutPanel::SetVerticalOffset(float offset) { m_scrollOffset.y = offset; }
-float UILayoutPanel::GetVerticalOffset() const { return m_scrollOffset.y; }
+float UILayoutPanel::getExtentWidth() const { return getDesiredSize().width; }
+float UILayoutPanel::getExtentHeight() const { return getDesiredSize().height; }
+float UILayoutPanel::getViewportWidth() const { return getRenderSize().width; }
+float UILayoutPanel::getViewportHeight() const { return getRenderSize().height; }
+void UILayoutPanel::setHorizontalOffset(float offset) { m_scrollOffset.x = offset; }
+float UILayoutPanel::getHorizontalOffset() const { return m_scrollOffset.x; }
+void UILayoutPanel::setVerticalOffset(float offset) { m_scrollOffset.y = offset; }
+float UILayoutPanel::getVerticalOffset() const { return m_scrollOffset.y; }
 
 //==============================================================================
 // UIStackPanel
@@ -122,10 +122,10 @@ float UILayoutPanel::GetVerticalOffset() const { return m_scrollOffset.y; }
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIStackPanel, UILayoutPanel)
 
 //------------------------------------------------------------------------------
-UIStackPanelPtr UIStackPanel::Create()
+UIStackPanelPtr UIStackPanel::create()
 {
-	auto ptr = RefPtr<UIStackPanel>::MakeRef();
-	ptr->Initialize();
+	auto ptr = RefPtr<UIStackPanel>::makeRef();
+	ptr->initialize();
 	return ptr;
 }
 
@@ -141,23 +141,23 @@ UIStackPanel::~UIStackPanel()
 }
 
 //------------------------------------------------------------------------------
-void UIStackPanel::Initialize()
+void UIStackPanel::initialize()
 {
-	UILayoutPanel::Initialize();
+	UILayoutPanel::initialize();
 }
 
 //------------------------------------------------------------------------------
-Size UIStackPanel::MeasureOverride(const Size& constraint)
+Size UIStackPanel::measureOverride(const Size& constraint)
 {
-	return Size::Max(
-		detail::LayoutImpl<UIStackPanel>::UIStackPanel_MeasureOverride(this, constraint, m_orientation),
-		UIElement::MeasureOverride(constraint));
+	return Size::max(
+		detail::LayoutImpl<UIStackPanel>::UIStackPanel_measureOverride(this, constraint, m_orientation),
+		UIElement::measureOverride(constraint));
 }
 
 //------------------------------------------------------------------------------
-Size UIStackPanel::ArrangeOverride(const Size& finalSize)
+Size UIStackPanel::arrangeOverride(const Size& finalSize)
 {
-	return detail::LayoutImpl<UIStackPanel>::UIStackPanel_ArrangeOverride(this, finalSize, m_orientation);
+	return detail::LayoutImpl<UIStackPanel>::UIStackPanel_arrangeOverride(this, finalSize, m_orientation);
 }
 
 
@@ -167,10 +167,10 @@ Size UIStackPanel::ArrangeOverride(const Size& finalSize)
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIAbsoluteLayout, UILayoutPanel)
 
 //------------------------------------------------------------------------------
-UIAbsoluteLayoutPtr UIAbsoluteLayout::Create()
+UIAbsoluteLayoutPtr UIAbsoluteLayout::create()
 {
-	auto ptr = UIAbsoluteLayoutPtr::MakeRef();
-	ptr->Initialize();
+	auto ptr = UIAbsoluteLayoutPtr::makeRef();
+	ptr->initialize();
 	return ptr;
 }
 
@@ -185,43 +185,43 @@ UIAbsoluteLayout::~UIAbsoluteLayout()
 }
 
 //------------------------------------------------------------------------------
-void UIAbsoluteLayout::Initialize()
+void UIAbsoluteLayout::initialize()
 {
-	UILayoutPanel::Initialize();
+	UILayoutPanel::initialize();
 }
 
 //------------------------------------------------------------------------------
-Size UIAbsoluteLayout::MeasureOverride(const Size& constraint)
+Size UIAbsoluteLayout::measureOverride(const Size& constraint)
 {
-	//return UILayoutPanel::MeasureOverride(constraint);
+	//return UILayoutPanel::measureOverride(constraint);
 	
-	// LayoutPanel ではなく、UIElement の MeasureOverride を実施 (this のサイズを測る)
-	Size size = UIElement::MeasureOverride(constraint);
+	// LayoutPanel ではなく、UIElement の measureOverride を実施 (this のサイズを測る)
+	Size size = UIElement::measureOverride(constraint);
 
 	Size childMaxSize(0, 0);
-	for (UIElement* child : *GetChildren())
+	for (UIElement* child : *getChildren())
 	{
-		child->MeasureLayout(constraint);
-		const Size& desiredSize = child->GetDesiredSize();
-		const PointF& pos = child->GetPositionInternal();
+		child->measureLayout(constraint);
+		const Size& desiredSize = child->getDesiredSize();
+		const PointF& pos = child->getPositionInternal();
 
 		childMaxSize.width  = std::max(childMaxSize.width,  pos.x + desiredSize.width);
 		childMaxSize.height = std::max(childMaxSize.height, pos.y + desiredSize.height);
 	}
 
-	return Size::Min(constraint, Size::Max(size, childMaxSize));
+	return Size::min(constraint, Size::max(size, childMaxSize));
 
 	//if (Math::IsNaN(size.width)) size.width = 
 
 	//Size desiredSize = baseCallback(static_cast<TPanel*>(panel), constraint);
-	//int childCount = panel->GetLayoutChildrenCount();
+	//int childCount = panel->getLayoutChildrenCount();
 	//for (int i = 0; i < childCount; i++)
 	//{
-	//	ILayoutElement* child = panel->GetLayoutChild(i);
-	//	PointF pos = child->GetPositionInternal();
+	//	ILayoutElement* child = panel->getLayoutChild(i);
+	//	PointF pos = child->getPositionInternal();
 
-	//	child->MeasureLayout(constraint);
-	//	const Size& childDesiredSize = child->GetLayoutDesiredSize();
+	//	child->measureLayout(constraint);
+	//	const Size& childDesiredSize = child->getLayoutDesiredSize();
 
 	//	desiredSize.width = std::max(desiredSize.width, childDesiredSize.width);
 	//	desiredSize.height = std::max(desiredSize.height, childDesiredSize.height);
@@ -229,9 +229,9 @@ Size UIAbsoluteLayout::MeasureOverride(const Size& constraint)
 	//return desiredSize;
 
 
-	//Size size = UILayoutPanel::MeasureOverride(constraint);
+	//Size size = UILayoutPanel::measureOverride(constraint);
 	//
-	//for (UIElement* child : *GetChildren())
+	//for (UIElement* child : *getChildren())
 	//{
 
 	//}
@@ -240,29 +240,29 @@ Size UIAbsoluteLayout::MeasureOverride(const Size& constraint)
 }
 
 //------------------------------------------------------------------------------
-Size UIAbsoluteLayout::ArrangeOverride(const Size& finalSize)
+Size UIAbsoluteLayout::arrangeOverride(const Size& finalSize)
 {
 	//ThicknessF canvas;
 	
-	for (UIElement* child : *GetChildren())
+	for (UIElement* child : *getChildren())
 	{
-		//if (child->GetInvalidateFlags().TestFlag(detail::InvalidateFlags::ParentChangedUpdating))
+		//if (child->getInvalidateFlags().TestFlag(detail::InvalidateFlags::ParentChangedUpdating))
 		//{
 		//}
 		
-		const Size& desiredSize = child->GetDesiredSize();
-		//Size layoutSize = child->GetSizeInternal();
+		const Size& desiredSize = child->getDesiredSize();
+		//Size layoutSize = child->getSizeInternal();
 		Size size = desiredSize;
 		//size.width = Math::IsNaN(layoutSize.width) ? desiredSize.width : layoutSize.width;
 		//size.height = Math::IsNaN(layoutSize.height) ? desiredSize.height : layoutSize.height;
 
-		Rect childRect(child->GetPositionInternal(), size/*child->GetSizeInternal()*/);
-		AlignmentAnchor anchor = child->GetAnchorInternal();
+		Rect childRect(child->getPositionInternal(), size/*child->getSizeInternal()*/);
+		AlignmentAnchor anchor = child->getAnchorInternal();
 		
 		if (anchor != AlignmentAnchor::None)
 		{
-			const ThicknessF& margin = GetMargineInternal();
-			//float l = childRect.GetLeft(), t = childRect.GetTop(), r = childRect.GetRight(), b = childRect.GetBottom();
+			const ThicknessF& margin = getMargineInternal();
+			//float l = childRect.getLeft(), t = childRect.GetTop(), r = childRect.getRight(), b = childRect.getBottom();
 
 			//if (anchor.TestFlag(AlignmentAnchor::LeftOffsets))
 			//	l = margin.Left;
@@ -292,7 +292,7 @@ Size UIAbsoluteLayout::ArrangeOverride(const Size& finalSize)
 
 			//childRect.Set(l, t, r - l, b - t);
 
-			//child->ArrangeLayout(childRect);
+			//child->arrangeLayout(childRect);
 #if 1
 			float l = NAN, t = NAN, r = NAN, b = NAN;
 			if (anchor.TestFlag(AlignmentAnchor::LeftOffsets))
@@ -321,13 +321,13 @@ Size UIAbsoluteLayout::ArrangeOverride(const Size& finalSize)
 			if (anchor.TestFlag(AlignmentAnchor::VCenter))
 				childRect.y = (finalSize.height - childRect.height) / 2;
 
-			if (!Math::IsNaN(l) || !Math::IsNaN(r))
+			if (!Math::isNaN(l) || !Math::isNaN(r))
 			{
-				if (!Math::IsNaN(l) && Math::IsNaN(r))
+				if (!Math::isNaN(l) && Math::isNaN(r))
 				{
 					childRect.x = l;
 				}
-				else if (Math::IsNaN(l) && !Math::IsNaN(r))
+				else if (Math::isNaN(l) && !Math::isNaN(r))
 				{
 					childRect.x = r - childRect.width;
 				}
@@ -338,13 +338,13 @@ Size UIAbsoluteLayout::ArrangeOverride(const Size& finalSize)
 				}
 			}
 
-			if (!Math::IsNaN(t) || !Math::IsNaN(b))
+			if (!Math::isNaN(t) || !Math::isNaN(b))
 			{
-				if (!Math::IsNaN(t) && Math::IsNaN(b))
+				if (!Math::isNaN(t) && Math::isNaN(b))
 				{
 					childRect.y = t;
 				}
-				else if (Math::IsNaN(t) && !Math::IsNaN(b))
+				else if (Math::isNaN(t) && !Math::isNaN(b))
 				{
 					childRect.y = b - childRect.height;
 				}
@@ -355,7 +355,7 @@ Size UIAbsoluteLayout::ArrangeOverride(const Size& finalSize)
 				}
 			}
 
-			child->ArrangeLayout(childRect);
+			child->arrangeLayout(childRect);
 #endif
 		}
 		else
@@ -364,7 +364,7 @@ Size UIAbsoluteLayout::ArrangeOverride(const Size& finalSize)
 			//	childRect.width = finalSize.width;
 			//if (Math::IsNaN(layoutSize.height))
 			//	childRect.height = finalSize.height;
-			child->ArrangeLayout(childRect);
+			child->arrangeLayout(childRect);
 		}
 	}
 
@@ -388,9 +388,9 @@ public:
 	{
 	}
 
-	GridLengthType GetType() const { return m_data.type; }
+	GridLengthType getType() const { return m_data.type; }
 
-	//float GetAvailableDesiredSize() const
+	//float getAvailableDesiredSize() const
 	//{
 	//	if (m_data.type == GridLengthType::Auto) {
 	//		return m_data.desiredSize;
@@ -408,7 +408,7 @@ public:
 	//	return (m_data.size == 0.0f) ? 1.0f : m_data.size;
 	//}
 
-	//void AdjustActualSize()
+	//void adjustActualSize()
 	//{
 	//	m_data.actualSize = Math::Clamp(m_data.actualSize, m_data.minSize, m_data.maxSize);
 	//}
@@ -442,13 +442,13 @@ public:
 	{
 	}
 
-	void SetWidth(float value, GridLengthType type = GridLengthType::Pixel) { m_data.size = value; m_data.type = type; }
-	float GetWidth() const { return m_data.size; }
+	void setWidth(float value, GridLengthType type = GridLengthType::Pixel) { m_data.size = value; m_data.type = type; }
+	float getWidth() const { return m_data.size; }
 
-	void SetMinWidth(float value) { m_data.minSize = value; }
+	void setMinWidth(float value) { m_data.minSize = value; }
 	float GetMinWidth() const { return m_data.minSize; }
 
-	void SetMaxWidth(float value) { m_data.maxSize = value; }
+	void setMaxWidth(float value) { m_data.maxSize = value; }
 	float GetMaxWidth() const { return m_data.maxSize; }
 };
 
@@ -468,13 +468,13 @@ public:
 	{
 	}
 
-	void SetHeight(float value, GridLengthType type = GridLengthType::Pixel) { m_data.size = value; m_data.type = type; }
-	float GetHeight() const { return m_data.size; }
+	void setHeight(float value, GridLengthType type = GridLengthType::Pixel) { m_data.size = value; m_data.type = type; }
+	float getHeight() const { return m_data.size; }
 
-	void SetMinHeight(float value) { m_data.minSize = value; }
+	void setMinHeight(float value) { m_data.minSize = value; }
 	float GetMinHeight() const { return m_data.minSize; }
 
-	void SetMaxHeight(float value) { m_data.maxSize = value; }
+	void setMaxHeight(float value) { m_data.maxSize = value; }
 	float GetMaxHeight() const { return m_data.maxSize; }
 };
 
@@ -484,19 +484,19 @@ public:
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIGridLayout, UILayoutPanel)
 
 //------------------------------------------------------------------------------
-UIGridLayoutPtr UIGridLayout::Create()
+UIGridLayoutPtr UIGridLayout::create()
 {
-	auto ptr = UIGridLayoutPtr::MakeRef();
-	ptr->Initialize();
+	auto ptr = UIGridLayoutPtr::makeRef();
+	ptr->initialize();
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
-UIGridLayoutPtr UIGridLayout::Create(int columnCount, int rowCount)
+UIGridLayoutPtr UIGridLayout::create(int columnCount, int rowCount)
 {
-	auto ptr = UIGridLayoutPtr::MakeRef();
-	ptr->Initialize();
-	ptr->SetGridSize(columnCount, rowCount);
+	auto ptr = UIGridLayoutPtr::makeRef();
+	ptr->initialize();
+	ptr->setGridSize(columnCount, rowCount);
 	return ptr;
 }
 
@@ -513,61 +513,61 @@ UIGridLayout::~UIGridLayout()
 }
 
 //------------------------------------------------------------------------------
-void UIGridLayout::Initialize()
+void UIGridLayout::initialize()
 {
-	UILayoutPanel::Initialize();
+	UILayoutPanel::initialize();
 }
 
 //------------------------------------------------------------------------------
-void UIGridLayout::SetGridSize(int columnCount, int rowCount)
+void UIGridLayout::setGridSize(int columnCount, int rowCount)
 {
-	m_columnDefinitions.Clear();
-	m_rowDefinitions.Clear();
+	m_columnDefinitions.clear();
+	m_rowDefinitions.clear();
 
 	for (int i = 0; i < columnCount; ++i)
-		m_columnDefinitions.Add(RefPtr<ColumnDefinition>::MakeRef());
+		m_columnDefinitions.add(RefPtr<ColumnDefinition>::makeRef());
 	for (int i = 0; i < rowCount; ++i)
-		m_rowDefinitions.Add(RefPtr<RowDefinition>::MakeRef());
+		m_rowDefinitions.add(RefPtr<RowDefinition>::makeRef());
 }
 
 //------------------------------------------------------------------------------
-void UIGridLayout::AddColumnDefinition(GridLengthType type, float width, float minWidth, float maxWidth)
+void UIGridLayout::addColumnDefinition(GridLengthType type, float width, float minWidth, float maxWidth)
 {
-	auto ptr = RefPtr<ColumnDefinition>::MakeRef();
-	ptr->SetWidth(width, type);
-	ptr->SetMinWidth(minWidth);
-	ptr->SetMaxWidth(maxWidth);
-	m_columnDefinitions.Add(ptr);
+	auto ptr = RefPtr<ColumnDefinition>::makeRef();
+	ptr->setWidth(width, type);
+	ptr->setMinWidth(minWidth);
+	ptr->setMaxWidth(maxWidth);
+	m_columnDefinitions.add(ptr);
 }
 
 //------------------------------------------------------------------------------
-void UIGridLayout::AddRowDefinition(GridLengthType type, float height, float minHeight, float maxHeight)
+void UIGridLayout::addRowDefinition(GridLengthType type, float height, float minHeight, float maxHeight)
 {
-	auto ptr = RefPtr<RowDefinition>::MakeRef();
-	ptr->SetHeight(height, type);
-	ptr->SetMinHeight(minHeight);
-	ptr->SetMaxHeight(maxHeight);
-	m_rowDefinitions.Add(ptr);
+	auto ptr = RefPtr<RowDefinition>::makeRef();
+	ptr->setHeight(height, type);
+	ptr->setMinHeight(minHeight);
+	ptr->setMaxHeight(maxHeight);
+	m_rowDefinitions.add(ptr);
 }
 
 //------------------------------------------------------------------------------
-Size UIGridLayout::MeasureOverride(const Size& constraint)
+Size UIGridLayout::measureOverride(const Size& constraint)
 {
-	return detail::LayoutImpl<UIGridLayout>::UIGridLayout_MeasureOverride(
+	return detail::LayoutImpl<UIGridLayout>::UIGridLayout_measureOverride(
 		this, constraint,
-		[](UIGridLayout* panel, const Size& constraint){ return panel->UILayoutPanel::MeasureOverride(constraint); });
+		[](UIGridLayout* panel, const Size& constraint){ return panel->UILayoutPanel::measureOverride(constraint); });
 }
 
 //------------------------------------------------------------------------------
-Size UIGridLayout::ArrangeOverride(const Size& finalSize)
+Size UIGridLayout::arrangeOverride(const Size& finalSize)
 {
-	return detail::LayoutImpl<UIGridLayout>::UIGridLayout_ArrangeOverride(this, finalSize);
+	return detail::LayoutImpl<UIGridLayout>::UIGridLayout_arrangeOverride(this, finalSize);
 }
 
 //------------------------------------------------------------------------------
-int UIGridLayout::GetLayoutGridColumnDefinitionCount() { return m_columnDefinitions.GetCount(); }
-detail::GridDefinitionData* UIGridLayout::GetLayoutGridColumnDefinition(int index) { return &m_columnDefinitions[index]->m_data; }
-int UIGridLayout::GetLayoutGridRowDefinitionCount() { return m_rowDefinitions.GetCount(); }
-detail::GridDefinitionData* UIGridLayout::GetLayoutGridRowDefinition(int index) { return &m_rowDefinitions[index]->m_data; }
+int UIGridLayout::getLayoutGridColumnDefinitionCount() { return m_columnDefinitions.getCount(); }
+detail::GridDefinitionData* UIGridLayout::getLayoutGridColumnDefinition(int index) { return &m_columnDefinitions[index]->m_data; }
+int UIGridLayout::getLayoutGridRowDefinitionCount() { return m_rowDefinitions.getCount(); }
+detail::GridDefinitionData* UIGridLayout::getLayoutGridRowDefinition(int index) { return &m_rowDefinitions[index]->m_data; }
 
 LN_NAMESPACE_END

@@ -20,7 +20,7 @@ public:
 	//tr::DelegateEvent<LRESULT(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, bool* handled)>	PreWndProc;
 
 	// override PlatformWindow
-	//virtual bool IsActive() const { return mIsActive; }
+	//virtual bool isActive() const { return mIsActive; }
 	//virtual void HideCursor();
 	//virtual void ShowCursor();
 
@@ -34,13 +34,13 @@ public:
 	//bool NortifyEvent(const PlatformEventArgs& e);
 
 	/// ウィンドウハンドルの取得
-	virtual HWND GetWindowHandle() = 0;
+	virtual HWND getWindowHandle() = 0;
 
-	virtual void SetSize(const SizeI& size) override;
-	virtual void OnPlatformEvent(const PlatformEventArgs& e) override;
+	virtual void setSize(const SizeI& size) override;
+	virtual void onPlatformEvent(const PlatformEventArgs& e) override;
 
 public:
-	static Keys ConvertVirtualKeyCode(DWORD winVK);
+	static Keys convertVirtualKeyCode(DWORD winVK);
 
 protected:
 	int		mLastMouseX;
@@ -72,14 +72,14 @@ public:
 
 public:
 	// PlatformWindow interface
-	virtual void SetVisible(bool visible) override;
-	virtual void SetTitleText(const StringRef& title) override;
-	virtual const String& GetTitleText() const override { return mTitleText; }
-	virtual void SetFullScreenEnabled(bool enabled) override;
-	virtual bool IsFullScreenEnabled() const override { return mFullScreen; }
+	virtual void setVisible(bool visible) override;
+	virtual void setTitleText(const StringRef& title) override;
+	virtual const String& getTitleText() const override { return mTitleText; }
+	virtual void setFullScreenEnabled(bool enabled) override;
+	virtual bool isFullScreenEnabled() const override { return mFullScreen; }
 
 	// Win32Window interface
-	virtual HWND GetWindowHandle() override { return mWindowHandle; }
+	virtual HWND getWindowHandle() override { return mWindowHandle; }
 
 private:
 	String		mTitleText;				// ウィンドウタイトルの文字列  
@@ -103,14 +103,14 @@ public:
 
 public:
 	// PlatformWindow interface
-	virtual void SetVisible(bool visible) override {}
-	virtual void SetTitleText(const StringRef& title) override;
-	virtual const String& GetTitleText() const override { return m_titleText; }
-	virtual void SetFullScreenEnabled(bool enabled) override {}
-	virtual bool IsFullScreenEnabled() const override { return false; }
+	virtual void setVisible(bool visible) override {}
+	virtual void setTitleText(const StringRef& title) override;
+	virtual const String& getTitleText() const override { return m_titleText; }
+	virtual void setFullScreenEnabled(bool enabled) override {}
+	virtual bool isFullScreenEnabled() const override { return false; }
 
 	// Win32Window interface
-	virtual HWND GetWindowHandle() override { return m_hWnd; }
+	virtual HWND getWindowHandle() override { return m_hWnd; }
 
 private:
 	HWND			m_hWnd;

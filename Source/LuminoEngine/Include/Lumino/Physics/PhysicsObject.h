@@ -14,27 +14,27 @@ LN_CLASS()
 class PhysicsObject
 	: public Component
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 
 public:
-	void SetOwnerWorld(PhysicsWorld* owner);
-	PhysicsWorld* GetOwnerWorld() const;
+	void setOwnerWorld(PhysicsWorld* owner);
+	PhysicsWorld* getOwnerWorld() const;
 
-	void SetCollisionFilterGroup(uint16_t flags);
-	uint16_t GetCollisionFilterGroup() const;
+	void setCollisionFilterGroup(uint16_t flags);
+	uint16_t getCollisionFilterGroup() const;
 
-	void SetCollisionFilterMask(uint16_t flags);
-	uint16_t GetCollisionFilterMask() const;
+	void setCollisionFilterMask(uint16_t flags);
+	uint16_t getCollisionFilterMask() const;
 
 protected:
-	virtual void OnBeforeStepSimulation();
-	virtual void OnAfterStepSimulation();
-	virtual void OnRemovedFromWorld();
+	virtual void onBeforeStepSimulation();
+	virtual void onAfterStepSimulation();
+	virtual void onRemovedFromWorld();
 
 LN_CONSTRUCT_ACCESS:
 	PhysicsObject();
 	virtual ~PhysicsObject();
-	void Initialize();
+	void initialize();
 
 private:
 	PhysicsWorld*	m_ownerWorld;
@@ -65,7 +65,7 @@ struct ContactInfo
 class BodyBase
 	: public Object
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	typedef List<ContactInfo>	ContactInfoList;
 
@@ -87,7 +87,7 @@ LN_INTERNAL_ACCESS:
 protected:
 	BodyBase();
 	virtual ~BodyBase();
-	void Initialize(btCollisionObject* obj);
+	void initialize(btCollisionObject* obj);
 
 private:
 	PhysicsWorld*			m_ownerWorld;

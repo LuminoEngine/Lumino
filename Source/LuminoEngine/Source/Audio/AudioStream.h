@@ -22,20 +22,20 @@ public:
 	AudioStream(AudioManager* manager, Stream* stream);
 	virtual ~AudioStream();
 
-	void Create(bool async);
+	void create(bool async);
 
-	StreamFormat GetFormat() const { return m_format; }
+	StreamFormat getFormat() const { return m_format; }
 
 	// 初期化が完了しているか確認する (例外が発生していればここから再 throw される)
-	bool CheckCreated();
+	bool checkCreated();
 
 	// デコーダの取得
-	AudioDecoder* GetDecoder() { return m_decoder; }
-	const AudioDecoder* GetDecoder() const { return m_decoder; }
+	AudioDecoder* getDecoder() { return m_decoder; }
+	const AudioDecoder* getDecoder() const { return m_decoder; }
 
 protected:
 	//　非同期ロード処理
-	virtual void OnASyncIOProc();
+	virtual void onASyncIOProc();
 
 private:
 	AudioManager*		m_manager;
@@ -54,7 +54,7 @@ protected:
 
 //public:
 //	/// Create 済みかを確認する。例外が保存されていれば throw する (非同期読み込み用)
-//	bool CheckCreated();
+//	bool checkCreated();
 //
 //protected:
 //	friend class ASyncAudioStreamLoadTask;
@@ -62,42 +62,42 @@ protected:
 
 public:
 	/// 作成
-	virtual void Create(Stream* stream) = 0;
+	virtual void create(Stream* stream) = 0;
 
 	/// ファイルフォーマットの取得
-	virtual StreamFormat GetSourceFormat() const = 0;
+	virtual StreamFormat getSourceFormat() const = 0;
 
 	/// PCM フォーマットの取得
-	virtual const WaveFormat* GetWaveFormat() const = 0;
+	virtual const WaveFormat* getWaveFormat() const = 0;
 
 	/// 元データのサイズの取得 ( ストリーミング再生での終了判定等で使う )
-	virtual uint32_t GetSourceDataSize() const = 0;
+	virtual uint32_t getSourceDataSize() const = 0;
 
 	/// 全体の再生時間の取得 ( ミリ秒。後で無くなるかも )
 	//virtual uint32_t getTotalTime() const = 0;
 
 	/// 全体のサンプル数の取得 ( Midi の場合はミュージックタイム単位 )
-	virtual uint32_t GetTotalUnits() const = 0;
+	virtual uint32_t getTotalUnits() const = 0;
 
 	/// オンメモリ再生用のバッファの先頭アドレス取得 ( fillBufferAndReleaseStream() を呼んでいない場合は NULL )
-	virtual byte_t* GetOnmemoryPCMBuffer() const = 0;
+	virtual byte_t* getOnmemoryPCMBuffer() const = 0;
 
 	/// オンメモリ再生時の全バッファサイズの取得
-	virtual uint32_t GetOnmemoryPCMBufferSize() const = 0;
+	virtual uint32_t getOnmemoryPCMBufferSize() const = 0;
 
 	/// 1 秒分のソースデータをデコードするときの、最適なバイト数の取得
 	///	
 	///	通常は PCM フォーマットから取得できるけど、MP3 の場合は
 	///	API の都合(?)上、デコードに最適な 1 秒分のサイズは、普通のPCMのそれとは異なる。
 	///	そのため、ちゃんとチェックできるようにこのメソッドを用意。
-	///	いまのところは MP3 に限った話だけど、GetWaveFormat() で
+	///	いまのところは MP3 に限った話だけど、getWaveFormat() で
 	///	取得した値から 1 秒分のサイズを計算するとバグので注意。
-	virtual uint32_t GetBytesPerSec() const = 0;
+	virtual uint32_t getBytesPerSec() const = 0;
 
 	/// ループ開始位置と終了位置の取得
 	///
 	///	Midi ファイルの場合は最初の CC111 位置のデルタタイムとベースタイム
-	virtual void GetLoopState(uint32_t* begin, uint32_t* length) const = 0;
+	virtual void setLoopState(uint32_t* begin, uint32_t* length) const = 0;
 
 	/// オンメモリ再生用に全てのデータを読み込む
 	///
@@ -113,7 +113,7 @@ public:
 	/// ストリーミング再生には使用できなくなります。<br>
 	//virtual void fillBufferAndReleaseStream() = 0;
 	/// ※スレッドセーフで実装する
-	virtual void FillOnmemoryBuffer() = 0;
+	virtual void fillOnmemoryBuffer() = 0;
 
 	/*
 		データをデコードし、buffer に書き込む
@@ -128,11 +128,11 @@ public:
 					現在のファイルポインタに outReadSize の値を足した値が、次回の読み込み位置となります。
 					この関数はスレッドセーフです。
 	*/
-	virtual void Read(uint32_t seekPos, void* buffer, uint32_t bufferSize, uint32_t* outReadSize, uint32_t* outWriteSize) = 0;
+	virtual void read(uint32_t seekPos, void* buffer, uint32_t bufferSize, uint32_t* outReadSize, uint32_t* outWriteSize) = 0;
 
 
 	/// デコード状態のリセット(再生開始直前に呼ばれる。MP3 用)
-	virtual void Reset() = 0;
+	virtual void reset() = 0;
 
 };
 

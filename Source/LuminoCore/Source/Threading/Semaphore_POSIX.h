@@ -22,7 +22,7 @@ public:
 		pthread_mutex_destroy(&m_mutex);
 	}
 
-	void Lock()
+	void lock()
 	{
 		pthread_mutex_lock(&m_mutex);
 		while (m_value < 1)
@@ -38,7 +38,7 @@ public:
 		pthread_mutex_unlock(&m_mutex);
 	}
 
-	void Unlock()
+	void unlock()
 	{
 		pthread_mutex_lock(&m_mutex);
 		m_value += 1;

@@ -70,38 +70,38 @@ namespace fl {
 // http://en.cppreference.com/w/cpp/language/operator_logical
 struct RpnOperator
 {
-	template<typename T> static void UnaryPlus(T /*lhs*/, T rhs, RpnOperand* out) { out->Set(rhs); }
-	template<typename T> static void UnaryMinus(T /*lhs*/, T rhs, RpnOperand* out) { out->Set(-rhs); }
-	template<> static void UnaryMinus<uint32_t>(uint32_t /*lhs*/, uint32_t rhs, RpnOperand* out) { out->Set((uint32_t)-((int32_t)rhs)); }	// 警告回避
-	template<> static void UnaryMinus<uint64_t>(uint64_t /*lhs*/, uint64_t rhs, RpnOperand* out) { out->Set((uint64_t)-((int64_t)rhs)); }	// 警告回避
+	template<typename T> static void UnaryPlus(T /*lhs*/, T rhs, RpnOperand* out) { out->set(rhs); }
+	template<typename T> static void UnaryMinus(T /*lhs*/, T rhs, RpnOperand* out) { out->set(-rhs); }
+	template<> static void UnaryMinus<uint32_t>(uint32_t /*lhs*/, uint32_t rhs, RpnOperand* out) { out->set((uint32_t)-((int32_t)rhs)); }	// 警告回避
+	template<> static void UnaryMinus<uint64_t>(uint64_t /*lhs*/, uint64_t rhs, RpnOperand* out) { out->set((uint64_t)-((int64_t)rhs)); }	// 警告回避
 
-	template<typename T> static void Multiply(T lhs, T rhs, RpnOperand* out)	{ out->Set(lhs * rhs); }
-	template<typename T> static void Divide(T lhs, T rhs, RpnOperand* out)		{ out->Set(lhs / rhs); }
-	template<typename T> static void Modulus(T lhs, T rhs, RpnOperand* out)		{ out->Set(lhs % rhs); }
-	template<typename T> static void BinaryPlus(T lhs, T rhs, RpnOperand* out)	{ out->Set(lhs + rhs); }
-	template<typename T> static void BinaryMinus(T lhs, T rhs, RpnOperand* out) { out->Set(lhs - rhs); }
+	template<typename T> static void multiply(T lhs, T rhs, RpnOperand* out)	{ out->set(lhs * rhs); }
+	template<typename T> static void Divide(T lhs, T rhs, RpnOperand* out)		{ out->set(lhs / rhs); }
+	template<typename T> static void Modulus(T lhs, T rhs, RpnOperand* out)		{ out->set(lhs % rhs); }
+	template<typename T> static void BinaryPlus(T lhs, T rhs, RpnOperand* out)	{ out->set(lhs + rhs); }
+	template<typename T> static void BinaryMinus(T lhs, T rhs, RpnOperand* out) { out->set(lhs - rhs); }
 
-	template<typename T> static void LeftShift(T lhs, T rhs, RpnOperand* out)	{ out->Set(lhs << rhs); }
-	template<typename T> static void RightShift(T lhs, T rhs, RpnOperand* out)	{ out->Set(lhs >> rhs); }
+	template<typename T> static void LeftShift(T lhs, T rhs, RpnOperand* out)	{ out->set(lhs << rhs); }
+	template<typename T> static void RightShift(T lhs, T rhs, RpnOperand* out)	{ out->set(lhs >> rhs); }
 
-	template<typename T> static void CompLessThan(T lhs, T rhs, RpnOperand* out)			{ out->Set(lhs < rhs); }
-	template<typename T> static void CompLessThanEqual(T lhs, T rhs, RpnOperand* out)		{ out->Set(lhs <= rhs); }
-	template<typename T> static void CompGreaterThen(T lhs, T rhs, RpnOperand* out)			{ out->Set(lhs > rhs); }
-	template<typename T> static void CompGreaterThenEqual(T lhs, T rhs, RpnOperand* out)	{ out->Set(lhs >= rhs); }
-	template<typename T> static void CompEqual(T lhs, T rhs, RpnOperand* out)				{ out->Set(lhs == rhs); }
-	template<typename T> static void CompNotEqual(T lhs, T rhs, RpnOperand* out)			{ out->Set(lhs != rhs); }
+	template<typename T> static void CompLessThan(T lhs, T rhs, RpnOperand* out)			{ out->set(lhs < rhs); }
+	template<typename T> static void CompLessThanEqual(T lhs, T rhs, RpnOperand* out)		{ out->set(lhs <= rhs); }
+	template<typename T> static void CompGreaterThen(T lhs, T rhs, RpnOperand* out)			{ out->set(lhs > rhs); }
+	template<typename T> static void CompGreaterThenEqual(T lhs, T rhs, RpnOperand* out)	{ out->set(lhs >= rhs); }
+	template<typename T> static void CompEqual(T lhs, T rhs, RpnOperand* out)				{ out->set(lhs == rhs); }
+	template<typename T> static void CompNotEqual(T lhs, T rhs, RpnOperand* out)			{ out->set(lhs != rhs); }
 
-	template<typename T> static void BitwiseNot(T /*lhs*/, T rhs, RpnOperand* out)	{ out->Set(~rhs); }
-	template<typename T> static void BitwiseAnd(T lhs, T rhs, RpnOperand* out)		{ out->Set(lhs & rhs); }
-	template<typename T> static void BitwiseXor(T lhs, T rhs, RpnOperand* out)		{ out->Set(lhs ^ rhs); }
-	template<typename T> static void BitwiseOr(T lhs, T rhs, RpnOperand* out)		{ out->Set(lhs | rhs); }
+	template<typename T> static void BitwiseNot(T /*lhs*/, T rhs, RpnOperand* out)	{ out->set(~rhs); }
+	template<typename T> static void BitwiseAnd(T lhs, T rhs, RpnOperand* out)		{ out->set(lhs & rhs); }
+	template<typename T> static void BitwiseXor(T lhs, T rhs, RpnOperand* out)		{ out->set(lhs ^ rhs); }
+	template<typename T> static void BitwiseOr(T lhs, T rhs, RpnOperand* out)		{ out->set(lhs | rhs); }
 
-	template<typename T> static void LogicalNot(T /*lhs*/, T rhs, RpnOperand* out)		{ out->Set(!(rhs != 0)); }
-	template<typename T> static void LogicalAnd(T lhs, T rhs, RpnOperand* out)			{ out->Set((lhs != 0) && (rhs != 0)); }
-	template<typename T> static void LogicalOr(T lhs, T rhs, RpnOperand* out)			{ out->Set((lhs != 0) || (rhs != 0)); }
-	template<> static void LogicalNot<bool>(bool /*lhs*/, bool rhs, RpnOperand* out)	{ out->Set(!rhs); }
-	template<> static void LogicalAnd<bool>(bool lhs, bool rhs, RpnOperand* out)		{ out->Set(lhs && rhs); }
-	template<> static void LogicalOr<bool>(bool lhs, bool rhs, RpnOperand* out)			{ out->Set(lhs || rhs); }
+	template<typename T> static void LogicalNot(T /*lhs*/, T rhs, RpnOperand* out)		{ out->set(!(rhs != 0)); }
+	template<typename T> static void LogicalAnd(T lhs, T rhs, RpnOperand* out)			{ out->set((lhs != 0) && (rhs != 0)); }
+	template<typename T> static void LogicalOr(T lhs, T rhs, RpnOperand* out)			{ out->set((lhs != 0) || (rhs != 0)); }
+	template<> static void LogicalNot<bool>(bool /*lhs*/, bool rhs, RpnOperand* out)	{ out->set(!rhs); }
+	template<> static void LogicalAnd<bool>(bool lhs, bool rhs, RpnOperand* out)		{ out->set(lhs && rhs); }
+	template<> static void LogicalOr<bool>(bool lhs, bool rhs, RpnOperand* out)			{ out->set(lhs || rhs); }
 };
 
 typedef void(*NullOperator)(nullptr_t lhs, nullptr_t rhs, RpnOperand* out);
@@ -153,7 +153,7 @@ static TokenTypeTableItem g_tokenTypeTable[] =
 	{ RpnTokenGroup::Unknown,		RpnOperatorGroup::Unknown,		false,	LN_RPN_OPERATOR_DEFINE_NONE, },		// RPN_TT_OP_GroupEnd,				// )	※ 括弧はパースで取り除かれるので Unknown
 	{ RpnTokenGroup::Operator,		RpnOperatorGroup::Arithmetic,	true,	LN_RPN_OPERATOR_DEFINE(UnaryPlus),},			// RPN_TT_OP_UnaryPlus,			// + (Unary)
 	{ RpnTokenGroup::Operator,		RpnOperatorGroup::Arithmetic,	true,	LN_RPN_OPERATOR_DEFINE(UnaryMinus), },			// RPN_TT_OP_UnaryMinus,			// - (Unary)
-	{ RpnTokenGroup::Operator,		RpnOperatorGroup::Arithmetic,	false,	LN_RPN_OPERATOR_DEFINE(Multiply), },		// RPN_TT_OP_Multiply,				// *
+	{ RpnTokenGroup::Operator,		RpnOperatorGroup::Arithmetic,	false,	LN_RPN_OPERATOR_DEFINE(multiply), },		// RPN_TT_OP_Multiply,				// *
 	{ RpnTokenGroup::Operator,		RpnOperatorGroup::Arithmetic,	false,	LN_RPN_OPERATOR_DEFINE(Divide), },		// RPN_TT_OP_Divide,				// /
 	{ RpnTokenGroup::Operator,		RpnOperatorGroup::Arithmetic,	false,	LN_RPN_OPERATOR_DEFINE_INTEGER(Modulus), },		// RPN_TT_OP_Modulus,				// %
 	{ RpnTokenGroup::Operator,		RpnOperatorGroup::Arithmetic,	false,	LN_RPN_OPERATOR_DEFINE(BinaryPlus), },		// RPN_TT_OP_BinaryPlus,			// + (Binary)
@@ -218,32 +218,32 @@ bool RpnToken::IsUnary() const
 //------------------------------------------------------------------------------
 ResultState RpnParser::ParseCppConstExpression2(Position exprBegin, Position exprEnd, DiagnosticsItemSet* diag)
 {
-	Initialize(diag);
+	initialize(diag);
 	TokenizeCppConst(exprBegin, exprEnd);
-	Parse();
+	parse();
 	return ResultState::Success;
 }
 
 //------------------------------------------------------------------------------
-void RpnParser::Initialize(DiagnosticsItemSet* diag)
+void RpnParser::initialize(DiagnosticsItemSet* diag)
 {
 	if (m_tokenList != nullptr) {
-		m_tokenList->Clear();
+		m_tokenList->clear();
 	}
 	else {
-		m_tokenList.Attach(LN_NEW RpnTokenList());
+		m_tokenList.attach(LN_NEW RpnTokenList());
 	}
 	if (m_rpnTokenList != nullptr) {
-		m_rpnTokenList->Clear();
+		m_rpnTokenList->clear();
 	}
 	else {
-		m_rpnTokenList.Attach(LN_NEW RpnTokenList());
+		m_rpnTokenList.attach(LN_NEW RpnTokenList());
 	}
 	m_diag = diag;
-	m_tmpRPNTokenList.Clear();
-	m_opStack.Clear();
-	m_condStack.Clear();
-	m_groupStack.Clear();
+	m_tmpRPNTokenList.clear();
+	m_opStack.clear();
+	m_condStack.clear();
+	m_groupStack.clear();
 	m_lastToken = nullptr;
 }
 
@@ -251,12 +251,12 @@ void RpnParser::Initialize(DiagnosticsItemSet* diag)
 void RpnParser::TokenizeCppConst(Position exprBegin, Position exprEnd)
 {
 	// とりあえず入力トークン数でメモリ確保 (スペースが含まれていれば Tokenize 後の使用量は少なくなるはず)
-	m_tokenList->Reserve(exprEnd - exprBegin + 2);
+	m_tokenList->reserve(exprEnd - exprBegin + 2);
 
 	// 実引数リスト解析処理が , 演算子の解析を兼ねられるように、リスト先頭にダミーの FuncCall を入れておく
 	RpnToken headToken;
 	headToken.Type = RPN_TT_OP_FuncCall;
-	m_tokenList->Add(headToken);
+	m_tokenList->add(headToken);
 
 	Position pos = exprBegin;
 
@@ -274,13 +274,13 @@ void RpnParser::TokenizeCppConst(Position exprBegin, Position exprEnd)
 			RpnToken token;
 			token.Type = RPN_TT_Identifier;
 			token.SourceToken = (*pos);
-			m_tokenList->Add(token);
+			m_tokenList->add(token);
 			break;
 		}
 		case TokenGroup::ArithmeticLiteral:
 		{
 			RpnToken token;
-			switch ((*pos)->GetTokenType())
+			switch ((*pos)->getTokenType())
 			{
 			case TT_NumericLitaralType_Char:		token.Type = RPN_TT_NumericLitaral_Int32; break;
 			case TT_NumericLitaralType_WideChar:	token.Type = RPN_TT_NumericLitaral_Int32; break;
@@ -295,7 +295,7 @@ void RpnParser::TokenizeCppConst(Position exprBegin, Position exprEnd)
 				return;	// TODO: Result
 			}
 			token.SourceToken = (*pos);
-			m_tokenList->Add(token);
+			m_tokenList->add(token);
 			break;
 		}
 		case TokenGroup::Operator:
@@ -408,15 +408,15 @@ void RpnParser::TokenizeCppConst(Position exprBegin, Position exprEnd)
 			assert(LN_ARRAY_SIZE_OF(TokenInfoTable) == RPN_TT_Max);
 
 			RpnToken token;
-			token.Type = CppTypeToRPNType[(*pos)->GetTokenType() - TT_CppOP_SeparatorBegin];
+			token.Type = CppTypeToRPNType[(*pos)->getTokenType() - TT_CppOP_SeparatorBegin];
 
 			// ( かつひとつ前が識別子の場合は関数呼び出しとする
 			if (token.Type == RPN_TT_OP_GroupStart &&
-				!m_tokenList->IsEmpty() &&
-				m_tokenList->GetLast().Type == RPN_TT_Identifier)
+				!m_tokenList->isEmpty() &&
+				m_tokenList->getLast().Type == RPN_TT_Identifier)
 			{
 				// Identifer の種類を FuncCall に変更し、( はトークンとして抽出しない
-				m_tokenList->GetLast().Type = RPN_TT_OP_FuncCall;
+				m_tokenList->getLast().Type = RPN_TT_OP_FuncCall;
 			}
 			else
 			{
@@ -424,7 +424,7 @@ void RpnParser::TokenizeCppConst(Position exprBegin, Position exprEnd)
 				// ひとつ前の有効トークンが演算子であれば単項演算子である。
 				if (token.Type == RPN_TT_OP_BinaryPlus || token.Type == RPN_TT_OP_BinaryMinus)
 				{
-					if (!m_tokenList->IsEmpty() && m_tokenList->GetLast().IsOperator())
+					if (!m_tokenList->isEmpty() && m_tokenList->getLast().IsOperator())
 					{
 						if (token.Type == RPN_TT_OP_BinaryPlus) {
 							token.Type = RPN_TT_OP_UnaryPlus;
@@ -438,24 +438,24 @@ void RpnParser::TokenizeCppConst(Position exprBegin, Position exprEnd)
 				token.Precedence = TokenInfoTable[token.Type].Precedence;
 				token.Association = TokenInfoTable[token.Type].Association;
 				token.SourceToken = (*pos);
-				m_tokenList->Add(token);
+				m_tokenList->add(token);
 			}
 			break;
 		}
 		case TokenGroup::Keyword:
 		{
 			RpnToken token;
-			if ((*pos)->GetTokenType() == TT_CppKW_true)
+			if ((*pos)->getTokenType() == TT_CppKW_true)
 			{
 				token.Type = RPN_TT_NumericLitaral_True;
 				token.SourceToken = (*pos);
-				m_tokenList->Add(token);
+				m_tokenList->add(token);
 			}
-			else if ((*pos)->GetTokenType() == TT_CppKW_false)
+			else if ((*pos)->getTokenType() == TT_CppKW_false)
 			{
 				token.Type = RPN_TT_NumericLitaral_False;
 				token.SourceToken = (*pos);
-				m_tokenList->Add(token);
+				m_tokenList->add(token);
 			}
 			break;
 		}
@@ -468,55 +468,55 @@ void RpnParser::TokenizeCppConst(Position exprBegin, Position exprEnd)
 	// 実引数リスト解析処理が , 演算子の解析を兼ねられるように、リスト終端にダミーの GroupEnd を入れておく
 	RpnToken tailToken;
 	tailToken.Type = RPN_TT_OP_GroupEnd;
-	m_tokenList->Add(tailToken);
+	m_tokenList->add(tailToken);
 }
 
 //------------------------------------------------------------------------------
-void RpnParser::Parse()
+void RpnParser::parse()
 {
-	m_tmpRPNTokenList.Reserve(m_tokenList->GetCount());
+	m_tmpRPNTokenList.reserve(m_tokenList->getCount());
 	m_lastToken = nullptr;
 
 	for (RpnToken& token : *m_tokenList)
 	{
 		// 現在の () 深さを振っておく
-		token.GroupLevel = m_groupStack.GetCount();
+		token.GroupLevel = m_groupStack.getCount();
 
 		// 定数は出力リストへ積んでいく
 		if (token.GetTokenGroup() == RpnTokenGroup::Literal)
 		{
-			m_tmpRPNTokenList.Add(&token);
+			m_tmpRPNTokenList.add(&token);
 		}
 		else if (token.IsOperator())
 		{
 			switch (token.Type)
 			{
 			case RPN_TT_OP_FuncCall:
-				m_groupStack.Push(&token);
-				m_opStack.Push(&token);
+				m_groupStack.push(&token);
+				m_opStack.push(&token);
 				break;
 			case RPN_TT_OP_GroupStart:
-				m_groupStack.Push(&token);
-				m_opStack.Push(&token);
+				m_groupStack.push(&token);
+				m_opStack.push(&token);
 				break;
 			case RPN_TT_OP_GroupEnd:			// m_tokenList の最後はダミーの ) を入れているため、最後に1度必ず通る
 				if (m_lastToken->Type != RPN_TT_OP_GroupStart) {
-					m_groupStack.GetTop()->ElementCount++;	// () 内の引数の数を増やす。ただし、"Func()" のように実引数が無ければ増やさない
+					m_groupStack.getTop()->ElementCount++;	// () 内の引数の数を増やす。ただし、"Func()" のように実引数が無ければ増やさない
 				}
 				PopOpStackGroupEnd(false);		// opStack の GroupStart または FuncCall までの内容を出力リストに移す。GroupStart または FuncCall は削除する。
 				CloseGroup(false);				// 同レベル () 内の ':' 全てに CondGoto を振る。最後に現在のグループ情報を削除する
 				break;
 			case RPN_TT_OP_CondTrue:
 				PushOpStack(&token);
-				m_tmpRPNTokenList.Add(&token);
+				m_tmpRPNTokenList.add(&token);
 				break;
 			case RPN_TT_OP_CondFalse:
 			{
 				RpnToken* condTrue = PopOpStackCondFalse();
 				if (!condTrue) { return; }		// Error : ':' に対応する ? が見つからなかった
-				m_tmpRPNTokenList.Add(&token);
-				m_condStack.Push(&token);
-				condTrue->CondGoto = m_tmpRPNTokenList.GetCount();	// ジャンプ先として ':' の次を指す
+				m_tmpRPNTokenList.add(&token);
+				m_condStack.push(&token);
+				condTrue->CondGoto = m_tmpRPNTokenList.getCount();	// ジャンプ先として ':' の次を指す
 				break;
 			}
 			case RPN_TT_OP_Comma:
@@ -524,7 +524,7 @@ void RpnParser::Parse()
 				//if (m_groupStack.GetTop()->ElementCount == 0) {	
 				//	m_groupStack.GetTop()->ElementCount++;
 				//}
-				m_groupStack.GetTop()->ElementCount++;	
+				m_groupStack.getTop()->ElementCount++;	
 
 				PopOpStackGroupEnd(true);				// ( ～ , までの opStack の内容を出力リストに移す。ただし、( は残したままにする
 				CloseGroup(true);						// グループ内の条件演算子の処理を行う。ただし、その後グループ情報は削除しない
@@ -545,10 +545,10 @@ void RpnParser::Parse()
 	//CloseGroup();
 
 	// 演算子用スタックに残っている要素を全て出力リストに移す
-	while (!m_opStack.IsEmpty())
+	while (!m_opStack.isEmpty())
 	{
 		RpnToken* top;
-		m_opStack.Pop(&top);
+		m_opStack.pop(&top);
 		if (top->Type == RPN_TT_OP_GroupStart) {
 			//TODO: error括弧が閉じていない
 			break;
@@ -557,14 +557,14 @@ void RpnParser::Parse()
 			//TODO: error条件演算子が閉じていない
 			break;
 		}
-		m_tmpRPNTokenList.Add(top);
+		m_tmpRPNTokenList.add(top);
 	}
 
 	// 出力用のリストへ、トークンのコピーを作成しつつ移す
-	m_rpnTokenList->Reserve(m_tmpRPNTokenList.GetCount());
+	m_rpnTokenList->reserve(m_tmpRPNTokenList.getCount());
 	for (RpnToken* token : m_tmpRPNTokenList)
 	{
-		m_rpnTokenList->Add(*token);
+		m_rpnTokenList->add(*token);
 	}
 }
 
@@ -575,9 +575,9 @@ void RpnParser::PushOpStack(RpnToken* token)	// Operator または CondTrue だ�
 	// これから入れようとしているものより、top の優先度の方が高ければ取り除く。
 	// 同じ場合は取り除かない。
 	// スタックには優先度の低いものが残り続けることになる。
-	while (!m_opStack.IsEmpty())
+	while (!m_opStack.isEmpty())
 	{
-		RpnToken* top = m_opStack.GetTop();
+		RpnToken* top = m_opStack.getTop();
 		if (top->Type == RPN_TT_OP_GroupStart || top->Type == RPN_TT_OP_FuncCall) {
 			// '(' は特別扱い。とにかく演算子スタックの先頭に積む。(演算子の優先度でどうこうできない)
 			// 別途、')' が見つかったとき、対応する '(' までのスタック要素を全てを出力リストへ移す。
@@ -587,14 +587,14 @@ void RpnParser::PushOpStack(RpnToken* token)	// Operator または CondTrue だ�
 		if (top->Precedence < token->Precedence)	// [+ * ← +] と言う状態なら、*(5) +(6) なので * を取り除く
 		{
 			// 出力リストへ
-			m_tmpRPNTokenList.Add(top);
-			m_opStack.Pop();
+			m_tmpRPNTokenList.add(top);
+			m_opStack.pop();
 		}
 		else {
 			break;
 		}
 	}
-	m_opStack.Push(token);
+	m_opStack.push(token);
 }
 
 //------------------------------------------------------------------------------
@@ -603,12 +603,12 @@ RpnToken* RpnParser::PopOpStackGroupEnd(bool fromArgsSeparator)
 {
 	// 対応する GroupStart ('(') が見つかるまでスタックの演算子を出力リストへ移していく。
 	RpnToken* top = NULL;
-	while (!m_opStack.IsEmpty())
+	while (!m_opStack.isEmpty())
 	{
-		top = m_opStack.GetTop();
+		top = m_opStack.getTop();
 		if (top->Type == RPN_TT_OP_GroupStart)
 		{
-			m_opStack.Pop();	// GroupStart は捨てる
+			m_opStack.pop();	// GroupStart は捨てる
 			break;
 		}
 		else if (top->Type == RPN_TT_OP_FuncCall)
@@ -617,15 +617,15 @@ RpnToken* RpnParser::PopOpStackGroupEnd(bool fromArgsSeparator)
 			// ただし、, の場合は積まない。
 			if (!fromArgsSeparator)
 			{
-				m_tmpRPNTokenList.Add(top);	
-				m_opStack.Pop();
+				m_tmpRPNTokenList.add(top);	
+				m_opStack.pop();
 			}
 			break;
 		}
 
 		// 出力リストへ
-		m_tmpRPNTokenList.Add(top);
-		m_opStack.Pop();
+		m_tmpRPNTokenList.add(top);
+		m_opStack.pop();
 		top = nullptr;
 	}
 
@@ -643,17 +643,17 @@ RpnToken* RpnParser::PopOpStackCondFalse()
 {
 	// 対応する CondStart ('?') が見つかるまでスタックの演算子を出力リストへ移していく。
 	RpnToken* top = nullptr;
-	while (!m_opStack.IsEmpty())
+	while (!m_opStack.isEmpty())
 	{
-		top = m_opStack.GetTop();
+		top = m_opStack.getTop();
 		if (top->Type == RPN_TT_OP_CondTrue) {
-			m_opStack.Pop();	// CondTrue は捨てる
+			m_opStack.pop();	// CondTrue は捨てる
 			break;
 		}
 
 		// 出力リストへ
-		m_tmpRPNTokenList.Add(top);
-		m_opStack.Pop();
+		m_tmpRPNTokenList.add(top);
+		m_opStack.pop();
 	}
 	/* 
 		↑直前の ? を探しに行くだけで良い。
@@ -672,19 +672,19 @@ RpnToken* RpnParser::PopOpStackCondFalse()
 void RpnParser::CloseGroup(bool fromArgsSeparator)
 {
 	// 現在の () レベルの ':' 全てに CondGoto を振り、スタックから取り除く
-	while (!m_condStack.IsEmpty())
+	while (!m_condStack.isEmpty())
 	{
-		RpnToken* condFalse = m_condStack.GetTop();
-		if (condFalse->GroupLevel < m_groupStack.GetCount()) {
+		RpnToken* condFalse = m_condStack.getTop();
+		if (condFalse->GroupLevel < m_groupStack.getCount()) {
 			break;
 		}
-		condFalse->CondGoto = m_tmpRPNTokenList.GetCount();
-		m_condStack.Pop();
+		condFalse->CondGoto = m_tmpRPNTokenList.getCount();
+		m_condStack.pop();
 	}
 
 	// グループ情報を1つ削除する。ただし、, の場合は残しておく。
 	if (!fromArgsSeparator) {
-		m_groupStack.Pop();
+		m_groupStack.pop();
 	}
 }
 
@@ -735,10 +735,10 @@ ResultState RpnEvaluator::TryEval(InputFile* inputFile, const RpnTokenList* toke
 	Stack<RpnOperand> operandStack;
 	List<RpnOperand> funcCallArgs;
 	RpnOperand operand, lhs, rhs;
-	for (int iToken = 0; iToken < tokenList->GetCount(); ++iToken)
+	for (int iToken = 0; iToken < tokenList->getCount(); ++iToken)
 	{
 		bool skipPush = false;
-		const RpnToken& token = tokenList->GetAt(iToken);
+		const RpnToken& token = tokenList->getAt(iToken);
 		switch (token.GetTokenGroup())
 		{
 			case RpnTokenGroup::Literal:
@@ -747,15 +747,15 @@ ResultState RpnEvaluator::TryEval(InputFile* inputFile, const RpnTokenList* toke
 			//case RpnTokenGroup::Constant:
 			//case RpnTokenGroup::Identifier:
 			case RpnTokenGroup::Operator:
-				if (token.IsUnary() && operandStack.GetCount() >= 1)
+				if (token.IsUnary() && operandStack.getCount() >= 1)
 				{
-					operandStack.Pop(&rhs);
+					operandStack.pop(&rhs);
 					lhs.type = RpnOperandType::Unknown;
 				}
-				else if (operandStack.GetCount() >= 2)
+				else if (operandStack.getCount() >= 2)
 				{
-					operandStack.Pop(&rhs);
-					operandStack.Pop(&lhs);
+					operandStack.pop(&rhs);
+					operandStack.pop(&lhs);
 				}
 				else
 				{
@@ -777,11 +777,11 @@ ResultState RpnEvaluator::TryEval(InputFile* inputFile, const RpnTokenList* toke
                 *      ? の goto は 8 (5へ)
                 *      : の goto は 11 (終端(配列外)へ)
                 */
-				if (operandStack.GetCount() >= 0)
+				if (operandStack.getCount() >= 0)
 				{
 					if (token.GetTokenGroup() == RpnTokenGroup::CondTrue)
 					{
-						operandStack.Pop(&lhs);		// このオペランドは値を見るだけで捨ててしまう
+						operandStack.pop(&lhs);		// このオペランドは値を見るだけで捨ててしまう
 						if (!lhs.IsFuzzyTrue())
 						{
 							// : の次へ行く
@@ -808,12 +808,12 @@ ResultState RpnEvaluator::TryEval(InputFile* inputFile, const RpnTokenList* toke
 				break;
 
 			case RpnTokenGroup::FunctionCall:
-				if (operandStack.GetCount() >= token.ElementCount)
+				if (operandStack.getCount() >= token.ElementCount)
 				{
-					funcCallArgs.Resize(token.ElementCount);
+					funcCallArgs.resize(token.ElementCount);
 					for (int i = token.ElementCount - 1; i >= 0; --i)
 					{
-						operandStack.Pop(&funcCallArgs[i]);
+						operandStack.pop(&funcCallArgs[i]);
 					}
 					if (!CallFunction(token, funcCallArgs, &operand)) return ResultState::Error;
 				}
@@ -833,17 +833,17 @@ ResultState RpnEvaluator::TryEval(InputFile* inputFile, const RpnTokenList* toke
 		}
 
 		if (!skipPush) {
-			operandStack.Push(operand);
+			operandStack.push(operand);
 		}
 	}
 
 	// 全てのトークンを読み終えると、スタックに1つだけ結果が出ている
-	if (operandStack.GetCount() != 1)
+	if (operandStack.getCount() != 1)
 	{
 		m_diag->Report(DiagnosticsCode::RpnEvaluator_InsufficientToken);
 		return ResultState::Error;
 	}
-	*outValue = operandStack.GetTop();
+	*outValue = operandStack.getTop();
 	return ResultState::Success;
 }
 
@@ -854,7 +854,7 @@ bool RpnEvaluator::MakeOperand(const RpnToken& token, RpnOperand* outOperand)
 	if (token.GetTokenGroup() == RpnTokenGroup::Literal)
 	{
 		const flChar* str = token.SourceToken->GetCStr(m_inputFile);
-		int len = token.SourceToken->GetLength();
+		int len = token.SourceToken->getLength();
 		const flChar* dummy;
 		NumberConversionResult r;
 		switch (token.Type)
@@ -875,27 +875,27 @@ bool RpnEvaluator::MakeOperand(const RpnToken& token, RpnOperand* outOperand)
 				break;
 			case RPN_TT_NumericLitaral_Int32:
 				outOperand->type = RpnOperandType::Int32;
-				outOperand->valueInt32 = StringTraits::ToInt32(str, len, 0, &dummy, &r);
+				outOperand->valueInt32 = StringTraits::toInt32(str, len, 0, &dummy, &r);
 				break;
 			case RPN_TT_NumericLitaral_UInt32:
 				outOperand->type = RpnOperandType::UInt32;
-				outOperand->valueUInt32 = StringTraits::ToInt32(str, len, 0, &dummy, &r);
+				outOperand->valueUInt32 = StringTraits::toInt32(str, len, 0, &dummy, &r);
 				break;
 			case RPN_TT_NumericLitaral_Int64:
 				outOperand->type = RpnOperandType::Int64;
-				outOperand->valueInt64 = StringTraits::ToInt64(str, len, 0, &dummy, &r);
+				outOperand->valueInt64 = StringTraits::toInt64(str, len, 0, &dummy, &r);
 				break;
 			case RPN_TT_NumericLitaral_UInt64:
 				outOperand->type = RpnOperandType::UInt64;
-				outOperand->valueUInt64 = StringTraits::ToUInt64(str, len, 0, &dummy, &r);
+				outOperand->valueUInt64 = StringTraits::toUInt64(str, len, 0, &dummy, &r);
 				break;
 			case RPN_TT_NumericLitaral_Float:
 				outOperand->type = RpnOperandType::Float;
-				outOperand->valueFloat = (float)StringTraits::ToDouble(str, len, &dummy, &r);
+				outOperand->valueFloat = (float)StringTraits::toDouble(str, len, &dummy, &r);
 				break;
 			case RPN_TT_NumericLitaral_Double:
 				outOperand->type = RpnOperandType::Double;
-				outOperand->valueDouble = StringTraits::ToDouble(str, len, &dummy, &r);
+				outOperand->valueDouble = StringTraits::toDouble(str, len, &dummy, &r);
 				break;
 		}
 		if (r == NumberConversionResult::Success)
@@ -923,7 +923,7 @@ bool RpnEvaluator::CallFunction(const RpnToken& token, List<RpnOperand> args, Rp
 	// 対応するトークンが無ければ、これはカンマ演算子解析用のダミー。一番後ろの引数を返すだけ。
 	if (token.SourceToken == nullptr)
 	{
-		*outOperand = args.GetLast();
+		*outOperand = args.getLast();
 		return true;
 	}
 	else
@@ -952,7 +952,7 @@ bool RpnEvaluator::EvalOperand(RpnTokenType tokenType, const RpnOperand& lhs, co
 		break;
 	}
 	// Error: 指定されたオペランドの型が不正。
-	m_diag->Report(DiagnosticsCode::RpnEvaluator_OperatorInvalidType, rhs.type.ToString().ToStringA());
+	m_diag->Report(DiagnosticsCode::RpnEvaluator_OperatorInvalidType, rhs.type.toString().toStringA());
 	return false;
 }
 

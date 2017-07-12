@@ -21,7 +21,7 @@ public:
 
 	virtual ~StreamProvider() = default;
 
-	virtual Nullable<T> Get() = 0;
+	virtual Nullable<T> get() = 0;
 
 	bool Advance() { return AdvanceImpl(); }
 
@@ -87,7 +87,7 @@ template<typename T>
 T& StreamProvider<T>::Iterator::operator* ()
 {
 	UpdateInitial();
-	return m_current.Get();
+	return m_current.get();
 }
 
 //------------------------------------------------------------------------------
@@ -98,7 +98,7 @@ typename StreamProvider<T>::Iterator& StreamProvider<T>::Iterator::operator++()
 	CheckConsumed();
 	if (m_source->Advance())
 	{
-		m_current = m_source->Get();
+		m_current = m_source->get();
 	}
 	else
 	{
@@ -117,7 +117,7 @@ typename StreamProvider<T>::Iterator StreamProvider<T>::Iterator::operator++(int
 	Iterator result(nullptr, State::Consumed, m_current);
 	if (m_source->Advance())
 	{
-		m_current = m_source->Get();
+		m_current = m_source->get();
 	}
 	else
 	{
@@ -173,7 +173,7 @@ void StreamProvider<T>::Iterator::UpdateInitial()
 	{
 		if (m_source->Advance())
 		{
-			m_current = m_source->Get();
+			m_current = m_source->get();
 			m_state = State::Iterating;
 		}
 		else
@@ -241,7 +241,7 @@ public:
 		, m_end(end)
 	{}
 
-	virtual Nullable<T> Get() override
+	virtual Nullable<T> get() override
 	{
 		return *m_current;
 	}
@@ -274,7 +274,7 @@ public:
 		, m_predicate(std::forward<TPredicate>(predicate))
 	{}
 
-	Nullable<T> Get() override
+	Nullable<T> get() override
 	{
 		return m_current;
 	}
@@ -283,7 +283,7 @@ public:
 	{
 		while (m_source->Advance())
 		{
-			m_current = m_source->Get();
+			m_current = m_source->get();
 			if (m_predicate(m_current))
 			{
 				return true;
@@ -317,7 +317,7 @@ public:
 		m_sources.push_back(second);
 	}
 
-	Nullable<T> Get() override
+	Nullable<T> get() override
 	{
 		return m_current;
 	}
@@ -329,7 +329,7 @@ public:
 			auto& provider = m_sources.front();
 			if (provider->Advance())
 			{
-				m_current = provider->Get();
+				m_current = provider->get();
 				return true;
 			}
 			m_sources.pop_front();
@@ -355,7 +355,7 @@ public:
 		, m_transform(transform)
 	{}
 
-	Nullable<T> Get() override
+	Nullable<T> get() override
 	{
 		return m_current;
 	}
@@ -364,7 +364,7 @@ public:
 	{
 		if (m_source->Advance())
 		{
-			m_current = m_transform(m_source->Get());
+			m_current = m_transform(m_source->get());
 			return true;
 		}
 		m_current.reset();

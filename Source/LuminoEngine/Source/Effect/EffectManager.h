@@ -29,20 +29,20 @@ public:
 	EffectManager();
 	virtual ~EffectManager();
 
-	void Initialize(const Settings& settings);
+	void initialize(const Settings& settings);
 	void Finalize();
 
 	EffectEngine* CreateEffectWorld();
 	void ReleaseEffectWorld(EffectEngine* world);
 
 	//void PreRender();
-	//void Render();
-	virtual void OnLostDevice() override;
-	virtual void OnResetDevice() override;
+	//void render();
+	virtual void onLostDevice() override;
+	virtual void onResetDevice() override;
 
-	FileManager*		GetFileManager() { return m_fileManager; }
-	GraphicsManager*	GetGraphicsManager() { return m_graphicsManager; }
-	AudioManager*		GetAudioManager() { return m_audioManager; }
+	FileManager*		getFileManager() { return m_fileManager; }
+	GraphicsManager*	getGraphicsManager() { return m_graphicsManager; }
+	AudioManager*		getAudioManager() { return m_audioManager; }
 
 	//EffectEngine*		GetEffectEngine() { return m_engine; }
 

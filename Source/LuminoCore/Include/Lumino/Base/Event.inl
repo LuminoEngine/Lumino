@@ -6,47 +6,47 @@ public:
 	typedef LN_EVENT_DELEGATE_CLASS_NAME<LN_EVENT_TEMPLATE_TYPES> DelegateType;
 
 public:
-	void AddHandler(const DelegateType& handler)
+	void addHandler(const DelegateType& handler)
 	{
-		m_handlerList.Add(handler);
+		m_handlerList.add(handler);
 	}
 
-	void RemoveHandler(const DelegateType& handler)
+	void removeHandler(const DelegateType& handler)
 	{
-		m_handlerList.Remove(handler);
+		m_handlerList.remove(handler);
 	}
 
-	void Clear()
+	void clear()
 	{
-		m_handlerList.Clear();
+		m_handlerList.clear();
 	}
 
-	void Raise(LN_EVENT_ARGS_DECL)
+	void raise(LN_EVENT_ARGS_DECL)
 	{
 		LN_FOREACH(DelegateType& d, m_handlerList)
 		{
-			d.Call(LN_EVENT_CALL_ARGS);
+			d.call(LN_EVENT_CALL_ARGS);
 		}
 	}
 
-	bool IsEmpty() const
+	bool isEmpty() const
 	{
-		return m_handlerList.IsEmpty();
+		return m_handlerList.isEmpty();
 	}
 
 	void operator += (const DelegateType& handler)
 	{
-		AddHandler(handler);
+		addHandler(handler);
 	}
 
 	void operator -= (const DelegateType& handler)
 	{
-		RemoveHandler(handler);
+		removeHandler(handler);
 	}
 
 	void operator () (LN_EVENT_ARGS_DECL)
 	{
-		Raise(LN_EVENT_CALL_ARGS);
+		raise(LN_EVENT_CALL_ARGS);
 	}
 
 private:

@@ -22,7 +22,6 @@
 
 #include "Lumino/Graphics/Common.h"
 #include "Lumino/Graphics/Graphics.h"
-#include "Lumino/Graphics/Renderer.h"
 #include "Lumino/Graphics/RenderState.h"
 #include "Lumino/Graphics/SamplerState.h"
 #include "Lumino/Graphics/Color.h"
@@ -33,12 +32,14 @@
 #include "Lumino/Graphics/Shader.h"
 #include "Lumino/Graphics/Bitmap.h"
 #include "Lumino/Graphics/GraphicsContext.h"
-#include "Lumino/Graphics/DrawingContext.h"
 #include "Lumino/Graphics/FrameCapturer.h"
 #include "Lumino/Graphics/Text/Font.h"
 #include "Lumino/Graphics/ImageEffect/ImageEffect.h"
 #include "Lumino/Graphics/ImageEffect/ToneImageEffect.h"
 #include "Lumino/Graphics/ImageEffect/ScreenMotionBlurImageEffect.h"
+
+#include "Lumino/Rendering/RenderingContext.h"
+#include "Lumino/Rendering/DrawingContext.h"
 
 #include "Lumino/Effect/VisualEffect.h"
 #include "Lumino/Effect/VisualEffectInstance.h"

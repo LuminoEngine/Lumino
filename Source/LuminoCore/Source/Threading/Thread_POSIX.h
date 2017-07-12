@@ -18,12 +18,12 @@ public:
 	{
 	}
 
-	void Start()
+	void start()
 	{
 		pthread_create(&mThread, NULL, ThreadEntry, this);
 	}
 
-	void Wait()
+	void wait()
 	{
 		if (mThread)
 		{
@@ -33,17 +33,17 @@ public:
 		}
 	}
 
-	intptr_t GetThreadId() const
+	intptr_t getThreadId() const
 	{
 		return (intptr_t)(mThread);
 	}
 
-	static void Sleep(int milliseconds)
+	static void sleep(int milliseconds)
 	{
 		usleep(milliseconds * 1000);
 	}
 
-	static intptr_t GetCurrentThreadId()
+	static intptr_t getCurrentThreadId()
 	{
 		return (intptr_t)(pthread_self());
 	}

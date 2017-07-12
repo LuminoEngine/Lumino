@@ -23,40 +23,40 @@ public:
 	virtual ~AudioPlayer();
 
 public:
-	virtual void Initialize(AudioStream* audioStream, bool enable3d);
+	virtual void initialize(AudioStream* audioStream, bool enable3d);
 
 public:
-	void CommitPlayerState(const detail::AudioPlayerState& newState);
-	const detail::AudioPlayerState& GetPlayerState() const { return m_playerState; }
+	void commitPlayerState(const detail::AudioPlayerState& newState);
+	const detail::AudioPlayerState& getPlayerState() const { return m_playerState; }
 
-	void DoPolling();
+	void doPolling();
 
 protected:
 
 
-	virtual void SetVolume(float volume);
-	virtual void SetPitch(float pitch);
-	virtual void SetLoopState(uint32_t loop_begin, uint32_t loop_length);
-	void SetLoopEnabled(bool enableLoop) { mIsLoop = enableLoop; }
+	virtual void setVolume(float volume);
+	virtual void setPitch(float pitch);
+	virtual void setLoopState(uint32_t loop_begin, uint32_t loop_length);
+	void setLoopEnabled(bool enableLoop) { mIsLoop = enableLoop; }
 
 
 
 	/// 再生
-	virtual void Play() = 0;
+	virtual void play() = 0;
 
 	/// 停止
-	virtual void Stop() = 0;
+	virtual void stop() = 0;
 
 	/// 一時停止
-	virtual void Pause(bool isPause) = 0;
+	virtual void pause(bool isPause) = 0;
 
 public:	// TODO: protected にしたい
 
 		/// 再生したサンプル数の取得 ( Midi の場合はミュージックタイム )
-	virtual uint64_t GetPlayedSamples() const = 0;
+	virtual uint64_t getPlayedSamples() const = 0;
 
 	/// 3D 音源かを判定する
-	virtual bool Is3DSound() = 0;
+	virtual bool is3DSound() = 0;
 
 	/// 3D 音源としての位置を設定する
     virtual void setPosition( const Vector3& pos ) = 0;
@@ -75,7 +75,7 @@ public:	// TODO: protected にしたい
 
 
 	/// ポーリング更新
-	virtual bool Polling() = 0;
+	virtual bool polling() = 0;
 
 protected:
 	AudioDevice*		mDevice;

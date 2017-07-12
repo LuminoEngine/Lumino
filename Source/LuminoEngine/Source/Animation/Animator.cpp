@@ -3,12 +3,12 @@
 	Static な頂点バッファの描画は、DrawPrimitiveUP よりも少なくとも 4 倍は早い。
 	ユーちゃんモデルでは 4ms かかってたのが 0ms 以下になった。(頂点数 37000)
 
-	一方、全 Lock すると Static な方は 50ms とかかかった。
-	部分 Lock だと、Lock した頂点数に比例する。
+	一方、全 lock すると Static な方は 50ms とかかかった。
+	部分 lock だと、lock した頂点数に比例する。
 	数個程度なら 0ms、半分の 18500個だと 25ms 前後になる。
 
-	Dynamic な頂点バッファの描画は、Lock しなければ 1ms くらい。
-	Lock すると 5～10ms。部分 Lock でも全 Lock でも変わらなかった。
+	Dynamic な頂点バッファの描画は、lock しなければ 1ms くらい。
+	lock すると 5～10ms。部分 lock でも全 lock でも変わらなかった。
 
 
 	広範を頻繁に書き換えるなら、平均的に見て DrawPrimitiveUP が一番よさそうではあるが、
@@ -17,7 +17,7 @@
 
 	実際に使われるのはほとんど表情アニメーションで、書き換えの対象となる頂点数はせいぜい1000個程度。
 	（たまに艦装を丸ごと縮小して隠すなんてことやってるモデルもあるが）
-	Static な 1000個 Lock は約 2ms だった。
+	Static な 1000個 lock は約 2ms だった。
 
 
 
@@ -41,8 +41,8 @@
 		・GUI なら Control。
 
 	IAnimationTargetAttribute
-		virtual GetName() = 0;
-		virtual SetValue() = 0;
+		virtual getName() = 0;
+		virtual setValue() = 0;
 		補間値を適用するオブジェクト。
 		・3D モデルならノード、モーフ。
 		・GUI ならプロパティ。
@@ -79,8 +79,8 @@
 			// 初期化
 			animCtrl->GetAnimationState("swing")->SetLayer(1);	// デフォルトは 0
 			// フレーム更新
-			animCtrl->Play("run", WrapMode_Loop);	// wrap は state->SetWrapMode(WrapMode_Loop) であらかじめ設定してもよい
-			animCtrl->Play("swing");
+			animCtrl->play("run", WrapMode_Loop);	// wrap は state->setWrapMode(WrapMode_Loop) であらかじめ設定してもよい
+			animCtrl->play("swing");
 		
 			下のレイヤーのアニメーションは上書きするので、例えば "run" アニメの "右腕" ボーンは上書きされる。
 			下半身は、"swing" アニメにキーフレームがひつもなければ1度も適用されないので、"run" のアニメが生き続けることになる。
@@ -119,43 +119,43 @@ Animator::~Animator()
 }
 
 //------------------------------------------------------------------------------
-void Animator::Create(detail::IAnimationTargetElement* element)
+void Animator::create(detail::IAnimationTargetElement* element)
 {
 	m_element = element;
 
 	for (int i = 0; i < MaxLayers; ++i)
 	{
-		m_layerList[i] = RefPtr<detail::AnimationLayer>::MakeRef(this);
+		m_layerList[i] = RefPtr<detail::AnimationLayer>::makeRef(this);
 	}
 
-	int count = m_element->GetAnimationTargetAttributeCount();
-	m_animationTargetAttributeEntityList.Resize(count);
+	int count = m_element->getAnimationTargetAttributeCount();
+	m_animationTargetAttributeEntityList.resize(count);
 	for (int i = 0; i < count; i++)
 	{
-		m_animationTargetAttributeEntityList[i].Target = m_element->GetAnimationTargetAttribute(i);
+		m_animationTargetAttributeEntityList[i].Target = m_element->getAnimationTargetAttribute(i);
 		m_animationTargetAttributeEntityList[i].Type = ValueType_Float;	// とりあえず初期化
 		memset(m_animationTargetAttributeEntityList[i].Buffer, 0, sizeof(m_animationTargetAttributeEntityList[i].Buffer));
 	}
 }
 
 //------------------------------------------------------------------------------
-bool Animator::IsPlaying() const
+bool Animator::isPlaying() const
 {
 	LN_THROW(0, NotImplementedException);
 	return false;
 }
 
 //------------------------------------------------------------------------------
-void Animator::Play(const TCHAR* name, float duration)
+void Animator::play(const TCHAR* name, float duration)
 {
 	for (detail::AnimationLayer* layer : m_layerList)
 	{
-		layer->TransitionState(name, duration);
+		layer->transitionState(name, duration);
 	}
 }
 
 //------------------------------------------------------------------------------
-void Animator::AdvanceTime(double elapsedTime)
+void Animator::advanceTime(double elapsedTime)
 {
 	// 一時バッファをクリアする (TODO: Valiant 型みたいなのを作って、各値毎に適切なクリア処理を実装する方が良いかもしれない…)
 	for (detail::AnimationTargetAttributeEntity& e : m_animationTargetAttributeEntityList)
@@ -174,36 +174,36 @@ void Animator::AdvanceTime(double elapsedTime)
 	// レイヤーの時間を進める
 	for (detail::AnimationLayer* layer : m_layerList)
 	{
-		layer->AdvanceTime(elapsedTime);
+		layer->advanceTime(elapsedTime);
 	}
 
 	for (detail::AnimationTargetAttributeEntity& e : m_animationTargetAttributeEntityList)
 	{
 		// 一連の処理の中で本当に値がセットされたものだけ通知する
 		if (e.Modified) {
-			e.Target->SetAnimationTargetValue(e.Type, e.Buffer);
+			e.Target->setAnimationTargetValue(e.Type, e.Buffer);
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
-void Animator::AddAnimationClip(AnimationClip* animationClip, int layer)
+void Animator::addAnimationClip(AnimationClip* animationClip, int layer)
 {
-	m_layerList[layer]->CreateStateAndAttachClip(animationClip);
+	m_layerList[layer]->createStateAndAttachClip(animationClip);
 }
 
 //------------------------------------------------------------------------------
-void Animator::RemoveAnimationClip(AnimationClip* animationClip, int layer)
+void Animator::removeAnimationClip(AnimationClip* animationClip, int layer)
 {
-	m_layerList[layer]->RemoveStateByClip(animationClip);
+	m_layerList[layer]->removeStateByClip(animationClip);
 }
 
 //------------------------------------------------------------------------------
-detail::AnimationTargetAttributeEntity* Animator::FindAnimationTargetAttributeEntity(const String& name)
+detail::AnimationTargetAttributeEntity* Animator::findAnimationTargetAttributeEntity(const String& name)
 {
 	for (detail::AnimationTargetAttributeEntity& e : m_animationTargetAttributeEntityList)
 	{
-		if (e.Target->GetAnimationTargetName() == name) {
+		if (e.Target->getAnimationTargetName() == name) {
 			return &e;
 		}
 	}
@@ -225,56 +225,56 @@ AnimationLayer::AnimationLayer(Animator* owner)
 }
 
 //------------------------------------------------------------------------------
-void AnimationLayer::CreateStateAndAttachClip(AnimationClip* animationClip)
+void AnimationLayer::createStateAndAttachClip(AnimationClip* animationClip)
 {
 	if (LN_CHECK_ARG(animationClip != nullptr)) return;
 
-	auto state = RefPtr<AnimationState>::MakeRef(animationClip);
-	m_animationStateList.Add(animationClip->GetName(), state);
-	state->Refresh(m_owner);
+	auto state = RefPtr<AnimationState>::makeRef(animationClip);
+	m_animationStateList.add(animationClip->getName(), state);
+	state->refresh(m_owner);
 }
 
 //------------------------------------------------------------------------------
-void AnimationLayer::RemoveStateByClip(AnimationClip* animationClip)
+void AnimationLayer::removeStateByClip(AnimationClip* animationClip)
 {
 	if (LN_CHECK_ARG(animationClip != nullptr)) return;
 	LN_THROW(0, NotImplementedException);
 }
 
 //------------------------------------------------------------------------------
-void AnimationLayer::TransitionState(const StringRef& name, float duration)
+void AnimationLayer::transitionState(const StringRef& name, float duration)
 {
-	AnimationState* state = FindAnimationState(name);
+	AnimationState* state = findAnimationState(name);
 	if (state != nullptr)
 	{
 		// 再生中状態にする
-		state->FadeInLinerInternal(duration);
-		//state->SetPlayState(PlayState_Playing);
+		state->fadeInLinerInternal(duration);
+		//state->setPlayState(PlayState_Playing);
 	}
 
 	// state 以外の再生中ステートに対してフェードアウトさせる
 	for (auto& pair : m_animationStateList)
 	{
-		if (pair.second != state && pair.second->GetPlayState() == PlayState_Playing)
+		if (pair.second != state && pair.second->setPlayState() == PlayState_Playing)
 		{
-			pair.second->FadeOutLinerInternal(duration);
+			pair.second->fadeOutLinerInternal(duration);
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
-void AnimationLayer::AdvanceTime(float elapsedTime)
+void AnimationLayer::advanceTime(float elapsedTime)
 {
 	for (auto& pair : m_animationStateList)
 	{
-		pair.second->AdvanceTime(elapsedTime);
+		pair.second->advanceTime(elapsedTime);
 	}
 }
 
 //------------------------------------------------------------------------------
-AnimationState* AnimationLayer::FindAnimationState(const StringRef& clipName)
+AnimationState* AnimationLayer::findAnimationState(const StringRef& clipName)
 {
-	RefPtr<AnimationState>* state = m_animationStateList.Find(clipName);
+	RefPtr<AnimationState>* state = m_animationStateList.find(clipName);
 	if (state == nullptr) return nullptr;
 	return *state;
 }

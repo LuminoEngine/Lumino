@@ -32,9 +32,9 @@ private:
 	{
 	public:
 		virtual ~HolderBase() = default;
-		virtual TRet Call(TArgs... args) const = 0;
-		virtual bool Equals(const HolderBase* p) const = 0;
-		virtual HolderBase* Copy() const = 0;
+		virtual TRet call(TArgs... args) const = 0;
+		virtual bool equals(const HolderBase* p) const = 0;
+		virtual HolderBase* copy() const = 0;
 	};
 
 	class StaticHolder
@@ -48,15 +48,15 @@ private:
 		StaticHolder(StaticFunction func)
 			: m_func(func)
 		{}
-		virtual TRet Call(TArgs... args) const
+		virtual TRet call(TArgs... args) const
 		{
 			return m_func(args...);
 		}
-		virtual bool Equals(const HolderBase* p) const
+		virtual bool equals(const HolderBase* p) const
 		{
 			return (m_func == static_cast<const StaticHolder*>(p)->m_func);
 		}
-		virtual HolderBase* Copy() const
+		virtual HolderBase* copy() const
 		{
 			return LN_NEW StaticHolder(m_func);
 		}
@@ -76,16 +76,16 @@ private:
 			: m_obj(obj)
 			, m_func(func)
 		{}
-		virtual TRet Call(TArgs... args) const
+		virtual TRet call(TArgs... args) const
 		{
 			return (m_obj->*m_func)(args...);
 		}
-		virtual bool Equals(const HolderBase* p) const
+		virtual bool equals(const HolderBase* p) const
 		{
 			return	m_obj == static_cast<const MemberHolder*>(p)->m_obj &&
 				m_func == static_cast<const MemberHolder*>(p)->m_func;
 		}
-		virtual HolderBase* Copy() const
+		virtual HolderBase* copy() const
 		{
 			return LN_NEW MemberHolder(m_obj, m_func);
 		}
@@ -102,15 +102,15 @@ private:
 		FuncObjHolder(const FuncObj& func)
 			: m_func(func)
 		{}
-		virtual TRet Call(TArgs... args) const
+		virtual TRet call(TArgs... args) const
 		{
 			return m_func(args...);
 		}
-		virtual bool Equals(const HolderBase* p) const
+		virtual bool equals(const HolderBase* p) const
 		{
 			return false;	// std::function を比較することは出来ない
 		}
-		virtual HolderBase* Copy() const
+		virtual HolderBase* copy() const
 		{
 			return LN_NEW FuncObjHolder(m_func);
 		}
@@ -120,7 +120,7 @@ public:
 
 	using EventType = Event<TRet(TArgs...)>;
 
-	/** デフォルトコンストラクタ */
+	/** Default constructor */
 	Delegate()
 		: m_holder(nullptr)
 		, m_type(HolderType::Static)
@@ -153,12 +153,17 @@ public:
 		, m_type(HolderType::FuncObj)
 	{}
 
-	/** コピーコンストラクタ */
+	/** nullptr constructor */
+	Delegate(std::nullptr_t)
+		: Delegate()
+	{}
+
+	/** Copy constructor */
 	Delegate(const Delegate& d)
 		: Delegate()
 	{
 		if (d.m_holder != nullptr) {
-			m_holder = d.m_holder->Copy();
+			m_holder = d.m_holder->copy();
 			m_type = d.m_type;
 		}
 	}
@@ -183,29 +188,29 @@ public:
 public:
 
 	/** 空の Delegate であるかを確認します。*/
-	bool IsEmpty() const
+	bool isEmpty() const
 	{
 		return m_holder == nullptr;
 	}
 
 	/** 関数を呼び出します。operator() と同じ動作です。*/
-	TRet Call(TArgs... args) const
+	TRet call(TArgs... args) const
 	{
-		return m_holder->Call(args...);
+		return m_holder->call(args...);
 	}
 
 	/** 関数を呼び出します。*/
 	void operator ()(TArgs... args) const
 	{
-		m_holder->Call(args...);
+		m_holder->call(args...);
 	}
 
 	/** コピー */
 	Delegate& operator = (const Delegate& d)
 	{
-		Detach();
+		detach();
 		if (d.m_holder != nullptr) {
-			m_holder = d.m_holder->Copy();
+			m_holder = d.m_holder->copy();
 			m_type = d.m_type;
 		}
 		return *this;
@@ -238,7 +243,7 @@ public:
 	/** 比較 */
 	bool operator==(const Delegate& left) const
 	{
-		return Equals(left);
+		return equals(left);
 	}
 
 	/** 比較 */
@@ -250,21 +255,21 @@ public:
 	/** 比較 */
 	bool operator!=(const Delegate& left) const
 	{
-		return !Equals(left);
+		return !equals(left);
 	}
 
 private:
-	void Detach()
+	void detach()
 	{
 		delete m_holder;
 		m_holder = nullptr;
 	}
-	bool Equals(const Delegate& left) const
+	bool equals(const Delegate& left) const
 	{
 		if (m_type != left.m_type) { return false; }
 		if (m_holder == NULL &&  left.m_holder == NULL) { return true; }
 		if (m_holder != NULL && left.m_holder != NULL) {
-			return m_holder->Equals(left.m_holder);
+			return m_holder->equals(left.m_holder);
 		}
 		else {
 			return false;	// this か obj 一方が NULL で、もう一方が 非NULL であればここに来る。
@@ -280,7 +285,7 @@ private:
 	@details	Delegate のコンストラクタと同じですが、冗長な記述を避けるために使用します。
 */
 template<class TRet, class... TArgs>
-Delegate<TRet(TArgs...)> CreateDelegate(TRet(*func)(TArgs...))
+Delegate<TRet(TArgs...)> createDelegate(TRet(*func)(TArgs...))
 {
 	return Delegate<TRet(TArgs...)>(func);
 }
@@ -290,7 +295,7 @@ Delegate<TRet(TArgs...)> CreateDelegate(TRet(*func)(TArgs...))
 	@details	Delegate のコンストラクタと同じですが、冗長な記述を避けるために使用します。
 */
 template<class T, class TRet, class... TArgs>
-Delegate<TRet(TArgs...)> CreateDelegate(T* objPtr, TRet(T::*func)(TArgs...))
+Delegate<TRet(TArgs...)> createDelegate(T* objPtr, TRet(T::*func)(TArgs...))
 {
 	return Delegate<TRet(TArgs...)>(objPtr, func);
 }
@@ -324,14 +329,14 @@ LN_NAMESPACE_BEGIN
 	@code
 				class Test
 				{
-					void Run(Delegate01<int> func) {
+					void run(Delegate01<int> func) {
 						func.Call(10);
 					}
 					void Callback(int value) {
 						printf("%d", value);
 					}
 					void Main() {
-						Run(LN_CreateDelegate(this, &Test::Callback));
+						run(LN_CreateDelegate(this, &Test::Callback));
 					}
 				}
 	@endcode

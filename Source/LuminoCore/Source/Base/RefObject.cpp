@@ -19,40 +19,48 @@ RefObject::RefObject()
 //------------------------------------------------------------------------------
 RefObject::~RefObject()
 {
-	LN_FATAL(m_referenceCount.Get() <= 1, "Object is still referenced.");
+	LN_FATAL(m_referenceCount.get() <= 1, "Object is still referenced.");
 }
 
 //------------------------------------------------------------------------------
-int32_t RefObject::GetReferenceCount() const
+void RefObject::finalize_()
+{
+	LN_FATAL(m_referenceCount.get() <= 1, "Object is still referenced.");
+}
+
+//------------------------------------------------------------------------------
+int32_t RefObject::getReferenceCount() const
 { 
-	return m_referenceCount.Get();
+	return m_referenceCount.get();
 }
 
 //------------------------------------------------------------------------------
-int32_t RefObject::AddRef()
+int32_t RefObject::addRef()
 {
-	return m_referenceCount.Increment();
+	return m_referenceCount.increment();
 }
 
 //------------------------------------------------------------------------------
-int32_t RefObject::Release()
+int32_t RefObject::release()
 {
-    int32_t count = m_referenceCount.Decrement();
+    int32_t count = m_referenceCount.decrement();
 	int32_t count2 = m_internalReferenceCount;
 	if (count <= 0 && count2 <= 0)
 	{
+		finalize_();
 		delete this;
 	}
     return count;
 }
 
 //------------------------------------------------------------------------------
-void RefObject::ReleaseInternal()
+void RefObject::releaseInternal()
 {
-	int32_t count = m_referenceCount.Get();
+	int32_t count = m_referenceCount.get();
 	int32_t count2 = (--m_internalReferenceCount);
 	if (count <= 0 && count2 <= 0)
 	{
+		finalize_();
 		delete this;
 	}
 }

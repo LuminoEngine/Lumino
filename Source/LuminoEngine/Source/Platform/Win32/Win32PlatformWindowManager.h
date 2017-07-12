@@ -8,7 +8,7 @@ class Win32WindowManager
 	: public WindowManagerBase
 {
 public:
-	/// CreateNativeWindow の引数
+	/// createNativeWindow の引数
 	struct NativeWindowCreationData
 	{
 		String	        TitleText;		///< ウィンドウタイトルの文字列
@@ -36,26 +36,26 @@ public:
 	virtual ~Win32WindowManager();
 
 public:
-	HINSTANCE GetInstanceHandle() const { return m_hInst; }
-	const String& GetWindowClassName() const { return m_windowClassName; }
-	HICON GetHIcon() const { return m_hIcon; }
+	HINSTANCE getInstanceHandle() const { return m_hInst; }
+	const String& getWindowClassName() const { return m_windowClassName; }
+	HICON getHIcon() const { return m_hIcon; }
 
-	Win32PlatformWindow* CreateNativeWindow(const NativeWindowCreationData& data);
+	Win32PlatformWindow* createNativeWindow(const NativeWindowCreationData& data);
 
-	static LRESULT CALLBACK StaticWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+	static LRESULT CALLBACK staticWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 	/// クライアント領域のサイズが指定した大きさになるようにウィンドウサイズを調整する
-	static void SetWindowClientSize(HWND hWnd, const SizeI& clientSize);
+	static void setWindowClientSize(HWND hWnd, const SizeI& clientSize);
 
 	/// ウィンドウをスクリーンの中央に移動する
-	static void AbjustLocationCentering(HWND hWnd);
+	static void abjustLocationCentering(HWND hWnd);
 
 public:
 	// Application interface
-	virtual void CreateMainWindow(const WindowCreationSettings& settings);
-	virtual PlatformWindow* GetMainWindow();
-	virtual PlatformWindow* CreateSubWindow(const WindowCreationSettings& settings);
-	virtual void DoEvents();
+	virtual void createMainWindow(const WindowCreationSettings& settings);
+	virtual PlatformWindow* getMainWindow();
+	virtual PlatformWindow* createSubWindow(const WindowCreationSettings& settings);
+	virtual void doEvents();
 	virtual void Finalize();
 
 private:

@@ -15,18 +15,18 @@ LN_CLASS()
 class GameScene
 	: public Object
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 protected:
 
 	/** 開始処理 */
 	LN_METHOD()
-	virtual void OnStart();
+	virtual void onStart();
 
 	/// フレーム更新
-	virtual void OnUpdate();
+	virtual void onUpdate();
 
 	/// 終了処理
-	virtual void OnTerminate();
+	virtual void onTerminate();
 
 	
 
@@ -36,11 +36,11 @@ LN_CONSTRUCT_ACCESS:
 
 	/** Initialize */
 	LN_METHOD()
-	void Initialize();
+	void initialize();
 
 private:
-	void AddGameObject(WorldObject* obj);
-	void Update();
+	void addGameObject(WorldObject* obj);
+	void update();
 
 	List<RefPtr<WorldObject>>	m_gameObjectList;
 

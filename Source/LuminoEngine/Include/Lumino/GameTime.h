@@ -12,22 +12,22 @@ public:
 	/**
 		@brief		前回のフレームから経過したゲーム時間 (秒) を取得します。
 	*/
-	static double GetElapsedGameTime();
+	static double getElapsedGameTime();
 
 	/**
 		@brief		前回のフレームから経過した実時間 (秒) を取得します。
 	*/
-	static double GetElapsedRealTime();
+	static double getElapsedRealTime();
 
 	/**
 		@brief		開始からの総ゲーム時間 (秒) を取得します。
 	*/
-	static double GetTotalGameTime();
+	static double getTotalGameTime();
 
 	/**
 		@brief		開始からの総実時間 (秒) を取得します。
 	*/
-	static double GetTotalRealTime();
+	static double getTotalRealTime();
 };
 
 LN_NAMESPACE_END

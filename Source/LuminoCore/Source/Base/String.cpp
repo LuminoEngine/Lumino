@@ -139,7 +139,7 @@ static const int MaxFormatLength = 1024;
 //------------------------------------------------------------------------------
 template<typename TChar>
 GenericString<TChar>::GenericString()
-	: m_string(detail::GenericStringCore<TChar>::GetSharedEmpty())
+	: m_string(detail::GenericStringCore<TChar>::getSharedEmpty())
 {
 }
 
@@ -157,46 +157,46 @@ template<typename TChar>
 GenericString<TChar>::GenericString(const GenericString& str)
 	: m_string(nullptr)
 {
-	Attach(str.m_string);
+	attach(str.m_string);
 }
 template<typename TChar>
 GenericString<TChar>::GenericString(const GenericString& str, int length)
 	: m_string(nullptr)
 {
-	AssignTString(str.m_string->c_str(), length);
+	assignTString(str.m_string->c_str(), length);
 }
 template<typename TChar>
 GenericString<TChar>::GenericString(const GenericString& str, int begin, int length)
 	: m_string(nullptr)
 {
-	AssignTString(str.m_string->c_str() + begin, length);	// str+begin にしないと、暗黙的コンストラクタの呼び出しが発生してしまう
+	assignTString(str.m_string->c_str() + begin, length);	// str+begin にしないと、暗黙的コンストラクタの呼び出しが発生してしまう
 }
 template<typename TChar>
 GenericString<TChar>::GenericString(const StringRefT& str)
 	: m_string(nullptr)
 {
 	if (str.m_string != nullptr)
-		Attach(str.m_string);
+		attach(str.m_string);
 	else
-		AssignTString(str.GetBegin(), str.GetLength());
+		assignTString(str.getBegin(), str.getLength());
 }
 template<typename TChar>
 GenericString<TChar>::GenericString(const TChar* str)
 	: m_string(nullptr)
 {
-	AssignTString(str, -1);
+	assignTString(str, -1);
 }
 template<typename TChar>
 GenericString<TChar>::GenericString(const TChar* str, int length)
 	: m_string(nullptr)
 {
-	AssignTString(str, length);
+	assignTString(str, length);
 }
 template<typename TChar>
 GenericString<TChar>::GenericString(const TChar* str, int begin, int length)
 	: m_string(nullptr)
 {
-	AssignTString(str + begin, length);
+	assignTString(str + begin, length);
 }
 template<typename TChar>
 GenericString<TChar>::GenericString(TChar ch)
@@ -208,12 +208,12 @@ template<typename TChar>
 GenericString<TChar>::GenericString(int count, TChar ch)
 	: m_string(nullptr)
 {
-	AssignTString(count, ch);
+	assignTString(count, ch);
 }
 
 template<typename TChar>
 GenericString<TChar>::GenericString(const GenericPathName<TChar>& path)
-	: GenericString(path.GetString())
+	: GenericString(path.getString())
 {
 }
 
@@ -232,31 +232,31 @@ template<typename TChar>
 GenericString<TChar>::GenericString(const GenericString<YCHAR>& str)
 	: m_string(nullptr)
 {
-	AssignCStr(str.c_str(), str.GetLength());
+	assignCStr(str.c_str(), str.getLength());
 }
 template<typename TChar>
 GenericString<TChar>::GenericString(const GenericString<YCHAR>& str, int length)
 	: m_string(nullptr)
 {
-	AssignCStr(str.c_str(), length);
+	assignCStr(str.c_str(), length);
 }
 template<typename TChar>
 GenericString<TChar>::GenericString(const GenericString<YCHAR>& str, int begin, int length)
 	: m_string(nullptr)
 {
-	AssignCStr(str.c_str(), begin, length);
+	assignCStr(str.c_str(), begin, length);
 }
 template<typename TChar>
 GenericString<TChar>::GenericString(const YCHAR* str)
 	: m_string(nullptr)
 {
-	AssignCStr(str);
+	assignCStr(str);
 }
 template<typename TChar>
 GenericString<TChar>::GenericString(const YCHAR* str, int length)
 	: m_string(nullptr)
 {
-	AssignCStr(str, length);
+	assignCStr(str, length);
 }
 
 //template<typename TChar>
@@ -308,31 +308,31 @@ GenericString<TChar>::GenericString(const YCHAR* str, int length)
 template<typename TChar>
 GenericString<TChar>& GenericString<TChar>::operator=(const GenericString& right)
 {
-	Attach(right.m_string);
+	attach(right.m_string);
 	return (*this);
 }
 template<typename TChar>
 GenericString<TChar>& GenericString<TChar>::operator=(const GenericStringRef<TChar>& right)
 {
-	AssignTString(right.GetBegin(), right.GetLength());
+	assignTString(right.getBegin(), right.getLength());
 	return (*this);
 }
 template<typename TChar>
 GenericString<TChar>& GenericString<TChar>::operator=(const std::basic_string<TChar>& right)
 {
-	AssignTString(right.c_str(), -1);
+	assignTString(right.c_str(), -1);
 	return (*this);
 }
 template<typename TChar>
 GenericString<TChar>& GenericString<TChar>::operator=(const TChar* right)
 {
-	AssignTString(right, -1);
+	assignTString(right, -1);
 	return (*this);
 }
 template<typename TChar>
 GenericString<TChar>& GenericString<TChar>::operator=(const GenericPathName<TChar>& right)
 {
-	return operator=(right.GetString());
+	return operator=(right.getString());
 }
 template<typename TChar>
 GenericString<TChar>& GenericString<TChar>::operator=(GenericString&& right) LN_NOEXCEPT
@@ -352,7 +352,7 @@ GenericString<TChar>& GenericString<TChar>::operator=(GenericString&& right) LN_
 template<typename TChar>
 GenericString<TChar>& GenericString<TChar>::operator+=(const GenericString<TChar>& right)
 {
-	Append(right.m_string->c_str(), right.GetLength());
+	append(right.m_string->c_str(), right.getLength());
 	return (*this);
 }
 //template<typename TChar>
@@ -364,13 +364,13 @@ GenericString<TChar>& GenericString<TChar>::operator+=(const GenericString<TChar
 template<typename TChar>
 GenericString<TChar>& GenericString<TChar>::operator+=(const TChar* ptr)
 {
-	Append(ptr, -1);
+	append(ptr, -1);
 	return (*this);
 }
 template<typename TChar>
 GenericString<TChar>& GenericString<TChar>::operator+=(TChar ch)
 {
-	Append(&ch, 1);
+	append(&ch, 1);
 	return (*this);
 }
 
@@ -380,17 +380,17 @@ GenericString<TChar>& GenericString<TChar>::operator+=(TChar ch)
 template<typename TChar>
 bool GenericString<TChar>::operator < (const GenericString& right) const
 {
-	return Compare(right.c_str(), right.GetLength(), CaseSensitivity::CaseSensitive) < 0;
+	return compare(right.c_str(), right.getLength(), CaseSensitivity::CaseSensitive) < 0;
 }
 template<typename TChar>
 bool GenericString<TChar>::operator < (const GenericStringRef<TChar>& right) const
 {
-	return Compare(right.GetBegin(), right.GetLength(), CaseSensitivity::CaseSensitive) < 0;
+	return compare(right.getBegin(), right.getLength(), CaseSensitivity::CaseSensitive) < 0;
 }
 template<typename TChar>
 bool GenericString<TChar>::operator < (const TChar* right) const
 {
-	return Compare(right, -1, CaseSensitivity::CaseSensitive) < 0;
+	return compare(right, -1, CaseSensitivity::CaseSensitive) < 0;
 }
 
 //------------------------------------------------------------------------------
@@ -399,17 +399,17 @@ bool GenericString<TChar>::operator < (const TChar* right) const
 template<typename TChar>
 bool GenericString<TChar>::operator > (const GenericString& right) const
 {
-	return Compare(right.c_str(), -1, CaseSensitivity::CaseSensitive) > 0;
+	return compare(right.c_str(), -1, CaseSensitivity::CaseSensitive) > 0;
 }
 template<typename TChar>
 bool GenericString<TChar>::operator > (const GenericStringRef<TChar>& right) const
 {
-	return Compare(right.GetBegin(), right.GetLength(), CaseSensitivity::CaseSensitive) > 0;
+	return compare(right.getBegin(), right.getLength(), CaseSensitivity::CaseSensitive) > 0;
 }
 template<typename TChar>
 bool GenericString<TChar>::operator > (const TChar* right) const
 {
-	return Compare(right, -1, CaseSensitivity::CaseSensitive) > 0;
+	return compare(right, -1, CaseSensitivity::CaseSensitive) > 0;
 }
 
 //------------------------------------------------------------------------------
@@ -423,7 +423,7 @@ bool GenericString<TChar>::operator > (const TChar* right) const
 template<typename TChar>
 const TChar& GenericString<TChar>::operator[](int index) const
 {
-	return InternalGetAt(index);
+	return internalGetAt(index);
 }
 
 //------------------------------------------------------------------------------
@@ -444,23 +444,23 @@ const TChar* GenericString<TChar>::c_str() const
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-int GenericString<TChar>::GetLength() const
+int GenericString<TChar>::getLength() const
 {
 	return (int)m_string->size();
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-bool GenericString<TChar>::IsEmpty() const
+bool GenericString<TChar>::isEmpty() const
 {
 	return m_string->empty();
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-void GenericString<TChar>::Append(const GenericString& str, int len)
+void GenericString<TChar>::append(const GenericString& str, int len)
 {
-	Append(str.m_string->c_str(), str.GetLength());
+	append(str.m_string->c_str(), str.getLength());
 }
 //template<typename TChar>
 //void GenericString<TChar>::Append(const std::basic_string<TChar>& str, int len)
@@ -468,26 +468,26 @@ void GenericString<TChar>::Append(const GenericString& str, int len)
 //	Append(str.c_str(), str.size());
 //}
 template<typename TChar>
-void GenericString<TChar>::Append(const TChar* str, int len)
+void GenericString<TChar>::append(const TChar* str, int len)
 {
 	if (str == nullptr || len == 0) {
 		return;		// 空文字列なので何もしない
 	}
-	Realloc();	// 共有参照を切る
+	realloc();	// 共有参照を切る
 	m_string->append(str, (len < 0) ? StringTraits::tcslen(str) : len);
 }
 template<typename TChar>
-void GenericString<TChar>::Append(TChar ch)
+void GenericString<TChar>::append(TChar ch)
 {
-	Append(&ch, 1);
+	append(&ch, 1);
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-void GenericString<TChar>::AssignCStr(const char* str, int begin, int length, bool* outUsedDefaultChar)
+void GenericString<TChar>::assignCStr(const char* str, int begin, int length, bool* outUsedDefaultChar)
 {
 	if (str == nullptr) {
-		Clear();
+		clear();
 		return;
 	}
 	//LN_THROW(str != nullptr, ArgumentException);	// std::string の assign は nullptr が渡されたときの動作は未定義。VS2013 では制御が返ってこなくなった
@@ -499,29 +499,29 @@ void GenericString<TChar>::AssignCStr(const char* str, int begin, int length, bo
 
 	// サイズ 0 なら空文字列にするだけ
 	if (len == 0) {
-		Clear();
+		clear();
 	}
 	else {
-		ConvertFrom(str + begin, len, Encoding::GetSystemMultiByteEncoding());
+		convertFrom(str + begin, len, Encoding::getSystemMultiByteEncoding());
 	}
 }
 template<typename TChar>
-void GenericString<TChar>::AssignCStr(const char* str, int length, bool* usedDefaultChar)
+void GenericString<TChar>::assignCStr(const char* str, int length, bool* usedDefaultChar)
 {
-	AssignCStr(str, 0, length, usedDefaultChar);
+	assignCStr(str, 0, length, usedDefaultChar);
 }
 template<typename TChar>
-void GenericString<TChar>::AssignCStr(const char* str, bool* usedDefaultChar)
+void GenericString<TChar>::assignCStr(const char* str, bool* usedDefaultChar)
 {
-	AssignCStr(str, 0, -1, usedDefaultChar);
+	assignCStr(str, 0, -1, usedDefaultChar);
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-void GenericString<TChar>::AssignCStr(const wchar_t* str, int begin, int length, bool* outUsedDefaultChar)
+void GenericString<TChar>::assignCStr(const wchar_t* str, int begin, int length, bool* outUsedDefaultChar)
 {
 	if (str == nullptr) {
-		Clear();
+		clear();
 		return;
 	}
 	//LN_THROW(str != nullptr, ArgumentException);	// std::string の assign は nullptr が渡されたときの動作は未定義。VS2013 では制御が返ってこなくなった
@@ -534,36 +534,36 @@ void GenericString<TChar>::AssignCStr(const wchar_t* str, int begin, int length,
 
 	// サイズ 0 なら空文字列にするだけ
 	if (len == 0) {
-		Clear();
+		clear();
 	}
 	else {
-		ConvertFrom(str + begin, len, Encoding::GetWideCharEncoding());
+		convertFrom(str + begin, len, Encoding::getWideCharEncoding());
 	}
 }
 template<typename TChar>
-void GenericString<TChar>::AssignCStr(const wchar_t* str, int length, bool* usedDefaultChar)
+void GenericString<TChar>::assignCStr(const wchar_t* str, int length, bool* usedDefaultChar)
 {
-	AssignCStr(str, 0, length, usedDefaultChar);
+	assignCStr(str, 0, length, usedDefaultChar);
 }
 template<typename TChar>
-void GenericString<TChar>::AssignCStr(const wchar_t* str, bool* usedDefaultChar)
+void GenericString<TChar>::assignCStr(const wchar_t* str, bool* usedDefaultChar)
 {
-	AssignCStr(str, 0, -1, usedDefaultChar);
+	assignCStr(str, 0, -1, usedDefaultChar);
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-void GenericString<TChar>::ConvertFrom(const void* buffer, int byteCount, const Encoding* encoding, bool* outUsedDefaultChar)
+void GenericString<TChar>::convertFrom(const void* buffer, int byteCount, const Encoding* encoding, bool* outUsedDefaultChar)
 {
 	LN_THROW(encoding, ArgumentException);
 
-	Encoding* thisTypeEncoding = GetThisTypeEncoding();
+	Encoding* thisTypeEncoding = getThisTypeEncoding();
 
 	// 全く同じエンコーディングなら変換の必要は無い
 	if (thisTypeEncoding == encoding) 
 	{
 		byteCount = (byteCount < 0) ? strlen((const char*)buffer) : byteCount;
-		AssignTString((const TChar*)buffer, byteCount / sizeof(TChar));
+		assignTString((const TChar*)buffer, byteCount / sizeof(TChar));
 	}
 	else
 	{
@@ -571,24 +571,24 @@ void GenericString<TChar>::ConvertFrom(const void* buffer, int byteCount, const 
 		options.NullTerminated = false;
 
 		EncodingConversionResult result;
-		const ByteBuffer tmpBuffer = Encoding::Convert(buffer, byteCount, encoding, thisTypeEncoding, options, &result);
+		const ByteBuffer tmpBuffer = Encoding::convert(buffer, byteCount, encoding, thisTypeEncoding, options, &result);
 		if (outUsedDefaultChar != nullptr) {
 			*outUsedDefaultChar = result.UsedDefaultChar;
 		}
 
-		AssignTString((const TChar*)tmpBuffer.GetData(), result.BytesUsed / sizeof(TChar));
+		assignTString((const TChar*)tmpBuffer.getData(), result.BytesUsed / sizeof(TChar));
 	}
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-ByteBuffer GenericString<TChar>::ConvertTo(const Encoding* encoding, bool* outUsedDefaultChar) const
+ByteBuffer GenericString<TChar>::convertTo(const Encoding* encoding, bool* outUsedDefaultChar) const
 {
 	EncodingConversionOptions options;
 	options.NullTerminated = true;
 
 	EncodingConversionResult result;
-	const ByteBuffer buf = Encoding::Convert(c_str(), GetByteCount(), GetThisTypeEncoding(), encoding, options, &result);
+	const ByteBuffer buf = Encoding::convert(c_str(), getByteCount(), getThisTypeEncoding(), encoding, options, &result);
 	if (outUsedDefaultChar != nullptr) {
 		*outUsedDefaultChar = result.UsedDefaultChar;
 	}
@@ -598,25 +598,25 @@ ByteBuffer GenericString<TChar>::ConvertTo(const Encoding* encoding, bool* outUs
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-void GenericString<TChar>::Clear()
+void GenericString<TChar>::clear()
 {
-	Attach(detail::GenericStringCore<TChar>::GetSharedEmpty());
+	attach(detail::GenericStringCore<TChar>::getSharedEmpty());
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-GenericString<TChar> GenericString<TChar>::SubString(int startIndex, int length) const
+GenericString<TChar> GenericString<TChar>::subString(int startIndex, int length) const
 {
 	return StringT(*this, startIndex, length);
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-GenericString<TChar> GenericString<TChar>::Trim() const
+GenericString<TChar> GenericString<TChar>::trim() const
 {
 	const TChar* begin;
 	int length;
-	StringTraits::Trim(c_str(), GetLength(), &begin, &length);
+	StringTraits::trim(c_str(), getLength(), &begin, &length);
 	return GenericString<TChar>(begin, length);
 }
 
@@ -632,14 +632,14 @@ template<typename TChar>
 struct CmpCaseInsensitive
 {
 	TChar ch;
-	bool operator()(TChar value) { return StringTraits::ToUpper(ch) == StringTraits::ToUpper(value); }
+	bool operator()(TChar value) { return StringTraits::toUpper(ch) == StringTraits::toUpper(value); }
 };
 
 template<typename TChar>
-GenericString<TChar> GenericString<TChar>::Remove(TChar ch, CaseSensitivity cs) const
+GenericString<TChar> GenericString<TChar>::remove(TChar ch, CaseSensitivity cs) const
 {
 	GenericString<TChar> newStr(*this);
-	if (newStr.IsEmpty()) {
+	if (newStr.isEmpty()) {
 		// 空文字列なら処理を行う必要は無い。というか、SharedEmpty に対して erase とかしてはいけない。
 		return newStr;
 	}
@@ -665,22 +665,22 @@ GenericString<TChar> GenericString<TChar>::Remove(TChar ch, CaseSensitivity cs) 
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-GenericString<TChar> GenericString<TChar>::Replace(const StringRefT& from, const StringRefT& to) const
+GenericString<TChar> GenericString<TChar>::replace(const StringRefT& from, const StringRefT& to) const
 {
 	GenericString<TChar> newStr;
-	newStr.AssignTString(c_str(), GetLength());
-	if (newStr.IsEmpty()) {
+	newStr.assignTString(c_str(), getLength());
+	if (newStr.isEmpty()) {
 		// 空文字列なら処理を行う必要は無い。というか、SharedEmpty に対して replace とかしてはいけない。
 		return newStr;
 	}
 
 	size_type pos = 0;
-	size_t fromLength = from.GetLength();
-	size_t toLength = to.GetLength();
+	size_t fromLength = from.getLength();
+	size_t toLength = to.getLength();
 
-	while (pos = newStr.m_string->find(from.GetBegin(), pos, fromLength), pos != std::basic_string<TChar>::npos)
+	while (pos = newStr.m_string->find(from.getBegin(), pos, fromLength), pos != std::basic_string<TChar>::npos)
 	{
-		newStr.m_string->replace(pos, fromLength, to.GetBegin(), toLength);
+		newStr.m_string->replace(pos, fromLength, to.getBegin(), toLength);
 		pos += toLength;
 	}
 
@@ -690,150 +690,150 @@ GenericString<TChar> GenericString<TChar>::Replace(const StringRefT& from, const
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-bool GenericString<TChar>::Contains(const TChar* str, CaseSensitivity cs) const
+bool GenericString<TChar>::contains(const TChar* str, CaseSensitivity cs) const
 {
-	return IndexOf(str, 0, cs) >= 0;
+	return indexOf(str, 0, cs) >= 0;
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-bool GenericString<TChar>::Contains(TChar ch, CaseSensitivity cs) const
+bool GenericString<TChar>::contains(TChar ch, CaseSensitivity cs) const
 {
 	TChar str[2] = { ch, 0x00 };
-	return IndexOf(str, 0, cs) >= 0;
+	return indexOf(str, 0, cs) >= 0;
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-int GenericString<TChar>::IndexOf(const StringRefT& str, int startIndex, CaseSensitivity cs) const
+int GenericString<TChar>::indexOf(const StringRefT& str, int startIndex, CaseSensitivity cs) const
 {
-	return StringTraits::IndexOf(c_str(), GetLength(), str.GetBegin(), str.GetLength(), startIndex, cs);
+	return StringTraits::indexOf(c_str(), getLength(), str.getBegin(), str.getLength(), startIndex, cs);
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-int GenericString<TChar>::IndexOf(TChar ch, int startIndex, CaseSensitivity cs) const
+int GenericString<TChar>::indexOf(TChar ch, int startIndex, CaseSensitivity cs) const
 {
 	TChar str[2] = { ch, 0x00 };
-	return StringTraits::IndexOf(c_str(), GetLength(), str, (int)StringTraits::tcslen(str), startIndex, cs);
+	return StringTraits::indexOf(c_str(), getLength(), str, (int)StringTraits::tcslen(str), startIndex, cs);
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-int GenericString<TChar>::LastIndexOf(const TChar* str, int startIndex, int count, CaseSensitivity cs) const
+int GenericString<TChar>::lastIndexOf(const TChar* str, int startIndex, int count, CaseSensitivity cs) const
 {
-	return StringTraits::LastIndexOf(c_str(), GetLength(), str, StringTraits::tcslen(str), startIndex, count, cs);
+	return StringTraits::lastIndexOf(c_str(), getLength(), str, StringTraits::tcslen(str), startIndex, count, cs);
 }
 template<typename TChar>
-int GenericString<TChar>::LastIndexOf(TChar ch, int startIndex, int count, CaseSensitivity cs) const
+int GenericString<TChar>::lastIndexOf(TChar ch, int startIndex, int count, CaseSensitivity cs) const
 {
-	return StringTraits::LastIndexOf(c_str(), GetLength(), &ch, 1, startIndex, count, cs);
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-bool GenericString<TChar>::StartsWith(const TChar* str, CaseSensitivity cs) const
-{
-	return StringTraits::StartsWith(c_str(), GetLength(), str, StringTraits::tcslen(str), cs);
-}
-template<typename TChar>
-bool GenericString<TChar>::StartsWith(TChar ch, CaseSensitivity cs ) const
-{
-	return StringTraits::EndsWith(c_str(), GetLength(), &ch, 1, cs);
+	return StringTraits::lastIndexOf(c_str(), getLength(), &ch, 1, startIndex, count, cs);
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-bool GenericString<TChar>::EndsWith(const TChar* str, CaseSensitivity cs) const
+bool GenericString<TChar>::startsWith(const TChar* str, CaseSensitivity cs) const
 {
-	return StringTraits::EndsWith(c_str(), GetLength(), str, StringTraits::tcslen(str), cs);
+	return StringTraits::startsWith(c_str(), getLength(), str, StringTraits::tcslen(str), cs);
 }
 template<typename TChar>
-bool GenericString<TChar>::EndsWith(TChar ch, CaseSensitivity cs) const
+bool GenericString<TChar>::startsWith(TChar ch, CaseSensitivity cs ) const
 {
-	return StringTraits::EndsWith(c_str(), GetLength(), &ch, 1, cs);
+	return StringTraits::endsWith(c_str(), getLength(), &ch, 1, cs);
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-bool GenericString<TChar>::Equals(const GenericString& str) const
+bool GenericString<TChar>::endsWith(const TChar* str, CaseSensitivity cs) const
 {
-	if (GetLength() != str.GetLength()) {
+	return StringTraits::endsWith(c_str(), getLength(), str, StringTraits::tcslen(str), cs);
+}
+template<typename TChar>
+bool GenericString<TChar>::endsWith(TChar ch, CaseSensitivity cs) const
+{
+	return StringTraits::endsWith(c_str(), getLength(), &ch, 1, cs);
+}
+
+//------------------------------------------------------------------------------
+template<typename TChar>
+bool GenericString<TChar>::equals(const GenericString& str) const
+{
+	if (getLength() != str.getLength()) {
 		return false;
 	}
-	return Compare(str.c_str(), str.GetLength(), CaseSensitivity::CaseSensitive) == 0;
+	return compare(str.c_str(), str.getLength(), CaseSensitivity::CaseSensitive) == 0;
 }
 template<typename TChar>
-bool GenericString<TChar>::Equals(const GenericStringRef<TChar>& str) const
+bool GenericString<TChar>::equals(const GenericStringRef<TChar>& str) const
 {
-	return Compare(str.GetBegin(), str.GetLength(), CaseSensitivity::CaseSensitive) == 0;
+	return compare(str.getBegin(), str.getLength(), CaseSensitivity::CaseSensitive) == 0;
 }
 template<typename TChar>
-bool GenericString<TChar>::Equals(const TChar* str) const
+bool GenericString<TChar>::equals(const TChar* str) const
 {
-	return Compare((str) ? str : GetEmpty().c_str(), -1, CaseSensitivity::CaseSensitive) == 0;
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-int GenericString<TChar>::Compare(const TChar* str, int count, CaseSensitivity cs) const
-{
-	return StringTraits::Compare(c_str(), GetLength(), str, count, -1/*std::max(GetLength(), count)*/, cs);
+	return compare((str) ? str : getEmpty().c_str(), -1, CaseSensitivity::CaseSensitive) == 0;
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-GenericString<TChar> GenericString<TChar>::Left(int count) const
+int GenericString<TChar>::compare(const TChar* str, int count, CaseSensitivity cs) const
 {
-	return StringTraits::Left(c_str(), count);
+	return StringTraits::compare(c_str(), getLength(), str, count, -1/*std::max(GetLength(), count)*/, cs);
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-GenericString<TChar> GenericString<TChar>::Right(int count) const
+GenericString<TChar> GenericString<TChar>::left(int count) const
 {
-	return StringTraits::Right(c_str(), count);
+	return StringTraits::left(c_str(), count);
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-GenericString<TChar> GenericString<TChar>::Mid(int start, int count) const
+GenericString<TChar> GenericString<TChar>::right(int count) const
 {
-	return StringTraits::Mid(c_str(), start, count);
+	return StringTraits::right(c_str(), count);
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-GenericStringArray<TChar> GenericString<TChar>::Split(const TChar* delim, StringSplitOptions option) const
+GenericString<TChar> GenericString<TChar>::mid(int start, int count) const
 {
-	return StringTraits::Split(*this, delim, option);
+	return StringTraits::mid(c_str(), start, count);
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-GenericString<TChar> GenericString<TChar>::ToUpper() const
+GenericStringArray<TChar> GenericString<TChar>::split(const TChar* delim, StringSplitOptions option) const
 {
-	GenericString<TChar> newStr(c_str(), GetLength());
-	std::transform(newStr.m_string->begin(), newStr.m_string->end(), newStr.m_string->begin(), StringTraits::ToUpper<TChar>);
+	return StringTraits::split(*this, delim, option);
+}
+
+//------------------------------------------------------------------------------
+template<typename TChar>
+GenericString<TChar> GenericString<TChar>::toUpper() const
+{
+	GenericString<TChar> newStr(c_str(), getLength());
+	std::transform(newStr.m_string->begin(), newStr.m_string->end(), newStr.m_string->begin(), StringTraits::toUpper<TChar>);
 	return newStr;
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-GenericString<TChar> GenericString<TChar>::ToLower() const
+GenericString<TChar> GenericString<TChar>::toLower() const
 {
-	GenericString<TChar> newStr(c_str(), GetLength());
-	std::transform(newStr.m_string->begin(), newStr.m_string->end(), newStr.m_string->begin(), StringTraits::ToLower<TChar>);
+	GenericString<TChar> newStr(c_str(), getLength());
+	std::transform(newStr.m_string->begin(), newStr.m_string->end(), newStr.m_string->begin(), StringTraits::toLower<TChar>);
 	return newStr;
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-GenericString<TChar> GenericString<TChar>::ToTitleCase() const
+GenericString<TChar> GenericString<TChar>::toTitleCase() const
 {
-	GenericString<TChar> newStr(c_str(), GetLength());
-	std::transform(newStr.m_string->begin(), newStr.m_string->end(), newStr.m_string->begin(), StringTraits::ToLower<TChar>);
-	if (newStr.m_string->size() > 0) (*newStr.m_string)[0] = StringTraits::ToUpper<TChar>((*newStr.m_string)[0]);
+	GenericString<TChar> newStr(c_str(), getLength());
+	std::transform(newStr.m_string->begin(), newStr.m_string->end(), newStr.m_string->begin(), StringTraits::toLower<TChar>);
+	if (newStr.m_string->size() > 0) (*newStr.m_string)[0] = StringTraits::toUpper<TChar>((*newStr.m_string)[0]);
 	return newStr;
 }
 
@@ -843,7 +843,7 @@ GenericString<TChar> GenericString<TChar>::ToTitleCase() const
 	const TChar* end; \
 	int len; \
 	NumberConversionResult res; \
-	StringTraits::Trim(c_str(), GetLength(), &str, &len); \
+	StringTraits::trim(c_str(), getLength(), &str, &len); \
 	type num = StringTraits::func(str, len, base, &end, &res); \
 	if (res == NumberConversionResult::ArgsError)	{ LN_THROW(0, ArgumentException); } \
 	if (res == NumberConversionResult::FormatError)	{ LN_THROW(0, InvalidFormatException); } \
@@ -852,21 +852,21 @@ GenericString<TChar> GenericString<TChar>::ToTitleCase() const
 	return num;
 
 template<typename TChar>
-int8_t GenericString<TChar>::ToInt8(int base) const { TO_INT_DEF(int8_t, ToInt8); }
+int8_t GenericString<TChar>::toInt8(int base) const { TO_INT_DEF(int8_t, toInt8); }
 template<typename TChar>
-int16_t GenericString<TChar>::ToInt16(int base) const { TO_INT_DEF(int16_t, ToInt16); }
+int16_t GenericString<TChar>::toInt16(int base) const { TO_INT_DEF(int16_t, toInt16); }
 template<typename TChar>
-int32_t GenericString<TChar>::ToInt32(int base) const { TO_INT_DEF(int32_t, ToInt32); }
+int32_t GenericString<TChar>::toInt32(int base) const { TO_INT_DEF(int32_t, toInt32); }
 template<typename TChar>
-int64_t GenericString<TChar>::ToInt64(int base) const { TO_INT_DEF(int64_t, ToInt64); }
+int64_t GenericString<TChar>::toInt64(int base) const { TO_INT_DEF(int64_t, toInt64); }
 template<typename TChar>
-uint8_t GenericString<TChar>::ToUInt8(int base) const { TO_INT_DEF(uint8_t, ToUInt8); }
+uint8_t GenericString<TChar>::toUInt8(int base) const { TO_INT_DEF(uint8_t, toUInt8); }
 template<typename TChar>
-uint16_t GenericString<TChar>::ToUInt16(int base) const { TO_INT_DEF(uint16_t, ToUInt16); }
+uint16_t GenericString<TChar>::toUInt16(int base) const { TO_INT_DEF(uint16_t, toUInt16); }
 template<typename TChar>
-uint32_t GenericString<TChar>::ToUInt32(int base) const { TO_INT_DEF(uint32_t, ToUInt32); }
+uint32_t GenericString<TChar>::toUInt32(int base) const { TO_INT_DEF(uint32_t, toUInt32); }
 template<typename TChar>
-uint64_t GenericString<TChar>::ToUInt64(int base) const { TO_INT_DEF(uint64_t, ToUInt64); }
+uint64_t GenericString<TChar>::toUInt64(int base) const { TO_INT_DEF(uint64_t, toUInt64); }
 
 #undef TO_INT_DEF
 
@@ -876,7 +876,7 @@ uint64_t GenericString<TChar>::ToUInt64(int base) const { TO_INT_DEF(uint64_t, T
 	const TChar* end; \
 	int len; \
 	NumberConversionResult res; \
-	StringTraits::Trim(c_str(), GetLength(), &str, &len); \
+	StringTraits::trim(c_str(), getLength(), &str, &len); \
 	type num = StringTraits::func(str, len, base, &end, &res); \
 	if (end != str + len) { return false; } \
 	if (res != NumberConversionResult::Success) { return false; } \
@@ -884,80 +884,80 @@ uint64_t GenericString<TChar>::ToUInt64(int base) const { TO_INT_DEF(uint64_t, T
 	return true;
 
 template<typename TChar>
-bool GenericString<TChar>::TryToInt8(int8_t* outValue, int base) const { TRY_TO_INT_DEF(int8_t, ToInt8); }
+bool GenericString<TChar>::tryToInt8(int8_t* outValue, int base) const { TRY_TO_INT_DEF(int8_t, toInt8); }
 template<typename TChar>
-bool GenericString<TChar>::TryToInt16(int16_t* outValue, int base) const { TRY_TO_INT_DEF(int16_t, ToInt16); }
+bool GenericString<TChar>::tryToInt16(int16_t* outValue, int base) const { TRY_TO_INT_DEF(int16_t, toInt16); }
 template<typename TChar>
-bool GenericString<TChar>::TryToInt32(int32_t* outValue, int base) const { TRY_TO_INT_DEF(int32_t, ToInt32); }
+bool GenericString<TChar>::tryToInt32(int32_t* outValue, int base) const { TRY_TO_INT_DEF(int32_t, toInt32); }
 template<typename TChar>
-bool GenericString<TChar>::TryToInt64(int64_t* outValue, int base) const { TRY_TO_INT_DEF(int64_t, ToInt64); }
+bool GenericString<TChar>::tryToInt64(int64_t* outValue, int base) const { TRY_TO_INT_DEF(int64_t, toInt64); }
 template<typename TChar>
-bool GenericString<TChar>::TryToUInt8(uint8_t* outValue, int base) const { TRY_TO_INT_DEF(uint8_t, ToUInt8); }
+bool GenericString<TChar>::tryToUInt8(uint8_t* outValue, int base) const { TRY_TO_INT_DEF(uint8_t, toUInt8); }
 template<typename TChar>
-bool GenericString<TChar>::TryToUInt16(uint16_t* outValue, int base) const { TRY_TO_INT_DEF(uint16_t, ToUInt16); }
+bool GenericString<TChar>::tryToUInt16(uint16_t* outValue, int base) const { TRY_TO_INT_DEF(uint16_t, toUInt16); }
 template<typename TChar>
-bool GenericString<TChar>::TryToUInt32(uint32_t* outValue, int base) const { TRY_TO_INT_DEF(uint32_t, ToUInt32); }
+bool GenericString<TChar>::tryToUInt32(uint32_t* outValue, int base) const { TRY_TO_INT_DEF(uint32_t, toUInt32); }
 template<typename TChar>
-bool GenericString<TChar>::TryToUInt64(uint64_t* outValue, int base) const { TRY_TO_INT_DEF(uint64_t, ToUInt64); }
+bool GenericString<TChar>::tryToUInt64(uint64_t* outValue, int base) const { TRY_TO_INT_DEF(uint64_t, toUInt64); }
 
 #undef TRY_TO_INT_DEF
 
 
 //------------------------------------------------------------------------------
 template<>
-GenericString<char>	GenericString<char>::ToStringA() const
+GenericString<char>	GenericString<char>::toStringA() const
 {
 	return *this;
 }
 template<>
-GenericString<char>	GenericString<wchar_t>::ToStringA() const
+GenericString<char>	GenericString<wchar_t>::toStringA() const
 {
 	GenericString<char> str;
-	str.AssignCStr(this->c_str());
+	str.assignCStr(this->c_str());
 	return str;
 }
 
 //------------------------------------------------------------------------------
 template<>
-GenericString<wchar_t> GenericString<char>::ToStringW() const
+GenericString<wchar_t> GenericString<char>::toStringW() const
 {
 	GenericString<wchar_t> str;
-	str.AssignCStr(this->c_str());
+	str.assignCStr(this->c_str());
 	return str;
 }
 template<>
-GenericString<wchar_t>	GenericString<wchar_t>::ToStringW() const
+GenericString<wchar_t>	GenericString<wchar_t>::toStringW() const
 {
 	return *this;
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-GenericString<TChar> GenericString<TChar>::FromNativeCharString(const char* str, int length)
+GenericString<TChar> GenericString<TChar>::fromNativeCharString(const char* str, int length)
 {
 	GenericString<TChar> out;
-	out.AssignCStr(str, (length < 0) ? StringTraits::tcslen(str) : length);
+	out.assignCStr(str, (length < 0) ? StringTraits::tcslen(str) : length);
 	return out;
 }
 template<typename TChar>
-GenericString<TChar> GenericString<TChar>::FromNativeCharString(const wchar_t* str, int length)
+GenericString<TChar> GenericString<TChar>::fromNativeCharString(const wchar_t* str, int length)
 {
 	GenericString<TChar> out;
-	out.AssignCStr(str, (length < 0) ? StringTraits::tcslen(str) : length);
+	out.assignCStr(str, (length < 0) ? StringTraits::tcslen(str) : length);
 	return out;
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-const GenericString<TChar>& GenericString<TChar>::GetNewLine()
+const GenericString<TChar>& GenericString<TChar>::getNewLine()
 {
-	static GenericString<TChar> nl(Environment::GetNewLine<TChar>());
+	static GenericString<TChar> nl(Environment::getNewLine<TChar>());
 	return nl;
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-const GenericString<TChar>& GenericString<TChar>::GetEmpty()
+const GenericString<TChar>& GenericString<TChar>::getEmpty()
 {
 	static GenericString<TChar> str;
 	return str;
@@ -965,37 +965,37 @@ const GenericString<TChar>& GenericString<TChar>::GetEmpty()
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-size_t GenericString<TChar>::GetHashCode() const
+size_t GenericString<TChar>::getHashCode() const
 {
-	if (GetLength() == 0) return 0;
-	return ln::Hash::CalcHash(c_str(), GetLength());
+	if (getLength() == 0) return 0;
+	return ln::Hash::calcHash(c_str(), getLength());
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-TChar* GenericString<TChar>::GetData()
+TChar* GenericString<TChar>::getData()
 {
-	Realloc();
+	realloc();
 	return &m_string->at(0);
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-GenericString<TChar> GenericString<TChar>::SPrintf(const GenericString<TChar>& format, ...)
+GenericString<TChar> GenericString<TChar>::sprintf(const GenericString<TChar>& format, ...)
 {
 	// http://jumble-note.blogspot.jp/2012/09/c-vacopy.html
 	const TChar* fmt = format.c_str();	// VS2015 エラー回避。一度変数に入れる。
 	va_list args1, args2;
 	va_start(args1, fmt);
 	va_copy(args2, args1);
-	int len = StringTraits::tvscprintf_l(format.c_str(), Locale::GetC().GetNativeLocale(), args1);	// 文字数を求める
+	int len = StringTraits::tvscprintf_l(format.c_str(), Locale::getC().getNativeLocale(), args1);	// 文字数を求める
 
 	// 文字数が一定以内ならメモリ確保せずにスタックを使い、速度向上を図る
 	if (len < MaxFormatLength)
 	{
 		TChar buf[MaxFormatLength + 1];
 		memset(buf, 0, sizeof(buf));
-		StringTraits::tvsnprintf_l(buf, MaxFormatLength + 1, format.c_str(), Locale::GetDefault().GetNativeLocale(), args2);
+		StringTraits::tvsnprintf_l(buf, MaxFormatLength + 1, format.c_str(), Locale::getDefault().getNativeLocale(), args2);
 		va_end(args1);
 		va_end(args2);
 		return GenericString<TChar>(buf);
@@ -1003,26 +1003,26 @@ GenericString<TChar> GenericString<TChar>::SPrintf(const GenericString<TChar>& f
 	else
 	{
 		ByteBuffer buf(len + 1);
-		StringTraits::tvsnprintf_l((TChar*)buf.GetData(), len + 1, format.c_str(), Locale::GetDefault().GetNativeLocale(), args2);
+		StringTraits::tvsnprintf_l((TChar*)buf.getData(), len + 1, format.c_str(), Locale::getDefault().getNativeLocale(), args2);
 		va_end(args1);
 		va_end(args2);
-		return GenericString<TChar>((TChar*)buf.GetData());
+		return GenericString<TChar>((TChar*)buf.getData());
 	}
 }
 template<typename TChar>
-GenericString<TChar> GenericString<TChar>::SPrintf(const TChar* format, ...)
+GenericString<TChar> GenericString<TChar>::sprintf(const TChar* format, ...)
 {
 	va_list args1, args2;
 	va_start(args1, format);
 	va_copy(args2, args1);
-	int len = StringTraits::tvscprintf_l(format, Locale::GetC().GetNativeLocale(), args1);	// 文字数を求める
+	int len = StringTraits::tvscprintf_l(format, Locale::getC().getNativeLocale(), args1);	// 文字数を求める
 
 	// 文字数が一定以内ならメモリ確保せずにスタックを使い、速度向上を図る
 	if (len < MaxFormatLength)
 	{
 		TChar buf[MaxFormatLength + 1];
 		memset(buf, 0, sizeof(buf));
-		StringTraits::tvsnprintf_l(buf, MaxFormatLength + 1, format, Locale::GetDefault().GetNativeLocale(), args2);
+		StringTraits::tvsnprintf_l(buf, MaxFormatLength + 1, format, Locale::getDefault().getNativeLocale(), args2);
 		va_end(args1);
 		va_end(args2);
 		return GenericString<TChar>(buf);
@@ -1030,36 +1030,36 @@ GenericString<TChar> GenericString<TChar>::SPrintf(const TChar* format, ...)
 	else
 	{
 		ByteBuffer buf((len + 1) * sizeof(TChar));
-		int ll = StringTraits::tvsnprintf_l((TChar*)buf.GetData(), len + 1, format, Locale::GetDefault().GetNativeLocale(), args2);
+		int ll = StringTraits::tvsnprintf_l((TChar*)buf.getData(), len + 1, format, Locale::getDefault().getNativeLocale(), args2);
 		va_end(args1);
 		va_end(args2);
-		return GenericString<TChar>((TChar*)buf.GetData(), len);
+		return GenericString<TChar>((TChar*)buf.getData(), len);
 	}
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-void GenericString<TChar>::Detach() LN_NOEXCEPT
+void GenericString<TChar>::detach() LN_NOEXCEPT
 {
 	LN_SAFE_RELEASE(m_string);
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-void GenericString<TChar>::Attach(detail::GenericStringCore<TChar>* core)
+void GenericString<TChar>::attach(detail::GenericStringCore<TChar>* core)
 {
 	LN_REFOBJ_SET(m_string, core);
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-void GenericString<TChar>::AssignTString(const TChar* str, int len)
+void GenericString<TChar>::assignTString(const TChar* str, int len)
 {
 	LN_SAFE_RELEASE(m_string);
 	if (str == nullptr || len == 0)
 	{
 		// 空の文字列になる場合は共有の空文字列を参照する
-		Attach(detail::GenericStringCore<TChar>::GetSharedEmpty());
+		attach(detail::GenericStringCore<TChar>::getSharedEmpty());
 	}
 	else 
 	{
@@ -1070,13 +1070,13 @@ void GenericString<TChar>::AssignTString(const TChar* str, int len)
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-void GenericString<TChar>::AssignTString(int count, TChar ch)
+void GenericString<TChar>::assignTString(int count, TChar ch)
 {
 	LN_SAFE_RELEASE(m_string);
 	if (count == 0)
 	{
 		// 空の文字列になる場合は共有の空文字列を参照する
-		Attach(detail::GenericStringCore<TChar>::GetSharedEmpty());
+		attach(detail::GenericStringCore<TChar>::getSharedEmpty());
 	}
 	else
 	{
@@ -1089,9 +1089,9 @@ void GenericString<TChar>::AssignTString(int count, TChar ch)
 // ソース文字列の共有参照を切り、新しい GenericStringCore を確保する
 //------------------------------------------------------------------------------
 template<typename TChar>
-void GenericString<TChar>::Realloc()
+void GenericString<TChar>::realloc()
 {
-	if (m_string->IsShared())
+	if (m_string->isShared())
 	{
 		detail::GenericStringCore<TChar>* old = m_string;
 		m_string = LN_NEW detail::GenericStringCore<TChar>();	// 参照カウントは 1
@@ -1107,9 +1107,9 @@ void GenericString<TChar>::Realloc()
 // 
 //------------------------------------------------------------------------------
 template<typename TChar>
-TChar& GenericString<TChar>::InternalGetAt(int index)
+TChar& GenericString<TChar>::internalGetAt(int index)
 {
-	LN_ASSERT(0 <= index && index < GetLength());
+	LN_ASSERT(0 <= index && index < getLength());
 	return m_string->at(index);
 }
 
@@ -1117,25 +1117,25 @@ TChar& GenericString<TChar>::InternalGetAt(int index)
 // 
 //------------------------------------------------------------------------------
 template<typename TChar>
-const TChar& GenericString<TChar>::InternalGetAt(int index) const
+const TChar& GenericString<TChar>::internalGetAt(int index) const
 {
-	LN_ASSERT(0 <= index && index < GetLength());
+	LN_ASSERT(0 <= index && index < getLength());
 	return m_string->at(index);
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-Encoding* GenericString<TChar>::GetThisTypeEncoding() const
+Encoding* GenericString<TChar>::getThisTypeEncoding() const
 {
 	if (sizeof(TChar) == sizeof(char))
 	{
 		// this のエンコーディングはシステム依存である
-		return Encoding::GetSystemMultiByteEncoding();
+		return Encoding::getSystemMultiByteEncoding();
 	}
 	else if (sizeof(TChar) == sizeof(wchar_t))
 	{
 		// this のエンコーディングは wchar_t である
-		return Encoding::GetWideCharEncoding();
+		return Encoding::getWideCharEncoding();
 	}
 	else
 	{
@@ -1155,12 +1155,12 @@ namespace std {
 // for unordered_map key
 std::size_t hash<ln::StringA>::operator () (const ln::StringA& key) const
 {
-	return ln::Hash::CalcHash(key.c_str(), key.GetLength());
+	return ln::Hash::calcHash(key.c_str(), key.getLength());
 }
 
 std::size_t hash<ln::StringW>::operator () (const ln::StringW& key) const
 {
-	return ln::Hash::CalcHash(key.c_str(), key.GetLength());
+	return ln::Hash::calcHash(key.c_str(), key.getLength());
 }
 
 } // namespace std

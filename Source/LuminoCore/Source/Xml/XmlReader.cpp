@@ -1,68 +1,68 @@
-
+ï»¿
 /*
 
-ƒhƒLƒ…ƒƒ“ƒgƒƒ‚F
-	EƒGƒ“ƒeƒBƒeƒBQÆ‚Í”F¯‚µ‚Ü‚·‚ª‰ğŒˆ‚Í‚µ‚Ü‚¹‚ñBXmlNodeType::EntityReference
+ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆãƒ¡ãƒ¢ï¼š
+	ãƒ»ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£å‚ç…§ã¯èªè­˜ã—ã¾ã™ãŒè§£æ±ºã¯ã—ã¾ã›ã‚“ã€‚XmlNodeType::EntityReference
 
 
 
-XmlNodeType::EntityReference ‚ÌƒTƒ“ƒvƒ‹
+XmlNodeType::EntityReference ã®ã‚µãƒ³ãƒ—ãƒ«
 http://www.atmarkit.co.jp/fxml/tecs/007entity/07.html
 
 
-&lt; ‚Æ‚©‚ÌƒGƒ“ƒeƒBƒeƒB‚Í‰ğŒˆ‚µ‚Ä‚©‚çƒnƒ“ƒhƒ‰‚É’Ê’m‚µ‚È‚¯‚ê‚ÎˆÓ–¡‚ª–³‚¢‚Ì‚Å
-StringRef g‚¤‚±‚Æ‚Í–³‚¢‚©‚àB
+&lt; ã¨ã‹ã®ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã¯è§£æ±ºã—ã¦ã‹ã‚‰ãƒãƒ³ãƒ‰ãƒ©ã«é€šçŸ¥ã—ãªã‘ã‚Œã°æ„å‘³ãŒç„¡ã„ã®ã§
+StringRef ä½¿ã†ã“ã¨ã¯ç„¡ã„ã‹ã‚‚ã€‚
 
 
 
-ƒAƒ‹ƒSƒŠƒYƒ€ ƒƒ‚F
+ã‚¢ãƒ«ã‚´ãƒªã‚ºãƒ  ãƒ¡ãƒ¢ï¼š
 
-	‰Â”\‚ÈŒÀ‚è alloc ‚ğ—}‚¦‚é‚½‚ßA­‚µ“Áê‚ÈƒAƒ‹ƒSƒŠƒYƒ€‚É‚È‚Á‚Ä‚¢‚éB
+	å¯èƒ½ãªé™ã‚Š alloc ã‚’æŠ‘ãˆã‚‹ãŸã‚ã€å°‘ã—ç‰¹æ®Šãªã‚¢ãƒ«ã‚´ãƒªã‚ºãƒ ã«ãªã£ã¦ã„ã‚‹ã€‚
 
-	1 “x‚É‰ğÍ‚·‚é‚Ì‚ÍA—v‘f1‚Â•ª‚Ü‚½‚Í—v‘f‚ÌŠO‘¤1—Ìˆæ•ªB
-	‚Â‚Ü‚èA
+	1 åº¦ã«è§£æã™ã‚‹ã®ã¯ã€è¦ç´ 1ã¤åˆ†ã¾ãŸã¯è¦ç´ ã®å¤–å´1é ˜åŸŸåˆ†ã€‚
+	ã¤ã¾ã‚Šã€
 
 		<a b="b"> C&AAA; </a>
 
-	‚Æ‚¢‚¤ XML •¶š—ñ‚Í 3 ‰ñ‚É•ª‚©‚ê‚Ä‰ğÍ‚³‚ê‚éB
+	ã¨ã„ã† XML æ–‡å­—åˆ—ã¯ 3 å›ã«åˆ†ã‹ã‚Œã¦è§£æã•ã‚Œã‚‹ã€‚
 
-	ƒeƒLƒXƒg " C&AAA; " ‚ÍA[Text][EntitiyReference][WhiteSpace] ‚Ì 3 ‚Â‚É•ª‚©‚ê‚é‚±‚Æ‚É’ˆÓB
-	‚±‚Ìê‡AÅ‰‚Ì Read() ‚Å‚Í [Text]AŸ‚Ì Read() ‚Å‚Í [EntitiyReference] ‚ğ•Ô‚µA
-	‘S‚Ä•Ô‚µI‚í‚Á‚½Ÿ‚Ì Read() ‚ÅAŸ‚Ìƒm[ƒh‚Ì‰ğÍ‚ÉˆÚ‚éB
+	ãƒ†ã‚­ã‚¹ãƒˆ " C&AAA; " ã¯ã€[Text][EntitiyReference][WhiteSpace] ã® 3 ã¤ã«åˆ†ã‹ã‚Œã‚‹ã“ã¨ã«æ³¨æ„ã€‚
+	ã“ã®å ´åˆã€æœ€åˆã® Read() ã§ã¯ [Text]ã€æ¬¡ã® Read() ã§ã¯ [EntitiyReference] ã‚’è¿”ã—ã€
+	å…¨ã¦è¿”ã—çµ‚ã‚ã£ãŸæ¬¡ã® Read() ã§ã€æ¬¡ã®ãƒãƒ¼ãƒ‰ã®è§£æã«ç§»ã‚‹ã€‚
 
 
-	ƒLƒƒƒbƒVƒ…‚É‚Â‚¢‚ÄEEE
+	ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã«ã¤ã„ã¦ãƒ»ãƒ»ãƒ»
 
 		<data a="1" b="2">
 
-	‚ğ\¬‚·‚éƒm[ƒh‚Í [Element][Attribute][Attribute] ‚Ì3‚ÂB
-	‰ğÍ‚³‚ê‚½ƒm[ƒh‚Í m_nodes ‚É’Ç‰Á‚³‚ê‚Ä‚¢‚­B
+	ã‚’æ§‹æˆã™ã‚‹ãƒãƒ¼ãƒ‰ã¯ [Element][Attribute][Attribute] ã®3ã¤ã€‚
+	è§£æã•ã‚ŒãŸãƒãƒ¼ãƒ‰ã¯ m_nodes ã«è¿½åŠ ã•ã‚Œã¦ã„ãã€‚
 
-	“¯‚É–¼‘O‚Æ’l‚Ì•¶š—ñ‚Í m_textCache ‚É’Ç‰Á‚³‚ê‚Ä‚¢‚­B
-	‚±‚Ì—á‚ğ“Ç‚İæ‚é‚Æ m_textCache ‚É‚Í "data12" ‚ª“ü‚Á‚Ä‚¢‚éB
-	‚±‚Ì m_textCache ‚Ì‚¤‚¿‚Ç‚±‚©‚ç‚Ç‚±‚Ü‚Å‚ª1‚Â‚Ì•¶š—ñ‚È‚Ì‚©‚ÍAŠeƒm[ƒh‚ª’m‚Á‚Ä‚¢‚éB
+	åŒæ™‚ã«åå‰ã¨å€¤ã®æ–‡å­—åˆ—ã¯ m_textCache ã«è¿½åŠ ã•ã‚Œã¦ã„ãã€‚
+	ã“ã®ä¾‹ã‚’èª­ã¿å–ã‚‹ã¨ m_textCache ã«ã¯ "data12" ãŒå…¥ã£ã¦ã„ã‚‹ã€‚
+	ã“ã® m_textCache ã®ã†ã¡ã©ã“ã‹ã‚‰ã©ã“ã¾ã§ãŒ1ã¤ã®æ–‡å­—åˆ—ãªã®ã‹ã¯ã€å„ãƒãƒ¼ãƒ‰ãŒçŸ¥ã£ã¦ã„ã‚‹ã€‚
 
 
 	### 
 
 */
 
-// "  2<test>"  // ƒ^ƒO‚Ì‘O‚É•Ï‚È•¶š‚ª‚ ‚é‚ÆƒGƒ‰[
+// "  2<test>"  // ã‚¿ã‚°ã®å‰ã«å¤‰ãªæ–‡å­—ãŒã‚ã‚‹ã¨ã‚¨ãƒ©ãƒ¼
 
-// 4&book1;     // "  4" ‚ª TextA"&book1;" ‚ª EntityReference
+// 4&book1;     // "  4" ãŒ Textã€"&book1;" ãŒ EntityReference
 
 /*
-* lt ‚È‚Ç‚Ì’è‹`Ï‚İƒGƒ“ƒeƒBƒeƒB‚Í EntityReference ‚É‚È‚ç‚È‚¢B
-* ‘Î‚µ‚ÄA©•ª‚Å lt2 ‚Æ‚©’è‹`‚·‚é‚Æ EntityReference ‚É‚È‚éB
+* lt ãªã©ã®å®šç¾©æ¸ˆã¿ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã¯ EntityReference ã«ãªã‚‰ãªã„ã€‚
+* å¯¾ã—ã¦ã€è‡ªåˆ†ã§ lt2 ã¨ã‹å®šç¾©ã™ã‚‹ã¨ EntityReference ã«ãªã‚‹ã€‚
 *
-* XMLd—l‚Å‚Í‚±‚¤‚È‚Á‚Ä‚¢‚é‚ªA
+* XMLä»•æ§˜ã§ã¯ã“ã†ãªã£ã¦ã„ã‚‹ãŒã€
 * <!ENTITY lt     "&#38;#60;">
 *
 * <!ENTITY lt2     "&#38;#60;">
-* A&lt2;S      // "A" "EntityReference" "S" ‚É•ª‚©‚ê‚é
+* A&lt2;S      // "A" "EntityReference" "S" ã«åˆ†ã‹ã‚Œã‚‹
 *
 */
-// & lt;   ƒGƒ“ƒeƒBƒeƒBQÆ‚ÌŠÔ‚ÉƒXƒy[ƒX‚ÍNG
+// & lt;   ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£å‚ç…§ã®é–“ã«ã‚¹ãƒšãƒ¼ã‚¹ã¯NG
 
 #include "../Internal.h"
 #include <Lumino/Base/StringHelper.h>
@@ -113,18 +113,18 @@ XmlReader::XmlReader()
 XmlReader::XmlReader(const String& str)
 	: XmlReader()
 {
-	m_reader.Attach(LN_NEW StringReader(str), false);
-	m_nodes.Reserve(32);
-	m_textCache.Reserve(1024);
+	m_reader.attach(LN_NEW StringReader(str), false);
+	m_nodes.reserve(32);
+	m_textCache.reserve(1024);
 }
 
 //------------------------------------------------------------------------------
 XmlReader::XmlReader(TextReader* textReader)
 	: XmlReader()
 {
-	m_reader.Attach(textReader, true);
-	m_nodes.Reserve(32);
-	m_textCache.Reserve(1024);
+	m_reader.attach(textReader, true);
+	m_nodes.reserve(32);
+	m_textCache.reserve(1024);
 }
 
 //------------------------------------------------------------------------------
@@ -133,7 +133,7 @@ XmlReader::~XmlReader()
 }
 
 //------------------------------------------------------------------------------
-void XmlReader::InitializeReader(TextReader* reader)
+void XmlReader::initializeReader(TextReader* reader)
 {
 	if (LN_CHECK_ARG(reader != nullptr)) return;
 	if (LN_CHECK_STATE(m_reader == nullptr)) return;
@@ -141,18 +141,18 @@ void XmlReader::InitializeReader(TextReader* reader)
 }
 
 //------------------------------------------------------------------------------
-// ¦Read() ©‘Ì‚Í‘®«ƒm[ƒh‚Í•Ô‚³‚È‚¢B
-bool XmlReader::Read()
+// â€»Read() è‡ªä½“ã¯å±æ€§ãƒãƒ¼ãƒ‰ã¯è¿”ã•ãªã„ã€‚
+bool XmlReader::read()
 {
-	bool r = ReadInternal();
-	if (LN_CHECK(!m_errorInfo.HasError(), XmlException, m_errorInfo.message.c_str())) return false;
+	bool r = readInternal();
+	if (LN_CHECK(!m_errorInfo.hasError(), XmlException, m_errorInfo.message.c_str())) return false;
 	return r;
 }
 
 //------------------------------------------------------------------------------
-XmlNodeType XmlReader::GetNodeType()  const
+XmlNodeType XmlReader::getNodeType()  const
 {
-	if (m_currentNode == nullptr || m_nodes.IsEmpty())
+	if (m_currentNode == nullptr || m_nodes.isEmpty())
 	{
 		return XmlNodeType::None;
 	}
@@ -160,81 +160,81 @@ XmlNodeType XmlReader::GetNodeType()  const
 }
 
 //------------------------------------------------------------------------------
-const String& XmlReader::GetName()
+const String& XmlReader::getName()
 {
-	if (m_nodes.IsEmpty())
+	if (m_nodes.isEmpty())
 	{
-		m_tmpName.Clear();
+		m_tmpName.clear();
 	}
 	else
 	{
 		if (m_currentNode->NameStartPos == -1 || m_currentNode->NameLen == 0)
 		{
-			m_tmpName.Clear();	// Node ‚Í‚ ‚é‚¯‚Ç–¼‘O‚ª–³‚©‚Á‚½
+			m_tmpName.clear();	// Node ã¯ã‚ã‚‹ã‘ã©åå‰ãŒç„¡ã‹ã£ãŸ
 		}
 		else
 		{
 			const TCHAR* name = &m_textCache[m_currentNode->NameStartPos];
-			m_tmpName.AssignCStr(name, m_currentNode->NameLen);
+			m_tmpName.assignCStr(name, m_currentNode->NameLen);
 		}
 	}
 	return m_tmpName;
 }
 
 //------------------------------------------------------------------------------
-const String& XmlReader::GetValue()
+const String& XmlReader::getValue()
 {
-	if (m_nodes.IsEmpty())
+	if (m_nodes.isEmpty())
 	{
-		m_valueCache.Clear();
+		m_valueCache.clear();
 	}
 	else
 	{
 		if (m_currentNode->ValueStartPos == -1 || m_currentNode->ValueLen == 0)
 		{
-			m_valueCache.Clear();	// Node ‚Í‚ ‚é‚¯‚Ç’l‚ª–³‚©‚Á‚½
+			m_valueCache.clear();	// Node ã¯ã‚ã‚‹ã‘ã©å€¤ãŒç„¡ã‹ã£ãŸ
 		}
 		else
 		{
-			// ’è‹`Ï‚İ Entity ‚ğ“WŠJ‚·‚é
-			ExpandReservedEntities(&m_textCache[m_currentNode->ValueStartPos], m_currentNode->ValueLen, &m_valueCacheBuilder);
-			m_valueCache = m_valueCacheBuilder.ToString();
+			// å®šç¾©æ¸ˆã¿ Entity ã‚’å±•é–‹ã™ã‚‹
+			expandReservedEntities(&m_textCache[m_currentNode->ValueStartPos], m_currentNode->ValueLen, &m_valueCacheBuilder);
+			m_valueCache = m_valueCacheBuilder.toString();
 		}
 	}
 	return m_valueCache;
 }
 
 //------------------------------------------------------------------------------
-bool XmlReader::IsEmptyElement() const
+bool XmlReader::isEmptyElement() const
 {
-	if (m_nodes.IsEmpty()) {
+	if (m_nodes.isEmpty()) {
 		return false;
 	}
-	return m_currentNode->IsEmptyElement;
+	return m_currentNode->isEmptyElement;
 }
 
 //------------------------------------------------------------------------------
-bool XmlReader::IsStartElement()
+bool XmlReader::isStartElement()
 {
-	return (MoveToContent() == XmlNodeType::Element);
+	return (moveToContent() == XmlNodeType::Element);
 }
 
 //------------------------------------------------------------------------------
-bool XmlReader::IsStartElement(const String& name)
+bool XmlReader::isStartElement(const String& name)
 {
 	return
-		(MoveToContent() == XmlNodeType::Element) &&
-		(GetName() == name);
+		(moveToContent() == XmlNodeType::Element) &&
+		(getName() == name);
 }
 
 //------------------------------------------------------------------------------
-int XmlReader::GetAttributeCount() const
+int XmlReader::getAttributeCount() const
 {
 	return m_currentAttrCount;
 }
 
 //------------------------------------------------------------------------------
-bool XmlReader::MoveToFirstAttribute()
+bool XmlReader::moveToFirstAttribute()
 {
 	if (m_currentAttrCount <= 0) {
 		return false;
@@ -246,7 +246,7 @@ bool XmlReader::MoveToFirstAttribute()
 }
 
 //------------------------------------------------------------------------------
-bool XmlReader::MoveToNextAttribute()
+bool XmlReader::moveToNextAttribute()
 {
 	if (m_currentAttrIndex + 1 >= m_currentAttrCount) {
 		return false;
@@ -258,11 +258,11 @@ bool XmlReader::MoveToNextAttribute()
 }
 
 //------------------------------------------------------------------------------
-bool XmlReader::MoveToElement()
+bool XmlReader::moveToElement()
 {
 	if (m_currentNode == nullptr || m_currentNode->Type != XmlNodeType::Attribute)
 	{
-		// Œ»İˆÊ’u‚ª Attribute ‚Å‚È‚¯‚ê‚Î‰½‚à‚·‚é•K—v‚Í–³‚¢
+		// ç¾åœ¨ä½ç½®ãŒ Attribute ã§ãªã‘ã‚Œã°ä½•ã‚‚ã™ã‚‹å¿…è¦ã¯ç„¡ã„
 		return false;
 	}
 
@@ -272,46 +272,46 @@ bool XmlReader::MoveToElement()
 }
 
 //------------------------------------------------------------------------------
-XmlNodeType XmlReader::MoveToContent()
+XmlNodeType XmlReader::moveToContent()
 {
 	do {
-		switch (GetNodeType())
+		switch (getNodeType())
 		{
 		case XmlNodeType::Attribute:
-			MoveToElement();
-			return GetNodeType();
+			moveToElement();
+			return getNodeType();
 		case XmlNodeType::Element:
 		case XmlNodeType::EndElement:
 		case XmlNodeType::CDATA:
 		case XmlNodeType::Text:
 		case XmlNodeType::EntityReference:
-			return GetNodeType();
+			return getNodeType();
 		}
-	} while (Read());
+	} while (read());
 
-	return GetNodeType();
+	return getNodeType();
 }
 
 //------------------------------------------------------------------------------
-String XmlReader::ReadString()
+String XmlReader::readString()
 {
-	MoveToElement();
-	if (GetNodeType() == XmlNodeType::Element)
+	moveToElement();
+	if (getNodeType() == XmlNodeType::Element)
 	{
-		if (IsEmptyElement()) {
-			return String::GetEmpty();
+		if (isEmptyElement()) {
+			return String::getEmpty();
 		}
-		else if (!Read()) {
-			return String::GetEmpty();
+		else if (!read()) {
+			return String::getEmpty();
 		}
-		if (GetNodeType() == XmlNodeType::EndElement) {
-			return String::GetEmpty();
+		if (getNodeType() == XmlNodeType::EndElement) {
+			return String::getEmpty();
 		}
 	}
 	String result;
-	while (GetNodeType() == XmlNodeType::Text) {
-		result += GetValue();
-		if (!Read()) {
+	while (getNodeType() == XmlNodeType::Text) {
+		result += getValue();
+		if (!read()) {
 			break;
 		}
 	}
@@ -320,20 +320,20 @@ String XmlReader::ReadString()
 
 
 //------------------------------------------------------------------------------
-StringRef XmlReader::GetStringFromCache(int pos, int len)
+StringRef XmlReader::getStringFromCache(int pos, int len)
 {
 	return StringRef(&m_textCache[pos], len);
 }
 
 //------------------------------------------------------------------------------
-StringRef XmlReader::GetNodeName(const NodeData& node)
+StringRef XmlReader::getNodeName(const NodeData& node)
 {
 	if (node.NameLen == 0) return StringRef();
 	return StringRef(&m_textCache[node.NameStartPos], node.NameLen);
 }
 
 //------------------------------------------------------------------------------
-bool XmlReader::ReadInternal()
+bool XmlReader::readInternal()
 {
 	while (true)
 	{
@@ -343,8 +343,8 @@ bool XmlReader::ReadInternal()
 			{
 				//if (m_stockElementCount > 0)
 				//{
-				//	m_currentElementNodePos += m_currentNode->AttrCount;	// ‘®«ƒm[ƒh‚ğ“Ç‚İ”ò‚Î‚· (‚ÆŒ¾‚Á‚Ä‚àŒ»İ‚Í Text ƒm[ƒh‚Ì‚İ‚±‚Ì if ‚É“ü‚Á‚Ä‚­‚é‚©‚çÀ¿ˆÓ–¡‚Í–³‚¢‚ª)
-				//	m_currentElementNodePos++;								// Ÿ‚Ìƒm[ƒh‚ğw‚·
+				//	m_currentElementNodePos += m_currentNode->AttrCount;	// å±æ€§ãƒãƒ¼ãƒ‰ã‚’èª­ã¿é£›ã°ã™ (ã¨è¨€ã£ã¦ã‚‚ç¾åœ¨ã¯ Text ãƒãƒ¼ãƒ‰ã®ã¿ã“ã® if ã«å…¥ã£ã¦ãã‚‹ã‹ã‚‰å®Ÿè³ªæ„å‘³ã¯ç„¡ã„ãŒ)
+				//	m_currentElementNodePos++;								// æ¬¡ã®ãƒãƒ¼ãƒ‰ã‚’æŒ‡ã™
 				//	m_currentNode = &m_nodes[m_currentElementNodePos];
 				//	m_currentAttrCount = m_currentNode->AttrCount;
 				//	m_stockElementCount--;
@@ -358,13 +358,13 @@ bool XmlReader::ReadInternal()
 				//m_currentNode = NULL;
 				//m_currentAttrIndex = -1;
 
-				int ch = m_reader->Peek();
-				if (ch < 0) { return false; }	// ‚à‚¤“Ç‚İæ‚ê‚é•¶š‚ª–³‚¢
+				int ch = m_reader->peek();
+				if (ch < 0) { return false; }	// ã‚‚ã†èª­ã¿å–ã‚Œã‚‹æ–‡å­—ãŒç„¡ã„
 				if (ch == '<') {
-					if (!ParseElementInner()) { return false; }
+					if (!parseElementInner()) { return false; }
 				}
 				else {
-					if (!ParseElementOuter()) { return false; }
+					if (!parseElementOuter()) { return false; }
 				}
 
 				//m_currentElementNodePos = 0;
@@ -377,24 +377,24 @@ bool XmlReader::ReadInternal()
 
 			}
 
-			case ParsingState::PopNode:
+			case ParsingState::popNode:
 			{
-				PopNode();
-				m_parsingState = ParsingState::ReadElement;	// TODO: ReadDocument ‚Æ‚©ì‚éH‚Æ‚¢‚¤‚©•¡”ƒhƒLƒ…ƒƒ“ƒg‚Í–³‚µ‚¾‚©‚ç End ‚Æ‚©‚Ì‚Ù‚¤‚ª‚¢‚¢‚©B
+				popNode();
+				m_parsingState = ParsingState::ReadElement;	// TODO: ReadDocument ã¨ã‹ä½œã‚‹ï¼Ÿã¨ã„ã†ã‹è¤‡æ•°ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆã¯ç„¡ã—ã ã‹ã‚‰ End ã¨ã‹ã®ã»ã†ãŒã„ã„ã‹ã€‚
 				continue;
 			}
 			case ParsingState::IterateAttributes:
 			{
-				// IterateAttributes ’†‚É Read() ‚³‚ê‚½‚çAŸ‚Ì Element ‚ğ“Ç‚İ‚És‚­
+				// IterateAttributes ä¸­ã« Read() ã•ã‚ŒãŸã‚‰ã€æ¬¡ã® Element ã‚’èª­ã¿ã«è¡Œã
 
-				MoveToElement();
-				if (m_currentNode->IsEmptyElement)
-					m_parsingState = ParsingState::PopNode;	// ‹óƒ^ƒO‚È‚çæ‚É pop ‚ª•K—v
+				moveToElement();
+				if (m_currentNode->isEmptyElement)
+					m_parsingState = ParsingState::popNode;	// ç©ºã‚¿ã‚°ãªã‚‰å…ˆã« pop ãŒå¿…è¦
 				else
 					m_parsingState = ParsingState::ReadElement;
 
-				// Attribute ‚ğ”jŠü
-				m_nodes.Resize(m_currentElementNodePos + 1);	// TODO: ‚±‚Ì•Ó‚ÌŒ¸‚ç‚·ˆ—‚àƒCƒ“ƒfƒbƒNƒXŒ¸‚ç‚·‚¾‚¯‚É‚µ‚½‚¢‚ªEEE
+				// Attribute ã‚’ç ´æ£„
+				m_nodes.resize(m_currentElementNodePos + 1);	// TODO: ã“ã®è¾ºã®æ¸›ã‚‰ã™å‡¦ç†ã‚‚ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹æ¸›ã‚‰ã™ã ã‘ã«ã—ãŸã„ãŒãƒ»ãƒ»ãƒ»
 
 				continue;
 			}
@@ -403,9 +403,9 @@ bool XmlReader::ReadInternal()
 				++m_currentElementNodePos;
 				if (m_currentElementNodePos >= m_stockElementCount)
 				{
-					m_currentElementNodePos = m_stockElementCount - m_currentPartialCount - 1;	//@ˆê˜A‚Ì Text ‚ªn‚Ü‚é‘O‚Ì—v‘f‚ğw‚· (Ÿ‚Í EndElement ‚ª‚­‚é‚Í‚¸)
-					m_nodes.Resize(m_currentElementNodePos+1);
-					m_stockElementCount = m_nodes.GetCount();	// TODO: m_stockElementCount‚Í”z—ñƒTƒCƒY‚Å‘ã—p‚Å‚«‚È‚¢‚©‚ÈH
+					m_currentElementNodePos = m_stockElementCount - m_currentPartialCount - 1;	//ã€€ä¸€é€£ã® Text ãŒå§‹ã¾ã‚‹å‰ã®è¦ç´ ã‚’æŒ‡ã™ (æ¬¡ã¯ EndElement ãŒãã‚‹ã¯ãš)
+					m_nodes.resize(m_currentElementNodePos+1);
+					m_stockElementCount = m_nodes.getCount();	// TODO: m_stockElementCountã¯é…åˆ—ã‚µã‚¤ã‚ºã§ä»£ç”¨ã§ããªã„ã‹ãªï¼Ÿ
 					m_currentPartialCount = 0;
 					m_parsingState = ParsingState::ReadElement;
 					continue;
@@ -421,18 +421,18 @@ bool XmlReader::ReadInternal()
 }
 
 //------------------------------------------------------------------------------
-int XmlReader::PushNode(const NodeData& node)
+int XmlReader::pushNode(const NodeData& node)
 {
-	bool isLastPartial = (!m_nodes.IsEmpty() && m_nodes.GetLast().IsPartial);
+	bool isLastPartial = (!m_nodes.isEmpty() && m_nodes.getLast().IsPartial);
 
-	m_nodes.Add(node);
-	int dataIdx = m_nodes.GetCount() - 1;
+	m_nodes.add(node);
+	int dataIdx = m_nodes.getCount() - 1;
 	++m_stockElementCount;
 
 	if (isLastPartial)
 	{
-		// ‚à‚µŠù‚ÉƒXƒ^ƒbƒN‚Ìƒgƒbƒv‚ª partial ‚È‚çAŠù‚É Text ‚â Entity ‚ª“ü‚Á‚Ä‚¢‚é‚Æ‚¢‚¤‚±‚ÆB
-		// ˆê˜A‚ÌƒeƒLƒXƒg‚ğƒp[ƒX’†‚ÍAÅ‰‚ÉŒ©‚Â‚©‚Á‚½—v‘f‚ğ "Œ»İ‚Ìƒm[ƒh" ‚É‚µ‚½‚¢B
+		// ã‚‚ã—æ—¢ã«ã‚¹ã‚¿ãƒƒã‚¯ã®ãƒˆãƒƒãƒ—ãŒ partial ãªã‚‰ã€æ—¢ã« Text ã‚„ Entity ãŒå…¥ã£ã¦ã„ã‚‹ã¨ã„ã†ã“ã¨ã€‚
+		// ä¸€é€£ã®ãƒ†ã‚­ã‚¹ãƒˆã‚’ãƒ‘ãƒ¼ã‚¹ä¸­ã¯ã€æœ€åˆã«è¦‹ã¤ã‹ã£ãŸè¦ç´ ã‚’ "ç¾åœ¨ã®ãƒãƒ¼ãƒ‰" ã«ã—ãŸã„ã€‚
 	}
 	else
 	{
@@ -447,13 +447,13 @@ int XmlReader::PushNode(const NodeData& node)
 }
 
 //------------------------------------------------------------------------------
-void XmlReader::PopNode()
+void XmlReader::popNode()
 {
-	m_textCache.Resize(m_textCache.GetCount() - m_nodes.GetLast().NameLen);
+	m_textCache.resize(m_textCache.getCount() - m_nodes.getLast().NameLen);
 
 
 	//m_nodes.RemoveLast();
-	m_nodes.Resize(m_currentElementNodePos);
+	m_nodes.resize(m_currentElementNodePos);
 	--m_stockElementCount;
 
 
@@ -469,59 +469,59 @@ void XmlReader::PopNode()
 }
 
 //------------------------------------------------------------------------------
-// ƒ^ƒO‚ÌŠJnˆÊ’u‚©‚ç‚Ì‰ğÍBreader ‚Í <aaa> ‚Ì‚æ‚¤‚Èƒ^ƒO‚Ì < ‚ğw‚µ‚Ä‚¢‚éB
-bool XmlReader::ParseElementInner()
+// ã‚¿ã‚°ã®é–‹å§‹ä½ç½®ã‹ã‚‰ã®è§£æã€‚reader ã¯ <aaa> ã®ã‚ˆã†ãªã‚¿ã‚°ã® < ã‚’æŒ‡ã—ã¦ã„ã‚‹ã€‚
+bool XmlReader::parseElementInner()
 {
-	m_reader->Read();	// skip '<'
+	m_reader->read();	// skip '<'
 
-	// ƒvƒŒƒtƒBƒbƒNƒX“I‚È‚à‚Ì‚Ìƒ`ƒFƒbƒN
+	// ãƒ—ãƒ¬ãƒ•ã‚£ãƒƒã‚¯ã‚¹çš„ãªã‚‚ã®ã®ãƒã‚§ãƒƒã‚¯
 	bool isProcInst = false;
 	bool isDocContent = false;
 	bool isElementEnd = false;
 	bool isComment = false;
 	bool isDataStart = false;
-	if (m_reader->Peek() == '?')		// <?xxx>
+	if (m_reader->peek() == '?')		// <?xxx>
 	{
 		isProcInst = true;
-		m_reader->Read();	// skip
+		m_reader->read();	// skip
 	}
-	else if (m_reader->Peek() == '!')	// <!xxx>
+	else if (m_reader->peek() == '!')	// <!xxx>
 	{
 		isDocContent = true;
-		m_reader->Read();	// skip
+		m_reader->read();	// skip
 	}
-	else if (m_reader->Peek() == '/')	// </xxx>
+	else if (m_reader->peek() == '/')	// </xxx>
 	{
 		isElementEnd = true;
-		m_reader->Read();	// skip
+		m_reader->read();	// skip
 	}
 	if (isDocContent)
 	{
-		if (m_reader->Peek() == '-')	// <-- -->
+		if (m_reader->peek() == '-')	// <-- -->
 		{
 			isComment = true;
-			m_reader->Read();	// skip
-			m_reader->Read();	// skip
+			m_reader->read();	// skip
+			m_reader->read();	// skip
 		}
-		else if (m_reader->Peek() == '[')	// <[ ]>
+		else if (m_reader->peek() == '[')	// <[ ]>
 		{
 			isDataStart = true;
-			m_reader->Read();	// skip
+			m_reader->read();	// skip
 		}
 	}
 
-	// ƒRƒƒ“ƒg‚¾‚Á‚½Bê—p‚Ì‰ğÍ‚É‚Ü‚í‚·
+	// ã‚³ãƒ¡ãƒ³ãƒˆã ã£ãŸã€‚å°‚ç”¨ã®è§£æã«ã¾ã‚ã™
 	if (isComment) {
-		return ParseComment();
+		return parseComment();
 	}
 
-	// —v‘f–¼ (Še—v‘f‚Ìí—Ş‚ğ‹æ•Ê‚·‚é‚½‚ßA‚Ü‚¸“Ç‚İæ‚é•K—v‚ª‚ ‚é)
+	// è¦ç´ å (å„è¦ç´ ã®ç¨®é¡ã‚’åŒºåˆ¥ã™ã‚‹ãŸã‚ã€ã¾ãšèª­ã¿å–ã‚‹å¿…è¦ãŒã‚ã‚‹)
 	int namePos = 0;
 	int nameLen = 0;
-	if (!ParseName(&namePos, &nameLen)) { return false; }
+	if (!parseName(&namePos, &nameLen)) { return false; }
 	if (nameLen == 0) {
-		// Error: —v‘f–¼‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½ (< ‚Æ‚ÌŠÔ‚É‹ó”’‚ğ“ü‚ê‚é‚±‚Æ‚Í‚Å‚«‚È‚¢)
-		m_errorInfo.AddError(detail::ParseError_ElementNameNotFount, m_line, m_col);
+		// Error: è¦ç´ åãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸ (< ã¨ã®é–“ã«ç©ºç™½ã‚’å…¥ã‚Œã‚‹ã“ã¨ã¯ã§ããªã„)
+		m_errorInfo.addError(detail::ParseError_ElementNameNotFount, m_line, m_col);
 		return false;
 	}
 
@@ -531,27 +531,27 @@ bool XmlReader::ParseElementInner()
 	// PEDecl		::=   	'<!ENTITY' S '%' S Name S PEDef S? '>'
 	// NotationDecl	::=   	'<!NOTATION' S Name S ( ExternalID | PublicID ) S? '>'
 	// XMLDecl		::=   	'<?xml' VersionInfo EncodingDecl? SDDecl? S? '?>'
-	// PI			::=   	'<?' PITarget ( S ( Char* - ( Char* '?>' Char* ) ) )? '?>'		¦ PITarget ‚Í "xml" ˆÈŠO
+	// PI			::=   	'<?' PITarget ( S ( Char* - ( Char* '?>' Char* ) ) )? '?>'		â€» PITarget ã¯ "xml" ä»¥å¤–
 	// includeSect	::=		'<![' S ? 'INCLUDE' S ? '[' extSubsetDecl ']]>'
 	// ignoreSect	::=   	'<![' S? 'IGNORE' S? '[' ignoreSectContents* ']]>'
 
 
 
-	// "<?xml..." “™
+	// "<?xml..." ç­‰
 	if (isProcInst)
 	{
 		const TCHAR* name = &m_textCache[namePos];
-		bool isXmlDecl = (nameLen == 3 && StringTraits::StrNICmp(name, _T("xml"), 3) == 0);
-		ParseXmlDeclOrPI(namePos, nameLen, isXmlDecl);
+		bool isXmlDecl = (nameLen == 3 && StringTraits::strnicmp(name, _T("xml"), 3) == 0);
+		parseXmlDeclOrPI(namePos, nameLen, isXmlDecl);
 	}
-	// ‚»‚Ì‘¼‚Ì—v‘f
+	// ãã®ä»–ã®è¦ç´ 
 	else if (isElementEnd)
 	{
-		if (!ParseEndElement(namePos, nameLen)) { return false; }
+		if (!parseEndElement(namePos, nameLen)) { return false; }
 	}
 	else
 	{
-		if (!ParseElement(namePos, nameLen)) { return false; }
+		if (!parseElement(namePos, nameLen)) { return false; }
 	}
 
 
@@ -559,13 +559,13 @@ bool XmlReader::ParseElementInner()
 
 
 	
-	// </Grid > ‚Ì‚æ‚¤‚ÉAŒã‚ë‚É‹ó”’‚Í‚ ‚Á‚Ä‚à‚æ‚¢B‘O‚Íƒ_ƒB
+	// </Grid > ã®ã‚ˆã†ã«ã€å¾Œã‚ã«ç©ºç™½ã¯ã‚ã£ã¦ã‚‚ã‚ˆã„ã€‚å‰ã¯ãƒ€ãƒ¡ã€‚
 
 	return true;
 }
 
 //------------------------------------------------------------------------------
-bool XmlReader::ParseElementOuter()
+bool XmlReader::parseElementOuter()
 {
 	enum EntityRefSeq
 	{
@@ -576,124 +576,124 @@ bool XmlReader::ParseElementOuter()
 	int entityRefStart = 0;
 
 	bool tokenIsSpaceOnly = true;
-	int tokenStart = m_textCache.GetCount();
+	int tokenStart = m_textCache.getCount();
 
 	for (;;)
 	{
-		int ch = m_reader->Peek();	// Œ»İˆÊ’u‚Ì•¶š‚ğ“Ç‚Ş
+		int ch = m_reader->peek();	// ç¾åœ¨ä½ç½®ã®æ–‡å­—ã‚’èª­ã‚€
 		if (ch < 0) { break; }		// EOF
-		if (ch == '<') { break; }	// Ÿ‚Ìƒ^ƒO‚ÌŠJn‚©‚à‚µ‚ê‚È‚¢BI—¹
-		m_reader->Read();			// 1•¶ši‚ß‚é
-		m_textCache.Add((TCHAR)ch);
+		if (ch == '<') { break; }	// æ¬¡ã®ã‚¿ã‚°ã®é–‹å§‹ã‹ã‚‚ã—ã‚Œãªã„ã€‚çµ‚äº†
+		m_reader->read();			// 1æ–‡å­—é€²ã‚ã‚‹
+		m_textCache.add((TCHAR)ch);
 
-		// Entity QÆ‚ÌŠJn‚ğ’T‚µ‚Ä‚¢‚éó‘Ô (•’Ê‚Ìó‘Ô)
+		// Entity å‚ç…§ã®é–‹å§‹ã‚’æ¢ã—ã¦ã„ã‚‹çŠ¶æ…‹ (æ™®é€šã®çŠ¶æ…‹)
 		if (entityRefSeq == Seq_FindAmp)
 		{
-			// Entity QÆ‚ÌŠJn‚ªŒ©‚Â‚©‚Á‚½
+			// Entity å‚ç…§ã®é–‹å§‹ãŒè¦‹ã¤ã‹ã£ãŸ
 			if (ch == '&')
 			{
-				// ';' ‚ğ’T‚µ‚És‚­
+				// ';' ã‚’æ¢ã—ã«è¡Œã
 				entityRefSeq = Seq_FindSemiColon;
-				entityRefStart = m_textCache.GetCount() - 1;
+				entityRefStart = m_textCache.getCount() - 1;
 			}
 			else
 			{
-				// ‹ó”’ˆÈŠO‚Ì•¶š‚ªŒ©‚Â‚©‚Á‚½‚©ƒ`ƒFƒbƒN
-				if (!IsWhiteSpace(ch)) {
+				// ç©ºç™½ä»¥å¤–ã®æ–‡å­—ãŒè¦‹ã¤ã‹ã£ãŸã‹ãƒã‚§ãƒƒã‚¯
+				if (!isWhiteSpace(ch)) {
 					tokenIsSpaceOnly = false;
 				}
 			}
 		}
-		// Enitty QÆ‚ÌI’[‚ğ’T‚µ‚Ä‚¢‚é
+		// Enitty å‚ç…§ã®çµ‚ç«¯ã‚’æ¢ã—ã¦ã„ã‚‹
 		else if (entityRefSeq == Seq_FindSemiColon)
 		{
-			// Entity QÆ‚ÌI’[‚ªŒ©‚Â‚©‚Á‚½
+			// Entity å‚ç…§ã®çµ‚ç«¯ãŒè¦‹ã¤ã‹ã£ãŸ
 			if (ch == ';')
 			{
-				if (IsReservedEntity(&m_textCache[entityRefStart], m_textCache.GetCount() - entityRefStart)) {
-					// &amp; “™A—\–ñÏ‚İ Entity ‚Í XmlNodeType::EntityReference ‚É‚µ‚È‚¢BText ‚Æ‚µ‚ÄŒ‹‡‚·‚é‚½‚ßA‚±‚±‚Å‚Í‚È‚É‚à‚µ‚È‚¢B
+				if (isReservedEntity(&m_textCache[entityRefStart], m_textCache.getCount() - entityRefStart)) {
+					// &amp; ç­‰ã€äºˆç´„æ¸ˆã¿ Entity ã¯ XmlNodeType::EntityReference ã«ã—ãªã„ã€‚Text ã¨ã—ã¦çµåˆã™ã‚‹ãŸã‚ã€ã“ã“ã§ã¯ãªã«ã‚‚ã—ãªã„ã€‚
 					tokenIsSpaceOnly = false;
 				}
 				else
 				{
-					// & ‚Ì‘O‚Ü‚Å‚ğ1‚Â‚Ì NodeData ‚Æ‚µ‚ÄƒXƒgƒbƒN‚µ‚Ä‚¨‚­
+					// & ã®å‰ã¾ã§ã‚’1ã¤ã® NodeData ã¨ã—ã¦ã‚¹ãƒˆãƒƒã‚¯ã—ã¦ãŠã
 					NodeData data1;
 					data1.Type = (tokenIsSpaceOnly) ? XmlNodeType::Whitespace : XmlNodeType::Text;
 					data1.ValueStartPos = tokenStart;
 					data1.ValueLen = entityRefStart - tokenStart;
 					data1.IsPartial = true;
-					PushNode(data1);
+					pushNode(data1);
 
-					// &`; ‚Ì“à•”‚ğ1‚Â‚Ì NodeData ‚Æ‚µ‚ÄƒXƒgƒbƒN‚µ‚Ä‚¨‚­
+					// &ï½; ã®å†…éƒ¨ã‚’1ã¤ã® NodeData ã¨ã—ã¦ã‚¹ãƒˆãƒƒã‚¯ã—ã¦ãŠã
 					NodeData data2;
 					data2.Type = XmlNodeType::EntityReference;
 					data2.NameStartPos = entityRefStart + 1;
-					data2.NameLen = (m_textCache.GetCount() - entityRefStart) - 2;
+					data2.NameLen = (m_textCache.getCount() - entityRefStart) - 2;
 					data2.IsPartial = true;
-					PushNode(data2);
+					pushNode(data2);
 
-					// ó‘Ô‚ğŒ³‚É–ß‚·
-					tokenStart = m_textCache.GetCount();	// ; ‚ÌŸ‚ğw‚·
+					// çŠ¶æ…‹ã‚’å…ƒã«æˆ»ã™
+					tokenStart = m_textCache.getCount();	// ; ã®æ¬¡ã‚’æŒ‡ã™
 					tokenIsSpaceOnly = true;
 				}
 
-				// & ‚ğ’T‚µ‚Ä‚¢‚éó‘Ô‚É‚·‚é
+				// & ã‚’æ¢ã—ã¦ã„ã‚‹çŠ¶æ…‹ã«ã™ã‚‹
 				entityRefSeq = Seq_FindAmp;
 			}
 		}
 	}
 
 	if (entityRefSeq != Seq_FindAmp) {
-		// TODO: Error: ƒeƒLƒXƒg—Ìˆæ‚ªI‚í‚Á‚½‚Ì‚É Entity QÆ‚ğ’T‚µ‚Ä‚¢‚é
+		// TODO: Error: ãƒ†ã‚­ã‚¹ãƒˆé ˜åŸŸãŒçµ‚ã‚ã£ãŸã®ã« Entity å‚ç…§ã‚’æ¢ã—ã¦ã„ã‚‹
 	}
 
-	if (tokenStart != m_textCache.GetCount())
+	if (tokenStart != m_textCache.getCount())
 	{
-		// ƒeƒLƒXƒg‚ğ NodeData ‚Æ‚µ‚ÄƒXƒgƒbƒN‚µ‚Ä‚¨‚­
+		// ãƒ†ã‚­ã‚¹ãƒˆã‚’ NodeData ã¨ã—ã¦ã‚¹ãƒˆãƒƒã‚¯ã—ã¦ãŠã
 		NodeData data1;
 		data1.Type = (tokenIsSpaceOnly) ? XmlNodeType::Whitespace : XmlNodeType::Text;
 		data1.ValueStartPos = tokenStart;
-		data1.ValueLen = m_textCache.GetCount() - tokenStart;
+		data1.ValueLen = m_textCache.getCount() - tokenStart;
 		data1.IsPartial = true;
-		PushNode(data1);
+		pushNode(data1);
 	}
 	else
 	{
-		// ‚±‚±‚É‚­‚é‚Ì‚Í "...&book;" ‚Ì‚æ‚¤‚É Entity QÆ‚ªI’[‚ÅI‚í‚Á‚Ä‚¢‚é‚Æ‚«B
-		// ‚±‚Ìê‡‚Í Text ƒm[ƒh‚ğì‚é•K—v‚Í–³‚¢B
+		// ã“ã“ã«ãã‚‹ã®ã¯ "...&book;" ã®ã‚ˆã†ã« Entity å‚ç…§ãŒçµ‚ç«¯ã§çµ‚ã‚ã£ã¦ã„ã‚‹ã¨ãã€‚
+		// ã“ã®å ´åˆã¯ Text ãƒãƒ¼ãƒ‰ã‚’ä½œã‚‹å¿…è¦ã¯ç„¡ã„ã€‚
 	}
 
-	// Ÿ‚©‚ç‚Ì Read() ‚ÅAƒXƒ^ƒbƒN‚É‹l‚ß‚ñ‚¾ƒm[ƒh‚ğ‡‚Éo‚µ‚Ä‚¢‚­
+	// æ¬¡ã‹ã‚‰ã® Read() ã§ã€ã‚¹ã‚¿ãƒƒã‚¯ã«è©°ã‚è¾¼ã‚“ã ãƒãƒ¼ãƒ‰ã‚’é †ã«å‡ºã—ã¦ã„ã
 	m_parsingState = ParsingState::IteratePartialElements;
 	return true;
 }
 
 //------------------------------------------------------------------------------
-bool XmlReader::ParseComment()
+bool XmlReader::parseComment()
 {
-	// m_reader ‚Í "<--" ‚ÌŸ‚Ì•¶š‚ğw‚µ‚Ä‚¢‚é
-	int hyphenCount = 0;	// ˜A‘±‚·‚é '-' ‚Ì”
-	int start = m_textCache.GetCount();
+	// m_reader ã¯ "<--" ã®æ¬¡ã®æ–‡å­—ã‚’æŒ‡ã—ã¦ã„ã‚‹
+	int hyphenCount = 0;	// é€£ç¶šã™ã‚‹ '-' ã®æ•°
+	int start = m_textCache.getCount();
 
 	for (;;)
 	{
-		int ch = m_reader->Read();
+		int ch = m_reader->read();
 		if (ch < 0) { break; }	// EOF
 
-		// - ‚ª˜A‘±‚µ‚Ä‚¢‚é
+		// - ãŒé€£ç¶šã—ã¦ã„ã‚‹
 		if (hyphenCount >= 2)
 		{
 			if (ch == '>') {
-				break;	// ƒRƒƒ“ƒg‚ª³í‚É•Â‚¶‚½
+				break;	// ã‚³ãƒ¡ãƒ³ãƒˆãŒæ­£å¸¸ã«é–‰ã˜ãŸ
 			}
 			else {
-				// Error: ƒRƒƒ“ƒg“à•”‚É˜A‘±‚·‚é -- ‚ªŒ©‚Â‚©‚Á‚½
-				m_errorInfo.AddError(detail::ParseError_CommentDoubleHyphen, m_line, m_col);
+				// Error: ã‚³ãƒ¡ãƒ³ãƒˆå†…éƒ¨ã«é€£ç¶šã™ã‚‹ -- ãŒè¦‹ã¤ã‹ã£ãŸ
+				m_errorInfo.addError(detail::ParseError_CommentDoubleHyphen, m_line, m_col);
 				return false;
 			}
 		}
 
-		// ˜A‘±‚·‚é '-' ‚Ì”‚ğƒJƒEƒ“ƒg
+		// é€£ç¶šã™ã‚‹ '-' ã®æ•°ã‚’ã‚«ã‚¦ãƒ³ãƒˆ
 		if (ch == '-') {
 			++hyphenCount;
 		}
@@ -701,24 +701,24 @@ bool XmlReader::ParseComment()
 		{
 			if (hyphenCount > 0)
 			{
-				// ƒRƒƒ“ƒgI’[‚Å‚Í‚È‚©‚Á‚½BƒJƒEƒ“ƒg‚µ‚Ä‚¢‚½ - ‚ğƒeƒLƒXƒgˆµ‚¢‚É–ß‚·
+				// ã‚³ãƒ¡ãƒ³ãƒˆçµ‚ç«¯ã§ã¯ãªã‹ã£ãŸã€‚ã‚«ã‚¦ãƒ³ãƒˆã—ã¦ã„ãŸ - ã‚’ãƒ†ã‚­ã‚¹ãƒˆæ‰±ã„ã«æˆ»ã™
 				hyphenCount = 0;
-				m_textCache.Add(_T('-'));	// ³í‚Å‚ ‚ê‚Î 1 ‚Â‚µ‚©‚È‚¢‚Í‚¸ (ƒRƒƒ“ƒg“à‚Å˜A‘±‚·‚é -- ‚Í‹Ö~‚³‚ê‚Ä‚¢‚é)
+				m_textCache.add(_T('-'));	// æ­£å¸¸ã§ã‚ã‚Œã° 1 ã¤ã—ã‹ãªã„ã¯ãš (ã‚³ãƒ¡ãƒ³ãƒˆå†…ã§é€£ç¶šã™ã‚‹ -- ã¯ç¦æ­¢ã•ã‚Œã¦ã„ã‚‹)
 			}
 
-			m_textCache.Add(ch);
+			m_textCache.add(ch);
 		}
 	}
 
-	// ƒRƒƒ“ƒg‚ğ NodeData ‚Æ‚µ‚ÄƒXƒgƒbƒN‚µ‚Ä‚¨‚­
+	// ã‚³ãƒ¡ãƒ³ãƒˆã‚’ NodeData ã¨ã—ã¦ã‚¹ãƒˆãƒƒã‚¯ã—ã¦ãŠã
 	NodeData data1;
 	data1.Type = XmlNodeType::Comment;
 	data1.ValueStartPos = start;
-	data1.ValueLen = m_textCache.GetCount() - start;
-	PushNode(data1);
+	data1.ValueLen = m_textCache.getCount() - start;
+	pushNode(data1);
 
-	// Ÿ‰ñ‚Ì Read() ‚ÅAƒXƒ^ƒbƒN (m_nodes) ‚ÉÏ‚ñ‚Å‚ ‚é Comment ‚ğÁ‚µ‚Ä‚Ù‚µ‚¢
-	m_parsingState = ParsingState::PopNode;
+	// æ¬¡å›ã® Read() ã§ã€ã‚¹ã‚¿ãƒƒã‚¯ (m_nodes) ã«ç©ã‚“ã§ã‚ã‚‹ Comment ã‚’æ¶ˆã—ã¦ã»ã—ã„
+	m_parsingState = ParsingState::popNode;
 	return true;
 }
 
@@ -732,30 +732,30 @@ bool XmlReader::ParseComment()
 	[7]   	Nmtoken			::=   	( NameChar )+
 	[8]   	Nmtokens		::=   	Nmtoken ( #x20 Nmtoken )*
 
-	¦¡‚Íascii‚Ì‚İl‚¦‚é
+	â€»ä»Šã¯asciiã®ã¿è€ƒãˆã‚‹
 */
-bool XmlReader::ParseName(int* startPos, int* length)
+bool XmlReader::parseName(int* startPos, int* length)
 {
 	LN_ASSERT(startPos != NULL);
 	LN_ASSERT(length != NULL);
 
-	*startPos = m_textCache.GetCount();
+	*startPos = m_textCache.getCount();
 	*length = 0;
 	int count = 0;
 	for (;;)
 	{
-		int ch = m_reader->Peek();
+		int ch = m_reader->peek();
 		if (ch < 0) { break; }	// EOF
 
-		if (IsAlphaNum(ch) ||
+		if (isAlphaNum(ch) ||
 			ch == '_' ||
 			ch == ':' ||
 			(ch == '-' && count > 0) ||
 			(ch == '.'&& count > 0))
 		{
 			++count;
-			m_textCache.Add(ch);
-			m_reader->Read();
+			m_textCache.add(ch);
+			m_reader->read();
 		}
 		else {
 			break;
@@ -767,57 +767,57 @@ bool XmlReader::ParseName(int* startPos, int* length)
 }
 
 //------------------------------------------------------------------------------
-// XML éŒ¾‚Ü‚½‚Íˆ—–½—ß‚ğ‰ğÍ‚·‚é (<?xxxx ... ?>)
+// XML å®£è¨€ã¾ãŸã¯å‡¦ç†å‘½ä»¤ã‚’è§£æã™ã‚‹ (<?xxxx ... ?>)
 //	<?xml version=...
-//	     ^ ŠJn‚Ì“Ç‚İæ‚èˆÊ’u‚Í‚±‚±B
+//	     ^ é–‹å§‹æ™‚ã®èª­ã¿å–ã‚Šä½ç½®ã¯ã“ã“ã€‚
 //
 //	XMLDecl		::=   	'<?xml' VersionInfo EncodingDecl? SDDecl? S? '?>'
 //	PI			::=   	'<?' PITarget ( S ( Char* - ( Char* '?>' Char* ) ) )? '?>'
 //
-//	Value ‚Í "?XXX " ‚ÌŒã‚ë‚Ì•¶š‘S‚ÄB
-//	<?xml version="1.0" encoding="UTF-8"  ?>	‚Í "version="1.0" encoding="UTF-8"  " ‚Ü‚ÅBI’[‚Í‹ó”’‚ğŠÜ‚ŞB
+//	Value ã¯ "?XXX " ã®å¾Œã‚ã®æ–‡å­—å…¨ã¦ã€‚
+//	<?xml version="1.0" encoding="UTF-8"  ?>	ã¯ "version="1.0" encoding="UTF-8"  " ã¾ã§ã€‚çµ‚ç«¯ã¯ç©ºç™½ã‚’å«ã‚€ã€‚
 //------------------------------------------------------------------------------
-bool XmlReader::ParseXmlDeclOrPI(int nameStart, int nameLength, bool isXmlDecl)
+bool XmlReader::parseXmlDeclOrPI(int nameStart, int nameLength, bool isXmlDecl)
 {
-	// NodeData ‰»‚µ‚ÄƒXƒgƒbƒN
+	// NodeData åŒ–ã—ã¦ã‚¹ãƒˆãƒƒã‚¯
 	NodeData data;
 	data.Type = (isXmlDecl) ? XmlNodeType::XmlDeclaration : XmlNodeType::ProcessingInstruction;
-	data.NameStartPos = nameStart;	// m_textCache ã‚Ì–¼‘O‚Ì‚ ‚éˆÊ’u
-	data.NameLen = nameLength;		// m_textCache ã‚Ì–¼‘O‚Ì’·‚³
+	data.NameStartPos = nameStart;	// m_textCache ä¸Šã®åå‰ã®ã‚ã‚‹ä½ç½®
+	data.NameLen = nameLength;		// m_textCache ä¸Šã®åå‰ã®é•·ã•
 	//m_nodes.Add(data);
 	//int dataIdx = m_nodes.GetCount() - 1;
 	//++m_stockElementCount;
-	PushNode(data);
+	pushNode(data);
 
-	// ‹ó”’*
-	SkipWhitespace();
+	// ç©ºç™½*
+	skipWhitespace();
 
 	int len = 0;
-	while (!m_reader->IsEOF())
+	while (!m_reader->isEOF())
 	{
-		// ƒ^ƒOI’[Šm”F
-		if (m_reader->Peek() == '?')
+		// ã‚¿ã‚°çµ‚ç«¯ç¢ºèª
+		if (m_reader->peek() == '?')
 		{
-			m_reader->Read();
-			if (m_reader->Read() == '>') {
+			m_reader->read();
+			if (m_reader->read() == '>') {
 				break;
 			}
 			else {
-				// Error: ³í‚Èƒ^ƒOI’[‚Å‚Í‚È‚¢
-				m_errorInfo.AddError(detail::ParseError_ElementInvalidEmptyTagEnd, m_line, m_col);
+				// Error: æ­£å¸¸ãªã‚¿ã‚°çµ‚ç«¯ã§ã¯ãªã„
+				m_errorInfo.addError(detail::ParseError_ElementInvalidEmptyTagEnd, m_line, m_col);
 				return false;
 			}
 		}
 		else {
-			m_reader->Read();
+			m_reader->read();
 		}
 		++len;
 	}
 
-	// Value •”•ª‚ğŠo‚¦‚Ä‚¨‚­
+	// Value éƒ¨åˆ†ã‚’è¦šãˆã¦ãŠã
 	if (len > 0)
 	{
-		data.ValueStartPos = m_textCache.GetCount();
+		data.ValueStartPos = m_textCache.getCount();
 		data.ValueLen = len;
 	}
 	return true;
@@ -826,56 +826,56 @@ bool XmlReader::ParseXmlDeclOrPI(int nameStart, int nameLength, bool isXmlDecl)
 //------------------------------------------------------------------------------
 // STag			::=   	'<' Name ( S Attribute )* S? '>'
 // 
-//		ƒ^ƒO–¼‚Ì•”•ª‚Í“Ç‚İæ‚èÏ‚İ‚ÅAm_reader ‚Í—v‘f–¼‚ÌŸ‚Ì‹ó”’‚ğw‚µ‚Ä‚¢‚éB
+//		ã‚¿ã‚°åã®éƒ¨åˆ†ã¯èª­ã¿å–ã‚Šæ¸ˆã¿ã§ã€m_reader ã¯è¦ç´ åã®æ¬¡ã®ç©ºç™½ã‚’æŒ‡ã—ã¦ã„ã‚‹ã€‚
 //
-bool XmlReader::ParseElement(int nameStart, int nameLength)
+bool XmlReader::parseElement(int nameStart, int nameLength)
 {
-	// NodeData ‰»‚µ‚ÄƒXƒgƒbƒN
+	// NodeData åŒ–ã—ã¦ã‚¹ãƒˆãƒƒã‚¯
 	NodeData data;
 	data.Type = XmlNodeType::Element;
 	data.NameStartPos = nameStart;
 	data.NameLen = nameLength;
-	int dataIdx = PushNode(data);
+	int dataIdx = pushNode(data);
 
 	for (;;)
 	{
-		// ‹ó”’*
-		SkipWhitespace();
+		// ç©ºç™½*
+		skipWhitespace();
 
-		// ƒ^ƒOI’[Šm”F
-		if (m_reader->Peek() == '/')
+		// ã‚¿ã‚°çµ‚ç«¯ç¢ºèª
+		if (m_reader->peek() == '/')
 		{
-			m_reader->Read();
-			if (m_reader->Read() == '>')
+			m_reader->read();
+			if (m_reader->read() == '>')
 			{
-				// <aaa /> ‚Ì‚æ‚¤‚Èq—v‘f‚ğ‚½‚È‚¢ƒ^ƒO‚¾‚Á‚½
-				m_nodes[dataIdx].IsEmptyElement = true;
+				// <aaa /> ã®ã‚ˆã†ãªå­è¦ç´ ã‚’æŒãŸãªã„ã‚¿ã‚°ã ã£ãŸ
+				m_nodes[dataIdx].isEmptyElement = true;
 
 				if (m_parsingState == ParsingState::IterateAttributes)
 				{
-					// IterateAttributes ‚È‚çó‘Ô‚ğˆÛ‚·‚éB
-					// Ÿ‚Ì Read() ‚Å‚Í Attributs ‰ğ•ú ¨ ‹óƒ^ƒO‰ğ•ú ¨ Ÿ‚Ì“Ç‚İæ‚è ‚Æi‚ß‚éB
+					// IterateAttributes ãªã‚‰çŠ¶æ…‹ã‚’ç¶­æŒã™ã‚‹ã€‚
+					// æ¬¡ã® Read() ã§ã¯ Attributs è§£æ”¾ â†’ ç©ºã‚¿ã‚°è§£æ”¾ â†’ æ¬¡ã®èª­ã¿å–ã‚Š ã¨é€²ã‚ã‚‹ã€‚
 				}
 				else
 				{
-					// Ÿ‰ñ‚Ì Read() ‚ÅAƒXƒ^ƒbƒN (m_nodes) ‚ÉÏ‚ñ‚Å‚ ‚é EndElement ‚ğÁ‚µ‚Ä‚Ù‚µ‚¢
-					m_parsingState = ParsingState::PopNode;
+					// æ¬¡å›ã® Read() ã§ã€ã‚¹ã‚¿ãƒƒã‚¯ (m_nodes) ã«ç©ã‚“ã§ã‚ã‚‹ EndElement ã‚’æ¶ˆã—ã¦ã»ã—ã„
+					m_parsingState = ParsingState::popNode;
 				}
 				break;
 			}
 			else {
-				// Error: ³í‚Èƒ^ƒOI’[‚Å‚Í‚È‚¢
-				m_errorInfo.AddError(detail::ParseError_ElementInvalidEmptyTagEnd, m_line, m_col);
+				// Error: æ­£å¸¸ãªã‚¿ã‚°çµ‚ç«¯ã§ã¯ãªã„
+				m_errorInfo.addError(detail::ParseError_ElementInvalidEmptyTagEnd, m_line, m_col);
 				return false;
 			}
 		}
-		else if (m_reader->Peek() == '>') {
-			m_reader->Read();
+		else if (m_reader->peek() == '>') {
+			m_reader->read();
 			break;
 		}
 
-		// ‚±‚±‚Ü‚Å‚«‚½‚ç‘®«‚ª‚ ‚é
-		if (!ParseAttribute()) { return false; }
+		// ã“ã“ã¾ã§ããŸã‚‰å±æ€§ãŒã‚ã‚‹
+		if (!parseAttribute()) { return false; }
 		m_nodes[dataIdx].AttrCount++;
 		m_parsingState = ParsingState::IterateAttributes;
 	}
@@ -884,105 +884,105 @@ bool XmlReader::ParseElement(int nameStart, int nameLength)
 }
 
 //------------------------------------------------------------------------------
-// ƒ^ƒO–¼‚Ì•”•ª‚Í“Ç‚İæ‚èÏ‚İ‚ÅAm_reader ‚Í—v‘f–¼‚ÌŸ‚Ì‹ó”’‚ğw‚µ‚Ä‚¢‚éB
-bool XmlReader::ParseEndElement(int nameStart, int nameLength)
+// ã‚¿ã‚°åã®éƒ¨åˆ†ã¯èª­ã¿å–ã‚Šæ¸ˆã¿ã§ã€m_reader ã¯è¦ç´ åã®æ¬¡ã®ç©ºç™½ã‚’æŒ‡ã—ã¦ã„ã‚‹ã€‚
+bool XmlReader::parseEndElement(int nameStart, int nameLength)
 {
 	NodeData* top = &m_nodes[m_currentElementNodePos];
-	if (GetNodeName(*top) != GetStringFromCache(nameStart, nameLength))
+	if (getNodeName(*top) != getStringFromCache(nameStart, nameLength))
 	{
-		m_errorInfo.AddError(
+		m_errorInfo.addError(
 			detail::ParseError_TagMismatch, m_line, m_col,
-			String::Format(StringRef(InternalResource::GetString(InternalResource::Xml_TagMismatch)), GetNodeName(*top), GetStringFromCache(nameStart, nameLength)));
+			String::format(StringRef(InternalResource::getString(InternalResource::Xml_TagMismatch)), getNodeName(*top), getStringFromCache(nameStart, nameLength)));
 		return false;
 	}
 
 
-	// ƒXƒ^ƒbƒN (m_nodes) ‚Ìæ“ª‚É‚Í StartElement ‚ª‚ ‚é‚Í‚¸B‚±‚ê‚ğÌ‚Ä‚ÄAEndElement ‚É‚·‚éB
+	// ã‚¹ã‚¿ãƒƒã‚¯ (m_nodes) ã®å…ˆé ­ã«ã¯ StartElement ãŒã‚ã‚‹ã¯ãšã€‚ã“ã‚Œã‚’æ¨ã¦ã¦ã€EndElement ã«ã™ã‚‹ã€‚
 	m_currentNode = &m_nodes[m_currentElementNodePos];
-	m_currentNode->Init();
+	m_currentNode->init();
 	m_currentNode->Type = XmlNodeType::EndElement;
 	m_currentNode->NameStartPos = nameStart;
 	m_currentNode->NameLen = nameLength;
 
-	// ‹ó”’‚ğ”ò‚Î‚µ‚Ä
-	SkipWhitespace();
+	// ç©ºç™½ã‚’é£›ã°ã—ã¦
+	skipWhitespace();
 
-	// > ‚ğ“Ç‚ñ‚¾‚çŠ®—¹
-	if (m_reader->Peek() != '>') return false;
-	m_reader->Read();
+	// > ã‚’èª­ã‚“ã ã‚‰å®Œäº†
+	if (m_reader->peek() != '>') return false;
+	m_reader->read();
 
-	// Ÿ‰ñ‚Ì Read() ‚ÅAƒXƒ^ƒbƒN (m_nodes) ‚ÉÏ‚ñ‚Å‚ ‚é EndElement ‚ğÁ‚µ‚Ä‚Ù‚µ‚¢
-	m_parsingState = ParsingState::PopNode;
+	// æ¬¡å›ã® Read() ã§ã€ã‚¹ã‚¿ãƒƒã‚¯ (m_nodes) ã«ç©ã‚“ã§ã‚ã‚‹ EndElement ã‚’æ¶ˆã—ã¦ã»ã—ã„
+	m_parsingState = ParsingState::popNode;
 	return true;
 }
 
 //------------------------------------------------------------------------------
 // Attribute	::=   	Name Eq AttValue
 //------------------------------------------------------------------------------
-bool XmlReader::ParseAttribute()
+bool XmlReader::parseAttribute()
 {
-	// m_reader ‚Í‘®«–¼‚Ìæ“ª‚ğw‚µ‚Ä‚¢‚é
+	// m_reader ã¯å±æ€§åã®å…ˆé ­ã‚’æŒ‡ã—ã¦ã„ã‚‹
 
-	// ‘®«–¼
+	// å±æ€§å
 	int nameStart, nameLength;
-	if (!ParseName(&nameStart, &nameLength)) { return false; }
+	if (!parseName(&nameStart, &nameLength)) { return false; }
 
-	// ‹ó”’*
-	SkipWhitespace();
+	// ç©ºç™½*
+	skipWhitespace();
 
 	// =
-	if (m_reader->Peek() != '=') {
-		// Error: = ‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½
-		m_errorInfo.AddError(detail::ParseError_CommentDoubleHyphen, m_line, m_col);
+	if (m_reader->peek() != '=') {
+		// Error: = ãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸ
+		m_errorInfo.addError(detail::ParseError_CommentDoubleHyphen, m_line, m_col);
 		return false;
 	}
-	m_reader->Read();
+	m_reader->read();
 
-	// ‹ó”’*
-	SkipWhitespace();
+	// ç©ºç™½*
+	skipWhitespace();
 
 	// "
-	if (m_reader->Peek() != '"') {
-		// Error: " ‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½
-		m_errorInfo.AddError(detail::ParseError_AttributeQuoteNotFount, m_line, m_col);
+	if (m_reader->peek() != '"') {
+		// Error: " ãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸ
+		m_errorInfo.addError(detail::ParseError_AttributeQuoteNotFount, m_line, m_col);
 		return false;
 	}
-	m_reader->Read();
+	m_reader->read();
 
-	// •¶š—ñ
-	int valueStart = m_textCache.GetCount();
+	// æ–‡å­—åˆ—
+	int valueStart = m_textCache.getCount();
 	int ch = 0;
 	for (;;)
 	{
-		ch = m_reader->Read();
+		ch = m_reader->read();
 		if (ch < 0) { break; }		// EOF
-		if (ch == '"') { break; }	// •¶š—ñI’[
-		m_textCache.Add(ch);
+		if (ch == '"') { break; }	// æ–‡å­—åˆ—çµ‚ç«¯
+		m_textCache.add(ch);
 	}
 
 	// "
 	if (ch != '"') {
-		// Error: " ‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½
-		m_errorInfo.AddError(detail::ParseError_AttributeQuoteNotFount, m_line, m_col);
+		// Error: " ãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸ
+		m_errorInfo.addError(detail::ParseError_AttributeQuoteNotFount, m_line, m_col);
 		return false;
 	}
 
-	// NodeData ‰»‚µ‚ÄƒXƒgƒbƒN
+	// NodeData åŒ–ã—ã¦ã‚¹ãƒˆãƒƒã‚¯
 	NodeData data;
 	data.Type = XmlNodeType::Attribute;
 	data.NameStartPos = nameStart;
 	data.NameLen = nameLength;
 	data.ValueStartPos = valueStart;
-	data.ValueLen = m_textCache.GetCount() - valueStart;
-	m_nodes.Add(data);
-	//++m_stockElementCount;	// ‘®«‚Ìê‡‚ÍƒXƒgƒbƒN”‚ğã‚°‚È‚¢
+	data.ValueLen = m_textCache.getCount() - valueStart;
+	m_nodes.add(data);
+	//++m_stockElementCount;	// å±æ€§ã®å ´åˆã¯ã‚¹ãƒˆãƒƒã‚¯æ•°ã‚’ä¸Šã’ãªã„
 	return true;
 }
 
 //------------------------------------------------------------------------------
 //bool XmlReader::ParseSkipElement()
 //{
-//	// m_reader ‚Í "DOCTYPE" “™‚Ì¯•Ê•¶š—ñ+‹ó”’‚ÌŸ‚Ì•¶š‚ğw‚µ‚Ä‚¢‚é
+//	// m_reader ã¯ "DOCTYPE" ç­‰ã®è­˜åˆ¥æ–‡å­—åˆ—+ç©ºç™½ã®æ¬¡ã®æ–‡å­—ã‚’æŒ‡ã—ã¦ã„ã‚‹
 //
 //	int leftAngle = 1;
 //	int rightAngle = 0;
@@ -994,13 +994,13 @@ bool XmlReader::ParseAttribute()
 //------------------------------------------------------------------------------
 bool XmlReader::ParseDocumentType()
 {
-	// m_reader ‚Í "DOCTYPE" ‚ÌŸ‚Ì•¶š‚ğw‚µ‚Ä‚¢‚é
+	// m_reader ã¯ "DOCTYPE" ã®æ¬¡ã®æ–‡å­—ã‚’æŒ‡ã—ã¦ã„ã‚‹
 
 	enum DocTypeSec
 	{
-		DocTypeSec_FindLeftBracket = 0,	// [ ‚ğ’T‚µ‚Ä‚¢‚é
-		DocTypeSec_FindRightBracket,	// ] ‚ğ’T‚µ‚Ä‚¢‚é
-		DocTypeSec_Finished,			// I’[‘Ò‚¿
+		DocTypeSec_FindLeftBracket = 0,	// [ ã‚’æ¢ã—ã¦ã„ã‚‹
+		DocTypeSec_FindRightBracket,	// ] ã‚’æ¢ã—ã¦ã„ã‚‹
+		DocTypeSec_Finished,			// çµ‚ç«¯å¾…ã¡
 	};
 	DocTypeSec sec = DocTypeSec_FindLeftBracket;
 
@@ -1010,36 +1010,36 @@ bool XmlReader::ParseDocumentType()
 		int ch = m_reader->Read();
 		if (ch < 0) { break; }	// EOF
 
-		// [ ‚ğ’T‚µ‚Ä‚¢‚é
+		// [ ã‚’æ¢ã—ã¦ã„ã‚‹
 		if (sec == DocTypeSec_FindLeftBracket)
 		{
 			if (ch == '[')
 			{
-				start = m_textCache.GetCount() + 1;	// ‚±‚±‚©‚ç Value ‚ğŠJn‚·‚é
+				start = m_textCache.GetCount() + 1;	// ã“ã“ã‹ã‚‰ Value ã‚’é–‹å§‹ã™ã‚‹
 				sec = DocTypeSec_FindRightBracket;
 			}
 			else if (ch == '>') {
-				break;	// —v‘fI’[
+				break;	// è¦ç´ çµ‚ç«¯
 			}
 		}
-		// ] ‚ğ’T‚µ‚Ä‚¢‚é
+		// ] ã‚’æ¢ã—ã¦ã„ã‚‹
 		else if (sec == DocTypeSec_FindRightBracket)
 		{
 			if (ch == ']') {
 				sec = DocTypeSec_Finished;
 			}
 			else {
-				m_textCache.Add(ch);	// ’l‚Æ‚µ‚Ä•¶š‚ğæ“¾‚µ‚Ä‚¨‚­
+				m_textCache.Add(ch);	// å€¤ã¨ã—ã¦æ–‡å­—ã‚’å–å¾—ã—ã¦ãŠã
 			}
 		}
 		else {
 			if (ch == '>') {
-				break;	// —v‘fI’[
+				break;	// è¦ç´ çµ‚ç«¯
 			}
 		}
 	}
 
-	// NodeData ‰»‚µ‚ÄƒXƒgƒbƒN‚µ‚Ä‚¨‚­
+	// NodeData åŒ–ã—ã¦ã‚¹ãƒˆãƒƒã‚¯ã—ã¦ãŠã
 	NodeData data1;
 	data1.Type = XmlNodeType::Comment;
 	data1.ValueStartPos = start;
@@ -1051,15 +1051,15 @@ bool XmlReader::ParseDocumentType()
 #endif
 
 //------------------------------------------------------------------------------
-bool XmlReader::IsTextChar(int ch)
+bool XmlReader::isTextChar(int ch)
 {
-	return true;//!IsWhiteSpace(ch);	// TODO: ‚¿‚á‚ñ‚Æ§Œä•¶š‚Æ‚©‚­‚×‚Â‚·‚é
+	return true;//!isWhiteSpace(ch);	// TODO: ã¡ã‚ƒã‚“ã¨åˆ¶å¾¡æ–‡å­—ã¨ã‹ãã¹ã¤ã™ã‚‹
 }
 
 //------------------------------------------------------------------------------
-bool XmlReader::IsReservedEntity(const TCHAR* text, int len)
+bool XmlReader::isReservedEntity(const TCHAR* text, int len)
 {
-	if (len < 2 ||			// & ‚Æ ; ‚Æ¯•Ê•¶š‚ÌÅ’á 3 •¶šˆÈã‚Í‚ ‚é‚Í‚¸
+	if (len < 2 ||			// & ã¨ ; ã¨è­˜åˆ¥æ–‡å­—ã®æœ€ä½ 3 æ–‡å­—ä»¥ä¸Šã¯ã‚ã‚‹ã¯ãš
 		text[0] != '&' ||
 		text[len - 1] != ';') {
 		return false;
@@ -1070,7 +1070,7 @@ bool XmlReader::IsReservedEntity(const TCHAR* text, int len)
 	for (int i = 0; i < ReservedEntitiesCount; ++i)
 	{
 		if (ReservedEntities[i].Length == len &&
-			StringTraits::StrNCmp(ReservedEntities[i].Pattern, text, len) == 0)
+			StringTraits::strncmp(ReservedEntities[i].Pattern, text, len) == 0)
 		{
 			return true;
 		}
@@ -1079,37 +1079,37 @@ bool XmlReader::IsReservedEntity(const TCHAR* text, int len)
 }
 
 //------------------------------------------------------------------------------
-bool XmlReader::IsWhiteSpace(int ch)
+bool XmlReader::isWhiteSpace(int ch)
 {
 	// S	   :: = (#x20 | #x9 | #xD | #xA) +
 	return (ch == 0x20 || ch == 0x09 || ch == 0x0D || ch == 0x0A);
 }
 
 //------------------------------------------------------------------------------
-bool XmlReader::SkipWhitespace()
+bool XmlReader::skipWhitespace()
 {
-	while (IsWhiteSpace(m_reader->Peek())) {
-		m_reader->Read();
+	while (isWhiteSpace(m_reader->peek())) {
+		m_reader->read();
 	}
-	return !m_reader->IsEOF();
+	return !m_reader->isEOF();
 }
 
 //------------------------------------------------------------------------------
-bool XmlReader::ParseWhiteSpace()
+bool XmlReader::parseWhiteSpace()
 {
 	return false;
 }
 
 //------------------------------------------------------------------------------
-bool XmlReader::IsAlphaNum(int ch)
+bool XmlReader::isAlphaNum(int ch)
 {
 	return (ch < 128) ? (isalnum(ch)!=0) : true;
 }
 
 //------------------------------------------------------------------------------
-void XmlReader::ExpandReservedEntities(const TCHAR* text, int len, StringBuilder* outBuilder)
+void XmlReader::expandReservedEntities(const TCHAR* text, int len, StringBuilder* outBuilder)
 {
-	outBuilder->Clear();
+	outBuilder->clear();
 
 	const TCHAR* rp = text;	// read pointer
 	const TCHAR* end = text + len;
@@ -1120,24 +1120,24 @@ void XmlReader::ExpandReservedEntities(const TCHAR* text, int len, StringBuilder
 			int i = 0;
 			for (; i < ReservedEntitiesCount; ++i)
 			{
-				if (StringTraits::StrNCmp(rp + 1, ReservedEntities[i].Pattern, ReservedEntities[i].Length) == 0 &&
+				if (StringTraits::strncmp(rp + 1, ReservedEntities[i].Pattern, ReservedEntities[i].Length) == 0 &&
 					*(rp + ReservedEntities[i].Length + 1) == ';')
 				{
-					outBuilder->Append(ReservedEntities[i].Value);
-					rp += ReservedEntities[i].Length + 2;	// +2 ‚Í & ‚Æ ; ‚Ì•ª
+					outBuilder->append(ReservedEntities[i].Value);
+					rp += ReservedEntities[i].Length + 2;	// +2 ã¯ & ã¨ ; ã®åˆ†
 					break;
 				}
 			}
-			// —\–ñÏ‚İ Entity ‚Å‚Í‚È‚©‚Á‚½
+			// äºˆç´„æ¸ˆã¿ Entity ã§ã¯ãªã‹ã£ãŸ
 			if (i == ReservedEntitiesCount)
 			{
-				outBuilder->Append(*rp);
+				outBuilder->append(*rp);
 				++rp;
 			}
 		}
 		else
 		{
-			outBuilder->Append(*rp);
+			outBuilder->append(*rp);
 			++rp;
 		}
 	}
@@ -1151,9 +1151,9 @@ void XmlReader::ExpandReservedEntities(const TCHAR* text, int len, StringBuilder
 XmlFileReader::XmlFileReader(const PathName& filePath, Encoding* encoding)
 	: XmlReader()
 {
-	m_filePath = filePath.CanonicalizePath();
+	m_filePath = filePath.canonicalizePath();
 	RefPtr<StreamReader> file(LN_NEW StreamReader(m_filePath, encoding), false);
-	InitializeReader(file);
+	initializeReader(file);
 	m_errorInfo.filePath = filePath;
 }
 

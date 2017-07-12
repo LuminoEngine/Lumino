@@ -22,7 +22,7 @@ public:
 		pthread_mutex_destroy(&mMutex);
 	}
 
-	void SetTrue()
+	void setTrue()
 	{
 		// ミューテックスをロックする
 		int r = pthread_mutex_lock(&mMutex);
@@ -51,14 +51,14 @@ public:
 		}
 	}
 
-	void SetFalse()
+	void setFalse()
 	{
 		pthread_mutex_lock(&mMutex);
 		mSignal = false;
 		pthread_mutex_unlock(&mMutex);
 	}
 
-	bool IsTrue() const
+	bool isTrue() const
 	{
 		pthread_mutex_lock(&mMutex);
 		bool b = mSignal;
@@ -66,7 +66,7 @@ public:
 		return b;
 	}
 
-	void Wait()
+	void wait()
 	{
 		// ミューテックスをロックする
 		int r = pthread_mutex_lock(&mMutex);

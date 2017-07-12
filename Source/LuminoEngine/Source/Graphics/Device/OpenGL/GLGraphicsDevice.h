@@ -58,51 +58,51 @@ public:
 public:
 	GLGraphicsDevice();
 	virtual ~GLGraphicsDevice();
-	void Initialize(const ConfigData& configData);
+	void initialize(const ConfigData& configData);
 
-	int GetOpenGLMajorVersio() const { return m_openGLMajorVersion; }
-	int GetOpenGLMinorVersio() const { return m_openGLMinorVersion; }
-	GLContext* GetMainContext() const;
-	GLContext* GetMainRenderingContext() const;
-	MemoryStream* GetUniformTempBuffer() { return &m_uniformTempBuffer; }
-	BinaryWriter* GetUniformTempBufferWriter() { return &m_uniformTempBufferWriter; }
+	int getOpenGLMajorVersion() const { return m_openGLMajorVersion; }
+	int getOpenGLMinorVersion() const { return m_openGLMinorVersion; }
+	GLContext* getMainContext() const;
+	GLContext* getMainRenderingContext() const;
+	MemoryStream* getUniformTempBuffer() { return &m_uniformTempBuffer; }
+	BinaryWriter* getUniformTempBufferWriter() { return &m_uniformTempBufferWriter; }
 
-	virtual RefPtr<GLContext> InitializeMainContext(const ConfigData& configData) = 0;
-	virtual RefPtr<GLContext> CreateContext(PlatformWindow* window) = 0;
-	virtual void MakeCurrentContext(GLContext* context) = 0;
+	virtual RefPtr<GLContext> initializeMainContext(const ConfigData& configData) = 0;
+	virtual RefPtr<GLContext> createContext(PlatformWindow* window) = 0;
+	virtual void makeCurrentContext(GLContext* context) = 0;
 
 public:
 	// IGraphicsDevice interface
 	virtual void Finalize() override;
-	virtual bool IsStandalone() const override { return true; }
-	virtual GraphicsAPI GetGraphicsAPI() const override { return GraphicsAPI::OpenGL; }
-	virtual IRenderer* GetRenderer() override { return m_renderer; }
-	virtual ISwapChain* GetDefaultSwapChain() override;
-	virtual ISwapChain* CreateSwapChain(PlatformWindow* window) override;
-	virtual void AttachRenderingThread() override;
-	virtual void DetachRenderingThread() override;
+	virtual bool isStandalone() const override { return true; }
+	virtual GraphicsAPI getGraphicsAPI() const override { return GraphicsAPI::OpenGL; }
+	virtual IRenderer* getRenderer() override { return m_renderer; }
+	virtual ISwapChain* getDefaultSwapChain() override;
+	virtual ISwapChain* createSwapChain(PlatformWindow* window) override;
+	virtual void attachRenderingThread() override;
+	virtual void detachRenderingThread() override;
 
 private:
-	virtual RefPtr<IVertexDeclaration> CreateVertexDeclarationImplement(const VertexElement* elements, int elementsCount) override;
-	virtual RefPtr<IVertexBuffer> CreateVertexBufferImplement(size_t bufferSize, const void* data, ResourceUsage usage) override;
-	virtual RefPtr<IIndexBuffer> CreateIndexBufferImplement(int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage) override;
-	virtual RefPtr<ITexture> CreateTextureImplement(const SizeI& size, bool mipmap, TextureFormat format, const void* initialData) override;
-	virtual RefPtr<ITexture> CreateTexturePlatformLoadingImplement(Stream* stream, bool mipmap, TextureFormat format) override { return NULL; }
-	virtual RefPtr<ITexture> CreateTexture3DImplement(int width, int height, int depth, uint32_t mipLevels, TextureFormat format, ResourceUsage usage, const void* initialData) override;
-	virtual RefPtr<ITexture> CreateRenderTargetImplement(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format) override;
-	virtual RefPtr<ITexture> CreateDepthBufferImplement(uint32_t width, uint32_t height, TextureFormat format) override;
-	virtual RefPtr<IShader> CreateShaderImplement(const void* textData, size_t size, ShaderCompileResult* result) override;
-	virtual RefPtr<ISwapChain> CreateSwapChainImplement(PlatformWindow* window) override;
-	virtual DeviceState GetDeviceState() override { return m_deviceState; }
-	virtual void ResetDevice() override;
-	virtual void OnLostDevice() override;
-	virtual void OnResetDevice() override;
-	virtual void FlushResource() override;
+	virtual RefPtr<IVertexDeclaration> createVertexDeclarationImplement(const VertexElement* elements, int elementsCount) override;
+	virtual RefPtr<IVertexBuffer> createVertexBufferImplement(size_t bufferSize, const void* data, ResourceUsage usage) override;
+	virtual RefPtr<IIndexBuffer> createIndexBufferImplement(int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage) override;
+	virtual RefPtr<ITexture> createTextureImplement(const SizeI& size, bool mipmap, TextureFormat format, const void* initialData) override;
+	virtual RefPtr<ITexture> createTexturePlatformLoadingImplement(Stream* stream, bool mipmap, TextureFormat format) override { return NULL; }
+	virtual RefPtr<ITexture> createTexture3DImplement(int width, int height, int depth, uint32_t mipLevels, TextureFormat format, ResourceUsage usage, const void* initialData) override;
+	virtual RefPtr<ITexture> ceateRenderTargetImplement(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format) override;
+	virtual RefPtr<ITexture> createDepthBufferImplement(uint32_t width, uint32_t height, TextureFormat format) override;
+	virtual RefPtr<IShader> createShaderImplement(const void* textData, size_t size, ShaderCompileResult* result) override;
+	virtual RefPtr<ISwapChain> createSwapChainImplement(PlatformWindow* window) override;
+	virtual DeviceState getDeviceState() override { return m_deviceState; }
+	virtual void resetDevice() override;
+	virtual void onLostDevice() override;
+	virtual void onResetDevice() override;
+	virtual void flushResource() override;
 
 protected:
-	static void ParseGLVersion(int* glMajor, int* glMinor, int* glslMajor, int* glslMinor);
-	static bool ContainsExtensionString(const char* extensionString, const char* str);
-	void SelectGLVersion(int requestMajor, int requestMinor);
+	static void parseGLVersion(int* glMajor, int* glMinor, int* glslMajor, int* glslMinor);
+	static bool containsExtensionString(const char* extensionString, const char* str);
+	void selectGLVersion(int requestMajor, int requestMinor);
 
 private:
 	DeviceState					m_deviceState;
@@ -126,7 +126,7 @@ class GLContext
 public:
 	GLContext() = default;
 	virtual ~GLContext() = default;
-	virtual void SwapBuffers() = 0;
+	virtual void swapBuffers() = 0;
 };
 
 } // namespace Driver

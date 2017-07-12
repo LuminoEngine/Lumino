@@ -32,7 +32,7 @@ WGLContext::WGLContext(WGLGraphicsDevice* device, PlatformWindow* window, WGLCon
 	, m_hDC(NULL)
 	, m_hGLRC(NULL)
 {
-	m_hWnd = PlatformSupport::GetWindowHandle(window);
+	m_hWnd = PlatformSupport::getWindowHandle(window);
 	m_hDC = ::GetDC(m_hWnd);
 
 	HGLRC share = NULL;
@@ -74,7 +74,7 @@ WGLContext::WGLContext(WGLGraphicsDevice* device, PlatformWindow* window, WGLCon
 	BOOL r = ::SetPixelFormat(m_hDC, pfmt, &pformat);
 	LN_THROW(r, Win32Exception, ::GetLastError());
 
-	if (device->GetOpenGLMajorVersio() != 0)
+	if (device->getOpenGLMajorVersion() != 0)
 	{
 		// 使用する OpenGL のバージョンとプロファイルの指定
 		//	WGL_CONTEXT_FLAGS_ARB
@@ -90,8 +90,8 @@ WGLContext::WGLContext(WGLGraphicsDevice* device, PlatformWindow* window, WGLCon
 		// http://marina.sys.wakayama-u.ac.jp/~tokoi/?date=20120908
 		// https://www.opengl.org/registry/specs/ARB/wgl_create_context.txt
 		int attr[] = {
-			WGL_CONTEXT_MAJOR_VERSION_ARB, device->GetOpenGLMajorVersio(),
-			WGL_CONTEXT_MINOR_VERSION_ARB, device->GetOpenGLMinorVersio(),
+			WGL_CONTEXT_MAJOR_VERSION_ARB, device->getOpenGLMajorVersion(),
+			WGL_CONTEXT_MINOR_VERSION_ARB, device->getOpenGLMinorVersion(),
 			WGL_CONTEXT_FLAGS_ARB, 0,
 			WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB,	// 古い機能と互換性あり (glBegin 使いたい)
 			//WGL_CONTEXT_FLAGS_ARB, 0,//WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,//WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB
@@ -127,7 +127,7 @@ WGLContext::~WGLContext()
 }
 
 //------------------------------------------------------------------------------
-void WGLContext::SwapBuffers()
+void WGLContext::swapBuffers()
 {
 	BOOL r = ::SwapBuffers(m_hDC);
 	LN_THROW(r, Win32Exception, ::GetLastError());
@@ -153,9 +153,9 @@ WGLGraphicsDevice::~WGLGraphicsDevice()
 }
 
 //------------------------------------------------------------------------------
-RefPtr<GLContext> WGLGraphicsDevice::InitializeMainContext(const ConfigData& configData)
+RefPtr<GLContext> WGLGraphicsDevice::initializeMainContext(const ConfigData& configData)
 {
-	HWND hWnd = PlatformSupport::GetWindowHandle(configData.mainWindow);
+	HWND hWnd = PlatformSupport::getWindowHandle(configData.mainWindow);
 	HDC hDC = ::GetDC(hWnd);
 
 	// まずは wglCreateContext で適当にコンテキストを作る。
@@ -190,35 +190,35 @@ RefPtr<GLContext> WGLGraphicsDevice::InitializeMainContext(const ConfigData& con
 	GetExtensionsStringARB = (PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsStringARB");
 	CreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
 
-	Logger::WriteLine("Default OpenGL info:");
-	Logger::WriteLine("    GL_VERSION                  : %s", glGetString(GL_VERSION));
-	Logger::WriteLine("    GL_SHADING_LANGUAGE_VERSION : %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
-	Logger::WriteLine("    Extensions strings          : %s", GetExtensionsStringEXT());
+	Logger::writeLine("Default OpenGL info:");
+	Logger::writeLine("    GL_VERSION                  : %s", glGetString(GL_VERSION));
+	Logger::writeLine("    GL_SHADING_LANGUAGE_VERSION : %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
+	Logger::writeLine("    Extensions strings          : %s", GetExtensionsStringEXT());
 
-	SelectGLVersion(configData.openGLMajorVersion, configData.openGLMinorVersion);
+	selectGLVersion(configData.openGLMajorVersion, configData.openGLMinorVersion);
 
 	
 	GLenum result = glewInit();
 	if (LN_CHECK_STATE(result == GLEW_OK)) return nullptr;	// コンテキスト作成後、wglMakeCurrent() しないとエラーが返る
 
-	auto mainContext = RefPtr<WGLContext>::MakeRef(this, configData.mainWindow, nullptr);
+	auto mainContext = RefPtr<WGLContext>::makeRef(this, configData.mainWindow, nullptr);
 
 	wglDeleteContext(hGLRC);
 	::ReleaseDC(hWnd, hDC);
 
 
-	return RefPtr<GLContext>::StaticCast(mainContext);
+	return RefPtr<GLContext>::staticCast(mainContext);
 }
 
 //------------------------------------------------------------------------------
-RefPtr<GLContext> WGLGraphicsDevice::CreateContext(PlatformWindow* window)
+RefPtr<GLContext> WGLGraphicsDevice::createContext(PlatformWindow* window)
 {
-	auto ptr = RefPtr<WGLContext>::MakeRef(this, window, static_cast<WGLContext*>(GetMainContext()));
-	return RefPtr<GLContext>::StaticCast(ptr);
+	auto ptr = RefPtr<WGLContext>::makeRef(this, window, static_cast<WGLContext*>(getMainContext()));
+	return RefPtr<GLContext>::staticCast(ptr);
 }
 
 //------------------------------------------------------------------------------
-void WGLGraphicsDevice::MakeCurrentContext(GLContext* context)
+void WGLGraphicsDevice::makeCurrentContext(GLContext* context)
 {
 	if (context != nullptr)
 	{

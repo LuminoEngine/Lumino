@@ -14,28 +14,28 @@ class MeshHelper
 {
 public:
 
-	static Vector3 GetXZCirclePoint(int i, int slices)
+	static Vector3 getXZCirclePoint(int i, int slices)
 	{
 		float angle = i * Math::PI2 / slices;
 		float dx, dz;
-		Math::SinCos(angle, &dx, &dz);
+		Math::sinCos(angle, &dx, &dz);
 		return Vector3(dx, 0, dz);
 	}
 
-	static Vector3 GetXZArcPoint(float startAngle, float endAngle, int i, int slices)
+	static Vector3 getXZArcPoint(float startAngle, float endAngle, int i, int slices)
 	{
 		float da = endAngle - startAngle;
 		float angle = (i * da / slices) + startAngle;
 		float dx, dz;
-		Math::SinCos(angle, &dx, &dz);
+		Math::sinCos(angle, &dx, &dz);
 		return Vector3(dx, 0, dz);
 	}
 
-	static void Transform(Vertex* begin, Vertex* end, const Matrix& transform)
+	static void transform(Vertex* begin, Vertex* end, const Matrix& transform)
 	{
 		for (Vertex* v = begin; v < end; v++)
 		{
-			v->position.TransformCoord(transform);
+			v->position.transformCoord(transform);
 		}
 	}
 };
@@ -49,7 +49,7 @@ public:
 	{
 	}
 
-	void Initialize(const Color& color, const Matrix& transform)
+	void initialize(const Color& color, const Matrix& transform)
 	{
 		m_color = color;
 		m_transform = transform;
@@ -67,31 +67,31 @@ public:
 		m_size = size;
 	}
 
-	int GetVertexCount() const
+	int getVertexCount() const
 	{
 		return 4;
 	}
 
-	int GetIndexCount() const
+	int getIndexCount() const
 	{
 		return 6;
 	}
 
-	void Generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
+	void generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
 	{
 		Vector2 half = m_size / 2;
-		outVertices[0].position.Set(-half.x, half.y, 0);
-		outVertices[0].normal.Set(0.0f, 0.0f, -1.0f);
-		outVertices[0].uv.Set(0.0f, 0.0f);
-		outVertices[1].position.Set(-half.x, -half.y, 0);
-		outVertices[1].normal.Set(0.0f, 0.0f, -1.0f);
-		outVertices[1].uv.Set(0.0f, 1.0f);
-		outVertices[2].position.Set(half.x, half.y, 0);
-		outVertices[2].normal.Set(0.0f, 0.0f, -1.0f);
-		outVertices[2].uv.Set(1.0f, 0.0f);
-		outVertices[3].position.Set(half.x, -half.y, 0);
-		outVertices[3].normal.Set(0.0f, 0.0f, -1.0f);
-		outVertices[3].uv.Set(1.0f, 1.0f);
+		outVertices[0].position.set(-half.x, half.y, 0);
+		outVertices[0].normal.set(0.0f, 0.0f, -1.0f);
+		outVertices[0].uv.set(0.0f, 0.0f);
+		outVertices[1].position.set(-half.x, -half.y, 0);
+		outVertices[1].normal.set(0.0f, 0.0f, -1.0f);
+		outVertices[1].uv.set(0.0f, 1.0f);
+		outVertices[2].position.set(half.x, half.y, 0);
+		outVertices[2].normal.set(0.0f, 0.0f, -1.0f);
+		outVertices[2].uv.set(1.0f, 0.0f);
+		outVertices[3].position.set(half.x, -half.y, 0);
+		outVertices[3].normal.set(0.0f, 0.0f, -1.0f);
+		outVertices[3].uv.set(1.0f, 1.0f);
 
 		outIndices[0] = beginIndex + 0;
 		outIndices[1] = beginIndex + 1;
@@ -113,25 +113,25 @@ public:
 		, m_front(front)
 	{}
 
-	int GetVertexCount() const { return 4; }
-	int GetIndexCount() const { return 6; }
+	int getVertexCount() const { return 4; }
+	int getIndexCount() const { return 6; }
 
-	void Generate(Vertex* outVertices, uint16_t* outIndices)
+	void generate(Vertex* outVertices, uint16_t* outIndices)
 	{
 		Vector2 half = m_size / 2;
 		if (m_front == Vector3::UnitY)
 		{
-			outVertices[0].position.Set(-half.x, 0, half.y);
-			outVertices[1].position.Set(-half.x, 0, -half.y);
-			outVertices[2].position.Set(half.x, 0, half.y);
-			outVertices[3].position.Set(half.x, 0, -half.y);
+			outVertices[0].position.set(-half.x, 0, half.y);
+			outVertices[1].position.set(-half.x, 0, -half.y);
+			outVertices[2].position.set(half.x, 0, half.y);
+			outVertices[3].position.set(half.x, 0, -half.y);
 		}
 		else if(m_front == -Vector3::UnitY)
 		{
-			outVertices[0].position.Set(half.x, 0, half.y);
-			outVertices[1].position.Set(half.x, 0, -half.y);
-			outVertices[2].position.Set(-half.x, 0, half.y);
-			outVertices[3].position.Set(-half.x, 0, -half.y);
+			outVertices[0].position.set(half.x, 0, half.y);
+			outVertices[1].position.set(half.x, 0, -half.y);
+			outVertices[2].position.set(-half.x, 0, half.y);
+			outVertices[3].position.set(-half.x, 0, -half.y);
 		}
 		else
 		{
@@ -139,13 +139,13 @@ public:
 		}
 
 		outVertices[0].normal = m_front;
-		outVertices[0].uv.Set(0.0f, 0.0f);
+		outVertices[0].uv.set(0.0f, 0.0f);
 		outVertices[1].normal = m_front;
-		outVertices[1].uv.Set(0.0f, 1.0f);
+		outVertices[1].uv.set(0.0f, 1.0f);
 		outVertices[2].normal = m_front;
-		outVertices[2].uv.Set(1.0f, 0.0f);
+		outVertices[2].uv.set(1.0f, 0.0f);
 		outVertices[3].normal = m_front;
-		outVertices[3].uv.Set(1.0f, 1.0f);
+		outVertices[3].uv.set(1.0f, 1.0f);
 
 		outIndices[0] = 0;
 		outIndices[1] = 1;
@@ -179,20 +179,20 @@ public:
 	{
 	}
 
-	void Initialize(const Vector2& size, int sliceX, int sliceZ, const Color& color, const Matrix& transform)
+	void initialize(const Vector2& size, int sliceX, int sliceZ, const Color& color, const Matrix& transform)
 	{
 		if (LN_CHECK_ARG(sliceX >= 1)) return;
 		if (LN_CHECK_ARG(sliceZ >= 1)) return;
 		m_size = size;
 		m_sliceX = sliceX;
 		m_sliceZ = sliceZ;
-		MeshFactoryBase::Initialize(color, transform);
+		MeshFactoryBase::initialize(color, transform);
 	}
 
-	int GetVertexCount() const { return (m_sliceX + 1) * (m_sliceZ + 1); }
-	int GetIndexCount() const { return (m_sliceX * m_sliceZ * 2) * 3; }
+	int getVertexCount() const { return (m_sliceX + 1) * (m_sliceZ + 1); }
+	int getIndexCount() const { return (m_sliceX * m_sliceZ * 2) * 3; }
 
-	void Generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
+	void generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
 	{
 		Vector2 minPos = -m_size / 2;
 		Vector2 maxPos = m_size / 2;
@@ -224,8 +224,8 @@ public:
 					v->position.z = maxZ - stepZ * iZ;
 
 				v->position.y = 0.0f;
-				v->normal.Set(0.0f, 1.0f, 0.0f);
-				v->uv.Set(StepU * iX, 1.0f - StepV * iZ);
+				v->normal.set(0.0f, 1.0f, 0.0f);
+				v->uv.set(StepU * iX, 1.0f - StepV * iZ);
 				v->color = m_color;
 				++v;
 			}
@@ -250,8 +250,8 @@ public:
 			}
 		}
 
-		if (!m_transform.IsIdentity())
-			MeshHelper::Transform(outVertices, v, m_transform);
+		if (!m_transform.isIdentity())
+			MeshHelper::transform(outVertices, v, m_transform);
 	}
 
 private:
@@ -268,39 +268,39 @@ public:
 		m_size = size;
 	}
 
-	int GetVertexCount() const
+	int getVertexCount() const
 	{
 		return 8;
 	}
 
-	int GetIndexCount() const
+	int getIndexCount() const
 	{
 		return 36;
 	}
 
-	void Generate(Vertex* outVertices, uint16_t* outIndices)
+	void generate(Vertex* outVertices, uint16_t* outIndices)
 	{
 		Vector3 minPos = -(m_size / 2);
 		Vector3 maxPos = (m_size / 2);
 
 		// 手前 (Z-)
-		outVertices[0].position.Set(minPos.x, maxPos.y, minPos.z);	// 左上
-		outVertices[0].uv.Set(0.0f, 0.0f);
-		outVertices[1].position.Set(minPos.x, minPos.y, minPos.z);	// 左下
-		outVertices[1].uv.Set(0.0f, 1.0f);
-		outVertices[2].position.Set(maxPos.x, maxPos.y, minPos.z);	// 右上
-		outVertices[2].uv.Set(1.0f, 0.0f);
-		outVertices[3].position.Set(maxPos.x, minPos.y, minPos.z);	// 右下
-		outVertices[3].uv.Set(1.0f, 1.0f);
+		outVertices[0].position.set(minPos.x, maxPos.y, minPos.z);	// 左上
+		outVertices[0].uv.set(0.0f, 0.0f);
+		outVertices[1].position.set(minPos.x, minPos.y, minPos.z);	// 左下
+		outVertices[1].uv.set(0.0f, 1.0f);
+		outVertices[2].position.set(maxPos.x, maxPos.y, minPos.z);	// 右上
+		outVertices[2].uv.set(1.0f, 0.0f);
+		outVertices[3].position.set(maxPos.x, minPos.y, minPos.z);	// 右下
+		outVertices[3].uv.set(1.0f, 1.0f);
 		// 奥 (Z+)
-		outVertices[4].position.Set(minPos.x, maxPos.y, maxPos.z);	// 左上
-		outVertices[4].uv.Set(1.0f, 0.0f);
-		outVertices[5].position.Set(minPos.x, minPos.y, maxPos.z);	// 左下
-		outVertices[5].uv.Set(1.0f, 1.0f);
-		outVertices[6].position.Set(maxPos.x, maxPos.y, maxPos.z);	// 右上
-		outVertices[6].uv.Set(0.0f, 0.0f);
-		outVertices[7].position.Set(maxPos.x, minPos.y, maxPos.z);	// 右下
-		outVertices[7].uv.Set(0.0f, 1.0f);
+		outVertices[4].position.set(minPos.x, maxPos.y, maxPos.z);	// 左上
+		outVertices[4].uv.set(1.0f, 0.0f);
+		outVertices[5].position.set(minPos.x, minPos.y, maxPos.z);	// 左下
+		outVertices[5].uv.set(1.0f, 1.0f);
+		outVertices[6].position.set(maxPos.x, maxPos.y, maxPos.z);	// 右上
+		outVertices[6].uv.set(0.0f, 0.0f);
+		outVertices[7].position.set(maxPos.x, minPos.y, maxPos.z);	// 右下
+		outVertices[7].uv.set(0.0f, 1.0f);
 
 		for (int i = 0; i < 8; ++i) outVertices[i].color = Color::White;
 
@@ -340,30 +340,30 @@ class RegularBoxMeshFactory
 public:
 	RegularBoxMeshFactory() {}
 
-	void Initialize(const Vector3& size, const Color& color, const Matrix& transform)
+	void initialize(const Vector3& size, const Color& color, const Matrix& transform)
 	{
 		m_size = size;
-		MeshFactoryBase::Initialize(color, transform);
+		MeshFactoryBase::initialize(color, transform);
 	}
 
-	int GetVertexCount() const
+	int getVertexCount() const
 	{
 		return 24;
 	}
 
-	int GetIndexCount() const
+	int getIndexCount() const
 	{
 		return 36;
 	}
 
-	void SetV(Vertex* vertex, float x, float y, float z, float u, float v, const Vector3& normal)
+	void setV(Vertex* vertex, float x, float y, float z, float u, float v, const Vector3& normal)
 	{
-		vertex->position.Set(x, y, z);
-		vertex->uv.Set(u, v);
+		vertex->position.set(x, y, z);
+		vertex->uv.set(u, v);
 		vertex->color = m_color;
 		vertex->normal = normal;
 	}
-	static void SetI(uint16_t* index, uint16_t begin)
+	static void setI(uint16_t* index, uint16_t begin)
 	{
 		index[0] = begin + 0;
 		index[1] = begin + 1;
@@ -373,7 +373,7 @@ public:
 		index[5] = begin + 3;
 	}
 
-	void Generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginVertexIndex)
+	void generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginVertexIndex)
 	{
 		Vector3 minPos = -(m_size / 2);
 		Vector3 maxPos = (m_size / 2);
@@ -381,49 +381,49 @@ public:
 		uint16_t* i = outIndices;
 
 		// 手前 (Z-)
-		SetV(v, minPos.x, maxPos.y, minPos.z, 0.0f, 0.0f, -Vector3::UnitZ); ++v;	// ┏
-		SetV(v, minPos.x, minPos.y, minPos.z, 0.0f, 1.0f, -Vector3::UnitZ); ++v;	// ┗
-		SetV(v, maxPos.x, maxPos.y, minPos.z, 1.0f, 0.0f, -Vector3::UnitZ); ++v;	// ┓
-		SetV(v, maxPos.x, minPos.y, minPos.z, 1.0f, 1.0f, -Vector3::UnitZ); ++v;	// ┛
-		SetI(i, beginVertexIndex + 0); i += 6;
+		setV(v, minPos.x, maxPos.y, minPos.z, 0.0f, 0.0f, -Vector3::UnitZ); ++v;	// ┏
+		setV(v, minPos.x, minPos.y, minPos.z, 0.0f, 1.0f, -Vector3::UnitZ); ++v;	// ┗
+		setV(v, maxPos.x, maxPos.y, minPos.z, 1.0f, 0.0f, -Vector3::UnitZ); ++v;	// ┓
+		setV(v, maxPos.x, minPos.y, minPos.z, 1.0f, 1.0f, -Vector3::UnitZ); ++v;	// ┛
+		setI(i, beginVertexIndex + 0); i += 6;
 
 		// 奥 (Z+)
-		SetV(v, maxPos.x, maxPos.y, maxPos.z, 0.0f, 0.0f, Vector3::UnitZ); ++v;	// ┏
-		SetV(v, maxPos.x, minPos.y, maxPos.z, 0.0f, 1.0f, Vector3::UnitZ); ++v;	// ┗
-		SetV(v, minPos.x, maxPos.y, maxPos.z, 1.0f, 0.0f, Vector3::UnitZ); ++v;	// ┓
-		SetV(v, minPos.x, minPos.y, maxPos.z, 1.0f, 1.0f, Vector3::UnitZ); ++v;	// ┛
-		SetI(i, beginVertexIndex + 4); i += 6;
+		setV(v, maxPos.x, maxPos.y, maxPos.z, 0.0f, 0.0f, Vector3::UnitZ); ++v;	// ┏
+		setV(v, maxPos.x, minPos.y, maxPos.z, 0.0f, 1.0f, Vector3::UnitZ); ++v;	// ┗
+		setV(v, minPos.x, maxPos.y, maxPos.z, 1.0f, 0.0f, Vector3::UnitZ); ++v;	// ┓
+		setV(v, minPos.x, minPos.y, maxPos.z, 1.0f, 1.0f, Vector3::UnitZ); ++v;	// ┛
+		setI(i, beginVertexIndex + 4); i += 6;
 
 		// 左 (X-)
-		SetV(v, minPos.x, maxPos.y, maxPos.z, 0.0f, 0.0f, -Vector3::UnitX); ++v;	// ┏
-		SetV(v, minPos.x, minPos.y, maxPos.z, 0.0f, 1.0f, -Vector3::UnitX); ++v;	// ┗
-		SetV(v, minPos.x, maxPos.y, minPos.z, 1.0f, 0.0f, -Vector3::UnitX); ++v;	// ┓
-		SetV(v, minPos.x, minPos.y, minPos.z, 1.0f, 1.0f, -Vector3::UnitX); ++v;	// ┛
-		SetI(i, beginVertexIndex + 8); i += 6;
+		setV(v, minPos.x, maxPos.y, maxPos.z, 0.0f, 0.0f, -Vector3::UnitX); ++v;	// ┏
+		setV(v, minPos.x, minPos.y, maxPos.z, 0.0f, 1.0f, -Vector3::UnitX); ++v;	// ┗
+		setV(v, minPos.x, maxPos.y, minPos.z, 1.0f, 0.0f, -Vector3::UnitX); ++v;	// ┓
+		setV(v, minPos.x, minPos.y, minPos.z, 1.0f, 1.0f, -Vector3::UnitX); ++v;	// ┛
+		setI(i, beginVertexIndex + 8); i += 6;
 
 		// 右 (X+)
-		SetV(v, maxPos.x, maxPos.y, minPos.z, 0.0f, 0.0f, Vector3::UnitX); ++v;	// ┏
-		SetV(v, maxPos.x, minPos.y, minPos.z, 0.0f, 1.0f, Vector3::UnitX); ++v;	// ┗
-		SetV(v, maxPos.x, maxPos.y, maxPos.z, 1.0f, 0.0f, Vector3::UnitX); ++v;	// ┓
-		SetV(v, maxPos.x, minPos.y, maxPos.z, 1.0f, 1.0f, Vector3::UnitX); ++v;	// ┛
-		SetI(i, beginVertexIndex + 12); i += 6;
+		setV(v, maxPos.x, maxPos.y, minPos.z, 0.0f, 0.0f, Vector3::UnitX); ++v;	// ┏
+		setV(v, maxPos.x, minPos.y, minPos.z, 0.0f, 1.0f, Vector3::UnitX); ++v;	// ┗
+		setV(v, maxPos.x, maxPos.y, maxPos.z, 1.0f, 0.0f, Vector3::UnitX); ++v;	// ┓
+		setV(v, maxPos.x, minPos.y, maxPos.z, 1.0f, 1.0f, Vector3::UnitX); ++v;	// ┛
+		setI(i, beginVertexIndex + 12); i += 6;
 
 		// 下 (Y-)(Z- がUVの上方向)
-		SetV(v, minPos.x, minPos.y, minPos.z, 0.0f, 0.0f, -Vector3::UnitY); ++v;	// ┏
-		SetV(v, minPos.x, minPos.y, maxPos.z, 0.0f, 1.0f, -Vector3::UnitY); ++v;	// ┗
-		SetV(v, maxPos.x, minPos.y, minPos.z, 1.0f, 0.0f, -Vector3::UnitY); ++v;	// ┓
-		SetV(v, maxPos.x, minPos.y, maxPos.z, 1.0f, 1.0f, -Vector3::UnitY); ++v;	// ┛
-		SetI(i, beginVertexIndex + 16); i += 6;
+		setV(v, minPos.x, minPos.y, minPos.z, 0.0f, 0.0f, -Vector3::UnitY); ++v;	// ┏
+		setV(v, minPos.x, minPos.y, maxPos.z, 0.0f, 1.0f, -Vector3::UnitY); ++v;	// ┗
+		setV(v, maxPos.x, minPos.y, minPos.z, 1.0f, 0.0f, -Vector3::UnitY); ++v;	// ┓
+		setV(v, maxPos.x, minPos.y, maxPos.z, 1.0f, 1.0f, -Vector3::UnitY); ++v;	// ┛
+		setI(i, beginVertexIndex + 16); i += 6;
 
 		// 上 (Y+)(Z+ がUVの上方向)
-		SetV(v, minPos.x, maxPos.y, maxPos.z, 0.0f, 0.0f, Vector3::UnitY); ++v;	// ┏
-		SetV(v, minPos.x, maxPos.y, minPos.z, 0.0f, 1.0f, Vector3::UnitY); ++v;	// ┗
-		SetV(v, maxPos.x, maxPos.y, maxPos.z, 1.0f, 0.0f, Vector3::UnitY); ++v;	// ┓
-		SetV(v, maxPos.x, maxPos.y, minPos.z, 1.0f, 1.0f, Vector3::UnitY); ++v;	// ┛
-		SetI(i, beginVertexIndex + 20);
+		setV(v, minPos.x, maxPos.y, maxPos.z, 0.0f, 0.0f, Vector3::UnitY); ++v;	// ┏
+		setV(v, minPos.x, maxPos.y, minPos.z, 0.0f, 1.0f, Vector3::UnitY); ++v;	// ┗
+		setV(v, maxPos.x, maxPos.y, maxPos.z, 1.0f, 0.0f, Vector3::UnitY); ++v;	// ┓
+		setV(v, maxPos.x, maxPos.y, minPos.z, 1.0f, 1.0f, Vector3::UnitY); ++v;	// ┛
+		setI(i, beginVertexIndex + 20);
 
-		if (!m_transform.IsIdentity())
-			MeshHelper::Transform(outVertices, v, m_transform);
+		if (!m_transform.isIdentity())
+			MeshHelper::transform(outVertices, v, m_transform);
 	}
 
 private:
@@ -443,26 +443,26 @@ public:
 	{
 	}
 
-	void Initialize(float radius, int slices, int stacks, const Color& color, const Matrix& transform)
+	void initialize(float radius, int slices, int stacks, const Color& color, const Matrix& transform)
 	{
 		if (LN_CHECK_ARG(slices >= 3)) return;
 		if (LN_CHECK_ARG(stacks >= 2)) return;
 		m_radius = radius;
 		m_slices = slices;
 		m_stacks = stacks;
-		MakeSinCosTable();
-		MeshFactoryBase::Initialize(color, transform);
+		makeSinCosTable();
+		MeshFactoryBase::initialize(color, transform);
 	}
 
 	// Squashed
 
-	int GetVertexCount() const
+	int getVertexCount() const
 	{
 		return (m_slices + 1) * (m_stacks + 1);
 		//return 2 + m_slices * (m_stacks - 1);	// (top と bottom の 2 点) + リングの頂点数 * 重ねる数
 	}
 
-	int GetIndexCount() const
+	int getIndexCount() const
 	{
 		return m_slices * m_stacks * 6;
 		//return 2 * m_slices + (m_stacks - 2) * (2 * m_slices);
@@ -471,13 +471,13 @@ public:
 	//typedef uint16_t Face[3];
 	//typedef uint16_t QuadFace[6];
 
-	struct SinCos
+	struct sinCos
 	{
 		float	sin;
 		float	cos;
 	};
 
-	void Generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
+	void generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
 	{
 		Vertex* v = outVertices;
 		uint16_t* i = (uint16_t*)outIndices;
@@ -555,8 +555,8 @@ public:
 			}
 		}
 
-		if (!m_transform.IsIdentity())
-			MeshHelper::Transform(outVertices, v, m_transform);
+		if (!m_transform.isIdentity())
+			MeshHelper::transform(outVertices, v, m_transform);
 	}
 
 	static uint16_t vertex_index(int slices, int slice, int stack)
@@ -564,11 +564,11 @@ public:
 		return stack*slices + slice + 1;
 	}
 
-	void MakeSinCosTable()
+	void makeSinCosTable()
 	{
 		float phi_start = Math::PI / 2.0f;
 		float phi_step = -2.0f * Math::PI / m_slices;
-		m_sincosTable.Resize(m_slices + 1);
+		m_sincosTable.resize(m_slices + 1);
 
 		float angle = phi_start;
 		for (int i = 0; i < m_slices; ++i)
@@ -586,7 +586,7 @@ private:
 	int		m_slices;
 	int		m_stacks;
 
-	List<SinCos>	m_sincosTable;
+	List<sinCos>	m_sincosTable;
 };
 
 // Sphere 同様、uv 展開の都合上 ring の始点と終点、底の位置は同一。
@@ -602,7 +602,7 @@ public:
 	{
 	}
 
-	void Initialize(float radius, float height, int slices, int stacks, const Color& color, const Matrix& transform)
+	void initialize(float radius, float height, int slices, int stacks, const Color& color, const Matrix& transform)
 	{
 		if (LN_CHECK_ARG(slices >= 3)) return;
 		if (LN_CHECK_ARG(stacks >= 1)) return;
@@ -610,20 +610,20 @@ public:
 		m_height = height;
 		m_slices = slices;
 		m_stacks = stacks;
-		MeshFactoryBase::Initialize(color, transform);
+		MeshFactoryBase::initialize(color, transform);
 	}
 
-	int GetVertexCount() const
+	int getVertexCount() const
 	{
 		return (m_slices + 1) * (m_stacks + 3);
 	}
 
-	int GetIndexCount() const
+	int getIndexCount() const
 	{
 		return m_slices * (m_stacks + 2) * 6;
 	}
 
-	void Generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
+	void generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
 	{
 		Vertex* vb = outVertices;
 		uint16_t* ib = (uint16_t*)outIndices;
@@ -636,16 +636,16 @@ public:
 		//for (int iSlice = 0; iSlice < m_slices + 1; ++iSlice)
 		for (int iSlice = m_slices; iSlice >= 0; iSlice--)
 		{
-			Vector3 n = MeshHelper::GetXZCirclePoint(iSlice, m_slices);
+			Vector3 n = MeshHelper::getXZCirclePoint(iSlice, m_slices);
 			Vector3 xz = n * m_radius;
 
 			// upper base
 			{
 				Vertex v;
-				v.position.Set(0, yu, 0);
+				v.position.set(0, yu, 0);
 				v.normal = Vector3::UnitY;
 				v.color = m_color;
-				AddVertex(&vb, v);
+				addVertex(&vb, v);
 			}
 			// side
 			y = yu;
@@ -657,16 +657,16 @@ public:
 				v.position.z = xz.z;
 				v.normal = n;
 				v.color = m_color;
-				AddVertex(&vb, v);
+				addVertex(&vb, v);
 				y -= yStep;
 			}
 			// lower base
 			{
 				Vertex v;
-				v.position.Set(0, yd, 0);
+				v.position.set(0, yd, 0);
 				v.normal = -Vector3::UnitY;
 				v.color = m_color;
-				AddVertex(&vb, v);
+				addVertex(&vb, v);
 			}
 		}
 
@@ -690,11 +690,11 @@ public:
 			}
 		}
 
-		if (!m_transform.IsIdentity())
-			MeshHelper::Transform(outVertices, vb, m_transform);
+		if (!m_transform.isIdentity())
+			MeshHelper::transform(outVertices, vb, m_transform);
 	}
 
-	static void AddVertex(Vertex** vb, const Vertex& v)
+	static void addVertex(Vertex** vb, const Vertex& v)
 	{
 		*(*vb) = v;
 		(*vb)++;
@@ -719,59 +719,59 @@ public:
 	{
 	}
 
-	void Initialize(float radius, float height, int slices, const Color& color, const Matrix& transform)
+	void initialize(float radius, float height, int slices, const Color& color, const Matrix& transform)
 	{
 		if (LN_CHECK_ARG(slices >= 3)) return;
 		m_radius = radius;
 		m_height = height;
 		m_slices = slices;
-		MeshFactoryBase::Initialize(color, transform);
+		MeshFactoryBase::initialize(color, transform);
 	}
 
-	int GetVertexCount() const
+	int getVertexCount() const
 	{
 		return (m_slices + 1) * 3;
 	}
 
-	int GetIndexCount() const
+	int getIndexCount() const
 	{
 		return m_slices * 3 * 6;
 	}
 
-	void Generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
+	void generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
 	{
 		Vertex* vb = outVertices;
 		uint16_t* ib = (uint16_t*)outIndices;
 
 		for (int iSlice = m_slices; iSlice >= 0; iSlice--)
 		{
-			Vector3 n = MeshHelper::GetXZCirclePoint(iSlice, m_slices);
+			Vector3 n = MeshHelper::getXZCirclePoint(iSlice, m_slices);
 			Vector3 xz = n * m_radius;
 
 			// top
 			{
 				Vertex v;
-				v.position.Set(0, m_height / 2, 0);
+				v.position.set(0, m_height / 2, 0);
 				v.normal = Vector3::UnitY;
 				v.color = m_color;
-				AddVertex(&vb, v);
+				addVertex(&vb, v);
 			}
 			// side
 			float y = -m_height / 2;
 			{
 				Vertex v;
-				v.position.Set(xz.x, y, xz.z);
+				v.position.set(xz.x, y, xz.z);
 				v.normal = n;
 				v.color = m_color;
-				AddVertex(&vb, v);
+				addVertex(&vb, v);
 			}
 			// lower base
 			{
 				Vertex v;
-				v.position.Set(0, y, 0);
+				v.position.set(0, y, 0);
 				v.normal = -Vector3::UnitY;
 				v.color = m_color;
-				AddVertex(&vb, v);
+				addVertex(&vb, v);
 			}
 		}
 
@@ -795,11 +795,11 @@ public:
 			}
 		}
 
-		if (!m_transform.IsIdentity())
-			MeshHelper::Transform(outVertices, vb, m_transform);
+		if (!m_transform.isIdentity())
+			MeshHelper::transform(outVertices, vb, m_transform);
 	}
 
-	static void AddVertex(Vertex** vb, const Vertex& v)
+	static void addVertex(Vertex** vb, const Vertex& v)
 	{
 		*(*vb) = v;
 		(*vb)++;
@@ -825,7 +825,7 @@ public:
 	{
 	}
 
-	void Initialize(float startAngle, float endAngle, float innerRadius, float outerRadius, int slices, const Color& color, const Matrix& transform)
+	void initialize(float startAngle, float endAngle, float innerRadius, float outerRadius, int slices, const Color& color, const Matrix& transform)
 	{
 		if (LN_CHECK_ARG(slices >= 1)) return;
 		m_startAngle = startAngle;
@@ -833,27 +833,27 @@ public:
 		m_innerRadius = innerRadius;
 		m_outerRadius = outerRadius;
 		m_slices = slices;
-		MeshFactoryBase::Initialize(color, transform);
+		MeshFactoryBase::initialize(color, transform);
 	}
 
-	int GetVertexCount() const
+	int getVertexCount() const
 	{
 		return (m_slices + 1) * 2;
 	}
 
-	int GetIndexCount() const
+	int getIndexCount() const
 	{
 		return m_slices * 6;
 	}
 
-	void Generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
+	void generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
 	{
 		Vertex* vb = outVertices;
 		uint16_t* ib = (uint16_t*)outIndices;
 
 		for (int iSlice = 0; iSlice < m_slices + 1; iSlice++)
 		{
-			Vector3 n = MeshHelper::GetXZArcPoint(m_startAngle, m_endAngle, iSlice, m_slices);
+			Vector3 n = MeshHelper::getXZArcPoint(m_startAngle, m_endAngle, iSlice, m_slices);
 
 			// outer
 			{
@@ -861,7 +861,7 @@ public:
 				v.position = n * m_outerRadius;
 				v.normal = Vector3::UnitY;
 				v.color = m_color;
-				AddVertex(&vb, v);
+				addVertex(&vb, v);
 			}
 			// inner
 			{
@@ -869,7 +869,7 @@ public:
 				v.position = n * m_innerRadius;
 				v.normal = Vector3::UnitY;
 				v.color = m_color;
-				AddVertex(&vb, v);
+				addVertex(&vb, v);
 			}
 		}
 
@@ -889,11 +889,11 @@ public:
 			ib += 6;
 		}
 
-		if (!m_transform.IsIdentity())
-			MeshHelper::Transform(outVertices, vb, m_transform);
+		if (!m_transform.isIdentity())
+			MeshHelper::transform(outVertices, vb, m_transform);
 	}
 
-	static void AddVertex(Vertex** vb, const Vertex& v)
+	static void addVertex(Vertex** vb, const Vertex& v)
 	{
 		*(*vb) = v;
 		(*vb)++;
@@ -916,20 +916,20 @@ class TeapotMeshFactory
 public:
 	TeapotMeshFactory();
 
-	void Initialize(float size, int tessellation, const Color& color, const Matrix& transform);
+	void initialize(float size, int tessellation, const Color& color, const Matrix& transform);
 
-	int GetVertexCount() const;
+	int getVertexCount() const;
 
-	int GetIndexCount() const;
+	int getIndexCount() const;
 
-	void Generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex);
+	void generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex);
 
 private:
-	void AddVertex(const Vector3& pos, const Vector3& normal, const Vector2& texUV);
-	void AddIndex(uint16_t index);
+	void addVertex(const Vector3& pos, const Vector3& normal, const Vector2& texUV);
+	void addIndex(uint16_t index);
 
-	void ComputeTeapot(float size, size_t tessellation/*, bool rhcoords*/);
-	void TessellatePatch(const TeapotPatch& patch, size_t tessellation, const Vector3& scale, bool isMirrored);
+	void computeTeapot(float size, size_t tessellation/*, bool rhcoords*/);
+	void tessellatePatch(const TeapotPatch& patch, size_t tessellation, const Vector3& scale, bool isMirrored);
 
 	float		m_size;
 	int			m_tessellation;

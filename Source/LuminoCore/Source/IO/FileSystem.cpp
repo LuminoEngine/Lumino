@@ -274,17 +274,17 @@ template<typename TString> static bool Exists2(const TString& filePath);
 
 
 //------------------------------------------------------------------------------
-FileAttribute FileSystem::GetAttribute(const char* filePath)
+FileAttribute FileSystem::getAttribute(const char* filePath)
 {
 	FileAttribute attr;
-	bool r = GetAttributeInternal(filePath, &attr);
+	bool r = getAttributeInternal(filePath, &attr);
 	LN_THROW(r, FileNotFoundException, filePath);
 	return attr;
 }
-FileAttribute FileSystem::GetAttribute(const wchar_t* filePath)
+FileAttribute FileSystem::getAttribute(const wchar_t* filePath)
 {
 	FileAttribute attr;
-	bool r = GetAttributeInternal(filePath, &attr);
+	bool r = getAttributeInternal(filePath, &attr);
 	LN_THROW(r, FileNotFoundException, filePath);
 	return attr;
 }
@@ -293,76 +293,76 @@ FileAttribute FileSystem::GetAttribute(const wchar_t* filePath)
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-void FileSystem::DeleteDirectoryInternal(const GenericStringRef<TChar>& path, bool recursive)
+void FileSystem::deleteDirectoryInternal(const GenericStringRef<TChar>& path, bool recursive)
 {
 	detail::GenericStaticallyLocalPath<TChar> localPath(path);
 	if (recursive)
 	{
 		GenericFileFinder<TChar> finder(localPath.c_str());
-		while (!finder.GetCurrent().IsEmpty())
+		while (!finder.getCurrent().isEmpty())
 		{
-			if (GetAttribute(finder.GetCurrent().c_str()) == FileAttribute::Directory)
+			if (getAttribute(finder.getCurrent().c_str()) == FileAttribute::Directory)
 			{
-				DeleteDirectoryInternal<TChar>(finder.GetCurrent(), recursive);	// recursive
+				deleteDirectoryInternal<TChar>(finder.getCurrent(), recursive);	// recursive
 			}
 			else // TODO: 他の属性みないとダメ。シンボリックリンクとか
 			{
-				Delete(finder.GetCurrent().c_str());
+				deleteFile(finder.getCurrent().c_str());
 			}
-			finder.Next();
+			finder.next();
 		}
 	}
 	RemoveDirectoryImpl(localPath.c_str());
 }
-template void FileSystem::DeleteDirectoryInternal<char>(const GenericStringRef<char>& path, bool recursive);
-template void FileSystem::DeleteDirectoryInternal<wchar_t>(const GenericStringRef<wchar_t>& path, bool recursive);
+template void FileSystem::deleteDirectoryInternal<char>(const GenericStringRef<char>& path, bool recursive);
+template void FileSystem::deleteDirectoryInternal<wchar_t>(const GenericStringRef<wchar_t>& path, bool recursive);
 //------------------------------------------------------------------------------
 template<typename TChar>
-void FileSystem::CopyDirectoryInternal(const GenericStringRef<TChar>& srcPath, const GenericStringRef<TChar>& destPath, bool overwrite, bool recursive)
+void FileSystem::copyDirectoryInternal(const GenericStringRef<TChar>& srcPath, const GenericStringRef<TChar>& destPath, bool overwrite, bool recursive)
 {
-	if (LN_CHECK_ARG(!srcPath.IsEmpty())) return;
-	if (LN_CHECK_ARG(!destPath.IsEmpty())) return;
+	if (LN_CHECK_ARG(!srcPath.isEmpty())) return;
+	if (LN_CHECK_ARG(!destPath.isEmpty())) return;
 
 	// 上書きしないとき、すでにフォルダが存在してはならない
 	if (!overwrite)
 	{
-		LN_THROW(ExistsDirectory(srcPath.GetBegin()), IOException);	// TODO: range
+		LN_THROW(existsDirectory(srcPath.getBegin()), IOException);	// TODO: range
 	}
 
 	// コピー先フォルダを作っておく
-	FileSystem::CreateDirectory(destPath.GetBegin());	// TODO: range
+	FileSystem::createDirectory(destPath.getBegin());	// TODO: range
 
 	GenericFileFinder<TChar> finder(srcPath);
-	while (finder.IsWorking())
+	while (finder.isWorking())
 	{
-		const GenericPathName<TChar>& src = finder.GetCurrent();
-		GenericPathName<TChar> dest(destPath, src.GetFileName());
+		const GenericPathName<TChar>& src = finder.getCurrent();
+		GenericPathName<TChar> dest(destPath, src.getFileName());
 		
 
-		if (src.ExistsFile())
+		if (src.existsFile())
 		{
-			if (dest.ExistsDirectory())
+			if (dest.existsDirectory())
 			{
 				// src と dest で同名なのに種類が違う。xcopy 的にはファイルを結合してしまうが・・・
 				LN_NOTIMPLEMENTED();
 			}
 
 			// コピー先にファイルとして存在していて、上書きする場合はコピーする
-			if (dest.ExistsFile())
+			if (dest.existsFile())
 			{
 				if (overwrite)
 				{
-					Copy(src, dest, true);
+					copy(src, dest, true);
 				}
 			}
 			else
 			{
-				Copy(src, dest, false);
+				copy(src, dest, false);
 			}
 		}
-		else if (src.ExistsDirectory())
+		else if (src.existsDirectory())
 		{
-			if (dest.ExistsFile())
+			if (dest.existsFile())
 			{
 				// src と dest で同名なのに種類が違う。xcopy 的にはファイルを結合してしまうが・・・
 				LN_NOTIMPLEMENTED();
@@ -370,82 +370,82 @@ void FileSystem::CopyDirectoryInternal(const GenericStringRef<TChar>& srcPath, c
 
 			if (recursive)
 			{
-				CopyDirectoryInternal<TChar>(src, dest, overwrite, recursive);
+				copyDirectoryInternal<TChar>(src, dest, overwrite, recursive);
 			}
 		}
 
-		finder.Next();
+		finder.next();
 	}
 }
-template void FileSystem::CopyDirectoryInternal<char>(const GenericStringRef<char>& srcPath, const GenericStringRef<char>& destPath, bool overwrite, bool recursive);
-template void FileSystem::CopyDirectoryInternal<wchar_t>(const GenericStringRef<wchar_t>& srcPath, const GenericStringRef<wchar_t>& destPath, bool overwrite, bool recursive);
+template void FileSystem::copyDirectoryInternal<char>(const GenericStringRef<char>& srcPath, const GenericStringRef<char>& destPath, bool overwrite, bool recursive);
+template void FileSystem::copyDirectoryInternal<wchar_t>(const GenericStringRef<wchar_t>& srcPath, const GenericStringRef<wchar_t>& destPath, bool overwrite, bool recursive);
 
 //------------------------------------------------------------------------------
-ByteBuffer FileSystem::ReadAllBytes(const StringRefA& filePath)
+ByteBuffer FileSystem::readAllBytes(const StringRefA& filePath)
 {
 	detail::GenericStaticallyLocalPath<char> localPath(filePath);
 	FILE* fp;
 	errno_t err = fopen_s(&fp, localPath.c_str(), "rb");
 	LN_THROW(err == 0, FileNotFoundException, localPath.c_str());
-	size_t size = (size_t)GetFileSize(fp);
+	size_t size = (size_t)getFileSize(fp);
 
 	ByteBuffer buffer(size);
-	fread(buffer.GetData(), 1, size, fp);
+	fread(buffer.getData(), 1, size, fp);
 	return buffer;
 }
-ByteBuffer FileSystem::ReadAllBytes(const StringRefW& filePath)
+ByteBuffer FileSystem::readAllBytes(const StringRefW& filePath)
 {
 	detail::GenericStaticallyLocalPath<wchar_t> localPath(filePath);
 	FILE* fp;
 	errno_t err = _wfopen_s(&fp, localPath.c_str(), L"rb");
 	LN_THROW(err == 0, FileNotFoundException, localPath.c_str());
-	size_t size = (size_t)GetFileSize(fp);
+	size_t size = (size_t)getFileSize(fp);
 
 	ByteBuffer buffer(size);
-	fread(buffer.GetData(), 1, size, fp);
+	fread(buffer.getData(), 1, size, fp);
 	return buffer;
 }
 
 //------------------------------------------------------------------------------
-String FileSystem::ReadAllText(const StringRef& filePath, const Encoding* encoding)
+String FileSystem::readAllText(const StringRef& filePath, const Encoding* encoding)
 {
-	ByteBuffer buffer(FileSystem::ReadAllBytes(filePath));
+	ByteBuffer buffer(FileSystem::readAllBytes(filePath));
 	if (encoding == nullptr)
 	{
-		Encoding* e = Encoding::GetEncoding(EncodingType::UTF8);
-		if (ByteBuffer::Compare(buffer, e->GetPreamble(), 3, 3) == 0)
+		Encoding* e = Encoding::getEncoding(EncodingType::UTF8);
+		if (ByteBuffer::compare(buffer, e->getPreamble(), 3, 3) == 0)
 			encoding = e;
 		else
-			encoding = Encoding::GetUTF8Encoding();
+			encoding = Encoding::getUTF8Encoding();
 	}
 
 	String str;
-	str.ConvertFrom(buffer.GetData(), buffer.GetSize(), encoding);
+	str.convertFrom(buffer.getData(), buffer.getSize(), encoding);
 	return str;
 }
 
 //------------------------------------------------------------------------------
-void FileSystem::WriteAllBytes(const TCHAR* filePath, const void* buffer, size_t size)
+void FileSystem::writeAllBytes(const TCHAR* filePath, const void* buffer, size_t size)
 {
-	RefPtr<FileStream> stream = FileStream::Create(filePath, FileOpenMode::Write | FileOpenMode::Truncate);
-	stream->Write(buffer, size);
+	RefPtr<FileStream> stream = FileStream::create(filePath, FileOpenMode::write | FileOpenMode::Truncate);
+	stream->write(buffer, size);
 }
 
 //------------------------------------------------------------------------------
-void FileSystem::WriteAllText(const TCHAR* filePath, const String& str, const Encoding* encoding)
+void FileSystem::writeAllText(const TCHAR* filePath, const String& str, const Encoding* encoding)
 {
-	encoding = (encoding == nullptr) ? Encoding::GetUTF8Encoding() : encoding;
+	encoding = (encoding == nullptr) ? Encoding::getUTF8Encoding() : encoding;
 
 	EncodingConversionResult result;
 	EncodingConversionOptions options;
 	options.NullTerminated = false;
-	ByteBuffer buffer = Encoding::Convert(str.c_str(), str.GetByteCount(), Encoding::GetTCharEncoding(), encoding, options, &result);
+	ByteBuffer buffer = Encoding::convert(str.c_str(), str.getByteCount(), Encoding::getTCharEncoding(), encoding, options, &result);
 	
-	WriteAllBytes(filePath, buffer.GetConstData(), buffer.GetSize());
+	writeAllBytes(filePath, buffer.getConstData(), buffer.getSize());
 }
 
 //------------------------------------------------------------------------------
-int64_t FileSystem::CalcSeekPoint(int64_t curPoint, int64_t maxSize, int64_t offset, int origin)
+int64_t FileSystem::calcSeekPoint(int64_t curPoint, int64_t maxSize, int64_t offset, int origin)
 {
 	int64_t newPoint = curPoint;
 	switch (origin)
@@ -473,21 +473,21 @@ int64_t FileSystem::CalcSeekPoint(int64_t curPoint, int64_t maxSize, int64_t off
 }
     
 //------------------------------------------------------------------------------
-bool FileSystem::ExistsDirectory(const char* path)
+bool FileSystem::existsDirectory(const char* path)
 {
 	FileAttribute attr;
-	if (!GetAttributeInternal(path, &attr)) { return false; }
+	if (!getAttributeInternal(path, &attr)) { return false; }
 	return attr.TestFlag(FileAttribute::Directory);
 }
-bool FileSystem::ExistsDirectory(const wchar_t* path)
+bool FileSystem::existsDirectory(const wchar_t* path)
 {
 	FileAttribute attr;
-	if (!GetAttributeInternal(path, &attr)) { return false; }
+	if (!getAttributeInternal(path, &attr)) { return false; }
 	return attr.TestFlag(FileAttribute::Directory);
 }
 
 //------------------------------------------------------------------------------
-CaseSensitivity FileSystem::GetFileSystemCaseSensitivity()
+CaseSensitivity FileSystem::getFileSystemCaseSensitivity()
 {
 #ifdef LN_OS_WIN32
 	return CaseSensitivity::CaseInsensitive;
@@ -498,7 +498,7 @@ CaseSensitivity FileSystem::GetFileSystemCaseSensitivity()
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-void FileSystem::CreateDirectoryInternal(const TChar* path)
+void FileSystem::createDirectoryInternal(const TChar* path)
 {
 	List< GenericString<wchar_t> >	pathList;
 	GenericString<wchar_t> dir;
@@ -506,11 +506,11 @@ void FileSystem::CreateDirectoryInternal(const TChar* path)
 	int i = StringTraits::tcslen(path) - 1;	// 一番後ろの文字の位置
 	while (i >= 0)
 	{
-		dir.AssignCStr(path, 0, i + 1);
-		if (FileSystem::ExistsDirectory(dir)) {
+		dir.assignCStr(path, 0, i + 1);
+		if (FileSystem::existsDirectory(dir)) {
 			break;
 		}
-		pathList.Add(dir);
+		pathList.add(dir);
 
 		// セパレータが見つかるまで探す
 		while (i > 0 && path[i] != PathTraits::DirectorySeparatorChar && path[i] != PathTraits::AltDirectorySeparatorChar) {
@@ -519,31 +519,31 @@ void FileSystem::CreateDirectoryInternal(const TChar* path)
 		--i;
 	}
 
-	if (pathList.IsEmpty()) { return; }	// path が存在している
+	if (pathList.isEmpty()) { return; }	// path が存在している
 
-	for (int i = pathList.GetCount() - 1; i >= 0; --i)
+	for (int i = pathList.getCount() - 1; i >= 0; --i)
 	{
 		bool r = FileSystem::mkdir(pathList[i].c_str());
 		LN_THROW(r, IOException);
 	}
 }
 #pragma push_macro("CreateDirectory")
-#undef CreateDirectory
-void FileSystem::CreateDirectory(const char* path)
+#undef createDirectory
+void FileSystem::createDirectory(const char* path)
 {
-	LN_AFX_FUNCNAME(CreateDirectory)(path);
+	LN_AFX_FUNCNAME(createDirectory)(path);
 }
-void FileSystem::CreateDirectory(const wchar_t* path)
+void FileSystem::createDirectory(const wchar_t* path)
 {
-	LN_AFX_FUNCNAME(CreateDirectory)(path);
+	LN_AFX_FUNCNAME(createDirectory)(path);
 }
-void FileSystem::LN_AFX_FUNCNAME(CreateDirectory)(const char* path)
+void FileSystem::LN_AFX_FUNCNAME(createDirectory)(const char* path)
 {
-	CreateDirectoryInternal(path);
+	createDirectoryInternal(path);
 }
-void FileSystem::LN_AFX_FUNCNAME(CreateDirectory)(const wchar_t* path)
+void FileSystem::LN_AFX_FUNCNAME(createDirectory)(const wchar_t* path)
 {
-	CreateDirectoryInternal(path);
+	createDirectoryInternal(path);
 }
 #pragma pop_macro("CreateDirectory")
 

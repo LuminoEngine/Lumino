@@ -26,27 +26,27 @@ ReadWriteMutex::~ReadWriteMutex()
 }
 
 //------------------------------------------------------------------------------
-void ReadWriteMutex::LockRead()
+void ReadWriteMutex::lockRead()
 {
-	m_impl->LockRead();
+	m_impl->lockRead();
 }
 
 //------------------------------------------------------------------------------
-void ReadWriteMutex::UnlockRead()
+void ReadWriteMutex::unlockRead()
 {
-	m_impl->UnlockRead();
+	m_impl->unlockRead();
 }
 
 //------------------------------------------------------------------------------
-void ReadWriteMutex::LockWrite()
+void ReadWriteMutex::lockWrite()
 {
-	m_impl->LockWrite();
+	m_impl->lockWrite();
 }
 
 //------------------------------------------------------------------------------
-void ReadWriteMutex::UnlockWrite()
+void ReadWriteMutex::unlockWrite()
 {
-	m_impl->UnlockWrite();
+	m_impl->unlockWrite();
 }
 
 LN_NAMESPACE_END

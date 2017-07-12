@@ -26,33 +26,33 @@ public:
 public:
 	static EngineDiagCore	Instance;		// グローバルインスタンス
 
-	void Initialize(EngineManager* manager);
+	void initialize(EngineManager* manager);
 
-	void ReportCapability(int indent, const char* name, const char* value);
+	void reportCapability(int indent, const char* name, const char* value);
 
 	template<typename... TArgs>
-	void ReportCapability(int indent, const char* name, const char* format, const TArgs&... args)
+	void reportCapability(int indent, const char* name, const char* format, const TArgs&... args)
 	{
 		StringA str = StringA::Format(format, args...);
-		ReportCapability(indent, name, str.c_str());
+		reportCapability(indent, name, str.c_str());
 	}
 
-	float GetMainFPS() const;
-	float GetMainFPSCapacity() const;
+	float getMainFPS() const;
+	float getMainFPSCapacity() const;
 
 	// Graphics
-	void ResetGraphicsFrameReport() { m_graphicsDeviceDrawCount = 0; }
-	void IncreaseGraphicsDeviceDrawCount() { ++m_graphicsDeviceDrawCount; }
-	int GetGraphicsDeviceDrawCount() const { return m_graphicsDeviceDrawCount; }
+	void resetGraphicsFrameReport() { m_graphicsDeviceDrawCount = 0; }
+	void increaseGraphicsDeviceDrawCount() { ++m_graphicsDeviceDrawCount; }
+	int getGraphicsDeviceDrawCount() const { return m_graphicsDeviceDrawCount; }
 
 	// SceneGraph
-	void IncreaseVisualNodeDrawCount() { ++m_visualNodeDrawCount; }
-	void ResetVisualNodeDrawCount() { m_visualNodeDrawCount = 0; }
-	int GetVisualNodeDrawCount() const { return m_visualNodeDrawCount; }
+	void increaseVisualNodeDrawCount() { ++m_visualNodeDrawCount; }
+	void resetVisualNodeDrawCount() { m_visualNodeDrawCount = 0; }
+	int getVisualNodeDrawCount() const { return m_visualNodeDrawCount; }
 
 
-	SectionId StartSection(uint32_t threadId, const StringRef& sectionName);
-	void EndSection(SectionId sectionId);
+	SectionId startSection(uint32_t threadId, const StringRef& sectionName);
+	void endSection(SectionId sectionId);
 	
 private:
 	EngineDiagCore();

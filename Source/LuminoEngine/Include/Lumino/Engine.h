@@ -28,13 +28,13 @@ public:
 		@brief		エンジンの初期化処理を行います。
 	*/
 	LN_METHOD(RuntimeInitializer)
-	static void Initialize();
+	static void initialize();
 	
 	/**
 		@brief		エンジンの終了処理を行います。
 	*/
 	LN_METHOD()
-	static void Terminate();
+	static void terminate();
 
 	/**
 		@brief		1フレーム分の更新処理を行います。
@@ -42,43 +42,44 @@ public:
 		@details	この関数はグラフィックスと入力を更新し、指定されたフレームレートになるように待機します。
 	*/
 	LN_METHOD()
-	static bool Update();
+	static bool update();
 
-	static void UpdateFrame();
+	static void updateFrame();
 	//static bool BeginRendering();	// TODO: 描画リスト作成開始前に描画中かを判定しても、描画リスト作成中に並列描画できない。十分にリソースを活用できていない。
 	
-	static void RenderFrame();
-	static void PresentFrame();
-	static bool IsEndRequested();
-	static void Exit();
-	static void SetFrameUpdateMode(FrameUpdateMode mode);
+	static void renderFrame();
+	static void presentFrame();
+	static bool isEndRequested();
+	static void exit();
+	static void setFrameUpdateMode(FrameUpdateMode mode);
 
 	
 	/**
 		@brief		遅延をリセットします。
 		@details	リソースのロード等で時間がかかり長い時間更新処理が行われなかった場合、
-					UpdateFrame() は本来あるべき時間に追いつこうとしてしばらくの間ノーウェイトでフレーム更新が行われます。
+					updateFrame() は本来あるべき時間に追いつこうとしてしばらくの間ノーウェイトでフレーム更新が行われます。
 					その間はアプリケーションが非常に高速に動作しているように見えてしまします。
 					これを回避するため、時間のかかる処理の直後でこの関数を呼ぶことで、FPS 制御に遅延が発生していないことを伝えます。
 	*/
-	static void ResetFrameDelay();
+	static void resetFrameDelay();
+
+	/** エンジンによって作成されるデフォルトの World2D を取得します。 */
+	static World2D* getWorld2D();
+
+	/** エンジンによって作成されるデフォルトの World3D を取得します。 */
+	static World3D* getWorld3D();
+
+	static Camera* getCamera3D();
+
+
+	/** エンジンによって作成されるデフォルトの UIViewport を取得します。 */
+	static UIViewport* getMainViewport();
 
 
 
-
-
-	static World2D* GetWorld2D();
-	static World3D* GetWorld3D();
-	static Camera* GetCamera3D();
-
-	static UIMainWindow* GetMainWindow();
-	static UIViewport* GetMainViewport();
-	static UIViewportLayer* GetDefault2DLayer();
-	static UIViewportLayer* GetDefault3DLayer();
-	static UILayoutLayer* GetDefaultUILayer();		// TODO: name Builtin
-	//static SceneGraph2D* GetDefaultSceneGraph2D();
-	//static SceneGraph3D* GetDefaultSceneGraph3D();
-	//static LightComponent* GetMainLight3D();
+	static UIViewportLayer* getDefault2DLayer();
+	static UIViewportLayer* getDefault3DLayer();
+	static UILayoutLayer* getDefaultUILayer();		// TODO: name Builtin
 };
 
 LN_NAMESPACE_END

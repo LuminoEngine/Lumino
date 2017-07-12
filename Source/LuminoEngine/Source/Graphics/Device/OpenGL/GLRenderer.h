@@ -23,31 +23,31 @@ public:
 	virtual ~GLRenderer();
 
 public:
-	void Activate();
+	void activate();
 	void Deactivate();
 
-	/// ShaderPass::Begin から呼ばれる
-	void SetCurrentShaderPass(GLShaderPass* pass) { m_currentShaderPass = pass; }
+	/// ShaderPass::begin から呼ばれる
+	void setCurrentShaderPass(GLShaderPass* pass) { m_currentShaderPass = pass; }
 
-	GLuint GetVertexArrayObject();
+	GLuint getVertexArrayObject();
 
 protected:
-	virtual void OnEnterRenderState() override;
-	virtual void OnLeaveRenderState() override;
-	virtual void OnBeginRendering() override;
-	virtual void OnEndRendering() override;
-	virtual void OnUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, ITexture* depthBuffer) override;
-	virtual	void OnUpdateRenderState(const RenderState& newState, const RenderState& oldState, bool reset) override;
-	virtual	void OnUpdateDepthStencilState(const DepthStencilState& newState, const DepthStencilState& oldState, bool reset) override;
-	virtual void OnUpdatePrimitiveData(IVertexDeclaration* decls, const List<RefPtr<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer) override;
-	virtual void OnClear(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
-	virtual void OnDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount) override;
-	virtual void OnDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount) override;
+	virtual void onEnterRenderState() override;
+	virtual void onLeaveRenderState() override;
+	virtual void onBeginRendering() override;
+	virtual void onEndRendering() override;
+	virtual void onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, ITexture* depthBuffer) override;
+	virtual	void onUpdateRenderState(const RenderState& newState, const RenderState& oldState, bool reset) override;
+	virtual	void onUpdateDepthStencilState(const DepthStencilState& newState, const DepthStencilState& oldState, bool reset) override;
+	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, const List<RefPtr<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer) override;
+	virtual void onClear(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
+	virtual void onDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount) override;
+	virtual void onDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount) override;
 
 private:
-	void UpdateVAO();
-	void UpdateVertexAttribPointer();
-	void GetPrimitiveInfo(PrimitiveType primitive, int primitiveCount, GLenum* gl_prim, int* vertexCount);
+	void updateVAO();
+	void updateVertexAttribPointer();
+	void getPrimitiveInfo(PrimitiveType primitive, int primitiveCount, GLenum* gl_prim, int* vertexCount);
 
 	RectI					m_currentViewportRect;
 	GLVertexBuffer*			m_currentVertexBuffer;

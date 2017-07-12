@@ -22,73 +22,73 @@ LN_CLASS()
 class CollisionBody
 	: public PhysicsObject
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 	/**
 		@brief		RigidBody オブジェクトを作成します。
 		@param[in]	shape	: 衝突判定形状
 	*/
-	static RefPtr<CollisionBody> Create(CollisionShape* shape);
+	static RefPtr<CollisionBody> create(CollisionShape* shape);
 
 
 	/** 現在の姿勢を取得します。*/
-	//const Matrix& GetTransform() const;
+	//const Matrix& getTransform() const;
 
 	/** 衝突判定形状を追加します。*/
 	LN_METHOD()
-	void AddShape(CollisionShape* shape);
+	void addShape(CollisionShape* shape);
 
 	/** この CollisionBody が衝突判定のためのトリガーであるかを設定します。初期値は false です。*/
 	LN_METHOD(Property)
-	void SetTrigger(bool enabled);
+	void setTrigger(bool enabled);
 
 	/** この CollisionBody が衝突判定のためのトリガーであるかを取得します。*/
 	LN_METHOD(Property)
-	bool IsTrigger() const;
+	bool isTrigger() const;
 
 	// TODO: ContactBodies();
-	const List<PhysicsObject*>& GetContactPhysicsObjects() const { return m_contactObjects; }
+	const List<PhysicsObject*>& getContactPhysicsObjects() const { return m_contactObjects; }
 
-	/** OnTriggerEnter イベントの通知を受け取るコールバックを登録します。*/
+	/** onTriggerEnter イベントの通知を受け取るコールバックを登録します。*/
 	LN_METHOD(Event)
-	EventConnection ConnectOnTriggerEnter(CollisionEventHandler handler);
+	EventConnection connectOnTriggerEnter(CollisionEventHandler handler);
 
-	/** OnTriggerLeave イベントの通知を受け取るコールバックを登録します。*/
+	/** onTriggerLeave イベントの通知を受け取るコールバックを登録します。*/
 	LN_METHOD(Event)
-	EventConnection ConnectOnTriggerLeave(CollisionEventHandler handler);
+	EventConnection connectOnTriggerLeave(CollisionEventHandler handler);
 
-	/** OnTriggerStay イベントの通知を受け取るコールバックを登録します。*/
+	/** onTriggerStay イベントの通知を受け取るコールバックを登録します。*/
 	LN_METHOD(Event)
-	EventConnection ConnectOnTriggerStay(CollisionEventHandler handler);
+	EventConnection connectOnTriggerStay(CollisionEventHandler handler);
 
 protected:
-	virtual void OnBeforeStepSimulation() override;
-	virtual void OnAfterStepSimulation() override;
-	virtual void OnRemovedFromWorld() override;
+	virtual void onBeforeStepSimulation() override;
+	virtual void onAfterStepSimulation() override;
+	virtual void onRemovedFromWorld() override;
 
 	/** 他の CollisionBody または RigidBody が、この CollisionBody との接触を開始したときに呼び出されます。*/
-	void OnTriggerEnter(PhysicsObject* otherObject);
+	void onTriggerEnter(PhysicsObject* otherObject);
 
 	/** 他の CollisionBody または RigidBody が、この CollisionBody との接触を終了したときに呼び出されます。*/
-	virtual void OnTriggerLeave(PhysicsObject* otherObject);
+	virtual void onTriggerLeave(PhysicsObject* otherObject);
 
 	/** 他の CollisionBody または RigidBody が、この Collider との接触している間呼び出されます。*/
-	virtual void OnTriggerStay(PhysicsObject* otherObject);
+	virtual void onTriggerStay(PhysicsObject* otherObject);
 
 LN_CONSTRUCT_ACCESS:
 	CollisionBody();
 	virtual ~CollisionBody();
 
 	LN_METHOD()
-	void Initialize();
+	void initialize();
 
 LN_INTERNAL_ACCESS:
-	const Matrix& GetPhysicsObjectTransform() const { return m_transform; }
+	const Matrix& getPhysicsObjectTransform() const { return m_transform; }
 
 private:
-	void CreateInternalObject();
-	void DeleteInternalObject();
+	void createInternalObject();
+	void deleteInternalObject();
 
 	class LocalGhostObject;
 
@@ -99,9 +99,9 @@ private:
 	bool					m_isTrigger;
 	bool					m_initialUpdate;
 
-	CollisionEventHandler::EventType	onTriggerEnter;
-	CollisionEventHandler::EventType	onTriggerLeave;
-	CollisionEventHandler::EventType	onTriggerStay;
+	CollisionEventHandler::EventType	m_onTriggerEnter;
+	CollisionEventHandler::EventType	m_onTriggerLeave;
+	CollisionEventHandler::EventType	m_onTriggerStay;
 };
 
 LN_NAMESPACE_END

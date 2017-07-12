@@ -53,6 +53,7 @@
 #include "Lumino/IO/TextWriter.h"
 #include "Lumino/IO/Process.h"
 #include "Lumino/IO/Console.h"
+#include "Lumino/IO/CommandLine.h"
 
 #include "Lumino/Json/JsonValue.h"
 #include "Lumino/Json/JsonHandler.h"
@@ -68,3 +69,5 @@
 #include "Lumino/Threading/Thread.h"
 #include "Lumino/Threading/Task.h"
 #include "Lumino/Threading/TaskScheduler.h"
+
+#include "LuminoMath.h"

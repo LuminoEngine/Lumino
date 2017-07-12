@@ -12,35 +12,35 @@ LN_NAMESPACE_BEGIN
 //------------------------------------------------------------------------------
 RefPtr<Material> PmxMaterialResource::MakeCommonMaterial() const
 {
-	auto m = RefPtr<Material>::MakeRef();
-	m->SetBuiltinColorParameter(
+	auto m = RefPtr<Material>::makeRef();
+	m->setBuiltinColorParameter(
 		Material::DiffuseParameter,
 		Diffuse.r,
 		Diffuse.g,
 		Diffuse.b,
 		Diffuse.a);
-	m->SetBuiltinColorParameter(
+	m->setBuiltinColorParameter(
 		Material::AmbientParameter,
 		Ambient.r,
 		Ambient.g,
 		Ambient.b,
 		Ambient.a);
-	m->SetBuiltinColorParameter(
+	m->setBuiltinColorParameter(
 		Material::SpecularParameter,
 		Specular.r,
 		Specular.g,
 		Specular.b,
 		Specular.a);
-	m->SetBuiltinColorParameter(
+	m->setBuiltinColorParameter(
 		Material::EmissiveParameter,
 		Emissive.r,
 		Emissive.g,
 		Emissive.b,
 		Emissive.a);
-	m->SetBuiltinFloatParameter(
+	m->setBuiltinFloatParameter(
 		Material::PowerParameter,
 		Power);
-	m->SetBuiltinTextureParameter(
+	m->setBuiltinTextureParameter(
 		Material::MaterialTextureParameter,
 		Texture);
 	return m;
@@ -58,7 +58,7 @@ PmxBoneResource::PmxBoneResource(PmxSkinnedMeshResource* owner, int boneIndex)
 }
 
 //------------------------------------------------------------------------------
-void PmxBoneResource::RefreshInitialValues()
+void PmxBoneResource::refreshInitialValues()
 {
 	if (ParentBoneIndex >= 0)
 	{
@@ -69,7 +69,7 @@ void PmxBoneResource::RefreshInitialValues()
 		m_offsetFromParent = OrgPosition;	// モデル原点からのオフセット
 	}
 		
-	m_initialTranstormInv = Matrix::MakeTranslation(-OrgPosition);
+	m_initialTranstormInv = Matrix::makeTranslation(-OrgPosition);
 }
 
 //==============================================================================
@@ -82,11 +82,11 @@ PmxSkinnedMeshResource::~PmxSkinnedMeshResource()
 }
 
 //------------------------------------------------------------------------------
-void PmxSkinnedMeshResource::RefreshInitialValues()
+void PmxSkinnedMeshResource::refreshInitialValues()
 {
 	for (RefPtr<PmxBoneResource>& b : bones)
 	{
-		b->RefreshInitialValues();
+		b->refreshInitialValues();
 	}
 }
 

@@ -24,17 +24,17 @@ BinaryWriter::~BinaryWriter()
 }
 
 //------------------------------------------------------------------------------
-void BinaryWriter::WriteInt8(int8_t value)
+void BinaryWriter::writeInt8(int8_t value)
 {
-	m_stream->Write(&value, 1);
+	m_stream->write(&value, 1);
 }
 
 //------------------------------------------------------------------------------
-void BinaryWriter::WriteInt16(int16_t value, ByteOrder byteOrder)
+void BinaryWriter::writeInt16(int16_t value, ByteOrder byteOrder)
 {
 	// 現在の環境と同じエンディアンであればそのまま
-	if (byteOrder == Environment::GetByteOrder()) {
-		m_stream->Write(&value, 2);
+	if (byteOrder == Environment::getByteOrder()) {
+		m_stream->write(&value, 2);
 	}
 	// 異なるエンディアンであれば swap
 	else
@@ -42,16 +42,16 @@ void BinaryWriter::WriteInt16(int16_t value, ByteOrder byteOrder)
 		byte_t out[2], *p = (byte_t*)&value;
 		out[1] = *p++;
 		out[0] = *p++;
-		m_stream->Write(out, 2);
+		m_stream->write(out, 2);
 	}
 }
 
 //------------------------------------------------------------------------------
-void BinaryWriter::WriteInt32(int32_t value, ByteOrder byteOrder)
+void BinaryWriter::writeInt32(int32_t value, ByteOrder byteOrder)
 {
 	// 現在の環境と同じエンディアンであればそのまま
-	if (byteOrder == Environment::GetByteOrder()) {
-		m_stream->Write(&value, 4);
+	if (byteOrder == Environment::getByteOrder()) {
+		m_stream->write(&value, 4);
 	}
 	// 異なるエンディアンであれば swap
 	else
@@ -61,16 +61,16 @@ void BinaryWriter::WriteInt32(int32_t value, ByteOrder byteOrder)
 		out[2] = *p++;
 		out[1] = *p++;
 		out[0] = *p++;
-		m_stream->Write(out, 4);
+		m_stream->write(out, 4);
 	}
 }
 
 //------------------------------------------------------------------------------
-void BinaryWriter::WriteInt64(int64_t value, ByteOrder byteOrder)
+void BinaryWriter::writeInt64(int64_t value, ByteOrder byteOrder)
 {
 	// 現在の環境と同じエンディアンであればそのまま
-	if (byteOrder == Environment::GetByteOrder()) {
-		m_stream->Write(&value, 8);
+	if (byteOrder == Environment::getByteOrder()) {
+		m_stream->write(&value, 8);
 	}
 	// 異なるエンディアンであれば swap
 	else
@@ -84,22 +84,22 @@ void BinaryWriter::WriteInt64(int64_t value, ByteOrder byteOrder)
 		out[2] = *p++;
 		out[1] = *p++;
 		out[0] = *p++;
-		m_stream->Write(out, 8);
+		m_stream->write(out, 8);
 	}
 }
 
 //------------------------------------------------------------------------------
-void BinaryWriter::WriteUInt8(uint8_t value)
+void BinaryWriter::writeUInt8(uint8_t value)
 {
-	m_stream->Write(&value, 1);
+	m_stream->write(&value, 1);
 }
 
 //------------------------------------------------------------------------------
-void BinaryWriter::WriteUInt16(uint16_t value, ByteOrder byteOrder)
+void BinaryWriter::writeUInt16(uint16_t value, ByteOrder byteOrder)
 {
 	// 現在の環境と同じエンディアンであればそのまま
-	if (byteOrder == Environment::GetByteOrder()) {
-		m_stream->Write(&value, 2);
+	if (byteOrder == Environment::getByteOrder()) {
+		m_stream->write(&value, 2);
 	}
 	// 異なるエンディアンであれば swap
 	else
@@ -107,16 +107,16 @@ void BinaryWriter::WriteUInt16(uint16_t value, ByteOrder byteOrder)
 		byte_t out[2], *p = (byte_t*)&value;
 		out[1] = *p++;
 		out[0] = *p++;
-		m_stream->Write(out, 2);
+		m_stream->write(out, 2);
 	}
 }
 
 //------------------------------------------------------------------------------
-void BinaryWriter::WriteUInt32(uint32_t value, ByteOrder byteOrder)
+void BinaryWriter::writeUInt32(uint32_t value, ByteOrder byteOrder)
 {
 	// 現在の環境と同じエンディアンであればそのまま
-	if (byteOrder == Environment::GetByteOrder()) {
-		m_stream->Write(&value, 4);
+	if (byteOrder == Environment::getByteOrder()) {
+		m_stream->write(&value, 4);
 	}
 	// 異なるエンディアンであれば swap
 	else
@@ -126,16 +126,16 @@ void BinaryWriter::WriteUInt32(uint32_t value, ByteOrder byteOrder)
 		out[2] = *p++;
 		out[1] = *p++;
 		out[0] = *p++;
-		m_stream->Write(out, 4);
+		m_stream->write(out, 4);
 	}
 }
 
 //------------------------------------------------------------------------------
-void BinaryWriter::WriteUInt64(uint64_t value, ByteOrder byteOrder)
+void BinaryWriter::writeUInt64(uint64_t value, ByteOrder byteOrder)
 {
 	// 現在の環境と同じエンディアンであればそのまま
-	if (byteOrder == Environment::GetByteOrder()) {
-		m_stream->Write(&value, 8);
+	if (byteOrder == Environment::getByteOrder()) {
+		m_stream->write(&value, 8);
 	}
 	// 異なるエンディアンであれば swap
 	else
@@ -149,38 +149,38 @@ void BinaryWriter::WriteUInt64(uint64_t value, ByteOrder byteOrder)
 		out[2] = *p++;
 		out[1] = *p++;
 		out[0] = *p++;
-		m_stream->Write(out, 8);
+		m_stream->write(out, 8);
 	}
 }
 
 //------------------------------------------------------------------------------
-void BinaryWriter::WriteFloat(float value)
+void BinaryWriter::writeFloat(float value)
 {
-	m_stream->Write(&value, 4);
+	m_stream->write(&value, 4);
 }
 
 //------------------------------------------------------------------------------
-void BinaryWriter::WriteDouble(double value)
+void BinaryWriter::writeDouble(double value)
 {
-	m_stream->Write(&value, 8);
+	m_stream->write(&value, 8);
 }
 
 //------------------------------------------------------------------------------
-void BinaryWriter::Write(const void* buffer, size_t count)
+void BinaryWriter::write(const void* buffer, size_t count)
 {
-	m_stream->Write(buffer, count);
+	m_stream->write(buffer, count);
 }
 
 //------------------------------------------------------------------------------
-void BinaryWriter::Seek(int offset, SeekOrigin origin)
+void BinaryWriter::seek(int offset, SeekOrigin origin)
 {
-	m_stream->Seek(offset, origin);
+	m_stream->seek(offset, origin);
 }
 
 //------------------------------------------------------------------------------
-int64_t BinaryWriter::GetPosition() const
+int64_t BinaryWriter::getPosition() const
 {
-	return m_stream->GetPosition();
+	return m_stream->getPosition();
 }
 
 LN_NAMESPACE_END

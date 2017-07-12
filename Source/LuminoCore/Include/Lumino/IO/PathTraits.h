@@ -22,23 +22,23 @@ public:
 
 	/// 文字がディレクトリセパレータ (DirectorySeparatorChar or AltDirectorySeparatorChar) であるかを判定する
 	template<typename TChar>
-	static bool IsSeparatorChar(TChar ch);
+	static bool isSeparatorChar(TChar ch);
 
 	/// ボリュームセパレータであるかを判定する
 	template<typename TChar>
-	static bool IsVolumeSeparatorChar(TChar ch);
+	static bool isVolumeSeparatorChar(TChar ch);
 
 	/// path がルートパスであるかを判定する ("C:/", "C:", "/" 等)
 	template<typename TChar>
-	static bool IsRootPath(const TChar* path);
+	static bool isRootPath(const TChar* path);
 
 	/// path が絶対パスであるかを判定する ("C:/AAA"、"/AAA" 両方判定)
 	template<typename TChar>
-	static bool IsAbsolutePath(const TChar* path, int len = -1);
+	static bool isAbsolutePath(const TChar* path, int len = -1);
 
 	/** 文字列の末尾がディレクトリセパレータであるかを確認します。*/
 	template<typename TChar>
-	static bool EndWithSeparator(const TChar* path, int len = -1);
+	static bool endWithSeparator(const TChar* path, int len = -1);
 
 	/**
 		@brief		パス文字列からディレクトリ部分を取り出す
@@ -54,7 +54,7 @@ public:
 					- "/" → ""
 	*/
 	template<typename TChar>
-	static GenericString<TChar> GetDirectoryPath(const TChar* path);
+	static GenericString<TChar> getDirectoryPath(const TChar* path);
 
 	/**
 		@brief		パス文字列の中から拡張子を含むファイル名の部分を返す
@@ -62,13 +62,13 @@ public:
 		@details	path が NULL の場合は空文字列を返します。
 	*/
 	template<typename TChar>
-	static GenericString<TChar> GetFileName(const TChar* path);
+	static GenericString<TChar> getFileName(const TChar* path);
 
 	/**
 		@brief		パス文字列の中から拡張子を含むファイル名の部分を返す
 	*/
 	template<typename TChar>
-	static const TChar* GetFileNameSub(const TChar* path);
+	static const TChar* getFileNameSub(const TChar* path);
 
 	/**
 		@brief		指定したパス文字列のファイル名を拡張子を付けずに返します。
@@ -76,7 +76,7 @@ public:
 		@param[out]	outPath	: ファイル名を格納するバッファ (LN_MAX_PATH 文字の領域があること)
 	*/
 	template<typename TChar>
-	static void GetFileNameWithoutExtension(const TChar* path, TChar* outPath);
+	static void getFileNameWithoutExtension(const TChar* path, TChar* outPath);
 
 	/**
 		@brief		パス文字列の中から拡張子を返します。
@@ -90,9 +90,9 @@ public:
 		@endcode
 	*/
 	template<typename TChar>
-	static void GetExtension(const TChar* path, TChar* outExt);
+	static void getExtension(const TChar* path, TChar* outExt);
 	template<typename TChar>
-	static Result GetExtension(const TChar* path, bool withDot, GenericStringRef<TChar>* outRef) LN_NOEXCEPT;
+	static Result getExtension(const TChar* path, bool withDot, GenericStringRef<TChar>* outRef) LN_NOEXCEPT;
 	
 	/**
 		@brief		パス文字列を結合します。
@@ -104,7 +104,7 @@ public:
 		@param[in]	pathCapacity	: outPath のサイズ
 	*/
 	template<typename TChar>
-	static Result Combine(const TChar* path1, int path1Len, const TChar* path2, int path2Len, TChar* outPath, int pathCapacity) LN_NOEXCEPT;
+	static Result combine(const TChar* path1, int path1Len, const TChar* path2, int path2Len, TChar* outPath, int pathCapacity) LN_NOEXCEPT;
 
 	/**
 		@brief		パスを単純化する
@@ -112,14 +112,14 @@ public:
 		@param[in]	outPath	: 単純化したパスの格納先 (LN_MAX_PATH + 1 の領域があること)
 	*/
 	template<typename TChar>
-	static void CanonicalizePath(const TChar* srcPath, TChar* outPath);
+	static void canonicalizePath(const TChar* srcPath, TChar* outPath);
 
 	/**
 		@brief			パスを単純化する
 		@param[in,out]	path	: 単純化するファイルパスが格納されている変数
 	*/
 	template<typename TChar>
-	static void CanonicalizePath(GenericString<TChar>* path);
+	static void canonicalizePath(GenericString<TChar>* path);
 
 	/**
 		@brief		パスを単純化する
@@ -127,13 +127,13 @@ public:
 		@details	このオーバーロードは現在内部処理用です。
 	*/
 	template<typename TChar>
-	static int CanonicalizePath(const TChar* srcPath, size_t srcLen, TChar* outPath);
+	static int canonicalizePath(const TChar* srcPath, size_t srcLen, TChar* outPath);
 
 	/**
 		@brief		パスに含まれるディレクトリセパレータを統一する。
 	*/
 	template<typename TChar>
-	static void NormalizeSeparator(TChar* srcPath);
+	static void normalizeSeparator(TChar* srcPath);
 
 	/**
 		@brief		2つのパス文字列を比較する
@@ -144,7 +144,7 @@ public:
 					また、大文字小文字を区別しません。
 	*/
 	template<typename TChar>
-	static int Compare(const TChar* path1, const TChar* path2);
+	static int compare(const TChar* path1, const TChar* path2);
 
 
 	/**
@@ -155,15 +155,15 @@ public:
 					また、大文字小文字を区別しません。
 	*/
 	template<typename TChar>
-	static bool Equals(const TChar* path1, const TChar* path2);
+	static bool equals(const TChar* path1, const TChar* path2);
 
 
 
 	template<typename TChar>
-	static int Compare(TChar ch1, TChar ch2, CaseSensitivity cs);
+	static int compare(TChar ch1, TChar ch2, CaseSensitivity cs);
 
 	template<typename TChar>
-	static GenericString<TChar> DiffPath(const TChar* path1, int len1, const TChar* path2, int len2, CaseSensitivity cs);
+	static GenericString<TChar> diffPath(const TChar* path1, int len1, const TChar* path2, int len2, CaseSensitivity cs);
 };
 
 LN_NAMESPACE_END

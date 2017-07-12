@@ -28,67 +28,61 @@ LightComponent::~LightComponent()
 }
 
 //------------------------------------------------------------------------------
-void LightComponent::Initialize(SceneGraph* owner, LightType type)
+void LightComponent::initialize(LightType type)
 {
-	SceneNode::Initialize(owner);
-	m_lightInfo = RefPtr<detail::DynamicLightInfo>::MakeRef();
+	SceneNode::initialize();
+	m_lightInfo = RefPtr<detail::DynamicLightInfo>::makeRef();
 	m_lightInfo->m_type = type;
-	m_lightInfo->m_diffuse.Set(1.0f, 1.0f, 1.0f, 1.0f);
-	m_lightInfo->m_ambient.Set(1.0f, 1.0f, 1.0f, 1.0f);
-	m_lightInfo->m_specular.Set(1.0f, 1.0f, 1.0f, 1.0f);
+	m_lightInfo->m_diffuse.set(1.0f, 1.0f, 1.0f, 1.0f);
+	m_lightInfo->m_ambient.set(1.0f, 1.0f, 1.0f, 1.0f);
+	m_lightInfo->m_specular.set(1.0f, 1.0f, 1.0f, 1.0f);
 	m_lightInfo->m_shadowZFar = 1000.0f;
-
-	// Unity Default
-	Quaternion rot;
-	rot.RotateX(Math::DegreesToRadians(50));
-	rot.RotateY(Math::DegreesToRadians(-30));
-	SetRotation(rot);
 }
 
 //------------------------------------------------------------------------------
-void LightComponent::UpdateMatrices(/*const Size& viewSize*/)
+void LightComponent::updateMatrices(/*const Size& viewSize*/)
 {
-	const Matrix& worldMatrix = GetOwnerObject()->transform.GetWorldMatrix();
+	const Matrix& worldMatrix = getOwnerObject()->transform.getWorldMatrix();
 
 	// 正面方向
-	Vector3 direction = Vector3::TransformCoord(Vector3(0, 0, 1), worldMatrix);
+	Vector3 direction = Vector3::transformCoord(Vector3(0, 0, 1), worldMatrix);
 
 	// 注視点
-	Vector3 lookAt = worldMatrix.GetPosition() + direction;
+	Vector3 lookAt = worldMatrix.getPosition() + direction;
 
 	// ビュー行列
 	Vector3 up = Vector3(0, 1, 0);
-	m_viewMatrix = Matrix::MakeLookAtLH(worldMatrix.GetPosition(), lookAt, up);
+	m_viewMatrix = Matrix::makeLookAtLH(worldMatrix.getPosition(), lookAt, up);
 
 	// プロジェクション行列の更新
 	// TODO: 視野角とnear,far
 	// https://sites.google.com/site/mmereference/home/Annotations-and-Semantics-of-the-parameter/2-1-geometry-translation
-	//m_projMatrix = Matrix::MakePerspectiveFovLH(Math::PI / 4.0f, viewSize.width / viewSize.height, 0.01f, 1000.0f);
+	//m_projMatrix = Matrix::makePerspectiveFovLH(Math::PI / 4.0f, viewSize.width / viewSize.height, 0.01f, 1000.0f);
 
-	//m_worldViewProjMatrix = GetMatrix() * m_viewMatrix * m_projMatrix;
+	//m_worldViewProjMatrix = getMatrix() * m_viewMatrix * m_projMatrix;
 	//m_viewProjMatrix = m_viewMatrix * m_projMatrix;
 
 	m_lightInfo->m_direction = direction;
 
-	//m_viewMatrixI = Matrix::MakeInverse(m_viewMatrix);
-	//m_projMatrixI = Matrix::MakeInverse(m_projMatrix);
-	//m_viewProjMatrixI = Matrix::MakeInverse(m_viewProjMatrix);
-	//m_viewMatrixT = Matrix::MakeTranspose(m_viewMatrix);
-	//m_projMatrixT = Matrix::MakeTranspose(m_projMatrix);
-	//m_viewProjMatrixT = Matrix::MakeTranspose(m_viewProjMatrix);
-	//m_viewMatrixIT = Matrix::MakeTranspose(m_viewMatrixI);
-	//m_projMatrixIT = Matrix::MakeTranspose(m_projMatrixI);
-	//m_viewProjMatrixIT = Matrix::MakeTranspose(m_viewProjMatrixI);
+	//m_viewMatrixI = Matrix::makeInverse(m_viewMatrix);
+	//m_projMatrixI = Matrix::makeInverse(m_projMatrix);
+	//m_viewProjMatrixI = Matrix::makeInverse(m_viewProjMatrix);
+	//m_viewMatrixT = Matrix::makeTranspose(m_viewMatrix);
+	//m_projMatrixT = Matrix::makeTranspose(m_projMatrix);
+	//m_viewProjMatrixT = Matrix::makeTranspose(m_viewProjMatrix);
+	//m_viewMatrixIT = Matrix::makeTranspose(m_viewMatrixI);
+	//m_projMatrixIT = Matrix::makeTranspose(m_projMatrixI);
+	//m_viewProjMatrixIT = Matrix::makeTranspose(m_viewProjMatrixI);
 }
 
 //------------------------------------------------------------------------------
-void LightComponent::OnRender(DrawList* renderer)
+void LightComponent::onPreRender(DrawList* context)
 {
 	if (m_enabled)
 	{
-		UpdateMatrices();
-		m_lightInfo->transform = GetOwnerObject()->transform.GetWorldMatrix();
-		renderer->AddDynamicLightInfo(m_lightInfo);
+		updateMatrices();
+		m_lightInfo->transform = getOwnerObject()->transform.getWorldMatrix();
+		context->addDynamicLightInfo(m_lightInfo);
 	}
 }
 
@@ -110,11 +104,17 @@ Light::~Light()
 }
 
 //------------------------------------------------------------------------------
-void Light::Initialize(SceneGraph* owner)
+void Light::initialize()
 {
-	WorldObject::Initialize();
-	m_component = NewObject<LightComponent>(owner, LightType_Directional);
-	AddComponent(m_component);
+	WorldObject::initialize();
+	m_component = newObject<LightComponent>(LightType_Directional);
+	addComponent(m_component);
+
+	// Unity Default
+	Quaternion rot;
+	rot.rotateX(Math::degreesToRadians(50));
+	rot.rotateY(Math::degreesToRadians(-30));
+	setRotation(rot);
 }
 
 //------------------------------------------------------------------------------

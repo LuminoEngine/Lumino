@@ -18,33 +18,33 @@ LN_CLASS()
 class SpriteComponent
 	: public VisualComponent
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 	/**
 		@brief		スプライトが表示するテクスチャを設定します。
 	*/
 	LN_METHOD(Property)
-	void SetTexture(Texture* texture);
+	void setTexture(Texture* texture);
 	
 	/**
 		@brief		スプライトが表示するテクスチャを取得します。
 	*/
 	LN_METHOD(Property)
-	Texture* GetTexture() const;
+	Texture* getTexture() const;
 
 	/**
 		@brief		スプライトの大きさを設定します。
 	*/
-	void SetSize(const Size& size);
+	void setSize(const Size& size);
 
 	/**
 		@brief		テクスチャのどの部分を表示するかを示す転送矩形を設定します。(ピクセル単位)
 	*/
-	void SetSourceRect(const Rect& rect);
-	void SetSourceRect(float x, float y, float width, float height);	/**< @overload SetSourceRect */
+	void setSourceRect(const Rect& rect);
+	void setSourceRect(float x, float y, float width, float height);	/**< @overload setSourceRect */
 
-	const Rect& GetSourceRect() const { return m_srcRect; }
+	const Rect& getSourceRect() const { return m_srcRect; }
 
 	/** 
 		@brief		スプライトの原点を設定します。
@@ -52,8 +52,8 @@ public:
 					デフォルトは (0,0) で、これはスプライトの左上が原点であることを意味します。
 					(0.5,0.5) はスプライトの中央、(1,1) は右下が原点となります。
 	*/
-	void SetAnchorPoint(const Vector2& ratio);
-	void SetAnchorPoint(float ratioX, float ratioY);					/**< @overload SetAnchorPoint */
+	void setAnchorPoint(const Vector2& ratio);
+	void setAnchorPoint(float ratioX, float ratioY);					/**< @overload setAnchorPoint */
 
 
 	/// 反転方法の設定
@@ -65,11 +65,11 @@ public:
 LN_PROTECTED_INTERNAL_ACCESS:
 	SpriteComponent();
 	virtual ~SpriteComponent();
-	void Initialize(SceneGraph* owner);
-	void RenderSprite(DrawList* renderer, SpriteBaseDirection dir);
+	void initialize();
+	void renderSprite(RenderingContext* renderer, SpriteBaseDirection dir);
 
 private:
-	void UpdateVertexData();
+	void updateVertexData();
 
 	Size				m_size;
 	Rect				m_srcRect;
@@ -88,22 +88,22 @@ LN_CLASS()
 class Sprite2DComponent
 	: public SpriteComponent
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	
 	/**
-		@brief		テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには SetTexture() を使用します。
+		@brief		テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには setTexture() を使用します。
 		@detail		作成されたスプライトは、デフォルトの 2D シーングラフ に追加されます。
 	*/
-	static Sprite2DComponentPtr Create();
+	static Sprite2DComponentPtr create();
 	
 	/**
-		@brief		指定したファイルパスのテクスチャを読み込み、スプライトを作成します。
+		@brief		指定したファイルパスのテクスチャをアセットから読み込み、スプライトを作成します。
 		@param[in]	filePath	: 画像ファイルのファイルパス
 		@detail		作成されたスプライトは、デフォルトの 2D シーングラフ に追加されます。
 					スプライトのサイズは、読み込んだテクスチャのサイズとなります。
 	*/
-	static Sprite2DComponentPtr Create(const StringRef& filePath);
+	static Sprite2DComponentPtr create(const StringRef& filePath);
 	
 	/**
 		@brief		テクスチャを指定してスプライトを作成します。
@@ -111,16 +111,16 @@ public:
 		@detail		作成されたスプライトは、デフォルトの 2D シーングラフ に追加されます。
 					スプライトのサイズは、指定したテクスチャのサイズとなります。
 	*/
-	static Sprite2DComponentPtr Create(Texture* texture);
+	static Sprite2DComponentPtr create(Texture* texture);
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	Sprite2DComponent();
 	virtual ~Sprite2DComponent();
 	LN_METHOD()
-	void Initialize();
+	void initialize();
 	LN_METHOD()
-	void Initialize(Texture* texture);
-	virtual void OnRender2(DrawList* renderer) override;
+	void initialize(Texture* texture);
+	virtual void onRender2(RenderingContext* renderer) override;
 };
 
 /**
@@ -130,23 +130,23 @@ LN_CLASS()
 class Sprite3DComponent
 	: public SpriteComponent
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	
 	/**
-		@brief		テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには SetTexture() を使用します。
+		@brief		テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには setTexture() を使用します。
 		@detail		作成されたスプライトは、デフォルトの 3D シーングラフ に追加されます。
 	*/
-	static Sprite3DComponentPtr Create();
+	static Sprite3DComponentPtr create();
 	
 	
 	/**
-		@brief		サイズを指定して、テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには SetTexture() を使用します。
+		@brief		サイズを指定して、テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには setTexture() を使用します。
 		@param[in]	width		: スプライトの幅
 		@param[in]	height		: スプライトの高さ
 		@detail		作成されたスプライトは、デフォルトの 3D シーングラフ に追加されます。
 	*/
-	static Sprite3DComponentPtr Create(float width, float height);
+	static Sprite3DComponentPtr create(float width, float height);
 	
 	/**
 		@brief		サイズとテクスチャを指定してスプライトを作成します。
@@ -155,13 +155,13 @@ public:
 		@param[in]	texture		: スプライトが表示するテクスチャ
 		@detail		作成されたスプライトは、デフォルトの 3D シーングラフ に追加されます。
 	*/
-	static Sprite3DComponentPtr Create(float width, float height, Texture* texture);
+	static Sprite3DComponentPtr create(float width, float height, Texture* texture);
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	Sprite3DComponent();
 	virtual ~Sprite3DComponent();
-	void Initialize(SceneGraph* owner);
-	virtual void OnRender2(DrawList* renderer) override;
+	void initialize();
+	virtual void onRender2(RenderingContext* renderer) override;
 };
 
 
@@ -172,28 +172,28 @@ LN_CLASS()
 class SpriteBase
 	: public VisualObject
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	
 	/** スプライトが表示するテクスチャを設定します。 */
 	LN_METHOD(Property)
-	void SetTexture(Texture* texture);
+	void setTexture(Texture* texture);
 	
 	/** スプライトが表示するテクスチャを取得します。 */
 	LN_METHOD(Property)
-	Texture* GetTexture() const;
+	Texture* getTexture() const;
 
 	/** テクスチャのどの部分を表示するかを示す転送矩形を設定します。(ピクセル単位) デフォルトは Rect::Empty で、テクスチャ全体を転送することを示します。 */
 	LN_METHOD(Property)
-	void SetSourceRect(const Rect& rect);
+	void setSourceRect(const Rect& rect);
 
-	/** @overload SetSourceRect */
+	/** @overload setSourceRect */
 	LN_METHOD()
-	void SetSourceRect(float x, float y, float width, float height);
+	void setSourceRect(float x, float y, float width, float height);
 
 	/** テクスチャのどの部分を表示するかを示す転送矩形を取得します。(ピクセル単位) */
 	LN_METHOD(Property)
-	const Rect& GetSourceRect() const;
+	const Rect& getSourceRect() const;
 	
 	/** 
 		@brief		スプライトの原点を設定します。
@@ -202,21 +202,21 @@ public:
 					(0.5,0.5) はスプライトの中央、(1,1) は右下が原点となります。
 	*/
 	LN_METHOD(Property)
-	void SetAnchorPoint(const Vector2& ratio);
+	void setAnchorPoint(const Vector2& ratio);
 
-	/** @overload SetSourceRect */
+	/** @overload setSourceRect */
 	LN_METHOD()
-	void SetAnchorPoint(float ratioX, float ratioY);
+	void setAnchorPoint(float ratioX, float ratioY);
 
 protected:
-	virtual SpriteComponent* GetSpriteComponent() const = 0;
+	virtual SpriteComponent* getSpriteComponent() const = 0;
 
 LN_CONSTRUCT_ACCESS:
 	SpriteBase();
 	virtual ~SpriteBase();
 
 	LN_METHOD()
-	void Initialize();
+	void initialize();
 };
 
 /**
@@ -226,14 +226,14 @@ LN_CLASS()
 class Sprite2D
 	: public SpriteBase
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	
 	/**
-		@brief		テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには SetTexture() を使用します。
+		@brief		テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには setTexture() を使用します。
 		@detail		作成されたスプライトは、デフォルトの 2D シーングラフ に追加されます。
 	*/
-	static RefPtr<Sprite2D> Create();
+	static RefPtr<Sprite2D> create();
 	
 	/**
 		@brief		指定したファイルパスのテクスチャを読み込み、スプライトを作成します。
@@ -241,7 +241,7 @@ public:
 		@detail		作成されたスプライトは、デフォルトの 2D シーングラフ に追加されます。
 					スプライトのサイズは、読み込んだテクスチャのサイズとなります。
 	*/
-	static RefPtr<Sprite2D> Create(const StringRef& filePath);
+	static RefPtr<Sprite2D> create(const StringRef& filePath);
 	
 	/**
 		@brief		テクスチャを指定してスプライトを作成します。
@@ -249,24 +249,24 @@ public:
 		@detail		作成されたスプライトは、デフォルトの 2D シーングラフ に追加されます。
 					スプライトのサイズは、指定したテクスチャのサイズとなります。
 	*/
-	static RefPtr<Sprite2D> Create(Texture* texture);
+	static RefPtr<Sprite2D> create(Texture* texture);
 
 protected:
-	virtual VisualComponent* GetMainVisualComponent() const override;
-	virtual SpriteComponent* GetSpriteComponent() const override;
+	virtual VisualComponent* getMainVisualComponent() const override;
+	virtual SpriteComponent* getSpriteComponent() const override;
 
 LN_CONSTRUCT_ACCESS:
 	Sprite2D();
 	virtual ~Sprite2D();
 
 	LN_METHOD()
-	void Initialize();
+	void initialize();
 
 	LN_METHOD()
-	void Initialize(const StringRef& filePath);
+	void initialize(const StringRef& filePath);
 
 	LN_METHOD()
-	void Initialize(Texture* texture);
+	void initialize(Texture* texture);
 
 private:
 	RefPtr<Sprite2DComponent>	m_component;
@@ -279,23 +279,23 @@ LN_CLASS()
 class Sprite3D
 	: public SpriteBase
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	
 	/**
-		@brief		テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには SetTexture() を使用します。
+		@brief		テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには setTexture() を使用します。
 		@detail		作成されたスプライトは、デフォルトの 3D シーングラフ に追加されます。
 	*/
-	static RefPtr<Sprite3D> Create();
+	static RefPtr<Sprite3D> create();
 	
 	
 	/**
-		@brief		サイズを指定して、テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには SetTexture() を使用します。
+		@brief		サイズを指定して、テクスチャを持たないスプライトを作成します。テクスチャを割り当てるには setTexture() を使用します。
 		@param[in]	width		: スプライトの幅
 		@param[in]	height		: スプライトの高さ
 		@detail		作成されたスプライトは、デフォルトの 3D シーングラフ に追加されます。
 	*/
-	//static RefPtr<Sprite3D> Create(float width, float height);
+	//static RefPtr<Sprite3D> create(float width, float height);
 	
 	/**
 		@brief		サイズとテクスチャを指定してスプライトを作成します。
@@ -304,22 +304,22 @@ public:
 		@param[in]	texture		: スプライトが表示するテクスチャ
 		@detail		作成されたスプライトは、デフォルトの 3D シーングラフ に追加されます。
 	*/
-	static RefPtr<Sprite3D> Create(float width, float height, Texture* texture);
+	static RefPtr<Sprite3D> create(float width, float height, Texture* texture);
 
 
 protected:
-	virtual VisualComponent* GetMainVisualComponent() const override;
-	virtual SpriteComponent* GetSpriteComponent() const override;
+	virtual VisualComponent* getMainVisualComponent() const override;
+	virtual SpriteComponent* getSpriteComponent() const override;
 
 LN_CONSTRUCT_ACCESS:
 	Sprite3D();
 	virtual ~Sprite3D();
 
 	LN_METHOD()
-	void Initialize();
+	void initialize();
 
 	LN_METHOD()
-	void Initialize(float width, float height, Texture* texture);
+	void initialize(float width, float height, Texture* texture);
 
 private:
 	RefPtr<Sprite3DComponent>	m_component;

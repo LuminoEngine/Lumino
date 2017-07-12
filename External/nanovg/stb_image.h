@@ -6092,7 +6092,7 @@ static float *stbi__hdr_load(stbi__context *s, int *x, int *y, int *comp, int re
             while (i < width) {
                count = stbi__get8(s);
                if (count > 128) {
-                  // Run
+                  // run
                   value = stbi__get8(s);
                   count -= 128;
                   for (z = 0; z < count; ++z)

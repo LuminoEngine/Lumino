@@ -55,7 +55,7 @@ HRESULT AllocateHierarchy::CreateFrame( const char* name_, D3DXFRAME** out_new_f
 	dx_frame->Index = mFrameNum;
 	++mFrameNum;
 
-    mDerivedD3DXFrameArray.Add( dx_frame );
+    mDerivedD3DXFrameArray.add( dx_frame );
 	return S_OK;
 
 ERR_EXIT:
@@ -134,7 +134,7 @@ HRESULT AllocateHierarchy::CreateMeshContainer(
 	}
 
     // 作成したメッシュコンテナのポインタを渡す
-    mDerivedD3DXMeshContainerArray.Add( mesh_container );
+    mDerivedD3DXMeshContainerArray.add( mesh_container );
 	*new_mesh_container_ = mesh_container;
 	mesh_container = NULL;
 
@@ -170,13 +170,13 @@ HRESULT AllocateHierarchy::DestroyMeshContainer( D3DXMESHCONTAINER* mesh_contain
 	LN_SAFE_DELETE_ARRAY( mesh_container->pAdjacency );
 	LN_SAFE_DELETE_ARRAY( mesh_container->pMaterials );
 
-	LN_SAFE_RELEASE( mesh_container->OriginalMesh );
+	LN_COM_SAFE_RELEASE( mesh_container->OriginalMesh );
 	LN_SAFE_DELETE_ARRAY( mesh_container->BoneOffsetMatrices );
 
     //SAFE_DELETE_ARRAY( mesh_container->pAttributeTable );
 
-	LN_SAFE_RELEASE( mesh_container->MeshData.pMesh );
-	LN_SAFE_RELEASE( mesh_container->pSkinInfo );
+	LN_COM_SAFE_RELEASE( mesh_container->MeshData.pMesh );
+	LN_COM_SAFE_RELEASE( mesh_container->pSkinInfo );
 
 	LN_SAFE_DELETE( mesh_container );
 	return S_OK;
@@ -245,14 +245,14 @@ HRESULT AllocateHierarchy::_registMaterialData(
 
             if ( out_->pMaterials[ i ].pTextureFilename != NULL )
             {
-                out_->TextureNames.Add(String::FromNativeCharString( out_->pMaterials[ i ].pTextureFilename ) );
+                out_->TextureNames.add(String::fromNativeCharString( out_->pMaterials[ i ].pTextureFilename ) );
                 out_->pMaterials[ i ].pTextureFilename = NULL;
             }
             else
             {
                 // テクスチャ名がない場合でも、空の文字列を入れておく
                 // そうしないと、マテリアル数とテクスチャ名数が合わなくなる
-                out_->TextureNames.Add(String::GetEmpty());
+                out_->TextureNames.add(String::getEmpty());
             }
         }
 	}
@@ -549,22 +549,22 @@ static void FlipTriangleFronts(TIndex* indices, int count)
 //==============================================================================
 
 //------------------------------------------------------------------------------
-RefPtr<StaticMeshModel> XFileLoader::Load(ModelManager* manager, Stream* stream, const PathName& parentDir, bool isDynamic, ModelCreationFlag flags)
+RefPtr<StaticMeshModel> XFileLoader::load(ModelManager* manager, Stream* stream, const PathName& parentDir, bool isDynamic, ModelCreationFlag flags)
 {
-	Driver::DX9GraphicsDevice* device = dynamic_cast<Driver::DX9GraphicsDevice*>(manager->GetGraphicsManager()->GetGraphicsDevice());
+	Driver::DX9GraphicsDevice* device = dynamic_cast<Driver::DX9GraphicsDevice*>(manager->getGraphicsManager()->getGraphicsDevice());
 	LN_THROW(device != nullptr, ArgumentException);
 
 	AllocateHierarchy allocate_hierarchy;
 	D3DXFRAME* root_frame = NULL;
 	ID3DXAnimationController* dx_anim_controller = NULL;
 
-	ByteBuffer data((size_t)stream->GetLength());
-	stream->Read(data.GetData(), data.GetSize());
+	ByteBuffer data((size_t)stream->getLength());
+	stream->read(data.getData(), data.getSize());
 	LN_COMCALL(DX9Module::D3DXLoadMeshHierarchyFromXInMemory(
-		data.GetConstData(),
-		data.GetSize(),
+		data.getConstData(),
+		data.getSize(),
 		D3DXMESH_MANAGED | D3DXMESH_32BIT,	// まずは 32bit インデックスで作る
-		device->GetIDirect3DDevice9(),
+		device->getIDirect3DDevice9(),
 		&allocate_hierarchy,
 		NULL,
 		&root_frame,
@@ -578,7 +578,7 @@ RefPtr<StaticMeshModel> XFileLoader::Load(ModelManager* manager, Stream* stream,
 		~finally()
 		{
 			if (mRF) DX9Module::D3DXFrameDestroy(mRF, mAH);
-			LN_SAFE_RELEASE(mAC);
+			LN_COM_SAFE_RELEASE(mAC);
 		}
 		AllocateHierarchy* mAH;
 		D3DXFRAME* mRF;
@@ -589,9 +589,9 @@ RefPtr<StaticMeshModel> XFileLoader::Load(ModelManager* manager, Stream* stream,
 
 	try
 	{
-		auto meshRes = RefPtr<MeshResource>::MakeRef();
-		meshRes->Initialize(manager->GetGraphicsManager(), MeshCreationFlags::None);
-		auto mesh1 = NewObject<StaticMeshModel>(manager->GetGraphicsManager(), meshRes);
+		auto meshRes = RefPtr<MeshResource>::makeRef();
+		meshRes->initialize(manager->getGraphicsManager(), MeshCreationFlags::None);
+		auto mesh1 = newObject<StaticMeshModel>(manager->getGraphicsManager(), meshRes);
 
 		// スキンメッシュではない場合
 		if (!dx_anim_controller)
@@ -603,7 +603,7 @@ RefPtr<StaticMeshModel> XFileLoader::Load(ModelManager* manager, Stream* stream,
 			uint32_t all_index_num = 0;
 
 			DerivedD3DXMeshContainerArray& dx_mesh_containers = allocate_hierarchy.getDerivedD3DXMeshContainerArray();
-			LN_THROW(dx_mesh_containers.GetCount() == 1, InvalidFormatException, "XFile error: Mesh container is 2 or more.");
+			LN_THROW(dx_mesh_containers.getCount() == 1, InvalidFormatException, "XFile error: Mesh container is 2 or more.");
 			
 			for (DerivedD3DXMeshContainer* c : dx_mesh_containers)
 			{
@@ -617,15 +617,15 @@ RefPtr<StaticMeshModel> XFileLoader::Load(ModelManager* manager, Stream* stream,
 			// 頂点バッファ、インデックスバッファ作成
 
 			// VertexDeclaration
-			meshRes->m_vertexDeclaration = manager->GetGraphicsManager()->GetDefaultVertexDeclaration();
+			meshRes->m_vertexDeclaration = manager->getGraphicsManager()->getDefaultVertexDeclaration();
 
 			// VertexBuffer
-			meshRes->m_vertexBufferInfos[0].buffer.Attach(LN_NEW VertexBuffer());
-			meshRes->m_vertexBufferInfos[0].buffer->Initialize(
-				manager->GetGraphicsManager(),
+			meshRes->m_vertexBufferInfos[0].buffer.attach(LN_NEW VertexBuffer());
+			meshRes->m_vertexBufferInfos[0].buffer->initialize(
+				manager->getGraphicsManager(),
 				sizeof(Vertex) * all_vertex_num,
 				nullptr,
-				(isDynamic) ? ResourceUsage::Dynamic : ResourceUsage::Static);
+				(isDynamic) ? ResourceUsage::Dynamic : ResourceUsage::Static, true);
 
 			LN_NOTIMPLEMENTED();
 #if 0
@@ -636,7 +636,7 @@ RefPtr<StaticMeshModel> XFileLoader::Load(ModelManager* manager, Stream* stream,
 			dx_indexbuffer->GetDesc(&dx_indexbuffer_desc);
 			dx_indexbuffer->Release();
 			mesh->m_indexBuffer.Attach(LN_NEW IndexBuffer());
-			mesh->m_indexBuffer->Initialize(
+			mesh->m_indexBuffer->initialize(
 				manager->GetGraphicsManager(),
 				all_index_num,
 				nullptr,
@@ -700,7 +700,7 @@ RefPtr<StaticMeshModel> XFileLoader::Load(ModelManager* manager, Stream* stream,
 
 			// マテリアル数取得
 			uint32_t attr_num = allocate_hierarchy.getAllMaterialNum();
-			mesh1->AddMaterials(attr_num);
+			mesh1->addMaterials(attr_num);
 
 			// マテリアル、属性配列
 			MaterialList* materials = mesh1->m_materials;
@@ -715,19 +715,19 @@ RefPtr<StaticMeshModel> XFileLoader::Load(ModelManager* manager, Stream* stream,
 					DWORD   attr_num = 0;
 					c->MeshData.pMesh->GetAttributeTable(NULL, &attr_num);
 					List<D3DXATTRIBUTERANGE> dx_attrib_table;
-					dx_attrib_table.Resize(attr_num);
+					dx_attrib_table.resize(attr_num);
 					c->MeshData.pMesh->GetAttributeTable(&dx_attrib_table[0], &attr_num);
 
 					for (uint32_t i = 0; i < c->NumMaterials; ++i, ++mi)
 					{
-						DxMaterialToLnMaterial(c->pMaterials[i].MatD3D, materials->GetAt(mi));
+						DxMaterialToLnMaterial(c->pMaterials[i].MatD3D, materials->getAt(mi));
 
 						// テクスチャ名がある場合はテクスチャ作成
-						if (!c->TextureNames.IsEmpty() && !c->TextureNames[i].IsEmpty())
+						if (!c->TextureNames.isEmpty() && !c->TextureNames[i].isEmpty())
 						{
-							materials->GetAt(mi)->SetTextureParameter(
+							materials->getAt(mi)->setTextureParameter(
 								Material::MaterialTextureParameter,
-								manager->CreateTexture(parentDir, c->TextureNames[i], flags));
+								manager->createTexture(parentDir, c->TextureNames[i], flags));
 						}
 
 						// 属性
@@ -817,35 +817,35 @@ RefPtr<StaticMeshModel> XFileLoader::Load(ModelManager* manager, Stream* stream,
 //------------------------------------------------------------------------------
 void XFileLoader::DxMaterialToLnMaterial(const D3DMATERIAL9& dx_material, Material* material)
 {
-	material->SetColorParameter(
+	material->setColorParameter(
 		Material::DiffuseParameter,
 		dx_material.Diffuse.r,
 		dx_material.Diffuse.g,
 		dx_material.Diffuse.b,
 		dx_material.Diffuse.a);
 
-	material->SetColorParameter(
+	material->setColorParameter(
 		Material::AmbientParameter,
 		dx_material.Ambient.r,
 		dx_material.Ambient.g,
 		dx_material.Ambient.b,
 		dx_material.Ambient.a);
 
-	material->SetColorParameter(
+	material->setColorParameter(
 		Material::SpecularParameter,
 		dx_material.Specular.r,
 		dx_material.Specular.g,
 		dx_material.Specular.b,
 		dx_material.Specular.a);
 
-	material->SetColorParameter(
+	material->setColorParameter(
 		Material::EmissiveParameter,
 		dx_material.Emissive.r,
 		dx_material.Emissive.g,
 		dx_material.Emissive.b,
 		dx_material.Emissive.a);
 
-	material->SetFloatParameter(
+	material->setFloatParameter(
 		Material::PowerParameter,
 		dx_material.Power);
 }

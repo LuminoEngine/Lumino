@@ -16,7 +16,7 @@ public:
 
 public:
 
-	bool Init();
+	bool init();
 
 	static pf_glGenFramebuffers glGenFramebuffers;
 };

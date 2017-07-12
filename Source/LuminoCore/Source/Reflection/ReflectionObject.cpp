@@ -21,31 +21,31 @@ namespace tr
 // ReflectionHelper
 //==============================================================================
 //------------------------------------------------------------------------------
-void ReflectionHelper::AddGCObject(ReflectionObject* obj, ReflectionObject* child)
+void ReflectionHelper::addGCObject(ReflectionObject* obj, ReflectionObject* child)
 {
 	if (obj == nullptr || child == nullptr) return;
-	obj->m_gcList.Add(child);
+	obj->m_gcList.add(child);
 }
 
 //------------------------------------------------------------------------------
-void ReflectionHelper::RemoveGCObject(ReflectionObject* obj, ReflectionObject* child)
+void ReflectionHelper::removeGCObject(ReflectionObject* obj, ReflectionObject* child)
 {
 	if (obj == nullptr || child == nullptr) return;
-	obj->m_gcList.Remove(child);
+	obj->m_gcList.remove(child);
 }
 
 //------------------------------------------------------------------------------
-void ReflectionHelper::GCObjects(ReflectionObject* obj)
+void ReflectionHelper::gcObjects(ReflectionObject* obj)
 {
 	if (obj == nullptr) return;
-	obj->m_gcList.RemoveAll([](RefPtr<ReflectionObject>& obj) { return IsGCReady(obj); });
+	obj->m_gcList.removeAll([](RefPtr<ReflectionObject>& obj) { return isGCReady(obj); });
 }
 
 //------------------------------------------------------------------------------
-bool ReflectionHelper::IsGCReady(ReflectionObject* obj)
+bool ReflectionHelper::isGCReady(ReflectionObject* obj)
 {
 	if (obj == nullptr) return false;
-	return obj->m_autoGC && obj->GetReferenceCount() == 1;
+	return obj->m_autoGC && obj->getReferenceCount() == 1;
 }
 
 //==============================================================================
@@ -69,35 +69,35 @@ ReflectionObject::~ReflectionObject()
 	if (m_weakRefInfo != nullptr)
 	{
 		m_weakRefInfo->owner = nullptr;
-		m_weakRefInfo->Release();
+		m_weakRefInfo->release();
 		m_weakRefInfo = nullptr;
 	}
 }
 
 //------------------------------------------------------------------------------
-void ReflectionObject::RaiseReflectionEvent(const ReflectionEventBase& ev, ReflectionEventArgs* args)
+void ReflectionObject::raiseReflectionEvent(const ReflectionEventBase& ev, ReflectionEventArgs* args)
 {
-	ev.Raise(args);
+	ev.raise(args);
 }
 
 //------------------------------------------------------------------------------
-void ReflectionObject::OnPropertyChanged(PropertyChangedEventArgs* e)
+void ReflectionObject::onPropertyChanged(PropertyChangedEventArgs* e)
 {
 	// e->Property を持つクラスのコールバックを呼び出す
 	//e->changedProperty->NotifyPropertyChange(this, e);
 }
 
 //------------------------------------------------------------------------------
-void ReflectionObject::SetPropertyValueInternal(const PropertyInfo* prop, const Variant& value, bool reset, PropertySetSource source)
+void ReflectionObject::setPropertyValueInternal(const PropertyInfo* prop, const Variant& value, bool reset, PropertySetSource source)
 {
-	//if (prop->IsStored())
+	//if (prop->isStored())
 	//{
 	//	// 必要になったので作る
 	//	if (m_propertyDataStore == NULL) { m_propertyDataStore = LN_NEW PropertyDataStore(); }
-	//	m_propertyDataStore->SetValue(prop, value);
+	//	m_propertyDataStore->setValue(prop, value);
 	//}
 	//else {
-		prop->SetValue(this, value, source);
+		prop->setValue(this, value, source);
 	//}
 
 	//PropertyInstanceData* data = prop->GetPropertyInstanceData(this);
@@ -123,11 +123,11 @@ void ReflectionObject::SetPropertyValueInternal(const PropertyInfo* prop, const 
 	//	}
 	//}
 
-	//SetPropertyValue(prop->GetName(), value);	// TODO: GetName じゃなくて、型情報も考慮するように。あるいは生ポインタ
+	//setPropertyValue(prop->getName(), value);	// TODO: getName じゃなくて、型情報も考慮するように。あるいは生ポインタ
 }
 
 //------------------------------------------------------------------------------
-detail::WeakRefInfo* ReflectionObject::RequestWeakRefInfo()
+detail::WeakRefInfo* ReflectionObject::requestWeakRefInfo()
 {
 	MutexScopedLock lock(m_weakRefInfoMutex);
 	if (m_weakRefInfo == nullptr)

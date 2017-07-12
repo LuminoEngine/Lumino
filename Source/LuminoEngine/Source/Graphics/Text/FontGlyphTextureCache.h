@@ -31,33 +31,29 @@ public:
 	FontGlyphTextureCache();
 	virtual ~FontGlyphTextureCache();
 
-	void Initialize(GraphicsManager* manager, RawFont* font);	// TODO: ストローク幅をpenで表すなら太さ分の引数が増えることになる。
+	void initialize(GraphicsManager* manager, RawFont* font);	// TODO: ストローク幅をpenで表すなら太さ分の引数が増えることになる。
 
 
 	// まずメインスレッドでこの関数でキャッシュを検索する。
 	// outFlush が true になったらキャッシュが一杯になったので、フラッシュする必要がある。
 	// Bitmap が得られたときは CommitAndGetGlyphTextureInfo() に渡す前に、
 	// 描画コマンド用の一時メモリにコピーしてか渡さなければならない。
-	void LookupGlyphInfo(UTF32 ch, CacheGlyphInfo* outInfo, bool* outFlush);
+	void lookupGlyphInfo(UTF32 ch, CacheGlyphInfo* outInfo, bool* outFlush);
 
-	// 次に描画スレッドで、LookupFillGlyph() によって取得して CacheGlyphInfo を指定する。
-	// LookupFillGlyph() の呼び出し回数と対応させなければならない。
-	// 同時に、得られた srcRect で頂点バッファを作る。
-	//void CommitCacheGlyphInfo(CacheGlyphInfo* info, RectI* srcFillRect, RectI* srcOutlineRect);
-
-	// 最後に、描画するときにこのテクスチャを使う。
-	Driver::ITexture* GetGlyphsFillTexture();
+	// 描画するときにこのテクスチャを使う。
+	//Driver::ITexture* getGlyphsFillTexture();
+	Texture2D* getGlyphsFillTexture();
 
 	// メインスレッドで Flush したときにはこれを呼ぶ
-	void OnFlush();
+	void onFlush();
 
 	//const SizeI& GetGlyphsTextureSize() const;
 
-	TextLayoutEngine* GetTextLayoutEngine() { return &m_layoutEngine; }
-	void Measure(const UTF32* text, int length, TextLayoutResult* outResult);	// ユーティリティ
+	TextLayoutEngine* getTextLayoutEngine() { return &m_layoutEngine; }
+	void measure(const UTF32* text, int length, TextLayoutResult* outResult);	// ユーティリティ
 
 private:
-	void ResetUsedFlags();
+	void resetUsedFlags();
 
 	struct CachedGlyphInfo
 	{
@@ -101,21 +97,21 @@ public:
 
 	VectorFontGlyphCache();
 	virtual ~VectorFontGlyphCache();
-	void Initialize(GraphicsManager* manager, RawFont* font, int maxSize);
-	int GetMaxCount() const { return m_glyphInfoList.GetCount(); }
+	void initialize(GraphicsManager* manager, RawFont* font, int maxSize);
+	int getMaxCount() const { return m_glyphInfoList.getCount(); }
 
 	// callby main thread
-	Handle GetGlyphInfo(char32_t utf32Code, bool* outFlushRequested);
-	void OnFlush();	// メインスレッドで Flush したときにはこれを呼ぶ
+	Handle getGlyphInfo(char32_t utf32Code, bool* outFlushRequested);
+	void onFlush();	// メインスレッドで Flush したときにはこれを呼ぶ
 
 	// callby rendering thread
-	int GetVertexCount(Handle info);
-	int GetIndexCount(Handle info);
-	void GenerateMesh(Handle info, const Vector3& baselineOrigin, const Matrix& transform, Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex);
+	int getVertexCount(Handle info);
+	int getIndexCount(Handle info);
+	void generateMesh(Handle info, const Vector3& baselineOrigin, const Matrix& transform, Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex);
 
 private:
-	void ResetUsedFlags();
-	void RegisterPolygons(Handle infoIndex, const RawFont::FontOutlineVertex* vertices, int vertexSize, const RawFont::OutlineInfo* outlines, int outlineSize);
+	void resetUsedFlags();
+	void registerPolygons(Handle infoIndex, const RawFont::FontOutlineVertex* vertices, int vertexSize, const RawFont::OutlineInfo* outlines, int outlineSize);
 	
 	class GryphInfo : public LinkedNode
 	{

@@ -31,8 +31,8 @@ namespace InternalResource
 	extern const String Xml_TagMismatch;
 
 
-	extern const String& GetString(const String& name);
-	extern void SetString(const String& name, const String& value);
+	extern const String& getString(const String& name);
+	extern void setString(const String& name, const String& value);
 };
 
 LN_NAMESPACE_END

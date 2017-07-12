@@ -24,22 +24,19 @@
 		Windows:
 			_printf_l のように、_l が付いている関数はロケールを引数で指定できる。
 
-		Max:
+		max:
 			(実際に動かしてはいないが) Windows と同じく、printf_l のような関数が用意されているようだ。
 			ただし、Windows と違って先頭に _ が付かない。
 
 		Linux:
 			これも種類によって差が大きい。
-			FreeBSD は Max と同様らしい。
+			FreeBSD は max と同様らしい。
 			Ubuntu は _l が付く関数は無い。変わりに、uselocale を使うとスレッドのロケールを変更できる。
 			(__locale_raii でググるといろいろ出てくる)
 		
 */
 
 #include "../Internal.h"
-#if defined(LN_OS_WIN32)
-#include <windows.h>
-#endif
 #include <locale.h>
 #include <Lumino/Base/Locale.h>
 
@@ -133,7 +130,7 @@ Locale::Locale()
 	, m_nativeName()
 {
 	GetNativeDefaultLocale(&m_nativeLocale, &m_nativeName);
-	StringA name = m_nativeName.ToStringA();
+	StringA name = m_nativeName.toStringA();
 	m_stdLocale = std::locale(name.c_str());
 }
 
@@ -141,13 +138,13 @@ Locale::Locale()
 Locale::Locale(const TCHAR* name)
 : m_nativeLocale(0)
 #if defined(LN_OS_WIN32)
-	, m_nativeName(StringW::FromNativeCharString(name))
+	, m_nativeName(StringW::fromNativeCharString(name))
 #else
     , m_nativeName(StringA::FromNativeCharString(name))
 #endif
 {
 	m_nativeLocale = CreateNativeLocale(m_nativeName.c_str());
-	StringA t = m_nativeName.ToStringA();
+	StringA t = m_nativeName.toStringA();
 	m_stdLocale = std::locale(t.c_str());
 }
 
@@ -172,36 +169,36 @@ Locale& Locale::operator=(const Locale& locale)
 //------------------------------------------------------------------------------
 Locale::~Locale()
 {
-	Release();
+	release();
 }
 
 //------------------------------------------------------------------------------
-void Locale::Release()
+void Locale::release()
 {
 	FreeNativeLocale(m_nativeLocale);
 }
 
 //------------------------------------------------------------------------------
-const std::locale& Locale::GetStdLocale() const
+const std::locale& Locale::getStdLocale() const
 {
 	return m_stdLocale;
 }
 
 //------------------------------------------------------------------------------
-NativeLocale_t Locale::GetNativeLocale() const
+NativeLocale_t Locale::getNativeLocale() const
 {
 	return m_nativeLocale;
 }
 
 //------------------------------------------------------------------------------
-const Locale& Locale::GetDefault()
+const Locale& Locale::getDefault()
 {
 	static Locale locale;
 	return locale;
 }
 
 //------------------------------------------------------------------------------
-const Locale& Locale::GetC()
+const Locale& Locale::getC()
 {
 	static Locale locale;
 	static bool init = false;
@@ -232,7 +229,7 @@ GenericLocalizer<TChar>::GenericLocalizer(const Locale& locale)
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-int GenericLocalizer<TChar>::Format(TChar* outBuf, int outBufLength, const TChar* format, ...)
+int GenericLocalizer<TChar>::format(TChar* outBuf, int outBufLength, const TChar* format, ...)
 {
 
 }

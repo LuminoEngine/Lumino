@@ -13,7 +13,7 @@ public:
 	XAudio2Module();
 	~XAudio2Module();
 
-	bool Initialize();
+	bool initialize();
 
 	HRESULT XAudio2Create(__deref_out IXAudio2** ppXAudio2, UINT32 Flags X2DEFAULT(0), XAUDIO2_PROCESSOR XAudio2Processor X2DEFAULT(XAUDIO2_DEFAULT_PROCESSOR));
 

@@ -17,30 +17,30 @@ public:
 
 public:
 	/// 名前の取得
-	const String& GetName() const;
+	const String& getName() const;
 
 	/// AnimationTarget の再割り当てを行う
-	void Refresh(Animator* animator);
+	void refresh(Animator* animator);
 
 	/// 再生状態の設定
-	void SetPlayState(PlayState state);
+	void setPlayState(PlayState state);
 
 	/// 再生状態の取得
-	PlayState GetPlayState() const { return m_state; }
+	PlayState setPlayState() const { return m_state; }
 
 	/// この AnimationState の同レイヤー内のブレンド率
 	//void SetAddingBlendWeight(float weight) { m_addingBlendWeight = weight; }
 
 	/// 時間を進める
-	void AdvanceTime(double elapsedTime);
+	void advanceTime(double elapsedTime);
 
 LN_INTERNAL_ACCESS:
-	void FadeInLinerInternal(float duration);
-	void FadeOutLinerInternal(float duration);
+	void fadeInLinerInternal(float duration);
+	void fadeOutLinerInternal(float duration);
 
 private:
-	void ClearTargetList();
-	void SetLocalTime(double time);
+	void clearTargetList();
+	void setLocalTime(double time);
 
 private:
 	struct AnimationTarget

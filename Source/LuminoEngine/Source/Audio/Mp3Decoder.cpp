@@ -50,22 +50,22 @@ Mp3Decoder::~Mp3Decoder()
 }
 
 //------------------------------------------------------------------------------
-void Mp3Decoder::Create(Stream* stream)
+void Mp3Decoder::create(Stream* stream)
 {
 	LN_THROW(stream != NULL, ArgumentException);
 	m_stream = stream;
-	m_stream->AddRef();
+	m_stream->addRef();
 
 	// ファイルポインタを先頭に戻す
-	m_stream->Seek(0, SeekOrigin_Begin);
+	m_stream->seek(0, SeekOrigin_Begin);
 
 	m_dataOffset = 0;
 
 	// ID3v 確認
-	CheckId3v();
+	checkId3v();
 		
 	// PCM フォーマット取得
-	GetPCMFormat();
+	getPCMFormat();
 
 	// mp3 を PCM にデコードした時の wave フォーマットを取得
 	MPEGLAYER3WAVEFORMAT* mp3_format = &m_acmMP3WaveFormat;
@@ -80,7 +80,7 @@ void Mp3Decoder::Create(Stream* stream)
 	LN_THROW(mmr == 0, InvalidOperationException, _T("MMRESULT:%u"), mmr);
 
 	// WAVEFORMATEX → Audio::WaveFormat
-	AudioUtils::ConvertWAVEFORMATEXToLNWaveFormat(wav_fmt_ex, &m_waveFormat);
+	AudioUtils::convertWAVEFORMATEXToLNWaveFormat(wav_fmt_ex, &m_waveFormat);
 
 	// 全体を変換した時の PCM サイズを m_onmemoryPCMBufferSize に格納
     DWORD pcm_size = 0;
@@ -106,7 +106,7 @@ void Mp3Decoder::Create(Stream* stream)
 	//
 	//mMP3SourceBufferParSec = LN_NEW byte_t[ mMP3SourceBufferSizeParSec ];
 	// ストリーミング再生用の 1 秒分の mp3 データのサイズ分、メモリを確保
-	m_mp3SourceBufferParSec.Resize(mp3_format->wfx.nAvgBytesPerSec);
+	m_mp3SourceBufferParSec.resize(mp3_format->wfx.nAvgBytesPerSec);
 
 	// 全体の再生時間を計算する
 	double t = static_cast< double >(m_onmemoryPCMBufferSize) / (static_cast< double >(m_waveFormat.avgBytesPerSec) * 0.001);
@@ -118,7 +118,7 @@ void Mp3Decoder::Create(Stream* stream)
 }
 
 //------------------------------------------------------------------------------
-void Mp3Decoder::FillOnmemoryBuffer()
+void Mp3Decoder::fillOnmemoryBuffer()
 {
 	MutexScopedLock lock(m_mutex);
 
@@ -131,8 +131,8 @@ void Mp3Decoder::FillOnmemoryBuffer()
 		//LN_THROW_SystemCall(mp3_buffer);
 		ByteBuffer mp3_buffer(m_sourceDataSize);
 
-		m_stream->Seek(m_dataOffset, SeekOrigin_Begin);
-		size_t read_size = m_stream->Read(mp3_buffer.GetData(), m_sourceDataSize);
+		m_stream->seek(m_dataOffset, SeekOrigin_Begin);
+		size_t read_size = m_stream->read(mp3_buffer.getData(), m_sourceDataSize);
 		LN_THROW(read_size == m_sourceDataSize, InvalidFormatException);
 
 		// 全体を変換した時の PCM サイズを mPCMSize に格納
@@ -148,7 +148,7 @@ void Mp3Decoder::FillOnmemoryBuffer()
 		ACMSTREAMHEADER ash;
 		ZeroMemory(&ash, sizeof(ACMSTREAMHEADER));
 		ash.cbStruct = sizeof(ACMSTREAMHEADER);
-		ash.pbSrc = mp3_buffer.GetData();
+		ash.pbSrc = mp3_buffer.getData();
 		ash.cbSrcLength = m_sourceDataSize;
 		ash.pbDst = (LPBYTE)m_onmemoryPCMBuffer;
 		ash.cbDstLength = m_onmemoryPCMBufferSize;
@@ -169,7 +169,7 @@ void Mp3Decoder::FillOnmemoryBuffer()
 }
 
 //------------------------------------------------------------------------------
-void Mp3Decoder::Read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uint32_t* out_read_size, uint32_t* out_write_size)
+void Mp3Decoder::read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uint32_t* out_read_size, uint32_t* out_write_size)
 {
 	LN_THROW(m_stream != NULL, InvalidOperationException);	// オンメモリ再生とストリーミング再生で同じ AudioStream を共有したときにぶつかる
 	MutexScopedLock lock(m_mutex);
@@ -181,17 +181,17 @@ void Mp3Decoder::Read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uint
 	//else
 	//{
 
-		m_stream->Seek(m_dataOffset + seekPos, SeekOrigin_Begin);
+		m_stream->seek(m_dataOffset + seekPos, SeekOrigin_Begin);
 
 		ZeroMemory(buffer, buffer_size);
 
 		// ファイルからデータ読み込み
-		size_t read_size = m_stream->Read(m_mp3SourceBufferParSec.GetData(), m_mp3SourceBufferParSec.GetSize());
+		size_t read_size = m_stream->read(m_mp3SourceBufferParSec.getData(), m_mp3SourceBufferParSec.getSize());
 
-		DWORD src_length = m_mp3SourceBufferParSec.GetSize();
+		DWORD src_length = m_mp3SourceBufferParSec.getSize();
 
 		// 実際に読み込んだサイズが、読むべきサイズよりも小さかった場合
-		if (read_size < m_mp3SourceBufferParSec.GetSize())
+		if (read_size < m_mp3SourceBufferParSec.getSize())
 		{
 			// とりあえず、読み込めたサイズ分コンバートする
 			src_length = read_size;
@@ -201,7 +201,7 @@ void Mp3Decoder::Read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uint
 		ACMSTREAMHEADER ash;
 		ZeroMemory(&ash, sizeof(ACMSTREAMHEADER));
 		ash.cbStruct = sizeof(ACMSTREAMHEADER);
-		ash.pbSrc = m_mp3SourceBufferParSec.GetData();
+		ash.pbSrc = m_mp3SourceBufferParSec.getData();
 		ash.cbSrcLength = src_length;
 		ash.pbDst = (LPBYTE)buffer;
 		ash.cbDstLength = buffer_size;
@@ -228,14 +228,14 @@ void Mp3Decoder::Read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uint
 //----------------------------------------------------------------------
 //
 //----------------------------------------------------------------------
-void Mp3Decoder::CheckId3v()
+void Mp3Decoder::checkId3v()
 {
 	// とりあえず最初に、ファイルサイズを mp3 データ全体のサイズとする
-	m_sourceDataSize = (uint32_t)m_stream->GetLength();
+	m_sourceDataSize = (uint32_t)m_stream->getLength();
 
 	// とりあえず ID3v2 としてヘッダ部分を読み込む
 	ID3v2Header header;
-	int read_size = m_stream->Read(&header, sizeof(ID3v2Header));
+	int read_size = m_stream->read(&header, sizeof(ID3v2Header));
 	LN_THROW(read_size == sizeof(ID3v2Header), InvalidFormatException, "mp3 file size is invalid.");
 
 	// Id3v2 形式の場合
@@ -254,7 +254,7 @@ void Mp3Decoder::CheckId3v()
 	else
 	{
 		// 終端のタグ情報がない
-		LN_THROW(m_stream->GetLength() >= 128, InvalidFormatException, "not found mp3 tag.");
+		LN_THROW(m_stream->getLength() >= 128, InvalidFormatException, "not found mp3 tag.");
 
 		// タグなし　データがある場所はファイルの先頭から
 		m_id3vTagFieldSize = 0;
@@ -262,8 +262,8 @@ void Mp3Decoder::CheckId3v()
 
 		// ファイル終端から 128 バイト戻ったところを調べる
 		byte_t data[3];
-		m_stream->Seek(-128, SeekOrigin_End);
-		read_size = m_stream->Read(data, 3);
+		m_stream->seek(-128, SeekOrigin_End);
+		read_size = m_stream->read(data, 3);
 		LN_THROW(read_size == 3, InvalidFormatException, "not found mp3 tag.");
 
 		// 'TAG' が見つかった
@@ -275,13 +275,13 @@ void Mp3Decoder::CheckId3v()
 	}
 
 	// 念のため、ファイルポインタを先頭に戻しておく
-	m_stream->Seek(0, SeekOrigin_Begin);
+	m_stream->seek(0, SeekOrigin_Begin);
 }
 
 //----------------------------------------------------------------------
 //
 //----------------------------------------------------------------------
-void Mp3Decoder::GetPCMFormat()
+void Mp3Decoder::getPCMFormat()
 {
 	BYTE  index;
 	BYTE  version;
@@ -301,25 +301,25 @@ void Mp3Decoder::GetPCMFormat()
 
 	// フレームヘッダ部分を読み込む
 	byte_t data[4];
-	m_stream->Seek(m_id3vTagFieldSize, SeekOrigin_Begin);
-	m_stream->Read(data, 4);
+	m_stream->seek(m_id3vTagFieldSize, SeekOrigin_Begin);
+	m_stream->read(data, 4);
 
 	// data がフレームヘッダを指しているか調べる
 	if (data[0] != 0xff || data[1] >> 5 != 0x07)
 	{
 		// 先頭になければガンガン進めながら探す
 		int rs;
-		int64_t ends = m_stream->GetLength();
+		int64_t ends = m_stream->getLength();
 		while (true)
 		{
-			rs = m_stream->Read(data, 4);
+			rs = m_stream->read(data, 4);
 			LN_THROW(rs == 4, InvalidFormatException, "not found mp3 frame header.");
 
 			if (data[0] == 0xff && data[1] >> 5 == 0x07)
 			{
 				break;
 			}
-			m_stream->Seek(-3, SeekOrigin_Current);
+			m_stream->seek(-3, SeekOrigin_Current);
 		}
 	}
 

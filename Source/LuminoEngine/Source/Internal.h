@@ -1,10 +1,12 @@
 ﻿
 #pragma once
-
 #define LN_INTERNAL_ACCESS				public
 #define LN_PROTECTED_INTERNAL_ACCESS	public
 
+#if defined(_WIN32)
 #define NOMINMAX
+#include <Windows.h>
+#endif
 #include <LuminoCore.h>
 #include "../include/Lumino/Graphics/Common.h"	// TODO: Internal.h には置きたくない
 
@@ -16,6 +18,7 @@ class SceneGraph2D;
 class SceneGraph3D;
 class World2D;
 class World3D;
+class EngineManager;
 
 namespace detail {
 class AnimationManager;
@@ -26,18 +29,19 @@ class UIManager;
 class EngineDomain
 {
 public:
-	static PhysicsWorld* GetPhysicsWorld3D();
+	static PhysicsWorld* getPhysicsWorld3D();
 
-	static AnimationManager* GetAnimationManager();
-	static GraphicsManager* GetGraphicsManager();
-	static ModelManager* GetModelManager();
-	static UIManager* GetUIManager();
+	static EngineManager* getEngineManager();
+	static AnimationManager* getAnimationManager();
+	static GraphicsManager* getGraphicsManager();
+	static ModelManager* getModelManager();
+	static UIManager* getUIManager();
 
-	static SceneGraphManager* GetSceneGraphManager();
-	static SceneGraph2D* GetDefaultSceneGraph2D();
-	static SceneGraph3D* GetDefaultSceneGraph3D();
-	static World2D* GetDefaultWorld2D();
-	static World3D* GetDefaultWorld3D();
+	static SceneGraphManager* getSceneGraphManager();
+	static SceneGraph2D* getDefaultSceneGraph2D();
+	static SceneGraph3D* getDefaultSceneGraph3D();
+	static World2D* getDefaultWorld2D();
+	static World3D* getDefaultWorld3D();
 };
 
 } // namespace detail

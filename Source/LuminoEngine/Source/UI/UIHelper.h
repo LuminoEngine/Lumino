@@ -9,17 +9,17 @@ class UIHelper
 {
 public:
 
-	static void ForEachVisualChildren(UIElement* element, std::function<void(UIElement* child)> func)
+	static void forEachVisualChildren(UIElement* element, std::function<void(UIElement* child)> func)
 	{
-		int count = element->GetVisualChildrenCount();
+		int count = element->getVisualChildrenCount();
 		for (int i = 0; i < count; ++i)
 		{
-			func(static_cast<UIElement*>(element->GetVisualChild(i)));
+			func(static_cast<UIElement*>(element->getVisualChild(i)));
 		}
 	}
 
 	template<typename TPred>
-	static UIElement* FindVisualAncestor(UIElement* element, bool self, TPred pred)
+	static UIElement* findVisualAncestor(UIElement* element, bool self, TPred pred)
 	{
 		if (LN_CHECK_ARG(element != nullptr)) return nullptr;
 
@@ -34,7 +34,7 @@ public:
 
 		while (true)
 		{
-			element = element->GetVisualParent();
+			element = element->getVisualParent();
 			if (element == nullptr)
 			{
 				break;
@@ -48,64 +48,31 @@ public:
 		return nullptr;
 	}
 
-	static UIElement* GetLayoutRoot(UIElement* element)
+	static UIElement* getLayoutRoot(UIElement* element)
 	{
 		while (element != nullptr)
 		{
-			if (element->GetSpcialUIElementType() == detail::SpcialUIElementType::LayoutRoot)
+			if (element->getSpcialUIElementType() == detail::SpcialUIElementType::LayoutRoot)
 			{
 				return element;
 			}
-			element = element->GetVisualParent();
+			element = element->getVisualParent();
 		}
 		return nullptr;
 	}
 
-	//static void AdjustHorizontalAlignment(const Size& arrangeSize, const SizeF& desiredSize, HorizontalAlignment align, RectF* outRect)
-	//{
-	//	switch (align)
-	//	{
-	//	case HorizontalAlignment::Left:
-	//		outRect->x = 0;
-	//		outRect->width = desiredSize.width;
-	//		break;
-	//	case HorizontalAlignment::Center:
-	//		outRect->x = (arrangeSize.width - desiredSize.width) / 2;
-	//		outRect->width = desiredSize.width;
-	//		break;
-	//	case HorizontalAlignment::Right:
-	//		outRect->x = arrangeSize.width - desiredSize.width;
-	//		outRect->width = desiredSize.width;
-	//		break;
-	//	case HorizontalAlignment::Stretch:
-	//		outRect->x = 0;
-	//		outRect->width = arrangeSize.width;
-	//		break;
-	//	}
-	//}
-
-	//static void AdjustVerticalAlignment(const Size& arrangeSize, const SizeF& desiredSize, VerticalAlignment align, RectF* outRect)
-	//{
-	//	switch (align)
-	//	{
-	//	case VerticalAlignment::Top:
-	//		outRect->y = 0;
-	//		outRect->height = desiredSize.height;
-	//		break;
-	//	case VerticalAlignment::Center:
-	//		outRect->y = (arrangeSize.height - desiredSize.height) / 2;
-	//		outRect->height = desiredSize.height;
-	//		break;
-	//	case VerticalAlignment::Bottom:
-	//		outRect->y = arrangeSize.height - desiredSize.height;
-	//		outRect->height = desiredSize.height;
-	//		break;
-	//	case VerticalAlignment::Stretch:
-	//		outRect->y = 0;
-	//		outRect->height = arrangeSize.height;
-	//		break;
-	//	}
-	//}
+	static UIElement* findSpcialElementAncestor(UIElement* element, UISpecialElementType type)
+	{
+		while (element != nullptr)
+		{
+			if (element->getSpecialElementType2() == type)
+			{
+				return element;
+			}
+			element = element->getVisualParent();
+		}
+		return nullptr;
+	}
 };
 
 LN_NAMESPACE_END

@@ -24,12 +24,12 @@ public:
 	/**
 		@brief	アーカイブ内に指定したパスのファイルが存在するか確認します。
 	*/
-	virtual bool ExistsFile(const PathName& fileFullPath) = 0;
+	virtual bool existsFile(const PathName& fileFullPath) = 0;
 
 	/**
 		@brief	アーカイブ内のファイルを読み取るためのストリームを作成します。
 	*/
-	virtual bool TryCreateStream(const PathName& fileFullPath, RefPtr<Stream>* outStream, bool isDeferring) = 0;
+	virtual bool tryCreateStream(const PathName& fileFullPath, RefPtr<Stream>* outStream, bool isDeferring) = 0;
 
 };
 
@@ -73,35 +73,35 @@ public:
 		@param[in]	filePath	: アーカイブファイルのパス
 		@param[in]	key			: パスワード文字列
 	*/
-	void Open(const PathName& filePath, const String& key);
+	void open(const PathName& filePath, const String& key);
 
 	/**
 		@brief	アーカイブ内に指定したパスのファイルが存在するか確認します。
 	*/
-	virtual bool ExistsFile(const PathName& fileFullPath) override;
+	virtual bool existsFile(const PathName& fileFullPath) override;
 
 	/**
 		@brief	アーカイブ内のファイルを読み取るためのストリームを作成します。
 	*/
-	virtual bool TryCreateStream(const PathName& fileFullPath, RefPtr<Stream>* outStream, bool isDeferring) override;
+	virtual bool tryCreateStream(const PathName& fileFullPath, RefPtr<Stream>* outStream, bool isDeferring) override;
 
 private:
 
 	/// ArchiveStream から呼ばれる
-	size_t ReadArchiveStream(byte_t* buffer, size_t count, FILE* stream, uint64_t dataOffset, uint64_t seekPos);
+	size_t readArchiveStream(byte_t* buffer, size_t count, FILE* stream, uint64_t dataOffset, uint64_t seekPos);
 
 	// 数値を 16 にそろえるために加算する数値「( 16 - ( v_ % 16 ) ) % 16」の最適化 ( 5 は 11、27 は 5 等 )
-	int Padding16(int v) const { return (v != 0) ? (16 - (v & 0x0000000f)) & 0x0000000f : 16; }
-	uint32_t Padding16(uint32_t v) const { return (v != 0) ? (16 - (v & 0x0000000f)) & 0x0000000f : 16; }
+	int padding16(int v) const { return (v != 0) ? (16 - (v & 0x0000000f)) & 0x0000000f : 16; }
+	uint32_t padding16(uint32_t v) const { return (v != 0) ? (16 - (v & 0x0000000f)) & 0x0000000f : 16; }
 
 	/// パディングを考慮して整数を読み込む
-	uint32_t ReadU32Padding16();
+	uint32_t readU32Padding16();
 
 	/// パディングを考慮して整数を読み込む (ファイル名長さ、ファイルサイズ用)
-	void ReadU32Padding16(uint32_t* v0, uint32_t* v1);
+	void readU32Padding16(uint32_t* v0, uint32_t* v1);
 
 	/// パディングを考慮してデータを読み込む
-	void ReadPadding16(byte_t* buffer, int count);
+	void readPadding16(byte_t* buffer, int count);
 
 private:
 
@@ -131,7 +131,7 @@ private:
 	int					m_fileCount;			///< アーカイブファイル内のファイル数
     String				m_key;				    ///< 復号キー (char)
 	KEY_TABLE_TYPE		m_keyTable;
-    Mutex				m_mutex;				///< ReadArchiveStream() をスレッドセーフにする
+    Mutex				m_mutex;				///< readArchiveStream() をスレッドセーフにする
 };
 
 /**
@@ -145,14 +145,14 @@ private:
 	virtual ~ArchiveStream();
 
 public:
-	virtual bool CanRead() const { return true; }
-	virtual bool CanWrite() const { return false; }
-	virtual int64_t GetLength() const { return m_dataSize; }
-	virtual int64_t GetPosition() const { return m_seekPoint; }
-	virtual size_t Read(void* buffer, size_t byteCount);
-	virtual void Write(const void* data, size_t byteCount) {}
-	virtual void Seek(int64_t offset, SeekOrigin origin);
-	virtual void Flush() {}
+	virtual bool canRead() const { return true; }
+	virtual bool canWrite() const { return false; }
+	virtual int64_t getLength() const { return m_dataSize; }
+	virtual int64_t getPosition() const { return m_seekPoint; }
+	virtual size_t read(void* buffer, size_t byteCount);
+	virtual void write(const void* data, size_t byteCount) {}
+	virtual void seek(int64_t offset, SeekOrigin origin);
+	virtual void flush() {}
 
 private:
 	friend class Archive;
@@ -169,8 +169,8 @@ class DummyArchive
 	: public IArchive
 {
 public:
-	virtual bool ExistsFile(const PathName& fileFullPath) override;
-	virtual bool TryCreateStream(const PathName& fileFullPath, RefPtr<Stream>* outStream, bool isDeferring) override;
+	virtual bool existsFile(const PathName& fileFullPath) override;
+	virtual bool tryCreateStream(const PathName& fileFullPath, RefPtr<Stream>* outStream, bool isDeferring) override;
 };
 
 LN_NAMESPACE_END

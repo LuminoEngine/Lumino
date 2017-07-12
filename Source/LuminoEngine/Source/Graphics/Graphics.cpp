@@ -46,7 +46,7 @@ void Graphics::ClosePath()
 }
 //void Graphics::DrawPoint(const Vector3& point, const Color& color)
 //{
-//	GraphicsManager::GetInstance()->GetGraphicsContext()->DrawPoint(point, color);
+//	GraphicsManager::getInstance()->GetGraphicsContext()->DrawPoint(point, color);
 //}
 void Graphics::DrawTriangle(const Vector3& p1, const Color& p1Color, const Vector3& p2, const Color& p2Color, const Vector3& p3, const Color& p3Color)
 {
@@ -76,26 +76,26 @@ void Graphics::Flush()
 #endif
 
 //------------------------------------------------------------------------------
-void Graphics::ChangeDirectX9Device(void* id3d9device)
+void Graphics::changeDirectX9Device(void* id3d9device)
 {
 #if defined(LN_OS_WIN32)
 	if (id3d9device == NULL)
 	{
-		detail::GraphicsManager::GetInstance()->ChangeDevice(NULL);
+		detail::GraphicsManager::getInstance()->changeDevice(NULL);
 	}
 	else
 	{
 		Driver::DX9GraphicsDevice::ConfigData data;
-		data.MainWindow = detail::GraphicsManager::GetInstance()->GetMainWindow();
-		data.FileManager = detail::GraphicsManager::GetInstance()->GetFileManager();
+		data.MainWindow = detail::GraphicsManager::getInstance()->getMainWindow();
+		data.FileManager = detail::GraphicsManager::getInstance()->getFileManager();
 		data.D3D9Device = (IDirect3DDevice9*)id3d9device;
 		//data.BackbufferSize = configData.MainWindow->GetSize();	// TODO
 		//data.EnableVSyncWait = false;			// TODO
 		//data.EnableFPUPreserve = false;			// TODO
 		auto* device = LN_NEW Driver::DX9GraphicsDevice();
-		device->Initialize(data);
-		detail::GraphicsManager::GetInstance()->ChangeDevice(device);
-		device->Release();
+		device->initialize(data);
+		detail::GraphicsManager::getInstance()->changeDevice(device);
+		device->release();
 	}
     
 #endif
@@ -104,11 +104,11 @@ void Graphics::ChangeDirectX9Device(void* id3d9device)
 //------------------------------------------------------------------------------
 //RenderTargetTexturePtr GraphicsPlatformSupport::CreateRenderTargetFromD3D9Surface(void* surface)
 //{
-//	auto* device = dynamic_cast<Driver::DX9GraphicsDevice*>(detail::EngineDomain::GetGraphicsManager()->GetGraphicsDevice());
+//	auto* device = dynamic_cast<Driver::DX9GraphicsDevice*>(detail::EngineDomain::getGraphicsManager()->getGraphicsDevice());
 //	if (LN_CHECK_STATE(device != nullptr)) return nullptr;
 //
 //	auto* ptr = LN_NEW Driver::DX9BackBufferTexture(device);
-//	ptr->Reset((IDirect3DSurface9*)surface);
+//	ptr->reset((IDirect3DSurface9*)surface);
 //
 //}
 

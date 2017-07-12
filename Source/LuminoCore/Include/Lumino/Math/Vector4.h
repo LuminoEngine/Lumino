@@ -53,12 +53,12 @@ public:
 	/**
 		@brief		各要素に値を設定します。
 	*/
-	void Set(float x, float y, float z, float w);
+	void set(float x, float y, float z, float w);
 	
 	/**
 		@brief		このベクトルの X Y 要素を Vector2 として返します。
 	*/
-	const Vector2& GetXY() const;
+	const Vector2& getXY() const;
 	
 	/**
 		@brief		このベクトルの X Y Z 要素を Vector3 として返します。
@@ -68,29 +68,29 @@ public:
 	/**
 		@brief		ベクトルの長さを返します。
 	*/
-	float GetLength() const;
+	float getLength() const;
 
 	/**
 		@brief		ベクトルの長さの 2 乗を返します。
 	*/
-	float GetLengthSquared() const;
+	float getLengthSquared() const;
 
 	/**
 		@brief		このベクトルを指定された最大値と最小値の範囲にクランプします。
 	*/
-	void Clamp(float min_xyzw, float max_xyzw);
+	void clamp(float min_xyzw, float max_xyzw);
 
 	/**
 		@brief		このベクトルを指定された最大値と最小値の範囲にクランプします。
 		@param[in]	minVec	: 最小値
 		@param[in]	maxVec	: 最大値
 	*/
-	void Clamp(const Vector4& minVec, const Vector4& maxVec);
+	void clamp(const Vector4& minVec, const Vector4& maxVec);
 	
 	/**
 		@brief		要素のいずれかが NaN または Inf かを判別します。
 	*/
-	bool IsNaNOrInf() const;
+	bool isNaNOrInf() const;
 
 	/**
 		@brief		デバッグ用に文字列を標準出力します。
@@ -98,7 +98,7 @@ public:
 		@param[in]	stream	: 出力先ストリーム
 		@details	format が NULL の場合、書式は "%f, %f, %f, %f\n" を使用します。
 	*/
-	void Print(const char* format = NULL, FILE* stream = NULL) const;
+	void print(const char* format = NULL, FILE* stream = NULL) const;
 
 public:
 
@@ -107,7 +107,7 @@ public:
 		@param[in]	vec		: 処理の基になるベクトル
 		@return		正規化されたベクトル
 	*/
-	static Vector4 Normalize(const Vector4& vec);
+	static Vector4 normalize(const Vector4& vec);
 
 	/**
 		@brief		2つのベクトルの内積を計算します。
@@ -115,7 +115,7 @@ public:
 		@param[in]	vec2	: 処理の基になるベクトル
 		@return		2つのベクトルの内積
 	*/
-	static float Dot(const Vector4& vec1, const Vector4& vec2);
+	static float dot(const Vector4& vec1, const Vector4& vec2);
 
 	/**
 		@brief		2つのベクトルの最小値で構成されるベクトルを返します。
@@ -123,7 +123,7 @@ public:
 		@param[in]	vec2	: 処理の基になるベクトル
 		@return		最小値から作成されたベクトル
 	*/
-	static Vector4 Min(const Vector4& vec1, const Vector4& vec2);
+	static Vector4 min(const Vector4& vec1, const Vector4& vec2);
 
 	/**
 		@brief		2つのベクトルの最大値で構成されるベクトルを返します。
@@ -131,7 +131,7 @@ public:
 		@param[in]	vec2	: 処理の基になるベクトル
 		@return		最大値から作成されたベクトル
 	*/
-	static Vector4 Max(const Vector4& vec1, const Vector4& vec2);
+	static Vector4 max(const Vector4& vec1, const Vector4& vec2);
 
 	/**
 		@brief		指定された行列を使用してベクトルを座標変換します。
@@ -139,7 +139,7 @@ public:
 		@param[in]	mat		: 処理の基になる行列
 		@return		変換されたベクトル
 	*/
-	static Vector4 Transform(const Vector4& vec, const Matrix& mat);
+	static Vector4 transform(const Vector4& vec, const Matrix& mat);
 
 	/**
 		@brief		2 つのベクトル間の線形補間を行います。
@@ -149,7 +149,7 @@ public:
 		@return		補間結果のベクトル
 		@details	t は通常、0.0～1.0 を指定します。
 	*/
-	static Vector4 Lerp(const Vector4& start, const Vector4& end, float t);
+	static Vector4 lerp(const Vector4& start, const Vector4& end, float t);
 
 	/**
 		@brief		指定されたベクトルを使用して エルミートスプライン補間を実行します。
@@ -161,7 +161,7 @@ public:
 		@return		補間結果の値
 		@details	t は通常、0.0～1.0 を指定します。
 	*/
-	static Vector4 Hermite(const Vector4& v1, const Vector4& a1, const Vector4& v2, const Vector4& a2, float t);
+	static Vector4 hermite(const Vector4& v1, const Vector4& a1, const Vector4& v2, const Vector4& a2, float t);
 
 	/**
 		@brief		指定されたベクトルを使用して Catmull-Rom 補間を行います。
@@ -173,7 +173,7 @@ public:
 		@return		補間結果のベクトル
 		@details	t は通常、0.0～1.0 を指定します。
 	*/
-	static Vector4 CatmullRom(const Vector4& vec1, const Vector4& vec2, const Vector4& vec3, const Vector4& vec4, float t);
+	static Vector4 catmullRom(const Vector4& vec1, const Vector4& vec2, const Vector4& vec3, const Vector4& vec4, float t);
 
 public:
 

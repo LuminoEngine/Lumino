@@ -20,9 +20,9 @@ public:
 
 	~Semaphore();
 
-	void Lock();
+	void lock();
 
-	void Unlock();
+	void unlock();
 
 private:
 	LN_DISALLOW_COPY_AND_ASSIGN(Semaphore);

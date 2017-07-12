@@ -8,7 +8,7 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 namespace detail {
 class RenderTargetTextureCache;
-class DrawElementBatch;
+class IRenderFeature;
 
 LN_ENUM_FLAGS(ContextStateFlags)
 {
@@ -36,19 +36,19 @@ struct ContextState
 	ContextState();
 	~ContextState();
 
-	ContextState(const ContextState& obj) : ContextState() { Copy(obj); }
-	ContextState& operator=(const ContextState& obj) { Copy(obj); return *this; }
+	ContextState(const ContextState& obj) : ContextState() { copy(obj); }
+	ContextState& operator=(const ContextState& obj) { copy(obj); return *this; }
 
 
-	void SetRenderTarget(int index, Texture* texture);
-	Texture* GetRenderTarget(int index) const;
-	void SetShaderPass(ShaderPass* pass);
-	ShaderPass* GetShaderPass() const { return m_shaderPass; }
+	void setRenderTarget(int index, Texture* texture);
+	Texture* getRenderTarget(int index) const;
+	void setShaderPass(ShaderPass* pass);
+	ShaderPass* getShaderPass() const { return m_shaderPass; }
 
-	void SetFillBrush(Brush* brush);
-	Brush* GetFillBrush() const { return m_fillBrush; }
+	void setFillBrush(Brush* brush);
+	Brush* getFillBrush() const { return m_fillBrush; }
 
-	void Reset()
+	void reset()
 	{
 		renderState = RenderState();
 		depthStencilState = DepthStencilState();
@@ -58,24 +58,13 @@ struct ContextState
 		//indexBuffer = nullptr;
 	}
 
-	void Copy(const ContextState& obj);
+	void copy(const ContextState& obj);
 
 private:
 	std::array<Texture*, Graphics::MaxMultiRenderTargets>	m_renderTargets = {};
 	Shader*		m_ownerShader = nullptr;
 	ShaderPass*	m_shaderPass = nullptr;
 	Brush*		m_fillBrush;
-};
-
-class IRendererPloxy// : public RefObject
-{
-public:
-	virtual bool IsStandaloneShader() const = 0;
-	virtual void Flush() = 0;
-	virtual void OnActivated() = 0;
-	virtual void OnDeactivated() = 0;
-
-	virtual void OnSetState(const DrawElementBatch* state) {}
 };
 
 
@@ -86,13 +75,13 @@ struct BasicContextState
 	RefPtr<DepthBuffer>			depthBuffer;
 	//RectI					viewport;
 
-	void SetRenderTarget(int index, Texture* texture);
-	Texture* GetRenderTarget(int index) const;
-	void SetShaderPass(ShaderPass* pass);
-	ShaderPass* GetShaderPass() const { return m_shaderPass; }
+	void setRenderTarget(int index, Texture* texture);
+	Texture* getRenderTarget(int index) const;
+	void setShaderPass(ShaderPass* pass);
+	ShaderPass* getShaderPass() const { return m_shaderPass; }
 
-	bool Equals(const BasicContextState& s) const;
-	void Copy(const BasicContextState& s);
+	bool equals(const BasicContextState& s) const;
+	void copy(const BasicContextState& s);
 
 private:
 	std::array<RefPtr<Texture>, Graphics::MaxMultiRenderTargets>	m_renderTargets;
@@ -108,39 +97,39 @@ class ContextInterface
 protected:
 	ContextInterface();
 	virtual ~ContextInterface();
-	void Initialize(GraphicsManager* manager);
-	GraphicsManager* GetManager() const { return m_manager; }
+	void initialize(GraphicsManager* manager);
+	GraphicsManager* getManager() const { return m_manager; }
 
-	void NorityStateChanging();
-	void NorityStartDrawing(detail::IRendererPloxy* rendererPloxy);
-	void FlushImplemented();
+	void norityStateChanging();
+	void norityStartDrawing(detail::IRenderFeature* rendererPloxy);
+	void flushImplemented();
 
 	// call by GraphicsManager
-	void OnActivated();
-	void OnDeactivated();
+	void onActivated();
+	void onDeactivated();
 
-	virtual bool OnCheckStateChanged() = 0;
-	virtual void OnStateFlush(detail::IRendererPloxy* activeRenderer);
-	virtual void OnPrimitiveFlush();
+	virtual bool onCheckStateChanged() = 0;
+	virtual void onStateFlush(detail::IRenderFeature* activeRenderer);
+	virtual void onPrimitiveFlush();
 
-	// call by ShaderVariable::SetModified()
-	virtual void OnShaderVariableModified(ShaderVariable* var);
+	// call by ShaderVariable::setModified()
+	virtual void onShaderVariableModified(ShaderVariable* var);
 
-	void SetBasicContextState(const BasicContextState& state);
-	Details::Renderer* GetBaseRenderer() const { return m_baseRenderer; }
+	void setBasicContextState(const BasicContextState& state);
+	detail::CoreGraphicsRenderFeature* getBaseRenderer() const { return m_baseRenderer; }
 
 
 public:
 	// Utils
-	static void MakeBlendMode(BlendMode mode, RenderState* state);
+	static void makeBlendMode(BlendMode mode, RenderState* state);
 
 private:
-	void SwitchActiveRendererPloxy(detail::IRendererPloxy* rendererPloxy);
+	void switchActiveRendererPloxy(detail::IRenderFeature* rendererPloxy);
 
-	GraphicsManager*		m_manager;
-	Details::Renderer*		m_baseRenderer;
-	detail::IRendererPloxy*	m_activeRendererPloxy;
-	bool					m_stateChanged;
+	GraphicsManager*				m_manager;
+	detail::CoreGraphicsRenderFeature*	m_baseRenderer;
+	detail::IRenderFeature*			m_activeRendererPloxy;
+	bool							m_stateChanged;
 
 	friend class GraphicsManager;
 	friend class ::ln::ShaderVariable;
@@ -152,42 +141,42 @@ class SimpleOneTimeObjectCache
 	: public RefObject
 {
 public:
-	T* QueryCommandList()
+	T* queryCommandList()
 	{
 		MutexScopedLock lock(m_mutex);
 
-		if (m_freeObjects.IsEmpty())
+		if (m_freeObjects.isEmpty())
 		{
-			auto ptr = CreateObject();
-			m_objects.Add(ptr);
+			auto ptr = createObject();
+			m_objects.add(ptr);
 			return ptr;
 		}
 		else
 		{
 			T* ptr;
-			m_freeObjects.Pop(&ptr);
+			m_freeObjects.pop(&ptr);
 			return ptr;
 		}
 	}
 
-	void ReleaseCommandList(T* commandList)
+	void releaseCommandList(T* commandList)
 	{
 		MutexScopedLock lock(m_mutex);
-		m_freeObjects.Push(commandList);
+		m_freeObjects.push(commandList);
 	}
 
-	void ReleaseAll()
+	void releaseAll()
 	{
 		MutexScopedLock lock(m_mutex);
-		m_freeObjects.Clear();
+		m_freeObjects.clear();
 		for (RefPtr<T>& ptr : m_objects)
 		{
-			m_freeObjects.Push(ptr);
+			m_freeObjects.push(ptr);
 		}
 	}
 
 protected:
-	virtual RefPtr<T> CreateObject() = 0;
+	virtual RefPtr<T> createObject() = 0;
 
 private:
 	Mutex			m_mutex;

@@ -15,14 +15,14 @@ using GridPtr = RefPtr<Grid>;
 class Grid
 	: public VisualComponent		// TODO: Visual である必要ない気もするが・・・
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	static GridPtr Create3D();
 
 protected:
 	Grid();
 	virtual ~Grid();
-	void Initialize(SceneGraph* owner);
+	void initialize(SceneGraph* owner);
 
 	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
 

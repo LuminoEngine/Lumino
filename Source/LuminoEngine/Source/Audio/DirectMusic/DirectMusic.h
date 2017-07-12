@@ -33,33 +33,33 @@ public:
 public:
 
 	/// 音量の設定 (0.0～1.0)
-	void SetVolume(float volume);
+	void setVolume(float volume);
 
 	/// ピッチの設定 (0.5 ～ 2.0 が基本。範囲外も一応可。)
-	void SetPitch(float pitch);
+	void setPitch(float pitch);
 
 	/// 全体の再生時間の取得 (ミュージックタイム単位)
-    uint32_t GetTotalTime() const;
+    uint32_t getTotalTime() const;
 
 	/// 再生位置の取得 (ミュージックタイム単位)
-	uint32_t GetPlayPosition() const;
+	uint32_t getPlayPosition() const;
 
 	/// 再生位置の設定 (ミュージックタイム単位)
-	void SetPlayPosition(uint32_t time);
+	void setPlayPosition(uint32_t time);
 
 	/// 再生中かを判定 (音が鳴っているか)
-    bool IsPlaying() const;
+    bool isPlaying() const;
 
 	/// ループ情報の設定
 	///		begin と length はミュージックタイム単位。
 	///		 length が 0 の場合は begin の位置から終端まで再生する。
-	void SetLoopState( bool isLoop, uint32_t begin, uint32_t length );
+	void setLoopState( bool isLoop, uint32_t begin, uint32_t length );
 
 	/// 再生
-    void Play();
+    void play();
 
 	/// 停止
-    void Stop();
+    void stop();
 
 private:
     IDirectMusicPerformance8*   m_dmPerformance;
@@ -105,57 +105,57 @@ public:
 public:
 
 	/// 初期化
-	///		DMInitMode が LN_DMINITMODE_NOTUSE の場合はインスタンスを作成しない。GetInstance() は NULL を返す。
-	static void Initialize( const ConfigData& configData );
+	///		DMInitMode が LN_DMINITMODE_NOTUSE の場合はインスタンスを作成しない。getInstance() は NULL を返す。
+	static void initialize( const ConfigData& configData );
 
 	/// 終了処理
 	static void Finalize();
 
 	///インスタンスへのポインタの取得
-    static DirectMusicManager* GetInstance() { return m_instance; }
+    static DirectMusicManager* getInstance() { return m_instance; }
 
 public:
 
 	/// 初期化が完了しているかを判定する
-	bool IsInitialized() const { return m_performanceInited.IsTrue(); }
+	bool isInitialized() const { return m_performanceInited.isTrue(); }
 
 	/// エラー状態の取得 (エラー番号(内部用)。 正常な場合は 0)
-    uint32_t GetErrorState();
+    uint32_t getErrorState();
 
-	float GetReverbLevel() const { return m_reverbLevel; }
+	float getReverbLevel() const { return m_reverbLevel; }
 
 	/// 再生要求の追加 (既に同じオブジェクトが追加されている場合はなにもしません。)
-	void AddPlayRequest( PlayerObject* obj );
+	void addPlayRequest( PlayerObject* obj );
 
 	///  再生要求の削除
 	///		DirectMusic の初期化中にオーディオプレイヤーが解放された
 	///		時に、この関数でリストから外しますが、
 	///		PlayerObject クラスのデストラクタで呼ばれるため
 	///		通常は呼び出す必要はありません。
-	void RemovePlayRequest( PlayerObject* obj );
+	void removePlayRequest( PlayerObject* obj );
 
 	/// IDirectMusicPerformance8 の作成
 	///		isInitialized() によって初期化の完了を確認してから呼び出してください。
-    IDirectMusicPerformance8* CreateDMPerformance();
+    IDirectMusicPerformance8* createDMPerformance();
 
 	/// 再生要求リストをチェックして、可能なら再生する
-    void Polling();
+    void polling();
 
 private:
     DirectMusicManager();
     ~DirectMusicManager();
 
 	/// 初期化
-    void InternalInitialize( const ConfigData& configData );
+    void internalInitialize( const ConfigData& configData );
 
 	/// ひとつめのパフォーマンスの初期化 ( 別スレッドで初期化する場合はそこから呼ばれる )
-	void InitPerformance();
+	void initPerformance();
 
 	/// (参照カウントなどに変化はなし)
 	//IDirectMusicPerformance8* InternalCreateDMPerformance();
 
 	/// 最初の IDirectMusicPerformance8 の初期化スレッド
-	void Thread_InitPerformance();
+	void thread_InitPerformance();
 
 private:
 

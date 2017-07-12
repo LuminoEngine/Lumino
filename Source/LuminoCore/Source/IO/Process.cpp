@@ -18,9 +18,9 @@ Process::Process()
 	, m_redirectStandardInput(false)
 	, m_redirectStandardOutput(false)
 	, m_redirectStandardError(false)
-	, m_standardInputEncoding(Encoding::GetSystemMultiByteEncoding())
-	, m_standardOutputEncoding(Encoding::GetSystemMultiByteEncoding())
-	, m_standardErrorEncoding(Encoding::GetSystemMultiByteEncoding())
+	, m_standardInputEncoding(Encoding::getSystemMultiByteEncoding())
+	, m_standardOutputEncoding(Encoding::getSystemMultiByteEncoding())
+	, m_standardErrorEncoding(Encoding::getSystemMultiByteEncoding())
 	, m_standardOutputExternalStream(nullptr)
 	, m_standardInputWriter()
 	, m_standardOutputReader()
@@ -37,62 +37,62 @@ Process::Process()
 //------------------------------------------------------------------------------
 Process::~Process()
 {
-	Dispose();
+	disposeProcess();
 	LN_SAFE_DELETE(m_impl);
 }
 
 //------------------------------------------------------------------------------
-void Process::SetWorkingDirectory(const PathName& directoryPath)
+void Process::setWorkingDirectory(const PathName& directoryPath)
 {
 	m_workingDirectory = directoryPath;
 }
 
 //------------------------------------------------------------------------------
-void Process::SetRedirectStandardInput(bool enabled)
+void Process::setRedirectStandardInput(bool enabled)
 {
 	m_redirectStandardInput = enabled;
 }
 
 //------------------------------------------------------------------------------
-void Process::SetRedirectStandardOutput(bool enabled)
+void Process::setRedirectStandardOutput(bool enabled)
 {
 	m_redirectStandardOutput = enabled;
 }
 
 //------------------------------------------------------------------------------
-void Process::SetRedirectStandardError(bool enabled)
+void Process::setRedirectStandardError(bool enabled)
 {
 	m_redirectStandardError = enabled;
 }
 
 #ifdef LN_CPP11
 //------------------------------------------------------------------------------
-void Process::SetOutputDataReceivedCallback(const Delegate<void(String)>& callback)
+void Process::setOutputDataReceivedCallback(const Delegate<void(String)>& callback)
 {
 	m_outputDataReceivedCallback = callback;
 }
 
 //------------------------------------------------------------------------------
-void Process::SetErrorDataReceivedCallback(const Delegate<void(String)>& callback)
+void Process::setErrorDataReceivedCallback(const Delegate<void(String)>& callback)
 {
 	m_errorDataReceivedCallback = callback;
 }
 #else
 //------------------------------------------------------------------------------
-void Process::SetOutputDataReceivedCallback(const Delegate01<String>& callback)
+void process::SetOutputDataReceivedCallback(const Delegate01<String>& callback)
 {
 	m_outputDataReceivedCallback = callback;
 }
 
 //------------------------------------------------------------------------------
-void Process::SetErrorDataReceivedCallback(const Delegate01<String>& callback)
+void process::SetErrorDataReceivedCallback(const Delegate01<String>& callback)
 {
 	m_errorDataReceivedCallback = callback;
 }
 #endif
 
 //------------------------------------------------------------------------------
-void Process::Start(const PathName& program, const String& args)
+void Process::start(const PathName& program, const String& args)
 {
 	detail::ProcessStartInfo si;
 	detail::ProcessStartResult result;
@@ -105,28 +105,28 @@ void Process::Start(const PathName& program, const String& args)
 	si.standardInputEncoding = m_standardInputEncoding;
 	si.standardOutputEncoding = m_standardOutputEncoding;
 	si.standardErrorEncoding = m_standardErrorEncoding;
-	m_impl->Start(si, &result);
+	m_impl->start(si, &result);
 	m_standardInputWriter = result.standardInputWriter;
 	m_standardOutputReader = result.standardOutputReader;
 	m_standardErrorReader = result.standardErrorReader;
 }
 
 //------------------------------------------------------------------------------
-void Process::Start(const PathName& program, const StringArray& argsList)
+void Process::start(const PathName& program, const StringArray& argsList)
 {
 	// コマンドライン引数を作る
 	String args;
-	for (int i = 0; i < argsList.GetCount(); ++i)
+	for (int i = 0; i < argsList.getCount(); ++i)
 	{
-		if (!args.IsEmpty()) {
+		if (!args.isEmpty()) {
 			args += _T(' ');
 		}
 
 		// スペースが含まれていれば引数を " で囲む
 		String tmp = argsList[i];
-		if (tmp.Contains(_T(' ')) || tmp.Contains(_T('\t')))
+		if (tmp.contains(_T(' ')) || tmp.contains(_T('\t')))
 		{
-			if (!tmp.StartsWith(_T('\"')) && !tmp.EndsWith(_T('\"')))
+			if (!tmp.startsWith(_T('\"')) && !tmp.endsWith(_T('\"')))
 			{
 				tmp = _T('\"') + tmp + _T('\"');
 			}
@@ -135,89 +135,89 @@ void Process::Start(const PathName& program, const StringArray& argsList)
 		args += tmp;
 	}
 
-	Start(program, args);
+	start(program, args);
 }
 
 //------------------------------------------------------------------------------
-bool Process::WaitForExit(int timeoutMSec)
+bool Process::waitForExit(int timeoutMSec)
 {
-	return m_impl->WaitForExit(timeoutMSec);
+	return m_impl->waitForExit(timeoutMSec);
 }
 
 //------------------------------------------------------------------------------
-StreamWriter* Process::GetStandardInput() const
+StreamWriter* Process::getStandardInput() const
 {
 	if (LN_CHECK_STATE(m_standardInputWriter != nullptr)) return nullptr;
 	return m_standardInputWriter;
 }
 
 //------------------------------------------------------------------------------
-StreamReader* Process::GetStandardOutput() const
+StreamReader* Process::getStandardOutput() const
 {
 	if (LN_CHECK_STATE(m_standardOutputReader != nullptr)) return nullptr;
 	return m_standardOutputReader;
 }
 
 //------------------------------------------------------------------------------
-StreamReader* Process::GetStandardError() const
+StreamReader* Process::getStandardError() const
 {
 	if (LN_CHECK_STATE(m_standardErrorReader != nullptr)) return nullptr;
 	return m_standardErrorReader;
 }
 
 //------------------------------------------------------------------------------
-int Process::Execute(const PathName& program, const String& args, String* outStdOutput, String* outStdError)
+int Process::execute(const PathName& program, const String& args, String* outStdOutput, String* outStdError)
 {
 	Process proc;
-	proc.SetRedirectStandardOutput(outStdOutput != nullptr);
-	proc.SetRedirectStandardError(outStdError != nullptr);
-	proc.Start(program, args);
+	proc.setRedirectStandardOutput(outStdOutput != nullptr);
+	proc.setRedirectStandardError(outStdError != nullptr);
+	proc.start(program, args);
 	if (outStdOutput != nullptr) {
-		*outStdOutput = proc.GetStandardOutput()->ReadToEnd();
+		*outStdOutput = proc.getStandardOutput()->readToEnd();
 	}
 	if (outStdError != nullptr) {
-		*outStdError = proc.GetStandardError()->ReadToEnd();
+		*outStdError = proc.getStandardError()->readToEnd();
 	}
-	proc.WaitForExit();
-	return proc.GetExitCode();
+	proc.waitForExit();
+	return proc.getExitCode();
 }
 
 //------------------------------------------------------------------------------
-int Process::GetExitCode()
+int Process::getExitCode()
 {
-	return m_impl->GetExitCode();
+	return m_impl->getExitCode();
 }
 
 //------------------------------------------------------------------------------
-void Process::BeginOutputReadLine()
+void Process::beginOutputReadLine()
 {
 	if (LN_CHECK_STATE(m_standardOutputReader != nullptr)) return;
 
 	// 読み取りスレッドを立てる
 #ifdef LN_CPP11
-	m_readStdOutputThread.Start(Delegate<void()>(this, &Process::Thread_ReadStdOutput));
+	m_readStdOutputThread.start(Delegate<void()>(this, &Process::thread_ReadStdOutput));
 #else
-	m_readStdOutputThread.Start(LN_CreateDelegate(this, &Process::Thread_ReadStdOutput));
+	m_readStdOutputThread.start(LN_CreateDelegate(this, &process::Thread_ReadStdOutput));
 #endif
 	m_runningReadThread = true;
 }
 
 //------------------------------------------------------------------------------
-void Process::BeginErrorReadLine()
+void Process::beginErrorReadLine()
 {
 	if (LN_CHECK_STATE(m_standardErrorReader != nullptr)) return;
 
 	// 読み取りスレッドを立てる
 #ifdef LN_CPP11
-	m_readStdErrorThread.Start(Delegate<void()>(this, &Process::Thread_ReadStdError));
+	m_readStdErrorThread.start(Delegate<void()>(this, &Process::thread_ReadStdError));
 #else
-	m_readStdErrorThread.Start(LN_CreateDelegate(this, &Process::Thread_ReadStdError));
+	m_readStdErrorThread.start(LN_CreateDelegate(this, &process::Thread_ReadStdError));
 #endif
 	m_runningErrorReadThread = true;
 }
 
 //------------------------------------------------------------------------------
-void Process::Dispose()
+void Process::disposeProcess()
 {
 	m_impl->Dispose();
 
@@ -225,35 +225,35 @@ void Process::Dispose()
 	if (m_runningReadThread)
 	{
 		m_runningReadThread = false;
-		m_readStdOutputThread.Wait();
+		m_readStdOutputThread.wait();
 	}
 	if (m_runningErrorReadThread)
 	{
 		m_runningErrorReadThread = false;
-		m_readStdErrorThread.Wait();
+		m_readStdErrorThread.wait();
 	}
 }
 
 //------------------------------------------------------------------------------
-void Process::Thread_ReadStdOutput()
+void Process::thread_ReadStdOutput()
 {
 	String strLine;
-	while (m_standardOutputReader->ReadLine(&strLine))
+	while (m_standardOutputReader->readLine(&strLine))
 	{
-		if (!m_outputDataReceivedCallback.IsEmpty()) {
-			m_outputDataReceivedCallback.Call(strLine);
+		if (!m_outputDataReceivedCallback.isEmpty()) {
+			m_outputDataReceivedCallback.call(strLine);
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
-void Process::Thread_ReadStdError()
+void Process::thread_ReadStdError()
 {
 	String strLine;
-	while (m_standardErrorReader->ReadLine(&strLine))
+	while (m_standardErrorReader->readLine(&strLine))
 	{
-		if (!m_errorDataReceivedCallback.IsEmpty()) {
-			m_errorDataReceivedCallback.Call(strLine);
+		if (!m_errorDataReceivedCallback.isEmpty()) {
+			m_errorDataReceivedCallback.call(strLine);
 		}
 	}
 }

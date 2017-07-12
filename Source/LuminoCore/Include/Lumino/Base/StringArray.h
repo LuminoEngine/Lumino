@@ -23,9 +23,9 @@ public:
 	/** 初期化子リストから作成します。*/
 	GenericStringArray(std::initializer_list<const TChar*> list)
 	{
-		ArrayType::Reserve(list.size());
+		ArrayType::reserve(list.size());
 		for (const TChar* str : list) {
-			ArrayType::Add(String(str));
+			ArrayType::add(String(str));
 		}
 	}
 
@@ -34,23 +34,23 @@ public:
 public:
 
 	/** 指定した文字列がこの配列内に存在するかどうかを判断します。*/
-	bool Contains(const TChar* str) const
+	bool contains(const TChar* str) const
 	{
 		return std::find(ArrayType::begin(), ArrayType::end(), str) != ArrayType::end();
 	}
-	bool Contains(const StringType& str) const		/**< @overload EndsWith */
+	bool contains(const StringType& str) const		/**< @overload EndsWith */
 	{
-		return Contains(str.c_str());
+		return contains(str.c_str());
 	}
 
 
-	int IndexOf(const TChar* str, int startIndex = 0, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const
+	int indexOf(const TChar* str, int startIndex = 0, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const
 	{
 		int len = StringTraits::tcslen(str);
-		for (int i = startIndex; i < ArrayType::GetCount(); ++i)
+		for (int i = startIndex; i < ArrayType::getCount(); ++i)
 		{
-			const StringType& item = ArrayType::GetAt(i);
-			if (StringTraits::Compare(item.c_str(), item.GetLength(), str, len, -1, cs) == 0)
+			const StringType& item = ArrayType::getAt(i);
+			if (StringTraits::compare(item.c_str(), item.getLength(), str, len, -1, cs) == 0)
 			{
 				return i;
 			}

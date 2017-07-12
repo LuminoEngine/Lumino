@@ -34,8 +34,8 @@ TEST_F(Test_Base_Uuid, Basic)
 
 	// <Test> 新しい UUID を生成する
 	{
-		Uuid newId1 = Uuid::Generate();
-		Uuid newId2 = Uuid::Generate();
+		Uuid newId1 = Uuid::generate();
+		Uuid newId2 = Uuid::generate();
 		ASSERT_NE(newId1, newId2);
 		ASSERT_NE(empty1, newId1);
 		ASSERT_NE(empty1, newId2);
@@ -43,9 +43,9 @@ TEST_F(Test_Base_Uuid, Basic)
 
 	// <Test> 文字列への変換
 	{
-		ASSERT_EQ(_T("{00000000-0000-0000-0000-000000000000}"), empty1.ToString());
-		ASSERT_EQ(_T("{8DF0E5DD-0717-4F29-8F2F-A47DEDA55041}"), id1.ToString());
-		ASSERT_EQ(_T("{8DF0E5DD-0717-4F29-8F2F-A47DEDA55041}"), id2.ToString());
-		ASSERT_EQ(_T("{6003FC8B-E954-4E2A-931D-BC1427A7BF31}"), id3.ToString());
+		ASSERT_EQ(_T("{00000000-0000-0000-0000-000000000000}"), empty1.toString());
+		ASSERT_EQ(_T("{8DF0E5DD-0717-4F29-8F2F-A47DEDA55041}"), id1.toString());
+		ASSERT_EQ(_T("{8DF0E5DD-0717-4F29-8F2F-A47DEDA55041}"), id2.toString());
+		ASSERT_EQ(_T("{6003FC8B-E954-4E2A-931D-BC1427A7BF31}"), id3.toString());
 	}
 }

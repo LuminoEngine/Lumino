@@ -3,7 +3,10 @@
 #include <Lumino/UI/UIViewport.h>
 #include <Lumino/UI/UILayoutView.h>
 #include <Lumino/UI/UIContext.h>
-#include <Lumino/Graphics/DrawingContext.h>
+#include <Lumino/UI/UIFrameWindow.h>
+#include <Lumino/Rendering/DrawingContext.h>
+#include <Lumino/Rendering/SceneRenderer.h>
+#include "../EngineManager.h"
 #include "UIManager.h"
 
 LN_NAMESPACE_BEGIN
@@ -17,7 +20,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIViewport, UIElement);
 UIViewport::UIViewport()
 	: UIElement()
 	, m_backbufferSize(0, 0)
-	, m_placement(ViewportPlacement::Stretch)
+	, m_placement(ViewportPlacement::ViewBox)
 	, m_backgroundColor(Color::White)
 {
 }
@@ -28,33 +31,40 @@ UIViewport::~UIViewport()
 }
 
 //------------------------------------------------------------------------------
-void UIViewport::Initialize()
+void UIViewport::initialize()
 {
-	UIElement::Initialize();
+	UIElement::initialize();
+	setHitTestVisible(true);
+
+	m_drawingContext = newObject<DrawingContext>();
+	m_sceneRenderer = RefPtr<detail::NonShadingRenderer>::makeRef();
+	m_sceneRenderer->initialize(detail::EngineDomain::getGraphicsManager());
+	m_renderView = newObject<RenderView>();
+	m_renderView->m_lists.add(m_drawingContext->getDrawElementList());
 }
 
 //------------------------------------------------------------------------------
-void UIViewport::SetViewBackgroundColor(const Color& color)
+void UIViewport::setViewBackgroundColor(const Color& color)
 {
 	m_backgroundColor = color;
 }
 
 //------------------------------------------------------------------------------
-void UIViewport::SetPlacement(ViewportPlacement placement)
+void UIViewport::setPlacement(ViewportPlacement placement)
 {
 	m_placement = placement;
 }
 
 //------------------------------------------------------------------------------
-void UIViewport::SetBackbufferSize(int width, int height)
+void UIViewport::setBackbufferSize(int width, int height)
 {
-	m_backbufferSize.Set(width, height);
+	m_backbufferSize.set(width, height);
 }
 
 //------------------------------------------------------------------------------
-void UIViewport::AddViewportLayer(UIViewportLayer* layer)
+void UIViewport::addViewportLayer(UIViewportLayer* layer)
 {
-	m_viewportLayerList.Add(layer);
+	m_viewportLayerList.add(layer);
 	layer->m_owner = this;
 }
 
@@ -68,7 +78,7 @@ void UIViewport::AddViewportLayer(UIViewportLayer* layer)
 //}
 
 //------------------------------------------------------------------------------
-void UIViewport::OnRoutedEvent(UIEventArgs* e)
+void UIViewport::onRoutedEvent(UIEventArgs* e)
 {
 	// UI 要素は通常 UIViewport の上に張り付けられる。
 	// デフォルトの MainWindow などは全体に UILayoutPanel が乗るので、
@@ -76,129 +86,125 @@ void UIViewport::OnRoutedEvent(UIEventArgs* e)
 
 	for (auto& layer : m_viewportLayerList)
 	{
-		layer->OnRoutedEvent(e);
+		layer->onRoutedEvent(e);
 		if (e->handled) return;
 	}
 
-	return UIElement::OnRoutedEvent(e);
+	return UIElement::onRoutedEvent(e);
 }
 
 //------------------------------------------------------------------------------
-Size UIViewport::ArrangeOverride(const Size& finalSize)
+Size UIViewport::arrangeOverride(const Size& finalSize)
 {
-	Size renderSize = UIElement::ArrangeOverride(finalSize);
-
+	Size renderSize = UIElement::arrangeOverride(finalSize);
 
 	for (auto& layer : m_viewportLayerList)
 	{
-		layer->UpdateLayout(finalSize);
+		layer->updateLayout(finalSize);
 	}
 
+	// バックバッファサイズの調整
+	{
+		if (m_placement == ViewportPlacement::AutoResize)
+			m_viewSize = getRenderSize();
+		else
+			m_viewSize = m_backbufferSize.toFloatSize();
+	}
 
 	return renderSize;
 }
 
 //------------------------------------------------------------------------------
-void UIViewport::OnRender(DrawingContext* g)
+UIElement* UIViewport::checkMouseHoverElement(const PointF& globalPt)
 {
-	// バックバッファサイズの調整
-	{
-		SizeI bakcbufferSize;
-		if (m_placement == ViewportPlacement::AutoResize)
-			bakcbufferSize = SizeI::FromFloatSize(GetRenderSize());
-		else
-			bakcbufferSize = m_backbufferSize;
-
-		UpdateFramebufferSizeIfNeeded(bakcbufferSize);
-	}
-
-
-	//TODO: state push/pop
-
-	RefPtr<RenderTargetTexture> oldRT = g->GetRenderTarget(0);
-	RefPtr<DepthBuffer> oldDB = g->GetDepthBuffer();
-
-	g->SetRenderTarget(0, m_primaryLayerTarget);
-	g->SetDepthBuffer(m_depthBuffer);
-	g->Clear(ClearFlags::All, m_backgroundColor, 1.0f, 0);
-
-
-
-
-
 	for (auto& layer : m_viewportLayerList)
 	{
-		layer->Render();
+		auto* element = layer->hitTestUIElement(globalPt);
+		if (element != nullptr) return element;
 	}
 
-	g->SetBuiltinEffectData(detail::BuiltinEffectData::DefaultData);
-
-	// 全てのレイヤーの描画リストを実行し m_primaryLayerTarget へ書き込む
-	for (auto& layer : m_viewportLayerList)
-	{
-		layer->ExecuteDrawListRendering(g, m_primaryLayerTarget, m_depthBuffer);
-
-		// Posteffect
-		layer->PostRender(g, &m_primaryLayerTarget, &m_secondaryLayerTarget);
-	}
-
-
-
-
-
-	g->SetRenderTarget(0, oldRT);
-	g->SetDepthBuffer(oldDB);
-	g->Blit(m_primaryLayerTarget);	// TODO: 転送先指定
-
-	// TODO: 暫定。Blit の中で深度書き込みしないようにしてほしいかも。
-	g->Clear(ClearFlags::Depth, Color());
-
-	UIElement::OnRender(g);
+	return UIElement::checkMouseHoverElement(globalPt);
 }
 
 //------------------------------------------------------------------------------
-void UIViewport::UpdateFramebufferSizeIfNeeded(const SizeI& viewSize)
+void UIViewport::onRender(DrawingContext* g)
 {
-	bool create = false;
-	SizeI newSize(0, 0);
+	updateFramebufferSizeIfNeeded();
 
-	// 初回、まだ作成されていなければ作りたい
-	if (m_primaryLayerTarget == nullptr)
+	//TODO: state push/pop
+
+	//RefPtr<RenderTargetTexture> oldRT = g->getRenderTarget(0);
+	//RefPtr<DepthBuffer> oldDB = g->getDepthBuffer();
+
+	//g->setRenderTarget(0, m_primaryLayerTarget);
+	//g->setDepthBuffer(m_depthBuffer);
+	//g->clear(ClearFlags::All, m_backgroundColor, 1.0f, 0);
+
+
+
+
+	bool clearColorBuffer = true;
+	for (auto& layer : m_viewportLayerList)
 	{
-		create = true;
-		newSize = viewSize;
+		layer->render(clearColorBuffer);
+		clearColorBuffer = false;
 	}
 
-	// 自動リサイズONで、描画先とサイズが異なるなら再作成
-	if (m_placement == ViewportPlacement::AutoResize)
+	g->setBuiltinEffectData(detail::BuiltinEffectData::DefaultData);
+
+	// 全てのレイヤーの描画リストを実行し m_primaryLayerTarget へ書き込む
+	clearColorBuffer = true;
+	for (auto& layer : m_viewportLayerList)
 	{
-		if (m_primaryLayerTarget != nullptr && viewSize != m_primaryLayerTarget->GetSize())
-		{
-			create = true;
-		}
-		newSize = viewSize;
+		layer->executeDrawListRendering(g, m_primaryLayerTarget, m_depthBuffer, clearColorBuffer);
+		clearColorBuffer = false;
+
+		// Posteffect
+		layer->postRender(g, &m_primaryLayerTarget, &m_secondaryLayerTarget);
 	}
 
-	if (create)
+
+
+
+
+	//g->setRenderTarget(0, oldRT);
+	//g->setDepthBuffer(oldDB);
+
+	//Matrix transform;
+	//makeViewBoxTransform(SizeI::fromFloatSize(getRenderSize()), m_backbufferSize, &transform);
+
+	g->blit(m_primaryLayerTarget/*, transform*/);	// TODO: 転送先指定
+
+	// TODO: 暫定。blit の中で深度書き込みしないようにしてほしいかも。
+	g->clear(ClearFlags::Depth, Color());
+
+	UIElement::onRender(g);
+}
+
+//------------------------------------------------------------------------------
+void UIViewport::updateFramebufferSizeIfNeeded()
+{
+	const SizeI& newSize = SizeI::fromFloatSize(m_viewSize);
+
+	if (m_primaryLayerTarget == nullptr || 
+		(m_primaryLayerTarget != nullptr && newSize != m_primaryLayerTarget->getSize()))
 	{
 		// RenderTargetTexture
 		// TODO: できればこういうのは Resize 関数を作りたい。作り直したくない
 		// TODO: というか UE4 みたいにキャッシュしたい
-		m_primaryLayerTarget = RefPtr<RenderTargetTexture>::MakeRef();
-		m_primaryLayerTarget->CreateImpl(GetManager()->GetGraphicsManager(), newSize, 1, TextureFormat::R8G8B8X8);
-		m_secondaryLayerTarget = RefPtr<RenderTargetTexture>::MakeRef();
-		m_secondaryLayerTarget->CreateImpl(GetManager()->GetGraphicsManager(), newSize, 1, TextureFormat::R8G8B8X8);
+		m_primaryLayerTarget = RefPtr<RenderTargetTexture>::makeRef();
+		m_primaryLayerTarget->createImpl(getManager()->getGraphicsManager(), newSize, 1, TextureFormat::R8G8B8X8);
+		m_secondaryLayerTarget = RefPtr<RenderTargetTexture>::makeRef();
+		m_secondaryLayerTarget->createImpl(getManager()->getGraphicsManager(), newSize, 1, TextureFormat::R8G8B8X8);
 
 		// DepthBuffer
-		m_depthBuffer = RefPtr<DepthBuffer>::MakeRef();
-		m_depthBuffer->CreateImpl(GetManager()->GetGraphicsManager(), newSize, TextureFormat::D24S8);
-
-		m_viewSize = newSize.ToFloatSize();
+		m_depthBuffer = RefPtr<DepthBuffer>::makeRef();
+		m_depthBuffer->createImpl(getManager()->getGraphicsManager(), newSize, TextureFormat::D24S8);
 	}
 }
 
 //------------------------------------------------------------------------------
-void UIViewport::MakeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize, Matrix* mat)
+void UIViewport::makeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize, Matrix* mat)
 {
 	float sw = static_cast<float>(srcSize.width);   // 転送元
 	float sh = static_cast<float>(srcSize.height);
@@ -246,13 +252,13 @@ void UIViewport::MakeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize
 		}
 	}
 
-#if 1	// pxel based
+#if 0	// pxel based
 	* mat = Matrix::Identity;
-	mat->Scale(new_w / sw, new_h / sh, 1.0f);
-	mat->Translate(new_x, new_y, 0.0f);
+	mat->scale(new_w / sw, new_h / sh, 1.0f);
+	mat->translate(new_x, new_y, 0.0f);
 #else	// screen coord based
 	*mat = Matrix::Identity;
-	mat->Scale(new_w / dw, new_h / dh, 1.0f);
+	mat->scale(new_w / sw, new_h / sh, 1.0f);
 #endif
 }
 
@@ -275,35 +281,41 @@ UIViewportLayer::~UIViewportLayer()
 }
 
 //------------------------------------------------------------------------------
-void UIViewportLayer::AddPostEffect(PostEffect* postEffect)
+void UIViewportLayer::addPostEffect(PostEffect* postEffect)
 {
-	m_postEffects.Add(postEffect);
+	m_postEffects.add(postEffect);
 	postEffect->m_ownerLayer = this;
 }
 
 //------------------------------------------------------------------------------
-void UIViewportLayer::OnRoutedEvent(UIEventArgs* e)
+UIElement* UIViewportLayer::hitTestUIElement(const PointF& globalPt)
+{
+	return nullptr;
+}
+
+//------------------------------------------------------------------------------
+void UIViewportLayer::onRoutedEvent(UIEventArgs* e)
 {
 }
 
 //------------------------------------------------------------------------------
-void UIViewportLayer::UpdateLayout(const Size& viewSize)
+void UIViewportLayer::updateLayout(const Size& viewSize)
 {
 }
 
 //------------------------------------------------------------------------------
-void UIViewportLayer::PostRender(DrawList* context, RefPtr<RenderTargetTexture>* primaryLayerTarget, RefPtr<RenderTargetTexture>* secondaryLayerTarget)
+void UIViewportLayer::postRender(DrawList* context, RefPtr<RenderTargetTexture>* primaryLayerTarget, RefPtr<RenderTargetTexture>* secondaryLayerTarget)
 {
 	for (auto& e : m_postEffects)
 	{
-		e->OnRender(context, *primaryLayerTarget, *secondaryLayerTarget);
+		e->onRender(context, *primaryLayerTarget, *secondaryLayerTarget);
 		std::swap(*primaryLayerTarget, *secondaryLayerTarget);
 	}
 }
 
 
 //==============================================================================
-// PostEffect
+// UILayoutLayer
 //==============================================================================
 //------------------------------------------------------------------------------
 UILayoutLayer::UILayoutLayer()
@@ -316,18 +328,26 @@ UILayoutLayer::~UILayoutLayer()
 }
 
 //------------------------------------------------------------------------------
-void UILayoutLayer::Initialize()
+void UILayoutLayer::initialize()
 {
-	UIViewportLayer::Initialize();
-	m_root = NewObject<UILayoutView>(UIContext::GetMainContext(), nullptr);	// TODO: コンテキスト変更とか
+	UIViewportLayer::initialize();
+	m_root = newObject<UILayoutView>(UIContext::getMainContext(), nullptr);	// TODO: コンテキスト変更とか
 
-	m_drawingContext = NewObject<DrawingContext>();
+	// このルート要素はビュー全体に広がるが、ヒットテストは行わない。
+	// 行ってしまうと、その後ろにあるシーンのビューにイベントが流れなくなる。
+	m_root->setHitTestVisible(false);
+
+	m_drawingContext = newObject<DrawingContext>();
 
 	// lighting disabled.
-	// TODO: NewObject
-	auto internalRenderer = RefPtr<detail::NonShadingRenderer>::MakeRef();
-	internalRenderer->Initialize(detail::EngineDomain::GetGraphicsManager());
+	// TODO: newObject
+	auto internalRenderer = RefPtr<detail::NonShadingRenderer>::makeRef();
+	internalRenderer->initialize(detail::EngineDomain::getGraphicsManager());
 	m_internalRenderer = internalRenderer;
+
+	m_drawElementListSet = newObject<RenderView>();
+	m_drawElementListSet->m_lists.add(m_drawingContext->getDrawElementList());
+
 }
 
 //------------------------------------------------------------------------------
@@ -337,46 +357,55 @@ UILayoutView* UILayoutLayer::GetLayoutView() const
 }
 
 //------------------------------------------------------------------------------
-void UILayoutLayer::UpdateLayout(const Size& viewSize)
+UIElement* UILayoutLayer::hitTestUIElement(const PointF& globalPt)
 {
-	m_root->UpdateLayout(viewSize);
+	auto* element = m_root->checkMouseHoverElement(globalPt);
+	if (element != nullptr) return element;
+	return UIViewportLayer::hitTestUIElement(globalPt);
 }
 
 //------------------------------------------------------------------------------
-void UILayoutLayer::Render()
+void UILayoutLayer::onRoutedEvent(UIEventArgs* e)
 {
-	m_drawingContext->BeginMakeElements();
-	m_drawingContext->SetBlendMode(BlendMode::Alpha);
-	m_root->Render(m_drawingContext);
+	//m_root->raiseEvent(e->GetType(), e->sender, e);
 }
 
 //------------------------------------------------------------------------------
-void UILayoutLayer::ExecuteDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+void UILayoutLayer::updateLayout(const Size& viewSize)
+{
+	m_root->updateLayout(viewSize);
+}
+
+//------------------------------------------------------------------------------
+void UILayoutLayer::render(bool clearColorBuffer)
+{
+	m_drawingContext->beginMakeElements();
+	m_drawingContext->setBlendMode(BlendMode::Alpha);
+	//m_drawingContext->Clear(ClearFlags::All, Color::Black);;	// TODO
+	m_root->render(m_drawingContext);
+}
+
+//------------------------------------------------------------------------------
+void UILayoutLayer::executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, bool clearColorBuffer)
 {
 	// TODO: float
-	Size viewPixelSize((float)renderTarget->GetWidth(), (float)renderTarget->GetHeight());
+	Size viewPixelSize((float)renderTarget->getWidth(), (float)renderTarget->getHeight());
 
-	detail::CameraInfo cameraInfo;
-	cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
-	cameraInfo.viewPixelSize = viewPixelSize;
-	cameraInfo.viewPosition = Vector3::Zero;
-	cameraInfo.viewMatrix = Matrix::Identity;
-	cameraInfo.projMatrix = Matrix::MakePerspective2DLH(cameraInfo.viewPixelSize.width, cameraInfo.viewPixelSize.height, 0, 1);
-	cameraInfo.viewProjMatrix = cameraInfo.viewMatrix * cameraInfo.projMatrix;
-	cameraInfo.viewFrustum = ViewFrustum(cameraInfo.projMatrix);
-	cameraInfo.zSortDistanceBase = ZSortDistanceBase::NodeZ;
-	parentDrawList->RenderSubDrawList(
-		m_drawingContext->GetDrawElementList(),
-		cameraInfo,
-		m_internalRenderer,
-		renderTarget,
-		depthBuffer);
-	m_drawingContext->EndFrame();
-}
-
-//------------------------------------------------------------------------------
-void UILayoutLayer::OnRoutedEvent(UIEventArgs* e)
-{
+	m_drawElementListSet->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
+	m_drawElementListSet->m_cameraInfo.viewPixelSize = viewPixelSize;
+	m_drawElementListSet->m_cameraInfo.viewPosition = Vector3::Zero;
+	m_drawElementListSet->m_cameraInfo.viewDirection = Vector3::UnitZ;
+	m_drawElementListSet->m_cameraInfo.viewMatrix = Matrix::Identity;
+	m_drawElementListSet->m_cameraInfo.projMatrix = Matrix::makePerspective2DLH(m_drawElementListSet->m_cameraInfo.viewPixelSize.width, m_drawElementListSet->m_cameraInfo.viewPixelSize.height, 0, 1);
+	m_drawElementListSet->m_cameraInfo.viewProjMatrix = m_drawElementListSet->m_cameraInfo.viewMatrix * m_drawElementListSet->m_cameraInfo.projMatrix;
+	m_drawElementListSet->m_cameraInfo.viewFrustum = ViewFrustum(m_drawElementListSet->m_cameraInfo.projMatrix);
+	m_drawElementListSet->m_cameraInfo.zSortDistanceBase = ZSortDistanceBase::NodeZ;
+	m_internalRenderer->render(m_drawElementListSet, renderTarget, depthBuffer, nullptr, clearColorBuffer, getOwnerViewport()->getViewBackgroundColor());	// TODO: diag
+	//parentDrawList->renderSubView(
+	//	m_drawElementListSet,
+	//	m_internalRenderer,
+	//	renderTarget,
+	//	depthBuffer);
 }
 
 //==============================================================================
@@ -396,7 +425,7 @@ PostEffect::~PostEffect()
 }
 
 //------------------------------------------------------------------------------
-void PostEffect::Initialize()
+void PostEffect::initialize()
 {
 }
 

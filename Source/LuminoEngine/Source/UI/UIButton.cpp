@@ -14,8 +14,6 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIButtonBase, UIControl);
 
 //------------------------------------------------------------------------------
 UIButtonBase::UIButtonBase()
-	: m_clickMode(ClickMode::Release)
-	, m_isPressed(false)
 {
 }
 
@@ -25,76 +23,65 @@ UIButtonBase::~UIButtonBase()
 }
 
 //------------------------------------------------------------------------------
-void UIButtonBase::Initialize()
+void UIButtonBase::initialize()
 {
-	UIControl::Initialize();
+	UIControl::initialize();
 
 	HContentAlignment = HAlignment::Center;
 	VContentAlignment = VAlignment::Center;
 
-	// TODO: UIControl::Initialize() の中でも作ってるから、そっちが無駄になる。
+	// TODO: UIControl::initialize() の中でも作ってるから、そっちが無駄になる。
 	// UIControl では何も作らなくてもいいかも。null の場合、UILayoutPanel と同じレイアウトにするとか。
-	SetLayoutPanel(NewObject<UIStackPanel>());
+	setLayoutPanel(newObject<UIStackPanel>());
 }
 
 //------------------------------------------------------------------------------
-void UIButtonBase::SetText(const StringRef& text)
+void UIButtonBase::setText(const StringRef& text)
 {
-	auto textBlock = UITextBlockPtr::MakeRef();
-	textBlock->Initialize();
-	textBlock->SetText(text);
-	AddChild(textBlock);
-}
-
-//------------------------------------------------------------------------------
-EventConnection UIButtonBase::ConnectOnGotFocus(UIEventHandler handler)
-{
-	return m_onClick.Connect(handler);
-}
-
-//------------------------------------------------------------------------------
-void UIButtonBase::OnClick(UIEventArgs* e)
-{
-	m_onClick.Raise(e);
-	//RaiseEvent(ClickEvent, this, UIEventArgs::Create(this));
-}
-
-//------------------------------------------------------------------------------
-void UIButtonBase::OnMouseDown(UIMouseEventArgs* e)
-{
-	if (m_clickMode == ClickMode::Release)
+	if (m_textContent == nullptr)
 	{
-		m_isPressed = true;
-		Focus();
-		CaptureMouse();
-		GoToVisualState(UIVisualStates::PressedState);
-		e->handled = true;
+		m_textContent = newObject<UITextBlock>();
+		addChild(m_textContent);
 	}
-	else if (m_clickMode == ClickMode::Press)
-	{
-		OnClick(e);
-		e->handled = true;
-	}
-
-	UIControl::OnMouseDown(e);
+	m_textContent->setText(text);
 }
 
 //------------------------------------------------------------------------------
-void UIButtonBase::OnMouseUp(UIMouseEventArgs* e)
+void UIButtonBase::onMouseDown(UIMouseEventArgs* e)
 {
-	if (m_clickMode == ClickMode::Release)
-	{
-		if (m_isPressed)
-		{
-			m_isPressed = false;
-			ReleaseMouseCapture();
-			GoToVisualState(UIVisualStates::MouseOverState);
-			OnClick(e);
-			e->handled = true;
-		}
-	}
+	//if (m_clickMode == ClickMode::Release)
+	//{
+	//	m_isPressed = true;
+	//	focus();
+	//	captureMouse();
+	//	goToVisualState(UIVisualStates::PressedState);
+	//	e->handled = true;
+	//}
+	//else if (m_clickMode == ClickMode::Press)
+	//{
+	//	onClick(e);
+	//	e->handled = true;
+	//}
 
-	UIControl::OnMouseUp(e);
+	UIControl::onMouseDown(e);
+}
+
+//------------------------------------------------------------------------------
+void UIButtonBase::onMouseUp(UIMouseEventArgs* e)
+{
+	//if (m_clickMode == ClickMode::Release)
+	//{
+	//	if (m_isPressed)
+	//	{
+	//		m_isPressed = false;
+	//		releaseMouseCapture();
+	//		goToVisualState(UIVisualStates::MouseOverState);
+	//		onClick(e);
+	//		e->handled = true;
+	//	}
+	//}
+
+	UIControl::onMouseUp(e);
 }
 
 //==============================================================================
@@ -103,15 +90,15 @@ void UIButtonBase::OnMouseUp(UIMouseEventArgs* e)
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIButton, UIButtonBase);
 
 //------------------------------------------------------------------------------
-RefPtr<UIButton> UIButton::Create()
+RefPtr<UIButton> UIButton::create()
 {
-	return NewObject<UIButton>();
+	return newObject<UIButton>();
 }
 
 //------------------------------------------------------------------------------
-RefPtr<UIButton> UIButton::Create(const StringRef& text, float width, float height)
+RefPtr<UIButton> UIButton::create(const StringRef& text, float width, float height)
 {
-	return NewObject<UIButton>(text, width, height);
+	return newObject<UIButton>(text, width, height);
 }
 
 //------------------------------------------------------------------------------
@@ -125,18 +112,18 @@ UIButton::~UIButton()
 }
 
 //------------------------------------------------------------------------------
-void UIButton::Initialize()
+void UIButton::initialize()
 {
-	UIButtonBase::Initialize();
+	UIButtonBase::initialize();
 }
 
 //------------------------------------------------------------------------------
-void UIButton::Initialize(const StringRef& text, float width, float height)
+void UIButton::initialize(const StringRef& text, float width, float height)
 {
-	UIButtonBase::Initialize();
-	SetText(text);
-	SetWidth(width);
-	SetHeight(height);
+	UIButtonBase::initialize();
+	setText(text);
+	setWidth(width);
+	setHeight(height);
 }
 
 //==============================================================================
@@ -148,14 +135,14 @@ const String UIToggleButton::CheckedState = _T("Checked");
 const String UIToggleButton::UncheckedState = _T("Unchecked");
 
 //------------------------------------------------------------------------------
-RefPtr<UIToggleButton> UIToggleButton::Create()
+RefPtr<UIToggleButton> UIToggleButton::create()
 {
-	return NewObject<UIToggleButton>();
+	return newObject<UIToggleButton>();
 }
 
 //------------------------------------------------------------------------------
 UIToggleButton::UIToggleButton()
-	: m_isChecked(false)
+	: m_checkState(UICheckState::Unchecked)
 {
 }
 
@@ -165,31 +152,79 @@ UIToggleButton::~UIToggleButton()
 }
 
 //------------------------------------------------------------------------------
-void UIToggleButton::Initialize()
+void UIToggleButton::initialize()
 {
-	UIButtonBase::Initialize();
+	UIButtonBase::initialize();
 
-	auto* vsm = GetVisualStateManager();
-	vsm->RegisterVisualState(UIVisualStates::CommonGroup, CheckedState);
-	vsm->RegisterVisualState(UIVisualStates::CommonGroup, UncheckedState);
+	auto* vsm = getVisualStateManager();
+	vsm->registerVisualState(UIVisualStates::CommonGroup, CheckedState);
+	vsm->registerVisualState(UIVisualStates::CommonGroup, UncheckedState);
 }
 
 //------------------------------------------------------------------------------
-void UIToggleButton::OnClick(UIEventArgs* e)
+void UIToggleButton::setChecked(bool checked)
 {
-	m_isChecked = !m_isChecked;
-
-	if (m_isChecked)
+	UICheckState newState = (checked) ? UICheckState::Checked : UICheckState::Unchecked;
+	if (newState != m_checkState)
 	{
-		GoToVisualState(CheckedState);
+		m_checkState = newState;
+		checkChanged();
+	}
+}
+
+//------------------------------------------------------------------------------
+bool UIToggleButton::isChecked() const
+{
+	return m_checkState != UICheckState::Unchecked;
+}
+
+//------------------------------------------------------------------------------
+EventConnection UIToggleButton::connectOnChecked(UIEventHandler handler)
+{
+	return m_onChecked.connect(handler);
+}
+
+//------------------------------------------------------------------------------
+EventConnection UIToggleButton::connectOnUnchecked(UIEventHandler handler)
+{
+	return m_onUnchecked.connect(handler);
+}
+
+//------------------------------------------------------------------------------
+void UIToggleButton::onClick(UIEventArgs* e)
+{
+	if (m_checkState != UICheckState::Checked)
+	{
+		m_checkState = UICheckState::Checked;
 	}
 	else
 	{
-		GoToVisualState(UncheckedState);
+		m_checkState = UICheckState::Unchecked;
 	}
 
-	UIButtonBase::OnClick(e);
+	checkChanged();
+
+	UIButtonBase::onClick(e);
 }
 
+//------------------------------------------------------------------------------
+void UIToggleButton::checkChanged()
+{
+	switch (m_checkState)
+	{
+	case ln::UICheckState::Unchecked:
+		m_onUnchecked.raise(UIEventArgs::create(UIEvents::UncheckedEvent, this));
+		goToVisualState(UncheckedState);
+		break;
+	case ln::UICheckState::Indeterminate:
+		break;
+	case ln::UICheckState::Checked:
+		m_onChecked.raise(UIEventArgs::create(UIEvents::CheckedEvent, this));
+		goToVisualState(CheckedState);
+		break;
+	default:
+		break;
+	}
+}
 
 LN_NAMESPACE_END

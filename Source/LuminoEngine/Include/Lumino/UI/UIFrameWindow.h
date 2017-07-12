@@ -6,7 +6,7 @@
 #include "UILayoutView.h"
 
 LN_NAMESPACE_BEGIN
-namespace detail { class InternalRenderer; }
+namespace detail { class SceneRenderer; }
 class PlatformWindow;
 class SwapChain;
 class DrawingContext;
@@ -15,6 +15,8 @@ class World2D;
 class World3D;
 class UIViewport;
 class UILayoutLayer;
+class RenderView;
+class RenderDiag;
 
 /**
 	@brief		
@@ -23,44 +25,50 @@ class UIFrameWindow
 	: public UILayoutView
 	, public IEventListener
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
-	PlatformWindow* GetPlatformWindow() const { return m_platformWindow; }
+	PlatformWindow* getPlatformWindow() const;
 
-	DrawingContext* GetDrawingContext() const;
+	DrawingContext* getDrawingContext() const;
 
-	//void SetSize(const SizeI& size);
+	//void setSize(const SizeI& size);
 
-protected:
+	RenderDiag* GetRenderDiagnostic() const;
+
+LN_CONSTRUCT_ACCESS:
 	UIFrameWindow();
 	virtual ~UIFrameWindow();
-	void Initialize(detail::UIManager* manager, PlatformWindow* platformWindow, SwapChain* swapChain, UIContext* context);
-	virtual bool OnEvent(const PlatformEventArgs& e) override;
-	virtual void OnRenderContents();
-	virtual void OnPresentRenderingContexts();
+	void initialize(PlatformWindow* platformWindow, SwapChain* swapChain, UIContext* context);
+	void initialize();
+	virtual void Dispose();
+	virtual bool onEvent(const PlatformEventArgs& e) override;
+	virtual void onPresentRenderingContexts();
 
 LN_INTERNAL_ACCESS:
-	detail::UIManager* GetManager() const { return m_manager; }
-	SwapChain* GetSwapChain() const { return m_swapChain; }
-	void SetDelayedRenderingSkip(bool enabled) { m_delayedRenderingSkip = enabled; }
+	detail::UIManager* getManager() const { return m_manager; }
+	SwapChain* getSwapChain() const;
+	void setDelayedRenderingSkip(bool enabled) { m_delayedRenderingSkip = enabled; }
 
-	void RenderContents();
-	virtual void PresentRenderingContexts();
+	void renderContents();
+	virtual void presentRenderingContexts();
 
 private:
-	void Initialize_UIRenderer();
-	void Render_UIRenderer();
-	void ExecuteDrawList_UIRenderer();
-	bool IsStandaloneSwapChain() const { return m_swapChain != nullptr; }
+	void initialize_UIRenderer();
+	void executeDrawList_UIRenderer();
+	bool isStandaloneSwapChain() const { return !m_swapChain.isNull(); }
 
 	detail::UIManager*		m_manager;
-	PlatformWindow*			m_platformWindow;
-	SwapChain*				m_swapChain;
+	RefPtr<PlatformWindow>	m_platformWindow;
+	RefPtr<SwapChain>		m_swapChain;
 
 	RefPtr<DrawingContext>				m_drawingContext;
-	RefPtr<detail::InternalRenderer>	m_internalRenderer;
+	RefPtr<detail::SceneRenderer>	m_internalRenderer;
+	RefPtr<RenderView>	m_drawElementListSet;		// いまは作業用変数を使うためのダミー
+	RefPtr<RenderDiag>	m_renderDiag;
 	bool								m_delayedRenderingSkip;
+
+	friend class detail::UIManager;
 };
 
 
@@ -70,34 +78,31 @@ private:
 class UIMainWindow
 	: public UIFrameWindow
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
-	UIContext* GetMainUIContext() const { return m_mainUIContext; }
-	UIViewport* GetViewport() const;
+	UIContext* getMainUIContext() const { return m_mainUIContext; }
+	UIViewport* getViewport() const;
 
 protected:
-	virtual void OnPresentRenderingContexts() override;
-	virtual Size ArrangeOverride(const Size& finalSize) override;
+	virtual void onPresentRenderingContexts() override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
 
 LN_INTERNAL_ACCESS:
 	UIMainWindow();
 	virtual ~UIMainWindow();
-	void Initialize(detail::UIManager* manager, PlatformWindow* platformWindow, World2D* defaultWorld2D, World3D* defaultWorld3D);
+	void initialize(PlatformWindow* platformWindow, World2D* defaultWorld2D, World3D* defaultWorld3D);
 
-	void InjectElapsedTime(float elapsedTime);
-	void UpdateLayout(const Size& viewSize);	// TODO: ゆくゆくは SwapChain や Viewport も UIFrameWindow にもってくる。そのとき、この viewSize はいらなくなる
-	void RenderUI();
+	//void injectElapsedTime(float elapsedTime);
+	void updateLayout(const Size& viewSize);	// TODO: ゆくゆくは SwapChain や Viewport も UIFrameWindow にもってくる。そのとき、この viewSize はいらなくなる
+	void renderUI();
+	virtual void presentRenderingContexts() override;
 
-	//virtual bool OnEvent(const PlatformEventArgs& e) override;
-	virtual void OnRenderContents() override;
-	virtual void PresentRenderingContexts() override;
-
-	CameraViewportLayer2* GetDefaultCameraViewportLayer2D() const;
-	CameraViewportLayer2* GetDefaultCameraViewportLayer3D() const;
-	UILayoutLayer* GetDefaultUILayer() const;
+	CameraViewportLayer2* getDefaultCameraViewportLayer2D() const;
+	CameraViewportLayer2* getDefaultCameraViewportLayer3D() const;
+	UILayoutLayer* getDefaultUILayer() const;
 
 private:
-	void UpdateViewportTransform();
+	void updateViewportTransform();
 
 	UIContext*						m_mainUIContext;
 	RefPtr<UIViewport>				m_mainUIViewport;
@@ -118,24 +123,24 @@ using UINativeHostWindowPtr = RefPtr<UINativeHostWindow>;
 class UINativeHostWindow
 	: public UIFrameWindow
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 	/**
 		@brief		UIFrameWindow を作成します。
 	*/
-	static UINativeHostWindowPtr Create(intptr_t windowHandle);
+	static UINativeHostWindowPtr create(intptr_t windowHandle);
 
 
 public:
 
 	/** ホストされたネイティブウィンドウへ描画を行います。*/
-	//void Render();
+	//void render();
 
 LN_INTERNAL_ACCESS:
 	UINativeHostWindow();
 	virtual ~UINativeHostWindow();
-	void Initialize(detail::UIManager* manager, intptr_t windowHandle);
+	void initialize(intptr_t windowHandle);
 
 private:
 	UIContext*	m_mainUIContext;

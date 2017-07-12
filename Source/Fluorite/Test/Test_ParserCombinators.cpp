@@ -9,7 +9,7 @@ protected:
 };
 
 //-----------------------------------------------------------------------------
-TEST_F(Test_ParserCombinators, Parse)
+TEST_F(Test_ParserCombinators, parse)
 {
 	struct TokenParser : public combinators::ParseLib<TokenParser>
 	{
@@ -40,7 +40,7 @@ TEST_F(Test_ParserCombinators, Parse)
 			LN_PARSE_RESULT(r2, TokenChar('{'));
 			LN_PARSE_RESULT(r3, Many(Parser<Decl>(Parse_EmptyDecl) || Parser<Decl>(Parse_LN_METHOD)));	// ネスト	TODO: できれば <Decl> はやめたい
 			LN_PARSE_RESULT(r4, TokenChar('}'));
-			return input.Success(Decl{ _T("LN_CLASS"), r1.GetMatchBegin(), r4.GetMatchEnd(), r3.GetValue() });
+			return input.Success(Decl{ _T("LN_CLASS"), r1.GetMatchBegin(), r4.GetMatchEnd(), r3.getValue() });
 		}
 
 		static ParserResult<List<Decl>> Parse_File(ParserContext input)
@@ -64,8 +64,8 @@ TEST_F(Test_ParserCombinators, Parse)
 	auto result = TokenParser::TryParse(TokenParser::Parse_File, tokens);
 
 	ASSERT_EQ(true, result.IsSucceed());
-	auto d = result.GetValue()[0];
-	ASSERT_EQ(2, d.decls.GetCount());
+	auto d = result.getValue()[0];
+	ASSERT_EQ(2, d.decls.getCount());
 	ASSERT_EQ(_T("EmptyDecl"), d.decls[0].type);
 	ASSERT_EQ(_T("LN_METHOD"), d.decls[1].type);
 }
@@ -88,7 +88,7 @@ TEST_F(Test_ParserCombinators, AcceptsThatChar)
 		DO_LEX("a");
 		auto result = TokenParser::TryParse(TokenParser::Parse_String, tokens);
 		ASSERT_EQ(true, result.IsSucceed());
-		ASSERT_EQ(100, result.GetValue());
+		ASSERT_EQ(100, result.getValue());
 		ASSERT_EQ(0, result.GetMatchBegin() - tokens->begin());
 		ASSERT_EQ(1, result.GetMatchEnd() - tokens->begin());
 	}
@@ -96,7 +96,7 @@ TEST_F(Test_ParserCombinators, AcceptsThatChar)
 		DO_LEX("a a");	// ※ "aa" だと 1 つの Token になるので分割されるようにする
 		auto result = TokenParser::TryParse(TokenParser::Parse_String, tokens);
 		ASSERT_EQ(true, result.IsSucceed());
-		ASSERT_EQ(100, result.GetValue());
+		ASSERT_EQ(100, result.getValue());
 		ASSERT_EQ(0, result.GetMatchBegin() - tokens->begin());
 		ASSERT_EQ(1, result.GetMatchEnd() - tokens->begin());		// 1つ目のトークンまでマッチ成功
 	}
@@ -105,7 +105,7 @@ TEST_F(Test_ParserCombinators, AcceptsThatChar)
 		DO_LEX("b");
 		auto result = TokenParser::TryParse(TokenParser::Parse_String, tokens);
 		ASSERT_EQ(false, result.IsSucceed());
-		ASSERT_EQ(true, result.GetMessage().IndexOf("Unexpected") >= 0);	// なんかエラーメッセージが入っているはず
+		ASSERT_EQ(true, result.getMessage().indexOf("Unexpected") >= 0);	// なんかエラーメッセージが入っているはず
 	}
 	// <Test> 空文字列の入力
 	{

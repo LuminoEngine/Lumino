@@ -19,24 +19,24 @@ ILayoutElement::~ILayoutElement()
 }
 
 //------------------------------------------------------------------------------
-void ILayoutElement::UpdateLayout(const Size& viewSize)
+void ILayoutElement::updateLayout(const Size& viewSize)
 {
-	Size itemSize = GetLayoutSize();
+	Size itemSize = getLayoutSize();
 	Size size(
-		Math::IsNaNOrInf(itemSize.width) ? viewSize.width : itemSize.width,
-		Math::IsNaNOrInf(itemSize.height) ? viewSize.height : itemSize.height);
+		Math::isNaNOrInf(itemSize.width) ? viewSize.width : itemSize.width,
+		Math::isNaNOrInf(itemSize.height) ? viewSize.height : itemSize.height);
 
 	// サイズが定まっていない場合はレイアウトを決定できない
 	// TODO: 例外の方が良いかも？
 	//if (Math::IsNaNOrInf(m_size.Width) || Math::IsNaNOrInf(m_size.Height)) { return; }
 
-	MeasureLayout(size);
-	ArrangeLayout(Rect(0, 0, size.width, size.height));
-	UpdateTransformHierarchy(Rect(0, 0, size));
+	measureLayout(size);
+	arrangeLayout(Rect(0, 0, size.width, size.height));
+	updateTransformHierarchy(Rect(0, 0, size));
 }
 
 //------------------------------------------------------------------------------
-void ILayoutElement::MeasureLayout(const Size& availableSize)
+void ILayoutElement::measureLayout(const Size& availableSize)
 {
 	// 親要素から子要素を配置できる範囲(availableSize)を受け取り、DesiredSize を更新する。
 	// ① Pane ―[measure()   … この範囲内なら配置できるよ]→ Button
@@ -46,39 +46,39 @@ void ILayoutElement::MeasureLayout(const Size& availableSize)
 
 	
 	// [WPF] DesiredSize は Mergin を含む。例えば、Width=200, Mergin=10,0,0,0 なら DesiredSize は 210 となる。
-	// [WPF] MeasureOverride() の引数の Size には、Mergin は含まない。Widht=200 なら 200 がそのまま渡る。
-	// Padding も関係ない。逆にいうと、MeasureOverride() の中では Padding を考慮してサイズを返さなければならない。
+	// [WPF] measureOverride() の引数の Size には、Mergin は含まない。Widht=200 なら 200 がそのまま渡る。
+	// Padding も関係ない。逆にいうと、measureOverride() の中では Padding を考慮してサイズを返さなければならない。
 
 	// Margin を考慮する
-	const ThicknessF& margin = GetLayoutMargin();
+	const ThicknessF& margin = getLayoutMargin();
 	float marginWidth = margin.Left + margin.Right;
 	float marginHeight = margin.Top + margin.Bottom;
 	Size localAvailableSize(
 		std::max(availableSize.width - marginWidth, 0.0f),
 		std::max(availableSize.height - marginHeight, 0.0f));
 
-	Size desiredSize = MeasureOverride(localAvailableSize);
+	Size desiredSize = measureOverride(localAvailableSize);
 
 	// Margin を考慮する
 	desiredSize.width += marginWidth;
 	desiredSize.height += marginHeight;
 
-	SetLayoutDesiredSize(desiredSize);
+	setLayoutDesiredSize(desiredSize);
 }
 
 //------------------------------------------------------------------------------
-void ILayoutElement::ArrangeLayout(const Rect& finalLocalRect)
+void ILayoutElement::arrangeLayout(const Rect& finalLocalRect)
 {
 	// finalLocalRect はこの要素を配置できる領域サイズ。と、親要素内でのオフセット。
 	// 要素に直接設定されているサイズよりも大きいこともある。
 	// TODO: HorizontalAlignment 等を考慮して、最終的な座標とサイズを決定する。
 	//		 この要素のサイズが省略されていれば、Stretch ならサイズは最大に、それ以外なら最小になる。
 
-	const Size& areaSize = finalLocalRect.GetSize();
+	const Size& areaSize = finalLocalRect.getSize();
 
 #if 1
-	HAlignment		hAlign = GetLayoutHAlignment();
-	VAlignment		vAlign = GetLayoutVAlignment();
+	HAlignment		hAlign = getLayoutHAlignment();
+	VAlignment		vAlign = getLayoutVAlignment();
 #else
 	ILayoutElement* parent = GetLayoutParent();
 	HAlignment		hAlign = GetLayoutHAlignment();
@@ -89,61 +89,61 @@ void ILayoutElement::ArrangeLayout(const Rect& finalLocalRect)
 	if (parentVAlign != nullptr) vAlign = *parentVAlign;
 #endif
 
-	//Size ds;// = GetLayoutDesiredSize();
+	//Size ds;// = getLayoutDesiredSize();
 	//ds.width = Math::IsNaNOrInf(layoutSize.width) ? finalLocalRect.width : layoutSize.width;
 	//ds.height = Math::IsNaNOrInf(layoutSize.height) ? finalLocalRect.height : layoutSize.height;
-	Size ds = GetLayoutDesiredSize();
-	LN_ASSERT(!Math::IsNaNOrInf(ds.width));
-	LN_ASSERT(!Math::IsNaNOrInf(ds.height));
+	Size ds = getLayoutDesiredSize();
+	LN_ASSERT(!Math::isNaNOrInf(ds.width));
+	LN_ASSERT(!Math::isNaNOrInf(ds.height));
 
 	// DesiredSize は Margin 考慮済み
 
 	// Alignment で調整する領域は、margin 領域も含む
-	const ThicknessF& margin = GetLayoutMargin();
+	const ThicknessF& margin = getLayoutMargin();
 	float marginWidth = margin.Left + margin.Right;
 	float marginHeight = margin.Top + margin.Bottom;
 	//ds.width += marginWidth;
 	//ds.height += marginHeight;
 
-	Size layoutSize = GetLayoutSize();
+	Size layoutSize = getLayoutSize();
 	Rect arrangeRect;
-	detail::LayoutHelper::AdjustHorizontalAlignment(areaSize, ds, Math::IsNaN(layoutSize.width), hAlign, &arrangeRect);
-	detail::LayoutHelper::AdjustVerticalAlignment(areaSize, ds, Math::IsNaN(layoutSize.height), vAlign, &arrangeRect);
+	detail::LayoutHelper::adjustHorizontalAlignment(areaSize, ds, Math::isNaN(layoutSize.width), hAlign, &arrangeRect);
+	detail::LayoutHelper::adjustVerticalAlignment(areaSize, ds, Math::isNaN(layoutSize.height), vAlign, &arrangeRect);
 
 	// Margin を考慮する (0 以下には出来ない)
 	arrangeRect.width = std::max(arrangeRect.width - marginWidth, 0.0f);
 	arrangeRect.height = std::max(arrangeRect.height - marginHeight, 0.0f);
 
 
-	Size renderSize = ArrangeOverride(arrangeRect.GetSize());
+	Size renderSize = arrangeOverride(arrangeRect.getSize());
 	Rect thisFinalLocalRect;
 	thisFinalLocalRect.x = finalLocalRect.x + margin.Left + arrangeRect.x;
 	thisFinalLocalRect.y = finalLocalRect.y + margin.Top + arrangeRect.y;
 	thisFinalLocalRect.width = renderSize.width;
 	thisFinalLocalRect.height = renderSize.height;
-	SetLayoutFinalLocalRect(thisFinalLocalRect);
+	setLayoutFinalLocalRect(thisFinalLocalRect);
 }
 
 //------------------------------------------------------------------------------
-Size ILayoutElement::MeasureOverride(const Size& constraint)
+Size ILayoutElement::measureOverride(const Size& constraint)
 {
 	// 戻り値は、constraint の制限の中で、子要素をレイアウトするために必要な最小サイズ。
 	// ユーザー指定のサイズがある場合はそれを返す。
 	// ただし、constraint を超えることはできない。
 
-	return detail::LayoutHelper::MeasureElement(this, constraint);
+	return detail::LayoutHelper::measureElement(this, constraint);
 }
 
 //------------------------------------------------------------------------------
-Size ILayoutElement::ArrangeOverride(const Size& finalSize)
+Size ILayoutElement::arrangeOverride(const Size& finalSize)
 {
 	return finalSize;
 }
 
 //------------------------------------------------------------------------------
-void ILayoutElement::UpdateTransformHierarchy(const Rect& parentGlobalRect)
+void ILayoutElement::updateTransformHierarchy(const Rect& parentGlobalRect)
 {
-	const Rect& localRect = GetLayoutFinalLocalRect();
+	const Rect& localRect = getLayoutFinalLocalRect();
 	Rect finalGlobalRect;
 	//if (m_parent != nullptr)
 	//{
@@ -160,18 +160,18 @@ void ILayoutElement::UpdateTransformHierarchy(const Rect& parentGlobalRect)
 	finalGlobalRect.width = localRect.width;
 	finalGlobalRect.height = localRect.height;
 
-	SetLayoutFinalGlobalRect(finalGlobalRect);
+	setLayoutFinalGlobalRect(finalGlobalRect);
 
 	// update children
-	int childCount = GetVisualChildrenCount();
+	int childCount = getVisualChildrenCount();
 	for (int i = 0; i < childCount; i++)
 	{
-		ILayoutElement* child = GetVisualChild(i);
-		child->UpdateTransformHierarchy(finalGlobalRect);
+		ILayoutElement* child = getVisualChild(i);
+		child->updateTransformHierarchy(finalGlobalRect);
 	}
 
 	// 子要素
-	//UIHelper::ForEachVisualChildren(this, [](UIElement* child) { child->UpdateTransformHierarchy(); });
+	//UIHelper::forEachVisualChildren(this, [](UIElement* child) { child->updateTransformHierarchy(); });
 
 }
 
@@ -183,22 +183,22 @@ void ILayoutElement::UpdateTransformHierarchy(const Rect& parentGlobalRect)
 namespace detail {
 
 //------------------------------------------------------------------------------
-Size LayoutHelper::MeasureElement(ILayoutElement* element, const Size& constraint)
+Size LayoutHelper::measureElement(ILayoutElement* element, const Size& constraint)
 {
-	Size size = element->GetLayoutSize();
+	Size size = element->getLayoutSize();
 	Size desiredSize;
 	// NaN の場合、この要素として必要な最小サイズは 0 となる。
-	desiredSize.width = Math::IsNaNOrInf(size.width) ? 0.0f : size.width;
-	desiredSize.height = Math::IsNaNOrInf(size.height) ? 0.0f : size.height;
+	desiredSize.width = Math::isNaNOrInf(size.width) ? 0.0f : size.width;
+	desiredSize.height = Math::isNaNOrInf(size.height) ? 0.0f : size.height;
 	desiredSize.width = std::min(desiredSize.width, constraint.width);
 	desiredSize.height = std::min(desiredSize.height, constraint.height);
 
 	Size minSize, maxSize;
-	element->GetLayoutMinMaxInfo(&minSize, &maxSize);
-	if (!Math::IsNaNOrInf(minSize.width)) desiredSize.width = std::max(desiredSize.width, minSize.width);
-	if (!Math::IsNaNOrInf(minSize.height)) desiredSize.height = std::max(desiredSize.height, minSize.height);
-	if (!Math::IsNaNOrInf(maxSize.width)) desiredSize.width = std::min(desiredSize.width, maxSize.width);
-	if (!Math::IsNaNOrInf(maxSize.height)) desiredSize.height = std::min(desiredSize.height, maxSize.height);
+	element->getLayoutMinMaxInfo(&minSize, &maxSize);
+	if (!Math::isNaNOrInf(minSize.width)) desiredSize.width = std::max(desiredSize.width, minSize.width);
+	if (!Math::isNaNOrInf(minSize.height)) desiredSize.height = std::max(desiredSize.height, minSize.height);
+	if (!Math::isNaNOrInf(maxSize.width)) desiredSize.width = std::min(desiredSize.width, maxSize.width);
+	if (!Math::isNaNOrInf(maxSize.height)) desiredSize.height = std::min(desiredSize.height, maxSize.height);
 
 	return desiredSize;
 }

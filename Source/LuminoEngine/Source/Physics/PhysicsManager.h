@@ -23,7 +23,7 @@ public:
 	PhysicsManager();
 	virtual ~PhysicsManager();
 
-	void Initialize();
+	void initialize();
 	void Finalize();
 
 	//void AddPhysicsWorld(PhysicsWorldCore* world) { m_worldList.Add(world); }
@@ -35,13 +35,13 @@ private:
 
 //
 //
-//	/// StepSimulation() の前処理。メインスレッドで呼び出すこと。物理更新スレッドが実行中であれば待機するまで待つ。
+//	/// stepSimulation() の前処理。メインスレッドで呼び出すこと。物理更新スレッドが実行中であれば待機するまで待つ。
 //	void SyncBeforeStepSimulation();
 //
 //	/// 
-//	void StepSimulation(float elapsedTime);
+//	void stepSimulation(float elapsedTime);
 //
-//	void DrawDebugShapes(IDebugRenderer* renderer);
+//	void drawDebugShapes(IDebugRenderer* renderer);
 //
 //public:	// internal
 //
@@ -49,7 +49,7 @@ private:
 //	void StepSimulationInternal();
 //
 //	void AddRigidBody(RigidBody* body);
-//	void AddJoint(Joint* joint);
+//	void addJoint(Joint* joint);
 
 
 //private:

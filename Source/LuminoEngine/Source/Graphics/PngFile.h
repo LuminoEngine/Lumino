@@ -65,14 +65,14 @@ public:
 		//size_t		size;
 		int			res;
 
-		size_t dataSize = (size_t)stream->GetLength();
+		size_t dataSize = (size_t)stream->getLength();
 
 		// サイズチェック
 		if (dataSize < PNG_BYTES_TO_CHECK) return false;
 
 		// データが png かどうか調べる
-		stream->Read(sig, 4);
-		stream->Seek(0, SeekOrigin_Begin);
+		stream->read(sig, 4);
+		stream->seek(0, SeekOrigin_Begin);
 		res = png_check_sig(sig, PNG_BYTES_TO_CHECK);
 		if (!res) return false;
 
@@ -147,7 +147,7 @@ public:
 		{
 			m_format = PixelFormat::R8G8B8A8;
 			m_bitmapData = ByteBuffer(m_size.width * m_size.height * 4);
-			byte_t* bitmap = m_bitmapData.GetData();
+			byte_t* bitmap = m_bitmapData.getData();
 
 			// 1行ずつコピー
 			for (int h = 0; h < m_size.height; ++h) {
@@ -160,7 +160,7 @@ public:
 		{
 			m_format = PixelFormat::R8G8B8A8;
 			m_bitmapData = ByteBuffer(m_size.width * m_size.height * 4);
-			byte_t* bitmap = m_bitmapData.GetData();
+			byte_t* bitmap = m_bitmapData.getData();
 
 			byte_t* row;
 			for (int y = 0; y < m_size.height; ++y)
@@ -182,7 +182,7 @@ public:
 		{
 			m_format = PixelFormat::A8;
 			m_bitmapData = ByteBuffer(m_size.width * m_size.height * 1);
-			byte_t* bitmap = m_bitmapData.GetData();
+			byte_t* bitmap = m_bitmapData.getData();
 
 			for (int h = 0; h < m_size.height; ++h) {
 				memcpy(&bitmap[row_bytes * (unit + (sign * h))], row_pointers[h], row_bytes);
@@ -216,7 +216,7 @@ public:
 	}
 
 	/// 保存 (bitmapData のフォーマットは PixelFormat_BYTE_R8G8B8A8 であること)
-	void Save(const TCHAR* filePath, const ByteBuffer& bitmapData, const SizeI& size, bool upFlow)
+	void save(const TCHAR* filePath, const ByteBuffer& bitmapData, const SizeI& size, bool upFlow)
 	{
 		FILE *fp;
 		_tfopen_s(&fp, filePath, _T("wb"));
@@ -234,9 +234,9 @@ public:
 		//png_bytepp rows = bitmapData->GetData();
 		List<png_bytep> rows;
 		ByteBuffer tmpData = bitmapData;	// 書き込み可能ポインタでないと png の API に渡せないので一時メモリ化する。
-		rows.Resize(size.height);
+		rows.resize(size.height);
 		int rowBytes = png_get_rowbytes(pp, pngInfo);	// PixelFormat_BYTE_R8G8B8A8
-		byte_t* data = tmpData.GetData();//bitmapData.GetData();
+		byte_t* data = tmpData.getData();//bitmapData.GetData();
 		for (int i = 0; i < size.height; i++)
 		{
 			if (upFlow) {
@@ -265,7 +265,7 @@ private:
 	{
 #if 1
 		PngData* png_data = (PngData*)png_get_io_ptr(png_ptr);
-		int validSize = png_data->SourceStream->Read(data, length);
+		int validSize = png_data->SourceStream->read(data, length);
 		if (validSize != length) {
 			png_error(png_ptr, "_readPngData failed");
 		}

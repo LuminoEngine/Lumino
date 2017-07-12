@@ -26,8 +26,8 @@ int DxLibMain();
 template<class T, typename... TArgs>
 RefPtr<T> NewObject(TArgs... args)
 {
-	auto ptr = RefPtr<T>::MakeRef();
-	//ptr->Initialize(args);
+	auto ptr = RefPtr<T>::makeRef();
+	//ptr->initialize(args);
 	return ptr;
 }
 
@@ -54,8 +54,8 @@ public:
 
 	virtual void OnStart() override
 	{
-		auto player = WorldObject::Create();
-		player->AddComponent(Sprite2DComponent::Create(_T("C:/LocalProj/設計ツール/dll_48x48.png")));
+		auto player = WorldObject::create();
+		player->AddComponent(Sprite2DComponent::create(_T("C:/LocalProj/設計ツール/dll_48x48.png")));
 		player->AddComponent(NewObject<Simple2DCharacterController>());
 	}
 
@@ -87,17 +87,16 @@ void Main()
 #endif
 
 
-	//Engine::Initialize();
+	//Engine::initialize();
 
-	//auto sprite = Sprite2D::Create(_T("C:/Proj/LN/HC1/External/Lumino/Documentation/Logo/icon32.png"));
-	//sprite->SetPosition(10, 20);
+	//auto window = newObject<UIFrameWindow>();
 
 
-	//while (Engine::Update())
+	//while (Engine::update())
 	//{
 	//}
 
-	//Engine::Terminate();
+	//Engine::terminate();
 
 	//return;
 
@@ -121,13 +120,13 @@ void Main()
 
 
 	Ray ray(Vector3(1, 0, 0), Vector3(0, 0, 1));
-	Matrix mat = Matrix::MakeScaling(2) * Matrix::MakeRotationY(Math::PI / 4)/* * Matrix::MakeTranslation(2, 0, 0)*/;
-	mat.Inverse();
+	Matrix mat = Matrix::makeScaling(2) * Matrix::makeRotationY(Math::PI / 4)/* * Matrix::MakeTranslation(2, 0, 0)*/;
+	mat.inverse();
 
 	Ray ray2 = ray;
 	ray2.direction += ray2.origin;
-	ray2.origin.TransformCoord(mat);
-	ray2.direction.TransformCoord(mat);
+	ray2.origin.transformCoord(mat);
+	ray2.direction.transformCoord(mat);
 	ray2.direction -= ray2.origin;
 
 	std::function<void(int)> f = [ray](int a) {};
@@ -135,50 +134,49 @@ void Main()
 
 	//EngineSettings::SetGraphicsAPI(GraphicsAPI::OpenGL);
 	EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Threaded);//GraphicsRenderingType::Immediate);//
-	Engine::Initialize();
-	//Engine::GetMainViewport()->SetBackgroundColor(Color32::Gray);
-	Engine::GetMainViewport()->SetPlacement(ViewportPlacement::AutoResize);
+	Engine::initialize();
+	//Engine::getMainViewport()->SetBackgroundColor(Color32::Gray);
+	Engine::getMainViewport()->setPlacement(ViewportPlacement::AutoResize);
 
-	//Engine::GetDefaultSceneGraph3D()->visibleGridPlane = true;
+	//Engine::getDefaultSceneGraph3D()->visibleGridPlane = true;
 
-	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
-	CameraComponent::GetMain3DCamera()->SetCameraBehavior(cb);
+	Engine::getCamera3D()->addComponent(newObject<CameraMouseMoveBehavior>());
 
-	//auto mesh = SkinnedMeshComponent::Create(_T("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
+	//auto mesh = SkinnedMeshComponent::create(_T("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
 
-	//auto tex = Texture2D::Create("D:/Proj/Volkoff/External/Lumino/test/UnitTest/Scene/TestData/Dice1.png");
-	//auto sprite1 = Sprite3DComponent::Create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
-	//auto sprite2 = Sprite3DComponent::Create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
-	//auto sprite3 = Sprite3DComponent::Create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
-	//auto sprite4 = Sprite3DComponent::Create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
-	//auto sprite5 = Sprite3DComponent::Create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
-	//auto sprite6 = Sprite3DComponent::Create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
+	//auto tex = Texture2D::create("D:/Proj/Volkoff/External/Lumino/test/UnitTest/Scene/TestData/Dice1.png");
+	//auto sprite1 = Sprite3DComponent::create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
+	//auto sprite2 = Sprite3DComponent::create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
+	//auto sprite3 = Sprite3DComponent::create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
+	//auto sprite4 = Sprite3DComponent::create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
+	//auto sprite5 = Sprite3DComponent::create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
+	//auto sprite6 = Sprite3DComponent::create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
 
-	//auto mesh = StaticMeshComponent::CreateSphere(2, 4, 4);
+	//auto mesh = StaticMeshComponent::createSphere(2, 4, 4);
 
 #if 0
-	auto blur = ScreenMotionBlurImageEffect::Create();
-	//blur->SetAmount(0.5f);
-	//blur->SetRadialScale(1.05f);
+	auto blur = ScreenMotionBlurImageEffect::create();
+	//blur->setAmount(0.5f);
+	//blur->setRadialScale(1.05f);
 	CameraViewportLayer::GetDefault2D()->GetImageEffects()->Add(blur);
 
-	//auto tonePE23 = ToneImageEffect::Create();
-	//tonePE23->SetTone(ToneF(1, 0,0, 1.0));
+	//auto tonePE23 = ToneImageEffect::create();
+	//tonePE23->setTone(ToneF(1, 0,0, 1.0));
 	//CameraViewportLayer::GetDefault2D()->GetImageEffects()->Add(tonePE23);
 
-	//auto tonePE2 = ToneImageEffect::Create();
-	//tonePE2->SetTone(ToneF(0,0,1, 1.0));
+	//auto tonePE2 = ToneImageEffect::create();
+	//tonePE2->setTone(ToneF(0,0,1, 1.0));
 	//CameraViewportLayer::GetDefault2D()->GetImageEffects()->Add(tonePE2);
 
-	auto tonePE = ToneImageEffect::Create();
-	//tonePE->SetTone(ToneF(0,0,1, 1.0));
+	auto tonePE = ToneImageEffect::create();
+	//tonePE->setTone(ToneF(0,0,1, 1.0));
 	tonePE->ChangeTone(ToneF(1, 0, 1, 0), 5);
 	CameraViewportLayer::GetDefault2D()->GetImageEffects()->Add(tonePE);
 #endif
 
 #if 0
-	//Engine::GetMainLight3D()->SetPosition();
-	auto mLogoSprite = Sprite2DComponent::Create(_T("D:/Proj/Volkoff/Volkoff/Data/Graphics/Frontend/Logo_1.png"));
+	//Engine::GetMainLight3D()->setPosition();
+	auto mLogoSprite = Sprite2DComponent::create(_T("D:/Proj/Volkoff/Volkoff/Data/Graphics/Frontend/Logo_1.png"));
 
 	int map[5*5] =
 	{
@@ -191,15 +189,15 @@ void Main()
 
 	auto t = Assets::LoadTexture(_T("D:/Proj/Volkoff/Volkoff/Data/Graphics/MapChip_1.png"));
 
-	auto m_tileset = TileSet::Create();
+	auto m_tileset = TileSet::create();
 	m_tileset->SetImageSource(t);
 	m_tileset->SetTileSize(SizeI(20, 20));
 
 
-	auto tilemapModel = TileMapModel::Create();
+	auto tilemapModel = TileMapModel::create();
 	tilemapModel->SetTileSet(m_tileset);
 
-	auto m_tileLayer = TileLayer::Create();
+	auto m_tileLayer = TileLayer::create();
 	m_tileLayer->Resize(5, 5);
 	tilemapModel->GetLayers()->Add(m_tileLayer);
 
@@ -214,18 +212,18 @@ void Main()
 	}
 #endif
 
-	EngineDiag::SetDisplayMode(EngineDiagDisplayMode::FpsSummary);
+	EngineDiag::setDisplayMode(EngineDiagDisplayMode::FpsSummary);
 
-	Input::AddButtonBinding(_T("AA"), KeyboardBinding::Create(Keys::C));
-	Input::AddButtonBinding(_T("GG"), KeyboardBinding::Create(Keys::A));
+	Input::addButtonBinding(_T("AA"), KeyboardBinding::create(Keys::C));
+	Input::addButtonBinding(_T("GG"), KeyboardBinding::create(Keys::A));
 
-	//auto spr1 = Sprite2DComponent::Create(_T("D:/Proj/LuminoStudio/Engine/External/Lumino/test/UnitTest/Graphics/TestData/Sprite2.png"));
+	//auto spr1 = Sprite2DComponent::create(_T("D:/Proj/LuminoStudio/Engine/External/Lumino/test/UnitTest/Graphics/TestData/Sprite2.png"));
 
-	//auto text = TextBlock2DComponent::Create(_T("Hello, world!"));
+	//auto text = TextBlock2DComponent::create(_T("Hello, world!"));
 
 #if 0
 
-	auto m = SpriteParticleModel::Create();
+	auto m = SpriteParticleModel::create();
 	m->SetSpawnRate(100);
 	m->SetLifeTime(3.0f);
 	m->m_maxParticles = 300;
@@ -242,25 +240,25 @@ void Main()
 	m->SetVelocity(Vector3(0, -3, 0));
 	//m->SetAccel(Vector3(0, -8, 0));
 
-	auto material = DiffuseMaterial::Create();
-	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	auto material = DiffuseMaterial::create();
+	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetEmissive(Color::White);
 	m->SetMaterial(material);
-	//m->SetTexture(Texture2D::Create(LN_LOCALFILE("../Media/Spark1.png"), TextureFormat::R8G8B8A8, false));
+	//m->setTexture(Texture2D::create(LN_LOCALFILE("../Media/Spark1.png"), TextureFormat::R8G8B8A8, false));
 
 	auto particle1 = SpriteParticle::Create3D(m);
 	particle1->SetBlendMode(BlendMode::Add);
 	particle1->SetPosition(2, 0, 0);
 
 	//auto particle2 = SpriteParticle::Create3D(m);
-	//particle2->SetBlendMode(BlendMode::Subtract);
-	//particle2->SetPosition(3, 0, 0);
+	//particle2->setBlendMode(BlendMode::Subtract);
+	//particle2->setPosition(3, 0, 0);
 
-	//particle1->AddChild(particle2);
+	//particle1->addChild(particle2);
 #endif
 
 #if 0
-	auto m1 = SpriteParticleModel::Create();
+	auto m1 = SpriteParticleModel::create();
 	m1->SetSpawnRate(2);
 	m1->SetLifeTime(2.0f);
 	m1->m_maxParticles = 10;
@@ -268,7 +266,7 @@ void Main()
 	m1->m_shapeParam.x = Math::PI * 0.1;
 	m1->m_shapeParam.y = 2;
 
-	auto m2 = SpriteParticleModel::Create();
+	auto m2 = SpriteParticleModel::create();
 	m2->SetSpawnRate(2);
 	m2->SetLifeTime(2.0f);
 	m2->m_maxParticles = 10;
@@ -277,8 +275,8 @@ void Main()
 	m2->m_shapeParam.y = 2;
 	m1->SetSubParticle(m2);
 
-	auto material = DiffuseMaterial::Create();
-	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	auto material = DiffuseMaterial::create();
+	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 	m1->SetMaterial(material);
 	m2->SetMaterial(material);
@@ -290,7 +288,7 @@ void Main()
 
 #endif
 #if 0
-	auto m1 = SpriteParticleModel::Create();
+	auto m1 = SpriteParticleModel::create();
 	m1->SetSpawnRate(40);
 	m1->SetLifeTime(5.0f);
 	m1->m_maxParticles = 100;
@@ -301,8 +299,8 @@ void Main()
 	m1->SetSize(0.5);
 	//m1->m_loop = false;
 
-	auto material = DiffuseMaterial::Create();
-	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	auto material = DiffuseMaterial::create();
+	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 	m1->SetMaterial(material);
 
@@ -312,7 +310,7 @@ void Main()
 
 #endif
 #if 0	// 半円ほわほわ
-	auto m1 = SpriteParticleModel::Create();
+	auto m1 = SpriteParticleModel::create();
 	m1->SetSpawnRate(40);
 	m1->SetLifeTime(5.0f);
 	m1->m_maxParticles = 100;
@@ -326,8 +324,8 @@ void Main()
 	m1->m_forwardPosition.maxValue = 2;
 	m1->SetSize(0.5);
 
-	auto material = DiffuseMaterial::Create();
-	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	auto material = DiffuseMaterial::create();
+	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 	m1->SetMaterial(material);
 
@@ -337,7 +335,7 @@ void Main()
 
 #endif
 #if 0	// くるくる
-	auto m1 = SpriteParticleModel::Create();
+	auto m1 = SpriteParticleModel::create();
 	m1->SetSpawnRate(40);
 	m1->SetLifeTime(5.0f);
 	m1->m_maxParticles = 100;
@@ -353,8 +351,8 @@ void Main()
 	m1->m_forwardPosition.maxValue = 10;
 	m1->SetSize(0.5);
 
-	auto material = DiffuseMaterial::Create();
-	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	auto material = DiffuseMaterial::create();
+	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 	m1->SetMaterial(material);
 
@@ -364,7 +362,7 @@ void Main()
 
 #endif
 #if 0	// 引力斥力
-	auto m1 = SpriteParticleModel::Create();
+	auto m1 = SpriteParticleModel::create();
 	m1->SetSpawnRate(100);
 	m1->SetLifeTime(5.0f);
 	m1->m_maxParticles = 1000;
@@ -382,8 +380,8 @@ void Main()
 	m1->m_forwardVelocity.maxValue = 0;
 	m1->SetSize(0.5);
 
-	auto material = DiffuseMaterial::Create();
-	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	auto material = DiffuseMaterial::create();
+	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 	m1->SetMaterial(material);
 
@@ -393,7 +391,7 @@ void Main()
 
 #endif
 #if 0	// point trail
-	auto m1 = SpriteParticleModel::Create();
+	auto m1 = SpriteParticleModel::create();
 	m1->SetSpawnRate(4);
 	m1->SetLifeTime(5.0f);
 	m1->m_maxParticles = 1000;
@@ -412,8 +410,8 @@ void Main()
 	m1->m_trailTime = 0.5f;
 	m1->m_loop = false;
 
-	auto material = DiffuseMaterial::Create();
-	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	auto material = DiffuseMaterial::create();
+	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 	m1->SetMaterial(material);
 
@@ -424,7 +422,7 @@ void Main()
 #endif
 #if 0	// 放射
 	Camera::GetMain3DCamera()->SetFarClip(10000);
-	auto m1 = SpriteParticleModel::Create();
+	auto m1 = SpriteParticleModel::create();
 	m1->m_maxParticles = 128;
 	m1->SetSpawnRate(12);
 	m1->SetLifeTime(3.0);
@@ -450,19 +448,19 @@ void Main()
 	m1->m_forwardVelocity.randomSource = ParticleRandomSource::ByBaseValueInverse;	// 速度が大きい
 
 
-	auto material = DiffuseMaterial::Create();
-	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	auto material = DiffuseMaterial::create();
+	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 	m1->SetMaterial(material);
 
-	auto particle1 = ParticleEmitter3D::Create(m1);
+	auto particle1 = ParticleEmitter3D::create(m1);
 	particle1->SetBlendMode(BlendMode::Subtract);
 	particle1->SetPosition(2, 0, 200);
 
 #endif
 #if 0	// 雨
 	Camera::GetMain3DCamera()->SetFarClip(10000);
-	auto m1 = SpriteParticleModel::Create();
+	auto m1 = SpriteParticleModel::create();
 	m1->m_maxParticles = 10000;
 	m1->SetSpawnRate(1000);
 	m1->SetLifeTime(1.0);
@@ -478,19 +476,19 @@ void Main()
 	m1->m_forwardVelocity.maxValue = -12;
 	m1->m_lengthScale = 10;
 
-	auto material = DiffuseMaterial::Create();
-	material->SetMaterialTexture(Texture2D::Create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	auto material = DiffuseMaterial::create();
+	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 	m1->SetMaterial(material);
 
-	auto particle1 = ParticleEmitter3D::Create(m1);
+	auto particle1 = ParticleEmitter3D::create(m1);
 	particle1->SetBlendMode(BlendMode::Add);
 	particle1->SetPosition(0, 12, 0);
-	//particle1->SetAngles(Math::PI, 0, 0);
+	//particle1->setAngles(Math::PI, 0, 0);
 
 
 
-	auto m2 = SpriteParticleModel::Create();
+	auto m2 = SpriteParticleModel::create();
 	m2->m_maxParticles = 1000;
 	m2->SetSpawnRate(200);
 	m2->SetLifeTime(0.2);
@@ -503,50 +501,50 @@ void Main()
 	m2->m_particleDirection = ParticleDirectionType::Horizontal;
 	m2->SetMaterial(material);
 
-	auto particle2 = ParticleEmitter3D::Create(m2);
+	auto particle2 = ParticleEmitter3D::create(m2);
 	particle2->SetBlendMode(BlendMode::Add);
 #endif
 
-	//auto uiRoot = UIContext::GetMainContext()->GetMainWindowView()->GetLayoutRoot();
-	//auto listBox = tr::UIListBox::Create();
-	//listBox->AddTextItem(_T("test"));
-	//listBox->AddTextItem(_T("fff"));
-	//uiRoot->SetContent(listBox);
+	//auto uiRoot = UIContext::getMainContext()->GetMainWindowView()->getLayoutRoot();
+	//auto listBox = tr::UIListBox::create();
+	//listBox->addTextItem(_T("test"));
+	//listBox->addTextItem(_T("fff"));
+	//uiRoot->setContent(listBox);
 
-	//GameAudio::PlayBGM("D:/GameProjects/Materials/BGM/Windsphere/call.mp3");
+	//GameAudio::playBGM("D:/GameProjects/Materials/BGM/Windsphere/call.mp3");
 	
 
 
-	//auto gizmo = static_cast<CameraViewportLayer*>(Engine::GetDefault3DLayer())->CreateGizmo();
+	//auto gizmo = static_cast<CameraViewportLayer*>(Engine::getDefault3DLayer())->CreateGizmo();
 
-	//auto sp = Sprite3DComponent::Create(2, 2, Texture2D::Create(_T("D:/GameProjects/Chronicles/110220c_as019.jpg")));
-	//sp->SetTone(ToneF(0, 0, 1, 1.0));
-	//gizmo->Setup(Matrix::Identity, sp->GetTransform());//Matrix::MakeTranslation(1, 0, 0));
+	//auto sp = Sprite3DComponent::create(2, 2, Texture2D::create(_T("D:/GameProjects/Chronicles/110220c_as019.jpg")));
+	//sp->setTone(ToneF(0, 0, 1, 1.0));
+	//gizmo->setup(Matrix::Identity, sp->getTransform());//Matrix::MakeTranslation(1, 0, 0));
 	//
 	//
-	//gizmo->AddOnTargetTransformChanged([sp](tr::GizmoModel* g)
+	//gizmo->addOnTargetTransformChanged([sp](tr::GizmoModel* g)
 	//{
-	//	sp->SetTransform(g->GetTargetTransform());
+	//	sp->setTransform(g->GetTargetTransform());
 	//});
-	//gizmo->AddOnSubmitEditing([sp](tr::GizmoModel* g)
+	//gizmo->addOnSubmitEditing([sp](tr::GizmoModel* g)
 	//{
-	//	//sp->SetTransform(g->GetTargetTransform());
+	//	//sp->setTransform(g->GetTargetTransform());
 	//});
 
 
-	//auto tex1 = Texture2D::Create(32, 32);
+	//auto tex1 = Texture2D::create(32, 32);
 	//tex1->Clear(Color32::Red);
-	//auto box1 = StaticMeshComponent::CreateBox(Vector3(5, 5, 5));
-	//auto box1 = StaticMeshComponent::CreateTeapot();
-	//auto box1 = StaticMeshComponent::Create(_T("D:/Proj/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/MqoTest1.mqo"));
-	//auto box1 = StaticMeshComponent::Create(_T("C:/Proj/FluoriteSolution/External/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/Plant1.mqo"));
+	//auto box1 = StaticMeshComponent::createBox(Vector3(5, 5, 5));
+	//auto box1 = StaticMeshComponent::createTeapot();
+	//auto box1 = StaticMeshComponent::create(_T("D:/Proj/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/MqoTest1.mqo"));
+	//auto box1 = StaticMeshComponent::create(_T("C:/Proj/FluoriteSolution/External/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/Plant1.mqo"));
 
-	//box1->GetMaterials()->GetAt(0)->SetMaterialTexture(tex1);
-	////box1->SetTone(ToneF(0, 0, 1, 1.0));
-	//gizmo->Setup(Matrix::Identity, box1->GetTransform());//Matrix::MakeTranslation(1, 0, 0));
+	//box1->GetMaterials()->GetAt(0)->setMaterialTexture(tex1);
+	////box1->setTone(ToneF(0, 0, 1, 1.0));
+	//gizmo->setup(Matrix::Identity, box1->getTransform());//Matrix::MakeTranslation(1, 0, 0));
 
-	//auto mesh3 = StaticMeshComponent::CreatePlane(Vector2(3, 3), 1, 1);
-	//mesh3->SetPosition(-2, 0, 0);
+	//auto mesh3 = StaticMeshComponent::createPlane(Vector2(3, 3), 1, 1);
+	//mesh3->setPosition(-2, 0, 0);
 
 #if 0
 	List<RefPtr<StaticMeshComponent>> boxList;
@@ -565,70 +563,70 @@ void Main()
 #endif
 
 #if 0
-	auto col1 = BoxCollisionShape::Create(1, 2, 3);
-	auto body1 = RigidBody::Create(col1);
+	auto col1 = BoxCollisionShape::create(1, 2, 3);
+	auto body1 = RigidBody::create(col1);
 	body1->SetPosition(10, 0, 0);
 #endif
-	//static_cast<CameraViewportLayer*>(Engine::GetDefault3DLayer())->SetDebugDrawFlags(WorldDebugDrawFlags::PhysicsInfo);
+	//static_cast<CameraViewportLayer*>(Engine::getDefault3DLayer())->setDebugDrawFlags(WorldDebugDrawFlags::PhysicsInfo);
 
-	auto uiRoot = Engine::GetMainWindow();
-	//auto thumb = UIThumb::Create();
-	////thumb->SetPosition(PointF(100, 200));
-	//thumb->SetSize(Size(30,60));
-	////thumb->SetBackground(ColorBrush::Red);
+	auto uiRoot = Application::getMainWindow();
+	//auto thumb = UIThumb::create();
+	////thumb->setPosition(PointF(100, 200));
+	//thumb->setSize(Size(30,60));
+	////thumb->setBackground(ColorBrush::Red);
 	////textBlock1->SetText(_T("TextBlock"));
-	//uiRoot->SetContent(thumb);
-	auto track = UIScrollBar::Create();
-	//track->SetSize(Size(200, NAN));
-	track->SetMaximum(10);
-	track->SetValue(3);
-	track->SetViewportSize(2);
-	uiRoot->AddChild(track);
+	//uiRoot->setContent(thumb);
+	auto track = UIScrollBar::create();
+	//track->setSize(Size(200, NAN));
+	track->setMaximum(10);
+	track->setValue(3);
+	track->setViewportSize(2);
+	uiRoot->addChild(track);
 
 
-	while (!Engine::IsEndRequested())
+	while (!Engine::isEndRequested())
 	{
-		Engine::UpdateFrame();
+		Engine::updateFrame();
 		//if (Engine::BeginRendering())
 		{
-			Engine::RenderFrame();
+			Engine::renderFrame();
 
 
-			//Engine::GetDefaultSceneGraph3D()->GetRenderer()->DrawLinePrimitive(
+			//Engine::getDefaultSceneGraph3D()->getRenderer()->drawLinePrimitive(
 			//	Vector3(0, 0, 0), Color::Red,
 			//	Vector3(5, 5, 5), Color::White);
 
 
-			//gizmo->Render(Engine::GetDefault3DLayer()->GetRenderer());
+			//gizmo->render(Engine::getDefault3DLayer()->getRenderer());
 
-			Engine::PresentFrame();
+			Engine::presentFrame();
 		}
 
-		//body1->GetWorldTransform().GetPosition().Print();
+		//body1->getWorldTransform().GetPosition().print();
 
 
-		//if (Input::IsTriggered(InputButtons::Ok))
+		//if (Input::isTriggered(InputButtons::Ok))
 		//{
-		//	gizmo->SetGizmoType(tr::GizmoType::Scaling);
+		//	gizmo->setGizmoType(tr::GizmoType::Scaling);
 		//}
-		//if (Input::IsTriggered(InputButtons::Cancel))
+		//if (Input::isTriggered(InputButtons::Cancel))
 		//{
-		//	gizmo->SetGizmoType(tr::GizmoType::Rotation);
+		//	gizmo->setGizmoType(tr::GizmoType::Rotation);
 		//}
 	}
 
-	//while (Engine::Update())
+	//while (Engine::update())
 	//{
 	//	//printf("----\n");
-	//	if (Input::IsTriggered(InputButtons::Cancel))
+	//	if (Input::isTriggered(InputButtons::Cancel))
 	//	{
-	//		//tonePE->SetTone(ToneF(-1, -1, -1, 0));
-	//		//tonePE->ChangeTone(ToneF(1, 1, 1, 0), 0.5);
-	//		//blur->SetBlurStatus(0.5, Vector2::Zero, 1.05, 0.5);
+	//		//tonePE->setTone(ToneF(-1, -1, -1, 0));
+	//		//tonePE->changeTone(ToneF(1, 1, 1, 0), 0.5);
+	//		//blur->setBlurStatus(0.5, Vector2::Zero, 1.05, 0.5);
 
-	//		//Engine::GetMainWindow()->SetSize(SizeI(200, 100));
+	//		//Engine::getMainWindow()->setSize(SizeI(200, 100));
 	//	}
-	//	//blur->SetBlurStatus(0.9f, Vector2::Zero, 1.02);
+	//	//blur->setBlurStatus(0.9f, Vector2::Zero, 1.02);
 	//}
 }
 

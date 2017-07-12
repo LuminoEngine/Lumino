@@ -12,22 +12,22 @@ static const String MethodBodyTemplate =
 	_T("    %ReturnStmt%\n")
 	_T("}\n");
 
-void CSStructsGenerator::Generate()
+void CSStructsGenerator::generate()
 {
 	OutputBuffer structText(1);
 	for (auto& structInfo : g_database.structs)
 	{
 		structText.AppendLines(DotNetCommon::MakeXmlDocument(structInfo->document));
-		structText.Append("[StructLayout(LayoutKind.Sequential)]").NewLine();
-		structText.Append("public struct {0}", structInfo->name).NewLine();
-		structText.Append("{").NewLine();
+		structText.append("[StructLayout(LayoutKind.Sequential)]").NewLine();
+		structText.append("public struct {0}", structInfo->name).NewLine();
+		structText.append("{").NewLine();
 		structText.IncreaseIndent();
 
 		// fields
 		for (auto& fieldInfo : structInfo->declaredFields)
 		{
 			structText.AppendLines(DotNetCommon::MakeXmlDocument(fieldInfo->document));
-			structText.Append("public {0} {1};", DotNetCommon::MakeTypeName(fieldInfo->type), fieldInfo->name.ToTitleCase()).NewLine(2);
+			structText.append("public {0} {1};", DotNetCommon::MakeTypeName(fieldInfo->type), fieldInfo->name.toTitleCase()).NewLine(2);
 		}
 
 		// 各要素指定のコンストラクタを作る
@@ -40,22 +40,22 @@ void CSStructsGenerator::Generate()
 			// フィールド格納 代入式 → X = x; Y = y; 等
 			OutputBuffer body;
 			for (auto& fieldInfo : structInfo->declaredFields)
-				body.Append("{0} = {1};", fieldInfo->name.ToTitleCase(), fieldInfo->name).NewLine();
+				body.append("{0} = {1};", fieldInfo->name.toTitleCase(), fieldInfo->name).NewLine();
 
 			// メソッド定義
-			structText.Append("public {0}({1})", structInfo->name, params.ToString()).NewLine();
-			structText.Append("{").NewLine();
+			structText.append("public {0}({1})", structInfo->name, params.toString()).NewLine();
+			structText.append("{").NewLine();
 			structText.IncreaseIndent();
-			structText.AppendLines(body.ToString());
+			structText.AppendLines(body.toString());
 			structText.DecreaseIndent();
-			structText.Append("}").NewLine(2);
+			structText.append("}").NewLine(2);
 		}
 
 		// methods
 		for (auto& methodInfo : structInfo->declaredMethods)
 		{
 			if (methodInfo->ownerProperty != nullptr) continue;								// プロパティの場合はスキップ
-			if (methodInfo->isConstructor && methodInfo->parameters.IsEmpty()) continue;	// C# は構造体にデフォルトコンストラクタは定義できない
+			if (methodInfo->isConstructor && methodInfo->parameters.isEmpty()) continue;	// C# は構造体にデフォルトコンストラクタは定義できない
 			if (CheckAllMemberSetConstructor(structInfo, methodInfo)) continue;				// 単に全メンバに set するだけのコンストラクタは別途定義される
 
 			// params
@@ -73,9 +73,9 @@ void CSStructsGenerator::Generate()
 			if (methodInfo->isStatic) modifier += " static";
 			if (methodInfo->isVirtual) modifier += " virtual";
 			if (methodInfo->isConstructor)
-				structText.Append("{0} {1}({2})", modifier, methodInfo->name, params.ToString()).NewLine();
+				structText.append("{0} {1}({2})", modifier, methodInfo->name, params.toString()).NewLine();
 			else
-				structText.Append("{0} {1} {2}({3})", modifier, DotNetCommon::MakeTypeName(methodInfo->returnType), methodInfo->name, params.ToString()).NewLine();
+				structText.append("{0} {1} {2}({3})", modifier, DotNetCommon::MakeTypeName(methodInfo->returnType), methodInfo->name, params.toString()).NewLine();
 
 			// method body
 			structText.AppendLines(MakeMethodBody(methodInfo, false)).NewLine();
@@ -90,34 +90,34 @@ void CSStructsGenerator::Generate()
 			structText.AppendLines(DotNetCommon::MakeXmlDocument(propInfo->document));
 
 			// property header
-			structText.Append("public {0} {1}", DotNetCommon::MakeTypeName(propInfo->type), propInfo->name).NewLine();
-			structText.Append("{").NewLine();
+			structText.append("public {0} {1}", DotNetCommon::MakeTypeName(propInfo->type), propInfo->name).NewLine();
+			structText.append("{").NewLine();
 			structText.IncreaseIndent();
 
 			if (propInfo->getter != nullptr)
 			{
-				structText.Append("get").NewLine();
+				structText.append("get").NewLine();
 				structText.AppendLines(MakeMethodBody(propInfo->getter, false));
 			}
 			if (propInfo->setter != nullptr)
 			{
-				structText.Append("set").NewLine();
+				structText.append("set").NewLine();
 				structText.AppendLines(MakeMethodBody(propInfo->setter, true));
 			}
 
 			structText.DecreaseIndent();
-			structText.Append("}").NewLine(2);
+			structText.append("}").NewLine(2);
 		}
 
 		structText.DecreaseIndent();
-		structText.Append("}").NewLine();
+		structText.append("}").NewLine();
 	}
 
 	// output
 	{
-		String src = FileSystem::ReadAllText(PathName(g_templateDir, "DotNet/CSStructs.template.cs"));
-		src = src.Replace("%Structs%", structText.ToString());
-		FileSystem::WriteAllText(PathName(g_csOutputDir, "CSStructs.generated.cs"), src);
+		String src = FileSystem::readAllText(PathName(g_templateDir, "DotNet/CSStructs.template.cs"));
+		src = src.replace("%Structs%", structText.toString());
+		FileSystem::writeAllText(PathName(g_csOutputDir, "CSStructs.generated.cs"), src);
 	}
 }
 
@@ -135,9 +135,9 @@ String CSStructsGenerator::MakeMethodBody(MethodInfoPtr methodInfo, bool isSetPr
 		if (paramInfo->isOut || paramInfo->isReturn)
 		{
 			if (paramInfo->type->isStruct)
-				initStmt.Append("{0} {1} = new {0}();", DotNetCommon::MakeTypeName(paramInfo->type), paramInfo->name);
+				initStmt.append("{0} {1} = new {0}();", DotNetCommon::MakeTypeName(paramInfo->type), paramInfo->name);
 			else
-				initStmt.Append("{0} {1};", DotNetCommon::MakeTypeName(paramInfo->type), paramInfo->name);
+				initStmt.append("{0} {1};", DotNetCommon::MakeTypeName(paramInfo->type), paramInfo->name);
 		}
 
 		// call args
@@ -151,25 +151,25 @@ String CSStructsGenerator::MakeMethodBody(MethodInfoPtr methodInfo, bool isSetPr
 
 		// return stmt
 		if (paramInfo->isReturn)
-			returnStmt = String::Format("return {0};", paramInfo->name);
+			returnStmt = String::format("return {0};", paramInfo->name);
 	}
 
 	// method body
 	methodBody.AppendLines(MethodBodyTemplate
-		.Replace("%InitStmt%", initStmt.ToString())
-		.Replace("%APIFuncName%", methodInfo->GetCAPIFuncName())
-		.Replace("%CallArgList%", callArgs.ToString())
-		.Replace("%ReturnStmt%", returnStmt));
+		.replace("%InitStmt%", initStmt.toString())
+		.replace("%APIFuncName%", methodInfo->GetCAPIFuncName())
+		.replace("%CallArgList%", callArgs.toString())
+		.replace("%ReturnStmt%", returnStmt));
 
-	return methodBody.ToString();
+	return methodBody.toString();
 }
 
 bool CSStructsGenerator::CheckAllMemberSetConstructor(TypeInfoPtr structInfo, MethodInfoPtr methodInfo)
 {
 	if (!methodInfo->isConstructor) return false;
 
-	int count = methodInfo->parameters.GetCount();
-	if (count != structInfo->declaredFields.GetCount()) return false;
+	int count = methodInfo->parameters.getCount();
+	if (count != structInfo->declaredFields.getCount()) return false;
 
 	for (int i = 0; i < count; i++)
 	{

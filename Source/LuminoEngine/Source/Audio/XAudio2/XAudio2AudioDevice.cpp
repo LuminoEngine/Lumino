@@ -45,14 +45,14 @@ XAudio2AudioDevice::~XAudio2AudioDevice()
     if ( m_XAudio )
     {
 		m_XAudio->StopEngine();
-		LN_SAFE_RELEASE(m_XAudio);
+		LN_COM_SAFE_RELEASE(m_XAudio);
     }
 }
 
 //------------------------------------------------------------------------------
-bool XAudio2AudioDevice::Initialize(/* const ConfigData& configData */)
+bool XAudio2AudioDevice::initialize(/* const ConfigData& configData */)
 {
-	if (!m_module.Initialize()) {
+	if (!m_module.initialize()) {
 		return false;
 	}
 
@@ -75,28 +75,28 @@ bool XAudio2AudioDevice::Initialize(/* const ConfigData& configData */)
 		return false;
 	}
 
-	ln::Logger::WriteLine("get XAudio2AudioDevice information...");
+	ln::Logger::writeLine("get XAudio2AudioDevice information...");
 
 	// デバイス詳細情報の確認
 	XAUDIO2_DEVICE_DETAILS details;
 	hr = m_XAudio->GetDeviceDetails(0, &details);
 	if (SUCCEEDED(hr))
 	{
-		ln::Logger::WriteLine(L"    DeviceID    : %s", details.DeviceID);
-		ln::Logger::WriteLine(L"    DisplayName : %s", details.DisplayName);
-		ln::Logger::WriteLine(L"    Role        : %d", details.Role);
-		ln::Logger::WriteLine(L"    OutputFormat ( WAVEFORMATEX )");
-		ln::Logger::WriteLine("        Format ID       : %hu", details.OutputFormat.Format.wFormatTag);
-		ln::Logger::WriteLine("        Channels        : %hu", details.OutputFormat.Format.nChannels);
-		ln::Logger::WriteLine("        SamplesPerSec   : %lu", details.OutputFormat.Format.nSamplesPerSec);
-		ln::Logger::WriteLine("        AvgBytesPerSec  : %lu", details.OutputFormat.Format.nAvgBytesPerSec);
-		ln::Logger::WriteLine("        BlockAlign      : %hu", details.OutputFormat.Format.nBlockAlign);
-		ln::Logger::WriteLine("        BitsPerSample   : %hu", details.OutputFormat.Format.wBitsPerSample);
-		ln::Logger::WriteLine("        ExtraSize       : %hu", details.OutputFormat.Format.cbSize);
+		ln::Logger::writeLine(L"    DeviceID    : %s", details.DeviceID);
+		ln::Logger::writeLine(L"    DisplayName : %s", details.DisplayName);
+		ln::Logger::writeLine(L"    Role        : %d", details.Role);
+		ln::Logger::writeLine(L"    OutputFormat ( WAVEFORMATEX )");
+		ln::Logger::writeLine("        Format ID       : %hu", details.OutputFormat.Format.wFormatTag);
+		ln::Logger::writeLine("        Channels        : %hu", details.OutputFormat.Format.nChannels);
+		ln::Logger::writeLine("        SamplesPerSec   : %lu", details.OutputFormat.Format.nSamplesPerSec);
+		ln::Logger::writeLine("        AvgBytesPerSec  : %lu", details.OutputFormat.Format.nAvgBytesPerSec);
+		ln::Logger::writeLine("        BlockAlign      : %hu", details.OutputFormat.Format.nBlockAlign);
+		ln::Logger::writeLine("        BitsPerSample   : %hu", details.OutputFormat.Format.wBitsPerSample);
+		ln::Logger::writeLine("        ExtraSize       : %hu", details.OutputFormat.Format.cbSize);
     }
     else
     {
-		ln::Logger::WriteLine("failed to get information.");
+		ln::Logger::writeLine("failed to get information.");
     }
 
     // チャンネル数記憶
@@ -119,7 +119,7 @@ bool XAudio2AudioDevice::Initialize(/* const ConfigData& configData */)
 }
 
 //------------------------------------------------------------------------------
-void XAudio2AudioDevice::CalcEmitterState(EmitterState* emitter)
+void XAudio2AudioDevice::calcEmitterState(EmitterState* emitter)
 {
     if ( emitter )
     {
@@ -130,7 +130,7 @@ void XAudio2AudioDevice::CalcEmitterState(EmitterState* emitter)
             X3DAUDIO_CALCULATE_REVERB       |
             X3DAUDIO_CALCULATE_DOPPLER;
 
-		emitter->UpdateXAudioEmitter(m_metreUnitDistanceInv);
+		emitter->updateXAudioEmitter(m_metreUnitDistanceInv);
 		emitter->DSPSettings.DstChannelCount = m_deviceChannels;
 
 		m_module.X3DAudioCalculate(
@@ -143,7 +143,7 @@ void XAudio2AudioDevice::CalcEmitterState(EmitterState* emitter)
 }
 
 //------------------------------------------------------------------------------
-AudioPlayer* XAudio2AudioDevice::CreateAudioPlayer(AudioStream* audioStream, bool enable3d, SoundPlayingMode mode)
+AudioPlayer* XAudio2AudioDevice::createAudioPlayer(AudioStream* audioStream, bool enable3d, SoundPlayingMode mode)
 {
 	RefPtr<AudioPlayer> audioPlayer;
 
@@ -154,16 +154,16 @@ AudioPlayer* XAudio2AudioDevice::CreateAudioPlayer(AudioStream* audioStream, boo
 		case SoundPlayingMode::OnMemory:
         {
 			XAudio2OnMemoryAudioPlayer* player = LN_NEW XAudio2OnMemoryAudioPlayer(this);
-			audioPlayer.Attach(player, false);
-			player->Initialize(audioStream, enable3d);
+			audioPlayer.attach(player, false);
+			player->initialize(audioStream, enable3d);
 			break;
         }
 		// ストリーミング再生
 		case SoundPlayingMode::Streaming:
         {
 			XAudio2StreamingAudioPlayer* player = LN_NEW XAudio2StreamingAudioPlayer(this);
-			audioPlayer.Attach(player, false);
-			player->Initialize(audioStream, enable3d);
+			audioPlayer.attach(player, false);
+			player->initialize(audioStream, enable3d);
 			break;
         }
 		default:
@@ -171,14 +171,14 @@ AudioPlayer* XAudio2AudioDevice::CreateAudioPlayer(AudioStream* audioStream, boo
 			break;
 	}
 
-	audioPlayer.SafeAddRef();
+	audioPlayer.safeAddRef();
 	return audioPlayer;
 }
 
 //------------------------------------------------------------------------------
-void XAudio2AudioDevice::Update()
+void XAudio2AudioDevice::update()
 {
-	auto* data = GetSoundListenerData();
+	auto* data = getSoundListenerData();
     m_listenerState.OrientFront.x = data->direction.x;
 	m_listenerState.OrientFront.y = data->direction.y;
 	m_listenerState.OrientFront.z = data->direction.z;
@@ -259,7 +259,7 @@ EmitterState::~EmitterState()
 	LN_SAFE_DELETE_ARRAY(MatrixCoefficients);
 }
 //------------------------------------------------------------------------------
-void EmitterState::UpdateXAudioEmitter( float scale )
+void EmitterState::updateXAudioEmitter( float scale )
 {
     Emitter.Position.x = Position.x * scale;
     Emitter.Position.y = Position.y * scale;
@@ -267,7 +267,7 @@ void EmitterState::UpdateXAudioEmitter( float scale )
     Emitter.Velocity.x = Velocity.x * scale;
     Emitter.Velocity.y = Velocity.y * scale;
     Emitter.Velocity.z = Velocity.z * scale;
-    Emitter.CurveDistanceScaler = Distance * scale;
+    Emitter.CurveDistanceScaler = distance * scale;
 }
 
 } // namespace detail

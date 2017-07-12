@@ -13,9 +13,9 @@ LN_NAMESPACE_BEGIN
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(VisualEffect, tr::ReflectionObject);
 
 //------------------------------------------------------------------------------
-//VisualEffectPtr VisualEffect::Create(const StringRef& filePath)
+//VisualEffectPtr VisualEffect::create(const StringRef& filePath)
 //{
-//	auto* manager = detail::GetEffectManager(nullptr);
+//	auto* manager = detail::getEffectManager(nullptr);
 //	auto* obj = manager->GetEffectEngine()->CreateEffectCore(PathName(filePath));
 //	return VisualEffectPtr(obj, false);
 //}
@@ -27,7 +27,7 @@ VisualEffect::~VisualEffect()
 }
 
 //------------------------------------------------------------------------------
-void VisualEffect::Initialize(/*detail::EffectCore* core*/)
+void VisualEffect::initialize(/*detail::EffectCore* core*/)
 {
 	//LN_REFOBJ_SET(m_core, core);
 }
@@ -37,17 +37,17 @@ void VisualEffect::ReleaseInstance()
 {
 	for (auto* inst : m_instanceList)
 	{
-		inst->Release();
+		inst->release();
 	}
 	m_instanceList.clear();
 }
 
 //------------------------------------------------------------------------------
-VisualEffectInstance* VisualEffect::Play()
+VisualEffectInstance* VisualEffect::play()
 {
 	if (m_overlapEffects)
 	{
-		Stop();
+		stop();
 	}
 
 	VisualEffectInstance* inst = PlayNewInstance();
@@ -56,21 +56,21 @@ VisualEffectInstance* VisualEffect::Play()
 }
 
 //------------------------------------------------------------------------------
-void VisualEffect::Stop()
+void VisualEffect::stop()
 {
 	for (auto* inst : m_instanceList)
 	{
-		inst->Stop();
+		inst->stop();
 	}
 	ReleaseInstance();
 }
 
 //------------------------------------------------------------------------------
-bool VisualEffect::IsPlaying() const
+bool VisualEffect::isPlaying() const
 {
 	for (auto* inst : m_instanceList)
 	{
-		if (inst->IsPlaying())
+		if (inst->isPlaying())
 		{
 			return true;
 		}

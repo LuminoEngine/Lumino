@@ -9,12 +9,12 @@ namespace tr { class ReflectionHelper; }
 
 /// 参照カウントのインクリメント
 #ifndef LN_SAFE_ADDREF
-	#define LN_SAFE_ADDREF( p ) { if ( p ) { (p)->AddRef(); } }
+	#define LN_SAFE_ADDREF( p ) { if ( p ) { (p)->addRef(); } }
 #endif
 
 /// 参照カウントのデクリメント
 #ifndef LN_SAFE_RELEASE
-	#define LN_SAFE_RELEASE( p ) { if ( p ) { (p)->Release(); (p)= nullptr; } }
+	#define LN_SAFE_RELEASE( p ) { if ( p ) { (p)->release(); (p)= nullptr; } }
 #endif
 
 /// a に b を格納するユーティリティ
@@ -23,7 +23,7 @@ namespace tr { class ReflectionHelper; }
 	if (a != b) \
 	{ \
 		LN_SAFE_ADDREF(b); \
-		if (a) (a)->Release(); \
+		if (a) (a)->release(); \
 		(a) = (b); \
 	} \
 }
@@ -37,17 +37,18 @@ class RefObject
 protected:
 	RefObject();
 	virtual ~RefObject();
+	virtual void finalize_();
 
 public:
 
 	/** 参照カウントを取得します。*/
-	virtual int32_t GetReferenceCount() const;
+	virtual int32_t getReferenceCount() const;
 
 	/** 参照カウントをインクリメントします。*/
-	virtual int32_t AddRef();
+	virtual int32_t addRef();
 
 	/** 参照カウントをデクリメントします。*/
-	virtual int32_t Release();
+	virtual int32_t release();
 
 protected:
     Atomic					m_referenceCount;	///< 参照カウント	TODO: atomic<> の方が高速
@@ -55,7 +56,7 @@ protected:
 private:
 	LN_DISALLOW_COPY_AND_ASSIGN(RefObject);
 
-	void ReleaseInternal();
+	void releaseInternal();
 
 	std::atomic<int32_t>	m_internalReferenceCount;
 
@@ -80,15 +81,15 @@ public:
 public:
 
 	template<typename... TArgs>
-	static RefPtr<T> MakeRef(TArgs... args)
+	static RefPtr<T> makeRef(TArgs... args)
 	{
 		return RefPtr<T>(LN_NEW T(args...), false);
 	}
     
     template<class T2>
-    static RefPtr<T> StaticCast(const RefPtr<T2>& other)
+    static RefPtr<T> staticCast(const RefPtr<T2>& other)
     {
-        T* ptr = static_cast<T*>(other.Get());
+        T* ptr = static_cast<T*>(other.get());
         return RefPtr<T>(ptr, true);
     }
 
@@ -115,18 +116,18 @@ public:
 		@param[in]	ptr		: 管理対象としてセットする ReferenceObject インスタンスのポインタ
 		@param[in]	addRef	: true の場合、セットされた ReferenceObject の参照カウントをインクリメントする
 	*/
-	void Attach(T* ptr, bool addRef = false)
+	void attach(T* ptr, bool addRef = false)
     {
 		if (ptr == m_ptr) return;
-        SafeRelease();
+        safeRelease();
 		m_ptr = ptr;
-		if (addRef) SafeAddRef();
+		if (addRef) safeAddRef();
     }
 
 	/**
 		@brief		管理対象オブジェクトの参照カウントをインクリメントする
 	*/
-	void SafeAddRef()
+	void safeAddRef()
 	{ 
 		LN_SAFE_ADDREF(m_ptr);
 	}
@@ -134,12 +135,12 @@ public:
 	/**
 		@brief		管理対象オブジェクトの参照カウントをデクリメントし、管理対象から外す
 	*/
-    void SafeRelease()
+    void safeRelease()
 	{
 		LN_SAFE_RELEASE(m_ptr);
 	}
 
-	T* DetachMove()
+	T* detachMove()
 	{
 		RefObject* ptr = m_ptr;
 		m_ptr = nullptr;
@@ -149,12 +150,12 @@ public:
 	/**
 		@brief		管理対象オブジェクトへのポインタが nullptr であるかを確認する
 	*/
-	bool IsNull() const { return (m_ptr == nullptr); }
+	bool isNull() const { return (m_ptr == nullptr); }
 
 	/**
 		@brief		管理対象オブジェクトへのポインタを取得する
 	*/
-    T* Get() const	{ return static_cast<T*>(m_ptr); }
+    T* get() const	{ return static_cast<T*>(m_ptr); }
 
 
 	/// operator=
@@ -261,42 +262,42 @@ RefPtr<T>::~RefPtr()
 template<typename T1, typename T2>
 bool operator==(const RefPtr<T1>& left, const RefPtr<T2>& right) LN_NOEXCEPT
 {
-	return (left.Get() == right.Get());
+	return (left.get() == right.get());
 }
 
 //------------------------------------------------------------------------------
 template<typename T>
 bool operator==(std::nullptr_t left, const RefPtr<T>& right) LN_NOEXCEPT
 {
-	return ((T*)0 == right.Get());
+	return ((T*)0 == right.get());
 }
 
 //------------------------------------------------------------------------------
 template<typename T>
 bool operator==(const RefPtr<T>& left, std::nullptr_t right) LN_NOEXCEPT
 {
-	return (left.Get() == (T*)0);
+	return (left.get() == (T*)0);
 }
 
 //------------------------------------------------------------------------------
 template<typename T1, typename T2>
 bool operator!=(const RefPtr<T1>& left, const RefPtr<T2>& right) LN_NOEXCEPT
 {
-	return (left.Get() != right.Get());
+	return (left.get() != right.get());
 }
 
 //------------------------------------------------------------------------------
 template<typename T>
 bool operator!=(std::nullptr_t left, const RefPtr<T>& right) LN_NOEXCEPT
 {
-	return ((T*)0 != right.Get());
+	return ((T*)0 != right.get());
 }
 
 //------------------------------------------------------------------------------
 template<typename T>
 bool operator!=(const RefPtr<T>& left, std::nullptr_t right) LN_NOEXCEPT
 {
-	return (left.Get() != (T*)0);
+	return (left.get() != (T*)0);
 }
 
 LN_NAMESPACE_END

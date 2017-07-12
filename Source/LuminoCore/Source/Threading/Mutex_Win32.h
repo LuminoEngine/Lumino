@@ -1,6 +1,5 @@
 ﻿
 #include "../Internal.h"
-#include <windows.h>
 
 LN_NAMESPACE_BEGIN
 namespace detail {
@@ -18,12 +17,12 @@ public:
 		::DeleteCriticalSection(&m_criticalSection);
 	}
 
-	void Lock()
+	void lock()
 	{
 		::EnterCriticalSection(&m_criticalSection);
 	}
 
-	void Unlock()
+	void unlock()
 	{
 		::LeaveCriticalSection(&m_criticalSection);
 	}

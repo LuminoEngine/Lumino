@@ -19,7 +19,7 @@ const float Math::PI2		= 6.283185307f;
 const float Math::PIDiv2	= 1.570796327f;
 
 //------------------------------------------------------------------------------
-unsigned int Math::NextPow2(unsigned int value)
+unsigned int Math::nextPow2(unsigned int value)
 {
 	unsigned int i = 1;
 	while (value > (i <<= 1)) {
@@ -29,7 +29,7 @@ unsigned int Math::NextPow2(unsigned int value)
 }
 
 //------------------------------------------------------------------------------
-void Math::SinCos(float value, float* outSin, float* outCos)
+void Math::sinCos(float value, float* outSin, float* outCos)
 {
 	// Map Value to y in [-pi,pi], x = 2*pi*quotient + remainder.
 	float quotient = (1.0f / PI2) * value;
@@ -71,13 +71,13 @@ void Math::SinCos(float value, float* outSin, float* outCos)
 }
 
 //------------------------------------------------------------------------------
-bool Math::NearEqual(float value1, float value2)
+bool Math::nearEqual(float value1, float value2)
 {
 	return ((value2 - FLT_EPSILON) < value1) && (value1 < (value2 + FLT_EPSILON));
 }
 
 //------------------------------------------------------------------------------
-bool Math::IsNaN(float value)
+bool Math::isNaN(float value)
 {
 #ifdef _MSC_VER
 	return (_isnan(value) != 0);
@@ -87,7 +87,7 @@ bool Math::IsNaN(float value)
 }
 
 //------------------------------------------------------------------------------
-bool Math::IsNaN(double value)
+bool Math::isNaN(double value)
 {
 #ifdef _MSC_VER
 	return (_isnan(value) != 0);
@@ -97,7 +97,7 @@ bool Math::IsNaN(double value)
 }
 
 //------------------------------------------------------------------------------
-bool Math::IsInf(float value)
+bool Math::isInf(float value)
 {
 #ifdef _MSC_VER
 	return (_isnan(value) == 0 && _finite(value) == 0);
@@ -107,7 +107,7 @@ bool Math::IsInf(float value)
 }
 
 //------------------------------------------------------------------------------
-bool Math::IsInf(double value)
+bool Math::isInf(double value)
 {
 #ifdef _MSC_VER
 	return (_isnan(value) == 0 && _finite(value) == 0);
@@ -117,19 +117,19 @@ bool Math::IsInf(double value)
 }
 
 //------------------------------------------------------------------------------
-float Math::Lerp(float v1, float v2, float t)
+float Math::lerp(float v1, float v2, float t)
 {
 	return v1 + ((v2 - v1) * t);
 }
 
 //------------------------------------------------------------------------------
-float Math::QuadAccel(float p, float v, float a, float t)
+float Math::quadAccel(float p, float v, float a, float t)
 {
 	return p + (v * t) + (0.5f * a * t * t);
 }
 
 //------------------------------------------------------------------------------
-float Math::Hermite(float v1, float a1, float v2, float a2, float t)
+float Math::hermite(float v1, float a1, float v2, float a2, float t)
 {
 	float a = 2.f * (v1 - v2) + (a1 + a2);
 	float b = 3.f * (v2 - v1) - (2.f * a1) - a2;
@@ -143,7 +143,7 @@ float Math::Hermite(float v1, float a1, float v2, float a2, float t)
 }
 
 //------------------------------------------------------------------------------
-float Math::CatmullRom(float v1, float v2, float v3, float v4, float t)
+float Math::catmullRom(float v1, float v2, float v3, float v4, float t)
 {
 	float d1 = (v3 - v1) * 0.5f;
 	float d2 = (v4 - v2) * 0.5f;
@@ -151,7 +151,7 @@ float Math::CatmullRom(float v1, float v2, float v3, float v4, float t)
 }
 
 //------------------------------------------------------------------------------
-float Math::CubicBezier(float v1, float v2, float v3, float v4, float t)
+float Math::cubicBezier(float v1, float v2, float v3, float v4, float t)
 {
 	float tp = 1.f - t;
 	return t*t*t*v4 + 3.f*t*t*tp*v3 + 3.f*t*tp*tp*v2 + tp*tp*tp*v1;

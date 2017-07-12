@@ -17,7 +17,7 @@ ReflectionEventInfo::ReflectionEventInfo(TypeInfo* ownerClass, const TCHAR* name
 	, m_raiseEvent(raiseEvent)
 	, m_registerd(false)
 {
-	ownerClass->RegisterReflectionEvent(this);
+	ownerClass->registerReflectionEvent(this);
 }
 
 //------------------------------------------------------------------------------

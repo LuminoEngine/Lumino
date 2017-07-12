@@ -23,48 +23,35 @@ using SceneGraph3DPtr = RefPtr<SceneGraph3D>;
 class SceneGraph
 	: public Object
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 	/// レイヤーリストの取得
 	//LayerList* GetLayerList() { return &m_layerList; }
 
 	/// 現在の時間を取得する (秒)
-	double GetTime() const { return m_time; }
+	double getTime() const { return m_time; }
 
 	/// 前回フレームからの経過時間を取得する (秒)
-	float GetElapsedTime() const { return m_elapsedTime; }
+	float getElapsedTime() const { return m_elapsedTime; }
 
-	/// マウス移動イベントを通知する (ViewPane の左上を 0,0 とした座標を指定する)
-	bool InjectMouseMove(int x, int y);
-
-	/// マウスボタンイベントを通知する
-	bool InjectMouseButtonDown(MouseButtons button, int x, int y);
-
-	/// マウスボタンイベントを通知する
-	bool InjectMouseButtonUp(MouseButtons button, int x, int y);
-
-	bool InjectMouseWheel(int delta);
-
-	SceneGraphManager* GetManager() const { return m_manager; }
-	virtual void UpdateFrame(float deltaTime);
-	virtual SceneNode* GetRootNode() = 0;
-	//virtual CameraComponent* GetMainCamera() = 0;
+	SceneGraphManager* getManager() const { return m_manager; }
+	//virtual void updateFrame(float deltaTime);
+	virtual SceneNode* getRootNode() = 0;
+	//virtual CameraComponent* getMainCamera() = 0;
 
 
-	//DrawList* GetRenderer() const;
+	//DrawList* getRenderer() const;
 	//DrawList* GetDebugRenderer() const;
 
 protected:
 	SceneGraph();
 	virtual ~SceneGraph();
-	void CreateCore(SceneGraphManager* manager);
+	void createCore(SceneGraphManager* manager);
 
 LN_INTERNAL_ACCESS:
-	List<CameraComponent*>* GetAllCameraList() { return &m_allCameraList; }
-	//detail::SceneGraphRenderingProfilerInterface& GetRenderingProfiler() { return m_renderingProfiler; }
 
-	void BeginUpdateFrame();
+	void reginUpdateFrame();
 
 private:
 
@@ -75,7 +62,7 @@ private:
 		float	time = 0.0f;		// 最後にボタンが押されたときの時間（秒）
 		bool	isDown = false;		// 現在ボタンが押されているか
 
-		void ToVector4(const Size& viewSize, Vector4* v)
+		void toVector4(const Size& viewSize, Vector4* v)
 		{
 			v->x = (2.0f * ((float)position.x) / viewSize.width) - 1.0f;
 			v->y = (2.0f * ((float)position.y) / viewSize.height) - 1.0f;
@@ -89,7 +76,6 @@ private:
 
 	double				m_time;					///< 時間処理の開始通知からの経過時間 (秒)
 	float				m_elapsedTime;			///< 前回フレームからの経過時間 (秒)
-	List<CameraComponent*>		m_allCameraList;
 	//LightNodeList		m_renderingLightList;	// 描画ルート以下のライト (他の描画空間にライティングの影響を与えないようにするため)
 
 	MouseState			m_leftMouseState;		///< マウスの左ボタンの状態
@@ -108,21 +94,21 @@ private:
 class SceneGraph2D
 	: public SceneGraph
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
-	static SceneGraph2DPtr Create();
+	static SceneGraph2DPtr create();
 
 public:
 
-	virtual void UpdateFrame(float elapsedTime);
-	virtual SceneNode* GetRootNode() override { return m_defaultRoot; }
-	//virtual CameraComponent* GetMainCamera() override { return m_defaultCamera; }
+	//virtual void updateFrame(float elapsedTime);
+	virtual SceneNode* getRootNode() override { return m_defaultRoot; }
+	//virtual CameraComponent* getMainCamera() override { return m_defaultCamera; }
 	//virtual List<RenderingPass*>* GetRenderingPasses() override { return &m_renderingPasses; }
 
 public:
 	SceneGraph2D();
 	virtual ~SceneGraph2D();
-	void CreateCore(SceneGraphManager* manager);
+	void createCore(SceneGraphManager* manager);
 
 private:
 	SceneNode*				m_defaultRoot;
@@ -136,27 +122,26 @@ private:
 class SceneGraph3D
 	: public SceneGraph
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
-	LN_TR_PROPERTY(bool, visibleGridPlane);
-	tr::Property<bool>	visibleGridPlane;
+	bool	visibleGridPlane;
 
-	virtual void UpdateFrame(float elapsedTime);
-	virtual SceneNode* GetRootNode() override { return m_defaultRoot; }
-	//virtual CameraComponent* GetMainCamera() override { return m_defaultCamera; }
+	//virtual void updateFrame(float elapsedTime);
+	virtual SceneNode* getRootNode() override { return m_defaultRoot; }
+	//virtual CameraComponent* getMainCamera() override { return m_defaultCamera; }
 	//LightComponent* GetMainLight() const;
 	//virtual List<RenderingPass*>* GetRenderingPasses() override { return &m_renderingPasses; }
 
 public:
 	SceneGraph3D();
 	virtual ~SceneGraph3D();
-	void CreateCore(SceneGraphManager* manager);
+	void createCore(SceneGraphManager* manager);
 
 private:
 
 	SceneNode*				m_defaultRoot;
 	CameraComponent*					m_defaultCamera;
-	RefPtr<LightComponent>			m_defaultLight;
+	//RefPtr<LightComponent>			m_defaultLight;
 
 };
 

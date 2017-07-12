@@ -19,25 +19,25 @@ ArchiveMaker::ArchiveMaker()
 //------------------------------------------------------------------------------
 ArchiveMaker::~ArchiveMaker()
 {
-	Close();
+	close();
 }
 
 //------------------------------------------------------------------------------
-bool ArchiveMaker::Open(const char* filePath, const char* key)
+bool ArchiveMaker::open(const char* filePath, const char* key)
 {
 	PathName path(filePath);
-	return Open(path, key);
+	return open(path, key);
 }
 
 //------------------------------------------------------------------------------
-bool ArchiveMaker::Open(const wchar_t* filePath, const char* key)
+bool ArchiveMaker::open(const wchar_t* filePath, const char* key)
 {
 	PathName path(filePath);
-	return Open(path, key);
+	return open(path, key);
 }
 
 //------------------------------------------------------------------------------
-bool ArchiveMaker::Open(const PathName& filePath, const char* key)
+bool ArchiveMaker::open(const PathName& filePath, const char* key)
 {
 	m_encryptionKey = (key) ? key : "";
 	m_fileCount = 0;
@@ -72,18 +72,18 @@ bool ArchiveMaker::Open(const PathName& filePath, const char* key)
 	fwrite(&header, sizeof(header), 1, m_stream);
 
 	// 内部キー(シグネチャ)16バイト
-	WritePadding16(Archive::InternalKey, 16);
+	writePadding16(Archive::InternalKey, 16);
 
 	return true;
 }
 
 //------------------------------------------------------------------------------
-void ArchiveMaker::Close()
+void ArchiveMaker::close()
 {
 	if (m_stream)
 	{
 		// 一番最後にファイルの数を書き込む
-		WriteU32Padding16(m_fileCount, 0);
+		writeU32Padding16(m_fileCount, 0);
 
 		// ファイルを閉じる
 		fclose(m_stream);
@@ -92,34 +92,34 @@ void ArchiveMaker::Close()
 }
 
 //------------------------------------------------------------------------------
-bool ArchiveMaker::AddFile(const PathName& filePath, String aliasPath)
+bool ArchiveMaker::addFile(const PathName& filePath, String aliasPath)
 {
 	FILE* stream;
 	errno_t err = _tfopen_s(&stream, filePath, _T("rb"));
 	if (err == 0)
 	{
         // アクセス用の名前がなければ、ファイル名を代わりに使う
-		if (aliasPath.IsEmpty())
+		if (aliasPath.isEmpty())
         {
 			aliasPath = filePath.c_str();
         }
 
         // アクセス用ファイル名のスラッシュをバックスラッシュ化
-		StringW filename = StringW::FromNativeCharString(aliasPath.c_str());
-		NormalizePath(&filename);
+		StringW filename = StringW::fromNativeCharString(aliasPath.c_str());
+		normalizePath(&filename);
 
         //-------------------------------------------------
         // ファイル名の長さとファイルのサイズを書き込む
-		uint32_t nameSize = filename.GetLength();
-		uint32_t fileSize = (uint32_t)FileSystem::GetFileSize(stream);
+		uint32_t nameSize = filename.getLength();
+		uint32_t fileSize = (uint32_t)FileSystem::getFileSize(stream);
 
-		WriteU32Padding16(nameSize, fileSize);
+		writeU32Padding16(nameSize, fileSize);
 
         //-------------------------------------------------
         // ファイル名とファイル内容を書き込む
 
         // ファイル名を書き込む (終端NULLはナシ)
-		WritePadding16((byte_t*)filename.c_str(), nameSize * sizeof(wchar_t));
+		writePadding16((byte_t*)filename.c_str(), nameSize * sizeof(wchar_t));
 
 		//wprintf(L"filename : %s\n", filename.c_str());
 		//wprintf(L"seek     : %u\n", ftell(m_stream));
@@ -130,7 +130,7 @@ bool ArchiveMaker::AddFile(const PathName& filePath, String aliasPath)
 		fread(buffer, sizeof(byte_t), fileSize, stream);
 
 		// 内容を書き込む
-		WritePadding16(buffer, fileSize);
+		writePadding16(buffer, fileSize);
 
 		delete[] buffer;
         fclose( stream );
@@ -142,17 +142,17 @@ bool ArchiveMaker::AddFile(const PathName& filePath, String aliasPath)
 }
 
 //------------------------------------------------------------------------------
-void ArchiveMaker::NormalizePath(StringW* path)
+void ArchiveMaker::normalizePath(StringW* path)
 {
-	if (path->GetLength() > 0) {
-		for (int i = 0; i < path->GetLength(); ++i) {
+	if (path->getLength() > 0) {
+		for (int i = 0; i < path->getLength(); ++i) {
 			if ((*path)[i] == L'\\') (*path)[i] = L'/';
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
-void ArchiveMaker::WritePadding16(const byte_t* data, uint32_t size)
+void ArchiveMaker::writePadding16(const byte_t* data, uint32_t size)
 {
 	uint32_t ps = (16 - (size % 16)) % 16;
 	char padding[16];
@@ -194,7 +194,7 @@ void ArchiveMaker::WritePadding16(const byte_t* data, uint32_t size)
 }
 
 //------------------------------------------------------------------------------
-void ArchiveMaker::WriteU32Padding16(uint32_t v0, uint32_t v1)
+void ArchiveMaker::writeU32Padding16(uint32_t v0, uint32_t v1)
 {
 	// 16 byte のうち、先頭 8 byte に u32 を 2 つ書き込む
 

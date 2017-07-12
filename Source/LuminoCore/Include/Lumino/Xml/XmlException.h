@@ -16,7 +16,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW XmlException(*this); }
+	virtual Exception* copy() const { return LN_NEW XmlException(*this); }
 };
 
 namespace detail
@@ -50,19 +50,19 @@ public:
 	XmlError() {}
 	~XmlError() {}
 
-	void AddError(XmlErrorCode errorCode_, int line_, int col_, const String& message_)
+	void addError(XmlErrorCode errorCode_, int line_, int col_, const String& message_)
 	{
 		errorCode = errorCode_;
 		line = line_;
 		col = col_;
-		message = String::Format(_T("{3}({0}, {1}): {2}"), line, col, message_, filePath);
+		message = String::format(_T("{3}({0}, {1}): {2}"), line, col, message_, filePath);
 	}
-	void AddError(XmlErrorCode errorCode_, int line_, int col_)	// TODO: 削除予定。エラーメッセージはちゃんとつけてあげよう。
+	void addError(XmlErrorCode errorCode_, int line_, int col_)	// TODO: 削除予定。エラーメッセージはちゃんとつけてあげよう。
 	{
-		AddError(errorCode_, line_, col_, String());
+		addError(errorCode_, line_, col_, String());
 	}
 
-	bool HasError() const { return errorCode != ParseError_NoError; }
+	bool hasError() const { return errorCode != ParseError_NoError; }
 };
 
 } // namespace detail

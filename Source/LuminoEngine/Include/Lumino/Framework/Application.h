@@ -4,8 +4,10 @@
 #include "../EngineSettings.h"
 
 LN_NAMESPACE_BEGIN
+class EngineManager;
 class GameScene;
 namespace detail { class GameSceneManager; }
+class UIMainWindow;
 
 /**
 	@brief		アプリケーションを表します。
@@ -14,14 +16,19 @@ class Application
 	: public RefObject
 {
 public:
-	PlatformWindow* GetNativeMainWindow();
+
+	/** アプリケーションのメインウィンドウを取得します。 */
+	static UIMainWindow* getMainWindow();
+
+
+	PlatformWindow* getNativeMainWindow();
 
 protected:
 	Application();
 	virtual ~Application();
 
 LN_INTERNAL_ACCESS:
-	void Initialize(EngineManager* engineManager);
+	void initialize(EngineManager* engineManager);
 
 private:
 	EngineManager*	m_engineManager;
@@ -46,7 +53,7 @@ LN_CLASS()
 class GameApplication
 	: public Object
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	GameApplication();
 	virtual ~GameApplication();
@@ -60,11 +67,11 @@ public:
 		@brief		アプリケーションを実行します。
 	*/
 	LN_METHOD()
-	void Run(GameScene* initialScene = nullptr);
+	void run(GameScene* initialScene = nullptr);
 
 LN_INTERNAL_ACCESS:
 	LN_METHOD()
-	void Initialize();
+	void initialize();
 
 private:
 	RefPtr<detail::GameSceneManager>	m_gameSceneManager;

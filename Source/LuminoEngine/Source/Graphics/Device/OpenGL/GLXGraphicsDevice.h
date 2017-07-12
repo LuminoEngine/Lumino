@@ -29,19 +29,19 @@ public:
 	/// 描画を行うスレッドで初期化する必要がある
 	void Initialize(const GraphicsDeviceConfigData& configData);
 
-	/// MakeCurrentContext
-	//void MakeCurrentContext(GLXContextObject* context);
+	/// makeCurrentContext
+	//void makeCurrentContext(GLXContextObject* context);
 
 public:
 	// override IGraphicsDevice
-	virtual ISwapChain* GetDefaultSwapChain();
-	virtual ISwapChain* CreateSwapChain(Platform::Window* window);
-	virtual void AttachRenderingThread();
-	virtual void DetachRenderingThread();
+	virtual ISwapChain* getDefaultSwapChain();
+	virtual ISwapChain* createSwapChain(Platform::Window* window);
+	virtual void attachRenderingThread();
+	virtual void detachRenderingThread();
 	// override GLGraphicsDevice
-	virtual GLContext* GetMainContext();
-	virtual GLContext* GetMainRenderingContext();
-	virtual void MakeCurrentContext(GLContext* context);
+	virtual GLContext* getMainContext();
+	virtual GLContext* getMainRenderingContext();
+	virtual void makeCurrentContext(GLContext* context);
 
 public:
 	static void* GetGLXProcAddress(const char* procName);

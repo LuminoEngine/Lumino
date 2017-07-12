@@ -31,7 +31,7 @@ GLRenderer::~GLRenderer()
 }
 
 //------------------------------------------------------------------------------
-void GLRenderer::Activate()
+void GLRenderer::activate()
 {
 	// VAO はコンテキスト間で共有できないため、描画スレッド上で作る必要がある。
 	// なお、メインスレッドの MainContext で作った後、描画スレッドの Context に glBindVertexArray すると、
@@ -67,48 +67,48 @@ void GLRenderer::Deactivate()
 }
 
 //------------------------------------------------------------------------------
-GLuint GLRenderer::GetVertexArrayObject()
+GLuint GLRenderer::getVertexArrayObject()
 {
 	
 	return m_vertexArray;
 }
 
 ////------------------------------------------------------------------------------
-//void GLRenderer::SetRenderTarget(int index, ITexture* texture)
+//void GLRenderer::setRenderTarget(int index, ITexture* texture)
 //{
 //	if (texture != nullptr) {
-//		LN_THROW((texture->GetTextureType() == TextureType_RenderTarget), ArgumentException);
+//		LN_THROW((texture->getTextureType() == TextureType_RenderTarget), ArgumentException);
 //	}
 //	LN_REFOBJ_SET(m_currentRenderTargets[index], static_cast<GLRenderTargetTexture*>(texture));
 //	m_modifiedFrameBuffer = true;
 //}
 //
 ////------------------------------------------------------------------------------
-//ITexture* GLRenderer::GetRenderTarget(int index)
+//ITexture* GLRenderer::getRenderTarget(int index)
 //{
 //	return m_currentRenderTargets[index];
 //}
 //
 ////------------------------------------------------------------------------------
-//void GLRenderer::SetDepthBuffer(ITexture* texture)
+//void GLRenderer::setDepthBuffer(ITexture* texture)
 //{
 //	if (texture != nullptr)
 //	{
-//		LN_THROW((texture->GetTextureType() == TextureType_DepthBuffer), ArgumentException);
+//		LN_THROW((texture->getTextureType() == TextureType_DepthBuffer), ArgumentException);
 //	}
 //	LN_REFOBJ_SET(m_currentDepthBuffer, static_cast<GLDepthBuffer*>(texture));
 //	m_modifiedFrameBuffer = true;
 //}
 
 //------------------------------------------------------------------------------
-//ITexture* GLRenderer::GetDepthBuffer()
+//ITexture* GLRenderer::getDepthBuffer()
 //{
 //	LN_THROW(0, NotImplementedException);
 //	return 0;
 //}
 
 ////------------------------------------------------------------------------------
-//void GLRenderer::SetViewport(const RectI& rect)
+//void GLRenderer::setViewport(const RectI& rect)
 //{
 //	const SizeI& scr = m_currentRenderTargets[0]->GetSize();
 //	glViewport(rect.x, scr.height - (rect.y + rect.height), rect.width, rect.height);
@@ -116,27 +116,27 @@ GLuint GLRenderer::GetVertexArrayObject()
 //}
 
 //------------------------------------------------------------------------------
-void GLRenderer::OnEnterRenderState()
+void GLRenderer::onEnterRenderState()
 {
 }
 
 //------------------------------------------------------------------------------
-void GLRenderer::OnLeaveRenderState()
+void GLRenderer::onLeaveRenderState()
 {
 }
 
 //------------------------------------------------------------------------------
-void GLRenderer::OnBeginRendering()
+void GLRenderer::onBeginRendering()
 {
 }
 
 //------------------------------------------------------------------------------
-void GLRenderer::OnEndRendering()
+void GLRenderer::onEndRendering()
 {
 }
 
 //------------------------------------------------------------------------------
-void GLRenderer::OnUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, ITexture* depthBuffer)
+void GLRenderer::onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, ITexture* depthBuffer)
 {
 
 	//auto cc =wglGetCurrentContext();
@@ -157,7 +157,7 @@ void GLRenderer::OnUpdateFrameBuffers(ITexture** renderTargets, int renderTarget
 			// カラーバッファをセットする
 			glFramebufferTexture2D(
 				GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D,
-				static_cast<GLTextureBase*>(renderTargets[i])->GetGLTexture(), 0);
+				static_cast<GLTextureBase*>(renderTargets[i])->getGLTexture(), 0);
 			LN_CHECK_GLERROR();
 		}
 		else
@@ -176,7 +176,7 @@ void GLRenderer::OnUpdateFrameBuffers(ITexture** renderTargets, int renderTarget
 		// 深度バッファをセットする
 		glFramebufferRenderbuffer(
 			GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,//GL_DEPTH_STENCIL_ATTACHMENT,
-			GL_RENDERBUFFER, static_cast<GLTextureBase*>(depthBuffer)->GetGLTexture());
+			GL_RENDERBUFFER, static_cast<GLTextureBase*>(depthBuffer)->getGLTexture());
 		LN_CHECK_GLERROR();
 	}
 	else
@@ -191,7 +191,7 @@ void GLRenderer::OnUpdateFrameBuffers(ITexture** renderTargets, int renderTarget
 }
 
 //------------------------------------------------------------------------------
-void GLRenderer::OnUpdateRenderState(const RenderState& newState, const RenderState& oldState, bool reset)
+void GLRenderer::onUpdateRenderState(const RenderState& newState, const RenderState& oldState, bool reset)
 {
 	if (reset)
 	{
@@ -296,7 +296,7 @@ glIsEnabled with argument GL_BLEND
 }
 
 //------------------------------------------------------------------------------
-void GLRenderer::OnUpdateDepthStencilState(const DepthStencilState& newState, const DepthStencilState& oldState, bool reset)
+void GLRenderer::onUpdateDepthStencilState(const DepthStencilState& newState, const DepthStencilState& oldState, bool reset)
 {
 	GLenum cmpFuncTable[] =
 	{
@@ -363,17 +363,17 @@ void GLRenderer::OnUpdateDepthStencilState(const DepthStencilState& newState, co
 }
 
 //------------------------------------------------------------------------------
-void GLRenderer::OnUpdatePrimitiveData(IVertexDeclaration* decls, const List<RefPtr<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer)
+void GLRenderer::onUpdatePrimitiveData(IVertexDeclaration* decls, const List<RefPtr<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer)
 {
-	if (vertexBuufers.IsEmpty())
+	if (vertexBuufers.isEmpty())
 		m_currentVertexBuffer = nullptr;
 	else
-		LN_REFOBJ_SET(m_currentVertexBuffer, static_cast<GLVertexBuffer*>(vertexBuufers[0].Get()));
+		LN_REFOBJ_SET(m_currentVertexBuffer, static_cast<GLVertexBuffer*>(vertexBuufers[0].get()));
 	LN_REFOBJ_SET(m_currentIndexBuffer, static_cast<GLIndexBuffer*>(indexBuffer));
 }
 
 //------------------------------------------------------------------------------
-void GLRenderer::OnClear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
+void GLRenderer::onClear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
 	glDepthMask(GL_TRUE);	LN_CHECK_GLERROR();   // これがないと Depth が正常にクリアされない
 
@@ -406,7 +406,7 @@ void GLRenderer::OnClear(ClearFlags flags, const Color& color, float z, uint8_t 
 }
 
 //------------------------------------------------------------------------------
-void GLRenderer::OnDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
+void GLRenderer::onDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
 {
 	if (m_currentVertexBuffer == NULL) {
 		LN_THROW(0, InvalidOperationException);
@@ -416,8 +416,8 @@ void GLRenderer::OnDrawPrimitive(PrimitiveType primitive, int startVertex, int p
 	// 描画に必要な情報を最新にする
 	//UpdateRenderState(m_requestedRenderState, m_justSawReset);
 	//UpdateDepthStencilState(m_requestedDepthStencilState, m_justSawReset);
-	UpdateVAO();
-	UpdateVertexAttribPointer();
+	updateVAO();
+	updateVertexAttribPointer();
 
 
 	// TODO:仮位置
@@ -431,7 +431,7 @@ void GLRenderer::OnDrawPrimitive(PrimitiveType primitive, int startVertex, int p
 	// プリミティブと必要な頂点数の取得
 	GLenum gl_prim;
 	int vertexCount;
-	GetPrimitiveInfo(primitive, primitiveCount, &gl_prim, &vertexCount);
+	getPrimitiveInfo(primitive, primitiveCount, &gl_prim, &vertexCount);
 
 	// 描画
 	glDrawArrays(gl_prim, startVertex, vertexCount);
@@ -444,7 +444,7 @@ void GLRenderer::OnDrawPrimitive(PrimitiveType primitive, int startVertex, int p
 }
 
 //------------------------------------------------------------------------------
-void GLRenderer::OnDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
+void GLRenderer::onDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
 {
 	if (m_currentVertexBuffer == NULL ||
 		m_currentIndexBuffer == NULL ||
@@ -456,18 +456,18 @@ void GLRenderer::OnDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex,
 	// 描画に必要な情報を最新にする
 	//UpdateRenderState(m_requestedRenderState, m_justSawReset);
 	//UpdateDepthStencilState(m_requestedDepthStencilState, m_justSawReset);
-	UpdateVAO();
-	UpdateVertexAttribPointer();
+	updateVAO();
+	updateVertexAttribPointer();
 
 	// プリミティブと必要な頂点数の取得
 	GLenum gl_prim;
 	int vertexCount;
-	GetPrimitiveInfo(primitive, primitiveCount, &gl_prim, &vertexCount);
+	getPrimitiveInfo(primitive, primitiveCount, &gl_prim, &vertexCount);
 
 	// 引数 start end には、本来であれば0～vertexCountまでのインデックスの中の最大、最小の値を渡す。
 	// http://wiki.livedoor.jp/mikk_ni3_92/d/glDrawRangeElements%A4%CB%A4%E8%A4%EB%C9%C1%B2%E8
 	// ただ、全範囲を渡しても特に問題なさそうなのでこのまま。
-	if (m_currentIndexBuffer->GetFormat() == IndexBufferFormat_UInt16)
+	if (m_currentIndexBuffer->getFormat() == IndexBufferFormat_UInt16)
 	{
 		glDrawElements(gl_prim, vertexCount, GL_UNSIGNED_SHORT, (GLvoid*)(sizeof(GLushort) * startIndex));
 	}
@@ -484,13 +484,13 @@ void GLRenderer::OnDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex,
 }
 
 //------------------------------------------------------------------------------
-void GLRenderer::UpdateVAO()
+void GLRenderer::updateVAO()
 {
 	glBindVertexArray(m_vertexArray); LN_CHECK_GLERROR();
-	glBindBuffer(GL_ARRAY_BUFFER, m_currentVertexBuffer->GetGLVertexBuffer()); LN_CHECK_GLERROR();
+	glBindBuffer(GL_ARRAY_BUFFER, m_currentVertexBuffer->getGLVertexBuffer()); LN_CHECK_GLERROR();
 
 	if (m_currentIndexBuffer != NULL) {
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_currentIndexBuffer->GetIndexBufferObject()); LN_CHECK_GLERROR();
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_currentIndexBuffer->getIndexBufferObject()); LN_CHECK_GLERROR();
 	}
 	else {
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); LN_CHECK_GLERROR();
@@ -498,17 +498,17 @@ void GLRenderer::UpdateVAO()
 }
 
 //------------------------------------------------------------------------------
-void GLRenderer::UpdateVertexAttribPointer()
+void GLRenderer::updateVertexAttribPointer()
 {
 	if (m_currentShaderPass == nullptr) return;
 
-	GLVertexDeclaration* glDecls = static_cast<GLVertexDeclaration*>(GetVertexDeclaration());
+	GLVertexDeclaration* glDecls = static_cast<GLVertexDeclaration*>(getVertexDeclaration());
 
 	// シェーダの頂点属性の更新
-	const List<LNGLVertexElement>& elements = glDecls->GetVertexElements();
+	const List<LNGLVertexElement>& elements = glDecls->getVertexElements();
 	for (const LNGLVertexElement& elm : elements)
 	{
-		int index = m_currentShaderPass->GetUsageAttributeIndex(elm.Usage, elm.UsageIndex);
+		int index = m_currentShaderPass->getUsageAttributeIndex(elm.Usage, elm.UsageIndex);
 		if (index == -1) {
 			continue;	// elm に対応するセマンティクスをもつ attribute 変数は見つからなかった
 		}
@@ -528,7 +528,7 @@ void GLRenderer::UpdateVertexAttribPointer()
 }
 
 //------------------------------------------------------------------------------
-void GLRenderer::GetPrimitiveInfo(PrimitiveType primitive, int primitiveCount, GLenum* gl_prim, int* vertexCount)
+void GLRenderer::getPrimitiveInfo(PrimitiveType primitive, int primitiveCount, GLenum* gl_prim, int* vertexCount)
 {
 	switch (primitive)
 	{

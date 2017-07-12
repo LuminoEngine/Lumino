@@ -18,31 +18,31 @@ TEST_F(IntegrateTest_Threading_Task, Basic)
 {
 	g_value = 0;
 	ConditionFlag flag(false);
-	auto func = [&flag](){ g_value++; flag.Wait(); };
+	auto func = [&flag](){ g_value++; flag.wait(); };
 
-	int level = TaskScheduler::GetDefault()->GetMaxConcurrencyLevel();
+	int level = TaskScheduler::getDefault()->getMaxConcurrencyLevel();
 
 	// 同時実行可能な数+1だけ Task を作る
 	List<TaskPtr> tasks;
 	for (int i = 0; i < level + 1; ++i)
 	{
-		tasks.Add(Task::Run(Delegate<void()>(func)));
+		tasks.add(Task::run(Delegate<void()>(func)));
 	}
 
-	// 実行されているのは TaskScheduler::GetDefault()->GetMaxConcurrencyLevel() だけ
-	//Threading::Thread::Sleep(200);
+	// 実行されているのは TaskScheduler::GetDefault()->getMaxConcurrencyLevel() だけ
+	//Threading::Thread::sleep(200);
 	while (g_value != level);
 	ASSERT_EQ(level, g_value);
-	ASSERT_EQ(TaskStatus::Running, tasks[0]->GetStatus());	// まだ lag.Wait(); で待機している
+	ASSERT_EQ(TaskStatus::Running, tasks[0]->getStatus());	// まだ lag.wait(); で待機している
 
-	flag.SetTrue();
-	//Threading::Thread::Sleep(200);
+	flag.setTrue();
+	//Threading::Thread::sleep(200);
 	while (g_value != level + 1);
 	ASSERT_EQ(level + 1, g_value);
-	Thread::Sleep(200);
+	Thread::sleep(200);
 	for (int i = 0; i < level + 1; ++i)
 	{
-		ASSERT_EQ(true, tasks[i]->IsCompleted());
+		ASSERT_EQ(true, tasks[i]->isCompleted());
 	}
 }
 
@@ -53,19 +53,19 @@ TEST_F(IntegrateTest_Threading_Task, Basic2)
 	{
 		List<int> ary;
 		int sum;
-		auto funcAdd = [&ary]() { ary.Add(1); };
+		auto funcAdd = [&ary]() { ary.add(1); };
 		auto funcItr = [&ary, &sum]() { for (int v : ary) { sum += v; } };
 
-		auto task1 = Task::Create(Delegate<void()>(funcAdd));
-		auto task2 = Task::Create(Delegate<void()>(funcItr));
+		auto task1 = Task::create(Delegate<void()>(funcAdd));
+		auto task2 = Task::create(Delegate<void()>(funcItr));
 
 		for (int j = 0; j < 1000; j++)
 		{
 			sum = 0;
-			task1->Start();
-			task1->Wait();
-			task2->Start();
-			task2->Wait();
+			task1->start();
+			task1->wait();
+			task2->start();
+			task2->wait();
 			ASSERT_EQ((j + 1), sum);
 		}
 	}

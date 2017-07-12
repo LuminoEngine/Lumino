@@ -30,62 +30,62 @@ class SkinnedMeshModel
 	: public Object
 	, public detail::IAnimationTargetElement
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 	// TODO: Unity では Mesh からは切り離された独立したコンポーネントである。そうしたほうがいいかな？
-	Animator* GetAnimator() const { return m_animator; }
+	Animator* getAnimator() const { return m_animator; }
 
 protected:
 	// IAnimationTargetElement interface
-	virtual int GetAnimationTargetAttributeCount() const override;
-	virtual detail::IAnimationTargetAttribute* GetAnimationTargetAttribute(int index) override;
+	virtual int getAnimationTargetAttributeCount() const override;
+	virtual detail::IAnimationTargetAttribute* getAnimationTargetAttribute(int index) override;
 
 LN_INTERNAL_ACCESS:
 	SkinnedMeshModel();
 	virtual ~SkinnedMeshModel();
-	void Initialize(detail::GraphicsManager* manager, PmxSkinnedMeshResource* sharingMesh);
+	void initialize(detail::GraphicsManager* manager, PmxSkinnedMeshResource* sharingMesh);
 
-	void SetWorldTransform(const Matrix& matrix) { m_worldTransform = matrix; m_worldTransformInverse = Matrix::MakeInverse(m_worldTransform); }
-	const Matrix& GetWorldTransform() const { return m_worldTransform; }
-	const Matrix& GetWorldTransformInverse() const { return m_worldTransformInverse; }
+	void setWorldTransform(const Matrix& matrix) { m_worldTransform = matrix; m_worldTransformInverse = Matrix::makeInverse(m_worldTransform); }
+	const Matrix& getWorldTransform() const { return m_worldTransform; }
+	const Matrix& getWorldTransformInverse() const { return m_worldTransformInverse; }
 
 
-	void PreUpdate();
+	void preUpdate();
 
-	void PostUpdate();
+	void postUpdate();
 
 
 
 	// ボーン行列を、ルートボーンから階層的に更新する
 	// (アニメーション適用後に呼び出す)
-	void UpdateBoneTransformHierarchy();
+	void updateBoneTransformHierarchy();
 
 	// スキニングに使用する最終ボーン行列の作成
-	void UpdateSkinningMatrices();
+	void updateSkinningMatrices();
 
 	// スキニング行列配列の取得 (要素数は要素数はボーン数。これをそのままスキニングテクスチャに書き込める)
 	//Matrix* GetSkinningMatrices() { return m_skinningMatrices; }
 
 	// スキニング行列配列を書き込んだテクスチャの取得
-	Texture* GetSkinningMatricesTexture() { return m_skinningMatricesTexture; }
+	Texture* getSkinningMatricesTexture() { return m_skinningMatricesTexture; }
 
 	// サブセット数の取得
-	//int GetSubsetCount() const;
+	//int getSubsetCount() const;
 
 	// マテリアル取得
-	//const Material& GetMaterial(int subsetIndex) const;
+	//const Material& getMaterial(int subsetIndex) const;
 
 	// サブセット描画
-	//void DrawSubset(int subsetIndex);
+	//void drawSubset(int subsetIndex);
 
 private:
-	void UpdateIK();
-	void UpdateBestow();
+	void updateIK();
+	void updateBestow();
 
 
 LN_INTERNAL_ACCESS:	// TODO:
-	// TODO: ↓このあたりは StaticMeshModel にして、Renderer::DrawMesh に渡せるようにしたい。LOD の選択はそちらで。
+	// TODO: ↓このあたりは StaticMeshModel にして、Renderer::drawMesh に渡せるようにしたい。LOD の選択はそちらで。
 	//RefPtr<PmxSkinnedMeshResource>	m_meshResource;
 	//RefPtr<MaterialList>			m_materials;
 	RefPtr<StaticMeshModel>			m_mesh;
@@ -117,37 +117,37 @@ class SkinnedMeshBone
 	: public Object
 	, public detail::IAnimationTargetAttribute
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
-	SkinnedMeshBone* GetParent() const { return m_parent; }
+	SkinnedMeshBone* getParent() const { return m_parent; }
 
 LN_INTERNAL_ACCESS:
 	SkinnedMeshBone();
 	virtual ~SkinnedMeshBone();
-	void Initialize(PmxBoneResource* boneResource);
-	void PostInitialize(SkinnedMeshModel* owner, int depth);
+	void initialize(PmxBoneResource* boneResource);
+	void postInitialize(SkinnedMeshModel* owner, int depth);
 
 	// PmxBoneResource の取得
-	PmxBoneResource* GetCore() const;
+	PmxBoneResource* getCore() const;
 
 	// 子ボーンの追加
-	void AddChildBone(SkinnedMeshBone* bone);
+	void addChildBone(SkinnedMeshBone* bone);
 
 	// ボーン行列を階層的に更新する
-	void UpdateGlobalTransform(bool hierarchical);
+	void updateGlobalTransform(bool hierarchical);
 
 	//  結合済み行列 (モデル内のグローバル行列) の取得
-	const Matrix& GetCombinedMatrix() const { return m_combinedMatrix; }
+	const Matrix& getCombinedMatrix() const { return m_combinedMatrix; }
 
 	// ローカル行列を初期値に戻す
-	void ResetLocalTransform() { m_localTransform = AttitudeTransform::Identity; }
+	void resetLocalTransform() { m_localTransform = AttitudeTransform::Identity; }
 
-	AttitudeTransform* GetLocalTransformPtr() { return &m_localTransform; }
+	AttitudeTransform* getLocalTransformPtr() { return &m_localTransform; }
 
 protected:
 	// IAnimationTargetAttribute interface
-	virtual const String& GetAnimationTargetName() const override;
-	virtual void SetAnimationTargetValue(ValueType type, const void* value) override;
+	virtual const String& getAnimationTargetName() const override;
+	virtual void setAnimationTargetValue(ValueType type, const void* value) override;
 
 LN_INTERNAL_ACCESS:	// TODO
 	RefPtr<PmxBoneResource>	m_core;				// 共有データクラス
@@ -170,11 +170,11 @@ class MmdSkinnedMeshRigidBody
 LN_INTERNAL_ACCESS:
 	MmdSkinnedMeshRigidBody();
 	virtual ~MmdSkinnedMeshRigidBody();
-	void Initialize(SkinnedMeshModel* ownerModel, PmxRigidBodyResource* rigidBodyResource, float scale);
+	void initialize(SkinnedMeshModel* ownerModel, PmxRigidBodyResource* rigidBodyResource, float scale);
 
-	RigidBody* GetRigidBody() const;
-	void UpdateBeforePhysics();
-	void UpdateAfterPhysics();
+	RigidBody* getRigidBody() const;
+	void updateBeforePhysics();
+	void updateAfterPhysics();
 
 private:
 	SkinnedMeshModel*		m_ownerModel;
@@ -192,7 +192,7 @@ class MmdSkinnedMeshJoint
 LN_INTERNAL_ACCESS:
 	MmdSkinnedMeshJoint();
 	virtual ~MmdSkinnedMeshJoint();
-	void Initialize(SkinnedMeshModel* ownerModel, PmxJointResource* jointResource);
+	void initialize(SkinnedMeshModel* ownerModel, PmxJointResource* jointResource);
 
 private:
 	RefPtr<DofSpringJoint>	m_joint;

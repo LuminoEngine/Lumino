@@ -23,7 +23,7 @@ Win32CodePageEncoding::Win32CodePageEncoding(UINT codePage)
 }
 
 //------------------------------------------------------------------------------
-int Win32CodePageEncoding::GetCharacterCount(const void* buffer, size_t bufferSize) const
+int Win32CodePageEncoding::getCharacterCount(const void* buffer, size_t bufferSize) const
 {
 	int count = 0;
 	const byte_t* pos = (const byte_t*)buffer;
@@ -40,7 +40,7 @@ int Win32CodePageEncoding::GetCharacterCount(const void* buffer, size_t bufferSi
 }
 
 //------------------------------------------------------------------------------
-int Win32CodePageEncoding::GetLeadExtraLength(const void* buffer, size_t bufferSize) const
+int Win32CodePageEncoding::getLeadExtraLength(const void* buffer, size_t bufferSize) const
 {
 	return (::IsDBCSLeadByteEx(m_cpInfo.CodePage, *((const byte_t*)buffer))) ? 1 : 0;
 }
@@ -61,11 +61,11 @@ Win32CodePageEncoding::Win32CodePageDecoder::Win32CodePageDecoder(const CPINFOEX
 	if (m_maxByteCount == 2 && cpInfo.LeadByte[0] != '\0') {
 		m_canRemain = true;
 	}
-	Reset();
+	reset();
 }
 
 //------------------------------------------------------------------------------
-void Win32CodePageEncoding::Win32CodePageDecoder::ConvertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, size_t* outBytesUsed, size_t* outCharsUsed)
+void Win32CodePageEncoding::Win32CodePageDecoder::convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, size_t* outBytesUsed, size_t* outCharsUsed)
 {
 	if (outputElementSize > 0) {
 		output[0] = '\0';
@@ -87,19 +87,19 @@ void Win32CodePageEncoding::Win32CodePageDecoder::ConvertToUTF16(const byte_t* i
 		ByteBuffer tmpInBuffer;
 		if (m_lastLeadByte != '\0')
 		{
-			tmpInBuffer.Resize(1 + inputByteSize);
-			tmpInBuffer.Copy(0, &m_lastLeadByte, 1);
-			tmpInBuffer.Copy(1, input, inputByteSize);
+			tmpInBuffer.resize(1 + inputByteSize);
+			tmpInBuffer.copy(0, &m_lastLeadByte, 1);
+			tmpInBuffer.copy(1, input, inputByteSize);
 		}
 		else
 		{
-			tmpInBuffer.Resize(inputByteSize);
-			tmpInBuffer.Copy(0, input, inputByteSize);
+			tmpInBuffer.resize(inputByteSize);
+			tmpInBuffer.copy(0, input, inputByteSize);
 		}
 
 		// バッファ全体をチェック。末尾が先行バイトであれば defectCount が 1 でループ終了する。
 		size_t defectCount = 0;
-		for (size_t i = 0; i < tmpInBuffer.GetSize(); i++)
+		for (size_t i = 0; i < tmpInBuffer.getSize(); i++)
 		{
 			if (defectCount > 0) {
 				// ひとつ前の文字が LeadByte だった。2つで1文字。
@@ -116,19 +116,19 @@ void Win32CodePageEncoding::Win32CodePageDecoder::ConvertToUTF16(const byte_t* i
 
 		// バッファ終端が先行バイトだった。先行バイトを保存する
 		if (defectCount > 0) {
-			m_lastLeadByte = tmpInBuffer[tmpInBuffer.GetSize() - 1];
+			m_lastLeadByte = tmpInBuffer[tmpInBuffer.getSize() - 1];
 		}
 		else {
 			m_lastLeadByte = '\0';
 		}
 
 		// バッファ全てが先行バイトだった。何もしない
-		if (defectCount == tmpInBuffer.GetSize()) {
+		if (defectCount == tmpInBuffer.getSize()) {
 			return;
 		}
 
 		// 変換
-		convertedWideCount = ::MultiByteToWideChar(m_codePage, MB_ERR_INVALID_CHARS, (LPCSTR)tmpInBuffer.GetConstData(), tmpInBuffer.GetSize() - defectCount, (LPWSTR)output, outputElementSize);
+		convertedWideCount = ::MultiByteToWideChar(m_codePage, MB_ERR_INVALID_CHARS, (LPCSTR)tmpInBuffer.getConstData(), tmpInBuffer.getSize() - defectCount, (LPWSTR)output, outputElementSize);
 		LN_THROW(convertedWideCount > 0, EncodingException);
 	}
 	else
@@ -139,7 +139,7 @@ void Win32CodePageEncoding::Win32CodePageDecoder::ConvertToUTF16(const byte_t* i
 
 	// MultiByteToWideChar じゃ文字数カウントはできないので UnicodeUtils を使う
 	int count;
-	UTFConversionResult r = UnicodeUtils::GetUTF16CharCount((UnicodeUtils::UTF16*)output, convertedWideCount, true, &count);
+	UTFConversionResult r = UnicodeUtils::getUTF16CharCount((UnicodeUtils::UTF16*)output, convertedWideCount, true, &count);
 	LN_THROW(r == UTFConversionResult_Success, EncodingException);
 
 	*outBytesUsed = convertedWideCount * sizeof(wchar_t);
@@ -159,11 +159,11 @@ Win32CodePageEncoding::Win32CodePageEncoder::Win32CodePageEncoder(const CPINFOEX
 {
 	// TODO: 実装の時間無いので今は flase
 	m_canRemain = false;
-	Reset();
+	reset();
 }
 
 //------------------------------------------------------------------------------
-void Win32CodePageEncoding::Win32CodePageEncoder::ConvertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, size_t* outBytesUsed, size_t* outCharsUsed)
+void Win32CodePageEncoding::Win32CodePageEncoder::convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, size_t* outBytesUsed, size_t* outCharsUsed)
 {
 	if (outputByteSize > 0) {
 		output[0] = '\0';
@@ -210,7 +210,7 @@ void Win32CodePageEncoding::Win32CodePageEncoder::ConvertFromUTF16(const UTF16* 
 
 	// WideCharToMultiByte じゃ文字数カウントはできないので UnicodeUtils を使う
 	int count;
-	UTFConversionResult r = UnicodeUtils::GetUTF16CharCount((UnicodeUtils::UTF16*)input, inputElementSize, true, &count);
+	UTFConversionResult r = UnicodeUtils::getUTF16CharCount((UnicodeUtils::UTF16*)input, inputElementSize, true, &count);
 	LN_THROW(r == UTFConversionResult_Success, EncodingException);
 
 	*outBytesUsed = convertedByteCount;

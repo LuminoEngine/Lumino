@@ -1,10 +1,11 @@
 
 set(LN_SOURCES_SampleBrowser
+	Sample_Basic_HelloWorld.cpp
+	Sample_Graphics2D_Sprite2D.cpp
+	Sample_Support_DebugAndTestSupport.cpp
+	SampleBrowser.cpp
 	SampleBrowser.PCH.cpp
 	SampleBrowser.PCH.h
-	SampleBrowser.cpp
-	HelloWorld.cpp
-	Sprite2D.cpp
 )
 
 include_directories(

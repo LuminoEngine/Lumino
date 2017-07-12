@@ -50,9 +50,9 @@ ResultState AbstractLexer::Tokenize(InputFile* file)
 {
 	assert(file != nullptr);
 	m_inputFile = file;
-	const char* code = (const char*)file->GetCodeBuffer()->GetConstData();
-	int length = (file->GetCodeBuffer()->GetSize() / sizeof(char));
-	return Tokenize(code, length, file->GetTokenListInternal(), file->GetDiag());
+	const char* code = (const char*)file->GetCodeBuffer()->getConstData();
+	int length = (file->GetCodeBuffer()->getSize() / sizeof(char));
+	return Tokenize(code, length, file->GetTokenListInternal(), file->getDiag());
 }
 
 //------------------------------------------------------------------------------
@@ -72,7 +72,7 @@ ResultState AbstractLexer::Tokenize(const char* code, int length, TokenList* out
 	//m_tokenList->Clear();
 	//m_tokenList->Reserve(buffer->GetSize());
 
-	OnStart();
+	onStart();
 
 	// 解析メイン
 	Range r;
@@ -147,16 +147,16 @@ void AbstractLexer::AddToken(TokenGroup group, const char* bufBegin, const char*
 //------------------------------------------------------------------------------
 Token* AbstractLexer::GetLastToken()
 {
-	return m_inputFile->GetTokenListInternal()->GetLast();
+	return m_inputFile->GetTokenListInternal()->getLast();
 }
 
 //------------------------------------------------------------------------------
 bool AbstractLexer::EqualsString(Token* token, const char* str, int length) const
 {
 	// TODO: 普通に Token::EqualXXXX使っていいと思う
-	if (token->GetLength() != length) return false;
+	if (token->getLength() != length) return false;
 	const char* begin = m_inputBuffer;
-	return StringTraits::StrNCmp(begin + token->GetBeginLoc(), str, length) == 0;	// TODO: Case
+	return StringTraits::strncmp(begin + token->GetBeginLoc(), str, length) == 0;	// TODO: Case
 }
 
 //------------------------------------------------------------------------------
@@ -203,7 +203,7 @@ int AbstractLexer::ReadMBSSequence(const Range& buffer)
 	while (r.pos < r.end)
 	{
 		int extraCount = 0;
-		UnicodeUtils::CheckUTF8TrailingBytes((const UnicodeUtils::UTF8*)r.pos, (const UnicodeUtils::UTF8*)r.end, false, &extraCount);
+		UnicodeUtils::checkUTF8TrailingBytes((const UnicodeUtils::UTF8*)r.pos, (const UnicodeUtils::UTF8*)r.end, false, &extraCount);
 
 		// 追加バイトが無い = シングルバイト文字だった場合は終了
 		if (extraCount == 0) {
@@ -222,7 +222,7 @@ int AbstractLexer::ReadMBSSequence(const Range& buffer)
 }
 
 //------------------------------------------------------------------------------
-void AbstractLexer::OnStart()
+void AbstractLexer::onStart()
 {
 }
 

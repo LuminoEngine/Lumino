@@ -8,168 +8,161 @@
 LN_NAMESPACE_BEGIN
 class UIStyle;
 using UIStylePtr = RefPtr<UIStyle>;
+class UIRenderElement;
+class DrawingContext;
 
-#if 1
+enum class UIStyleAttributeValueSource
+{
+	InMerging,		// not set
+	Default,		// not set
+	//InheritParent,	// 親 UIElement の Style から継承していることを示す
+	//InheritBaseOn,
+	//InheritBase,	// VisualState に対応するスタイルは、共通の基準スタイルを持つ (HTML の a:hover は a が基準スタイル)。その基準スタイルから継承しているか
+	ByStyleInherit,		// VisualState ごとのスタイルから継承しているか
+	ByUserLocal,		// 直接設定された値であるか
+};
+
+//enum class UIStyleAttributeInheritSourceType
+//{
+//	ParentElement,
+//	BaseOnStyle,
+//	BaseStyle,
+//	StyleLocal,
+//};
+
 template<typename T>
 class UIStyleAttribute
 {
 public:
 	UIStyleAttribute()
-		: value()
-		, isSet(false)
-		, m_modified(true)
-		, m_hasValue(false)
+		: m_value()
+		, m_source(UIStyleAttributeValueSource::Default)
 	{}
 
-	UIStyleAttribute(const T& v)
-		: value(v)
-		, isSet(true)
-		, m_modified(true)
-		, m_hasValue(true)
-	{}
+	void reset()
+	{
+		m_value = T();
+		m_source = UIStyleAttributeValueSource::Default;
+	}
 
-	UIStyleAttribute(const UIStyleAttribute& v)
-		: value(v.value)
-		, isSet(v.isSet)
-		, m_modified(true)
-		, m_hasValue(v.m_hasValue)
-	{}
-
-	operator const T&() const { return value; }
+	operator const T&() const
+	{
+		return m_value;
+	}
 
 	UIStyleAttribute& operator=(const T& v)
 	{
-		value = v;
-		isSet = true;
-		m_modified = true;
-		m_hasValue = true;
+		set(v);
 		return *this;
 	}
 
-	UIStyleAttribute& operator=(const UIStyleAttribute& other)
+	void set(const T& v)
 	{
-		value = other.value;
-		isSet = other.isSet;
-		m_modified = true;
-		m_hasValue = other.m_hasValue;
-		return *this;
+		m_value = v;
+		m_source = UIStyleAttributeValueSource::ByUserLocal;
+	}
+	const T& get() const
+	{
+		return m_value;
 	}
 
-	bool UpdateInherit(const UIStyleAttribute& parent)
+	bool hasValue() const
 	{
-		m_hasValue = false;
+		return m_source != UIStyleAttributeValueSource::Default;
+	}
 
-		if (isSet)
-		{
-			bool changed = m_modified;
-			m_modified = false;
-			m_hasValue = true;
-			return changed;
-		}
-		else if (parent.m_hasValue)
-		{
-			bool changed = false;
-			if (value != parent.value)
-			{
-				value = parent.value;
-				changed = true;
-			}
-			m_hasValue = true;
-			return changed;
-		}
-		else
-		{
-			return false;
-		}
-		//else if (!parent.isSet)
+	bool inherit(const UIStyleAttribute& parent/*, UIStyleAttributeInheritSourceType sourceType*/)
+	{
+		// そもそも parent が値を持っていなければ何もする必要はない
+		if (parent.m_source == UIStyleAttributeValueSource::Default) return false;
+		// Local 値を持っているので継承する必要はない
+		if (m_source == UIStyleAttributeValueSource::ByUserLocal) return false;
+
+		bool inherit = ((int)m_source < ((int)parent.m_source - 1));
+		//bool inherit = false;
+		//if (m_source == UIStyleAttributeValueSource::Default)
 		//{
-		//	return false;
+		//	inherit = true;
 		//}
-		//else
+		//else if (m_source == UIStyleAttributeValueSource::InheritParent)
 		//{
-		//	bool changed = false;
-		//	if (value != parent.value)
+		//	if (sourceType == UIStyleAttributeInheritSourceType::ParentElement ||
+		//		sourceType == UIStyleAttributeInheritSourceType::BaseOnStyle ||
+		//		sourceType == UIStyleAttributeInheritSourceType::BaseStyle ||
+		//		sourceType == UIStyleAttributeInheritSourceType::StyleLocal)
 		//	{
-		//		value = parent.value;
-		//		changed = true;
+		//		inherit = true;
 		//	}
-		//	return changed;
 		//}
+		//else if (m_source == UIStyleAttributeValueSource::InheritBaseOn)
+		//{
+		//	if (sourceType == UIStyleAttributeInheritSourceType::BaseOnStyle ||
+		//		sourceType == UIStyleAttributeInheritSourceType::BaseStyle ||
+		//		sourceType == UIStyleAttributeInheritSourceType::StyleLocal)
+		//	{
+		//		inherit = true;
+		//	}
+		//}
+		//else if (m_source == UIStyleAttributeValueSource::InheritBase)
+		//{
+		//	if (sourceType == UIStyleAttributeInheritSourceType::BaseStyle ||
+		//		sourceType == UIStyleAttributeInheritSourceType::StyleLocal)
+		//	{
+		//		inherit = true;
+		//	}
+		//}
+		//else if (m_source == UIStyleAttributeValueSource::StyleLocal)
+		//{
+		//	if (sourceType == UIStyleAttributeInheritSourceType::StyleLocal)
+		//	{
+		//		inherit = true;
+		//	}
+		//}
+
+		bool changed = false;
+		if (inherit)
+		{
+			//if (sourceType == UIStyleAttributeInheritSourceType::ParentElement)
+			//	m_source = UIStyleAttributeValueSource::InheritParent;
+			//else if (sourceType == UIStyleAttributeInheritSourceType::BaseOnStyle)
+			//	m_source = UIStyleAttributeValueSource::InheritBaseOn;
+			//else if (sourceType == UIStyleAttributeInheritSourceType::BaseStyle)
+			//	m_source = UIStyleAttributeValueSource::InheritBase;
+			//else
+			//	m_source = UIStyleAttributeValueSource::StyleLocal;
+			m_source = UIStyleAttributeValueSource::ByStyleInherit;
+			changed = (m_value != parent.m_value);
+			m_value = parent.m_value;
+		}
+		return changed;
 	}
 
-	bool Merge(const UIStyleAttribute& source)
-	{
-		return UpdateInherit(source);	// やることは同じ
-	}
-
-	bool HasValue() const { return m_hasValue; }
-
-	T		value;
-	bool	isSet;
-	bool	m_modified;
-
-	bool	m_hasValue;		// 直値or継承によりなんらかの値を持っているか
-
-
-	//EasingMode	easingMode;
-	//double		time;
+	T							m_value;
+	UIStyleAttributeValueSource	m_source;
 };
-#else
-class UIStyleAttribute
+
+class UIRenderElement
+	: public Object
 {
+	LN_OBJECT();
 public:
-	//UIStyleAttribute() : value(), isSet(false), m_modified(true) {}
-	UIStyleAttribute(const tr::PropertyInfo* targetProperty, const tr::Variant& v, double time_, EasingMode easingMode_)
-		: m_targetProperty(targetProperty)
-		, value(v)
-		, isSet(false)
-		, m_modified(true)
-		, time(time_)
-		, easingMode(easingMode_)
-	{}
-	//UIStyleAttribute(const UIStyleAttribute& v) : value(v.value), isSet(v.isSet), m_modified(true) {}
+	float			m_width;
+	float			m_height;
+	ThicknessF		m_margin;
+	HAlignment		m_hAlignment;
+	VAlignment		m_vAlignment;
+	RefPtr<Brush>	m_brush;
 
-	//operator const T&() const { return value; }
-	//UIStyleAttribute& operator=(const T& v) { value = v; isSet = true; m_modified = true; return *this; }
-	//UIStyleAttribute& operator=(const UIStyleAttribute& other) { value = other.value; isSet = other.isSet; m_modified = true; return *this; }
+LN_CONSTRUCT_ACCESS:
+	UIRenderElement();
+	virtual ~UIRenderElement();
+	void initialize();
 
-	bool UpdateInherit(const UIStyleAttribute& parent)
-	{
-		if (isSet)
-		{
-			bool changed = m_modified;
-			m_modified = false;
-			return changed;
-		}
-		else if (!parent.isSet)
-		{
-			return false;
-		}
-		else
-		{
-			bool changed = false;
-			if (value.Equals(parent.value))
-			{
-				value = parent.value;
-				changed = true;
-			}
-			return changed;
-		}
-	}
+private:
+	void layoutAndRender(DrawingContext* context, const Size& parentRenderSize);
 
-	const tr::PropertyInfo*	m_targetProperty;
-	tr::Variant			value;
-	bool				isSet;
-	bool				m_modified;
-
-
-	EasingMode	easingMode;
-	double		time;
-
-	bool				m_mergedMark;	// UIStylePropertyTable::UpdateInherit の中で使う作業用変数
+	friend class UIElement;
 };
-#endif
-
 
 
 
@@ -179,17 +172,14 @@ public:
 class UIStylePropertyTable
 	: public Object
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	//void AddValue(const tr::PropertyInfo* targetProperty, const tr::Variant& value, double time = 0.0, EasingMode easingMode = EasingMode::Linear);
 
 LN_INTERNAL_ACCESS:
 	UIStylePropertyTable();
 	virtual ~UIStylePropertyTable();
-	void Initialize(const StringRef& visualStateName);
-	detail::InvalidateFlags UpdateInherit(UIStylePropertyTable* parent);
-	detail::InvalidateFlags Merge(UIStylePropertyTable* source);
-	void Apply(UIElement* targetElement, bool useTransitionAnimation);
+	void initialize(const StringRef& visualStateName);
 
 private:
 	//void ApplyInternal(UIElement* targetElement, bool useTransitionAnimation);
@@ -209,7 +199,11 @@ public:
 	//UIStyleAttribute<ThicknessF>			m_padding;
 	//UIStyleAttribute<VAlignment>		m_verticalAlignment;
 	//UIStyleAttribute<HAlignment>	m_horizontalAlignment;
-	tr::Property<BrushPtr>				background;
+	UIStyleAttribute<BrushPtr>				background;
+
+	//UIStyleAttribute < RefPtr<UIRenderElement>>	testDeco;
+	
+	//UIStyleAttribute<BrushPtr>				backgroundMargin;
 	//UIStyleAttribute<BrushPtr>				foreground;
 	//UIStyleAttribute<TexturePtr>			m_image;
 
@@ -224,15 +218,85 @@ public:
 	//UIStyleAttribute<bool>					m_fontBold;
 	//UIStyleAttribute<bool>					m_fontItalic;
 
-	// TODO: Property はちょっとサイズ大きいので、SimpleProperty とか変更通知持たないのを作りたい
-	tr::Property<ThicknessF>		borderThickness;
-	tr::Property<CornerRadius>		cornerRadius;
-	tr::Property<Color>				leftBorderColor;
-	tr::Property<Color>				topBorderColor;
-	tr::Property<Color>				rightBorderColor;
-	tr::Property<Color>				bottomBorderColor;
-	tr::Property<BorderDirection>	borderDirection;
+	UIStyleAttribute<ThicknessF>		borderThickness;
+	UIStyleAttribute<CornerRadius>		cornerRadius;
+	UIStyleAttribute<Color>				leftBorderColor;
+	UIStyleAttribute<Color>				topBorderColor;
+	UIStyleAttribute<Color>				rightBorderColor;
+	UIStyleAttribute<Color>				bottomBorderColor;
+	UIStyleAttribute<BorderDirection>	borderDirection;
+
+	//std::unordered_map<String, UIStyleAttribute<RefPtr<UIRenderElement>>>	m_renderElementMap;
+	List<RefPtr<UIRenderElement>>	m_renderElements;
 };
+
+namespace detail {
+
+class UIStylePropertyTableInstance
+	: public RefObject
+{
+public:
+	void clearAvailableRenderElements();
+	detail::InvalidateFlags inheritParentElementStyle(UIStylePropertyTableInstance* parent);
+	detail::InvalidateFlags merge(const UIStylePropertyTable* source/*, UIStyleAttributeInheritSourceType sourceType*/);
+	void apply(UIElement* targetElement, bool useTransitionAnimation);
+
+public:
+	UIStyleAttribute<float>				width;
+	UIStyleAttribute<float>				height;
+
+	//UIStyleAttribute<ThicknessF>			m_margin;
+	//UIStyleAttribute<ThicknessF>			m_padding;
+	//UIStyleAttribute<VAlignment>		m_verticalAlignment;
+	//UIStyleAttribute<HAlignment>	m_horizontalAlignment;
+	UIStyleAttribute<BrushPtr>				background;
+
+	//UIStyleAttribute < RefPtr<UIRenderElement>>	testDeco;
+
+	//UIStyleAttribute<BrushPtr>				backgroundMargin;
+	//UIStyleAttribute<BrushPtr>				foreground;
+	//UIStyleAttribute<TexturePtr>			m_image;
+
+	//UIStyleAttribute<RefPtr<Pen>>			m_borderLeft;
+	//UIStyleAttribute<RefPtr<Pen>>			m_borderRight;
+	//UIStyleAttribute<RefPtr<Pen>>			m_borderTop;
+	//UIStyleAttribute<RefPtr<Pen>>			m_borderBottom;
+	//UIStyleAttribute<FontPtr>				m_font;
+
+	//UIStyleAttribute<String>				m_fontFamily;
+	//UIStyleAttribute<int>					m_fontSize;
+	//UIStyleAttribute<bool>					m_fontBold;
+	//UIStyleAttribute<bool>					m_fontItalic;
+
+	UIStyleAttribute<ThicknessF>		borderThickness;
+	UIStyleAttribute<CornerRadius>		cornerRadius;
+	UIStyleAttribute<Color>				leftBorderColor;
+	UIStyleAttribute<Color>				topBorderColor;
+	UIStyleAttribute<Color>				rightBorderColor;
+	UIStyleAttribute<Color>				bottomBorderColor;
+	UIStyleAttribute<BorderDirection>	borderDirection;
+
+	List<RefPtr<UIRenderElement>>	m_availableRenderElements;
+
+public:
+	void readyMergeProcess()
+	{
+		if (width.m_source != UIStyleAttributeValueSource::ByUserLocal) width.reset();
+		if (height.m_source != UIStyleAttributeValueSource::ByUserLocal) height.reset();
+		if (background.m_source != UIStyleAttributeValueSource::ByUserLocal) background.reset();
+		if (borderThickness.m_source != UIStyleAttributeValueSource::ByUserLocal) borderThickness.reset();
+		if (cornerRadius.m_source != UIStyleAttributeValueSource::ByUserLocal) cornerRadius.reset();
+		if (leftBorderColor.m_source != UIStyleAttributeValueSource::ByUserLocal) leftBorderColor.reset();
+		if (topBorderColor.m_source != UIStyleAttributeValueSource::ByUserLocal) topBorderColor.reset();
+		if (rightBorderColor.m_source != UIStyleAttributeValueSource::ByUserLocal) rightBorderColor.reset();
+		if (bottomBorderColor.m_source != UIStyleAttributeValueSource::ByUserLocal) bottomBorderColor.reset();
+		if (borderDirection.m_source != UIStyleAttributeValueSource::ByUserLocal) borderDirection.reset();
+	}
+
+	friend class UIStyle;
+};
+
+} // namespace detail
 
 /**
 	@brief		
@@ -240,14 +304,14 @@ public:
 class UIStyle
 	: public Object
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
-	static UIStylePtr Create();
+	static UIStylePtr create();
 
 public:
 	UIStyle();
 	virtual ~UIStyle();
-	void Initialize();
+	void initialize();
 
 	//void AddValue(const tr::PropertyInfo* targetProperty, const tr::Variant& value, double time = 0.0, EasingMode easingMode = EasingMode::Linear);
 
@@ -258,17 +322,17 @@ public:
 	//void AddSubStateStyle(const StringRef& subStateName, UIStyle* style);
 	//UIStyle* FindSubStateStyle(const StringRef& subStateName);
 
-	UIStylePropertyTable* GetPropertyTable();
-	UIStylePropertyTable* GetPropertyTable(const StringRef& visualStateName);
+	UIStylePropertyTable* getPropertyTable();
+	UIStylePropertyTable* getPropertyTable(const StringRef& visualStateName);
 
-	void SetBaseOnStyle(UIStyle* style);
+	void setBaseOnStyle(UIStyle* style);
 
 LN_INTERNAL_ACCESS:
-	UIStylePropertyTable* FindStylePropertyTable(const String& visualStateName);
+	UIStylePropertyTable* findStylePropertyTable(const String& visualStateName);
 	//detail::InvalidateFlags UpdateInherit(UIStyle* parent);
-	//void Apply(UIElement* targetElement);
+	//void apply(UIElement* targetElement);
 
-	detail::InvalidateFlags MergeActiveStylePropertyTables(UIStylePropertyTable* store, const List<String>& visualStateNames);
+	detail::InvalidateFlags mergeActiveStylePropertyTables(detail::UIStylePropertyTableInstance* store, const List<String>& visualStateNames);
 
 public:	// TODO:
 	using VisualStateStylePair = std::pair<String, RefPtr<UIStylePropertyTable>>;
@@ -300,7 +364,7 @@ public:	// TODO:
 class UIStyleTable
 	: public Object
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	UIStyleTable();
 	virtual ~UIStyleTable();
@@ -309,16 +373,16 @@ public:
 	//void AddStyle(const tr::TypeInfo* targetType, const StringRef& subStateName, UIStyle* style);
 
 
-	UIStyle* GetStyle(const StringRef& typeName);
-	UIStyle* GetSubControlStyle(const StringRef& subControlOwnerName, const StringRef& subControlName);
-	//UIStyle* GetStyle(const tr::TypeInfo* targetType, const StringRef& subStateName);
+	UIStyle* getStyle(const StringRef& typeName);
+	UIStyle* getSubControlStyle(const StringRef& subControlOwnerName, const StringRef& subControlName);
+	//UIStyle* getStyle(const tr::TypeInfo* targetType, const StringRef& subStateName);
 
 LN_INTERNAL_ACCESS:
 
 	// 見つからなければ nullptr (ベースクラス情報も使用して検索する)
-	UIStyle* FindStyle(const tr::TypeInfo* targetType/*, const StringRef& subControlOwnerName, const StringRef& subControlName*/);
-	UIStyle* FindSubControlStyle(const StringRef& subControlOwnerName, const StringRef& subControlName);
-	//UIStyle* FindStyle(const tr::TypeInfo* targetType, const StringRef& subStateName);
+	UIStyle* findStyle(const tr::TypeInfo* targetType/*, const StringRef& subControlOwnerName, const StringRef& subControlName*/);
+	UIStyle* findSubControlStyle(const StringRef& subControlOwnerName, const StringRef& subControlName);
+	//UIStyle* findStyle(const tr::TypeInfo* targetType, const StringRef& subStateName);
 
 private:	
 	//typedef const tr::TypeInfo* StyleKey;
@@ -362,10 +426,10 @@ public:
 	static const int MaxIndex = 20;
 
 	/** 色を取得します。*/
-	static const Color& GetColor(UIColorIndex index, int depth = 5);
+	static const Color& getColor(UIColorIndex index, int depth = 5);
 
 	/** SolidColorBrush を取得します。*/
-	static SolidColorBrush* GetBrush(UIColorIndex index, int depth = 5);
+	static SolidColorBrush* getBrush(UIColorIndex index, int depth = 5);
 };
 
 LN_NAMESPACE_END

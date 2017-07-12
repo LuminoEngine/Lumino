@@ -18,13 +18,17 @@ using UIListBoxPtr = RefPtr<UIListBox>;
 class UIListBoxItem
 	: public UIControl
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
+	virtual void onRender(DrawingContext* g) override
+	{
+		UIControl::onRender(g);
+	}
 LN_PROTECTED_INTERNAL_ACCESS:
 	UIListBoxItem();
 	virtual ~UIListBoxItem();
-	void Initialize();
+	void initialize();
 };
 
 /**
@@ -33,21 +37,21 @@ LN_PROTECTED_INTERNAL_ACCESS:
 class UIListBox
 	: public UIControl
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	static const String NormalState;
 
 public:
-	static UIListBoxPtr Create();
+	static UIListBoxPtr create();
 
 public:
-	UIListBoxItemPtr AddTextItem(const String& text);
-	UIListBoxItemPtr AddItem(UIElement* item);
+	UIListBoxItemPtr addTextItem(const String& text);
+	UIListBoxItemPtr addItem(UIElement* item);
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	UIListBox();
 	virtual ~UIListBox();
-	void Initialize();
+	void initialize();
 
 private:
 };

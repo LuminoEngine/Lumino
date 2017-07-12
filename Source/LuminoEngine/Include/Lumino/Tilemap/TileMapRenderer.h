@@ -13,13 +13,13 @@ class TileMapRenderer
 	: public RefObject
 {
 public:
-	void SetTransform(const Matrix& world, const Matrix& viewProj);
-	void Draw(DrawList* context, TileMapModel* tileMap, const Rect& boundingRect, const ViewFrustum& cameraFrustum, int priority);
+	void setTransform(const Matrix& world, const Matrix& viewProj);
+	void draw(DrawList* context, TileMapModel* tileMap, const Rect& boundingRect, const ViewFrustum& cameraFrustum, int priority);
 
 protected:
-	void Begin();
+	void begin();
 
-	void End();
+	void end();
 
 	//void DrawTile(
 	//	const Vector3& position,
@@ -80,21 +80,21 @@ private:
 //		@brief		座標変換行列を設定します。
 //		@param[in]	matrix		: 座標変換行列
 //	*/
-//	void SetTransform(const Matrix& matrix);
+//	void setTransform(const Matrix& matrix);
 //
 //	/**
 //		@brief		ビュー及びプロジェクション行列を設定します。
 //	*/
-//	void SetViewProjMatrix(const Matrix& view, const Matrix& proj);
+//	void setViewProjMatrix(const Matrix& view, const Matrix& proj);
 //
 //	/**
 //		@brief		レンダリングステートを設定します。
 //	*/
-//	void SetRenderState(const RenderState& state);
+//	void setRenderState(const RenderState& state);
 //
 //protected:
-//	virtual void Begin();
-//	virtual void End();
+//	virtual void begin();
+//	virtual void end();
 //	virtual void DrawTile(
 //		const Vector3& position,
 //		const Vector2& size,

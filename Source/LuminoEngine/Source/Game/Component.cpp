@@ -1,5 +1,6 @@
 
 #include "../Internal.h"
+#include <Lumino/Rendering/RenderingContext.h>
 #include <Lumino/Game/Component.h>
 #include <Lumino/Framework/GameScene.h>
 #include <Lumino/Scene/WorldObject.h>
@@ -15,6 +16,9 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Component, Object);
 Component::Component()
 	: transfotm(nullptr)
 	, m_owner(nullptr)
+	, m_specialComponentType(SpecialComponentType::None)
+	, m_layer(0)
+	, m_orderInLayer(0)
 {
 }
 
@@ -24,77 +28,110 @@ Component::~Component()
 }
 
 //------------------------------------------------------------------------------
-WorldObject* Component::GetOwnerObject() const
+WorldObject* Component::getOwnerObject() const
 {
 	return m_owner;
 }
 
 //------------------------------------------------------------------------------
-Transform* Component::GetTransform() const
+Transform* Component::getTransform() const
 {
 	return (m_owner != nullptr) ? &m_owner->transform : nullptr;
 }
 
 //------------------------------------------------------------------------------
-void Component::OnAttached()
+void Component::onAttached()
 {
 }
 
 //------------------------------------------------------------------------------
-void Component::OnDetaching()
+void Component::onDetaching()
 {
 }
 
 //------------------------------------------------------------------------------
-void Component::OnUpdate()
+void Component::onUpdate()
 {
 }
 
 //------------------------------------------------------------------------------
-void Component::OnRender(DrawList* context)
+void Component::onPreRender(DrawList* context)
 {
 }
 
 //------------------------------------------------------------------------------
-void Component::OnUIEvent(UIEventArgs* e)
+void Component::onRender(DrawList* context)
 {
 }
 
 //------------------------------------------------------------------------------
-void Component::Attach(WorldObject* owner)
+void Component::onAttachedWorld(World* world)
+{
+}
+
+//------------------------------------------------------------------------------
+void Component::onDetachedWorld(World* world)
+{
+}
+
+//------------------------------------------------------------------------------
+void Component::onUIEvent(UIEventArgs* e)
+{
+}
+
+//------------------------------------------------------------------------------
+void Component::attach(WorldObject* owner)
 {
 	m_owner = owner;
 	transfotm = &m_owner->transform;
-	OnAttached();
+	onAttached();
 }
 
 //------------------------------------------------------------------------------
-void Component::Detach()
+void Component::detach()
 {
-	OnDetaching();
+	onDetaching();
 	m_owner = nullptr;
 	transfotm = nullptr;
 }
 
 //------------------------------------------------------------------------------
-void Component::UpdateFrame()
+void Component::updateFrame()
 {
-	OnUpdate();
+	onUpdate();
 }
 
 //------------------------------------------------------------------------------
-void Component::Render(DrawList* context)
+void Component::render(RenderingContext* context)
 {
-	OnRender(context);
+	onRender(context);
+}
+
+//==============================================================================
+// Behavior
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Behavior, Component);
+
+//------------------------------------------------------------------------------
+Behavior::Behavior()
+{
+}
+
+//------------------------------------------------------------------------------
+Behavior::~Behavior()
+{
+}
+
+//------------------------------------------------------------------------------
+void Behavior::initialize()
+{
+	Component::initialize();
 }
 
 //==============================================================================
 // Transform
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Transform, Component);
-LN_TR_PROPERTY_IMPLEMENT(Transform, Vector3, position, tr::PropertyMetadata());
-LN_TR_PROPERTY_IMPLEMENT(Transform, Quaternion, rotation, tr::PropertyMetadata());
-LN_TR_PROPERTY_IMPLEMENT(Transform, Vector3, scale, tr::PropertyMetadata());
 
 //------------------------------------------------------------------------------
 Transform::Transform()
@@ -112,53 +149,53 @@ Transform::~Transform()
 }
 
 //------------------------------------------------------------------------------
-Vector3 Transform::GetFront() const
+Vector3 Transform::getFront() const
 {
-	return Vector3::Transform(Vector3::UnitZ, rotation.Get());
+	return Vector3::transform(Vector3::UnitZ, rotation);
 }
 
 //------------------------------------------------------------------------------
-void Transform::Translate(const Vector3& translation)
+void Transform::translate(const Vector3& translation)
 {
-	position = position.Get() + translation;
+	position = position + translation;
 }
 
 //------------------------------------------------------------------------------
-void Transform::Translate(float x, float y, float z)
+void Transform::translate(float x, float y, float z)
 {
-	Translate(Vector3(x, y, z));
+	translate(Vector3(x, y, z));
 }
 
 //------------------------------------------------------------------------------
-void Transform::LookAt(const Vector3& target, const Vector3& up)
+void Transform::lookAt(const Vector3& target, const Vector3& up)
 {
-	if (target == position.Get()) return;
+	if (target == position) return;
 
 	// left-hand coord
-	Vector3 f = Vector3::Normalize(target - position.Get());
-	Vector3 s = Vector3::Normalize(Vector3::Cross(up, f));
-	Vector3 u = Vector3::Cross(f, s);
+	Vector3 f = Vector3::normalize(target - position);
+	Vector3 s = Vector3::normalize(Vector3::cross(up, f));
+	Vector3 u = Vector3::cross(f, s);
 	Matrix mat(
 		s.x, s.y, s.z, 0.0f,
 		u.x, u.y, u.z, 0.0f,
 		f.x, f.y, f.z, 0.0f,
 		0.0f, 0.0f, 0.0f, 1.0f);
-	rotation = Quaternion::MakeFromRotationMatrix(mat);
+	rotation = Quaternion::makeFromRotationMatrix(mat);
 }
 
 //------------------------------------------------------------------------------
-Matrix Transform::GetTransformMatrix() const
+Matrix Transform::getTransformMatrix() const
 {
-	return Matrix::MakeAffineTransformation(scale, center, rotation, position);
+	return Matrix::makeAffineTransformation(scale, center, rotation, position);
 }
 
 //------------------------------------------------------------------------------
-void Transform::UpdateWorldMatrix()
+void Transform::updateWorldMatrix()
 {
-	Matrix localMatrix = Matrix::MakeAffineTransformation(scale, center, rotation, position);
+	Matrix localMatrix = Matrix::makeAffineTransformation(scale, center, rotation, position);
 
 	if (m_parent != nullptr)
-		m_worldMatrix = localMatrix * m_parent->GetWorldMatrix();
+		m_worldMatrix = localMatrix * m_parent->getWorldMatrix();
 	else
 		m_worldMatrix = localMatrix;
 }

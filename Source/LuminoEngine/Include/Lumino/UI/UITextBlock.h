@@ -12,23 +12,23 @@ using UITextBlockPtr = RefPtr<UITextBlock>;
 class UITextBlock
 	: public UITextElement
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
-	static UITextBlockPtr Create();
+	static UITextBlockPtr create();
 
 public:
-	void SetText(const StringRef& text);
+	void setText(const StringRef& text);
 
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	UITextBlock();
 	virtual ~UITextBlock();
-	void Initialize();
+	void initialize();
 
-	virtual Size MeasureOverride(const Size& availableSize) override;
-	virtual Size ArrangeOverride(const Size& finalSize) override;
-	virtual void OnRender(DrawingContext* g) override;
+	virtual Size measureOverride(const Size& availableSize) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
+	virtual void onRender(DrawingContext* g) override;
 
 private:
 	String	m_text;

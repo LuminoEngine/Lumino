@@ -26,40 +26,40 @@ AnimationState::AnimationState(AnimationClip* clip)
 //------------------------------------------------------------------------------
 AnimationState::~AnimationState()
 {
-	ClearTargetList();
+	clearTargetList();
 	LN_SAFE_RELEASE(m_clip);
 }
 
 //------------------------------------------------------------------------------
-const String& AnimationState::GetName() const
+const String& AnimationState::getName() const
 {
-	return m_clip->GetName();
+	return m_clip->getName();
 }
 
 //------------------------------------------------------------------------------
-void AnimationState::Refresh(Animator* animator)
+void AnimationState::refresh(Animator* animator)
 {
 	if (LN_CHECK_ARG(animator != nullptr)) return;
 
-	ClearTargetList();
+	clearTargetList();
 
 	// Curve の適用先を element から探し、見つかれば t に持っておく
-	for (const AnimationClip::AnimationCurveEntry& e : m_clip->GetAnimationCurveEntryList())
+	for (const AnimationClip::AnimationCurveEntry& e : m_clip->getAnimationCurveEntryList())
 	{
-		detail::AnimationTargetAttributeEntity* target = animator->FindAnimationTargetAttributeEntity(e.RelativePath);
+		detail::AnimationTargetAttributeEntity* target = animator->findAnimationTargetAttributeEntity(e.RelativePath);
 		if (target != NULL)
 		{
 			AnimationTarget t;
 			t.Curve = e.Curve;
 			t.Target = target;
 			LN_SAFE_ADDREF(t.Curve);
-			m_animationTargetList.Add(t);
+			m_animationTargetList.add(t);
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
-void AnimationState::SetPlayState(PlayState state)
+void AnimationState::setPlayState(PlayState state)
 {
 	// 新しく再生を開始する場合は時間をリセットする
 	if (m_state == PlayState_Stopped && state == PlayState_Playing)
@@ -72,44 +72,44 @@ void AnimationState::SetPlayState(PlayState state)
 }
 
 //------------------------------------------------------------------------------
-void AnimationState::AdvanceTime(double elapsedTime)
+void AnimationState::advanceTime(double elapsedTime)
 {
 	if (m_state == PlayState_Playing)
 	{
-		SetLocalTime(m_currentLocalTime + elapsedTime);
+		setLocalTime(m_currentLocalTime + elapsedTime);
 	}
 }
 
 //------------------------------------------------------------------------------
-void AnimationState::FadeInLinerInternal(float duration)
+void AnimationState::fadeInLinerInternal(float duration)
 {
-	SetPlayState(PlayState_Playing);
+	setPlayState(PlayState_Playing);
 	m_internalFade = InternalFade::FadeIn;
-	m_internalFadeWeight.Start(1.0f, duration);
+	m_internalFadeWeight.start(1.0f, duration);
 }
 
 //------------------------------------------------------------------------------
-void AnimationState::FadeOutLinerInternal(float duration)
+void AnimationState::fadeOutLinerInternal(float duration)
 {
 	if (m_state == PlayState_Playing)
 	{
 		m_internalFade = InternalFade::FadeOut;
-		m_internalFadeWeight.Start(0.0f, duration);
+		m_internalFadeWeight.start(0.0f, duration);
 	}
 }
 
 //------------------------------------------------------------------------------
-void AnimationState::ClearTargetList()
+void AnimationState::clearTargetList()
 {
 	for (AnimationTarget& target : m_animationTargetList)
 	{
-		target.Curve->Release();
+		target.Curve->release();
 	}
-	m_animationTargetList.Clear();
+	m_animationTargetList.clear();
 }
 
 //------------------------------------------------------------------------------
-void AnimationState::SetLocalTime(double time)
+void AnimationState::setLocalTime(double time)
 {
 	float elapsed = time - m_currentLocalTime;
 
@@ -121,9 +121,9 @@ void AnimationState::SetLocalTime(double time)
 	}
 	else
 	{
-		m_internalFadeWeight.AdvanceTime(elapsed);
-		m_addingBlendWeight = m_internalFadeWeight.GetValue();
-		if (m_internalFade == InternalFade::FadeOut && m_internalFadeWeight.IsFinished())
+		m_internalFadeWeight.advanceTime(elapsed);
+		m_addingBlendWeight = m_internalFadeWeight.getValue();
+		if (m_internalFade == InternalFade::FadeOut && m_internalFadeWeight.isFinished())
 		{
 			// フェードアウト中で最後までたどり着いたら停止状態にする
 			m_state = PlayState_Stopped;
@@ -137,15 +137,15 @@ void AnimationState::SetLocalTime(double time)
 	for (AnimationTarget& target : m_animationTargetList)
 	{
 		// 時間をセットして値を生成する
-		target.Curve->SetTime(time);
+		target.Curve->getTime(time);
 
 		// 値の型に応じてブレンド率を加味し、出力する
-		target.Target->Type = target.Curve->GetValueType();
+		target.Target->Type = target.Curve->getValueType();
 		switch (target.Target->Type)
 		{
 		case ValueType_Float:
 		{
-			*((float*)target.Target->Buffer) = static_cast<FloatAnimationCurve*>(target.Curve)->GetValue();
+			*((float*)target.Target->Buffer) = static_cast<FloatAnimationCurve*>(target.Curve)->getValue();
 			break;
 		}
 		case ValueType_Vector3:
@@ -162,15 +162,15 @@ void AnimationState::SetLocalTime(double time)
 		{
 			if (m_addingBlendWeight != 1.0f)
 			{
-				AttitudeTransform v = static_cast<VMDBezierAttitudeTransformAnimation*>(target.Curve)->GetValue();
+				AttitudeTransform v = static_cast<VMDBezierAttitudeTransformAnimation*>(target.Curve)->getValue();
 				AttitudeTransform* t = (AttitudeTransform*)target.Target->Buffer;
 				t->scale += v.scale * m_addingBlendWeight;
-				t->rotation *= Quaternion::Slerp(Quaternion::Identity, v.rotation, m_addingBlendWeight);
+				t->rotation *= Quaternion::slerp(Quaternion::Identity, v.rotation, m_addingBlendWeight);
 				t->translation += v.translation * m_addingBlendWeight;
 			}
 			else
 			{
-				*((AttitudeTransform*)target.Target->Buffer) = static_cast<VMDBezierAttitudeTransformAnimation*>(target.Curve)->GetValue();
+				*((AttitudeTransform*)target.Target->Buffer) = static_cast<VMDBezierAttitudeTransformAnimation*>(target.Curve)->getValue();
 			}
 			target.Target->Modified = true;	// 値をセットした
 			break;

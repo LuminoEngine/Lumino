@@ -4,7 +4,7 @@
 class DotNetPInvokeLibGenerator
 {
 public:
-	void Generate();
+	void generate();
 
 	String MakePInvokeMethodDecl(MethodInfoPtr methodInfo, bool virtualBase);
 	String MakePInvokeMethodDeclSetOverrideCallback(MethodInfoPtr methodInfo);

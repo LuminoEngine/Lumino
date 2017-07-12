@@ -10,19 +10,19 @@ LN_NAMESPACE_BEGIN
 class UIWindow
 	: public UIControl
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
-	static RefPtr<UIWindow> Create();
+	static RefPtr<UIWindow> create();
 
 protected:
-	virtual void OnRoutedEvent(UIEventArgs* e) override;
-	virtual void OnLayoutPanelChanged(UILayoutPanel* newPanel) override;
-	virtual void OnRender(DrawingContext* g) override;
+	virtual void onRoutedEvent(UIEventArgs* e) override;
+	virtual void onLayoutPanelChanged(UILayoutPanel* newPanel) override;
+	virtual void onRender(DrawingContext* g) override;
 
 LN_CONSTRUCT_ACCESS:
 	UIWindow();
 	virtual ~UIWindow();
-	void Initialize();
+	void initialize();
 
 private:
 	Vector2	m_dragStartWindowPosition;

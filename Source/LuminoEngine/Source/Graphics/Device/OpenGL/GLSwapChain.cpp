@@ -33,14 +33,14 @@ GLSwapChain::GLSwapChain()
 //------------------------------------------------------------------------------
 GLSwapChain::~GLSwapChain()
 {
-	OnLostDevice();
+	onLostDevice();
 	LN_SAFE_RELEASE(m_renderTarget);
 	LN_SAFE_RELEASE(m_context);
 	LN_SAFE_RELEASE(m_window);
 }
 
 //------------------------------------------------------------------------------
-void GLSwapChain::Initialize(GLGraphicsDevice* device, GLContext* context, PlatformWindow* window)
+void GLSwapChain::initialize(GLGraphicsDevice* device, GLContext* context, PlatformWindow* window)
 {
 	m_device = device;
 	LN_REFOBJ_SET(m_context, context);
@@ -48,21 +48,21 @@ void GLSwapChain::Initialize(GLGraphicsDevice* device, GLContext* context, Platf
 
 
 	// TODO: バックバッファサイズ
-	m_backBufferSize = m_window->GetSize();
+	m_backBufferSize = m_window->getSize();
 	m_renderTarget = LN_NEW GLRenderTargetTexture(m_backBufferSize, TextureFormat::R8G8B8A8, 1);
 
-	OnResetDevice();
+	onResetDevice();
 }
 
 //------------------------------------------------------------------------------
-void GLSwapChain::OnLostDevice()
+void GLSwapChain::onLostDevice()
 {
 	glDeleteBuffers(1, &m_vertexBuffer);
 	glDeleteVertexArrays(1, &m_vertexArray);
 }
 
 //------------------------------------------------------------------------------
-void GLSwapChain::OnResetDevice()
+void GLSwapChain::onResetDevice()
 {
 	/*	仮のバックバッファを本物のバックバッファに丸ごと転送するため、
 		単に四角形を描画するためのシェーダと頂点バッファを作る。
@@ -86,7 +86,7 @@ void GLSwapChain::OnResetDevice()
         "	gl_FragColor = texture2D(texture, vTexCoord);\n"
         "}\n";
 	StringA message;
-	ShaderCompileResultLevel r = GLSLUtils::MakeShaderProgram(vsCode, sizeof(vsCode), fsCode, sizeof(fsCode), &m_shaderProgram, &message);
+	ShaderCompileResultLevel r = GLSLUtils::makeShaderProgram(vsCode, sizeof(vsCode), fsCode, sizeof(fsCode), &m_shaderProgram, &message);
 	if (r != ShaderCompileResultLevel_Success) {
 		ShaderCompileResult result;
 		result.Level = r;
@@ -111,36 +111,36 @@ void GLSwapChain::OnResetDevice()
 }
 
 //------------------------------------------------------------------------------
-void GLSwapChain::Resize(const SizeI& size)
+void GLSwapChain::resize(const SizeI& size)
 {
 	m_backBufferSize = size;
 }
 
 //------------------------------------------------------------------------------
-void GLSwapChain::Present(ITexture* colorBuffer)
+void GLSwapChain::present(ITexture* colorBuffer)
 {
 	assert(colorBuffer == m_renderTarget);
 
 	try
 	{
-		m_device->MakeCurrentContext(m_context);
+		m_device->makeCurrentContext(m_context);
 
 		// colorBuffer をバックバッファに描画する
-		InternalPresent(colorBuffer, static_cast<GLRenderer*>(m_device->GetRenderer()));
+		internalPresent(colorBuffer, static_cast<GLRenderer*>(m_device->getRenderer()));
 
 		// バックバッファをフロントバッファに転送する
-		m_context->SwapBuffers();
+		m_context->swapBuffers();
 	}
 	catch (...)
 	{
-		m_device->MakeCurrentContext(m_device->GetMainRenderingContext());
+		m_device->makeCurrentContext(m_device->getMainRenderingContext());
 		throw;
 	}
-	m_device->MakeCurrentContext(m_device->GetMainRenderingContext());
-	m_device->GCDeviceResource();
+	m_device->makeCurrentContext(m_device->getMainRenderingContext());
+	m_device->gcDeviceResource();
 
 
-	if (m_backBufferSize != m_renderTarget->GetSize())
+	if (m_backBufferSize != m_renderTarget->getSize())
 	{
 		LN_SAFE_RELEASE(m_renderTarget);
 		m_renderTarget = LN_NEW GLRenderTargetTexture(m_backBufferSize, TextureFormat::R8G8B8A8, 1);
@@ -148,7 +148,7 @@ void GLSwapChain::Present(ITexture* colorBuffer)
 }
 
 //------------------------------------------------------------------------------
-void GLSwapChain::InternalPresent(ITexture* colorBuffer, GLRenderer* renderer)
+void GLSwapChain::internalPresent(ITexture* colorBuffer, GLRenderer* renderer)
 {
 	//glEnable(GL_TEXTURE_2D);
 	glDisable(GL_CULL_FACE);	// 両面描画
@@ -157,7 +157,7 @@ void GLSwapChain::InternalPresent(ITexture* colorBuffer, GLRenderer* renderer)
 	glUseProgram(0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0); LN_CHECK_GLERROR();
 
-	const SizeI& size = m_window->GetSize();
+	const SizeI& size = m_window->getSize();
 	glViewport(0, 0, size.width, size.height); LN_CHECK_GLERROR();
     
     /*
@@ -189,7 +189,7 @@ void GLSwapChain::InternalPresent(ITexture* colorBuffer, GLRenderer* renderer)
 
 	// テクスチャユニット0に戻す
 	glActiveTexture(GL_TEXTURE0); LN_CHECK_GLERROR();
-	glBindTexture(GL_TEXTURE_2D, static_cast<GLTextureBase*>(colorBuffer)->GetGLTexture()); LN_CHECK_GLERROR();
+	glBindTexture(GL_TEXTURE_2D, static_cast<GLTextureBase*>(colorBuffer)->getGLTexture()); LN_CHECK_GLERROR();
 	glUniform1i(m_textureLoc, 0); LN_CHECK_GLERROR();	// テクスチャユニット 0 を割り当てる
 
 

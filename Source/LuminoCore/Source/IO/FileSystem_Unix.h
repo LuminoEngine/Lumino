@@ -33,7 +33,7 @@ static bool is_stat_writable(struct stat *st, const char *path)
 }
 
 //------------------------------------------------------------------------------
-bool FileSystem::ExistsFile(const StringRefA& filePath)
+bool FileSystem::existsFile(const StringRefA& filePath)
 {
 	//if (filePath == NULL) {
 	//	return false;
@@ -72,17 +72,17 @@ bool FileSystem::ExistsFile(const StringRefA& filePath)
 	return true;
 #endif
 }
-bool FileSystem::ExistsFile(const StringRefW& filePath)
+bool FileSystem::existsFile(const StringRefW& filePath)
 {
 	if (filePath.IsNullOrEmpty()) {
 		return false;
 	}
-	MBCS_FILEPATH(mbcsFilePath, filePath.GetBegin());	// TODO: GetBegin
-	return ExistsFile(mbcsFilePath);
+	MBCS_FILEPATH(mbcsFilePath, filePath.getBegin());	// TODO: GetBegin
+	return existsFile(mbcsFilePath);
 }
 
 //------------------------------------------------------------------------------
-void FileSystem::SetAttribute(const char* filePath, FileAttribute attrs)
+void FileSystem::setAttribute(const char* filePath, FileAttribute attrs)
 {
 	struct stat st;
 	int ret = ::stat(filePath, &st);
@@ -98,17 +98,17 @@ void FileSystem::SetAttribute(const char* filePath, FileAttribute attrs)
 	}
 	LN_THROW(ret != -1, IOException);
 }
-void FileSystem::SetAttribute(const wchar_t* filePath, FileAttribute attrs)
+void FileSystem::setAttribute(const wchar_t* filePath, FileAttribute attrs)
 {
 	MBCS_FILEPATH(mbcsFilePath, filePath);
-	return SetAttribute(mbcsFilePath, attrs);
+	return setAttribute(mbcsFilePath, attrs);
 }
 
 //------------------------------------------------------------------------------
-void FileSystem::Copy(const char* sourceFileName, const char* destFileName, bool overwrite)
+void FileSystem::copy(const char* sourceFileName, const char* destFileName, bool overwrite)
 {
 	// コピー先ファイルの存在確認
-	if (!overwrite && ExistsFile(destFileName)) {
+	if (!overwrite && existsFile(destFileName)) {
 		LN_THROW(0, IOException);
 	}
 
@@ -144,27 +144,27 @@ void FileSystem::Copy(const char* sourceFileName, const char* destFileName, bool
 	fclose(fpSrc);
 }
 
-void FileSystem::Copy(const wchar_t* sourceFileName, const wchar_t* destFileName, bool overwrite)
+void FileSystem::copy(const wchar_t* sourceFileName, const wchar_t* destFileName, bool overwrite)
 {
 	MBCS_FILEPATH(mbcsSrc, sourceFileName);
 	MBCS_FILEPATH(mbcsDest, destFileName);
-	Copy(mbcsSrc, mbcsDest, overwrite);
+	copy(mbcsSrc, mbcsDest, overwrite);
 }
 
 //------------------------------------------------------------------------------
-void FileSystem::Delete(const char* filePath)
+void FileSystem::deleteFile(const char* filePath)
 {
 	int ret = remove(filePath);
 	if (ret == -1) LN_THROW(0, IOException, strerror(errno));
 }
-void FileSystem::Delete(const wchar_t* filePath)
+void FileSystem::deleteFile(const wchar_t* filePath)
 {
 	MBCS_FILEPATH(mbcsFilePath, filePath);
-	Delete(mbcsFilePath);
+	deleteFile(mbcsFilePath);
 }
 
 //------------------------------------------------------------------------------
-uint64_t FileSystem::GetFileSize(const TCHAR* filePath)
+uint64_t FileSystem::getFileSize(const TCHAR* filePath)
 {
 	if (LN_CHECK_ARG(filePath != nullptr)) return 0;
 	detail::GenericStaticallyLocalPath<char> localPath(filePath);
@@ -175,7 +175,7 @@ uint64_t FileSystem::GetFileSize(const TCHAR* filePath)
 }
 
 //------------------------------------------------------------------------------
-uint64_t FileSystem::GetFileSize(FILE* stream)
+uint64_t FileSystem::getFileSize(FILE* stream)
 {
 	struct stat stbuf;
 	int handle = fileno(stream);
@@ -200,7 +200,7 @@ bool FileSystem::mkdir(const wchar_t* path)
 }
 
 //------------------------------------------------------------------------------
-bool FileSystem::GetAttributeInternal(const char* path, FileAttribute* outAttr)
+bool FileSystem::getAttributeInternal(const char* path, FileAttribute* outAttr)
 {
 	// Unix 系の場合、ファイルの先頭が . であれば隠しファイルである。
 	// mono-master/mono/io-layer/io.c の、_wapi_stat_to_file_attributes が参考になる。
@@ -210,7 +210,7 @@ bool FileSystem::GetAttributeInternal(const char* path, FileAttribute* outAttr)
 		return false;
 	}
 
-	const char* fileName = PathTraits::GetFileNameSub(path);
+	const char* fileName = PathTraits::getFileNameSub(path);
 	FileAttribute attrs;
 	if (S_ISDIR(st.st_mode))
 	{
@@ -234,10 +234,10 @@ bool FileSystem::GetAttributeInternal(const char* path, FileAttribute* outAttr)
 	*outAttr = attrs;
 	return true;
 }
-bool FileSystem::GetAttributeInternal(const wchar_t* path, FileAttribute* outAttr)
+bool FileSystem::getAttributeInternal(const wchar_t* path, FileAttribute* outAttr)
 {
 	MBCS_FILEPATH(mbcsFilePath, path);
-	return GetAttributeInternal(mbcsFilePath, outAttr);
+	return getAttributeInternal(mbcsFilePath, outAttr);
 }
 
 //------------------------------------------------------------------------------

@@ -20,9 +20,9 @@ class CapturerContext
 {
 public:
 	virtual ~CapturerContext() = default;
-	virtual void Open(const PathName& filePath, const SizeI& size) = 0;
-	virtual void Close() = 0;
-	virtual void AddFrame(Bitmap* bitmap, int delayMS) = 0;
+	virtual void open(const PathName& filePath, const SizeI& size) = 0;
+	virtual void close() = 0;
+	virtual void addFrame(Bitmap* bitmap, int delayMS) = 0;
 };
 
 /*
@@ -46,16 +46,16 @@ public:
 
 	virtual ~DynamicPaletteGifContext()
 	{
-		Close();
+		close();
 	}
 
-	virtual void Open(const PathName& filePath, const SizeI& size) override
+	virtual void open(const PathName& filePath, const SizeI& size) override
 	{
 		m_imageSize = size;
-		m_framePixels.Resize(size.width * size.height * 4);	// 4 component. RGBX format, where X is unused
+		m_framePixels.resize(size.width * size.height * 4);	// 4 component. RGBX format, where X is unused
 		m_frameCount = 0;
 
-		StringA fn = StringA::FromNativeCharString(filePath);
+		StringA fn = StringA::fromNativeCharString(filePath);
 		int error;
 		m_gif = EGifOpenFileName(fn.c_str(), false, &error);
 
@@ -63,12 +63,12 @@ public:
 
 	}
 
-	virtual void Close() override
+	virtual void close() override
 	{
 		if (m_task != nullptr)
 		{
-			m_task->Wait();
-			m_task.SafeRelease();
+			m_task->wait();
+			m_task.safeRelease();
 		}
 		jo_gif_end(&m_joGif);
 
@@ -76,7 +76,7 @@ public:
 		EGifCloseFile(m_gif, &error);
 	}
 
-	virtual void AddFrame(Bitmap* bitmap, int delayMS) override
+	virtual void addFrame(Bitmap* bitmap, int delayMS) override
 	{
 		if (delayMS <= 0) return;
 
@@ -85,11 +85,11 @@ public:
 			byte_t r, g, b, x;
 		};
 
-		if (m_task == nullptr || m_task->IsCompleted())
+		if (m_task == nullptr || m_task->isCompleted())
 		{
 			// Task の中で jo_gif で減色を行うため、ピクセルフォーマットを変換しつつ作業領域にビットマップデータを取り出す
-			const SizeI& bmpSize = bitmap->GetSize();
-			RGBX* framePixels = (RGBX*)m_framePixels.GetData();
+			const SizeI& bmpSize = bitmap->getSize();
+			RGBX* framePixels = (RGBX*)m_framePixels.getData();
 			for (int y = 0; y < m_imageSize.height; ++y)
 			{
 				for (int x = 0; x < m_imageSize.width; ++x)
@@ -104,7 +104,7 @@ public:
 					}
 					else
 					{
-						Color32 c = bitmap->GetPixel(x, y);
+						Color32 c = bitmap->getPixel(x, y);
 						p->r = c.r;
 						p->g = c.g;
 						p->b = c.b;
@@ -119,14 +119,14 @@ public:
 				bool updatePalette = (m_frameCount % m_keyFrameSpan == 0);
 
 				// ビットマップデータからインデックスデータと、必要に応じてパレットを作る
-				jo_gif_frame(&m_joGif, &m_gifFrame, (unsigned char*)m_framePixels.GetConstData(), m_frameCount, updatePalette);
+				jo_gif_frame(&m_joGif, &m_gifFrame, (unsigned char*)m_framePixels.getConstData(), m_frameCount, updatePalette);
 
 				// 使うパレットを選択する
 				ColorMapObject* palette = nullptr;
 				if (updatePalette)
 				{
 					// jo_gif のパレットを giflib のパレットに変換
-					m_lastPalette.reset(GifMakeMapObject(m_colorCount, (GifColorType*)m_gifFrame.palette.GetConstData()));
+					m_lastPalette.reset(GifMakeMapObject(m_colorCount, (GifColorType*)m_gifFrame.palette.getConstData()));
 					palette = m_lastPalette.get();
 				}
 
@@ -157,7 +157,7 @@ public:
 				EGifPutImageDesc(m_gif, 0, 0, m_imageSize.width, m_imageSize.height, false, palette);
 				
 				// ピクセルインデックス出力
-				const byte_t* indices = m_gifFrame.indexed_pixels.GetConstData();
+				const byte_t* indices = m_gifFrame.indexed_pixels.getConstData();
 				for (int y = 0; y < m_imageSize.height; ++y)
 				{
 					EGifPutLine(m_gif, (GifPixelType*)&indices[m_imageSize.width * y], m_imageSize.width);
@@ -165,7 +165,7 @@ public:
 
 				++m_frameCount;
 			};
-			m_task = tr::Task::Run(Delegate<void()>(func));
+			m_task = tr::Task::run(Delegate<void()>(func));
 		}
 	}
 
@@ -203,15 +203,15 @@ public:
 
 	virtual ~GifContext()
 	{
-		Close();
+		close();
 	}
 
-	virtual void Open(const PathName& filePath, const SizeI& size) override
+	virtual void open(const PathName& filePath, const SizeI& size) override
 	{
 		m_imageSize = size;
-		m_line.Alloc(sizeof(GifPixelType) * m_imageSize.width);
+		m_line.alloc(sizeof(GifPixelType) * m_imageSize.width);
 
-		StringA f = StringA::FromNativeCharString(filePath);
+		StringA f = StringA::fromNativeCharString(filePath);
 		int error;
 		m_gif = EGifOpenFileName(f.c_str(), false, &error);
 
@@ -233,7 +233,7 @@ public:
 		EGifPutExtensionTrailer(m_gif);
 	}
 
-	virtual void Close() override
+	virtual void close() override
 	{
 		int error;
 		EGifCloseFile(m_gif, &error);
@@ -241,7 +241,7 @@ public:
 		GifFreeMapObject(m_globalPalette);
 	}
 
-	virtual void AddFrame(Bitmap* bitmap, int delayMS) override
+	virtual void addFrame(Bitmap* bitmap, int delayMS) override
 	{
 		if (delayMS <= 0) return;
 
@@ -254,8 +254,8 @@ public:
 		// Image Descriptor
 		EGifPutImageDesc(m_gif, 0, 0, m_imageSize.width, m_imageSize.height, false, nullptr);
 
-		const SizeI& bmpSize = bitmap->GetSize();
-		GifPixelType* line = (GifPixelType*)m_line.GetData();
+		const SizeI& bmpSize = bitmap->getSize();
+		GifPixelType* line = (GifPixelType*)m_line.getData();
 		for (int y = 0; y < m_imageSize.height; ++y)
 		{
 			for (int x = 0; x < m_imageSize.width; ++x)
@@ -267,7 +267,7 @@ public:
 				}
 				else
 				{
-					*p = PeekR4G2B4Index(bitmap->GetPixel(x, y));
+					*p = PeekR4G2B4Index(bitmap->getPixel(x, y));
 				}
 			}
 
@@ -335,10 +335,10 @@ const GifColorType GifContext::PaletteGPriority[256] =
 //==============================================================================
 
 //------------------------------------------------------------------------------
-FrameCapturerPtr FrameCapturer::Create()
+FrameCapturerPtr FrameCapturer::create()
 {
-	auto ptr = FrameCapturerPtr::MakeRef();
-	ptr->Initialize(detail::GraphicsManager::GetInstance());
+	auto ptr = FrameCapturerPtr::makeRef();
+	ptr->initialize(detail::GraphicsManager::getInstance());
 	return ptr;
 }
 
@@ -361,38 +361,38 @@ FrameCapturer::~FrameCapturer()
 }
 
 //------------------------------------------------------------------------------
-void FrameCapturer::Initialize(detail::GraphicsManager* manager)
+void FrameCapturer::initialize(detail::GraphicsManager* manager)
 {
 	m_manager = manager;
 	m_gifContext = LN_NEW detail::DynamicPaletteGifContext();//;GifContext
 }
 
 //------------------------------------------------------------------------------
-void FrameCapturer::SetCapturerTarget(RenderTargetTexture* renderTarget)
+void FrameCapturer::setCapturerTarget(RenderTargetTexture* renderTarget)
 {
 	LN_REFOBJ_SET(m_capturerTarget, renderTarget);
 }
 
 //------------------------------------------------------------------------------
-void FrameCapturer::StartRecording()
+void FrameCapturer::startRecording()
 {
 	m_requestedState = State::Recording;
 }
 
 //------------------------------------------------------------------------------
-void FrameCapturer::StopRecording()
+void FrameCapturer::stopRecording()
 {
 	m_requestedState = State::Stoped;
 }
 
 //------------------------------------------------------------------------------
-void FrameCapturer::Record()
+void FrameCapturer::record()
 {
 	if (LN_CHECK_STATE(m_capturerTarget != nullptr)) return;
 
 
 	RefPtr<FrameCapturer> fc = this;
-	Driver::ITexture* target = m_capturerTarget->ResolveDeviceObject();
+	Driver::ITexture* target = m_capturerTarget->resolveDeviceObject();
 	State newState = m_requestedState;
 
 	LN_ENQUEUE_RENDER_COMMAND_3(
@@ -413,12 +413,12 @@ void FrameCapturer::RecordCommand(Driver::ITexture* target, State newState)
 	{
 		if (newState == State::Stoped)
 		{
-			m_gifContext->Close();
+			m_gifContext->close();
 		}
 		else if (newState == State::Recording)
 		{
 			PathName filePath(_T("FrameCapturer.gif"));
-			m_gifContext->Open(filePath, target->GetSize());
+			m_gifContext->open(filePath, target->getSize());
 			m_lastTick = 0;
 		}
 		m_currentState = newState;
@@ -429,15 +429,15 @@ void FrameCapturer::RecordCommand(Driver::ITexture* target, State newState)
 	{
 		// 差分時間計算
 		uint64_t deltaTick = 0;
-		uint64_t curTick = Environment::GetTickCount();
+		uint64_t curTick = Environment::getTickCount();
 		if (m_lastTick != 0) deltaTick = curTick - m_lastTick;
 
 		if (m_lastTick == 0 || deltaTick > 64)	// FPS15 くらいでプロットする場合はコレ (TODO: fps指定)
 		{
 			// RenderTargetTexture の内容を読み取る
-			Bitmap* bmp = target->Lock();	//TODO: Scoped
-			m_gifContext->AddFrame(bmp, deltaTick);
-			target->Unlock();
+			Bitmap* bmp = target->lock();	//TODO: Scoped
+			m_gifContext->addFrame(bmp, deltaTick);
+			target->unlock();
 
 			m_lastTick = curTick;
 		}

@@ -1,8 +1,5 @@
-﻿/**
-	@file	Cache.h
-*/
+﻿
 #pragma once
-
 #include <map>
 #include "String.h"
 #include "RefObject.h"
@@ -31,7 +28,7 @@ public:
 	bool operator == (const CacheKey& key) const;
 	bool operator < (const CacheKey& key) const;
 
-	bool IsNull() const;
+	bool isNull() const;
 
 private:
 
@@ -75,11 +72,11 @@ public:
 
 protected:
 	virtual ~ICacheObject() {}
-	virtual CacheObjectInfo&	GetCacheObjectInfo() = 0;
+	virtual CacheObjectInfo&	getCacheObjectInfo() = 0;
 
 public:
-	virtual int32_t	AddRef() = 0;
-	virtual int32_t	Release() = 0;
+	virtual int32_t	addRef() = 0;
+	virtual int32_t	release() = 0;
 };
 
 /// ICacheObject の実装ユーティリティ
@@ -87,19 +84,19 @@ public:
 protected: \
 	CacheObjectInfo m_cacheObjectInfo; \
 public: \
-	virtual CacheObjectInfo& GetCacheObjectInfo() { return m_cacheObjectInfo; } \
-	virtual int32_t AddRef() { return RefObject::AddRef(); } \
-	virtual int32_t Release() \
+	virtual CacheObjectInfo& getCacheObjectInfo() { return m_cacheObjectInfo; } \
+	virtual int32_t addRef() { return RefObject::addRef(); } \
+	virtual int32_t release() \
 	{ \
 		if (m_cacheObjectInfo.manager == NULL/* || m_cacheObjectInfo.mIsStockObject*/) \
 		{ \
-			return RefObject::Release(); \
+			return RefObject::release(); \
 		} \
-		int32_t count = m_referenceCount.Decrement(); \
+		int32_t count = m_referenceCount.decrement(); \
 		LN_ASSERT(count >= 0); \
 		if (count == 0) \
 		{ \
-			m_cacheObjectInfo.manager->AddCacheUnusedList(this); \
+			m_cacheObjectInfo.manager->addCacheUnusedList(this); \
 		} \
 		return count; \
 	}
@@ -123,27 +120,27 @@ public:
 	/**
 		@brief	終了処理 (これ以降キャッシュにオブジェクトを追加しないようにする)
 	*/
-	void Finalize();
+	void finalizeCache();
 
 	/**
 		@brief	オブジェクトをキャッシュ管理に追加します。
 	*/
-	void RegisterCacheObject(const CacheKey& key, ICacheObject* obj);
+	void registerCacheObject(const CacheKey& key, ICacheObject* obj);
 
 	/**
 		@brief		キーに一致するオブジェクトを検索します。
 		@details	参照カウントをインクリメントして返します。
 	*/
-	ICacheObject* FindObjectAddRef(const CacheKey& key);
+	ICacheObject* findObjectAddRef(const CacheKey& key);
 	
 	/**
 		@brief	キャッシュをクリアします。
 	*/
-	void ClearCache();
+	void clearCache();
 
 public:
-	void AddCacheUnusedList(ICacheObject* obj);
-	void DeleteCachedObject(ICacheObject* obj);
+	void addCacheUnusedList(ICacheObject* obj);
+	void deleteCachedObject(ICacheObject* obj);
 
 private:
 	virtual ~CacheManager();

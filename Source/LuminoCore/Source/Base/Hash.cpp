@@ -70,14 +70,14 @@ static uint32_t CalcCRCHash(const char* str, int len)
 }
 
 //------------------------------------------------------------------------------
-uint32_t Hash::CalcHash(const char* str, int len)
+uint32_t Hash::calcHash(const char* str, int len)
 {
 	len = static_cast<int>((len < 0) ? strlen(str) : len);
 	return CalcCRCHash(str, len);
 }
 
 //------------------------------------------------------------------------------
-uint32_t Hash::CalcHash(const wchar_t* str, int len)
+uint32_t Hash::calcHash(const wchar_t* str, int len)
 {
 	len = static_cast<int>(((len < 0) ? wcslen(str) : len) * sizeof(wchar_t));
 	return CalcCRCHash((const char*)str, len);

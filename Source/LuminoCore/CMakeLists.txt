@@ -125,6 +125,7 @@ set(LN_SOURCES_Text
 set(LN_SOURCES_IO
 	Include/Lumino/IO/BinaryReader.h
 	Include/Lumino/IO/BinaryWriter.h
+	Include/Lumino/IO/CommandLine.h
 	Include/Lumino/IO/Common.h
 	Include/Lumino/IO/Console.h
 	Include/Lumino/IO/DirectoryUtils.h
@@ -144,6 +145,7 @@ set(LN_SOURCES_IO
 	Include/Lumino/IO/TextWriter.h
 	Source/IO/BinaryReader.cpp
 	Source/IO/BinaryWriter.cpp
+	Source/IO/CommandLine.cpp
 	Source/IO/Console.cpp
 	Source/IO/DirectoryUtils.cpp
 	Source/IO/File.cpp

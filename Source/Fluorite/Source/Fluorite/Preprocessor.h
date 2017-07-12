@@ -89,7 +89,7 @@ public:
 	bool IsDefined(const Token& name, MacroDefine** outDefinedMacro = nullptr) const;
 	bool IsDefined(const TokenChar* name, MacroDefine** outDefinedMacro = nullptr) const;
 
-	uint64_t GetHashCode() const;
+	uint64_t getHashCode() const;
 
 	void Copy(const MacroMap* srcMacroMap);
 
@@ -115,11 +115,11 @@ public:
 		m_core = &m_sharedEmpty;
 	}
 
-	MacroMap* Get()
+	MacroMap* get()
 	{
-		if (m_core.Get() == &m_sharedEmpty || m_core->GetReferenceCount() != 1)
+		if (m_core.get() == &m_sharedEmpty || m_core->GetReferenceCount() != 1)
 		{
-			auto newCore = RefPtr<MacroMap>::MakeRef();
+			auto newCore = RefPtr<MacroMap>::makeRef();
 			if (!m_core.IsNull())
 			{
 				newCore->Copy(m_core);

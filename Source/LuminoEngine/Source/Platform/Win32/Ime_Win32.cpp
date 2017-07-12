@@ -21,6 +21,6 @@
 		アプリから各種設定を送りたいときはこれを使うイメージ？
 
 	・ITextStoreACP
-		継承してインターフェイスを実装し、ITfDocumentMgr::CreateContext() に渡す。
+		継承してインターフェイスを実装し、ITfDocumentMgr::createContext() に渡す。
 		様々な操作のコールバック。
 */

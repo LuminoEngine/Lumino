@@ -335,7 +335,7 @@ DECLARE_INTERFACE_(IDirectMusicSegment, IUnknown)
     STDMETHOD_(ULONG,Release)       (THIS) PURE;
 
     /*  IDirectMusicSegment */
-    STDMETHOD(GetLength)                (THIS_ MUSIC_TIME* pmtLength) PURE;
+    STDMETHOD(getLength)                (THIS_ MUSIC_TIME* pmtLength) PURE;
     STDMETHOD(SetLength)                (THIS_ MUSIC_TIME mtLength) PURE;
     STDMETHOD(GetRepeats)               (THIS_ DWORD* pdwRepeats) PURE;
     STDMETHOD(SetRepeats)               (THIS_ DWORD  dwRepeats) PURE;
@@ -391,7 +391,7 @@ DECLARE_INTERFACE_(IDirectMusicSegment8, IDirectMusicSegment)
     STDMETHOD_(ULONG,Release)       (THIS) PURE;
 
     /*  IDirectMusicSegment */
-    STDMETHOD(GetLength)                (THIS_ MUSIC_TIME* pmtLength) PURE;
+    STDMETHOD(getLength)                (THIS_ MUSIC_TIME* pmtLength) PURE;
     STDMETHOD(SetLength)                (THIS_ MUSIC_TIME mtLength) PURE;
     STDMETHOD(GetRepeats)               (THIS_ DWORD* pdwRepeats) PURE;
     STDMETHOD(SetRepeats)               (THIS_ DWORD  dwRepeats) PURE;

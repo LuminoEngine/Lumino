@@ -11,7 +11,7 @@ LN_NAMESPACE_BEGIN
 class VisualEffect
 	: public tr::ReflectionObject
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 	/**
@@ -19,7 +19,7 @@ public:
 		@param[in]	filePath	: エフェクトファイル
 		@details	対応しているエフェクトファイルは Effekseer のファイル (.efk) です。
 	*/
-	static VisualEffectPtr Create(const StringRef& filePath);
+	static VisualEffectPtr create(const StringRef& filePath);
 
 public:
 
@@ -28,17 +28,17 @@ public:
 		@param[in]	overlap	: trueの場合は再生中のエフェクトがあれば停止せずに新しいエフェクトの再生を開始し、false の場合は停止してから開始する。
 		@return		開始されたエフェクトを示すクラス (このインスタンスは開放しないでください)
 	*/
-	VisualEffectInstance* Play();
+	VisualEffectInstance* play();
 
 	/**
 		@brief		このオブジェクトから再生されたエフェクトを停止します。
 	*/
-	void Stop();
+	void stop();
 
 	/**
 		@brief		このオブジェクトから再生されたエフェクトのいずれかが再生中かを確認します。
 	*/
-	bool IsPlaying() const;
+	bool isPlaying() const;
 
 	void SetOverlapEffects(bool enabled);
 
@@ -56,7 +56,7 @@ public:
 protected:
 	VisualEffect() = default;
 	virtual ~VisualEffect();
-	void Initialize(/*detail::EffectCore* core*/);
+	void initialize(/*detail::EffectCore* core*/);
 	void ReleaseInstance();
 
 	virtual VisualEffectInstance* PlayNewInstance() = 0;

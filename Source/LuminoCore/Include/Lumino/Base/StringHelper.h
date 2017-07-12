@@ -47,11 +47,11 @@ public:
 
 	/** ASCII の小文字を大文字に変換します。(ロケールの影響を受けません) */
 	template<typename TChar>
-	static TChar ToUpper(TChar ch);
+	static TChar toUpper(TChar ch);
 
 	/** ASCII の大文字を小文字に変換します。(ロケールの影響を受けません) */
 	template<typename TChar>
-	static TChar ToLower(TChar ch);
+	static TChar toLower(TChar ch);
 
 	///** 先頭の ASCII 文字を大文字、以降を小文字に変換します。(ロケールの影響を受けません) */
 	//template<typename TChar>
@@ -63,17 +63,17 @@ public:
 					ロケールの影響を受けます。(例：日本語環境であれば、wchar_t の全角スペースもスペースとして扱われます。)
 	*/
 	template<typename TChar>
-	static bool IsSpace(TChar ch);
+	static bool isSpace(TChar ch);
 
 	/**
 		@brief
 		@attention	文字数を計る機能は保障しない。linux では wchar_t 用に文字列を計る関数が無いため。
 	*/
-	static int VSPrintf(char* out, int charCount, const char* format, va_list args);
-	static int VSPrintf(wchar_t* out, int charCount, const wchar_t* format, va_list args);
+	static int vsprintf(char* out, int charCount, const char* format, va_list args);
+	static int vsprintf(wchar_t* out, int charCount, const wchar_t* format, va_list args);
 
-	static int SPrintf(char* out, int charCount, const char* format, ...);
-	static int SPrintf(wchar_t* out, int charCount, const wchar_t* format, ...);
+	static int sprintf(char* out, int charCount, const char* format, ...);
+	static int sprintf(wchar_t* out, int charCount, const wchar_t* format, ...);
 
 
 
@@ -82,21 +82,21 @@ public:
 		@details	input の文字コードは setlocale() に依存します。
 					基本的にOSのAPIが返す文字列を変換したい時に使用してください。
 	*/
-	static void ConvertMultiToWide(std::wstring* out, const char* input, int inputLength);
+	static void convertMultiToWide(std::wstring* out, const char* input, int inputLength);
 
 
-	static void StrNCpy(char* dest, size_t destSize, const char* src, int count) { strncpy_s(dest, destSize, src, count); }
-	static void StrNCpy(wchar_t* dest, size_t destElementsSize, const wchar_t* src, int count) { wcsncpy_s(dest, destElementsSize, src, count); }	// 文字単位。バイト単位ではない
+	static void strncpy(char* dest, size_t destSize, const char* src, int count) { strncpy_s(dest, destSize, src, count); }
+	static void strncpy(wchar_t* dest, size_t destElementsSize, const wchar_t* src, int count) { wcsncpy_s(dest, destElementsSize, src, count); }	// 文字単位。バイト単位ではない
 
 	/// strncmp の overload 実装
-	static int StrNCmp(const char* str1, const char* str2, size_t count) { return strncmp(str1, str2, count); }
-	static int StrNCmp(const wchar_t* str1, const wchar_t* str2, size_t count) { return wcsncmp(str1, str2, count); }
-	static int StrNICmp(const char* str1, const char* str2, size_t count);
-	static int StrNICmp(const wchar_t* str1, const wchar_t* str2, size_t count);
+	static int strncmp(const char* str1, const char* str2, size_t count) { return ::strncmp(str1, str2, count); }
+	static int strncmp(const wchar_t* str1, const wchar_t* str2, size_t count) { return ::wcsncmp(str1, str2, count); }
+	static int strnicmp(const char* str1, const char* str2, size_t count);
+	static int strnicmp(const wchar_t* str1, const wchar_t* str2, size_t count);
 
 	/// strtod の overload 実装
-	static double StrToD(const char* str, char** endptr) { return strtod(str, endptr); }
-	static double StrToD(const wchar_t* str, wchar_t** endptr) { return wcstod(str, endptr); }
+	static double strtod(const char* str, char** endptr) { return ::strtod(str, endptr); }
+	static double strtod(const wchar_t* str, wchar_t** endptr) { return:: wcstod(str, endptr); }
 
 	/** @} */
 
@@ -114,7 +114,7 @@ public:
 		@details	str2 が空文字列である場合は 0 を返します。
 	*/
 	template<typename TChar>
-	static int IndexOf(const TChar* str1, int str1Len, const TChar* str2, int str2Len, int startIndex = 0, CaseSensitivity cs = CaseSensitivity::CaseSensitive);
+	static int indexOf(const TChar* str1, int str1Len, const TChar* str2, int str2Len, int startIndex = 0, CaseSensitivity cs = CaseSensitivity::CaseSensitive);
 
 	/**
 		@brief		文字列を検索し、最後に見つかったインデックスを返します。
@@ -126,7 +126,7 @@ public:
 		@return		見つかった文字列の開始インデックス。見つからなかった場合は -1。
 	*/
 	template<typename TChar>
-	static int LastIndexOf(const TChar* str1, int str1Len, const TChar* str2, int str2Len, int startIndex, int count, CaseSensitivity cs);
+	static int lastIndexOf(const TChar* str1, int str1Len, const TChar* str2, int str2Len, int startIndex, int count, CaseSensitivity cs);
 
 	/**
 		@brief		2 つの文字列を比較します。
@@ -141,18 +141,18 @@ public:
 					str1 が str2 より大きい (str1 > str2)  → 0 より大きい値
 	*/
 	template<typename TChar>
-	static int Compare(const TChar* str1, int str1Len, const TChar* str2, int str2Len, int count, CaseSensitivity cs = CaseSensitivity::CaseSensitive);
+	static int compare(const TChar* str1, int str1Len, const TChar* str2, int str2Len, int count, CaseSensitivity cs = CaseSensitivity::CaseSensitive);
 	template<typename TChar>
-	static int Compare(const TChar* str1, const TChar* str2, int count, CaseSensitivity cs = CaseSensitivity::CaseSensitive);
+	static int compare(const TChar* str1, const TChar* str2, int count, CaseSensitivity cs = CaseSensitivity::CaseSensitive);
 	template<typename TChar>
-	static int Compare(TChar ch1, TChar ch2, CaseSensitivity cs = CaseSensitivity::CaseSensitive);
+	static int compare(TChar ch1, TChar ch2, CaseSensitivity cs = CaseSensitivity::CaseSensitive);
 
 	/**
 		@brief		文字列の前後にある空白を除いた文字列の範囲を調べる
 		@param[in]
 	*/
 	template<typename TChar>
-	static void Trim(const TChar* begin, int length, const TChar** outBegin, int* outLength);
+	static void trim(const TChar* begin, int length, const TChar** outBegin, int* outLength);
 
 	/**
 		@brief		書式文字列と可変長引数リストから文字列を生成する
@@ -179,7 +179,7 @@ public:
 		@details	str2 が空文字の場合は必ず true が返ります。
 	*/
 	template<typename TChar>
-	static bool StartsWith(const TChar* str1, int len1, const TChar* str2, int len2, CaseSensitivity cs);
+	static bool startsWith(const TChar* str1, int len1, const TChar* str2, int len2, CaseSensitivity cs);
 
 	/**
 		@brief		文字列の末尾が、指定した文字列と一致するかどうかを判断します。
@@ -192,7 +192,7 @@ public:
 		@endcode
 	*/
 	template<typename TChar>
-	static bool EndsWith(const TChar* str1, int len1, const TChar* str2, int len2, CaseSensitivity cs);
+	static bool endsWith(const TChar* str1, int len1, const TChar* str2, int len2, CaseSensitivity cs);
 
 	/**
 		@brief		文字列に含まれる部分文字列の数をカウントします。
@@ -205,7 +205,7 @@ public:
 		@return		見つかった数。
 	*/
 	template<typename TChar>
-	static int CountString(const TChar* str1, int str1Len, const TChar* str2, int str2Len, CaseSensitivity cs = CaseSensitivity::CaseSensitive);
+	static int countString(const TChar* str1, int str1Len, const TChar* str2, int str2Len, CaseSensitivity cs = CaseSensitivity::CaseSensitive);
 
 	/**
 		@brief		文字列の左側(先頭)から指定した文字数を抽出します。
@@ -214,7 +214,7 @@ public:
 		@return		抽出された文字列
 	*/
 	template<typename TChar>
-	static GenericString<TChar> Left(const TChar* str, int count);
+	static GenericString<TChar> left(const TChar* str, int count);
 
 	/**
 		@brief		文字列の右側(末尾)から指定した文字数を抽出します。
@@ -223,7 +223,7 @@ public:
 		@return		抽出された文字列
 	*/
 	template<typename TChar>
-	static GenericString<TChar> Right(const TChar* str, int count);
+	static GenericString<TChar> right(const TChar* str, int count);
 
 	/**
 		@brief		文字列の部分文字列を抽出します。
@@ -233,7 +233,7 @@ public:
 		@return		抽出された文字列
 	*/
 	template<typename TChar>
-	static GenericString<TChar> Mid(const TChar* str, int start, int count = -1);
+	static GenericString<TChar> mid(const TChar* str, int start, int count = -1);
 
 	/**
 		@brief		文字列をデリミタで分割する
@@ -243,7 +243,7 @@ public:
 		@return		分割結果の文字列配列
 	*/
 	template<typename TChar>
-	static GenericStringArray<TChar> Split(const GenericString<TChar>& str, const TChar* delim, StringSplitOptions option = StringSplitOptions::None);
+	static GenericStringArray<TChar> split(const GenericString<TChar>& str, const TChar* delim, StringSplitOptions option = StringSplitOptions::None);
 
 	template<typename TChar, typename TLookuped>
 	static void SplitHelper(const TChar* begin, const TChar* end, const TChar* delim, int delimLen, StringSplitOptions option, CaseSensitivity cs, TLookuped callback)
@@ -259,7 +259,7 @@ public:
 
 		while (cur < end)
 		{
-			if (*cur == *delim && (end - cur >= delimLen) && Compare(cur, delim, delimLen, cs) == 0)
+			if (*cur == *delim && (end - cur >= delimLen) && compare(cur, delim, delimLen, cs) == 0)
 			{
 				if (option == StringSplitOptions::RemoveEmptyEntries && tokenBegin == cur)
 				{
@@ -293,7 +293,7 @@ public:
 		@brief		[start] ～ [end - 1] の範囲の先頭が改行かを判別し、一致したら文字数を返す ("\r" か "\n" なら 1、"\r\n" なら 2)
 	*/
 	template<typename TChar>
-	static int CheckNewLineSequence(const TChar* start, const TChar* end);
+	static int checkNewLineSequence(const TChar* start, const TChar* end);
 
 	/**
 		@brief		[start] ～ [end - 1] の範囲の中で最初の改行文字の位置を検索する
@@ -302,7 +302,7 @@ public:
 		@return		見つかれば true
 	*/
 	template<typename TChar>
-	static bool IndexOfNewLineSequence(const TChar* start, const TChar* end, int* outIndex, int* outNewLineCodeCount);
+	static bool indexOfNewLineSequence(const TChar* start, const TChar* end, int* outIndex, int* outNewLineCodeCount);
 
 	/**
 		@brief		ワイルドカード('*', '?')を考慮して文字列を比較する
@@ -310,7 +310,7 @@ public:
 		@param[in]	str			: 比較対象の文字列
 	*/
 	template<typename TChar>
-	static bool Match(const TChar* pattern, const TChar* str);
+	static bool match(const TChar* pattern, const TChar* str);
 
 	/**
 		@brief		文字列を整数値に変換します。
@@ -332,28 +332,28 @@ public:
 					この値が str+len と一致しなければ、文字列が全て読み取られなかったことを示します。
 	*/
 	template<typename TChar>
-	static int8_t ToInt8(const TChar* str, int len = -1, int base = 0, const TChar** outEndPtr = NULL, NumberConversionResult* outResult = NULL);
+	static int8_t toInt8(const TChar* str, int len = -1, int base = 0, const TChar** outEndPtr = NULL, NumberConversionResult* outResult = NULL);
 	/// @copydoc ToInt8
 	template<typename TChar>
-	static uint8_t ToUInt8(const TChar* str, int len = -1, int base = 0, const TChar** outEndPtr = NULL, NumberConversionResult* outResult = NULL);
+	static uint8_t toUInt8(const TChar* str, int len = -1, int base = 0, const TChar** outEndPtr = NULL, NumberConversionResult* outResult = NULL);
 	/// @copydoc ToInt8
 	template<typename TChar>
-	static int16_t ToInt16(const TChar* str, int len = -1, int base = 0, const TChar** outEndPtr = NULL, NumberConversionResult* outResult = NULL);
+	static int16_t toInt16(const TChar* str, int len = -1, int base = 0, const TChar** outEndPtr = NULL, NumberConversionResult* outResult = NULL);
 	/// @copydoc ToInt8
 	template<typename TChar>
-	static uint16_t ToUInt16(const TChar* str, int len = -1, int base = 0, const TChar** outEndPtr = NULL, NumberConversionResult* outResult = NULL);
+	static uint16_t toUInt16(const TChar* str, int len = -1, int base = 0, const TChar** outEndPtr = NULL, NumberConversionResult* outResult = NULL);
 	/// @copydoc ToInt8
 	template<typename TChar>
-	static int32_t ToInt32(const TChar* str, int len = -1, int base = 0, const TChar** outEndPtr = NULL, NumberConversionResult* outResult = NULL);
+	static int32_t toInt32(const TChar* str, int len = -1, int base = 0, const TChar** outEndPtr = NULL, NumberConversionResult* outResult = NULL);
 	/// @copydoc ToInt8
 	template<typename TChar>
-	static uint32_t ToUInt32(const TChar* str, int len = -1, int base = 0, const TChar** outEndPtr = NULL, NumberConversionResult* outResult = NULL);
+	static uint32_t toUInt32(const TChar* str, int len = -1, int base = 0, const TChar** outEndPtr = NULL, NumberConversionResult* outResult = NULL);
 	/// @copydoc ToInt8
 	template<typename TChar>
-	static int64_t ToInt64(const TChar* str, int len = -1, int base = 0, const TChar** outEndPtr = NULL, NumberConversionResult* outResult = NULL);
+	static int64_t toInt64(const TChar* str, int len = -1, int base = 0, const TChar** outEndPtr = NULL, NumberConversionResult* outResult = NULL);
 	/// @copydoc ToInt8
 	template<typename TChar>
-	static uint64_t ToUInt64(const TChar* str, int len = -1, int base = 0, const TChar** outEndPtr = NULL, NumberConversionResult* outResult = NULL);
+	static uint64_t toUInt64(const TChar* str, int len = -1, int base = 0, const TChar** outEndPtr = NULL, NumberConversionResult* outResult = NULL);
 
 	/**
 		@brief		文字列を実数値に変換します。
@@ -365,10 +365,10 @@ public:
 					JSON 等の '.' が小数点として定められている文字列を変換する場合、この関数を使用します。
 	*/
 	template<typename TChar>
-	static double ToDouble(const TChar* str, int len = -1, const TChar** outEndPtr = NULL, NumberConversionResult* outResult = NULL);
+	static double toDouble(const TChar* str, int len = -1, const TChar** outEndPtr = NULL, NumberConversionResult* outResult = NULL);
 	
 	template<typename TChar>
-	static float ToFloat(const TChar* str, int len = -1, const TChar** outEndPtr = NULL, NumberConversionResult* outResult = NULL);
+	static float toFloat(const TChar* str, int len = -1, const TChar** outEndPtr = NULL, NumberConversionResult* outResult = NULL);
 
 };
 

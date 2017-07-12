@@ -10,10 +10,10 @@ LN_NAMESPACE_BEGIN
 class VisualEffectInstance
 	: public tr::ReflectionObject
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
-	virtual void Stop() = 0;
-	virtual bool IsPlaying() = 0;
+	virtual void stop() = 0;
+	virtual bool isPlaying() = 0;
 	virtual void SetWorldMatrix(const Matrix& matrix) = 0;
 
 private:

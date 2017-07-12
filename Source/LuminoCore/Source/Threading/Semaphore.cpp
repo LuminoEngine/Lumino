@@ -25,15 +25,15 @@ Semaphore::~Semaphore()
 }
 
 //------------------------------------------------------------------------------
-void Semaphore::Lock()
+void Semaphore::lock()
 {
-	m_impl->Lock();
+	m_impl->lock();
 }
 
 //------------------------------------------------------------------------------
-void Semaphore::Unlock()
+void Semaphore::unlock()
 {
-	m_impl->Unlock();
+	m_impl->unlock();
 }
 
 LN_NAMESPACE_END

@@ -140,6 +140,8 @@ public:
 	// UI Skin
 	PathName	defaultSkinFilePath;
 
+	// internal
+	PathName	assetDirecotry;
 
 public:
 	EngineSettings()
@@ -153,7 +155,7 @@ public:
 	{
 #ifdef LN_DEBUG
 		engineLogEnabled = true;
-		acceleratorKeys.toggleShowDiag = KeyboardBinding::Create(Keys::F3);
+		acceleratorKeys.toggleShowDiag = KeyboardBinding::create(Keys::F3);
 #endif
 		//engineAcceleratorKeys[(int)EngineAcceleratorKey::ToggleShowDiag] = Key::F3;
 	}
@@ -167,7 +169,7 @@ class EngineManager
 public:
 	static EngineManager*	Instance;
 
-	static EngineManager* GetInstance(EngineManager* priority = nullptr);
+	static EngineManager* getInstance(EngineManager* priority = nullptr);
 
 public:
 	static const TCHAR*	LogFileName;
@@ -177,62 +179,62 @@ public:
 	/**
 		@brief		
 	*/
-	static EngineManager* Create(const detail::EngineSettings& configData);
+	static EngineManager* create(const detail::EngineSettings& configData);
 
 public:
-	void SetFrameUpdateMode(FrameUpdateMode mode) { m_frameUpdateMode = mode; }
+	void setFrameUpdateMode(FrameUpdateMode mode) { m_frameUpdateMode = mode; }
 
-	bool UpdateUnitily();
+	bool updateUnitily();
 
-	void UpdateFrame();
+	void updateFrame();
 	//bool BeginRendering();
-	void RenderFrame();
-	void EndRendering();
-	void PresentFrame();
-	void ResetFrameDelay();
-	bool IsEndRequested() const { return m_endRequested; }
-	void Exit();
+	void renderFrame();
+	void endRendering();
+	void presentFrame();
+	void resetFrameDelay();
+	bool isEndRequested() const { return m_endRequested; }
+	void exit();
 
 
-	PlatformManager* GetPlatformManager() const { return m_platformManager; }
-	detail::AnimationManager* GetAnimationManager() const { return m_animationManager; }
-	detail::AudioManager* GetAudioManager() const { return m_audioManager; }
-	detail::PhysicsManager* GetPhysicsManager() const;
-	detail::GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
-	detail::ModelManager* GetModelManager() const { return m_modelManager; }
-	detail::DocumentsManager* GetDocumentsManager() const { return m_documentsManager; }
-	detail::UIManager* GetUIManager() const { return m_uiManager; }
-	SceneGraphManager* GetSceneGraphManager() const { return m_sceneGraphManager; }
+	PlatformManager* getPlatformManager() const { return m_platformManager; }
+	detail::AnimationManager* getAnimationManager() const { return m_animationManager; }
+	detail::AudioManager* getAudioManager() const { return m_audioManager; }
+	detail::PhysicsManager* getPhysicsManager() const;
+	detail::GraphicsManager* getGraphicsManager() const { return m_graphicsManager; }
+	detail::ModelManager* getModelManager() const { return m_modelManager; }
+	detail::DocumentsManager* getDocumentsManager() const { return m_documentsManager; }
+	detail::UIManager* getUIManager() const { return m_uiManager; }
+	SceneGraphManager* getSceneGraphManager() const { return m_sceneGraphManager; }
 	//Application* GetApplication() const { return m_application; }
 
-	const FpsController& GetFpsController() const { return m_fpsController; }
-	EngineDiagViewer* GetEngineDiagViewer() const { return m_diagViewer; }
-	World2D* GetDefaultWorld2D() const;
-	World3D* GetDefaultWorld3D() const;
+	const FpsController& getFpsController() const { return m_fpsController; }
+	EngineDiagViewer* getEngineDiagViewer() const { return m_diagViewer; }
+	World2D* getDefaultWorld2D() const;
+	World3D* getDefaultWorld3D() const;
 
 protected:
 	EngineManager(const detail::EngineSettings& configData);
 	virtual ~EngineManager();
 
 public:
-	void Initialize();
-	void InitializeCommon();
-	void InitializeAnimationManager();
-	void InitializeFileManager();
-	void InitializePlatformManager();
-	void InitializeInputManager();
-	void InitializeAudioManager();
-	void InitializePhysicsManager();
-	void InitializeGraphicsManager();
-	void InitializeEffectManager();
-	void InitializeModelManager();
-	void InitializeDocumentsManager();
-	void InitializeUIManager();
-	void InitializeSceneGraphManager();
-	void InitializeAssetsManager();
-	virtual bool OnEvent(const PlatformEventArgs& e);
-	//void OnLostDevice();
-	//void OnResetDevice();
+	void initialize();
+	void initializeCommon();
+	void initializeAnimationManager();
+	void initializeFileManager();
+	void initializePlatformManager();
+	void initializeInputManager();
+	void initializeAudioManager();
+	void initializePhysicsManager();
+	void initializeGraphicsManager();
+	void initializeEffectManager();
+	void initializeModelManager();
+	void initializeDocumentsManager();
+	void initializeUIManager();
+	void initializeSceneGraphManager();
+	void initializeAssetsManager();
+	virtual bool onEvent(const PlatformEventArgs& e);
+	//void onLostDevice();
+	//void onResetDevice();
 
 private:
 	//class NativeWindowEventListener;

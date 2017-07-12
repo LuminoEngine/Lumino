@@ -34,28 +34,28 @@ public:
 	//virtual bool CanVerticallyScroll() const = 0;
 
 	/// エクステント (コンテンツ全体) の横幅を取得します。
-	virtual float GetExtentWidth() const = 0;
+	virtual float getExtentWidth() const = 0;
 
 	/// エクステント (コンテンツ全体) の縦幅を取得します。
-	virtual float GetExtentHeight() const = 0;
+	virtual float getExtentHeight() const = 0;
 
 	/// コンテンツに対する実際の表示領域の横幅を取得します。
-	virtual float GetViewportWidth() const = 0;
+	virtual float getViewportWidth() const = 0;
 
 	/// コンテンツに対する実際の表示領域の縦幅を取得します。
-	virtual float GetViewportHeight() const = 0;
+	virtual float getViewportHeight() const = 0;
 
 	/// スクロールしたコンテンツの水平オフセットを設定します。
-	virtual void SetHorizontalOffset(float offset) = 0;
+	virtual void setHorizontalOffset(float offset) = 0;
 
 	/// スクロールしたコンテンツの水平オフセットを取得します。
-	virtual float GetHorizontalOffset() const = 0;
+	virtual float getHorizontalOffset() const = 0;
 
 	/// スクロールしたコンテンツの水平オフセットを設定します。
-	virtual void SetVerticalOffset(float offset) = 0;
+	virtual void setVerticalOffset(float offset) = 0;
 
 	/// スクロールしたコンテンツの垂直オフセットを取得します。
-	virtual float GetVerticalOffset() const = 0;
+	virtual float getVerticalOffset() const = 0;
 
 	/// スクロール動作を制御する ScrollViewer 要素を設定します。
 	//virtual void SetScrollOwner(ScrollViewer* owner) = 0;
@@ -112,43 +112,43 @@ class UILayoutPanel
 	, public detail::ILayoutPanel
 	, public IScrollInfo
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
-	void AddChild(UIElement* element);
-	void RemoveChild(UIElement* element);
+	void addChild(UIElement* element);
+	void removeChild(UIElement* element);
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	UILayoutPanel();
 	virtual ~UILayoutPanel();
-	void Initialize();
-	UIElementCollection* GetChildren() const { return m_children; }
+	void initialize();
+	UIElementCollection* getChildren() const { return m_children; }
 
 	// UIElement interface
-	virtual int GetVisualChildrenCount() const override;
-	virtual UIElement* GetVisualChild(int index) const override;
-	virtual Size MeasureOverride(const Size& constraint) override;
-	virtual Size ArrangeOverride(const Size& finalSize) override;
+	virtual int getVisualChildrenCount() const override;
+	virtual UIElement* getVisualChild(int index) const override;
+	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
 
 	// IUIElementCollectionOwner interface
-	virtual void OnChildCollectionChanged(const tr::ChildCollectionChangedArgs& e) override;
+	virtual void onChildCollectionChanged(const tr::ChildCollectionChangedArgs& e) override;
 
 	// ILayoutPanel interface
-	virtual int GetLayoutChildrenCount() override;
-	virtual ILayoutElement* GetLayoutChild(int index) override;
-	virtual int GetLayoutGridColumnDefinitionCount() override;
-	virtual detail::GridDefinitionData* GetLayoutGridColumnDefinition(int index) override;
-	virtual int GetLayoutGridRowDefinitionCount() override;
-	virtual detail::GridDefinitionData* GetLayoutGridRowDefinition(int index) override;
+	virtual int getLayoutChildrenCount() override;
+	virtual ILayoutElement* getLayoutChild(int index) override;
+	virtual int getLayoutGridColumnDefinitionCount() override;
+	virtual detail::GridDefinitionData* getLayoutGridColumnDefinition(int index) override;
+	virtual int getLayoutGridRowDefinitionCount() override;
+	virtual detail::GridDefinitionData* getLayoutGridRowDefinition(int index) override;
 
 	// IScrollInfo interface
-	virtual float GetExtentWidth() const;
-	virtual float GetExtentHeight() const;
-	virtual float GetViewportWidth() const;
-	virtual float GetViewportHeight() const;
-	virtual void SetHorizontalOffset(float offset);
-	virtual float GetHorizontalOffset() const;
-	virtual void SetVerticalOffset(float offset);
-	virtual float GetVerticalOffset() const;
+	virtual float getExtentWidth() const;
+	virtual float getExtentHeight() const;
+	virtual float getViewportWidth() const;
+	virtual float getViewportHeight() const;
+	virtual void setHorizontalOffset(float offset);
+	virtual float getHorizontalOffset() const;
+	virtual void setVerticalOffset(float offset);
+	virtual float getVerticalOffset() const;
 
 private:
 	RefPtr<UIElementCollection>	m_children;
@@ -161,22 +161,22 @@ private:
 class UIStackPanel
 	: public UILayoutPanel
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
-	static UIStackPanelPtr Create();
+	static UIStackPanelPtr create();
 
 public:
-	void SetOrientation(Orientation orientation) { m_orientation = orientation; }
-	Orientation GetOrientation() const { return m_orientation; }
+	void setOrientation(Orientation orientation) { m_orientation = orientation; }
+	Orientation getOrientation() const { return m_orientation; }
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	UIStackPanel();
 	virtual ~UIStackPanel();
-	void Initialize();
+	void initialize();
 
 	// UIElement interface
-	virtual Size MeasureOverride(const Size& constraint) override;
-	virtual Size ArrangeOverride(const Size& finalSize) override;
+	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
 
 private:
 	Orientation	m_orientation;
@@ -188,18 +188,18 @@ private:
 class UIAbsoluteLayout
 	: public UILayoutPanel
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
-	static UIAbsoluteLayoutPtr Create();
+	static UIAbsoluteLayoutPtr create();
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	UIAbsoluteLayout();
 	virtual ~UIAbsoluteLayout();
-	void Initialize();
+	void initialize();
 
 	// UIElement interface
-	virtual Size MeasureOverride(const Size& constraint) override;
-	virtual Size ArrangeOverride(const Size& finalSize) override;
+	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
 
 private:
 };
@@ -211,40 +211,40 @@ private:
 class UIGridLayout
 	: public UILayoutPanel
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 	/**
 		@brief		UIGridLayout オブジェクトを作成します。
 	*/
-	static UIGridLayoutPtr Create();
+	static UIGridLayoutPtr create();
 
 	/**
 		@brief		指定した数の行列をもつ UIGridLayout オブジェクトを作成します。
 		@details	各セルの幅と高さは GridLengthType::Ratio となります。
 	*/
-	static UIGridLayoutPtr Create(int columnCount, int rowCount);
+	static UIGridLayoutPtr create(int columnCount, int rowCount);
 
 public:
 
-	void SetGridSize(int columnCount, int rowCount);
-	void AddColumnDefinition(GridLengthType type = GridLengthType::Ratio, float width = 1.0f, float minWidth = 0.0f, float maxWidth = FLT_MAX);
-	void AddRowDefinition(GridLengthType type = GridLengthType::Ratio, float height = 1.0f, float minHeight = 0.0f, float maxHeight = FLT_MAX);
+	void setGridSize(int columnCount, int rowCount);
+	void addColumnDefinition(GridLengthType type = GridLengthType::Ratio, float width = 1.0f, float minWidth = 0.0f, float maxWidth = FLT_MAX);
+	void addRowDefinition(GridLengthType type = GridLengthType::Ratio, float height = 1.0f, float minHeight = 0.0f, float maxHeight = FLT_MAX);
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	UIGridLayout();
 	virtual ~UIGridLayout();
-	void Initialize();
+	void initialize();
 
 	// UIElement interface
-	virtual Size MeasureOverride(const Size& constraint) override;
-	virtual Size ArrangeOverride(const Size& finalSize) override;
+	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
 
 	// ILayoutPanel interface
-	virtual int GetLayoutGridColumnDefinitionCount() override;
-	virtual detail::GridDefinitionData* GetLayoutGridColumnDefinition(int index) override;
-	virtual int GetLayoutGridRowDefinitionCount() override;
-	virtual detail::GridDefinitionData* GetLayoutGridRowDefinition(int index) override;
+	virtual int getLayoutGridColumnDefinitionCount() override;
+	virtual detail::GridDefinitionData* getLayoutGridColumnDefinition(int index) override;
+	virtual int getLayoutGridRowDefinitionCount() override;
+	virtual detail::GridDefinitionData* getLayoutGridRowDefinition(int index) override;
 
 private:
 	class DefinitionBase;

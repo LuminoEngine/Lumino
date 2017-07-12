@@ -58,13 +58,13 @@
 #define LN_PARSE(result, parser) \
 	auto result##_ = (parser)(input); \
 	if (result##_.IsFailed()) return input.Fail(result##_); \
-	input.Next(result##_); \
-	auto result = result##_.GetValue();
+	input.next(result##_); \
+	auto result = result##_.getValue();
 
 #define LN_PARSE_RESULT(result, parser) \
 	auto result = (parser)(input); \
 	if (result.IsFailed()) return input.Fail(result); \
-	input.Next(result);
+	input.next(result);
 
 //#define LN_PARSE_SUCCESS(value)	\
 //	Success(value, input);
@@ -103,21 +103,21 @@ class GenericParserResult
 public:
 	static GenericParserResult<T, TCursor> Success(const T& value, Iterator matchBegin, Iterator matchEnd, const TCursor& remainder)
 	{
-		return GenericParserResult<T, TCursor>(value, matchBegin, matchEnd, remainder, true, flString::GetEmpty());
+		return GenericParserResult<T, TCursor>(value, matchBegin, matchEnd, remainder, true, flString::getEmpty());
 	}
 	static GenericParserResult<T, TCursor> Fail(const TCursor& remainder, const flStringRef& message)
 	{
 		return GenericParserResult<T, TCursor>(T(), remainder, false, message);
 	}
 
-	const T& GetValue() const { return m_value; }
+	const T& getValue() const { return m_value; }
 	const TCursor& GetRemainder() const { return m_remainder; }	// 評価後の次の読み取り位置
-	int GetRemainderPosition() const { return m_remainder.GetPosition(); }
+	int GetRemainderPosition() const { return m_remainder.getPosition(); }
 	bool IsSucceed() const { return m_isSuccess; }
 	bool IsFailed() const { return !m_isSuccess; }
 	Iterator GetMatchBegin() const { return m_matchBegin; }
 	Iterator GetMatchEnd() const { return m_matchEnd; }
-	const flString& GetMessage() const { return m_message; }
+	const flString& getMessage() const { return m_message; }
 
 	// Parser 関数の return で Fail() によって、Parse 失敗であることを伝え、Value を捨てるために使う
 	GenericParserResult(const detail::ParserFailure<TCursor>& failer)
@@ -167,8 +167,8 @@ public:
 	static Option Some(const T& value) { return Option(value); }
 	static Option None() { return Option(); }
 
-	bool IsEmpty() const { return m_empty; }
-	const T& GetValue() const { return m_value; }
+	bool isEmpty() const { return m_empty; }
+	const T& getValue() const { return m_value; }
 
 private:
 	Option(const T& value)
@@ -250,7 +250,7 @@ public:
 		return *m_current;
 	}
 
-	Iterator GetPosition() const
+	Iterator getPosition() const
 	{
 		return m_current;
 	}
@@ -325,12 +325,12 @@ public:
 
 	Iterator GetStartPosition() const
 	{
-		return m_start.GetPosition();
+		return m_start.getPosition();
 	}
 
 	Iterator GetLastMatchEndPosition() const
 	{
-		return m_last.GetPosition() + 1;	// 最後のマッチ位置の次
+		return m_last.getPosition() + 1;	// 最後のマッチ位置の次
 	}
 
 	const TCursor& GetCurrentCursor() const
@@ -339,7 +339,7 @@ public:
 	}
 
 	template<typename T>
-	void Next(const GenericParserResult<T, TCursor>& result/*const TCursor& newPos*/)
+	void next(const GenericParserResult<T, TCursor>& result/*const TCursor& newPos*/)
 	{
 		m_last = m_current;
 		m_current = result.GetRemainder();
@@ -354,7 +354,7 @@ public:
 	template<typename TResult>
 	detail::ParserFailure<TCursor> Fail(const TResult& result)
 	{
-		return detail::ParserFailure<TCursor>(GetCurrentCursor(), result.GetMessage());
+		return detail::ParserFailure<TCursor>(GetCurrentCursor(), result.getMessage());
 	}
 
 private:
@@ -408,7 +408,7 @@ public:
 			fl::Token* tok = input.GetCurrentValue();
 			if (tok->EqualChar(ch))
 				return ParserResult<ValueT>::Success(tok, input.GetStartPosition(), input.GetStartPosition() + 1, input.GetNext());
-			return ParserResult<ValueT>::Fail(input.GetCurrentCursor(), flString::Format("Unexpected token \"{0}\". expected \"{1}\"", tok->GetString(), ch));
+			return ParserResult<ValueT>::Fail(input.GetCurrentCursor(), flString::format("Unexpected token \"{0}\". expected \"{1}\"", tok->getString(), ch));
 		};
 	}
 
@@ -418,9 +418,9 @@ public:
 		return [str](ParserContext input)
 		{
 			fl::Token* tok = input.GetCurrentValue();
-			if (tok->EqualString(str.c_str(), str.GetLength()))
+			if (tok->EqualString(str.c_str(), str.getLength()))
 				return ParserResult<ValueT>::Success(tok, input.GetStartPosition(), input.GetStartPosition() + 1, input.GetNext());
-			return ParserResult<ValueT>::Fail(input.GetCurrentCursor(), flString::Format("Unexpected token \"{0}\". expected \"{1}\"", tok->GetString(), str));
+			return ParserResult<ValueT>::Fail(input.GetCurrentCursor(), flString::format("Unexpected token \"{0}\". expected \"{1}\"", tok->getString(), str));
 		};
 	}
 
@@ -431,7 +431,7 @@ public:
 			fl::Token* tok = input.GetCurrentValue();
 			if (tok->GetTokenGroup() == type)
 				return ParserResult<ValueT>::Success(tok, input.GetStartPosition(), input.GetStartPosition() + 1, input.GetNext());
-			return ParserResult<ValueT>::Fail(input.GetCurrentCursor(), flString::Format("Unexpected token group \"{0}\". expected \"{1}\"", (int)tok->GetTokenGroup(), (int)type));
+			return ParserResult<ValueT>::Fail(input.GetCurrentCursor(), flString::format("Unexpected token group \"{0}\". expected \"{1}\"", (int)tok->GetTokenGroup(), (int)type));
 		};
 	}
 
@@ -467,7 +467,7 @@ public:
 
 			while (r.IsSucceed())
 			{
-				list.Add(r.GetValue());
+				list.add(r.getValue());
 				r = parser(r.GetRemainder());
 				//input = r.GetRemainder();
 			}
@@ -498,7 +498,7 @@ public:
 			auto r = parser(input);
 			if (r.IsSucceed())
 			{
-				return ParserResult<Option<T>>::Success(Option<T>::Some(r.GetValue()), input.GetStartPosition(), r.GetMatchEnd(), r.GetRemainder());
+				return ParserResult<Option<T>>::Success(Option<T>::Some(r.getValue()), input.GetStartPosition(), r.GetMatchEnd(), r.GetRemainder());
 			}
 			return ParserResult<Option<T>>::Success(Option<T>::None(), input.GetStartPosition(), input.GetStartPosition(), input.GetStartCursor());
 		};
@@ -559,7 +559,7 @@ public:
 
 			while (r.IsFailed())
 			{
-				list.Add(r.GetValue());
+				list.add(r.getValue());
 				lastResult = r;
 				r = term(r.GetRemainder().Advance());
 			}

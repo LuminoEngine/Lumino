@@ -20,6 +20,7 @@ enum class ZSortDistanceBase
 namespace detail {
 class CombinedMaterial;
 class DynamicLightInfo;
+class CoreGraphicsRenderFeature;
 	
 // シェーダ変数セマンティクス
 LN_ENUM(BuiltinSemantics)
@@ -71,6 +72,7 @@ struct CameraInfo
 	intptr_t	dataSourceId;
 	Size		viewPixelSize;
 	Vector3		viewPosition;
+	Vector3		viewDirection;
 	Matrix		viewMatrix;
 	Matrix		projMatrix;
 	Matrix		viewProjMatrix;
@@ -93,8 +95,11 @@ struct ElementInfo
 // サブセット単位のデータに関する情報
 struct SubsetInfo
 {
-	CombinedMaterial*	combinedMaterial;
-	Texture*			materialTexture;		// TODO: これやめたい。Blit で使っているが・・・
+	const CombinedMaterial*	combinedMaterial;
+
+	// TODO: これやめたい。blit で使っているが・・・ → オーバーライドするにはRenderingCommand にする前にセットが必要。
+	//TextRendererCore の中でステートを変更したら復元も気を付けなければならないし、変更が頻繁になる。メインスレッドで頑張った意味がなくなる。
+	Texture*			materialTexture;
 };
 
 // セマンティクスが関係するシェーダ変数の管理
@@ -102,16 +107,16 @@ class ShaderSemanticsManager
 {
 public:
 	ShaderSemanticsManager();
-	void Initialize(GraphicsManager* manager);
+	void initialize(GraphicsManager* manager);
 
-	void TryPushVariable(ShaderVariable* var);
-	void UpdateSceneVariables(const SceneInfo& info);
-	void UpdateCameraVariables(const CameraInfo& info);
-	void UpdateElementVariables(const ElementInfo& info);
-	void UpdateSubsetVariables(const SubsetInfo& info);
+	void tryPushVariable(ShaderVariable* var);
+	void updateSceneVariables(const SceneInfo& info);
+	void updateCameraVariables(const CameraInfo& info);
+	void updateElementVariables(const ElementInfo& info);
+	void updateSubsetVariables(const SubsetInfo& info);
 
-	// Blit 用
-	//void SetMaterialTexture(Texture* texture);
+	// blit 用
+	//void setMaterialTexture(Texture* texture);
 
 private:
 	struct VariableKindPair
@@ -157,20 +162,20 @@ public:
 	/**
 		@brief		
 	*/
-	static ShaderPtr GetBuiltinShader(BuiltinShader shader);
+	static ShaderPtr getBuiltinShader(BuiltinShader shader);
 
 	/**
 		@brief		シェーダコードが記述されたテキストファイルをコンパイルし、Shader を作成します。
 		@param[in]	filePath		: ファイルパス
 	*/
-	static RefPtr<Shader> Create(const StringRef& filePath, bool useTRSS = false);
+	static RefPtr<Shader> create(const StringRef& filePath, bool useTRSS = false);
 
 	/**
 		@brief		メモリ上に展開されたテキストデータをコンパイルし、Shader を作成します。
 		@param[in]	code			: シェーダコード文字列
 		@param[in]	length			: 文字列の長さ (-1 で 終端 \0 まで)
 	*/
-	static RefPtr<Shader> Create(const char* code, int length);
+	static RefPtr<Shader> create(const char* code, int length);
 	
 	///**
 	//	@brief		文字列をコンパイルし、シェーダを作成します。
@@ -181,7 +186,7 @@ public:
 	//				(成功または警告のみの場合は throw されません)
 	//				例外を throw せず、コンパイル結果の詳細を取得したいときは TryCreate() を使用してください。
 	//*/
-	//static Shader* Create(const char* code, int length = -1);
+	//static Shader* create(const char* code, int length = -1);
 
 	///**
 	//	@brief		メモリ上に展開されたテキストデータをコンパイルし、シェーダを作成します。
@@ -193,7 +198,7 @@ public:
 	//				(成功または警告のみの場合は throw されません)
 	//				例外を throw せず、コンパイル結果の詳細を取得したいときは TryCreate() を使用してください。
 	//*/
-	//static Shader* Create(GraphicsManager* manager, const void* textData, size_t byteCount);
+	//static Shader* create(GraphicsManager* manager, const void* textData, size_t byteCount);
 	//
 	///**
 	//	@brief		メモリ上に展開されたテキストデータをコンパイルし、シェーダを作成します。
@@ -212,44 +217,45 @@ public:
 	/**
 		@brief		このシェーダで定義されている全ての変数を取得します。
 	*/
-	const List<ShaderVariable*>& GetVariables() const { return m_variables; }
+	const List<ShaderVariable*>& getVariables() const { return m_variables; }
 	
 	/**
 		@brief		名前を指定してシェーダ変数を検索します。
 		@return		見つからなかった場合は NULL を返します。
 	*/
-	ShaderVariable* FindVariable(const TCHAR* name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
-	ShaderVariable* FindVariable(const String& name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const { return FindVariable(name.c_str(), cs); }
+	ShaderVariable* findVariable(const TCHAR* name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+	ShaderVariable* findVariable(const String& name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const { return findVariable(name.c_str(), cs); }
 
 	/**
 		@brief		このシェーダで定義されている全てのテクニックを取得します。
 	*/
-	const List<ShaderTechnique*>& GetTechniques() const;
+	const List<ShaderTechnique*>& getTechniques() const;
 
 	/**
 		@brief		名前を指定してテクニックを検索します。
 		@return		見つからなかった場合は NULL を返します。
 	*/
-	ShaderTechnique* FindTechnique(const TCHAR* name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
-	ShaderTechnique* FindTechnique(const String& name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const { return FindTechnique(name.c_str(), cs); }
+	ShaderTechnique* findTechnique(const TCHAR* name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+	ShaderTechnique* findTechnique(const String& name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const { return findTechnique(name.c_str(), cs); }
 
-	detail::GraphicsManager* GetManager() { return m_manager; }
+	detail::GraphicsManager* getManager() { return m_manager; }
 
 protected:
 	virtual ~Shader();
-	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
+	virtual void Dispose() override;
+	virtual void onChangeDevice(Driver::IGraphicsDevice* device);
 
 LN_INTERNAL_ACCESS:
-	friend class RenderingCommandList;
+	friend class detail::RenderingCommandList;
 	Shader();
-	void Initialize(detail::GraphicsManager* manager, const StringRef& filePath, bool useTRSS = false);
-	void Initialize(detail::GraphicsManager* manager, const void* code, int length, bool useTRSS = false);
-	void PostInitialize();
-	void SetModifiedVariables(bool modified) { m_modifiedVariables = modified; }
-	bool IsModifiedVariables() const { return m_modifiedVariables; }
-	void TryCommitChanges();
-	detail::ShaderSemanticsManager* GetSemanticsManager() { return &m_semanticsManager; }
-	void SetShaderValue(uint32_t variableNameHash, const ShaderValue& value);
+	void initialize(detail::GraphicsManager* manager, const StringRef& filePath, bool useTRSS = false);
+	void initialize(detail::GraphicsManager* manager, const void* code, int length, bool useTRSS = false);
+	void postInitialize();
+	void setModifiedVariables(bool modified) { m_modifiedVariables = modified; }
+	bool isModifiedVariables() const { return m_modifiedVariables; }
+	void tryCommitChanges();
+	detail::ShaderSemanticsManager* getSemanticsManager() { return &m_semanticsManager; }
+	void setShaderValue(uint32_t variableNameHash, const ShaderValue& value);
 
 	ByteBuffer						m_sourceCode;
 	Driver::IShader*				m_deviceObj;
@@ -271,40 +277,40 @@ public:
 	ShaderValue& operator = (const ShaderValue& obj);
 
 public:
-	bool IsValid() const { return m_type != ShaderVariableType_Unknown; }
-	ShaderVariableType GetType() const { return m_type; }
+	bool isValid() const { return m_type != ShaderVariableType_Unknown; }
+	ShaderVariableType getType() const { return m_type; }
 
-	void SetBool(bool value);
-	bool GetBool() const { return m_value.BoolVal; }
-	void SetInt(int value);
-	int GetInt() const { return m_value.Int; }
-	void SetBoolArray(const bool* values, int count);
-	const bool* GetBoolArray() const { return m_value.BoolArray; }
-	void SetFloat(float value);
-	float GetFloat() const { return m_value.Float; }
-	void SetFloatArray(const float* values, int count);
-	const float* GetFloatArray() const { return m_value.FloatArray; }
-	void SetVector(const Vector4& vec);
-	const Vector4& GetVector() const { return *m_value.Vector; }
-	void SetVectorArray(const Vector4* vectors, int count);
-	const Vector4* GetVectorArray() const { return m_value.VectorArray; }
-	void SetMatrix(const Matrix& matrix);
-	const Matrix& GetMatrix() const { return *m_value.Matrix; }
-	void SetMatrixArray(const Matrix* matrices, int count);
-	const Matrix* GetMatrixArray() const { return m_value.MatrixArray; }
-	void SetDeviceTexture(Driver::ITexture* texture);
-	Driver::ITexture* GetDeviceTexture() const { return m_value.DeviceTexture; }
-	void SetManagedTexture(Texture* texture);
-	Texture* GetManagedTexture() const { return m_value.ManagedTexture; }
-	void SetString(const char* str);
-	void SetString(const String& str);
-	const TCHAR* GetString() const { return m_value.String; }
+	void setBool(bool value);
+	bool getBool() const { return m_value.BoolVal; }
+	void setInt(int value);
+	int getInt() const { return m_value.Int; }
+	void setBoolArray(const bool* values, int count);
+	const bool* getBoolArray() const { return m_value.BoolArray; }
+	void setFloat(float value);
+	float getFloat() const { return m_value.Float; }
+	void setFloatArray(const float* values, int count);
+	const float* getFloatArray() const { return m_value.FloatArray; }
+	void setVector(const Vector4& vec);
+	const Vector4& getVector() const { return *m_value.Vector; }
+	void setVectorArray(const Vector4* vectors, int count);
+	const Vector4* getVectorArray() const { return m_value.VectorArray; }
+	void setMatrix(const Matrix& matrix);
+	const Matrix& getMatrix() const { return *m_value.Matrix; }
+	void setMatrixArray(const Matrix* matrices, int count);
+	const Matrix* getMatrixArray() const { return m_value.MatrixArray; }
+	void setDeviceTexture(Driver::ITexture* texture);
+	Driver::ITexture* getDeviceTexture() const { return m_value.DeviceTexture; }
+	void setManagedTexture(Texture* texture);
+	Texture* getManagedTexture() const { return m_value.ManagedTexture; }
+	void setString(const char* str);
+	void setString(const String& str);
+	const TCHAR* getString() const { return m_value.String; }
 
-	int GetArrayLength() const;
-	byte_t* GetDataBuffer() { return m_value.Buffer; }	// 初期値格納用
+	int getArrayLength() const;
+	byte_t* getDataBuffer() { return m_value.Buffer; }	// 初期値格納用
 
-	bool Equals(const ShaderValue& value) const;
-	uint32_t GetHashCode();
+	bool equals(const ShaderValue& value) const;
+	uint32_t getHashCode();
 
 private:
 
@@ -348,9 +354,9 @@ private:
 	uint32_t			m_hashCode;
 	bool				m_hashDirty;
 
-	void ReleaseValueBuffer();
-	void AllocValueBuffer(size_t byteCount);
-	void Copy(const ShaderValue& value);
+	void releaseValueBuffer();
+	void allocValueBuffer(size_t byteCount);
+	void copy(const ShaderValue& value);
 
 };
 
@@ -362,65 +368,65 @@ class ShaderVariable
 {
 public:
 	/// 変数の型の取得
-	ShaderVariableType GetType() const;
+	ShaderVariableType getType() const;
 
 	/// 変数名の取得
-	const String& GetName() const;
+	const String& getName() const;
 
 	/// セマンティクス名の取得
-	const String& GetSemanticName() const;
+	const String& getSemanticName() const;
 
 	/// 行列型の場合の行の数を取得する
-	int GetRows() const;
+	int getRows() const;
 
 	/// ベクトルまたは行列型の場合の列の数を取得する
-	int GetColumns() const;
+	int getColumns() const;
 
 	/// 配列型の場合の要素数を取得する (0 の場合は配列ではない)
-	int GetArrayElements() const;
+	int getArrayElements() const;
 
-	void SetBool(bool value);
-	bool GetBool() const;
-	void SetBoolArray(const bool* values, int count);
-	void SetInt(int value);
-	int GetInt() const;
-	void SetFloat(float value);
-	float GetFloat() const;
-	void SetFloatArray(const float* values, int count);
-	void SetVector(const Vector4& value);
-	const Vector4& GetVector() const;
-	void SetVectorArray(const Vector4* values, int count);
-	const Vector4* GetVectorArray() const;
-	void SetMatrix(const Matrix& value);
-	const Matrix& GetMatrix() const;
-	void SetMatrixArray(const Matrix* values, int count);
-	const Matrix* GetMatrixArray() const;
-	void SetTexture(Texture* texture);
-	Texture* GetTexture() const;
-	void SetString(const char* str);
-	const TCHAR* GetString() const;
+	void setBool(bool value);
+	bool getBool() const;
+	void setBoolArray(const bool* values, int count);
+	void setInt(int value);
+	int getInt() const;
+	void setFloat(float value);
+	float getFloat() const;
+	void setFloatArray(const float* values, int count);
+	void setVector(const Vector4& value);
+	const Vector4& getVector() const;
+	void setVectorArray(const Vector4* values, int count);
+	const Vector4* getVectorArray() const;
+	void setMatrix(const Matrix& value);
+	const Matrix& getMatrix() const;
+	void setMatrixArray(const Matrix* values, int count);
+	const Matrix* getMatrixArray() const;
+	void setTexture(Texture* texture);
+	Texture* getTexture() const;
+	void setString(const char* str);
+	const TCHAR* getString() const;
 
 	/**
 		@brief		このシェーダ変数で定義されている全てのアノテーションを取得します。
 	*/
-	const List<ShaderVariable*>& GetAnnotations() const;
+	const List<ShaderVariable*>& getAnnotations() const;
 
 	/**
 		@brief		名前を指定してアノテーションを検索します。
 		@return		見つからなかった場合は NULL を返します。
 	*/
-	ShaderVariable* FindAnnotation(const TCHAR* name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
-	ShaderVariable* FindAnnotation(const String& name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const { return FindAnnotation(name.c_str(), cs); }
+	ShaderVariable* findAnnotation(const TCHAR* name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+	ShaderVariable* findAnnotation(const String& name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const { return findAnnotation(name.c_str(), cs); }
 	
 LN_INTERNAL_ACCESS:
-	void ChangeDevice(Driver::IShaderVariable* obj);
-	void SetModified();
-	void OnCommitChanges();
-	uint32_t GetNameHash() const { return m_nameHash; }
-	Shader* GetOwnerShader() const { return m_owner; }
-	Driver::IShaderVariable* GetDeviceObject() const { return m_deviceObj; }
-	void SetShaderValue(const ShaderValue& value);
-	const ShaderValue& GetShaderValue() const { return m_value; }
+	void changeDevice(Driver::IShaderVariable* obj);
+	void setModified();
+	void onCommitChanges();
+	uint32_t getNameHash() const { return m_nameHash; }
+	Shader* getOwnerShader() const { return m_owner; }
+	Driver::IShaderVariable* getDeviceObject() const { return m_deviceObj; }
+	void setShaderValue(const ShaderValue& value);
+	const ShaderValue& getShaderValue() const { return m_value; }
 
 private:
 	friend class Shader;
@@ -446,33 +452,33 @@ class ShaderTechnique
 {
 public:
 
-	const String& GetName() const;
+	const String& getName() const;
 
-	const List<ShaderPass*>& GetPasses() const;
+	const List<ShaderPass*>& getPasses() const;
 	
 	/**
 		@brief		名前を指定してパスを検索します。
 		@exception	KeyNotFoundException
 	*/
-	ShaderPass* GetPass(const TCHAR* name) const;
+	ShaderPass* getPass(const TCHAR* name) const;
 
 	/**
 		@brief		このテクニックで定義されている全てのアノテーションを取得します。
 	*/
-	const List<ShaderVariable*>& GetAnnotations() const;
+	const List<ShaderVariable*>& getAnnotations() const;
 
 	/**
 		@brief		名前を指定してアノテーションを検索します。
 		@return		見つからなかった場合は NULL を返します。
 	*/
-	ShaderVariable* FindAnnotation(const TCHAR* name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
-	ShaderVariable* FindAnnotation(const String& name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const { return FindAnnotation(name.c_str(), cs); }
+	ShaderVariable* findAnnotation(const TCHAR* name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+	ShaderVariable* findAnnotation(const String& name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const { return findAnnotation(name.c_str(), cs); }
 
 protected:
 	virtual ~ShaderTechnique();
 
 LN_INTERNAL_ACCESS:
-	void ChangeDevice(Driver::IShaderTechnique* obj);
+	void changeDevice(Driver::IShaderTechnique* obj);
 
 private:
 	friend class Shader;
@@ -495,34 +501,34 @@ public:
 	/**
 		@brief	パスの名前を取得します。
 	*/
-	const String& GetName() const;
+	const String& getName() const;
 
 
 	/**
 		@brief		このパスで定義されている全てのアノテーションを取得します。
 	*/
-	const List<ShaderVariable*>& GetAnnotations() const;
+	const List<ShaderVariable*>& getAnnotations() const;
 
 	/**
 		@brief		名前を指定してアノテーションを検索します。
 		@return		見つからなかった場合は NULL を返します。
 	*/
-	ShaderVariable* FindAnnotation(const TCHAR* name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
-	ShaderVariable* FindAnnotation(const String& name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const { return FindAnnotation(name.c_str(), cs); }
+	ShaderVariable* findAnnotation(const TCHAR* name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+	ShaderVariable* findAnnotation(const String& name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const { return findAnnotation(name.c_str(), cs); }
 	
 private:
-	friend class Details::Renderer;
-	void Apply();
+	friend class detail::CoreGraphicsRenderFeature;
+	void apply();
 
 protected:
 	virtual ~ShaderPass();
 
 LN_INTERNAL_ACCESS:
-	void ChangeDevice(Driver::IShaderPass* obj);
-	Shader* GetOwnerShader() { return m_owner; }
+	void changeDevice(Driver::IShaderPass* obj);
+	Shader* getOwnerShader() { return m_owner; }
 
 private:
-	friend class RenderingCommandList;
+	friend class detail::RenderingCommandList;
 	friend class ShaderTechnique;
 	ShaderPass(Shader* owner, Driver::IShaderPass* deviceObj);
 

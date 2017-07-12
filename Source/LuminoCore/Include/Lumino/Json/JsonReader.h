@@ -21,22 +21,22 @@ public:
 	~JsonReader();
 
 public:
-	void Parse(const String& text);
-	void Parse(const TCHAR* text, int len = -1);
-	void Parse(TextReader* textReader);
-	bool HasError() const { return m_error.ErrorCode != JsonParseError::NoError; }
-	const JsonError& GetError() const { return m_error; }
+	void parse(const String& text);
+	void parse(const TCHAR* text, int len = -1);
+	void parse(TextReader* textReader);
+	bool hasError() const { return m_error.ErrorCode != JsonParseError::NoError; }
+	const JsonError& getError() const { return m_error; }
 
 private:
-	bool SkipWhitespace();
-	bool ParseValue();
-	bool ParseNull();
-	bool ParseTrue();
-	bool ParseFalse();
-	bool ParseNumber();
-	bool ParseString(bool isKey);
-	bool ParseArray();
-	bool ParseObject();
+	bool skipWhitespace();
+	bool parseValue();
+	bool parseNull();
+	bool parseTrue();
+	bool parseFalse();
+	bool parseNumber();
+	bool parseString(bool isKey);
+	bool parseArray();
+	bool parseObject();
 
 private:
 	JsonError		m_error;
@@ -71,22 +71,22 @@ public:
 		//m_matched = 0;
 	}
 
-	virtual int Peek() override
+	virtual int peek() override
 	{
-		return m_innter->Peek();
+		return m_innter->peek();
 	}
 
-	virtual int Read() override
+	virtual int read() override
 	{
-		int c = m_innter->Read();
+		int c = m_innter->read();
 		if (c >= 0) {
-			AdvancePosition((TCHAR)c);
+			advancePosition((TCHAR)c);
 		}
 		return c;
 	}
 
 	// TODO: ReadLine と ReadToEnd は Read を実装すれば使えるようにするべき
-	virtual bool ReadLine(String* line) override
+	virtual bool readLine(String* line) override
 	{
 		LN_THROW(0, NotImplementedException);
 		//bool r = m_innter->ReadLine(line);
@@ -95,34 +95,34 @@ public:
 		//return r;
 	}
 
-	virtual String ReadToEnd() override
+	virtual String readToEnd() override
 	{
 		LN_THROW(0, NotImplementedException);
 	}
 
-	virtual bool IsEOF() override
+	virtual bool isEOF() override
 	{
-		return m_innter->IsEOF();
+		return m_innter->isEOF();
 	}
 
-	int GetPosition() const
+	int getPosition() const
 	{
 		return m_pos;
 	}
 
-	int GetLineNumber() const
+	int getLineNumber() const
 	{
 		return m_line;
 	}
 
-	int GetColumnNumber() const
+	int getColumnNumber() const
 	{
 		return m_column;
 	}
 
 private:
 
-	void AdvancePosition(TCHAR ch)
+	void advancePosition(TCHAR ch)
 	{
 		++m_pos;
 		if (m_lastCR)
@@ -198,45 +198,45 @@ public:
 		@brief		次のノード読み取ります。
 		@return		正常に読み取られた場合は true。それ以上読み取るノードが存在しない場合は false。
 	*/
-	bool Read();
+	bool read();
 
-	bool TryRead();
+	bool tryRead();
 
 	/**
 		@brief		現在のノードの種類を取得します。
 	*/
-	JsonToken GetTokenType() const;
+	JsonToken getTokenType() const;
 
 	/**
 		@brief		現在のノードの値 (文字列形式) を取得します。
 		@details	値が無い場合は空文字列を返します。
 	*/
-	const String& GetValue() const;
+	const String& getValue() const;
 
-	const String& GetPropertyName() const;
+	const String& getPropertyName() const;
 
 	/** 現在のノードが Bool である場合、パース結果の bool 値を取得できます。*/
-	bool GetBoolValue() const;
+	bool getBoolValue() const;
 	/** 現在のノードが Int32 である場合、パース結果の int32_t 値を取得できます。*/
-	int32_t GetInt32Value() const;
+	int32_t getInt32Value() const;
 	/** 現在のノードが Int64 である場合、パース結果の int64_t 値を取得できます。*/
-	int64_t GetInt64Value() const;
+	int64_t getInt64Value() const;
 	/** 現在のノードが Float である場合、パース結果の float 値を取得できます。*/
-	float GetFloatValue() const;
+	float getFloatValue() const;
 	/** 現在のノードが Double である場合、パース結果の double 値を取得できます。*/
-	double GetDoubleValue() const;
+	double getDoubleValue() const;
 
 
-	const JsonError2& GetError() const;
+	const JsonError2& getError() const;
 
 
-	void ReadAsStartObject();
-	void ReadAsEndObject();
-	void ReadAsStartArray();
-	void ReadAsEndArray();
-	const String& ReadAsPropertyName();
-	bool ReadAsBool();
-	const String& ReadAsString();
+	void readAsStartObject();
+	void readAsEndObject();
+	void readAsStartArray();
+	void readAsEndArray();
+	const String& readAsPropertyName();
+	bool readAsBool();
+	const String& readAsString();
 
 private:
 	enum class ResultState
@@ -298,21 +298,21 @@ private:
 	JsonError2				m_error;
 
 	JsonReader2();
-	bool SkipWhitespace();
-	bool ParseValue();
-	bool ParseNull();
-	bool ParseTrue();
-	bool ParseFalse();
-	bool ParseNumber();
-	bool ParseObject();
-	bool TryParsePropertyName();
-	bool ParseString(bool isKey);
+	bool skipWhitespace();
+	bool parseValue();
+	bool parseNull();
+	bool parseTrue();
+	bool parseFalse();
+	bool parseNumber();
+	bool parseObject();
+	bool tryParsePropertyName();
+	bool parseString(bool isKey);
 	bool ParsePostValue(bool* outSkip);
 
-	bool SetToken(JsonToken newToken, const TCHAR* value = nullptr, int valueLen = 0);
-	void PushState(/*ContainerType containerType*/);
-	void PopState();
-	void SetError(JsonParseError2 code, const String& message = String::GetEmpty());
+	bool setToken(JsonToken newToken, const TCHAR* value = nullptr, int valueLen = 0);
+	void pushState(/*ContainerType containerType*/);
+	void popState();
+	void setError(JsonParseError2 code, const String& message = String::getEmpty());
 };
 
 } // namespace tr

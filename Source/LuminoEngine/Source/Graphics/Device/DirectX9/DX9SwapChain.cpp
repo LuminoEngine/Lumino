@@ -30,18 +30,18 @@ DX9SwapChain::DX9SwapChain()
 //------------------------------------------------------------------------------
 DX9SwapChain::~DX9SwapChain()
 {
-	OnLostDevice();
+	onLostDevice();
 	LN_SAFE_RELEASE(m_backBuffer);
 	LN_SAFE_RELEASE(m_targetWindow);
 	LN_SAFE_RELEASE(m_graphicsDevice);
 }
 
 //------------------------------------------------------------------------------
-void DX9SwapChain::InitializeDefault(DX9GraphicsDevice* device, PlatformWindow* window, const SizeI& backBufferSize)
+void DX9SwapChain::initializeDefault(DX9GraphicsDevice* device, PlatformWindow* window, const SizeI& backBufferSize)
 {
 	LN_REFOBJ_SET(m_graphicsDevice, device);
 	LN_REFOBJ_SET(m_targetWindow, window);
-	m_targetHWnd = PlatformSupport::GetWindowHandle(m_targetWindow);
+	m_targetHWnd = PlatformSupport::getWindowHandle(m_targetWindow);
 	m_backBufferSize = backBufferSize;
 	m_isDefault = true;
 
@@ -51,43 +51,43 @@ void DX9SwapChain::InitializeDefault(DX9GraphicsDevice* device, PlatformWindow* 
 }
 
 //------------------------------------------------------------------------------
-void DX9SwapChain::InitializeSub(DX9GraphicsDevice* device, PlatformWindow* window, const SizeI& backBufferSize)
+void DX9SwapChain::initializeSub(DX9GraphicsDevice* device, PlatformWindow* window, const SizeI& backBufferSize)
 {
-	InitializeDefault(device, window, backBufferSize);
+	initializeDefault(device, window, backBufferSize);
 	m_isDefault = false;
-	PostInitialize();
+	postInitialize();
 }
 
 //------------------------------------------------------------------------------
-void DX9SwapChain::PostInitialize()
+void DX9SwapChain::postInitialize()
 {
-	OnResetDevice();
+	onResetDevice();
 }
 
 //------------------------------------------------------------------------------
-void DX9SwapChain::OnLostDevice()
+void DX9SwapChain::onLostDevice()
 {
 	// バックバッファ IDirect3DSurface9 の参照を外す
 	if (m_backBuffer) {
-		m_backBuffer->Reset(NULL);
+		m_backBuffer->reset(NULL);
 	}
 
-	LN_SAFE_RELEASE(m_dxSwapChain);
+	LN_COM_SAFE_RELEASE(m_dxSwapChain);
 }
 
 //------------------------------------------------------------------------------
-void DX9SwapChain::OnResetDevice()
+void DX9SwapChain::onResetDevice()
 {
 	if (LN_CHECK_STATE(m_dxSwapChain == nullptr)) return;
 
-	IDirect3DDevice9* dxDevice = m_graphicsDevice->GetIDirect3DDevice9();
+	IDirect3DDevice9* dxDevice = m_graphicsDevice->getIDirect3DDevice9();
 	if (m_isDefault)
 	{
 		LN_COMCALL(dxDevice->GetSwapChain(0, &m_dxSwapChain));
 	}
 	else
 	{
-		D3DPRESENT_PARAMETERS pp = m_graphicsDevice->GetPresentParameters();
+		D3DPRESENT_PARAMETERS pp = m_graphicsDevice->getPresentParameters();
 		pp.BackBufferWidth = m_backBufferSize.width;
 		pp.BackBufferHeight = m_backBufferSize.height;
 		LN_COMCALL(dxDevice->CreateAdditionalSwapChain(&pp, &m_dxSwapChain));
@@ -95,14 +95,14 @@ void DX9SwapChain::OnResetDevice()
 
 	// バックバッファサーフェイスを保持
 	IDirect3DSurface9* surface;
-	//LN_COMCALL(m_graphicsDevice->GetIDirect3DDevice9()->GetRenderTarget(0, &surface));
+	//LN_COMCALL(m_graphicsDevice->getIDirect3DDevice9()->getRenderTarget(0, &surface));
 	m_dxSwapChain->GetBackBuffer(0, D3DBACKBUFFER_TYPE_MONO, &surface);
-	m_backBuffer->Reset(surface);
-	LN_SAFE_RELEASE(surface);
+	m_backBuffer->reset(surface);
+	LN_COM_SAFE_RELEASE(surface);
 }
 
 //------------------------------------------------------------------------------
-void DX9SwapChain::Resize(const SizeI& size)
+void DX9SwapChain::resize(const SizeI& size)
 {
 	m_backBufferSize = size;
 
@@ -111,7 +111,7 @@ void DX9SwapChain::Resize(const SizeI& size)
 		// ソフト的にデバイスロスト状態にして、
 		// 次回のロストチェック時にバックバッファを作り直す。
 		// (描画スレッドを分けている場合の対応)
-		m_graphicsDevice->SetDeviceLostFlag();
+		m_graphicsDevice->setDeviceLostFlag();
 	}
 	else
 	{
@@ -120,31 +120,31 @@ void DX9SwapChain::Resize(const SizeI& size)
 }
 
 //------------------------------------------------------------------------------
-void DX9SwapChain::Present(ITexture* /*colorBuffer*/)
+void DX9SwapChain::present(ITexture* /*colorBuffer*/)
 {
-	if (m_graphicsDevice->GetDeviceState() != DeviceState_Enabled) {
+	if (m_graphicsDevice->getDeviceState() != DeviceState_Enabled) {
 		return;
 	}
 
 	// ここでバックバッファに戻しておく
-	DX9Renderer* r = static_cast<DX9Renderer*>(m_graphicsDevice->GetRenderer());
-	r->SetRenderTarget(0, m_backBuffer);
-	r->SetDepthBuffer(NULL);
+	DX9Renderer* r = static_cast<DX9Renderer*>(m_graphicsDevice->getRenderer());
+	r->setRenderTarget(0, m_backBuffer);
+	r->setDepthBuffer(NULL);
 	
 
-	//IDirect3DDevice9* dxDevice = m_graphicsDevice->GetIDirect3DDevice9();
+	//IDirect3DDevice9* dxDevice = m_graphicsDevice->getIDirect3DDevice9();
 	//D3DCOLOR dxc = D3DCOLOR_ARGB(255, 255, 0, 0);
 	//LN_COMCALL(dxDevice->Clear(0, NULL, D3DCLEAR_TARGET, dxc, 1.0f, 0));
 
 	// 転送
 	//
-	//HRESULT hr = dxDevice->Present(NULL, NULL, m_targetHWnd, NULL);
+	//HRESULT hr = dxDevice->present(NULL, NULL, m_targetHWnd, NULL);
 	HRESULT hr = m_dxSwapChain->Present(NULL, NULL, m_targetHWnd, NULL, 0);
 
 	// デバイスロスト確認
 	if (hr == D3DERR_DEVICELOST)
 	{
-		IDirect3DDevice9* dxDevice = m_graphicsDevice->GetIDirect3DDevice9();
+		IDirect3DDevice9* dxDevice = m_graphicsDevice->getIDirect3DDevice9();
 		hr = dxDevice->TestCooperativeLevel();
 		switch (hr)
 		{
@@ -155,7 +155,7 @@ void DX9SwapChain::Present(ITexture* /*colorBuffer*/)
 			break;
 			// デバイスロスト：リセット可能状態
 		case D3DERR_DEVICENOTRESET:
-			m_graphicsDevice->SetDeviceLostFlag();
+			m_graphicsDevice->setDeviceLostFlag();
 			break;
 		default:
 			LN_THROW(0, COMException, hr);
@@ -166,12 +166,12 @@ void DX9SwapChain::Present(ITexture* /*colorBuffer*/)
 	{
 		if (m_dirtySize)
 		{
-			OnLostDevice();
-			OnResetDevice();
+			onLostDevice();
+			onResetDevice();
 		}
 	}
 
-	m_graphicsDevice->GCDeviceResource();
+	m_graphicsDevice->gcDeviceResource();
 }
 
 } // namespace Driver

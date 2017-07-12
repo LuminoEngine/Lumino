@@ -4,7 +4,6 @@
 #include "GraphicsResourceObject.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 
 /**
 	@brief		頂点バッファのクラスです。
@@ -14,96 +13,46 @@ class VertexBuffer
 {
 public:
 
-	/**
-		@brief		頂点バッファを作成します。
-		@param[in]	vertexElements	: 頂点データレイアウトを表す VertexElement の配列
-		@param[in]	elementsCount	: vertexElements の要素数
-		@param[in]	vertexCount		: 頂点の数
-		@param[in]	data			: 作成と同時に書き込む初期データ (必要なければ NULL)
-		@param[in]	usage			: 頂点バッファリソースの使用方法
-	*/
-	//static VertexBuffer* Create(const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data = NULL, DeviceResourceUsage usage = DeviceResourceUsage_Static);
+	/** 頂点バッファのバイトサイズを取得します。 */
+	int getSize() const;
 
-	/**
-		@brief		頂点バッファを作成します。
-		@param[in]	manager			: 作成に使用する GraphicsManager
-		@param[in]	vertexElements	: 頂点データレイアウトを表す VertexElement の配列
-		@param[in]	elementsCount	: vertexElements の要素数
-		@param[in]	vertexCount		: 頂点の数
-		@param[in]	data			: 作成と同時に書き込む初期データ (必要なければ NULL)
-		@param[in]	usage			: 頂点バッファリソースの使用方法
-		@details	この関数はデフォルト以外の GraphicsManager を指定して作成する場合に使用します。
-	*/
-	//static VertexBuffer* Create(GraphicsManager* manager, const VertexElement* vertexElements, int elementsCount, int vertexCount, const void* data = NULL, DeviceResourceUsage usage = DeviceResourceUsage_Static);
-	
-public:
+	/** 頂点バッファの容量を確保します。 */
+	void reserve(int size);
 
-	size_t GetBufferSize() const { return m_bufferSize; }
+	/** 頂点バッファのサイズを変更します。 */
+	void resize(int size);
 
-	/**
-		@brief		リソースをロックします。
-	*/
-	ByteBuffer* GetMappedData();
-	//ByteBuffer* Lock(int offset, int byteCount);	// テスト用
+	/** 頂点バッファが保持するデータにアクセスします。 */
+	void* getMappedData();
 
-	/**
-		@brief		リソースをアンロックします。
-	*/
-	//void Unlock();
+	/** 頂点が保持するデータにアクセスします。サイズが size より小さい場合はバッファを拡張します。 */
+	void* requestMappedData(int size);
+
+	/** 頂点バッファをクリアします。 */
+	void clear();
+
+protected:
+	virtual void Dispose() override;
 
 LN_INTERNAL_ACCESS:
 	VertexBuffer();
 	virtual ~VertexBuffer();
-	void Initialize(detail::GraphicsManager* manager, size_t bufferSize, const void* data, ResourceUsage usage);
-	//Driver::IVertexBuffer* GetDeviceObject() const { return m_deviceObj; }
-	Driver::IVertexBuffer* ResolveDeviceObject();
-	void Resize(size_t bufferSize);
+	void initialize(detail::GraphicsManager* manager, size_t bufferSize, const void* data, ResourceUsage usage, bool sizeConst);
+	Driver::IVertexBuffer* resolveRHIObject();
+	virtual void onChangeDevice(Driver::IGraphicsDevice* device);
 
-	// GraphicsResourceObject interface
-	virtual void OnChangeDevice(Driver::IGraphicsDevice* device);
+private:
+	bool isRHIDirect() const { return m_initialUpdate && m_rhiObject != nullptr; }
 
-private:	// TODO
+	// TODO
 	friend struct SetVertexBufferCommand;
-	Driver::IVertexBuffer*	m_deviceObj;
-	size_t					m_bufferSize;
+	Driver::IVertexBuffer*	m_rhiObject;
 	ResourceUsage			m_usage;
 	GraphicsResourcePool	m_pool;
-	ByteBuffer				m_lockedBuffer;
+	std::vector<byte_t>		m_buffer;
+	void*					m_rhiLockedBuffer;
 	bool					m_initialUpdate;
 	bool					m_locked;
 };
 
-///**
-//	@brief		VertexBuffer のリソースロックを補助します。
-//*/
-//class ScopedVertexBufferLock
-//{
-//public:
-//	ScopedVertexBufferLock(VertexBuffer* indexBuffer)
-//	{
-//		m_vertexBuffer = indexBuffer;
-//		m_lockedBuffer = m_vertexBuffer->Lock();
-//	}
-//	
-//	~ScopedVertexBufferLock()
-//	{
-//		m_vertexBuffer->Unlock();
-//	}
-//
-//	byte_t* GetData()
-//	{
-//		return m_lockedBuffer->GetData();
-//	}
-//
-//	size_t GetSize()
-//	{
-//		return m_lockedBuffer->GetSize();
-//	}
-//
-//private:
-//	VertexBuffer*	m_vertexBuffer;
-//	ByteBuffer*		m_lockedBuffer;
-//};
-
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

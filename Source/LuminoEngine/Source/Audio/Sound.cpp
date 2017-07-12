@@ -24,21 +24,21 @@ LN_NAMESPACE_AUDIO_BEGIN
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sound, Object);
 
 //------------------------------------------------------------------------------
-SoundPtr Sound::Create(const TCHAR* filePath)
+SoundPtr Sound::create(const TCHAR* filePath)
 {
-	auto ptr = SoundPtr::MakeRef();
-	ptr->Initialize(filePath);
+	auto ptr = SoundPtr::makeRef();
+	ptr->initialize(filePath);
 	return ptr;
-	//return CreateInternal(detail::AudioManager::GetInstance(), filePath);
+	//return CreateInternal(detail::AudioManager::getInstance(), filePath);
 }
 
 //------------------------------------------------------------------------------
-SoundPtr Sound::Create(Stream* stream, SoundLoadingMode loadingMode)
+SoundPtr Sound::create(Stream* stream, SoundLoadingMode loadingMode)
 {
-	auto ptr = SoundPtr::MakeRef();
-	ptr->Initialize(stream, loadingMode);
+	auto ptr = SoundPtr::makeRef();
+	ptr->initialize(stream, loadingMode);
 	return ptr;
-	//return CreateInternal(detail::AudioManager::GetInstance(), stream, loadingMode);
+	//return CreateInternal(detail::AudioManager::getInstance(), stream, loadingMode);
 }
 
 ////------------------------------------------------------------------------------
@@ -76,14 +76,14 @@ Sound::~Sound()
 }
 
 //------------------------------------------------------------------------------
-void Sound::Initialize(const StringRef& filePath)
+void Sound::initialize(const StringRef& filePath)
 {
-	detail::AudioManager* manager = detail::AudioManager::GetInstance();
-	RefPtr<Stream> stream(manager->GetFileManager()->CreateFileStream(filePath, true), false);
-	RefPtr<detail::AudioStream> audioStream(manager->CreateAudioStream(stream, CacheKey(PathName(filePath)), SoundLoadingMode::ASync), false);
+	detail::AudioManager* manager = detail::AudioManager::getInstance();
+	RefPtr<Stream> stream(manager->getFileManager()->createFileStream(filePath, true), false);
+	RefPtr<detail::AudioStream> audioStream(manager->createAudioStream(stream, CacheKey(PathName(filePath)), SoundLoadingMode::ASync), false);
 
 
-	//manager->CreateSound(stream, CacheKey(PathName(filePath)), SoundLoadingMode::ASync)
+	//manager->createSound(stream, CacheKey(PathName(filePath)), SoundLoadingMode::ASync)
 	//return SoundPtr(, false);
 
 
@@ -91,17 +91,17 @@ void Sound::Initialize(const StringRef& filePath)
 	if (LN_CHECK_ARG(stream != nullptr)) return;
 	m_manager = manager;
 	LN_REFOBJ_SET(m_audioStream, audioStream);
-	m_manager->AddSound(this);
+	m_manager->addSound(this);
 }
 
 //------------------------------------------------------------------------------
-void Sound::Initialize(Stream* stream, SoundLoadingMode loadingMode)
+void Sound::initialize(Stream* stream, SoundLoadingMode loadingMode)
 {
-	detail::AudioManager* manager = detail::AudioManager::GetInstance();
-	//RefPtr<Stream> stream(manager->GetFileManager()->CreateFileStream(filePath, true), false);
-	RefPtr<detail::AudioStream> audioStream(manager->CreateAudioStream(stream, CacheKey::Null, SoundLoadingMode::ASync), false);
+	detail::AudioManager* manager = detail::AudioManager::getInstance();
+	//RefPtr<Stream> stream(manager->getFileManager()->createFileStream(filePath, true), false);
+	RefPtr<detail::AudioStream> audioStream(manager->createAudioStream(stream, CacheKey::Null, SoundLoadingMode::ASync), false);
 
-	//SoundPtr(manager->CreateSound(stream, CacheKey::Null, loadingMode), false);
+	//SoundPtr(manager->createSound(stream, CacheKey::Null, loadingMode), false);
 
 	if (LN_CHECK_ARG(manager != nullptr)) return;
 	if (LN_CHECK_ARG(stream != nullptr)) return;
@@ -109,114 +109,114 @@ void Sound::Initialize(Stream* stream, SoundLoadingMode loadingMode)
 	LN_REFOBJ_SET(m_audioStream, audioStream);
 
 	if (loadingMode == SoundLoadingMode::Sync) {
-		CreateAudioPlayerSync();
+		createAudioPlayerSync();
 	}
-	m_manager->AddSound(this);
+	m_manager->addSound(this);
 }
 
 //------------------------------------------------------------------------------
-void Sound::Initialize(detail::AudioStream* audioStream)
+void Sound::initialize(detail::AudioStream* audioStream)
 {
-	detail::AudioManager* manager = detail::AudioManager::GetInstance();
+	detail::AudioManager* manager = detail::AudioManager::getInstance();
 	if (LN_CHECK_ARG(manager != nullptr)) return;
 	if (LN_CHECK_ARG(audioStream != nullptr)) return;
 	m_manager = manager;
 	LN_REFOBJ_SET(m_audioStream, audioStream);
-	m_manager->AddSound(this);
+	m_manager->addSound(this);
 }
 
 //------------------------------------------------------------------------------
-void Sound::SetVolume(float volume)
+void Sound::setVolume(float volume)
 {
 	MutexScopedLock lock(m_playerStateLock);
-	m_playerState.SetVolume(Math::Clamp(volume, 0.0f, 1.0f));
+	m_playerState.setVolume(Math::clamp(volume, 0.0f, 1.0f));
 }
 
 //------------------------------------------------------------------------------
-float Sound::GetVolume() const
+float Sound::getVolume() const
 {
-	return m_playerState.GetVolume();
+	return m_playerState.getVolume();
 }
 
 //------------------------------------------------------------------------------
-void Sound::SetPitch(float pitch)
-{
-	MutexScopedLock lock(m_playerStateLock);
-	m_playerState.SetPitch(Math::Clamp(pitch, 0.5f, 2.0f));
-}
-
-//------------------------------------------------------------------------------
-float Sound::GetPitch() const
-{
-	return m_playerState.GetPitch();
-}
-
-//------------------------------------------------------------------------------
-void Sound::SetLoopEnabled(bool enabled)
+void Sound::setPitch(float pitch)
 {
 	MutexScopedLock lock(m_playerStateLock);
-	m_playerState.SetLoopEnabled(enabled);
+	m_playerState.setPitch(Math::clamp(pitch, 0.5f, 2.0f));
 }
 
 //------------------------------------------------------------------------------
-bool Sound::IsLoopEnabled() const
+float Sound::getPitch() const
 {
-	return m_playerState.IsLoopEnabled();
+	return m_playerState.getPitch();
+}
+
+//------------------------------------------------------------------------------
+void Sound::setLoopEnabled(bool enabled)
+{
+	MutexScopedLock lock(m_playerStateLock);
+	m_playerState.setLoopEnabled(enabled);
+}
+
+//------------------------------------------------------------------------------
+bool Sound::isLoopEnabled() const
+{
+	return m_playerState.isLoopEnabled();
 }
 
 //------------------------------------------------------------------------------
 void Sound::SetLoopRange(uint32_t begin, uint32_t length)
 {
 	MutexScopedLock lock(m_playerStateLock);
-	m_playerState.SetLoopBegin(begin);
-	m_playerState.SetLoopLength(length);
+	m_playerState.setLoopBegin(begin);
+	m_playerState.setLoopLength(length);
 }
 
 //------------------------------------------------------------------------------
-void Sound::Play()
+void Sound::play()
 {
 	MutexScopedLock lock(m_playerStateLock);
-	m_playerState.SetPlayingState(SoundPlayingState::Playing);
+	m_playerState.setPlayingState(SoundPlayingState::Playing);
 }
 
 //------------------------------------------------------------------------------
-void Sound::Stop()
+void Sound::stop()
 {
 	MutexScopedLock lock(m_playerStateLock);
-	m_playerState.SetPlayingState(SoundPlayingState::Stopped);
+	m_playerState.setPlayingState(SoundPlayingState::Stopped);
 }
 
 //------------------------------------------------------------------------------
-void Sound::Pause()
+void Sound::pause()
 {
 	MutexScopedLock lock(m_playerStateLock);
-	m_playerState.SetPlayingState(SoundPlayingState::Pausing);
+	m_playerState.setPlayingState(SoundPlayingState::Pausing);
 }
 
 //------------------------------------------------------------------------------
 void Sound::Resume()
 {
 	MutexScopedLock lock(m_playerStateLock);
-	if (m_playerState.GetPlayingState() == SoundPlayingState::Pausing)
+	if (m_playerState.getPlayingState() == SoundPlayingState::Pausing)
 	{
-		m_playerState.SetPlayingState(SoundPlayingState::Playing);
+		m_playerState.setPlayingState(SoundPlayingState::Playing);
 	}
 }
 
 //------------------------------------------------------------------------------
-void Sound::Set3DEnabled(bool enabled)
+void Sound::set3DEnabled(bool enabled)
 {
 	m_is3DSound = enabled;
 }
 
 //------------------------------------------------------------------------------
-bool Sound::Is3DEnabled() const
+bool Sound::is3DEnabled() const
 {
 	return m_is3DSound;
 }
 
 //------------------------------------------------------------------------------
-void Sound::SetEmitterPosition(const Vector3& pos)
+void Sound::setEmitterPosition(const Vector3& pos)
 {
 	m_position = pos;
 	if (m_audioPlayer != NULL) {
@@ -225,13 +225,13 @@ void Sound::SetEmitterPosition(const Vector3& pos)
 }
 
 //------------------------------------------------------------------------------
-const Vector3& Sound::GetEmitterPosition() const
+const Vector3& Sound::getEmitterPosition() const
 {
     return m_audioPlayer->getPosition();
 }
 
 //------------------------------------------------------------------------------
-void Sound::SetEmitterVelocity(const Vector3& v)
+void Sound::setEmitterVelocity(const Vector3& v)
 {
 	m_velocity = v;
 	if (m_audioPlayer != NULL) {
@@ -240,13 +240,13 @@ void Sound::SetEmitterVelocity(const Vector3& v)
 }
 
 //------------------------------------------------------------------------------
-const Vector3& Sound::GetEmitterVelocity() const
+const Vector3& Sound::getEmitterVelocity() const
 {
 	return m_velocity;
 }
 
 //------------------------------------------------------------------------------
-void Sound::SetEmitterMaxDistance(float distance)
+void Sound::setEmitterMaxDistance(float distance)
 {
 	m_maxDistance = distance;
 	if (m_audioPlayer != NULL) {
@@ -255,10 +255,10 @@ void Sound::SetEmitterMaxDistance(float distance)
 }
 
 //------------------------------------------------------------------------------
-int64_t Sound::GetTotalSamples() const
+int64_t Sound::getTotalSamples() const
 {
 	// TODO: 生成完了まで待つべき？
-	if (m_audioStream->CheckCreated() && m_audioStream->GetFormat() == StreamFormat_Midi) {
+	if (m_audioStream->checkCreated() && m_audioStream->getFormat() == StreamFormat_Midi) {
 #ifdef LN_OS_WIN32
 		if (m_audioPlayer != NULL) {
 			return static_cast<detail::DirectMusicAudioPlayer*>(m_audioPlayer)->getTotalTime();
@@ -268,41 +268,41 @@ int64_t Sound::GetTotalSamples() const
 		LN_THROW(0, NotImplementedException);
 #endif
 	}
-	if (m_audioStream->CheckCreated()) {
-		return m_audioStream->GetDecoder()->GetTotalUnits();
+	if (m_audioStream->checkCreated()) {
+		return m_audioStream->getDecoder()->getTotalUnits();
 	}
 	return 0;
 }
 
 //------------------------------------------------------------------------------
-int64_t Sound::GetPlayedSamples() const
+int64_t Sound::getPlayedSamples() const
 {
 	if (m_audioPlayer != NULL) {
-		return m_audioPlayer->GetPlayedSamples();
+		return m_audioPlayer->getPlayedSamples();
 	}
 	return 0;
 }
 
 //------------------------------------------------------------------------------
-int Sound::GetSamplingRate() const
+int Sound::getSamplingRate() const
 {
-	if (m_audioStream->CheckCreated() && m_audioStream->GetFormat() == StreamFormat_Midi) {
+	if (m_audioStream->checkCreated() && m_audioStream->getFormat() == StreamFormat_Midi) {
 #ifdef LN_OS_WIN32
 		return detail::DirectMusicManager::MusicTimeBase;
 #else
 		LN_THROW(0, NotImplementedException);
 #endif
 	}
-	if (m_audioStream->CheckCreated()) {
-		return m_audioStream->GetDecoder()->GetWaveFormat()->samplesPerSec;
+	if (m_audioStream->checkCreated()) {
+		return m_audioStream->getDecoder()->getWaveFormat()->samplesPerSec;
 	}
 	return 0;
 }
 
 //------------------------------------------------------------------------------
-SoundPlayingState Sound::GetPlayingState() const
+SoundPlayingState Sound::getPlayingState() const
 {
-	return m_playerState.GetPlayingState();
+	return m_playerState.getPlayingState();
 }
 
 //------------------------------------------------------------------------------
@@ -312,25 +312,25 @@ void Sound::SetPlayingMode(SoundPlayingMode mode)
 }
 
 //------------------------------------------------------------------------------
-SoundPlayingMode Sound::GetPlayingMode() const
+SoundPlayingMode Sound::getPlayingMode() const
 {
 	return m_playingMode;
 }
 
 //------------------------------------------------------------------------------
-void Sound::FadeVolume(float targetVolume, double time, SoundFadeBehavior behavior)
+void Sound::fadeVolume(float targetVolume, double time, SoundFadeBehavior behavior)
 {
 	MutexScopedLock lock(m_playerStateLock);
 
 	// 現在の音量から targetVolume への遷移
-	targetVolume = Math::Clamp(targetVolume, 0.0f, 1.0f);
-	m_fadeValue.Start(GetVolume(), targetVolume, time);
+	targetVolume = Math::clamp(targetVolume, 0.0f, 1.0f);
+	m_fadeValue.start(getVolume(), targetVolume, time);
 	m_fadeBehavior = behavior;
 	m_fading = true;
 }
 
 //------------------------------------------------------------------------------
-bool Sound::IsVolumeFading() const
+bool Sound::isVolumeFading() const
 {
 	return m_fading;
 }
@@ -338,21 +338,21 @@ bool Sound::IsVolumeFading() const
 //------------------------------------------------------------------------------
 // 同期的な生成モード時、Manager から呼ばれる。
 //------------------------------------------------------------------------------
-void Sound::CreateAudioPlayerSync()
+void Sound::createAudioPlayerSync()
 {
-	if (LN_CHECK_STATE(m_audioPlayer == NULL && m_audioStream->CheckCreated())) return;
-	m_audioPlayer = m_manager->CreateAudioPlayer(m_audioStream, m_playingMode, m_is3DSound);
+	if (LN_CHECK_STATE(m_audioPlayer == NULL && m_audioStream->checkCreated())) return;
+	m_audioPlayer = m_manager->createAudioPlayer(m_audioStream, m_playingMode, m_is3DSound);
 }
 
 //------------------------------------------------------------------------------
-void Sound::Polling(float elapsedTime)
+void Sound::polling(float elapsedTime)
 {
 	// TODO: 例外catch
 	
 	// stream が準備できていれば Player を作成する
-	if (m_audioPlayer == NULL && m_audioStream->CheckCreated())
+	if (m_audioPlayer == NULL && m_audioStream->checkCreated())
 	{
-		m_audioPlayer = m_manager->CreateAudioPlayer(m_audioStream, m_playingMode, m_is3DSound);
+		m_audioPlayer = m_manager->createAudioPlayer(m_audioStream, m_playingMode, m_is3DSound);
 	}
 
 	//-----------------------------------------------------------
@@ -368,11 +368,11 @@ void Sound::Polling(float elapsedTime)
 		// フェード中の場合 (m_playerState の Volume,PlayingState 上書き)
 		if (m_fading)
 		{
-			m_fadeValue.AdvanceTime(elapsedTime);
-			m_playerState.SetVolume(m_fadeValue.GetValue());
+			m_fadeValue.advanceTime(elapsedTime);
+			m_playerState.setVolume(m_fadeValue.getValue());
 
 			// フェード完了
-			if (m_fadeValue.IsFinished())
+			if (m_fadeValue.isFinished())
 			{
 				m_fading = false;
 
@@ -383,56 +383,56 @@ void Sound::Polling(float elapsedTime)
 				case SoundFadeBehavior::Continue:
 					break;
 					// 停止する場合
-				case SoundFadeBehavior::Stop:
+				case SoundFadeBehavior::stop:
 				case SoundFadeBehavior::StopReset:
-					m_playerState.SetPlayingState(SoundPlayingState::Stopped);
+					m_playerState.setPlayingState(SoundPlayingState::Stopped);
 					break;
 					// 一時停止する場合
-				case SoundFadeBehavior::Pause:
+				case SoundFadeBehavior::pause:
 				case SoundFadeBehavior::PauseReset:
-					m_playerState.SetPlayingState(SoundPlayingState::Pausing);
+					m_playerState.setPlayingState(SoundPlayingState::Pausing);
 					break;
 				}
 
 				// 音量を元に戻す
 				if (m_fadeBehavior == SoundFadeBehavior::StopReset || SoundFadeBehavior::StopReset == SoundFadeBehavior::PauseReset)
 				{
-					m_playerState.SetVolume(m_fadeValue.GetStartValue());
+					m_playerState.setVolume(m_fadeValue.getStartValue());
 				}
 			}
 		}
 
-		if (m_playerState.GetModifiedFlags() & detail::AudioPlayerState::ModifiedFlags_Volume)
+		if (m_playerState.getModifiedFlags() & detail::AudioPlayerState::ModifiedFlags_Volume)
 		{
-			newState.SetVolume(m_playerState.GetVolume());
+			newState.setVolume(m_playerState.getVolume());
 		}
-		if (m_playerState.GetModifiedFlags() & detail::AudioPlayerState::ModifiedFlags_Pitch)
+		if (m_playerState.getModifiedFlags() & detail::AudioPlayerState::ModifiedFlags_Pitch)
 		{
-			newState.SetPitch(m_playerState.GetPitch());
+			newState.setPitch(m_playerState.getPitch());
 		}
-		if (m_playerState.GetModifiedFlags() & detail::AudioPlayerState::ModifiedFlags_LoopEnabled)
+		if (m_playerState.getModifiedFlags() & detail::AudioPlayerState::ModifiedFlags_LoopEnabled)
 		{
-			newState.SetLoopEnabled(m_playerState.IsLoopEnabled());
+			newState.setLoopEnabled(m_playerState.isLoopEnabled());
 		}
-		if (m_playerState.GetModifiedFlags() & detail::AudioPlayerState::ModifiedFlags_LoopBegin)
+		if (m_playerState.getModifiedFlags() & detail::AudioPlayerState::ModifiedFlags_LoopBegin)
 		{
-			newState.SetLoopBegin(m_playerState.GetLoopBegin());
+			newState.setLoopBegin(m_playerState.getLoopBegin());
 		}
-		if (m_playerState.GetModifiedFlags() & detail::AudioPlayerState::ModifiedFlags_LoopLength)
+		if (m_playerState.getModifiedFlags() & detail::AudioPlayerState::ModifiedFlags_LoopLength)
 		{
-			newState.SetLoopLength(m_playerState.GetLoopLength());
+			newState.setLoopLength(m_playerState.getLoopLength());
 		}
-		if (m_playerState.GetModifiedFlags() & detail::AudioPlayerState::ModifiedFlags_PlayingState)
+		if (m_playerState.getModifiedFlags() & detail::AudioPlayerState::ModifiedFlags_PlayingState)
 		{
 			// 再生状態が Sound 側から変更されているので、Player へ設定する。
 			// Player 側から変更されている場合も Sound 側の状態を上書きする。
-			newState.SetPlayingState(m_playerState.GetPlayingState());
+			newState.setPlayingState(m_playerState.getPlayingState());
 		}
-		else if (m_audioPlayer != nullptr && m_audioPlayer->GetPlayerState().GetModifiedFlags() & detail::AudioPlayerState::ModifiedFlags_PlayingState)
+		else if (m_audioPlayer != nullptr && m_audioPlayer->getPlayerState().getModifiedFlags() & detail::AudioPlayerState::ModifiedFlags_PlayingState)
 		{
 			// Player 側からのみ変更されている場合は Sound 側へ設定する。
-			m_playerState.SetPlayingState(m_audioPlayer->GetPlayerState().GetPlayingState());
-			m_playerState.SetModifiedFlags(m_playerState.GetModifiedFlags() & ~detail::AudioPlayerState::ModifiedFlags_PlayingState);
+			m_playerState.setPlayingState(m_audioPlayer->getPlayerState().getPlayingState());
+			m_playerState.setModifiedFlags(m_playerState.getModifiedFlags() & ~detail::AudioPlayerState::ModifiedFlags_PlayingState);
 		}
 
 	}
@@ -440,15 +440,15 @@ void Sound::Polling(float elapsedTime)
 	// 出来上がった newState を AudioPlayer へ送り込む
 	if (m_audioPlayer != nullptr)
 	{
-		m_audioPlayer->CommitPlayerState(newState);
-		m_playerState.SetModifiedFlags(detail::AudioPlayerState::ModifiedFlags_None);	// 同期完了
+		m_audioPlayer->commitPlayerState(newState);
+		m_playerState.setModifiedFlags(detail::AudioPlayerState::ModifiedFlags_None);	// 同期完了
 
 		// TODO: あとで playerstate に含めたい
 		m_audioPlayer->setPosition(m_position);
 		m_audioPlayer->setVelocity(m_velocity);
 		m_audioPlayer->setEmitterDistance(m_maxDistance);
 
-		m_audioPlayer->DoPolling();
+		m_audioPlayer->doPolling();
 	}
 }
 

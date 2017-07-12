@@ -6,7 +6,7 @@
 #include "RenderingCommand.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
+namespace detail {
 
 class RenderingThread
 	: public Thread
@@ -16,25 +16,25 @@ public:
 	virtual ~RenderingThread();
 
 public:
-	void Reset(Driver::IGraphicsDevice* device);
+	void reset(Driver::IGraphicsDevice* device);
 	void Dispose();
 
 	// 指定したコマンドリストの実行を直ちに開始する
-	void PushRenderingCommand(RenderingCommandList* commandList);
-	Exception* GetException() { return m_exception; }
+	void pushRenderingCommand(RenderingCommandList* commandList, SwapChain* publisher = nullptr);
+	Exception* getException() { return m_exception; }
 
-	bool IsRunning() { return m_running.IsTrue(); }
+	bool isRunning() { return m_running.isTrue(); }
 
 	/// 描画スレッドへ一時停止を要求し、停止するまで待つ。
 	/// 描画スレッドは、現在実行中のコマンドリストの実行が終わってから一時停止する。
-	void RequestPauseAndWait();
+	void requestPauseAndWait();
 
 	/// 描画スレッドを再開する
-	void RequestResume();
+	void requestResume();
 
 protected:
 	/// スレッド関数
-	virtual void Execute();
+	virtual void execute();
 
 private:
 	Driver::IGraphicsDevice*			m_device;
@@ -46,5 +46,5 @@ private:
 	Exception*							m_exception;
 };
 
-LN_NAMESPACE_GRAPHICS_END
+} // namespace detail
 LN_NAMESPACE_END

@@ -222,7 +222,7 @@ static std::string DeathTestThreadWarning(size_t thread_count) {
     msg << "couldn't detect the number of threads.";
   else
     msg << "detected " << thread_count << " threads.";
-  return msg.GetString();
+  return msg.getString();
 }
 # endif  // !GTEST_OS_WINDOWS
 

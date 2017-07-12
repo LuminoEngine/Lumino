@@ -1,6 +1,5 @@
 ﻿
 #pragma once
-
 #include <vector>
 #include <Lumino/Base/Delegate.h>
 #include <Lumino/Base/GeometryStructs.h>
@@ -16,12 +15,13 @@
 #define LN_RC_TRACE /*printf*/
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 class SwapChain;
 class Texture;
 class VertexBuffer;
 class IndexBuffer;
 class ShaderPass;
+
+namespace detail {
 class RenderingCommandList;
 class RenderBulkData;
 
@@ -38,7 +38,7 @@ class RenderBulkData;
 	しかし、コマンドは RenderingCommandList::Alloc() が呼ばれると再配置される可能性がある。
 	そのため、コンストラクタ内で Alloc() すると this が不正なポインタになることがある。
 
-	対策として、初期化は static 関数である Create() で行うようにした。
+	対策として、初期化は static 関数である create() で行うようにした。
 	ユーティリティ関数を用意したものの、キャストなどで冗長になってしまうのはやむなし。
 	(急いで作ったから、もう少し改善の余地はあるかも)
 
@@ -56,20 +56,20 @@ public:
 
 	typedef size_t	DataHandle;
 
-	virtual void Execute() = 0;
+	virtual void execute() = 0;
 
 
 protected:
-	inline Driver::IGraphicsDevice* GetDevice() const;
-	inline Driver::IRenderer* GetRenderer() const;	// TODO: いらないかも
-	inline DataHandle AllocExtData(size_t byteCount, const void* copyData);
-	inline void* GetExtData(DataHandle handle);
-	inline void MarkGC(RefObject* obj);
+	inline Driver::IGraphicsDevice* getDevice() const;
+	inline Driver::IRenderer* getRenderer() const;	// TODO: いらないかも
+	inline DataHandle allocExtData(size_t byteCount, const void* copyData);
+	inline void* getExtData(DataHandle handle);
+	inline void markGC(RefObject* obj);
 
 	template<typename T>
-	inline void MarkBulkData(RenderingCommandList* commandList, T& value);
+	inline void markBulkData(RenderingCommandList* commandList, T& value);
 	//template<>
-	//inline void MarkBulkData<RenderBulkData>(RenderingCommandList* commandList, RenderBulkData& value);
+	//inline void markBulkData<RenderBulkData>(RenderingCommandList* commandList, RenderBulkData& value);
 
 private:
 	friend class RenderingCommandList;
@@ -93,12 +93,12 @@ private:
 	//template<class CommandT>
 	//static CommandT* HandleCast(CmdInfo& cmd)
 	//{
-	//	return reinterpret_cast<CommandT*>(cmd.m_commandList->GetExtData(cmd.m_dataHandle));
+	//	return reinterpret_cast<CommandT*>(cmd.m_commandList->getExtData(cmd.m_dataHandle));
 	//}
 
-	//inline static size_t AllocExtData(size_t byteCount, const void* copyData);
+	//inline static size_t allocExtData(size_t byteCount, const void* copyData);
 
-	//inline void MarkGC(RefObject* obj);
+	//inline void markGC(RefObject* obj);
 
 //private:
 	//friend class RenderingCommandList;
@@ -115,14 +115,14 @@ class RenderBulkData
 public:
 	RenderBulkData();
 	RenderBulkData(const void* srcData, size_t size);
-	const void* GetData() const;
-	size_t GetSize() const { return m_size; }
+	const void* getData() const;
+	size_t getSize() const { return m_size; }
 
 	// 確保したメモリは書き込み可能ポインタとして返される。
-	void* Alloc(RenderingCommandList* commandList, size_t size);
+	void* alloc(RenderingCommandList* commandList, size_t size);
 
 	// TODO: internal
-	void* Alloc(RenderingCommandList* commandList);
+	void* alloc(RenderingCommandList* commandList);
 
 private:
 	const void*				m_srcData;
@@ -138,181 +138,90 @@ class RenderingCommandList
 public:
 	typedef size_t	DataHandle;
 
-	RenderingCommandList(detail::GraphicsManager* manager);
+	RenderingCommandList(detail::GraphicsManager* manager, intptr_t mainThreadId);
 	virtual ~RenderingCommandList();
 
 public:
-	void ClearCommands();
+	void clearCommands();
 
 	/// すべてのコマンドを実行する (描画スレッドから呼ばれる)
-	void Execute(Driver::IGraphicsDevice* device/*, Device::IRenderer* renderer*/);
+	void execute(Driver::IGraphicsDevice* device/*, Device::IRenderer* renderer*/);
 
 	/// 後処理 (描画スレッドから呼ばれる)
-	void PostExecute();
+	//void postExecute();
 
 	/// 描画キューに入っているか
-	bool IsRunning() { return m_running.IsTrue(); }
+	bool isRunning() { return m_running.isTrue(); }
 
 	/// アイドル状態になるまで待つ
-	void WaitForIdle() { m_idling.Wait(); }
+	void waitForIdle() { m_idling.wait(); }
 
 
 private:
+	static const size_t DataBufferReserve = 20;	// TODO: デバッグ用。もっと大きくて良い
 
-	static const size_t DataBufferReserve = 20;
-
+	void presentRHIAndEndExecute();
 
 private:
-	DataHandle AllocCommand(size_t byteCount, const void* copyData);
+	DataHandle allocCommand(size_t byteCount, const void* copyData);
 
-	RenderingCommand* GetCommand(DataHandle bufferIndex) { return (RenderingCommand*)&(m_commandDataBuffer.GetData()[bufferIndex]); }
+	RenderingCommand* getCommand(DataHandle bufferIndex) { return (RenderingCommand*)&(m_commandDataBuffer.getData()[bufferIndex]); }
 
 	template<typename T>
-	DataHandle CreateCommand()
+	DataHandle createCommand()
 	{
-		size_t dataHandle = AllocCommand(sizeof(T), NULL);
-		T* t = new (GetCommand(dataHandle))T();
+		size_t dataHandle = allocCommand(sizeof(T), NULL);
+		T* t = new (getCommand(dataHandle))T();
 		t->m_commandList = this;
 		//t->m_dataHandle = dataHandle;
 		return dataHandle;
 	}
 
-	bool CheckOnStandaloneRenderingThread();
+	bool checkOnStandaloneRenderingThread();
 
 public:
 
 	template<typename T, typename... TArgs>
-	void AddCommand(TArgs... args)
+	void addCommand(TArgs... args)
 	{
-		DataHandle h = CreateCommand<T>();
-		T* cmd = static_cast<T*>(GetCommand(h));
+		DataHandle h = createCommand<T>();
+		T* cmd = static_cast<T*>(getCommand(h));
 		//RenderingCommand::CmdInfo cmd;
 		//cmd->m_commandList = this;
 		//cmd.m_dataHandle = t->m_dataHandle;
-		cmd->Create(args...);
+		cmd->create(args...);
 		LN_RC_TRACE("RenderingCommandList::AddCommand 0() s %p\n", this);
-		m_commandList.Add(h);
+		m_commandList.add(h);
 	}
 
 	template<typename T, typename... TArgs>
-	void EnqueueCommand(TArgs... args)
+	void enqueueCommand(TArgs... args)
 	{
-		if (LN_CHECK_STATE(!CheckOnStandaloneRenderingThread())) return;
+		if (LN_CHECK_STATE(!checkOnStandaloneRenderingThread())) return;
 
-		size_t dataHandle = AllocCommand(sizeof(T), NULL);
-		T* t = new (GetCommand(dataHandle))T(args...);
+		size_t dataHandle = allocCommand(sizeof(T), NULL);
+		T* t = new (getCommand(dataHandle))T(args...);
 		t->m_commandList = this;
 		t->OnEnqueued(this);
 		LN_RC_TRACE("RenderingCommandList::EnqueueCommand 0() s %p\n", this);
-		m_commandList.Add(dataHandle);
+		m_commandList.add(dataHandle);
 	}
-	
-
-#if 0
-	template<typename T, typename A1>
-	void AddCommand(const A1& a1)
-	{
-		T* t = CreateCommand<T>();
-		RenderingCommand::CmdInfo cmd;
-		cmd.m_commandList = this;
-		cmd.m_dataHandle = t->m_dataHandle;
-		T::Create(cmd, a1);
-		LN_RC_TRACE("RenderingCommandList::AddCommand 0() s %p\n", this);
-		m_commandList.Add(cmd.m_dataHandle);
-	}
-	template<typename T, typename A1, typename A2>
-	void AddCommand(const A1& a1, const A2& a2)
-	{
-		T* t = CreateCommand<T>();
-		RenderingCommand::CmdInfo cmd;
-		cmd.m_commandList = this;
-		cmd.m_dataHandle = t->m_dataHandle;
-		T::Create(cmd, a1, a2);
-		LN_RC_TRACE("RenderingCommandList::AddCommand 1() s %p\n", this);
-		m_commandList.Add(cmd.m_dataHandle);
-	}
-	template<typename T, typename A1, typename A2, typename A3>
-	void AddCommand(const A1& a1, const A2& a2, const A3& a3)
-	{
-		T* t = CreateCommand<T>();
-		RenderingCommand::CmdInfo cmd;
-		cmd.m_commandList = this;
-		cmd.m_dataHandle = t->m_dataHandle;
-		T::Create(cmd, a1, a2, a3);
-		LN_RC_TRACE("RenderingCommandList::AddCommand 2() s %p\n", this);
-		m_commandList.Add(cmd.m_dataHandle);
-	}
-	template<typename T, typename A1, typename A2, typename A3, typename A4>
-	void AddCommand(const A1& a1, const A2& a2, const A3& a3, const A4& a4)
-	{
-		T* t = CreateCommand<T>();
-		RenderingCommand::CmdInfo cmd;
-		cmd.m_commandList = this;
-		cmd.m_dataHandle = t->m_dataHandle;
-		T::Create(cmd, a1, a2, a3, a4);
-		LN_RC_TRACE("RenderingCommandList::AddCommand 3() s %p\n", this);
-		m_commandList.Add(cmd.m_dataHandle);
-	}
-	template<typename T, typename A1, typename A2, typename A3, typename A4, typename A5>
-	void AddCommand(const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5)
-	{
-		T* t = CreateCommand<T>();
-		RenderingCommand::CmdInfo cmd;
-		cmd.m_commandList = this;
-		cmd.m_dataHandle = t->m_dataHandle;
-		T::Create(cmd, a1, a2, a3, a4, a5);
-		LN_RC_TRACE("RenderingCommandList::AddCommand 4() s %p\n", this);
-		m_commandList.Add(cmd.m_dataHandle);
-	}
-	template<typename T, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
-	void AddCommand(const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6)
-	{
-		T* t = CreateCommand<T>();
-		RenderingCommand::CmdInfo cmd;
-		cmd.m_commandList = this;
-		cmd.m_dataHandle = t->m_dataHandle;
-		T::Create(cmd, a1, a2, a3, a4, a5, a6);
-		LN_RC_TRACE("RenderingCommandList::AddCommand 5() s %p\n", this);
-		m_commandList.Add(cmd.m_dataHandle);
-	}
-	template<typename T, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7>
-	void AddCommand(const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7)
-	{
-		T* t = CreateCommand<T>();
-		RenderingCommand::CmdInfo cmd;
-		cmd.m_commandList = this;
-		cmd.m_dataHandle = t->m_dataHandle;
-		T::Create(cmd, a1, a2, a3, a4, a5, a6, a7);
-		LN_RC_TRACE("RenderingCommandList::AddCommand 6() s %p\n", this);
-		m_commandList.Add(cmd.m_dataHandle);
-	}
-	template<typename T, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7, typename A8>
-	void AddCommand(const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7, const A8& a8)
-	{
-		T* t = CreateCommand<T>();
-		RenderingCommand::CmdInfo cmd;
-		cmd.m_commandList = this;
-		cmd.m_dataHandle = t->m_dataHandle;
-		T::Create(cmd, a1, a2, a3, a4, a5, a6, a7, a8);
-		LN_RC_TRACE("RenderingCommandList::AddCommand 8() s %p\n", this);
-		m_commandList.Add(cmd.m_dataHandle);
-	}
-#endif
 
 public:
-	DataHandle AllocExtData(size_t byteCount, const void* copyData);
-	void* GetExtData(DataHandle bufferIndex);
-	void MarkGC(RefObject* obj) 
-	{ 
+	DataHandle allocExtData(size_t byteCount, const void* copyData);
+	void* getExtData(DataHandle bufferIndex);
+	void markGC(RefObject* obj)
+	{
 		if (obj != NULL)	// テクスチャを解除したりするときは NULL が渡されてくる
 		{
-			obj->AddRef();
-			m_markGCList.Add(obj);
+			obj->addRef();
+			m_markGCList.add(obj);
 		}
 	}
 
 private:
 	detail::GraphicsManager*	m_manager;
+	intptr_t					m_mainThreadId;		// for inspection
 	List<size_t>			m_commandList;
 	ByteBuffer				m_commandDataBuffer;
 	size_t					m_commandDataBufferUsed;
@@ -327,52 +236,55 @@ private:
 	friend struct RenderingCommand;
 	ConditionFlag	m_running;	///< 描画キューに入っているか
 	ConditionFlag	m_idling;
+	RefPtr<SwapChain> m_publisher;
 };
 
 
-inline Driver::IGraphicsDevice* RenderingCommand::GetDevice() const
+inline Driver::IGraphicsDevice* RenderingCommand::getDevice() const
 {
 	return m_commandList->m_currentDevice;
 }
-inline Driver::IRenderer* RenderingCommand::GetRenderer() const
+inline Driver::IRenderer* RenderingCommand::getRenderer() const
 {
 	return m_commandList->m_currentRenderer;
 }
-inline RenderingCommand::DataHandle RenderingCommand::AllocExtData(size_t byteCount, const void* copyData)
-{ 
-	return m_commandList->AllocExtData(byteCount, copyData);
-}
-inline void* RenderingCommand::GetExtData(DataHandle handle)
+inline RenderingCommand::DataHandle RenderingCommand::allocExtData(size_t byteCount, const void* copyData)
 {
-	return m_commandList->GetExtData(handle);
+	return m_commandList->allocExtData(byteCount, copyData);
 }
-inline void RenderingCommand::MarkGC(RefObject* obj)
+inline void* RenderingCommand::getExtData(DataHandle handle)
 {
-	m_commandList->MarkGC(obj);
+	return m_commandList->getExtData(handle);
+}
+inline void RenderingCommand::markGC(RefObject* obj)
+{
+	m_commandList->markGC(obj);
 }
 template<typename T>
-inline void RenderingCommand::MarkBulkData(RenderingCommandList* commandList, T& value)
+inline void RenderingCommand::markBulkData(RenderingCommandList* commandList, T& value)
 {
 }
 template<>
-inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList* commandList, RenderBulkData& value)
+inline void RenderingCommand::markBulkData<RenderBulkData>(RenderingCommandList* commandList, RenderBulkData& value)
 {
-	value.Alloc(commandList);
+	value.alloc(commandList);
 }
+
+} // namespace detail
 
 #define LN_ENQUEUE_RENDER_COMMAND_PARAM(type, param) type param
 
 #define LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, commandName, ...) \
-	if (manager->GetRenderingType() == GraphicsRenderingType::Threaded) { \
-		manager->GetPrimaryRenderingCommandList()->EnqueueCommand<commandName>(__VA_ARGS__); \
+	if (manager->getRenderingType() == GraphicsRenderingType::Threaded) { \
+		manager->getPrimaryRenderingCommandList()->enqueueCommand<commandName>(__VA_ARGS__); \
 	} \
 	else { \
 		commandName cmd(__VA_ARGS__); \
-		cmd.Execute(); \
+		cmd.execute(); \
 	}
 
 #define LN_ENQUEUE_RENDER_COMMAND_1(name, manager, type1, param1, code) \
-	class RenderCommand_##name : public RenderingCommand \
+	class RenderCommand_##name : public ln::detail::RenderingCommand \
 	{ \
 	public: \
 		type1 param1; \
@@ -380,11 +292,11 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 			LN_ENQUEUE_RENDER_COMMAND_PARAM(type1, in_##param1)) \
 			: param1(in_##param1) \
 		{} \
-		void OnEnqueued(RenderingCommandList* commandList) \
+		void OnEnqueued(ln::detail::RenderingCommandList* commandList) \
 		{ \
-			RenderingCommand::MarkBulkData(commandList, param1); \
+			RenderingCommand::markBulkData(commandList, param1); \
 		} \
-		virtual void Execute() override \
+		virtual void execute() override \
 		{ \
 			code; \
 		} \
@@ -392,7 +304,7 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 	LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, RenderCommand_##name, param1);
 
 #define LN_ENQUEUE_RENDER_COMMAND_2(name, manager, type1, param1, type2, param2, code) \
-	class RenderCommand_##name : public RenderingCommand \
+	class RenderCommand_##name : public ln::detail::RenderingCommand \
 	{ \
 	public: \
 		type1 param1; \
@@ -403,12 +315,12 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 			: param1(in_##param1) \
 			, param2(in_##param2) \
 		{} \
-		void OnEnqueued(RenderingCommandList* commandList) \
+		void OnEnqueued(ln::detail::RenderingCommandList* commandList) \
 		{ \
-			RenderingCommand::MarkBulkData(commandList, param1); \
-			RenderingCommand::MarkBulkData(commandList, param2); \
+			RenderingCommand::markBulkData(commandList, param1); \
+			RenderingCommand::markBulkData(commandList, param2); \
 		} \
-		virtual void Execute() override \
+		virtual void execute() override \
 		{ \
 			code; \
 		} \
@@ -416,7 +328,7 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 	LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, RenderCommand_##name, param1, param2);
 
 #define LN_ENQUEUE_RENDER_COMMAND_3(name, manager, type1, param1, type2, param2, type3, param3, code) \
-	class RenderCommand_##name : public RenderingCommand \
+	class RenderCommand_##name : public ln::detail::RenderingCommand \
 	{ \
 	public: \
 		type1 param1; \
@@ -430,13 +342,13 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 			, param2(in_##param2) \
 			, param3(in_##param3) \
 		{} \
-		void OnEnqueued(RenderingCommandList* commandList) \
+		void OnEnqueued(ln::detail::RenderingCommandList* commandList) \
 		{ \
-			RenderingCommand::MarkBulkData(commandList, param1); \
-			RenderingCommand::MarkBulkData(commandList, param2); \
-			RenderingCommand::MarkBulkData(commandList, param3); \
+			RenderingCommand::markBulkData(commandList, param1); \
+			RenderingCommand::markBulkData(commandList, param2); \
+			RenderingCommand::markBulkData(commandList, param3); \
 		} \
-		virtual void Execute() override \
+		virtual void execute() override \
 		{ \
 			code; \
 		} \
@@ -444,7 +356,7 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 	LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, RenderCommand_##name, param1, param2, param3);
 
 #define LN_ENQUEUE_RENDER_COMMAND_4(name, manager, type1, param1, type2, param2, type3, param3, type4, param4, code) \
-	class RenderCommand_##name : public RenderingCommand \
+	class RenderCommand_##name : public ln::detail::RenderingCommand \
 	{ \
 	public: \
 		type1 param1; \
@@ -461,14 +373,14 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 			, param3(in_##param3) \
 			, param4(in_##param4) \
 		{} \
-		void OnEnqueued(RenderingCommandList* commandList) \
+		void OnEnqueued(ln::detail::RenderingCommandList* commandList) \
 		{ \
-			RenderingCommand::MarkBulkData(commandList, param1); \
-			RenderingCommand::MarkBulkData(commandList, param2); \
-			RenderingCommand::MarkBulkData(commandList, param3); \
-			RenderingCommand::MarkBulkData(commandList, param4); \
+			RenderingCommand::markBulkData(commandList, param1); \
+			RenderingCommand::markBulkData(commandList, param2); \
+			RenderingCommand::markBulkData(commandList, param3); \
+			RenderingCommand::markBulkData(commandList, param4); \
 		} \
-		virtual void Execute() override \
+		virtual void execute() override \
 		{ \
 			code; \
 		} \
@@ -476,7 +388,7 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 	LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, RenderCommand_##name, param1, param2, param3, param4);
 
 #define LN_ENQUEUE_RENDER_COMMAND_5(name, manager, type1, param1, type2, param2, type3, param3, type4, param4, type5, param5, code) \
-	class RenderCommand_##name : public RenderingCommand \
+	class RenderCommand_##name : public ln::detail::RenderingCommand \
 	{ \
 	public: \
 		type1 param1; \
@@ -496,15 +408,15 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 			, param4(in_##param4) \
 			, param5(in_##param5) \
 		{} \
-		void OnEnqueued(RenderingCommandList* commandList) \
+		void OnEnqueued(ln::detail::RenderingCommandList* commandList) \
 		{ \
-			RenderingCommand::MarkBulkData(commandList, param1); \
-			RenderingCommand::MarkBulkData(commandList, param2); \
-			RenderingCommand::MarkBulkData(commandList, param3); \
-			RenderingCommand::MarkBulkData(commandList, param4); \
-			RenderingCommand::MarkBulkData(commandList, param5); \
+			RenderingCommand::markBulkData(commandList, param1); \
+			RenderingCommand::markBulkData(commandList, param2); \
+			RenderingCommand::markBulkData(commandList, param3); \
+			RenderingCommand::markBulkData(commandList, param4); \
+			RenderingCommand::markBulkData(commandList, param5); \
 		} \
-		virtual void Execute() override \
+		virtual void execute() override \
 		{ \
 			code; \
 		} \
@@ -512,7 +424,7 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 	LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, RenderCommand_##name, param1, param2, param3, param4, param5);
 
 #define LN_ENQUEUE_RENDER_COMMAND_6(name, manager, type1, param1, type2, param2, type3, param3, type4, param4, type5, param5, type6, param6, code) \
-	class RenderCommand_##name : public RenderingCommand \
+	class RenderCommand_##name : public ln::detail::RenderingCommand \
 	{ \
 	public: \
 		type1 param1; \
@@ -535,16 +447,16 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 			, param5(in_##param5) \
 			, param6(in_##param6) \
 		{} \
-		void OnEnqueued(RenderingCommandList* commandList) \
+		void OnEnqueued(ln::detail::RenderingCommandList* commandList) \
 		{ \
-			RenderingCommand::MarkBulkData(commandList, param1); \
-			RenderingCommand::MarkBulkData(commandList, param2); \
-			RenderingCommand::MarkBulkData(commandList, param3); \
-			RenderingCommand::MarkBulkData(commandList, param4); \
-			RenderingCommand::MarkBulkData(commandList, param5); \
-			RenderingCommand::MarkBulkData(commandList, param6); \
+			RenderingCommand::markBulkData(commandList, param1); \
+			RenderingCommand::markBulkData(commandList, param2); \
+			RenderingCommand::markBulkData(commandList, param3); \
+			RenderingCommand::markBulkData(commandList, param4); \
+			RenderingCommand::markBulkData(commandList, param5); \
+			RenderingCommand::markBulkData(commandList, param6); \
 		} \
-		virtual void Execute() override \
+		virtual void execute() override \
 		{ \
 			code; \
 		} \
@@ -552,7 +464,7 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 	LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, RenderCommand_##name, param1, param2, param3, param4, param5, param6);
 
 #define LN_ENQUEUE_RENDER_COMMAND_7(name, manager, type1, param1, type2, param2, type3, param3, type4, param4, type5, param5, type6, param6, type7, param7, code) \
-	class RenderCommand_##name : public RenderingCommand \
+	class RenderCommand_##name : public ln::detail::RenderingCommand \
 	{ \
 	public: \
 		type1 param1; \
@@ -578,17 +490,17 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 			, param6(in_##param6) \
 			, param7(in_##param7) \
 		{} \
-		void OnEnqueued(RenderingCommandList* commandList) \
+		void OnEnqueued(ln::detail::RenderingCommandList* commandList) \
 		{ \
-			RenderingCommand::MarkBulkData(commandList, param1); \
-			RenderingCommand::MarkBulkData(commandList, param2); \
-			RenderingCommand::MarkBulkData(commandList, param3); \
-			RenderingCommand::MarkBulkData(commandList, param4); \
-			RenderingCommand::MarkBulkData(commandList, param5); \
-			RenderingCommand::MarkBulkData(commandList, param6); \
-			RenderingCommand::MarkBulkData(commandList, param7); \
+			RenderingCommand::markBulkData(commandList, param1); \
+			RenderingCommand::markBulkData(commandList, param2); \
+			RenderingCommand::markBulkData(commandList, param3); \
+			RenderingCommand::markBulkData(commandList, param4); \
+			RenderingCommand::markBulkData(commandList, param5); \
+			RenderingCommand::markBulkData(commandList, param6); \
+			RenderingCommand::markBulkData(commandList, param7); \
 		} \
-		virtual void Execute() override \
+		virtual void execute() override \
 		{ \
 			code; \
 		} \
@@ -596,7 +508,7 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 	LN_ENQUEUE_RENDER_COMMAND_CREATE(manager, RenderCommand_##name, param1, param2, param3, param4, param5, param6, param7);
 
 #define LN_ENQUEUE_RENDER_COMMAND_8(name, manager, type1, param1, type2, param2, type3, param3, type4, param4, type5, param5, type6, param6, type7, param7, type8, param8, code) \
-	class RenderCommand_##name : public RenderingCommand \
+	class RenderCommand_##name : public ln::detail::RenderingCommand \
 	{ \
 	public: \
 		type1 param1; \
@@ -625,18 +537,18 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 			, param7(in_##param7) \
 			, param8(in_##param8) \
 		{} \
-		void OnEnqueued(RenderingCommandList* commandList) \
+		void OnEnqueued(ln::detail::RenderingCommandList* commandList) \
 		{ \
-			RenderingCommand::MarkBulkData(commandList, param1); \
-			RenderingCommand::MarkBulkData(commandList, param2); \
-			RenderingCommand::MarkBulkData(commandList, param3); \
-			RenderingCommand::MarkBulkData(commandList, param4); \
-			RenderingCommand::MarkBulkData(commandList, param5); \
-			RenderingCommand::MarkBulkData(commandList, param6); \
-			RenderingCommand::MarkBulkData(commandList, param7); \
-			RenderingCommand::MarkBulkData(commandList, param8); \
+			RenderingCommand::markBulkData(commandList, param1); \
+			RenderingCommand::markBulkData(commandList, param2); \
+			RenderingCommand::markBulkData(commandList, param3); \
+			RenderingCommand::markBulkData(commandList, param4); \
+			RenderingCommand::markBulkData(commandList, param5); \
+			RenderingCommand::markBulkData(commandList, param6); \
+			RenderingCommand::markBulkData(commandList, param7); \
+			RenderingCommand::markBulkData(commandList, param8); \
 		} \
-		virtual void Execute() override \
+		virtual void execute() override \
 		{ \
 			code; \
 		} \
@@ -645,24 +557,24 @@ inline void RenderingCommand::MarkBulkData<RenderBulkData>(RenderingCommandList*
 
 
 //==============================================================================
-struct SetSamplerStateCommand : public RenderingCommand
+struct SetSamplerStateCommand : public ln::detail::RenderingCommand
 {
 	Driver::ITexture* m_targetTexture;
 	SamplerState m_state;
-	void Create(Driver::ITexture* texture, const SamplerState& state)
+	void create(Driver::ITexture* texture, const SamplerState& state)
 	{
 		m_targetTexture = texture;
 		m_state = state;
-		MarkGC(m_targetTexture);
+		markGC(m_targetTexture);
 	}
-	void Execute()
+	void execute()
 	{
-		m_targetTexture->SetSamplerState(m_state);
+		m_targetTexture->setSamplerState(m_state);
 	}
 };
 
 //==============================================================================
-struct SetShaderVariableCommand : public RenderingCommand
+struct SetShaderVariableCommand : public ln::detail::RenderingCommand
 {
 	union
 	{
@@ -678,99 +590,99 @@ struct SetShaderVariableCommand : public RenderingCommand
 	ShaderVariableType			m_variableType;
 	Driver::IShaderVariable*	m_target;
 
-	void Create(Driver::IShaderVariable* target, bool value)
+	void create(Driver::IShaderVariable* target, bool value)
 	{
 		m_target = target;
 		m_variableType = ShaderVariableType_Bool;
 		BoolVal = value;
-		MarkGC(target);
+		markGC(target);
 	}
-	void Create(Driver::IShaderVariable* target, int value)
+	void create(Driver::IShaderVariable* target, int value)
 	{
 		m_target = target;
 		m_variableType = ShaderVariableType_Int;
 		Int = value;
-		MarkGC(target);
+		markGC(target);
 	}
-	void Create(Driver::IShaderVariable* target, float value)
+	void create(Driver::IShaderVariable* target, float value)
 	{
 		m_target = target;
 		m_variableType = ShaderVariableType_Float;
 		Float = value;
-		MarkGC(target);
+		markGC(target);
 	}
-	void Create(Driver::IShaderVariable* target, const Vector4& value)
+	void create(Driver::IShaderVariable* target, const Vector4& value)
 	{
-		size_t tmpData = AllocExtData(sizeof(Vector4), &value);
+		size_t tmpData = allocExtData(sizeof(Vector4), &value);
 		m_target = target;
 		m_variableType = ShaderVariableType_Vector;
 		VectorsBufferIndex = tmpData;
-		MarkGC(target);
+		markGC(target);
 	}
-	void Create(Driver::IShaderVariable* target, const Vector4* vectors, size_t count)
+	void create(Driver::IShaderVariable* target, const Vector4* vectors, size_t count)
 	{
-		size_t tmpData = AllocExtData(sizeof(Vector4) * count, vectors);
+		size_t tmpData = allocExtData(sizeof(Vector4) * count, vectors);
 		m_target = target;
 		m_arrayLength = count;
 		m_variableType = ShaderVariableType_VectorArray;
 		VectorsBufferIndex = tmpData;
-		MarkGC(target);
+		markGC(target);
 	}
-	void Create(Driver::IShaderVariable* target, const Matrix* matrices, size_t count)
+	void create(Driver::IShaderVariable* target, const Matrix* matrices, size_t count)
 	{
-		size_t tmpData = AllocExtData(sizeof(Matrix) * count, matrices);
+		size_t tmpData = allocExtData(sizeof(Matrix) * count, matrices);
 		m_target = target;
 		m_arrayLength = count;
 		m_variableType = ShaderVariableType_MatrixArray;
 		VectorsBufferIndex = tmpData;
-		MarkGC(target);
+		markGC(target);
 	}
-	void Create(Driver::IShaderVariable* target, const Matrix& value)
+	void create(Driver::IShaderVariable* target, const Matrix& value)
 	{
-		size_t tmpData = AllocExtData(sizeof(Matrix), &value);
+		size_t tmpData = allocExtData(sizeof(Matrix), &value);
 		m_target = target;
 		m_variableType = ShaderVariableType_Matrix;
 		VectorsBufferIndex = tmpData;
-		MarkGC(target);
+		markGC(target);
 	}
-	void Create(Driver::IShaderVariable* target, Driver::ITexture* value)
+	void create(Driver::IShaderVariable* target, Driver::ITexture* value)
 	{
 		m_target = target;
 		m_variableType = ShaderVariableType_DeviceTexture;
 		Texture = value;
-		MarkGC(target);
-		MarkGC(value);
+		markGC(target);
+		markGC(value);
 	}
 
-	void Execute()
+	void execute()
 	{
 		switch (m_variableType)
 		{
 		case ShaderVariableType_Bool:
-			m_target->SetBool(BoolVal);
+			m_target->setBool(BoolVal);
 			break;
 		case ShaderVariableType_Int:
-			m_target->SetInt(Int);
+			m_target->setInt(Int);
 			break;
 		case ShaderVariableType_Float:
-			m_target->SetFloat(Float);
+			m_target->setFloat(Float);
 			break;
 		case ShaderVariableType_Vector:
-			m_target->SetVector(*((Vector4*)GetExtData(VectorsBufferIndex)));
+			m_target->setVector(*((Vector4*)getExtData(VectorsBufferIndex)));
 			break;
 		case ShaderVariableType_VectorArray:
-			m_target->SetVectorArray((Vector4*)GetExtData(VectorsBufferIndex), m_arrayLength);
+			m_target->setVectorArray((Vector4*)getExtData(VectorsBufferIndex), m_arrayLength);
 			break;
 		case ShaderVariableType_Matrix:
-			m_target->SetMatrix(*((Matrix*)GetExtData(VectorsBufferIndex)));
+			m_target->setMatrix(*((Matrix*)getExtData(VectorsBufferIndex)));
 			break;
 		case ShaderVariableType_MatrixArray:
-			m_target->SetMatrixArray((Matrix*)GetExtData(VectorsBufferIndex), m_arrayLength);
+			m_target->setMatrixArray((Matrix*)getExtData(VectorsBufferIndex), m_arrayLength);
 			break;
 		case ShaderVariableType_DeviceTexture:
-			m_target->SetTexture(Texture);
+			m_target->setTexture(Texture);
 			break;
-		//case ShaderVariableType_String:
+			//case ShaderVariableType_String:
 		default:
 			break;
 		}
@@ -778,36 +690,36 @@ struct SetShaderVariableCommand : public RenderingCommand
 };
 
 //==============================================================================
-struct ApplyShaderPassCommand : public RenderingCommand
+struct ApplyShaderPassCommand : public ln::detail::RenderingCommand
 {
 	Driver::IShaderPass* m_pass;
-	void Create(Driver::IShaderPass* pass)
+	void create(Driver::IShaderPass* pass)
 	{
 		m_pass = pass;
-		MarkGC(pass);
+		markGC(pass);
 	}
-	void Execute() { GetRenderer()->SetShaderPass(m_pass); /*m_pass->Apply();*/ }
+	void execute() { getRenderer()->setShaderPass(m_pass); /*m_pass->apply();*/ }
 };
 
 //==============================================================================
-struct PresentCommand : public RenderingCommand
-{
-	SwapChain* m_targetSwapChain;
+//struct PresentCommand : public ln::detail::RenderingCommand
+//{
+//	SwapChain* m_targetSwapChain;
+//
+//	void create(SwapChain* swapChain)
+//	{
+//		m_targetSwapChain = swapChain;
+//		markGC(swapChain);
+//	}
+//
+//	void execute()
+//	{
+//		m_targetSwapChain->PresentInternal();
+//	}
+//};
 
-	void Create(SwapChain* swapChain)
-	{
-		m_targetSwapChain = swapChain;
-		MarkGC(swapChain);
-	}
-
-	void Execute()
-	{
-		m_targetSwapChain->PresentInternal();
-	}
-};
-	
 //==============================================================================
-struct SetSubDataTextureCommand : public RenderingCommand
+struct SetSubDataTextureCommand : public ln::detail::RenderingCommand
 {
 	Driver::ITexture*		m_targetTexture;
 	PointI					m_offset;
@@ -816,56 +728,55 @@ struct SetSubDataTextureCommand : public RenderingCommand
 	SizeI					m_bmpSize;
 	// ↑エラーチェックは Texture で行い、フォーマットは既に決まっていることを前提とするため、コマンドに乗せるデータはこれだけでOK。
 
-	void Create(Driver::ITexture* texture, const PointI& offset, const void* data, size_t dataSize, const SizeI& bmpSize)
+	void create(Driver::ITexture* texture, const PointI& offset, const void* data, size_t dataSize, const SizeI& bmpSize)
 	{
 		m_targetTexture = texture;
 		m_offset = offset;
-		m_bmpDataIndex = AllocExtData(dataSize, data);
+		m_bmpDataIndex = allocExtData(dataSize, data);
 		m_dataSize = dataSize;
 		m_bmpSize = bmpSize;
-		MarkGC(texture);
+		markGC(texture);
 	}
 
-	void Execute()
+	void execute()
 	{
-		m_targetTexture->SetSubData(m_offset, GetExtData(m_bmpDataIndex), m_dataSize, m_bmpSize);
+		m_targetTexture->setSubData(m_offset, getExtData(m_bmpDataIndex), m_dataSize, m_bmpSize);
 	}
 };
 
 //==============================================================================
-struct ReadLockTextureCommand : public RenderingCommand
+struct ReadLockTextureCommand : public ln::detail::RenderingCommand
 {
 	Texture*	m_targetTexture;
-	void Create(Texture* texture)
+	void create(Texture* texture)
 	{
 		m_targetTexture = texture;
-		MarkGC(texture);
+		markGC(texture);
 	}
-	void Execute()
+	void execute()
 	{
-		m_targetTexture->m_primarySurface = m_targetTexture->m_deviceObj->Lock();
-		// Texture::Lock() はこの後コマンドリストが空になるまで待機する
+		m_targetTexture->m_primarySurface = m_targetTexture->m_deviceObj->lock();
+		// Texture::lock() はこの後コマンドリストが空になるまで待機する
 		// (実際のところ、このコマンドが最後のコマンドのはず)
 	}
 };
 
 //==============================================================================
-struct ReadUnlockTextureCommand : public RenderingCommand
+struct ReadUnlockTextureCommand : public ln::detail::RenderingCommand
 {
 	Texture*	m_targetTexture;
-	void Create(Texture* texture)
+	void create(Texture* texture)
 	{
 		m_targetTexture = texture;
-		MarkGC(texture);
+		markGC(texture);
 	}
-	void Execute()
+	void execute()
 	{
-		m_targetTexture->m_deviceObj->Unlock();
+		m_targetTexture->m_deviceObj->unlock();
 		m_targetTexture->m_primarySurface = NULL;
-		// ReadLockTextureCommand と同じように、Texture::Unlock() で待機している。
+		// ReadLockTextureCommand と同じように、Texture::unlock() で待機している。
 		// (でも、ここまで待機することも無いかも？)
 	}
 };
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

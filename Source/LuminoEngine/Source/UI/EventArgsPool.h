@@ -17,24 +17,24 @@ public:
 	{
 		for (auto* obj : m_poolList)
 		{
-			obj->Release();
+			obj->release();
 		}
 	}
 
 	template<class TObject, typename ...TArgs>
-	TObject* Create(TArgs... args)
+	TObject* create(TArgs... args)
 	{
-		TObject* obj = static_cast<TObject* >(FindFreeObject(tr::TypeInfo::GetTypeInfo<TObject>()));
+		TObject* obj = static_cast<TObject* >(findFreeObject(tr::TypeInfo::getTypeInfo<TObject>()));
 		if (obj == nullptr) {
 			obj = LN_NEW TObject(args...);
-			Register(obj);
+			registerObject(obj);
 		}
 		else {
 			obj->~TObject();
 			new (obj)TObject(args...);
 		}
 		obj->handled = false;
-		obj->AddRef();
+		obj->addRef();
 		return obj;
 	}
 
@@ -42,20 +42,20 @@ private:
 	typedef List<tr::ReflectionObject*>	ObjectList;
 	ObjectList					m_poolList;
 
-	tr::ReflectionObject* FindFreeObject(tr::TypeInfo* typeId)
+	tr::ReflectionObject* findFreeObject(tr::TypeInfo* typeId)
 	{
 		for (auto* e : m_poolList)
 		{
-			if (e->GetReferenceCount() == 1) {	// このリストからしか参照されていなければ返す
+			if (e->getReferenceCount() == 1) {	// このリストからしか参照されていなければ返す
 				return e;
 			}
 		}
 		return nullptr;
 	}
 
-	void Register(tr::ReflectionObject* obj)
+	void registerObject(tr::ReflectionObject* obj)
 	{
-		m_poolList.Add(obj);
+		m_poolList.add(obj);
 	}
 };
 
@@ -86,27 +86,27 @@ public:
 		{
 			for (auto e : (*list.second))
 			{
-				e->Release();
+				e->release();
 			}
 			delete list.second;
 		}
 	}
 
 	template<class TEventArgs, typename ...TArgs>
-	TEventArgs* Create(TArgs... args)
+	TEventArgs* create(TArgs... args)
 	{
-		TEventArgs* e = static_cast<TEventArgs* >(Find(tr::TypeInfo::GetTypeInfo<TEventArgs>()));
+		TEventArgs* e = static_cast<TEventArgs* >(find(tr::TypeInfo::getTypeInfo<TEventArgs>()));
 		if (e == nullptr) {
-			auto eRef = NewObject<TEventArgs>(args...);
-			Register(eRef);
+			auto eRef = newObject<TEventArgs>(args...);
+			registerObject(eRef);
 			e = eRef;
 		}
 		else {
 			static_cast<UIEventArgs*>(e)->~UIEventArgs();
-			PlacementNewObject<TEventArgs>(e, args...);
+			placementNewObject<TEventArgs>(e, args...);
 		}
 		e->handled = false;
-		e->AddRef();
+		e->addRef();
 		return e;
 	}
 
@@ -115,14 +115,14 @@ private:
 	typedef SortedArray<tr::TypeInfo*, EventArgsList*>	EventArgsMap;
 	EventArgsMap	m_pool;
 
-	UIEventArgs* Find(tr::TypeInfo* typeId)
+	UIEventArgs* find(tr::TypeInfo* typeId)
 	{
 		EventArgsList* list;
-		if (m_pool.TryGetValue(typeId, &list))
+		if (m_pool.tryGetValue(typeId, &list))
 		{
 			for (auto e : (*list))
 			{
-				if (e->GetReferenceCount() == 1) {	// このリストからしか参照されていなければ返す
+				if (e->getReferenceCount() == 1) {	// このリストからしか参照されていなければ返す
 					return e;
 				}
 			}
@@ -130,16 +130,16 @@ private:
 		return NULL;
 	}
 
-	void Register(UIEventArgs* e)
+	void registerObject(UIEventArgs* e)
 	{
 		EventArgsList* list;
-		if (!m_pool.TryGetValue(tr::TypeInfo::GetTypeInfo(e), &list))
+		if (!m_pool.tryGetValue(tr::TypeInfo::getTypeInfo(e), &list))
 		{
 			list = LN_NEW EventArgsList();
-			m_pool.Add(tr::TypeInfo::GetTypeInfo(e), list);
-			e->AddRef();
+			m_pool.add(tr::TypeInfo::getTypeInfo(e), list);
+			e->addRef();
 		}
-		list->Add(e);
+		list->add(e);
 	}
 
 
@@ -150,11 +150,11 @@ private:
 
 
 	template<class T>
-	T FindFreeObject(const List<T>& pool)
+	T findFreeObject(const List<T>& pool)
 	{
 		LN_FOREACH(T a, pool)
 		{
-			if (a->GetReferenceCount() == 1) {
+			if (a->getReferenceCount() == 1) {
 				return a;
 			}
 		}

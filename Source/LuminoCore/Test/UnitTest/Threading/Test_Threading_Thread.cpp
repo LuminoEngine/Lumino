@@ -30,7 +30,7 @@ TEST_F(Test_Thread, Basic)
 			//tar = t;
 			////value = 0;
 			//gValue[4000] = 0;
-			////inited.SetFalse();
+			////inited.setFalse();
 			//inited = false;
 			writed = false;
 			runnning = true;
@@ -53,7 +53,7 @@ TEST_F(Test_Thread, Basic)
 
 			//value = tar;
 			//gValue[4000] = tar;
-			//inited.SetTrue();
+			//inited.setTrue();
 			//inited = true;
 		}
 	};
@@ -62,7 +62,7 @@ TEST_F(Test_Thread, Basic)
 
 	volatile int gTest;
 	TestThread testThread(&gTest);
-	testThread.Start();
+	testThread.start();
 
 	
 
@@ -92,9 +92,9 @@ TEST_F(Test_Thread, Basic)
 
 	
 
-		//while (!testThread.inited.IsTrue()) {}
+		//while (!testThread.inited.isTrue()) {}
 		while (!testThread.inited) {}
-		//testThread.inited.Wait();
+		//testThread.inited.wait();
 		//printf("%d\n", testThread.value);
 		//EXPECT_EQ(i, testThread.value);
 		EXPECT_EQ(i, gValue[4000]);

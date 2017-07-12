@@ -32,22 +32,22 @@ public:
 public:
 	X11Window(X11WindowManager* windowManager, const SettingData& settingData);
 	virtual ~X11Window();
-	GLXFBConfig* GetGLXFBConfig() { return &m_fbConfig; }
-	XVisualInfo* GetX11VisualInfo() { return m_visualInfo; }
-	::Window GetX11WindowID() { return m_x11Window; }
-	X11WindowManager* GetWindowManager() { return (X11WindowManager*)(m_windowManager); }
+	GLXFBConfig* getGLXFBConfig() { return &m_fbConfig; }
+	XVisualInfo* getX11VisualInfo() { return m_visualInfo; }
+	::Window getX11WindowID() { return m_x11Window; }
+	X11WindowManager* getWindowManager() { return (X11WindowManager*)(m_windowManager); }
 
 public:
 	// override Window
-	virtual bool IsActive() const { return true; }
-	virtual const Size& GetSize() const { return m_clientSize; }
-	virtual void SetFullScreenEnabled(bool enabled);
-	virtual bool IsFullScreenEnabled() const { return false; }
-	virtual void CaptureMouse();
-	virtual void ReleaseMouseCapture();
+	virtual bool isActive() const { return true; }
+	virtual const Size& getSize() const { return m_clientSize; }
+	virtual void setFullScreenEnabled(bool enabled);
+	virtual bool isFullScreenEnabled() const { return false; }
+	virtual void captureMouse();
+	virtual void releaseMouseCapture();
 	
 private:
-	void SetVisible(bool show);
+	void setVisible(bool show);
 
 private:
 	String			m_titleText;		///< ウィンドウタイトルの文字列

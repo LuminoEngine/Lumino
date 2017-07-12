@@ -14,19 +14,19 @@ TEST_F(Test_Base_Regex, Integrate)
 	// <Test> 部分一致の検索
 	{
 		MatchResult mr;
-		ASSERT_EQ(true, Regex::Search(_T("xxx123456yyy"), _T("[0-9]+"), &mr));
+		ASSERT_EQ(true, Regex::search(_T("xxx123456yyy"), _T("[0-9]+"), &mr));
 	}
 	// <Test> 完全一致の確認
 	// <Test> グループ
 	{
 		MatchResult mr;
-		ASSERT_EQ(true, Regex::Match(_T("123 456 789"), _T("(\\d+) (\\d+) (\\d+)"), &mr));
-		ASSERT_EQ(_T("123 456 789"), mr.GetValue());
-		ASSERT_EQ(4, mr.GetGroupCount());
-		ASSERT_EQ(_T("123 456 789"), mr.GetGroup(0));
-		ASSERT_EQ(_T("123"), mr.GetGroup(1));
-		ASSERT_EQ(_T("456"), mr.GetGroup(2));
-		ASSERT_EQ(_T("789"), mr.GetGroup(3));
+		ASSERT_EQ(true, Regex::match(_T("123 456 789"), _T("(\\d+) (\\d+) (\\d+)"), &mr));
+		ASSERT_EQ(_T("123 456 789"), mr.getValue());
+		ASSERT_EQ(4, mr.getGroupCount());
+		ASSERT_EQ(_T("123 456 789"), mr.getGroup(0));
+		ASSERT_EQ(_T("123"), mr.getGroup(1));
+		ASSERT_EQ(_T("456"), mr.getGroup(2));
+		ASSERT_EQ(_T("789"), mr.getGroup(3));
 	}
 
 	//std::regex re("[0-9]+");

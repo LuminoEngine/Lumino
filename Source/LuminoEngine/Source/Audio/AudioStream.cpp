@@ -37,28 +37,28 @@ AudioStream::~AudioStream()
 }
 
 //------------------------------------------------------------------------------
-void AudioStream::Create(bool async)
+void AudioStream::create(bool async)
 {
-	InvokeIOProc(async, m_manager->GetFileManager());
+	invokeIOProc(async, m_manager->getFileManager());
 }
 
 //------------------------------------------------------------------------------
-bool AudioStream::CheckCreated()
+bool AudioStream::checkCreated()
 {
-	if (GetASyncIOState() == ASyncIOState_Completed) {
+	if (getASyncIOState() == ASyncIOState_Completed) {
 		return true;
 	}
-	else if (GetASyncIOState() == ASyncIOState_Failed && GetASyncIOException() != NULL) {
-		throw *GetASyncIOException();
+	else if (getASyncIOState() == ASyncIOState_Failed && getASyncIOException() != NULL) {
+		throw *getASyncIOException();
 	}
 	return false;
 }
 
 //------------------------------------------------------------------------------
-void AudioStream::OnASyncIOProc()
+void AudioStream::onASyncIOProc()
 {
 	// フォーマットを調べてデコーダを作る
-	StreamFormat format = AudioUtils::CheckFormat(m_stream);
+	StreamFormat format = AudioUtils::checkFormat(m_stream);
 	switch (format)
 	{
 		// Wave
@@ -85,7 +85,7 @@ void AudioStream::OnASyncIOProc()
 	}
 
 	// 初期化
-	m_decoder->Create(m_stream);
+	m_decoder->create(m_stream);
 }
 
 //==============================================================================
@@ -108,7 +108,7 @@ AudioDecoder::~AudioDecoder()
 ////------------------------------------------------------------------------------
 ////
 ////------------------------------------------------------------------------------
-//bool AudioDecoder::CheckCreated()
+//bool AudioDecoder::checkCreated()
 //{
 //	if (m_exception != NULL) {
 //		throw m_exception;

@@ -16,7 +16,7 @@ public:
 
 public:
 	// override Exception
-	virtual Exception* Copy() const { return LN_NEW ThreadException( *this ); }
+	virtual Exception* copy() const { return LN_NEW ThreadException( *this ); }
 };
 
 LN_NAMESPACE_END

@@ -25,13 +25,13 @@ InputDriver::~InputDriver()
 }
 
 //------------------------------------------------------------------------------
-bool InputDriver::QueryKeyState(Keys key)
+bool InputDriver::queryKeyState(Keys key)
 {
 	return m_keyStatus[(int)key];
 }
 
 //------------------------------------------------------------------------------
-bool InputDriver::QueryMouseState(MouseAction action)
+bool InputDriver::queryMouseState(MouseAction action)
 {
 	switch (action)
 	{
@@ -66,7 +66,7 @@ bool InputDriver::QueryMouseState(MouseAction action)
 }
 
 //------------------------------------------------------------------------------
-void InputDriver::PreUpdateFrame()
+void InputDriver::preUpdateFrame()
 {
 	//m_keyStatus.fill(false);
 	//m_mouseStatus.fill(false);
@@ -76,15 +76,15 @@ void InputDriver::PreUpdateFrame()
 }
 
 //------------------------------------------------------------------------------
-void InputDriver::OnEvent(const PlatformEventArgs& e)
+void InputDriver::onEvent(const PlatformEventArgs& e)
 {
 	switch (e.type)
 	{
 	case PlatformEventType::MouseDown:
-		OnMouseButtonDown(e.mouse.button);
+		onMouseButtonDown(e.mouse.button);
 		break;
 	case PlatformEventType::MouseUp:
-		OnMouseButtonUp(e.mouse.button);
+		onMouseButtonUp(e.mouse.button);
 		break;
 	case PlatformEventType::MouseMove:
 		m_mousePoint.x = e.mouse.x;
@@ -94,10 +94,10 @@ void InputDriver::OnEvent(const PlatformEventArgs& e)
 		m_mouseWheel = e.wheel.delta;
 		break;
 	case PlatformEventType::KeyDown:
-		OnKeyDown(e.key.keyCode);
+		onKeyDown(e.key.keyCode);
 		break;
 	case PlatformEventType::KeyUp:
-		OnKeyUp(e.key.keyCode);
+		onKeyUp(e.key.keyCode);
 		break;
 	default:
 		break;
@@ -105,26 +105,26 @@ void InputDriver::OnEvent(const PlatformEventArgs& e)
 }
 
 //------------------------------------------------------------------------------
-void InputDriver::OnKeyDown(Keys key)
+void InputDriver::onKeyDown(Keys key)
 {
 	m_keyStatus[(int)key] = true;
 }
 
 //------------------------------------------------------------------------------
-void InputDriver::OnKeyUp(Keys key)
+void InputDriver::onKeyUp(Keys key)
 {
 	m_keyStatus[(int)key] = false;
 }
 
 //------------------------------------------------------------------------------
-void InputDriver::OnMouseButtonDown(MouseButtons button)
+void InputDriver::onMouseButtonDown(MouseButtons button)
 {
 	m_mouseStatus[(int)button] = true;
 
 	MouseClickTracker& tracker = m_mouseClickTrackers[(int)button];
 	tracker.clickCount++;
 
-	double curTime = 0.001 * Environment::GetTickCount();
+	double curTime = 0.001 * Environment::getTickCount();
 	float elapsed = (float)(curTime - tracker.lastTime);
 	if (elapsed > m_mouseButtonClickTimeout ||
 		tracker.clickCount > 3)
@@ -135,7 +135,7 @@ void InputDriver::OnMouseButtonDown(MouseButtons button)
 }
 
 //------------------------------------------------------------------------------
-void InputDriver::OnMouseButtonUp(MouseButtons button)
+void InputDriver::onMouseButtonUp(MouseButtons button)
 {
 	m_mouseStatus[(int)button] = false;
 }

@@ -52,7 +52,7 @@ void HeaderParser::ParseFile(const PathName& path)
 			LN_PARSE_RESULT(r2, UntilMore(TokenChar('{')));
 			LN_PARSE_RESULT(r3, Many(Parser<Decl>(Parse_EnumMember) || Parser<Decl>(Parse_DocumentComment)));
 			LN_PARSE_RESULT(r4, TokenChar('}'));
-			return input.Success(Decl{ _T("enum"), r1.GetMatchBegin(), r4.GetMatchEnd(), r3.GetValue() });
+			return input.Success(Decl{ _T("enum"), r1.GetMatchBegin(), r4.GetMatchEnd(), r3.getValue() });
 		}
 		
 		static ParserResult<Decl> Parse_EnumMember(ParserContext input)
@@ -67,7 +67,7 @@ void HeaderParser::ParseFile(const PathName& path)
 			LN_PARSE_RESULT(r2, UntilMore(TokenChar('{')));
 			LN_PARSE_RESULT(r3, Many(Parser<Decl>(Parse_LN_FIELD) || Parser<Decl>(Parse_LN_METHOD) || Parser<Decl>(Parse_EmptyDecl) || Parser<Decl>(Parse_LocalBlock) || Parser<Decl>(Parse_DocumentComment) || Parser<Decl>(Parse_AccessLevel)));
 			LN_PARSE_RESULT(r4, TokenChar('}'));
-			return input.Success(Decl{ _T("Struct"), r1.GetMatchBegin(), r4.GetMatchEnd(), r3.GetValue() });
+			return input.Success(Decl{ _T("Struct"), r1.GetMatchBegin(), r4.GetMatchEnd(), r3.getValue() });
 		}
 
 		static ParserResult<Decl> Parse_LN_CLASS(ParserContext input)
@@ -76,7 +76,7 @@ void HeaderParser::ParseFile(const PathName& path)
 			LN_PARSE_RESULT(r2, UntilMore(TokenChar('{')));
 			LN_PARSE_RESULT(r3, Many(Parser<Decl>(Parse_LN_FIELD) || Parser<Decl>(Parse_LN_METHOD) || Parser<Decl>(Parse_EmptyDecl) || Parser<Decl>(Parse_LocalBlock) || Parser<Decl>(Parse_DocumentComment) || Parser<Decl>(Parse_AccessLevel)));
 			LN_PARSE_RESULT(r4, TokenChar('}'));
-			return input.Success(Decl{ _T("class"), r1.GetMatchBegin(), r4.GetMatchEnd(), r3.GetValue() });
+			return input.Success(Decl{ _T("class"), r1.GetMatchBegin(), r4.GetMatchEnd(), r3.getValue() });
 		}
 
 		static ParserResult<Decl> Parse_LN_FIELD(ParserContext input)
@@ -130,7 +130,7 @@ void HeaderParser::ParseFile(const PathName& path)
 		static bool FilterToken(fl::Token* token)
 		{
 			if (token->GetTokenGroup() == TokenGroup::Comment &&
-				StringTraits::Compare(token->GetBegin(), "/**", 3) == 0)
+				StringTraits::compare(token->getBegin(), "/**", 3) == 0)
 			{
 				return true;
 			}
@@ -149,8 +149,8 @@ void HeaderParser::ParseFile(const PathName& path)
 	};
 
 
-	auto codeStr = FileSystem::ReadAllText(path);
-	StringA code = codeStr.ToStringA();
+	auto codeStr = FileSystem::readAllText(path);
+	StringA code = codeStr.toStringA();
 
 	fl::AnalyzerContext ctx;
 	auto file = ctx.RegisterInputMemoryCode("memory", code.c_str());
@@ -158,7 +158,7 @@ void HeaderParser::ParseFile(const PathName& path)
 	auto tokens = file->GetTokenList();
 
 	auto result = DeclsParser::TryParse(DeclsParser::Parse_File, tokens);
-	for (auto decl1 : result.GetValue())
+	for (auto decl1 : result.getValue())
 	{
 		if (decl1.type == "document") ParseDocument(decl1);
 		if (decl1.type == "Struct") ParseStructDecl(decl1);
@@ -195,13 +195,13 @@ HeaderParser::TokenItr HeaderParser::ParseMetadataDecl(TokenItr begin, TokenItr 
 	flString key, value;
 	for (auto itr = argTokens.begin(); itr != argTokens.end();)
 	{
-		key = (*itr)->GetString();
-		value = flString::GetEmpty();
+		key = (*itr)->getString();
+		value = flString::getEmpty();
 		++itr;
 		if (itr != argTokens.end() && (*itr)->EqualChar('='))
 		{
 			++itr;
-			value = (*itr)->GetString();
+			value = (*itr)->getString();
 			++itr;
 		}
 
@@ -219,9 +219,9 @@ void HeaderParser::ParseStructDecl(const Decl& decl)
 
 	auto info = std::make_shared<TypeInfo>();
 	info->document = MoveLastDocument();
-	info->name = String((*name)->GetString());
+	info->name = String((*name)->getString());
 	info->isStruct = true;
-	m_database->structs.Add(info);
+	m_database->structs.add(info);
 
 	m_currentAccessLevel = AccessLevel::Public;
 	for (auto& d : decl.decls)
@@ -241,9 +241,9 @@ void HeaderParser::ParseFieldDecl(const Decl& decl, TypeInfoPtr parent)
 
 	auto info = std::make_shared<FieldInfo>();
 	info->document = MoveLastDocument();
-	info->name = String((*name)->GetString());
-	info->typeRawName = String((*type)->GetString());
-	parent->declaredFields.Add(info);
+	info->name = String((*name)->getString());
+	info->typeRawName = String((*type)->getString());
+	parent->declaredFields.add(info);
 }
 
 void HeaderParser::ParseMethodDecl(const Decl& decl, TypeInfoPtr parent)
@@ -277,12 +277,12 @@ void HeaderParser::ParseMethodDecl(const Decl& decl, TypeInfoPtr parent)
 	info->metadata = MoveLastMetadata();
 	info->document = MoveLastDocument();
 	info->accessLevel = m_currentAccessLevel;
-	info->name = String((declTokens.GetLast())->GetString());	// ( の直前を関数名として取り出す
+	info->name = String((declTokens.getLast())->getString());	// ( の直前を関数名として取り出す
 
 	if (info->metadata->HasKey("Document"))
-		parent->declaredMethodsForDocument.Add(info);	// ドキュメント抽出用メソッド
+		parent->declaredMethodsForDocument.add(info);	// ドキュメント抽出用メソッド
 	else
-		parent->declaredMethods.Add(info);				// 普通にラッパーを作るメソッド
+		parent->declaredMethods.add(info);				// 普通にラッパーを作るメソッド
 
 	// struct 型で戻り値が無ければコンストラクタ
 	if (parent->isStruct && declTokens.begin() + 1 == declTokens.end())
@@ -313,7 +313,7 @@ void HeaderParser::ParseMethodDecl(const Decl& decl, TypeInfoPtr parent)
 	if (!info->isStatic)
 	{
 		// class 型で InitializeXXXX ならコンストラクタ
-		if (!parent->isStruct &&info->name.IndexOf(_T("Initialize")) == 0)
+		if (!parent->isStruct &&info->name.indexOf(_T("Initialize")) == 0)
 			info->isConstructor = true;
 	}
 
@@ -408,7 +408,7 @@ void HeaderParser::ParseParamDecl(TokenItr begin, TokenItr end, MethodInfoPtr pa
 		{
 			// デフォルト引数の解析
 			String value;
-			for (auto itr = paramEnd + 1; itr < declTokens.end(); ++itr) value += (*itr)->GetString();
+			for (auto itr = paramEnd + 1; itr < declTokens.end(); ++itr) value += (*itr)->getString();
 			info->rawDefaultValue = value;
 		}
 
@@ -422,12 +422,12 @@ void HeaderParser::ParseParamDecl(TokenItr begin, TokenItr end, MethodInfoPtr pa
 		bool hasVirtual;
 		ParseParamType(declTokens.begin(), paramEnd - 1, &typeName, &pointerLevel, &hasConst, &hasVirtual);
 
-		info->name = String((*name)->GetString());
+		info->name = String((*name)->getString());
 		info->typeRawName = typeName;
 		info->isIn = hasConst;
 		info->isOut = (!hasConst && pointerLevel > 0);
 	}
-	parent->parameters.Add(info);
+	parent->parameters.add(info);
 
 	// copydoc 用シグネチャの抽出
 	String sig;
@@ -437,10 +437,10 @@ void HeaderParser::ParseParamDecl(TokenItr begin, TokenItr end, MethodInfoPtr pa
 			(*itr)->GetTokenGroup() == TokenGroup::Operator ||
 			(*itr)->GetTokenGroup() == TokenGroup::Keyword)
 		{
-			sig += (*itr)->GetString();
+			sig += (*itr)->getString();
 		}
 	}
-	if (!parent->paramsRawSignature.IsEmpty()) parent->paramsRawSignature += ",";
+	if (!parent->paramsRawSignature.isEmpty()) parent->paramsRawSignature += ",";
 	parent->paramsRawSignature += sig;
 }
 
@@ -462,7 +462,7 @@ void HeaderParser::ParseParamType(TokenItr begin, TokenItr end, String* outName,
 		if ((*itr)->GetTokenGroup() == TokenGroup::Identifier || (*itr)->GetTokenGroup() == TokenGroup::Keyword) typeName = itr;
 	}
 
-	*outName = String((*typeName)->GetString());
+	*outName = String((*typeName)->getString());
 	*outPointerLevel = pointerLevel;
 	*outHasConst = hasConst;
 	*outHasVirtual = hasVirtual;
@@ -506,15 +506,15 @@ void HeaderParser::ParseClassDecl(const Decl& decl)
 			LN_PARSE_RESULT(r2, TokenChar('<'));
 			LN_PARSE_RESULT(r3, Parse_TemplateParamList);
 			LN_PARSE_RESULT(r4, TokenChar('>'));
-			return input.Success(r3.GetValue());
+			return input.Success(r3.getValue());
 		}
 
 		static ParserResult<List<flString>> Parse_TemplateParamList(ParserContext input)
 		{
 			LN_PARSE_RESULT(r1, Parse_TemplateParam);
 			LN_PARSE_RESULT(r2, Many(Parser<flString>(Parse_TemplateParamLater)));
-			List<flString> list{ r1.GetValue() };
-			list.AddRange(r2.GetValue());
+			List<flString> list{ r1.getValue() };
+			list.addRange(r2.getValue());
 			return input.Success(list);
 		}
 
@@ -522,7 +522,7 @@ void HeaderParser::ParseClassDecl(const Decl& decl)
 		{
 			LN_PARSE_RESULT(r1, TokenString("typename") || TokenString("class"));
 			LN_PARSE_RESULT(r2, Token(TokenGroup::Identifier));
-			return input.Success(r2.GetValue()->GetString());
+			return input.Success(r2.getValue()->getString());
 		}
 
 		static ParserResult<flString> Parse_TemplateParamLater(ParserContext input)
@@ -530,7 +530,7 @@ void HeaderParser::ParseClassDecl(const Decl& decl)
 			LN_PARSE_RESULT(r1, TokenChar(','));
 			LN_PARSE_RESULT(r2, TokenString("typename") || TokenString("class"));
 			LN_PARSE_RESULT(r3, Token(TokenGroup::Identifier));
-			return input.Success(r3.GetValue()->GetString());
+			return input.Success(r3.getValue()->getString());
 		}
 
 		//----------------------------------------------------------------------
@@ -539,7 +539,7 @@ void HeaderParser::ParseClassDecl(const Decl& decl)
 		{
 			LN_PARSE_RESULT(r1, TokenString("class"));
 			LN_PARSE_RESULT(r2, Token(TokenGroup::Identifier));
-			return input.Success(r2.GetValue()->GetString());
+			return input.Success(r2.getValue()->getString());
 		}
 
 		//----------------------------------------------------------------------
@@ -549,8 +549,8 @@ void HeaderParser::ParseClassDecl(const Decl& decl)
 			LN_PARSE_RESULT(r1, TokenChar(':'));
 			LN_PARSE_RESULT(r2, Many(Parser<TypeName>(Parse_BaseTypeName)));
 			LN_PARSE_RESULT(r3, Many(Parser<TypeName>(Parse_BaseTypeNameLater)));
-			auto list = r2.GetValue();
-			list.AddRange(r3.GetValue());
+			auto list = r2.getValue();
+			list.addRange(r3.getValue());
 			return input.Success(list);
 		}
 		
@@ -559,7 +559,7 @@ void HeaderParser::ParseClassDecl(const Decl& decl)
 			LN_PARSE_RESULT(r1, TokenString("public"));
 			LN_PARSE_RESULT(r2, Token(TokenGroup::Identifier));
 			LN_PARSE_RESULT(r3, Optional(Parser<List<flString>>(Parse_TypeParamList)));
-			return input.Success(TypeName{ r2.GetValue()->GetString(), r3.GetValue().GetValue() });
+			return input.Success(TypeName{ r2.getValue()->getString(), r3.getValue().getValue() });
 		}
 
 		static ParserResult<TypeName> Parse_BaseTypeNameLater(ParserContext input)
@@ -568,7 +568,7 @@ void HeaderParser::ParseClassDecl(const Decl& decl)
 			LN_PARSE_RESULT(r2, TokenString("public"));
 			LN_PARSE_RESULT(r3, Token(TokenGroup::Identifier));
 			LN_PARSE_RESULT(r4, Optional(Parser<List<flString>>(Parse_TypeParamList)));
-			return input.Success(TypeName{ r3.GetValue()->GetString(), r4.GetValue().GetValue() });
+			return input.Success(TypeName{ r3.getValue()->getString(), r4.getValue().getValue() });
 		}
 
 		static ParserResult<List<flString>> Parse_TypeParamList(ParserContext input)
@@ -577,22 +577,22 @@ void HeaderParser::ParseClassDecl(const Decl& decl)
 			LN_PARSE_RESULT(r2, Parse_TypeParam);
 			LN_PARSE_RESULT(r3, Many(Parser<flString>(Parse_TypeParamLater)));
 			LN_PARSE_RESULT(r4, TokenChar('>'));
-			List<flString> list{ r2.GetValue() };
-			list.AddRange(r3.GetValue());
+			List<flString> list{ r2.getValue() };
+			list.addRange(r3.getValue());
 			return input.Success(list);
 		}
 
 		static ParserResult<flString> Parse_TypeParam(ParserContext input)
 		{
 			LN_PARSE_RESULT(r1, Token(TokenGroup::Identifier));
-			return input.Success(r1.GetValue()->GetString());
+			return input.Success(r1.getValue()->getString());
 		}
 
 		static ParserResult<flString> Parse_TypeParamLater(ParserContext input)
 		{
 			LN_PARSE_RESULT(r1, TokenChar(','));
 			LN_PARSE_RESULT(r2, Token(TokenGroup::Identifier));
-			return input.Success(r2.GetValue()->GetString());
+			return input.Success(r2.getValue()->getString());
 		}
 
 		//----------------------------------------------------------------------
@@ -603,7 +603,7 @@ void HeaderParser::ParseClassDecl(const Decl& decl)
 			LN_PARSE_RESULT(r2, Parse_ClassMain);
 			LN_PARSE_RESULT(r3, Optional(Parser<List<TypeName>>(Parse_BaseClasses)));
 			LN_PARSE_RESULT(r4, TokenChar('{'));
-			return input.Success(ClassHeader{ r1.GetValue().GetValue(), r2.GetValue(), r3.GetValue().GetValue(), });
+			return input.Success(ClassHeader{ r1.getValue().getValue(), r2.getValue(), r3.getValue().getValue(), });
 		}
 
 		static bool FilterToken(fl::Token* token)
@@ -626,7 +626,7 @@ void HeaderParser::ParseClassDecl(const Decl& decl)
 	auto paramEnd = ParseMetadataDecl(decl.begin, decl.end);
 
 	auto& result = ClassHeaderParser::TryParse(ClassHeaderParser::Parse_ClassHeader, paramEnd, decl.end);
-	auto& classHeader = result.GetValue();
+	auto& classHeader = result.getValue();
 
 
 	//auto name = std::find_if(paramEnd, decl.end, [](Token* t) { return t->EqualChar(':'); }) - 2;
@@ -642,8 +642,8 @@ void HeaderParser::ParseClassDecl(const Decl& decl)
 	info->metadata = MoveLastMetadata();
 	info->document = MoveLastDocument();
 	info->name = String(classHeader.className);
-	if (!classHeader.baseClassNames.IsEmpty()) info->baseClassRawName = String(classHeader.baseClassNames[0].name);
-	m_database->classes.Add(info);
+	if (!classHeader.baseClassNames.isEmpty()) info->baseClassRawName = String(classHeader.baseClassNames[0].name);
+	m_database->classes.add(info);
 
 	// base class name
 	//if ((*itr)->EqualChar(':'))
@@ -676,9 +676,9 @@ void HeaderParser::ParseEnumDecl(const Decl& decl)
 
 	auto info = std::make_shared<TypeInfo>();
 	info->document = MoveLastDocument();
-	info->name = String((*name)->GetString());
+	info->name = String((*name)->getString());
 	info->isEnum = true;
-	m_database->enums.Add(info);
+	m_database->enums.add(info);
 
 	m_currentEnumValue = 0;
 	TokenItr last = itr;
@@ -711,16 +711,16 @@ void HeaderParser::ParseEnumMemberDecl(TokenItr begin, TokenItr end, TypeInfoPtr
 			if ((*itr)->GetTokenGroup() == TokenGroup::ArithmeticLiteral) value = itr;
 			if ((*itr)->EqualChar(',')) break;
 		}
-		m_currentEnumValue = (*value)->GetString().ToInt32();
+		m_currentEnumValue = (*value)->getString().toInt32();
 	}
 
 	// create info
 	auto info = std::make_shared<ConstantInfo>();
 	info->document = MoveLastDocument();
-	info->name = String((*name)->GetString());
+	info->name = String((*name)->getString());
 	info->value = m_currentEnumValue;
 	info->type = parent;
-	parent->declaredConstants.Add(info);
+	parent->declaredConstants.add(info);
 
 	m_currentEnumValue++;
 }
@@ -760,8 +760,8 @@ void HeaderParser::ParseDelegateDecl(const Decl& decl)
 	delegateInfo->isDelegate = true;
 	delegateInfo->document = MoveLastDocument();
 	delegateInfo->metadata = MoveLastMetadata();
-	delegateInfo->name = (*name)->GetString();
-	m_database->delegates.Add(delegateInfo);
+	delegateInfo->name = (*name)->getString();
+	m_database->delegates.add(delegateInfo);
 
 	// Delegate クラスに Invoke メソッドを追加する
 	auto invokeMethodInfo = std::make_shared<MethodInfo>();
@@ -770,7 +770,7 @@ void HeaderParser::ParseDelegateDecl(const Decl& decl)
 	invokeMethodInfo->metadata = std::make_shared<MetadataInfo>();
 	invokeMethodInfo->returnTypeRawName = "void";
 	invokeMethodInfo->name = "Invoke";
-	delegateInfo->declaredMethods.Add(invokeMethodInfo);
+	delegateInfo->declaredMethods.add(invokeMethodInfo);
 
 	// 引数リストを解析する
 	ParseParamListDecl(lparen, rparen, invokeMethodInfo);
@@ -778,69 +778,69 @@ void HeaderParser::ParseDelegateDecl(const Decl& decl)
 
 void HeaderParser::ParseDocument(const Decl& decl)
 {
-	String doc((*decl.begin)->GetString());
+	String doc((*decl.begin)->getString());
 
 	// 改行コード統一し、コメント開始終了を削除する
 	doc = doc
-		.Replace(_T("\r\n"), _T("\n"))
-		.Replace(_T("\r"), _T("\n"))
-		.Replace(_T("/**"), _T(""))
-		.Replace(_T("*/"), _T(""));
+		.replace(_T("\r\n"), _T("\n"))
+		.replace(_T("\r"), _T("\n"))
+		.replace(_T("/**"), _T(""))
+		.replace(_T("*/"), _T(""));
 
 	auto info = std::make_shared<DocumentInfo>();
 
-	List<String> lines = doc.Split(_T("\n"));
+	List<String> lines = doc.split(_T("\n"));
 	String* target = &info->summary;
 	for (String line : lines)
 	{
-		line = line.Trim();
+		line = line.trim();
 
 		MatchResult result;
-		if (Regex::Search(line, _T("@(\\w+)"), &result))
+		if (Regex::search(line, _T("@(\\w+)"), &result))
 		{
 			if (result[1] == _T("brief"))
 			{
 				target = &info->summary;
-				line = line.Mid(result.GetLength());
+				line = line.mid(result.getLength());
 			}
 			else if (result[1] == _T("param"))
 			{
-				String con = line.Mid(result.GetLength());
-				if (Regex::Search(con, R"(\[(\w+)\]\s+(\w+)\s*\:\s*)", &result))
+				String con = line.mid(result.getLength());
+				if (Regex::search(con, R"(\[(\w+)\]\s+(\w+)\s*\:\s*)", &result))
 				{
 					auto paramInfo = std::make_shared<ParameterDocumentInfo>();
-					info->params.Add(paramInfo);
+					info->params.add(paramInfo);
 					paramInfo->io = result[1];
 					paramInfo->name = result[2];
 					target = &paramInfo->description;
-					line = con.Mid(result.GetLength());
+					line = con.mid(result.getLength());
 				}
 			}
 			else if (result[1] == _T("return"))
 			{
 				target = &info->returns;
-				line = line.Mid(result.GetLength());
+				line = line.mid(result.getLength());
 			}
 			else if (result[1] == _T("details"))
 			{
 				target = &info->details;
-				line = line.Mid(result.GetLength());
+				line = line.mid(result.getLength());
 			}
 			else if (result[1] == _T("copydoc"))
 			{
-				String con = line.Mid(result.GetLength());
-				if (Regex::Search(con, R"((\w+)(.*))", &result))
+				String con = line.mid(result.getLength());
+				if (Regex::search(con, R"((\w+)(.*))", &result))
 				{
 					info->copydocMethodName = result[1];
 					info->copydocSignature = result[2];
-					info->copydocSignature = info->copydocSignature.Remove('(').Remove(')').Remove(' ').Remove('\t');
+					info->copydocSignature = info->copydocSignature.remove('(').remove(')').remove(' ').remove('\t');
 					target = &info->details;
-					line.Clear();
+					line.clear();
 				}
 			}
 		}
 
-		(*target) += line.Trim();
+		(*target) += line.trim();
 	}
 
 	m_lastDocument = info;

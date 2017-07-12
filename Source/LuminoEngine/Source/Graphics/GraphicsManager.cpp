@@ -16,20 +16,21 @@
 #include "GraphicsManager.h"
 #include <Lumino/Graphics/Graphics.h>
 #include "Text/FreeTypeFont.h"
-#include "RendererImpl.h"
+#include "CoreGraphicsRenderFeature.h"
 #include "Text/FontGlyphTextureCache.h"
 #include "RenderingThread.h"
-#include "Rendering/ShapesRenderer.h"
-#include "NanoVGRenderer.h"
+#include "../Rendering/ShapesRenderFeature.h"
+#include "../Rendering/NanoVGRenderFeature.h"
 #include "Text/FontManager.h"
-#include "Text/TextRenderer.h"
+#include "Text/SpriteTextRenderFeature.h"
+#include "Text/VectorTextRenderFeature.h"
 #include "Text/BitmapTextRenderer.h"
 #include <Lumino/Graphics/Viewport.h>
 #include <Lumino/Graphics/GraphicsContext.h>
 #include <Lumino/Graphics/Shader.h>
 #include <Lumino/Graphics/VertexDeclaration.h>
 #include <Lumino/Graphics/Shader.h>
-#include <Lumino/Graphics/Rendering.h>
+#include <Lumino/Rendering/Rendering.h>
 
 LN_NAMESPACE_BEGIN
 
@@ -44,25 +45,32 @@ GraphicsResourceObject::GraphicsResourceObject()
 {
 }
 
+static int _pp = 0;
+
 //------------------------------------------------------------------------------
 GraphicsResourceObject::~GraphicsResourceObject()
 {
-	Finalize();
 }
 
 //------------------------------------------------------------------------------
-void GraphicsResourceObject::Initialize(detail::GraphicsManager* manager)
+void GraphicsResourceObject::finalize_()
 {
-	m_manager = manager;
-	m_manager->AddResourceObject(this);
+	Dispose();
 }
 
 //------------------------------------------------------------------------------
-void GraphicsResourceObject::Finalize()
+void GraphicsResourceObject::initialize()
+{
+	m_manager = detail::EngineDomain::getGraphicsManager();
+	m_manager->addResourceObject(this);
+}
+
+//------------------------------------------------------------------------------
+void GraphicsResourceObject::Dispose()
 {
 	if (m_manager != nullptr)
 	{
-		m_manager->RemoveResourceObject(this);
+		m_manager->removeResourceObject(this);
 		m_manager = nullptr;
 	}
 }
@@ -75,7 +83,7 @@ namespace detail {
 static GraphicsManager* g_GraphicsManagerInstance = nullptr;
 
 //------------------------------------------------------------------------------
-GraphicsManager* GraphicsManager::GetInstance(GraphicsManager* priority)
+GraphicsManager* GraphicsManager::getInstance(GraphicsManager* priority)
 {
 	if (priority != nullptr)
 	{
@@ -99,7 +107,6 @@ GraphicsManager::GraphicsManager()
 	, m_dymmyWhiteTexture(nullptr)
 	, m_renderer(nullptr)
 	, m_renderingThread(nullptr)
-	, m_lockPresentCommandList()
 	, m_internalContext(nullptr)
 	, m_activeContext(nullptr)
 	, m_textRendererCore(nullptr)
@@ -115,11 +122,11 @@ GraphicsManager::~GraphicsManager()
 
 	if (m_textRendererCore != nullptr)
 	{
-		m_textRendererCore->Finalize();
+		m_textRendererCore->Dispose();
 		LN_SAFE_RELEASE(m_textRendererCore);
 	}
-	m_dymmyBlackTexture.SafeRelease();
-	m_dymmyWhiteTexture.SafeRelease();
+	m_dymmyBlackTexture.safeRelease();
+	m_dymmyWhiteTexture.safeRelease();
 	LN_SAFE_RELEASE(m_dummyDeviceTexture);
 	LN_SAFE_RELEASE(m_mainSwapChain);
 	LN_SAFE_RELEASE(m_renderer);
@@ -127,7 +134,6 @@ GraphicsManager::~GraphicsManager()
 
 	if (m_fontManager != nullptr)
 	{
-		m_fontManager->Finalize();
 		LN_SAFE_RELEASE(m_fontManager);
 	}
 
@@ -145,7 +151,7 @@ GraphicsManager::~GraphicsManager()
 
 
 //------------------------------------------------------------------------------
-void GraphicsManager::Initialize(const ConfigData& configData)
+void GraphicsManager::initialize(const ConfigData& configData)
 {
 	m_renderingType = configData.renderingType;
 	m_animationManager = configData.animationManager;
@@ -156,7 +162,7 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 
 	// フォント管理
 	m_fontManager = LN_NEW FontManager();
-	m_fontManager->Initialize(m_fileManager, this);
+	m_fontManager->initialize(m_fileManager, this);
 
 #if defined(LN_OS_WIN32)
 	if (configData.graphicsAPI == GraphicsAPI::DirectX9)
@@ -169,9 +175,9 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 		data.EnableVSyncWait = false;			// TODO
 		data.EnableFPUPreserve = configData.fpuPreserveEnabled;
 		auto* device = LN_NEW Driver::DX9GraphicsDevice();
-		device->Initialize(data);
-		ChangeDevice(device);
-		device->Release();
+		device->initialize(data);
+		changeDevice(device);
+		device->release();
 	}
 	else if (configData.graphicsAPI == GraphicsAPI::OpenGL)
 	{
@@ -183,9 +189,9 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 		data.openGLMinorVersion = 1;
 		data.createSharedRenderingContext = (m_renderingType == GraphicsRenderingType::Threaded);
 		auto* device = LN_NEW Driver::WGLGraphicsDevice();
-		device->Initialize(data);
-		ChangeDevice(device);
-		device->Release();
+		device->initialize(data);
+		changeDevice(device);
+		device->release();
 	}
 	else {
 		LN_THROW(0, ArgumentException);
@@ -200,7 +206,7 @@ void GraphicsManager::Initialize(const ConfigData& configData)
     data.OpenGLMinorVersion = 1;
 
     auto* device = LN_NEW Driver::NSGLGraphicsDevice();
-    device->Initialize(data);
+    device->initialize(data);
     ChangeDevice(device);
     device->Release();
     
@@ -208,51 +214,51 @@ void GraphicsManager::Initialize(const ConfigData& configData)
     m_platformTextureLoading = false;
     
 	auto* device = LN_NEW Driver::GLXGraphicsDevice();
-	device->Initialize(data);
+	device->initialize(data);
 	ChangeDevice(device);
 	device->Release();
 #else
 	LN_THROW(0, NotImplementedException);
 #endif
 
-	Driver::IRenderer* renderer = m_graphicsDevice->GetRenderer();
-	renderer->SetDiag(configData.diag);
+	Driver::IRenderer* renderer = m_graphicsDevice->getRenderer();
+	renderer->setDiag(configData.diag);
 
 	// Renderer
-	m_renderer = LN_NEW Details::Renderer(this);
+	m_renderer = LN_NEW detail::CoreGraphicsRenderFeature(this);
 
-	Driver::ISwapChain* deviceSwapChain = m_graphicsDevice->GetDefaultSwapChain();
+	Driver::ISwapChain* deviceSwapChain = m_graphicsDevice->getDefaultSwapChain();
 	if (deviceSwapChain != nullptr) {
 		m_mainSwapChain = LN_NEW SwapChain();
-		m_mainSwapChain->InitializeDefault(this);
+		m_mainSwapChain->initializeDefault(this);
 	}
 
 
 	// PainterEngine
 	//m_painterEngine = LN_NEW PainterEngine();
-	//m_painterEngine->Create(this);
+	//m_painterEngine->create(this);
 
 	m_textRendererCore = LN_NEW detail::TextRendererCore();
-	m_textRendererCore->Initialize(this);
+	m_textRendererCore->initialize(this);
 
 	//m_graphicsContext = LN_NEW GraphicsContext();
-	//m_graphicsContext->Initialize(this);
+	//m_graphicsContext->initialize(this);
 
 	m_bitmapTextRenderer = LN_NEW BitmapTextRenderer();
-	m_bitmapTextRenderer->Initialize(this);
+	m_bitmapTextRenderer->initialize(this);
 
-	m_internalContext = RefPtr<InternalContext>::MakeRef();
-	m_internalContext->Initialize(this);
+	m_internalContext = RefPtr<InternalContext>::makeRef();
+	m_internalContext->initialize(this);
 
-	m_shapesRendererCommandListCache = RefPtr<ShapesRendererCommandListCache>::MakeRef();
-	m_nanoVGCommandListCache = RefPtr<NanoVGCommandListCache>::MakeRef();
+	m_shapesRendererCommandListCache = RefPtr<ShapesRendererCommandListCache>::makeRef();
+	m_nanoVGCommandListCache = RefPtr<NanoVGCommandListCache>::makeRef();
 
 	m_defaultVertexDeclaration = LN_NEW VertexDeclaration();
-	m_defaultVertexDeclaration->Initialize(this);
-	m_defaultVertexDeclaration->AddVertexElement(0, VertexElementType_Float3, VertexElementUsage_Position, 0);
-	m_defaultVertexDeclaration->AddVertexElement(0, VertexElementType_Float2, VertexElementUsage_TexCoord, 0);
-	m_defaultVertexDeclaration->AddVertexElement(0, VertexElementType_Float3, VertexElementUsage_Normal, 0);
-	m_defaultVertexDeclaration->AddVertexElement(0, VertexElementType_Float4, VertexElementUsage_Color, 0);
+	m_defaultVertexDeclaration->initialize(this);
+	m_defaultVertexDeclaration->addVertexElement(0, VertexElementType_Float3, VertexElementUsage_Position, 0);
+	m_defaultVertexDeclaration->addVertexElement(0, VertexElementType_Float2, VertexElementUsage_TexCoord, 0);
+	m_defaultVertexDeclaration->addVertexElement(0, VertexElementType_Float3, VertexElementUsage_Normal, 0);
+	m_defaultVertexDeclaration->addVertexElement(0, VertexElementType_Float4, VertexElementUsage_Color, 0);
 
 	
 	// Shader common header.
@@ -262,7 +268,7 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 #include "Resource/EffectHeader.fxh.h"
 		};
 		static const size_t EffectHeader_Data_Len = LN_ARRAY_SIZE_OF(EffectHeader_Data);
-		m_commonShaderHeader.AssignCStr((const char*)EffectHeader_Data, EffectHeader_Data_Len);
+		m_commonShaderHeader.assignCStr((const char*)EffectHeader_Data, EffectHeader_Data_Len);
 	}
 	
 	// デフォルトシェーダ
@@ -272,8 +278,8 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 #include "Resource/NoLightingRendering.fx.h"
 		};
 		static const size_t shaderDataLen = LN_ARRAY_SIZE_OF(shaderData);
-		auto shader = RefPtr<Shader>::MakeRef();
-		shader->Initialize(this, (const char*)shaderData, shaderDataLen);
+		auto shader = RefPtr<Shader>::makeRef();
+		shader->initialize(this, (const char*)shaderData, shaderDataLen);
 		m_builtinShaders[(int)BuiltinShader::Sprite] = shader;
 	}
 	{
@@ -282,8 +288,8 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 #include "Resource/ForwardRendering.fx.h"
 		};
 		static const size_t shaderDataLen = LN_ARRAY_SIZE_OF(shaderData);
-		auto shader = RefPtr<Shader>::MakeRef();
-		shader->Initialize(this, (const char*)shaderData, shaderDataLen);
+		auto shader = RefPtr<Shader>::makeRef();
+		shader->initialize(this, (const char*)shaderData, shaderDataLen);
 		m_builtinShaders[(int)BuiltinShader::LegacyDiffuse] = shader;
 	}
 	
@@ -293,8 +299,8 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 	{
 		// 描画スレッドを立ち上げる
 		m_renderingThread = LN_NEW RenderingThread();
-		m_renderingThread->Reset(m_graphicsDevice);
-		m_renderingThread->Start();
+		m_renderingThread->reset(m_graphicsDevice);
+		m_renderingThread->start();
 	}
 
 	if (g_GraphicsManagerInstance == nullptr)
@@ -302,12 +308,12 @@ void GraphicsManager::Initialize(const ConfigData& configData)
 		g_GraphicsManagerInstance = this;
 	}
 
-	CreateGlobalObjects();
+	createGlobalObjects();
 }
 
 
 //------------------------------------------------------------------------------
-void GraphicsManager::Finalize()
+void GraphicsManager::Dispose()
 {
 	if (m_renderingThread != nullptr)
 	{
@@ -315,52 +321,53 @@ void GraphicsManager::Finalize()
 		LN_SAFE_DELETE(m_renderingThread);
 	}
 
+	if (m_fontManager != nullptr)
+	{
+		m_fontManager->Dispose();
+	}
+
+	// TODO: なんか量がすごいことになっている。多分 VertexDecl。Diag で監視する。
 	auto deleteList = m_resourceObjectList;
-	for (auto* obj : deleteList)
+	for (auto& obj : deleteList)
 	{
-		obj->Finalize();
+		obj->Dispose();
 	}
+	deleteList.clear();
+	m_resourceObjectList.clear();
 
-	//LN_SAFE_RELEASE(m_renderingContext);
-	m_internalContext.SafeRelease();
+	m_internalContext.safeRelease();
 }
 
 //------------------------------------------------------------------------------
-GraphicsAPI GraphicsManager::GetGraphicsAPI() const
+GraphicsAPI GraphicsManager::getGraphicsAPI() const
 {
-	return m_graphicsDevice->GetGraphicsAPI();
+	return m_graphicsDevice->getGraphicsAPI();
 }
 
 //------------------------------------------------------------------------------
-//RenderingCommandList* GraphicsManager::GetPrimaryRenderingCommandList()
-//{
-//	return m_renderer->m_primaryCommandList;
-//}
-
-//------------------------------------------------------------------------------
-void GraphicsManager::PauseDevice()
+void GraphicsManager::pauseDevice()
 {
 	// TODO: ユーザーコールバック
 	for (auto* listener : m_deviceResetListenerList)
 	{
-		listener->OnLostDevice();
+		listener->onLostDevice();
 	}
-	m_graphicsDevice->OnLostDevice();
+	m_graphicsDevice->onLostDevice();
 }
 
 //------------------------------------------------------------------------------
-void GraphicsManager::ResumeDevice()
+void GraphicsManager::resumeDevice()
 {
-	m_graphicsDevice->OnResetDevice();
+	m_graphicsDevice->onResetDevice();
 	for (auto* listener : m_deviceResetListenerList)
 	{
-		listener->OnResetDevice();
+		listener->onResetDevice();
 	}
 	// TODO: ユーザーコールバック
 }
 
 //------------------------------------------------------------------------------
-void GraphicsManager::ChangeDevice(Driver::IGraphicsDevice* device)
+void GraphicsManager::changeDevice(Driver::IGraphicsDevice* device)
 {
 	if (m_renderingThread != NULL) {
 		LN_THROW(0, InvalidOperationException);
@@ -369,8 +376,8 @@ void GraphicsManager::ChangeDevice(Driver::IGraphicsDevice* device)
 	if (device == NULL)
 	{
 		// 全オブジェクトに通知
-		for (auto* obj : m_resourceObjectList) {
-			obj->OnChangeDevice(NULL);
+		for (auto& obj : m_resourceObjectList) {
+			obj->onChangeDevice(NULL);
 		}
 
 		// 色々解放
@@ -379,7 +386,7 @@ void GraphicsManager::ChangeDevice(Driver::IGraphicsDevice* device)
 		if (m_graphicsDevice != NULL)
 		{
 			if (m_renderingType == GraphicsRenderingType::Immediate) {
-				m_graphicsDevice->DetachRenderingThread();
+				m_graphicsDevice->detachRenderingThread();
 			}
 
 			m_graphicsDevice->Finalize();
@@ -392,104 +399,81 @@ void GraphicsManager::ChangeDevice(Driver::IGraphicsDevice* device)
 
 		// Immediate の場合は Initialize したスレッドをレンダリングスレッドとする
 		if (m_renderingType == GraphicsRenderingType::Immediate) {
-			m_graphicsDevice->AttachRenderingThread();
+			m_graphicsDevice->attachRenderingThread();
 		}
 
 		// ダミーテクスチャ
-		m_dummyDeviceTexture = m_graphicsDevice->CreateTexture(SizeI(32, 32), false, TextureFormat::R8G8B8A8, NULL);
+		m_dummyDeviceTexture = m_graphicsDevice->createTexture(SizeI(32, 32), false, TextureFormat::R8G8B8A8, NULL);
 		{
-			BitmapPainter painter(m_dummyDeviceTexture->Lock());
-			painter.Clear(Color32::White);
-			m_dummyDeviceTexture->Unlock();
+			BitmapPainter painter(m_dummyDeviceTexture->lock());
+			painter.clear(Color32::White);
+			m_dummyDeviceTexture->unlock();
 		}
 
 		// 全オブジェクトに通知
-		for (auto* obj : m_resourceObjectList) {
-			obj->OnChangeDevice(device);
+		for (auto& obj : m_resourceObjectList) {
+			obj->onChangeDevice(device);
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
-void GraphicsManager::SwitchActiveContext(detail::ContextInterface* context)
+void GraphicsManager::switchActiveContext(detail::ContextInterface* context)
 {
 	if (context != m_activeContext)
 	{
 		if (m_activeContext != nullptr)
 		{
-			m_activeContext->OnDeactivated();
+			m_activeContext->onDeactivated();
 		}
 
 		m_activeContext = context;
 
 		if (m_activeContext != nullptr)
 		{
-			m_activeContext->OnActivated();
+			m_activeContext->onActivated();
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
-InternalContext* GraphicsManager::GetInternalContext() const
+void GraphicsManager::addResourceObject(GraphicsResourceObject* obj)
+{
+	m_resourceObjectList.add(obj);
+}
+
+//------------------------------------------------------------------------------
+void GraphicsManager::removeResourceObject(GraphicsResourceObject* obj)
+{
+	m_resourceObjectList.remove(obj);
+}
+
+//------------------------------------------------------------------------------
+InternalContext* GraphicsManager::getInternalContext() const
 {
 	return m_internalContext;
 }
 
 //------------------------------------------------------------------------------
-const RefPtr<Shader>& GraphicsManager::GetBuiltinShader(BuiltinShader shader) const
+const RefPtr<Shader>& GraphicsManager::getBuiltinShader(BuiltinShader shader) const
 {
 	return m_builtinShaders[(int)shader];
 }
 
 //------------------------------------------------------------------------------
-void GraphicsManager::PresentSwapChain(SwapChain* swapChain)
-{
-	if (GetRenderingType() == GraphicsRenderingType::Immediate)
-	{
-		swapChain->PresentInternal();
-
-		// 一時メモリの解放とかをやっておく
-		GetPrimaryRenderingCommandList()->PostExecute();
-	}
-	else
-	{
-		// ごく稀に RenderingCommandList::Execute() でイテレータアクセス assert する問題があった。
-		// この assert が発生する原因は、イテレート中に他のスレッドから Add とかされた時。
-		// でも、パッと見原因になりそうなところが見つからなかったので、もしかしたら
-		// キャッシュにリストのポインタが残っていたことが原因かもしれない。
-		// 念のためここでキャッシュをフラッシュし、様子を見る。
-		MutexScopedLock lock(m_lockPresentCommandList);
-
-		// 前回この SwapChain から発行したコマンドリストがまだ処理中である。待ち状態になるまで待機する。
-		swapChain->WaitForPresent();
-
-		// 実行状態にする。Present コマンドが実行された後、コマンドリストクラスから True がセットされる。
-		// ※ PresentCommandList() の前に false にしておかないとダメ。
-		//    後で false にすると、PresentCommandList() と同時に全部のコマンドが実行されて、描画スレッドから
-		//    true がセットされるのに、その後 false をセットしてしまうことがある。
-		swapChain->m_waiting.SetFalse();
-
-		GetGraphicsDevice()->FlushResource();
-
-		// Primary コマンドリストの末尾に Present を追加し、キューへ追加する
-		GetRenderer()->PresentCommandList(swapChain);
-	}
-}
-
-//------------------------------------------------------------------------------
-RenderingCommandList* GraphicsManager::GetPrimaryRenderingCommandList()
+RenderingCommandList* GraphicsManager::getPrimaryRenderingCommandList()
 {
 	return m_renderer->m_primaryCommandList;
 }
 
 //------------------------------------------------------------------------------
-void GraphicsManager::CreateGlobalObjects()
+void GraphicsManager::createGlobalObjects()
 {
 	// 作成の式を簡単にするためのヘルパー
 	auto colorBrush = [this](const Color& c)
 	{
-		auto brush = NewObject<SolidColorBrush>(c);
-		this->m_globalBrushes.Add(brush);
+		auto brush = newObject<SolidColorBrush>(c);
+		this->m_globalBrushes.add(brush);
 		return brush;
 	};
 
@@ -503,12 +487,12 @@ void GraphicsManager::CreateGlobalObjects()
 	Brush::DimGray = colorBrush(Color(0.25, 0.25, 0.25, 1.0));
 
 	// black texture
-	m_dymmyBlackTexture = NewObject<Texture2D>(SizeI(32, 32), TextureFormat::R8G8B8A8, false, ResourceUsage::Static);
-	m_dymmyBlackTexture->Clear(Color32::Black);
+	m_dymmyBlackTexture = newObject<Texture2D>(SizeI(32, 32), TextureFormat::R8G8B8A8, false, ResourceUsage::Static);
+	m_dymmyBlackTexture->clear(Color32::Black);
 
 	// white texture
-	m_dymmyWhiteTexture = NewObject<Texture2D>(SizeI(32, 32), TextureFormat::R8G8B8A8, false, ResourceUsage::Static);
-	m_dymmyWhiteTexture->Clear(Color32::White);
+	m_dymmyWhiteTexture = newObject<Texture2D>(SizeI(32, 32), TextureFormat::R8G8B8A8, false, ResourceUsage::Static);
+	m_dymmyWhiteTexture->clear(Color32::White);
 }
 
 //==============================================================================
@@ -517,60 +501,60 @@ void GraphicsManager::CreateGlobalObjects()
 //------------------------------------------------------------------------------
 ShaderVariableCommitSerializeHelper::ShaderVariableCommitSerializeHelper()
 {
-	m_writerBuffer = MemoryStream::Create();
-	m_writer = RefPtr<BinaryWriter>::MakeRef(m_writerBuffer);
+	m_writerBuffer = MemoryStream::create();
+	m_writer = RefPtr<BinaryWriter>::makeRef(m_writerBuffer);
 }
 
 //------------------------------------------------------------------------------
-void ShaderVariableCommitSerializeHelper::BeginSerialize()
+void ShaderVariableCommitSerializeHelper::beginSerialize()
 {
-	m_writer->Seek(0, SeekOrigin_Begin);
+	m_writer->seek(0, SeekOrigin_Begin);
 }
 
 //------------------------------------------------------------------------------
-void ShaderVariableCommitSerializeHelper::WriteValue(Driver::IShaderVariable* targetVariable, const ShaderValue& value)
+void ShaderVariableCommitSerializeHelper::writeValue(Driver::IShaderVariable* targetVariable, const ShaderValue& value)
 {
-	m_writer->WriteInt8(value.GetType());
-	m_writer->WriteUInt64((intptr_t)targetVariable);
+	m_writer->writeInt8(value.getType());
+	m_writer->writeUInt64((intptr_t)targetVariable);
 
-	switch (value.GetType())
+	switch (value.getType())
 	{
 	case ShaderVariableType_Bool:
-		m_writer->WriteUInt8(value.GetBool() ? 1 : 0);
+		m_writer->writeUInt8(value.getBool() ? 1 : 0);
 		break;
 	case ShaderVariableType_BoolArray:
-		m_writer->WriteUInt8(value.GetArrayLength());
-		m_writer->Write(value.GetBoolArray(), sizeof(bool) * value.GetArrayLength());
+		m_writer->writeUInt8(value.getArrayLength());
+		m_writer->write(value.getBoolArray(), sizeof(bool) * value.getArrayLength());
 		break;
 	case ShaderVariableType_Int:
-		m_writer->WriteInt32(value.GetInt());
+		m_writer->writeInt32(value.getInt());
 		break;
 	case ShaderVariableType_Float:
-		m_writer->WriteFloat(value.GetFloat());
+		m_writer->writeFloat(value.getFloat());
 		break;
 	case ShaderVariableType_FloatArray:
-		m_writer->WriteUInt8(value.GetArrayLength());
-		m_writer->Write(value.GetFloatArray(), sizeof(float) * value.GetArrayLength());
+		m_writer->writeUInt8(value.getArrayLength());
+		m_writer->write(value.getFloatArray(), sizeof(float) * value.getArrayLength());
 		break;
 	case ShaderVariableType_Vector:
-		m_writer->Write(&value.GetVector(), sizeof(Vector4));
+		m_writer->write(&value.getVector(), sizeof(Vector4));
 		break;
 	case ShaderVariableType_VectorArray:
-		m_writer->WriteUInt8(value.GetArrayLength());
-		m_writer->Write(value.GetVectorArray(), sizeof(Vector4) * value.GetArrayLength());
+		m_writer->writeUInt8(value.getArrayLength());
+		m_writer->write(value.getVectorArray(), sizeof(Vector4) * value.getArrayLength());
 		break;
 	case ShaderVariableType_Matrix:
-		m_writer->Write(&value.GetMatrix(), sizeof(Matrix));
+		m_writer->write(&value.getMatrix(), sizeof(Matrix));
 		break;
 	case ShaderVariableType_MatrixArray:
-		m_writer->WriteUInt8(value.GetArrayLength());
-		m_writer->Write(value.GetMatrixArray(), sizeof(Matrix) * value.GetArrayLength());
+		m_writer->writeUInt8(value.getArrayLength());
+		m_writer->write(value.getMatrixArray(), sizeof(Matrix) * value.getArrayLength());
 		break;
 	case ShaderVariableType_DeviceTexture:
-		m_writer->WriteUInt64((intptr_t)value.GetDeviceTexture());
+		m_writer->writeUInt64((intptr_t)value.getDeviceTexture());
 		break;
 	case ShaderVariableType_ManagedTexture:
-		m_writer->WriteUInt64((intptr_t)((value.GetManagedTexture()) ? value.GetManagedTexture()->ResolveDeviceObject() : nullptr));
+		m_writer->writeUInt64((intptr_t)((value.getManagedTexture()) ? value.getManagedTexture()->resolveDeviceObject() : nullptr));
 		break;
 	default:
 		// TODO: シェーダ変数に値が1度もセットされなかった場合ここに来る。デフォルト値を使うべき？
@@ -580,91 +564,91 @@ void ShaderVariableCommitSerializeHelper::WriteValue(Driver::IShaderVariable* ta
 }
 
 //------------------------------------------------------------------------------
-void* ShaderVariableCommitSerializeHelper::GetSerializeData()
+void* ShaderVariableCommitSerializeHelper::getSerializeData()
 {
-	return m_writerBuffer->GetBuffer();
+	return m_writerBuffer->getBuffer();
 }
 
 //------------------------------------------------------------------------------
-size_t ShaderVariableCommitSerializeHelper::GetSerializeDataLength()
+size_t ShaderVariableCommitSerializeHelper::getSerializeDataLength()
 {
-	return (size_t)m_writerBuffer->GetPosition();
+	return (size_t)m_writerBuffer->getPosition();
 }
 
 //------------------------------------------------------------------------------
-void ShaderVariableCommitSerializeHelper::Deserialize(const void* data, size_t length)
+void ShaderVariableCommitSerializeHelper::deserialize(const void* data, size_t length)
 {
 	const byte_t* raw = (const byte_t*)data;
 	MemoryStream buffer(data, length);
 	BinaryReader reader(&buffer);
 
-	while (!reader.IsEOF())
+	while (!reader.isEOF())
 	{
-		uint8_t type = reader.ReadInt8();
-		Driver::IShaderVariable* variable = (Driver::IShaderVariable*)reader.ReadUInt64();
+		uint8_t type = reader.readInt8();
+		Driver::IShaderVariable* variable = (Driver::IShaderVariable*)reader.readUInt64();
 
 		switch (type)
 		{
 			case ShaderVariableType_Bool:
 			{
-				variable->SetBool(reader.ReadUInt8() != 0);
+				variable->setBool(reader.readUInt8() != 0);
 				break;
 			}
 			case ShaderVariableType_BoolArray:
 			{
-				size_t size = reader.ReadUInt8();
-				variable->SetBoolArray((const bool*)&raw[buffer.GetPosition()], size);
-				reader.Seek(sizeof(bool) * size);
+				size_t size = reader.readUInt8();
+				variable->setBoolArray((const bool*)&raw[buffer.getPosition()], size);
+				reader.seek(sizeof(bool) * size);
 				break;
 			}
 			case ShaderVariableType_Int:
 			{
-				variable->SetInt(reader.ReadInt32());
+				variable->setInt(reader.readInt32());
 				break;
 			}
 			case ShaderVariableType_Float:
 			{
-				variable->SetFloat(reader.ReadFloat());
+				variable->setFloat(reader.readFloat());
 				break;
 			}
 			case ShaderVariableType_FloatArray:
 			{
-				size_t size = reader.ReadUInt8();
-				variable->SetFloatArray((const float*)&raw[buffer.GetPosition()], size);
-				reader.Seek(sizeof(float) * size);
+				size_t size = reader.readUInt8();
+				variable->setFloatArray((const float*)&raw[buffer.getPosition()], size);
+				reader.seek(sizeof(float) * size);
 				break;
 			}
 			case ShaderVariableType_Vector:
 			{
 				Vector4 v;
-				reader.Read(&v, sizeof(Vector4));
-				variable->SetVector(v);
+				reader.read(&v, sizeof(Vector4));
+				variable->setVector(v);
 				break;
 			}
 			case ShaderVariableType_VectorArray:
 			{
-				size_t size = reader.ReadUInt8();
-				variable->SetVectorArray((const Vector4*)&raw[buffer.GetPosition()], size);
-				reader.Seek(sizeof(Vector4) * size);
+				size_t size = reader.readUInt8();
+				variable->setVectorArray((const Vector4*)&raw[buffer.getPosition()], size);
+				reader.seek(sizeof(Vector4) * size);
 				break;
 			}
 			case ShaderVariableType_Matrix:
 			{
 				Matrix v;
-				reader.Read(&v, sizeof(Matrix));
-				variable->SetMatrix(v);
+				reader.read(&v, sizeof(Matrix));
+				variable->setMatrix(v);
 				break;
 			}
 			case ShaderVariableType_MatrixArray:
 			{
-				size_t size = reader.ReadUInt8();
-				variable->SetMatrixArray((const Matrix*)&raw[buffer.GetPosition()], size);
-				reader.Seek(sizeof(Matrix) * size);
+				size_t size = reader.readUInt8();
+				variable->setMatrixArray((const Matrix*)&raw[buffer.getPosition()], size);
+				reader.seek(sizeof(Matrix) * size);
 				break;
 			}
 			case ShaderVariableType_DeviceTexture:
 			case ShaderVariableType_ManagedTexture:
-				variable->SetTexture((Driver::ITexture*)reader.ReadUInt64());
+				variable->setTexture((Driver::ITexture*)reader.readUInt64());
 				break;
 			default:
 				LN_THROW(0, InvalidOperationException);

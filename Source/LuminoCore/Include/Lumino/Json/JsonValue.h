@@ -37,8 +37,8 @@ public:
 	JsonValue& operator=(const JsonValue& obj);
 
 public:
-	JsonType GetType()  const { return m_type; }
-	bool IsNull()   const { return m_type == JsonType::Null; }
+	JsonType getType()  const { return m_type; }
+	bool isNull()   const { return m_type == JsonType::Null; }
 	bool IsBool()   const { return m_type == JsonType::Bool; }
 	bool IsDouble() const { return m_type == JsonType::Double; }
 	bool IsString() const { return m_type == JsonType::String; }
@@ -50,7 +50,7 @@ public:
 	/** @{ */
 
 	/** この値に Null を設定します。*/
-	void SetNull();
+	void setNull();
 
 	/** @} */
 	/*-----------------------------------------------------------------------*/
@@ -58,10 +58,10 @@ public:
 	/** @{ */
 
 	/** この値に Bool 値を設定します。*/
-	void SetBool(bool value);
+	void setBool(bool value);
 
 	/** この値の Bool 値を取得します。*/
-	bool GetBool() const;
+	bool getBool() const;
 
 	/** @} */
 	/*-----------------------------------------------------------------------*/
@@ -69,10 +69,10 @@ public:
 	/** @{ */
 
 	/** この値に Double 値を設定します。*/
-	void SetDouble(double value);
+	void setDouble(double value);
 
 	/** この値の Double 値を取得します。*/
-	double GetDouble() const;
+	double getDouble() const;
 
 	/** @} */
 	/*-----------------------------------------------------------------------*/
@@ -80,10 +80,10 @@ public:
 	/** @{ */
 
 	/** この値に文字列を設定します。*/
-	void SetString(const String& str);
+	void setString(const String& str);
 
 	/** この値の文字列を取得します。*/
-	const String& GetString() const;
+	const String& getString() const;
 
 	/** @} */
 	/*-----------------------------------------------------------------------*/
@@ -91,13 +91,13 @@ public:
 	/** @{ */
 
 	/** この値に空の配列を設定します。*/
-	void SetArray();
+	void setArray();
 
 	/** この配列に含まれている値の数を取得します。*/
-	int GetItemCount() const;
+	int getItemCount() const;
 
 	/** この配列の末尾に要素を追加します。*/
-	void AddItem(const JsonValue& value);
+	void addItem(const JsonValue& value);
 
 	/** 指定したインデックスの要素を取得します。*/
 	JsonValue& operator[](int index);
@@ -109,25 +109,25 @@ public:
 	/** @{ */
 
 	/** この値に空のオブジェクトを設定します。*/
-	void SetObject();
+	void setObject();
 
 	/** このオブジェクトに含まれているメンバの数を取得します。*/
-	int GetMemberCount() const;
+	int getMemberCount() const;
 
 	/** このオブジェクトに新しいメンバを追加します。*/
-	void AddMember(const String& name, const JsonValue& value);
+	void addMember(const String& name, const JsonValue& value);
 
 	/** @} */
 
 private:
-	void Copy(const JsonValue& obj);
-	void Detach();
+	void copy(const JsonValue& obj);
+	void detach();
 
 	friend class JsonDOMHandler;
-	void ResizeValueList(int count) { m_valueList->Resize(count); }
-	JsonValue& GetAtValue(int index) { return m_valueList->GetAt(index); }
-	void ResizeMemberList(int count) { m_memberList->Resize(count); }
-	JsonMember& GetAtMember(int index) { return m_memberList->GetAt(index); }
+	void resizeValueList(int count) { m_valueList->resize(count); }
+	JsonValue& getAtValue(int index) { return m_valueList->getAt(index); }
+	void resizeMemberList(int count) { m_memberList->resize(count); }
+	JsonMember& getAtMember(int index) { return m_memberList->getAt(index); }
 
 private:
 	typedef List<JsonValue>	ValueList;

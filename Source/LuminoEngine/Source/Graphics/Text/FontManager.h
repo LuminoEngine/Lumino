@@ -1,8 +1,5 @@
 ﻿
 #pragma once
-#ifdef LN_OS_WIN32
-#include <Windows.h>
-#endif
 #include <map>
 #include <Lumino/Base/Hash.h>
 #include <Lumino/IO/FileManager.h>
@@ -23,7 +20,6 @@ typedef struct FT_GlyphRec_*  FT_Glyph;
 
 LN_NAMESPACE_BEGIN
 class RawFont;
-class FreeTypeFont;
 
 namespace detail {
 class GraphicsManager;
@@ -35,45 +31,47 @@ class FontManager
 public:
 	FontManager();
 	virtual ~FontManager();
-	void Initialize(FileManager* fileManager, GraphicsManager* graphicsManager);
-	void Finalize();
+	void initialize(FileManager* fileManager, GraphicsManager* graphicsManager);
+	void Dispose();
 
-	GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
+	GraphicsManager* getGraphicsManager() const { return m_graphicsManager; }
 
-	RefPtr<Font> GetDefaultFont() const { return m_defaultFont; }
+	RefPtr<Font> getDefaultFont() const { return m_defaultFont; }
 
 	// フォントファイルを追加する (ttf)
-	void RegisterFontFile(const String& fontFilePath);
+	void registerFontFile(const String& fontFilePath);
 
-	void SetDefaultRawFont(RawFont* font);
-	RawFont* GetDefaultRawFont() const { return m_defaultRawFont; }
+	void setDefaultRawFont(RawFont* font);
+	RawFont* getDefaultRawFont() const { return m_defaultRawFont; }
 
 	// FreeTypeFont で名前が空のときに使われる
-	void SetDefaultFontName(const String& name) { m_defaultFontName = name; }
-	const String& GetDefaultFontName() const { return m_defaultFontName; }
+	void setDefaultFontName(const String& name) { m_defaultFontName = name; }
+	const String& getDefaultFontName() const { return m_defaultFontName; }
 
-	FontPtr GetBuiltinFont(BuiltinFontSize size) const;
+	FontPtr getBuiltinFont(BuiltinFontSize size) const;
 
-	EncodingConverter* GetCharToUTF32Converter() { return &m_charToUTF32Converter; }
-	EncodingConverter* GetWCharToUTF32Converter() { return &m_wcharToUTF32Converter; }
-	EncodingConverter* GetTCharToUTF32Converter() { return &m_TCharToUTF32Converter; }
-	EncodingConverter* GetUTF32ToTCharConverter() { return &m_UTF32ToTCharConverter; }
+	EncodingConverter* getCharToUTF32Converter() { return &m_charToUTF32Converter; }
+	EncodingConverter* getWCharToUTF32Converter() { return &m_wcharToUTF32Converter; }
+	EncodingConverter* getTCharToUTF32Converter() { return &m_TCharToUTF32Converter; }
+	EncodingConverter* getUTF32ToTCharConverter() { return &m_UTF32ToTCharConverter; }
 
-	RawFontPtr LookupRawFont(const detail::FontData& keyData);
+	RawFontPtr lookupRawFont(const detail::FontData& keyData);
 
 LN_INTERNAL_ACCESS:
-	FT_Library GetFTLibrary() const { return m_ftLibrary; }
-	FTC_Manager GetFTCacheManager() const { return m_ftCacheManager; }
-	FTC_CMapCache GetFTCacheMapCache() const { return m_ftCMapCache; }
-	FTC_ImageCache GetFTCImageCache() const { return m_ftImageCache; }
+	void addFontResource_(RawFont* font) { m_fontResourceList.add(font); }
+	void removeFontResource_(RawFont* font) { m_fontResourceList.remove(font); }
+	FT_Library getFTLibrary() const { return m_ftLibrary; }
+	FTC_Manager getFTCacheManager() const { return m_ftCacheManager; }
+	FTC_CMapCache getFTCacheMapCache() const { return m_ftCMapCache; }
+	FTC_ImageCache getFTCImageCache() const { return m_ftImageCache; }
 	//void AddFreeTypeFont(FreeTypeFont* font) { m_freeTypeFontList.Add(font); }
 	//void RemoveFreeTypeFont(FreeTypeFont* font) { m_freeTypeFontList.Remove(font); }
 
 	// キャッシュ検索コールバック
-	FT_Error FaceRequester(FTC_FaceID face_id, FT_Library library, FT_Pointer request_data, FT_Face* aface);
+	FT_Error faceRequester(FTC_FaceID face_id, FT_Library library, FT_Pointer request_data, FT_Face* aface);
 
-	// FaceRequester() の呼び出し元
-	static FT_Error CallbackFaceRequester(FTC_FaceID face_id, FT_Library library, FT_Pointer request_data, FT_Face* aface);
+	// faceRequester() の呼び出し元
+	static FT_Error callbackFaceRequester(FTC_FaceID face_id, FT_Library library, FT_Pointer request_data, FT_Face* aface);
 
 #ifdef LN_OS_WIN32
 	typedef struct TSystemFontData
@@ -87,11 +85,11 @@ LN_INTERNAL_ACCESS:
 	} TSystemFontData;
 
 	/// Windowsに登録されているフォントのバイナリデータを名称から取得
-	TSystemFontData* GetWindowsSystemFontData(LPCTSTR name);
-	unsigned char* LockWindowsSystemFontData(TSystemFontData *fnt, size_t *size, int *index);
-	static void FreeWindowsSystemFontData(TSystemFontData *fnt);
-	static unsigned long StreamIoFunc(FT_Stream stream, unsigned long offset, unsigned char* buffer, unsigned long count);
-	static void StreamCloseFunc(FT_Stream stream);
+	TSystemFontData* getWindowsSystemFontData(LPCTSTR name);
+	unsigned char* lockWindowsSystemFontData(TSystemFontData *fnt, size_t *size, int *index);
+	static void freeWindowsSystemFontData(TSystemFontData *fnt);
+	static unsigned long streamIoFunc(FT_Stream stream, unsigned long offset, unsigned char* buffer, unsigned long count);
+	static void streamCloseFunc(FT_Stream stream);
 #endif
 
 	struct TTFDataEntry
@@ -116,9 +114,10 @@ LN_INTERNAL_ACCESS:
 	GraphicsManager*		m_graphicsManager;
 	RefPtr<CacheManager>	m_rawFontCache;
 	RefPtr<Font>			m_defaultFont;
-	RawFont*				m_defaultRawFont;
+	RefPtr<RawFont>			m_defaultRawFont;
 	String					m_defaultFontName;
 	List<RefPtr<Font>>		m_builtinFontList;
+	List<RawFont*>			m_fontResourceList;
 
 	EncodingConverter		m_charToUTF32Converter;
 	EncodingConverter		m_wcharToUTF32Converter;
@@ -129,15 +128,13 @@ LN_INTERNAL_ACCESS:
 	FTC_Manager				m_ftCacheManager;
 	FTC_CMapCache			m_ftCMapCache;
 	FTC_ImageCache			m_ftImageCache;
-	//List<FreeTypeFont*>		m_freeTypeFontList;
 
-
-	// FaceRequester() で Windows のシステムフォントを拾うための細工。
+	// faceRequester() で Windows のシステムフォントを拾うための細工。
 	// FreeType は FTC_Manager_LookupFace() に渡されたアドレスを直接辞書のキーとする。
 	// (アドレスの中身までは見ない。そのため、文字列をキーにすることはできない)
 	// つまり、faceRequester() にフォント名を伝えることはできない。なので、外部に一度とっておく必要がある。
 	// この変数には、FTC_Manager_LookupFace() の直前でフォント名をセットしておく。
-	// ローカル変数のポインタでよい。FaceRequester() で NULL が格納される。
+	// ローカル変数のポインタでよい。faceRequester() で NULL が格納される。
 	const TCHAR*		m_requesterFaceName;
 
 };

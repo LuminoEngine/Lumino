@@ -22,13 +22,13 @@ UIElementCollection::~UIElementCollection()
 }
 
 //------------------------------------------------------------------------------
-void UIElementCollection::InsertItem(int index, const value_type& item)
+void UIElementCollection::insertItem(int index, const value_type& item)
 {
-	m_newItemsCache.Resize(1);
+	m_newItemsCache.resize(1);
 	m_newItemsCache[0] = item;
-	m_oldItemsCache.Clear();
+	m_oldItemsCache.clear();
 
-	tr::ReflectionObjectList<UIElement*>::InsertItem(index, item);
+	tr::ReflectionObjectList<UIElement*>::insertItem(index, item);
 
 	tr::ChildCollectionChangedArgs e =
 	{
@@ -36,35 +36,35 @@ void UIElementCollection::InsertItem(int index, const value_type& item)
 		m_newItemsCache, index,
 		m_oldItemsCache, 0,
 	};
-	m_owner->OnChildCollectionChanged(e);
-	m_newItemsCache.Clear();
+	m_owner->onChildCollectionChanged(e);
+	m_newItemsCache.clear();
 }
 
 //------------------------------------------------------------------------------
-void UIElementCollection::ClearItems()
+void UIElementCollection::clearItems()
 {
-	m_newItemsCache.Clear();
-	m_oldItemsCache.Clear();
+	m_newItemsCache.clear();
+	m_oldItemsCache.clear();
 
-	tr::ReflectionObjectList<UIElement*>::ClearItems();
+	tr::ReflectionObjectList<UIElement*>::clearItems();
 
 	tr::ChildCollectionChangedArgs e =
 	{
-		tr::NotifyCollectionChangedAction::Reset,
+		tr::NotifyCollectionChangedAction::reset,
 		m_newItemsCache, 0,
 		m_oldItemsCache, 0,
 	};
-	m_owner->OnChildCollectionChanged(e);
+	m_owner->onChildCollectionChanged(e);
 }
 
 //------------------------------------------------------------------------------
-void UIElementCollection::RemoveItem(int index)
+void UIElementCollection::removeItem(int index)
 {
-	m_newItemsCache.Clear();
-	m_oldItemsCache.Resize(1);
-	m_oldItemsCache[0] = GetAt(index);
+	m_newItemsCache.clear();
+	m_oldItemsCache.resize(1);
+	m_oldItemsCache[0] = getAt(index);
 
-	tr::ReflectionObjectList<UIElement*>::RemoveItem(index);
+	tr::ReflectionObjectList<UIElement*>::removeItem(index);
 
 	tr::ChildCollectionChangedArgs e =
 	{
@@ -72,29 +72,29 @@ void UIElementCollection::RemoveItem(int index)
 		m_newItemsCache, 0,
 		m_oldItemsCache, index,
 	};
-	m_owner->OnChildCollectionChanged(e);
-	m_oldItemsCache.Clear();
+	m_owner->onChildCollectionChanged(e);
+	m_oldItemsCache.clear();
 }
 
 //------------------------------------------------------------------------------
-void UIElementCollection::SetItem(int index, const value_type& item)
+void UIElementCollection::setItem(int index, const value_type& item)
 {
-	m_newItemsCache.Resize(1);
+	m_newItemsCache.resize(1);
 	m_newItemsCache[0] = item;
-	m_oldItemsCache.Resize(1);
-	m_oldItemsCache[0] = GetAt(index);
+	m_oldItemsCache.resize(1);
+	m_oldItemsCache[0] = getAt(index);
 
-	tr::ReflectionObjectList<UIElement*>::SetItem(index, item);
+	tr::ReflectionObjectList<UIElement*>::setItem(index, item);
 
 	tr::ChildCollectionChangedArgs e =
 	{
-		tr::NotifyCollectionChangedAction::Replace,
+		tr::NotifyCollectionChangedAction::replace,
 		m_newItemsCache, index,
 		m_oldItemsCache, index,
 	};
-	m_owner->OnChildCollectionChanged(e);
-	m_newItemsCache.Clear();
-	m_oldItemsCache.Clear();
+	m_owner->onChildCollectionChanged(e);
+	m_newItemsCache.clear();
+	m_oldItemsCache.clear();
 }
 
 LN_NAMESPACE_END

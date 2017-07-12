@@ -26,43 +26,43 @@ DX9IndexBuffer::DX9IndexBuffer()
 //------------------------------------------------------------------------------
 DX9IndexBuffer::~DX9IndexBuffer()
 {
-	LN_SAFE_RELEASE(m_indexBuffer);
+	LN_COM_SAFE_RELEASE(m_indexBuffer);
 	LN_SAFE_RELEASE(m_graphicsDevice);
 }
 
 //------------------------------------------------------------------------------
-void DX9IndexBuffer::Create(DX9GraphicsDevice* device, int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage)
+void DX9IndexBuffer::create(DX9GraphicsDevice* device, int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage)
 {
 	LN_REFOBJ_SET(m_graphicsDevice, device);
 	m_format = format;
 	m_indexCount = indexCount;
 	m_indexStride = (m_format == IndexBufferFormat_UInt16) ? 2 : 4;
 
-	OnResetDevice();
+	onResetDevice();
 
 	// data コピー
 	if (initialData)
 	{
 		void* buf;
 		size_t lockedSize;
-		Lock(&buf, &lockedSize);
+		lock(&buf, &lockedSize);
 		memcpy(buf, initialData, m_indexStride * m_indexCount);
-		Unlock();
+		unlock();
 	}
 }
 
 //------------------------------------------------------------------------------
-void DX9IndexBuffer::SetSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes)
+void DX9IndexBuffer::setSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes)
 {
 	byte_t* buf;
 	size_t lockedSize;
-	Lock((void**)&buf, &lockedSize);
+	lock((void**)&buf, &lockedSize);
 	memcpy(buf + offsetBytes, data, std::min(lockedSize - offsetBytes, dataBytes));
-	Unlock();
+	unlock();
 }
 
 //------------------------------------------------------------------------------
-void DX9IndexBuffer::Lock(void** lockedBuffer, size_t* lockedSize)
+void DX9IndexBuffer::lock(void** lockedBuffer, size_t* lockedSize)
 {
 	DWORD flags = 0;
 	if (m_usage == ResourceUsage::Dynamic)
@@ -75,22 +75,22 @@ void DX9IndexBuffer::Lock(void** lockedBuffer, size_t* lockedSize)
 }
 
 //------------------------------------------------------------------------------
-void DX9IndexBuffer::Unlock()
+void DX9IndexBuffer::unlock()
 {
 	LN_COMCALL(m_indexBuffer->Unlock());
 }
 
 //------------------------------------------------------------------------------
-void DX9IndexBuffer::OnLostDevice()
+void DX9IndexBuffer::onLostDevice()
 {
 	if (m_usage == ResourceUsage::Dynamic)
 	{
-		LN_SAFE_RELEASE(m_indexBuffer);
+		LN_COM_SAFE_RELEASE(m_indexBuffer);
 	}
 }
 
 //------------------------------------------------------------------------------
-void DX9IndexBuffer::OnResetDevice()
+void DX9IndexBuffer::onResetDevice()
 {
 	if (m_indexBuffer == nullptr)
 	{
@@ -103,7 +103,7 @@ void DX9IndexBuffer::OnResetDevice()
 		}
 
 		LN_COMCALL(
-			m_graphicsDevice->GetIDirect3DDevice9()->CreateIndexBuffer(
+			m_graphicsDevice->getIDirect3DDevice9()->CreateIndexBuffer(
 				m_indexStride * m_indexCount,
 				dxUsage,
 				(m_format == IndexBufferFormat_UInt16) ? D3DFMT_INDEX16 : D3DFMT_INDEX32,

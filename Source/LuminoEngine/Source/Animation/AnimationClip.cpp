@@ -10,23 +10,23 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
-AnimationClipPtr AnimationClip::Create(const StringRef& filePath)
+AnimationClipPtr AnimationClip::create(const StringRef& filePath)
 {
-	auto stream = FileStream::Create(filePath.GetBegin(), FileOpenMode::Read);
+	auto stream = FileStream::create(filePath.getBegin(), FileOpenMode::read);
 
 	VmdLoader loader;
-	loader.Load(stream);
+	loader.load(stream);
 
-	auto ptr = AnimationClipPtr::MakeRef();
-	for (VmdLoader::BoneAnimation& anim : loader.GetBoneAnimationList())
+	auto ptr = AnimationClipPtr::makeRef();
+	for (VmdLoader::BoneAnimation& anim : loader.getBoneAnimationList())
 	{
-		ptr->AddAnimationCurve(anim.TargetBoneName, anim.AnimationCurve);
+		ptr->addAnimationCurve(anim.TargetBoneName, anim.AnimationCurve);
 	}
-	for (VmdLoader::FaceAnimation& anim : loader.GetFaceAnimationList())
+	for (VmdLoader::FaceAnimation& anim : loader.getFaceAnimationList())
 	{
-		ptr->AddAnimationCurve(anim.TargetFaceName, anim.AnimationCurve);
+		ptr->addAnimationCurve(anim.TargetFaceName, anim.AnimationCurve);
 	}
-	ptr->m_lastFrameTime = loader.GetLastFramePosition();
+	ptr->m_lastFrameTime = loader.getLastFramePosition();
 	return ptr;
 }
 
@@ -43,22 +43,22 @@ AnimationClip::AnimationClip()
 AnimationClip::~AnimationClip()
 {
 	for (AnimationCurveEntry& e : m_animationCurveEntryList) {
-		e.Curve->Release();
+		e.Curve->release();
 	}
 }
 
 //------------------------------------------------------------------------------
-void AnimationClip::AddAnimationCurve(const String& relativePath, AnimationCurve* curve)
+void AnimationClip::addAnimationCurve(const String& relativePath, AnimationCurve* curve)
 {
 	AnimationCurveEntry e;
 	e.RelativePath = relativePath;
 	e.Curve = curve;
 	LN_SAFE_ADDREF(e.Curve);
-	m_animationCurveEntryList.Add(e);
+	m_animationCurveEntryList.add(e);
 }
 
 //------------------------------------------------------------------------------
-//void AnimationClip::SetTime(double oldTime, double newTime)
+//void AnimationClip::getTime(double oldTime, double newTime)
 //{
 //}
 

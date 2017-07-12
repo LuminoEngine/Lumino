@@ -1,19 +1,17 @@
-
+ï»¿
 #pragma once
 #include "UIControl.h"
 
 LN_NAMESPACE_BEGIN
 class UIButton;
 using UIButtonPtr = RefPtr<UIButton>;
+class UITextBlock;
 
-/** ƒ{ƒ^ƒ“‚ÌƒNƒŠƒbƒNƒCƒxƒ“ƒg‚ğ”­¶‚³‚¹‚éƒ^ƒCƒ~ƒ“ƒO‚ğ•\‚µ‚Ü‚·B*/
-enum class ClickMode
+enum class UICheckState
 {
-	/** ƒ{ƒ^ƒ“‚ğ—£‚µ‚½‚Æ‚«‚ÉƒCƒxƒ“ƒg‚ğ”­¶‚³‚¹‚Ü‚·B*/
-	Release,
-
-	/** ƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½‚Æ‚«‚ÉƒCƒxƒ“ƒg‚ğ”­¶‚³‚¹‚Ü‚·B*/
-	Press,
+	Unchecked,
+	Indeterminate,
+	Checked,
 };
 
 /**
@@ -22,33 +20,26 @@ enum class ClickMode
 class UIButtonBase
 	: public UIControl
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
-	void SetText(const StringRef& text);
+	void setText(const StringRef& text);
 
-	/** OnClick ƒCƒxƒ“ƒg‚Ì’Ê’m‚ğó‚¯æ‚éƒR[ƒ‹ƒoƒbƒN‚ğ“o˜^‚µ‚Ü‚·B*/
-	LN_METHOD(Event)
-	EventConnection ConnectOnGotFocus(UIEventHandler handler);
 
 protected:
 
-	/** ƒ{ƒ^ƒ“‚ªƒNƒŠƒbƒN‚³‚ê‚½‚Æ‚«‚ÉŒÄ‚Ño‚³‚ê‚Ü‚·B*/
-	virtual void OnClick(UIEventArgs* e);
 
 	// UIElement interface
-	virtual void OnMouseDown(UIMouseEventArgs* e) override;
-	virtual void OnMouseUp(UIMouseEventArgs* e) override;
+	virtual void onMouseDown(UIMouseEventArgs* e) override;
+	virtual void onMouseUp(UIMouseEventArgs* e) override;
 
 LN_CONSTRUCT_ACCESS:
 	UIButtonBase();
 	virtual ~UIButtonBase();
-	void Initialize();
+	void initialize();
 
 private:
-	ClickMode	m_clickMode;
-	bool		m_isPressed;
+	RefPtr<UITextBlock>	m_textContent;
 
-	UIEventHandler::EventType	m_onClick;
 };
 
 /**
@@ -57,16 +48,16 @@ private:
 class UIButton
 	: public UIButtonBase
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
-	static RefPtr<UIButton> Create();
-	static RefPtr<UIButton> Create(const StringRef& text, float width, float height);
+	static RefPtr<UIButton> create();
+	static RefPtr<UIButton> create(const StringRef& text, float width, float height);
 
 LN_CONSTRUCT_ACCESS:
 	UIButton();
 	virtual ~UIButton();
-	void Initialize();
-	void Initialize(const StringRef& text, float width, float height);
+	void initialize();
+	void initialize(const StringRef& text, float width, float height);
 };
 
 
@@ -76,23 +67,40 @@ LN_CONSTRUCT_ACCESS:
 class UIToggleButton
 	: public UIButtonBase
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 	static const String CheckedState;
 	static const String UncheckedState;
 
-	static RefPtr<UIToggleButton> Create();
+	static RefPtr<UIToggleButton> create();
+
+	void setChecked(bool checked);
+	bool isChecked() const;
+
+	/** Checked ã‚¤ãƒ™ãƒ³ãƒˆã®é€šçŸ¥ã‚’å—ã‘å–ã‚‹ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã‚’ç™»éŒ²ã—ã¾ã™ã€‚*/
+	LN_METHOD(Event)
+	EventConnection connectOnChecked(UIEventHandler handler);
+
+	/** Unchecked ã‚¤ãƒ™ãƒ³ãƒˆã®é€šçŸ¥ã‚’å—ã‘å–ã‚‹ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã‚’ç™»éŒ²ã—ã¾ã™ã€‚*/
+	LN_METHOD(Event)
+	EventConnection connectOnUnchecked(UIEventHandler handler);
 
 protected:
-	virtual void OnClick(UIEventArgs* e);
+	virtual void onClick(UIEventArgs* e);
 
 LN_CONSTRUCT_ACCESS:
 	UIToggleButton();
 	virtual ~UIToggleButton();
-	void Initialize();
+	void initialize();
 
 private:
-	bool	m_isChecked;
+	void checkChanged();
+
+	UICheckState				m_checkState;
+	UIEventHandler::EventType	m_onChecked;
+	UIEventHandler::EventType	m_onUnchecked;
+	//Nullable<bool>			m_isChecked;
+	//UIEventHandler::EventType	m_onIndeterminate; 
 };
 
 LN_NAMESPACE_END

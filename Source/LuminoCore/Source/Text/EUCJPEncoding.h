@@ -14,14 +14,14 @@ public:
 
 public:
 	// override Encoding
-	virtual const TCHAR* GetName() const { return _T("EUC-JP"); }
-	virtual int GetMinByteCount() const { return 1; }
-	virtual int GetMaxByteCount() const { return 3; }
-	virtual Decoder* CreateDecoder() const { return LN_NEW EUCJPDecoder(); }
-	virtual Encoder* CreateEncoder() const { return LN_NEW EUCJPEncoder(); }
-	virtual byte_t* GetPreamble() const { return NULL; }
-	virtual int GetCharacterCount(const void* buffer, size_t bufferSize) const;
-	virtual int GetLeadExtraLength(const void* buffer, size_t bufferSize) const;
+	virtual const TCHAR* getName() const { return _T("EUC-JP"); }
+	virtual int getMinByteCount() const { return 1; }
+	virtual int getMaxByteCount() const { return 3; }
+	virtual Decoder* createDecoder() const { return LN_NEW EUCJPDecoder(); }
+	virtual Encoder* createEncoder() const { return LN_NEW EUCJPEncoder(); }
+	virtual byte_t* getPreamble() const { return NULL; }
+	virtual int getCharacterCount(const void* buffer, size_t bufferSize) const;
+	virtual int getLeadExtraLength(const void* buffer, size_t bufferSize) const;
 
 private:
 
@@ -35,25 +35,25 @@ private:
 		EUCGroup_Unknown,
 	};
 
-	static inline EUCGroup CheckEUCGroup(const byte_t* pos, int len);
+	static inline EUCGroup checkEUCGroup(const byte_t* pos, int len);
 
 private:
 	// Decoder
 	class EUCJPDecoder : public Decoder
 	{
 	public:
-		EUCJPDecoder() { Reset(); }
-		virtual int GetMinByteCount() { return 1; }
-		virtual int GetMaxByteCount() { return 3; }
-		virtual bool CanRemain() { return true; }
-		virtual void ConvertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, size_t* outBytesUsed, size_t* outCharsUsed);
-		virtual int UsedDefaultCharCount() { return mUsedDefaultCharCount; }
-		virtual bool Completed() { return mCompleted; }
-		virtual void Reset() { mUsedDefaultCharCount = 0; mCompleted = false; m_lastLeadBytesCount = 0; m_currentGroup = EUCGroup_Unknown; }
+		EUCJPDecoder() { reset(); }
+		virtual int getMinByteCount() { return 1; }
+		virtual int getMaxByteCount() { return 3; }
+		virtual bool canRemain() { return true; }
+		virtual void convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, size_t* outBytesUsed, size_t* outCharsUsed);
+		virtual int usedDefaultCharCount() { return mUsedDefaultCharCount; }
+		virtual bool completed() { return mCompleted; }
+		virtual void reset() { mUsedDefaultCharCount = 0; mCompleted = false; m_lastLeadBytesCount = 0; m_currentGroup = EUCGroup_Unknown; }
 
 	private:
-		int		mUsedDefaultCharCount;	///< 一連の ConvertToUTF16() の呼び出しの中で、変換できない文字を規定文字に変換した文字数
-		bool	mCompleted;				///< 最後の ConvertToUTF16() で、バッファ末尾でマルチバイト文字が途切れていなければ true
+		int		mUsedDefaultCharCount;	///< 一連の convertToUTF16() の呼び出しの中で、変換できない文字を規定文字に変換した文字数
+		bool	mCompleted;				///< 最後の convertToUTF16() で、バッファ末尾でマルチバイト文字が途切れていなければ true
 
 		byte_t		m_lastLeadBytes[3];
 		int			m_lastLeadBytesCount;
@@ -64,18 +64,18 @@ private:
 	class EUCJPEncoder : public Encoder
 	{
 	public:
-		EUCJPEncoder() { Reset(); }
-		virtual int GetMinByteCount() { return 1; }
-		virtual int GetMaxByteCount() { return 3; }
-		virtual bool CanRemain() { return true; }
-		virtual void ConvertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, size_t* outBytesUsed, size_t* outCharsUsed);
-		virtual int UsedDefaultCharCount() { return mUsedDefaultCharCount; }
-		virtual bool Completed() { return mCompleted; }
-		virtual void Reset() { mUsedDefaultCharCount = 0; mCompleted = false; m_lastBufferCount = 0; }
+		EUCJPEncoder() { reset(); }
+		virtual int getMinByteCount() { return 1; }
+		virtual int getMaxByteCount() { return 3; }
+		virtual bool canRemain() { return true; }
+		virtual void convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, size_t* outBytesUsed, size_t* outCharsUsed);
+		virtual int usedDefaultCharCount() { return mUsedDefaultCharCount; }
+		virtual bool completed() { return mCompleted; }
+		virtual void reset() { mUsedDefaultCharCount = 0; mCompleted = false; m_lastBufferCount = 0; }
 
 	private:
-		int		mUsedDefaultCharCount;	///< 一連の ConvertFromUTF16() の呼び出しの中で、変換できない文字を規定文字に変換した文字数
-		bool	mCompleted;				///< 最後の ConvertFromUTF16() で、バッファ末尾でマルチバイト文字が途切れていなければ true
+		int		mUsedDefaultCharCount;	///< 一連の convertFromUTF16() の呼び出しの中で、変換できない文字を規定文字に変換した文字数
+		bool	mCompleted;				///< 最後の convertFromUTF16() で、バッファ末尾でマルチバイト文字が途切れていなければ true
 		UTF16	m_lastBuffer[2];
 		int		m_lastBufferCount;
 	};

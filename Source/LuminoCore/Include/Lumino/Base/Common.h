@@ -118,8 +118,8 @@
 
 #ifndef LN_CONSTRUCT_ACCESS
 	#define LN_CONSTRUCT_ACCESS \
-		template<class T, typename... TArgs> friend ln::RefPtr<T> ln::NewObject(TArgs&&... args); \
-		template<class T, typename... TArgs> friend void ln::PlacementNewObject(void* ptr, TArgs&&... args); \
+		template<class T, typename... TArgs> friend ln::RefPtr<T> ln::newObject(TArgs&&... args); \
+		template<class T, typename... TArgs> friend void ln::placementNewObject(void* ptr, TArgs&&... args); \
 		protected
 #endif
 
@@ -139,6 +139,12 @@
 #define LN_DISALLOW_COPY_AND_ASSIGN(typeName) \
 	typeName(const typeName&); \
 	void operator=(const typeName&)
+
+// increment COM reference count
+#define LN_COM_SAFE_ADDREF(p)	{ if (p) { (p)->AddRef(); } }
+
+// decrement COM reference count
+#define LN_COM_SAFE_RELEASE(p)	{ if (p) { (p)->Release(); (p)= nullptr; } }
 
 //----------------------------------------------------------------------
 // include

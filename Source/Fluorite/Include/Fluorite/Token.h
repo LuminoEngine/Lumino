@@ -24,14 +24,14 @@ public:
 	TokenGroup GetTokenGroup() const { return m_group; }
 
 	/** トークンの種別。値の意味はプログラム言語ごとに異なる */
-	int GetTokenType() const { return m_tokenType; }
+	int getTokenType() const { return m_tokenType; }
 
-	int GetLength() const { return m_locEnd - m_locBegin; }
+	int getLength() const { return m_locEnd - m_locBegin; }
 	SourceLocation GetBeginLoc() const { return m_locBegin; }
 	SourceLocation GetEndLoc() const { return m_locEnd; }
 
-	const flChar* GetBegin() const;
-	const flChar* GetEnd() const;
+	const flChar* getBegin() const;
+	const flChar* getEnd() const;
 
 	int GetFirstLineNumber() const { return m_firstLineNumber; }
 	int GetFirstColumn() const { return m_firstColumn; }
@@ -39,8 +39,8 @@ public:
 	int GetLastColumn() const { return m_lastColumn; }
 
 	const flChar* GetCStr(InputFile* file) const;	// not null terminator
-	StringA GetString(InputFile* file) const;
-	flString GetString() const;
+	StringA getString(InputFile* file) const;
+	flString getString() const;
 
 
 	/** 文字列が一致するか */
@@ -99,7 +99,7 @@ public:
 	//	StringBuilder sb;
 	//	for (int i = 0; i < GetCount(); ++i)
 	//	{
-	//		if (GetAt(i).IsValid())
+	//		if (GetAt(i).isValid())
 	//		{
 	//			sb.Append(GetAt(i).GetBegin(), GetAt(i).GetLength());
 	//		}
@@ -108,11 +108,11 @@ public:
 	//}
 
 	template <class TPred>
-	int IndexOf(int startIndex, int count, TPred pred) const
+	int indexOf(int startIndex, int count, TPred pred) const
 	{
-		for (int i = startIndex; i < startIndex + count && i < GetCount(); i++)
+		for (int i = startIndex; i < startIndex + count && i < getCount(); i++)
 		{
-			if (pred(GetAt(i))) return i;
+			if (pred(getAt(i))) return i;
 		}
 		return -1;
 	}

@@ -16,23 +16,23 @@ using UIComboBoxPtr = RefPtr<UIComboBox>;
 class UIPopup
 	: public UIElement
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
-	void SetContent(UIElement* element);
+	void setContent(UIElement* element);
 
-	void Open();
+	void open();
 
 protected:
-	virtual Size MeasureOverride(const Size& constraint) override;
-	virtual Size ArrangeOverride(const Size& finalSize) override;
+	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
 
 LN_CONSTRUCT_ACCESS:
 	UIPopup();
 	virtual ~UIPopup();
-	void Initialize();
+	void initialize();
 
 LN_INTERNAL_ACCESS:
-	void UpdateLayoutForInPlacePopup(const Size& viewSize);
+	void updateLayoutForInPlacePopup(const Size& viewSize);
 
 private:
 	RefPtr<UIElement>	m_content;
@@ -45,13 +45,13 @@ private:
 class UIComboBoxItem
 	: public UIContentControl
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
 
 LN_CONSTRUCT_ACCESS :
 	UIComboBoxItem();
 	virtual ~UIComboBoxItem();
-	void Initialize();
+	void initialize();
 };
 
 /**
@@ -60,21 +60,21 @@ LN_CONSTRUCT_ACCESS :
 class UIComboBox
 	: public UIControl
 {
-	LN_TR_REFLECTION_TYPEINFO_DECLARE();
+	LN_OBJECT();
 public:
-	static UIComboBoxPtr Create();
+	static UIComboBoxPtr create();
 
 public:
-	UIComboBoxItemPtr AddTextItem(const String& text);
-	UIComboBoxItemPtr AddItem(UIElement* item);
+	UIComboBoxItemPtr addTextItem(const String& text);
+	UIComboBoxItemPtr addItem(UIElement* item);
 
 protected:
-	virtual void OnMouseDown(UIMouseEventArgs* e) override;
+	virtual void onMouseDown(UIMouseEventArgs* e) override;
 
 LN_CONSTRUCT_ACCESS:
 	UIComboBox();
 	virtual ~UIComboBox();
-	void Initialize();
+	void initialize();
 
 private:
 	RefPtr<UIScrollViewer>	m_scrollViewer;

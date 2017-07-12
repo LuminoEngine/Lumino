@@ -36,12 +36,12 @@ class BtShapeManager
 public:
 	BtShapeManager();
 	~BtShapeManager();
-	void AddShape(CollisionShape* shape);
-	bool IsEmpty() const;
-	btCollisionShape* GetBtCollisionShape();
+	void addShape(CollisionShape* shape);
+	bool isEmpty() const;
+	btCollisionShape* getBtCollisionShape();
 
 private:
-	void Refresh();
+	void refresh();
 
 	RefPtr<CollisionShape>		m_collisionShape;
 	btCompoundShape*			m_btCompoundShape;

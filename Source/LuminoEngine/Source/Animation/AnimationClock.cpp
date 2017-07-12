@@ -11,9 +11,9 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
-RefPtr<AnimationClock> AnimationClock::Create()
+RefPtr<AnimationClock> AnimationClock::create()
 {
-	return ln::NewObject<AnimationClock>();
+	return ln::newObject<AnimationClock>();
 }
 
 //------------------------------------------------------------------------------
@@ -34,32 +34,32 @@ AnimationClock::AnimationClock()
 //}
 
 //------------------------------------------------------------------------------
-void AnimationClock::Start(float startValue, float targetValue, float duration, EasingMode easingMode, const Delegate<void(float)>& setCallback, const Delegate<void(void)>& endCallback)
+void AnimationClock::start(float startValue, float targetValue, float duration, EasingMode easingMode, const Delegate<void(float)>& setCallback, const Delegate<void(void)>& endCallback)
 {
-	auto timeline = FloatEasingAnimationTimeline::Create(targetValue, duration, easingMode);
-	m_timelineInstance = detail::CreateTimelineInstance<float>(timeline, startValue, setCallback, endCallback);
-	AddManager();
+	auto timeline = FloatEasingAnimationTimeline::create(targetValue, duration, easingMode);
+	m_timelineInstance = detail::createTimelineInstance<float>(timeline, startValue, setCallback, endCallback);
+	addManager();
 }
 
 //------------------------------------------------------------------------------
-void AnimationClock::AdvanceTime(float deltaTime)
+void AnimationClock::advanceTime(float deltaTime)
 {
 	if (m_timelineInstance != nullptr)
 	{
-		m_timelineInstance->AdvanceTime(deltaTime);
+		m_timelineInstance->advanceTime(deltaTime);
 	}
 }
 
 //------------------------------------------------------------------------------
-bool AnimationClock::IsFinished() const
+bool AnimationClock::isFinished() const
 {
-	return m_timelineInstance == nullptr || m_timelineInstance->IsFinished();
+	return m_timelineInstance == nullptr || m_timelineInstance->isFinished();
 }
 
 //------------------------------------------------------------------------------
-void AnimationClock::AddManager()
+void AnimationClock::addManager()
 {
-	detail::EngineDomain::GetAnimationManager()->AddAnimationClock(this);
+	detail::EngineDomain::getAnimationManager()->addAnimationClock(this);
 }
 
 
@@ -69,21 +69,21 @@ void AnimationClock::AddManager()
 namespace detail {
 
 //------------------------------------------------------------------------------
-bool AnimationTimelineInstance::IsFinished() const
+bool AnimationTimelineInstance::isFinished() const
 {
-	return m_currentTime >= m_timeline->GetLastTime();
+	return m_currentTime >= m_timeline->getLastTime();
 }
 
 //------------------------------------------------------------------------------
-void AnimationTimelineInstance::AdvanceTime(float deltaTime)
+void AnimationTimelineInstance::advanceTime(float deltaTime)
 {
-	float lastTime = m_timeline->GetLastTime();
+	float lastTime = m_timeline->getLastTime();
 	bool endFrame = (m_currentTime < lastTime && m_currentTime + deltaTime >= lastTime);
 
 	m_currentTime += deltaTime;
-	UpdateTime(0, m_currentTime);
+	updateTime(0, m_currentTime);
 
-	if (endFrame && m_endCallback != nullptr)
+	if (endFrame && !m_endCallback.isEmpty())
 	{
 		m_endCallback();
 	}

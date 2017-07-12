@@ -35,28 +35,36 @@ public:
 	static const float MouseButtonClickTimeout;
 
 public:
-	static UIManager* GetInstance(UIManager* priority = nullptr);
+	static UIManager* getInstance(UIManager* priority = nullptr);
 
 	UIManager();
 	virtual ~UIManager();
 
-	void Initialize(const Settings& settings);
+	void initialize(const Settings& settings);
 	void Finalize();
-	void CreateGameModeMainFrame(World2D* defaultWorld2D, World3D* defaultWorld3D);
+	void createGameModeMainFrame(World2D* defaultWorld2D, World3D* defaultWorld3D);
 	//void CreateWrapModeMainFrame(void* window, World2D* defaultWorld2D, World3D* defaultWorld3D);
-	void ReleaseGameModeMainFrame();
-	EventArgsPool* GetEventArgsPool() const { return m_eventArgsPool; }
-	const RefPtr<Texture2D>& GetDefaultSkinTexture() const { return m_defaultSkinTexture; }
-	UIStyleTable* GetDefaultStyleTable() const { return m_defaultStyleTable; }
-	AnimationManager* GetAnimationManager() const { return m_animationManager; }
-	PlatformManager* GetPlatformManager() const { return m_platformManager; }
-	GraphicsManager* GetGraphicsManager() const { return m_graphicsManager; }
-	AssetsManager* GetAssetsManager() const { return m_assetsManager; }
-	UIMainWindow* GetMainWindow() const { return m_mainWindow; }
+	void releaseGameModeMainFrame();
+	EventArgsPool* getEventArgsPool() const { return m_eventArgsPool; }
+	const RefPtr<Texture2D>& getDefaultSkinTexture() const { return m_defaultSkinTexture; }
+	UIStyleTable* getDefaultStyleTable() const { return m_defaultStyleTable; }
+	AnimationManager* getAnimationManager() const { return m_animationManager; }
+	PlatformManager* getPlatformManager() const { return m_platformManager; }
+	GraphicsManager* getGraphicsManager() const { return m_graphicsManager; }
+	AssetsManager* getAssetsManager() const { return m_assetsManager; }
+	UIMainWindow* getMainWindow() const { return m_mainWindow; }
+
+	void captureMouse(UIElement* element);
+	void releaseMouseCapture(UIElement* element);
+	UIElement* getMouseCapturedElement() const { return m_mouseCapturedElement; }
+
+	const List<UIFrameWindow*>& getWindows() const { return m_windows; }
+	void addFrameWindow(UIFrameWindow* window) { m_windows.add(window); }
+	void removeFrameWindow(UIFrameWindow* window) { m_windows.remove(window); }
 
 private:
-	void CreateGlobalObjects();
-	void MakeDefaultStyle(UIStyleTable* table);
+	void createGlobalObjects();
+	void makeDefaultStyle(UIStyleTable* table);
 
 	EventArgsPool*		m_eventArgsPool;
 	FileManager*		m_fileManager;
@@ -68,6 +76,9 @@ private:
 	UIStyleTable*		m_defaultStyleTable;
 	UIMainWindow*		m_mainWindow;
 	List<RefPtr<UIRoutedCommand>>		m_allGlobalCommands;
+	List<UIFrameWindow*>	m_windows;
+
+	UIElement*				m_mouseCapturedElement;
 };
 
 } // namespace detail

@@ -39,38 +39,38 @@ GLGraphicsDevice::~GLGraphicsDevice()
 }
 
 //------------------------------------------------------------------------------
-void GLGraphicsDevice::Initialize(const ConfigData& configData)
+void GLGraphicsDevice::initialize(const ConfigData& configData)
 {
 	if (LN_CHECK_ARG(configData.mainWindow != nullptr)) return;
 
 	m_mainWindow = configData.mainWindow;
 	m_deviceState = DeviceState_Enabled;
 
-	Logger::WriteLine("GLGraphicsDevice::Initialize");
-	Logger::WriteLine("    Requested OpenGL version : %d.%d", configData.openGLMajorVersion, configData.openGLMinorVersion);
+	Logger::writeLine("GLGraphicsDevice::Initialize");
+	Logger::writeLine("    Requested OpenGL version : %d.%d", configData.openGLMajorVersion, configData.openGLMinorVersion);
 
 	// create main context
-	m_mainContext = InitializeMainContext(configData);
+	m_mainContext = initializeMainContext(configData);
 
 	// Threading: create new rendering context
 	// Immediate: referemce main context
 	if (configData.createSharedRenderingContext)
-		m_mainRenderingContext = CreateContext(m_mainWindow);
+		m_mainRenderingContext = createContext(m_mainWindow);
 	else
 		m_mainRenderingContext = m_mainContext;
 
-	// m_defaultSwapChain->Create() でシェーダとか作るので先にアクティブにしておく
-	MakeCurrentContext(m_mainContext);
+	// m_defaultSwapChain->create() でシェーダとか作るので先にアクティブにしておく
+	makeCurrentContext(m_mainContext);
 
 	// create MainWindow SwapChain
 	RefPtr<GLContext> swapChainContext = m_mainContext;
 	if (configData.createSharedRenderingContext)
-		swapChainContext = CreateContext(m_mainWindow);
-	m_defaultSwapChain = RefPtr<GLSwapChain>::MakeRef();
-	m_defaultSwapChain->Initialize(this, swapChainContext, m_mainWindow);
+		swapChainContext = createContext(m_mainWindow);
+	m_defaultSwapChain = RefPtr<GLSwapChain>::makeRef();
+	m_defaultSwapChain->initialize(this, swapChainContext, m_mainWindow);
 
 	// create Renderer
-	m_renderer = RefPtr<GLRenderer>::MakeRef();
+	m_renderer = RefPtr<GLRenderer>::makeRef();
 }
 
 //------------------------------------------------------------------------------
@@ -79,101 +79,101 @@ void GLGraphicsDevice::Finalize()	// 仮想関数呼び出しが必要なので�
 	ScopedAccessContext lock(this);
 	GraphicsDeviceBase::Finalize();
 
-	m_renderer.SafeRelease();
-	m_defaultSwapChain.SafeRelease();
-	m_mainRenderingContext.SafeRelease();
-	m_mainContext.SafeRelease();
+	m_renderer.safeRelease();
+	m_defaultSwapChain.safeRelease();
+	m_mainRenderingContext.safeRelease();
+	m_mainContext.safeRelease();
 }
 
 //------------------------------------------------------------------------------
-GLContext* GLGraphicsDevice::GetMainContext() const
+GLContext* GLGraphicsDevice::getMainContext() const
 {
 	return m_mainContext;
 }
 
 //------------------------------------------------------------------------------
-GLContext* GLGraphicsDevice::GetMainRenderingContext() const
+GLContext* GLGraphicsDevice::getMainRenderingContext() const
 {
 	return m_mainRenderingContext;
 }
 
 //------------------------------------------------------------------------------
-ISwapChain* GLGraphicsDevice::GetDefaultSwapChain()
+ISwapChain* GLGraphicsDevice::getDefaultSwapChain()
 {
 	return m_defaultSwapChain;
 }
 
 //------------------------------------------------------------------------------
-ISwapChain* GLGraphicsDevice::CreateSwapChain(PlatformWindow* window)
+ISwapChain* GLGraphicsDevice::createSwapChain(PlatformWindow* window)
 {
-	RefPtr<GLContext> context = CreateContext(window);
-	auto ptr = RefPtr<GLSwapChain>::MakeRef();
-	ptr->Initialize(this, context, window);
-	return ptr.DetachMove();
+	RefPtr<GLContext> context = createContext(window);
+	auto ptr = RefPtr<GLSwapChain>::makeRef();
+	ptr->initialize(this, context, window);
+	return ptr.detachMove();
 }
 
 //------------------------------------------------------------------------------
-RefPtr<IVertexDeclaration> GLGraphicsDevice::CreateVertexDeclarationImplement(const VertexElement* elements, int elementsCount)
+RefPtr<IVertexDeclaration> GLGraphicsDevice::createVertexDeclarationImplement(const VertexElement* elements, int elementsCount)
 {
 	RefPtr<GLVertexDeclaration> obj(LN_NEW GLVertexDeclaration(), false);
-	obj->Initialize(elements, elementsCount);
-	return RefPtr<IVertexDeclaration>::StaticCast(obj);
+	obj->initialize(elements, elementsCount);
+	return RefPtr<IVertexDeclaration>::staticCast(obj);
 }
 
 //------------------------------------------------------------------------------
-RefPtr<IVertexBuffer> GLGraphicsDevice::CreateVertexBufferImplement(size_t bufferSize, const void* data, ResourceUsage usage)
+RefPtr<IVertexBuffer> GLGraphicsDevice::createVertexBufferImplement(size_t bufferSize, const void* data, ResourceUsage usage)
 {
 	RefPtr<GLVertexBuffer> obj(LN_NEW GLVertexBuffer(), false);
-	obj->Create(bufferSize, data, usage);
-    return RefPtr<IVertexBuffer>::StaticCast(obj);
+	obj->create(bufferSize, data, usage);
+    return RefPtr<IVertexBuffer>::staticCast(obj);
 }
 
 //------------------------------------------------------------------------------
-RefPtr<IIndexBuffer> GLGraphicsDevice::CreateIndexBufferImplement(int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage)
+RefPtr<IIndexBuffer> GLGraphicsDevice::createIndexBufferImplement(int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage)
 {
 	RefPtr<GLIndexBuffer> obj(LN_NEW GLIndexBuffer(), false);
-    obj->Create(indexCount, initialData, format, usage);
-    return RefPtr<IIndexBuffer>::StaticCast(obj);
+    obj->create(indexCount, initialData, format, usage);
+    return RefPtr<IIndexBuffer>::staticCast(obj);
 }
 
 //------------------------------------------------------------------------------
-RefPtr<ITexture> GLGraphicsDevice::CreateTextureImplement(const SizeI& size, bool mipmap, TextureFormat format, const void* initialData)
+RefPtr<ITexture> GLGraphicsDevice::createTextureImplement(const SizeI& size, bool mipmap, TextureFormat format, const void* initialData)
 {
 	RefPtr<GLTexture> obj(LN_NEW GLTexture(size, format, mipmap), false);
 	if (initialData != nullptr) {
-		obj->SetSubData(PointI(0, 0), initialData, Utils::GetTextureFormatByteCount(format) * size.width * size.height, size);
+		obj->setSubData(PointI(0, 0), initialData, Utils::getTextureFormatByteCount(format) * size.width * size.height, size);
     }
-    return RefPtr<ITexture>::StaticCast(obj);
+    return RefPtr<ITexture>::staticCast(obj);
 }
 
 //------------------------------------------------------------------------------
-RefPtr<ITexture> GLGraphicsDevice::CreateTexture3DImplement(int width, int height, int depth, uint32_t mipLevels, TextureFormat format, ResourceUsage usage, const void* initialData)
+RefPtr<ITexture> GLGraphicsDevice::createTexture3DImplement(int width, int height, int depth, uint32_t mipLevels, TextureFormat format, ResourceUsage usage, const void* initialData)
 {
 	LN_NOTIMPLEMENTED();
 	return nullptr;
 }
 
 //------------------------------------------------------------------------------
-RefPtr<ITexture> GLGraphicsDevice::CreateRenderTargetImplement(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format)
+RefPtr<ITexture> GLGraphicsDevice::ceateRenderTargetImplement(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format)
 {
 	RefPtr<GLRenderTargetTexture> obj(LN_NEW GLRenderTargetTexture(SizeI(width, height), format, mipLevels), false);
-    return RefPtr<ITexture>::StaticCast(obj);
+    return RefPtr<ITexture>::staticCast(obj);
 }
 
 //------------------------------------------------------------------------------
-RefPtr<ITexture> GLGraphicsDevice::CreateDepthBufferImplement(uint32_t width, uint32_t height, TextureFormat format)
+RefPtr<ITexture> GLGraphicsDevice::createDepthBufferImplement(uint32_t width, uint32_t height, TextureFormat format)
 {
 	RefPtr<GLDepthBuffer> obj(LN_NEW GLDepthBuffer(SizeI(width, height), format), false);
-    return RefPtr<ITexture>::StaticCast(obj);
+    return RefPtr<ITexture>::staticCast(obj);
 }
 
 //------------------------------------------------------------------------------
-RefPtr<IShader> GLGraphicsDevice::CreateShaderImplement(const void* textData, size_t size, ShaderCompileResult* result)
+RefPtr<IShader> GLGraphicsDevice::createShaderImplement(const void* textData, size_t size, ShaderCompileResult* result)
 {
 	GLShader* shader = LN_NEW GLShader();
-	shader->Initialize(this, textData, size);
-	result->Level = shader->GetDiag()->level;
-	result->Message = shader->GetDiag()->message;
+	shader->initialize(this, textData, size);
+	result->Level = shader->getDiag()->level;
+	result->Message = shader->getDiag()->message;
 
 	//printf("▼\n");
 
@@ -183,10 +183,10 @@ RefPtr<IShader> GLGraphicsDevice::CreateShaderImplement(const void* textData, si
 
 
 	//if (shader != NULL) {
-	//	AddDeviceResource(shader);
+	//	addDeviceResource(shader);
 	//}
 	/*
-		シェーダを作った直後、Shader の Apply() → DrawPrimitive() → Present() すると、
+		シェーダを作った直後、Shader の apply() → drawPrimitive() → present() すると、
 		glFlush() とか wglMakeCurrent() とかでビジー状態になり、「ディスプレイドライバが応答しません」とか右下からエラー出た。
 		リソースをメインスレッドで作って、描画スレッドで ドライバに描画情報送るときに落ちたと思われるが、ホントの原因は不明。
 		SwapChain を 2 つ作ったりすると何故か正常に動作した。
@@ -198,8 +198,8 @@ RefPtr<IShader> GLGraphicsDevice::CreateShaderImplement(const void* textData, si
 
 		GeForce GTX 560M では正常に動作した。
 	*/
-	//MakeCurrentContext(NULL);
-	//MakeCurrentContext(GetMainContext());
+	//makeCurrentContext(NULL);
+	//makeCurrentContext(getMainContext());
 
 	//printf("▲\n");
 	RefPtr<IShader> obj(shader, false);
@@ -207,33 +207,33 @@ RefPtr<IShader> GLGraphicsDevice::CreateShaderImplement(const void* textData, si
 }
 
 //------------------------------------------------------------------------------
-RefPtr<ISwapChain> GLGraphicsDevice::CreateSwapChainImplement(PlatformWindow* window)
+RefPtr<ISwapChain> GLGraphicsDevice::createSwapChainImplement(PlatformWindow* window)
 {
 	LN_THROW(0, NotImplementedException);
 	return nullptr;
 }
 
 //------------------------------------------------------------------------------
-void GLGraphicsDevice::ResetDevice()
+void GLGraphicsDevice::resetDevice()
 {
-	// 先に OnLostDevice() を呼ぶこと
+	// 先に onLostDevice() を呼ぶこと
 	LN_THROW(m_deviceState == DeviceState_Pausing, InvalidOperationException);
 }
 
 //------------------------------------------------------------------------------
-void GLGraphicsDevice::OnLostDevice()
+void GLGraphicsDevice::onLostDevice()
 {
 	m_deviceState = DeviceState_Pausing;
 }
 
 //------------------------------------------------------------------------------
-void GLGraphicsDevice::OnResetDevice()
+void GLGraphicsDevice::onResetDevice()
 {
 	m_deviceState = DeviceState_Enabled;
 }
 
 //------------------------------------------------------------------------------
-void GLGraphicsDevice::FlushResource()
+void GLGraphicsDevice::flushResource()
 {
 	/*
 		- AMD Radeon(TM) HD8490
@@ -249,7 +249,7 @@ void GLGraphicsDevice::FlushResource()
 }
 
 //------------------------------------------------------------------------------
-void GLGraphicsDevice::ParseGLVersion(int* glMajor, int* glMinor, int* glslMajor, int* glslMinor)
+void GLGraphicsDevice::parseGLVersion(int* glMajor, int* glMinor, int* glslMajor, int* glslMinor)
 {
 	// GL_VERSION の文字列フォーマットは決まっている。
 	// https://www.opengl.org/wiki/GLAPI/glGetString
@@ -270,7 +270,7 @@ void GLGraphicsDevice::ParseGLVersion(int* glMajor, int* glMinor, int* glslMajor
 }
 
 //------------------------------------------------------------------------------
-bool GLGraphicsDevice::ContainsExtensionString(const char* extensionString, const char* str)
+bool GLGraphicsDevice::containsExtensionString(const char* extensionString, const char* str)
 {
 	const char* readPos = extensionString;
 	const char* extensionStringEnd = extensionString + strlen(extensionString);
@@ -300,7 +300,7 @@ bool GLGraphicsDevice::ContainsExtensionString(const char* extensionString, cons
 }
 
 //------------------------------------------------------------------------------
-void GLGraphicsDevice::SelectGLVersion(int requestMajor, int requestMinor)
+void GLGraphicsDevice::selectGLVersion(int requestMajor, int requestMinor)
 {
 	if (requestMajor == 0)
 	{
@@ -312,7 +312,7 @@ void GLGraphicsDevice::SelectGLVersion(int requestMajor, int requestMinor)
 	{
 		// OpenGL バージョンの選択 (最大でも GL_VERSION にする)
 		int glMajor, glMinor, glslMajor, glslMinor;
-		ParseGLVersion(&glMajor, &glMinor, &glslMajor, &glslMinor);
+		parseGLVersion(&glMajor, &glMinor, &glslMajor, &glslMinor);
 		if (requestMajor > glMajor) {
 			m_openGLMajorVersion = glMajor;
 			m_openGLMinorVersion = glMinor;
@@ -327,23 +327,23 @@ void GLGraphicsDevice::SelectGLVersion(int requestMajor, int requestMinor)
 		}
 	}
 
-	Logger::WriteLine("Active OpenGL version : %d.%d", m_openGLMajorVersion, m_openGLMinorVersion);
+	Logger::writeLine("Active OpenGL version : %d.%d", m_openGLMajorVersion, m_openGLMinorVersion);
 }
 
 //------------------------------------------------------------------------------
-void GLGraphicsDevice::AttachRenderingThread()
+void GLGraphicsDevice::attachRenderingThread()
 {
-	MakeCurrentContext(GetMainRenderingContext());
-	GraphicsDeviceBase::AttachRenderingThread();
-	m_renderer->Activate();
+	makeCurrentContext(getMainRenderingContext());
+	GraphicsDeviceBase::attachRenderingThread();
+	m_renderer->activate();
 }
 
 //------------------------------------------------------------------------------
-void GLGraphicsDevice::DetachRenderingThread()
+void GLGraphicsDevice::detachRenderingThread()
 {
 	m_renderer->Deactivate();
-	MakeCurrentContext(nullptr);
-	GraphicsDeviceBase::DetachRenderingThread();
+	makeCurrentContext(nullptr);
+	GraphicsDeviceBase::detachRenderingThread();
 }
 
 } // namespace Driver

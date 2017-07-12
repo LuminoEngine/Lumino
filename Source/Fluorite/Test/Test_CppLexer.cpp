@@ -1,4 +1,4 @@
-#include "TestConfig.h"
+ï»¿#include "TestConfig.h"
 #include <Lumino/Xml/XmlWriter.h>
 #include "../Source/Fluorite/Lexer/CppLexer.h"
 
@@ -18,162 +18,162 @@ protected:
 //------------------------------------------------------------------------------
 TEST_F(Test_CppLexer, Basic)
 {
-	// <Test> ¯•Êq
+	// <Test> è­˜åˆ¥å­
 	{
 		DO_LEX("abc");
-		ASSERT_EQ(2, tokens->GetCount());
-		ASSERT_EQ(TokenGroup::Identifier, tokens->GetAt(0)->GetTokenGroup());
-		ASSERT_EQ(TokenGroup::Eof, tokens->GetAt(1)->GetTokenGroup());
+		ASSERT_EQ(2, tokens->getCount());
+		ASSERT_EQ(TokenGroup::Identifier, tokens->getAt(0)->GetTokenGroup());
+		ASSERT_EQ(TokenGroup::Eof, tokens->getAt(1)->GetTokenGroup());
 	}
-	// <Test> ‹ó”’ (˜A‘±‚·‚é‹ó”’•¶š‚Í1‚Â‚Ìƒg[ƒNƒ“‚É‚Ü‚Æ‚ß‚ç‚ê‚é)
+	// <Test> ç©ºç™½ (é€£ç¶šã™ã‚‹ç©ºç™½æ–‡å­—ã¯1ã¤ã®ãƒˆãƒ¼ã‚¯ãƒ³ã«ã¾ã¨ã‚ã‚‰ã‚Œã‚‹)
 	{
 		DO_LEX(" \t\f\v");
-		ASSERT_EQ(2, tokens->GetCount());
-		ASSERT_EQ(TokenGroup::SpaceSequence, tokens->GetAt(0)->GetTokenGroup());
-		ASSERT_EQ(TokenGroup::Eof, tokens->GetAt(1)->GetTokenGroup());
+		ASSERT_EQ(2, tokens->getCount());
+		ASSERT_EQ(TokenGroup::SpaceSequence, tokens->getAt(0)->GetTokenGroup());
+		ASSERT_EQ(TokenGroup::Eof, tokens->getAt(1)->GetTokenGroup());
 	}
-	// <Test> ‰üs
+	// <Test> æ”¹è¡Œ
 	{
 		DO_LEX("\n\r\r\n");
-		ASSERT_EQ(4, tokens->GetCount());
-		ASSERT_EQ(TokenGroup::NewLine, tokens->GetAt(0)->GetTokenGroup());
-		ASSERT_EQ(TokenGroup::NewLine, tokens->GetAt(1)->GetTokenGroup());
-		ASSERT_EQ(TokenGroup::NewLine, tokens->GetAt(2)->GetTokenGroup());
+		ASSERT_EQ(4, tokens->getCount());
+		ASSERT_EQ(TokenGroup::NewLine, tokens->getAt(0)->GetTokenGroup());
+		ASSERT_EQ(TokenGroup::NewLine, tokens->getAt(1)->GetTokenGroup());
+		ASSERT_EQ(TokenGroup::NewLine, tokens->getAt(2)->GetTokenGroup());
 	}
-	// <Test> ”’lƒŠƒeƒ‰ƒ‹ (ƒTƒtƒBƒbƒNƒX‚È‚µ)
+	// <Test> æ•°å€¤ãƒªãƒ†ãƒ©ãƒ« (ã‚µãƒ•ã‚£ãƒƒã‚¯ã‚¹ãªã—)
 	{
 		DO_LEX("5 0x5 5.0 5.");
-		ASSERT_EQ(8, tokens->GetCount());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->GetAt(0)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Int32, tokens->GetAt(0)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->GetAt(2)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Int32, tokens->GetAt(2)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->GetAt(4)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Double, tokens->GetAt(4)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->GetAt(6)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Double, tokens->GetAt(6)->GetTokenType());
+		ASSERT_EQ(8, tokens->getCount());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(0)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Int32, tokens->getAt(0)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(2)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Int32, tokens->getAt(2)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(4)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Double, tokens->getAt(4)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(6)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Double, tokens->getAt(6)->getTokenType());
 	}
-	// <Test> ®”ƒTƒtƒBƒbƒNƒX‚ÌŠm”F
+	// <Test> æ•´æ•°ã‚µãƒ•ã‚£ãƒƒã‚¯ã‚¹ã®ç¢ºèª
 	{
 		DO_LEX("5u 5U    5l 5L    5ul 5Ul 5uL 5UL    5ll 5LL    5ull 5Ull 5uLL 5uLL");
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->GetAt(0)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt32, tokens->GetAt(0)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->GetAt(2)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt32, tokens->GetAt(2)->GetTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(0)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt32, tokens->getAt(0)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(2)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt32, tokens->getAt(2)->getTokenType());
 
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->GetAt(4)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Int32, tokens->GetAt(4)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->GetAt(6)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Int32, tokens->GetAt(6)->GetTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(4)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Int32, tokens->getAt(4)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(6)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Int32, tokens->getAt(6)->getTokenType());
 
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->GetAt(8)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt32, tokens->GetAt(8)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->GetAt(10)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt32, tokens->GetAt(10)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->GetAt(12)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt32, tokens->GetAt(12)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->GetAt(14)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt32, tokens->GetAt(14)->GetTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(8)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt32, tokens->getAt(8)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(10)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt32, tokens->getAt(10)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(12)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt32, tokens->getAt(12)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(14)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt32, tokens->getAt(14)->getTokenType());
 
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->GetAt(16)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Int64, tokens->GetAt(16)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->GetAt(18)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Int64, tokens->GetAt(18)->GetTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(16)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Int64, tokens->getAt(16)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(18)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Int64, tokens->getAt(18)->getTokenType());
 
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->GetAt(20)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt64, tokens->GetAt(20)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->GetAt(22)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt64, tokens->GetAt(22)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->GetAt(24)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt64, tokens->GetAt(24)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->GetAt(26)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt64, tokens->GetAt(26)->GetTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(20)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt64, tokens->getAt(20)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(22)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt64, tokens->getAt(22)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(24)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt64, tokens->getAt(24)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(26)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_UInt64, tokens->getAt(26)->getTokenType());
 	}
-	// <Test> À”ƒTƒtƒBƒbƒNƒX‚ÌŠm”F
+	// <Test> å®Ÿæ•°ã‚µãƒ•ã‚£ãƒƒã‚¯ã‚¹ã®ç¢ºèª
 	{
 		DO_LEX("5f 5.F 5d 5.D");
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->GetAt(0)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Float, tokens->GetAt(0)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->GetAt(2)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Float, tokens->GetAt(2)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->GetAt(4)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Double, tokens->GetAt(4)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->GetAt(6)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Double, tokens->GetAt(6)->GetTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(0)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Float, tokens->getAt(0)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(2)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Float, tokens->getAt(2)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(4)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Double, tokens->getAt(4)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(6)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Double, tokens->getAt(6)->getTokenType());
 	}
-	// <Test> w”•\‹L
+	// <Test> æŒ‡æ•°è¡¨è¨˜
 	{
 		DO_LEX("5e+03 5e+03F 5.e+03 5.0e+03");
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->GetAt(0)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Double, tokens->GetAt(0)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->GetAt(2)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Float, tokens->GetAt(2)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->GetAt(4)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Double, tokens->GetAt(4)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->GetAt(6)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Double, tokens->GetAt(6)->GetTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(0)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Double, tokens->getAt(0)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(2)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Float, tokens->getAt(2)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(4)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Double, tokens->getAt(4)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(6)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Double, tokens->getAt(6)->getTokenType());
 	}
-	// <Test> •¶šƒŠƒeƒ‰ƒ‹
+	// <Test> æ–‡å­—ãƒªãƒ†ãƒ©ãƒ«
 	{
 		DO_LEX("'a' '\\'' L'\\n'");
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->GetAt(0)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Char, tokens->GetAt(0)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->GetAt(2)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Char, tokens->GetAt(2)->GetTokenType());
-		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->GetAt(4)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_WideChar, tokens->GetAt(4)->GetTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(0)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Char, tokens->getAt(0)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(2)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_Char, tokens->getAt(2)->getTokenType());
+		ASSERT_EQ(TokenGroup::ArithmeticLiteral, tokens->getAt(4)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_WideChar, tokens->getAt(4)->getTokenType());
 	}
 
-	// <Test> •¶š—ñƒŠƒeƒ‰ƒ‹
+	// <Test> æ–‡å­—åˆ—ãƒªãƒ†ãƒ©ãƒ«
 	{
 		DO_LEX("\"a\" \"\\\"\" L\"\"");
-		ASSERT_EQ(TokenGroup::StringLiteral, tokens->GetAt(0)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_AsciiString, tokens->GetAt(0)->GetTokenType());
-		ASSERT_EQ(TokenGroup::StringLiteral, tokens->GetAt(2)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_AsciiString, tokens->GetAt(2)->GetTokenType());
-		ASSERT_EQ(TokenGroup::StringLiteral, tokens->GetAt(4)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_WideString, tokens->GetAt(4)->GetTokenType());
+		ASSERT_EQ(TokenGroup::StringLiteral, tokens->getAt(0)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_AsciiString, tokens->getAt(0)->getTokenType());
+		ASSERT_EQ(TokenGroup::StringLiteral, tokens->getAt(2)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_AsciiString, tokens->getAt(2)->getTokenType());
+		ASSERT_EQ(TokenGroup::StringLiteral, tokens->getAt(4)->GetTokenGroup()); ASSERT_EQ(TT_NumericLitaralType_WideString, tokens->getAt(4)->getTokenType());
 	}
-	// <Test> ƒuƒƒbƒNƒRƒƒ“ƒg
+	// <Test> ãƒ–ãƒ­ãƒƒã‚¯ã‚³ãƒ¡ãƒ³ãƒˆ
 	{
 		DO_LEX("/*a*//**/");
-		ASSERT_EQ(TokenGroup::Comment, tokens->GetAt(0)->GetTokenGroup());
-		ASSERT_EQ(TokenGroup::Comment, tokens->GetAt(1)->GetTokenGroup());
-		ASSERT_EQ(TokenGroup::Eof, tokens->GetAt(2)->GetTokenGroup());
+		ASSERT_EQ(TokenGroup::Comment, tokens->getAt(0)->GetTokenGroup());
+		ASSERT_EQ(TokenGroup::Comment, tokens->getAt(1)->GetTokenGroup());
+		ASSERT_EQ(TokenGroup::Eof, tokens->getAt(2)->GetTokenGroup());
 	}
-	// <Test> sƒRƒƒ“ƒg
+	// <Test> è¡Œã‚³ãƒ¡ãƒ³ãƒˆ
 	{
 		DO_LEX("//\r\n//a\\\na");
-		ASSERT_EQ(TokenGroup::Comment, tokens->GetAt(0)->GetTokenGroup());
-		ASSERT_EQ(TokenGroup::NewLine, tokens->GetAt(1)->GetTokenGroup());	// \r\n
-		ASSERT_EQ(TokenGroup::Comment, tokens->GetAt(2)->GetTokenGroup());	// \ ‚ªs‚ÌI’[‚É‚ ‚é‚Ì‚Å‚Ğ‚Æ‘±‚«
-		ASSERT_EQ(TokenGroup::Eof, tokens->GetAt(3)->GetTokenGroup());
+		ASSERT_EQ(TokenGroup::Comment, tokens->getAt(0)->GetTokenGroup());
+		ASSERT_EQ(TokenGroup::NewLine, tokens->getAt(1)->GetTokenGroup());	// \r\n
+		ASSERT_EQ(TokenGroup::Comment, tokens->getAt(2)->GetTokenGroup());	// \ ãŒè¡Œã®çµ‚ç«¯ã«ã‚ã‚‹ã®ã§ã²ã¨ç¶šã
+		ASSERT_EQ(TokenGroup::Eof, tokens->getAt(3)->GetTokenGroup());
 	}
-	// <Test> ‰‰Zq
+	// <Test> æ¼”ç®—å­
 	{
 		DO_LEX("/ /+++++");
-		ASSERT_EQ(TokenGroup::Operator, tokens->GetAt(0)->GetTokenGroup());
-		ASSERT_EQ(TokenGroup::SpaceSequence, tokens->GetAt(1)->GetTokenGroup());
-		ASSERT_EQ(TokenGroup::Operator, tokens->GetAt(2)->GetTokenGroup());
-		ASSERT_EQ(TokenGroup::Operator, tokens->GetAt(3)->GetTokenGroup());
-		ASSERT_EQ(TokenGroup::Operator, tokens->GetAt(4)->GetTokenGroup());
-		ASSERT_EQ(TokenGroup::Operator, tokens->GetAt(5)->GetTokenGroup());
-		ASSERT_EQ(TokenGroup::Eof, tokens->GetAt(6)->GetTokenGroup());
+		ASSERT_EQ(TokenGroup::Operator, tokens->getAt(0)->GetTokenGroup());
+		ASSERT_EQ(TokenGroup::SpaceSequence, tokens->getAt(1)->GetTokenGroup());
+		ASSERT_EQ(TokenGroup::Operator, tokens->getAt(2)->GetTokenGroup());
+		ASSERT_EQ(TokenGroup::Operator, tokens->getAt(3)->GetTokenGroup());
+		ASSERT_EQ(TokenGroup::Operator, tokens->getAt(4)->GetTokenGroup());
+		ASSERT_EQ(TokenGroup::Operator, tokens->getAt(5)->GetTokenGroup());
+		ASSERT_EQ(TokenGroup::Eof, tokens->getAt(6)->GetTokenGroup());
 	}
-	// <Test> s––ƒGƒXƒP[ƒv
+	// <Test> è¡Œæœ«ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—
 	{
 		DO_LEX("\\\n");
-		ASSERT_EQ(TokenGroup::SpaceSequence, tokens->GetAt(0)->GetTokenGroup()); ASSERT_EQ(TT_EscapeNewLine, tokens->GetAt(0)->GetTokenType());
-		ASSERT_EQ(TokenGroup::Eof, tokens->GetAt(1)->GetTokenGroup());
+		ASSERT_EQ(TokenGroup::SpaceSequence, tokens->getAt(0)->GetTokenGroup()); ASSERT_EQ(TT_EscapeNewLine, tokens->getAt(0)->getTokenType());
+		ASSERT_EQ(TokenGroup::Eof, tokens->getAt(1)->GetTokenGroup());
 	
-		// ƒRƒƒ“ƒgA•¶š—ñ“à‚Ì‚à‚Ì‚ÍƒRƒƒ“ƒgA•¶š—ñ‚Æ‚µ‚Äˆµ‚¤B‚»‚ÌŠO‘¤‚Ì‚à‚Ì‚Í‹ó”’‚Æ‚µ‚Ä‡ˆµ‚¤B
+		// ã‚³ãƒ¡ãƒ³ãƒˆã€æ–‡å­—åˆ—å†…ã®ã‚‚ã®ã¯ã‚³ãƒ¡ãƒ³ãƒˆã€æ–‡å­—åˆ—ã¨ã—ã¦æ‰±ã†ã€‚ãã®å¤–å´ã®ã‚‚ã®ã¯ç©ºç™½ã¨ã—ã¦åˆæ‰±ã†ã€‚
 	}
-	// ƒ}ƒ‹ƒ`ƒoƒCƒg•¶š•À‚Ñ
+	// ãƒãƒ«ãƒãƒã‚¤ãƒˆæ–‡å­—ä¸¦ã³
 	{
 		byte_t buf[] = { 0xE6, 0x95, 0xB0, 0x20, 0xE6, 0x95, 0xB0, 0x00 };
 		DO_LEX((const char*)buf);
-		ASSERT_EQ(TokenGroup::MbsSequence, tokens->GetAt(0)->GetTokenGroup());
-		ASSERT_EQ(TokenGroup::SpaceSequence, tokens->GetAt(1)->GetTokenGroup());
-		ASSERT_EQ(TokenGroup::MbsSequence, tokens->GetAt(2)->GetTokenGroup());
-		ASSERT_EQ(TokenGroup::Eof, tokens->GetAt(3)->GetTokenGroup());
+		ASSERT_EQ(TokenGroup::MbsSequence, tokens->getAt(0)->GetTokenGroup());
+		ASSERT_EQ(TokenGroup::SpaceSequence, tokens->getAt(1)->GetTokenGroup());
+		ASSERT_EQ(TokenGroup::MbsSequence, tokens->getAt(2)->GetTokenGroup());
+		ASSERT_EQ(TokenGroup::Eof, tokens->getAt(3)->GetTokenGroup());
 	}
 
-	// <Test> ƒvƒŠƒvƒƒZƒbƒT
+	// <Test> ãƒ—ãƒªãƒ—ãƒ­ã‚»ãƒƒã‚µ
 	{
 		DO_LEX("#include <stdio.h>");
-		ASSERT_EQ(TokenGroup::Operator, tokens->GetAt(0)->GetTokenGroup());
-		ASSERT_EQ(TokenGroup::Identifier, tokens->GetAt(1)->GetTokenGroup());
-		ASSERT_EQ(TokenGroup::SpaceSequence, tokens->GetAt(2)->GetTokenGroup());
-		ASSERT_EQ(TokenGroup::StringLiteral, tokens->GetAt(3)->GetTokenGroup());
-		ASSERT_EQ(TokenGroup::Eof, tokens->GetAt(4)->GetTokenGroup());
+		ASSERT_EQ(TokenGroup::Operator, tokens->getAt(0)->GetTokenGroup());
+		ASSERT_EQ(TokenGroup::Identifier, tokens->getAt(1)->GetTokenGroup());
+		ASSERT_EQ(TokenGroup::SpaceSequence, tokens->getAt(2)->GetTokenGroup());
+		ASSERT_EQ(TokenGroup::StringLiteral, tokens->getAt(3)->GetTokenGroup());
+		ASSERT_EQ(TokenGroup::Eof, tokens->getAt(4)->GetTokenGroup());
 	}
 	// <Test> #pragma
 	{
 		DO_LEX("#pragma xxx yyy\n");
-		ASSERT_EQ(TokenGroup::Operator, tokens->GetAt(0)->GetTokenGroup());
-		ASSERT_EQ(TokenGroup::Identifier, tokens->GetAt(1)->GetTokenGroup());
-		ASSERT_EQ(TokenGroup::SpaceSequence, tokens->GetAt(2)->GetTokenGroup());
-		ASSERT_EQ(TokenGroup::TextTokens, tokens->GetAt(3)->GetTokenGroup()); ASSERT_EQ(TT_PPTokens, tokens->GetAt(3)->GetTokenType());
-		ASSERT_EQ(TokenGroup::NewLine, tokens->GetAt(4)->GetTokenGroup());
-		ASSERT_EQ(TokenGroup::Eof, tokens->GetAt(5)->GetTokenGroup());
+		ASSERT_EQ(TokenGroup::Operator, tokens->getAt(0)->GetTokenGroup());
+		ASSERT_EQ(TokenGroup::Identifier, tokens->getAt(1)->GetTokenGroup());
+		ASSERT_EQ(TokenGroup::SpaceSequence, tokens->getAt(2)->GetTokenGroup());
+		ASSERT_EQ(TokenGroup::TextTokens, tokens->getAt(3)->GetTokenGroup()); ASSERT_EQ(TT_PPTokens, tokens->getAt(3)->getTokenType());
+		ASSERT_EQ(TokenGroup::NewLine, tokens->getAt(4)->GetTokenGroup());
+		ASSERT_EQ(TokenGroup::Eof, tokens->getAt(5)->GetTokenGroup());
 	}
-	// <Test> ƒL[ƒ[ƒh
+	// <Test> ã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰
 	{
 		DO_LEX("if");
-		ASSERT_EQ(TokenGroup::Keyword, tokens->GetAt(0)->GetTokenGroup());
+		ASSERT_EQ(TokenGroup::Keyword, tokens->getAt(0)->GetTokenGroup());
 	}
-	// <Test> æ“ª‚ª•”•ª“I‚ÉƒL[ƒ[ƒh‚Å‚àŠ¨ˆá‚¢‚µ‚È‚¢‚±‚Æ
+	// <Test> å…ˆé ­ãŒéƒ¨åˆ†çš„ã«ã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰ã§ã‚‚å‹˜é•ã„ã—ãªã„ã“ã¨
 	{
 		DO_LEX("ifdef");
-		ASSERT_EQ(TokenGroup::Identifier, tokens->GetAt(0)->GetTokenGroup());
+		ASSERT_EQ(TokenGroup::Identifier, tokens->getAt(0)->GetTokenGroup());
 	}
 }
 
@@ -181,88 +181,88 @@ TEST_F(Test_CppLexer, Basic)
 TEST_F(Test_CppLexer, Location)
 {
 #define CHECK_LOC(tokenIndex, firstLine, firstCol, lastLine, lastCol) \
-		ASSERT_EQ(firstLine, tokens->GetAt(tokenIndex)->GetFirstLineNumber()); \
-		ASSERT_EQ(firstCol,  tokens->GetAt(tokenIndex)->GetFirstColumn()); \
-		ASSERT_EQ(lastLine,  tokens->GetAt(tokenIndex)->GetLastLineNumber()); \
-		ASSERT_EQ(lastCol,   tokens->GetAt(tokenIndex)->GetLastColumn());
+		ASSERT_EQ(firstLine, tokens->getAt(tokenIndex)->GetFirstLineNumber()); \
+		ASSERT_EQ(firstCol,  tokens->getAt(tokenIndex)->GetFirstColumn()); \
+		ASSERT_EQ(lastLine,  tokens->getAt(tokenIndex)->GetLastLineNumber()); \
+		ASSERT_EQ(lastCol,   tokens->getAt(tokenIndex)->GetLastColumn());
 
-	// <Test> s”Ô†A—ñ”Ô†
+	// <Test> è¡Œç•ªå·ã€åˆ—ç•ªå·
 	{
 		DO_LEX("a\n bb\r\\\nd\r\n ");
-		ASSERT_EQ(10, tokens->GetCount());
-		ASSERT_EQ(TokenGroup::Identifier, tokens->GetAt(0)->GetTokenGroup());	CHECK_LOC(0, 1, 1, 1, 1);	// "a"
-		ASSERT_EQ(TokenGroup::NewLine, tokens->GetAt(1)->GetTokenGroup());		CHECK_LOC(1, 1, 2, 1, 2);	// "\n"
-		ASSERT_EQ(TokenGroup::SpaceSequence, tokens->GetAt(2)->GetTokenGroup());	CHECK_LOC(2, 2, 1, 2, 1);	// " "
-		ASSERT_EQ(TokenGroup::Identifier, tokens->GetAt(3)->GetTokenGroup());	CHECK_LOC(3, 2, 2, 2, 3);	// "bb"
-		ASSERT_EQ(TokenGroup::NewLine, tokens->GetAt(4)->GetTokenGroup());		CHECK_LOC(4, 2, 4, 2, 4);	// "\r"
-		ASSERT_EQ(TokenGroup::SpaceSequence, tokens->GetAt(5)->GetTokenGroup());	CHECK_LOC(5, 3, 1, 3, 2);	// "\\\n"	EscNewLine
-		ASSERT_EQ(TokenGroup::Identifier, tokens->GetAt(6)->GetTokenGroup());	CHECK_LOC(6, 4, 1, 4, 1);	// "d"
-		ASSERT_EQ(TokenGroup::NewLine, tokens->GetAt(7)->GetTokenGroup());		CHECK_LOC(7, 4, 2, 4, 3);	// "\r\n"
-		ASSERT_EQ(TokenGroup::SpaceSequence, tokens->GetAt(8)->GetTokenGroup());	CHECK_LOC(8, 5, 1, 5, 1);	// " "
-		ASSERT_EQ(TokenGroup::Eof, tokens->GetAt(9)->GetTokenGroup());
+		ASSERT_EQ(10, tokens->getCount());
+		ASSERT_EQ(TokenGroup::Identifier, tokens->getAt(0)->GetTokenGroup());	CHECK_LOC(0, 1, 1, 1, 1);	// "a"
+		ASSERT_EQ(TokenGroup::NewLine, tokens->getAt(1)->GetTokenGroup());		CHECK_LOC(1, 1, 2, 1, 2);	// "\n"
+		ASSERT_EQ(TokenGroup::SpaceSequence, tokens->getAt(2)->GetTokenGroup());	CHECK_LOC(2, 2, 1, 2, 1);	// " "
+		ASSERT_EQ(TokenGroup::Identifier, tokens->getAt(3)->GetTokenGroup());	CHECK_LOC(3, 2, 2, 2, 3);	// "bb"
+		ASSERT_EQ(TokenGroup::NewLine, tokens->getAt(4)->GetTokenGroup());		CHECK_LOC(4, 2, 4, 2, 4);	// "\r"
+		ASSERT_EQ(TokenGroup::SpaceSequence, tokens->getAt(5)->GetTokenGroup());	CHECK_LOC(5, 3, 1, 3, 2);	// "\\\n"	EscNewLine
+		ASSERT_EQ(TokenGroup::Identifier, tokens->getAt(6)->GetTokenGroup());	CHECK_LOC(6, 4, 1, 4, 1);	// "d"
+		ASSERT_EQ(TokenGroup::NewLine, tokens->getAt(7)->GetTokenGroup());		CHECK_LOC(7, 4, 2, 4, 3);	// "\r\n"
+		ASSERT_EQ(TokenGroup::SpaceSequence, tokens->getAt(8)->GetTokenGroup());	CHECK_LOC(8, 5, 1, 5, 1);	// " "
+		ASSERT_EQ(TokenGroup::Eof, tokens->getAt(9)->GetTokenGroup());
 }
-	// <Test> s”Ô†A—ñ”Ô† (•¡”sƒRƒƒ“ƒg)
+	// <Test> è¡Œç•ªå·ã€åˆ—ç•ªå· (è¤‡æ•°è¡Œã‚³ãƒ¡ãƒ³ãƒˆ)
 	{
 		DO_LEX("/*a\na*//*\nb\n*/");
-		ASSERT_EQ(3, tokens->GetCount());
-		ASSERT_EQ(TokenGroup::Comment, tokens->GetAt(0)->GetTokenGroup());		CHECK_LOC(0, 1, 1, 2, 3);	// "/*a\na*/"
-		ASSERT_EQ(TokenGroup::Comment, tokens->GetAt(1)->GetTokenGroup());		CHECK_LOC(1, 2, 4, 4, 2);	// "/*\nb\n*/"
+		ASSERT_EQ(3, tokens->getCount());
+		ASSERT_EQ(TokenGroup::Comment, tokens->getAt(0)->GetTokenGroup());		CHECK_LOC(0, 1, 1, 2, 3);	// "/*a\na*/"
+		ASSERT_EQ(TokenGroup::Comment, tokens->getAt(1)->GetTokenGroup());		CHECK_LOC(1, 2, 4, 4, 2);	// "/*\nb\n*/"
 	}
-	// <Test> s”Ô†A—ñ”Ô† (ƒRƒƒ“ƒg“à‚Ì EscapeNewLine)
+	// <Test> è¡Œç•ªå·ã€åˆ—ç•ªå· (ã‚³ãƒ¡ãƒ³ãƒˆå†…ã® EscapeNewLine)
 	{
 		DO_LEX("/*a\\\na*/");
-		ASSERT_EQ(2, tokens->GetCount());
-		ASSERT_EQ(TokenGroup::Comment, tokens->GetAt(0)->GetTokenGroup());		CHECK_LOC(0, 1, 1, 2, 3);
+		ASSERT_EQ(2, tokens->getCount());
+		ASSERT_EQ(TokenGroup::Comment, tokens->getAt(0)->GetTokenGroup());		CHECK_LOC(0, 1, 1, 2, 3);
 	}
-	// <Test> s”Ô†A—ñ”Ô† (ƒRƒƒ“ƒg“à‚Ì EscapeNewLine)
+	// <Test> è¡Œç•ªå·ã€åˆ—ç•ªå· (ã‚³ãƒ¡ãƒ³ãƒˆå†…ã® EscapeNewLine)
 	{
 		DO_LEX("\"a\\\na\"");
-		ASSERT_EQ(2, tokens->GetCount());
-		ASSERT_EQ(TokenGroup::StringLiteral, tokens->GetAt(0)->GetTokenGroup());	CHECK_LOC(0, 1, 1, 2, 2);
+		ASSERT_EQ(2, tokens->getCount());
+		ASSERT_EQ(TokenGroup::StringLiteral, tokens->getAt(0)->GetTokenGroup());	CHECK_LOC(0, 1, 1, 2, 2);
 	}
 }
 
 //------------------------------------------------------------------------------
 TEST_F(Test_CppLexer, Diagnostics)
 {
-	// <Test> ƒuƒƒbƒNƒRƒƒ“ƒg‚Ì“r’†‚ÅEOF
+	// <Test> ãƒ–ãƒ­ãƒƒã‚¯ã‚³ãƒ¡ãƒ³ãƒˆã®é€”ä¸­ã§EOF
 	{
 		DO_LEX("/*");
-		ASSERT_EQ(DiagnosticsCode::UnexpectedEOFInBlockComment, file->GetDiag()->GetItems()->GetLast().GetCode());
+		ASSERT_EQ(DiagnosticsCode::UnexpectedEOFInBlockComment, file->getDiag()->getItems()->getLast().GetCode());
 	}
 }
 
 //------------------------------------------------------------------------------
 TEST_F(Test_CppLexer, Example)
 {
-	// ƒL[ƒ[ƒh‚ğ <b> ‚ÅˆÍ‚ñ‚Å‚İ‚é
+	// ã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰ã‚’ <b> ã§å›²ã‚“ã§ã¿ã‚‹
 	AnalyzerContext ctx;
 	InputFile* file = ctx.RegisterInputFile(LN_LOCALFILE("Test_CppLexer.cpp"));
 	ctx.LexFile(file);
 	const TokenList& tokens = *file->GetTokenList();
 	tr::XmlFileWriter xml("test.html");
-	xml.WriteStartDocument();
-	xml.WriteStartElement(_T("body"));
+	xml.writeStartDocument();
+	xml.writeStartElement(_T("body"));
 	for (Token* t : tokens)
 	{
 		if (t->GetTokenGroup() == TokenGroup::Keyword)
 		{
-			xml.WriteStartElement(_T("b"));
-			StringA str = t->GetString(file);
-			xml.WriteString(String::FromNativeCharString(str.c_str(), str.GetLength()));
-			xml.WriteEndElement();
+			xml.writeStartElement(_T("b"));
+			StringA str = t->getString(file);
+			xml.writeString(String::fromNativeCharString(str.c_str(), str.getLength()));
+			xml.writeEndElement();
 		}
 		else if(t->GetTokenGroup() == TokenGroup::NewLine)
 		{
-			xml.WriteStartElement(_T("br"));
-			xml.WriteEndElement();
+			xml.writeStartElement(_T("br"));
+			xml.writeEndElement();
 		}
 		else
 		{
-			StringA str = t->GetString(file);
-			xml.WriteString(String::FromNativeCharString(str.c_str(), str.GetLength()));
+			StringA str = t->getString(file);
+			xml.writeString(String::fromNativeCharString(str.c_str(), str.getLength()));
 		}
 	}
-	xml.WriteEndElement();
-	xml.WriteEndDocument();
+	xml.writeEndElement();
+	xml.writeEndDocument();
 }

@@ -24,7 +24,7 @@ namespace detail { class ReadWriteMutexImpl; }
 				return m_nValue;
 			}
 
-			void SetValue(int nValue)
+			void setValue(int nValue)
 			{
 				ScopedWriteLock lock(m_RWMutex);
 				m_nValue = nValue;
@@ -47,22 +47,22 @@ public:
 	/**
 		@brief	読み取りロック
 	*/
-	void LockRead();
+	void lockRead();
 
 	/**
 		@brief	読み取りアンロック
 	*/
-	void UnlockRead();
+	void unlockRead();
 
 	/**
 		@brief	書き込みロック
 	*/
-	void LockWrite();
+	void lockWrite();
 
 	/**
 		@brief	書き込みアンロック
 	*/
-	void UnlockWrite();
+	void unlockWrite();
 
 private:
 	LN_DISALLOW_COPY_AND_ASSIGN(ReadWriteMutex);

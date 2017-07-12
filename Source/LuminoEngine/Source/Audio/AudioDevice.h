@@ -34,16 +34,16 @@ public:
 	virtual ~AudioDevice() {}
 
 	// 3Dサウンドリスナーの取得
-	SoundListenerData* GetSoundListenerData() { return &m_soundListenerData; }
+	SoundListenerData* getSoundListenerData() { return &m_soundListenerData; }
 
 	// AudioPlayer を作成する (type に LN_SOUNDPLAYTYPE_AUTO は指定できないので注意)
-	virtual AudioPlayer* CreateAudioPlayer(AudioStream* source, bool enable3d, SoundPlayingMode mode) = 0;
+	virtual AudioPlayer* createAudioPlayer(AudioStream* source, bool enable3d, SoundPlayingMode mode) = 0;
 	
 	// 更新 (更新スレッドから呼ばれる)
-	virtual void Update() = 0;
+	virtual void update() = 0;
 	
 	// 3D 空間の1メートル相当の距離の設定
-	virtual void SetMetreUnitDistance(float d) = 0;
+	virtual void setMetreUnitDistance(float d) = 0;
 
 private:
 	SoundListenerData		m_soundListenerData;

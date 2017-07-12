@@ -16,32 +16,32 @@ UTF8Encoding::UTF8Encoding(bool byteOrderMark)
 }
 
 //------------------------------------------------------------------------------
-byte_t* UTF8Encoding::GetPreamble() const
+byte_t* UTF8Encoding::getPreamble() const
 {
 	static byte_t bom[] = { 0xEF, 0xBB, 0xBF, 0x00 };
 	return bom;
 }
 
 //------------------------------------------------------------------------------
-int UTF8Encoding::GetCharacterCount(const void* buffer, size_t bufferSize) const
+int UTF8Encoding::getCharacterCount(const void* buffer, size_t bufferSize) const
 {
 	int count;
-	UTFConversionResult result = UnicodeUtils::GetUTF8CharCount((const byte_t*)buffer, bufferSize, true, &count);
+	UTFConversionResult result = UnicodeUtils::getUTF8CharCount((const byte_t*)buffer, bufferSize, true, &count);
 	LN_THROW(result == UTFConversionResult_Success, EncodingException);
 	return count;
 }
 
 //------------------------------------------------------------------------------
-int UTF8Encoding::GetLeadExtraLength(const void* buffer, size_t bufferSize) const
+int UTF8Encoding::getLeadExtraLength(const void* buffer, size_t bufferSize) const
 {
 	int len;
-	UTFConversionResult result = UnicodeUtils::CheckUTF8TrailingBytes(((const byte_t*)buffer), ((const byte_t*)buffer) + bufferSize, true, &len);
+	UTFConversionResult result = UnicodeUtils::checkUTF8TrailingBytes(((const byte_t*)buffer), ((const byte_t*)buffer) + bufferSize, true, &len);
 	LN_THROW(result == UTFConversionResult_Success, EncodingException);
 	return len;
 }
 
 //------------------------------------------------------------------------------
-void UTF8Encoding::UTF8Decoder::ConvertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, size_t* outBytesUsed, size_t* outCharsUsed)
+void UTF8Encoding::UTF8Decoder::convertToUTF16(const byte_t* input, size_t inputByteSize, UTF16* output, size_t outputElementSize, size_t* outBytesUsed, size_t* outCharsUsed)
 {
 	*outBytesUsed = 0;
 	*outCharsUsed = 0;
@@ -105,7 +105,7 @@ void UTF8Encoding::UTF8Decoder::ConvertToUTF16(const byte_t* input, size_t input
 		// 先行バイトの確認
 		if (m_requestLeadBytesCount == 0)
 		{
-			UnicodeUtils::CheckUTF8TrailingBytes(srcPos, srcEnd, false, &m_requestLeadBytesCount);
+			UnicodeUtils::checkUTF8TrailingBytes(srcPos, srcEnd, false, &m_requestLeadBytesCount);
 			//m_requestLeadBytesCount++;	// ↓で今回の文字も含めて m_lastLeadBytes に保存したい
 		}
 		
@@ -126,12 +126,12 @@ void UTF8Encoding::UTF8Decoder::ConvertToUTF16(const byte_t* input, size_t input
 			UnicodeUtils::UTF32 ch;
 			const UnicodeUtils::UTF8* start = m_lastLeadBytes;
 			const UnicodeUtils::UTF8* end = start + m_lastLeadBytesCount;
-			result = UnicodeUtils::ConvertCharUTF8toUTF32(&start, end, NULL, &ch);
+			result = UnicodeUtils::convertCharUTF8toUTF32(&start, end, NULL, &ch);
 			LN_THROW(result == UTFConversionResult_Success, EncodingException);
 
 			// UTF32 から UTF16 へ 
 			UTF16* prev = dstPos;
-			result = UnicodeUtils::ConvertCharUTF32toUTF16(ch, &dstPos, dstEnd, &options);
+			result = UnicodeUtils::convertCharUTF32toUTF16(ch, &dstPos, dstEnd, &options);
 			LN_THROW(result == UTFConversionResult_Success, EncodingException);
 
 			bytesUsed += (dstPos - prev)* sizeof(UTF16);
@@ -146,7 +146,7 @@ void UTF8Encoding::UTF8Decoder::ConvertToUTF16(const byte_t* input, size_t input
 	
 	
 	// 変換
-	//UTFConversionResult result = UnicodeUtils::ConvertUTF8toUTF16(
+	//UTFConversionResult result = UnicodeUtils::convertUTF8toUTF16(
 	//	(UnicodeUtils::UTF8*)input, 
 	//	inputByteSize,
 	//	(UnicodeUtils::UTF16*)outBuffer, 
@@ -160,13 +160,13 @@ void UTF8Encoding::UTF8Decoder::ConvertToUTF16(const byte_t* input, size_t input
 }
 
 //------------------------------------------------------------------------------
-//int UTF8Encoding::UTF8Encoder::PollingChar(UTF8 ch, UTF16* outBuffer, size_t outBufferCharCount, size_t* outBytesUsed, size_t* outCharsUsed)
+//int UTF8Encoding::UTF8Encoder::pollingChar(UTF8 ch, UTF16* outBuffer, size_t outBufferCharCount, size_t* outBytesUsed, size_t* outCharsUsed)
 //{
 //	
 //}
 
 //------------------------------------------------------------------------------
-void UTF8Encoding::UTF8Encoder::ConvertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, size_t* outBytesUsed, size_t* outCharsUsed)
+void UTF8Encoding::UTF8Encoder::convertFromUTF16(const UTF16* input, size_t inputElementSize, byte_t* output, size_t outputByteSize, size_t* outBytesUsed, size_t* outCharsUsed)
 {
 	*outCharsUsed = 0;
 	*outBytesUsed = 0;
@@ -184,7 +184,7 @@ void UTF8Encoding::UTF8Encoder::ConvertFromUTF16(const UTF16* input, size_t inpu
 	while (srcPos < srcEnd)
 	{
 		// サロゲートの確認
-		if (UnicodeUtils::CheckUTF16HighSurrogate(*srcPos))
+		if (UnicodeUtils::checkUTF16HighSurrogate(*srcPos))
 		{
 			if (m_lastBufferCount == 0)
 			{
@@ -198,7 +198,7 @@ void UTF8Encoding::UTF8Encoder::ConvertFromUTF16(const UTF16* input, size_t inpu
 		}
 		else
 		{
-			if (UnicodeUtils::CheckUTF16LowSurrogate(*srcPos))
+			if (UnicodeUtils::checkUTF16LowSurrogate(*srcPos))
 			{
 				if (m_lastBufferCount == 1) {
 				}
@@ -225,12 +225,12 @@ void UTF8Encoding::UTF8Encoder::ConvertFromUTF16(const UTF16* input, size_t inpu
 			const UTF16* bufStart = m_lastBuffer;
 			const UTF16* bufEnd = m_lastBuffer + m_lastBufferCount;
 			UnicodeUtils::UTF32 ch;
-			result = UnicodeUtils::ConvertCharUTF16toUTF32(&bufStart, bufEnd, &options, &ch);
+			result = UnicodeUtils::convertCharUTF16toUTF32(&bufStart, bufEnd, &options, &ch);
 			LN_THROW(result == UTFConversionResult_Success, EncodingException);
 
 			// UTF-8 文字へ
 			UTF8* prev = dstPos;
-			result = UnicodeUtils::ConvertCharUTF32toUTF8(ch, &dstPos, dstEnd, &options);
+			result = UnicodeUtils::convertCharUTF32toUTF8(ch, &dstPos, dstEnd, &options);
 			LN_THROW(result == UTFConversionResult_Success, EncodingException);
 
 			m_lastBufferCount = 0;
@@ -248,7 +248,7 @@ void UTF8Encoding::UTF8Encoder::ConvertFromUTF16(const UTF16* input, size_t inpu
 	//options.ReplacementChar = mFallbackReplacementChar;
 	//
 	//// 変換
-	//UTFConversionResult result = UnicodeUtils::ConvertUTF16toUTF8(
+	//UTFConversionResult result = UnicodeUtils::convertUTF16toUTF8(
 	//	(UnicodeUtils::UTF16*)input, 
 	//	inBufferCharCount,
 	//	(UnicodeUtils::UTF8*)output, 

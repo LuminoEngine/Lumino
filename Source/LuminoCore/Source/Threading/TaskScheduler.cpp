@@ -13,7 +13,7 @@ namespace tr
 //==============================================================================
 
 //------------------------------------------------------------------------------
-TaskScheduler* TaskScheduler::GetDefault()
+TaskScheduler* TaskScheduler::getDefault()
 {
 	static TaskScheduler instance(4);
 	return &instance;
@@ -24,58 +24,58 @@ TaskScheduler::TaskScheduler(int threadCount)
 	: m_semaphore(0, INT_MAX)
 	, m_endRequested(false)
 {
-	m_threadList.Reserve(threadCount);
+	m_threadList.reserve(threadCount);
 	for (int i = 0; i < threadCount; ++i)
 	{
 		auto thr = LN_NEW DelegateThread();
-		thr->Start(CreateDelegate(this, &TaskScheduler::ExecuteThread));
-		m_threadList.Add(thr);
+		thr->start(createDelegate(this, &TaskScheduler::executeThread));
+		m_threadList.add(thr);
 	}
 }
 
 //------------------------------------------------------------------------------
 TaskScheduler::~TaskScheduler()
 {
-	m_endRequested.SetTrue();		// 終了要求を出して、
+	m_endRequested.setTrue();		// 終了要求を出して、
 
 	for (auto& thr : m_threadList)	// スレッドの数だけセマフォ増やして全部起こして、
 	{
-		m_semaphore.Unlock();
+		m_semaphore.unlock();
 	}
 	for (auto& thr : m_threadList)	// 全部終わるまで待つ
 	{
-		thr->Wait();
+		thr->wait();
 		LN_SAFE_DELETE(thr);
 	}
 }
 
 //------------------------------------------------------------------------------
-int TaskScheduler::GetMaxConcurrencyLevel() const
+int TaskScheduler::getMaxConcurrencyLevel() const
 {
-	return m_threadList.GetCount();
+	return m_threadList.getCount();
 }
 
 //------------------------------------------------------------------------------
-void TaskScheduler::QueueTask(Task* task)
+void TaskScheduler::queueTask(Task* task)
 {
 	if (LN_CHECK_ARG(task != nullptr)) return;
 
 	MutexScopedLock lock(m_taskQueueLock);
 	m_taskQueue.push_back(task);
-	task->AddRef();
+	task->addRef();
 
-	m_semaphore.Unlock();	// キューに入れたので取り出したい人はどうぞ。
+	m_semaphore.unlock();	// キューに入れたので取り出したい人はどうぞ。
 }
 
 //------------------------------------------------------------------------------
-void TaskScheduler::ExecuteThread()
+void TaskScheduler::executeThread()
 {
 	while (true)
 	{
-		m_semaphore.Lock();	// キューに何か追加されるまで待つ。または終了要求まで。
+		m_semaphore.lock();	// キューに何か追加されるまで待つ。または終了要求まで。
 
 		// 終了要求がきていたらおしまい
-		if (m_endRequested.IsTrue()) {
+		if (m_endRequested.isTrue()) {
 			break;
 		}
 
@@ -88,8 +88,8 @@ void TaskScheduler::ExecuteThread()
 		}
 
 		// 実行。状態変化は内部で行う
-		task->Execute();
-		task->Release();
+		task->execute();
+		task->release();
 	}
 }
 

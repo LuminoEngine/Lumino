@@ -39,8 +39,8 @@ public:
 					(ユーザーA は ユーザーB の "マイドキュメント" フォルダのファイルにアクセスできない)
 					また、パスが空文字や NULL の場合も false を返します。
 	*/
-	static bool ExistsFile(const StringRefA& filePath);
-	static bool ExistsFile(const StringRefW& filePath);
+	static bool existsFile(const StringRefA& filePath);
+	static bool existsFile(const StringRefW& filePath);
 	//template<typename TChar> static bool Exists2(const TChar* filePath);		/**< a */
 	//template<typename TString> static bool Exists2(const TString& filePath);	/**< b */
 
@@ -50,8 +50,8 @@ public:
 		@return		ファイルの属性 (FileAttribute のビットの組み合わせ)
 		@exception	FileNotFoundException	対象にアクセスできなかった。
 	*/
-	static FileAttribute GetAttribute(const char* filePath);
-	static FileAttribute GetAttribute(const wchar_t* filePath);
+	static FileAttribute getAttribute(const char* filePath);
+	static FileAttribute getAttribute(const wchar_t* filePath);
 
 	/**
 		@brief		ファイルの属性を設定します。
@@ -60,8 +60,8 @@ public:
 		@details	この関数により変更できる属性は、読み取り属性のみです。(Unix では隠し属性はファイル名で表現されるためです)
 					それ以外のフラグビットは無視されます。
 	*/
-	static void SetAttribute(const char* filePath, FileAttribute attr);
-	static void SetAttribute(const wchar_t* filePath, FileAttribute attr);
+	static void setAttribute(const char* filePath, FileAttribute attr);
+	static void setAttribute(const wchar_t* filePath, FileAttribute attr);
 
 	/**
 		@brief		ファイルをコピーする
@@ -70,44 +70,44 @@ public:
 		@param[in]	overwrite		: コピー先を上書きする場合は true
 		@details	読み取り専用ファイルに上書きすることはできません。
 	*/
-	static void Copy(const char* sourceFileName, const char* destFileName, bool overwrite);
-	static void Copy(const wchar_t* sourceFileName, const wchar_t* destFileName, bool overwrite);
+	static void copy(const char* sourceFileName, const char* destFileName, bool overwrite);
+	static void copy(const wchar_t* sourceFileName, const wchar_t* destFileName, bool overwrite);
 
 	/**
 		@brief		ファイルを削除する
 		@param[in]	filePath		: 削除するファイルのパス
 		@details	削除するファイルが存在しない場合、例外はスローされません。
 	*/
-	static void Delete(const char* filePath);
-	static void Delete(const wchar_t* filePath);
+	static void deleteFile(const char* filePath);
+	static void deleteFile(const wchar_t* filePath);
 
 	/**
 		@brief		ディレクトリを削除します。
 		@param[in]	path			: 削除するディレクトリのパス
 		@param[in]	recursive		: 
 	*/
-	static void DeleteDirectory(const StringRefA& path, bool recursive) { DeleteDirectoryInternal(path, recursive); }
-	static void DeleteDirectory(const StringRefW& path, bool recursive) { DeleteDirectoryInternal(path, recursive); }
+	static void deleteDirectory(const StringRefA& path, bool recursive) { deleteDirectoryInternal(path, recursive); }
+	static void deleteDirectory(const StringRefW& path, bool recursive) { deleteDirectoryInternal(path, recursive); }
 
 	template<typename TChar>
-	static void DeleteDirectoryInternal(const GenericStringRef<TChar>& path, bool recursive);
+	static void deleteDirectoryInternal(const GenericStringRef<TChar>& path, bool recursive);
 
 
 	/**
 		@brief		
 		@param[in]	overwrite		: コピー先のファイルとディレクトリを上書きする場合は true
 	*/
-	static void CopyDirectory(const GenericStringRef<char>& srcPath, const GenericStringRef<char>& destPath, bool overwrite, bool recursive)
+	static void copyDirectory(const GenericStringRef<char>& srcPath, const GenericStringRef<char>& destPath, bool overwrite, bool recursive)
 	{
-		CopyDirectoryInternal(srcPath, destPath, overwrite, recursive);
+		copyDirectoryInternal(srcPath, destPath, overwrite, recursive);
 	}
-	static void CopyDirectory(const GenericStringRef<wchar_t>& srcPath, const GenericStringRef<wchar_t>& destPath, bool overwrite, bool recursive)
+	static void copyDirectory(const GenericStringRef<wchar_t>& srcPath, const GenericStringRef<wchar_t>& destPath, bool overwrite, bool recursive)
 	{
-		CopyDirectoryInternal(srcPath, destPath, overwrite, recursive);
+		copyDirectoryInternal(srcPath, destPath, overwrite, recursive);
 	}
 
 	template<typename TChar>
-	static void CopyDirectoryInternal(const GenericStringRef<TChar>& srcPath, const GenericStringRef<TChar>& destPath, bool overwrite, bool recursive);
+	static void copyDirectoryInternal(const GenericStringRef<TChar>& srcPath, const GenericStringRef<TChar>& destPath, bool overwrite, bool recursive);
 
 
 
@@ -121,14 +121,14 @@ public:
 
 	
 	/// ファイルサイズを取得する
-	static uint64_t GetFileSize(const TCHAR* filePath);
+	static uint64_t getFileSize(const TCHAR* filePath);
 
 	/// ファイルサイズを取得する
-	static uint64_t GetFileSize(FILE* stream);
+	static uint64_t getFileSize(FILE* stream);
 
 	/// ファイルの内容をすべて読み込む (バイナリ形式)
-	static ByteBuffer ReadAllBytes(const StringRefA& filePath);
-	static ByteBuffer ReadAllBytes(const StringRefW& filePath);
+	static ByteBuffer readAllBytes(const StringRefA& filePath);
+	static ByteBuffer readAllBytes(const StringRefW& filePath);
 
 	/// 
 	/// encoding 省略時は UTF8(BOM 無し)
@@ -140,14 +140,14 @@ public:
 		@details	encoding が nullptr である場合、UTF8 テキストとして読み込みます。
 					BOM の有無は自動判別します。
 	*/
-	static String ReadAllText(const StringRef& filePath, const Encoding* encoding = nullptr);
+	static String readAllText(const StringRef& filePath, const Encoding* encoding = nullptr);
 
 	/// 配列の内容をバイナリファイルとして書き出す
-	static void WriteAllBytes(const TCHAR* filePath, const void* buffer, size_t size);
+	static void writeAllBytes(const TCHAR* filePath, const void* buffer, size_t size);
 
 	/// 文字列をテキストファイルとして書き出す
 	/// encoding 省略時は UTF8 (BOM 無し)
-	static void WriteAllText(const TCHAR* filePath, const String& str, const Encoding* encoding = nullptr);
+	static void writeAllText(const TCHAR* filePath, const String& str, const Encoding* encoding = nullptr);
 
 	
 	/**
@@ -155,56 +155,56 @@ public:
 		@param[in]	path	: ディレクトリのパス
 		@return		ディレクトリが存在すれば true。それ以外の場合は false。
 	*/
-	static bool ExistsDirectory(const char* path);
-	static bool ExistsDirectory(const wchar_t* path);
-	template<typename TString> static inline bool ExistsDirectory(const TString& path) { return ExistsDirectory(path.c_str()); }
+	static bool existsDirectory(const char* path);
+	static bool existsDirectory(const wchar_t* path);
+	template<typename TString> static inline bool existsDirectory(const TString& path) { return existsDirectory(path.c_str()); }
 
 	// TODO: これだけだと FileSystem::ForEachFilesInDirectory<TCHAR>() のように明示的な型指定が必要
 	template<typename TChar, typename TCallback>
-	static void ForEachFilesInDirectory(const GenericStringRef<TChar>& path, TCallback callback);
+	static void forEachFilesInDirectory(const GenericStringRef<TChar>& path, TCallback callback);
 
 #pragma push_macro("CreateDirectory")
-#undef CreateDirectory
+#undef createDirectory
 	/**
 		@brief		ディレクトリを作成します。
 		@param[in]	path	: 作成するディレクトリのパス
 		@details	指定したパスへの全てのディレクトリを作成します。
 					既に存在する場合は作成しません。
 	*/
-	static void CreateDirectory(const char* path);
-	static void CreateDirectory(const wchar_t* path);
+	static void createDirectory(const char* path);
+	static void createDirectory(const wchar_t* path);
 
-	static void LN_AFX_FUNCNAME(CreateDirectory)(const char* path);
-	static void LN_AFX_FUNCNAME(CreateDirectory)(const wchar_t* path);
+	static void LN_AFX_FUNCNAME(createDirectory)(const char* path);
+	static void LN_AFX_FUNCNAME(createDirectory)(const wchar_t* path);
 #pragma pop_macro("CreateDirectory")
 
 
 	/// 現在の位置とデータ(ファイル)サイズ、オフセット、基準(SEEK_xxxx)を受け取って、新しいシーク位置を返す
-	static int64_t CalcSeekPoint(int64_t curPoint, int64_t maxSize, int64_t offset, int origin);
+	static int64_t calcSeekPoint(int64_t curPoint, int64_t maxSize, int64_t offset, int origin);
 	
 	/**
 		@brief		現在の環境のファイルシステムが、パス文字列の大文字と小文字を区別するかを確認します。
 	*/
-	static CaseSensitivity GetFileSystemCaseSensitivity();
+	static CaseSensitivity getFileSystemCaseSensitivity();
 
 private:
 	static bool mkdir(const char* path);
 	static bool mkdir(const wchar_t* path);
-	static bool GetAttributeInternal(const char* path, FileAttribute* outAttr);
-	static bool GetAttributeInternal(const wchar_t* path, FileAttribute* outAttr);
-	template<typename TChar> static void CreateDirectoryInternal(const TChar* path);
+	static bool getAttributeInternal(const char* path, FileAttribute* outAttr);
+	static bool getAttributeInternal(const wchar_t* path, FileAttribute* outAttr);
+	template<typename TChar> static void createDirectoryInternal(const TChar* path);
 };
 
 
 //------------------------------------------------------------------------------
 template<typename TChar, typename TCallback>
-inline void FileSystem::ForEachFilesInDirectory(const GenericStringRef<TChar>& path, TCallback callback)
+inline void FileSystem::forEachFilesInDirectory(const GenericStringRef<TChar>& path, TCallback callback)
 {
 	GenericFileFinder<TChar> finder(path);
-	while (!finder.GetCurrent().IsEmpty())
+	while (!finder.getCurrent().isEmpty())
 	{
-		callback(finder.GetCurrent());
-		finder.Next();
+		callback(finder.getCurrent());
+		finder.next();
 	}
 }
 
