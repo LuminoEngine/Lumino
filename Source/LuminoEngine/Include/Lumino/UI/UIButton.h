@@ -7,16 +7,6 @@ class UIButton;
 using UIButtonPtr = RefPtr<UIButton>;
 class UITextBlock;
 
-/** ボタンのクリックイベントを発生させるタイミングを表します。*/
-enum class ClickMode
-{
-	/** ボタンを離したときにイベントを発生させます。*/
-	Release,
-
-	/** ボタンを押したときにイベントを発生させます。*/
-	Press,
-};
-
 enum class UICheckState
 {
 	Unchecked,
@@ -34,14 +24,9 @@ class UIButtonBase
 public:
 	void setText(const StringRef& text);
 
-	/** onClick イベントの通知を受け取るコールバックを登録します。*/
-	LN_METHOD(Event)
-	EventConnection connectOnGotFocus(UIEventHandler handler);
 
 protected:
 
-	/** ボタンがクリックされたときに呼び出されます。*/
-	virtual void onClick(UIEventArgs* e);
 
 	// UIElement interface
 	virtual void onMouseDown(UIMouseEventArgs* e) override;
@@ -53,11 +38,8 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 private:
-	ClickMode			m_clickMode;
-	bool				m_isPressed;
 	RefPtr<UITextBlock>	m_textContent;
 
-	UIEventHandler::EventType	m_onClick;
 };
 
 /**

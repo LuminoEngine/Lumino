@@ -15,6 +15,8 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIControl, UIElement);
 UIControl::UIControl()
 	: HContentAlignment(HAlignment::Stretch)
 	, VContentAlignment(VAlignment::Stretch)
+	, m_clickMode(ClickMode::Release)
+	, m_isPressed(false)
 {
 }
 
@@ -119,6 +121,18 @@ UILayoutPanel* UIControl::getLayoutPanel() const
 	return m_itemsHostPanel;
 }
 
+//------------------------------------------------------------------------------
+EventConnection UIControl::connectOnClick(UIEventHandler handler)
+{
+	return m_onClick.connect(handler);
+}
+
+//------------------------------------------------------------------------------
+void UIControl::onClick(UIEventArgs* e)
+{
+	m_onClick.raise(e);
+	//raiseEvent(ClickEvent, this, UIEventArgs::create(this));
+}
 
 ////------------------------------------------------------------------------------
 //int UIControl::getVisualChildrenCount() const
@@ -238,6 +252,35 @@ void UIControl::onLostFocus(UIEventArgs* e)
 	UIElement::onLostFocus(e);
 }
 
+//------------------------------------------------------------------------------
+void UIControl::onMouseDown(UIMouseEventArgs* e)
+{
+	if (!m_isPressed)
+	{
+		m_isPressed = true;
+		focus();
+		captureMouse();
+		goToVisualState(UIVisualStates::PressedState);
+		e->handled = true;
+	}
+
+	UIElement::onGotFocus(e);
+}
+
+//------------------------------------------------------------------------------
+void UIControl::onMouseUp(UIMouseEventArgs* e)
+{
+	if (m_isPressed)
+	{
+		m_isPressed = false;
+		releaseMouseCapture();
+		goToVisualState(UIVisualStates::MouseOverState);
+		onClick(e);
+		e->handled = true;
+	}
+
+	UIElement::onGotFocus(e);
+}
 
 //------------------------------------------------------------------------------
 //void UIControl::SetVisualTreeRoot(UIElement* element)

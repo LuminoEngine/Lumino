@@ -1,10 +1,10 @@
 #include <Lumino.h>
 using namespace ln;
 
-LN_SAMPLE_MAIN(HelloWorld)
+LN_SAMPLE_MAIN(Basic, HelloWorld)
 {
 	// Lumino の初期化処理
-	LN_SAMPLE_INITIALIZE;
+	Engine::initialize();
 
 	// 文字列を表示するための TextBlock2D オブジェクトを作成する
 	auto text = TextBlock2D::create(_T("Hello, Lumino!"));
@@ -16,10 +16,10 @@ LN_SAMPLE_MAIN(HelloWorld)
 	text->setPosition(320, 240);
 
 	// メインループ
-	while (LN_SAMPLE_UPDATE)
+	while (Engine::update())
 	{
 	}
 
 	// Lumino の終了処理
-	LN_SAMPLE_TERMINATE;
+	Engine::terminate();
 }

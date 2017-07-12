@@ -1,5 +1,6 @@
 ﻿
 #include <windows.h>
+#include <Lumino/IO/CommandLine.h>
 #include "EntryPoint.h"
 
 //------------------------------------------------------------------------------
@@ -84,6 +85,19 @@ int APIENTRY WinMain(
 	}
 #endif
 
+	{
+		int nArgs = 0;
+		LPWSTR* lplpszArgs = ::CommandLineToArgvW(::GetCommandLineW(), &nArgs);
+
+		for (int i = 0; i < nArgs; i++)
+		{
+			ln::CommandLine::args.add(ln::String::fromNativeCharString(lplpszArgs[i]));
+		}
+
+		::LocalFree(lplpszArgs);
+	}
+
+
 	int r = ln::EntryPoint();
 
 	//SAFE_FREE(argv);
@@ -94,5 +108,10 @@ int APIENTRY WinMain(
 //------------------------------------------------------------------------------
 int main(int argc_, char* argv_[])
 {
+	for (int i = 0; i < argc_; i++)
+	{
+		ln::CommandLine::args.add(ln::String::fromNativeCharString(argv_[i]));
+	}
+
 	return ln::EntryPoint();
 }

@@ -7,6 +7,17 @@ LN_NAMESPACE_BEGIN
 class UIElementCollection;
 class UILayoutPanel;
 
+
+/** ボタンのクリックイベントを発生させるタイミングを表します。*/
+enum class ClickMode
+{
+	/** ボタンを離したときにイベントを発生させます。*/
+	Release,
+
+	/** ボタンを押したときにイベントを発生させます。*/
+	Press,
+};
+
 /**
 	@brief		
 */
@@ -48,6 +59,10 @@ public:
 	UILayoutPanel* getLayoutPanel() const;
 
 
+	/** onClick イベントの通知を受け取るコールバックを登録します。*/
+	LN_METHOD(Event)
+	EventConnection connectOnClick(UIEventHandler handler);
+
 protected:
 	// UIElement interface
 	//virtual int getVisualChildrenCount() const override;
@@ -59,7 +74,11 @@ protected:
 	virtual void onRoutedEvent(UIEventArgs* e) override;
 	virtual void onGotFocus(UIEventArgs* e) override;
 	virtual void onLostFocus(UIEventArgs* e) override;
+	virtual void onMouseDown(UIMouseEventArgs* e) override;
+	virtual void onMouseUp(UIMouseEventArgs* e) override;
 
+	/** ボタンがクリックされたときに呼び出されます。*/
+	virtual void onClick(UIEventArgs* e);
 
 	virtual void onLayoutPanelChanged(UILayoutPanel* newPanel);
 
@@ -85,6 +104,9 @@ private:
 	//bool							m_invalidateItemsHostPanel;
 
 	//UIElement*	m_visualTreeRoot;
+	ClickMode			m_clickMode;
+	bool				m_isPressed;
+	UIEventHandler::EventType	m_onClick;
 };
 
 

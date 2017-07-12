@@ -1,7 +1,7 @@
 #include <Lumino.h>
 using namespace ln;
 
-LN_SAMPLE_MAIN(DebugAndTestSupport)
+LN_SAMPLE_MAIN(Support, DebugAndTestSupport)
 {
 	Engine::getWorld3D()->setVisibleGridPlane(true);
 

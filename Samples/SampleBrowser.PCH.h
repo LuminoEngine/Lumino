@@ -10,15 +10,15 @@ namespace sample {
 
 using SampleMainFunc = void(*)();
 
-SampleMainFunc registerSample(const char* name, SampleMainFunc func);
+SampleMainFunc registerSample(const char* group, const char* caption, SampleMainFunc func);
 
 extern bool g_sceneChanging;
 
 } // namespace sample
 
 
-#define LN_SAMPLE_MAIN(name) \
-	void SampleMain_##name(); \
-	static sample::SampleMainFunc _localSampleMain_##name = sample::registerSample(#name, SampleMain_##name); \
-	void SampleMain_##name()
+#define LN_SAMPLE_MAIN(group, caption) \
+	void SampleMain_##caption(); \
+	static sample::SampleMainFunc _localSampleMain_##caption = sample::registerSample(#group, #caption, SampleMain_##caption); \
+	void SampleMain_##caption()
 

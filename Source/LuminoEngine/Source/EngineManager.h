@@ -140,6 +140,8 @@ public:
 	// UI Skin
 	PathName	defaultSkinFilePath;
 
+	// internal
+	PathName	assetDirecotry;
 
 public:
 	EngineSettings()

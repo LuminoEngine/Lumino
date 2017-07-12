@@ -1,8 +1,11 @@
 #include <Lumino.h>
+#include "Lumino/Testing/TestHelper.h"
+#include "../Source/LuminoEngine/Source/EngineManager.h"
 using namespace ln;
 
 struct SampleInfo
 {
+	String			group;
 	String			caption;
 	sample::SampleMainFunc	mainFunc;
 };
@@ -15,7 +18,7 @@ public:
 	static SampleManager* getInstance();
 
 public:
-	std::vector<SampleInfo>	m_samples;
+	List<SampleInfo>	m_samples;
 };
 
 
@@ -32,12 +35,13 @@ namespace sample {
 bool g_sceneChanging = false;
 
 
-SampleMainFunc registerSample(const char* name, SampleMainFunc func)
+SampleMainFunc registerSample(const char* group, const char* caption, SampleMainFunc func)
 {
 	SampleInfo info;
-	info.caption = String::fromNativeCharString(name);
+	info.group = String::fromNativeCharString(group);
+	info.caption = String::fromNativeCharString(caption);
 	info.mainFunc = func;
-	SampleManager::getInstance()->m_samples.push_back(info);
+	SampleManager::getInstance()->m_samples.add(info);
 	return func;
 }
 
@@ -62,6 +66,26 @@ void closeListWindow()
 
 void Main()
 {
+	//auto& ss = CommandLine::args;
+
+	detail::EngineSettings::instance.assetDirecotry = LN_LOCALFILE("Assets");
+
+	if (CommandLine::args.getCount() == 2)
+	{
+		auto tokens = CommandLine::args[1].split(_T("."));
+		auto* info = SampleManager::getInstance()->m_samples.find([tokens](const SampleInfo& info) { return info.group == tokens[0] && info.caption == tokens[1]; });
+		if (info != nullptr)
+		{
+			info->mainFunc();
+		}
+
+		return;
+	}
+
+
+	String program = CommandLine::args[0];
+
+
 	Engine::initialize();
 
 
@@ -73,9 +97,12 @@ void Main()
 	auto listBox1 = UIListBox::create();
 	listBox1->setWidth(200);
 	//listBox1->margin = ThicknessF(0, 32, 0, 0);
-	for (int i = 0; i < SampleManager::getInstance()->m_samples.size(); i++)
+	for (int i = 0; i < SampleManager::getInstance()->m_samples.getCount(); i++)
 	{
-		listBox1->addTextItem(SampleManager::getInstance()->m_samples[i].caption);
+		auto& info = SampleManager::getInstance()->m_samples[i];
+		String name = info.group + _T(".") + info.caption;
+		UIListBoxItem* item = listBox1->addTextItem(name);
+		item->connectOnClick([program, name](UIEventArgs* e) { Process::execute(program, name); });
 	}
 
 
@@ -87,25 +114,26 @@ void Main()
 	mainWindow->addChild(g_listWindow);
 
 
-	g_pinButton = UIToggleButton::create();
-	g_pinButton->setSize(Size(32, 32));
-	g_pinButton->connectOnChecked([&](UIEventArgs* e) { showListWindow(); });
-	g_pinButton->connectOnUnchecked([&](UIEventArgs* e) { closeListWindow(); });
-	g_pinButton->setBackground(SolidColorBrush::White);
-	mainWindow->addChild(g_pinButton);
+	//g_pinButton = UIToggleButton::create();
+	//g_pinButton->setSize(Size(32, 32));
+	//g_pinButton->connectOnChecked([&](UIEventArgs* e) { showListWindow(); });
+	//g_pinButton->connectOnUnchecked([&](UIEventArgs* e) { closeListWindow(); });
+	//g_pinButton->setBackground(SolidColorBrush::White);
+	//mainWindow->addChild(g_pinButton);
 
 	//g_pinButton->setChecked(false);
-	closeListWindow();
+	//closeListWindow();
 
 	//showListWindow();
 
 
 	Engine::resetFrameDelay();
 
-	while (!Engine::isEndRequested() && g_samplesIndex >= 0)
+	while (Engine::update())
 	{
-		SampleManager::getInstance()->m_samples[g_samplesIndex].mainFunc();
+		//SampleManager::getInstance()->m_samples[g_samplesIndex].mainFunc();
 
+		//Process::execute();
 	}
 
 	Engine::terminate();

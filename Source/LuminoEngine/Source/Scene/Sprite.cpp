@@ -6,6 +6,7 @@
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/Sprite.h>
 #include <Lumino/World.h>
+#include <Lumino/Assets.h>
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
@@ -148,7 +149,7 @@ Sprite2DComponentPtr Sprite2DComponent::create()
 //------------------------------------------------------------------------------
 Sprite2DComponentPtr Sprite2DComponent::create(const StringRef& filePath)
 {
-	auto tex = Texture2D::create(filePath);	// TODO: from asset
+	auto tex = ln::Assets::loadTexture(filePath);
 	return create(tex);
 }
 

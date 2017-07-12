@@ -581,6 +581,11 @@ void EngineManager::initializeAssetsManager()
 	{
 		m_assetsManager = LN_NEW AssetsManager();
 		m_assetsManager->initialize(this);
+
+		if (!m_configData.assetDirecotry.isEmpty())
+		{
+			m_assetsManager->addAssetsDirectory(m_configData.assetDirecotry);
+		}
 	}
 }
 
