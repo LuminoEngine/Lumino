@@ -83,6 +83,7 @@
 #include "Lumino/Scene/TextBlock.h"
 #include "Lumino/Scene/StaticMesh.h"
 #include "Lumino/Scene/TransitionPostEffect.h"
+#include "Lumino/Scene/OffscreenWorldView.h"
 
 #include "Lumino/Framework/Application.h"
 #include "Lumino/Framework/GameScene.h"

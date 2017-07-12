@@ -802,6 +802,7 @@ void CameraViewportLayer2::initialize(World* targetWorld, CameraComponent* hosti
 	//m_mainRenderView->m_lists.add(m_targetWorld->getInsideWorldRenderer()->getDrawElementList());
 	m_mainRenderView->m_lists.add(m_targetWorld->getRenderer()->getDrawElementList());
 	m_mainRenderView->m_lists.add(m_targetWorld->GetDebugRenderer()->getDrawElementList());
+	m_mainRenderView->setSceneRenderer(m_internalRenderer);
 }
 
 //------------------------------------------------------------------------------

@@ -544,6 +544,9 @@ public:
 
 	const ln::Size& getViewSize() const { return m_viewSize; }
 	
+	detail::SceneRenderer* getSceneRenderer() { return m_sceneRenderer; }
+	void setSceneRenderer(detail::SceneRenderer* sr) { m_sceneRenderer = sr; }
+	
 LN_CONSTRUCT_ACCESS:
 	RenderView();
 	virtual ~RenderView();
@@ -553,6 +556,7 @@ LN_INTERNAL_ACCESS:
 
 private:
 	ln::Size    m_viewSize;
+	detail::SceneRenderer*	m_sceneRenderer;
 };
 
 

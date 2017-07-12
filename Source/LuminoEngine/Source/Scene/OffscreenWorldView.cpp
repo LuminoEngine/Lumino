@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.h"
 #include <Lumino/Rendering/RenderingContext.h>
+#include <Lumino/Rendering/SceneRenderer.h>
 #include <Lumino/World.h>
 #include <Lumino/Scene/Camera.h>
 #include <Lumino/Scene/OffscreenWorldView.h>
@@ -134,13 +135,14 @@ void OffscreenWorldView::renderWorld(World* world, RenderView* mainRenderView)
 
 
 
+	mainRenderView->getSceneRenderer()->render(this, m_renderTarget, nullptr, nullptr, true, Color::White);	// TODO: diag
 
 	// user override
 	//OnUpdateRenderViewPoint(m_renderView);
 
 	//DrawList* r = world->getRenderer();
 	//r->renderSubView(this);
-	LN_NOTIMPLEMENTED();
+	//LN_NOTIMPLEMENTED();
 }
 
 //------------------------------------------------------------------------------

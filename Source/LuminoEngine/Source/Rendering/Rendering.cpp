@@ -1822,6 +1822,7 @@ void DrawList::drawFrameRectangle(const Rect& rect)
 //------------------------------------------------------------------------------
 RenderView::RenderView()
 	: m_viewSize()
+	, m_sceneRenderer(nullptr)
 {
 }
 

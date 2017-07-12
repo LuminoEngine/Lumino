@@ -63,6 +63,8 @@ public:
 
 	void addWorldObject(WorldObject* obj, bool autoRelease /*= false*/);
 	void removeWorldObject(WorldObject* obj);
+	void addOffscreenWorldView(OffscreenWorldView* view);
+	void removeOffscreenWorldView(OffscreenWorldView* view);
 protected:
 	//virtual SceneGraph* GetSceneGraph() = 0;
 
@@ -73,8 +75,6 @@ LN_CONSTRUCT_ACCESS:
 
 LN_INTERNAL_ACCESS:
 	//const RefPtr<DrawList>& getInsideWorldRenderer() const { return m_insideWorldRenderer; }
-	void addOffscreenWorldView(OffscreenWorldView* view);
-	void removeOffscreenWorldView(OffscreenWorldView* view);
 	virtual void reginUpdateFrame();
 	virtual void updateFrame(float elapsedTime);
 
