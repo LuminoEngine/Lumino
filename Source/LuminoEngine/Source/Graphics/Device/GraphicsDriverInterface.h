@@ -69,7 +69,7 @@ class IGraphicsDevice
 public:
 
 	/// 終了処理
-	virtual void Finalize() = 0;
+	virtual void dispose() = 0;
 	
 	/// グラフィックスデバイスをライブラリ内部で生成したかを確認する
 	virtual bool isStandalone() const = 0;

@@ -35,7 +35,7 @@ public:
 	void initialize(IDirectInputDevice8* device, HWND hwnd, int xinputNumber, bool forcefeedback);
 
 	/// 解放
-	void Dispose();
+	void dispose();
 
 	/// ジョイパッドの状態を取得する
 	void getJoystickDeviceState(JoystickDeviceState* state);

@@ -35,7 +35,7 @@ public:
 	virtual ~ModelManager();
 
 	void initialize(const ConfigData& configData);
-	void Finalize();
+	void dispose();
 	FileManager* getFileManager() const { return m_fileManager; }
 	detail::PhysicsManager* getPhysicsManager() { return m_physicsManager; }
 	GraphicsManager* getGraphicsManager() { return m_graphicsManager; }

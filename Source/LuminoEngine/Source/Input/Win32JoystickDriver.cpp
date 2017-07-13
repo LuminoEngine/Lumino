@@ -99,14 +99,14 @@ Win32JoystickDriver::Win32JoystickDriver()
 //------------------------------------------------------------------------------
 Win32JoystickDriver::~Win32JoystickDriver()
 {
-	Dispose();
+	dispose();
 }
 
 //------------------------------------------------------------------------------
 void Win32JoystickDriver::initialize( IDirectInputDevice8* device, HWND hwnd, int xinputNumber, bool forcefeedback )
 {
 	XInputModule::initialize();
-	Dispose();
+	dispose();
 
 	mDevice = device;
 	mXInputNo = xinputNumber;
@@ -178,7 +178,7 @@ void Win32JoystickDriver::initialize( IDirectInputDevice8* device, HWND hwnd, in
 }
 
 //------------------------------------------------------------------------------
-void Win32JoystickDriver::Dispose()
+void Win32JoystickDriver::dispose()
 {
     if ( mDeviceEffect )
     {

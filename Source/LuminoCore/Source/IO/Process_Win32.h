@@ -71,7 +71,7 @@ public:
 	ProcessStatus getState();
 	int getExitCode();
 	void TryGetExitCode();
-	void Dispose();
+	void dispose();
 
 private:
 	HANDLE					m_hInputRead;			// 標準出力の読み取り側 (子プロセス側)
@@ -284,7 +284,7 @@ bool ProcessImpl::waitForExit(int timeoutMSec)
 	}
 
 	// いろいろ閉じる
-	Dispose();
+	dispose();
 	return true;
 }
 
@@ -324,7 +324,7 @@ void ProcessImpl::TryGetExitCode()
 }
 
 //------------------------------------------------------------------------------
-void ProcessImpl::Dispose()
+void ProcessImpl::dispose()
 {
 	if (!m_disposed)
 	{

@@ -66,7 +66,7 @@ public:
 	virtual ~EffekseerEffectEngine();
 
 	void initialize(EffectManager* manager, int cacheObjectCount, size_t cacheMemorySize, int maxSpriteCount);
-	void Finalize();
+	void dispose();
 	void SetViewProjection(const Matrix& view, const Matrix& proj);
 	void UpdateRenderContents();
 

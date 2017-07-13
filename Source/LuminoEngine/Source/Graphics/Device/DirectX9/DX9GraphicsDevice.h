@@ -58,7 +58,7 @@ public:
 	const List<IDirect3DTexture9*>& getDummyTextures() const { return m_dummyTextures; }
 
 public:
-	virtual void Finalize() override;
+	virtual void dispose() override;
 	virtual bool isStandalone() const override { return m_direct3D != NULL; }
 	virtual GraphicsAPI getGraphicsAPI() const override { return GraphicsAPI::DirectX9; }
 	virtual ISwapChain* getDefaultSwapChain() override;

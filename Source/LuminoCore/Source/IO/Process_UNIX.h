@@ -28,7 +28,7 @@ public:
 	ProcessStatus getState();
 	int getExitCode();
 	void TryGetExitCode();
-	void Dispose();
+	void dispose();
 	
 private:
 	pid_t   m_pid;
@@ -117,7 +117,7 @@ bool ProcessImpl::waitForExit(int timeoutMSec)
 	if (exit)
 	{
 		// いろいろ閉じる
-		Dispose();
+		dispose();
 	}
 	else {
 		// タイムアウトした
@@ -144,7 +144,7 @@ void ProcessImpl::TryGetExitCode()
 }
 
 //------------------------------------------------------------------------------
-void ProcessImpl::Dispose()
+void ProcessImpl::dispose()
 {
 	if (!m_disposed)
 	{
@@ -215,7 +215,7 @@ void process::TryGetExitCode()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void process::Dispose()
+void process::dispose()
 {
 	if (!m_disposed)
 	{

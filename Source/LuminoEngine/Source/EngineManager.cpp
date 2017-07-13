@@ -214,7 +214,7 @@ EngineManager::~EngineManager()
 
 	if (m_assetsManager != nullptr)
 	{
-		m_assetsManager->Finalize();
+		m_assetsManager->dispose();
 		LN_SAFE_RELEASE(m_assetsManager);
 	}
 
@@ -222,30 +222,33 @@ EngineManager::~EngineManager()
 	{
 		// 先に描画スレッドを終了しておく。
 		// 他モジュールで発行されたコマンドがまだ実行待機中にそのモジュールが解放されるとマズイ。
-		m_graphicsManager->Dispose();
+		m_graphicsManager->dispose();
 	}
 
 	if (m_platformManager != nullptr)
 	{
 		m_platformManager->getMainWindow()->detachEventListener(this);
-		m_platformManager->Dispose();
+		m_platformManager->dispose();
 	}
-	if (m_sceneGraphManager != nullptr) {
+	if (m_sceneGraphManager != nullptr)
+	{
 		m_sceneGraphManager->releaseDefaultSceneGraph();
 		LN_SAFE_RELEASE(m_sceneGraphManager);
 	}
-	if (m_modelManager != nullptr) {
-		m_modelManager->Finalize();
+	if (m_modelManager != nullptr)
+	{
+		m_modelManager->dispose();
 		LN_SAFE_RELEASE(m_modelManager);
 	}
 	if (m_effectManager != nullptr)
 	{
 		m_graphicsManager->removeDeviceResetListener(m_effectManager);
-		m_effectManager->Finalize();
+		m_effectManager->dispose();
 		LN_SAFE_RELEASE(m_effectManager);
 	}
-	if (m_uiManager != nullptr) {
-		m_uiManager->Finalize();
+	if (m_uiManager != nullptr)
+	{
+		m_uiManager->dispose();
 		LN_SAFE_RELEASE(m_uiManager);
 	}
 
@@ -253,17 +256,20 @@ EngineManager::~EngineManager()
 
 	LN_SAFE_RELEASE(m_graphicsManager);
 
-	if (m_physicsManager != nullptr) {
-		m_physicsManager->Finalize();
+	if (m_physicsManager != nullptr)
+	{
+		m_physicsManager->dispose();
 		m_physicsManager.safeRelease();
 		//LN_SAFE_RELEASE(m_physicsManager);
 	}
-	if (m_audioManager != nullptr) {
-		m_audioManager->Finalize();
+	if (m_audioManager != nullptr)
+	{
+		m_audioManager->dispose();
 		LN_SAFE_RELEASE(m_audioManager);
 	}
-	if (m_inputManager != nullptr) {
-		m_inputManager->Finalize();
+	if (m_inputManager != nullptr)
+	{
+		m_inputManager->dispose();
 		LN_SAFE_RELEASE(m_inputManager);
 	}
 

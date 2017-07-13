@@ -290,7 +290,7 @@ void DirectMusicManager::initialize(const ConfigData& configData)
 }
 
 //------------------------------------------------------------------------------
-void DirectMusicManager::Finalize()
+void DirectMusicManager::dispose()
 {
 	LN_SAFE_DELETE(m_instance);
 }

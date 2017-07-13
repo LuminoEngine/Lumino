@@ -56,7 +56,7 @@ public:
 	virtual PlatformWindow* getMainWindow();
 	virtual PlatformWindow* createSubWindow(const WindowCreationSettings& settings);
 	virtual void doEvents();
-	virtual void Finalize();
+	virtual void dispose();
 
 private:
 	RefPtr<Win32PlatformWindow>	m_mainWindow;

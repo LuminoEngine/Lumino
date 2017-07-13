@@ -23,7 +23,7 @@ GraphicsDeviceBase::~GraphicsDeviceBase()
 }
 
 //------------------------------------------------------------------------------
-void GraphicsDeviceBase::Finalize()
+void GraphicsDeviceBase::dispose()
 {
 	MutexScopedLock lock(m_deviceObjectListMutex);
 	for (IDeviceObject* obj : m_deviceObjectList) {

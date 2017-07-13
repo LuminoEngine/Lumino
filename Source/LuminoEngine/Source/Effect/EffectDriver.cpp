@@ -21,7 +21,7 @@ void EffectEngine::initialize(EffectManager* manager, int cacheObjectCount, size
 }
 
 //------------------------------------------------------------------------------
-void EffectEngine::Finalize()
+void EffectEngine::dispose()
 {
 	if (m_effectCoreCache != NULL) {
 		m_effectCoreCache->finalizeCache();

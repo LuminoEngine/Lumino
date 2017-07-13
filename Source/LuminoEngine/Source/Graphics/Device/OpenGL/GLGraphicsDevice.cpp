@@ -35,7 +35,7 @@ GLGraphicsDevice::GLGraphicsDevice()
 //------------------------------------------------------------------------------
 GLGraphicsDevice::~GLGraphicsDevice()
 {
-	LN_ASSERT(m_renderer == nullptr);	// Finalize 済みであること
+	LN_ASSERT(m_renderer == nullptr);	// dispose 済みであること
 }
 
 //------------------------------------------------------------------------------
@@ -74,10 +74,10 @@ void GLGraphicsDevice::initialize(const ConfigData& configData)
 }
 
 //------------------------------------------------------------------------------
-void GLGraphicsDevice::Finalize()	// 仮想関数呼び出しが必要なのでデストラクタとは別に開放用関数を用意した
+void GLGraphicsDevice::dispose()	// 仮想関数呼び出しが必要なのでデストラクタとは別に開放用関数を用意した
 {
 	ScopedAccessContext lock(this);
-	GraphicsDeviceBase::Finalize();
+	GraphicsDeviceBase::dispose();
 
 	m_renderer.safeRelease();
 	m_defaultSwapChain.safeRelease();

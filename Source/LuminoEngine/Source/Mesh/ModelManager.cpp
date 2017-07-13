@@ -267,7 +267,7 @@ void ModelManager::initialize(const ConfigData& configData)
 }
 
 //------------------------------------------------------------------------------
-void ModelManager::Finalize()
+void ModelManager::dispose()
 {
 	for (auto tex : m_mmdDefaultToonTexture)
 	{

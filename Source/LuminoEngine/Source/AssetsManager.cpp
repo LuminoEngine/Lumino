@@ -54,7 +54,7 @@ void AssetsManager::initialize(EngineManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void AssetsManager::Finalize()
+void AssetsManager::dispose()
 {
 	m_textureCache->finalizeCache();
 	//m_shaderCache->finalizeCache();

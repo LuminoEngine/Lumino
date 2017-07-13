@@ -15,7 +15,7 @@ LN_NAMESPACE_BEGIN
 			ただ、この方法だとさらに上のレベルでプラットフォームを考慮した
 			new をしなければならない。(これはファクトリ関数使えばまぁ何とかなるが)
 			さらに、終了処理をデストラクタで行うことができない。
-			「delete する前には必ず Finalize() のような終了処理を呼んでくださいね」になる。
+			「delete する前には必ず dispose() のような終了処理を呼んでくださいね」になる。
 
 			特に、スレッド関数から仮想関数を呼び出している時、デストラクタでスレッド終了待ちなんてことをすると、
 			pre call virtual function とか一見わけわからないエラーが発生する。
@@ -36,7 +36,7 @@ public:
 	virtual PlatformWindow* getMainWindow() = 0;
 	virtual PlatformWindow* createSubWindow(const WindowCreationSettings& settings) = 0;
 	virtual void doEvents() = 0;
-	virtual void Finalize() = 0;
+	virtual void dispose() = 0;
 
 public:
 	void addWindow(PlatformWindow* window) { m_windowArray.add(window); }

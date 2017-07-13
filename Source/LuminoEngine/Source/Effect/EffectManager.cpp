@@ -77,7 +77,7 @@ void EffectManager::initialize(const Settings& settings)
 }
 
 //------------------------------------------------------------------------------
-void EffectManager::Finalize()
+void EffectManager::dispose()
 {
 	if (g_managerInstance == this) {
 		g_managerInstance = nullptr;
@@ -104,7 +104,7 @@ EffectEngine* EffectManager::CreateEffectWorld()
 void EffectManager::ReleaseEffectWorld(EffectEngine* world)
 {
 	assert(world != nullptr);
-	world->Finalize();
+	world->dispose();
 	m_effectWorldList.remove(RefPtr<EffectEngine>(world));
 }
 

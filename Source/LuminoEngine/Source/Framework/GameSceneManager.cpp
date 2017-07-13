@@ -88,7 +88,7 @@ GameSceneManager::~GameSceneManager()
 }
 
 //------------------------------------------------------------------------------
-void GameSceneManager::Finalize()
+void GameSceneManager::dispose()
 {
 	releaseAndTerminateAllRunningScenes();
 }

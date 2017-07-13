@@ -101,7 +101,7 @@ void UIManager::initialize(const Settings& settings)
 }
 
 //------------------------------------------------------------------------------
-void UIManager::Finalize()
+void UIManager::dispose()
 {
 	auto deleteList = m_windows;
 	for (auto& p : deleteList)

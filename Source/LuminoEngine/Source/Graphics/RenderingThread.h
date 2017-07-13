@@ -17,7 +17,7 @@ public:
 
 public:
 	void reset(Driver::IGraphicsDevice* device);
-	void Dispose();
+	void dispose();
 
 	// 指定したコマンドリストの実行を直ちに開始する
 	void pushRenderingCommand(RenderingCommandList* commandList, SwapChain* publisher = nullptr);

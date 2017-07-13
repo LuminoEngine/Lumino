@@ -24,7 +24,7 @@ Win32InputDriver::Win32InputDriver()
 //------------------------------------------------------------------------------
 Win32InputDriver::~Win32InputDriver()
 {
-	Finalize();
+	dispose();
 }
 
 //------------------------------------------------------------------------------
@@ -40,7 +40,7 @@ void Win32InputDriver::initialize(HWND hWnd)
 }
 
 //------------------------------------------------------------------------------
-void Win32InputDriver::Finalize()
+void Win32InputDriver::dispose()
 {
 	releaseDevice();
 	LN_COM_SAFE_RELEASE(m_directInput);

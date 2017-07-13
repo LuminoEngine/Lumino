@@ -7,7 +7,7 @@ msbuild = "msbuild"
 if os.name != 'nt':
 	msbuild = "xbuild"
 
-proc = Popen(msbuild + " ./Build/LuminoBuild.sln /t:Build /p:Configuration=\"Release\"")
+proc = Popen(msbuild + " ./Build/LuminoBuild.sln /t:Build /p:Configuration=\"Release\" /p:Platform=\"x86\"")
 proc.communicate()
 
 

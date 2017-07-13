@@ -219,7 +219,7 @@ void Process::beginErrorReadLine()
 //------------------------------------------------------------------------------
 void Process::disposeProcess()
 {
-	m_impl->Dispose();
+	m_impl->dispose();
 
 	// 読み取りスレッドの終了を待つ
 	if (m_runningReadThread)

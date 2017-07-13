@@ -73,7 +73,7 @@ public:
 
 public:
 	// IGraphicsDevice interface
-	virtual void Finalize() override;
+	virtual void dispose() override;
 	virtual bool isStandalone() const override { return true; }
 	virtual GraphicsAPI getGraphicsAPI() const override { return GraphicsAPI::OpenGL; }
 	virtual IRenderer* getRenderer() override { return m_renderer; }

@@ -24,7 +24,7 @@ public:
 
 	virtual ~Win32PlatformFileOpenDialog()
 	{
-		Finalize();
+		dispose();
 	}
 
 	void initialize(Type type)
@@ -53,7 +53,7 @@ public:
 		}
 	}
 
-	void Finalize()
+	void dispose()
 	{
 		if (m_fileDialog != NULL) m_fileDialog->Release();
 		CoUninitialize();
