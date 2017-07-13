@@ -309,7 +309,7 @@ LN_CONSTRUCT_ACCESS:
 	virtual void finalize_();
 
 LN_PROTECTED_INTERNAL_ACCESS:
-	virtual void Dispose_();
+	virtual void disposeFontResource();
 
 LN_INTERNAL_ACCESS:
 	detail::FontGlyphTextureCache* GetGlyphTextureCache();

@@ -59,7 +59,7 @@ public:
 	FreeTypeFont();
 	virtual ~FreeTypeFont();
 	void initialize();
-	virtual void Dispose_() override;
+	virtual void disposeFontResource() override;
 
 public:
 	virtual void setName(const String& fontName) { m_fontData.Family = fontName; m_modified = true; }

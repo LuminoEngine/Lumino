@@ -70,7 +70,7 @@ void UIFrameWindow::initialize()
 }
 
 //------------------------------------------------------------------------------
-void UIFrameWindow::Dispose()
+void UIFrameWindow::dispose()
 {
 	if (m_manager != nullptr)
 	{

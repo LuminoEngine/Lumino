@@ -71,12 +71,18 @@ void OffscreenWorldView::hideVisual(VisualComponent* renderObject)
 }
 
 //------------------------------------------------------------------------------
+void OffscreenWorldView::filterWorldMatrix(Matrix* outMatrix)
+{
+	(*outMatrix) = (*outMatrix) * Matrix::makeReflection(Plane(Vector3::UnitY));
+}
+
+//------------------------------------------------------------------------------
 Matrix OffscreenWorldView::calculateViewMatrix(RenderView* mainRenderView)
 {
 	//const Matrix& worldMatrix = mainViewCamera->getOwnerObject()->transform.getWorldMatrix();
 	//Matrix viewMatrix = Matrix::makeLookAtLH(worldMatrix.getPosition(), Vector3(0, 0, 0), -Vector3::UnitY);
 
-	return Matrix::makeReflection(Plane(Vector3::UnitY)) * mainRenderView->m_cameraInfo.viewMatrix;//mainViewCamera->getViewMatrix(); //viewMatrix;// 
+	return mainRenderView->m_cameraInfo.viewMatrix;//mainViewCamera->getViewMatrix(); //viewMatrix;// 
 }
 
 //------------------------------------------------------------------------------

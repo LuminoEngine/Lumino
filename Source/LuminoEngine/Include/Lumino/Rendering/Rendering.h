@@ -183,7 +183,7 @@ public:
 
 	const Matrix& getTransform(DrawElementList* oenerList) const;
 
-	virtual void makeElementInfo(DrawElementList* oenerList, const CameraInfo& cameraInfo, const PriorityBatchState& priorityState, ElementInfo* outInfo);
+	virtual void makeElementInfo(DrawElementList* oenerList, const CameraInfo& cameraInfo, const PriorityBatchState& priorityState, RenderView* renderView, ElementInfo* outInfo);
 	virtual void makeSubsetInfo(DrawElementList* oenerList, CombinedMaterial* material, SubsetInfo* outInfo);
 
 	virtual void drawSubset(const DrawArgs& e) = 0;
@@ -546,6 +546,9 @@ public:
 	
 	detail::SceneRenderer* getSceneRenderer() { return m_sceneRenderer; }
 	void setSceneRenderer(detail::SceneRenderer* sr) { m_sceneRenderer = sr; }
+
+
+	virtual void filterWorldMatrix(Matrix* outMatrix);
 	
 LN_CONSTRUCT_ACCESS:
 	RenderView();

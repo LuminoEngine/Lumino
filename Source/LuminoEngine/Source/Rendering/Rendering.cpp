@@ -647,12 +647,16 @@ const Matrix& DrawElement::getTransform(DrawElementList* oenerList) const
 }
 
 //------------------------------------------------------------------------------
-void DrawElement::makeElementInfo(DrawElementList* oenerList, const CameraInfo& cameraInfo, const PriorityBatchState& priorityState, ElementInfo* outInfo)
+void DrawElement::makeElementInfo(DrawElementList* oenerList, const CameraInfo& cameraInfo, const PriorityBatchState& priorityState, RenderView* renderView, ElementInfo* outInfo)
 {
 	auto& matrix = (priorityState.worldTransform.isNull()) ? getTransform(oenerList) : priorityState.worldTransform.get();
 	outInfo->viewProjMatrix = &cameraInfo.viewProjMatrix;
 	outInfo->WorldMatrix = matrix;
+	renderView->filterWorldMatrix(&outInfo->WorldMatrix);
+
+	// TODO: 呼び出し元でやるようにした
 	outInfo->WorldViewProjectionMatrix = outInfo->WorldMatrix * cameraInfo.viewMatrix * cameraInfo.projMatrix;	// TODO: viewProj はまとめたい
+
 	outInfo->affectedLights = getAffectedDynamicLightInfos();
 }
 
@@ -1718,9 +1722,9 @@ void DrawList::blitInternal(Texture* source, RenderTargetTexture* dest, const Ma
 		Matrix			overrideTransform;
 		RefPtr<Texture>	source;
 
-		virtual void makeElementInfo(detail::DrawElementList* oenerList, const detail::CameraInfo& cameraInfo, const detail::PriorityBatchState& priorityState, detail::ElementInfo* outInfo) override
+		virtual void makeElementInfo(detail::DrawElementList* oenerList, const detail::CameraInfo& cameraInfo, const detail::PriorityBatchState& priorityState, RenderView* renderView, detail::ElementInfo* outInfo) override
 		{
-			DrawElement::makeElementInfo(oenerList, cameraInfo, priorityState, outInfo);
+			DrawElement::makeElementInfo(oenerList, cameraInfo, priorityState, renderView, outInfo);
 			outInfo->WorldViewProjectionMatrix = overrideTransform;
 		}
 		virtual void makeSubsetInfo(detail::DrawElementList* oenerList, detail::CombinedMaterial* material, detail::SubsetInfo* outInfo) override
@@ -1828,6 +1832,11 @@ RenderView::RenderView()
 
 //------------------------------------------------------------------------------
 RenderView::~RenderView()
+{
+}
+
+//------------------------------------------------------------------------------
+void RenderView::filterWorldMatrix(Matrix* outMatrix)
 {
 }
 

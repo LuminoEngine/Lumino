@@ -47,11 +47,11 @@ RuntimeResource::~RuntimeResource()
 //------------------------------------------------------------------------------
 void RuntimeResource::finalize_()
 {
-	Dispose();
+	dispose();
 }
 
 //------------------------------------------------------------------------------
-void RuntimeResource::Dispose()
+void RuntimeResource::dispose()
 {
 }
 

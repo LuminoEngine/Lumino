@@ -79,7 +79,6 @@
 #include "Lumino/Scene/Sprite.h"
 #include "Lumino/Scene/TileMap.h"
 #include "Lumino/Scene/Particle.h"
-#include "Lumino/Scene/Grid.h"
 #include "Lumino/Scene/TextBlock.h"
 #include "Lumino/Scene/StaticMesh.h"
 #include "Lumino/Scene/TransitionPostEffect.h"

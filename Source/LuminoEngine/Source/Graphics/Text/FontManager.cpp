@@ -158,7 +158,7 @@ void FontManager::dispose()
 	auto disposeList = m_fontResourceList;
 	for (RawFont* font : disposeList)
 	{
-		font->Dispose_();
+		font->disposeFontResource();
 	}
 
 	m_builtinFontList.clear();

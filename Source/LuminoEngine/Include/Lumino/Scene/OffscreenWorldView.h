@@ -18,6 +18,7 @@ public:
 	void hideVisual(VisualComponent* renderObject);
 
 protected:
+	virtual void filterWorldMatrix(Matrix* outMatrix) override;
 	virtual Matrix calculateViewMatrix(RenderView* mainRenderView);
 	virtual Matrix calculateProjectionMatrix(RenderView* mainRenderView);
 
