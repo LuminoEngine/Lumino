@@ -3,7 +3,7 @@ using System.IO;
 using LuminoBuild;
 using System.Text;
 
-class RubyPackageRule : ModuleRule
+class RubyPackageRule : BuildTask
 {
     /// <summary>
     /// ルールを実行するためのコマンド名

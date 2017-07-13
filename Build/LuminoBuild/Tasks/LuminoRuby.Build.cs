@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using LuminoBuild;
 
-class LuminoRubyRule : ModuleRule
+class LuminoRubyRule : BuildTask
 {
     public string _devKitDir;
 

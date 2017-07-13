@@ -2,7 +2,6 @@
 #ifndef LUMINO_MATH_H
 #define LUMINO_MATH_H
 
-#include "Lumino/Math/Version.h"
 #include "Lumino/Math/MathUtils.h"
 #include "Lumino/Math/Vector2.h"
 #include "Lumino/Math/Vector3.h"

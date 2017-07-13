@@ -72,7 +72,6 @@ set(LN_SOURCES_Base
 	Include/Lumino/Base/StringRef.h
 	Include/Lumino/Base/StringHelper.h
 	Include/Lumino/Base/Typedef.h
-	Include/Lumino/Base/Version.h
 	Source/Base/ByteBuffer.cpp
 	Source/Base/Cache.cpp
 	Source/Base/Diff.cpp
@@ -91,7 +90,6 @@ set(LN_SOURCES_Base
 	Source/Base/StringBuilder.cpp
 	Source/Base/StringRef.cpp
 	Source/Base/StringHelper.cpp
-	Source/Base/Version.cpp
 )
 
 set(LN_SOURCES_Text
@@ -265,7 +263,6 @@ set(LN_SOURCES_Math
 	Include/Lumino/Math/Plane.h
 	Include/Lumino/Math/Plane.inl
 	Include/Lumino/Math/Quaternion.h
-	Include/Lumino/Math/Version.h
 	Include/Lumino/Math/ViewFrustum.h
 	Source/Math/Geometries.cpp
 	Source/Math/Random.cpp

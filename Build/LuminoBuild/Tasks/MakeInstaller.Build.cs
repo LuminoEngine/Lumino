@@ -4,7 +4,7 @@ using LuminoBuild;
 using System.Text;
 using System.IO.Compression;
 
-class MakeInstaller : ModuleRule
+class MakeInstaller : BuildTask
 {
     public override string CommandName { get { return "installer"; } }
 

@@ -3,7 +3,7 @@ using System.IO;
 using LuminoBuild;
 using System.Text.RegularExpressions;
 
-class LuminoDotNetRule : ModuleRule
+class LuminoDotNetRule : BuildTask
 {
     private string _msbuild;
     private string _SHFBROOT;

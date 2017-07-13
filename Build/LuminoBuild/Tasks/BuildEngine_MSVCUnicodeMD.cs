@@ -5,9 +5,9 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LuminoBuild.Rules
+namespace LuminoBuild.Tasks
 {
-    class BuildEngine_MSVCUnicodeMD : ModuleRule
+    class BuildEngine_MSVCUnicodeMD : BuildTask
     {
         public string _msbuild;
 

@@ -3,49 +3,46 @@
 #include <Lumino/Version.h>
 
 LN_NAMESPACE_BEGIN
-namespace Version
-{
 
 //------------------------------------------------------------------------------
-int Engine::GetMajor()
+int Version::getMajor()
 {
-	return LUMINO_ENGINE_VERSION_MAJOR;
+	return LUMINO_VERSION_MAJOR;
 }
 
 //------------------------------------------------------------------------------
-int Engine::GetMinor()
+int Version::getMinor()
 {
-	return LUMINO_ENGINE_VERSION_MINOR;
+	return LUMINO_VERSION_MINOR;
 }
 
 //------------------------------------------------------------------------------
-int Engine::getRevision()
+int Version::getRevision()
 {
-	return LUMINO_ENGINE_VERSION_REVISION;
+	return LUMINO_VERSION_REVISION;
 }
 
 //------------------------------------------------------------------------------
-int Engine::GetBuild()
+int Version::getBuild()
 {
-	return LUMINO_ENGINE_VERSION_BUILD;
+	return LUMINO_VERSION_BUILD;
 }
 
 //------------------------------------------------------------------------------
-const TCHAR* Engine::getString()
+const TCHAR* Version::getString()
 {
-	return LUMINO_ENGINE_VERSION_STRING;
+	return LUMINO_VERSION_STRING;
 }
 
 //------------------------------------------------------------------------------
-bool Engine::IsAtLeast(int major, int minor, int revision)
+bool Version::isAtLeast(int major, int minor, int revision)
 {
-	if (LUMINO_ENGINE_VERSION_MAJOR < major) return false;
-	if (LUMINO_ENGINE_VERSION_MAJOR > major) return true;
-	if (LUMINO_ENGINE_VERSION_MINOR < minor) return false;
-	if (LUMINO_ENGINE_VERSION_MINOR > minor) return true;
-	if (LUMINO_ENGINE_VERSION_REVISION < revision) return false;
+	if (LUMINO_VERSION_MAJOR < major) return false;
+	if (LUMINO_VERSION_MAJOR > major) return true;
+	if (LUMINO_VERSION_MINOR < minor) return false;
+	if (LUMINO_VERSION_MINOR > minor) return true;
+	if (LUMINO_VERSION_REVISION < revision) return false;
 	return true;
 }
 
-} // namespace Version
 LN_NAMESPACE_END
