@@ -24,8 +24,15 @@ class UIButtonBase
 public:
 	void setText(const StringRef& text);
 
+	
+	/** onClick イベントの通知を受け取るコールバックを登録します。*/
+	LN_METHOD(Event)
+	EventConnection connectOnClick(UIEventHandler handler);
 
 protected:
+
+	/** ボタンがクリックされたときに呼び出されます。*/
+	virtual void onClick(UIEventArgs* e);
 
 
 	// UIElement interface
@@ -39,6 +46,9 @@ LN_CONSTRUCT_ACCESS:
 
 private:
 	RefPtr<UITextBlock>	m_textContent;
+	ClickMode			m_clickMode;
+	bool				m_isPressed;
+	UIEventHandler::EventType	m_onClick;
 
 };
 
