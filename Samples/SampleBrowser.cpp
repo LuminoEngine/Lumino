@@ -102,7 +102,7 @@ void Main()
 		auto& info = SampleManager::getInstance()->m_samples[i];
 		String name = info.group + _T(".") + info.caption;
 		UIListBoxItem* item = listBox1->addTextItem(name);
-		item->connectOnClick([program, name](UIEventArgs* e) { Process::execute(program, name); });
+		//item->connectOnClick([program, name](UIEventArgs* e) { Process::execute(program, name); });
 	}
 
 

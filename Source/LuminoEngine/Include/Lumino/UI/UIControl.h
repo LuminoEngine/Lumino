@@ -58,9 +58,14 @@ public:
 	void setLayoutPanel(UILayoutPanel* panel);
 	UILayoutPanel* getLayoutPanel() const;
 
-
+	
+	/** onSubmit イベントの通知を受け取るコールバックを登録します。*/
+	LN_METHOD(Event)
+	EventConnection connectOnSubmit(UIEventHandler handler);
 
 protected:
+	virtual void onSubmit(UIEventArgs* e);
+
 	// UIElement interface
 	//virtual int getVisualChildrenCount() const override;
 	//virtual ILayoutElement* getVisualChild(int index) const override;
@@ -94,6 +99,8 @@ LN_INTERNAL_ACCESS:
 private:
 	RefPtr<UIElementCollection>		m_items;
 	RefPtr<UILayoutPanel>			m_itemsHostPanel;
+
+	UIEventHandler::EventType		m_onSubmit;
 
 	//bool							m_invalidateItemsHostPanel;
 

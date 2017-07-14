@@ -119,6 +119,18 @@ UILayoutPanel* UIControl::getLayoutPanel() const
 	return m_itemsHostPanel;
 }
 
+//------------------------------------------------------------------------------
+EventConnection UIControl::connectOnSubmit(UIEventHandler handler)
+{
+	return m_onSubmit.connect(handler);
+}
+
+//------------------------------------------------------------------------------
+void UIControl::onSubmit(UIEventArgs* e)
+{
+	m_onSubmit.raise(e);
+}
+
 ////------------------------------------------------------------------------------
 //int UIControl::getVisualChildrenCount() const
 //{
