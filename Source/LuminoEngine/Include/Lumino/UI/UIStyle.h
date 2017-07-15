@@ -195,8 +195,9 @@ public:
 	UIStyleAttribute<float>				width;
 	UIStyleAttribute<float>				height;
 
-	//UIStyleAttribute<ThicknessF>			m_margin;
-	//UIStyleAttribute<ThicknessF>			m_padding;
+	UIStyleAttribute<ThicknessF>		margin;
+	UIStyleAttribute<ThicknessF>		padding;
+
 	//UIStyleAttribute<VAlignment>		m_verticalAlignment;
 	//UIStyleAttribute<HAlignment>	m_horizontalAlignment;
 	UIStyleAttribute<BrushPtr>				background;
@@ -244,9 +245,9 @@ public:
 public:
 	UIStyleAttribute<float>				width;
 	UIStyleAttribute<float>				height;
+	UIStyleAttribute<ThicknessF>		margin;
+	UIStyleAttribute<ThicknessF>		padding;
 
-	//UIStyleAttribute<ThicknessF>			m_margin;
-	//UIStyleAttribute<ThicknessF>			m_padding;
 	//UIStyleAttribute<VAlignment>		m_verticalAlignment;
 	//UIStyleAttribute<HAlignment>	m_horizontalAlignment;
 	UIStyleAttribute<BrushPtr>				background;
@@ -283,6 +284,8 @@ public:
 	{
 		if (width.m_source != UIStyleAttributeValueSource::ByUserLocal) width.reset();
 		if (height.m_source != UIStyleAttributeValueSource::ByUserLocal) height.reset();
+		if (margin.m_source != UIStyleAttributeValueSource::ByUserLocal) margin.reset();
+		if (padding.m_source != UIStyleAttributeValueSource::ByUserLocal) padding.reset();
 		if (background.m_source != UIStyleAttributeValueSource::ByUserLocal) background.reset();
 		if (borderThickness.m_source != UIStyleAttributeValueSource::ByUserLocal) borderThickness.reset();
 		if (cornerRadius.m_source != UIStyleAttributeValueSource::ByUserLocal) cornerRadius.reset();

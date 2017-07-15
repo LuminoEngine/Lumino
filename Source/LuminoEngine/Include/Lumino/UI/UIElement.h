@@ -113,8 +113,8 @@ public:
 	PointF				position;
 	float					width;
 	float					height;
-	ThicknessF		margin;
-	ThicknessF			padding;
+	//ThicknessF		margin;
+	//ThicknessF			padding;
 	AlignmentAnchor		anchor;
 
 	HAlignment			hAlignment;
@@ -170,6 +170,18 @@ public:
 	void setSize(const Size& value) { setWidth(value.width); setHeight(value.height); }
 	Size getSize() const { return Size(width, height); }
 
+	/** 要素の margin 値 (外側の余白) を設定します。 */
+	void setMargin(const ThicknessF& margin);
+
+	/** 要素の margin 値 (外側の余白) を取得します。 */
+	const ThicknessF& getMargin() const;
+
+	/** 要素の padding 値 (内側の余白) を設定します。 */
+	void setPadding(const ThicknessF& padding);
+
+	/** 要素の padding 値 (内側の余白) を取得します。 */
+	const ThicknessF& getPadding() const;
+
 	void setMinWidth(float value) { m_minSize.width = value; }
 
 	void setMinHeight(float value) { m_minSize.height = value; }
@@ -221,7 +233,7 @@ public:
 	const Size& getDesiredSize() const { return m_desiredSize; }
 
 	/** この要素の最終的な描画サイズを取得します。この値は Arrange() で確定します。*/
-	Size getRenderSize() const { return m_finalLocalRect.getSize(); }
+	Size getRenderSize() const { return m_finalLocalRenderRect.getSize(); }
 
 	/** この要素へのフォーカスの取得を試みます。*/
 	void focus();
@@ -250,8 +262,8 @@ public:
 
 	void applyTemplateHierarchy(UIStyleTable* styleTable, detail::UIStylePropertyTableInstance* parentStyle);
 
-	float getActualWidth() const { return m_finalLocalRect.width; }
-	float getActualHeight() const { return m_finalLocalRect.height; }
+	float getActualWidth() const { return m_finalLocalRenderRect.width; }
+	float getActualHeight() const { return m_finalLocalRenderRect.height; }
 
 	bool hasFocus() const { return m_hasFocus; }
 
@@ -354,7 +366,7 @@ LN_INTERNAL_ACCESS:
 	const PointF& getPositionInternal() const { return position; }
 	void setSizeInternal(const Size& size) { width = size.width; height = size.height; }
 	Size getSizeInternal() const { return Size(width, height); }
-	const ThicknessF& getMargineInternal() const { return margin; }
+	const ThicknessF& getMargineInternal() const;
 	AlignmentAnchor getAnchorInternal() const { return anchor; }
 	const BrushPtr& getForegroundInternal() const { return foreground; }
 	void setLogicalParent(UIElement* parent);
@@ -404,8 +416,8 @@ private:
 	virtual const VAlignment* getLayoutContentVAlignment() override;
 	virtual const Size& getLayoutDesiredSize() const override;
 	virtual void setLayoutDesiredSize(const Size& size) override;
-	virtual void setLayoutFinalLocalRect(const Rect& rect) override;
-	virtual const Rect& getLayoutFinalLocalRect() const override;
+	virtual void setLayoutFinalLocalRect(const Rect& renderRect, const Rect& contentRect) override;
+	virtual void getLayoutFinalLocalRect(Rect* outRenderRect, Rect* outContentRect) const override;
 	virtual void setLayoutFinalGlobalRect(const Rect& rect) override;
 
 
@@ -425,7 +437,8 @@ private:
 	//	m_localStyle;
 	RefPtr<detail::UIStylePropertyTableInstance>	m_localStyle;
 	Size					m_desiredSize;			// measureLayout() で決定されるこのコントロールの要求サイズ
-	Rect					m_finalLocalRect;		// 描画に使用する最終境界矩形 (グローバル座標系=RootFrame のローカル座標系)
+	Rect					m_finalLocalRenderRect;		// 描画に使用する最終境界矩形 (グローバル座標系=RootFrame のローカル座標系)
+	Rect					m_finalLocalContentRect;
 	Rect					m_finalGlobalRect;
 	String					m_elementName;				// 要素名 ("UITextBlock" など) TODO: いらないかも
 	RefPtr<UIVisualStateManager>	m_visualStateManager;

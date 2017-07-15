@@ -40,8 +40,8 @@ protected:
 	virtual const VAlignment* getLayoutContentVAlignment() = 0;
 	virtual const Size& getLayoutDesiredSize() const = 0;
 	virtual void setLayoutDesiredSize(const Size& size) = 0;
-	virtual void setLayoutFinalLocalRect(const Rect& rect) = 0;
-	virtual const Rect& getLayoutFinalLocalRect() const = 0;
+	virtual void setLayoutFinalLocalRect(const Rect& renderRect, const Rect& contentRect) = 0;
+	virtual void getLayoutFinalLocalRect(Rect* outRenderRect, Rect* outContentRect) const = 0;
 	virtual void setLayoutFinalGlobalRect(const Rect& rect) = 0;
 
 	virtual int getVisualChildrenCount() const = 0;

@@ -38,30 +38,20 @@ void ILayoutElement::updateLayout(const Size& viewSize)
 //------------------------------------------------------------------------------
 void ILayoutElement::measureLayout(const Size& availableSize)
 {
-	// 親要素から子要素を配置できる範囲(availableSize)を受け取り、DesiredSize を更新する。
-	// ① Pane ―[measure()   … この範囲内なら配置できるよ]→ Button
-	// ② Pane ←[DesiredSize … じゃあこのサイズでお願いします]― Button		※この時点で inf を返すこともあり得る。
-	// ③ Pane ―[arrange()   … 他の子要素との兼ね合いで最終サイズはコレで]→ Button
-	// http://www.kanazawa-net.ne.jp/~pmansato/wpf/wpf_ctrl_arrange.htm
-
-	
-	// [WPF] DesiredSize は Mergin を含む。例えば、Width=200, Mergin=10,0,0,0 なら DesiredSize は 210 となる。
-	// [WPF] measureOverride() の引数の Size には、Mergin は含まない。Widht=200 なら 200 がそのまま渡る。
-	// Padding も関係ない。逆にいうと、measureOverride() の中では Padding を考慮してサイズを返さなければならない。
-
-	// Margin を考慮する
+	// Margin と Padding を考慮する
 	const ThicknessF& margin = getLayoutMargin();
-	float marginWidth = margin.Left + margin.Right;
-	float marginHeight = margin.Top + margin.Bottom;
+	const ThicknessF& padding = getLayoutPadding();
+	float spaceWidth = (margin.Left + margin.Right) + (padding.Left + padding.Right);
+	float spaceHeight = (margin.Top + margin.Bottom) + (padding.Top + padding.Bottom);
 	Size localAvailableSize(
-		std::max(availableSize.width - marginWidth, 0.0f),
-		std::max(availableSize.height - marginHeight, 0.0f));
+		std::max(availableSize.width - spaceWidth, 0.0f),
+		std::max(availableSize.height - spaceHeight, 0.0f));
 
 	Size desiredSize = measureOverride(localAvailableSize);
 
 	// Margin を考慮する
-	desiredSize.width += marginWidth;
-	desiredSize.height += marginHeight;
+	desiredSize.width += spaceWidth;
+	desiredSize.height += spaceHeight;
 
 	setLayoutDesiredSize(desiredSize);
 }
@@ -102,26 +92,37 @@ void ILayoutElement::arrangeLayout(const Rect& finalLocalRect)
 	const ThicknessF& margin = getLayoutMargin();
 	float marginWidth = margin.Left + margin.Right;
 	float marginHeight = margin.Top + margin.Bottom;
-	//ds.width += marginWidth;
-	//ds.height += marginHeight;
 
 	Size layoutSize = getLayoutSize();
 	Rect arrangeRect;
 	detail::LayoutHelper::adjustHorizontalAlignment(areaSize, ds, Math::isNaN(layoutSize.width), hAlign, &arrangeRect);
 	detail::LayoutHelper::adjustVerticalAlignment(areaSize, ds, Math::isNaN(layoutSize.height), vAlign, &arrangeRect);
 
+
 	// Margin を考慮する (0 以下には出来ない)
 	arrangeRect.width = std::max(arrangeRect.width - marginWidth, 0.0f);
 	arrangeRect.height = std::max(arrangeRect.height - marginHeight, 0.0f);
 
+	// Padding を考慮する
+	const ThicknessF& padding = getLayoutPadding();
 
-	Size renderSize = arrangeOverride(arrangeRect.getSize());
-	Rect thisFinalLocalRect;
-	thisFinalLocalRect.x = finalLocalRect.x + margin.Left + arrangeRect.x;
-	thisFinalLocalRect.y = finalLocalRect.y + margin.Top + arrangeRect.y;
-	thisFinalLocalRect.width = renderSize.width;
-	thisFinalLocalRect.height = renderSize.height;
-	setLayoutFinalLocalRect(thisFinalLocalRect);
+	Size contentAreaSize(
+		std::max(arrangeRect.width - padding.getWidth(), 0.0f),
+		std::max(arrangeRect.height - padding.getHeight(), 0.0f));
+	Size finalContentAreaSize = arrangeOverride(contentAreaSize);
+
+
+	Rect finalRenderRect;
+	Rect finalContentRect;
+	finalRenderRect.x = finalLocalRect.x + margin.Left + arrangeRect.x;
+	finalRenderRect.y = finalLocalRect.y + margin.Top + arrangeRect.y;
+	finalRenderRect.width = finalContentAreaSize.width + padding.getWidth();
+	finalRenderRect.height = finalContentAreaSize.height + padding.getHeight();
+	finalContentRect.x = finalRenderRect.x + padding.Left;
+	finalContentRect.y = finalRenderRect.y + padding.Top;
+	finalContentRect.width = finalRenderRect.width - padding.getWidth();
+	finalContentRect.height = finalRenderRect.height - padding.getHeight();
+	setLayoutFinalLocalRect(finalRenderRect, finalContentRect);
 }
 
 //------------------------------------------------------------------------------
@@ -143,12 +144,14 @@ Size ILayoutElement::arrangeOverride(const Size& finalSize)
 //------------------------------------------------------------------------------
 void ILayoutElement::updateTransformHierarchy(const Rect& parentGlobalRect)
 {
-	const Rect& localRect = getLayoutFinalLocalRect();
+	Rect localRenderRect, localContentRect;
+	getLayoutFinalLocalRect(&localRenderRect, &localContentRect);
+
 	Rect finalGlobalRect;
 	//if (m_parent != nullptr)
 	//{
-	finalGlobalRect.x = parentGlobalRect.x + localRect.x;
-	finalGlobalRect.y = parentGlobalRect.y + localRect.y;
+	finalGlobalRect.x = parentGlobalRect.x + localRenderRect.x;
+	finalGlobalRect.y = parentGlobalRect.y + localRenderRect.y;
 		//m_combinedOpacity = m_parent->m_combinedOpacity * m_opacity;	// 不透明度もココで混ぜてしまう
 	//}
 	//else
@@ -157,17 +160,22 @@ void ILayoutElement::updateTransformHierarchy(const Rect& parentGlobalRect)
 	//	m_finalGlobalRect.y = m_finalLocalRect.y;
 	//	m_combinedOpacity = m_opacity;
 	//}
-	finalGlobalRect.width = localRect.width;
-	finalGlobalRect.height = localRect.height;
+	finalGlobalRect.width = localRenderRect.width;
+	finalGlobalRect.height = localRenderRect.height;
 
 	setLayoutFinalGlobalRect(finalGlobalRect);
 
 	// update children
+	Rect finalGlobalContentRect(
+		parentGlobalRect.x + localContentRect.x,
+		parentGlobalRect.y + localContentRect.y,
+		localContentRect.width,
+		localContentRect.height);
 	int childCount = getVisualChildrenCount();
 	for (int i = 0; i < childCount; i++)
 	{
 		ILayoutElement* child = getVisualChild(i);
-		child->updateTransformHierarchy(finalGlobalRect);
+		child->updateTransformHierarchy(finalGlobalContentRect);
 	}
 
 	// 子要素

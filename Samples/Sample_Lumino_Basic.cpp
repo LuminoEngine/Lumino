@@ -1,7 +1,21 @@
 #include <Lumino.h>
 using namespace ln;
 
-LN_SAMPLE_MAIN(Basic, HelloWorld)
+LN_SAMPLE_MAIN(Lumino, Basic, MinCode)
+{
+	// Lumino の初期化処理
+	Engine::initialize();
+
+	// メインループ
+	while (Engine::update())
+	{
+	}
+
+	// Lumino の終了処理
+	Engine::terminate();
+}
+
+LN_SAMPLE_MAIN(Lumino, Basic, HelloWorld)
 {
 	// Lumino の初期化処理
 	Engine::initialize();

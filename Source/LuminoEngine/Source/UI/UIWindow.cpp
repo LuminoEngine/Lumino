@@ -95,7 +95,7 @@ void UIWindow::onLayoutPanelChanged(UILayoutPanel* newPanel)
 	{
 		newPanel->setStyleSubControlName(_T("UIWindow"), _T("ContentHost"));
 
-		newPanel->margin = ThicknessF(0, 30, 0, 0);
+		newPanel->setMargin(ThicknessF(0, 30, 0, 0));
 	}
 
 	UIControl::onLayoutPanelChanged(newPanel);

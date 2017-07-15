@@ -386,6 +386,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 		// base
 		{
 			auto* props = style->getPropertyTable();
+			props->padding = ThicknessF(10);
 		}
 		// UIListBoxItem.MouseOver
 		{

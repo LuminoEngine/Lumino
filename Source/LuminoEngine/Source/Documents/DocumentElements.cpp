@@ -200,8 +200,8 @@ const HAlignment* TextElement::getLayoutContentHAlignment() { return nullptr; }
 const VAlignment* TextElement::getLayoutContentVAlignment() { return nullptr; }
 const Size& TextElement::getLayoutDesiredSize() const { return m_desiredSize; }
 void TextElement::setLayoutDesiredSize(const Size& size) { m_desiredSize = size; }
-void TextElement::setLayoutFinalLocalRect(const Rect& rect) { m_finalLocalRect = rect; }
-const Rect& TextElement::getLayoutFinalLocalRect() const { return m_finalLocalRect; }
+void TextElement::setLayoutFinalLocalRect(const Rect& renderRect, const Rect& contentRect) { m_finalLocalRect = contentRect; LN_NOTIMPLEMENTED(); }
+void TextElement::getLayoutFinalLocalRect(Rect* outRenderRect, Rect* outContentRect) const { LN_NOTIMPLEMENTED(); }
 void TextElement::setLayoutFinalGlobalRect(const Rect& rect) { m_finalGlobalRect = rect; }
 int TextElement::getVisualChildrenCount() const { return 0; }
 ILayoutElement* TextElement::getVisualChild(int index) const { return nullptr; }

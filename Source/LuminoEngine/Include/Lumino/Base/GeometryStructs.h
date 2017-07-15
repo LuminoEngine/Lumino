@@ -429,6 +429,9 @@ public:
 	void toArray(float* buf) const { buf[0] = Left; buf[1] = Top; buf[2] = Right; buf[3] = Bottom; }
 	static ThicknessF fromArray(const float* buf) { return ThicknessF(buf[0], buf[1], buf[2], buf[3]); }
 
+	float getWidth() const { return Left + Right; }
+	float getHeight() const { return Top + Bottom; }
+
 public:
 	bool operator == (const ThicknessF& obj) const { return (Left == obj.Left && Top == obj.Top && Right == obj.Right && Bottom == obj.Bottom); }
 	bool operator != (const ThicknessF& obj) const { return !operator==(obj); }
