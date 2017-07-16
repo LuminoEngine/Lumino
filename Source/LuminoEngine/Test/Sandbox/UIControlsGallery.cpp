@@ -262,16 +262,16 @@ void UIControlsGallery()
 	//listBox1->addTextItem(_T("UI"));
 
 
-	auto slider = UISlider::create(0.75, 0.5, 2.0);
-	slider->setPosition(Point(10, 10));
-	slider->setWidth(300);
-	slider->setHeight(16);
-	//slider->setOrientation(Orientation::Vertical);
-	//uiRoot->addChild(slider);
+	//auto slider = UISlider::create(0.75, 0.5, 2.0);
+	//slider->setPosition(Point(10, 10));
+	//slider->setWidth(300);
+	//slider->setHeight(16);
+	////slider->setOrientation(Orientation::Vertical);
+	////uiRoot->addChild(slider);
 
 
-	auto window2 = newObject<UIDiagnosticsWindow>();
-	window2->setBackground(SolidColorBrush::White);
+	//auto window2 = newObject<UIDiagnosticsWindow>();
+	//window2->setBackground(SolidColorBrush::White);
 
 
 
@@ -348,7 +348,7 @@ void UIControlsGallery()
 	//stack1->addChild(text1);
 
 	auto ps1 = TransitionPostEffect::create();
-	Engine::getDefault3DLayer()->addPostEffect(ps1);
+	//Engine::getDefault3DLayer()->addPostEffect(ps1);
 	
 	//auto box1 = StaticMeshComponent::create(LN_LOCALFILE("Assets/cube.mqo"));
 	//auto box1 = StaticMeshComponent::create(LN_LOCALFILE("Assets/cylinder2.mqo"));
@@ -508,6 +508,9 @@ void UIControlsGallery()
 
 #endif
 
+	auto fc = FrameCapturer::create();
+	fc->startRecording();
+
 	float t = 0;
 	while (!Engine::isEndRequested())
 	{
@@ -535,10 +538,19 @@ void UIControlsGallery()
 
 		//printf("%f\n", slider->getValue());
 
+		fc->record();
 
 		//printf("----------\n");
 		//window2->GetRenderDiagnostic()->print();
+
+		if (t >= 2.0)
+		{
+
+			fc->stopRecording();
+			printf("stop\n");
+		}
 	}
+
 
 	//while (Engine::update())
 	//{
