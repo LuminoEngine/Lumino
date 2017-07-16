@@ -15,7 +15,7 @@ using TextBlock2DComponentPtr = Ref<TextBlock2DComponent>;
 class TextBlock2DComponent
 	: public VisualComponent
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	
 	/**
@@ -70,7 +70,7 @@ LN_CLASS()
 class TextBlock2D
 	: public VisualObject
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	
 	/**

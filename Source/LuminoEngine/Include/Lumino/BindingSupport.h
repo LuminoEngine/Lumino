@@ -213,7 +213,7 @@ public:
 class ListObject	// TODO: detail
 	: public Object
 {
-	LN_OBJECT();
+	LN_OBJECT;
 protected:
 	virtual ~ListObject() = default;
 

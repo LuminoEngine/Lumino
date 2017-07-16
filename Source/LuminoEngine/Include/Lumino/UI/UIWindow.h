@@ -10,7 +10,7 @@ LN_NAMESPACE_BEGIN
 class UIWindow
 	: public UIControl
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	static Ref<UIWindow> create();
 

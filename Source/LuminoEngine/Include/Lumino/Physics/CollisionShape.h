@@ -24,7 +24,7 @@ LN_CLASS()
 class CollisionShape
 	: public Object
 {
-	LN_OBJECT();
+	LN_OBJECT;
 
 public:
 
@@ -58,7 +58,7 @@ private:
 class PlaneCollisionShape
 	: public CollisionShape
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	
 	/**
@@ -80,7 +80,7 @@ LN_CLASS()
 class BoxCollisionShape
 	: public CollisionShape
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	
 	/**
@@ -109,7 +109,7 @@ LN_CONSTRUCT_ACCESS:
 class SphereCollisionShape
 	: public CollisionShape
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	
 	/**
@@ -130,7 +130,7 @@ LN_CONSTRUCT_ACCESS:
 class CapsuleCollisionShape
 	: public CollisionShape
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	
 	/**
@@ -153,7 +153,7 @@ LN_CONSTRUCT_ACCESS:
 class MeshCollisionShape
 	: public CollisionShape
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	
 	/**

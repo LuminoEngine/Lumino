@@ -157,7 +157,7 @@ LN_CLASS()
 class RuntimeResource
 	: public Object
 {
-	LN_OBJECT();
+	LN_OBJECT;
 protected:
 	RuntimeResource();
 	virtual ~RuntimeResource();

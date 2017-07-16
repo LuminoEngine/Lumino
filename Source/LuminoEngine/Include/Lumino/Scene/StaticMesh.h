@@ -12,7 +12,7 @@ LN_CLASS()
 class StaticMeshComponent
 	: public VisualComponent
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	static Ref<StaticMeshComponent> create(StaticMeshModel* staticMeshModel);
@@ -82,7 +82,7 @@ LN_CLASS()
 class Rectangle
 	: public VisualComponent		// TODO: Shape とか？
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	static Ref<Rectangle> create(const Rect& rect);

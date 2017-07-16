@@ -25,7 +25,7 @@ class UIControl
 	: public UIElement
 	, public tr::IUIElementCollectionOwner
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	HAlignment	HContentAlignment;
 	VAlignment	VContentAlignment;
@@ -114,7 +114,7 @@ private:
 class UIUserControl
 	: public UIControl
 {
-	LN_OBJECT();
+	LN_OBJECT;
 	
 public:
 

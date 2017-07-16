@@ -10,7 +10,7 @@ LN_NAMESPACE_BEGIN
 class VisualEffectInstance
 	: public tr::ReflectionObject
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	virtual void stop() = 0;
 	virtual bool isPlaying() = 0;

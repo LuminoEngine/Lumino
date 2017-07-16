@@ -10,7 +10,7 @@ LN_NAMESPACE_BEGIN
 class TransitionPostEffect
 	: public PostEffect
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	static Ref<TransitionPostEffect> create();
 	void transition(float duration, Texture* mask, int vague);

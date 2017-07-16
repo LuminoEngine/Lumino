@@ -32,7 +32,7 @@ namespace tr
 #define LN_TR_REFLECTION_TYPEINFO_DECLARE() \
 	LN_TR_REFLECTION_TYPEINFO_DECLARE_COMMON(ln::tr::TypeInfo)
 
-#define LN_OBJECT() \
+#define LN_OBJECT \
 	LN_TR_REFLECTION_TYPEINFO_DECLARE_COMMON(ln::tr::TypeInfo)
 
 #define LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(classType, baseClassType, ...) \

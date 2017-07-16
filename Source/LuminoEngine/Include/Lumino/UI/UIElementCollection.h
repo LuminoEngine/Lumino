@@ -42,7 +42,7 @@ using UIElementCollectionPtr = Ref<UIElementCollection>;
 class UIElementCollection
 	: public tr::ReflectionObjectList<UIElement*>
 {
-	//LN_OBJECT();	// TODO
+	//LN_OBJECT;	// TODO
 public:
 	typedef tr::ReflectionObjectList<UIElement*>::value_type value_type;
 

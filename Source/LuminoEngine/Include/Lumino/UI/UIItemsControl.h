@@ -14,7 +14,7 @@ class UIItemsControl
 	: public UIControl
 	, public tr::IUIElementCollectionOwner
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	UIElementCollection* GetItems() const;

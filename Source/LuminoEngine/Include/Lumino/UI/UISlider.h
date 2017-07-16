@@ -25,7 +25,7 @@ class UITrack;
 class UISlider
 	: public UIRangeBase
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	/**

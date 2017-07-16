@@ -123,7 +123,7 @@ private:
 class Light
 	: public WorldObject
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	LightComponent* GetLightComponent() const;
 

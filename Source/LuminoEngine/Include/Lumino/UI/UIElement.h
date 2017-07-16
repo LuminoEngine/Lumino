@@ -107,7 +107,7 @@ class UIElement
 	: public RuntimeResource
 	, public ILayoutElement
 {
-	LN_OBJECT();
+	LN_OBJECT;
 
 public:
 	PointF				position;

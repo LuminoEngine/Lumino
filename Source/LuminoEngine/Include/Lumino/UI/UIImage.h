@@ -10,7 +10,7 @@ LN_NAMESPACE_BEGIN
 class UIImage
 	: public UIElement
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	static Ref<UIImage> create();
 	static Ref<UIImage> create(const StringRef& filePath);

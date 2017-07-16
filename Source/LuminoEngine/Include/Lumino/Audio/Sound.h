@@ -18,7 +18,7 @@ LN_CLASS()
 class Sound
     : public Object
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 

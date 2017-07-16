@@ -12,7 +12,7 @@ using UITextBlockPtr = Ref<UITextBlock>;
 class UITextBlock
 	: public UITextElement
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	static UITextBlockPtr create();

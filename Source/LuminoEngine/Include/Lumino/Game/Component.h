@@ -25,7 +25,7 @@ LN_CLASS()
 class Component
 	: public Object
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	Transform*	transfotm;		/**< アタッチされた WorldObject の transform へのポインタ */
 
@@ -89,7 +89,7 @@ private:
 class Behavior
 	: public Component
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 LN_CONSTRUCT_ACCESS:
@@ -104,7 +104,7 @@ LN_CONSTRUCT_ACCESS:
 class Transform	// TODO: name TransformComponent
 	: public Component
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	Vector3		position;
 	Quaternion	rotation;

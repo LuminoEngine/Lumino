@@ -15,7 +15,7 @@ class TileMapRenderer;
 class TileMap
 	: public VisualComponent
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	/**

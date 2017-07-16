@@ -53,7 +53,7 @@ LN_CLASS()
 class GameApplication
 	: public Object
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	GameApplication();
 	virtual ~GameApplication();

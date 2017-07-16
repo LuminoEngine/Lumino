@@ -10,7 +10,7 @@ LN_NAMESPACE_BEGIN
 class UIRoutedCommand
 	: public Object
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	static Ref<UIRoutedCommand> create();
 

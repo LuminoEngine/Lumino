@@ -10,7 +10,7 @@ LN_NAMESPACE_BEGIN
 class UIRangeBase
 	: public UIControl
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	/** スクロール位置に対する値を設定します。*/

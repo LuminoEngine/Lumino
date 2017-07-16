@@ -42,7 +42,7 @@ enum class UnitMeshSide
 class MeshResource
 	: public Object
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	static MeshResourcePtr create();
 
@@ -235,7 +235,7 @@ LN_INTERNAL_ACCESS:	// TODO:
 class StaticMeshModel
 	: public Object
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	//void SetMeshResource(MeshResource* meshResource) { m_meshResource = meshResource; }

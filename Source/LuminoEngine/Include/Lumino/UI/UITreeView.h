@@ -16,7 +16,7 @@ using UITreeViewPtr = Ref<UITreeView>;
 class UITreeViewItem
 	: public UIControl
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	void setHeader(UIElement* header);
 
@@ -41,7 +41,7 @@ private:
 class UITreeView
 	: public UIControl
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	static UITreeViewPtr create();
 

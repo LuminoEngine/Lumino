@@ -45,7 +45,7 @@ LN_ENUM_FLAGS_DECLARE(RigidbodyConstraintFlags);
 class RigidBody
 	: public PhysicsObject
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	/// 初期状態データ (MMD 実装にあわせて用意している。実際に使うときはプロパティ的に Get/Set で編集し、遅延で bt オブジェクトを作るのがスマートかも)

@@ -16,7 +16,7 @@ using UIComboBoxPtr = Ref<UIComboBox>;
 class UIPopup
 	: public UIElement
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	void setContent(UIElement* element);
 
@@ -45,7 +45,7 @@ private:
 class UIComboBoxItem
 	: public UIContentControl
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 LN_CONSTRUCT_ACCESS :
@@ -60,7 +60,7 @@ LN_CONSTRUCT_ACCESS :
 class UIComboBox
 	: public UIControl
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	static UIComboBoxPtr create();
 

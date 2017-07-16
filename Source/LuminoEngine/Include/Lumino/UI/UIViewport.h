@@ -19,7 +19,7 @@ class RenderView;
 class UIViewport
 	: public UIElement
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	/** */
@@ -73,7 +73,7 @@ private:
 class UIViewportLayer
 	: public Object
 {
-	//LN_OBJECT();
+	//LN_OBJECT;
 public:
 	UIViewport* getOwnerViewport() const { return m_owner; }
 	void addPostEffect(PostEffect* postEffect);
@@ -103,7 +103,7 @@ private:
 class UILayoutLayer
 	: public UIViewportLayer
 {
-	//LN_OBJECT();
+	//LN_OBJECT;
 public:
 	UILayoutView* GetLayoutView() const;
 
@@ -132,7 +132,7 @@ private:
 class PostEffect
 	: public Object
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	UIViewportLayer* GetOwnerLayer() const { return m_ownerLayer; }
 

@@ -11,7 +11,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 class ScreenMotionBlurImageEffect
 	: public ImageEffect
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	float	m_amount;
 

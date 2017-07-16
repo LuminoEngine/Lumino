@@ -29,7 +29,7 @@ LN_CLASS()
 class VisualComponent
 	: public SceneNode
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 
@@ -216,7 +216,7 @@ LN_INTERNAL_ACCESS:
 class VisualObject
 	: public WorldObject
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	/** 不透明度を設定します。(default: 1.0) */

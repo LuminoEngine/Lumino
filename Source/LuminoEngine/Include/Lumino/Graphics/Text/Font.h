@@ -44,7 +44,7 @@ enum class BuiltinFontSize
 class Font
 	: public Object
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	/**

@@ -13,7 +13,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 class ToneImageEffect
 	: public ImageEffect
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	Vector4	m_tone;
 

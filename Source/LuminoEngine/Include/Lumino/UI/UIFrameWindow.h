@@ -25,7 +25,7 @@ class UIFrameWindow
 	: public UILayoutView
 	, public IEventListener
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	PlatformWindow* getPlatformWindow() const;
@@ -78,7 +78,7 @@ private:
 class UIMainWindow
 	: public UIFrameWindow
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	UIContext* getMainUIContext() const { return m_mainUIContext; }
 	UIViewport* getViewport() const;
@@ -123,7 +123,7 @@ using UINativeHostWindowPtr = Ref<UINativeHostWindow>;
 class UINativeHostWindow
 	: public UIFrameWindow
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	/**

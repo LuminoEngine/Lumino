@@ -23,7 +23,7 @@ using SceneGraph3DPtr = Ref<SceneGraph3D>;
 class SceneGraph
 	: public Object
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	/// レイヤーリストの取得
@@ -94,7 +94,7 @@ private:
 class SceneGraph2D
 	: public SceneGraph
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	static SceneGraph2DPtr create();
 
@@ -122,7 +122,7 @@ private:
 class SceneGraph3D
 	: public SceneGraph
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	bool	visibleGridPlane;
 

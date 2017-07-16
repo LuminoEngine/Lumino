@@ -40,7 +40,7 @@ struct LayerMask
 class WorldObject
 	: public Object
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	Transform	transform;
 
@@ -165,7 +165,7 @@ private:
 class WorldObject2D
 	: public WorldObject
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 LN_CONSTRUCT_ACCESS:
@@ -181,7 +181,7 @@ LN_CONSTRUCT_ACCESS:
 class WorldObject3D
 	: public WorldObject
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 LN_CONSTRUCT_ACCESS:

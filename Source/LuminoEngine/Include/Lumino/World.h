@@ -53,7 +53,7 @@ private:
 class World
 	: public Object
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	DrawList* getRenderer() const;
@@ -103,7 +103,7 @@ LN_INTERNAL_ACCESS:
 class World2D
 	: public World
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	//virtual DrawList* getRenderer() const override;
 
@@ -133,7 +133,7 @@ private:
 class World3D
 	: public World
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	void setVisibleGridPlane(bool visible) { m_visibleGridPlane = visible; }
 	//virtual DrawList* getRenderer() const override;

@@ -222,7 +222,7 @@ private:
 class CameraMouseMoveBehavior
 	: public Behavior
 {
-	LN_OBJECT();
+	LN_OBJECT;
 LN_CONSTRUCT_ACCESS:
 	CameraMouseMoveBehavior();
 	virtual ~CameraMouseMoveBehavior();
@@ -255,7 +255,7 @@ private:
 class Camera
 	: public WorldObject
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	CameraComponent* getCameraComponent() const;
 

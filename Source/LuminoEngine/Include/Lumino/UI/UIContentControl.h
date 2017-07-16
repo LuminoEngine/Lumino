@@ -11,7 +11,7 @@ LN_NAMESPACE_BEGIN
 class UIContentControl
 	: public UIControl
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	void setContent(UIElement* element);

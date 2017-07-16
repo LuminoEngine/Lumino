@@ -14,7 +14,7 @@ class PhysicsDebugDrawer;
 class PhysicsWorld
 	: public Object
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	//void AddRigidBody(RigidBody* rigidBody);

@@ -112,7 +112,7 @@ class UILayoutPanel
 	, public detail::ILayoutPanel
 	, public IScrollInfo
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	void addChild(UIElement* element);
 	void removeChild(UIElement* element);
@@ -161,7 +161,7 @@ private:
 class UIStackPanel
 	: public UILayoutPanel
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	static UIStackPanelPtr create();
 
@@ -188,7 +188,7 @@ private:
 class UIAbsoluteLayout
 	: public UILayoutPanel
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	static UIAbsoluteLayoutPtr create();
 
@@ -211,7 +211,7 @@ private:
 class UIGridLayout
 	: public UILayoutPanel
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	/**
