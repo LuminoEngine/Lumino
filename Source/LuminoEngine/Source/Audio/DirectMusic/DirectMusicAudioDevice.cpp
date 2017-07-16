@@ -45,7 +45,7 @@ void DirectMusicAudioDevice::initialize( const ConfigData& configData )
 //------------------------------------------------------------------------------
 AudioPlayer* DirectMusicAudioDevice::createAudioPlayer(AudioStream* source, bool enable3d, SoundPlayingMode mode)
 {
-	RefPtr<DirectMusicAudioPlayer> audioPlayer;
+	Ref<DirectMusicAudioPlayer> audioPlayer;
 
 	if (mode == SoundPlayingMode::Midi)
     {

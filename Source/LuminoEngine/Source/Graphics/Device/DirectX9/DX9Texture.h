@@ -72,7 +72,7 @@ private:
 	TextureFormat			m_format;
 	SizeI					m_size;
 	SizeI					m_realSize;
-	RefPtr<Bitmap>			m_lockedBitmap;
+	Ref<Bitmap>			m_lockedBitmap;
 };
 
 class DX9Texture3D
@@ -107,7 +107,7 @@ private:
 	SizeI						m_size;
 	int							m_depth;
 	SizeI						m_realSize;
-	RefPtr<Bitmap>				m_lockedBitmap;
+	Ref<Bitmap>				m_lockedBitmap;
 };
 
 /// レンダーターゲットテクスチャ

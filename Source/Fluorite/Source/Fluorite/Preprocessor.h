@@ -97,7 +97,7 @@ public:
 	//bool IsFreeze() const { return m_freeze; }
 
 private:
-	Array<RefPtr<MacroDefine>>			m_allMacroList;	// 過去に定義された全てのマクロ
+	Array<Ref<MacroDefine>>			m_allMacroList;	// 過去に定義された全てのマクロ
 	IdentifierMap<MacroDefine*>	m_macroMap;		// 再定義されたりしたものは一番新しいマクロが格納される
 	//bool						m_freeze;		// 変更禁止フラグ
 };
@@ -119,7 +119,7 @@ public:
 	{
 		if (m_core.get() == &m_sharedEmpty || m_core->GetReferenceCount() != 1)
 		{
-			auto newCore = RefPtr<MacroMap>::makeRef();
+			auto newCore = Ref<MacroMap>::makeRef();
 			if (!m_core.IsNull())
 			{
 				newCore->Copy(m_core);
@@ -138,7 +138,7 @@ public:
 
 
 private:
-	RefPtr<MacroMap>	m_core;
+	Ref<MacroMap>	m_core;
 	static MacroMap		m_sharedEmpty;
 };
 

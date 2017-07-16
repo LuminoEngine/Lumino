@@ -97,8 +97,8 @@ LN_INTERNAL_ACCESS:
 	//UIElement* GetVisualTreeRoot() { return m_visualTreeRoot; }
 
 private:
-	RefPtr<UIElementCollection>		m_items;
-	RefPtr<UILayoutPanel>			m_itemsHostPanel;
+	Ref<UIElementCollection>		m_items;
+	Ref<UILayoutPanel>			m_itemsHostPanel;
 
 	UIEventHandler::EventType		m_onSubmit;
 
@@ -119,7 +119,7 @@ class UIUserControl
 public:
 
 	/** UIUserControl のインスタンスを作成します。 */
-	static RefPtr<UIUserControl> create();
+	static Ref<UIUserControl> create();
 
 LN_CONSTRUCT_ACCESS:
 	UIUserControl();

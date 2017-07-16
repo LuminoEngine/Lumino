@@ -37,8 +37,8 @@ public:
 	virtual ~WGLGraphicsDevice();
 
 	// GLGraphicsDevice interface
-	virtual RefPtr<GLContext> initializeMainContext(const ConfigData& configData) override;
-	virtual RefPtr<GLContext> createContext(PlatformWindow* window) override;
+	virtual Ref<GLContext> initializeMainContext(const ConfigData& configData) override;
+	virtual Ref<GLContext> createContext(PlatformWindow* window) override;
 	virtual void makeCurrentContext(GLContext* context) override;
 
 	static PFNWGLGETEXTENSIONSSTRINGEXTPROC		GetExtensionsStringEXT;

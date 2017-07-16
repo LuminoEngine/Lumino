@@ -7,7 +7,7 @@ namespace detail { class CapturerContext; }
 class RenderTargetTexture;
 
 class FrameCapturer;
-using FrameCapturerPtr = RefPtr<FrameCapturer>;
+using FrameCapturerPtr = Ref<FrameCapturer>;
 
 class FrameCapturer
 	: public Object

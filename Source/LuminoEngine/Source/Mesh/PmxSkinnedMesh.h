@@ -117,10 +117,10 @@ public:
 	Color						Emissive;			///< 物体の発光色 ( 光源の影響を受けない色 )
 	float						Power;				///< 光沢の強さ
 
-	RefPtr<Shader>				Shader;				///< シェーダ
-	RefPtr<ln::Texture>			Texture;			///< テクスチャ
-	RefPtr<ln::Texture>			ToonTexture;		///< [PMD] トゥーンテクスチャ
-	RefPtr<ln::Texture>			SphereTexture;		///< [PMD] スフィアテクスチャ
+	Ref<Shader>				Shader;				///< シェーダ
+	Ref<ln::Texture>			Texture;			///< テクスチャ
+	Ref<ln::Texture>			ToonTexture;		///< [PMD] トゥーンテクスチャ
+	Ref<ln::Texture>			SphereTexture;		///< [PMD] スフィアテクスチャ
 
 	Color						ToonColor;			///< [PMD] トゥーンカラー
 	Color						EdgeColor;			///< [PMX] エッジカラー
@@ -147,7 +147,7 @@ public:
 		DrawingFlags = 0;
 	}
 
-	RefPtr<Material> MakeCommonMaterial() const;
+	Ref<Material> MakeCommonMaterial() const;
 };
 
 /// 共有ボーンデータ
@@ -405,12 +405,12 @@ public:
 	//String				Comment;			///< コメント
 	//String				EnglishComment;		///< コメント英
 
-	List<RefPtr<PmxMaterialResource>>	materials;	// マテリアルリスト
-	List<RefPtr<PmxBoneResource>>		bones;		// ボーンリスト
-	List<RefPtr<PmxIKResource>>		iks;		// IK リスト
-	List<RefPtr<PmxMorphResource>>		morphs;		// モーフリスト
-	List<RefPtr<PmxRigidBodyResource>>	rigidBodys;	// 剛体リスト
-	List<RefPtr<PmxJointResource>>		joints;		// ジョイントリスト
+	List<Ref<PmxMaterialResource>>	materials;	// マテリアルリスト
+	List<Ref<PmxBoneResource>>		bones;		// ボーンリスト
+	List<Ref<PmxIKResource>>		iks;		// IK リスト
+	List<Ref<PmxMorphResource>>		morphs;		// モーフリスト
+	List<Ref<PmxRigidBodyResource>>	rigidBodys;	// 剛体リスト
+	List<Ref<PmxJointResource>>		joints;		// ジョイントリスト
 };
 
 LN_NAMESPACE_END

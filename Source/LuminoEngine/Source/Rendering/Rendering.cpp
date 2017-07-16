@@ -124,30 +124,30 @@ void InternalContext::initialize(detail::GraphicsManager* manager)
 {
 	m_baseRenderer = manager->getRenderer();
 
-	m_primitiveRenderer = RefPtr<PrimitiveRenderFeature>::makeRef();
+	m_primitiveRenderer = Ref<PrimitiveRenderFeature>::makeRef();
 	m_primitiveRenderer->initialize(manager);
 
-	m_blitRenderer = RefPtr<BlitRenderer>::makeRef();
+	m_blitRenderer = Ref<BlitRenderer>::makeRef();
 	m_blitRenderer->initialize(manager);
 
-	m_meshRenderer = RefPtr<MeshRenderFeature>::makeRef();
+	m_meshRenderer = Ref<MeshRenderFeature>::makeRef();
 	m_meshRenderer->initialize(manager);
 
-	m_spriteRenderer = RefPtr<SpriteRenderFeature>::makeRef(manager, 2048);	// TODO
+	m_spriteRenderer = Ref<SpriteRenderFeature>::makeRef(manager, 2048);	// TODO
 
-	m_textRenderer = RefPtr<TextRenderer>::makeRef();
+	m_textRenderer = Ref<TextRenderer>::makeRef();
 	m_textRenderer->initialize(manager);
 
-	m_vectorTextRenderer = RefPtr<VectorTextRenderer>::makeRef();
+	m_vectorTextRenderer = Ref<VectorTextRenderer>::makeRef();
 	m_vectorTextRenderer->initialize(manager);
 
-	m_shapesRenderer = RefPtr<ShapesRenderFeature>::makeRef();
+	m_shapesRenderer = Ref<ShapesRenderFeature>::makeRef();
 	m_shapesRenderer->initialize(manager);
 
-	m_nanoVGRenderer = RefPtr<NanoVGRenderFeature>::makeRef();
+	m_nanoVGRenderer = Ref<NanoVGRenderFeature>::makeRef();
 	m_nanoVGRenderer->initialize(manager);
 
-	m_frameRectRenderer = RefPtr<FrameRectRenderFeature>::makeRef();
+	m_frameRectRenderer = Ref<FrameRectRenderFeature>::makeRef();
 	m_frameRectRenderer->initialize(manager);
 }
 
@@ -904,18 +904,18 @@ void DrawList::initialize(detail::GraphicsManager* manager)
 	// とりあえず 10 個くらい
 	for (int i = 0; i < 10; i++)
 	{
-		m_freeStateStack.add(RefPtr<StagingState>::makeRef());
+		m_freeStateStack.add(Ref<StagingState>::makeRef());
 	}
-	//m_aliveStateStack.add(RefPtr<StagingState>::makeRef());
+	//m_aliveStateStack.add(Ref<StagingState>::makeRef());
 }
 
 //------------------------------------------------------------------------------
 void DrawList::pushState()
 {
-	RefPtr<StagingState> state;
+	Ref<StagingState> state;
 	if (m_freeStateStack.isEmpty())
 	{
-		state = RefPtr<StagingState>::makeRef();
+		state = Ref<StagingState>::makeRef();
 	}
 	else
 	{
@@ -1328,7 +1328,7 @@ void DrawList::drawGlyphRun(const PointF& position, GlyphRun* glyphRun)
 	class DrawElement_DrawGlyphRun : public detail::DrawElement
 	{
 	public:
-		RefPtr<GlyphRun>	glyphRun;
+		Ref<GlyphRun>	glyphRun;
 		PointF position;
 		//virtual void makeElementInfo(detail::DrawElementList* oenerList, const detail::CameraInfo& cameraInfo, detail::ElementInfo* outInfo) override
 		//{
@@ -1351,7 +1351,7 @@ void DrawList::drawGlyphRun(const PointF& position, GlyphRun* glyphRun)
 
 	// TODO: オーバーライドされる場合の動作はちゃんと考えておこう。
 	// 3bd204b あたりの問題だけど、CombinedMaterial は 元 material のハッシュ値を覚えているので、それも変える必要がある。
-	//RefPtr<Texture> old = m_defaultMaterial->getMaterialTexture(nullptr);
+	//Ref<Texture> old = m_defaultMaterial->getMaterialTexture(nullptr);
 	//m_defaultMaterial->setMaterialTexture(m_state.state.getFont()->resolveRawFont()->GetGlyphTextureCache()->getGlyphsFillTexture());
 
 
@@ -1414,7 +1414,7 @@ void DrawList::drawText_(const StringRef& text, const Rect& rect, StringFormatFl
 
 	// TODO: オーバーライドされる場合の動作はちゃんと考えておこう。
 	// 3bd204b あたりの問題だけど、CombinedMaterial は 元 material のハッシュ値を覚えているので、それも変える必要がある。
-	//RefPtr<Texture> old = m_defaultMaterial->getMaterialTexture(nullptr);
+	//Ref<Texture> old = m_defaultMaterial->getMaterialTexture(nullptr);
 	//m_defaultMaterial->setMaterialTexture(m_state.state.getFont()->resolveRawFont()->GetGlyphTextureCache()->getGlyphsFillTexture());
 
 	detail::PriorityBatchState priorityState;
@@ -1508,7 +1508,7 @@ void DrawList::drawSprite(
 		Vector3 position;
 		Vector2 size;
 		Vector2 anchorRatio;
-		RefPtr<Texture> texture;
+		Ref<Texture> texture;
 		Rect srcRect;
 		Color color;
 		SpriteBaseDirection baseDirection;
@@ -1653,7 +1653,7 @@ void DrawList::drawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Mat
 	class DrawElement_DrawMeshResourceInternal : public detail::LightingDrawElement
 	{
 	public:
-		RefPtr<MeshResource>	mesh;
+		Ref<MeshResource>	mesh;
 		int startIndex;
 		int primitiveCount;
 		PrimitiveType primitiveType;
@@ -1689,7 +1689,7 @@ void DrawList::drawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Mat
 //	class DrawElement_DrawMeshInternal : public detail::LightingDrawElement
 //	{
 //	public:
-//		RefPtr<StaticMeshModel>	mesh;
+//		Ref<StaticMeshModel>	mesh;
 //		int startIndex;
 //		int primitiveCount;
 //		PrimitiveType primitiveType;
@@ -1720,7 +1720,7 @@ void DrawList::blitInternal(Texture* source, RenderTargetTexture* dest, const Ma
 	{
 	public:
 		Matrix			overrideTransform;
-		RefPtr<Texture>	source;
+		Ref<Texture>	source;
 
 		virtual void makeElementInfo(detail::DrawElementList* oenerList, const detail::CameraInfo& cameraInfo, const detail::PriorityBatchState& priorityState, RenderView* renderView, detail::ElementInfo* outInfo) override
 		{
@@ -1787,8 +1787,8 @@ void DrawList::drawFrameRectangle(const Rect& rect)
 //	public:
 //		RenderView* listSet;
 //		detail::SceneRenderer* renderer;
-//		RefPtr<RenderTargetTexture>	defaultRenderTarget;
-//		RefPtr<DepthBuffer> defaultDepthBuffer;
+//		Ref<RenderTargetTexture>	defaultRenderTarget;
+//		Ref<DepthBuffer> defaultDepthBuffer;
 //
 //		virtual void drawSubset(const DrawArgs& e) override
 //		{
@@ -1846,7 +1846,7 @@ void RenderView::filterWorldMatrix(Matrix* outMatrix)
 //------------------------------------------------------------------------------
 DrawList::StagingState::StagingState()
 {
-	//m_defaultMaterial = RefPtr<Material>::makeRef();
+	//m_defaultMaterial = Ref<Material>::makeRef();
 	//m_defaultMaterial->initialize();
 	reset();
 }

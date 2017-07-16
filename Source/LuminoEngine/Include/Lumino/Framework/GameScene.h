@@ -42,7 +42,7 @@ private:
 	void addGameObject(WorldObject* obj);
 	void update();
 
-	List<RefPtr<WorldObject>>	m_gameObjectList;
+	List<Ref<WorldObject>>	m_gameObjectList;
 
 	friend class WorldObject;
 	friend class detail::GameSceneManager;

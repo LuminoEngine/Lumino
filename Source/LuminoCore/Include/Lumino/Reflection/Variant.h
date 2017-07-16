@@ -182,7 +182,7 @@ public:
 	//}
 
 	template<typename T>
-	Variant(const RefPtr<T>& value)
+	Variant(const Ref<T>& value)
 		: Variant()
 	{
 		AccessorSelectorHelper<T*>::setValue(this, value.get());
@@ -208,12 +208,12 @@ public:
 
 
 	//template<typename T, EnumSubClass>
-	//Variant(RefPtr<T>& obj)
+	//Variant(Ref<T>& obj)
 	//{
 	//}
 
 	//template<class T>
-	//Variant(RefPtr<T>& obj);
+	//Variant(Ref<T>& obj);
 
 public:
 	VariantType getType() const { return m_type; }

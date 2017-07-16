@@ -89,11 +89,11 @@ public:
 
 private:
 	void ResetFileDiagnostics(InputFile* file);
-	RefPtr<AbstractLexer> CreateLexer(InputFile* file);
+	Ref<AbstractLexer> CreateLexer(InputFile* file);
 
-	List<RefPtr<InputFile>>		m_inputFileList;
+	List<Ref<InputFile>>		m_inputFileList;
 
-	RefPtr<DiagnosticsManager>	m_diagnosticsManager;
+	Ref<DiagnosticsManager>	m_diagnosticsManager;
 };
 
 } // namespace fl

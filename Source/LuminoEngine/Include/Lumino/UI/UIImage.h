@@ -12,8 +12,8 @@ class UIImage
 {
 	LN_OBJECT();
 public:
-	static RefPtr<UIImage> create();
-	static RefPtr<UIImage> create(const StringRef& filePath);
+	static Ref<UIImage> create();
+	static Ref<UIImage> create(const StringRef& filePath);
 
 
 	void setStretchType(StretchMode mode);
@@ -33,8 +33,8 @@ LN_CONSTRUCT_ACCESS:
 private:
 	Size measureInternal(Size contentSize);
 
-	//RefPtr<TextureBrush>	m_brush;
-	RefPtr<Texture>			m_texture;
+	//Ref<TextureBrush>	m_brush;
+	Ref<Texture>			m_texture;
 	StretchMode				m_stretchMode;
 };
 

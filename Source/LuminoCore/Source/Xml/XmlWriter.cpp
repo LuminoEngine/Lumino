@@ -337,7 +337,7 @@ void XmlWriter::indent(bool beforeEndElement)
 XmlFileWriter::XmlFileWriter(const PathName& filePath, Encoding* encoding)
 	: XmlWriter(NULL)
 {
-	RefPtr<StreamWriter> file(LN_NEW StreamWriter(filePath, encoding, FileWriteMode_Truncate), false);
+	Ref<StreamWriter> file(LN_NEW StreamWriter(filePath, encoding, FileWriteMode_Truncate), false);
 	initialize(file);
 }
 

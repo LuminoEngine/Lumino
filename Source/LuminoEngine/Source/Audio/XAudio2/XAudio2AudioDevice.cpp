@@ -145,7 +145,7 @@ void XAudio2AudioDevice::calcEmitterState(EmitterState* emitter)
 //------------------------------------------------------------------------------
 AudioPlayer* XAudio2AudioDevice::createAudioPlayer(AudioStream* audioStream, bool enable3d, SoundPlayingMode mode)
 {
-	RefPtr<AudioPlayer> audioPlayer;
+	Ref<AudioPlayer> audioPlayer;
 
     // 種類に応じてプレイヤーを作成する
 	switch ( mode )

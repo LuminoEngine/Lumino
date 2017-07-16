@@ -259,7 +259,7 @@ void NonShadingRenderer::initialize(GraphicsManager* manager)
 {
 	SceneRenderer::initialize(manager);
 
-	auto pass = RefPtr<detail::NonShadingRenderingPass>::makeRef();
+	auto pass = Ref<detail::NonShadingRenderingPass>::makeRef();
 	pass->initialize(manager);
 	addPass(pass);
 }
@@ -311,7 +311,7 @@ void ForwardShadingRenderer::initialize(GraphicsManager* manager)
 {
 	SceneRenderer::initialize(manager);
 
-	auto pass = RefPtr<detail::ForwardShadingRenderingPass>::makeRef();
+	auto pass = Ref<detail::ForwardShadingRenderingPass>::makeRef();
 	pass->initialize(manager);
 	addPass(pass);
 }
@@ -426,9 +426,9 @@ void InfomationRenderingPass::initialize(GraphicsManager* manager)
 //==============================================================================
 
 //------------------------------------------------------------------------------
-RefPtr<CombinedMaterial> CombinedMaterialCache::createObject()
+Ref<CombinedMaterial> CombinedMaterialCache::createObject()
 {
-	auto m = RefPtr<CombinedMaterial>::makeRef();
+	auto m = Ref<CombinedMaterial>::makeRef();
 	return m;
 }
 

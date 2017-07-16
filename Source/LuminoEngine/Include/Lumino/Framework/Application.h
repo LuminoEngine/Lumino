@@ -74,7 +74,7 @@ LN_INTERNAL_ACCESS:
 	void initialize();
 
 private:
-	RefPtr<detail::GameSceneManager>	m_gameSceneManager;
+	Ref<detail::GameSceneManager>	m_gameSceneManager;
 	
 };
 

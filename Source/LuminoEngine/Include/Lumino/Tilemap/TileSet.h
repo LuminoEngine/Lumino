@@ -6,7 +6,7 @@ LN_NAMESPACE_BEGIN
 class Texture;
 class Material;
 class TileSet;
-typedef RefPtr<TileSet> TileSetPtr;
+typedef Ref<TileSet> TileSetPtr;
 
 /**
 	@brief	
@@ -45,7 +45,7 @@ private:
 	};
 	
 	Texture*	m_imageSource;
-	RefPtr<Material>	m_material;
+	Ref<Material>	m_material;
 	SizeI		m_tileSize;
 	int			m_tileCountH;
 	//PathName	m_imageFilePath;

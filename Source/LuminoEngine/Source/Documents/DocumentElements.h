@@ -50,7 +50,7 @@ private:
 	void replace(int offset, int length, const UTF32* text, int len);
 
 	DocumentsManager*		m_manager;
-	List<RefPtr<Block>>		m_blockList;
+	List<Ref<Block>>		m_blockList;
 };
 
 /**
@@ -143,7 +143,7 @@ LN_INTERNAL_ACCESS:
 private:
 	DocumentsManager*		m_manager;
 	FontData				m_fontData;
-	RefPtr<Brush>			m_foreground;
+	Ref<Brush>			m_foreground;
 	bool					m_fontDataModified;
 
 	// layout data
@@ -182,11 +182,11 @@ protected:
 	virtual Size arrangeOverride(const Size& finalSize) override;
 
 LN_INTERNAL_ACCESS:
-	void insertInlines(int index, const List<RefPtr<Inline>>& inlines);
-	const List<RefPtr<Inline>>& getInlines() const { return m_inlines; }
+	void insertInlines(int index, const List<Ref<Inline>>& inlines);
+	const List<Ref<Inline>>& getInlines() const { return m_inlines; }
 
 private:
-	List<RefPtr<Inline>>	m_inlines;
+	List<Ref<Inline>>	m_inlines;
 };
 
 /**
@@ -242,7 +242,7 @@ protected:
 
 private:
 	GenericStringBuilderCore<UTF32>	m_text;
-	RefPtr<GlyphRun>				m_glyphRun;
+	Ref<GlyphRun>				m_glyphRun;
 };
 
 /**
@@ -298,7 +298,7 @@ public:
 
 private:
 public:	// TODO:
-	List<RefPtr<VisualTextElement>>	m_visualTextElementList;
+	List<Ref<VisualTextElement>>	m_visualTextElementList;
 };
 
 
@@ -315,8 +315,8 @@ public:
 private:
 	void rebuildVisualLineList();
 
-	RefPtr<Paragraph>			m_paragraph;
-	List<RefPtr<VisualLine>>	m_visualLineList;
+	Ref<Paragraph>			m_paragraph;
+	List<Ref<VisualLine>>	m_visualLineList;
 };
 
 //

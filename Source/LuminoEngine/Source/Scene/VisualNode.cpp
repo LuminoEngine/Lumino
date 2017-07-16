@@ -32,13 +32,13 @@ void MaterialList2::initialize(int subMaterialCount, bool createMainMaterial)
 	resize(subMaterialCount);
 	for (int i = 0; i < subMaterialCount; ++i)
 	{
-		auto m = RefPtr<Material>::makeRef();	// TODO
+		auto m = Ref<Material>::makeRef();	// TODO
 		getAt(i, m);
 	}
 
 	if (createMainMaterial)
 	{
-		m_mainMaterial = RefPtr<Material>::makeRef();	// TODO
+		m_mainMaterial = Ref<Material>::makeRef();	// TODO
 	}
 }
 
@@ -56,7 +56,7 @@ void MaterialList2::copyShared(MaterialList* srcList, bool createMainMaterial)
 
 	if (createMainMaterial)
 	{
-		m_mainMaterial = RefPtr<Material>::makeRef();
+		m_mainMaterial = Ref<Material>::makeRef();
 	}
 	else if (getCount() > 0)
 	{

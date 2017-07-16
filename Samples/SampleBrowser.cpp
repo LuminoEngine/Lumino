@@ -50,9 +50,9 @@ SampleMainFunc registerSample(const char* group1, const char* group2, const char
 } // namespace sample
 
 int						g_samplesIndex = 0;
-RefPtr<UIToggleButton>	g_pinButton;
-RefPtr<UIUserControl>	g_listWindow;
-RefPtr<AnimationClock>	g_clock;
+Ref<UIToggleButton>	g_pinButton;
+Ref<UIUserControl>	g_listWindow;
+Ref<AnimationClock>	g_clock;
 
 void showListWindow()
 {

@@ -36,7 +36,7 @@ public:
 
 	GraphicsManager* getGraphicsManager() const { return m_graphicsManager; }
 
-	RefPtr<Font> getDefaultFont() const { return m_defaultFont; }
+	Ref<Font> getDefaultFont() const { return m_defaultFont; }
 
 	// フォントファイルを追加する (ttf)
 	void registerFontFile(const String& fontFilePath);
@@ -110,13 +110,13 @@ LN_INTERNAL_ACCESS:
 	typedef std::pair<intptr_t, TTFDataEntry>    TTFDataEntryPair;
 	TTFDataEntryMap			m_ttfDataEntryMap;
 
-	RefPtr<FileManager>		m_fileManager;
+	Ref<FileManager>		m_fileManager;
 	GraphicsManager*		m_graphicsManager;
-	RefPtr<CacheManager>	m_rawFontCache;
-	RefPtr<Font>			m_defaultFont;
-	RefPtr<RawFont>			m_defaultRawFont;
+	Ref<CacheManager>	m_rawFontCache;
+	Ref<Font>			m_defaultFont;
+	Ref<RawFont>			m_defaultRawFont;
 	String					m_defaultFontName;
-	List<RefPtr<Font>>		m_builtinFontList;
+	List<Ref<Font>>		m_builtinFontList;
 	List<RawFont*>			m_fontResourceList;
 
 	EncodingConverter		m_charToUTF32Converter;

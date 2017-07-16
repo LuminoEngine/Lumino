@@ -254,7 +254,7 @@ VisualEffect* EffekseerEffectEngine::CreateEffectCore(const PathName& filePath)
 	CacheKey key(filePath);
 
 	// キャッシュ検索
-	RefPtr<EffekseerEffectCore> core(static_cast<EffekseerEffectCore*>(m_effectCoreCache->findObjectAddRef(key)), false);
+	Ref<EffekseerEffectCore> core(static_cast<EffekseerEffectCore*>(m_effectCoreCache->findObjectAddRef(key)), false);
 	if (core != nullptr) {
 		core.safeAddRef();
 		return core;

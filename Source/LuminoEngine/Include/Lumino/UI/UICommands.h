@@ -12,7 +12,7 @@ class UIRoutedCommand
 {
 	LN_OBJECT();
 public:
-	static RefPtr<UIRoutedCommand> create();
+	static Ref<UIRoutedCommand> create();
 
 LN_CONSTRUCT_ACCESS:
 	UIRoutedCommand();

@@ -67,8 +67,8 @@ public:
 	MemoryStream* getUniformTempBuffer() { return &m_uniformTempBuffer; }
 	BinaryWriter* getUniformTempBufferWriter() { return &m_uniformTempBufferWriter; }
 
-	virtual RefPtr<GLContext> initializeMainContext(const ConfigData& configData) = 0;
-	virtual RefPtr<GLContext> createContext(PlatformWindow* window) = 0;
+	virtual Ref<GLContext> initializeMainContext(const ConfigData& configData) = 0;
+	virtual Ref<GLContext> createContext(PlatformWindow* window) = 0;
 	virtual void makeCurrentContext(GLContext* context) = 0;
 
 public:
@@ -83,16 +83,16 @@ public:
 	virtual void detachRenderingThread() override;
 
 private:
-	virtual RefPtr<IVertexDeclaration> createVertexDeclarationImplement(const VertexElement* elements, int elementsCount) override;
-	virtual RefPtr<IVertexBuffer> createVertexBufferImplement(size_t bufferSize, const void* data, ResourceUsage usage) override;
-	virtual RefPtr<IIndexBuffer> createIndexBufferImplement(int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage) override;
-	virtual RefPtr<ITexture> createTextureImplement(const SizeI& size, bool mipmap, TextureFormat format, const void* initialData) override;
-	virtual RefPtr<ITexture> createTexturePlatformLoadingImplement(Stream* stream, bool mipmap, TextureFormat format) override { return NULL; }
-	virtual RefPtr<ITexture> createTexture3DImplement(int width, int height, int depth, uint32_t mipLevels, TextureFormat format, ResourceUsage usage, const void* initialData) override;
-	virtual RefPtr<ITexture> ceateRenderTargetImplement(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format) override;
-	virtual RefPtr<ITexture> createDepthBufferImplement(uint32_t width, uint32_t height, TextureFormat format) override;
-	virtual RefPtr<IShader> createShaderImplement(const void* textData, size_t size, ShaderCompileResult* result) override;
-	virtual RefPtr<ISwapChain> createSwapChainImplement(PlatformWindow* window) override;
+	virtual Ref<IVertexDeclaration> createVertexDeclarationImplement(const VertexElement* elements, int elementsCount) override;
+	virtual Ref<IVertexBuffer> createVertexBufferImplement(size_t bufferSize, const void* data, ResourceUsage usage) override;
+	virtual Ref<IIndexBuffer> createIndexBufferImplement(int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage) override;
+	virtual Ref<ITexture> createTextureImplement(const SizeI& size, bool mipmap, TextureFormat format, const void* initialData) override;
+	virtual Ref<ITexture> createTexturePlatformLoadingImplement(Stream* stream, bool mipmap, TextureFormat format) override { return NULL; }
+	virtual Ref<ITexture> createTexture3DImplement(int width, int height, int depth, uint32_t mipLevels, TextureFormat format, ResourceUsage usage, const void* initialData) override;
+	virtual Ref<ITexture> ceateRenderTargetImplement(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format) override;
+	virtual Ref<ITexture> createDepthBufferImplement(uint32_t width, uint32_t height, TextureFormat format) override;
+	virtual Ref<IShader> createShaderImplement(const void* textData, size_t size, ShaderCompileResult* result) override;
+	virtual Ref<ISwapChain> createSwapChainImplement(PlatformWindow* window) override;
 	virtual DeviceState getDeviceState() override { return m_deviceState; }
 	virtual void resetDevice() override;
 	virtual void onLostDevice() override;
@@ -106,14 +106,14 @@ protected:
 
 private:
 	DeviceState					m_deviceState;
-	RefPtr<PlatformWindow>		m_mainWindow;
+	Ref<PlatformWindow>		m_mainWindow;
 	int							m_openGLMajorVersion;
 	int							m_openGLMinorVersion;
 
-	RefPtr<GLContext>			m_mainContext;
-	RefPtr<GLContext>			m_mainRenderingContext;
-	RefPtr<GLSwapChain>			m_defaultSwapChain;
-	RefPtr<GLRenderer>			m_renderer;
+	Ref<GLContext>			m_mainContext;
+	Ref<GLContext>			m_mainRenderingContext;
+	Ref<GLSwapChain>			m_defaultSwapChain;
+	Ref<GLRenderer>			m_renderer;
 
 	MemoryStream				m_uniformTempBuffer;
 	BinaryWriter				m_uniformTempBufferWriter;

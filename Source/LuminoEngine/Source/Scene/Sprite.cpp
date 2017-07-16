@@ -316,19 +316,19 @@ void SpriteBase::setAnchorPoint(float ratioX, float ratioY)
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sprite2D, SpriteBase);
 
 //------------------------------------------------------------------------------
-RefPtr<Sprite2D> Sprite2D::create()
+Ref<Sprite2D> Sprite2D::create()
 {
 	return newObject<Sprite2D>();
 }
 
 //------------------------------------------------------------------------------
-RefPtr<Sprite2D> Sprite2D::create(const StringRef& filePath)
+Ref<Sprite2D> Sprite2D::create(const StringRef& filePath)
 {
 	return newObject<Sprite2D>(filePath);
 }
 
 //------------------------------------------------------------------------------
-RefPtr<Sprite2D> Sprite2D::create(Texture* texture)
+Ref<Sprite2D> Sprite2D::create(Texture* texture)
 {
 	return newObject<Sprite2D>(texture);
 }
@@ -392,13 +392,13 @@ SpriteComponent* Sprite2D::getSpriteComponent() const
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sprite3D, SpriteBase);
 
 //------------------------------------------------------------------------------
-RefPtr<Sprite3D> Sprite3D::create()
+Ref<Sprite3D> Sprite3D::create()
 {
 	return newObject<Sprite3D>();
 }
 
 //------------------------------------------------------------------------------
-RefPtr<Sprite3D> Sprite3D::create(float width, float height, Texture* texture)
+Ref<Sprite3D> Sprite3D::create(float width, float height, Texture* texture)
 {
 	return newObject<Sprite3D>(width, height, texture);
 }

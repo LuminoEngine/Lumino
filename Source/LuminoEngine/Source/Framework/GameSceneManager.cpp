@@ -166,7 +166,7 @@ void GameSceneManager::executeCommands()
 			/////////////// 呼び出し元へ戻る
 			case EventType::Return:
 			{
-				RefPtr<GameScene> oldScene = m_activeScene;
+				Ref<GameScene> oldScene = m_activeScene;
 				m_activeScene = m_sceneStack.top();
 				oldScene->onTerminate();
 				break;

@@ -41,12 +41,12 @@ private:
 	struct EventCommsnd
 	{
 		EventType			type;
-		RefPtr<GameScene>   scene;
+		Ref<GameScene>   scene;
 	};
 
-	RefPtr<GameScene>				m_activeScene;
+	Ref<GameScene>				m_activeScene;
 	std::deque<EventCommsnd>		m_eventQueue;
-	std::stack<RefPtr<GameScene>>	m_sceneStack;	// not contains m_activeScene
+	std::stack<Ref<GameScene>>	m_sceneStack;	// not contains m_activeScene
 };
 
 } // namespace detail

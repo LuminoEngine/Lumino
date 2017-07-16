@@ -62,8 +62,8 @@ void UIFrameWindow::initialize()
 	m_manager = detail::EngineDomain::getUIManager();
 
 	WindowCreationSettings ws;
-	RefPtr<PlatformWindow> window(m_manager->getPlatformManager()->getWindowManager()->createSubWindow(ws), false);
-	auto swapChain = RefPtr<SwapChain>::makeRef();
+	Ref<PlatformWindow> window(m_manager->getPlatformManager()->getWindowManager()->createSubWindow(ws), false);
+	auto swapChain = Ref<SwapChain>::makeRef();
 	swapChain->initializeSub(m_manager->getGraphicsManager(), window);
 
 	initialize(window, swapChain, UIContext::getMainContext());
@@ -187,7 +187,7 @@ void UIFrameWindow::initialize_UIRenderer()
 
 	// lighting disabled.
 	// TODO: newObject
-	auto internalRenderer = RefPtr<detail::NonShadingRenderer>::makeRef();
+	auto internalRenderer = Ref<detail::NonShadingRenderer>::makeRef();
 	internalRenderer->initialize(manager->getGraphicsManager());
 	m_internalRenderer = internalRenderer;
 
@@ -274,7 +274,7 @@ void UIMainWindow::initialize(PlatformWindow* platformWindow, World2D* defaultWo
 
 
 	// TODO: m_mainUIViewport を VisualTree の先頭に入れたい対策。InsertVisualTree とかほしいなぁ。。。
-	//RefPtr<UILayoutPanel> panel = getLayoutPanel();
+	//Ref<UILayoutPanel> panel = getLayoutPanel();
 	//setLayoutPanel(nullptr);
 
 	m_mainUIViewport = newObject<UIViewport>();
@@ -418,9 +418,9 @@ void UINativeHostWindow::initialize(intptr_t windowHandle)
 	//bool	fullscreen = false;				// フルスクリーンモードで作成するかどうか
 	//bool	resizable = true;				// 可変ウィンドウとして作成するかどうか
 	ws.userWindow = windowHandle;
-	RefPtr<PlatformWindow> window(manager->getPlatformManager()->getWindowManager()->createSubWindow(ws), false);
+	Ref<PlatformWindow> window(manager->getPlatformManager()->getWindowManager()->createSubWindow(ws), false);
 
-	auto swap = RefPtr<SwapChain>::makeRef();
+	auto swap = Ref<SwapChain>::makeRef();
 	swap->initializeSub(manager->getGraphicsManager(), window);
 
 

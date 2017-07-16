@@ -86,7 +86,7 @@ private:
 		bool	IndentSkip;
 	};
 
-	RefPtr<TextWriter>		m_textWriter;
+	Ref<TextWriter>		m_textWriter;
 	State					m_state;
 	Stack<ElementInfo>		m_elementStack;
 	String					m_indentString;

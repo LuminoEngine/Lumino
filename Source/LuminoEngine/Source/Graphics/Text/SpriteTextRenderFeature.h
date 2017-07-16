@@ -64,7 +64,7 @@ private:
 
 	//GraphicsManager*		m_manager;
 	//Driver::IRenderer*		m_renderer;
-	//RefPtr<Driver::IVertexDeclaration>	m_vertexDeclaration;
+	//Ref<Driver::IVertexDeclaration>	m_vertexDeclaration;
 	Driver::IVertexBuffer*	m_vertexBuffer;
 	Driver::IIndexBuffer*	m_indexBuffer;
 	CacheBuffer<Vertex>		m_vertexCache;
@@ -110,8 +110,8 @@ private:
 	TextRendererCore*	m_core;
 	List<TextRendererCore::GlyphRunData>	m_glyphLayoutDataList;
 
-	RefPtr<RawFont>		m_font;
-	RefPtr<Brush>		m_fillBrush;
+	Ref<RawFont>		m_font;
+	Ref<Brush>		m_fillBrush;
 	bool				m_flushRequested;
 };
 

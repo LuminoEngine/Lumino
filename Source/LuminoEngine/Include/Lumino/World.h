@@ -74,7 +74,7 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 LN_INTERNAL_ACCESS:
-	//const RefPtr<DrawList>& getInsideWorldRenderer() const { return m_insideWorldRenderer; }
+	//const Ref<DrawList>& getInsideWorldRenderer() const { return m_insideWorldRenderer; }
 	virtual void reginUpdateFrame();
 	virtual void updateFrame(float elapsedTime);
 
@@ -86,12 +86,12 @@ LN_INTERNAL_ACCESS:
 	EventConnection connectOnUIEvent(UIEventHandler handler);
 
 
-	List<RefPtr<WorldObject>>			m_rootWorldObjectList;
-	RefPtr<RenderingContext>			m_renderer;
-	//RefPtr<DrawList>					m_insideWorldRenderer;
-	RefPtr<DrawList>					m_debugRenderer;
-	RefPtr<Material>					m_debugRendererDefaultMaterial;	// TODO: DebugDrawList みたいに派生させてまとめたほうがいいかな・・・
-	List<RefPtr<OffscreenWorldView>>	m_offscreenWorldViewList;
+	List<Ref<WorldObject>>			m_rootWorldObjectList;
+	Ref<RenderingContext>			m_renderer;
+	//Ref<DrawList>					m_insideWorldRenderer;
+	Ref<DrawList>					m_debugRenderer;
+	Ref<Material>					m_debugRendererDefaultMaterial;	// TODO: DebugDrawList みたいに派生させてまとめたほうがいいかな・・・
+	List<Ref<OffscreenWorldView>>	m_offscreenWorldViewList;
 	List<int>							m_offscreenIdStorage;
 
 	UIEventHandler::EventType			m_onEvent;
@@ -123,8 +123,8 @@ LN_INTERNAL_ACCESS:
 	virtual void render(RenderingContext* context, WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen) override;
 
 private:
-	RefPtr<SceneGraph2D>		m_sceneGraph;
-	RefPtr<Camera>				m_mainCamera;
+	Ref<SceneGraph2D>		m_sceneGraph;
+	Ref<Camera>				m_mainCamera;
 };
 
 /**
@@ -159,11 +159,11 @@ private:
 	void renderGridPlane(DrawList* renderer, RenderView* renderView);
 	void adjustGridPlane(RenderView* renderView);
 
-	RefPtr<PhysicsWorld>		m_physicsWorld;
-	RefPtr<SceneGraph3D>		m_sceneGraph;
-	RefPtr<Camera>				m_mainCamera;
-	RefPtr<Light>				m_mainLight;
-	RefPtr<StaticMeshModel>		m_gridPlane;
+	Ref<PhysicsWorld>		m_physicsWorld;
+	Ref<SceneGraph3D>		m_sceneGraph;
+	Ref<Camera>				m_mainCamera;
+	Ref<Light>				m_mainLight;
+	Ref<StaticMeshModel>		m_gridPlane;
 	bool						m_visibleGridPlane;
 };
 

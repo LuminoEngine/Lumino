@@ -214,7 +214,7 @@ TEST_F(Test_UI_GridLayout, Basic)
 	//        また GridLayout(UIElement) のデフォルトの Alignment が Stretch であるため。
 	{
 		auto uiRoot = GetUIRoot();
-		RefPtr<UILayoutPanel> oldLayot = uiRoot->getLayoutPanel();
+		Ref<UILayoutPanel> oldLayot = uiRoot->getLayoutPanel();
 
 		auto grid = UIGridLayout::create();
 		grid->setBackground(Brush::Blue);
@@ -257,7 +257,7 @@ TEST_F(Test_UI_GridLayout, DefaultLayout)
 	// <Test> GridLayout へサイズ指定無しの子要素を追加する場合、UIElement のデフォルトの Alignment(Stretch) に従い引き伸ばされる。
 	{
 		auto uiRoot = GetUIRoot();
-		RefPtr<UILayoutPanel> oldLayot = uiRoot->getLayoutPanel();
+		Ref<UILayoutPanel> oldLayot = uiRoot->getLayoutPanel();
 
 		auto grid1 = UIGridLayout::create();
 		uiRoot->setLayoutPanel(grid1);
@@ -277,7 +277,7 @@ TEST_F(Test_UI_GridLayout, DefaultLayout)
 TEST_F(Test_UI_GridLayout, layout)
 {
 	auto uiRoot = GetUIRoot();
-	RefPtr<UILayoutPanel> oldLayot = uiRoot->getLayoutPanel();
+	Ref<UILayoutPanel> oldLayot = uiRoot->getLayoutPanel();
 
 	auto grid1 = UIGridLayout::create(4, 4);
 	uiRoot->setLayoutPanel(grid1);
@@ -341,7 +341,7 @@ TEST_F(Test_UI_GridLayout, layout)
 TEST_F(Test_UI_GridLayout, TreeLayout)
 {
 	auto uiRoot = GetUIRoot();
-	RefPtr<UILayoutPanel> oldLayot = uiRoot->getLayoutPanel();
+	Ref<UILayoutPanel> oldLayot = uiRoot->getLayoutPanel();
 
 	auto grid1 = UIGridLayout::create(2, 2);
 	uiRoot->setLayoutPanel(grid1);
@@ -384,7 +384,7 @@ TEST_F(Test_UI_GridLayout, TreeLayout)
 TEST_F(Test_UI_GridLayout, GridLength)
 {
 	auto uiRoot = GetUIRoot();
-	RefPtr<UILayoutPanel> oldLayot = uiRoot->getLayoutPanel();
+	Ref<UILayoutPanel> oldLayot = uiRoot->getLayoutPanel();
 
 	auto grid1 = UIGridLayout::create();
 	uiRoot->setLayoutPanel(grid1);
@@ -429,7 +429,7 @@ TEST_F(Test_UI_GridLayout, GridLength)
 TEST_F(Test_UI_GridLayout, MinMax)
 {
 	auto uiRoot = GetUIRoot();
-	RefPtr<UILayoutPanel> oldLayot = uiRoot->getLayoutPanel();
+	Ref<UILayoutPanel> oldLayot = uiRoot->getLayoutPanel();
 
 	auto grid1 = UIGridLayout::create();
 	uiRoot->setLayoutPanel(grid1);

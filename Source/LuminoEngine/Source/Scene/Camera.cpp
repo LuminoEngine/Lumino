@@ -631,18 +631,18 @@ void CameraViewportLayer::initialize(SceneGraphManager* manager, World* targetWo
 
 	if (m_hostingCamera->GetProjectionMode() == CameraProjection_3D)
 	{
-		auto internalRenderer = RefPtr<detail::ForwardShadingRenderer>::makeRef();
+		auto internalRenderer = Ref<detail::ForwardShadingRenderer>::makeRef();
 		internalRenderer->initialize(manager->GetGraphicsManager());
 		m_internalRenderer = internalRenderer;
 	}
 	else
 	{
-		auto internalRenderer = RefPtr<detail::NonShadingRenderer>::makeRef();
+		auto internalRenderer = Ref<detail::NonShadingRenderer>::makeRef();
 		internalRenderer->initialize(manager->GetGraphicsManager());
 		m_internalRenderer = internalRenderer;
 	}
 
-	//auto pass = RefPtr<detail::RenderingPass2>::MakeRef();
+	//auto pass = Ref<detail::RenderingPass2>::MakeRef();
 	//pass->initialize(manager->getGraphicsManager());
 	//AddRenderingPass(pass);
 }
@@ -662,7 +662,7 @@ void CameraViewportLayer::SetDebugDrawFlags(WorldDebugDrawFlags flags)
 //------------------------------------------------------------------------------
 tr::GizmoModel* CameraViewportLayer::CreateGizmo()
 {
-	m_gizmo = RefPtr<tr::GizmoModel>::makeRef();
+	m_gizmo = Ref<tr::GizmoModel>::makeRef();
 	m_gizmo->initialize(detail::EngineDomain::GetGraphicsManager());
 	return m_gizmo;
 }
@@ -793,13 +793,13 @@ void CameraViewportLayer2::initialize(World* targetWorld, CameraComponent* hosti
 
 	if (m_hostingCamera->getProjectionMode() == CameraProjection_3D)
 	{
-		auto internalRenderer = RefPtr<detail::ForwardShadingRenderer>::makeRef();
+		auto internalRenderer = Ref<detail::ForwardShadingRenderer>::makeRef();
 		internalRenderer->initialize(detail::EngineDomain::getGraphicsManager());
 		m_internalRenderer = internalRenderer;
 	}
 	else
 	{
-		auto internalRenderer = RefPtr<detail::NonShadingRenderer>::makeRef();
+		auto internalRenderer = Ref<detail::NonShadingRenderer>::makeRef();
 		internalRenderer->initialize(detail::EngineDomain::getGraphicsManager());
 		m_internalRenderer = internalRenderer;
 	}

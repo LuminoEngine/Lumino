@@ -24,7 +24,7 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 private:
-	RefPtr<UIPopup>	m_popup;
+	Ref<UIPopup>	m_popup;
 };
 
 } // namespace detail
@@ -99,7 +99,7 @@ private:
 
 	Size				m_viewPixelSize;
 
-	List<RefPtr<detail::UIPopuoContainer>>	m_popupContainers;
+	List<Ref<detail::UIPopuoContainer>>	m_popupContainers;
 };
 
 LN_NAMESPACE_END

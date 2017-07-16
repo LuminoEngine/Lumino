@@ -47,7 +47,7 @@ void DiagnosticsManager::clear()
 //------------------------------------------------------------------------------
 DiagnosticsItemSet* DiagnosticsManager::CreateItemSet(const PathNameA& absFilePath)
 {
-	auto ptr = RefPtr<DiagnosticsItemSet>::makeRef(absFilePath);
+	auto ptr = Ref<DiagnosticsItemSet>::makeRef(absFilePath);
 	m_itemSetList.add(ptr);
 	return ptr;
 }

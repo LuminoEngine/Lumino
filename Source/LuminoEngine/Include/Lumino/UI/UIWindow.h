@@ -12,7 +12,7 @@ class UIWindow
 {
 	LN_OBJECT();
 public:
-	static RefPtr<UIWindow> create();
+	static Ref<UIWindow> create();
 
 protected:
 	virtual void onRoutedEvent(UIEventArgs* e) override;

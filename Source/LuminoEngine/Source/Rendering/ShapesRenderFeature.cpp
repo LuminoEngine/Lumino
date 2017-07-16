@@ -100,9 +100,9 @@ void ShapesRendererCommandList::addDrawBoxShadow(const Rect& rect, const CornerR
 //==============================================================================
 
 //------------------------------------------------------------------------------
-RefPtr<ShapesRendererCommandList> ShapesRendererCommandListCache::createObject()
+Ref<ShapesRendererCommandList> ShapesRendererCommandListCache::createObject()
 {
-	return RefPtr<ShapesRendererCommandList>::makeRef();
+	return Ref<ShapesRendererCommandList>::makeRef();
 }
 
 //==============================================================================
@@ -1128,7 +1128,7 @@ ShapesRenderFeature::~ShapesRenderFeature()
 void ShapesRenderFeature::initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
-	m_core = RefPtr<ShapesRendererCore>::makeRef();
+	m_core = Ref<ShapesRendererCore>::makeRef();
 	m_core->initialize(m_manager);
 }
 
@@ -1139,8 +1139,8 @@ void ShapesRenderFeature::executeCommand(ShapesRendererCommandList* commandList)
 
 	LN_ENQUEUE_RENDER_COMMAND_3(
 		executeCommand, m_manager,
-		RefPtr<ShapesRendererCore>, m_core,
-		RefPtr<ShapesRendererCommandList>, commandList,
+		Ref<ShapesRendererCore>, m_core,
+		Ref<ShapesRendererCommandList>, commandList,
 		detail::BrushRawData, m_fillBrush,
 		{
 			m_core->renderCommandList(commandList, &m_fillBrush);

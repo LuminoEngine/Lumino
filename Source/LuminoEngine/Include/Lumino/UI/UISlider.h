@@ -31,7 +31,7 @@ public:
 	/**
 		@brief		UISlider を作成します。
 	*/
-	static RefPtr<UISlider> create();
+	static Ref<UISlider> create();
 
 	/**
 		@brief		UISlider を作成します。
@@ -39,7 +39,7 @@ public:
 		@param[in]	minimum	: 最小値
 		@param[in]	maximum	: 最大値
 	*/
-	static RefPtr<UISlider> create(float value, float minimum = 0.0f, float maximum = 1.0f);
+	static Ref<UISlider> create(float value, float minimum = 0.0f, float maximum = 1.0f);
 
 public:
 
@@ -69,7 +69,7 @@ LN_CONSTRUCT_ACCESS:
 private:
 	void updateValue(float value);
 
-	RefPtr<UITrack>		m_track;
+	Ref<UITrack>		m_track;
 	float				m_dragStartValue;
 };
 

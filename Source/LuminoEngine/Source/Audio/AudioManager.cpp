@@ -68,7 +68,7 @@ void AudioManager::initialize(const Settings& settings)
 #ifdef LN_OS_WIN32
 	if (m_audioDevice == NULL)
 	{
-		RefPtr<XAudio2AudioDevice> device(LN_NEW XAudio2AudioDevice(), false);
+		Ref<XAudio2AudioDevice> device(LN_NEW XAudio2AudioDevice(), false);
 		if (device->initialize()) {
 			device.safeAddRef();
 			m_audioDevice = device;
@@ -77,7 +77,7 @@ void AudioManager::initialize(const Settings& settings)
 	}
 	if (m_midiAudioDevice == NULL)
 	{
-		RefPtr<DirectMusicAudioDevice> device(LN_NEW DirectMusicAudioDevice(), false);
+		Ref<DirectMusicAudioDevice> device(LN_NEW DirectMusicAudioDevice(), false);
 		DirectMusicAudioDevice::ConfigData data;
 		data.DMInitMode = settings.directMusicInitMode;
 		data.hWnd = (HWND)settings.hWnd;
@@ -150,7 +150,7 @@ AudioStream* AudioManager::createAudioStream(Stream* stream, const CacheKey& key
 {
 	// キャッシュを検索する。
 	// 見つかった AudioStream は、まだ非同期初期化中であることもある。
-	RefPtr<AudioStream> audioStream((AudioStream*)m_audioStreamCache->findObjectAddRef(key), false);
+	Ref<AudioStream> audioStream((AudioStream*)m_audioStreamCache->findObjectAddRef(key), false);
 
 	// キャッシュに見つからなかったら新しく作る
 	if (audioStream.isNull())

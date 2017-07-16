@@ -2,17 +2,17 @@
 
 
 MyObject*			m_obj1;
-RefPtr<MyObject>*	m_obj2;
+Ref<MyObject>*	m_obj2;
 MyObject			m_obj3;
 
 ar & NewObjectNVP("obj1", m_obj1);	// 良くない
 ar & MakeNVP("obj1", *m_obj1);		// OK (あらかじめ new)
-ar & NewObjectNVP("obj2", m_obj2);	// OK	→ MakeMVP で RefPtr<> のみ特殊扱い、で。そうすると List のシリアライズが楽になる
+ar & NewObjectNVP("obj2", m_obj2);	// OK	→ MakeMVP で Ref<> のみ特殊扱い、で。そうすると List のシリアライズが楽になる
 ar & MakeNVP("obj", m_obj3);		// OK
 
 
 List<MyObject*>			m_list1;	// だめ
-List<RefPtr<MyObject>>	m_list2;
+List<Ref<MyObject>>	m_list2;
 
 ar & MakeNVP("list2", m_list2);
 
@@ -293,7 +293,7 @@ const TCHAR* Archive::ClassVersionKey = _T("_ln_class_version");
 const TCHAR* Archive::ClassBaseDefaultNameKey = _T("_ln_class_base");
 
 //------------------------------------------------------------------------------
-RefPtr<ReflectionObject> Archive::createObject(const String& className, TypeInfo* requestedType)
+Ref<ReflectionObject> Archive::createObject(const String& className, TypeInfo* requestedType)
 {
 	if (className == requestedType->getName())
 	{

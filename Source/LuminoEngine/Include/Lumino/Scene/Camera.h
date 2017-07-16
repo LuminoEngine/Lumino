@@ -166,9 +166,9 @@ LN_INTERNAL_ACCESS:
 
 private:
 	World*								m_targetWorld;
-	RefPtr<CameraComponent>				m_hostingCamera;
-	RefPtr<detail::SceneRenderer>		m_internalRenderer;
-	RefPtr<WorldRenderView>				m_mainRenderView;
+	Ref<CameraComponent>				m_hostingCamera;
+	Ref<detail::SceneRenderer>		m_internalRenderer;
+	Ref<WorldRenderView>				m_mainRenderView;
 	WorldDebugDrawFlags					m_debugDrawFlags;
 };
 
@@ -267,7 +267,7 @@ LN_CONSTRUCT_ACCESS:
 LN_INTERNAL_ACCESS:
 
 private:
-	RefPtr<CameraComponent>	m_component;
+	Ref<CameraComponent>	m_component;
 };
 
 LN_NAMESPACE_SCENE_END

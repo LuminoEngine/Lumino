@@ -247,11 +247,11 @@ void GraphicsManager::initialize(const ConfigData& configData)
 	m_bitmapTextRenderer = LN_NEW BitmapTextRenderer();
 	m_bitmapTextRenderer->initialize(this);
 
-	m_internalContext = RefPtr<InternalContext>::makeRef();
+	m_internalContext = Ref<InternalContext>::makeRef();
 	m_internalContext->initialize(this);
 
-	m_shapesRendererCommandListCache = RefPtr<ShapesRendererCommandListCache>::makeRef();
-	m_nanoVGCommandListCache = RefPtr<NanoVGCommandListCache>::makeRef();
+	m_shapesRendererCommandListCache = Ref<ShapesRendererCommandListCache>::makeRef();
+	m_nanoVGCommandListCache = Ref<NanoVGCommandListCache>::makeRef();
 
 	m_defaultVertexDeclaration = LN_NEW VertexDeclaration();
 	m_defaultVertexDeclaration->initialize(this);
@@ -278,7 +278,7 @@ void GraphicsManager::initialize(const ConfigData& configData)
 #include "Resource/NoLightingRendering.fx.h"
 		};
 		static const size_t shaderDataLen = LN_ARRAY_SIZE_OF(shaderData);
-		auto shader = RefPtr<Shader>::makeRef();
+		auto shader = Ref<Shader>::makeRef();
 		shader->initialize(this, (const char*)shaderData, shaderDataLen);
 		m_builtinShaders[(int)BuiltinShader::Sprite] = shader;
 	}
@@ -288,7 +288,7 @@ void GraphicsManager::initialize(const ConfigData& configData)
 #include "Resource/ForwardRendering.fx.h"
 		};
 		static const size_t shaderDataLen = LN_ARRAY_SIZE_OF(shaderData);
-		auto shader = RefPtr<Shader>::makeRef();
+		auto shader = Ref<Shader>::makeRef();
 		shader->initialize(this, (const char*)shaderData, shaderDataLen);
 		m_builtinShaders[(int)BuiltinShader::LegacyDiffuse] = shader;
 	}
@@ -455,7 +455,7 @@ InternalContext* GraphicsManager::getInternalContext() const
 }
 
 //------------------------------------------------------------------------------
-const RefPtr<Shader>& GraphicsManager::getBuiltinShader(BuiltinShader shader) const
+const Ref<Shader>& GraphicsManager::getBuiltinShader(BuiltinShader shader) const
 {
 	return m_builtinShaders[(int)shader];
 }
@@ -502,7 +502,7 @@ void GraphicsManager::createGlobalObjects()
 ShaderVariableCommitSerializeHelper::ShaderVariableCommitSerializeHelper()
 {
 	m_writerBuffer = MemoryStream::create();
-	m_writer = RefPtr<BinaryWriter>::makeRef(m_writerBuffer);
+	m_writer = Ref<BinaryWriter>::makeRef(m_writerBuffer);
 }
 
 //------------------------------------------------------------------------------

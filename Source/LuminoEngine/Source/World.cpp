@@ -241,7 +241,7 @@ void World2D::initialize()
 {
 	World::initialize();
 
-	m_sceneGraph = RefPtr<SceneGraph2D>::makeRef();
+	m_sceneGraph = Ref<SceneGraph2D>::makeRef();
 	m_sceneGraph->createCore(EngineManager::getInstance()->getSceneGraphManager());
 
 	m_mainCamera = newObject<Camera>(CameraProjection_2D);
@@ -328,7 +328,7 @@ void World3D::initialize()
 
 	m_physicsWorld = newObject<PhysicsWorld>();
 
-	m_sceneGraph = RefPtr<SceneGraph3D>::makeRef();
+	m_sceneGraph = Ref<SceneGraph3D>::makeRef();
 	m_sceneGraph->createCore(EngineManager::getInstance()->getSceneGraphManager());
 
 	m_mainCamera = newObject<Camera>(CameraProjection_3D);
@@ -441,7 +441,7 @@ void World3D::createGridPlane()
 	detail::GraphicsManager* gm = detail::EngineDomain::getGraphicsManager();
 
 	// 適当な四角形メッシュ
-	m_gridPlane = RefPtr<StaticMeshModel>::makeRef();
+	m_gridPlane = Ref<StaticMeshModel>::makeRef();
 	m_gridPlane->initializeScreenPlane(gm, MeshCreationFlags::DynamicBuffers);
 	MeshResource* mesh = m_gridPlane->getMeshResource(0);
 	mesh->addSections(1);
@@ -455,7 +455,7 @@ void World3D::createGridPlane()
 #include "Scene/Resource/InfinitePlaneGrid.lfx.h"
 	};
 	static const size_t shaderCodeLen = LN_ARRAY_SIZE_OF(shaderCode);
-	auto shader = RefPtr<Shader>::makeRef();
+	auto shader = Ref<Shader>::makeRef();
 	shader->initialize(gm, shaderCode, shaderCodeLen);
 	m_gridPlane->getMaterial(0)->setShader(shader);
 

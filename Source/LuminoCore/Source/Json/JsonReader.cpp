@@ -484,7 +484,7 @@ JsonReader2::JsonReader2()
 JsonReader2::JsonReader2(const String& text)
 	: JsonReader2()
 {
-	RefPtr<StringReader> r(LN_NEW StringReader(text), false);
+	Ref<StringReader> r(LN_NEW StringReader(text), false);
 	m_reader.attach(LN_NEW detail::PositioningTextReader(r));
 }
 

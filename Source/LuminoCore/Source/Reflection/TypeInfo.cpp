@@ -200,7 +200,7 @@ void TypeInfo::initializeProperties(ReflectionObject* obj)
 }
 
 //------------------------------------------------------------------------------
-RefPtr<Object> TypeInfo::createInstance()
+Ref<Object> TypeInfo::createInstance()
 {
 	if (LN_CHECK_STATE(m_factory != nullptr)) return nullptr;
 	return m_factory();

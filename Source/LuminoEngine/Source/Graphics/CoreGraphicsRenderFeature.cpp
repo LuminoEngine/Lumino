@@ -156,7 +156,7 @@ void CoreGraphicsRenderFeature::setRenderTarget(int index, Texture* texture)
 		setRenderTarget, m_manager,
 		Driver::IRenderer*, m_internal,
 		int, index,
-		RefPtr<Driver::ITexture>, t,
+		Ref<Driver::ITexture>, t,
 		{
 			m_internal->setRenderTarget(index, t);
 		});
@@ -178,7 +178,7 @@ void CoreGraphicsRenderFeature::setDepthBuffer(DepthBuffer* depthBuffer)
 	LN_ENQUEUE_RENDER_COMMAND_2(
 		setDepthBuffer, m_manager,
 		Driver::IRenderer*, m_internal,
-		RefPtr<Driver::ITexture>, t,
+		Ref<Driver::ITexture>, t,
 		{
 			m_internal->setDepthBuffer(t);
 		});
@@ -222,7 +222,7 @@ DepthBuffer* CoreGraphicsRenderFeature::getDepthBuffer() const
 //	LN_ENQUEUE_RENDER_COMMAND_2(
 //		setVertexBuffer, m_manager,
 //		Driver::IRenderer*, m_internal,
-//		RefPtr<Driver::IVertexBuffer>, t,
+//		Ref<Driver::IVertexBuffer>, t,
 //		{
 //			m_internal->setVertexBuffer(t);
 //		});
@@ -239,7 +239,7 @@ DepthBuffer* CoreGraphicsRenderFeature::getDepthBuffer() const
 //	LN_ENQUEUE_RENDER_COMMAND_2(
 //		setIndexBuffer, m_manager,
 //		Driver::IRenderer*, m_internal,
-//		RefPtr<Driver::IIndexBuffer>, t,
+//		Ref<Driver::IIndexBuffer>, t,
 //		{
 //			m_internal->setIndexBuffer(t);
 //		});

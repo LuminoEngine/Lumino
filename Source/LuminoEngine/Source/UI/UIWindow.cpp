@@ -12,7 +12,7 @@ LN_NAMESPACE_BEGIN
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIWindow, UIControl)
 
 //------------------------------------------------------------------------------
-RefPtr<UIWindow> UIWindow::create()
+Ref<UIWindow> UIWindow::create()
 {
 	return newObject<UIWindow>();
 }

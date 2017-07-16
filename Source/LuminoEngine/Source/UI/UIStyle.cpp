@@ -275,7 +275,7 @@ UIStyle::UIStyle()
 //------------------------------------------------------------------------------
 void UIStyle::initialize()
 {
-	m_basePropertyTable = RefPtr<UIStylePropertyTable>::makeRef();
+	m_basePropertyTable = Ref<UIStylePropertyTable>::makeRef();
 	m_basePropertyTable->initialize(_T(""));
 }
 
@@ -332,7 +332,7 @@ UIStylePropertyTable* UIStyle::getPropertyTable(const StringRef& visualStateName
 	}
 	else
 	{
-		auto table = RefPtr<UIStylePropertyTable>::makeRef();
+		auto table = Ref<UIStylePropertyTable>::makeRef();
 		table->initialize(visualStateName);
 		m_visualStatePropertyTableList.add(VisualStateStylePair{ visualStateName, table });
 		return table;
@@ -448,7 +448,7 @@ detail::InvalidateFlags UIStyle::mergeActiveStylePropertyTables(detail::UIStyleP
 //{
 //	LN_ASSERT(targetElement != nullptr);
 //
-//	RefPtr<UIStylePropertyTable> table;
+//	Ref<UIStylePropertyTable> table;
 //	if (m_propertyTableMap.TryGetValue(targetElement->GetCurrentVisualStateName(), &table))
 //	{
 //		table->apply(targetElement);
@@ -479,7 +479,7 @@ UIStyleTable::~UIStyleTable()
 ////------------------------------------------------------------------------------
 //void UIStyleTable::AddStyle(const tr::TypeInfo* targetType, const StringRef& subStateName, UIStyle* style)
 //{
-//	RefPtr<UIStyle>* s = m_table.Find(targetType);
+//	Ref<UIStyle>* s = m_table.Find(targetType);
 //	(*s)->AddSubStateStyle(subStateName, style);
 //}
 //------------------------------------------------------------------------------
@@ -488,7 +488,7 @@ UIStyle* UIStyleTable::getStyle(const StringRef& typeName)
 	StyleKey key = typeName.getHashCode()/* + subControlName.GetHashCode()*/;
 	if (key == 0) return nullptr;
 
-	RefPtr<UIStyle>* s = m_table.find(key);
+	Ref<UIStyle>* s = m_table.find(key);
 	if (s == nullptr)
 	{
 		auto s2 = newObject<UIStyle>();
@@ -507,7 +507,7 @@ UIStyle* UIStyleTable::getSubControlStyle(const StringRef& subControlOwnerName, 
 	StyleKey key = subControlOwnerName.getHashCode() + subControlName.getHashCode();
 	if (key == 0) return nullptr;
 
-	RefPtr<UIStyle>* s = m_subControlStyleTable.find(key);
+	Ref<UIStyle>* s = m_subControlStyleTable.find(key);
 	if (s == nullptr)
 	{
 		auto s2 = newObject<UIStyle>();
@@ -532,7 +532,7 @@ UIStyle* UIStyleTable::findStyle(const tr::TypeInfo* targetType/*, const StringR
 	if (LN_CHECK_ARG(targetType != nullptr)) return nullptr;
 
 	StyleKey key = targetType->getName().getHashCode();// +subControlName.GetHashCode();
-	RefPtr<UIStyle>* s = m_table.find(key);
+	Ref<UIStyle>* s = m_table.find(key);
 	if (s != nullptr)
 	{
 		return s->get();
@@ -550,7 +550,7 @@ UIStyle* UIStyleTable::findSubControlStyle(const StringRef& subControlOwnerName,
 {
 	StyleKey key = subControlOwnerName.getHashCode() + subControlName.getHashCode();
 
-	RefPtr<UIStyle>* s = m_subControlStyleTable.find(key);
+	Ref<UIStyle>* s = m_subControlStyleTable.find(key);
 	if (s != nullptr)
 		return s->get();
 	else

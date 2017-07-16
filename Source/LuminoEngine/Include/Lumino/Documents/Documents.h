@@ -76,13 +76,13 @@ public:
 
 LN_INTERNAL_ACCESS:
 	void replace(int offset, int length, const StringRef& text);
-	const List<RefPtr<Block>>& getBlocks() const { return m_blockList; }
+	const List<Ref<Block>>& getBlocks() const { return m_blockList; }
 
 private:
 	void replaceInternal(int offset, int length, const UTF32* text, int len);
 
 	ln::detail::DocumentsManager*	m_manager;
-	List<RefPtr<Block>>				m_blockList;
+	List<Ref<Block>>				m_blockList;
 };
 
 /**
@@ -147,7 +147,7 @@ private:
 	ln::detail::DocumentsManager*		m_manager;
 	//TextElement*						m_parent;
 	ln::detail::FontData				m_fontData;
-	RefPtr<Brush>			m_foreground;
+	Ref<Brush>			m_foreground;
 	bool					m_fontDataModified;
 
 
@@ -174,11 +174,11 @@ public:
 protected:
 
 LN_INTERNAL_ACCESS:
-	void insertInlines(int index, const List<RefPtr<Inline>>& inlines);
-	const List<RefPtr<Inline>>& getInlines() const { return m_inlines; }
+	void insertInlines(int index, const List<Ref<Inline>>& inlines);
+	const List<Ref<Inline>>& getInlines() const { return m_inlines; }
 
 private:
-	List<RefPtr<Inline>>	m_inlines;
+	List<Ref<Inline>>	m_inlines;
 };
 
 /**
@@ -235,7 +235,7 @@ LN_INTERNAL_ACCESS:
 
 private:
 	GenericStringBuilderCore<UTF32>	m_text;
-	//RefPtr<GlyphRun>				m_glyphRun;
+	//Ref<GlyphRun>				m_glyphRun;
 };
 
 /**
@@ -313,7 +313,7 @@ class VisualTextFragment
 public:
 
 	Rect	m_localRect;
-	RefPtr<GlyphRun>	m_glyphRun;
+	Ref<GlyphRun>	m_glyphRun;
 
 LN_CONSTRUCT_ACCESS:
 	VisualTextFragment();
@@ -364,7 +364,7 @@ LN_INTERNAL_ACCESS:
 	void render(const Matrix& transform, ln::detail::IDocumentsRenderer* renderer);
 
 private:
-	RefPtr<Inline>	m_inline;
+	Ref<Inline>	m_inline;
 
 	//TextElement*	m_element;
 	//int				m_documentLength;	// Document 上での TextLength
@@ -396,9 +396,9 @@ LN_INTERNAL_ACCESS:
 private:
 	void rebuildVisualLineList();
 
-	RefPtr<Block>						m_block;
-	List<RefPtr<VisualInline>>			m_visualInlines;
-	List<RefPtr<VisualTextFragment>>	m_visualFragments;
+	Ref<Block>						m_block;
+	List<Ref<VisualInline>>			m_visualInlines;
+	List<Ref<VisualTextFragment>>	m_visualFragments;
 };
 
 //
@@ -421,7 +421,7 @@ private:
 	Document*					m_document;
 	//int							m_thisRevision;
 	//int							m_childrenRevision;
-	List<RefPtr<VisualBlock>>	m_visualBlocks;
+	List<Ref<VisualBlock>>	m_visualBlocks;
 };
 
 

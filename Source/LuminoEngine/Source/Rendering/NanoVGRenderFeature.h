@@ -80,7 +80,7 @@ struct NanoVGBrush
 		} ImagePatternInfo;
 	};
 
-	RefPtr<Driver::ITexture>	imagePatternTexture;
+	Ref<Driver::ITexture>	imagePatternTexture;
 };
 
 struct NanoVGState
@@ -146,7 +146,7 @@ class NanoVGCommandListCache
 	: public SimpleOneTimeObjectCache<NanoVGCommandList>
 {
 protected:
-	virtual RefPtr<NanoVGCommandList> createObject() override;
+	virtual Ref<NanoVGCommandList> createObject() override;
 };
 
 class NanoVGRenderFeature

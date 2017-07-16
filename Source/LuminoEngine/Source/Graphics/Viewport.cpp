@@ -18,7 +18,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ViewportLayer, Object);
 //------------------------------------------------------------------------------
 ViewportLayer::ViewportLayer()
 	: m_owner(nullptr)
-	, m_imageEffects(RefPtr<ImageEffectList>::makeRef())
+	, m_imageEffects(Ref<ImageEffectList>::makeRef())
 	, m_zIndex(0)
 {
 }
@@ -58,7 +58,7 @@ bool ViewportLayer::OnPlatformEvent(const PlatformEventArgs& e)
 }
 
 //------------------------------------------------------------------------------
-void ViewportLayer::PostRender(DrawList* context, RefPtr<RenderTargetTexture>* primaryLayerTarget, RefPtr<RenderTargetTexture>* secondaryLayerTarget)
+void ViewportLayer::PostRender(DrawList* context, Ref<RenderTargetTexture>* primaryLayerTarget, Ref<RenderTargetTexture>* secondaryLayerTarget)
 {
 	for (ImageEffect* e : *m_imageEffects)
 	{
@@ -103,7 +103,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Viewport, Object);
 Viewport::Viewport()
 	: m_manager(nullptr)
 	, m_placement(ViewportPlacement::Stretch)
-	, m_viewportLayerList(RefPtr<ViewportLayerList>::makeRef())
+	, m_viewportLayerList(Ref<ViewportLayerList>::makeRef())
 	, m_backgroundColor(Color::White)
 	, m_primaryLayerTarget(nullptr)
 	, m_secondaryLayerTarget(nullptr)
@@ -123,14 +123,14 @@ void Viewport::initialize(detail::GraphicsManager* manager, const SizeI& viewSiz
 	//m_renderTarget = renderTarget;
 	//m_size.Set((float)m_renderTarget->getWidth(), (float)m_renderTarget->getHeight());
 
-	m_renderer = RefPtr<DrawList>::makeRef();
+	m_renderer = Ref<DrawList>::makeRef();
 	m_renderer->initialize(manager);
 
-	auto internalRenderer = RefPtr<detail::NonShadingRenderer>::makeRef();
+	auto internalRenderer = Ref<detail::NonShadingRenderer>::makeRef();
 	internalRenderer->initialize(manager);
 	m_internalRenderer = internalRenderer;
 
-	//m_pass = RefPtr<detail::RenderingPass2>::MakeRef();
+	//m_pass = Ref<detail::RenderingPass2>::MakeRef();
 	//m_pass->initialize(manager);
 
 	TryRemakeLayerTargets(viewSize);
@@ -164,7 +164,7 @@ void Viewport::AddViewportLayer(ViewportLayer* layer)
 //------------------------------------------------------------------------------
 void Viewport::RemoveViewportLayer(ViewportLayer* layer)
 {
-	if (m_viewportLayerList->Remove(RefPtr<ViewportLayer>(layer)))
+	if (m_viewportLayerList->Remove(Ref<ViewportLayer>(layer)))
 	{
 		layer->SetOwner(nullptr);
 	}
@@ -279,13 +279,13 @@ void Viewport::TryRemakeLayerTargets(const SizeI& ownerViewPixelSize)
 		// RenderTargetTexture
 		// TODO: できればこういうのは Resize 関数を作りたい。作り直したくない
 		// TODO: というか UE4 みたいにキャッシュしたい
-		m_primaryLayerTarget = RefPtr<RenderTargetTexture>::makeRef();
+		m_primaryLayerTarget = Ref<RenderTargetTexture>::makeRef();
 		m_primaryLayerTarget->CreateImpl(GetManager(), newSize, 1, TextureFormat::R8G8B8X8);
-		m_secondaryLayerTarget = RefPtr<RenderTargetTexture>::makeRef();
+		m_secondaryLayerTarget = Ref<RenderTargetTexture>::makeRef();
 		m_secondaryLayerTarget->CreateImpl(GetManager(), newSize, 1, TextureFormat::R8G8B8X8);
 
 		// DepthBuffer
-		m_depthBuffer = RefPtr<DepthBuffer>::makeRef();
+		m_depthBuffer = Ref<DepthBuffer>::makeRef();
 		m_depthBuffer->CreateImpl(GetManager(), newSize, TextureFormat::D24S8);
 	}
 }

@@ -35,7 +35,7 @@ class ShapesRendererCommandListCache
 	: public SimpleOneTimeObjectCache<ShapesRendererCommandList>
 {
 protected:
-	virtual RefPtr<ShapesRendererCommandList> createObject() override;
+	virtual Ref<ShapesRendererCommandList> createObject() override;
 };
 
 class ShapesRendererCore
@@ -145,7 +145,7 @@ protected:
 
 private:
 	GraphicsManager*				m_manager;
-	RefPtr<ShapesRendererCore>		m_core;
+	Ref<ShapesRendererCore>		m_core;
 	detail::BrushRawData			m_fillBrush;
 };
 

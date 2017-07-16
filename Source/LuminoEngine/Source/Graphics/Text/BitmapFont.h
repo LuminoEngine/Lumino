@@ -40,11 +40,11 @@ public:
 private:
 	FontManager*			m_manager;
 	String					m_name;					// 名前。グリフテクスチャのキャッシュで使用する
-	RefPtr<Bitmap>			m_fontBitmap;
+	Ref<Bitmap>			m_fontBitmap;
 	int						m_charWidth;			// 1文字分の幅
 	int						m_charHeight;			// 1文字分の高さ
 	FontGlyphLocation		m_fontGlyphLocation;	// advanceKerning() で返すデータ
-	RefPtr<Bitmap>			m_glyphBitmap;
+	Ref<Bitmap>			m_glyphBitmap;
 	FontGlyphBitmap			m_fontGlyphBitmap;		// lookupGlyphBitmap() で返すデータ
 };
 

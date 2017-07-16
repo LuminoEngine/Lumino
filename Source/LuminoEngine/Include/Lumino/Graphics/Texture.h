@@ -14,8 +14,8 @@ class Bitmap;
 class Font;
 class Texture;
 class DepthBuffer;
-using TexturePtr = RefPtr<Texture>;
-using DepthBufferPtr = RefPtr<DepthBuffer>;
+using TexturePtr = Ref<Texture>;
+using DepthBufferPtr = Ref<DepthBuffer>;
 
 /**
 	@brief		テクスチャのクラスです。
@@ -175,7 +175,7 @@ protected:
 	bool			m_isPlatformLoaded;
 	ResourceUsage	m_usage;
 	bool			m_usageReadFast;
-	RefPtr<Bitmap>	m_primarySurface2;
+	Ref<Bitmap>	m_primarySurface2;
 	bool			m_locked;
 	bool			m_initializing;
 };
@@ -255,7 +255,7 @@ private:
 
 namespace tr {
 class Texture3D;
-using Texture3DPtr = RefPtr<Texture3D>;
+using Texture3DPtr = Ref<Texture3D>;
 
 /**
 	@brief		
@@ -304,7 +304,7 @@ private:
 	int				m_depth;
 	int				m_mipLevels;
 	ResourceUsage	m_usage;
-	RefPtr<Bitmap>	m_primarySurface;
+	Ref<Bitmap>	m_primarySurface;
 	bool			m_locked;
 	bool			m_initializing;
 };

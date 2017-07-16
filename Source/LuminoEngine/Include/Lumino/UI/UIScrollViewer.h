@@ -7,7 +7,7 @@
 LN_NAMESPACE_BEGIN
 class IScrollInfo;
 class UIScrollEventArgs;
-using UIScrollEventArgsPtr = RefPtr<UIScrollEventArgs>;
+using UIScrollEventArgsPtr = Ref<UIScrollEventArgs>;
 
 /**
 	@brief	マウスドラッグが関係するイベント引数です。
@@ -39,7 +39,7 @@ public:
     LN_ROUTED_EVENT2(UIDragDeltaEventArgs, DragCanceledEvent);		/**< マウスドラッグを中断したときに発生するイベントを表します。*/
 
 public:
-	static RefPtr<UIThumb> create();
+	static Ref<UIThumb> create();
 
 LN_CONSTRUCT_ACCESS:
 	UIThumb();
@@ -78,7 +78,7 @@ public:
 	static const String VerticalState;
 
 
-	static RefPtr<UITrack> create();
+	static Ref<UITrack> create();
 public:
 
 	/** Track の方向を指定します。*/
@@ -150,9 +150,9 @@ private:
 	float				m_maximum;
 	float				m_density;
 	float				m_viewportSize;
-	RefPtr<UIButton>	m_decreaseButton;
-	RefPtr<UIThumb>		m_thumb;
-	RefPtr<UIButton>	m_increaseButton;
+	Ref<UIButton>	m_decreaseButton;
+	Ref<UIThumb>		m_thumb;
+	Ref<UIButton>	m_increaseButton;
 
 };
 
@@ -204,7 +204,7 @@ public:
 
 
 
-	static RefPtr<UIScrollBar> create();
+	static Ref<UIScrollBar> create();
 	// TODO:↓後で RangeBase に移すかも
 
 
@@ -253,9 +253,9 @@ protected:
 private:
 	void updateValue(float horizontalDragDelta, float verticalDragDelta);
 
-	RefPtr<UITrack>		m_track;
-	RefPtr<UIButton>	m_lineUpButton;
-	RefPtr<UIButton>	m_lineDownButton;
+	Ref<UITrack>		m_track;
+	Ref<UIButton>	m_lineUpButton;
+	Ref<UIButton>	m_lineDownButton;
 	float				m_dragStartValue;
 };
 
@@ -268,7 +268,7 @@ class UIScrollViewer
 	LN_OBJECT();
 public:
 
-	static RefPtr<UIScrollViewer> create();
+	static Ref<UIScrollViewer> create();
 
 LN_CONSTRUCT_ACCESS:
 	UIScrollViewer();
@@ -285,8 +285,8 @@ protected:
 	virtual void onLayoutPanelChanged(UILayoutPanel* newPanel) override;
 
 private:
-	RefPtr<UIScrollBar>			m_horizontalScrollBar;
-	RefPtr<UIScrollBar>			m_verticalScrollBar;
+	Ref<UIScrollBar>			m_horizontalScrollBar;
+	Ref<UIScrollBar>			m_verticalScrollBar;
 	IScrollInfo*				m_scrollTarget;
 };
 

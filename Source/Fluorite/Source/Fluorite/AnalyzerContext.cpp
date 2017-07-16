@@ -105,7 +105,7 @@ Token* InputFile::CreateToken()
 //------------------------------------------------------------------------------
 AnalyzerContext::AnalyzerContext()
 {
-	m_diagnosticsManager = RefPtr<DiagnosticsManager>::makeRef();
+	m_diagnosticsManager = Ref<DiagnosticsManager>::makeRef();
 }
 
 //------------------------------------------------------------------------------
@@ -116,7 +116,7 @@ AnalyzerContext::~AnalyzerContext()
 //------------------------------------------------------------------------------
 InputFile* AnalyzerContext::RegisterInputFile(const PathNameA& filePath)
 {
-	auto ptr = RefPtr<InputFile>::makeRef(filePath);
+	auto ptr = Ref<InputFile>::makeRef(filePath);
 	m_inputFileList.add(ptr);
 	return ptr;
 }
@@ -125,7 +125,7 @@ InputFile* AnalyzerContext::RegisterInputFile(const PathNameA& filePath)
 InputFile* AnalyzerContext::RegisterInputMemoryCode(const PathNameA& filePath, const char* code, int length)
 {
 	if (LN_CHECK_ARG(code != nullptr)) return nullptr;
-	auto ptr = RefPtr<InputFile>::makeRef(filePath, code, length);
+	auto ptr = Ref<InputFile>::makeRef(filePath, code, length);
 	m_inputFileList.add(ptr);
 	return ptr;
 }
@@ -186,12 +186,12 @@ void AnalyzerContext::ResetFileDiagnostics(InputFile* file)
 }
 
 //------------------------------------------------------------------------------
-RefPtr<AbstractLexer> AnalyzerContext::CreateLexer(InputFile* file)
+Ref<AbstractLexer> AnalyzerContext::CreateLexer(InputFile* file)
 {
 	switch (file->GetLanguage())
 	{
 	case Language::Cpp11:
-		return RefPtr<AbstractLexer>::staticCast(RefPtr<CppLexer>::makeRef());
+		return Ref<AbstractLexer>::staticCast(Ref<CppLexer>::makeRef());
 	default:
 		assert(0);
 		break;

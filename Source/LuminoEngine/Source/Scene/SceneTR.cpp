@@ -40,7 +40,7 @@ void HugePlane::initialize(SceneGraph* sceneGraph, const Vector3& direction)
 	sceneGraph->GetRootNode()->AddChild(this);
 	SetAutoRemove(true);
 
-	m_mesh = RefPtr<MeshResource>::makeRef();
+	m_mesh = Ref<MeshResource>::makeRef();
 	m_mesh->initialize(sceneGraph->GetManager()->GetGraphicsManager());
 	m_mesh->CreateSquarePlane(Vector2(1, 1), direction, MeshCreationFlags::DynamicBuffers);
 

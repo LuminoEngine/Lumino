@@ -19,7 +19,7 @@ class LightComponent;
 class EffectBatchRendererNode;
 
 class TileMap;
-typedef RefPtr<TileMap>		TileMapPtr;
+typedef Ref<TileMap>		TileMapPtr;
 
 class CameraBehavior;
 

@@ -169,7 +169,7 @@ protected:
 	bool				m_isAutoUpdate;
 	bool				m_isAutoRemove;
 
-	RefPtr<SceneNodeList>	m_children;
+	Ref<SceneNodeList>	m_children;
 	SceneNode*			m_parentNode;
 
 	//Matrix				m_combinedGlobalMatrix;

@@ -6,7 +6,7 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 class VertexDeclaration;
-using VertexDeclarationPtr = RefPtr<VertexDeclaration>;
+using VertexDeclarationPtr = Ref<VertexDeclaration>;
 
 /**
 	@brief		
@@ -40,7 +40,7 @@ LN_INTERNAL_ACCESS:
 	virtual void onChangeDevice(Driver::IGraphicsDevice* device);
 
 private:
-	RefPtr<Driver::IVertexDeclaration>	m_deviceObj;		// TODO: これは RefPtr にしたくない。Driver 系の include が必要になってしまう。
+	Ref<Driver::IVertexDeclaration>	m_deviceObj;		// TODO: これは Ref にしたくない。Driver 系の include が必要になってしまう。
 	List<VertexElement>					m_vertexElements;
 	bool								m_modified;
 };

@@ -65,9 +65,9 @@ private:
 
 LN_INTERNAL_ACCESS:
 	GraphicsManager*				m_manager;
-	RefPtr<VectorTextRendererCore>	m_core;
-	RefPtr<RawFont>					m_currentFont;
-	RefPtr<Brush>					m_fillBrush;
+	Ref<VectorTextRendererCore>	m_core;
+	Ref<RawFont>					m_currentFont;
+	Ref<Brush>					m_fillBrush;
 	List<VectorGlyphData>			m_bufferingCache;
 	TextLayoutEngine2::ResultData	m_layoutResult;
 };

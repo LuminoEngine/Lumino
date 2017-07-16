@@ -50,7 +50,7 @@ void OffscreenWorldView::initialize()
 	WorldRenderView::initialize();
 	m_renderer = newObject<RenderingContext>();
 
-	//m_renderView = RefPtr<RenderView>::MakeRef();
+	//m_renderView = Ref<RenderView>::MakeRef();
 	//m_renderView->
 	m_lists.add(m_renderer->getDrawElementList());
 

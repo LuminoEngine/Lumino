@@ -37,7 +37,7 @@ void UIViewport::initialize()
 	setHitTestVisible(true);
 
 	m_drawingContext = newObject<DrawingContext>();
-	m_sceneRenderer = RefPtr<detail::NonShadingRenderer>::makeRef();
+	m_sceneRenderer = Ref<detail::NonShadingRenderer>::makeRef();
 	m_sceneRenderer->initialize(detail::EngineDomain::getGraphicsManager());
 	m_renderView = newObject<RenderView>();
 	m_renderView->m_lists.add(m_drawingContext->getDrawElementList());
@@ -71,7 +71,7 @@ void UIViewport::addViewportLayer(UIViewportLayer* layer)
 //------------------------------------------------------------------------------
 //void UIViewport::RemoveViewportLayer(ViewportLayer* layer)
 //{
-//	if (m_viewportLayerList->Remove(RefPtr<ViewportLayer>(layer)))
+//	if (m_viewportLayerList->Remove(Ref<ViewportLayer>(layer)))
 //	{
 //		layer->SetOwner(nullptr);
 //	}
@@ -134,8 +134,8 @@ void UIViewport::onRender(DrawingContext* g)
 
 	//TODO: state push/pop
 
-	//RefPtr<RenderTargetTexture> oldRT = g->getRenderTarget(0);
-	//RefPtr<DepthBuffer> oldDB = g->getDepthBuffer();
+	//Ref<RenderTargetTexture> oldRT = g->getRenderTarget(0);
+	//Ref<DepthBuffer> oldDB = g->getDepthBuffer();
 
 	//g->setRenderTarget(0, m_primaryLayerTarget);
 	//g->setDepthBuffer(m_depthBuffer);
@@ -193,13 +193,13 @@ void UIViewport::updateFramebufferSizeIfNeeded()
 		// RenderTargetTexture
 		// TODO: できればこういうのは Resize 関数を作りたい。作り直したくない
 		// TODO: というか UE4 みたいにキャッシュしたい
-		m_primaryLayerTarget = RefPtr<RenderTargetTexture>::makeRef();
+		m_primaryLayerTarget = Ref<RenderTargetTexture>::makeRef();
 		m_primaryLayerTarget->createImpl(getManager()->getGraphicsManager(), newSize, 1, TextureFormat::R8G8B8X8);
-		m_secondaryLayerTarget = RefPtr<RenderTargetTexture>::makeRef();
+		m_secondaryLayerTarget = Ref<RenderTargetTexture>::makeRef();
 		m_secondaryLayerTarget->createImpl(getManager()->getGraphicsManager(), newSize, 1, TextureFormat::R8G8B8X8);
 
 		// DepthBuffer
-		m_depthBuffer = RefPtr<DepthBuffer>::makeRef();
+		m_depthBuffer = Ref<DepthBuffer>::makeRef();
 		m_depthBuffer->createImpl(getManager()->getGraphicsManager(), newSize, TextureFormat::D24S8);
 	}
 }
@@ -305,7 +305,7 @@ void UIViewportLayer::updateLayout(const Size& viewSize)
 }
 
 //------------------------------------------------------------------------------
-void UIViewportLayer::postRender(DrawList* context, RefPtr<RenderTargetTexture>* primaryLayerTarget, RefPtr<RenderTargetTexture>* secondaryLayerTarget)
+void UIViewportLayer::postRender(DrawList* context, Ref<RenderTargetTexture>* primaryLayerTarget, Ref<RenderTargetTexture>* secondaryLayerTarget)
 {
 	for (auto& e : m_postEffects)
 	{
@@ -342,7 +342,7 @@ void UILayoutLayer::initialize()
 
 	// lighting disabled.
 	// TODO: newObject
-	auto internalRenderer = RefPtr<detail::NonShadingRenderer>::makeRef();
+	auto internalRenderer = Ref<detail::NonShadingRenderer>::makeRef();
 	internalRenderer->initialize(detail::EngineDomain::getGraphicsManager());
 	m_internalRenderer = internalRenderer;
 

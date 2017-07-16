@@ -44,7 +44,7 @@ protected:
 
 private:
 	GraphicsManager*				m_manager;
-	List<RefPtr<RenderingPass2>>	m_renderingPassList;
+	List<Ref<RenderingPass2>>	m_renderingPassList;
 };
 
 
@@ -93,7 +93,7 @@ public:
 	virtual Shader* getDefaultShader() const override;
 
 private:
-	RefPtr<Shader>	m_defaultShader;
+	Ref<Shader>	m_defaultShader;
 };
 
 
@@ -126,7 +126,7 @@ public:
 	virtual Shader* getDefaultShader() const override;
 
 private:
-	RefPtr<Shader>	m_defaultShader;
+	Ref<Shader>	m_defaultShader;
 };
 
 

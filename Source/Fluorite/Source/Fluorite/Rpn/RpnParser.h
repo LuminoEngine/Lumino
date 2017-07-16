@@ -144,8 +144,8 @@ public:
 	typedef List<Token*>::const_iterator Position;
 
 public:
-	// TODO: RefPtr
-	//static RefPtr<RPNTokenList> ParseCppConstExpression(Position exprBegin, Position exprEnd, DiagnosticsItemSet* diag);
+	// TODO: Ref
+	//static Ref<RPNTokenList> ParseCppConstExpression(Position exprBegin, Position exprEnd, DiagnosticsItemSet* diag);
 
 	ResultState ParseCppConstExpression2(Position exprBegin, Position exprEnd, DiagnosticsItemSet* diag);
 	const RpnTokenList* GetTokenList() const { return m_rpnTokenList; }
@@ -160,8 +160,8 @@ private:
 	void CloseGroup(bool fromArgsSeparator);
 
 private:
-	RefPtr<RpnTokenList>	m_tokenList;
-	RefPtr<RpnTokenList>	m_rpnTokenList;
+	Ref<RpnTokenList>	m_tokenList;
+	Ref<RpnTokenList>	m_rpnTokenList;
 	DiagnosticsItemSet*		m_diag;
 
 	List<RpnToken*>			m_tmpRPNTokenList;

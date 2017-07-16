@@ -52,12 +52,12 @@ void UIEventArgs::initialize(UIEventType type)
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIMouseEventArgs, UIEventArgs)
 
 //------------------------------------------------------------------------------
-RefPtr<UIMouseEventArgs> UIMouseEventArgs::create(UIEventType type, MouseButtons button, float x, float y, int clickCount, bool caching)
+Ref<UIMouseEventArgs> UIMouseEventArgs::create(UIEventType type, MouseButtons button, float x, float y, int clickCount, bool caching)
 {
 	if (caching)
 	{
 		detail::EventArgsPool* pool = detail::UIManager::getInstance()->getEventArgsPool();
-		RefPtr<UIMouseEventArgs> ptr(pool->create<UIMouseEventArgs>(type, button, x, y, clickCount), false);
+		Ref<UIMouseEventArgs> ptr(pool->create<UIMouseEventArgs>(type, button, x, y, clickCount), false);
 		return ptr;
 	}
 	else
@@ -103,12 +103,12 @@ PointF UIMouseEventArgs::getPosition(UIElement* relativeTo) const
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIKeyEventArgs, UIEventArgs)
 
 //------------------------------------------------------------------------------
-RefPtr<UIKeyEventArgs> UIKeyEventArgs::create(UIEventType type, Keys keyCode, ModifierKeys modifierKeys, TCHAR charCode, bool caching)
+Ref<UIKeyEventArgs> UIKeyEventArgs::create(UIEventType type, Keys keyCode, ModifierKeys modifierKeys, TCHAR charCode, bool caching)
 {
 	if (caching)
 	{
 		detail::EventArgsPool* pool = detail::UIManager::getInstance()->getEventArgsPool();
-		RefPtr<UIKeyEventArgs> ptr(pool->create<UIKeyEventArgs>(type, keyCode, modifierKeys, charCode), false);
+		Ref<UIKeyEventArgs> ptr(pool->create<UIKeyEventArgs>(type, keyCode, modifierKeys, charCode), false);
 		return ptr;
 	}
 	else
@@ -146,12 +146,12 @@ void UIKeyEventArgs::initialize(UIEventType type, Keys keyCode, ModifierKeys mod
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIMouseWheelEventArgs, UIEventArgs)
 
 //------------------------------------------------------------------------------
-RefPtr<UIMouseWheelEventArgs> UIMouseWheelEventArgs::create(UIEventType type, int delta, bool caching)
+Ref<UIMouseWheelEventArgs> UIMouseWheelEventArgs::create(UIEventType type, int delta, bool caching)
 {
 	if (caching)
 	{
 		detail::EventArgsPool* pool = detail::UIManager::getInstance()->getEventArgsPool();
-		RefPtr<UIMouseWheelEventArgs> ptr(pool->create<UIMouseWheelEventArgs>(type, delta), false);
+		Ref<UIMouseWheelEventArgs> ptr(pool->create<UIMouseWheelEventArgs>(type, delta), false);
 		return ptr;
 	}
 	else

@@ -108,7 +108,7 @@ public:
 	List<MqoFace>			m_mqoFaceList;
 
 	void Smoothing();
-	RefPtr<MeshResource> createMeshResource();
+	Ref<MeshResource> createMeshResource();
 
 private:
 	void makeMqoFaceRefsAndEdge();
@@ -122,7 +122,7 @@ public:
 	MqoImporter();
 	virtual ~MqoImporter() = default;
 
-	RefPtr<StaticMeshModel> import(ModelManager* manager, const PathName& parentDir, Stream* stream);
+	Ref<StaticMeshModel> import(ModelManager* manager, const PathName& parentDir, Stream* stream);
 
 private:
 
@@ -143,10 +143,10 @@ private:
 	ModelManager*			m_manager;
 	PathName				m_filePath;
 	PathName				m_parentDir;
-	List<RefPtr<MqoObject>>	m_mqoObjectList;
+	List<Ref<MqoObject>>	m_mqoObjectList;
 	//List<MqoVertex>			m_mqoVertexList;
 	//List<MqoFace>			m_mqoFaceList;
-	RefPtr<StaticMeshModel>	m_model;
+	Ref<StaticMeshModel>	m_model;
 	//int						m_meshIndexCount;
 	//int						m_meshVertexCount;
 	bool					m_flipZCoord;

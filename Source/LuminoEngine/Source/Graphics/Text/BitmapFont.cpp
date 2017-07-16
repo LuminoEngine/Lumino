@@ -19,12 +19,12 @@ static const byte_t g_BuiltInBitmapFont_size7_Data[] =
 static const size_t g_BuiltInBitmapFont_size7_Len = LN_ARRAY_SIZE_OF(g_BuiltInBitmapFont_size7_Data);
 
 //------------------------------------------------------------------------------
-RefPtr<RawFont> RawFont::createBuiltInBitmapFontInternal2(int size)
+Ref<RawFont> RawFont::createBuiltInBitmapFontInternal2(int size)
 {
 	MemoryStream stream(g_BuiltInBitmapFont_size7_Data, g_BuiltInBitmapFont_size7_Len);
-	RefPtr<Bitmap> bitmap(LN_NEW Bitmap(&stream), false);
+	Ref<Bitmap> bitmap(LN_NEW Bitmap(&stream), false);
 	auto font = newObject<detail::BitmapFont>(bitmap);
-	return RefPtr<RawFont>::staticCast(font);
+	return Ref<RawFont>::staticCast(font);
 }
 
 //------------------------------------------------------------------------------

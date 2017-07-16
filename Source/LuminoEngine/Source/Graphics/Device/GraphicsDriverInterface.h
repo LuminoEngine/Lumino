@@ -230,7 +230,7 @@ protected:
 	virtual void onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, ITexture* depthBuffer) = 0;
 	virtual	void onUpdateRenderState(const RenderState& newState, const RenderState& oldState, bool reset) = 0;
 	virtual	void onUpdateDepthStencilState(const DepthStencilState& newState, const DepthStencilState& oldState, bool reset) = 0;
-	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, const List<RefPtr<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer) = 0;
+	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, const List<Ref<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer) = 0;
 	virtual void onClear(ClearFlags flags, const Color& color, float z, uint8_t stencil) = 0;
 	virtual void onDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount) = 0;
 	virtual void onDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount) = 0;
@@ -251,16 +251,16 @@ private:
 	EngineDiagCore*					m_diag;
 	uint32_t						m_modifiedFlags;
 
-	RefPtr<ITexture>				m_currentRenderTargets[Graphics::MaxMultiRenderTargets];
-	RefPtr<ITexture>				m_currentDepthBuffer;
+	Ref<ITexture>				m_currentRenderTargets[Graphics::MaxMultiRenderTargets];
+	Ref<ITexture>				m_currentDepthBuffer;
 	RenderState						m_requestedRenderState;
 	RenderState						m_currentRenderState;
 	DepthStencilState				m_requestedDepthStencilState;
 	DepthStencilState				m_currentDepthStencilState;
-	RefPtr<IVertexDeclaration>		m_currentVertexDeclaration;
-	List<RefPtr<IVertexBuffer>>		m_currentVertexBuffers;
-	RefPtr<IIndexBuffer>			m_currentIndexBuffer;
-	RefPtr<IShaderPass>				m_currentShaderPass;
+	Ref<IVertexDeclaration>		m_currentVertexDeclaration;
+	List<Ref<IVertexBuffer>>		m_currentVertexBuffers;
+	Ref<IIndexBuffer>			m_currentIndexBuffer;
+	Ref<IShaderPass>				m_currentShaderPass;
 	bool							m_rendering;
 };
 

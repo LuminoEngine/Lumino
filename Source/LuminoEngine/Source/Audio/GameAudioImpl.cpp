@@ -94,7 +94,7 @@ void GameAudioImpl::playBGMFromSound(Sound* sound, float volume, float pitch, do
 	//	}
 	//}
 
-	RefPtr<Sound> prev_bgm(mBGM, false);
+	Ref<Sound> prev_bgm(mBGM, false);
 
 	{
 		MutexScopedLock lock(mLock);
@@ -216,7 +216,7 @@ void GameAudioImpl::playBGSFromSound(Sound* sound, float volume, float pitch, do
 	//	}
 	//}
 
-	RefPtr<Sound> prev_bgs(mBGS, false);
+	Ref<Sound> prev_bgs(mBGS, false);
 
 	{
 		MutexScopedLock lock(mLock);

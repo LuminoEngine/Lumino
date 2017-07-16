@@ -44,9 +44,9 @@ private:
 
 	detail::GraphicsManager*	m_graphicsManager;
 	DrawList*	m_context;
-	RefPtr<MeshResource>	m_mesh;
+	Ref<MeshResource>	m_mesh;
 	int						m_maxTileCount;
-	//RefPtr<VertexDeclaration>	m_vertexDeclaration;
+	//Ref<VertexDeclaration>	m_vertexDeclaration;
 	//VertexBuffer*		m_vertexBuffer;
 	//IndexBuffer*		m_indexBuffer;
 	Matrix				m_viewProj;

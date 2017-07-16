@@ -7,7 +7,7 @@
 
 LN_NAMESPACE_BEGIN
 class UIStyle;
-using UIStylePtr = RefPtr<UIStyle>;
+using UIStylePtr = Ref<UIStyle>;
 class UIRenderElement;
 class DrawingContext;
 
@@ -151,7 +151,7 @@ public:
 	ThicknessF		m_margin;
 	HAlignment		m_hAlignment;
 	VAlignment		m_vAlignment;
-	RefPtr<Brush>	m_brush;
+	Ref<Brush>	m_brush;
 
 LN_CONSTRUCT_ACCESS:
 	UIRenderElement();
@@ -202,16 +202,16 @@ public:
 	//UIStyleAttribute<HAlignment>	m_horizontalAlignment;
 	UIStyleAttribute<BrushPtr>				background;
 
-	//UIStyleAttribute < RefPtr<UIRenderElement>>	testDeco;
+	//UIStyleAttribute < Ref<UIRenderElement>>	testDeco;
 	
 	//UIStyleAttribute<BrushPtr>				backgroundMargin;
 	//UIStyleAttribute<BrushPtr>				foreground;
 	//UIStyleAttribute<TexturePtr>			m_image;
 
-	//UIStyleAttribute<RefPtr<Pen>>			m_borderLeft;
-	//UIStyleAttribute<RefPtr<Pen>>			m_borderRight;
-	//UIStyleAttribute<RefPtr<Pen>>			m_borderTop;
-	//UIStyleAttribute<RefPtr<Pen>>			m_borderBottom;
+	//UIStyleAttribute<Ref<Pen>>			m_borderLeft;
+	//UIStyleAttribute<Ref<Pen>>			m_borderRight;
+	//UIStyleAttribute<Ref<Pen>>			m_borderTop;
+	//UIStyleAttribute<Ref<Pen>>			m_borderBottom;
 	//UIStyleAttribute<FontPtr>				m_font;
 
 	//UIStyleAttribute<String>				m_fontFamily;
@@ -227,8 +227,8 @@ public:
 	UIStyleAttribute<Color>				bottomBorderColor;
 	UIStyleAttribute<BorderDirection>	borderDirection;
 
-	//std::unordered_map<String, UIStyleAttribute<RefPtr<UIRenderElement>>>	m_renderElementMap;
-	List<RefPtr<UIRenderElement>>	m_renderElements;
+	//std::unordered_map<String, UIStyleAttribute<Ref<UIRenderElement>>>	m_renderElementMap;
+	List<Ref<UIRenderElement>>	m_renderElements;
 };
 
 namespace detail {
@@ -252,16 +252,16 @@ public:
 	//UIStyleAttribute<HAlignment>	m_horizontalAlignment;
 	UIStyleAttribute<BrushPtr>				background;
 
-	//UIStyleAttribute < RefPtr<UIRenderElement>>	testDeco;
+	//UIStyleAttribute < Ref<UIRenderElement>>	testDeco;
 
 	//UIStyleAttribute<BrushPtr>				backgroundMargin;
 	//UIStyleAttribute<BrushPtr>				foreground;
 	//UIStyleAttribute<TexturePtr>			m_image;
 
-	//UIStyleAttribute<RefPtr<Pen>>			m_borderLeft;
-	//UIStyleAttribute<RefPtr<Pen>>			m_borderRight;
-	//UIStyleAttribute<RefPtr<Pen>>			m_borderTop;
-	//UIStyleAttribute<RefPtr<Pen>>			m_borderBottom;
+	//UIStyleAttribute<Ref<Pen>>			m_borderLeft;
+	//UIStyleAttribute<Ref<Pen>>			m_borderRight;
+	//UIStyleAttribute<Ref<Pen>>			m_borderTop;
+	//UIStyleAttribute<Ref<Pen>>			m_borderBottom;
 	//UIStyleAttribute<FontPtr>				m_font;
 
 	//UIStyleAttribute<String>				m_fontFamily;
@@ -277,7 +277,7 @@ public:
 	UIStyleAttribute<Color>				bottomBorderColor;
 	UIStyleAttribute<BorderDirection>	borderDirection;
 
-	List<RefPtr<UIRenderElement>>	m_availableRenderElements;
+	List<Ref<UIRenderElement>>	m_availableRenderElements;
 
 public:
 	void readyMergeProcess()
@@ -338,15 +338,15 @@ LN_INTERNAL_ACCESS:
 	detail::InvalidateFlags mergeActiveStylePropertyTables(detail::UIStylePropertyTableInstance* store, const List<String>& visualStateNames);
 
 public:	// TODO:
-	using VisualStateStylePair = std::pair<String, RefPtr<UIStylePropertyTable>>;
-	using SubStateStylePair = std::pair<String, RefPtr<UIStyle>>;
+	using VisualStateStylePair = std::pair<String, Ref<UIStylePropertyTable>>;
+	using SubStateStylePair = std::pair<String, Ref<UIStyle>>;
 
 
-	RefPtr<UIStyle>	m_baseOn;
+	Ref<UIStyle>	m_baseOn;
 
-	RefPtr<UIStylePropertyTable>	m_basePropertyTable;
+	Ref<UIStylePropertyTable>	m_basePropertyTable;
 
-	//SortedArray<String, RefPtr<UIStylePropertyTable>>	m_propertyTableMap;
+	//SortedArray<String, Ref<UIStylePropertyTable>>	m_propertyTableMap;
 	List<VisualStateStylePair>	m_visualStatePropertyTableList;
 
 	//UIStyle*					m_subStyleParent;
@@ -391,8 +391,8 @@ private:
 	//typedef const tr::TypeInfo* StyleKey;
 	using StyleKey = size_t;
 
-	SortedArray<StyleKey, RefPtr<UIStyle>>	m_table;
-	SortedArray<StyleKey, RefPtr<UIStyle>>	m_subControlStyleTable;
+	SortedArray<StyleKey, Ref<UIStyle>>	m_table;
+	SortedArray<StyleKey, Ref<UIStyle>>	m_subControlStyleTable;
 };
 
 enum class UIColorIndex

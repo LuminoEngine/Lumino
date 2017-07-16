@@ -66,7 +66,7 @@ LN_CONSTRUCT_ACCESS:
 
 LN_INTERNAL_ACCESS:
 	int getRevision() const { return m_revision; }
-	const List<RefPtr<UITextDocumentLine>>& GetLines() const { return m_lines; }
+	const List<Ref<UITextDocumentLine>>& GetLines() const { return m_lines; }
 
 private:
 	void replaceInternal(int offset, int length, const UTF32* text, int len);
@@ -76,7 +76,7 @@ private:
 	UITextDocumentLine* findLineFromOffset(int offset);
 
 	detail::UIManager*					m_manager;
-	List<RefPtr<UITextDocumentLine>>	m_lines;		// 必ず1つ入っている。
+	List<Ref<UITextDocumentLine>>	m_lines;		// 必ず1つ入っている。
 	int									m_revision;
 };
 
@@ -116,7 +116,7 @@ LN_INTERNAL_ACCESS:
 	int getTextLength() const { return m_textLength; }
 
 private:
-	List<RefPtr<GlyphRun>>	m_glyphRuns;
+	List<Ref<GlyphRun>>	m_glyphRuns;
 	int						m_startDocumentTextOffset;
 	int						m_textLength;		// LineDelim も含む。ただし、折り返しなどでの改行には含まない
 	int						m_visualLineIndex;
@@ -149,12 +149,12 @@ LN_CONSTRUCT_ACCESS:
 
 LN_INTERNAL_ACCESS:
 	void render(DrawingContext* g);
-	const List<RefPtr<UITextVisualLine>>& getVisualLines() const { return m_visualLines; }
+	const List<Ref<UITextVisualLine>>& getVisualLines() const { return m_visualLines; }
 
 private:
-	RefPtr<UITextDocumentLine>		m_documentLine;
+	Ref<UITextDocumentLine>		m_documentLine;
 	int								m_revision;
-	List<RefPtr<UITextVisualLine>>	m_visualLines;
+	List<Ref<UITextVisualLine>>	m_visualLines;
 	Rect							m_renderRect;	// TextArea 座標系
 	//float							m_renderTop;
 	//Size							m_renderSize;
@@ -209,10 +209,10 @@ LN_INTERNAL_ACCESS:
 	int getDocumentTextOffset(const UITextVisualPosition& pos);
 
 private:
-	RefPtr<UITextDocument>				m_document;
-	List<RefPtr<UITextVisualLineBlock>>	m_visualLineBlocks;
+	Ref<UITextDocument>				m_document;
+	List<Ref<UITextVisualLineBlock>>	m_visualLineBlocks;
 	int									m_revision;
-	RefPtr<UITextAreaCaret>				m_caret;
+	Ref<UITextAreaCaret>				m_caret;
 };
 
 
@@ -379,7 +379,7 @@ void UITextDocument::insertInternal(int offset, const UTF32* text, int len)
 	//	m_lines.Add(newObject<UITextDocumentLine>());	// 空line。EOF。	// TODO: cache
 	//	lineInsertIndex = 0;
 	//}
-	RefPtr<UITextDocumentLine> firstLine = m_lines[lineInsertIndex];
+	Ref<UITextDocumentLine> firstLine = m_lines[lineInsertIndex];
 
 	// まず全部 Insert する
 	firstLine->insertText(offsetFromLineHead, text, len);
@@ -808,7 +808,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UITextBox, UITextElement)
 //------------------------------------------------------------------------------
 UITextBoxPtr UITextBox::create()
 {
-	auto ptr = RefPtr<UITextBox>::makeRef();
+	auto ptr = Ref<UITextBox>::makeRef();
 	ptr->initialize();
 	return ptr;
 }
@@ -977,9 +977,9 @@ private:
 	void UpdateCaretRectangle();
 
 	GenericStringBuilderCore<UTF32>	m_rawText;
-	RefPtr<GlyphRun>				m_glyphRun;
-	RefPtr<UITextAreaCaret>			m_caret;
-	RefPtr<Brush>					m_caretBrush;
+	Ref<GlyphRun>				m_glyphRun;
+	Ref<UITextAreaCaret>			m_caret;
+	Ref<Brush>					m_caretBrush;
 	bool							m_invalidateGlyphRun;
 };
 
@@ -1115,7 +1115,7 @@ void UISimpleTextArea::UpdateCaretRectangle()
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UITextField, UITextElement)
 
 //------------------------------------------------------------------------------
-RefPtr<UITextField> UITextField::create()
+Ref<UITextField> UITextField::create()
 {
 	return newObject<UITextField>();
 }

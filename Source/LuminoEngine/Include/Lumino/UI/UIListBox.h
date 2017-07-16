@@ -6,8 +6,8 @@
 LN_NAMESPACE_BEGIN
 class UIListBoxItem;
 class UIListBox;
-using UIListBoxItemPtr = RefPtr<UIListBoxItem>;
-using UIListBoxPtr = RefPtr<UIListBox>;
+using UIListBoxItemPtr = Ref<UIListBoxItem>;
+using UIListBoxPtr = Ref<UIListBox>;
 
 /**
 	@brief

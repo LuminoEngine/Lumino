@@ -84,7 +84,7 @@ public:
 		@brief		RigidBody オブジェクトを作成します。
 		@param[in]	collider	: 衝突判定形状
 	*/
-	static RefPtr<RigidBody> create(CollisionShape* collider);
+	static Ref<RigidBody> create(CollisionShape* collider);
 
 
 public:
@@ -219,7 +219,7 @@ private:
 	btRigidBody*				m_btRigidBody;
 	detail::BtShapeManager		m_btShapeManager;
 	
-	//List<RefPtr<CollisionShape>>		m_colliders;
+	//List<Ref<CollisionShape>>		m_colliders;
 	//btCollisionShape*			m_rootBtCollisionShape;
 	//btCollisionShape*			m_rootTriggerBtCollisionShape;
 	//bool						m_rootBtCollisionShapeStandalone;

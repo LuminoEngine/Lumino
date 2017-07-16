@@ -227,16 +227,16 @@ void SpriteParticleModel::commit()
 	// 瞬間最大パーティクル数
 	//m_maxParticleCount = (int)ceil(m_maxLifeTime * (float)m_spawnRate);
 
-	m_mesh = RefPtr<MeshResource>::makeRef();
+	m_mesh = Ref<MeshResource>::makeRef();
 	m_mesh->initialize(m_manager, MeshCreationFlags::DynamicBuffers);
 	m_mesh->resizeVertexBuffer(m_maxParticles * 4);
 	m_mesh->resizeIndexBuffer(m_maxParticles * 6);
 }
 
 //------------------------------------------------------------------------------
-RefPtr<detail::SpriteParticleModelInstance> SpriteParticleModel::createInstane()
+Ref<detail::SpriteParticleModelInstance> SpriteParticleModel::createInstane()
 {
-	auto ptr = RefPtr<detail::SpriteParticleModelInstance>::makeRef();
+	auto ptr = Ref<detail::SpriteParticleModelInstance>::makeRef();
 	ptr->m_owner = this;
 	ptr->m_particles.resize(m_maxParticles);
 	ptr->m_particleIndices.resize(m_maxParticles);
@@ -766,9 +766,9 @@ void ParticleEmitterComponent::onRender2(RenderingContext* renderer)
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ParticleEmitter3DComponent, ParticleEmitterComponent);
 
 //------------------------------------------------------------------------------
-RefPtr<ParticleEmitter3DComponent> ParticleEmitter3DComponent::create(SpriteParticleModel* model)
+Ref<ParticleEmitter3DComponent> ParticleEmitter3DComponent::create(SpriteParticleModel* model)
 {
-	auto ptr = RefPtr<ParticleEmitter3DComponent>::makeRef();
+	auto ptr = Ref<ParticleEmitter3DComponent>::makeRef();
 	ptr->initialize(model);
 	//detail::EngineDomain::getDefaultSceneGraph3D()->getRootNode()->addChild(ptr);
 	return ptr;

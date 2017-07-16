@@ -88,10 +88,10 @@ void EffectManager::dispose()
 EffectEngine* EffectManager::CreateEffectWorld()
 {
 #ifdef LN_USE_EXTERNAL_Effekseer
-	auto engine = RefPtr<EffekseerEffectEngine>::makeRef();
+	auto engine = Ref<EffekseerEffectEngine>::makeRef();
 	engine->initialize(this, 32, 0, 2000);	// TODO
 
-	auto basePtr = RefPtr<EffectEngine>::staticCast(engine);
+	auto basePtr = Ref<EffectEngine>::staticCast(engine);
 	m_effectWorldList.add(basePtr);
 	return basePtr;
 #else
@@ -105,7 +105,7 @@ void EffectManager::ReleaseEffectWorld(EffectEngine* world)
 {
 	assert(world != nullptr);
 	world->dispose();
-	m_effectWorldList.remove(RefPtr<EffectEngine>(world));
+	m_effectWorldList.remove(Ref<EffectEngine>(world));
 }
 
 ////------------------------------------------------------------------------------

@@ -53,7 +53,7 @@ private:
 	void initReader(Stream* stream, Encoding* encoding);
 	int readBuffer();
 
-	RefPtr<Stream>			m_stream;
+	Ref<Stream>			m_stream;
 	EncodingConverter		m_converter;
 	ByteBuffer				m_byteBuffer;
 	int						m_byteLen;

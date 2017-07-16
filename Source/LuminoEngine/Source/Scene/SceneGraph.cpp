@@ -122,7 +122,7 @@ void SceneGraph2D::createCore(SceneGraphManager* manager)
 	m_defaultCamera->initialize(CameraProjection_2D);
 	m_defaultRoot->addChild(m_defaultCamera);
 
-	//auto pass = RefPtr<MMERenderingPass>::MakeRef(manager, MMD_PASS_object);
+	//auto pass = Ref<MMERenderingPass>::MakeRef(manager, MMD_PASS_object);
 	//pass->initialize();
 	//m_renderingPasses.Add(pass);
 	//pass->AddRef();
@@ -167,7 +167,7 @@ void SceneGraph3D::createCore(SceneGraphManager* manager)
 	m_defaultCamera->initialize(CameraProjection_3D);
 	m_defaultRoot->addChild(m_defaultCamera);
 
-	//m_defaultLight = RefPtr<LightComponent>::makeRef();
+	//m_defaultLight = Ref<LightComponent>::makeRef();
 	//m_defaultLight->initialize(LightType_Directional);
 	//m_defaultRoot->addChild(m_defaultLight);
 }

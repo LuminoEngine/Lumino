@@ -40,7 +40,7 @@ public:
 	virtual size_t GetLength() override { return (size_t)m_stream->getLength(); }
 
 private:
-	RefPtr<Stream>	m_stream;
+	Ref<Stream>	m_stream;
 };
 
 // Effekseer::FileInterface の実装

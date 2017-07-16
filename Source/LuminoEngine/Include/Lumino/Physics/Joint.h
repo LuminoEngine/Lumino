@@ -54,8 +54,8 @@ LN_INTERNAL_ACCESS:
 
 private:
 	btGeneric6DofSpringConstraint*	m_btDofSpringConstraint;
-	RefPtr<RigidBody>				m_bodyA;
-	RefPtr<RigidBody>				m_bodyB;
+	Ref<RigidBody>				m_bodyA;
+	Ref<RigidBody>				m_bodyB;
 
 	//bool			m_enableSpring[6];
 	//float			m_stiffness[6];

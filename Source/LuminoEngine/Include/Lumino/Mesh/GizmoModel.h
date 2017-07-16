@@ -6,7 +6,7 @@ class DrawList;
 
 namespace tr {
 class GizmoModel;
-using GizmoModelPtr = RefPtr<GizmoModel>;
+using GizmoModelPtr = Ref<GizmoModel>;
 
 enum class GizmoType
 {
@@ -90,7 +90,7 @@ private:
 	static const float RotationViewZRingOuter;
 	static const float BaseOpacity;
 
-	//RefPtr<MeshResource>	m_mesh;
+	//Ref<MeshResource>	m_mesh;
 	GizmoType				m_gizmoType;
 	//Matrix					m_parentSpaceTransform;
 	AttitudeTransform					m_targetInitialTransform;
@@ -105,7 +105,7 @@ private:
 	SizeI					m_viewPixelSize;
 
 	OperationType			m_operationType;
-	RefPtr<Material>		m_tmat;
+	Ref<Material>		m_tmat;
 
 	bool					m_dragging;
 	Plane					m_draggingLocalPlane;

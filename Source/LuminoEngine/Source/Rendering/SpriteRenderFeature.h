@@ -101,9 +101,9 @@ private:
 	typedef List<Attribute>		AttributeList;
 
 	GraphicsManager*					m_manager;
-	RefPtr<Driver::IVertexDeclaration>	m_vertexDeclaration;
-	RefPtr<Driver::IVertexBuffer>	m_vertexBuffer;
-	RefPtr<Driver::IIndexBuffer>	m_indexBuffer;
+	Ref<Driver::IVertexDeclaration>	m_vertexDeclaration;
+	Ref<Driver::IVertexBuffer>	m_vertexBuffer;
+	Ref<Driver::IIndexBuffer>	m_indexBuffer;
 	int								m_maxSprites;
 	SpriteRequestList				m_spriteRequestList;
 	int								m_spriteRequestListUsedCount;
@@ -124,7 +124,7 @@ private:
 																/// シェーダ関係の変数をまとめた構造体
 	struct
 	{
-		RefPtr<Driver::IShader>		Shader;
+		Ref<Driver::IShader>		Shader;
 		Driver::IShaderVariable*    varViewProjMatrix;
 		Driver::IShaderVariable*    varViewPixelSize;
 		Driver::IShaderVariable*    varTexture;

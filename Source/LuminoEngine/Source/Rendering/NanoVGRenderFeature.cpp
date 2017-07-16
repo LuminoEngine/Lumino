@@ -377,7 +377,7 @@ struct LNNVGcontext
 	//float view[2];
 
 	GraphicsManager*			manager;
-	RefPtr<Driver::IShader>		shader;
+	Ref<Driver::IShader>		shader;
 	Driver::IShaderPass*		shaderPass;
 	Driver::IShaderVariable*	varViewSize;
 	Driver::IShaderVariable*	varFrag;
@@ -430,8 +430,8 @@ struct LNNVGcontext
 	}
 
 private:
-	RefPtr<Driver::IVertexDeclaration>	m_vertexDeclaration;
-	RefPtr<Driver::IVertexBuffer>		m_vertexBuffer;
+	Ref<Driver::IVertexDeclaration>	m_vertexDeclaration;
+	Ref<Driver::IVertexBuffer>		m_vertexBuffer;
 };
 
 Driver::ITexture* LNNVGcontext_GetTexture(LNNVGcontext* ctx, int imageId)
@@ -929,9 +929,9 @@ void nvgDeleteLNContext(NVGcontext* ctx)
 //==============================================================================
 
 //------------------------------------------------------------------------------
-RefPtr<NanoVGCommandList> NanoVGCommandListCache::createObject()
+Ref<NanoVGCommandList> NanoVGCommandListCache::createObject()
 {
-	return RefPtr<NanoVGCommandList>::makeRef();
+	return Ref<NanoVGCommandList>::makeRef();
 }
 
 
@@ -968,7 +968,7 @@ void NanoVGRenderFeature::executeCommand(NanoVGCommandList* commandList)
 		executeCommand, m_manager,
 		NanoVGRenderFeature*, _this,
 		NanoVGState, m_state,
-		RefPtr<NanoVGCommandList>, commandList,
+		Ref<NanoVGCommandList>, commandList,
 		{
 			_this->executeCommandInternal(m_state, commandList);
 		});

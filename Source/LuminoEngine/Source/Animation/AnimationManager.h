@@ -24,7 +24,7 @@ public:
 
 	//AnimationClock* StartPropertyAnimation(AnimatableObject* targetObject/*AnimationClockArgs* list, int listCount*/)
 	//{
-	//	auto ac = RefPtr<AnimationClock>::MakeRef();
+	//	auto ac = Ref<AnimationClock>::MakeRef();
 	//	ac->initialize(targetObject);
 	//	m_clockList.Add(ac);
 
@@ -34,7 +34,7 @@ public:
 
 	
 private:
-	List<RefPtr<AnimationClock>>	m_clockList;
+	List<Ref<AnimationClock>>	m_clockList;
 };
 
 } // namespace detail

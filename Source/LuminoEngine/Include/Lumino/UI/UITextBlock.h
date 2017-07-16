@@ -4,7 +4,7 @@
 
 LN_NAMESPACE_BEGIN
 class UITextBlock;
-using UITextBlockPtr = RefPtr<UITextBlock>;
+using UITextBlockPtr = Ref<UITextBlock>;
 
 /**
 	@brief		

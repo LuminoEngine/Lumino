@@ -125,7 +125,7 @@ void Animator::create(detail::IAnimationTargetElement* element)
 
 	for (int i = 0; i < MaxLayers; ++i)
 	{
-		m_layerList[i] = RefPtr<detail::AnimationLayer>::makeRef(this);
+		m_layerList[i] = Ref<detail::AnimationLayer>::makeRef(this);
 	}
 
 	int count = m_element->getAnimationTargetAttributeCount();
@@ -229,7 +229,7 @@ void AnimationLayer::createStateAndAttachClip(AnimationClip* animationClip)
 {
 	if (LN_CHECK_ARG(animationClip != nullptr)) return;
 
-	auto state = RefPtr<AnimationState>::makeRef(animationClip);
+	auto state = Ref<AnimationState>::makeRef(animationClip);
 	m_animationStateList.add(animationClip->getName(), state);
 	state->refresh(m_owner);
 }
@@ -274,7 +274,7 @@ void AnimationLayer::advanceTime(float elapsedTime)
 //------------------------------------------------------------------------------
 AnimationState* AnimationLayer::findAnimationState(const StringRef& clipName)
 {
-	RefPtr<AnimationState>* state = m_animationStateList.find(clipName);
+	Ref<AnimationState>* state = m_animationStateList.find(clipName);
 	if (state == nullptr) return nullptr;
 	return *state;
 }

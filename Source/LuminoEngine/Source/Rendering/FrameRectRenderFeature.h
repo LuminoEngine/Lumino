@@ -17,7 +17,7 @@ struct FrameRectRendererState
 	ThicknessF					borderThickness;
 	RectI						srcRect;
 	BrushWrapMode				wrapMode;
-	RefPtr<Driver::ITexture>	texture;
+	Ref<Driver::ITexture>	texture;
 };
 
 class FrameRectRendererCore
@@ -64,7 +64,7 @@ private:
 
 	GraphicsManager*			m_manager;
 	Driver::IRenderer*			m_renderer;
-	//RefPtr<Driver::IVertexDeclaration>	m_vertexDeclaration;
+	//Ref<Driver::IVertexDeclaration>	m_vertexDeclaration;
 	Driver::IVertexBuffer*		m_vertexBuffer;
 	Driver::IIndexBuffer*		m_indexBuffer;
 	CacheBuffer<Vertex>			m_vertexCache;
@@ -113,7 +113,7 @@ private:
 	FrameRectRendererCore*	m_core;
 
 	Matrix					m_viewProj;
-	RefPtr<Brush>	m_brush;
+	Ref<Brush>	m_brush;
 
 	//FrameRectRendererState	m_state;
 };

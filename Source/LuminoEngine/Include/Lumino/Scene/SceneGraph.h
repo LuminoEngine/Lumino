@@ -14,8 +14,8 @@ class StaticMeshModel;
 class Material;		// TODO: World temp
 class SceneGraph2D;
 class SceneGraph3D;
-using SceneGraph2DPtr = RefPtr<SceneGraph2D>;
-using SceneGraph3DPtr = RefPtr<SceneGraph3D>;
+using SceneGraph2DPtr = Ref<SceneGraph2D>;
+using SceneGraph3DPtr = Ref<SceneGraph3D>;
 
 /**
 	@brief
@@ -141,7 +141,7 @@ private:
 
 	SceneNode*				m_defaultRoot;
 	CameraComponent*					m_defaultCamera;
-	//RefPtr<LightComponent>			m_defaultLight;
+	//Ref<LightComponent>			m_defaultLight;
 
 };
 

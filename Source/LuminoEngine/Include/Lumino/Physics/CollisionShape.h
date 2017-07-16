@@ -10,12 +10,12 @@ class BoxCollisionShape;
 class SphereCollisionShape;
 class CapsuleCollisionShape;
 class MeshCollisionShape;
-using CollisionShapePtr = RefPtr<CollisionShape>;
-using PlaneCollisionShapePtr = RefPtr<PlaneCollisionShape>;
-using BoxCollisionShapePtr = RefPtr<BoxCollisionShape>;
-using SphereCollisionShapePtr = RefPtr<SphereCollisionShape>;
-using CapsuleCollisionShapePtr = RefPtr<CapsuleCollisionShape>;
-using MeshCollisionShapePtr = RefPtr<MeshCollisionShape>;
+using CollisionShapePtr = Ref<CollisionShape>;
+using PlaneCollisionShapePtr = Ref<PlaneCollisionShape>;
+using BoxCollisionShapePtr = Ref<BoxCollisionShape>;
+using SphereCollisionShapePtr = Ref<SphereCollisionShape>;
+using CapsuleCollisionShapePtr = Ref<CapsuleCollisionShape>;
+using MeshCollisionShapePtr = Ref<MeshCollisionShape>;
 
 /**
 	@brief	衝突判定のためのオブジェクト形状のベースクラスです。

@@ -363,7 +363,7 @@ void GLRenderer::onUpdateDepthStencilState(const DepthStencilState& newState, co
 }
 
 //------------------------------------------------------------------------------
-void GLRenderer::onUpdatePrimitiveData(IVertexDeclaration* decls, const List<RefPtr<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer)
+void GLRenderer::onUpdatePrimitiveData(IVertexDeclaration* decls, const List<Ref<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer)
 {
 	if (vertexBuufers.isEmpty())
 		m_currentVertexBuffer = nullptr;

@@ -156,7 +156,7 @@ void UIComboBox::initialize()
 
 	setHContentAlignment(HAlignment::Stretch);
 
-	auto panel = RefPtr<UIStackPanel>::makeRef();
+	auto panel = Ref<UIStackPanel>::makeRef();
 	panel->initialize();
 	panel->setHAlignment(HAlignment::Stretch);
 	panel->setVAlignment(VAlignment::Stretch);
@@ -167,7 +167,7 @@ void UIComboBox::initialize()
 //------------------------------------------------------------------------------
 //UIComboBoxItemPtr UIComboBox::addTextItem(const String& text)
 //{
-//	auto textBlock = RefPtr<UITextBlock>::MakeRef();
+//	auto textBlock = Ref<UITextBlock>::MakeRef();
 //	textBlock->initialize(getManager());
 //	textBlock->SetText(text);
 //	return AddItem(textBlock);
@@ -179,7 +179,7 @@ void UIComboBox::initialize()
 //	if (LN_CHECK_ARG(item != nullptr)) return nullptr;
 //
 //	// 受け取った item を UIComboBoxItem でラップして、UIComboBoxItem をリストに入れる
-//	auto listItem = RefPtr<UIComboBoxItem>::MakeRef();
+//	auto listItem = Ref<UIComboBoxItem>::MakeRef();
 //	listItem->initialize(getManager());
 //	listItem->setContent(item);
 //	getItems()->Add(listItem);

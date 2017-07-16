@@ -52,7 +52,7 @@ void Document::replace(int offset, int length, const UTF32* text, int len)
 	LN_ASSERT(offset == 0 && length == 0);	// TODO: まだ
 
 	// text を run と LineBrake のリストにする
-	List<RefPtr<Inline>> inlines;
+	List<Ref<Inline>> inlines;
 	{
 		const UTF32* pos = text;
 		const UTF32* end = pos + len;
@@ -73,7 +73,7 @@ void Document::replace(int offset, int length, const UTF32* text, int len)
 	// TODO: Insert 先を割る
 	int localInsertPoint = 0;
 	LN_ASSERT(m_blockList.isEmpty());	// TODO
-	RefPtr<Block> parentBlock = newObject<Paragraph>();
+	Ref<Block> parentBlock = newObject<Paragraph>();
 	m_blockList.add(parentBlock);
 
 	parentBlock->insertInlines(localInsertPoint, inlines);
@@ -242,7 +242,7 @@ void Block::addInline(Inline* inl)
 }
 
 //------------------------------------------------------------------------------
-void Block::insertInlines(int index, const List<RefPtr<Inline>>& inlines)
+void Block::insertInlines(int index, const List<Ref<Inline>>& inlines)
 {
 	m_inlines.insertRange(index, inlines);
 	for (Inline* inl : inlines)
@@ -365,7 +365,7 @@ void run::initialize()
 	Inline::initialize();
 
 	// TODO: 本当に画面に表示されている分だけ作ればいろいろ節約できそう
-	m_glyphRun = RefPtr<GlyphRun>::makeRef();
+	m_glyphRun = Ref<GlyphRun>::makeRef();
 	m_glyphRun->initialize(getManager()->getGraphicsManager());
 }
 
@@ -450,7 +450,7 @@ void VisualBlock::rebuildVisualLineList()
 
 	//m_visualLineList.Add(newObject<VisualLine>());
 	//VisualLine* lastLine = m_visualLineList.GetLast();
-	//for (const RefPtr<TextElement>& element : m_paragraph->GetChildElements())
+	//for (const Ref<TextElement>& element : m_paragraph->GetChildElements())
 	//{
 	//	lastLine->m_visualTextElementList.Add(newObject<VisualTextElement>());
 

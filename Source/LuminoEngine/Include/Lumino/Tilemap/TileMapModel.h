@@ -6,7 +6,7 @@
 
 LN_NAMESPACE_BEGIN
 class TileMapModel;
-using TileMapModelPtr = RefPtr<TileMapModel>;
+using TileMapModelPtr = Ref<TileMapModel>;
 
 /**
 	@brief	

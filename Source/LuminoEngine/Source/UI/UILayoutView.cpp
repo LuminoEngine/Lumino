@@ -164,7 +164,7 @@ void UILayoutView::openPopup(UIPopup* popup)
 //------------------------------------------------------------------------------
 void UILayoutView::closePopup(UIPopup* popup)
 {
-	m_popupContainers.removeIf([popup](const RefPtr<detail::UIPopuoContainer>& ptr) { return ptr->GetPopup() == popup; });
+	m_popupContainers.removeIf([popup](const Ref<detail::UIPopuoContainer>& ptr) { return ptr->GetPopup() == popup; });
 }
 
 ////------------------------------------------------------------------------------

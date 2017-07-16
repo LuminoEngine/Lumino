@@ -142,33 +142,33 @@ ISwapChain* DX9GraphicsDevice::getDefaultSwapChain()
 }
 
 //------------------------------------------------------------------------------
-RefPtr<IVertexDeclaration> DX9GraphicsDevice::createVertexDeclarationImplement(const VertexElement* elements, int elementsCount)
+Ref<IVertexDeclaration> DX9GraphicsDevice::createVertexDeclarationImplement(const VertexElement* elements, int elementsCount)
 {
-	RefPtr<DX9VertexDeclaration> obj(LN_NEW DX9VertexDeclaration(), false);
+	Ref<DX9VertexDeclaration> obj(LN_NEW DX9VertexDeclaration(), false);
 	obj->initialize(this, elements, elementsCount);
-	return RefPtr<IVertexDeclaration>::staticCast(obj);
+	return Ref<IVertexDeclaration>::staticCast(obj);
 }
 
 //------------------------------------------------------------------------------
-RefPtr<IVertexBuffer> DX9GraphicsDevice::createVertexBufferImplement(size_t bufferSize, const void* data, ResourceUsage usage)
+Ref<IVertexBuffer> DX9GraphicsDevice::createVertexBufferImplement(size_t bufferSize, const void* data, ResourceUsage usage)
 {
-	RefPtr<DX9VertexBuffer> obj(LN_NEW DX9VertexBuffer(), false);
+	Ref<DX9VertexBuffer> obj(LN_NEW DX9VertexBuffer(), false);
 	obj->create(this, bufferSize, data, usage);
 	return obj;
 }
 
 //------------------------------------------------------------------------------
-RefPtr<IIndexBuffer> DX9GraphicsDevice::createIndexBufferImplement(int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage)
+Ref<IIndexBuffer> DX9GraphicsDevice::createIndexBufferImplement(int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage)
 {
-	RefPtr<DX9IndexBuffer> obj(LN_NEW DX9IndexBuffer(), false);
+	Ref<DX9IndexBuffer> obj(LN_NEW DX9IndexBuffer(), false);
 	obj->create(this, indexCount, initialData, format, usage);
 	return obj;
 }
 
 //------------------------------------------------------------------------------
-RefPtr<ITexture> DX9GraphicsDevice::createTextureImplement(const SizeI& size, bool mipmap, TextureFormat format, const void* initialData)
+Ref<ITexture> DX9GraphicsDevice::createTextureImplement(const SizeI& size, bool mipmap, TextureFormat format, const void* initialData)
 {
-	RefPtr<DX9Texture> obj(LN_NEW DX9Texture(this, size, format, mipmap), false);
+	Ref<DX9Texture> obj(LN_NEW DX9Texture(this, size, format, mipmap), false);
 	if (initialData != nullptr) {
 		obj->setSubData(PointI(0, 0), initialData, Utils::getTextureFormatByteCount(format) * size.width * size.height, size);
 	}
@@ -176,20 +176,20 @@ RefPtr<ITexture> DX9GraphicsDevice::createTextureImplement(const SizeI& size, bo
 }
 
 //------------------------------------------------------------------------------
-RefPtr<ITexture> DX9GraphicsDevice::createTexturePlatformLoadingImplement(Stream* stream, bool mipmap, TextureFormat format)
+Ref<ITexture> DX9GraphicsDevice::createTexturePlatformLoadingImplement(Stream* stream, bool mipmap, TextureFormat format)
 {
 	ByteBuffer buffer;
 	buffer.resize((size_t)stream->getLength(), false);
 	stream->read(buffer.getData(), buffer.getSize());
 
-	RefPtr<DX9Texture> obj(LN_NEW DX9Texture(this, buffer.getData(), buffer.getSize(), Color32::Transparency, mipmap, format), false);
+	Ref<DX9Texture> obj(LN_NEW DX9Texture(this, buffer.getData(), buffer.getSize(), Color32::Transparency, mipmap, format), false);
 	return obj;
 }
 
 //------------------------------------------------------------------------------
-RefPtr<ITexture> DX9GraphicsDevice::createTexture3DImplement(int width, int height, int depth, uint32_t mipLevels, TextureFormat format, ResourceUsage usage, const void* initialData)
+Ref<ITexture> DX9GraphicsDevice::createTexture3DImplement(int width, int height, int depth, uint32_t mipLevels, TextureFormat format, ResourceUsage usage, const void* initialData)
 {
-	RefPtr<DX9Texture3D> obj(LN_NEW DX9Texture3D(this), false);
+	Ref<DX9Texture3D> obj(LN_NEW DX9Texture3D(this), false);
 	obj->initialize(width, height, depth, format, mipLevels);
 	if (initialData != nullptr) {
 		obj->setSubData3D(Box32::Zero, initialData, Utils::getTextureFormatByteCount(format) * width * height * depth);
@@ -198,35 +198,35 @@ RefPtr<ITexture> DX9GraphicsDevice::createTexture3DImplement(int width, int heig
 }
 
 //------------------------------------------------------------------------------
-RefPtr<ITexture> DX9GraphicsDevice::ceateRenderTargetImplement(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format)
+Ref<ITexture> DX9GraphicsDevice::ceateRenderTargetImplement(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format)
 {
-	RefPtr<DX9RenderTargetTexture> obj(LN_NEW DX9RenderTargetTexture(this, SizeI(width, height), format, mipLevels), false);
+	Ref<DX9RenderTargetTexture> obj(LN_NEW DX9RenderTargetTexture(this, SizeI(width, height), format, mipLevels), false);
 	return obj;
 }
 
 //------------------------------------------------------------------------------
-RefPtr<ITexture> DX9GraphicsDevice::createDepthBufferImplement(uint32_t width, uint32_t height, TextureFormat format)
+Ref<ITexture> DX9GraphicsDevice::createDepthBufferImplement(uint32_t width, uint32_t height, TextureFormat format)
 {
-	RefPtr<DX9DepthBuffer> obj(LN_NEW DX9DepthBuffer(this, SizeI(width, height), format), false);
+	Ref<DX9DepthBuffer> obj(LN_NEW DX9DepthBuffer(this, SizeI(width, height), format), false);
 	return obj;
 }
 
 //------------------------------------------------------------------------------
-RefPtr<IShader> DX9GraphicsDevice::createShaderImplement(const void* textData, size_t size, ShaderCompileResult* result)
+Ref<IShader> DX9GraphicsDevice::createShaderImplement(const void* textData, size_t size, ShaderCompileResult* result)
 {
 	DX9Shader* shader = NULL;
 	result->Level = DX9Shader::create(this, (const char*)textData, size, &shader, &result->Message);
 	if (shader != NULL) {
 		addDeviceResource(shader);
 	}
-	RefPtr<IShader> obj(shader, false);
+	Ref<IShader> obj(shader, false);
 	return obj;
 }
 
 //------------------------------------------------------------------------------
-RefPtr<ISwapChain> DX9GraphicsDevice::createSwapChainImplement(PlatformWindow* window)
+Ref<ISwapChain> DX9GraphicsDevice::createSwapChainImplement(PlatformWindow* window)
 {
-	RefPtr<DX9SwapChain> obj(LN_NEW DX9SwapChain(), false);
+	Ref<DX9SwapChain> obj(LN_NEW DX9SwapChain(), false);
 	obj->initializeSub(this, window, window->getSize());
 	return obj;
 }

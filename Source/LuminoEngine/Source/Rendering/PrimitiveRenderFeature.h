@@ -134,8 +134,8 @@ private:
 	void blitImpl();
 
 	GraphicsManager*					m_manager;
-	RefPtr<Driver::IVertexBuffer>		m_vertexBuffer;
-	RefPtr<Material>					m_commonMaterial;
+	Ref<Driver::IVertexBuffer>		m_vertexBuffer;
+	Ref<Material>					m_commonMaterial;
 };
 
 } // namespace detail

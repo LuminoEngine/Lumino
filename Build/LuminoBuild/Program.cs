@@ -10,7 +10,7 @@ namespace LuminoBuild
         public static void Main(string[] args)
         {
 #if true
-            args = new string[] { "MakeInstaller" };
+            args = new string[] { "MakeProjects" };
 #else
             // default
             if (args.Length == 0)

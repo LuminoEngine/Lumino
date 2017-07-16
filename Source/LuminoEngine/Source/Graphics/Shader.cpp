@@ -349,17 +349,17 @@ ShaderPtr Shader::getBuiltinShader(BuiltinShader shader)
 }
 
 //------------------------------------------------------------------------------
-RefPtr<Shader> Shader::create(const StringRef& filePath, bool useTRSS)
+Ref<Shader> Shader::create(const StringRef& filePath, bool useTRSS)
 {
-	RefPtr<Shader> obj(LN_NEW Shader(), false);
+	Ref<Shader> obj(LN_NEW Shader(), false);
 	obj->initialize(detail::GraphicsManager::getInstance(), filePath, useTRSS);
 	return obj;
 }
 
 //------------------------------------------------------------------------------
-RefPtr<Shader> Shader::create(const char* code, int length)
+Ref<Shader> Shader::create(const char* code, int length)
 {
-	RefPtr<Shader> obj(LN_NEW Shader(), false);
+	Ref<Shader> obj(LN_NEW Shader(), false);
 	obj->initialize(detail::GraphicsManager::getInstance(), code, length);
 	return obj;
 }
@@ -371,7 +371,7 @@ RefPtr<Shader> Shader::create(const char* code, int length)
 //{
 //	LN_THROW(manager != NULL, ArgumentException);
 //	ShaderCompileResult result;
-//	RefPtr<Driver::IShader> deviceObj(
+//	Ref<Driver::IShader> deviceObj(
 //		manager->getGraphicsDevice()->createShader(textData, byteCount, &result), false);
 //	LN_THROW(!deviceObj.IsNull(), CompilationException, result);
 //	return LN_NEW Shader(manager, deviceObj, ByteBuffer(textData, byteCount));
@@ -386,7 +386,7 @@ RefPtr<Shader> Shader::create(const char* code, int length)
 //	LN_THROW(outShader != NULL, ArgumentException);
 //
 //	*outShader = NULL;
-//	RefPtr<Driver::IShader> deviceObj(
+//	Ref<Driver::IShader> deviceObj(
 //		manager->getGraphicsDevice()->createShader(textData, byteCount, outResult), false);
 //	if (deviceObj.IsNull()) {
 //		return false;
@@ -412,7 +412,7 @@ Shader::~Shader()
 //------------------------------------------------------------------------------
 void Shader::initialize(detail::GraphicsManager* manager, const StringRef& filePath, bool useTRSS)
 {
-	RefPtr<Stream> stream(manager->getFileManager()->createFileStream(filePath), false);
+	Ref<Stream> stream(manager->getFileManager()->createFileStream(filePath), false);
 	ByteBuffer buf((size_t)stream->getLength() + 1, false);
 	stream->read(buf.getData(), buf.getSize());
 	buf[(size_t)stream->getLength()] = 0x00;
@@ -529,7 +529,7 @@ void Shader::tryCommitChanges()
 		CommitChanges, getManager(),
 		detail::GraphicsManager*, manager,
 		detail::RenderBulkData, varsData,
-		RefPtr<Shader>, _this,
+		Ref<Shader>, _this,
 		{
 			auto* serializer = manager->getShaderVariableCommitSerializeHelper();
 			serializer->deserialize(varsData.getData(), varsData.getSize());

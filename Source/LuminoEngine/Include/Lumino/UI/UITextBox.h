@@ -7,7 +7,7 @@ LN_NAMESPACE_BEGIN
 namespace tr { class Document; }
 namespace tr { class DocumentView; }
 class UITextBox;
-using UITextBoxPtr = RefPtr<UITextBox>;
+using UITextBoxPtr = Ref<UITextBox>;
 class UITextArea;
 class UISimpleTextArea;
 
@@ -40,9 +40,9 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual void onRender(DrawingContext* g) override;
 
 private:
-	//RefPtr<tr::Document>		m_document;
-	//RefPtr<tr::DocumentView>	m_documentView;
-	RefPtr<UITextArea>			m_textArea;
+	//Ref<tr::Document>		m_document;
+	//Ref<tr::DocumentView>	m_documentView;
+	Ref<UITextArea>			m_textArea;
 };
 
 
@@ -56,7 +56,7 @@ class UITextField
 {
 	LN_OBJECT();
 public:
-	static RefPtr<UITextField> create();
+	static Ref<UITextField> create();
 
 public:
 	void setText(const StringRef& text);
@@ -73,7 +73,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual Size arrangeOverride(const Size& finalSize) override;
 
 private:
-	RefPtr<UISimpleTextArea>			m_textArea;
+	Ref<UISimpleTextArea>			m_textArea;
 };
 
 LN_NAMESPACE_END

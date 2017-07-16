@@ -212,7 +212,7 @@ TEST_F(Test_Graphics_Rendering, drawCylinder)
 TEST_F(Test_Graphics_Rendering, drawMesh)
 {
 	//{
-	//	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
+	//	auto mesh = Ref<StaticMeshModel>::MakeRef();
 	//	mesh->InitializeSquarePlane(detail::GraphicsManager::getInstance(), Vector2(2, 1), Vector3::UnitY, MeshCreationFlags::None);
 	//	mesh->getMeshResource()->setPosition(0, Vector3(-2, 1, 0));
 	//	mesh->getMeshResource()->setNormal(0, Vector3(1, 0, 0));
@@ -222,7 +222,7 @@ TEST_F(Test_Graphics_Rendering, drawMesh)
 	//	mesh->getMeshResource()->setNormal(2, Vector3(0, 1, 0));
 	//	mesh->getMeshResource()->setPosition(3, Vector3(2, -1, 0));
 	//	mesh->getMeshResource()->setNormal(3, Vector3(0, 0, 1));
-	//	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
+	//	auto cb = Ref<CylinderMouseMoveCameraBehavior>::MakeRef();
 	//	Camera::getMain3DCamera()->setCameraBehavior(cb);
 
 	//	while (1)
@@ -239,7 +239,7 @@ TEST_F(Test_Graphics_Rendering, drawMesh)
 	//	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1.png")));
 	//}
 	{
-		auto mesh = RefPtr<StaticMeshModel>::makeRef();
+		auto mesh = Ref<StaticMeshModel>::makeRef();
 		mesh->initializeSphere(detail::GraphicsManager::getInstance(), 2, 8, 4, MeshCreationFlags::None);
 
 		LN_TEST_BEGIN_FRAME;

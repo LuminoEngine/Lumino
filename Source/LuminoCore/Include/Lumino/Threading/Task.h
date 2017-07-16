@@ -9,7 +9,7 @@ LN_NAMESPACE_BEGIN
 namespace tr
 {
 class Task;
-typedef RefPtr<Task>	TaskPtr;
+typedef Ref<Task>	TaskPtr;
 
 enum class TaskStatus
 {

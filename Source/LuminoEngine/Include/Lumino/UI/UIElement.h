@@ -435,18 +435,18 @@ private:
 	UIElement*				m_logicalParent;
 	//UIStylePropertyTable*	m_localStyle;			// 内部的に使用されるスタイル。親や VisualState から取得したスタイルをマージしたもの。
 	//	m_localStyle;
-	RefPtr<detail::UIStylePropertyTableInstance>	m_localStyle;
+	Ref<detail::UIStylePropertyTableInstance>	m_localStyle;
 	Size					m_desiredSize;			// measureLayout() で決定されるこのコントロールの要求サイズ
 	Rect					m_finalLocalRenderRect;		// 描画に使用する最終境界矩形 (グローバル座標系=RootFrame のローカル座標系)
 	Rect					m_finalLocalContentRect;
 	Rect					m_finalGlobalRect;
 	String					m_elementName;				// 要素名 ("UITextBlock" など) TODO: いらないかも
-	RefPtr<UIVisualStateManager>	m_visualStateManager;
+	Ref<UIVisualStateManager>	m_visualStateManager;
 	String							m_styleSubControlOwnerName;
 	String							m_styleSubControlName;
 
 	UIElement*                m_visualParent;
-	std::shared_ptr<List<RefPtr<UIElement>>>    m_visualChildren;
+	std::shared_ptr<List<Ref<UIElement>>>    m_visualChildren;
 
 	detail::GridLayoutInfo	m_gridLayoutInfo;
 
@@ -455,7 +455,7 @@ private:
 
 	UISpecialElementType			m_specialElementType;
 
-	//RefPtr<Style>					m_style;
+	//Ref<Style>					m_style;
 	float					m_combinedOpacity;
 	//AnchorInfo				m_anchorInfo;
 	detail::InvalidateFlags	m_invalidateFlags;

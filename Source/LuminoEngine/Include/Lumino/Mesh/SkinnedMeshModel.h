@@ -11,8 +11,8 @@ class PmxBoneResource;			// TODO: 抽象化したい
 class PmxIKResource;
 class SkinnedMeshModel;
 class SkinnedMeshBone;
-using SkinnedMeshModelPtr = RefPtr<SkinnedMeshModel>;
-using SkinnedMeshBonePtr = RefPtr<SkinnedMeshBone>;
+using SkinnedMeshModelPtr = Ref<SkinnedMeshModel>;
+using SkinnedMeshBonePtr = Ref<SkinnedMeshBone>;
 
 class RigidBody;	// TODO: MMD でのみ必要
 class DofSpringJoint;		// TODO: MMD でのみ必要
@@ -86,24 +86,24 @@ private:
 
 LN_INTERNAL_ACCESS:	// TODO:
 	// TODO: ↓このあたりは StaticMeshModel にして、Renderer::drawMesh に渡せるようにしたい。LOD の選択はそちらで。
-	//RefPtr<PmxSkinnedMeshResource>	m_meshResource;
-	//RefPtr<MaterialList>			m_materials;
-	RefPtr<StaticMeshModel>			m_mesh;
-	RefPtr<PmxSkinnedMeshResource>	m_meshResource;
+	//Ref<PmxSkinnedMeshResource>	m_meshResource;
+	//Ref<MaterialList>			m_materials;
+	Ref<StaticMeshModel>			m_mesh;
+	Ref<PmxSkinnedMeshResource>	m_meshResource;
 
 	List<SkinnedMeshBonePtr>		m_allBoneList;				// 全ボーンリスト
 	List<SkinnedMeshBone*>			m_rootBoneList;				// ルートボーンリスト (親を持たないボーンリスト)
 	List<Matrix>					m_skinningMatrices;			// スキニングに使用する最終ボーン行列 (要素数はボーン数)
 	List<Quaternion>				m_skinningLocalQuaternions;
-	RefPtr<Texture2D>				m_skinningMatricesTexture;	// Texture fetch による GPU スキニング用のテクスチャ
-	RefPtr<Texture2D>				m_skinningLocalQuaternionsTexture;	// Texture fetch による GPU スキニング用のテクスチャ
-	RefPtr<Animator>				m_animator;
+	Ref<Texture2D>				m_skinningMatricesTexture;	// Texture fetch による GPU スキニング用のテクスチャ
+	Ref<Texture2D>				m_skinningLocalQuaternionsTexture;	// Texture fetch による GPU スキニング用のテクスチャ
+	Ref<Animator>				m_animator;
 	List<SkinnedMeshBone*>			m_ikBoneList;
 
 	// TODO: これは物理演算機能を持つサブクラスを作ったほうがいい気がする
-	RefPtr<PhysicsWorld>	m_physicsWorld;
-	List<RefPtr<detail::MmdSkinnedMeshRigidBody>>	m_rigidBodyList;
-	List<RefPtr<detail::MmdSkinnedMeshJoint>>		m_jointList;
+	Ref<PhysicsWorld>	m_physicsWorld;
+	List<Ref<detail::MmdSkinnedMeshRigidBody>>	m_rigidBodyList;
+	List<Ref<detail::MmdSkinnedMeshJoint>>		m_jointList;
 
 	Matrix		m_worldTransform;
 	Matrix		m_worldTransformInverse;
@@ -150,7 +150,7 @@ protected:
 	virtual void setAnimationTargetValue(ValueType type, const void* value) override;
 
 LN_INTERNAL_ACCESS:	// TODO
-	RefPtr<PmxBoneResource>	m_core;				// 共有データクラス
+	Ref<PmxBoneResource>	m_core;				// 共有データクラス
 	SkinnedMeshBone*		m_parent;
 	List<SkinnedMeshBone*>	m_children;			// 子ボーンリスト
 	AttitudeTransform		m_localTransform;	// モーションを書き込むのはここ
@@ -180,7 +180,7 @@ private:
 	SkinnedMeshModel*		m_ownerModel;
 	PmxRigidBodyResource*	m_resource;
 	SkinnedMeshBone*		m_bone;
-	RefPtr<RigidBody>		m_rigidBody;
+	Ref<RigidBody>		m_rigidBody;
 	Matrix					m_boneLocalPosition;
 	Matrix					m_boneOffset;
 	Matrix					m_offsetBodyToBone;
@@ -195,7 +195,7 @@ LN_INTERNAL_ACCESS:
 	void initialize(SkinnedMeshModel* ownerModel, PmxJointResource* jointResource);
 
 private:
-	RefPtr<DofSpringJoint>	m_joint;
+	Ref<DofSpringJoint>	m_joint;
 };
 
 }

@@ -5,7 +5,7 @@
 
 LN_NAMESPACE_BEGIN
 class UIEventArgs;
-using UIEventArgsPtr = RefPtr<UIEventArgs>;
+using UIEventArgsPtr = Ref<UIEventArgs>;
 class UIEventInfo;
 using UIEventType = const UIEventInfo*;
 
@@ -44,7 +44,7 @@ class UIMouseEventArgs
 public:
 
 	/** UIMouseEventArgs のインスタンスを作成します。*/
-	static RefPtr<UIMouseEventArgs> create(UIEventType type, MouseButtons button, float x, float y, int clickCount, bool caching = true);
+	static Ref<UIMouseEventArgs> create(UIEventType type, MouseButtons button, float x, float y, int clickCount, bool caching = true);
 
 	/** ボタンの種類を取得します。*/
 	MouseButtons getMouseButtons() const { return m_button; }
@@ -79,7 +79,7 @@ class UIKeyEventArgs
 public:
 
 	/** UIKeyEventArgs のインスタンスを作成します。 */
-	static RefPtr<UIKeyEventArgs> create(UIEventType type, Keys keyCode, ModifierKeys modifierKeys, TCHAR charCode, bool caching = true);
+	static Ref<UIKeyEventArgs> create(UIEventType type, Keys keyCode, ModifierKeys modifierKeys, TCHAR charCode, bool caching = true);
 
 	/** キーコードを取得します。 */
 	Keys getKey() const { return m_keyCode; }
@@ -111,7 +111,7 @@ class UIMouseWheelEventArgs
 public:
 
 	/** UIMouseWheelEventArgs のインスタンスを作成します。 */
-	static RefPtr<UIMouseWheelEventArgs> create(UIEventType type, int delta, bool caching = true);
+	static Ref<UIMouseWheelEventArgs> create(UIEventType type, int delta, bool caching = true);
 
 	/** マウスホイールの回転回数を取得します。 (正または負の回数) */
 	int getDelta() const { return m_delta; }

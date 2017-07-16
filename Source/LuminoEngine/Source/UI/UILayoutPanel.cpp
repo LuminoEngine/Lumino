@@ -26,7 +26,7 @@ void UILayoutPanel::initialize()
 {
 	UIElement::initialize();
 	setHitTestVisible(false);
-	m_children = RefPtr<UIElementCollection>::makeRef(this);
+	m_children = Ref<UIElementCollection>::makeRef(this);
 
 	// Panel 系のデフォルトは Stretch
 	//setHAlignment(HAlignment::Stretch);
@@ -124,7 +124,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIStackPanel, UILayoutPanel)
 //------------------------------------------------------------------------------
 UIStackPanelPtr UIStackPanel::create()
 {
-	auto ptr = RefPtr<UIStackPanel>::makeRef();
+	auto ptr = Ref<UIStackPanel>::makeRef();
 	ptr->initialize();
 	return ptr;
 }
@@ -524,15 +524,15 @@ void UIGridLayout::setGridSize(int columnCount, int rowCount)
 	m_rowDefinitions.clear();
 
 	for (int i = 0; i < columnCount; ++i)
-		m_columnDefinitions.add(RefPtr<ColumnDefinition>::makeRef());
+		m_columnDefinitions.add(Ref<ColumnDefinition>::makeRef());
 	for (int i = 0; i < rowCount; ++i)
-		m_rowDefinitions.add(RefPtr<RowDefinition>::makeRef());
+		m_rowDefinitions.add(Ref<RowDefinition>::makeRef());
 }
 
 //------------------------------------------------------------------------------
 void UIGridLayout::addColumnDefinition(GridLengthType type, float width, float minWidth, float maxWidth)
 {
-	auto ptr = RefPtr<ColumnDefinition>::makeRef();
+	auto ptr = Ref<ColumnDefinition>::makeRef();
 	ptr->setWidth(width, type);
 	ptr->setMinWidth(minWidth);
 	ptr->setMaxWidth(maxWidth);
@@ -542,7 +542,7 @@ void UIGridLayout::addColumnDefinition(GridLengthType type, float width, float m
 //------------------------------------------------------------------------------
 void UIGridLayout::addRowDefinition(GridLengthType type, float height, float minHeight, float maxHeight)
 {
-	auto ptr = RefPtr<RowDefinition>::makeRef();
+	auto ptr = Ref<RowDefinition>::makeRef();
 	ptr->setHeight(height, type);
 	ptr->setMinHeight(minHeight);
 	ptr->setMaxHeight(maxHeight);

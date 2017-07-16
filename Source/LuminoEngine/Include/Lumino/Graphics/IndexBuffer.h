@@ -53,7 +53,7 @@ private:
 	void updateFormat(int indexCount);
 	bool isRHIDirect() const { return m_initialUpdate && !m_rhiObject.isNull(); }
 
-	RefPtr<Driver::IIndexBuffer>	m_rhiObject;
+	Ref<Driver::IIndexBuffer>	m_rhiObject;
 	IndexBufferFormat				m_format;
 	ResourceUsage					m_usage;
 	GraphicsResourcePool			m_pool;

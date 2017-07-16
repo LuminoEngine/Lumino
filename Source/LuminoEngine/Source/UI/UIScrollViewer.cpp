@@ -22,9 +22,9 @@ LN_ROUTED_EVENT_IMPLEMENT2(UIThumb, UIDragDeltaEventArgs, DragCompletedEvent);
 LN_ROUTED_EVENT_IMPLEMENT2(UIThumb, UIDragDeltaEventArgs, DragCanceledEvent);
 
 //------------------------------------------------------------------------------
-RefPtr<UIThumb> UIThumb::create()
+Ref<UIThumb> UIThumb::create()
 {
-	auto ptr = RefPtr<UIThumb>::makeRef();
+	auto ptr = Ref<UIThumb>::makeRef();
 	ptr->initialize();
 	return ptr;
 }
@@ -63,7 +63,7 @@ void UIThumb::onRoutedEvent(UIEventArgs* e)
 
 			// ドラッグ開始イベント
 			detail::EventArgsPool* pool = getManager()->getEventArgsPool();
-			RefPtr<UIDragDeltaEventArgs> args(pool->create<UIDragDeltaEventArgs>(DragStartedEventId), false);
+			Ref<UIDragDeltaEventArgs> args(pool->create<UIDragDeltaEventArgs>(DragStartedEventId), false);
 			args->horizontalChange = pos.x - m_lastScreenPosition.x;
 			args->verticalChange = pos.y - m_lastScreenPosition.y;
 			onDragStarted(args);
@@ -85,7 +85,7 @@ void UIThumb::onRoutedEvent(UIEventArgs* e)
 			// ドラッグ終了イベント
 			// TODO: template 化
 			detail::EventArgsPool* pool = getManager()->getEventArgsPool();
-			RefPtr<UIDragDeltaEventArgs> args(pool->create<UIDragDeltaEventArgs>(DragCompletedEventId), false);
+			Ref<UIDragDeltaEventArgs> args(pool->create<UIDragDeltaEventArgs>(DragCompletedEventId), false);
 			args->horizontalChange = pos.x - m_lastScreenPosition.x;
 			args->verticalChange = pos.y - m_lastScreenPosition.y;
 			onDragCompleted(args);
@@ -103,7 +103,7 @@ void UIThumb::onRoutedEvent(UIEventArgs* e)
 
 			// ドラッグ中イベント
 			detail::EventArgsPool* pool = getManager()->getEventArgsPool();
-			RefPtr<UIDragDeltaEventArgs> args(pool->create<UIDragDeltaEventArgs>(DragDeltaEventId), false);
+			Ref<UIDragDeltaEventArgs> args(pool->create<UIDragDeltaEventArgs>(DragDeltaEventId), false);
 			args->horizontalChange = pos.x - m_lastScreenPosition.x;
 			args->verticalChange = pos.y - m_lastScreenPosition.y;
 			onDragDelta(args);
@@ -126,9 +126,9 @@ const String UITrack::HorizontalState = _T("Horizontal");
 const String UITrack::VerticalState = _T("Vertical");
 
 //------------------------------------------------------------------------------
-RefPtr<UITrack> UITrack::create()
+Ref<UITrack> UITrack::create()
 {
-	auto ptr = RefPtr<UITrack>::makeRef();
+	auto ptr = Ref<UITrack>::makeRef();
 	ptr->initialize();
 	return ptr;
 }
@@ -425,7 +425,7 @@ UIScrollEventArgsPtr UIScrollEventArgs::create(Object* sender, float newValue, S
 	if (caching)
 	{
 		detail::EventArgsPool* pool = detail::UIManager::getInstance()->getEventArgsPool();
-		RefPtr<UIScrollEventArgs> ptr(pool->create<UIScrollEventArgs>(sender, newValue, type), false);
+		Ref<UIScrollEventArgs> ptr(pool->create<UIScrollEventArgs>(sender, newValue, type), false);
 		return ptr;
 	}
 	else
@@ -466,9 +466,9 @@ const String UIScrollBar::HorizontalState = _T("Horizontal");
 const String UIScrollBar::VerticalState = _T("Vertical");
 
 //------------------------------------------------------------------------------
-RefPtr<UIScrollBar> UIScrollBar::create()
+Ref<UIScrollBar> UIScrollBar::create()
 {
-	auto ptr = RefPtr<UIScrollBar>::makeRef();
+	auto ptr = Ref<UIScrollBar>::makeRef();
 	ptr->initialize();
 	return ptr;
 }
@@ -680,7 +680,7 @@ void UIScrollBar::updateValue(float horizontalDragDelta, float verticalDragDelta
 	m_track->setValue(newValue);
 
 	// TODO:
-	//RefPtr<ScrollEventArgs> args(m_manager->getEventArgsPool()->Create<ScrollEventArgs>(newValue, ScrollEventType::ThumbTrack), false);
+	//Ref<ScrollEventArgs> args(m_manager->getEventArgsPool()->Create<ScrollEventArgs>(newValue, ScrollEventType::ThumbTrack), false);
 	//raiseEvent(ScrollEvent, this, args);
 }
 
@@ -690,9 +690,9 @@ void UIScrollBar::updateValue(float horizontalDragDelta, float verticalDragDelta
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIScrollViewer, UIControl)
 
 //------------------------------------------------------------------------------
-RefPtr<UIScrollViewer> UIScrollViewer::create()
+Ref<UIScrollViewer> UIScrollViewer::create()
 {
-	auto ptr = RefPtr<UIScrollViewer>::makeRef();
+	auto ptr = Ref<UIScrollViewer>::makeRef();
 	ptr->initialize();
 	return ptr;
 }

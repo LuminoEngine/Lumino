@@ -26,7 +26,7 @@ TEST_F(Test_Graphics_XFile, Basic)
 	mesh->GetMaterials()->GetAt(0)->SetTextureParameter(Material::MaterialTextureParameter, tex);
 
 
-	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::makeRef();
+	auto cb = Ref<CylinderMouseMoveCameraBehavior>::makeRef();
 	Camera::GetMain3DCamera()->SetCameraBehavior(cb);
 
 

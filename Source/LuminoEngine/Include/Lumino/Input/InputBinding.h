@@ -7,10 +7,10 @@ class InputBinding;
 class KeyboardBinding;
 class MouseBinding;
 class GamepadBinding;
-using InputBindingPtr = RefPtr<InputBinding>;
-using KeyboardBindingPtr = RefPtr<KeyboardBinding>;
-using MouseBindingPtr = RefPtr<MouseBinding>;
-using GamepadBindingPtr = RefPtr<GamepadBinding>;
+using InputBindingPtr = Ref<InputBinding>;
+using KeyboardBindingPtr = Ref<KeyboardBinding>;
+using MouseBindingPtr = Ref<MouseBinding>;
+using GamepadBindingPtr = Ref<GamepadBinding>;
 
 /** マウスによって実行されるアクション */
 enum class MouseAction

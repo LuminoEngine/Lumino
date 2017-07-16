@@ -519,7 +519,7 @@ public:
 		if (ptr != nullptr) return m_prop.clearValue();
 	}
 
-	RefPtr<ReflectionObject> getOwenr()
+	Ref<ReflectionObject> getOwenr()
 	{
 		return m_propOwner.resolve();
 	}

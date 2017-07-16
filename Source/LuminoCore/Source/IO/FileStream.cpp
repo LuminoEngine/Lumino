@@ -11,9 +11,9 @@ LN_NAMESPACE_BEGIN
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-RefPtr<GenericFileStream<TChar>> GenericFileStream<TChar>::create(const TChar* filePath, FileOpenMode openMode)
+Ref<GenericFileStream<TChar>> GenericFileStream<TChar>::create(const TChar* filePath, FileOpenMode openMode)
 {
-	RefPtr<GenericFileStream<TChar>> ptr(LN_NEW GenericFileStream(), false);
+	Ref<GenericFileStream<TChar>> ptr(LN_NEW GenericFileStream(), false);
 	ptr->open(filePath, openMode);
 	return ptr;
 }

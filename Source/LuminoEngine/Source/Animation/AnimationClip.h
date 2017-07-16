@@ -5,7 +5,7 @@
 
 LN_NAMESPACE_BEGIN
 class AnimationClip;
-using AnimationClipPtr = RefPtr<AnimationClip>;
+using AnimationClipPtr = Ref<AnimationClip>;
 
 class AnimationClip
 	: public RefObject

@@ -354,8 +354,8 @@ void TextRenderer::FlushInternal(FontGlyphTextureCache* cache)
 		TextRendererCore*, m_core,
 		RenderBulkData, dataListData,
 		int, dataCount,
-		RefPtr<Driver::ITexture>, glyphsTexture,
-		RefPtr<Brush>, m_fillBrush,	// TODO: Brush をそのまま描画スレッドに持ち込むのは危険。変更される。
+		Ref<Driver::ITexture>, glyphsTexture,
+		Ref<Brush>, m_fillBrush,	// TODO: Brush をそのまま描画スレッドに持ち込むのは危険。変更される。
 		{
 			m_core->render(
 				(TextRendererCore::GlyphRunData*)dataListData.getData(),

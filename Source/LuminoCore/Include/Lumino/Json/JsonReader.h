@@ -174,7 +174,7 @@ private:
 	}
 
 private:
-	RefPtr<TextReader>	m_innter;
+	Ref<TextReader>	m_innter;
 	int					m_pos;
 	int					m_line;
 	int					m_column;
@@ -287,8 +287,8 @@ private:
 
 	} m_valueData;
 
-	//RefPtr<TextReader>		m_reader;
-	RefPtr<detail::PositioningTextReader>	m_reader;
+	//Ref<TextReader>		m_reader;
+	Ref<detail::PositioningTextReader>	m_reader;
 	//State					m_currentState;
 	ParserState				m_currentState;
 	Token					m_currentToken;

@@ -78,7 +78,7 @@ Material::~Material()
 //------------------------------------------------------------------------------
 void Material::initialize()
 {
-	//m_combinedMaterial = RefPtr<detail::CombinedMaterial>::MakeRef();
+	//m_combinedMaterial = Ref<detail::CombinedMaterial>::MakeRef();
 }
 
 //------------------------------------------------------------------------------
@@ -105,9 +105,9 @@ void Material::setBuiltinColorParameter(const StringRef& name, const Color& valu
 void Material::setBuiltinColorParameter(const StringRef& name, float r, float g, float b, float a) { setBuiltinVectorParameter(name, Color(r, g, b, a)); }
 
 //------------------------------------------------------------------------------
-RefPtr<Material> Material::copyShared() const
+Ref<Material> Material::copyShared() const
 {
-	auto m = RefPtr<Material>::makeRef();
+	auto m = Ref<Material>::makeRef();
 	m->initialize();	// TODO: base
 	m->m_shader = m_shader;
 	//m->m_shader = m_shader;

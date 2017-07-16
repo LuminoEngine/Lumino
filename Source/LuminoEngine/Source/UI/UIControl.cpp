@@ -42,7 +42,7 @@ void UIControl::initialize()
 	VContentAlignment = VAlignment::Stretch;
 
 
-	m_items = RefPtr<UIElementCollection>::makeRef(this);
+	m_items = Ref<UIElementCollection>::makeRef(this);
 	auto panel = newObject<UIAbsoluteLayout>();
 	setLayoutPanel(panel);
 }
@@ -332,7 +332,7 @@ void UIControl::onChildCollectionChanged(const tr::ChildCollectionChangedArgs& e
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIUserControl, UIControl);
 
 //------------------------------------------------------------------------------
-RefPtr<UIUserControl> UIUserControl::create()
+Ref<UIUserControl> UIUserControl::create()
 {
 	return newObject<UIUserControl>();
 }

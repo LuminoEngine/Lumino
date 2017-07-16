@@ -12,7 +12,7 @@ class TransitionPostEffect
 {
 	LN_OBJECT();
 public:
-	static RefPtr<TransitionPostEffect> create();
+	static Ref<TransitionPostEffect> create();
 	void transition(float duration, Texture* mask, int vague);
 
 private:
@@ -24,14 +24,14 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 private:
-	RefPtr<RenderTargetTexture>	m_primaryTarget;
-	RefPtr<RenderTargetTexture>	m_savedTarget;
+	Ref<RenderTargetTexture>	m_primaryTarget;
+	Ref<RenderTargetTexture>	m_savedTarget;
 	float						m_factor;
 	bool						m_freezeRequested;
 
 	struct WithoutMaskShader
 	{
-		RefPtr<Shader>			shader;
+		Ref<Shader>			shader;
 		ShaderVariable*			varFactor;
 		ShaderVariable*			varFreezedTexture;
 	} m_withoutMaskShader;

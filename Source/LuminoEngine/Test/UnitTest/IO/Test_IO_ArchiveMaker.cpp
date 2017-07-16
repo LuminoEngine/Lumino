@@ -35,7 +35,7 @@ TEST_F(Test_IO_ArchiveMaker, Basic)
 
 	// ArchiveText1_0byte.txt
 	{
-		RefPtr<Stream> file;
+		Ref<Stream> file;
 		archive.TryCreateStream(LN_LOCALFILE("Test1/ArchiveText1_0byte.txt"), &file, false);
 		ASSERT_EQ(0, file->getLength());
 	}
@@ -43,7 +43,7 @@ TEST_F(Test_IO_ArchiveMaker, Basic)
 	// ArchiveText1_1byte.txt
 	{
 		char buf[64] = { 0 };
-		RefPtr<Stream> file;
+		Ref<Stream> file;
 		archive.TryCreateStream(LN_LOCALFILE("Test1/ArchiveText1_1byte.txt"), &file, false);
 		ASSERT_EQ(1, file->getLength());
 		ASSERT_EQ(1, file->Read(buf, 1));
@@ -53,7 +53,7 @@ TEST_F(Test_IO_ArchiveMaker, Basic)
 	// ArchiveText1_15byte.txt
 	{
 		char buf[64] = { 0 };
-		RefPtr<Stream> file;
+		Ref<Stream> file;
 		archive.TryCreateStream(LN_LOCALFILE("Test1/ArchiveText1_15byte.txt"), &file, false);
 		ASSERT_EQ(15, file->getLength());
 		ASSERT_EQ(15, file->Read(buf, 15));
@@ -63,7 +63,7 @@ TEST_F(Test_IO_ArchiveMaker, Basic)
 	// ArchiveText1_16byte.txt
 	{
 		char buf[64] = { 0 };
-		RefPtr<Stream> file;
+		Ref<Stream> file;
 		archive.TryCreateStream(LN_LOCALFILE("Test1/ArchiveText1_16byte.txt"), &file, false);
 		ASSERT_EQ(16, file->getLength());
 		ASSERT_EQ(16, file->Read(buf, 16));
@@ -73,7 +73,7 @@ TEST_F(Test_IO_ArchiveMaker, Basic)
 	// ArchiveText1_17byte.txt
 	{
 		char buf[64] = { 0 };
-		RefPtr<Stream> file;
+		Ref<Stream> file;
 		archive.TryCreateStream(LN_LOCALFILE("Test1/ArchiveText1_17byte.txt"), &file, false);
 		ASSERT_EQ(17, file->getLength());
 		ASSERT_EQ(17, file->Read(buf, 17));
@@ -83,7 +83,7 @@ TEST_F(Test_IO_ArchiveMaker, Basic)
 	// ArchiveText1_32byte.txt
 	{
 		char buf[64] = { 0 };
-		RefPtr<Stream> file;
+		Ref<Stream> file;
 		archive.TryCreateStream(LN_LOCALFILE("Test1/ArchiveText1_32byte.txt"), &file, false);
 		ASSERT_EQ(32, file->getLength());
 		ASSERT_EQ(32, file->Read(buf, 32));
@@ -93,7 +93,7 @@ TEST_F(Test_IO_ArchiveMaker, Basic)
 	// ArchiveText1_33byte.txt
 	{
 		char buf[64] = { 0 };
-		RefPtr<Stream> file;
+		Ref<Stream> file;
 		archive.TryCreateStream(LN_LOCALFILE("Test1/ArchiveText1_33byte.txt"), &file, false);
 		ASSERT_EQ(33, file->getLength());
 		ASSERT_EQ(33, file->Read(buf, 33));
@@ -103,7 +103,7 @@ TEST_F(Test_IO_ArchiveMaker, Basic)
 	// ArchiveText1_33byte.txt  1 → 32 の分割
 	{
 		char buf[64] = { 0 };
-		RefPtr<Stream> file;
+		Ref<Stream> file;
 		archive.TryCreateStream(LN_LOCALFILE("Test1/ArchiveText1_33byte.txt"), &file, false);
 		ASSERT_EQ(1, file->Read(buf, 1));
 		ASSERT_STREQ("1", buf);
@@ -116,7 +116,7 @@ TEST_F(Test_IO_ArchiveMaker, Basic)
 	{
 		char buf[64] = { 0 };
 		char* pos = buf;
-		RefPtr<Stream> file;
+		Ref<Stream> file;
 		archive.TryCreateStream(LN_LOCALFILE("Test1/ArchiveText1_33byte.txt"), &file, false);
 
 		for (int i = 0; i < 33; i++)

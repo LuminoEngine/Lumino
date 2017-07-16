@@ -38,7 +38,7 @@ void ReflectionHelper::removeGCObject(ReflectionObject* obj, ReflectionObject* c
 void ReflectionHelper::gcObjects(ReflectionObject* obj)
 {
 	if (obj == nullptr) return;
-	obj->m_gcList.removeAll([](RefPtr<ReflectionObject>& obj) { return isGCReady(obj); });
+	obj->m_gcList.removeAll([](Ref<ReflectionObject>& obj) { return isGCReady(obj); });
 }
 
 //------------------------------------------------------------------------------

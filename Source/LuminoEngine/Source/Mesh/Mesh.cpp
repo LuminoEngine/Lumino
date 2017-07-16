@@ -44,7 +44,7 @@ MeshResourcePtr MeshResource::create()
 }
 
 //------------------------------------------------------------------------------
-RefPtr<MeshResource> MeshResource::getUnitSphere(UnitMeshSide side)
+Ref<MeshResource> MeshResource::getUnitSphere(UnitMeshSide side)
 {
 	return detail::ModelManager::getInstance()->getUnitSphereMeshResource(side == UnitMeshSide::Inward);
 }
@@ -530,7 +530,7 @@ void MeshResource::addTeapot(float size, int tessellation)
 //
 //	if (m_vertexBufferInfos[type].buffer == nullptr)
 //	{
-//		m_vertexBufferInfos[type].buffer = RefPtr<VertexBuffer>::MakeRef();
+//		m_vertexBufferInfos[type].buffer = Ref<VertexBuffer>::MakeRef();
 //		m_vertexBufferInfos[type].buffer->initialize(m_manager, requestedSize, nullptr, m_usage, false);
 //		m_vertexDeclarationModified = true;
 //	}
@@ -568,7 +568,7 @@ void MeshResource::addTeapot(float size, int tessellation)
 //
 //	if (m_indexBufferInfo.buffer == nullptr)
 //	{
-//		m_indexBufferInfo.buffer = RefPtr<IndexBuffer>::MakeRef();
+//		m_indexBufferInfo.buffer = Ref<IndexBuffer>::MakeRef();
 //		m_indexBufferInfo.buffer->initialize(m_manager, m_indexCapacity, nullptr, m_indexBufferInfo.format, m_usage, false);
 //		m_indexBufferInfo.refresh = false;
 //	}
@@ -693,7 +693,7 @@ void MeshResource::commitRenderData(VertexDeclaration** outDecl, VertexBuffer** 
 	// VertexDeclaration
 	if (m_vertexDeclaration == nullptr || m_vertexDeclarationModified)
 	{
-		m_vertexDeclaration = RefPtr<VertexDeclaration>::makeRef();
+		m_vertexDeclaration = Ref<VertexDeclaration>::makeRef();
 		m_vertexDeclaration->initialize(m_manager);
 		int stream = 0;
 
@@ -822,7 +822,7 @@ StaticMeshModel::~StaticMeshModel()
 void StaticMeshModel::initialize(detail::GraphicsManager* manager)
 {
 	LN_VERIFY_ARG(manager != nullptr);
-	m_materials = RefPtr<MaterialList>::makeRef();
+	m_materials = Ref<MaterialList>::makeRef();
 }
 
 //------------------------------------------------------------------------------
@@ -834,12 +834,12 @@ void StaticMeshModel::initialize(detail::GraphicsManager* manager, MeshResource*
 	// メッシュ(バッファ類)は共有する
 	m_meshResources.add(sharingMesh);
 
-	m_materials = RefPtr<MaterialList>::makeRef();
+	m_materials = Ref<MaterialList>::makeRef();
 
 	// マテリアルはコピーする
 	// TODO: コピー有無のフラグがあったほうがいいかも？
 	//int count = m_meshResource->m_materials->GetCount();
-	//m_materials = RefPtr<MaterialList>::MakeRef();
+	//m_materials = Ref<MaterialList>::MakeRef();
 	//m_materials->Resize(count);
 	//for (int i = 0; i < count; ++i)
 	//{
@@ -850,7 +850,7 @@ void StaticMeshModel::initialize(detail::GraphicsManager* manager, MeshResource*
 //------------------------------------------------------------------------------
 void StaticMeshModel::initializeBox(detail::GraphicsManager* manager, const Vector3& size, MeshCreationFlags flags)
 {
-	auto res = RefPtr<MeshResource>::makeRef();
+	auto res = Ref<MeshResource>::makeRef();
 	res->initialize(manager, flags);
 	res->addBox(size);
 	if (flags.TestFlag(MeshCreationFlags::reverseFaces)) res->reverseFaces();
@@ -861,7 +861,7 @@ void StaticMeshModel::initializeBox(detail::GraphicsManager* manager, const Vect
 //------------------------------------------------------------------------------
 void StaticMeshModel::initializeSphere(detail::GraphicsManager* manager, float radius, int slices, int stacks, MeshCreationFlags flags)
 {
-	auto res = RefPtr<MeshResource>::makeRef();
+	auto res = Ref<MeshResource>::makeRef();
 	res->initialize(manager, flags);
 	res->addSphere(radius, slices, stacks);
 	if (flags.TestFlag(MeshCreationFlags::reverseFaces)) res->reverseFaces();
@@ -872,7 +872,7 @@ void StaticMeshModel::initializeSphere(detail::GraphicsManager* manager, float r
 //------------------------------------------------------------------------------
 void StaticMeshModel::initializePlane(detail::GraphicsManager* manager, const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags)
 {
-	auto res = RefPtr<MeshResource>::makeRef();
+	auto res = Ref<MeshResource>::makeRef();
 	res->initialize(manager, flags);
 	res->addPlane(size, sliceH, sliceV);
 	if (flags.TestFlag(MeshCreationFlags::reverseFaces)) res->reverseFaces();
@@ -883,7 +883,7 @@ void StaticMeshModel::initializePlane(detail::GraphicsManager* manager, const Ve
 //------------------------------------------------------------------------------
 void StaticMeshModel::initializeScreenPlane(detail::GraphicsManager* manager, MeshCreationFlags flags)
 {
-	auto res = RefPtr<MeshResource>::makeRef();
+	auto res = Ref<MeshResource>::makeRef();
 	res->initialize(manager, flags);
 	res->addScreenPlane();
 	if (flags.TestFlag(MeshCreationFlags::reverseFaces)) res->reverseFaces();
@@ -894,7 +894,7 @@ void StaticMeshModel::initializeScreenPlane(detail::GraphicsManager* manager, Me
 //------------------------------------------------------------------------------
 void StaticMeshModel::initializeTeapot(detail::GraphicsManager* manager, float size, int tessellation, MeshCreationFlags flags)
 {
-	auto res = RefPtr<MeshResource>::makeRef();
+	auto res = Ref<MeshResource>::makeRef();
 	res->initialize(manager, flags);
 	res->addTeapot(size, tessellation);
 	if (flags.TestFlag(MeshCreationFlags::reverseFaces)) res->reverseFaces();

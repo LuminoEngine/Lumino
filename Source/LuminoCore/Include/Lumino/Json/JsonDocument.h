@@ -395,7 +395,7 @@ public:
 	}
 
 	template<typename T>
-	static RefPtr<T> loadObject(const StringRef& json)
+	static Ref<T> loadObject(const StringRef& json)
 	{
 		tr::JsonDocument2 doc;
 		doc.parse(json);

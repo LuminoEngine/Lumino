@@ -24,7 +24,7 @@ private:
 	EngineDiagCore*			m_diagCore;
 	PlatformWindow*			m_mainWindow;
 	String					m_originalMainWindowTitle;
-	RefPtr<Font>			m_font;
+	Ref<Font>			m_font;
 	Rect					m_windowRect;
 	EngineDiagDisplayMode	m_displayMode;
 

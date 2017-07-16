@@ -84,7 +84,7 @@ void UIElement::initialize()
 	// 要素名を覚えておく。末端のサブクラスの名前となる。
 	m_elementName = tr::TypeInfo::getTypeInfo(this)->getName();
 
-	m_localStyle = RefPtr<detail::UIStylePropertyTableInstance>::makeRef();
+	m_localStyle = Ref<detail::UIStylePropertyTableInstance>::makeRef();
 
 	//goToVisualState(String::GetEmpty());
 	m_invalidateFlags |= detail::InvalidateFlags::VisualState;
@@ -770,7 +770,7 @@ void UIElement::addVisualChild(UIElement* element)
 	// リストが作成されていなければ、ここで始めて作る (省メモリ)
 	if (m_visualChildren == nullptr)
 	{
-		m_visualChildren = std::make_shared<List<RefPtr<UIElement>>>();
+		m_visualChildren = std::make_shared<List<Ref<UIElement>>>();
 	}
 
 	m_visualChildren->add(element);

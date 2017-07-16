@@ -63,13 +63,13 @@ static Vector2 CalcViewBoxScale(
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIImage, UIElement)
 
 //------------------------------------------------------------------------------
-RefPtr<UIImage> UIImage::create()
+Ref<UIImage> UIImage::create()
 {
 	return newObject<UIImage>();
 }
 
 //------------------------------------------------------------------------------
-RefPtr<UIImage> UIImage::create(const StringRef& filePath)
+Ref<UIImage> UIImage::create(const StringRef& filePath)
 {
 	return newObject<UIImage>(filePath);
 }

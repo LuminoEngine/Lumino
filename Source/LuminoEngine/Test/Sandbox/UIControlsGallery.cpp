@@ -30,10 +30,10 @@ private:
 	void drawGroupList(DrawingContext* context, const Rect& listRect);
 	void drawSectionGraphBar(DrawingContext* context, ProfilingKey* key, float x, float y, const Rect& listRect, float* totalElapsed);
 
-	RefPtr<Font>	m_font;
+	Ref<Font>	m_font;
 	float			m_limitElapsedTime = 1.0f / 60.0f;	// TODO: FPS
 
-	RefPtr<UIButton>	m_recordButton;
+	Ref<UIButton>	m_recordButton;
 };
 
 

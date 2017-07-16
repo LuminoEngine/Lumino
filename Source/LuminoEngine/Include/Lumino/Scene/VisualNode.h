@@ -173,7 +173,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual detail::SceneNodeDefaultShaderClass getShaderClass() { return detail::SceneNodeDefaultShaderClass_StaticMesh; }
 
 //protected:
-//	RefPtr<MaterialList2>	m_materialList;
+//	Ref<MaterialList2>	m_materialList;
 
 private:
 	void render(RenderingContext* context) override;
@@ -204,7 +204,7 @@ LN_INTERNAL_ACCESS:
 	void copyShared(MaterialList* srcList, bool createMainMaterial);
 	
 LN_INTERNAL_ACCESS:
-	RefPtr<Material>				m_mainMaterial;
+	Ref<Material>				m_mainMaterial;
 };
 
 

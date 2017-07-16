@@ -56,15 +56,15 @@ private:
 	Size							m_viewSize;
 	ViewportPlacement				m_placement;
 	Color							m_backgroundColor;
-	List<RefPtr<UIViewportLayer>>	m_viewportLayerList;
-	RefPtr<RenderTargetTexture>		m_primaryLayerTarget;
-	RefPtr<RenderTargetTexture>		m_secondaryLayerTarget;
-	RefPtr<DepthBuffer>				m_depthBuffer;
+	List<Ref<UIViewportLayer>>	m_viewportLayerList;
+	Ref<RenderTargetTexture>		m_primaryLayerTarget;
+	Ref<RenderTargetTexture>		m_secondaryLayerTarget;
+	Ref<DepthBuffer>				m_depthBuffer;
 
 	// TODO: RenderView
-	RefPtr<DrawingContext>				m_drawingContext;
-	RefPtr<detail::NonShadingRenderer>	m_sceneRenderer;
-	RefPtr<RenderView>					m_renderView;
+	Ref<DrawingContext>				m_drawingContext;
+	Ref<detail::NonShadingRenderer>	m_sceneRenderer;
+	Ref<RenderView>					m_renderView;
 };
 
 /**
@@ -89,10 +89,10 @@ protected:
 	virtual void executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, bool clearColorBuffer) = 0;
 
 private:
-	void postRender(DrawList* context, RefPtr<RenderTargetTexture>* primaryLayerTarget, RefPtr<RenderTargetTexture>* secondaryLayerTarget);
+	void postRender(DrawList* context, Ref<RenderTargetTexture>* primaryLayerTarget, Ref<RenderTargetTexture>* secondaryLayerTarget);
 
 	UIViewport*					m_owner;
-	List<RefPtr<PostEffect>>	m_postEffects;
+	List<Ref<PostEffect>>	m_postEffects;
 	friend class UIViewport;
 };
 
@@ -120,10 +120,10 @@ protected:
 	virtual void executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, bool clearColorBuffer) override;
 
 private:
-	RefPtr<UILayoutView>				m_root;
-	RefPtr<DrawingContext>				m_drawingContext;
-	RefPtr<detail::SceneRenderer>	m_internalRenderer;
-	RefPtr<RenderView>	m_drawElementListSet;
+	Ref<UILayoutView>				m_root;
+	Ref<DrawingContext>				m_drawingContext;
+	Ref<detail::SceneRenderer>	m_internalRenderer;
+	Ref<RenderView>	m_drawElementListSet;
 };
 
 /**

@@ -25,7 +25,7 @@ namespace detail {
 struct BrushRawData
 {
 	Color						color;
-	RefPtr<Driver::ITexture>	texture;
+	Ref<Driver::ITexture>	texture;
 	Rect						srcRect;
 	BrushWrapMode				wrapMode;
 	BrushImageDrawMode			imageDrawMode;
@@ -50,7 +50,7 @@ public:
 	static Brush*	DimGray;
 
 public:
-	//static RefPtr<Brush> create(const StringRef& filePath);
+	//static Ref<Brush> create(const StringRef& filePath);
 
 
 
@@ -94,7 +94,7 @@ LN_INTERNAL_ACCESS:
 
 private:
 	Color				m_color;
-	RefPtr<Texture>		m_texture;
+	Ref<Texture>		m_texture;
 	Rect				m_srcRect;
 	BrushWrapMode		m_wrapMode;
 	BrushImageDrawMode	m_imageDrawMode;
@@ -108,8 +108,8 @@ class SolidColorBrush
 	: public Brush
 {
 public:
-	static RefPtr<SolidColorBrush> create(const Color& color);
-	static RefPtr<SolidColorBrush> create(const Color& rgb, float a);
+	static Ref<SolidColorBrush> create(const Color& color);
+	static Ref<SolidColorBrush> create(const Color& rgb, float a);
 
 LN_CONSTRUCT_ACCESS:
 	SolidColorBrush();
@@ -125,9 +125,9 @@ class TextureBrush
 	: public Brush
 {
 public:
-	static RefPtr<TextureBrush> create(const StringRef& filePath);
-	static RefPtr<TextureBrush> create(Texture* texture);
-	static RefPtr<TextureBrush> create(Texture* texture, BrushImageDrawMode drawMode, const Rect& sourceRect, const ThicknessF& borderThickness, BrushWrapMode wrapMode);
+	static Ref<TextureBrush> create(const StringRef& filePath);
+	static Ref<TextureBrush> create(Texture* texture);
+	static Ref<TextureBrush> create(Texture* texture, BrushImageDrawMode drawMode, const Rect& sourceRect, const ThicknessF& borderThickness, BrushWrapMode wrapMode);
 
 LN_CONSTRUCT_ACCESS:
 	TextureBrush();
@@ -170,7 +170,7 @@ class TextureBrush
 {
 public:
 
-	static RefPtr<TextureBrush> create(const StringRef& filePath);
+	static Ref<TextureBrush> create(const StringRef& filePath);
 
 public:
 	TextureBrush();
@@ -205,7 +205,7 @@ public:
 	float getThickness() const { return m_thickness; }
 
 private:
-	RefPtr<Brush>	m_brush;
+	Ref<Brush>	m_brush;
 	float			m_thickness;
 };
 

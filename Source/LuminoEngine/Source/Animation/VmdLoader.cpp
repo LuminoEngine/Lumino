@@ -72,7 +72,7 @@ bool VmdLoader::load(Stream* stream)
 			m_boneAnimationIndexMap.insert(BoneAnimationIndexPair(vmdMotion.szBoneName, m_boneAnimationList.getCount()));
 
 			// アニメーション作成、キー追加
-			anim.AnimationCurve = RefPtr<VMDBezierSQTTransformAnimation2>::makeRef();
+			anim.AnimationCurve = Ref<VMDBezierSQTTransformAnimation2>::makeRef();
 			anim.AnimationCurve->addFrame(frame);
 			m_boneAnimationList.add(anim);
 		}
@@ -117,7 +117,7 @@ bool VmdLoader::load(Stream* stream)
 			m_faceAnimationIndexMap.insert(FaceAnimationIndexPair(vmdFace.szFaceName, m_faceAnimationList.getCount()));
 
 			// アニメーション作成、キー追加
-			anim.AnimationCurve = RefPtr<FloatAnimationCurve>::makeRef();
+			anim.AnimationCurve = Ref<FloatAnimationCurve>::makeRef();
 			anim.AnimationCurve->addKeyFrame(vmdFace.ulFrameNo, vmdFace.fFactor);
 			m_faceAnimationList.add(anim);
 		}

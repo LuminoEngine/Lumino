@@ -35,7 +35,7 @@ private:
 	struct BindingSlot
 	{
 		String					name;
-		RefPtr<InputBinding>	binding;
+		Ref<InputBinding>	binding;
 	};
 
 	struct InputState

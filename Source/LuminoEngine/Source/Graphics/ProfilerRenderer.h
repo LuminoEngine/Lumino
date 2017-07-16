@@ -33,7 +33,7 @@ private:
 private:
 	detail::GraphicsManager*	m_manager;
 	Profiler*					m_profiler;
-	RefPtr<RawFont>				m_font;
+	Ref<RawFont>				m_font;
 	Rect						m_windowRect;
 };
 

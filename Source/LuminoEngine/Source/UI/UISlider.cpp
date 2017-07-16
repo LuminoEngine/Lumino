@@ -12,13 +12,13 @@ LN_NAMESPACE_BEGIN
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UISlider, UIRangeBase);
 
 //------------------------------------------------------------------------------
-RefPtr<UISlider> UISlider::create()
+Ref<UISlider> UISlider::create()
 {
 	return newObject<UISlider>();
 }
 
 //------------------------------------------------------------------------------
-RefPtr<UISlider> UISlider::create(float value, float minimum, float maximum)
+Ref<UISlider> UISlider::create(float value, float minimum, float maximum)
 {
 	return newObject<UISlider>(value, minimum, maximum);
 }

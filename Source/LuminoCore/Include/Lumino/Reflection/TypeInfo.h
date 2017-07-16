@@ -14,7 +14,7 @@ typedef uint32_t LocalValueHavingFlags;
 
 namespace detail
 {
-	using ObjectFactory = RefPtr<ReflectionObject>(*)();
+	using ObjectFactory = Ref<ReflectionObject>(*)();
 
 	// 1つの ReflectionObject に対して1つ作られる
 	class WeakRefInfo final
@@ -37,7 +37,7 @@ namespace detail
 	{
 		static ObjectFactory getFactory()
 		{
-			return []() { return RefPtr<ReflectionObject>::staticCast(newObject<TObject>()); };
+			return []() { return Ref<ReflectionObject>::staticCast(newObject<TObject>()); };
 		}
 	};
 	template<class TObject> struct ObjectFactorySelector<TObject, std::true_type>
@@ -224,7 +224,7 @@ public:
 	void initializeProperties(ReflectionObject* obj);
 
 
-	RefPtr<ReflectionObject> createInstance();
+	Ref<ReflectionObject> createInstance();
 	int getSerializeClassVersion() const { return m_serializeClassVersion; }
 
 protected:

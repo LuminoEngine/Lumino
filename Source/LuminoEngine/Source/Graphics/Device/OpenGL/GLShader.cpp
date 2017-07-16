@@ -191,7 +191,7 @@ enum class RenderStateId
 //		return resultLevel;
 //	}
 //
-//	RefPtr<GLShader> shader(LN_NEW GLShader(device, program), false);
+//	Ref<GLShader> shader(LN_NEW GLShader(device, program), false);
 //
 //	// uniform 変数の数を調べて、その数分 ShaderVariable 作成
 //	GLint params;
@@ -798,7 +798,7 @@ GLShaderVariable* GLShaderVariable::deserialize(GLShader* ownerShader, tr::JsonR
 	{
 		*outOverwrited = true;
 	}
-	//RefPtr<GLShaderVariable> var = ownerShader->TryCreateShaderVariable(dummy, name, String(), 0);	// TODO:この loc はいらない
+	//Ref<GLShaderVariable> var = ownerShader->TryCreateShaderVariable(dummy, name, String(), 0);	// TODO:この loc はいらない
 
 	while (json->read())
 	{
@@ -1084,7 +1084,7 @@ void GLShaderVariable::convertVariableTypeGLToLN(const char* name, GLenum gl_typ
 //------------------------------------------------------------------------------
 GLShaderAnnotation* GLShaderAnnotation::deserialize(tr::JsonReader2* json)
 {
-	auto anno = RefPtr<GLShaderAnnotation>::makeRef();
+	auto anno = Ref<GLShaderAnnotation>::makeRef();
 	String type, name, value;
 	if (json->readAsPropertyName() == _T("type")) type = json->readAsString();
 	if (json->readAsPropertyName() == _T("name")) name = json->readAsString();
@@ -1173,7 +1173,7 @@ GLShaderTechnique* GLShaderTechnique::deserialize(GLShader* ownerShader, tr::Jso
 {
 	String name;
 	if (json->readAsPropertyName() == _T("name")) name = json->readAsString();
-	auto tech = RefPtr<GLShaderTechnique>::makeRef();
+	auto tech = Ref<GLShaderTechnique>::makeRef();
 	tech->initialize(ownerShader, name);
 
 	if (json->readAsPropertyName() == _T("passes"))
@@ -1242,7 +1242,7 @@ IShaderPass* GLShaderTechnique::getPass(int index)
 //------------------------------------------------------------------------------
 GLShaderPass* GLShaderPass::deserialize(GLShader* ownerShader, tr::JsonReader2* json)
 {
-	auto pass = RefPtr<GLShaderPass>::makeRef();
+	auto pass = Ref<GLShaderPass>::makeRef();
 	String name, vsName, psName;
 
 	if (json->readAsPropertyName() == _T("name")) name = json->readAsString();

@@ -198,7 +198,7 @@ MacroDefine* MacroMap::Insert(const Token& name, const SourceRange& replacementR
 {
 	////LN_THROW(!IsFreeze(), InvalidOperationException);
 
-	auto macro = RefPtr<MacroDefine>::makeRef();
+	auto macro = Ref<MacroDefine>::makeRef();
 	macro->name = name.ToString();
 	macro->replacementRange = replacementRange;
 	//macro.replacementContentString = TokenString(replacementBegin->GetBegin(), replacementEnd->GetEnd() - replacementBegin->GetBegin());

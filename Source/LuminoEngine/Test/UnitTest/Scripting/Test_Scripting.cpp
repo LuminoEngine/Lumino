@@ -18,13 +18,13 @@ protected:
 //------------------------------------------------------------------------------
 TEST_F(Test_Scripting, Basic)
 {
-	auto nlif = RefPtr<NlGraphInterface>::makeRef();
+	auto nlif = Ref<NlGraphInterface>::makeRef();
 	nlif->initialize();
 
 	auto epNode = nlif->getEntryPoint();
 
-	auto node1 = RefPtr<NlNode_Print>::makeRef();
-	auto node2 = RefPtr<NlNode_Add>::makeRef();
+	auto node1 = Ref<NlNode_Print>::makeRef();
+	auto node2 = Ref<NlNode_Add>::makeRef();
 
 	node2->getDataInputLhsPin()->getValueCache()->setValue(200);
 	node2->getDataInputRhsPin()->getValueCache()->setValue(300);
@@ -35,7 +35,7 @@ TEST_F(Test_Scripting, Basic)
 	NlHelper::linkPins(epNode->getFlowOutputPin(), node1->getFlowInputPin());
 	NlHelper::linkPins(node1->getInputValuePin(), node2->getDataOutputPin());
 
-	auto ctx = RefPtr<NlContext>::makeRef();
+	auto ctx = Ref<NlContext>::makeRef();
 	//ctx->initialize();
 	ctx->callInterface(nlif);
 

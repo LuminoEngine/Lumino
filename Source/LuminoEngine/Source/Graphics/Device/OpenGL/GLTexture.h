@@ -65,7 +65,7 @@ private:
 	GLenum				m_pixelFormat;
 	GLenum				m_elementType;
 	SamplerState		m_samplerState;
-	RefPtr<Bitmap>	m_lockedTexture;		///< lock ～ unlock で作られる
+	Ref<Bitmap>	m_lockedTexture;		///< lock ～ unlock で作られる
 };
 
 /// レンダーターゲットテクスチャ

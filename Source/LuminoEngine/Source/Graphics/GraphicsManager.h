@@ -48,7 +48,7 @@ public:
 
 private:
 	MemoryStreamPtr			m_writerBuffer;
-	RefPtr<BinaryWriter>	m_writer;
+	Ref<BinaryWriter>	m_writer;
 };
 
 
@@ -139,17 +139,17 @@ public:
 	bool isPlatformTextureLoading() { return m_platformTextureLoading; }
 	RenderingCommandList* getPrimaryRenderingCommandList();
 	TextRendererCore* getTextRendererCore() { return m_textRendererCore; }
-	const RefPtr<ShapesRendererCommandListCache>& getShapesRendererCommandListCache() const { return m_shapesRendererCommandListCache; }
-	const RefPtr<NanoVGCommandListCache>& getNanoVGCommandListCache() const { return m_nanoVGCommandListCache; }
+	const Ref<ShapesRendererCommandListCache>& getShapesRendererCommandListCache() const { return m_shapesRendererCommandListCache; }
+	const Ref<NanoVGCommandListCache>& getNanoVGCommandListCache() const { return m_nanoVGCommandListCache; }
 	Driver::ITexture* getDummyDeviceTexture() { return m_dummyDeviceTexture; }
-	const RefPtr<Texture2D>& getDummyBlackTexture() const { return m_dymmyBlackTexture; }
-	const RefPtr<Texture2D>& getDummyWhiteTexture() const { return m_dymmyWhiteTexture; }
+	const Ref<Texture2D>& getDummyBlackTexture() const { return m_dymmyBlackTexture; }
+	const Ref<Texture2D>& getDummyWhiteTexture() const { return m_dymmyWhiteTexture; }
 	VertexDeclaration* getDefaultVertexDeclaration() const { return m_defaultVertexDeclaration; }
 	ShaderVariableCommitSerializeHelper* getShaderVariableCommitSerializeHelper() { return &m_shaderVariableCommitSerializeHelper; }
 	InternalContext* getInternalContext() const;
 
 	const StringA& getCommonShaderHeader() const { return m_commonShaderHeader; }
-	const RefPtr<Shader>& getBuiltinShader(BuiltinShader shader) const;
+	const Ref<Shader>& getBuiltinShader(BuiltinShader shader) const;
 
 	
 
@@ -162,7 +162,7 @@ private:
 	PlatformWindow*					m_mainWindow;
 	FontManager*					m_fontManager;
 	GraphicsRenderingType			m_renderingType;
-	List<RefPtr<GraphicsResourceObject>>	m_resourceObjectList;
+	List<Ref<GraphicsResourceObject>>	m_resourceObjectList;
 	List<IDeviceResetListener*>		m_deviceResetListenerList;
 	
 	Driver::IGraphicsDevice*		m_graphicsDevice;
@@ -172,21 +172,21 @@ private:
 
 	ContextInterface*				m_activeContext;
 
-	RefPtr<InternalContext>			m_internalContext;
+	Ref<InternalContext>			m_internalContext;
 	StringA							m_commonShaderHeader;
-	RefPtr<Shader>					m_builtinShaders[2];
+	Ref<Shader>					m_builtinShaders[2];
 
 	TextRendererCore*				m_textRendererCore;
 	BitmapTextRenderer*				m_bitmapTextRenderer;
 	ShaderVariableCommitSerializeHelper	m_shaderVariableCommitSerializeHelper;
 
-	RefPtr<ShapesRendererCommandListCache>	m_shapesRendererCommandListCache;
-	RefPtr<NanoVGCommandListCache>	m_nanoVGCommandListCache;
+	Ref<ShapesRendererCommandListCache>	m_shapesRendererCommandListCache;
+	Ref<NanoVGCommandListCache>	m_nanoVGCommandListCache;
 
 	Driver::ITexture*						m_dummyDeviceTexture;
-	RefPtr<Texture2D>						m_dymmyBlackTexture;
-	RefPtr<Texture2D>						m_dymmyWhiteTexture;
-	List<RefPtr<SolidColorBrush>>			m_globalBrushes;
+	Ref<Texture2D>						m_dymmyBlackTexture;
+	Ref<Texture2D>						m_dymmyWhiteTexture;
+	List<Ref<SolidColorBrush>>			m_globalBrushes;
 
 	VertexDeclaration*						m_defaultVertexDeclaration;
 	bool									m_platformTextureLoading;

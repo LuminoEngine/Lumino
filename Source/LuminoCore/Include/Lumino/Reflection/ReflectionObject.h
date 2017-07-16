@@ -15,7 +15,7 @@ namespace tr
 
 #define LN_TR_REFLECTION_TYPEINFO_DECLARE_COMMON(typeInfo) \
 	private: \
-		template<typename T> friend class ln::RefPtr; \
+		template<typename T> friend class ln::Ref; \
 		friend class ln::tr::ReflectionHelper; \
 		friend class ln::tr::ReflectionObject; \
 		static typeInfo							lnref_typeInfo; \
@@ -50,7 +50,7 @@ class ReflectionObject
 {
 private:
 	// declare base TypeInfo
-    template<typename T> friend class ln::RefPtr;
+    template<typename T> friend class ln::Ref;
     friend class ln::tr::ReflectionHelper;
     static TypeInfo					lnref_typeInfo;
     LocalValueHavingFlags			lnref_localValueHavingFlags;
@@ -85,15 +85,15 @@ private:
 	detail::WeakRefInfo*	m_weakRefInfo;
 	Mutex					m_weakRefInfoMutex;
 
-	List<RefPtr<ReflectionObject>>	m_gcList;
+	List<Ref<ReflectionObject>>	m_gcList;
 	bool							m_autoGC;
 
 LN_INTERNAL_ACCESS:
 
 	template<class T, typename... TArgs>
-	static RefPtr<T> makeRef(TArgs... args)
+	static Ref<T> makeRef(TArgs... args)
 	{
-		auto ptr = RefPtr<T>(LN_NEW T(), false);
+		auto ptr = Ref<T>(LN_NEW T(), false);
 		ptr->initialize(args...);
 		return ptr;
 	}
@@ -113,7 +113,7 @@ LN_INTERNAL_ACCESS:
 		正しいコードは次の通りです。
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		WeakRefPtr<MyClass> weak(obj);
-		RefPtr<MyClass> ptr = weak.resolve();
+		Ref<MyClass> ptr = weak.resolve();
 		if (ptr != nullptr)
 			ptr->Func();
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -154,14 +154,14 @@ public:
 		return (m_weakRefInfo != nullptr && m_weakRefInfo->owner != nullptr);
 	}
 
-	/** 監視しているオブジェクトへの RefPtr を取得します。*/
-	RefPtr<T> resolve() const
+	/** 監視しているオブジェクトへの Ref を取得します。*/
+	Ref<T> resolve() const
 	{
 		if (!isAlive())
 		{
-			return RefPtr<T>();
+			return Ref<T>();
 		}
-		return RefPtr<T>(static_cast<T*>(m_weakRefInfo->owner));
+		return Ref<T>(static_cast<T*>(m_weakRefInfo->owner));
 	}
 
 	/** */
@@ -260,9 +260,9 @@ typedef tr::ReflectionObject Object;
 
 
 template<class T, typename... TArgs>
-RefPtr<T> newObject(TArgs&&... args)
+Ref<T> newObject(TArgs&&... args)
 {
-	auto ptr = RefPtr<T>(new T(), false);
+	auto ptr = Ref<T>(new T(), false);
 	ptr->initialize(std::forward<TArgs>(args)...);
 	return ptr;
 }

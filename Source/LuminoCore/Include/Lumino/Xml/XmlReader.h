@@ -236,7 +236,7 @@ LN_INTERNAL_ACCESS:
 
 
 
-	RefPtr<TextReader>		m_reader;
+	Ref<TextReader>		m_reader;
 	List<TCHAR>				m_textCache;
 	ParsingState			m_parsingState;
 
