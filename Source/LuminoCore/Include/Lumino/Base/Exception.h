@@ -163,14 +163,11 @@ public:
 
 public:
 	
-#pragma push_macro("GetMessage")
-#undef getMessage
 	/**
 		@brief	例外の詳細メッセージを取得します。
 	*/
 	const TCHAR* getMessage() const;
 	const TCHAR* LN_AFX_FUNCNAME(getMessage)() const;
-#pragma pop_macro("GetMessage")
 
 	/**
 		@brief		例外発生時に詳細情報をダンプするファイルを初期化する

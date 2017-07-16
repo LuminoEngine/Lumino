@@ -17,8 +17,6 @@ class DirectoryUtils
 {
 public:
 
-	#pragma push_macro("GetCurrentDirectory")
-	#undef getCurrentDirectory
 	/**
 		@brief		カレントディレクトリのパスを取得します。
 		@param[in]	outPath	: パス文字列を格納するバッファ (LN_MAX_PATH 文字数分のサイズが必要) 
@@ -29,7 +27,6 @@ public:
 
 	template<typename TChar>
 	static size_t LN_AFX_FUNCNAME(getCurrentDirectory)(TChar* outPath);
-	#pragma pop_macro("GetCurrentDirectory")
 
 	/**
 		@brief		ディレクトリ内に含まれる全てのファイルのパスを取得します。

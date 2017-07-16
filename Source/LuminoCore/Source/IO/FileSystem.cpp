@@ -527,8 +527,6 @@ void FileSystem::createDirectoryInternal(const TChar* path)
 		LN_THROW(r, IOException);
 	}
 }
-#pragma push_macro("CreateDirectory")
-#undef createDirectory
 void FileSystem::createDirectory(const char* path)
 {
 	LN_AFX_FUNCNAME(createDirectory)(path);
@@ -545,7 +543,6 @@ void FileSystem::LN_AFX_FUNCNAME(createDirectory)(const wchar_t* path)
 {
 	createDirectoryInternal(path);
 }
-#pragma pop_macro("CreateDirectory")
 
 
 LN_NAMESPACE_END

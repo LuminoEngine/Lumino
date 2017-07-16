@@ -4,9 +4,6 @@
 #include "Common.h"
 #include "GraphicsResourceObject.h"
 
-#pragma push_macro("DrawText")
-#undef drawText
-
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 namespace detail { class RenderTargetTextureCache; }
@@ -314,4 +311,3 @@ private:
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END
 
-#pragma pop_macro("DrawText")

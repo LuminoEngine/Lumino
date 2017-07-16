@@ -28,9 +28,9 @@ namespace Bezier
 	)
 	{
 		Vector3 Control;
-		Control.x = (V1.x < V2.x) ? 1 : 0;
-		Control.y = (V1.y < V2.y) ? 1 : 0;
-		Control.z = (V1.z < V2.z) ? 1 : 0;
+		Control.x = (V1.x < V2.x) ? 1.0f : 0.0f;
+		Control.y = (V1.y < V2.y) ? 1.0f : 0.0f;
+		Control.z = (V1.z < V2.z) ? 1.0f : 0.0f;
 		return Control;
 	}
 
@@ -243,7 +243,7 @@ void TeapotMeshFactory::tessellatePatch(const TeapotPatch& patch, size_t tessell
 	size_t vbase = m_vbPos - m_vbBegin;
 	Bezier::CreatePatchIndices(tessellation, isMirrored, [&](size_t index)
 	{
-		addIndex(vbase + index);
+		addIndex(vbase + (uint16_t)index);
 	});
 
 	// Create the vertex data.

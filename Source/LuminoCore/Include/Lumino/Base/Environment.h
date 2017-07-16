@@ -37,8 +37,7 @@ LN_ENUM_DECLARE(SpecialFolder);
 class Environment
 {
 public:
-#pragma push_macro("getEnvironmentVariable")
-#undef getEnvironmentVariable
+
 	/**
 		@brief		環境変数の値を取得します。
 		@param[in]	variableName	: 環境変数の名前
@@ -46,7 +45,6 @@ public:
 	*/
 	static String getEnvironmentVariable(const String& variableName);
 	static String LN_AFX_FUNCNAME(getEnvironmentVariable)(const String& variableName);
-#pragma pop_macro("getEnvironmentVariable")
 
 	/**
 		@brief		環境変数の値を取得します。

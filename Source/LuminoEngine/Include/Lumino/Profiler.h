@@ -46,7 +46,7 @@ public:
 	void begin();
 	void end();
 
-	float getElapsedSeconds() const { return static_cast<float>(m_committedTime) * 0.000000001; }
+	float getElapsedSeconds() const { return static_cast<float>(m_committedTime) * 0.000000001f; }
 	uint64_t getElapsedNanoseconds() const { return m_committedTime; }
 
 private:

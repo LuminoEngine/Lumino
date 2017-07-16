@@ -5,9 +5,6 @@
 #include "Common.h"
 #include "PathTraits.h"
 
-#pragma push_macro("CreateDirectory")
-#undef createDirectory
-
 LN_NAMESPACE_BEGIN
 
 /**
@@ -288,14 +285,11 @@ public:
 
 public:
 
-	#pragma push_macro("GetCurrentDirectory")
-	#undef getCurrentDirectory
 	/**
 		@brief		カレントディレクトリのパスを取得します。
 	*/
 	static PathNameT getCurrentDirectory();
 	static PathNameT LN_AFX_FUNCNAME(getCurrentDirectory)();
-	#pragma pop_macro("GetCurrentDirectory")
 
 	/** アプリケーションを開始した実行ファイルのパスを取得します。*/
 	static PathNameT getExecutablePath();
@@ -381,4 +375,3 @@ struct Formatter<TChar, detail::FormatArgType::KindString, GenericPathName<TChar
 
 LN_NAMESPACE_END
 
-#pragma pop_macro("CreateDirectory")

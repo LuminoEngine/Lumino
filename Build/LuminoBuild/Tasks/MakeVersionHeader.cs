@@ -40,7 +40,7 @@ namespace LuminoBuild.Tasks
             text = text.Replace("%%RevisionVersion%%", builder.RevisionVersion.ToString());
             text = text.Replace("%%BuildVersion%%", builder.BuildVersion.ToString());
             text = text.Replace("%%VersionString%%", builder.VersionString);
-            File.WriteAllText(outFile, text);
+            File.WriteAllText(outFile, text, new UTF8Encoding(true));
         }
     }
 }

@@ -382,8 +382,6 @@ void Texture2D::blt(int x, int y, Bitmap* srcBitmap/*, const RectI& srcRect*/)
 }
 
 //------------------------------------------------------------------------------
-#pragma push_macro("DrawText")
-#undef drawText
 void Texture2D::drawText(const StringRef& text, const RectI& rect, Font* font, const Color32& fillColor, const Color32& strokeColor, int strokeThickness, TextAlignment alignment) { LN_AFX_FUNCNAME(drawText)(text, rect, font, fillColor, strokeColor, strokeThickness, alignment); }
 void Texture2D::LN_AFX_FUNCNAME(drawText)(const StringRef& text, const RectI& rect, Font* font, const Color32& fillColor, const Color32& strokeColor, int strokeThickness, TextAlignment alignment)
 {
@@ -396,7 +394,6 @@ void Texture2D::LN_AFX_FUNCNAME(drawText)(const StringRef& text, const RectI& re
 	r->setTextAlignment(alignment);
 	r->drawGlyphRun(m_primarySurface2, gr, fillColor, strokeColor, strokeThickness);
 }
-#pragma pop_macro("DrawText")
 
 //------------------------------------------------------------------------------
 void Texture2D::setSubData(const PointI& offset, Bitmap* bitmap)

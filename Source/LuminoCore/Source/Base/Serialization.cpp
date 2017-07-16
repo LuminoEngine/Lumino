@@ -209,7 +209,7 @@ void ScVariant::loadInternal(ISerializeElement* value)
 				break;
 			case SerializationValueType::Int64:
 				m_core->resetType(ScVariantType::Int);
-				m_core->m_int = value->getSerializeValueInt64();
+				m_core->m_int = (int)value->getSerializeValueInt64();
 				break;
 			case SerializationValueType::UInt8:
 				m_core->resetType(ScVariantType::Int);
@@ -225,7 +225,7 @@ void ScVariant::loadInternal(ISerializeElement* value)
 				break;
 			case SerializationValueType::UInt64:
 				m_core->resetType(ScVariantType::Int);
-				m_core->m_int = value->getSerializeValueUInt64();
+				m_core->m_int = (int)value->getSerializeValueUInt64();
 				break;
 			case SerializationValueType::Float:
 				m_core->resetType(ScVariantType::Float);
@@ -233,7 +233,7 @@ void ScVariant::loadInternal(ISerializeElement* value)
 				break;
 			case SerializationValueType::Double:
 				m_core->resetType(ScVariantType::Float);
-				m_core->m_float = value->getSerializeValueDouble();
+				m_core->m_float = (float)value->getSerializeValueDouble();
 				break;
 			case SerializationValueType::String:
 				m_core->setString(value->getSerializeValueString());
