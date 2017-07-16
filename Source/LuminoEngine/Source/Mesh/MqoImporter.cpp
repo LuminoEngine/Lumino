@@ -103,9 +103,9 @@ void MqoObject::Smoothing()
 }
 
 //------------------------------------------------------------------------------
-RefPtr<MeshResource> MqoObject::createMeshResource()
+Ref<MeshResource> MqoObject::createMeshResource()
 {
-	auto mesh = RefPtr<MeshResource>::makeRef();
+	auto mesh = Ref<MeshResource>::makeRef();
 	mesh->initialize(EngineDomain::getGraphicsManager(), MeshCreationFlags::None);
 	mesh->setName(m_name);
 
@@ -612,15 +612,15 @@ double AngleOf2Vector(Vector3 A, Vector3 B)
 }
 
 //------------------------------------------------------------------------------
-RefPtr<StaticMeshModel> MqoImporter::import(ModelManager* manager, const PathName& parentDir, Stream* stream)
+Ref<StaticMeshModel> MqoImporter::import(ModelManager* manager, const PathName& parentDir, Stream* stream)
 {
 	if (LN_CHECK_ARG(manager != nullptr)) return nullptr;
 
 	m_parentDir = parentDir;
 
-	//RefPtr<Stream> stream(file, false); //manager->getFileManager()->createFileStream(filePath)
+	//Ref<Stream> stream(file, false); //manager->getFileManager()->createFileStream(filePath)
 
-	m_model = RefPtr<StaticMeshModel>::makeRef();
+	m_model = Ref<StaticMeshModel>::makeRef();
 	m_model->initialize(manager->getGraphicsManager());
 
 	// Metasequoia4 で出力される .mqo ファイルの文字コードは Shift_JIS だった
@@ -685,7 +685,7 @@ void MqoImporter::loadMaterials(StreamReader* reader)
 		float emissive = 0.5f;
 		float specular = 0.0f;
 		float power = 1.0f;
-		RefPtr<Texture> texture;
+		Ref<Texture> texture;
 
 		while (dataHead < line.getLength())
 		{
@@ -775,7 +775,7 @@ void MqoImporter::loadMaterials(StreamReader* reader)
 //------------------------------------------------------------------------------
 void MqoImporter::loadObject(StreamReader* reader, const String& name)
 {
-	auto mqoObject = RefPtr<MqoObject>::makeRef();
+	auto mqoObject = Ref<MqoObject>::makeRef();
 	mqoObject->m_importer = this;
 	mqoObject->m_name = name;
 

@@ -38,8 +38,6 @@ static size_t GetCurrentDirectoryInternal(wchar_t* outPath)
 #endif
 }
 
-#pragma push_macro("GetCurrentDirectory")
-#undef getCurrentDirectory
 template<typename TChar>
 size_t DirectoryUtils::getCurrentDirectory(TChar* outPath) { return LN_AFX_FUNCNAME(getCurrentDirectory)(outPath); }
 template<typename TChar>
@@ -51,7 +49,6 @@ template size_t DirectoryUtils::getCurrentDirectory<char>(char* outPath);
 template size_t DirectoryUtils::LN_AFX_FUNCNAME(getCurrentDirectory)<char>(char* outPath);
 template size_t DirectoryUtils::getCurrentDirectory<wchar_t>(wchar_t* outPath);
 template size_t DirectoryUtils::LN_AFX_FUNCNAME(getCurrentDirectory)<wchar_t>(wchar_t* outPath);
-#pragma pop_macro("GetCurrentDirectory")
 
 //------------------------------------------------------------------------------
 #ifdef _WIN32

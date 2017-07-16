@@ -15,7 +15,7 @@ LN_CLASS()
 class GameScene
 	: public Object
 {
-	LN_OBJECT();
+	LN_OBJECT;
 protected:
 
 	/** 開始処理 */
@@ -42,7 +42,7 @@ private:
 	void addGameObject(WorldObject* obj);
 	void update();
 
-	List<RefPtr<WorldObject>>	m_gameObjectList;
+	List<Ref<WorldObject>>	m_gameObjectList;
 
 	friend class WorldObject;
 	friend class detail::GameSceneManager;

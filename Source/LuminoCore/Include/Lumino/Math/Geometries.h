@@ -9,7 +9,7 @@ LN_NAMESPACE_BEGIN
 /**
 	レイを定義します。
 */
-class LUMINO_EXPORT Ray
+struct LUMINO_EXPORT Ray
 {
 public:
 	
@@ -33,7 +33,7 @@ public:
 /**
 	直方体を定義します。
 */
-class LUMINO_EXPORT Box
+struct LUMINO_EXPORT Box
 {
 public:
 	Vector3		center;			/**< 中心座標 */
@@ -59,7 +59,7 @@ public:
 /**
 	向きを持つボックスを定義します。
 */
-class LUMINO_EXPORT OrientedBox
+struct LUMINO_EXPORT OrientedBox
 {
 public:
 	Vector3		center;			/**< ボックスの中心座標 */

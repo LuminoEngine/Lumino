@@ -12,8 +12,8 @@ namespace detail { class VectorFontGlyphCache; }
 class Bitmap;
 class Font;
 class RawFont;
-using FontPtr = RefPtr<Font>;
-using RawFontPtr = RefPtr<RawFont>;
+using FontPtr = Ref<Font>;
+using RawFontPtr = Ref<RawFont>;
 
 // https://www.freetype.org/freetype2/docs/tutorial/step2.html
 struct FontGlobalMetrics
@@ -44,7 +44,7 @@ enum class BuiltinFontSize
 class Font
 	: public Object
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	/**
@@ -119,7 +119,7 @@ LN_INTERNAL_ACCESS:
 private:
 	detail::GraphicsManager*	m_manager;
 	detail::FontData			m_fontInfo;
-	RefPtr<RawFont>				m_rawFont;
+	Ref<RawFont>				m_rawFont;
 	bool						m_builtin;
 };
 
@@ -211,7 +211,7 @@ public:
 	static RawFontPtr create();
 
 
-	static RefPtr<RawFont> createBuiltInBitmapFontInternal2(int size);
+	static Ref<RawFont> createBuiltInBitmapFontInternal2(int size);
 
 
 	static void registerFontFile(const StringRef& filePath);

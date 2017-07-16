@@ -25,13 +25,13 @@ public:
 	void addAssetsDirectory(const StringRef& directoryPath);
 
 	Texture2DPtr loadTexture(const StringRef& filePath);
-	RefPtr<Shader> loadShader(const StringRef& filePath);
+	Ref<Shader> loadShader(const StringRef& filePath);
 
-	RefPtr<StaticMeshModel> loadMeshModel(const StringRef& filePath);
+	Ref<StaticMeshModel> loadMeshModel(const StringRef& filePath);
 
 	String loadText(const StringRef& filePath);
 
-	RefPtr<Stream> openFile(const StringRef& filePath);
+	Ref<Stream> openFile(const StringRef& filePath);
 
 	//RawFontPtr LoadFont(const StringRef& name, int size, bool isBold, bool isItalic, bool isAntiAlias);
 
@@ -48,9 +48,9 @@ private:
 
 	EngineManager*			m_engineManager;
 	List<AssetsDirectory>	m_assetsDirectories;
-	RefPtr<CacheManager>	m_textureCache;
-	//RefPtr<CacheManager>	m_shaderCache;
-	RefPtr<CacheManager>	m_fontCache;
+	Ref<CacheManager>	m_textureCache;
+	//Ref<CacheManager>	m_shaderCache;
+	Ref<CacheManager>	m_fontCache;
 };
 
 LN_NAMESPACE_END

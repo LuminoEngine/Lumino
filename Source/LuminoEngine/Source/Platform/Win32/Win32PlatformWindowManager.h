@@ -59,7 +59,7 @@ public:
 	virtual void dispose();
 
 private:
-	RefPtr<Win32PlatformWindow>	m_mainWindow;
+	Ref<Win32PlatformWindow>	m_mainWindow;
 	HINSTANCE					m_hInst;
 	HICON						m_hIcon;
 	String						m_windowClassName;

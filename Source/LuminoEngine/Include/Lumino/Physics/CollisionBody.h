@@ -22,14 +22,14 @@ LN_CLASS()
 class CollisionBody
 	: public PhysicsObject
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	/**
 		@brief		RigidBody オブジェクトを作成します。
 		@param[in]	shape	: 衝突判定形状
 	*/
-	static RefPtr<CollisionBody> create(CollisionShape* shape);
+	static Ref<CollisionBody> create(CollisionShape* shape);
 
 
 	/** 現在の姿勢を取得します。*/

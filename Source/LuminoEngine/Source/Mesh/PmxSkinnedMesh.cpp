@@ -10,9 +10,9 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
-RefPtr<Material> PmxMaterialResource::MakeCommonMaterial() const
+Ref<Material> PmxMaterialResource::MakeCommonMaterial() const
 {
-	auto m = RefPtr<Material>::makeRef();
+	auto m = Ref<Material>::makeRef();
 	m->setBuiltinColorParameter(
 		Material::DiffuseParameter,
 		Diffuse.r,
@@ -84,7 +84,7 @@ PmxSkinnedMeshResource::~PmxSkinnedMeshResource()
 //------------------------------------------------------------------------------
 void PmxSkinnedMeshResource::refreshInitialValues()
 {
-	for (RefPtr<PmxBoneResource>& b : bones)
+	for (Ref<PmxBoneResource>& b : bones)
 	{
 		b->refreshInitialValues();
 	}

@@ -178,7 +178,7 @@ bool Archive::existsFile(const PathName& fileFullPath)
 }
 
 //------------------------------------------------------------------------------
-bool Archive::tryCreateStream(const PathName& fileFullPath, RefPtr<Stream>* outStream, bool isDeferring)
+bool Archive::tryCreateStream(const PathName& fileFullPath, Ref<Stream>* outStream, bool isDeferring)
 {
 #if 1 // map のキーを絶対パスにしてみた。メモリ効率は悪いが、検索キー用に PathName を再度作らなくて良くなる。まぁ、携帯機に乗せるときに問題になるようなら改めて見直す…。
 	EntriesMap::iterator itr = m_entriesMap.find(fileFullPath);
@@ -401,7 +401,7 @@ bool DummyArchive::existsFile(const PathName& fileFullPath)
 }
 
 //------------------------------------------------------------------------------
-bool DummyArchive::tryCreateStream(const PathName& fileFullPath, RefPtr<Stream>* outStream, bool isDeferring)
+bool DummyArchive::tryCreateStream(const PathName& fileFullPath, Ref<Stream>* outStream, bool isDeferring)
 {
 	if (!FileSystem::existsFile(fileFullPath)) {
 		return false;
@@ -409,7 +409,7 @@ bool DummyArchive::tryCreateStream(const PathName& fileFullPath, RefPtr<Stream>*
 
 	FileOpenMode mode = FileOpenMode::read;
 	if (isDeferring) { mode |= FileOpenMode::Deferring; }
-	RefPtr<FileStream> file = FileStream::create(fileFullPath, mode);
+	Ref<FileStream> file = FileStream::create(fileFullPath, mode);
 	*outStream = file;
 	return true;
 }

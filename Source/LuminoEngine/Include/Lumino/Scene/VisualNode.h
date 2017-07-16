@@ -29,7 +29,7 @@ LN_CLASS()
 class VisualComponent
 	: public SceneNode
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 
@@ -173,7 +173,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual detail::SceneNodeDefaultShaderClass getShaderClass() { return detail::SceneNodeDefaultShaderClass_StaticMesh; }
 
 //protected:
-//	RefPtr<MaterialList2>	m_materialList;
+//	Ref<MaterialList2>	m_materialList;
 
 private:
 	void render(RenderingContext* context) override;
@@ -204,7 +204,7 @@ LN_INTERNAL_ACCESS:
 	void copyShared(MaterialList* srcList, bool createMainMaterial);
 	
 LN_INTERNAL_ACCESS:
-	RefPtr<Material>				m_mainMaterial;
+	Ref<Material>				m_mainMaterial;
 };
 
 
@@ -216,7 +216,7 @@ LN_INTERNAL_ACCESS:
 class VisualObject
 	: public WorldObject
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	/** 不透明度を設定します。(default: 1.0) */

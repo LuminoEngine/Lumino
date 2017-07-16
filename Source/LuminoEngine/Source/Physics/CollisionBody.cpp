@@ -169,9 +169,9 @@ public:
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(CollisionBody, PhysicsObject);
 
 //------------------------------------------------------------------------------
-RefPtr<CollisionBody> CollisionBody::create(CollisionShape* shape)
+Ref<CollisionBody> CollisionBody::create(CollisionShape* shape)
 {
-	auto ptr = RefPtr<CollisionBody>::makeRef();
+	auto ptr = Ref<CollisionBody>::makeRef();
 	ptr->initialize();
 	ptr->addShape(shape);
 	return ptr;

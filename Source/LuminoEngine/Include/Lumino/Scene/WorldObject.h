@@ -7,7 +7,7 @@ LN_NAMESPACE_BEGIN
 class DrawList;
 class World;
 class WorldObject;
-using WorldObjectPtr = RefPtr<WorldObject>;
+using WorldObjectPtr = Ref<WorldObject>;
 class Component;
 
 enum class BuiltinLayers
@@ -40,7 +40,7 @@ struct LayerMask
 class WorldObject
 	: public Object
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	Transform	transform;
 
@@ -135,7 +135,7 @@ protected:
 
 LN_INTERNAL_ACCESS:
 	//const Matrix& GetCombinedGlobalMatrix() const { return m_combinedGlobalMatrix; }
-	const List<RefPtr<Component>>& getComponents() const { return m_components; }
+	const List<Ref<Component>>& getComponents() const { return m_components; }
 	void setSpecialObject(bool enalbed) { m_isSpecialObject = true; }
 	bool isSpecialObject() const { return m_isSpecialObject; }
 
@@ -144,10 +144,10 @@ private:
 	void render(DrawList* context);
 	void releaseComponents();
 
-	List<RefPtr<Component>>		m_components;
+	List<Ref<Component>>		m_components;
 
 	World*						m_world;
-	List<RefPtr<WorldObject>>	m_children;
+	List<Ref<WorldObject>>	m_children;
 	WorldObject*				m_parent;
 	String						m_tag;
 	int							m_layer;
@@ -165,7 +165,7 @@ private:
 class WorldObject2D
 	: public WorldObject
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 LN_CONSTRUCT_ACCESS:
@@ -181,7 +181,7 @@ LN_CONSTRUCT_ACCESS:
 class WorldObject3D
 	: public WorldObject
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 LN_CONSTRUCT_ACCESS:

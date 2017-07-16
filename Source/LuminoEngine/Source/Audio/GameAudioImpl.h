@@ -3,7 +3,7 @@
 #include <list>
 
 LN_NAMESPACE_BEGIN
-class Vector3;
+struct Vector3;
 
 LN_NAMESPACE_AUDIO_BEGIN
 namespace detail

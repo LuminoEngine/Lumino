@@ -6,8 +6,8 @@
 LN_NAMESPACE_BEGIN
 class UIListBoxItem;
 class UIListBox;
-using UIListBoxItemPtr = RefPtr<UIListBoxItem>;
-using UIListBoxPtr = RefPtr<UIListBox>;
+using UIListBoxItemPtr = Ref<UIListBoxItem>;
+using UIListBoxPtr = Ref<UIListBox>;
 
 /**
 	@brief
@@ -18,7 +18,7 @@ using UIListBoxPtr = RefPtr<UIListBox>;
 class UIListBoxItem
 	: public UIControl
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	virtual void onRender(DrawingContext* g) override
@@ -40,7 +40,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 class UIListBox
 	: public UIControl
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	static const String NormalState;
 

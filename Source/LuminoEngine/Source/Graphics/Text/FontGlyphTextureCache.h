@@ -74,7 +74,7 @@ private:
 	int						m_curPrimUsedCount;		// m_curPrimUsedFlags の中の true 数 (m_maxCacheGlyphs に到達したら Flush が必要)
 
 	//Driver::ITexture*		m_glyphsFillTexture;
-	RefPtr<Texture2D>		m_fillGlyphsTexture;
+	Ref<Texture2D>		m_fillGlyphsTexture;
 	//Bitmap*					m_lockedFillBitmap;
 
 	TextLayoutEngine		m_layoutEngine;	// TODO: GlyphRun に任せていいかも？

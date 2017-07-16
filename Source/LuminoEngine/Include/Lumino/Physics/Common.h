@@ -43,7 +43,7 @@ public:
 private:
 	void refresh();
 
-	RefPtr<CollisionShape>		m_collisionShape;
+	Ref<CollisionShape>		m_collisionShape;
 	btCompoundShape*			m_btCompoundShape;
 	btCollisionShape*			m_activeShape;
 	bool						m_dirty;

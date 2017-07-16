@@ -4,48 +4,61 @@
 
 LN_NAMESPACE_BEGIN
 
-/**
-	@brief	2次元上の点を表します。
-*/
-template<typename T>
-struct GenericPoint
+namespace detail {
+class GeometryStructsHelper
 {
 public:
-	static const GenericPoint<T>	Zero;	/**< (0, 0) */
 
+	template<typename TRect>
+	static void clip(TRect* this_, const TRect& rect)
+	{
+		auto l = (this_->x < rect.x) ? rect.x : this_->x;
+		auto t = (this_->y < rect.y) ? rect.y : this_->y;
+		auto r = (this_->getRight() > rect.getRight()) ? rect.getRight() : this_->getRight();
+		auto b = (this_->getBottom() > rect.getBottom()) ? rect.getBottom() : this_->getBottom();
+		this_->x = l;
+		this_->y = t;
+		this_->width = r - l;
+		this_->height = b - t;
+	}
+};
+} // namespace detail
+
+/** 2次元上の点を表します。*/
+LN_STRUCT()
+struct Point
+{
 public:
-	T		x;			/**< X 座標 */
-	T		y;			/**< Y 座標 */
+	static const Point	Zero;	/**< (0, 0) */
+	
+	/** X 座標 */
+	LN_FIELD()
+	float x;
+
+	/** Y 座標 */
+	LN_FIELD()
+	float y;
 
 public:
 
 	/** すべての要素を 0 で初期化します。*/
-	GenericPoint() { set(0, 0); }
-	
-	/** 各要素を指定して初期化します。*/
-	GenericPoint(T x, T y) { set(x, y); }
-	
+	Point() : x(0), y(0) {}
+
+	/** 位置を指定して初期化します。*/
+	Point(float x_, float y_) { set(x_, y_); }
+
+	/** 位置を指定して初期化します。*/
+	Point(const Vector2& v) { set(v.x, v.y); }
+
 	/** 各要素を設定します。 */
-	void set(T x_, T y_) { x = x_; y = y_; }
+	void set(float x_, float y_) { x = x_; y = y_; }
 
 	/** 要素がすべて 0 であるかを判定します。*/
 	bool isZero() const { return (x == 0 && y == 0); }
 
 public:
-	bool operator == (const GenericPoint<T>& obj) const { return (x == obj.x && y == obj.y); }
-	bool operator != (const GenericPoint<T>& obj) const { return !operator==(obj); }
-};
-
-//using PointF = GenericPoint<float>;
-using PointI = GenericPoint<int>;
-
-
-struct PointF : public GenericPoint<float>
-{
-public:
-	PointF() {}
-	PointF(const Vector2& v) { set(v.x, v.y); }
-	PointF(float x, float y) { set(x, y); }
+	bool operator == (const Point& rhs) const { return (x == rhs.x && y == rhs.y); }
+	bool operator != (const Point& rhs) const { return !operator==(rhs); }
 	operator const Vector2&() const { return *reinterpret_cast<const Vector2*>(this); }
 };
 
@@ -105,49 +118,6 @@ public:
 	bool operator != (const Size& obj) const { return !operator==(obj); }
 };
 
-// 内部用
-struct SizeI
-{
-public:
-	static const SizeI	Zero;
-
-	int		width;
-	int		height;
-
-	SizeI() { set(0, 0); }
-	SizeI(int w, int h) { set(w, h); }
-	
-	void set(int w, int h) { width = w; height = h; }
-	bool isZero() const { return (width == 0 && height == 0); }
-	bool isAnyZero() const { return (width == 0 || height == 0); }
-
-	Size toFloatSize() const { return Size((float)width, (float)height); }
-	static SizeI fromFloatSize(const Size& size);
-
-	bool operator == (const SizeI& obj) const { return (width == obj.width && height == obj.height); }
-	bool operator != (const SizeI& obj) const { return !operator==(obj); }
-};
-
-
-
-class GeometryStructsHelper
-{
-public:
-
-	template<typename TRect>
-	static void clip(TRect* this_, const TRect& rect)
-	{
-		auto l = (this_->x < rect.x) ? rect.x : this_->x;
-		auto t = (this_->y < rect.y) ? rect.y : this_->y;
-		auto r = (this_->getRight() > rect.getRight()) ? rect.getRight() : this_->getRight();
-		auto b = (this_->getBottom() > rect.getBottom()) ? rect.getBottom() : this_->getBottom();
-		this_->x = l;
-		this_->y = t;
-		this_->width = r - l;
-		this_->height = b - t;
-	}
-};
-
 /** 2次元の矩形を表すクラスです。*/
 LN_STRUCT()
 struct Rect
@@ -185,13 +155,13 @@ public:
 	Rect(float x, float y, float width, float height) { set(x, y, width, height); }
 	
 	/** 位置とサイズを指定して初期化します。*/
-	Rect(const PointF& point, const Size& size) { set(point.x, point.y, size.width, size.height); }
+	Rect(const Point& point, const Size& size) { set(point.x, point.y, size.width, size.height); }
 
 	/** 位置とサイズを指定して初期化します。*/
 	Rect(float x, float y, const Size& size) { set(x, y, size.width, size.height); }
 
 	/** 位置とサイズを指定して初期化します。 */
-	Rect(const PointF& point, float width, float height) { set(point.x, point.y, width, height); }
+	Rect(const Point& point, float width, float height) { set(point.x, point.y, width, height); }
 
 	/** 指定した矩形をコピーして初期化します。*/
 	Rect(const Rect& rect) { set(rect.x, rect.y, rect.width, rect.height); }
@@ -218,22 +188,22 @@ public:
 	float getBottom() const { return y + height; }
 
 	/** 左上隅の位置を取得します。*/
-	PointF getTopLeft() const { return PointF(getLeft(), getTop()); }
+	Point getTopLeft() const { return Point(getLeft(), getTop()); }
 	
 	/** 右上隅の位置を取得します。*/
-	PointF getTopRight() const { return PointF(getRight(), getTop()); }
+	Point getTopRight() const { return Point(getRight(), getTop()); }
 	
 	/** 左下隅の位置を取得します。*/
-	PointF getBottomLeft() const { return PointF(getLeft(), getBottom()); }
+	Point getBottomLeft() const { return Point(getLeft(), getBottom()); }
 
 	/** 右下隅の位置を取得します。*/
-	PointF getBottomRight() const { return PointF(getRight(), getBottom()); }
+	Point getBottomRight() const { return Point(getRight(), getBottom()); }
 
 	/** 左上隅の位置を設定します。*/
-	void setLocation(const PointF& pt) { x = pt.x; y = pt.y; }	// TODO: Pos?
+	void setLocation(const Point& pt) { x = pt.x; y = pt.y; }	// TODO: Pos?
 
 	/** 左上隅の位置を取得します。*/
-	PointF setLocation() const { return PointF(x, y); }
+	Point setLocation() const { return Point(x, y); }
 	
 	/** 幅と高さを設定します。*/
 	LN_METHOD(Property)
@@ -250,7 +220,7 @@ public:
 	bool isZero() const { return (x == 0 && y == 0 && width == 0 && height == 0); }
 
 	/** 矩形内に指定した点が含まれているかどうかを判定します。*/
-	bool contains(const PointF point) const { return contains(point.x, point.y); }
+	bool contains(const Point point) const { return contains(point.x, point.y); }
 	
 	/** 矩形内に指定した点が含まれているかどうかを判定します。*/
 	bool contains(float x_, float y_) const
@@ -281,7 +251,7 @@ public:
 	*/
 	void clip(const Rect& rect)
 	{
-		GeometryStructsHelper::clip(this, rect);
+		detail::GeometryStructsHelper::clip(this, rect);
 	}
 
 	/**
@@ -300,6 +270,125 @@ public:
 public:
 	bool operator == (const Rect& obj) const { return (x == obj.x && y == obj.y && width == obj.width && height == obj.height); }
 	bool operator != (const Rect& obj) const { return !operator==(obj); }
+};
+
+/**
+	@brief		四角形の枠の太さを表すクラスです。
+*/
+struct Thickness
+{
+public:
+	static const Thickness	Zero;	/**< Thickness(0, 0, 0, 0) */
+
+	float		left;		/**< 四角形の左辺の幅 */
+	float		top;		/**< 四角形の上辺の幅 */
+	float		right;		/**< 四角形の右辺の幅 */
+	float		bottom;		/**< 四角形の底辺の幅 */
+
+public:
+
+	/** すべての要素を 0 で初期化します。 */
+	Thickness() { set(0, 0, 0, 0); }
+
+	/** すべての要素を uniformLength で初期化します。 */
+	Thickness(float uniformLength) { set(uniformLength, uniformLength, uniformLength, uniformLength); }
+
+	/** 左右共通の幅及び上下共通の幅を指定して初期化します。 */
+	Thickness(float leftAndRight, float topAndbottom) { set(leftAndRight, topAndbottom, leftAndRight, topAndbottom); }
+	
+	/** 各辺の幅を指定して初期化します。 */
+	Thickness(float left_, float top_, float right_, float bottom_) { set(left_, top_, right_, bottom_); }
+	
+	/** 各要素を設定します。 */
+	void set(float left_, float top_, float right_, float bottom_) { left = left_; top = top_; right = right_; bottom = bottom_; }
+
+	/** 要素がすべて 0 かを判定します。 */
+	bool isZero() const { return (left == 0 && top == 0 && right == 0 && bottom == 0); }
+
+	void toArray(float* buf) const { buf[0] = left; buf[1] = top; buf[2] = right; buf[3] = bottom; }
+	static Thickness fromArray(const float* buf) { return Thickness(buf[0], buf[1], buf[2], buf[3]); }
+
+	float getWidth() const { return left + right; }
+	float getHeight() const { return top + bottom; }
+
+public:
+	bool operator == (const Thickness& rhs) const { return (left == rhs.left && top == rhs.top && right == rhs.right && bottom == rhs.bottom); }
+	bool operator != (const Thickness& rhs) const { return !operator==(rhs); }
+};
+
+/**
+	@brief	四角形の角の半径を表します。
+*/
+struct CornerRadius
+{
+public:
+
+	/** 左上角の半径 */
+	float topLeft;
+
+	/** 右上角の半径 */
+	float topRight;
+
+	/** 右下角の半径 */
+	float bottomRight;
+
+	/** 左下角の半径 */
+	float bottomLeft;
+
+public:
+	/** すべての要素を 0 で初期化します。 */
+	CornerRadius();
+
+	/** すべての要素を uniformRadius で初期化します。 */
+	CornerRadius(float uniformRadius);
+
+	/** 各要素の値を指定して初期化します。 */
+	CornerRadius(float topLeft, float topRight, float bottomRight, float bottomLeft);
+
+	bool operator == (const CornerRadius& rhs) const { return topLeft == rhs.topLeft && topRight == rhs.topRight && bottomRight == rhs.bottomRight && bottomLeft == rhs.bottomLeft; }
+	bool operator != (const CornerRadius& rhs) const { return !operator==(rhs); }
+};
+
+
+// 内部用
+struct PointI
+{
+public:
+	static const PointI Zero;
+
+	int		x;
+	int		y;
+
+	PointI() { set(0, 0); }
+	PointI(int x_, int y_) { set(x_, y_); }
+	void set(int x_, int y_) { x = x_; y = y_; }
+	bool isZero() const { return (x == 0 && y == 0); }
+
+	bool operator == (const PointI& rhs) const { return (x == rhs.x && y == rhs.y); }
+	bool operator != (const PointI& rhs) const { return !operator==(rhs); }
+};
+
+// 内部用
+struct SizeI
+{
+public:
+	static const SizeI	Zero;
+
+	int		width;
+	int		height;
+
+	SizeI() { set(0, 0); }
+	SizeI(int w, int h) { set(w, h); }
+
+	void set(int w, int h) { width = w; height = h; }
+	bool isZero() const { return (width == 0 && height == 0); }
+	bool isAnyZero() const { return (width == 0 || height == 0); }
+
+	Size toFloatSize() const { return Size((float)width, (float)height); }
+	static SizeI fromFloatSize(const Size& size);
+
+	bool operator == (const SizeI& obj) const { return (width == obj.width && height == obj.height); }
+	bool operator != (const SizeI& obj) const { return !operator==(obj); }
 };
 
 // 内部用
@@ -328,9 +417,9 @@ public:
 	int getBottom() const { return y + height; }
 	SizeI getSize() const { return SizeI(width, height); }
 
-	void clip(const RectI& rect) { GeometryStructsHelper::clip(this, rect); }
+	void clip(const RectI& rect) { detail::GeometryStructsHelper::clip(this, rect); }
 
-	static RectI fromFloatRect(const Rect& rect) { return RectI((float)rect.x, (float)rect.y, (float)rect.width, (float)rect.height); }
+	static RectI fromFloatRect(const Rect& rect) { return RectI((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height); }
 
 	bool operator == (const RectI& right) const { return (x == right.x && y == right.y && width == right.width && height == right.height); }
 	bool operator != (const RectI& right) const { return !operator==(right); }
@@ -372,103 +461,14 @@ public:
 	}
 };
 
-class Thickness	// TODO: struct
+// 内部用
+struct ThicknessI
 {
 public:
-	int		Left;		/**< 四角形の左辺の幅 */
-	int		Top;		/**< 四角形の上辺の幅 */
-	int		Right;		/**< 四角形の右辺の幅 */
-	int		Bottom;		/**< 四角形の底辺の幅 */
-
-};
-
-/**
-	@brief		四角形の枠の太さを表すクラスです。(浮動小数点形式)
-*/
-class ThicknessF
-{
-public:
-	static const ThicknessF	Zero;	///< ThicknessF(0, 0, 0, 0)
-
-public:
-	float		Left;		/**< 四角形の左辺の幅 */
-	float		Top;		/**< 四角形の上辺の幅 */
-	float		Right;		/**< 四角形の右辺の幅 */
-	float		Bottom;		/**< 四角形の底辺の幅 */
-
-public:
-
-	/**
-		@brief	すべての要素を 0 で初期化します。
-	*/
-	ThicknessF() { set(0, 0, 0, 0); }
-
-	/** すべての要素を uniformLength で初期化します。 */
-	ThicknessF(float uniformLength) { set(uniformLength, uniformLength, uniformLength, uniformLength); }
-
-	/**
-		@brief	左右共通の幅及び上下共通の幅を指定して初期化します。
-	*/
-	ThicknessF(float leftAndRight, float topAndbottom) { set(leftAndRight, topAndbottom, leftAndRight, topAndbottom); }
-	
-	/**
-		@brief	各辺の幅を指定して初期化します。
-	*/
-	ThicknessF(float left, float top, float right, float bottom) { set(left, top, right, bottom); }
-
-public:
-	
-	/**
-		@brief	各要素を設定します。
-	*/
-	void set(float left, float top, float right, float bottom) { Left = left; Top = top; Right = right; Bottom = bottom; }
-
-	/** 要素がすべて 0 かを判定します。*/
-	bool isZero() const { return (Left == 0 && Top == 0 && Right == 0 && Bottom == 0); }
-
-	void toArray(float* buf) const { buf[0] = Left; buf[1] = Top; buf[2] = Right; buf[3] = Bottom; }
-	static ThicknessF fromArray(const float* buf) { return ThicknessF(buf[0], buf[1], buf[2], buf[3]); }
-
-	float getWidth() const { return Left + Right; }
-	float getHeight() const { return Top + Bottom; }
-
-public:
-	bool operator == (const ThicknessF& obj) const { return (Left == obj.Left && Top == obj.Top && Right == obj.Right && Bottom == obj.Bottom); }
-	bool operator != (const ThicknessF& obj) const { return !operator==(obj); }
-};
-
-
-/**
-	@brief	四角形の角の半径を表します。
-*/
-struct CornerRadius
-{
-public:
-
-	/** 左上角の半径 */
-	float topLeft;
-
-	/** 右上角の半径 */
-	float topRight;
-
-	/** 右下角の半径 */
-	float bottomRight;
-
-	/** 左下角の半径 */
-	float bottomLeft;
-
-public:
-	/** すべての要素を 0 で初期化します。 */
-	CornerRadius();
-
-	/** すべての要素を uniformRadius で初期化します。 */
-	CornerRadius(float uniformRadius);
-
-	/** 各要素の値を指定して初期化します。 */
-	CornerRadius(float topLeft, float topRight, float bottomRight, float bottomLeft);
-
-	bool operator == (const CornerRadius& rhs) const { return topLeft == rhs.topLeft && topRight == rhs.topRight && bottomRight == rhs.bottomRight && bottomLeft == rhs.bottomLeft; }
-	bool operator != (const CornerRadius& rhs) const { return !operator==(rhs); }
+	int		left;
+	int		top;
+	int		right;
+	int		bottom;
 };
 
 namespace detail

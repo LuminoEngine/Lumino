@@ -213,9 +213,9 @@ void TextRenderer::initialize(GraphicsManager* manager)
 //------------------------------------------------------------------------------
 void TextRenderer::drawGlyphRun(const Matrix& transform, const PointI& position, GlyphRun* glyphRun)
 {
-	drawGlyphRun(transform, PointF((float)position.x, (float)position.y), glyphRun);
+	drawGlyphRun(transform, Point((float)position.x, (float)position.y), glyphRun);
 }
-void TextRenderer::drawGlyphRun(const Matrix& transform, const PointF& position, GlyphRun* glyphRun)
+void TextRenderer::drawGlyphRun(const Matrix& transform, const Point& position, GlyphRun* glyphRun)
 {
 	if (glyphRun == nullptr) return;
 	m_font = glyphRun->getFont();
@@ -223,7 +223,7 @@ void TextRenderer::drawGlyphRun(const Matrix& transform, const PointF& position,
 }
 
 //------------------------------------------------------------------------------
-void TextRenderer::drawString(const Matrix& transform, const TCHAR* str, int length, const PointF& position)
+void TextRenderer::drawString(const Matrix& transform, const TCHAR* str, int length, const Point& position)
 {
 	length = (length < 0) ? StringTraits::tcslen(str) : length;
 
@@ -277,7 +277,7 @@ void TextRenderer::drawString(const Matrix& transform, const TCHAR* str, int len
 }
 
 //------------------------------------------------------------------------------
-void TextRenderer::DrawGlyphsInternal(const Matrix& transform, const PointF& position, const List<TextLayoutResultItem>& layoutItems, FontGlyphTextureCache* cache)
+void TextRenderer::DrawGlyphsInternal(const Matrix& transform, const Point& position, const List<TextLayoutResultItem>& layoutItems, FontGlyphTextureCache* cache)
 {
 	int dataCount = layoutItems.getCount();
 
@@ -354,8 +354,8 @@ void TextRenderer::FlushInternal(FontGlyphTextureCache* cache)
 		TextRendererCore*, m_core,
 		RenderBulkData, dataListData,
 		int, dataCount,
-		RefPtr<Driver::ITexture>, glyphsTexture,
-		RefPtr<Brush>, m_fillBrush,	// TODO: Brush をそのまま描画スレッドに持ち込むのは危険。変更される。
+		Ref<Driver::ITexture>, glyphsTexture,
+		Ref<Brush>, m_fillBrush,	// TODO: Brush をそのまま描画スレッドに持ち込むのは危険。変更される。
 		{
 			m_core->render(
 				(TextRendererCore::GlyphRunData*)dataListData.getData(),

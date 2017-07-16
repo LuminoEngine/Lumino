@@ -218,9 +218,9 @@ TEST_F(IntegrationTest_Reflection_Variant, Basic)
 		ASSERT_EQ(obj1, Variant::cast<RefTest1*>(v2));
 		obj1->release();
 	}
-	// <Test> RefPtr 型
+	// <Test> Ref 型
 	{
-		RefPtr<RefTest1> obj1(new RefTest1(), false);
+		Ref<RefTest1> obj1(new RefTest1(), false);
 		Variant v1(obj1);
 		Variant v2 = v1;	// copy
 		ASSERT_EQ(VariantType::Object, v1.getType());
@@ -228,7 +228,7 @@ TEST_F(IntegrationTest_Reflection_Variant, Basic)
 		ASSERT_EQ(obj1.get(), Variant::cast<RefTest1*>(v1));
 		ASSERT_EQ(obj1.get(), Variant::cast<ReflectionObject*>(v1));
 		ASSERT_EQ(obj1.get(), Variant::cast<RefTest1*>(v2));
-		ASSERT_EQ(obj1, Variant::cast<RefPtr<RefTest1>>(v2));
+		ASSERT_EQ(obj1, Variant::cast<Ref<RefTest1>>(v2));
 	}
 	// <Test> ReflectionArrayObject 型
 	{

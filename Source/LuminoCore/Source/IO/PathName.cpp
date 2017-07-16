@@ -314,8 +314,6 @@ GenericPathName<TChar> GenericPathName<TChar>::makeRelative(const GenericPathNam
 }
 
 //------------------------------------------------------------------------------
-#pragma push_macro("CreateDirectory")
-#undef createDirectory
 template<typename TChar>
 void GenericPathName<TChar>::createDirectory() const { LN_AFX_FUNCNAME(createDirectory)(); }
 template<typename TChar>
@@ -323,11 +321,8 @@ void GenericPathName<TChar>::LN_AFX_FUNCNAME(createDirectory)() const
 {
 	FileSystem::createDirectory(m_path.c_str());
 }
-#pragma pop_macro("CreateDirectory")
 
 //------------------------------------------------------------------------------
-#pragma push_macro("GetCurrentDirectory")
-#undef getCurrentDirectory
 template<typename TChar>
 GenericPathName<TChar> GenericPathName<TChar>::getCurrentDirectory() { return LN_AFX_FUNCNAME(getCurrentDirectory)(); }
 template<typename TChar>
@@ -344,7 +339,6 @@ GenericPathName<TChar> GenericPathName<TChar>::LN_AFX_FUNCNAME(getCurrentDirecto
 	}
 	return path;
 }
-#pragma pop_macro("GetCurrentDirectory")
 
 //------------------------------------------------------------------------------
 template<>
@@ -515,6 +509,4 @@ template class GenericStaticallyLocalPath<wchar_t>;
 } // namespace detail
 
 LN_NAMESPACE_END
-
-#pragma pop_macro("CreateDirectory")
 

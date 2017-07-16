@@ -13,7 +13,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 class ToneImageEffect
 	: public ImageEffect
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	Vector4	m_tone;
 
@@ -31,7 +31,7 @@ protected:
 	virtual void onRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
 private:
-	RefPtr<Material>	m_material;
+	Ref<Material>	m_material;
 };
 
 LN_NAMESPACE_GRAPHICS_END

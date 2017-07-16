@@ -73,7 +73,7 @@ class RefPtrBase {};
 	@brief		RefObject 用 スマートポインタ
 */
 template <class T>
-class RefPtr : public /*detail::*/RefPtrBase
+class Ref : public /*detail::*/RefPtrBase
 {
 public:
 	typedef T* PtrType;
@@ -81,33 +81,33 @@ public:
 public:
 
 	template<typename... TArgs>
-	static RefPtr<T> makeRef(TArgs... args)
+	static Ref<T> makeRef(TArgs... args)
 	{
-		return RefPtr<T>(LN_NEW T(args...), false);
+		return Ref<T>(LN_NEW T(args...), false);
 	}
     
     template<class T2>
-    static RefPtr<T> staticCast(const RefPtr<T2>& other)
+    static Ref<T> staticCast(const Ref<T2>& other)
     {
         T* ptr = static_cast<T*>(other.get());
-        return RefPtr<T>(ptr, true);
+        return Ref<T>(ptr, true);
     }
 
 	/** コンストラクタ */
-	RefPtr();
+	Ref();
 
 	/**
 		@brief		コンストラクタ
 		@param[in]	ptr		: 管理対象としてセットする ReferenceObject インスタンスのポインタ
 		@param[in]	addRef	: true の場合、セットされた ReferenceObject の参照カウントをインクリメントする
 	*/
-	RefPtr(T* ptr, bool addRef = true);
+	Ref(T* ptr, bool addRef = true);
 
 	/** コピーコンストラクタ */
-	RefPtr(const RefPtr<T>& obj);
+	Ref(const Ref<T>& obj);
 
 	/** デストラクタ */
-	~RefPtr();
+	~Ref();
 
 public:
 
@@ -159,14 +159,14 @@ public:
 
 
 	/// operator=
-	RefPtr<T>& operator = (const RefPtr<T>& ptr)
+	Ref<T>& operator = (const Ref<T>& ptr)
 	{
 		LN_REFOBJ_SET(m_ptr, ptr.m_ptr);
 		return *this;
 	}
 
 	/// operator=
-	RefPtr<T>& operator = (T* ptr)
+	Ref<T>& operator = (T* ptr)
 	{
 		LN_REFOBJ_SET(m_ptr, ptr);
 		return *this;
@@ -179,13 +179,13 @@ public:
     //bool operator == (std::nullptr_t ptr) const { return (mPtr == ptr); }
     //bool operator == (const T* ptr) const { return (mPtr == ptr); }
 	//bool operator == (T* ptr) { return (mPtr == ptr); }
-	//bool operator == (const RefPtr<T>& ptr) const { return (mPtr == ptr.mPtr); }
+	//bool operator == (const Ref<T>& ptr) const { return (mPtr == ptr.mPtr); }
 
     /// operator!=
     //bool operator != ( const T* ptr ) const { return ( mPtr != ptr ); }
 	//bool operator != (std::nullptr_t ptr) const { return (mPtr != ptr); }
 	//bool operator != (const T* ptr) const { return (mPtr != ptr); }
-	//bool operator != (const RefPtr<T>& ptr) const { return (mPtr != ptr.mPtr); }
+	//bool operator != (const Ref<T>& ptr) const { return (mPtr != ptr.mPtr); }
 
     // operator<
     bool operator < (const T* ptr) const { return m_ptr < ptr; }
@@ -228,13 +228,13 @@ protected:
 
 //------------------------------------------------------------------------------
 template<typename T>
-RefPtr<T>::RefPtr()
+Ref<T>::Ref()
 	: m_ptr(nullptr)
 {}
 
 //------------------------------------------------------------------------------
 template<typename T>
-RefPtr<T>::RefPtr(T* ptr, bool addRef)
+Ref<T>::Ref(T* ptr, bool addRef)
 	: m_ptr(ptr)
 {
 	if (addRef)
@@ -245,7 +245,7 @@ RefPtr<T>::RefPtr(T* ptr, bool addRef)
 
 //------------------------------------------------------------------------------
 template<typename T>
-RefPtr<T>::RefPtr(const RefPtr<T>& obj)
+Ref<T>::Ref(const Ref<T>& obj)
 	: m_ptr(obj.m_ptr)
 {
 	LN_SAFE_ADDREF(m_ptr);
@@ -253,49 +253,49 @@ RefPtr<T>::RefPtr(const RefPtr<T>& obj)
 
 //------------------------------------------------------------------------------
 template<typename T>
-RefPtr<T>::~RefPtr()
+Ref<T>::~Ref()
 {
 	LN_SAFE_RELEASE(m_ptr);
 }
 
 //------------------------------------------------------------------------------
 template<typename T1, typename T2>
-bool operator==(const RefPtr<T1>& left, const RefPtr<T2>& right) LN_NOEXCEPT
+bool operator==(const Ref<T1>& left, const Ref<T2>& right) LN_NOEXCEPT
 {
 	return (left.get() == right.get());
 }
 
 //------------------------------------------------------------------------------
 template<typename T>
-bool operator==(std::nullptr_t left, const RefPtr<T>& right) LN_NOEXCEPT
+bool operator==(std::nullptr_t left, const Ref<T>& right) LN_NOEXCEPT
 {
 	return ((T*)0 == right.get());
 }
 
 //------------------------------------------------------------------------------
 template<typename T>
-bool operator==(const RefPtr<T>& left, std::nullptr_t right) LN_NOEXCEPT
+bool operator==(const Ref<T>& left, std::nullptr_t right) LN_NOEXCEPT
 {
 	return (left.get() == (T*)0);
 }
 
 //------------------------------------------------------------------------------
 template<typename T1, typename T2>
-bool operator!=(const RefPtr<T1>& left, const RefPtr<T2>& right) LN_NOEXCEPT
+bool operator!=(const Ref<T1>& left, const Ref<T2>& right) LN_NOEXCEPT
 {
 	return (left.get() != right.get());
 }
 
 //------------------------------------------------------------------------------
 template<typename T>
-bool operator!=(std::nullptr_t left, const RefPtr<T>& right) LN_NOEXCEPT
+bool operator!=(std::nullptr_t left, const Ref<T>& right) LN_NOEXCEPT
 {
 	return ((T*)0 != right.get());
 }
 
 //------------------------------------------------------------------------------
 template<typename T>
-bool operator!=(const RefPtr<T>& left, std::nullptr_t right) LN_NOEXCEPT
+bool operator!=(const Ref<T>& left, std::nullptr_t right) LN_NOEXCEPT
 {
 	return (left.get() != (T*)0);
 }

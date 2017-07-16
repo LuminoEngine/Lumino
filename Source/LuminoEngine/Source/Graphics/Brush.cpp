@@ -76,13 +76,13 @@ void Brush::getRawData(detail::BrushRawData* outData) const
 //==============================================================================
 
 //------------------------------------------------------------------------------
-RefPtr<SolidColorBrush> SolidColorBrush::create(const Color& color)
+Ref<SolidColorBrush> SolidColorBrush::create(const Color& color)
 {
 	return newObject<SolidColorBrush>(color);
 }
 
 //------------------------------------------------------------------------------
-RefPtr<SolidColorBrush> SolidColorBrush::create(const Color& rgb, float a)
+Ref<SolidColorBrush> SolidColorBrush::create(const Color& rgb, float a)
 {
 	return newObject<SolidColorBrush>(rgb, a);
 }
@@ -116,19 +116,19 @@ void SolidColorBrush::initialize(const Color& rgb, float a)
 //==============================================================================
 
 //------------------------------------------------------------------------------
-RefPtr<TextureBrush> TextureBrush::create(const StringRef& filePath)
+Ref<TextureBrush> TextureBrush::create(const StringRef& filePath)
 {
 	return newObject<TextureBrush>(filePath);
 }
 
 //------------------------------------------------------------------------------
-RefPtr<TextureBrush> TextureBrush::create(Texture* texture)
+Ref<TextureBrush> TextureBrush::create(Texture* texture)
 {
 	return newObject<TextureBrush>(texture);
 }
 
 //------------------------------------------------------------------------------
-RefPtr<TextureBrush> TextureBrush::create(Texture* texture, BrushImageDrawMode drawMode, const Rect& sourceRect, const ThicknessF& borderThickness, BrushWrapMode wrapMode)
+Ref<TextureBrush> TextureBrush::create(Texture* texture, BrushImageDrawMode drawMode, const Rect& sourceRect, const Thickness& borderThickness, BrushWrapMode wrapMode)
 {
 	auto ptr = newObject<TextureBrush>(texture);
 	ptr->getImageDrawMode(drawMode);
@@ -225,9 +225,9 @@ ColorBrush::~ColorBrush()
 //==============================================================================
 
 //------------------------------------------------------------------------------
-RefPtr<TextureBrush> TextureBrush::create(const StringRef& filePath)
+Ref<TextureBrush> TextureBrush::create(const StringRef& filePath)
 {
-	RefPtr<TextureBrush> obj(LN_NEW TextureBrush(), false);
+	Ref<TextureBrush> obj(LN_NEW TextureBrush(), false);
 	obj->create(filePath.GetBegin(), nullptr);	// TODO: getBegin
 	return obj;
 }

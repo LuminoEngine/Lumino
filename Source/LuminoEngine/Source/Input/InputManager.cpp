@@ -59,18 +59,18 @@ InputManager::~InputManager()
 void InputManager::initialize(const Settings& settings)
 {
 #if defined(LN_OS_WIN32)
-	RefPtr<Win32InputDriver> driver(LN_NEW Win32InputDriver());
+	Ref<Win32InputDriver> driver(LN_NEW Win32InputDriver());
 	driver->initialize(PlatformSupport::getWindowHandle(settings.mainWindow));
 	m_inputDriver = driver;
 #elif defined(LN_OS_MAC)
-	RefPtr<CocoaInputDriver> driver(LN_NEW CocoaInputDriver());
+	Ref<CocoaInputDriver> driver(LN_NEW CocoaInputDriver());
 	m_inputDriver = driver;
 #endif
 	
 	LN_THROW(m_inputDriver != nullptr, NotImplementedException);
 
 	// TODO: 今は1つだけ
-	auto pad = RefPtr<InputController>::makeRef(this);
+	auto pad = Ref<InputController>::makeRef(this);
 	m_defaultVirtualPads[0] = pad;
 	m_defaultVirtualPads[0]->addRef();
 

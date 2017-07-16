@@ -6,7 +6,7 @@ LN_NAMESPACE_BEGIN
 class Texture;
 class Material;
 class TileSet;
-typedef RefPtr<TileSet> TileSetPtr;
+typedef Ref<TileSet> TileSetPtr;
 
 /**
 	@brief	
@@ -14,7 +14,7 @@ typedef RefPtr<TileSet> TileSetPtr;
 class TileSet
 	: public tr::ReflectionObject
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	static TileSetPtr create();
 
@@ -45,7 +45,7 @@ private:
 	};
 	
 	Texture*	m_imageSource;
-	RefPtr<Material>	m_material;
+	Ref<Material>	m_material;
 	SizeI		m_tileSize;
 	int			m_tileCountH;
 	//PathName	m_imageFilePath;
@@ -57,7 +57,7 @@ private:
 //class RGSS1TileSet
 //	: public tr::ReflectionObject
 //{
-//	LN_OBJECT();
+//	LN_OBJECT;
 //public:
 //	RGSS1TileSet();
 //	virtual ~RGSS1TileSet();

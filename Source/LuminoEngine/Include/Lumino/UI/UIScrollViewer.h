@@ -7,7 +7,7 @@
 LN_NAMESPACE_BEGIN
 class IScrollInfo;
 class UIScrollEventArgs;
-using UIScrollEventArgsPtr = RefPtr<UIScrollEventArgs>;
+using UIScrollEventArgsPtr = Ref<UIScrollEventArgs>;
 
 /**
 	@brief	マウスドラッグが関係するイベント引数です。
@@ -15,7 +15,7 @@ using UIScrollEventArgsPtr = RefPtr<UIScrollEventArgs>;
 class UIDragDeltaEventArgs
 	: public UIEventArgs
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	UIDragDeltaEventArgs() = default;
 	virtual ~UIDragDeltaEventArgs() = default;
@@ -31,7 +31,7 @@ public:
 class UIThumb
 	: public UIElement
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	LN_ROUTED_EVENT2(UIDragDeltaEventArgs, DragStartedEvent);		/**< マウスドラッグを開始したときに発生するイベントを表します。*/
     LN_ROUTED_EVENT2(UIDragDeltaEventArgs, DragDeltaEvent);			/**< マウスドラッグ中に発生するイベントを表します。*/
@@ -39,7 +39,7 @@ public:
     LN_ROUTED_EVENT2(UIDragDeltaEventArgs, DragCanceledEvent);		/**< マウスドラッグを中断したときに発生するイベントを表します。*/
 
 public:
-	static RefPtr<UIThumb> create();
+	static Ref<UIThumb> create();
 
 LN_CONSTRUCT_ACCESS:
 	UIThumb();
@@ -54,7 +54,7 @@ protected:
 	virtual void onDragCanceled(UIDragDeltaEventArgs* e) { if (!e->handled) { raiseEvent(DragCanceledEventId, this, e); } }
 
 private:
-	PointF	m_lastScreenPosition;
+	Point	m_lastScreenPosition;
 	bool	m_isDragging;
 
 	UIEvent<UIDragDeltaEventArgs>        DragStarted;
@@ -69,7 +69,7 @@ private:
 class UITrack
 	: public UIElement
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	// TODO: 別途、UIScrollBarStyle 見たいなクラスに分けたほうがいいかも
@@ -78,7 +78,7 @@ public:
 	static const String VerticalState;
 
 
-	static RefPtr<UITrack> create();
+	static Ref<UITrack> create();
 public:
 
 	/** Track の方向を指定します。*/
@@ -150,9 +150,9 @@ private:
 	float				m_maximum;
 	float				m_density;
 	float				m_viewportSize;
-	RefPtr<UIButton>	m_decreaseButton;
-	RefPtr<UIThumb>		m_thumb;
-	RefPtr<UIButton>	m_increaseButton;
+	Ref<UIButton>	m_decreaseButton;
+	Ref<UIThumb>		m_thumb;
+	Ref<UIButton>	m_increaseButton;
 
 };
 
@@ -173,7 +173,7 @@ enum class ScrollEventType
 class UIScrollEventArgs
 	: public UIEventArgs
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	static UIScrollEventArgsPtr create(Object* sender, float newValue, ScrollEventType type, bool caching = true);
 
@@ -192,7 +192,7 @@ public:
 class UIScrollBar
 	: public UIControl
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	LN_ROUTED_EVENT2(UIScrollEventArgs, ScrollEvent);
 
@@ -204,7 +204,7 @@ public:
 
 
 
-	static RefPtr<UIScrollBar> create();
+	static Ref<UIScrollBar> create();
 	// TODO:↓後で RangeBase に移すかも
 
 
@@ -253,9 +253,9 @@ protected:
 private:
 	void updateValue(float horizontalDragDelta, float verticalDragDelta);
 
-	RefPtr<UITrack>		m_track;
-	RefPtr<UIButton>	m_lineUpButton;
-	RefPtr<UIButton>	m_lineDownButton;
+	Ref<UITrack>		m_track;
+	Ref<UIButton>	m_lineUpButton;
+	Ref<UIButton>	m_lineDownButton;
 	float				m_dragStartValue;
 };
 
@@ -265,10 +265,10 @@ private:
 class UIScrollViewer
 	: public UIControl
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
-	static RefPtr<UIScrollViewer> create();
+	static Ref<UIScrollViewer> create();
 
 LN_CONSTRUCT_ACCESS:
 	UIScrollViewer();
@@ -285,8 +285,8 @@ protected:
 	virtual void onLayoutPanelChanged(UILayoutPanel* newPanel) override;
 
 private:
-	RefPtr<UIScrollBar>			m_horizontalScrollBar;
-	RefPtr<UIScrollBar>			m_verticalScrollBar;
+	Ref<UIScrollBar>			m_horizontalScrollBar;
+	Ref<UIScrollBar>			m_verticalScrollBar;
 	IScrollInfo*				m_scrollTarget;
 };
 

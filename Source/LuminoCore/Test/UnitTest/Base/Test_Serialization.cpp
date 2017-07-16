@@ -57,9 +57,9 @@ public:
 struct TkMVMapData3 : public ln::Object
 {
 	bool							autoplayBgm;
-	RefPtr<TkMVSoundData3>			bgm;
+	Ref<TkMVSoundData3>			bgm;
 	ln::String						displayName;
-	List<RefPtr<TkMVEventData3>>	events;
+	List<Ref<TkMVEventData3>>	events;
 
 	void serialize(ln::tr::Archive& ar, int version)
 	{
@@ -85,7 +85,7 @@ struct TkMVEventCommand3 : public ln::Object
 struct TkMVMovementData3 : public ln::Object
 {
 	bool	ignore;
-	List<RefPtr<TkMVEventCommand3>>	commands;
+	List<Ref<TkMVEventCommand3>>	commands;
 
 	virtual void serialize(ln::tr::Archive& ar, int version)
 	{
@@ -351,7 +351,7 @@ TEST_F(Test_Serialization, List)
 		tr::JsonDocument2 doc;
 		tr::Archive ar(&doc, tr::ArchiveMode::save, false);
 
-		List <RefPtr<TestObject3>> m_list1 = { NewObject<TestObject3>(), NewObject<TestObject3>(), NewObject<TestObject3>() };
+		List <Ref<TestObject3>> m_list1 = { NewObject<TestObject3>(), NewObject<TestObject3>(), NewObject<TestObject3>() };
 		m_list1[0]->m_value = 1;
 		m_list1[1]->m_value = 2;
 		m_list1[2]->m_value = 3;
@@ -395,7 +395,7 @@ TEST_F(Test_Serialization, List)
 		doc.Load(LN_LOCALFILE("TestData/Test_Serialization_List2.json"));
 		tr::Archive ar(&doc, tr::ArchiveMode::Load, false);
 
-		List <RefPtr<TestObject3>> m_list1;
+		List <Ref<TestObject3>> m_list1;
 		ar & tr::makeNVP(_T("list1"), m_list1);
 
 		ASSERT_EQ(3, m_list1.GetCount());
@@ -406,7 +406,7 @@ TEST_F(Test_Serialization, List)
 }
 
 //------------------------------------------------------------------------------
-//using Test_Factory = RefPtr<Object>(*)();
+//using Test_Factory = Ref<Object>(*)();
 //
 //
 ////template<typename T, typename isAbstract>
@@ -430,7 +430,7 @@ TEST_F(Test_Serialization, List)
 //{
 //	static Test_Factory getFactory()
 //	{
-//		return []() { return RefPtr<Object>::StaticCast(newObject<TObject>()); };
+//		return []() { return Ref<Object>::StaticCast(newObject<TObject>()); };
 //	}
 //};
 //template<class TObject> struct Test_GetFactory<TObject, std::true_type>
@@ -500,7 +500,7 @@ TEST_F(Test_Serialization, Reflection)
 			tr::JsonDocument2 doc;
 			tr::Archive ar(&doc, tr::ArchiveMode::save, true);
 
-			List <RefPtr<TestObject3>> m_list1 = { NewObject<TestObject3>(), NewObject<TestObject3>(), NewObject<TestObject3>() };
+			List <Ref<TestObject3>> m_list1 = { NewObject<TestObject3>(), NewObject<TestObject3>(), NewObject<TestObject3>() };
 			m_list1[0]->m_value = 1;
 			m_list1[1]->m_value = 2;
 			m_list1[2]->m_value = 3;
@@ -513,7 +513,7 @@ TEST_F(Test_Serialization, Reflection)
 			doc.Parse(json);
 			tr::Archive ar(&doc, tr::ArchiveMode::Load, true);
 
-			List <RefPtr<TestObject3>> m_list1;
+			List <Ref<TestObject3>> m_list1;
 			ar & tr::makeNVP(_T("list1"), m_list1);
 
 			ASSERT_EQ(3, m_list1.GetCount());
@@ -536,7 +536,7 @@ TEST_F(Test_Serialization, Reflection)
 			obj1->m_value = 1; obj1->m_value2 = 4;
 			obj2->m_value = 2; obj2->m_value2 = 5;
 			obj3->m_value = 3; obj3->m_value2 = 6;
-			List <RefPtr<TestObject3>> m_list1 = { obj1.get(), obj2.get(), obj3.get() };
+			List <Ref<TestObject3>> m_list1 = { obj1.get(), obj2.get(), obj3.get() };
 			ar & tr::makeNVP(_T("list1"), m_list1);
 
 			json = doc.ToString(tr::JsonFormatting::Indented);
@@ -546,7 +546,7 @@ TEST_F(Test_Serialization, Reflection)
 			doc.Parse(json);
 			tr::Archive ar(&doc, tr::ArchiveMode::Load, true);
 
-			List <RefPtr<TestObject3>> m_list1;
+			List <Ref<TestObject3>> m_list1;
 			ar & tr::makeNVP(_T("list1"), m_list1);
 
 			auto* obj1 = dynamic_cast<TestObject4*>(m_list1[0].get());

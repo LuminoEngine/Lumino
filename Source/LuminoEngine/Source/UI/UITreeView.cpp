@@ -120,7 +120,7 @@ void UITreeView::initialize()
 	UIControl::initialize();
 	setHContentAlignment(HAlignment::Stretch);
 
-	auto panel = RefPtr<UIStackPanel>::makeRef();
+	auto panel = Ref<UIStackPanel>::makeRef();
 	panel->initialize();
 	panel->setHAlignment(HAlignment::Stretch);
 	panel->setVAlignment(VAlignment::Stretch);
@@ -131,7 +131,7 @@ void UITreeView::initialize()
 ////------------------------------------------------------------------------------
 //UITreeViewItemPtr UITreeView::addTextItem(const String& text)
 //{
-//	auto textBlock = RefPtr<UITextBlock>::MakeRef();
+//	auto textBlock = Ref<UITextBlock>::MakeRef();
 //	textBlock->initialize(getManager());
 //	textBlock->SetText(text);
 //	return AddItem(textBlock);
@@ -142,7 +142,7 @@ void UITreeView::initialize()
 //{
 //
 //	// 受け取った item を UITreeViewItem でラップして、UITreeViewItem をリストに入れる
-//	auto listItem = RefPtr<UITreeViewItem>::MakeRef();
+//	auto listItem = Ref<UITreeViewItem>::MakeRef();
 //	listItem->initialize(getManager());
 //	listItem->setContent(item);
 //	getItems()->Add(listItem);

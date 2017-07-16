@@ -35,7 +35,7 @@ RenderTargetTextureCache::~RenderTargetTextureCache()
 }
 
 //------------------------------------------------------------------------------
-RefPtr<RenderTargetTexture> RenderTargetTextureCache::requestRenderTarget(const SizeI& size, TextureFormat format, int mipLevel)
+Ref<RenderTargetTexture> RenderTargetTextureCache::requestRenderTarget(const SizeI& size, TextureFormat format, int mipLevel)
 {
 	LN_NOTIMPLEMENTED();
 
@@ -64,7 +64,7 @@ RefPtr<RenderTargetTexture> RenderTargetTextureCache::requestRenderTarget(const 
 	// 見つからなかったら新しく作って map に追加する
 	if (renderTarget == nullptr)
 	{
-		auto rt = RefPtr<RenderTargetTexture>::makeRef();
+		auto rt = Ref<RenderTargetTexture>::makeRef();
 		rt->createImpl(m_manager, size, mipLevel, format);
 		renderTarget = rt.detachMove();
 
@@ -74,7 +74,7 @@ RefPtr<RenderTargetTexture> RenderTargetTextureCache::requestRenderTarget(const 
 	// 現在のフレームで使用されたことをマークする
 	renderTarget->m_usedCacheOnFrame = true;
 
-	return RefPtr<RenderTargetTexture>(renderTarget, true);
+	return Ref<RenderTargetTexture>(renderTarget, true);
 }
 
 //------------------------------------------------------------------------------

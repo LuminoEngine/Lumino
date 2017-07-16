@@ -47,13 +47,13 @@ public:
 	struct BoneAnimation
 	{
 		String TargetBoneName;
-		RefPtr<VMDBezierSQTTransformAnimation2>	AnimationCurve;
+		Ref<VMDBezierSQTTransformAnimation2>	AnimationCurve;
 	};
 	
 	struct FaceAnimation
 	{
 		String TargetFaceName;
-		RefPtr<FloatAnimationCurve>	AnimationCurve;
+		Ref<FloatAnimationCurve>	AnimationCurve;
 	};
 
 	typedef List<BoneAnimation>	BoneAnimationList;

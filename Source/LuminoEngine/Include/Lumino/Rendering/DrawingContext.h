@@ -8,7 +8,7 @@ namespace detail {
 
 struct BoxBorderData
 {
-	ThicknessF		borderThickness;
+	Thickness		borderThickness;
 	CornerRadius	cornerRadius;
 	Color			leftBorderColor;
 	Color			topBorderColor;
@@ -47,12 +47,12 @@ public:
 	void drawBoxBackground(const Rect& rect, const CornerRadius& cornerRadius);
 
 	void drawBoxBorder(
-		const Rect& rect, const ThicknessF& thickness, const CornerRadius& cornerRadius,
+		const Rect& rect, const Thickness& thickness, const CornerRadius& cornerRadius,
 		const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor,
 		BorderDirection borderDirection);
 
 	void drawBoxBorder(
-		const Rect& rect, const ThicknessF& thickness,
+		const Rect& rect, const Thickness& thickness,
 		const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor,
 		float ltRad, float rtRad, float lbRad, float rbRad, BorderDirection borderDirection,
 		const Color& shadowColor, float shadowBlur, float shadowWidth, ShadowDirection shadowDirection);

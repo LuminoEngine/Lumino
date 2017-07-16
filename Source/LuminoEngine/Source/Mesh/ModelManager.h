@@ -41,11 +41,11 @@ public:
 	GraphicsManager* getGraphicsManager() { return m_graphicsManager; }
 	Texture2D* getMMDDefaultToonTexture(int index);
 
-	RefPtr<Texture> createTexture(const PathName& parentDir, const StringRef& filePath, ModelCreationFlag flags);
+	Ref<Texture> createTexture(const PathName& parentDir, const StringRef& filePath, ModelCreationFlag flags);
 	
 
-	RefPtr<StaticMeshModel> createStaticMeshModel(const PathName& filePath);
-	RefPtr<SkinnedMeshModel> createSkinnedMeshModel(const PathName& filePath);
+	Ref<StaticMeshModel> createStaticMeshModel(const PathName& filePath);
+	Ref<SkinnedMeshModel> createSkinnedMeshModel(const PathName& filePath);
 
 	Material* getDefaultMaterial() const;
 	MeshResource* getUnitBoxMeshResource(bool reverseFaces) const;
@@ -53,21 +53,21 @@ public:
 	MeshResource* getUnitTeapotMeshResource() const;
 
 private:
-	RefPtr<PmxSkinnedMeshResource> createSkinnedMeshResource(const PathName& filePath);
+	Ref<PmxSkinnedMeshResource> createSkinnedMeshResource(const PathName& filePath);
 	//Animation::AnimationClip* CreateMotion(const PathName& filePath);
 
 	FileManager*			m_fileManager;
 	PhysicsManager*		m_physicsManager;
 	GraphicsManager*	m_graphicsManager;
-	//RefPtr<CacheManager>				m_cacheManager;
-	std::array<RefPtr<Texture2D>, 10>	m_mmdDefaultToonTexture;
+	//Ref<CacheManager>				m_cacheManager;
+	std::array<Ref<Texture2D>, 10>	m_mmdDefaultToonTexture;
 
-	RefPtr<Material>		m_defaultMaterial;
-	RefPtr<MeshResource>	m_unitBoxMeshResource;
-	RefPtr<MeshResource>	m_unitBoxMeshResourceReverseFaces;
-	RefPtr<MeshResource>	m_unitSphereMeshResource;
-	RefPtr<MeshResource>	m_unitSphereMeshResourceReverseFaces;
-	RefPtr<MeshResource>	m_unitTeapotMeshResource;
+	Ref<Material>		m_defaultMaterial;
+	Ref<MeshResource>	m_unitBoxMeshResource;
+	Ref<MeshResource>	m_unitBoxMeshResourceReverseFaces;
+	Ref<MeshResource>	m_unitSphereMeshResource;
+	Ref<MeshResource>	m_unitSphereMeshResourceReverseFaces;
+	Ref<MeshResource>	m_unitTeapotMeshResource;
 };
 
 } // namespace detail

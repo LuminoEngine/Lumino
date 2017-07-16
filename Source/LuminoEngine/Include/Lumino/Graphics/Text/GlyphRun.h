@@ -41,10 +41,10 @@ public:
 	const SizeI& getRenderSize();
 
 	/** 行頭からの指定した距離に対応する文字ヒットを取得します。*/
-	bool getCharacterHitFromDistance(const PointF& pos, GlyphHit* outResult);
+	bool getCharacterHitFromDistance(const Point& pos, GlyphHit* outResult);
 	
 	/** 行頭から指定した文字までの距離を取得します。*/
-	bool getDistanceFromCharacterHit(int index, PointF* outPos);
+	bool getDistanceFromCharacterHit(int index, Point* outPos);
 
 LN_INTERNAL_ACCESS:
 	GlyphRun();

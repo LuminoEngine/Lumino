@@ -4,7 +4,7 @@
 
 LN_NAMESPACE_BEGIN
 class UIButton;
-using UIButtonPtr = RefPtr<UIButton>;
+using UIButtonPtr = Ref<UIButton>;
 class UITextBlock;
 
 enum class UICheckState
@@ -20,7 +20,7 @@ enum class UICheckState
 class UIButtonBase
 	: public UIControl
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	void setText(const StringRef& text);
 
@@ -45,7 +45,7 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 private:
-	RefPtr<UITextBlock>	m_textContent;
+	Ref<UITextBlock>	m_textContent;
 	ClickMode			m_clickMode;
 	bool				m_isPressed;
 	UIEventHandler::EventType	m_onClick;
@@ -58,10 +58,10 @@ private:
 class UIButton
 	: public UIButtonBase
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
-	static RefPtr<UIButton> create();
-	static RefPtr<UIButton> create(const StringRef& text, float width, float height);
+	static Ref<UIButton> create();
+	static Ref<UIButton> create(const StringRef& text, float width, float height);
 
 LN_CONSTRUCT_ACCESS:
 	UIButton();
@@ -77,12 +77,12 @@ LN_CONSTRUCT_ACCESS:
 class UIToggleButton
 	: public UIButtonBase
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	static const String CheckedState;
 	static const String UncheckedState;
 
-	static RefPtr<UIToggleButton> create();
+	static Ref<UIToggleButton> create();
 
 	void setChecked(bool checked);
 	bool isChecked() const;

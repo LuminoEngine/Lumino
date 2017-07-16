@@ -153,7 +153,7 @@ EngineManager* EngineManager::getInstance(EngineManager* priority)
 //------------------------------------------------------------------------------
 EngineManager* EngineManager::create(const detail::EngineSettings& configData)
 {
-	RefPtr<EngineManager> app(LN_NEW EngineManager(configData), false);
+	Ref<EngineManager> app(LN_NEW EngineManager(configData), false);
 	app.safeAddRef();
 	return app;
 }
@@ -435,7 +435,7 @@ void EngineManager::initializePhysicsManager()
 	if (m_physicsManager.isNull())
 	{
 		initializeCommon();
-		m_physicsManager = RefPtr<detail::PhysicsManager>::makeRef();
+		m_physicsManager = Ref<detail::PhysicsManager>::makeRef();
 		m_physicsManager->initialize();
 	}
 }

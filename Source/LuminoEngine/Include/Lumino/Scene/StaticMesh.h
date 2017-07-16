@@ -12,16 +12,16 @@ LN_CLASS()
 class StaticMeshComponent
 	: public VisualComponent
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
-	static RefPtr<StaticMeshComponent> create(StaticMeshModel* staticMeshModel);
+	static Ref<StaticMeshComponent> create(StaticMeshModel* staticMeshModel);
 
-	static RefPtr<StaticMeshComponent> create(const StringRef& filePath);
+	static Ref<StaticMeshComponent> create(const StringRef& filePath);
 
-	static RefPtr<StaticMeshComponent> createPlane(const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags = MeshCreationFlags::None);
+	static Ref<StaticMeshComponent> createPlane(const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags = MeshCreationFlags::None);
 
-	static RefPtr<StaticMeshComponent> createScreenPlane();
+	static Ref<StaticMeshComponent> createScreenPlane();
 
 	/**
 		@brief		サイズが 1.0 であるボックスのメッシュを作成します。
@@ -29,13 +29,13 @@ public:
 					頂点バッファやインデックスバッファを操作すると、このメソッドで作成したほかのメッシュの形状にも影響します。
 					通常はこれらのリソースを変更するべきではありません。
 	*/
-	static RefPtr<StaticMeshComponent> createBox();
+	static Ref<StaticMeshComponent> createBox();
 
 	/** 各軸に沿ったサイズを指定してボックスのメッシュを作成します。*/
-	static RefPtr<StaticMeshComponent> createBox(const Vector3& size);
+	static Ref<StaticMeshComponent> createBox(const Vector3& size);
 
 	/** 各軸に沿ったサイズを指定してボックスのメッシュを作成します。*/
-	static RefPtr<StaticMeshComponent> createBox(float width, float height, float depth);
+	static Ref<StaticMeshComponent> createBox(float width, float height, float depth);
 	
 	/**
 		@brief		半径が 0.5 である球のメッシュを作成します。
@@ -43,10 +43,10 @@ public:
 					頂点バッファやインデックスバッファを操作すると、このメソッドで作成したほかのメッシュの形状にも影響します。
 					通常はこれらのリソースを変更するべきではありません。
 	*/
-	static RefPtr<StaticMeshComponent> createSphere();
+	static Ref<StaticMeshComponent> createSphere();
 
 	/** 半径と分割数を指定して球のメッシュを作成します。*/
-	static RefPtr<StaticMeshComponent> createSphere(float radius, int tessellation = 16);
+	static Ref<StaticMeshComponent> createSphere(float radius, int tessellation = 16);
 
 	/**
 		@brief		サイズが 1.0 であるティーポットのメッシュを作成します。
@@ -54,10 +54,10 @@ public:
 					頂点バッファやインデックスバッファを操作すると、このメソッドで作成したほかのメッシュの形状にも影響します。
 					通常はこれらのリソースを変更するべきではありません。
 	*/
-	static RefPtr<StaticMeshComponent> createTeapot();
+	static Ref<StaticMeshComponent> createTeapot();
 
 	/** サイズとなめらかさを指定してメッシュを作成します。*/
-	static RefPtr<StaticMeshComponent> createTeapot(float size, int tessellation = 8);
+	static Ref<StaticMeshComponent> createTeapot(float size, int tessellation = 8);
 
 public:
 
@@ -70,7 +70,7 @@ LN_INTERNAL_ACCESS:
 	virtual void onRender2(RenderingContext* renderer) override;
 
 private:
-	RefPtr<StaticMeshModel>	m_mesh;
+	Ref<StaticMeshModel>	m_mesh;
 };
 
 
@@ -82,10 +82,10 @@ LN_CLASS()
 class Rectangle
 	: public VisualComponent		// TODO: Shape とか？
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
-	static RefPtr<Rectangle> create(const Rect& rect);
+	static Ref<Rectangle> create(const Rect& rect);
 
 
 LN_CONSTRUCT_ACCESS:

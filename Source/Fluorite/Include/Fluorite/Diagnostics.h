@@ -128,7 +128,7 @@ public:
 	DiagnosticsItemSet* CreateItemSet(const PathNameA& absFilePath);
 
 private:
-	List<RefPtr<DiagnosticsItemSet>>	m_itemSetList;
+	List<Ref<DiagnosticsItemSet>>	m_itemSetList;
 };
 
 } // namespace fl

@@ -7,10 +7,10 @@ class InputBinding;
 class KeyboardBinding;
 class MouseBinding;
 class GamepadBinding;
-using InputBindingPtr = RefPtr<InputBinding>;
-using KeyboardBindingPtr = RefPtr<KeyboardBinding>;
-using MouseBindingPtr = RefPtr<MouseBinding>;
-using GamepadBindingPtr = RefPtr<GamepadBinding>;
+using InputBindingPtr = Ref<InputBinding>;
+using KeyboardBindingPtr = Ref<KeyboardBinding>;
+using MouseBindingPtr = Ref<MouseBinding>;
+using GamepadBindingPtr = Ref<GamepadBinding>;
 
 /** マウスによって実行されるアクション */
 enum class MouseAction
@@ -87,7 +87,7 @@ enum class GamepadElement
 class InputBinding
 	: public Object
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	float GetMinValidMThreshold() const { return m_minValidMThreshold; }
 	float getScale() const { return 1.0f; }	// TODO
@@ -107,7 +107,7 @@ private:
 class KeyboardBinding
 	: public InputBinding
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	/**
@@ -141,7 +141,7 @@ private:
 class MouseBinding
 	: public InputBinding
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	/**
@@ -175,7 +175,7 @@ private:
 class GamepadBinding
 	: public InputBinding
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	/**

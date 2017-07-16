@@ -20,8 +20,6 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
-#pragma push_macro("GetEnvironmentVariable")
-#undef GetEnvironmentVariable
 String Environment::getEnvironmentVariable(const String& variableName)
 {
 	return LN_AFX_FUNCNAME(getEnvironmentVariable)(variableName);
@@ -33,7 +31,6 @@ String Environment::LN_AFX_FUNCNAME(getEnvironmentVariable)(const String& variab
 	LN_THROW(r, KeyNotFoundException);
 	return val;
 }
-#pragma pop_macro("GetEnvironmentVariable")
 
 //------------------------------------------------------------------------------
 bool Environment::tryGetEnvironmentVariable(const String& variableName, String* outValue)

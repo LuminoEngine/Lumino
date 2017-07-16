@@ -180,7 +180,7 @@ private:
 	jo_gif_t						m_joGif;
 	SizeI							m_imageSize;
 	ByteBuffer						m_framePixels;
-	RefPtr<BinaryWriter>			m_writer;
+	Ref<BinaryWriter>			m_writer;
 	int								m_frameCount;
 	jo_gif_frame_t					m_gifFrame;			// 1フレームの作業領域。前のフレームを保存するなら配列化する
 	tr::TaskPtr						m_task;
@@ -391,14 +391,14 @@ void FrameCapturer::record()
 	if (LN_CHECK_STATE(m_capturerTarget != nullptr)) return;
 
 
-	RefPtr<FrameCapturer> fc = this;
+	Ref<FrameCapturer> fc = this;
 	Driver::ITexture* target = m_capturerTarget->resolveDeviceObject();
 	State newState = m_requestedState;
 
 	LN_ENQUEUE_RENDER_COMMAND_3(
 		FrameCapturer_Record, m_manager,
-		RefPtr<FrameCapturer>, fc,
-		RefPtr<Driver::ITexture>, target,
+		Ref<FrameCapturer>, fc,
+		Ref<Driver::ITexture>, target,
 		State, newState,
 		{
 			fc->RecordCommand(target, newState);

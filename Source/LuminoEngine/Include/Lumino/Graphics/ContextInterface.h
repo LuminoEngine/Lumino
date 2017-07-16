@@ -72,7 +72,7 @@ struct BasicContextState
 {
 	RenderState				renderState;
 	DepthStencilState		depthStencilState;
-	RefPtr<DepthBuffer>			depthBuffer;
+	Ref<DepthBuffer>			depthBuffer;
 	//RectI					viewport;
 
 	void setRenderTarget(int index, Texture* texture);
@@ -84,8 +84,8 @@ struct BasicContextState
 	void copy(const BasicContextState& s);
 
 private:
-	std::array<RefPtr<Texture>, Graphics::MaxMultiRenderTargets>	m_renderTargets;
-	RefPtr<Shader>			m_ownerShader;
+	std::array<Ref<Texture>, Graphics::MaxMultiRenderTargets>	m_renderTargets;
+	Ref<Shader>			m_ownerShader;
 	ShaderPass*				m_shaderPass = nullptr;
 };
 
@@ -169,18 +169,18 @@ public:
 	{
 		MutexScopedLock lock(m_mutex);
 		m_freeObjects.clear();
-		for (RefPtr<T>& ptr : m_objects)
+		for (Ref<T>& ptr : m_objects)
 		{
 			m_freeObjects.push(ptr);
 		}
 	}
 
 protected:
-	virtual RefPtr<T> createObject() = 0;
+	virtual Ref<T> createObject() = 0;
 
 private:
 	Mutex			m_mutex;
-	List<RefPtr<T>>	m_objects;
+	List<Ref<T>>	m_objects;
 	Stack<T*>		m_freeObjects;
 };
 

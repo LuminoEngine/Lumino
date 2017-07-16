@@ -5,8 +5,8 @@ LN_NAMESPACE_BEGIN
 
 class VisualEffect;
 class VisualEffectInstance;
-typedef RefPtr<VisualEffect>	VisualEffectPtr;
-typedef RefPtr<VisualEffectInstance>	VisualEffectInstancePtr;
+typedef Ref<VisualEffect>	VisualEffectPtr;
+typedef Ref<VisualEffectInstance>	VisualEffectInstancePtr;
 
 namespace detail
 {

@@ -43,9 +43,9 @@ void AssetsManager::initialize(EngineManager* manager)
 
 	addAssetsDirectory(PathName::getCurrentDirectory());
 
-	m_textureCache = RefPtr<CacheManager>::makeRef(32, 0);
-	//m_shaderCache = RefPtr<CacheManager>::makeRef(32, 0);
-	m_fontCache = RefPtr<CacheManager>::makeRef(32, 0);
+	m_textureCache = Ref<CacheManager>::makeRef(32, 0);
+	//m_shaderCache = Ref<CacheManager>::makeRef(32, 0);
+	m_fontCache = Ref<CacheManager>::makeRef(32, 0);
 
 	if (g_managerInstance == nullptr)
 	{
@@ -88,7 +88,7 @@ Texture2DPtr AssetsManager::loadTexture(const StringRef& filePath)
 }
 
 //------------------------------------------------------------------------------
-RefPtr<Shader> AssetsManager::loadShader(const StringRef& filePath)
+Ref<Shader> AssetsManager::loadShader(const StringRef& filePath)
 {
 	// TODO: 暫定処置
 	makeSearchPath(filePath);
@@ -98,7 +98,7 @@ RefPtr<Shader> AssetsManager::loadShader(const StringRef& filePath)
 }
 
 //------------------------------------------------------------------------------
-RefPtr<StaticMeshModel> AssetsManager::loadMeshModel(const StringRef& filePath)
+Ref<StaticMeshModel> AssetsManager::loadMeshModel(const StringRef& filePath)
 {
 	// TODO: 暫定処置
 	makeSearchPath(filePath);
@@ -117,7 +117,7 @@ String AssetsManager::loadText(const StringRef& filePath)
 }
 
 //------------------------------------------------------------------------------
-RefPtr<Stream> AssetsManager::openFile(const StringRef& filePath)
+Ref<Stream> AssetsManager::openFile(const StringRef& filePath)
 {
 	makeSearchPath(filePath);
 	auto* path = findLocalFilePath();
@@ -171,7 +171,7 @@ const PathName* AssetsManager::findLocalFilePath()
 //	PathName absPath = filePath;
 //	absPath.CanonicalizePath();
 //
-//	RefPtr<Stream> stream;
+//	Ref<Stream> stream;
 //	for (IArchive* archive : m_archiveList)
 //	{
 //		if (archive->tryCreateStream(absPath, &stream, isDeferring)) {
@@ -198,7 +198,7 @@ const PathName* AssetsManager::findLocalFilePath()
 //	}
 //	else
 //	{
-//		auto ftFont = RefPtr<FreeTypeFont>::MakeRef(m_engineManager->getGraphicsManager()->getFontManager());
+//		auto ftFont = Ref<FreeTypeFont>::MakeRef(m_engineManager->getGraphicsManager()->getFontManager());
 //		ref = ftFont;
 //	}
 //
@@ -229,13 +229,13 @@ Texture2DPtr Assets::loadTexture(const StringRef& filePath)
 }
 
 //------------------------------------------------------------------------------
-RefPtr<Shader> Assets::loadShader(const StringRef& filePath)
+Ref<Shader> Assets::loadShader(const StringRef& filePath)
 {
 	return AssetsManager::getInstance()->loadShader(filePath);
 }
 
 //------------------------------------------------------------------------------
-RefPtr<StaticMeshModel> Assets::loadMeshModel(const StringRef& filePath)
+Ref<StaticMeshModel> Assets::loadMeshModel(const StringRef& filePath)
 {
 	return AssetsManager::getInstance()->loadMeshModel(filePath);
 }

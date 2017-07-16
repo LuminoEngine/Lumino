@@ -51,7 +51,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(GameApplication, Object);
 //------------------------------------------------------------------------------
 GameApplication::GameApplication()
 {
-	m_gameSceneManager = RefPtr<detail::GameSceneManager>::makeRef();
+	m_gameSceneManager = Ref<detail::GameSceneManager>::makeRef();
 }
 
 //------------------------------------------------------------------------------
@@ -79,7 +79,7 @@ void GameApplication::run(GameScene* initialScene)
 	//Engine::initialize();
 
 	if (initialScene == nullptr)
-		m_gameSceneManager->gotoScene(RefPtr<GameScene>::makeRef());
+		m_gameSceneManager->gotoScene(Ref<GameScene>::makeRef());
 	else
 		m_gameSceneManager->gotoScene(initialScene);
 

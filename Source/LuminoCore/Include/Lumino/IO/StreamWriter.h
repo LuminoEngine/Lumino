@@ -46,7 +46,7 @@ private:
 	virtual void writeOverride(const void* data, size_t byteCount);
 
 private:
-	RefPtr<Stream>	m_stream;
+	Ref<Stream>	m_stream;
 };
 
 LN_NAMESPACE_END

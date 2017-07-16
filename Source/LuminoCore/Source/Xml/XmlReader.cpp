@@ -1152,7 +1152,7 @@ XmlFileReader::XmlFileReader(const PathName& filePath, Encoding* encoding)
 	: XmlReader()
 {
 	m_filePath = filePath.canonicalizePath();
-	RefPtr<StreamReader> file(LN_NEW StreamReader(m_filePath, encoding), false);
+	Ref<StreamReader> file(LN_NEW StreamReader(m_filePath, encoding), false);
 	initializeReader(file);
 	m_errorInfo.filePath = filePath;
 }

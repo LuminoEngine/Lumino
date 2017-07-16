@@ -6,7 +6,7 @@
 
 LN_NAMESPACE_BEGIN
 class TileMapModel;
-using TileMapModelPtr = RefPtr<TileMapModel>;
+using TileMapModelPtr = Ref<TileMapModel>;
 
 /**
 	@brief	
@@ -14,7 +14,7 @@ using TileMapModelPtr = RefPtr<TileMapModel>;
 class TileMapModel
 	: public tr::ReflectionObject
 {
-	LN_OBJECT();
+	LN_OBJECT;
 
 public:
 	static TileMapModelPtr create();

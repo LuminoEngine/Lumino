@@ -70,8 +70,8 @@ class DepthStencilState;
 class SamplerState;
 class ShaderValue;
 
-class Color32;
-class Color;
+struct Color32;
+struct Color;
 
 class GraphicsResourceObject;
 class VertexDeclaration;
@@ -79,9 +79,9 @@ class VertexBuffer;
 class IndexBuffer;
 class Texture;
 class Texture2D;
-typedef RefPtr<Texture2D>		Texture2DPtr;
+typedef Ref<Texture2D>		Texture2DPtr;
 class RenderTargetTexture;
-typedef RefPtr<RenderTargetTexture>	RenderTargetTexturePtr;
+typedef Ref<RenderTargetTexture>	RenderTargetTexturePtr;
 class DepthBuffer;
 class Shader;
 class ShaderVariable;
@@ -93,12 +93,12 @@ class GlyphRun;
 class Helper;
 
 class Brush;
-typedef RefPtr<Brush>				BrushPtr;
+typedef Ref<Brush>				BrushPtr;
 
 class ScreenMotionBlurImageEffect;
-typedef RefPtr<ScreenMotionBlurImageEffect>	ScreenMotionBlurImageEffectPtr;
+typedef Ref<ScreenMotionBlurImageEffect>	ScreenMotionBlurImageEffectPtr;
 class ToneImageEffect;
-typedef RefPtr<ToneImageEffect>	ToneImageEffectPtr;
+typedef Ref<ToneImageEffect>	ToneImageEffectPtr;
 
 class ImageEffect;
 typedef tr::ReflectionObjectList<ImageEffect*>	ImageEffectList;
@@ -500,8 +500,6 @@ private:
 	ByteBuffer				m_dataBuffer;
 	size_t					m_dataBufferUsed;
 };
-
-
 
 } // namespace detail
 LN_NAMESPACE_GRAPHICS_END

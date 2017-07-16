@@ -11,7 +11,7 @@ class AnimationCurveInstanceBase
 	: public RefObject
 {
 public:
-	RefPtr<AnimationCurve>	owner;
+	Ref<AnimationCurve>	owner;
 	//Object*			targetObject;		// TODO: アニメ実行中に Target がデストラクトされた時の対応
 	//const tr::PropertyInfo*	targetProperty;
 	//Variant		StartValue;
@@ -112,9 +112,9 @@ public:
 	virtual double getLastFrameTime() const { return 0; }
 
 public:
-	static RefPtr<ValueEasingCurve<TValue>> create(TValue targetValue, double duration, EasingMode easingMode)
+	static Ref<ValueEasingCurve<TValue>> create(TValue targetValue, double duration, EasingMode easingMode)
 	{
-		return RefPtr<ValueEasingCurve<TValue>>::makeRef(targetValue, duration, easingMode);
+		return Ref<ValueEasingCurve<TValue>>::makeRef(targetValue, duration, easingMode);
 	}
 
 	ValueEasingCurve(TValue targetValue, double duration, EasingMode easingMode)

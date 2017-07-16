@@ -13,7 +13,7 @@ class SkinnedMeshComponent
 	: public VisualComponent
 {
 public:
-	static RefPtr<SkinnedMeshComponent> create(const StringRef& filePath);
+	static Ref<SkinnedMeshComponent> create(const StringRef& filePath);
 
 public:
 	SkinnedMeshModel* getSkinnedMeshModel() const;
@@ -29,7 +29,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual detail::SceneNodeDefaultShaderClass getShaderClass() override { return detail::SceneNodeDefaultShaderClass_SkinnedMesh; }
 
 private:
-	RefPtr<SkinnedMeshModel>	m_meshModel;
+	Ref<SkinnedMeshModel>	m_meshModel;
 };
 
 LN_NAMESPACE_END
@@ -46,7 +46,7 @@ LN_NAMESPACE_END
 //	: public VisualComponent
 //{
 //public:
-//	static RefPtr<MeshModelObject> create(const StringRef& filePath);
+//	static Ref<MeshModelObject> create(const StringRef& filePath);
 //
 //public:
 //
@@ -66,7 +66,7 @@ LN_NAMESPACE_END
 //	virtual void drawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
 //
 //private:
-//	RefPtr<Model>	m_model;
+//	Ref<Model>	m_model;
 //};
 
 //LN_NAMESPACE_END

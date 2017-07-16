@@ -8,10 +8,10 @@
 #include "Vector4.h"
 
 LN_NAMESPACE_BEGIN
-class Vector3;
-class Quaternion;
-class AttitudeTransform;
-class Plane;
+struct Vector3;
+struct Quaternion;
+struct AttitudeTransform;
+struct Plane;
 
 /**
 	@brief      4x4 の行列を定義します。
@@ -33,7 +33,7 @@ class Plane;
 
 				なお、後者は行列の生成と乗算をまとめて行うように最適化されており、高速に動作します。
 */
-class LUMINO_EXPORT Matrix
+struct LUMINO_EXPORT Matrix
 {
 public:
 

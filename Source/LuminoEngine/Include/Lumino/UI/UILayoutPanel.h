@@ -7,9 +7,9 @@ LN_NAMESPACE_BEGIN
 class UIStackPanel;
 class UIAbsoluteLayout;
 class UIGridLayout;
-using UIStackPanelPtr = RefPtr<UIStackPanel>;
-using UIAbsoluteLayoutPtr = RefPtr<UIAbsoluteLayout>;
-using UIGridLayoutPtr = RefPtr<UIGridLayout>;
+using UIStackPanelPtr = Ref<UIStackPanel>;
+using UIAbsoluteLayoutPtr = Ref<UIAbsoluteLayout>;
+using UIGridLayoutPtr = Ref<UIGridLayout>;
 
 
 /**
@@ -112,7 +112,7 @@ class UILayoutPanel
 	, public detail::ILayoutPanel
 	, public IScrollInfo
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	void addChild(UIElement* element);
 	void removeChild(UIElement* element);
@@ -151,7 +151,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual float getVerticalOffset() const;
 
 private:
-	RefPtr<UIElementCollection>	m_children;
+	Ref<UIElementCollection>	m_children;
 	Vector2						m_scrollOffset;
 };
 
@@ -161,7 +161,7 @@ private:
 class UIStackPanel
 	: public UILayoutPanel
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	static UIStackPanelPtr create();
 
@@ -188,7 +188,7 @@ private:
 class UIAbsoluteLayout
 	: public UILayoutPanel
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	static UIAbsoluteLayoutPtr create();
 
@@ -211,7 +211,7 @@ private:
 class UIGridLayout
 	: public UILayoutPanel
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	/**
@@ -250,8 +250,8 @@ private:
 	class DefinitionBase;
 	class ColumnDefinition;
 	class RowDefinition;
-	List<RefPtr<ColumnDefinition>>	m_columnDefinitions;
-	List<RefPtr<RowDefinition>>	m_rowDefinitions;
+	List<Ref<ColumnDefinition>>	m_columnDefinitions;
+	List<Ref<RowDefinition>>	m_rowDefinitions;
 };
 
 LN_NAMESPACE_END

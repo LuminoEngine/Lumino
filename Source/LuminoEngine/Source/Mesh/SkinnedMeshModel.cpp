@@ -216,7 +216,7 @@ void SkinnedMeshModel::initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 	// マテリアルのインスタンス化
 	{
 		int count = sharingMesh->materials.getCount();
-		m_mesh->m_materials = RefPtr<MaterialList>::makeRef();
+		m_mesh->m_materials = Ref<MaterialList>::makeRef();
 		m_mesh->m_materials->resize(count);
 		for (int i = 0; i < count; ++i)
 		{
@@ -272,7 +272,7 @@ void SkinnedMeshModel::initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 		m_skinningLocalQuaternionsTexture = newObject<Texture2D>(SizeI(1, boneCount), TextureFormat::R32G32B32A32_Float, false, ResourceUsage::Static);	// TODO: Dynamic、NoManaged
 
 		// アニメーション管理
-		m_animator = RefPtr<Animator>::makeRef();
+		m_animator = Ref<Animator>::makeRef();
 		m_animator->create(this);
 	}
 
@@ -314,14 +314,14 @@ void SkinnedMeshModel::initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 	m_rigidBodyList.resize(m_meshResource->rigidBodys.getCount());
 	for (int i = 0; i < m_meshResource->rigidBodys.getCount(); ++i)
 	{
-		m_rigidBodyList[i] = RefPtr<detail::MmdSkinnedMeshRigidBody>::makeRef();
+		m_rigidBodyList[i] = Ref<detail::MmdSkinnedMeshRigidBody>::makeRef();
 		m_rigidBodyList[i]->initialize(this, m_meshResource->rigidBodys[i], 1.0f);
 	}
 
 	m_jointList.resize(m_meshResource->joints.getCount());
 	for (int i = 0; i < m_meshResource->joints.getCount(); ++i)
 	{
-		m_jointList[i] = RefPtr<detail::MmdSkinnedMeshJoint>::makeRef();
+		m_jointList[i] = Ref<detail::MmdSkinnedMeshJoint>::makeRef();
 		m_jointList[i]->initialize(this, m_meshResource->joints[i]);
 	}
 }
@@ -673,7 +673,7 @@ void MmdSkinnedMeshRigidBody::initialize(SkinnedMeshModel* ownerModel, PmxRigidB
 		data.KinematicObject = true;
 	}
 
-	m_rigidBody = RefPtr<RigidBody>::makeRef();
+	m_rigidBody = Ref<RigidBody>::makeRef();
 	m_rigidBody->initializeCore(collider, data, scale);
 	ownerModel->m_physicsWorld->addPhysicsObject(m_rigidBody);
 }
@@ -887,7 +887,7 @@ void MmdSkinnedMeshJoint::initialize(SkinnedMeshModel* ownerModel, PmxJointResou
 	Matrix frameInA = jointOffset * transInvA;
 	Matrix frameInB = jointOffset * transInvB;
 
-	m_joint = RefPtr<DofSpringJoint>::makeRef();
+	m_joint = Ref<DofSpringJoint>::makeRef();
 	m_joint->initialize(bodyA->getRigidBody(), bodyB->getRigidBody(), frameInA, frameInB);
 
 	// SpringPositionStiffness.x

@@ -68,7 +68,7 @@ void UIContentControl::setContent(UIElement* element)
 //	// Style の持つ Template に Host となれる Panel が含まれていなかったということ。
 //	if (GetVisualTreeRoot() == nullptr)
 //	{
-//		auto panel = RefPtr<UIPanel>::MakeRef();
+//		auto panel = Ref<UIPanel>::MakeRef();
 //		panel->initialize(getManager());
 //
 //		// ContentAlignment 設定

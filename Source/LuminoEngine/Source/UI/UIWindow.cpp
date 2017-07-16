@@ -12,7 +12,7 @@ LN_NAMESPACE_BEGIN
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIWindow, UIControl)
 
 //------------------------------------------------------------------------------
-RefPtr<UIWindow> UIWindow::create()
+Ref<UIWindow> UIWindow::create()
 {
 	return newObject<UIWindow>();
 }
@@ -44,7 +44,7 @@ void UIWindow::onRoutedEvent(UIEventArgs* e)
 		if (!m_isDragging)
 		{
 			auto mouseEvent = static_cast<UIMouseEventArgs*>(e);
-			PointF pos = mouseEvent->getPosition(getVisualParent());
+			Point pos = mouseEvent->getPosition(getVisualParent());
 
 			m_dragStartWindowPosition = getPosition();
 			m_dragStartLocalPosition = pos;
@@ -60,7 +60,7 @@ void UIWindow::onRoutedEvent(UIEventArgs* e)
 		if (m_isDragging)
 		{
 			auto mouseEvent = static_cast<UIMouseEventArgs*>(e);
-			PointF pos = mouseEvent->getPosition(getVisualParent());
+			Point pos = mouseEvent->getPosition(getVisualParent());
 
 			m_isDragging = false;
 			releaseMouseCapture();
@@ -95,7 +95,7 @@ void UIWindow::onLayoutPanelChanged(UILayoutPanel* newPanel)
 	{
 		newPanel->setStyleSubControlName(_T("UIWindow"), _T("ContentHost"));
 
-		newPanel->setMargin(ThicknessF(0, 30, 0, 0));
+		newPanel->setMargin(Thickness(0, 30, 0, 0));
 	}
 
 	UIControl::onLayoutPanelChanged(newPanel);
@@ -108,7 +108,7 @@ void UIWindow::onRender(DrawingContext* g)
 	//g->setBlendMode(BlendMode::Alpha);
 	////g->setBrush(Brush::White);
 	//////g->drawBoxBorder(
-	//////	RectF(10, 10, 300, 200), ThicknessF(3, 3, 3, 3), Color::Red, Color::Green, Color::Blue, Color::Cyan, 0, 10, 20, 30,
+	//////	RectF(10, 10, 300, 200), Thickness(3, 3, 3, 3), Color::Red, Color::Green, Color::Blue, Color::Cyan, 0, 10, 20, 30,
 	//////	Color::Gray, 5, 5, false);	// TODO:
 
 	////Color c = Color::LightSkyBlue;
@@ -116,11 +116,11 @@ void UIWindow::onRender(DrawingContext* g)
 	////c.a = 0.25;
 	////c2.a = 0.25;
 	//g->drawBoxBorder(
-	//	RectF(10, 10, 200, 50), ThicknessF(1, 2, 4, 8), CornerRadius(0, 0, 0, 0),
+	//	RectF(10, 10, 200, 50), Thickness(1, 2, 4, 8), CornerRadius(0, 0, 0, 0),
 	//	Color::LightSkyBlue, Color::LightSkyBlue, Color::LightSkyBlue, Color::LightSkyBlue,
 	//	BorderDirection::Outside);	// TODO:
 	//g->drawBoxBorder(
-	//	RectF(250, 10, 200, 50), ThicknessF(1, 1, 1, 1), CornerRadius(10, 0, 10, 20),
+	//	RectF(250, 10, 200, 50), Thickness(1, 1, 1, 1), CornerRadius(10, 0, 10, 20),
 	//	Color::LightSkyBlue, Color::LightSkyBlue, Color::LightSkyBlue, Color::LightSkyBlue,
 	//	BorderDirection::Outside);	// TODO:
 
@@ -130,19 +130,19 @@ void UIWindow::onRender(DrawingContext* g)
 	//	ShadowDirection::Outside);	// TODO:
 
 	//g->drawBoxBorder(
-	//	RectF(10, 100, 300, 50), ThicknessF(1, 1, 1, 1),
+	//	RectF(10, 100, 300, 50), Thickness(1, 1, 1, 1),
 	//	Color::LawnGreen, Color::LightSkyBlue, Color::Gray, Color::OrangeRed,
 	//	30, 0, 0, 30, BorderDirection::Inside,
 	//	c2, 5, 5, ShadowDirection::Outside);	// TODO:
 
 	//g->drawBoxBorder(
-	//	RectF(10, 200, 300, 50), ThicknessF(1, 1, 1, 1),
+	//	RectF(10, 200, 300, 50), Thickness(1, 1, 1, 1),
 	//	Color::OrangeRed, Color::OrangeRed, Color::OrangeRed, Color::OrangeRed,
 	//	20, 20, 20, 20, BorderDirection::Inside,
 	//	Color::OrangeRed.withAlpha(0.25), 5, 5, ShadowDirection::Outside);	// TODO:
 
 	//g->drawBoxBorder(
-	//	RectF(10, 70, 300, 50), ThicknessF(8, 2, 8, 8),
+	//	RectF(10, 70, 300, 50), Thickness(8, 2, 8, 8),
 	//	Color::LightSkyBlue, Color::BlueViolet, Color::Orange, Color::GreenYellow,
 	//	30, 0, 0, 30, BorderDirection::Inside,
 	//	c2, 5, 5, ShadowDirection::Outside);	// TODO:

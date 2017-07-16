@@ -2,16 +2,16 @@
 #pragma once
 
 LN_NAMESPACE_BEGIN
-class Vector3;
-class Vector4;
+struct Vector3;
+struct Vector4;
 
 LN_NAMESPACE_GRAPHICS_BEGIN
-class Color;
+struct Color;
 	
 /**
 	@brief	各要素を 0～255 の範囲で表す RGBA カラーを定義します。
 */
-class Color32
+struct Color32
 {
 public:
 	static const Color32 Transparency;			///< 透明	(0, 0, 0, 0)
@@ -202,7 +202,7 @@ public:
 /**
 	@brief	各要素を 0.0～1.0 の範囲で表す RGBA カラーを定義します。
 */
-class Color
+struct Color
 {
 public:
 	float	r;		///< 赤成分 (0.0～1.0)

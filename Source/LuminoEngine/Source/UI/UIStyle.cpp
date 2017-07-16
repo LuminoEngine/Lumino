@@ -26,7 +26,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIRenderElement, Object);
 UIRenderElement::UIRenderElement()
 	: m_width(Math::NaN)
 	, m_height(Math::NaN)
-	, m_margin(ThicknessF::Zero)
+	, m_margin(Thickness::Zero)
 	, m_hAlignment(HAlignment::Stretch)
 	, m_vAlignment(VAlignment::Stretch)
 {
@@ -46,8 +46,8 @@ void UIRenderElement::initialize()
 void UIRenderElement::layoutAndRender(DrawingContext* context, const Size& parentRenderSize)
 {
 	Size areaSize;
-	areaSize.width = parentRenderSize.width - (m_margin.Left + m_margin.Right);
-	areaSize.height = parentRenderSize.height - (m_margin.Top + m_margin.Bottom);
+	areaSize.width = parentRenderSize.width - (m_margin.left + m_margin.right);
+	areaSize.height = parentRenderSize.height - (m_margin.top + m_margin.bottom);
 
 	Size desiredSize;
 	desiredSize.width = Math::isNaN(m_width) ? 0.0f : m_width;
@@ -259,8 +259,8 @@ UIStyle::UIStyle()
 	//, m_subStateStyles()
 	//: m_lastUpdateParent(nullptr)
 	//m_revisionCount(0)
-	//: m_margin(ThicknessF(0, 0, 0, 0))
-	//, m_padding(ThicknessF(0, 0, 0, 0))
+	//: m_margin(Thickness(0, 0, 0, 0))
+	//, m_padding(Thickness(0, 0, 0, 0))
 	//, m_verticalAlignment(VerticalAlignment::Top)
 	//, m_horizontalAlignment(HorizontalAlignment::Left)
 	//, m_background(nullptr)
@@ -275,7 +275,7 @@ UIStyle::UIStyle()
 //------------------------------------------------------------------------------
 void UIStyle::initialize()
 {
-	m_basePropertyTable = RefPtr<UIStylePropertyTable>::makeRef();
+	m_basePropertyTable = Ref<UIStylePropertyTable>::makeRef();
 	m_basePropertyTable->initialize(_T(""));
 }
 
@@ -332,7 +332,7 @@ UIStylePropertyTable* UIStyle::getPropertyTable(const StringRef& visualStateName
 	}
 	else
 	{
-		auto table = RefPtr<UIStylePropertyTable>::makeRef();
+		auto table = Ref<UIStylePropertyTable>::makeRef();
 		table->initialize(visualStateName);
 		m_visualStatePropertyTableList.add(VisualStateStylePair{ visualStateName, table });
 		return table;
@@ -448,7 +448,7 @@ detail::InvalidateFlags UIStyle::mergeActiveStylePropertyTables(detail::UIStyleP
 //{
 //	LN_ASSERT(targetElement != nullptr);
 //
-//	RefPtr<UIStylePropertyTable> table;
+//	Ref<UIStylePropertyTable> table;
 //	if (m_propertyTableMap.TryGetValue(targetElement->GetCurrentVisualStateName(), &table))
 //	{
 //		table->apply(targetElement);
@@ -479,7 +479,7 @@ UIStyleTable::~UIStyleTable()
 ////------------------------------------------------------------------------------
 //void UIStyleTable::AddStyle(const tr::TypeInfo* targetType, const StringRef& subStateName, UIStyle* style)
 //{
-//	RefPtr<UIStyle>* s = m_table.Find(targetType);
+//	Ref<UIStyle>* s = m_table.Find(targetType);
 //	(*s)->AddSubStateStyle(subStateName, style);
 //}
 //------------------------------------------------------------------------------
@@ -488,7 +488,7 @@ UIStyle* UIStyleTable::getStyle(const StringRef& typeName)
 	StyleKey key = typeName.getHashCode()/* + subControlName.GetHashCode()*/;
 	if (key == 0) return nullptr;
 
-	RefPtr<UIStyle>* s = m_table.find(key);
+	Ref<UIStyle>* s = m_table.find(key);
 	if (s == nullptr)
 	{
 		auto s2 = newObject<UIStyle>();
@@ -507,7 +507,7 @@ UIStyle* UIStyleTable::getSubControlStyle(const StringRef& subControlOwnerName, 
 	StyleKey key = subControlOwnerName.getHashCode() + subControlName.getHashCode();
 	if (key == 0) return nullptr;
 
-	RefPtr<UIStyle>* s = m_subControlStyleTable.find(key);
+	Ref<UIStyle>* s = m_subControlStyleTable.find(key);
 	if (s == nullptr)
 	{
 		auto s2 = newObject<UIStyle>();
@@ -532,7 +532,7 @@ UIStyle* UIStyleTable::findStyle(const tr::TypeInfo* targetType/*, const StringR
 	if (LN_CHECK_ARG(targetType != nullptr)) return nullptr;
 
 	StyleKey key = targetType->getName().getHashCode();// +subControlName.GetHashCode();
-	RefPtr<UIStyle>* s = m_table.find(key);
+	Ref<UIStyle>* s = m_table.find(key);
 	if (s != nullptr)
 	{
 		return s->get();
@@ -550,7 +550,7 @@ UIStyle* UIStyleTable::findSubControlStyle(const StringRef& subControlOwnerName,
 {
 	StyleKey key = subControlOwnerName.getHashCode() + subControlName.getHashCode();
 
-	RefPtr<UIStyle>* s = m_subControlStyleTable.find(key);
+	Ref<UIStyle>* s = m_subControlStyleTable.find(key);
 	if (s != nullptr)
 		return s->get();
 	else

@@ -11,7 +11,7 @@ LN_NAMESPACE_BEGIN
 class VisualEffect
 	: public tr::ReflectionObject
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	/**

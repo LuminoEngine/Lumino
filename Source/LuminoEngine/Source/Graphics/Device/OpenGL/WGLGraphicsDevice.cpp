@@ -153,7 +153,7 @@ WGLGraphicsDevice::~WGLGraphicsDevice()
 }
 
 //------------------------------------------------------------------------------
-RefPtr<GLContext> WGLGraphicsDevice::initializeMainContext(const ConfigData& configData)
+Ref<GLContext> WGLGraphicsDevice::initializeMainContext(const ConfigData& configData)
 {
 	HWND hWnd = PlatformSupport::getWindowHandle(configData.mainWindow);
 	HDC hDC = ::GetDC(hWnd);
@@ -201,20 +201,20 @@ RefPtr<GLContext> WGLGraphicsDevice::initializeMainContext(const ConfigData& con
 	GLenum result = glewInit();
 	if (LN_CHECK_STATE(result == GLEW_OK)) return nullptr;	// コンテキスト作成後、wglMakeCurrent() しないとエラーが返る
 
-	auto mainContext = RefPtr<WGLContext>::makeRef(this, configData.mainWindow, nullptr);
+	auto mainContext = Ref<WGLContext>::makeRef(this, configData.mainWindow, nullptr);
 
 	wglDeleteContext(hGLRC);
 	::ReleaseDC(hWnd, hDC);
 
 
-	return RefPtr<GLContext>::staticCast(mainContext);
+	return Ref<GLContext>::staticCast(mainContext);
 }
 
 //------------------------------------------------------------------------------
-RefPtr<GLContext> WGLGraphicsDevice::createContext(PlatformWindow* window)
+Ref<GLContext> WGLGraphicsDevice::createContext(PlatformWindow* window)
 {
-	auto ptr = RefPtr<WGLContext>::makeRef(this, window, static_cast<WGLContext*>(getMainContext()));
-	return RefPtr<GLContext>::staticCast(ptr);
+	auto ptr = Ref<WGLContext>::makeRef(this, window, static_cast<WGLContext*>(getMainContext()));
+	return Ref<GLContext>::staticCast(ptr);
 }
 
 //------------------------------------------------------------------------------

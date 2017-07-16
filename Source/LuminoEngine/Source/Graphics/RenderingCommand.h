@@ -236,7 +236,7 @@ private:
 	friend struct RenderingCommand;
 	ConditionFlag	m_running;	///< 描画キューに入っているか
 	ConditionFlag	m_idling;
-	RefPtr<SwapChain> m_publisher;
+	Ref<SwapChain> m_publisher;
 };
 
 

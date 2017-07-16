@@ -10,7 +10,7 @@ LN_NAMESPACE_BEGIN
 class UITextElement
 	: public UIElement
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	String	FontFamily;
 	int		FontSize;

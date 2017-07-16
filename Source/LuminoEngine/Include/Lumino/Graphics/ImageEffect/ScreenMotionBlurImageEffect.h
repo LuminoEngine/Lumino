@@ -11,7 +11,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 class ScreenMotionBlurImageEffect
 	: public ImageEffect
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	float	m_amount;
 
@@ -39,7 +39,7 @@ protected:
 	void initialize(detail::GraphicsManager* manager);
 	virtual void onRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
-	RefPtr<Material>		m_material;
+	Ref<Material>		m_material;
 	RenderTargetTexture*	m_accumTexture;	// 前回の画面描画内容
 	Vector2					m_center;
 	float					m_scale;

@@ -16,9 +16,9 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
-RefPtr<SkinnedMeshComponent> SkinnedMeshComponent::create(const StringRef& filePath)
+Ref<SkinnedMeshComponent> SkinnedMeshComponent::create(const StringRef& filePath)
 {
-	auto ptr = RefPtr<SkinnedMeshComponent>::makeRef();
+	auto ptr = Ref<SkinnedMeshComponent>::makeRef();
 	auto mesh = SceneGraphManager::Instance->getModelManager()->createSkinnedMeshModel(filePath);
 	ptr->initialize(mesh);
 	return ptr;
@@ -147,9 +147,9 @@ LN_NAMESPACE_END
 ////==============================================================================
 //
 ////------------------------------------------------------------------------------
-//RefPtr<MeshModelObject> MeshModelObject::create(const StringRef& filePath)
+//Ref<MeshModelObject> MeshModelObject::create(const StringRef& filePath)
 //{
-//	RefPtr<MeshModelObject> obj(LN_NEW MeshModelObject(), false);
+//	Ref<MeshModelObject> obj(LN_NEW MeshModelObject(), false);
 //	obj->initialize(SceneGraphManager::Instance->GetDefault3DSceneGraph(), filePath);	// tODO: 3Dだけ？
 //	return obj;
 //}

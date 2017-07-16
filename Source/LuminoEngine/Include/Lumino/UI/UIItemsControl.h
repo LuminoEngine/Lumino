@@ -14,7 +14,7 @@ class UIItemsControl
 	: public UIControl
 	, public tr::IUIElementCollectionOwner
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	UIElementCollection* GetItems() const;
@@ -41,8 +41,8 @@ protected:
 	virtual void OnChildCollectionChanged(const tr::ChildCollectionChangedArgs& e) override;
 
 private:
-	RefPtr<UIElementCollection>	m_items;
-	RefPtr<UILayoutPanel>			m_itemsHostPanel;
+	Ref<UIElementCollection>	m_items;
+	Ref<UILayoutPanel>			m_itemsHostPanel;
 };
 #endif
 

@@ -166,9 +166,9 @@ LN_INTERNAL_ACCESS:
 
 private:
 	World*								m_targetWorld;
-	RefPtr<CameraComponent>				m_hostingCamera;
-	RefPtr<detail::SceneRenderer>		m_internalRenderer;
-	RefPtr<WorldRenderView>				m_mainRenderView;
+	Ref<CameraComponent>				m_hostingCamera;
+	Ref<detail::SceneRenderer>		m_internalRenderer;
+	Ref<WorldRenderView>				m_mainRenderView;
 	WorldDebugDrawFlags					m_debugDrawFlags;
 };
 
@@ -222,7 +222,7 @@ private:
 class CameraMouseMoveBehavior
 	: public Behavior
 {
-	LN_OBJECT();
+	LN_OBJECT;
 LN_CONSTRUCT_ACCESS:
 	CameraMouseMoveBehavior();
 	virtual ~CameraMouseMoveBehavior();
@@ -255,7 +255,7 @@ private:
 class Camera
 	: public WorldObject
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	CameraComponent* getCameraComponent() const;
 
@@ -267,7 +267,7 @@ LN_CONSTRUCT_ACCESS:
 LN_INTERNAL_ACCESS:
 
 private:
-	RefPtr<CameraComponent>	m_component;
+	Ref<CameraComponent>	m_component;
 };
 
 LN_NAMESPACE_SCENE_END

@@ -25,7 +25,7 @@ class UIControl
 	: public UIElement
 	, public tr::IUIElementCollectionOwner
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	HAlignment	HContentAlignment;
 	VAlignment	VContentAlignment;
@@ -97,8 +97,8 @@ LN_INTERNAL_ACCESS:
 	//UIElement* GetVisualTreeRoot() { return m_visualTreeRoot; }
 
 private:
-	RefPtr<UIElementCollection>		m_items;
-	RefPtr<UILayoutPanel>			m_itemsHostPanel;
+	Ref<UIElementCollection>		m_items;
+	Ref<UILayoutPanel>			m_itemsHostPanel;
 
 	UIEventHandler::EventType		m_onSubmit;
 
@@ -114,12 +114,12 @@ private:
 class UIUserControl
 	: public UIControl
 {
-	LN_OBJECT();
+	LN_OBJECT;
 	
 public:
 
 	/** UIUserControl のインスタンスを作成します。 */
-	static RefPtr<UIUserControl> create();
+	static Ref<UIUserControl> create();
 
 LN_CONSTRUCT_ACCESS:
 	UIUserControl();

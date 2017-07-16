@@ -116,11 +116,8 @@ Exception::~Exception() throw()
 }
 
 //------------------------------------------------------------------------------
-#pragma push_macro("GetMessage")
-#undef getMessage
 const TCHAR* Exception::getMessage() const { return LN_AFX_FUNCNAME(getMessage)(); }
 const TCHAR* Exception::LN_AFX_FUNCNAME(getMessage)() const { return getMessageOverride(); }
-#pragma pop_macro("GetMessage")
 
 //------------------------------------------------------------------------------
 Exception& Exception::setSourceLocationInfo(const char* filePath, int fileLine)

@@ -8,9 +8,9 @@ class NlGraphPin;
 class NlContext;
 class NlGraph;
 class NlGraphInterface;
-using NlGraphNodePtr = RefPtr<NlGraphNode>;
-using NlGraphPinPtr = RefPtr<NlGraphPin>;
-using NlGraphPtr = RefPtr<NlGraph>;
+using NlGraphNodePtr = Ref<NlGraphNode>;
+using NlGraphPinPtr = Ref<NlGraphPin>;
+using NlGraphPtr = Ref<NlGraph>;
 
 enum class NlGraphNodeCategory
 {
@@ -149,7 +149,7 @@ private:
 	NlGraphPinCategory	m_category;
 	NlGraphPinDirection	m_direction;
 	List<NlGraphPin*>	m_linkedTo;
-	RefPtr<NlVariant>	m_valueCache;	// input:inline value, output: return value
+	Ref<NlVariant>	m_valueCache;	// input:inline value, output: return value
 
 };
 
@@ -190,7 +190,7 @@ public:
 	void addGraphNode(NlGraphNode* node);
 
 private:
-	List<RefPtr<NlGraphNode>>	m_nodeList;
+	List<Ref<NlGraphNode>>	m_nodeList;
 };
 
 /**

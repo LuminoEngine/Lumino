@@ -30,10 +30,10 @@ private:
 	void drawGroupList(DrawingContext* context, const Rect& listRect);
 	void drawSectionGraphBar(DrawingContext* context, ProfilingKey* key, float x, float y, const Rect& listRect, float* totalElapsed);
 
-	RefPtr<Font>	m_font;
+	Ref<Font>	m_font;
 	float			m_limitElapsedTime = 1.0f / 60.0f;	// TODO: FPS
 
-	RefPtr<UIButton>	m_recordButton;
+	Ref<UIButton>	m_recordButton;
 };
 
 
@@ -65,7 +65,7 @@ void UIDiagnosticsWindow::onRender(DrawingContext* context)
 //------------------------------------------------------------------------------
 void UIDiagnosticsWindow::drawStatistics(DrawingContext* context, const Rect& windowRect)
 {
-	PointF loc(windowRect.x, windowRect.y);
+	Point loc(windowRect.x, windowRect.y);
 
 
 	// キャプションバー
@@ -76,7 +76,7 @@ void UIDiagnosticsWindow::drawStatistics(DrawingContext* context, const Rect& wi
 	//context->setOpacity(1.0f);
 	context->setFont(m_font);
 	context->setBrush(UIColors::getBrush(UIColorIndex::Grey, 8));
-	context->drawText_(_T("Statistics"), PointF(10, 20));
+	context->drawText_(_T("Statistics"), Point(10, 20));
 
 	//return;
 	loc.y += 24;
@@ -86,7 +86,7 @@ void UIDiagnosticsWindow::drawStatistics(DrawingContext* context, const Rect& wi
 
 	//-----------------------------------------------------
 	// Main info
-	context->drawText_(_T("Main information:"), PointF(loc.x + 8, loc.y));
+	context->drawText_(_T("Main information:"), Point(loc.x + 8, loc.y));
 	loc.y += 16;
 	loc.x += 16;
 
@@ -104,7 +104,7 @@ void UIDiagnosticsWindow::drawStatistics(DrawingContext* context, const Rect& wi
 	context->drawText_(text, loc);
 
 	StringTraits::sprintf(text, 256, _T(" / Capacity : %.1f"), Profiler2::GetMainFpsCapacity());
-	context->drawText_(text, PointF(loc.x + 150, loc.y));
+	context->drawText_(text, Point(loc.x + 150, loc.y));
 	loc.y += 16;
 
 	//StringTraits::sprintf(text, 256, _T("Window Size     : %d x %d"), m_profiler->GetCommitedMainWindowSize().Width, m_profiler->GetCommitedMainWindowSize().Height);
@@ -120,7 +120,7 @@ void UIDiagnosticsWindow::drawStatistics(DrawingContext* context, const Rect& wi
 	//-----------------------------------------------------
 	// Threads performance
 
-	context->drawText_(_T("Threads performance:"), PointF(loc.x + 8, loc.y));
+	context->drawText_(_T("Threads performance:"), Point(loc.x + 8, loc.y));
 	loc.y += 16;
 
 	// グループリストの描画
@@ -169,7 +169,7 @@ void UIDiagnosticsWindow::drawGroupList(DrawingContext* context, const Rect& lis
 		// グループ名
 		context->setBrush(UIColors::getBrush(UIColorIndex::Grey, 8));
 		//context->SetOpacity(1.0f);
-		PointF pt(listRect.x + 4, listRect.y + (iGrout * rowHeight) + 1);
+		Point pt(listRect.x + 4, listRect.y + (iGrout * rowHeight) + 1);
 		context->drawText_(groups[iGrout]->getName(), pt);
 
 		// セクションを積み上げ棒グラフで表示
@@ -254,8 +254,8 @@ void UIControlsGallery()
 
 	//auto item = listBox1->addTextItem(_T("スプライト"));
 	//auto button1 = UIButton::create(_T(">"), 20, 20);
-	////button1->setPosition(PointF(2, 0));
-	//button1->margin = ThicknessF(2);
+	////button1->setPosition(Point(2, 0));
+	//button1->margin = Thickness(2);
 	//button1->setAnchor(AlignmentAnchor::RightOffsets | AlignmentAnchor::VCenter);
 	//item->addChild(button1);
 
@@ -263,7 +263,7 @@ void UIControlsGallery()
 
 
 	auto slider = UISlider::create(0.75, 0.5, 2.0);
-	slider->setPosition(PointF(10, 10));
+	slider->setPosition(Point(10, 10));
 	slider->setWidth(300);
 	slider->setHeight(16);
 	//slider->setOrientation(Orientation::Vertical);

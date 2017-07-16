@@ -7,7 +7,7 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 namespace detail { class Paragraph; }
 class TextBlock2DComponent;
-using TextBlock2DComponentPtr = RefPtr<TextBlock2DComponent>;
+using TextBlock2DComponentPtr = Ref<TextBlock2DComponent>;
 
 /**
 	@brief
@@ -15,7 +15,7 @@ using TextBlock2DComponentPtr = RefPtr<TextBlock2DComponent>;
 class TextBlock2DComponent
 	: public VisualComponent
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	
 	/**
@@ -55,10 +55,10 @@ protected:
 
 protected:
 	Vector2			m_anchor;
-	RefPtr<Font>	m_font;
+	Ref<Font>	m_font;
 	String			m_text;
 	Size			m_renderSize;
-	//RefPtr<detail::Paragraph>	m_paragraph;
+	//Ref<detail::Paragraph>	m_paragraph;
 	//Size			m_renderSize;
 };
 
@@ -70,18 +70,18 @@ LN_CLASS()
 class TextBlock2D
 	: public VisualObject
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	
 	/**
 		@brief		
 	*/
-	static RefPtr<TextBlock2D> create();
+	static Ref<TextBlock2D> create();
 	
 	/**
 		@brief		
 	*/
-	static RefPtr<TextBlock2D> create(const StringRef& text);
+	static Ref<TextBlock2D> create(const StringRef& text);
 
 	void setText(const StringRef& text);
 
@@ -109,7 +109,7 @@ LN_CONSTRUCT_ACCESS:
 	void initialize(const StringRef& text);
 
 private:
-	RefPtr<TextBlock2DComponent>	m_component;
+	Ref<TextBlock2DComponent>	m_component;
 };
 
 LN_NAMESPACE_SCENE_END

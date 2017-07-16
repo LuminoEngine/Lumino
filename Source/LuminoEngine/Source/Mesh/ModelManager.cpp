@@ -237,25 +237,25 @@ void ModelManager::initialize(const ConfigData& configData)
 
 	m_defaultMaterial = newObject<Material>();
 
-	m_unitBoxMeshResource = RefPtr<MeshResource>::makeRef();
+	m_unitBoxMeshResource = Ref<MeshResource>::makeRef();
 	m_unitBoxMeshResource->initialize(m_graphicsManager, MeshCreationFlags::None);
 	m_unitBoxMeshResource->addBox(Vector3(1, 1, 1));
 
-	m_unitBoxMeshResourceReverseFaces = RefPtr<MeshResource>::makeRef();
+	m_unitBoxMeshResourceReverseFaces = Ref<MeshResource>::makeRef();
 	m_unitBoxMeshResourceReverseFaces->initialize(m_graphicsManager, MeshCreationFlags::None);
 	m_unitBoxMeshResourceReverseFaces->addBox(Vector3(1, 1, 1));
 	m_unitBoxMeshResourceReverseFaces->reverseFaces();
 
-	m_unitSphereMeshResource = RefPtr<MeshResource>::makeRef();
+	m_unitSphereMeshResource = Ref<MeshResource>::makeRef();
 	m_unitSphereMeshResource->initialize(m_graphicsManager, MeshCreationFlags::None);
 	m_unitSphereMeshResource->addSphere(0.5, 16, 16);
 
-	m_unitSphereMeshResourceReverseFaces = RefPtr<MeshResource>::makeRef();
+	m_unitSphereMeshResourceReverseFaces = Ref<MeshResource>::makeRef();
 	m_unitSphereMeshResourceReverseFaces->initialize(m_graphicsManager, MeshCreationFlags::None);
 	m_unitSphereMeshResourceReverseFaces->addSphere(0.5, 16, 16);
 	m_unitSphereMeshResourceReverseFaces->reverseFaces();
 
-	m_unitTeapotMeshResource = RefPtr<MeshResource>::makeRef();
+	m_unitTeapotMeshResource = Ref<MeshResource>::makeRef();
 	m_unitTeapotMeshResource->initialize(m_graphicsManager, MeshCreationFlags::None);
 	m_unitTeapotMeshResource->addTeapot(1.0f, 8);
 
@@ -311,22 +311,22 @@ Texture2D* ModelManager::getMMDDefaultToonTexture(int index)
 }
 
 //------------------------------------------------------------------------------
-RefPtr<PmxSkinnedMeshResource> ModelManager::createSkinnedMeshResource(const PathName& filePath)
+Ref<PmxSkinnedMeshResource> ModelManager::createSkinnedMeshResource(const PathName& filePath)
 {
-	RefPtr<Stream> stream(m_fileManager->createFileStream(filePath), false);
+	Ref<Stream> stream(m_fileManager->createFileStream(filePath), false);
 	PmxLoader loader;
-	RefPtr<PmxSkinnedMeshResource> mesh = loader.load(this, stream, filePath.getParent(), true, ModelCreationFlag::None);
+	Ref<PmxSkinnedMeshResource> mesh = loader.load(this, stream, filePath.getParent(), true, ModelCreationFlag::None);
 	mesh->refreshInitialValues();
 	return mesh;
 }
 
 //------------------------------------------------------------------------------
-RefPtr<StaticMeshModel> ModelManager::createStaticMeshModel(const PathName& filePath)
+Ref<StaticMeshModel> ModelManager::createStaticMeshModel(const PathName& filePath)
 {
 
 #if defined(LN_OS_WIN32)
-	RefPtr<StaticMeshModel> mesh;
-	RefPtr<Stream> stream(m_fileManager->createFileStream(filePath), false);
+	Ref<StaticMeshModel> mesh;
+	Ref<Stream> stream(m_fileManager->createFileStream(filePath), false);
 
 	PathName parentDir = filePath.getParent();
 	{
@@ -337,7 +337,7 @@ RefPtr<StaticMeshModel> ModelManager::createStaticMeshModel(const PathName& file
 	}
 
 	//PMXLoader loader;
-	//RefPtr<ModelCore> modelCore(loader.Load(this, stream, filePath.GetParent(), true));
+	//Ref<ModelCore> modelCore(loader.Load(this, stream, filePath.GetParent(), true));
 
 	XFileLoader loader;
 	mesh = loader.load(this, stream, parentDir, true, ModelCreationFlag::None);
@@ -351,16 +351,16 @@ RefPtr<StaticMeshModel> ModelManager::createStaticMeshModel(const PathName& file
 #endif
 
 	//auto meshResource = CreateModelCore(filePath);
-	//auto mesh = RefPtr<StaticMeshModel>::MakeRef();
+	//auto mesh = Ref<StaticMeshModel>::MakeRef();
 	//mesh->initialize(m_graphicsManager, meshResource);
 	//return mesh;
 }
 
 //------------------------------------------------------------------------------
-RefPtr<SkinnedMeshModel> ModelManager::createSkinnedMeshModel(const PathName& filePath)
+Ref<SkinnedMeshModel> ModelManager::createSkinnedMeshModel(const PathName& filePath)
 {
 	auto meshResource = createSkinnedMeshResource(filePath);
-	auto mesh = RefPtr<SkinnedMeshModel>::makeRef();
+	auto mesh = Ref<SkinnedMeshModel>::makeRef();
 	mesh->initialize(m_graphicsManager, meshResource);
 	return mesh;
 }
@@ -369,14 +369,14 @@ RefPtr<SkinnedMeshModel> ModelManager::createSkinnedMeshModel(const PathName& fi
 //------------------------------------------------------------------------------
 Animation::AnimationClip* ModelManager::CreateMotion(const PathName& filePath)
 {
-	RefPtr<Stream> stream(m_fileManager->CreateFileStream(filePath));
+	Ref<Stream> stream(m_fileManager->CreateFileStream(filePath));
 	VMDLoader loader;
 	if (!loader.Load(stream)) {
 		LN_THROW(0, InvalidFormatException);
 	}
 
 	// TODO: ボーンと表情のアニメーションは分けた方が良い気がする…
-	RefPtr<Animation::AnimationClip> clip(LN_NEW Animation::AnimationClip());
+	Ref<Animation::AnimationClip> clip(LN_NEW Animation::AnimationClip());
 	LN_FOREACH(VMDLoader::BoneAnimation& anim, loader.GetBoneAnimationList())
 	{
 		clip->AddAnimationCurve(anim.TargetBoneName, anim.AnimationCurve);
@@ -391,7 +391,7 @@ Animation::AnimationClip* ModelManager::CreateMotion(const PathName& filePath)
 #endif
 
 //------------------------------------------------------------------------------
-RefPtr<Texture> ModelManager::createTexture(const PathName& parentDir, const StringRef& filePath, ModelCreationFlag flags)
+Ref<Texture> ModelManager::createTexture(const PathName& parentDir, const StringRef& filePath, ModelCreationFlag flags)
 {
 	PathName path(parentDir, filePath.getBegin());	// TODO GetBegin
 

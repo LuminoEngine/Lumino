@@ -22,7 +22,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TileMap, VisualComponent);
 //------------------------------------------------------------------------------
 //TileMap* TileMap::create()
 //{
-//	RefPtr<TileMap> obj(LN_NEW TileMap(), false);
+//	Ref<TileMap> obj(LN_NEW TileMap(), false);
 //	obj->createCore(SceneGraphManager::Instance);
 //	obj.SafeAddRef();
 //	return obj;
@@ -31,7 +31,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TileMap, VisualComponent);
 //------------------------------------------------------------------------------
 TileMapPtr TileMap::Create3D()
 {
-	RefPtr<TileMap> obj(LN_NEW TileMap(), false);
+	Ref<TileMap> obj(LN_NEW TileMap(), false);
 	obj->Create3DCore(detail::EngineDomain::GetDefaultSceneGraph3D());
 	return obj;
 }
@@ -95,7 +95,7 @@ void TileMap::OnRender2(DrawList* renderer)
 //	//dc->drawRectangle(RectF(0, 0, 1, 2));
 //	//dc->SetViewProjection(dc->CurrentCamera->GetViewMatrix(), dc->CurrentCamera->GetProjectionMatrix());
 //
-//	//RefPtr<Pen> pen(LN_NEW Pen(), false);
+//	//Ref<Pen> pen(LN_NEW Pen(), false);
 //	//pen->setBrush(ColorBrush::Green);
 //
 //	//auto* d = dc->BeginDrawingContext();

@@ -202,9 +202,9 @@ private:
 	Encoding*					m_standardOutputEncoding;
 	Encoding*					m_standardErrorEncoding;
 	Stream*						m_standardOutputExternalStream;
-	RefPtr<StreamWriter>		m_standardInputWriter;
-	RefPtr<StreamReader>		m_standardOutputReader;
-	RefPtr<StreamReader>		m_standardErrorReader;
+	Ref<StreamWriter>		m_standardInputWriter;
+	Ref<StreamReader>		m_standardOutputReader;
+	Ref<StreamReader>		m_standardErrorReader;
 
 #ifdef LN_CPP11
 	Delegate<void(String)>		m_outputDataReceivedCallback;
@@ -242,9 +242,9 @@ struct ProcessStartInfo
 
 struct ProcessStartResult
 {
-	RefPtr<StreamWriter>	standardInputWriter;
-	RefPtr<StreamReader>	standardOutputReader;
-	RefPtr<StreamReader>	standardErrorReader;
+	Ref<StreamWriter>	standardInputWriter;
+	Ref<StreamReader>	standardOutputReader;
+	Ref<StreamReader>	standardErrorReader;
 };
 	
 } // namespace detail

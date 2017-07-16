@@ -83,7 +83,7 @@ public:
 
 private:
 	PathName			m_filePath;
-	RefPtr<FileStream>	m_fileStream;
+	Ref<FileStream>	m_fileStream;
 };
 
 class TemporaryFile

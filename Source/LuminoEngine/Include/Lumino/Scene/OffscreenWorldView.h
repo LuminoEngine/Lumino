@@ -35,8 +35,8 @@ LN_INTERNAL_ACCESS:
 	detail::OffscreenFilterInfo* updateRenderObjectFilterInfo(VisualComponent* renderObject);
 
 private:
-	RefPtr<RenderTargetTexture>	m_renderTarget;
-	RefPtr<RenderingContext>	m_renderer;
+	Ref<RenderTargetTexture>	m_renderTarget;
+	Ref<RenderingContext>	m_renderer;
 	int							m_id;
 };
 
@@ -57,7 +57,7 @@ LN_INTERNAL_ACCESS:
 
 private:
 
-	RefPtr<Material>			m_skyMaterial;
+	Ref<Material>			m_skyMaterial;
 };
 
 class MirrorComponent
@@ -74,8 +74,8 @@ LN_INTERNAL_ACCESS:
 	void initialize();
 
 private:
-	RefPtr<OffscreenWorldView>	m_offscreen;
-	RefPtr<Material>			m_material;
+	Ref<OffscreenWorldView>	m_offscreen;
+	Ref<Material>			m_material;
 
 };
 

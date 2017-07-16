@@ -91,7 +91,7 @@ private:
 	//Color	m_diffuse;			///< ディフューズカラー
 	//Color	m_ambient;			///< アンビエントカラー
 	//Color	m_specular;			///< スペキュラカラー
-	RefPtr<detail::DynamicLightInfo>	m_lightInfo;
+	Ref<detail::DynamicLightInfo>	m_lightInfo;
 	bool				m_enabled;			///< 有効状態
 	float				m_spotAngle;		///< コーン角度 (ラジアン単位)
 
@@ -123,7 +123,7 @@ private:
 class Light
 	: public WorldObject
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	LightComponent* GetLightComponent() const;
 
@@ -135,7 +135,7 @@ LN_CONSTRUCT_ACCESS:
 LN_INTERNAL_ACCESS:
 
 private:
-	RefPtr<LightComponent>	m_component;
+	Ref<LightComponent>	m_component;
 };
 
 LN_NAMESPACE_SCENE_END

@@ -427,7 +427,7 @@ String FileSystem::readAllText(const StringRef& filePath, const Encoding* encodi
 //------------------------------------------------------------------------------
 void FileSystem::writeAllBytes(const TCHAR* filePath, const void* buffer, size_t size)
 {
-	RefPtr<FileStream> stream = FileStream::create(filePath, FileOpenMode::write | FileOpenMode::Truncate);
+	Ref<FileStream> stream = FileStream::create(filePath, FileOpenMode::write | FileOpenMode::Truncate);
 	stream->write(buffer, size);
 }
 
@@ -527,8 +527,6 @@ void FileSystem::createDirectoryInternal(const TChar* path)
 		LN_THROW(r, IOException);
 	}
 }
-#pragma push_macro("CreateDirectory")
-#undef createDirectory
 void FileSystem::createDirectory(const char* path)
 {
 	LN_AFX_FUNCNAME(createDirectory)(path);
@@ -545,7 +543,6 @@ void FileSystem::LN_AFX_FUNCNAME(createDirectory)(const wchar_t* path)
 {
 	createDirectoryInternal(path);
 }
-#pragma pop_macro("CreateDirectory")
 
 
 LN_NAMESPACE_END

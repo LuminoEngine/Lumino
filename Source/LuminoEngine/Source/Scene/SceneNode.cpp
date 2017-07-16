@@ -45,7 +45,7 @@ SceneNode::SceneNode()
 	//, m_transformModified(true)
 	, m_isAutoUpdate(false)
 	, m_isAutoRemove(false)
-	, m_children(RefPtr<SceneNodeList>::makeRef())
+	, m_children(Ref<SceneNodeList>::makeRef())
 	, m_parentNode(NULL)
 	, m_isVisible(true)
 {

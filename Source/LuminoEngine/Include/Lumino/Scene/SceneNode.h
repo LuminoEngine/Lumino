@@ -27,7 +27,7 @@ class SceneNode
 	//: public tr::ReflectionObject
 	//, public IMMESceneObject
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	/// ノード名の設定
@@ -169,7 +169,7 @@ protected:
 	bool				m_isAutoUpdate;
 	bool				m_isAutoRemove;
 
-	RefPtr<SceneNodeList>	m_children;
+	Ref<SceneNodeList>	m_children;
 	SceneNode*			m_parentNode;
 
 	//Matrix				m_combinedGlobalMatrix;
@@ -188,7 +188,7 @@ private:
 class SceneNodeList
 	: public ObjectList<SceneNode*>
 {
-	LN_OBJECT();
+	LN_OBJECT;
 LN_INTERNAL_ACCESS:
 	SceneNodeList();
 	virtual ~SceneNodeList();

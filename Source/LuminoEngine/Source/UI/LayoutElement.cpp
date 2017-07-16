@@ -39,10 +39,10 @@ void ILayoutElement::updateLayout(const Size& viewSize)
 void ILayoutElement::measureLayout(const Size& availableSize)
 {
 	// Margin と Padding を考慮する
-	const ThicknessF& margin = getLayoutMargin();
-	const ThicknessF& padding = getLayoutPadding();
-	float spaceWidth = (margin.Left + margin.Right) + (padding.Left + padding.Right);
-	float spaceHeight = (margin.Top + margin.Bottom) + (padding.Top + padding.Bottom);
+	const Thickness& margin = getLayoutMargin();
+	const Thickness& padding = getLayoutPadding();
+	float spaceWidth = (margin.left + margin.right) + (padding.left + padding.right);
+	float spaceHeight = (margin.top + margin.bottom) + (padding.top + padding.bottom);
 	Size localAvailableSize(
 		std::max(availableSize.width - spaceWidth, 0.0f),
 		std::max(availableSize.height - spaceHeight, 0.0f));
@@ -89,9 +89,9 @@ void ILayoutElement::arrangeLayout(const Rect& finalLocalRect)
 	// DesiredSize は Margin 考慮済み
 
 	// Alignment で調整する領域は、margin 領域も含む
-	const ThicknessF& margin = getLayoutMargin();
-	float marginWidth = margin.Left + margin.Right;
-	float marginHeight = margin.Top + margin.Bottom;
+	const Thickness& margin = getLayoutMargin();
+	float marginWidth = margin.left + margin.right;
+	float marginHeight = margin.top + margin.bottom;
 
 	Size layoutSize = getLayoutSize();
 	Rect arrangeRect;
@@ -104,7 +104,7 @@ void ILayoutElement::arrangeLayout(const Rect& finalLocalRect)
 	arrangeRect.height = std::max(arrangeRect.height - marginHeight, 0.0f);
 
 	// Padding を考慮する
-	const ThicknessF& padding = getLayoutPadding();
+	const Thickness& padding = getLayoutPadding();
 
 	Size contentAreaSize(
 		std::max(arrangeRect.width - padding.getWidth(), 0.0f),
@@ -114,12 +114,12 @@ void ILayoutElement::arrangeLayout(const Rect& finalLocalRect)
 
 	Rect finalRenderRect;
 	Rect finalContentRect;
-	finalRenderRect.x = finalLocalRect.x + margin.Left + arrangeRect.x;
-	finalRenderRect.y = finalLocalRect.y + margin.Top + arrangeRect.y;
+	finalRenderRect.x = finalLocalRect.x + margin.left + arrangeRect.x;
+	finalRenderRect.y = finalLocalRect.y + margin.top + arrangeRect.y;
 	finalRenderRect.width = finalContentAreaSize.width + padding.getWidth();
 	finalRenderRect.height = finalContentAreaSize.height + padding.getHeight();
-	finalContentRect.x = finalRenderRect.x + padding.Left;
-	finalContentRect.y = finalRenderRect.y + padding.Top;
+	finalContentRect.x = finalRenderRect.x + padding.left;
+	finalContentRect.y = finalRenderRect.y + padding.top;
 	finalContentRect.width = finalRenderRect.width - padding.getWidth();
 	finalContentRect.height = finalRenderRect.height - padding.getHeight();
 	setLayoutFinalLocalRect(finalRenderRect, finalContentRect);

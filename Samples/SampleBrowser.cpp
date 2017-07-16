@@ -50,20 +50,20 @@ SampleMainFunc registerSample(const char* group1, const char* group2, const char
 } // namespace sample
 
 int						g_samplesIndex = 0;
-RefPtr<UIToggleButton>	g_pinButton;
-RefPtr<UIUserControl>	g_listWindow;
-RefPtr<AnimationClock>	g_clock;
+Ref<UIToggleButton>	g_pinButton;
+Ref<UIUserControl>	g_listWindow;
+Ref<AnimationClock>	g_clock;
 
 void showListWindow()
 {
 	g_pinButton->setText(_T("<"));
-	g_clock->start(g_listWindow->getPosition().x, 0, 0.5, EasingMode::EaseOutExpo, [](float v) {g_listWindow->setPosition(PointF(v, 0)); }, nullptr);
+	g_clock->start(g_listWindow->getPosition().x, 0, 0.5, EasingMode::EaseOutExpo, [](float v) {g_listWindow->setPosition(Point(v, 0)); }, nullptr);
 }
 
 void closeListWindow()
 {
 	g_pinButton->setText(_T(">"));
-	g_clock->start(g_listWindow->getPosition().x, -200, 0.5, EasingMode::EaseOutExpo, [](float v) {g_listWindow->setPosition(PointF(v, 0)); }, nullptr);
+	g_clock->start(g_listWindow->getPosition().x, -200, 0.5, EasingMode::EaseOutExpo, [](float v) {g_listWindow->setPosition(Point(v, 0)); }, nullptr);
 }
 
 void Main()
@@ -102,7 +102,7 @@ void Main()
 	auto listBox1 = UIListBox::create();
 	listBox1->setWidth(640);
 	listBox1->setHeight(480);
-	//listBox1->margin = ThicknessF(0, 32, 0, 0);
+	//listBox1->margin = Thickness(0, 32, 0, 0);
 	for (int i = 0; i < SampleManager::getInstance()->m_samples.getCount(); i++)
 	{
 		auto& info = SampleManager::getInstance()->m_samples[i];

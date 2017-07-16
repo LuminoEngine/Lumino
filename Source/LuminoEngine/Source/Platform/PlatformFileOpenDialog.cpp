@@ -17,7 +17,7 @@ namespace tr
 PlatformFileOpenDialogPtr PlatformFileOpenDialog::create()
 {
 #ifdef LN_OS_WIN32
-	auto ptr = RefPtr<Win32PlatformFileOpenDialog>::makeRef();
+	auto ptr = Ref<Win32PlatformFileOpenDialog>::makeRef();
 	return ptr;
 #endif
 }

@@ -81,7 +81,7 @@ void UIManager::initialize(const Settings& settings)
 #include "Resource/DefaultSkin.png.h"
 		};
 		MemoryStream defaultSkinStream(defaultSkin_data, LN_ARRAY_SIZE_OF(defaultSkin_data));
-		m_defaultSkinTexture = RefPtr<Texture2D>::makeRef();
+		m_defaultSkinTexture = Ref<Texture2D>::makeRef();
 		m_defaultSkinTexture = newObject<Texture2D>(&defaultSkinStream, TextureFormat::R8G8B8A8, false);
 	}
 	else
@@ -226,8 +226,8 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 		// base
 		{
 			auto* props = s->getPropertyTable();
-			//st->background = RefPtr<Brush>::StaticCast(buttonNormalBrush);
-			props->borderThickness = ThicknessF(1);
+			//st->background = Ref<Brush>::StaticCast(buttonNormalBrush);
+			props->borderThickness = Thickness(1);
 			props->cornerRadius = 4;
 
 			//props->background = UIColors::getBrush(UIColorIndex::LightGreen);
@@ -235,17 +235,17 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 		// UIButton.Focused
 		{
 			auto* st = s->getPropertyTable(UIVisualStates::FocusedState);
-			st->background = RefPtr<Brush>::staticCast(buttonFocusedBrush);
+			st->background = Ref<Brush>::staticCast(buttonFocusedBrush);
 		}
 		// UIButton.MouseOver
 		{
 			auto* st = s->getPropertyTable(UIVisualStates::MouseOverState);
-			st->background = RefPtr<Brush>::staticCast(buttonMouseOverBrush);
+			st->background = Ref<Brush>::staticCast(buttonMouseOverBrush);
 		}
 		// UIButton.Pressed
 		{
 			auto* st = s->getPropertyTable(UIVisualStates::PressedState);
-			st->background = RefPtr<Brush>::staticCast(buttonPressedBrush);
+			st->background = Ref<Brush>::staticCast(buttonPressedBrush);
 		}
 	}
 
@@ -279,7 +279,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 		// base
 		{
 			auto* props = style->getPropertyTable();
-			props->background = RefPtr<Brush>::staticCast(thumbBrush);
+			props->background = Ref<Brush>::staticCast(thumbBrush);
 		}
 	}
 
@@ -348,12 +348,12 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 		// base
 		{
 			auto* props = style->getPropertyTable();
-			props->background = RefPtr<Brush>::staticCast(buttonNormalBrush);
+			props->background = Ref<Brush>::staticCast(buttonNormalBrush);
 		}
 		// UIScrollBar::LineUpButton.MouseOver
 		{
 			auto* props = style->getPropertyTable(UIVisualStates::MouseOverState);
-			props->background = RefPtr<Brush>::staticCast(buttonMouseOverBrush);
+			props->background = Ref<Brush>::staticCast(buttonMouseOverBrush);
 		}
 	}
 	// UIScrollBar::LineDownButton
@@ -371,13 +371,13 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 		// base
 		{
 			auto* props = style->getPropertyTable();
-			props->background = RefPtr<Brush>::staticCast(containerBackground);
-			props->borderThickness = ThicknessF(1);
+			props->background = Ref<Brush>::staticCast(containerBackground);
+			props->borderThickness = Thickness(1);
 		}
 		// UIListBox.MouseOver
 		//{
 		//	auto* props = style->getPropertyTable(UIVisualStates::MouseOverState);
-		//	props->background = RefPtr<Brush>::StaticCast(containerItemMouseOver);
+		//	props->background = Ref<Brush>::StaticCast(containerItemMouseOver);
 		//}
 	}
 	// UIListBoxItem
@@ -386,12 +386,12 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 		// base
 		{
 			auto* props = style->getPropertyTable();
-			props->padding = ThicknessF(10);
+			props->padding = Thickness(10);
 		}
 		// UIListBoxItem.MouseOver
 		{
 			auto* props = style->getPropertyTable(UIVisualStates::MouseOverState);
-			props->background = RefPtr<Brush>::staticCast(containerItemMouseOver);
+			props->background = Ref<Brush>::staticCast(containerItemMouseOver);
 		}
 	}
 
@@ -401,7 +401,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 		// base
 		{
 			auto* props = style->getPropertyTable();
-			props->background = RefPtr<Brush>::staticCast(boarderNormalBrush);
+			props->background = Ref<Brush>::staticCast(boarderNormalBrush);
 		}
 	}
 	// UIWindow
@@ -410,7 +410,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 		// base
 		{
 			auto* props = style->getPropertyTable();
-			props->background = RefPtr<Brush>::staticCast(boarderNormalBrush);
+			props->background = Ref<Brush>::staticCast(boarderNormalBrush);
 		}
 	}
 	// UIWindow::LineDownButton

@@ -44,16 +44,16 @@ public:
 	virtual ISwapChain* createSwapChain(PlatformWindow* window) override;
 
 protected:
-	virtual RefPtr<IVertexDeclaration> createVertexDeclarationImplement(const VertexElement* elements, int elementsCount) = 0;
-	virtual RefPtr<IVertexBuffer> createVertexBufferImplement(size_t bufferSize, const void* data, ResourceUsage usage) = 0;
-	virtual RefPtr<IIndexBuffer> createIndexBufferImplement(int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage) = 0;
-	virtual RefPtr<ITexture> createTextureImplement(const SizeI& size, bool mipmap, TextureFormat format, const void* initialData) = 0;
-	virtual RefPtr<ITexture> createTexturePlatformLoadingImplement(Stream* stream, bool mipmap, TextureFormat format) = 0;
-	virtual RefPtr<ITexture> createTexture3DImplement(int width, int height, int depth, uint32_t mipLevels, TextureFormat format, ResourceUsage usage, const void* initialData) = 0;
-	virtual RefPtr<ITexture> ceateRenderTargetImplement(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format) = 0;
-	virtual RefPtr<ITexture> createDepthBufferImplement(uint32_t width, uint32_t height, TextureFormat format) = 0;
-	virtual RefPtr<IShader> createShaderImplement(const void* textData, size_t size, ShaderCompileResult* result) = 0;
-	virtual RefPtr<ISwapChain> createSwapChainImplement(PlatformWindow* window) = 0;
+	virtual Ref<IVertexDeclaration> createVertexDeclarationImplement(const VertexElement* elements, int elementsCount) = 0;
+	virtual Ref<IVertexBuffer> createVertexBufferImplement(size_t bufferSize, const void* data, ResourceUsage usage) = 0;
+	virtual Ref<IIndexBuffer> createIndexBufferImplement(int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage) = 0;
+	virtual Ref<ITexture> createTextureImplement(const SizeI& size, bool mipmap, TextureFormat format, const void* initialData) = 0;
+	virtual Ref<ITexture> createTexturePlatformLoadingImplement(Stream* stream, bool mipmap, TextureFormat format) = 0;
+	virtual Ref<ITexture> createTexture3DImplement(int width, int height, int depth, uint32_t mipLevels, TextureFormat format, ResourceUsage usage, const void* initialData) = 0;
+	virtual Ref<ITexture> ceateRenderTargetImplement(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format) = 0;
+	virtual Ref<ITexture> createDepthBufferImplement(uint32_t width, uint32_t height, TextureFormat format) = 0;
+	virtual Ref<IShader> createShaderImplement(const void* textData, size_t size, ShaderCompileResult* result) = 0;
+	virtual Ref<ISwapChain> createSwapChainImplement(PlatformWindow* window) = 0;
 	//virtual void OnBeginAccessContext();
 	//virtual void OnEndAccessContext();
 

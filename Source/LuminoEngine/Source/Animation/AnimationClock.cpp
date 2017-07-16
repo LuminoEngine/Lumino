@@ -11,7 +11,7 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
-RefPtr<AnimationClock> AnimationClock::create()
+Ref<AnimationClock> AnimationClock::create()
 {
 	return ln::newObject<AnimationClock>();
 }

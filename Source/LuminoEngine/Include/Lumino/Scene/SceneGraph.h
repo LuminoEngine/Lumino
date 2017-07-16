@@ -14,8 +14,8 @@ class StaticMeshModel;
 class Material;		// TODO: World temp
 class SceneGraph2D;
 class SceneGraph3D;
-using SceneGraph2DPtr = RefPtr<SceneGraph2D>;
-using SceneGraph3DPtr = RefPtr<SceneGraph3D>;
+using SceneGraph2DPtr = Ref<SceneGraph2D>;
+using SceneGraph3DPtr = Ref<SceneGraph3D>;
 
 /**
 	@brief
@@ -23,7 +23,7 @@ using SceneGraph3DPtr = RefPtr<SceneGraph3D>;
 class SceneGraph
 	: public Object
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	/// レイヤーリストの取得
@@ -94,7 +94,7 @@ private:
 class SceneGraph2D
 	: public SceneGraph
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	static SceneGraph2DPtr create();
 
@@ -122,7 +122,7 @@ private:
 class SceneGraph3D
 	: public SceneGraph
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	bool	visibleGridPlane;
 
@@ -141,7 +141,7 @@ private:
 
 	SceneNode*				m_defaultRoot;
 	CameraComponent*					m_defaultCamera;
-	//RefPtr<LightComponent>			m_defaultLight;
+	//Ref<LightComponent>			m_defaultLight;
 
 };
 

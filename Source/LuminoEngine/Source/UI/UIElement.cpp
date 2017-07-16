@@ -51,7 +51,7 @@ UIElement::UIElement()
 	//, m_currentVisualStateStyle(nullptr)
 	, m_visualParent(nullptr)
 	, m_visualChildren(nullptr)
-	, position(PointF(0, 0))
+	, position(Point(0, 0))
 	, width(NAN)
 	, height(NAN)
 	, anchor(AlignmentAnchor::None)
@@ -84,32 +84,32 @@ void UIElement::initialize()
 	// 要素名を覚えておく。末端のサブクラスの名前となる。
 	m_elementName = tr::TypeInfo::getTypeInfo(this)->getName();
 
-	m_localStyle = RefPtr<detail::UIStylePropertyTableInstance>::makeRef();
+	m_localStyle = Ref<detail::UIStylePropertyTableInstance>::makeRef();
 
 	//goToVisualState(String::GetEmpty());
 	m_invalidateFlags |= detail::InvalidateFlags::VisualState;
 }
 
 //------------------------------------------------------------------------------
-void UIElement::setMargin(const ThicknessF& margin)
+void UIElement::setMargin(const Thickness& margin)
 {
 	m_localStyle->margin = margin;
 }
 
 //------------------------------------------------------------------------------
-const ThicknessF& UIElement::getMargin() const
+const Thickness& UIElement::getMargin() const
 {
 	return m_localStyle->margin;
 }
 
 //------------------------------------------------------------------------------
-void UIElement::setPadding(const ThicknessF& Padding)
+void UIElement::setPadding(const Thickness& Padding)
 {
 	m_localStyle->padding = Padding;
 }
 
 //------------------------------------------------------------------------------
-const ThicknessF& UIElement::getPadding() const
+const Thickness& UIElement::getPadding() const
 {
 	return m_localStyle->padding;
 }
@@ -394,7 +394,7 @@ void UIElement::setLogicalParent(UIElement* parent)
 }
 
 //------------------------------------------------------------------------------
-UIElement* UIElement::checkMouseHoverElement(const PointF& globalPt)
+UIElement* UIElement::checkMouseHoverElement(const Point& globalPt)
 {
 	// 後ろからループする。後のモノが上に描画されるので、この方が自然。
 	// TODO: Zオーダーは別のリストにしたほうがいい気がする・・・
@@ -407,7 +407,7 @@ UIElement* UIElement::checkMouseHoverElement(const PointF& globalPt)
 
 	if (m_isHitTestVisible)
 	{
-		PointF localPoint = globalPt;
+		Point localPoint = globalPt;
 		if (m_visualParent != nullptr)
 		{
 			localPoint.x -= m_visualParent->m_finalGlobalRect.x;
@@ -639,7 +639,7 @@ void UIElement::onUpdatingLayout()
 }
 
 //------------------------------------------------------------------------------
-bool UIElement::onHitTest(const PointF& localPoint)
+bool UIElement::onHitTest(const Point& localPoint)
 {
 	return m_finalLocalRenderRect.contains(localPoint);
 }
@@ -651,7 +651,7 @@ UIContext* UIElement::getContext() const
 }
 
 //------------------------------------------------------------------------------
-const ThicknessF& UIElement::getMargineInternal() const { return m_localStyle->margin.get(); }
+const Thickness& UIElement::getMargineInternal() const { return m_localStyle->margin.get(); }
 
 //------------------------------------------------------------------------------
 void UIElement::updateLayout(const Size& viewSize)
@@ -692,7 +692,7 @@ void UIElement::updateFrame()
 //------------------------------------------------------------------------------
 void UIElement::render(DrawingContext* g)
 {
-	//PointF contentOffset;
+	//Point contentOffset;
 	if (m_visualParent != nullptr)
 	{
 		detail::BuiltinEffectData::combine(m_visualParent->m_combinedBuiltinEffectData, m_builtinEffectData, &m_combinedBuiltinEffectData);
@@ -712,7 +712,7 @@ void UIElement::render(DrawingContext* g)
 
 	
 
-	//g->drawBoxBorder(Rect(50, 50, 300, 200), ThicknessF(10, 10, 10, 10), Color::Red, Color::Green, Color::Blue, Color::Cyan, 10, 10, 10, 10);	// TODO:
+	//g->drawBoxBorder(Rect(50, 50, 300, 200), Thickness(10, 10, 10, 10), Color::Red, Color::Green, Color::Blue, Color::Cyan, 10, 10, 10, 10);	// TODO:
 	//g->drawBoxShadow(Rect(10, 20, 300, 400), Color::Black, 5, 5, false);
 	onRender(g);
 
@@ -770,7 +770,7 @@ void UIElement::addVisualChild(UIElement* element)
 	// リストが作成されていなければ、ここで始めて作る (省メモリ)
 	if (m_visualChildren == nullptr)
 	{
-		m_visualChildren = std::make_shared<List<RefPtr<UIElement>>>();
+		m_visualChildren = std::make_shared<List<Ref<UIElement>>>();
 	}
 
 	m_visualChildren->add(element);
@@ -789,10 +789,10 @@ void UIElement::removeVisualChild(UIElement* element)
 }
 
 //------------------------------------------------------------------------------
-const PointF& UIElement::getLayoutPosition() const { return position; }
+const Point& UIElement::getLayoutPosition() const { return position; }
 Size UIElement::getLayoutSize() const { return Size(width, height); }
-const ThicknessF& UIElement::getLayoutMargin() const { return m_localStyle->margin.get(); }
-const ThicknessF& UIElement::getLayoutPadding() const { return m_localStyle->padding.get(); }
+const Thickness& UIElement::getLayoutMargin() const { return m_localStyle->margin.get(); }
+const Thickness& UIElement::getLayoutPadding() const { return m_localStyle->padding.get(); }
 AlignmentAnchor UIElement::getLayoutAnchor() const { return anchor; }
 HAlignment UIElement::getLayoutHAlignment() const { return hAlignment; }
 VAlignment UIElement::getLayoutVAlignment() const { return vAlignment; }

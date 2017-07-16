@@ -199,7 +199,7 @@ Driver::IIndexBuffer* IndexBuffer::resolveRHIObject()
 				LN_ENQUEUE_RENDER_COMMAND_2(
 					VertexBuffer_SetSubData, m_manager,
 					detail::RenderBulkData, data,
-					RefPtr<Driver::IIndexBuffer>, deviceObj,
+					Ref<Driver::IIndexBuffer>, deviceObj,
 					{
 						deviceObj->setSubData(0, data.getData(), data.getSize());
 					});

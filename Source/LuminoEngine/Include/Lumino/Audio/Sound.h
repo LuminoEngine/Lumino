@@ -9,7 +9,7 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_AUDIO_BEGIN
 
 class Sound;
-typedef RefPtr<Sound>	SoundPtr;
+typedef Ref<Sound>	SoundPtr;
 
 /**
 	@brief	音声の再生、制御を行います。
@@ -18,7 +18,7 @@ LN_CLASS()
 class Sound
     : public Object
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 

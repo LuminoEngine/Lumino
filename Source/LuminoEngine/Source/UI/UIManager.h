@@ -46,7 +46,7 @@ public:
 	//void CreateWrapModeMainFrame(void* window, World2D* defaultWorld2D, World3D* defaultWorld3D);
 	void releaseGameModeMainFrame();
 	EventArgsPool* getEventArgsPool() const { return m_eventArgsPool; }
-	const RefPtr<Texture2D>& getDefaultSkinTexture() const { return m_defaultSkinTexture; }
+	const Ref<Texture2D>& getDefaultSkinTexture() const { return m_defaultSkinTexture; }
 	UIStyleTable* getDefaultStyleTable() const { return m_defaultStyleTable; }
 	AnimationManager* getAnimationManager() const { return m_animationManager; }
 	PlatformManager* getPlatformManager() const { return m_platformManager; }
@@ -72,10 +72,10 @@ private:
 	PlatformManager*	m_platformManager;
 	GraphicsManager*	m_graphicsManager;
 	AssetsManager*		m_assetsManager;
-	RefPtr<Texture2D>	m_defaultSkinTexture;
+	Ref<Texture2D>	m_defaultSkinTexture;
 	UIStyleTable*		m_defaultStyleTable;
 	UIMainWindow*		m_mainWindow;
-	List<RefPtr<UIRoutedCommand>>		m_allGlobalCommands;
+	List<Ref<UIRoutedCommand>>		m_allGlobalCommands;
 	List<UIFrameWindow*>	m_windows;
 
 	UIElement*				m_mouseCapturedElement;

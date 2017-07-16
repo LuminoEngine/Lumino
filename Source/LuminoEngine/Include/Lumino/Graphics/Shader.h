@@ -8,7 +8,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 class ShaderVariable;
 class Material;
 class Shader;
-using ShaderPtr = RefPtr<Shader>;
+using ShaderPtr = Ref<Shader>;
 
 enum class ZSortDistanceBase
 {
@@ -168,14 +168,14 @@ public:
 		@brief		シェーダコードが記述されたテキストファイルをコンパイルし、Shader を作成します。
 		@param[in]	filePath		: ファイルパス
 	*/
-	static RefPtr<Shader> create(const StringRef& filePath, bool useTRSS = false);
+	static Ref<Shader> create(const StringRef& filePath, bool useTRSS = false);
 
 	/**
 		@brief		メモリ上に展開されたテキストデータをコンパイルし、Shader を作成します。
 		@param[in]	code			: シェーダコード文字列
 		@param[in]	length			: 文字列の長さ (-1 で 終端 \0 まで)
 	*/
-	static RefPtr<Shader> create(const char* code, int length);
+	static Ref<Shader> create(const char* code, int length);
 	
 	///**
 	//	@brief		文字列をコンパイルし、シェーダを作成します。

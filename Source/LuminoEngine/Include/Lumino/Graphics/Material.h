@@ -10,8 +10,8 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 class Material;
 class DiffuseMaterial;
-using MaterialPtr = RefPtr<Material>;
-using DiffuseMaterialPtr = RefPtr<DiffuseMaterial>;
+using MaterialPtr = Ref<Material>;
+using DiffuseMaterialPtr = Ref<DiffuseMaterial>;
 
 namespace detail {
 
@@ -143,7 +143,7 @@ public:
 	}
 
 private:
-	RefPtr<Shader>	m_shader;		// default shader (on VisualComponent, マテリアルの shader が null のときに使われる)
+	Ref<Shader>	m_shader;		// default shader (on VisualComponent, マテリアルの shader が null のときに使われる)
 	float			m_opacity;
 	Color			m_colorScale;
 	Color			m_blendColor;
@@ -160,7 +160,7 @@ private:
 class Material
 	: public Object
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	static const String DiffuseParameter;
 	static const String AmbientParameter;
@@ -236,7 +236,7 @@ LN_INTERNAL_ACCESS:
 
 	//const List<ValuePair>& GetLinkedVariableList() { return m_linkedVariableList; }
 
-	RefPtr<Material> copyShared() const;
+	Ref<Material> copyShared() const;
 
 	//void ResolveCombinedMaterial();
 	//detail::CombinedMaterial* getCombinedMaterial() const;
@@ -286,7 +286,7 @@ private:
 
 
 LN_INTERNAL_ACCESS:
-	RefPtr<Shader>						m_shader;
+	Ref<Shader>						m_shader;
 	int									m_revisionCount;
 	uint32_t							m_hashCode;
 
@@ -325,7 +325,7 @@ LN_INTERNAL_ACCESS:
 class DiffuseMaterial
 	: public Material
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	static DiffuseMaterialPtr create();
 
@@ -352,7 +352,7 @@ public:
 	CombinedMaterial();
 	virtual ~CombinedMaterial();
 
-	RefPtr<Shader>	m_shader;
+	Ref<Shader>	m_shader;
 	Color			m_colorScale;	// 乗算結合済み (opacity 込み)
 	Color			m_blendColor;	// 加算結合済み
 	ToneF			m_tone;			// 加算結合済み

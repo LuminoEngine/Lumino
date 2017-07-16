@@ -135,7 +135,7 @@ VectorTextRenderer::~VectorTextRenderer()
 void VectorTextRenderer::initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
-	m_core = RefPtr<VectorTextRendererCore>::makeRef();
+	m_core = Ref<VectorTextRendererCore>::makeRef();
 	m_core->initialize(m_manager);
 }
 
@@ -168,7 +168,7 @@ void VectorTextRenderer::drawInternal(const Matrix& transform)
 		VectorGlyphData data;
 		data.cacheGlyphInfoHandle = glyphCache->getGlyphInfo(item.ch, &needFlush);
 		data.transform = transform;
-		data.origin = PointF(item.columnBaseline, item.lineBaseline);
+		data.origin = Point(item.columnBaseline, item.lineBaseline);
 		m_bufferingCache.add(data);
 	}
 
@@ -192,8 +192,8 @@ void VectorTextRenderer::flush()
 			VectorTextRendererCore*, m_core,
 			RenderBulkData, dataListData,
 			int, dataCount,
-			RefPtr<VectorFontGlyphCache>, glyphCache,
-			RefPtr<Brush>, m_fillBrush,
+			Ref<VectorFontGlyphCache>, glyphCache,
+			Ref<Brush>, m_fillBrush,
 			{
 				m_core->render(
 					(VectorGlyphData*)dataListData.getData(),

@@ -178,8 +178,8 @@ void EngineInitalize()
 		// base
 		{
 			auto* props = style->getPropertyTable();
-			props->background = RefPtr<Brush>::staticCast(buttonNormalBrush);
-			props->borderThickness = ThicknessF(0);
+			props->background = Ref<Brush>::staticCast(buttonNormalBrush);
+			props->borderThickness = Thickness(0);
 		}
 	}
 }

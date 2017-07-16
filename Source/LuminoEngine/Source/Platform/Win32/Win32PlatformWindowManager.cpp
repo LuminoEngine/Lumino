@@ -121,7 +121,7 @@ Win32PlatformWindow* Win32WindowManager::createNativeWindow(const NativeWindowCr
 		//::ValidateRect(hWnd, 0);
 
 		//// Win32Window 作成
-		//RefPtr<Win32NativeWindow> window(LN_NEW Win32NativeWindow(this, hWnd, dwStyle, hAccel, data.TitleText), false);
+		//Ref<Win32NativeWindow> window(LN_NEW Win32NativeWindow(this, hWnd, dwStyle, hAccel, data.TitleText), false);
 
 		//// ウィンドウハンドルと Win32Window のポインタを関連付ける
 		//BOOL r = ::SetProp(hWnd, PROP_WINPROC, window);
@@ -130,7 +130,7 @@ Win32PlatformWindow* Win32WindowManager::createNativeWindow(const NativeWindowCr
 		////window->setFullScreenEnabled(true);
 		//window->setVisible(true);
 
-		RefPtr<Win32NativeWindow> window(LN_NEW Win32NativeWindow(this), false);
+		Ref<Win32NativeWindow> window(LN_NEW Win32NativeWindow(this), false);
 		window->Initilaize(this, data.TitleText, data.Width, data.Height, data.Fullscreen, data.Resizable);
 		window->setVisible(true);
 		window.safeAddRef();

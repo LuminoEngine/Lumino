@@ -25,7 +25,7 @@ class UIFrameWindow
 	: public UILayoutView
 	, public IEventListener
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	PlatformWindow* getPlatformWindow() const;
@@ -59,13 +59,13 @@ private:
 	bool isStandaloneSwapChain() const { return !m_swapChain.isNull(); }
 
 	detail::UIManager*		m_manager;
-	RefPtr<PlatformWindow>	m_platformWindow;
-	RefPtr<SwapChain>		m_swapChain;
+	Ref<PlatformWindow>	m_platformWindow;
+	Ref<SwapChain>		m_swapChain;
 
-	RefPtr<DrawingContext>				m_drawingContext;
-	RefPtr<detail::SceneRenderer>	m_internalRenderer;
-	RefPtr<RenderView>	m_drawElementListSet;		// いまは作業用変数を使うためのダミー
-	RefPtr<RenderDiag>	m_renderDiag;
+	Ref<DrawingContext>				m_drawingContext;
+	Ref<detail::SceneRenderer>	m_internalRenderer;
+	Ref<RenderView>	m_drawElementListSet;		// いまは作業用変数を使うためのダミー
+	Ref<RenderDiag>	m_renderDiag;
 	bool								m_delayedRenderingSkip;
 
 	friend class detail::UIManager;
@@ -78,7 +78,7 @@ private:
 class UIMainWindow
 	: public UIFrameWindow
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	UIContext* getMainUIContext() const { return m_mainUIContext; }
 	UIViewport* getViewport() const;
@@ -105,17 +105,17 @@ private:
 	void updateViewportTransform();
 
 	UIContext*						m_mainUIContext;
-	RefPtr<UIViewport>				m_mainUIViewport;
-	RefPtr<CameraViewportLayer2>	m_cameraViewportLayer3D;
-	RefPtr<CameraViewportLayer2>	m_cameraViewportLayer2D;
-	RefPtr<UILayoutLayer>			m_uiLayer;
+	Ref<UIViewport>				m_mainUIViewport;
+	Ref<CameraViewportLayer2>	m_cameraViewportLayer3D;
+	Ref<CameraViewportLayer2>	m_cameraViewportLayer2D;
+	Ref<UILayoutLayer>			m_uiLayer;
 };
 
 
 
 
 class UINativeHostWindow;
-using UINativeHostWindowPtr = RefPtr<UINativeHostWindow>;
+using UINativeHostWindowPtr = Ref<UINativeHostWindow>;
 
 /**
 	@brief		ネイティブウィンドウをホストするための UIFrameWindow クラスです。
@@ -123,7 +123,7 @@ using UINativeHostWindowPtr = RefPtr<UINativeHostWindow>;
 class UINativeHostWindow
 	: public UIFrameWindow
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	/**

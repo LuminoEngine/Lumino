@@ -6,7 +6,7 @@ LN_NAMESPACE_BEGIN
 namespace tr
 {
 class PlatformFileOpenDialog;
-using PlatformFileOpenDialogPtr = RefPtr<PlatformFileOpenDialog>;
+using PlatformFileOpenDialogPtr = Ref<PlatformFileOpenDialog>;
 
 /**
 	@brief	

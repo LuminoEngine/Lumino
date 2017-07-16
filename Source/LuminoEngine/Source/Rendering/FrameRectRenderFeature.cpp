@@ -107,16 +107,16 @@ void FrameRectRendererCore::draw(const Matrix& transform, const Rect& rect)
 	if (m_state.imageDrawMode == BrushImageDrawMode::BoxFrame)
 	{
 		Rect dstRect = rect;
-		dstRect.x += m_state.borderThickness.Left;
-		dstRect.y += m_state.borderThickness.Top;
-		dstRect.width -= m_state.borderThickness.Right + m_state.borderThickness.Left;
-		dstRect.height -= m_state.borderThickness.Bottom + m_state.borderThickness.Top;
+		dstRect.x += m_state.borderThickness.left;
+		dstRect.y += m_state.borderThickness.top;
+		dstRect.width -= m_state.borderThickness.getWidth();
+		dstRect.height -= m_state.borderThickness.getHeight();
 
 		RectI srcRect = m_state.srcRect;
-		srcRect.x += m_state.borderThickness.Left;
-		srcRect.y += m_state.borderThickness.Top;
-		srcRect.width -= m_state.borderThickness.Right + m_state.borderThickness.Left;
-		srcRect.height -= m_state.borderThickness.Bottom + m_state.borderThickness.Top;
+		srcRect.x += m_state.borderThickness.left;
+		srcRect.y += m_state.borderThickness.top;
+		srcRect.width -= m_state.borderThickness.getWidth();
+		srcRect.height -= m_state.borderThickness.getHeight();
 
 		Size texSize((float)srcTexture->getRealSize().width, (float)srcTexture->getRealSize().height);
 		texSize.width = 1.0f / texSize.width;
@@ -340,7 +340,7 @@ void FrameRectRendererCore::putRectangle(const Rect& rect, const RectI& srcPixel
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRendererCore::putFrameRectangle(const Rect& rect, const ThicknessF& borderThickness, Driver::ITexture* srcTexture, RectI srcRect, BrushWrapMode wrapMode)
+void FrameRectRendererCore::putFrameRectangle(const Rect& rect, const Thickness& borderThickness, Driver::ITexture* srcTexture, RectI srcRect, BrushWrapMode wrapMode)
 {
 	if (srcRect.isEmpty()) return;
 	assert(srcTexture != nullptr);
@@ -360,116 +360,116 @@ void FrameRectRendererCore::putFrameRectangle(const Rect& rect, const ThicknessF
 	texSize.height = 1.0f / texSize.height;
 	Rect uvSrcRect(srcRect.x * texSize.width, srcRect.y * texSize.height, srcRect.width * texSize.width, srcRect.height * texSize.height);
 
-	ThicknessF dstFrame;
-	ThicknessF uvFrame;
-	Thickness srcFrame;
+	Thickness dstFrame;
+	Thickness uvFrame;
+	ThicknessI srcFrame;
 	{
-		ThicknessF baseThickness = borderThickness;
+		Thickness baseThickness = borderThickness;
 
 		// 横幅が小さいため、枠幅も狭めなければならない
-		if (rect.width < baseThickness.Left + baseThickness.Right)
+		if (rect.width < baseThickness.left + baseThickness.right)
 		{
-			baseThickness.Left = rect.width / 2;
-			baseThickness.Right = rect.width / 2;
+			baseThickness.left = rect.width / 2;
+			baseThickness.right = rect.width / 2;
 		}
 		// 縦幅が小さいため、枠幅も狭めなければならない
-		if (rect.height < baseThickness.Top + baseThickness.Bottom)
+		if (rect.height < baseThickness.top + baseThickness.bottom)
 		{
-			baseThickness.Top = rect.height / 2;
-			baseThickness.Bottom = rect.height / 2;
+			baseThickness.top = rect.height / 2;
+			baseThickness.bottom = rect.height / 2;
 		}
 
-		dstFrame.Left = baseThickness.Left;
-		dstFrame.Right = baseThickness.Right;
-		dstFrame.Top = baseThickness.Top;
-		dstFrame.Bottom = baseThickness.Bottom;
-		uvFrame.Left = baseThickness.Left * texSize.width;
-		uvFrame.Right = baseThickness.Right * texSize.width;
-		uvFrame.Top = baseThickness.Top * texSize.height;
-		uvFrame.Bottom = baseThickness.Bottom * texSize.height;
-		srcFrame.Left = (int)baseThickness.Left;	// 型変換回数を減らすため、あらかじめ int 化しておく
-		srcFrame.Right = (int)baseThickness.Right;
-		srcFrame.Top = (int)baseThickness.Top;
-		srcFrame.Bottom = (int)baseThickness.Bottom;
+		dstFrame.left = baseThickness.left;
+		dstFrame.right = baseThickness.right;
+		dstFrame.top = baseThickness.top;
+		dstFrame.bottom = baseThickness.bottom;
+		uvFrame.left = baseThickness.left * texSize.width;
+		uvFrame.right = baseThickness.right * texSize.width;
+		uvFrame.top = baseThickness.top * texSize.height;
+		uvFrame.bottom = baseThickness.bottom * texSize.height;
+		srcFrame.left = (int)baseThickness.left;	// 型変換回数を減らすため、あらかじめ int 化しておく
+		srcFrame.right = (int)baseThickness.right;
+		srcFrame.top = (int)baseThickness.top;
+		srcFrame.bottom = (int)baseThickness.bottom;
 	}
 
 	Rect outerRect = rect;
-	Rect innerRect(outerRect.x + dstFrame.Left, outerRect.y + dstFrame.Top, outerRect.width - (dstFrame.Left + dstFrame.Right), outerRect.height - (dstFrame.Top + dstFrame.Bottom));
+	Rect innerRect(outerRect.x + dstFrame.left, outerRect.y + dstFrame.top, outerRect.width - (dstFrame.left + dstFrame.right), outerRect.height - (dstFrame.top + dstFrame.bottom));
 	Rect outerUVRect = uvSrcRect;
-	Rect innerUVRect(outerUVRect.x + uvFrame.Left, outerUVRect.y + uvFrame.Top, outerUVRect.width - (uvFrame.Left + uvFrame.Right), outerUVRect.height - (uvFrame.Top + uvFrame.Bottom));
+	Rect innerUVRect(outerUVRect.x + uvFrame.left, outerUVRect.y + uvFrame.top, outerUVRect.width - (uvFrame.left + uvFrame.right), outerUVRect.height - (uvFrame.top + uvFrame.bottom));
 	RectI  outerSrcRect = srcRect;
-	RectI  innerSrcRect(outerSrcRect.x + srcFrame.Left, outerSrcRect.y + srcFrame.Top, outerSrcRect.width - (srcFrame.Left + srcFrame.Right), outerSrcRect.height - (srcFrame.Top + srcFrame.Bottom));
+	RectI  innerSrcRect(outerSrcRect.x + srcFrame.left, outerSrcRect.y + srcFrame.top, outerSrcRect.width - (srcFrame.left + srcFrame.right), outerSrcRect.height - (srcFrame.top + srcFrame.bottom));
 
 	// 左上	■□□
 	//		□　□
 	//		□□□
 	putRectangle(
-		Rect(outerRect.getLeft(), outerRect.getTop(), dstFrame.Left, dstFrame.Top),
-		RectI(outerSrcRect.getLeft(), outerSrcRect.getTop(), srcFrame.Left, srcFrame.Top),
-		Rect(outerUVRect.getLeft(), outerUVRect.getTop(), uvFrame.Left, uvFrame.Top),
+		Rect(outerRect.getLeft(), outerRect.getTop(), dstFrame.left, dstFrame.top),
+		RectI(outerSrcRect.getLeft(), outerSrcRect.getTop(), srcFrame.left, srcFrame.top),
+		Rect(outerUVRect.getLeft(), outerUVRect.getTop(), uvFrame.left, uvFrame.top),
 		srcTexture, wrapMode);
 
 	// 上	□■□
 	//		□　□
 	//		□□□
 	putRectangle(
-		Rect(innerRect.getLeft(), outerRect.getTop(), innerRect.width, dstFrame.Top),
-		RectI(innerSrcRect.getLeft(), outerSrcRect.getTop(), innerSrcRect.width, srcFrame.Top),
-		Rect(innerUVRect.getLeft(), outerUVRect.getTop(), innerUVRect.width, uvFrame.Top),
+		Rect(innerRect.getLeft(), outerRect.getTop(), innerRect.width, dstFrame.top),
+		RectI(innerSrcRect.getLeft(), outerSrcRect.getTop(), innerSrcRect.width, srcFrame.top),
+		Rect(innerUVRect.getLeft(), outerUVRect.getTop(), innerUVRect.width, uvFrame.top),
 		srcTexture, wrapMode);
 
 	// 右上	□□■
 	//		□　□
 	//		□□□
 	putRectangle(
-		Rect(innerRect.getRight(), outerRect.getTop(), dstFrame.Right, dstFrame.Top),
-		RectI(innerSrcRect.getRight(), outerSrcRect.getTop(), srcFrame.Right, srcFrame.Top),
-		Rect(innerUVRect.getRight(), outerUVRect.getTop(), uvFrame.Right, uvFrame.Top),
+		Rect(innerRect.getRight(), outerRect.getTop(), dstFrame.right, dstFrame.top),
+		RectI(innerSrcRect.getRight(), outerSrcRect.getTop(), srcFrame.right, srcFrame.top),
+		Rect(innerUVRect.getRight(), outerUVRect.getTop(), uvFrame.right, uvFrame.top),
 		srcTexture, wrapMode);
 
 	// 右	□□□
 	//		□　■
 	//		□□□
 	putRectangle(
-		Rect(innerRect.getRight(), innerRect.getTop(), dstFrame.Right, innerRect.height),
-		RectI(innerSrcRect.getRight(), innerSrcRect.getTop(), srcFrame.Right, innerSrcRect.height),
-		Rect(innerUVRect.getRight(), innerUVRect.getTop(), uvFrame.Right, innerUVRect.height),
+		Rect(innerRect.getRight(), innerRect.getTop(), dstFrame.right, innerRect.height),
+		RectI(innerSrcRect.getRight(), innerSrcRect.getTop(), srcFrame.right, innerSrcRect.height),
+		Rect(innerUVRect.getRight(), innerUVRect.getTop(), uvFrame.right, innerUVRect.height),
 		srcTexture, wrapMode);
 
 	// 右下	□□□
 	//		□　□
 	//		□□■
 	putRectangle(
-		Rect(innerRect.getRight(), innerRect.getBottom(), dstFrame.Right, dstFrame.Bottom),
-		RectI(innerSrcRect.getRight(), innerSrcRect.getBottom(), srcFrame.Right, srcFrame.Bottom),
-		Rect(innerUVRect.getRight(), innerUVRect.getBottom(), uvFrame.Right, uvFrame.Bottom),
+		Rect(innerRect.getRight(), innerRect.getBottom(), dstFrame.right, dstFrame.bottom),
+		RectI(innerSrcRect.getRight(), innerSrcRect.getBottom(), srcFrame.right, srcFrame.bottom),
+		Rect(innerUVRect.getRight(), innerUVRect.getBottom(), uvFrame.right, uvFrame.bottom),
 		srcTexture, wrapMode);
 
 	// 下	□□□
 	//		□　□
 	//		□■□
 	putRectangle(
-		Rect(innerRect.getLeft(), innerRect.getBottom(), innerRect.width, dstFrame.Bottom),
-		RectI(innerSrcRect.getLeft(), innerSrcRect.getBottom(), innerSrcRect.width, srcFrame.Bottom),
-		Rect(innerUVRect.getLeft(), innerUVRect.getBottom(), innerUVRect.width, uvFrame.Bottom),
+		Rect(innerRect.getLeft(), innerRect.getBottom(), innerRect.width, dstFrame.bottom),
+		RectI(innerSrcRect.getLeft(), innerSrcRect.getBottom(), innerSrcRect.width, srcFrame.bottom),
+		Rect(innerUVRect.getLeft(), innerUVRect.getBottom(), innerUVRect.width, uvFrame.bottom),
 		srcTexture, wrapMode);
 
 	// 左下	□□□
 	//		□　□
 	//		■□□
 	putRectangle(
-		Rect(outerRect.getLeft(), innerRect.getBottom(), dstFrame.Left, dstFrame.Bottom),
-		RectI(outerSrcRect.getLeft(), innerSrcRect.getBottom(), srcFrame.Left, srcFrame.Bottom),
-		Rect(outerUVRect.getLeft(), innerUVRect.getBottom(), uvFrame.Left, uvFrame.Bottom),
+		Rect(outerRect.getLeft(), innerRect.getBottom(), dstFrame.left, dstFrame.bottom),
+		RectI(outerSrcRect.getLeft(), innerSrcRect.getBottom(), srcFrame.left, srcFrame.bottom),
+		Rect(outerUVRect.getLeft(), innerUVRect.getBottom(), uvFrame.left, uvFrame.bottom),
 		srcTexture, wrapMode);
 
 	// 左	□□□
 	//		■　□
 	//		□□□
 	putRectangle(
-		Rect(outerRect.getLeft(), innerRect.getTop(), dstFrame.Left, innerRect.height),
-		RectI(outerSrcRect.getLeft(), innerSrcRect.getTop(), srcFrame.Left, innerSrcRect.height),
-		Rect(outerUVRect.getLeft(), innerUVRect.getTop(), uvFrame.Left, innerUVRect.height),
+		Rect(outerRect.getLeft(), innerRect.getTop(), dstFrame.left, innerRect.height),
+		RectI(outerSrcRect.getLeft(), innerSrcRect.getTop(), srcFrame.left, innerSrcRect.height),
+		Rect(outerUVRect.getLeft(), innerUVRect.getTop(), uvFrame.left, innerUVRect.height),
 		srcTexture, wrapMode);
 }
 

@@ -11,7 +11,7 @@ LN_NAMESPACE_BEGIN
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TransitionPostEffect, PostEffect);
 
 //------------------------------------------------------------------------------
-RefPtr<TransitionPostEffect> TransitionPostEffect::create()
+Ref<TransitionPostEffect> TransitionPostEffect::create()
 {
 	return newObject<TransitionPostEffect>();
 }
@@ -85,7 +85,7 @@ void TransitionPostEffect::onRender(DrawList* context, RenderTargetTexture* sour
 			// このときはビューの背景色を使う。
 
 			// TODO: scoped または blit みたいに RT 直接指定の Clear
-			RefPtr<RenderTargetTexture> oldTarget = context->getRenderTarget(0);
+			Ref<RenderTargetTexture> oldTarget = context->getRenderTarget(0);
 			context->setRenderTarget(0, m_savedTarget);
 			context->clear(ClearFlags::Color, GetOwnerLayer()->getOwnerViewport()->getViewBackgroundColor());
 		}
@@ -114,7 +114,7 @@ void TransitionPostEffect::onRender(DrawList* context, RenderTargetTexture* sour
 
 
 	// TODO: scoped
-	RefPtr<Shader> oldShader = context->getShader();
+	Ref<Shader> oldShader = context->getShader();
 	context->setShader(shader);
 
 	// エフェクト適用済みの描画結果を前回の描画結果として毎回覚えておく

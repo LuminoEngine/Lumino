@@ -29,7 +29,7 @@ TEST_F(Test_Graphics_Pmx, Basic)
 	animator->AddAnimationClip(clip2);
 	animator->Play(clip2->GetName().c_str());
 	
-	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::makeRef();
+	auto cb = Ref<CylinderMouseMoveCameraBehavior>::makeRef();
 	Camera::GetMain3DCamera()->SetCameraBehavior(cb);
 
 	Viewport::GetMainViewport()->SetBackgroundColor(Color::White);
@@ -99,7 +99,7 @@ TEST_F(Test_Graphics_Pmx, Skinning)
 	}
 
 
-	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::makeRef();
+	auto cb = Ref<CylinderMouseMoveCameraBehavior>::makeRef();
 	Camera::GetMain3DCamera()->SetCameraBehavior(cb);
 
 	while (Engine::UpdateFrame())

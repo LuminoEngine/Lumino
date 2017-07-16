@@ -73,7 +73,7 @@ private:
 	detail::IAnimationTargetElement*	m_element;
 	AnimationTargetAttributeEntityList	m_animationTargetAttributeEntityList;
 
-	std::array<RefPtr<detail::AnimationLayer>, MaxLayers>	m_layerList;
+	std::array<Ref<detail::AnimationLayer>, MaxLayers>	m_layerList;
 
 	///// 追加済み AnimationApplyTarget の検索
 	//AnimationApplyTargetState* findAnimationApplyTargetState(const lnKeyChar* naem);
@@ -92,7 +92,7 @@ class AnimationLayer
 	: public RefObject
 {
 public:
-	typedef SortedArray<String, RefPtr<AnimationState>>	AnimationStateList;
+	typedef SortedArray<String, Ref<AnimationState>>	AnimationStateList;
 
 	Animator*			m_owner;
 	AnimationStateList	m_animationStateList;

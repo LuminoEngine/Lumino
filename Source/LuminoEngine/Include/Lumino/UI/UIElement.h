@@ -107,14 +107,14 @@ class UIElement
 	: public RuntimeResource
 	, public ILayoutElement
 {
-	LN_OBJECT();
+	LN_OBJECT;
 
 public:
-	PointF				position;
+	Point				position;
 	float					width;
 	float					height;
-	//ThicknessF		margin;
-	//ThicknessF			padding;
+	//Thickness		margin;
+	//Thickness			padding;
 	AlignmentAnchor		anchor;
 
 	HAlignment			hAlignment;
@@ -125,7 +125,7 @@ public:
 	float					decoratorOpacity;
 
 	// Border
-	//ThicknessF			borderThickness;
+	//Thickness			borderThickness;
 	//CornerRadius		cornerRadius;
 	//Color					leftBorderColor;
 	//Color					topBorderColor;
@@ -158,8 +158,8 @@ public:
 	/** @name Properties */
 	/** @{ */
 
-	void setPosition(const PointF& value) { position = value; }
-	const PointF& getPosition() const { return position; }
+	void setPosition(const Point& value) { position = value; }
+	const Point& getPosition() const { return position; }
 
 	void setWidth(float value) { width = value; }
 	float getWidth() const { return width; }
@@ -171,16 +171,16 @@ public:
 	Size getSize() const { return Size(width, height); }
 
 	/** 要素の margin 値 (外側の余白) を設定します。 */
-	void setMargin(const ThicknessF& margin);
+	void setMargin(const Thickness& margin);
 
 	/** 要素の margin 値 (外側の余白) を取得します。 */
-	const ThicknessF& getMargin() const;
+	const Thickness& getMargin() const;
 
 	/** 要素の padding 値 (内側の余白) を設定します。 */
-	void setPadding(const ThicknessF& padding);
+	void setPadding(const Thickness& padding);
 
 	/** 要素の padding 値 (内側の余白) を取得します。 */
-	const ThicknessF& getPadding() const;
+	const Thickness& getPadding() const;
 
 	void setMinWidth(float value) { m_minSize.width = value; }
 
@@ -348,7 +348,7 @@ protected:
 	virtual void onUpdateStyle(detail::UIStylePropertyTableInstance* localStyle, detail::InvalidateFlags invalidateFlags);
 	virtual void onUpdatingLayout();
 
-	virtual bool onHitTest(const PointF& localPoint);
+	virtual bool onHitTest(const Point& localPoint);
 
 	//UIStylePropertyTable* GetLocalStyle() const { return m_localStyle; }
 
@@ -358,15 +358,15 @@ protected:
 	virtual detail::SpcialUIElementType getSpcialUIElementType() const;
 
 public:
-	virtual UIElement* checkMouseHoverElement(const PointF& globalPt);
+	virtual UIElement* checkMouseHoverElement(const Point& globalPt);
 
 LN_INTERNAL_ACCESS:
 	detail::UIManager* getManager() const { return m_manager; }
 	UIContext* getContext() const;
-	const PointF& getPositionInternal() const { return position; }
+	const Point& getPositionInternal() const { return position; }
 	void setSizeInternal(const Size& size) { width = size.width; height = size.height; }
 	Size getSizeInternal() const { return Size(width, height); }
-	const ThicknessF& getMargineInternal() const;
+	const Thickness& getMargineInternal() const;
 	AlignmentAnchor getAnchorInternal() const { return anchor; }
 	const BrushPtr& getForegroundInternal() const { return foreground; }
 	void setLogicalParent(UIElement* parent);
@@ -403,10 +403,10 @@ LN_PROTECTED_INTERNAL_ACCESS:
 
 private:
 	// ILayoutElement interface
-	virtual const PointF& getLayoutPosition() const override;
+	virtual const Point& getLayoutPosition() const override;
 	virtual Size getLayoutSize() const override;
-	virtual const ThicknessF& getLayoutMargin() const override;
-	virtual const ThicknessF& getLayoutPadding() const override;
+	virtual const Thickness& getLayoutMargin() const override;
+	virtual const Thickness& getLayoutPadding() const override;
 	virtual AlignmentAnchor getLayoutAnchor() const override;
 	virtual HAlignment getLayoutHAlignment() const override;
 	virtual VAlignment getLayoutVAlignment() const override;
@@ -435,18 +435,18 @@ private:
 	UIElement*				m_logicalParent;
 	//UIStylePropertyTable*	m_localStyle;			// 内部的に使用されるスタイル。親や VisualState から取得したスタイルをマージしたもの。
 	//	m_localStyle;
-	RefPtr<detail::UIStylePropertyTableInstance>	m_localStyle;
+	Ref<detail::UIStylePropertyTableInstance>	m_localStyle;
 	Size					m_desiredSize;			// measureLayout() で決定されるこのコントロールの要求サイズ
 	Rect					m_finalLocalRenderRect;		// 描画に使用する最終境界矩形 (グローバル座標系=RootFrame のローカル座標系)
 	Rect					m_finalLocalContentRect;
 	Rect					m_finalGlobalRect;
 	String					m_elementName;				// 要素名 ("UITextBlock" など) TODO: いらないかも
-	RefPtr<UIVisualStateManager>	m_visualStateManager;
+	Ref<UIVisualStateManager>	m_visualStateManager;
 	String							m_styleSubControlOwnerName;
 	String							m_styleSubControlName;
 
 	UIElement*                m_visualParent;
-	std::shared_ptr<List<RefPtr<UIElement>>>    m_visualChildren;
+	std::shared_ptr<List<Ref<UIElement>>>    m_visualChildren;
 
 	detail::GridLayoutInfo	m_gridLayoutInfo;
 
@@ -455,7 +455,7 @@ private:
 
 	UISpecialElementType			m_specialElementType;
 
-	//RefPtr<Style>					m_style;
+	//Ref<Style>					m_style;
 	float					m_combinedOpacity;
 	//AnchorInfo				m_anchorInfo;
 	detail::InvalidateFlags	m_invalidateFlags;

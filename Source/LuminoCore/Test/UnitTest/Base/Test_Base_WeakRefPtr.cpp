@@ -23,7 +23,7 @@ TEST_F(Test_Base_WeakRefPtr, Basic)
 {
 	tr::WeakRefPtr<WeakRefTest1> weak;
 	{
-		auto ptr = RefPtr<WeakRefTest1>::makeRef();
+		auto ptr = Ref<WeakRefTest1>::makeRef();
 		weak = tr::WeakRefPtr<WeakRefTest1>(ptr);
 		ASSERT_EQ(true, weak.isAlive());
 		ASSERT_EQ(100, weak.resolve()->m);

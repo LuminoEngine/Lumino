@@ -51,16 +51,16 @@ Uuid Uuid::generate()
 	CoCreateGuid(&guid);
 	const uint8_t bytes[16] = 
 	{
-		(guid.Data1 >> 24) & 0xFF,
-		(guid.Data1 >> 16) & 0xFF,
-		(guid.Data1 >> 8) & 0xFF,
-		(guid.Data1) & 0xff,
+		(uint8_t)((guid.Data1 >> 24) & 0xFF),
+		(uint8_t)((guid.Data1 >> 16) & 0xFF),
+		(uint8_t)((guid.Data1 >> 8) & 0xFF),
+		(uint8_t)((guid.Data1) & 0xFF),
 
-		(guid.Data2 >> 8) & 0xFF,
-		(guid.Data2) & 0xff,
+		(uint8_t)((guid.Data2 >> 8) & 0xFF),
+		(uint8_t)((guid.Data2) & 0xFF),
 
-		(guid.Data3 >> 8) & 0xFF,
-		(guid.Data3) & 0xFF,
+		(uint8_t)((guid.Data3 >> 8) & 0xFF),
+		(uint8_t)((guid.Data3) & 0xFF),
 
 		guid.Data4[0],
 		guid.Data4[1],

@@ -5,7 +5,7 @@
 #include "../Reflection/ReflectionObject.h"
 
 LN_NAMESPACE_BEGIN
-//template <class T> class RefPtr;
+//template <class T> class Ref;
 
 namespace tr {
 //class ReflectionObject;
@@ -77,7 +77,7 @@ public:
 
 private:
 	friend class Archive;
-	ln::RefPtr<ScVariantCore>	m_core;
+	ln::Ref<ScVariantCore>	m_core;
 };
 
 enum class ArchiveMode
@@ -307,7 +307,7 @@ public:
 	template<class TThis>
 	Archive& operator & (const NameValuePairBaseObject<TThis>& nvp)
 	{
-		process(KeyInfo{ nvp.name, true }, RefPtr<TThis>(nvp.value));
+		process(KeyInfo{ nvp.name, true }, Ref<TThis>(nvp.value));
 		return *this;
 	}
 
@@ -354,7 +354,7 @@ public:
 
 
 protected:
-	virtual RefPtr<ReflectionObject> createObject(const String& className, TypeInfo* requestedType);
+	virtual Ref<ReflectionObject> createObject(const String& className, TypeInfo* requestedType);
 
 private:
 
@@ -428,7 +428,7 @@ private:
 		doSaveObjectType(obj, false);
 		m_currentObject = old;
 	}
-	template<typename T> void addMemberValue(const KeyInfo& key, RefPtr<T>& value)	 // nonÅ]intrusive Object
+	template<typename T> void addMemberValue(const KeyInfo& key, Ref<T>& value)	 // nonÅ]intrusive Object
 	{
 		auto* old = m_currentObject;
 		m_currentObject = m_currentObject->addObject(key.name);
@@ -492,7 +492,7 @@ private:
 	{
 		value.serialize(*this, 0);
 	}
-	template<typename T> void doSaveObjectType(RefPtr<T>& value, bool baseCall)
+	template<typename T> void doSaveObjectType(Ref<T>& value, bool baseCall)
 	{
 		callSave(*value, baseCall);
 	}
@@ -508,11 +508,11 @@ private:
 	//{
 	//	obj.serialize(*this, 0);
 	//}
-	//template<typename T> void AddMemberValueInternal(RefPtr<T>& value)
+	//template<typename T> void AddMemberValueInternal(Ref<T>& value)
 	//{
 	//	CallSave(*value, key.callBase);
 	//}
-	//template<typename T> void AddMemberValueInternal(RefPtr<T>& value)
+	//template<typename T> void AddMemberValueInternal(Ref<T>& value)
 	//{
 	//	CallSave(*value, key.callBase);
 	//}
@@ -601,7 +601,7 @@ private:
 	}
 	// for ln::Object type
 	template<typename T>
-	void addItemValue(ISerializeElement* arrayElement, RefPtr<T>& value)
+	void addItemValue(ISerializeElement* arrayElement, Ref<T>& value)
 	{
 		if (value == nullptr)
 		{
@@ -670,7 +670,7 @@ private:
 
 
 	template<typename T>
-	bool tryGetValue(ISerializeElement* element, RefPtr<T>* value, bool callBase)
+	bool tryGetValue(ISerializeElement* element, Ref<T>* value, bool callBase)
 	{
 		auto* old = m_currentObject;
 		m_currentObject = element;
@@ -776,7 +776,7 @@ private:
 	}
 
 	template<typename T>
-	void callLoad(RefPtr<T>* value, bool callBase)
+	void callLoad(Ref<T>* value, bool callBase)
 	{
 		bool loaded = false;
 		if (m_refrectionSupported)
@@ -796,7 +796,7 @@ private:
 					}
 					else
 					{
-						(*value) = RefPtr<T>::staticCast(createObject(className, typeInfo));
+						(*value) = Ref<T>::staticCast(createObject(className, typeInfo));
 						(*value)->serialize(*this, classVersion);
 					}
 					loaded = true;

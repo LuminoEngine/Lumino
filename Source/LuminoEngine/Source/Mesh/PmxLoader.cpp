@@ -43,7 +43,7 @@ PmxLoader::~PmxLoader()
 }
 
 //------------------------------------------------------------------------------
-RefPtr<PmxSkinnedMeshResource> PmxLoader::load(detail::ModelManager* manager, Stream* stream, const PathName& baseDir, bool isDynamic, ModelCreationFlag flags)
+Ref<PmxSkinnedMeshResource> PmxLoader::load(detail::ModelManager* manager, Stream* stream, const PathName& baseDir, bool isDynamic, ModelCreationFlag flags)
 {
 	m_manager = manager;
 	m_isDynamic = isDynamic;
@@ -51,7 +51,7 @@ RefPtr<PmxSkinnedMeshResource> PmxLoader::load(detail::ModelManager* manager, St
 	m_hasSDEF = false;
 
 	BinaryReader reader(stream);
-	m_modelCore = RefPtr<PmxSkinnedMeshResource>::makeRef();
+	m_modelCore = Ref<PmxSkinnedMeshResource>::makeRef();
 	m_modelCore->initialize(manager->getGraphicsManager(), MeshCreationFlags::None);
 	m_modelCore->Format = ModelFormat_PMX;
 	
@@ -316,7 +316,7 @@ void PmxLoader::loadMaterials(BinaryReader* reader)
 	int indexAttrOffset = 0;
 	for (int i = 0; i < materialCount; ++i)
 	{
-		auto m = RefPtr<PmxMaterialResource>::makeRef();
+		auto m = Ref<PmxMaterialResource>::makeRef();
 		m_modelCore->materials[i] = m;;
 
 		// 材質名
@@ -404,7 +404,7 @@ void PmxLoader::loadBones(BinaryReader* reader)
 	m_modelCore->bones.resize(boneCount);
 	for (int i = 0; i < boneCount; ++i)
 	{
-		m_modelCore->bones[i] = RefPtr<PmxBoneResource>::makeRef(m_modelCore, i);
+		m_modelCore->bones[i] = Ref<PmxBoneResource>::makeRef(m_modelCore, i);
 	}
 
 	// データ読み込み
@@ -486,7 +486,7 @@ void PmxLoader::loadBones(BinaryReader* reader)
 		// IK:1 の場合
 		if (bone->IsIK)
 		{
-			auto ik = RefPtr<PmxIKResource>::makeRef();
+			auto ik = Ref<PmxIKResource>::makeRef();
 			m_modelCore->iks.add(ik);
 			ik->IKBoneIndex = i;							// 現在処理中のボーン番号
 			ik->IKTargetBoneIndex = (int)reader->readInt(getBoneIndexSize());
@@ -529,7 +529,7 @@ void PmxLoader::loadMorphs(BinaryReader* reader)
 	// データ読み込み
 	for (int i = 0; i < boneCount; ++i)
 	{
-		auto morph = RefPtr<PmxMorphResource>::makeRef();
+		auto morph = Ref<PmxMorphResource>::makeRef();
 		m_modelCore->morphs[i] = morph;
 
 		// モーフ名
@@ -673,7 +673,7 @@ void PmxLoader::loadRigidBodys(BinaryReader* reader)
 	// データ読み込み
 	for (int i = 0; i < bodyCount; ++i)
 	{
-		auto body = RefPtr<PmxRigidBodyResource>::makeRef();
+		auto body = Ref<PmxRigidBodyResource>::makeRef();
 		m_modelCore->rigidBodys[i] = body;
 
 		// 剛体名
@@ -765,7 +765,7 @@ void PmxLoader::loadJoints(BinaryReader* reader)
 	// データ読み込み
 	for (int i = 0; i < jointCount; ++i)
 	{
-		auto joint = RefPtr<PmxJointResource>::makeRef();
+		auto joint = Ref<PmxJointResource>::makeRef();
 		m_modelCore->joints[i] = joint;
 
 		// Joint名

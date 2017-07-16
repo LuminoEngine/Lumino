@@ -212,7 +212,7 @@ TEST_F(Test_Graphics_Rendering, drawCylinder)
 TEST_F(Test_Graphics_Rendering, drawMesh)
 {
 	//{
-	//	auto mesh = RefPtr<StaticMeshModel>::MakeRef();
+	//	auto mesh = Ref<StaticMeshModel>::MakeRef();
 	//	mesh->InitializeSquarePlane(detail::GraphicsManager::getInstance(), Vector2(2, 1), Vector3::UnitY, MeshCreationFlags::None);
 	//	mesh->getMeshResource()->setPosition(0, Vector3(-2, 1, 0));
 	//	mesh->getMeshResource()->setNormal(0, Vector3(1, 0, 0));
@@ -222,7 +222,7 @@ TEST_F(Test_Graphics_Rendering, drawMesh)
 	//	mesh->getMeshResource()->setNormal(2, Vector3(0, 1, 0));
 	//	mesh->getMeshResource()->setPosition(3, Vector3(2, -1, 0));
 	//	mesh->getMeshResource()->setNormal(3, Vector3(0, 0, 1));
-	//	auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::MakeRef();
+	//	auto cb = Ref<CylinderMouseMoveCameraBehavior>::MakeRef();
 	//	Camera::getMain3DCamera()->setCameraBehavior(cb);
 
 	//	while (1)
@@ -239,7 +239,7 @@ TEST_F(Test_Graphics_Rendering, drawMesh)
 	//	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1.png")));
 	//}
 	{
-		auto mesh = RefPtr<StaticMeshModel>::makeRef();
+		auto mesh = Ref<StaticMeshModel>::makeRef();
 		mesh->initializeSphere(detail::GraphicsManager::getInstance(), 2, 8, 4, MeshCreationFlags::None);
 
 		LN_TEST_BEGIN_FRAME;
@@ -313,7 +313,7 @@ TEST_F(Test_Graphics_Rendering, drawText_)
 		Engine::getWorld2D()->getRenderer()->setFont(font);
 		Engine::getWorld2D()->getRenderer()->setBrush(Brush::White);
 		Engine::getWorld2D()->getRenderer()->setTransform(Matrix::makeTranslation(10, 20, 0));
-		Engine::getWorld2D()->getRenderer()->drawText_(_T("Text1"), PointF());
+		Engine::getWorld2D()->getRenderer()->drawText_(_T("Text1"), Point());
 		Engine::renderFrame();
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawText3.png")));
@@ -433,19 +433,19 @@ TEST_F(Test_Graphics_Rendering, drawFrameRectangle)
 		brush1->setSourceRect(0, 192, 32, 32);
 		brush1->setWrapMode(BrushWrapMode::Tile);
 		brush1->getImageDrawMode(BrushImageDrawMode::BorderFrame);
-		brush1->getBorderThickness(ThicknessF(8, 8, 8, 8));
+		brush1->getBorderThickness(Thickness(8, 8, 8, 8));
 
 		auto brush2 = TextureBrush::create(LN_LOCALFILE("TestData/Window.png"));
 		brush2->setSourceRect(0, 160, 32, 32);
 		brush2->setWrapMode(BrushWrapMode::Tile);
 		brush2->getImageDrawMode(BrushImageDrawMode::BorderFrame);
-		brush2->getBorderThickness(ThicknessF(0, 2, 4, 8));
+		brush2->getBorderThickness(Thickness(0, 2, 4, 8));
 
 		auto brush3 = TextureBrush::create(LN_LOCALFILE("TestData/Window.png"));
 		brush3->setSourceRect(0, 160, 32, 32);
 		brush3->setWrapMode(BrushWrapMode::Tile);
 		brush3->getImageDrawMode(BrushImageDrawMode::BorderFrame);
-		brush3->getBorderThickness(ThicknessF(8, 8, 8, 8));
+		brush3->getBorderThickness(Thickness(8, 8, 8, 8));
 
 		LN_TEST_BEGIN_FRAME;
 
@@ -481,19 +481,19 @@ TEST_F(Test_Graphics_Rendering, drawFrameRectangle)
 		brush1->setSourceRect(0, 192, 32, 32);
 		brush1->setWrapMode(BrushWrapMode::Stretch);
 		brush1->getImageDrawMode(BrushImageDrawMode::BorderFrame);
-		brush1->getBorderThickness(ThicknessF(8, 8, 8, 8));
+		brush1->getBorderThickness(Thickness(8, 8, 8, 8));
 
 		auto brush2 = TextureBrush::create(LN_LOCALFILE("TestData/Window.png"));
 		brush2->setSourceRect(0, 192, 32, 32);
 		brush2->setWrapMode(BrushWrapMode::Stretch);
 		brush2->getImageDrawMode(BrushImageDrawMode::BoxFrame);
-		brush2->getBorderThickness(ThicknessF(8, 8, 8, 8));
+		brush2->getBorderThickness(Thickness(8, 8, 8, 8));
 
 		auto brush3 = TextureBrush::create(LN_LOCALFILE("TestData/Window.png"));
 		brush3->setSourceRect(0, 192, 32, 32);
 		brush3->setWrapMode(BrushWrapMode::Tile);
 		brush3->getImageDrawMode(BrushImageDrawMode::BoxFrame);
-		brush3->getBorderThickness(ThicknessF(8, 8, 8, 8));
+		brush3->getBorderThickness(Thickness(8, 8, 8, 8));
 
 		LN_TEST_BEGIN_FRAME;
 
@@ -539,7 +539,7 @@ TEST_F(Test_Graphics_DrawingContext, drawChar)
 		//auto* dc = Engine::getMainWindow()->getDrawingContext();
 		dc->clear(ClearFlags::Color, Color::Blue);
 		dc->setBrush(Brush::Black);
-		dc->drawChar('g', PointF(100, 100));
+		dc->drawChar('g', Point(100, 100));
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_DrawingContext.DrawChar1.png"), 90, true));
 	}

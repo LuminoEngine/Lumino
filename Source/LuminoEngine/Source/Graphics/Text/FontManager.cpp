@@ -127,7 +127,7 @@ void FontManager::initialize(FileManager* fileManager, GraphicsManager* graphics
 	LN_THROW(err == 0, InvalidOperationException, "failed initialize font image cache : %d\n", err);
 
 	// デフォルトフォント
-	m_defaultFont = RefPtr<Font>::makeRef();
+	m_defaultFont = Ref<Font>::makeRef();
 	m_defaultFont->initialize(m_graphicsManager, nullptr);
 	m_defaultFont->setFamily(m_defaultFontName);
 	m_defaultFont->setAntiAlias(true);
@@ -140,13 +140,13 @@ void FontManager::initialize(FileManager* fileManager, GraphicsManager* graphics
 	//m_defaultFont = RawFont::CreateBuiltInBitmapFontInternal(this, 7);
 
 	// キャッシュ
-	m_rawFontCache = RefPtr<CacheManager>::makeRef(32, 0);
+	m_rawFontCache = Ref<CacheManager>::makeRef(32, 0);
 
 	// 組み込みフォント
 	m_builtinFontList.resize(1);
 	{
-		RefPtr<RawFont> raw = RawFont::createBuiltInBitmapFontInternal2(7);
-		RefPtr<Font> font = RefPtr<Font>::makeRef();
+		Ref<RawFont> raw = RawFont::createBuiltInBitmapFontInternal2(7);
+		Ref<Font> font = Ref<Font>::makeRef();
 		font->initialize(m_graphicsManager, raw);
 		m_builtinFontList[(int)BuiltinFontSize::XXSmall] = font;
 	}
@@ -196,7 +196,7 @@ void FontManager::dispose()
 void FontManager::registerFontFile(const String& fontFilePath)
 {
 	// ファイルから全てのデータを読み込む
-	RefPtr<Stream> file(m_fileManager->createFileStream(fontFilePath), false);
+	Ref<Stream> file(m_fileManager->createFileStream(fontFilePath), false);
 	ByteBuffer buffer((size_t)file->getLength(), false);
 	file->read(buffer.getData(), buffer.getSize());
 

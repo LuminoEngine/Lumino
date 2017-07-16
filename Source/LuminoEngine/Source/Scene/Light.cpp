@@ -31,7 +31,7 @@ LightComponent::~LightComponent()
 void LightComponent::initialize(LightType type)
 {
 	SceneNode::initialize();
-	m_lightInfo = RefPtr<detail::DynamicLightInfo>::makeRef();
+	m_lightInfo = Ref<detail::DynamicLightInfo>::makeRef();
 	m_lightInfo->m_type = type;
 	m_lightInfo->m_diffuse.set(1.0f, 1.0f, 1.0f, 1.0f);
 	m_lightInfo->m_ambient.set(1.0f, 1.0f, 1.0f, 1.0f);

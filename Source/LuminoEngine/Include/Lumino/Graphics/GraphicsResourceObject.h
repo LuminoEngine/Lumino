@@ -12,7 +12,7 @@ LN_CLASS()
 class GraphicsResourceObject
 	: public Object
 {
-	LN_OBJECT();
+	LN_OBJECT;
 protected:
 	friend class detail::GraphicsManager;
 	friend class ShaderVariable;

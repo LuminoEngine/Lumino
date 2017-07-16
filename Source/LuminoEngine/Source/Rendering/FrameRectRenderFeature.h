@@ -14,10 +14,10 @@ struct FrameRectRendererState
 	//Matrix						worldTransform;
 	Matrix						viewProjTransform;
 	BrushImageDrawMode			imageDrawMode;
-	ThicknessF					borderThickness;
+	Thickness					borderThickness;
 	RectI						srcRect;
 	BrushWrapMode				wrapMode;
-	RefPtr<Driver::ITexture>	texture;
+	Ref<Driver::ITexture>	texture;
 };
 
 class FrameRectRendererCore
@@ -37,7 +37,7 @@ private:
 	void putRectangleStretch(const Rect& rect, const Rect& srcUVRect);
 	void putRectangleTiling(const Rect& rect, const RectI& srcPixelRect, const Rect& srcUVRect, Driver::ITexture* srcTexture);
 	void putRectangle(const Rect& rect, const RectI& srcPixelRect, const Rect& srcUVRect, Driver::ITexture* srcTexture, BrushWrapMode wrapMode);
-	void putFrameRectangle(const Rect& rect, const ThicknessF& borderThickness, Driver::ITexture* srcTexture, RectI srcRect, BrushWrapMode wrapMode);
+	void putFrameRectangle(const Rect& rect, const Thickness& borderThickness, Driver::ITexture* srcTexture, RectI srcRect, BrushWrapMode wrapMode);
 
 	//// TODO í∏ì_êÈåæÇ∆Ç©ÇÕäOïîÇ©ÇÁÇ‡ÇÁÇ§ÇÊÇ§Ç…ÇµÇΩÇ¢
 	//struct Vertex
@@ -64,7 +64,7 @@ private:
 
 	GraphicsManager*			m_manager;
 	Driver::IRenderer*			m_renderer;
-	//RefPtr<Driver::IVertexDeclaration>	m_vertexDeclaration;
+	//Ref<Driver::IVertexDeclaration>	m_vertexDeclaration;
 	Driver::IVertexBuffer*		m_vertexBuffer;
 	Driver::IIndexBuffer*		m_indexBuffer;
 	CacheBuffer<Vertex>			m_vertexCache;
@@ -113,7 +113,7 @@ private:
 	FrameRectRendererCore*	m_core;
 
 	Matrix					m_viewProj;
-	RefPtr<Brush>	m_brush;
+	Ref<Brush>	m_brush;
 
 	//FrameRectRendererState	m_state;
 };

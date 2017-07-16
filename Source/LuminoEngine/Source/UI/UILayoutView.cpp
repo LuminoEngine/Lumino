@@ -107,7 +107,7 @@ void UILayoutView::render(DrawingContext* g)
 }
 
 //------------------------------------------------------------------------------
-bool UILayoutView::updateMouseHover(const PointF& mousePos)
+bool UILayoutView::updateMouseHover(const Point& mousePos)
 {
 	UIElement* old = m_mouseHoverElement;
 
@@ -164,7 +164,7 @@ void UILayoutView::openPopup(UIPopup* popup)
 //------------------------------------------------------------------------------
 void UILayoutView::closePopup(UIPopup* popup)
 {
-	m_popupContainers.removeIf([popup](const RefPtr<detail::UIPopuoContainer>& ptr) { return ptr->GetPopup() == popup; });
+	m_popupContainers.removeIf([popup](const Ref<detail::UIPopuoContainer>& ptr) { return ptr->GetPopup() == popup; });
 }
 
 ////------------------------------------------------------------------------------
@@ -206,7 +206,7 @@ bool UILayoutView::injectMouseMove(float clientX, float clientY)
 		auto args = UIMouseEventArgs::create(UIEvents::MouseMoveEvent, MouseButtons::None, clientX, clientY, 0, true);
 		return m_manager->getMouseCapturedElement()->onEvent(detail::UIInternalEventType::MouseMove, args);
 	}
-	updateMouseHover(PointF(clientX, clientY));
+	updateMouseHover(Point(clientX, clientY));
 	if (m_mouseHoverElement == nullptr) return false;
 
 	auto args = UIMouseEventArgs::create(UIEvents::MouseMoveEvent, MouseButtons::None, clientX, clientY, 0, true);

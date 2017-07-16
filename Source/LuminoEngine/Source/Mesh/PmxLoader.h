@@ -41,7 +41,7 @@ public:
 	PmxLoader();
 	~PmxLoader();
 
-	RefPtr<PmxSkinnedMeshResource> load(detail::ModelManager* manager, Stream* stream, const PathName& baseDir, bool isDynamic, ModelCreationFlag flags);
+	Ref<PmxSkinnedMeshResource> load(detail::ModelManager* manager, Stream* stream, const PathName& baseDir, bool isDynamic, ModelCreationFlag flags);
 
 private:
 	PMX_Encode getEncode() { return (PMX_Encode)m_pmxHeader.Data[0]; }
@@ -72,9 +72,9 @@ private:
 	detail::ModelManager*			m_manager;
 	bool							m_isDynamic;
 	ModelCreationFlag				m_flags;
-	RefPtr<PmxSkinnedMeshResource>	m_modelCore;		///< 最終出力
+	Ref<PmxSkinnedMeshResource>	m_modelCore;		///< 最終出力
 	PMX_Header						m_pmxHeader;
-	List<RefPtr<Texture>>			m_textureTable;
+	List<Ref<Texture>>			m_textureTable;
 	ByteBuffer						m_tmpBuffer;
 	bool							m_hasSDEF;
 };

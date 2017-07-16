@@ -544,8 +544,8 @@ namespace detail
 	//	typedef std::map<UTF32, CachedGlyphInfo> CachedGlyphInfoMap;
 
 	//	CachedGlyphInfoMap			m_cachedGlyphInfoMap;
-	//	RefPtr<Device::ITexture>	m_glyphCacheTexture;
-	//	RefPtr<RawFont>		m_font;
+	//	Ref<Device::ITexture>	m_glyphCacheTexture;
+	//	Ref<RawFont>		m_font;
 
 
 	//public:

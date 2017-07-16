@@ -10,9 +10,9 @@ LN_NAMESPACE_BEGIN
 class UIWindow
 	: public UIControl
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
-	static RefPtr<UIWindow> create();
+	static Ref<UIWindow> create();
 
 protected:
 	virtual void onRoutedEvent(UIEventArgs* e) override;

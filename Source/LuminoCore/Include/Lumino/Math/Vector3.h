@@ -6,17 +6,16 @@
 #include "Common.h"
 
 LN_NAMESPACE_BEGIN
-
-class Vector2;
-class Vector4;
-class Quaternion;
-class Matrix;
+struct Vector2;
+struct Vector4;
+struct Quaternion;
+struct Matrix;
 
 /**
 	@brief	3次元のベクトルを定義します。
 */
 LN_STRUCT()
-class LUMINO_EXPORT Vector3
+struct LUMINO_EXPORT Vector3
 {
 public:
 

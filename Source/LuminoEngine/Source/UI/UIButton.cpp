@@ -105,13 +105,13 @@ void UIButtonBase::onMouseUp(UIMouseEventArgs* e)
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIButton, UIButtonBase);
 
 //------------------------------------------------------------------------------
-RefPtr<UIButton> UIButton::create()
+Ref<UIButton> UIButton::create()
 {
 	return newObject<UIButton>();
 }
 
 //------------------------------------------------------------------------------
-RefPtr<UIButton> UIButton::create(const StringRef& text, float width, float height)
+Ref<UIButton> UIButton::create(const StringRef& text, float width, float height)
 {
 	return newObject<UIButton>(text, width, height);
 }
@@ -150,7 +150,7 @@ const String UIToggleButton::CheckedState = _T("Checked");
 const String UIToggleButton::UncheckedState = _T("Unchecked");
 
 //------------------------------------------------------------------------------
-RefPtr<UIToggleButton> UIToggleButton::create()
+Ref<UIToggleButton> UIToggleButton::create()
 {
 	return newObject<UIToggleButton>();
 }

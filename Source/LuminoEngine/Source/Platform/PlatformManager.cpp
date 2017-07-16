@@ -108,7 +108,7 @@ void PlatformManager::initialize(const Settings& settings)
 	// create window manager
 	if (api == WindowSystemAPI::Win32API)
 	{
-		auto m = RefPtr<Win32WindowManager>::makeRef(0);
+		auto m = Ref<Win32WindowManager>::makeRef(0);
 		m_windowManager = m.detachMove();
     }
 #elif defined(LN_OS_MAC)
@@ -120,7 +120,7 @@ void PlatformManager::initialize(const Settings& settings)
     // create window manager
     if (api == WindowSystemAPI::Cocoa)
     {
-        auto m = RefPtr<CocoaPlatformWindowManager>::makeRef();
+        auto m = Ref<CocoaPlatformWindowManager>::makeRef();
         m->initialize();
         m_windowManager = m.detachMove();
     }
@@ -134,7 +134,7 @@ void PlatformManager::initialize(const Settings& settings)
 	// create window manager
 	if (api == WindowSystemAPI::X11)
 	{
-		auto m = RefPtr<X11WindowManager>::makeRef();
+		auto m = Ref<X11WindowManager>::makeRef();
 		m_windowManager = m.detachMove();
 	}
 #endif

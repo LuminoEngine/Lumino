@@ -29,7 +29,7 @@ public:
 	/**
 		@brief	アーカイブ内のファイルを読み取るためのストリームを作成します。
 	*/
-	virtual bool tryCreateStream(const PathName& fileFullPath, RefPtr<Stream>* outStream, bool isDeferring) = 0;
+	virtual bool tryCreateStream(const PathName& fileFullPath, Ref<Stream>* outStream, bool isDeferring) = 0;
 
 };
 
@@ -83,7 +83,7 @@ public:
 	/**
 		@brief	アーカイブ内のファイルを読み取るためのストリームを作成します。
 	*/
-	virtual bool tryCreateStream(const PathName& fileFullPath, RefPtr<Stream>* outStream, bool isDeferring) override;
+	virtual bool tryCreateStream(const PathName& fileFullPath, Ref<Stream>* outStream, bool isDeferring) override;
 
 private:
 
@@ -170,7 +170,7 @@ class DummyArchive
 {
 public:
 	virtual bool existsFile(const PathName& fileFullPath) override;
-	virtual bool tryCreateStream(const PathName& fileFullPath, RefPtr<Stream>* outStream, bool isDeferring) override;
+	virtual bool tryCreateStream(const PathName& fileFullPath, Ref<Stream>* outStream, bool isDeferring) override;
 };
 
 LN_NAMESPACE_END

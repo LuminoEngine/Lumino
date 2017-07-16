@@ -245,10 +245,10 @@ private:
 
 	detail::AnimationManager*			m_animationManager;
 	FileManager*						m_fileManager;
-	RefPtr<PlatformManager>				m_platformManager;
+	Ref<PlatformManager>				m_platformManager;
 	detail::InputManager*				m_inputManager;
 	detail::AudioManager*				m_audioManager;
-	RefPtr<detail::PhysicsManager>		m_physicsManager;
+	Ref<detail::PhysicsManager>		m_physicsManager;
 	detail::GraphicsManager*			m_graphicsManager;
 	detail::EffectManager*				m_effectManager;
 	detail::ModelManager*				m_modelManager;
@@ -258,8 +258,8 @@ private:
 	AssetsManager*						m_assetsManager;
 
 	EngineDiagViewer*					m_diagViewer;
-	RefPtr<World2D>						m_defaultWorld2D;
-	RefPtr<World3D>						m_defaultWorld3D;
+	Ref<World2D>						m_defaultWorld2D;
+	Ref<World3D>						m_defaultWorld3D;
 
 	//bool								m_frameRenderingSkip;
 	bool								m_frameRenderd;

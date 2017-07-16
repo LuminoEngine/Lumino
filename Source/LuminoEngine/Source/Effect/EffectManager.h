@@ -53,7 +53,7 @@ private:
 	FileManager*		m_fileManager;
 	GraphicsManager*	m_graphicsManager;
 	AudioManager*		m_audioManager;
-	List<RefPtr<EffectEngine>>	m_effectWorldList;
+	List<Ref<EffectEngine>>	m_effectWorldList;
 
 	//tr::TaskPtr	m_taskUpdateFrame;
 };

@@ -40,9 +40,9 @@ TEST_F(Test_Base_Point, Basic)
 //------------------------------------------------------------------------------
 TEST_F(Test_Base_Point, Float)
 {
-	PointF pt1;
+	Point pt1;
 	ASSERT_EQ_POINT_FLOAT(0, 0, pt1);
-	PointF pt2(0.5f, 0.75f);
+	Point pt2(0.5f, 0.75f);
 	ASSERT_EQ_POINT_FLOAT(0.5f, 0.75f, pt2);
 
 	pt2.set(3.5f, 4.25f);
@@ -51,7 +51,7 @@ TEST_F(Test_Base_Point, Float)
 	ASSERT_TRUE(pt1.isZero());
 	ASSERT_FALSE(pt2.isZero());
 
-	PointF pt3(3.5f, 4.25f);
+	Point pt3(3.5f, 4.25f);
 	ASSERT_TRUE(pt2 == pt3);
 	ASSERT_FALSE(pt1 == pt2);
 	ASSERT_FALSE(pt2 != pt3);
@@ -120,7 +120,7 @@ TEST_F(Test_Base_Rect, contains)
 {
 	Rect rc1(10, 20, 30, 40);
 	ASSERT_TRUE(rc1.contains(10, 20));
-	ASSERT_TRUE(rc1.contains(PointF(30, 40)));
+	ASSERT_TRUE(rc1.contains(Point(30, 40)));
 
 	// 同じサイズ → true
 	Rect rc2(10, 20, 30, 40);

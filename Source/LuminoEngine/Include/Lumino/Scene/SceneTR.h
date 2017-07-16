@@ -7,7 +7,7 @@ LN_NAMESPACE_BEGIN
 namespace tr
 {
 class HugePlane;
-using HugePlanePtr = RefPtr<HugePlane>;
+using HugePlanePtr = Ref<HugePlane>;
 
 class HugePlane
 	: public VisualComponent
@@ -27,7 +27,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual void DrawSubset(SceneGraphRenderingContext* dc, int subsetIndex) override;
 
 private:
-	RefPtr<MeshResource>	m_mesh;
+	Ref<MeshResource>	m_mesh;
 	Vector3					m_direction;
 };
 

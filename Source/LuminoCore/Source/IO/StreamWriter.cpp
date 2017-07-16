@@ -27,7 +27,7 @@ StreamWriter::StreamWriter(const PathName& filePath, Encoding* encoding, FileWri
 		openMode = FileOpenMode::write | FileOpenMode::append;
 	}
 
-	RefPtr<FileStream> stream = FileStream::create(filePath, openMode);
+	Ref<FileStream> stream = FileStream::create(filePath, openMode);
 	init(stream, encoding);
 }
 

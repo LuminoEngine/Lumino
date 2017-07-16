@@ -32,10 +32,10 @@ protected:
 private:
 	struct DrawMeshCommandData
 	{
-		RefPtr<Driver::IVertexDeclaration>	vertexDeclaration;
-		RefPtr<Driver::IVertexBuffer>		vertexBuffers[Driver::MaxVertexStreams];
+		Ref<Driver::IVertexDeclaration>	vertexDeclaration;
+		Ref<Driver::IVertexBuffer>		vertexBuffers[Driver::MaxVertexStreams];
 		int									vertexBuffersCount;
-		RefPtr<Driver::IIndexBuffer>		indexBuffer;
+		Ref<Driver::IIndexBuffer>		indexBuffer;
 		int									startIndex;
 		int									primitiveCount;
 		PrimitiveType						primitiveType;

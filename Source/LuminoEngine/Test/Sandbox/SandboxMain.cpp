@@ -24,9 +24,9 @@ int DxLibMain();
 
 
 template<class T, typename... TArgs>
-RefPtr<T> NewObject(TArgs... args)
+Ref<T> NewObject(TArgs... args)
 {
-	auto ptr = RefPtr<T>::makeRef();
+	auto ptr = Ref<T>::makeRef();
 	//ptr->initialize(args);
 	return ptr;
 }
@@ -547,7 +547,7 @@ void Main()
 	//mesh3->setPosition(-2, 0, 0);
 
 #if 0
-	List<RefPtr<StaticMeshComponent>> boxList;
+	List<Ref<StaticMeshComponent>> boxList;
 	for (int z = 0; z < 10; z++)
 	{
 		for (int y = 0; y < 10; y++)
@@ -571,7 +571,7 @@ void Main()
 
 	auto uiRoot = Application::getMainWindow();
 	//auto thumb = UIThumb::create();
-	////thumb->setPosition(PointF(100, 200));
+	////thumb->setPosition(Point(100, 200));
 	//thumb->setSize(Size(30,60));
 	////thumb->setBackground(ColorBrush::Red);
 	////textBlock1->SetText(_T("TextBlock"));

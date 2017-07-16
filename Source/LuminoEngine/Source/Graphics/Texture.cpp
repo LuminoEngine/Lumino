@@ -102,7 +102,7 @@ Texture2DPtr Texture2D::create(int width, int height, TextureFormat format, bool
 //------------------------------------------------------------------------------
 Texture2DPtr Texture2D::create(const SizeI& size, TextureFormat format, bool mipmap)
 {
-	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
+	Ref<Texture2D> tex(LN_NEW Texture2D(), false);
 	tex->initialize(size, format, mipmap, ResourceUsage::Dynamic);
 	return tex;
 }
@@ -110,7 +110,7 @@ Texture2DPtr Texture2D::create(const SizeI& size, TextureFormat format, bool mip
 //------------------------------------------------------------------------------
 Texture2DPtr Texture2D::create(const StringRef& filePath, TextureFormat format, bool mipmap)
 {
-	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
+	Ref<Texture2D> tex(LN_NEW Texture2D(), false);
 	tex->initialize(filePath, format, mipmap);
 	return tex;
 }
@@ -118,21 +118,21 @@ Texture2DPtr Texture2D::create(const StringRef& filePath, TextureFormat format, 
 //------------------------------------------------------------------------------
 Texture2DPtr Texture2D::create(Stream* stream, TextureFormat format, bool mipmap)
 {
-	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
+	Ref<Texture2D> tex(LN_NEW Texture2D(), false);
 	tex->initialize(stream, format, mipmap);
 	return tex;
 	/*
 	if (getManager()->isPlatformTextureLoading())
 	{
-		RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
+		Ref<Texture2D> tex(LN_NEW Texture2D(), false);
 		tex->createImpl(getManager(), stream, format, mipLevels);
 		tex.SafeAddRef();
 		return tex;
 	}
 
 	// ビットマップを作る
-	RefPtr<Bitmap> bitmap(LN_NEW Bitmap(stream), false);
-	RefPtr<Texture2D> tex(LN_NEW Texture2D(), false);
+	Ref<Bitmap> bitmap(LN_NEW Bitmap(stream), false);
+	Ref<Texture2D> tex(LN_NEW Texture2D(), false);
 	tex->createImpl(getManager(), bitmap->GetSize(), format, mipLevels, bitmap);
 	tex.SafeAddRef();
 	return tex;
@@ -198,7 +198,7 @@ void Texture2D::initialize(int width, int height, TextureFormat format, bool mip
 //------------------------------------------------------------------------------
 void Texture2D::initialize(const StringRef& filePath, TextureFormat format, bool mipmap)
 {
-	RefPtr<Stream> stream(detail::GraphicsManager::getInstance()->getFileManager()->createFileStream(filePath), false);
+	Ref<Stream> stream(detail::GraphicsManager::getInstance()->getFileManager()->createFileStream(filePath), false);
 	initialize(stream, format, mipmap);
 }
 
@@ -220,7 +220,7 @@ void Texture2D::initialize(Stream* stream, TextureFormat format, bool mipmap)
 			Bitmap deviceSurface(size, Utils::translatePixelFormat(m_deviceObj->getTextureFormat()), true);
 			m_deviceObj->getData(RectI(0, 0, size), deviceSurface.getBitmapBuffer()->getData());
 
-			m_primarySurface2 = RefPtr<Bitmap>::makeRef(m_deviceObj->getSize(), Utils::translatePixelFormat(format));
+			m_primarySurface2 = Ref<Bitmap>::makeRef(m_deviceObj->getSize(), Utils::translatePixelFormat(format));
 			m_primarySurface2->bitBlt(RectI(0, 0, size), &deviceSurface, RectI(0, 0, size), Color32::White, false);
 
 			m_size = size;
@@ -231,7 +231,7 @@ void Texture2D::initialize(Stream* stream, TextureFormat format, bool mipmap)
 	if (m_deviceObj == NULL)
 	{
 		m_locked = true;
-		m_primarySurface2 = RefPtr<Bitmap>::makeRef(stream);
+		m_primarySurface2 = Ref<Bitmap>::makeRef(stream);
 		m_size = m_primarySurface2->getSize();
 	}
 
@@ -281,7 +281,7 @@ void Texture2D::tryLock()
 			// もし合わせていないと、転送時に同じサイズで DeviceObject 側のフォーマットと同じ Bitmap を
 			// いちいち作らなければならなくなる。
 			// 基本的に Texture への直接転送は重い体でいるので、ユーザーがあまり Clear や blit を多用しないような想定でいる。
-			m_primarySurface2 = RefPtr<Bitmap>::makeRef(m_size, Utils::translatePixelFormat(m_deviceObj->getTextureFormat()));
+			m_primarySurface2 = Ref<Bitmap>::makeRef(m_size, Utils::translatePixelFormat(m_deviceObj->getTextureFormat()));
 		}
 		m_locked = true;
 	}
@@ -325,7 +325,7 @@ void Texture2D::applyModifies()
 				Texture3D_ApplyModifies, m_manager,
 				detail::RenderBulkData, bmpRawData,
 				SizeI, bmpSize,
-				RefPtr<Driver::ITexture>, deviceTexture,
+				Ref<Driver::ITexture>, deviceTexture,
 				{
 					deviceTexture->setSubData(PointI::Zero, bmpRawData.getData(), bmpRawData.getSize(), bmpSize);
 				});
@@ -382,8 +382,6 @@ void Texture2D::blt(int x, int y, Bitmap* srcBitmap/*, const RectI& srcRect*/)
 }
 
 //------------------------------------------------------------------------------
-#pragma push_macro("DrawText")
-#undef drawText
 void Texture2D::drawText(const StringRef& text, const RectI& rect, Font* font, const Color32& fillColor, const Color32& strokeColor, int strokeThickness, TextAlignment alignment) { LN_AFX_FUNCNAME(drawText)(text, rect, font, fillColor, strokeColor, strokeThickness, alignment); }
 void Texture2D::LN_AFX_FUNCNAME(drawText)(const StringRef& text, const RectI& rect, Font* font, const Color32& fillColor, const Color32& strokeColor, int strokeThickness, TextAlignment alignment)
 {
@@ -396,7 +394,6 @@ void Texture2D::LN_AFX_FUNCNAME(drawText)(const StringRef& text, const RectI& re
 	r->setTextAlignment(alignment);
 	r->drawGlyphRun(m_primarySurface2, gr, fillColor, strokeColor, strokeThickness);
 }
-#pragma pop_macro("DrawText")
 
 //------------------------------------------------------------------------------
 void Texture2D::setSubData(const PointI& offset, Bitmap* bitmap)
@@ -500,7 +497,7 @@ void Texture3D::initialize(ln::detail::GraphicsManager* manager, int width, int 
 
 	if (m_usage == ResourceUsage::Dynamic)
 	{
-		m_primarySurface = RefPtr<Bitmap>::makeRef(m_size.width, m_size.height, m_depth, Utils::translatePixelFormat(m_format));
+		m_primarySurface = Ref<Bitmap>::makeRef(m_size.width, m_size.height, m_depth, Utils::translatePixelFormat(m_format));
 	}
 }
 
@@ -524,7 +521,7 @@ void Texture3D::tryLock()
 	{
 		if (m_usage == ResourceUsage::Static)
 		{
-			m_primarySurface = RefPtr<Bitmap>::makeRef(m_size.width, m_size.height, m_depth, Utils::translatePixelFormat(m_format));
+			m_primarySurface = Ref<Bitmap>::makeRef(m_size.width, m_size.height, m_depth, Utils::translatePixelFormat(m_format));
 		}
 		m_locked = true;
 	}
@@ -548,7 +545,7 @@ void Texture3D::applyModifies()
 			LN_ENQUEUE_RENDER_COMMAND_2(
 				Texture3D_ApplyModifies, m_manager,
 				ln::detail::RenderBulkData, bmpRawData,
-				RefPtr<Driver::ITexture>, deviceTexture,
+				Ref<Driver::ITexture>, deviceTexture,
 				{
 					deviceTexture->setSubData3D(Box32::Zero, bmpRawData.getData(), bmpRawData.getSize());
 				});
@@ -586,7 +583,7 @@ void Texture3D::onChangeDevice(Driver::IGraphicsDevice* device)
 //------------------------------------------------------------------------------
 RenderTargetTexturePtr RenderTargetTexture::create(const SizeI& size, TextureFormat format, int mipLevels)
 {
-	RefPtr<RenderTargetTexture> tex(LN_NEW RenderTargetTexture(), false);
+	Ref<RenderTargetTexture> tex(LN_NEW RenderTargetTexture(), false);
 	tex->createImpl(detail::GraphicsManager::getInstance(), size, mipLevels, format);
 	return tex;
 }

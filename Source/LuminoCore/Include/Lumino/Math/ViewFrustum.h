@@ -6,7 +6,7 @@
 #include "Plane.h"
 
 LN_NAMESPACE_BEGIN
-class Matrix;
+struct Matrix;
 
 /**
 	3D の視錐台を定義します。
@@ -18,7 +18,7 @@ class Matrix;
 	intersects() を使用して視錐台とオブジェクトの交差判定 (内側に存在するか) を行うことで、
 	レンダリングが必要かをチェックできます。
 */
-class LUMINO_EXPORT ViewFrustum
+struct LUMINO_EXPORT ViewFrustum
 {
 public:
 

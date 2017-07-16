@@ -53,7 +53,7 @@ LN_CLASS()
 class GameApplication
 	: public Object
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	GameApplication();
 	virtual ~GameApplication();
@@ -74,7 +74,7 @@ LN_INTERNAL_ACCESS:
 	void initialize();
 
 private:
-	RefPtr<detail::GameSceneManager>	m_gameSceneManager;
+	Ref<detail::GameSceneManager>	m_gameSceneManager;
 	
 };
 

@@ -1,6 +1,6 @@
 
 set(LN_SOURCES_SampleBrowser
-	Sample_Basic_HelloWorld.cpp
+	Sample_Lumino_Basic.cpp
 	Sample_Graphics2D_Sprite2D.cpp
 	Sample_Support_DebugAndTestSupport.cpp
 	SampleBrowser.cpp

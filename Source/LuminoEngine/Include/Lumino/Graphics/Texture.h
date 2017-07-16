@@ -4,9 +4,6 @@
 #include "Common.h"
 #include "GraphicsResourceObject.h"
 
-#pragma push_macro("DrawText")
-#undef drawText
-
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 namespace detail { class RenderTargetTextureCache; }
@@ -14,8 +11,8 @@ class Bitmap;
 class Font;
 class Texture;
 class DepthBuffer;
-using TexturePtr = RefPtr<Texture>;
-using DepthBufferPtr = RefPtr<DepthBuffer>;
+using TexturePtr = Ref<Texture>;
+using DepthBufferPtr = Ref<DepthBuffer>;
 
 /**
 	@brief		テクスチャのクラスです。
@@ -24,7 +21,7 @@ LN_CLASS()
 class Texture
 	: public GraphicsResourceObject
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	/**
@@ -74,7 +71,7 @@ class Texture2D
 	, public ICacheObject
 {
 	LN_CACHE_OBJECT_DECL;
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	/**
@@ -175,7 +172,7 @@ protected:
 	bool			m_isPlatformLoaded;
 	ResourceUsage	m_usage;
 	bool			m_usageReadFast;
-	RefPtr<Bitmap>	m_primarySurface2;
+	Ref<Bitmap>	m_primarySurface2;
 	bool			m_locked;
 	bool			m_initializing;
 };
@@ -255,7 +252,7 @@ private:
 
 namespace tr {
 class Texture3D;
-using Texture3DPtr = RefPtr<Texture3D>;
+using Texture3DPtr = Ref<Texture3D>;
 
 /**
 	@brief		
@@ -265,7 +262,7 @@ class Texture3D
 	, public ICacheObject
 {
 	LN_CACHE_OBJECT_DECL;
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	/**
@@ -304,7 +301,7 @@ private:
 	int				m_depth;
 	int				m_mipLevels;
 	ResourceUsage	m_usage;
-	RefPtr<Bitmap>	m_primarySurface;
+	Ref<Bitmap>	m_primarySurface;
 	bool			m_locked;
 	bool			m_initializing;
 };
@@ -314,4 +311,3 @@ private:
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END
 
-#pragma pop_macro("DrawText")

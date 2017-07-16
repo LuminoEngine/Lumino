@@ -11,7 +11,7 @@ LN_NAMESPACE_BEGIN
 /**
 	@brief		位置、回転、スケールを定義します。
 */
-class LUMINO_EXPORT AttitudeTransform
+struct LUMINO_EXPORT AttitudeTransform
 {
 public:
 

@@ -54,7 +54,7 @@ void TextBlock2DComponent::initialize()
 	//owner->getRootNode()->addChild(this);
 	setAutoRemove(true);
 
-	//m_paragraph = RefPtr<detail::Paragraph>::makeRef();
+	//m_paragraph = Ref<detail::Paragraph>::makeRef();
 	//m_paragraph->initialize();
 
 	setBlendMode(BlendMode::Alpha);
@@ -64,7 +64,7 @@ void TextBlock2DComponent::initialize()
 void TextBlock2DComponent::setText(const StringRef& text)
 {
 	//m_paragraph->clearInlines();
-	//auto run = RefPtr<detail::run>::makeRef();
+	//auto run = Ref<detail::run>::makeRef();
 	//run->initialize();
 	//run->setText(text);
 	//m_paragraph->addInline(run);
@@ -111,13 +111,13 @@ void TextBlock2DComponent::onRender2(RenderingContext* renderer)
 	//renderer->setTransform(transform);
 	//renderer->setBlendMode(BlendMode::Alpha);
 	//renderer->setBrush(SolidColorBrush::Red);
-	renderer->drawText_(m_text, PointF(-m_renderSize.width * m_anchor.x, -m_renderSize.height * m_anchor.y));
+	renderer->drawText_(m_text, Point(-m_renderSize.width * m_anchor.x, -m_renderSize.height * m_anchor.y));
 
 	//struct LocalRenderer : detail::IDocumentsRenderer
 	//{
 	//	DrawList* renderer;
 
-	//	virtual void onDrawGlyphRun(const Matrix& transform, Brush* forground, GlyphRun* glyphRun, const PointF& point) override
+	//	virtual void onDrawGlyphRun(const Matrix& transform, Brush* forground, GlyphRun* glyphRun, const Point& point) override
 	//	{
 	//		// TODO: ここで強制設定よりは VisualComponent::setBlendMode がいいか？
 	//		renderer->setBlendMode(BlendMode::Alpha);
@@ -147,13 +147,13 @@ void TextBlock2DComponent::onRender2(RenderingContext* renderer)
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TextBlock2D, VisualObject);
 
 //------------------------------------------------------------------------------
-RefPtr<TextBlock2D> TextBlock2D::create()
+Ref<TextBlock2D> TextBlock2D::create()
 {
 	return newObject<TextBlock2D>();
 }
 
 //------------------------------------------------------------------------------
-RefPtr<TextBlock2D> TextBlock2D::create(const StringRef& text)
+Ref<TextBlock2D> TextBlock2D::create(const StringRef& text)
 {
 	return newObject<TextBlock2D>(text);
 }

@@ -95,7 +95,7 @@ class CombinedMaterialCache
 	: public SimpleOneTimeObjectCache<CombinedMaterial>
 {
 protected:
-	virtual RefPtr<CombinedMaterial> createObject() override;
+	virtual Ref<CombinedMaterial> createObject() override;
 };
 
 class InternalContext
@@ -129,15 +129,15 @@ LN_INTERNAL_ACCESS:
 
 	IRenderFeature*					m_current;
 	detail::CoreGraphicsRenderFeature*	m_baseRenderer;
-	RefPtr<PrimitiveRenderFeature>	m_primitiveRenderer;
-	RefPtr<BlitRenderer>			m_blitRenderer;
-	RefPtr<MeshRenderFeature>		m_meshRenderer;
-	RefPtr<SpriteRenderFeature>		m_spriteRenderer;
-	RefPtr<TextRenderer>			m_textRenderer;
-	RefPtr<VectorTextRenderer>		m_vectorTextRenderer;
-	RefPtr<ShapesRenderFeature>		m_shapesRenderer;
-	RefPtr<NanoVGRenderFeature>		m_nanoVGRenderer;
-	RefPtr<FrameRectRenderFeature>	m_frameRectRenderer;
+	Ref<PrimitiveRenderFeature>	m_primitiveRenderer;
+	Ref<BlitRenderer>			m_blitRenderer;
+	Ref<MeshRenderFeature>		m_meshRenderer;
+	Ref<SpriteRenderFeature>		m_spriteRenderer;
+	Ref<TextRenderer>			m_textRenderer;
+	Ref<VectorTextRenderer>		m_vectorTextRenderer;
+	Ref<ShapesRenderFeature>		m_shapesRenderer;
+	Ref<NanoVGRenderFeature>		m_nanoVGRenderer;
+	Ref<FrameRectRenderFeature>	m_frameRectRenderer;
 	DrawElementBatch*				m_currentStatePtr;
 
 	friend class ::ln::DrawList;
@@ -146,7 +146,7 @@ LN_INTERNAL_ACCESS:
 struct PriorityBatchState
 {
 	Nullable<Matrix>	worldTransform;
-	RefPtr<Texture>		mainTexture;
+	Ref<Texture>		mainTexture;
 
 	static PriorityBatchState defaultState;
 
@@ -266,16 +266,16 @@ LN_INTERNAL_ACCESS:
 
 private:
 
-	RefPtr<RenderTargetTexture>	m_renderTargets[Graphics::MaxMultiRenderTargets];
-	RefPtr<DepthBuffer>			m_depthBuffer;
+	Ref<RenderTargetTexture>	m_renderTargets[Graphics::MaxMultiRenderTargets];
+	Ref<DepthBuffer>			m_depthBuffer;
 	RectI						m_scissorRect;
 	BlendMode					m_blendMode;
 	CullingMode					m_cullingMode;
 	bool						m_depthTestEnabled;
 	bool						m_depthWriteEnabled;
 
-	RefPtr<Brush>				m_brush;
-	RefPtr<Font>				m_font;
+	Ref<Brush>				m_brush;
+	Ref<Font>				m_font;
 
 	mutable size_t				m_hashCode;
 	mutable bool				m_hashDirty;
@@ -364,7 +364,7 @@ public:
 	//void ResolveCombinedMaterials();
 
 	void addDynamicLightInfo(DynamicLightInfo* lightInfo);
-	const List<RefPtr<DynamicLightInfo>>& getDynamicLightList() const { return m_dynamicLightList; }
+	const List<Ref<DynamicLightInfo>>& getDynamicLightList() const { return m_dynamicLightList; }
 
 
 	// default settings
@@ -381,10 +381,10 @@ private:
 	List<DrawElementBatch>	m_batchList;
 
 	detail::CombinedMaterialCache	m_combinedMaterialCache;
-	List<RefPtr<DynamicLightInfo>>	m_dynamicLightList;
+	List<Ref<DynamicLightInfo>>	m_dynamicLightList;
 
-	RefPtr<RenderTargetTexture>		m_defaultRenderTarget;
-	RefPtr<DepthBuffer>				m_depthBuffer;
+	Ref<RenderTargetTexture>		m_defaultRenderTarget;
+	Ref<DepthBuffer>				m_depthBuffer;
 };
 
 } // namespace detail
@@ -670,13 +670,13 @@ public:
 	void blit(Texture* source, RenderTargetTexture* dest, const Matrix& transform);
 	void blit(Texture* source, RenderTargetTexture* dest, Material* material);
 
-	void drawGlyphRun(const PointF& position, GlyphRun* glyphRun);
+	void drawGlyphRun(const Point& position, GlyphRun* glyphRun);
 
 	// 描画時、アルファブレンド無効であれば有効として描画される。
-	void drawText_(const StringRef& text, const PointF& position);
+	void drawText_(const StringRef& text, const Point& position);
 	void drawText_(const StringRef& text, const Rect& rect, StringFormatFlags flags);
 
-	void drawChar(TCHAR ch, const PointF& position);
+	void drawChar(TCHAR ch, const Point& position);
 	void drawText2(const StringRef& text, const Rect& rect);
 
 	void drawSprite(
@@ -731,9 +731,9 @@ private:
 	{
 	public:
 		detail::DrawElementBatch		m_state;
-		RefPtr<Material>				m_material;		// TODO: これは内容を書き換えないようにしたほうがよさそう。今の使い方てきに。
+		Ref<Material>				m_material;		// TODO: これは内容を書き換えないようにしたほうがよさそう。今の使い方てきに。
 		detail::BuiltinEffectData		m_builtinEffectData;
-		RefPtr<Shader>					m_defaultMaterialShader;
+		Ref<Shader>					m_defaultMaterialShader;
 
 		StagingState();
 
@@ -747,9 +747,9 @@ private:
 	StagingState* getCurrentState() const { return m_aliveStateStack.getLast(); }
 
 	detail::GraphicsManager*		m_manager;
-	List<RefPtr<StagingState>>		m_freeStateStack;
-	List<RefPtr<StagingState>>		m_aliveStateStack;	// size >= 1
-	RefPtr<Material>				m_defaultMaterial;
+	List<Ref<StagingState>>		m_freeStateStack;
+	List<Ref<StagingState>>		m_aliveStateStack;	// size >= 1
+	Ref<Material>				m_defaultMaterial;
 
 
 	detail::DrawElementList			m_drawElementList;

@@ -32,7 +32,7 @@ PropertyInfo::~PropertyInfo()
 //------------------------------------------------------------------------------
 void PropertyInfo::notifyPropertyChanged(ReflectionObject* ownerObject, PropertyBase* target, const PropertyInfo* prop, PropertySetSource source)
 {
-	RefPtr<PropertyChangedEventArgs> e(g_eventArgsPool.create<PropertyChangedEventArgs>(prop, source), false);
+	Ref<PropertyChangedEventArgs> e(g_eventArgsPool.create<PropertyChangedEventArgs>(prop, source), false);
 	//target->onPropertyChanged(e);
 	//target->CallListener(e);
 	//prop->m_metadata->CallPropertyChangedCallback(target, e);

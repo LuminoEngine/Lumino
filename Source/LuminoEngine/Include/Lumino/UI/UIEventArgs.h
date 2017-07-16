@@ -5,7 +5,7 @@
 
 LN_NAMESPACE_BEGIN
 class UIEventArgs;
-using UIEventArgsPtr = RefPtr<UIEventArgs>;
+using UIEventArgsPtr = Ref<UIEventArgs>;
 class UIEventInfo;
 using UIEventType = const UIEventInfo*;
 
@@ -15,7 +15,7 @@ using UIEventType = const UIEventInfo*;
 class UIEventArgs
 	: public tr::ReflectionEventArgs
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	static UIEventArgsPtr create(UIEventType type, Object* sender, bool caching = true);
 
@@ -40,23 +40,23 @@ private:
 class UIMouseEventArgs
 	: public UIEventArgs
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	/** UIMouseEventArgs のインスタンスを作成します。*/
-	static RefPtr<UIMouseEventArgs> create(UIEventType type, MouseButtons button, float x, float y, int clickCount, bool caching = true);
+	static Ref<UIMouseEventArgs> create(UIEventType type, MouseButtons button, float x, float y, int clickCount, bool caching = true);
 
 	/** ボタンの種類を取得します。*/
 	MouseButtons getMouseButtons() const { return m_button; }
 
 	/** マウスイベント生成時のマウスの座標を取得します。*/
-	const PointF& getPosition() const { return m_position; }
+	const Point& getPosition() const { return m_position; }
 
 	/** ボタンがクリックされた回数を取得します。(ダブルクリックやトリプルクリックを区別するために使用する。最大3まで) */
 	int getClickCount() const { return m_clickCount; }
 
 	/** 指定した要素から見た相対的なマウス ポインターの位置を返します。*/
-	PointF getPosition(UIElement* relativeTo) const;
+	Point getPosition(UIElement* relativeTo) const;
 
 LN_CONSTRUCT_ACCESS:
 	UIMouseEventArgs();
@@ -65,7 +65,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
 	MouseButtons	m_button;
-	PointF			m_position;
+	Point			m_position;
 	int				m_clickCount;
 };
 
@@ -75,11 +75,11 @@ private:
 class UIKeyEventArgs
 	: public UIEventArgs
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	/** UIKeyEventArgs のインスタンスを作成します。 */
-	static RefPtr<UIKeyEventArgs> create(UIEventType type, Keys keyCode, ModifierKeys modifierKeys, TCHAR charCode, bool caching = true);
+	static Ref<UIKeyEventArgs> create(UIEventType type, Keys keyCode, ModifierKeys modifierKeys, TCHAR charCode, bool caching = true);
 
 	/** キーコードを取得します。 */
 	Keys getKey() const { return m_keyCode; }
@@ -107,11 +107,11 @@ private:
 class UIMouseWheelEventArgs
 	: public UIEventArgs
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	/** UIMouseWheelEventArgs のインスタンスを作成します。 */
-	static RefPtr<UIMouseWheelEventArgs> create(UIEventType type, int delta, bool caching = true);
+	static Ref<UIMouseWheelEventArgs> create(UIEventType type, int delta, bool caching = true);
 
 	/** マウスホイールの回転回数を取得します。 (正または負の回数) */
 	int getDelta() const { return m_delta; }

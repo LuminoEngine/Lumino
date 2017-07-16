@@ -59,7 +59,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(PlaneCollisionShape, CollisionShape);
 //------------------------------------------------------------------------------
 PlaneCollisionShapePtr PlaneCollisionShape::create(const Vector3& direction)
 {
-	auto ptr = RefPtr<PlaneCollisionShape>::makeRef();
+	auto ptr = Ref<PlaneCollisionShape>::makeRef();
 	ptr->initialize(direction);
 	return ptr;
 }
@@ -88,7 +88,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(BoxCollisionShape, CollisionShape);
 //------------------------------------------------------------------------------
 BoxCollisionShapePtr BoxCollisionShape::create(const Vector3& size)
 {
-	auto ptr = RefPtr<BoxCollisionShape>::makeRef();
+	auto ptr = Ref<BoxCollisionShape>::makeRef();
 	ptr->initialize(size);
 	return ptr;
 }
@@ -124,7 +124,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SphereCollisionShape, CollisionShape);
 //------------------------------------------------------------------------------
 SphereCollisionShapePtr SphereCollisionShape::create(float radius)
 {
-	auto ptr = RefPtr<SphereCollisionShape>::makeRef();
+	auto ptr = Ref<SphereCollisionShape>::makeRef();
 	ptr->initialize(radius);
 	return ptr;
 }
@@ -153,7 +153,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(CapsuleCollisionShape, CollisionShape);
 //------------------------------------------------------------------------------
 CapsuleCollisionShapePtr CapsuleCollisionShape::create(float radius, float height)
 {
-	auto ptr = RefPtr<CapsuleCollisionShape>::makeRef();
+	auto ptr = Ref<CapsuleCollisionShape>::makeRef();
 	ptr->initialize(radius, height);
 	return ptr;
 }
@@ -182,7 +182,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(MeshCollisionShape, CollisionShape);
 //------------------------------------------------------------------------------
 MeshCollisionShapePtr MeshCollisionShape::create(MeshResource* mesh)
 {
-	auto ptr = RefPtr<MeshCollisionShape>::makeRef();
+	auto ptr = Ref<MeshCollisionShape>::makeRef();
 	ptr->initialize(mesh);
 	return ptr;
 }

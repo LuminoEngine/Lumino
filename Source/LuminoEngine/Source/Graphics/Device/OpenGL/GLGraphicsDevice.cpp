@@ -63,14 +63,14 @@ void GLGraphicsDevice::initialize(const ConfigData& configData)
 	makeCurrentContext(m_mainContext);
 
 	// create MainWindow SwapChain
-	RefPtr<GLContext> swapChainContext = m_mainContext;
+	Ref<GLContext> swapChainContext = m_mainContext;
 	if (configData.createSharedRenderingContext)
 		swapChainContext = createContext(m_mainWindow);
-	m_defaultSwapChain = RefPtr<GLSwapChain>::makeRef();
+	m_defaultSwapChain = Ref<GLSwapChain>::makeRef();
 	m_defaultSwapChain->initialize(this, swapChainContext, m_mainWindow);
 
 	// create Renderer
-	m_renderer = RefPtr<GLRenderer>::makeRef();
+	m_renderer = Ref<GLRenderer>::makeRef();
 }
 
 //------------------------------------------------------------------------------
@@ -106,69 +106,69 @@ ISwapChain* GLGraphicsDevice::getDefaultSwapChain()
 //------------------------------------------------------------------------------
 ISwapChain* GLGraphicsDevice::createSwapChain(PlatformWindow* window)
 {
-	RefPtr<GLContext> context = createContext(window);
-	auto ptr = RefPtr<GLSwapChain>::makeRef();
+	Ref<GLContext> context = createContext(window);
+	auto ptr = Ref<GLSwapChain>::makeRef();
 	ptr->initialize(this, context, window);
 	return ptr.detachMove();
 }
 
 //------------------------------------------------------------------------------
-RefPtr<IVertexDeclaration> GLGraphicsDevice::createVertexDeclarationImplement(const VertexElement* elements, int elementsCount)
+Ref<IVertexDeclaration> GLGraphicsDevice::createVertexDeclarationImplement(const VertexElement* elements, int elementsCount)
 {
-	RefPtr<GLVertexDeclaration> obj(LN_NEW GLVertexDeclaration(), false);
+	Ref<GLVertexDeclaration> obj(LN_NEW GLVertexDeclaration(), false);
 	obj->initialize(elements, elementsCount);
-	return RefPtr<IVertexDeclaration>::staticCast(obj);
+	return Ref<IVertexDeclaration>::staticCast(obj);
 }
 
 //------------------------------------------------------------------------------
-RefPtr<IVertexBuffer> GLGraphicsDevice::createVertexBufferImplement(size_t bufferSize, const void* data, ResourceUsage usage)
+Ref<IVertexBuffer> GLGraphicsDevice::createVertexBufferImplement(size_t bufferSize, const void* data, ResourceUsage usage)
 {
-	RefPtr<GLVertexBuffer> obj(LN_NEW GLVertexBuffer(), false);
+	Ref<GLVertexBuffer> obj(LN_NEW GLVertexBuffer(), false);
 	obj->create(bufferSize, data, usage);
-    return RefPtr<IVertexBuffer>::staticCast(obj);
+    return Ref<IVertexBuffer>::staticCast(obj);
 }
 
 //------------------------------------------------------------------------------
-RefPtr<IIndexBuffer> GLGraphicsDevice::createIndexBufferImplement(int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage)
+Ref<IIndexBuffer> GLGraphicsDevice::createIndexBufferImplement(int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage)
 {
-	RefPtr<GLIndexBuffer> obj(LN_NEW GLIndexBuffer(), false);
+	Ref<GLIndexBuffer> obj(LN_NEW GLIndexBuffer(), false);
     obj->create(indexCount, initialData, format, usage);
-    return RefPtr<IIndexBuffer>::staticCast(obj);
+    return Ref<IIndexBuffer>::staticCast(obj);
 }
 
 //------------------------------------------------------------------------------
-RefPtr<ITexture> GLGraphicsDevice::createTextureImplement(const SizeI& size, bool mipmap, TextureFormat format, const void* initialData)
+Ref<ITexture> GLGraphicsDevice::createTextureImplement(const SizeI& size, bool mipmap, TextureFormat format, const void* initialData)
 {
-	RefPtr<GLTexture> obj(LN_NEW GLTexture(size, format, mipmap), false);
+	Ref<GLTexture> obj(LN_NEW GLTexture(size, format, mipmap), false);
 	if (initialData != nullptr) {
 		obj->setSubData(PointI(0, 0), initialData, Utils::getTextureFormatByteCount(format) * size.width * size.height, size);
     }
-    return RefPtr<ITexture>::staticCast(obj);
+    return Ref<ITexture>::staticCast(obj);
 }
 
 //------------------------------------------------------------------------------
-RefPtr<ITexture> GLGraphicsDevice::createTexture3DImplement(int width, int height, int depth, uint32_t mipLevels, TextureFormat format, ResourceUsage usage, const void* initialData)
+Ref<ITexture> GLGraphicsDevice::createTexture3DImplement(int width, int height, int depth, uint32_t mipLevels, TextureFormat format, ResourceUsage usage, const void* initialData)
 {
 	LN_NOTIMPLEMENTED();
 	return nullptr;
 }
 
 //------------------------------------------------------------------------------
-RefPtr<ITexture> GLGraphicsDevice::ceateRenderTargetImplement(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format)
+Ref<ITexture> GLGraphicsDevice::ceateRenderTargetImplement(uint32_t width, uint32_t height, uint32_t mipLevels, TextureFormat format)
 {
-	RefPtr<GLRenderTargetTexture> obj(LN_NEW GLRenderTargetTexture(SizeI(width, height), format, mipLevels), false);
-    return RefPtr<ITexture>::staticCast(obj);
+	Ref<GLRenderTargetTexture> obj(LN_NEW GLRenderTargetTexture(SizeI(width, height), format, mipLevels), false);
+    return Ref<ITexture>::staticCast(obj);
 }
 
 //------------------------------------------------------------------------------
-RefPtr<ITexture> GLGraphicsDevice::createDepthBufferImplement(uint32_t width, uint32_t height, TextureFormat format)
+Ref<ITexture> GLGraphicsDevice::createDepthBufferImplement(uint32_t width, uint32_t height, TextureFormat format)
 {
-	RefPtr<GLDepthBuffer> obj(LN_NEW GLDepthBuffer(SizeI(width, height), format), false);
-    return RefPtr<ITexture>::staticCast(obj);
+	Ref<GLDepthBuffer> obj(LN_NEW GLDepthBuffer(SizeI(width, height), format), false);
+    return Ref<ITexture>::staticCast(obj);
 }
 
 //------------------------------------------------------------------------------
-RefPtr<IShader> GLGraphicsDevice::createShaderImplement(const void* textData, size_t size, ShaderCompileResult* result)
+Ref<IShader> GLGraphicsDevice::createShaderImplement(const void* textData, size_t size, ShaderCompileResult* result)
 {
 	GLShader* shader = LN_NEW GLShader();
 	shader->initialize(this, textData, size);
@@ -202,12 +202,12 @@ RefPtr<IShader> GLGraphicsDevice::createShaderImplement(const void* textData, si
 	//makeCurrentContext(getMainContext());
 
 	//printf("▲\n");
-	RefPtr<IShader> obj(shader, false);
+	Ref<IShader> obj(shader, false);
 	return obj;
 }
 
 //------------------------------------------------------------------------------
-RefPtr<ISwapChain> GLGraphicsDevice::createSwapChainImplement(PlatformWindow* window)
+Ref<ISwapChain> GLGraphicsDevice::createSwapChainImplement(PlatformWindow* window)
 {
 	LN_THROW(0, NotImplementedException);
 	return nullptr;

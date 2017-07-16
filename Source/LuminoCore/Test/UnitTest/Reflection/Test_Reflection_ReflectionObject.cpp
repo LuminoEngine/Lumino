@@ -146,8 +146,8 @@ public:
 	tr::Property<RefTest1*> V2;
 	LN_TR_PROPERTY(Point, V3);
 	tr::Property<Point> V3;
-	LN_TR_PROPERTY(RefPtr<RefTest2>, V4);
-	tr::Property<RefPtr<RefTest2>> V4;
+	LN_TR_PROPERTY(Ref<RefTest2>, V4);
+	tr::Property<Ref<RefTest2>> V4;
 	tr::Property<int> V5;	// メタデータを持たないプロパティ
 	LN_TR_PROPERTY(int, V6);
 	tr::Property<int> V6;
@@ -177,7 +177,7 @@ public:
 	void SetV4(RefTest2* v) { V4.set(v); }
 	//RefTest2* GetV4() const { return V4; }	// TODO: できればコレがやりたいのだが・・・
 	RefTest2* GetV4() const { return V4.get(); }
-	RefPtr<RefTest2> GetV4_2() const { return V4; }
+	Ref<RefTest2> GetV4_2() const { return V4; }
 
 	virtual void onPropertyChanged(tr::PropertyChangedEventArgs* e) override
 	{
@@ -198,7 +198,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(PropertyTest1, tr::ReflectionObject);
 LN_TR_PROPERTY_IMPLEMENT(PropertyTest1, int, V1, tr::PropertyMetadata());
 LN_TR_PROPERTY_IMPLEMENT(PropertyTest1, RefTest1*, V2, tr::PropertyMetadata());
 LN_TR_PROPERTY_IMPLEMENT(PropertyTest1, Point, V3, tr::PropertyMetadata());
-LN_TR_PROPERTY_IMPLEMENT(PropertyTest1, RefPtr<RefTest2>, V4, tr::PropertyMetadata());
+LN_TR_PROPERTY_IMPLEMENT(PropertyTest1, Ref<RefTest2>, V4, tr::PropertyMetadata());
 LN_TR_PROPERTY_IMPLEMENT(PropertyTest1, int, V6, tr::PropertyMetadata(PropertyTest1::V6Changed));
 
 //------------------------------------------------------------------------------
@@ -206,7 +206,7 @@ TEST_F(Test_Reflection_Property, GetSet)
 {
 	PropertyTest1 obj;
 	RefTest1 t2;
-	auto t3 = RefPtr<RefTest2>::makeRef();
+	auto t3 = Ref<RefTest2>::makeRef();
 
 	// int type
 	ASSERT_EQ(1, obj.V1);
@@ -224,7 +224,7 @@ TEST_F(Test_Reflection_Property, GetSet)
 	ASSERT_EQ(1, obj.V3.get().x);
 	ASSERT_EQ(2, obj.V3.get().y);
 
-	// RefPtr<> type
+	// Ref<> type
 	ASSERT_EQ(nullptr, obj.V4.get());
 	obj.V4 = t3;
 	ASSERT_EQ(t3, obj.V4);
@@ -366,28 +366,28 @@ TEST_F(IntegrationTest_Reflection_ReflectionObject, GetSetHelper)
 		ASSERT_EQ(4, t1.GetV3().y);
 	}
 
-	// <Test> RefPtr
+	// <Test> Ref
 	{
 		// set
-		RefPtr<RefTest2> p1(LN_NEW RefTest2(), false);
+		Ref<RefTest2> p1(LN_NEW RefTest2(), false);
 		tr::PropertyInfo::setPropertyValue(&t1, PropertyTest1::V4Id, p1);
 		ASSERT_EQ(p1, t1.V4);
 
 		// get
 		tr::Variant v = tr::PropertyInfo::getPropertyValue(&t1, PropertyTest1::V4Id);
-		ASSERT_EQ(p1.get(), tr::Variant::cast<RefPtr<RefTest2>>(v));
+		ASSERT_EQ(p1.get(), tr::Variant::cast<Ref<RefTest2>>(v));
 
 		// set (Direct)
-		RefPtr<RefTest2> p12(LN_NEW RefTest2(), false);
-		tr::PropertyInfo::setPropertyValueDirect<RefPtr<RefTest2>>(&t1, PropertyTest1::V4Id, p12);
+		Ref<RefTest2> p12(LN_NEW RefTest2(), false);
+		tr::PropertyInfo::setPropertyValueDirect<Ref<RefTest2>>(&t1, PropertyTest1::V4Id, p12);
 		ASSERT_EQ(p12, t1.V4);
 
 		// get (Direct)
-		tr::Variant v2 = tr::PropertyInfo::getPropertyValueDirect<RefPtr<RefTest2>>(&t1, PropertyTest1::V4Id);
-		ASSERT_EQ(p12, tr::Variant::cast<RefPtr<RefTest2>>(v2));
+		tr::Variant v2 = tr::PropertyInfo::getPropertyValueDirect<Ref<RefTest2>>(&t1, PropertyTest1::V4Id);
+		ASSERT_EQ(p12, tr::Variant::cast<Ref<RefTest2>>(v2));
 
 		// setter/getter
-		RefPtr<RefTest2> p2(LN_NEW RefTest2(), false);
+		Ref<RefTest2> p2(LN_NEW RefTest2(), false);
 		t1.SetV4(p2);
 		ASSERT_EQ(p2.get(), t1.GetV4());
 

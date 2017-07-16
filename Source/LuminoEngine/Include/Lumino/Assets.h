@@ -18,9 +18,9 @@ public:
 	static Texture2DPtr loadTexture(const StringRef& filePath);
 
 	/** アセットフォルダからシェーダを読み込みます。 */
-	static RefPtr<Shader> loadShader(const StringRef& filePath);
+	static Ref<Shader> loadShader(const StringRef& filePath);
 
-	static RefPtr<StaticMeshModel> loadMeshModel(const StringRef& filePath);
+	static Ref<StaticMeshModel> loadMeshModel(const StringRef& filePath);
 
 	static String loadText(const StringRef& filePath);
 

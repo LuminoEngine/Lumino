@@ -63,7 +63,7 @@ void AnimationManager::addAnimationClock(AnimationClock* clock)
 //------------------------------------------------------------------------------
 //AnimationClock* AnimationManager::StartPropertyAnimation(AnimationClockArgs* list, int listCount)
 //{
-//	auto ac = RefPtr<AnimationClock>::MakeRef();
+//	auto ac = Ref<AnimationClock>::MakeRef();
 //	ac->initialize(list, listCount);
 //	m_clockList.Add(ac);
 //	return ac;

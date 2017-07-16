@@ -8,7 +8,7 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
 class SpriteParticleModel;
-using SpriteParticleModelPtr = RefPtr<SpriteParticleModel>;
+using SpriteParticleModelPtr = Ref<SpriteParticleModel>;
 
 namespace detail {
 struct SpriteParticleModelInstance;
@@ -50,7 +50,7 @@ struct ParticleData
 	float		ramdomBaseValue = 0.0f;
 	Vector3		currentDirection;
 	
-	RefPtr<SpriteParticleModelInstance>	m_childInstance;		// ParticleSourceDataType::Particle のときに使われる
+	Ref<SpriteParticleModelInstance>	m_childInstance;		// ParticleSourceDataType::Particle のときに使われる
 
 	bool		m_isTrailPoint = false;
 
@@ -65,7 +65,7 @@ struct ParticleData
 struct SpriteParticleModelInstance
 	: public RefObject
 {
-	RefPtr<SpriteParticleModel>	m_owner;
+	Ref<SpriteParticleModel>	m_owner;
 	Matrix						m_worldTransform;
 	List<ParticleData>			m_particles;
 	List<int>					m_particleIndices;
@@ -148,7 +148,7 @@ struct RadomRangeValue
 class SpriteParticleModel
 	: public Object
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	static SpriteParticleModelPtr create();
 
@@ -190,7 +190,7 @@ protected:
 
 public: // TODO
 	void commit();
-	RefPtr<detail::SpriteParticleModelInstance> createInstane();
+	Ref<detail::SpriteParticleModelInstance> createInstane();
 	void updateInstance(detail::SpriteParticleModelInstance* instance, float deltaTime, const Matrix& emitterTransform);
 	//detail::ParticleData* getNextFreeParticleData(float emitterTime);
 	void spawnParticle(const Matrix& emitterTransform, detail::ParticleData* data, float spawnTime);
@@ -203,8 +203,8 @@ public: // TODO
 	Vector3 makeRandom(detail::ParticleData* data, const RadomRangeValue<Vector3>& value);
 	
 	detail::GraphicsManager*	m_manager;
-	RefPtr<MeshResource>		m_mesh;		// TODO: このあたりは Manager に置いて、全体で共有した方がメモリ効率よいかも？
-	RefPtr<Material>			m_material;
+	Ref<MeshResource>		m_mesh;		// TODO: このあたりは Manager に置いて、全体で共有した方がメモリ効率よいかも？
+	Ref<Material>			m_material;
 	Randomizer			m_rand;
 
 
@@ -213,7 +213,7 @@ public: // TODO
 	Vector3						m_shapeParam;
 
 	ParticleSourceDataType		m_sourceDataType;
-	RefPtr<SpriteParticleModel>	m_childModel;		// ParticleSourceDataType::Particle のときに使われる
+	Ref<SpriteParticleModel>	m_childModel;		// ParticleSourceDataType::Particle のときに使われる
 
 
 
@@ -334,7 +334,7 @@ class ParticleEmitter3DComponent;
 class ParticleEmitterComponent
 	: public VisualComponent
 {
-	LN_OBJECT();
+	LN_OBJECT;
 protected:
 	ParticleEmitterComponent();
 	virtual ~ParticleEmitterComponent();
@@ -344,18 +344,18 @@ protected:
 	virtual void onRender2(RenderingContext* renderer) override;
 
 private:
-	RefPtr<SpriteParticleModel>					m_model;
-	RefPtr<detail::SpriteParticleModelInstance>	m_instance;
-	RefPtr<Material>							m_material;
+	Ref<SpriteParticleModel>					m_model;
+	Ref<detail::SpriteParticleModelInstance>	m_instance;
+	Ref<Material>							m_material;
 };
 
 /** 3D 空間に配置されるパーティクルエミッタです。*/
 class ParticleEmitter3DComponent
 	: public ParticleEmitterComponent
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
-	static RefPtr<ParticleEmitter3DComponent> create(SpriteParticleModel* model);
+	static Ref<ParticleEmitter3DComponent> create(SpriteParticleModel* model);
 
 protected:
 	ParticleEmitter3DComponent();

@@ -7,8 +7,8 @@ LN_NAMESPACE_BEGIN
 class UIScrollViewer;
 class UIComboBoxItem;
 class UIComboBox;
-using UIComboBoxItemPtr = RefPtr<UIComboBoxItem>;
-using UIComboBoxPtr = RefPtr<UIComboBox>;
+using UIComboBoxItemPtr = Ref<UIComboBoxItem>;
+using UIComboBoxPtr = Ref<UIComboBox>;
 
 /**
 	@brief
@@ -16,7 +16,7 @@ using UIComboBoxPtr = RefPtr<UIComboBox>;
 class UIPopup
 	: public UIElement
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	void setContent(UIElement* element);
 
@@ -35,7 +35,7 @@ LN_INTERNAL_ACCESS:
 	void updateLayoutForInPlacePopup(const Size& viewSize);
 
 private:
-	RefPtr<UIElement>	m_content;
+	Ref<UIElement>	m_content;
 };
 
 
@@ -45,7 +45,7 @@ private:
 class UIComboBoxItem
 	: public UIContentControl
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 LN_CONSTRUCT_ACCESS :
@@ -60,7 +60,7 @@ LN_CONSTRUCT_ACCESS :
 class UIComboBox
 	: public UIControl
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	static UIComboBoxPtr create();
 
@@ -77,8 +77,8 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 private:
-	RefPtr<UIScrollViewer>	m_scrollViewer;
-	RefPtr<UIPopup>			m_popup;
+	Ref<UIScrollViewer>	m_scrollViewer;
+	Ref<UIPopup>			m_popup;
 };
 
 LN_NAMESPACE_END

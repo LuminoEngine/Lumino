@@ -90,13 +90,13 @@ private:
 	typedef std::pair<String, SceneNode*>		NodeNamePair;
 
 	EngineDiagCore*						m_engineDiag;
-	RefPtr<FileManager>					m_fileManager;
-	RefPtr<detail::PhysicsManager>		m_physicsManager;	// TODO: remove RefPtr
-	RefPtr<detail::GraphicsManager>	m_graphicsManager;	// TODO: remove RefPtr
+	Ref<FileManager>					m_fileManager;
+	Ref<detail::PhysicsManager>		m_physicsManager;	// TODO: remove Ref
+	Ref<detail::GraphicsManager>	m_graphicsManager;	// TODO: remove Ref
 	detail::EffectManager*				m_effectManager;
 	detail::ModelManager*				m_modelManager;
 	detail::DocumentsManager*			m_documentsManager;
-	RefPtr<Texture2D>			m_dummyWhiteTexture;
+	Ref<Texture2D>			m_dummyWhiteTexture;
 
 
 

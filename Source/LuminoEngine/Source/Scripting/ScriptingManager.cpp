@@ -102,7 +102,7 @@ void NlGraphPin::initialize(NlGraphNode* ownerNode, NlGraphPinCategory category,
 	m_ownerNode = ownerNode;
 	m_category = category;
 	m_direction = direction;
-	m_valueCache = RefPtr<NlVariant>::makeRef();
+	m_valueCache = Ref<NlVariant>::makeRef();
 }
 
 //------------------------------------------------------------------------------
@@ -267,7 +267,7 @@ void NlGraphInterface::initialize()
 	m_graph = NlGraphPtr::makeRef();
 
 	// 1つのエントリーポイントは必ず存在している
-	auto ep = RefPtr<EntryPointNode>::makeRef();
+	auto ep = Ref<EntryPointNode>::makeRef();
 	ep->initialize(_T(""));
 	m_graph->addGraphNode(ep);
 	m_entryPoint = ep;

@@ -20,7 +20,7 @@ public:
 		@param	filePath	: ファイル名
 		@param	openMode	: ファイルを開く方法 (FileOpenMode のフラグの組み合わせ)
 	*/
-	static RefPtr<GenericFileStream<TChar>> create(const TChar* filePath, FileOpenMode openMode);
+	static Ref<GenericFileStream<TChar>> create(const TChar* filePath, FileOpenMode openMode);
 
 	/** ファイルを閉じます。*/
 	void close();

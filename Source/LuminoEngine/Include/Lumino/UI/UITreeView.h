@@ -7,8 +7,8 @@ namespace tr
 {
 class UITreeViewItem;
 class UITreeView;
-using UITreeViewItemPtr = RefPtr<UITreeViewItem>;
-using UITreeViewPtr = RefPtr<UITreeView>;
+using UITreeViewItemPtr = Ref<UITreeViewItem>;
+using UITreeViewPtr = Ref<UITreeView>;
 
 /**
 	@brief
@@ -16,7 +16,7 @@ using UITreeViewPtr = RefPtr<UITreeView>;
 class UITreeViewItem
 	: public UIControl
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	void setHeader(UIElement* header);
 
@@ -32,7 +32,7 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 private:
-	RefPtr<UIElement>	m_header;
+	Ref<UIElement>	m_header;
 };
 
 /**
@@ -41,7 +41,7 @@ private:
 class UITreeView
 	: public UIControl
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	static UITreeViewPtr create();
 

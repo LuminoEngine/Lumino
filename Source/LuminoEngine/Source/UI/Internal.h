@@ -8,7 +8,7 @@
 //class UIApplicationCommandsInternal
 //{
 //public:
-//	RefPtr<UIRoutedCommand> Paste;
+//	Ref<UIRoutedCommand> Paste;
 //};
 //
 //

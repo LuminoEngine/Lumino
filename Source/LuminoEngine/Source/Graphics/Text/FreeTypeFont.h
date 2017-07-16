@@ -152,8 +152,8 @@ private:
 
 	// TODO: いらないかも
 	FreeTypeGlyphData	m_glyphData;		///< LookupGlyphData() の戻り値として公開されるデータ
-	RefPtr<Bitmap>		m_glyphBitmap;		///< LookupGlyphData() で生成する一時グリフデータ
-	RefPtr<Bitmap>		m_outlineBitmap;	///< LookupGlyphData() で生成する一時グリフデータ
+	Ref<Bitmap>		m_glyphBitmap;		///< LookupGlyphData() で生成する一時グリフデータ
+	Ref<Bitmap>		m_outlineBitmap;	///< LookupGlyphData() で生成する一時グリフデータ
 };
 
 } // namespace detail

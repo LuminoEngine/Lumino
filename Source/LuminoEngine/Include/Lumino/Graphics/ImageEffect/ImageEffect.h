@@ -12,7 +12,7 @@ class DrawList;
 class ImageEffect
 	: public Object
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 protected:

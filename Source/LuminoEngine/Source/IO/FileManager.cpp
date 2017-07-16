@@ -102,7 +102,7 @@ Stream* FileManager::createFileStream(const PathName& filePath, bool isDeferring
 {
 	PathName absPath = filePath.canonicalizePath();
 
-	RefPtr<Stream> stream;
+	Ref<Stream> stream;
 	for (IArchive* archive : m_archiveList)
 	{
 		if (archive->tryCreateStream(absPath, &stream, isDeferring)) {

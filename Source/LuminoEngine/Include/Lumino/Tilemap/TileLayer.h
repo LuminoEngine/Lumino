@@ -5,7 +5,7 @@
 LN_NAMESPACE_BEGIN
 
 class TileLayer;
-typedef RefPtr<TileLayer> TileLayerPtr;
+typedef Ref<TileLayer> TileLayerPtr;
 
 /**
 	@brief	
@@ -13,7 +13,7 @@ typedef RefPtr<TileLayer> TileLayerPtr;
 class TileLayer
 	: public tr::ReflectionObject
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	static TileLayerPtr create();
 

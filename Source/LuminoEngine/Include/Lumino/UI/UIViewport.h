@@ -19,7 +19,7 @@ class RenderView;
 class UIViewport
 	: public UIElement
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	/** */
@@ -41,7 +41,7 @@ protected:
 	virtual Size arrangeOverride(const Size& finalSize) override;
 	virtual void onRender(DrawingContext* g) override;
 
-	virtual UIElement* checkMouseHoverElement(const PointF& globalPt) override;
+	virtual UIElement* checkMouseHoverElement(const Point& globalPt) override;
 
 LN_CONSTRUCT_ACCESS:
 	UIViewport();
@@ -56,15 +56,15 @@ private:
 	Size							m_viewSize;
 	ViewportPlacement				m_placement;
 	Color							m_backgroundColor;
-	List<RefPtr<UIViewportLayer>>	m_viewportLayerList;
-	RefPtr<RenderTargetTexture>		m_primaryLayerTarget;
-	RefPtr<RenderTargetTexture>		m_secondaryLayerTarget;
-	RefPtr<DepthBuffer>				m_depthBuffer;
+	List<Ref<UIViewportLayer>>	m_viewportLayerList;
+	Ref<RenderTargetTexture>		m_primaryLayerTarget;
+	Ref<RenderTargetTexture>		m_secondaryLayerTarget;
+	Ref<DepthBuffer>				m_depthBuffer;
 
 	// TODO: RenderView
-	RefPtr<DrawingContext>				m_drawingContext;
-	RefPtr<detail::NonShadingRenderer>	m_sceneRenderer;
-	RefPtr<RenderView>					m_renderView;
+	Ref<DrawingContext>				m_drawingContext;
+	Ref<detail::NonShadingRenderer>	m_sceneRenderer;
+	Ref<RenderView>					m_renderView;
 };
 
 /**
@@ -73,7 +73,7 @@ private:
 class UIViewportLayer
 	: public Object
 {
-	//LN_OBJECT();
+	//LN_OBJECT;
 public:
 	UIViewport* getOwnerViewport() const { return m_owner; }
 	void addPostEffect(PostEffect* postEffect);
@@ -82,17 +82,17 @@ protected:
 	UIViewportLayer();
 	virtual ~UIViewportLayer();
 
-	virtual UIElement* hitTestUIElement(const PointF& globalPt);	// TODO: globalPt じゃなくて local のほうがやりやすい
+	virtual UIElement* hitTestUIElement(const Point& globalPt);	// TODO: globalPt じゃなくて local のほうがやりやすい
 	virtual void onRoutedEvent(UIEventArgs* e);
 	virtual void updateLayout(const Size& viewSize);
 	virtual void render(bool clearColorBuffer) = 0;
 	virtual void executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, bool clearColorBuffer) = 0;
 
 private:
-	void postRender(DrawList* context, RefPtr<RenderTargetTexture>* primaryLayerTarget, RefPtr<RenderTargetTexture>* secondaryLayerTarget);
+	void postRender(DrawList* context, Ref<RenderTargetTexture>* primaryLayerTarget, Ref<RenderTargetTexture>* secondaryLayerTarget);
 
 	UIViewport*					m_owner;
-	List<RefPtr<PostEffect>>	m_postEffects;
+	List<Ref<PostEffect>>	m_postEffects;
 	friend class UIViewport;
 };
 
@@ -103,7 +103,7 @@ private:
 class UILayoutLayer
 	: public UIViewportLayer
 {
-	//LN_OBJECT();
+	//LN_OBJECT;
 public:
 	UILayoutView* GetLayoutView() const;
 
@@ -113,17 +113,17 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 protected:
-	virtual UIElement* hitTestUIElement(const PointF& globalPt) override;
+	virtual UIElement* hitTestUIElement(const Point& globalPt) override;
 	virtual void onRoutedEvent(UIEventArgs* e) override;
 	virtual void updateLayout(const Size& viewSize) override;
 	virtual void render(bool clearColorBuffer) override;
 	virtual void executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, bool clearColorBuffer) override;
 
 private:
-	RefPtr<UILayoutView>				m_root;
-	RefPtr<DrawingContext>				m_drawingContext;
-	RefPtr<detail::SceneRenderer>	m_internalRenderer;
-	RefPtr<RenderView>	m_drawElementListSet;
+	Ref<UILayoutView>				m_root;
+	Ref<DrawingContext>				m_drawingContext;
+	Ref<detail::SceneRenderer>	m_internalRenderer;
+	Ref<RenderView>	m_drawElementListSet;
 };
 
 /**
@@ -132,7 +132,7 @@ private:
 class PostEffect
 	: public Object
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	UIViewportLayer* GetOwnerLayer() const { return m_ownerLayer; }
 

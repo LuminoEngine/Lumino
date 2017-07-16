@@ -31,7 +31,7 @@ public:
 TEST_F(Test_Base_Cache, ObjectCount)
 {
 	g_count = 0;
-	RefPtr<CacheManager> manager(LN_NEW CacheManager(2, 0), false);
+	Ref<CacheManager> manager(LN_NEW CacheManager(2, 0), false);
 	
 	CacheTest* obj1 = LN_NEW CacheTest(10);
 	CacheTest* obj2 = LN_NEW CacheTest(10);
@@ -119,7 +119,7 @@ TEST_F(Test_Base_Cache, ObjectCount)
 TEST_F(Test_Base_Cache, ObjectSize)
 {
 	g_count = 0;
-	RefPtr<CacheManager> manager(LN_NEW CacheManager(2, 1), false);	// 1byte しかキャッシュに置けない
+	Ref<CacheManager> manager(LN_NEW CacheManager(2, 1), false);	// 1byte しかキャッシュに置けない
 
 	CacheTest* obj1 = LN_NEW CacheTest(1);
 	CacheTest* obj2 = LN_NEW CacheTest(10);
@@ -163,7 +163,7 @@ TEST_F(Test_Base_Cache, ObjectSize)
 //------------------------------------------------------------------------------
 TEST_F(Test_Base_Cache, NotUseCache)
 {
-	RefPtr<CacheManager> manager(LN_NEW CacheManager(0, 0), false);
+	Ref<CacheManager> manager(LN_NEW CacheManager(0, 0), false);
 
 	CacheTest* obj1 = LN_NEW CacheTest(1);
 

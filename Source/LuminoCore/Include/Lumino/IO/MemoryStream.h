@@ -7,7 +7,7 @@
 
 LN_NAMESPACE_BEGIN
 class MemoryStream;
-typedef RefPtr<MemoryStream>	MemoryStreamPtr;
+typedef Ref<MemoryStream>	MemoryStreamPtr;
 
 /**
 	@brief	データの読み書き先としてメモリを使用するストリームです。

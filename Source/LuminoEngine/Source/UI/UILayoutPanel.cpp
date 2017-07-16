@@ -26,7 +26,7 @@ void UILayoutPanel::initialize()
 {
 	UIElement::initialize();
 	setHitTestVisible(false);
-	m_children = RefPtr<UIElementCollection>::makeRef(this);
+	m_children = Ref<UIElementCollection>::makeRef(this);
 
 	// Panel 系のデフォルトは Stretch
 	//setHAlignment(HAlignment::Stretch);
@@ -124,7 +124,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIStackPanel, UILayoutPanel)
 //------------------------------------------------------------------------------
 UIStackPanelPtr UIStackPanel::create()
 {
-	auto ptr = RefPtr<UIStackPanel>::makeRef();
+	auto ptr = Ref<UIStackPanel>::makeRef();
 	ptr->initialize();
 	return ptr;
 }
@@ -203,7 +203,7 @@ Size UIAbsoluteLayout::measureOverride(const Size& constraint)
 	{
 		child->measureLayout(constraint);
 		const Size& desiredSize = child->getDesiredSize();
-		const PointF& pos = child->getPositionInternal();
+		const Point& pos = child->getPositionInternal();
 
 		childMaxSize.width  = std::max(childMaxSize.width,  pos.x + desiredSize.width);
 		childMaxSize.height = std::max(childMaxSize.height, pos.y + desiredSize.height);
@@ -218,7 +218,7 @@ Size UIAbsoluteLayout::measureOverride(const Size& constraint)
 	//for (int i = 0; i < childCount; i++)
 	//{
 	//	ILayoutElement* child = panel->getLayoutChild(i);
-	//	PointF pos = child->getPositionInternal();
+	//	Point pos = child->getPositionInternal();
 
 	//	child->measureLayout(constraint);
 	//	const Size& childDesiredSize = child->getLayoutDesiredSize();
@@ -242,10 +242,10 @@ Size UIAbsoluteLayout::measureOverride(const Size& constraint)
 //------------------------------------------------------------------------------
 Size UIAbsoluteLayout::arrangeOverride(const Size& finalSize)
 {
-	//ThicknessF canvas;
-	const ThicknessF& padding = getPadding();
-	PointF childrenOffset(padding.Left, padding.Top);
-	Size childrenBoundSize(finalSize.width - (padding.Left + padding.Right), finalSize.height - (padding.Top + padding.Bottom));
+	//Thickness canvas;
+	const Thickness& padding = getPadding();
+	Point childrenOffset(padding.left, padding.top);
+	Size childrenBoundSize(finalSize.width - padding.getWidth(), finalSize.height - padding.getHeight());
 
 	
 	for (UIElement* child : *getChildren())
@@ -265,7 +265,7 @@ Size UIAbsoluteLayout::arrangeOverride(const Size& finalSize)
 		
 		if (anchor != AlignmentAnchor::None)
 		{
-			const ThicknessF& margin = getMargineInternal();
+			const Thickness& margin = getMargineInternal();
 			//float l = childRect.getLeft(), t = childRect.GetTop(), r = childRect.getRight(), b = childRect.getBottom();
 
 			//if (anchor.TestFlag(AlignmentAnchor::LeftOffsets))
@@ -300,24 +300,24 @@ Size UIAbsoluteLayout::arrangeOverride(const Size& finalSize)
 #if 1
 			float l = NAN, t = NAN, r = NAN, b = NAN;
 			if (anchor.TestFlag(AlignmentAnchor::LeftOffsets))
-				l = margin.Left;
+				l = margin.left;
 			else if (anchor.TestFlag(AlignmentAnchor::LeftRatios))
-				l = childrenBoundSize.width * margin.Left;
+				l = childrenBoundSize.width * margin.left;
 			
 			if (anchor.TestFlag(AlignmentAnchor::TopOffsets))
-				t = margin.Top;
+				t = margin.top;
 			else if (anchor.TestFlag(AlignmentAnchor::TopRatios))
-				t = childrenBoundSize.height * margin.Top;
+				t = childrenBoundSize.height * margin.top;
 			
 			if (anchor.TestFlag(AlignmentAnchor::RightOffsets))
-				r = childrenBoundSize.width - margin.Right;
+				r = childrenBoundSize.width - margin.right;
 			else if (anchor.TestFlag(AlignmentAnchor::RightRatios))
-				r = childrenBoundSize.width - (childrenBoundSize.width * margin.Right);
+				r = childrenBoundSize.width - (childrenBoundSize.width * margin.right);
 			
 			if (anchor.TestFlag(AlignmentAnchor::BottomOffsets))
-				b = childrenBoundSize.height - margin.Bottom;
+				b = childrenBoundSize.height - margin.bottom;
 			else if (anchor.TestFlag(AlignmentAnchor::BottomRatios))
-				b = childrenBoundSize.height - (childrenBoundSize.height * margin.Bottom);
+				b = childrenBoundSize.height - (childrenBoundSize.height * margin.bottom);
 
 			if (anchor.TestFlag(AlignmentAnchor::HCenter))
 				childRect.x = (childrenBoundSize.width - childRect.width) / 2;
@@ -524,15 +524,15 @@ void UIGridLayout::setGridSize(int columnCount, int rowCount)
 	m_rowDefinitions.clear();
 
 	for (int i = 0; i < columnCount; ++i)
-		m_columnDefinitions.add(RefPtr<ColumnDefinition>::makeRef());
+		m_columnDefinitions.add(Ref<ColumnDefinition>::makeRef());
 	for (int i = 0; i < rowCount; ++i)
-		m_rowDefinitions.add(RefPtr<RowDefinition>::makeRef());
+		m_rowDefinitions.add(Ref<RowDefinition>::makeRef());
 }
 
 //------------------------------------------------------------------------------
 void UIGridLayout::addColumnDefinition(GridLengthType type, float width, float minWidth, float maxWidth)
 {
-	auto ptr = RefPtr<ColumnDefinition>::makeRef();
+	auto ptr = Ref<ColumnDefinition>::makeRef();
 	ptr->setWidth(width, type);
 	ptr->setMinWidth(minWidth);
 	ptr->setMaxWidth(maxWidth);
@@ -542,7 +542,7 @@ void UIGridLayout::addColumnDefinition(GridLengthType type, float width, float m
 //------------------------------------------------------------------------------
 void UIGridLayout::addRowDefinition(GridLengthType type, float height, float minHeight, float maxHeight)
 {
-	auto ptr = RefPtr<RowDefinition>::makeRef();
+	auto ptr = Ref<RowDefinition>::makeRef();
 	ptr->setHeight(height, type);
 	ptr->setMinHeight(minHeight);
 	ptr->setMaxHeight(maxHeight);

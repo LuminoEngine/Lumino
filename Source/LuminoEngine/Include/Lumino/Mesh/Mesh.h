@@ -8,8 +8,8 @@ LN_NAMESPACE_BEGIN
 class VertexDeclaration;
 class MeshResource;
 class StaticMeshModel;
-using MeshResourcePtr = RefPtr<MeshResource>;
-using StaticMeshModelPtr = RefPtr<StaticMeshModel>;
+using MeshResourcePtr = Ref<MeshResource>;
+using StaticMeshModelPtr = Ref<StaticMeshModel>;
 
 /** メッシュ生成オプション */
 LN_ENUM_FLAGS(MeshCreationFlags)
@@ -42,11 +42,11 @@ enum class UnitMeshSide
 class MeshResource
 	: public Object
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 	static MeshResourcePtr create();
 
-	static RefPtr<MeshResource> getUnitSphere(UnitMeshSide side = UnitMeshSide::Outward);
+	static Ref<MeshResource> getUnitSphere(UnitMeshSide side = UnitMeshSide::Outward);
 
 public:
 	/** 名前を設定します。*/
@@ -133,7 +133,7 @@ LN_INTERNAL_ACCESS:
 
 	struct VertexBufferInfo
 	{
-		RefPtr<VertexBuffer>	buffer = nullptr;
+		Ref<VertexBuffer>	buffer = nullptr;
 		void*					lockedBuffer = nullptr;
 		bool					refresh = true;
 	};
@@ -141,7 +141,7 @@ LN_INTERNAL_ACCESS:
 	struct IndexBufferInfo
 	{
 		//IndexBufferFormat		format = IndexBufferFormat_UInt16;
-		RefPtr<IndexBuffer>		buffer = nullptr;
+		Ref<IndexBuffer>		buffer = nullptr;
 		void*					lockedBuffer = nullptr;
 		bool					refresh = true;
 	};
@@ -219,11 +219,11 @@ LN_INTERNAL_ACCESS:	// TODO:
 	//int							m_vertexUsedCount;
 	//int							m_indexCapacity;
 	//int							m_indexUsedCount;
-	RefPtr<VertexDeclaration>	m_vertexDeclaration;
+	Ref<VertexDeclaration>	m_vertexDeclaration;
 	VertexBufferInfo			m_vertexBufferInfos[VB_Count];
 	IndexBufferInfo				m_indexBufferInfo;
 
-	//RefPtr<MaterialList>		m_materials;
+	//Ref<MaterialList>		m_materials;
 	MeshAttributeList			m_attributes;
 	bool						m_vertexDeclarationModified;
 };
@@ -235,7 +235,7 @@ LN_INTERNAL_ACCESS:	// TODO:
 class StaticMeshModel
 	: public Object
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	//void SetMeshResource(MeshResource* meshResource) { m_meshResource = meshResource; }
@@ -263,8 +263,8 @@ LN_INTERNAL_ACCESS:
 	void initializeTeapot(detail::GraphicsManager* manager, float size, int tessellation, MeshCreationFlags flags);
 	
 LN_INTERNAL_ACCESS:	// TODO:
-	List<RefPtr<MeshResource>>	m_meshResources;
-	RefPtr<MaterialList>		m_materials;
+	List<Ref<MeshResource>>	m_meshResources;
+	Ref<MaterialList>		m_materials;
 };
 
 LN_NAMESPACE_END

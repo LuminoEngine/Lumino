@@ -14,7 +14,7 @@ class PhysicsDebugDrawer;
 class PhysicsWorld
 	: public Object
 {
-	LN_OBJECT();
+	LN_OBJECT;
 public:
 
 	//void AddRigidBody(RigidBody* rigidBody);
@@ -49,7 +49,7 @@ LN_INTERNAL_ACCESS:
 	//void AutoAddChild(RigidBody* child);
 
 private:
-	//RefPtr<detail::PhysicsWorldCore>		m_impl;
+	//Ref<detail::PhysicsWorldCore>		m_impl;
 	//MultiThreadingInFrameGCList<RigidBody>	m_rigidBodyList;
 
 	btDefaultCollisionConfiguration*		m_btCollisionConfig;
@@ -63,8 +63,8 @@ private:
 	btSoftBodyWorldInfo*					m_softBodyWorldInfo;
 	PhysicsDebugDrawer*						m_debugDrawer;
 
-	List<RefPtr<PhysicsObject>>				m_physicsObjectList;
-	List<RefPtr<Joint>>						m_jointList;
+	List<Ref<PhysicsObject>>				m_physicsObjectList;
+	List<Ref<Joint>>						m_jointList;
 };
 
 LN_NAMESPACE_END
