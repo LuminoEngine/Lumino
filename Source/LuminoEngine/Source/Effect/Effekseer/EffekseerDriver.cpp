@@ -207,9 +207,9 @@ void EffekseerEffectEngine::initialize(EffectManager* manager, int cacheObjectCo
 }
 
 //------------------------------------------------------------------------------
-void EffekseerEffectEngine::Finalize()
+void EffekseerEffectEngine::dispose()
 {
-	EffectEngine::Finalize();
+	EffectEngine::dispose();
 
 	// Effekseer のサンプルでは先にエフェクト管理用インスタンスを破棄する必要があるようだ
 	if (m_efkManager != nullptr) {

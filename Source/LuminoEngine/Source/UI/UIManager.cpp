@@ -101,12 +101,12 @@ void UIManager::initialize(const Settings& settings)
 }
 
 //------------------------------------------------------------------------------
-void UIManager::Finalize()
+void UIManager::dispose()
 {
 	auto deleteList = m_windows;
 	for (auto& p : deleteList)
 	{
-		p->Dispose();
+		p->dispose();
 	}
 
 	LN_SAFE_RELEASE(m_mainWindow);
@@ -386,6 +386,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 		// base
 		{
 			auto* props = style->getPropertyTable();
+			props->padding = ThicknessF(10);
 		}
 		// UIListBoxItem.MouseOver
 		{

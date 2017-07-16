@@ -109,7 +109,7 @@ void AudioManager::initialize(const Settings& settings)
 }
 
 //------------------------------------------------------------------------------
-void AudioManager::Finalize()
+void AudioManager::dispose()
 {
 	// ポーリングスレッドの終了を待つ
 	m_endRequested.setTrue();

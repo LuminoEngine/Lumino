@@ -30,7 +30,7 @@ public:
 	virtual ~EffectManager();
 
 	void initialize(const Settings& settings);
-	void Finalize();
+	void dispose();
 
 	EffectEngine* CreateEffectWorld();
 	void ReleaseEffectWorld(EffectEngine* world);

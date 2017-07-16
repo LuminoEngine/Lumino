@@ -84,6 +84,7 @@ void UIViewport::onRoutedEvent(UIEventArgs* e)
 	// デフォルトの MainWindow などは全体に UILayoutPanel が乗るので、
 	// 通常のイベントではなく RoutedEvent でなければハンドリングできない。
 
+
 	for (auto& layer : m_viewportLayerList)
 	{
 		layer->onRoutedEvent(e);

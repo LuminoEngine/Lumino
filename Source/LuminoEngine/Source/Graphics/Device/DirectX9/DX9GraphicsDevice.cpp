@@ -122,7 +122,7 @@ void DX9GraphicsDevice::initialize(const ConfigData& configData)
 }
 
 //------------------------------------------------------------------------------
-void DX9GraphicsDevice::Finalize()
+void DX9GraphicsDevice::dispose()
 {
 	for (IDirect3DTexture9* tex : m_dummyTextures)
 	{
@@ -130,7 +130,7 @@ void DX9GraphicsDevice::Finalize()
 	}
 	m_dummyTextures.clear();
 
-	GraphicsDeviceBase::Finalize();
+	GraphicsDeviceBase::dispose();
 	LN_SAFE_RELEASE(m_renderer);
 	LN_SAFE_RELEASE(m_defaultSwapChain);
 }

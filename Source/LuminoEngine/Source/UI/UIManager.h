@@ -41,7 +41,7 @@ public:
 	virtual ~UIManager();
 
 	void initialize(const Settings& settings);
-	void Finalize();
+	void dispose();
 	void createGameModeMainFrame(World2D* defaultWorld2D, World3D* defaultWorld3D);
 	//void CreateWrapModeMainFrame(void* window, World2D* defaultWorld2D, World3D* defaultWorld3D);
 	void releaseGameModeMainFrame();

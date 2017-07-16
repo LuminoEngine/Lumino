@@ -10,6 +10,10 @@ namespace LuminoBuild
 {
 	class Builder
     {
+        public int MajorVersion;
+        public int MinorVersion;
+        public int RevisionVersion;
+        public int BuildVersion;
         public string VersionString;
         public string InstallerProductGUID_MSVC2013;
         public string InstallerProductGUID_MSVC2015;
@@ -25,17 +29,62 @@ namespace LuminoBuild
         public string LuminoPackageSourceDir;
         public string LuminoPackageReleaseDir;
         public string LuminoDependenciesDir;
-        public List<ModuleRule> Rules = new List<ModuleRule>();
+        public List<BuildTask> Tasks = new List<BuildTask>();
+        public List<BuildRule> Rules = new List<BuildRule>();
 
-        public void Execute(string commands)
+        public void DoTaskOrRule(string name)
         {
-            var rules = new List<ModuleRule>();
+            var rule = Rules.Find((r) => r.Name == name);
+            if (rule != null)
+            {
+                DoRule(name);
+            }
+            else
+            {
+                DoTask(name);
+            }
+        }
+
+        public void DoTask(string name)
+        {
+            try
+            {
+                Execute(name);
+            }
+            catch (Exception e)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(e.ToString());
+                Console.ResetColor(); // 色のリセット
+            }
+        }
+        
+        public void DoRule(string name)
+        {
+            var rule = Rules.Find((r) => r.Name == name);
+            try
+            {
+                Logger.WriteLine("[{0}] Rule started.", rule.Name);
+                rule.Build(this);
+                Logger.WriteLine("[{0}] Rule succeeded.", rule.Name);
+            }
+            catch (Exception e)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(e.ToString());
+                Console.ResetColor(); // 色のリセット
+            }
+        }
+
+        private void Execute(string commands)
+        {
+            var tasks = new List<BuildTask>();
 
             if (commands == "all")
             {
-                foreach (var rule in Rules)
+                foreach (var rule in Tasks)
                 {
-                    rules.Add(rule);
+                    tasks.Add(rule);
                 }
             }
             else
@@ -43,29 +92,29 @@ namespace LuminoBuild
                 string[] list = commands.Split(',');
                 foreach (var cmd in list)
                 {
-                    var rule = Rules.Find((r) => r.CommandName == cmd);
-                    if (rule != null) rules.Add(rule);
+                    var task = Tasks.Find((r) => r.CommandName == cmd);
+                    if (task != null) tasks.Add(task);
                 }
             }
 
-            foreach (var rule in rules)
+            foreach (var task in tasks)
             {
-                rule.CheckPrerequisite(this);
+                task.CheckPrerequisite(this);
             }
-            foreach (var rule in rules)
+            foreach (var task in tasks)
             {
-                if (rule.Buildable)
+                if (task.Buildable)
                 {
-                    Logger.WriteLine("[{0}] Rule started.", rule.CommandName);
-                    rule.Build(this);
-                    Logger.WriteLine("[{0}] Rule succeeded.", rule.CommandName);
+                    Logger.WriteLine("[{0}] Task started.", task.CommandName);
+                    task.Build(this);
+                    Logger.WriteLine("[{0}] Task succeeded.", task.CommandName);
                 }
             }
         }
 
         public void CheckPrerequisite()
         {
-            foreach (var rule in Rules)
+            foreach (var rule in Tasks)
             {
                 rule.CheckPrerequisite(this);
             }
@@ -73,7 +122,7 @@ namespace LuminoBuild
 
         public void Build()
         {
-            foreach (var rule in Rules)
+            foreach (var rule in Tasks)
             {
                 if (rule.Buildable)
                 {
@@ -85,7 +134,14 @@ namespace LuminoBuild
         }
     }
 
-    abstract class ModuleRule
+    /// <summary>
+    /// ビルドタスク
+    /// </summary>
+    /// <remarks>
+    /// タスク自体は依存関係を定義しない。一般的なビルドツールとはやや異なるが。
+    /// これは、特定のタスクだけを繰り返し実行できるようにするため。例えば Ruby バインダのデバッグ中、これだけビルドしなおすなど。
+    /// </remarks>
+    abstract class BuildTask
     {
         /// <summary>
         /// ルールを実行するためのコマンド名
@@ -114,6 +170,23 @@ namespace LuminoBuild
         /// <param name="builder">Builder.</param>
 		public abstract void Build(Builder builder);
 	}
+
+    /// <summary>
+    /// 一連の BuildTask
+    /// </summary>
+    abstract class BuildRule
+    {
+        /// <summary>
+        /// 名前
+        /// </summary>
+        public abstract string Name { get; }
+
+        /// <summary>
+        /// 実行
+        /// </summary>
+        /// <param name="builder"></param>
+        public abstract void Build(Builder builder);
+    }
 
     static class Logger
     {

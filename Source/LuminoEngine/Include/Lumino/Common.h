@@ -151,7 +151,7 @@ enum class FrameUpdateMode
 };
 
 /**
-	@brief	
+	@brief	オブジェクトに関連付けられたリソースを解放するためのメカニズムを提供します。
 */
 LN_CLASS()
 class RuntimeResource
@@ -161,9 +161,10 @@ class RuntimeResource
 protected:
 	RuntimeResource();
 	virtual ~RuntimeResource();
-
 	virtual void finalize_() override;
-	virtual void Dispose();
+
+	/** リソースの解放を行います。 */
+	virtual void dispose();
 };
 
 LN_NAMESPACE_END

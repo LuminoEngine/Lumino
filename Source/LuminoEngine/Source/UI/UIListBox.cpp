@@ -34,6 +34,18 @@ void UIListBoxItem::initialize()
 	setMinHeight(16);
 }
 
+//------------------------------------------------------------------------------
+void UIListBoxItem::onMouseDown(UIMouseEventArgs* e)
+{
+	if (e->getClickCount() == 2)
+	{
+		// TODO: public ‚È submit() ‚ð—pˆÓ‚µ‚½‚Ù‚¤‚ª‚¢‚¢‚©‚È
+		onSubmit(e);
+	}
+
+	UIControl::onMouseDown(e);
+}
+
 //==============================================================================
 // UIListBox
 //==============================================================================

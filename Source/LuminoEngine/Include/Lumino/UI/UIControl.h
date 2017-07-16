@@ -58,12 +58,14 @@ public:
 	void setLayoutPanel(UILayoutPanel* panel);
 	UILayoutPanel* getLayoutPanel() const;
 
-
-	/** onClick イベントの通知を受け取るコールバックを登録します。*/
+	
+	/** onSubmit イベントの通知を受け取るコールバックを登録します。*/
 	LN_METHOD(Event)
-	EventConnection connectOnClick(UIEventHandler handler);
+	EventConnection connectOnSubmit(UIEventHandler handler);
 
 protected:
+	virtual void onSubmit(UIEventArgs* e);
+
 	// UIElement interface
 	//virtual int getVisualChildrenCount() const override;
 	//virtual ILayoutElement* getVisualChild(int index) const override;
@@ -76,9 +78,6 @@ protected:
 	virtual void onLostFocus(UIEventArgs* e) override;
 	virtual void onMouseDown(UIMouseEventArgs* e) override;
 	virtual void onMouseUp(UIMouseEventArgs* e) override;
-
-	/** ボタンがクリックされたときに呼び出されます。*/
-	virtual void onClick(UIEventArgs* e);
 
 	virtual void onLayoutPanelChanged(UILayoutPanel* newPanel);
 
@@ -101,12 +100,11 @@ private:
 	RefPtr<UIElementCollection>		m_items;
 	RefPtr<UILayoutPanel>			m_itemsHostPanel;
 
+	UIEventHandler::EventType		m_onSubmit;
+
 	//bool							m_invalidateItemsHostPanel;
 
 	//UIElement*	m_visualTreeRoot;
-	ClickMode			m_clickMode;
-	bool				m_isPressed;
-	UIEventHandler::EventType	m_onClick;
 };
 
 

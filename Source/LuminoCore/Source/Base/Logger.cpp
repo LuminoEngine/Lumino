@@ -10,7 +10,6 @@
 #include <time.h>
 #include <sstream>
 #include <iomanip>
-#include <Lumino/Base/Version.h>
 #include <Lumino/Base/String.h>
 #include <Lumino/Base/Environment.h>
 #include <Lumino/Base/Logger.h>
@@ -247,7 +246,6 @@ bool Logger::initialize(const TCHAR* filePath) throw()
 	//char* ts = asctime(localtime(&timer));
 
 	fprintf(stream, "===============================================================\n");
-	fprintf(stream, " %s Log    Version:%s\n", LUMINO_NAME, LUMINO_CORE_VERSION_STRING);//    %s\n", LUMINO_CORE_VERSION_STRING, ts);
 	fprintf(stream, "---------------------------------------------------------------\n");
 
 #ifdef LN_DEBUG

@@ -3,7 +3,7 @@ using System.Text;
 using System.IO;
 using LuminoBuild;
 
-class CppPackageRule : ModuleRule
+class CppPackageRule : BuildTask
 {
     [Flags]
     enum VSBuildFlags

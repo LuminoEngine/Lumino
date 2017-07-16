@@ -50,7 +50,7 @@ public:
 	WindowManagerBase* getWindowManager() const LN_NOEXCEPT { return m_windowManager; }
 
 public:
-	void Dispose();
+	void dispose();
 
 protected:
 

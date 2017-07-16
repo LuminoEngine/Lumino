@@ -243,6 +243,10 @@ Size UIAbsoluteLayout::measureOverride(const Size& constraint)
 Size UIAbsoluteLayout::arrangeOverride(const Size& finalSize)
 {
 	//ThicknessF canvas;
+	const ThicknessF& padding = getPadding();
+	PointF childrenOffset(padding.Left, padding.Top);
+	Size childrenBoundSize(finalSize.width - (padding.Left + padding.Right), finalSize.height - (padding.Top + padding.Bottom));
+
 	
 	for (UIElement* child : *getChildren())
 	{
@@ -298,28 +302,28 @@ Size UIAbsoluteLayout::arrangeOverride(const Size& finalSize)
 			if (anchor.TestFlag(AlignmentAnchor::LeftOffsets))
 				l = margin.Left;
 			else if (anchor.TestFlag(AlignmentAnchor::LeftRatios))
-				l = finalSize.width * margin.Left;
+				l = childrenBoundSize.width * margin.Left;
 			
 			if (anchor.TestFlag(AlignmentAnchor::TopOffsets))
 				t = margin.Top;
 			else if (anchor.TestFlag(AlignmentAnchor::TopRatios))
-				t = finalSize.height * margin.Top;
+				t = childrenBoundSize.height * margin.Top;
 			
 			if (anchor.TestFlag(AlignmentAnchor::RightOffsets))
-				r = finalSize.width - margin.Right;
+				r = childrenBoundSize.width - margin.Right;
 			else if (anchor.TestFlag(AlignmentAnchor::RightRatios))
-				r = finalSize.width - (finalSize.width * margin.Right);
+				r = childrenBoundSize.width - (childrenBoundSize.width * margin.Right);
 			
 			if (anchor.TestFlag(AlignmentAnchor::BottomOffsets))
-				b = finalSize.height - margin.Bottom;
+				b = childrenBoundSize.height - margin.Bottom;
 			else if (anchor.TestFlag(AlignmentAnchor::BottomRatios))
-				b = finalSize.height - (finalSize.height * margin.Bottom);
+				b = childrenBoundSize.height - (childrenBoundSize.height * margin.Bottom);
 
 			if (anchor.TestFlag(AlignmentAnchor::HCenter))
-				childRect.x = (finalSize.width - childRect.width) / 2;
+				childRect.x = (childrenBoundSize.width - childRect.width) / 2;
 
 			if (anchor.TestFlag(AlignmentAnchor::VCenter))
-				childRect.y = (finalSize.height - childRect.height) / 2;
+				childRect.y = (childrenBoundSize.height - childRect.height) / 2;
 
 			if (!Math::isNaN(l) || !Math::isNaN(r))
 			{
@@ -355,17 +359,12 @@ Size UIAbsoluteLayout::arrangeOverride(const Size& finalSize)
 				}
 			}
 
-			child->arrangeLayout(childRect);
+			childRect.x += childrenOffset.x;
+			childRect.y += childrenOffset.y;
 #endif
 		}
-		else
-		{
-			//if (Math::IsNaN(layoutSize.width))
-			//	childRect.width = finalSize.width;
-			//if (Math::IsNaN(layoutSize.height))
-			//	childRect.height = finalSize.height;
-			child->arrangeLayout(childRect);
-		}
+
+		child->arrangeLayout(childRect);
 	}
 
 	return finalSize;

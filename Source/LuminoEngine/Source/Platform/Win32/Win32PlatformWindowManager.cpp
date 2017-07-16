@@ -254,7 +254,7 @@ void Win32WindowManager::doEvents()
 }
 
 //------------------------------------------------------------------------------
-void Win32WindowManager::Finalize()
+void Win32WindowManager::dispose()
 {
 	m_mainWindow.safeRelease();
 }

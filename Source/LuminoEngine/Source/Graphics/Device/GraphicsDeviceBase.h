@@ -18,7 +18,7 @@ public:
 
 public:
 
-	virtual void Finalize() override;
+	virtual void dispose() override;
 
 	/// リソース登録
 	void addDeviceResource(IDeviceObject* obj);

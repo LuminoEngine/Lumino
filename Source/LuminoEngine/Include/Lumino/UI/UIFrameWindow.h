@@ -41,7 +41,7 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~UIFrameWindow();
 	void initialize(PlatformWindow* platformWindow, SwapChain* swapChain, UIContext* context);
 	void initialize();
-	virtual void Dispose();
+	virtual void dispose() override;
 	virtual bool onEvent(const PlatformEventArgs& e) override;
 	virtual void onPresentRenderingContexts();
 

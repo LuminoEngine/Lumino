@@ -57,7 +57,7 @@ GameApplication::GameApplication()
 //------------------------------------------------------------------------------
 GameApplication::~GameApplication()
 {
-	m_gameSceneManager->Finalize();
+	m_gameSceneManager->dispose();
 }
 
 //------------------------------------------------------------------------------

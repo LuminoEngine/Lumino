@@ -4,7 +4,7 @@ using LuminoBuild;
 using System.Text;
 using System.IO.Compression;
 
-class SetupDependencies : ModuleRule
+class SetupDependencies : BuildTask
 {
     public override string CommandName { get { return "setup"; } }
     
@@ -18,6 +18,8 @@ class SetupDependencies : ModuleRule
     public override void Build(Builder builder)
     {
         var zipPath = builder.LuminoRootDir + "External/LuminoDependencies.zip";
+        if (File.Exists(zipPath)) return;   // ‚à‚¤Š®—¹‚µ‚Ä‚¢‚é
+
         var extraName = builder.LuminoRootDir + "External";
 
         Logger.WriteLine("Downloading dependencies...");

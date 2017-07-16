@@ -88,7 +88,7 @@ PlatformManager::PlatformManager(const Settings& settings)
 //------------------------------------------------------------------------------
 PlatformManager::~PlatformManager()
 {
-	Dispose();
+	dispose();
 }
 
 //------------------------------------------------------------------------------
@@ -179,7 +179,7 @@ bool PlatformManager::doEvents()
 }
 
 //------------------------------------------------------------------------------
-void PlatformManager::Dispose()
+void PlatformManager::dispose()
 {
 	if (m_windowManager != NULL)
 	{
@@ -190,7 +190,7 @@ void PlatformManager::Dispose()
 		}
 		// メインスレッドでメッセージ処理していた場合はここで Destroy
 		else {
-			m_windowManager->Finalize();
+			m_windowManager->dispose();
 		}
 		//LN_SAFE_RELEASE(m_mainWindow);
 		LN_SAFE_RELEASE(m_windowManager);
@@ -217,7 +217,7 @@ void PlatformManager::thread_MainWindow()
 	}
 
 	// 終了処理
-	m_windowManager->Finalize();
+	m_windowManager->dispose();
 }
 
 LN_NAMESPACE_END

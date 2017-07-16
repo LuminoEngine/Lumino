@@ -39,7 +39,7 @@ public:
 	AudioManager();
 	virtual ~AudioManager();
 	void initialize(const Settings& settings);
-	void Finalize();
+	void dispose();
 
 	/// オンメモリorストリーミング自動選択の音声データバイト数閾値
 	void setAutoPlayTypeSelectThreshold(uint32_t threshold) { m_onMemoryLimitSize = threshold; }

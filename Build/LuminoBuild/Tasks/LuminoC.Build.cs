@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using LuminoBuild;
 
-class LuminoCRule : ModuleRule
+class LuminoCRule : BuildTask
 {
     /// <summary>
     /// ルールを実行するためのコマンド名

@@ -54,8 +54,6 @@ UIElement::UIElement()
 	, position(PointF(0, 0))
 	, width(NAN)
 	, height(NAN)
-	, margin(ThicknessF(0, 0, 0, 0))
-	, padding(ThicknessF(0, 0, 0, 0))
 	, anchor(AlignmentAnchor::None)
 	, hAlignment(HAlignment::Stretch)
 	, vAlignment(VAlignment::Stretch)
@@ -90,6 +88,30 @@ void UIElement::initialize()
 
 	//goToVisualState(String::GetEmpty());
 	m_invalidateFlags |= detail::InvalidateFlags::VisualState;
+}
+
+//------------------------------------------------------------------------------
+void UIElement::setMargin(const ThicknessF& margin)
+{
+	m_localStyle->margin = margin;
+}
+
+//------------------------------------------------------------------------------
+const ThicknessF& UIElement::getMargin() const
+{
+	return m_localStyle->margin;
+}
+
+//------------------------------------------------------------------------------
+void UIElement::setPadding(const ThicknessF& Padding)
+{
+	m_localStyle->padding = Padding;
+}
+
+//------------------------------------------------------------------------------
+const ThicknessF& UIElement::getPadding() const
+{
+	return m_localStyle->padding;
 }
 
 //------------------------------------------------------------------------------
@@ -270,7 +292,7 @@ void UIElement::onRender(DrawingContext* g)
 	{
 		g->setBrush(m_localStyle->background.get());
 		//g->drawRectangle(Rect(0, 0, m_finalLocalRect.getSize()));
-		g->drawBoxBackground(Rect(0, 0, m_finalLocalRect.getSize()), m_localStyle->cornerRadius.get());
+		g->drawBoxBackground(Rect(0, 0, m_finalLocalRenderRect.getSize()), m_localStyle->cornerRadius.get());
 	}
 	//else
 	//{
@@ -616,10 +638,10 @@ void UIElement::onUpdatingLayout()
 	UIHelper::forEachVisualChildren(this, [](UIElement* child) { child->onUpdatingLayout(); });
 }
 
-//------------------------------------------------------------------------------s
+//------------------------------------------------------------------------------
 bool UIElement::onHitTest(const PointF& localPoint)
 {
-	return m_finalLocalRect.contains(localPoint);
+	return m_finalLocalRenderRect.contains(localPoint);
 }
 
 //------------------------------------------------------------------------------
@@ -627,6 +649,9 @@ UIContext* UIElement::getContext() const
 {
 	return UIContext::getMainContext();// TODO
 }
+
+//------------------------------------------------------------------------------
+const ThicknessF& UIElement::getMargineInternal() const { return m_localStyle->margin.get(); }
 
 //------------------------------------------------------------------------------
 void UIElement::updateLayout(const Size& viewSize)
@@ -667,9 +692,11 @@ void UIElement::updateFrame()
 //------------------------------------------------------------------------------
 void UIElement::render(DrawingContext* g)
 {
+	//PointF contentOffset;
 	if (m_visualParent != nullptr)
 	{
 		detail::BuiltinEffectData::combine(m_visualParent->m_combinedBuiltinEffectData, m_builtinEffectData, &m_combinedBuiltinEffectData);
+		//contentOffset = m_visualParent->m_finalLocalContentRect.getTopLeft();
 	}
 	else
 	{
@@ -764,8 +791,8 @@ void UIElement::removeVisualChild(UIElement* element)
 //------------------------------------------------------------------------------
 const PointF& UIElement::getLayoutPosition() const { return position; }
 Size UIElement::getLayoutSize() const { return Size(width, height); }
-const ThicknessF& UIElement::getLayoutMargin() const { return margin; }
-const ThicknessF& UIElement::getLayoutPadding() const { return padding; }
+const ThicknessF& UIElement::getLayoutMargin() const { return m_localStyle->margin.get(); }
+const ThicknessF& UIElement::getLayoutPadding() const { return m_localStyle->padding.get(); }
 AlignmentAnchor UIElement::getLayoutAnchor() const { return anchor; }
 HAlignment UIElement::getLayoutHAlignment() const { return hAlignment; }
 VAlignment UIElement::getLayoutVAlignment() const { return vAlignment; }
@@ -775,8 +802,8 @@ const HAlignment* UIElement::getLayoutContentHAlignment() { return getPriorityCo
 const VAlignment* UIElement::getLayoutContentVAlignment() { return getPriorityContentVAlignment(); }
 const Size& UIElement::getLayoutDesiredSize() const { return m_desiredSize; }
 void UIElement::setLayoutDesiredSize(const Size& size) { m_desiredSize = size; }
-void UIElement::setLayoutFinalLocalRect(const Rect& rect) { m_finalLocalRect = rect; }
-const Rect& UIElement::getLayoutFinalLocalRect() const { return m_finalLocalRect; }
+void UIElement::setLayoutFinalLocalRect(const Rect& renderRect, const Rect& contentRect) { m_finalLocalRenderRect = renderRect; m_finalLocalContentRect = contentRect; }
+void UIElement::getLayoutFinalLocalRect(Rect* outRenderRect, Rect* outContentRect) const { *outRenderRect = m_finalLocalRenderRect; *outContentRect = m_finalLocalContentRect; }
 void UIElement::setLayoutFinalGlobalRect(const Rect& rect) { m_finalGlobalRect = rect; }
 
 LN_NAMESPACE_END

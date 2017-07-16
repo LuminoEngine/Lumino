@@ -157,7 +157,7 @@ void FreeTypeFont::initialize()
 }
 
 //------------------------------------------------------------------------------
-void FreeTypeFont::Dispose_()
+void FreeTypeFont::disposeFontResource()
 {
 	if (m_ftStroker)
 	{

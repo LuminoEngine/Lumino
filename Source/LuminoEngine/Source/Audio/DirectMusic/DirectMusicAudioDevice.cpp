@@ -24,7 +24,7 @@ DirectMusicAudioDevice::~DirectMusicAudioDevice()
 {
 	if (DirectMusicManager::getInstance())
 	{
-		DirectMusicManager::getInstance()->Finalize();
+		DirectMusicManager::getInstance()->dispose();
 	}
 }
 

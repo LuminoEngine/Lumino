@@ -14,7 +14,7 @@ public:
 
 	GameSceneManager();
 	virtual ~GameSceneManager();
-	void Finalize();
+	void dispose();
 
 	void gotoScene(GameScene* scene);
 	void callScene(GameScene* scene);

@@ -21,7 +21,7 @@ public:
 	void stopVibration(int joysticNumber);
 
 private:
-	void Finalize();
+	void dispose();
 	void refreshDevice();
 	void releaseDevice();
 

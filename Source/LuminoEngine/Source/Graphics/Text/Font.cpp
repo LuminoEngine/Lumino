@@ -215,11 +215,11 @@ void RawFont::initialize()
 //------------------------------------------------------------------------------
 void RawFont::finalize_()
 {
-	Dispose_();
+	disposeFontResource();
 }
 
 //------------------------------------------------------------------------------
-void RawFont::Dispose_()
+void RawFont::disposeFontResource()
 {
 	if (m_manager != nullptr)
 	{

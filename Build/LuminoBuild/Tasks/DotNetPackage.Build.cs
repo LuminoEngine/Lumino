@@ -3,7 +3,7 @@ using System.Text;
 using System.IO;
 using LuminoBuild;
 
-class DotNetPackageRule : ModuleRule
+class DotNetPackageRule : BuildTask
 {
     /// <summary>
     /// ルールを実行するためのコマンド名

@@ -29,7 +29,7 @@ void RenderingThread::reset(Driver::IGraphicsDevice* device)
 }
 
 //------------------------------------------------------------------------------
-void RenderingThread::Dispose()
+void RenderingThread::dispose()
 {
 	// 終了要求を出して待つ
 	m_endRequested.setTrue();

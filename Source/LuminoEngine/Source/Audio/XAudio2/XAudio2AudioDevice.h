@@ -42,7 +42,7 @@ public:
 	XAudio2AudioDevice();
 	virtual ~XAudio2AudioDevice();
     bool initialize();
-    void Finalize();
+    //void dispose();
 
 	IXAudio2* getXAudio2() const { return m_XAudio; }
 	IXAudio2MasteringVoice* getMasteringVoice() { return m_masteringVoice; }

@@ -14,6 +14,8 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIButtonBase, UIControl);
 
 //------------------------------------------------------------------------------
 UIButtonBase::UIButtonBase()
+	: m_clickMode(ClickMode::Release)
+	, m_isPressed(false)
 {
 }
 
@@ -47,21 +49,34 @@ void UIButtonBase::setText(const StringRef& text)
 }
 
 //------------------------------------------------------------------------------
+EventConnection UIButtonBase::connectOnClick(UIEventHandler handler)
+{
+	return m_onClick.connect(handler);
+}
+
+//------------------------------------------------------------------------------
+void UIButtonBase::onClick(UIEventArgs* e)
+{
+	m_onClick.raise(e);
+	//raiseEvent(ClickEvent, this, UIEventArgs::create(this));
+}
+
+//------------------------------------------------------------------------------
 void UIButtonBase::onMouseDown(UIMouseEventArgs* e)
 {
-	//if (m_clickMode == ClickMode::Release)
-	//{
-	//	m_isPressed = true;
-	//	focus();
-	//	captureMouse();
-	//	goToVisualState(UIVisualStates::PressedState);
-	//	e->handled = true;
-	//}
-	//else if (m_clickMode == ClickMode::Press)
-	//{
-	//	onClick(e);
-	//	e->handled = true;
-	//}
+	if (m_clickMode == ClickMode::Release)
+	{
+		m_isPressed = true;
+		focus();
+		captureMouse();
+		goToVisualState(UIVisualStates::PressedState);
+		e->handled = true;
+	}
+	else if (m_clickMode == ClickMode::Press)
+	{
+		onClick(e);
+		e->handled = true;
+	}
 
 	UIControl::onMouseDown(e);
 }
@@ -69,17 +84,17 @@ void UIButtonBase::onMouseDown(UIMouseEventArgs* e)
 //------------------------------------------------------------------------------
 void UIButtonBase::onMouseUp(UIMouseEventArgs* e)
 {
-	//if (m_clickMode == ClickMode::Release)
-	//{
-	//	if (m_isPressed)
-	//	{
-	//		m_isPressed = false;
-	//		releaseMouseCapture();
-	//		goToVisualState(UIVisualStates::MouseOverState);
-	//		onClick(e);
-	//		e->handled = true;
-	//	}
-	//}
+	if (m_clickMode == ClickMode::Release)
+	{
+		if (m_isPressed)
+		{
+			m_isPressed = false;
+			releaseMouseCapture();
+			goToVisualState(UIVisualStates::MouseOverState);
+			onClick(e);
+			e->handled = true;
+		}
+	}
 
 	UIControl::onMouseUp(e);
 }

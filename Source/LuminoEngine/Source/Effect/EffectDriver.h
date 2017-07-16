@@ -19,7 +19,7 @@ public:
 	virtual ~EffectEngine() = default;
 
 	void initialize(EffectManager* manager, int cacheObjectCount, size_t cacheMemorySize);
-	virtual void Finalize();
+	virtual void dispose();
 	virtual VisualEffect* CreateEffectCore(const PathName& filePath) = 0;
 	virtual void SetViewProjectin(const Matrix& view, const Matrix& proj) = 0;
 	virtual void updateFrame(float elapsedTime) = 0;

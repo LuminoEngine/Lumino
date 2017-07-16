@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.h"
 #include <Lumino/Rendering/RenderingContext.h>
+#include <Lumino/Rendering/SceneRenderer.h>
 #include <Lumino/World.h>
 #include <Lumino/Scene/Camera.h>
 #include <Lumino/Scene/OffscreenWorldView.h>
@@ -31,7 +32,7 @@ LN_NAMESPACE_BEGIN
 	グループ -1 は非表示を表す。
 */
 //==============================================================================
-static bool g_ofs = false;
+bool g_ofs = false;
 //------------------------------------------------------------------------------
 OffscreenWorldView::OffscreenWorldView()
 	: m_id(0)
@@ -70,18 +71,39 @@ void OffscreenWorldView::hideVisual(VisualComponent* renderObject)
 }
 
 //------------------------------------------------------------------------------
+void OffscreenWorldView::filterWorldMatrix(Matrix* outMatrix)
+{
+	//(*outMatrix) = (*outMatrix) * Matrix::makeReflection(Plane(Vector3::UnitY));
+}
+
+//------------------------------------------------------------------------------
 Matrix OffscreenWorldView::calculateViewMatrix(RenderView* mainRenderView)
 {
+#if 0
+	return Matrix::makeReflection(Vector3::UnitY) * mainRenderView->m_cameraInfo.viewMatrix;
+#else
+	Vector3 pos = mainRenderView->m_cameraInfo.viewPosition;
+	Vector3 dir = mainRenderView->m_cameraInfo.viewDirection;
+	//pos.y *= -1;
+	//dir.y *= -1;
+	// TODO:
+	return Matrix::makeReflection(Vector3::UnitY) * Matrix::makeLookAtRH(pos, pos + dir, /*-*/Vector3::UnitY);
+#endif
 	//const Matrix& worldMatrix = mainViewCamera->getOwnerObject()->transform.getWorldMatrix();
 	//Matrix viewMatrix = Matrix::makeLookAtLH(worldMatrix.getPosition(), Vector3(0, 0, 0), -Vector3::UnitY);
 
-	return Matrix::makeReflection(Plane(Vector3::UnitY)) * mainRenderView->m_cameraInfo.viewMatrix;//mainViewCamera->getViewMatrix(); //viewMatrix;// 
+	//Matrix::makeTranspose
+
+
+	//return mainRenderView->m_cameraInfo.viewMatrix;//mainViewCamera->getViewMatrix(); //viewMatrix;// 
 }
 
 //------------------------------------------------------------------------------
 Matrix OffscreenWorldView::calculateProjectionMatrix(RenderView* mainRenderView)
 {
-	return mainRenderView->m_cameraInfo.projMatrix; //mainViewCamera->getProjectionMatrix();
+	// TODO:
+	return Matrix::makePerspectiveFovRH(Math::PI / 3.0f, 640 / 480, 0.3, 1000);
+	//return mainRenderView->m_cameraInfo.projMatrix; //mainViewCamera->getProjectionMatrix();
 }
 
 //------------------------------------------------------------------------------
@@ -134,13 +156,14 @@ void OffscreenWorldView::renderWorld(World* world, RenderView* mainRenderView)
 
 
 
+	mainRenderView->getSceneRenderer()->render(this, m_renderTarget, nullptr, nullptr, true, Color::White);	// TODO: diag
 
 	// user override
 	//OnUpdateRenderViewPoint(m_renderView);
 
 	//DrawList* r = world->getRenderer();
 	//r->renderSubView(this);
-	LN_NOTIMPLEMENTED();
+	//LN_NOTIMPLEMENTED();
 }
 
 //------------------------------------------------------------------------------
@@ -213,7 +236,7 @@ void SkyComponent::onRender2(RenderingContext* renderer)
 		//m_skyMaterial->setMatrixParameter("_refrect", ref);
 		if (g_ofs)
 		{
-			//ref = Matrix::makeReflection(Plane(Vector3::UnitY));
+			ref = Matrix::makeReflection(Plane(Vector3::UnitY));
 		}
 
 		//auto* cam = renderer->getCurrentCamera();

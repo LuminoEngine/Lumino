@@ -25,6 +25,9 @@ public:
 	{
 		UIControl::onRender(g);
 	}
+
+	virtual void onMouseDown(UIMouseEventArgs* e) override;
+
 LN_PROTECTED_INTERNAL_ACCESS:
 	UIListBoxItem();
 	virtual ~UIListBoxItem();

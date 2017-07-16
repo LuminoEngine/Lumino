@@ -153,8 +153,8 @@ TEST_F(Test_UI_StackPanel, Margin_Padding)
 	panel->addChild(button1);
 	panel->addChild(button2);
 
-	panel->padding = ThicknessF(5, 10, 15, 20);
-	button2->margin = ThicknessF(5, 10, 15, 20);
+	panel->setPadding(ThicknessF(5, 10, 15, 20));
+	button2->setMargin(ThicknessF(5, 10, 15, 20));
 
 	Engine::update();
 

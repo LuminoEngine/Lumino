@@ -20,7 +20,7 @@ public:
 	AssetsManager();
 	virtual ~AssetsManager();
 	void initialize(EngineManager* manager);
-	void Finalize();
+	void dispose();
 
 	void addAssetsDirectory(const StringRef& directoryPath);
 

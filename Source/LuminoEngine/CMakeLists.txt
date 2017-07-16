@@ -366,7 +366,6 @@ set(LN_SOURCES_Scene
 	Include/Lumino/Scene/Detail.h
 	Include/Lumino/Scene/EffectNode.h
 	Include/Lumino/Scene/GpuParticle.h
-	Include/Lumino/Scene/Grid.h
 	Include/Lumino/Scene/Light.h
 	Include/Lumino/Scene/MeshModelObject.h
 	Include/Lumino/Scene/OffscreenWorldView.h
@@ -391,7 +390,6 @@ set(LN_SOURCES_Scene
 	Source/Scene/EffectBatchRendererNode.h
 	Source/Scene/EffectNode.cpp
 	Source/Scene/GpuParticle.cpp
-	Source/Scene/Grid.cpp
 	Source/Scene/Light.cpp
 	Source/Scene/MeshModelObject.cpp
 	Source/Scene/OffscreenWorldView.cpp

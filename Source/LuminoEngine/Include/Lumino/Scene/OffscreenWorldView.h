@@ -18,13 +18,16 @@ public:
 	void hideVisual(VisualComponent* renderObject);
 
 protected:
+	virtual void filterWorldMatrix(Matrix* outMatrix) override;
 	virtual Matrix calculateViewMatrix(RenderView* mainRenderView);
 	virtual Matrix calculateProjectionMatrix(RenderView* mainRenderView);
 
-LN_INTERNAL_ACCESS:
+LN_CONSTRUCT_ACCESS:
 	OffscreenWorldView();
 	virtual ~OffscreenWorldView();
 	void initialize();
+
+LN_INTERNAL_ACCESS:
 	void setId(int id) { m_id = id; }
 	int getId() const { return m_id; }
 	void renderWorld(World* world, RenderView* mainRenderView);

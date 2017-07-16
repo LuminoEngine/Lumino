@@ -155,6 +155,8 @@ detail::InvalidateFlags UIStylePropertyTableInstance::merge(const UIStylePropert
 		bool changed = false;
 		changed |= width.inherit(source->width);
 		changed |= height.inherit(source->height);
+		changed |= margin.inherit(source->margin);
+		changed |= padding.inherit(source->padding);
 		if (changed) flags |= detail::InvalidateFlags::layout;
 	}
 	{

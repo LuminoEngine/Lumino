@@ -139,7 +139,7 @@ GraphicsManager::~GraphicsManager()
 
 	if (m_graphicsDevice != nullptr)
 	{
-		m_graphicsDevice->Finalize();
+		m_graphicsDevice->dispose();
 		LN_SAFE_RELEASE(m_graphicsDevice);
 	}
 
@@ -313,17 +313,17 @@ void GraphicsManager::initialize(const ConfigData& configData)
 
 
 //------------------------------------------------------------------------------
-void GraphicsManager::Dispose()
+void GraphicsManager::dispose()
 {
 	if (m_renderingThread != nullptr)
 	{
-		m_renderingThread->Dispose();
+		m_renderingThread->dispose();
 		LN_SAFE_DELETE(m_renderingThread);
 	}
 
 	if (m_fontManager != nullptr)
 	{
-		m_fontManager->Dispose();
+		m_fontManager->dispose();
 	}
 
 	// TODO: なんか量がすごいことになっている。多分 VertexDecl。Diag で監視する。
@@ -389,7 +389,7 @@ void GraphicsManager::changeDevice(Driver::IGraphicsDevice* device)
 				m_graphicsDevice->detachRenderingThread();
 			}
 
-			m_graphicsDevice->Finalize();
+			m_graphicsDevice->dispose();
 			LN_SAFE_RELEASE(m_graphicsDevice);
 		}
 	}

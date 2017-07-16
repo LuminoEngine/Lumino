@@ -283,8 +283,15 @@ void CameraMouseMoveBehavior::onDetachedWorld(World* world)
 //------------------------------------------------------------------------------
 void CameraMouseMoveBehavior::World_onUIEvent(UIEventArgs* e)
 {
+	//printf("%s %p %p\n", typeid(*e).name(), e->getType(), UIEvents::MouseUpEvent);
+
 	if (e->getType() == UIEvents::MouseDownEvent)
 	{
+		//if (m_RDrag)
+		//{
+		//	printf("%s %p %p\n", typeid(*e).name(), e->getType(), UIEvents::MouseUpEvent);
+		//}
+
 		auto* me = static_cast<UIMouseEventArgs*>(e);
 		auto pos = me->getPosition(me->sender);
 		injectMouseButtonDown(me->getMouseButtons(), pos.x, pos.y);
@@ -802,6 +809,7 @@ void CameraViewportLayer2::initialize(World* targetWorld, CameraComponent* hosti
 	//m_mainRenderView->m_lists.add(m_targetWorld->getInsideWorldRenderer()->getDrawElementList());
 	m_mainRenderView->m_lists.add(m_targetWorld->getRenderer()->getDrawElementList());
 	m_mainRenderView->m_lists.add(m_targetWorld->GetDebugRenderer()->getDrawElementList());
+	m_mainRenderView->setSceneRenderer(m_internalRenderer);
 }
 
 //------------------------------------------------------------------------------

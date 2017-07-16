@@ -153,12 +153,12 @@ void FontManager::initialize(FileManager* fileManager, GraphicsManager* graphics
 }
 
 //------------------------------------------------------------------------------
-void FontManager::Dispose()
+void FontManager::dispose()
 {
 	auto disposeList = m_fontResourceList;
 	for (RawFont* font : disposeList)
 	{
-		font->Dispose_();
+		font->disposeFontResource();
 	}
 
 	m_builtinFontList.clear();

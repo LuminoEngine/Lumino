@@ -99,7 +99,7 @@ void InputManager::initialize(const Settings& settings)
 }
 
 //------------------------------------------------------------------------------
-void InputManager::Finalize()
+void InputManager::dispose()
 {
 	for (auto* pad : m_defaultVirtualPads) {
 		LN_SAFE_RELEASE(pad);

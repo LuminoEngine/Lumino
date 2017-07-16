@@ -70,7 +70,7 @@ void UIFrameWindow::initialize()
 }
 
 //------------------------------------------------------------------------------
-void UIFrameWindow::Dispose()
+void UIFrameWindow::dispose()
 {
 	if (m_manager != nullptr)
 	{
@@ -193,6 +193,7 @@ void UIFrameWindow::initialize_UIRenderer()
 
 	m_drawElementListSet = newObject<RenderView>();
 	m_drawElementListSet->m_lists.add(m_drawingContext->getDrawElementList());
+	m_drawElementListSet->setSceneRenderer(m_internalRenderer);
 
 	m_renderDiag = newObject<RenderDiag>();
 }

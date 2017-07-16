@@ -47,7 +47,7 @@ void PhysicsManager::initialize()
 }
 
 //------------------------------------------------------------------------------
-void PhysicsManager::Finalize()
+void PhysicsManager::dispose()
 {
 }
 

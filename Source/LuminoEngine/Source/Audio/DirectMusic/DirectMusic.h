@@ -109,7 +109,7 @@ public:
 	static void initialize( const ConfigData& configData );
 
 	/// 終了処理
-	static void Finalize();
+	static void dispose();
 
 	///インスタンスへのポインタの取得
     static DirectMusicManager* getInstance() { return m_instance; }

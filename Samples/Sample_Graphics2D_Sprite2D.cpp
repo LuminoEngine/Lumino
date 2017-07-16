@@ -2,7 +2,7 @@
 using namespace ln;
 
 // ‰æ‘œ‚ð•\Ž¦‚·‚é
-LN_SAMPLE_MAIN(Graphics2D, Sprite2D)
+LN_SAMPLE_MAIN(Graphics2D, Sprite2D, Sample1)
 {
 	Engine::initialize();
 

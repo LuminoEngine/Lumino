@@ -15,8 +15,6 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIControl, UIElement);
 UIControl::UIControl()
 	: HContentAlignment(HAlignment::Stretch)
 	, VContentAlignment(VAlignment::Stretch)
-	, m_clickMode(ClickMode::Release)
-	, m_isPressed(false)
 {
 }
 
@@ -122,16 +120,15 @@ UILayoutPanel* UIControl::getLayoutPanel() const
 }
 
 //------------------------------------------------------------------------------
-EventConnection UIControl::connectOnClick(UIEventHandler handler)
+EventConnection UIControl::connectOnSubmit(UIEventHandler handler)
 {
-	return m_onClick.connect(handler);
+	return m_onSubmit.connect(handler);
 }
 
 //------------------------------------------------------------------------------
-void UIControl::onClick(UIEventArgs* e)
+void UIControl::onSubmit(UIEventArgs* e)
 {
-	m_onClick.raise(e);
-	//raiseEvent(ClickEvent, this, UIEventArgs::create(this));
+	m_onSubmit.raise(e);
 }
 
 ////------------------------------------------------------------------------------
@@ -254,7 +251,7 @@ void UIControl::onLostFocus(UIEventArgs* e)
 
 //------------------------------------------------------------------------------
 void UIControl::onMouseDown(UIMouseEventArgs* e)
-{
+{/*
 	if (!m_isPressed)
 	{
 		m_isPressed = true;
@@ -262,24 +259,24 @@ void UIControl::onMouseDown(UIMouseEventArgs* e)
 		captureMouse();
 		goToVisualState(UIVisualStates::PressedState);
 		e->handled = true;
-	}
+	}*/
 
-	UIElement::onGotFocus(e);
+	UIElement::onMouseDown(e);
 }
 
 //------------------------------------------------------------------------------
 void UIControl::onMouseUp(UIMouseEventArgs* e)
 {
-	if (m_isPressed)
-	{
-		m_isPressed = false;
-		releaseMouseCapture();
-		goToVisualState(UIVisualStates::MouseOverState);
-		onClick(e);
-		e->handled = true;
-	}
+	//if (m_isPressed)
+	//{
+	//	m_isPressed = false;
+	//	releaseMouseCapture();
+	//	goToVisualState(UIVisualStates::MouseOverState);
+	//	onClick(e);
+	//	e->handled = true;
+	//}
 
-	UIElement::onGotFocus(e);
+	UIElement::onMouseUp(e);
 }
 
 //------------------------------------------------------------------------------

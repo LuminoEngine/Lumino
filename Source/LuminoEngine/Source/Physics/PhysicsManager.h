@@ -24,7 +24,7 @@ public:
 	virtual ~PhysicsManager();
 
 	void initialize();
-	void Finalize();
+	void dispose();
 
 	//void AddPhysicsWorld(PhysicsWorldCore* world) { m_worldList.Add(world); }
 	//void RemovePhysicsWorld(PhysicsWorldCore* world) { m_worldList.Remove(world); }
