@@ -6,8 +6,8 @@
 #include "Common.h"
 
 LN_NAMESPACE_BEGIN
-class Vector3;
-class Matrix;
+struct Vector3;
+struct Matrix;
 
 /**
 	@brief		クォータニオンを定義します。
@@ -20,7 +20,7 @@ class Matrix;
 				この動作がほぼ一般的なので、これに合わせています。<br>
 				(DirectX(D3DX)、XNA、Unity、cocos2dx 等はこの動作)
 */
-class LUMINO_EXPORT Quaternion
+struct LUMINO_EXPORT Quaternion
 {
 public:
 

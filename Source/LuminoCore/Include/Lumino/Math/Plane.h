@@ -6,12 +6,12 @@
 #include "Vector3.h"
 
 LN_NAMESPACE_BEGIN
-class Ray;
+struct Ray;
 
 /**
 	@brief		平面を定義します。
 */
-class LUMINO_EXPORT Plane
+struct LUMINO_EXPORT Plane
 {
 public:
 

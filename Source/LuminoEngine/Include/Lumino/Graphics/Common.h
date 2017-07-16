@@ -70,8 +70,8 @@ class DepthStencilState;
 class SamplerState;
 class ShaderValue;
 
-class Color32;
-class Color;
+struct Color32;
+struct Color;
 
 class GraphicsResourceObject;
 class VertexDeclaration;
