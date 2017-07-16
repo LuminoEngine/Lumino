@@ -433,19 +433,19 @@ TEST_F(Test_Graphics_Rendering, drawFrameRectangle)
 		brush1->setSourceRect(0, 192, 32, 32);
 		brush1->setWrapMode(BrushWrapMode::Tile);
 		brush1->getImageDrawMode(BrushImageDrawMode::BorderFrame);
-		brush1->getBorderThickness(ThicknessF(8, 8, 8, 8));
+		brush1->getBorderThickness(Thickness(8, 8, 8, 8));
 
 		auto brush2 = TextureBrush::create(LN_LOCALFILE("TestData/Window.png"));
 		brush2->setSourceRect(0, 160, 32, 32);
 		brush2->setWrapMode(BrushWrapMode::Tile);
 		brush2->getImageDrawMode(BrushImageDrawMode::BorderFrame);
-		brush2->getBorderThickness(ThicknessF(0, 2, 4, 8));
+		brush2->getBorderThickness(Thickness(0, 2, 4, 8));
 
 		auto brush3 = TextureBrush::create(LN_LOCALFILE("TestData/Window.png"));
 		brush3->setSourceRect(0, 160, 32, 32);
 		brush3->setWrapMode(BrushWrapMode::Tile);
 		brush3->getImageDrawMode(BrushImageDrawMode::BorderFrame);
-		brush3->getBorderThickness(ThicknessF(8, 8, 8, 8));
+		brush3->getBorderThickness(Thickness(8, 8, 8, 8));
 
 		LN_TEST_BEGIN_FRAME;
 
@@ -481,19 +481,19 @@ TEST_F(Test_Graphics_Rendering, drawFrameRectangle)
 		brush1->setSourceRect(0, 192, 32, 32);
 		brush1->setWrapMode(BrushWrapMode::Stretch);
 		brush1->getImageDrawMode(BrushImageDrawMode::BorderFrame);
-		brush1->getBorderThickness(ThicknessF(8, 8, 8, 8));
+		brush1->getBorderThickness(Thickness(8, 8, 8, 8));
 
 		auto brush2 = TextureBrush::create(LN_LOCALFILE("TestData/Window.png"));
 		brush2->setSourceRect(0, 192, 32, 32);
 		brush2->setWrapMode(BrushWrapMode::Stretch);
 		brush2->getImageDrawMode(BrushImageDrawMode::BoxFrame);
-		brush2->getBorderThickness(ThicknessF(8, 8, 8, 8));
+		brush2->getBorderThickness(Thickness(8, 8, 8, 8));
 
 		auto brush3 = TextureBrush::create(LN_LOCALFILE("TestData/Window.png"));
 		brush3->setSourceRect(0, 192, 32, 32);
 		brush3->setWrapMode(BrushWrapMode::Tile);
 		brush3->getImageDrawMode(BrushImageDrawMode::BoxFrame);
-		brush3->getBorderThickness(ThicknessF(8, 8, 8, 8));
+		brush3->getBorderThickness(Thickness(8, 8, 8, 8));
 
 		LN_TEST_BEGIN_FRAME;
 

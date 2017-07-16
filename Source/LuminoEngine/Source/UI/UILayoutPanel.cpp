@@ -242,10 +242,10 @@ Size UIAbsoluteLayout::measureOverride(const Size& constraint)
 //------------------------------------------------------------------------------
 Size UIAbsoluteLayout::arrangeOverride(const Size& finalSize)
 {
-	//ThicknessF canvas;
-	const ThicknessF& padding = getPadding();
-	Point childrenOffset(padding.Left, padding.Top);
-	Size childrenBoundSize(finalSize.width - (padding.Left + padding.Right), finalSize.height - (padding.Top + padding.Bottom));
+	//Thickness canvas;
+	const Thickness& padding = getPadding();
+	Point childrenOffset(padding.left, padding.top);
+	Size childrenBoundSize(finalSize.width - padding.getWidth(), finalSize.height - padding.getHeight());
 
 	
 	for (UIElement* child : *getChildren())
@@ -265,7 +265,7 @@ Size UIAbsoluteLayout::arrangeOverride(const Size& finalSize)
 		
 		if (anchor != AlignmentAnchor::None)
 		{
-			const ThicknessF& margin = getMargineInternal();
+			const Thickness& margin = getMargineInternal();
 			//float l = childRect.getLeft(), t = childRect.GetTop(), r = childRect.getRight(), b = childRect.getBottom();
 
 			//if (anchor.TestFlag(AlignmentAnchor::LeftOffsets))
@@ -300,24 +300,24 @@ Size UIAbsoluteLayout::arrangeOverride(const Size& finalSize)
 #if 1
 			float l = NAN, t = NAN, r = NAN, b = NAN;
 			if (anchor.TestFlag(AlignmentAnchor::LeftOffsets))
-				l = margin.Left;
+				l = margin.left;
 			else if (anchor.TestFlag(AlignmentAnchor::LeftRatios))
-				l = childrenBoundSize.width * margin.Left;
+				l = childrenBoundSize.width * margin.left;
 			
 			if (anchor.TestFlag(AlignmentAnchor::TopOffsets))
-				t = margin.Top;
+				t = margin.top;
 			else if (anchor.TestFlag(AlignmentAnchor::TopRatios))
-				t = childrenBoundSize.height * margin.Top;
+				t = childrenBoundSize.height * margin.top;
 			
 			if (anchor.TestFlag(AlignmentAnchor::RightOffsets))
-				r = childrenBoundSize.width - margin.Right;
+				r = childrenBoundSize.width - margin.right;
 			else if (anchor.TestFlag(AlignmentAnchor::RightRatios))
-				r = childrenBoundSize.width - (childrenBoundSize.width * margin.Right);
+				r = childrenBoundSize.width - (childrenBoundSize.width * margin.right);
 			
 			if (anchor.TestFlag(AlignmentAnchor::BottomOffsets))
-				b = childrenBoundSize.height - margin.Bottom;
+				b = childrenBoundSize.height - margin.bottom;
 			else if (anchor.TestFlag(AlignmentAnchor::BottomRatios))
-				b = childrenBoundSize.height - (childrenBoundSize.height * margin.Bottom);
+				b = childrenBoundSize.height - (childrenBoundSize.height * margin.bottom);
 
 			if (anchor.TestFlag(AlignmentAnchor::HCenter))
 				childRect.x = (childrenBoundSize.width - childRect.width) / 2;

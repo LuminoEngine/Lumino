@@ -103,8 +103,8 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	// ILayoutElement interface
 	virtual const Point& getLayoutPosition() const override;
 	virtual Size getLayoutSize() const override;
-	virtual const ThicknessF& getLayoutMargin() const override;
-	virtual const ThicknessF& getLayoutPadding() const override;
+	virtual const Thickness& getLayoutMargin() const override;
+	virtual const Thickness& getLayoutPadding() const override;
 	virtual AlignmentAnchor getLayoutAnchor() const override;
 	virtual HAlignment getLayoutHAlignment() const override;
 	virtual VAlignment getLayoutVAlignment() const override;
@@ -149,8 +149,8 @@ private:
 	// layout data
 	Point					m_position;
 	Size					m_size;
-	ThicknessF				m_margin;
-	ThicknessF				m_padding;
+	Thickness				m_margin;
+	Thickness				m_padding;
 	AlignmentAnchor			m_anchor;
 	HAlignment				m_horizontalAlignment;
 	VAlignment				m_verticalAlignment;

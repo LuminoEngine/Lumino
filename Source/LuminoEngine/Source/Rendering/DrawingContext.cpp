@@ -76,7 +76,7 @@ void DrawingContext::drawBoxBackground(const Rect& rect, const CornerRadius& cor
 
 //------------------------------------------------------------------------------
 void DrawingContext::drawBoxBorder(
-	const Rect& rect, const ThicknessF& thickness, const CornerRadius& cornerRadius,
+	const Rect& rect, const Thickness& thickness, const CornerRadius& cornerRadius,
 	const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor,
 	BorderDirection borderDirection)
 {
@@ -90,7 +90,7 @@ void DrawingContext::drawBoxBorder(
 
 //------------------------------------------------------------------------------
 void DrawingContext::drawBoxBorder(
-	const Rect& rect, const ThicknessF& thickness,
+	const Rect& rect, const Thickness& thickness,
 	const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor,
 	float ltRad, float rtRad, float lbRad, float rbRad, BorderDirection borderDirection,
 	const Color& shadowColor, float shadowBlur, float shadowWidth, ShadowDirection shadowDirection)
@@ -98,7 +98,7 @@ void DrawingContext::drawBoxBorder(
 	auto* ptr = resolveDrawElement<DrawElement_DrawShapesRendererCommandList>(getManager()->getInternalContext()->m_shapesRenderer, nullptr, nullptr, true);
 	auto* list = ptr->GetGCommandList(this);
 	list->addDrawBoxBorder(
-		rect.x, rect.y, rect.width, rect.height, thickness.Left, thickness.Top, thickness.Right, thickness.Bottom,
+		rect.x, rect.y, rect.width, rect.height, thickness.left, thickness.top, thickness.right, thickness.bottom,
 		leftColor, topColor, rightColor, bottomColor,
 		ltRad, rtRad, lbRad, rbRad,
 		shadowColor, shadowBlur, shadowWidth, (shadowDirection == ShadowDirection::Inside), (borderDirection == BorderDirection::Inside));

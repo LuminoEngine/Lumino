@@ -113,8 +113,8 @@ public:
 	Point				position;
 	float					width;
 	float					height;
-	//ThicknessF		margin;
-	//ThicknessF			padding;
+	//Thickness		margin;
+	//Thickness			padding;
 	AlignmentAnchor		anchor;
 
 	HAlignment			hAlignment;
@@ -125,7 +125,7 @@ public:
 	float					decoratorOpacity;
 
 	// Border
-	//ThicknessF			borderThickness;
+	//Thickness			borderThickness;
 	//CornerRadius		cornerRadius;
 	//Color					leftBorderColor;
 	//Color					topBorderColor;
@@ -171,16 +171,16 @@ public:
 	Size getSize() const { return Size(width, height); }
 
 	/** 要素の margin 値 (外側の余白) を設定します。 */
-	void setMargin(const ThicknessF& margin);
+	void setMargin(const Thickness& margin);
 
 	/** 要素の margin 値 (外側の余白) を取得します。 */
-	const ThicknessF& getMargin() const;
+	const Thickness& getMargin() const;
 
 	/** 要素の padding 値 (内側の余白) を設定します。 */
-	void setPadding(const ThicknessF& padding);
+	void setPadding(const Thickness& padding);
 
 	/** 要素の padding 値 (内側の余白) を取得します。 */
-	const ThicknessF& getPadding() const;
+	const Thickness& getPadding() const;
 
 	void setMinWidth(float value) { m_minSize.width = value; }
 
@@ -366,7 +366,7 @@ LN_INTERNAL_ACCESS:
 	const Point& getPositionInternal() const { return position; }
 	void setSizeInternal(const Size& size) { width = size.width; height = size.height; }
 	Size getSizeInternal() const { return Size(width, height); }
-	const ThicknessF& getMargineInternal() const;
+	const Thickness& getMargineInternal() const;
 	AlignmentAnchor getAnchorInternal() const { return anchor; }
 	const BrushPtr& getForegroundInternal() const { return foreground; }
 	void setLogicalParent(UIElement* parent);
@@ -405,8 +405,8 @@ private:
 	// ILayoutElement interface
 	virtual const Point& getLayoutPosition() const override;
 	virtual Size getLayoutSize() const override;
-	virtual const ThicknessF& getLayoutMargin() const override;
-	virtual const ThicknessF& getLayoutPadding() const override;
+	virtual const Thickness& getLayoutMargin() const override;
+	virtual const Thickness& getLayoutPadding() const override;
 	virtual AlignmentAnchor getLayoutAnchor() const override;
 	virtual HAlignment getLayoutHAlignment() const override;
 	virtual VAlignment getLayoutVAlignment() const override;

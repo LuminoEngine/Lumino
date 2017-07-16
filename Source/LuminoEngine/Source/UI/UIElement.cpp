@@ -91,25 +91,25 @@ void UIElement::initialize()
 }
 
 //------------------------------------------------------------------------------
-void UIElement::setMargin(const ThicknessF& margin)
+void UIElement::setMargin(const Thickness& margin)
 {
 	m_localStyle->margin = margin;
 }
 
 //------------------------------------------------------------------------------
-const ThicknessF& UIElement::getMargin() const
+const Thickness& UIElement::getMargin() const
 {
 	return m_localStyle->margin;
 }
 
 //------------------------------------------------------------------------------
-void UIElement::setPadding(const ThicknessF& Padding)
+void UIElement::setPadding(const Thickness& Padding)
 {
 	m_localStyle->padding = Padding;
 }
 
 //------------------------------------------------------------------------------
-const ThicknessF& UIElement::getPadding() const
+const Thickness& UIElement::getPadding() const
 {
 	return m_localStyle->padding;
 }
@@ -651,7 +651,7 @@ UIContext* UIElement::getContext() const
 }
 
 //------------------------------------------------------------------------------
-const ThicknessF& UIElement::getMargineInternal() const { return m_localStyle->margin.get(); }
+const Thickness& UIElement::getMargineInternal() const { return m_localStyle->margin.get(); }
 
 //------------------------------------------------------------------------------
 void UIElement::updateLayout(const Size& viewSize)
@@ -712,7 +712,7 @@ void UIElement::render(DrawingContext* g)
 
 	
 
-	//g->drawBoxBorder(Rect(50, 50, 300, 200), ThicknessF(10, 10, 10, 10), Color::Red, Color::Green, Color::Blue, Color::Cyan, 10, 10, 10, 10);	// TODO:
+	//g->drawBoxBorder(Rect(50, 50, 300, 200), Thickness(10, 10, 10, 10), Color::Red, Color::Green, Color::Blue, Color::Cyan, 10, 10, 10, 10);	// TODO:
 	//g->drawBoxShadow(Rect(10, 20, 300, 400), Color::Black, 5, 5, false);
 	onRender(g);
 
@@ -791,8 +791,8 @@ void UIElement::removeVisualChild(UIElement* element)
 //------------------------------------------------------------------------------
 const Point& UIElement::getLayoutPosition() const { return position; }
 Size UIElement::getLayoutSize() const { return Size(width, height); }
-const ThicknessF& UIElement::getLayoutMargin() const { return m_localStyle->margin.get(); }
-const ThicknessF& UIElement::getLayoutPadding() const { return m_localStyle->padding.get(); }
+const Thickness& UIElement::getLayoutMargin() const { return m_localStyle->margin.get(); }
+const Thickness& UIElement::getLayoutPadding() const { return m_localStyle->padding.get(); }
 AlignmentAnchor UIElement::getLayoutAnchor() const { return anchor; }
 HAlignment UIElement::getLayoutHAlignment() const { return hAlignment; }
 VAlignment UIElement::getLayoutVAlignment() const { return vAlignment; }

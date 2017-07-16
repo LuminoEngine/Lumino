@@ -29,7 +29,7 @@ struct BrushRawData
 	Rect						srcRect;
 	BrushWrapMode				wrapMode;
 	BrushImageDrawMode			imageDrawMode;
-	ThicknessF					borderThickness;
+	Thickness					borderThickness;
 };
 
 } // namespace detail
@@ -77,9 +77,9 @@ public:
 	void getImageDrawMode(BrushImageDrawMode mode) { m_imageDrawMode = mode; }
 	BrushImageDrawMode getImageDrawMode() const { return m_imageDrawMode; }
 
-	void getBorderThickness(const ThicknessF& thickness) { m_borderThickness = thickness; }
+	void getBorderThickness(const Thickness& thickness) { m_borderThickness = thickness; }
 	void getBorderThickness(float left, float top, float right, float bottom) { m_borderThickness.set(left, top, right, bottom); }
-	const ThicknessF& getBorderThickness() const { return m_borderThickness; }
+	const Thickness& getBorderThickness() const { return m_borderThickness; }
 
 LN_CONSTRUCT_ACCESS:
 	Brush();
@@ -98,7 +98,7 @@ private:
 	Rect				m_srcRect;
 	BrushWrapMode		m_wrapMode;
 	BrushImageDrawMode	m_imageDrawMode;
-	ThicknessF			m_borderThickness;
+	Thickness			m_borderThickness;
 };
 
 /**
@@ -127,7 +127,7 @@ class TextureBrush
 public:
 	static Ref<TextureBrush> create(const StringRef& filePath);
 	static Ref<TextureBrush> create(Texture* texture);
-	static Ref<TextureBrush> create(Texture* texture, BrushImageDrawMode drawMode, const Rect& sourceRect, const ThicknessF& borderThickness, BrushWrapMode wrapMode);
+	static Ref<TextureBrush> create(Texture* texture, BrushImageDrawMode drawMode, const Rect& sourceRect, const Thickness& borderThickness, BrushWrapMode wrapMode);
 
 LN_CONSTRUCT_ACCESS:
 	TextureBrush();

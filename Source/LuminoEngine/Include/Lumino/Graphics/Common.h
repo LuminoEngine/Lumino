@@ -501,8 +501,6 @@ private:
 	size_t					m_dataBufferUsed;
 };
 
-
-
 } // namespace detail
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

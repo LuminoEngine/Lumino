@@ -227,7 +227,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 		{
 			auto* props = s->getPropertyTable();
 			//st->background = Ref<Brush>::StaticCast(buttonNormalBrush);
-			props->borderThickness = ThicknessF(1);
+			props->borderThickness = Thickness(1);
 			props->cornerRadius = 4;
 
 			//props->background = UIColors::getBrush(UIColorIndex::LightGreen);
@@ -372,7 +372,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 		{
 			auto* props = style->getPropertyTable();
 			props->background = Ref<Brush>::staticCast(containerBackground);
-			props->borderThickness = ThicknessF(1);
+			props->borderThickness = Thickness(1);
 		}
 		// UIListBox.MouseOver
 		//{
@@ -386,7 +386,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 		// base
 		{
 			auto* props = style->getPropertyTable();
-			props->padding = ThicknessF(10);
+			props->padding = Thickness(10);
 		}
 		// UIListBoxItem.MouseOver
 		{

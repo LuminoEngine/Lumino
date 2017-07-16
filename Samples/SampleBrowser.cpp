@@ -102,7 +102,7 @@ void Main()
 	auto listBox1 = UIListBox::create();
 	listBox1->setWidth(640);
 	listBox1->setHeight(480);
-	//listBox1->margin = ThicknessF(0, 32, 0, 0);
+	//listBox1->margin = Thickness(0, 32, 0, 0);
 	for (int i = 0; i < SampleManager::getInstance()->m_samples.getCount(); i++)
 	{
 		auto& info = SampleManager::getInstance()->m_samples[i];

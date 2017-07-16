@@ -189,8 +189,8 @@ InternalTextElementType TextElement::getInternalTextElementType() const
 //------------------------------------------------------------------------------
 const Point& TextElement::getLayoutPosition() const { return m_position; }
 Size TextElement::getLayoutSize() const { return m_size; }
-const ThicknessF& TextElement::getLayoutMargin() const { return m_margin; }
-const ThicknessF& TextElement::getLayoutPadding() const { return m_padding; }
+const Thickness& TextElement::getLayoutMargin() const { return m_margin; }
+const Thickness& TextElement::getLayoutPadding() const { return m_padding; }
 AlignmentAnchor TextElement::getLayoutAnchor() const { return m_anchor; }
 HAlignment TextElement::getLayoutHAlignment() const { return m_horizontalAlignment; }
 VAlignment TextElement::getLayoutVAlignment() const { return m_verticalAlignment; }

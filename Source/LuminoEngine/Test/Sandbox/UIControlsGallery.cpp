@@ -255,7 +255,7 @@ void UIControlsGallery()
 	//auto item = listBox1->addTextItem(_T("スプライト"));
 	//auto button1 = UIButton::create(_T(">"), 20, 20);
 	////button1->setPosition(Point(2, 0));
-	//button1->margin = ThicknessF(2);
+	//button1->margin = Thickness(2);
 	//button1->setAnchor(AlignmentAnchor::RightOffsets | AlignmentAnchor::VCenter);
 	//item->addChild(button1);
 

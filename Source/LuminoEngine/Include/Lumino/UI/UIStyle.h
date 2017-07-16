@@ -148,7 +148,7 @@ class UIRenderElement
 public:
 	float			m_width;
 	float			m_height;
-	ThicknessF		m_margin;
+	Thickness		m_margin;
 	HAlignment		m_hAlignment;
 	VAlignment		m_vAlignment;
 	Ref<Brush>	m_brush;
@@ -195,8 +195,8 @@ public:
 	UIStyleAttribute<float>				width;
 	UIStyleAttribute<float>				height;
 
-	UIStyleAttribute<ThicknessF>		margin;
-	UIStyleAttribute<ThicknessF>		padding;
+	UIStyleAttribute<Thickness>		margin;
+	UIStyleAttribute<Thickness>		padding;
 
 	//UIStyleAttribute<VAlignment>		m_verticalAlignment;
 	//UIStyleAttribute<HAlignment>	m_horizontalAlignment;
@@ -219,7 +219,7 @@ public:
 	//UIStyleAttribute<bool>					m_fontBold;
 	//UIStyleAttribute<bool>					m_fontItalic;
 
-	UIStyleAttribute<ThicknessF>		borderThickness;
+	UIStyleAttribute<Thickness>		borderThickness;
 	UIStyleAttribute<CornerRadius>		cornerRadius;
 	UIStyleAttribute<Color>				leftBorderColor;
 	UIStyleAttribute<Color>				topBorderColor;
@@ -245,8 +245,8 @@ public:
 public:
 	UIStyleAttribute<float>				width;
 	UIStyleAttribute<float>				height;
-	UIStyleAttribute<ThicknessF>		margin;
-	UIStyleAttribute<ThicknessF>		padding;
+	UIStyleAttribute<Thickness>		margin;
+	UIStyleAttribute<Thickness>		padding;
 
 	//UIStyleAttribute<VAlignment>		m_verticalAlignment;
 	//UIStyleAttribute<HAlignment>	m_horizontalAlignment;
@@ -269,7 +269,7 @@ public:
 	//UIStyleAttribute<bool>					m_fontBold;
 	//UIStyleAttribute<bool>					m_fontItalic;
 
-	UIStyleAttribute<ThicknessF>		borderThickness;
+	UIStyleAttribute<Thickness>		borderThickness;
 	UIStyleAttribute<CornerRadius>		cornerRadius;
 	UIStyleAttribute<Color>				leftBorderColor;
 	UIStyleAttribute<Color>				topBorderColor;

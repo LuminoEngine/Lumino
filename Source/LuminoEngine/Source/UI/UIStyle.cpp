@@ -26,7 +26,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIRenderElement, Object);
 UIRenderElement::UIRenderElement()
 	: m_width(Math::NaN)
 	, m_height(Math::NaN)
-	, m_margin(ThicknessF::Zero)
+	, m_margin(Thickness::Zero)
 	, m_hAlignment(HAlignment::Stretch)
 	, m_vAlignment(VAlignment::Stretch)
 {
@@ -46,8 +46,8 @@ void UIRenderElement::initialize()
 void UIRenderElement::layoutAndRender(DrawingContext* context, const Size& parentRenderSize)
 {
 	Size areaSize;
-	areaSize.width = parentRenderSize.width - (m_margin.Left + m_margin.Right);
-	areaSize.height = parentRenderSize.height - (m_margin.Top + m_margin.Bottom);
+	areaSize.width = parentRenderSize.width - (m_margin.left + m_margin.right);
+	areaSize.height = parentRenderSize.height - (m_margin.top + m_margin.bottom);
 
 	Size desiredSize;
 	desiredSize.width = Math::isNaN(m_width) ? 0.0f : m_width;
@@ -259,8 +259,8 @@ UIStyle::UIStyle()
 	//, m_subStateStyles()
 	//: m_lastUpdateParent(nullptr)
 	//m_revisionCount(0)
-	//: m_margin(ThicknessF(0, 0, 0, 0))
-	//, m_padding(ThicknessF(0, 0, 0, 0))
+	//: m_margin(Thickness(0, 0, 0, 0))
+	//, m_padding(Thickness(0, 0, 0, 0))
 	//, m_verticalAlignment(VerticalAlignment::Top)
 	//, m_horizontalAlignment(HorizontalAlignment::Left)
 	//, m_background(nullptr)

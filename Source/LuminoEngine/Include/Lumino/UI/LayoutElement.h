@@ -29,8 +29,8 @@ public:
 protected:
 	virtual const Point& getLayoutPosition() const = 0;
 	virtual Size getLayoutSize() const = 0;
-	virtual const ThicknessF& getLayoutMargin() const = 0;
-	virtual const ThicknessF& getLayoutPadding() const = 0;
+	virtual const Thickness& getLayoutMargin() const = 0;
+	virtual const Thickness& getLayoutPadding() const = 0;
 	virtual AlignmentAnchor getLayoutAnchor() const = 0;
 	virtual HAlignment getLayoutHAlignment() const = 0;
 	virtual VAlignment getLayoutVAlignment() const = 0;

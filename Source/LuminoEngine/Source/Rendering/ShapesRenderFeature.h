@@ -27,7 +27,7 @@ public:
 
 	void addDrawBoxBackground(const Rect& rect, const CornerRadius& cornerRadius);
 	void addDrawBoxBorder(float x, float y, float w, float h, float l, float t, float r, float b, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, float ltRad, float rtRad, float lbRad, float rbRad, const Color& shadowColor, float shadowBlur, float shadowWidth, bool shadowInset, bool borderInset);
-	void addDrawBoxBorder2(const Rect& rect, const ThicknessF& thickness, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const CornerRadius& cornerRadius, bool borderInset);
+	void addDrawBoxBorder2(const Rect& rect, const Thickness& thickness, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const CornerRadius& cornerRadius, bool borderInset);
 	void addDrawBoxShadow(const Rect& rect, const CornerRadius& cornerRadius, const Color& color, float blur, float width, bool inset);
 };
 
@@ -104,7 +104,7 @@ private:
 	Path* addPath(PathType type, const Color& color, PathWinding winding = PathWinding::CCW, PathAttribute attribute = PathAttribute::None);
 	void endPath(Path* path);
 	void extractBasePoints(ShapesRendererCommandList* commandList);
-	void makeBasePointsAndBorderComponent(const Rect& rect, const ThicknessF& thickness, const CornerRadius& cornerRadius, BorderComponent components[4]);
+	void makeBasePointsAndBorderComponent(const Rect& rect, const Thickness& thickness, const CornerRadius& cornerRadius, BorderComponent components[4]);
 	void calcExtrudedDirection();
 	void expandVertices(const Path& path);
 	void expandFill(const Path& path);

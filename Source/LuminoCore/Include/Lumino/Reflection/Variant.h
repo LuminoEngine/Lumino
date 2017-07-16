@@ -310,7 +310,7 @@ private:
 	template<> struct CastSelector < String, std::false_type >		{ static String getValue(const Variant& v) { return v.getString(); } };
 	template<> struct CastSelector < Rect, std::false_type >		{ static Rect getValue(const Variant& v) { return v.GetRect(); } };
 	template<> struct CastSelector < SizeF, std::false_type >		{ static SizeF getValue(const Variant& v) { return v.GetSizeF(); } };
-	template<> struct CastSelector < ThicknessF, std::false_type > { static const ThicknessF& getValue(const Variant& v) { return v.GetThicknessF(); } };
+	template<> struct CastSelector < Thickness, std::false_type > { static const Thickness& getValue(const Variant& v) { return v.GetThicknessF(); } };
 	template<typename T> struct CastSelector < T, std::true_type > { static T getValue(const Variant& v) { return *((T*)(&v.m_enum)); } };	// TODO: 型チェック
 //	template<typename TRefPtr, typename U> struct CastSelector < TRefPtr<U>, std::true_type > { static TRefPtr<U> GetValue(const Variant& v) { return TRefPtr<U>(static_cast<U>(v.GetObject())); } };	// TODO: 型チェック
 #endif
