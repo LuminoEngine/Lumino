@@ -37,6 +37,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="LuminoBuildTool.cs" />
+    <Compile Include="Rules\MakeInstaller.cs" />
     <Compile Include="Rules\MakeProjects.cs" />
     <Compile Include="Tasks\BuildEngine_MSVCUnicodeMD.cs" />
     <Compile Include="Tasks\CPackage.Build.cs" />

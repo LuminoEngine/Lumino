@@ -31,6 +31,7 @@ class MakeInstaller : BuildTask
             new { ContentFilesDir = builder.LuminoPackageDir + "Release/Lumino/MSVC2017", WXSFileTemplate = builder.LuminoPackageSourceDir + "Installer/LuminoInstaller_MSVC2017.wxs.template", TargetDirId = "LUMINO_MSVC2017", ProductGUID = builder.InstallerProductGUID_MSVC2017, Output = "LuminoInstaller_MSVC2017.msi" },
         };
 
+        Directory.CreateDirectory(tmpDir);
 
         foreach (var t in targets)
         {

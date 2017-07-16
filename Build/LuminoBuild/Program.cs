@@ -9,6 +9,16 @@ namespace LuminoBuild
     {
         public static void Main(string[] args)
         {
+#if true
+            args = new string[] { "MakeInstaller" };
+#else
+            // default
+            if (args.Length == 0)
+            {
+                args = new string[] { "MakeInstaller" };
+            }
+#endif
+
             Assembly thisAssembly = Assembly.GetEntryAssembly();
             string exeDir = Path.GetDirectoryName(thisAssembly.Location);
             
@@ -52,6 +62,7 @@ namespace LuminoBuild
             if (Utils.IsWin32) builder.Tasks.Add(new HSPPackageRule());
 
             builder.Rules.Add(new Rules.MakeProjects());
+            builder.Rules.Add(new Rules.MakeInstaller());
 
             if (args.Length >= 1)
             {
