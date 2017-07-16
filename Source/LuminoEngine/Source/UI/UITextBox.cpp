@@ -109,10 +109,10 @@ LN_INTERNAL_ACCESS:
 	int getStartDocumentTextOffset() const { return  m_startDocumentTextOffset; }
 	void addGlyphRun(GlyphRun* run);
 	void setVisualLineIndex(int index) { m_visualLineIndex = index; }
-	void setRenderPt(const PointF& pt) { m_renderRect.setLocation(pt); }
+	void setRenderPt(const Point& pt) { m_renderRect.setLocation(pt); }
 	void render(DrawingContext* g);
 	Rect getGlyphAreaGlobalRect(int column);	// 高さ=行高さ
-	bool testHitFromGlobalPoint(const PointF& pt, UITextVisualPosition* outPos);
+	bool testHitFromGlobalPoint(const Point& pt, UITextVisualPosition* outPos);
 	int getTextLength() const { return m_textLength; }
 
 private:
@@ -140,7 +140,7 @@ public:
 	//float GetRenderHeight() const { return m_renderSize.width; }
 	const Rect& getRenderRect() const { return m_renderRect; }
 
-	void buildVisualLines(Font* font, int startDocumentTextOffset, int visualLineIndex, const PointF& renderPt);
+	void buildVisualLines(Font* font, int startDocumentTextOffset, int visualLineIndex, const Point& renderPt);
 
 LN_CONSTRUCT_ACCESS:
 	UITextVisualLineBlock();
@@ -205,7 +205,7 @@ LN_CONSTRUCT_ACCESS:
 LN_INTERNAL_ACCESS:
 	UITextVisualLine* findVisualLine(int lineIndex);
 	Rect getGlyphGlobalRectFromVisualPosition(const UITextVisualPosition& pos);
-	void getVisualPositionFromRenderPosition(const PointF& pt, UITextVisualPosition* outPos);
+	void getVisualPositionFromRenderPosition(const Point& pt, UITextVisualPosition* outPos);
 	int getDocumentTextOffset(const UITextVisualPosition& pos);
 
 private:
@@ -507,7 +507,7 @@ void UITextVisualLine::render(DrawingContext* g)
 {
 	for (auto& run : m_glyphRuns)
 	{
-		g->drawGlyphRun(PointF(), run);// TODO:
+		g->drawGlyphRun(Point(), run);// TODO:
 	}
 }
 
@@ -532,14 +532,14 @@ Rect UITextVisualLine::getGlyphAreaGlobalRect(int column)
 }
 
 //------------------------------------------------------------------------------
-bool UITextVisualLine::testHitFromGlobalPoint(const PointF& pt, UITextVisualPosition* outPos)
+bool UITextVisualLine::testHitFromGlobalPoint(const Point& pt, UITextVisualPosition* outPos)
 {
 	if (m_renderRect.contains(pt))
 	{
-		PointF localPt(pt.x - m_renderRect.x, pt.y - m_renderRect.y);
+		Point localPt(pt.x - m_renderRect.x, pt.y - m_renderRect.y);
 		int glyphIndex = 0;
 
-		PointF flow(0, 0);
+		Point flow(0, 0);
 		for (auto& run : m_glyphRuns)
 		{
 			for (auto& item : run->requestLayoutItems())
@@ -588,7 +588,7 @@ bool UITextVisualLineBlock::isModified() const
 }
 
 //------------------------------------------------------------------------------
-void UITextVisualLineBlock::buildVisualLines(Font* font, int startDocumentTextOffset, int visualLineIndex, const PointF& renderPt)
+void UITextVisualLineBlock::buildVisualLines(Font* font, int startDocumentTextOffset, int visualLineIndex, const Point& renderPt)
 {
 	m_visualLines.clear();
 	m_renderRect = Rect(renderPt, 0, 0);
@@ -713,7 +713,7 @@ Size UITextArea::measure(const Size& availableSize, Font* font)
 	{
 		int documentTextOffset = 0;
 		int visualLineIndex = 0;
-		PointF renderPt;
+		Point renderPt;
 		for (auto& block : m_visualLineBlocks)
 		{
 			block->buildVisualLines(font, documentTextOffset, visualLineIndex, renderPt);
@@ -775,7 +775,7 @@ Rect UITextArea::getGlyphGlobalRectFromVisualPosition(const UITextVisualPosition
 }
 
 //------------------------------------------------------------------------------
-void UITextArea::getVisualPositionFromRenderPosition(const PointF& pt, UITextVisualPosition* outPos)
+void UITextArea::getVisualPositionFromRenderPosition(const Point& pt, UITextVisualPosition* outPos)
 {
 	outPos->line = 0;
 	outPos->column = 0;
@@ -915,8 +915,8 @@ void UITextBox::onRender(DrawingContext* g)
 	m_textArea->render(g);
 	//g->setFont(getActiveFont());
 	//g->setBrush(getForegroundInternal());
-	//g->drawText_(m_text, PointF::Zero);
-	//g->drawChar('g', PointF(0, 0));
+	//g->drawText_(m_text, Point::Zero);
+	//g->drawChar('g', Point(0, 0));
 }
 
 
@@ -970,7 +970,7 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 	//UITextVisualLine* findVisualLine(int lineIndex);
 	//Rect getGlyphGlobalRectFromVisualPosition(const UITextVisualPosition& pos);
-	//void getVisualPositionFromRenderPosition(const PointF& pt, UITextVisualPosition* outPos);
+	//void getVisualPositionFromRenderPosition(const Point& pt, UITextVisualPosition* outPos);
 	//int getDocumentTextOffset(const UITextVisualPosition& pos);
 
 private:
@@ -1067,14 +1067,14 @@ void UISimpleTextArea::onRender(DrawingContext* g)
 	g->setFont(getActiveFont());	// TODO:
 	g->setBrush(Brush::Red);
 
-	g->drawGlyphRun(PointF(0, 0), m_glyphRun);
+	g->drawGlyphRun(Point(0, 0), m_glyphRun);
 
 	g->setBrush(m_caretBrush);
 	g->drawRectangle(m_caret->getRenderRectangle());
 	//g->setFont(getActiveFont());
 	//g->setBrush(getForegroundInternal());
-	//g->drawText_(m_text, PointF::Zero);
-	//g->drawChar('g', PointF(0, 0));
+	//g->drawText_(m_text, Point::Zero);
+	//g->drawChar('g', Point(0, 0));
 }
 
 //------------------------------------------------------------------------------
@@ -1099,7 +1099,7 @@ Size UISimpleTextArea::measure(const Size& availableSize, Font* font, detail::UI
 void UISimpleTextArea::UpdateCaretRectangle()
 {
 	Rect rect(0, 0, 1, m_glyphRun->getRenderSize().height);
-	PointF pos;
+	Point pos;
 	if (m_glyphRun->getDistanceFromCharacterHit(m_caret->getVisualPosition().column, &pos))
 	{
 		pos.x += 1;	// 少しだけ間を空けて見やすくする

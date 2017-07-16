@@ -135,7 +135,7 @@ void EngineDiagViewer::Render(DrawingContext* g, const Vector2& viewSize)
 {
 	if (m_displayMode != DisplayMode_Details) return;
 
-	PointF location(m_windowRect.x, m_windowRect.y);
+	Point location(m_windowRect.x, m_windowRect.y);
 	g->SetOpacity(0.5f);
 	g->SetFont(m_font);
 
@@ -174,7 +174,7 @@ void EngineDiagViewer::Render(DrawingContext* g, const Vector2& viewSize)
 
 	//-----------------------------------------------------
 	// Main info
-	g->DrawText(_T("Main information:"), PointF(location.x + 8, location.y));
+	g->DrawText(_T("Main information:"), Point(location.x + 8, location.y));
 	location.y += 16;
 	location.x += 16;
 
@@ -192,7 +192,7 @@ void EngineDiagViewer::Render(DrawingContext* g, const Vector2& viewSize)
 	g->DrawText(text, location);
 
 	StringTraits::SPrintf(text, 256, _T(" / Capacity : %.1f"), m_diagCore->GetMainFPSCapacity());
-	g->DrawText(text, PointF(location.x + 150, location.y));
+	g->DrawText(text, Point(location.x + 150, location.y));
 	location.y += 16;
 
 	//StringTraits::SPrintf(text, 256, _T("Window Size     : %d x %d"), m_profiler->getCommitedMainWindowSize().Width, m_profiler->getCommitedMainWindowSize().Height);

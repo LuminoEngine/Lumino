@@ -111,13 +111,13 @@ void TextBlock2DComponent::onRender2(RenderingContext* renderer)
 	//renderer->setTransform(transform);
 	//renderer->setBlendMode(BlendMode::Alpha);
 	//renderer->setBrush(SolidColorBrush::Red);
-	renderer->drawText_(m_text, PointF(-m_renderSize.width * m_anchor.x, -m_renderSize.height * m_anchor.y));
+	renderer->drawText_(m_text, Point(-m_renderSize.width * m_anchor.x, -m_renderSize.height * m_anchor.y));
 
 	//struct LocalRenderer : detail::IDocumentsRenderer
 	//{
 	//	DrawList* renderer;
 
-	//	virtual void onDrawGlyphRun(const Matrix& transform, Brush* forground, GlyphRun* glyphRun, const PointF& point) override
+	//	virtual void onDrawGlyphRun(const Matrix& transform, Brush* forground, GlyphRun* glyphRun, const Point& point) override
 	//	{
 	//		// TODO: ここで強制設定よりは VisualComponent::setBlendMode がいいか？
 	//		renderer->setBlendMode(BlendMode::Alpha);

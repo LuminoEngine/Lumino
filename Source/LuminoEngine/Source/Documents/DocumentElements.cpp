@@ -187,7 +187,7 @@ InternalTextElementType TextElement::getInternalTextElementType() const
 }
 
 //------------------------------------------------------------------------------
-const PointF& TextElement::getLayoutPosition() const { return m_position; }
+const Point& TextElement::getLayoutPosition() const { return m_position; }
 Size TextElement::getLayoutSize() const { return m_size; }
 const ThicknessF& TextElement::getLayoutMargin() const { return m_margin; }
 const ThicknessF& TextElement::getLayoutPadding() const { return m_padding; }
@@ -404,7 +404,7 @@ Size run::measureOverride(const Size& constraint)
 //------------------------------------------------------------------------------
 void run::render(const Matrix& transform, IDocumentsRenderer* renderer)
 {
-	renderer->onDrawGlyphRun(transform, getForeground(), m_glyphRun, PointF());
+	renderer->onDrawGlyphRun(transform, getForeground(), m_glyphRun, Point());
 }
 
 

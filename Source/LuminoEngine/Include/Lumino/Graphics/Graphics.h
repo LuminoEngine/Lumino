@@ -32,7 +32,7 @@ public:
 
 	//static void drawTexture(const RectF& rect, Texture* texture, const RectI& srcRect, const Color& color);
 
-	//static void drawText(const StringRef& text, const PointF& position);
+	//static void drawText(const StringRef& text, const Point& position);
 
 	//static void Flush();
 

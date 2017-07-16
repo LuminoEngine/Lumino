@@ -423,7 +423,7 @@ void VisualTextFragment::render(DrawList* renderer)
 {
 	renderer->setBrush(Brush::Red);
 	//renderer->drawRectangle(m_localRect);
-	renderer->drawGlyphRun(PointF(), m_glyphRun);
+	renderer->drawGlyphRun(Point(), m_glyphRun);
 }
 
 

@@ -116,7 +116,7 @@ const SizeI& GlyphRun::getRenderSize()
 }
 
 //------------------------------------------------------------------------------
-bool GlyphRun::getCharacterHitFromDistance(const PointF& pos, GlyphHit* outResult)
+bool GlyphRun::getCharacterHitFromDistance(const Point& pos, GlyphHit* outResult)
 {
 	updateTextLayoutItem();
 
@@ -137,7 +137,7 @@ bool GlyphRun::getCharacterHitFromDistance(const PointF& pos, GlyphHit* outResul
 }
 
 //------------------------------------------------------------------------------
-bool GlyphRun::getDistanceFromCharacterHit(int index, PointF* outPos)
+bool GlyphRun::getDistanceFromCharacterHit(int index, Point* outPos)
 {
 	updateTextLayoutItem();
 

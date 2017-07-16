@@ -50,7 +50,7 @@ LN_INTERNAL_ACCESS:
 	void render(DrawingContext* g);
 	
 	const Size& getViewPixelSize() const { return m_viewPixelSize; }
-	bool updateMouseHover(const PointF& mousePos);
+	bool updateMouseHover(const Point& mousePos);
 	//void captureMouse(UIElement* element);
 	//void releaseMouseCapture(UIElement* element);
 
@@ -94,7 +94,7 @@ private:
 	UIContext*			m_ownerContext;
 	UIElement*			m_mouseHoverElement;
 
-	PointF				m_mousePosition;
+	Point				m_mousePosition;
 	MouseClickTracker	m_mouseClickTrackers[8];
 
 	Size				m_viewPixelSize;

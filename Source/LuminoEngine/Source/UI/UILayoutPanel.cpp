@@ -203,7 +203,7 @@ Size UIAbsoluteLayout::measureOverride(const Size& constraint)
 	{
 		child->measureLayout(constraint);
 		const Size& desiredSize = child->getDesiredSize();
-		const PointF& pos = child->getPositionInternal();
+		const Point& pos = child->getPositionInternal();
 
 		childMaxSize.width  = std::max(childMaxSize.width,  pos.x + desiredSize.width);
 		childMaxSize.height = std::max(childMaxSize.height, pos.y + desiredSize.height);
@@ -218,7 +218,7 @@ Size UIAbsoluteLayout::measureOverride(const Size& constraint)
 	//for (int i = 0; i < childCount; i++)
 	//{
 	//	ILayoutElement* child = panel->getLayoutChild(i);
-	//	PointF pos = child->getPositionInternal();
+	//	Point pos = child->getPositionInternal();
 
 	//	child->measureLayout(constraint);
 	//	const Size& childDesiredSize = child->getLayoutDesiredSize();
@@ -244,7 +244,7 @@ Size UIAbsoluteLayout::arrangeOverride(const Size& finalSize)
 {
 	//ThicknessF canvas;
 	const ThicknessF& padding = getPadding();
-	PointF childrenOffset(padding.Left, padding.Top);
+	Point childrenOffset(padding.Left, padding.Top);
 	Size childrenBoundSize(finalSize.width - (padding.Left + padding.Right), finalSize.height - (padding.Top + padding.Bottom));
 
 	

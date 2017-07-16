@@ -116,7 +116,7 @@ Size UIViewport::arrangeOverride(const Size& finalSize)
 }
 
 //------------------------------------------------------------------------------
-UIElement* UIViewport::checkMouseHoverElement(const PointF& globalPt)
+UIElement* UIViewport::checkMouseHoverElement(const Point& globalPt)
 {
 	for (auto& layer : m_viewportLayerList)
 	{
@@ -289,7 +289,7 @@ void UIViewportLayer::addPostEffect(PostEffect* postEffect)
 }
 
 //------------------------------------------------------------------------------
-UIElement* UIViewportLayer::hitTestUIElement(const PointF& globalPt)
+UIElement* UIViewportLayer::hitTestUIElement(const Point& globalPt)
 {
 	return nullptr;
 }
@@ -358,7 +358,7 @@ UILayoutView* UILayoutLayer::GetLayoutView() const
 }
 
 //------------------------------------------------------------------------------
-UIElement* UILayoutLayer::hitTestUIElement(const PointF& globalPt)
+UIElement* UILayoutLayer::hitTestUIElement(const Point& globalPt)
 {
 	auto* element = m_root->checkMouseHoverElement(globalPt);
 	if (element != nullptr) return element;

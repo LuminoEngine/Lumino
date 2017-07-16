@@ -168,7 +168,7 @@ void VectorTextRenderer::drawInternal(const Matrix& transform)
 		VectorGlyphData data;
 		data.cacheGlyphInfoHandle = glyphCache->getGlyphInfo(item.ch, &needFlush);
 		data.transform = transform;
-		data.origin = PointF(item.columnBaseline, item.lineBaseline);
+		data.origin = Point(item.columnBaseline, item.lineBaseline);
 		m_bufferingCache.add(data);
 	}
 

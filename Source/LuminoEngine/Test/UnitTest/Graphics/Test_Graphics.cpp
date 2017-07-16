@@ -313,7 +313,7 @@ TEST_F(Test_Graphics_Rendering, drawText_)
 		Engine::getWorld2D()->getRenderer()->setFont(font);
 		Engine::getWorld2D()->getRenderer()->setBrush(Brush::White);
 		Engine::getWorld2D()->getRenderer()->setTransform(Matrix::makeTranslation(10, 20, 0));
-		Engine::getWorld2D()->getRenderer()->drawText_(_T("Text1"), PointF());
+		Engine::getWorld2D()->getRenderer()->drawText_(_T("Text1"), Point());
 		Engine::renderFrame();
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawText3.png")));
@@ -539,7 +539,7 @@ TEST_F(Test_Graphics_DrawingContext, drawChar)
 		//auto* dc = Engine::getMainWindow()->getDrawingContext();
 		dc->clear(ClearFlags::Color, Color::Blue);
 		dc->setBrush(Brush::Black);
-		dc->drawChar('g', PointF(100, 100));
+		dc->drawChar('g', Point(100, 100));
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_DrawingContext.DrawChar1.png"), 90, true));
 	}

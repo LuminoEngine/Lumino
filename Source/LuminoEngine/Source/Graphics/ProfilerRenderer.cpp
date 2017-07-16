@@ -29,7 +29,7 @@ ProfilerRenderer::~ProfilerRenderer()
 //------------------------------------------------------------------------------
 void ProfilerRenderer::Render(const Vector2& viewSize)
 {
-	PointF location(m_windowRect.X, m_windowRect.Y);
+	Point location(m_windowRect.X, m_windowRect.Y);
 
 	LocalPainter painter(Size(viewSize.X, viewSize.Y), m_manager);
 	//painter.SetProjection(Size(viewSize.X, viewSize.Y), 0, 1000);
@@ -56,7 +56,7 @@ void ProfilerRenderer::Render(const Vector2& viewSize)
 
 	//-----------------------------------------------------
 	// Main info
-	painter.DrawString(_T("Main information:"), -1, PointF(location.X + 8, location.Y));
+	painter.DrawString(_T("Main information:"), -1, Point(location.X + 8, location.Y));
 	location.Y += 16;
 	location.X += 16;
 
@@ -74,7 +74,7 @@ void ProfilerRenderer::Render(const Vector2& viewSize)
 	painter.DrawString(text, -1, location);
 
 	StringTraits::SPrintf(text, 256, _T(" / Capacity : %.1f"), m_profiler->GetCommitedMainFPSCapacity());
-	painter.DrawString(text, -1, PointF(location.X + 150, location.Y));
+	painter.DrawString(text, -1, Point(location.X + 150, location.Y));
 	location.Y += 16;
 
 	StringTraits::SPrintf(text, 256, _T("Window Size     : %d x %d"), m_profiler->GetCommitedMainWindowSize().Width, m_profiler->GetCommitedMainWindowSize().Height );
@@ -88,7 +88,7 @@ void ProfilerRenderer::Render(const Vector2& viewSize)
 
 	//-----------------------------------------------------
 	// Threads performance
-	painter.DrawString(_T("Threads performance:"), -1, PointF(location.X + 8, location.Y));
+	painter.DrawString(_T("Threads performance:"), -1, Point(location.X + 8, location.Y));
 	location.Y += 16;
 
 	// グループリストの描画
@@ -155,7 +155,7 @@ void ProfilerRenderer::DrawGroupList(GraphicsContext& painter, const RectF& list
 		// グループ名
 		painter.SetBrush(ColorBrush::White);
 		painter.SetOpacity(1.0f);
-		PointF pt(listRect.X + 4, listRect.Y + (iGrout * rowHeight) + 1);
+		Point pt(listRect.X + 4, listRect.Y + (iGrout * rowHeight) + 1);
 		painter.DrawString(groups[iGrout].Name, pt);
 
 		// ms

@@ -41,7 +41,7 @@ protected:
 	virtual Size arrangeOverride(const Size& finalSize) override;
 	virtual void onRender(DrawingContext* g) override;
 
-	virtual UIElement* checkMouseHoverElement(const PointF& globalPt) override;
+	virtual UIElement* checkMouseHoverElement(const Point& globalPt) override;
 
 LN_CONSTRUCT_ACCESS:
 	UIViewport();
@@ -82,7 +82,7 @@ protected:
 	UIViewportLayer();
 	virtual ~UIViewportLayer();
 
-	virtual UIElement* hitTestUIElement(const PointF& globalPt);	// TODO: globalPt じゃなくて local のほうがやりやすい
+	virtual UIElement* hitTestUIElement(const Point& globalPt);	// TODO: globalPt じゃなくて local のほうがやりやすい
 	virtual void onRoutedEvent(UIEventArgs* e);
 	virtual void updateLayout(const Size& viewSize);
 	virtual void render(bool clearColorBuffer) = 0;
@@ -113,7 +113,7 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 protected:
-	virtual UIElement* hitTestUIElement(const PointF& globalPt) override;
+	virtual UIElement* hitTestUIElement(const Point& globalPt) override;
 	virtual void onRoutedEvent(UIEventArgs* e) override;
 	virtual void updateLayout(const Size& viewSize) override;
 	virtual void render(bool clearColorBuffer) override;

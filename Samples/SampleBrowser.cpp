@@ -57,13 +57,13 @@ Ref<AnimationClock>	g_clock;
 void showListWindow()
 {
 	g_pinButton->setText(_T("<"));
-	g_clock->start(g_listWindow->getPosition().x, 0, 0.5, EasingMode::EaseOutExpo, [](float v) {g_listWindow->setPosition(PointF(v, 0)); }, nullptr);
+	g_clock->start(g_listWindow->getPosition().x, 0, 0.5, EasingMode::EaseOutExpo, [](float v) {g_listWindow->setPosition(Point(v, 0)); }, nullptr);
 }
 
 void closeListWindow()
 {
 	g_pinButton->setText(_T(">"));
-	g_clock->start(g_listWindow->getPosition().x, -200, 0.5, EasingMode::EaseOutExpo, [](float v) {g_listWindow->setPosition(PointF(v, 0)); }, nullptr);
+	g_clock->start(g_listWindow->getPosition().x, -200, 0.5, EasingMode::EaseOutExpo, [](float v) {g_listWindow->setPosition(Point(v, 0)); }, nullptr);
 }
 
 void Main()

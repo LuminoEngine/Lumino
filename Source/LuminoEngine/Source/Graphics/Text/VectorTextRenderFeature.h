@@ -16,7 +16,7 @@ struct VectorGlyphData
 {
 	int		cacheGlyphInfoHandle;
 	Matrix	transform;
-	PointF	origin;		// baseline origin
+	Point	origin;		// baseline origin
 };
 
 class VectorTextRendererCore

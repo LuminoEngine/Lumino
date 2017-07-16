@@ -51,7 +51,7 @@ UIElement::UIElement()
 	//, m_currentVisualStateStyle(nullptr)
 	, m_visualParent(nullptr)
 	, m_visualChildren(nullptr)
-	, position(PointF(0, 0))
+	, position(Point(0, 0))
 	, width(NAN)
 	, height(NAN)
 	, anchor(AlignmentAnchor::None)
@@ -394,7 +394,7 @@ void UIElement::setLogicalParent(UIElement* parent)
 }
 
 //------------------------------------------------------------------------------
-UIElement* UIElement::checkMouseHoverElement(const PointF& globalPt)
+UIElement* UIElement::checkMouseHoverElement(const Point& globalPt)
 {
 	// 後ろからループする。後のモノが上に描画されるので、この方が自然。
 	// TODO: Zオーダーは別のリストにしたほうがいい気がする・・・
@@ -407,7 +407,7 @@ UIElement* UIElement::checkMouseHoverElement(const PointF& globalPt)
 
 	if (m_isHitTestVisible)
 	{
-		PointF localPoint = globalPt;
+		Point localPoint = globalPt;
 		if (m_visualParent != nullptr)
 		{
 			localPoint.x -= m_visualParent->m_finalGlobalRect.x;
@@ -639,7 +639,7 @@ void UIElement::onUpdatingLayout()
 }
 
 //------------------------------------------------------------------------------
-bool UIElement::onHitTest(const PointF& localPoint)
+bool UIElement::onHitTest(const Point& localPoint)
 {
 	return m_finalLocalRenderRect.contains(localPoint);
 }
@@ -692,7 +692,7 @@ void UIElement::updateFrame()
 //------------------------------------------------------------------------------
 void UIElement::render(DrawingContext* g)
 {
-	//PointF contentOffset;
+	//Point contentOffset;
 	if (m_visualParent != nullptr)
 	{
 		detail::BuiltinEffectData::combine(m_visualParent->m_combinedBuiltinEffectData, m_builtinEffectData, &m_combinedBuiltinEffectData);
@@ -789,7 +789,7 @@ void UIElement::removeVisualChild(UIElement* element)
 }
 
 //------------------------------------------------------------------------------
-const PointF& UIElement::getLayoutPosition() const { return position; }
+const Point& UIElement::getLayoutPosition() const { return position; }
 Size UIElement::getLayoutSize() const { return Size(width, height); }
 const ThicknessF& UIElement::getLayoutMargin() const { return m_localStyle->margin.get(); }
 const ThicknessF& UIElement::getLayoutPadding() const { return m_localStyle->padding.get(); }

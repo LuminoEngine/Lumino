@@ -44,7 +44,7 @@ void UIWindow::onRoutedEvent(UIEventArgs* e)
 		if (!m_isDragging)
 		{
 			auto mouseEvent = static_cast<UIMouseEventArgs*>(e);
-			PointF pos = mouseEvent->getPosition(getVisualParent());
+			Point pos = mouseEvent->getPosition(getVisualParent());
 
 			m_dragStartWindowPosition = getPosition();
 			m_dragStartLocalPosition = pos;
@@ -60,7 +60,7 @@ void UIWindow::onRoutedEvent(UIEventArgs* e)
 		if (m_isDragging)
 		{
 			auto mouseEvent = static_cast<UIMouseEventArgs*>(e);
-			PointF pos = mouseEvent->getPosition(getVisualParent());
+			Point pos = mouseEvent->getPosition(getVisualParent());
 
 			m_isDragging = false;
 			releaseMouseCapture();

@@ -55,7 +55,7 @@ void UIThumb::onRoutedEvent(UIEventArgs* e)
 		if (!m_isDragging)
 		{
 			auto mouseEvent = static_cast<UIMouseEventArgs*>(e);
-			PointF pos = mouseEvent->getPosition(getVisualParent());
+			Point pos = mouseEvent->getPosition(getVisualParent());
 
 			m_lastScreenPosition = pos;
 			m_isDragging = true;
@@ -77,7 +77,7 @@ void UIThumb::onRoutedEvent(UIEventArgs* e)
 		if (m_isDragging)
 		{
 			auto mouseEvent = static_cast<UIMouseEventArgs*>(e);
-			PointF pos = mouseEvent->getPosition(getVisualParent());
+			Point pos = mouseEvent->getPosition(getVisualParent());
 
 			m_isDragging = false;
 			releaseMouseCapture();
@@ -99,7 +99,7 @@ void UIThumb::onRoutedEvent(UIEventArgs* e)
 		if (m_isDragging)
 		{
 			auto mouseEvent = static_cast<UIMouseEventArgs*>(e);
-			PointF pos = mouseEvent->getPosition(getVisualParent());
+			Point pos = mouseEvent->getPosition(getVisualParent());
 
 			// ドラッグ中イベント
 			detail::EventArgsPool* pool = getManager()->getEventArgsPool();

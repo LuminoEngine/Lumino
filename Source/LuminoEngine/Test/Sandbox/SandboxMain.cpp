@@ -571,7 +571,7 @@ void Main()
 
 	auto uiRoot = Application::getMainWindow();
 	//auto thumb = UIThumb::create();
-	////thumb->setPosition(PointF(100, 200));
+	////thumb->setPosition(Point(100, 200));
 	//thumb->setSize(Size(30,60));
 	////thumb->setBackground(ColorBrush::Red);
 	////textBlock1->SetText(_T("TextBlock"));

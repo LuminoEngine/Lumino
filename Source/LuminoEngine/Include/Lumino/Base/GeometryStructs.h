@@ -4,48 +4,41 @@
 
 LN_NAMESPACE_BEGIN
 
-/**
-	@brief	2次元上の点を表します。
-*/
-template<typename T>
-struct GenericPoint
+/** 2次元上の点を表します。*/
+LN_STRUCT()
+struct Point
 {
 public:
-	static const GenericPoint<T>	Zero;	/**< (0, 0) */
+	static const Point	Zero;	/**< (0, 0) */
+	
+	/** X 座標 */
+	LN_FIELD()
+	float x;
 
-public:
-	T		x;			/**< X 座標 */
-	T		y;			/**< Y 座標 */
+	/** Y 座標 */
+	LN_FIELD()
+	float y;
 
 public:
 
 	/** すべての要素を 0 で初期化します。*/
-	GenericPoint() { set(0, 0); }
-	
-	/** 各要素を指定して初期化します。*/
-	GenericPoint(T x, T y) { set(x, y); }
-	
+	Point() : x(0), y(0) {}
+
+	/** 位置を指定して初期化します。*/
+	Point(float x_, float y_) { set(x_, y_); }
+
+	/** 位置を指定して初期化します。*/
+	Point(const Vector2& v) { set(v.x, v.y); }
+
 	/** 各要素を設定します。 */
-	void set(T x_, T y_) { x = x_; y = y_; }
+	void set(float x_, float y_) { x = x_; y = y_; }
 
 	/** 要素がすべて 0 であるかを判定します。*/
 	bool isZero() const { return (x == 0 && y == 0); }
 
 public:
-	bool operator == (const GenericPoint<T>& obj) const { return (x == obj.x && y == obj.y); }
-	bool operator != (const GenericPoint<T>& obj) const { return !operator==(obj); }
-};
-
-//using PointF = GenericPoint<float>;
-using PointI = GenericPoint<int>;
-
-
-struct PointF : public GenericPoint<float>
-{
-public:
-	PointF() {}
-	PointF(const Vector2& v) { set(v.x, v.y); }
-	PointF(float x, float y) { set(x, y); }
+	bool operator == (const Point& rhs) const { return (x == rhs.x && y == rhs.y); }
+	bool operator != (const Point& rhs) const { return !operator==(rhs); }
 	operator const Vector2&() const { return *reinterpret_cast<const Vector2*>(this); }
 };
 
@@ -103,6 +96,25 @@ public:
 public:
 	bool operator == (const Size& obj) const { return (width == obj.width && height == obj.height); }
 	bool operator != (const Size& obj) const { return !operator==(obj); }
+};
+
+
+// 内部用
+struct PointI
+{
+public:
+	static const PointI Zero;
+
+	int		x;
+	int		y;
+
+	PointI() { set(0, 0); }
+	PointI(int x_, int y_) { set(x_, y_); }
+	void set(int x_, int y_) { x = x_; y = y_; }
+	bool isZero() const { return (x == 0 && y == 0); }
+
+	bool operator == (const PointI& rhs) const { return (x == rhs.x && y == rhs.y); }
+	bool operator != (const PointI& rhs) const { return !operator==(rhs); }
 };
 
 // 内部用
@@ -185,13 +197,13 @@ public:
 	Rect(float x, float y, float width, float height) { set(x, y, width, height); }
 	
 	/** 位置とサイズを指定して初期化します。*/
-	Rect(const PointF& point, const Size& size) { set(point.x, point.y, size.width, size.height); }
+	Rect(const Point& point, const Size& size) { set(point.x, point.y, size.width, size.height); }
 
 	/** 位置とサイズを指定して初期化します。*/
 	Rect(float x, float y, const Size& size) { set(x, y, size.width, size.height); }
 
 	/** 位置とサイズを指定して初期化します。 */
-	Rect(const PointF& point, float width, float height) { set(point.x, point.y, width, height); }
+	Rect(const Point& point, float width, float height) { set(point.x, point.y, width, height); }
 
 	/** 指定した矩形をコピーして初期化します。*/
 	Rect(const Rect& rect) { set(rect.x, rect.y, rect.width, rect.height); }
@@ -218,22 +230,22 @@ public:
 	float getBottom() const { return y + height; }
 
 	/** 左上隅の位置を取得します。*/
-	PointF getTopLeft() const { return PointF(getLeft(), getTop()); }
+	Point getTopLeft() const { return Point(getLeft(), getTop()); }
 	
 	/** 右上隅の位置を取得します。*/
-	PointF getTopRight() const { return PointF(getRight(), getTop()); }
+	Point getTopRight() const { return Point(getRight(), getTop()); }
 	
 	/** 左下隅の位置を取得します。*/
-	PointF getBottomLeft() const { return PointF(getLeft(), getBottom()); }
+	Point getBottomLeft() const { return Point(getLeft(), getBottom()); }
 
 	/** 右下隅の位置を取得します。*/
-	PointF getBottomRight() const { return PointF(getRight(), getBottom()); }
+	Point getBottomRight() const { return Point(getRight(), getBottom()); }
 
 	/** 左上隅の位置を設定します。*/
-	void setLocation(const PointF& pt) { x = pt.x; y = pt.y; }	// TODO: Pos?
+	void setLocation(const Point& pt) { x = pt.x; y = pt.y; }	// TODO: Pos?
 
 	/** 左上隅の位置を取得します。*/
-	PointF setLocation() const { return PointF(x, y); }
+	Point setLocation() const { return Point(x, y); }
 	
 	/** 幅と高さを設定します。*/
 	LN_METHOD(Property)
@@ -250,7 +262,7 @@ public:
 	bool isZero() const { return (x == 0 && y == 0 && width == 0 && height == 0); }
 
 	/** 矩形内に指定した点が含まれているかどうかを判定します。*/
-	bool contains(const PointF point) const { return contains(point.x, point.y); }
+	bool contains(const Point point) const { return contains(point.x, point.y); }
 	
 	/** 矩形内に指定した点が含まれているかどうかを判定します。*/
 	bool contains(float x_, float y_) const

@@ -18,7 +18,7 @@ public:
 	struct GlyphRunData
 	{
 		Matrix	transform;
-		PointF	Position;
+		Point	Position;
 
 		// CacheGlyphInfo から取りだすデータ
 		int			outlineOffset;
@@ -89,9 +89,9 @@ public:
 	void initialize(GraphicsManager* manager);
 
 	void drawGlyphRun(const Matrix& transform, const PointI& position, GlyphRun* glyphRun);
-	void drawGlyphRun(const Matrix& transform, const PointF& position, GlyphRun* glyphRun);	// setFont 無視
+	void drawGlyphRun(const Matrix& transform, const Point& position, GlyphRun* glyphRun);	// setFont 無視
 
-	void drawString(const Matrix& transform, const TCHAR* str, int length, const PointF& position);
+	void drawString(const Matrix& transform, const TCHAR* str, int length, const Point& position);
 	void drawString(const Matrix& transform, const TCHAR* str, int length, const Rect& rect, StringFormatFlags flags);
 
 	virtual bool isStandaloneShader() const { return false; }
@@ -102,7 +102,7 @@ public:
 
 public:
 	// TODO: ↓いまは Flush でやるようなことをしている。後で変更したい。
-	void DrawGlyphsInternal(const Matrix& transform, const PointF& position, const List<TextLayoutResultItem>& layoutItems, FontGlyphTextureCache* cache);
+	void DrawGlyphsInternal(const Matrix& transform, const Point& position, const List<TextLayoutResultItem>& layoutItems, FontGlyphTextureCache* cache);
 	void FlushInternal(FontGlyphTextureCache* cache);
 
 private:

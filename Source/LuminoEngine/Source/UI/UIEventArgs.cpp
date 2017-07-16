@@ -91,10 +91,10 @@ void UIMouseEventArgs::initialize(UIEventType type, MouseButtons button, float x
 }
 
 //------------------------------------------------------------------------------
-PointF UIMouseEventArgs::getPosition(UIElement* relativeTo) const
+Point UIMouseEventArgs::getPosition(UIElement* relativeTo) const
 {
 	const Rect& rc = relativeTo->getFinalGlobalRect();
-	return PointF(m_position.x - rc.x, m_position.y - rc.y);
+	return Point(m_position.x - rc.x, m_position.y - rc.y);
 }
 
 //==============================================================================

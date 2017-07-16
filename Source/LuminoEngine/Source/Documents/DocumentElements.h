@@ -101,7 +101,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual void onFontDataChanged(const FontData& newData);
 
 	// ILayoutElement interface
-	virtual const PointF& getLayoutPosition() const override;
+	virtual const Point& getLayoutPosition() const override;
 	virtual Size getLayoutSize() const override;
 	virtual const ThicknessF& getLayoutMargin() const override;
 	virtual const ThicknessF& getLayoutPadding() const override;
@@ -147,7 +147,7 @@ private:
 	bool					m_fontDataModified;
 
 	// layout data
-	PointF					m_position;
+	Point					m_position;
 	Size					m_size;
 	ThicknessF				m_margin;
 	ThicknessF				m_padding;

@@ -670,13 +670,13 @@ public:
 	void blit(Texture* source, RenderTargetTexture* dest, const Matrix& transform);
 	void blit(Texture* source, RenderTargetTexture* dest, Material* material);
 
-	void drawGlyphRun(const PointF& position, GlyphRun* glyphRun);
+	void drawGlyphRun(const Point& position, GlyphRun* glyphRun);
 
 	// 描画時、アルファブレンド無効であれば有効として描画される。
-	void drawText_(const StringRef& text, const PointF& position);
+	void drawText_(const StringRef& text, const Point& position);
 	void drawText_(const StringRef& text, const Rect& rect, StringFormatFlags flags);
 
-	void drawChar(TCHAR ch, const PointF& position);
+	void drawChar(TCHAR ch, const Point& position);
 	void drawText2(const StringRef& text, const Rect& rect);
 
 	void drawSprite(

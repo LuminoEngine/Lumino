@@ -50,13 +50,13 @@ public:
 	MouseButtons getMouseButtons() const { return m_button; }
 
 	/** マウスイベント生成時のマウスの座標を取得します。*/
-	const PointF& getPosition() const { return m_position; }
+	const Point& getPosition() const { return m_position; }
 
 	/** ボタンがクリックされた回数を取得します。(ダブルクリックやトリプルクリックを区別するために使用する。最大3まで) */
 	int getClickCount() const { return m_clickCount; }
 
 	/** 指定した要素から見た相対的なマウス ポインターの位置を返します。*/
-	PointF getPosition(UIElement* relativeTo) const;
+	Point getPosition(UIElement* relativeTo) const;
 
 LN_CONSTRUCT_ACCESS:
 	UIMouseEventArgs();
@@ -65,7 +65,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
 	MouseButtons	m_button;
-	PointF			m_position;
+	Point			m_position;
 	int				m_clickCount;
 };
 

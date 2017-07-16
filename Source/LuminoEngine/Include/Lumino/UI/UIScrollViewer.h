@@ -54,7 +54,7 @@ protected:
 	virtual void onDragCanceled(UIDragDeltaEventArgs* e) { if (!e->handled) { raiseEvent(DragCanceledEventId, this, e); } }
 
 private:
-	PointF	m_lastScreenPosition;
+	Point	m_lastScreenPosition;
 	bool	m_isDragging;
 
 	UIEvent<UIDragDeltaEventArgs>        DragStarted;

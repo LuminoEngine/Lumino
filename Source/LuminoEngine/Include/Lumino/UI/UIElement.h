@@ -110,7 +110,7 @@ class UIElement
 	LN_OBJECT;
 
 public:
-	PointF				position;
+	Point				position;
 	float					width;
 	float					height;
 	//ThicknessF		margin;
@@ -158,8 +158,8 @@ public:
 	/** @name Properties */
 	/** @{ */
 
-	void setPosition(const PointF& value) { position = value; }
-	const PointF& getPosition() const { return position; }
+	void setPosition(const Point& value) { position = value; }
+	const Point& getPosition() const { return position; }
 
 	void setWidth(float value) { width = value; }
 	float getWidth() const { return width; }
@@ -348,7 +348,7 @@ protected:
 	virtual void onUpdateStyle(detail::UIStylePropertyTableInstance* localStyle, detail::InvalidateFlags invalidateFlags);
 	virtual void onUpdatingLayout();
 
-	virtual bool onHitTest(const PointF& localPoint);
+	virtual bool onHitTest(const Point& localPoint);
 
 	//UIStylePropertyTable* GetLocalStyle() const { return m_localStyle; }
 
@@ -358,12 +358,12 @@ protected:
 	virtual detail::SpcialUIElementType getSpcialUIElementType() const;
 
 public:
-	virtual UIElement* checkMouseHoverElement(const PointF& globalPt);
+	virtual UIElement* checkMouseHoverElement(const Point& globalPt);
 
 LN_INTERNAL_ACCESS:
 	detail::UIManager* getManager() const { return m_manager; }
 	UIContext* getContext() const;
-	const PointF& getPositionInternal() const { return position; }
+	const Point& getPositionInternal() const { return position; }
 	void setSizeInternal(const Size& size) { width = size.width; height = size.height; }
 	Size getSizeInternal() const { return Size(width, height); }
 	const ThicknessF& getMargineInternal() const;
@@ -403,7 +403,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 
 private:
 	// ILayoutElement interface
-	virtual const PointF& getLayoutPosition() const override;
+	virtual const Point& getLayoutPosition() const override;
 	virtual Size getLayoutSize() const override;
 	virtual const ThicknessF& getLayoutMargin() const override;
 	virtual const ThicknessF& getLayoutPadding() const override;

@@ -1323,13 +1323,13 @@ void DrawList::blit(Texture* source, RenderTargetTexture* dest, Material* materi
 }
 
 //------------------------------------------------------------------------------
-void DrawList::drawGlyphRun(const PointF& position, GlyphRun* glyphRun)
+void DrawList::drawGlyphRun(const Point& position, GlyphRun* glyphRun)
 {
 	class DrawElement_DrawGlyphRun : public detail::DrawElement
 	{
 	public:
 		Ref<GlyphRun>	glyphRun;
-		PointF position;
+		Point position;
 		//virtual void makeElementInfo(detail::DrawElementList* oenerList, const detail::CameraInfo& cameraInfo, detail::ElementInfo* outInfo) override
 		//{
 		//	// ワールド行列は作らない。一連の Glyphs を描画する方に任せる。
@@ -1365,7 +1365,7 @@ void DrawList::drawGlyphRun(const PointF& position, GlyphRun* glyphRun)
 }
 
 //------------------------------------------------------------------------------
-void DrawList::drawText_(const StringRef& text, const PointF& position)
+void DrawList::drawText_(const StringRef& text, const Point& position)
 {
 	drawText_(text, Rect(position, FLT_MAX, FLT_MAX), StringFormatFlags::LeftAlignment);
 }
@@ -1434,13 +1434,13 @@ void DrawList::drawText_(const StringRef& text, const Rect& rect, StringFormatFl
 }
 
 //------------------------------------------------------------------------------
-void DrawList::drawChar(TCHAR ch, const PointF& position)
+void DrawList::drawChar(TCHAR ch, const Point& position)
 {
 	class DrawElement_DrawChar : public detail::DrawElement
 	{
 	public:
 		TCHAR ch;
-		PointF position;
+		Point position;
 
 		virtual void drawSubset(const DrawArgs& e) override
 		{
