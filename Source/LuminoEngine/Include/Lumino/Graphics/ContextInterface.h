@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include <Lumino/Base/Stack.h>
 #include "Common.h"
 #include "Graphics.h"
 #include "RenderState.h"

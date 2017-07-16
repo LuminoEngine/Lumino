@@ -5,7 +5,7 @@
 LN_NAMESPACE_BEGIN
 
 /**
-	@brief	GUI システムへの入力イベントの入り口となるインターフェイスです。
+	@brief	[Obsolete] GUI システムへの入力イベントの入り口となるインターフェイスです。
 */
 class IUIInjectedInputReceiver
 {

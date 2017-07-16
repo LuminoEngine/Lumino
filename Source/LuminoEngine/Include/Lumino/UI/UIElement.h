@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include <Lumino/Base/Event.h>
 #include "../Base/GeometryStructs.h"
 #include "../Graphics/Material.h"
 #include "Common.h"
