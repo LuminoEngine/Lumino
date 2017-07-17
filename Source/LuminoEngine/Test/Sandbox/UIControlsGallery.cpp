@@ -290,8 +290,6 @@ void UIControlsGallery()
 
 #endif
 
-	auto fc = FrameCapturer::create();
-	fc->startRecording();
 
 	float t = 0;
 	while (!Engine::isEndRequested())
@@ -320,17 +318,10 @@ void UIControlsGallery()
 
 		//printf("%f\n", slider->getValue());
 
-		fc->record();
 
 		//printf("----------\n");
 		//window2->GetRenderDiagnostic()->print();
 
-		if (t >= 2.0)
-		{
-
-			fc->stopRecording();
-			printf("stop\n");
-		}
 	}
 
 
