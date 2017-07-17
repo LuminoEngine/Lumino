@@ -5,6 +5,7 @@
 #include <Lumino/Base/String.h>
 #include <Lumino/Base/ElapsedTimer.h>
 #include <Lumino/Threading/Mutex.h>
+#include <Lumino/Threading/ConditionFlag.h>
 
 LN_NAMESPACE_BEGIN
 class Profiler2;

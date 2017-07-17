@@ -1,5 +1,7 @@
 ﻿
 #pragma once
+#include <Lumino/IO/MemoryStream.h>
+#include <Lumino/IO/BinaryWriter.h>
 #include "Common.h"
 #include "GraphicsResourceObject.h"
 

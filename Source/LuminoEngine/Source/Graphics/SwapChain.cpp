@@ -2,6 +2,7 @@
 #include "../Internal.h"
 #include <Lumino/Graphics/SwapChain.h>
 #include <Lumino/Graphics/Texture.h>
+#include <Lumino/Graphics/FrameCapturer.h>
 #include "GraphicsManager.h"
 #include "CoreGraphicsRenderFeature.h"
 #include "RenderingThread.h"
@@ -99,6 +100,11 @@ RenderTargetTexture* SwapChain::getBackBuffer()
 //------------------------------------------------------------------------------
 void SwapChain::present()
 {
+	if (m_frameCapturerContext != nullptr)
+	{
+		m_frameCapturerContext->updateOnRender();
+	}
+
 	m_manager->getRenderer()->presentSwapChain(this);
 }
 
@@ -198,6 +204,16 @@ void SwapChain::PresentInternal()
 void SwapChain::WaitForPresent()
 {
 	m_waiting.wait();
+}
+
+//------------------------------------------------------------------------------
+FrameCapturerContext* SwapChain::getFrameCapturerContext()
+{
+	if (m_frameCapturerContext == nullptr)
+	{
+		m_frameCapturerContext = newObject<FrameCapturerContext>(this);
+	}
+	return m_frameCapturerContext;
 }
 
 LN_NAMESPACE_GRAPHICS_END

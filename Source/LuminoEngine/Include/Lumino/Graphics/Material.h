@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include <unordered_map>
+#include <Lumino/Base/Nullable.h>
 #include "Color.h"
 #include "Texture.h"
 #include "Shader.h"

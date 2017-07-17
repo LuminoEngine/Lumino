@@ -16,10 +16,10 @@ public:
 		@brief	メッセージ処理コールバック
 		@return true の場合、呼び出し側で他の処理を行わずに、すぐに処理を終了します。
 	*/
-	virtual bool onEvent(const PlatformEventArgs& e) = 0;
+	virtual bool onPlatformEvent(const PlatformEventArgs& e) = 0;
 
 protected:
-	virtual ~IEventListener() {}
+	virtual ~IEventListener() = default;
 };
 
 LN_NAMESPACE_END

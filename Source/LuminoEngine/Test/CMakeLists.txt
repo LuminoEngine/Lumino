@@ -44,6 +44,7 @@ endif()
 include_directories(
 	"${PROJECT_SOURCE_DIR}/Source/LuminoCore/Include"
 	"${PROJECT_SOURCE_DIR}/Include"
+	"${PROJECT_SOURCE_DIR}/Source/LuminoExperimental/Include"
 	"${PROJECT_SOURCE_DIR}/Test/gtest/include"
 	"${PROJECT_SOURCE_DIR}/Test/gtest"
 	"${PROJECT_SOURCE_DIR}/Test/gtest/src"

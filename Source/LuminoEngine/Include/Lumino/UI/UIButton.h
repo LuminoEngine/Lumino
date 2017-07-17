@@ -83,6 +83,7 @@ public:
 	static const String UncheckedState;
 
 	static Ref<UIToggleButton> create();
+	static Ref<UIToggleButton> create(const StringRef& text, float width, float height);
 
 	void setChecked(bool checked);
 	bool isChecked() const;
@@ -102,6 +103,7 @@ LN_CONSTRUCT_ACCESS:
 	UIToggleButton();
 	virtual ~UIToggleButton();
 	void initialize();
+	void initialize(const StringRef& text, float width, float height);
 
 private:
 	void checkChanged();

@@ -75,22 +75,20 @@ void UILayoutView::initialize(UIContext* ownerContext, PlatformWindow* ownerNati
 //------------------------------------------------------------------------------
 void UILayoutView::updateLayout(const Size& viewSize)
 {
-	m_viewPixelSize = viewSize;
-
 	//if (m_rootElement != nullptr)
 	{
-		setSize(m_viewPixelSize);
+		setSize(viewSize);
 
 		// TODO: ここは getRootStyleTable を使うべき？
 		// 今は UILayoutView::updateLayout() からしか呼ばれていないので問題ないが…。
 		applyTemplateHierarchy(getOwnerContext()->getRootStyleTable(), nullptr);
 
-		UIControl::updateLayout(getViewPixelSize());
+		UIControl::updateLayout(viewSize);
 
 
 		for (auto& popup : m_popupContainers)
 		{
-			popup->GetPopup()->updateLayoutForInPlacePopup(getViewPixelSize());
+			popup->GetPopup()->updateLayoutForInPlacePopup(viewSize);
 		}
 	}
 }

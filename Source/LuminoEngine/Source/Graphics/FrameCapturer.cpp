@@ -13,7 +13,6 @@
 #include "RenderingThread.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 namespace detail
 {
 class CapturerContext
@@ -22,7 +21,45 @@ public:
 	virtual ~CapturerContext() = default;
 	virtual void open(const PathName& filePath, const SizeI& size) = 0;
 	virtual void close() = 0;
-	virtual void addFrame(Bitmap* bitmap, int delayMS) = 0;
+	virtual void addFrame(Bitmap* bitmap, int delayMS, double timestamp) = 0;
+};
+
+
+class GifTaskManager
+{
+public:
+	GifTaskManager()
+		: m_maxTasks(8)
+	{}
+
+	void setMaxTasks(int count)
+	{
+		m_maxTasks = count;
+	}
+
+	void addTask(const Delegate<void()>& action)
+	{
+		while (m_tasks.getCount() >= m_maxTasks)
+		{
+			m_tasks.getFront()->wait();
+			m_tasks.removeAt(0);	// TODO: removeFront
+		}
+
+		m_tasks.add(tr::Task::run(action));
+	}
+
+	void wait()
+	{
+		for (auto& t : m_tasks)
+		{
+			t->wait();
+		}
+		m_tasks.clear();
+	}
+
+private:
+	int					m_maxTasks;
+	List<tr::TaskPtr>	m_tasks;
 };
 
 /*
@@ -30,17 +67,36 @@ public:
 	giflib はイイ感じのリアルタイム減色機能を持っていないので jo_gif の機能を使う。
 	jo_gif は lzw のデコードが giflib と比べて遅いので、デコード&ファイル保存は giflib を使う。
 	※デコードの速度は 50ms〜150ms vs 20ms くらい。写真のように色数が増えると、jo_gif は遅くなっていく。
+
+	"キーフレーム" : パレットを更新するタイミングのこと。ある程度で実施しないと色が偏る。
 */
 class DynamicPaletteGifContext
 	: public CapturerContext
 {
 public:
+	struct GifTaskData
+	{
+		//fcPixelFormat raw_pixel_format = fcPixelFormat_Unknown;
+		//Buffer raw_pixels;
+		//Buffer rgba8_pixels;
+		ByteBuffer	rgba8Pixels;
+		jo_gif_frame_t*	gitFrame = nullptr;
+		int frame = 0;
+		bool local_palette = true;
+		double timestamp = 0.0;
+		uint32_t	elapsedMSecs;
+	};
 
 	DynamicPaletteGifContext()
-		: m_colorCount(128)
+		: m_keyframeInterval(30)
+		, m_colorCount(128)
 		, m_loopCount(0)
 		, m_keyFrameSpan(300)
 		, m_frameCount(0)
+		, m_maxTask(8)
+		, m_forceKeyframe(false)
+		, m_gif(nullptr)
+		, m_lastPalette(nullptr)
 	{
 	}
 
@@ -52,31 +108,41 @@ public:
 	virtual void open(const PathName& filePath, const SizeI& size) override
 	{
 		m_imageSize = size;
-		m_framePixels.resize(size.width * size.height * 4);	// 4 component. RGBX format, where X is unused
+		//m_framePixels.resize(size.width * size.height * 4);	// 4 component. RGBX format, where X is unused
 		m_frameCount = 0;
 
-		StringA fn = StringA::fromNativeCharString(filePath);
-		int error;
-		m_gif = EGifOpenFileName(fn.c_str(), false, &error);
+		giflib_openFile(filePath);
 
 		m_joGif = jo_gif_start(size.width, size.height, 0, m_colorCount);
 
+		// ready task buffers
+		m_taskManager.setMaxTasks(m_maxTask);
+		m_taskDatas.resize(m_maxTask);
+		for (auto& data : m_taskDatas)
+		{
+			// TODO: Pixelformat
+			data.rgba8Pixels.resize(size.width * size.height * 4);
+			m_taskDatasUnused.add(&data);
+		}
 	}
 
 	virtual void close() override
 	{
-		if (m_task != nullptr)
+		m_taskManager.wait();
+
+
+		for (int i = 0; i < m_bufferingGitFrames.getCount(); i++)
 		{
-			m_task->wait();
-			m_task.safeRelease();
+			giflib_writeFrame(m_bufferingGitFrames[i].get(), i);
 		}
+
+
 		jo_gif_end(&m_joGif);
 
-		int error;
-		EGifCloseFile(m_gif, &error);
+		giflib_closeFile();
 	}
 
-	virtual void addFrame(Bitmap* bitmap, int delayMS) override
+	virtual void addFrame(Bitmap* bitmap, int delayMS, double timestamp) override
 	{
 		if (delayMS <= 0) return;
 
@@ -85,105 +151,208 @@ public:
 			byte_t r, g, b, x;
 		};
 
-		if (m_task == nullptr || m_task->isCompleted())
+		GifTaskData* data = getTaskData();
+		data->timestamp = timestamp;
+		data->elapsedMSecs = delayMS;
+
+		// Task の中で jo_gif で減色を行うため、ピクセルフォーマットを変換しつつ作業領域にビットマップデータを取り出す
+		const SizeI& bmpSize = bitmap->getSize();
+		RGBX* framePixels = (RGBX*)data->rgba8Pixels.getData();
+		for (int y = 0; y < m_imageSize.height; ++y)
 		{
-			// Task の中で jo_gif で減色を行うため、ピクセルフォーマットを変換しつつ作業領域にビットマップデータを取り出す
-			const SizeI& bmpSize = bitmap->getSize();
-			RGBX* framePixels = (RGBX*)m_framePixels.getData();
-			for (int y = 0; y < m_imageSize.height; ++y)
+			for (int x = 0; x < m_imageSize.width; ++x)
 			{
-				for (int x = 0; x < m_imageSize.width; ++x)
+				RGBX* p = &framePixels[y * m_imageSize.width + x];
+				if (x >= bmpSize.width || y >= bmpSize.height)
 				{
-					RGBX* p = &framePixels[y * m_imageSize.width + x];
-					if (x >= bmpSize.width || y >= bmpSize.height)
-					{
-						p->r = 0x00;
-						p->g = 0x00;
-						p->b = 0x00;
-						p->x = 0xFF;
-					}
-					else
-					{
-						Color32 c = bitmap->getPixel(x, y);
-						p->r = c.r;
-						p->g = c.g;
-						p->b = c.b;
-						p->x = 0xFF;
-					}
+					p->r = 0x00;
+					p->g = 0x00;
+					p->b = 0x00;
+					p->x = 0xFF;
+				}
+				else
+				{
+					Color32 c = bitmap->getPixel(x, y);
+					p->r = c.r;
+					p->g = c.g;
+					p->b = c.b;
+					p->x = 0xFF;
 				}
 			}
+		}
 
-			// この中は別スレッドで実行される
-			auto func = [this, delayMS]()
+
+		// kick task
+		{
+			auto frame = std::make_shared<jo_gif_frame_t>();
+			m_bufferingGitFrames.add(frame);
+
+			data->gitFrame = frame.get();
+			data->gitFrame->timestamp = data->timestamp;
+			data->gitFrame->elapsedMSecs = data->elapsedMSecs;
+			data->frame = m_frameCount;
+			data->local_palette = false;
+
+			// キーフレームを作るタイミングかを確認
+			if (data->frame == 0 || (m_keyframeInterval > 0 && data->frame % m_keyframeInterval == 0) || m_forceKeyframe)
 			{
-				bool updatePalette = (m_frameCount % m_keyFrameSpan == 0);
+				data->local_palette = true;
+				m_forceKeyframe = false;
+			}
 
-				// ビットマップデータからインデックスデータと、必要に応じてパレットを作る
-				jo_gif_frame(&m_joGif, &m_gifFrame, (unsigned char*)m_framePixels.getConstData(), m_frameCount, updatePalette);
-
-				// 使うパレットを選択する
-				ColorMapObject* palette = nullptr;
-				if (updatePalette)
+			if (data->local_palette)
+			{
+				// キーフレームを作る場合は共有データ (パレット) を変更するため同期的に行う必要がある
+				m_taskManager.wait();
+				addGifFrame(data);
+			}
+			else
+			{
+				m_taskManager.addTask([this, data]()
 				{
-					// jo_gif のパレットを giflib のパレットに変換
-					m_lastPalette.reset(GifMakeMapObject(m_colorCount, (GifColorType*)m_gifFrame.palette.getConstData()));
-					palette = m_lastPalette.get();
-				}
+					addGifFrame(data);
+				});
+			}
 
-				// 初回フレームではいろいろ情報を書き込む必要がある
-				if (m_frameCount == 0)
-				{
-					// Logical Screen Descriptor (全体のサイズとグローバルパレット)
-					EGifPutScreenDesc(m_gif, m_imageSize.width, m_imageSize.height, m_colorCount, 0, palette);
-
-					// Netscape Extension (ループ回数)
-					EGifPutExtensionLeader(m_gif, APPLICATION_EXT_FUNC_CODE);
-					EGifPutExtensionBlock(m_gif, 11, "NETSCAPE2.0");	// 固定
-					char subblock[3];
-					subblock[0] = 1;
-					subblock[2] = m_loopCount % 256;
-					subblock[1] = m_loopCount / 256;
-					EGifPutExtensionRaw(m_gif, 3, subblock);
-					EGifPutExtensionTrailer(m_gif);
-				}
-
-				// Graphic Control Extension
-				byte_t ext[4] = { 0x04, 0x00, 0x00, 0xff };
-				ext[1] = (delayMS / 10) % 256;
-				ext[2] = (delayMS / 10) / 256;
-				EGifPutExtension(m_gif, GRAPHICS_EXT_FUNC_CODE, 4, ext);
-
-				// Image Descriptor
-				EGifPutImageDesc(m_gif, 0, 0, m_imageSize.width, m_imageSize.height, false, palette);
-				
-				// ピクセルインデックス出力
-				const byte_t* indices = m_gifFrame.indexed_pixels.getConstData();
-				for (int y = 0; y < m_imageSize.height; ++y)
-				{
-					EGifPutLine(m_gif, (GifPixelType*)&indices[m_imageSize.width * y], m_imageSize.width);
-				}
-
-				++m_frameCount;
-			};
-			m_task = tr::Task::run(Delegate<void()>(func));
+			m_frameCount++;
 		}
 	}
 
 private:
+	GifTaskData* getTaskData()
+	{
+		GifTaskData* data = nullptr;
+		for (;;)
+		{
+			{
+				MutexScopedLock lock(m_taskDatasMutex);
+				if (!m_taskDatasUnused.isEmpty())
+				{
+					data = m_taskDatasUnused.getLast();
+					m_taskDatasUnused.removeLast();
+					break;
+				}
+			}
+
+			Thread::sleep(1);
+		}
+		return data;
+	}
+
+	void releaseTaskData(GifTaskData* data)
+	{
+		MutexScopedLock lock(m_taskDatasMutex);
+		m_taskDatasUnused.add(data);
+	}
+
+	void addGifFrame(GifTaskData* data)
+	{
+		// 今 addFrame() で行っている ピクセルフォーマット変換 は、速度が気になるようならここでやってもいい。
+		// その場合は GifTaskData にビットマップを持っておく必要があるが。
+
+		// TODO: no const_cast
+		unsigned char* src = const_cast<unsigned char*>(data->rgba8Pixels.getConstData());
+
+		// ビットマップデータからインデックスデータと、必要に応じてパレットを作る
+		jo_gif_frame(&m_joGif, data->gitFrame, src, data->frame, data->local_palette);
+
+		// DataBuffer 返却
+		releaseTaskData(data);
+	}
+
+	void giflib_openFile(const StringRef& filePath)
+	{
+		LN_REQUIRE(m_gif == nullptr);
+
+		StringA fn = StringA::fromNativeCharString(filePath.getBegin(), filePath.getLength());	// TODO: StringRef だけ渡して、getLength とかいらないようにしたい。
+		int error = 0;
+		m_gif = EGifOpenFileName(fn.c_str(), false, &error);
+		LN_ENSURE(m_gif != nullptr, "EGifOpenFileName %d", error);
+	}
+
+	void giflib_writeFrame(jo_gif_frame_t* gifFrame, int frameNumber)
+	{
+		LN_REQUIRE(m_gif != nullptr);
+
+		// 使うパレットを選択する
+		ColorMapObject* palette = nullptr;
+		if (gifFrame->palette.getSize() != 0)
+		{
+			// jo_gif のパレットを giflib のパレットに変換
+			m_lastPalette.reset(GifMakeMapObject(m_colorCount, (GifColorType*)gifFrame->palette.getConstData()));
+			palette = m_lastPalette.get();
+		}
+
+		// 初回フレームではいろいろ情報を書き込む必要がある
+		if (frameNumber == 0)
+		{
+			// Logical Screen Descriptor (全体のサイズとグローバルパレット)
+			EGifPutScreenDesc(m_gif, m_imageSize.width, m_imageSize.height, m_colorCount, 0, palette);
+
+			// Netscape Extension (ループ回数)
+			EGifPutExtensionLeader(m_gif, APPLICATION_EXT_FUNC_CODE);
+			EGifPutExtensionBlock(m_gif, 11, "NETSCAPE2.0");	// 固定
+			char subblock[3];
+			subblock[0] = 1;
+			subblock[2] = m_loopCount % 256;
+			subblock[1] = m_loopCount / 256;
+			EGifPutExtensionRaw(m_gif, 3, subblock);
+			EGifPutExtensionTrailer(m_gif);
+		}
+
+		// Graphic Control Extension
+		byte_t ext[4] = { 0x04, 0x00, 0x00, 0xff };
+		ext[1] = (gifFrame->elapsedMSecs / 10) % 256;
+		ext[2] = (gifFrame->elapsedMSecs / 10) / 256;
+		EGifPutExtension(m_gif, GRAPHICS_EXT_FUNC_CODE, 4, ext);
+
+		// Image Descriptor
+		EGifPutImageDesc(m_gif, 0, 0, m_imageSize.width, m_imageSize.height, false, palette);
+
+		// ピクセルインデックス出力
+		const byte_t* indices = gifFrame->indexed_pixels.getConstData();
+		for (int y = 0; y < m_imageSize.height; ++y)
+		{
+			EGifPutLine(m_gif, (GifPixelType*)&indices[m_imageSize.width * y], m_imageSize.width);
+		}
+	}
+
+	void giflib_closeFile()
+	{
+		LN_REQUIRE(m_gif != nullptr);
+		int error = 0;
+		int ret = EGifCloseFile(m_gif, &error);
+		LN_ENSURE(ret == GIF_OK, "EGifCloseFile %d", error);
+	}
+
+
+	// settings
+	int	m_keyframeInterval;
+	int								m_maxTask;
+
+
 	int								m_colorCount;
 	int								m_loopCount;		// 0 で無限ループ
 	int								m_keyFrameSpan;		// パレットを更新するフレーム数間隔
 
-	GifFileType*					m_gif;				// gifファイルを作るための giflib コンテキスト
-	std::shared_ptr<ColorMapObject>	m_lastPalette;
 
 	jo_gif_t						m_joGif;
 	SizeI							m_imageSize;
-	ByteBuffer						m_framePixels;
+	//ByteBuffer						m_framePixels;
 	Ref<BinaryWriter>			m_writer;
 	int								m_frameCount;
-	jo_gif_frame_t					m_gifFrame;			// 1フレームの作業領域。前のフレームを保存するなら配列化する
-	tr::TaskPtr						m_task;
+	//jo_gif_frame_t					m_gifFrame;			// 1フレームの作業領域。前のフレームを保存するなら配列化する
+
+	GifTaskManager					m_taskManager;
+	List<GifTaskData>				m_taskDatas;
+	List<GifTaskData*>				m_taskDatasUnused;
+	Mutex							m_taskDatasMutex;
+	List<std::shared_ptr<jo_gif_frame_t>>	m_bufferingGitFrames;
+	bool							m_forceKeyframe;
+
+	// giflib 関係
+	GifFileType*					m_gif;				// gifファイルを作るための giflib コンテキスト
+	std::shared_ptr<ColorMapObject>	m_lastPalette;
 };
 
 /*
@@ -241,7 +410,7 @@ public:
 		GifFreeMapObject(m_globalPalette);
 	}
 
-	virtual void addFrame(Bitmap* bitmap, int delayMS) override
+	virtual void addFrame(Bitmap* bitmap, int delayMS, double timestamp) override
 	{
 		if (delayMS <= 0) return;
 
@@ -335,81 +504,115 @@ const GifColorType GifContext::PaletteGPriority[256] =
 //==============================================================================
 
 //------------------------------------------------------------------------------
-FrameCapturerPtr FrameCapturer::create()
+void FrameCapturer::startRecording(double time)
 {
-	auto ptr = FrameCapturerPtr::makeRef();
-	ptr->initialize(detail::GraphicsManager::getInstance());
-	return ptr;
+	detail::EngineDomain::getGraphicsManager()->getMainSwapChain()->getFrameCapturerContext()->startRecording(time);
 }
 
 //------------------------------------------------------------------------------
-FrameCapturer::FrameCapturer()
+void FrameCapturer::stopRecording()
+{
+	detail::EngineDomain::getGraphicsManager()->getMainSwapChain()->getFrameCapturerContext()->stopRecording();
+}
+
+
+//==============================================================================
+// FrameCapturerContext
+//==============================================================================
+//------------------------------------------------------------------------------
+//Ref<FrameCapturerContext> FrameCapturerContext::create()
+//{
+//	auto ptr = Ref<FrameCapturerContext>::makeRef();
+//	ptr->initialize(detail::GraphicsManager::getInstance());
+//	return ptr;
+//}
+
+//------------------------------------------------------------------------------
+FrameCapturerContext::FrameCapturerContext()
 	: m_manager(nullptr)
 	, m_capturerTarget(nullptr)
+	, m_timeMSecs(0)
 	, m_requestedState(State::Stoped)
 	, m_gifContext(nullptr)
-	, m_currentState(State::Stoped)
+	, m_currentState_main(State::Stoped)
+	, m_currentState_render(State::Stoped)
 	, m_lastTick(0)
 {
 }
 
 //------------------------------------------------------------------------------
-FrameCapturer::~FrameCapturer()
+FrameCapturerContext::~FrameCapturerContext()
 {
 	LN_SAFE_RELEASE(m_capturerTarget);
 	LN_SAFE_DELETE(m_gifContext);
 }
 
 //------------------------------------------------------------------------------
-void FrameCapturer::initialize(detail::GraphicsManager* manager)
+void FrameCapturerContext::initialize(SwapChain* swapChain)
 {
-	m_manager = manager;
+	m_manager = detail::EngineDomain::getGraphicsManager();
 	m_gifContext = LN_NEW detail::DynamicPaletteGifContext();//;GifContext
+
+	setCapturerTarget(swapChain->getBackBuffer());
 }
 
 //------------------------------------------------------------------------------
-void FrameCapturer::setCapturerTarget(RenderTargetTexture* renderTarget)
+void FrameCapturerContext::setCapturerTarget(RenderTargetTexture* renderTarget)
 {
 	LN_REFOBJ_SET(m_capturerTarget, renderTarget);
 }
 
 //------------------------------------------------------------------------------
-void FrameCapturer::startRecording()
+void FrameCapturerContext::startRecording(double time)
 {
+	m_timeMSecs = (int)(time * 1000);
 	m_requestedState = State::Recording;
 }
 
 //------------------------------------------------------------------------------
-void FrameCapturer::stopRecording()
+void FrameCapturerContext::stopRecording()
 {
 	m_requestedState = State::Stoped;
 }
 
 //------------------------------------------------------------------------------
-void FrameCapturer::record()
+void FrameCapturerContext::updateOnRender()
 {
+	if (m_currentState_main == State::Stoped && m_requestedState == State::Stoped) return;
 	if (LN_CHECK_STATE(m_capturerTarget != nullptr)) return;
 
+	if (m_timeMSecs > 0)
+	{
+		uint64_t curTick = Environment::getTickCount();
+		int d = (int)(curTick - m_lastTimeMSecs);
+		m_timeMSecs -= d;
+		if (m_timeMSecs <= 0)
+		{
+			stopRecording();
+		}
+	}
 
-	Ref<FrameCapturer> fc = this;
+	Ref<FrameCapturerContext> fc = this;
 	Driver::ITexture* target = m_capturerTarget->resolveDeviceObject();
 	State newState = m_requestedState;
 
 	LN_ENQUEUE_RENDER_COMMAND_3(
 		FrameCapturer_Record, m_manager,
-		Ref<FrameCapturer>, fc,
+		Ref<FrameCapturerContext>, fc,
 		Ref<Driver::ITexture>, target,
 		State, newState,
 		{
 			fc->RecordCommand(target, newState);
 		});
+
+	m_currentState_main = newState;
 }
 
 //------------------------------------------------------------------------------
-void FrameCapturer::RecordCommand(Driver::ITexture* target, State newState)
+void FrameCapturerContext::RecordCommand(Driver::ITexture* target, State newState)
 {
 	// 録画状態の変化確認
-	if (newState != m_currentState)
+	if (newState != m_currentState_render)
 	{
 		if (newState == State::Stoped)
 		{
@@ -421,11 +624,11 @@ void FrameCapturer::RecordCommand(Driver::ITexture* target, State newState)
 			m_gifContext->open(filePath, target->getSize());
 			m_lastTick = 0;
 		}
-		m_currentState = newState;
+		m_currentState_render = newState;
 	}
 
 	// 録画
-	if (m_currentState == State::Recording)
+	if (m_currentState_render == State::Recording)
 	{
 		// 差分時間計算
 		uint64_t deltaTick = 0;
@@ -436,7 +639,7 @@ void FrameCapturer::RecordCommand(Driver::ITexture* target, State newState)
 		{
 			// RenderTargetTexture の内容を読み取る
 			Bitmap* bmp = target->lock();	//TODO: Scoped
-			m_gifContext->addFrame(bmp, deltaTick);
+			m_gifContext->addFrame(bmp, deltaTick, (double)curTick / 1000000);
 			target->unlock();
 
 			m_lastTick = curTick;
@@ -444,5 +647,4 @@ void FrameCapturer::RecordCommand(Driver::ITexture* target, State newState)
 	}
 }
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

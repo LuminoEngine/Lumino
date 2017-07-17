@@ -342,7 +342,9 @@ struct jo_gif_frame_t
 	ln::MemoryStream encoded_pixels;
     double timestamp;
 
-    jo_gif_frame_t() : timestamp() {}
+	uint32_t	elapsedMSecs;
+
+    jo_gif_frame_t() : timestamp(0), elapsedMSecs(0) {}
 };
 
 void jo_gif_frame(jo_gif_t *gif, jo_gif_frame_t *fdata, unsigned char * rgba, int frame, bool localPalette)

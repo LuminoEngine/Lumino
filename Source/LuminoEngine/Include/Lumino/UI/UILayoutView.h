@@ -36,20 +36,20 @@ private:
 */
 class UILayoutView
 	: public UIControl
-	, public IUIInjectedInputReceiver
+	//, public IUIInjectedInputReceiver
 {
 public:
 
 	/** この要素が関連付けられている UIContext を取得します。*/
 	UIContext* getOwnerContext() const { return m_ownerContext; }
 
-
+	virtual void updateLayout(const Size& viewSize) override;
+	virtual detail::SpcialUIElementType getSpcialUIElementType() const;
 
 LN_INTERNAL_ACCESS:
-	void updateLayout(const Size& viewSize);
 	void render(DrawingContext* g);
 	
-	const Size& getViewPixelSize() const { return m_viewPixelSize; }
+	//const Size& getViewPixelSize() const { return m_viewPixelSize; }
 	bool updateMouseHover(const Point& mousePos);
 	//void captureMouse(UIElement* element);
 	//void releaseMouseCapture(UIElement* element);
@@ -60,23 +60,18 @@ LN_INTERNAL_ACCESS:
 	void closePopup(UIPopup* popup);
 
 
-	// Implements IUIInjectedInputReceiver
-	//virtual bool InjectViewportSizeChanged(int width, int height) override;
-	virtual bool injectMouseMove(float clientX, float clientY) override;
-	virtual bool injectMouseButtonDown(MouseButtons button, float clientX, float clientY) override;
-	virtual bool injectMouseButtonUp(MouseButtons button, float clientX, float clientY) override;
-	virtual bool injectMouseWheel(int delta) override;
-	virtual bool injectKeyDown(Keys keyCode, ModifierKeys modifierKeys) override;
-	virtual bool injectKeyUp(Keys keyCode, ModifierKeys modifierKeys) override;
-	virtual bool injectTextInput(TCHAR ch) override;
+	bool injectMouseMove(float clientX, float clientY);
+	bool injectMouseButtonDown(MouseButtons button, float clientX, float clientY);
+	bool injectMouseButtonUp(MouseButtons button, float clientX, float clientY);
+	bool injectMouseWheel(int delta);
+	bool injectKeyDown(Keys keyCode, ModifierKeys modifierKeys);
+	bool injectKeyUp(Keys keyCode, ModifierKeys modifierKeys);
+	bool injectTextInput(TCHAR ch);
 
 LN_CONSTRUCT_ACCESS:
 	UILayoutView();
 	virtual ~UILayoutView();
 	void initialize(UIContext* ownerContext, PlatformWindow* ownerNativeWindow);
-
-LN_INTERNAL_ACCESS:
-	virtual detail::SpcialUIElementType getSpcialUIElementType() const;
 
 private:
 	friend class UIContext;
@@ -96,8 +91,6 @@ private:
 
 	Point				m_mousePosition;
 	MouseClickTracker	m_mouseClickTrackers[8];
-
-	Size				m_viewPixelSize;
 
 	List<Ref<detail::UIPopuoContainer>>	m_popupContainers;
 };

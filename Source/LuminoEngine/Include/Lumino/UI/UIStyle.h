@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include <Lumino/Base/SortedArray.h>
 #include "../Animation/Common.h"
 #include "Common.h"
 #include "Detail.h"
