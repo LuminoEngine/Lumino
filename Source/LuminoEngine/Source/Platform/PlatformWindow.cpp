@@ -127,7 +127,7 @@ bool PlatformWindow::SendEventToAllListener(const PlatformEventArgs& e)
 {
 	for (auto& listener : m_listenerEntryArray)
 	{
-		if (listener.second->onEvent(e)) {
+		if (listener.second->onPlatformEvent(e)) {
 			return true;
 		}
 	}

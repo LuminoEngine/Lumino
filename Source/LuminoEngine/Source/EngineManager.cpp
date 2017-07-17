@@ -227,7 +227,6 @@ EngineManager::~EngineManager()
 
 	if (m_platformManager != nullptr)
 	{
-		m_platformManager->getMainWindow()->detachEventListener(this);
 		m_platformManager->dispose();
 	}
 	if (m_sceneGraphManager != nullptr)
@@ -311,6 +310,7 @@ void EngineManager::initialize()
 	m_defaultWorld3D = newObject<World3D>();
 	m_uiManager->createGameModeMainFrame(m_defaultWorld2D, m_defaultWorld3D);
 	m_uiManager->getMainWindow()->setDelayedRenderingSkip(m_configData.delayedRenderingSkip);
+	m_uiManager->getMainWindow()->setInputManager(m_inputManager);
 
 	// for UIViewport::getViewSize() immediately after initialize
 	auto* mainWindow = m_uiManager->getMainWindow();
@@ -379,9 +379,6 @@ void EngineManager::initializePlatformManager()
 
 		m_platformManager.attach(LN_NEW PlatformManager());
 		m_platformManager->initialize(data);
-
-		// イベントリスナー登録
-		m_platformManager->getMainWindow()->attachEventListener(this, 0);
 	}
 }
 
@@ -808,92 +805,6 @@ World3D* EngineManager::getDefaultWorld3D() const
 detail::PhysicsManager* EngineManager::getPhysicsManager() const
 {
 	return m_physicsManager;
-}
-
-//------------------------------------------------------------------------------
-bool EngineManager::onEvent(const PlatformEventArgs& e)
-{
-	UILayoutView* uiView = nullptr;
-	if (m_uiManager != nullptr)
-	{
-		uiView = m_uiManager->getMainWindow();
-	}
-
-
-	switch (e.type)
-	{
-	case PlatformEventType::Quit:	// アプリ終了要求
-	case PlatformEventType::close:	// ウィンドウが閉じられようとしている
-		break;
-
-	case PlatformEventType::MouseDown:		// マウスボタンが押された
-		if (uiView != nullptr)
-		{
-			if (uiView->injectMouseButtonDown(e.mouse.button, e.mouse.x, e.mouse.y)) { return true; }
-		}
-		break;
-	case PlatformEventType::MouseUp:			// マウスボタンが離された
-		if (uiView != nullptr)
-		{
-			if (uiView->injectMouseButtonUp(e.mouse.button, e.mouse.x, e.mouse.y)) { return true; }
-		}
-		break;
-	case PlatformEventType::MouseMove:		// マウスが移動した
-		if (uiView != nullptr)
-		{
-			if (uiView->injectMouseMove(e.mouse.x, e.mouse.y)) { return true; }
-		}
-		break;
-	case PlatformEventType::MouseWheel:		// マウスホイールが操作された
-		if (uiView != nullptr)
-		{
-			if (uiView->injectMouseWheel(e.wheel.delta)) { return true; }
-		}
-		break;
-	case PlatformEventType::KeyDown:
-		if (uiView != nullptr)
-		{
-			if (uiView->injectKeyDown(e.key.keyCode, e.key.modifierKeys)) { return true; }
-		}
-
-		//// デバッグ表示切替
-		//if (m_configData.acceleratorKeys.toggleShowDiag != nullptr &&
-		//	m_configData.acceleratorKeys.toggleShowDiag->EqualKeyInput(e.key.keyCode, e.key.modifierKeys) &&
-		//	m_diagViewer != nullptr)
-		//{
-		//	m_diagViewer->toggleDisplayMode();
-		//}
-		break;
-	case PlatformEventType::KeyUp:
-		if (uiView != nullptr)
-		{
-			if (uiView->injectKeyUp(e.key.keyCode, e.key.modifierKeys/*, e.Key.keyChar*/)) { return true; }
-		}
-		break;
-	case PlatformEventType::KeyChar:
-		if (uiView != nullptr)
-		{
-			if (uiView->injectTextInput(e.key.keyChar)) { return true; }
-		}
-		break;
-	case PlatformEventType::WindowSizeChanged:
-		//if (m_graphicsManager != nullptr)
-		//{
-		//	m_graphicsManager->getMainSwapChain()->Resize(SizeI(e.size.width, e.size.height));
-		//}
-		//if (uiView != nullptr)
-		//{
-		//	if (uiView->InjectViewportSizeChanged(e.size.width, e.size.height)) { return true; }
-		//}
-		break;
-	default:
-		break;
-	}
-
-	if (m_inputManager != nullptr) {
-		m_inputManager->onEvent(e);
-	}
-	return false;
 }
 
 ////------------------------------------------------------------------------------

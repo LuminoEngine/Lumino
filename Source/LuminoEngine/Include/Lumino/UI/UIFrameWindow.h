@@ -6,6 +6,7 @@
 #include "UILayoutView.h"
 
 LN_NAMESPACE_BEGIN
+namespace detail { class InputManager; }
 namespace detail { class SceneRenderer; }
 class PlatformWindow;
 class SwapChain;
@@ -42,7 +43,7 @@ LN_CONSTRUCT_ACCESS:
 	void initialize(PlatformWindow* platformWindow, SwapChain* swapChain, UIContext* context);
 	void initialize();
 	virtual void dispose() override;
-	virtual bool onEvent(const PlatformEventArgs& e) override;
+	virtual bool onPlatformEvent(const PlatformEventArgs& e) override;
 	virtual void onPresentRenderingContexts();
 
 LN_INTERNAL_ACCESS:
@@ -51,7 +52,7 @@ LN_INTERNAL_ACCESS:
 	void setDelayedRenderingSkip(bool enabled) { m_delayedRenderingSkip = enabled; }
 
 	void renderContents();
-	virtual void presentRenderingContexts();
+	void presentRenderingContexts();
 
 private:
 	void initialize_UIRenderer();
@@ -86,6 +87,7 @@ public:
 protected:
 	virtual void onPresentRenderingContexts() override;
 	virtual Size arrangeOverride(const Size& finalSize) override;
+	virtual bool onPlatformEvent(const PlatformEventArgs& e) override;
 
 LN_INTERNAL_ACCESS:
 	UIMainWindow();
@@ -95,20 +97,19 @@ LN_INTERNAL_ACCESS:
 	//void injectElapsedTime(float elapsedTime);
 	void updateLayout(const Size& viewSize);	// TODO: ゆくゆくは SwapChain や Viewport も UIFrameWindow にもってくる。そのとき、この viewSize はいらなくなる
 	void renderUI();
-	virtual void presentRenderingContexts() override;
 
 	CameraViewportLayer2* getDefaultCameraViewportLayer2D() const;
 	CameraViewportLayer2* getDefaultCameraViewportLayer3D() const;
 	UILayoutLayer* getDefaultUILayer() const;
+	void setInputManager(detail::InputManager* inputManager) { m_inputManager = inputManager; }
 
 private:
-	void updateViewportTransform();
-
-	UIContext*						m_mainUIContext;
+	UIContext*					m_mainUIContext;
 	Ref<UIViewport>				m_mainUIViewport;
 	Ref<CameraViewportLayer2>	m_cameraViewportLayer3D;
 	Ref<CameraViewportLayer2>	m_cameraViewportLayer2D;
 	Ref<UILayoutLayer>			m_uiLayer;
+	detail::InputManager*		m_inputManager;
 };
 
 

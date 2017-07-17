@@ -240,7 +240,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 		// UIButton.MouseOver
 		{
 			auto* st = s->getPropertyTable(UIVisualStates::MouseOverState);
-			st->background = Ref<Brush>::staticCast(buttonMouseOverBrush);
+			st->background = UIColors::getBrush(UIColorIndex::Grey, 3);//Ref<Brush>::staticCast(buttonMouseOverBrush);
 		}
 		// UIButton.Pressed
 		{

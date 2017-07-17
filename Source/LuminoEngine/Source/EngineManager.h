@@ -164,7 +164,6 @@ public:
 
 class EngineManager
 	: public RefObject
-	, public IEventListener
 {
 public:
 	static EngineManager*	Instance;
@@ -232,7 +231,6 @@ public:
 	void initializeUIManager();
 	void initializeSceneGraphManager();
 	void initializeAssetsManager();
-	virtual bool onEvent(const PlatformEventArgs& e);
 	//void onLostDevice();
 	//void onResetDevice();
 

@@ -14,6 +14,7 @@
 #include <Lumino/World.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include "UIManager.h"
+#include "../Input/InputManager.h"
 #include "../Graphics/GraphicsManager.h"
 #include "../Graphics/CoreGraphicsRenderFeature.h"
 #include "../Graphics/RenderingThread.h"
@@ -107,8 +108,47 @@ RenderDiag* UIFrameWindow::GetRenderDiagnostic() const
 }
 
 //------------------------------------------------------------------------------
-bool UIFrameWindow::onEvent(const PlatformEventArgs& e)
+bool UIFrameWindow::onPlatformEvent(const PlatformEventArgs& e)
 {
+	switch (e.type)
+	{
+	case PlatformEventType::Quit:
+	case PlatformEventType::close:
+		break;
+	case PlatformEventType::MouseDown:
+		if (injectMouseButtonDown(e.mouse.button, e.mouse.x, e.mouse.y)) return true;
+		break;
+	case PlatformEventType::MouseUp:
+		if (injectMouseButtonUp(e.mouse.button, e.mouse.x, e.mouse.y)) return true;
+		break;
+	case PlatformEventType::MouseMove:
+			if (injectMouseMove(e.mouse.x, e.mouse.y)) return true;
+		break;
+	case PlatformEventType::MouseWheel:
+			if (injectMouseWheel(e.wheel.delta)) return true;
+		break;
+	case PlatformEventType::KeyDown:
+			if (injectKeyDown(e.key.keyCode, e.key.modifierKeys)) return true;
+		//// TODO: デバッグ表示切替
+		//if (m_configData.acceleratorKeys.toggleShowDiag != nullptr &&
+		//	m_configData.acceleratorKeys.toggleShowDiag->EqualKeyInput(e.key.keyCode, e.key.modifierKeys) &&
+		//	m_diagViewer != nullptr)
+		//{
+		//	m_diagViewer->toggleDisplayMode();
+		//}
+		break;
+	case PlatformEventType::KeyUp:
+			if (injectKeyUp(e.key.keyCode, e.key.modifierKeys)) return true;
+		break;
+	case PlatformEventType::KeyChar:
+			if (injectTextInput(e.key.keyChar)) return true;
+		break;
+	case PlatformEventType::WindowSizeChanged:
+		break;
+	default:
+		break;
+	}
+
 	return false;
 }
 
@@ -252,6 +292,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIMainWindow, UIFrameWindow)
 //------------------------------------------------------------------------------
 UIMainWindow::UIMainWindow()
 	: m_mainUIContext(nullptr)
+	, m_inputManager(nullptr)
 {
 }
 
@@ -294,9 +335,6 @@ void UIMainWindow::initialize(PlatformWindow* platformWindow, World2D* defaultWo
 
 
 	setSizeInternal(platformWindow->getSize().toFloatSize());
-
-	// SwapChain のサイズを Viewport へ通知
-	updateViewportTransform();
 }
 
 //------------------------------------------------------------------------------
@@ -332,35 +370,22 @@ Size UIMainWindow::arrangeOverride(const Size& finalSize)
 	return renderSize;
 }
 
+//------------------------------------------------------------------------------
+bool UIMainWindow::onPlatformEvent(const PlatformEventArgs& e)
+{
+	bool handled = UIFrameWindow::onPlatformEvent(e);
+
+	if (!handled && m_inputManager != nullptr)
+	{
+		m_inputManager->onEvent(e);
+	}
+
+	return handled;
+}
+
 void UIMainWindow::onPresentRenderingContexts()
 {
 	UIFrameWindow::onPresentRenderingContexts();
-}
-
-void UIMainWindow::presentRenderingContexts()
-{
-	UIFrameWindow::presentRenderingContexts();
-
-	// SwapChain のサイズを Viewport へ通知
-	// ※ SwapChain のサイズが「本当に」変わるタイミングは、描画コマンドが確定する present の後。
-	//    フレーム更新の最初で行ってもよいが、この時点で行ってもよい。
-	updateViewportTransform();
-}
-
-void UIMainWindow::updateViewportTransform()
-{
-	//Size viewSize;
-
-	//SwapChain* swapChain = getSwapChain();
-	//if (swapChain != nullptr)
-	//{
-	//	const SizeI& bbSize = getSwapChain()->getBackBuffer()->GetSize();
-	//	viewSize.width = bbSize;
-	//	viewSize.height = bbSize;
-	//}
-
-	//SizeI size = getPlatformWindow()->GetSize();
-	//m_mainViewport->UpdateLayersTransform(size.toFloatSize());
 }
 
 //------------------------------------------------------------------------------

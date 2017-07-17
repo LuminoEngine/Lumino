@@ -20,7 +20,8 @@ void UIDiagnosticsWindow::initialize()
 	UIFrameWindow::initialize();
 	m_font = Font::getBuiltin(BuiltinFontSize::XXSmall);
 
-	m_recordButton = UIButton::create(_T("Record"), 80, 24);
+	m_recordButton = UIButton::create(_T("Record"), 100, 24);
+	m_recordButton->setPosition(Point(100, 200));
 	addChild(m_recordButton);
 }
 

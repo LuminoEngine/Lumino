@@ -43,10 +43,10 @@ public:
 	/** この要素が関連付けられている UIContext を取得します。*/
 	UIContext* getOwnerContext() const { return m_ownerContext; }
 
-
+	virtual void updateLayout(const Size& viewSize) override;
+	virtual detail::SpcialUIElementType getSpcialUIElementType() const;
 
 LN_INTERNAL_ACCESS:
-	void updateLayout(const Size& viewSize);
 	void render(DrawingContext* g);
 	
 	//const Size& getViewPixelSize() const { return m_viewPixelSize; }
@@ -72,9 +72,6 @@ LN_CONSTRUCT_ACCESS:
 	UILayoutView();
 	virtual ~UILayoutView();
 	void initialize(UIContext* ownerContext, PlatformWindow* ownerNativeWindow);
-
-LN_INTERNAL_ACCESS:
-	virtual detail::SpcialUIElementType getSpcialUIElementType() const;
 
 private:
 	friend class UIContext;
