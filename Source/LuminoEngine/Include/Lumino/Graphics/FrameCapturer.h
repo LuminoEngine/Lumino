@@ -2,29 +2,37 @@
 #pragma once
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
+namespace detail { class GraphicsManager; }
 namespace detail { class CapturerContext; }
+namespace Driver { class ITexture; }
 class RenderTargetTexture;
+class SwapChain;
 
-class FrameCapturer;
-using FrameCapturerPtr = Ref<FrameCapturer>;
-
+/**
+	@brief	
+*/
 class FrameCapturer
+{
+public:
+	static void startRecording(double time = 0.0);
+	static void stopRecording();
+};
+
+
+// TODO: internal
+class FrameCapturerContext
 	: public Object
 {
 public:
-	static FrameCapturerPtr create();
-
-public:
 	void setCapturerTarget(RenderTargetTexture* renderTarget);
-	void startRecording();
+	void startRecording(double time);
 	void stopRecording();
-	void record();
+	void updateOnRender();
 
 LN_INTERNAL_ACCESS:
-	FrameCapturer();
-	virtual ~FrameCapturer();
-	void initialize(detail::GraphicsManager* manager);
+	FrameCapturerContext();
+	virtual ~FrameCapturerContext();
+	void initialize(SwapChain* swapChain);
 
 private:
 	enum class State
@@ -37,13 +45,15 @@ private:
 
 	detail::GraphicsManager*	m_manager;
 	RenderTargetTexture*		m_capturerTarget;
+	uint64_t					m_lastTimeMSecs;
+	int							m_timeMSecs;
 	State						m_requestedState;
+	State						m_currentState_main;
 	
 	PathNameA					m_savingDir;
 	detail::CapturerContext*	m_gifContext;
-	State						m_currentState;
+	State						m_currentState_render;
 	uint64_t					m_lastTick;
 };
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

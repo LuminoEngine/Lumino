@@ -30,7 +30,7 @@ private:
 	Ref<Font>	m_font;
 	float			m_limitElapsedTime = 1.0f / 60.0f;	// TODO: FPS
 
-	Ref<UIButton>	m_recordButton;
+	Ref<UIToggleButton>	m_recordButton;
 };
 
 LN_NAMESPACE_END

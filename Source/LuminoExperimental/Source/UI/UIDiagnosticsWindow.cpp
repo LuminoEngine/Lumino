@@ -1,4 +1,5 @@
 
+#include <Lumino/Graphics/FrameCapturer.h>
 #include <Lumino/Rendering/DrawingContext.h>
 #include <Lumino/UI/UIStyle.h>
 #include <Lumino/UI/UIButton.h>
@@ -20,8 +21,10 @@ void UIDiagnosticsWindow::initialize()
 	UIFrameWindow::initialize();
 	m_font = Font::getBuiltin(BuiltinFontSize::XXSmall);
 
-	m_recordButton = UIButton::create(_T("Record"), 100, 24);
+	m_recordButton = UIToggleButton::create(_T("Record"), 100, 24);
 	m_recordButton->setPosition(Point(100, 200));
+	m_recordButton->connectOnChecked([](UIEventArgs* e) { FrameCapturer::startRecording(); });	// TODO: "UIEventArgs* e" ‚ð•`‚­‚Ì‚ª‚ß‚ñ‚Ç‚¢
+	m_recordButton->connectOnUnchecked([](UIEventArgs* e) { FrameCapturer::stopRecording(); });
 	addChild(m_recordButton);
 }
 

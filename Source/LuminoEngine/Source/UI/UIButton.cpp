@@ -135,7 +135,7 @@ void UIButton::initialize()
 //------------------------------------------------------------------------------
 void UIButton::initialize(const StringRef& text, float width, float height)
 {
-	UIButtonBase::initialize();
+	UIButton::initialize();
 	setText(text);
 	setWidth(width);
 	setHeight(height);
@@ -153,6 +153,12 @@ const String UIToggleButton::UncheckedState = _T("Unchecked");
 Ref<UIToggleButton> UIToggleButton::create()
 {
 	return newObject<UIToggleButton>();
+}
+
+//------------------------------------------------------------------------------
+Ref<UIToggleButton> UIToggleButton::create(const StringRef& text, float width, float height)
+{
+	return newObject<UIToggleButton>(text, width, height);
 }
 
 //------------------------------------------------------------------------------
@@ -174,6 +180,15 @@ void UIToggleButton::initialize()
 	auto* vsm = getVisualStateManager();
 	vsm->registerVisualState(UIVisualStates::CommonGroup, CheckedState);
 	vsm->registerVisualState(UIVisualStates::CommonGroup, UncheckedState);
+}
+
+//------------------------------------------------------------------------------
+void UIToggleButton::initialize(const StringRef& text, float width, float height)
+{
+	UIToggleButton::initialize();
+	setText(text);
+	setWidth(width);
+	setHeight(height);
 }
 
 //------------------------------------------------------------------------------

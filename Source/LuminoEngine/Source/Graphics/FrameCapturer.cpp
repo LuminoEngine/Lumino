@@ -13,7 +13,6 @@
 #include "RenderingThread.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 namespace detail
 {
 class CapturerContext
@@ -96,6 +95,8 @@ public:
 		, m_frameCount(0)
 		, m_maxTask(8)
 		, m_forceKeyframe(false)
+		, m_gif(nullptr)
+		, m_lastPalette(nullptr)
 	{
 	}
 
@@ -321,7 +322,7 @@ private:
 		LN_REQUIRE(m_gif != nullptr);
 		int error = 0;
 		int ret = EGifCloseFile(m_gif, &error);
-		LN_ENSURE(ret != GIF_OK, "EGifCloseFile %d", error);
+		LN_ENSURE(ret == GIF_OK, "EGifCloseFile %d", error);
 	}
 
 
@@ -503,83 +504,115 @@ const GifColorType GifContext::PaletteGPriority[256] =
 //==============================================================================
 
 //------------------------------------------------------------------------------
-FrameCapturerPtr FrameCapturer::create()
+void FrameCapturer::startRecording(double time)
 {
-	auto ptr = FrameCapturerPtr::makeRef();
-	ptr->initialize(detail::GraphicsManager::getInstance());
-	return ptr;
+	detail::EngineDomain::getGraphicsManager()->getMainSwapChain()->getFrameCapturerContext()->startRecording(time);
 }
 
 //------------------------------------------------------------------------------
-FrameCapturer::FrameCapturer()
+void FrameCapturer::stopRecording()
+{
+	detail::EngineDomain::getGraphicsManager()->getMainSwapChain()->getFrameCapturerContext()->stopRecording();
+}
+
+
+//==============================================================================
+// FrameCapturerContext
+//==============================================================================
+//------------------------------------------------------------------------------
+//Ref<FrameCapturerContext> FrameCapturerContext::create()
+//{
+//	auto ptr = Ref<FrameCapturerContext>::makeRef();
+//	ptr->initialize(detail::GraphicsManager::getInstance());
+//	return ptr;
+//}
+
+//------------------------------------------------------------------------------
+FrameCapturerContext::FrameCapturerContext()
 	: m_manager(nullptr)
 	, m_capturerTarget(nullptr)
+	, m_timeMSecs(0)
 	, m_requestedState(State::Stoped)
 	, m_gifContext(nullptr)
-	, m_currentState(State::Stoped)
+	, m_currentState_main(State::Stoped)
+	, m_currentState_render(State::Stoped)
 	, m_lastTick(0)
 {
 }
 
 //------------------------------------------------------------------------------
-FrameCapturer::~FrameCapturer()
+FrameCapturerContext::~FrameCapturerContext()
 {
 	LN_SAFE_RELEASE(m_capturerTarget);
 	LN_SAFE_DELETE(m_gifContext);
 }
 
 //------------------------------------------------------------------------------
-void FrameCapturer::initialize(detail::GraphicsManager* manager)
+void FrameCapturerContext::initialize(SwapChain* swapChain)
 {
-	m_manager = manager;
+	m_manager = detail::EngineDomain::getGraphicsManager();
 	m_gifContext = LN_NEW detail::DynamicPaletteGifContext();//;GifContext
 
-	setCapturerTarget(m_manager->getMainSwapChain()->getBackBuffer());
+	setCapturerTarget(swapChain->getBackBuffer());
 }
 
 //------------------------------------------------------------------------------
-void FrameCapturer::setCapturerTarget(RenderTargetTexture* renderTarget)
+void FrameCapturerContext::setCapturerTarget(RenderTargetTexture* renderTarget)
 {
 	LN_REFOBJ_SET(m_capturerTarget, renderTarget);
 }
 
 //------------------------------------------------------------------------------
-void FrameCapturer::startRecording()
+void FrameCapturerContext::startRecording(double time)
 {
+	m_timeMSecs = (int)(time * 1000);
 	m_requestedState = State::Recording;
 }
 
 //------------------------------------------------------------------------------
-void FrameCapturer::stopRecording()
+void FrameCapturerContext::stopRecording()
 {
 	m_requestedState = State::Stoped;
 }
 
 //------------------------------------------------------------------------------
-void FrameCapturer::record()
+void FrameCapturerContext::updateOnRender()
 {
+	if (m_currentState_main == State::Stoped && m_requestedState == State::Stoped) return;
 	if (LN_CHECK_STATE(m_capturerTarget != nullptr)) return;
 
+	if (m_timeMSecs > 0)
+	{
+		uint64_t curTick = Environment::getTickCount();
+		int d = (int)(curTick - m_lastTimeMSecs);
+		m_timeMSecs -= d;
+		if (m_timeMSecs <= 0)
+		{
+			stopRecording();
+		}
+	}
 
-	Ref<FrameCapturer> fc = this;
+	Ref<FrameCapturerContext> fc = this;
 	Driver::ITexture* target = m_capturerTarget->resolveDeviceObject();
 	State newState = m_requestedState;
 
 	LN_ENQUEUE_RENDER_COMMAND_3(
 		FrameCapturer_Record, m_manager,
-		Ref<FrameCapturer>, fc,
+		Ref<FrameCapturerContext>, fc,
 		Ref<Driver::ITexture>, target,
 		State, newState,
 		{
 			fc->RecordCommand(target, newState);
 		});
+
+	m_currentState_main = newState;
 }
 
 //------------------------------------------------------------------------------
-void FrameCapturer::RecordCommand(Driver::ITexture* target, State newState)
+void FrameCapturerContext::RecordCommand(Driver::ITexture* target, State newState)
 {
 	// 録画状態の変化確認
-	if (newState != m_currentState)
+	if (newState != m_currentState_render)
 	{
 		if (newState == State::Stoped)
 		{
@@ -591,11 +624,11 @@ void FrameCapturer::RecordCommand(Driver::ITexture* target, State newState)
 			m_gifContext->open(filePath, target->getSize());
 			m_lastTick = 0;
 		}
-		m_currentState = newState;
+		m_currentState_render = newState;
 	}
 
 	// 録画
-	if (m_currentState == State::Recording)
+	if (m_currentState_render == State::Recording)
 	{
 		// 差分時間計算
 		uint64_t deltaTick = 0;
@@ -614,5 +647,4 @@ void FrameCapturer::RecordCommand(Driver::ITexture* target, State newState)
 	}
 }
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

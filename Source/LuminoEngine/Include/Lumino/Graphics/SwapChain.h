@@ -7,6 +7,7 @@ LN_NAMESPACE_BEGIN
 class PlatformWindow;
 
 LN_NAMESPACE_GRAPHICS_BEGIN
+class FrameCapturerContext;
 
 /**
 	@brief		スワップチェインのクラスです。
@@ -44,10 +45,13 @@ LN_INTERNAL_ACCESS:
 	void PresentInternal();
 	void WaitForPresent();
 
+	FrameCapturerContext* getFrameCapturerContext();
+
 	Driver::ISwapChain*				m_deviceObj;
 	detail::RenderingCommandList*	m_commandList;
 	ConditionFlag					m_waiting;		// コマンド実行していない
 	RenderTargetTexture*			m_backColorBuffer;
+	Ref<FrameCapturerContext>		m_frameCapturerContext;
 };
 
 LN_NAMESPACE_GRAPHICS_END
