@@ -12,7 +12,7 @@
 LN_NAMESPACE_BEGIN
 class ArchiveStream;
 
-class IArchive
+class IArchive	// TODO: AssetStorage
 	: public RefObject
 {
 protected:
@@ -20,6 +20,7 @@ protected:
 	virtual ~IArchive() {}
 
 public:
+	virtual const PathName& getDirectoryPath() const = 0;
 
 	/**
 		@brief	アーカイブ内に指定したパスのファイルが存在するか確認します。
@@ -74,6 +75,8 @@ public:
 		@param[in]	key			: パスワード文字列
 	*/
 	void open(const PathName& filePath, const String& key);
+
+	virtual const PathName& getDirectoryPath() const override { return m_virtualDirectoryPath; }
 
 	/**
 		@brief	アーカイブ内に指定したパスのファイルが存在するか確認します。
@@ -169,8 +172,52 @@ class DummyArchive
 	: public IArchive
 {
 public:
+	virtual const PathName& getDirectoryPath() const override { static PathName dummy; return dummy; }
 	virtual bool existsFile(const PathName& fileFullPath) override;
 	virtual bool tryCreateStream(const PathName& fileFullPath, Ref<Stream>* outStream, bool isDeferring) override;
 };
 
+
+
+namespace detail {
+
+class DirectoryAssetsStorage
+	: public IArchive
+{
+public:
+	DirectoryAssetsStorage(const PathName& directoryPath);
+	virtual ~DirectoryAssetsStorage();
+	virtual const PathName& getDirectoryPath() const override { return m_directoryFullPath; }
+	virtual bool existsFile(const PathName& fileFullPath) override;
+	virtual bool tryCreateStream(const PathName& fileFullPath, Ref<Stream>* outStream, bool isDeferring) override;
+
+private:
+	PathName	m_directoryFullPath;
+};
+
+class ArchiveManager
+    : public RefObject
+{
+public:
+	ArchiveManager();
+	virtual ~ArchiveManager();
+	void initialize(FileAccessPriority accessPriority);
+	void dispose();
+
+	void registerArchive(const PathName& filePath, const String& password);
+	void addAssetsDirectory(const StringRef& directoryPath);
+	bool existsFile(const StringRef& filePath);
+	Ref<Stream> createFileStream(const StringRef& filePath, bool isDeferring);
+	PathName findLocalFilePath(const StringRef& filePath);
+
+private:
+	void refreshArchiveList();
+
+	FileAccessPriority		m_fileAccessPriority;
+	List<Ref<Archive>>		m_archiveList;
+	List<Ref<IArchive>>		m_directoryArchiveList;
+	List<IArchive*>			m_activeArchiveList;
+};
+
+} // namespace detail
 LN_NAMESPACE_END

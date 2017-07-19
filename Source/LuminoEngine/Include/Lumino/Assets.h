@@ -11,6 +11,7 @@ class StaticMeshModel;
 class Assets
 {
 public:
+	static const String standardContentsDirectory;
 
 	static void addAssetsDirectory(const StringRef& directoryPath);
 

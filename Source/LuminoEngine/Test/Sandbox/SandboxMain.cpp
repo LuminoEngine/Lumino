@@ -133,7 +133,7 @@ void Main()
 
 
 	//EngineSettings::SetGraphicsAPI(GraphicsAPI::OpenGL);
-	EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Threaded);//GraphicsRenderingType::Immediate);//
+	EngineSettings::setGraphicsRenderingType(GraphicsRenderingType::Threaded);//GraphicsRenderingType::Immediate);//
 	Engine::initialize();
 	//Engine::getMainViewport()->SetBackgroundColor(Color32::Gray);
 	Engine::getMainViewport()->setPlacement(ViewportPlacement::AutoResize);

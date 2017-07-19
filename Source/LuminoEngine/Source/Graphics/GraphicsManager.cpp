@@ -163,7 +163,7 @@ void GraphicsManager::initialize(const ConfigData& configData)
 
 	// フォント管理
 	m_fontManager = LN_NEW FontManager();
-	m_fontManager->initialize(m_fileManager, this);
+	m_fontManager->initialize(configData.archiveManager, this);
 	m_glyphIconFontManager = newObject<GlyphIconFontManager>();
 
 #if defined(LN_OS_WIN32)

@@ -22,6 +22,7 @@ namespace detail { class PhysicsManager; }
 
 
 namespace detail {
+class ArchiveManager;
 class InternalContext;
 class TextRendererCore;
 class FontGlyphTextureCache;
@@ -77,6 +78,7 @@ public:
 		SizeI						backBufferSize = SizeI(640, 480);					// バックバッファのサイズ
 		AnimationManager*			animationManager = nullptr;
 		FileManager*				fileManager = nullptr;								// FileManager
+		ArchiveManager*				archiveManager = nullptr;
 		PhysicsManager*				physicsManager = nullptr;
 		bool						platformTextureLoading = false;						// 画像リソースの読み込みにプラットフォーム固有の機能を使用するか
 		void*						D3D9Device = nullptr;								// 作成済みの IDirect3DDevice9 インターフェイス

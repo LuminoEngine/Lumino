@@ -18,7 +18,10 @@
 	}
 */
 #include "../Internal.h"
+#include "../GraphicsManager.h"
+#include "FontManager.h"
 #include "GlyphIconFontManager.h"
+#include <Lumino/Assets.h>
 
 LN_NAMESPACE_BEGIN
 namespace detail {
@@ -37,6 +40,8 @@ GlyphIconFontManager::~GlyphIconFontManager()
 
 void GlyphIconFontManager::initialize()
 {
+	auto path = PathName(Assets::standardContentsDirectory, _T("FontAwesome.otf"));
+	detail::EngineDomain::getGraphicsManager()->getFontManager()->registerFontFile(path);
 }
 
 void GlyphIconFontManager::dispose()

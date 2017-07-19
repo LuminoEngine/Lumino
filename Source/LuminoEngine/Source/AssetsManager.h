@@ -4,6 +4,7 @@
 #include <Lumino/Graphics/Texture.h>
 
 LN_NAMESPACE_BEGIN
+namespace detail { class ArchiveManager; }
 class EngineManager;
 class StaticMeshModel;
 
@@ -36,18 +37,19 @@ public:
 	//RawFontPtr LoadFont(const StringRef& name, int size, bool isBold, bool isItalic, bool isAntiAlias);
 
 private:
-	struct AssetsDirectory
-	{
-		PathName	path;
-		PathName	searchPath;
-	};
+	//struct AssetsDirectory
+	//{
+	//	PathName	path;
+	//	PathName	searchPath;
+	//};
 
-	void makeSearchPath(const StringRef& path);
-	const PathName* findLocalFilePath();
+	//void makeSearchPath(const StringRef& path);
+	//const PathName* findLocalFilePath();
 	//Stream* createFileStream(const StringRef& filePath, bool isDeferring = false);
 
 	EngineManager*			m_engineManager;
-	List<AssetsDirectory>	m_assetsDirectories;
+	Ref<detail::ArchiveManager>	m_archiveManager;
+	//List<AssetsDirectory>	m_assetsDirectories;
 	Ref<CacheManager>	m_textureCache;
 	//Ref<CacheManager>	m_shaderCache;
 	Ref<CacheManager>	m_fontCache;

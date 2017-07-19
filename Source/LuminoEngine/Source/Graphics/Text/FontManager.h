@@ -22,6 +22,7 @@ LN_NAMESPACE_BEGIN
 class RawFont;
 
 namespace detail {
+class ArchiveManager;
 class GraphicsManager;
 
 // フォントの管理クラス
@@ -31,7 +32,7 @@ class FontManager
 public:
 	FontManager();
 	virtual ~FontManager();
-	void initialize(FileManager* fileManager, GraphicsManager* graphicsManager);
+	void initialize(ArchiveManager* archiveManager, GraphicsManager* graphicsManager);
 	void dispose();
 
 	GraphicsManager* getGraphicsManager() const { return m_graphicsManager; }
@@ -110,7 +111,7 @@ LN_INTERNAL_ACCESS:
 	typedef std::pair<intptr_t, TTFDataEntry>    TTFDataEntryPair;
 	TTFDataEntryMap			m_ttfDataEntryMap;
 
-	Ref<FileManager>		m_fileManager;
+	ArchiveManager*			m_archiveManager;
 	GraphicsManager*		m_graphicsManager;
 	Ref<CacheManager>	m_rawFontCache;
 	Ref<Font>			m_defaultFont;

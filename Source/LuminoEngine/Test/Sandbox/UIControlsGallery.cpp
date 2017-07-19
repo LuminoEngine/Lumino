@@ -14,6 +14,8 @@ using namespace ln;
 
 void UIControlsGallery()
 {
+	EngineSettings::addAssetsDirectory(LN_LOCALFILE("../../../../Samples/Assets"));
+
 	Engine::initialize();
 
 
@@ -56,14 +58,19 @@ void UIControlsGallery()
 	//window2->setBackground(SolidColorBrush::White);
 
 
-	RawFont::registerFontFile(_T("C:/LocalProj/tmp/font-awesome-4.7.0/fonts/FontAwesome.otf"));
+	//RawFont::registerFontFile(_T("C:/LocalProj/tmp/font-awesome-4.7.0/fonts/FontAwesome.otf"));
 	//auto font = Font::create(_T("FontAwesome"), 32);
 
 	//auto text = TextBlock2D::create();
 	//text->setFont(font);
 	//text->setText(_T("A"));
 
-	auto icon = GlyphIcon2D::create("fa-globe", 32);
+	auto icon1 = GlyphIcon2D::create("fa-globe", 64);
+	auto icon2 = GlyphIcon2D::create("fa-play-circle-o", 64);
+	auto icon3 = GlyphIcon2D::create("fa-android", 64);
+	icon1->setPosition(32, 32);
+	icon2->setPosition(96, 32);
+	icon3->setPosition(160, 32);
 
 
 //	auto sky = newObject<SkyComponent>();

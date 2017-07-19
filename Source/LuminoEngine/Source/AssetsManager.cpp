@@ -1,6 +1,7 @@
 ﻿
 #include "Internal.h"
 #include <Lumino/Assets.h>
+#include "IO/Archive.h"
 #include "Graphics/GraphicsManager.h"
 #include "Graphics/Text/FreeTypeFont.h"
 #include "Mesh/ModelManager.h"
@@ -40,8 +41,9 @@ AssetsManager::~AssetsManager()
 void AssetsManager::initialize(EngineManager* manager)
 {
 	m_engineManager = manager;
+	m_archiveManager = m_engineManager->getArchiveManager();
 
-	addAssetsDirectory(PathName::getCurrentDirectory());
+	//addAssetsDirectory(PathName::getCurrentDirectory());
 
 	m_textureCache = Ref<CacheManager>::makeRef(32, 0);
 	//m_shaderCache = Ref<CacheManager>::makeRef(32, 0);
@@ -64,24 +66,24 @@ void AssetsManager::dispose()
 //------------------------------------------------------------------------------
 void AssetsManager::addAssetsDirectory(const StringRef& directoryPath)
 {
-	AssetsDirectory dir;
-	dir.path = PathName(directoryPath);
-	m_assetsDirectories.add(dir);
+	m_archiveManager->addAssetsDirectory(directoryPath);
+	//AssetsDirectory dir;
+	//dir.path = PathName(directoryPath);
+	//m_assetsDirectories.add(dir);
 }
 
 //------------------------------------------------------------------------------
 Texture2DPtr AssetsManager::loadTexture(const StringRef& filePath)
 {
-	// TODO: 暫定処置
-	makeSearchPath(filePath);
-	auto* path = findLocalFilePath();
+	// TODO: Stream 指定
+	auto path = m_archiveManager->findLocalFilePath(filePath);
 
-	CacheKey key(*path);
+	CacheKey key(path);
 	Texture2D* ptr = static_cast<Texture2D*>(m_textureCache->findObjectAddRef(key));
 	if (ptr != nullptr) { return Texture2DPtr(ptr, false); }
 
 	// TODO: mipmap ON にしたい。ただ、サンプラステートを変更しないとならないようなので動作確認してから。
-	auto ref = newObject<Texture2D>(*path, TextureFormat::R8G8B8A8, false);
+	auto ref = newObject<Texture2D>(path, TextureFormat::R8G8B8A8, false);
 
 	m_textureCache->registerCacheObject(key, ref);
 	return ref;
@@ -90,77 +92,65 @@ Texture2DPtr AssetsManager::loadTexture(const StringRef& filePath)
 //------------------------------------------------------------------------------
 Ref<Shader> AssetsManager::loadShader(const StringRef& filePath)
 {
-	// TODO: 暫定処置
-	makeSearchPath(filePath);
-	auto* path = findLocalFilePath();
-
-	return Shader::create(*path);
+	// TODO: キャッシュ
+	// TODO: Stream 指定
+	auto path = m_archiveManager->findLocalFilePath(filePath);
+	return Shader::create(path);
 }
 
 //------------------------------------------------------------------------------
 Ref<StaticMeshModel> AssetsManager::loadMeshModel(const StringRef& filePath)
 {
-	// TODO: 暫定処置
-	makeSearchPath(filePath);
-	auto* path = findLocalFilePath();
-
 	// TODO: キャッシュ
-	return detail::EngineDomain::getModelManager()->createStaticMeshModel(*path);
+	// TODO: Stream 指定
+	auto path = m_archiveManager->findLocalFilePath(filePath);
+	return detail::EngineDomain::getModelManager()->createStaticMeshModel(path);
 }
 
 //------------------------------------------------------------------------------
 String AssetsManager::loadText(const StringRef& filePath)
 {
-	makeSearchPath(filePath);
-	auto* path = findLocalFilePath();
-	return FileSystem::readAllText(*path);
+	auto stream = m_archiveManager->createFileStream(filePath, false);
+	return FileSystem::readAllText(stream);
 }
 
 //------------------------------------------------------------------------------
 Ref<Stream> AssetsManager::openFile(const StringRef& filePath)
 {
-	makeSearchPath(filePath);
-	auto* path = findLocalFilePath();
-	//if (path == nullptr)
-	//{
-	//	LN_LOG_ERROR << _T("file not found: ") << filePath;
-	//	return nullptr;
-	//}
-
-	return FileStream::create(*path, FileOpenMode::read);
+	return m_archiveManager->createFileStream(filePath, false);
 }
 
-//------------------------------------------------------------------------------
-void AssetsManager::makeSearchPath(const StringRef& path)
-{
-	if (PathTraits::isAbsolutePath(path.getBegin(), path.getLength()))
-	{
-		for (AssetsDirectory& dir : m_assetsDirectories)
-		{
-			dir.searchPath = PathName(path);
-		}
-	}
-	else
-	{
-		for (AssetsDirectory& dir : m_assetsDirectories)
-		{
-			dir.searchPath = PathName(dir.path, path);
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
-const PathName* AssetsManager::findLocalFilePath()
-{
-	for (AssetsDirectory& dir : m_assetsDirectories)
-	{
-		if (dir.searchPath.existsFile())
-		{
-			return &dir.searchPath;
-		}
-	}
-	return nullptr;
-}
+////------------------------------------------------------------------------------
+//void AssetsManager::makeSearchPath(const StringRef& path)
+//{
+//	if (PathTraits::isAbsolutePath(path.getBegin(), path.getLength()))
+//	{
+//		for (AssetsDirectory& dir : m_assetsDirectories)
+//		{
+//			dir.searchPath = PathName(path);
+//		}
+//	}
+//	else
+//	{
+//		for (AssetsDirectory& dir : m_assetsDirectories)
+//		{
+//			dir.searchPath = PathName(dir.path, path);
+//		}
+//	}
+//}
+//
+////------------------------------------------------------------------------------
+//const PathName* AssetsManager::findLocalFilePath()
+//{
+//	for (AssetsDirectory& dir : m_assetsDirectories)
+//	{
+//		if (dir.searchPath.existsFile())
+//		{
+//			return &dir.searchPath;
+//		}
+//	}
+//	return nullptr;
+//}
 
 //------------------------------------------------------------------------------
 // Note: isDeferring は今のところ Sound の遅延読み込み用のもの。
@@ -215,6 +205,7 @@ const PathName* AssetsManager::findLocalFilePath()
 //==============================================================================
 // Assets
 //==============================================================================
+const String Assets::standardContentsDirectory = _T("LuminoContents");
 
 //------------------------------------------------------------------------------
 void Assets::addAssetsDirectory(const StringRef& directoryPath)

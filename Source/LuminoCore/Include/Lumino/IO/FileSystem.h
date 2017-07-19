@@ -10,6 +10,7 @@
 
 LN_NAMESPACE_BEGIN
 class Encoding;
+class Stream;
 
 /** ファイルとディレクトリの属性 */
 LN_ENUM_FLAGS(FileAttribute)
@@ -141,6 +142,8 @@ public:
 					BOM の有無は自動判別します。
 	*/
 	static String readAllText(const StringRef& filePath, const Encoding* encoding = nullptr);
+
+	static String readAllText(Stream* stream, const Encoding* encoding = nullptr);
 
 	/// 配列の内容をバイナリファイルとして書き出す
 	static void writeAllBytes(const TCHAR* filePath, const void* buffer, size_t size);
