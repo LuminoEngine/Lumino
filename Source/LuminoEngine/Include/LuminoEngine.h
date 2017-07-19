@@ -80,6 +80,7 @@
 #include "Lumino/Scene/TileMap.h"
 #include "Lumino/Scene/Particle.h"
 #include "Lumino/Scene/TextBlock.h"
+#include "Lumino/Scene/GlyphIcon.h"
 #include "Lumino/Scene/StaticMesh.h"
 #include "Lumino/Scene/TransitionPostEffect.h"
 #include "Lumino/Scene/OffscreenWorldView.h"

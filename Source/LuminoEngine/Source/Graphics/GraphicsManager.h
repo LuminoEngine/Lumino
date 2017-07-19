@@ -25,6 +25,7 @@ namespace detail {
 class InternalContext;
 class TextRendererCore;
 class FontGlyphTextureCache;
+class GlyphIconFontManager;
 class ShapesRendererCommandListCache;
 class NanoVGCommandListCache;
 
@@ -112,8 +113,8 @@ public:
 
 	PlatformWindow* getMainWindow() const { return m_mainWindow; }
 
-	/** 関連付けられている FontManager を取得します。*/
 	FontManager* getFontManager() const { return m_fontManager; }
+	const Ref<GlyphIconFontManager>& getGlyphIconFontManager() const { return m_glyphIconFontManager; }
 	
 	BitmapTextRenderer* getBitmapTextRenderer() const { return m_bitmapTextRenderer; }
 
@@ -161,6 +162,8 @@ private:
 	PhysicsManager*					m_physicsManager;
 	PlatformWindow*					m_mainWindow;
 	FontManager*					m_fontManager;
+	Ref<GlyphIconFontManager>		m_glyphIconFontManager;
+
 	GraphicsRenderingType			m_renderingType;
 	List<Ref<GraphicsResourceObject>>	m_resourceObjectList;
 	List<IDeviceResetListener*>		m_deviceResetListenerList;

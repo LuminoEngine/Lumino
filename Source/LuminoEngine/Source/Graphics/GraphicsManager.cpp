@@ -22,6 +22,7 @@
 #include "../Rendering/ShapesRenderFeature.h"
 #include "../Rendering/NanoVGRenderFeature.h"
 #include "Text/FontManager.h"
+#include "Text/GlyphIconFontManager.h"
 #include "Text/SpriteTextRenderFeature.h"
 #include "Text/VectorTextRenderFeature.h"
 #include "Text/BitmapTextRenderer.h"
@@ -163,6 +164,7 @@ void GraphicsManager::initialize(const ConfigData& configData)
 	// フォント管理
 	m_fontManager = LN_NEW FontManager();
 	m_fontManager->initialize(m_fileManager, this);
+	m_glyphIconFontManager = newObject<GlyphIconFontManager>();
 
 #if defined(LN_OS_WIN32)
 	if (configData.graphicsAPI == GraphicsAPI::DirectX9)
@@ -319,6 +321,11 @@ void GraphicsManager::dispose()
 	{
 		m_renderingThread->dispose();
 		LN_SAFE_DELETE(m_renderingThread);
+	}
+
+	if (m_glyphIconFontManager != nullptr)
+	{
+		m_glyphIconFontManager->dispose();
 	}
 
 	if (m_fontManager != nullptr)

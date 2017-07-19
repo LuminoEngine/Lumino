@@ -30,6 +30,8 @@ public:
 
 public:
 
+	void setFont(Font* font);
+
 	/** 表示する文字列を設定します。*/
 	void setText(const StringRef& text);
 
@@ -83,6 +85,7 @@ public:
 	*/
 	static Ref<TextBlock2D> create(const StringRef& text);
 
+	void setFont(Font* font);
 	void setText(const StringRef& text);
 
 	

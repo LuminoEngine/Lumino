@@ -282,6 +282,8 @@ set(LN_SOURCES_Graphics_Text
 	Source/Graphics/Text/FontOutlineTessellator.h
 	Source/Graphics/Text/FreeTypeFont.cpp
 	Source/Graphics/Text/FreeTypeFont.h
+	Source/Graphics/Text/GlyphIconFontManager.cpp
+	Source/Graphics/Text/GlyphIconFontManager.h
 	Source/Graphics/Text/GlyphRun.cpp
 	Source/Graphics/Text/SpriteTextRenderFeature.cpp
 	Source/Graphics/Text/SpriteTextRenderFeature.h
@@ -365,6 +367,7 @@ set(LN_SOURCES_Scene
 	Include/Lumino/Scene/Common.h
 	Include/Lumino/Scene/Detail.h
 	Include/Lumino/Scene/EffectNode.h
+	Include/Lumino/Scene/GlyphIcon.h
 	Include/Lumino/Scene/GpuParticle.h
 	Include/Lumino/Scene/Light.h
 	Include/Lumino/Scene/MeshModelObject.h
@@ -389,6 +392,7 @@ set(LN_SOURCES_Scene
 	Source/Scene/EffectBatchRendererNode.cpp
 	Source/Scene/EffectBatchRendererNode.h
 	Source/Scene/EffectNode.cpp
+	Source/Scene/GlyphIcon.cpp
 	Source/Scene/GpuParticle.cpp
 	Source/Scene/Light.cpp
 	Source/Scene/MeshModelObject.cpp

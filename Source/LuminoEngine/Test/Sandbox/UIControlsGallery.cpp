@@ -56,7 +56,14 @@ void UIControlsGallery()
 	//window2->setBackground(SolidColorBrush::White);
 
 
+	RawFont::registerFontFile(_T("C:/LocalProj/tmp/font-awesome-4.7.0/fonts/FontAwesome.otf"));
+	//auto font = Font::create(_T("FontAwesome"), 32);
 
+	//auto text = TextBlock2D::create();
+	//text->setFont(font);
+	//text->setText(_T("A"));
+
+	auto icon = GlyphIcon2D::create("fa-globe", 32);
 
 
 //	auto sky = newObject<SkyComponent>();
