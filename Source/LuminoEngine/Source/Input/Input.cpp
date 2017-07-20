@@ -62,12 +62,16 @@ void Input::clearBindings()
 //==============================================================================
 // InputButton
 //==============================================================================
-const String InputButtons::Any = String::getEmpty();
 const String InputButtons::Left = _T("left");
 const String InputButtons::Right = _T("right");
 const String InputButtons::Up = _T("up");
 const String InputButtons::Down = _T("down");
-const String InputButtons::OK = _T("ok");
+const String InputButtons::Submit = _T("submit");
 const String InputButtons::Cancel = _T("cancel");
+const String InputButtons::Menu = _T("menu");
+const String InputButtons::Shift = _T("shift");
+const String InputButtons::PageUp = _T("pageup");
+const String InputButtons::PageDown = _T("pagedown");
+const String InputButtons::Any = String::getEmpty();
 
 LN_NAMESPACE_END
