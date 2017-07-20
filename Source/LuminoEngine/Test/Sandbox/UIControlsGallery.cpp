@@ -310,7 +310,7 @@ void UIControlsGallery()
 	{
 		Engine::updateFrame();
 
-		if (Input::isTriggered(InputButtons::OK))
+		if (Input::isTriggered(InputButtons::Submit))
 		{
 			ps1->transition(1, nullptr, 0);
 		}

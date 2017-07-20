@@ -70,6 +70,7 @@ void Main()
 {
 	//auto& ss = CommandLine::args;
 
+	EngineSettings::addAssetsDirectory(LN_LOCALFILE("Assets"));
 	detail::EngineSettings::instance.assetDirecotry = LN_LOCALFILE("Assets");
 
 	if (CommandLine::args.getCount() == 2)

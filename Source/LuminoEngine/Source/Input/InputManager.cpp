@@ -78,8 +78,13 @@ void InputManager::initialize(const Settings& settings)
 	pad->addBinding(InputButtons::Right,	KeyboardBinding::create(Keys::Right));
 	pad->addBinding(InputButtons::Up,		KeyboardBinding::create(Keys::Up));
 	pad->addBinding(InputButtons::Down,		KeyboardBinding::create(Keys::Down));
-	pad->addBinding(InputButtons::OK,		KeyboardBinding::create(Keys::Z));
+	pad->addBinding(InputButtons::Submit,	KeyboardBinding::create(Keys::Z));
 	pad->addBinding(InputButtons::Cancel,	KeyboardBinding::create(Keys::X));
+	pad->addBinding(InputButtons::Menu,		KeyboardBinding::create(Keys::X));
+	pad->addBinding(InputButtons::Shift,	KeyboardBinding::create(Keys::LShift));
+	pad->addBinding(InputButtons::Shift,	KeyboardBinding::create(Keys::RShift));
+	pad->addBinding(InputButtons::PageUp,	KeyboardBinding::create(Keys::Q));
+	pad->addBinding(InputButtons::PageDown,	KeyboardBinding::create(Keys::W));
 
 	pad->addBinding(InputButtons::Left,		GamepadBinding::create(GamepadElement::PovLeft));
 	pad->addBinding(InputButtons::Right,	GamepadBinding::create(GamepadElement::PovRight));
@@ -90,8 +95,12 @@ void InputManager::initialize(const Settings& settings)
 	pad->addBinding(InputButtons::Right,	GamepadBinding::create(GamepadElement::Axis1Plus));
 	pad->addBinding(InputButtons::Up,		GamepadBinding::create(GamepadElement::Axis2Minus));
 	pad->addBinding(InputButtons::Down,		GamepadBinding::create(GamepadElement::Axis2Plus));
-	pad->addBinding(InputButtons::OK,		GamepadBinding::create(GamepadElement::Button1));
+	pad->addBinding(InputButtons::Submit,	GamepadBinding::create(GamepadElement::Button1));
 	pad->addBinding(InputButtons::Cancel,	GamepadBinding::create(GamepadElement::Button2));
+	pad->addBinding(InputButtons::Menu,		GamepadBinding::create(GamepadElement::Button3));
+	pad->addBinding(InputButtons::Shift,	GamepadBinding::create(GamepadElement::Button4));
+	pad->addBinding(InputButtons::PageUp,	GamepadBinding::create(GamepadElement::Button5));
+	pad->addBinding(InputButtons::PageDown,	GamepadBinding::create(GamepadElement::Button6));
 
 	if (g_inputManager == nullptr) {
 		g_inputManager = this;
