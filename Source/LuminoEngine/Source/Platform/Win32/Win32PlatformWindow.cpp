@@ -425,7 +425,7 @@ Keys Win32PlatformWindow::convertVirtualKeyCode(DWORD winVK)
 	case VK_BACK:
 		return Keys::BackSpace;
 	case VK_INSERT:
-		return Keys::insert;
+		return Keys::Insert;
 	case VK_DELETE:
 		return Keys::Delete;
 	case VK_PRIOR:
@@ -440,7 +440,7 @@ Keys Win32PlatformWindow::convertVirtualKeyCode(DWORD winVK)
 	case VK_OEM_1:
 		return Keys::Colon;
 	case VK_OEM_PLUS:
-		return Keys::SemiColon;
+		return Keys::Semicolon;
 	case VK_OEM_COMMA:
 		return Keys::Comma;
 	case VK_OEM_PERIOD:
@@ -450,7 +450,7 @@ Keys Win32PlatformWindow::convertVirtualKeyCode(DWORD winVK)
 	case VK_OEM_MINUS:
 		return Keys::Minus;
 	case VK_OEM_102:
-		return Keys::BackSlash;
+		return Keys::Backslash;
 	case VK_OEM_5:
 		return Keys::Yen;
 	case VK_OEM_7:

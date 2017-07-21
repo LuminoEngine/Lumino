@@ -5,34 +5,34 @@
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
-// InputBinding
+// InputGesture
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(InputBinding, tr::ReflectionObject);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(InputGesture, tr::ReflectionObject);
 
 //------------------------------------------------------------------------------
-InputBinding::InputBinding()
+InputGesture::InputGesture()
 	: m_minValidMThreshold(0.2f)
 {
 }
 
 //------------------------------------------------------------------------------
-InputBinding::~InputBinding()
+InputGesture::~InputGesture()
 {
 }
 
 //==============================================================================
-// KeyboardBinding
+// KeyGesture
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(KeyboardBinding, InputBinding);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(KeyGesture, InputGesture);
 
 static const String& getKeyName(Keys key)
 {
-	struct KeyName
+	struct NamePair
 	{
 		Keys	key;	// for verify
 		String	name;
 	};
-	static const KeyName table[] =
+	static const NamePair table[] =
 	{
 		{ Keys::Unknown,	_T("Unknown") },
 		{ Keys::A,			_T("A") },
@@ -123,94 +123,184 @@ static const String& getKeyName(Keys key)
 		{ Keys::AndroidPlus,	_T("+") },
 	};
 
-	int ki = (int)key;
-	LN_ASSERT(ki < LN_ARRAY_SIZE_OF(table));
-	LN_ASSERT(key == table[ki].key);
-	return table[ki].name;
+	int i = (int)key;
+	LN_ASSERT(i <= 0 && i < LN_ARRAY_SIZE_OF(table));
+	LN_ASSERT(key == table[i].key);
+	return table[i].name;
 }
 
 //------------------------------------------------------------------------------
-KeyboardBindingPtr KeyboardBinding::create(Keys key, ModifierKeys modifierKeys)
+KeyboardBindingPtr KeyGesture::create(Keys key, ModifierKeys modifierKeys)
 {
 	auto ptr = KeyboardBindingPtr::makeRef(key, modifierKeys);
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
-KeyboardBinding::KeyboardBinding(Keys key, ModifierKeys modifierKeys)
+KeyGesture::KeyGesture(Keys key, ModifierKeys modifierKeys)
 	: m_key(key)
 	, m_modifierKeys(modifierKeys)
 {
 }
 
 //------------------------------------------------------------------------------
-KeyboardBinding::~KeyboardBinding()
+KeyGesture::~KeyGesture()
 {
 }
 
 //------------------------------------------------------------------------------
-detail::InputBindingType KeyboardBinding::getType() const
+detail::InputBindingType KeyGesture::getType() const
 {
 	return detail::InputBindingType::Keyboard;
 }
 
 
 //==============================================================================
-// MouseBinding
+// MouseGesture
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(MouseBinding, InputBinding);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(MouseGesture, InputGesture);
+
+static const String& getMouseActionName(MouseAction mouseAction)
+{
+	struct NamePair
+	{
+		MouseAction	mouseAction;	// for verify
+		String		name;
+	};
+	static const NamePair table[] =
+	{
+		{ MouseAction::LeftClick,			_T("Mouse Left") },
+		{ MouseAction::LeftDoubleClick,		_T("Mouse Left (Double)") },
+		{ MouseAction::RightClick,			_T("Mouse Right") },
+		{ MouseAction::RightDoubleClick,	_T("Mouse Right (Double)") },
+		{ MouseAction::MiddleClick,			_T("Mouse Middle") },
+		{ MouseAction::MiddleDoubleClick,	_T("Mouse Middle (Double)") },
+		{ MouseAction::X1Click,				_T("Mouse X1") },
+		{ MouseAction::X1DoubleClick,		_T("Mouse X1 (Double)") },
+		{ MouseAction::X2Click,				_T("Mouse X2") },
+		{ MouseAction::X2DoubleClick,		_T("Mouse X2 (Double)") },
+		{ MouseAction::WheelPlus,			_T("Mouse Wheel +") },
+		{ MouseAction::WheelMinus,			_T("Mouse Wheel -") },
+	};
+
+	int i = (int)mouseAction;
+	LN_ASSERT(i <= 0 && i < LN_ARRAY_SIZE_OF(table));
+	LN_ASSERT(mouseAction == table[i].mouseAction);
+	return table[i].name;
+}
 
 //------------------------------------------------------------------------------
-MouseBindingPtr MouseBinding::create(MouseAction mouseAction, ModifierKeys modifierKeys)
+MouseBindingPtr MouseGesture::create(MouseAction mouseAction, ModifierKeys modifierKeys)
 {
 	auto ptr = MouseBindingPtr::makeRef(mouseAction, modifierKeys);
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
-MouseBinding::MouseBinding(MouseAction mouseAction, ModifierKeys modifierKeys)
+MouseGesture::MouseGesture(MouseAction mouseAction, ModifierKeys modifierKeys)
 	: m_mouseAction(mouseAction)
 	, m_modifierKeys(modifierKeys)
 {
 }
 
 //------------------------------------------------------------------------------
-MouseBinding::~MouseBinding()
+MouseGesture::~MouseGesture()
 {
 }
 
 //------------------------------------------------------------------------------
-detail::InputBindingType MouseBinding::getType() const
+detail::InputBindingType MouseGesture::getType() const
 {
 	return detail::InputBindingType::Mouse;
 }
 
 
 //==============================================================================
-// GamepadBinding
+// GamepadGesture
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(GamepadBinding, InputBinding);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(GamepadGesture, InputGesture);
+
+static const String& getGamepadElementName(GamepadElement element)
+{
+	struct NamePair
+	{
+		GamepadElement	element;	// for verify
+		String			name;
+	};
+	static const NamePair table[] =
+	{
+		{ GamepadElement::Button1,		_T("Gamepad Button 1") },
+		{ GamepadElement::Button2,		_T("Gamepad Button 2") },
+		{ GamepadElement::Button3,		_T("Gamepad Button 3") },
+		{ GamepadElement::Button4,		_T("Gamepad Button 4") },
+		{ GamepadElement::Button5,		_T("Gamepad Button 5") },
+		{ GamepadElement::Button6,		_T("Gamepad Button 6") },
+		{ GamepadElement::Button7,		_T("Gamepad Button 7") },
+		{ GamepadElement::Button8,		_T("Gamepad Button 8") },
+		{ GamepadElement::Button9,		_T("Gamepad Button 9") },
+		{ GamepadElement::Button10,		_T("Gamepad Button 10") },
+		{ GamepadElement::Button11,		_T("Gamepad Button 11") },
+		{ GamepadElement::Button12,		_T("Gamepad Button 12") },
+		{ GamepadElement::Button13,		_T("Gamepad Button 13") },
+		{ GamepadElement::Button14,		_T("Gamepad Button 14") },
+		{ GamepadElement::Button15,		_T("Gamepad Button 15") },
+		{ GamepadElement::Button16,		_T("Gamepad Button 16") },
+		{ GamepadElement::PovLeft,		_T("Gamepad POV Left") },
+		{ GamepadElement::PovRight,		_T("Gamepad POV Right") },
+		{ GamepadElement::PovUp,		_T("Gamepad POV Up") },
+		{ GamepadElement::PovDown,		_T("Gamepad POV Down") },
+		{ GamepadElement::Axis1,		_T("Gamepad Axis 1") },
+		{ GamepadElement::Axis2,		_T("Gamepad Axis 2") },
+		{ GamepadElement::Axis3,		_T("Gamepad Axis 3") },
+		{ GamepadElement::Axis4,		_T("Gamepad Axis 4") },
+		{ GamepadElement::Axis5,		_T("Gamepad Axis 5") },
+		{ GamepadElement::Axis6,		_T("Gamepad Axis 6") },
+		{ GamepadElement::Axis7,		_T("Gamepad Axis 7") },
+		{ GamepadElement::Axis8,		_T("Gamepad Axis 8") },
+		{ GamepadElement::Axis1Minus,	_T("Gamepad Axis 1 -") },
+		{ GamepadElement::Axis1Plus,	_T("Gamepad Axis 1 +") },
+		{ GamepadElement::Axis2Minus,	_T("Gamepad Axis 2 -") },
+		{ GamepadElement::Axis2Plus,	_T("Gamepad Axis 2 +") },
+		{ GamepadElement::Axis3Minus,	_T("Gamepad Axis 3 -") },
+		{ GamepadElement::Axis3Plus,	_T("Gamepad Axis 3 +") },
+		{ GamepadElement::Axis4Minus,	_T("Gamepad Axis 4 -") },
+		{ GamepadElement::Axis4Plus,	_T("Gamepad Axis 4 +") },
+		{ GamepadElement::Axis5Minus,	_T("Gamepad Axis 5 -") },
+		{ GamepadElement::Axis5Plus,	_T("Gamepad Axis 5 +") },
+		{ GamepadElement::Axis6Minus,	_T("Gamepad Axis 6 -") },
+		{ GamepadElement::Axis6Plus,	_T("Gamepad Axis 6 +") },
+		{ GamepadElement::Axis7Minus,	_T("Gamepad Axis 7 -") },
+		{ GamepadElement::Axis7Plus,	_T("Gamepad Axis 7 +") },
+		{ GamepadElement::Axis8Minus,	_T("Gamepad Axis 8 -") },
+		{ GamepadElement::Axis8Plus,	_T("Gamepad Axis 8 +") },
+	};
+
+	int i = (int)element;
+	LN_ASSERT(i <= 0 && i < LN_ARRAY_SIZE_OF(table));
+	LN_ASSERT(element == table[i].element);
+	return table[i].name;
+}
 
 //------------------------------------------------------------------------------
-GamepadBindingPtr GamepadBinding::create(GamepadElement element)
+GamepadBindingPtr GamepadGesture::create(GamepadElement element)
 {
 	auto ptr = GamepadBindingPtr::makeRef(element);
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
-GamepadBinding::GamepadBinding(GamepadElement element)
+GamepadGesture::GamepadGesture(GamepadElement element)
 	: m_element(element)
 {
 }
 
 //------------------------------------------------------------------------------
-GamepadBinding::~GamepadBinding()
+GamepadGesture::~GamepadGesture()
 {
 }
 
 //------------------------------------------------------------------------------
-detail::InputBindingType GamepadBinding::getType() const
+detail::InputBindingType GamepadGesture::getType() const
 {
 	return detail::InputBindingType::Gamepad;
 }

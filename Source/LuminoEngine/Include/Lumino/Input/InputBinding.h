@@ -3,14 +3,14 @@
 #include "Common.h"
 
 LN_NAMESPACE_BEGIN
-class InputBinding;
-class KeyboardBinding;
-class MouseBinding;
-class GamepadBinding;
-using InputBindingPtr = Ref<InputBinding>;
-using KeyboardBindingPtr = Ref<KeyboardBinding>;
-using MouseBindingPtr = Ref<MouseBinding>;
-using GamepadBindingPtr = Ref<GamepadBinding>;
+class InputGesture;
+class KeyGesture;
+class MouseGesture;
+class GamepadGesture;
+using InputBindingPtr = Ref<InputGesture>;
+using KeyboardBindingPtr = Ref<KeyGesture>;
+using MouseBindingPtr = Ref<MouseGesture>;
+using GamepadBindingPtr = Ref<GamepadGesture>;
 
 /** マウスによって実行されるアクション */
 enum class MouseAction
@@ -84,17 +84,18 @@ enum class GamepadElement
 /**
 	@brief	ユーザー入力となる入力デバイス操作を定義するためのベースクラスです。
 */
-class InputBinding
+class InputGesture
 	: public Object
 {
 	LN_OBJECT;
 public:
+	//virtual String getDisplayName() const = 0;
 	float GetMinValidMThreshold() const { return m_minValidMThreshold; }
 	float getScale() const { return 1.0f; }	// TODO
 
 LN_PROTECTED_INTERNAL_ACCESS:
-	InputBinding();
-	virtual ~InputBinding();
+	InputGesture();
+	virtual ~InputGesture();
 	virtual detail::InputBindingType getType() const = 0;
 
 private:
@@ -104,14 +105,14 @@ private:
 /**
 	@brief	ユーザー入力となるキーボード操作の組み合わせを定義します。
 */
-class KeyboardBinding
-	: public InputBinding
+class KeyGesture
+	: public InputGesture
 {
 	LN_OBJECT;
 public:
 
 	/**
-		@brief		MouseBinding オブジェクトを作成します。
+		@brief		MouseGesture オブジェクトを作成します。
 		@param[in]	key				: 関連付けられるキー
 		@param[in]	modifierKeys	: 関連付けられる修飾キー
 	*/
@@ -126,8 +127,9 @@ public:
 	ModifierKeys getModifierKeys() const { return m_modifierKeys; }
 
 LN_PROTECTED_INTERNAL_ACCESS:
-	KeyboardBinding(Keys key, ModifierKeys modifierKeys);
-	virtual ~KeyboardBinding();
+	KeyGesture(Keys key, ModifierKeys modifierKeys);
+	virtual ~KeyGesture();
+	//virtual String getDisplayName() const override;
 	virtual detail::InputBindingType getType() const override;
 
 private:
@@ -138,14 +140,14 @@ private:
 /**
 	@brief	ユーザー入力となるマウス操作の組み合わせを定義します。
 */
-class MouseBinding
-	: public InputBinding
+class MouseGesture
+	: public InputGesture
 {
 	LN_OBJECT;
 public:
 
 	/**
-		@brief		MouseBinding オブジェクトを作成します。
+		@brief		MouseGesture オブジェクトを作成します。
 		@param[in]	mouseAction		: 関連付けられるマウス操作
 		@param[in]	modifierKeys	: 関連付けられる修飾キー
 	*/
@@ -160,8 +162,8 @@ public:
 	ModifierKeys getModifierKeys() const { return m_modifierKeys; }
 
 LN_PROTECTED_INTERNAL_ACCESS:
-	MouseBinding(MouseAction mouseAction, ModifierKeys modifierKeys);
-	virtual ~MouseBinding();
+	MouseGesture(MouseAction mouseAction, ModifierKeys modifierKeys);
+	virtual ~MouseGesture();
 	virtual detail::InputBindingType getType() const override;
 
 private:
@@ -172,14 +174,14 @@ private:
 /**
 	@brief	ユーザー入力となるゲームパッド操作の組み合わせを定義します。
 */
-class GamepadBinding
-	: public InputBinding
+class GamepadGesture
+	: public InputGesture
 {
 	LN_OBJECT;
 public:
 
 	/**
-		@brief		GamepadBinding オブジェクトを作成します。
+		@brief		GamepadGesture オブジェクトを作成します。
 		@param[in]	element		: 関連付けられるゲームパッド操作
 	*/
 	static GamepadBindingPtr create(GamepadElement element);
@@ -190,8 +192,8 @@ public:
 	GamepadElement getElement() const { return m_element; }
 
 LN_PROTECTED_INTERNAL_ACCESS:
-	GamepadBinding(GamepadElement element);
-	virtual ~GamepadBinding();
+	GamepadGesture(GamepadElement element);
+	virtual ~GamepadGesture();
 	virtual detail::InputBindingType getType() const override;
 
 private:

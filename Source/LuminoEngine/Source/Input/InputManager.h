@@ -6,7 +6,7 @@
 
 LN_NAMESPACE_BEGIN
 class InputDriver;
-class InputBinding;
+class InputGesture;
 
 namespace detail
 {
@@ -43,7 +43,7 @@ public:
 	void onEvent(const PlatformEventArgs& e);
 
 
-	float getVirtualButtonState(InputBinding* binding, bool keyboard, bool mouse, int joyNumber);
+	float getVirtualButtonState(InputGesture* binding, bool keyboard, bool mouse, int joyNumber);
 
 private:
 	void refreshDevices();
