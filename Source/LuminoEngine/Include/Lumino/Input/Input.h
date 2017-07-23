@@ -39,34 +39,72 @@ public:
 	/**
 		@brief		ボタンのアクションマッピングを追加します。
 	*/
-	static void addButtonBinding(const StringRef& buttonName, InputBinding* binding);
+	static void addButtonBinding(const StringRef& buttonName, InputGesture* gesture);
 
 	/**
 		@brief		アクションマッピングを除外します。
 	*/
-	static void removeBinding(InputBinding* binding);
+	static void removeBinding(InputGesture* gesture);
+	
+	/**
+		@brief		指定したボタンのアクションマッピングをすべて削除します。
+	*/
+	static void clearBindings(const StringRef& buttonName);
 
 	/**
 		@brief		全てのアクションマッピングを削除します。
 	*/
-	static void clearBindings();
+	static void clearAllBindings();
+	
+	/**
+		@brief		サポートしているすべての入力のうち、現在入力中であるものを InputGesture として返します。
+		@details	この機能はキーコンフィグ用のヘルパーです。新しく押された瞬間を判定します。それ以外は nullptr を返します。
+	*/
+	static InputGesture* getAnyActiveTriggered();
 
 private:
 };
 
 /**
-	@brief	
+	@brief	デフォルトでマッピングされる仮想ボタンの名前を表します。
 */
 class InputButtons
 {
 public:
-	static const String Any;
+
+	/** 左方向を表す仮想ボタンの名前 */
 	static const String Left;
+
+	/** 右方向を表す仮想ボタンの名前 */
 	static const String Right;
+
+	/** 上方向を表す仮想ボタンの名前 */
 	static const String Up;
+
+	/** 下方向を表す仮想ボタンの名前 */
 	static const String Down;
-	static const String OK;
+
+	/** 決定操作を表す仮想ボタンの名前 */
+	static const String Submit;
+	
+	/** キャンセル操作を表す仮想ボタンの名前 */
 	static const String Cancel;
+
+	/** メニュー操作を表す仮想ボタンの名前 */
+	static const String Menu;
+
+	/** 補助操作を表す仮想ボタンの名前 */
+	static const String Shift;
+
+	/** 前ページの表示操作を表す仮想ボタンの名前 */
+	static const String PageUp;
+
+	/** 次ページの表示操作を表す仮想ボタンの名前 */
+	static const String PageDown;
+
+	/** マッピングされているいずれかの操作を表す仮想ボタンの名前 */
+	static const String Any;
+
 };
 
 LN_NAMESPACE_END

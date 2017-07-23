@@ -8,6 +8,7 @@
 #include FT_SFNT_NAMES_H
 #include <Lumino/Base/Hash.h>
 #include <Lumino/Graphics/Text/Font.h>
+#include "../../IO/Archive.h"
 #include "FontManager.h"
 #include "FreeTypeFont.h"
 
@@ -91,9 +92,9 @@ FontManager::~FontManager()
 }
 
 //------------------------------------------------------------------------------
-void FontManager::initialize(FileManager* fileManager, GraphicsManager* graphicsManager)
+void FontManager::initialize(ArchiveManager* archiveManager, GraphicsManager* graphicsManager)
 {
-	m_fileManager = fileManager;
+	m_archiveManager = archiveManager;
 	m_graphicsManager = graphicsManager;
 	m_charToUTF32Converter.setDestinationEncoding(Encoding::getUTF32Encoding());
 	m_charToUTF32Converter.getSourceEncoding(Encoding::getSystemMultiByteEncoding());
@@ -196,7 +197,7 @@ void FontManager::dispose()
 void FontManager::registerFontFile(const String& fontFilePath)
 {
 	// ファイルから全てのデータを読み込む
-	Ref<Stream> file(m_fileManager->createFileStream(fontFilePath), false);
+	Ref<Stream> file = m_archiveManager->createFileStream(fontFilePath, false);
 	ByteBuffer buffer((size_t)file->getLength(), false);
 	file->read(buffer.getData(), buffer.getSize());
 

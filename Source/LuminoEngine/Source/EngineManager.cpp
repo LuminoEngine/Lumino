@@ -5,6 +5,7 @@
 #include "Animation/AnimationManager.h"
 #include <Lumino/Platform/PlatformWindow.h>
 #include <Lumino/Platform/PlatformSupport.h>
+#include "IO/Archive.h"
 #include "Input/InputManager.h"
 #include "Audio/AudioManager.h"
 #include <Lumino/Engine.h>
@@ -82,55 +83,61 @@ void EngineSettings::setMainBackBufferSize(int width, int height)
 }
 
 //------------------------------------------------------------------------------
-void EngineSettings::SetMainWindowTitle(const StringRef& title)
+void EngineSettings::setMainWindowTitle(const StringRef& title)
 {
 	detail::EngineSettings::instance.mainWindowTitle = title;
 }
 
 //------------------------------------------------------------------------------
-void EngineSettings::SetEngineLogEnabled(bool enabled)
+void EngineSettings::setEngineLogEnabled(bool enabled)
 {
 	detail::EngineSettings::instance.engineLogEnabled = enabled;
 }
 
 //------------------------------------------------------------------------------
-void EngineSettings::SetGraphicsAPI(GraphicsAPI graphicsAPI)
+void EngineSettings::addAssetsDirectory(const StringRef& directoryPath)
+{
+	detail::EngineSettings::instance.assetsDirectoryList.add(directoryPath);
+}
+
+//------------------------------------------------------------------------------
+void EngineSettings::setGraphicsAPI(GraphicsAPI graphicsAPI)
 {
 	detail::EngineSettings::instance.graphicsAPI = graphicsAPI;
 }
 
 //------------------------------------------------------------------------------
-void EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType renderingType)
+void EngineSettings::setGraphicsRenderingType(GraphicsRenderingType renderingType)
 {
 	detail::EngineSettings::instance.renderingType = renderingType;
 }
 
 //------------------------------------------------------------------------------
-void EngineSettings::SetFpuPreserveEnabled(bool enabled)
+void EngineSettings::setFpuPreserveEnabled(bool enabled)
 {
 	detail::EngineSettings::instance.fpuPreserveEnabled = enabled;
 }
 
 //------------------------------------------------------------------------------
-void EngineSettings::SetDirectMusicMode(DirectMusicMode mode)
+void EngineSettings::setDirectMusicMode(DirectMusicMode mode)
 {
 	detail::EngineSettings::instance.directMusicMode = mode;
 }
 
 //------------------------------------------------------------------------------
-void EngineSettings::SetDirectMusicReverbLevel(float level)
+void EngineSettings::setDirectMusicReverbLevel(float level)
 {
 	detail::EngineSettings::instance.DirectMusicReverbLevel = level;
 }
 
 //------------------------------------------------------------------------------
-void EngineSettings::SetUserWindowHandle(intptr_t hWnd)	// Qt とかは windows.h を隠蔽しているので、型を HWND にしてしまうと #include <windows.h> 必要だったりといろいろ面倒。
+void EngineSettings::setUserWindowHandle(intptr_t hWnd)	// Qt とかは windows.h を隠蔽しているので、型を HWND にしてしまうと #include <windows.h> 必要だったりといろいろ面倒。
 {
 	detail::EngineSettings::instance.userMainWindow = hWnd;
 }
 
 //------------------------------------------------------------------------------
-void EngineSettings::SetD3D9Device(void* device)
+void EngineSettings::setD3D9Device(void* device)
 {
 	detail::EngineSettings::instance.D3D9Device = device;
 }
@@ -272,6 +279,12 @@ EngineManager::~EngineManager()
 		LN_SAFE_RELEASE(m_inputManager);
 	}
 
+	if (m_archiveManager != nullptr)
+	{
+		m_archiveManager->dispose();
+		m_archiveManager.safeRelease();
+	}
+
 	LN_SAFE_RELEASE(m_fileManager);
 
 	LN_SAFE_RELEASE(m_animationManager);
@@ -357,6 +370,20 @@ void EngineManager::initializeFileManager()
 		m_fileManager = LN_NEW FileManager(data);
 		for (auto& e : m_configData.ArchiveFileEntryList) {
 			m_fileManager->registerArchive(e.filePath, e.password);
+		}
+	}
+
+	if (m_archiveManager == nullptr)
+	{
+		m_archiveManager = Ref<detail::ArchiveManager>::makeRef();
+		m_archiveManager->initialize(m_configData.FileAccessPriority);	// TODO
+		for (auto& e : m_configData.ArchiveFileEntryList)
+		{
+			m_archiveManager->registerArchive(e.filePath, e.password);
+		}
+		for (auto& e : m_configData.assetsDirectoryList)
+		{
+			m_archiveManager->addAssetsDirectory(e);
 		}
 	}
 }
@@ -455,6 +482,7 @@ void EngineManager::initializeGraphicsManager()
 		data.backBufferSize = m_configData.mainBackBufferSize;
 		data.animationManager = m_animationManager;
 		data.fileManager = m_fileManager;
+		data.archiveManager = m_archiveManager;
 		data.physicsManager = m_physicsManager;
 		data.platformTextureLoading = true;
 		data.diag = &EngineDiagCore::Instance;

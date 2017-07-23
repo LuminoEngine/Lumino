@@ -210,12 +210,12 @@ GTEST_API_ int main(int argc, char **argv)
 		int scale = 1;
 		EngineSettings::setMainWindowSize(SizeI(160 * scale, 120 * scale));
 		EngineSettings::setMainBackBufferSize(SizeI(160 * scale, 120 * scale));
-		EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Threaded);//GraphicsRenderingType::Immediate);//
+		EngineSettings::setGraphicsRenderingType(GraphicsRenderingType::Threaded);//GraphicsRenderingType::Immediate);//
 		detail::EngineSettings::instance.defaultSkinFilePath = LN_LOCALFILE("UI/Data/Skin.png");
 	}
 
 	{
-		EngineSettings::SetGraphicsAPI(GraphicsAPI::DirectX9);
+		EngineSettings::setGraphicsAPI(GraphicsAPI::DirectX9);
 
 		EngineInitalize();
 		int r = RUN_ALL_TESTS();

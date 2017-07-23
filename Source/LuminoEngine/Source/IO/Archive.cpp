@@ -414,4 +414,168 @@ bool DummyArchive::tryCreateStream(const PathName& fileFullPath, Ref<Stream>* ou
 	return true;
 }
 
+
+
+
+
+
+namespace detail {
+
+//==============================================================================
+// DirectoryAssetsStorage
+//==============================================================================
+
+DirectoryAssetsStorage::DirectoryAssetsStorage(const PathName& directoryPath)
+	: m_directoryFullPath(directoryPath.canonicalizePath())
+{
+}
+
+DirectoryAssetsStorage::~DirectoryAssetsStorage()
+{
+}
+
+bool DirectoryAssetsStorage::existsFile(const PathName& fileFullPath)
+{
+	LN_ASSERT(fileFullPath.isAbsolute());
+
+	// fileFullPath が m_directoryFullPath 以下のファイルを指していること
+	if (StringTraits::compare(
+		m_directoryFullPath.c_str(), m_directoryFullPath.getLength(),
+		fileFullPath.c_str(), fileFullPath.getLength(),
+		m_directoryFullPath.getLength(), FileSystem::getFileSystemCaseSensitivity()) == 0)
+	{
+		return FileSystem::existsFile(fileFullPath);
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool DirectoryAssetsStorage::tryCreateStream(const PathName& fileFullPath, Ref<Stream>* outStream, bool isDeferring)
+{
+	FileOpenMode mode = FileOpenMode::read;
+	if (isDeferring) { mode |= FileOpenMode::Deferring; }
+	Ref<FileStream> file = FileStream::create(fileFullPath, mode);
+	*outStream = file;
+	return true;
+}
+
+//==============================================================================
+// ArchiveManager
+//==============================================================================
+
+ArchiveManager::ArchiveManager()
+	: m_fileAccessPriority(FileAccessPriority_DirectoryFirst)
+	, m_archiveList()
+	, m_directoryArchiveList()
+	, m_activeArchiveList()
+{
+}
+
+ArchiveManager::~ArchiveManager()
+{
+}
+
+void ArchiveManager::initialize(FileAccessPriority accessPriority)
+{
+	m_fileAccessPriority = accessPriority;
+	auto storage = Ref<DummyArchive>::makeRef();
+	m_directoryArchiveList.add(Ref<IArchive>::staticCast(storage));
+	refreshArchiveList();
+}
+
+void ArchiveManager::dispose()
+{
+	m_archiveList.clear();
+	m_directoryArchiveList.clear();
+}
+
+void ArchiveManager::registerArchive(const PathName& filePath, const String& password)
+{
+	auto archive = Ref<Archive>::makeRef();
+	archive->open(filePath, password);
+	m_archiveList.add(archive);
+	refreshArchiveList();
+}
+
+void ArchiveManager::addAssetsDirectory(const StringRef& directoryPath)
+{
+	auto storage = Ref<DirectoryAssetsStorage>::makeRef(directoryPath);
+	m_directoryArchiveList.add(Ref<IArchive>::staticCast(storage));
+	refreshArchiveList();
+}
+
+bool ArchiveManager::existsFile(const StringRef& filePath)
+{
+	for (IArchive* archive : m_activeArchiveList)
+	{
+		// TODO: PathName に SmallStringOptimaize を実装しよう
+		PathName path(archive->getDirectoryPath(), filePath);
+		if (archive->existsFile(path))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+Ref<Stream> ArchiveManager::createFileStream(const StringRef& filePath, bool isDeferring)
+{
+	Ref<Stream> stream;
+	for (IArchive* archive : m_activeArchiveList)
+	{
+		// TODO: PathName に SmallStringOptimaize を実装しよう
+		PathName path(archive->getDirectoryPath(), filePath);
+		if (archive->tryCreateStream(path, &stream, isDeferring))
+		{
+			break;
+		}
+	}
+
+	LN_ENSURE(stream != nullptr, "file not found: %s", filePath.getBegin());
+	return stream;
+}
+
+// Assets フォルダとして登録されているフォルダの中の有効なファイルパスを取得する。
+// ファイルがなければ空のパスを返す。
+// これは、ローカルファイルからしかリソースアクセスできない (Stream 対応していない) API を使う場合の逃げ道。
+PathName ArchiveManager::findLocalFilePath(const StringRef& filePath)
+{
+	for (IArchive* archive : m_directoryArchiveList)
+	{
+		// TODO: PathName に SmallStringOptimaize を実装しよう
+		PathName path(archive->getDirectoryPath(), filePath);
+		if (archive->existsFile(path))
+		{
+			return path;
+		}
+	}
+	return PathName();
+}
+
+void ArchiveManager::refreshArchiveList()
+{
+	m_activeArchiveList.clear();
+
+	switch (m_fileAccessPriority)
+	{
+	case ln::FileAccessPriority_ArchiveFirst:
+		for (auto& ac : m_archiveList) m_activeArchiveList.add(ac);
+		for (auto& ac : m_directoryArchiveList) m_activeArchiveList.add(ac);
+		break;
+	case ln::FileAccessPriority_DirectoryFirst:
+		for (auto& ac : m_directoryArchiveList) m_activeArchiveList.add(ac);
+		for (auto& ac : m_archiveList) m_activeArchiveList.add(ac);
+		break;
+	case ln::FileAccessPriority_ArchiveOnly:
+		for (auto& ac : m_archiveList) m_activeArchiveList.add(ac);
+		break;
+	default:
+		LN_UNREACHABLE();
+		break;
+	}
+}
+
+} // namespace detail
 LN_NAMESPACE_END

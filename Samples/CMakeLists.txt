@@ -2,6 +2,7 @@
 set(LN_SOURCES_SampleBrowser
 	Sample_Lumino_Basic.cpp
 	Sample_Graphics2D_Sprite2D.cpp
+	Sample_Input_VirtualController.cpp
 	Sample_Support_DebugAndTestSupport.cpp
 	SampleBrowser.cpp
 	SampleBrowser.PCH.cpp

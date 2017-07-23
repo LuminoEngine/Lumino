@@ -61,6 +61,12 @@ void TextBlock2DComponent::initialize()
 }
 
 //------------------------------------------------------------------------------
+void TextBlock2DComponent::setFont(Font* font)
+{
+	m_font = font;
+}
+
+//------------------------------------------------------------------------------
 void TextBlock2DComponent::setText(const StringRef& text)
 {
 	//m_paragraph->clearInlines();
@@ -107,6 +113,8 @@ void TextBlock2DComponent::onRender2(RenderingContext* renderer)
 		auto font = (m_font != nullptr) ? m_font : Font::getDefault();
 		m_renderSize = font->measureRenderSize(m_text);
 	}
+
+	renderer->setFont(m_font);
 
 	//renderer->setTransform(transform);
 	//renderer->setBlendMode(BlendMode::Alpha);
@@ -184,6 +192,12 @@ void TextBlock2D::initialize(const StringRef& text)
 {
 	initialize();
 	setText(text);
+}
+
+//------------------------------------------------------------------------------
+void TextBlock2D::setFont(Font* font)
+{
+	m_component->setFont(font);
 }
 
 //------------------------------------------------------------------------------

@@ -406,10 +406,8 @@ ByteBuffer FileSystem::readAllBytes(const StringRefW& filePath)
 	return buffer;
 }
 
-//------------------------------------------------------------------------------
-String FileSystem::readAllText(const StringRef& filePath, const Encoding* encoding)
+static String readAllTextHelper(const ByteBuffer& buffer, const Encoding* encoding)
 {
-	ByteBuffer buffer(FileSystem::readAllBytes(filePath));
 	if (encoding == nullptr)
 	{
 		Encoding* e = Encoding::getEncoding(EncodingType::UTF8);
@@ -422,6 +420,21 @@ String FileSystem::readAllText(const StringRef& filePath, const Encoding* encodi
 	String str;
 	str.convertFrom(buffer.getData(), buffer.getSize(), encoding);
 	return str;
+}
+
+//------------------------------------------------------------------------------
+String FileSystem::readAllText(const StringRef& filePath, const Encoding* encoding)
+{
+	ByteBuffer buffer(FileSystem::readAllBytes(filePath));
+	return readAllTextHelper(buffer, encoding);
+}
+
+//------------------------------------------------------------------------------
+String FileSystem::readAllText(Stream* stream, const Encoding* encoding)
+{
+	ByteBuffer buffer(stream->getLength());
+	stream->read(buffer.getData(), buffer.getSize());
+	return readAllTextHelper(buffer, encoding);
 }
 
 //------------------------------------------------------------------------------

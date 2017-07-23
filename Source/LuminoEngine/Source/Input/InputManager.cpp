@@ -47,6 +47,8 @@ InputManager* InputManager::getInstance(InputManager* priority)
 InputManager::InputManager()
 	: m_inputDriver(nullptr)
 	, m_defaultVirtualPads{}
+	, m_lasgAnyActiveTriggered(nullptr)
+	, m_anyActiveTriggeredFrameCount(0)
 {
 }
 
@@ -74,24 +76,33 @@ void InputManager::initialize(const Settings& settings)
 	m_defaultVirtualPads[0] = pad;
 	m_defaultVirtualPads[0]->addRef();
 
-	pad->addBinding(InputButtons::Left,		KeyboardBinding::create(Keys::Left));
-	pad->addBinding(InputButtons::Right,	KeyboardBinding::create(Keys::Right));
-	pad->addBinding(InputButtons::Up,		KeyboardBinding::create(Keys::Up));
-	pad->addBinding(InputButtons::Down,		KeyboardBinding::create(Keys::Down));
-	pad->addBinding(InputButtons::OK,		KeyboardBinding::create(Keys::Z));
-	pad->addBinding(InputButtons::Cancel,	KeyboardBinding::create(Keys::X));
+	pad->addBinding(InputButtons::Left,		KeyGesture::create(Keys::Left));
+	pad->addBinding(InputButtons::Right,	KeyGesture::create(Keys::Right));
+	pad->addBinding(InputButtons::Up,		KeyGesture::create(Keys::Up));
+	pad->addBinding(InputButtons::Down,		KeyGesture::create(Keys::Down));
+	pad->addBinding(InputButtons::Submit,	KeyGesture::create(Keys::Z));
+	pad->addBinding(InputButtons::Cancel,	KeyGesture::create(Keys::X));
+	pad->addBinding(InputButtons::Menu,		KeyGesture::create(Keys::X));
+	pad->addBinding(InputButtons::Shift,	KeyGesture::create(Keys::LShift));
+	pad->addBinding(InputButtons::Shift,	KeyGesture::create(Keys::RShift));
+	pad->addBinding(InputButtons::PageUp,	KeyGesture::create(Keys::Q));
+	pad->addBinding(InputButtons::PageDown,	KeyGesture::create(Keys::W));
 
-	pad->addBinding(InputButtons::Left,		GamepadBinding::create(GamepadElement::PovLeft));
-	pad->addBinding(InputButtons::Right,	GamepadBinding::create(GamepadElement::PovRight));
-	pad->addBinding(InputButtons::Up,		GamepadBinding::create(GamepadElement::PovUp));
-	pad->addBinding(InputButtons::Down,		GamepadBinding::create(GamepadElement::PovDown));
+	pad->addBinding(InputButtons::Left,		GamepadGesture::create(GamepadElement::PovLeft));
+	pad->addBinding(InputButtons::Right,	GamepadGesture::create(GamepadElement::PovRight));
+	pad->addBinding(InputButtons::Up,		GamepadGesture::create(GamepadElement::PovUp));
+	pad->addBinding(InputButtons::Down,		GamepadGesture::create(GamepadElement::PovDown));
 
-	pad->addBinding(InputButtons::Left,		GamepadBinding::create(GamepadElement::Axis1Minus));
-	pad->addBinding(InputButtons::Right,	GamepadBinding::create(GamepadElement::Axis1Plus));
-	pad->addBinding(InputButtons::Up,		GamepadBinding::create(GamepadElement::Axis2Minus));
-	pad->addBinding(InputButtons::Down,		GamepadBinding::create(GamepadElement::Axis2Plus));
-	pad->addBinding(InputButtons::OK,		GamepadBinding::create(GamepadElement::Button1));
-	pad->addBinding(InputButtons::Cancel,	GamepadBinding::create(GamepadElement::Button2));
+	pad->addBinding(InputButtons::Left,		GamepadGesture::create(GamepadElement::Axis1Minus));
+	pad->addBinding(InputButtons::Right,	GamepadGesture::create(GamepadElement::Axis1Plus));
+	pad->addBinding(InputButtons::Up,		GamepadGesture::create(GamepadElement::Axis2Minus));
+	pad->addBinding(InputButtons::Down,		GamepadGesture::create(GamepadElement::Axis2Plus));
+	pad->addBinding(InputButtons::Submit,	GamepadGesture::create(GamepadElement::Button1));
+	pad->addBinding(InputButtons::Cancel,	GamepadGesture::create(GamepadElement::Button2));
+	pad->addBinding(InputButtons::Menu,		GamepadGesture::create(GamepadElement::Button3));
+	pad->addBinding(InputButtons::Shift,	GamepadGesture::create(GamepadElement::Button4));
+	pad->addBinding(InputButtons::PageUp,	GamepadGesture::create(GamepadElement::Button5));
+	pad->addBinding(InputButtons::PageDown,	GamepadGesture::create(GamepadElement::Button6));
 
 	if (g_inputManager == nullptr) {
 		g_inputManager = this;
@@ -125,9 +136,24 @@ void InputManager::updateFrame()
 {
 	for (auto* pad : m_defaultVirtualPads)
 	{
-		if (pad != nullptr) {
+		if (pad != nullptr)
+		{
 			pad->updateFrame();
 		}
+	}
+
+	m_inputDriver->updatePressedAnyGamepadElement();
+
+
+	if (m_inputDriver->getPressedAnyKey() != nullptr ||
+		m_inputDriver->getPressedAnyMouseButton() != nullptr ||
+		m_inputDriver->getPressedAnyGamepadElement() != nullptr)
+	{
+		m_anyActiveTriggeredFrameCount++;
+	}
+	else
+	{
+		m_anyActiveTriggeredFrameCount = 0;
 	}
 }
 
@@ -140,19 +166,19 @@ void InputManager::onEvent(const PlatformEventArgs& e)
 }
 
 //------------------------------------------------------------------------------
-float InputManager::getVirtualButtonState(InputBinding* binding, bool keyboard, bool mouse, int joyNumber)
+float InputManager::getVirtualButtonState(InputGesture* binding, bool keyboard, bool mouse, int joyNumber)
 {
 	// キーボード
 	if (keyboard && binding->getType() == detail::InputBindingType::Keyboard)
 	{
-		auto* b = static_cast<KeyboardBinding*>(binding);
+		auto* b = static_cast<KeyGesture*>(binding);
 		if (b->getModifierKeys() != ModifierKeys::None) { LN_NOTIMPLEMENTED(); }
 		return m_inputDriver->queryKeyState(b->getKey()) ? 1.0f : 0.0f;
 	}
 	// マウス
 	if (mouse && binding->getType() == detail::InputBindingType::Mouse)
 	{
-		auto* b = static_cast<MouseBinding*>(binding);
+		auto* b = static_cast<MouseGesture*>(binding);
 		if (b->getModifierKeys() != ModifierKeys::None) { LN_NOTIMPLEMENTED(); }
 		return m_inputDriver->queryMouseState(b->getMouseAction()) ? 1.0f : 0.0f;
 	}
@@ -162,7 +188,7 @@ float InputManager::getVirtualButtonState(InputBinding* binding, bool keyboard, 
 	{
 		if (joyNumber >= m_inputDriver->getJoystickCount()) return 0.0f;
 
-		auto b = static_cast<GamepadBinding*>(binding);
+		auto b = static_cast<GamepadGesture*>(binding);
 		int e = (int)b->getElement();
 		// ボタン
 		if ((int)GamepadElement::Button1 <= e && e <= (int)GamepadElement::Button16)
@@ -206,6 +232,46 @@ float InputManager::getVirtualButtonState(InputBinding* binding, bool keyboard, 
 		}
 	}
 	return 0.0f;
+}
+
+InputGesture* InputManager::getAnyActiveTriggered()
+{
+	bool pressed = false;
+
+	// keyboard
+	{
+		auto* g = m_inputDriver->getPressedAnyKey();
+		if (g != nullptr)
+		{
+			m_lasgAnyActiveTriggered = Ref<KeyGesture>::makeRef(g->getKey(), g->getModifierKeys());
+			pressed = true;
+		}
+	}
+	// mouse
+	{
+		auto* g = m_inputDriver->getPressedAnyMouseButton();
+		if (g != nullptr)
+		{
+			m_lasgAnyActiveTriggered = Ref<MouseGesture>::makeRef(g->getMouseAction(), g->getModifierKeys());
+			pressed = true;
+		}
+	}
+	// gamepad
+	{
+		auto* g = m_inputDriver->getPressedAnyGamepadElement();
+		if (g != nullptr)
+		{
+			m_lasgAnyActiveTriggered = Ref<GamepadGesture>::makeRef(g->getElement());
+			pressed = true;
+		}
+	}
+
+	if (!pressed)
+	{
+		m_lasgAnyActiveTriggered = nullptr;
+	}
+
+	return (m_anyActiveTriggeredFrameCount == 1) ? m_lasgAnyActiveTriggered : nullptr;
 }
 
 } // namespace detail

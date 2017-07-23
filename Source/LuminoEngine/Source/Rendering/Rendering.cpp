@@ -1434,26 +1434,35 @@ void DrawList::drawText_(const StringRef& text, const Rect& rect, StringFormatFl
 }
 
 //------------------------------------------------------------------------------
-void DrawList::drawChar(TCHAR ch, const Point& position)
+void DrawList::drawChar(uint32_t codePoint, const Rect& rect, StringFormatFlags flags)
 {
 	class DrawElement_DrawChar : public detail::DrawElement
 	{
 	public:
-		TCHAR ch;
-		Point position;
+		uint32_t ch;
+		Rect rect;
+		StringFormatFlags flags;
+		//Point position;
 
 		virtual void drawSubset(const DrawArgs& e) override
 		{
-			e.context->beginVectorTextRenderer()->drawChar(getTransform(e.oenerList), ch, Rect(position, 0, 0), TextLayoutOptions::None);
+			e.context->beginTextRenderer()->drawChar(getTransform(e.oenerList), ch, rect, flags);
+			//e.context->beginVectorTextRenderer()->drawChar(getTransform(e.oenerList), ch, Rect(position, 0, 0), TextLayoutOptions::None);
 		}
 		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("DrawChar")); }
 	};
 
-	// TODO: UTF32 変換
+	//auto* e = resolveDrawElement<DrawElement_DrawChar>(m_manager->getInternalContext()->m_vectorTextRenderer, nullptr);
 
-	auto* e = resolveDrawElement<DrawElement_DrawChar>(m_manager->getInternalContext()->m_vectorTextRenderer, nullptr);
-	e->ch = ch;
-	e->position = position;
+	detail::PriorityBatchState priorityState;
+	priorityState.worldTransform = Matrix::Identity;
+	priorityState.mainTexture = getCurrentState()->m_state.state.getFont()->resolveRawFont()->GetGlyphTextureCache()->getGlyphsFillTexture();
+
+
+	auto* e = resolveDrawElement<DrawElement_DrawChar>(m_manager->getInternalContext()->m_textRenderer, nullptr, &priorityState);
+	e->ch = codePoint;
+	e->rect = rect;
+	e->flags = flags;
 	//e->boundingSphere = ;	// TODO
 }
 

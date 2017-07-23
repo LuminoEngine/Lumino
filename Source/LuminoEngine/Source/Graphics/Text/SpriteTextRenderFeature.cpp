@@ -223,6 +223,19 @@ void TextRenderer::drawGlyphRun(const Matrix& transform, const Point& position, 
 }
 
 //------------------------------------------------------------------------------
+void TextRenderer::drawChar(const Matrix& transform, uint32_t codePoint, const Rect& rect, StringFormatFlags flags)
+{
+	// レイアウト
+	TextLayoutResult result;
+	FontGlyphTextureCache* cache = m_font->GetGlyphTextureCache();
+	cache->getTextLayoutEngine()->resetSettings();
+	cache->getTextLayoutEngine()->layoutText((UTF32*)&codePoint, 1, LayoutTextOptions::All, &result);
+
+	// 描画
+	DrawGlyphsInternal(transform, rect.getTopLeft(), result.Items, cache);
+}
+
+//------------------------------------------------------------------------------
 void TextRenderer::drawString(const Matrix& transform, const TCHAR* str, int length, const Point& position)
 {
 	length = (length < 0) ? StringTraits::tcslen(str) : length;
@@ -230,13 +243,13 @@ void TextRenderer::drawString(const Matrix& transform, const TCHAR* str, int len
 	// UTF32 へ変換
 	const ByteBuffer& utf32Buf = m_manager->getFontManager()->getTCharToUTF32Converter()->convert(str, sizeof(TCHAR) * length);
 
-	FontGlyphTextureCache* cache = m_font->GetGlyphTextureCache();
-
-	// 
+	// レイアウト
 	TextLayoutResult result;
+	FontGlyphTextureCache* cache = m_font->GetGlyphTextureCache();
 	cache->getTextLayoutEngine()->resetSettings();
 	cache->getTextLayoutEngine()->layoutText((UTF32*)utf32Buf.getConstData(), utf32Buf.getSize() / sizeof(UTF32), LayoutTextOptions::All, &result);
 
+	// 描画
 	DrawGlyphsInternal(transform, position, result.Items, cache);
 }
 
@@ -343,6 +356,8 @@ void TextRenderer::onSetState(const DrawElementBatch* state)
 //------------------------------------------------------------------------------
 void TextRenderer::FlushInternal(FontGlyphTextureCache* cache)
 {
+	if (m_glyphLayoutDataList.isEmpty()) return;
+
 	int dataCount = m_glyphLayoutDataList.getCount();
 	RenderBulkData dataListData(&m_glyphLayoutDataList[0], sizeof(TextRendererCore::GlyphRunData) * dataCount);
 

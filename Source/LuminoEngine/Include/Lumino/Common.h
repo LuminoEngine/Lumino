@@ -91,7 +91,7 @@ enum class Keys
 	Tab,
 	Enter,
 	BackSpace,
-	insert,
+	Insert,
 	Delete,
 	PageUp,
 	PageDown,
@@ -99,12 +99,12 @@ enum class Keys
 	End,
 
 	Colon,		///< :	[非推奨 GLFWでは;]
-	SemiColon,	///< ;	[非推奨 GLFWでは=]   TODO:Semicolon
+	Semicolon,	///< ;	[非推奨 GLFWでは=]
 	Comma,		///< ,
 	Period,		///< .
 	Slash,		///< /
 	Minus,		///< -
-	BackSlash,	///< \(バックスラッシュ) [非推奨 GLFWではNOWORD2]    TODO:Backslash
+	Backslash,	///< \(バックスラッシュ) [非推奨 GLFWではNOWORD2]
 	Yen,		///< \(BaskSpaceキーの左の\キー) [非推奨 GLFWではI]
 	Caret,		///< ^ [非推奨 GLFWではGLFW_KEY_APOSTROPHE(')]
 	LBracket,	///< [

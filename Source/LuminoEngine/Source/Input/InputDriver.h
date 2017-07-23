@@ -24,7 +24,7 @@ struct JoystickDeviceState
 	static const int MaxButtons = 16;    ///< ジョイパッドのボタンの最大数
 	static const int MaxAxis = 8;        ///< ジョイパッドの軸の最大数
 
-	float		Axes[MaxAxis];
+	float		Axes[MaxAxis];	// -1.0～1.0
 	uint32_t	POV;						        ///< POV 状態 (POVDir の組み合わせ  GLFWでは取れない)
 	uint8_t		Buttons[MaxButtons];
 };
@@ -42,7 +42,7 @@ public:
 
 	void preUpdateFrame();
 
-
+	
 
 
 
@@ -64,9 +64,17 @@ public:
 	void onMouseButtonDown(MouseButtons button);
 	void onMouseButtonUp(MouseButtons button);
 
+	void updatePressedAnyGamepadElement();
 
+	// TODO: コピーして使おう
+	KeyGesture* getPressedAnyKey() const;
+	MouseGesture* getPressedAnyMouseButton() const;
+	GamepadGesture* getPressedAnyGamepadElement() const;
 
 private:
+	MouseAction toMouseActionSimple(MouseButtons button);
+	bool getPressedAnyGamepadElementHelper(int* outPadNumber, GamepadElement* outElement);
+
 	struct MouseClickTracker
 	{
 		double		lastTime;
@@ -75,12 +83,16 @@ private:
 	
 
 
-	std::array<bool, 256>			m_keyStatus;
-	std::array<bool, 8>	m_mouseStatus;
+	std::array<bool, 256>				m_keyStatus;
+	std::array<bool, 8>					m_mouseStatus;
 	std::array<MouseClickTracker, 8>	m_mouseClickTrackers;
-	float				m_mouseButtonClickTimeout;
-	PointI	m_mousePoint;
-	int		m_mouseWheel;
+	float								m_mouseButtonClickTimeout;
+	PointI								m_mousePoint;
+	int									m_mouseWheel;
+
+	Ref<KeyGesture>						m_pressedAnyKey;
+	Ref<MouseGesture>					m_pressedAnyMouseButton;
+	Ref<GamepadGesture>					m_pressedAnyGamepadElement;
 };
 
 LN_NAMESPACE_END

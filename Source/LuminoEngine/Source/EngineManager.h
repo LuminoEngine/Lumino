@@ -21,6 +21,7 @@ namespace detail { class AudioManager; }
 namespace detail { class PhysicsManager; }
 namespace detail { class DocumentsManager; }
 class FileManager;
+namespace detail { class ArchiveManager; }
 class SceneGraphManager;
 class Application;
 class EngineDiagViewer;
@@ -79,6 +80,8 @@ public:
 		@brief		登録するアーカイブファイルのリストです。
 	*/
 	List<ArchiveFileEntry>	ArchiveFileEntryList;
+
+	List<PathName> assetsDirectoryList;
 	
 	/**
 		@brief		ファイルを開く時の検索場所の優先順です。
@@ -155,7 +158,7 @@ public:
 	{
 #ifdef LN_DEBUG
 		engineLogEnabled = true;
-		acceleratorKeys.toggleShowDiag = KeyboardBinding::create(Keys::F3);
+		acceleratorKeys.toggleShowDiag = KeyGesture::create(Keys::F3);
 #endif
 		//engineAcceleratorKeys[(int)EngineAcceleratorKey::ToggleShowDiag] = Key::F3;
 	}
@@ -196,6 +199,7 @@ public:
 
 
 	PlatformManager* getPlatformManager() const { return m_platformManager; }
+	const Ref<detail::ArchiveManager>& getArchiveManager() const { return m_archiveManager; }
 	detail::AnimationManager* getAnimationManager() const { return m_animationManager; }
 	detail::AudioManager* getAudioManager() const { return m_audioManager; }
 	detail::PhysicsManager* getPhysicsManager() const;
@@ -243,6 +247,7 @@ private:
 
 	detail::AnimationManager*			m_animationManager;
 	FileManager*						m_fileManager;
+	Ref<detail::ArchiveManager>			m_archiveManager;
 	Ref<PlatformManager>				m_platformManager;
 	detail::InputManager*				m_inputManager;
 	detail::AudioManager*				m_audioManager;

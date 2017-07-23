@@ -61,7 +61,7 @@ public:
 	bool remove(const TKey& key)
 	{
 		typename InternalArray::iterator itr = m_vector.begin();
-		for (; itr != m_vector.end();)
+		for (; itr != m_vector.end(); ++itr)
 		{
 			if (itr->first == key) {
 				m_vector.erase(itr);

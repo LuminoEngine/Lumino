@@ -1,4 +1,4 @@
-#include <Lumino.h>
+ï»¿#include <Lumino.h>
 #include "Lumino/Testing/TestHelper.h"
 #include "../Source/LuminoEngine/Source/EngineManager.h"
 using namespace ln;
@@ -14,8 +14,8 @@ struct SampleInfo
 class SampleManager
 {
 public:
-	// VS2017 ‚Å‚ÍƒOƒ[ƒoƒ‹•Ï”‚Å std::vector ‚â ln::List ‚ðì‚é‚Æ main Žn‚Ü‚é‘O‚ÉƒfƒXƒgƒ‰ƒNƒ^‚ªŒÄ‚Î‚ê‚Ä‹ó‚Á‚Û‚É‚È‚Á‚Ä‚µ‚Ü‚Á‚½BƒoƒO‚©‚ÈH
-	// ƒ[ƒJƒ‹‚Ì static •Ï”‚È‚ç‘åä•v‚È‚Ì‚ÅAgtest ‚Æ“¯‚¶Žd‘g‚Ý‚ÅƒVƒ“ƒOƒ‹ƒgƒ“‚ðŽÀ‘•‚·‚éB
+	// VS2017 ã§ã¯ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã§ std::vector ã‚„ ln::List ã‚’ä½œã‚‹ã¨ main å§‹ã¾ã‚‹å‰ã«ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ãŒå‘¼ã°ã‚Œã¦ç©ºã£ã½ã«ãªã£ã¦ã—ã¾ã£ãŸã€‚ãƒã‚°ã‹ãªï¼Ÿ
+	// ãƒ­ãƒ¼ã‚«ãƒ«ã® static å¤‰æ•°ãªã‚‰å¤§ä¸ˆå¤«ãªã®ã§ã€gtest ã¨åŒã˜ä»•çµ„ã¿ã§ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ã‚’å®Ÿè£…ã™ã‚‹ã€‚
 	static SampleManager* getInstance();
 
 public:
@@ -68,8 +68,11 @@ void closeListWindow()
 
 void Main()
 {
-	//auto& ss = CommandLine::args;
+#if 0	// ãƒ‡ãƒãƒƒã‚°ç”¨ã€‚æŒ‡å®šã—ãŸã®ã‚µãƒ³ãƒ—ãƒ«ã‚’å®Ÿè¡Œã™ã‚‹
+	CommandLine::args.add(_T("Input.VirtualController.KeyConfig"));
+#endif
 
+	EngineSettings::addAssetsDirectory(LN_LOCALFILE("Assets"));
 	detail::EngineSettings::instance.assetDirecotry = LN_LOCALFILE("Assets");
 
 	if (CommandLine::args.getCount() == 2)
@@ -115,7 +118,7 @@ void Main()
 	g_listWindow = UIUserControl::create();
 	//g_listWindow->setWidth(220);
 	//g_listWindow->setBackground(UIColors::getBrush(UIColorIndex::Grey, 3));
-	g_listWindow->setAnchor(AlignmentAnchor::TopOffsets | AlignmentAnchor::BottomOffsets);	// TODO: UIAnchor ‚Å‚¢‚¢‚Æ‚¨‚à‚¤
+	g_listWindow->setAnchor(AlignmentAnchor::TopOffsets | AlignmentAnchor::BottomOffsets);	// TODO: UIAnchor ã§ã„ã„ã¨ãŠã‚‚ã†
 	g_listWindow->addChild(listBox1);
 	mainWindow->addChild(g_listWindow);
 

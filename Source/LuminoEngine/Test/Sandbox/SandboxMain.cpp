@@ -133,7 +133,7 @@ void Main()
 
 
 	//EngineSettings::SetGraphicsAPI(GraphicsAPI::OpenGL);
-	EngineSettings::SetGraphicsRenderingType(GraphicsRenderingType::Threaded);//GraphicsRenderingType::Immediate);//
+	EngineSettings::setGraphicsRenderingType(GraphicsRenderingType::Threaded);//GraphicsRenderingType::Immediate);//
 	Engine::initialize();
 	//Engine::getMainViewport()->SetBackgroundColor(Color32::Gray);
 	Engine::getMainViewport()->setPlacement(ViewportPlacement::AutoResize);
@@ -214,8 +214,8 @@ void Main()
 
 	EngineDiag::setDisplayMode(EngineDiagDisplayMode::FpsSummary);
 
-	Input::addButtonBinding(_T("AA"), KeyboardBinding::create(Keys::C));
-	Input::addButtonBinding(_T("GG"), KeyboardBinding::create(Keys::A));
+	Input::addButtonBinding(_T("AA"), KeyGesture::create(Keys::C));
+	Input::addButtonBinding(_T("GG"), KeyGesture::create(Keys::A));
 
 	//auto spr1 = Sprite2DComponent::create(_T("D:/Proj/LuminoStudio/Engine/External/Lumino/test/UnitTest/Graphics/TestData/Sprite2.png"));
 

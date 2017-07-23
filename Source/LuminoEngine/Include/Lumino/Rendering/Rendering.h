@@ -676,7 +676,8 @@ public:
 	void drawText_(const StringRef& text, const Point& position);
 	void drawText_(const StringRef& text, const Rect& rect, StringFormatFlags flags);
 
-	void drawChar(TCHAR ch, const Point& position);
+	//void drawChar(uint32_t ch, const Point& position);
+	void drawChar(uint32_t codePoint, const Rect& rect, StringFormatFlags flags);
 	void drawText2(const StringRef& text, const Rect& rect);
 
 	void drawSprite(

@@ -1,6 +1,6 @@
 ﻿/*
 	[2016/10/2]
-		BindingSlot は、InputBinding は UE4 に合わせて名前を持たせないようにしたため、
+		BindingSlot は、InputGesture は UE4 に合わせて名前を持たせないようにしたため、
 		入力ソースとの対応付けを行うために必要。
 */
 #include "../Internal.h"
@@ -81,9 +81,9 @@ float InputController::getAxisValue(const StringRef& bindingName) const
 }
 
 //------------------------------------------------------------------------------
-void InputController::addBinding(const StringRef& buttonName, InputBinding* binding)
+void InputController::addBinding(const StringRef& buttonName, InputGesture* gesture)
 {
-	BindingSlot slot = { buttonName, binding };
+	BindingSlot slot = { buttonName, gesture };
 	m_bindingSlots.add(slot);
 
 	// まだ登録したことがない名前であれば InputState を作る。そうでなければ参照カウントを増やす。
@@ -103,9 +103,9 @@ void InputController::addBinding(const StringRef& buttonName, InputBinding* bind
 }
 
 //------------------------------------------------------------------------------
-void InputController::removeBinding(InputBinding* binding)
+void InputController::removeBinding(InputGesture* gesture)
 {
-	int index = m_bindingSlots.indexOf([binding](const BindingSlot& slot) { return slot.binding == binding; });
+	int index = m_bindingSlots.indexOf([gesture](const BindingSlot& slot) { return slot.binding == gesture; });
 	if (index < 0) return;
 
 	const String& name = m_bindingSlots[index].name;
@@ -120,10 +120,23 @@ void InputController::removeBinding(InputBinding* binding)
 }
 
 //------------------------------------------------------------------------------
-void InputController::clearBindings()
+void InputController::clearBindings(const StringRef& buttonName)
 {
 	List<BindingSlot> list = m_bindingSlots;
-	for (int i = list.getCount() - 1; i >= 0; ++i)	// 後ろから回した方がちょっと削除の効率がいい
+	for (int i = list.getCount() - 1; i >= 0; --i)	// 後ろから回した方がちょっと削除の効率がいい
+	{
+		if (list[i].name == buttonName)
+		{
+			removeBinding(list[i].binding);
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+void InputController::clearAllBindings()
+{
+	List<BindingSlot> list = m_bindingSlots;
+	for (int i = list.getCount() - 1; i >= 0; --i)	// 後ろから回した方がちょっと削除の効率がいい
 	{
 		removeBinding(list[i].binding);
 	}
@@ -152,7 +165,7 @@ void InputController::updateFrame()
 	// m_inputStatus に現在の入力値を展開する
 	for (const BindingSlot& slot : m_bindingSlots)
 	{
-		InputBinding* binding = slot.binding;
+		InputGesture* binding = slot.binding;
 
 		float v = m_manager->getVirtualButtonState(
 			binding,
