@@ -120,10 +120,23 @@ void InputController::removeBinding(InputGesture* gesture)
 }
 
 //------------------------------------------------------------------------------
-void InputController::clearBindings()
+void InputController::clearBindings(const StringRef& buttonName)
 {
 	List<BindingSlot> list = m_bindingSlots;
-	for (int i = list.getCount() - 1; i >= 0; ++i)	// 後ろから回した方がちょっと削除の効率がいい
+	for (int i = list.getCount() - 1; i >= 0; --i)	// 後ろから回した方がちょっと削除の効率がいい
+	{
+		if (list[i].name == buttonName)
+		{
+			removeBinding(list[i].binding);
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+void InputController::clearAllBindings()
+{
+	List<BindingSlot> list = m_bindingSlots;
+	for (int i = list.getCount() - 1; i >= 0; --i)	// 後ろから回した方がちょっと削除の効率がいい
 	{
 		removeBinding(list[i].binding);
 	}

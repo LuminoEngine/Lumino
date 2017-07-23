@@ -356,6 +356,8 @@ void TextRenderer::onSetState(const DrawElementBatch* state)
 //------------------------------------------------------------------------------
 void TextRenderer::FlushInternal(FontGlyphTextureCache* cache)
 {
+	if (m_glyphLayoutDataList.isEmpty()) return;
+
 	int dataCount = m_glyphLayoutDataList.getCount();
 	RenderBulkData dataListData(&m_glyphLayoutDataList[0], sizeof(TextRendererCore::GlyphRunData) * dataCount);
 

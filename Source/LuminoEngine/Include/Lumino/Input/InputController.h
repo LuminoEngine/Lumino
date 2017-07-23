@@ -23,7 +23,8 @@ public:
 
 	void addBinding(const StringRef& buttonName, InputGesture* gesture);
 	void removeBinding(InputGesture* gesture);
-	void clearBindings();
+	void clearBindings(const StringRef& buttonName);
+	void clearAllBindings();
 	void setRepeatInterval(int start, int step);
 
 	void updateFrame();

@@ -45,11 +45,16 @@ public:
 		@brief		アクションマッピングを除外します。
 	*/
 	static void removeBinding(InputGesture* gesture);
+	
+	/**
+		@brief		指定したボタンのアクションマッピングをすべて削除します。
+	*/
+	static void clearBindings(const StringRef& buttonName);
 
 	/**
 		@brief		全てのアクションマッピングを削除します。
 	*/
-	static void clearBindings();
+	static void clearAllBindings();
 	
 	/**
 		@brief		サポートしているすべての入力のうち、現在入力中であるものを InputGesture として返します。

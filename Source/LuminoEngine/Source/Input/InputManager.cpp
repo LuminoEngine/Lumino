@@ -136,7 +136,8 @@ void InputManager::updateFrame()
 {
 	for (auto* pad : m_defaultVirtualPads)
 	{
-		if (pad != nullptr) {
+		if (pad != nullptr)
+		{
 			pad->updateFrame();
 		}
 	}
@@ -144,7 +145,9 @@ void InputManager::updateFrame()
 	m_inputDriver->updatePressedAnyGamepadElement();
 
 
-	if (m_lasgAnyActiveTriggered != nullptr)
+	if (m_inputDriver->getPressedAnyKey() != nullptr ||
+		m_inputDriver->getPressedAnyMouseButton() != nullptr ||
+		m_inputDriver->getPressedAnyGamepadElement() != nullptr)
 	{
 		m_anyActiveTriggeredFrameCount++;
 	}
@@ -267,9 +270,8 @@ InputGesture* InputManager::getAnyActiveTriggered()
 	{
 		m_lasgAnyActiveTriggered = nullptr;
 	}
-	
-	// return active gesture, if frameCount == 0
-	return (m_anyActiveTriggeredFrameCount == 0) ? m_lasgAnyActiveTriggered : nullptr;
+
+	return (m_anyActiveTriggeredFrameCount == 1) ? m_lasgAnyActiveTriggered : nullptr;
 }
 
 } // namespace detail

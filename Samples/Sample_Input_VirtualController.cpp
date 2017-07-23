@@ -44,28 +44,25 @@ LN_SAMPLE_MAIN(Input, VirtualController, KeyConfig)
 {
 	Engine::initialize();
 
+	// 操作キャラクターの画像
 	auto icon = GlyphIcon2D::create(_T("fa-child"), 64);
 
-	auto caption1 = TextBlock2D::create(_T("Jump"));
-	auto caption2 = TextBlock2D::create(_T("Left move"));
-	auto caption3 = TextBlock2D::create(_T("Right move"));
-	auto description1 = TextBlock2D::create(_T("a"));
-	auto description2 = TextBlock2D::create(_T("b"));
-	auto description3 = TextBlock2D::create(_T("c"));
-	caption1->setPosition(20, 400);
-	caption2->setPosition(20, 420);
-	caption3->setPosition(20, 440);
-	description1->setPosition(200, 400);
-	description2->setPosition(200, 420);
-	description3->setPosition(200, 440);
+	// 現在のキーコンフィグを表示するテキスト
+	auto description = TextBlock2D::create();
+	description->setPosition(20, 440);
+
+	// 初期状態のキーコンフィグ ("jump" という名前のボタンにスペースキーを割り当てる)
+	Ref<InputGesture> jumpButton = KeyGesture::create(Keys::Space);
+	Input::addButtonBinding(_T("jump"), jumpButton);
+	description->setText(_T("jump : ") + jumpButton->getDisplayName());
 
 	Vector3 pos(100, 100, 0);
-	Vector3 velocity, accel;
+	Vector3 velocity;
 	bool configMode = false;
-	Ref<InputGesture> jumpButton;// = KeyGesture::create(Keys::Z);
 
 	while (Engine::update())
 	{
+		// キャラクター操作中
 		if (!configMode)
 		{
 			// ← ボタンが押されていたら
@@ -81,41 +78,39 @@ LN_SAMPLE_MAIN(Input, VirtualController, KeyConfig)
 			}
 
 			// ジャンプボタンが押されていたら
-			if (Input::isTriggered(InputButtons::Submit))
+			if (Input::isTriggered(_T("jump")))
 			{
-				accel.y = -4.0;
+				velocity.y = -10.0;
 			}
 
 			// メニューボタンが押されていたらキーコンフィグモードへ
 			if (Input::isTriggered(InputButtons::Menu))
 			{
 				configMode = true;
-				description1->setText(_T("Press any key..."));
+				description->setText(_T("press any key..."));
 			}
 		}
+		// キーコンフィグ中
 		else
 		{
 			jumpButton = Input::getAnyActiveTriggered();
 			if (jumpButton != nullptr)
 			{
 				configMode = false;
-				description1->setText(jumpButton->getDisplayName());
+				Input::clearBindings(_T("jump"));
+				Input::addButtonBinding(_T("jump"), jumpButton);
+				description->setText(_T("jump : ") + jumpButton->getDisplayName());
 			}
 		}
 
-
-		accel.y += 0.5;	// gravity
-		velocity += accel;
+		// 移動の処理
+		velocity.y += 0.5;	// gravity
 		pos += velocity;
-
 		if (pos.y > 300)
 		{
 			pos.y = 300;
 			velocity.y = 0;
-			accel.y = 0;
 		}
-
-
 
 		// アイコンの位置を設定する
 		icon->setPosition(pos);

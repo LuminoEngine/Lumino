@@ -276,7 +276,7 @@ bool InputDriver::getPressedAnyGamepadElementHelper(int* outPadNumber, GamepadEl
 			if (abs(state.Axes[iAxis]) > 0.5f)	// あそび固定。この処理の目的はキーとして扱いたいような要素を検出することだから問題ないだろう
 			{
 				int index = iAxis * 2 + (int)GamepadElement::Axis1Minus;
-				if (state.Axes[iAxis] < 0.0) index += 1;
+				if (state.Axes[iAxis] > 0.0) index += 1;
 				*outElement = (GamepadElement)index;
 				return true;
 

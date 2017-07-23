@@ -53,9 +53,15 @@ void Input::removeBinding(InputGesture* gesture)
 }
 
 //------------------------------------------------------------------------------
-void Input::clearBindings()
+void Input::clearBindings(const StringRef& buttonName)
 {
-	return detail::InputManager::getInstance()->getVirtualPad(0)->clearBindings();
+	return detail::InputManager::getInstance()->getVirtualPad(0)->clearBindings(buttonName);
+}
+
+//------------------------------------------------------------------------------
+void Input::clearAllBindings()
+{
+	return detail::InputManager::getInstance()->getVirtualPad(0)->clearAllBindings();
 }
 
 //------------------------------------------------------------------------------
