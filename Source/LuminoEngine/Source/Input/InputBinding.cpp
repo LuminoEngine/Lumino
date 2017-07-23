@@ -124,9 +124,29 @@ static const String& getKeyName(Keys key)
 	};
 
 	int i = (int)key;
-	LN_ASSERT(i <= 0 && i < LN_ARRAY_SIZE_OF(table));
+	LN_ASSERT(0 <= i && i < LN_ARRAY_SIZE_OF(table));
 	LN_ASSERT(key == table[i].key);
 	return table[i].name;
+}
+
+static String getModifierKeysName(ModifierKeys modifierKeyss)
+{
+	String name;
+	if (modifierKeyss.TestFlag(ModifierKeys::Control))
+	{
+		name = _T("Ctrl");
+	}
+	if (modifierKeyss.TestFlag(ModifierKeys::Shift))
+	{
+		if (!name.isEmpty()) name += _T("+");
+		name = _T("Shift");
+	}
+	if (modifierKeyss.TestFlag(ModifierKeys::Alt))
+	{
+		if (!name.isEmpty()) name += _T("+");
+		name = _T("Alt");
+	}
+	return name;
 }
 
 //------------------------------------------------------------------------------
@@ -146,6 +166,18 @@ KeyGesture::KeyGesture(Keys key, ModifierKeys modifierKeys)
 //------------------------------------------------------------------------------
 KeyGesture::~KeyGesture()
 {
+}
+
+//------------------------------------------------------------------------------
+String KeyGesture::getDisplayName() const
+{
+	String name;
+	if (m_modifierKeys != ModifierKeys::None)
+	{
+		name = getModifierKeysName(m_modifierKeys) + _T("+");
+	}
+	name += getKeyName(m_key);
+	return name;
 }
 
 //------------------------------------------------------------------------------
@@ -184,7 +216,7 @@ static const String& getMouseActionName(MouseAction mouseAction)
 	};
 
 	int i = (int)mouseAction;
-	LN_ASSERT(i <= 0 && i < LN_ARRAY_SIZE_OF(table));
+	LN_ASSERT(0 <= i && i < LN_ARRAY_SIZE_OF(table));
 	LN_ASSERT(mouseAction == table[i].mouseAction);
 	return table[i].name;
 }
@@ -206,6 +238,18 @@ MouseGesture::MouseGesture(MouseAction mouseAction, ModifierKeys modifierKeys)
 //------------------------------------------------------------------------------
 MouseGesture::~MouseGesture()
 {
+}
+
+//------------------------------------------------------------------------------
+String MouseGesture::getDisplayName() const
+{
+	String name;
+	if (m_modifierKeys != ModifierKeys::None)
+	{
+		name = getModifierKeysName(m_modifierKeys) + _T("+");
+	}
+	name += getMouseActionName(m_mouseAction);
+	return name;
 }
 
 //------------------------------------------------------------------------------
@@ -276,7 +320,7 @@ static const String& getGamepadElementName(GamepadElement element)
 	};
 
 	int i = (int)element;
-	LN_ASSERT(i <= 0 && i < LN_ARRAY_SIZE_OF(table));
+	LN_ASSERT(0 <= i && i < LN_ARRAY_SIZE_OF(table));
 	LN_ASSERT(element == table[i].element);
 	return table[i].name;
 }
@@ -290,13 +334,20 @@ GamepadBindingPtr GamepadGesture::create(GamepadElement element)
 
 //------------------------------------------------------------------------------
 GamepadGesture::GamepadGesture(GamepadElement element)
-	: m_element(element)
+	: m_padNumber(0)
+	, m_element(element)
 {
 }
 
 //------------------------------------------------------------------------------
 GamepadGesture::~GamepadGesture()
 {
+}
+
+//------------------------------------------------------------------------------
+String GamepadGesture::getDisplayName() const
+{
+	return getGamepadElementName(m_element);
 }
 
 //------------------------------------------------------------------------------

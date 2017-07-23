@@ -50,6 +50,12 @@ public:
 		@brief		全てのアクションマッピングを削除します。
 	*/
 	static void clearBindings();
+	
+	/**
+		@brief		サポートしているすべての入力のうち、現在入力中であるものを InputGesture として返します。
+		@details	この機能はキーコンフィグ用のヘルパーです。新しく押された瞬間を判定します。それ以外は nullptr を返します。
+	*/
+	static InputGesture* getAnyActiveTriggered();
 
 private:
 };

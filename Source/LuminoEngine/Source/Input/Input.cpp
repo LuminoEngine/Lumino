@@ -58,6 +58,11 @@ void Input::clearBindings()
 	return detail::InputManager::getInstance()->getVirtualPad(0)->clearBindings();
 }
 
+//------------------------------------------------------------------------------
+InputGesture* Input::getAnyActiveTriggered()
+{
+	return detail::InputManager::getInstance()->getAnyActiveTriggered();
+}
 
 //==============================================================================
 // InputButton

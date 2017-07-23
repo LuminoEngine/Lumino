@@ -16,6 +16,9 @@ InputDriver::InputDriver()
 	, m_mouseButtonClickTimeout(0.3f)
 	, m_mousePoint()
 	, m_mouseWheel(0)
+	, m_pressedAnyKey(Ref<KeyGesture>::makeRef(Keys::Unknown, ModifierKeys::None))
+	, m_pressedAnyMouseButton(Ref<MouseGesture>::makeRef(MouseAction::None, ModifierKeys::None))
+	, m_pressedAnyGamepadElement(Ref<GamepadGesture>::makeRef(GamepadElement::None))
 {
 }
 
@@ -108,12 +111,24 @@ void InputDriver::onEvent(const PlatformEventArgs& e)
 void InputDriver::onKeyDown(Keys key)
 {
 	m_keyStatus[(int)key] = true;
+
+	// any key の処理
+	if (m_pressedAnyKey->getKey() == Keys::Unknown)
+	{
+		m_pressedAnyKey->setKey(key);
+	}
 }
 
 //------------------------------------------------------------------------------
 void InputDriver::onKeyUp(Keys key)
 {
 	m_keyStatus[(int)key] = false;
+
+	// any key の処理
+	if (m_pressedAnyKey->getKey() == key)
+	{
+		m_pressedAnyKey->setKey(Keys::Unknown);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -132,12 +147,143 @@ void InputDriver::onMouseButtonDown(MouseButtons button)
 		tracker.clickCount = 1;
 	}
 	tracker.lastTime = curTime;
+
+	// any key の処理
+	if (m_pressedAnyMouseButton->getMouseAction() == MouseAction::None)
+	{
+		m_pressedAnyMouseButton->setMouseAction(toMouseActionSimple(button));
+	}
 }
 
 //------------------------------------------------------------------------------
 void InputDriver::onMouseButtonUp(MouseButtons button)
 {
 	m_mouseStatus[(int)button] = false;
+
+	// any key の処理
+	if (m_pressedAnyMouseButton->getMouseAction() == toMouseActionSimple(button))
+	{
+		m_pressedAnyMouseButton->setMouseAction(MouseAction::None);
+	}
+}
+
+void InputDriver::updatePressedAnyGamepadElement()
+{
+	int newPadIndex;
+	GamepadElement newElement;
+	if (getPressedAnyGamepadElementHelper(&newPadIndex, &newElement))
+	{
+		m_pressedAnyGamepadElement->setGamepadNumber(newPadIndex);
+		m_pressedAnyGamepadElement->setElement(newElement);
+	}
+	else
+	{
+		m_pressedAnyGamepadElement->setElement(GamepadElement::None);
+	}
+}
+
+KeyGesture* InputDriver::getPressedAnyKey() const
+{
+	if (m_pressedAnyKey->getKey() == Keys::Unknown) return nullptr;
+	return m_pressedAnyKey;
+}
+
+MouseGesture* InputDriver::getPressedAnyMouseButton() const
+{
+	if (m_pressedAnyMouseButton->getMouseAction() == MouseAction::None) return nullptr;
+	return m_pressedAnyMouseButton;
+}
+
+GamepadGesture* InputDriver::getPressedAnyGamepadElement() const
+{
+	if (m_pressedAnyGamepadElement->getElement() == GamepadElement::None) return nullptr;
+	return m_pressedAnyGamepadElement;
+}
+
+MouseAction InputDriver::toMouseActionSimple(MouseButtons button)
+{
+	MouseAction mouseAction = MouseAction::None;
+	switch (button)
+	{
+	case MouseButtons::None:
+		break;
+	case MouseButtons::Left:
+		mouseAction = MouseAction::LeftClick;
+		break;
+	case MouseButtons::Right:
+		mouseAction = MouseAction::RightClick;
+		break;
+	case MouseButtons::Middle:
+		mouseAction = MouseAction::MiddleClick;
+		break;
+	case MouseButtons::X1:
+		mouseAction = MouseAction::X1Click;
+		break;
+	case MouseButtons::X2:
+		mouseAction = MouseAction::X2Click;
+		break;
+	default:
+		break;
+	}
+	return mouseAction;
+}
+
+bool InputDriver::getPressedAnyGamepadElementHelper(int* outPadNumber, GamepadElement* outElement)
+{
+	int joyCount = getJoystickCount();
+	for (int i = 0; i < joyCount; i++)
+	{
+		*outPadNumber = i;
+
+		JoystickDeviceState state;
+		getJoystickState(i, &state);
+
+		// buttons
+		for (int iButton = 0; iButton < JoystickDeviceState::MaxButtons; iButton++)
+		{
+			if (state.Buttons[iButton] != 0)
+			{
+				*outElement = (GamepadElement)(((int)GamepadElement::Button1) + iButton);
+				return true;
+			}
+		}
+
+		// pov
+		if (state.POV & PovDirFlags::Left)
+		{
+			*outElement = GamepadElement::PovLeft;
+			return true;
+		}
+		if (state.POV & PovDirFlags::Right)
+		{
+			*outElement = GamepadElement::PovRight;
+			return true;
+		}
+		if (state.POV & PovDirFlags::Up)
+		{
+			*outElement = GamepadElement::PovUp;
+			return true;
+		}
+		if (state.POV & PovDirFlags::Down)
+		{
+			*outElement = GamepadElement::PovDown;
+			return true;
+		}
+
+		// axis
+		for (int iAxis = 0; iAxis < JoystickDeviceState::MaxAxis; iAxis++)
+		{
+			if (abs(state.Axes[iAxis]) > 0.5f)	// あそび固定。この処理の目的はキーとして扱いたいような要素を検出することだから問題ないだろう
+			{
+				int index = iAxis * 2 + (int)GamepadElement::Axis1Minus;
+				if (state.Axes[iAxis] < 0.0) index += 1;
+				*outElement = (GamepadElement)index;
+				return true;
+
+			}
+		}
+	}
+	return false;
 }
 
 LN_NAMESPACE_END

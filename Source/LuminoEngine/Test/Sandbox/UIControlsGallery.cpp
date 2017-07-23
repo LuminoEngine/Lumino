@@ -332,6 +332,8 @@ void UIControlsGallery()
 
 		//printf("%f\n", slider->getValue());
 
+		printf("%p\n", Input::getAnyActiveTriggered());
+
 
 		//printf("----------\n");
 		//window2->GetRenderDiagnostic()->print();

@@ -47,6 +47,8 @@ InputManager* InputManager::getInstance(InputManager* priority)
 InputManager::InputManager()
 	: m_inputDriver(nullptr)
 	, m_defaultVirtualPads{}
+	, m_lasgAnyActiveTriggered(nullptr)
+	, m_anyActiveTriggeredFrameCount(0)
 {
 }
 
@@ -138,6 +140,18 @@ void InputManager::updateFrame()
 			pad->updateFrame();
 		}
 	}
+
+	m_inputDriver->updatePressedAnyGamepadElement();
+
+
+	if (m_lasgAnyActiveTriggered != nullptr)
+	{
+		m_anyActiveTriggeredFrameCount++;
+	}
+	else
+	{
+		m_anyActiveTriggeredFrameCount = 0;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -215,6 +229,47 @@ float InputManager::getVirtualButtonState(InputGesture* binding, bool keyboard, 
 		}
 	}
 	return 0.0f;
+}
+
+InputGesture* InputManager::getAnyActiveTriggered()
+{
+	bool pressed = false;
+
+	// keyboard
+	{
+		auto* g = m_inputDriver->getPressedAnyKey();
+		if (g != nullptr)
+		{
+			m_lasgAnyActiveTriggered = Ref<KeyGesture>::makeRef(g->getKey(), g->getModifierKeys());
+			pressed = true;
+		}
+	}
+	// mouse
+	{
+		auto* g = m_inputDriver->getPressedAnyMouseButton();
+		if (g != nullptr)
+		{
+			m_lasgAnyActiveTriggered = Ref<MouseGesture>::makeRef(g->getMouseAction(), g->getModifierKeys());
+			pressed = true;
+		}
+	}
+	// gamepad
+	{
+		auto* g = m_inputDriver->getPressedAnyGamepadElement();
+		if (g != nullptr)
+		{
+			m_lasgAnyActiveTriggered = Ref<GamepadGesture>::makeRef(g->getElement());
+			pressed = true;
+		}
+	}
+
+	if (!pressed)
+	{
+		m_lasgAnyActiveTriggered = nullptr;
+	}
+	
+	// return active gesture, if frameCount == 0
+	return (m_anyActiveTriggeredFrameCount == 0) ? m_lasgAnyActiveTriggered : nullptr;
 }
 
 } // namespace detail

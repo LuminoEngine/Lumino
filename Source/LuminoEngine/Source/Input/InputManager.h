@@ -45,6 +45,8 @@ public:
 
 	float getVirtualButtonState(InputGesture* binding, bool keyboard, bool mouse, int joyNumber);
 
+	InputGesture* getAnyActiveTriggered();
+
 private:
 	void refreshDevices();
 
@@ -56,6 +58,9 @@ private:
 	//Mouse*				m_mouse;
 	//Keyboard*			m_keyboard;
 	//ArrayList<Joypad*>	m_joypadList;
+
+	Ref<InputGesture>	m_lasgAnyActiveTriggered;
+	int					m_anyActiveTriggeredFrameCount;
 };
 
 } // namespace detail

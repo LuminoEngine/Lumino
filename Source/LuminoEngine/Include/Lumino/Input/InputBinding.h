@@ -15,6 +15,7 @@ using GamepadBindingPtr = Ref<GamepadGesture>;
 /** マウスによって実行されるアクション */
 enum class MouseAction
 {
+	None,
 	LeftClick,				/**< 左ボタンのクリック */
 	LeftDoubleClick,		/**< 左ボタンのダブルクリック */
 	RightClick,				/**< 右ボタンのクリック */
@@ -32,6 +33,8 @@ enum class MouseAction
 /** ゲームパッドの入力要素 */
 enum class GamepadElement
 {
+	None,
+	
 	Button1,
 	Button2,
 	Button3,
@@ -89,7 +92,7 @@ class InputGesture
 {
 	LN_OBJECT;
 public:
-	//virtual String getDisplayName() const = 0;
+	virtual String getDisplayName() const = 0;
 	float GetMinValidMThreshold() const { return m_minValidMThreshold; }
 	float getScale() const { return 1.0f; }	// TODO
 
@@ -126,11 +129,15 @@ public:
 	/** 関連付けられる修飾キー */
 	ModifierKeys getModifierKeys() const { return m_modifierKeys; }
 
+	virtual String getDisplayName() const override;
+
 LN_PROTECTED_INTERNAL_ACCESS:
 	KeyGesture(Keys key, ModifierKeys modifierKeys);
 	virtual ~KeyGesture();
-	//virtual String getDisplayName() const override;
 	virtual detail::InputBindingType getType() const override;
+
+LN_INTERNAL_ACCESS:
+	void setKey(Keys key) { m_key = key; }
 
 private:
 	Keys			m_key;
@@ -161,10 +168,15 @@ public:
 	/** 関連付けられる修飾キー */
 	ModifierKeys getModifierKeys() const { return m_modifierKeys; }
 
+	virtual String getDisplayName() const override;
+
 LN_PROTECTED_INTERNAL_ACCESS:
 	MouseGesture(MouseAction mouseAction, ModifierKeys modifierKeys);
 	virtual ~MouseGesture();
 	virtual detail::InputBindingType getType() const override;
+
+LN_INTERNAL_ACCESS:
+	void setMouseAction(MouseAction mouseAction) { m_mouseAction = mouseAction; }
 
 private:
 	MouseAction		m_mouseAction;
@@ -191,12 +203,20 @@ public:
 	/** 関連付けられるゲームパッド操作 */
 	GamepadElement getElement() const { return m_element; }
 
+	virtual String getDisplayName() const override;
+
 LN_PROTECTED_INTERNAL_ACCESS:
 	GamepadGesture(GamepadElement element);
 	virtual ~GamepadGesture();
 	virtual detail::InputBindingType getType() const override;
 
+LN_INTERNAL_ACCESS:
+	void setGamepadNumber(int number) { m_padNumber = number; }
+	int getGamepadNumber() const { return m_padNumber; }
+	void setElement(GamepadElement element) { m_element = element; }
+
 private:
+	int					m_padNumber;
 	GamepadElement		m_element;
 };
 
