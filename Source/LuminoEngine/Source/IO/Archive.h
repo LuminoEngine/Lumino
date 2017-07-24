@@ -214,6 +214,7 @@ private:
 	void refreshArchiveList();
 
 	FileAccessPriority		m_fileAccessPriority;
+	Ref<IArchive>			m_installDirAssetsStorage;
 	List<Ref<Archive>>		m_archiveList;
 	List<Ref<IArchive>>		m_directoryArchiveList;
 	List<IArchive*>			m_activeArchiveList;

@@ -69,7 +69,7 @@ void closeListWindow()
 void Main()
 {
 #if 0	// デバッグ用。指定したのサンプルを実行する
-	CommandLine::args.add(_T("Input.VirtualController.KeyConfig"));
+	CommandLine::args.add(_T("Graphics2D.Sprite2D.AnchorPoint"));
 #endif
 
 	EngineSettings::addAssetsDirectory(LN_LOCALFILE("Assets"));

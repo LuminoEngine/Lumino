@@ -98,6 +98,10 @@ class CppPackageRule : BuildTask
         Utils.CopyDirectory(libTargetDir, releaseDir + "Lib", true, "*.lib");
         Utils.CopyDirectory(libTargetDir, releaseDir + "Lib", true, "*.dll");
 
+        // Assets
+        Logger.WriteLine("copy Assets files...");
+        Utils.CopyDirectory(Path.Combine(builder.LuminoRootDir, "Samples/Assets"), releaseDir + "Assets", true);
+
         // Readme.txt (バージョン名を埋め込む)
         string text = File.ReadAllText(pkgSrcDir + "Readme.template.txt");
         text = text.Replace("$(LuminoVersion)", builder.VersionString);

@@ -19,6 +19,8 @@ void UIControlsGallery()
 	Engine::initialize();
 
 
+
+
 	Engine::getWorld3D()->setVisibleGridPlane(true);
 
 	Engine::getCamera3D()->addComponent(newObject<CameraMouseMoveBehavior>());
