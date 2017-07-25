@@ -304,6 +304,12 @@ EngineManager::~EngineManager()
 //------------------------------------------------------------------------------
 void EngineManager::initialize()
 {
+	String installDir;
+	if (Environment::tryGetEnvironmentVariable(_T("LuminoInstallDir"), &installDir))
+	{
+		m_installDir = installDir;
+	}
+
 	Profiler2::initializeGlobalSections();
 
 	initializePlatformManager();

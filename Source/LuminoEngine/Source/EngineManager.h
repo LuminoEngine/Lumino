@@ -197,6 +197,7 @@ public:
 	bool isEndRequested() const { return m_endRequested; }
 	void exit();
 
+	const PathName& getInstallDir() const { return m_installDir; }
 
 	PlatformManager* getPlatformManager() const { return m_platformManager; }
 	const Ref<detail::ArchiveManager>& getArchiveManager() const { return m_archiveManager; }
@@ -242,6 +243,7 @@ private:
 	//class NativeWindowEventListener;
 
 	detail::EngineSettings				m_configData;
+	PathName							m_installDir;
 	FpsController						m_fpsController;
 	FrameUpdateMode						m_frameUpdateMode;
 

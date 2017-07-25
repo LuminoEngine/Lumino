@@ -9,7 +9,7 @@ namespace LuminoBuild
     {
         public static void Main(string[] args)
         {
-#if true
+#if false
             args = new string[] { "MakeProjects" };
 #else
             // default

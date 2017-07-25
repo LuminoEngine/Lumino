@@ -4,6 +4,21 @@ PackageSource フォルダには、配布するパッケージに含めるファ
 例えば、インストールスクリプトや Readme のソースファイルなど。
 
 
+インストーラについて
+--------------------
+インストーラは Release/Lumino/MSVC... フォルダ以下のファイルを全てパッケージ化する。
+
+ファイルやフォルダを追加したい場合はインストーラプロジェクトを変更するのではなく、
+ビルドスクリプトでコピーされるファイルを調整すること。
+
+
+
+
+
+
+
+
+
 
 "C:\Program Files (x86)\WiX Toolset v3.11\bin\heat" dir Release/Lumino -dr LUMINO_DIR -cg LuminoFiles -gg -g1 -sfrag -srd  -var "var.LuminoFilesDir" -out LuminoFiles.wxs
 

@@ -37,6 +37,7 @@
 #include <Lumino/IO/FileStream.h>
 #include <Lumino/IO/FileManager.h>
 #include <Lumino/Text/Encoding.h>
+#include "../EngineManager.h"
 #include "ArchiveMaker.h"
 #include "Archive.h"
 
@@ -439,6 +440,7 @@ bool DirectoryAssetsStorage::existsFile(const PathName& fileFullPath)
 	LN_ASSERT(fileFullPath.isAbsolute());
 
 	// fileFullPath が m_directoryFullPath 以下のファイルを指していること
+	// (実際に存在していても、Lumino に登録されていない場所は除外したい)
 	if (StringTraits::compare(
 		m_directoryFullPath.c_str(), m_directoryFullPath.getLength(),
 		fileFullPath.c_str(), fileFullPath.getLength(),
@@ -454,8 +456,17 @@ bool DirectoryAssetsStorage::existsFile(const PathName& fileFullPath)
 
 bool DirectoryAssetsStorage::tryCreateStream(const PathName& fileFullPath, Ref<Stream>* outStream, bool isDeferring)
 {
+	if (!existsFile(fileFullPath))
+	{
+		return false;
+	}
+
 	FileOpenMode mode = FileOpenMode::read;
-	if (isDeferring) { mode |= FileOpenMode::Deferring; }
+	if (isDeferring)
+	{
+		mode |= FileOpenMode::Deferring;
+	}
+
 	Ref<FileStream> file = FileStream::create(fileFullPath, mode);
 	*outStream = file;
 	return true;
@@ -467,6 +478,7 @@ bool DirectoryAssetsStorage::tryCreateStream(const PathName& fileFullPath, Ref<S
 
 ArchiveManager::ArchiveManager()
 	: m_fileAccessPriority(FileAccessPriority_DirectoryFirst)
+	, m_installDirAssetsStorage(nullptr)
 	, m_archiveList()
 	, m_directoryArchiveList()
 	, m_activeArchiveList()
@@ -483,6 +495,12 @@ void ArchiveManager::initialize(FileAccessPriority accessPriority)
 	auto storage = Ref<DummyArchive>::makeRef();
 	m_directoryArchiveList.add(Ref<IArchive>::staticCast(storage));
 	refreshArchiveList();
+
+	auto installDir = detail::EngineDomain::getEngineManager()->getInstallDir();
+	if (!installDir.isEmpty())
+	{
+		m_installDirAssetsStorage = Ref<DirectoryAssetsStorage>::makeRef(PathName(installDir, _T("Assets")));
+	}
 }
 
 void ArchiveManager::dispose()
@@ -563,10 +581,12 @@ void ArchiveManager::refreshArchiveList()
 	case ln::FileAccessPriority_ArchiveFirst:
 		for (auto& ac : m_archiveList) m_activeArchiveList.add(ac);
 		for (auto& ac : m_directoryArchiveList) m_activeArchiveList.add(ac);
+		if (m_installDirAssetsStorage != nullptr) m_activeArchiveList.add(m_installDirAssetsStorage);
 		break;
 	case ln::FileAccessPriority_DirectoryFirst:
 		for (auto& ac : m_directoryArchiveList) m_activeArchiveList.add(ac);
 		for (auto& ac : m_archiveList) m_activeArchiveList.add(ac);
+		if (m_installDirAssetsStorage != nullptr) m_activeArchiveList.add(m_installDirAssetsStorage);
 		break;
 	case ln::FileAccessPriority_ArchiveOnly:
 		for (auto& ac : m_archiveList) m_activeArchiveList.add(ac);
