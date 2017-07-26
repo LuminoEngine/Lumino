@@ -5,35 +5,6 @@ LN_NAMESPACE_BEGIN
 namespace detail { class ReadWriteMutexImpl; }
 
 /**
-	@page	Doc_Threading
-		- @ref Doc_ReadWriteMutex_1
-
-	@page	Doc_ReadWriteMutex_1	複数の読み取りロックと、1つの書き込みロックを行う
-
-	@code
-		class Test
-		{
-		private:
-			ReadWriteMutex m_RWMutex;
-			int m_Value;
-
-		public:
-			int GetValue()
-			{
-				ScopedReadLock lock(m_RWMutex);
-				return m_nValue;
-			}
-
-			void setValue(int nValue)
-			{
-				ScopedWriteLock lock(m_RWMutex);
-				m_nValue = nValue;
-			}
-		}
-	@endcode
-*/
-
-/**
 	@brief	複数の読み取りロックと、1つの書き込みロックを行う Mutex
 */
 class ReadWriteMutex

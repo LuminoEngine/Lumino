@@ -1,9 +1,0 @@
-- name: Articles
-  href: articles/
-- name: Manual
-  href: manual/
-- name: Api Documentation
-  href: api/
-  homepage: api/index.md
-- name: Sampels
-  href: samples/

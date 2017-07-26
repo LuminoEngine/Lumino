@@ -53,7 +53,7 @@ LN_SAMPLE_MAIN(Input, VirtualController, KeyConfig)
 
 	// 初期状態のキーコンフィグ ("jump" という名前のボタンにスペースキーを割り当てる)
 	Ref<InputGesture> jumpButton = KeyGesture::create(Keys::Space);
-	Input::addButtonBinding(_T("jump"), jumpButton);
+	Input::addBinding(_T("jump"), jumpButton);
 	description->setText(_T("jump : ") + jumpButton->getDisplayName());
 
 	Vector3 pos(100, 100, 0);
@@ -98,7 +98,7 @@ LN_SAMPLE_MAIN(Input, VirtualController, KeyConfig)
 			{
 				configMode = false;
 				Input::clearBindings(_T("jump"));
-				Input::addButtonBinding(_T("jump"), jumpButton);
+				Input::addBinding(_T("jump"), jumpButton);
 				description->setText(_T("jump : ") + jumpButton->getDisplayName());
 			}
 		}

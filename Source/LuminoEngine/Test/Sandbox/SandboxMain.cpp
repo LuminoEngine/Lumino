@@ -214,8 +214,8 @@ void Main()
 
 	EngineDiag::setDisplayMode(EngineDiagDisplayMode::FpsSummary);
 
-	Input::addButtonBinding(_T("AA"), KeyGesture::create(Keys::C));
-	Input::addButtonBinding(_T("GG"), KeyGesture::create(Keys::A));
+	Input::addBinding(_T("AA"), KeyGesture::create(Keys::C));
+	Input::addBinding(_T("GG"), KeyGesture::create(Keys::A));
 
 	//auto spr1 = Sprite2DComponent::create(_T("D:/Proj/LuminoStudio/Engine/External/Lumino/test/UnitTest/Graphics/TestData/Sprite2.png"));
 
