@@ -6,19 +6,19 @@ using namespace ln;
 void Main()
 {
 	// Lumino の初期化処理
-	Engine::Initialize();
+	Engine::initialize();
 
 	// 画像を読み込み、2Dスプライトを作成する
-	auto sprite = Sprite2D::Create("Assets/icon256.png");
+	auto sprite = Sprite2D::create("Assets/icon256.png");
 
 	// 2Dスプライトの位置を設定する
-	sprite->SetPosition(200, 100);
+	sprite->setPosition(200, 100);
 
 	// Lumino の更新処理 (ウィンドウへの描画などを行い、ウィンドウが閉じられていれば false を返す)
-	while (Engine::Update())
+	while (Engine::update())
 	{
 	}
 
 	// Lumino の終了処理
-	Engine::Terminate();
+	Engine::terminate();
 }
