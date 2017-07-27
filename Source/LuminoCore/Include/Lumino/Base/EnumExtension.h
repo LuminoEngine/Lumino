@@ -1,14 +1,7 @@
 ﻿/**
 	@file	EnumExtension.h
 */
-/**
-	@page	Doc_Core
-	- @ref	Doc_EnumExtension_1
-	@page	Doc_EnumExtension_1	
 
-	@code
-	@endcode
-*/
 #pragma once
 #include "List.h"
 #include "String.h"

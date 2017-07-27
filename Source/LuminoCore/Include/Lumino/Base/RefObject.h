@@ -193,8 +193,7 @@ public:
 	/// operator*
     T& operator* ()
     {
-		if (m_ptr == nullptr)
-			LN_ASSERT(m_ptr != nullptr);
+		LN_ASSERT(m_ptr != nullptr);
         return *static_cast<T*>(m_ptr);
     }
 
@@ -208,8 +207,7 @@ public:
 	/// ->
     T* operator -> () const
     {
-		if (m_ptr == nullptr)
-			LN_ASSERT(m_ptr != nullptr );
+		LN_ASSERT(m_ptr != nullptr );
         return static_cast<T*>(m_ptr);
     }
 

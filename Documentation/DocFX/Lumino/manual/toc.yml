@@ -1,4 +1,0 @@
-- name: エンジン
-  items:
-    - name: オブジェクトの作成
-      href: Engine_ObjectCreation.md

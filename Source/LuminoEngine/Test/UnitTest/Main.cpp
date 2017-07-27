@@ -150,10 +150,13 @@ void TestEnv::WaitRendering()
 //------------------------------------------------------------------------------
 void EngineInitalize()
 {
+	EngineSettings::addAssetsDirectory(LN_LOCALFILE("../../../../Samples/Assets"));
+
 	Engine::initialize();
 
 	// テストしやすいように固定フレームレートにする
 	Engine::setFrameUpdateMode(FrameUpdateMode::Fixed);
+
 
 	RawFont::registerFontFile(LN_LOCALFILE("../../../../Tools/VLGothic/VL-Gothic-Regular.ttf"));
 	RawFont::getDefaultFont()->setName(_T("VL Gothic"));
