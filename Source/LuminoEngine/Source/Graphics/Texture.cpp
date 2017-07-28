@@ -3,6 +3,7 @@
 #include "../Internal.h"
 #include <Lumino/IO/FileManager.h>
 #include "../../include/Lumino/Graphics/Texture.h"
+#include "../IO/Archive.h"
 #include "GraphicsManager.h"
 #include <Lumino/Graphics/Utils.h>
 #include <Lumino/Graphics/Text/GlyphRun.h>
@@ -198,7 +199,7 @@ void Texture2D::initialize(int width, int height, TextureFormat format, bool mip
 //------------------------------------------------------------------------------
 void Texture2D::initialize(const StringRef& filePath, TextureFormat format, bool mipmap)
 {
-	Ref<Stream> stream(detail::GraphicsManager::getInstance()->getFileManager()->createFileStream(filePath), false);
+	auto stream = detail::EngineDomain::getArchiveManager()->createFileStream(filePath, false);
 	initialize(stream, format, mipmap);
 }
 

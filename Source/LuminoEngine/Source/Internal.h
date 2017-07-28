@@ -21,6 +21,7 @@ class World3D;
 class EngineManager;
 
 namespace detail {
+class ArchiveManager;
 class AnimationManager;
 class GraphicsManager;
 class ModelManager;
@@ -32,6 +33,7 @@ public:
 	static PhysicsWorld* getPhysicsWorld3D();
 
 	static EngineManager* getEngineManager();
+	static ArchiveManager* getArchiveManager();
 	static AnimationManager* getAnimationManager();
 	static GraphicsManager* getGraphicsManager();
 	static ModelManager* getModelManager();
