@@ -30,6 +30,11 @@ TEST_F(Test_IO_PathName, Constructor)
 		ASSERT_STREQ(_T("a/b"), path.c_str());
 
 	}
+	// <Test> 空パスとの結合を確認する
+	{
+		PathName path(PathName(), _T("a/b.txt"));
+		ASSERT_STREQ(_T("a/b.txt"), path.c_str());
+	}
 }
 
 //------------------------------------------------------------------------------
