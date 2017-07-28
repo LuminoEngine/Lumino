@@ -492,15 +492,17 @@ ArchiveManager::~ArchiveManager()
 void ArchiveManager::initialize(FileAccessPriority accessPriority)
 {
 	m_fileAccessPriority = accessPriority;
+
 	auto storage = Ref<DummyArchive>::makeRef();
 	m_directoryArchiveList.add(Ref<IArchive>::staticCast(storage));
-	refreshArchiveList();
 
 	auto installDir = detail::EngineDomain::getEngineManager()->getInstallDir();
 	if (!installDir.isEmpty())
 	{
 		m_installDirAssetsStorage = Ref<DirectoryAssetsStorage>::makeRef(PathName(installDir, _T("Assets")));
 	}
+
+	refreshArchiveList();
 }
 
 void ArchiveManager::dispose()
