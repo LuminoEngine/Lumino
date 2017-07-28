@@ -39,7 +39,9 @@ template<typename TChar>
 void GenericPathName<TChar>::assignUnderBasePath(const PathNameT& basePath, const char* relativePath, int len)
 {
 	// フルパスの場合はそのまま割り当てる
-	if (PathTraits::isAbsolutePath(relativePath, len))
+	// basePath が空なら relativePath を使う
+	if (PathTraits::isAbsolutePath(relativePath, len) ||
+		basePath.isEmpty())
 	{
 		m_path.assignCStr(relativePath, len);
 	}
@@ -68,7 +70,9 @@ template<typename TChar>
 void GenericPathName<TChar>::assignUnderBasePath(const PathNameT& basePath, const wchar_t* relativePath, int len)
 {
 	// フルパスの場合はそのまま割り当てる
-	if (PathTraits::isAbsolutePath(relativePath, len))
+	// basePath が空なら relativePath を使う
+	if (PathTraits::isAbsolutePath(relativePath, len) ||
+		basePath.isEmpty())
 	{
 		m_path.assignCStr(relativePath, len);
 	}
@@ -76,8 +80,7 @@ void GenericPathName<TChar>::assignUnderBasePath(const PathNameT& basePath, cons
 	else
 	{
 		m_path = basePath.m_path;
-		//if ((*m_path.rbegin()) != Separator) {	// 末尾セパレータ
-		// 末尾がセパレータでなければ付加する
+		// 末尾にセパレータがなければ付加する
 		if (!PathTraits::endWithSeparator(m_path.c_str(), m_path.getLength())) {
 			m_path += Separator;
 		}
