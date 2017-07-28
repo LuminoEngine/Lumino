@@ -282,8 +282,9 @@ namespace LuminoBuild
         /// </summary>
         public static void CreateZipFile(string dirPath, string zipFilePath, bool includeBaseDirectory = true)
         {
+            zipFilePath = Path.GetFullPath(zipFilePath);
             File.Delete(zipFilePath);
-            ZipFile.CreateFromDirectory(dirPath, zipFilePath, CompressionLevel.Optimal, includeBaseDirectory);
+            ZipFile.CreateFromDirectory(Path.GetFullPath(dirPath), zipFilePath, CompressionLevel.Optimal, includeBaseDirectory);
         }
 
         /// <summary>

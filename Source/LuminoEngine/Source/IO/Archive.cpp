@@ -499,7 +499,10 @@ void ArchiveManager::initialize(FileAccessPriority accessPriority)
 	auto installDir = detail::EngineDomain::getEngineManager()->getInstallDir();
 	if (!installDir.isEmpty())
 	{
-		m_installDirAssetsStorage = Ref<DirectoryAssetsStorage>::makeRef(PathName(installDir, _T("Assets")));
+		PathName dir = installDir;
+		dir.append(LN_COMPILER_KEYWORD);
+		dir.append(_T("Assets"));
+		m_installDirAssetsStorage = Ref<DirectoryAssetsStorage>::makeRef(dir);
 	}
 
 	refreshArchiveList();
