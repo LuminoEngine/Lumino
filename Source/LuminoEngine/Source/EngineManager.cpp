@@ -879,6 +879,12 @@ EngineManager* EngineDomain::getEngineManager()
 }
 
 //------------------------------------------------------------------------------
+ArchiveManager* EngineDomain::getArchiveManager()
+{
+	return EngineManager::getInstance()->getArchiveManager();
+}
+
+//------------------------------------------------------------------------------
 AnimationManager* EngineDomain::getAnimationManager()
 {
 	return EngineManager::getInstance()->getAnimationManager();
