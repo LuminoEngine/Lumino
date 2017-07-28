@@ -30,6 +30,15 @@
 	#define LN_GNUC
 #elif defined(_MSC_VER)
 	#define LN_MSVC
+	#if _MSC_VER >= 1910	// Visual C++ 15.0 (Visual Studio 2017)
+		#define LN_COMPILER_KEYWORD		"MSVC2017"
+	#elif _MSC_VER >= 1900	// Visual C++ 14.0 (Visual Studio 2015)
+		#define LN_COMPILER_KEYWORD		"MSVC2015"
+	#elif _MSC_VER >= 1800	// Visual C++ 12.0 (Visual Studio 2013)
+		#define LN_COMPILER_KEYWORD		"MSVC2013"
+	#else
+		#error "current MSVC is not supported."
+	#endif
 #else
 	#error "invalid compiler"
 #endif

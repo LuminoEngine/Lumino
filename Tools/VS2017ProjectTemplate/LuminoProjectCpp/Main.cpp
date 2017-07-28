@@ -18,7 +18,4 @@ void Main()
 	while (Engine::update())
 	{
 	}
-
-	// Lumino の終了処理
-	Engine::terminate();
 }

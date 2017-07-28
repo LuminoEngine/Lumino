@@ -75,7 +75,9 @@ class CppPackageRule : BuildTask
             Logger.WriteLine("copy other files...");
             Directory.CreateDirectory(releaseDir + "Tools/VS2017ProjectTemplate");
             Utils.CreateZipFile(builder.LuminoToolsDir + "VS2017ProjectTemplate/LuminoProjectCpp", releaseDir + "Tools/VS2017ProjectTemplate/LuminoProjectCpp.zip", false);
-
+            // ↑ Kaspersky で、このタイミングでのzip圧縮でウィルス扱いされることがあった。
+            // clone 直後など、クリーンな状態では発生しない。Release フォルダに上書きコピー → zpi 化がキーだろうか？
+            // Release フォルダを削除しておくとセーフ。
         }
 
         // .zip に圧縮する
