@@ -1,6 +1,7 @@
 
 #pragma once
 #include "UIControl.h"
+#include "UIItemsControl.h"
 
 LN_NAMESPACE_BEGIN
 class UIToggleButton;
@@ -11,11 +12,12 @@ class UITreeView;
 	@brief
 */
 class UITreeViewItem
-	: public UIControl
+	//: public UIControl
+	: public UIHeaderedItemsControl
 {
 	LN_OBJECT;
 public:
-	void setHeader(UIElement* header);
+	//void setHeader(UIElement* header);
 
 	void setExpanded(bool expand);
 	bool isExpanded() const;
@@ -38,7 +40,7 @@ private:
 	void expander_OnChecked(UIEventArgs* e);
 	void expander_OnUnchecked(UIEventArgs* e);
 
-	Ref<UIElement>		m_header;
+	//Ref<UIElement>		m_header;
 	Ref<UIToggleButton>	m_expander;
 };
 

@@ -4,7 +4,48 @@
 #include "UIElementCollection.h"
 
 LN_NAMESPACE_BEGIN
-class UILayoutPanel;
+
+/**
+	@brief	意味のある連続した子要素を管理する機能を持ったコントロールです。
+*/
+class UIItemsControl
+	: public UIControl
+{
+	LN_OBJECT;
+public:
+	void addItem(UIElement* item);
+
+LN_CONSTRUCT_ACCESS:
+	UIItemsControl();
+	virtual ~UIItemsControl();
+	void initialize();
+
+private:
+};
+
+/**
+	@brief
+*/
+class UIHeaderedItemsControl
+	: public UIItemsControl
+{
+	LN_OBJECT;
+public:
+	void setHeader(UIElement* header);
+
+LN_CONSTRUCT_ACCESS:
+	UIHeaderedItemsControl();
+	virtual ~UIHeaderedItemsControl();
+	void initialize();
+
+protected:
+	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
+
+private:
+	Ref<UIControl>	m_headerContainer;
+	Ref<UIElement>	m_headerContent;
+};
 
 #if 0
 /**

@@ -11,11 +11,10 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 // UITreeViewItem
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UITreeViewItem, UIControl)
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UITreeViewItem, UIHeaderedItemsControl)
 
 //------------------------------------------------------------------------------
 UITreeViewItem::UITreeViewItem()
-	: m_header(nullptr)
 {
 }
 
@@ -27,7 +26,7 @@ UITreeViewItem::~UITreeViewItem()
 //------------------------------------------------------------------------------
 void UITreeViewItem::initialize()
 {
-	UIControl::initialize();
+	UIHeaderedItemsControl::initialize();
 
 	auto panel = newObject<UIStackPanel>();
 	panel->setHAlignment(HAlignment::Stretch);
@@ -46,20 +45,20 @@ void UITreeViewItem::initialize()
 	setBackground(Brush::Blue);
 }
 
-//------------------------------------------------------------------------------
-void UITreeViewItem::setHeader(UIElement* header)
-{
-	removeVisualChild(m_header);
-
-	m_header = header;
-	m_header->setBackground(Brush::Green);
-	m_header->setHeight(16);	// TODO:
-
-	if (m_header != nullptr)
-	{
-		addVisualChild(m_header);
-	}
-}
+////------------------------------------------------------------------------------
+//void UITreeViewItem::setHeader(UIElement* header)
+//{
+//	removeVisualChild(m_header);
+//
+//	m_header = header;
+//	m_header->setBackground(Brush::Green);
+//	m_header->setHeight(16);	// TODO:
+//
+//	if (m_header != nullptr)
+//	{
+//		addVisualChild(m_header);
+//	}
+//}
 
 //------------------------------------------------------------------------------
 void UITreeViewItem::setExpanded(bool expand)
@@ -94,51 +93,76 @@ UITreeViewItem* UITreeViewItem::addItem(UIElement* item)
 //------------------------------------------------------------------------------
 Size UITreeViewItem::measureOverride(const Size& constraint)
 {
-	Size desiredSize(0, 0);	// TODO: Branch の余白は後で考える http://doc.qt.io/qt-4.8/stylesheet-examples.html#customizing-qtreeview
+	//// TODO: type
+	//auto* parent = dynamic_cast<UITreeViewItem*>(getLogicalParent());
+	//if (parent != nullptr)
+	//{
+	//	writeCoreFlag(detail::UICoreFlags_LayoutVisible, parent->isExpanded());
+	//	printf("%d\n", parent->isExpanded());
+	//}
+
+	//Size desiredSize(0, 0);	// TODO: Branch の余白は後で考える http://doc.qt.io/qt-4.8/stylesheet-examples.html#customizing-qtreeview
 
 	// Expander ボタンの領域を計測する
 	m_expander->measureLayout(constraint);
 	Size expanderSize = m_expander->getDesiredSize();
 
-	// ヘッダの領域を計測する
-	m_header->measureLayout(constraint);
-	Size headerSize = m_header->getDesiredSize();
+	Size desiredSize = UIHeaderedItemsControl::measureOverride(constraint);
 
-	// 子アイテムの領域を計測する
-	UILayoutPanel* itemsPanel = getLayoutPanel();
-	itemsPanel->measureLayout(constraint);
-	Size panelSize = itemsPanel->getDesiredSize();
+	desiredSize.width += expanderSize.width;
 
-	// 下方向に結合する
-	desiredSize.height += headerSize.height;
-	desiredSize.height += panelSize.height;
-	desiredSize.width = expanderSize.width + std::max(headerSize.width, panelSize.width);
+	return desiredSize;
 
-	Size thisSize = ln::detail::LayoutHelper::measureElement(this, constraint);
+	//// ヘッダの領域を計測する
+	//m_header->measureLayout(constraint);
+	//Size headerSize = m_header->getDesiredSize();
 
-	return Size::max(desiredSize, thisSize);
+	//// 子アイテムの領域を計測する
+	//UILayoutPanel* itemsPanel = getLayoutPanel();
+	//itemsPanel->measureLayout(constraint);
+	//Size panelSize = itemsPanel->getDesiredSize();
+
+	//// 下方向に結合する
+	//desiredSize.height += headerSize.height;
+	//desiredSize.height += panelSize.height;
+	//desiredSize.width = expanderSize.width + std::max(headerSize.width, panelSize.width);
+
+	//Size thisSize = ln::detail::LayoutHelper::measureElement(this, constraint);
+
+	//return Size::max(desiredSize, thisSize);
 }
 
 //------------------------------------------------------------------------------
 Size UITreeViewItem::arrangeOverride(const Size& finalSize)
 {
+	UIHeaderedItemsControl::arrangeOverride(finalSize);
+
 	Size expanderSize = m_expander->getDesiredSize();
 
 	// Expander
 	m_expander->arrangeLayout(Rect(0, 0, expanderSize));
 
-	// Header
-	Size headerSize = m_header->getDesiredSize();
-	Rect headerRect(expanderSize.width, 0, finalSize.width - expanderSize.width, std::max(expanderSize.height, headerSize.height));
-	m_header->arrangeLayout(headerRect);
-	
-	// Items
-	Rect itemsRect(expanderSize.width, headerRect.height, finalSize.width - expanderSize.width, finalSize.height - headerRect.height);
-	getLayoutPanel()->arrangeLayout(itemsRect);
+	//// Header
+	//Size headerSize = m_header->getDesiredSize();
+	//Rect headerRect(expanderSize.width, 0, finalSize.width - expanderSize.width, std::max(expanderSize.height, headerSize.height));
+	//m_header->arrangeLayout(headerRect);
+	//
+	//// Items
+	//Rect itemsRect(expanderSize.width, headerRect.height, finalSize.width - expanderSize.width, finalSize.height - headerRect.height);
+	//getLayoutPanel()->arrangeLayout(itemsRect);
 
 	return finalSize;
 }
 
+void UITreeViewItem::expander_OnChecked(UIEventArgs* e)
+{
+
+}
+
+void UITreeViewItem::expander_OnUnchecked(UIEventArgs* e)
+{
+
+}
 
 //==============================================================================
 // UITreeView
