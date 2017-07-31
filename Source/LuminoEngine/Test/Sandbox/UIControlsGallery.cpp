@@ -21,13 +21,24 @@ void UIControlsGallery()
 
 
 
-	Engine::getWorld3D()->setVisibleGridPlane(true);
+	//Engine::getWorld3D()->setVisibleGridPlane(true);
 
 	Engine::getCamera3D()->addComponent(newObject<CameraMouseMoveBehavior>());
 
 
 	//auto* uiRoot = Engine::getMainWindow();
 	auto* uiRoot = Engine::getDefaultUILayer()->GetLayoutView();
+
+
+	auto tree1 = UITreeView::create();
+	tree1->setSize(Size(200, 300));
+	tree1->setBackground(UIColors::getBrush(UIColorIndex::Blue, 9));
+	auto item1 = tree1->addTextItem(_T("item1"));
+	auto item2 = tree1->addTextItem(_T("item2"));
+	auto item2_1 = item2->addTextItem(_T("item2_1"));
+	auto item2_2 = item2->addTextItem(_T("item2_2"));
+	auto item3 = tree1->addTextItem(_T("item3"));
+	uiRoot->addChild(tree1);
 
 
 	//auto grid1 = UIGridLayout::create();
@@ -67,12 +78,12 @@ void UIControlsGallery()
 	//text->setFont(font);
 	//text->setText(_T("A"));
 
-	auto icon1 = GlyphIcon2D::create("fa-globe", 64);
-	auto icon2 = GlyphIcon2D::create("fa-play-circle-o", 64);
-	auto icon3 = GlyphIcon2D::create("fa-android", 64);
-	icon1->setPosition(32, 32);
-	icon2->setPosition(96, 32);
-	icon3->setPosition(160, 32);
+	//auto icon1 = GlyphIcon2D::create("fa-globe", 64);
+	//auto icon2 = GlyphIcon2D::create("fa-play-circle-o", 64);
+	//auto icon3 = GlyphIcon2D::create("fa-android", 64);
+	//icon1->setPosition(32, 32);
+	//icon2->setPosition(96, 32);
+	//icon3->setPosition(160, 32);
 
 
 //	auto sky = newObject<SkyComponent>();

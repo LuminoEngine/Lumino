@@ -9,6 +9,7 @@
 #include <Lumino/UI/UIStyle.h>
 #include "UIHelper.h"
 #include "UIManager.h"
+#include "LayoutHelper.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -61,6 +62,7 @@ UIElement::UIElement()
 	, decoratorOpacity(1.0f)
 	, m_specialElementType(UISpecialElementType::None)
 	, m_combinedOpacity(0.0f)
+	, m_coreFlags(detail::UICoreFlags_LayoutVisible)
 	, m_isEnabled(true)
 	, m_isMouseOver(nullptr)
 	, m_isHitTestVisible(true)
@@ -226,7 +228,9 @@ void UIElement::raiseEvent(const UIEventInfo* ev, UIElement* sender, UIEventArgs
 //------------------------------------------------------------------------------
 void UIElement::measureLayout(const Size& availableSize)
 {
-	ILayoutElement::measureLayout(availableSize);
+	//ILayoutElement::measureLayout(availableSize);
+
+	detail::LayoutHelper2::measureLayout(this, availableSize);
 
 	// フォントの無効フラグを落とす
 	// TODO: UITextElement へ移動した方が良いかも？
@@ -253,7 +257,8 @@ void UIElement::arrangeLayout(const Rect& finalLocalRect)
 	}
 
 
-	ILayoutElement::arrangeLayout(alignd/*finalLocalRect*/);
+	//ILayoutElement::arrangeLayout(alignd/*finalLocalRect*/);
+	detail::LayoutHelper2::arrangeLayout(this, alignd);
 
 	onLayoutUpdated();
 }
@@ -786,6 +791,27 @@ void UIElement::removeVisualChild(UIElement* element)
 
 	m_visualChildren->remove(element);
 	element->m_visualParent = nullptr;
+}
+
+//------------------------------------------------------------------------------
+bool UIElement::readCoreFlag(detail::UICoreFlags field) const
+{
+	return (m_coreFlags & field) != 0;
+}
+
+//------------------------------------------------------------------------------
+void UIElement::writeCoreFlag(detail::UICoreFlags field, bool value)
+{
+	uint32_t flags = m_coreFlags;
+	if (value)
+	{
+		flags |= field;
+	}
+	else
+	{
+		flags &= (~field);
+	}
+	m_coreFlags = (detail::UICoreFlags)flags;
 }
 
 //------------------------------------------------------------------------------

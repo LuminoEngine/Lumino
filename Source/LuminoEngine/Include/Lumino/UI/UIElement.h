@@ -13,7 +13,17 @@ LN_NAMESPACE_BEGIN
 class DrawingContext;
 class UIStylePropertyTable;
 class UIVisualStateManager;
-namespace detail { class UIStylePropertyTableInstance; }
+namespace detail {
+class UIStylePropertyTableInstance;
+class LayoutHelper2;
+
+enum UICoreFlags
+{
+	UICoreFlags_None			= 0x0000,
+	UICoreFlags_LayoutVisible	= 0x0001,
+};
+
+} // namespace detail
 
 enum class UISpecialElementType
 {
@@ -385,6 +395,9 @@ LN_INTERNAL_ACCESS:
 	void setSpecialElementType(UISpecialElementType type) { m_specialElementType = type; }
 	UISpecialElementType getSpecialElementType2() const { return m_specialElementType; }
 
+	bool readCoreFlag(detail::UICoreFlags field) const;
+	void writeCoreFlag(detail::UICoreFlags field, bool value);
+
 	void updateFrame();
 	void render(DrawingContext* g);
 
@@ -420,7 +433,7 @@ private:
 	virtual void setLayoutFinalLocalRect(const Rect& renderRect, const Rect& contentRect) override;
 	virtual void getLayoutFinalLocalRect(Rect* outRenderRect, Rect* outContentRect) const override;
 	virtual void setLayoutFinalGlobalRect(const Rect& rect) override;
-
+	bool isLayoutVisible() const { return readCoreFlag(detail::UICoreFlags::UICoreFlags_LayoutVisible); }
 
 private:
 	void updateLocalStyleAndApplyProperties(UIStyleTable* styleTable, detail::UIStylePropertyTableInstance* parentStyleInstance);
@@ -460,6 +473,7 @@ private:
 	float					m_combinedOpacity;
 	//AnchorInfo				m_anchorInfo;
 	detail::InvalidateFlags	m_invalidateFlags;
+	detail::UICoreFlags		m_coreFlags;
 	bool					m_isEnabled;
 	bool					m_isMouseOver;
 	bool					m_isHitTestVisible;
@@ -473,6 +487,7 @@ private:
 	friend class UIPopup;
 	friend class UIContext;
 	friend class UIHelper;
+	friend class detail::LayoutHelper2;
 };
 
 LN_NAMESPACE_END
