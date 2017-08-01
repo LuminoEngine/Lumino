@@ -39,6 +39,8 @@ void UITreeViewItem::initialize()
 
 	m_expander = newObject<UIToggleButton>();
 	m_expander->setSize(Size(16, 16));	// TODO:
+	m_expander->connectOnChecked(createDelegate(this, &UITreeViewItem::expander_OnChecked));
+	m_expander->connectOnUnchecked(createDelegate(this, &UITreeViewItem::expander_OnUnchecked));
 	addVisualChild(m_expander);
 
 	// TODO:
@@ -135,33 +137,52 @@ Size UITreeViewItem::measureOverride(const Size& constraint)
 //------------------------------------------------------------------------------
 Size UITreeViewItem::arrangeOverride(const Size& finalSize)
 {
-	UIHeaderedItemsControl::arrangeOverride(finalSize);
-
-	Size expanderSize = m_expander->getDesiredSize();
-
 	// Expander
+	Size expanderSize = m_expander->getDesiredSize();
 	m_expander->arrangeLayout(Rect(0, 0, expanderSize));
 
-	//// Header
-	//Size headerSize = m_header->getDesiredSize();
-	//Rect headerRect(expanderSize.width, 0, finalSize.width - expanderSize.width, std::max(expanderSize.height, headerSize.height));
-	//m_header->arrangeLayout(headerRect);
-	//
-	//// Items
-	//Rect itemsRect(expanderSize.width, headerRect.height, finalSize.width - expanderSize.width, finalSize.height - headerRect.height);
-	//getLayoutPanel()->arrangeLayout(itemsRect);
+	// Header
+	Rect headerRect(expanderSize.width, 0, finalSize.width - expanderSize.width, 0);
+	UIElement* header = getHeader();
+	if (header != nullptr)
+	{
+		Size headerSize = header->getDesiredSize();
+		headerRect.height = headerSize.height;
+		header->arrangeLayout(headerRect);
+	}
+
+	// Items
+	Rect itemsRect(headerRect.x, headerRect.height, headerRect.width, finalSize.height - headerRect.height);
+	getLayoutPanel()->arrangeLayout(itemsRect);
+
+
+	//UIHeaderedItemsControl::arrangeOverride(finalSize);
+
+	//Size expanderSize = m_expander->getDesiredSize();
+
+	//// Expander
+	//m_expander->arrangeLayout(Rect(0, 0, expanderSize));
+
+	////// Header
+	////Size headerSize = m_header->getDesiredSize();
+	////Rect headerRect(expanderSize.width, 0, finalSize.width - expanderSize.width, std::max(expanderSize.height, headerSize.height));
+	////m_header->arrangeLayout(headerRect);
+	////
+	////// Items
+	////Rect itemsRect(expanderSize.width, headerRect.height, finalSize.width - expanderSize.width, finalSize.height - headerRect.height);
+	////getLayoutPanel()->arrangeLayout(itemsRect);
 
 	return finalSize;
 }
 
 void UITreeViewItem::expander_OnChecked(UIEventArgs* e)
 {
-
+	getLayoutPanel()->writeCoreFlag(detail::UICoreFlags_LayoutVisible, true);
 }
 
 void UITreeViewItem::expander_OnUnchecked(UIEventArgs* e)
 {
-
+	getLayoutPanel()->writeCoreFlag(detail::UICoreFlags_LayoutVisible, false);
 }
 
 //==============================================================================

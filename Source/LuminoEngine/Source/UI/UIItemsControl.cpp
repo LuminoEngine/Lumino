@@ -42,8 +42,8 @@ void UIItemsControl::addItem(UIElement* item)
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIHeaderedItemsControl, UIItemsControl)
 
 UIHeaderedItemsControl::UIHeaderedItemsControl()
-	: m_headerContainer(nullptr)
-	, m_headerContent(nullptr)
+	:/* m_headerContainer(nullptr)
+	, */m_headerContent(nullptr)
 {
 }
 
@@ -55,16 +55,17 @@ void UIHeaderedItemsControl::initialize()
 {
 	UIItemsControl::initialize();
 
-	m_headerContainer = newObject<UIControl>();
-	m_headerContainer->setBackground(Brush::Green);	// TODO:
-	m_headerContainer->setHeight(16);				// TODO:
-	m_headerContainer->setSize(Size(16, 16));		// TODO:
-	addVisualChild(m_headerContainer);
+	//m_headerContainer = newObject<UIControl>();
+	//m_headerContainer->setBackground(Brush::Green);	// TODO:
+	//m_headerContainer->setHeight(16);				// TODO:
+	//m_headerContainer->setSize(Size(16, 16));		// TODO:
+	//addVisualChild(m_headerContainer);
 }
 
 void UIHeaderedItemsControl::setHeader(UIElement* header)
 {
-	m_headerContainer->removeVisualChild(m_headerContent);
+	//m_headerContainer->removeVisualChild(m_headerContent);
+	removeVisualChild(m_headerContent);
 
 	m_headerContent = header;
 	m_headerContent->setBackground(Brush::Red);	// TODO:
@@ -72,8 +73,14 @@ void UIHeaderedItemsControl::setHeader(UIElement* header)
 
 	if (m_headerContent != nullptr)
 	{
-		m_headerContainer->addVisualChild(m_headerContent);
+		//m_headerContainer->addVisualChild(m_headerContent);
+		addVisualChild(m_headerContent);
 	}
+}
+
+UIElement* UIHeaderedItemsControl::getHeader() const
+{
+	return m_headerContent;
 }
 
 Size UIHeaderedItemsControl::measureOverride(const Size& constraint)
@@ -81,8 +88,10 @@ Size UIHeaderedItemsControl::measureOverride(const Size& constraint)
 	Size desiredSize(0, 0);
 
 	// ヘッダの領域を計測する
-	m_headerContainer->measureLayout(constraint);
-	Size headerSize = m_headerContainer->getDesiredSize();
+	//m_headerContainer->measureLayout(constraint);
+	//Size headerSize = m_headerContainer->getDesiredSize();
+	m_headerContent->measureLayout(constraint);
+	Size headerSize = m_headerContent->getDesiredSize();
 
 	// 子アイテムの領域を計測する
 	UILayoutPanel* itemsPanel = getLayoutPanel();
@@ -102,9 +111,12 @@ Size UIHeaderedItemsControl::measureOverride(const Size& constraint)
 Size UIHeaderedItemsControl::arrangeOverride(const Size& finalSize)
 {
 	// Header
-	Size headerSize = m_headerContainer->getDesiredSize();
+	//Size headerSize = m_headerContainer->getDesiredSize();
+	//Rect headerRect(0, 0, finalSize.width, headerSize.height);
+	//m_headerContainer->arrangeLayout(headerRect);
+	Size headerSize = m_headerContent->getDesiredSize();
 	Rect headerRect(0, 0, finalSize.width, headerSize.height);
-	m_headerContainer->arrangeLayout(headerRect);
+	m_headerContent->arrangeLayout(headerRect);
 
 	// Items
 	Rect itemsRect(0, headerRect.height, finalSize.width, finalSize.height - headerRect.height);

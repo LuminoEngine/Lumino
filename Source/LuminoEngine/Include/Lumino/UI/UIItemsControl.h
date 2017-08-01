@@ -32,6 +32,7 @@ class UIHeaderedItemsControl
 	LN_OBJECT;
 public:
 	void setHeader(UIElement* header);
+	UIElement* getHeader() const;
 
 LN_CONSTRUCT_ACCESS:
 	UIHeaderedItemsControl();
@@ -43,7 +44,6 @@ protected:
 	virtual Size arrangeOverride(const Size& finalSize) override;
 
 private:
-	Ref<UIControl>	m_headerContainer;
 	Ref<UIElement>	m_headerContent;
 };
 
