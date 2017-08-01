@@ -28,6 +28,8 @@ void UITreeViewItem::initialize()
 {
 	UIHeaderedItemsControl::initialize();
 
+	setHContentAlignment(HAlignment::Stretch);
+
 	auto panel = newObject<UIStackPanel>();
 	panel->setHAlignment(HAlignment::Stretch);
 	panel->setVAlignment(VAlignment::Stretch);
@@ -140,7 +142,6 @@ Size UITreeViewItem::arrangeOverride(const Size& finalSize)
 {
 	// Expander
 	Size expanderSize = m_expander->getDesiredSize();
-	m_expander->arrangeLayout(Rect(0, 0, expanderSize));
 
 	// Header
 	Rect headerRect(expanderSize.width, 0, finalSize.width - expanderSize.width, 0);
@@ -152,9 +153,19 @@ Size UITreeViewItem::arrangeOverride(const Size& finalSize)
 		header->arrangeLayout(headerRect);
 	}
 
+	setRenderFrameThickness(Thickness(0, 0, 0, finalSize.height - headerRect.height));
+
 	// Items
 	Rect itemsRect(headerRect.x, headerRect.height, headerRect.width, finalSize.height - headerRect.height);
 	getLayoutPanel()->arrangeLayout(itemsRect);
+
+
+
+
+	// Expander
+	Rect expanderRect(0, 0, expanderSize);
+	expanderRect.y = (headerRect.height - expanderSize.height) / 2;
+	m_expander->arrangeLayout(expanderRect);
 
 
 	//UIHeaderedItemsControl::arrangeOverride(finalSize);

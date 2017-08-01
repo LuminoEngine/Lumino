@@ -244,7 +244,7 @@ public:
 	const Size& getDesiredSize() const { return m_desiredSize; }
 
 	/** この要素の最終的な描画サイズを取得します。この値は Arrange() で確定します。*/
-	Size getRenderSize() const { return m_finalLocalRenderRect.getSize(); }
+	Size getActualSize() const { return m_finalLocalActualRect.getSize(); }
 
 	/** この要素へのフォーカスの取得を試みます。*/
 	void focus();
@@ -273,8 +273,8 @@ public:
 
 	void applyTemplateHierarchy(UIStyleTable* styleTable, detail::UIStylePropertyTableInstance* parentStyle);
 
-	float getActualWidth() const { return m_finalLocalRenderRect.width; }
-	float getActualHeight() const { return m_finalLocalRenderRect.height; }
+	float getActualWidth() const { return m_finalLocalActualRect.width; }
+	float getActualHeight() const { return m_finalLocalActualRect.height; }
 
 	bool hasFocus() const { return m_hasFocus; }
 
@@ -415,6 +415,8 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	/** 指定した要素をこの要素のビジュアルツリーから削除します。*/
 	void removeVisualChild(UIElement* element);
 
+	void setRenderFrameThickness(const Thickness& value) { m_renderFrameThickness = value; }
+
 private:
 	// ILayoutElement interface
 	virtual const Point& getLayoutPosition() const override;
@@ -451,7 +453,8 @@ private:
 	//	m_localStyle;
 	Ref<detail::UIStylePropertyTableInstance>	m_localStyle;
 	Size					m_desiredSize;			// measureLayout() で決定されるこのコントロールの要求サイズ
-	Rect					m_finalLocalRenderRect;		// 描画に使用する最終境界矩形 (グローバル座標系=RootFrame のローカル座標系)
+	Rect					m_finalLocalActualRect;		// 最終境界矩形 (グローバル座標系=RootFrame のローカル座標系)
+	Thickness				m_renderFrameThickness;
 	//Rect					m_finalLocalContentRect;
 	Rect					m_finalGlobalRect;
 	String					m_elementName;				// 要素名 ("UITextBlock" など) TODO: いらないかも

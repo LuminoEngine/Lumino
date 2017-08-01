@@ -78,6 +78,8 @@ protected:
 	virtual void onLostFocus(UIEventArgs* e) override;
 	virtual void onMouseDown(UIMouseEventArgs* e) override;
 	virtual void onMouseUp(UIMouseEventArgs* e) override;
+	virtual void onMouseEnter(UIMouseEventArgs* e) override;
+	virtual void onMouseLeave(UIMouseEventArgs* e) override;
 
 	virtual void onLayoutPanelChanged(UILayoutPanel* newPanel);
 

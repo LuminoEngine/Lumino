@@ -288,6 +288,14 @@ void UIElement::onLayoutUpdated()
 //------------------------------------------------------------------------------
 void UIElement::onRender(DrawingContext* g)
 {
+	Rect localRenderRect = Rect(0, 0, m_finalLocalActualRect.getSize());
+	localRenderRect.x += m_renderFrameThickness.left;
+	localRenderRect.y += m_renderFrameThickness.top;
+	localRenderRect.width = std::max(localRenderRect.width - m_renderFrameThickness.getWidth(), 0.0f);
+	localRenderRect.height = std::max(localRenderRect.height - m_renderFrameThickness.getHeight(), 0.0f);
+	
+
+
 	//g->setBlendMode(BlendMode::Alpha);
 	//g->setDepthTestEnabled(false);
 	//g->setDepthWriteEnabled(false);
@@ -297,7 +305,7 @@ void UIElement::onRender(DrawingContext* g)
 	{
 		g->setBrush(m_localStyle->background.get());
 		//g->drawRectangle(Rect(0, 0, m_finalLocalRect.getSize()));
-		g->drawBoxBackground(Rect(0, 0, m_finalLocalRenderRect.getSize()), m_localStyle->cornerRadius.get());
+		g->drawBoxBackground(localRenderRect/*Rect(0, 0, m_finalLocalActualRect.getSize())*/, m_localStyle->cornerRadius.get());
 	}
 	//else
 	//{
@@ -646,7 +654,7 @@ void UIElement::onUpdatingLayout()
 //------------------------------------------------------------------------------
 bool UIElement::onHitTest(const Point& localPoint)
 {
-	return m_finalLocalRenderRect.contains(localPoint);
+	return m_finalLocalActualRect.contains(localPoint);
 }
 
 //------------------------------------------------------------------------------
@@ -828,8 +836,8 @@ const HAlignment* UIElement::getLayoutContentHAlignment() { return getPriorityCo
 const VAlignment* UIElement::getLayoutContentVAlignment() { return getPriorityContentVAlignment(); }
 const Size& UIElement::getLayoutDesiredSize() const { return m_desiredSize; }
 void UIElement::setLayoutDesiredSize(const Size& size) { m_desiredSize = size; }
-void UIElement::setLayoutFinalLocalRect(const Rect& renderRect/*, const Rect& contentRect*/) { m_finalLocalRenderRect = renderRect; /*m_finalLocalContentRect = contentRect;*/ }
-void UIElement::getLayoutFinalLocalRect(Rect* outRenderRect/*, Rect* outContentRect*/) const { *outRenderRect = m_finalLocalRenderRect; /**outContentRect = m_finalLocalContentRect;*/ }
+void UIElement::setLayoutFinalLocalRect(const Rect& renderRect/*, const Rect& contentRect*/) { m_finalLocalActualRect = renderRect; /*m_finalLocalContentRect = contentRect;*/ }
+void UIElement::getLayoutFinalLocalRect(Rect* outRenderRect/*, Rect* outContentRect*/) const { *outRenderRect = m_finalLocalActualRect; /**outContentRect = m_finalLocalContentRect;*/ }
 void UIElement::setLayoutFinalGlobalRect(const Rect& rect) { m_finalGlobalRect = rect; }
 
 LN_NAMESPACE_END

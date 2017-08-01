@@ -107,7 +107,7 @@ Size UIViewport::arrangeOverride(const Size& finalSize)
 	// バックバッファサイズの調整
 	{
 		if (m_placement == ViewportPlacement::AutoResize)
-			m_viewSize = getRenderSize();
+			m_viewSize = getActualSize();
 		else
 			m_viewSize = m_backbufferSize.toFloatSize();
 	}

@@ -16,9 +16,9 @@ public:
 		{
 			// Margin ‚Æ Padding ‚ðl—¶‚·‚é
 			const Thickness& margin = element->getLayoutMargin();
-			const Thickness& padding = element->getLayoutPadding();
-			float spaceWidth = (margin.left + margin.right) + (padding.left + padding.right);
-			float spaceHeight = (margin.top + margin.bottom) + (padding.top + padding.bottom);
+			//const Thickness& padding = element->getLayoutPadding();
+			float spaceWidth = (margin.left + margin.right);// +(padding.left + padding.right);
+			float spaceHeight = (margin.top + margin.bottom);// +(padding.top + padding.bottom);
 			Size localAvailableSize(
 				std::max(availableSize.width - spaceWidth, 0.0f),
 				std::max(availableSize.height - spaceHeight, 0.0f));
