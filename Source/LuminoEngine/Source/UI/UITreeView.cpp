@@ -35,8 +35,6 @@ void UITreeViewItem::initialize()
 	panel->setVAlignment(VAlignment::Stretch);
 	setLayoutPanel(panel);
 	
-	setHContentAlignment(HAlignment::Left);
-	setHAlignment(HAlignment::Stretch);
 	goToVisualState(UIVisualStates::NormalState);
 
 	m_expander = newObject<UIToggleButton>();
@@ -153,7 +151,7 @@ Size UITreeViewItem::arrangeOverride(const Size& finalSize)
 		header->arrangeLayout(headerRect);
 	}
 
-	setRenderFrameThickness(Thickness(0, 0, 0, finalSize.height - headerRect.height));
+	setRenderFrameThickness(Thickness(expanderSize.width, 0, 0, finalSize.height - headerRect.height));
 
 	// Items
 	Rect itemsRect(headerRect.x, headerRect.height, headerRect.width, finalSize.height - headerRect.height);

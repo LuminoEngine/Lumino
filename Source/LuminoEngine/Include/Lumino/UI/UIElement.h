@@ -443,6 +443,8 @@ private:
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
 	void raiseEventInternal(UIEventArgs* e);
 
+	//Rect getLocalRenderRect() const;
+
 	detail::UIManager*		m_manager;
 	//UILayoutView*			m_ownerLayoutView;
 	String					m_keyName;

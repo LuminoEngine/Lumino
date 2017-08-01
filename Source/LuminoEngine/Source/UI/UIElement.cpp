@@ -288,12 +288,7 @@ void UIElement::onLayoutUpdated()
 //------------------------------------------------------------------------------
 void UIElement::onRender(DrawingContext* g)
 {
-	Rect localRenderRect = Rect(0, 0, m_finalLocalActualRect.getSize());
-	localRenderRect.x += m_renderFrameThickness.left;
-	localRenderRect.y += m_renderFrameThickness.top;
-	localRenderRect.width = std::max(localRenderRect.width - m_renderFrameThickness.getWidth(), 0.0f);
-	localRenderRect.height = std::max(localRenderRect.height - m_renderFrameThickness.getHeight(), 0.0f);
-	
+	Rect localRenderRect = Rect(0, 0, m_finalLocalActualRect.getSize()).makeDeflate(m_renderFrameThickness);
 
 
 	//g->setBlendMode(BlendMode::Alpha);
@@ -369,7 +364,10 @@ void UIElement::onMouseEnter(UIMouseEventArgs* e)
 	// 親にもマウスがはじめて乗ったのであれば親にも通知する
 	if (m_visualParent != nullptr && !m_visualParent->m_isMouseOver)
 	{
-		m_visualParent->onMouseEnter(e);
+		if (onHitTest(e->getPosition(this)))
+		{
+			m_visualParent->onMouseEnter(e);
+		}
 	}
 
 	m_isMouseOver = true;
@@ -383,7 +381,8 @@ void UIElement::onMouseLeave(UIMouseEventArgs* e)
 	// 親にもマウスが乗ったことになっていれば、ヒットテストをした上で通知する
 	if (m_visualParent != nullptr && m_visualParent->m_isMouseOver)
 	{
-		if (!m_visualParent->m_finalGlobalRect.contains(e->getPosition()))
+		//if (!m_visualParent->m_finalGlobalRect.contains(e->getPosition()))
+		if (onHitTest(e->getPosition(this)))
 		{
 			m_visualParent->onMouseLeave(e);
 		}
@@ -636,6 +635,16 @@ void UIElement::updateLocalStyleAndApplyProperties(UIStyleTable* styleTable, det
 
 }
 
+//Rect UIElement::getLocalRenderRect() const
+//{
+//	Rect localRenderRect = Rect(0, 0, m_finalLocalActualRect.getSize());
+//	localRenderRect.x += m_renderFrameThickness.left;
+//	localRenderRect.y += m_renderFrameThickness.top;
+//	localRenderRect.width = std::max(localRenderRect.width - m_renderFrameThickness.getWidth(), 0.0f);
+//	localRenderRect.height = std::max(localRenderRect.height - m_renderFrameThickness.getHeight(), 0.0f);
+//	return localRenderRect;
+//}
+
 //------------------------------------------------------------------------------
 void UIElement::onUpdateStyle(detail::UIStylePropertyTableInstance* localStyle, detail::InvalidateFlags invalidateFlags)
 {
@@ -654,7 +663,16 @@ void UIElement::onUpdatingLayout()
 //------------------------------------------------------------------------------
 bool UIElement::onHitTest(const Point& localPoint)
 {
-	return m_finalLocalActualRect.contains(localPoint);
+	return m_finalLocalActualRect.makeDeflate(m_renderFrameThickness).contains(localPoint);
+
+	//Rect localRenderRect = m_finalLocalActualRect;
+	//localRenderRect.x += m_renderFrameThickness.left;
+	//localRenderRect.y += m_renderFrameThickness.top;
+	//localRenderRect.width = std::max(localRenderRect.width - m_renderFrameThickness.getWidth(), 0.0f);
+	//localRenderRect.height = std::max(localRenderRect.height - m_renderFrameThickness.getHeight(), 0.0f);
+	//return localRenderRect.contains(localPoint);
+	//return getLocalRenderRect().contains(localPoint);
+	//return m_finalLocalActualRect.contains(localPoint);
 }
 
 //------------------------------------------------------------------------------

@@ -271,7 +271,6 @@ void UIControl::onMouseUp(UIMouseEventArgs* e)
 
 void UIControl::onMouseEnter(UIMouseEventArgs* e)
 {
-	printf("enter %p\n", this);
 	UIElement::onMouseEnter(e);
 	goToVisualState(UIVisualStates::MouseOverState);
 	e->handled = true;
@@ -279,7 +278,6 @@ void UIControl::onMouseEnter(UIMouseEventArgs* e)
 
 void UIControl::onMouseLeave(UIMouseEventArgs* e)
 {
-	printf("leave %p\n", this);
 	UIElement::onMouseLeave(e);
 	goToVisualState(UIVisualStates::NormalState);
 	e->handled = true;

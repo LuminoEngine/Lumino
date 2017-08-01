@@ -3,6 +3,7 @@
 #include <Lumino/Math/Vector3.h>
 
 LN_NAMESPACE_BEGIN
+struct Thickness;
 
 namespace detail {
 class GeometryStructsHelper
@@ -266,6 +267,9 @@ public:
 		if (width < 0) width = 0;
 		if (height < 0) height = 0;
 	}
+
+	/** 指定した厚さだけ、この矩形から縮小した矩形を作成します。 */
+	Rect makeDeflate(const Thickness& thickness) const;
 
 public:
 	bool operator == (const Rect& obj) const { return (x == obj.x && y == obj.y && width == obj.width && height == obj.height); }
