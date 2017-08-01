@@ -68,7 +68,7 @@ void UIHeaderedItemsControl::setHeader(UIElement* header)
 	removeVisualChild(m_headerContent);
 
 	m_headerContent = header;
-	m_headerContent->setBackground(Brush::Red);	// TODO:
+	//m_headerContent->setBackground(Brush::Red);	// TODO:
 	m_headerContent->setHeight(16);	// TODO:
 
 	if (m_headerContent != nullptr)

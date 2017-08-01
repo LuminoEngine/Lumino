@@ -39,12 +39,13 @@ void UITreeViewItem::initialize()
 
 	m_expander = newObject<UIToggleButton>();
 	m_expander->setSize(Size(16, 16));	// TODO:
+	m_expander->setStyleSubControlName(_T("UITreeViewItem"), _T("ExpanderButton"));
 	m_expander->connectOnChecked(createDelegate(this, &UITreeViewItem::expander_OnChecked));
 	m_expander->connectOnUnchecked(createDelegate(this, &UITreeViewItem::expander_OnUnchecked));
 	addVisualChild(m_expander);
 
 	// TODO:
-	setBackground(Brush::Blue);
+	//setBackground(Brush::Blue);
 }
 
 ////------------------------------------------------------------------------------

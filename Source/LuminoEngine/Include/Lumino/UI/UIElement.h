@@ -430,8 +430,8 @@ private:
 	virtual const VAlignment* getLayoutContentVAlignment() override;
 	virtual const Size& getLayoutDesiredSize() const override;
 	virtual void setLayoutDesiredSize(const Size& size) override;
-	virtual void setLayoutFinalLocalRect(const Rect& renderRect, const Rect& contentRect) override;
-	virtual void getLayoutFinalLocalRect(Rect* outRenderRect, Rect* outContentRect) const override;
+	virtual void setLayoutFinalLocalRect(const Rect& renderRect/*, const Rect& contentRect*/) override;
+	virtual void getLayoutFinalLocalRect(Rect* outRenderRect/*, Rect* outContentRect*/) const override;
 	virtual void setLayoutFinalGlobalRect(const Rect& rect) override;
 	bool isLayoutVisible() const { return readCoreFlag(detail::UICoreFlags::UICoreFlags_LayoutVisible); }
 
@@ -452,7 +452,7 @@ private:
 	Ref<detail::UIStylePropertyTableInstance>	m_localStyle;
 	Size					m_desiredSize;			// measureLayout() で決定されるこのコントロールの要求サイズ
 	Rect					m_finalLocalRenderRect;		// 描画に使用する最終境界矩形 (グローバル座標系=RootFrame のローカル座標系)
-	Rect					m_finalLocalContentRect;
+	//Rect					m_finalLocalContentRect;
 	Rect					m_finalGlobalRect;
 	String					m_elementName;				// 要素名 ("UITextBlock" など) TODO: いらないかも
 	Ref<UIVisualStateManager>	m_visualStateManager;

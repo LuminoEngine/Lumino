@@ -32,7 +32,7 @@ void UIControlsGallery()
 
 	auto tree1 = UITreeView::create();
 	tree1->setSize(Size(200, 300));
-	tree1->setBackground(UIColors::getBrush(UIColorIndex::Blue, 9));
+	//tree1->setBackground(UIColors::getBrush(UIColorIndex::Blue, 9));
 	auto item1 = tree1->addTextItem(_T("item1"));
 	auto item2 = tree1->addTextItem(_T("item2"));
 	auto item2_1 = item2->addTextItem(_T("item2_1"));
@@ -345,7 +345,7 @@ void UIControlsGallery()
 
 		//printf("%f\n", slider->getValue());
 
-		printf("%p\n", Input::getAnyActiveTriggered());
+		//printf("%p\n", Input::getAnyActiveTriggered());
 
 
 		//printf("----------\n");

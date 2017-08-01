@@ -485,7 +485,40 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 		}
 	}
 
-	
+	//------------------------------------------------------------------------------
+	// UITreeView
+	{
+		auto* style = table->getStyle(_T("UITreeView"));
+		// base
+		{
+			auto* props = style->getPropertyTable();
+			props->background = Ref<Brush>::staticCast(containerBackground);
+			props->borderThickness = Thickness(1);
+		}
+	}
+	// UITreeViewItem
+	{
+		auto* style = table->getStyle(_T("UITreeViewItem"));
+		// base
+		{
+			auto* props = style->getPropertyTable();
+			props->padding = Thickness(10);
+		}
+		// UITreeViewItem.MouseOver
+		{
+			auto* props = style->getPropertyTable(UIVisualStates::MouseOverState);
+			props->background = Ref<Brush>::staticCast(containerItemMouseOver);
+		}
+	}
+	// UISlider::DecreaseButton
+	{
+		auto* style = table->getSubControlStyle(_T("UITreeViewItem"), _T("ExpanderButton"));
+		// base
+		{
+			auto* props = style->getPropertyTable();
+			props->background = UIColors::getBrush(UIColorIndex::Red);
+		}
+	}
 
 	//{
 	//	auto brush = TextureBrush::create(m_defaultSkinTexture);

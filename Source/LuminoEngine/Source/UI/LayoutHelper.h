@@ -87,28 +87,31 @@ public:
 			arrangeRect.height = std::max(arrangeRect.height - marginHeight, 0.0f);
 
 			// Padding ‚ðl—¶‚·‚é
-			const Thickness& padding = element->getLayoutPadding();
+			//const Thickness& padding = element->getLayoutPadding();
 
+			//Size contentAreaSize(
+			//	std::max(arrangeRect.width - padding.getWidth(), 0.0f),
+			//	std::max(arrangeRect.height - padding.getHeight(), 0.0f));
 			Size contentAreaSize(
-				std::max(arrangeRect.width - padding.getWidth(), 0.0f),
-				std::max(arrangeRect.height - padding.getHeight(), 0.0f));
+				std::max(arrangeRect.width, 0.0f),
+				std::max(arrangeRect.height, 0.0f));
 			Size finalContentAreaSize = element->arrangeOverride(contentAreaSize);
 
 			Rect finalRenderRect;
-			Rect finalContentRect;
 			finalRenderRect.x = finalLocalRect.x + margin.left + arrangeRect.x;
 			finalRenderRect.y = finalLocalRect.y + margin.top + arrangeRect.y;
-			finalRenderRect.width = finalContentAreaSize.width + padding.getWidth();
-			finalRenderRect.height = finalContentAreaSize.height + padding.getHeight();
-			finalContentRect.x = finalRenderRect.x + padding.left;
-			finalContentRect.y = finalRenderRect.y + padding.top;
-			finalContentRect.width = finalRenderRect.width - padding.getWidth();
-			finalContentRect.height = finalRenderRect.height - padding.getHeight();
-			element->setLayoutFinalLocalRect(finalRenderRect, finalContentRect);
+			finalRenderRect.width = finalContentAreaSize.width;// +padding.getWidth();
+			finalRenderRect.height = finalContentAreaSize.height;// +padding.getHeight();
+			//Rect finalContentRect;
+			//finalContentRect.x = finalRenderRect.x + padding.left;
+			//finalContentRect.y = finalRenderRect.y + padding.top;
+			//finalContentRect.width = finalRenderRect.width - padding.getWidth();
+			//finalContentRect.height = finalRenderRect.height - padding.getHeight();
+			element->setLayoutFinalLocalRect(finalRenderRect/*, finalContentRect*/);
 		}
 		else
 		{
-			element->setLayoutFinalLocalRect(Rect::Zero, Rect::Zero);
+			element->setLayoutFinalLocalRect(Rect::Zero/*, Rect::Zero*/);
 		}
 	}
 };

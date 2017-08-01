@@ -85,12 +85,16 @@ public:
 	//------------------------------------------------------------------------------
 	static Size UIStackPanel_arrangeOverride(TPanel* panel, const Size& finalSize, Orientation orientation)
 	{
+		//ILayoutPanel* basePanel = static_cast<ILayoutPanel*>(panel);
+		//Size childrenBoundSize(finalSize.width, finalSize.height);		
 		ILayoutPanel* basePanel = static_cast<ILayoutPanel*>(panel);
-		Size childrenBoundSize(finalSize.width, finalSize.height);
+		const Thickness& padding = static_cast<ILayoutElement*>(panel)->getLayoutPadding();
+		Size childrenBoundSize(finalSize.width - (padding.left + padding.right), finalSize.height - (padding.top + padding.bottom));
 
 		float prevChildSize = 0;
 		float rPos = 0;
-		Rect childRect(0, 0, 0, 0);
+		//Rect childRect(0, 0, 0, 0);
+		Rect childRect(padding.left, padding.top, 0, 0);
 		int childCount = basePanel->getLayoutChildrenCount();
 		for (int i = 0; i < childCount; i++)
 		{
@@ -190,8 +194,12 @@ public:
 	//------------------------------------------------------------------------------
 	static Size UIGridLayout_arrangeOverride(TPanel* panel, const Size& finalSize)
 	{
+		//ILayoutPanel* basePanel = static_cast<ILayoutPanel*>(panel);
+		//Size childrenBoundSize(finalSize.width, finalSize.height);
 		ILayoutPanel* basePanel = static_cast<ILayoutPanel*>(panel);
-		Size childrenBoundSize(finalSize.width, finalSize.height);
+		const Thickness& padding = static_cast<ILayoutElement*>(panel)->getLayoutPadding();
+		Size childrenBoundSize(finalSize.width - (padding.left + padding.right), finalSize.height - (padding.top + padding.bottom));
+
 
 		// "Auto" と "Pixel" 指定である Column/Row の最終サイズを確定させる。
 		// また、"*" である行列の数をカウントする。
@@ -281,7 +289,8 @@ public:
 			rowSpan = std::min(rowSpan, rowIdx + rowDefCount);	// 最大値制限
 
 			// Span を考慮してサイズを確定
-			Rect rect = Rect(0, 0, 0, 0);
+			//Rect rect = Rect(0, 0, 0, 0);
+			Rect rect = Rect(padding.left, padding.top, 0, 0);
 			if (colDefCount == 0)	// is empty
 			{
 				rect.width = childrenBoundSize.width;

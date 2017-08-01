@@ -105,9 +105,9 @@ const Thickness& UIElement::getMargin() const
 }
 
 //------------------------------------------------------------------------------
-void UIElement::setPadding(const Thickness& Padding)
+void UIElement::setPadding(const Thickness& padding)
 {
-	m_localStyle->padding = Padding;
+	m_localStyle->padding = padding;
 }
 
 //------------------------------------------------------------------------------
@@ -828,8 +828,8 @@ const HAlignment* UIElement::getLayoutContentHAlignment() { return getPriorityCo
 const VAlignment* UIElement::getLayoutContentVAlignment() { return getPriorityContentVAlignment(); }
 const Size& UIElement::getLayoutDesiredSize() const { return m_desiredSize; }
 void UIElement::setLayoutDesiredSize(const Size& size) { m_desiredSize = size; }
-void UIElement::setLayoutFinalLocalRect(const Rect& renderRect, const Rect& contentRect) { m_finalLocalRenderRect = renderRect; m_finalLocalContentRect = contentRect; }
-void UIElement::getLayoutFinalLocalRect(Rect* outRenderRect, Rect* outContentRect) const { *outRenderRect = m_finalLocalRenderRect; *outContentRect = m_finalLocalContentRect; }
+void UIElement::setLayoutFinalLocalRect(const Rect& renderRect/*, const Rect& contentRect*/) { m_finalLocalRenderRect = renderRect; /*m_finalLocalContentRect = contentRect;*/ }
+void UIElement::getLayoutFinalLocalRect(Rect* outRenderRect/*, Rect* outContentRect*/) const { *outRenderRect = m_finalLocalRenderRect; /**outContentRect = m_finalLocalContentRect;*/ }
 void UIElement::setLayoutFinalGlobalRect(const Rect& rect) { m_finalGlobalRect = rect; }
 
 LN_NAMESPACE_END

@@ -118,11 +118,11 @@ void ILayoutElement::arrangeLayout(const Rect& finalLocalRect)
 	finalRenderRect.y = finalLocalRect.y + margin.top + arrangeRect.y;
 	finalRenderRect.width = finalContentAreaSize.width + padding.getWidth();
 	finalRenderRect.height = finalContentAreaSize.height + padding.getHeight();
-	finalContentRect.x = finalRenderRect.x + padding.left;
-	finalContentRect.y = finalRenderRect.y + padding.top;
-	finalContentRect.width = finalRenderRect.width - padding.getWidth();
-	finalContentRect.height = finalRenderRect.height - padding.getHeight();
-	setLayoutFinalLocalRect(finalRenderRect, finalContentRect);
+	//finalContentRect.x = finalRenderRect.x + padding.left;
+	//finalContentRect.y = finalRenderRect.y + padding.top;
+	//finalContentRect.width = finalRenderRect.width - padding.getWidth();
+	//finalContentRect.height = finalRenderRect.height - padding.getHeight();
+	setLayoutFinalLocalRect(finalRenderRect/*, finalContentRect*/);
 }
 
 //------------------------------------------------------------------------------
@@ -144,8 +144,8 @@ Size ILayoutElement::arrangeOverride(const Size& finalSize)
 //------------------------------------------------------------------------------
 void ILayoutElement::updateTransformHierarchy(const Rect& parentGlobalRect)
 {
-	Rect localRenderRect, localContentRect;
-	getLayoutFinalLocalRect(&localRenderRect, &localContentRect);
+	Rect localRenderRect/*, localContentRect*/;
+	getLayoutFinalLocalRect(&localRenderRect/*, &localContentRect*/);
 
 	Rect finalGlobalRect;
 	//if (m_parent != nullptr)
@@ -166,11 +166,17 @@ void ILayoutElement::updateTransformHierarchy(const Rect& parentGlobalRect)
 	setLayoutFinalGlobalRect(finalGlobalRect);
 
 	// update children
+	//Rect finalGlobalContentRect(
+	//	parentGlobalRect.x + localContentRect.x,
+	//	parentGlobalRect.y + localContentRect.y,
+	//	localContentRect.width,
+	//	localContentRect.height);
 	Rect finalGlobalContentRect(
-		parentGlobalRect.x + localContentRect.x,
-		parentGlobalRect.y + localContentRect.y,
-		localContentRect.width,
-		localContentRect.height);
+		parentGlobalRect.x + localRenderRect.x,
+		parentGlobalRect.y + localRenderRect.y,
+		localRenderRect.width,
+		localRenderRect.height);
+
 	int childCount = getVisualChildrenCount();
 	for (int i = 0; i < childCount; i++)
 	{
