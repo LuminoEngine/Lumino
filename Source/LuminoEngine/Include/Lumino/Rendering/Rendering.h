@@ -143,6 +143,9 @@ LN_INTERNAL_ACCESS:
 	friend class ::ln::DrawList;
 };
 
+// SpriteTextRenderFeature など、RenderFeature によっては描画時にユーザー指定のマテリアルをオーバーライドする必要がある。
+// その場合は BatchState の一部として変更を持っておかないと、SceneRenderer は RenderFeature がオーバーライドしたいことがわからないため
+// いろいろなステートが Flush されなくなってしまう。つまり、テキスト描画時に別のテクスチャが使われてしまう。
 struct PriorityBatchState
 {
 	Nullable<Matrix>	worldTransform;

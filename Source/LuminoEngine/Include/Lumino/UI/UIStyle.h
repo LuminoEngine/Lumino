@@ -147,6 +147,23 @@ class UIRenderElement
 {
 	LN_OBJECT;
 public:
+
+LN_CONSTRUCT_ACCESS:
+	UIRenderElement();
+	virtual ~UIRenderElement();
+	void initialize();
+
+protected:
+	virtual void layoutAndRender(DrawingContext* context, const Size& parentRenderSize);
+
+	friend class UIElement;
+};
+
+class UIImageRenderElement
+	: public UIRenderElement
+{
+	LN_OBJECT;
+public:
 	float			m_width;
 	float			m_height;
 	Thickness		m_margin;
@@ -155,16 +172,58 @@ public:
 	Ref<Brush>	m_brush;
 
 LN_CONSTRUCT_ACCESS:
-	UIRenderElement();
-	virtual ~UIRenderElement();
+	UIImageRenderElement();
+	virtual ~UIImageRenderElement();
 	void initialize();
 
-private:
-	void layoutAndRender(DrawingContext* context, const Size& parentRenderSize);
-
-	friend class UIElement;
+protected:
+	virtual void layoutAndRender(DrawingContext* context, const Size& parentRenderSize) override;
 };
 
+class UITextRenderElement
+	: public UIRenderElement
+{
+	LN_OBJECT;
+public:
+	Thickness		m_margin;
+	HAlignment		m_hAlignment;
+	VAlignment		m_vAlignment;
+	Ref<Font>		m_font;
+	Ref<Brush>		m_brush;
+	String			m_text;
+
+LN_CONSTRUCT_ACCESS:
+	UITextRenderElement();
+	virtual ~UITextRenderElement();
+	void initialize();
+
+protected:
+	virtual void layoutAndRender(DrawingContext* context, const Size& parentRenderSize) override;
+};
+
+class UIGlyphIconRenderElement
+	: public UIRenderElement
+{
+	LN_OBJECT;
+public:
+	Thickness		m_margin;
+	HAlignment		m_hAlignment;
+	VAlignment		m_vAlignment;
+	Ref<Brush>		m_brush;
+	Ref<Font>		m_font;
+	int				m_size;
+	uint32_t		m_codePoint;
+
+	void setGlyph(const StringRef& glyphName, int glyphSize);
+
+LN_CONSTRUCT_ACCESS:
+	UIGlyphIconRenderElement();
+	virtual ~UIGlyphIconRenderElement();
+	void initialize();
+
+protected:
+	virtual void layoutAndRender(DrawingContext* context, const Size& parentRenderSize) override;
+};
 
 
 /**

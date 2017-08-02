@@ -148,6 +148,7 @@ public:
 	//	}
 	//}
 
+	// widthNan : ユーザーが希望するサイズを指定しているか
 	static void adjustHorizontalAlignment(const Size& areaSize, const Size& desiredSize, bool widthNan, HAlignment align, Rect* outRect)
 	{
 		switch (align)

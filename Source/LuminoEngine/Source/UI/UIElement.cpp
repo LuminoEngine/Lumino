@@ -19,6 +19,7 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 const String UIVisualStates::CommonGroup = _T("CommonGroup");
 const String UIVisualStates::FocusGroup = _T("FocusGroup");
+const String UIVisualStates::CheckStates = _T("CheckStates");
 //const String UIVisualStates::ValidationStates = _T("ValidationStates");
 const String UIVisualStates::NormalState = _T("Normal");
 const String UIVisualStates::MouseOverState = _T("MouseOver");
@@ -723,34 +724,37 @@ void UIElement::updateFrame()
 //------------------------------------------------------------------------------
 void UIElement::render(DrawingContext* g)
 {
-	//Point contentOffset;
-	if (m_visualParent != nullptr)
+	if (isRenderVisible())
 	{
-		detail::BuiltinEffectData::combine(m_visualParent->m_combinedBuiltinEffectData, m_builtinEffectData, &m_combinedBuiltinEffectData);
-		//contentOffset = m_visualParent->m_finalLocalContentRect.getTopLeft();
+		//Point contentOffset;
+		if (m_visualParent != nullptr)
+		{
+			detail::BuiltinEffectData::combine(m_visualParent->m_combinedBuiltinEffectData, m_builtinEffectData, &m_combinedBuiltinEffectData);
+			//contentOffset = m_visualParent->m_finalLocalContentRect.getTopLeft();
+		}
+		else
+		{
+			m_combinedBuiltinEffectData = m_builtinEffectData;
+		}
+
+		g->pushState();
+
+		Matrix mat;
+		mat.translate(m_finalGlobalRect.x, m_finalGlobalRect.y, 0);
+		g->setTransform(mat);
+		g->setBuiltinEffectData(m_combinedBuiltinEffectData);
+
+
+
+		//g->drawBoxBorder(Rect(50, 50, 300, 200), Thickness(10, 10, 10, 10), Color::Red, Color::Green, Color::Blue, Color::Cyan, 10, 10, 10, 10);	// TODO:
+		//g->drawBoxShadow(Rect(10, 20, 300, 400), Color::Black, 5, 5, false);
+		onRender(g);
+
+		// 子要素
+		UIHelper::forEachVisualChildren(this, [g](UIElement* child) { child->render(g); });
+
+		g->popState();	// TODO: scoped
 	}
-	else
-	{
-		m_combinedBuiltinEffectData = m_builtinEffectData;
-	}
-
-	g->pushState();
-
-	Matrix mat;
-	mat.translate(m_finalGlobalRect.x, m_finalGlobalRect.y, 0);
-	g->setTransform(mat);
-	g->setBuiltinEffectData(m_combinedBuiltinEffectData);
-
-	
-
-	//g->drawBoxBorder(Rect(50, 50, 300, 200), Thickness(10, 10, 10, 10), Color::Red, Color::Green, Color::Blue, Color::Cyan, 10, 10, 10, 10);	// TODO:
-	//g->drawBoxShadow(Rect(10, 20, 300, 400), Color::Black, 5, 5, false);
-	onRender(g);
-
-	// 子要素
-	UIHelper::forEachVisualChildren(this, [g](UIElement* child) { child->render(g); });
-
-	g->popState();	// TODO: scoped
 }
 
 //------------------------------------------------------------------------------
@@ -838,6 +842,11 @@ void UIElement::writeCoreFlag(detail::UICoreFlags field, bool value)
 		flags &= (~field);
 	}
 	m_coreFlags = (detail::UICoreFlags)flags;
+}
+
+bool UIElement::isRenderVisible() const
+{
+	return readCoreFlag(detail::UICoreFlags_LayoutVisible);
 }
 
 //------------------------------------------------------------------------------

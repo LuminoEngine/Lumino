@@ -33,6 +33,7 @@ void UITreeViewItem::initialize()
 	auto panel = newObject<UIStackPanel>();
 	panel->setHAlignment(HAlignment::Stretch);
 	panel->setVAlignment(VAlignment::Stretch);
+	panel->writeCoreFlag(detail::UICoreFlags_LayoutVisible, false);	// default close
 	setLayoutPanel(panel);
 	
 	goToVisualState(UIVisualStates::NormalState);

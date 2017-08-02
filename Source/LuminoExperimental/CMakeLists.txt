@@ -13,6 +13,10 @@ set(LN_SOURCES_PCH
 	Source/LuminoExperimental.PCH.h
 )
 
+set(LN_SOURCES_Editor
+	Include/LuminoExperimental/Editor/Editor.h
+	Source/Editor/Editor.cpp
+)
 set(LN_SOURCES_Scene
 	Include/LuminoExperimental/Scene/Mirror.h
 	Source/Scene/Mirror.cpp
@@ -25,12 +29,14 @@ set(LN_SOURCES_UI
 #--------------------------------------
 # Grouping.
 source_group("PCH"				FILES ${LN_SOURCES_PCH})
+source_group("Editor"			FILES ${LN_SOURCES_Editor})
 source_group("Scene"			FILES ${LN_SOURCES_Scene})
 source_group("UI"				FILES ${LN_SOURCES_UI})
 
 set(LN_SOURCES
 	Include/LuminoExperimental.h
 	${LN_SOURCES_PCH}
+	${LN_SOURCES_Editor}
 	${LN_SOURCES_Scene}
 	${LN_SOURCES_UI}
 )

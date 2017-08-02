@@ -231,6 +231,9 @@ public:
 	void addColumnDefinition(GridLengthType type = GridLengthType::Ratio, float width = 1.0f, float minWidth = 0.0f, float maxWidth = FLT_MAX);
 	void addRowDefinition(GridLengthType type = GridLengthType::Ratio, float height = 1.0f, float minHeight = 0.0f, float maxHeight = FLT_MAX);
 
+	void addChild(UIElement* child);
+	void addChild(UIElement* child, int column, int row);
+
 LN_PROTECTED_INTERNAL_ACCESS:
 	UIGridLayout();
 	virtual ~UIGridLayout();

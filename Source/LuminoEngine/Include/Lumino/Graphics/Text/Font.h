@@ -72,6 +72,8 @@ public:
 	*/
 	static FontPtr getBuiltin(BuiltinFontSize size);
 
+	static FontPtr getAwesomeIconFont(int size);
+
 public:
 
 	/** フォントファミリ名の設定 */

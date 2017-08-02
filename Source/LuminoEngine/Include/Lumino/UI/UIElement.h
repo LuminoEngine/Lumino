@@ -93,6 +93,7 @@ class UIVisualStates
 public:
 	static const String CommonGroup;
 	static const String FocusGroup;
+	static const String CheckStates;
 	//static const String ValidationStates;
 
 	static const String NormalState;
@@ -397,6 +398,7 @@ LN_INTERNAL_ACCESS:
 
 	bool readCoreFlag(detail::UICoreFlags field) const;
 	void writeCoreFlag(detail::UICoreFlags field, bool value);
+	bool isRenderVisible() const;
 
 	void updateFrame();
 	void render(DrawingContext* g);

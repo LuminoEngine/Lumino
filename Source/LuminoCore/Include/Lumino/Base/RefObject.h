@@ -103,6 +103,13 @@ public:
 	*/
 	Ref(T* ptr, bool addRef = true);
 
+	template <class Y>
+	Ref(const Ref<Y>& r) LN_NOEXCEPT
+		: m_ptr(r.get())
+	{
+		LN_SAFE_ADDREF(m_ptr);
+	}
+
 	/** コピーコンストラクタ */
 	Ref(const Ref<T>& obj);
 
@@ -166,11 +173,11 @@ public:
 	}
 
 	/// operator=
-	Ref<T>& operator = (T* ptr)
-	{
-		LN_REFOBJ_SET(m_ptr, ptr);
-		return *this;
-	}
+	//Ref<T>& operator = (T* ptr)
+	//{
+	//	LN_REFOBJ_SET(m_ptr, ptr);
+	//	return *this;
+	//}
 
 	/// operator!
     bool operator ! () const { return (m_ptr == nullptr); }

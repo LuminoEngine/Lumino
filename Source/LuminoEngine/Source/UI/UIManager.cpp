@@ -465,7 +465,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 		{
 			auto* props = style->getPropertyTable();
 
-			auto r1 = newObject<UIRenderElement>();
+			auto r1 = newObject<UIImageRenderElement>();
 			r1->m_height = 2.0f;
 			r1->m_brush = UIColors::getBrush(UIColorIndex::LightGreen);
 			props->m_renderElements.add(r1);
@@ -478,7 +478,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 		{
 			auto* props = style->getPropertyTable();
 
-			auto r1 = newObject<UIRenderElement>();
+			auto r1 = newObject<UIImageRenderElement>();
 			r1->m_height = 2.0f;
 			r1->m_brush = UIColors::getBrush(UIColorIndex::Grey);
 			props->m_renderElements.add(r1);
@@ -510,13 +510,29 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 			props->background = Ref<Brush>::staticCast(containerItemMouseOver);
 		}
 	}
-	// UISlider::DecreaseButton
+	// UITreeViewItem::ExpanderButton
 	{
 		auto* style = table->getSubControlStyle(_T("UITreeViewItem"), _T("ExpanderButton"));
-		// base
 		{
 			auto* props = style->getPropertyTable();
 			props->background = UIColors::getBrush(UIColorIndex::Red);
+
+		}
+		// ExpanderButton.Checked
+		{
+			auto* props = style->getPropertyTable(UIToggleButton::CheckedState);
+
+			auto r1 = newObject<UIGlyphIconRenderElement>();
+			r1->setGlyph(_T("fa-angle-down"), 16);
+			props->m_renderElements.add(r1);
+		}
+		// ExpanderButton.Unchecked
+		{
+			auto* props = style->getPropertyTable(UIToggleButton::UncheckedState);
+
+			auto r1 = newObject<UIGlyphIconRenderElement>();
+			r1->setGlyph(_T("fa-angle-right"), 16);
+			props->m_renderElements.add(r1);
 		}
 	}
 

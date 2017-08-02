@@ -539,6 +539,19 @@ void UIGridLayout::addColumnDefinition(GridLengthType type, float width, float m
 	m_columnDefinitions.add(ptr);
 }
 
+void UIGridLayout::addChild(UIElement* child)
+{
+	UILayoutPanel::addChild(child);
+}
+
+//------------------------------------------------------------------------------
+void UIGridLayout::addChild(UIElement* child, int column, int row)
+{
+	child->setLayoutColumn(column);
+	child->setLayoutRow(row);
+	addChild(child);
+}
+
 //------------------------------------------------------------------------------
 void UIGridLayout::addRowDefinition(GridLengthType type, float height, float minHeight, float maxHeight)
 {
