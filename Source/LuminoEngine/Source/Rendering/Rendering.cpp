@@ -317,6 +317,15 @@ void BatchState::setDepthBuffer(DepthBuffer* depthBuffer)
 	}
 }
 
+void BatchState::setViewportRect(const RectI& rect)
+{
+	if (m_viewportRect != rect)
+	{
+		m_viewportRect = rect;
+		m_hashDirty = true;
+	}
+}
+
 //------------------------------------------------------------------------------
 void BatchState::setScissorRect(const RectI& scissorRect)
 {
@@ -410,6 +419,7 @@ void BatchState::reset()
 	m_cullingMode = CullingMode::Back;
 	m_depthTestEnabled = true;
 	m_depthWriteEnabled = true;
+	m_viewportRect.set(0, 0, -1, -1);
 
 	m_brush = nullptr;
 	m_font = nullptr;
@@ -448,6 +458,7 @@ void BatchState::applyStatus(InternalContext* context, CombinedMaterial* combine
 		stateManager->setDepthStencilState(state);
 	}
 	// FrameBuffer
+	RenderTargetTexture* renderTarget0 = nullptr;
 	{
 		//if (defaultRenderTarget == nullptr && defaultDepthBuffer == nullptr)
 		//{
@@ -458,15 +469,43 @@ void BatchState::applyStatus(InternalContext* context, CombinedMaterial* combine
 
 		for (int i = 0; i < Graphics::MaxMultiRenderTargets; ++i)
 		{
+			RenderTargetTexture* target;
 			if (i == 0 && m_renderTargets[i] == nullptr)
-				stateManager->setRenderTarget(i, defaultStatus.defaultRenderTarget);
+			{
+				target = defaultStatus.defaultRenderTarget;
+			}
 			else
-				stateManager->setRenderTarget(i, m_renderTargets[i]);
+			{
+				target = m_renderTargets[i];
+			}
+			stateManager->setRenderTarget(i, target);
+
+			if (i == 0)
+			{
+				renderTarget0 = target;
+			}
 		}
+
 		if (m_depthBuffer == nullptr)
+		{
 			stateManager->setDepthBuffer(defaultStatus.defaultDepthBuffer);
+		}
 		else
+		{
 			stateManager->setDepthBuffer(m_depthBuffer);
+		}
+	}
+	// Viewport
+	{
+		const RectI& rect = getViewportRect();
+		if (rect.width < 0)
+		{
+			stateManager->setViewport(RectI(0, 0, renderTarget0->getSize()));
+		}
+		else
+		{
+			stateManager->setViewport(rect);
+		}
 		// TODO: m_scissorRect
 	}
 }
@@ -957,6 +996,10 @@ void DrawList::popState()
 void DrawList::setRenderTarget(int index, RenderTargetTexture* renderTarget)
 {
 	getCurrentState()->m_state.state.setRenderTarget(index, renderTarget);
+	if (index == 0)
+	{
+		setViewportRect(RectI(0, 0, renderTarget->getSize()));
+	}
 	m_currentStateFence++;
 }
 
@@ -977,6 +1020,16 @@ void DrawList::setDepthBuffer(DepthBuffer* depthBuffer)
 DepthBuffer* DrawList::getDepthBuffer() const
 {
 	return getCurrentState()->m_state.state.getDepthBuffer();
+}
+
+void DrawList::setViewportRect(const RectI& rect)
+{
+	getCurrentState()->m_state.state.setViewportRect(rect);
+}
+
+const RectI& DrawList::getViewportRect() const
+{
+	return getCurrentState()->m_state.state.getViewportRect();
 }
 
 //------------------------------------------------------------------------------
@@ -1337,16 +1390,6 @@ void DrawList::drawGlyphRun(const Point& position, GlyphRun* glyphRun)
 	public:
 		Ref<GlyphRun>	glyphRun;
 		Point position;
-		//virtual void makeElementInfo(detail::DrawElementList* oenerList, const detail::CameraInfo& cameraInfo, detail::ElementInfo* outInfo) override
-		//{
-		//	// ワールド行列は作らない。一連の Glyphs を描画する方に任せる。
-		//	// (スプライトと同じく、できるだけ一度に描画する)
-		//	outInfo->viewProjMatrix = &cameraInfo.viewProjMatrix;
-		//	outInfo->WorldMatrix = Matrix::Identity;//getTransform(oenerList);
-		//	outInfo->WorldViewProjectionMatrix = cameraInfo.viewMatrix * cameraInfo.projMatrix;// outInfo->WorldMatrix * cameraInfo.viewMatrix * cameraInfo.projMatrix;	// TODO: viewProj はまとめたい
-		//	outInfo->affectedLights = getAffectedDynamicLightInfos();
-		//}
-
 
 		virtual void drawSubset(const DrawArgs& e) override
 		{
@@ -1386,24 +1429,6 @@ void DrawList::drawText_(const StringRef& text, const Rect& rect, StringFormatFl
 		String text;	// TODO: BlukData
 		Rect rect;
 		StringFormatFlags flags;
-
-		//virtual void makeElementInfo(detail::DrawElementList* oenerList, const detail::CameraInfo& cameraInfo, detail::ElementInfo* outInfo) override
-		//{
-		//	// ワールド行列は作らない。一連の Glyphs を描画する方に任せる。
-		//	// (スプライトと同じく、できるだけ一度に描画する)
-		//	outInfo->viewProjMatrix = &cameraInfo.viewProjMatrix;
-		//	outInfo->WorldMatrix = Matrix::Identity;//getTransform(oenerList);
-		//	outInfo->WorldViewProjectionMatrix = cameraInfo.viewMatrix * cameraInfo.projMatrix;// outInfo->WorldMatrix * cameraInfo.viewMatrix * cameraInfo.projMatrix;	// TODO: viewProj はまとめたい
-		//	outInfo->affectedLights = getAffectedDynamicLightInfos();
-		//}
-
-		//virtual void makeSubsetInfo(detail::DrawElementList* oenerList, detail::CombinedMaterial* material, detail::SubsetInfo* outInfo) override
-		//{
-		//	DrawElement::makeSubsetInfo(oenerList, material, outInfo);
-
-		//	// MaterialTexture を上書きする
-		//	outInfo->materialTexture = oenerList->getBatch(batchIndex)->state.getFont()->resolveRawFont()->GetGlyphTextureCache()->getGlyphsFillTexture();
-		//}
 
 		virtual void drawSubset(const DrawArgs& e) override
 		{

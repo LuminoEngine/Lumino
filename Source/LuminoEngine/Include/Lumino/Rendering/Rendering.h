@@ -220,6 +220,9 @@ public:
 	void setDepthBuffer(DepthBuffer* depthBuffer);
 	DepthBuffer* getDepthBuffer() const { return m_depthBuffer; }
 
+	void setViewportRect(const RectI& rect);
+	const RectI& getViewportRect() const { return m_viewportRect; }
+
 	void setScissorRect(const RectI& scissorRect);
 	const RectI& getScissorRect() const { return m_scissorRect; }
 
@@ -255,6 +258,7 @@ private:
 
 	Ref<RenderTargetTexture>	m_renderTargets[Graphics::MaxMultiRenderTargets];
 	Ref<DepthBuffer>			m_depthBuffer;
+	RectI						m_viewportRect;
 	RectI						m_scissorRect;
 	BlendMode					m_blendMode;
 	CullingMode					m_cullingMode;
@@ -565,7 +569,7 @@ public:
 	/** @name render targets */
 	/** @{ */
 
-	/** レンダリングターゲットを設定します。*/
+	/** レンダリングターゲットを設定します。index 0 のレンダリングターゲットを変更すると、ビューポート領域とシザー領域がリセットされます。 */
 	void setRenderTarget(int index, RenderTargetTexture* renderTarget);
 
 	/** 現在設定されているレンダリングターゲットを取得します。*/
@@ -577,11 +581,11 @@ public:
 	/** 現在設定されている深度バッファを取得します。*/
 	DepthBuffer* getDepthBuffer() const;
 
-	/** シザー領域を設定します。*/
-	void setViewport(const RectI& rect);
+	/** ビューポート領域を設定します。*/
+	void setViewportRect(const RectI& rect);
 
-	/** 現在設定されているシザー領域を取得します。*/
-	const RectI& getViewport() const;
+	/** 現在設定されている ビューポート領域を取得します。*/
+	const RectI& getViewportRect() const;
 
 	/** @} */
 

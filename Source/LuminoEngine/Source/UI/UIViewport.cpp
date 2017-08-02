@@ -174,6 +174,7 @@ void UIViewport::onRender(DrawingContext* g)
 	Matrix transform;
 	makeViewBoxTransform(SizeI::fromFloatSize(getActualSize()), m_backbufferSize, &transform);
 
+	g->setViewportRect(RectI::fromFloatRect(getFinalGlobalRect()));
 	g->blit(m_primaryLayerTarget, transform);
 
 	// TODO: 暫定。blit の中で深度書き込みしないようにしてほしいかも。

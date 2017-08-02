@@ -38,21 +38,23 @@ void UIControlsGallery()
 	auto item2_1 = item2->addTextItem(_T("item2_1"));
 	auto item2_2 = item2->addTextItem(_T("item2_2"));
 	auto item3 = tree1->addTextItem(_T("item3"));
+#if 0
 	uiRoot->addChild(tree1);
+#else
 
+	auto grid1 = UIGridLayout::create();
+	grid1->addColumnDefinition(GridLengthType::Auto, 200);
+	grid1->addColumnDefinition(GridLengthType::Ratio);
+	grid1->setBackground(Brush::Blue);
+	//grid1->set
+	
+	Application::getMainWindow()->removeChild(Engine::getMainViewport());
+	//Application::getMainWindow()->addChild(grid1);
+	Application::getMainWindow()->setLayoutPanel(grid1);
 
-	//auto grid1 = UIGridLayout::create();
-	//grid1->addColumnDefinition(GridLengthType::Auto, 200);
-	//grid1->addColumnDefinition(GridLengthType::Ratio);
-	//grid1->setBackground(Brush::Blue);
-	////grid1->set
-	//
-	//Application::getMainWindow()->removeChild(Engine::getMainViewport());
-	////Application::getMainWindow()->addChild(grid1);
-	//Application::getMainWindow()->setLayoutPanel(grid1);
-
-	//grid1->addChild(Engine::getMainViewport(), 1, 0);
-	//grid1->addChild(tree1, 0, 0);
+	grid1->addChild(Engine::getMainViewport(), 1, 0);
+	grid1->addChild(tree1, 0, 0);
+#endif
 
 
 

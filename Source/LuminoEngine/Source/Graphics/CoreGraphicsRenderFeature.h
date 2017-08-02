@@ -79,7 +79,7 @@ public:
 	///**
 	//	@brief	ビューポートを設定します。
 	//*/
-	//void setViewport(const RectI& rect);
+	void setViewport(const RectI& rect);
 
 	///**
 	//	@brief	現在設定されているビューポートを取得します。

@@ -191,19 +191,19 @@ DepthBuffer* CoreGraphicsRenderFeature::getDepthBuffer() const
 }
 
 //------------------------------------------------------------------------------
-//void CoreGraphicsRenderFeature::setViewport(const RectI& rect)
-//{
-//	//LN_CALL_RENDERER_COMMAND(setViewport, SetViewportCommand, rect);
-//	m_currentViewport = rect;
-//
-//	LN_ENQUEUE_RENDER_COMMAND_2(
-//		setViewport, m_manager,
-//		Driver::IRenderer*, m_internal,
-//		RectI, rect,
-//		{
-//			m_internal->setViewport(rect);
-//		});
-//}
+void CoreGraphicsRenderFeature::setViewport(const RectI& rect)
+{
+	//LN_CALL_RENDERER_COMMAND(setViewport, SetViewportCommand, rect);
+	//m_currentViewport = rect;
+
+	LN_ENQUEUE_RENDER_COMMAND_2(
+		setViewport, m_manager,
+		Driver::IRenderer*, m_internal,
+		RectI, rect,
+		{
+			m_internal->setViewport(rect);
+		});
+}
 
 ////------------------------------------------------------------------------------
 //const RectI& CoreGraphicsRenderFeature::getViewport()
