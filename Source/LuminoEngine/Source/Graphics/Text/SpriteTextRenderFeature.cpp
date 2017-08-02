@@ -353,6 +353,17 @@ void TextRenderer::onSetState(const DrawElementBatch* state)
 	}
 }
 
+void TextRenderer::onShaderElementInfoOverride(ElementInfo* elementInfo)
+{
+	elementInfo->WorldMatrix = Matrix::Identity;
+	elementInfo->WorldViewProjectionMatrix = *elementInfo->viewProjMatrix;
+}
+
+void TextRenderer::onShaderSubsetInfoOverride(SubsetInfo* subsetInfo)
+{
+	subsetInfo->materialTexture = m_font->GetGlyphTextureCache()->getGlyphsFillTexture();
+}
+
 //------------------------------------------------------------------------------
 void TextRenderer::FlushInternal(FontGlyphTextureCache* cache)
 {
