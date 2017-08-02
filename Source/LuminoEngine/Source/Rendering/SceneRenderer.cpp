@@ -179,7 +179,8 @@ void SceneRenderer::render(
 			}
 
 			// 固定の内部シェーダを使わない場合はいろいろ設定する
-			if (!currentState->IsStandaloneShaderRenderer())
+			if (currentState->getRenderFeature() == nullptr ||	// TODO: だめ。でもいまやらかしてる人がいるので、後で ASSERT 張って対応する
+				!currentState->getRenderFeature()->isStandaloneShader())
 			{
 				CombinedMaterial* material = currentState->getCombinedMaterial();
 				ElementRenderingPolicy policy;
@@ -196,11 +197,19 @@ void SceneRenderer::render(
 					//elementInfo.WorldViewProjectionMatrix = elementInfo.WorldMatrix * cameraInfo.viewMatrix * cameraInfo.projMatrix;	// TODO: viewProj はまとめたい
 
 
+
 					SubsetInfo subsetInfo;
 					element->makeSubsetInfo(element->m_ownerDrawElementList, material, &subsetInfo);
 					if (currentState->m_priorityState.mainTexture != nullptr)
 					{
 						subsetInfo.materialTexture = currentState->m_priorityState.mainTexture;
+					}
+
+					//currentState->IsStandaloneShaderRenderer
+
+					if (currentState->getRenderFeature() != nullptr)
+					{
+						currentState->getRenderFeature()->onShaderSubsetInfoOverride(&subsetInfo);
 					}
 
 					shader->getSemanticsManager()->updateCameraVariables(cameraInfo);

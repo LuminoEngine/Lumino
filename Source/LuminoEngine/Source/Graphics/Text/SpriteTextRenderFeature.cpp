@@ -354,6 +354,12 @@ void TextRenderer::onSetState(const DrawElementBatch* state)
 }
 
 //------------------------------------------------------------------------------
+void TextRenderer::onShaderSubsetInfoOverride(SubsetInfo* subsetInfo)
+{
+	subsetInfo->materialTexture = m_font->GetGlyphTextureCache()->getGlyphsFillTexture();
+}
+
+//------------------------------------------------------------------------------
 void TextRenderer::FlushInternal(FontGlyphTextureCache* cache)
 {
 	if (m_glyphLayoutDataList.isEmpty()) return;

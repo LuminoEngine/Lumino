@@ -4,6 +4,7 @@
 LN_NAMESPACE_BEGIN
 namespace detail {
 class DrawElementBatch;
+class SubsetInfo;
 
 class IRenderFeature
 {
@@ -14,6 +15,7 @@ public:
 	virtual void onDeactivated() = 0;
 
 	virtual void onSetState(const DrawElementBatch* state) {}
+	virtual void onShaderSubsetInfoOverride(SubsetInfo* subsetInfo) {}
 };
 
 } // namespace detail

@@ -525,21 +525,30 @@ void DrawElementBatch::SetBuiltinEffect(const BuiltinEffectData& data)
 		m_hashDirty = true;
 	}
 }
+//
+////------------------------------------------------------------------------------
+//void DrawElementBatch::SetStandaloneShaderRenderer(bool enabled)
+//{
+//	if (m_standaloneShaderRenderer != enabled)
+//	{
+//		m_standaloneShaderRenderer = enabled;
+//		m_hashDirty = true;
+//	}
+//}
+//
+////------------------------------------------------------------------------------
+//bool DrawElementBatch::IsStandaloneShaderRenderer() const
+//{
+//	return m_standaloneShaderRenderer;
+//}
 
-//------------------------------------------------------------------------------
-void DrawElementBatch::SetStandaloneShaderRenderer(bool enabled)
+void DrawElementBatch::setRenderFeature(IRenderFeature* renderFeature)
 {
-	if (m_standaloneShaderRenderer != enabled)
+	if (m_renderFeature != renderFeature)
 	{
-		m_standaloneShaderRenderer = enabled;
+		m_renderFeature = renderFeature;
 		m_hashDirty = true;
 	}
-}
-
-//------------------------------------------------------------------------------
-bool DrawElementBatch::IsStandaloneShaderRenderer() const
-{
-	return m_standaloneShaderRenderer;
 }
 
 //------------------------------------------------------------------------------
@@ -591,7 +600,8 @@ void DrawElementBatch::reset()
 
 	m_transfrom = Matrix::Identity;
 	m_combinedMaterial = nullptr;
-	m_standaloneShaderRenderer = false;
+	//m_standaloneShaderRenderer = false;
+	m_renderFeature = nullptr;
 
 	m_hashCode = 0;
 	m_hashDirty = true;
@@ -741,6 +751,7 @@ void DrawElementList::postAddCommandInternal(const DrawElementBatch& state, Mate
 		m_batchList.add(DrawElementBatch());
 		m_batchList.getLast().state = state.state;
 		m_batchList.getLast().m_priorityState = priorityState;
+		m_batchList.getLast().setRenderFeature(state.getRenderFeature());
 		m_batchList.getLast().setCombinedMaterial(cm);
 		m_batchList.getLast().setTransfrom(state.getTransfrom());
 		m_batchList.getLast().SetBuiltinEffect(effectData);
@@ -1456,7 +1467,7 @@ void DrawList::drawChar(uint32_t codePoint, const Rect& rect, StringFormatFlags 
 
 	detail::PriorityBatchState priorityState;
 	priorityState.worldTransform = Matrix::Identity;
-	priorityState.mainTexture = getCurrentState()->m_state.state.getFont()->resolveRawFont()->GetGlyphTextureCache()->getGlyphsFillTexture();
+	//priorityState.mainTexture = getCurrentState()->m_state.state.getFont()->resolveRawFont()->GetGlyphTextureCache()->getGlyphsFillTexture();
 
 
 	auto* e = resolveDrawElement<DrawElement_DrawChar>(m_manager->getInternalContext()->m_textRenderer, nullptr, &priorityState);

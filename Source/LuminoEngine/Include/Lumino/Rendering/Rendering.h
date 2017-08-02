@@ -312,8 +312,10 @@ public:
 
 	void SetBuiltinEffect(const BuiltinEffectData& data);
 
-	void SetStandaloneShaderRenderer(bool enabled);
-	bool IsStandaloneShaderRenderer() const;
+	//void SetStandaloneShaderRenderer(bool enabled);
+	//bool IsStandaloneShaderRenderer() const;
+	void setRenderFeature(IRenderFeature* renderFeature);
+	IRenderFeature* getRenderFeature() const { return m_renderFeature; }
 
 	bool Equal(const DrawElementBatch& state, Material* material, const BuiltinEffectData& effectData, const PriorityBatchState& priorityState) const;
 	void reset();
@@ -329,7 +331,8 @@ public:
 private:
 	Matrix					m_transfrom;			// WorldTransform. 変わったらシェーダの ln_World* も変える必要がある。
 	CombinedMaterial*		m_combinedMaterial;
-	bool					m_standaloneShaderRenderer;
+	IRenderFeature*			m_renderFeature;			// この state の下で描画を行う RenderFeature
+	//bool					m_standaloneShaderRenderer;
 	mutable size_t			m_hashCode;
 	mutable bool			m_hashDirty;
 
@@ -809,7 +812,8 @@ inline TElement* DrawList::resolveDrawElement(detail::IRenderFeature* renderFeat
 
 
 	// これを決定してから比較を行う
-	getCurrentState()->m_state.SetStandaloneShaderRenderer(renderFeature->isStandaloneShader());
+	//getCurrentState()->m_state.SetStandaloneShaderRenderer(renderFeature->isStandaloneShader());
+	getCurrentState()->m_state.setRenderFeature(renderFeature);
 
 	bool forceStateChange = (m_lastRenderFeature != renderFeature);
 
