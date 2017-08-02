@@ -176,6 +176,7 @@ void UIViewport::onRender(DrawingContext* g)
 
 	g->setViewportRect(RectI::fromFloatRect(getFinalGlobalRect()));
 	g->blit(m_primaryLayerTarget, transform);
+	g->setViewportRect(RectI(0, 0, -1, -1));
 
 	// TODO: 暫定。blit の中で深度書き込みしないようにしてほしいかも。
 	g->clear(ClearFlags::Depth, Color());

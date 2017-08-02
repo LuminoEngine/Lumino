@@ -31,7 +31,7 @@ void UIControlsGallery()
 
 
 	auto tree1 = UITreeView::create();
-	tree1->setSize(Size(200, 300));
+	tree1->setWidth(300);
 	//tree1->setBackground(UIColors::getBrush(UIColorIndex::Blue, 9));
 	auto item1 = tree1->addTextItem(_T("item1"));
 	auto item2 = tree1->addTextItem(_T("item2"));
@@ -51,6 +51,8 @@ void UIControlsGallery()
 	Application::getMainWindow()->removeChild(Engine::getMainViewport());
 	//Application::getMainWindow()->addChild(grid1);
 	Application::getMainWindow()->setLayoutPanel(grid1);
+	//Application::getMainWindow()->setBackground(UIColo);
+	//Engine::getMainViewport()->setBackground(Brush::Black);
 
 	grid1->addChild(Engine::getMainViewport(), 1, 0);
 	grid1->addChild(tree1, 0, 0);
