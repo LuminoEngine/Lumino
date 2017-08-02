@@ -160,70 +160,70 @@ detail::CoreGraphicsRenderFeature* InternalContext::getRenderStateManager()
 //------------------------------------------------------------------------------
 detail::CoreGraphicsRenderFeature* InternalContext::beginBaseRenderer()
 {
-	switchActiveRenderer(m_baseRenderer);
+	//switchActiveRenderer(m_baseRenderer);
 	return m_baseRenderer;
 }
 
 //------------------------------------------------------------------------------
 PrimitiveRenderFeature* InternalContext::beginPrimitiveRenderer()
 {
-	switchActiveRenderer(m_primitiveRenderer);
+	//switchActiveRenderer(m_primitiveRenderer);
 	return m_primitiveRenderer;
 }
 
 //------------------------------------------------------------------------------
 BlitRenderer* InternalContext::beginBlitRenderer()
 {
-	switchActiveRenderer(m_blitRenderer);
+	//switchActiveRenderer(m_blitRenderer);
 	return m_blitRenderer;
 }
 
 //------------------------------------------------------------------------------
 MeshRenderFeature* InternalContext::beginMeshRenderer()
 {
-	switchActiveRenderer(m_meshRenderer);
+	//switchActiveRenderer(m_meshRenderer);
 	return m_meshRenderer;
 }
 
 //------------------------------------------------------------------------------
 SpriteRenderFeature* InternalContext::beginSpriteRenderer()
 {
-	switchActiveRenderer(m_spriteRenderer);
+	//switchActiveRenderer(m_spriteRenderer);
 	return m_spriteRenderer;
 }
 
 //------------------------------------------------------------------------------
 TextRenderer* InternalContext::beginTextRenderer()
 {
-	switchActiveRenderer(m_textRenderer);
+	//switchActiveRenderer(m_textRenderer);
 	return m_textRenderer;
 }
 
 //------------------------------------------------------------------------------
 VectorTextRenderer* InternalContext::beginVectorTextRenderer()
 {
-	switchActiveRenderer(m_vectorTextRenderer);
+	//switchActiveRenderer(m_vectorTextRenderer);
 	return m_vectorTextRenderer;
 }
 
 //------------------------------------------------------------------------------
 ShapesRenderFeature* InternalContext::beginShapesRenderer()
 {
-	switchActiveRenderer(m_shapesRenderer);
+	//switchActiveRenderer(m_shapesRenderer);
 	return m_shapesRenderer;
 }
 
 //------------------------------------------------------------------------------
 NanoVGRenderFeature* InternalContext::beginNanoVGRenderer()
 {
-	switchActiveRenderer(m_nanoVGRenderer);
+	//switchActiveRenderer(m_nanoVGRenderer);
 	return m_nanoVGRenderer;
 }
 
 //------------------------------------------------------------------------------
 FrameRectRenderFeature* InternalContext::beginFrameRectRenderer()
 {
-	switchActiveRenderer(m_frameRectRenderer);
+	//switchActiveRenderer(m_frameRectRenderer);
 	return m_frameRectRenderer;
 }
 
@@ -1428,11 +1428,11 @@ void DrawList::drawText_(const StringRef& text, const Rect& rect, StringFormatFl
 	//Ref<Texture> old = m_defaultMaterial->getMaterialTexture(nullptr);
 	//m_defaultMaterial->setMaterialTexture(m_state.state.getFont()->resolveRawFont()->GetGlyphTextureCache()->getGlyphsFillTexture());
 
-	detail::PriorityBatchState priorityState;
-	priorityState.worldTransform = Matrix::Identity;
-	priorityState.mainTexture = getCurrentState()->m_state.state.getFont()->resolveRawFont()->GetGlyphTextureCache()->getGlyphsFillTexture();
+	//detail::PriorityBatchState priorityState;
+	//priorityState.worldTransform = Matrix::Identity;
+	//priorityState.mainTexture = getCurrentState()->m_state.state.getFont()->resolveRawFont()->GetGlyphTextureCache()->getGlyphsFillTexture();
 
-	auto* e = resolveDrawElement<DrawElement_DrawText>(m_manager->getInternalContext()->m_textRenderer, nullptr, &priorityState);
+	auto* e = resolveDrawElement<DrawElement_DrawText>(m_manager->getInternalContext()->m_textRenderer, nullptr, nullptr);
 	e->text = text;
 	e->rect = rect;
 	e->flags = flags;
@@ -1466,7 +1466,7 @@ void DrawList::drawChar(uint32_t codePoint, const Rect& rect, StringFormatFlags 
 	//auto* e = resolveDrawElement<DrawElement_DrawChar>(m_manager->getInternalContext()->m_vectorTextRenderer, nullptr);
 
 	detail::PriorityBatchState priorityState;
-	priorityState.worldTransform = Matrix::Identity;
+	//priorityState.worldTransform = Matrix::Identity;
 	//priorityState.mainTexture = getCurrentState()->m_state.state.getFont()->resolveRawFont()->GetGlyphTextureCache()->getGlyphsFillTexture();
 
 

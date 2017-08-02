@@ -175,6 +175,7 @@ void SceneRenderer::render(
 				//currentBatchIndex = element->batchIndex;
 				currentState = batch;
 				context->applyStatus(currentState, { defaultRenderTarget, defaultDepthBuffer });
+				context->switchActiveRenderer(currentState->getRenderFeature());
 				if (diag != nullptr) diag->changeRenderStage();
 			}
 
@@ -209,6 +210,7 @@ void SceneRenderer::render(
 
 					if (currentState->getRenderFeature() != nullptr)
 					{
+						currentState->getRenderFeature()->onShaderElementInfoOverride(&elementInfo);
 						currentState->getRenderFeature()->onShaderSubsetInfoOverride(&subsetInfo);
 					}
 
