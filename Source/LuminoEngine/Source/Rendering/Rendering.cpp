@@ -30,8 +30,6 @@ const DrawElementMetadata DrawElementMetadata::Default;
 
 namespace detail {
 
-PriorityBatchState PriorityBatchState::defaultState;
-
 //==============================================================================
 // DynamicLightInfo
 //==============================================================================
@@ -552,15 +550,14 @@ void DrawElementBatch::setRenderFeature(IRenderFeature* renderFeature)
 }
 
 //------------------------------------------------------------------------------
-bool DrawElementBatch::Equal(const DrawElementBatch& state_, Material* material, const BuiltinEffectData& effectData, const PriorityBatchState& priorityState) const
+bool DrawElementBatch::Equal(const DrawElementBatch& state_, Material* material, const BuiltinEffectData& effectData) const
 {
 	assert(m_combinedMaterial != nullptr);
 	return
 		state.getHashCode() == state_.state.getHashCode() &&
 		m_combinedMaterial->getSourceHashCode() == material->getHashCode() &&
 		m_transfrom == state_.m_transfrom &&
-		m_builtinEffectData.getHashCode() == effectData.getHashCode() &&
-		m_priorityState.equals(priorityState);
+		m_builtinEffectData.getHashCode() == effectData.getHashCode();
 //#if 
 //	return GetHashCode() == obj.GetHashCode();
 //#else
@@ -657,9 +654,9 @@ const Matrix& DrawElement::getTransform(DrawElementList* oenerList) const
 }
 
 //------------------------------------------------------------------------------
-void DrawElement::makeElementInfo(DrawElementList* oenerList, const CameraInfo& cameraInfo, const PriorityBatchState& priorityState, RenderView* renderView, ElementInfo* outInfo)
+void DrawElement::makeElementInfo(DrawElementList* oenerList, const CameraInfo& cameraInfo, RenderView* renderView, ElementInfo* outInfo)
 {
-	auto& matrix = (priorityState.worldTransform.isNull()) ? getTransform(oenerList) : priorityState.worldTransform.get();
+	auto& matrix = getTransform(oenerList);
 	outInfo->viewProjMatrix = &cameraInfo.viewProjMatrix;
 	outInfo->WorldMatrix = matrix;
 	renderView->filterWorldMatrix(&outInfo->WorldMatrix);
@@ -738,10 +735,10 @@ void DrawElementList::clearCommands()
 }
 
 //------------------------------------------------------------------------------
-void DrawElementList::postAddCommandInternal(const DrawElementBatch& state, Material* availableMaterial, const BuiltinEffectData& effectData, bool forceStateChange, const detail::PriorityBatchState& priorityState, DrawElement* element)
+void DrawElementList::postAddCommandInternal(const DrawElementBatch& state, Material* availableMaterial, const BuiltinEffectData& effectData, bool forceStateChange, DrawElement* element)
 {
 	if (forceStateChange || m_batchList.isEmpty() ||
-		!m_batchList.getLast().Equal(state, availableMaterial, effectData, priorityState))
+		!m_batchList.getLast().Equal(state, availableMaterial, effectData))
 	{
 		// CombinedMaterial を作る
 		CombinedMaterial* cm = m_combinedMaterialCache.queryCommandList();
@@ -750,7 +747,6 @@ void DrawElementList::postAddCommandInternal(const DrawElementBatch& state, Mate
 		// 新しく DrawElementBatch を作る
 		m_batchList.add(DrawElementBatch());
 		m_batchList.getLast().state = state.state;
-		m_batchList.getLast().m_priorityState = priorityState;
 		m_batchList.getLast().setRenderFeature(state.getRenderFeature());
 		m_batchList.getLast().setCombinedMaterial(cm);
 		m_batchList.getLast().setTransfrom(state.getTransfrom());
@@ -1101,7 +1097,7 @@ void DrawList::setTransform(const Matrix& transform)
 void DrawList::clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
 	// TODO: これだけ他と独立していて変更が反映されない
-	auto* ptr = m_drawElementList.addCommand<detail::ClearElement>(getCurrentState()->m_state, m_defaultMaterial, getCurrentState()->m_builtinEffectData, false, detail::PriorityBatchState::defaultState);
+	auto* ptr = m_drawElementList.addCommand<detail::ClearElement>(getCurrentState()->m_state, m_defaultMaterial, getCurrentState()->m_builtinEffectData, false);
 	ptr->flags = flags;
 	ptr->color = color;
 	ptr->z = z;
@@ -1463,14 +1459,7 @@ void DrawList::drawChar(uint32_t codePoint, const Rect& rect, StringFormatFlags 
 		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("DrawChar")); }
 	};
 
-	//auto* e = resolveDrawElement<DrawElement_DrawChar>(m_manager->getInternalContext()->m_vectorTextRenderer, nullptr);
-
-	detail::PriorityBatchState priorityState;
-	//priorityState.worldTransform = Matrix::Identity;
-	//priorityState.mainTexture = getCurrentState()->m_state.state.getFont()->resolveRawFont()->GetGlyphTextureCache()->getGlyphsFillTexture();
-
-
-	auto* e = resolveDrawElement<DrawElement_DrawChar>(m_manager->getInternalContext()->m_textRenderer, nullptr, &priorityState);
+	auto* e = resolveDrawElement<DrawElement_DrawChar>(m_manager->getInternalContext()->m_textRenderer, nullptr);
 	e->ch = codePoint;
 	e->rect = rect;
 	e->flags = flags;
@@ -1593,7 +1582,7 @@ void DrawList::drawRectangle(const Rect& rect)
 		return;
 	}
 
-	auto* ptr = resolveDrawElement<DrawElement_DrawNanoVGCommands>(m_manager->getInternalContext()->m_nanoVGRenderer, nullptr, nullptr, true);
+	auto* ptr = resolveDrawElement<DrawElement_DrawNanoVGCommands>(m_manager->getInternalContext()->m_nanoVGRenderer, nullptr, true);
 	auto* list = ptr->GetGCommandList(this);
 	detail::NanoVGCommandHelper::nvgBeginPath(list);
 	detail::NanoVGCommandHelper::nvgRect(list, rect.x, rect.y, rect.width, rect.height);
@@ -1742,9 +1731,9 @@ void DrawList::blitInternal(Texture* source, RenderTargetTexture* dest, const Ma
 		Matrix			overrideTransform;
 		Ref<Texture>	source;
 
-		virtual void makeElementInfo(detail::DrawElementList* oenerList, const detail::CameraInfo& cameraInfo, const detail::PriorityBatchState& priorityState, RenderView* renderView, detail::ElementInfo* outInfo) override
+		virtual void makeElementInfo(detail::DrawElementList* oenerList, const detail::CameraInfo& cameraInfo, RenderView* renderView, detail::ElementInfo* outInfo) override
 		{
-			DrawElement::makeElementInfo(oenerList, cameraInfo, priorityState, renderView, outInfo);
+			DrawElement::makeElementInfo(oenerList, cameraInfo, renderView, outInfo);
 			outInfo->WorldViewProjectionMatrix = overrideTransform;
 		}
 		virtual void makeSubsetInfo(detail::DrawElementList* oenerList, detail::CombinedMaterial* material, detail::SubsetInfo* outInfo) override

@@ -4,8 +4,8 @@
 LN_NAMESPACE_BEGIN
 namespace detail {
 class DrawElementBatch;
-class ElementInfo;
-class SubsetInfo;
+struct ElementInfo;
+struct SubsetInfo;
 
 class IRenderFeature
 {

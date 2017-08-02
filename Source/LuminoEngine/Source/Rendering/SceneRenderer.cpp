@@ -193,7 +193,7 @@ void SceneRenderer::render(
 					Shader* shader = policy.shader;
 
 					ElementInfo elementInfo;
-					element->makeElementInfo(element->m_ownerDrawElementList, cameraInfo, currentState->m_priorityState, drawElementListSet, &elementInfo);
+					element->makeElementInfo(element->m_ownerDrawElementList, cameraInfo, drawElementListSet, &elementInfo);
 					//drawElementListSet->filterWorldMatrix(&elementInfo.WorldMatrix);
 					//elementInfo.WorldViewProjectionMatrix = elementInfo.WorldMatrix * cameraInfo.viewMatrix * cameraInfo.projMatrix;	// TODO: viewProj はまとめたい
 
@@ -201,10 +201,6 @@ void SceneRenderer::render(
 
 					SubsetInfo subsetInfo;
 					element->makeSubsetInfo(element->m_ownerDrawElementList, material, &subsetInfo);
-					if (currentState->m_priorityState.mainTexture != nullptr)
-					{
-						subsetInfo.materialTexture = currentState->m_priorityState.mainTexture;
-					}
 
 					//currentState->IsStandaloneShaderRenderer
 

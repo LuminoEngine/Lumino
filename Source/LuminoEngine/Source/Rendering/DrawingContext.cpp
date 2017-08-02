@@ -68,7 +68,7 @@ void DrawingContext::drawBoxBackground(const Rect& rect, const CornerRadius& cor
 	}
 	else
 	{
-		auto* ptr = resolveDrawElement<DrawElement_DrawShapesRendererCommandList>(getManager()->getInternalContext()->m_shapesRenderer, nullptr, nullptr, true);
+		auto* ptr = resolveDrawElement<DrawElement_DrawShapesRendererCommandList>(getManager()->getInternalContext()->m_shapesRenderer, nullptr, true);
 		auto* list = ptr->GetGCommandList(this);
 		list->addDrawBoxBackground(rect, cornerRadius);
 	}
@@ -80,7 +80,7 @@ void DrawingContext::drawBoxBorder(
 	const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor,
 	BorderDirection borderDirection)
 {
-	auto* ptr = resolveDrawElement<DrawElement_DrawShapesRendererCommandList>(getManager()->getInternalContext()->m_shapesRenderer, nullptr, nullptr, true);
+	auto* ptr = resolveDrawElement<DrawElement_DrawShapesRendererCommandList>(getManager()->getInternalContext()->m_shapesRenderer, nullptr, true);
 	auto* list = ptr->GetGCommandList(this);
 	list->addDrawBoxBorder2(
 		rect, thickness,
@@ -95,7 +95,7 @@ void DrawingContext::drawBoxBorder(
 	float ltRad, float rtRad, float lbRad, float rbRad, BorderDirection borderDirection,
 	const Color& shadowColor, float shadowBlur, float shadowWidth, ShadowDirection shadowDirection)
 {
-	auto* ptr = resolveDrawElement<DrawElement_DrawShapesRendererCommandList>(getManager()->getInternalContext()->m_shapesRenderer, nullptr, nullptr, true);
+	auto* ptr = resolveDrawElement<DrawElement_DrawShapesRendererCommandList>(getManager()->getInternalContext()->m_shapesRenderer, nullptr, true);
 	auto* list = ptr->GetGCommandList(this);
 	list->addDrawBoxBorder(
 		rect.x, rect.y, rect.width, rect.height, thickness.left, thickness.top, thickness.right, thickness.bottom,
@@ -107,7 +107,7 @@ void DrawingContext::drawBoxBorder(
 //------------------------------------------------------------------------------
 void DrawingContext::drawBoxShadow(const Rect& rect, const CornerRadius& cornerRadius, const Color& color, float blur, float width, ShadowDirection shadowDirection)
 {
-	auto* ptr = resolveDrawElement<DrawElement_DrawShapesRendererCommandList>(getManager()->getInternalContext()->m_shapesRenderer, nullptr, nullptr, true);
+	auto* ptr = resolveDrawElement<DrawElement_DrawShapesRendererCommandList>(getManager()->getInternalContext()->m_shapesRenderer, nullptr, true);
 	auto* list = ptr->GetGCommandList(this);
 	list->addDrawBoxShadow(rect, cornerRadius, color, blur, width, (shadowDirection == ShadowDirection::Inside));
 }
