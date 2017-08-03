@@ -465,7 +465,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 		{
 			auto* props = style->getPropertyTable();
 
-			auto r1 = newObject<UIRenderElement>();
+			auto r1 = newObject<UIImageRenderElement>();
 			r1->m_height = 2.0f;
 			r1->m_brush = UIColors::getBrush(UIColorIndex::LightGreen);
 			props->m_renderElements.add(r1);
@@ -478,14 +478,59 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 		{
 			auto* props = style->getPropertyTable();
 
-			auto r1 = newObject<UIRenderElement>();
+			auto r1 = newObject<UIImageRenderElement>();
 			r1->m_height = 2.0f;
 			r1->m_brush = UIColors::getBrush(UIColorIndex::Grey);
 			props->m_renderElements.add(r1);
 		}
 	}
 
-	
+	//------------------------------------------------------------------------------
+	// UITreeView
+	{
+		auto* style = table->getStyle(_T("UITreeView"));
+		// base
+		{
+			auto* props = style->getPropertyTable();
+			props->background = Ref<Brush>::staticCast(containerBackground);
+			props->borderThickness = Thickness(1);
+		}
+	}
+	// UITreeViewItem
+	{
+		auto* style = table->getStyle(_T("UITreeViewItem"));
+		// base
+		{
+			auto* props = style->getPropertyTable();
+			props->padding = Thickness(10);
+		}
+		// UITreeViewItem.MouseOver
+		{
+			auto* props = style->getPropertyTable(UIVisualStates::MouseOverState);
+			props->background = Ref<Brush>::staticCast(containerItemMouseOver);
+		}
+	}
+	// UITreeViewItem::ExpanderButton
+	{
+		auto* style = table->getSubControlStyle(_T("UITreeViewItem"), _T("ExpanderButton"));
+		{
+			auto* props = style->getPropertyTable();
+		}
+		// ExpanderButton.Checked
+		{
+			auto* props = style->getPropertyTable(UIToggleButton::CheckedState);
+			auto r1 = newObject<UIGlyphIconRenderElement>();
+			r1->setGlyph(_T("fa-angle-down"), 16);
+			props->m_renderElements.add(r1);
+		}
+		// ExpanderButton.Unchecked
+		{
+			auto* props = style->getPropertyTable(UIToggleButton::UncheckedState);
+			auto r1 = newObject<UIGlyphIconRenderElement>();
+			r1->setGlyph(_T("fa-angle-right"), 16);
+			props->m_renderElements.add(r1);
+		}
+	}
 
 	//{
 	//	auto brush = TextureBrush::create(m_defaultSkinTexture);

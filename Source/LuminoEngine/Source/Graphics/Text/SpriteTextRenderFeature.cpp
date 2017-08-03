@@ -225,11 +225,26 @@ void TextRenderer::drawGlyphRun(const Matrix& transform, const Point& position, 
 //------------------------------------------------------------------------------
 void TextRenderer::drawChar(const Matrix& transform, uint32_t codePoint, const Rect& rect, StringFormatFlags flags)
 {
+	FontGlyphTextureCache* cache = m_font->GetGlyphTextureCache();
+
 	// レイアウト
 	TextLayoutResult result;
-	FontGlyphTextureCache* cache = m_font->GetGlyphTextureCache();
-	cache->getTextLayoutEngine()->resetSettings();
-	cache->getTextLayoutEngine()->layoutText((UTF32*)&codePoint, 1, LayoutTextOptions::All, &result);
+	if (flags.TestFlag(StringFormatFlags::LayoutDisabled))
+	{
+		FontGlyphMetrics metrics;
+		m_font->getGlyphMetrics(codePoint, &metrics);
+
+		TextLayoutResultItem item;
+		item.Char = codePoint;
+		item.Location.BitmapSize = SizeI::fromFloatSize(metrics.size);
+		item.Location.BitmapTopLeftPosition = PointI::Zero;
+		result.Items.add(item);
+	}
+	else
+	{
+		cache->getTextLayoutEngine()->resetSettings();
+		cache->getTextLayoutEngine()->layoutText((UTF32*)&codePoint, 1, LayoutTextOptions::All, &result);
+	}
 
 	// 描画
 	DrawGlyphsInternal(transform, rect.getTopLeft(), result.Items, cache);
@@ -351,6 +366,17 @@ void TextRenderer::onSetState(const DrawElementBatch* state)
 
 		LN_ASSERT(m_fillBrush != nullptr);
 	}
+}
+
+void TextRenderer::onShaderElementInfoOverride(ElementInfo* elementInfo)
+{
+	elementInfo->WorldMatrix = Matrix::Identity;
+	elementInfo->WorldViewProjectionMatrix = *elementInfo->viewProjMatrix;
+}
+
+void TextRenderer::onShaderSubsetInfoOverride(SubsetInfo* subsetInfo)
+{
+	subsetInfo->materialTexture = m_font->GetGlyphTextureCache()->getGlyphsFillTexture();
 }
 
 //------------------------------------------------------------------------------

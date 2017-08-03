@@ -114,8 +114,8 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual const VAlignment* getLayoutContentVAlignment() override;
 	virtual const Size& getLayoutDesiredSize() const override;
 	virtual void setLayoutDesiredSize(const Size& size) override;
-	virtual void setLayoutFinalLocalRect(const Rect& renderRect, const Rect& contentRect) override;
-	virtual void getLayoutFinalLocalRect(Rect* outRenderRect, Rect* outContentRect) const override;
+	virtual void setLayoutFinalLocalRect(const Rect& renderRect) override;
+	virtual void getLayoutFinalLocalRect(Rect* outRenderRect) const override;
 	virtual void setLayoutFinalGlobalRect(const Rect& rect) override;
 	virtual int getVisualChildrenCount() const override;
 	virtual ILayoutElement* getVisualChild(int index) const override;

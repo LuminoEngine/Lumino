@@ -107,7 +107,7 @@ Size UIViewport::arrangeOverride(const Size& finalSize)
 	// バックバッファサイズの調整
 	{
 		if (m_placement == ViewportPlacement::AutoResize)
-			m_viewSize = getRenderSize();
+			m_viewSize = getActualSize();
 		else
 			m_viewSize = m_backbufferSize.toFloatSize();
 	}
@@ -171,10 +171,12 @@ void UIViewport::onRender(DrawingContext* g)
 	//g->setRenderTarget(0, oldRT);
 	//g->setDepthBuffer(oldDB);
 
-	//Matrix transform;
-	//makeViewBoxTransform(SizeI::fromFloatSize(getRenderSize()), m_backbufferSize, &transform);
+	Matrix transform;
+	makeViewBoxTransform(SizeI::fromFloatSize(getActualSize()), m_backbufferSize, &transform);
 
-	g->blit(m_primaryLayerTarget/*, transform*/);	// TODO: 転送先指定
+	g->setViewportRect(RectI::fromFloatRect(getFinalGlobalRect()));
+	g->blit(m_primaryLayerTarget, transform);
+	g->setViewportRect(RectI(0, 0, -1, -1));
 
 	// TODO: 暫定。blit の中で深度書き込みしないようにしてほしいかも。
 	g->clear(ClearFlags::Depth, Color());
@@ -259,7 +261,7 @@ void UIViewport::makeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize
 	mat->translate(new_x, new_y, 0.0f);
 #else	// screen coord based
 	*mat = Matrix::Identity;
-	mat->scale(new_w / sw, new_h / sh, 1.0f);
+	mat->scale(new_w / dw, new_h / dh, 1.0f);
 #endif
 }
 

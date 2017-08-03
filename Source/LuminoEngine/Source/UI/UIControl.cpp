@@ -222,16 +222,6 @@ const VAlignment* UIControl::getPriorityContentVAlignment()
 //------------------------------------------------------------------------------
 void UIControl::onRoutedEvent(UIEventArgs* e)
 {
-	// TODO: ここでやるべきではない。MFC なら PreTranslate 相当なので。On～で行う。
-	if (e->getType() == UIEvents::MouseEnterEvent)
-	{
-		goToVisualState(UIVisualStates::MouseOverState);
-	}
-	else if (e->getType() == UIEvents::MouseLeaveEvent)
-	{
-		goToVisualState(UIVisualStates::NormalState);
-	}
-
 	UIElement::onRoutedEvent(e);
 }
 
@@ -277,6 +267,20 @@ void UIControl::onMouseUp(UIMouseEventArgs* e)
 	//}
 
 	UIElement::onMouseUp(e);
+}
+
+void UIControl::onMouseEnter(UIMouseEventArgs* e)
+{
+	UIElement::onMouseEnter(e);
+	goToVisualState(UIVisualStates::MouseOverState);
+	e->handled = true;
+}
+
+void UIControl::onMouseLeave(UIMouseEventArgs* e)
+{
+	UIElement::onMouseLeave(e);
+	goToVisualState(UIVisualStates::NormalState);
+	e->handled = true;
 }
 
 //------------------------------------------------------------------------------

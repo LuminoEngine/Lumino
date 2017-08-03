@@ -351,6 +351,18 @@ void DX9Renderer::onUpdateDepthStencilState(const DepthStencilState& newState, c
 	}
 }
 
+void DX9Renderer::onUpdateViewport(const RectI& viewport)
+{
+	D3DVIEWPORT9 dxvp;
+	dxvp.X = static_cast<DWORD>(viewport.x);
+	dxvp.Y = static_cast<DWORD>(viewport.y);
+	dxvp.Width = static_cast<DWORD>(viewport.width);
+	dxvp.Height = static_cast<DWORD>(viewport.height);
+	dxvp.MinZ = 0.0f;
+	dxvp.MaxZ = 1.0f;
+	LN_COMCALL(m_dxDevice->SetViewport(&dxvp));
+}
+
 //------------------------------------------------------------------------------
 void DX9Renderer::onUpdatePrimitiveData(IVertexDeclaration* decls, const List<Ref<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer)
 {
@@ -488,21 +500,6 @@ void DX9Renderer::onDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex
 			primitiveCount));
 }
 
-
-////------------------------------------------------------------------------------
-//void DX9Renderer::InternalSetViewport(const RectI& rect, bool reset)
-//{
-//	D3DVIEWPORT9 viewport;
-//	viewport.X = static_cast<DWORD>(rect.x);
-//	viewport.Y = static_cast<DWORD>(rect.y);
-//	viewport.Width = static_cast<DWORD>(rect.width);
-//	viewport.Height = static_cast<DWORD>(rect.height);
-//	viewport.MinZ = 0.0f;
-//	viewport.MaxZ = 1.0f;
-//
-//	LN_COMCALL(m_dxDevice->setViewport(&viewport));
-//	m_currentViewportRect = rect;
-//}
 
 } // namespace Driver
 LN_NAMESPACE_GRAPHICS_END

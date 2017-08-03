@@ -6,6 +6,7 @@
 #include "FontManager.h"
 #include "FontGlyphTextureCache.h"
 #include "BitmapTextRenderer.h"
+#include "GlyphIconFontManager.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
@@ -52,6 +53,12 @@ FontPtr Font::getDefault()
 FontPtr Font::getBuiltin(BuiltinFontSize size)
 {
 	return detail::GraphicsManager::getInstance()->getFontManager()->getBuiltinFont(size);
+}
+
+FontPtr Font::getAwesomeIconFont(int size)
+{
+	auto& manager = detail::EngineDomain::getGraphicsManager()->getGlyphIconFontManager();
+	return manager->getGlyphIconFont(size);
 }
 
 //------------------------------------------------------------------------------
@@ -165,6 +172,14 @@ Size Font::measureRenderSize(const StringRef& text)
 	RawFont* raw = resolveRawFont();
 	SizeI size = raw->getTextSize(text);
 	return Size(size.width, size.height);
+}
+
+Size Font::measureRenderSize(uint32_t ch)
+{
+	RawFont* raw = resolveRawFont();
+	FontGlyphMetrics metrics;
+	raw->getGlyphMetrics(ch, &metrics);
+	return metrics.size;
 }
 
 //------------------------------------------------------------------------------

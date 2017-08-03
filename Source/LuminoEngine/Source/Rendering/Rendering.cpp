@@ -30,8 +30,6 @@ const DrawElementMetadata DrawElementMetadata::Default;
 
 namespace detail {
 
-PriorityBatchState PriorityBatchState::defaultState;
-
 //==============================================================================
 // DynamicLightInfo
 //==============================================================================
@@ -160,70 +158,70 @@ detail::CoreGraphicsRenderFeature* InternalContext::getRenderStateManager()
 //------------------------------------------------------------------------------
 detail::CoreGraphicsRenderFeature* InternalContext::beginBaseRenderer()
 {
-	switchActiveRenderer(m_baseRenderer);
+	//switchActiveRenderer(m_baseRenderer);
 	return m_baseRenderer;
 }
 
 //------------------------------------------------------------------------------
 PrimitiveRenderFeature* InternalContext::beginPrimitiveRenderer()
 {
-	switchActiveRenderer(m_primitiveRenderer);
+	//switchActiveRenderer(m_primitiveRenderer);
 	return m_primitiveRenderer;
 }
 
 //------------------------------------------------------------------------------
 BlitRenderer* InternalContext::beginBlitRenderer()
 {
-	switchActiveRenderer(m_blitRenderer);
+	//switchActiveRenderer(m_blitRenderer);
 	return m_blitRenderer;
 }
 
 //------------------------------------------------------------------------------
 MeshRenderFeature* InternalContext::beginMeshRenderer()
 {
-	switchActiveRenderer(m_meshRenderer);
+	//switchActiveRenderer(m_meshRenderer);
 	return m_meshRenderer;
 }
 
 //------------------------------------------------------------------------------
 SpriteRenderFeature* InternalContext::beginSpriteRenderer()
 {
-	switchActiveRenderer(m_spriteRenderer);
+	//switchActiveRenderer(m_spriteRenderer);
 	return m_spriteRenderer;
 }
 
 //------------------------------------------------------------------------------
 TextRenderer* InternalContext::beginTextRenderer()
 {
-	switchActiveRenderer(m_textRenderer);
+	//switchActiveRenderer(m_textRenderer);
 	return m_textRenderer;
 }
 
 //------------------------------------------------------------------------------
 VectorTextRenderer* InternalContext::beginVectorTextRenderer()
 {
-	switchActiveRenderer(m_vectorTextRenderer);
+	//switchActiveRenderer(m_vectorTextRenderer);
 	return m_vectorTextRenderer;
 }
 
 //------------------------------------------------------------------------------
 ShapesRenderFeature* InternalContext::beginShapesRenderer()
 {
-	switchActiveRenderer(m_shapesRenderer);
+	//switchActiveRenderer(m_shapesRenderer);
 	return m_shapesRenderer;
 }
 
 //------------------------------------------------------------------------------
 NanoVGRenderFeature* InternalContext::beginNanoVGRenderer()
 {
-	switchActiveRenderer(m_nanoVGRenderer);
+	//switchActiveRenderer(m_nanoVGRenderer);
 	return m_nanoVGRenderer;
 }
 
 //------------------------------------------------------------------------------
 FrameRectRenderFeature* InternalContext::beginFrameRectRenderer()
 {
-	switchActiveRenderer(m_frameRectRenderer);
+	//switchActiveRenderer(m_frameRectRenderer);
 	return m_frameRectRenderer;
 }
 
@@ -315,6 +313,15 @@ void BatchState::setDepthBuffer(DepthBuffer* depthBuffer)
 	if (m_depthBuffer != depthBuffer)
 	{
 		m_depthBuffer = depthBuffer;
+		m_hashDirty = true;
+	}
+}
+
+void BatchState::setViewportRect(const RectI& rect)
+{
+	if (m_viewportRect != rect)
+	{
+		m_viewportRect = rect;
 		m_hashDirty = true;
 	}
 }
@@ -412,6 +419,7 @@ void BatchState::reset()
 	m_cullingMode = CullingMode::Back;
 	m_depthTestEnabled = true;
 	m_depthWriteEnabled = true;
+	m_viewportRect.set(0, 0, -1, -1);
 
 	m_brush = nullptr;
 	m_font = nullptr;
@@ -450,6 +458,7 @@ void BatchState::applyStatus(InternalContext* context, CombinedMaterial* combine
 		stateManager->setDepthStencilState(state);
 	}
 	// FrameBuffer
+	RenderTargetTexture* renderTarget0 = nullptr;
 	{
 		//if (defaultRenderTarget == nullptr && defaultDepthBuffer == nullptr)
 		//{
@@ -460,15 +469,43 @@ void BatchState::applyStatus(InternalContext* context, CombinedMaterial* combine
 
 		for (int i = 0; i < Graphics::MaxMultiRenderTargets; ++i)
 		{
+			RenderTargetTexture* target;
 			if (i == 0 && m_renderTargets[i] == nullptr)
-				stateManager->setRenderTarget(i, defaultStatus.defaultRenderTarget);
+			{
+				target = defaultStatus.defaultRenderTarget;
+			}
 			else
-				stateManager->setRenderTarget(i, m_renderTargets[i]);
+			{
+				target = m_renderTargets[i];
+			}
+			stateManager->setRenderTarget(i, target);
+
+			if (i == 0)
+			{
+				renderTarget0 = target;
+			}
 		}
+
 		if (m_depthBuffer == nullptr)
+		{
 			stateManager->setDepthBuffer(defaultStatus.defaultDepthBuffer);
+		}
 		else
+		{
 			stateManager->setDepthBuffer(m_depthBuffer);
+		}
+	}
+	// Viewport
+	{
+		const RectI& rect = getViewportRect();
+		if (rect.width < 0)
+		{
+			stateManager->setViewport(RectI(0, 0, renderTarget0->getSize()));
+		}
+		else
+		{
+			stateManager->setViewport(rect);
+		}
 		// TODO: m_scissorRect
 	}
 }
@@ -525,33 +562,41 @@ void DrawElementBatch::SetBuiltinEffect(const BuiltinEffectData& data)
 		m_hashDirty = true;
 	}
 }
+//
+////------------------------------------------------------------------------------
+//void DrawElementBatch::SetStandaloneShaderRenderer(bool enabled)
+//{
+//	if (m_standaloneShaderRenderer != enabled)
+//	{
+//		m_standaloneShaderRenderer = enabled;
+//		m_hashDirty = true;
+//	}
+//}
+//
+////------------------------------------------------------------------------------
+//bool DrawElementBatch::IsStandaloneShaderRenderer() const
+//{
+//	return m_standaloneShaderRenderer;
+//}
 
-//------------------------------------------------------------------------------
-void DrawElementBatch::SetStandaloneShaderRenderer(bool enabled)
+void DrawElementBatch::setRenderFeature(IRenderFeature* renderFeature)
 {
-	if (m_standaloneShaderRenderer != enabled)
+	if (m_renderFeature != renderFeature)
 	{
-		m_standaloneShaderRenderer = enabled;
+		m_renderFeature = renderFeature;
 		m_hashDirty = true;
 	}
 }
 
 //------------------------------------------------------------------------------
-bool DrawElementBatch::IsStandaloneShaderRenderer() const
-{
-	return m_standaloneShaderRenderer;
-}
-
-//------------------------------------------------------------------------------
-bool DrawElementBatch::Equal(const DrawElementBatch& state_, Material* material, const BuiltinEffectData& effectData, const PriorityBatchState& priorityState) const
+bool DrawElementBatch::Equal(const DrawElementBatch& state_, Material* material, const BuiltinEffectData& effectData) const
 {
 	assert(m_combinedMaterial != nullptr);
 	return
 		state.getHashCode() == state_.state.getHashCode() &&
 		m_combinedMaterial->getSourceHashCode() == material->getHashCode() &&
 		m_transfrom == state_.m_transfrom &&
-		m_builtinEffectData.getHashCode() == effectData.getHashCode() &&
-		m_priorityState.equals(priorityState);
+		m_builtinEffectData.getHashCode() == effectData.getHashCode();
 //#if 
 //	return GetHashCode() == obj.GetHashCode();
 //#else
@@ -591,7 +636,8 @@ void DrawElementBatch::reset()
 
 	m_transfrom = Matrix::Identity;
 	m_combinedMaterial = nullptr;
-	m_standaloneShaderRenderer = false;
+	//m_standaloneShaderRenderer = false;
+	m_renderFeature = nullptr;
 
 	m_hashCode = 0;
 	m_hashDirty = true;
@@ -647,9 +693,9 @@ const Matrix& DrawElement::getTransform(DrawElementList* oenerList) const
 }
 
 //------------------------------------------------------------------------------
-void DrawElement::makeElementInfo(DrawElementList* oenerList, const CameraInfo& cameraInfo, const PriorityBatchState& priorityState, RenderView* renderView, ElementInfo* outInfo)
+void DrawElement::makeElementInfo(DrawElementList* oenerList, const CameraInfo& cameraInfo, RenderView* renderView, ElementInfo* outInfo)
 {
-	auto& matrix = (priorityState.worldTransform.isNull()) ? getTransform(oenerList) : priorityState.worldTransform.get();
+	auto& matrix = getTransform(oenerList);
 	outInfo->viewProjMatrix = &cameraInfo.viewProjMatrix;
 	outInfo->WorldMatrix = matrix;
 	renderView->filterWorldMatrix(&outInfo->WorldMatrix);
@@ -728,10 +774,10 @@ void DrawElementList::clearCommands()
 }
 
 //------------------------------------------------------------------------------
-void DrawElementList::postAddCommandInternal(const DrawElementBatch& state, Material* availableMaterial, const BuiltinEffectData& effectData, bool forceStateChange, const detail::PriorityBatchState& priorityState, DrawElement* element)
+void DrawElementList::postAddCommandInternal(const DrawElementBatch& state, Material* availableMaterial, const BuiltinEffectData& effectData, bool forceStateChange, DrawElement* element)
 {
 	if (forceStateChange || m_batchList.isEmpty() ||
-		!m_batchList.getLast().Equal(state, availableMaterial, effectData, priorityState))
+		!m_batchList.getLast().Equal(state, availableMaterial, effectData))
 	{
 		// CombinedMaterial を作る
 		CombinedMaterial* cm = m_combinedMaterialCache.queryCommandList();
@@ -740,7 +786,7 @@ void DrawElementList::postAddCommandInternal(const DrawElementBatch& state, Mate
 		// 新しく DrawElementBatch を作る
 		m_batchList.add(DrawElementBatch());
 		m_batchList.getLast().state = state.state;
-		m_batchList.getLast().m_priorityState = priorityState;
+		m_batchList.getLast().setRenderFeature(state.getRenderFeature());
 		m_batchList.getLast().setCombinedMaterial(cm);
 		m_batchList.getLast().setTransfrom(state.getTransfrom());
 		m_batchList.getLast().SetBuiltinEffect(effectData);
@@ -950,6 +996,10 @@ void DrawList::popState()
 void DrawList::setRenderTarget(int index, RenderTargetTexture* renderTarget)
 {
 	getCurrentState()->m_state.state.setRenderTarget(index, renderTarget);
+	if (index == 0)
+	{
+		setViewportRect(RectI(0, 0, renderTarget->getSize()));
+	}
 	m_currentStateFence++;
 }
 
@@ -970,6 +1020,16 @@ void DrawList::setDepthBuffer(DepthBuffer* depthBuffer)
 DepthBuffer* DrawList::getDepthBuffer() const
 {
 	return getCurrentState()->m_state.state.getDepthBuffer();
+}
+
+void DrawList::setViewportRect(const RectI& rect)
+{
+	getCurrentState()->m_state.state.setViewportRect(rect);
+}
+
+const RectI& DrawList::getViewportRect() const
+{
+	return getCurrentState()->m_state.state.getViewportRect();
 }
 
 //------------------------------------------------------------------------------
@@ -1090,7 +1150,7 @@ void DrawList::setTransform(const Matrix& transform)
 void DrawList::clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
 	// TODO: これだけ他と独立していて変更が反映されない
-	auto* ptr = m_drawElementList.addCommand<detail::ClearElement>(getCurrentState()->m_state, m_defaultMaterial, getCurrentState()->m_builtinEffectData, false, detail::PriorityBatchState::defaultState);
+	auto* ptr = m_drawElementList.addCommand<detail::ClearElement>(getCurrentState()->m_state, m_defaultMaterial, getCurrentState()->m_builtinEffectData, false);
 	ptr->flags = flags;
 	ptr->color = color;
 	ptr->z = z;
@@ -1330,16 +1390,6 @@ void DrawList::drawGlyphRun(const Point& position, GlyphRun* glyphRun)
 	public:
 		Ref<GlyphRun>	glyphRun;
 		Point position;
-		//virtual void makeElementInfo(detail::DrawElementList* oenerList, const detail::CameraInfo& cameraInfo, detail::ElementInfo* outInfo) override
-		//{
-		//	// ワールド行列は作らない。一連の Glyphs を描画する方に任せる。
-		//	// (スプライトと同じく、できるだけ一度に描画する)
-		//	outInfo->viewProjMatrix = &cameraInfo.viewProjMatrix;
-		//	outInfo->WorldMatrix = Matrix::Identity;//getTransform(oenerList);
-		//	outInfo->WorldViewProjectionMatrix = cameraInfo.viewMatrix * cameraInfo.projMatrix;// outInfo->WorldMatrix * cameraInfo.viewMatrix * cameraInfo.projMatrix;	// TODO: viewProj はまとめたい
-		//	outInfo->affectedLights = getAffectedDynamicLightInfos();
-		//}
-
 
 		virtual void drawSubset(const DrawArgs& e) override
 		{
@@ -1380,24 +1430,6 @@ void DrawList::drawText_(const StringRef& text, const Rect& rect, StringFormatFl
 		Rect rect;
 		StringFormatFlags flags;
 
-		//virtual void makeElementInfo(detail::DrawElementList* oenerList, const detail::CameraInfo& cameraInfo, detail::ElementInfo* outInfo) override
-		//{
-		//	// ワールド行列は作らない。一連の Glyphs を描画する方に任せる。
-		//	// (スプライトと同じく、できるだけ一度に描画する)
-		//	outInfo->viewProjMatrix = &cameraInfo.viewProjMatrix;
-		//	outInfo->WorldMatrix = Matrix::Identity;//getTransform(oenerList);
-		//	outInfo->WorldViewProjectionMatrix = cameraInfo.viewMatrix * cameraInfo.projMatrix;// outInfo->WorldMatrix * cameraInfo.viewMatrix * cameraInfo.projMatrix;	// TODO: viewProj はまとめたい
-		//	outInfo->affectedLights = getAffectedDynamicLightInfos();
-		//}
-
-		//virtual void makeSubsetInfo(detail::DrawElementList* oenerList, detail::CombinedMaterial* material, detail::SubsetInfo* outInfo) override
-		//{
-		//	DrawElement::makeSubsetInfo(oenerList, material, outInfo);
-
-		//	// MaterialTexture を上書きする
-		//	outInfo->materialTexture = oenerList->getBatch(batchIndex)->state.getFont()->resolveRawFont()->GetGlyphTextureCache()->getGlyphsFillTexture();
-		//}
-
 		virtual void drawSubset(const DrawArgs& e) override
 		{
 			e.context->beginTextRenderer()->drawString(getTransform(e.oenerList), text.c_str(), text.getLength(), rect, flags);
@@ -1417,11 +1449,11 @@ void DrawList::drawText_(const StringRef& text, const Rect& rect, StringFormatFl
 	//Ref<Texture> old = m_defaultMaterial->getMaterialTexture(nullptr);
 	//m_defaultMaterial->setMaterialTexture(m_state.state.getFont()->resolveRawFont()->GetGlyphTextureCache()->getGlyphsFillTexture());
 
-	detail::PriorityBatchState priorityState;
-	priorityState.worldTransform = Matrix::Identity;
-	priorityState.mainTexture = getCurrentState()->m_state.state.getFont()->resolveRawFont()->GetGlyphTextureCache()->getGlyphsFillTexture();
+	//detail::PriorityBatchState priorityState;
+	//priorityState.worldTransform = Matrix::Identity;
+	//priorityState.mainTexture = getCurrentState()->m_state.state.getFont()->resolveRawFont()->GetGlyphTextureCache()->getGlyphsFillTexture();
 
-	auto* e = resolveDrawElement<DrawElement_DrawText>(m_manager->getInternalContext()->m_textRenderer, nullptr, &priorityState);
+	auto* e = resolveDrawElement<DrawElement_DrawText>(m_manager->getInternalContext()->m_textRenderer, nullptr, nullptr);
 	e->text = text;
 	e->rect = rect;
 	e->flags = flags;
@@ -1452,14 +1484,7 @@ void DrawList::drawChar(uint32_t codePoint, const Rect& rect, StringFormatFlags 
 		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("DrawChar")); }
 	};
 
-	//auto* e = resolveDrawElement<DrawElement_DrawChar>(m_manager->getInternalContext()->m_vectorTextRenderer, nullptr);
-
-	detail::PriorityBatchState priorityState;
-	priorityState.worldTransform = Matrix::Identity;
-	priorityState.mainTexture = getCurrentState()->m_state.state.getFont()->resolveRawFont()->GetGlyphTextureCache()->getGlyphsFillTexture();
-
-
-	auto* e = resolveDrawElement<DrawElement_DrawChar>(m_manager->getInternalContext()->m_textRenderer, nullptr, &priorityState);
+	auto* e = resolveDrawElement<DrawElement_DrawChar>(m_manager->getInternalContext()->m_textRenderer, nullptr);
 	e->ch = codePoint;
 	e->rect = rect;
 	e->flags = flags;
@@ -1582,7 +1607,7 @@ void DrawList::drawRectangle(const Rect& rect)
 		return;
 	}
 
-	auto* ptr = resolveDrawElement<DrawElement_DrawNanoVGCommands>(m_manager->getInternalContext()->m_nanoVGRenderer, nullptr, nullptr, true);
+	auto* ptr = resolveDrawElement<DrawElement_DrawNanoVGCommands>(m_manager->getInternalContext()->m_nanoVGRenderer, nullptr, true);
 	auto* list = ptr->GetGCommandList(this);
 	detail::NanoVGCommandHelper::nvgBeginPath(list);
 	detail::NanoVGCommandHelper::nvgRect(list, rect.x, rect.y, rect.width, rect.height);
@@ -1731,9 +1756,9 @@ void DrawList::blitInternal(Texture* source, RenderTargetTexture* dest, const Ma
 		Matrix			overrideTransform;
 		Ref<Texture>	source;
 
-		virtual void makeElementInfo(detail::DrawElementList* oenerList, const detail::CameraInfo& cameraInfo, const detail::PriorityBatchState& priorityState, RenderView* renderView, detail::ElementInfo* outInfo) override
+		virtual void makeElementInfo(detail::DrawElementList* oenerList, const detail::CameraInfo& cameraInfo, RenderView* renderView, detail::ElementInfo* outInfo) override
 		{
-			DrawElement::makeElementInfo(oenerList, cameraInfo, priorityState, renderView, outInfo);
+			DrawElement::makeElementInfo(oenerList, cameraInfo, renderView, outInfo);
 			outInfo->WorldViewProjectionMatrix = overrideTransform;
 		}
 		virtual void makeSubsetInfo(detail::DrawElementList* oenerList, detail::CombinedMaterial* material, detail::SubsetInfo* outInfo) override

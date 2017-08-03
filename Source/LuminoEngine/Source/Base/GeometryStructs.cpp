@@ -44,6 +44,15 @@ const RectI	RectI::Zero(0, 0, 0, 0);
 const Rect	Rect::Zero(0, 0, 0, 0);
 const Rect	Rect::Empty(0, 0, -1, -1);
 
+Rect Rect::makeDeflate(const Thickness& thickness) const
+{
+	return Rect(
+		x + thickness.left,
+		y + thickness.top,
+		std::max(width - thickness.getWidth(), 0.0f),
+		std::max(height - thickness.getHeight(), 0.0f));
+}
+
 //==============================================================================
 // Box32
 //==============================================================================

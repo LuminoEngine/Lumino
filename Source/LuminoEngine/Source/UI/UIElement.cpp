@@ -9,6 +9,7 @@
 #include <Lumino/UI/UIStyle.h>
 #include "UIHelper.h"
 #include "UIManager.h"
+#include "LayoutHelper.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -18,6 +19,7 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 const String UIVisualStates::CommonGroup = _T("CommonGroup");
 const String UIVisualStates::FocusGroup = _T("FocusGroup");
+const String UIVisualStates::CheckStates = _T("CheckStates");
 //const String UIVisualStates::ValidationStates = _T("ValidationStates");
 const String UIVisualStates::NormalState = _T("Normal");
 const String UIVisualStates::MouseOverState = _T("MouseOver");
@@ -61,6 +63,7 @@ UIElement::UIElement()
 	, decoratorOpacity(1.0f)
 	, m_specialElementType(UISpecialElementType::None)
 	, m_combinedOpacity(0.0f)
+	, m_coreFlags(detail::UICoreFlags_LayoutVisible)
 	, m_isEnabled(true)
 	, m_isMouseOver(nullptr)
 	, m_isHitTestVisible(true)
@@ -88,6 +91,8 @@ void UIElement::initialize()
 
 	//goToVisualState(String::GetEmpty());
 	m_invalidateFlags |= detail::InvalidateFlags::VisualState;
+
+	setVisibility(UIVisibility::Visible);
 }
 
 //------------------------------------------------------------------------------
@@ -103,9 +108,9 @@ const Thickness& UIElement::getMargin() const
 }
 
 //------------------------------------------------------------------------------
-void UIElement::setPadding(const Thickness& Padding)
+void UIElement::setPadding(const Thickness& padding)
 {
-	m_localStyle->padding = Padding;
+	m_localStyle->padding = padding;
 }
 
 //------------------------------------------------------------------------------
@@ -115,14 +120,14 @@ const Thickness& UIElement::getPadding() const
 }
 
 //------------------------------------------------------------------------------
-void UIElement::setLayoutColumn(int index) { m_gridLayoutInfo.layoutColumn = index; }
-int UIElement::getLayoutColumn() const { return m_gridLayoutInfo.layoutColumn; }
 void UIElement::setLayoutRow(int index) { m_gridLayoutInfo.layoutRow = index; }
 int UIElement::getLayoutRow() const { return m_gridLayoutInfo.layoutRow; }
-void UIElement::setLayoutColumnSpan(int span) { m_gridLayoutInfo.layoutColumnSpan = span; }
-int UIElement::getLayoutColumnSpan() const { return m_gridLayoutInfo.layoutColumnSpan; }
+void UIElement::setLayoutColumn(int index) { m_gridLayoutInfo.layoutColumn = index; }
+int UIElement::getLayoutColumn() const { return m_gridLayoutInfo.layoutColumn; }
 void UIElement::setLayoutRowSpan(int span) { m_gridLayoutInfo.layoutRowSpan = span; }
 int UIElement::getLayoutRowSpan() const { return m_gridLayoutInfo.layoutRowSpan; }
+void UIElement::setLayoutColumnSpan(int span) { m_gridLayoutInfo.layoutColumnSpan = span; }
+int UIElement::getLayoutColumnSpan() const { return m_gridLayoutInfo.layoutColumnSpan; }
 
 //------------------------------------------------------------------------------
 void UIElement::setBackground(Brush* value)
@@ -136,6 +141,37 @@ Brush* UIElement::getBackground() const
 {
 	return m_localStyle->background.get();
 	//return tr::PropertyInfo::getPropertyValueDirect<BrushPtr>(this, backgroundId);
+}
+
+void UIElement::setVisibility(UIVisibility value)
+{
+	switch (value)
+	{
+		case UIVisibility::Visible:
+			writeCoreFlag(detail::UICoreFlags_LayoutVisible, true);
+			writeCoreFlag(detail::UICoreFlags_RenderVisible, true);
+			break;
+		case UIVisibility::Hidden:
+			writeCoreFlag(detail::UICoreFlags_LayoutVisible, true);
+			writeCoreFlag(detail::UICoreFlags_RenderVisible, false);
+			break;
+		case UIVisibility::Collapsed:
+			writeCoreFlag(detail::UICoreFlags_LayoutVisible, false);
+			writeCoreFlag(detail::UICoreFlags_RenderVisible, false);
+			break;
+	}
+}
+
+UIVisibility UIElement::getVisibility() const
+{
+	bool v1 = readCoreFlag(detail::UICoreFlags_LayoutVisible);
+	bool v2 = readCoreFlag(detail::UICoreFlags_RenderVisible);
+	if (v1 && v2) return UIVisibility::Visible;
+	if (v1 && !v2) return UIVisibility::Hidden;
+	if (!v1 && !v2) return UIVisibility::Collapsed;
+
+	LN_UNREACHABLE();	// 何かおかしい
+	return UIVisibility::Visible;
 }
 
 //------------------------------------------------------------------------------
@@ -226,7 +262,9 @@ void UIElement::raiseEvent(const UIEventInfo* ev, UIElement* sender, UIEventArgs
 //------------------------------------------------------------------------------
 void UIElement::measureLayout(const Size& availableSize)
 {
-	ILayoutElement::measureLayout(availableSize);
+	//ILayoutElement::measureLayout(availableSize);
+
+	detail::LayoutHelper2::measureLayout(this, availableSize);
 
 	// フォントの無効フラグを落とす
 	// TODO: UITextElement へ移動した方が良いかも？
@@ -253,7 +291,8 @@ void UIElement::arrangeLayout(const Rect& finalLocalRect)
 	}
 
 
-	ILayoutElement::arrangeLayout(alignd/*finalLocalRect*/);
+	//ILayoutElement::arrangeLayout(alignd/*finalLocalRect*/);
+	detail::LayoutHelper2::arrangeLayout(this, alignd);
 
 	onLayoutUpdated();
 }
@@ -283,6 +322,9 @@ void UIElement::onLayoutUpdated()
 //------------------------------------------------------------------------------
 void UIElement::onRender(DrawingContext* g)
 {
+	Rect localRenderRect = Rect(0, 0, m_finalLocalActualRect.getSize()).makeDeflate(m_renderFrameThickness);
+
+
 	//g->setBlendMode(BlendMode::Alpha);
 	//g->setDepthTestEnabled(false);
 	//g->setDepthWriteEnabled(false);
@@ -292,7 +334,7 @@ void UIElement::onRender(DrawingContext* g)
 	{
 		g->setBrush(m_localStyle->background.get());
 		//g->drawRectangle(Rect(0, 0, m_finalLocalRect.getSize()));
-		g->drawBoxBackground(Rect(0, 0, m_finalLocalRenderRect.getSize()), m_localStyle->cornerRadius.get());
+		g->drawBoxBackground(localRenderRect/*Rect(0, 0, m_finalLocalActualRect.getSize())*/, m_localStyle->cornerRadius.get());
 	}
 	//else
 	//{
@@ -356,7 +398,10 @@ void UIElement::onMouseEnter(UIMouseEventArgs* e)
 	// 親にもマウスがはじめて乗ったのであれば親にも通知する
 	if (m_visualParent != nullptr && !m_visualParent->m_isMouseOver)
 	{
-		m_visualParent->onMouseEnter(e);
+		if (onHitTest(e->getPosition(this)))
+		{
+			m_visualParent->onMouseEnter(e);
+		}
 	}
 
 	m_isMouseOver = true;
@@ -370,7 +415,8 @@ void UIElement::onMouseLeave(UIMouseEventArgs* e)
 	// 親にもマウスが乗ったことになっていれば、ヒットテストをした上で通知する
 	if (m_visualParent != nullptr && m_visualParent->m_isMouseOver)
 	{
-		if (!m_visualParent->m_finalGlobalRect.contains(e->getPosition()))
+		//if (!m_visualParent->m_finalGlobalRect.contains(e->getPosition()))
+		if (onHitTest(e->getPosition(this)))
 		{
 			m_visualParent->onMouseLeave(e);
 		}
@@ -623,6 +669,16 @@ void UIElement::updateLocalStyleAndApplyProperties(UIStyleTable* styleTable, det
 
 }
 
+//Rect UIElement::getLocalRenderRect() const
+//{
+//	Rect localRenderRect = Rect(0, 0, m_finalLocalActualRect.getSize());
+//	localRenderRect.x += m_renderFrameThickness.left;
+//	localRenderRect.y += m_renderFrameThickness.top;
+//	localRenderRect.width = std::max(localRenderRect.width - m_renderFrameThickness.getWidth(), 0.0f);
+//	localRenderRect.height = std::max(localRenderRect.height - m_renderFrameThickness.getHeight(), 0.0f);
+//	return localRenderRect;
+//}
+
 //------------------------------------------------------------------------------
 void UIElement::onUpdateStyle(detail::UIStylePropertyTableInstance* localStyle, detail::InvalidateFlags invalidateFlags)
 {
@@ -641,7 +697,16 @@ void UIElement::onUpdatingLayout()
 //------------------------------------------------------------------------------
 bool UIElement::onHitTest(const Point& localPoint)
 {
-	return m_finalLocalRenderRect.contains(localPoint);
+	return m_finalLocalActualRect.makeDeflate(m_renderFrameThickness).contains(localPoint);
+
+	//Rect localRenderRect = m_finalLocalActualRect;
+	//localRenderRect.x += m_renderFrameThickness.left;
+	//localRenderRect.y += m_renderFrameThickness.top;
+	//localRenderRect.width = std::max(localRenderRect.width - m_renderFrameThickness.getWidth(), 0.0f);
+	//localRenderRect.height = std::max(localRenderRect.height - m_renderFrameThickness.getHeight(), 0.0f);
+	//return localRenderRect.contains(localPoint);
+	//return getLocalRenderRect().contains(localPoint);
+	//return m_finalLocalActualRect.contains(localPoint);
 }
 
 //------------------------------------------------------------------------------
@@ -692,34 +757,37 @@ void UIElement::updateFrame()
 //------------------------------------------------------------------------------
 void UIElement::render(DrawingContext* g)
 {
-	//Point contentOffset;
-	if (m_visualParent != nullptr)
+	if (isRenderVisible())
 	{
-		detail::BuiltinEffectData::combine(m_visualParent->m_combinedBuiltinEffectData, m_builtinEffectData, &m_combinedBuiltinEffectData);
-		//contentOffset = m_visualParent->m_finalLocalContentRect.getTopLeft();
+		//Point contentOffset;
+		if (m_visualParent != nullptr)
+		{
+			detail::BuiltinEffectData::combine(m_visualParent->m_combinedBuiltinEffectData, m_builtinEffectData, &m_combinedBuiltinEffectData);
+			//contentOffset = m_visualParent->m_finalLocalContentRect.getTopLeft();
+		}
+		else
+		{
+			m_combinedBuiltinEffectData = m_builtinEffectData;
+		}
+
+		g->pushState();
+
+		Matrix mat;
+		mat.translate(m_finalGlobalRect.x, m_finalGlobalRect.y, 0);
+		g->setTransform(mat);
+		g->setBuiltinEffectData(m_combinedBuiltinEffectData);
+
+
+
+		//g->drawBoxBorder(Rect(50, 50, 300, 200), Thickness(10, 10, 10, 10), Color::Red, Color::Green, Color::Blue, Color::Cyan, 10, 10, 10, 10);	// TODO:
+		//g->drawBoxShadow(Rect(10, 20, 300, 400), Color::Black, 5, 5, false);
+		onRender(g);
+
+		// 子要素
+		UIHelper::forEachVisualChildren(this, [g](UIElement* child) { child->render(g); });
+
+		g->popState();	// TODO: scoped
 	}
-	else
-	{
-		m_combinedBuiltinEffectData = m_builtinEffectData;
-	}
-
-	g->pushState();
-
-	Matrix mat;
-	mat.translate(m_finalGlobalRect.x, m_finalGlobalRect.y, 0);
-	g->setTransform(mat);
-	g->setBuiltinEffectData(m_combinedBuiltinEffectData);
-
-	
-
-	//g->drawBoxBorder(Rect(50, 50, 300, 200), Thickness(10, 10, 10, 10), Color::Red, Color::Green, Color::Blue, Color::Cyan, 10, 10, 10, 10);	// TODO:
-	//g->drawBoxShadow(Rect(10, 20, 300, 400), Color::Black, 5, 5, false);
-	onRender(g);
-
-	// 子要素
-	UIHelper::forEachVisualChildren(this, [g](UIElement* child) { child->render(g); });
-
-	g->popState();	// TODO: scoped
 }
 
 //------------------------------------------------------------------------------
@@ -789,6 +857,32 @@ void UIElement::removeVisualChild(UIElement* element)
 }
 
 //------------------------------------------------------------------------------
+bool UIElement::readCoreFlag(detail::UICoreFlags field) const
+{
+	return (m_coreFlags & field) != 0;
+}
+
+//------------------------------------------------------------------------------
+void UIElement::writeCoreFlag(detail::UICoreFlags field, bool value)
+{
+	uint32_t flags = m_coreFlags;
+	if (value)
+	{
+		flags |= field;
+	}
+	else
+	{
+		flags &= (~field);
+	}
+	m_coreFlags = (detail::UICoreFlags)flags;
+}
+
+bool UIElement::isRenderVisible() const
+{
+	return readCoreFlag(detail::UICoreFlags_RenderVisible);
+}
+
+//------------------------------------------------------------------------------
 const Point& UIElement::getLayoutPosition() const { return position; }
 Size UIElement::getLayoutSize() const { return Size(width, height); }
 const Thickness& UIElement::getLayoutMargin() const { return m_localStyle->margin.get(); }
@@ -802,8 +896,8 @@ const HAlignment* UIElement::getLayoutContentHAlignment() { return getPriorityCo
 const VAlignment* UIElement::getLayoutContentVAlignment() { return getPriorityContentVAlignment(); }
 const Size& UIElement::getLayoutDesiredSize() const { return m_desiredSize; }
 void UIElement::setLayoutDesiredSize(const Size& size) { m_desiredSize = size; }
-void UIElement::setLayoutFinalLocalRect(const Rect& renderRect, const Rect& contentRect) { m_finalLocalRenderRect = renderRect; m_finalLocalContentRect = contentRect; }
-void UIElement::getLayoutFinalLocalRect(Rect* outRenderRect, Rect* outContentRect) const { *outRenderRect = m_finalLocalRenderRect; *outContentRect = m_finalLocalContentRect; }
+void UIElement::setLayoutFinalLocalRect(const Rect& renderRect/*, const Rect& contentRect*/) { m_finalLocalActualRect = renderRect; /*m_finalLocalContentRect = contentRect;*/ }
+void UIElement::getLayoutFinalLocalRect(Rect* outRenderRect/*, Rect* outContentRect*/) const { *outRenderRect = m_finalLocalActualRect; /**outContentRect = m_finalLocalContentRect;*/ }
 void UIElement::setLayoutFinalGlobalRect(const Rect& rect) { m_finalGlobalRect = rect; }
 
 LN_NAMESPACE_END

@@ -178,8 +178,10 @@ void UIToggleButton::initialize()
 	UIButtonBase::initialize();
 
 	auto* vsm = getVisualStateManager();
-	vsm->registerVisualState(UIVisualStates::CommonGroup, CheckedState);
-	vsm->registerVisualState(UIVisualStates::CommonGroup, UncheckedState);
+	vsm->registerVisualState(UIVisualStates::CheckStates, CheckedState);
+	vsm->registerVisualState(UIVisualStates::CheckStates, UncheckedState);
+
+	goToVisualState(UncheckedState);
 }
 
 //------------------------------------------------------------------------------

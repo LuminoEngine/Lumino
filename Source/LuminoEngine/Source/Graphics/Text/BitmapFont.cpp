@@ -196,6 +196,8 @@ void BitmapFont::getGlobalMetrics(FontGlobalMetrics* outMetrics)
 void BitmapFont::getGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics)
 {
 	if (LN_CHECK_ARG(outMetrics != nullptr)) return;
+	outMetrics->size.width = (float)m_charWidth;
+	outMetrics->size.height = (float)m_charHeight;
 	outMetrics->advance.x = m_charWidth;
 	outMetrics->advance.y = m_charHeight;
 }

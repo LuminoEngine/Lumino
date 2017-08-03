@@ -36,6 +36,7 @@ private:
 	virtual void onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, ITexture* depthBuffer) override;
 	virtual	void onUpdateRenderState(const RenderState& newState, const RenderState& oldState, bool reset) override;
 	virtual	void onUpdateDepthStencilState(const DepthStencilState& newState, const DepthStencilState& oldState, bool reset) override;
+	virtual void onUpdateViewport(const RectI& viewport) override;
 	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, const List<Ref<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer) override;
 	virtual void onClear(ClearFlags flags, const Color& color, float z, uint8_t stencil) override;
 	virtual void onDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount) override;

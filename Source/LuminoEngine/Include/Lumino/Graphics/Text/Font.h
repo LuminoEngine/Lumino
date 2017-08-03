@@ -25,6 +25,7 @@ struct FontGlobalMetrics
 
 struct FontGlyphMetrics
 {
+	Size	size;
 	float	bearingX;
 	float	bearingY;
 	Vector2	advance;		// 次の文字までのベースライン間隔
@@ -72,6 +73,8 @@ public:
 	*/
 	static FontPtr getBuiltin(BuiltinFontSize size);
 
+	static FontPtr getAwesomeIconFont(int size);
+
 public:
 
 	/** フォントファミリ名の設定 */
@@ -106,6 +109,9 @@ public:
 
 	/** 指定した文字列を描画する際のサイズを計算します。*/
 	Size measureRenderSize(const StringRef& text);
+
+	/** 指定した文字を描画する際のサイズを計算します。*/
+	Size measureRenderSize(uint32_t ch);
 
 	/** このフォントのコピーを作成します。*/
 	FontPtr clone() const;

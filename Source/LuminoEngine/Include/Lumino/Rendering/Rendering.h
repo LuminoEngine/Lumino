@@ -143,19 +143,6 @@ LN_INTERNAL_ACCESS:
 	friend class ::ln::DrawList;
 };
 
-struct PriorityBatchState
-{
-	Nullable<Matrix>	worldTransform;
-	Ref<Texture>		mainTexture;
-
-	static PriorityBatchState defaultState;
-
-	bool equals(const PriorityBatchState& rhs) const
-	{
-		return worldTransform == rhs.worldTransform && mainTexture == rhs.mainTexture;
-	}
-};
-
 class DrawElement
 {
 public:
@@ -183,7 +170,7 @@ public:
 
 	const Matrix& getTransform(DrawElementList* oenerList) const;
 
-	virtual void makeElementInfo(DrawElementList* oenerList, const CameraInfo& cameraInfo, const PriorityBatchState& priorityState, RenderView* renderView, ElementInfo* outInfo);
+	virtual void makeElementInfo(DrawElementList* oenerList, const CameraInfo& cameraInfo, RenderView* renderView, ElementInfo* outInfo);
 	virtual void makeSubsetInfo(DrawElementList* oenerList, CombinedMaterial* material, SubsetInfo* outInfo);
 
 	virtual void drawSubset(const DrawArgs& e) = 0;
@@ -233,6 +220,9 @@ public:
 	void setDepthBuffer(DepthBuffer* depthBuffer);
 	DepthBuffer* getDepthBuffer() const { return m_depthBuffer; }
 
+	void setViewportRect(const RectI& rect);
+	const RectI& getViewportRect() const { return m_viewportRect; }
+
 	void setScissorRect(const RectI& scissorRect);
 	const RectI& getScissorRect() const { return m_scissorRect; }
 
@@ -268,6 +258,7 @@ private:
 
 	Ref<RenderTargetTexture>	m_renderTargets[Graphics::MaxMultiRenderTargets];
 	Ref<DepthBuffer>			m_depthBuffer;
+	RectI						m_viewportRect;
 	RectI						m_scissorRect;
 	BlendMode					m_blendMode;
 	CullingMode					m_cullingMode;
@@ -309,10 +300,12 @@ public:
 
 	void SetBuiltinEffect(const BuiltinEffectData& data);
 
-	void SetStandaloneShaderRenderer(bool enabled);
-	bool IsStandaloneShaderRenderer() const;
+	//void SetStandaloneShaderRenderer(bool enabled);
+	//bool IsStandaloneShaderRenderer() const;
+	void setRenderFeature(IRenderFeature* renderFeature);
+	IRenderFeature* getRenderFeature() const { return m_renderFeature; }
 
-	bool Equal(const DrawElementBatch& state, Material* material, const BuiltinEffectData& effectData, const PriorityBatchState& priorityState) const;
+	bool Equal(const DrawElementBatch& state, Material* material, const BuiltinEffectData& effectData) const;
 	void reset();
 	void applyStatus(InternalContext* context, const DefaultStatus& defaultStatus);
 	size_t getHashCode() const;
@@ -321,12 +314,11 @@ public:
 
 	BatchState				state;
 
-	PriorityBatchState		m_priorityState;
-
 private:
 	Matrix					m_transfrom;			// WorldTransform. 変わったらシェーダの ln_World* も変える必要がある。
 	CombinedMaterial*		m_combinedMaterial;
-	bool					m_standaloneShaderRenderer;
+	IRenderFeature*			m_renderFeature;			// この state の下で描画を行う RenderFeature
+	//bool					m_standaloneShaderRenderer;
 	mutable size_t			m_hashCode;
 	mutable bool			m_hashDirty;
 
@@ -348,11 +340,11 @@ public:
 	void clearCommands();
 
 	template<typename T, typename... TArgs>
-	T* addCommand(const DrawElementBatch& state, Material* availableMaterial, const BuiltinEffectData& effectData, bool forceStateChange, const detail::PriorityBatchState& priorityState, TArgs... args)
+	T* addCommand(const DrawElementBatch& state, Material* availableMaterial, const BuiltinEffectData& effectData, bool forceStateChange, TArgs... args)
 	{
 		auto handle = m_commandDataCache.allocData(sizeof(T));
 		T* t = new (m_commandDataCache.getData(handle))T(args...);
-		postAddCommandInternal(state, availableMaterial, effectData, forceStateChange, priorityState, t);
+		postAddCommandInternal(state, availableMaterial, effectData, forceStateChange, t);
 		t->m_ownerDrawElementList = this;
 		return t;
 	}
@@ -374,7 +366,7 @@ public:
 	DepthBuffer* getDefaultDepthBuffer() const { return m_depthBuffer; }
 
 private:
-	void postAddCommandInternal(const DrawElementBatch& state, Material* availableMaterial, const BuiltinEffectData& effectData, bool forceStateChange, const detail::PriorityBatchState& priorityState, DrawElement* element);
+	void postAddCommandInternal(const DrawElementBatch& state, Material* availableMaterial, const BuiltinEffectData& effectData, bool forceStateChange, DrawElement* element);
 
 	CommandDataCache		m_commandDataCache;
 	CommandDataCache		m_extDataCache;
@@ -577,7 +569,7 @@ public:
 	/** @name render targets */
 	/** @{ */
 
-	/** レンダリングターゲットを設定します。*/
+	/** レンダリングターゲットを設定します。index 0 のレンダリングターゲットを変更すると、ビューポート領域とシザー領域がリセットされます。 */
 	void setRenderTarget(int index, RenderTargetTexture* renderTarget);
 
 	/** 現在設定されているレンダリングターゲットを取得します。*/
@@ -589,11 +581,11 @@ public:
 	/** 現在設定されている深度バッファを取得します。*/
 	DepthBuffer* getDepthBuffer() const;
 
-	/** シザー領域を設定します。*/
-	void setViewport(const RectI& rect);
+	/** ビューポート領域を設定します。*/
+	void setViewportRect(const RectI& rect);
 
-	/** 現在設定されているシザー領域を取得します。*/
-	const RectI& getViewport() const;
+	/** 現在設定されている ビューポート領域を取得します。*/
+	const RectI& getViewportRect() const;
 
 	/** @} */
 
@@ -712,7 +704,7 @@ LN_INTERNAL_ACCESS:
 	const DrawElementMetadata* getMetadata();
 	void popMetadata();
 
-	template<typename TElement> TElement* resolveDrawElement(detail::IRenderFeature* renderFeature, Material* userMaterial, const detail::PriorityBatchState* priorityState = nullptr, bool append = false);
+	template<typename TElement> TElement* resolveDrawElement(detail::IRenderFeature* renderFeature, Material* userMaterial, bool append = false);
 	void drawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Material* material);
 	//void DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material);
 	void blitInternal(Texture* source, RenderTargetTexture* dest, const Matrix& transform, Material* material);
@@ -796,7 +788,7 @@ private:
 
 //------------------------------------------------------------------------------
 template<typename TElement>
-inline TElement* DrawList::resolveDrawElement(detail::IRenderFeature* renderFeature, Material* userMaterial, const detail::PriorityBatchState* priorityState, bool append)
+inline TElement* DrawList::resolveDrawElement(detail::IRenderFeature* renderFeature, Material* userMaterial, bool append)
 {
 	//Material* availableMaterial = m_defaultMaterial;// = (userMaterial != nullptr) ? userMaterial : getCurrentState()->m_defaultMaterial.get();
 	//if (getCurrentState()->m_defaultMaterial != nullptr) availableMaterial = getCurrentState()->m_defaultMaterial;
@@ -806,14 +798,14 @@ inline TElement* DrawList::resolveDrawElement(detail::IRenderFeature* renderFeat
 
 
 	// これを決定してから比較を行う
-	getCurrentState()->m_state.SetStandaloneShaderRenderer(renderFeature->isStandaloneShader());
+	//getCurrentState()->m_state.SetStandaloneShaderRenderer(renderFeature->isStandaloneShader());
+	getCurrentState()->m_state.setRenderFeature(renderFeature);
 
 	bool forceStateChange = (m_lastRenderFeature != renderFeature);
 
 
 	const DrawElementMetadata* userMetadata = getMetadata();
 	const DrawElementMetadata* metadata = (userMetadata != nullptr) ? userMetadata : &DrawElementMetadata::Default;
-	const detail::PriorityBatchState& availablePriorityState = (priorityState != nullptr) ? *priorityState : detail::PriorityBatchState::defaultState;
 
 	m_lastRenderFeature = renderFeature;
 
@@ -822,14 +814,14 @@ inline TElement* DrawList::resolveDrawElement(detail::IRenderFeature* renderFeat
 		append &&
 		m_currentSectionTopElement->metadata.equals(*metadata) &&
 		m_currentSectionTopElement->m_stateFence == m_currentStateFence &&
-		m_drawElementList.getBatch(m_currentSectionTopElement->batchIndex)->Equal(getCurrentState()->m_state, availableMaterial, getCurrentState()->m_builtinEffectData, availablePriorityState))
+		m_drawElementList.getBatch(m_currentSectionTopElement->batchIndex)->Equal(getCurrentState()->m_state, availableMaterial, getCurrentState()->m_builtinEffectData))
 	{
 		return static_cast<TElement*>(m_currentSectionTopElement);
 	}
 
 
 	// DrawElement を新しく作る
-	TElement* element = m_drawElementList.addCommand<TElement>(getCurrentState()->m_state, availableMaterial, getCurrentState()->m_builtinEffectData, forceStateChange, availablePriorityState);
+	TElement* element = m_drawElementList.addCommand<TElement>(getCurrentState()->m_state, availableMaterial, getCurrentState()->m_builtinEffectData, forceStateChange);
 	element->metadata = *metadata;
 	element->m_stateFence = m_currentStateFence;
 	m_currentSectionTopElement = element;

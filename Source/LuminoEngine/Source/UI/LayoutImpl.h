@@ -85,12 +85,16 @@ public:
 	//------------------------------------------------------------------------------
 	static Size UIStackPanel_arrangeOverride(TPanel* panel, const Size& finalSize, Orientation orientation)
 	{
+		//ILayoutPanel* basePanel = static_cast<ILayoutPanel*>(panel);
+		//Size childrenBoundSize(finalSize.width, finalSize.height);		
 		ILayoutPanel* basePanel = static_cast<ILayoutPanel*>(panel);
-		Size childrenBoundSize(finalSize.width, finalSize.height);
+		const Thickness& padding = static_cast<ILayoutElement*>(panel)->getLayoutPadding();
+		Size childrenBoundSize(finalSize.width - (padding.left + padding.right), finalSize.height - (padding.top + padding.bottom));
 
 		float prevChildSize = 0;
 		float rPos = 0;
-		Rect childRect(0, 0, 0, 0);
+		//Rect childRect(0, 0, 0, 0);
+		Rect childRect(padding.left, padding.top, 0, 0);
 		int childCount = basePanel->getLayoutChildrenCount();
 		for (int i = 0; i < childCount; i++)
 		{
@@ -140,8 +144,8 @@ public:
 	static Size UIGridLayout_measureOverride(TPanel* panel, const Size& constraint, BaseMeasureOverrideCallback baseCallback)
 	{
 		ILayoutPanel* basePanel = static_cast<ILayoutPanel*>(panel);
-		int colDefCount = basePanel->getLayoutGridColumnDefinitionCount();
 		int rowDefCount = basePanel->getLayoutGridRowDefinitionCount();
+		int colDefCount = basePanel->getLayoutGridColumnDefinitionCount();
 
 		int childCount = basePanel->getLayoutChildrenCount();
 		for (int i = 0; i < childCount; i++)
@@ -151,37 +155,37 @@ public:
 			// まずは子を measure
 			child->measureLayout(constraint);
 
-			// child が配置されるべき column と row を探す
-			int colIdx = child->getLayoutColumn();
+			// child が配置されるべき row と column を探す
 			int rowIdx = child->getLayoutRow();
+			int colIdx = child->getLayoutColumn();
 
-			colIdx = (0 <= colIdx && colIdx < colDefCount) ? colIdx : 0;
 			rowIdx = (0 <= rowIdx && rowIdx < rowDefCount) ? rowIdx : 0;
+			colIdx = (0 <= colIdx && colIdx < colDefCount) ? colIdx : 0;
 
-			detail::GridDefinitionData* col = (colIdx < colDefCount) ? basePanel->getLayoutGridColumnDefinition(colIdx) : nullptr;
 			detail::GridDefinitionData* row = (rowIdx < rowDefCount) ? basePanel->getLayoutGridRowDefinition(rowIdx) : nullptr;
+			detail::GridDefinitionData* col = (colIdx < colDefCount) ? basePanel->getLayoutGridColumnDefinition(colIdx) : nullptr;
 
 			// 子要素の DesiredSize (最低サイズ) を測るのは、セルのサイズ指定が "Auto" の時だけでよい。
 			const Size& childDesiredSize = child->getLayoutDesiredSize();
-			if (col != nullptr && col->type == GridLengthType::Auto)
-			{
-				col->desiredSize = std::max(col->desiredSize, childDesiredSize.width);
-			}
 			if (row != nullptr && row->type == GridLengthType::Auto)
 			{
 				row->desiredSize = std::max(row->desiredSize, childDesiredSize.height);
+			}
+			if (col != nullptr && col->type == GridLengthType::Auto)
+			{
+				col->desiredSize = std::max(col->desiredSize, childDesiredSize.width);
 			}
 		}
 
 		// 各セルの DesiredSize を集計して、Grid 全体の DesiredSize を求める
 		Size desiredSize = baseCallback(panel, constraint);
-		for (int iCol = 0; iCol < colDefCount; iCol++)
-		{
-			desiredSize.width += basePanel->getLayoutGridColumnDefinition(iCol)->getAvailableDesiredSize();
-		}
 		for (int iRow = 0; iRow < rowDefCount; iRow++)
 		{
 			desiredSize.height += basePanel->getLayoutGridRowDefinition(iRow)->getAvailableDesiredSize();
+		}
+		for (int iCol = 0; iCol < colDefCount; iCol++)
+		{
+			desiredSize.width += basePanel->getLayoutGridColumnDefinition(iCol)->getAvailableDesiredSize();
 		}
 
 		return desiredSize;
@@ -190,29 +194,20 @@ public:
 	//------------------------------------------------------------------------------
 	static Size UIGridLayout_arrangeOverride(TPanel* panel, const Size& finalSize)
 	{
+		//ILayoutPanel* basePanel = static_cast<ILayoutPanel*>(panel);
+		//Size childrenBoundSize(finalSize.width, finalSize.height);
 		ILayoutPanel* basePanel = static_cast<ILayoutPanel*>(panel);
-		Size childrenBoundSize(finalSize.width, finalSize.height);
+		const Thickness& padding = static_cast<ILayoutElement*>(panel)->getLayoutPadding();
+		Size childrenBoundSize(finalSize.width - (padding.left + padding.right), finalSize.height - (padding.top + padding.bottom));
 
-		// "Auto" と "Pixel" 指定である Column/Row の最終サイズを確定させる。
+
+		// "Auto" と "Pixel" 指定である Row/Column の最終サイズを確定させる。
 		// また、"*" である行列の数をカウントする。
 		Size totalActual = Size::Zero;
-		float starColCount = 0.0f;
 		float starRowCount = 0.0f;
-		int colDefCount = basePanel->getLayoutGridColumnDefinitionCount();
+		float starColCount = 0.0f;
 		int rowDefCount = basePanel->getLayoutGridRowDefinitionCount();
-		for (int iCol = 0; iCol < colDefCount; iCol++)
-		{
-			auto* col = basePanel->getLayoutGridColumnDefinition(iCol);
-			if (col->type == GridLengthType::Auto || col->type == GridLengthType::Pixel)
-			{
-				col->actualSize = col->getAvailableDesiredSize();
-				totalActual.width += col->actualSize;
-			}
-			else
-			{
-				starColCount += col->getRatioSize();
-			}
-		}
+		int colDefCount = basePanel->getLayoutGridColumnDefinitionCount();
 		for (int iRow = 0; iRow < rowDefCount; iRow++)
 		{
 			auto* row = basePanel->getLayoutGridRowDefinition(iRow);
@@ -226,6 +221,19 @@ public:
 				starRowCount += row->getRatioSize();
 			}
 		}
+		for (int iCol = 0; iCol < colDefCount; iCol++)
+		{
+			auto* col = basePanel->getLayoutGridColumnDefinition(iCol);
+			if (col->type == GridLengthType::Auto || col->type == GridLengthType::Pixel)
+			{
+				col->actualSize = col->getAvailableDesiredSize();
+				totalActual.width += col->actualSize;
+			}
+			else
+			{
+				starColCount += col->getRatioSize();
+			}
+		}
 
 		// "1*" 分のセルの領域を計算する
 		Size starUnit(
@@ -234,23 +242,9 @@ public:
 		starUnit.width = std::max(0.0f, starUnit.width);	// 負値はダメ
 		starUnit.height = std::max(0.0f, starUnit.height);	// 負値はダメ
 
-		// "*" 指定である Column/Row の最終サイズを確定させ、
+		// "*" 指定である Row/Column の最終サイズを確定させ、
 		// 全セルのオフセット (位置) も確定させる
 		Point totalOffset;
-		for (int iCol = 0; iCol < colDefCount; iCol++)
-		{
-			auto* col = basePanel->getLayoutGridColumnDefinition(iCol);
-			if (col->type == GridLengthType::Ratio)
-			{
-				col->actualSize = starUnit.width * col->getRatioSize();
-			}
-
-			col->adjustActualSize();
-
-			// セルX座標確定
-			col->actualOffset = totalOffset.x;
-			totalOffset.x += col->actualSize;
-		}
 		for (int iRow = 0; iRow < rowDefCount; iRow++)
 		{
 			auto* row = basePanel->getLayoutGridRowDefinition(iRow);
@@ -265,35 +259,38 @@ public:
 			row->actualOffset = totalOffset.y;
 			totalOffset.y += row->actualSize;
 		}
+		for (int iCol = 0; iCol < colDefCount; iCol++)
+		{
+			auto* col = basePanel->getLayoutGridColumnDefinition(iCol);
+			if (col->type == GridLengthType::Ratio)
+			{
+				col->actualSize = starUnit.width * col->getRatioSize();
+			}
+
+			col->adjustActualSize();
+
+			// セルX座標確定
+			col->actualOffset = totalOffset.x;
+			totalOffset.x += col->actualSize;
+		}
 
 		// 子要素の最終位置・サイズを確定させる
 		int childCount = basePanel->getLayoutChildrenCount();
 		for (int i = 0; i < childCount; i++)
 		{
 			ILayoutElement* child = basePanel->getLayoutChild(i);
-			int colIdx = child->getLayoutColumn();
 			int rowIdx = child->getLayoutRow();
-			int colSpan = child->getLayoutColumnSpan();
+			int colIdx = child->getLayoutColumn();
 			int rowSpan = child->getLayoutRowSpan();
-			colSpan = std::max(1, colSpan);	// 最低 1
+			int colSpan = child->getLayoutColumnSpan();
 			rowSpan = std::max(1, rowSpan);	// 最低 1
-			colSpan = std::min(colSpan, colIdx + colDefCount);	// 最大値制限
+			colSpan = std::max(1, colSpan);	// 最低 1
 			rowSpan = std::min(rowSpan, rowIdx + rowDefCount);	// 最大値制限
+			colSpan = std::min(colSpan, colIdx + colDefCount);	// 最大値制限
 
 			// Span を考慮してサイズを確定
-			Rect rect = Rect(0, 0, 0, 0);
-			if (colDefCount == 0)	// is empty
-			{
-				rect.width = childrenBoundSize.width;
-			}
-			else
-			{
-				rect.x += basePanel->getLayoutGridColumnDefinition(colIdx)->actualOffset;
-				for (int iCol = 0; iCol < colSpan; ++iCol)
-				{
-					rect.width += basePanel->getLayoutGridColumnDefinition(colIdx + iCol)->actualSize;
-				}
-			}
+			//Rect rect = Rect(0, 0, 0, 0);
+			Rect rect = Rect(padding.left, padding.top, 0, 0);
 			if (rowDefCount == 0)	// is empty
 			{
 				rect.height = childrenBoundSize.height;
@@ -304,6 +301,18 @@ public:
 				for (int iRow = 0; iRow < rowSpan; ++iRow)
 				{
 					rect.height += basePanel->getLayoutGridRowDefinition(rowIdx + iRow)->actualSize;
+				}
+			}
+			if (colDefCount == 0)	// is empty
+			{
+				rect.width = childrenBoundSize.width;
+			}
+			else
+			{
+				rect.x += basePanel->getLayoutGridColumnDefinition(colIdx)->actualOffset;
+				for (int iCol = 0; iCol < colSpan; ++iCol)
+				{
+					rect.width += basePanel->getLayoutGridColumnDefinition(colIdx + iCol)->actualSize;
 				}
 			}
 

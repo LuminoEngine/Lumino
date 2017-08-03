@@ -567,6 +567,8 @@ void FreeTypeFont::getGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics
 {
 	if (LN_CHECK_ARG(outMetrics != nullptr)) return;
 
+	updateFont();
+
 	// get glyph index
 	FT_UInt glyphIndex = FTC_CMapCache_Lookup(m_manager->getFTCacheMapCache(), m_ftFaceID, m_ftCacheMapIndex, utf32Code);
 	if (LN_CHECK_STATE(glyphIndex != 0)) return;
@@ -575,11 +577,12 @@ void FreeTypeFont::getGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics
 	FT_Error err = FT_Load_Glyph(m_ftFace, glyphIndex, FT_LOAD_DEFAULT);
 	if (LN_CHECK_STATE(err == 0)) return;
 
-	outMetrics->bearingX = m_ftFace->glyph->metrics.horiBearingX >> 6;
-	outMetrics->bearingY = m_ftFace->glyph->metrics.horiBearingY >> 6;
-
-	outMetrics->advance.x = m_ftFace->glyph->advance.x >> 6;
-	outMetrics->advance.y = m_ftFace->glyph->advance.y >> 6;
+	outMetrics->size.width = (float)(m_ftFace->glyph->metrics.width >> 6);
+	outMetrics->size.height = (float)(m_ftFace->glyph->metrics.height >> 6);
+	outMetrics->bearingX = (float)(m_ftFace->glyph->metrics.horiBearingX >> 6);
+	outMetrics->bearingY = (float)(m_ftFace->glyph->metrics.horiBearingY >> 6);
+	outMetrics->advance.x = (float)(m_ftFace->glyph->advance.x >> 6);
+	outMetrics->advance.y = (float)(m_ftFace->glyph->advance.y >> 6);
 }
 
 //------------------------------------------------------------------------------

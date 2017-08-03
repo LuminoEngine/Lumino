@@ -187,11 +187,8 @@ public:
 	const DepthStencilState& getDepthStencilState() { return m_requestedDepthStencilState; }
 
 
-	/// ビューポート矩形の設定
-	//virtual void setViewport(const RectI& rect) = 0;
+	void setViewport(const RectI& rect);
 
-	/// ビューポート矩形の取得
-	//virtual const RectI& getViewport() = 0;
 
 	void setVertexDeclaration(IVertexDeclaration* vertexDeclaration);
 	IVertexDeclaration* getVertexDeclaration() const;
@@ -231,6 +228,7 @@ protected:
 	virtual	void onUpdateRenderState(const RenderState& newState, const RenderState& oldState, bool reset) = 0;
 	virtual	void onUpdateDepthStencilState(const DepthStencilState& newState, const DepthStencilState& oldState, bool reset) = 0;
 	virtual void onUpdatePrimitiveData(IVertexDeclaration* decls, const List<Ref<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer) = 0;
+	virtual void onUpdateViewport(const RectI& viewport) = 0;
 	virtual void onClear(ClearFlags flags, const Color& color, float z, uint8_t stencil) = 0;
 	virtual void onDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount) = 0;
 	virtual void onDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount) = 0;
@@ -245,21 +243,23 @@ private:
 		Modified_VertexBuffer		= 0x0002,
 		Modified_IndexBuffer		= 0x0004,
 		Modified_FrameBuffer		= 0x0008,
+		Modified_Viewport			= 0x0010,
 		Modified_All				= 0xFFFFFFFF,
 	};
 
 	EngineDiagCore*					m_diag;
 	uint32_t						m_modifiedFlags;
 
-	Ref<ITexture>				m_currentRenderTargets[Graphics::MaxMultiRenderTargets];
-	Ref<ITexture>				m_currentDepthBuffer;
+	Ref<ITexture>					m_currentRenderTargets[Graphics::MaxMultiRenderTargets];
+	Ref<ITexture>					m_currentDepthBuffer;
 	RenderState						m_requestedRenderState;
 	RenderState						m_currentRenderState;
 	DepthStencilState				m_requestedDepthStencilState;
 	DepthStencilState				m_currentDepthStencilState;
-	Ref<IVertexDeclaration>		m_currentVertexDeclaration;
+	RectI							m_viewportRect;
+	Ref<IVertexDeclaration>			m_currentVertexDeclaration;
 	List<Ref<IVertexBuffer>>		m_currentVertexBuffers;
-	Ref<IIndexBuffer>			m_currentIndexBuffer;
+	Ref<IIndexBuffer>				m_currentIndexBuffer;
 	Ref<IShaderPass>				m_currentShaderPass;
 	bool							m_rendering;
 };

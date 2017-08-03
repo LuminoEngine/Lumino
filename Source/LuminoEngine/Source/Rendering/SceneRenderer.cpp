@@ -175,11 +175,13 @@ void SceneRenderer::render(
 				//currentBatchIndex = element->batchIndex;
 				currentState = batch;
 				context->applyStatus(currentState, { defaultRenderTarget, defaultDepthBuffer });
+				context->switchActiveRenderer(currentState->getRenderFeature());
 				if (diag != nullptr) diag->changeRenderStage();
 			}
 
 			// 固定の内部シェーダを使わない場合はいろいろ設定する
-			if (!currentState->IsStandaloneShaderRenderer())
+			if (currentState->getRenderFeature() == nullptr ||	// TODO: だめ。でもいまやらかしてる人がいるので、後で ASSERT 張って対応する
+				!currentState->getRenderFeature()->isStandaloneShader())
 			{
 				CombinedMaterial* material = currentState->getCombinedMaterial();
 				ElementRenderingPolicy policy;
@@ -191,16 +193,21 @@ void SceneRenderer::render(
 					Shader* shader = policy.shader;
 
 					ElementInfo elementInfo;
-					element->makeElementInfo(element->m_ownerDrawElementList, cameraInfo, currentState->m_priorityState, drawElementListSet, &elementInfo);
+					element->makeElementInfo(element->m_ownerDrawElementList, cameraInfo, drawElementListSet, &elementInfo);
 					//drawElementListSet->filterWorldMatrix(&elementInfo.WorldMatrix);
 					//elementInfo.WorldViewProjectionMatrix = elementInfo.WorldMatrix * cameraInfo.viewMatrix * cameraInfo.projMatrix;	// TODO: viewProj はまとめたい
 
 
+
 					SubsetInfo subsetInfo;
 					element->makeSubsetInfo(element->m_ownerDrawElementList, material, &subsetInfo);
-					if (currentState->m_priorityState.mainTexture != nullptr)
+
+					//currentState->IsStandaloneShaderRenderer
+
+					if (currentState->getRenderFeature() != nullptr)
 					{
-						subsetInfo.materialTexture = currentState->m_priorityState.mainTexture;
+						currentState->getRenderFeature()->onShaderElementInfoOverride(&elementInfo);
+						currentState->getRenderFeature()->onShaderSubsetInfoOverride(&subsetInfo);
 					}
 
 					shader->getSemanticsManager()->updateCameraVariables(cameraInfo);

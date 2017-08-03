@@ -69,7 +69,7 @@ public:
 	LN_METHOD()
 	void run(GameScene* initialScene = nullptr);
 
-LN_INTERNAL_ACCESS:
+LN_CONSTRUCT_ACCESS:
 	LN_METHOD()
 	void initialize();
 

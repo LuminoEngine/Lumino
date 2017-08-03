@@ -13,7 +13,18 @@ LN_NAMESPACE_BEGIN
 class DrawingContext;
 class UIStylePropertyTable;
 class UIVisualStateManager;
-namespace detail { class UIStylePropertyTableInstance; }
+namespace detail {
+class UIStylePropertyTableInstance;
+class LayoutHelper2;
+
+enum UICoreFlags
+{
+	UICoreFlags_None			= 0x0000,
+	UICoreFlags_LayoutVisible	= 0x0001,
+	UICoreFlags_RenderVisible	= 0x0002,
+};
+
+} // namespace detail
 
 enum class UISpecialElementType
 {
@@ -83,6 +94,7 @@ class UIVisualStates
 public:
 	static const String CommonGroup;
 	static const String FocusGroup;
+	static const String CheckStates;
 	//static const String ValidationStates;
 
 	static const String NormalState;
@@ -98,6 +110,19 @@ public:
 	static const String OrientationGroup;
 	static const String HorizontalState;
 	static const String VerticalState;
+};
+
+/** UI要素の表示状態を指定します。 */
+enum class UIVisibility
+{
+	/** 要素を表示します。 */
+	Visible,
+
+	/** 要素を表示しませんが、その要素の領域をレイアウト内に予約します。 */
+	Hidden,
+
+	/** 要素を表示しません。また、その要素の領域もレイアウト内に予約しません。 */
+	Collapsed,
 };
 
 /**
@@ -207,6 +232,12 @@ public:
 	void setOpacity(float value) { m_builtinEffectData.setOpacity(value); }
 	float getOpacity() const { return m_builtinEffectData.getOpacity(); }
 
+	/** この要素の可視性を設定します。 */
+	void setVisibility(UIVisibility value);
+
+	/** この要素の可視性を取得します。 */
+	UIVisibility getVisibility() const;
+
 	/** @} */
 
 
@@ -234,7 +265,7 @@ public:
 	const Size& getDesiredSize() const { return m_desiredSize; }
 
 	/** この要素の最終的な描画サイズを取得します。この値は Arrange() で確定します。*/
-	Size getRenderSize() const { return m_finalLocalRenderRect.getSize(); }
+	Size getActualSize() const { return m_finalLocalActualRect.getSize(); }
 
 	/** この要素へのフォーカスの取得を試みます。*/
 	void focus();
@@ -263,8 +294,8 @@ public:
 
 	void applyTemplateHierarchy(UIStyleTable* styleTable, detail::UIStylePropertyTableInstance* parentStyle);
 
-	float getActualWidth() const { return m_finalLocalRenderRect.width; }
-	float getActualHeight() const { return m_finalLocalRenderRect.height; }
+	float getActualWidth() const { return m_finalLocalActualRect.width; }
+	float getActualHeight() const { return m_finalLocalActualRect.height; }
 
 	bool hasFocus() const { return m_hasFocus; }
 
@@ -272,14 +303,14 @@ public:
 	/** @name Grid layout */
 	/** @{ */
 
-	void setLayoutColumn(int index);
-	virtual int getLayoutColumn() const override;
 	void setLayoutRow(int index);
 	virtual int getLayoutRow() const override;
-	void setLayoutColumnSpan(int span);
-	virtual int getLayoutColumnSpan() const override;
+	void setLayoutColumn(int index);
+	virtual int getLayoutColumn() const override;
 	void setLayoutRowSpan(int span);
 	virtual int getLayoutRowSpan() const override;
+	void setLayoutColumnSpan(int span);
+	virtual int getLayoutColumnSpan() const override;
 
 	/** @} */
 
@@ -385,6 +416,10 @@ LN_INTERNAL_ACCESS:
 	void setSpecialElementType(UISpecialElementType type) { m_specialElementType = type; }
 	UISpecialElementType getSpecialElementType2() const { return m_specialElementType; }
 
+	bool readCoreFlag(detail::UICoreFlags field) const;
+	void writeCoreFlag(detail::UICoreFlags field, bool value);
+	bool isRenderVisible() const;
+
 	void updateFrame();
 	void render(DrawingContext* g);
 
@@ -402,6 +437,8 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	/** 指定した要素をこの要素のビジュアルツリーから削除します。*/
 	void removeVisualChild(UIElement* element);
 
+	void setRenderFrameThickness(const Thickness& value) { m_renderFrameThickness = value; }
+
 private:
 	// ILayoutElement interface
 	virtual const Point& getLayoutPosition() const override;
@@ -417,16 +454,18 @@ private:
 	virtual const VAlignment* getLayoutContentVAlignment() override;
 	virtual const Size& getLayoutDesiredSize() const override;
 	virtual void setLayoutDesiredSize(const Size& size) override;
-	virtual void setLayoutFinalLocalRect(const Rect& renderRect, const Rect& contentRect) override;
-	virtual void getLayoutFinalLocalRect(Rect* outRenderRect, Rect* outContentRect) const override;
+	virtual void setLayoutFinalLocalRect(const Rect& renderRect/*, const Rect& contentRect*/) override;
+	virtual void getLayoutFinalLocalRect(Rect* outRenderRect/*, Rect* outContentRect*/) const override;
 	virtual void setLayoutFinalGlobalRect(const Rect& rect) override;
-
+	bool isLayoutVisible() const { return readCoreFlag(detail::UICoreFlags::UICoreFlags_LayoutVisible); }
 
 private:
 	void updateLocalStyleAndApplyProperties(UIStyleTable* styleTable, detail::UIStylePropertyTableInstance* parentStyleInstance);
 
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
 	void raiseEventInternal(UIEventArgs* e);
+
+	//Rect getLocalRenderRect() const;
 
 	detail::UIManager*		m_manager;
 	//UILayoutView*			m_ownerLayoutView;
@@ -438,8 +477,9 @@ private:
 	//	m_localStyle;
 	Ref<detail::UIStylePropertyTableInstance>	m_localStyle;
 	Size					m_desiredSize;			// measureLayout() で決定されるこのコントロールの要求サイズ
-	Rect					m_finalLocalRenderRect;		// 描画に使用する最終境界矩形 (グローバル座標系=RootFrame のローカル座標系)
-	Rect					m_finalLocalContentRect;
+	Rect					m_finalLocalActualRect;		// 最終境界矩形 (グローバル座標系=RootFrame のローカル座標系)
+	Thickness				m_renderFrameThickness;
+	//Rect					m_finalLocalContentRect;
 	Rect					m_finalGlobalRect;
 	String					m_elementName;				// 要素名 ("UITextBlock" など) TODO: いらないかも
 	Ref<UIVisualStateManager>	m_visualStateManager;
@@ -460,6 +500,7 @@ private:
 	float					m_combinedOpacity;
 	//AnchorInfo				m_anchorInfo;
 	detail::InvalidateFlags	m_invalidateFlags;
+	detail::UICoreFlags		m_coreFlags;
 	bool					m_isEnabled;
 	bool					m_isMouseOver;
 	bool					m_isHitTestVisible;
@@ -473,6 +514,7 @@ private:
 	friend class UIPopup;
 	friend class UIContext;
 	friend class UIHelper;
+	friend class detail::LayoutHelper2;
 };
 
 LN_NAMESPACE_END

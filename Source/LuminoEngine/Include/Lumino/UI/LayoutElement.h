@@ -40,8 +40,8 @@ protected:
 	virtual const VAlignment* getLayoutContentVAlignment() = 0;
 	virtual const Size& getLayoutDesiredSize() const = 0;
 	virtual void setLayoutDesiredSize(const Size& size) = 0;
-	virtual void setLayoutFinalLocalRect(const Rect& renderRect, const Rect& contentRect) = 0;
-	virtual void getLayoutFinalLocalRect(Rect* outRenderRect, Rect* outContentRect) const = 0;
+	virtual void setLayoutFinalLocalRect(const Rect& renderRect) = 0;
+	virtual void getLayoutFinalLocalRect(Rect* outRenderRect) const = 0;
 	virtual void setLayoutFinalGlobalRect(const Rect& rect) = 0;
 
 	virtual int getVisualChildrenCount() const = 0;
@@ -49,10 +49,10 @@ protected:
 
 protected:
 	// GridLayout properties
-	virtual int getLayoutColumn() const = 0;
 	virtual int getLayoutRow() const = 0;
-	virtual int getLayoutColumnSpan() const = 0;
+	virtual int getLayoutColumn() const = 0;
 	virtual int getLayoutRowSpan() const = 0;
+	virtual int getLayoutColumnSpan() const = 0;
 
 	virtual Size measureOverride(const Size& constraint);
 	virtual Size arrangeOverride(const Size& finalSize);
@@ -113,10 +113,10 @@ protected:
 	virtual ILayoutElement* getLayoutChild(int index) = 0;
 
 	// GridLayout properties
-	virtual int getLayoutGridColumnDefinitionCount() = 0;
-	virtual GridDefinitionData* getLayoutGridColumnDefinition(int index) = 0;
 	virtual int getLayoutGridRowDefinitionCount() = 0;
 	virtual GridDefinitionData* getLayoutGridRowDefinition(int index) = 0;
+	virtual int getLayoutGridColumnDefinitionCount() = 0;
+	virtual GridDefinitionData* getLayoutGridColumnDefinition(int index) = 0;
 
 protected:
 	virtual ~ILayoutPanel() = default;
@@ -126,10 +126,10 @@ protected:
 
 struct GridLayoutInfo
 {
-	int		layoutColumn = 0;
 	int		layoutRow = 0;
-	int		layoutColumnSpan = 0;
+	int		layoutColumn = 0;
 	int		layoutRowSpan = 0;
+	int		layoutColumnSpan = 0;
 };
 
 class LayoutHelper
@@ -148,6 +148,7 @@ public:
 	//	}
 	//}
 
+	// widthNan : ユーザーが希望するサイズを指定しているか
 	static void adjustHorizontalAlignment(const Size& areaSize, const Size& desiredSize, bool widthNan, HAlignment align, Rect* outRect)
 	{
 		switch (align)

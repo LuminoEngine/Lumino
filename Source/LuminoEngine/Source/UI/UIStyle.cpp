@@ -13,22 +13,19 @@
 #include <Lumino/UI/UIElement.h>
 #include <Lumino/UI/UIStyle.h>
 #include "../Animation/AnimationManager.h"
+#include "../Graphics/GraphicsManager.h"
+#include "../Graphics/Text/GlyphIconFontManager.h"
 #include "UIManager.h"
 
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
-// UIStylePropertyTable
+// UIRenderElement
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIRenderElement, Object);
 
 //------------------------------------------------------------------------------
 UIRenderElement::UIRenderElement()
-	: m_width(Math::NaN)
-	, m_height(Math::NaN)
-	, m_margin(Thickness::Zero)
-	, m_hAlignment(HAlignment::Stretch)
-	, m_vAlignment(VAlignment::Stretch)
 {
 }
 
@@ -45,6 +42,37 @@ void UIRenderElement::initialize()
 //------------------------------------------------------------------------------
 void UIRenderElement::layoutAndRender(DrawingContext* context, const Size& parentRenderSize)
 {
+}
+
+//==============================================================================
+// UIImageRenderElement
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIImageRenderElement, UIRenderElement);
+
+//------------------------------------------------------------------------------
+UIImageRenderElement::UIImageRenderElement()
+	: m_width(Math::NaN)
+	, m_height(Math::NaN)
+	, m_margin(Thickness::Zero)
+	, m_hAlignment(HAlignment::Stretch)
+	, m_vAlignment(VAlignment::Stretch)
+{
+}
+
+//------------------------------------------------------------------------------
+UIImageRenderElement::~UIImageRenderElement()
+{
+}
+
+//------------------------------------------------------------------------------
+void UIImageRenderElement::initialize()
+{
+	UIRenderElement::initialize();
+}
+
+//------------------------------------------------------------------------------
+void UIImageRenderElement::layoutAndRender(DrawingContext* context, const Size& parentRenderSize)
+{
 	Size areaSize;
 	areaSize.width = parentRenderSize.width - (m_margin.left + m_margin.right);
 	areaSize.height = parentRenderSize.height - (m_margin.top + m_margin.bottom);
@@ -59,6 +87,106 @@ void UIRenderElement::layoutAndRender(DrawingContext* context, const Size& paren
 
 	context->setBrush(m_brush);
 	context->drawBoxBackground(localRect, CornerRadius());
+}
+
+//==============================================================================
+// UITextRenderElement
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UITextRenderElement, UIRenderElement);
+
+//------------------------------------------------------------------------------
+UITextRenderElement::UITextRenderElement()
+	: m_margin(Thickness::Zero)
+	, m_hAlignment(HAlignment::Stretch)
+	, m_vAlignment(VAlignment::Stretch)
+	, m_font(nullptr)
+	, m_brush(nullptr)
+	, m_text()
+{
+}
+
+//------------------------------------------------------------------------------
+UITextRenderElement::~UITextRenderElement()
+{
+}
+
+//------------------------------------------------------------------------------
+void UITextRenderElement::initialize()
+{
+	UIRenderElement::initialize();
+}
+
+//------------------------------------------------------------------------------
+void UITextRenderElement::layoutAndRender(DrawingContext* context, const Size& parentRenderSize)
+{
+	Size areaSize;
+	areaSize.width = parentRenderSize.width - (m_margin.left + m_margin.right);
+	areaSize.height = parentRenderSize.height - (m_margin.top + m_margin.bottom);
+
+	Size desiredSize = m_font->measureRenderSize(m_text);	// TODO: context->getTextExtent();
+
+	Rect localRect;
+	detail::LayoutHelper::adjustHorizontalAlignment(areaSize, desiredSize, true, m_hAlignment, &localRect);
+	detail::LayoutHelper::adjustVerticalAlignment(areaSize, desiredSize, true, m_vAlignment, &localRect);
+
+	context->setFont(m_font);
+	context->setBrush(m_brush);
+	context->drawText_(m_text, localRect, StringFormatFlags::LeftAlignment);
+}
+
+//==============================================================================
+// UIGlyphIconRenderElement
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIGlyphIconRenderElement, UIRenderElement);
+
+//------------------------------------------------------------------------------
+UIGlyphIconRenderElement::UIGlyphIconRenderElement()
+	: m_margin(Thickness::Zero)
+	, m_hAlignment(HAlignment::Center)
+	, m_vAlignment(VAlignment::Center)
+	, m_brush(nullptr)
+	, m_font(nullptr)
+	, m_size(16)
+	, m_codePoint(0)
+{
+}
+
+//------------------------------------------------------------------------------
+UIGlyphIconRenderElement::~UIGlyphIconRenderElement()
+{
+}
+
+//------------------------------------------------------------------------------
+void UIGlyphIconRenderElement::initialize()
+{
+	UIRenderElement::initialize();
+}
+
+//------------------------------------------------------------------------------
+void UIGlyphIconRenderElement::setGlyph(const StringRef& glyphName, int glyphSize)
+{
+	auto& manager = detail::EngineDomain::getGraphicsManager()->getGlyphIconFontManager();
+	m_codePoint = manager->getFontAwesomeCodePoint(glyphName);
+	m_font = manager->getGlyphIconFont(glyphSize);
+	m_size = glyphSize;
+}
+
+//------------------------------------------------------------------------------
+void UIGlyphIconRenderElement::layoutAndRender(DrawingContext* context, const Size& parentRenderSize)
+{
+	Size areaSize;
+	areaSize.width = parentRenderSize.width - (m_margin.left + m_margin.right);
+	areaSize.height = parentRenderSize.height - (m_margin.top + m_margin.bottom);
+
+	Size desiredSize = m_font->measureRenderSize(m_codePoint);
+
+	Rect localRect;
+	detail::LayoutHelper::adjustHorizontalAlignment(areaSize, desiredSize, true, m_hAlignment, &localRect);
+	detail::LayoutHelper::adjustVerticalAlignment(areaSize, desiredSize, true, m_vAlignment, &localRect);
+
+	context->setFont(m_font);
+	context->setBrush(m_brush);
+	context->drawChar(m_codePoint, localRect, StringFormatFlags::LayoutDisabled);
 }
 
 //==============================================================================

@@ -20,6 +20,7 @@ IRenderer::IRenderer()
 	, m_currentRenderState()
 	, m_requestedDepthStencilState()
 	, m_currentDepthStencilState()
+	, m_viewportRect(0, 0, -1, -1)
 	, m_currentVertexDeclaration()
 	, m_currentVertexBuffers()
 	, m_currentIndexBuffer()
@@ -83,6 +84,15 @@ void IRenderer::setDepthBuffer(ITexture* buffer)
 ITexture* IRenderer::getDepthBuffer()
 {
 	return m_currentDepthBuffer;
+}
+
+void IRenderer::setViewport(const RectI& rect)
+{
+	if (rect != m_viewportRect)
+	{
+		m_viewportRect = rect;
+		m_modifiedFlags |= Modified_Viewport;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -192,6 +202,19 @@ void IRenderer::flushStates()
 	{
 		onUpdateDepthStencilState(m_requestedDepthStencilState, m_currentDepthStencilState, false);
 		m_currentDepthStencilState = m_requestedDepthStencilState;
+	}
+
+	// Viewport
+	if (m_modifiedFlags & Modified_Viewport)
+	{
+		if (m_viewportRect.width < 0)
+		{
+			onUpdateViewport(RectI(0, 0, getRenderTarget(0)->getSize()));
+		}
+		else
+		{
+			onUpdateViewport(m_viewportRect);
+		}
 	}
 
 	// VertexBuffer

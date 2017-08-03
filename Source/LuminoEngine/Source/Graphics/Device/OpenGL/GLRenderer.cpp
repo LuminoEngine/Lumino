@@ -362,6 +362,13 @@ void GLRenderer::onUpdateDepthStencilState(const DepthStencilState& newState, co
 	}
 }
 
+void GLRenderer::onUpdateViewport(const RectI& viewport)
+{
+	const SizeI& scr =getRenderTarget(0)->getSize();
+	glViewport(viewport.x, scr.height - (viewport.y + viewport.height), viewport.width, viewport.height);
+	LN_NOTIMPLEMENTED();
+}
+
 //------------------------------------------------------------------------------
 void GLRenderer::onUpdatePrimitiveData(IVertexDeclaration* decls, const List<Ref<IVertexBuffer>>& vertexBuufers, IIndexBuffer* indexBuffer)
 {

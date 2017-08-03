@@ -1,24 +1,29 @@
 
 #pragma once
 #include "UIControl.h"
+#include "UIItemsControl.h"
 
 LN_NAMESPACE_BEGIN
-namespace tr
-{
+class UIToggleButton;
 class UITreeViewItem;
 class UITreeView;
-using UITreeViewItemPtr = Ref<UITreeViewItem>;
-using UITreeViewPtr = Ref<UITreeView>;
 
 /**
 	@brief
 */
 class UITreeViewItem
-	: public UIControl
+	//: public UIControl
+	: public UIHeaderedItemsControl
 {
 	LN_OBJECT;
 public:
-	void setHeader(UIElement* header);
+	//void setHeader(UIElement* header);
+
+	void setExpanded(bool expand);
+	bool isExpanded() const;
+
+	UITreeViewItem* addTextItem(const String& text);
+	UITreeViewItem* addItem(UIElement* item);
 
 protected:
 
@@ -32,7 +37,11 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 private:
-	Ref<UIElement>	m_header;
+	void expander_OnChecked(UIEventArgs* e);
+	void expander_OnUnchecked(UIEventArgs* e);
+
+	//Ref<UIElement>		m_header;
+	Ref<UIToggleButton>	m_expander;
 };
 
 /**
@@ -43,13 +52,13 @@ class UITreeView
 {
 	LN_OBJECT;
 public:
-	static UITreeViewPtr create();
+	static Ref<UITreeView> create();
 
-//public:
-//	UITreeViewItemPtr addTextItem(const String& text);
-//	UITreeViewItemPtr AddItem(UIElement* item);
-//
-LN_PROTECTED_INTERNAL_ACCESS:
+public:
+	UITreeViewItem* addTextItem(const String& text);
+	UITreeViewItem* addItem(UIElement* item);
+
+LN_CONSTRUCT_ACCESS:
 	UITreeView();
 	virtual ~UITreeView();
 	void initialize();
@@ -57,5 +66,4 @@ LN_PROTECTED_INTERNAL_ACCESS:
 private:
 };
 
-} // namespace tr
 LN_NAMESPACE_END

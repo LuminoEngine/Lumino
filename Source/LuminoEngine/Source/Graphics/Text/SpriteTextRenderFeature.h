@@ -100,6 +100,8 @@ public:
 	virtual void onActivated() { }
 	virtual void onDeactivated() { flush(); }
 	virtual void onSetState(const DrawElementBatch* state);
+	virtual void onShaderElementInfoOverride(ElementInfo* elementInfo) override;
+	virtual void onShaderSubsetInfoOverride(SubsetInfo* subsetInfo) override;
 
 public:
 	// TODO: ↓いまは Flush でやるようなことをしている。後で変更したい。
