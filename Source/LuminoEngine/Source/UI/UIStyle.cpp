@@ -142,8 +142,8 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIGlyphIconRenderElement, UIRenderElement);
 //------------------------------------------------------------------------------
 UIGlyphIconRenderElement::UIGlyphIconRenderElement()
 	: m_margin(Thickness::Zero)
-	, m_hAlignment(HAlignment::Stretch)
-	, m_vAlignment(VAlignment::Stretch)
+	, m_hAlignment(HAlignment::Center)
+	, m_vAlignment(VAlignment::Center)
 	, m_brush(nullptr)
 	, m_font(nullptr)
 	, m_size(16)
@@ -178,7 +178,7 @@ void UIGlyphIconRenderElement::layoutAndRender(DrawingContext* context, const Si
 	areaSize.width = parentRenderSize.width - (m_margin.left + m_margin.right);
 	areaSize.height = parentRenderSize.height - (m_margin.top + m_margin.bottom);
 
-	Size desiredSize = Size(m_size, m_size);// TODO:
+	Size desiredSize = m_font->measureRenderSize(m_codePoint);
 
 	Rect localRect;
 	detail::LayoutHelper::adjustHorizontalAlignment(areaSize, desiredSize, true, m_hAlignment, &localRect);
@@ -186,7 +186,7 @@ void UIGlyphIconRenderElement::layoutAndRender(DrawingContext* context, const Si
 
 	context->setFont(m_font);
 	context->setBrush(m_brush);
-	context->drawChar(m_codePoint, localRect, StringFormatFlags::LeftAlignment);
+	context->drawChar(m_codePoint, localRect, StringFormatFlags::LayoutDisabled);
 }
 
 //==============================================================================

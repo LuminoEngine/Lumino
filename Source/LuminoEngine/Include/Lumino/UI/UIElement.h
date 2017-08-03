@@ -21,6 +21,7 @@ enum UICoreFlags
 {
 	UICoreFlags_None			= 0x0000,
 	UICoreFlags_LayoutVisible	= 0x0001,
+	UICoreFlags_RenderVisible	= 0x0002,
 };
 
 } // namespace detail
@@ -109,6 +110,19 @@ public:
 	static const String OrientationGroup;
 	static const String HorizontalState;
 	static const String VerticalState;
+};
+
+/** UI要素の表示状態を指定します。 */
+enum class UIVisibility
+{
+	/** 要素を表示します。 */
+	Visible,
+
+	/** 要素を表示しませんが、その要素の領域をレイアウト内に予約します。 */
+	Hidden,
+
+	/** 要素を表示しません。また、その要素の領域もレイアウト内に予約しません。 */
+	Collapsed,
 };
 
 /**
@@ -218,6 +232,12 @@ public:
 	void setOpacity(float value) { m_builtinEffectData.setOpacity(value); }
 	float getOpacity() const { return m_builtinEffectData.getOpacity(); }
 
+	/** この要素の可視性を設定します。 */
+	void setVisibility(UIVisibility value);
+
+	/** この要素の可視性を取得します。 */
+	UIVisibility getVisibility() const;
+
 	/** @} */
 
 
@@ -283,14 +303,14 @@ public:
 	/** @name Grid layout */
 	/** @{ */
 
-	void setLayoutColumn(int index);
-	virtual int getLayoutColumn() const override;
 	void setLayoutRow(int index);
 	virtual int getLayoutRow() const override;
-	void setLayoutColumnSpan(int span);
-	virtual int getLayoutColumnSpan() const override;
+	void setLayoutColumn(int index);
+	virtual int getLayoutColumn() const override;
 	void setLayoutRowSpan(int span);
 	virtual int getLayoutRowSpan() const override;
+	void setLayoutColumnSpan(int span);
+	virtual int getLayoutColumnSpan() const override;
 
 	/** @} */
 

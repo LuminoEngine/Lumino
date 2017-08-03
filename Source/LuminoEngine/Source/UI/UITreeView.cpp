@@ -33,7 +33,7 @@ void UITreeViewItem::initialize()
 	auto panel = newObject<UIStackPanel>();
 	panel->setHAlignment(HAlignment::Stretch);
 	panel->setVAlignment(VAlignment::Stretch);
-	panel->writeCoreFlag(detail::UICoreFlags_LayoutVisible, false);	// default close
+	panel->setVisibility(UIVisibility::Collapsed);	// default close
 	setLayoutPanel(panel);
 	
 	goToVisualState(UIVisualStates::NormalState);
@@ -97,6 +97,15 @@ UITreeViewItem* UITreeViewItem::addItem(UIElement* item)
 //------------------------------------------------------------------------------
 Size UITreeViewItem::measureOverride(const Size& constraint)
 {
+	if (getItems()->isEmpty())
+	{
+		m_expander->setVisibility(UIVisibility::Hidden);
+	}
+	else
+	{
+		m_expander->setVisibility(UIVisibility::Visible);
+	}
+
 	//// TODO: type
 	//auto* parent = dynamic_cast<UITreeViewItem*>(getLogicalParent());
 	//if (parent != nullptr)
@@ -188,12 +197,12 @@ Size UITreeViewItem::arrangeOverride(const Size& finalSize)
 
 void UITreeViewItem::expander_OnChecked(UIEventArgs* e)
 {
-	getLayoutPanel()->writeCoreFlag(detail::UICoreFlags_LayoutVisible, true);
+	getLayoutPanel()->setVisibility(UIVisibility::Visible);
 }
 
 void UITreeViewItem::expander_OnUnchecked(UIEventArgs* e)
 {
-	getLayoutPanel()->writeCoreFlag(detail::UICoreFlags_LayoutVisible, false);
+	getLayoutPanel()->setVisibility(UIVisibility::Collapsed);
 }
 
 //==============================================================================

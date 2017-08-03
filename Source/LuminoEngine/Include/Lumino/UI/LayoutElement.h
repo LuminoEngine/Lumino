@@ -49,10 +49,10 @@ protected:
 
 protected:
 	// GridLayout properties
-	virtual int getLayoutColumn() const = 0;
 	virtual int getLayoutRow() const = 0;
-	virtual int getLayoutColumnSpan() const = 0;
+	virtual int getLayoutColumn() const = 0;
 	virtual int getLayoutRowSpan() const = 0;
+	virtual int getLayoutColumnSpan() const = 0;
 
 	virtual Size measureOverride(const Size& constraint);
 	virtual Size arrangeOverride(const Size& finalSize);
@@ -113,10 +113,10 @@ protected:
 	virtual ILayoutElement* getLayoutChild(int index) = 0;
 
 	// GridLayout properties
-	virtual int getLayoutGridColumnDefinitionCount() = 0;
-	virtual GridDefinitionData* getLayoutGridColumnDefinition(int index) = 0;
 	virtual int getLayoutGridRowDefinitionCount() = 0;
 	virtual GridDefinitionData* getLayoutGridRowDefinition(int index) = 0;
+	virtual int getLayoutGridColumnDefinitionCount() = 0;
+	virtual GridDefinitionData* getLayoutGridColumnDefinition(int index) = 0;
 
 protected:
 	virtual ~ILayoutPanel() = default;
@@ -126,10 +126,10 @@ protected:
 
 struct GridLayoutInfo
 {
-	int		layoutColumn = 0;
 	int		layoutRow = 0;
-	int		layoutColumnSpan = 0;
+	int		layoutColumn = 0;
 	int		layoutRowSpan = 0;
+	int		layoutColumnSpan = 0;
 };
 
 class LayoutHelper

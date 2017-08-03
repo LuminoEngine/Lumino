@@ -355,6 +355,8 @@ LN_ENUM_FLAGS(StringFormatFlags)	// TODO: LayoutFlags のほうがいいかな�
 	CenterAlignment = 0x0002,
 	RightAlignment = 0x0004,
 
+	LayoutDisabled = 0x0008,
+
 	Default = LeftAlignment,
 };
 LN_ENUM_FLAGS_DECLARE(StringFormatFlags);

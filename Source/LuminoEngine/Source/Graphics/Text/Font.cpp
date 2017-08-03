@@ -174,6 +174,14 @@ Size Font::measureRenderSize(const StringRef& text)
 	return Size(size.width, size.height);
 }
 
+Size Font::measureRenderSize(uint32_t ch)
+{
+	RawFont* raw = resolveRawFont();
+	FontGlyphMetrics metrics;
+	raw->getGlyphMetrics(ch, &metrics);
+	return metrics.size;
+}
+
 //------------------------------------------------------------------------------
 FontPtr Font::clone() const
 {

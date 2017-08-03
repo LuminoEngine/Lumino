@@ -91,6 +91,8 @@ void UIElement::initialize()
 
 	//goToVisualState(String::GetEmpty());
 	m_invalidateFlags |= detail::InvalidateFlags::VisualState;
+
+	setVisibility(UIVisibility::Visible);
 }
 
 //------------------------------------------------------------------------------
@@ -118,14 +120,14 @@ const Thickness& UIElement::getPadding() const
 }
 
 //------------------------------------------------------------------------------
-void UIElement::setLayoutColumn(int index) { m_gridLayoutInfo.layoutColumn = index; }
-int UIElement::getLayoutColumn() const { return m_gridLayoutInfo.layoutColumn; }
 void UIElement::setLayoutRow(int index) { m_gridLayoutInfo.layoutRow = index; }
 int UIElement::getLayoutRow() const { return m_gridLayoutInfo.layoutRow; }
-void UIElement::setLayoutColumnSpan(int span) { m_gridLayoutInfo.layoutColumnSpan = span; }
-int UIElement::getLayoutColumnSpan() const { return m_gridLayoutInfo.layoutColumnSpan; }
+void UIElement::setLayoutColumn(int index) { m_gridLayoutInfo.layoutColumn = index; }
+int UIElement::getLayoutColumn() const { return m_gridLayoutInfo.layoutColumn; }
 void UIElement::setLayoutRowSpan(int span) { m_gridLayoutInfo.layoutRowSpan = span; }
 int UIElement::getLayoutRowSpan() const { return m_gridLayoutInfo.layoutRowSpan; }
+void UIElement::setLayoutColumnSpan(int span) { m_gridLayoutInfo.layoutColumnSpan = span; }
+int UIElement::getLayoutColumnSpan() const { return m_gridLayoutInfo.layoutColumnSpan; }
 
 //------------------------------------------------------------------------------
 void UIElement::setBackground(Brush* value)
@@ -139,6 +141,37 @@ Brush* UIElement::getBackground() const
 {
 	return m_localStyle->background.get();
 	//return tr::PropertyInfo::getPropertyValueDirect<BrushPtr>(this, backgroundId);
+}
+
+void UIElement::setVisibility(UIVisibility value)
+{
+	switch (value)
+	{
+		case UIVisibility::Visible:
+			writeCoreFlag(detail::UICoreFlags_LayoutVisible, true);
+			writeCoreFlag(detail::UICoreFlags_RenderVisible, true);
+			break;
+		case UIVisibility::Hidden:
+			writeCoreFlag(detail::UICoreFlags_LayoutVisible, true);
+			writeCoreFlag(detail::UICoreFlags_RenderVisible, false);
+			break;
+		case UIVisibility::Collapsed:
+			writeCoreFlag(detail::UICoreFlags_LayoutVisible, false);
+			writeCoreFlag(detail::UICoreFlags_RenderVisible, false);
+			break;
+	}
+}
+
+UIVisibility UIElement::getVisibility() const
+{
+	bool v1 = readCoreFlag(detail::UICoreFlags_LayoutVisible);
+	bool v2 = readCoreFlag(detail::UICoreFlags_RenderVisible);
+	if (v1 && v2) return UIVisibility::Visible;
+	if (v1 && !v2) return UIVisibility::Hidden;
+	if (!v1 && !v2) return UIVisibility::Collapsed;
+
+	LN_UNREACHABLE();	// 何かおかしい
+	return UIVisibility::Visible;
 }
 
 //------------------------------------------------------------------------------
@@ -846,7 +879,7 @@ void UIElement::writeCoreFlag(detail::UICoreFlags field, bool value)
 
 bool UIElement::isRenderVisible() const
 {
-	return readCoreFlag(detail::UICoreFlags_LayoutVisible);
+	return readCoreFlag(detail::UICoreFlags_RenderVisible);
 }
 
 //------------------------------------------------------------------------------

@@ -135,10 +135,10 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	// ILayoutPanel interface
 	virtual int getLayoutChildrenCount() override;
 	virtual ILayoutElement* getLayoutChild(int index) override;
-	virtual int getLayoutGridColumnDefinitionCount() override;
-	virtual detail::GridDefinitionData* getLayoutGridColumnDefinition(int index) override;
 	virtual int getLayoutGridRowDefinitionCount() override;
 	virtual detail::GridDefinitionData* getLayoutGridRowDefinition(int index) override;
+	virtual int getLayoutGridColumnDefinitionCount() override;
+	virtual detail::GridDefinitionData* getLayoutGridColumnDefinition(int index) override;
 
 	// IScrollInfo interface
 	virtual float getExtentWidth() const;
@@ -223,16 +223,16 @@ public:
 		@brief		指定した数の行列をもつ UIGridLayout オブジェクトを作成します。
 		@details	各セルの幅と高さは GridLengthType::Ratio となります。
 	*/
-	static UIGridLayoutPtr create(int columnCount, int rowCount);
+	static UIGridLayoutPtr create(int rowCount, int columnCount);
 
 public:
 
-	void setGridSize(int columnCount, int rowCount);
-	void addColumnDefinition(GridLengthType type = GridLengthType::Ratio, float width = 1.0f, float minWidth = 0.0f, float maxWidth = FLT_MAX);
+	void setGridSize(int rowCount, int columnCount);
 	void addRowDefinition(GridLengthType type = GridLengthType::Ratio, float height = 1.0f, float minHeight = 0.0f, float maxHeight = FLT_MAX);
+	void addColumnDefinition(GridLengthType type = GridLengthType::Ratio, float width = 1.0f, float minWidth = 0.0f, float maxWidth = FLT_MAX);
 
 	void addChild(UIElement* child);
-	void addChild(UIElement* child, int column, int row);
+	void addChild(UIElement* child, int row, int column);
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	UIGridLayout();
@@ -244,17 +244,49 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual Size arrangeOverride(const Size& finalSize) override;
 
 	// ILayoutPanel interface
-	virtual int getLayoutGridColumnDefinitionCount() override;
-	virtual detail::GridDefinitionData* getLayoutGridColumnDefinition(int index) override;
 	virtual int getLayoutGridRowDefinitionCount() override;
 	virtual detail::GridDefinitionData* getLayoutGridRowDefinition(int index) override;
+	virtual int getLayoutGridColumnDefinitionCount() override;
+	virtual detail::GridDefinitionData* getLayoutGridColumnDefinition(int index) override;
 
 private:
 	class DefinitionBase;
-	class ColumnDefinition;
 	class RowDefinition;
-	List<Ref<ColumnDefinition>>	m_columnDefinitions;
+	class ColumnDefinition;
 	List<Ref<RowDefinition>>	m_rowDefinitions;
+	List<Ref<ColumnDefinition>>	m_columnDefinitions;
+};
+
+
+/**
+	@brief		要素を上から下へ規則的に配置するためのシンプル方法を提供するレイアウト要素です。
+*/
+class UIFlowLayout
+	: public UIGridLayout
+{
+	LN_OBJECT;
+public:
+
+	/**
+		@brief		UIFlowGridLayout オブジェクトを作成します。
+	*/
+	static Ref<UIFlowLayout> create();
+
+public:
+
+	/** 子要素を追加し、横方向に並べます。 */
+	void add(UIElement* child);
+
+	void newLine();
+
+LN_CONSTRUCT_ACCESS:
+	UIFlowLayout();
+	virtual ~UIFlowLayout();
+	void initialize();
+
+private:
+	int		m_nextRow;
+	int		m_nextColumn;
 };
 
 LN_NAMESPACE_END
