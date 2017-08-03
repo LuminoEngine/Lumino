@@ -61,9 +61,14 @@ void UIContext::setFocusElement(UIElement* element)
 		if (LN_CHECK_STATE(element->isFocusable())) return;
 	}
 
+	// フォーカスの処理をどこまでさかのぼって処理すればいいのかを調べる
 	UIElement* focusedBranchRoot = UIHelper::findVisualAncestor(element, true, [](UIElement* e) { return e->hasFocus() || e->getSpcialUIElementType() == detail::SpcialUIElementType::LayoutRoot; });
 	if (LN_CHECK_STATE(focusedBranchRoot != nullptr)) return;
+
+	// 同じだった。つまり、今フォーカスを持っているものに対して、フォーカスを取得させようとした。何もする必要はない
+	if (focusedBranchRoot == element) return;
 	
+	// フォーカスを外す処理
 	if (m_focusElement != nullptr)
 	{
 		if (m_focusElement->isFocusable() && m_focusElement->hasFocus()) m_focusElement->callOnLostFocus();
@@ -75,6 +80,7 @@ void UIContext::setFocusElement(UIElement* element)
 		});
 	}
 
+	// フォーカスを与える処理
 	if (element->isFocusable() && !element->hasFocus()) element->callOnGotFocus();
 	UIHelper::findVisualAncestor(element, false, [focusedBranchRoot](UIElement* e)
 	{

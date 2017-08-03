@@ -25,6 +25,8 @@ public:
 protected:
 	virtual Size measureOverride(const Size& constraint) override;
 	virtual Size arrangeOverride(const Size& finalSize) override;
+	virtual void onGotFocus(UIEventArgs* e) override;
+	virtual void onLostFocus(UIEventArgs* e) override;
 
 LN_CONSTRUCT_ACCESS:
 	UIPopup();
@@ -36,6 +38,7 @@ LN_INTERNAL_ACCESS:
 
 private:
 	Ref<UIElement>	m_content;
+	UILayoutView*	m_layoutView;
 };
 
 

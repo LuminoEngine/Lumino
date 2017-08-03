@@ -118,6 +118,15 @@ bool UILayoutView::updateMouseHover(const Point& mousePos)
 	//	}
 	//}
 
+	// Popup を調べる
+	for (auto& popup : m_popupContainers)
+	{
+		m_mouseHoverElement = popup->GetPopup()->checkMouseHoverElement(mousePos);
+		if (m_mouseHoverElement != nullptr) {
+			goto EXIT;
+		}
+	}
+
 	// 通常のウィンドウのイベントを処理する
 	//if (m_rootElement != NULL)
 	{
@@ -157,11 +166,16 @@ void UILayoutView::openPopup(UIPopup* popup)
 	auto container = newObject<detail::UIPopuoContainer>();
 	container->SetPopup(popup);
 	m_popupContainers.add(container);
+
+	// inplace popup は Visual child としておく。
+	// マウスハンドリングやフォーカスの処理をこの View 内で行うため。
+	addVisualChild(popup);
 }
 
 //------------------------------------------------------------------------------
 void UILayoutView::closePopup(UIPopup* popup)
 {
+	removeVisualChild(popup);
 	m_popupContainers.removeIf([popup](const Ref<detail::UIPopuoContainer>& ptr) { return ptr->GetPopup() == popup; });
 }
 

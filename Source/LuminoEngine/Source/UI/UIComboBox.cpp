@@ -17,6 +17,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIPopup, UIContentControl)
 
 //------------------------------------------------------------------------------
 UIPopup::UIPopup()
+	: m_layoutView(nullptr)
 {
 }
 
@@ -29,6 +30,8 @@ UIPopup::~UIPopup()
 void UIPopup::initialize()
 {
 	UIElement::initialize();
+	setHitTestVisible(true);
+	setFocusable(true);
 }
 
 //------------------------------------------------------------------------------
@@ -56,14 +59,17 @@ void UIPopup::setContent(UIElement* element)
 //------------------------------------------------------------------------------
 void UIPopup::open(UIElement* owner)
 {
+	if (LN_CHECK_STATE(m_layoutView == nullptr)) return;
+
 	auto* parent = getVisualParent();
 	if (parent == nullptr) parent = owner;
 
 	UIElement* root = UIHelper::getLayoutRoot(parent);
 	if (root != nullptr)
 	{
-		UILayoutView* rootView = static_cast<UILayoutView*>(root);
-		rootView->openPopup(this);
+		m_layoutView = static_cast<UILayoutView*>(root);
+		m_layoutView->openPopup(this);
+		focus();
 	}
 }
 
@@ -81,6 +87,21 @@ Size UIPopup::measureOverride(const Size& constraint)
 Size UIPopup::arrangeOverride(const Size& finalSize)
 {
 	return UIElement::arrangeOverride(finalSize);
+}
+
+void UIPopup::onGotFocus(UIEventArgs* e)
+{
+	UIElement::onGotFocus(e);
+}
+
+void UIPopup::onLostFocus(UIEventArgs* e)
+{
+	// TODO: WPF は StaysOpen で制御できる
+	if (m_layoutView != nullptr)
+	{
+		m_layoutView->closePopup(this);
+	}
+	UIElement::onLostFocus(e);
 }
 
 //------------------------------------------------------------------------------
