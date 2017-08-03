@@ -71,6 +71,11 @@ void UIControlsGallery()
 		//flow1->add(button1);
 	}
 
+	auto popup = newObject<UIPopup>();
+	popup->setSize(Size(50, 50));
+	popup->setBackground(Brush::Red);
+	popup->open(tree1);
+
 #endif
 
 

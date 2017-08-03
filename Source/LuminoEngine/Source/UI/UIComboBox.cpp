@@ -1,9 +1,9 @@
-
+ï»¿
 #include "Internal.h"
 #include <Lumino/UI/UITextBlock.h>
 #include <Lumino/UI/UIScrollViewer.h>
 #include <Lumino/UI/UIComboBox.h>
-#include <Lumino/UI/UILayoutPanel.h>	// TODO: stackpanel ‚É‚·‚é‚©‚à
+#include <Lumino/UI/UILayoutPanel.h>	// TODO: stackpanel ã«ã™ã‚‹ã‹ã‚‚
 #include <Lumino/UI/UILayoutView.h>
 #include "UIManager.h"
 #include "UIHelper.h"
@@ -38,14 +38,14 @@ void UIPopup::setContent(UIElement* element)
 
 	m_content = element;
 
-	// Šù‚É‚Á‚Ä‚¢‚ê‚Îæ‚èœ‚¢‚Ä‚¨‚­
+	// æ—¢ã«æŒã£ã¦ã„ã‚Œã°å–ã‚Šé™¤ã„ã¦ãŠã
 	if (m_content != nullptr)
 	{
 		removeVisualChild(m_content);
 		m_content = nullptr;
 	}
 
-	// V‚µ‚­•Û‚·‚é
+	// æ–°ã—ãä¿æŒã™ã‚‹
 	if (element != nullptr)
 	{
 		addVisualChild(element);
@@ -54,9 +54,12 @@ void UIPopup::setContent(UIElement* element)
 }
 
 //------------------------------------------------------------------------------
-void UIPopup::open()
+void UIPopup::open(UIElement* owner)
 {
-	UIElement* root = UIHelper::getLayoutRoot(this);
+	auto* parent = getVisualParent();
+	if (parent == nullptr) parent = owner;
+
+	UIElement* root = UIHelper::getLayoutRoot(parent);
 	if (root != nullptr)
 	{
 		UILayoutView* rootView = static_cast<UILayoutView*>(root);
@@ -67,10 +70,11 @@ void UIPopup::open()
 //------------------------------------------------------------------------------
 Size UIPopup::measureOverride(const Size& constraint)
 {
-	// Popup ‚Íí‚ÉƒTƒCƒY 0 ‚Æ‚È‚éB
-	// ‚Ü‚½Aq—v‘f‚ÌƒŒƒCƒAƒEƒg‚Ís‚í‚È‚¢B
-	// q—v‘f‚ÌƒŒƒCƒAƒEƒg‚ğs‚¤‚Ì‚Í•Ê“rAPopup ê—p‚ÌƒŒƒCƒAƒEƒgƒtƒF[ƒYB
-	return Size();
+	// Popup ã¯å¸¸ã«ã‚µã‚¤ã‚º 0 ã¨ãªã‚‹ã€‚
+	// ã¾ãŸã€å­è¦ç´ ã®ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã¯è¡Œã‚ãªã„ã€‚
+	// å­è¦ç´ ã®ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã‚’è¡Œã†ã®ã¯åˆ¥é€”ã€Popup å°‚ç”¨ã®ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆãƒ•ã‚§ãƒ¼ã‚ºã€‚
+	//return Size();
+	return UIElement::measureOverride(constraint);
 }
 
 //------------------------------------------------------------------------------
@@ -82,10 +86,15 @@ Size UIPopup::arrangeOverride(const Size& finalSize)
 //------------------------------------------------------------------------------
 void UIPopup::updateLayoutForInPlacePopup(const Size& viewSize)
 {
-	m_content->updateLayout(viewSize);
+	updateLayout(viewSize);
+
+	//if (m_content != nullptr)
+	//{
+	//	m_content->updateLayout(viewSize);
+	//}
 	//m_content->measureLayout(viewSize);
 
-	////TODO: ‚±‚Ì‚Ö‚ñ‚Åchild‚ÌˆÊ’u‚ğŒˆ‚ß‚é
+	////TODO: ã“ã®ã¸ã‚“ã§childã®ä½ç½®ã‚’æ±ºã‚ã‚‹
 
 	//m_content->arrangeLayout(RectF(0, 0, viewSize));
 	//m_content->updateTransformHierarchy(RectF(0, 0, viewSize));
@@ -178,7 +187,7 @@ void UIComboBox::initialize()
 //{
 //	if (LN_CHECK_ARG(item != nullptr)) return nullptr;
 //
-//	// ó‚¯æ‚Á‚½ item ‚ğ UIComboBoxItem ‚Åƒ‰ƒbƒv‚µ‚ÄAUIComboBoxItem ‚ğƒŠƒXƒg‚É“ü‚ê‚é
+//	// å—ã‘å–ã£ãŸ item ã‚’ UIComboBoxItem ã§ãƒ©ãƒƒãƒ—ã—ã¦ã€UIComboBoxItem ã‚’ãƒªã‚¹ãƒˆã«å…¥ã‚Œã‚‹
 //	auto listItem = Ref<UIComboBoxItem>::MakeRef();
 //	listItem->initialize(getManager());
 //	listItem->setContent(item);
@@ -189,7 +198,7 @@ void UIComboBox::initialize()
 //------------------------------------------------------------------------------
 void UIComboBox::onMouseDown(UIMouseEventArgs* e)
 {
-	m_popup->open();
+	m_popup->open(this);
 	UIControl::onMouseDown(e);
 }
 

@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 #include "UIItemsControl.h"
 #include "UIContentControl.h"
@@ -20,7 +20,7 @@ class UIPopup
 public:
 	void setContent(UIElement* element);
 
-	void open();
+	void open(UIElement* owner);
 
 protected:
 	virtual Size measureOverride(const Size& constraint) override;
