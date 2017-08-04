@@ -6,6 +6,7 @@
 LN_NAMESPACE_BEGIN
 class UIElementCollection;
 class UILayoutPanel;
+class UIContextMenu;
 
 
 /** ボタンのクリックイベントを発生させるタイミングを表します。*/
@@ -58,12 +59,20 @@ public:
 	void setLayoutPanel(UILayoutPanel* panel);
 	UILayoutPanel* getLayoutPanel() const;
 
-	
+	/** この要素に対してメニュー表示が要求された場合に表示するコンテキストメニューを設定します。 */
+	void setContextMenu(UIContextMenu* menu);
+
+	/** この要素に対してメニュー表示が要求された場合に表示するコンテキストメニューを取得します。 */
+	UIContextMenu* getContextMenu() const;
+
 	/** onSubmit イベントの通知を受け取るコールバックを登録します。*/
 	LN_METHOD(Event)
 	EventConnection connectOnSubmit(UIEventHandler handler);
 
 protected:
+	void setLogicalChildrenPresenter(UILayoutPanel* presenter);
+	UILayoutPanel* getLogicalChildrenPresenter() const;
+
 	virtual void onSubmit(UIEventArgs* e);
 
 	// UIElement interface
@@ -81,7 +90,7 @@ protected:
 	virtual void onMouseEnter(UIMouseEventArgs* e) override;
 	virtual void onMouseLeave(UIMouseEventArgs* e) override;
 
-	virtual void onLayoutPanelChanged(UILayoutPanel* newPanel);
+	virtual void onLogicalChildrenPresenterChanged(UILayoutPanel* presenter);
 
 	// IUIElementCollectionOwner interface
 	virtual void onChildCollectionChanged(const tr::ChildCollectionChangedArgs& e) override;
@@ -100,7 +109,9 @@ LN_INTERNAL_ACCESS:
 
 private:
 	Ref<UIElementCollection>		m_items;
-	Ref<UILayoutPanel>			m_itemsHostPanel;
+	Ref<UILayoutPanel>				m_itemsHostPanel;		// TODO: 後で ContentControl 作ってそっちに持っていこう
+	Ref<UILayoutPanel>				m_logicalChildrenPresenter;	// 子要素の実際の追加先
+	Ref<UIContextMenu>				m_contextMenu;
 
 	UIEventHandler::EventType		m_onSubmit;
 

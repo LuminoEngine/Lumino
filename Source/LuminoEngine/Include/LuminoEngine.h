@@ -69,6 +69,7 @@
 #include "Lumino/UI/UIListBox.h"
 #include "Lumino/UI/UIComboBox.h"
 #include "Lumino/UI/UITreeView.h"
+#include "Lumino/UI/UIMenu.h"
 
 #include "Lumino/TileMap/TileSet.h"
 #include "Lumino/TileMap/TileLayer.h"

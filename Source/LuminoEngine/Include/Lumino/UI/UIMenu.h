@@ -23,6 +23,9 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~UIMenuItem();
 	void initialize();
 
+LN_INTERNAL_ACCESS:
+	Delegate<void()>	m_handler;
+
 private:
 };
 
@@ -34,6 +37,7 @@ class UIMenuBase
 {
 	LN_OBJECT;
 public:
+	UIMenuItem* addMenuItem(const StringRef& text, const Delegate<void()>& handler);
 
 LN_CONSTRUCT_ACCESS:
 	UIMenuBase();
@@ -56,6 +60,9 @@ LN_CONSTRUCT_ACCESS:
 	UIContextMenu();
 	virtual ~UIContextMenu();
 	void initialize();
+
+LN_INTERNAL_ACCESS:
+	void open(UIElement* owner);
 
 private:
 	Ref<UIPopup>	m_popup;

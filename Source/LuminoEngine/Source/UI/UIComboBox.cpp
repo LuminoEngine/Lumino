@@ -7,6 +7,7 @@
 #include <Lumino/UI/UILayoutView.h>
 #include "UIManager.h"
 #include "UIHelper.h"
+#include "LayoutHelper.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -80,13 +81,16 @@ Size UIPopup::measureOverride(const Size& constraint)
 	// また、子要素のレイアウトは行わない。
 	// 子要素のレイアウトを行うのは別途、Popup 専用のレイアウトフェーズ。
 	//return Size();
-	return UIElement::measureOverride(constraint);
+	//return UIElement::measureOverride(constraint);
+
+	return detail::LayoutHelper2::measureOverride_SimpleOneChild<UIPopup, UIElement>(this, constraint, m_content);
 }
 
 //------------------------------------------------------------------------------
 Size UIPopup::arrangeOverride(const Size& finalSize)
 {
-	return UIElement::arrangeOverride(finalSize);
+	//return UIElement::arrangeOverride(finalSize);
+	return detail::LayoutHelper2::arrangeOverride_SimpleOneChild<UIPopup, UIElement>(this, finalSize, m_content);
 }
 
 void UIPopup::onGotFocus(UIEventArgs* e)
@@ -100,6 +104,7 @@ void UIPopup::onLostFocus(UIEventArgs* e)
 	if (m_layoutView != nullptr)
 	{
 		m_layoutView->closePopup(this);
+		m_layoutView = nullptr;
 	}
 	UIElement::onLostFocus(e);
 }

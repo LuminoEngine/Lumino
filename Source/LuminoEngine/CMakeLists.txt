@@ -486,6 +486,7 @@ set(LN_SOURCES_UI
 	Source/UI/EventArgsPool.h
 	Source/UI/Internal.h
 	Source/UI/LayoutElement.cpp
+	Source/UI/LayoutHelper.h
 	Source/UI/LayoutImpl.h
 	Source/UI/UIButton.cpp
 	Source/UI/UIColorsDefine.inl

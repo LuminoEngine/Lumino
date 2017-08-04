@@ -7,8 +7,7 @@ namespace detail {
 class LayoutHelper2
 {
 public:
-
-	//------------------------------------------------------------------------------
+	
 	template<class TElement>
 	static void measureLayout(TElement* element, const Size& availableSize)
 	{
@@ -37,7 +36,7 @@ public:
 		}
 	}
 
-	//------------------------------------------------------------------------------
+	
 	template<class TElement>
 	static void arrangeLayout(TElement* element, const Rect& finalLocalRect)
 	{
@@ -114,6 +113,79 @@ public:
 			element->setLayoutFinalLocalRect(Rect::Zero/*, Rect::Zero*/);
 		}
 	}
+
+	// 単一の子要素を、要素全体にレイアウトするための measureOverride の実装
+	template<class TElement, class TElementBaseClass>
+	static Size measureOverride_SimpleOneChild(TElement* element, const Size& constraint, UIElement* child)
+	{
+		//if (m_invalidateItemsHostPanel)
+		//{
+
+		//	m_invalidateItemsHostPanel = false;
+		//}
+
+
+#if 1
+		Size desiredSize = element->TElementBaseClass::measureOverride(constraint);
+
+		Size childDesiredSize(0, 0);
+		//if (readCoreFlag(detail::UICoreFlags_LogicalChildrenPresenterAutoManagement))
+		if (child != nullptr)
+		{
+			child->measureLayout(constraint);
+			childDesiredSize = child->getDesiredSize();
+		}
+
+		desiredSize.width = std::max(desiredSize.width, childDesiredSize.width);
+		desiredSize.height = std::max(desiredSize.height, childDesiredSize.height);
+
+		return desiredSize;
+#else
+		return detail::LayoutImpl<UIControl>::UILayoutPanel_MeasureOverride(
+			this, constraint,
+			[](UIControl* panel, const Size& constraint) { return panel->UIElement::MeasureOverride(constraint); });
+		//Size desiredSize = UIElement::measureOverride(constraint);
+		//if (m_visualTreeRoot != nullptr)
+		//{
+		//    m_visualTreeRoot->measureLayout(constraint);
+		//    const Size& childDesiredSize = m_visualTreeRoot->getDesiredSize();
+
+		//    desiredSize.width = std::max(desiredSize.width, childDesiredSize.width);
+		//    desiredSize.height = std::max(desiredSize.height, childDesiredSize.height);
+		//}
+		//return desiredSize;
+#endif
+
+	}
+
+	// 単一の子要素を、要素全体にレイアウトするための arrangeOverride の実装
+	template<class TElement, class TElementBaseClass>
+	static Size arrangeOverride_SimpleOneChild(TElement* element, const Size& finalSize, UIElement* child)
+	{
+#if 1
+		if (child != nullptr)
+		{
+			Size childDesiredSize = child->getDesiredSize();
+			childDesiredSize.width = std::max(finalSize.width, childDesiredSize.width);
+			childDesiredSize.height = std::max(finalSize.height, childDesiredSize.height);
+			child->arrangeLayout(Rect(0.0f, 0.0f, childDesiredSize));
+		}
+
+		return element->TElementBaseClass::arrangeOverride(finalSize);
+#else
+		return detail::LayoutImpl<UIControl>::UILayoutPanel_ArrangeOverride(this, Vector2::Zero, finalSize);
+		//RectF childFinal(0, 0, finalSize);
+		//if (m_visualTreeRoot != nullptr)
+		//{
+		//    Size childDesiredSize = m_visualTreeRoot->getDesiredSize();
+		//    childDesiredSize.width = std::max(finalSize.width, childDesiredSize.width);
+		//    childDesiredSize.height = std::max(finalSize.height, childDesiredSize.height);
+		//    m_visualTreeRoot->arrangeLayout(RectF(0, 0, childDesiredSize));
+		//}
+		//return finalSize;
+#endif
+	}
+
 };
 
 } // namespace detail

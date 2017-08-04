@@ -30,6 +30,7 @@ void UIControlsGallery()
 	auto* uiRoot = Engine::getDefaultUILayer()->GetLayoutView();
 
 
+
 	auto tree1 = UITreeView::create();
 	tree1->setWidth(100);
 	//tree1->setBackground(UIColors::getBrush(UIColorIndex::Blue, 9));
@@ -38,6 +39,12 @@ void UIControlsGallery()
 	auto item2_1 = item2->addTextItem(_T("item2_1"));
 	auto item2_2 = item2->addTextItem(_T("item2_2"));
 	auto item3 = tree1->addTextItem(_T("item3"));
+
+
+	auto menu = newObject<UIContextMenu>();
+	menu->addMenuItem(_T("item1"), []() { printf("item1\n"); });
+	menu->addMenuItem(_T("item2"), []() { printf("item2\n"); });
+	item1->setContextMenu(menu);
 #if 0
 	uiRoot->addChild(tree1);
 #else
@@ -71,10 +78,10 @@ void UIControlsGallery()
 		//flow1->add(button1);
 	}
 
-	auto popup = newObject<UIPopup>();
-	popup->setSize(Size(50, 50));
-	popup->setBackground(Brush::Red);
-	popup->open(tree1);
+	//auto popup = newObject<UIPopup>();
+	//popup->setSize(Size(50, 50));
+	//popup->setBackground(Brush::Red);
+	//popup->open(tree1);
 
 #endif
 

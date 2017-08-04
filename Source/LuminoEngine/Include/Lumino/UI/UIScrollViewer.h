@@ -282,7 +282,7 @@ protected:
 	virtual void onRoutedEvent(UIEventArgs* e) override;
 
 	// UIControl interface
-	virtual void onLayoutPanelChanged(UILayoutPanel* newPanel) override;
+	virtual void onLogicalChildrenPresenterChanged(UILayoutPanel* newPanel) override;
 
 private:
 	Ref<UIScrollBar>			m_horizontalScrollBar;
