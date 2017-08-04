@@ -23,6 +23,7 @@ enum UICoreFlags
 	UICoreFlags_LayoutVisible	= 0x0001,
 	UICoreFlags_RenderVisible	= 0x0002,
 	UICoreFlags_LogicalChildrenPresenterAutoManagement = 0x0004,
+	UICoreFlags_PopupMenuRoot	= 0x0008,
 };
 
 } // namespace detail
@@ -388,7 +389,7 @@ protected:
 	virtual bool onEvent(detail::UIInternalEventType type, UIEventArgs* args);
 	virtual void onRoutedEvent(UIEventArgs* e);
 	virtual void updateLayout(const Size& viewSize) override;
-	virtual detail::SpcialUIElementType getSpcialUIElementType() const;
+	virtual detail::SpcialUIElementType getSpcialUIElementType() const;	// TODO: CoreFlags で間に合う間はそっち使おう
 
 public:
 	virtual UIElement* checkMouseHoverElement(const Point& globalPt);

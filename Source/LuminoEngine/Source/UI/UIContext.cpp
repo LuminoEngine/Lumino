@@ -69,7 +69,7 @@ void UIContext::setFocusElement(UIElement* element)
 	if (focusedBranchRoot == element) return;
 	
 	// フォーカスを外す処理
-	if (m_focusElement != nullptr)
+	if (m_focusElement != nullptr && m_focusElement != focusedBranchRoot)
 	{
 		if (m_focusElement->isFocusable() && m_focusElement->hasFocus()) m_focusElement->callOnLostFocus();
 		UIHelper::findVisualAncestor(m_focusElement, false, [focusedBranchRoot](UIElement* e)

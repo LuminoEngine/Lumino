@@ -18,6 +18,8 @@ UIControl::UIControl()
 	: HContentAlignment(HAlignment::Stretch)
 	, VContentAlignment(VAlignment::Stretch)
 	, m_contextMenu(nullptr)
+	, m_clickMode(ClickMode::Release)
+	, m_isPressed(false)
 {
 }
 
@@ -179,6 +181,11 @@ UILayoutPanel* UIControl::getLogicalChildrenPresenter() const
 	return m_logicalChildrenPresenter;
 }
 
+void UIControl::submit()
+{
+	onSubmit(UIEventArgs::create(nullptr, this));
+}
+
 //------------------------------------------------------------------------------
 EventConnection UIControl::connectOnSubmit(UIEventHandler handler)
 {
@@ -189,6 +196,10 @@ EventConnection UIControl::connectOnSubmit(UIEventHandler handler)
 void UIControl::onSubmit(UIEventArgs* e)
 {
 	m_onSubmit.raise(e);
+}
+
+void UIControl::onMouseClick(UIMouseEventArgs* e)
+{
 }
 
 ////------------------------------------------------------------------------------
@@ -327,12 +338,37 @@ void UIControl::onMouseDown(UIMouseEventArgs* e)
 		e->handled = true;
 	}*/
 
+	if (m_clickMode == ClickMode::Release)
+	{
+		m_isPressed = true;
+		focus();
+		captureMouse();
+		//goToVisualState(UIVisualStates::PressedState);
+		e->handled = true;
+	}
+	else if (m_clickMode == ClickMode::Press)
+	{
+		onMouseClick(e);
+		e->handled = true;
+	}
+
 	UIElement::onMouseDown(e);
 }
 
 //------------------------------------------------------------------------------
 void UIControl::onMouseUp(UIMouseEventArgs* e)
 {
+	if (m_clickMode == ClickMode::Release)
+	{
+		if (m_isPressed)
+		{
+			m_isPressed = false;
+			releaseMouseCapture();
+			goToVisualState(UIVisualStates::MouseOverState);
+			onMouseClick(e);
+			e->handled = true;
+		}
+	}
 	//if (m_isPressed)
 	//{
 	//	m_isPressed = false;

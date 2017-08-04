@@ -65,6 +65,9 @@ public:
 	/** この要素に対してメニュー表示が要求された場合に表示するコンテキストメニューを取得します。 */
 	UIContextMenu* getContextMenu() const;
 
+	/** この要素へ決定操作を通知します。 */
+	void submit();
+
 	/** onSubmit イベントの通知を受け取るコールバックを登録します。*/
 	LN_METHOD(Event)
 	EventConnection connectOnSubmit(UIEventHandler handler);
@@ -74,6 +77,7 @@ protected:
 	UILayoutPanel* getLogicalChildrenPresenter() const;
 
 	virtual void onSubmit(UIEventArgs* e);
+	virtual void onMouseClick(UIMouseEventArgs* e);
 
 	// UIElement interface
 	//virtual int getVisualChildrenCount() const override;
@@ -112,6 +116,9 @@ private:
 	Ref<UILayoutPanel>				m_itemsHostPanel;		// TODO: 後で ContentControl 作ってそっちに持っていこう
 	Ref<UILayoutPanel>				m_logicalChildrenPresenter;	// 子要素の実際の追加先
 	Ref<UIContextMenu>				m_contextMenu;
+
+	ClickMode						m_clickMode;
+	bool							m_isPressed;
 
 	UIEventHandler::EventType		m_onSubmit;
 

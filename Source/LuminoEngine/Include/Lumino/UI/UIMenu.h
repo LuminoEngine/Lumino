@@ -17,6 +17,8 @@ public:
 protected:
 	virtual Size measureOverride(const Size& constraint) override;
 	virtual Size arrangeOverride(const Size& finalSize) override;
+	virtual void onMouseClick(UIMouseEventArgs* e) override;
+	virtual void onSubmit(UIEventArgs* e) override;
 
 LN_CONSTRUCT_ACCESS:
 	UIMenuItem();
@@ -63,6 +65,7 @@ LN_CONSTRUCT_ACCESS:
 
 LN_INTERNAL_ACCESS:
 	void open(UIElement* owner);
+	void close();
 
 private:
 	Ref<UIPopup>	m_popup;

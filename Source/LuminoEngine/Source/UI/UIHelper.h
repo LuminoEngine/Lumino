@@ -48,6 +48,36 @@ public:
 		return nullptr;
 	}
 
+	template<typename TPred>
+	static UIElement* findLogicalAncestor(UIElement* element, bool self, TPred pred)
+	{
+		if (LN_CHECK_ARG(element != nullptr)) return nullptr;
+
+		// 自分もチェックするか
+		if (self)
+		{
+			if (pred(element))
+			{
+				return element;
+			}
+		}
+
+		while (true)
+		{
+			element = element->getLogicalParent();
+			if (element == nullptr)
+			{
+				break;
+			}
+
+			if (pred(element))
+			{
+				return element;
+			}
+		}
+		return nullptr;
+	}
+
 	static UIElement* getLayoutRoot(UIElement* element)
 	{
 		while (element != nullptr)

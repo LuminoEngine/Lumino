@@ -21,6 +21,7 @@ public:
 	void setContent(UIElement* element);
 
 	void open(UIElement* owner);
+	void close();
 
 protected:
 	virtual Size measureOverride(const Size& constraint) override;

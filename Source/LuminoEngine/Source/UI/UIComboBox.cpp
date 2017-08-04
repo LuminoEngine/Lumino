@@ -74,6 +74,16 @@ void UIPopup::open(UIElement* owner)
 	}
 }
 
+void UIPopup::close()
+{
+	// TODO: WPF は StaysOpen で制御できる
+	if (m_layoutView != nullptr)
+	{
+		m_layoutView->closePopup(this);
+		m_layoutView = nullptr;
+	}
+}
+
 //------------------------------------------------------------------------------
 Size UIPopup::measureOverride(const Size& constraint)
 {
@@ -100,12 +110,7 @@ void UIPopup::onGotFocus(UIEventArgs* e)
 
 void UIPopup::onLostFocus(UIEventArgs* e)
 {
-	// TODO: WPF は StaysOpen で制御できる
-	if (m_layoutView != nullptr)
-	{
-		m_layoutView->closePopup(this);
-		m_layoutView = nullptr;
-	}
+	close();
 	UIElement::onLostFocus(e);
 }
 

@@ -532,6 +532,21 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 		}
 	}
 
+	//------------------------------------------------------------------------------
+	// UIMenuItem
+	{
+		auto* style = table->getStyle(_T("UIMenuItem"));
+		// base
+		{
+			auto* props = style->getPropertyTable();
+		}
+		// UITreeViewItem.MouseOver
+		{
+			auto* props = style->getPropertyTable(UIVisualStates::MouseOverState);
+			props->background = Ref<Brush>::staticCast(containerItemMouseOver);
+		}
+	}
+
 	//{
 	//	auto brush = TextureBrush::create(m_defaultSkinTexture);
 	//	brush->setSourceRect(0, 32, 32, 32);

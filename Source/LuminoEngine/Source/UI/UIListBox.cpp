@@ -39,8 +39,7 @@ void UIListBoxItem::onMouseDown(UIMouseEventArgs* e)
 {
 	if (e->getClickCount() == 2)
 	{
-		// TODO: public ‚È submit() ‚ð—pˆÓ‚µ‚½‚Ù‚¤‚ª‚¢‚¢‚©‚È
-		onSubmit(e);
+		submit();
 	}
 
 	UIControl::onMouseDown(e);

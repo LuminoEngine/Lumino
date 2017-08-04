@@ -4,6 +4,7 @@
 #include <Lumino/UI/UILayoutPanel.h>
 #include <Lumino/UI/UIComboBox.h>
 #include <Lumino/UI/UITextBlock.h>
+#include "UIHelper.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -35,6 +36,24 @@ Size UIMenuItem::arrangeOverride(const Size& finalSize)
 	return UIHeaderedItemsControl::arrangeOverride(finalSize);
 }
 
+void UIMenuItem::onMouseClick(UIMouseEventArgs* e)
+{
+	UIHeaderedItemsControl::onMouseClick(e);
+	submit();
+}
+
+void UIMenuItem::onSubmit(UIEventArgs* e)
+{
+	UIHeaderedItemsControl::onSubmit(e);
+
+	UIContextMenu* parentMenu = static_cast<UIContextMenu*>(
+		UIHelper::findLogicalAncestor(this, false, [](UIElement* e) { return e->readCoreFlag(detail::UICoreFlags_PopupMenuRoot); }));
+	if (parentMenu != nullptr)
+	{
+		parentMenu->close();
+	}
+}
+
 //==============================================================================
 // UIMenuBase
 //==============================================================================
@@ -51,6 +70,7 @@ UIMenuBase::~UIMenuBase()
 void UIMenuBase::initialize()
 {
 	UIItemsControl::initialize();
+	writeCoreFlag(detail::UICoreFlags_PopupMenuRoot, true);
 }
 
 UIMenuItem* UIMenuBase::addMenuItem(const StringRef& text, const Delegate<void()>& handler)
@@ -97,6 +117,11 @@ void UIContextMenu::open(UIElement* owner)
 	m_popup->setBackground(Brush::Red);	// TODO:
 	m_popup->setContent(getLogicalChildrenPresenter());
 	m_popup->open(owner);
+}
+
+void UIContextMenu::close()
+{
+	m_popup->close();
 }
 
 LN_NAMESPACE_END
