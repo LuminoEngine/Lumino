@@ -5,6 +5,7 @@
 #include <Lumino/UI/UIComboBox.h>
 #include <Lumino/UI/UILayoutPanel.h>	// TODO: stackpanel にするかも
 #include <Lumino/UI/UILayoutView.h>
+#include <Lumino/UI/UIInput.h>
 #include "UIManager.h"
 #include "UIHelper.h"
 #include "LayoutHelper.h"
@@ -12,9 +13,76 @@
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
+// UIAdorner
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIAdorner, UIElement)
+
+UIAdorner::UIAdorner()
+{
+}
+
+UIAdorner::~UIAdorner()
+{
+}
+
+void UIAdorner::initialize()
+{
+	UIElement::initialize();
+}
+
+//==============================================================================
+// UIAdornerLayer
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIAdornerLayer, UIElement)
+
+UIAdornerLayer::UIAdornerLayer()
+{
+}
+
+UIAdornerLayer::~UIAdornerLayer()
+{
+}
+
+void UIAdornerLayer::initialize()
+{
+	UIElement::initialize();
+	setHitTestVisible(false);	// TODO: デフォルト false がいいだろう。control は true で。
+	writeCoreFlag(detail::UICoreFlags_AdornerLayer, true);
+}
+
+void UIAdornerLayer::add(UIAdorner* adorner)
+{
+	adorner->setLogicalParent(this);
+	addVisualChild(adorner);
+	m_adorners.add(adorner);
+}
+
+void UIAdornerLayer::remove(UIAdorner* adorner)
+{
+	if (LN_CHECK_STATE(adorner->getLogicalParent() == this)) return;
+	adorner->setLogicalParent(nullptr);
+	removeVisualChild(adorner);
+	m_adorners.remove(adorner);
+}
+
+Size UIAdornerLayer::measureOverride(const Size& constraint)
+{
+	// LayoutPanel ではなく、UIElement の measureOverride を実施 (this のサイズを測る)
+	return detail::LayoutHelper2::measureOverride_AbsoluteLayout<UIAdornerLayer, UIElement, List<Ref<UIAdorner>>>(
+		this, constraint, m_adorners);
+}
+
+Size UIAdornerLayer::arrangeOverride(const Size& finalSize)
+{
+	return detail::LayoutHelper2::arrangeOverride_AbsoluteLayout<UIAdornerLayer, UIElement, List<Ref<UIAdorner>>>(
+		this, finalSize, m_adorners);
+}
+
+//==============================================================================
 // UIPopup
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIPopup, UIContentControl)
+//LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIPopup, UIContentControl)
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIPopup, UIAdorner)
 
 //------------------------------------------------------------------------------
 UIPopup::UIPopup()
@@ -30,7 +98,7 @@ UIPopup::~UIPopup()
 //------------------------------------------------------------------------------
 void UIPopup::initialize()
 {
-	UIElement::initialize();
+	UIAdorner::initialize();
 	setHitTestVisible(true);
 	setFocusable(true);
 }
@@ -70,6 +138,7 @@ void UIPopup::open(UIElement* owner)
 	{
 		m_layoutView = static_cast<UILayoutView*>(root);
 		m_layoutView->openPopup(this);
+		setPosition(UIMouse::getPosition(m_layoutView));	// TODO: WPF だとこの辺に PlacementMode がかかってくる
 		focus();
 	}
 }
@@ -93,25 +162,25 @@ Size UIPopup::measureOverride(const Size& constraint)
 	//return Size();
 	//return UIElement::measureOverride(constraint);
 
-	return detail::LayoutHelper2::measureOverride_SimpleOneChild<UIPopup, UIElement>(this, constraint, m_content);
+	return detail::LayoutHelper2::measureOverride_SimpleOneChild<UIPopup, UIAdorner>(this, constraint, m_content);
 }
 
 //------------------------------------------------------------------------------
 Size UIPopup::arrangeOverride(const Size& finalSize)
 {
 	//return UIElement::arrangeOverride(finalSize);
-	return detail::LayoutHelper2::arrangeOverride_SimpleOneChild<UIPopup, UIElement>(this, finalSize, m_content);
+	return detail::LayoutHelper2::arrangeOverride_SimpleOneChild<UIPopup, UIAdorner>(this, finalSize, m_content);
 }
 
 void UIPopup::onGotFocus(UIEventArgs* e)
 {
-	UIElement::onGotFocus(e);
+	UIAdorner::onGotFocus(e);
 }
 
 void UIPopup::onLostFocus(UIEventArgs* e)
 {
 	close();
-	UIElement::onLostFocus(e);
+	UIAdorner::onLostFocus(e);
 }
 
 //------------------------------------------------------------------------------

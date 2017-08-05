@@ -3,6 +3,7 @@
 #include <Lumino/UI/UILayoutPanel.h>
 #include "UIManager.h"
 #include "LayoutImpl.h"
+#include "LayoutHelper.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -193,181 +194,16 @@ void UIAbsoluteLayout::initialize()
 //------------------------------------------------------------------------------
 Size UIAbsoluteLayout::measureOverride(const Size& constraint)
 {
-	//return UILayoutPanel::measureOverride(constraint);
-	
 	// LayoutPanel ではなく、UIElement の measureOverride を実施 (this のサイズを測る)
-	Size size = UIElement::measureOverride(constraint);
-
-	Size childMaxSize(0, 0);
-	for (UIElement* child : *getChildren())
-	{
-		child->measureLayout(constraint);
-		const Size& desiredSize = child->getDesiredSize();
-		const Point& pos = child->getPositionInternal();
-
-		childMaxSize.width  = std::max(childMaxSize.width,  pos.x + desiredSize.width);
-		childMaxSize.height = std::max(childMaxSize.height, pos.y + desiredSize.height);
-	}
-
-	return Size::min(constraint, Size::max(size, childMaxSize));
-
-	//if (Math::IsNaN(size.width)) size.width = 
-
-	//Size desiredSize = baseCallback(static_cast<TPanel*>(panel), constraint);
-	//int childCount = panel->getLayoutChildrenCount();
-	//for (int i = 0; i < childCount; i++)
-	//{
-	//	ILayoutElement* child = panel->getLayoutChild(i);
-	//	Point pos = child->getPositionInternal();
-
-	//	child->measureLayout(constraint);
-	//	const Size& childDesiredSize = child->getLayoutDesiredSize();
-
-	//	desiredSize.width = std::max(desiredSize.width, childDesiredSize.width);
-	//	desiredSize.height = std::max(desiredSize.height, childDesiredSize.height);
-	//}
-	//return desiredSize;
-
-
-	//Size size = UILayoutPanel::measureOverride(constraint);
-	//
-	//for (UIElement* child : *getChildren())
-	//{
-
-	//}
-
-	//return size;
+	return detail::LayoutHelper2::measureOverride_AbsoluteLayout<UIAbsoluteLayout, UIElement, UIElementCollection>(
+		this, constraint, *getChildren());
 }
 
 //------------------------------------------------------------------------------
 Size UIAbsoluteLayout::arrangeOverride(const Size& finalSize)
 {
-	//Thickness canvas;
-	const Thickness& padding = getPadding();
-	Point childrenOffset(padding.left, padding.top);
-	Size childrenBoundSize(finalSize.width - padding.getWidth(), finalSize.height - padding.getHeight());
-
-	
-	for (UIElement* child : *getChildren())
-	{
-		//if (child->getInvalidateFlags().TestFlag(detail::InvalidateFlags::ParentChangedUpdating))
-		//{
-		//}
-		
-		const Size& desiredSize = child->getDesiredSize();
-		//Size layoutSize = child->getSizeInternal();
-		Size size = desiredSize;
-		//size.width = Math::IsNaN(layoutSize.width) ? desiredSize.width : layoutSize.width;
-		//size.height = Math::IsNaN(layoutSize.height) ? desiredSize.height : layoutSize.height;
-
-		Rect childRect(child->getPositionInternal(), size/*child->getSizeInternal()*/);
-		AlignmentAnchor anchor = child->getAnchorInternal();
-		
-		if (anchor != AlignmentAnchor::None)
-		{
-			const Thickness& margin = getMargineInternal();
-			//float l = childRect.getLeft(), t = childRect.GetTop(), r = childRect.getRight(), b = childRect.getBottom();
-
-			//if (anchor.TestFlag(AlignmentAnchor::LeftOffsets))
-			//	l = margin.Left;
-			//else if (anchor.TestFlag(AlignmentAnchor::LeftRatios))
-			//	l = finalSize.width * margin.Left;
-
-			//if (anchor.TestFlag(AlignmentAnchor::TopOffsets))
-			//	t = margin.Top;
-			//else if (anchor.TestFlag(AlignmentAnchor::TopRatios))
-			//	t = finalSize.height * margin.Top;
-
-			//if (anchor.TestFlag(AlignmentAnchor::RightOffsets))
-			//	r = finalSize.width - margin.Right;
-			//else if (anchor.TestFlag(AlignmentAnchor::RightRatios))
-			//	r = finalSize.width - (finalSize.width * margin.Right);
-
-			//if (anchor.TestFlag(AlignmentAnchor::BottomOffsets))
-			//	b = finalSize.height - margin.Bottom;
-			//else if (anchor.TestFlag(AlignmentAnchor::BottomRatios))
-			//	b = finalSize.height - (finalSize.height * margin.Bottom);
-
-			//if (anchor.TestFlag(AlignmentAnchor::HCenter))
-			//	childRect.x = (finalSize.width - childRect.width) / 2;
-
-			//if (anchor.TestFlag(AlignmentAnchor::VCenter))
-			//	childRect.y = (finalSize.height - childRect.height) / 2;
-
-			//childRect.Set(l, t, r - l, b - t);
-
-			//child->arrangeLayout(childRect);
-#if 1
-			float l = NAN, t = NAN, r = NAN, b = NAN;
-			if (anchor.TestFlag(AlignmentAnchor::LeftOffsets))
-				l = margin.left;
-			else if (anchor.TestFlag(AlignmentAnchor::LeftRatios))
-				l = childrenBoundSize.width * margin.left;
-			
-			if (anchor.TestFlag(AlignmentAnchor::TopOffsets))
-				t = margin.top;
-			else if (anchor.TestFlag(AlignmentAnchor::TopRatios))
-				t = childrenBoundSize.height * margin.top;
-			
-			if (anchor.TestFlag(AlignmentAnchor::RightOffsets))
-				r = childrenBoundSize.width - margin.right;
-			else if (anchor.TestFlag(AlignmentAnchor::RightRatios))
-				r = childrenBoundSize.width - (childrenBoundSize.width * margin.right);
-			
-			if (anchor.TestFlag(AlignmentAnchor::BottomOffsets))
-				b = childrenBoundSize.height - margin.bottom;
-			else if (anchor.TestFlag(AlignmentAnchor::BottomRatios))
-				b = childrenBoundSize.height - (childrenBoundSize.height * margin.bottom);
-
-			if (anchor.TestFlag(AlignmentAnchor::HCenter))
-				childRect.x = (childrenBoundSize.width - childRect.width) / 2;
-
-			if (anchor.TestFlag(AlignmentAnchor::VCenter))
-				childRect.y = (childrenBoundSize.height - childRect.height) / 2;
-
-			if (!Math::isNaN(l) || !Math::isNaN(r))
-			{
-				if (!Math::isNaN(l) && Math::isNaN(r))
-				{
-					childRect.x = l;
-				}
-				else if (Math::isNaN(l) && !Math::isNaN(r))
-				{
-					childRect.x = r - childRect.width;
-				}
-				else
-				{
-					childRect.x = l;
-					childRect.width = r - l;
-				}
-			}
-
-			if (!Math::isNaN(t) || !Math::isNaN(b))
-			{
-				if (!Math::isNaN(t) && Math::isNaN(b))
-				{
-					childRect.y = t;
-				}
-				else if (Math::isNaN(t) && !Math::isNaN(b))
-				{
-					childRect.y = b - childRect.height;
-				}
-				else
-				{
-					childRect.y = t;
-					childRect.height = b - t;
-				}
-			}
-
-			childRect.x += childrenOffset.x;
-			childRect.y += childrenOffset.y;
-#endif
-		}
-
-		child->arrangeLayout(childRect);
-	}
-
-	return finalSize;
+	return detail::LayoutHelper2::arrangeOverride_AbsoluteLayout<UIAbsoluteLayout, UIElement, UIElementCollection>(
+		this, finalSize, *getChildren());
 }
 
 

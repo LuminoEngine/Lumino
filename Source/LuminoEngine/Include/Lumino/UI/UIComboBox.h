@@ -10,11 +10,52 @@ class UIComboBox;
 using UIComboBoxItemPtr = Ref<UIComboBoxItem>;
 using UIComboBoxPtr = Ref<UIComboBox>;
 
+
+/**
+	@brief
+*/
+class UIAdorner
+	: public UIElement
+{
+	LN_OBJECT;
+public:
+
+LN_CONSTRUCT_ACCESS:
+	UIAdorner();
+	virtual ~UIAdorner();
+	void initialize();
+};
+
+/**
+	@brief
+*/
+class UIAdornerLayer
+	: public UIElement
+{
+	LN_OBJECT;
+public:
+	void add(UIAdorner* adorner);
+	void remove(UIAdorner* adorner);
+
+protected:
+	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
+
+LN_CONSTRUCT_ACCESS:
+	UIAdornerLayer();
+	virtual ~UIAdornerLayer();
+	void initialize();
+
+private:
+	List<Ref<UIAdorner>>	m_adorners;
+};
+
 /**
 	@brief
 */
 class UIPopup
-	: public UIElement
+	//: public UIElement
+	: public UIAdorner
 {
 	LN_OBJECT;
 public:

@@ -24,6 +24,8 @@ enum UICoreFlags
 	UICoreFlags_RenderVisible	= 0x0002,
 	UICoreFlags_LogicalChildrenPresenterAutoManagement = 0x0004,
 	UICoreFlags_PopupMenuRoot	= 0x0008,
+	UICoreFlags_AdornerLayer	= 0x0010,
+
 };
 
 } // namespace detail

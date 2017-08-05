@@ -7,6 +7,7 @@ LN_NAMESPACE_BEGIN
 class DrawingContext;
 class PlatformWindow;
 class UIPopup;
+class UIAdornerLayer;
 
 namespace detail {
 
@@ -46,6 +47,11 @@ public:
 	virtual void updateLayout(const Size& viewSize) override;
 	virtual detail::SpcialUIElementType getSpcialUIElementType() const;
 
+
+protected:
+	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
+
 LN_INTERNAL_ACCESS:
 	void render(DrawingContext* g);
 	
@@ -54,6 +60,7 @@ LN_INTERNAL_ACCESS:
 	//void captureMouse(UIElement* element);
 	//void releaseMouseCapture(UIElement* element);
 
+	const Ref<UIAdornerLayer>& getAdornerLayer() const { return m_adornerLayer; }
 
 	// Popup
 	void openPopup(UIPopup* popup);
@@ -67,6 +74,8 @@ LN_INTERNAL_ACCESS:
 	bool injectKeyDown(Keys keyCode, ModifierKeys modifierKeys);
 	bool injectKeyUp(Keys keyCode, ModifierKeys modifierKeys);
 	bool injectTextInput(TCHAR ch);
+
+	const Point& getMousePosition() const { return m_mousePosition; }
 
 LN_CONSTRUCT_ACCESS:
 	UILayoutView();
@@ -85,6 +94,7 @@ private:
 
 
 	PlatformWindow*		m_ownerNativeWindow;
+	Ref<UIAdornerLayer>	m_adornerLayer;
 
 	UIContext*			m_ownerContext;
 	UIElement*			m_mouseHoverElement;

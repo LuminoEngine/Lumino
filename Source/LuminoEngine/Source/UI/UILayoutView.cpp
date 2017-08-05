@@ -70,6 +70,8 @@ void UILayoutView::initialize(UIContext* ownerContext, PlatformWindow* ownerNati
 
 	m_ownerContext = ownerContext;
 	m_ownerNativeWindow = ownerNativeWindow;
+	m_adornerLayer = newObject<UIAdornerLayer>();
+	addVisualChild(m_adornerLayer);
 }
 
 //------------------------------------------------------------------------------
@@ -102,6 +104,20 @@ void UILayoutView::render(DrawingContext* g)
 	{
 		popup->GetPopup()->render(g);
 	}
+
+	m_adornerLayer->render(g);
+}
+
+Size UILayoutView::measureOverride(const Size& constraint)
+{
+	m_adornerLayer->measureLayout(constraint);
+	return UIControl::measureOverride(constraint);
+}
+
+Size UILayoutView::arrangeOverride(const Size& finalSize)
+{
+	m_adornerLayer->arrangeLayout(Rect(0, 0, finalSize));
+	return UIControl::arrangeOverride(finalSize);
 }
 
 //------------------------------------------------------------------------------
@@ -116,6 +132,13 @@ bool UILayoutView::updateMouseHover(const Point& mousePos)
 	//	{
 	//		goto EXIT;
 	//	}
+	//}
+
+
+	// m_adornerLayer を調べる
+	//m_mouseHoverElement = m_adornerLayer->checkMouseHoverElement(mousePos);
+	//if (m_mouseHoverElement != nullptr) {
+	//	goto EXIT;
 	//}
 
 	// Popup を調べる
@@ -163,20 +186,22 @@ EXIT:
 //------------------------------------------------------------------------------
 void UILayoutView::openPopup(UIPopup* popup)
 {
-	auto container = newObject<detail::UIPopuoContainer>();
-	container->SetPopup(popup);
-	m_popupContainers.add(container);
+	m_adornerLayer->add(popup);
+	//auto container = newObject<detail::UIPopuoContainer>();
+	//container->SetPopup(popup);
+	//m_popupContainers.add(container);
 
-	// inplace popup は Visual child としておく。
-	// マウスハンドリングやフォーカスの処理をこの View 内で行うため。
-	addVisualChild(popup);
+	//// inplace popup は Visual child としておく。
+	//// マウスハンドリングやフォーカスの処理をこの View 内で行うため。
+	//addVisualChild(popup);
 }
 
 //------------------------------------------------------------------------------
 void UILayoutView::closePopup(UIPopup* popup)
 {
-	removeVisualChild(popup);
-	m_popupContainers.removeIf([popup](const Ref<detail::UIPopuoContainer>& ptr) { return ptr->GetPopup() == popup; });
+	m_adornerLayer->remove(popup);
+	//removeVisualChild(popup);
+	//m_popupContainers.removeIf([popup](const Ref<detail::UIPopuoContainer>& ptr) { return ptr->GetPopup() == popup; });
 }
 
 ////------------------------------------------------------------------------------

@@ -385,6 +385,7 @@ void UIControl::onMouseUp(UIMouseEventArgs* e)
 		if (m_contextMenu != nullptr)
 		{
 			m_contextMenu->open(this);
+			e->handled = true;
 		}
 	}
 }
