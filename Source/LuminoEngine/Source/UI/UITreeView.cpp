@@ -1,4 +1,4 @@
-
+ï»¿
 #include "Internal.h"
 #include <Lumino/UI/UIButton.h>
 #include <Lumino/UI/UITextBlock.h>
@@ -114,28 +114,26 @@ Size UITreeViewItem::measureOverride(const Size& constraint)
 	//	printf("%d\n", parent->isExpanded());
 	//}
 
-	//Size desiredSize(0, 0);	// TODO: Branch ‚Ì—]”’‚ÍŒã‚Ål‚¦‚é http://doc.qt.io/qt-4.8/stylesheet-examples.html#customizing-qtreeview
-
-	// Expander ƒ{ƒ^ƒ“‚Ì—Ìˆæ‚ðŒv‘ª‚·‚é
-	m_expander->measureLayout(constraint);
-	Size expanderSize = m_expander->getDesiredSize();
+	//Size desiredSize(0, 0);	// TODO: Branch ã®ä½™ç™½ã¯å¾Œã§è€ƒãˆã‚‹ http://doc.qt.io/qt-4.8/stylesheet-examples.html#customizing-qtreeview
 
 	Size desiredSize = UIHeaderedItemsControl::measureOverride(constraint);
 
+	// ãƒ™ãƒ¼ã‚¹ã®é ˜åŸŸã«å¯¾ã—ã¦ã€ExpanderButton ã®é ˜åŸŸã‚’è¿½åŠ ã™ã‚‹
+	m_expander->measureLayout(constraint);
+	Size expanderSize = m_expander->getDesiredSize();
 	desiredSize.width += expanderSize.width;
-
 	return desiredSize;
 
-	//// ƒwƒbƒ_‚Ì—Ìˆæ‚ðŒv‘ª‚·‚é
+	//// ãƒ˜ãƒƒãƒ€ã®é ˜åŸŸã‚’è¨ˆæ¸¬ã™ã‚‹
 	//m_header->measureLayout(constraint);
 	//Size headerSize = m_header->getDesiredSize();
 
-	//// ŽqƒAƒCƒeƒ€‚Ì—Ìˆæ‚ðŒv‘ª‚·‚é
+	//// å­ã‚¢ã‚¤ãƒ†ãƒ ã®é ˜åŸŸã‚’è¨ˆæ¸¬ã™ã‚‹
 	//UILayoutPanel* itemsPanel = getLayoutPanel();
 	//itemsPanel->measureLayout(constraint);
 	//Size panelSize = itemsPanel->getDesiredSize();
 
-	//// ‰º•ûŒü‚ÉŒ‹‡‚·‚é
+	//// ä¸‹æ–¹å‘ã«çµåˆã™ã‚‹
 	//desiredSize.height += headerSize.height;
 	//desiredSize.height += panelSize.height;
 	//desiredSize.width = expanderSize.width + std::max(headerSize.width, panelSize.width);
@@ -148,6 +146,8 @@ Size UITreeViewItem::measureOverride(const Size& constraint)
 //------------------------------------------------------------------------------
 Size UITreeViewItem::arrangeOverride(const Size& finalSize)
 {
+	auto& padding = getPadding();
+
 	// Expander
 	Size expanderSize = m_expander->getDesiredSize();
 
@@ -158,10 +158,20 @@ Size UITreeViewItem::arrangeOverride(const Size& finalSize)
 	{
 		Size headerSize = header->getDesiredSize();
 		headerRect.height = headerSize.height;
-		header->arrangeLayout(headerRect);
+		//headerRect = headerRect.makeDeflate(getPadding());	// padding ã¯ Header ã¸ã®ã¿å½±éŸ¿ã•ã›ã‚‹
+		//header->arrangeLayout(headerRect);
+		Rect arrangeRect(headerRect.x + padding.left, headerRect.y + padding.top, headerRect.getSize());
+		header->arrangeLayout(arrangeRect);
+		//headerRect = Rect(headerRect.x + padding.left, headerRect.y + padding.top, headerRect.getSize());
+		//header->arrangeLayout(headerRect);
+
+		headerRect.height += padding.getHeight();
 	}
 
-	setRenderFrameThickness(Thickness(expanderSize.width, 0, 0, finalSize.height - headerRect.height));
+	Thickness renderFrame(expanderSize.width, 0, 0, finalSize.height - headerRect.height);
+	//renderFrame.right -= padding.getWidth() - renderFrame.left;
+	//renderFrame.bottom -= padding.getHeight();
+	setRenderFrameThickness(renderFrame);
 
 	// Items
 	Rect itemsRect(headerRect.x, headerRect.height, headerRect.width, finalSize.height - headerRect.height);

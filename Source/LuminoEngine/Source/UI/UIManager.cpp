@@ -502,7 +502,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 		// base
 		{
 			auto* props = style->getPropertyTable();
-			props->padding = Thickness(10);
+			props->padding = Thickness(3);
 		}
 		// UITreeViewItem.MouseOver
 		{
@@ -533,12 +533,26 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 	}
 
 	//------------------------------------------------------------------------------
+	// UIContextMenu
+	{
+		auto* style = table->getStyle(_T("UIContextMenu"));
+		// base
+		{
+			auto* props = style->getPropertyTable();
+			props->background = Brush::White;
+			props->borderThickness = 1;
+			props->padding = Thickness(3);
+		}
+	}
+
+	//------------------------------------------------------------------------------
 	// UIMenuItem
 	{
 		auto* style = table->getStyle(_T("UIMenuItem"));
 		// base
 		{
 			auto* props = style->getPropertyTable();
+			props->padding = Thickness(3);
 		}
 		// UITreeViewItem.MouseOver
 		{

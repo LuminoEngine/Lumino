@@ -301,6 +301,7 @@ public:
 	detail::InvalidateFlags inheritParentElementStyle(UIStylePropertyTableInstance* parent);
 	detail::InvalidateFlags merge(const UIStylePropertyTable* source/*, UIStyleAttributeInheritSourceType sourceType*/);
 	void apply(UIElement* targetElement, bool useTransitionAnimation);
+	void copyFrom(UIStylePropertyTableInstance* style);
 
 public:
 	UIStyleAttribute<float>				width;

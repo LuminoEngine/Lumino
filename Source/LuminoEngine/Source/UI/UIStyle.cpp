@@ -342,6 +342,27 @@ void UIStylePropertyTableInstance::apply(UIElement* targetElement, bool useTrans
 	//}
 }
 
+void UIStylePropertyTableInstance::copyFrom(UIStylePropertyTableInstance* style)
+{
+	width = style->width;
+	height = style->height;
+	margin = style->margin;
+	padding = style->padding;
+
+	background = style->background;
+
+
+	borderThickness = style->borderThickness;
+	cornerRadius = style->cornerRadius;
+	leftBorderColor = style->leftBorderColor;
+	topBorderColor = style->topBorderColor;
+	rightBorderColor = style->rightBorderColor;
+	bottomBorderColor = style->bottomBorderColor;
+	borderDirection = style->borderDirection;
+
+	m_availableRenderElements = style->m_availableRenderElements;
+}
+
 //------------------------------------------------------------------------------
 //void UIStylePropertyTable::ApplyInternal(UIElement* targetElement, const UIStyleAttribute& setter, bool useTransitionAnimation)
 //{

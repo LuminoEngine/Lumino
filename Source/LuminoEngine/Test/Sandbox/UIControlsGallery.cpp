@@ -32,7 +32,7 @@ void UIControlsGallery()
 
 
 	auto tree1 = UITreeView::create();
-	tree1->setWidth(100);
+	tree1->setWidth(130);
 	//tree1->setBackground(UIColors::getBrush(UIColorIndex::Blue, 9));
 	auto item1 = tree1->addTextItem(_T("item1"));
 	auto item2 = tree1->addTextItem(_T("item2"));
@@ -42,8 +42,8 @@ void UIControlsGallery()
 
 
 	auto menu = newObject<UIContextMenu>();
-	menu->addMenuItem(_T("item1"), []() { printf("item1\n"); });
-	menu->addMenuItem(_T("item2"), []() { printf("item2\n"); });
+	menu->addMenuItem(_T("追加"), [&item1]() { printf("item1\n"); item1->addTextItem(_T("item a1")); });
+	menu->addMenuItem(_T("削除"), [&item1]() { printf("item2\n"); });
 	item1->setContextMenu(menu);
 #if 0
 	uiRoot->addChild(tree1);
@@ -71,11 +71,17 @@ void UIControlsGallery()
 	grid1->addChild(flow1, 0, 2);
 
 	{
-		auto text1 = UITextField::create();
-		text1->setBackground(Brush::Red);
-		auto button1 = UIButton::create();
+		//auto text1 = UITextField::create();
+		////text1->setBackground(Brush::Red);
+		//text1->setText(_T("いんすぺくた"));
+		//auto button1 = UIButton::create();
+		//flow1->add(text1);
+		////flow1->add(button1);
+
+		auto text1 = UITextBlock::create();
+		text1->setText(_T("いんすぺくた"));
 		flow1->add(text1);
-		//flow1->add(button1);
+		flow1->setBackground(Brush::White);
 	}
 
 	//auto popup = newObject<UIPopup>();

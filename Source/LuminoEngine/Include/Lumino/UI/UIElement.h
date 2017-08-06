@@ -416,6 +416,7 @@ LN_INTERNAL_ACCESS:
 	void callOnLostFocus();
 	const Rect& getFinalGlobalRect() const { return m_finalGlobalRect; }
 	UIElement* getVisualParent() const { return m_visualParent; }
+	const Ref<detail::UIStylePropertyTableInstance>& getLocalStyle() const { return m_localStyle; }
 
 	void setSpecialElementType(UISpecialElementType type) { m_specialElementType = type; }
 	UISpecialElementType getSpecialElementType2() const { return m_specialElementType; }

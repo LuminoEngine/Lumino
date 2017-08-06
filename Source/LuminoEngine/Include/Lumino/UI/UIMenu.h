@@ -58,6 +58,9 @@ class UIContextMenu
 	LN_OBJECT;
 public:
 
+protected:
+	virtual void onUpdateStyle(detail::UIStylePropertyTableInstance* localStyle, detail::InvalidateFlags invalidateFlags) override;
+
 LN_CONSTRUCT_ACCESS:
 	UIContextMenu();
 	virtual ~UIContextMenu();
