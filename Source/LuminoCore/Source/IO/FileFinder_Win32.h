@@ -36,6 +36,7 @@ public:
 	GenericFileFinderImpl(const GenericStringRef<char>& dirPath)
 		: GenericFileFinderImplBase<char>(dirPath)
 		, m_fh(INVALID_HANDLE_VALUE)
+		, m_first(true)
 	{
 		char pattern[LN_MAX_PATH];
 		makePattern(dirPath, pattern);
@@ -56,11 +57,11 @@ public:
 		}
 		else
 		{
-			setCurrentFileName(m_fd.cFileName);
-			if (strcmp(m_fd.cFileName, ".") == 0 || strcmp(m_fd.cFileName, "..") == 0)
-			{
-				next();
-			}
+			//setCurrentFileName(m_fd.cFileName);
+			//if (strcmp(m_fd.cFileName, ".") == 0 || strcmp(m_fd.cFileName, "..") == 0)
+			//{
+			//	next();
+			//}
 		}
 	}
 
@@ -74,6 +75,16 @@ public:
 
 	virtual bool next() override
 	{
+		if (m_first)
+		{
+			m_first = false;
+			setCurrentFileName(m_fd.cFileName);
+			if (strcmp(m_fd.cFileName, ".") != 0 && strcmp(m_fd.cFileName, "..") != 0)
+			{
+				return !getCurrent().isEmpty();
+			}
+		}
+
 		do
 		{
 			if (::FindNextFileA(m_fh, &m_fd) != 0)
@@ -93,6 +104,7 @@ public:
 private:
 	HANDLE				m_fh;
 	WIN32_FIND_DATAA	m_fd;
+	bool				m_first;
 };
 
 //------------------------------------------------------------------------------

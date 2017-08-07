@@ -355,6 +355,7 @@ if (WIN32)
 
 	# link librarys.
 	list(APPEND LN_LINK_LIBS "imagehlp.lib")
+	list(APPEND LN_LINK_LIBS "Shlwapi.lib")
 
 elseif (APPLE)
 	set(LN_UNIT_TEST_LINK_LIBS "pthread")

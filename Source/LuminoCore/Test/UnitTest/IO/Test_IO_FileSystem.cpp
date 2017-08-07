@@ -1,5 +1,7 @@
 ﻿#include <TestConfig.h>
 #include <Lumino/IO/FileSystem.h>
+#include <Lumino/Base/Enumerable.h>
+
 
 class Test_IO_FileSystem : public ::testing::Test
 {
@@ -175,3 +177,87 @@ TEST_F(Test_IO_FileSystem, writeAllText)
 	FileSystem::writeAllText(TEMPFILE("Test_IO_FileSystem/WriteAllText1"), text);
 	ASSERT_EQ(true, TestHelper::equalFiles(TEMPFILE("Test_IO_FileSystem/WriteAllText1"), LN_LOCALFILE("TestData/WriteAllText1.txt")));
 }
+
+
+
+
+//
+//namespace ln {
+//namespace detail {
+//
+//
+//} // namespace detail
+//}
+
+
+//------------------------------------------------------------------------------
+TEST_F(Test_IO_FileSystem, getFiles)
+{
+	// <Test> ファイル列挙
+	{
+		auto files = FileSystem::getFiles(LN_LOCALFILE("TestData/Files2"));
+		List<PathName> list;
+		for (auto& path : files) list.add(path);
+		ASSERT_EQ(3, list.getCount());
+		ASSERT_EQ(true, list.contains([](const PathName& path) { return path.getFileName() == _T("f1.a"); }));
+		ASSERT_EQ(true, list.contains([](const PathName& path) { return path.getFileName() == _T("f2.b"); }));
+		ASSERT_EQ(true, list.contains([](const PathName& path) { return path.getFileName() == _T("f3.a"); }));
+	}
+	// <Test> ファイル列挙(パターン指定)
+	{
+		auto files = FileSystem::getFiles(LN_LOCALFILE("TestData/Files2"), _T("*.a"));
+		List<PathName> list;
+		for (auto& path : files) list.add(path);
+		ASSERT_EQ(2, list.getCount());
+		ASSERT_EQ(true, list.contains([](const PathName& path) { return path.getFileName() == _T("f1.a"); }));
+		ASSERT_EQ(true, list.contains([](const PathName& path) { return path.getFileName() == _T("f3.a"); }));
+	}
+	// <Test> ファイル列挙(パターン指定)
+	{
+		auto files = FileSystem::getFiles(LN_LOCALFILE("TestData/Files2"), _T("*.b"));
+		List<PathName> list;
+		for (auto& path : files) list.add(path);
+		ASSERT_EQ(1, list.getCount());
+		ASSERT_EQ(true, list.contains([](const PathName& path) { return path.getFileName() == _T("f2.b"); }));
+	}
+	// <Test> ファイル列挙(パターン指定)
+	{
+		auto files = FileSystem::getFiles(LN_LOCALFILE("TestData/Files2"), _T("*.c"));
+		List<PathName> list;
+		for (auto& path : files) list.add(path);
+		ASSERT_EQ(0, list.getCount());
+	}
+	// <Test> 空フォルダの確認
+	{
+		PathName dir = TEMPFILE("Test_IO_FileSystem/getFiles");
+		FileSystem::createDirectory(dir.c_str());
+		auto files = FileSystem::getFiles(dir);
+		List<PathName> list;
+		for (auto& path : files) list.add(path);
+		ASSERT_EQ(0, list.getCount());
+	}
+	// <Test> . lead
+	//{TODO:
+	//	auto files = FileSystem::getFiles(LN_LOCALFILE("TestData/Files2"), _T("*.test"));
+	//	List<PathName> list;
+	//	for (auto& path : files) list.add(path);
+	//	ASSERT_EQ(1, list.getCount());
+	//	ASSERT_EQ(true, list.contains([](const PathName& path) { return path.getFileName() == _T(".test"); }));
+	//}
+
+	//detail::DirectoryIterator itr(LN_LOCALFILE("TestData"), _T("*.dat"));
+	//detail::DirectoryIterator end;
+	//auto list = tr::MakeEnumerator::from(itr, end);
+	////for (; itr != end; ++itr)
+	////for (auto& path : list)
+	////for (auto i2 = list.begin(); i2 != list.end(); ++i2)
+	////{
+	////	auto& path = *i2;
+	////	printf("%s\n", itr->getFileName().c_str());
+	////}
+	//for (auto& path : list)
+	//{
+	//	printf("%s\n", path.getFileName().c_str());
+	//}
+}
+

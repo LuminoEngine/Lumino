@@ -509,6 +509,90 @@ CaseSensitivity FileSystem::getFileSystemCaseSensitivity()
 #endif
 }
 
+//bool FileSystem::matchFileName(const TCHAR* filePath, const TCHAR* pattern)
+//{
+//	// TODO: Unix は fnmatch
+//}
+
+
+
+
+
+
+
+
+
+
+
+class DirectoryIterator
+{
+public:
+	using value_type = PathName;
+
+	DirectoryIterator()
+		: m_finder(nullptr)
+		, m_path()
+	{}
+
+	DirectoryIterator(const StringRef dirPath, const StringRef pattern = nullptr)
+		: m_finder(Ref<GenericFileFinder<TCHAR>>::makeRef(dirPath, pattern))
+		, m_path()
+	{
+		m_path = m_finder->getCurrent();
+	}
+
+	DirectoryIterator(const DirectoryIterator& other)
+		: m_finder(other.m_finder)
+		, m_path(other.m_path)
+	{
+	}
+
+	DirectoryIterator& operator = (const DirectoryIterator& other)
+	{
+		m_finder = other.m_finder;
+		m_path = other.m_path;
+	}
+
+	DirectoryIterator& operator ++ ()   // prefix
+	{
+		if (m_finder != nullptr)
+		{
+			m_finder->next();
+			m_path = m_finder->getCurrent();
+		}
+		return *this;
+	}
+
+	DirectoryIterator operator ++ (int) // postfix
+	{
+		if (m_finder != nullptr)
+		{
+			m_finder->next();
+			m_path = m_finder->getCurrent();
+		}
+		return *this;
+	}
+
+	const PathName& operator * () const { return m_path; }
+	PathName& operator * () { return m_path; }
+	const PathName* operator -> () const { return &m_path; }
+	PathName* operator -> () { return &m_path; }
+
+	bool operator == (const DirectoryIterator& othre) const { return m_path == othre.m_path; }
+	bool operator != (const DirectoryIterator& othre) const { return m_path != othre.m_path; }
+
+private:
+	Ref<GenericFileFinder<TCHAR>>	m_finder;
+	PathName						m_path;
+};
+
+tr::Enumerator<PathName> FileSystem::getFiles(const StringRef& dirPath, const StringRef& pattern)
+{
+	DirectoryIterator itr(dirPath, pattern.IsNullOrEmpty() ? nullptr : pattern.getBegin());
+	DirectoryIterator end;
+	return tr::MakeEnumerator::from(itr, end);
+}
+
 //------------------------------------------------------------------------------
 template<typename TChar>
 void FileSystem::createDirectoryInternal(const TChar* path)

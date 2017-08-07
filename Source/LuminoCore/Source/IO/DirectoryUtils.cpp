@@ -3,6 +3,7 @@
 #include <Lumino/IO/PathName.h>
 #include <Lumino/IO/DirectoryUtils.h>
 #include <Lumino/IO/PathTraits.h>
+#include <Lumino/IO/FileSystem.h>
 #if defined(LN_OS_WIN32)
 #include "FileFinder_Win32.h"
 #else
@@ -117,9 +118,11 @@ List<String> DirectoryUtils::getFiles(const TCHAR* drPath, const TCHAR* pattern)
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-GenericFileFinder<TChar>::GenericFileFinder(const GenericStringRef<TChar>& dirPath)
+GenericFileFinder<TChar>::GenericFileFinder(const GenericStringRef<TChar>& dirPath, const GenericStringRef<TChar>& pattern)
 	: m_impl(LN_NEW detail::GenericFileFinderImpl<TChar>(dirPath))
+	, m_pattern(pattern)
 {
+	next();
 }
 
 //------------------------------------------------------------------------------
@@ -147,7 +150,21 @@ const GenericPathName<TChar>& GenericFileFinder<TChar>::getCurrent() const
 template<typename TChar>
 bool GenericFileFinder<TChar>::next()
 {
-	return m_impl->next();
+	if (m_pattern.isEmpty())
+	{
+		return m_impl->next();
+	}
+	else
+	{
+		bool result = false;
+		do
+		{
+			result = m_impl->next();
+
+		} while (result && !FileSystem::matchPath(m_impl->getCurrent().c_str(), m_pattern.c_str()));
+
+		return result;
+	}
 }
 
 // テンプレートのインスタンス化

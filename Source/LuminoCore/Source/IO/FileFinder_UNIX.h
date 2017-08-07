@@ -63,7 +63,7 @@ public:
 		m_dir = opendir(dirPath);
 		LN_THROW(m_dir != NULL, IOException, dirPath);
 
-		next();
+		//next();
 	}
 
 	virtual bool next() override

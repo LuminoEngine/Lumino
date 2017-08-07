@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "../Base/List.h"
 #include "../Base/StringRef.h"
+#include "../Base/RefObject.h"
 #include "PathName.h"
 
 #if defined(LN_OS_FAMILY_UNIX)
@@ -11,7 +12,7 @@ LN_NAMESPACE_BEGIN
 namespace detail { template<typename TChar> class GenericFileFinderImplBase; }
 
 /**
-	@brief	
+	@brief	Obsolete
 */
 class DirectoryUtils
 {
@@ -44,9 +45,10 @@ public:
 */
 template<typename TChar>
 class GenericFileFinder
+	: public RefObject
 {
 public:
-	GenericFileFinder(const GenericStringRef<TChar>& dirPath);
+	GenericFileFinder(const GenericStringRef<TChar>& dirPath, const GenericStringRef<TChar>& pattern = GenericStringRef<TChar>());
 	~GenericFileFinder();
 	bool isWorking() const;
 	const GenericPathName<TChar>& getCurrent() const;
@@ -54,6 +56,7 @@ public:
 
 private:
 	detail::GenericFileFinderImplBase<TChar>*	m_impl;
+	GenericString<TChar>	m_pattern;
 };
 
 

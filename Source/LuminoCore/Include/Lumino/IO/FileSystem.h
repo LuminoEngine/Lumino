@@ -6,6 +6,7 @@
 #include "../Base/RefObject.h"
 #include "../Base/String.h"
 #include "../Base/EnumExtension.h"
+#include "../Base/Enumerable.h"
 #include "DirectoryUtils.h"
 
 LN_NAMESPACE_BEGIN
@@ -187,6 +188,12 @@ public:
 	*/
 	static CaseSensitivity getFileSystemCaseSensitivity();
 
+	/** パスのファイル名と1つ以上のファイル名パターンを照合します。 */
+	static bool matchPath(const char* filePath, const char* pattern);
+	static bool matchPath(const wchar_t* filePath, const wchar_t* pattern);
+
+	static tr::Enumerator<PathName> getFiles(const StringRef& dirPath, const StringRef& pattern = StringRef());
+
 private:
 	static bool mkdir(const char* path);
 	static bool mkdir(const wchar_t* path);
@@ -194,7 +201,6 @@ private:
 	static bool getAttributeInternal(const wchar_t* path, FileAttribute* outAttr);
 	template<typename TChar> static void createDirectoryInternal(const TChar* path);
 };
-
 
 //------------------------------------------------------------------------------
 template<typename TChar, typename TCallback>
