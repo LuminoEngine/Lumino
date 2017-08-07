@@ -48,14 +48,16 @@ class GenericFileFinder
 	: public RefObject
 {
 public:
-	GenericFileFinder(const GenericStringRef<TChar>& dirPath, const GenericStringRef<TChar>& pattern = GenericStringRef<TChar>());
+	GenericFileFinder(const GenericStringRef<TChar>& dirPath, FileAttribute attr = FileAttribute::All, const GenericStringRef<TChar>& pattern = GenericStringRef<TChar>());
 	~GenericFileFinder();
 	bool isWorking() const;
 	const GenericPathName<TChar>& getCurrent() const;
 	bool next();
 
 private:
+	bool nextInternal();
 	detail::GenericFileFinderImplBase<TChar>*	m_impl;
+	FileAttribute			m_attr;
 	GenericString<TChar>	m_pattern;
 };
 

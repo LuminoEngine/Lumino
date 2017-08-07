@@ -534,8 +534,8 @@ public:
 		, m_path()
 	{}
 
-	DirectoryIterator(const StringRef dirPath, const StringRef pattern = nullptr)
-		: m_finder(Ref<GenericFileFinder<TCHAR>>::makeRef(dirPath, pattern))
+	DirectoryIterator(const StringRef dirPath, FileAttribute attr = FileAttribute::All, const StringRef pattern = nullptr)
+		: m_finder(Ref<GenericFileFinder<TCHAR>>::makeRef(dirPath, attr, pattern))
 		, m_path()
 	{
 		m_path = m_finder->getCurrent();
@@ -588,7 +588,7 @@ private:
 
 tr::Enumerator<PathName> FileSystem::getFiles(const StringRef& dirPath, const StringRef& pattern)
 {
-	DirectoryIterator itr(dirPath, pattern.IsNullOrEmpty() ? nullptr : pattern.getBegin());
+	DirectoryIterator itr(dirPath, FileAttribute::Normal, pattern.IsNullOrEmpty() ? nullptr : pattern.getBegin());
 	DirectoryIterator end;
 	return tr::MakeEnumerator::from(itr, end);
 }

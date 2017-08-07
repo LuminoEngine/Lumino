@@ -57,6 +57,7 @@ public:
 public:
 	UITreeViewItem* addTextItem(const String& text);
 	UITreeViewItem* addItem(UIElement* item);
+	void clearItems();
 
 LN_CONSTRUCT_ACCESS:
 	UITreeView();

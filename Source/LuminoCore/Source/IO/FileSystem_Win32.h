@@ -247,10 +247,11 @@ bool FileSystem::getAttributeInternal(const char* path, FileAttribute* outAttr)
 	DWORD attr = ::GetFileAttributesA(path);
 	if (attr == -1) { return false; }
 
-	FileAttribute flags = FileAttribute::Normal;
-	if (attr & FILE_ATTRIBUTE_DIRECTORY) flags |= FileAttribute::Directory;
-	if (attr & FILE_ATTRIBUTE_READONLY)  flags |= FileAttribute::ReadOnly;
-	if (attr & FILE_ATTRIBUTE_HIDDEN)    flags |= FileAttribute::Hidden;
+	FileAttribute flags = FileAttribute::None;
+	if (attr & FILE_ATTRIBUTE_DIRECTORY)	flags |= FileAttribute::Directory;
+	else									flags |= FileAttribute::Normal;
+	if (attr & FILE_ATTRIBUTE_READONLY)		flags |= FileAttribute::ReadOnly;
+	if (attr & FILE_ATTRIBUTE_HIDDEN)		flags |= FileAttribute::Hidden;
 	*outAttr = flags;
 	return true;
 }
@@ -259,10 +260,11 @@ bool FileSystem::getAttributeInternal(const wchar_t* path, FileAttribute* outAtt
 	DWORD attr = ::GetFileAttributesW(path);
 	if (attr == -1) { return false; }
 
-	FileAttribute flags = FileAttribute::Normal;
-	if (attr & FILE_ATTRIBUTE_DIRECTORY) flags |= FileAttribute::Directory;
-	if (attr & FILE_ATTRIBUTE_READONLY)  flags |= FileAttribute::ReadOnly;
-	if (attr & FILE_ATTRIBUTE_HIDDEN)    flags |= FileAttribute::Hidden;
+	FileAttribute flags = FileAttribute::None;
+	if (attr & FILE_ATTRIBUTE_DIRECTORY)	flags |= FileAttribute::Directory;
+	else									flags |= FileAttribute::Normal;
+	if (attr & FILE_ATTRIBUTE_READONLY)		flags |= FileAttribute::ReadOnly;
+	if (attr & FILE_ATTRIBUTE_HIDDEN)		flags |= FileAttribute::Hidden;
 	*outAttr = flags;
 	return true;
 }

@@ -269,4 +269,9 @@ UITreeViewItem* UITreeView::addItem(UIElement* item)
 	return treeItem;
 }
 
+void UITreeView::clearItems()
+{
+	clearChildren();
+}
+
 LN_NAMESPACE_END

@@ -45,7 +45,7 @@ TEST_F(Test_IO_FileSystem, getAttribute)
 	// <Test> ファイルの読み取り専用を確認する
 	{
 		attr = FileSystem::getAttribute(LN_LOCALFILE("TestData/readonly.txt"));
-		ASSERT_EQ(FileAttribute::ReadOnly, attr);
+		ASSERT_EQ(FileAttribute::Normal | FileAttribute::ReadOnly, attr);
 	}
 
 	// <Test> ファイルの読み取り専用を解除する
@@ -235,6 +235,14 @@ TEST_F(Test_IO_FileSystem, getFiles)
 		List<PathName> list;
 		for (auto& path : files) list.add(path);
 		ASSERT_EQ(0, list.getCount());
+	}
+	// <Test> ファイルだけ列挙されることの確認
+	{
+		auto files = FileSystem::getFiles(LN_LOCALFILE("TestData/Files3"));
+		List<PathName> list;
+		for (auto& path : files) list.add(path);
+		ASSERT_EQ(1, list.getCount());
+		ASSERT_EQ(true, list.contains([](const PathName& path) { return path.getFileName() == _T("f1.a"); }));
 	}
 	// <Test> . lead
 	//{TODO:

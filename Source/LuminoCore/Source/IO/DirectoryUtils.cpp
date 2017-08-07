@@ -118,8 +118,9 @@ List<String> DirectoryUtils::getFiles(const TCHAR* drPath, const TCHAR* pattern)
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-GenericFileFinder<TChar>::GenericFileFinder(const GenericStringRef<TChar>& dirPath, const GenericStringRef<TChar>& pattern)
+GenericFileFinder<TChar>::GenericFileFinder(const GenericStringRef<TChar>& dirPath, FileAttribute attr, const GenericStringRef<TChar>& pattern)
 	: m_impl(LN_NEW detail::GenericFileFinderImpl<TChar>(dirPath))
+	, m_attr(attr)
 	, m_pattern(pattern)
 {
 	next();
@@ -152,19 +153,40 @@ bool GenericFileFinder<TChar>::next()
 {
 	if (m_pattern.isEmpty())
 	{
-		return m_impl->next();
+		return nextInternal();
 	}
 	else
 	{
 		bool result = false;
 		do
 		{
-			result = m_impl->next();
+			result = nextInternal();
 
 		} while (result && !FileSystem::matchPath(m_impl->getCurrent().c_str(), m_pattern.c_str()));
 
 		return result;
 	}
+}
+
+template<typename TChar>
+bool GenericFileFinder<TChar>::nextInternal()
+{
+	bool result = false;
+	while (true)
+	{
+		result = m_impl->next();
+		if (!result) break;
+
+		uint32_t attr = FileSystem::getAttribute(m_impl->getCurrent().c_str()).getValue();
+		//uint32_t filter = (FileAttribute::enum_type)m_attr.getValue());
+		uint32_t filter = (uint32_t)m_attr.getValue();
+		if ((attr & filter) != 0)
+		{
+			break;
+		}
+	}
+
+	return result;
 }
 
 // テンプレートのインスタンス化
