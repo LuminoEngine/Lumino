@@ -457,7 +457,7 @@ set(LN_SOURCES_UI
 	Include/Lumino/UI/UIButton.h
 	Include/Lumino/UI/UIComboBox.h
 	Include/Lumino/UI/UICommands.h
-	Include/Lumino/UI/UIContentControl.h
+	Include/Lumino/UI/UIContentsControl.h
 	Include/Lumino/UI/UIContext.h
 	Include/Lumino/UI/UIControl.h
 	Include/Lumino/UI/UIElement.h
@@ -493,7 +493,7 @@ set(LN_SOURCES_UI
 	Source/UI/UIColorsDefine.inl
 	Source/UI/UIComboBox.cpp
 	Source/UI/UICommands.cpp
-	Source/UI/UIContentControl.cpp
+	Source/UI/UIContentsControl.cpp
 	Source/UI/UIContext.cpp
 	Source/UI/UIControl.cpp
 	Source/UI/UIElement.cpp

@@ -48,7 +48,7 @@ private:
 	@brief
 */
 class UITreeView
-	: public UIControl
+	: public UIContentsControl
 {
 	LN_OBJECT;
 public:

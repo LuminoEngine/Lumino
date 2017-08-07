@@ -10,7 +10,7 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 // UIListBoxItem
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIListBoxItem, UIControl)
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIListBoxItem, UIContentsControl)
 
 //------------------------------------------------------------------------------
 UIListBoxItem::UIListBoxItem()
@@ -25,7 +25,7 @@ UIListBoxItem::~UIListBoxItem()
 //------------------------------------------------------------------------------
 void UIListBoxItem::initialize()
 {
-	UIControl::initialize();
+	UIContentsControl::initialize();
 	setHContentAlignment(HAlignment::Left);
 	setHAlignment(HAlignment::Stretch);
 	goToVisualState(UIVisualStates::NormalState);
@@ -42,13 +42,13 @@ void UIListBoxItem::onMouseDown(UIMouseEventArgs* e)
 		submit();
 	}
 
-	UIControl::onMouseDown(e);
+	UIContentsControl::onMouseDown(e);
 }
 
 //==============================================================================
 // UIListBox
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIListBox, UIControl)
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIListBox, UIContentsControl)
 
 const String UIListBox::NormalState = _T("Normal");
 
@@ -73,7 +73,7 @@ UIListBox::~UIListBox()
 //------------------------------------------------------------------------------
 void UIListBox::initialize()
 {
-	UIControl::initialize();
+	UIContentsControl::initialize();
 	setHContentAlignment(HAlignment::Stretch);
 
 	auto panel = newObject<UIStackPanel>();

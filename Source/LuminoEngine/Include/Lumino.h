@@ -6,6 +6,7 @@
 	#pragma comment(lib, "imagehlp.lib")
 	#pragma comment(lib, "msacm32.lib")
 	#pragma comment(lib, "Opengl32.lib")
+	#pragma comment(lib, "Shlwapi.lib")
 	
 	#if defined(_DEBUG)
 		#define LN_MSVC_LIBRARY_POSTFIX "d.lib"

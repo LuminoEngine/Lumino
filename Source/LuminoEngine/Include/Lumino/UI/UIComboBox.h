@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include "UIItemsControl.h"
-#include "UIContentControl.h"
+#include "UIContentsControl.h"
 
 LN_NAMESPACE_BEGIN
 class UIScrollViewer;
@@ -88,7 +88,7 @@ private:
 	@brief
 */
 class UIComboBoxItem
-	: public UIContentControl
+	: public UIControl
 {
 	LN_OBJECT;
 public:

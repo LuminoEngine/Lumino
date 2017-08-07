@@ -66,7 +66,7 @@ UILayoutView::~UILayoutView()
 //------------------------------------------------------------------------------
 void UILayoutView::initialize(UIContext* ownerContext, PlatformWindow* ownerNativeWindow)
 {
-	UIControl::initialize();
+	UIContentsControl::initialize();
 
 	m_ownerContext = ownerContext;
 	m_ownerNativeWindow = ownerNativeWindow;
@@ -85,7 +85,7 @@ void UILayoutView::updateLayout(const Size& viewSize)
 		// 今は UILayoutView::updateLayout() からしか呼ばれていないので問題ないが…。
 		applyTemplateHierarchy(getOwnerContext()->getRootStyleTable(), nullptr);
 
-		UIControl::updateLayout(viewSize);
+		UIContentsControl::updateLayout(viewSize);
 
 
 		for (auto& popup : m_popupContainers)
@@ -98,7 +98,7 @@ void UILayoutView::updateLayout(const Size& viewSize)
 //------------------------------------------------------------------------------
 void UILayoutView::render(DrawingContext* g)
 {
-	UIControl::render(g);
+	UIContentsControl::render(g);
 
 	for (auto& popup : m_popupContainers)
 	{
@@ -111,13 +111,13 @@ void UILayoutView::render(DrawingContext* g)
 Size UILayoutView::measureOverride(const Size& constraint)
 {
 	m_adornerLayer->measureLayout(constraint);
-	return UIControl::measureOverride(constraint);
+	return UIContentsControl::measureOverride(constraint);
 }
 
 Size UILayoutView::arrangeOverride(const Size& finalSize)
 {
 	m_adornerLayer->arrangeLayout(Rect(0, 0, finalSize));
-	return UIControl::arrangeOverride(finalSize);
+	return UIContentsControl::arrangeOverride(finalSize);
 }
 
 //------------------------------------------------------------------------------

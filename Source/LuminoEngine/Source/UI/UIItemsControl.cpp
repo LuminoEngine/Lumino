@@ -8,7 +8,7 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 // UIItemsControl
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIItemsControl, UIControl)
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIItemsControl, UIContentsControl)
 
 UIItemsControl::UIItemsControl()
 {
@@ -20,7 +20,7 @@ UIItemsControl::~UIItemsControl()
 
 void UIItemsControl::initialize()
 {
-	UIControl::initialize();
+	UIContentsControl::initialize();
 
 	setHContentAlignment(HAlignment::Stretch);
 

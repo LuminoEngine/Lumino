@@ -1,7 +1,8 @@
 ﻿
 #pragma once
 #include "UIInjectedInputReceiver.h"
-#include "UIItemsControl.h"
+#include "UIContentsControl.h"
+#include "UIItemsControl.h"	// TODO: 必要？
 
 LN_NAMESPACE_BEGIN
 class DrawingContext;
@@ -36,7 +37,8 @@ private:
 				UI レイアウトのルート要素となります。
 */
 class UILayoutView
-	: public UIControl
+	: public UIContentsControl
+	//: public UIControl
 	//, public IUIInjectedInputReceiver
 {
 public:

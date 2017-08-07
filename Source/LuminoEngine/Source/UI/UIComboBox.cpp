@@ -204,7 +204,7 @@ void UIPopup::updateLayoutForInPlacePopup(const Size& viewSize)
 //==============================================================================
 // UIComboBoxItem
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIComboBoxItem, UIContentControl)
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIComboBoxItem, UIControl)
 
 //------------------------------------------------------------------------------
 UIComboBoxItem::UIComboBoxItem()
@@ -219,7 +219,7 @@ UIComboBoxItem::~UIComboBoxItem()
 //------------------------------------------------------------------------------
 void UIComboBoxItem::initialize()
 {
-	UIContentControl::initialize();
+	UIControl::initialize();
 	setHContentAlignment(HAlignment::Left);
 	setHAlignment(HAlignment::Stretch);
 	goToVisualState(UIVisualStates::NormalState);

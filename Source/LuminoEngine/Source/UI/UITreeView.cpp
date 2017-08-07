@@ -218,7 +218,7 @@ void UITreeViewItem::expander_OnUnchecked(UIEventArgs* e)
 //==============================================================================
 // UITreeView
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UITreeView, UIControl)
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UITreeView, UIContentsControl)
 
 //------------------------------------------------------------------------------
 Ref<UITreeView> UITreeView::create()
@@ -241,7 +241,7 @@ UITreeView::~UITreeView()
 //------------------------------------------------------------------------------
 void UITreeView::initialize()
 {
-	UIControl::initialize();
+	UIContentsControl::initialize();
 	setHContentAlignment(HAlignment::Stretch);
 
 	auto panel = newObject<UIStackPanel>();

@@ -1,7 +1,7 @@
 
 #pragma once
 #include "UIItemsControl.h"
-#include "UIContentControl.h"
+#include "UIContentsControl.h"
 
 LN_NAMESPACE_BEGIN
 class UIListBoxItem;
@@ -16,14 +16,14 @@ using UIListBoxPtr = Ref<UIListBox>;
 				ÇªÇÍÇºÇÍÇÃ Item ÇÃèÛë‘ÇçXêVÇ∑ÇÈÅB
 */
 class UIListBoxItem
-	: public UIControl
+	: public UIContentsControl
 {
 	LN_OBJECT;
 public:
 
 	virtual void onRender(DrawingContext* g) override
 	{
-		UIControl::onRender(g);
+		UIContentsControl::onRender(g);
 	}
 
 	virtual void onMouseDown(UIMouseEventArgs* e) override;
@@ -38,7 +38,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	@brief
 */
 class UIListBox
-	: public UIControl
+	: public UIContentsControl
 {
 	LN_OBJECT;
 public:

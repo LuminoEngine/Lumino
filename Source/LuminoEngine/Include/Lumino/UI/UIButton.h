@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include "UIControl.h"
+#include "UIContentsControl.h"
 
 LN_NAMESPACE_BEGIN
 class UIButton;
@@ -18,7 +18,7 @@ enum class UICheckState
 	@brief		
 */
 class UIButtonBase
-	: public UIControl
+	: public UIContentsControl
 {
 	LN_OBJECT;
 public:

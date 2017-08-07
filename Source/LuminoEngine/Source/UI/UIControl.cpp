@@ -48,40 +48,16 @@ void UIControl::initialize()
 	VContentAlignment = VAlignment::Stretch;
 
 
-	m_items = Ref<UIElementCollection>::makeRef(this);
+	//m_items = Ref<UIElementCollection>::makeRef(this);
 	auto panel = newObject<UIAbsoluteLayout>();
 	setLayoutPanel(panel);
 }
-
-//------------------------------------------------------------------------------
-UIElementCollection* UIControl::getItems() const
-{
-	return m_items;
-}
-
-//------------------------------------------------------------------------------
-void UIControl::addChild(UIElement* element)
-{
-	m_items->add(element);
-	element->setLogicalParent(this);
-}
-
-//------------------------------------------------------------------------------
-void UIControl::removeChild(UIElement* element)
-{
-	element->setLogicalParent(nullptr);
-	m_items->remove(element);
-}
-
-//------------------------------------------------------------------------------
-void UIControl::clearChildren()
-{
-	for (auto* c : *m_items)
-	{
-		c->setLogicalParent(nullptr);
-	}
-	m_items->clear();
-}
+//
+////------------------------------------------------------------------------------
+//UIElementCollection* UIControl::getItems() const
+//{
+//	return m_items;
+//}
 
 //------------------------------------------------------------------------------
 void UIControl::setLayoutPanel(UILayoutPanel* newPanel)
@@ -144,9 +120,10 @@ void UIControl::setLogicalChildrenPresenter(UILayoutPanel* presenter)
 		// 既に持っていれば取り除いておく
 		if (m_logicalChildrenPresenter != nullptr)
 		{
-			for (auto* c : *m_items)
+			int count = getLogicalChildrenCount();
+			for (int i = 0; i < count; i++)
 			{
-				m_logicalChildrenPresenter->getChildren()->remove(c);
+				m_logicalChildrenPresenter->getChildren()->remove(getLogicalChild(i));
 			}
 
 			removeVisualChild(m_logicalChildrenPresenter);
@@ -163,9 +140,10 @@ void UIControl::setLogicalChildrenPresenter(UILayoutPanel* presenter)
 
 			m_logicalChildrenPresenter = presenter;
 
-			for (auto* c : *m_items)
+			int count = getLogicalChildrenCount();
+			for (int i = 0; i < count; i++)
 			{
-				m_logicalChildrenPresenter->getChildren()->add(c);
+				m_logicalChildrenPresenter->getChildren()->add(getLogicalChild(i));
 			}
 		}
 
@@ -179,6 +157,16 @@ void UIControl::setLogicalChildrenPresenter(UILayoutPanel* presenter)
 UILayoutPanel* UIControl::getLogicalChildrenPresenter() const
 {
 	return m_logicalChildrenPresenter;
+}
+
+int UIControl::getLogicalChildrenCount() const
+{
+	return 0;
+}
+
+UIElement* UIControl::getLogicalChild(int index)
+{
+	return nullptr;
 }
 
 void UIControl::submit()
@@ -449,33 +437,6 @@ void UIControl::onChildCollectionChanged(const tr::ChildCollectionChangedArgs& e
 	default:
 		break;
 	}
-}
-
-//==============================================================================
-// UIUserControl
-//==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIUserControl, UIControl);
-
-//------------------------------------------------------------------------------
-Ref<UIUserControl> UIUserControl::create()
-{
-	return newObject<UIUserControl>();
-}
-
-//------------------------------------------------------------------------------
-UIUserControl::UIUserControl()
-{
-}
-
-//------------------------------------------------------------------------------
-UIUserControl::~UIUserControl()
-{
-}
-
-//------------------------------------------------------------------------------
-void UIUserControl::initialize()
-{
-	UIControl::initialize();
 }
 
 LN_NAMESPACE_END

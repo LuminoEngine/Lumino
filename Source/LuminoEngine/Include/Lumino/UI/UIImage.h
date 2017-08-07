@@ -1,6 +1,6 @@
 
 #pragma once
-#include "UIContentControl.h"
+#include "UIContentsControl.h"
 
 LN_NAMESPACE_BEGIN
 

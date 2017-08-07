@@ -49,13 +49,6 @@ public:
 	VAlignment getVContentAlignment() const { return VContentAlignment; }
 	
 
-
-	UIElementCollection* getItems() const;
-
-	void addChild(UIElement* element);
-	void removeChild(UIElement* element);
-	void clearChildren();
-
 	void setLayoutPanel(UILayoutPanel* panel);
 	UILayoutPanel* getLayoutPanel() const;
 
@@ -75,6 +68,9 @@ public:
 protected:
 	void setLogicalChildrenPresenter(UILayoutPanel* presenter);
 	UILayoutPanel* getLogicalChildrenPresenter() const;
+
+	virtual int getLogicalChildrenCount() const;
+	virtual UIElement* getLogicalChild(int index);
 
 	virtual void onSubmit(UIEventArgs* e);
 	virtual void onMouseClick(UIMouseEventArgs* e);
@@ -112,7 +108,7 @@ LN_INTERNAL_ACCESS:
 	//UIElement* GetVisualTreeRoot() { return m_visualTreeRoot; }
 
 private:
-	Ref<UIElementCollection>		m_items;
+	//Ref<UIElementCollection>		m_items;
 	Ref<UILayoutPanel>				m_itemsHostPanel;		// TODO: 後で ContentControl 作ってそっちに持っていこう
 	Ref<UILayoutPanel>				m_logicalChildrenPresenter;	// 子要素の実際の追加先
 	Ref<UIContextMenu>				m_contextMenu;
@@ -126,26 +122,5 @@ private:
 
 	//UIElement*	m_visualTreeRoot;
 };
-
-
-/**
-	@brief	複数のコントロールを組み合わせたコントロールを作成するためのクラスです。
-*/
-class UIUserControl
-	: public UIControl
-{
-	LN_OBJECT;
-	
-public:
-
-	/** UIUserControl のインスタンスを作成します。 */
-	static Ref<UIUserControl> create();
-
-LN_CONSTRUCT_ACCESS:
-	UIUserControl();
-	virtual ~UIUserControl();
-	void initialize();
-};
-
 
 LN_NAMESPACE_END

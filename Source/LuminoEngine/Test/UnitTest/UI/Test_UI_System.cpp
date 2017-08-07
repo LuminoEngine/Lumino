@@ -28,27 +28,27 @@ TEST_F(Test_UI_System, focus)
 	auto uiRoot = Application::getMainWindow();
 	uiRoot->setLayoutPanel(UIStackPanel::create());
 
-	auto c1 = newObject<UIControl>();
+	auto c1 = newObject<UIContentsControl>();
 	c1->setSize(Size(64, 32));
 	uiRoot->addChild(c1);
 
-	auto c1_1 = newObject<UIControl>();
+	auto c1_1 = newObject<UIContentsControl>();
 	c1_1->setSize(Size(32, 32));
 	c1->addChild(c1_1);
 
-	auto c2 = newObject<UIControl>();
+	auto c2 = newObject<UIContentsControl>();
 	c2->setSize(Size(64, 32));
 	uiRoot->addChild(c2);
 
-	auto c2_1 = newObject<UIControl>();
+	auto c2_1 = newObject<UIContentsControl>();
 	c2_1->setSize(Size(16, 16));
 	c2->addChild(c2_1);
 
-	auto c2_2 = newObject<UIControl>();
+	auto c2_2 = newObject<UIContentsControl>();
 	c2_2->setSize(Size(32, 32));
 	c2->addChild(c2_2);
 
-	auto c2_3 = newObject<UIControl>();
+	auto c2_3 = newObject<UIContentsControl>();
 	c2_3->setSize(Size(48, 32));
 	c2_2->addChild(c2_3);
 
