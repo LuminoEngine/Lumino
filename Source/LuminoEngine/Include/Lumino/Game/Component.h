@@ -67,8 +67,8 @@ private:
 	void attach(WorldObject* owner);
 	void detach();
 	void updateFrame();
-
 	virtual void render(RenderingContext* context);
+
 LN_INTERNAL_ACCESS:
 	void setSpecialComponentType(SpecialComponentType type) { m_specialComponentType = type; }
 	SpecialComponentType getSpecialComponentType() const { return m_specialComponentType; }

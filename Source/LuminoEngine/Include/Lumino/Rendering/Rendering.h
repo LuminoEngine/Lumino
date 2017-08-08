@@ -821,7 +821,6 @@ inline TElement* DrawList::resolveDrawElement(detail::IRenderFeature* renderFeat
 
 	m_lastRenderFeature = renderFeature;
 
-
 	// DrawElement を新しく作る
 	TElement* element = m_drawElementList.addCommand<TElement>(getCurrentState()->m_state, availableMaterial, getCurrentState()->m_builtinEffectData, forceStateChange);
 	element->metadata = *metadata;
