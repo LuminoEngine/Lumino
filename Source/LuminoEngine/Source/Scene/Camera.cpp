@@ -35,7 +35,7 @@ CameraComponent* CameraComponent::getMain2DCamera()
 CameraComponent::CameraComponent()
 	: SceneNode()
 	, m_projectionMode()
-	, m_directionMode(CameraDirection::lookAt)
+	, m_directionMode(CameraDirection::transform)
 	, m_upDirection(Vector3::UnitY)
 	, m_fovY(Math::PI / 3.0f)	// Unity based.
 	, m_nearClip(0.3f)			// Unity based.
@@ -915,6 +915,7 @@ void Camera::initialize(CameraProjection proj)
 	WorldObject::initialize();
 	m_component = newObject<CameraComponent>(proj);
 	addComponent(m_component);
+	transform.lookAt(Vector3::Zero);
 
 	if (proj == CameraProjection_2D)
 	{
