@@ -14,7 +14,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 CompilationException::CompilationException(const ShaderCompileResult& result)
 {
 	m_message.assignCStr(result.Message.c_str());
-	m_messageMBCS.assignCStr(result.Message.c_str());
+	m_messageMBCS = result.Message;
 }
 
 //------------------------------------------------------------------------------

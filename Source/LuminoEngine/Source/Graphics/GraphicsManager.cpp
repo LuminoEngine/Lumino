@@ -270,7 +270,7 @@ void GraphicsManager::initialize(const ConfigData& configData)
 #include "Resource/EffectHeader.fxh.h"
 		};
 		static const size_t EffectHeader_Data_Len = LN_ARRAY_SIZE_OF(EffectHeader_Data);
-		m_commonShaderHeader.assignCStr((const char*)EffectHeader_Data, EffectHeader_Data_Len);
+		m_commonShaderHeader.assign((const char*)EffectHeader_Data, EffectHeader_Data_Len);
 	}
 	
 	// デフォルトシェーダ

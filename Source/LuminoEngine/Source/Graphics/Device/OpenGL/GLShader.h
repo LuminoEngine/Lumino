@@ -17,7 +17,7 @@ class GLShaderPass;
 struct ShaderDiag
 {
 	ShaderCompileResultLevel	level;
-	StringA						message;
+	std::string					message;
 };
 
 /// Pass が利用するシェーダ変数と、その GLSL Location
@@ -37,7 +37,7 @@ public:
 		GLint		length;
 	};
 
-	static ShaderCompileResultLevel makeShaderProgram(const char* vsCode, size_t vsCodeLen, const char* fsCode, size_t fsCodeLen, GLuint* outProgram, StringA* outMessage);
+	static ShaderCompileResultLevel makeShaderProgram(const char* vsCode, size_t vsCodeLen, const char* fsCode, size_t fsCodeLen, GLuint* outProgram, std::string* outMessage);
 
 	static void analyzeLNBasicShaderCode(const char* code, size_t codeLen, GLuint type, const char* entryName, CodeRange* outCode);
 
@@ -80,8 +80,6 @@ private:
 	GLuint compileShader(const char* code, size_t codeLen, const char* entryName, GLuint type);
 
 	GLGraphicsDevice*				m_device;
-	//GLuint							m_glProgram;
-	//StringA						m_lastMessage;
 
 	ShaderDiag					m_diag;
 

@@ -220,7 +220,7 @@ enum ShaderCompileResultLevel
 struct ShaderCompileResult
 {
 	ShaderCompileResultLevel	Level;		///< 結果の概要
-	StringA						Message;	///< メッセージ (警告・エラーメッセージが格納される)
+	std::string					Message;	///< メッセージ (警告・エラーメッセージが格納される)
 };
 
 /// シェーダ変数の型

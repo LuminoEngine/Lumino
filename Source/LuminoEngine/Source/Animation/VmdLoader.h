@@ -71,11 +71,11 @@ public:
 	FaceAnimationList& getFaceAnimationList() { return m_faceAnimationList; }
 
 private:
-	// こちらの検索キーは StringA。VMD ファイルから読み取ったキー名をそのまま比較できるようにするため。
-    typedef std::map<StringA, int>	BoneAnimationIndexMap;
-	typedef std::pair<StringA, int>	BoneAnimationIndexPair;
-	typedef std::map<StringA, int>	FaceAnimationIndexMap;
-	typedef std::pair<StringA, int>	FaceAnimationIndexPair;
+	// こちらの検索キーは std::string。VMD ファイルから読み取ったキー名をそのまま比較できるようにするため。
+    typedef std::map<std::string, int>	BoneAnimationIndexMap;
+	typedef std::pair<std::string, int>	BoneAnimationIndexPair;
+	typedef std::map<std::string, int>	FaceAnimationIndexMap;
+	typedef std::pair<std::string, int>	FaceAnimationIndexPair;
 	
 	double					m_lastFramePosition;
 	BoneAnimationList		m_boneAnimationList;

@@ -19,8 +19,8 @@ public:
 	virtual const TCHAR* getMessageOverride() const override;
 
 private:
-	String	m_message;		///< コンパイルエラーのメッセージはベースで確保しているメッセージのバッファを余裕で超えることがあるので独自確保
-	StringA	m_messageMBCS;	
+	String		m_message;		///< コンパイルエラーのメッセージはベースで確保しているメッセージのバッファを余裕で超えることがあるので独自確保
+	std::string	m_messageMBCS;	
 };
 
 class OpenGLException

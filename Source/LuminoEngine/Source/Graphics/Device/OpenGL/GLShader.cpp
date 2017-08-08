@@ -9,6 +9,7 @@
 
 */
 #include "../../Internal.h"
+#include <Lumino/Base/StdStringHelper.h>
 #include <Lumino/Graphics/GraphicsException.h>
 #include "GLGraphicsDevice.h"
 #include "GLShader.h"
@@ -326,7 +327,7 @@ enum class RenderStateId
 //}
 
 //------------------------------------------------------------------------------
-ShaderCompileResultLevel GLSLUtils::makeShaderProgram(const char* vsCode, size_t vsCodeLen, const char* fsCode, size_t fsCodeLen, GLuint* outProgram, StringA* outMessage)
+ShaderCompileResultLevel GLSLUtils::makeShaderProgram(const char* vsCode, size_t vsCodeLen, const char* fsCode, size_t fsCodeLen, GLuint* outProgram, std::string* outMessage)
 {
 	*outProgram = NULL;
 	outMessage->clear();
@@ -421,7 +422,7 @@ ShaderCompileResultLevel GLSLUtils::makeShaderProgram(const char* vsCode, size_t
 		glDeleteShader(fragmentShader);
 
 		*outProgram = program;
-		if (outMessage->isEmpty()) {
+		if (outMessage->empty()) {
 			return ShaderCompileResultLevel_Success;
 		}
 		else {
@@ -450,28 +451,28 @@ void GLSLUtils::analyzeLNBasicShaderCode(const char* code, size_t codeLen, GLuin
 	outCode->length = 0;
 
 	// make keyword
-	StringA ifdef;
-	StringA endKey;
+	std::string ifdef;
+	std::string endKey;
 	if (type == GL_VERTEX_SHADER)
 	{
-		ifdef = StringA::format("#ifdef LN_GLSL_VERTEX_{0}", entryName);
-		endKey = StringA::format("#endif LN_GLSL_VERTEX_{0}", entryName);
+		ifdef = StdStringHelper::cat<std::string>("#ifdef LN_GLSL_VERTEX_", entryName);
+		endKey = StdStringHelper::cat<std::string>("#endif LN_GLSL_VERTEX_", entryName);
 	}
 	else if (type == GL_FRAGMENT_SHADER)
 	{
-		ifdef = StringA::format("#ifdef LN_GLSL_FRAGMENT_{0}", entryName);
-		endKey = StringA::format("#endif LN_GLSL_FRAGMENT_{0}", entryName);
+		ifdef = StdStringHelper::cat<std::string>("#ifdef LN_GLSL_FRAGMENT_", entryName);
+		endKey = StdStringHelper::cat<std::string>("#endif LN_GLSL_FRAGMENT_", entryName);
 	}
 
 	// find begin - end
 	int codeBegin = StringTraits::indexOf(code, codeLen, ifdef.c_str(), -1);
 	if (LN_CHECK_FORMAT(codeBegin >= 0)) return;
 	//int codeEnd = StringTraits::IndexOf(code, codeLen, "LN_GLSL_END", 11, codeBegin);
-	int codeEnd = StringTraits::indexOf(code, codeLen, endKey.c_str(), endKey.getLength(), codeBegin);
+	int codeEnd = StringTraits::indexOf(code, codeLen, endKey.c_str(), endKey.length(), codeBegin);
 	if (LN_CHECK_FORMAT(codeEnd >= 0)) return;
 
 	// make range
-	const char* begin = code + codeBegin + ifdef.getLength();
+	const char* begin = code + codeBegin + ifdef.length();
 	const char* end = code + codeEnd;
 
 	// output
@@ -521,14 +522,14 @@ GLuint GLSLUtils::compileShader2(GLuint type, int codeCount, const char** codes,
 GLuint GLSLUtils::compileShader3(GLuint type, const char* code, GLint codeLen, const char* entryName, ShaderDiag* diag)
 {
 	// make keyword
-	StringA ifdef;
+	std::string ifdef;
 	if (type == GL_VERTEX_SHADER)
 	{
-		ifdef = StringA::format("#define LN_GLSL_VERTEX_{0}\n", entryName);
+		ifdef = StdStringHelper::cat<std::string>("#define LN_GLSL_VERTEX_", entryName, "\n");
 	}
 	else if (type == GL_FRAGMENT_SHADER)
 	{
-		ifdef = StringA::format("#define LN_GLSL_FRAGMENT_{0}\n", entryName);
+		ifdef = StdStringHelper::cat<std::string>("#define LN_GLSL_FRAGMENT_", entryName, "\n");
 	}
 
 	const char* codes[] =
@@ -540,7 +541,7 @@ GLuint GLSLUtils::compileShader3(GLuint type, const char* code, GLint codeLen, c
 	GLint codeLens[] =
 	{
 		strlen(codes[0]),
-		ifdef.getLength(),
+		ifdef.length(),
 		codeLen,
 	};
 

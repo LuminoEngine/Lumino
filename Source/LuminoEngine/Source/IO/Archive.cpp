@@ -31,6 +31,7 @@
 #include "../Internal.h"
 #include <Lumino/Base/ByteBuffer.h>
 #include <Lumino/Base/Environment.h>
+#include <Lumino/Base/StdStringHelper.h>
 #include <Lumino/IO/Common.h>
 #include <Lumino/IO/FileSystem.h>
 #include <Lumino/IO/Stream.h>
@@ -86,9 +87,9 @@ void Archive::open(const PathName& filePath, const String& key)
 	memset(m_keyTable, 0, sizeof(m_keyTable));
 	if (!m_key.isEmpty())
 	{
-		StringA k = m_key.toStringA();
+		std::string k = StdStringHelper::makeStdString(m_key);
 		byte_t key_buf[KEY_SIZE] = { 0 };
-		memcpy(key_buf, k.c_str(), k.getLength());
+		memcpy(key_buf, k.c_str(), k.length());
 		memset(m_keyTable, 0, sizeof(m_keyTable));
 		Camellia_Ekeygen(KEY_SIZE, key_buf, m_keyTable);
     }

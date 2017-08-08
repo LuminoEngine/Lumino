@@ -65,6 +65,7 @@ set(LN_SOURCES_Base
 	Include/Lumino/Base/Resource.h
 	Include/Lumino/Base/Serialization.h
 	Include/Lumino/Base/Stack.h
+	Include/Lumino/Base/StdStringHelper.h
 	Include/Lumino/Base/StlHelper.h
 	Include/Lumino/Base/String.h
 	Include/Lumino/Base/StringArray.h
