@@ -151,7 +151,7 @@ public:
 	ShaderVariableCommitSerializeHelper* getShaderVariableCommitSerializeHelper() { return &m_shaderVariableCommitSerializeHelper; }
 	InternalContext* getInternalContext() const;
 
-	const StringA& getCommonShaderHeader() const { return m_commonShaderHeader; }
+	const std::string& getCommonShaderHeader() const { return m_commonShaderHeader; }
 	const Ref<Shader>& getBuiltinShader(BuiltinShader shader) const;
 
 	
@@ -178,7 +178,7 @@ private:
 	ContextInterface*				m_activeContext;
 
 	Ref<InternalContext>			m_internalContext;
-	StringA							m_commonShaderHeader;
+	std::string						m_commonShaderHeader;
 	Ref<Shader>					m_builtinShaders[2];
 
 	TextRendererCore*				m_textRendererCore;

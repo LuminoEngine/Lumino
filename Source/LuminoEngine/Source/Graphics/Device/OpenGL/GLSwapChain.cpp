@@ -85,7 +85,7 @@ void GLSwapChain::onResetDevice()
         "void main() {\n"
         "	gl_FragColor = texture2D(texture, vTexCoord);\n"
         "}\n";
-	StringA message;
+	std::string message;
 	ShaderCompileResultLevel r = GLSLUtils::makeShaderProgram(vsCode, sizeof(vsCode), fsCode, sizeof(fsCode), &m_shaderProgram, &message);
 	if (r != ShaderCompileResultLevel_Success) {
 		ShaderCompileResult result;

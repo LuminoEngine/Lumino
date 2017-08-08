@@ -5,6 +5,7 @@
 #include "Internal.h"
 #include <gif_lib.h>
 #include "../../../external/jo_gif/jo_gif.cpp"
+#include <Lumino/Base/StdStringHelper.h>
 #include <Lumino/Threading/Task.h>
 #include <Lumino/Graphics/Texture.h>
 #include <Lumino/Graphics/FrameCapturer.h>
@@ -264,7 +265,7 @@ private:
 	{
 		LN_REQUIRE(m_gif == nullptr);
 
-		StringA fn = StringA::fromNativeCharString(filePath.getBegin(), filePath.getLength());	// TODO: StringRef だけ渡して、getLength とかいらないようにしたい。
+		std::string fn = StdStringHelper::makeStdString(filePath.getBegin(), filePath.getLength());
 		int error = 0;
 		m_gif = EGifOpenFileName(fn.c_str(), false, &error);
 		LN_ENSURE(m_gif != nullptr, "EGifOpenFileName %d", error);
@@ -380,7 +381,7 @@ public:
 		m_imageSize = size;
 		m_line.alloc(sizeof(GifPixelType) * m_imageSize.width);
 
-		StringA f = StringA::fromNativeCharString(filePath);
+		std::string f = StdStringHelper::makeStdString(filePath.c_str());
 		int error;
 		m_gif = EGifOpenFileName(f.c_str(), false, &error);
 
