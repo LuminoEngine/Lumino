@@ -443,7 +443,7 @@ void Shader::initialize(detail::GraphicsManager* manager, const void* code, int 
 		analyzer.analyzeLNFX((const char*)code, length);
 		auto cc = analyzer.makeHLSLCode();
 
-		sb << (cc.data(), cc.size());
+		sb << std::string(cc.data(), cc.size());
 
 		//FileSystem::WriteAllBytes(_T("code.c"), cc.data(), cc.size());
 	}

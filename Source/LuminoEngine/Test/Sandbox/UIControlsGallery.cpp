@@ -89,6 +89,10 @@ void UIControlsGallery()
 	//popup->setBackground(Brush::Red);
 	//popup->open(tree1);
 
+	auto meshModel = ln::Assets::loadMeshModel(_T("D:/Proj/LN/HC1/Assets/Graphics/TestMap1.mqo"));
+	auto mesh = ln::StaticMeshComponent::create(meshModel);
+	
+
 #endif
 
 

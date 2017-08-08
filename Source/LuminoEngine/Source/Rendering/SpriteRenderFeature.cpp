@@ -449,11 +449,15 @@ void SpriteRendererImpl::drawRequestInternal(
 
 	Matrix mat = m_transformMatrix.getRotationMatrix();
 
+	//m_viewPosition.print();
+
+	// TODO: もう position もらわなくていいかも。TextRenderer とおなじく、matrix 直接もらってそれ使おう。
+	Vector3 worldPoint = Vector3::transformCoord(position, m_transformMatrix);
 
 	// ビルボード
 	if (billboardType == BillboardType::ToCameraPoint)
 	{
-		Vector3 f = Vector3::normalize(m_viewPosition - position);
+		Vector3 f = Vector3::normalize(m_viewPosition - worldPoint);
 		Vector3 r = Vector3::normalize(Vector3::cross(Vector3::UnitY, f));
 		Vector3 u = Vector3::cross(f, r);
 		mat = Matrix(
@@ -467,7 +471,7 @@ void SpriteRendererImpl::drawRequestInternal(
 		// ↑がカメラ位置を基準にするのに対し、こちらはビュー平面に垂直に交差する点を基準とする。
 
 		// ビュー平面との距離
-		float d = Vector3::dot(position - m_viewPosition, m_viewDirection);
+		float d = Vector3::dot(worldPoint - m_viewPosition, m_viewDirection);
 
 		// left-hand coord
 		Vector3 f = Vector3::normalize(m_viewDirection * d);

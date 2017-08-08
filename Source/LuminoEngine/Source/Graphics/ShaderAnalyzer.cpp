@@ -159,7 +159,7 @@ std::vector<char> ShaderAnalyzer::makeHLSLCode() const
 #include "Resource/EffectHeaderDX9HLSL.fxh.h"
 		};
 		static const size_t EffectHeader_Data_Len = LN_ARRAY_SIZE_OF(EffectHeader_Data);
-		sb << (EffectHeader_Data, EffectHeader_Data_Len);
+		sb << std::string((const char*)EffectHeader_Data, EffectHeader_Data_Len);
 	}
 	sb << ("#line 5");
 	sb << ("\n");
