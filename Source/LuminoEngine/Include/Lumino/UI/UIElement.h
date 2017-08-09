@@ -242,6 +242,12 @@ public:
 	/** この要素の可視性を取得します。 */
 	UIVisibility getVisibility() const;
 
+	/** この要素の可視性を設定します。UIVisibility::Visible または UIVisibility::Collapsed を設定します。 */
+	void setVisible(bool value) { setVisibility(value ? UIVisibility::Visible : UIVisibility::Collapsed); }
+
+	/** この要素の可視性を取得します。 */
+	bool getVisible() const { return getVisibility() == UIVisibility::Visible; }
+
 	/** @} */
 
 
