@@ -218,7 +218,7 @@ GTEST_API_ int main(int argc, char **argv)
 	}
 
 	{
-		EngineSettings::setGraphicsAPI(GraphicsAPI::DirectX9);
+		EngineSettings::setGraphicsAPI(GraphicsAPI::OpenGL);
 
 		EngineInitalize();
 		int r = RUN_ALL_TESTS();

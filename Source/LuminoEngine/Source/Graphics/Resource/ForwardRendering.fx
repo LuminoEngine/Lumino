@@ -88,7 +88,7 @@ void main()
 	gl_Position		= ln_WorldViewProjection * vec4(ln_Vertex, 1.0);
 	
 	// 頂点法線をワールド空間に変換
-	vec3 normal		= normalize(mat3(ln_WorldViewProjection) * ln_Normal0);
+	vec3 normal		= normalize(mat3(ln_World) * ln_Normal0);
 	
 	// テクスチャ座標
 	v_TexUV			= LN_FlipTexCoord(ln_MultiTexCoord0);
