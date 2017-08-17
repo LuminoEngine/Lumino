@@ -2,9 +2,10 @@ cmake_minimum_required (VERSION 2.8.7)
 project (Lumino)
 
 include(Source/LuminoCore/CMake/LNCommon.cmake NO_POLICY_SCOPE)
+include(CMake/LuminoCommon.cmake NO_POLICY_SCOPE)
 
-set(LN_DEPENDENCIES_ROOT_DIR "${PROJECT_SOURCE_DIR}/External/LuminoDependencies/")
-include(External/LuminoDependencies/LuminoDependencies.cmake)
+#set(LN_DEPENDENCIES_ROOT_DIR "${PROJECT_SOURCE_DIR}/External/LuminoDependencies/")
+#include(External/LuminoDependencies/LuminoDependencies.cmake)
 
 set(LN_STATIC_LIB_OUTPUT_NAME "Lumino")
 set(LN_LINK_LIBS "")
@@ -13,9 +14,9 @@ set(LN_LIB_POSTFIX "")
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "C:/Proj/Lumino/lib/MSVC140")
 
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 # Options
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 # Unicode char set.
 option(LN_USE_UNICODE_CHAR_SET "Use unicode char set." ON)
@@ -32,11 +33,16 @@ option(LN_USE_EXTERNAL_Effekseer "" ON)
 # Architecture.
 #option(LN_BUILD_X64 "Architecture." OFF)
 
+#-------------------------------------------------------------------------------
+set(LN_DEPENDENCIES_DEBUG_OUTPUT_DIR ${LN_LIB_DEBUG_OUTPUT_ROOT_DIR})
+set(LN_DEPENDENCIES_RELEASE_OUTPUT_DIR ${LN_LIB_RELEASE_OUTPUT_ROOT_DIR})
+set(LN_DEPENDENCIES_POSTFIX "")
+set(LN_DEPENDENCIES_INCLUDE_DIRECTORIES "")
+add_subdirectory(External)
 
-
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 # 
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 # lib postfix
 if (LN_USE_UNICODE_CHAR_SET)
 	set(LN_LIB_POSTFIX "U")
@@ -44,19 +50,19 @@ if (LN_USE_UNICODE_CHAR_SET)
 endif()
 
 # output dir
-set(LN_LIB_OUTPUT_DIR "${PROJECT_SOURCE_DIR}/${LN_LIB_OUTPUT_LOCAL_DIR}")
+#set(LN_LIB_OUTPUT_DIR "${PROJECT_SOURCE_DIR}/${LN_LIB_OUTPUT_LOCAL_DIR}")
 
 macro(ln_add_common_property projectName)
 	set_target_properties(${projectName} PROPERTIES OUTPUT_NAME "${projectName}${LN_STATIC_LIB_POSTFIX}")
 	set_target_properties(${projectName} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
-	set_target_properties(${projectName} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${LN_LIB_OUTPUT_DIR}")
-	set_target_properties(${projectName} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${LN_LIB_OUTPUT_DIR}")
+	set_target_properties(${projectName} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${LN_LIB_DEBUG_OUTPUT_ROOT_DIR}")
+	set_target_properties(${projectName} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${LN_LIB_RELEASE_OUTPUT_ROOT_DIR}")
 	set_target_properties(${projectName} PROPERTIES PREFIX "")
 endmacro()
 
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 # External
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 add_subdirectory(Source/LuminoCore)
 
@@ -75,9 +81,9 @@ add_subdirectory(Samples)
 
 
 
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 # Output
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 add_definitions(-DLUMINO_ROOT_DIR="${CMAKE_SOURCE_DIR}")
 
 if (LN_EXCEPTION_BACKTRACE)
