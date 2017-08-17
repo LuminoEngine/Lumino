@@ -168,7 +168,7 @@ TEST_F(Test_Scene_Sprite, Issues_HC1)
 		sprite1->getSpriteComponent()->setBillboardType(BillboardType::ToScreen);
 
 		Engine::update();
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Scene_Sprite.Issues_HC1_1.png")));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Scene_Sprite.Issues_HC1_1.png"), 90));
 		Engine::getWorld2D()->RemoveAllObjects();
 	}
 }
