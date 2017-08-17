@@ -19,7 +19,7 @@ project(LuminoDependencies)
 # Visual Studio ソリューションフォルダを作るようにする
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-macro(ln_add_common_property projectName)
+macro(ln_add_dependencies_common_property projectName)
 	set_target_properties(${projectName} PROPERTIES OUTPUT_NAME "${projectName}${LN_DEPENDENCIES_POSTFIX}")
 	set_target_properties(${projectName} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "")
 	set_target_properties(${projectName} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${LN_DEPENDENCIES_DEBUG_OUTPUT_DIR}")
@@ -35,25 +35,25 @@ endif()
 
 #-------------------------------------------------------------------------------
 add_subdirectory(zlib-1.2.7)
-ln_add_common_property(zlib)
+ln_add_dependencies_common_property(zlib)
 
 add_subdirectory(bullet-2.82)
-ln_add_common_property(bullet)
+ln_add_dependencies_common_property(bullet)
 
 add_subdirectory(freetype-2.6)
-ln_add_common_property(freetype)
+ln_add_dependencies_common_property(freetype)
 
 add_subdirectory(giflib-5.1.4)
-ln_add_common_property(giflib)
+ln_add_dependencies_common_property(giflib)
 
 add_subdirectory(libogg-1.3.2)
-ln_add_common_property(libogg)
+ln_add_dependencies_common_property(libogg)
 
 add_subdirectory(libpng-1.6.12)
-ln_add_common_property(libpng)
+ln_add_dependencies_common_property(libpng)
 
 add_subdirectory(libvorbis-1.3.5)
-ln_add_common_property(libvorbis)
+ln_add_dependencies_common_property(libvorbis)
 
 
 #---------------------------------------
@@ -74,13 +74,13 @@ set(USE_OPENGL3 OFF)
 
 add_subdirectory(EffekseerRuntime101/src)
 
-ln_add_common_property(effekseer)
-ln_add_common_property(effekseer_renderer_gl)
+ln_add_dependencies_common_property(effekseer)
+ln_add_dependencies_common_property(effekseer_renderer_gl)
 
 if (MSVC)
-	ln_add_common_property(effekseer_renderer_dx9)
-	ln_add_common_property(effekseer_renderer_dx11)
-	ln_add_common_property(effekseer_sound_xaudio2)
+	ln_add_dependencies_common_property(effekseer_renderer_dx9)
+	ln_add_dependencies_common_property(effekseer_renderer_dx11)
+	ln_add_dependencies_common_property(effekseer_sound_xaudio2)
 endif()
 
 set(LN_DEPENDENCIES_INCLUDE_DIRECTORIES ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES} ${PROJECT_SOURCE_DIR}/EffekseerRuntime101/src/include)

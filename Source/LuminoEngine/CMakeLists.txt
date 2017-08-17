@@ -782,16 +782,6 @@ set(LN_SOURCES
 find_package(OpenGL REQUIRED)
 
 if (WIN32)
-	if (LN_MSVC_STATIC_RUNTIME)
-		foreach (flag CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE)
-			if (${flag} MATCHES "/MD")
-				string(REGEX REPLACE "/MD" "/MT" ${flag} "${${flag}}")
-			endif()
-			if (${flag} MATCHES "/MDd")
-				string(REGEX REPLACE "/MDd" "/MTd" ${flag} "${${flag}}")
-			endif()
-		endforeach()
-	endif()
 
 	#set(CMAKE_DEBUG_POSTFIX "d")
 
@@ -859,21 +849,12 @@ include_directories(${LN_INCLUDE_DIRECTORIES} ${LN_PLATFORM_INCLUDE_DIRS})
 
 link_libraries(LuminoCore)
 
-# Make postfix.
-#ln_make_postfix(LN_LIB_POSTFIX)
-
 
 #------------------------------------------------------------------------------
 # Output
 #------------------------------------------------------------------------------
 
 add_definitions(-DLUMINO_ROOT_DIR="${PROJECT_SOURCE_DIR}")
-
-#set(CMAKE_CXX_FLAGS "")
-#set(CMAKE_CXX_FLAGS_DEBUG "-g -pg")
-#set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g -pg -O3")
-#set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3")
-#set(CMAKE_CXX_FLAGS_MINSIZEREL "")
 
 if (LN_EXCEPTION_BACKTRACE)
 	add_definitions(-DLN_EXCEPTION_BACKTRACE)
