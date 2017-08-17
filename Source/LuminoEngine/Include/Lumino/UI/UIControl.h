@@ -6,6 +6,7 @@
 LN_NAMESPACE_BEGIN
 class UIElementCollection;
 class UILayoutPanel;
+class UIContextMenu;
 
 
 /** ボタンのクリックイベントを発生させるタイミングを表します。*/
@@ -48,23 +49,31 @@ public:
 	VAlignment getVContentAlignment() const { return VContentAlignment; }
 	
 
-
-	UIElementCollection* getItems() const;
-
-	void addChild(UIElement* element);
-	void removeChild(UIElement* element);
-	void clearChildren();
-
 	void setLayoutPanel(UILayoutPanel* panel);
 	UILayoutPanel* getLayoutPanel() const;
 
-	
+	/** この要素に対してメニュー表示が要求された場合に表示するコンテキストメニューを設定します。 */
+	void setContextMenu(UIContextMenu* menu);
+
+	/** この要素に対してメニュー表示が要求された場合に表示するコンテキストメニューを取得します。 */
+	UIContextMenu* getContextMenu() const;
+
+	/** この要素へ決定操作を通知します。 */
+	void submit();
+
 	/** onSubmit イベントの通知を受け取るコールバックを登録します。*/
 	LN_METHOD(Event)
 	EventConnection connectOnSubmit(UIEventHandler handler);
 
 protected:
+	void setLogicalChildrenPresenter(UILayoutPanel* presenter);
+	UILayoutPanel* getLogicalChildrenPresenter() const;
+
+	virtual int getLogicalChildrenCount() const;
+	virtual UIElement* getLogicalChild(int index);
+
 	virtual void onSubmit(UIEventArgs* e);
+	virtual void onMouseClick(UIMouseEventArgs* e);
 
 	// UIElement interface
 	//virtual int getVisualChildrenCount() const override;
@@ -81,7 +90,7 @@ protected:
 	virtual void onMouseEnter(UIMouseEventArgs* e) override;
 	virtual void onMouseLeave(UIMouseEventArgs* e) override;
 
-	virtual void onLayoutPanelChanged(UILayoutPanel* newPanel);
+	virtual void onLogicalChildrenPresenterChanged(UILayoutPanel* presenter);
 
 	// IUIElementCollectionOwner interface
 	virtual void onChildCollectionChanged(const tr::ChildCollectionChangedArgs& e) override;
@@ -99,8 +108,13 @@ LN_INTERNAL_ACCESS:
 	//UIElement* GetVisualTreeRoot() { return m_visualTreeRoot; }
 
 private:
-	Ref<UIElementCollection>		m_items;
-	Ref<UILayoutPanel>			m_itemsHostPanel;
+	//Ref<UIElementCollection>		m_items;
+	Ref<UILayoutPanel>				m_itemsHostPanel;		// TODO: 後で ContentControl 作ってそっちに持っていこう
+	Ref<UILayoutPanel>				m_logicalChildrenPresenter;	// 子要素の実際の追加先
+	Ref<UIContextMenu>				m_contextMenu;
+
+	ClickMode						m_clickMode;
+	bool							m_isPressed;
 
 	UIEventHandler::EventType		m_onSubmit;
 
@@ -108,26 +122,5 @@ private:
 
 	//UIElement*	m_visualTreeRoot;
 };
-
-
-/**
-	@brief	複数のコントロールを組み合わせたコントロールを作成するためのクラスです。
-*/
-class UIUserControl
-	: public UIControl
-{
-	LN_OBJECT;
-	
-public:
-
-	/** UIUserControl のインスタンスを作成します。 */
-	static Ref<UIUserControl> create();
-
-LN_CONSTRUCT_ACCESS:
-	UIUserControl();
-	virtual ~UIUserControl();
-	void initialize();
-};
-
 
 LN_NAMESPACE_END

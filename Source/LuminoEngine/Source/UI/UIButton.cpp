@@ -10,7 +10,7 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 // UIButtonBase
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIButtonBase, UIControl);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIButtonBase, UIContentsControl);
 
 //------------------------------------------------------------------------------
 UIButtonBase::UIButtonBase()
@@ -27,13 +27,13 @@ UIButtonBase::~UIButtonBase()
 //------------------------------------------------------------------------------
 void UIButtonBase::initialize()
 {
-	UIControl::initialize();
+	UIContentsControl::initialize();
 
 	HContentAlignment = HAlignment::Center;
 	VContentAlignment = VAlignment::Center;
 
-	// TODO: UIControl::initialize() の中でも作ってるから、そっちが無駄になる。
-	// UIControl では何も作らなくてもいいかも。null の場合、UILayoutPanel と同じレイアウトにするとか。
+	// TODO: UIContentsControl::initialize() の中でも作ってるから、そっちが無駄になる。
+	// UIContentsControl では何も作らなくてもいいかも。null の場合、UILayoutPanel と同じレイアウトにするとか。
 	setLayoutPanel(newObject<UIStackPanel>());
 }
 
@@ -78,7 +78,7 @@ void UIButtonBase::onMouseDown(UIMouseEventArgs* e)
 		e->handled = true;
 	}
 
-	UIControl::onMouseDown(e);
+	UIContentsControl::onMouseDown(e);
 }
 
 //------------------------------------------------------------------------------
@@ -96,7 +96,7 @@ void UIButtonBase::onMouseUp(UIMouseEventArgs* e)
 		}
 	}
 
-	UIControl::onMouseUp(e);
+	UIContentsControl::onMouseUp(e);
 }
 
 //==============================================================================

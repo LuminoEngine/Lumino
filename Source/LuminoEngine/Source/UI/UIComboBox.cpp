@@ -1,22 +1,92 @@
-
+ï»¿
 #include "Internal.h"
 #include <Lumino/UI/UITextBlock.h>
 #include <Lumino/UI/UIScrollViewer.h>
 #include <Lumino/UI/UIComboBox.h>
-#include <Lumino/UI/UILayoutPanel.h>	// TODO: stackpanel ‚É‚·‚é‚©‚à
+#include <Lumino/UI/UILayoutPanel.h>	// TODO: stackpanel ã«ã™ã‚‹ã‹ã‚‚
 #include <Lumino/UI/UILayoutView.h>
+#include <Lumino/UI/UIInput.h>
 #include "UIManager.h"
 #include "UIHelper.h"
+#include "LayoutHelper.h"
 
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
+// UIAdorner
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIAdorner, UIElement)
+
+UIAdorner::UIAdorner()
+{
+}
+
+UIAdorner::~UIAdorner()
+{
+}
+
+void UIAdorner::initialize()
+{
+	UIElement::initialize();
+}
+
+//==============================================================================
+// UIAdornerLayer
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIAdornerLayer, UIElement)
+
+UIAdornerLayer::UIAdornerLayer()
+{
+}
+
+UIAdornerLayer::~UIAdornerLayer()
+{
+}
+
+void UIAdornerLayer::initialize()
+{
+	UIElement::initialize();
+	setHitTestVisible(false);	// TODO: ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ false ãŒã„ã„ã ã‚ã†ã€‚control ã¯ true ã§ã€‚
+	writeCoreFlag(detail::UICoreFlags_AdornerLayer, true);
+}
+
+void UIAdornerLayer::add(UIAdorner* adorner)
+{
+	adorner->setLogicalParent(this);
+	addVisualChild(adorner);
+	m_adorners.add(adorner);
+}
+
+void UIAdornerLayer::remove(UIAdorner* adorner)
+{
+	if (LN_CHECK_STATE(adorner->getLogicalParent() == this)) return;
+	adorner->setLogicalParent(nullptr);
+	removeVisualChild(adorner);
+	m_adorners.remove(adorner);
+}
+
+Size UIAdornerLayer::measureOverride(const Size& constraint)
+{
+	// LayoutPanel ã§ã¯ãªãã€UIElement ã® measureOverride ã‚’å®Ÿæ–½ (this ã®ã‚µã‚¤ã‚ºã‚’æ¸¬ã‚‹)
+	return detail::LayoutHelper2::measureOverride_AbsoluteLayout<UIAdornerLayer, UIElement, List<Ref<UIAdorner>>>(
+		this, constraint, m_adorners);
+}
+
+Size UIAdornerLayer::arrangeOverride(const Size& finalSize)
+{
+	return detail::LayoutHelper2::arrangeOverride_AbsoluteLayout<UIAdornerLayer, UIElement, List<Ref<UIAdorner>>>(
+		this, finalSize, m_adorners);
+}
+
+//==============================================================================
 // UIPopup
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIPopup, UIContentControl)
+//LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIPopup, UIContentControl)
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIPopup, UIAdorner)
 
 //------------------------------------------------------------------------------
 UIPopup::UIPopup()
+	: m_layoutView(nullptr)
 {
 }
 
@@ -28,7 +98,9 @@ UIPopup::~UIPopup()
 //------------------------------------------------------------------------------
 void UIPopup::initialize()
 {
-	UIElement::initialize();
+	UIAdorner::initialize();
+	setHitTestVisible(true);
+	setFocusable(true);
 }
 
 //------------------------------------------------------------------------------
@@ -38,14 +110,14 @@ void UIPopup::setContent(UIElement* element)
 
 	m_content = element;
 
-	// Šù‚É‚Á‚Ä‚¢‚ê‚Îæ‚èœ‚¢‚Ä‚¨‚­
+	// æ—¢ã«æŒã£ã¦ã„ã‚Œã°å–ã‚Šé™¤ã„ã¦ãŠã
 	if (m_content != nullptr)
 	{
 		removeVisualChild(m_content);
 		m_content = nullptr;
 	}
 
-	// V‚µ‚­•Û‚·‚é
+	// æ–°ã—ãä¿æŒã™ã‚‹
 	if (element != nullptr)
 	{
 		addVisualChild(element);
@@ -54,38 +126,75 @@ void UIPopup::setContent(UIElement* element)
 }
 
 //------------------------------------------------------------------------------
-void UIPopup::open()
+void UIPopup::open(UIElement* owner)
 {
-	UIElement* root = UIHelper::getLayoutRoot(this);
+	if (LN_CHECK_STATE(m_layoutView == nullptr)) return;
+
+	auto* parent = getVisualParent();
+	if (parent == nullptr) parent = owner;
+
+	UIElement* root = UIHelper::getLayoutRoot(parent);
 	if (root != nullptr)
 	{
-		UILayoutView* rootView = static_cast<UILayoutView*>(root);
-		rootView->openPopup(this);
+		m_layoutView = static_cast<UILayoutView*>(root);
+		m_layoutView->openPopup(this);
+		setPosition(UIMouse::getPosition(m_layoutView));	// TODO: WPF ã ã¨ã“ã®è¾ºã« PlacementMode ãŒã‹ã‹ã£ã¦ãã‚‹
+		focus();
+	}
+}
+
+void UIPopup::close()
+{
+	// TODO: WPF ã¯ StaysOpen ã§åˆ¶å¾¡ã§ãã‚‹
+	if (m_layoutView != nullptr)
+	{
+		m_layoutView->closePopup(this);
+		m_layoutView = nullptr;
 	}
 }
 
 //------------------------------------------------------------------------------
 Size UIPopup::measureOverride(const Size& constraint)
 {
-	// Popup ‚Íí‚ÉƒTƒCƒY 0 ‚Æ‚È‚éB
-	// ‚Ü‚½Aq—v‘f‚ÌƒŒƒCƒAƒEƒg‚Ís‚í‚È‚¢B
-	// q—v‘f‚ÌƒŒƒCƒAƒEƒg‚ğs‚¤‚Ì‚Í•Ê“rAPopup ê—p‚ÌƒŒƒCƒAƒEƒgƒtƒF[ƒYB
-	return Size();
+	// Popup ã¯å¸¸ã«ã‚µã‚¤ã‚º 0 ã¨ãªã‚‹ã€‚
+	// ã¾ãŸã€å­è¦ç´ ã®ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã¯è¡Œã‚ãªã„ã€‚
+	// å­è¦ç´ ã®ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã‚’è¡Œã†ã®ã¯åˆ¥é€”ã€Popup å°‚ç”¨ã®ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆãƒ•ã‚§ãƒ¼ã‚ºã€‚
+	//return Size();
+	//return UIElement::measureOverride(constraint);
+
+	return detail::LayoutHelper2::measureOverride_SimpleOneChild<UIPopup, UIAdorner>(this, constraint, m_content);
 }
 
 //------------------------------------------------------------------------------
 Size UIPopup::arrangeOverride(const Size& finalSize)
 {
-	return UIElement::arrangeOverride(finalSize);
+	//return UIElement::arrangeOverride(finalSize);
+	return detail::LayoutHelper2::arrangeOverride_SimpleOneChild<UIPopup, UIAdorner>(this, finalSize, m_content);
+}
+
+void UIPopup::onGotFocus(UIEventArgs* e)
+{
+	UIAdorner::onGotFocus(e);
+}
+
+void UIPopup::onLostFocus(UIEventArgs* e)
+{
+	close();
+	UIAdorner::onLostFocus(e);
 }
 
 //------------------------------------------------------------------------------
 void UIPopup::updateLayoutForInPlacePopup(const Size& viewSize)
 {
-	m_content->updateLayout(viewSize);
+	updateLayout(viewSize);
+
+	//if (m_content != nullptr)
+	//{
+	//	m_content->updateLayout(viewSize);
+	//}
 	//m_content->measureLayout(viewSize);
 
-	////TODO: ‚±‚Ì‚Ö‚ñ‚Åchild‚ÌˆÊ’u‚ğŒˆ‚ß‚é
+	////TODO: ã“ã®ã¸ã‚“ã§childã®ä½ç½®ã‚’æ±ºã‚ã‚‹
 
 	//m_content->arrangeLayout(RectF(0, 0, viewSize));
 	//m_content->updateTransformHierarchy(RectF(0, 0, viewSize));
@@ -95,7 +204,7 @@ void UIPopup::updateLayoutForInPlacePopup(const Size& viewSize)
 //==============================================================================
 // UIComboBoxItem
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIComboBoxItem, UIContentControl)
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIComboBoxItem, UIControl)
 
 //------------------------------------------------------------------------------
 UIComboBoxItem::UIComboBoxItem()
@@ -110,7 +219,7 @@ UIComboBoxItem::~UIComboBoxItem()
 //------------------------------------------------------------------------------
 void UIComboBoxItem::initialize()
 {
-	UIContentControl::initialize();
+	UIControl::initialize();
 	setHContentAlignment(HAlignment::Left);
 	setHAlignment(HAlignment::Stretch);
 	goToVisualState(UIVisualStates::NormalState);
@@ -178,7 +287,7 @@ void UIComboBox::initialize()
 //{
 //	if (LN_CHECK_ARG(item != nullptr)) return nullptr;
 //
-//	// ó‚¯æ‚Á‚½ item ‚ğ UIComboBoxItem ‚Åƒ‰ƒbƒv‚µ‚ÄAUIComboBoxItem ‚ğƒŠƒXƒg‚É“ü‚ê‚é
+//	// å—ã‘å–ã£ãŸ item ã‚’ UIComboBoxItem ã§ãƒ©ãƒƒãƒ—ã—ã¦ã€UIComboBoxItem ã‚’ãƒªã‚¹ãƒˆã«å…¥ã‚Œã‚‹
 //	auto listItem = Ref<UIComboBoxItem>::MakeRef();
 //	listItem->initialize(getManager());
 //	listItem->setContent(item);
@@ -189,7 +298,7 @@ void UIComboBox::initialize()
 //------------------------------------------------------------------------------
 void UIComboBox::onMouseDown(UIMouseEventArgs* e)
 {
-	m_popup->open();
+	m_popup->open(this);
 	UIControl::onMouseDown(e);
 }
 

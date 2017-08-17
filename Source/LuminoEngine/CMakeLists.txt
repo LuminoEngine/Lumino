@@ -457,7 +457,7 @@ set(LN_SOURCES_UI
 	Include/Lumino/UI/UIButton.h
 	Include/Lumino/UI/UIComboBox.h
 	Include/Lumino/UI/UICommands.h
-	Include/Lumino/UI/UIContentControl.h
+	Include/Lumino/UI/UIContentsControl.h
 	Include/Lumino/UI/UIContext.h
 	Include/Lumino/UI/UIControl.h
 	Include/Lumino/UI/UIElement.h
@@ -466,11 +466,13 @@ set(LN_SOURCES_UI
 	Include/Lumino/UI/UIEventArgs.h
 	Include/Lumino/UI/UIFrameWindow.h
 	Include/Lumino/UI/UIImage.h
+	Include/Lumino/UI/UIInput.h
 	Include/Lumino/UI/UIInjectedInputReceiver.h
 	Include/Lumino/UI/UIItemsControl.h
 	Include/Lumino/UI/UILayoutPanel.h
 	Include/Lumino/UI/UILayoutView.h
 	Include/Lumino/UI/UIListBox.h
+	Include/Lumino/UI/UIMenu.h
 	Include/Lumino/UI/UIRangeBase.h
 	Include/Lumino/UI/UIScrollViewer.h
 	Include/Lumino/UI/UISlider.h
@@ -485,12 +487,13 @@ set(LN_SOURCES_UI
 	Source/UI/EventArgsPool.h
 	Source/UI/Internal.h
 	Source/UI/LayoutElement.cpp
+	Source/UI/LayoutHelper.h
 	Source/UI/LayoutImpl.h
 	Source/UI/UIButton.cpp
 	Source/UI/UIColorsDefine.inl
 	Source/UI/UIComboBox.cpp
 	Source/UI/UICommands.cpp
-	Source/UI/UIContentControl.cpp
+	Source/UI/UIContentsControl.cpp
 	Source/UI/UIContext.cpp
 	Source/UI/UIControl.cpp
 	Source/UI/UIElement.cpp
@@ -500,12 +503,14 @@ set(LN_SOURCES_UI
 	Source/UI/UIFrameWindow.cpp
 	Source/UI/UIHelper.h
 	Source/UI/UIImage.cpp
+	Source/UI/UIInput.cpp
 	Source/UI/UIItemsControl.cpp
 	Source/UI/UILayoutPanel.cpp
 	Source/UI/UILayoutView.cpp
 	Source/UI/UIListBox.cpp
 	Source/UI/UIManager.cpp
 	Source/UI/UIManager.h
+	Source/UI/UIMenu.cpp
 	Source/UI/UIRangeBase.cpp
 	Source/UI/UIScrollViewer.cpp
 	Source/UI/UISlider.cpp

@@ -66,10 +66,12 @@ UILayoutView::~UILayoutView()
 //------------------------------------------------------------------------------
 void UILayoutView::initialize(UIContext* ownerContext, PlatformWindow* ownerNativeWindow)
 {
-	UIControl::initialize();
+	UIContentsControl::initialize();
 
 	m_ownerContext = ownerContext;
 	m_ownerNativeWindow = ownerNativeWindow;
+	m_adornerLayer = newObject<UIAdornerLayer>();
+	addVisualChild(m_adornerLayer);
 }
 
 //------------------------------------------------------------------------------
@@ -83,7 +85,7 @@ void UILayoutView::updateLayout(const Size& viewSize)
 		// 今は UILayoutView::updateLayout() からしか呼ばれていないので問題ないが…。
 		applyTemplateHierarchy(getOwnerContext()->getRootStyleTable(), nullptr);
 
-		UIControl::updateLayout(viewSize);
+		UIContentsControl::updateLayout(viewSize);
 
 
 		for (auto& popup : m_popupContainers)
@@ -96,12 +98,26 @@ void UILayoutView::updateLayout(const Size& viewSize)
 //------------------------------------------------------------------------------
 void UILayoutView::render(DrawingContext* g)
 {
-	UIControl::render(g);
+	UIContentsControl::render(g);
 
 	for (auto& popup : m_popupContainers)
 	{
 		popup->GetPopup()->render(g);
 	}
+
+	m_adornerLayer->render(g);
+}
+
+Size UILayoutView::measureOverride(const Size& constraint)
+{
+	m_adornerLayer->measureLayout(constraint);
+	return UIContentsControl::measureOverride(constraint);
+}
+
+Size UILayoutView::arrangeOverride(const Size& finalSize)
+{
+	m_adornerLayer->arrangeLayout(Rect(0, 0, finalSize));
+	return UIContentsControl::arrangeOverride(finalSize);
 }
 
 //------------------------------------------------------------------------------
@@ -117,6 +133,22 @@ bool UILayoutView::updateMouseHover(const Point& mousePos)
 	//		goto EXIT;
 	//	}
 	//}
+
+
+	// m_adornerLayer を調べる
+	//m_mouseHoverElement = m_adornerLayer->checkMouseHoverElement(mousePos);
+	//if (m_mouseHoverElement != nullptr) {
+	//	goto EXIT;
+	//}
+
+	// Popup を調べる
+	for (auto& popup : m_popupContainers)
+	{
+		m_mouseHoverElement = popup->GetPopup()->checkMouseHoverElement(mousePos);
+		if (m_mouseHoverElement != nullptr) {
+			goto EXIT;
+		}
+	}
 
 	// 通常のウィンドウのイベントを処理する
 	//if (m_rootElement != NULL)
@@ -154,15 +186,22 @@ EXIT:
 //------------------------------------------------------------------------------
 void UILayoutView::openPopup(UIPopup* popup)
 {
-	auto container = newObject<detail::UIPopuoContainer>();
-	container->SetPopup(popup);
-	m_popupContainers.add(container);
+	m_adornerLayer->add(popup);
+	//auto container = newObject<detail::UIPopuoContainer>();
+	//container->SetPopup(popup);
+	//m_popupContainers.add(container);
+
+	//// inplace popup は Visual child としておく。
+	//// マウスハンドリングやフォーカスの処理をこの View 内で行うため。
+	//addVisualChild(popup);
 }
 
 //------------------------------------------------------------------------------
 void UILayoutView::closePopup(UIPopup* popup)
 {
-	m_popupContainers.removeIf([popup](const Ref<detail::UIPopuoContainer>& ptr) { return ptr->GetPopup() == popup; });
+	m_adornerLayer->remove(popup);
+	//removeVisualChild(popup);
+	//m_popupContainers.removeIf([popup](const Ref<detail::UIPopuoContainer>& ptr) { return ptr->GetPopup() == popup; });
 }
 
 ////------------------------------------------------------------------------------

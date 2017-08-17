@@ -22,6 +22,10 @@ enum UICoreFlags
 	UICoreFlags_None			= 0x0000,
 	UICoreFlags_LayoutVisible	= 0x0001,
 	UICoreFlags_RenderVisible	= 0x0002,
+	UICoreFlags_LogicalChildrenPresenterAutoManagement = 0x0004,
+	UICoreFlags_PopupMenuRoot	= 0x0008,
+	UICoreFlags_AdornerLayer	= 0x0010,
+
 };
 
 } // namespace detail
@@ -238,6 +242,12 @@ public:
 	/** この要素の可視性を取得します。 */
 	UIVisibility getVisibility() const;
 
+	/** この要素の可視性を設定します。UIVisibility::Visible または UIVisibility::Collapsed を設定します。 */
+	void setVisible(bool value) { setVisibility(value ? UIVisibility::Visible : UIVisibility::Collapsed); }
+
+	/** この要素の可視性を取得します。 */
+	bool getVisible() const { return getVisibility() == UIVisibility::Visible; }
+
 	/** @} */
 
 
@@ -387,7 +397,7 @@ protected:
 	virtual bool onEvent(detail::UIInternalEventType type, UIEventArgs* args);
 	virtual void onRoutedEvent(UIEventArgs* e);
 	virtual void updateLayout(const Size& viewSize) override;
-	virtual detail::SpcialUIElementType getSpcialUIElementType() const;
+	virtual detail::SpcialUIElementType getSpcialUIElementType() const;	// TODO: CoreFlags で間に合う間はそっち使おう
 
 public:
 	virtual UIElement* checkMouseHoverElement(const Point& globalPt);
@@ -412,6 +422,7 @@ LN_INTERNAL_ACCESS:
 	void callOnLostFocus();
 	const Rect& getFinalGlobalRect() const { return m_finalGlobalRect; }
 	UIElement* getVisualParent() const { return m_visualParent; }
+	const Ref<detail::UIStylePropertyTableInstance>& getLocalStyle() const { return m_localStyle; }
 
 	void setSpecialElementType(UISpecialElementType type) { m_specialElementType = type; }
 	UISpecialElementType getSpecialElementType2() const { return m_specialElementType; }

@@ -104,6 +104,7 @@ LN_INTERNAL_ACCESS:
 	CameraComponent();
 	virtual ~CameraComponent();
 	void initialize(CameraProjection proj);
+	void setCameraDirection(CameraDirection mode) { m_directionMode = mode; }
 	CameraProjection getProjectionMode() const { return m_projectionMode; }
 
 	void setReflectionPlane(const Plane& plane) { m_reflectionPlane = plane; }

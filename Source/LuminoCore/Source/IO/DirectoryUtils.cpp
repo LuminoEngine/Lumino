@@ -3,6 +3,7 @@
 #include <Lumino/IO/PathName.h>
 #include <Lumino/IO/DirectoryUtils.h>
 #include <Lumino/IO/PathTraits.h>
+#include <Lumino/IO/FileSystem.h>
 #if defined(LN_OS_WIN32)
 #include "FileFinder_Win32.h"
 #else
@@ -117,9 +118,12 @@ List<String> DirectoryUtils::getFiles(const TCHAR* drPath, const TCHAR* pattern)
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-GenericFileFinder<TChar>::GenericFileFinder(const GenericStringRef<TChar>& dirPath)
+GenericFileFinder<TChar>::GenericFileFinder(const GenericStringRef<TChar>& dirPath, FileAttribute attr, const GenericStringRef<TChar>& pattern)
 	: m_impl(LN_NEW detail::GenericFileFinderImpl<TChar>(dirPath))
+	, m_attr(attr)
+	, m_pattern(pattern)
 {
+	next();
 }
 
 //------------------------------------------------------------------------------
@@ -147,7 +151,42 @@ const GenericPathName<TChar>& GenericFileFinder<TChar>::getCurrent() const
 template<typename TChar>
 bool GenericFileFinder<TChar>::next()
 {
-	return m_impl->next();
+	if (m_pattern.isEmpty())
+	{
+		return nextInternal();
+	}
+	else
+	{
+		bool result = false;
+		do
+		{
+			result = nextInternal();
+
+		} while (result && !FileSystem::matchPath(m_impl->getCurrent().c_str(), m_pattern.c_str()));
+
+		return result;
+	}
+}
+
+template<typename TChar>
+bool GenericFileFinder<TChar>::nextInternal()
+{
+	bool result = false;
+	while (true)
+	{
+		result = m_impl->next();
+		if (!result) break;
+
+		uint32_t attr = FileSystem::getAttribute(m_impl->getCurrent().c_str()).getValue();
+		//uint32_t filter = (FileAttribute::enum_type)m_attr.getValue());
+		uint32_t filter = (uint32_t)m_attr.getValue();
+		if ((attr & filter) != 0)
+		{
+			break;
+		}
+	}
+
+	return result;
 }
 
 // テンプレートのインスタンス化

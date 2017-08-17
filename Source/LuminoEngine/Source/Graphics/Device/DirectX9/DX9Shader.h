@@ -31,7 +31,7 @@ public:
 
 public:
 	/// 作成
-	static ShaderCompileResultLevel create(DX9GraphicsDevice* device, const char* code, size_t codeByteCount, DX9Shader** outShader, StringA* outMessage);
+	static ShaderCompileResultLevel create(DX9GraphicsDevice* device, const char* code, size_t codeByteCount, DX9Shader** outShader, std::string* outMessage);
 
 	DX9GraphicsDevice* getGraphicsDevice() { return m_device; }
 	ID3DXEffect* getID3DXEffect() { return m_dxEffect; }

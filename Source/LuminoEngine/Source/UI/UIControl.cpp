@@ -2,7 +2,9 @@
 #include "Internal.h"
 #include <Lumino/UI/UIControl.h>
 #include <Lumino/UI/UILayoutPanel.h>
+#include <Lumino/UI/UIMenu.h>
 #include "LayoutImpl.h"
+#include "LayoutHelper.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -15,6 +17,9 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIControl, UIElement);
 UIControl::UIControl()
 	: HContentAlignment(HAlignment::Stretch)
 	, VContentAlignment(VAlignment::Stretch)
+	, m_contextMenu(nullptr)
+	, m_clickMode(ClickMode::Release)
+	, m_isPressed(false)
 {
 }
 
@@ -28,6 +33,7 @@ void UIControl::initialize()
 {
 	UIElement::initialize();
 	setFocusable(true);
+	writeCoreFlag(detail::UICoreFlags_LogicalChildrenPresenterAutoManagement, true);
 
 	auto* vsm = getVisualStateManager();
 	vsm->registerVisualState(UIVisualStates::CommonGroup, UIVisualStates::NormalState);
@@ -42,81 +48,130 @@ void UIControl::initialize()
 	VContentAlignment = VAlignment::Stretch;
 
 
-	m_items = Ref<UIElementCollection>::makeRef(this);
+	//m_items = Ref<UIElementCollection>::makeRef(this);
 	auto panel = newObject<UIAbsoluteLayout>();
 	setLayoutPanel(panel);
 }
-
-//------------------------------------------------------------------------------
-UIElementCollection* UIControl::getItems() const
-{
-	return m_items;
-}
-
-//------------------------------------------------------------------------------
-void UIControl::addChild(UIElement* element)
-{
-	m_items->add(element);
-	element->setLogicalParent(this);
-}
-
-//------------------------------------------------------------------------------
-void UIControl::removeChild(UIElement* element)
-{
-	element->setLogicalParent(nullptr);
-	m_items->remove(element);
-}
-
-//------------------------------------------------------------------------------
-void UIControl::clearChildren()
-{
-	for (auto* c : *m_items)
-	{
-		c->setLogicalParent(nullptr);
-	}
-	m_items->clear();
-}
+//
+////------------------------------------------------------------------------------
+//UIElementCollection* UIControl::getItems() const
+//{
+//	return m_items;
+//}
 
 //------------------------------------------------------------------------------
 void UIControl::setLayoutPanel(UILayoutPanel* newPanel)
 {
-	if (newPanel != m_itemsHostPanel)
-	{
-		// 既に持っていれば取り除いておく
-		if (m_itemsHostPanel != nullptr)
-		{
-			for (auto* c : *m_items)
-			{
-				m_itemsHostPanel->getChildren()->remove(c);
-			}
-
-			removeVisualChild(m_itemsHostPanel);
-			m_itemsHostPanel = nullptr;
-		}
-
-		// 新しく保持する
-		if (newPanel != nullptr)
-		{
-			addVisualChild(newPanel);
-			m_itemsHostPanel = newPanel;
-
-			for (auto* c : *m_items)
-			{
-				m_itemsHostPanel->getChildren()->add(c);
-			}
-		}
-
-		// 変更通知
-		onLayoutPanelChanged(m_itemsHostPanel);
-
-		//m_invalidateItemsHostPanel = true;
-	}
+	m_itemsHostPanel = newPanel;
+	setLogicalChildrenPresenter(m_itemsHostPanel);
+//	if (newPanel != m_itemsHostPanel)
+//	{
+//		// 既に持っていれば取り除いておく
+//		if (m_itemsHostPanel != nullptr)
+//		{
+//			for (auto* c : *m_items)
+//			{
+//				m_itemsHostPanel->getChildren()->remove(c);
+//			}
+//
+//			removeVisualChild(m_itemsHostPanel);
+//			m_itemsHostPanel = nullptr;
+//		}
+//
+//		// 新しく保持する
+//		if (newPanel != nullptr)
+//		{
+//			addVisualChild(newPanel);
+//			m_itemsHostPanel = newPanel;
+//
+//			for (auto* c : *m_items)
+//			{
+//				m_itemsHostPanel->getChildren()->add(c);
+//			}
+//		}
+//
+//		// 変更通知
+//		onLogicalChildrenPresenterChanged(m_itemsHostPanel);
+//
+//		//m_invalidateItemsHostPanel = true;
+//	}
 }
 
 //------------------------------------------------------------------------------
 UILayoutPanel* UIControl::getLayoutPanel() const
 {
 	return m_itemsHostPanel;
+}
+
+void UIControl::setContextMenu(UIContextMenu* menu)
+{
+	m_contextMenu = menu;
+}
+
+UIContextMenu* UIControl::getContextMenu() const
+{
+	return m_contextMenu;
+}
+
+void UIControl::setLogicalChildrenPresenter(UILayoutPanel* presenter)
+{
+	if (presenter != m_logicalChildrenPresenter)
+	{
+		// 既に持っていれば取り除いておく
+		if (m_logicalChildrenPresenter != nullptr)
+		{
+			int count = getLogicalChildrenCount();
+			for (int i = 0; i < count; i++)
+			{
+				m_logicalChildrenPresenter->getChildren()->remove(getLogicalChild(i));
+			}
+
+			removeVisualChild(m_logicalChildrenPresenter);
+			m_logicalChildrenPresenter = nullptr;
+		}
+
+		// 新しく保持する
+		if (presenter != nullptr)
+		{
+			if (readCoreFlag(detail::UICoreFlags_LogicalChildrenPresenterAutoManagement))
+			{
+				addVisualChild(presenter);
+			}
+
+			m_logicalChildrenPresenter = presenter;
+
+			int count = getLogicalChildrenCount();
+			for (int i = 0; i < count; i++)
+			{
+				m_logicalChildrenPresenter->getChildren()->add(getLogicalChild(i));
+			}
+		}
+
+		// 変更通知
+		onLogicalChildrenPresenterChanged(m_logicalChildrenPresenter);
+
+		//m_invalidateItemsHostPanel = true;
+	}
+}
+
+UILayoutPanel* UIControl::getLogicalChildrenPresenter() const
+{
+	return m_logicalChildrenPresenter;
+}
+
+int UIControl::getLogicalChildrenCount() const
+{
+	return 0;
+}
+
+UIElement* UIControl::getLogicalChild(int index)
+{
+	return nullptr;
+}
+
+void UIControl::submit()
+{
+	onSubmit(UIEventArgs::create(nullptr, this));
 }
 
 //------------------------------------------------------------------------------
@@ -129,6 +184,10 @@ EventConnection UIControl::connectOnSubmit(UIEventHandler handler)
 void UIControl::onSubmit(UIEventArgs* e)
 {
 	m_onSubmit.raise(e);
+}
+
+void UIControl::onMouseClick(UIMouseEventArgs* e)
+{
 }
 
 ////------------------------------------------------------------------------------
@@ -147,6 +206,9 @@ void UIControl::onSubmit(UIEventArgs* e)
 //------------------------------------------------------------------------------
 Size UIControl::measureOverride(const Size& constraint)
 {
+	UIElement* child = (readCoreFlag(detail::UICoreFlags_LogicalChildrenPresenterAutoManagement)) ? m_logicalChildrenPresenter : nullptr;
+	return detail::LayoutHelper2::measureOverride_SimpleOneChild<UIControl, UIElement>(this, constraint, child);
+
 	//if (m_invalidateItemsHostPanel)
 	//{
 
@@ -154,55 +216,68 @@ Size UIControl::measureOverride(const Size& constraint)
 	//}
 
 
-#if 1
-	Size desiredSize = UIElement::measureOverride(constraint);
-
-	m_itemsHostPanel->measureLayout(constraint);
-	const Size& childDesiredSize = m_itemsHostPanel->getDesiredSize();
-
-	desiredSize.width = std::max(desiredSize.width, childDesiredSize.width);
-	desiredSize.height = std::max(desiredSize.height, childDesiredSize.height);
-
-	return desiredSize;
-#else
-	return detail::LayoutImpl<UIControl>::UILayoutPanel_MeasureOverride(
-		this, constraint,
-		[](UIControl* panel, const Size& constraint) { return panel->UIElement::MeasureOverride(constraint); });
-	//Size desiredSize = UIElement::measureOverride(constraint);
-	//if (m_visualTreeRoot != nullptr)
-	//{
-	//    m_visualTreeRoot->measureLayout(constraint);
-	//    const Size& childDesiredSize = m_visualTreeRoot->getDesiredSize();
-
-	//    desiredSize.width = std::max(desiredSize.width, childDesiredSize.width);
-	//    desiredSize.height = std::max(desiredSize.height, childDesiredSize.height);
-	//}
-	//return desiredSize;
-#endif
+//#if 1
+//	Size desiredSize = UIElement::measureOverride(constraint);
+//
+//	Size childDesiredSize(0, 0);
+//	if (readCoreFlag(detail::UICoreFlags_LogicalChildrenPresenterAutoManagement))
+//	{
+//		m_logicalChildrenPresenter->measureLayout(constraint);
+//		childDesiredSize = m_logicalChildrenPresenter->getDesiredSize();
+//	}
+//
+//	desiredSize.width = std::max(desiredSize.width, childDesiredSize.width);
+//	desiredSize.height = std::max(desiredSize.height, childDesiredSize.height);
+//
+//	return desiredSize;
+//#else
+//	return detail::LayoutImpl<UIControl>::UILayoutPanel_MeasureOverride(
+//		this, constraint,
+//		[](UIControl* panel, const Size& constraint) { return panel->UIElement::MeasureOverride(constraint); });
+//	//Size desiredSize = UIElement::measureOverride(constraint);
+//	//if (m_visualTreeRoot != nullptr)
+//	//{
+//	//    m_visualTreeRoot->measureLayout(constraint);
+//	//    const Size& childDesiredSize = m_visualTreeRoot->getDesiredSize();
+//
+//	//    desiredSize.width = std::max(desiredSize.width, childDesiredSize.width);
+//	//    desiredSize.height = std::max(desiredSize.height, childDesiredSize.height);
+//	//}
+//	//return desiredSize;
+//#endif
 
 }
 
 //------------------------------------------------------------------------------
 Size UIControl::arrangeOverride(const Size& finalSize)
 {
-#if 1
-	Size childDesiredSize = m_itemsHostPanel->getDesiredSize();
-	childDesiredSize.width = std::max(finalSize.width, childDesiredSize.width);
-	childDesiredSize.height = std::max(finalSize.height, childDesiredSize.height);
-	m_itemsHostPanel->arrangeLayout(Rect(0.0f, 0.0f, childDesiredSize));
-	return finalSize;
-#else
-	return detail::LayoutImpl<UIControl>::UILayoutPanel_ArrangeOverride(this, Vector2::Zero, finalSize);
-	//RectF childFinal(0, 0, finalSize);
-	//if (m_visualTreeRoot != nullptr)
-	//{
-	//    Size childDesiredSize = m_visualTreeRoot->getDesiredSize();
-	//    childDesiredSize.width = std::max(finalSize.width, childDesiredSize.width);
-	//    childDesiredSize.height = std::max(finalSize.height, childDesiredSize.height);
-	//    m_visualTreeRoot->arrangeLayout(RectF(0, 0, childDesiredSize));
-	//}
-	//return finalSize;
-#endif
+	UIElement* child = (readCoreFlag(detail::UICoreFlags_LogicalChildrenPresenterAutoManagement)) ? m_logicalChildrenPresenter : nullptr;
+	return detail::LayoutHelper2::arrangeOverride_SimpleOneChild<UIControl, UIElement>(this, finalSize, child);
+
+
+
+//#if 1
+//	if (readCoreFlag(detail::UICoreFlags_LogicalChildrenPresenterAutoManagement))
+//	{
+//		Size childDesiredSize = m_logicalChildrenPresenter->getDesiredSize();
+//		childDesiredSize.width = std::max(finalSize.width, childDesiredSize.width);
+//		childDesiredSize.height = std::max(finalSize.height, childDesiredSize.height);
+//		m_logicalChildrenPresenter->arrangeLayout(Rect(0.0f, 0.0f, childDesiredSize));
+//	}
+//
+//	return finalSize;
+//#else
+//	return detail::LayoutImpl<UIControl>::UILayoutPanel_ArrangeOverride(this, Vector2::Zero, finalSize);
+//	//RectF childFinal(0, 0, finalSize);
+//	//if (m_visualTreeRoot != nullptr)
+//	//{
+//	//    Size childDesiredSize = m_visualTreeRoot->getDesiredSize();
+//	//    childDesiredSize.width = std::max(finalSize.width, childDesiredSize.width);
+//	//    childDesiredSize.height = std::max(finalSize.height, childDesiredSize.height);
+//	//    m_visualTreeRoot->arrangeLayout(RectF(0, 0, childDesiredSize));
+//	//}
+//	//return finalSize;
+//#endif
 }
 
 
@@ -251,12 +326,37 @@ void UIControl::onMouseDown(UIMouseEventArgs* e)
 		e->handled = true;
 	}*/
 
+	if (m_clickMode == ClickMode::Release)
+	{
+		m_isPressed = true;
+		focus();
+		captureMouse();
+		//goToVisualState(UIVisualStates::PressedState);
+		e->handled = true;
+	}
+	else if (m_clickMode == ClickMode::Press)
+	{
+		onMouseClick(e);
+		e->handled = true;
+	}
+
 	UIElement::onMouseDown(e);
 }
 
 //------------------------------------------------------------------------------
 void UIControl::onMouseUp(UIMouseEventArgs* e)
 {
+	if (m_clickMode == ClickMode::Release)
+	{
+		if (m_isPressed)
+		{
+			m_isPressed = false;
+			releaseMouseCapture();
+			goToVisualState(UIVisualStates::MouseOverState);
+			onMouseClick(e);
+			e->handled = true;
+		}
+	}
 	//if (m_isPressed)
 	//{
 	//	m_isPressed = false;
@@ -267,6 +367,15 @@ void UIControl::onMouseUp(UIMouseEventArgs* e)
 	//}
 
 	UIElement::onMouseUp(e);
+
+	if (e->getMouseButtons() == MouseButtons::Right)
+	{
+		if (m_contextMenu != nullptr)
+		{
+			m_contextMenu->open(this);
+			e->handled = true;
+		}
+	}
 }
 
 void UIControl::onMouseEnter(UIMouseEventArgs* e)
@@ -300,7 +409,7 @@ void UIControl::onMouseLeave(UIMouseEventArgs* e)
 //}
 
 //------------------------------------------------------------------------------
-void UIControl::onLayoutPanelChanged(UILayoutPanel* newPanel)
+void UIControl::onLogicalChildrenPresenterChanged(UILayoutPanel* presenter)
 {
 }
 
@@ -311,50 +420,23 @@ void UIControl::onChildCollectionChanged(const tr::ChildCollectionChangedArgs& e
 	{
 	case tr::NotifyCollectionChangedAction::Add:
 		if (LN_CHECK_STATE(e.newItems.getCount() == 1)) return;	// TODO
-		m_itemsHostPanel->getChildren()->insert(e.newStartingIndex, e.newItems.getAt(0));
+		m_logicalChildrenPresenter->getChildren()->insert(e.newStartingIndex, e.newItems.getAt(0));
 		break;
 	case tr::NotifyCollectionChangedAction::Move:
 		LN_NOTIMPLEMENTED();
 		break;
 	case tr::NotifyCollectionChangedAction::Remove:
-		m_itemsHostPanel->getChildren()->removeAt(e.oldStartingIndex);
+		m_logicalChildrenPresenter->getChildren()->removeAt(e.oldStartingIndex);
 		break;
 	case tr::NotifyCollectionChangedAction::replace:
 		LN_NOTIMPLEMENTED();
 		break;
 	case tr::NotifyCollectionChangedAction::reset:
-		m_itemsHostPanel->getChildren()->clear();
+		m_logicalChildrenPresenter->getChildren()->clear();
 		break;
 	default:
 		break;
 	}
-}
-
-//==============================================================================
-// UIUserControl
-//==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIUserControl, UIControl);
-
-//------------------------------------------------------------------------------
-Ref<UIUserControl> UIUserControl::create()
-{
-	return newObject<UIUserControl>();
-}
-
-//------------------------------------------------------------------------------
-UIUserControl::UIUserControl()
-{
-}
-
-//------------------------------------------------------------------------------
-UIUserControl::~UIUserControl()
-{
-}
-
-//------------------------------------------------------------------------------
-void UIUserControl::initialize()
-{
-	UIControl::initialize();
 }
 
 LN_NAMESPACE_END

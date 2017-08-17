@@ -167,7 +167,7 @@ void EngineInitalize()
 	// 背景はグレーにしておくと加算合成のテストとか、いろいろ都合がよい
 	Engine::getMainViewport()->setViewBackgroundColor(Color32::Gray);
 
-
+	Engine::getCamera3D()->getCameraComponent()->setCameraDirection(CameraDirection::lookAt);
 
 	{
 		auto buttonNormalBrush = TextureBrush::create(detail::UIManager::getInstance()->getDefaultSkinTexture());
@@ -198,7 +198,7 @@ GTEST_API_ int main(int argc, char **argv)
 #if 0	// 部分的にテストを実行したりする
 	char* testArgs[] = {
 		argv[0],
-		"--gtest_filter=Test_UI_GridLayout.*"
+		"--gtest_filter=Test_Scene_Sprite.Issues_HC1"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);
@@ -218,7 +218,7 @@ GTEST_API_ int main(int argc, char **argv)
 	}
 
 	{
-		EngineSettings::setGraphicsAPI(GraphicsAPI::DirectX9);
+		EngineSettings::setGraphicsAPI(GraphicsAPI::OpenGL);
 
 		EngineInitalize();
 		int r = RUN_ALL_TESTS();

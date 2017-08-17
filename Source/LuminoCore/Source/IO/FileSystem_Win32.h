@@ -1,6 +1,7 @@
 ﻿
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <Shlwapi.h>
 #include "../Internal.h"
 #include "../../include/Lumino/Text/Encoding.h"
 #include "../../include/Lumino/IO/FileStream.h"
@@ -246,10 +247,11 @@ bool FileSystem::getAttributeInternal(const char* path, FileAttribute* outAttr)
 	DWORD attr = ::GetFileAttributesA(path);
 	if (attr == -1) { return false; }
 
-	FileAttribute flags = FileAttribute::Normal;
-	if (attr & FILE_ATTRIBUTE_DIRECTORY) flags |= FileAttribute::Directory;
-	if (attr & FILE_ATTRIBUTE_READONLY)  flags |= FileAttribute::ReadOnly;
-	if (attr & FILE_ATTRIBUTE_HIDDEN)    flags |= FileAttribute::Hidden;
+	FileAttribute flags = FileAttribute::None;
+	if (attr & FILE_ATTRIBUTE_DIRECTORY)	flags |= FileAttribute::Directory;
+	else									flags |= FileAttribute::Normal;
+	if (attr & FILE_ATTRIBUTE_READONLY)		flags |= FileAttribute::ReadOnly;
+	if (attr & FILE_ATTRIBUTE_HIDDEN)		flags |= FileAttribute::Hidden;
 	*outAttr = flags;
 	return true;
 }
@@ -258,12 +260,23 @@ bool FileSystem::getAttributeInternal(const wchar_t* path, FileAttribute* outAtt
 	DWORD attr = ::GetFileAttributesW(path);
 	if (attr == -1) { return false; }
 
-	FileAttribute flags = FileAttribute::Normal;
-	if (attr & FILE_ATTRIBUTE_DIRECTORY) flags |= FileAttribute::Directory;
-	if (attr & FILE_ATTRIBUTE_READONLY)  flags |= FileAttribute::ReadOnly;
-	if (attr & FILE_ATTRIBUTE_HIDDEN)    flags |= FileAttribute::Hidden;
+	FileAttribute flags = FileAttribute::None;
+	if (attr & FILE_ATTRIBUTE_DIRECTORY)	flags |= FileAttribute::Directory;
+	else									flags |= FileAttribute::Normal;
+	if (attr & FILE_ATTRIBUTE_READONLY)		flags |= FileAttribute::ReadOnly;
+	if (attr & FILE_ATTRIBUTE_HIDDEN)		flags |= FileAttribute::Hidden;
 	*outAttr = flags;
 	return true;
+}
+
+bool FileSystem::matchPath(const char* filePath, const char* pattern)
+{
+	return ::PathMatchSpecExA(filePath, pattern, PMSF_NORMAL) == S_OK;
+}
+
+bool FileSystem::matchPath(const wchar_t* filePath, const wchar_t* pattern)
+{
+	return ::PathMatchSpecExW(filePath, pattern, PMSF_NORMAL) == S_OK;
 }
 
 LN_NAMESPACE_END

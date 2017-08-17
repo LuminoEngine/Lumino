@@ -67,9 +67,9 @@ private:
 	void attach(WorldObject* owner);
 	void detach();
 	void updateFrame();
+	virtual void render(RenderingContext* context);
 
 LN_INTERNAL_ACCESS:
-	virtual void render(RenderingContext* context);
 	void setSpecialComponentType(SpecialComponentType type) { m_specialComponentType = type; }
 	SpecialComponentType getSpecialComponentType() const { return m_specialComponentType; }
 
@@ -79,6 +79,7 @@ private:
 	int						m_layer;
 	short					m_orderInLayer;
 
+	friend class World;
 	friend class WorldObject;
 	friend class VisualComponent;
 };

@@ -807,11 +807,11 @@ inline TElement* DrawList::resolveDrawElement(detail::IRenderFeature* renderFeat
 	const DrawElementMetadata* userMetadata = getMetadata();
 	const DrawElementMetadata* metadata = (userMetadata != nullptr) ? userMetadata : &DrawElementMetadata::Default;
 
-	m_lastRenderFeature = renderFeature;
 
 	// 何か前回追加された DrawElement があり、それと DrawingSectionId、State が一致するならそれに対して追記できる
 	if (m_currentSectionTopElement != nullptr &&
 		append &&
+		m_lastRenderFeature == renderFeature &&
 		m_currentSectionTopElement->metadata.equals(*metadata) &&
 		m_currentSectionTopElement->m_stateFence == m_currentStateFence &&
 		m_drawElementList.getBatch(m_currentSectionTopElement->batchIndex)->Equal(getCurrentState()->m_state, availableMaterial, getCurrentState()->m_builtinEffectData))
@@ -819,6 +819,7 @@ inline TElement* DrawList::resolveDrawElement(detail::IRenderFeature* renderFeat
 		return static_cast<TElement*>(m_currentSectionTopElement);
 	}
 
+	m_lastRenderFeature = renderFeature;
 
 	// DrawElement を新しく作る
 	TElement* element = m_drawElementList.addCommand<TElement>(getCurrentState()->m_state, availableMaterial, getCurrentState()->m_builtinEffectData, forceStateChange);

@@ -436,33 +436,34 @@ void Shader::initialize(detail::GraphicsManager* manager, const void* code, int 
 {
 	GraphicsResourceObject::initialize();
 
-	StringBuilderA newCode;
+	std::stringstream sb;
 	if (useTRSS)
 	{
 		detail::ShaderAnalyzer analyzer;
 		analyzer.analyzeLNFX((const char*)code, length);
 		auto cc = analyzer.makeHLSLCode();
 
-		newCode.append(cc.data(), cc.size());
+		sb << std::string(cc.data(), cc.size());
 
 		//FileSystem::WriteAllBytes(_T("code.c"), cc.data(), cc.size());
 	}
 	else
 	{
 		// ヘッダコード先頭に追加する
-		newCode.append(manager->getCommonShaderHeader().c_str());
-		newCode.append("#line 5");
-		newCode.append(StringA::getNewLine().c_str());
-		newCode.append((const char*)code, length);
-		newCode.append("\n");	// 最後には改行を入れておく。環境によっては改行がないとエラーになる。しかもエラーなのにエラー文字列が出ないこともある。
+		sb << (manager->getCommonShaderHeader());
+		sb << ("#line 5\n");
+		sb << std::string((const char*)code, length);
+		sb << ("\n");	// 最後には改行を入れておく。環境によっては改行がないとエラーになる。しかもエラーなのにエラー文字列が出ないこともある。
 	}
 
+	std::string newCode = sb.str();
+
 	ShaderCompileResult result;
-	m_deviceObj = m_manager->getGraphicsDevice()->createShader(newCode.c_str(), newCode.getLength(), &result);
+	m_deviceObj = m_manager->getGraphicsDevice()->createShader(newCode.c_str(), newCode.length(), &result);
 	LN_THROW(m_deviceObj != nullptr, CompilationException, result);
 
 	// ライブラリ外部からの DeviceContext 再設定に備えてコードを保存する
-	m_sourceCode.alloc(newCode.c_str(), newCode.getLength());
+	m_sourceCode.alloc(newCode.c_str(), newCode.length());
 
 	postInitialize();
 }

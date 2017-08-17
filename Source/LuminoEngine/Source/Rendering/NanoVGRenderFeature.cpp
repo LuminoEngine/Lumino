@@ -596,11 +596,11 @@ static int lnnvg__renderCreate(void* uptr)
 #include "../Graphics/Resource/NanoVGShader.fx.h"
 	};
 	static const size_t codeLen = LN_ARRAY_SIZE_OF(codeData);
-	StringA code = lnc->manager->getCommonShaderHeader();
+	std::string code = lnc->manager->getCommonShaderHeader();
 	code.append((const char*)codeData, codeLen);
 
 	ShaderCompileResult result;
-	lnc->shader.attach(device->createShader(code.c_str(), code.getLength(), &result), false);
+	lnc->shader.attach(device->createShader(code.c_str(), code.length(), &result), false);
 	LN_THROW(result.Level != ShaderCompileResultLevel_Error, CompilationException, result);
 	lnc->shaderPass = lnc->shader->getTechnique(0)->getPass(0);
 	lnc->varViewSize = lnc->shader->getVariableByName(_T("viewSize"));

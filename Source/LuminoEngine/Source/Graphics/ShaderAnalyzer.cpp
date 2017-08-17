@@ -1,5 +1,6 @@
 ﻿
 #include "../Internal.h"
+#include <Lumino/Base/StdStringHelper.h>
 #include <Fluorite/Diagnostics.h>
 #include <Fluorite/AnalyzerContext.h>
 #include "../../../Fluorite/Source/Fluorite/Lexer/CppLexer.h"
@@ -140,7 +141,7 @@ void ShaderAnalyzer::parseSimpleShaderMacros(const fl::TokenList* tokenList)
 		}
 		else if (keyword.GetToken()->EqualString("LN_SURFACE_PS", 13))
 		{
-			m_wrapedShaderFuncList.add({ lastTechniqueKWLoc, pos.GetToken()->getString(), ShaderCodeType::SurfacePixelShader });
+			m_wrapedShaderFuncList.add({ lastTechniqueKWLoc, pos.GetToken()->getString().c_str(), ShaderCodeType::SurfacePixelShader });
 		}
 
 		pos = keyword.next();
@@ -150,7 +151,7 @@ void ShaderAnalyzer::parseSimpleShaderMacros(const fl::TokenList* tokenList)
 //------------------------------------------------------------------------------
 std::vector<char> ShaderAnalyzer::makeHLSLCode() const
 {
-	StringBuilderA newCode;
+	std::stringstream sb;
 	// Shader common header.
 	{
 		static const unsigned char EffectHeader_Data[] =
@@ -158,42 +159,42 @@ std::vector<char> ShaderAnalyzer::makeHLSLCode() const
 #include "Resource/EffectHeaderDX9HLSL.fxh.h"
 		};
 		static const size_t EffectHeader_Data_Len = LN_ARRAY_SIZE_OF(EffectHeader_Data);
-		newCode.append(EffectHeader_Data, EffectHeader_Data_Len);
+		sb << std::string((const char*)EffectHeader_Data, EffectHeader_Data_Len);
 	}
-	newCode.append("#line 5");
-	newCode.append(StringA::getNewLine().c_str());
+	sb << ("#line 5");
+	sb << ("\n");
 	//newCode.Append(m_code, m_codeLength);
 	//newCode.Append("\n");	// 最後には改行を入れておく。環境によっては改行がないとエラーになる。しかもエラーなのにエラー文字列が出ないこともある。
 
+	std::string newCode = sb.str();
 
-
-	std::vector<char> code(newCode.c_str(), newCode.c_str() + newCode.getLength());
+	std::vector<char> code(newCode.c_str(), newCode.c_str() + newCode.length());
 	code.insert(code.end(), m_code, m_code + m_codeLength);
 
 	// TODO: StringBuilderA Insert, AppendFormat, AppendLine
 
-	int insetedLength = newCode.getLength();
+	int insetedLength = newCode.length();
 
 	for (auto& info : m_wrapedShaderFuncList)
 	{
 		if (info.type == ShaderCodeType::SurfacePixelShader)
 		{
-			StringBuilderA sb;
-			sb.append(StringA::format("LN_PS_OUTPUT_SURFACE LN_SurfacePS_{0}(LN_PS_INPUT_SURFACE i){{", info.funcName));
-			sb.append("LN_SURFACE_INPUT ui;");
-			sb.append("ui.TexCoord  = i.TexCoord;");
-			sb.append("ui.TexCoord1 = i.TexCoord1;");
-			sb.append("ui.TexCoord2 = i.TexCoord2;");
-			sb.append("ui.TexCoord3 = i.TexCoord;");
-			sb.append("ui.Color     = i.Color;");
-			sb.append(StringA::format("LN_SURFACE_OUTPUT uo = {0}(ui);", info.funcName));
-			sb.append("LN_PS_OUTPUT_SURFACE o;");
-			sb.append("o.Color = uo.Albedo;");
-			sb.append("return o;");
-			sb.append("}");
-
-			code.insert(code.begin() + insetedLength + info.lastTechniqueKWLoc, sb.c_str(), sb.c_str() + sb.getLength());
-			insetedLength += sb.getLength();
+			std::stringstream sb;
+			sb << (StdStringHelper::cat<std::string>("LN_PS_OUTPUT_SURFACE LN_SurfacePS_", info.funcName, "(LN_PS_INPUT_SURFACE i){"));
+			sb << ("LN_SURFACE_INPUT ui;");
+			sb << ("ui.TexCoord  = i.TexCoord;");
+			sb << ("ui.TexCoord1 = i.TexCoord1;");
+			sb << ("ui.TexCoord2 = i.TexCoord2;");
+			sb << ("ui.TexCoord3 = i.TexCoord;");
+			sb << ("ui.Color     = i.Color;");
+			sb << (StdStringHelper::cat<std::string>("LN_SURFACE_OUTPUT uo = ", info.funcName, "(ui);"));
+			sb << ("LN_PS_OUTPUT_SURFACE o;");
+			sb << ("o.Color = uo.Albedo;");
+			sb << ("return o;");
+			sb << ("}");
+			std::string str = sb.str();
+			code.insert(code.begin() + insetedLength + info.lastTechniqueKWLoc, str.c_str(), str.c_str() + str.length());
+			insetedLength += str.length();
 		}
 	}
 

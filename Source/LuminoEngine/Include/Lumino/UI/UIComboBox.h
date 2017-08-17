@@ -1,7 +1,7 @@
-
+﻿
 #pragma once
 #include "UIItemsControl.h"
-#include "UIContentControl.h"
+#include "UIContentsControl.h"
 
 LN_NAMESPACE_BEGIN
 class UIScrollViewer;
@@ -10,21 +10,65 @@ class UIComboBox;
 using UIComboBoxItemPtr = Ref<UIComboBoxItem>;
 using UIComboBoxPtr = Ref<UIComboBox>;
 
+
+/**
+	@brief
+*/
+class UIAdorner
+	: public UIElement
+{
+	LN_OBJECT;
+public:
+
+LN_CONSTRUCT_ACCESS:
+	UIAdorner();
+	virtual ~UIAdorner();
+	void initialize();
+};
+
+/**
+	@brief
+*/
+class UIAdornerLayer
+	: public UIElement
+{
+	LN_OBJECT;
+public:
+	void add(UIAdorner* adorner);
+	void remove(UIAdorner* adorner);
+
+protected:
+	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
+
+LN_CONSTRUCT_ACCESS:
+	UIAdornerLayer();
+	virtual ~UIAdornerLayer();
+	void initialize();
+
+private:
+	List<Ref<UIAdorner>>	m_adorners;
+};
+
 /**
 	@brief
 */
 class UIPopup
-	: public UIElement
+	//: public UIElement
+	: public UIAdorner
 {
 	LN_OBJECT;
 public:
 	void setContent(UIElement* element);
 
-	void open();
+	void open(UIElement* owner);
+	void close();
 
 protected:
 	virtual Size measureOverride(const Size& constraint) override;
 	virtual Size arrangeOverride(const Size& finalSize) override;
+	virtual void onGotFocus(UIEventArgs* e) override;
+	virtual void onLostFocus(UIEventArgs* e) override;
 
 LN_CONSTRUCT_ACCESS:
 	UIPopup();
@@ -36,6 +80,7 @@ LN_INTERNAL_ACCESS:
 
 private:
 	Ref<UIElement>	m_content;
+	UILayoutView*	m_layoutView;
 };
 
 
@@ -43,7 +88,7 @@ private:
 	@brief
 */
 class UIComboBoxItem
-	: public UIContentControl
+	: public UIControl
 {
 	LN_OBJECT;
 public:

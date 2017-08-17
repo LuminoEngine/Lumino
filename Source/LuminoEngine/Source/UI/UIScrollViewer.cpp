@@ -805,7 +805,7 @@ void UIScrollViewer::onRoutedEvent(UIEventArgs* e)
 }
 
 //------------------------------------------------------------------------------
-void UIScrollViewer::onLayoutPanelChanged(UILayoutPanel* newPanel)
+void UIScrollViewer::onLogicalChildrenPresenterChanged(UILayoutPanel* newPanel)
 {
 	m_scrollTarget = newPanel;
 }

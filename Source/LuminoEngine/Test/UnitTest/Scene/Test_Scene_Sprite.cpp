@@ -155,6 +155,23 @@ TEST_F(Test_Scene_Sprite, Issues_Volkoff)
 	}
 }
 
+//------------------------------------------------------------------------------
+TEST_F(Test_Scene_Sprite, Issues_HC1)
+{
+	// <Issues> スプライトの BillboardType が ToScreen、カメラ位置が Z+ にあるとき、Sprite3D の向きが反転してしまう問題の修正。
+	{
+		Vector3 pos(0, 0, 10);
+		ScopedCameraPosition cp(pos + Vector3(0, 2, -8), pos);
+
+		auto sprite1 = Sprite3D::create(7, 5, Texture2D::create(LN_LOCALFILE("TestData/Sprite1.png")));
+		sprite1->setPosition(pos);
+		sprite1->getSpriteComponent()->setBillboardType(BillboardType::ToScreen);
+
+		Engine::update();
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Scene_Sprite.Issues_HC1_1.png"), 90));
+		Engine::getWorld2D()->RemoveAllObjects();
+	}
+}
 
 
 

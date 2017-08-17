@@ -65,6 +65,7 @@ set(LN_SOURCES_Base
 	Include/Lumino/Base/Resource.h
 	Include/Lumino/Base/Serialization.h
 	Include/Lumino/Base/Stack.h
+	Include/Lumino/Base/StdStringHelper.h
 	Include/Lumino/Base/StlHelper.h
 	Include/Lumino/Base/String.h
 	Include/Lumino/Base/StringArray.h
@@ -246,10 +247,12 @@ set(LN_SOURCES_Reflection
 
 set(LN_SOURCES_Math
 	Include/LuminoMath.h
+	Include/Lumino/Math/AttitudeTransform.h
+	Include/Lumino/Math/Common.h
+	Include/Lumino/Math/CommonOperators.inl
 	Include/Lumino/Math/Geometries.h
 	Include/Lumino/Math/Quaternion.inl
 	Include/Lumino/Math/Random.h
-	Include/Lumino/Math/AttitudeTransform.h
 	Include/Lumino/Math/Vector2.h
 	Include/Lumino/Math/Vector2.inl
 	Include/Lumino/Math/Vector3.h
@@ -355,6 +358,7 @@ if (WIN32)
 
 	# link librarys.
 	list(APPEND LN_LINK_LIBS "imagehlp.lib")
+	list(APPEND LN_LINK_LIBS "Shlwapi.lib")
 
 elseif (APPLE)
 	set(LN_UNIT_TEST_LINK_LIBS "pthread")

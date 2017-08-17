@@ -48,7 +48,7 @@ private:
 	@brief
 */
 class UITreeView
-	: public UIControl
+	: public UIContentsControl
 {
 	LN_OBJECT;
 public:
@@ -57,6 +57,7 @@ public:
 public:
 	UITreeViewItem* addTextItem(const String& text);
 	UITreeViewItem* addItem(UIElement* item);
+	void clearItems();
 
 LN_CONSTRUCT_ACCESS:
 	UITreeView();

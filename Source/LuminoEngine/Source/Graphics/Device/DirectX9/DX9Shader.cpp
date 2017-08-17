@@ -102,7 +102,7 @@ private:
 const char* DX9Shader::Macro_LN_HLSL_DX9 = "LN_HLSL_DX9";
 
 //------------------------------------------------------------------------------
-ShaderCompileResultLevel DX9Shader::create(DX9GraphicsDevice* device, const char* code, size_t codeByteCount, DX9Shader** outShader, StringA* outMessage)
+ShaderCompileResultLevel DX9Shader::create(DX9GraphicsDevice* device, const char* code, size_t codeByteCount, DX9Shader** outShader, std::string* outMessage)
 {
 	// UTF-8のBOM対策
 	if (code[0] == 0xEF && code[1] == 0xBB && code[2] == 0xBF) {

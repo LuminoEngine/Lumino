@@ -6,21 +6,12 @@
 #include "../Base/RefObject.h"
 #include "../Base/String.h"
 #include "../Base/EnumExtension.h"
+#include "../Base/Enumerable.h"
 #include "DirectoryUtils.h"
 
 LN_NAMESPACE_BEGIN
 class Encoding;
 class Stream;
-
-/** ファイルとディレクトリの属性 */
-LN_ENUM_FLAGS(FileAttribute)
-{
-	Normal		= 0x0000,	/**< 特に属性を持たない通常のファイル */
-	Directory	= 0x0001,	/**< ディレクトリ */
-	ReadOnly	= 0x0002,	/**< 読み取り専用 */
-	Hidden		= 0x0004,	/**< 隠しファイル */
-};
-LN_ENUM_FLAGS_DECLARE(FileAttribute)
 
 /**
 	@brief	ファイルユーティリティ
@@ -187,6 +178,12 @@ public:
 	*/
 	static CaseSensitivity getFileSystemCaseSensitivity();
 
+	/** パスのファイル名と1つ以上のファイル名パターンを照合します。 */
+	static bool matchPath(const char* filePath, const char* pattern);
+	static bool matchPath(const wchar_t* filePath, const wchar_t* pattern);
+
+	static tr::Enumerator<PathName> getFiles(const StringRef& dirPath, const StringRef& pattern = StringRef());
+
 private:
 	static bool mkdir(const char* path);
 	static bool mkdir(const wchar_t* path);
@@ -194,7 +191,6 @@ private:
 	static bool getAttributeInternal(const wchar_t* path, FileAttribute* outAttr);
 	template<typename TChar> static void createDirectoryInternal(const TChar* path);
 };
-
 
 //------------------------------------------------------------------------------
 template<typename TChar, typename TCallback>

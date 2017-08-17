@@ -211,7 +211,7 @@ bool FileSystem::getAttributeInternal(const char* path, FileAttribute* outAttr)
 	}
 
 	const char* fileName = PathTraits::getFileNameSub(path);
-	FileAttribute attrs;
+	FileAttribute attrs = FileAttribute::None;
 	if (S_ISDIR(st.st_mode))
 	{
 		attrs |= FileAttribute::Directory;
@@ -224,6 +224,7 @@ bool FileSystem::getAttributeInternal(const char* path, FileAttribute* outAttr)
 	}
 	else
 	{
+		attrs |= FileAttribute::Normal;
 		if (!is_stat_writable(&st, path)) {
 			attrs |= FileAttribute::ReadOnly;
 		}

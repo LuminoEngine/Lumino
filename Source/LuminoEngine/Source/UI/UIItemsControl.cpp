@@ -8,7 +8,7 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 // UIItemsControl
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIItemsControl, UIControl)
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIItemsControl, UIContentsControl)
 
 UIItemsControl::UIItemsControl()
 {
@@ -20,7 +20,7 @@ UIItemsControl::~UIItemsControl()
 
 void UIItemsControl::initialize()
 {
-	UIControl::initialize();
+	UIContentsControl::initialize();
 
 	setHContentAlignment(HAlignment::Stretch);
 
@@ -93,6 +93,10 @@ Size UIHeaderedItemsControl::measureOverride(const Size& constraint)
 	m_headerContent->measureLayout(constraint);
 	Size headerSize = m_headerContent->getDesiredSize();
 
+	// padding は Header へ影響させる
+	headerSize.width += getPadding().getWidth();
+	headerSize.height += getPadding().getHeight();
+
 	// 子アイテムの領域を計測する
 	UILayoutPanel* itemsPanel = getLayoutPanel();
 	itemsPanel->measureLayout(constraint);
@@ -115,7 +119,7 @@ Size UIHeaderedItemsControl::arrangeOverride(const Size& finalSize)
 	//Rect headerRect(0, 0, finalSize.width, headerSize.height);
 	//m_headerContainer->arrangeLayout(headerRect);
 	Size headerSize = m_headerContent->getDesiredSize();
-	Rect headerRect(0, 0, finalSize.width, headerSize.height);
+	Rect headerRect = Rect(0, 0, finalSize.width, headerSize.height).makeDeflate(getPadding());	// padding は Header へのみ影響させる
 	m_headerContent->arrangeLayout(headerRect);
 
 	// Items

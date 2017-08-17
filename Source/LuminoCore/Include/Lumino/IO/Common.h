@@ -8,6 +8,18 @@ class IArchive;
 
 
 
+/** ファイルとディレクトリの属性 */
+LN_ENUM_FLAGS(FileAttribute)
+{
+	None		= 0x0000,
+	Normal		= 0x0001,	/**< 特に属性を持たない通常のファイル */
+	Directory	= 0x0002,	/**< ディレクトリ */
+	ReadOnly	= 0x0004,	/**< 読み取り専用 */
+	Hidden		= 0x0008,	/**< 隠しファイル */
+	All			= 0xFFFF,
+};
+LN_ENUM_FLAGS_DECLARE(FileAttribute)
+
 //
 //
 //

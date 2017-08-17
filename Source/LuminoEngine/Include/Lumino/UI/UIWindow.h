@@ -16,7 +16,7 @@ public:
 
 protected:
 	virtual void onRoutedEvent(UIEventArgs* e) override;
-	virtual void onLayoutPanelChanged(UILayoutPanel* newPanel) override;
+	virtual void onLogicalChildrenPresenterChanged(UILayoutPanel* newPanel) override;
 	virtual void onRender(DrawingContext* g) override;
 
 LN_CONSTRUCT_ACCESS:

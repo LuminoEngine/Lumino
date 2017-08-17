@@ -1,6 +1,6 @@
 
 #pragma once
-#include "UIControl.h"
+#include "UIContentsControl.h"
 #include "UIElementCollection.h"
 
 LN_NAMESPACE_BEGIN
@@ -9,7 +9,7 @@ LN_NAMESPACE_BEGIN
 	@brief	意味のある連続した子要素を管理する機能を持ったコントロールです。
 */
 class UIItemsControl
-	: public UIControl
+	: public UIContentsControl	// TODO: temp
 {
 	LN_OBJECT;
 public:

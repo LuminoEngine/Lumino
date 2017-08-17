@@ -502,7 +502,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 		// base
 		{
 			auto* props = style->getPropertyTable();
-			props->padding = Thickness(10);
+			props->padding = Thickness(3);
 		}
 		// UITreeViewItem.MouseOver
 		{
@@ -529,6 +529,35 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 			auto r1 = newObject<UIGlyphIconRenderElement>();
 			r1->setGlyph(_T("fa-angle-right"), 16);
 			props->m_renderElements.add(r1);
+		}
+	}
+
+	//------------------------------------------------------------------------------
+	// UIContextMenu
+	{
+		auto* style = table->getStyle(_T("UIContextMenu"));
+		// base
+		{
+			auto* props = style->getPropertyTable();
+			props->background = Brush::White;
+			props->borderThickness = 1;
+			props->padding = Thickness(3);
+		}
+	}
+
+	//------------------------------------------------------------------------------
+	// UIMenuItem
+	{
+		auto* style = table->getStyle(_T("UIMenuItem"));
+		// base
+		{
+			auto* props = style->getPropertyTable();
+			props->padding = Thickness(3);
+		}
+		// UITreeViewItem.MouseOver
+		{
+			auto* props = style->getPropertyTable(UIVisualStates::MouseOverState);
+			props->background = Ref<Brush>::staticCast(containerItemMouseOver);
 		}
 	}
 

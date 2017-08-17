@@ -89,7 +89,7 @@ void UIWindow::onRoutedEvent(UIEventArgs* e)
 }
 
 //------------------------------------------------------------------------------
-void UIWindow::onLayoutPanelChanged(UILayoutPanel* newPanel)
+void UIWindow::onLogicalChildrenPresenterChanged(UILayoutPanel* newPanel)
 {
 	if (newPanel != nullptr)
 	{
@@ -98,7 +98,7 @@ void UIWindow::onLayoutPanelChanged(UILayoutPanel* newPanel)
 		newPanel->setMargin(Thickness(0, 30, 0, 0));
 	}
 
-	UIControl::onLayoutPanelChanged(newPanel);
+	UIControl::onLogicalChildrenPresenterChanged(newPanel);
 }
 
 //------------------------------------------------------------------------------

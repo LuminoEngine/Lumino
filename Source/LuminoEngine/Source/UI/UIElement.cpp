@@ -843,6 +843,16 @@ void UIElement::addVisualChild(UIElement* element)
 
 	m_visualChildren->add(element);
 	element->m_visualParent = this;
+
+	std::stable_sort(
+		m_visualChildren->begin(), m_visualChildren->end(),
+		[](const Ref<UIElement>& lhs, const Ref<UIElement>& rhs)
+	{
+		// TODO: ZOrder 指定
+		int li = lhs->readCoreFlag(detail::UICoreFlags_AdornerLayer) ? 1 : 0;
+		int ri = rhs->readCoreFlag(detail::UICoreFlags_AdornerLayer) ? 1 : 0;
+		return li < ri;
+	});
 }
 
 //------------------------------------------------------------------------------

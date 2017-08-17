@@ -134,6 +134,7 @@ enum class SpcialUIElementType
 {
 	Common,
 	LayoutRoot,
+	PopupMenuRoot,
 };
 
 } // namespace detail

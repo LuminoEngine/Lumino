@@ -307,9 +307,10 @@ public:
 	static Ref<Sprite3D> create(float width, float height, Texture* texture);
 
 
-protected:
-	virtual VisualComponent* getMainVisualComponent() const override;
 	virtual SpriteComponent* getSpriteComponent() const override;
+
+public:
+	virtual VisualComponent* getMainVisualComponent() const override;
 
 LN_CONSTRUCT_ACCESS:
 	Sprite3D();

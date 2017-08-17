@@ -26,7 +26,7 @@ private:
 	struct WrappedMacroInfo
 	{
 		int				lastTechniqueKWLoc;
-		StringA			funcName;
+		std::string		funcName;
 		ShaderCodeType	type;
 	};
 
