@@ -13,7 +13,9 @@ namespace LuminoBuild.Rules
         public override void Build(Builder builder)
         {
             builder.DoTask("MakeVersionHeader");
-            builder.DoTask("make-vs");
+
+			if (Utils.IsWin32) builder.DoTask("make-vs");
+			if (Utils.IsMac) builder.DoTask("MakeXCodeProjects");
         }
     }
 }
