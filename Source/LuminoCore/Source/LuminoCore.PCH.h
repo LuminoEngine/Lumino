@@ -1,7 +1,7 @@
 
 #pragma once
 #define LN_INTERNAL_ACCESS	public
-#include "../include/Lumino/Base/Common.h"
-#include "../include/Lumino/Base/Exception.h"
+#include "../Include/Lumino/Base/Common.h"
+#include "../Include/Lumino/Base/Exception.h"
 #include "Internal.h"
 

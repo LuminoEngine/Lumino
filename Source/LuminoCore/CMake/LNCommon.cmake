@@ -95,27 +95,43 @@ function(ln_make_output_dir outPath)
 endfunction()
 
 #------------------------------------------------------------------------------
-# e.g.) ln_add_pch(LuminoCore ${LN_SOURCES} "LuminoCore.PCH.h" "src/LuminoCore.PCH.cpp")
-function(ln_add_pch project_name header_file_name source_file_path)
+# e.g.) ln_add_pch(LuminoCore ${LN_SOURCES} "src/LuminoCore.PCH.h" "src/LuminoCore.PCH.cpp")
+function(ln_add_pch project_name header_file_path source_file_path)
 	if (MSVC)
+
+		get_filename_component(header_file_name ${header_file_path} NAME)
+
 		set(ln_compile_flags
 			"/Yu\"${header_file_name}\" /FI\"${header_file_name}\""	# use PCH, ForcedIncludeFiles
 		)
 		
-		# get source files from project (referred LLVM)
-		get_property(source_files TARGET ${project_name} PROPERTY SOURCES)
-		foreach (file ${source_files})
-			if (${file} MATCHES ".+\\.cpp")
-				set_source_files_properties(${file} PROPERTIES COMPILE_FLAGS ${ln_compile_flags})
-			endif()
-		endforeach()
 		
 		set_source_files_properties(${source_file_path} PROPERTIES COMPILE_FLAGS "/Yc\"${header_file_name}\"")	# create PCH
 	
 		#set_target_properties(${project_name} PROPERTIES COMPILE_FLAGS ${ln_compile_flags})			
 		#get_target_property(compile_defs ${project_name} COMPILE_FLAGS)
 		#message(${compile_defs})
+	else()
+		# https://github.com/nanoant/CMakePCHCompiler/blob/master/CMakePCHCompiler.cmake
+
+		#set(COMPILE_FLAGS "-x c++-header")
+
+		get_filename_component(result ${header_file_path} ABSOLUTE)
+
+		# force include header
+		set(ln_compile_flags "-include \"${result}\"")
+		
+		#Sset_source_files_properties(${project_name} PROPERTIES COMPILE_FLAGS ${ln_compile_flags})
 	endif()
+
+
+	# get source files from project (referred LLVM)
+	get_property(source_files TARGET ${project_name} PROPERTY SOURCES)
+	foreach (file ${source_files})
+		if (${file} MATCHES ".+\\.cpp")
+			set_source_files_properties(${file} PROPERTIES COMPILE_FLAGS ${ln_compile_flags})
+		endif()
+	endforeach()
 endfunction()
 
 #------------------------------------------------------------------------------

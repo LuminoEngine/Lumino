@@ -68,5 +68,5 @@ include_directories(${LN_INCLUDE_DIRECTORIES} ${LN_PLATFORM_INCLUDE_DIRS})
 add_library(LuminoExperimental STATIC ${LN_SOURCES})
 ln_add_common_property(LuminoExperimental)
 target_include_directories(LuminoExperimental PUBLIC ${LN_DEPENDENCIES_INCLUDES})
-ln_add_pch(LuminoExperimental "LuminoExperimental.PCH.h" "Source/LuminoExperimental.PCH.cpp")
+ln_add_pch(LuminoExperimental "Source/LuminoExperimental.PCH.h" "Source/LuminoExperimental.PCH.cpp")
 

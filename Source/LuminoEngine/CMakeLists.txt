@@ -877,7 +877,7 @@ add_library(LuminoEngine STATIC ${LN_SOURCES})
 ln_add_common_property(LuminoEngine)
 target_include_directories(LuminoEngine PUBLIC ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES})
 target_link_libraries(LuminoEngine Fluorite ${LN_LINK_LIBS} ${LN_DEPENDENCIES_LIBRARIES})
-ln_add_pch(LuminoEngine "LuminoEngine.PCH.h" "Source/LuminoEngine.PCH.cpp")
+ln_add_pch(LuminoEngine "Source/LuminoEngine.PCH.h" "Source/LuminoEngine.PCH.cpp")
 
 # Unit test.
 add_subdirectory(Test)

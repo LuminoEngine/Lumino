@@ -387,7 +387,7 @@ endif()
 add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
 ln_add_common_property(${PROJECT_NAME})
 target_link_libraries(${PROJECT_NAME} ${LN_LINK_LIBS})
-ln_add_pch(${PROJECT_NAME} "LuminoCore.PCH.h" "Source/LuminoCore.PCH.cpp")
+ln_add_pch(${PROJECT_NAME} "Source/LuminoCore.PCH.h" "Source/LuminoCore.PCH.cpp")
 
 # Unit test.
 add_subdirectory(Test)
