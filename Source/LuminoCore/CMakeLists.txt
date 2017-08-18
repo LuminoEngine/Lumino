@@ -3,7 +3,7 @@
 cmake_minimum_required (VERSION 3.0.0)
 project (LuminoCore)
 
-include(cmake/LNCommon.cmake NO_POLICY_SCOPE)
+include(CMake/LNCommon.cmake NO_POLICY_SCOPE)
 
 set(LN_LINK_LIBS "")
 set(LN_UNIT_TEST_LINK_LIBS "")
@@ -390,4 +390,4 @@ target_link_libraries(${PROJECT_NAME} ${LN_LINK_LIBS})
 ln_add_pch(${PROJECT_NAME} "LuminoCore.PCH.h" "Source/LuminoCore.PCH.cpp")
 
 # Unit test.
-add_subdirectory(test)
+add_subdirectory(Test)

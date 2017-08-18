@@ -75,6 +75,6 @@ ln_add_common_property(Fluorite)
 set_target_properties(Fluorite PROPERTIES INCLUDE_DIRECTORIES "${LN_FL_INCLUDE_DIRECTORIES}")
 
 # test
-add_subdirectory(test)
+add_subdirectory(Test)
 
 
