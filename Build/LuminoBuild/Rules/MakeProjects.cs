@@ -12,7 +12,6 @@ namespace LuminoBuild.Rules
 
         public override void Build(Builder builder)
         {
-            builder.DoTask("setup");
             builder.DoTask("MakeVersionHeader");
             builder.DoTask("make-vs");
         }
