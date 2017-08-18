@@ -694,7 +694,7 @@ elseif (UNIX)
 		${LN_SOURCES_Platform}
 		Source/Platform/X11/X11WindowManager.cpp
 		Source/Platform/X11/X11Window.cpp
-		Source/Platform/X11/PlatformSupport_X11.cp
+		Source/Platform/X11/PlatformSupport_X11.cpp
 	)
 
 	set(LN_SOURCES_Graphics
