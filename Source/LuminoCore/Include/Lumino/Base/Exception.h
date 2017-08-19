@@ -87,21 +87,21 @@
 #if defined(LN_DO_CHECK_ASSERT)
 #define LN_CHECK(expression, exception, ...)		((!(expression)) && ln::detail::notifyAssert([](){ assert(!#expression); }))
 #elif defined(LN_DO_CHECK_THROW)
-#define LN_CHECK(expression, exception, ...)		(!(expression)) && ln::detail::notifyException<exception>(__FILE__, __LINE__, __VA_ARGS__)
+#define LN_CHECK(expression, exception, ...)		(!(expression)) && ln::detail::notifyException<exception>(__FILE__, __LINE__, ##__VA_ARGS__)
 #else
 #define LN_FAIL_CHECK(expression, exception)		(!(expression))
 #endif
 
-#define LN_CHECK_ARG(expression, ...)				LN_CHECK(expression, ::ln::ArgumentException, __VA_ARGS__)
-#define LN_CHECK_STATE(expression, ...)				LN_CHECK(expression, ::ln::InvalidOperationException, __VA_ARGS__)
-#define LN_CHECK_FORMAT(expression, ...)			LN_CHECK(expression, ::ln::InvalidFormatException, __VA_ARGS__)
+#define LN_CHECK_ARG(expression, ...)				LN_CHECK(expression, ::ln::ArgumentException, ##__VA_ARGS__)
+#define LN_CHECK_STATE(expression, ...)				LN_CHECK(expression, ::ln::InvalidOperationException, ##__VA_ARGS__)
+#define LN_CHECK_FORMAT(expression, ...)			LN_CHECK(expression, ::ln::InvalidFormatException, ##__VA_ARGS__)
 #define LN_CHECK_RANGE(value, begin, end)			LN_CHECK(begin <= value && value < end, ::ln::OutOfRangeException)
 
 #define LN_FATAL(expression, message)				{ if (!(expression)) ln::detail::notifyFatalError(__FILE__, __LINE__, message); }
-#define LN_VERIFY(expression, exception, ...)		{ if (!(expression)) ln::detail::notifyException<exception>(__FILE__, __LINE__, __VA_ARGS__); }
-#define LN_VERIFY_ARG(expression, ...)				{ if (!(expression)) ln::detail::notifyException<::ln::ArgumentException>(__FILE__, __LINE__, __VA_ARGS__); }
-#define LN_VERIFY_STATE(expression, ...)			{ if (!(expression)) ln::detail::notifyException<::ln::InvalidOperationException>(__FILE__, __LINE__, __VA_ARGS__); }
-#define LN_VERIFY_FORMAT(expression, ...)			{ if (!(expression)) ln::detail::notifyException<::ln::InvalidFormatException>(__FILE__, __LINE__, __VA_ARGS__); }
+#define LN_VERIFY(expression, exception, ...)		{ if (!(expression)) ln::detail::notifyException<exception>(__FILE__, __LINE__, ##__VA_ARGS__); }
+#define LN_VERIFY_ARG(expression, ...)				{ if (!(expression)) ln::detail::notifyException<::ln::ArgumentException>(__FILE__, __LINE__, ##__VA_ARGS__); }
+#define LN_VERIFY_STATE(expression, ...)			{ if (!(expression)) ln::detail::notifyException<::ln::InvalidOperationException>(__FILE__, __LINE__, ##__VA_ARGS__); }
+#define LN_VERIFY_FORMAT(expression, ...)			{ if (!(expression)) ln::detail::notifyException<::ln::InvalidFormatException>(__FILE__, __LINE__, ##__VA_ARGS__); }
 
 // TODO: ln::detail::notifyXXXX へ流す
 #define LN_REQUIRE(expression, ...)					LN_CHECK(expression, ::ln::InvalidOperationException, __VA_ARGS__)

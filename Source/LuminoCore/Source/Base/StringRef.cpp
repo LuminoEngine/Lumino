@@ -7,6 +7,7 @@
 #include <Lumino/Base/StringRef.h>
 #include <Lumino/Base/Hash.h>
 #include <Lumino/IO/PathName.h>
+//#include <Lumino/Text/Encoding.h>
 #include "../Text/UTF8Encoding.h"
 #ifdef LN_OS_WIN32
 #include "../Text/Win32CodePageEncoding.h"
@@ -38,9 +39,9 @@ int GenericStringRef<wchar_t>::copyToLocal8Bit(char* dest, int destLen) const
 #else
 	// TODO: メモリ確保伴わないようにはできるけど時間ないので後回し
 	EncodingConversionResult result;
-	Encoding::Convert(
-		m_str + m_pos, m_len * sizeof(wchar_t), Encoding::GetWideCharEncoding(),
-		dest, destLen, Encoding::GetUTF8Encoding(),
+	Encoding::convert(
+		m_str + m_pos, m_len * sizeof(wchar_t), Encoding::getWideCharEncoding(),
+		dest, destLen, Encoding::getUTF8Encoding(),
 		&result);
 	return result.BytesUsed;
 

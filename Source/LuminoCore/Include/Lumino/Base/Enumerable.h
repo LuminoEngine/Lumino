@@ -425,7 +425,7 @@ public:
 		return *this;
 	}
 
-	template<typename TTransform, typename TResult = std::result_of_t<TTransform(T&&)>>
+	template<typename TTransform, typename TResult = std::result_of<TTransform(T&&)>>
 	Enumerator<TResult> Select(TTransform transform)
 	{
 		Enumerator<TResult> e(std::make_shared<detail::MapProvider<TResult, TTransform, T>>(m_source, transform));

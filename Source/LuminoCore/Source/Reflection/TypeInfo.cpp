@@ -12,6 +12,27 @@ LN_NAMESPACE_BEGIN
 namespace tr {
 
 
+namespace detail
+{
+	// get instance factory
+	template<class TObject, class TIsAbstract> struct ObjectFactorySelector
+	{};
+	template<class TObject> struct ObjectFactorySelector<TObject, std::false_type>
+	{
+		static ObjectFactory getFactory()
+		{
+			return []() { return Ref<ReflectionObject>::staticCast(::ln::newObject<TObject>()); };
+		}
+	};
+	template<class TObject> struct ObjectFactorySelector<TObject, std::true_type>
+	{
+		static ObjectFactory getFactory()
+		{
+			return nullptr;
+		}
+	};
+}
+
 //==============================================================================
 // TypeInfoManager
 //==============================================================================

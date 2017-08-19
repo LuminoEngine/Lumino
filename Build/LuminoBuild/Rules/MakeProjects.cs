@@ -14,7 +14,7 @@ namespace LuminoBuild.Rules
         {
             builder.DoTask("MakeVersionHeader");
 
-			if (Utils.IsWin32) builder.DoTask("make-vs");
+            if (Utils.IsWin32) builder.DoTask("make-vs");
 			if (Utils.IsMac) builder.DoTask("MakeXCodeProjects");
         }
     }

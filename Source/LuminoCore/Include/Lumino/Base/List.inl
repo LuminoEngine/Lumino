@@ -35,7 +35,7 @@ template <typename T, typename TAllocator> template <class TIter>
 List<T, TAllocator>::List(TIter begin, TIter end)
 {
 	m_data = LN_NEW ArrayData(1);
-	m_data->m_vector.assign<TIter>(begin, end);
+	m_data->m_vector.template assign<TIter>(begin, end);
 }
 
 //------------------------------------------------------------------------------

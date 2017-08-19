@@ -1,5 +1,6 @@
 ﻿
 #include "../Internal.h"
+#include <float.h>
 #include <Lumino/Base/String.h>
 #include <Lumino/IO/StringReader.h>
 #include <Lumino/Json/JsonReader.h>

@@ -1,5 +1,6 @@
 
-#pragma once 
+#pragma once
+#include "Hash.h"
 
 LN_NAMESPACE_BEGIN
 

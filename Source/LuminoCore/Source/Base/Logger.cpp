@@ -7,6 +7,7 @@
 #include <io.h>
 #include <sys/timeb.h>
 #endif
+#include <sys/time.h>
 #include <time.h>
 #include <sstream>
 #include <iomanip>
@@ -31,16 +32,19 @@ public:
 		::ftime(t);
 	}
 #else
+	typedef detail::LogTime Time;
+	/*
 	struct Time
 	{
 		time_t time;
 		unsigned short millitm;
 	};
+	 */
 
-	static void GetTime(Time* t)
+	static void getTime(Time* t)
 	{
 		timeval tv;
-		::gettimeofday(&tv, NULL);
+		gettimeofday(&tv, NULL);
 
 		t->time = tv.tv_sec;
 		t->millitm = static_cast<unsigned short>(tv.tv_usec / 1000);
@@ -146,23 +150,23 @@ public:
 		}
 	}
 #else
-	void Open(const char* filePath)
+	void open(const char* filePath)
 	{
-		Close();
-		m_file = ::open(fileName, O_CREAT | O_TRUNC | O_WRONLY, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+		close();
+		m_file = ::open(filePath, O_CREAT | O_TRUNC | O_WRONLY, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 	}
 
-	int Write(const void* buf, size_t count)
+	int write(const void* buf, size_t count)
 	{
 		return (m_file != -1) ? static_cast<int>(::write(m_file, buf, count)) : -1;
 	}
 
-	off_t Seek(off_t offset, int whence)
+	off_t seek(off_t offset, int whence)
 	{
 		return (m_file != -1) ? ::lseek(m_file, offset, whence) : -1;
 	}
 
-	void Close()
+	void close()
 	{
 		if (m_file != -1)
 		{

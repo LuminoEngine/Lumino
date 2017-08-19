@@ -355,15 +355,16 @@ class InternalRefGCList
 	: public Collection<TObject*>
 {
 public:
+	using value_type = typename Collection<TObject*>::value_type;
 
 	void CollectGC()
 	{
-		for (int i = getCount() - 1; i >= 0; i--)
+		for (int i = Collection<TObject*>::getCount() - 1; i >= 0; i--)
 		{
-			TObject* ptr = getAt(i);
+			TObject* ptr = Collection<TObject*>::getAt(i);
 			if (ptr->getReferenceCount() == 0 && tr::ReflectionHelper::getInternalReferenceCount(ptr) == 1)
 			{
-				removeAt(i);
+				Collection<TObject*>::removeAt(i);
 			}
 		}
 	}
@@ -388,7 +389,7 @@ private:
 
 	virtual void removeItem(int index) override
 	{
-		tr::ReflectionHelper::releaseInternal(getAt(index));
+		tr::ReflectionHelper::releaseInternal(Collection<TObject*>::getAt(index));
 		Collection<TObject>::removeItem(index);
 	}
 

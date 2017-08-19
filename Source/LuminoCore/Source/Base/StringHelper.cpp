@@ -2,6 +2,7 @@
 #include "../Internal.h"
 #include <math.h>
 #include <wctype.h>
+#include <float.h>
 #include <Lumino/Base/RefObject.h>
 #include <Lumino/Base/String.h>
 #include <Lumino/Base/StringHelper.h>
@@ -765,7 +766,9 @@ int StringTraits::checkNewLineSequence(const T* start, const T* end)
 template int StringTraits::checkNewLineSequence<byte_t>(const byte_t* start, const byte_t* end);
 template int StringTraits::checkNewLineSequence<char>(const char* start, const char* end);
 template int StringTraits::checkNewLineSequence<wchar_t>(const wchar_t* start, const wchar_t* end);
+#if defined(LN_WCHAR_16)
 template int StringTraits::checkNewLineSequence<UTF32>(const UTF32* start, const UTF32* end);
+#endif
 
 //------------------------------------------------------------------------------
 template<typename TChar>
@@ -788,7 +791,9 @@ bool StringTraits::indexOfNewLineSequence(const TChar* start, const TChar* end, 
 }
 template bool StringTraits::indexOfNewLineSequence<char>(const char* start, const char* end, int* outIndex, int* outNewLineCodeCount);
 template bool StringTraits::indexOfNewLineSequence<wchar_t>(const wchar_t* start, const wchar_t* end, int* outIndex, int* outNewLineCodeCount);
+#if defined(LN_WCHAR_16)
 template bool StringTraits::indexOfNewLineSequence<UTF32>(const UTF32* start, const UTF32* end, int* outIndex, int* outNewLineCodeCount);
+#endif
 
 //------------------------------------------------------------------------------
 template<typename TChar>

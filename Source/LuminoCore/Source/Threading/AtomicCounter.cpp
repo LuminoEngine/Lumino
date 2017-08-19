@@ -4,7 +4,8 @@
 #else
 #include <pthread.h>
 #endif
-#include "../../include/Lumino/Threading/AtomicCounter.h"
+
+#include <Lumino/Threading/AtomicCounter.h>
 
 LN_NAMESPACE_BEGIN
 
@@ -77,7 +78,7 @@ int32_t Atomic::get() const
 }
 
 //------------------------------------------------------------------------------
-void Atomic::Set( int32_t value_ )
+void Atomic::set( int32_t value_ )
 {
     pthread_mutex_lock( &m_mutex );
     m_value = value_;

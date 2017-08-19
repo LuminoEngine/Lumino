@@ -3,6 +3,7 @@
 #else
 	#include <sys/time.h>
 #endif
+
 #include <Lumino/Base/ElapsedTimer.h>
 
 LN_NAMESPACE_BEGIN
@@ -14,8 +15,8 @@ LN_NAMESPACE_BEGIN
 //------------------------------------------------------------------------------
 static uint64_t TicksToNanoseconds(uint64_t ticks, uint64_t freq) LN_NOEXCEPT
 {
-	UINT64 seconds = ticks / freq;
-	UINT64 nanoSeconds = (ticks - seconds * freq) * 1000000000 / freq;
+	uint64_t seconds = ticks / freq;
+	uint64_t nanoSeconds = (ticks - seconds * freq) * 1000000000 / freq;
 	return seconds * 1000000000 + nanoSeconds;
 }
 
@@ -64,17 +65,9 @@ void ElapsedTimer::start()
 	m_start = (uint64_t)t.tv_sec * 1000000 + (uint64_t)t.tv_usec;
 }
 
-//------------------------------------------------------------------------------
-uint64_t ElapsedTimer::GetElapsedTime() const
-{
-	timeval t;
-	gettimeofday(&t, NULL);
-	uint64_t ct = (uint64_t)t.tv_sec * 1000000 + (uint64_t)t.tv_usec;
-	return (ct - m_start) / 1000;	// us 単位なので ms に変換する
-}
 
 //------------------------------------------------------------------------------
-uint64_t ElapsedTimer::GetElapsedTimeNS() const
+uint64_t ElapsedTimer::getElapsed() const noexcept
 {
 	timeval t;
 	gettimeofday(&t, NULL);

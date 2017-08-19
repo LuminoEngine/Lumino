@@ -112,7 +112,7 @@ bool ProcessImpl::waitForExit(int timeoutMSec)
 		
 		Thread::sleep(1);
 		
-	} while(timeoutMSec == -1 || timer.getElapsedTime() < timeoutMSec);
+	} while(timeoutMSec == -1 || timer.getElapsed() < timeoutMSec);
 	
 	if (exit)
 	{

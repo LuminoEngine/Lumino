@@ -140,7 +140,7 @@ Locale::Locale(const TCHAR* name)
 #if defined(LN_OS_WIN32)
 	, m_nativeName(StringW::fromNativeCharString(name))
 #else
-    , m_nativeName(StringA::FromNativeCharString(name))
+    , m_nativeName(StringA::fromNativeCharString(name))
 #endif
 {
 	m_nativeLocale = CreateNativeLocale(m_nativeName.c_str());

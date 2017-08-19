@@ -74,7 +74,7 @@ uint64_t Environment::getTickCount()
 	// GetTickCount() の方が無難かもしれない
 	return ::GetTickCount();
 #elif defined(LN_OS_MAC)
-    return GetTickCountNS() / 1000000;
+    return getTickCountNS() / 1000000;
     
 #else
 	struct timespec ts;
@@ -242,13 +242,13 @@ void Environment::getSpecialFolderPath(SpecialFolder specialFolder, TChar* outPa
 	}
 
 	ByteBuffer buf(2048);
-	if (FSRefMakePath(&ref, reinterpret_cast<UInt8 *>(buf.GetData()), buf.GetSize()) != noErr) {
+	if (FSRefMakePath(&ref, reinterpret_cast<UInt8 *>(buf.getData()), buf.getSize()) != noErr) {
 		LN_THROW(0, RuntimeException);
 		return;
 	}
 
 	GenericString<TChar> path;
-	path.AssignCStr((const char*)buf.GetConstData(), buf.GetSize());
+	path.assignCStr((const char*)buf.getConstData(), buf.getSize());
 	StringTraits::tstrcpy(outPath, LN_MAX_PATH, path.c_str());
 }
 template void Environment::getSpecialFolderPath(SpecialFolder specialFolder, char* outPath);

@@ -123,12 +123,6 @@ private:
 	NameValuePairBaseObject & operator=(NameValuePairBaseObject const &) = delete;
 };
 
-template<typename TThis>
-NameValuePairBaseObject<TThis> makeNVPBaseObject(TThis* value)
-{
-	return NameValuePairBaseObject<TThis>(Archive::ClassBaseDefaultNameKey, value);
-}
-
 ///**
 //	@brief
 //*/
@@ -834,6 +828,13 @@ private:
 
 };
 
+	
+	
+	template<typename TThis>
+	NameValuePairBaseObject<TThis> makeNVPBaseObject(TThis* value)
+	{
+		return NameValuePairBaseObject<TThis>(Archive::ClassBaseDefaultNameKey, value);
+	}
 
 //#define LN_SERIALIZE(ar, version, classVersion) \
 //	static const int lnsl_GetClassVersion() { return classVersion; } \

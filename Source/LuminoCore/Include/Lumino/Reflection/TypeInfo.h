@@ -3,6 +3,7 @@
 #include "Common.h"
 #include "../Base/RefObject.h"
 #include "../Base/String.h"
+//#include "../Reflection/ReflectionObject.h"
 
 LN_NAMESPACE_BEGIN
 namespace tr
@@ -15,108 +16,9 @@ typedef uint32_t LocalValueHavingFlags;
 namespace detail
 {
 	using ObjectFactory = Ref<ReflectionObject>(*)();
-
-	// 1つの ReflectionObject に対して1つ作られる
-	class WeakRefInfo final
-	{
-	public:
-
-		RefObject*			owner;
-		std::atomic<int>	weakRefCount;// = 1;	// GCC で使えなかった
-		//int	weakRefCount;
-
-		WeakRefInfo();
-		void addRef();
-		void release();
-	};
-
-	// get instance factory
-	template<class TObject, class TIsAbstract> struct ObjectFactorySelector
-	{};
-	template<class TObject> struct ObjectFactorySelector<TObject, std::false_type>
-	{
-		static ObjectFactory getFactory()
-		{
-			return []() { return Ref<ReflectionObject>::staticCast(newObject<TObject>()); };
-		}
-	};
-	template<class TObject> struct ObjectFactorySelector<TObject, std::true_type>
-	{
-		static ObjectFactory getFactory()
-		{
-			return nullptr;
-		}
-	};
 }
 
-class ReflectionHelper
-{
-public:
-	template<class T>
-	static ln::tr::LocalValueHavingFlags* GetLocalValueHavingFlags(ReflectionObject* thisObj)
-	{
-		return &static_cast<T*>(thisObj)->lnref_localValueHavingFlags;
-	}
-	template<class T>
-	static TypeInfo* getClassTypeInfo()
-	{
-		return &T::lnref_typeInfo;
-	}
-	template<class T>
-	static void setBindingTypeInfo(void* data)
-	{
-		T::lnref_bindingTypeInfo = data;
-	}
-	template<class T>
-	static void* getBindingTypeInfo()
-	{
-		return T::lnref_bindingTypeInfo;
-	}
-	template<class T>
-	static TypeInfo* getTypeInfo(const T* obj)
-	{
-		return obj->lnref_GetThisTypeInfo();
-	}
-	template<class T>
-	inline static TypeInfo* getTypeInfo()
-	{
-		return &T::lnref_typeInfo;
-	}
-
-	template<class T>
-	inline static detail::WeakRefInfo* requestWeakRefInfo(T* obj)
-	{
-		return obj->requestWeakRefInfo();
-	}
-	template<class T, class TData>
-	inline static TData* requestAnimationData(T* obj)
-	{
-		if (obj->m_animationData == nullptr)
-		{
-			obj->m_animationData = LN_NEW TData();
-		}
-		return static_cast<TData*>(obj->m_animationData);
-	}
-
-	static void addGCObject(ReflectionObject* obj, ReflectionObject* child);
-	static void removeGCObject(ReflectionObject* obj, ReflectionObject* child);
-	static void gcObjects(ReflectionObject* obj);
-	static bool isGCReady(ReflectionObject* obj);
-
-	template<class TList>
-	inline static void gcObjectList(TList* list)
-	{
-		list->removeAll([](typename TList::value_type& obj) { return isGCReady(obj); });
-	}
-
-
-
-	static int32_t getInternalReferenceCount(RefObject* obj) { return obj->m_internalReferenceCount; }
-	static void addRefInternal(RefObject* obj) { obj->m_internalReferenceCount++; }
-	static void releaseInternal(RefObject* obj) { obj->releaseInternal(); }
-};
-
-/**
+	/**
 	@brief		
 */
 class TypeInfo
@@ -131,21 +33,6 @@ public:
 	struct ConstructArg
 	{
 		virtual void doSet(TypeInfo* typeInfo) = 0;
-	};
-	template<class T>
-	struct ClassVersion : public ConstructArg
-	{
-		ClassVersion(int version)
-			: m_version(version)
-		{}
-
-		virtual void doSet(TypeInfo* typeInfo) override
-		{
-			typeInfo->m_serializeClassVersion = m_version;
-			typeInfo->m_factory = ::tr::detail::ObjectFactorySelector<T, std::is_abstract<T>::type>::getFactory();
-		}
-
-		int m_version;
 	};
 	struct ConstructArgHolder
 	{
@@ -246,12 +133,6 @@ private:
 	intptr_t					m_internalGroup;
 };
 
-//------------------------------------------------------------------------------
-template<class T>
-inline TypeInfo* TypeInfo::getTypeInfo()
-{
-	return ReflectionHelper::getTypeInfo<T>();
-}
 
 } // namespace tr
 LN_NAMESPACE_END

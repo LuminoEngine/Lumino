@@ -52,7 +52,7 @@ private:
 template<typename... TArgs>
 void Console::writeLine(const StringRefA& str, const TArgs&... args)
 {
-	StringA s = StringA::Format(str, args...);
+	StringA s = StringA::format(str, args...);
 	writeInternal(s.c_str());
 	writeLine();
 }
@@ -61,7 +61,7 @@ void Console::writeLine(const StringRefA& str, const TArgs&... args)
 template<typename... TArgs>
 void Console::writeLine(const StringRefW& str, const TArgs&... args)
 {
-	StringW s = StringW::Format(str, args...);
+	StringW s = StringW::format(str, args...);
 	writeInternal(s.c_str());
 	writeLine();
 }
@@ -70,7 +70,7 @@ void Console::writeLine(const StringRefW& str, const TArgs&... args)
 template<typename... TArgs>
 void Console::writeLineError(const StringRefA& str, const TArgs&... args)
 {
-	StringA s = StringA::Format(str, args...);
+	StringA s = StringA::format(str, args...);
 	writeInternalError(s.c_str());
 	writeLineError();
 }
@@ -79,7 +79,7 @@ void Console::writeLineError(const StringRefA& str, const TArgs&... args)
 template<typename... TArgs>
 void Console::writeLineError(const StringRefW& str, const TArgs&... args)
 {
-	StringW s = StringW::Format(str, args...);
+	StringW s = StringW::format(str, args...);
 	writeInternalError(s.c_str());
 	writeLineError();
 }

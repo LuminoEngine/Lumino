@@ -38,7 +38,9 @@ namespace tr
 #define LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(classType, baseClassType, ...) \
 	LN_TR_REFLECTION_TYPEINFO_IMPLEMENT_COMMON(ln::tr::TypeInfo, classType, baseClassType, __VA_ARGS__)
 
-
+namespace detail { class WeakRefInfo; }
+typedef uint32_t LocalValueHavingFlags;
+class PropertyInfo;
 
 
 
@@ -98,6 +100,93 @@ LN_INTERNAL_ACCESS:
 		return ptr;
 	}
 };
+	
+
+class ReflectionHelper
+{
+public:
+	template<class T>
+	static ln::tr::LocalValueHavingFlags* GetLocalValueHavingFlags(ReflectionObject* thisObj)
+	{
+		return &static_cast<T*>(thisObj)->lnref_localValueHavingFlags;
+	}
+	template<class T>
+	static TypeInfo* getClassTypeInfo()
+	{
+		return &T::lnref_typeInfo;
+	}
+	template<class T>
+	static void setBindingTypeInfo(void* data)
+	{
+		T::lnref_bindingTypeInfo = data;
+	}
+	template<class T>
+	static void* getBindingTypeInfo()
+	{
+		return T::lnref_bindingTypeInfo;
+	}
+	template<class T>
+	static TypeInfo* getTypeInfo(const T* obj)
+	{
+		return obj->lnref_GetThisTypeInfo();
+	}
+	template<class T>
+	inline static TypeInfo* getTypeInfo()
+	{
+		return &T::lnref_typeInfo;
+	}
+	
+	template<class T>
+	inline static detail::WeakRefInfo* requestWeakRefInfo(T* obj)
+	{
+		return obj->requestWeakRefInfo();
+	}
+	template<class T, class TData>
+	inline static TData* requestAnimationData(T* obj)
+	{
+		if (obj->m_animationData == nullptr)
+		{
+			obj->m_animationData = LN_NEW TData();
+		}
+		return static_cast<TData*>(obj->m_animationData);
+	}
+	
+	static void addGCObject(ReflectionObject* obj, ReflectionObject* child);
+	static void removeGCObject(ReflectionObject* obj, ReflectionObject* child);
+	static void gcObjects(ReflectionObject* obj);
+	static bool isGCReady(ReflectionObject* obj);
+	
+	template<class TList>
+	inline static void gcObjectList(TList* list)
+	{
+		list->removeAll([](typename TList::value_type& obj) { return isGCReady(obj); });
+	}
+	
+	
+	
+	static int32_t getInternalReferenceCount(RefObject* obj) { return obj->m_internalReferenceCount; }
+	static void addRefInternal(RefObject* obj) { obj->m_internalReferenceCount++; }
+	static void releaseInternal(RefObject* obj) { obj->releaseInternal(); }
+};
+
+namespace detail {
+	
+	
+	// 1つの ReflectionObject に対して1つ作られる
+	class WeakRefInfo final
+	{
+	public:
+		
+		RefObject*			owner;
+		std::atomic<int>	weakRefCount;// = 1;	// GCC で使えなかった
+		//int	weakRefCount;
+		
+		WeakRefInfo();
+		void addRef();
+		void release();
+	};
+
+} // namespace detail
 
 /**
 	@brief
@@ -253,6 +342,14 @@ protected:
 
 private:
 };
+
+
+//------------------------------------------------------------------------------
+template<class T>
+inline TypeInfo* TypeInfo::getTypeInfo()
+{
+	return ReflectionHelper::getTypeInfo<T>();
+}
 
 } // namespace tr
 

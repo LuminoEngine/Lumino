@@ -328,7 +328,7 @@ set(LN_SOURCES
 	${LN_SOURCES_Testing})
 
 set(LN_INCLUDE_DIRECTORIES
-	${PROJECT_SOURCE_DIR}/include)
+	${PROJECT_SOURCE_DIR}/Include)
 include_directories(${LN_INCLUDE_DIRECTORIES})
 
 #------------------------------------------------------------------------------
