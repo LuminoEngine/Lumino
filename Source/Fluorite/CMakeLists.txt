@@ -61,6 +61,16 @@ set(LN_FL_INCLUDE_DIRECTORIES
 #-------------------------------------------------------------------------------
 #include(${PROJECT_SOURCE_DIR}/../LuminoCore/CMake/LNCommon.cmake NO_POLICY_SCOPE)
 
+if (WIN32)
+
+elseif (APPLE)
+	set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++")
+
+elseif (UNIX)
+	add_definitions("-std=c++11")
+
+endif()
+
 #-------------------------------------------------------------------------------
 # Dependencies
 #-------------------------------------------------------------------------------

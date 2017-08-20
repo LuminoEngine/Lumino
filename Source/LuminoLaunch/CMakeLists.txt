@@ -28,8 +28,8 @@ if (WIN32)
 
 elseif (APPLE)
 	set(LN_SOURCES_Launch
-		${Main_Mac}
-		Source/Main_Win32.cpp
+		${LN_SOURCES_Launch}
+		Source/Main_Mac.cpp
 	)
 
 elseif (UNIX)

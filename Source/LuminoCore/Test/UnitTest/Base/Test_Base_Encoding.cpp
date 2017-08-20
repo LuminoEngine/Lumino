@@ -119,7 +119,7 @@ TEST_F(Test_Base_Encoding, SystemEncodingTest)
 #ifdef _WIN32
 		str2.convertFrom(str1, 6, Encoding::getSystemMultiByteEncoding());
 #else
-		str2.ConvertFrom(str1, 9, Encoding::GetSystemMultiByteEncoding());
+		str2.convertFrom(str1, 9, Encoding::getSystemMultiByteEncoding());
 #endif
 
 		ASSERT_EQ(3, str2.getLength());
