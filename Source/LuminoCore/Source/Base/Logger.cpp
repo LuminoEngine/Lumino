@@ -6,8 +6,9 @@
 #ifdef _WIN32
 #include <io.h>
 #include <sys/timeb.h>
-#endif
+#else
 #include <sys/time.h>
+#endif
 #include <time.h>
 #include <sstream>
 #include <iomanip>
