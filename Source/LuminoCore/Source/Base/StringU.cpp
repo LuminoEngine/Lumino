@@ -84,6 +84,12 @@ UString::UString(int count, UChar ch)
 	assign(count, ch);
 }
 
+UString::UString(const char* str)
+	: UString()
+{
+	assignFromCStr(str);
+}
+
 UString& UString::operator=(UChar ch)
 {
 	assign(&ch, 0, 1);
@@ -149,6 +155,21 @@ void UString::move(UString&& str) LN_NOEXCEPT
 	str.init();
 }
 
+void UString::allocBuffer(int length)
+{
+	if (length < SSOCapacity)
+	{
+		setSSOLength(length);
+		m_data.sso.buffer[length] = '\0';
+	}
+	else
+	{
+		checkDetachShared();
+		m_data.core->alloc(length);
+		m_data.core->get()[length] = '\0';
+	}
+}
+
 void UString::assign(const UChar* str)
 {
 	assign(str, 0, UStringHelper::strlen(str));
@@ -163,19 +184,9 @@ void UString::assign(const UChar* str, int begin, int length)
 {
 	if (str && *str)
 	{
-		if (length < SSOCapacity)
-		{
-			setSSOLength(length);
-		}
-		else
-		{
-			checkDetachShared();
-			m_data.core->alloc(length);
-		}
-
+		allocBuffer(length);
 		UChar* buf = getBuffer();
 		memcpy(buf, str + begin, sizeof(UChar) * length);
-		buf[length] = '\0';
 	}
 }
 
@@ -183,18 +194,42 @@ void UString::assign(int count, UChar ch)
 {
 	if (count > 0)
 	{
-		if (count < SSOCapacity)
-		{
-			setSSOLength(count);
-		}
-		else
-		{
-			checkDetachShared();
-			m_data.core->alloc(count);
-		}
-
+		allocBuffer(count);
 		UChar* buf = getBuffer();
 		std::fill<UChar*, UChar>(buf, buf + count, ch);
+	}
+}
+
+void UString::assignFromCStr(const char* str, int length)
+{
+	length = (length < 0) ? INT_MAX : length;
+	int len = 0;
+	const char* pos = str;
+	bool ascii = true;
+	for (; *pos && len < length; ++pos, ++len)
+	{
+		if (isascii(*pos) == 0)
+		{
+			ascii = false;
+		}
+	}
+
+	if (ascii)
+	{
+		allocBuffer(len);
+		UChar* buf = getBuffer();
+		for (int i = 0; i < len; ++i)
+		{
+			buf[i] = str[i];
+		}
+	}
+	else
+	{
+		LN_NOTIMPLEMENTED();
+		//Encoding* encoding = Encoding::getSystemMultiByteEncoding();
+		//Ref<Decoder> decoder(encoding->createDecoder(), false);
+		//getMaxByteCount
+		//	decoder->convertToUTF16(str, length, )
 	}
 }
 

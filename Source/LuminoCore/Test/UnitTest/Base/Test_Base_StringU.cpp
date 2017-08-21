@@ -153,6 +153,14 @@ TEST_F(Test_Base_UString, Operators)
 }
 
 //------------------------------------------------------------------------------
+TEST_F(Test_Base_UString, assignFromCStr)
+{
+	UString s1("abc");
+	ASSERT_EQ(3, s1.getLength());
+	ASSERT_EQ(u"abc", s1);
+}
+
+//------------------------------------------------------------------------------
 TEST_F(Test_Base_UString, clear)
 {
 	// <Test> (SSO)

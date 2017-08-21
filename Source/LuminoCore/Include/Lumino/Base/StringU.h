@@ -51,6 +51,7 @@ public:
 	UString(const UChar* str, int begin);
 	UString(const UChar* str, int begin, int length);
 	UString(int count, UChar ch);
+	UString(const char* str);
 
 	UString& operator=(UChar ch);
 	UString& operator=(const UChar* str);
@@ -76,10 +77,12 @@ private:
 	void init() LN_NOEXCEPT;
 	void copy(const UString& str);
 	void move(UString&& str) LN_NOEXCEPT;
+	void allocBuffer(int length);
 	void assign(const UChar* str);
 	void assign(const UChar* str, int begin);
 	void assign(const UChar* str, int begin, int length);
 	void assign(int count, UChar ch);
+	void assignFromCStr(const char* str, int length = -1);
 	void checkDetachShared();
 	UChar* getBuffer();
 	void setSSOLength(int len);
