@@ -11,7 +11,7 @@
 #include "../../EffekseerRendererCommon/EffekseerRenderer.StandardRenderer.h"
 
 /* Visual Studio 2008 */
-#if _MSC_VER == 1500 || _MSC_VER == 1910
+#if _MSC_VER == 1500 || _MSC_VER == 1910 || _MSC_VER == 1911
 #include <xmmintrin.h>
 #endif
 
