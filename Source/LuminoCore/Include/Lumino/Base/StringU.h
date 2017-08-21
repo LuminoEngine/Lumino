@@ -27,7 +27,16 @@ void setLSB(unsigned char& byte, bool bit)
 	}
 }
 
+//enum class UStringType
+//{
+//	Internal,
+//	Char,
+//	WChar,
+//};
+
 }
+
+class UStringRef;
 
 /**
 	@brief		文字列を表すクラスです。
@@ -67,6 +76,17 @@ public:
 
 	/** 文字列をクリアします。 */
 	void clear();
+
+	/**
+		@brief		文字列を検索し、見つかった最初の文字のインデックスを返します。
+		@param[in]	str			: 検索文字列
+		@param[in]	startIndex	: 検索を開始するインデックス (省略した場合は先頭から)
+		@param[in]	cs			: 大文字と小文字の区別設定
+		@return		見つからなかった場合は -1。str が空文字列である場合は 0。
+	*/
+	int indexOf(const UString& str, int startIndex = 0, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+	int indexOf(UChar ch, int startIndex = 0, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+
 
 	bool isSSO() const LN_NOEXCEPT { return detail::getLSB<7>(static_cast<uint8_t>(m_data.sso.length)); }
 	bool isNonSSO() const LN_NOEXCEPT { return !detail::getLSB<7>(static_cast<uint8_t>(m_data.sso.length)); }
@@ -110,6 +130,38 @@ public:
 	static size_t strlen(const UChar* str);
 	static int compare(const UChar* str1, const UChar* str2);
 };
+
+//class UStringRef
+//{
+//public:
+//	UStringRef(const UString& str) LN_NOEXCEPT
+//	{
+//		m_str = str.c_str();
+//		m_length = str.getLength();
+//	}
+//
+//	UStringRef(const UChar* str) LN_NOEXCEPT
+//	{
+//		m_str = str;
+//		m_length = UStringHelper::strlen(str);
+//	}
+//
+//
+//	//template<std::size_t N>
+//	//UStringRef(const UChar str[N]) LN_NOEXCEPT
+//	//{
+//	//	m_str = str;
+//	//	m_length = N;
+//	//}
+//
+//private:
+//	detail::UStringType		m_type;
+//	int						m_length;
+//	union
+//	{
+//		const UChar*	m_str;
+//	};
+//};
 
 namespace detail {
 

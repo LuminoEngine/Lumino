@@ -129,6 +129,16 @@ void UString::clear()
 	}
 }
 
+int UString::indexOf(const UString& str, int startIndex, CaseSensitivity cs) const
+{
+	return StringTraits::indexOf(c_str(), getLength(), str.c_str(), str.getLength(), startIndex, cs);
+}
+
+int UString::indexOf(UChar ch, int startIndex, CaseSensitivity cs) const
+{
+	return StringTraits::indexOf(c_str(), getLength(), &ch, 1, startIndex, cs);
+}
+
 void UString::init() LN_NOEXCEPT
 {
 	m_data.core = nullptr;
@@ -202,6 +212,7 @@ void UString::assign(int count, UChar ch)
 
 void UString::assignFromCStr(const char* str, int length)
 {
+	// ASCII だけの文字列か調べる。ついでに文字数も調べる。
 	length = (length < 0) ? INT_MAX : length;
 	int len = 0;
 	const char* pos = str;

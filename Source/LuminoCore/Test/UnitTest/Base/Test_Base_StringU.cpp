@@ -155,9 +155,20 @@ TEST_F(Test_Base_UString, Operators)
 //------------------------------------------------------------------------------
 TEST_F(Test_Base_UString, assignFromCStr)
 {
-	UString s1("abc");
-	ASSERT_EQ(3, s1.getLength());
-	ASSERT_EQ(u"abc", s1);
+	// <Test> コンストラクタへ const char*, char 指定
+	{
+		UString s1("abc");
+		UString s2(2, 'a');
+		ASSERT_EQ(3, s1.getLength());
+		ASSERT_EQ(u"abc", s1);
+		ASSERT_EQ(u"aa", s2);
+	}
+	// <Test> 処理系関数へ const char*, char 指定
+	{
+		UString s1("abc");
+		ASSERT_EQ(1, s1.indexOf("b"));
+		ASSERT_EQ(1, s1.indexOf('b'));
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -179,6 +190,16 @@ TEST_F(Test_Base_UString, clear)
 		ASSERT_EQ(true, s1.isEmpty());
 		ASSERT_EQ(true, s2.isEmpty());
 	}
+}
+
+//------------------------------------------------------------------------------
+TEST_F(Test_Base_UString, indexOf)
+{
+	UString s1(u"abcdef");
+	ASSERT_EQ(1, s1.indexOf(u"bcd"));
+	ASSERT_EQ(-1, s1.indexOf(u"a", 1));
+	ASSERT_EQ(0, s1.indexOf(u"A", 0, CaseSensitivity::CaseInsensitive));
+	ASSERT_EQ(4, s1.indexOf(u'e'));
 }
 
 //------------------------------------------------------------------------------

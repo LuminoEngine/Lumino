@@ -273,6 +273,35 @@ void StringTraits::convertMultiToWide(std::wstring* out, const char* input, int 
 	(*out) = strWide.c_str();
 }
 
+template<typename TChar>
+static int my_strncmp(const TChar* str1, const TChar* str2, size_t count) LN_NOEXCEPT
+{
+	for (; 0 < count; --count, ++str1, ++str2)
+	{
+		if (*str1 != *str2)
+		{
+			return (*str1 < *str2) ? -1 : 1;
+		}
+	}
+	return 0;
+}
+
+template<typename TChar>
+static int my_strnicmp(const TChar* str1, const TChar* str2, size_t count) LN_NOEXCEPT
+{
+	for (; 0 < count; --count, ++str1, ++str2)
+	{
+		TChar c1 = StringTraits::toUpper(*str1);
+		TChar c2 = StringTraits::toUpper(*str2);
+		if (c1 != c2)
+		{
+			return (c1 < c2) ? -1 : 1;
+		}
+	}
+	return 0;
+}
+
+
 //------------------------------------------------------------------------------
 template<typename TChar>
 int StringTraits::indexOf(const TChar* str1, int str1Len, const TChar* str2, int str2Len, int startIndex, CaseSensitivity cs)
@@ -296,8 +325,10 @@ int StringTraits::indexOf(const TChar* str1, int str1Len, const TChar* str2, int
 	{
 		for (; *pos; ++pos)
 		{
-			if (*pos == *str2) {
-				if (strncmp(pos, str2, str2Len) == 0) {
+			if (*pos == *str2)
+			{
+				if (my_strncmp(pos, str2, str2Len) == 0)
+				{
 					return (int)(pos - str1);
 				}
 			}
@@ -308,10 +339,9 @@ int StringTraits::indexOf(const TChar* str1, int str1Len, const TChar* str2, int
 	{
 		for (; *pos; ++pos)
 		{
-			if (*pos == *str2) {
-				if (strnicmp(pos, str2, str2Len) == 0) {
-					return (int)(pos - str1);
-				}
+			if (my_strnicmp(pos, str2, str2Len) == 0)
+			{
+				return (int)(pos - str1);
 			}
 		}
 	}
@@ -320,6 +350,7 @@ int StringTraits::indexOf(const TChar* str1, int str1Len, const TChar* str2, int
 }
 template int StringTraits::indexOf<char>(const char* str1, int str1Len, const char* str2, int str2Len, int startIndex, CaseSensitivity cs);
 template int StringTraits::indexOf<wchar_t>(const wchar_t* str1, int str1Len, const wchar_t* str2, int str2Len, int startIndex, CaseSensitivity cs);
+template int StringTraits::indexOf<char16_t>(const char16_t* str1, int str1Len, const char16_t* str2, int str2Len, int startIndex, CaseSensitivity cs);
 
 
 //------------------------------------------------------------------------------
