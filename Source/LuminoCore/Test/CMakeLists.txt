@@ -23,6 +23,7 @@ set(LN_TEST_SOURCES
 	UnitTest/Base/Test_Base_StringArray.cpp
 	UnitTest/Base/Test_Base_StringRef.cpp
 	UnitTest/Base/Test_Base_StringTraits.cpp
+	UnitTest/Base/Test_Base_StringU.cpp
 	UnitTest/Base/Test_Base_UnicodeUtils.cpp
 	UnitTest/Base/Test_Base_UTF32Encoding.cpp
 	UnitTest/Base/Test_Base_WeakRefPtr.cpp
