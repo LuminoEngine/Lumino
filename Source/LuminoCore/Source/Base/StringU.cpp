@@ -4,6 +4,7 @@
 #include <Lumino/Base/StringU.h>
 #include <Lumino/Base/StringHelper.h>
 #include <Lumino/Base/RefObject.h>
+#include <Lumino/Base/Formatter.h>
 
 LN_NAMESPACE_BEGIN
 
@@ -129,9 +130,10 @@ void UString::clear()
 	}
 }
 
-int UString::indexOf(const UString& str, int startIndex, CaseSensitivity cs) const
+int UString::indexOf(const UStringRef& str, int startIndex, CaseSensitivity cs) const
 {
-	return StringTraits::indexOf(c_str(), getLength(), str.c_str(), str.getLength(), startIndex, cs);
+	//return StringTraits::indexOf(c_str(), getLength(), str.c_str(), str.getLength(), startIndex, cs);
+	return StringTraits::indexOf(c_str(), getLength(), str.data(), str.getLength(), startIndex, cs);
 }
 
 int UString::indexOf(UChar ch, int startIndex, CaseSensitivity cs) const
@@ -302,5 +304,30 @@ int UStringHelper::compare(const UChar* str1, const UChar* str2)
 	}
 	return (0);
 }
+
+template<typename TChar, typename TValue>
+static void toStringIntX(TValue v, TChar* outStr, int size)
+{
+	char buf[64];
+	detail::StdCharArrayBuffer<char> b(buf, 64);
+	std::ostream os(&b);
+	os << v;
+	const char* str = b.GetCStr();
+	int i = 0;
+	for (; *str && i < (size - 1); ++str, ++i)
+	{
+		outStr[i] = *str;
+	}
+	outStr[i] = '\0';
+}
+
+template<typename TChar>
+void UStringHelper::toStringInt8(int8_t v, TChar* outStr, int size)
+{
+	toStringIntX((int32_t)v, outStr, size);
+}
+template void UStringHelper::toStringInt8<char>(int8_t v, char* outStr, int size);
+template void UStringHelper::toStringInt8<wchar_t>(int8_t v, wchar_t* outStr, int size);
+template void UStringHelper::toStringInt8<char16_t>(int8_t v, char16_t* outStr, int size);
 
 LN_NAMESPACE_END

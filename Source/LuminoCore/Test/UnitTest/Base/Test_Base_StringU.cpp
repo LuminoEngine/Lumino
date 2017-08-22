@@ -205,6 +205,12 @@ TEST_F(Test_Base_UString, indexOf)
 //------------------------------------------------------------------------------
 TEST_F(Test_Base_UString, Issue)
 {
+	auto a = UString::format(u"{0}", 100);
+
+	UChar ss[32];
+	UStringHelper::toStringInt8(19, ss, 32);
+	ss[0] = 0;
+
 }
 
 
