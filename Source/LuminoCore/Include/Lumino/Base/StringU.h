@@ -426,17 +426,17 @@ public:
 	{}
 
 	template <typename T>
-	static void format_custom_arg(void *formatter, const void *arg, void *format_str_ptr)
+	static void format_custom_arg(UStringFormatter* formatter, const void* arg, void* format_str_ptr)
 	{
-		format_arg(*static_cast<Formatter*>(formatter),
-			*static_cast<const Char**>(format_str_ptr),
-			*static_cast<const T*>(arg));
+		format_arg(*formatter,
+			format_str_ptr,
+			arg);
 	}
 
 
-	static void formatInternal_Int32(UStringFormatter* formatter, const int* arg, void* format_str_ptr)
+	static void formatInternal_Int32(UStringFormatter* formatter, const void* arg, void* format_str_ptr)
 	{
-		formatInternal_Numeric<TChar, int>(formatter, arg, format_str_ptr);
+		formatInternal_Numeric<TChar, int>(formatter, reinterpret_cast<const int*>(arg), format_str_ptr);
 	}
 
 
