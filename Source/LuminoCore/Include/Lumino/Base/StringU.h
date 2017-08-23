@@ -61,9 +61,6 @@ public:
 	UString(int count, UChar ch);
 	UString(const char* str);
 
-	UString& operator=(UChar ch);
-	UString& operator=(const UChar* str);
-
 	/** 文字列が空であるかを確認します。 */
 	bool isEmpty() const;
 
@@ -99,6 +96,10 @@ public:
 	bool isSSO() const LN_NOEXCEPT { return detail::getLSB<7>(static_cast<uint8_t>(m_data.sso.length)); }
 	bool isNonSSO() const LN_NOEXCEPT { return !detail::getLSB<7>(static_cast<uint8_t>(m_data.sso.length)); }
 
+	UString& operator=(UChar ch);
+	UString& operator=(const UChar* rhs);
+	UString& operator=(const UStringRef& rhs);
+
 private:
 	static std::size_t const SSOCapacity = 15;//31;//sizeof(uint32_t) * 4 / sizeof(UChar) - 1;
 
@@ -107,8 +108,7 @@ private:
 	void move(UString&& str) LN_NOEXCEPT;
 	void allocBuffer(int length);
 	void assign(const UChar* str);
-	void assign(const UChar* str, int begin);
-	void assign(const UChar* str, int begin, int length);
+	void assign2(const UChar* str, int length);
 	void assign(int count, UChar ch);
 	void assignFromCStr(const char* str, int length = -1);
 	void checkDetachShared();
@@ -452,6 +452,24 @@ inline UString UString::format(const Locale& locale, const UStringRef& format, T
 	{
 		return UString();
 	}
+}
+
+inline UString& UString::operator=(UChar ch)
+{
+	assign2(&ch, 1);
+	return *this;
+}
+
+inline UString& UString::operator=(const UChar* rhs)
+{
+	assign(rhs);
+	return *this;
+}
+
+inline UString& UString::operator=(const UStringRef& rhs)
+{
+	assign2(rhs.data(), rhs.getLength());
+	return *this;
 }
 
 inline bool operator==(const UChar* lhs, const UString& rhs)

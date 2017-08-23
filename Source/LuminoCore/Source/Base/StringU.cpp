@@ -52,13 +52,13 @@ UString& UString::operator=(UString&& str) LN_NOEXCEPT
 UString::UString(const UString& str, int begin)
 	: UString()
 {
-	assign(str.c_str(), begin, str.getLength());
+	assign2(str.c_str() + begin, str.getLength());
 }
 
 UString::UString(const UString& str, int begin, int length)
 	: UString()
 {
-	assign(str.c_str(), begin, length);
+	assign2(str.c_str() + begin, length);
 }
 
 UString::UString(const UChar* str)
@@ -70,7 +70,7 @@ UString::UString(const UChar* str)
 UString::UString(const UChar* str, int length)
 	: UString()
 {
-	assign(str, 0, length);
+	assign2(str, length);
 }
 
 UString::UString(int count, UChar ch)
@@ -83,18 +83,6 @@ UString::UString(const char* str)
 	: UString()
 {
 	assignFromCStr(str);
-}
-
-UString& UString::operator=(UChar ch)
-{
-	assign(&ch, 0, 1);
-	return *this;
-}
-
-UString& UString::operator=(const UChar* str)
-{
-	assign(str);
-	return *this;
 }
 
 bool UString::isEmpty() const
@@ -143,10 +131,17 @@ void UString::init() LN_NOEXCEPT
 
 void UString::copy(const UString& str)
 {
-	memcpy(&m_data, &str.m_data, sizeof(m_data));
-	if (isNonSSO())
+	bool changed = false;
+	if (isSSO() != str.isSSO()) changed = true;
+	else if (isNonSSO() && (!m_data.core || m_data.core != m_data.core)) changed = true;
+
+	if (changed)
 	{
-		LN_SAFE_ADDREF(m_data.core);
+		memcpy(&m_data, &str.m_data, sizeof(m_data));
+		if (isNonSSO())
+		{
+			LN_SAFE_ADDREF(m_data.core);
+		}
 	}
 }
 
@@ -178,21 +173,20 @@ void UString::allocBuffer(int length)
 
 void UString::assign(const UChar* str)
 {
-	assign(str, 0, UStringHelper::strlen(str));
+	assign2(str, UStringHelper::strlen(str));
 }
 
-void UString::assign(const UChar* str, int begin)
-{
-	assign(str, begin, UStringHelper::strlen(str));
-}
-
-void UString::assign(const UChar* str, int begin, int length)
+void UString::assign2(const UChar* str, int length)
 {
 	if (str && *str)
 	{
 		allocBuffer(length);
 		UChar* buf = getBuffer();
-		memcpy(buf, str + begin, sizeof(UChar) * length);
+		memcpy(buf, str, sizeof(UChar) * length);
+	}
+	else
+	{
+		allocBuffer(0);
 	}
 }
 
@@ -240,12 +234,20 @@ void UString::assignFromCStr(const char* str, int length)
 	}
 }
 
+// 共有を切り離したあたらしい Core を作成し、NonSSO にする
 void UString::checkDetachShared()
 {
-	if (m_data.core && m_data.core->isShared())
+	if (isSSO())
 	{
-		m_data.core->release();
 		m_data.core = nullptr;
+	}
+	else
+	{
+		if (m_data.core && m_data.core->isShared())
+		{
+			m_data.core->release();
+			m_data.core = nullptr;
+		}
 	}
 	if (!m_data.core)
 	{
@@ -280,6 +282,7 @@ void UString::setNonSSO()
 
 size_t UStringHelper::strlen(const UChar* str)
 {
+	if (!str) return 0;
 	size_t count = 0;
 	for (; *str; ++str) ++count;
 	return count;
