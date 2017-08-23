@@ -12,7 +12,6 @@ protected:
 
 #define NSSO_STR	u"abcdefghij1234567890"
 
-//------------------------------------------------------------------------------
 TEST_F(Test_Base_UString, Constructor)
 {
 	// <Test> SSO
@@ -69,7 +68,6 @@ TEST_F(Test_Base_UString, Constructor)
 	}
 }
 
-//------------------------------------------------------------------------------
 TEST_F(Test_Base_UString, CopyFramework)
 {
 	// <Test> copy (SSO)
@@ -134,7 +132,6 @@ TEST_F(Test_Base_UString, CopyFramework)
 	}
 }
 
-//------------------------------------------------------------------------------
 TEST_F(Test_Base_UString, Operators)
 {
 	// <Test> =
@@ -147,9 +144,223 @@ TEST_F(Test_Base_UString, Operators)
 		ASSERT_EQ(u"abc", s2);
 		ASSERT_EQ(u"a", s3); ASSERT_EQ(1, s3.getLength());
 	}
+
+
+	std::string strAStd = "a";
+	std::wstring strWStd = L"w";
+	StringA strASample = "a";
+	StringW strWSample = L"w";
+	StringA strAEmpty;
+	StringW strWEmpty;
+	StringA strA;
+	StringW strW;
+
+	// <Test> operator= (文字列ポインタ)
+	{
+		strA = "a";
+		strW = L"w";
+		ASSERT_EQ("a", strA);
+		ASSERT_EQ(L"w", strW);
+	}
+	// <Test> operator= (GenericString)
+	{
+		strA = strASample;
+		strW = strWSample;
+		ASSERT_EQ("a", strA);
+		ASSERT_EQ(L"w", strW);
+	}
+	// <Test> operator= (std::string)
+	{
+		strA = strAStd;
+		strW = strWStd;
+		ASSERT_EQ("a", strA);
+		ASSERT_EQ(L"w", strW);
+	}
+	// <Test> operator= (文字列ポインタ・ASCII/Wide逆の型)
+	{
+		strA = L"w";
+		strW = "a";
+		ASSERT_EQ("w", strA);
+		ASSERT_EQ(L"a", strW);
+	}
+	// <Test> operator= (NULL)
+	{
+		strA = ((char*)NULL);
+		strW = ((wchar_t*)NULL);
+		ASSERT_TRUE(strA.isEmpty());
+		ASSERT_TRUE(strW.isEmpty());
+	}
+	// <Test> operator= (自己代入)
+	{
+		strA = strASample;
+		strW = strWSample;
+		strA = strA;
+		strW = strW;
+		ASSERT_EQ("a", strA);
+		ASSERT_EQ(L"w", strW);
+	}
+
+	strA = "a";
+	strW = L"w";
+	// <Test> operator== (GenericString)
+	{
+		ASSERT_TRUE(strA == strASample);
+		ASSERT_TRUE(strW == strWSample);
+	}
+	// <Test> operator== (文字列ポインタ)
+	{
+		ASSERT_TRUE(strA == "a");
+		ASSERT_TRUE(strW == L"w");
+	}
+	// <Test> operator== (NULL)
+	{
+		ASSERT_FALSE(strA == ((char*)NULL));
+		ASSERT_FALSE(strW == ((wchar_t*)NULL));
+		ASSERT_TRUE(strAEmpty == ((char*)NULL));
+		ASSERT_TRUE(strWEmpty == ((wchar_t*)NULL));
+	}
+	// <Test> operator== (自己比較)
+	{
+		ASSERT_TRUE(strA == strA);
+		ASSERT_TRUE(strW == strW);
+	}
+	// <Test> operator!= (GenericString)
+	{
+		ASSERT_FALSE(strA != strASample);
+		ASSERT_FALSE(strW != strWSample);
+	}
+	// <Test> operator!= (文字列ポインタ)
+	{
+		ASSERT_FALSE(strA != "a");
+		ASSERT_FALSE(strW != L"w");
+	}
+	// <Test> operator!= (NULL)
+	{
+		ASSERT_TRUE(strA != ((char*)NULL));
+		ASSERT_TRUE(strW != ((wchar_t*)NULL));
+		ASSERT_FALSE(strAEmpty != ((char*)NULL));
+		ASSERT_FALSE(strWEmpty != ((wchar_t*)NULL));
+	}
+
+	strA = "a";
+	strW = L"w";
+	// <Test> operator+= (GenericString)
+	{
+		strA += strASample;
+		strW += strWSample;
+		ASSERT_EQ("aa", strA);
+		ASSERT_EQ(L"ww", strW);
+	}
+	// <Test> operator+= (文字列ポインタ)
+	{
+		strA += "a";
+		strW += L"w";
+		ASSERT_EQ("aaa", strA);
+		ASSERT_EQ(L"www", strW);
+	}
+	// <Test> operator+= (文字)
+	{
+		strA += 'a';
+		strW += L'w';
+		ASSERT_EQ("aaaa", strA);
+		ASSERT_EQ(L"wwww", strW);
+	}
+	// <Test> operator+= (NULL)
+	{
+		strA += ((char*)NULL);
+		strW += ((wchar_t*)NULL);
+		ASSERT_EQ("aaaa", strA);
+		ASSERT_EQ(L"wwww", strW);
+	}
+
+	strA = "a";
+	strW = L"w";
+	StringA strA2 = "A";
+	StringW strW2 = L"W";
+	// <Test> operator < (GenericString)
+	{
+		ASSERT_TRUE(strA2 < strA);
+		ASSERT_TRUE(strW2 < strW);
+	}
+	// <Test> operator < (文字列ポインタ)
+	{
+		ASSERT_TRUE(strA < "b");
+		ASSERT_TRUE(strW < L"x");
+	}
+	// <Test> operator < (空文字列)
+	{
+		ASSERT_FALSE(strA < StringA());
+		ASSERT_FALSE(strW < StringW());
+		ASSERT_FALSE(strA < "");
+		ASSERT_FALSE(strW < L"");
+	}
+	// <Test> operator < (NULL)
+	{
+		ASSERT_FALSE(strA < ((char*)NULL));
+		ASSERT_FALSE(strW < ((wchar_t*)NULL));
+	}
+
+	// <Test> operator > (GenericString)
+	{
+		ASSERT_FALSE(strA2 > strA);
+		ASSERT_FALSE(strW2 > strW);
+	}
+	// <Test> operator > (文字列ポインタ)
+	{
+		ASSERT_FALSE(strA > "b");
+		ASSERT_FALSE(strW > L"x");
+	}
+	// <Test> operator > (空文字列)
+	{
+		ASSERT_TRUE(strA > StringA());
+		ASSERT_TRUE(strW > StringW());
+		ASSERT_TRUE(strA > "");
+		ASSERT_TRUE(strW > L"");
+	}
+	// <Test> operator > (NULL)
+	{
+		ASSERT_TRUE(strA > ((char*)NULL));
+		ASSERT_TRUE(strW > ((wchar_t*)NULL));
+	}
+
+	// <Test> operator <= (GenericString)
+	{
+		ASSERT_TRUE(strA2 <= strA);
+		ASSERT_TRUE(strW2 <= strW);
+	}
+	// <Test> operator <= (文字列ポインタ)
+	{
+		ASSERT_TRUE(strA <= "b");
+		ASSERT_TRUE(strW <= L"x");
+	}
+	// <Test> operator >= (GenericString)
+	{
+		ASSERT_FALSE(strA2 >= strA);
+		ASSERT_FALSE(strW2 >= strW);
+	}
+	// <Test> operator >= (文字列ポインタ)
+	{
+		ASSERT_FALSE(strA >= "b");
+		ASSERT_FALSE(strW >= L"x");
+	}
+
+	// <Test> operator +
+	{
+		String str = String(_T("a")) + String(_T("b"));
+		ASSERT_EQ(_T("ab"), str);
+	}
+	// <Test> operator +
+	{
+		String str = String(_T("a")) + _T("b");
+		ASSERT_EQ(_T("ab"), str);
+	}
+	// <Test> operator +
+	{
+		String str = _T("a") + String(_T("b"));
+		ASSERT_EQ(_T("ab"), str);
+	}
 }
 
-//------------------------------------------------------------------------------
 TEST_F(Test_Base_UString, assignFromCStr)
 {
 	// <Test> コンストラクタへ const char*, char 指定
@@ -168,7 +379,6 @@ TEST_F(Test_Base_UString, assignFromCStr)
 	}
 }
 
-//------------------------------------------------------------------------------
 TEST_F(Test_Base_UString, clear)
 {
 	// <Test> (SSO)
@@ -189,7 +399,6 @@ TEST_F(Test_Base_UString, clear)
 	}
 }
 
-//------------------------------------------------------------------------------
 TEST_F(Test_Base_UString, indexOf)
 {
 	UString s1(u"abcdef");
@@ -199,14 +408,8 @@ TEST_F(Test_Base_UString, indexOf)
 	ASSERT_EQ(4, s1.indexOf(u'e'));
 }
 
-//------------------------------------------------------------------------------
 TEST_F(Test_Base_UString, Issue)
 {
-	auto a = UString::format(u"{0}", 100);
-
-	UChar ss[32];
-	UStringHelper::toStringInt8(19, ss, 32);
-	ss[0] = 0;
 }
 
 

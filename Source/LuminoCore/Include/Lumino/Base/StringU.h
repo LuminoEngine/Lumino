@@ -339,10 +339,7 @@ private:
 template<typename Formatter>
 void formatArg(Formatter&, ...)
 {
-	static_assert(false,
-		"Cannot format argument. To enable the use of ostream "
-		"operator<< include fmt/ostream.h. Otherwise provide "
-		"an overload of formatArg.");
+	static_assert(false, "[Lumino format string error] Cannot format argument. Please overload formatArg.");
 }
 
 } // namespace fmt
