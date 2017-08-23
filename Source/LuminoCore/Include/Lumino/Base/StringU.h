@@ -2,6 +2,7 @@
 #pragma once
 #include <atomic>
 #include "Common.h"
+#include "StringBuilder.h"
 
 LN_NAMESPACE_BEGIN
 namespace detail { class UStringCore; }
@@ -56,8 +57,7 @@ public:
 	UString(const UString& str, int begin);
 	UString(const UString& str, int begin, int length);
 	UString(const UChar* str);
-	UString(const UChar* str, int begin);
-	UString(const UChar* str, int begin, int length);
+	UString(const UChar* str, int length);
 	UString(int count, UChar ch);
 	UString(const char* str);
 
@@ -91,7 +91,9 @@ public:
 
 
 	template<typename... TArgs>
-	static UString format(const UStringRef& format, const TArgs&... args);
+	static UString format(const UStringRef& format, TArgs&&... args);
+	template<typename... TArgs>
+	static UString format(const Locale& locale, const UStringRef& format, TArgs&&... args);	/**< @overload Format */
 
 
 	bool isSSO() const LN_NOEXCEPT { return detail::getLSB<7>(static_cast<uint8_t>(m_data.sso.length)); }
@@ -263,242 +265,86 @@ private:
 	};
 };
 
-/**
-	@brief		
-*/
-class UStringBuilder
-{
-public:
 
-private:
-};
-
-
-/**
-	@brief		
-*/
-class UStringFormatter
-{
-public:
-
-private:
-	//const std::locale& locale;
-};
 
 
 namespace fmt {
 
-typedef void(*FormatFunc)(UStringFormatter* formatter, const void* arg, void* format_str_ptr);
+template<typename TChar>
+class GenericFormatStringRef
+{
+public:
+	GenericFormatStringRef();
+	GenericFormatStringRef(const TChar* begin, const TChar* end);
+	GenericFormatStringRef(const GenericFormatStringRef& str);
+
+	bool isEmpty() const { return m_length == 0; }
+	int getLength() const { return m_length; }
+	const TChar* begin() const { return m_str; }
+	const TChar* end() const { return m_str + m_length; }
+
+	const TChar& operator[](int index) const { return *(m_str + index); }
+
+private:
+	const TChar*	m_str;
+	int				m_length;
+};
+
+template<typename TChar>
+class GenericFormatStringBuilder
+{
+public:
+	GenericFormatStringBuilder();
+
+	void clear();
+	void appendChar(TChar ch);
+	void appendChar(TChar ch, int count);
+	void appendString(const TChar* str);
+	void appendString(const TChar* str, int length);
+	void appendString(const UString& str);
+	const TChar* c_str() const;
+	int getLength() const;
+
+private:
+	void appendIntenal(const TChar* str, int length);
+
+	ByteBuffer	m_buffer;
+	size_t		m_bufferUsed;
+};
+
+template<typename TChar>
+class GenericStringFormatter
+{
+public:
+	GenericStringFormatter()
+		: m_error()
+		, m_errorPos(0)
+	{}
+	~GenericStringFormatter() {}
+
+	void reportError(const char* message, int pos) { m_error = message; m_errorPos = pos; }
+	bool hasError() const { return !m_error.empty(); }
+
+public:	// TODO
+	const std::locale* m_locale;
+	GenericFormatStringBuilder<TChar>	m_sb;
+	GenericFormatStringRef<TChar>	m_formatString;
+	GenericFormatStringRef<TChar>	m_precision;
+
+private:
+	std::string	m_error;
+	int			m_errorPos;
+};
 
 template<typename Formatter>
-void format_arg(Formatter&, ...)
+void formatArg(Formatter&, ...)
 {
 	static_assert(false,
 		"Cannot format argument. To enable the use of ostream "
 		"operator<< include fmt/ostream.h. Otherwise provide "
-		"an overload of format_arg.");
+		"an overload of formatArg.");
 }
 
-namespace detail {
-
-#if defined(_MSC_VER) && _MSC_VER <= 1800 // VS2013
-#	define LN_FMT_BRACED_INIT_WORKAROUND(x) (x)
-#else
-#	define LN_FMT_BRACED_INIT_WORKAROUND(x) {x}
-#endif
-
-template<typename T>
-FormatFunc selectFormatFunc(const T& v)
-{
-	return &format_arg;
-}
-
-
-
-//static GenericString<TChar> Format(const std::locale& locale, const GenericStringRef<TChar>& format, const GenericStringRef<TChar>& formatParam, TValue value)
-template<typename TChar, typename TValue>
-void formatInternal_Numeric(UStringFormatter* formatter, const TValue* arg, void* format_str_ptr)
-{
-	//TChar buf[64];
-	//detail::StdCharArrayBuffer<TChar> b(buf, 64);
-	//std::basic_ostream<TChar, std::char_traits<TChar> > os(&b);
-	//os.imbue(locale);
-
-	//int32_t precision = -1;
-	//if (!formatParam.isEmpty())
-	//{
-	//	NumberConversionResult result;
-	//	const TChar* dummy;
-	//	precision = StringTraits::toInt32(formatParam.getBegin(), formatParam.getLength(), 10, &dummy, &result);
-	//	LN_THROW(result == NumberConversionResult::Success, InvalidFormatException);
-	//}
-
-	//if (format.isEmpty())
-	//{
-	//}
-	//else if (format.getLength() == 1)
-	//{
-	//	if (format[0] == 'd' || format[0] == 'D')
-	//	{
-	//		if (precision >= 0)
-	//		{
-	//			// 0埋め
-	//			os << std::setfill((TChar)'0') << std::setw(precision);
-	//		}
-	//	}
-	//	else if (format[0] == 'x' || format[0] == 'X')
-	//	{
-	//		os << std::hex;
-	//		if (format[0] == 'X') { os << std::uppercase; }
-
-	//		if (precision >= 0)
-	//		{
-	//			// 0埋め
-	//			os << std::setfill((TChar)'0') << std::setw(precision);
-	//		}
-	//	}
-	//	else if (format[0] == 'f' || format[0] == 'F')
-	//	{
-	//		os << std::fixed;
-
-	//		if (precision >= 0)
-	//		{
-	//			// 小数点以下の精度
-	//			os << std::setprecision(precision);
-	//		}
-	//	}
-	//	else if (format[0] == 'e' || format[0] == 'E')
-	//	{
-	//		os << std::scientific;
-	//		if (format[0] == 'E') { os << std::uppercase; }
-
-	//		if (precision >= 0)
-	//		{
-	//			// 小数点以下の精度
-	//			os << std::setprecision(precision);
-	//		}
-	//	}
-	//}
-	//else
-	//{
-	//	LN_THROW(0, InvalidFormatException);
-	//}
-	//// http://sla0.jp/2012/04/cpp%E3%81%AEiostream%E3%83%95%E3%82%A9%E3%83%BC%E3%83%9E%E3%83%83%E3%83%88%E6%8C%87%E5%AE%9A%E6%97%A9%E8%A6%8B%E8%A1%A8/
-
-	//os << value;
-	//return GenericString<TChar>(b.GetCStr());
-}
-
-
-
-
-
-
-
-
-
-
-
-
-template<typename TChar>
-class FormatArg
-{
-public:
-	//template<typename T>
-	//	FormatArg(const T& value)
-	//	: m_value(static_cast<const void*>(&value))
-	//	//, m_formatImpl(&FormatImpl<T>)	// T に応じた変換関数のポインタ
-	//{
-	//}
-
-	//GenericString<TChar> DoFormat(const std::locale& locale, const GenericStringRef<TChar>& format, const GenericStringRef<TChar>& formatParam) const
-	//{
-	//	return m_formatImpl(locale, format, formatParam, m_value);
-	//}
-
-//#define LN_FMT_MAKE_VALUE()
-	FormatArg(const int& value) : m_value(static_cast<const void*>(&value)), m_format(&formatInternal_Int32) {}
-
-	template <typename T>
-	FormatArg(const T &value)
-		: m_value(static_cast<const void*>(&value))
-		, m_format(&format_custom_arg<T>)
-	{}
-
-	template <typename T>
-	static void format_custom_arg(UStringFormatter* formatter, const void* arg, void* format_str_ptr)
-	{
-		format_arg(*formatter,
-			format_str_ptr,
-			arg);
-	}
-
-
-	static void formatInternal_Int32(UStringFormatter* formatter, const void* arg, void* format_str_ptr)
-	{
-		formatInternal_Numeric<TChar, int>(formatter, reinterpret_cast<const int*>(arg), format_str_ptr);
-	}
-
-
-private:
-
-	const void*	m_value;
-	FormatFunc	m_format;
-};
-
-// base class of variadic args
-template<typename TChar>
-class FormatList
-{
-public:
-	FormatList()
-		: m_argList(nullptr)
-		, m_count(0)
-	{}
-
-	const FormatArg<TChar>& GetArg(int index) const { return m_argList[index]; }
-	int getCount() const { return m_count; }
-
-protected:
-	const FormatArg<TChar>* m_argList;
-	int m_count;
-};
-
-// variadic args (N > 0)
-template<typename TChar, int N>
-class FormatListN : public FormatList<TChar>
-{
-public:
-	template<typename... Args>
-	FormatListN(const Args&... args)
-		: FormatList<TChar>()
-		, m_argListInstance LN_FMT_BRACED_INIT_WORKAROUND({ FormatArg<TChar>(args)... })	// extract to -> {FormatArg(e1), FormatArg(e2), FormatArg(e3)} http://en.cppreference.com/w/cpp/language/parameter_pack
-	{
-		static_assert(sizeof...(args) == N, "Invalid args count.");
-		m_argList = &m_argListInstance[0];
-		m_count = N;
-	}
-
-private:
-	std::array<FormatArg<TChar>, N> m_argListInstance;
-};
-
-// variadic args (N = 0)
-template<typename TChar>
-class FormatListN<TChar, 0> : public FormatList<TChar>
-{
-public:
-	FormatListN() : FormatList<TChar>(0, 0) {}
-};
-
-
-template<typename TChar, typename... Args>
-static FormatListN<TChar, sizeof...(Args)> makeArgList(const Args&... args)
-{
-	return FormatListN<TChar, sizeof...(args)>(args...);
-}
-
-} // namespace detail
 } // namespace fmt
 
 
@@ -582,15 +428,40 @@ inline int UString::getLength() const
 }
 
 template<typename... TArgs>
-inline UString UString::format(const UStringRef& format, const TArgs&... args)
+inline UString UString::format(const UStringRef& format, TArgs&&... args)
 {
-	auto argList = ln::fmt::detail::makeArgList<UChar>(args...);
-	return UString();
+	auto argList = ln::fmt::detail::makeArgList<UChar>(std::forward<TArgs>(args)...);
+	fmt::GenericFormatStringBuilder<UChar> sb;
+	if (fmt::detail::formatInternal<UChar>(Locale::getC(), &sb, format.data(), format.getLength(), argList))
+	{
+		return UString(sb.c_str(), sb.getLength());
+	}
+	else
+	{
+		return UString();
+	}
+}
+
+template<typename... TArgs>
+inline UString UString::format(const Locale& locale, const UStringRef& format, TArgs&&... args)
+{
+	auto argList = ln::fmt::detail::makeArgList<UChar>(std::forward<TArgs>(args)...);
+	fmt::GenericFormatStringBuilder<UChar> sb;
+	if (fmt::detail::formatInternal<UChar>(locale, &sb, format.data(), format.getLength(), argList))
+	{
+		return UString(sb.c_str(), sb.getLength());
+	}
+	else
+	{
+		return UString();
+	}
 }
 
 inline bool operator==(const UChar* lhs, const UString& rhs)
 {
 	return UStringHelper::compare(lhs, rhs.c_str()) == 0;
 }
+
+#include "StringFormat.inl"
 
 LN_NAMESPACE_END

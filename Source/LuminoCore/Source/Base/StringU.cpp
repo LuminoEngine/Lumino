@@ -67,16 +67,10 @@ UString::UString(const UChar* str)
 	assign(str);
 }
 
-UString::UString(const UChar* str, int begin)
+UString::UString(const UChar* str, int length)
 	: UString()
 {
-	assign(str, begin);
-}
-
-UString::UString(const UChar* str, int begin, int length)
-	: UString()
-{
-	assign(str, begin, length);
+	assign(str, 0, length);
 }
 
 UString::UString(int count, UChar ch)
@@ -329,5 +323,24 @@ void UStringHelper::toStringInt8(int8_t v, TChar* outStr, int size)
 template void UStringHelper::toStringInt8<char>(int8_t v, char* outStr, int size);
 template void UStringHelper::toStringInt8<wchar_t>(int8_t v, wchar_t* outStr, int size);
 template void UStringHelper::toStringInt8<char16_t>(int8_t v, char16_t* outStr, int size);
+
+
+
+//namespace fmt {
+
+////==============================================================================
+//// GenericFormatStringBuilder
+////==============================================================================
+//
+//template class GenericFormatStringBuilder<char16_t>;
+//
+//template<typename TChar>
+//GenericFormatStringBuilder<TChar>::GenericFormatStringBuilder()
+//	: m_buffer()
+//	, m_bufferUsed(0)
+//{
+//}
+//
+//} // namespace fmt
 
 LN_NAMESPACE_END

@@ -1056,6 +1056,7 @@ int32_t StringTraits::toInt32(const TChar* str, int len, int base, const TChar**
 }
 template int32_t StringTraits::toInt32<char>(const char* str, int len, int base, const char** outEndPtr, NumberConversionResult* outResult);
 template int32_t StringTraits::toInt32<wchar_t>(const wchar_t* str, int len, int base, const wchar_t** outEndPtr, NumberConversionResult* outResult);
+template int32_t StringTraits::toInt32<char16_t>(const char16_t* str, int len, int base, const char16_t** outEndPtr, NumberConversionResult* outResult);
 
 //------------------------------------------------------------------------------
 template<typename TChar>

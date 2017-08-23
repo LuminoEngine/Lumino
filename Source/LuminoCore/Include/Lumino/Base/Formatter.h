@@ -148,6 +148,11 @@ public:
 		std::basic_streambuf<TChar, std::char_traits<TChar> >::setg(buffer, buffer, bufferEnd);
 	}
 
+	int getLength() const
+	{
+		return std::basic_streambuf<TChar, std::char_traits<TChar> >::pptr() - m_begin;
+	}
+
 	const TChar* GetCStr()
 	{
 		*std::basic_streambuf<TChar, std::char_traits<TChar> >::pptr() = '\0';

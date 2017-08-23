@@ -70,6 +70,7 @@ set(LN_SOURCES_Base
 	Include/Lumino/Base/String.h
 	Include/Lumino/Base/StringArray.h
 	Include/Lumino/Base/StringBuilder.h
+	Include/Lumino/Base/StringFormat.inl
 	Include/Lumino/Base/StringRef.h
 	Include/Lumino/Base/StringHelper.h
 	Include/Lumino/Base/StringU.h
