@@ -92,6 +92,20 @@ public:
 	template<typename... TArgs>
 	static UString format(const Locale& locale, const UStringRef& format, TArgs&&... args);	/**< @overload Format */
 
+	
+	/**
+		@brief		この文字列と、指定した文字列を比較します。
+		@param[in]	str1		: 比較文字列
+		@param[in]	index1		: str1 内の部分文字列の開始位置
+		@param[in]	str2		: 比較文字列
+		@param[in]	index2		: str2 内の部分文字列の開始位置
+		@param[in]	length		: 比較する文字数 (-1 の場合、GetLength() の値を使用します)
+		@param[in]	cs			: 大文字と小文字の区別設定
+		@return		str1 が str2 より小さい → 0 より小さい値
+					str1 と str2 が等しい   → 0
+					str1 が str2 より大きい → 0 より大きい値
+	*/
+	static int compare(const UStringRef& str1, int index1, const UStringRef& str2, int index2, int length = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive);
 
 	bool isSSO() const LN_NOEXCEPT { return detail::getLSB<7>(static_cast<uint8_t>(m_data.sso.length)); }
 	bool isNonSSO() const LN_NOEXCEPT { return !detail::getLSB<7>(static_cast<uint8_t>(m_data.sso.length)); }
@@ -104,11 +118,12 @@ private:
 	static std::size_t const SSOCapacity = 15;//31;//sizeof(uint32_t) * 4 / sizeof(UChar) - 1;
 
 	void init() LN_NOEXCEPT;
+	void release() LN_NOEXCEPT;
 	void copy(const UString& str);
 	void move(UString&& str) LN_NOEXCEPT;
 	void allocBuffer(int length);
 	void assign(const UChar* str);
-	void assign2(const UChar* str, int length);
+	void assign(const UChar* str, int length);
 	void assign(int count, UChar ch);
 	void assignFromCStr(const char* str, int length = -1);
 	void checkDetachShared();
@@ -399,7 +414,14 @@ public:
 		}
 		m_length = length;
 	}
-	void clear() { m_length = 0; }
+	void clear()
+	{
+		if (m_str != nullptr)
+		{
+			m_str[0] = '\0';
+		}
+		m_length = 0;
+	}
 
 private:
 	std::atomic<int>	m_refCount;
@@ -456,7 +478,7 @@ inline UString UString::format(const Locale& locale, const UStringRef& format, T
 
 inline UString& UString::operator=(UChar ch)
 {
-	assign2(&ch, 1);
+	assign(&ch, 1);
 	return *this;
 }
 
@@ -468,13 +490,38 @@ inline UString& UString::operator=(const UChar* rhs)
 
 inline UString& UString::operator=(const UStringRef& rhs)
 {
-	assign2(rhs.data(), rhs.getLength());
+	assign(rhs.data(), rhs.getLength());
 	return *this;
 }
 
 inline bool operator==(const UChar* lhs, const UString& rhs)
 {
 	return UStringHelper::compare(lhs, rhs.c_str()) == 0;
+}
+
+inline bool operator==(const UString& lhs, const UString& rhs)
+{
+	return UString::compare(lhs, 0, rhs, 0) == 0;
+}
+
+inline bool operator==(const UString& lhs, const UChar* rhs)
+{
+	return UStringHelper::compare(lhs.c_str(), rhs) == 0;
+}
+
+inline bool operator!=(const UChar* lhs, const UString& rhs)
+{
+	return !operator==(lhs, rhs);
+}
+
+inline bool operator!=(const UString& lhs, const UString& rhs)
+{
+	return !operator==(lhs, rhs);
+}
+
+inline bool operator!=(const UString& lhs, const UChar* rhs)
+{
+	return !operator==(lhs, rhs);
 }
 
 #include "StringFormat.inl"

@@ -145,7 +145,6 @@ TEST_F(Test_Base_UString, Operators)
 		ASSERT_EQ(u"a", s3); ASSERT_EQ(1, s3.getLength());
 	}
 
-
 	//std::string strAStd = "a";
 	//std::wstring strWStd = L"w";
 	//StringA strASample = "a";
@@ -167,7 +166,7 @@ TEST_F(Test_Base_UString, Operators)
 		ASSERT_EQ(u"a", str);
 		str = NSSO_STR;
 		ASSERT_EQ(NSSO_STR, str);
-		
+
 		// StringRef
 		str = UStringRef(u"b");
 		ASSERT_EQ(u"b", str);
@@ -186,31 +185,46 @@ TEST_F(Test_Base_UString, Operators)
 		str = nullptr;
 		ASSERT_EQ(true, str.isEmpty());
 	}
+	// <Test> operator==
+	{
+		// String
+		UString ss = u"a";
+		UString s1 = u"a";
+		ASSERT_EQ(true, s1 == ss);
 
-	//strA = "a";
-	//strW = L"w";
-	//// <Test> operator== (GenericString)
-	//{
-	//	ASSERT_TRUE(strA == strASample);
-	//	ASSERT_TRUE(strW == strWSample);
-	//}
-	//// <Test> operator== (文字列ポインタ)
-	//{
-	//	ASSERT_TRUE(strA == "a");
-	//	ASSERT_TRUE(strW == L"w");
-	//}
-	//// <Test> operator== (NULL)
-	//{
-	//	ASSERT_FALSE(strA == ((char*)NULL));
-	//	ASSERT_FALSE(strW == ((wchar_t*)NULL));
-	//	ASSERT_TRUE(strAEmpty == ((char*)NULL));
-	//	ASSERT_TRUE(strWEmpty == ((wchar_t*)NULL));
-	//}
-	//// <Test> operator== (自己比較)
-	//{
-	//	ASSERT_TRUE(strA == strA);
-	//	ASSERT_TRUE(strW == strW);
-	//}
+		// Char*
+		ASSERT_EQ(true, s1 == u"a");
+		ASSERT_EQ(true, s1 == "a");
+
+		// (自己比較)
+		ASSERT_EQ(true, s1 == s1);
+
+		// null Char* (illigal)
+		ASSERT_EQ(false, s1 == ((char16_t*)NULL));
+		s1.clear();
+		ASSERT_EQ(true, s1 == ((char16_t*)NULL));
+	}
+	// <Test> operator!=
+	{
+		// String
+		UString ss = u"a";
+		UString s1 = u"b";
+		ASSERT_EQ(true, s1 != ss);
+
+		// Char*
+		ASSERT_EQ(true, s1 != u"c");
+		ASSERT_EQ(true, s1 != "c");
+
+		// (自己比較)
+		ASSERT_EQ(false, s1 != s1);
+
+		// null Char* (illigal)
+		ASSERT_EQ(true, s1 != ((char16_t*)NULL));
+		s1.clear();
+		ASSERT_EQ(false, s1 != ((char16_t*)NULL));
+	}
+
+
 	//// <Test> operator!= (GenericString)
 	//{
 	//	ASSERT_FALSE(strA != strASample);
@@ -374,7 +388,9 @@ TEST_F(Test_Base_UString, clear)
 		s1.clear();
 		s2.clear();
 		ASSERT_EQ(true, s1.isEmpty());
+		ASSERT_EQ(u"", s1);
 		ASSERT_EQ(true, s2.isEmpty());
+		ASSERT_EQ(u"", s2);
 	}
 	// <Test> (NonSSO)
 	{
@@ -382,7 +398,16 @@ TEST_F(Test_Base_UString, clear)
 		s1.clear();
 		s2.clear();
 		ASSERT_EQ(true, s1.isEmpty());
+		ASSERT_EQ(u"", s1);
 		ASSERT_EQ(true, s2.isEmpty());
+		ASSERT_EQ(u"", s2);
+	}
+	// <Test> SSO <=> NonSSO
+	{
+		UString s1 = NSSO_STR;
+		UString s2 = s1;
+		s1.clear();
+		ASSERT_EQ(NSSO_STR, s2);
 	}
 }
 

@@ -19,10 +19,7 @@ UString::UString()
 
 UString::~UString()
 {
-	if (!isSSO())
-	{
-		LN_SAFE_RELEASE(m_data.core);
-	}
+	release();
 }
 
 UString::UString(const UString& str)
@@ -52,13 +49,13 @@ UString& UString::operator=(UString&& str) LN_NOEXCEPT
 UString::UString(const UString& str, int begin)
 	: UString()
 {
-	assign2(str.c_str() + begin, str.getLength());
+	assign(str.c_str() + begin, str.getLength());
 }
 
 UString::UString(const UString& str, int begin, int length)
 	: UString()
 {
-	assign2(str.c_str() + begin, length);
+	assign(str.c_str() + begin, length);
 }
 
 UString::UString(const UChar* str)
@@ -70,7 +67,7 @@ UString::UString(const UChar* str)
 UString::UString(const UChar* str, int length)
 	: UString()
 {
-	assign2(str, length);
+	assign(str, length);
 }
 
 UString::UString(int count, UChar ch)
@@ -107,6 +104,7 @@ void UString::clear()
 	{
 		if (m_data.core)
 		{
+			checkDetachShared();
 			m_data.core->clear();
 		}
 	}
@@ -123,10 +121,25 @@ int UString::indexOf(UChar ch, int startIndex, CaseSensitivity cs) const
 	return StringTraits::indexOf(c_str(), getLength(), &ch, 1, startIndex, cs);
 }
 
+int UString::compare(const UStringRef& str1, int index1, const UStringRef& str2, int index2, int length, CaseSensitivity cs)
+{
+	const UChar* s1 = str1.data() + index1;
+	const UChar* s2 = str2.data() + index2;
+	return StringTraits::compare(s1, str1.getLength() - index1, s2, str2.getLength() - index2, length, cs);
+}
+
 void UString::init() LN_NOEXCEPT
 {
 	m_data.core = nullptr;
 	m_data.sso.length = 0;
+}
+
+void UString::release() LN_NOEXCEPT
+{
+	if (isNonSSO())
+	{
+		LN_SAFE_RELEASE(m_data.core);
+	}
 }
 
 void UString::copy(const UString& str)
@@ -137,6 +150,7 @@ void UString::copy(const UString& str)
 
 	if (changed)
 	{
+		release();
 		memcpy(&m_data, &str.m_data, sizeof(m_data));
 		if (isNonSSO())
 		{
@@ -160,8 +174,8 @@ void UString::allocBuffer(int length)
 {
 	if (length < SSOCapacity)
 	{
+		release();
 		setSSOLength(length);
-		m_data.sso.buffer[length] = '\0';
 	}
 	else
 	{
@@ -173,10 +187,10 @@ void UString::allocBuffer(int length)
 
 void UString::assign(const UChar* str)
 {
-	assign2(str, UStringHelper::strlen(str));
+	assign(str, UStringHelper::strlen(str));
 }
 
-void UString::assign2(const UChar* str, int length)
+void UString::assign(const UChar* str, int length)
 {
 	if (str && *str)
 	{
@@ -264,6 +278,7 @@ UChar* UString::getBuffer()
 void UString::setSSOLength(int len)
 {
 	m_data.sso.length = 0x80 | (static_cast<size_t>(len) & 0x07);
+	m_data.sso.buffer[len] = '\0';
 }
 
 int UString::getSSOLength() const
@@ -290,8 +305,8 @@ size_t UStringHelper::strlen(const UChar* str)
 
 int UStringHelper::compare(const UChar* str1, const UChar* str2)
 {
-	assert(str1);
-	assert(str2);
+	str1 = (str1) ? str1 : u"";
+	str2 = (str2) ? str2 : u"";
 	for (; *str1; ++str1, ++str2)
 	{
 		if (*str1 != *str2)

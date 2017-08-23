@@ -488,6 +488,7 @@ int StringTraits::compare(const TChar* str1, int str1Len, const TChar* str2, int
 }
 template int StringTraits::compare<char>(const char* str1, int str1Len, const char* str2, int str2Len, int count, CaseSensitivity cs);
 template int StringTraits::compare<wchar_t>(const wchar_t* str1, int str1Len, const wchar_t* str2, int str2Len, int count, CaseSensitivity cs);
+template int StringTraits::compare<char16_t>(const char16_t* str1, int str1Len, const char16_t* str2, int str2Len, int count, CaseSensitivity cs);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
