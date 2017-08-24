@@ -93,9 +93,47 @@ public:
 	int indexOf(const UStringRef& str, int startIndex = 0, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
 	int indexOf(UChar ch, int startIndex = 0, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
 
+	/**
+		@brief		文字列を検索し、最後に見つかったインデックスを返します。
+		@param[in]	str			: 検索文字列
+		@param[in]	startIndex	: 検索を開始するインデックス (-1 を指定すると、文字列の末尾から検索を開始する)
+		@param[in]	count		: 検索する文字数 (-1 を指定すると、文字列の先頭まで検索する)
+		@param[in]	cs			: 大文字と小文字の区別設定
+		@return		見つかった文字列の開始インデックス。見つからなかった場合は -1。
+		@details	startIndex の位置から文字列の先頭に向かう count 文字分の領域から str を検索します。
+		@code
+					String str = "abcdef";
+					str.LastIndexOf("de");			// => 3
+					str.LastIndexOf("bc", 2);		// => 1
+					str.LastIndexOf("cd", 2);		// => -1	(検索範囲 "abc" の中に "cd" は存在しない)
+					str.LastIndexOf("cd", 4, 3);	// => 2		(検索範囲 "cde" の中に "cd" は存在する)
+					str.LastIndexOf("bc", 4, 3);	// => -1	(検索範囲 "cde" の中に "bc" は存在しない)
+		@endcode
+	*/
+	int lastIndexOf(const UStringRef& str, int startIndex = -1, int count = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+	int lastIndexOf(UChar ch, int startIndex = -1, int count = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;	/**< @overload lastIndexOf */
+	
+	/**
+		@brief		文字列の先頭と末尾の空白を全て削除します。
+	*/
+	UString trim() const;
 
-
-
+	/**
+		@brief		この文字列から指定した文字をすべて取り除いた新しい文字列を返します。
+		@param[in]	str		: 削除する文字列
+		@param[in]	cs		: 大文字と小文字の区別設定
+	*/
+	UString remove(const UStringRef& str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+	UString remove(UChar ch, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+	
+	/**
+		@brief		文字列の置換を行います。
+		@param[in]	from	: 置換される文字列
+		@param[in]	to		: from を置換する文字列
+		@return		置換結果の文字列
+		@details	from に一致するすべての文字列を to に置換します。
+	*/
+	UString replace(const UStringRef& from, const UStringRef& to, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
 
 	/** 指定した文字列を連結します。 */
 	static UString concat(const UStringRef& str1, const UStringRef& str2);
@@ -223,6 +261,20 @@ public:
 		m_u.length = UStringHelper::strlen(str);
 	}
 
+	UStringRef(const UChar* str, int length)
+	{
+		m_type = detail::UStringRefSource::ByUChar;
+		m_u.str = str;
+		m_u.length = length;
+	}
+
+	UStringRef(const UChar* begin, const UChar* end)
+	{
+		m_type = detail::UStringRefSource::ByUChar;
+		m_u.str = begin;
+		m_u.length = end - begin;
+	}
+
 	UStringRef(const char* str)
 	{
 		m_type = detail::UStringRefSource::ByChar;
@@ -253,6 +305,11 @@ public:
 	const UChar* data() const
 	{
 		return (m_type == detail::UStringRefSource::ByUChar) ? m_u.str : m_c.str.c_str();
+	}
+
+	const UChar* end() const
+	{
+		return data() + getLength();
 	}
 
 private:

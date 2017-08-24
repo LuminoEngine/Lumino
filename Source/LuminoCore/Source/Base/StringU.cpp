@@ -127,13 +127,106 @@ void UString::reserve(int size)
 
 int UString::indexOf(const UStringRef& str, int startIndex, CaseSensitivity cs) const
 {
-	//return StringTraits::indexOf(c_str(), getLength(), str.c_str(), str.getLength(), startIndex, cs);
 	return StringTraits::indexOf(c_str(), getLength(), str.data(), str.getLength(), startIndex, cs);
 }
 
 int UString::indexOf(UChar ch, int startIndex, CaseSensitivity cs) const
 {
 	return StringTraits::indexOf(c_str(), getLength(), &ch, 1, startIndex, cs);
+}
+
+int UString::lastIndexOf(const UStringRef& str, int startIndex, int count, CaseSensitivity cs) const
+{
+	return StringTraits::lastIndexOf(c_str(), getLength(), str.data(), str.getLength(), startIndex, count, cs);
+}
+
+int UString::lastIndexOf(UChar ch, int startIndex, int count, CaseSensitivity cs) const
+{
+	return StringTraits::lastIndexOf(c_str(), getLength(), &ch, 1, startIndex, count, cs);
+}
+
+UString UString::trim() const
+{
+	const UChar* begin;
+	int length;
+	StringTraits::trim(c_str(), getLength(), &begin, &length);
+	return UString(begin, length);
+}
+
+UString UString::remove(const UStringRef& str, CaseSensitivity cs) const
+{
+	UString result;
+	const UChar* pos = c_str();
+	const UChar* end = pos + getLength();
+	const UChar* fs = str.data();
+	int fsLen = str.getLength();
+
+	UChar* buf = result.lockBuffer(end - pos);
+	UChar* bufBegin = buf;
+	int bufSize = 0;
+
+	if (fsLen > 0)
+	{
+		for (; pos < end;)
+		{
+			int index = StringTraits::indexOf(pos, end - pos, fs, fsLen, 0, cs);
+			if (index >= 0)
+			{
+				memcpy(buf, pos, index * sizeof(UChar));
+				buf += index;
+				pos += index + fsLen;
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+
+	if (pos < end)
+	{
+		memcpy(buf, pos, (end - pos) * sizeof(UChar));
+		buf += (end - pos);
+	}
+	
+	result.unlockBuffer(buf - bufBegin);
+	return result;
+}
+
+UString UString::replace(const UStringRef& from, const UStringRef& to, CaseSensitivity cs) const
+{
+	UString result;
+	result.reserve(getLength());
+
+	int pos = 0;
+	const UChar* src = c_str();
+	int srcLen = getLength();
+	const UChar* fromStr = from.data();
+	int fromLen = from.getLength();
+	int start = 0;
+
+	if (fromLen > 0)
+	{
+		do
+		{
+			pos = StringTraits::indexOf(src, srcLen, fromStr, fromLen, start, cs);
+			if (pos >= 0)
+			{
+				result.append(src + start, pos - start);
+				result.append(to.data(), to.getLength());
+				start = pos + fromLen;
+			}
+
+		} while (pos >= 0);
+	}
+
+	result.append(src + start, srcLen - start);
+	return result;
+}
+
+UString UString::remove(UChar ch, CaseSensitivity cs) const
+{
+	return remove(UStringRef(&ch, 1), cs);
 }
 
 UString UString::concat(const UStringRef& str1, const UStringRef& str2)
@@ -306,7 +399,7 @@ UChar* UString::getBuffer()
 
 void UString::setSSOLength(int len)
 {
-	m_data.sso.length = (static_cast<size_t>(len) & 0x07) << 1;
+	m_data.sso.length = (static_cast<size_t>(len) & 0x7F) << 1;
 	m_data.sso.buffer[len] = '\0';
 }
 

@@ -357,8 +357,10 @@ template int StringTraits::indexOf<char16_t>(const char16_t* str1, int str1Len, 
 template<typename TChar>
 int StringTraits::lastIndexOf(const TChar* str1, int str1Len, const TChar* str2, int str2Len, int startIndex, int count, CaseSensitivity cs)
 {
-	str1 = (str1 == NULL) ? LN_T(TChar, "") : str1;
-	str2 = (str2 == NULL) ? LN_T(TChar, "") : str2;
+	const TChar nullStr[] = { '\0' };
+
+	str1 = (str1 == nullptr) ? nullStr : str1;
+	str2 = (str2 == nullptr) ? nullStr : str2;
 	str1Len = static_cast<int>((str1Len < 0) ? tcslen(str1) : str1Len);
 	str2Len = static_cast<int>((str2Len < 0) ? tcslen(str2) : str2Len);
 	startIndex = (startIndex < 0) ? (str1Len-1) : startIndex;
@@ -392,7 +394,7 @@ int StringTraits::lastIndexOf(const TChar* str1, int str1Len, const TChar* str2,
 		// 後ろから前へ見ていく
 		while (pos >= end)
 		{
-			if (strncmp(pos, str2, str2Len) == 0) {
+			if (my_strncmp(pos, str2, str2Len) == 0) {
 				return (int)(pos - str1);
 			}
 			--pos;
@@ -404,7 +406,7 @@ int StringTraits::lastIndexOf(const TChar* str1, int str1Len, const TChar* str2,
 		// 後ろから前へ見ていく
 		while (pos >= end)
 		{
-			if (strnicmp(pos, str2, str2Len) == 0) {
+			if (my_strnicmp(pos, str2, str2Len) == 0) {
 				return (int)(pos - str1);
 			}
 			--pos;
@@ -414,6 +416,7 @@ int StringTraits::lastIndexOf(const TChar* str1, int str1Len, const TChar* str2,
 }
 template int StringTraits::lastIndexOf<char>(const char* str1, int str1Len, const char* str2, int str2Len, int startIndex, int count, CaseSensitivity cs);
 template int StringTraits::lastIndexOf<wchar_t>(const wchar_t* str1, int str1Len, const wchar_t* str2, int str2Len, int startIndex, int count, CaseSensitivity cs);
+template int StringTraits::lastIndexOf<char16_t>(const char16_t* str1, int str1Len, const char16_t* str2, int str2Len, int startIndex, int count, CaseSensitivity cs);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
@@ -553,6 +556,7 @@ void StringTraits::trim(const TChar* begin, int length, const TChar** outBegin, 
 }
 template void StringTraits::trim<char>(const char* begin, int length, const char** outBegin, int* outLength);
 template void StringTraits::trim<wchar_t>(const wchar_t* begin, int length, const wchar_t** outBegin, int* outLength);
+template void StringTraits::trim<char16_t>(const char16_t* begin, int length, const char16_t** outBegin, int* outLength);
 
 //------------------------------------------------------------------------------
 //template<typename TChar>

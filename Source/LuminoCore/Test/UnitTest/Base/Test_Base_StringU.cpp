@@ -418,6 +418,146 @@ TEST_F(Test_Base_UString, indexOf)
 	ASSERT_EQ(4, s1.indexOf(u'e'));
 }
 
+TEST_F(Test_Base_UString, lastIndexOf)
+{
+	{
+		UString str = u"abcdef";
+		ASSERT_EQ(3, str.lastIndexOf(u"de"));
+		ASSERT_EQ(1, str.lastIndexOf(u"bc", 2));
+		ASSERT_EQ(-1, str.lastIndexOf(u"cd", 2));
+		ASSERT_EQ(2, str.lastIndexOf(u"cd", 4, 3));
+		ASSERT_EQ(-1, str.lastIndexOf(u"bc", 4, 3));
+	}
+	// .NET の System.String.LastIndexOf() と同様の動作
+	{
+		UString str = u"crazy azimuths";
+		UString se = u"";
+		ASSERT_EQ(6, str.lastIndexOf(u"az"));			// 6
+		ASSERT_EQ(2, str.lastIndexOf(u"az", 6));		// 2 ("crazy a"
+		ASSERT_EQ(6, str.lastIndexOf(u"az", 7));		// 6 ("crazy az"
+		ASSERT_EQ(0, str.lastIndexOf(u"cr", 6));		// 0
+		ASSERT_EQ(-1, str.lastIndexOf(u"cr", 6, 4));	// -1
+		ASSERT_EQ(-1, str.lastIndexOf(u"cr", 6, 6));	// -1
+		ASSERT_EQ(0, str.lastIndexOf(u"cr", 6, 7));		// 0
+		ASSERT_EQ(5, str.lastIndexOf(u"", 5, 2));		// 5
+		ASSERT_EQ(3, str.lastIndexOf(u"", 3, 0));
+		ASSERT_EQ(0, se.lastIndexOf(u""));
+	}
+}
+
+TEST_F(Test_Base_UString, trim)
+{
+	// 前後
+	{
+		UString str1(u" abc def ");
+		UString t = str1.trim();
+		ASSERT_EQ(u"abc def", t);
+	}
+	// 前だけ
+	{
+		UString str1(u" abc def");
+		UString t = str1.trim();
+		ASSERT_EQ(u"abc def", t);
+	}
+	// 後ろだけ
+	{
+		UString str1(u"abc def ");
+		UString t = str1.trim();
+		ASSERT_EQ(u"abc def", t);
+	}
+	// 空文字
+	{
+		UString str1(u"");
+		UString t = str1.trim();
+		ASSERT_EQ(u"", t);
+	}
+	// 空白だけ
+	{
+		UString str1(u" ");
+		UString t = str1.trim();
+		ASSERT_EQ(u"", t);
+	}
+	// 空白だけ * 2
+	{
+		UString str1(u"  ");
+		UString t = str1.trim();
+		ASSERT_EQ(u"", t);
+	}
+	// 空白だけ * 3
+	{
+		UString str1(u"   ");
+		UString t = str1.trim();
+		ASSERT_EQ(u"", t);
+	}
+}
+
+TEST_F(Test_Base_UString, remove)
+{
+	UString str1(u"abcdef");
+
+	UString str2 = str1.remove(u'c');
+	ASSERT_EQ(u"abdef", str2);
+
+	// 大文字小文字を区別しない
+	UString str3 = str2.remove(u"D", CaseSensitivity::CaseInsensitive);
+	ASSERT_EQ(u"abef", str3);
+}
+
+
+TEST_F(Test_Base_UString, replace)
+{
+	// <Test> 部分一致を置換できること。
+	{
+		UString str1(u"test");
+		UString str2 = str1.replace(u"es", u"b");
+		ASSERT_EQ(u"tbt", str2);
+		UString str3 = str2.replace(u"t", u"");
+		ASSERT_EQ(u"b", str3);
+		UString str4 = str3.replace(u"b", u"");
+		ASSERT_EQ(u"", str4);
+	}
+	// <Test> 全ての一致を置換できること。
+	// <Test> 破壊的変更にならないこと。
+	{
+		UString str1(u"aaa");
+		UString str2 = str1.replace(u"a", u"b");
+		ASSERT_EQ(u"bbb", str2);
+		ASSERT_EQ(u"aaa", str1);
+	}
+	// <Test> UString を渡せること。
+	{
+		UString str1(u"a");
+		UString str2 = str1.replace(UString(u"a"), UString(u"b"));
+		ASSERT_EQ(u"b", str2);
+	}
+	// <Test> UStringRef を渡せること。
+	{
+		UString str1(u"reabcdef");
+		UChar buf1[] = u"abc";
+		UChar buf2[] = u"def";
+		UString str2 = str1.replace(UStringRef(buf1, buf1 + 2), UStringRef(buf2, buf2 + 2));
+		ASSERT_EQ(u"redecdef", str2);
+	}
+	// <Test> 文字列を置換する
+	{
+		UString str1 = u"abcdcd";
+
+		// "ab" を "12" に置き換える
+		str1 = str1.replace(u"ab", u"12");
+
+		// "cd" を "345" に置き換える
+		UString from = u"cd";
+		UString to = u"345";
+		str1 = str1.replace(from, to);
+
+		ASSERT_EQ(u"12345345", str1);
+	}
+}
+
+
+
+
+
 
 TEST_F(Test_Base_UString, concat)
 {
