@@ -554,6 +554,78 @@ TEST_F(Test_Base_UString, replace)
 	}
 }
 
+TEST_F(Test_Base_UString, equals)
+{
+	// <Issue> 文字列の先頭が同じだけで一致判定にならないこと。
+	{
+	}
+}
+
+TEST_F(Test_Base_UString, compare)
+{
+	int a1 = strcmp("abc", "abcd");
+	int a2 = strcmp("bbb", "aaaa");
+	int a3 = strncmp("abc", "abcd", 4);
+	int a4 = strncmp("abcd", "abc", 4);
+
+	// <Issue> 文字列の先頭が同じだけで一致判定にならないこと。
+	{
+		UString str1(u"abc");
+		UString str2(u"abcd");
+		ASSERT_EQ(true, UString::compare(str1, str2) < 0);
+		ASSERT_EQ(true, UString::compare(str2, str1) > 0);
+	}
+	{
+		UString str1(u"abc");
+		EXPECT_EQ(0, UString::compare(str1, u"abc"));
+		EXPECT_LE(0, UString::compare(str1, u"ab"));	// v1 < v2
+		EXPECT_GT(0, UString::compare(str1, u"abd"));	// v1 > v2
+	}
+
+	{
+		UString str1(u"abc");
+		UString str2(u"abcd");
+		ASSERT_TRUE(str1 < str2);
+	}
+
+	// <Test> UStringRef との比較
+	{
+		ASSERT_EQ(true, UString(u"abc") == UStringRef(u"abc"));
+		ASSERT_EQ(false, UString(u"abcd") == UStringRef(u"abc"));
+		ASSERT_EQ(false, UString(u"abc") == UStringRef(u"abcd"));
+		ASSERT_EQ(false, UString(u"abc") == UStringRef(u"a"));
+		ASSERT_EQ(false, UString(u"abc") == UStringRef(u"ab"));
+		ASSERT_EQ(false, UString(u"a") == UStringRef(u"abc"));
+		ASSERT_EQ(false, UString(u"ab") == UStringRef(u"abc"));
+		ASSERT_EQ(false, UString(u"abc") == UStringRef(u""));
+		ASSERT_EQ(false, UString(u"") == UStringRef(u"abc"));
+
+		ASSERT_EQ(true, UString(u"abc") == UStringRef(u"abcd", 3));
+		ASSERT_EQ(false, UString(u"abcd") == UStringRef(u"abcd", 3));
+		ASSERT_EQ(false, UString(u"abc") == UStringRef(u"abcd", 4));
+		ASSERT_EQ(false, UString(u"abc") == UStringRef(u"abcd", 1));
+		ASSERT_EQ(false, UString(u"abc") == UStringRef(u"abcd", 2));
+		ASSERT_EQ(false, UString(u"a") == UStringRef(u"abcd", 3));
+		ASSERT_EQ(false, UString(u"ab") == UStringRef(u"abcd", 3));
+		ASSERT_EQ(false, UString(u"abc") == UStringRef(u"abcd", 0));
+		ASSERT_EQ(false, UString(u"") == UStringRef(u"abcd", 3));
+	}
+
+	// <Test> 比較
+	{
+		ASSERT_LE(0, StringTraits::compare(u"abcd", 4, u"abc", 3, 4));	// 0 < result (1)
+		ASSERT_GT(0, StringTraits::compare(u"abc", 3, u"abcd", 4, 4));	// result < 0 (-1)
+	}
+}
+
+TEST_F(Test_Base_UString, substring)
+{
+	UString str1(u"abcdef");
+	ASSERT_EQ(u"ab", str1.substring(0, 2));
+	ASSERT_EQ(u"ef", str1.substring(2));
+	ASSERT_EQ(u"cde", str1.substring(2, 3));
+}
+
 
 
 

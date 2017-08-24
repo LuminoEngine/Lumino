@@ -805,7 +805,7 @@ public:
 	static GenericStringCore<TChar>* getStringCore(const GenericString<TChar>& str) { return str.m_string; }
 
 	template<typename TChar>
-	static void attachStringCore(String* str, GenericStringCore<TChar>* core) { str->attach(core); }
+	static void attachStringCore(GenericString<TCHAR>* str, GenericStringCore<TChar>* core) { str->attach(core); }
 };
 
 } // namespace detail
@@ -823,3 +823,9 @@ template <> struct hash<ln::StringW> { std::size_t operator () (const ln::String
 
 #include "StringHelper.h"
 #include "StringRef.h"
+
+//#include "StringU.h"
+//namespace ln
+//{
+//	typedef UString String;
+//}

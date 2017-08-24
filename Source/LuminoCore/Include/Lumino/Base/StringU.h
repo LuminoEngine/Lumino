@@ -112,7 +112,20 @@ public:
 	*/
 	int lastIndexOf(const UStringRef& str, int startIndex = -1, int count = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
 	int lastIndexOf(UChar ch, int startIndex = -1, int count = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;	/**< @overload lastIndexOf */
-	
+
+	/**
+		@brief		文字列の部分文字列を抽出します。
+		@param[in]	str		: 対象の文字列
+		@param[in]	start	: 開始文字インデックス
+		@param[in]	count	: 文字数 (-1 の場合、末尾まで抽出する)
+		@return		抽出された文字列
+		@code
+					String s("abcdef");
+					s.Mid(2, 3)		=> "cde";
+		@endcode
+	*/
+	UStringRef substring(int start, int count = -1) const;
+
 	/**
 		@brief		文字列の先頭と末尾の空白を全て削除します。
 	*/
@@ -157,6 +170,7 @@ public:
 					str1 と str2 が等しい   → 0
 					str1 が str2 より大きい → 0 より大きい値
 	*/
+	static int compare(const UString& str1, const UString& str2, CaseSensitivity cs = CaseSensitivity::CaseSensitive);
 	static int compare(const UStringRef& str1, int index1, const UStringRef& str2, int index2, int length = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive);
 
 	bool isSSO() const LN_NOEXCEPT { return !detail::getLSB<0>(static_cast<uint8_t>(m_data.sso.length)); }
@@ -598,6 +612,7 @@ inline UString operator+(const UStringRef& lhs, const UStringRef& rhs) { return 
 inline bool operator==(const UChar* lhs, const UString& rhs) { return UStringHelper::compare(lhs, rhs.c_str()) == 0; }
 inline bool operator==(const UString& lhs, const UString& rhs) { return UString::compare(lhs, 0, rhs, 0) == 0; }
 inline bool operator==(const UString& lhs, const UChar* rhs) { return UStringHelper::compare(lhs.c_str(), rhs) == 0; }
+inline bool operator==(const UString& lhs, const UStringRef& rhs) { return UString::compare(lhs, 0, rhs, 0) == 0; }
 inline bool operator!=(const UChar* lhs, const UString& rhs) { return !operator==(lhs, rhs); }
 inline bool operator!=(const UString& lhs, const UString& rhs) { return !operator==(lhs, rhs); }
 inline bool operator!=(const UString& lhs, const UChar* rhs) { return !operator==(lhs, rhs); }

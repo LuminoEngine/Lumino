@@ -512,6 +512,9 @@ template<typename TChar>
 GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const UStringRef& path)
 	: GenericStaticallyLocalPath(GenericStringRef<wchar_t>((const wchar_t*)path.data(), path.getLength()))
 {
+#ifndef LN_WCHAR_16
+#error "invalid wchar_t"
+#endif
 }
 
 template class GenericStaticallyLocalPath<char>;

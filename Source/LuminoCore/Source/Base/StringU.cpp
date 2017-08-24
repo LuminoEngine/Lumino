@@ -145,6 +145,35 @@ int UString::lastIndexOf(UChar ch, int startIndex, int count, CaseSensitivity cs
 	return StringTraits::lastIndexOf(c_str(), getLength(), &ch, 1, startIndex, count, cs);
 }
 
+UStringRef UString::substring(int start, int count) const
+{
+	int len = getLength();
+
+	if (start < 0)
+	{
+		start = 0;
+	}
+	if (count < 0)
+	{
+		count = len - start;
+	}
+	if (start + count > len)
+	{
+		count = len - start;
+	}
+	if (start > len)
+	{
+		count = 0;
+	}
+
+	if (start == 0 && count == len)
+	{
+		return UStringRef(c_str());
+	}
+
+	return UStringRef(c_str() + start, count);
+}
+
 UString UString::trim() const
 {
 	const UChar* begin;
@@ -236,6 +265,11 @@ UString UString::concat(const UStringRef& str1, const UStringRef& str2)
 	s.append(str1.data(), str1.getLength());
 	s.append(str2.data(), str2.getLength());
 	return s;
+}
+
+int UString::compare(const UString& str1, const UString& str2, CaseSensitivity cs)
+{
+	return StringTraits::compare(str1.c_str(), str1.getLength(), str2.c_str(), str2.getLength(), std::max(str1.getLength(), str2.getLength()), cs);
 }
 
 int UString::compare(const UStringRef& str1, int index1, const UStringRef& str2, int index2, int length, CaseSensitivity cs)
