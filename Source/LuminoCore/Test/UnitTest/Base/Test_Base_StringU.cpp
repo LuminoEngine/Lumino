@@ -373,7 +373,7 @@ TEST_F(Test_Base_UString, assignFromCStr)
 	// <Test> 処理系関数へ const char*, char 指定
 	{
 		UString s1("abc");
-		ASSERT_EQ(1, s1.indexOf("b"));
+		//ASSERT_EQ(1, s1.indexOf("b"));
 		ASSERT_EQ(1, s1.indexOf('b'));
 	}
 }

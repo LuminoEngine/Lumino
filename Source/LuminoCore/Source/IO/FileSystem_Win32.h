@@ -41,90 +41,171 @@ static void Win32IOErrorToExceptionThrow(DWORD errorCode, const TChar* message)
 	}
 }
 
-//------------------------------------------------------------------------------
-bool FileSystem::existsFile(const StringRefA& filePath)
+
+
+
+
+class PlatformFileSystem
 {
-	if (filePath.IsNullOrEmpty()) return false;
+public:
+	using PathChar = wchar_t;
 
-	char tmpPath[MAX_PATH];
-	filePath.copyTo(tmpPath, MAX_PATH);
-
-	// ※fopen によるチェックはNG。ファイルが排他ロックで開かれていた時に失敗する。
-	DWORD attr = ::GetFileAttributesA(tmpPath);
-	// 他ユーザーフォルダ内のファイルにアクセスしようとすると attr = -1 になる。
-	// このとき GetLastError() は ERROR_ACCESS_DENIED である。
-	// .NET の仕様にあわせ、エラーは一律 false で返している。
-	return ((attr != -1) &&
-			(attr & FILE_ATTRIBUTE_DIRECTORY) == 0);
-}
-
-bool FileSystem::existsFile(const StringRefW& filePath)
-{
-	if (filePath.IsNullOrEmpty()) return false;
-
-	wchar_t tmpPath[MAX_PATH];
-	filePath.copyTo(tmpPath, MAX_PATH);
-
-	DWORD attr = ::GetFileAttributesW(tmpPath);
-	return ((attr != -1) &&
-			(attr & FILE_ATTRIBUTE_DIRECTORY) == 0);
-}
-
-//------------------------------------------------------------------------------
-void FileSystem::setAttribute(const char* filePath, FileAttribute attr)
-{
-	DWORD dwAttr = 0;
-	if (attr.TestFlag(FileAttribute::Directory)) dwAttr |= FILE_ATTRIBUTE_DIRECTORY;
-	if (attr.TestFlag(FileAttribute::ReadOnly))  dwAttr |= FILE_ATTRIBUTE_READONLY;
-	if (attr.TestFlag(FileAttribute::Hidden))    dwAttr |= FILE_ATTRIBUTE_HIDDEN;
-	BOOL r = ::SetFileAttributesA(filePath, dwAttr);
-	if (r == FALSE) { Win32IOErrorToExceptionThrow(::GetLastError(), filePath); }
-}
-
-void FileSystem::setAttribute(const wchar_t* filePath, FileAttribute attr)
-{
-	DWORD dwAttr = 0;
-	if (attr.TestFlag(FileAttribute::Directory)) dwAttr |= FILE_ATTRIBUTE_DIRECTORY;
-	if (attr.TestFlag(FileAttribute::ReadOnly))  dwAttr |= FILE_ATTRIBUTE_READONLY;
-	if (attr.TestFlag(FileAttribute::Hidden))    dwAttr |= FILE_ATTRIBUTE_HIDDEN;
-	BOOL r = ::SetFileAttributesW(filePath, dwAttr);
-	if (r == FALSE) { Win32IOErrorToExceptionThrow(::GetLastError(), filePath); }
-}
-
-//------------------------------------------------------------------------------
-void FileSystem::copy(const char* sourceFileName, const char* destFileName, bool overwrite)
-{
-	BOOL bRes = ::CopyFileA(sourceFileName, destFileName, (overwrite) ? FALSE : TRUE);
-	if (bRes == FALSE) {
-		// TODO 引数もう一つ増やさないと、どちらが原因かわかりにくい
-		Win32IOErrorToExceptionThrow(::GetLastError(), sourceFileName);
+	static bool existsFile(const wchar_t* filePath)
+	{
+		// ※fopen によるチェックはNG。ファイルが排他ロックで開かれていた時に失敗する。
+		DWORD attr = ::GetFileAttributesW(filePath);
+		// 他ユーザーフォルダ内のファイルにアクセスしようとすると attr = -1 になる。
+		// このとき GetLastError() は ERROR_ACCESS_DENIED である。
+		// .NET の仕様にあわせ、エラーは一律 false で返している。
+		return ((attr != -1) && (attr & FILE_ATTRIBUTE_DIRECTORY) == 0);
 	}
-}
 
-void FileSystem::copy(const wchar_t* sourceFileName, const wchar_t* destFileName, bool overwrite)
-{
-	BOOL bRes = ::CopyFileW(sourceFileName, destFileName, (overwrite) ? FALSE : TRUE);
-	if (bRes == FALSE) {
-		// TODO 引数もう一つ増やさないと、どちらが原因かわかりにくい
-		Win32IOErrorToExceptionThrow(::GetLastError(), sourceFileName);
+	static void setAttribute(const wchar_t* filePath, FileAttribute attr)
+	{
+		DWORD dwAttr = 0;
+		if (attr.TestFlag(FileAttribute::Directory)) dwAttr |= FILE_ATTRIBUTE_DIRECTORY;
+		if (attr.TestFlag(FileAttribute::ReadOnly))  dwAttr |= FILE_ATTRIBUTE_READONLY;
+		if (attr.TestFlag(FileAttribute::Hidden))    dwAttr |= FILE_ATTRIBUTE_HIDDEN;
+		BOOL r = ::SetFileAttributesW(filePath, dwAttr);
+		if (r == FALSE) { Win32IOErrorToExceptionThrow(::GetLastError(), filePath); }
 	}
-}
+
+	static bool getAttribute(const wchar_t* path, FileAttribute* outAttr)
+	{
+		DWORD attr = ::GetFileAttributesW(path);
+		if (attr == -1) { return false; }
+
+		FileAttribute flags = FileAttribute::None;
+		if (attr & FILE_ATTRIBUTE_DIRECTORY)	flags |= FileAttribute::Directory;
+		else									flags |= FileAttribute::Normal;
+		if (attr & FILE_ATTRIBUTE_READONLY)		flags |= FileAttribute::ReadOnly;
+		if (attr & FILE_ATTRIBUTE_HIDDEN)		flags |= FileAttribute::Hidden;
+		*outAttr = flags;
+		return true;
+	}
+
+	static void copyFile(const wchar_t* sourceFileName, const wchar_t* destFileName, bool overwrite)
+	{
+		BOOL bRes = ::CopyFileW(sourceFileName, destFileName, (overwrite) ? FALSE : TRUE);
+		if (bRes == FALSE) {
+			// TODO 引数もう一つ増やさないと、どちらが原因かわかりにくい
+			Win32IOErrorToExceptionThrow(::GetLastError(), sourceFileName);
+		}
+	}
+
+	static void deleteFile(const wchar_t* filePath)
+	{
+		BOOL r = ::DeleteFileW(filePath);
+		if (r == FALSE) {
+			Win32IOErrorToExceptionThrow(::GetLastError(), filePath);
+		}
+	}
+
+	static void removeDirectory(const wchar_t* path)
+	{
+		BOOL r = ::RemoveDirectoryW(path);
+		if (r == FALSE) {
+			Win32IOErrorToExceptionThrow(::GetLastError(), path);
+		}
+	}
+
+	static bool createDirectory(const wchar_t* path)
+	{
+		return ::CreateDirectoryW(path, NULL) != FALSE;
+	}
+
+	static bool matchPath(const wchar_t* filePath, const wchar_t* pattern)
+	{
+		return ::PathMatchSpecExW(filePath, pattern, PMSF_NORMAL) == S_OK;
+	}
+};
+
+
 
 //------------------------------------------------------------------------------
-void FileSystem::deleteFile(const char* filePath)
-{
-	BOOL r = ::DeleteFileA(filePath);
-	if (r == FALSE) {
-		Win32IOErrorToExceptionThrow(::GetLastError(), filePath);
-	}
-}
-void FileSystem::deleteFile(const wchar_t* filePath)
-{
-	BOOL r = ::DeleteFileW(filePath);
-	if (r == FALSE) {
-		Win32IOErrorToExceptionThrow(::GetLastError(), filePath);
-	}
-}
+//bool FileSystem::existsFile(const StringRefA& filePath)
+//{
+//	if (filePath.IsNullOrEmpty()) return false;
+//
+//	char tmpPath[MAX_PATH];
+//	filePath.copyTo(tmpPath, MAX_PATH);
+//
+//	// ※fopen によるチェックはNG。ファイルが排他ロックで開かれていた時に失敗する。
+//	DWORD attr = ::GetFileAttributesA(tmpPath);
+//	// 他ユーザーフォルダ内のファイルにアクセスしようとすると attr = -1 になる。
+//	// このとき GetLastError() は ERROR_ACCESS_DENIED である。
+//	// .NET の仕様にあわせ、エラーは一律 false で返している。
+//	return ((attr != -1) &&
+//			(attr & FILE_ATTRIBUTE_DIRECTORY) == 0);
+//}
+//
+//bool FileSystem::existsFile(const StringRefW& filePath)
+//{
+//	if (filePath.IsNullOrEmpty()) return false;
+//
+//	wchar_t tmpPath[MAX_PATH];
+//	filePath.copyTo(tmpPath, MAX_PATH);
+//
+//	DWORD attr = ::GetFileAttributesW(tmpPath);
+//	return ((attr != -1) &&
+//			(attr & FILE_ATTRIBUTE_DIRECTORY) == 0);
+//}
+
+////------------------------------------------------------------------------------
+//void FileSystem::setAttribute(const char* filePath, FileAttribute attr)
+//{
+//	DWORD dwAttr = 0;
+//	if (attr.TestFlag(FileAttribute::Directory)) dwAttr |= FILE_ATTRIBUTE_DIRECTORY;
+//	if (attr.TestFlag(FileAttribute::ReadOnly))  dwAttr |= FILE_ATTRIBUTE_READONLY;
+//	if (attr.TestFlag(FileAttribute::Hidden))    dwAttr |= FILE_ATTRIBUTE_HIDDEN;
+//	BOOL r = ::SetFileAttributesA(filePath, dwAttr);
+//	if (r == FALSE) { Win32IOErrorToExceptionThrow(::GetLastError(), filePath); }
+//}
+//
+//void FileSystem::setAttribute(const wchar_t* filePath, FileAttribute attr)
+//{
+//	DWORD dwAttr = 0;
+//	if (attr.TestFlag(FileAttribute::Directory)) dwAttr |= FILE_ATTRIBUTE_DIRECTORY;
+//	if (attr.TestFlag(FileAttribute::ReadOnly))  dwAttr |= FILE_ATTRIBUTE_READONLY;
+//	if (attr.TestFlag(FileAttribute::Hidden))    dwAttr |= FILE_ATTRIBUTE_HIDDEN;
+//	BOOL r = ::SetFileAttributesW(filePath, dwAttr);
+//	if (r == FALSE) { Win32IOErrorToExceptionThrow(::GetLastError(), filePath); }
+//}
+//
+////------------------------------------------------------------------------------
+//void FileSystem::copy(const char* sourceFileName, const char* destFileName, bool overwrite)
+//{
+//	BOOL bRes = ::CopyFileA(sourceFileName, destFileName, (overwrite) ? FALSE : TRUE);
+//	if (bRes == FALSE) {
+//		// TODO 引数もう一つ増やさないと、どちらが原因かわかりにくい
+//		Win32IOErrorToExceptionThrow(::GetLastError(), sourceFileName);
+//	}
+//}
+//
+//void FileSystem::copy(const wchar_t* sourceFileName, const wchar_t* destFileName, bool overwrite)
+//{
+//	BOOL bRes = ::CopyFileW(sourceFileName, destFileName, (overwrite) ? FALSE : TRUE);
+//	if (bRes == FALSE) {
+//		// TODO 引数もう一つ増やさないと、どちらが原因かわかりにくい
+//		Win32IOErrorToExceptionThrow(::GetLastError(), sourceFileName);
+//	}
+//}
+
+////------------------------------------------------------------------------------
+//void FileSystem::deleteFile(const char* filePath)
+//{
+//	BOOL r = ::DeleteFileA(filePath);
+//	if (r == FALSE) {
+//		Win32IOErrorToExceptionThrow(::GetLastError(), filePath);
+//	}
+//}
+//void FileSystem::deleteFile(const wchar_t* filePath)
+//{
+//	BOOL r = ::DeleteFileW(filePath);
+//	if (r == FALSE) {
+//		Win32IOErrorToExceptionThrow(::GetLastError(), filePath);
+//	}
+//}
 
 //------------------------------------------------------------------------------
 static void RemoveDirectoryImpl(LPCSTR lpPathName)

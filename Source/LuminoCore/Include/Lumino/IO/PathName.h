@@ -328,6 +328,7 @@ private:
 typedef GenericPathName<TCHAR>		PathName;
 typedef GenericPathName<char>		PathNameA;
 typedef GenericPathName<wchar_t>	PathNameW;
+class UStringRef;
 
 namespace detail
 {
@@ -340,6 +341,7 @@ class GenericStaticallyLocalPath
 public:
 	GenericStaticallyLocalPath(const GenericStringRef<char>& path);
 	GenericStaticallyLocalPath(const GenericStringRef<wchar_t>& path);
+	GenericStaticallyLocalPath(const UStringRef& path);
 	
 	const TChar* c_str() const { return m_path.isEmpty() ? m_static : m_path.c_str(); }
 	const GenericString<TChar>& getPath() const { return m_path; }

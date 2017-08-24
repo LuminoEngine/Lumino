@@ -98,18 +98,18 @@ TEST_F(Test_IO_FileSystem, Copy_Delete)
 	ASSERT_FALSE(FileSystem::existsFile(dest.c_str()));
 
 	// コピー
-	FileSystem::copy(src1.c_str(), dest.c_str(), false);
+	FileSystem::copyFile(src1.c_str(), dest.c_str(), false);
 
 	// コピーしたファイル(サイズ)が同じ
 	ASSERT_EQ(src1Size, FileSystem::getFileSize(dest.c_str()));
 
 	// 上書きしようとすると IOException
 	ASSERT_THROW(
-		FileSystem::copy(src2.c_str(), dest.c_str(), false),
+		FileSystem::copyFile(src2.c_str(), dest.c_str(), false),
 		IOException);
 
 	// 上書き許可でコピー
-	FileSystem::copy(src2.c_str(), dest.c_str(), true);
+	FileSystem::copyFile(src2.c_str(), dest.c_str(), true);
 
 	// コピーしたファイル(サイズ)が同じ
 	ASSERT_EQ(src2Size, FileSystem::getFileSize(dest.c_str()));

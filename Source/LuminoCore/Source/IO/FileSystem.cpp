@@ -265,30 +265,122 @@ size_t FileSystem::GetFileSize( FILE* stream )
 #endif
 
 
-
-template<typename TChar> static bool Exists2(const TChar* filePath);
-template<typename TString> static bool Exists2(const TString& filePath);
-
-
-
-
-
-//------------------------------------------------------------------------------
-FileAttribute FileSystem::getAttribute(const char* filePath)
+bool FileSystem::existsFile(const StringRefA& filePath)
 {
-	FileAttribute attr;
-	bool r = getAttributeInternal(filePath, &attr);
-	LN_THROW(r, FileNotFoundException, filePath);
-	return attr;
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath);
+	return PlatformFileSystem::existsFile(localPath.c_str());
 }
-FileAttribute FileSystem::getAttribute(const wchar_t* filePath)
+bool FileSystem::existsFile(const StringRefW& filePath)
 {
-	FileAttribute attr;
-	bool r = getAttributeInternal(filePath, &attr);
-	LN_THROW(r, FileNotFoundException, filePath);
-	return attr;
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath);
+	return PlatformFileSystem::existsFile(localPath.c_str());
+}
+bool FileSystem::existsFile(const UStringRef& filePath)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath);
+	return PlatformFileSystem::existsFile(localPath.c_str());
 }
 
+
+FileAttribute FileSystem::getAttribute(const StringRefA& filePath)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath);
+	FileAttribute attr;
+	bool r = PlatformFileSystem::getAttribute(localPath.c_str(), &attr);
+	LN_THROW(r, FileNotFoundException, localPath.c_str());
+	return attr;
+}
+FileAttribute FileSystem::getAttribute(const StringRefW& filePath)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath);
+	FileAttribute attr;
+	bool r = PlatformFileSystem::getAttribute(localPath.c_str(), &attr);
+	LN_THROW(r, FileNotFoundException, localPath.c_str());
+	return attr;
+}
+FileAttribute FileSystem::getAttribute(const UStringRef& filePath)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath);
+	FileAttribute attr;
+	bool r = PlatformFileSystem::getAttribute(localPath.c_str(), &attr);
+	LN_THROW(r, FileNotFoundException, localPath.c_str());
+	return attr;
+}
+
+void FileSystem::setAttribute(const StringRefA& filePath, FileAttribute attr)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath);
+	PlatformFileSystem::setAttribute(localPath.c_str(), attr);
+}
+void FileSystem::setAttribute(const StringRefW& filePath, FileAttribute attr)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath);
+	PlatformFileSystem::setAttribute(localPath.c_str(), attr);
+}
+void FileSystem::setAttribute(const UStringRef& filePath, FileAttribute attr)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath);
+	PlatformFileSystem::setAttribute(localPath.c_str(), attr);
+}
+
+void FileSystem::copyFile(const StringRefA& sourceFileName, const StringRefA& destFileName, bool overwrite)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath1(sourceFileName);
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath2(destFileName);
+	PlatformFileSystem::copyFile(localPath1.c_str(), localPath2.c_str(), overwrite);
+}
+void FileSystem::copyFile(const StringRefW& sourceFileName, const StringRefW& destFileName, bool overwrite)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath1(sourceFileName);
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath2(destFileName);
+	PlatformFileSystem::copyFile(localPath1.c_str(), localPath2.c_str(), overwrite);
+}
+void FileSystem::copyFile(const UStringRef& sourceFileName, const UStringRef& destFileName, bool overwrite)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath1(sourceFileName);
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath2(destFileName);
+	PlatformFileSystem::copyFile(localPath1.c_str(), localPath2.c_str(), overwrite);
+}
+
+void FileSystem::deleteFile(const StringRefA& filePath)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath);
+	PlatformFileSystem::deleteFile(localPath.c_str());
+}
+void FileSystem::deleteFile(const StringRefW& filePath)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath);
+	PlatformFileSystem::deleteFile(localPath.c_str());
+}
+void FileSystem::deleteFile(const UStringRef& filePath)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath);
+	PlatformFileSystem::deleteFile(localPath.c_str());
+}
+//
+//template<typename TChar> static bool Exists2(const TChar* filePath);
+//template<typename TString> static bool Exists2(const TString& filePath);
+
+
+//
+//
+//
+////------------------------------------------------------------------------------
+//FileAttribute FileSystem::getAttribute(const char* filePath)
+//{
+//	FileAttribute attr;
+//	bool r = getAttributeInternal(filePath, &attr);
+//	LN_THROW(r, FileNotFoundException, filePath);
+//	return attr;
+//}
+//FileAttribute FileSystem::getAttribute(const wchar_t* filePath)
+//{
+//	FileAttribute attr;
+//	bool r = getAttributeInternal(filePath, &attr);
+//	LN_THROW(r, FileNotFoundException, filePath);
+//	return attr;
+//}
+//
 
 
 //------------------------------------------------------------------------------
@@ -316,6 +408,7 @@ void FileSystem::deleteDirectoryInternal(const GenericStringRef<TChar>& path, bo
 }
 template void FileSystem::deleteDirectoryInternal<char>(const GenericStringRef<char>& path, bool recursive);
 template void FileSystem::deleteDirectoryInternal<wchar_t>(const GenericStringRef<wchar_t>& path, bool recursive);
+
 //------------------------------------------------------------------------------
 template<typename TChar>
 void FileSystem::copyDirectoryInternal(const GenericStringRef<TChar>& srcPath, const GenericStringRef<TChar>& destPath, bool overwrite, bool recursive)
@@ -352,12 +445,12 @@ void FileSystem::copyDirectoryInternal(const GenericStringRef<TChar>& srcPath, c
 			{
 				if (overwrite)
 				{
-					copy(src, dest, true);
+					copyFile(src, dest, true);
 				}
 			}
 			else
 			{
-				copy(src, dest, false);
+				copyFile(src, dest, false);
 			}
 		}
 		else if (src.existsDirectory())

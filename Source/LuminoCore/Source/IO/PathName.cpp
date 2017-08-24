@@ -2,6 +2,7 @@
 #include <time.h>
 #include "../Internal.h"
 #include <Lumino/Base/String.h>
+#include <Lumino/Base/StringU.h>
 #include <Lumino/IO/FileSystem.h>
 #include <Lumino/IO/PathName.h>
 #include <Lumino/IO/DirectoryUtils.h>
@@ -488,7 +489,7 @@ template<typename TChar>
 GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const GenericStringRef<char>& path)
 {
 	m_static[0] = '0';
-	if (ConvertNativeString(path, m_static) < 0)
+	if (!path.isEmpty() && ConvertNativeString(path, m_static) < 0)
 	{
 		// 文字列が長すぎるなど、変換失敗したら String へ割り当てる
 		m_path.assignCStr(path.getBegin(), path.getLength());
@@ -499,11 +500,18 @@ template<typename TChar>
 GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const GenericStringRef<wchar_t>& path)
 {
 	m_static[0] = '0';
-	if (ConvertNativeString(path, m_static) < 0)
+	if (!path.isEmpty() && ConvertNativeString(path, m_static) < 0)
 	{
 		// 文字列が長すぎるなど、変換失敗したら String へ割り当てる
 		m_path.assignCStr(path.getBegin(), path.getLength());
 	}
+}
+
+// TODO
+template<typename TChar>
+GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const UStringRef& path)
+	: GenericStaticallyLocalPath(GenericStringRef<wchar_t>((const wchar_t*)path.data(), path.getLength()))
+{
 }
 
 template class GenericStaticallyLocalPath<char>;

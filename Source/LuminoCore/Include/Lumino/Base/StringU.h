@@ -275,11 +275,11 @@ public:
 		m_u.length = end - begin;
 	}
 
-	UStringRef(const char* str)
-	{
-		m_type = detail::UStringRefSource::ByChar;
-		m_c.str = UString(str);
-	}
+	//UStringRef(const char* str)
+	//{
+	//	m_type = detail::UStringRefSource::ByChar;
+	//	m_c.str = UString(str);
+	//}
 
 	UStringRef(const UStringRef& str)
 		: UStringRef()

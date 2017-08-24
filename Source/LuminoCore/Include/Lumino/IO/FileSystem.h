@@ -12,6 +12,7 @@
 LN_NAMESPACE_BEGIN
 class Encoding;
 class Stream;
+class UStringRef;
 
 /**
 	@brief	ファイルユーティリティ
@@ -19,9 +20,6 @@ class Stream;
 class FileSystem
 {
 public:
-	/// fopen の template 実装
-	//template<typename TChar>
-	//static FILE* fopen(const TChar* filePath, const TChar* pMode);
 	
 	/**
 		@brief		指定されたファイルが存在するか確認します。
@@ -33,17 +31,16 @@ public:
 	*/
 	static bool existsFile(const StringRefA& filePath);
 	static bool existsFile(const StringRefW& filePath);
-	//template<typename TChar> static bool Exists2(const TChar* filePath);		/**< a */
-	//template<typename TString> static bool Exists2(const TString& filePath);	/**< b */
+	static bool existsFile(const UStringRef& filePath);
 
 	/**
 		@brief		ファイルの属性を取得します。
 		@param[in]	filePath		: ファイル名
 		@return		ファイルの属性 (FileAttribute のビットの組み合わせ)
-		@exception	FileNotFoundException	対象にアクセスできなかった。
 	*/
-	static FileAttribute getAttribute(const char* filePath);
-	static FileAttribute getAttribute(const wchar_t* filePath);
+	static FileAttribute getAttribute(const StringRefA& filePath);
+	static FileAttribute getAttribute(const StringRefW& filePath);
+	static FileAttribute getAttribute(const UStringRef& filePath);
 
 	/**
 		@brief		ファイルの属性を設定します。
@@ -52,8 +49,9 @@ public:
 		@details	この関数により変更できる属性は、読み取り属性のみです。(Unix では隠し属性はファイル名で表現されるためです)
 					それ以外のフラグビットは無視されます。
 	*/
-	static void setAttribute(const char* filePath, FileAttribute attr);
-	static void setAttribute(const wchar_t* filePath, FileAttribute attr);
+	static void setAttribute(const StringRefA& filePath, FileAttribute attr);
+	static void setAttribute(const StringRefW& filePath, FileAttribute attr);
+	static void setAttribute(const UStringRef& filePath, FileAttribute attr);
 
 	/**
 		@brief		ファイルをコピーする
@@ -62,16 +60,18 @@ public:
 		@param[in]	overwrite		: コピー先を上書きする場合は true
 		@details	読み取り専用ファイルに上書きすることはできません。
 	*/
-	static void copy(const char* sourceFileName, const char* destFileName, bool overwrite);
-	static void copy(const wchar_t* sourceFileName, const wchar_t* destFileName, bool overwrite);
+	static void copyFile(const StringRefA& sourceFileName, const StringRefA& destFileName, bool overwrite);
+	static void copyFile(const StringRefW& sourceFileName, const StringRefW& destFileName, bool overwrite);
+	static void copyFile(const UStringRef& sourceFileName, const UStringRef& destFileName, bool overwrite);
 
 	/**
 		@brief		ファイルを削除する
 		@param[in]	filePath		: 削除するファイルのパス
 		@details	削除するファイルが存在しない場合、例外はスローされません。
 	*/
-	static void deleteFile(const char* filePath);
-	static void deleteFile(const wchar_t* filePath);
+	static void deleteFile(const StringRefA& filePath);
+	static void deleteFile(const StringRefW& filePath);
+	static void deleteFile(const UStringRef& filePath);
 
 	/**
 		@brief		ディレクトリを削除します。
