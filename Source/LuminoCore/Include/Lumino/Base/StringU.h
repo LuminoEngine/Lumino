@@ -110,9 +110,14 @@ public:
 	bool isSSO() const LN_NOEXCEPT { return detail::getLSB<7>(static_cast<uint8_t>(m_data.sso.length)); }
 	bool isNonSSO() const LN_NOEXCEPT { return !detail::getLSB<7>(static_cast<uint8_t>(m_data.sso.length)); }
 
-	UString& operator=(UChar ch);
-	UString& operator=(const UChar* rhs);
 	UString& operator=(const UStringRef& rhs);
+	UString& operator=(const UChar* rhs);
+	UString& operator=(UChar ch);
+
+	UString& operator+=(const UString& rhs);
+	UString& operator+=(const UStringRef& rhs);
+	UString& operator+=(const UChar* rhs);
+	UString& operator+=(UChar rhs);
 
 private:
 	static std::size_t const SSOCapacity = 15;//31;//sizeof(uint32_t) * 4 / sizeof(UChar) - 1;
@@ -122,6 +127,7 @@ private:
 	void copy(const UString& str);
 	void move(UString&& str) LN_NOEXCEPT;
 	void allocBuffer(int length);
+	void resizeBuffer(int length);
 	void assign(const UChar* str);
 	void assign(const UChar* str, int length);
 	void assign(int count, UChar ch);
@@ -131,6 +137,7 @@ private:
 	void setSSOLength(int len);
 	int getSSOLength() const;
 	void setNonSSO();
+	void append(const UChar* str, int length);
 
 	union Data
 	{
@@ -402,16 +409,26 @@ public:
 	//	memcpy(m_str, str + begin, sizeof(UChar) * length);
 	//	m_str[length] = '\0';
 	//}
-	void alloc(int length)
+	void resize(int length)
 	{
 		assert(length >= 0);
 		int size = length + 1;
 		if (m_capacity < size)
 		{
-			delete m_str;
+			UChar* oldStr = m_str;
+			int oldLen = m_length;
+			
 			m_str = LN_NEW UChar[size];
 			m_capacity = size;
+
+			if (oldStr != nullptr)
+			{
+				memcpy(m_str, oldStr, std::min(length, oldLen) * sizeof(UChar));
+				delete oldStr;
+			}
+
 		}
+		m_str[length] = '\0';
 		m_length = length;
 	}
 	void clear()
@@ -476,9 +493,9 @@ inline UString UString::format(const Locale& locale, const UStringRef& format, T
 	}
 }
 
-inline UString& UString::operator=(UChar ch)
+inline UString& UString::operator=(const UStringRef& rhs)
 {
-	assign(&ch, 1);
+	assign(rhs.data(), rhs.getLength());
 	return *this;
 }
 
@@ -488,9 +505,33 @@ inline UString& UString::operator=(const UChar* rhs)
 	return *this;
 }
 
-inline UString& UString::operator=(const UStringRef& rhs)
+inline UString& UString::operator=(UChar ch)
 {
-	assign(rhs.data(), rhs.getLength());
+	assign(&ch, 1);
+	return *this;
+}
+
+inline UString& UString::operator+=(const UString& rhs)
+{
+	append(rhs.c_str(), rhs.getLength());
+	return *this;
+}
+
+inline UString& UString::operator+=(const UStringRef& rhs)
+{
+	append(rhs.data(), rhs.getLength());
+	return *this;
+}
+
+inline UString& UString::operator+=(const UChar* rhs)
+{
+	append(rhs, UStringHelper::strlen(rhs));
+	return *this;
+}
+
+inline UString& UString::operator+=(UChar rhs)
+{
+	append(&rhs, 1);
 	return *this;
 }
 

@@ -1,5 +1,6 @@
 ﻿
 #include "../Internal.h"
+#include <memory>
 #include <Lumino/Text/Encoding.h>
 #include <Lumino/Base/StringU.h>
 #include <Lumino/Base/StringHelper.h>
@@ -170,6 +171,7 @@ void UString::move(UString&& str) LN_NOEXCEPT
 	str.init();
 }
 
+// 中身は不定値となる
 void UString::allocBuffer(int length)
 {
 	if (length < SSOCapacity)
@@ -180,8 +182,75 @@ void UString::allocBuffer(int length)
 	else
 	{
 		checkDetachShared();
-		m_data.core->alloc(length);
-		m_data.core->get()[length] = '\0';
+		m_data.core->resize(length);
+	}
+}
+
+// 中身は以前のものが維持され、新しい領域は不定値となる
+void UString::resizeBuffer(int length)
+{
+	if (isSSO())
+	{
+		if (length < SSOCapacity)
+		{
+			// SSO -> SSO
+			setSSOLength(length);
+		}
+		else
+		{
+			// SSO -> NonSSO
+			std::unique_ptr<detail::UStringCore> core(LN_NEW detail::UStringCore());
+			core->resize(length);
+			memcpy(core->get(), m_data.sso.buffer, std::min(getSSOLength(), length) * sizeof(UChar));
+			core->get()[length] = '\0';
+			m_data.core = core.get();
+			core.release();
+			setNonSSO();
+		}
+	}
+	else
+	{
+		if (length < SSOCapacity)
+		{
+			// NonSSO -> SSO
+			if (m_data.core)
+			{
+				detail::UStringCore* oldCore = m_data.core;
+				setSSOLength(length);
+				memcpy(m_data.sso.buffer, oldCore->get(), std::min(oldCore->getLength(), length) * sizeof(UChar));
+				oldCore->release();
+			}
+			else
+			{
+				setSSOLength(length);
+			}
+		}
+		else
+		{
+			//bool shared = false;
+
+			// NonSSO -> NonSSO
+			if (m_data.core)
+			{
+				if (m_data.core->isShared())
+				{
+					detail::UStringCore* oldCore = m_data.core;
+					m_data.core = LN_NEW detail::UStringCore();
+					m_data.core->resize(length);
+					memcpy(m_data.core->get(), oldCore->get(), std::min(oldCore->getLength(), length) * sizeof(UChar));
+					oldCore->release();
+				}
+				else
+				{
+					m_data.core->resize(length);
+				}
+			}
+			else
+			{
+				m_data.core = LN_NEW detail::UStringCore();
+				m_data.core->resize(length);
+			}
+		}
 	}
 }
 
@@ -289,6 +358,14 @@ int UString::getSSOLength() const
 void UString::setNonSSO()
 {
 	m_data.sso.length = 0;
+}
+
+void UString::append(const UChar* str, int length)
+{
+	int firstLen = getLength();
+	resizeBuffer(firstLen + length);
+	UChar* b = getBuffer() + firstLen;
+	memcpy(b, str, length * sizeof(UChar));
 }
 
 //==============================================================================

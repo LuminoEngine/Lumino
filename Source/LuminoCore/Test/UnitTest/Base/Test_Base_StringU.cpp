@@ -132,6 +132,46 @@ TEST_F(Test_Base_UString, CopyFramework)
 	}
 }
 
+TEST_F(Test_Base_UString, resize)
+{
+	UString s1, s2;
+
+	// SSO -> SSO
+	s1 = u"a";
+	s1 += u"b";
+	ASSERT_EQ(u"ab", s1);
+
+	// SSO -> NonSSO
+	s1 = u"a";
+	s1 += NSSO_STR;
+	ASSERT_EQ(u"aabcdefghij1234567890", s1);
+
+	// NonSSO -> SSO
+	s1 = NSSO_STR;
+	// TODO:
+
+	// NonSSO -> SSO (shared)
+	s1 = NSSO_STR;
+	// TODO:
+
+	// NonSSO -> NonSSO
+	s1 = NSSO_STR;
+	s1 += u"a";
+	ASSERT_EQ(u"abcdefghij1234567890a", s1);
+
+	// NonSSO -> NonSSO (shared)
+	s1 = NSSO_STR;
+	s2 = s1;
+	s2 += u"a";
+	ASSERT_EQ(NSSO_STR, s1);
+	ASSERT_EQ(u"abcdefghij1234567890a", s2);
+
+	// NonSSO(init) -> NonSSO
+	UString s3;
+	s3 += NSSO_STR;
+	ASSERT_EQ(NSSO_STR, s3);
+}
+
 TEST_F(Test_Base_UString, Operators)
 {
 	// <Test> =
@@ -181,8 +221,8 @@ TEST_F(Test_Base_UString, Operators)
 		str = str;
 		ASSERT_EQ(NSSO_STR, str);
 
-		// nullptr (illigal)
-		str = nullptr;
+		// null Char*
+		str = ((char16_t*)NULL);
 		ASSERT_EQ(true, str.isEmpty());
 	}
 	// <Test> operator==
@@ -196,10 +236,10 @@ TEST_F(Test_Base_UString, Operators)
 		ASSERT_EQ(true, s1 == u"a");
 		ASSERT_EQ(true, s1 == "a");
 
-		// (自己比較)
+		// self
 		ASSERT_EQ(true, s1 == s1);
 
-		// null Char* (illigal)
+		// null Char*
 		ASSERT_EQ(false, s1 == ((char16_t*)NULL));
 		s1.clear();
 		ASSERT_EQ(true, s1 == ((char16_t*)NULL));
@@ -215,33 +255,35 @@ TEST_F(Test_Base_UString, Operators)
 		ASSERT_EQ(true, s1 != u"c");
 		ASSERT_EQ(true, s1 != "c");
 
-		// (自己比較)
+		// self
 		ASSERT_EQ(false, s1 != s1);
 
-		// null Char* (illigal)
+		// null Char*
 		ASSERT_EQ(true, s1 != ((char16_t*)NULL));
 		s1.clear();
 		ASSERT_EQ(false, s1 != ((char16_t*)NULL));
 	}
+	// <Test> operator+=
+	{
+		UString s1;
+		UString s2 = u"a";
 
+		// String
+		s1 += s2;
+		ASSERT_EQ(u"a", s1);
 
-	//// <Test> operator!= (GenericString)
-	//{
-	//	ASSERT_FALSE(strA != strASample);
-	//	ASSERT_FALSE(strW != strWSample);
-	//}
-	//// <Test> operator!= (文字列ポインタ)
-	//{
-	//	ASSERT_FALSE(strA != "a");
-	//	ASSERT_FALSE(strW != L"w");
-	//}
-	//// <Test> operator!= (NULL)
-	//{
-	//	ASSERT_TRUE(strA != ((char*)NULL));
-	//	ASSERT_TRUE(strW != ((wchar_t*)NULL));
-	//	ASSERT_FALSE(strAEmpty != ((char*)NULL));
-	//	ASSERT_FALSE(strWEmpty != ((wchar_t*)NULL));
-	//}
+		// StringRef
+		s1 += UStringRef(u"b");
+		ASSERT_EQ(u"ab", s1);
+
+		// Char*
+		s1 += u"c";
+		ASSERT_EQ(u"abc", s1);
+
+		// Char
+		s1 += u'd';
+		ASSERT_EQ(u"abcd", s1);
+	}
 
 	//strA = "a";
 	//strW = L"w";
