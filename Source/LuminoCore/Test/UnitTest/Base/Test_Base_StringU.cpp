@@ -134,42 +134,58 @@ TEST_F(Test_Base_UString, CopyFramework)
 
 TEST_F(Test_Base_UString, resize)
 {
-	UString s1, s2;
+	// <Test>
+	{
+		UString s1 = u"abd";
+		s1.resize(2);
+		ASSERT_EQ(u"ab", s1);
 
-	// SSO -> SSO
-	s1 = u"a";
-	s1 += u"b";
-	ASSERT_EQ(u"ab", s1);
+		s1.resize(5, u'c');
+		ASSERT_EQ(u"abccc", s1);
+	}
+	// <Test> 内部状態切り替えのテスト
+	{
+		UString s1, s2;
 
-	// SSO -> NonSSO
-	s1 = u"a";
-	s1 += NSSO_STR;
-	ASSERT_EQ(u"aabcdefghij1234567890", s1);
+		// SSO -> SSO
+		s1 = u"a";
+		s1 += u"b";
+		ASSERT_EQ(u"ab", s1);
 
-	// NonSSO -> SSO
-	s1 = NSSO_STR;
-	// TODO:
+		// SSO -> NonSSO
+		s1 = u"a";
+		s1 += NSSO_STR;
+		ASSERT_EQ(u"aabcdefghij1234567890", s1);
 
-	// NonSSO -> SSO (shared)
-	s1 = NSSO_STR;
-	// TODO:
+		// NonSSO -> SSO
+		s1 = NSSO_STR;
+		s1.resize(1);
+		ASSERT_EQ(u"a", s1);
 
-	// NonSSO -> NonSSO
-	s1 = NSSO_STR;
-	s1 += u"a";
-	ASSERT_EQ(u"abcdefghij1234567890a", s1);
+		// NonSSO -> SSO (shared)
+		s1 = NSSO_STR;
+		s2 = s1;
+		s2.resize(1);
+		ASSERT_EQ(NSSO_STR, s1);
+		ASSERT_EQ(u"a", s2);
 
-	// NonSSO -> NonSSO (shared)
-	s1 = NSSO_STR;
-	s2 = s1;
-	s2 += u"a";
-	ASSERT_EQ(NSSO_STR, s1);
-	ASSERT_EQ(u"abcdefghij1234567890a", s2);
+		// NonSSO -> NonSSO
+		s1 = NSSO_STR;
+		s1 += u"a";
+		ASSERT_EQ(u"abcdefghij1234567890a", s1);
 
-	// NonSSO(init) -> NonSSO
-	UString s3;
-	s3 += NSSO_STR;
-	ASSERT_EQ(NSSO_STR, s3);
+		// NonSSO -> NonSSO (shared)
+		s1 = NSSO_STR;
+		s2 = s1;
+		s2 += u"a";
+		ASSERT_EQ(NSSO_STR, s1);
+		ASSERT_EQ(u"abcdefghij1234567890a", s2);
+
+		// NonSSO(init) -> NonSSO
+		UString s3;
+		s3 += NSSO_STR;
+		ASSERT_EQ(NSSO_STR, s3);
+	}
 }
 
 TEST_F(Test_Base_UString, Operators)
@@ -184,17 +200,10 @@ TEST_F(Test_Base_UString, Operators)
 		ASSERT_EQ(u"abc", s2);
 		ASSERT_EQ(u"a", s3); ASSERT_EQ(1, s3.getLength());
 	}
-
-	//std::string strAStd = "a";
-	//std::wstring strWStd = L"w";
-	//StringA strASample = "a";
-	//StringW strWSample = L"w";
-	//StringA strAEmpty;
-	//StringW strWEmpty;
-	UString str;
-
 	// <Test> operator=
 	{
+		UString str;
+
 		// Char
 		str = '0';
 		ASSERT_EQ(u"0", str);
@@ -284,124 +293,71 @@ TEST_F(Test_Base_UString, Operators)
 		s1 += u'd';
 		ASSERT_EQ(u"abcd", s1);
 	}
+	// <Test> operator +
+	{
+		// String + String
+		UString s1;
+		s1 = UString(u"a") + UString(u"b");
+		ASSERT_EQ(u"ab", s1);
 
-	//strA = "a";
-	//strW = L"w";
-	//// <Test> operator+= (GenericString)
-	//{
-	//	strA += strASample;
-	//	strW += strWSample;
-	//	ASSERT_EQ("aa", strA);
-	//	ASSERT_EQ(L"ww", strW);
-	//}
-	//// <Test> operator+= (文字列ポインタ)
-	//{
-	//	strA += "a";
-	//	strW += L"w";
-	//	ASSERT_EQ("aaa", strA);
-	//	ASSERT_EQ(L"www", strW);
-	//}
-	//// <Test> operator+= (文字)
-	//{
-	//	strA += 'a';
-	//	strW += L'w';
-	//	ASSERT_EQ("aaaa", strA);
-	//	ASSERT_EQ(L"wwww", strW);
-	//}
-	//// <Test> operator+= (NULL)
-	//{
-	//	strA += ((char*)NULL);
-	//	strW += ((wchar_t*)NULL);
-	//	ASSERT_EQ("aaaa", strA);
-	//	ASSERT_EQ(L"wwww", strW);
-	//}
+		// String + Char*
+		s1 = UString(u"a") + u"b";
+		ASSERT_EQ(u"ab", s1);
 
-	//strA = "a";
-	//strW = L"w";
-	//StringA strA2 = "A";
-	//StringW strW2 = L"W";
-	//// <Test> operator < (GenericString)
-	//{
-	//	ASSERT_TRUE(strA2 < strA);
-	//	ASSERT_TRUE(strW2 < strW);
-	//}
-	//// <Test> operator < (文字列ポインタ)
-	//{
-	//	ASSERT_TRUE(strA < "b");
-	//	ASSERT_TRUE(strW < L"x");
-	//}
-	//// <Test> operator < (空文字列)
-	//{
-	//	ASSERT_FALSE(strA < StringA());
-	//	ASSERT_FALSE(strW < StringW());
-	//	ASSERT_FALSE(strA < "");
-	//	ASSERT_FALSE(strW < L"");
-	//}
-	//// <Test> operator < (NULL)
-	//{
-	//	ASSERT_FALSE(strA < ((char*)NULL));
-	//	ASSERT_FALSE(strW < ((wchar_t*)NULL));
-	//}
+		// Char* + String
+		s1 = u"a" + UString(u"b");
+		ASSERT_EQ(u"ab", s1);
+	}
+	// <Test> operator <
+	{
+		UString s1 = u"a", s2 = u"A";
 
-	//// <Test> operator > (GenericString)
-	//{
-	//	ASSERT_FALSE(strA2 > strA);
-	//	ASSERT_FALSE(strW2 > strW);
-	//}
-	//// <Test> operator > (文字列ポインタ)
-	//{
-	//	ASSERT_FALSE(strA > "b");
-	//	ASSERT_FALSE(strW > L"x");
-	//}
-	//// <Test> operator > (空文字列)
-	//{
-	//	ASSERT_TRUE(strA > StringA());
-	//	ASSERT_TRUE(strW > StringW());
-	//	ASSERT_TRUE(strA > "");
-	//	ASSERT_TRUE(strW > L"");
-	//}
-	//// <Test> operator > (NULL)
-	//{
-	//	ASSERT_TRUE(strA > ((char*)NULL));
-	//	ASSERT_TRUE(strW > ((wchar_t*)NULL));
-	//}
+		// String
+		ASSERT_EQ(true, s2 < s1);
+		ASSERT_EQ(false, s2 < UString());
 
-	//// <Test> operator <= (GenericString)
-	//{
-	//	ASSERT_TRUE(strA2 <= strA);
-	//	ASSERT_TRUE(strW2 <= strW);
-	//}
-	//// <Test> operator <= (文字列ポインタ)
-	//{
-	//	ASSERT_TRUE(strA <= "b");
-	//	ASSERT_TRUE(strW <= L"x");
-	//}
-	//// <Test> operator >= (GenericString)
-	//{
-	//	ASSERT_FALSE(strA2 >= strA);
-	//	ASSERT_FALSE(strW2 >= strW);
-	//}
-	//// <Test> operator >= (文字列ポインタ)
-	//{
-	//	ASSERT_FALSE(strA >= "b");
-	//	ASSERT_FALSE(strW >= L"x");
-	//}
+		// Char*
+		ASSERT_EQ(true, s1 < u"b");
+		ASSERT_EQ(false, s1 < u"");
+		ASSERT_EQ(false, s1 < ((char16_t*)NULL));
+	}
+	// <Test> operator >
+	{
+		UString s1 = u"a", s2 = u"A";
 
-	//// <Test> operator +
-	//{
-	//	String str = String(_T("a")) + String(_T("b"));
-	//	ASSERT_EQ(_T("ab"), str);
-	//}
-	//// <Test> operator +
-	//{
-	//	String str = String(_T("a")) + _T("b");
-	//	ASSERT_EQ(_T("ab"), str);
-	//}
-	//// <Test> operator +
-	//{
-	//	String str = _T("a") + String(_T("b"));
-	//	ASSERT_EQ(_T("ab"), str);
-	//}
+		// String
+		ASSERT_EQ(false, s2 > s1);
+		ASSERT_EQ(true, s2 > UString());
+
+		// Char*
+		ASSERT_EQ(false, s1 > u"b");
+		ASSERT_EQ(true, s1 > u"");
+		ASSERT_EQ(true, s1 > ((char16_t*)NULL));
+	}
+	// <Test> operator <=
+	{
+		UString s1 = u"a", s2 = u"A", s3 = u"a";
+
+		// String
+		ASSERT_EQ(true, s2 <= s1);
+		ASSERT_EQ(true, s2 <= s3);
+
+		// Char*
+		ASSERT_EQ(false, s1 <= u"A");
+		ASSERT_EQ(true, s1 <= u"a");
+	}
+	// <Test> operator >=
+	{
+		UString s1 = u"a", s2 = u"A", s3 = u"a";
+
+		// String
+		ASSERT_EQ(false, s2 >= s1);
+		ASSERT_EQ(false, s2 >= s3);
+
+		// Char*
+		ASSERT_EQ(true, s1 >= u"A");
+		ASSERT_EQ(true, s1 >= u"a");
+	}
 }
 
 TEST_F(Test_Base_UString, assignFromCStr)
@@ -460,6 +416,16 @@ TEST_F(Test_Base_UString, indexOf)
 	ASSERT_EQ(-1, s1.indexOf(u"a", 1));
 	ASSERT_EQ(0, s1.indexOf(u"A", 0, CaseSensitivity::CaseInsensitive));
 	ASSERT_EQ(4, s1.indexOf(u'e'));
+}
+
+
+TEST_F(Test_Base_UString, concat)
+{
+	UString s1 = UString::concat(u"a", u"b");
+	ASSERT_EQ(u"ab", s1);
+
+	s1 = UString::concat(u"12345678901234567890", u"12345678901234567890");
+	ASSERT_EQ(u"1234567890123456789012345678901234567890", s1);
 }
 
 TEST_F(Test_Base_UString, Issue)

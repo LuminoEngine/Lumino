@@ -70,8 +70,18 @@ public:
 	/** 文字列の長さを取得します。 */
 	int getLength() const;
 
+	/** メモリを再確保せずに格納できる最大の要素数を取得する。 */
+	int getCapacity() const;
+
 	/** 文字列をクリアします。 */
 	void clear();
+
+	/** 文字列の長さを変更します。 */
+	void resize(int newLength);
+	void resize(int newLength, UChar ch);
+
+	/** サイズ変更の予定を指示します。 */
+	void reserve(int size);
 
 	/**
 		@brief		文字列を検索し、見つかった最初の文字のインデックスを返します。
@@ -87,10 +97,14 @@ public:
 
 
 
+	/** 指定した文字列を連結します。 */
+	static UString concat(const UStringRef& str1, const UStringRef& str2);
+
+
 	template<typename... TArgs>
 	static UString format(const UStringRef& format, TArgs&&... args);
 	template<typename... TArgs>
-	static UString format(const Locale& locale, const UStringRef& format, TArgs&&... args);	/**< @overload Format */
+	static UString format(const Locale& locale, const UStringRef& format, TArgs&&... args);	/**< @overload format */
 
 	
 	/**
@@ -107,8 +121,8 @@ public:
 	*/
 	static int compare(const UStringRef& str1, int index1, const UStringRef& str2, int index2, int length = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive);
 
-	bool isSSO() const LN_NOEXCEPT { return detail::getLSB<7>(static_cast<uint8_t>(m_data.sso.length)); }
-	bool isNonSSO() const LN_NOEXCEPT { return !detail::getLSB<7>(static_cast<uint8_t>(m_data.sso.length)); }
+	bool isSSO() const LN_NOEXCEPT { return !detail::getLSB<0>(static_cast<uint8_t>(m_data.sso.length)); }
+	bool isNonSSO() const LN_NOEXCEPT { return detail::getLSB<0>(static_cast<uint8_t>(m_data.sso.length)); }
 
 	UString& operator=(const UStringRef& rhs);
 	UString& operator=(const UChar* rhs);
@@ -122,21 +136,27 @@ public:
 private:
 	static std::size_t const SSOCapacity = 15;//31;//sizeof(uint32_t) * 4 / sizeof(UChar) - 1;
 
+	// resource management
 	void init() LN_NOEXCEPT;
 	void release() LN_NOEXCEPT;
 	void copy(const UString& str);
 	void move(UString&& str) LN_NOEXCEPT;
-	void allocBuffer(int length);
-	void resizeBuffer(int length);
+	void reserveBuffer(int length);
+	UChar* lockBuffer(int requestSize);
+	void unlockBuffer(int confirmedSize);
+	UChar* getBuffer();
+
+	// sso operation
+	void setSSOLength(int len);
+	int getSSOLength() const;
+	void setSSO();
+	void setNonSSO();
+
+	// utils
 	void assign(const UChar* str);
 	void assign(const UChar* str, int length);
 	void assign(int count, UChar ch);
 	void assignFromCStr(const char* str, int length = -1);
-	void checkDetachShared();
-	UChar* getBuffer();
-	void setSSOLength(int len);
-	int getSSOLength() const;
-	void setNonSSO();
 	void append(const UChar* str, int length);
 
 	union Data
@@ -146,7 +166,7 @@ private:
 		struct SSO
 		{
 			UChar		buffer[SSOCapacity];
-			UChar		length;	// y---xxxx	: x=size y:flag(0=non sso,1=sso)
+			UChar		length;	// ---xxxxy	: x=size y:flag(0=sso,1=non sso)
 		} sso;
 	} m_data;
 };
@@ -400,6 +420,7 @@ public:
 	UChar* get() LN_NOEXCEPT { return m_str; }
 	const UChar* get() const LN_NOEXCEPT { return m_str; }
 	int getLength() const LN_NOEXCEPT { return m_length; }
+	int getCapacity() const { return m_capacity; }
 	//void assign(const UChar* str, int begin, int length)
 	//{
 	//	assert(str);
@@ -409,7 +430,7 @@ public:
 	//	memcpy(m_str, str + begin, sizeof(UChar) * length);
 	//	m_str[length] = '\0';
 	//}
-	void resize(int length)
+	void reserve(int length)
 	{
 		assert(length >= 0);
 		int size = length + 1;
@@ -417,7 +438,7 @@ public:
 		{
 			UChar* oldStr = m_str;
 			int oldLen = m_length;
-			
+
 			m_str = LN_NEW UChar[size];
 			m_capacity = size;
 
@@ -426,10 +447,17 @@ public:
 				memcpy(m_str, oldStr, std::min(length, oldLen) * sizeof(UChar));
 				delete oldStr;
 			}
-
 		}
+	}
+	void fixLength(int length)
+	{
 		m_str[length] = '\0';
 		m_length = length;
+	}
+	void resize(int length)
+	{
+		reserve(length);
+		fixLength(length);
 	}
 	void clear()
 	{
@@ -463,6 +491,12 @@ inline int UString::getLength() const
 	return (isSSO()) ? getSSOLength() : ((m_data.core) ? m_data.core->getLength() : 0);
 }
 
+inline int UString::getCapacity() const
+{
+	//return (isSSO() || !m_data.core) ? SSOCapacity : m_data.core->getCapacity();
+	return (isSSO()) ? SSOCapacity : ((m_data.core) ? m_data.core->getCapacity() : 0);
+}
+
 template<typename... TArgs>
 inline UString UString::format(const UStringRef& format, TArgs&&... args)
 {
@@ -493,77 +527,37 @@ inline UString UString::format(const Locale& locale, const UStringRef& format, T
 	}
 }
 
-inline UString& UString::operator=(const UStringRef& rhs)
-{
-	assign(rhs.data(), rhs.getLength());
-	return *this;
-}
+inline UString& UString::operator=(const UStringRef& rhs) { assign(rhs.data(), rhs.getLength()); return *this; }
+inline UString& UString::operator=(const UChar* rhs) { assign(rhs); return *this; }
+inline UString& UString::operator=(UChar ch) { assign(&ch, 1); return *this; }
 
-inline UString& UString::operator=(const UChar* rhs)
-{
-	assign(rhs);
-	return *this;
-}
+inline UString& UString::operator+=(const UString& rhs) { append(rhs.c_str(), rhs.getLength()); return *this; }
+inline UString& UString::operator+=(const UStringRef& rhs) { append(rhs.data(), rhs.getLength()); return *this; }
+inline UString& UString::operator+=(const UChar* rhs) { append(rhs, UStringHelper::strlen(rhs)); return *this; }
+inline UString& UString::operator+=(UChar rhs) { append(&rhs, 1); return *this; }
 
-inline UString& UString::operator=(UChar ch)
-{
-	assign(&ch, 1);
-	return *this;
-}
+inline UString operator+(const UStringRef& lhs, const UStringRef& rhs) { return UString::concat(lhs, rhs); }
 
-inline UString& UString::operator+=(const UString& rhs)
-{
-	append(rhs.c_str(), rhs.getLength());
-	return *this;
-}
+inline bool operator==(const UChar* lhs, const UString& rhs) { return UStringHelper::compare(lhs, rhs.c_str()) == 0; }
+inline bool operator==(const UString& lhs, const UString& rhs) { return UString::compare(lhs, 0, rhs, 0) == 0; }
+inline bool operator==(const UString& lhs, const UChar* rhs) { return UStringHelper::compare(lhs.c_str(), rhs) == 0; }
+inline bool operator!=(const UChar* lhs, const UString& rhs) { return !operator==(lhs, rhs); }
+inline bool operator!=(const UString& lhs, const UString& rhs) { return !operator==(lhs, rhs); }
+inline bool operator!=(const UString& lhs, const UChar* rhs) { return !operator==(lhs, rhs); }
 
-inline UString& UString::operator+=(const UStringRef& rhs)
-{
-	append(rhs.data(), rhs.getLength());
-	return *this;
-}
+inline bool operator<(const UString& lhs, const UString& rhs) { return UString::compare(lhs, 0, rhs, 0, std::max(lhs.getLength(), rhs.getLength()), CaseSensitivity::CaseSensitive) < 0; }
+inline bool operator<(const UChar* lhs, const UString& rhs) { return UString::compare(lhs, 0, rhs, 0, -1, CaseSensitivity::CaseSensitive) < 0; }
+inline bool operator<(const UString& lhs, const UChar* rhs) { return UString::compare(lhs, 0, rhs, 0, -1, CaseSensitivity::CaseSensitive) < 0; }
+inline bool operator>(const UString& lhs, const UString& rhs) { return UString::compare(lhs, 0, rhs, 0, std::max(lhs.getLength(), rhs.getLength()), CaseSensitivity::CaseSensitive) > 0; }
+inline bool operator>(const UChar* lhs, const UString& rhs) { return UString::compare(lhs, 0, rhs, 0, -1, CaseSensitivity::CaseSensitive) > 0; }
+inline bool operator>(const UString& lhs, const UChar* rhs) { return UString::compare(lhs, 0, rhs, 0, -1, CaseSensitivity::CaseSensitive) > 0; }
 
-inline UString& UString::operator+=(const UChar* rhs)
-{
-	append(rhs, UStringHelper::strlen(rhs));
-	return *this;
-}
-
-inline UString& UString::operator+=(UChar rhs)
-{
-	append(&rhs, 1);
-	return *this;
-}
-
-inline bool operator==(const UChar* lhs, const UString& rhs)
-{
-	return UStringHelper::compare(lhs, rhs.c_str()) == 0;
-}
-
-inline bool operator==(const UString& lhs, const UString& rhs)
-{
-	return UString::compare(lhs, 0, rhs, 0) == 0;
-}
-
-inline bool operator==(const UString& lhs, const UChar* rhs)
-{
-	return UStringHelper::compare(lhs.c_str(), rhs) == 0;
-}
-
-inline bool operator!=(const UChar* lhs, const UString& rhs)
-{
-	return !operator==(lhs, rhs);
-}
-
-inline bool operator!=(const UString& lhs, const UString& rhs)
-{
-	return !operator==(lhs, rhs);
-}
-
-inline bool operator!=(const UString& lhs, const UChar* rhs)
-{
-	return !operator==(lhs, rhs);
-}
+inline bool operator<=(const UString& lhs, const UString& rhs) { return !operator>(lhs, rhs); }
+inline bool operator<=(const UChar* lhs, const UString& rhs) { return !operator>(lhs, rhs); }
+inline bool operator<=(const UString& lhs, const UChar* rhs) { return !operator>(lhs, rhs); }
+inline bool operator>=(const UString& lhs, const UString& rhs) { return !operator<(lhs, rhs); }
+inline bool operator>=(const UChar* lhs, const UString& rhs) { return !operator<(lhs, rhs); }
+inline bool operator>=(const UString& lhs, const UChar* rhs) { return !operator<(lhs, rhs); }
 
 #include "StringFormat.inl"
 

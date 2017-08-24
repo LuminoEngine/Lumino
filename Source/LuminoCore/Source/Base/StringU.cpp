@@ -97,18 +97,32 @@ bool UString::isEmpty() const
 
 void UString::clear()
 {
-	if (isSSO())
+	lockBuffer(0);
+	unlockBuffer(0);
+}
+
+void UString::resize(int newLength)
+{
+	resize(newLength, UChar());
+}
+
+void UString::resize(int newLength, UChar ch)
+{
+	int oldLen = getLength();
+	UChar* buf = lockBuffer(newLength);
+	if (newLength > oldLen)
 	{
-		setSSOLength(0);
-	}
-	else
-	{
-		if (m_data.core)
+		for (int i = oldLen; i < newLength; i++)
 		{
-			checkDetachShared();
-			m_data.core->clear();
+			buf[i] = ch;
 		}
 	}
+	unlockBuffer(newLength);
+}
+
+void UString::reserve(int size)
+{
+	reserveBuffer(size);
 }
 
 int UString::indexOf(const UStringRef& str, int startIndex, CaseSensitivity cs) const
@@ -120,6 +134,15 @@ int UString::indexOf(const UStringRef& str, int startIndex, CaseSensitivity cs) 
 int UString::indexOf(UChar ch, int startIndex, CaseSensitivity cs) const
 {
 	return StringTraits::indexOf(c_str(), getLength(), &ch, 1, startIndex, cs);
+}
+
+UString UString::concat(const UStringRef& str1, const UStringRef& str2)
+{
+	UString s;
+	s.reserve(str1.getLength() + str2.getLength());
+	s.append(str1.data(), str1.getLength());
+	s.append(str2.data(), str2.getLength());
+	return s;
 }
 
 int UString::compare(const UStringRef& str1, int index1, const UStringRef& str2, int index2, int length, CaseSensitivity cs)
@@ -145,17 +168,38 @@ void UString::release() LN_NOEXCEPT
 
 void UString::copy(const UString& str)
 {
-	bool changed = false;
-	if (isSSO() != str.isSSO()) changed = true;
-	else if (isNonSSO() && (!m_data.core || m_data.core != m_data.core)) changed = true;
-
-	if (changed)
+	if (this != &str)
 	{
-		release();
-		memcpy(&m_data, &str.m_data, sizeof(m_data));
-		if (isNonSSO())
+		if (isSSO())
 		{
-			LN_SAFE_ADDREF(m_data.core);
+			if (str.isSSO())
+			{
+				// SSO -> SSO
+				memcpy(&m_data, &str.m_data, sizeof(m_data));
+			}
+			else
+			{
+				// SSO -> NonSSO
+				m_data.core = str.m_data.core;
+				LN_SAFE_ADDREF(m_data.core);
+				setNonSSO();
+			}
+		}
+		else
+		{
+			if (str.isSSO())
+			{
+				// NonSSO -> SSO
+				release();
+				memcpy(&m_data, &str.m_data, sizeof(m_data));
+			}
+			else
+			{
+				// NonSSO -> NonSSO
+				release();
+				m_data.core = str.m_data.core;
+				LN_SAFE_ADDREF(m_data.core);
+			}
 		}
 	}
 }
@@ -171,36 +215,39 @@ void UString::move(UString&& str) LN_NOEXCEPT
 	str.init();
 }
 
-// 中身は不定値となる
-void UString::allocBuffer(int length)
+UChar* UString::lockBuffer(int requestSize)
 {
-	if (length < SSOCapacity)
+	reserveBuffer(requestSize);
+	return getBuffer();
+}
+
+void UString::unlockBuffer(int confirmedSize)
+{
+	if (isSSO())
 	{
-		release();
-		setSSOLength(length);
+		setSSOLength(confirmedSize);
 	}
 	else
 	{
-		checkDetachShared();
-		m_data.core->resize(length);
+		m_data.core->fixLength(confirmedSize);
 	}
 }
 
-// 中身は以前のものが維持され、新しい領域は不定値となる
-void UString::resizeBuffer(int length)
+// 領域を確保し、sso かどうかのフラグをセットする。長さは変えない。
+// 中身は以前のものが維持され、新しい領域は不定値となる。
+void UString::reserveBuffer(int length)
 {
 	if (isSSO())
 	{
 		if (length < SSOCapacity)
 		{
 			// SSO -> SSO
-			setSSOLength(length);
 		}
 		else
 		{
 			// SSO -> NonSSO
 			std::unique_ptr<detail::UStringCore> core(LN_NEW detail::UStringCore());
-			core->resize(length);
+			core->reserve(length);
 			memcpy(core->get(), m_data.sso.buffer, std::min(getSSOLength(), length) * sizeof(UChar));
 			core->get()[length] = '\0';
 			m_data.core = core.get();
@@ -216,19 +263,17 @@ void UString::resizeBuffer(int length)
 			if (m_data.core)
 			{
 				detail::UStringCore* oldCore = m_data.core;
-				setSSOLength(length);
+				setSSO();
 				memcpy(m_data.sso.buffer, oldCore->get(), std::min(oldCore->getLength(), length) * sizeof(UChar));
 				oldCore->release();
 			}
 			else
 			{
-				setSSOLength(length);
+				setSSO();
 			}
 		}
 		else
 		{
-			//bool shared = false;
-
 			// NonSSO -> NonSSO
 			if (m_data.core)
 			{
@@ -236,22 +281,56 @@ void UString::resizeBuffer(int length)
 				{
 					detail::UStringCore* oldCore = m_data.core;
 					m_data.core = LN_NEW detail::UStringCore();
-					m_data.core->resize(length);
+					m_data.core->reserve(length);
 					memcpy(m_data.core->get(), oldCore->get(), std::min(oldCore->getLength(), length) * sizeof(UChar));
 					oldCore->release();
 				}
 				else
 				{
-					m_data.core->resize(length);
+					m_data.core->reserve(length);
 				}
 			}
 			else
 			{
 				m_data.core = LN_NEW detail::UStringCore();
-				m_data.core->resize(length);
+				m_data.core->reserve(length);
 			}
 		}
 	}
+}
+
+UChar* UString::getBuffer()
+{
+	return (isSSO()) ? m_data.sso.buffer : m_data.core->get();
+}
+
+void UString::setSSOLength(int len)
+{
+	m_data.sso.length = (static_cast<size_t>(len) & 0x07) << 1;
+	m_data.sso.buffer[len] = '\0';
+}
+
+int UString::getSSOLength() const
+{
+	return m_data.sso.length >> 1;
+}
+
+void UString::setSSO()
+{
+	m_data.sso.length = (static_cast<size_t>(m_data.sso.length) & 0x07) << 1;
+}
+
+void UString::setNonSSO()
+{
+	m_data.sso.length = 0x01;
+}
+
+void UString::append(const UChar* str, int length)
+{
+	int firstLen = getLength();
+	UChar* b = lockBuffer(firstLen + length) + firstLen;
+	memcpy(b, str, length * sizeof(UChar));
+	unlockBuffer(firstLen + length);
 }
 
 void UString::assign(const UChar* str)
@@ -263,13 +342,14 @@ void UString::assign(const UChar* str, int length)
 {
 	if (str && *str)
 	{
-		allocBuffer(length);
-		UChar* buf = getBuffer();
+		UChar* buf = lockBuffer(length);
 		memcpy(buf, str, sizeof(UChar) * length);
+		unlockBuffer(length);
 	}
 	else
 	{
-		allocBuffer(0);
+		lockBuffer(0);
+		unlockBuffer(0);
 	}
 }
 
@@ -277,9 +357,9 @@ void UString::assign(int count, UChar ch)
 {
 	if (count > 0)
 	{
-		allocBuffer(count);
-		UChar* buf = getBuffer();
+		UChar* buf = lockBuffer(count);
 		std::fill<UChar*, UChar>(buf, buf + count, ch);
+		unlockBuffer(count);
 	}
 }
 
@@ -300,12 +380,12 @@ void UString::assignFromCStr(const char* str, int length)
 
 	if (ascii)
 	{
-		allocBuffer(len);
-		UChar* buf = getBuffer();
+		UChar* buf = lockBuffer(len);
 		for (int i = 0; i < len; ++i)
 		{
 			buf[i] = str[i];
 		}
+		unlockBuffer(len);
 	}
 	else
 	{
@@ -315,57 +395,6 @@ void UString::assignFromCStr(const char* str, int length)
 		//getMaxByteCount
 		//	decoder->convertToUTF16(str, length, )
 	}
-}
-
-// 共有を切り離したあたらしい Core を作成し、NonSSO にする
-void UString::checkDetachShared()
-{
-	if (isSSO())
-	{
-		m_data.core = nullptr;
-	}
-	else
-	{
-		if (m_data.core && m_data.core->isShared())
-		{
-			m_data.core->release();
-			m_data.core = nullptr;
-		}
-	}
-	if (!m_data.core)
-	{
-		m_data.core = LN_NEW detail::UStringCore();
-		setNonSSO();
-	}
-}
-
-UChar* UString::getBuffer()
-{
-	return (isSSO()) ? m_data.sso.buffer : m_data.core->get();
-}
-
-void UString::setSSOLength(int len)
-{
-	m_data.sso.length = 0x80 | (static_cast<size_t>(len) & 0x07);
-	m_data.sso.buffer[len] = '\0';
-}
-
-int UString::getSSOLength() const
-{
-	return m_data.sso.length & 0x07;
-}
-
-void UString::setNonSSO()
-{
-	m_data.sso.length = 0;
-}
-
-void UString::append(const UChar* str, int length)
-{
-	int firstLen = getLength();
-	resizeBuffer(firstLen + length);
-	UChar* b = getBuffer() + firstLen;
-	memcpy(b, str, length * sizeof(UChar));
 }
 
 //==============================================================================
@@ -418,7 +447,6 @@ void UStringHelper::toStringInt8(int8_t v, TChar* outStr, int size)
 template void UStringHelper::toStringInt8<char>(int8_t v, char* outStr, int size);
 template void UStringHelper::toStringInt8<wchar_t>(int8_t v, wchar_t* outStr, int size);
 template void UStringHelper::toStringInt8<char16_t>(int8_t v, char16_t* outStr, int size);
-
 
 
 //namespace fmt {
