@@ -58,6 +58,7 @@ public:
 	UString(const UString& str, int begin, int length);
 	UString(const UChar* str);
 	UString(const UChar* str, int length);
+	UString(const UChar* begin, const UChar* end);
 	UString(int count, UChar ch);
 	UString(const char* str);
 	UString(const UStringRef& str);
@@ -709,6 +710,22 @@ public:
 
 	/** パス文字列の中から拡張子を含むファイル名の部分を返します。 (空パスの場合は空文字列を返す) */
 	UString getFileName() const;
+	
+	/**
+		@brief		このパスから拡張子を取り除いたパスを返します。
+		@code
+					PathName path1("C:/dir/file.txt");
+					PathName path2 = path1.GetWithoutExtension();	// => "C:/dir/file"
+
+					"file.txt"			=> "file"
+					"file"				=> "file"
+					""					=> ""
+					"C:/dir.sub/file"	=> "C:/dir.sub/file"
+					"dir/.git"			=> "dir/"
+					".git"				=> ""
+		@endcode
+	*/
+	Path getWithoutExtension() const;
 
 #if 0
 	UStringRef getFileNameWithoutExtension() const;
@@ -742,21 +759,6 @@ public:
 	///// パス文字列を返す (末尾に必ずセパレータをひとつ付加する)
 	//const GenericString<TChar> getStrEndSeparator() const;
 
-	/**
-		@brief		このパスから拡張子を取り除いたパスを返します。
-		@code
-					PathName path1("C:/dir/file.txt");
-					PathName path2 = path1.GetWithoutExtension();	// => "C:/dir/file"
-
-					"file.txt"			=> "file"
-					"file"				=> "file"
-					""					=> ""
-					"C:/dir.sub/file"	=> "C:/dir.sub/file"
-					"dir/.git"			=> "dir/"
-					".git"				=> ""
-		@endcode
-	*/
-	Path<TChar> getWithoutExtension() const;
 
 	/**
 		@brief		このパスの拡張子を変更した新しいパスを返します。

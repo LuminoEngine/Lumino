@@ -19,6 +19,18 @@ public:
 #endif
 
 public:
+	template<typename TChar>
+	static const TChar* getFileName(const TChar* begin, const TChar* end);
+
+	template<typename TChar>
+	static const TChar* getWithoutExtensionEnd(const TChar* begin, const TChar* end);
+
+
+
+
+
+
+
 
 	/// 文字がディレクトリセパレータ (DirectorySeparatorChar or AltDirectorySeparatorChar) であるかを判定する
 	template<typename TChar>
@@ -64,8 +76,6 @@ public:
 	template<typename TChar>
 	static GenericString<TChar> getFileName(const TChar* path);
 
-	template<typename TChar>
-	static void getFileName(const TChar* path, int* outIndex);
 
 	/**
 		@brief		パス文字列の中から拡張子を含むファイル名の部分を返す

@@ -1142,3 +1142,29 @@ TEST_F(Test_IO_Path, getFileName)
 	ASSERT_EQ(_U("file.txt"), path2.getFileName());
 }
 
+TEST_F(Test_IO_Path, getWithoutExtension)
+{
+	Path path;
+
+	path = _U("C:/dir/file.txt");
+	ASSERT_EQ(_U("C:/dir/file"), path.getWithoutExtension().getString());
+
+	path = _U("file.txt");
+	ASSERT_EQ(_U("file"), path.getWithoutExtension().getString());
+
+	path = _U("file");
+	ASSERT_EQ(_U("file"), path.getWithoutExtension().getString());
+
+	path = _U("");
+	ASSERT_EQ(_U(""), path.getWithoutExtension().getString());
+
+	path = _U("C:/dir.sub/file");
+	ASSERT_EQ(_U("C:/dir.sub/file"), path.getWithoutExtension().getString());
+
+	path = _U("dir/.git");
+	ASSERT_EQ(_U("dir/"), path.getWithoutExtension().getString());
+
+	path = _U(".git");
+	ASSERT_EQ(_U(""), path.getWithoutExtension().getString());
+}
+

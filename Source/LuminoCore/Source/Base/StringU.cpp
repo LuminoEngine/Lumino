@@ -74,6 +74,12 @@ UString::UString(const UChar* str, int length)
 	assign(str, length);
 }
 
+UString::UString(const UChar* begin, const UChar* end)
+	: UString()
+{
+	assign(begin, end - begin);
+}
+
 UString::UString(int count, UChar ch)
 	: UString()
 {
@@ -811,7 +817,14 @@ void Path::append(const UStringRef& path)
 
 UString Path::getFileName() const
 {
-	return PathTraits::getFileName(m_path.c_str());
+	const UChar* end = m_path.c_str() + m_path.getLength();
+	return UString(PathTraits::getFileName(m_path.c_str(), end), end);
+}
+
+Path Path::getWithoutExtension() const
+{
+	const UChar* begin = m_path.c_str();
+	return UString(begin, PathTraits::getWithoutExtensionEnd(begin, begin + m_path.getLength()));
 }
 
 //bool Path::operator < (const Path& right) const { return PathTraits::compare(m_path.c_str(), right.m_path.c_str()) < 0; }
