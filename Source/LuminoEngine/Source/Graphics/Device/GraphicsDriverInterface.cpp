@@ -263,7 +263,7 @@ ITexture::~ITexture()
 //==============================================================================
 
 //------------------------------------------------------------------------------
-IShaderVariable* IShader::getVariableByName(const TCHAR* name) const
+IShaderVariable* IShader::getVariableByName(const Char* name) const
 {
 	int count = getVariableCount();
 	for (int i = 0; i < count; ++i)

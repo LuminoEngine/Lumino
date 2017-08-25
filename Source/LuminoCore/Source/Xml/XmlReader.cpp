@@ -82,9 +82,9 @@ namespace tr {
 
 struct Entity
 {
-	const TCHAR* Pattern;
+	const Char* Pattern;
 	int Length;
-	TCHAR Value;
+	Char Value;
 };
 
 static const int ReservedEntitiesCount = 5;
@@ -174,7 +174,7 @@ const String& XmlReader::getName()
 		}
 		else
 		{
-			const TCHAR* name = &m_textCache[m_currentNode->NameStartPos];
+			const Char* name = &m_textCache[m_currentNode->NameStartPos];
 			m_tmpName.assignCStr(name, m_currentNode->NameLen);
 		}
 	}
@@ -540,7 +540,7 @@ bool XmlReader::parseElementInner()
 	// "<?xml..." 等
 	if (isProcInst)
 	{
-		const TCHAR* name = &m_textCache[namePos];
+		const Char* name = &m_textCache[namePos];
 		bool isXmlDecl = (nameLen == 3 && StringTraits::strnicmp(name, _T("xml"), 3) == 0);
 		parseXmlDeclOrPI(namePos, nameLen, isXmlDecl);
 	}
@@ -584,7 +584,7 @@ bool XmlReader::parseElementOuter()
 		if (ch < 0) { break; }		// EOF
 		if (ch == '<') { break; }	// 次のタグの開始かもしれない。終了
 		m_reader->read();			// 1文字進める
-		m_textCache.add((TCHAR)ch);
+		m_textCache.add((Char)ch);
 
 		// Entity 参照の開始を探している状態 (普通の状態)
 		if (entityRefSeq == Seq_FindAmp)
@@ -1057,7 +1057,7 @@ bool XmlReader::isTextChar(int ch)
 }
 
 //------------------------------------------------------------------------------
-bool XmlReader::isReservedEntity(const TCHAR* text, int len)
+bool XmlReader::isReservedEntity(const Char* text, int len)
 {
 	if (len < 2 ||			// & と ; と識別文字の最低 3 文字以上はあるはず
 		text[0] != '&' ||
@@ -1107,12 +1107,12 @@ bool XmlReader::isAlphaNum(int ch)
 }
 
 //------------------------------------------------------------------------------
-void XmlReader::expandReservedEntities(const TCHAR* text, int len, StringBuilder* outBuilder)
+void XmlReader::expandReservedEntities(const Char* text, int len, StringBuilder* outBuilder)
 {
 	outBuilder->clear();
 
-	const TCHAR* rp = text;	// read pointer
-	const TCHAR* end = text + len;
+	const Char* rp = text;	// read pointer
+	const Char* end = text + len;
 	while (rp < end)
 	{
 		if (*rp == '&')

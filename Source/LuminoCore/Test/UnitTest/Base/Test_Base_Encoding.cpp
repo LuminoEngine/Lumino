@@ -15,7 +15,7 @@ protected:
 //---------------------------------------------------------------------
 TEST_F(Test_Base_Encoding, Basic)
 {
-	// TCHAR エンコーディング
+	// Char エンコーディング
 	{
 #ifdef LN_UNICODE
 #ifdef _WIN32

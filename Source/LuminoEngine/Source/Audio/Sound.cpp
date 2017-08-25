@@ -24,7 +24,7 @@ LN_NAMESPACE_AUDIO_BEGIN
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sound, Object);
 
 //------------------------------------------------------------------------------
-SoundPtr Sound::create(const TCHAR* filePath)
+SoundPtr Sound::create(const Char* filePath)
 {
 	auto ptr = SoundPtr::makeRef();
 	ptr->initialize(filePath);
@@ -80,7 +80,7 @@ void Sound::initialize(const StringRef& filePath)
 {
 	detail::AudioManager* manager = detail::AudioManager::getInstance();
 	Ref<Stream> stream(manager->getFileManager()->createFileStream(filePath, true), false);
-	Ref<detail::AudioStream> audioStream(manager->createAudioStream(stream, CacheKey(PathName(filePath)), SoundLoadingMode::ASync), false);
+	Ref<detail::AudioStream> audioStream(manager->createAudioStream(stream, CacheKey(filePath), SoundLoadingMode::ASync), false);
 
 
 	//manager->createSound(stream, CacheKey(PathName(filePath)), SoundLoadingMode::ASync)

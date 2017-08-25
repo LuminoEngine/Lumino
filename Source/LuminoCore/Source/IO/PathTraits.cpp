@@ -97,6 +97,8 @@ bool PathTraits::isAbsolutePath(const TChar* path, int len)
 }
 template bool PathTraits::isAbsolutePath<char>(const char* path, int len);
 template bool PathTraits::isAbsolutePath<wchar_t>(const wchar_t* path, int len);
+template bool PathTraits::isAbsolutePath<char16_t>(const char16_t* path, int len);
+
 
 //------------------------------------------------------------------------------
 template<typename TChar>
@@ -113,6 +115,7 @@ bool PathTraits::endWithSeparator(const TChar* path, int len)
 }
 template bool PathTraits::endWithSeparator<char>(const char* path, int len);
 template bool PathTraits::endWithSeparator<wchar_t>(const wchar_t* path, int len);
+template bool PathTraits::endWithSeparator<char16_t>(const char16_t* path, int len);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
@@ -606,6 +609,7 @@ void PathTraits::canonicalizePath(const TChar* srcPath, TChar* outPath)
 		src[len2] = DirectorySeparatorChar;
 		++len2;
 		StringTraits::strncpy(src + len2, LN_MAX_PATH - len2, srcPath, srcLen);
+		//memcpy(src + len2, srcPath, srcLen * sizeof(TChar));
 		srcLen += len2;
 		canonicalizePath(src, srcLen, outPath);
 	}

@@ -17,6 +17,7 @@ public:
 	*/
 	static uint32_t calcHash(const char* str, int len = -1);
 	static uint32_t calcHash(const wchar_t* str, int len = -1);
+	static uint32_t calcHash(const char16_t* str, int len);
 };
 
 LN_NAMESPACE_END

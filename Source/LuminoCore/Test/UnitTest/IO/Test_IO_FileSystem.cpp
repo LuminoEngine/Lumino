@@ -157,7 +157,7 @@ TEST_F(Test_IO_FileSystem, forEachFilesInDirectory)
 	FileSystem::writeAllText(TEMPFILE("Test_IO_FileSystem/ForEachFilesInDirectory/file2"), _T("test"));
 
 	List<PathName> list;
-	FileSystem::forEachFilesInDirectory<TCHAR>(TEMPFILE("Test_IO_FileSystem/ForEachFilesInDirectory"), [&list](const PathName& path) { list.add(path); });
+	FileSystem::forEachFilesInDirectory<Char>(TEMPFILE("Test_IO_FileSystem/ForEachFilesInDirectory"), [&list](const PathName& path) { list.add(path); });
 
 	ASSERT_EQ(4, list.getCount());
 	ASSERT_EQ(true, list[0].isAbsolute());

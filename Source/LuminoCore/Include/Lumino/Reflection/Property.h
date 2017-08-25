@@ -114,7 +114,7 @@ public:
 	// ↑※static 関数のポインタでないと、言語バインダを作りにくくなる。
 
 public:
-	TypedPropertyInfo(TypeInfo* ownerTypeInfo, const TCHAR* name, PropertyMetadata* metadata)
+	TypedPropertyInfo(TypeInfo* ownerTypeInfo, const Char* name, PropertyMetadata* metadata)
 		: PropertyInfo(ownerTypeInfo, metadata, false)
 		, m_name(name)
 		, m_setter(nullptr)

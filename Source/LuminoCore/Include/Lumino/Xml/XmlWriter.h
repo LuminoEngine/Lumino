@@ -17,7 +17,7 @@ namespace tr {
 class XmlWriter
 {
 public:
-	static const TCHAR* DefaultIndentString;
+	static const Char* DefaultIndentString;
 
 public:
 	XmlWriter(TextWriter* textWriter);
@@ -65,7 +65,7 @@ protected:
 private:
 	void writeStartAttribute(const String& name);
 	void writeEndAttribute();
-	void writeStringInternal(const TCHAR* str, int len, bool inAttribute);
+	void writeStringInternal(const Char* str, int len, bool inAttribute);
 	void preWrite(XmlNodeType type);
 	void writeStartTagEnd(bool empty);
 	void indent(bool beforeEndElement);
@@ -90,7 +90,7 @@ private:
 	State					m_state;
 	Stack<ElementInfo>		m_elementStack;
 	String					m_indentString;
-	TCHAR					m_quoteChar;
+	Char					m_quoteChar;
 };
 
 

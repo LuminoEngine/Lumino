@@ -23,7 +23,7 @@ public:
 	/**
 		@brief		ロケール名を指定してオブジェクトを構築します。
 	*/
-	explicit Locale(const TCHAR* name);
+	explicit Locale(const Char* name);
 
 	Locale(const Locale& locale);
 	Locale& operator=(const Locale& locale);

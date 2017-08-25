@@ -92,8 +92,8 @@ public:
 	void drawGlyphRun(const Matrix& transform, const Point& position, GlyphRun* glyphRun);	// setFont 無視
 
 	void drawChar(const Matrix& transform, uint32_t codePoint, const Rect& rect, StringFormatFlags flags);
-	void drawString(const Matrix& transform, const TCHAR* str, int length, const Point& position);
-	void drawString(const Matrix& transform, const TCHAR* str, int length, const Rect& rect, StringFormatFlags flags);
+	void drawString(const Matrix& transform, const Char* str, int length, const Point& position);
+	void drawString(const Matrix& transform, const Char* str, int length, const Rect& rect, StringFormatFlags flags);
 
 	virtual bool isStandaloneShader() const { return false; }
 	virtual void flush() override;

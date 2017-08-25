@@ -79,7 +79,7 @@ class UIKeyEventArgs
 public:
 
 	/** UIKeyEventArgs のインスタンスを作成します。 */
-	static Ref<UIKeyEventArgs> create(UIEventType type, Keys keyCode, ModifierKeys modifierKeys, TCHAR charCode, bool caching = true);
+	static Ref<UIKeyEventArgs> create(UIEventType type, Keys keyCode, ModifierKeys modifierKeys, Char charCode, bool caching = true);
 
 	/** キーコードを取得します。 */
 	Keys getKey() const { return m_keyCode; }
@@ -88,17 +88,17 @@ public:
 	ModifierKeys getModifierKeys() const { return m_modifierKeys; }
 
 	/** TextInput イベントにより通知された場合、その文字コードを取得します。 */
-	TCHAR getCharCode() const { return m_charCode; }
+	Char getCharCode() const { return m_charCode; }
 
 LN_CONSTRUCT_ACCESS:
 	UIKeyEventArgs();
 	virtual ~UIKeyEventArgs();
-	void initialize(UIEventType type, Keys keyCode, ModifierKeys modifierKeys, TCHAR charCode);
+	void initialize(UIEventType type, Keys keyCode, ModifierKeys modifierKeys, Char charCode);
 
 private:
 	Keys			m_keyCode;
 	ModifierKeys	m_modifierKeys;
-	TCHAR			m_charCode;
+	Char			m_charCode;
 };
 
 /**

@@ -76,7 +76,7 @@ void JsonWriter::writeEndArray()
 }
 
 //------------------------------------------------------------------------------
-void JsonWriter::writePropertyName(const TCHAR* str, int length)
+void JsonWriter::writePropertyName(const Char* str, int length)
 {
 	if (LN_CHECK_ARG(m_levelStack.getCount() >= 1)) return;
 	length = (length <= -1) ? (int)StringTraits::tcslen(str) : length;
@@ -144,7 +144,7 @@ void JsonWriter::writeDouble(double value)
 }
 
 //------------------------------------------------------------------------------
-void JsonWriter::writeString(const TCHAR* str, int length)	// TODO: StringRef
+void JsonWriter::writeString(const Char* str, int length)	// TODO: StringRef
 {
 	if (LN_CHECK_ARG(m_levelStack.getCount() >= 1)) return;
 	length = (length <= -1) ? (int)StringTraits::tcslen(str) : length;
@@ -256,7 +256,7 @@ void JsonWriter::onEndArray()
 }
 
 //------------------------------------------------------------------------------
-void JsonWriter::onKey(const TCHAR* str, int length)
+void JsonWriter::onKey(const Char* str, int length)
 {
 	onString(str, length);
 }
@@ -303,7 +303,7 @@ void JsonWriter::onDouble(double value)
 }
 
 //------------------------------------------------------------------------------
-void JsonWriter::onString(const TCHAR* str, int length)
+void JsonWriter::onString(const Char* str, int length)
 {
 	m_textWriter->write(_T("\""), 1);
 	m_textWriter->write(str, length);

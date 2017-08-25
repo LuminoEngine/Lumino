@@ -147,7 +147,7 @@ void EngineSettings::setD3D9Device(void* device)
 //==============================================================================
 
 EngineManager* EngineManager::Instance = nullptr;
-const TCHAR* EngineManager::LogFileName = _T("EngineLog.txt");
+const Char* EngineManager::LogFileName = _T("EngineLog.txt");
 
 //------------------------------------------------------------------------------
 EngineManager* EngineManager::getInstance(EngineManager* priority)

@@ -111,7 +111,7 @@ void MethodInfo::ExpandCAPIParameters()
 	for (auto& paramInfo : parameters)
 	{
 		capiParameters.add(paramInfo);
-		overloadSuffix += StringTraits::toUpper((TCHAR)paramInfo->name[0]);
+		overloadSuffix += StringTraits::toUpper((Char)paramInfo->name[0]);
 	}
 
 	// return value

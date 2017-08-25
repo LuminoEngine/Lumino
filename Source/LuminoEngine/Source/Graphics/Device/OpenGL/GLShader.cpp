@@ -51,8 +51,8 @@ namespace Driver
 //	{
 //		struct Item
 //		{
-//			const TCHAR*	name;
-//			const TCHAR*	value;
+//			const Char*	name;
+//			const Char*	value;
 //			SamplerStateId	stateId;
 //			uint32_t		stateValue;
 //		};
@@ -127,8 +127,8 @@ enum class RenderStateId
 //	{
 //		struct Item
 //		{
-//			const TCHAR*	name;
-//			const TCHAR*	value;
+//			const Char*	name;
+//			const Char*	value;
 //			RenderStateId	stateId;
 //			uint32_t		stateValue;
 //		};

@@ -14,7 +14,7 @@ public:
 
 public:
 	// override Encoding
-	virtual const TCHAR* getName() const { return (m_bigEndian) ? _T("UTF-16BE") : _T("UTF-16"); }	// .NET に合わせてみる
+	virtual const Char* getName() const { return (m_bigEndian) ? _T("UTF-16BE") : _T("UTF-16"); }	// .NET に合わせてみる
 	virtual int getMinByteCount() const { return 2; }
 	virtual int getMaxByteCount() const { return 4; }
 	virtual Decoder* createDecoder() const { return LN_NEW UTF16Decoder(); }

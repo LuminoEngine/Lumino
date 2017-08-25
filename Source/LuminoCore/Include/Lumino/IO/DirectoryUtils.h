@@ -34,7 +34,7 @@ public:
 		@param[in]	dirPath	: 検索するディレクトリ
 		@param[in]	pattern	: 検索文字列 (ワイルドカード指定可能)
 	*/
-	static List<String> getFiles(const TCHAR* dirPath, const TCHAR* pattern);
+	static List<String> getFiles(const TTCHAR* dirPath, const TTCHAR* pattern);
 
 
 };

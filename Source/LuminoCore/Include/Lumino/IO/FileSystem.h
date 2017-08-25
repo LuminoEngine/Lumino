@@ -12,6 +12,7 @@
 LN_NAMESPACE_BEGIN
 class Encoding;
 class Stream;
+class UString;
 class UStringRef;
 
 /**
@@ -113,7 +114,7 @@ public:
 
 	
 	/// ファイルサイズを取得する
-	static uint64_t getFileSize(const TCHAR* filePath);
+	static uint64_t getFileSize(const Char* filePath);
 
 	/// ファイルサイズを取得する
 	static uint64_t getFileSize(FILE* stream);
@@ -183,6 +184,8 @@ public:
 	static bool matchPath(const wchar_t* filePath, const wchar_t* pattern);
 
 	static tr::Enumerator<PathName> getFiles(const StringRef& dirPath, const StringRef& pattern = StringRef());
+
+	static void getCurrentDirectory(UString* outPath);
 
 private:
 	static bool mkdir(const char* path);

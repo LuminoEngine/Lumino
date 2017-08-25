@@ -538,7 +538,7 @@ void Shader::tryCommitChanges()
 }
 
 //------------------------------------------------------------------------------
-ShaderVariable* Shader::findVariable(const TCHAR* name, CaseSensitivity cs) const
+ShaderVariable* Shader::findVariable(const Char* name, CaseSensitivity cs) const
 {
 	for (ShaderVariable* var : m_variables) {
 		if (var->getName().compare(name, -1, cs) == 0) {
@@ -555,7 +555,7 @@ const List<ShaderTechnique*>& Shader::getTechniques() const
 }
 
 //------------------------------------------------------------------------------
-ShaderTechnique* Shader::findTechnique(const TCHAR* name, CaseSensitivity cs) const
+ShaderTechnique* Shader::findTechnique(const Char* name, CaseSensitivity cs) const
 {
 	for (auto* var : m_techniques) {
 		if (var->getName().compare(name, -1, cs) == 0) {
@@ -753,7 +753,7 @@ void ShaderValue::setString(const char* str)
 	m_type = ShaderVariableType_String;
 	String s;
 	s.assignCStr(str);
-	size_t size = s.getByteCount() + sizeof(TCHAR);
+	size_t size = s.getByteCount() + sizeof(Char);
 	allocValueBuffer(size);
 	memcpy(m_value.String, s.c_str(), size);
 	m_hashDirty = true;
@@ -763,7 +763,7 @@ void ShaderValue::setString(const char* str)
 void ShaderValue::setString(const String& s)
 {
 	m_type = ShaderVariableType_String;
-	size_t size = s.getByteCount() + sizeof(TCHAR);
+	size_t size = s.getByteCount() + sizeof(Char);
 	allocValueBuffer(size);
 	memcpy(m_value.String, s.c_str(), size);
 	m_hashDirty = true;
@@ -1152,7 +1152,7 @@ void ShaderVariable::setString(const char* str)
 }
 
 //------------------------------------------------------------------------------
-const TCHAR* ShaderVariable::getString() const
+const Char* ShaderVariable::getString() const
 {
 	return m_value.getString();
 }
@@ -1182,7 +1182,7 @@ const List<ShaderVariable*>& ShaderVariable::getAnnotations() const
 }
 
 //------------------------------------------------------------------------------
-ShaderVariable* ShaderVariable::findAnnotation(const TCHAR* name, CaseSensitivity cs) const
+ShaderVariable* ShaderVariable::findAnnotation(const Char* name, CaseSensitivity cs) const
 {
 	for (ShaderVariable* anno : m_annotations) {
 		if (anno->getName().compare(name, -1, cs) == 0) {
@@ -1282,7 +1282,7 @@ const List<ShaderPass*>& ShaderTechnique::getPasses() const
 }
 
 //------------------------------------------------------------------------------
-ShaderPass* ShaderTechnique::getPass(const TCHAR* name) const
+ShaderPass* ShaderTechnique::getPass(const Char* name) const
 {
 	auto itr = std::find_if(m_passes.begin(), m_passes.end(), [name](ShaderPass* pass) { return pass->getName() == name; });
 	LN_THROW(itr != m_passes.end(), KeyNotFoundException);
@@ -1296,7 +1296,7 @@ const List<ShaderVariable*>& ShaderTechnique::getAnnotations() const
 }
 
 //------------------------------------------------------------------------------
-ShaderVariable* ShaderTechnique::findAnnotation(const TCHAR* name, CaseSensitivity cs) const
+ShaderVariable* ShaderTechnique::findAnnotation(const Char* name, CaseSensitivity cs) const
 {
 	for (ShaderVariable* anno : m_annotations) {
 		if (anno->getName().compare(name, -1, cs) == 0) {
@@ -1386,7 +1386,7 @@ const List<ShaderVariable*>& ShaderPass::getAnnotations() const
 }
 
 //------------------------------------------------------------------------------
-ShaderVariable* ShaderPass::findAnnotation(const TCHAR* name, CaseSensitivity cs) const
+ShaderVariable* ShaderPass::findAnnotation(const Char* name, CaseSensitivity cs) const
 {
 	for (ShaderVariable* anno : m_annotations) {
 		if (anno->getName().compare(name, -1, cs) == 0) {

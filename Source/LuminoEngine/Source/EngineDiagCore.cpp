@@ -178,7 +178,7 @@ void EngineDiagViewer::Render(DrawingContext* g, const Vector2& viewSize)
 	location.y += 16;
 	location.x += 16;
 
-	TCHAR text[256] = { 0 };
+	Char text[256] = { 0 };
 
 	//StringTraits::SPrintf(text, 256, _T("Graphics API    : %s"), m_manager->getGraphicsAPI().ToString().c_str());
 	//g->drawText(text, -1, location);

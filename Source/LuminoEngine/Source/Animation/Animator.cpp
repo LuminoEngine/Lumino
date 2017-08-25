@@ -146,7 +146,7 @@ bool Animator::isPlaying() const
 }
 
 //------------------------------------------------------------------------------
-void Animator::play(const TCHAR* name, float duration)
+void Animator::play(const Char* name, float duration)
 {
 	for (detail::AnimationLayer* layer : m_layerList)
 	{

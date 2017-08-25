@@ -22,7 +22,7 @@ public:
 
 public:
 	void parse(const String& text);
-	void parse(const TCHAR* text, int len = -1);
+	void parse(const Char* text, int len = -1);
 	void parse(TextReader* textReader);
 	bool hasError() const { return m_error.ErrorCode != JsonParseError::NoError; }
 	const JsonError& getError() const { return m_error; }
@@ -80,7 +80,7 @@ public:
 	{
 		int c = m_innter->read();
 		if (c >= 0) {
-			advancePosition((TCHAR)c);
+			advancePosition((Char)c);
 		}
 		return c;
 	}
@@ -122,7 +122,7 @@ public:
 
 private:
 
-	void advancePosition(TCHAR ch)
+	void advancePosition(Char ch)
 	{
 		++m_pos;
 		if (m_lastCR)
@@ -293,7 +293,7 @@ private:
 	ParserState				m_currentState;
 	Token					m_currentToken;
 	String					m_value;
-	List<TCHAR>				m_textCache;
+	List<Char>				m_textCache;
 	Stack<ParserState>		m_stateStack;
 	JsonError2				m_error;
 
@@ -309,7 +309,7 @@ private:
 	bool parseString(bool isKey);
 	bool ParsePostValue(bool* outSkip);
 
-	bool setToken(JsonToken newToken, const TCHAR* value = nullptr, int valueLen = 0);
+	bool setToken(JsonToken newToken, const Char* value = nullptr, int valueLen = 0);
 	void pushState(/*ContainerType containerType*/);
 	void popState();
 	void setError(JsonParseError2 code, const String& message = String::getEmpty());

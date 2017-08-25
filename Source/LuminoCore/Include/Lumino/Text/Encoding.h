@@ -71,7 +71,7 @@ public:
 	static Encoding* getWideCharEncoding();
 
 	/**
-		@brief		TCHAR 型文字のエンコーディングを取得します。
+		@brief		Char 型文字のエンコーディングを取得します。
 	*/
 	static Encoding* getTCharEncoding();
 
@@ -188,7 +188,7 @@ public:
 		@details	名前は IANA 文字セット名です。(http://www.iana.org/assignments/character-sets/character-sets.xhtml)
 					Windows コードページによるエンコーディングを使用している場合、"cp437" のようなエイリアス名になることがあります。
 	*/
-	virtual const TCHAR* getName() const = 0;
+	virtual const TTCHAR* getName() const = 0;
 
 	/**
 		@brief		1 文字の最小バイト数を取得する

@@ -108,8 +108,8 @@ TEST_F(Test_IO_PathName, canonicalizePath)
 // いろいろなケースをテストしやすいようにマクロ化
 #define TEST_CASE(result, src) \
 	{ \
-		TCHAR path1[LN_MAX_PATH] = _T(src); \
-		TCHAR path2[LN_MAX_PATH]; \
+		Char path1[LN_MAX_PATH] = _T(src); \
+		Char path2[LN_MAX_PATH]; \
 		PathTraits::canonicalizePath(path1, _tcslen(path1), path2); \
 		ASSERT_STREQ(_T(result), path2); \
 	}

@@ -312,7 +312,7 @@ void UITextDocument::initialize()
 void UITextDocument::replace(int offset, int length, const StringRef& text)
 {
 	// UTF32 へ変換
-	const ByteBuffer& utf32Buf = m_manager->getGraphicsManager()->getFontManager()->getTCharToUTF32Converter()->convert(text.getBegin(), sizeof(TCHAR) * text.getLength());
+	const ByteBuffer& utf32Buf = m_manager->getGraphicsManager()->getFontManager()->getTCharToUTF32Converter()->convert(text.getBegin(), sizeof(Char) * text.getLength());
 	int len = utf32Buf.getSize() / sizeof(UTF32);
 	replaceInternal(offset, length, (const UTF32*)utf32Buf.getConstData(), len);
 }
@@ -874,7 +874,7 @@ void UITextBox::onKeyDown(UIKeyEventArgs* e)
 //------------------------------------------------------------------------------
 void UITextBox::onTextInput(UIKeyEventArgs* e)
 {
-	TCHAR ch = e->getCharCode();
+	Char ch = e->getCharCode();
 	m_textArea->getDocument()->replace(
 		m_textArea->getDocumentTextOffset(m_textArea->getCaret()->getVisualPosition()),
 		0, StringRef(ch, 1));
@@ -1012,7 +1012,7 @@ void UISimpleTextArea::initialize()
 void UISimpleTextArea::replace(int offset, int length, const StringRef& text)
 {
 	// to UTF32
-	const ByteBuffer& utf32Buf = getManager()->getGraphicsManager()->getFontManager()->getTCharToUTF32Converter()->convert(text.getBegin(), sizeof(TCHAR) * text.getLength());
+	const ByteBuffer& utf32Buf = getManager()->getGraphicsManager()->getFontManager()->getTCharToUTF32Converter()->convert(text.getBegin(), sizeof(Char) * text.getLength());
 	int len = utf32Buf.getSize() / sizeof(UTF32);
 
 
@@ -1041,7 +1041,7 @@ void UISimpleTextArea::onTextInput(UIKeyEventArgs* e)
 	//	m_textArea->getDocumentTextOffset(m_textArea->getCaret()->getVisualPosition()),
 	//	0, StringRef(&e->charCode, 1));
 
-	TCHAR ch = e->getCharCode();
+	Char ch = e->getCharCode();
 	replace(m_caret->getVisualPosition().column, 0, StringRef(&ch, 1));
 	UITextElement::onTextInput(e);
 }

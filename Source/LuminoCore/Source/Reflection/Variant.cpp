@@ -77,11 +77,11 @@ void Variant::setArithmetic(double value)
 	m_type = VariantType::Double;
 	m_double = value;
 }
-void Variant::setString(const TCHAR* value)
+void Variant::setString(const Char* value)
 {
 	release();
 	m_type = VariantType::String;
-	m_string = LN_NEW ln::detail::GenericStringCore<TCHAR>();
+	m_string = LN_NEW ln::detail::GenericStringCore<Char>();
 	m_string->assign(value);
 }
 void Variant::setString(const String& value)

@@ -4,7 +4,7 @@
 #include "TestConfig.h"
 #include <Lumino/IO/FileSystem.h>
 
-PathName Test_GetTempFilePath(const TCHAR* fileName)
+PathName Test_GetTempFilePath(const Char* fileName)
 {
 	PathName base(__FILE__);
 	PathName tempDir(base.getParent(), _T("../../"));
@@ -52,7 +52,7 @@ GTEST_API_ int main(int argc, char **argv)
 #if 1	// 部分的にテストを実行したりする
 	char* testArgs[] = {
 		argv[0],
-		"--gtest_filter=Test_Base_UString.*"
+		"--gtest_filter=Test_IO_Path.*"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);

@@ -7,7 +7,7 @@
 LN_NAMESPACE_BEGIN
 
 //------------------------------------------------------------------------------
-void PlatformSupport::showAlertMessageBox(const TCHAR* message) LN_NOEXCEPT
+void PlatformSupport::showAlertMessageBox(const Char* message) LN_NOEXCEPT
 {
 	HWND owner = NULL;
 	PlatformManager* manager = PlatformManager::getInstance();

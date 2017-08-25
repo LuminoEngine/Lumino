@@ -35,7 +35,7 @@ Exception* CompilationException::copy() const
 }
 
 //------------------------------------------------------------------------------
-const TCHAR* CompilationException::getMessageOverride() const
+const Char* CompilationException::getMessageOverride() const
 {
 	return m_message.c_str();
 }

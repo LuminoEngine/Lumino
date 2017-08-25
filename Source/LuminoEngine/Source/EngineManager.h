@@ -174,7 +174,7 @@ public:
 	static EngineManager* getInstance(EngineManager* priority = nullptr);
 
 public:
-	static const TCHAR*	LogFileName;
+	static const Char*	LogFileName;
 
 public:
 

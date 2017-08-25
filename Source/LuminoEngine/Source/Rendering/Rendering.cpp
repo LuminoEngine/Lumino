@@ -899,7 +899,7 @@ void RenderDiag::changeRenderStage()
 }
 
 //------------------------------------------------------------------------------
-void RenderDiag::callCommonElement(const TCHAR* typeName)
+void RenderDiag::callCommonElement(const Char* typeName)
 {
 	instantiate<detail::RenderDiagItem_Common>(typeName);
 }
@@ -1513,7 +1513,7 @@ void DrawList::drawText2(const StringRef& text, const Rect& rect)
 		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("DrawString")); }
 	};
 
-	const ByteBuffer& utf32Data = m_manager->getFontManager()->getTCharToUTF32Converter()->convert(text.getBegin(), text.getLength() * sizeof(TCHAR));
+	const ByteBuffer& utf32Data = m_manager->getFontManager()->getTCharToUTF32Converter()->convert(text.getBegin(), text.getLength() * sizeof(Char));
 
 	auto* e = resolveDrawElement<DrawElement_DrawString>(m_manager->getInternalContext()->m_vectorTextRenderer, nullptr);
 	e->utf32DataHandle = m_drawElementList.allocExtData(utf32Data.getSize());

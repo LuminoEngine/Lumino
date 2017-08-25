@@ -53,7 +53,7 @@ template size_t DirectoryUtils::LN_AFX_FUNCNAME(getCurrentDirectory)<wchar_t>(wc
 
 //------------------------------------------------------------------------------
 #ifdef _WIN32
-List<String> DirectoryUtils::getFiles(const TCHAR* drPath, const TCHAR* pattern)
+List<String> DirectoryUtils::getFiles(const TTCHAR* drPath, const TTCHAR* pattern)
 {
 	List<String> fileList;
 	PathName dirPathKey(drPath);
@@ -100,7 +100,7 @@ List<String> DirectoryUtils::getFiles(const TCHAR* drPath, const TCHAR* pattern)
 }
 
 #else
-List<String> DirectoryUtils::getFiles(const TCHAR* drPath, const TCHAR* pattern)
+List<String> DirectoryUtils::getFiles(const Char* drPath, const Char* pattern)
 {
 	LN_THROW(0, NotImplementedException);
 	// http://www.syuhitu.org/other/dir.html

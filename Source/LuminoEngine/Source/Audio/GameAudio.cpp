@@ -18,7 +18,7 @@ enum GameAudioFlags
 //==============================================================================
 
 //------------------------------------------------------------------------------
-void GameAudio::playBGM(const TCHAR* filePath, float volume, float pitch, double fadeTime)
+void GameAudio::playBGM(const Char* filePath, float volume, float pitch, double fadeTime)
 {
 	detail::AudioManager::getInstance()->getGameAudio()->playBGM(filePath, volume, pitch, fadeTime);
 }
@@ -36,7 +36,7 @@ void GameAudio::stopBGM(double fadeTime)
 }
 
 //------------------------------------------------------------------------------
-void GameAudio::playBGS( const TCHAR* filePath, float volume, float pitch, double fadeTime )
+void GameAudio::playBGS( const Char* filePath, float volume, float pitch, double fadeTime )
 {
 	detail::AudioManager::getInstance()->getGameAudio()->playBGS(filePath, volume, pitch, fadeTime);
 }
@@ -54,7 +54,7 @@ void GameAudio::stopBGS( double fadeTime )
 }
 
 //------------------------------------------------------------------------------
-void GameAudio::playME( const TCHAR* filePath, float volume, float pitch )
+void GameAudio::playME( const Char* filePath, float volume, float pitch )
 {
 	detail::AudioManager::getInstance()->getGameAudio()->playME(filePath, volume, pitch);
 }
@@ -72,13 +72,13 @@ void GameAudio::stopME()
 }
 
 //------------------------------------------------------------------------------
-void GameAudio::playSE( const TCHAR* filePath, float volume, float pitch )
+void GameAudio::playSE( const Char* filePath, float volume, float pitch )
 {
 	detail::AudioManager::getInstance()->getGameAudio()->playSE(filePath, volume, pitch);
 }
 
 //------------------------------------------------------------------------------
-void GameAudio::playSE3D( const TCHAR* filePath, const Vector3& position, float distance, float volume, float pitch )
+void GameAudio::playSE3D( const Char* filePath, const Vector3& position, float distance, float volume, float pitch )
 {
 	detail::AudioManager::getInstance()->getGameAudio()->playSE3D(filePath, position, distance, volume, pitch);
 }

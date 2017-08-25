@@ -218,7 +218,7 @@ TEST_F(Test_Xml_XmlReader, User)
 		}
 	}
 
-	const TCHAR* result =
+	const Char* result =
 		_T("type:Element name:ToolSettings\n")
 		_T("type:Whitespace\n")
 		_T("type:Element name:WorkingDirectory\n")

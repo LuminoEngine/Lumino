@@ -23,7 +23,7 @@ void JsonDocument::parse(const String& text)
 	StringReader textReader(text);
 	parse(&textReader);
 }
-void JsonDocument::parse(const TCHAR* text, int len)
+void JsonDocument::parse(const Char* text, int len)
 {
 	if (LN_CHECK_ARG(text != nullptr)) return;
 

@@ -118,6 +118,11 @@ public:
 	{
 		return ::PathMatchSpecExW(filePath, pattern, PMSF_NORMAL) == S_OK;
 	}
+
+	static int getCurrentDirectory(int bufferLength, wchar_t* outBuffer)
+	{
+		return ::GetCurrentDirectoryW(bufferLength, outBuffer);
+	}
 };
 
 
@@ -278,7 +283,7 @@ static void RemoveDirectoryImpl(LPCWSTR lpPathName)
 //}
 
 //------------------------------------------------------------------------------
-uint64_t FileSystem::getFileSize(const TCHAR* filePath)
+uint64_t FileSystem::getFileSize(const Char* filePath)
 {
 	if (LN_CHECK_ARG(filePath != nullptr)) return 0;
 	struct _stat stat_buf;

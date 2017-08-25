@@ -251,7 +251,7 @@ void EffekseerEffectEngine::UpdateRenderContents()
 //------------------------------------------------------------------------------
 VisualEffect* EffekseerEffectEngine::CreateEffectCore(const PathName& filePath)
 {
-	CacheKey key(filePath);
+	CacheKey key(filePath.toString());
 
 	// キャッシュ検索
 	Ref<EffekseerEffectCore> core(static_cast<EffekseerEffectCore*>(m_effectCoreCache->findObjectAddRef(key)), false);
@@ -261,7 +261,7 @@ VisualEffect* EffekseerEffectEngine::CreateEffectCore(const PathName& filePath)
 	}
 
 	// unicode へ
-	ByteBuffer utf16 = m_TCharToUTF16Converter.convert(filePath.c_str(), _tcslen(filePath.c_str()) * sizeof(TCHAR));
+	ByteBuffer utf16 = m_TCharToUTF16Converter.convert(filePath.c_str(), _tcslen(filePath.c_str()) * sizeof(Char));
 
 	// エフェクトの読込
 	Effekseer::Effect* efkEffect = Effekseer::Effect::Create(

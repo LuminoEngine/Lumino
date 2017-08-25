@@ -251,12 +251,12 @@ void TextRenderer::drawChar(const Matrix& transform, uint32_t codePoint, const R
 }
 
 //------------------------------------------------------------------------------
-void TextRenderer::drawString(const Matrix& transform, const TCHAR* str, int length, const Point& position)
+void TextRenderer::drawString(const Matrix& transform, const Char* str, int length, const Point& position)
 {
 	length = (length < 0) ? StringTraits::tcslen(str) : length;
 
 	// UTF32 へ変換
-	const ByteBuffer& utf32Buf = m_manager->getFontManager()->getTCharToUTF32Converter()->convert(str, sizeof(TCHAR) * length);
+	const ByteBuffer& utf32Buf = m_manager->getFontManager()->getTCharToUTF32Converter()->convert(str, sizeof(Char) * length);
 
 	// レイアウト
 	TextLayoutResult result;
@@ -269,12 +269,12 @@ void TextRenderer::drawString(const Matrix& transform, const TCHAR* str, int len
 }
 
 //------------------------------------------------------------------------------
-void TextRenderer::drawString(const Matrix& transform, const TCHAR* str, int length, const Rect& rect, StringFormatFlags flags)
+void TextRenderer::drawString(const Matrix& transform, const Char* str, int length, const Rect& rect, StringFormatFlags flags)
 {
 	length = (length < 0) ? StringTraits::tcslen(str) : length;
 
 	// UTF32 へ変換
-	const ByteBuffer& utf32Buf = m_manager->getFontManager()->getTCharToUTF32Converter()->convert(str, sizeof(TCHAR) * length);
+	const ByteBuffer& utf32Buf = m_manager->getFontManager()->getTCharToUTF32Converter()->convert(str, sizeof(Char) * length);
 
 	FontGlyphTextureCache* cache = m_font->GetGlyphTextureCache();
 

@@ -64,6 +64,9 @@ public:
 	template<typename TChar>
 	static GenericString<TChar> getFileName(const TChar* path);
 
+	template<typename TChar>
+	static void getFileName(const TChar* path, int* outIndex);
+
 	/**
 		@brief		パス文字列の中から拡張子を含むファイル名の部分を返す
 	*/

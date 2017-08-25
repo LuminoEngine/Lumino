@@ -20,10 +20,9 @@ public:
 public:
 	CacheKey();
 	explicit CacheKey(uint64_t hashCode);
-	explicit CacheKey(const TCHAR* str);
+	explicit CacheKey(const Char* str);
 	explicit CacheKey(const String& str);
 	explicit CacheKey(const StringRef& str);
-	explicit CacheKey(const PathName& path);
 
 	bool operator == (const CacheKey& key) const;
 	bool operator < (const CacheKey& key) const;
@@ -37,13 +36,11 @@ private:
 		Type_Null = 0,
 		Type_HashCode,
 		Type_String,
-		Type_PathName,
 	};
 
 	Type		m_keyType;
 	uint64_t	m_hashCode;
 	String		m_string;
-	PathName	m_pathName;
 };
 
 /**

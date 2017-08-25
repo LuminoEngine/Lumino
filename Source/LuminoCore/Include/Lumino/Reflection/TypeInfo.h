@@ -59,7 +59,7 @@ public:
 
 public:
 	TypeInfo(
-		const TCHAR* className,
+		const Char* className,
 		TypeInfo* baseClass,
 		HasLocalValueFlagsGetter getter,
 		BindingTypeInfoSetter bindingTypeInfoSetter,

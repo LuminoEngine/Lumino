@@ -23,7 +23,7 @@ TEST_F(Test_Base_StringArray, Constructor)
 TEST_F(Test_Base_StringArray, Unit_Contains)
 {
 	StringArray ary;
-	ASSERT_EQ(false, ary.contains((const TCHAR*)NULL));
+	ASSERT_EQ(false, ary.contains((const Char*)NULL));
 	ASSERT_EQ(false, ary.contains(_T("")));
 
 	ary.add(_T("a"));

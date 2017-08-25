@@ -75,7 +75,7 @@ LN_INTERNAL_ACCESS:
 	bool injectMouseWheel(int delta);
 	bool injectKeyDown(Keys keyCode, ModifierKeys modifierKeys);
 	bool injectKeyUp(Keys keyCode, ModifierKeys modifierKeys);
-	bool injectTextInput(TCHAR ch);
+	bool injectTextInput(Char ch);
 
 	const Point& getMousePosition() const { return m_mousePosition; }
 

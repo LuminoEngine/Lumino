@@ -133,7 +133,7 @@ protected:
 	virtual void writeOverride(const void* data, size_t byteCount) = 0;
 
 private:
-	void writeInternal(const TCHAR* str, int len);
+	void writeInternal(const Char* str, int len);
 
 private:
 	static const int	BufferSize = 2048;

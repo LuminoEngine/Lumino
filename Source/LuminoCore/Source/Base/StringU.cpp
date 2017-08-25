@@ -6,6 +6,9 @@
 #include <Lumino/Base/StringHelper.h>
 #include <Lumino/Base/RefObject.h>
 #include <Lumino/Base/Formatter.h>
+#include <Lumino/Base/Hash.h>
+#include <Lumino/IO/PathTraits.h>
+#include <Lumino/Text/Encoding.h>
 
 LN_NAMESPACE_BEGIN
 
@@ -83,6 +86,12 @@ UString::UString(const char* str)
 	assignFromCStr(str);
 }
 
+UString::UString(const UStringRef& str)
+	: UString()
+{
+	assign(str);
+}
+
 bool UString::isEmpty() const
 {
 	if (isSSO())
@@ -125,6 +134,16 @@ void UString::reserve(int size)
 	reserveBuffer(size);
 }
 
+bool UString::contains(const UStringRef& str, CaseSensitivity cs) const
+{
+	return indexOf(str, 0, cs) >= 0;
+}
+
+bool UString::contains(UChar ch, CaseSensitivity cs) const
+{
+	return indexOf(ch, 0, cs) >= 0;
+}
+
 int UString::indexOf(const UStringRef& str, int startIndex, CaseSensitivity cs) const
 {
 	return StringTraits::indexOf(c_str(), getLength(), str.data(), str.getLength(), startIndex, cs);
@@ -143,6 +162,26 @@ int UString::lastIndexOf(const UStringRef& str, int startIndex, int count, CaseS
 int UString::lastIndexOf(UChar ch, int startIndex, int count, CaseSensitivity cs) const
 {
 	return StringTraits::lastIndexOf(c_str(), getLength(), &ch, 1, startIndex, count, cs);
+}
+
+bool UString::startsWith(const UStringRef& str, CaseSensitivity cs) const
+{
+	return StringTraits::startsWith(c_str(), getLength(), str.data(), str.getLength(), cs);
+}
+
+bool UString::startsWith(UChar ch, CaseSensitivity cs) const
+{
+	return StringTraits::endsWith(c_str(), getLength(), &ch, 1, cs);
+}
+
+bool UString::endsWith(const UStringRef& str, CaseSensitivity cs) const
+{
+	return StringTraits::endsWith(c_str(), getLength(), str.data(), str.getLength(), cs);
+}
+
+bool UString::endsWith(UChar ch, CaseSensitivity cs) const
+{
+	return StringTraits::endsWith(c_str(), getLength(), &ch, 1, cs);
 }
 
 UStringRef UString::substring(int start, int count) const
@@ -180,6 +219,34 @@ UString UString::trim() const
 	int length;
 	StringTraits::trim(c_str(), getLength(), &begin, &length);
 	return UString(begin, length);
+}
+
+UString UString::toUpper() const
+{
+	int len = getLength();
+	UString result(c_str(), len);
+	UChar* buf = result.getBuffer();
+	std::transform(buf, buf + len, buf, StringTraits::toUpper<UChar>);
+	return result;
+}
+
+UString UString::toLower() const
+{
+	int len = getLength();
+	UString result(c_str(), len);
+	UChar* buf = result.getBuffer();
+	std::transform(buf, buf + len, buf, StringTraits::toLower<UChar>);
+	return result;
+}
+
+UString UString::toTitleCase() const
+{
+	int len = getLength();
+	UString result(c_str(), len);
+	UChar* buf = result.getBuffer();
+	std::transform(buf, buf + len, buf, StringTraits::toLower<UChar>);
+	if (len > 0) buf[0] = StringTraits::toUpper<UChar>(buf[0]);
+	return result;
 }
 
 UString UString::remove(const UStringRef& str, CaseSensitivity cs) const
@@ -253,6 +320,48 @@ UString UString::replace(const UStringRef& from, const UStringRef& to, CaseSensi
 	return result;
 }
 
+List<UString> UString::split(const UStringRef& delim, StringSplitOptions option) const
+{
+	List<UString> result;
+	StringTraits::SplitHelper(
+		c_str(), c_str() + getLength(), delim.data(), delim.getLength(), option, CaseSensitivity::CaseSensitive,
+		[&result](const UChar* begin, const UChar* end) { result.add(UString(begin, end - begin)); });
+	return result;
+}
+
+std::string UString::toStdString() const
+{
+	ByteBuffer buf = convertTo(*this, Encoding::getSystemMultiByteEncoding());
+	return std::string((const char*)buf.getConstData());
+}
+
+std::wstring UString::toStdWString() const
+{
+	ByteBuffer buf = convertTo(*this, Encoding::getWideCharEncoding());
+	return std::wstring((const wchar_t*)buf.getConstData());
+}
+
+ByteBuffer UString::convertTo(const UString& str, const Encoding* encoding, bool* outUsedDefaultChar)
+{
+	if (encoding == Encoding::getUTF16Encoding())	// TODO: ポインタ比較ではダメ
+	{
+		return ByteBuffer(str.c_str(), (str.getLength() + 1) * sizeof(UChar));
+	}
+	else
+	{
+		EncodingConversionOptions options;
+		options.NullTerminated = true;
+
+		EncodingConversionResult result;
+		ByteBuffer buf = Encoding::convert(str.c_str(), str.getLength() * sizeof(UChar), Encoding::getUTF16Encoding(), encoding, options, &result);
+		if (outUsedDefaultChar != nullptr)
+		{
+			*outUsedDefaultChar = result.UsedDefaultChar;
+		}
+		return buf;
+	}
+}
+
 UString UString::remove(UChar ch, CaseSensitivity cs) const
 {
 	return remove(UStringRef(&ch, 1), cs);
@@ -277,6 +386,20 @@ int UString::compare(const UStringRef& str1, int index1, const UStringRef& str2,
 	const UChar* s1 = str1.data() + index1;
 	const UChar* s2 = str2.data() + index2;
 	return StringTraits::compare(s1, str1.getLength() - index1, s2, str2.getLength() - index2, length, cs);
+}
+
+UString UString::fromCString(const char* str, int length)
+{
+	UString result;
+	result.assignFromCStr(str, length);
+	return result;
+}
+
+UString UString::fromCString(const wchar_t* str, int length)
+{
+	UString result;
+	result.assignFromCStr(str, length);
+	return result;
 }
 
 void UString::init() LN_NOEXCEPT
@@ -475,8 +598,7 @@ void UString::assign(const UChar* str, int length)
 	}
 	else
 	{
-		lockBuffer(0);
-		unlockBuffer(0);
+		clear();
 	}
 }
 
@@ -488,14 +610,36 @@ void UString::assign(int count, UChar ch)
 		std::fill<UChar*, UChar>(buf, buf + count, ch);
 		unlockBuffer(count);
 	}
+	else
+	{
+		clear();
+	}
 }
 
-void UString::assignFromCStr(const char* str, int length)
+void UString::assign(const UStringRef& str)
+{
+	// TODO: String 参照のときの特殊化
+
+	int len = str.getLength();
+	if (len > 0)
+	{
+		UChar* buf = lockBuffer(len);
+		memcpy(buf, str.data(), sizeof(UChar) * len);
+		unlockBuffer(len);
+	}
+	else
+	{
+		clear();
+	}
+}
+
+template<typename TChar>
+void UString::assignFromCStr(const TChar* str, int length)
 {
 	// ASCII だけの文字列か調べる。ついでに文字数も調べる。
 	length = (length < 0) ? INT_MAX : length;
 	int len = 0;
-	const char* pos = str;
+	const TChar* pos = str;
 	bool ascii = true;
 	for (; *pos && len < length; ++pos, ++len)
 	{
@@ -522,6 +666,32 @@ void UString::assignFromCStr(const char* str, int length)
 		//getMaxByteCount
 		//	decoder->convertToUTF16(str, length, )
 	}
+}
+
+
+
+
+
+
+
+const UString& UString::getNewLine()
+{
+#ifdef LN_OS_WIN32
+	static UString nl(u"\r\n");
+	return nl;
+#elif defined(LN_OS_MAC)
+	static UString nl(u"\r");
+	return nl;
+#else
+	static UString nl(u"\n");
+	return nl;
+#endif
+}
+
+const UString& UString::getEmpty()
+{
+	static UString str;
+	return str;
 }
 
 //==============================================================================
@@ -576,6 +746,77 @@ template void UStringHelper::toStringInt8<wchar_t>(int8_t v, wchar_t* outStr, in
 template void UStringHelper::toStringInt8<char16_t>(int8_t v, char16_t* outStr, int size);
 
 
+//==============================================================================
+// Path
+//==============================================================================
+
+const UChar Path::Separator = (UChar)PathTraits::DirectorySeparatorChar;
+const UChar Path::AltSeparator = (UChar)PathTraits::AltDirectorySeparatorChar;
+const UChar Path::VolumeSeparator = (UChar)PathTraits::VolumeSeparatorChar;
+
+void Path::assign(const UStringRef& path)
+{
+	m_path = path;
+}
+
+void Path::assignUnderBasePath(const Path& basePath, const UStringRef& relativePath)
+{
+	// フルパスの場合はそのまま割り当てる
+	// basePath が空なら relativePath を使う
+	if (PathTraits::isAbsolutePath(relativePath.data(), relativePath.getLength()) || basePath.isEmpty())
+	{
+		m_path = relativePath;
+	}
+	// フルパスでなければ結合する
+	else
+	{
+		m_path = basePath.m_path;
+
+		// 末尾にセパレータがなければ付加する
+		if (!PathTraits::endWithSeparator(m_path.c_str(), m_path.getLength()))
+		{
+			m_path += Separator;
+		}
+
+		// relativePath 結合
+		m_path += relativePath;
+	}
+
+	// 単純化する (.NET の Uri の動作に合わせる)
+	//PathTraits::CanonicalizePath(&m_path);
+	// ↑× 相対パスはそのまま扱いたい
+}
+
+void Path::assignUnderBasePath(const Path& basePath, const Path& relativePath)
+{
+	m_path = basePath.m_path;
+	append(relativePath);
+}
+
+void Path::append(const UStringRef& path)
+{
+	if (PathTraits::isAbsolutePath(path.data(), path.getLength()))
+	{
+		m_path = path;
+	}
+	else
+	{
+		if (m_path.getLength() > 0 && !PathTraits::endWithSeparator(m_path.c_str(), m_path.getLength()))/*(*m_path.rbegin()) != Separator)*/	// 末尾セパレータ
+		{
+			m_path += Separator;
+		}
+		m_path += path;
+	}
+}
+
+UString Path::getFileName() const
+{
+	return PathTraits::getFileName(m_path.c_str());
+}
+
+//bool Path::operator < (const Path& right) const { return PathTraits::compare(m_path.c_str(), right.m_path.c_str()) < 0; }
+//bool Path::operator < (const UChar* right) const { return PathTraits::compare(m_path.c_str(), right) < 0; }
+
 //namespace fmt {
 
 ////==============================================================================
@@ -594,3 +835,16 @@ template void UStringHelper::toStringInt8<char16_t>(int8_t v, char16_t* outStr, 
 //} // namespace fmt
 
 LN_NAMESPACE_END
+
+//==============================================================================
+//
+//==============================================================================
+namespace std {
+
+// for unordered_map key
+std::size_t hash<ln::UString>::operator () (const ln::UString& key) const
+{
+	return ln::Hash::calcHash(key.c_str(), key.getLength());
+}
+
+} // namespace std

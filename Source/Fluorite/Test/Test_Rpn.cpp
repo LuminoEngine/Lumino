@@ -124,8 +124,8 @@ TEST_F(Test_Rpn, parse)
 	//{
 	//	ByteBuffer buf(_T("1 + 2 ? 3 + 4 : 5 + 6"));
 	//	ErrorManager err;
-	//	TokenListPtr tokens(CppLexer<TCHAR>::Lex(&buf, &err));
-	//	RPNTokenListPtr rpnTokens(RPNParser<TCHAR>::ParseCppConstExpression(tokens->begin(), tokens->end(), &err));
+	//	TokenListPtr tokens(CppLexer<Char>::Lex(&buf, &err));
+	//	RPNTokenListPtr rpnTokens(RPNParser<Char>::ParseCppConstExpression(tokens->begin(), tokens->end(), &err));
 	//	ASSERT_EQ(11, rpnTokens->GetCount());
 
 	//	// 1+1 ?   2 ? 1: 2  : 3

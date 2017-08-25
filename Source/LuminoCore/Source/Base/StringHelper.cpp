@@ -138,6 +138,7 @@ template char StringTraits::toUpper<char>(char ch);
 template UTF8 StringTraits::toUpper<UTF8>(UTF8 ch);
 template UTF16 StringTraits::toUpper<UTF16>(UTF16 ch);
 template UTF32 StringTraits::toUpper<UTF32>(UTF32 ch);
+template char16_t StringTraits::toUpper<char16_t>(char16_t ch);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
@@ -151,6 +152,7 @@ template char StringTraits::toLower<char>(char ch);
 template UTF8 StringTraits::toLower<UTF8>(UTF8 ch);
 template UTF16 StringTraits::toLower<UTF16>(UTF16 ch);
 template UTF32 StringTraits::toLower<UTF32>(UTF32 ch);
+template char16_t StringTraits::toLower<char16_t>(char16_t ch);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
@@ -501,6 +503,7 @@ int StringTraits::compare(const TChar* str1, const TChar* str2, int count, CaseS
 }
 template int StringTraits::compare<char>(const char* str1, const char* str2, int count, CaseSensitivity cs);
 template int StringTraits::compare<wchar_t>(const wchar_t* str1, const wchar_t* str2, int count, CaseSensitivity cs);
+template int StringTraits::compare<char16_t>(const char16_t* str1, const char16_t* str2, int count, CaseSensitivity cs);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
@@ -602,6 +605,7 @@ bool StringTraits::startsWith(const TChar* str1, int len1, const TChar* str2, in
 }
 template bool StringTraits::startsWith<char>(const char* str1, int len1, const char* str2, int len2, CaseSensitivity cs);
 template bool StringTraits::startsWith<wchar_t>(const wchar_t* str1, int len1, const wchar_t* str2, int len2, CaseSensitivity cs);
+template bool StringTraits::startsWith<char16_t>(const char16_t* str1, int len1, const char16_t* str2, int len2, CaseSensitivity cs);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
@@ -645,6 +649,7 @@ bool StringTraits::endsWith(const TChar* str1, int len1, const TChar* str2, int 
 }
 template bool StringTraits::endsWith<char>(const char* str1, int len1, const char* str2, int len2, CaseSensitivity cs);
 template bool StringTraits::endsWith<wchar_t>(const wchar_t* str1, int len1, const wchar_t* str2, int len2, CaseSensitivity cs);
+template bool StringTraits::endsWith<char16_t>(const char16_t* str1, int len1, const char16_t* str2, int len2, CaseSensitivity cs);
 
 //------------------------------------------------------------------------------
 template<typename TChar>

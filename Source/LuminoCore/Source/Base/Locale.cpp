@@ -135,7 +135,7 @@ Locale::Locale()
 }
 
 //------------------------------------------------------------------------------
-Locale::Locale(const TCHAR* name)
+Locale::Locale(const Char* name)
 : m_nativeLocale(0)
 #if defined(LN_OS_WIN32)
 	, m_nativeName(StringW::fromNativeCharString(name))

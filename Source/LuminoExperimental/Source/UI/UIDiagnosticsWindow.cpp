@@ -64,7 +64,7 @@ void UIDiagnosticsWindow::drawStatistics(DrawingContext* context, const Rect& wi
 	loc.y += 16;
 	loc.x += 16;
 
-	TCHAR text[256] = { 0 };
+	Char text[256] = { 0 };
 
 	//StringTraits::sprintf(text, 256, _T("Graphics API    : %s"), m_manager->GetGraphicsAPI().ToString().c_str());
 	//context->drawText_(text, loc);
@@ -151,7 +151,7 @@ void UIDiagnosticsWindow::drawGroupList(DrawingContext* context, const Rect& lis
 		drawSectionGraphBar(context, groups[iGrout], listRect.x + ThreadNameColumnWidth, listRect.y + (iGrout * rowHeight), listRect, &totalElapsed);
 
 		// ms
-		TCHAR fps[256] = { 0 };
+		Char fps[256] = { 0 };
 		StringTraits::sprintf(fps, 256, _T("%.1f ms"), totalElapsed * 1000.0f);
 		pt.y += 16;
 		context->setBrush(UIColors::getBrush(UIColorIndex::Grey, 5));

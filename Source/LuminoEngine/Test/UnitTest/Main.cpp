@@ -15,14 +15,14 @@ void TestEnv::TearDown()
 }
 
 //------------------------------------------------------------------------------
-void TestEnv::saveScreenShot(const TCHAR* filePath)
+void TestEnv::saveScreenShot(const Char* filePath)
 {
 	EngineManager::Instance->getGraphicsManager()->getMainSwapChain()->getBackBuffer()->lock()->save(filePath);
 	EngineManager::Instance->getGraphicsManager()->getMainSwapChain()->getBackBuffer()->unlock();
 }
 
 //------------------------------------------------------------------------------
-bool TestEnv::EqualsScreenShot(const TCHAR* filePath, int passRate)
+bool TestEnv::EqualsScreenShot(const Char* filePath, int passRate)
 {
 	bool r = TestEnv::EqualsBitmapFile(EngineManager::Instance->getGraphicsManager()->getMainSwapChain()->getBackBuffer()->lock(), filePath, passRate);
 	EngineManager::Instance->getGraphicsManager()->getMainSwapChain()->getBackBuffer()->unlock();
@@ -30,7 +30,7 @@ bool TestEnv::EqualsScreenShot(const TCHAR* filePath, int passRate)
 }
 
 //------------------------------------------------------------------------------
-//bool TestEnv::equalsTexture(Texture* texture, const TCHAR* filePath)
+//bool TestEnv::equalsTexture(Texture* texture, const Char* filePath)
 //{
 //	bool r = TestEnv::EqualsBitmapFile(texture->lock(), filePath, 90);
 //	texture->unlock();
@@ -86,7 +86,7 @@ Color32 MixPixels(Bitmap* bmp, int x, int y)
 	return Color32(r / count, g / count, b / count, a / count);
 }
 
-bool TestEnv::EqualsBitmapFile(Bitmap* bmp1, const TCHAR* filePath, int passRate)
+bool TestEnv::EqualsBitmapFile(Bitmap* bmp1, const Char* filePath, int passRate)
 {
 	Bitmap bmp2(filePath);
 
@@ -120,7 +120,7 @@ bool TestEnv::EqualsBitmapFile(Bitmap* bmp1, const TCHAR* filePath, int passRate
 	return pass >= thr;
 }
 
-bool TestEnv::CheckScreenShot(const TCHAR* filePath, int passRate, bool save)
+bool TestEnv::CheckScreenShot(const Char* filePath, int passRate, bool save)
 {
 	if (save)
 	{

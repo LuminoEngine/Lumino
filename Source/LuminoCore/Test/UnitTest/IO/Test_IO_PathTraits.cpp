@@ -10,7 +10,7 @@ protected:
 //------------------------------------------------------------------------------
 TEST_F(Test_IO_PathTraits, getFileNameWithoutExtension)
 {
-	TCHAR result[LN_MAX_PATH];
+	Char result[LN_MAX_PATH];
 	// <Test> 拡張子を取り除いたファイル名を取得できること。
 	{
 		PathTraits::getFileNameWithoutExtension(_T("a.b"), result);
@@ -43,7 +43,7 @@ TEST_F(Test_IO_PathTraits, getFileNameWithoutExtension)
 	}
 	// <Test> NULL は空文字列として出力されること。
 	{
-		PathTraits::getFileNameWithoutExtension((TCHAR*)NULL, result);
+		PathTraits::getFileNameWithoutExtension((Char*)NULL, result);
 		ASSERT_STREQ(_T(""), result);
 	}
 	// <Test> 空文字列は空文字列として出力されること。

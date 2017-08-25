@@ -83,7 +83,7 @@ void GlyphRun::setText(const StringRef& text)
 {
 	EncodingConverter* conv = m_manager->getFontManager()->getTCharToUTF32Converter();
 	m_utf32Text.clear();
-	m_utf32Text.append(conv->convert(text.getBegin(), text.getLength() * sizeof(TCHAR)));
+	m_utf32Text.append(conv->convert(text.getBegin(), text.getLength() * sizeof(Char)));
 	m_modifiedRenderSize = true;
 	m_modifiedItems = true;
 }

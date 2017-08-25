@@ -22,11 +22,11 @@ public:
 	virtual bool onNull()							{ Text += _T("<null>"); return true; }
 	virtual bool onBool(bool value)					{ if (value) Text += _T("<true>"); else Text += _T("<false>"); return true; }
 	virtual bool onDouble(double value)				{ Text += _T("<double>"); return true; }
-	virtual bool onString(const TCHAR* str, int len){ Text += _T("<str>"); return true; }
+	virtual bool onString(const Char* str, int len)	{ Text += _T("<str>"); return true; }
 	virtual bool onStartArray()						{ Text += _T("<ary>"); return true; }
 	virtual bool onEndArray(int elementCount)		{ Text += _T("</ary>"); return true; }
 	virtual bool onStartObject()					{ Text += _T("<obj>"); return true; }
-	virtual bool onKey(const TCHAR* str, int len)	{ Text += _T("<key>"); return true; }
+	virtual bool onKey(const Char* str, int len)	{ Text += _T("<key>"); return true; }
 	virtual bool onEndObject(int memberCount)		{ Text += _T("</obj>"); return true; }
 };
 

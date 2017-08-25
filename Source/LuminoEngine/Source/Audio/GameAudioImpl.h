@@ -18,7 +18,7 @@ class GameAudioImpl
 public:
 
 	/// BGM を演奏する
-	void playBGM(const TCHAR* filePath, float volume = 1.0f, float pitch = 1.0f, double fadeTime = 0.0);
+	void playBGM(const Char* filePath, float volume = 1.0f, float pitch = 1.0f, double fadeTime = 0.0);
 
 	/// 指定された Sound を BGM として演奏する
 	void playBGMFromSound(Sound* sound, float volume = 1.0f, float pitch = 1.0f, double fadeTime = 0.0);
@@ -27,7 +27,7 @@ public:
 	void stopBGM(double fadeTime = 0.0);
 
 	/// BGS ( 環境音 ) を演奏する
-	void playBGS(const TCHAR* filePath, float volume = 1.0f, float pitch = 1.0f, double fadeTime = 0.0);
+	void playBGS(const Char* filePath, float volume = 1.0f, float pitch = 1.0f, double fadeTime = 0.0);
 
 	/// 指定された Sound を BGS として演奏する
 	void playBGSFromSound(Sound* sound, float volume = 1.0f, float pitch = 1.0f, double fadeTime = 0.0);
@@ -36,7 +36,7 @@ public:
 	void stopBGS(double fadeTime = 0.0);
 
 	// ME ( 効果音楽 ) を演奏する
-	void playME(const TCHAR* filePath, float volume = 1.0f, float pitch = 1.0f);
+	void playME(const Char* filePath, float volume = 1.0f, float pitch = 1.0f);
 
 	/// 指定された Sound を ME として演奏する
 	void playMEFromSound(Sound* sound, float volume = 1.0f, float pitch = 1.0f);
@@ -45,10 +45,10 @@ public:
 	void stopME();
 
 	/// SE を演奏する
-	void playSE(const TCHAR* filePath, float volume = 1.0f, float pitch = 1.0f);
+	void playSE(const Char* filePath, float volume = 1.0f, float pitch = 1.0f);
 
 	/// SE を 3D 空間上で演奏する
-	void playSE3D(const TCHAR* filePath, const Vector3& position, float distance, float volume = 1.0f, float pitch = 1.0f);
+	void playSE3D(const Char* filePath, const Vector3& position, float distance, float volume = 1.0f, float pitch = 1.0f);
 
 	/// 指定された Sound を SE として演奏する
 	void playSEFromSound(Sound* sound, float volume = 1.0f, float pitch = 1.0f);

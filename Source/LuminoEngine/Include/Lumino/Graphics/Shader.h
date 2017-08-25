@@ -225,7 +225,7 @@ public:
 		@brief		名前を指定してシェーダ変数を検索します。
 		@return		見つからなかった場合は NULL を返します。
 	*/
-	ShaderVariable* findVariable(const TCHAR* name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+	ShaderVariable* findVariable(const Char* name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
 	ShaderVariable* findVariable(const String& name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const { return findVariable(name.c_str(), cs); }
 
 	/**
@@ -237,7 +237,7 @@ public:
 		@brief		名前を指定してテクニックを検索します。
 		@return		見つからなかった場合は NULL を返します。
 	*/
-	ShaderTechnique* findTechnique(const TCHAR* name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+	ShaderTechnique* findTechnique(const Char* name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
 	ShaderTechnique* findTechnique(const String& name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const { return findTechnique(name.c_str(), cs); }
 
 	detail::GraphicsManager* getManager() { return m_manager; }
@@ -306,7 +306,7 @@ public:
 	Texture* getManagedTexture() const { return m_value.ManagedTexture; }
 	void setString(const char* str);
 	void setString(const String& str);
-	const TCHAR* getString() const { return m_value.String; }
+	const Char* getString() const { return m_value.String; }
 
 	int getArrayLength() const;
 	byte_t* getDataBuffer() { return m_value.Buffer; }	// 初期値格納用
@@ -343,7 +343,7 @@ private:
 			ln::Matrix*	MatrixArray;
 			Driver::ITexture*	DeviceTexture;
 			Texture*			ManagedTexture;
-			TCHAR*			String;
+			Char*			String;
 
 			byte_t*			Buffer;		// ↑のポインタ型の実態 (ITexture*以外)
 		};
@@ -406,7 +406,7 @@ public:
 	void setTexture(Texture* texture);
 	Texture* getTexture() const;
 	void setString(const char* str);
-	const TCHAR* getString() const;
+	const Char* getString() const;
 
 	/**
 		@brief		このシェーダ変数で定義されている全てのアノテーションを取得します。
@@ -417,7 +417,7 @@ public:
 		@brief		名前を指定してアノテーションを検索します。
 		@return		見つからなかった場合は NULL を返します。
 	*/
-	ShaderVariable* findAnnotation(const TCHAR* name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+	ShaderVariable* findAnnotation(const Char* name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
 	ShaderVariable* findAnnotation(const String& name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const { return findAnnotation(name.c_str(), cs); }
 	
 LN_INTERNAL_ACCESS:
@@ -462,7 +462,7 @@ public:
 		@brief		名前を指定してパスを検索します。
 		@exception	KeyNotFoundException
 	*/
-	ShaderPass* getPass(const TCHAR* name) const;
+	ShaderPass* getPass(const Char* name) const;
 
 	/**
 		@brief		このテクニックで定義されている全てのアノテーションを取得します。
@@ -473,7 +473,7 @@ public:
 		@brief		名前を指定してアノテーションを検索します。
 		@return		見つからなかった場合は NULL を返します。
 	*/
-	ShaderVariable* findAnnotation(const TCHAR* name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+	ShaderVariable* findAnnotation(const Char* name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
 	ShaderVariable* findAnnotation(const String& name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const { return findAnnotation(name.c_str(), cs); }
 
 protected:
@@ -515,7 +515,7 @@ public:
 		@brief		名前を指定してアノテーションを検索します。
 		@return		見つからなかった場合は NULL を返します。
 	*/
-	ShaderVariable* findAnnotation(const TCHAR* name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+	ShaderVariable* findAnnotation(const Char* name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
 	ShaderVariable* findAnnotation(const String& name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const { return findAnnotation(name.c_str(), cs); }
 	
 private:

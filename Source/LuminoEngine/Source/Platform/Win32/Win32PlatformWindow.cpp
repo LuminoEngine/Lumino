@@ -666,7 +666,7 @@ Win32UserHostWindow::Win32UserHostWindow(Win32WindowManager* windowManager, HWND
 	m_clientSize.set(rc.right, rc.bottom);
 	sendPlatformEvent(PlatformEventArgs::makeWindowSizeChangedEvent(this, rc.right, rc.bottom));
 
-	TCHAR text[256];
+	Char text[256];
 	::GetWindowText(m_hWnd, text, 256);
 	m_titleText = text;
 }

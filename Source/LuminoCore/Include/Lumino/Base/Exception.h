@@ -170,8 +170,8 @@ public:
 	/**
 		@brief	例外の詳細メッセージを取得します。
 	*/
-	const TCHAR* getMessage() const;
-	const TCHAR* LN_AFX_FUNCNAME(getMessage)() const;
+	const Char* getMessage() const;
+	const Char* LN_AFX_FUNCNAME(getMessage)() const;
 
 	/**
 		@brief		例外発生時に詳細情報をダンプするファイルを初期化する
@@ -193,12 +193,12 @@ public:
 	virtual const char* what() const  throw() { return m_symbolBuffer; }
 
 protected:
-	void setMessage(const TCHAR* caption);
-	void setMessage(const TCHAR* caption, const char* format, va_list args);
-	void setMessage(const TCHAR* caption, const wchar_t* format, va_list args);
-	void setMessage(const TCHAR* caption, const char* format, ...);
-	void setMessage(const TCHAR* caption, const wchar_t* format, ...);
-	virtual const TCHAR* getMessageOverride() const;
+	void setMessage(const Char* caption);
+	void setMessage(const Char* caption, const char* format, va_list args);
+	void setMessage(const Char* caption, const wchar_t* format, va_list args);
+	void setMessage(const Char* caption, const char* format, ...);
+	void setMessage(const Char* caption, const wchar_t* format, ...);
+	virtual const Char* getMessageOverride() const;
 
 private:
 	void appendMessage(const char* message, size_t len);
@@ -207,12 +207,12 @@ private:
 private:
 	static const int MaxMessageBufferSize = 1024;
 
-	TCHAR		m_sourceFilePath[LN_MAX_PATH];
+	Char		m_sourceFilePath[LN_MAX_PATH];
 	int			m_sourceFileLine;
 	void*		m_stackBuffer[32];
 	int			m_stackBufferSize;
 	char		m_symbolBuffer[2048];
-	TCHAR		m_message[MaxMessageBufferSize];
+	Char		m_message[MaxMessageBufferSize];
 };
 
 /**
@@ -438,7 +438,7 @@ public:
 
 public:
 	uint32_t/*DWORD*/			getLastErrorCode() const { return m_dwLastErrorCode; }
-	const TCHAR*	getFormatMessage() const { return m_pFormatMessage; }
+	const Char*	getFormatMessage() const { return m_pFormatMessage; }
 
 public:
 	// override Exception
@@ -446,7 +446,7 @@ public:
 
 private:
 	uint32_t/*DWORD*/	m_dwLastErrorCode;
-	TCHAR				m_pFormatMessage[512];	///< FormatMessage() で取得したメッセージ
+	Char				m_pFormatMessage[512];	///< FormatMessage() で取得したメッセージ
 };
 
 /**

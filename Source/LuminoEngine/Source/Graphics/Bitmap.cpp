@@ -63,7 +63,7 @@ Bitmap::Bitmap(Stream* stream, bool flipV)
 }
 
 //------------------------------------------------------------------------------
-Bitmap::Bitmap(const TCHAR* filePath)
+Bitmap::Bitmap(const Char* filePath)
 {
 	init();
 	LN_THROW(filePath != NULL, ArgumentException);
@@ -191,7 +191,7 @@ void Bitmap::bitBlt(int x, int y, const Bitmap* srcBitmap, const RectI& srcRect,
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::save(const TCHAR* filePath)
+void Bitmap::save(const Char* filePath)
 {
 	// png に保存するときは RGBA
 	Bitmap bitmap(m_size, PixelFormat::R8G8B8A8);

@@ -12,7 +12,7 @@ LN_NAMESPACE_BEGIN
 // DllLoader
 //==============================================================================
 
-static void* LoadDLL(const TCHAR* filePath)
+static void* LoadDLL(const Char* filePath)
 {
 #ifdef _WIN32
 	return ::LoadLibrary(filePath);
@@ -51,7 +51,7 @@ DllLoader::DllLoader()
 }
 
 //------------------------------------------------------------------------------
-DllLoader::DllLoader(const TCHAR* filePath)
+DllLoader::DllLoader(const Char* filePath)
 	: m_module(NULL)
 {
 	load(filePath);
@@ -64,7 +64,7 @@ DllLoader::~DllLoader()
 }
 
 //------------------------------------------------------------------------------
-bool DllLoader::exists(const TCHAR* filePath)
+bool DllLoader::exists(const Char* filePath)
 {
 	// ロードできるかでチェック
 	void* module = LoadDLL(filePath);
@@ -77,7 +77,7 @@ bool DllLoader::exists(const TCHAR* filePath)
 }
 
 //------------------------------------------------------------------------------
-void DllLoader::load(const TCHAR* filePath)
+void DllLoader::load(const Char* filePath)
 {
 	unload();
 	m_module = LoadDLL(filePath);
@@ -85,7 +85,7 @@ void DllLoader::load(const TCHAR* filePath)
 }
 
 //------------------------------------------------------------------------------
-bool DllLoader::tryLoad(const TCHAR* filePath)
+bool DllLoader::tryLoad(const Char* filePath)
 {
 	unload();
 	m_module = LoadDLL(filePath);

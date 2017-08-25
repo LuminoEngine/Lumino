@@ -88,7 +88,7 @@ const ByteBuffer& EncodingConverter::convert(const void* data, size_t byteCount,
 	// デコーダが変換状態を保持できない場合はやむを得ないので一時メモリを確保し、ソースバッファ全体を一度に変換する。
 	else
 	{
-		// TCHAR を UTF16 へ全部変換するのに必要なバイト数で一時メモリ確保
+		// Char を UTF16 へ全部変換するのに必要なバイト数で一時メモリ確保
 		size_t totalByteCount = Encoding::getConversionRequiredByteCount(m_srcEncoding, m_dstEncoding, byteCount);
 		m_tmpBuffer.resize(totalByteCount);
 
@@ -96,7 +96,7 @@ const ByteBuffer& EncodingConverter::convert(const void* data, size_t byteCount,
 		UTF16* utf16Buf = (UTF16*)m_tmpBuffer.getData();
 		int utf16ElementCount = m_tmpBuffer.getSize() / sizeof(UTF16);
 
-		// TCHAR を中間コード(UTF16) へ
+		// Char を中間コード(UTF16) へ
 		size_t outBytesUsed, outCharsUsed;
 		m_srcDecoder->convertToUTF16((const byte_t*)data, byteCount, utf16Buf, utf16ElementCount, &outBytesUsed, &outCharsUsed);
 

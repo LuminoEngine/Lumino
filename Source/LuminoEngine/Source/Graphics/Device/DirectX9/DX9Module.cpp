@@ -39,7 +39,7 @@ void DX9Module::initialize()
 		Direct3DCreate9 = reinterpret_cast<MD_Direct3DCreate9>(m_D3D9Module.getProcAddress("Direct3DCreate9"));
 
         // モジュール読み込み
-		TCHAR name[64] = { 0 };
+		Char name[64] = { 0 };
 		_stprintf_s(name, 64, _T("d3dx9_%d.dll"), D3DX_SDK_VERSION);
 		if (!m_D3Dx9Module.tryLoad(name))
 		{
@@ -65,7 +65,7 @@ void DX9Module::initialize()
 }
 
 //------------------------------------------------------------------------------
-const TCHAR* DX9Module::GetDxFormatString(D3DFORMAT Format)
+const Char* DX9Module::GetDxFormatString(D3DFORMAT Format)
 {
 	switch ( Format )
 	{

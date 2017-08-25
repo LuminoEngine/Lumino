@@ -5,6 +5,6 @@
 #include <Lumino/Testing/TestHelper.h>
 using namespace ln;
 
-PathName Test_GetTempFilePath(const TCHAR* fileName);
+PathName Test_GetTempFilePath(const Char* fileName);
 #define TEMPFILE(fileName)	Test_GetTempFilePath(_T(fileName)).c_str()
 

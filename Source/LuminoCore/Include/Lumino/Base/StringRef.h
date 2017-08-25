@@ -160,7 +160,9 @@ inline bool operator!=(const GenericStringRef<TChar>& left, const GenericStringR
 }
 
 
+#ifndef LN_USTRING
 typedef GenericStringRef<TCHAR>		StringRef;
+#endif
 typedef GenericStringRef<char>		StringRefA;
 typedef GenericStringRef<wchar_t>	StringRefW;
 

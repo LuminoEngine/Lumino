@@ -1,7 +1,7 @@
 ﻿/*	
 	[2015/4/13] ファイル名マップのキーは UTF-16 統一？環境に合わせる？その②
 		
-		TCHAR に合わせる。
+		Char に合わせる。
 		というのも、一部 (ほぼ全て？Ubuntuとか) の Unix 環境では、wchar_t が使いものにならないため。
 
 
@@ -165,7 +165,7 @@ bool Archive::existsFile(const PathName& fileFullPath)
 	if (StringUtils::Compare(fileFullPath.c_str(), m_virtualDirectoryPath.GetCStr(), m_virtualDirectoryPath.getString().getLength(), cs) == 0)
 	{
 		// internalPath は m_virtualDirectoryPath の後ろの部分の開始位置
-		const TCHAR* internalPath = fileFullPath.c_str() + m_virtualDirectoryPath.getString().getLength();
+		const Char* internalPath = fileFullPath.c_str() + m_virtualDirectoryPath.getString().getLength();
 		if (*internalPath != _T('\0'))
 		{
 			// 検索
@@ -199,7 +199,7 @@ bool Archive::tryCreateStream(const PathName& fileFullPath, Ref<Stream>* outStre
 	}
 
 	// internalPath は m_virtualDirectoryPath の後ろの部分の開始位置
-	const TCHAR* internalPath = fileFullPath.c_str() + m_virtualDirectoryPath.getString().getLength();
+	const Char* internalPath = fileFullPath.c_str() + m_virtualDirectoryPath.getString().getLength();
 	LN_THROW((*internalPath != _T('\0')), FileNotFoundException, fileFullPath);	// ファイル名が空だった
 
 	EntriesMap::iterator itr = m_entriesMap.find(internalPath);

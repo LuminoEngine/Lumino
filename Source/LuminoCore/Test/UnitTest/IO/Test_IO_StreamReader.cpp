@@ -30,7 +30,7 @@ TEST_F(Test_IO_StreamReader, readLine)
 	// <Test> バッファリングバッファの境界で CRLF 改行文字が途切れていてもデコードできる。
 	{
 		char asciiBuf[StreamReader::DefaultBufferSize + 2];
-		TCHAR tcharBuf[StreamReader::DefaultBufferSize + 2];
+		Char tcharBuf[StreamReader::DefaultBufferSize + 2];
 		for (int i = 0; i < StreamReader::DefaultBufferSize; i++) {
 			asciiBuf[i] = 'a';
 			tcharBuf[i] = _T('a');

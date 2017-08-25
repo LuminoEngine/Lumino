@@ -126,10 +126,10 @@ class MatchResultA {};
 /** @see GenericMatchResult */
 class MatchResultW {};
 #else
-typedef GenericRegex<TCHAR>			Regex;
+typedef GenericRegex<Char>			Regex;
 typedef GenericRegex<char>			RegexA;
 typedef GenericRegex<wchar_t>		RegexW;
-typedef GenericMatchResult<TCHAR>	MatchResult;
+typedef GenericMatchResult<Char>	MatchResult;
 typedef GenericMatchResult<char>	MatchResultA;
 typedef GenericMatchResult<wchar_t>	MatchResultW;
 #endif

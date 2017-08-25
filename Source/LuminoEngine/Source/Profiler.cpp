@@ -204,7 +204,7 @@ Profiler::Profiler()
 }
 
 //------------------------------------------------------------------------------
-int Profiler::registerGroup(const TCHAR* name)
+int Profiler::registerGroup(const Char* name)
 {
 	std::shared_ptr<Group> group(LN_NEW Group());
 	group->Name = name;
@@ -218,7 +218,7 @@ int Profiler::registerGroup(const TCHAR* name)
 }
 
 //------------------------------------------------------------------------------
-int Profiler::registerSection(int parentGroupIndex, const TCHAR* name)
+int Profiler::registerSection(int parentGroupIndex, const Char* name)
 {
 	std::shared_ptr<Section> section(LN_NEW Section());
 	section->Name;

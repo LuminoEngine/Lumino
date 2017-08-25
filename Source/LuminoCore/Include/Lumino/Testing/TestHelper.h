@@ -28,7 +28,7 @@ public:
 // __FILE__ のあるフォルダパス (PathName) を取得する
 #define LN_TEST_GET_DIR_PATH() TestHelper::getDirPath(__FILE__)
 
-// __FILE__ と同じフォルダのファイルパス (TCHAR) を取得する
+// __FILE__ と同じフォルダのファイルパス (Char) を取得する
 #define LN_LOCALFILE(fileName) TestHelper::getFilePath(__FILE__, fileName).c_str()
 
 // __FILE__ と同じフォルダのファイルパス (char) を取得する

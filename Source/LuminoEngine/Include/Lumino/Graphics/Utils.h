@@ -21,7 +21,7 @@ public:
 	static int getTextureFormatByteCount(TextureFormat format);
 	static PixelFormat translatePixelFormat(TextureFormat format);
 	
-	static void saveScreenShot(const TCHAR* filePath);
+	static void saveScreenShot(const Char* filePath);
 	static void waitSaveScreenShot();
 
 	static bool equalsTexture(Texture* texture1, Texture* texture2);

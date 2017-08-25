@@ -201,7 +201,7 @@ static std::stringstream	g_logSS;
 static const int	TEMP_BUFFER_SIZE = 2048;
 static uint64_t		g_logStartTime;
 
-static TCHAR		g_logFilePath[LN_MAX_PATH] = { 0 };
+static Char		g_logFilePath[LN_MAX_PATH] = { 0 };
 
 class FileClose
 {
@@ -222,7 +222,7 @@ public:
 static FileClose g_fileClose;
 
 //------------------------------------------------------------------------------
-bool Logger::initialize(const TCHAR* filePath) throw()
+bool Logger::initialize(const Char* filePath) throw()
 {
 	//if (log_dir)
 	//{

@@ -226,18 +226,18 @@ LN_INTERNAL_ACCESS:
 	bool isWhiteSpace(int ch);
 	bool skipWhitespace();
 
-	bool isReservedEntity(const TCHAR* text, int len);	// & と ; は含まないこと
+	bool isReservedEntity(const Char* text, int len);	// & と ; は含まないこと
 
 	bool parseWhiteSpace();
 
 	bool isAlphaNum(int ch);
 
-	static void expandReservedEntities(const TCHAR* text, int len, StringBuilder* outBuilder);
+	static void expandReservedEntities(const Char* text, int len, StringBuilder* outBuilder);
 
 
 
 	Ref<TextReader>		m_reader;
-	List<TCHAR>				m_textCache;
+	List<Char>				m_textCache;
 	ParsingState			m_parsingState;
 
 	List<NodeData>			m_nodes;

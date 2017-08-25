@@ -55,7 +55,7 @@ public:
 		@param[in]	filePath	: ログファイルのパス
 		@return		true=成功 / false=失敗
 	*/
-	static bool initialize(const TCHAR* filePath) throw();
+	static bool initialize(const Char* filePath) throw();
 
 	/**
 		@brief		通知レベルを指定して書式指定メッセージを書き込みます。

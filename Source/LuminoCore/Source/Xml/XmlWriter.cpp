@@ -11,7 +11,7 @@ namespace tr {
 //==============================================================================
 // XmlWriter
 //==============================================================================
-const TCHAR* XmlWriter::DefaultIndentString = _T("  ");
+const Char* XmlWriter::DefaultIndentString = _T("  ");
 
 //------------------------------------------------------------------------------
 XmlWriter::XmlWriter(TextWriter* textWriter)
@@ -160,14 +160,14 @@ void XmlWriter::writeEndAttribute()
 }
 
 //------------------------------------------------------------------------------
-void XmlWriter::writeStringInternal(const TCHAR* str, int len, bool inAttribute)
+void XmlWriter::writeStringInternal(const Char* str, int len, bool inAttribute)
 {
 	if (str == NULL || len == 0) { return; }
 
 	Encoding* enc = Encoding::getTCharEncoding();
-	const TCHAR* begin = str;
-	const TCHAR* end = begin + len;
-	const TCHAR* pos = begin;
+	const Char* begin = str;
+	const Char* end = begin + len;
+	const Char* pos = begin;
 	while (pos < end)
 	{
 		int extra = enc->getLeadExtraLength(pos, end - pos);
@@ -178,7 +178,7 @@ void XmlWriter::writeStringInternal(const TCHAR* str, int len, bool inAttribute)
 		}
 		else
 		{
-			TCHAR ch = *pos;
+			Char ch = *pos;
 			switch (ch)
 			{
 			case (char)0xA:

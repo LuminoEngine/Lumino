@@ -325,7 +325,11 @@ private:
 	//void ConvertSeparatorToInternal(GenericStringT* path);
 };
 
+#ifdef LN_USTRING
+typedef Path		PathName;
+#else
 typedef GenericPathName<TCHAR>		PathName;
+#endif
 typedef GenericPathName<char>		PathNameA;
 typedef GenericPathName<wchar_t>	PathNameW;
 class UStringRef;
@@ -376,4 +380,5 @@ struct Formatter<TChar, detail::FormatArgType::KindString, GenericPathName<TChar
 };
 
 LN_NAMESPACE_END
+
 

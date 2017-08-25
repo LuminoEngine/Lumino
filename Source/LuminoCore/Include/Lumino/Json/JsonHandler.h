@@ -23,11 +23,11 @@ public:
 	virtual bool onNull() = 0;
 	virtual bool onBool(bool value) = 0;
 	virtual bool onDouble(double value) = 0;
-	virtual bool onString(const TCHAR* str, int len) = 0;
+	virtual bool onString(const Char* str, int len) = 0;
 	virtual bool onStartArray() = 0;
 	virtual bool onEndArray(int elementCount) = 0;
 	virtual bool onStartObject() = 0;
-	virtual bool onKey(const TCHAR* str, int len) = 0;
+	virtual bool onKey(const Char* str, int len) = 0;
 	virtual bool onEndObject(int memberCount) = 0;
 };
 
@@ -45,11 +45,11 @@ public:
 	virtual bool onNull();
 	virtual bool onBool(bool value);
 	virtual bool onDouble(double value);
-	virtual bool onString(const TCHAR* str, int len);
+	virtual bool onString(const Char* str, int len);
 	virtual bool onStartArray();
 	virtual bool onEndArray(int elementCount);
 	virtual bool onStartObject();
-	virtual bool onKey(const TCHAR* str, int len);
+	virtual bool onKey(const Char* str, int len);
 	virtual bool onEndObject(int memberCount);
 
 	void build();	// Parse Ç™èIÇÌÇ¡ÇΩå„Ç…åƒÇ—èoÇ∑

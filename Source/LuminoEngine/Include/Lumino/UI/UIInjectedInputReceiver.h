@@ -65,7 +65,7 @@ public:
 		@brief		文字が入力された時のイベントを受け取ります。
 		@param[in]	ch			: 入力された文字
 	*/
-	virtual bool injectTextInput(TCHAR ch) = 0;
+	virtual bool injectTextInput(Char ch) = 0;
 
 protected:
 	virtual ~IUIInjectedInputReceiver() {}

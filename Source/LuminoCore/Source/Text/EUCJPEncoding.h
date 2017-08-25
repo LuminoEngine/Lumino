@@ -14,7 +14,7 @@ public:
 
 public:
 	// override Encoding
-	virtual const TCHAR* getName() const { return _T("EUC-JP"); }
+	virtual const Char* getName() const { return _T("EUC-JP"); }
 	virtual int getMinByteCount() const { return 1; }
 	virtual int getMaxByteCount() const { return 3; }
 	virtual Decoder* createDecoder() const { return LN_NEW EUCJPDecoder(); }

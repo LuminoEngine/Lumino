@@ -83,4 +83,10 @@ uint32_t Hash::calcHash(const wchar_t* str, int len)
 	return CalcCRCHash((const char*)str, len);
 }
 
+uint32_t Hash::calcHash(const char16_t* str, int len)
+{
+	len = static_cast<int>(len * sizeof(char16_t));
+	return CalcCRCHash((const char*)str, len);
+}
+
 LN_NAMESPACE_END

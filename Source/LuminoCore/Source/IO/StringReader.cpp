@@ -61,7 +61,7 @@ bool StringReader::readLine(String* line)
 	int i = m_pos;
 	while (i < m_range.getLength())
 	{
-		TCHAR ch = m_range[i];
+		TTCHAR ch = m_range[i];
 		if (ch == '\r' || ch == '\n')
 		{
 			if (line != NULL) {

@@ -17,7 +17,7 @@ Win32CodePageEncoding::Win32CodePageEncoding(UINT codePage)
 	LN_THROW(r, Win32Exception, ::GetLastError());
 	
 	// 以前 String::SPrintf を使っていたが、その中から呼ばれて無限再起することがあるのでやめた
-	TCHAR buf[32];
+	Char buf[32];
 	_stprintf_s(buf, _T("cp%u"), codePage);
 	m_name = buf;
 }

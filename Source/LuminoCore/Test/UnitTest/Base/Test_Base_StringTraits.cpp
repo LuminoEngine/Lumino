@@ -142,99 +142,99 @@ TEST_F(Test_Base_StringUtils, endsWith)
 {
 	// 普通に比較
 	{
-		const TCHAR* str1 = _T("abc def");
-		const TCHAR* str2 = _T("def");
+		const Char* str1 = _T("abc def");
+		const Char* str2 = _T("def");
 		ASSERT_EQ(true, StringTraits::endsWith(str1, -1, str2, -1, CaseSensitivity::CaseSensitive));
 	}
 	// 完全一致
 	{
-		const TCHAR* str1 = _T("def");
-		const TCHAR* str2 = _T("def");
+		const Char* str1 = _T("def");
+		const Char* str2 = _T("def");
 		ASSERT_EQ(true, StringTraits::endsWith(str1, -1, str2, -1, CaseSensitivity::CaseSensitive));
 	}
 	// 不一致 (後ろ方向)
 	{
-		const TCHAR* str1 = _T("def");
-		const TCHAR* str2 = _T("de");
+		const Char* str1 = _T("def");
+		const Char* str2 = _T("de");
 		ASSERT_EQ(false, StringTraits::endsWith(str1, -1, str2, -1, CaseSensitivity::CaseSensitive));
 	}
 	// 一致 (前方向方向)
 	{
-		const TCHAR* str1 = _T("def");
-		const TCHAR* str2 = _T("ef");
+		const Char* str1 = _T("def");
+		const Char* str2 = _T("ef");
 		ASSERT_EQ(true, StringTraits::endsWith(str1, -1, str2, -1, CaseSensitivity::CaseSensitive));
 	}
 	// 不一致 (str2が長い)
 	{
-		const TCHAR* str1 = _T("def");
-		const TCHAR* str2 = _T("defghi");
+		const Char* str1 = _T("def");
+		const Char* str2 = _T("defghi");
 		ASSERT_EQ(false, StringTraits::endsWith(str1, -1, str2, -1, CaseSensitivity::CaseSensitive));
 	}
 	// 空文字どうし
 	{
-		const TCHAR* str1 = _T("");
-		const TCHAR* str2 = _T("");
+		const Char* str1 = _T("");
+		const Char* str2 = _T("");
 		ASSERT_EQ(true, StringTraits::endsWith(str1, -1, str2, -1, CaseSensitivity::CaseSensitive));
 	}
 	// 空文字
 	{
-		const TCHAR* str1 = _T("a");
-		const TCHAR* str2 = _T("");
+		const Char* str1 = _T("a");
+		const Char* str2 = _T("");
 		ASSERT_EQ(true, StringTraits::endsWith(str1, -1, str2, -1, CaseSensitivity::CaseSensitive));
 	}
 	// 空文字
 	{
-		const TCHAR* str1 = _T("");
-		const TCHAR* str2 = _T("a");
+		const Char* str1 = _T("");
+		const Char* str2 = _T("a");
 		ASSERT_EQ(false, StringTraits::endsWith(str1, -1, str2, -1, CaseSensitivity::CaseSensitive));
 	}
 
 	// 普通に比較 (IgnoreCase)
 	{
-		const TCHAR* str1 = _T("abc def");
-		const TCHAR* str2 = _T("DeF");
+		const Char* str1 = _T("abc def");
+		const Char* str2 = _T("DeF");
 		ASSERT_EQ(true, StringTraits::endsWith(str1, -1, str2, -1, CaseSensitivity::CaseInsensitive));
 	}
 	// 完全一致 (IgnoreCase)
 	{
-		const TCHAR* str1 = _T("DEF");
-		const TCHAR* str2 = _T("def");
+		const Char* str1 = _T("DEF");
+		const Char* str2 = _T("def");
 		ASSERT_EQ(true, StringTraits::endsWith(str1, -1, str2, -1, CaseSensitivity::CaseInsensitive));
 	}
 	// 不一致 (後ろ方向) (IgnoreCase)
 	{
-		const TCHAR* str1 = _T("def");
-		const TCHAR* str2 = _T("DE");
+		const Char* str1 = _T("def");
+		const Char* str2 = _T("DE");
 		ASSERT_EQ(false, StringTraits::endsWith(str1, -1, str2, -1, CaseSensitivity::CaseInsensitive));
 	}
 	// 一致 (前方向方向) (IgnoreCase)
 	{
-		const TCHAR* str1 = _T("DEF");
-		const TCHAR* str2 = _T("ef");
+		const Char* str1 = _T("DEF");
+		const Char* str2 = _T("ef");
 		ASSERT_EQ(true, StringTraits::endsWith(str1, -1, str2, -1, CaseSensitivity::CaseInsensitive));
 	}
 	// 不一致 (str2が長い) (IgnoreCase)
 	{
-		const TCHAR* str1 = _T("def");
-		const TCHAR* str2 = _T("defGHI");
+		const Char* str1 = _T("def");
+		const Char* str2 = _T("defGHI");
 		ASSERT_EQ(false, StringTraits::endsWith(str1, -1, str2, -1, CaseSensitivity::CaseInsensitive));
 	}
 	// 空文字どうし (IgnoreCase)
 	{
-		const TCHAR* str1 = _T("");
-		const TCHAR* str2 = _T("");
+		const Char* str1 = _T("");
+		const Char* str2 = _T("");
 		ASSERT_EQ(true, StringTraits::endsWith(str1, -1, str2, -1, CaseSensitivity::CaseInsensitive));
 	}
 	// 空文字 (IgnoreCase)
 	{
-		const TCHAR* str1 = _T("A");
-		const TCHAR* str2 = _T("");
+		const Char* str1 = _T("A");
+		const Char* str2 = _T("");
 		ASSERT_EQ(true, StringTraits::endsWith(str1, -1, str2, -1, CaseSensitivity::CaseInsensitive));
 	}
 	// 空文字 (IgnoreCase)
 	{
-		const TCHAR* str1 = _T("");
-		const TCHAR* str2 = _T("A");
+		const Char* str1 = _T("");
+		const Char* str2 = _T("A");
 		ASSERT_EQ(false, StringTraits::endsWith(str1, -1, str2, -1, CaseSensitivity::CaseInsensitive));
 	}
 }
@@ -252,7 +252,7 @@ TEST_F(Test_Base_StringUtils, countString)
 TEST_F(Test_Base_StringUtils, toInt8)
 {
 	int8_t n;
-	const TCHAR* end;
+	const Char* end;
 	NumberConversionResult r;
 
 	// min Overflow
@@ -280,7 +280,7 @@ TEST_F(Test_Base_StringUtils, toInt8)
 TEST_F(Test_Base_StringUtils, toUInt8)
 {
 	uint8_t n;
-	const TCHAR* end;
+	const Char* end;
 	NumberConversionResult r;
 
 	// Neg Success
@@ -308,7 +308,7 @@ TEST_F(Test_Base_StringUtils, toUInt8)
 TEST_F(Test_Base_StringUtils, toInt16)
 {
 	int16_t n;
-	const TCHAR* end;
+	const Char* end;
 	NumberConversionResult r;
 
 	// min Overflow
@@ -336,7 +336,7 @@ TEST_F(Test_Base_StringUtils, toInt16)
 TEST_F(Test_Base_StringUtils, toUInt16)
 {
 	uint16_t n;
-	const TCHAR* end;
+	const Char* end;
 	NumberConversionResult r;
 
 	// Neg Success
@@ -364,7 +364,7 @@ TEST_F(Test_Base_StringUtils, toUInt16)
 TEST_F(Test_Base_StringUtils, toInt32)
 {
 	int32_t n;
-	const TCHAR* end;
+	const Char* end;
 	NumberConversionResult r;
 
 	// min Overflow
@@ -392,7 +392,7 @@ TEST_F(Test_Base_StringUtils, toInt32)
 TEST_F(Test_Base_StringUtils, toUInt32)
 {
 	uint32_t n;
-	const TCHAR* end;
+	const Char* end;
 	NumberConversionResult r;
 
 	// Neg Success
@@ -420,7 +420,7 @@ TEST_F(Test_Base_StringUtils, toUInt32)
 TEST_F(Test_Base_StringUtils, toInt64)
 {
 	int64_t n;
-	const TCHAR* end;
+	const Char* end;
 	NumberConversionResult r;
 
 	// min Overflow
@@ -448,7 +448,7 @@ TEST_F(Test_Base_StringUtils, toInt64)
 TEST_F(Test_Base_StringUtils, toUInt64)
 {
 	uint64_t n;
-	const TCHAR* end;
+	const Char* end;
 	NumberConversionResult r;
 
 	// Neg Success
@@ -475,8 +475,8 @@ TEST_F(Test_Base_StringUtils, toUInt64)
 //------------------------------------------------------------------------------
 TEST_F(Test_Base_StringUtils, ToUInt)
 {
-	const TCHAR* str;
-	const TCHAR* end;
+	const Char* str;
+	const Char* end;
 	NumberConversionResult r;
 
 	// 基数指定で 2 進数
@@ -551,8 +551,8 @@ TEST_F(Test_Base_StringUtils, ToUInt)
 //------------------------------------------------------------------------------
 TEST_F(Test_Base_StringUtils, toDouble)
 {
-	const TCHAR* str;
-	const TCHAR* end;
+	const Char* str;
+	const Char* end;
 	NumberConversionResult r;
 
 	// 普通に

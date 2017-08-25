@@ -892,7 +892,7 @@ void MqoImporter::readInts(const StringRef& str, int* values, int valuesCount)
 	int* valuesEnd = values + valuesCount;
 	StringTraits::SplitHelper(
 		str.getBegin(), str.getEnd(), _T(" "), 1, StringSplitOptions::RemoveEmptyEntries, CaseSensitivity::CaseSensitive,
-		[&values, &valuesEnd](const TCHAR* begin, const TCHAR* end)
+		[&values, &valuesEnd](const Char* begin, const Char* end)
 		{
 			if (values < valuesEnd)
 			{
@@ -908,7 +908,7 @@ void MqoImporter::readUInts(const StringRef& str, uint32_t* values, int valuesCo
 	uint32_t* valuesEnd = values + valuesCount;
 	StringTraits::SplitHelper(
 		str.getBegin(), str.getEnd(), _T(" "), 1, StringSplitOptions::RemoveEmptyEntries, CaseSensitivity::CaseSensitive,
-		[&values, &valuesEnd](const TCHAR* begin, const TCHAR* end)
+		[&values, &valuesEnd](const Char* begin, const Char* end)
 	{
 		if (values < valuesEnd)
 		{
@@ -924,7 +924,7 @@ void MqoImporter::readFloats(const StringRef& str, float* values, int valuesCoun
 	float* valuesEnd = values + valuesCount;
 	StringTraits::SplitHelper(
 		str.getBegin(), str.getEnd(), _T(" "), 1, StringSplitOptions::RemoveEmptyEntries, CaseSensitivity::CaseSensitive,
-		[&values, &valuesEnd](const TCHAR* begin, const TCHAR* end)
+		[&values, &valuesEnd](const Char* begin, const Char* end)
 		{
 			if (values < valuesEnd)
 			{

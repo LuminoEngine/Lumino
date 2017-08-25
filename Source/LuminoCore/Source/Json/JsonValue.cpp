@@ -29,7 +29,7 @@ JsonValue::JsonValue(double value)
 {
 	setDouble(value);
 }
-JsonValue::JsonValue(const TCHAR* value)
+JsonValue::JsonValue(const Char* value)
 	: m_type(JsonType::Null)
 	, m_uint(0)
 {

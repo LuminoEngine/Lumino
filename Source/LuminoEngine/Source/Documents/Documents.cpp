@@ -42,7 +42,7 @@ void Document::setText(const StringRef& text)
 void Document::replace(int offset, int length, const StringRef& text)
 {
 	// UTF32 へ変換
-	const ByteBuffer& utf32Buf = m_manager->getTCharToUTF32Converter()->convert(text.getBegin(), sizeof(TCHAR) * text.getLength());
+	const ByteBuffer& utf32Buf = m_manager->getTCharToUTF32Converter()->convert(text.getBegin(), sizeof(Char) * text.getLength());
 	int len = utf32Buf.getSize() / sizeof(UTF32);
 	replaceInternal(offset, length, (const UTF32*)utf32Buf.getConstData(), len);
 }

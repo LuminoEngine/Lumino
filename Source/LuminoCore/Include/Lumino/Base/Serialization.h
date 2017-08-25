@@ -93,17 +93,17 @@ template<typename TRef>
 class NameValuePair
 {
 public:
-	const TCHAR* name;
+	const Char* name;
 	TRef& value;
 
-	NameValuePair(const TCHAR* n, TRef& v) : name(n), value(v) {}
+	NameValuePair(const Char* n, TRef& v) : name(n), value(v) {}
 
 private:
 	NameValuePair & operator=(NameValuePair const &) = delete;
 };
 
 template<typename TRef>
-NameValuePair<TRef> makeNVP(const TCHAR* name, TRef& valueRef)
+NameValuePair<TRef> makeNVP(const Char* name, TRef& valueRef)
 {
 	return NameValuePair<TRef>(name, valueRef);
 }
@@ -114,10 +114,10 @@ template<typename TThis>
 class NameValuePairBaseObject
 {
 public:
-	const TCHAR* name;
+	const Char* name;
 	TThis* value;
 
-	NameValuePairBaseObject(const TCHAR* n, TThis* v) : name(n), value(v) {}
+	NameValuePairBaseObject(const Char* n, TThis* v) : name(n), value(v) {}
 
 private:
 	NameValuePairBaseObject & operator=(NameValuePairBaseObject const &) = delete;
@@ -272,9 +272,9 @@ class Archive
 	};
 
 public:
-	static const TCHAR* ClassNameKey;
-	static const TCHAR* ClassVersionKey;
-	static const TCHAR* ClassBaseDefaultNameKey;
+	static const TTCHAR* ClassNameKey;
+	static const TTCHAR* ClassVersionKey;
+	static const TTCHAR* ClassBaseDefaultNameKey;
 	//Archive(const PathName& filePath, ArchiveMode mode);
 
 	//template<typename T> Archive& operator&(T && arg)
@@ -355,14 +355,14 @@ private:
 	ISerializeElement* saveHeaderElement(ISerializeElement* element)
 	{
 		int version = 1;
-		element->addSerializeMemberValue(_T("version"), SerializationValueType::Int32, &version);
-		return element->addSerializeMemberNewObject(_T("root"));
+		element->addSerializeMemberValue(_TT("version"), SerializationValueType::Int32, &version);
+		return element->addSerializeMemberNewObject(_TT("root"));
 	}
 
 	ISerializeElement* loadHeaderElement(ISerializeElement* element)
 	{
-		ISerializeElement* version = element->findSerializeElement(_T("version"));
-		ISerializeElement* root = element->findSerializeElement(_T("root"));
+		ISerializeElement* version = element->findSerializeElement(_TT("version"));
+		ISerializeElement* root = element->findSerializeElement(_TT("root"));
 		if (version != nullptr && root != nullptr)
 		{
 			return root;

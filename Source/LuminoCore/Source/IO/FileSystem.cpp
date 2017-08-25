@@ -3,6 +3,7 @@
 #include <sys/stat.h>
 #include "../Internal.h"
 #include <Lumino/Base/String.h>
+#include <Lumino/Base/StringU.h>
 #include <Lumino/Base/ByteBuffer.h>
 #include <Lumino/Text/Encoding.h>
 #include <Lumino/IO/FileStream.h>
@@ -214,7 +215,7 @@ void FileSystem::Delete(const wchar_t* filePath)
 }
 
 //------------------------------------------------------------------------------
-size_t FileSystem::GetFileSize(const TCHAR* filePath)
+size_t FileSystem::GetFileSize(const Char* filePath)
 {
 	LN_THROW( filePath != NULL, ArgumentException );
 
@@ -357,6 +358,14 @@ void FileSystem::deleteFile(const UStringRef& filePath)
 	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath);
 	PlatformFileSystem::deleteFile(localPath.c_str());
 }
+
+void FileSystem::getCurrentDirectory(UString* outPath)
+{
+	PlatformFileSystem::PathChar path[LN_MAX_PATH];
+	int len = PlatformFileSystem::getCurrentDirectory(LN_MAX_PATH, path);
+	*outPath = UString::fromCString(path, len);
+}
+
 //
 //template<typename TChar> static bool Exists2(const TChar* filePath);
 //template<typename TString> static bool Exists2(const TString& filePath);
@@ -531,14 +540,14 @@ String FileSystem::readAllText(Stream* stream, const Encoding* encoding)
 }
 
 //------------------------------------------------------------------------------
-void FileSystem::writeAllBytes(const TCHAR* filePath, const void* buffer, size_t size)
+void FileSystem::writeAllBytes(const Char* filePath, const void* buffer, size_t size)
 {
 	Ref<FileStream> stream = FileStream::create(filePath, FileOpenMode::write | FileOpenMode::Truncate);
 	stream->write(buffer, size);
 }
 
 //------------------------------------------------------------------------------
-void FileSystem::writeAllText(const TCHAR* filePath, const String& str, const Encoding* encoding)
+void FileSystem::writeAllText(const Char* filePath, const String& str, const Encoding* encoding)
 {
 	encoding = (encoding == nullptr) ? Encoding::getUTF8Encoding() : encoding;
 
@@ -733,6 +742,7 @@ void FileSystem::LN_AFX_FUNCNAME(createDirectory)(const wchar_t* path)
 {
 	createDirectoryInternal(path);
 }
+
 
 
 LN_NAMESPACE_END

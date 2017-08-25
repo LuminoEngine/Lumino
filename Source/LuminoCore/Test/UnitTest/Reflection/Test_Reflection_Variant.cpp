@@ -148,7 +148,7 @@ TEST_F(IntegrationTest_Reflection_Variant, Basic)
 		ASSERT_EQ(100, Variant::cast<double>(v1));
 		ASSERT_EQ(100, Variant::cast<float>(v2));		// 算術型ならキャストできる
 	}
-	// <Test> TCHAR* 型
+	// <Test> Char* 型
 	{
 		Variant v1(_T("str"));
 		Variant v2 = v1;	// copy

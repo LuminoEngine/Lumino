@@ -154,7 +154,7 @@ public:
 	void addPass(GLShaderPass* pass) { m_passes.add(pass); }
 
 public:
-	virtual const TCHAR* getName() const { return m_name.c_str(); }
+	virtual const Char* getName() const { return m_name.c_str(); }
 	virtual int getPassCount() const { return m_passes.getCount(); }
 	virtual IShaderPass* getPass(int index);
 	virtual int getAnnotationCount() { return m_annotations.getCount(); }
@@ -188,7 +188,7 @@ public:
 
 public:
 	virtual IShader* getShader() const { return m_ownerShader; }
-	virtual const TCHAR* getName() const { return m_name.c_str(); }
+	virtual const Char* getName() const { return m_name.c_str(); }
 	virtual int getAnnotationCount() { return m_annotations.getCount(); }
 	virtual IShaderVariable* getAnnotation(int index) { return m_annotations[index]; }
 	virtual void apply();

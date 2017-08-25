@@ -29,7 +29,7 @@ int Version::getBuild()
 }
 
 //------------------------------------------------------------------------------
-const TCHAR* Version::getString()
+const Char* Version::getString()
 {
 	return LUMINO_VERSION_STRING;
 }

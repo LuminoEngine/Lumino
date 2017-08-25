@@ -116,8 +116,8 @@ Exception::~Exception() throw()
 }
 
 //------------------------------------------------------------------------------
-const TCHAR* Exception::getMessage() const { return LN_AFX_FUNCNAME(getMessage)(); }
-const TCHAR* Exception::LN_AFX_FUNCNAME(getMessage)() const { return getMessageOverride(); }
+const Char* Exception::getMessage() const { return LN_AFX_FUNCNAME(getMessage)(); }
+const Char* Exception::LN_AFX_FUNCNAME(getMessage)() const { return getMessageOverride(); }
 
 //------------------------------------------------------------------------------
 Exception& Exception::setSourceLocationInfo(const char* filePath, int fileLine)
@@ -137,7 +137,7 @@ Exception& Exception::setSourceLocationInfo(const char* filePath, int fileLine)
 		return *this;
 	}
 #else
-	StringTraits::tstrcpy(m_sourceFilePath, sizeof(m_sourceFilePath) / sizeof(TCHAR), filePath);
+	StringTraits::tstrcpy(m_sourceFilePath, sizeof(m_sourceFilePath) / sizeof(Char), filePath);
 #endif
 
 	m_sourceFileLine = fileLine;
@@ -161,7 +161,7 @@ bool Exception::initDumpFile(const char* filePath)
 }
 
 //------------------------------------------------------------------------------
-void Exception::setMessage(const TCHAR* caption)
+void Exception::setMessage(const Char* caption)
 {
 	appendMessage(caption, _tcslen(caption));
 	//int captionLen = _tcslen(caption);
@@ -175,7 +175,7 @@ void Exception::setMessage(const TCHAR* caption)
 }
 
 //------------------------------------------------------------------------------
-void Exception::setMessage(const TCHAR* caption, const char* format, va_list args)
+void Exception::setMessage(const Char* caption, const char* format, va_list args)
 {
 	appendMessage(caption, _tcslen(caption));
 
@@ -210,7 +210,7 @@ void Exception::setMessage(const TCHAR* caption, const char* format, va_list arg
 }
 
 //------------------------------------------------------------------------------
-void Exception::setMessage(const TCHAR* caption, const wchar_t* format, va_list args)
+void Exception::setMessage(const Char* caption, const wchar_t* format, va_list args)
 {
 	appendMessage(caption, _tcslen(caption));
 
@@ -245,7 +245,7 @@ void Exception::setMessage(const TCHAR* caption, const wchar_t* format, va_list 
 }
 
 //------------------------------------------------------------------------------
-void Exception::setMessage(const TCHAR* caption, const char* format, ...)
+void Exception::setMessage(const Char* caption, const char* format, ...)
 {
 	va_list args;
 	va_start(args, format);
@@ -254,7 +254,7 @@ void Exception::setMessage(const TCHAR* caption, const char* format, ...)
 }
 
 //------------------------------------------------------------------------------
-void Exception::setMessage(const TCHAR* caption, const wchar_t* format, ...)
+void Exception::setMessage(const Char* caption, const wchar_t* format, ...)
 {
 	va_list args;
 	va_start(args, format);
@@ -264,7 +264,7 @@ void Exception::setMessage(const TCHAR* caption, const wchar_t* format, ...)
 
 //------------------------------------------------------------------------------
 // GetMessage() を直接オーバーライドすると、windows.h と使うときに A/W を考慮せねばならず煩雑になる。それを回避するために用意した。
-const TCHAR* Exception::getMessageOverride() const
+const Char* Exception::getMessageOverride() const
 {
 	return m_message;
 }
@@ -276,7 +276,7 @@ void Exception::appendMessage(const char* message, size_t len)
 	size_t remainLen = (MaxMessageBufferSize - curLen) - 2;	// -2 は "\r\0"
 	len = std::min(len, remainLen);
 
-	TCHAR* head = m_message + curLen;
+	Char* head = m_message + curLen;
 #ifdef LN_UNICODE
 	size_t wlen;
 	mbstowcs_s(&wlen, head, remainLen + 2, message, _TRUNCATE);
@@ -295,7 +295,7 @@ void Exception::appendMessage(const wchar_t* message, size_t len)
 	size_t remainLen = (MaxMessageBufferSize - curLen) - 2;	// -2 は "\r\0"
 	len = std::min(len, remainLen);
 
-	TCHAR* head = m_message + curLen;
+	Char* head = m_message + curLen;
 #ifdef LN_UNICODE
 	wcsncpy_s(head, remainLen + 2, message, len);
 #else

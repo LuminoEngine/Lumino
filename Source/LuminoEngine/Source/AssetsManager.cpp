@@ -78,7 +78,7 @@ Texture2DPtr AssetsManager::loadTexture(const StringRef& filePath)
 	// TODO: Stream 指定
 	auto path = m_archiveManager->findLocalFilePath(filePath);
 
-	CacheKey key(path);
+	CacheKey key(path.toString());
 	Texture2D* ptr = static_cast<Texture2D*>(m_textureCache->findObjectAddRef(key));
 	if (ptr != nullptr) { return Texture2DPtr(ptr, false); }
 

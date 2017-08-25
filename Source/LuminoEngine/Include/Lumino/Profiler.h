@@ -161,10 +161,10 @@ public:
 
 public:
 	/// グループを作成する
-	int registerGroup(const TCHAR* name);
+	int registerGroup(const Char* name);
 
 	/// セクションを作成する
-	int registerSection(int parentGroupIndex, const TCHAR* name);
+	int registerSection(int parentGroupIndex, const Char* name);
 
 	/// グループの測定基準となるフレームレートを設定する
 	void setBaseFrameRate(int group, float baseFrameRate);

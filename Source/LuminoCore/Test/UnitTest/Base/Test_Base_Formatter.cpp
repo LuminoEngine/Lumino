@@ -7,9 +7,9 @@ namespace ln
 
 	//// GenericString
 	//template<>
-	//struct Formatter<TCHAR, detail::FormatArgType::KindString, String>
+	//struct Formatter<Char, detail::FormatArgType::KindString, String>
 	//{
-	//	static GenericString<TCHAR> Format(const Locale& locale, const GenericStringRef<TCHAR>& format, const GenericStringRef<TCHAR>& formatParam, String value)
+	//	static GenericString<Char> Format(const Locale& locale, const GenericStringRef<TCHAR>& format, const GenericStringRef<TCHAR>& formatParam, String value)
 	//	{
 	//		return value;
 	//	}
@@ -119,14 +119,14 @@ TEST_F(Test_Base_Formatter, Basic)
 	}
 	// <Test> char*/wchar_t*
 	{
-		TCHAR buf[] = _T("abc");
-		TCHAR* t1 = (TCHAR*)buf;
-		const TCHAR* t2 = _T("def");
+		Char buf[] = _T("abc");
+		Char* t1 = (Char*)buf;
+		const Char* t2 = _T("def");
 		ASSERT_EQ(_T("abcdef"), String::format(_T("{0}{1}"), t1, t2));
 	}
 	// <Test> std::string
 	{
-		std::basic_string<TCHAR> s = _T("abc");
+		std::basic_string<Char> s = _T("abc");
 		ASSERT_EQ(_T("abc"), String::format(_T("{0}"), s));
 	}
 	// <Test> String

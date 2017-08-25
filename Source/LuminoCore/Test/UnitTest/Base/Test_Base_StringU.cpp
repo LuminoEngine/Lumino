@@ -445,6 +445,20 @@ TEST_F(Test_Base_UString, lastIndexOf)
 	}
 }
 
+TEST_F(Test_Base_UString, startsWith)
+{
+	UString s1(u"abc.txt");
+	ASSERT_EQ(true, s1.startsWith(u"abc"));
+	ASSERT_EQ(false, s1.startsWith(u".txt"));
+}
+
+TEST_F(Test_Base_UString, endsWith)
+{
+	UString s1(u"abc.txt");
+	ASSERT_EQ(false, s1.endsWith(u"abc"));
+	ASSERT_EQ(true, s1.endsWith(u".txt"));
+}
+
 TEST_F(Test_Base_UString, trim)
 {
 	// 前後
@@ -554,13 +568,6 @@ TEST_F(Test_Base_UString, replace)
 	}
 }
 
-TEST_F(Test_Base_UString, equals)
-{
-	// <Issue> 文字列の先頭が同じだけで一致判定にならないこと。
-	{
-	}
-}
-
 TEST_F(Test_Base_UString, compare)
 {
 	int a1 = strcmp("abc", "abcd");
@@ -622,8 +629,225 @@ TEST_F(Test_Base_UString, substring)
 {
 	UString str1(u"abcdef");
 	ASSERT_EQ(u"ab", str1.substring(0, 2));
-	ASSERT_EQ(u"ef", str1.substring(2));
+	ASSERT_EQ(u"ef", str1.substring(str1.getLength() - 2));
 	ASSERT_EQ(u"cde", str1.substring(2, 3));
+}
+
+TEST_F(Test_Base_UString, split)
+{
+	// 普通の分割
+	{
+		UString str(u"a,b,c");
+		List<UString> lines = str.split(u",", StringSplitOptions::None);
+		ASSERT_EQ(3, lines.getCount());
+		ASSERT_EQ(u"a", lines[0]);
+		ASSERT_EQ(u"b", lines[1]);
+		ASSERT_EQ(u"c", lines[2]);
+	}
+
+	// 空文字
+	{
+		UString str = u"";
+		List<UString> lines = str.split(u",", StringSplitOptions::None);
+		ASSERT_EQ(1, lines.getCount());
+	}
+
+	// 空文字の RemoveEmptyEntries
+	{
+		UString str = u"";
+		List<UString> lines = str.split(u",", StringSplitOptions::RemoveEmptyEntries);
+		ASSERT_EQ(0, lines.getCount());
+	}
+
+	// 区切り無し
+	{
+		UString str = u"abc";
+		List<UString> lines = str.split(u",", StringSplitOptions::None);
+		ASSERT_EQ(1, lines.getCount());
+		ASSERT_EQ(u"abc", lines[0]);
+	}
+
+	// 区切り無し RemoveEmptyEntries
+	{
+		UString str = u"abc";
+		List<UString> lines = str.split(u",", StringSplitOptions::RemoveEmptyEntries);
+		ASSERT_EQ(1, lines.getCount());
+	}
+
+	// トークン無し
+	{
+		UString str = u",";
+		List<UString> lines = str.split(u",", StringSplitOptions::None);
+		ASSERT_EQ(2, lines.getCount());
+		ASSERT_EQ(u"", lines[0]);
+		ASSERT_EQ(u"", lines[1]);
+	}
+
+	// トークン無し RemoveEmptyEntries
+	{
+		UString str = u",";
+		List<UString> lines = str.split(u",", StringSplitOptions::RemoveEmptyEntries);
+		ASSERT_EQ(0, lines.getCount());
+	}
+
+	// トークン無し 2
+	{
+		UString str = u",,";
+		List<UString> lines = str.split(u",", StringSplitOptions::None);
+		ASSERT_EQ(3, lines.getCount());
+	}
+
+	// トークン無し 2 RemoveEmptyEntries
+	{
+		UString str = u",,";
+		List<UString> lines = str.split(u",", StringSplitOptions::RemoveEmptyEntries);
+		ASSERT_EQ(0, lines.getCount());
+	}
+
+	// 空要素付き
+	{
+		UString str = u"a,,c";
+		List<UString> lines = str.split(u",", StringSplitOptions::None);
+		ASSERT_EQ(3, lines.getCount());
+		ASSERT_EQ(u"a", lines[0]);
+		ASSERT_EQ(u"", lines[1]);
+		ASSERT_EQ(u"c", lines[2]);
+	}
+
+	// 空要素付き RemoveEmptyEntries
+	{
+		UString str = u"a,,c";
+		List<UString> lines = str.split(u",", StringSplitOptions::RemoveEmptyEntries);
+		ASSERT_EQ(2, lines.getCount());
+		ASSERT_EQ(u"a", lines[0]);
+		ASSERT_EQ(u"c", lines[1]);
+	}
+
+	// 先頭空要素付き
+	{
+		UString str = u",b,c";
+		List<UString> lines = str.split(u",", StringSplitOptions::None);
+		ASSERT_EQ(3, lines.getCount());
+		ASSERT_EQ(u"", lines[0]);
+		ASSERT_EQ(u"b", lines[1]);
+		ASSERT_EQ(u"c", lines[2]);
+	}
+
+	// 先頭空要素付き RemoveEmptyEntries
+	{
+		UString str = u",b,c";
+		List<UString> lines = str.split(u",", StringSplitOptions::RemoveEmptyEntries);
+		ASSERT_EQ(2, lines.getCount());
+		ASSERT_EQ(u"b", lines[0]);
+		ASSERT_EQ(u"c", lines[1]);
+	}
+
+	// 終端空要素付き
+	{
+		UString str = u"a,b,";
+		List<UString> lines = str.split(u",", StringSplitOptions::None);
+		ASSERT_EQ(3, lines.getCount());
+		ASSERT_EQ(u"a", lines[0]);
+		ASSERT_EQ(u"b", lines[1]);
+		ASSERT_EQ(u"", lines[2]);
+	}
+
+	// 終端空要素付き RemoveEmptyEntries
+	{
+		UString str = u"a,b,";
+		List<UString> lines = str.split(u",", StringSplitOptions::RemoveEmptyEntries);
+		ASSERT_EQ(2, lines.getCount());
+		ASSERT_EQ(u"a", lines[0]);
+		ASSERT_EQ(u"b", lines[1]);
+	}
+
+	// 両端空要素付き
+	{
+		UString str = u",b,";
+		List<UString> lines = str.split(u",", StringSplitOptions::None);
+		ASSERT_EQ(3, lines.getCount());
+		ASSERT_EQ(u"", lines[0]);
+		ASSERT_EQ(u"b", lines[1]);
+		ASSERT_EQ(u"", lines[2]);
+	}
+
+	// 両端空要素付き RemoveEmptyEntries
+	{
+		UString str = u",b,";
+		List<UString> lines = str.split(u",", StringSplitOptions::RemoveEmptyEntries);
+		ASSERT_EQ(1, lines.getCount());
+		ASSERT_EQ(u"b", lines[0]);
+	}
+	// 長さ2以上のデリミタ
+	{
+		UString str = u"a::b";
+		List<UString> lines = str.split(u"::", StringSplitOptions::None);
+		ASSERT_EQ(2, lines.getCount());
+		ASSERT_EQ(u"a", lines[0]);
+		ASSERT_EQ(u"b", lines[1]);
+	}
+}
+
+TEST_F(Test_Base_UString, ToInt)
+{
+	// TODO:
+}
+
+TEST_F(Test_Base_UString, convertNativeCharString)
+{
+	UString str = u"abc";
+	ASSERT_EQ("abc", str.toStdString());
+	ASSERT_EQ(L"abc", str.toStdWString());
+
+	// TODO:
+}
+
+TEST_F(Test_Base_UString, unordered_map)
+{
+	// <Test> unordered_map のキーにできること (char)
+	{
+		std::unordered_map<UString, int> map1;
+		map1[u"key1"] = 1;
+		map1.insert(std::pair<UString, int>(u"key2", 2));
+		ASSERT_EQ(1, map1[u"key1"]);
+		ASSERT_EQ(2, map1.find(u"key2")->second);
+
+		std::unordered_map<UString, int> map2 =
+		{
+			{ u"key1", 1 },
+			{ u"key2", 2 },
+		};
+		ASSERT_EQ(1, map2[u"key1"]);
+		ASSERT_EQ(2, map2.find(u"key2")->second);
+	}
+	// <Test> std::hash の String の特殊化テスト
+	{
+		std::hash<ln::UString> hash1;
+		ASSERT_NE(hash1(UString(u"key1")), hash1(UString(u"key2")));
+	}
+	// <Test> StringRef で検索
+	{
+		UString key1 = u"key1";
+		UStringRef key1ref(key1);
+		UString key2 = u"key2";
+		UStringRef key2ref(key2);
+
+		std::unordered_map<UString, int> map1;
+		map1[key1ref] = 1;
+		map1.insert(std::pair<UString, int>(key2ref, 2));
+		ASSERT_EQ(1, map1[key1ref]);
+		ASSERT_EQ(2, map1.find(key2ref)->second);
+	}
+}
+
+TEST_F(Test_Base_UString, conv_case)
+{
+	UString s1 = u"AbCd";
+	ASSERT_EQ(u"ABCD", s1.toUpper());
+	UString s2 = u"AbCd";
+	ASSERT_EQ(u"abcd", s2.toLower());
+	UString s3 = u"aBcD";
+	ASSERT_EQ(u"Abcd", s3.toTitleCase());
 }
 
 
@@ -870,3 +1094,51 @@ TEST_F(Test_Base_FormatterU, Examples)
 		ASSERT_EQ(u"0xFF", UString::format(u"0x{0:X}", 255));
 	}
 }
+
+
+
+class Test_IO_Path : public ::testing::Test
+{
+protected:
+	virtual void SetUp() {}
+	virtual void TearDown() {}
+};
+
+TEST_F(Test_IO_Path, Constructor)
+{
+	// <Test> String から変換できること
+	{
+		Path path = UString("dir");
+	}
+	// <Test> 
+	{
+		Path base = _U("dir1/dir2");
+		Path path(base, _U("../file1.txt"));
+#ifdef LN_OS_WIN32
+		ASSERT_EQ(_U("dir1/dir2\\../file1.txt"), path.getString());
+#else
+		ASSERT_STREQ(_U("dir1/dir2/../file1.txt"), path.getString());
+#endif
+	}
+	// <Test> 
+	{
+		Path path(_U("a/"), _U("b"));
+		ASSERT_EQ(_U("a/b"), path.getString());
+
+	}
+	// <Test> 空パスとの結合を確認する
+	{
+		Path path(Path(), _U("a/b.txt"));
+		ASSERT_EQ(_U("a/b.txt"), path.getString());
+	}
+}
+
+TEST_F(Test_IO_Path, getFileName)
+{
+	Path path1(_U("dir/file.txt"));
+	ASSERT_EQ(_U("file.txt"), path1.getFileName());
+
+	Path path2(_U("file.txt"));
+	ASSERT_EQ(_U("file.txt"), path2.getFileName());
+}
+
