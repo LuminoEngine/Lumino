@@ -727,6 +727,21 @@ public:
 	*/
 	Path getWithoutExtension() const;
 
+	/**
+		@brief		ファイルの拡張子を取得します。
+		@param[in]	withDot		: true の場合、結果は '.' を含み、false の場合は含まない
+		@details	拡張子を持たない場合は空文字列を返します。
+		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		PathName("file.txt").GetExtension()			// => ".txt"
+		PathName("file.txt").GetExtension(false)	// => "txt"
+		PathName("file.tmp.txt").GetExtension()		// => ".txt"
+		PathName("file").GetExtension()				// => ""
+		PathName("").GetExtension()					// => ""
+		PathName(".").GetExtension()				// => ""
+		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	*/
+	UStringRef getExtension(bool withDot = true) const;
+
 #if 0
 	UStringRef getFileNameWithoutExtension() const;
 

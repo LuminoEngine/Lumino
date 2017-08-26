@@ -1168,3 +1168,18 @@ TEST_F(Test_IO_Path, getWithoutExtension)
 	ASSERT_EQ(_U(""), path.getWithoutExtension().getString());
 }
 
+TEST_F(Test_IO_Path, getExtension)
+{
+	ASSERT_EQ(_U(".txt"), Path(_U("file.txt")).getExtension());
+	ASSERT_EQ(_U("txt"), Path(_U("file.txt")).getExtension(false));
+	ASSERT_EQ(_U(".txt"), Path(_U("file.tmp.txt")).getExtension());
+	ASSERT_EQ(_U(""), Path(_U("file")).getExtension());
+	ASSERT_EQ(_U(""), Path(_U("")).getExtension());
+	ASSERT_EQ(_U(""), Path(_U(".")).getExtension());
+
+	ASSERT_EQ(_U(""), Path(_U("dir.a/file")).getExtension());
+	ASSERT_EQ(_U(""), Path(_U("file.")).getExtension());
+	ASSERT_EQ(_U(""), Path(_U("..")).getExtension());
+	ASSERT_EQ(_U(""), Path(_U("a/")).getExtension());
+	ASSERT_EQ(_U(""), Path(_U("/")).getExtension());
+}

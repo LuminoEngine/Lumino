@@ -25,6 +25,8 @@ public:
 	template<typename TChar>
 	static const TChar* getWithoutExtensionEnd(const TChar* begin, const TChar* end);
 
+	template<typename TChar>
+	static const TChar* getExtensionBegin(const TChar* begin, const TChar* end, bool withDot);
 
 
 
