@@ -485,6 +485,13 @@ static int ConvertNativeString(const GenericStringRef<wchar_t>& src, char* dst)
 	return size;
 }
 
+
+template<typename TChar>
+GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath()
+{
+	m_static[0] = '0';
+}
+
 template<typename TChar>
 GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const GenericStringRef<char>& path)
 {

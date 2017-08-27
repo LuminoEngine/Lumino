@@ -2,7 +2,8 @@
 #include <unordered_map>
 #include <Lumino/Text/Encoding.h>
 
-
+#ifdef LN_USTRING
+#else
 
 class Test_Base_String : public ::testing::Test
 {
@@ -1078,5 +1079,5 @@ TEST_F(Test_Base_String, Issue)
 	}
 }
 
-
+#endif
 

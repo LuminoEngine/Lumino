@@ -2,6 +2,8 @@
 #include <Lumino/IO/FileSystem.h>
 #include <Lumino/Base/Enumerable.h>
 
+#ifdef LN_USTRING
+#else
 
 class Test_IO_FileSystem : public ::testing::Test
 {
@@ -269,3 +271,4 @@ TEST_F(Test_IO_FileSystem, getFiles)
 	//}
 }
 
+#endif

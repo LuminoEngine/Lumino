@@ -122,7 +122,7 @@ private: \
 	struct LocalEnumParser : public EnumFlagsParser <_##enumName> { LocalEnumParser() { _##enumName values[] = { __VA_ARGS__ };  init(values, LN_ARRAY_SIZE_OF(values), #__VA_ARGS__); } }; \
 	static LocalEnumParser& GetEnumParser() { static LocalEnumParser parser; return parser; } \
 public: \
-	String toString(const Char* separator = _T("|")) const { return GetEnumParser().toString(m_value, separator); } \
+	String toString(const Char* separator = _TT("|")) const { return GetEnumParser().toString(m_value, separator); } \
 	static enumName parse(const Char* str, TCHAR separator = '|') { return GetEnumParser().parse(str, separator); }; \
 	static bool TryParse(const Char* str, enumName* outValue, TCHAR separator = '|') { return GetEnumParser().TryParse(str, (outValue) ? &outValue->m_value : NULL, separator); }
 
@@ -164,7 +164,11 @@ public:
 		void init(const TEnum* values, int valuesCount, const char* argNames)
 		{
 			PairList& members = GetMemberList();
+#ifdef LN_USTRING
+			String names = String::fromCString(argNames);
+#else
 			String names = String::fromNativeCharString(argNames);
+#endif
 			List<String> tokens = names.split(_TT(","));
 			for (int i = 0; i < valuesCount; ++i)
 			{
@@ -329,7 +333,11 @@ public:
 			PairListReference members = EnumParser<TEnum>::GetMemberList();
 			for (int i = 0; i < members.getCount(); ++i)
 			{
+#ifdef LN_USTRING
+				if (members[i].name == UStringRef(str, len))
+#else
 				if (members[i].name.compare(str, len) == 0)
+#endif
 				{
 					*outValue = members[i].value;
 					return true;

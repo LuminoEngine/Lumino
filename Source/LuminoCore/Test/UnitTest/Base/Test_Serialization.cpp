@@ -11,8 +11,8 @@ struct TkMVSoundData
 
 	void serialize(ln::tr::Archive& ar, int version)
 	{
-		ar & ln::tr::makeNVP(_T("name"), name);
-		ar & ln::tr::makeNVP(_T("volume"), volume);
+		ar & ln::tr::makeNVP(_TT("name"), name);
+		ar & ln::tr::makeNVP(_TT("volume"), volume);
 	}
 };
 
@@ -24,9 +24,9 @@ struct TkMVMapData1
 
 	void serialize(ln::tr::Archive& ar, int version)
 	{
-		ar & ln::tr::makeNVP(_T("autoplayBgm"), autoplayBgm);
-		ar & ln::tr::makeNVP(_T("bgm"), bgm);
-		ar & ln::tr::makeNVP(_T("displayName"), displayName);
+		ar & ln::tr::makeNVP(_TT("autoplayBgm"), autoplayBgm);
+		ar & ln::tr::makeNVP(_TT("bgm"), bgm);
+		ar & ln::tr::makeNVP(_TT("displayName"), displayName);
 	}
 };
 
@@ -38,8 +38,8 @@ public:
 
 	virtual void serialize(ln::tr::Archive& ar, int version)
 	{
-		ar & ln::tr::makeNVP(_T("name"), name);
-		ar & ln::tr::makeNVP(_T("volume"), volume);
+		ar & ln::tr::makeNVP(_TT("name"), name);
+		ar & ln::tr::makeNVP(_TT("volume"), volume);
 	}
 };
 
@@ -50,7 +50,7 @@ public:
 
 	virtual void serialize(ln::tr::Archive& ar, int version)
 	{
-		ar & ln::tr::makeNVP(_T("id"), id);
+		ar & ln::tr::makeNVP(_TT("id"), id);
 	}
 };
 
@@ -63,10 +63,10 @@ struct TkMVMapData3 : public ln::Object
 
 	void serialize(ln::tr::Archive& ar, int version)
 	{
-		ar & ln::tr::makeNVP(_T("autoplayBgm"), autoplayBgm);
-		ar & ln::tr::makeNVP(_T("bgm"), bgm);
-		ar & ln::tr::makeNVP(_T("displayName"), displayName);
-		ar & ln::tr::makeNVP(_T("events"), events);
+		ar & ln::tr::makeNVP(_TT("autoplayBgm"), autoplayBgm);
+		ar & ln::tr::makeNVP(_TT("bgm"), bgm);
+		ar & ln::tr::makeNVP(_TT("displayName"), displayName);
+		ar & ln::tr::makeNVP(_TT("events"), events);
 	}
 };
 
@@ -77,8 +77,8 @@ struct TkMVEventCommand3 : public ln::Object
 
 	virtual void serialize(ln::tr::Archive& ar, int version)
 	{
-		ar & ln::tr::makeNVP(_T("code"), code);
-		ar & ln::tr::makeNVP(_T("params"), params);
+		ar & ln::tr::makeNVP(_TT("code"), code);
+		ar & ln::tr::makeNVP(_TT("params"), params);
 	}
 };
 
@@ -89,8 +89,8 @@ struct TkMVMovementData3 : public ln::Object
 
 	virtual void serialize(ln::tr::Archive& ar, int version)
 	{
-		ar & ln::tr::makeNVP(_T("ignore"), ignore);
-		ar & ln::tr::makeNVP(_T("commands"), commands);
+		ar & ln::tr::makeNVP(_TT("ignore"), ignore);
+		ar & ln::tr::makeNVP(_TT("commands"), commands);
 	}
 };
 
@@ -109,14 +109,14 @@ TEST_F(Test_Serialization, SimpleStruct)
 	// save
 	{
 		TkMVSoundData t1;
-		t1.name = _T("test");
+		t1.name = _TT("test");
 		t1.volume = 100;
 		json = tr::JsonSerializer::save(t1);
 	}
 	// load
 	{
 		TkMVSoundData t2 = tr::JsonSerializer::load<TkMVSoundData>(json);
-		ASSERT_EQ(_T("test"), t2.name);
+		ASSERT_EQ(_TT("test"), t2.name);
 		ASSERT_EQ(100, t2.volume);
 	}
 }
@@ -129,18 +129,18 @@ TEST_F(Test_Serialization, StructNested)
 	{
 		TkMVMapData1 t1;
 		t1.autoplayBgm = true;
-		t1.bgm.name = _T("test");
+		t1.bgm.name = _TT("test");
 		t1.bgm.volume = 100;
-		t1.displayName = _T("map1");
+		t1.displayName = _TT("map1");
 		json = tr::JsonSerializer::save(t1);
 	}
 	// load
 	{
 		TkMVMapData1 t2 = tr::JsonSerializer::load<TkMVMapData1>(json);
 		ASSERT_EQ(true, t2.autoplayBgm);
-		ASSERT_EQ(_T("test"), t2.bgm.name);
+		ASSERT_EQ(_TT("test"), t2.bgm.name);
 		ASSERT_EQ(100, t2.bgm.volume);
-		ASSERT_EQ(_T("map1"), t2.displayName);
+		ASSERT_EQ(_TT("map1"), t2.displayName);
 	}
 }
 
@@ -151,14 +151,14 @@ TEST_F(Test_Serialization, SimpleObject)
 	// save
 	{
 		auto t1 = newObject<TkMVSoundData3>();
-		t1->name = _T("test");
+		t1->name = _TT("test");
 		t1->volume = 100;
 		json = tr::JsonSerializer::save(t1);
 	}
 	// load
 	{
 		auto t2 = tr::JsonSerializer::loadObject<TkMVSoundData3>(json);
-		ASSERT_EQ(_T("test"), t2->name);
+		ASSERT_EQ(_TT("test"), t2->name);
 		ASSERT_EQ(100, t2->volume);
 	}
 }
@@ -172,26 +172,26 @@ TEST_F(Test_Serialization, CommonObject)
 		auto t1 = newObject<TkMVMapData3>();
 		t1->autoplayBgm = true;
 		t1->bgm = newObject<TkMVSoundData3>();
-		t1->bgm->name = _T("test");
+		t1->bgm->name = _TT("test");
 		t1->bgm->volume = 100;
-		t1->displayName = _T("map1");
+		t1->displayName = _TT("map1");
 		t1->events.add(newObject<TkMVEventData3>());
 		t1->events.add(nullptr);
 		t1->events.add(newObject<TkMVEventData3>());
-		t1->events[0]->id = _T("EV001");
-		t1->events[2]->id = _T("EV003");
+		t1->events[0]->id = _TT("EV001");
+		t1->events[2]->id = _TT("EV003");
 		json = tr::JsonSerializer::save(t1);
 	}
 	// load
 	{
 		auto t2 = tr::JsonSerializer::loadObject<TkMVMapData3>(json);
 		ASSERT_EQ(true, t2->autoplayBgm);
-		ASSERT_EQ(_T("test"), t2->bgm->name);
+		ASSERT_EQ(_TT("test"), t2->bgm->name);
 		ASSERT_EQ(100, t2->bgm->volume);
-		ASSERT_EQ(_T("map1"), t2->displayName);
-		ASSERT_EQ(_T("EV001"), t2->events[0]->id);
+		ASSERT_EQ(_TT("map1"), t2->displayName);
+		ASSERT_EQ(_TT("EV001"), t2->events[0]->id);
 		ASSERT_EQ(nullptr, t2->events[1]);
-		ASSERT_EQ(_T("EV003"), t2->events[2]->id);
+		ASSERT_EQ(_TT("EV003"), t2->events[2]->id);
 	}
 }
 
@@ -209,7 +209,7 @@ TEST_F(Test_Serialization, Variant)
 			tr::ScVariant v1;
 			tr::ScVariant v2;
 			v1.setInt(20);
-			v2.setString(_T("test"));
+			v2.setString(_TT("test"));
 			c1->params.add(v1);
 			c1->params.add(v2);
 			t1->commands.add(c1);
@@ -220,7 +220,7 @@ TEST_F(Test_Serialization, Variant)
 			tr::ScVariant v1;
 			tr::ScVariant v2;
 			v1.setInt(120);
-			v2.setString(_T("test2"));
+			v2.setString(_TT("test2"));
 			c1->params.add(v1);
 			c1->params.add(v2);
 			t1->commands.add(c1);
@@ -233,10 +233,10 @@ TEST_F(Test_Serialization, Variant)
 		ASSERT_EQ(true, t2->ignore);
 		ASSERT_EQ(100, t2->commands[0]->code);
 		ASSERT_EQ(20, t2->commands[0]->params[0].getInt());
-		ASSERT_EQ(_T("test"), t2->commands[0]->params[1].getString());
+		ASSERT_EQ(_TT("test"), t2->commands[0]->params[1].getString());
 		ASSERT_EQ(200, t2->commands[1]->code);
 		ASSERT_EQ(120, t2->commands[1]->params[0].getInt());
-		ASSERT_EQ(_T("test2"), t2->commands[1]->params[1].getString());
+		ASSERT_EQ(_TT("test2"), t2->commands[1]->params[1].getString());
 	}
 }
 

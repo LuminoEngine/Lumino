@@ -343,6 +343,7 @@ template<typename TChar>
 class GenericStaticallyLocalPath
 {
 public:
+	GenericStaticallyLocalPath();
 	GenericStaticallyLocalPath(const GenericStringRef<char>& path);
 	GenericStaticallyLocalPath(const GenericStringRef<wchar_t>& path);
 	GenericStaticallyLocalPath(const UStringRef& path);

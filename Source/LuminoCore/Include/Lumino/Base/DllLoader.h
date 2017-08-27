@@ -2,6 +2,9 @@
 #pragma once
 #include "Common.h"
 
+#ifdef LN_USTRING
+#else
+
 LN_NAMESPACE_BEGIN
 
 /**
@@ -66,3 +69,5 @@ private:
 };
 
 LN_NAMESPACE_END
+
+#endif

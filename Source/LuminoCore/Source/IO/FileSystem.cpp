@@ -359,6 +359,52 @@ void FileSystem::deleteFile(const UStringRef& filePath)
 	PlatformFileSystem::deleteFile(localPath.c_str());
 }
 
+template<typename TChar>
+static void createDirectoryInternal2(const TChar* begin, const TChar* end)
+{
+	std::vector<std::basic_string<TChar>>	pathList;
+	std::basic_string<TChar> dir;
+
+	int i = (end - begin) - 1//StringTraits::tcslen(path) - 1;	// 一番後ろの文字の位置
+	while (i >= 0)
+	{
+		dir.assign(path, i + 1);
+		if (FileSystem::existsDirectory(dir))
+		{
+			break;
+		}
+		pathList.add(dir);
+
+		// セパレータが見つかるまで探す
+		while (i > 0 && path[i] != PathTraits::DirectorySeparatorChar && path[i] != PathTraits::AltDirectorySeparatorChar)
+		{
+			--i;
+		}
+		--i;
+	}
+
+	if (pathList.isEmpty()) { return; }	// path が存在している
+
+	for (int i = pathList.size() - 1; i >= 0; --i)
+	{
+		detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(pathList[i].c_str());
+		bool r = FileSystem::mkdir(createDirectory);
+		LN_THROW(r, IOException);
+	}
+}
+void FileSystem::createDirectory(const StringRefA& path)
+{
+	createDirectoryInternal2(path.getBegin(), path.getEnd());
+}
+void FileSystem::createDirectory(const StringRefW& path)
+{
+	createDirectoryInternal2(path.getBegin(), path.getEnd());
+}
+void FileSystem::createDirectory(const UStringRef& path)
+{
+	createDirectoryInternal2(path.data(), path.data() + path.getLength());
+}
+
 void FileSystem::getCurrentDirectory(UString* outPath)
 {
 	PlatformFileSystem::PathChar path[LN_MAX_PATH];
@@ -696,52 +742,52 @@ tr::Enumerator<PathName> FileSystem::getFiles(const StringRef& dirPath, const St
 }
 
 //------------------------------------------------------------------------------
-template<typename TChar>
-void FileSystem::createDirectoryInternal(const TChar* path)
-{
-	List< GenericString<wchar_t> >	pathList;
-	GenericString<wchar_t> dir;
-
-	int i = StringTraits::tcslen(path) - 1;	// 一番後ろの文字の位置
-	while (i >= 0)
-	{
-		dir.assignCStr(path, 0, i + 1);
-		if (FileSystem::existsDirectory(dir)) {
-			break;
-		}
-		pathList.add(dir);
-
-		// セパレータが見つかるまで探す
-		while (i > 0 && path[i] != PathTraits::DirectorySeparatorChar && path[i] != PathTraits::AltDirectorySeparatorChar) {
-			--i;
-		}
-		--i;
-	}
-
-	if (pathList.isEmpty()) { return; }	// path が存在している
-
-	for (int i = pathList.getCount() - 1; i >= 0; --i)
-	{
-		bool r = FileSystem::mkdir(pathList[i].c_str());
-		LN_THROW(r, IOException);
-	}
-}
-void FileSystem::createDirectory(const char* path)
-{
-	LN_AFX_FUNCNAME(createDirectory)(path);
-}
-void FileSystem::createDirectory(const wchar_t* path)
-{
-	LN_AFX_FUNCNAME(createDirectory)(path);
-}
-void FileSystem::LN_AFX_FUNCNAME(createDirectory)(const char* path)
-{
-	createDirectoryInternal(path);
-}
-void FileSystem::LN_AFX_FUNCNAME(createDirectory)(const wchar_t* path)
-{
-	createDirectoryInternal(path);
-}
+//template<typename TChar>
+//void FileSystem::createDirectoryInternal(const TChar* path)
+//{
+//	List< GenericString<wchar_t> >	pathList;
+//	GenericString<wchar_t> dir;
+//
+//	int i = StringTraits::tcslen(path) - 1;	// 一番後ろの文字の位置
+//	while (i >= 0)
+//	{
+//		dir.assignCStr(path, 0, i + 1);
+//		if (FileSystem::existsDirectory(dir)) {
+//			break;
+//		}
+//		pathList.add(dir);
+//
+//		// セパレータが見つかるまで探す
+//		while (i > 0 && path[i] != PathTraits::DirectorySeparatorChar && path[i] != PathTraits::AltDirectorySeparatorChar) {
+//			--i;
+//		}
+//		--i;
+//	}
+//
+//	if (pathList.isEmpty()) { return; }	// path が存在している
+//
+//	for (int i = pathList.getCount() - 1; i >= 0; --i)
+//	{
+//		bool r = FileSystem::mkdir(pathList[i].c_str());
+//		LN_THROW(r, IOException);
+//	}
+//}
+//void FileSystem::createDirectory(const char* path)
+//{
+//	LN_AFX_FUNCNAME(createDirectory)(path);
+//}
+//void FileSystem::createDirectory(const wchar_t* path)
+//{
+//	LN_AFX_FUNCNAME(createDirectory)(path);
+//}
+//void FileSystem::LN_AFX_FUNCNAME(createDirectory)(const char* path)
+//{
+//	createDirectoryInternal(path);
+//}
+//void FileSystem::LN_AFX_FUNCNAME(createDirectory)(const wchar_t* path)
+//{
+//	createDirectoryInternal(path);
+//}
 
 
 

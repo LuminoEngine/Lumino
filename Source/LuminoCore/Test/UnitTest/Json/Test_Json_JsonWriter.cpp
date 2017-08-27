@@ -3,6 +3,8 @@
 #include <Lumino/Json/JsonWriter.h>
 using namespace ln::tr;
 
+#ifdef LN_USTRING
+#else
 //==============================================================================
 class Test_Json_JsonWriter : public ::testing::Test
 {
@@ -77,3 +79,4 @@ TEST_F(Test_Json_JsonWriter, Formatting)
 	}
 }
 
+#endif

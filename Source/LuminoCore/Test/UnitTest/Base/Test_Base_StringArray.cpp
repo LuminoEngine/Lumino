@@ -1,5 +1,8 @@
 ﻿#include <TestConfig.h>
 
+#ifdef LN_USTRING
+#else
+
 class Test_Base_StringArray : public ::testing::Test
 {
 protected:
@@ -36,3 +39,4 @@ TEST_F(Test_Base_StringArray, Unit_Contains)
 	ASSERT_EQ(true, ary.contains(String("a")));
 	ASSERT_EQ(true, ary.contains(String(" ")));
 }
+#endif

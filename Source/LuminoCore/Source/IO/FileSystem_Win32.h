@@ -101,17 +101,17 @@ public:
 		}
 	}
 
+	static bool createDirectory(const wchar_t* path)
+	{
+		return ::CreateDirectoryW(path, NULL) != FALSE;
+	}
+
 	static void removeDirectory(const wchar_t* path)
 	{
 		BOOL r = ::RemoveDirectoryW(path);
 		if (r == FALSE) {
 			Win32IOErrorToExceptionThrow(::GetLastError(), path);
 		}
-	}
-
-	static bool createDirectory(const wchar_t* path)
-	{
-		return ::CreateDirectoryW(path, NULL) != FALSE;
 	}
 
 	static bool matchPath(const wchar_t* filePath, const wchar_t* pattern)

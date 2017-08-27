@@ -1,5 +1,7 @@
 ﻿#include <TestConfig.h>
 
+#ifdef LN_USTRING
+#else
 class Test_IO_PathName : public ::testing::Test
 {
 protected:
@@ -365,3 +367,4 @@ TEST_F(Test_IO_PathName, GenericStaticallyLocalPath)
 	}
 }
 
+#endif

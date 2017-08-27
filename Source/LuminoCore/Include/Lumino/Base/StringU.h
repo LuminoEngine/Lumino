@@ -693,6 +693,7 @@ public:
 	*/
 	void append(const UStringRef& path);
 	void append(const Path& path) { append(UStringRef(path.m_path)); }
+	void append(const UChar* path) { append(UStringRef(path)); }
 
 	/// 空文字列を設定する
 	void clear() { m_path.clear(); }
@@ -741,6 +742,8 @@ public:
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	*/
 	UStringRef getExtension(bool withDot = true) const;
+
+	Path getParent() const;
 
 #if 0
 	UStringRef getFileNameWithoutExtension() const;

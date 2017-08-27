@@ -2,6 +2,8 @@
 #include <Lumino/IO/FileSystem.h>
 #include <Lumino/Text/EncodingDetector.h>
 
+#ifdef LN_USTRING
+#else
 class Test_Text_EncodingDetector : public ::testing::Test
 {
 protected:
@@ -34,3 +36,4 @@ TEST_F(Test_Text_EncodingDetector, SJIS)
 	ASSERT_EQ(EncodingType::SJIS, detector.getEncodingType());
 
 }
+#endif

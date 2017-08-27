@@ -63,7 +63,54 @@ static const TChar* PathTraits::getExtensionBegin(const TChar* begin, const TCha
 }
 template const char16_t* PathTraits::getExtensionBegin(const char16_t* begin, const char16_t* end, bool withDot);
 
+template<typename TChar>
+const TChar* PathTraits::getDirectoryPathEnd(const TChar* begin, const TChar* end)
+{
+	/* 参考：他のライブラリの、空文字やセパレータが無いなどで親ディレクトリが取れない時の動作
+	"C:"	"C:/"	"C:/file"
+	- Qt (QFileInfo)			…	"C:"	"C:/"	"C:/"
+	- wxWidgets (wxFileName)	…
+	- Python (os.path)			…
+	- Ruby (Pathname)			…	"C:.."	"C:/"	"C:/"
+	- Java (os.nio.Paths)		…
+	- C# (Path, Uri)			…	""		"C:/"	"C:/"
+	*/
 
+	// 後ろから前に調べて、最初に \\ か / が見つかるところを探す
+	const TChar* pos = findLast(begin, end, [](TChar ch) { return isSeparatorChar(ch); });
+	return pos;
+
+	//GenericString<TChar> str;
+	//if (begin < pos)
+	//{
+	//	//str = GenericString<TChar>(path, pos);
+
+	//	// ルートパスの末尾は必ずセパレータにする
+	//	if (isRootPath(pos, end))
+	//	{
+	//		// 末尾がセパレータでなければセパレータを追加する
+	//		if (!str.endsWith((TChar)DirectorySeparatorChar) && !str.endsWith((TChar)AltDirectorySeparatorChar))
+	//		{
+	//			if (lastSep != 0) {
+	//				str += (const char)lastSep;
+	//			}
+	//			else {
+	//				str += (const char)DirectorySeparatorChar;
+	//			}
+	//		}
+	//	}
+
+	//}
+	//else
+	//{
+	//	// セパレータが見つからなかった。ただし、ルートパスの場合は空文字にしない。
+	//	if (isRootPath(begin, end))
+	//	{
+	//		str = path;
+	//	}
+	//}
+	//return str;
+}
 
 
 //------------------------------------------------------------------------------

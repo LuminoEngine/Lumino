@@ -13,11 +13,63 @@
 #include <Lumino/Base/StringHelper.h>
 #include <Lumino/IO/FileSystem.h>
 
+#include <Lumino/Base/StringU.h>
+#include <Lumino/Text/Encoding.h>
+
 LN_NAMESPACE_BEGIN
+
+// Native -> char or wchar_t or char16_t
+template<typename TSrcChar/*, typename TDstChar*/>
+class LocalStringConverter
+{
+public:
+	void alloc(int length)
+	{
+		// TODO: SSO
+		m_longNativeString.resize(length);
+	}
+
+	TSrcChar* data()
+	{
+		return m_longNativeString.data();
+	}
+
+	UString toUString() const
+	{
+		return UString::fromCString(m_longNativeString.data(), m_longNativeString.size());
+	}
+
+private:
+	std::vector<TSrcChar> m_longNativeString;
+};
+
+// Win32
+class PlatformEnvironment
+{
+public:
+	using CharType = wchar_t;
+
+	static void getCurrentDirectory(LocalStringConverter<CharType>* out)
+	{
+		DWORD size = ::GetCurrentDirectoryW(0, NULL);
+		out->alloc(size);
+		::GetCurrentDirectoryW(size, out->data());
+	}
+};
 
 //==============================================================================
 // Environment
 //==============================================================================
+
+UString getCurrentDirectory()
+{
+	LocalStringConverter<PlatformEnvironment::CharType> buf;
+	PlatformEnvironment::getCurrentDirectory(&buf);
+	return buf.toUString();
+}
+
+
+
 
 //------------------------------------------------------------------------------
 String Environment::getEnvironmentVariable(const String& variableName)
@@ -35,6 +87,10 @@ String Environment::LN_AFX_FUNCNAME(getEnvironmentVariable)(const String& variab
 //------------------------------------------------------------------------------
 bool Environment::tryGetEnvironmentVariable(const String& variableName, String* outValue)
 {
+#ifdef LN_USTRING
+	LN_NOTIMPLEMENTED();
+	return false;
+#else
 	String name = variableName;
 #ifdef LN_OS_WIN32
 	size_t len;
@@ -47,6 +103,7 @@ bool Environment::tryGetEnvironmentVariable(const String& variableName, String* 
 	if (outValue) { *outValue = val; }
 	return true;
 #else
+#endif
 #endif
 }
 

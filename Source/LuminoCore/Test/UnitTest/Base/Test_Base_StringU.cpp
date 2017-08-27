@@ -1011,7 +1011,7 @@ TEST_F(Test_Base_FormatterU, Basic)
 		ASSERT_EQ(u"25.187900", UString::format(u"{0:F}", 25.1879));
 		ASSERT_EQ(u"25.187900", UString::format(u"{0:f}", 25.1879));
 		ASSERT_EQ(u"25.19", UString::format(u"{0:F2}", 25.1879));
-		ASSERT_EQ(u"25,187900", UString::format(Locale(_T("fr")), u"{0:F}", 25.1879));
+		ASSERT_EQ(u"25,187900", UString::format(Locale(_TT("fr")), u"{0:F}", 25.1879));
 	}
 	// <Test> E
 	{
@@ -1078,7 +1078,7 @@ TEST_F(Test_Base_FormatterU, Examples)
 		ASSERT_EQ(u"1.234568e+04", UString::format(u"{0:e}", 12345.6789));
 		ASSERT_EQ(u"1.2345678900E+04", UString::format(u"{0:E10}", 12345.6789));
 		ASSERT_EQ(u"1.2346e+04", UString::format(u"{0:e4}", 12345.6789));
-		ASSERT_EQ(u"1,234568E+04", UString::format(Locale(_T("fr")), u"{0:E}", 12345.6789));
+		ASSERT_EQ(u"1,234568E+04", UString::format(Locale(_TT("fr")), u"{0:E}", 12345.6789));
 #else
 		ASSERT_EQ(u"1.234568e+004", UString::format(u"{0:e}", 12345.6789));
 		ASSERT_EQ(u"1.2345678900E+004", UString::format(u"{0:E10}", 12345.6789));

@@ -9,7 +9,11 @@ class TestHelper
 public:
 	/// baseFilePath のファイルと同じディレクトリの fileName を指すパスを得る
 	static String getFilePath(const char* baseFilePath, const char* fileName);
+#ifdef LN_USTRING
+	static String getFilePath(const char* baseFilePath, const Char* fileName) { return String(getFilePathU(baseFilePath, fileName).c_str()); }
+#else
 	static String getFilePath(const char* baseFilePath, const wchar_t* fileName) { return String::fromNativeCharString(getFilePathW(baseFilePath, fileName).c_str()); }
+#endif
 
 	/// baseFilePath のファイルと同じディレクトリの fileName を指すパスを得る
 	static PathName getDirPath(const char* baseFilePath);
@@ -17,6 +21,7 @@ public:
 	/// baseFilePath のファイルと同じディレクトリの fileName を指すパスを得る
 	static PathNameA getFilePathA(const char* baseFilePath, const char* fileName);
 	static PathNameW getFilePathW(const char* baseFilePath, const wchar_t* fileName);
+	static Path getFilePathU(const char* baseFilePath, const UChar* fileName);
 
 	/// 2 つの配列をバイト単位で比較する
 	static bool checkArrays(const void* ary1, const void* ary2, size_t count);

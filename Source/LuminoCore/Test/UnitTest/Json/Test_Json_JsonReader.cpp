@@ -6,6 +6,8 @@
 #include <Lumino/Json/JsonReader.h>
 using namespace ln::tr;
 
+#ifdef LN_USTRING
+#else
 class Test_Json_JsonReader : public ::testing::Test
 {
 protected:
@@ -139,7 +141,7 @@ TEST_F(Test_Json_JsonReader, Integrate)
 	// http://json.org/example.html
 	// <Integrate> オフィシャルページのサンプル1
 	{
-		StreamReader r(LN_LOCALFILE(_T("TestData/JSONExample1.json")));
+		StreamReader r(LN_LOCALFILE(_TT("TestData/JSONExample1.json")));
 		JsonReader2 jr(&r);
 		ASSERT_EQ(true, jr.read()); ASSERT_EQ(JsonToken::StartObject, jr.getTokenType());
 			ASSERT_EQ(true, jr.read()); ASSERT_EQ(JsonToken::PropertyName, jr.getTokenType()); ASSERT_EQ(_T("glossary"), jr.getValue());
@@ -185,7 +187,7 @@ TEST_F(Test_Json_JsonReader, Integrate)
 	}
 	// <Integrate> オフィシャルページのサンプル2
 	{
-		StreamReader r(LN_LOCALFILE(_T("TestData/JSONExample2.json")));
+		StreamReader r(LN_LOCALFILE(_TT("TestData/JSONExample2.json")));
 		JsonReader2 jr(&r);
 		while (jr.read());
 		ASSERT_EQ(JsonParseError2::NoError, jr.getError().code);
@@ -193,7 +195,7 @@ TEST_F(Test_Json_JsonReader, Integrate)
 	}
 	// <Integrate> オフィシャルページのサンプル3
 	{
-		StreamReader r(LN_LOCALFILE(_T("TestData/JSONExample3.json")));
+		StreamReader r(LN_LOCALFILE(_TT("TestData/JSONExample3.json")));
 		JsonReader2 jr(&r);
 		while (jr.read());
 		ASSERT_EQ(JsonParseError2::NoError, jr.getError().code);
@@ -201,7 +203,7 @@ TEST_F(Test_Json_JsonReader, Integrate)
 	}
 	// <Integrate> オフィシャルページのサンプル4
 	{
-		StreamReader r(LN_LOCALFILE(_T("TestData/JSONExample4.json")));
+		StreamReader r(LN_LOCALFILE(_TT("TestData/JSONExample4.json")));
 		JsonReader2 jr(&r);
 		while (jr.read());
 		ASSERT_EQ(JsonParseError2::NoError, jr.getError().code);
@@ -209,7 +211,7 @@ TEST_F(Test_Json_JsonReader, Integrate)
 	}
 	// <Integrate> オフィシャルページのサンプル5
 	{
-		StreamReader r(LN_LOCALFILE(_T("TestData/JSONExample5.json")));
+		StreamReader r(LN_LOCALFILE(_TT("TestData/JSONExample5.json")));
 		JsonReader2 jr(&r);
 		while (jr.read());
 		ASSERT_EQ(JsonParseError2::NoError, jr.getError().code);
@@ -271,7 +273,7 @@ TEST_F(Test_Json_JsonReader, Issues)
 {
 	// <Issue> ネストされた配列の終端で解析が終了してしまう。
 	{
-		StringReader r(_T(R"([{"tags": ["dolor"]},"end"])"));
+		StringReader r(_TT(R"([{"tags": ["dolor"]},"end"])"));
 		JsonReader2 jr(&r);
 		while (jr.read());
 		ASSERT_EQ(JsonParseError2::NoError, jr.getError().code);
@@ -279,7 +281,7 @@ TEST_F(Test_Json_JsonReader, Issues)
 	}
 	// <Issue> プロパティの値が配列だと、次のプロパティの解析で終了してしまう。
 	{
-		StringReader r(_T(R"({"tags": [],"friends":"10"})"));
+		StringReader r(_TT(R"({"tags": [],"friends":"10"})"));
 		JsonReader2 jr(&r);
 		while (jr.read());
 		ASSERT_EQ(JsonParseError2::NoError, jr.getError().code);
@@ -300,3 +302,5 @@ TEST_F(Test_Json_JsonReader, Issues)
 //	ASSERT_EQ(JsonParseError2::NoError, jr.GetError().code);
 //	ASSERT_EQ(true, r.IsEOF());
 //}
+
+#endif

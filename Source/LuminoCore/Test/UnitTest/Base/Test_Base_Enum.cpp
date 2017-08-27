@@ -104,12 +104,12 @@ TEST_F(Test_Base_Enum, parse)
 {
 	// <Test> 文字列を enum 値に変換できる。
 	{
-		TestValues v1 = TestValues::parse(_T("ID2"));
+		TestValues v1 = TestValues::parse(_TT("ID2"));
 		ASSERT_EQ(TestValues::ID2, v1);
 	}
 	// <Test> 別の enum の値でメンバの値を設定できる。
 	{
-		TestValues v1 = TestValues::parse(_T("ID3"));
+		TestValues v1 = TestValues::parse(_TT("ID3"));
 		ASSERT_EQ(102, v1);
 	}
 }
@@ -241,26 +241,26 @@ TEST_F(Test_Base_Enum, FlagsParse)
 {
 	// <Test> | で区切った文字列を enum(flags) 値に変換できる。
 	{
-		TestFlags v1 = TestFlags::parse(_T("Option2|Option3"));
+		TestFlags v1 = TestFlags::parse(_TT("Option2|Option3"));
 		ASSERT_EQ(TestFlags::Option2 | TestFlags::Option3, v1);
 	}
 	// <Test> 区切り文字を変更できる
 	{
-		TestFlags v1 = TestFlags::parse(_T("Option1, Option3"), _T(','));	// .NET スタイル
+		TestFlags v1 = TestFlags::parse(_TT("Option1, Option3"), _TT(','));	// .NET スタイル
 		ASSERT_EQ(TestFlags::Option1 | TestFlags::Option3, v1);
 	}
 	// <Illegal> 異常系チェック。前後や間に空白があってもOK。
 	{
 		TestFlags v1;
-		v1 = TestFlags::parse(_T(" Option2|Option3"));
+		v1 = TestFlags::parse(_TT(" Option2|Option3"));
 		ASSERT_EQ(TestFlags::Option2 | TestFlags::Option3, v1);
-		v1 = TestFlags::parse(_T("Option2|Option3 "));
+		v1 = TestFlags::parse(_TT("Option2|Option3 "));
 		ASSERT_EQ(TestFlags::Option2 | TestFlags::Option3, v1);
-		v1 = TestFlags::parse(_T("Option2\t|Option3"));
+		v1 = TestFlags::parse(_TT("Option2\t|Option3"));
 		ASSERT_EQ(TestFlags::Option2 | TestFlags::Option3, v1);
-		v1 = TestFlags::parse(_T("Option2| Option3"));
+		v1 = TestFlags::parse(_TT("Option2| Option3"));
 		ASSERT_EQ(TestFlags::Option2 | TestFlags::Option3, v1);
-		v1 = TestFlags::parse(_T(" Option2 | Option3 "));
+		v1 = TestFlags::parse(_TT(" Option2 | Option3 "));
 		ASSERT_EQ(TestFlags::Option2 | TestFlags::Option3, v1);
 	}
 }

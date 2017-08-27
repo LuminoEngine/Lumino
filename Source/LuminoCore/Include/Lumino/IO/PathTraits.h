@@ -28,7 +28,8 @@ public:
 	template<typename TChar>
 	static const TChar* getExtensionBegin(const TChar* begin, const TChar* end, bool withDot);
 
-
+	template<typename TChar>
+	static const TChar* getDirectoryPathEnd(const TChar* begin, const TChar* end);
 
 
 

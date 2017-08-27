@@ -4,6 +4,7 @@
 
 #pragma once
 #include "EnumExtension.h"
+#include "StringU.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -37,6 +38,8 @@ LN_ENUM_DECLARE(SpecialFolder);
 class Environment
 {
 public:
+	static UString getCurrentDirectory();
+
 
 	/**
 		@brief		環境変数の値を取得します。

@@ -834,6 +834,13 @@ UStringRef Path::getExtension(bool withDot) const
 	return UStringRef(PathTraits::getExtensionBegin(begin, end, withDot), end);
 }
 
+Path Path::getParent() const
+{
+	const UChar* begin = m_path.c_str();
+	const UChar* end = m_path.c_str() + m_path.getLength();
+	return UStringRef(begin, PathTraits::getDirectoryPathEnd(begin, end));
+}
+
 //bool Path::operator < (const Path& right) const { return PathTraits::compare(m_path.c_str(), right.m_path.c_str()) < 0; }
 //bool Path::operator < (const UChar* right) const { return PathTraits::compare(m_path.c_str(), right) < 0; }
 

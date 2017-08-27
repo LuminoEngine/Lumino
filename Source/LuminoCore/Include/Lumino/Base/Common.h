@@ -4,14 +4,17 @@
 //------------------------------------------------------------------------------
 // flags
 
-//#define LN_USTRING
-//#define _TT(x)	(u ## x)
-//#define TTCHAR 
-//using Char = char16_t;
-#define _TT		_T
-#define TTCHAR	TCHAR
-#define Char	TCHAR
-#define _U(x)	u ## x
+#define LN_USTRING
+#define _TT(x)	(u ## x)
+#define TTCHAR	char16_t
+//#define Char		char16_t
+#define _U(x)		u ## x
+namespace ln { using Char = char16_t; }
+
+//#define _TT		_T
+//#define TTCHAR	TCHAR
+//#define Char	TCHAR
+//#define _U(x)	u ## x
 
 
 // Debug ビルドフラグ

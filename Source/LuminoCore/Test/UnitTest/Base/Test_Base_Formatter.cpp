@@ -2,6 +2,9 @@
 #include <Lumino/Base/StringBuilder.h>
 #include <Lumino/Base/Locale.h>
 
+#ifdef LN_USTRING
+#else
+
 namespace ln
 {
 
@@ -244,3 +247,4 @@ TEST_F(Test_Base_Formatter, Examples)
 	}
 }
 
+#endif

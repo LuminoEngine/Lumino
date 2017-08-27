@@ -75,6 +75,16 @@ public:
 	static void deleteFile(const UStringRef& filePath);
 
 	/**
+		@brief		ディレクトリを作成します。
+		@param[in]	path	: 作成するディレクトリのパス
+		@details	指定したパスへの全てのディレクトリを作成します。
+					既に存在する場合は作成しません。
+	*/
+	static void createDirectory(const StringRefA& path);
+	static void createDirectory(const StringRefW& path);
+	static void createDirectory(const UStringRef& path);
+
+	/**
 		@brief		ディレクトリを削除します。
 		@param[in]	path			: 削除するディレクトリのパス
 		@param[in]	recursive		: 
@@ -158,14 +168,6 @@ public:
 	template<typename TChar, typename TCallback>
 	static void forEachFilesInDirectory(const GenericStringRef<TChar>& path, TCallback callback);
 
-	/**
-		@brief		ディレクトリを作成します。
-		@param[in]	path	: 作成するディレクトリのパス
-		@details	指定したパスへの全てのディレクトリを作成します。
-					既に存在する場合は作成しません。
-	*/
-	static void createDirectory(const char* path);
-	static void createDirectory(const wchar_t* path);
 
 	static void LN_AFX_FUNCNAME(createDirectory)(const char* path);
 	static void LN_AFX_FUNCNAME(createDirectory)(const wchar_t* path);

@@ -7,10 +7,10 @@
 PathName Test_GetTempFilePath(const Char* fileName)
 {
 	PathName base(__FILE__);
-	PathName tempDir(base.getParent(), _T("../../"));
-	tempDir.append(_T("tmp"));
+	PathName tempDir(base.getParent(), _TT("../../"));
+	tempDir.append(_TT("tmp"));
 	PathName path(tempDir, fileName);
-	FileSystem::createDirectory(path.getParent());
+	FileSystem::createDirectory(path.getParent().c_str());
 	return PathName(path.c_str());
 }
 

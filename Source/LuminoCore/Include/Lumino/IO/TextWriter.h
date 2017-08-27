@@ -115,7 +115,11 @@ public:
 	void writeLine(float value);
 	void writeLine(double value);		/**< @copydoc WriteLine(float) */
 
+#ifdef LN_USTRING
+	void writeLine(const StringRef& str) { writeInternal(str.data(), str.getLength()); writeLine(); }
+#else
 	void writeLine(const StringRef& str) { writeInternal(str.getBegin(), str.getLength()); writeLine(); }
+#endif
 
 	template<typename... TArgs>
 	void writeLine(const StringRef& str, const TArgs&... args) { String s = String::format(str, args...); writeInternal(s.c_str(), s.getLength()); writeLine(); }

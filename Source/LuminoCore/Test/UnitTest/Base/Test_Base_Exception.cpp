@@ -1,5 +1,7 @@
 ﻿#include <TestConfig.h>
 
+#ifdef LN_USTRING
+#else
 class Test_Base_Exception : public ::testing::Test
 {
 protected:
@@ -161,3 +163,4 @@ TEST_F(Test_Base_Exception, Basic)
 //
 //	ASSERT_EQ(0, x);
 //}
+#endif
