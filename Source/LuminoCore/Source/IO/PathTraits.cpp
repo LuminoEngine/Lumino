@@ -111,6 +111,7 @@ const TChar* PathTraits::getDirectoryPathEnd(const TChar* begin, const TChar* en
 	//}
 	//return str;
 }
+template const char16_t* PathTraits::getDirectoryPathEnd(const char16_t* begin, const char16_t* end);
 
 
 //------------------------------------------------------------------------------

@@ -21,7 +21,9 @@ public:
 	/// baseFilePath のファイルと同じディレクトリの fileName を指すパスを得る
 	static PathNameA getFilePathA(const char* baseFilePath, const char* fileName);
 	static PathNameW getFilePathW(const char* baseFilePath, const wchar_t* fileName);
+#ifdef LN_USTRING
 	static Path getFilePathU(const char* baseFilePath, const UChar* fileName);
+#endif
 
 	/// 2 つの配列をバイト単位で比較する
 	static bool checkArrays(const void* ary1, const void* ary2, size_t count);

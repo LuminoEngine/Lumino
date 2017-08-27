@@ -35,12 +35,14 @@ PathNameW TestHelper::getFilePathW(const char* baseFilePath, const wchar_t* file
 	return path;
 }
 
+#ifdef LN_USTRING
 Path TestHelper::getFilePathU(const char* baseFilePath, const UChar* fileName)
 {
 	Path base(baseFilePath);
 	Path path(base.getParent(), fileName);
 	return path;
 }
+#endif
 
 //------------------------------------------------------------------------------
 bool TestHelper::checkArrays(const void* ary1, const void* ary2, size_t count)

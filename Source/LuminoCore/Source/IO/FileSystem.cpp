@@ -365,31 +365,31 @@ static void createDirectoryInternal2(const TChar* begin, const TChar* end)
 	std::vector<std::basic_string<TChar>>	pathList;
 	std::basic_string<TChar> dir;
 
-	int i = (end - begin) - 1//StringTraits::tcslen(path) - 1;	// 一番後ろの文字の位置
+	int i = (end - begin) - 1;//StringTraits::tcslen(path) - 1;	// 一番後ろの文字の位置
 	while (i >= 0)
 	{
-		dir.assign(path, i + 1);
+		dir.assign(begin, i + 1);
 		if (FileSystem::existsDirectory(dir))
 		{
 			break;
 		}
-		pathList.add(dir);
+		pathList.push_back(dir);
 
 		// セパレータが見つかるまで探す
-		while (i > 0 && path[i] != PathTraits::DirectorySeparatorChar && path[i] != PathTraits::AltDirectorySeparatorChar)
+		while (i > 0 && begin[i] != PathTraits::DirectorySeparatorChar && begin[i] != PathTraits::AltDirectorySeparatorChar)
 		{
 			--i;
 		}
 		--i;
 	}
 
-	if (pathList.isEmpty()) { return; }	// path が存在している
+	if (pathList.empty()) { return; }	// path が存在している
 
 	for (int i = pathList.size() - 1; i >= 0; --i)
 	{
 		detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(pathList[i].c_str());
-		bool r = FileSystem::mkdir(createDirectory);
-		LN_THROW(r, IOException);
+		PlatformFileSystem::createDirectory(localPath.c_str());
+		//LN_THROW(r, IOException);
 	}
 }
 void FileSystem::createDirectory(const StringRefA& path)
@@ -644,6 +644,11 @@ bool FileSystem::existsDirectory(const wchar_t* path)
 {
 	FileAttribute attr;
 	if (!getAttributeInternal(path, &attr)) { return false; }
+	return attr.TestFlag(FileAttribute::Directory);
+}
+bool FileSystem::existsDirectory(const UChar* path)
+{
+	FileAttribute attr = getAttribute(path);
 	return attr.TestFlag(FileAttribute::Directory);
 }
 

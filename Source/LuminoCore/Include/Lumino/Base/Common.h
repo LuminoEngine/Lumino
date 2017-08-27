@@ -4,19 +4,6 @@
 //------------------------------------------------------------------------------
 // flags
 
-#define LN_USTRING
-#define _TT(x)	(u ## x)
-#define TTCHAR	char16_t
-//#define Char		char16_t
-#define _U(x)		u ## x
-namespace ln { using Char = char16_t; }
-
-//#define _TT		_T
-//#define TTCHAR	TCHAR
-//#define Char	TCHAR
-//#define _U(x)	u ## x
-
-
 // Debug ビルドフラグ
 #if defined(DEBUG) || defined(_DEBUG)
 	#define LN_DEBUG
@@ -113,6 +100,28 @@ namespace ln { using Char = char16_t; }
 #else
 	#define LN_CONSTEXPR
 #endif
+
+
+//#define LN_USTRING
+
+#ifdef LN_USTRING
+#define _TT(x)	(u ## x)
+#define TTCHAR	char16_t
+//#define Char		char16_t
+#define _U(x)		u ## x
+namespace ln { using Char = char16_t; }
+#else
+#define _TT		_T
+#define TTCHAR	TCHAR
+//#define Char	TCHAR
+#ifdef LN_UNICODE
+namespace ln { using Char = wchar_t; }
+#else
+namespace ln { using Char = char; }
+#endif
+#define _U(x)	u ## x
+#endif
+
 
 //------------------------------------------------------------------------------
 // defines

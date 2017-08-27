@@ -162,6 +162,7 @@ public:
 	*/
 	static bool existsDirectory(const char* path);
 	static bool existsDirectory(const wchar_t* path);
+	static bool existsDirectory(const UChar* path);
 	template<typename TString> static inline bool existsDirectory(const TString& path) { return existsDirectory(path.c_str()); }
 
 	// TODO: これだけだと FileSystem::ForEachFilesInDirectory<TCHAR>() のように明示的な型指定が必要
