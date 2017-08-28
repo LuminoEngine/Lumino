@@ -50,7 +50,11 @@ public:
 	bool isFaulted() const;
 
 	/** 実行中に発生しハンドルされなかった例外を返します。例外が発生していなければ nullptr です。*/
+#ifdef LN_EXCEPTION2
+	std::exception* getException() const;
+#else
 	Exception* getException() const;
+#endif
 
 LN_INTERNAL_ACCESS:
 	void execute();
@@ -61,7 +65,11 @@ private:
 
 	Delegate<void()>	m_action;
 	TaskStatus			m_status;
+#ifdef LN_EXCEPTION2
+	std::exception*		m_exception;
+#else
 	Exception*			m_exception;
+#endif
 	ConditionFlag		m_waiting;
 };
 

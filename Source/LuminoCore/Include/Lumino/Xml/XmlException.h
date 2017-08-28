@@ -8,16 +8,16 @@ namespace tr {
 /**
 	@brief	不正な XML フォーマットが入力された場合にスローされる例外です。
 */
-class XmlException
-	: public Exception
-{
-public:
-	LN_EXCEPTION_BASIC_CONSTRUCTOR_DECLARE(XmlException);
-
-public:
-	// override Exception
-	virtual Exception* copy() const { return LN_NEW XmlException(*this); }
-};
+//class XmlException
+//	: public Exception
+//{
+//public:
+//	LN_EXCEPTION_BASIC_CONSTRUCTOR_DECLARE(XmlException);
+//
+//public:
+//	// override Exception
+//	virtual Exception* copy() const { return LN_NEW XmlException(*this); }
+//};
 
 namespace detail
 {

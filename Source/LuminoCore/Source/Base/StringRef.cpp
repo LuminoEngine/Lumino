@@ -29,7 +29,7 @@ int GenericStringRef<wchar_t>::copyToLocal8Bit(char* dest, int destLen) const
 #ifdef LN_OS_WIN32
 	CPINFOEX cpInfo;
 	BOOL r = ::GetCPInfoEx(CP_THREAD_ACP, 0, &cpInfo);
-	LN_THROW(r, Win32Exception, ::GetLastError());
+	LN_THROW_WIN32(r, Win32Exception, ::GetLastError());
 	Win32CodePageEncoding::Win32CodePageEncoder enc(cpInfo);
 	size_t byteUsed = 0;
 	size_t charUsed = 0;

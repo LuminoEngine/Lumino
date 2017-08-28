@@ -9,7 +9,7 @@ namespace tr {
 //==============================================================================
 // XmlException
 //==============================================================================
-LN_EXCEPTION_BASIC_CONSTRUCTOR_IMPLEMENT(XmlException, InternalResource::XmlException);
+//LN_EXCEPTION_BASIC_CONSTRUCTOR_IMPLEMENT(XmlException, InternalResource::XmlException);
 
 namespace detail
 {

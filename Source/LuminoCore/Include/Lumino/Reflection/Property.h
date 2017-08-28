@@ -37,7 +37,7 @@ public:
 	virtual ~PropertyInfo();
 
 	virtual void setValue(ReflectionObject* target, Variant value, PropertySetSource source) const { LN_THROW(0, InvalidOperationException); }
-	virtual Variant getValue(const ReflectionObject* target) const { LN_THROW(0, InvalidOperationException); }
+	virtual Variant getValue(const ReflectionObject* target) const { LN_THROW(0, InvalidOperationException); return Variant(); }
 	virtual void addItem(ReflectionObject* target, const Variant& value) const { LN_THROW(0, InvalidOperationException); }
 
 	//virtual bool isReadable() const { return false; }

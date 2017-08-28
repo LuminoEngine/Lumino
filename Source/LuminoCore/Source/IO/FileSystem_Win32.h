@@ -37,7 +37,7 @@ static void Win32IOErrorToExceptionThrow(DWORD errorCode, const TChar* message)
 		LN_THROW(0, IOException, LN_T(TChar, "File exists : %s"), message);
 
 	default:
-		LN_THROW(0, Win32Exception, errorCode);
+		LN_THROW_WIN32(0, Win32Exception, errorCode);
 	}
 }
 

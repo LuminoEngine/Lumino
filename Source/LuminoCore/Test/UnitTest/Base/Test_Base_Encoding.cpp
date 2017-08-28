@@ -44,6 +44,8 @@ TEST_F(Test_Base_Encoding, convert)
 	std::unique_ptr<Decoder> decoder(Encoding::getSystemMultiByteEncoding()->createDecoder());
 	std::unique_ptr<Encoder> encoder(Encoding::getWideCharEncoding()->createEncoder());
 
+#ifdef LN_EXCEPTION2
+#else
 	// src が無い
 	ASSERT_THROW(
 		Encoding::convert(NULL, 0, (Decoder*)NULL, NULL, options, NULL),
@@ -56,6 +58,7 @@ TEST_F(Test_Base_Encoding, convert)
 	ASSERT_THROW(
 		Encoding::convert(buf1, 0, decoder.get(), NULL, options, NULL),
 		ArgumentException);
+#endif
 
 	// ↓ストリーミング用状態記憶対応のため、許可する
 	// ×最低でも必要なバイト数が無い

@@ -54,7 +54,7 @@ void GenericFileStream<TChar>::open(const TChar* filePath, FileOpenMode openMode
 	if (m_openModeFlags.TestFlag(FileOpenMode::Deferring))
 	{
 		if (!FileSystem::existsFile(filePath)) {
-			LN_THROW(0, FileNotFoundException, filePath);
+			LN_THROW_WIN32(0, FileNotFoundException, filePath);
 		}
 	}
 	// 遅延オープンでなければここで開いてしまう

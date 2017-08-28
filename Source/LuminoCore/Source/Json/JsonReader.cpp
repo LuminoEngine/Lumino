@@ -1059,7 +1059,7 @@ bool JsonReader2::parseString(bool isKey)
 			else if (esc == 'u')
 			{
 				// TODO: 未実装
-				LN_THROW(0, NotImplementedException);
+				LN_NOTIMPLEMENTED();
 				return false;
 			}
 			else

@@ -69,7 +69,11 @@ void InputManager::initialize(const Settings& settings)
 	m_inputDriver = driver;
 #endif
 	
-	LN_THROW(m_inputDriver != nullptr, NotImplementedException);
+	if (!m_inputDriver)
+	{
+		LN_NOTIMPLEMENTED();
+		return;
+	}
 
 	// TODO: 今は1つだけ
 	auto pad = Ref<InputController>::makeRef(this);

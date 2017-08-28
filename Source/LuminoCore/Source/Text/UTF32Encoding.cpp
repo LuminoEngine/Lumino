@@ -15,7 +15,7 @@ UTF32Encoding::UTF32Encoding(bool bigEndian, bool byteOrderMark)
 	, m_byteOrderMark(byteOrderMark)
 {
 	if (m_bigEndian) {
-		LN_THROW(0, NotImplementedException);
+		LN_NOTIMPLEMENTED();
 	}
 }
 
@@ -23,7 +23,7 @@ UTF32Encoding::UTF32Encoding(bool bigEndian, bool byteOrderMark)
 byte_t* UTF32Encoding::getPreamble() const
 {
 	static byte_t bom[] = { 0x00 };
-	LN_THROW(0, NotImplementedException);
+	LN_NOTIMPLEMENTED();
 	return bom;
 }
 

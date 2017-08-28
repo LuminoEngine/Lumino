@@ -52,7 +52,7 @@ public:
 			}
 			else
 			{
-				LN_THROW(0, Win32Exception, dwError);
+				LN_THROW_WIN32(0, Win32Exception, dwError);
 			}
 		}
 		else
@@ -132,7 +132,7 @@ public:
 			}
 			else
 			{
-				LN_THROW(0, Win32Exception, dwError);
+				LN_THROW_WIN32(0, Win32Exception, dwError);
 			}
 		}
 		else

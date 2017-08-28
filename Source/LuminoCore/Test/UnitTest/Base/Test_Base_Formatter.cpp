@@ -184,6 +184,8 @@ TEST_F(Test_Base_Formatter, Basic)
 
 }
 
+#ifdef LN_EXCEPTION2
+#else
 //---------------------------------------------------------------------
 TEST_F(Test_Base_Formatter, Illigal)
 {
@@ -206,6 +208,7 @@ TEST_F(Test_Base_Formatter, Illigal)
 		ASSERT_THROW(String::format(_T("{0:D "), _T("a")), InvalidFormatException);
 	}
 }
+#endif
 
 
 //---------------------------------------------------------------------

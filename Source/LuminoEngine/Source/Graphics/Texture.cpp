@@ -402,8 +402,10 @@ void Texture2D::setSubData(const PointI& offset, Bitmap* bitmap)
 	if (LN_CHECK_ARG(bitmap != nullptr)) return;
 
 	// TODO: 現状、ピクセルフォーマットが一致していることが前提
-	if (bitmap->getPixelFormat() != Utils::translatePixelFormat(m_deviceObj->getTextureFormat())) {
-		LN_THROW(0, NotImplementedException);
+	if (bitmap->getPixelFormat() != Utils::translatePixelFormat(m_deviceObj->getTextureFormat()))
+	{
+		LN_NOTIMPLEMENTED();
+		return;
 	}
 
 	LN_CALL_TEXTURE_COMMAND(setSubData, SetSubDataTextureCommand,

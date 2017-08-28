@@ -4,6 +4,8 @@
 
 LN_NAMESPACE_BEGIN
 
+#ifdef LN_EXCEPTION2
+#else
 /**
 	@brief	スレッド実行中にハンドルされない例外(このライブラリ以外の例外)が発生した
 */
@@ -18,5 +20,6 @@ public:
 	// override Exception
 	virtual Exception* copy() const { return LN_NEW ThreadException( *this ); }
 };
+#endif
 
 LN_NAMESPACE_END

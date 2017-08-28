@@ -92,6 +92,16 @@ void Thread::ExecuteInternal()
 	{
 		execute();
 	}
+#ifdef LN_EXCEPTION2
+	catch (std::exception& e)
+	{
+		mLastException = LN_NEW std::exception(e);
+	}
+	catch (...)
+	{
+		mLastException = LN_NEW std::exception("ThreadException");
+	}
+#else
 	catch (Exception& e)
 	{
 		mLastException = e.copy();
@@ -100,6 +110,7 @@ void Thread::ExecuteInternal()
 	{
 		mLastException = LN_NEW ThreadException();
 	}
+#endif
 
 	// 終了フラグを立てる
 	mFinished.setTrue();

@@ -6,6 +6,137 @@
 #include <exception>
 #include <assert.h>
 
+//#define LN_EXCEPTION2
+
+#ifdef LN_EXCEPTION2
+
+LN_NAMESPACE_BEGIN
+
+enum class ExceptionType
+{
+	Unkonwn,
+	ArgumentException,
+	InvalidOperationException,
+	InvalidFormatException,
+	NotImplementedException,
+	IOException,
+	DirectoryNotFoundException,
+	FileNotFoundException,		// TODO: Access
+	EndOfStreamException,
+	OutOfRangeException,
+	KeyNotFoundException,
+	OutOfMemoryException,
+	EncodingException,
+	OverflowException,
+	COMException,
+	Win32Exception,
+	XmlException,
+
+	Fatal,
+};
+
+extern ExceptionType ArgumentException;
+extern ExceptionType InvalidOperationException;
+extern ExceptionType InvalidFormatException;
+extern ExceptionType FileNotFoundException;
+extern ExceptionType IOException;
+extern ExceptionType DirectoryNotFoundException;
+extern ExceptionType EndOfStreamException;
+extern ExceptionType OutOfRangeException;
+extern ExceptionType KeyNotFoundException;
+extern ExceptionType OutOfMemoryException;
+extern ExceptionType EncodingException;
+extern ExceptionType OverflowException;
+extern ExceptionType Win32Exception;
+extern ExceptionType XmlException;
+
+
+
+
+
+// TODO: コンパイルオプションで指定したい
+//#define LN_DO_CHECK_ASSERT
+#define LN_DO_CHECK_THROW
+
+// exp の条件が満たされなかった場合、type に指定した例外を throw する
+#define LN_THROW(exp, type, ...)	{ if (!(exp)) { ::ln::detail::notifyException(type, __FILE__, __LINE__, ##__VA_ARGS__); } }
+
+// HRESULT を返す関数の呼び出しユーティリティ (Win32 用)
+#define LN_COMCALL(exp)				{ HRESULT hr = (exp); if (FAILED(hr)) { LN_THROW(0, ::ln::ExceptionType::COMException, "0x%x", hr); } }
+
+
+
+#if defined(LN_DO_CHECK_ASSERT)
+#define LN_CHECK(expression, exception, ...)		((!(expression)) && ln::detail::notifyAssert([](){ assert(!#expression); }))
+#elif defined(LN_DO_CHECK_THROW)
+#define LN_CHECK(expression, exception, ...)		(!(expression)) && ln::detail::notifyException(exception, __FILE__, __LINE__, ##__VA_ARGS__)
+#else
+#define LN_FAIL_CHECK(expression, exception)		(!(expression))
+#endif
+
+#define LN_CHECK_ARG(expression, ...)				LN_CHECK(expression, ::ln::ExceptionType::ArgumentException, ##__VA_ARGS__)
+#define LN_CHECK_STATE(expression, ...)				LN_CHECK(expression, ::ln::ExceptionType::InvalidOperationException, ##__VA_ARGS__)
+#define LN_CHECK_FORMAT(expression, ...)			LN_CHECK(expression, ::ln::ExceptionType::InvalidFormatException, ##__VA_ARGS__)
+#define LN_CHECK_RANGE(value, begin, end)			LN_CHECK(begin <= value && value < end, ::ln::ExceptionType::OutOfRangeException)
+
+#define LN_FATAL(expression, message)				{ if (!(expression)) ln::detail::notifyException(::ln::ExceptionType::Fatal, __FILE__, __LINE__, message); }
+#define LN_VERIFY(expression, exception, ...)		{ if (!(expression)) ln::detail::notifyException(exception, __FILE__, __LINE__, ##__VA_ARGS__); }
+#define LN_VERIFY_ARG(expression, ...)				{ if (!(expression)) ln::detail::notifyException(::ln::ExceptionType::ArgumentException, __FILE__, __LINE__, ##__VA_ARGS__); }
+#define LN_VERIFY_STATE(expression, ...)			{ if (!(expression)) ln::detail::notifyException(::ln::ExceptionType::InvalidOperationException, __FILE__, __LINE__, ##__VA_ARGS__); }
+#define LN_VERIFY_FORMAT(expression, ...)			{ if (!(expression)) ln::detail::notifyException(::ln::ExceptionType::InvalidFormatException, __FILE__, __LINE__, ##__VA_ARGS__); }
+
+// TODO: ln::detail::notifyXXXX へ流す
+#define LN_REQUIRE(expression, ...)					LN_CHECK(expression, ::ln::ExceptionType::InvalidOperationException, __VA_ARGS__)
+#define LN_ENSURE(expression, ...)					LN_CHECK(expression, ::ln::ExceptionType::InvalidOperationException, __VA_ARGS__)
+
+#define LN_UNREACHABLE()							LN_VERIFY(0, ::ln::ExceptionType::InvalidOperationException)
+#define LN_NOTIMPLEMENTED()							LN_VERIFY(0, ln::ExceptionType::NotImplementedException)
+
+
+#define LN_THROW_WIN32(exp, type, lastError)		LN_THROW(exp, type, "%d", lastError)
+
+
+
+class Assertion
+{
+public:
+	using NotifyExceptionHandler = bool(*)(ExceptionType type, const char* file, int line, const char* message);	// TODO: UChar
+	using NotifyFataiErrorHandler = bool(*)(ExceptionType type, const char* file, int line, const char* message);
+
+	static void setNotifyExceptionHandler(NotifyExceptionHandler handler);
+	static NotifyExceptionHandler getNotifyExceptionHandler();
+
+	static void setNotifyFataiErrorHandler(NotifyFataiErrorHandler handler);
+	static NotifyFataiErrorHandler getNotifyFataiErrorHandler();
+};
+
+namespace detail
+{
+template<typename TAssert>
+inline bool notifyAssert(TAssert callback)
+{
+	callback();
+	return true;	// TODO: ユーザー通知
+}
+
+bool notifyException(ExceptionType type, const char* file, int line);
+bool notifyException(ExceptionType type, const char* file, int line, const char* format, ...);
+bool notifyException(ExceptionType type, const char* file, int line, const wchar_t* format, ...);
+
+} // namespace detail
+
+
+LN_NAMESPACE_END
+
+
+
+
+
+
+
+
+#else
+
 // exp の条件が満たされなかった場合、type に指定した例外を throw する
 #define LN_THROW( exp, type, ... )	{ if (!(exp)) { type e = type(__VA_ARGS__); e.setSourceLocationInfo(__FILE__, __LINE__); throw e; } }
 
@@ -109,6 +240,8 @@
 
 #define LN_UNREACHABLE()							LN_VERIFY(0, ::ln::InvalidOperationException)
 #define LN_NOTIMPLEMENTED()							LN_VERIFY(0, ln::NotImplementedException)
+
+#define LN_THROW_WIN32	LN_THROW
 
 LN_NAMESPACE_BEGIN
 
@@ -470,3 +603,6 @@ private:
 };
 
 LN_NAMESPACE_END
+
+#endif
+

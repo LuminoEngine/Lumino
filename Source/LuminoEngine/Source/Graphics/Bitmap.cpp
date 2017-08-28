@@ -246,7 +246,7 @@ void Bitmap::convertToDownFlow()
 		}
 	}
 	else {
-		LN_THROW(0, NotImplementedException);
+		LN_NOTIMPLEMENTED();
 	}
 }
 

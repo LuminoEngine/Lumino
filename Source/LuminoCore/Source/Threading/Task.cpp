@@ -77,10 +77,17 @@ bool Task::isFaulted() const
 }
 
 //------------------------------------------------------------------------------
+#ifdef LN_EXCEPTION2
+std::exception* Task::getException() const
+{
+	return m_exception;
+}
+#else
 Exception* Task::getException() const
 {
 	return m_exception;
 }
+#endif
 
 //------------------------------------------------------------------------------
 void Task::execute()
@@ -91,6 +98,18 @@ void Task::execute()
 		m_action.call();
 		m_status = TaskStatus::completed;
 	}
+#ifdef LN_EXCEPTION2
+	catch (std::exception& e)
+	{
+		m_exception = LN_NEW std::exception(e);
+		m_status = TaskStatus::Faulted;
+	}
+	catch (...)
+	{
+		m_exception = LN_NEW std::exception("ThreadException");
+		m_status = TaskStatus::Faulted;
+	}
+#else
 	catch (Exception& e)
 	{
 		m_exception = e.copy();
@@ -101,6 +120,7 @@ void Task::execute()
 		m_exception = LN_NEW ThreadException();
 		m_status = TaskStatus::Faulted;
 	}
+#endif
 	m_waiting.setTrue();
 }
 

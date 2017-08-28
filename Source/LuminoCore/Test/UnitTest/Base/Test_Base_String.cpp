@@ -905,11 +905,14 @@ TEST_F(Test_Base_String, ToInt)
 	ASSERT_EQ(10, String(_T("10")).toUInt32());
 	ASSERT_EQ(10, String(_T("10")).toUInt64());
 
+#ifdef LN_EXCEPTION2
+#else
 	// 異常系
 	ASSERT_THROW(String(_T("10")).toInt8(1), ArgumentException);
 	ASSERT_THROW(String(_T("-")).toInt8(), InvalidFormatException);
 	ASSERT_THROW(String(_T("qwer")).toInt8(), InvalidFormatException);
 	ASSERT_THROW(String(_T("0xfffffffffffffffff")).toInt8(), OverflowException);
+#endif
 }
 
 //------------------------------------------------------------------------------

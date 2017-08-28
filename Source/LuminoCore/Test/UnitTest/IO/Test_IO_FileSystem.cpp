@@ -104,9 +104,12 @@ TEST_F(Test_IO_FileSystem, Copy_Delete)
 	ASSERT_EQ(src1Size, FileSystem::getFileSize(dest.c_str()));
 
 	// 上書きしようとすると IOException
+#ifdef LN_EXCEPTION2
+#else
 	ASSERT_THROW(
 		FileSystem::copy(src2.c_str(), dest.c_str(), false),
 		IOException);
+#endif
 
 	// 上書き許可でコピー
 	FileSystem::copy(src2.c_str(), dest.c_str(), true);

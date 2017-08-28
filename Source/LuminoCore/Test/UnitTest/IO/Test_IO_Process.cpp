@@ -93,9 +93,12 @@ TEST_F(Test_IO_Process, start)
 	// <Illegal> プログラム名が見つからなかった。
 	{
 		Process proc;
+#ifdef LN_EXCEPTION2
+#else
 		ASSERT_THROW(
 			proc.start(_T("XXXX")),
 			FileNotFoundException);
+#endif
 	}
 }
 

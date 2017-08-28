@@ -8,6 +8,94 @@
 #include <Lumino/Base/Logger.h>
 #include <Lumino/Base/Resource.h>
 
+#ifdef LN_EXCEPTION2
+
+LN_NAMESPACE_BEGIN
+
+ExceptionType ArgumentException = ExceptionType::ArgumentException;
+ExceptionType InvalidOperationException = ExceptionType::InvalidOperationException;
+ExceptionType InvalidFormatException = ExceptionType::InvalidFormatException;
+ExceptionType FileNotFoundException = ExceptionType::FileNotFoundException;
+ExceptionType IOException = ExceptionType::IOException;
+ExceptionType DirectoryNotFoundException = ExceptionType::DirectoryNotFoundException;
+ExceptionType EndOfStreamException = ExceptionType::EndOfStreamException;
+ExceptionType OutOfRangeException = ExceptionType::OutOfRangeException;
+ExceptionType KeyNotFoundException = ExceptionType::KeyNotFoundException;
+ExceptionType OutOfMemoryException = ExceptionType::OutOfMemoryException;
+ExceptionType EncodingException = ExceptionType::EncodingException;
+ExceptionType OverflowException = ExceptionType::OverflowException;
+ExceptionType Win32Exception = ExceptionType::Win32Exception;
+ExceptionType XmlException = ExceptionType::XmlException;
+
+namespace detail {
+
+
+bool notifyException(ExceptionType type, const char* file, int line)
+{
+	// TODO: format
+	auto handler = Assertion::getNotifyExceptionHandler();
+	if (handler && handler(type, file, line, "")) return true;
+	return true;
+}
+
+bool notifyException(ExceptionType type, const char* file, int line, const char* format, ...)
+{
+	// TODO: format
+	auto handler = Assertion::getNotifyExceptionHandler();
+	if (handler && handler(type, file, line, format)) return true;
+	return true;
+}
+
+bool notifyException(ExceptionType type, const char* file, int line, const wchar_t* format, ...)
+{
+	// TODO:
+	return true;
+}
+
+//
+//bool notifyFatalError(const char* file, int line, const char* message)
+//{
+//	auto h = Assertion::getNotifyFataiErrorHandler();
+//	if (h != nullptr && h(file, line, message)) return true;
+//	printf("%s : %s(%d)", message, file, line);
+//	*reinterpret_cast<int*>(0) = 0;
+//	return true;
+//}
+
+} // namespace detail
+
+
+//==============================================================================
+// Assertion
+//==============================================================================
+
+static Assertion::NotifyExceptionHandler	g_notifyExceptionHandlerHandler = nullptr;
+static Assertion::NotifyFataiErrorHandler	g_notifyFataiErrorHandler = nullptr;
+
+void Assertion::setNotifyExceptionHandler(NotifyExceptionHandler handler)
+{
+	g_notifyExceptionHandlerHandler = handler;
+}
+
+Assertion::NotifyExceptionHandler Assertion::getNotifyExceptionHandler()
+{
+	return g_notifyExceptionHandlerHandler;
+}
+
+void Assertion::setNotifyFataiErrorHandler(NotifyFataiErrorHandler handler)
+{
+	g_notifyFataiErrorHandler = handler;
+}
+
+Assertion::NotifyFataiErrorHandler Assertion::getNotifyFataiErrorHandler()
+{
+	return g_notifyFataiErrorHandler;
+}
+
+LN_NAMESPACE_END
+
+#else
+
 #ifdef LN_EXCEPTION_BACKTRACE
 	#if defined(LN_OS_WIN32)	// Cygwin もこっち
 		#include "Win32/BackTrace.h"
@@ -422,3 +510,4 @@ Exception* COMException::copy() const
 }
 
 LN_NAMESPACE_END
+#endif

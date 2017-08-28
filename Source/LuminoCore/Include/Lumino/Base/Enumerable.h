@@ -364,7 +364,7 @@ public:
 	{
 		if (m_source->Advance())
 		{
-			m_current = m_transform(m_source->get());
+			m_current = Nullable<T>(m_transform(m_source->get()));
 			return true;
 		}
 		m_current.reset();

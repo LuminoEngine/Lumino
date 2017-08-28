@@ -46,7 +46,7 @@ public:
 
 		DWORD bytesWrite = 0;
 		BOOL bRes = ::WriteFile(m_hPipe, data, (DWORD)byteCount, &bytesWrite, NULL);
-		LN_THROW(bRes != FALSE, Win32Exception, ::GetLastError());
+		LN_THROW_WIN32(bRes != FALSE, Win32Exception, ::GetLastError());
 	}
 	virtual void seek(int64_t offset, SeekOrigin origin) { LN_THROW(0, InvalidOperationException); }
 	virtual void flush() {}
@@ -135,7 +135,7 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo, ProcessStartResult* o
 	{
 		HANDLE hPipe[2] = { 0, 0 };
 		bResult = ::CreatePipe(&hPipe[R], &hPipe[W], &sa, 0);
-		LN_THROW(bResult != FALSE, Win32Exception, ::GetLastError());
+		LN_THROW_WIN32(bResult != FALSE, Win32Exception, ::GetLastError());
 
 		// パイプのこのプロセス側を非継承で複製する
 		if (!::DuplicateHandle(hProcess, hPipe[W], hProcess, &m_hInputWrite, 0, FALSE, DUPLICATE_SAME_ACCESS))
@@ -143,7 +143,7 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo, ProcessStartResult* o
 			DWORD dwErr = ::GetLastError();
 			::CloseHandle(hPipe[R]);
 			::CloseHandle(hPipe[W]);
-			LN_THROW(0, Win32Exception, dwErr);
+			LN_THROW_WIN32(0, Win32Exception, dwErr);
 		}
 		::CloseHandle(hPipe[W]);
 		m_hInputRead = hPipe[R];
@@ -158,7 +158,7 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo, ProcessStartResult* o
 	{
 		HANDLE hPipe[2] = { 0, 0 };
 		bResult = ::CreatePipe(&hPipe[R], &hPipe[W], &sa, 0);
-		LN_THROW(bResult != FALSE, Win32Exception, ::GetLastError());
+		LN_THROW_WIN32(bResult != FALSE, Win32Exception, ::GetLastError());
 
 		// パイプのこのプロセス側を非継承で複製する
 		if (!::DuplicateHandle(hProcess, hPipe[R], hProcess, &m_hOutputRead, 0, FALSE, DUPLICATE_SAME_ACCESS))
@@ -166,7 +166,7 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo, ProcessStartResult* o
 			DWORD dwErr = ::GetLastError();
 			::CloseHandle(hPipe[R]);
 			::CloseHandle(hPipe[W]);
-			LN_THROW(0, Win32Exception, dwErr);
+			LN_THROW_WIN32(0, Win32Exception, dwErr);
 		}
 		::CloseHandle(hPipe[R]);
 		m_hOutputWrite = hPipe[W];
@@ -181,7 +181,7 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo, ProcessStartResult* o
 	{
 		HANDLE hPipe[2] = { 0, 0 };
 		bResult = ::CreatePipe(&hPipe[R], &hPipe[W], &sa, 0);
-		LN_THROW(bResult != FALSE, Win32Exception, ::GetLastError());
+		LN_THROW_WIN32(bResult != FALSE, Win32Exception, ::GetLastError());
 
 		// パイプのこのプロセス側を非継承で複製する
 		if (!::DuplicateHandle(hProcess, hPipe[R], hProcess, &m_hErrorRead, 0, FALSE, DUPLICATE_SAME_ACCESS))
@@ -189,7 +189,7 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo, ProcessStartResult* o
 			DWORD dwErr = ::GetLastError();
 			::CloseHandle(hPipe[R]);
 			::CloseHandle(hPipe[W]);
-			LN_THROW(0, Win32Exception, dwErr);
+			LN_THROW_WIN32(0, Win32Exception, dwErr);
 		}
 		::CloseHandle(hPipe[R]);
 		m_hErrorWrite = hPipe[W];
@@ -233,7 +233,7 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo, ProcessStartResult* o
 		if (dwErr == ERROR_FILE_NOT_FOUND) {
 			LN_THROW(0, FileNotFoundException, startInfo.program);
 		}
-		LN_THROW(0, Win32Exception, dwErr);
+		LN_THROW_WIN32(0, Win32Exception, dwErr);
 	}
 
 	// 子プロセスのスレッドハンドルは不必要なのでクローズしてしまう

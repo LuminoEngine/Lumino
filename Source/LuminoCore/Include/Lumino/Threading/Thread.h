@@ -1,12 +1,12 @@
 ﻿
 #pragma once
 #include "../Base/Common.h"
+#include "../Base/Exception.h"
 #include "../Base/Delegate.h"
 #include "ConditionFlag.h"
 
 LN_NAMESPACE_BEGIN
 namespace detail { class ThreadImpl; }
-class Exception;
 
 /**
 	@brief		スレッドクラスの基底クラス
@@ -76,7 +76,11 @@ private:
 
 	detail::ThreadImpl*	m_impl;
 	ConditionFlag		mFinished;
+#ifdef LN_EXCEPTION2
+	std::exception*		mLastException;
+#else
 	Exception*			mLastException;
+#endif
 };
 
 

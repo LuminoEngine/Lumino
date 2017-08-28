@@ -77,7 +77,7 @@ List<String> DirectoryUtils::getFiles(const TCHAR* drPath, const TCHAR* pattern)
 			return fileList;
 		}
 		else {
-			LN_THROW(0, Win32Exception, dwError);
+			LN_THROW_WIN32(0, Win32Exception, dwError);
 		}
 	}
 

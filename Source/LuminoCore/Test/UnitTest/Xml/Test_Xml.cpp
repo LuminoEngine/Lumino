@@ -136,7 +136,10 @@ TEST_F(Test_Xml_XmlWriter, UnitTest)
 		XmlWriter xmlWriter(&strWriter);
 		xmlWriter.writeStartElement(_T("test"));
 		xmlWriter.writeComment(_T("comment1"));
+#ifdef LN_EXCEPTION2
+#else
 		ASSERT_THROW(xmlWriter.writeComment(_T("comment2--")), ArgumentException);
+#endif
 		xmlWriter.writeComment(_T("comment3"));
 		xmlWriter.writeEndElement();
 		ASSERT_EQ(_T("<test>\n  <!--comment1-->\n  <!--comment3-->\n</test>"), strWriter.toString());
@@ -148,7 +151,10 @@ TEST_F(Test_Xml_XmlWriter, UnitTest)
 		XmlWriter xmlWriter(&strWriter);
 		xmlWriter.writeStartElement(_T("test"));
 		xmlWriter.writeCData(_T("AAA && BBB"));
+#ifdef LN_EXCEPTION2
+#else
 		ASSERT_THROW(xmlWriter.writeCData(_T("XX]]>")), ArgumentException);
+#endif
 		xmlWriter.writeCData(_T("CCC\nDDD"));
 		xmlWriter.writeEndElement();
 		ASSERT_EQ(_T("<test><![CDATA[AAA && BBB]]><![CDATA[CCC\nDDD]]></test>"), strWriter.toString());

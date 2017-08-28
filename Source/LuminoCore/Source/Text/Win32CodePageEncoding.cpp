@@ -14,7 +14,7 @@ LN_NAMESPACE_BEGIN
 Win32CodePageEncoding::Win32CodePageEncoding(UINT codePage)
 {
 	BOOL r = ::GetCPInfoEx(codePage, 0, &m_cpInfo);
-	LN_THROW(r, Win32Exception, ::GetLastError());
+	LN_THROW_WIN32(r, Win32Exception, ::GetLastError());
 	
 	// 以前 String::SPrintf を使っていたが、その中から呼ばれて無限再起することがあるのでやめた
 	TCHAR buf[32];
@@ -190,7 +190,7 @@ void Win32CodePageEncoding::Win32CodePageEncoder::convertFromUTF16(const UTF16* 
 	int convertedByteCount = 0;
 	if (m_canRemain)
 	{
-		LN_THROW(0, NotImplementedException);
+		LN_NOTIMPLEMENTED();
 	}
 	else
 	{
