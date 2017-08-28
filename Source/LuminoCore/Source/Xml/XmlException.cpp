@@ -6,10 +6,13 @@
 LN_NAMESPACE_BEGIN
 namespace tr {
 
+#ifdef LN_EXCEPTION2
+#else
 //==============================================================================
 // XmlException
 //==============================================================================
-//LN_EXCEPTION_BASIC_CONSTRUCTOR_IMPLEMENT(XmlException, InternalResource::XmlException);
+LN_EXCEPTION_BASIC_CONSTRUCTOR_IMPLEMENT(XmlException, InternalResource::XmlException);
+#endif
 
 namespace detail
 {
