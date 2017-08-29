@@ -202,10 +202,11 @@ SkinnedMeshModel::~SkinnedMeshModel()
 }
 
 //------------------------------------------------------------------------------
-void SkinnedMeshModel::initialize(detail::GraphicsManager* manager, PmxSkinnedMeshResource* sharingMesh)
+bool SkinnedMeshModel::initialize(detail::GraphicsManager* manager, PmxSkinnedMeshResource* sharingMesh)
 {
-	if (LN_CHECK_ARG(manager != nullptr)) return;
-	if (LN_CHECK_ARG(sharingMesh != nullptr)) return;
+	LN_BASE_INITIALIZE(Object);
+	if (LN_CHECK_ARG(manager != nullptr)) return false;
+	if (LN_CHECK_ARG(sharingMesh != nullptr)) return false;
 
 	m_mesh = Object::makeRef<StaticMeshModel>(manager, sharingMesh);
 
@@ -324,6 +325,7 @@ void SkinnedMeshModel::initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 		m_jointList[i] = Ref<detail::MmdSkinnedMeshJoint>::makeRef();
 		m_jointList[i]->initialize(this, m_meshResource->joints[i]);
 	}
+	return true;
 }
 
 //------------------------------------------------------------------------------
@@ -484,9 +486,11 @@ SkinnedMeshBone::~SkinnedMeshBone()
 }
 
 //------------------------------------------------------------------------------
-void SkinnedMeshBone::initialize(PmxBoneResource* boneResource)
+bool SkinnedMeshBone::initialize(PmxBoneResource* boneResource)
 {
+	LN_BASE_INITIALIZE(Object);
 	m_core = boneResource;
+	return true;
 }
 
 //------------------------------------------------------------------------------

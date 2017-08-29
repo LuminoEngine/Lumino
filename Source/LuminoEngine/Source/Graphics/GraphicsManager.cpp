@@ -54,16 +54,18 @@ GraphicsResourceObject::~GraphicsResourceObject()
 }
 
 //------------------------------------------------------------------------------
-void GraphicsResourceObject::finalize_()
+bool GraphicsResourceObject::initialize()
 {
-	Dispose();
+	LN_BASE_INITIALIZE(Object);
+	m_manager = detail::EngineDomain::getGraphicsManager();
+	m_manager->addResourceObject(this);
+	return true;
 }
 
 //------------------------------------------------------------------------------
-void GraphicsResourceObject::initialize()
+void GraphicsResourceObject::finalize_()
 {
-	m_manager = detail::EngineDomain::getGraphicsManager();
-	m_manager->addResourceObject(this);
+	Dispose();
 }
 
 //------------------------------------------------------------------------------

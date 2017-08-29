@@ -47,7 +47,7 @@ protected:
 
 protected:
 	NlGraphNode();
-	void initialize(NlGraphNodeCategory category);
+	bool initialize(NlGraphNodeCategory category);
 
 private:
 	NlGraphNodeCategory	m_category;
@@ -97,7 +97,7 @@ public:
 
 LN_INTERNAL_ACCESS:
 	EntryPointNode();
-	void initialize(const StringRef& name);
+	bool initialize(const StringRef& name);
 
 protected:
 	virtual void execute(NlContext* sc);
@@ -142,7 +142,7 @@ public:
 
 LN_INTERNAL_ACCESS:
 	NlGraphPin();
-	void initialize(NlGraphNode* ownerNode, NlGraphPinCategory category, NlGraphPinDirection direction);
+	bool initialize(NlGraphNode* ownerNode, NlGraphPinCategory category, NlGraphPinDirection direction);
 
 private:
 	NlGraphNode*		m_ownerNode;
@@ -206,7 +206,7 @@ public:
 LN_INTERNAL_ACCESS:
 	NlGraphInterface();
 	virtual ~NlGraphInterface() = default;
-	void initialize();
+	bool initialize();
 
 private:
 	NlGraphPtr	m_graph;

@@ -23,7 +23,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIAdorner();
 	virtual ~UIAdorner();
-	void initialize();
+	bool initialize();
 };
 
 /**
@@ -44,7 +44,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	UIAdornerLayer();
 	virtual ~UIAdornerLayer();
-	void initialize();
+	bool initialize();
 
 private:
 	List<Ref<UIAdorner>>	m_adorners;
@@ -73,7 +73,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	UIPopup();
 	virtual ~UIPopup();
-	void initialize();
+	bool initialize();
 
 LN_INTERNAL_ACCESS:
 	void updateLayoutForInPlacePopup(const Size& viewSize);
@@ -96,7 +96,7 @@ public:
 LN_CONSTRUCT_ACCESS :
 	UIComboBoxItem();
 	virtual ~UIComboBoxItem();
-	void initialize();
+	bool initialize();
 };
 
 /**
@@ -119,7 +119,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	UIComboBox();
 	virtual ~UIComboBox();
-	void initialize();
+	bool initialize();
 
 private:
 	Ref<UIScrollViewer>	m_scrollViewer;

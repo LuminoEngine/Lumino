@@ -31,8 +31,8 @@ protected:
 LN_INTERNAL_ACCESS:
 	VertexDeclaration();
 	virtual ~VertexDeclaration();
-	void initialize(detail::GraphicsManager* manager);
-	void initialize(detail::GraphicsManager* manager, const VertexElement* elements, int count);
+	bool initialize(detail::GraphicsManager* manager);
+	bool initialize(detail::GraphicsManager* manager, const VertexElement* elements, int count);
 	void tryUpdateResource();
 	Driver::IVertexDeclaration* getDeviceObject();
 

@@ -65,7 +65,7 @@ public:
 LN_PROTECTED_INTERNAL_ACCESS:
 	SpriteComponent();
 	virtual ~SpriteComponent();
-	void initialize();
+	bool initialize();
 	void renderSprite(RenderingContext* renderer, SpriteBaseDirection dir);
 
 private:
@@ -117,9 +117,9 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	Sprite2DComponent();
 	virtual ~Sprite2DComponent();
 	LN_METHOD()
-	void initialize();
+	bool initialize();
 	LN_METHOD()
-	void initialize(Texture* texture);
+	bool initialize(Texture* texture);
 	virtual void onRender2(RenderingContext* renderer) override;
 };
 
@@ -160,7 +160,7 @@ public:
 LN_PROTECTED_INTERNAL_ACCESS:
 	Sprite3DComponent();
 	virtual ~Sprite3DComponent();
-	void initialize();
+	bool initialize();
 	virtual void onRender2(RenderingContext* renderer) override;
 };
 
@@ -216,7 +216,7 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~SpriteBase();
 
 	LN_METHOD()
-	void initialize();
+	bool initialize();
 };
 
 /**
@@ -260,13 +260,13 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~Sprite2D();
 
 	LN_METHOD()
-	void initialize();
+	bool initialize();
 
 	LN_METHOD()
-	void initialize(const StringRef& filePath);
+	bool initialize(const StringRef& filePath);
 
 	LN_METHOD()
-	void initialize(Texture* texture);
+	bool initialize(Texture* texture);
 
 private:
 	Ref<Sprite2DComponent>	m_component;
@@ -317,10 +317,10 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~Sprite3D();
 
 	LN_METHOD()
-	void initialize();
+	bool initialize();
 
 	LN_METHOD()
-	void initialize(float width, float height, Texture* texture);
+	bool initialize(float width, float height, Texture* texture);
 
 private:
 	Ref<Sprite3DComponent>	m_component;

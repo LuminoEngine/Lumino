@@ -62,7 +62,7 @@ SceneNode::~SceneNode()
 }
 
 //------------------------------------------------------------------------------
-void SceneNode::initialize()
+bool SceneNode::initialize()
 {
 	m_manager = detail::EngineDomain::getSceneGraphManager();
 }

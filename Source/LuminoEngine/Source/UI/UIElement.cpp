@@ -78,9 +78,9 @@ UIElement::~UIElement()
 }
 
 //------------------------------------------------------------------------------
-void UIElement::initialize()
+bool UIElement::initialize()
 {
-	RuntimeResource::initialize();
+	LN_BASE_INITIALIZE(RuntimeResource);
 	m_manager = detail::EngineDomain::getUIManager();
 	m_invalidateFlags |= detail::InvalidateFlags::Initializing;
 
@@ -93,6 +93,7 @@ void UIElement::initialize()
 	m_invalidateFlags |= detail::InvalidateFlags::VisualState;
 
 	setVisibility(UIVisibility::Visible);
+	return true;
 }
 
 //------------------------------------------------------------------------------

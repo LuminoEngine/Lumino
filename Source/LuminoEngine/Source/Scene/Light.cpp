@@ -28,15 +28,16 @@ LightComponent::~LightComponent()
 }
 
 //------------------------------------------------------------------------------
-void LightComponent::initialize(LightType type)
+bool LightComponent::initialize(LightType type)
 {
-	SceneNode::initialize();
+	LN_BASE_INITIALIZE(SceneNode);
 	m_lightInfo = Ref<detail::DynamicLightInfo>::makeRef();
 	m_lightInfo->m_type = type;
 	m_lightInfo->m_diffuse.set(1.0f, 1.0f, 1.0f, 1.0f);
 	m_lightInfo->m_ambient.set(1.0f, 1.0f, 1.0f, 1.0f);
 	m_lightInfo->m_specular.set(1.0f, 1.0f, 1.0f, 1.0f);
 	m_lightInfo->m_shadowZFar = 1000.0f;
+	return true;
 }
 
 //------------------------------------------------------------------------------
@@ -104,9 +105,9 @@ Light::~Light()
 }
 
 //------------------------------------------------------------------------------
-void Light::initialize()
+bool Light::initialize()
 {
-	WorldObject::initialize();
+	LN_BASE_INITIALIZE(WorldObject);
 	m_component = newObject<LightComponent>(LightType_Directional);
 	addComponent(m_component);
 
@@ -115,6 +116,7 @@ void Light::initialize()
 	rot.rotateX(Math::degreesToRadians(50));
 	rot.rotateY(Math::degreesToRadians(-30));
 	setRotation(rot);
+	return true;
 }
 
 //------------------------------------------------------------------------------

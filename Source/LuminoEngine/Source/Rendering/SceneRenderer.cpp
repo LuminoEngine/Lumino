@@ -286,9 +286,11 @@ NonShadingRenderingPass::~NonShadingRenderingPass()
 }
 
 //------------------------------------------------------------------------------
-void NonShadingRenderingPass::initialize(GraphicsManager* manager)
+bool NonShadingRenderingPass::initialize(GraphicsManager* manager)
 {
+	LN_BASE_INITIALIZE(Object);
 	m_defaultShader = manager->getBuiltinShader(BuiltinShader::Sprite);
+	return true;
 }
 
 //------------------------------------------------------------------------------
@@ -395,9 +397,11 @@ ForwardShadingRenderingPass::~ForwardShadingRenderingPass()
 }
 
 //------------------------------------------------------------------------------
-void ForwardShadingRenderingPass::initialize(GraphicsManager* manager)
+bool ForwardShadingRenderingPass::initialize(GraphicsManager* manager)
 {
+	LN_BASE_INITIALIZE(Object);
 	m_defaultShader = manager->getBuiltinShader(BuiltinShader::LegacyDiffuse);
+	return true;
 }
 
 //------------------------------------------------------------------------------
@@ -422,9 +426,11 @@ InfomationRenderingPass::~InfomationRenderingPass()
 }
 
 //------------------------------------------------------------------------------
-void InfomationRenderingPass::initialize(GraphicsManager* manager)
+bool InfomationRenderingPass::initialize(GraphicsManager* manager)
 {
+	LN_BASE_INITIALIZE(Object);
 	NonShadingRenderingPass::initialize(manager);
+	return true;
 }
 
 

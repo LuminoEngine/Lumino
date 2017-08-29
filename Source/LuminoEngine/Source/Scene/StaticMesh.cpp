@@ -139,18 +139,18 @@ StaticMeshComponent::~StaticMeshComponent()
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshComponent::initialize(StaticMeshModel* meshModel)
+bool StaticMeshComponent::initialize(StaticMeshModel* meshModel)
 {
-	if (LN_CHECK_ARG(meshModel != nullptr)) return;
+	LN_BASE_INITIALIZE(VisualComponent);
+	if (LN_CHECK_ARG(meshModel != nullptr)) return false;
 	m_mesh = meshModel;
-
-	VisualComponent::initialize();
 
 	//m_materialList->copyShared(m_mesh->m_materials, true);
 
 
 	//owner->getRootNode()->addChild(this);
 	setAutoRemove(true);
+	return true;
 }
 
 //------------------------------------------------------------------------------
@@ -194,13 +194,14 @@ Rectangle::~Rectangle()
 }
 
 //------------------------------------------------------------------------------
-void Rectangle::initialize(const Rect& rect)
+bool Rectangle::initialize(const Rect& rect)
 {
-	VisualComponent::initialize();
+	LN_BASE_INITIALIZE(VisualComponent);
 	detail::EngineDomain::getDefaultSceneGraph3D()->getRootNode()->addChild(this);
 	setAutoRemove(true);
 
 	m_rect = rect;
+	return true;
 }
 
 //------------------------------------------------------------------------------

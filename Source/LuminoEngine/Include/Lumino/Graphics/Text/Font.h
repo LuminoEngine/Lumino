@@ -119,8 +119,8 @@ public:
 LN_INTERNAL_ACCESS:
 	Font();
 	virtual ~Font();
-	void initialize(const String& family, float size);
-	void initialize(detail::GraphicsManager* manager, RawFont* builtinRawFont);
+	bool initialize(const String& family, float size);
+	bool initialize(detail::GraphicsManager* manager, RawFont* builtinRawFont);
 	RawFont* resolveRawFont();
 
 private:

@@ -213,7 +213,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	Material();
 	virtual ~Material();
-	void initialize();
+	bool initialize();
 
 LN_INTERNAL_ACCESS:
 	void reset();
@@ -340,7 +340,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	DiffuseMaterial();
 	virtual ~DiffuseMaterial();
-	void initialize();
+	bool initialize();
 };
 
 

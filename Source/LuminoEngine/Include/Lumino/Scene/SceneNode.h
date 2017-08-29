@@ -147,7 +147,7 @@ protected:
 LN_INTERNAL_ACCESS:
 	SceneNode();
 	virtual ~SceneNode();
-	void initialize();
+	bool initialize();
 
 	// TODO: これらもいらない
 	void setAutoRemove(bool enabled) { m_isAutoRemove = enabled; }

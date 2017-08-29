@@ -96,7 +96,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	Behavior();
 	virtual ~Behavior();
-	void initialize();
+	bool initialize();
 };
 
 /**

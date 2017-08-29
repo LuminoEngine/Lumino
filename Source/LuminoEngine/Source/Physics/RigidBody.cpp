@@ -71,27 +71,29 @@ RigidBody::~RigidBody()
 }
 
 //------------------------------------------------------------------------------
-void RigidBody::initialize(CollisionShape* collider, const ConfigData& configData)
+bool RigidBody::initialize(CollisionShape* collider, const ConfigData& configData)
 {
-	if (LN_CHECK_ARG(collider != nullptr)) return;
-	PhysicsObject::initialize();
+	if (LN_CHECK_ARG(collider != nullptr)) return false;
+	LN_BASE_INITIALIZE(Object);
 	m_btShapeManager.addShape(collider);
 	m_data = configData;
 	m_modifiedFlags |= Modified_InitialUpdate;
 	detail::EngineDomain::getPhysicsWorld3D()->addPhysicsObject(this);
+	return true;
 }
 
 //------------------------------------------------------------------------------
-void RigidBody::initializeCore(CollisionShape* collider, const ConfigData& configData, float scale)
+bool RigidBody::initializeCore(CollisionShape* collider, const ConfigData& configData, float scale)
 {
-	if (LN_CHECK_ARG(collider != nullptr)) return;
-	PhysicsObject::initialize();
+	if (LN_CHECK_ARG(collider != nullptr)) return false;
+	LN_BASE_INITIALIZE(Object);
 	m_btShapeManager.addShape(collider);
 	m_data = configData;
 	m_data.scale = scale;
 	setCollisionFilterGroup(configData.Group);
 	setCollisionFilterMask(configData.GroupMask);
 	m_modifiedFlags |= Modified_InitialUpdate;
+	return true;
 }
 
 //------------------------------------------------------------------------------

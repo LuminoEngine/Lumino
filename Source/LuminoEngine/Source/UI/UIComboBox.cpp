@@ -25,9 +25,9 @@ UIAdorner::~UIAdorner()
 {
 }
 
-void UIAdorner::initialize()
+bool UIAdorner::initialize()
 {
-	UIElement::initialize();
+	return UIElement::initialize();
 }
 
 //==============================================================================
@@ -43,11 +43,12 @@ UIAdornerLayer::~UIAdornerLayer()
 {
 }
 
-void UIAdornerLayer::initialize()
+bool UIAdornerLayer::initialize()
 {
-	UIElement::initialize();
+	LN_BASE_INITIALIZE(UIElement);
 	setHitTestVisible(false);	// TODO: デフォルト false がいいだろう。control は true で。
 	writeCoreFlag(detail::UICoreFlags_AdornerLayer, true);
+	return true;
 }
 
 void UIAdornerLayer::add(UIAdorner* adorner)
@@ -96,11 +97,12 @@ UIPopup::~UIPopup()
 }
 
 //------------------------------------------------------------------------------
-void UIPopup::initialize()
+bool UIPopup::initialize()
 {
-	UIAdorner::initialize();
+	LN_BASE_INITIALIZE(UIAdorner);
 	setHitTestVisible(true);
 	setFocusable(true);
+	return true;
 }
 
 //------------------------------------------------------------------------------
@@ -217,12 +219,13 @@ UIComboBoxItem::~UIComboBoxItem()
 }
 
 //------------------------------------------------------------------------------
-void UIComboBoxItem::initialize()
+bool UIComboBoxItem::initialize()
 {
-	UIControl::initialize();
+	LN_BASE_INITIALIZE(UIControl);
 	setHContentAlignment(HAlignment::Left);
 	setHAlignment(HAlignment::Stretch);
 	goToVisualState(UIVisualStates::NormalState);
+	return true;
 }
 
 //==============================================================================
@@ -250,9 +253,9 @@ UIComboBox::~UIComboBox()
 }
 
 //------------------------------------------------------------------------------
-void UIComboBox::initialize()
+bool UIComboBox::initialize()
 {
-	UIControl::initialize();
+	LN_BASE_INITIALIZE(UIControl);
 
 	m_popup = newObject<UIPopup>();
 	addVisualChild(m_popup);
@@ -271,6 +274,8 @@ void UIComboBox::initialize()
 	panel->setVAlignment(VAlignment::Stretch);
 	setLayoutPanel(panel);
 	goToVisualState(UIVisualStates::NormalState);
+
+	return true;
 }
 
 //------------------------------------------------------------------------------

@@ -20,8 +20,9 @@ UIRoutedCommand::~UIRoutedCommand()
 }
 
 //------------------------------------------------------------------------------
-void UIRoutedCommand::initialize()
+bool UIRoutedCommand::initialize()
 {
+	return Object::initialize();
 }
 
 //==============================================================================

@@ -41,9 +41,11 @@ UIEventArgs::~UIEventArgs()
 }
 
 //------------------------------------------------------------------------------
-void UIEventArgs::initialize(UIEventType type)
+bool UIEventArgs::initialize(UIEventType type)
 {
+	if (!ReflectionEventArgs::initialize()) return false;
 	m_type = type;
+	return true;
 }
 
 //==============================================================================
@@ -81,13 +83,14 @@ UIMouseEventArgs::~UIMouseEventArgs()
 }
 
 //------------------------------------------------------------------------------
-void UIMouseEventArgs::initialize(UIEventType type, MouseButtons button, float x, float y, int clickCount)
+bool UIMouseEventArgs::initialize(UIEventType type, MouseButtons button, float x, float y, int clickCount)
 {
-	UIEventArgs::initialize(type);
+	LN_BASE_INITIALIZE(UIEventArgs, type);
 	m_button = button;
 	m_position.x = x;
 	m_position.y = y;
 	m_clickCount = clickCount;
+	return true;
 }
 
 //------------------------------------------------------------------------------
@@ -132,12 +135,13 @@ UIKeyEventArgs::~UIKeyEventArgs()
 }
 
 //------------------------------------------------------------------------------
-void UIKeyEventArgs::initialize(UIEventType type, Keys keyCode, ModifierKeys modifierKeys, TCHAR charCode)
+bool UIKeyEventArgs::initialize(UIEventType type, Keys keyCode, ModifierKeys modifierKeys, TCHAR charCode)
 {
-	UIEventArgs::initialize(type);
+	LN_BASE_INITIALIZE(UIEventArgs, type);
 	m_keyCode = keyCode;
 	m_modifierKeys = modifierKeys;
 	m_charCode = charCode;
+	return true;
 }
 
 //==============================================================================
@@ -173,10 +177,11 @@ UIMouseWheelEventArgs::~UIMouseWheelEventArgs()
 }
 
 //------------------------------------------------------------------------------
-void UIMouseWheelEventArgs::initialize(UIEventType type, int delta)
+bool UIMouseWheelEventArgs::initialize(UIEventType type, int delta)
 {
-	UIEventArgs::initialize(type);
+	LN_BASE_INITIALIZE(UIEventArgs, type);
 	m_delta = delta;
+	return true;
 }
 
 LN_NAMESPACE_END

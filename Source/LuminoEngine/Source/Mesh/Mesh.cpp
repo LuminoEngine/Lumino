@@ -69,12 +69,13 @@ MeshResource::~MeshResource()
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::initialize(detail::GraphicsManager* manager, MeshCreationFlags flags)
+bool MeshResource::initialize(detail::GraphicsManager* manager, MeshCreationFlags flags)
 {
+	LN_BASE_INITIALIZE(Object);
 	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_manager = manager;
 	m_usage = (flags.TestFlag(MeshCreationFlags::DynamicBuffers)) ? ResourceUsage::Dynamic : ResourceUsage::Static;
-
+	return true;
 }
 
 //------------------------------------------------------------------------------
@@ -819,17 +820,20 @@ StaticMeshModel::~StaticMeshModel()
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::initialize(detail::GraphicsManager* manager)
+bool StaticMeshModel::initialize(detail::GraphicsManager* manager)
 {
+	LN_BASE_INITIALIZE(Object);
 	LN_VERIFY_ARG(manager != nullptr);
 	m_materials = Ref<MaterialList>::makeRef();
+	return true;
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::initialize(detail::GraphicsManager* manager, MeshResource* sharingMesh)
+bool StaticMeshModel::initialize(detail::GraphicsManager* manager, MeshResource* sharingMesh)
 {
-	if (LN_CHECK_ARG(manager != nullptr)) return;
-	if (LN_CHECK_ARG(sharingMesh != nullptr)) return;
+	LN_BASE_INITIALIZE(Object);
+	if (LN_CHECK_ARG(manager != nullptr)) return false;
+	if (LN_CHECK_ARG(sharingMesh != nullptr)) return false;
 
 	// メッシュ(バッファ類)は共有する
 	m_meshResources.add(sharingMesh);
@@ -845,61 +849,72 @@ void StaticMeshModel::initialize(detail::GraphicsManager* manager, MeshResource*
 	//{
 	//	m_materials->SetAt(i, m_meshResource->m_materials->GetAt(i)->copyShared());
 	//}
+	return true;
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::initializeBox(detail::GraphicsManager* manager, const Vector3& size, MeshCreationFlags flags)
+bool StaticMeshModel::initializeBox(detail::GraphicsManager* manager, const Vector3& size, MeshCreationFlags flags)
 {
+	LN_BASE_INITIALIZE(Object);
 	auto res = Ref<MeshResource>::makeRef();
 	res->initialize(manager, flags);
 	res->addBox(size);
 	if (flags.TestFlag(MeshCreationFlags::reverseFaces)) res->reverseFaces();
 	initialize(manager, res);
 	addMaterials(1);
+	return true;
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::initializeSphere(detail::GraphicsManager* manager, float radius, int slices, int stacks, MeshCreationFlags flags)
+bool StaticMeshModel::initializeSphere(detail::GraphicsManager* manager, float radius, int slices, int stacks, MeshCreationFlags flags)
 {
+	LN_BASE_INITIALIZE(Object);
 	auto res = Ref<MeshResource>::makeRef();
 	res->initialize(manager, flags);
 	res->addSphere(radius, slices, stacks);
 	if (flags.TestFlag(MeshCreationFlags::reverseFaces)) res->reverseFaces();
 	initialize(manager, res);
 	addMaterials(1);
+	return true;
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::initializePlane(detail::GraphicsManager* manager, const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags)
+bool StaticMeshModel::initializePlane(detail::GraphicsManager* manager, const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags)
 {
+	LN_BASE_INITIALIZE(Object);
 	auto res = Ref<MeshResource>::makeRef();
 	res->initialize(manager, flags);
 	res->addPlane(size, sliceH, sliceV);
 	if (flags.TestFlag(MeshCreationFlags::reverseFaces)) res->reverseFaces();
 	initialize(manager, res);
 	addMaterials(1);
+	return true;
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::initializeScreenPlane(detail::GraphicsManager* manager, MeshCreationFlags flags)
+bool StaticMeshModel::initializeScreenPlane(detail::GraphicsManager* manager, MeshCreationFlags flags)
 {
+	LN_BASE_INITIALIZE(Object);
 	auto res = Ref<MeshResource>::makeRef();
 	res->initialize(manager, flags);
 	res->addScreenPlane();
 	if (flags.TestFlag(MeshCreationFlags::reverseFaces)) res->reverseFaces();
 	initialize(manager, res);
 	addMaterials(1);
+	return true;
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::initializeTeapot(detail::GraphicsManager* manager, float size, int tessellation, MeshCreationFlags flags)
+bool StaticMeshModel::initializeTeapot(detail::GraphicsManager* manager, float size, int tessellation, MeshCreationFlags flags)
 {
+	LN_BASE_INITIALIZE(Object);
 	auto res = Ref<MeshResource>::makeRef();
 	res->initialize(manager, flags);
 	res->addTeapot(size, tessellation);
 	if (flags.TestFlag(MeshCreationFlags::reverseFaces)) res->reverseFaces();
 	initialize(manager, res);
 	addMaterials(1);
+	return true;
 }
 
 //------------------------------------------------------------------------------

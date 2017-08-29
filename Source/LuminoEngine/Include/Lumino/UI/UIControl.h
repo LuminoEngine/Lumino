@@ -98,7 +98,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	UIControl();
 	virtual ~UIControl();
-	void initialize();
+	bool initialize();
 
 LN_INTERNAL_ACCESS:
 	int getLayoutChildrenCount() const { return getVisualChildrenCount(); }

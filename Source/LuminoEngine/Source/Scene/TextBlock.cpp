@@ -47,9 +47,9 @@ TextBlock2DComponent::~TextBlock2DComponent()
 }
 
 //------------------------------------------------------------------------------
-void TextBlock2DComponent::initialize()
+bool TextBlock2DComponent::initialize()
 {
-	VisualComponent::initialize();
+	LN_BASE_INITIALIZE(VisualComponent);
 
 	//owner->getRootNode()->addChild(this);
 	setAutoRemove(true);
@@ -58,6 +58,7 @@ void TextBlock2DComponent::initialize()
 	//m_paragraph->initialize();
 
 	setBlendMode(BlendMode::Alpha);
+	return true;
 }
 
 //------------------------------------------------------------------------------
@@ -178,20 +179,22 @@ TextBlock2D::~TextBlock2D()
 }
 
 //------------------------------------------------------------------------------
-void TextBlock2D::initialize()
+bool TextBlock2D::initialize()
 {
-	VisualObject::initialize();
+	LN_BASE_INITIALIZE(VisualObject);
 	m_component = TextBlock2DComponent::create();
 	m_component->setLayer(LayerMask::GetLayer(BuiltinLayers::Default2D));
 	addComponent(m_component);
 	detail::EngineDomain::getDefaultWorld2D()->addWorldObject(this, true);
+	return true;
 }
 
 //------------------------------------------------------------------------------
-void TextBlock2D::initialize(const StringRef& text)
+bool TextBlock2D::initialize(const StringRef& text)
 {
-	initialize();
+	if (!initialize()) return false;
 	setText(text);
+	return true;
 }
 
 //------------------------------------------------------------------------------

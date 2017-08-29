@@ -72,8 +72,10 @@ public:
 	}
 
 LN_CONSTRUCT_ACCESS:
-	void initialize()
+	bool initialize()
 	{
+		LN_BASE_INITIALIZE(Object);
+		return true;
 	}
 
 	Group* findGroup(const StringRef& stateName)
@@ -336,7 +338,7 @@ public:
 protected:
 	UIElement();
 	virtual ~UIElement();
-	void initialize();
+	bool initialize();
 
 	/** 要素の視覚状態を切り替えます。*/
 	void goToVisualState(const StringRef& stateName);

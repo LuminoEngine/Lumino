@@ -76,9 +76,9 @@ Material::~Material()
 }
 
 //------------------------------------------------------------------------------
-void Material::initialize()
+bool Material::initialize()
 {
-	//m_combinedMaterial = Ref<detail::CombinedMaterial>::MakeRef();
+	return Object::initialize();
 }
 
 //------------------------------------------------------------------------------
@@ -408,9 +408,9 @@ DiffuseMaterial::~DiffuseMaterial()
 }
 
 //------------------------------------------------------------------------------
-void DiffuseMaterial::initialize()
+bool DiffuseMaterial::initialize()
 {
-	Material::initialize();
+	return Material::initialize();
 }
 
 //------------------------------------------------------------------------------

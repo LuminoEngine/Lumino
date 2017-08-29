@@ -32,9 +32,9 @@ SpriteComponent::~SpriteComponent()
 }
 
 //------------------------------------------------------------------------------
-void SpriteComponent::initialize()
+bool SpriteComponent::initialize()
 {
-	VisualComponent::initialize();
+	LN_BASE_INITIALIZE(VisualComponent);
 	m_srcRect.set(0, 0, -1, -1);
 	setSize(Size(-1, -1));
 
@@ -44,6 +44,7 @@ void SpriteComponent::initialize()
 
 	//owner->getRootNode()->addChild(this);
 	setAutoRemove(true);
+	return true;
 }
 
 //------------------------------------------------------------------------------
@@ -172,16 +173,17 @@ Sprite2DComponent::~Sprite2DComponent()
 }
 
 //------------------------------------------------------------------------------
-void Sprite2DComponent::initialize()
+bool Sprite2DComponent::initialize()
 {
-	SpriteComponent::initialize();
+	return SpriteComponent::initialize();
 }
 
 //------------------------------------------------------------------------------
-void Sprite2DComponent::initialize(Texture* texture)
+bool Sprite2DComponent::initialize(Texture* texture)
 {
-	initialize();
+	if (!initialize()) return false;
 	setTexture(texture);
+	return true;
 }
 
 //------------------------------------------------------------------------------
@@ -234,9 +236,9 @@ Sprite3DComponent::~Sprite3DComponent()
 }
 
 //------------------------------------------------------------------------------
-void Sprite3DComponent::initialize()
+bool Sprite3DComponent::initialize()
 {
-	SpriteComponent::initialize();
+	return SpriteComponent::initialize();
 }
 
 //------------------------------------------------------------------------------
@@ -263,9 +265,9 @@ SpriteBase::~SpriteBase()
 }
 
 //------------------------------------------------------------------------------
-void SpriteBase::initialize()
+bool SpriteBase::initialize()
 {
-	VisualObject::initialize();
+	return VisualObject::initialize();
 }
 
 //------------------------------------------------------------------------------
@@ -346,31 +348,34 @@ Sprite2D::~Sprite2D()
 }
 
 //------------------------------------------------------------------------------
-void Sprite2D::initialize()
+bool Sprite2D::initialize()
 {
-	SpriteBase::initialize();
+	LN_BASE_INITIALIZE(SpriteBase);
 	m_component = Sprite2DComponent::create();
 	m_component->setLayer(LayerMask::GetLayer(BuiltinLayers::Default2D));
 	addComponent(m_component);
 	detail::EngineDomain::getDefaultWorld2D()->addWorldObject(this, true);
+	return true;
 }
 
 //------------------------------------------------------------------------------
-void Sprite2D::initialize(const StringRef& filePath)
+bool Sprite2D::initialize(const StringRef& filePath)
 {
-	SpriteBase::initialize();
+	LN_BASE_INITIALIZE(SpriteBase);
 	m_component = Sprite2DComponent::create(filePath);
 	addComponent(m_component);
 	detail::EngineDomain::getDefaultWorld2D()->addWorldObject(this, true);
+	return true;
 }
 
 //------------------------------------------------------------------------------
-void Sprite2D::initialize(Texture* texture)
+bool Sprite2D::initialize(Texture* texture)
 {
-	SpriteBase::initialize();
+	LN_BASE_INITIALIZE(SpriteBase);
 	m_component = Sprite2DComponent::create(texture);
 	addComponent(m_component);
 	detail::EngineDomain::getDefaultWorld2D()->addWorldObject(this, true);
+	return true;
 }
 
 //------------------------------------------------------------------------------
@@ -416,22 +421,24 @@ Sprite3D::~Sprite3D()
 }
 
 //------------------------------------------------------------------------------
-void Sprite3D::initialize()
+bool Sprite3D::initialize()
 {
-	SpriteBase::initialize();
+	LN_BASE_INITIALIZE(SpriteBase);
 	m_component = Sprite3DComponent::create();
 	m_component->setLayer(LayerMask::GetLayer(BuiltinLayers::Default3D));
 	addComponent(m_component);
 	detail::EngineDomain::getDefaultWorld3D()->addWorldObject(this, true);
+	return true;
 }
 
 //------------------------------------------------------------------------------
-void Sprite3D::initialize(float width, float height, Texture* texture)
+bool Sprite3D::initialize(float width, float height, Texture* texture)
 {
-	SpriteBase::initialize();
+	LN_BASE_INITIALIZE(SpriteBase);
 	m_component = Sprite3DComponent::create(width, height, texture);
 	addComponent(m_component);
 	detail::EngineDomain::getDefaultWorld3D()->addWorldObject(this, true);
+	return true;
 }
 
 //------------------------------------------------------------------------------

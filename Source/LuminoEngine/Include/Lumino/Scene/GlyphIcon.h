@@ -45,13 +45,13 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~GlyphIcon2D();
 
 	LN_METHOD()
-	void initialize();
+	bool initialize();
 
 	LN_METHOD()
-	void initialize(const StringRef& glyphName);
+	bool initialize(const StringRef& glyphName);
 
 	LN_METHOD()
-	void initialize(const StringRef& glyphName, int glyphSize);
+	bool initialize(const StringRef& glyphName, int glyphSize);
 
 private:
 	Ref<GlyphIconComponent>	m_component;
@@ -73,7 +73,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	GlyphIconComponent();
 	virtual ~GlyphIconComponent();
-	void initialize();
+	bool initialize();
 
 private:
 	Vector2			m_anchor;

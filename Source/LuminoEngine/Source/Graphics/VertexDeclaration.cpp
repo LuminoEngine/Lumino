@@ -34,20 +34,21 @@ VertexDeclaration::~VertexDeclaration()
 }
 
 //------------------------------------------------------------------------------
-void VertexDeclaration::initialize(detail::GraphicsManager* manager)
+bool VertexDeclaration::initialize(detail::GraphicsManager* manager)
 {
-	GraphicsResourceObject::initialize();
+	return GraphicsResourceObject::initialize();
 }
 
 //------------------------------------------------------------------------------
-void VertexDeclaration::initialize(detail::GraphicsManager* manager, const VertexElement* elements, int count)
+bool VertexDeclaration::initialize(detail::GraphicsManager* manager, const VertexElement* elements, int count)
 {
-	GraphicsResourceObject::initialize();
+	LN_BASE_INITIALIZE(GraphicsResourceObject);
 
 	for (int i = 0; i < count; ++i)
 	{
 		m_vertexElements.add(elements[i]);
 	}
+	return true;
 }
 
 //------------------------------------------------------------------------------

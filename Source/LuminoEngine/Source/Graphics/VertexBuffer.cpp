@@ -65,9 +65,9 @@ VertexBuffer::~VertexBuffer()
 }
 
 //------------------------------------------------------------------------------
-void VertexBuffer::initialize(detail::GraphicsManager* manager, size_t bufferSize, const void* data, ResourceUsage usage, bool sizeConst)
+bool VertexBuffer::initialize(detail::GraphicsManager* manager, size_t bufferSize, const void* data, ResourceUsage usage, bool sizeConst)
 {
-	GraphicsResourceObject::initialize();
+	LN_BASE_INITIALIZE(GraphicsResourceObject);
 	m_usage = usage;
 
 	if (sizeConst)
@@ -78,6 +78,7 @@ void VertexBuffer::initialize(detail::GraphicsManager* manager, size_t bufferSiz
 	{
 		m_buffer.resize(bufferSize);
 	}
+	return true;
 }
 
 //------------------------------------------------------------------------------

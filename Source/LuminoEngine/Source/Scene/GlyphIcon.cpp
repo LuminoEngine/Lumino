@@ -44,26 +44,29 @@ GlyphIcon2D::~GlyphIcon2D()
 {
 }
 
-void GlyphIcon2D::initialize()
+bool GlyphIcon2D::initialize()
 {
-	VisualObject::initialize();
+	LN_BASE_INITIALIZE(VisualObject);
 	m_component = newObject<GlyphIconComponent>();
 	m_component->setLayer(LayerMask::GetLayer(BuiltinLayers::Default2D));
 	addComponent(m_component);
 	detail::EngineDomain::getDefaultWorld2D()->addWorldObject(this, true);
+	return true;
 }
 
-void GlyphIcon2D::initialize(const StringRef& glyphName)
+bool GlyphIcon2D::initialize(const StringRef& glyphName)
 {
-	GlyphIcon2D::initialize();
+	if (!GlyphIcon2D::initialize()) return false;
 	setGlyphName(glyphName);
+	return true;
 }
 
-void GlyphIcon2D::initialize(const StringRef& glyphName, int glyphSize)
+bool GlyphIcon2D::initialize(const StringRef& glyphName, int glyphSize)
 {
-	GlyphIcon2D::initialize();
+	if (!GlyphIcon2D::initialize()) return false;
 	setGlyphName(glyphName);
 	setGlyphSize(glyphSize);
+	return true;
 }
 
 void GlyphIcon2D::setGlyphName(const StringRef& glyphName)
@@ -94,12 +97,13 @@ GlyphIconComponent::~GlyphIconComponent()
 {
 }
 
-void GlyphIconComponent::initialize()
+bool GlyphIconComponent::initialize()
 {
-	VisualComponent::initialize();
+	LN_BASE_INITIALIZE(VisualComponent);
 
 	// TODO: Node ë§Ç≈êßå‰Ç∑ÇÈÇ◊Ç´ÅH
 	setBlendMode(BlendMode::Alpha);
+	return true;
 }
 
 void GlyphIconComponent::setGlyphName(const StringRef& glyphName)

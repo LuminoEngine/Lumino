@@ -27,7 +27,7 @@ public:
 protected:
 	ToneImageEffect();
 	virtual ~ToneImageEffect();
-	void initialize(detail::GraphicsManager* manager);
+	bool initialize(detail::GraphicsManager* manager);
 	virtual void onRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
 private:

@@ -162,7 +162,7 @@ public:
 protected:
 	VisualComponent();
 	virtual ~VisualComponent();
-	void initialize();
+	bool initialize();
 
 LN_INTERNAL_ACCESS:
 	//MaterialList2* GetMaterialList() { return m_materialList; }
@@ -283,7 +283,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	VisualObject();
 	virtual ~VisualObject();
-	void initialize();
+	bool initialize();
 };
 
 LN_NAMESPACE_SCENE_END

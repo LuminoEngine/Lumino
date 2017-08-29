@@ -49,7 +49,7 @@ public:
 protected:
 	TextBlock2DComponent();
 	virtual ~TextBlock2DComponent();
-	void initialize();
+	bool initialize();
 
 	virtual void updateFrameHierarchy(SceneNode* parent, float deltaTime) override;
 	virtual detail::Sphere getBoundingSphere() override;
@@ -106,10 +106,10 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~TextBlock2D();
 
 	LN_METHOD()
-	void initialize();
+	bool initialize();
 
 	LN_METHOD()
-	void initialize(const StringRef& text);
+	bool initialize(const StringRef& text);
 
 private:
 	Ref<TextBlock2DComponent>	m_component;

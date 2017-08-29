@@ -76,16 +76,18 @@ Font::~Font()
 }
 
 //------------------------------------------------------------------------------
-void Font::initialize(const String& family, float size)
+bool Font::initialize(const String& family, float size)
 {
-	initialize(detail::EngineDomain::getGraphicsManager(), nullptr);
+	if (!initialize(detail::EngineDomain::getGraphicsManager(), nullptr)) return false;
 	setFamily(family);
 	setSize(size);
+	return true;
 }
 
 //------------------------------------------------------------------------------
-void Font::initialize(detail::GraphicsManager* manager, RawFont* builtinRawFont)
+bool Font::initialize(detail::GraphicsManager* manager, RawFont* builtinRawFont)
 {
+	LN_BASE_INITIALIZE(Object);
 	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_manager = manager;
 
@@ -94,6 +96,7 @@ void Font::initialize(detail::GraphicsManager* manager, RawFont* builtinRawFont)
 		m_rawFont = builtinRawFont;
 		m_builtin = true;
 	}
+	return true;
 }
 
 //------------------------------------------------------------------------------

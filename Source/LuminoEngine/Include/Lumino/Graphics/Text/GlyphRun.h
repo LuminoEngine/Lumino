@@ -49,8 +49,8 @@ public:
 LN_INTERNAL_ACCESS:
 	GlyphRun();
 	virtual ~GlyphRun();
-	void initialize();
-	void initialize(detail::GraphicsManager* manager);
+	bool initialize();
+	bool initialize(detail::GraphicsManager* manager);
 	const List<TextLayoutResultItem>& requestLayoutItems();
 	detail::FontGlyphTextureCache* lookupFontGlyphTextureCache();
 	const UTF32* getText() const { return m_utf32Text.c_str(); }

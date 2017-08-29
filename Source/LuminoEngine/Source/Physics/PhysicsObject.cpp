@@ -24,8 +24,9 @@ PhysicsObject::~PhysicsObject()
 }
 
 //------------------------------------------------------------------------------
-void PhysicsObject::initialize()
+bool PhysicsObject::initialize()
 {
+	return Component::initialize();
 }
 
 //------------------------------------------------------------------------------

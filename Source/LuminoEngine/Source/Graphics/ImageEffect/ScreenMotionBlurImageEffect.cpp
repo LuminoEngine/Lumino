@@ -47,15 +47,16 @@ ScreenMotionBlurImageEffect::~ScreenMotionBlurImageEffect()
 }
 
 //------------------------------------------------------------------------------
-void ScreenMotionBlurImageEffect::initialize(detail::GraphicsManager* manager)
+bool ScreenMotionBlurImageEffect::initialize(detail::GraphicsManager* manager)
 {
-	ImageEffect::initialize(manager);
+	LN_BASE_INITIALIZE(ImageEffect, manager);
 
 	auto shader = Object::makeRef<Shader>(m_manager, g_ScreenMotionBlurImageEffect_fx_Data, g_ScreenMotionBlurImageEffect_fx_Len);
 
 	m_material = Object::makeRef<Material>();
 	m_material->setShader(shader);
 	m_material->setBlendMode(BlendMode::Alpha);
+	return true;
 }
 
 //------------------------------------------------------------------------------

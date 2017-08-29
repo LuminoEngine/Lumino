@@ -69,7 +69,7 @@ class Document
 public:
 	Document();
 	virtual ~Document();
-	void initialize();
+	bool initialize();
 
 	// 現在の内容をすべて破棄して、新しい1つの Paragraph を作る
 	void setText(const StringRef& text);
@@ -247,7 +247,7 @@ class Span
 public:
 	Span();
 	virtual ~Span();
-	void initialize();
+	bool initialize();
 
 private:
 	// Inline List

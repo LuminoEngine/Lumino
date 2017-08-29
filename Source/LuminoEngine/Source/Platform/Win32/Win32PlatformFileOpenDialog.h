@@ -27,8 +27,9 @@ public:
 		dispose();
 	}
 
-	void initialize(Type type)
+	bool initialize(Type type)
 	{
+		LN_BASE_INITIALIZE(PlatformFileOpenDialog);
 		if (SUCCEEDED(CoInitializeEx(NULL, COINIT_APARTMENTTHREADED)))	// multi-threaded is not supported
 		{
 			HRESULT hr;
@@ -51,6 +52,7 @@ public:
 			}
 			LN_THROW(SUCCEEDED(hr), COMException, hr);
 		}
+		return true;
 	}
 
 	void dispose()

@@ -89,7 +89,7 @@ class NonShadingRenderingPass
 public:
 	NonShadingRenderingPass();
 	virtual ~NonShadingRenderingPass();
-	void initialize(GraphicsManager* manager);
+	bool initialize(GraphicsManager* manager);
 	virtual Shader* getDefaultShader() const override;
 
 private:
@@ -122,7 +122,7 @@ class ForwardShadingRenderingPass
 public:
 	ForwardShadingRenderingPass();
 	virtual ~ForwardShadingRenderingPass();
-	void initialize(GraphicsManager* manager);
+	bool initialize(GraphicsManager* manager);
 	virtual Shader* getDefaultShader() const override;
 
 private:
@@ -136,7 +136,7 @@ class InfomationRenderingPass
 public:
 	InfomationRenderingPass();
 	virtual ~InfomationRenderingPass();
-	void initialize(GraphicsManager* manager);
+	bool initialize(GraphicsManager* manager);
 };
 
 

@@ -21,7 +21,7 @@ public:
 LN_INTERNAL_ACCESS:
 	SkinnedMeshComponent();
 	virtual ~SkinnedMeshComponent();
-	void initialize(SkinnedMeshModel* meshModel);
+	bool initialize(SkinnedMeshModel* meshModel);
 	virtual void onUpdateFrame(float elapsedTime) override;
 	virtual void onRender2(RenderingContext* renderer) override;
 

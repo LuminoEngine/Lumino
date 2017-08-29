@@ -92,9 +92,9 @@ VisualComponent::~VisualComponent()
 }
 
 //------------------------------------------------------------------------------
-void VisualComponent::initialize()
+bool VisualComponent::initialize()
 {
-	SceneNode::initialize();
+	return SceneNode::initialize();
 }
 
 ////------------------------------------------------------------------------------
@@ -316,9 +316,9 @@ VisualObject::~VisualObject()
 }
 
 //------------------------------------------------------------------------------
-void VisualObject::initialize()
+bool VisualObject::initialize()
 {
-	WorldObject::initialize();
+	return WorldObject::initialize();
 }
 
 //------------------------------------------------------------------------------

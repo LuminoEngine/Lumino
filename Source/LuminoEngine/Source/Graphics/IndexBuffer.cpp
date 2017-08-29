@@ -62,9 +62,9 @@ IndexBuffer::~IndexBuffer()
 }
 
 //------------------------------------------------------------------------------
-void IndexBuffer::initialize(detail::GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage, bool sizeConst)
+bool IndexBuffer::initialize(detail::GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage, bool sizeConst)
 {
-	GraphicsResourceObject::initialize();
+	LN_BASE_INITIALIZE(GraphicsResourceObject);
 	m_format = format;
 	m_usage = usage;
 
@@ -76,6 +76,7 @@ void IndexBuffer::initialize(detail::GraphicsManager* manager, int indexCount, c
 	{
 		m_buffer.resize(Utils::getIndexBufferSize(m_format, indexCount));
 	}
+	return true;
 }
 
 //------------------------------------------------------------------------------

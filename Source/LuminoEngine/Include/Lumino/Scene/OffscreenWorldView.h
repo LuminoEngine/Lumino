@@ -25,7 +25,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	OffscreenWorldView();
 	virtual ~OffscreenWorldView();
-	void initialize();
+	bool initialize();
 
 LN_INTERNAL_ACCESS:
 	void setId(int id) { m_id = id; }
@@ -53,7 +53,7 @@ protected:
 LN_INTERNAL_ACCESS:
 	SkyComponent();
 	virtual ~SkyComponent();
-	void initialize();
+	bool initialize();
 
 private:
 
@@ -71,7 +71,7 @@ protected:
 LN_INTERNAL_ACCESS:
 	MirrorComponent();
 	virtual ~MirrorComponent();
-	void initialize();
+	bool initialize();
 
 private:
 	Ref<OffscreenWorldView>	m_offscreen;

@@ -174,7 +174,7 @@ LN_INTERNAL_ACCESS:
 
 	MeshResource();
 	virtual ~MeshResource();
-	void initialize(detail::GraphicsManager* manager, MeshCreationFlags flags);
+	bool initialize(detail::GraphicsManager* manager, MeshCreationFlags flags);
 	void reserve(int vertexCount, int indexCount);
 	//void Resize(int vertexCount);
 
@@ -254,13 +254,13 @@ public:
 LN_INTERNAL_ACCESS:
 	StaticMeshModel();
 	virtual ~StaticMeshModel();
-	void initialize(detail::GraphicsManager* manager);
-	void initialize(detail::GraphicsManager* manager, MeshResource* sharingMesh);
-	void initializeBox(detail::GraphicsManager* manager, const Vector3& size, MeshCreationFlags flags);
-	void initializeSphere(detail::GraphicsManager* manager, float radius, int slices, int stacks, MeshCreationFlags flags);
-	void initializePlane(detail::GraphicsManager* manager, const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags);
-	void initializeScreenPlane(detail::GraphicsManager* manager, MeshCreationFlags flags);
-	void initializeTeapot(detail::GraphicsManager* manager, float size, int tessellation, MeshCreationFlags flags);
+	bool initialize(detail::GraphicsManager* manager);
+	bool initialize(detail::GraphicsManager* manager, MeshResource* sharingMesh);
+	bool initializeBox(detail::GraphicsManager* manager, const Vector3& size, MeshCreationFlags flags);
+	bool initializeSphere(detail::GraphicsManager* manager, float radius, int slices, int stacks, MeshCreationFlags flags);
+	bool initializePlane(detail::GraphicsManager* manager, const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags);
+	bool initializeScreenPlane(detail::GraphicsManager* manager, MeshCreationFlags flags);
+	bool initializeTeapot(detail::GraphicsManager* manager, float size, int tessellation, MeshCreationFlags flags);
 	
 LN_INTERNAL_ACCESS:	// TODO:
 	List<Ref<MeshResource>>	m_meshResources;

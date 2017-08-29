@@ -172,9 +172,15 @@ Texture2D::Texture2D()
 }
 
 //------------------------------------------------------------------------------
-void Texture2D::initialize(const SizeI& size, TextureFormat format, bool mipmap, ResourceUsage usage)
+Texture2D::~Texture2D()
 {
-	GraphicsResourceObject::initialize();
+	LN_SAFE_RELEASE(m_primarySurface);
+}
+
+//------------------------------------------------------------------------------
+bool Texture2D::initialize(const SizeI& size, TextureFormat format, bool mipmap, ResourceUsage usage)
+{
+	LN_BASE_INITIALIZE(GraphicsResourceObject);
 
 	m_size = size;
 	m_mipmap = mipmap;
@@ -188,27 +194,28 @@ void Texture2D::initialize(const SizeI& size, TextureFormat format, bool mipmap,
 	m_deviceObj = m_manager->getGraphicsDevice()->createTexture(size, m_mipmap, format, nullptr);
 
 	m_initializing = true;
+	return true;
 }
 
 //------------------------------------------------------------------------------
-void Texture2D::initialize(int width, int height, TextureFormat format, bool mipmap)
+bool Texture2D::initialize(int width, int height, TextureFormat format, bool mipmap)
 {
-	initialize(SizeI(width, height), format, mipmap, ResourceUsage::Dynamic);
+	return initialize(SizeI(width, height), format, mipmap, ResourceUsage::Dynamic);
 }
 
 //------------------------------------------------------------------------------
-void Texture2D::initialize(const StringRef& filePath, TextureFormat format, bool mipmap)
+bool Texture2D::initialize(const StringRef& filePath, TextureFormat format, bool mipmap)
 {
 	auto stream = detail::EngineDomain::getArchiveManager()->createFileStream(filePath, false);
-	initialize(stream, format, mipmap);
+	return initialize(stream, format, mipmap);
 }
 
 //------------------------------------------------------------------------------
 // プラットフォーム依存用
 //------------------------------------------------------------------------------
-void Texture2D::initialize(Stream* stream, TextureFormat format, bool mipmap)
+bool Texture2D::initialize(Stream* stream, TextureFormat format, bool mipmap)
 {
-	GraphicsResourceObject::initialize();
+	LN_BASE_INITIALIZE(GraphicsResourceObject);
 	m_mipmap = mipmap;
 	m_format = format;
 
@@ -251,6 +258,7 @@ void Texture2D::initialize(Stream* stream, TextureFormat format, bool mipmap)
 	// TODO: 失敗したら普通の処理
 #endif
 	m_initializing = true;
+	return true;
 }
 
 //Texture2D::Texture(GraphicsManager* manager, Driver::ITexture* deviceObj, Bitmap* primarySurface)
@@ -264,12 +272,6 @@ void Texture2D::initialize(Stream* stream, TextureFormat format, bool mipmap)
 //	m_manager->addResourceObject(this);
 //}
 
-
-//------------------------------------------------------------------------------
-Texture2D::~Texture2D()
-{
-	LN_SAFE_RELEASE(m_primarySurface);
-}
 
 //------------------------------------------------------------------------------
 void Texture2D::tryLock()
@@ -486,9 +488,9 @@ Texture3D::~Texture3D()
 }
 
 //------------------------------------------------------------------------------
-void Texture3D::initialize(ln::detail::GraphicsManager* manager, int width, int height, int depth, TextureFormat format, int mipLevels, ResourceUsage usage)
+bool Texture3D::initialize(ln::detail::GraphicsManager* manager, int width, int height, int depth, TextureFormat format, int mipLevels, ResourceUsage usage)
 {
-	GraphicsResourceObject::initialize();
+	LN_BASE_INITIALIZE(GraphicsResourceObject);
 	m_size.width = width;
 	m_size.height = height;
 	m_depth = depth;
@@ -502,6 +504,7 @@ void Texture3D::initialize(ln::detail::GraphicsManager* manager, int width, int 
 	{
 		m_primarySurface = Ref<Bitmap>::makeRef(m_size.width, m_size.height, m_depth, Utils::translatePixelFormat(m_format));
 	}
+	return true;
 }
 
 //------------------------------------------------------------------------------
@@ -601,27 +604,29 @@ RenderTargetTexture::RenderTargetTexture()
 }
 
 //------------------------------------------------------------------------------
-void RenderTargetTexture::initialize(const SizeI& size, int mipLevels, TextureFormat format)
+bool RenderTargetTexture::initialize(const SizeI& size, int mipLevels, TextureFormat format)
 {
-	createImpl(detail::EngineDomain::getGraphicsManager(), size, mipLevels, format);
+	return createImpl(detail::EngineDomain::getGraphicsManager(), size, mipLevels, format);
 }
 
 //------------------------------------------------------------------------------
-void RenderTargetTexture::createImpl(detail::GraphicsManager* manager, const SizeI& size, int mipLevels, TextureFormat format)
+bool RenderTargetTexture::createImpl(detail::GraphicsManager* manager, const SizeI& size, int mipLevels, TextureFormat format)
 {
-	GraphicsResourceObject::initialize();
+	LN_BASE_INITIALIZE(GraphicsResourceObject);
 	m_size = size;
 	m_mipLevels = mipLevels;
 	m_format = format;
 	m_deviceObj = m_manager->getGraphicsDevice()->createRenderTarget(m_size.width, m_size.height, m_mipLevels, m_format);
+	return true;
 }
 
 //------------------------------------------------------------------------------
-void RenderTargetTexture::createCore(detail::GraphicsManager* manager, bool isDefaultBackBuffer)
+bool RenderTargetTexture::createCore(detail::GraphicsManager* manager, bool isDefaultBackBuffer)
 {
-	GraphicsResourceObject::initialize();
+	LN_BASE_INITIALIZE(GraphicsResourceObject);
 	m_deviceObj = NULL;
 	m_isDefaultBackBuffer = isDefaultBackBuffer;
+	return true;
 }
 
 //------------------------------------------------------------------------------

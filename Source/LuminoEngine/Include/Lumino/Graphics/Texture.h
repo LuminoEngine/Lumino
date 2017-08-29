@@ -152,12 +152,12 @@ LN_CONSTRUCT_ACCESS:
 	Texture2D();
 	virtual ~Texture2D();
 	//LN_METHOD()
-	void initialize(const SizeI& size, TextureFormat format, bool mipmap, ResourceUsage usage);
+	bool initialize(const SizeI& size, TextureFormat format, bool mipmap, ResourceUsage usage);
 	LN_METHOD()
-	void initialize(int width, int height, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
+	bool initialize(int width, int height, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
 	LN_METHOD()
-	void initialize(const StringRef& filePath, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
-	void initialize(Stream* stream, TextureFormat format, bool mipmap);
+	bool initialize(const StringRef& filePath, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
+	bool initialize(Stream* stream, TextureFormat format, bool mipmap);
 
 LN_INTERNAL_ACCESS:
 	void tryLock();
@@ -196,9 +196,9 @@ public:
 LN_INTERNAL_ACCESS:
 	RenderTargetTexture();
 	virtual ~RenderTargetTexture();
-	void initialize(const SizeI& size, int mipLevels, TextureFormat format);
-	void createImpl(detail::GraphicsManager* manager, const SizeI& size, int mipLevels, TextureFormat format);
-	void createCore(detail::GraphicsManager* manager, bool isDefaultBackBuffer);
+	bool initialize(const SizeI& size, int mipLevels, TextureFormat format);
+	bool createImpl(detail::GraphicsManager* manager, const SizeI& size, int mipLevels, TextureFormat format);
+	bool createCore(detail::GraphicsManager* manager, bool isDefaultBackBuffer);
 	void attachDefaultBackBuffer(Driver::ITexture* deviceObj);
 	void detachDefaultBackBuffer();
 	//Bitmap* readSurface();
@@ -287,7 +287,7 @@ public:
 LN_PROTECTED_INTERNAL_ACCESS:
 	Texture3D();
 	virtual ~Texture3D();
-	void initialize(ln::detail::GraphicsManager* manager, int width, int height, int depth, TextureFormat format, int mipLevels, ResourceUsage usage);
+	bool initialize(ln::detail::GraphicsManager* manager, int width, int height, int depth, TextureFormat format, int mipLevels, ResourceUsage usage);
 
 protected:
 	virtual void applyModifies() override;

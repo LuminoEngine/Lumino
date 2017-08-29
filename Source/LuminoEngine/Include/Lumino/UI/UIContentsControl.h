@@ -28,7 +28,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	UIContentsControl();
 	virtual ~UIContentsControl();
-	void initialize();
+	bool initialize();
 	//virtual void onUpdatingLayout() override;
 
 
@@ -52,7 +52,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIUserControl();
 	virtual ~UIUserControl();
-	void initialize();
+	bool initialize();
 };
 
 LN_NAMESPACE_END

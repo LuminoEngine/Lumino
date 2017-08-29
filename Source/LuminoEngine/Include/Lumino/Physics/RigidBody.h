@@ -170,11 +170,11 @@ public:
 LN_INTERNAL_ACCESS:
 	RigidBody();
 	virtual ~RigidBody();
-	void initialize(CollisionShape* collider, const ConfigData& configData);
+	bool initialize(CollisionShape* collider, const ConfigData& configData);
 
 	/// 初期化 (剛体を受け取ってワールドに追加する) (現行PMD用にpublic。後で protected にする)
 	///		shape		: (BodyBase  削除時に delete される)
-	void initializeCore(CollisionShape* collider, const ConfigData& configData, float scale);
+	bool initializeCore(CollisionShape* collider, const ConfigData& configData, float scale);
 
 	//void setOwnerWorld(PhysicsWorld* owner);
 	//PhysicsWorld* getOwnerWorld() const;

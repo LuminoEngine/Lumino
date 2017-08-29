@@ -25,9 +25,9 @@ UIButtonBase::~UIButtonBase()
 }
 
 //------------------------------------------------------------------------------
-void UIButtonBase::initialize()
+bool UIButtonBase::initialize()
 {
-	UIContentsControl::initialize();
+	LN_BASE_INITIALIZE(UIContentsControl);
 
 	HContentAlignment = HAlignment::Center;
 	VContentAlignment = VAlignment::Center;
@@ -35,6 +35,7 @@ void UIButtonBase::initialize()
 	// TODO: UIContentsControl::initialize() の中でも作ってるから、そっちが無駄になる。
 	// UIContentsControl では何も作らなくてもいいかも。null の場合、UILayoutPanel と同じレイアウトにするとか。
 	setLayoutPanel(newObject<UIStackPanel>());
+	return true;
 }
 
 //------------------------------------------------------------------------------
@@ -127,18 +128,19 @@ UIButton::~UIButton()
 }
 
 //------------------------------------------------------------------------------
-void UIButton::initialize()
+bool UIButton::initialize()
 {
-	UIButtonBase::initialize();
+	return UIButtonBase::initialize();
 }
 
 //------------------------------------------------------------------------------
-void UIButton::initialize(const StringRef& text, float width, float height)
+bool UIButton::initialize(const StringRef& text, float width, float height)
 {
-	UIButton::initialize();
+	LN_BASE_INITIALIZE(UIButtonBase);
 	setText(text);
 	setWidth(width);
 	setHeight(height);
+	return true;
 }
 
 //==============================================================================
@@ -173,24 +175,26 @@ UIToggleButton::~UIToggleButton()
 }
 
 //------------------------------------------------------------------------------
-void UIToggleButton::initialize()
+bool UIToggleButton::initialize()
 {
-	UIButtonBase::initialize();
+	LN_BASE_INITIALIZE(UIButtonBase);
 
 	auto* vsm = getVisualStateManager();
 	vsm->registerVisualState(UIVisualStates::CheckStates, CheckedState);
 	vsm->registerVisualState(UIVisualStates::CheckStates, UncheckedState);
 
 	goToVisualState(UncheckedState);
+	return true;
 }
 
 //------------------------------------------------------------------------------
-void UIToggleButton::initialize(const StringRef& text, float width, float height)
+bool UIToggleButton::initialize(const StringRef& text, float width, float height)
 {
-	UIToggleButton::initialize();
+	if (!initialize()) return false;
 	setText(text);
 	setWidth(width);
 	setHeight(height);
+	return true;
 }
 
 //------------------------------------------------------------------------------

@@ -96,8 +96,9 @@ WorldObject::~WorldObject()
 }
 
 //------------------------------------------------------------------------------
-void WorldObject::initialize()
+bool WorldObject::initialize()
 {
+	return Object::initialize();
 }
 
 //------------------------------------------------------------------------------
@@ -273,10 +274,11 @@ WorldObject2D::~WorldObject2D()
 }
 
 //------------------------------------------------------------------------------
-void WorldObject2D::initialize()
+bool WorldObject2D::initialize()
 {
-	WorldObject::initialize();
+	LN_BASE_INITIALIZE(WorldObject);
 	detail::EngineDomain::getDefaultWorld2D()->addWorldObject(this, true);
+	return true;
 }
 
 
@@ -296,10 +298,11 @@ WorldObject3D::~WorldObject3D()
 }
 
 //------------------------------------------------------------------------------
-void WorldObject3D::initialize()
+bool WorldObject3D::initialize()
 {
-	WorldObject::initialize();
+	LN_BASE_INITIALIZE(WorldObject);
 	detail::EngineDomain::getDefaultWorld3D()->addWorldObject(this, true);
+	return true;
 }
 
 LN_NAMESPACE_END

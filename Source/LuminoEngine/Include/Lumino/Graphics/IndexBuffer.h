@@ -43,7 +43,7 @@ protected:
 LN_INTERNAL_ACCESS:
 	IndexBuffer();
 	virtual ~IndexBuffer();
-	void initialize(detail::GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage, bool sizeConst);
+	bool initialize(detail::GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage, bool sizeConst);
 	int getIndexStride() const;
 	Driver::IIndexBuffer* resolveRHIObject();
 	virtual void onChangeDevice(Driver::IGraphicsDevice* device);

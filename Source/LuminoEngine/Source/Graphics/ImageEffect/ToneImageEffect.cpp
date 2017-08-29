@@ -42,9 +42,9 @@ ToneImageEffect::~ToneImageEffect()
 }
 
 //------------------------------------------------------------------------------
-void ToneImageEffect::initialize(detail::GraphicsManager* manager)
+bool ToneImageEffect::initialize(detail::GraphicsManager* manager)
 {
-	ImageEffect::initialize(manager);
+	LN_BASE_INITIALIZE(ImageEffect, manager);
 
 	m_material = Object::makeRef<Material>();
 	m_material->setShader(Object::makeRef<Shader>(m_manager, g_ToneImageEffect_fx_Data, g_ToneImageEffect_fx_Len));
@@ -56,6 +56,7 @@ void ToneImageEffect::initialize(detail::GraphicsManager* manager)
 
 
 	//printf("%p %p\n", m_material.Get(), m_material->getShader());
+	return true;
 }
 
 //------------------------------------------------------------------------------

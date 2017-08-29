@@ -939,9 +939,10 @@ DrawList::~DrawList()
 }
 
 //------------------------------------------------------------------------------
-void DrawList::initialize(detail::GraphicsManager* manager)
+bool DrawList::initialize(detail::GraphicsManager* manager)
 {
-	if (LN_CHECK_ARG(manager != nullptr)) return;
+	LN_BASE_INITIALIZE(Object);
+	if (LN_CHECK_ARG(manager != nullptr)) return false;
 	m_manager = manager;
 	//m_state.reset();
 
@@ -953,6 +954,7 @@ void DrawList::initialize(detail::GraphicsManager* manager)
 		m_freeStateStack.add(Ref<StagingState>::makeRef());
 	}
 	//m_aliveStateStack.add(Ref<StagingState>::makeRef());
+	return true;
 }
 
 //------------------------------------------------------------------------------

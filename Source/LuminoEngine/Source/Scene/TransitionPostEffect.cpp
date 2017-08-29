@@ -30,9 +30,9 @@ TransitionPostEffect::~TransitionPostEffect()
 }
 
 //------------------------------------------------------------------------------
-void TransitionPostEffect::initialize()
+bool TransitionPostEffect::initialize()
 {
-	PostEffect::initialize();
+	LN_BASE_INITIALIZE(PostEffect);
 
 	{
 		static const byte_t ShaderData[] =
@@ -45,6 +45,7 @@ void TransitionPostEffect::initialize()
 	}
 
 	m_factor = 1.0f;
+	return true;
 }
 
 //------------------------------------------------------------------------------

@@ -38,9 +38,10 @@ SkinnedMeshComponent::~SkinnedMeshComponent()
 }
 
 //------------------------------------------------------------------------------
-void SkinnedMeshComponent::initialize(SkinnedMeshModel* meshModel)
+bool SkinnedMeshComponent::initialize(SkinnedMeshModel* meshModel)
 {
-	if (LN_CHECK_ARG(meshModel != nullptr)) return;
+	LN_BASE_INITIALIZE(Object);
+	if (LN_CHECK_ARG(meshModel != nullptr)) return false;
 	m_meshModel = meshModel;
 
 	VisualComponent::initialize();
@@ -51,7 +52,7 @@ void SkinnedMeshComponent::initialize(SkinnedMeshModel* meshModel)
 	//ownerSceneGraph->getRootNode()->addChild(this);
 	setAutoRemove(true);
 
-
+	return true;
 }
 
 //------------------------------------------------------------------------------

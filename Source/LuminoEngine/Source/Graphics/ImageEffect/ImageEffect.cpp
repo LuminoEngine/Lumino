@@ -22,10 +22,12 @@ ImageEffect::~ImageEffect()
 }
 
 //------------------------------------------------------------------------------
-void ImageEffect::initialize(detail::GraphicsManager* manager)
+bool ImageEffect::initialize(detail::GraphicsManager* manager)
 {
-	if (LN_CHECK_ARG(manager != nullptr)) return;
+	LN_BASE_INITIALIZE(Object);
+	if (LN_CHECK_ARG(manager != nullptr)) return false;
 	m_manager = manager;
+	return true;
 }
 
 LN_NAMESPACE_GRAPHICS_END

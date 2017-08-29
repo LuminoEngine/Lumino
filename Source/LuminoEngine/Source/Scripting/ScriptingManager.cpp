@@ -16,9 +16,11 @@ NlGraphNode::NlGraphNode()
 }
 
 //------------------------------------------------------------------------------
-void NlGraphNode::initialize(NlGraphNodeCategory category)
+bool NlGraphNode::initialize(NlGraphNodeCategory category)
 {
+	LN_BASE_INITIALIZE(Object);
 	m_category = category;
+	return true;
 }
 
 //------------------------------------------------------------------------------
@@ -73,9 +75,11 @@ EntryPointNode::EntryPointNode()
 }
 
 //------------------------------------------------------------------------------
-void EntryPointNode::initialize(const StringRef& name)
+bool EntryPointNode::initialize(const StringRef& name)
 {
+	LN_BASE_INITIALIZE(NlGraphNode);
 	m_flowOutput = createPin(NlGraphPinCategory::CommandFlow, NlGraphPinDirection::Output, _T("name"));
+	return true;
 }
 
 //------------------------------------------------------------------------------
@@ -97,12 +101,14 @@ NlGraphPin::NlGraphPin()
 }
 
 //------------------------------------------------------------------------------
-void NlGraphPin::initialize(NlGraphNode* ownerNode, NlGraphPinCategory category, NlGraphPinDirection direction)
+bool NlGraphPin::initialize(NlGraphNode* ownerNode, NlGraphPinCategory category, NlGraphPinDirection direction)
 {
+	LN_BASE_INITIALIZE(Object);
 	m_ownerNode = ownerNode;
 	m_category = category;
 	m_direction = direction;
 	m_valueCache = Ref<NlVariant>::makeRef();
+	return true;
 }
 
 //------------------------------------------------------------------------------
@@ -262,7 +268,7 @@ NlGraphInterface::NlGraphInterface()
 }
 
 //------------------------------------------------------------------------------
-void NlGraphInterface::initialize()
+bool NlGraphInterface::initialize()
 {
 	m_graph = NlGraphPtr::makeRef();
 

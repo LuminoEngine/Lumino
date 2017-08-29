@@ -23,7 +23,7 @@ public:
 
 	UIEventArgs();
 	virtual ~UIEventArgs();
-	void initialize(UIEventType type);
+	bool initialize(UIEventType type);
 
 public:
 	UIElement*	sender;
@@ -61,7 +61,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIMouseEventArgs();
 	virtual ~UIMouseEventArgs();
-	void initialize(UIEventType type, MouseButtons button, float x, float y, int clickCount);
+	bool initialize(UIEventType type, MouseButtons button, float x, float y, int clickCount);
 
 private:
 	MouseButtons	m_button;
@@ -93,7 +93,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIKeyEventArgs();
 	virtual ~UIKeyEventArgs();
-	void initialize(UIEventType type, Keys keyCode, ModifierKeys modifierKeys, TCHAR charCode);
+	bool initialize(UIEventType type, Keys keyCode, ModifierKeys modifierKeys, TCHAR charCode);
 
 private:
 	Keys			m_keyCode;
@@ -119,7 +119,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIMouseWheelEventArgs();
 	virtual ~UIMouseWheelEventArgs();
-	void initialize(UIEventType type, int delta);
+	bool initialize(UIEventType type, int delta);
 
 public:
 	int		m_delta;

@@ -193,11 +193,12 @@ CollisionBody::~CollisionBody()
 }
 
 //------------------------------------------------------------------------------
-void CollisionBody::initialize()
+bool CollisionBody::initialize()
 {
-	PhysicsObject::initialize();
+	LN_BASE_INITIALIZE(PhysicsObject);
 	m_initialUpdate = true;
 	detail::EngineDomain::getPhysicsWorld3D()->addPhysicsObject(this);
+	return true;
 }
 
 //------------------------------------------------------------------------------

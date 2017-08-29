@@ -185,9 +185,11 @@ SpriteParticleModel::~SpriteParticleModel()
 }
 
 //------------------------------------------------------------------------------
-void SpriteParticleModel::initialize(detail::GraphicsManager* manager)
+bool SpriteParticleModel::initialize(detail::GraphicsManager* manager)
 {
+	LN_BASE_INITIALIZE(Object);
 	m_manager = manager;
+	return true;
 }
 
 //------------------------------------------------------------------------------
@@ -722,11 +724,11 @@ ParticleEmitterComponent::~ParticleEmitterComponent()
 }
 
 //------------------------------------------------------------------------------
-void ParticleEmitterComponent::initialize(SpriteParticleModel* model)
+bool ParticleEmitterComponent::initialize(SpriteParticleModel* model)
 {
-	if (LN_CHECK_ARG(model != nullptr)) return;
+	LN_BASE_INITIALIZE(VisualComponent);
+	if (LN_CHECK_ARG(model != nullptr)) return false;
 
-	VisualComponent::initialize();
 	m_model = model;
 	m_model->commit();
 	m_instance = m_model->createInstane();
@@ -737,6 +739,7 @@ void ParticleEmitterComponent::initialize(SpriteParticleModel* model)
 	//m_materialList->m_mainMaterial = m_model->getMaterial();
 
 	m_material = newObject<Material>();
+	return true;
 }
 
 //------------------------------------------------------------------------------

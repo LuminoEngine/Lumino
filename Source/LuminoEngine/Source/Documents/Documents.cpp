@@ -25,9 +25,11 @@ Document::~Document()
 }
 
 //------------------------------------------------------------------------------
-void Document::initialize()
+bool Document::initialize()
 {
+	LN_BASE_INITIALIZE(DocumentContentElement);
 	m_manager = ln::detail::DocumentsManager::getInstance();
+	return true;
 }
 
 //------------------------------------------------------------------------------

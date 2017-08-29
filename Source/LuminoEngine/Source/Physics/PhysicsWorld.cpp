@@ -109,8 +109,10 @@ PhysicsWorld::~PhysicsWorld()
 }
 
 //------------------------------------------------------------------------------
-void PhysicsWorld::initialize()
+bool PhysicsWorld::initialize()
 {
+	LN_BASE_INITIALIZE(Object);
+
 	// ↓以下で出てくる単語とか
 	//		http://nullorempry.jimdo.com/2012/03/10/bullet-physics%E3%81%AE%E3%81%8A%E5%8B%89%E5%BC%B7/
 
@@ -205,6 +207,8 @@ void PhysicsWorld::initialize()
 	m_softBodyWorldInfo->m_dispatcher = m_btCollisionDispatcher;
 	m_softBodyWorldInfo->m_sparsesdf.Initialize();
 	m_softBodyWorldInfo->m_sparsesdf.Reset();
+
+	return true;
 }
 
 //------------------------------------------------------------------------------

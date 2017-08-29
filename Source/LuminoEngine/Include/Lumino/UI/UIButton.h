@@ -42,7 +42,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	UIButtonBase();
 	virtual ~UIButtonBase();
-	void initialize();
+	bool initialize();
 
 private:
 	Ref<UITextBlock>	m_textContent;
@@ -66,8 +66,8 @@ public:
 LN_CONSTRUCT_ACCESS:
 	UIButton();
 	virtual ~UIButton();
-	void initialize();
-	void initialize(const StringRef& text, float width, float height);
+	bool initialize();
+	bool initialize(const StringRef& text, float width, float height);
 };
 
 
@@ -102,8 +102,8 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	UIToggleButton();
 	virtual ~UIToggleButton();
-	void initialize();
-	void initialize(const StringRef& text, float width, float height);
+	bool initialize();
+	bool initialize(const StringRef& text, float width, float height);
 
 private:
 	void checkChanged();

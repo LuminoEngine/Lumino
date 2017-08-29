@@ -690,7 +690,7 @@ public:
 LN_INTERNAL_ACCESS:
 	DrawList();
 	virtual ~DrawList();
-	void initialize(detail::GraphicsManager* manager);
+	bool initialize(detail::GraphicsManager* manager);
 	detail::GraphicsManager* getManager() const { return m_manager; }
 	detail::DrawElementList* getDrawElementList() { return &m_drawElementList; }
 	void setDefaultMaterial(Material* material);

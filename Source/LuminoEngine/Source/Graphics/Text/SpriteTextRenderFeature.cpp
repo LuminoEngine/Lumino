@@ -40,10 +40,11 @@ TextRendererCore::~TextRendererCore()
 }
 
 //------------------------------------------------------------------------------
-void TextRendererCore::initialize(GraphicsManager* manager)
+bool TextRendererCore::initialize(GraphicsManager* manager)
 {
-	GraphicsResourceObject::initialize();
+	LN_BASE_INITIALIZE(GraphicsResourceObject);
 	createDeviceResources();
+	return true;
 }
 
 //------------------------------------------------------------------------------

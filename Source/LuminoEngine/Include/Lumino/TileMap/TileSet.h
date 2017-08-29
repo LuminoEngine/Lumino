@@ -34,7 +34,7 @@ public:
 	//void SetImageFilePath(const PathName& filePath);
 
 LN_PROTECTED_INTERNAL_ACCESS:
-	void initialize(detail::GraphicsManager* manager);
+	bool initialize(detail::GraphicsManager* manager);
 	virtual void LookupTileImage(int id, Texture** outTexture, RectI* outSrcRect);
 	Material* getMaterial() const;
 

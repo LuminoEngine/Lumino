@@ -33,18 +33,20 @@ GlyphRun::~GlyphRun()
 }
 
 //------------------------------------------------------------------------------
-void GlyphRun::initialize()
+bool GlyphRun::initialize()
 {
-	initialize(detail::EngineDomain::getGraphicsManager());
+	return initialize(detail::EngineDomain::getGraphicsManager());
 }
 
 //------------------------------------------------------------------------------
-void GlyphRun::initialize(detail::GraphicsManager* manager)
+bool GlyphRun::initialize(detail::GraphicsManager* manager)
 {
+	LN_BASE_INITIALIZE(Object);
 	if (LN_CHECK_ARG(manager != nullptr)) return;
 	m_manager = manager;
 	m_layoutEngine = LN_NEW detail::TextLayoutEngine();
 	m_layoutEngine->setFont(m_manager->getFontManager()->getDefaultRawFont());
+	return true;
 }
 
 //------------------------------------------------------------------------------

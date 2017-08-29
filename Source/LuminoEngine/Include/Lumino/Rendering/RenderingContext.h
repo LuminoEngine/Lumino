@@ -16,7 +16,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	RenderingContext();
 	virtual ~RenderingContext();
-	void initialize();
+	bool initialize();
 
 private:
 	void setRenderView(RenderView* renderView) { m_currentRenderView = renderView; }

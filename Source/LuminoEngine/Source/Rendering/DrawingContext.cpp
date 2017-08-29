@@ -46,9 +46,9 @@ DrawingContext::~DrawingContext()
 }
 
 //------------------------------------------------------------------------------
-void DrawingContext::initialize()
+bool DrawingContext::initialize()
 {
-	DrawList::initialize(detail::EngineDomain::getGraphicsManager());
+	return DrawList::initialize(detail::EngineDomain::getGraphicsManager());
 }
 
 //------------------------------------------------------------------------------

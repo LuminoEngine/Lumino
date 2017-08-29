@@ -28,7 +28,7 @@ public:
 
 	TextRendererCore();
 	~TextRendererCore();
-	void initialize(GraphicsManager* manager);
+	bool initialize(GraphicsManager* manager);
 
 	void render(const GlyphRunData* dataList, int dataCount, Driver::ITexture* glyphsTexture, Brush* fillBrush);
 

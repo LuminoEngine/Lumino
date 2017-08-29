@@ -103,7 +103,7 @@ protected:
 LN_INTERNAL_ACCESS:
 	CameraComponent();
 	virtual ~CameraComponent();
-	void initialize(CameraProjection proj);
+	bool initialize(CameraProjection proj);
 	void setCameraDirection(CameraDirection mode) { m_directionMode = mode; }
 	CameraProjection getProjectionMode() const { return m_projectionMode; }
 
@@ -162,7 +162,7 @@ protected:
 LN_INTERNAL_ACCESS:
 	CameraViewportLayer2();
 	virtual ~CameraViewportLayer2();
-	void initialize(World* targetWorld, CameraComponent* hostingCamera);
+	bool initialize(World* targetWorld, CameraComponent* hostingCamera);
 	const Size& getViewSize() const;
 
 private:
@@ -227,7 +227,7 @@ class CameraMouseMoveBehavior
 LN_CONSTRUCT_ACCESS:
 	CameraMouseMoveBehavior();
 	virtual ~CameraMouseMoveBehavior();
-	void initialize();
+	bool initialize();
 
 protected:
 	virtual void onAttached() override;
@@ -263,7 +263,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	Camera();
 	virtual ~Camera();
-	void initialize(CameraProjection proj);
+	bool initialize(CameraProjection proj);
 
 LN_INTERNAL_ACCESS:
 

@@ -20,9 +20,9 @@ RenderingContext::~RenderingContext()
 }
 
 //------------------------------------------------------------------------------
-void RenderingContext::initialize()
+bool RenderingContext::initialize()
 {
-	DrawList::initialize(detail::EngineDomain::getGraphicsManager());
+	return DrawList::initialize(detail::EngineDomain::getGraphicsManager());
 }
 
 LN_NAMESPACE_END

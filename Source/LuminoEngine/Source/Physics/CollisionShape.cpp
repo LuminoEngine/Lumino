@@ -34,9 +34,11 @@ CollisionShape::~CollisionShape()
 }
 
 //------------------------------------------------------------------------------
-void CollisionShape::initialize(btCollisionShape* shape)
+bool CollisionShape::initialize(btCollisionShape* shape)
 {
+	LN_BASE_INITIALIZE(Object);
 	m_shape = shape;
+	return true;
 }
 
 //------------------------------------------------------------------------------
@@ -75,9 +77,9 @@ PlaneCollisionShape::~PlaneCollisionShape()
 }
 
 //------------------------------------------------------------------------------
-void PlaneCollisionShape::initialize(const Vector3& direction)
+bool PlaneCollisionShape::initialize(const Vector3& direction)
 {
-	CollisionShape::initialize(new btStaticPlaneShape(detail::BulletUtil::LNVector3ToBtVector3(Vector3::normalize(direction)), 0.0f));
+	return CollisionShape::initialize(new btStaticPlaneShape(detail::BulletUtil::LNVector3ToBtVector3(Vector3::normalize(direction)), 0.0f));
 }
 
 //==============================================================================
@@ -110,9 +112,9 @@ BoxCollisionShape::~BoxCollisionShape()
 }
 
 //------------------------------------------------------------------------------
-void BoxCollisionShape::initialize(const Vector3& size)
+bool BoxCollisionShape::initialize(const Vector3& size)
 {
-	CollisionShape::initialize(new btBoxShape(detail::BulletUtil::LNVector3ToBtVector3(size * 0.5f)));
+	return CollisionShape::initialize(new btBoxShape(detail::BulletUtil::LNVector3ToBtVector3(size * 0.5f)));
 	// ¦PMD ‚Ì„‘ÌƒTƒCƒY‚Í bullet ‚Ì‚Æ“¯‚¶‚È‚Ì‚Å’ˆÓ
 }
 
@@ -140,9 +142,9 @@ SphereCollisionShape::~SphereCollisionShape()
 }
 
 //------------------------------------------------------------------------------
-void SphereCollisionShape::initialize(float radius)
+bool SphereCollisionShape::initialize(float radius)
 {
-	CollisionShape::initialize(new btSphereShape(radius));
+	return CollisionShape::initialize(new btSphereShape(radius));
 }
 
 //==============================================================================
@@ -169,9 +171,9 @@ CapsuleCollisionShape::~CapsuleCollisionShape()
 }
 
 //------------------------------------------------------------------------------
-void CapsuleCollisionShape::initialize(float radius, float height)
+bool CapsuleCollisionShape::initialize(float radius, float height)
 {
-	CollisionShape::initialize(new btCapsuleShape(radius, height));
+	return CollisionShape::initialize(new btCapsuleShape(radius, height));
 }
 
 //==============================================================================
@@ -200,10 +202,10 @@ MeshCollisionShape::~MeshCollisionShape()
 }
 
 //------------------------------------------------------------------------------
-void MeshCollisionShape::initialize(MeshResource* mesh)
+bool MeshCollisionShape::initialize(MeshResource* mesh)
 {
-	if (LN_CHECK_ARG(mesh != nullptr)) return;
-	if (LN_CHECK_STATE(m_btMeshData == nullptr)) return;
+	if (LN_CHECK_ARG(mesh != nullptr)) return false;
+	if (LN_CHECK_STATE(m_btMeshData == nullptr)) return false;
 
 	IndexBuffer* indexBuffer = mesh->getIndexBuffer();
 
@@ -225,7 +227,7 @@ void MeshCollisionShape::initialize(MeshResource* mesh)
 	//	mesh->getTriangleCount(), (int*)ib, mesh->getIndexStride(),
 	//	mesh->getVertexCount(), (btScalar*)vb, sizeof(Vertex));
 	
-	CollisionShape::initialize(new btBvhTriangleMeshShape(m_btMeshData, true));
+	return CollisionShape::initialize(new btBvhTriangleMeshShape(m_btMeshData, true));
 }
 
 LN_NAMESPACE_END

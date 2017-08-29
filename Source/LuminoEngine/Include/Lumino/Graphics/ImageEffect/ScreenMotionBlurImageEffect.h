@@ -36,7 +36,7 @@ public:
 protected:
 	ScreenMotionBlurImageEffect();
 	virtual ~ScreenMotionBlurImageEffect();
-	void initialize(detail::GraphicsManager* manager);
+	bool initialize(detail::GraphicsManager* manager);
 	virtual void onRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
 	Ref<Material>		m_material;

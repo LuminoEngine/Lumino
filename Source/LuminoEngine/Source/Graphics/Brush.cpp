@@ -43,8 +43,9 @@ Brush::~Brush()
 }
 
 //------------------------------------------------------------------------------
-void Brush::initialize()
+bool Brush::initialize()
 {
+	return Object::initialize();
 }
 
 //------------------------------------------------------------------------------
@@ -98,17 +99,19 @@ SolidColorBrush::~SolidColorBrush()
 }
 
 //------------------------------------------------------------------------------
-void SolidColorBrush::initialize(const Color& color)
+bool SolidColorBrush::initialize(const Color& color)
 {
-	Brush::initialize();
+	LN_BASE_INITIALIZE(Brush);
 	setColor(color);
+	return true;
 }
 
 //------------------------------------------------------------------------------
-void SolidColorBrush::initialize(const Color& rgb, float a)
+bool SolidColorBrush::initialize(const Color& rgb, float a)
 {
-	Brush::initialize();
+	LN_BASE_INITIALIZE(Brush);
 	setColor(rgb.withAlpha(a));
+	return true;
 }
 
 //==============================================================================
@@ -150,24 +153,26 @@ TextureBrush::~TextureBrush()
 }
 
 //------------------------------------------------------------------------------
-void TextureBrush::initialize()
+bool TextureBrush::initialize()
 {
-	Brush::initialize();
+	return Brush::initialize();
 }
 
 //------------------------------------------------------------------------------
-void TextureBrush::initialize(const StringRef& filePath)
+bool TextureBrush::initialize(const StringRef& filePath)
 {
-	Brush::initialize();
+	LN_BASE_INITIALIZE(Brush);
 	auto texture = Texture2D::create(filePath, TextureFormat::R8G8B8A8, false);		//TODO: GraphicsManager?
 	setTexture(texture);
+	return true;
 }
 
 //------------------------------------------------------------------------------
-void TextureBrush::initialize(Texture* texture)
+bool TextureBrush::initialize(Texture* texture)
 {
-	Brush::initialize();
+	LN_BASE_INITIALIZE(Brush);
 	setTexture(texture);
+	return true;
 }
 
 //------------------------------------------------------------------------------

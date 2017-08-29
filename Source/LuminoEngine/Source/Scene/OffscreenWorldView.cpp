@@ -45,9 +45,9 @@ OffscreenWorldView::~OffscreenWorldView()
 }
 
 //------------------------------------------------------------------------------
-void OffscreenWorldView::initialize()
+bool OffscreenWorldView::initialize()
 {
-	WorldRenderView::initialize();
+	LN_BASE_INITIALIZE(WorldRenderView);
 	m_renderer = newObject<RenderingContext>();
 
 	//m_renderView = Ref<RenderView>::MakeRef();
@@ -55,6 +55,7 @@ void OffscreenWorldView::initialize()
 	m_lists.add(m_renderer->getDrawElementList());
 
 	setLayerCullingMask(0xFFFFFFFF);	// TODO
+	return true;
 }
 
 //------------------------------------------------------------------------------
@@ -212,9 +213,9 @@ SkyComponent::~SkyComponent()
 }
 
 //------------------------------------------------------------------------------
-void SkyComponent::initialize()
+bool SkyComponent::initialize()
 {
-	VisualComponent::initialize();
+	LN_BASE_INITIALIZE(VisualComponent);
 	setLayer(LayerMask::GetLayer(BuiltinLayers::Background3D));
 	setOrderInLayer(SHRT_MIN);
 
@@ -224,6 +225,7 @@ void SkyComponent::initialize()
 		m_skyMaterial = newObject<Material>();
 		m_skyMaterial->setShader(shader);
 	}
+	return true;
 }
 
 //------------------------------------------------------------------------------
@@ -381,7 +383,7 @@ MirrorComponent::~MirrorComponent()
 }
 
 //------------------------------------------------------------------------------
-void MirrorComponent::initialize()
+bool MirrorComponent::initialize()
 {
 	VisualComponent::initialize();
 

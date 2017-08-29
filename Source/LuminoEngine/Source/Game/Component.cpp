@@ -123,9 +123,9 @@ Behavior::~Behavior()
 }
 
 //------------------------------------------------------------------------------
-void Behavior::initialize()
+bool Behavior::initialize()
 {
-	Component::initialize();
+	return Component::initialize();
 }
 
 //==============================================================================

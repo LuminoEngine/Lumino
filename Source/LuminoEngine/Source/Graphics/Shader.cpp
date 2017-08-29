@@ -410,31 +410,20 @@ Shader::~Shader()
 }
 
 //------------------------------------------------------------------------------
-void Shader::initialize(detail::GraphicsManager* manager, const StringRef& filePath, bool useTRSS)
+bool Shader::initialize(detail::GraphicsManager* manager, const StringRef& filePath, bool useTRSS)
 {
 	Ref<Stream> stream(manager->getFileManager()->createFileStream(filePath), false);
 	ByteBuffer buf((size_t)stream->getLength() + 1, false);
 	stream->read(buf.getData(), buf.getSize());
 	buf[(size_t)stream->getLength()] = 0x00;
 
-	initialize(manager, buf.getConstData(), buf.getSize(), useTRSS);
-
-	//GraphicsResourceObject::initialize(manager);
-	//
-
-	//
-
-	//ShaderCompileResult result;
-	//m_deviceObj = m_manager->getGraphicsDevice()->createShader(buf.GetConstData(), buf.GetSize(), &result);
-	//LN_THROW(m_deviceObj != nullptr, CompilationException, result);
-
-	//postInitialize();
+	return initialize(manager, buf.getConstData(), buf.getSize(), useTRSS);
 }
 
 //------------------------------------------------------------------------------
-void Shader::initialize(detail::GraphicsManager* manager, const void* code, int length, bool useTRSS)
+bool Shader::initialize(detail::GraphicsManager* manager, const void* code, int length, bool useTRSS)
 {
-	GraphicsResourceObject::initialize();
+	LN_BASE_INITIALIZE(GraphicsResourceObject);
 
 	std::stringstream sb;
 	if (useTRSS)
@@ -466,6 +455,7 @@ void Shader::initialize(detail::GraphicsManager* manager, const void* code, int 
 	m_sourceCode.alloc(newCode.c_str(), newCode.length());
 
 	postInitialize();
+	return true;
 }
 
 //------------------------------------------------------------------------------

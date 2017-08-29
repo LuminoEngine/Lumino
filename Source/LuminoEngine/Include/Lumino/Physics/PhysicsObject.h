@@ -34,7 +34,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	PhysicsObject();
 	virtual ~PhysicsObject();
-	void initialize();
+	bool initialize();
 
 private:
 	PhysicsWorld*	m_ownerWorld;

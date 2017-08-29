@@ -44,7 +44,7 @@ protected:
 LN_INTERNAL_ACCESS:
 	SkinnedMeshModel();
 	virtual ~SkinnedMeshModel();
-	void initialize(detail::GraphicsManager* manager, PmxSkinnedMeshResource* sharingMesh);
+	bool initialize(detail::GraphicsManager* manager, PmxSkinnedMeshResource* sharingMesh);
 
 	void setWorldTransform(const Matrix& matrix) { m_worldTransform = matrix; m_worldTransformInverse = Matrix::makeInverse(m_worldTransform); }
 	const Matrix& getWorldTransform() const { return m_worldTransform; }
@@ -124,7 +124,7 @@ public:
 LN_INTERNAL_ACCESS:
 	SkinnedMeshBone();
 	virtual ~SkinnedMeshBone();
-	void initialize(PmxBoneResource* boneResource);
+	bool initialize(PmxBoneResource* boneResource);
 	void postInitialize(SkinnedMeshModel* owner, int depth);
 
 	// PmxBoneResource の取得

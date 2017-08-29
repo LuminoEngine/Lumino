@@ -186,7 +186,7 @@ public:
 protected:
 	SpriteParticleModel();
 	virtual ~SpriteParticleModel();
-	void initialize(detail::GraphicsManager* manager);
+	bool initialize(detail::GraphicsManager* manager);
 
 public: // TODO
 	void commit();
@@ -338,7 +338,7 @@ class ParticleEmitterComponent
 protected:
 	ParticleEmitterComponent();
 	virtual ~ParticleEmitterComponent();
-	void initialize(SpriteParticleModel* model);
+	bool initialize(SpriteParticleModel* model);
 
 	virtual void onUpdateFrame(float deltaTime) override;
 	virtual void onRender2(RenderingContext* renderer) override;

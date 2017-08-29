@@ -20,10 +20,9 @@ UIContentsControl::~UIContentsControl()
 {
 }
 
-void UIContentsControl::initialize()
+bool UIContentsControl::initialize()
 {
-	UIControl::initialize();
-
+	return UIControl::initialize();
 }
 
 void UIContentsControl::addChild(UIElement* element)
@@ -80,9 +79,9 @@ UIUserControl::~UIUserControl()
 {
 }
 
-void UIUserControl::initialize()
+bool UIUserControl::initialize()
 {
-	UIContentsControl::initialize();
+	return UIContentsControl::initialize();
 }
 
 LN_NAMESPACE_END

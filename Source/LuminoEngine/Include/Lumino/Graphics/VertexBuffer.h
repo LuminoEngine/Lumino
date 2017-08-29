@@ -37,7 +37,7 @@ protected:
 LN_INTERNAL_ACCESS:
 	VertexBuffer();
 	virtual ~VertexBuffer();
-	void initialize(detail::GraphicsManager* manager, size_t bufferSize, const void* data, ResourceUsage usage, bool sizeConst);
+	bool initialize(detail::GraphicsManager* manager, size_t bufferSize, const void* data, ResourceUsage usage, bool sizeConst);
 	Driver::IVertexBuffer* resolveRHIObject();
 	virtual void onChangeDevice(Driver::IGraphicsDevice* device);
 

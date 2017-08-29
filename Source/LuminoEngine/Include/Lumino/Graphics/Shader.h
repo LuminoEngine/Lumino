@@ -250,8 +250,8 @@ protected:
 LN_INTERNAL_ACCESS:
 	friend class detail::RenderingCommandList;
 	Shader();
-	void initialize(detail::GraphicsManager* manager, const StringRef& filePath, bool useTRSS = false);
-	void initialize(detail::GraphicsManager* manager, const void* code, int length, bool useTRSS = false);
+	bool initialize(detail::GraphicsManager* manager, const StringRef& filePath, bool useTRSS = false);
+	bool initialize(detail::GraphicsManager* manager, const void* code, int length, bool useTRSS = false);
 	void postInitialize();
 	void setModifiedVariables(bool modified) { m_modifiedVariables = modified; }
 	bool isModifiedVariables() const { return m_modifiedVariables; }

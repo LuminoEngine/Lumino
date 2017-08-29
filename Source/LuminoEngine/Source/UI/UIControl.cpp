@@ -29,9 +29,9 @@ UIControl::~UIControl()
 }
 
 //------------------------------------------------------------------------------
-void UIControl::initialize()
+bool UIControl::initialize()
 {
-	UIElement::initialize();
+	LN_BASE_INITIALIZE(UIElement);
 	setFocusable(true);
 	writeCoreFlag(detail::UICoreFlags_LogicalChildrenPresenterAutoManagement, true);
 
@@ -51,6 +51,7 @@ void UIControl::initialize()
 	//m_items = Ref<UIElementCollection>::makeRef(this);
 	auto panel = newObject<UIAbsoluteLayout>();
 	setLayoutPanel(panel);
+	return true;
 }
 //
 ////------------------------------------------------------------------------------

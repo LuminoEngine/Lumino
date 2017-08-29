@@ -15,7 +15,7 @@ class LightComponent
 public:
 	LightComponent();
 	virtual ~LightComponent();
-	void initialize(LightType type);
+	bool initialize(LightType type);
 
 public:
 
@@ -130,7 +130,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	Light();
 	virtual ~Light();
-	void initialize();
+	bool initialize();
 
 LN_INTERNAL_ACCESS:
 

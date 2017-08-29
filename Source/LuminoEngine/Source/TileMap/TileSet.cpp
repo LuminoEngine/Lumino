@@ -34,11 +34,13 @@ TileSet::~TileSet()
 }
 
 //------------------------------------------------------------------------------
-void TileSet::initialize(detail::GraphicsManager* manager)
+bool TileSet::initialize(detail::GraphicsManager* manager)
 {
+	LN_BASE_INITIALIZE(Object);
 	m_material = Object::makeRef<Material>();
 	// TODO:自己照明
 	m_material->setBuiltinColorParameter(Material::AmbientParameter, Color::White);
+	return true;
 }
 
 //------------------------------------------------------------------------------

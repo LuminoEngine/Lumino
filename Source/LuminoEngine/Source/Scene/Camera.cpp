@@ -53,9 +53,9 @@ CameraComponent::~CameraComponent()
 }
 
 //------------------------------------------------------------------------------
-void CameraComponent::initialize(CameraProjection proj)
+bool CameraComponent::initialize(CameraProjection proj)
 {
-	SceneNode::initialize();
+	LN_BASE_INITIALIZE(SceneNode);
 	m_projectionMode = proj;
 
 	if (m_projectionMode == CameraProjection_2D)
@@ -70,6 +70,7 @@ void CameraComponent::initialize(CameraProjection proj)
 		m_farClip = 1000.0f;
 		m_zSortDistanceBase = ZSortDistanceBase::CameraDistance;
 	}
+	return true;
 }
 
 //------------------------------------------------------------------------------
@@ -250,9 +251,9 @@ CameraMouseMoveBehavior::~CameraMouseMoveBehavior()
 }
 
 //------------------------------------------------------------------------------
-void CameraMouseMoveBehavior::initialize()
+bool CameraMouseMoveBehavior::initialize()
 {
-	Behavior::initialize();
+	return Behavior::initialize();
 }
 
 //------------------------------------------------------------------------------
@@ -785,8 +786,15 @@ CameraViewportLayer2::CameraViewportLayer2()
 }
 
 //------------------------------------------------------------------------------
-void CameraViewportLayer2::initialize(World* targetWorld, CameraComponent* hostingCamera)
+CameraViewportLayer2::~CameraViewportLayer2()
 {
+	m_hostingCamera->m_ownerLayer = nullptr;
+}
+
+//------------------------------------------------------------------------------
+bool CameraViewportLayer2::initialize(World* targetWorld, CameraComponent* hostingCamera)
+{
+	LN_BASE_INITIALIZE(UIViewportLayer);
 	m_targetWorld = targetWorld;
 	m_hostingCamera = hostingCamera;
 	m_hostingCamera->m_ownerLayer = this;
@@ -810,18 +818,13 @@ void CameraViewportLayer2::initialize(World* targetWorld, CameraComponent* hosti
 	m_mainRenderView->m_lists.add(m_targetWorld->getRenderer()->getDrawElementList());
 	m_mainRenderView->m_lists.add(m_targetWorld->GetDebugRenderer()->getDrawElementList());
 	m_mainRenderView->setSceneRenderer(m_internalRenderer);
+	return true;
 }
 
 //------------------------------------------------------------------------------
 const Size& CameraViewportLayer2::getViewSize() const
 {
 	return getOwnerViewport()->getViewSize();
-}
-
-//------------------------------------------------------------------------------
-CameraViewportLayer2::~CameraViewportLayer2()
-{
-	m_hostingCamera->m_ownerLayer = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -910,9 +913,9 @@ Camera::~Camera()
 }
 
 //------------------------------------------------------------------------------
-void Camera::initialize(CameraProjection proj)
+bool Camera::initialize(CameraProjection proj)
 {
-	WorldObject::initialize();
+	LN_BASE_INITIALIZE(WorldObject);
 	m_component = newObject<CameraComponent>(proj);
 	addComponent(m_component);
 	transform.lookAt(Vector3::Zero);
@@ -925,6 +928,7 @@ void Camera::initialize(CameraProjection proj)
 	{
 		transform.position = Vector3(0, 1.0f, -10.0f);	// Unity based.
 	}
+	return true;
 }
 
 //------------------------------------------------------------------------------
