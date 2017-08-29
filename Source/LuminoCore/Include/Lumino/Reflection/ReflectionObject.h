@@ -62,7 +62,7 @@ private:
 public:
 	ReflectionObject();
 	virtual ~ReflectionObject();
-	void initialize() {}
+	bool initialize() { return true; }
 
 	void setUserData(void* data) { m_userData = data; }
 	void* getUserData() const { return m_userData; }
@@ -360,16 +360,25 @@ template<class T, typename... TArgs>
 Ref<T> newObject(TArgs&&... args)
 {
 	auto ptr = Ref<T>(new T(), false);
-	ptr->initialize(std::forward<TArgs>(args)...);
-	return ptr;
+	if (ptr->initialize(std::forward<TArgs>(args)...))
+	{
+		return ptr;
+	}
+	else
+	{
+		return nullptr;
+	}
 }
 
 template<class T, typename... TArgs>
-void placementNewObject(void* ptr, TArgs&&... args)
+bool placementNewObject(void* ptr, TArgs&&... args)
 {
 	new (ptr)T();
-	static_cast<T*>(ptr)->initialize(std::forward<TArgs>(args)...);
+	return static_cast<T*>(ptr)->initialize(std::forward<TArgs>(args)...);
 }
+
+//#define LN_BASE_INITIALIZE(initexpression)	if (!(initexpression)) return false;
+#define LN_BASE_INITIALIZE(baseClass, ...)	if (!(baseClass::initialize(##__VA_ARGS__))) return false;
 
 LN_NAMESPACE_END
 

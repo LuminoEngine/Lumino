@@ -61,9 +61,10 @@ GameApplication::~GameApplication()
 }
 
 //------------------------------------------------------------------------------
-void GameApplication::initialize()
+bool GameApplication::initialize()
 {
-
+	LN_BASE_INITIALIZE(Object);
+	return true;
 }
 
 //------------------------------------------------------------------------------

@@ -30,9 +30,9 @@ AnimationManager::~AnimationManager()
 }
 
 //------------------------------------------------------------------------------
-void AnimationManager::initialize()
-{
-}
+//void AnimationManager::initialize()
+//{
+//}
 
 //------------------------------------------------------------------------------
 void AnimationManager::advanceTime(float deltaTime)

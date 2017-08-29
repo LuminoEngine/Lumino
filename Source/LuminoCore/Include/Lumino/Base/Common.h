@@ -128,7 +128,7 @@
 #ifndef LN_CONSTRUCT_ACCESS
 	#define LN_CONSTRUCT_ACCESS \
 		template<class T, typename... TArgs> friend ln::Ref<T> ln::newObject(TArgs&&... args); \
-		template<class T, typename... TArgs> friend void ln::placementNewObject(void* ptr, TArgs&&... args); \
+		template<class T, typename... TArgs> friend bool ln::placementNewObject(void* ptr, TArgs&&... args); \
 		protected
 #endif
 

@@ -71,7 +71,7 @@ public:
 
 LN_CONSTRUCT_ACCESS:
 	LN_METHOD()
-	void initialize();
+	bool initialize();
 
 private:
 	Ref<detail::GameSceneManager>	m_gameSceneManager;

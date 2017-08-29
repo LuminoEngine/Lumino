@@ -136,8 +136,10 @@ TextElement::~TextElement()
 }
 
 //------------------------------------------------------------------------------
-void TextElement::initialize()
+bool TextElement::initialize()
 {
+	LN_BASE_INITIALIZE(DocumentContentElement);
+
 	m_manager = ln::detail::DocumentsManager::getInstance();
 	m_fontData.Family = String::getEmpty();
 	m_fontData.Size = 20;
@@ -184,9 +186,9 @@ Block::~Block()
 }
 
 //------------------------------------------------------------------------------
-void Block::initialize()
+bool Block::initialize()
 {
-	TextElement::initialize();
+	return TextElement::initialize();
 }
 
 //------------------------------------------------------------------------------
@@ -232,9 +234,9 @@ Paragraph::~Paragraph()
 }
 
 //------------------------------------------------------------------------------
-void Paragraph::initialize()
+bool Paragraph::initialize()
 {
-	Block::initialize();
+	return Block::initialize();
 }
 
 
@@ -254,9 +256,9 @@ Inline::~Inline()
 }
 
 //------------------------------------------------------------------------------
-void Inline::initialize()
+bool Inline::initialize()
 {
-	TextElement::initialize();
+	return TextElement::initialize();
 }
 
 
@@ -276,9 +278,9 @@ Run::~Run()
 }
 
 //------------------------------------------------------------------------------
-void Run::initialize()
+bool Run::initialize()
 {
-	Inline::initialize();
+	LN_BASE_INITIALIZE(Inline);
 
 	// TODO: 本当に画面に表示されている分だけ作ればいろいろ節約できそう
 	//m_glyphRun = Ref<GlyphRun>::MakeRef();
@@ -286,7 +288,7 @@ void Run::initialize()
 }
 
 //------------------------------------------------------------------------------
-void Run::initialize(const UTF32* str, int len)
+bool Run::initialize(const UTF32* str, int len)
 {
 	initialize();
 
@@ -331,9 +333,9 @@ LineBreak::~LineBreak()
 }
 
 //------------------------------------------------------------------------------
-void LineBreak::initialize()
+bool LineBreak::initialize()
 {
-	Inline::initialize();
+	return Inline::initialize();
 }
 
 //------------------------------------------------------------------------------
@@ -414,8 +416,9 @@ VisualTextFragment::~VisualTextFragment()
 }
 
 //------------------------------------------------------------------------------
-void VisualTextFragment::initialize()
+bool VisualTextFragment::initialize()
 {
+	return Object::initialize();
 }
 
 //------------------------------------------------------------------------------
@@ -461,9 +464,11 @@ VisualInline::~VisualInline()
 }
 
 //------------------------------------------------------------------------------
-void VisualInline::initialize(Inline* inl)
+bool VisualInline::initialize(Inline* inl)
 {
+	LN_BASE_INITIALIZE(VisualTextElement);
 	m_inline = inl;
+	return true;
 }
 
 //------------------------------------------------------------------------------
@@ -545,9 +550,11 @@ VisualBlock::~VisualBlock()
 }
 
 //------------------------------------------------------------------------------
-void VisualBlock::initialize(Block* block)
+bool VisualBlock::initialize(Block* block)
 {
+	LN_BASE_INITIALIZE(VisualTextElement);
 	m_block = block;
+	return;
 }
 
 //------------------------------------------------------------------------------
@@ -647,9 +654,11 @@ DocumentView::~DocumentView()
 }
 
 //------------------------------------------------------------------------------
-void DocumentView::initialize(Document* document)
+bool DocumentView::initialize(Document* document)
 {
+	LN_BASE_INITIALIZE(DocumentContentElement);
 	m_document = document;
+	return true;
 }
 
 //------------------------------------------------------------------------------

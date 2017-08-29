@@ -27,9 +27,10 @@ VisualEffect::~VisualEffect()
 }
 
 //------------------------------------------------------------------------------
-void VisualEffect::initialize(/*detail::EffectCore* core*/)
+bool VisualEffect::initialize(/*detail::EffectCore* core*/)
 {
-	//LN_REFOBJ_SET(m_core, core);
+	LN_BASE_INITIALIZE(Object);
+	return true;
 }
 
 //------------------------------------------------------------------------------

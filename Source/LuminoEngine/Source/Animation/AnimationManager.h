@@ -16,7 +16,7 @@ public:
 	AnimationManager();
 	virtual ~AnimationManager();
 
-	void initialize();
+	//void initialize();
 
 	void advanceTime(float deltaTime);
 

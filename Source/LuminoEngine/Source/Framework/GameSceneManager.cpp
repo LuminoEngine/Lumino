@@ -22,9 +22,9 @@ GameScene::~GameScene()
 }
 
 //------------------------------------------------------------------------------
-void GameScene::initialize()
+bool GameScene::initialize()
 {
-
+	return Object::initialize();
 }
 
 //------------------------------------------------------------------------------

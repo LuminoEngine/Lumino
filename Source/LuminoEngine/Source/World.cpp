@@ -44,8 +44,10 @@ World::~World()
 }
 
 //------------------------------------------------------------------------------
-void World::initialize()
+bool World::initialize()
 {
+	LN_BASE_INITIALIZE(Object);
+
 	m_renderer = newObject<RenderingContext>();
 	//m_insideWorldRenderer = newObject<DrawList>(detail::EngineDomain::getGraphicsManager());
 	m_debugRenderer = newObject<DrawList>(detail::EngineDomain::getGraphicsManager());
@@ -56,6 +58,8 @@ void World::initialize()
 	{
 		m_offscreenIdStorage.add(i);
 	}
+
+	return true;
 }
 
 //------------------------------------------------------------------------------
@@ -237,9 +241,9 @@ World2D::~World2D()
 }
 
 //------------------------------------------------------------------------------
-void World2D::initialize()
+bool World2D::initialize()
 {
-	World::initialize();
+	LN_BASE_INITIALIZE(World);
 
 	m_sceneGraph = Ref<SceneGraph2D>::makeRef();
 	m_sceneGraph->createCore(EngineManager::getInstance()->getSceneGraphManager());
@@ -247,6 +251,8 @@ void World2D::initialize()
 	m_mainCamera = newObject<Camera>(CameraProjection_2D);
 	m_mainCamera->setSpecialObject(true);
 	addWorldObject(m_mainCamera, true);
+
+	return true;
 }
 
 //------------------------------------------------------------------------------
@@ -322,9 +328,9 @@ World3D::~World3D()
 }
 
 //------------------------------------------------------------------------------
-void World3D::initialize()
+bool World3D::initialize()
 {
-	World::initialize();
+	LN_BASE_INITIALIZE(World);
 
 	m_physicsWorld = newObject<PhysicsWorld>();
 
@@ -340,6 +346,8 @@ void World3D::initialize()
 	addWorldObject(m_mainLight, true);
 
 	createGridPlane();
+
+	return false;
 }
 
 //------------------------------------------------------------------------------

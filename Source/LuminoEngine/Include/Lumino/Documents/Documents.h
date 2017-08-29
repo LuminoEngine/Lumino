@@ -132,7 +132,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 LN_CONSTRUCT_ACCESS:
 	TextElement();
 	virtual ~TextElement();
-	void initialize();
+	bool initialize();
 
 LN_INTERNAL_ACCESS:
 	ln::detail::DocumentsManager* getManager() const { return m_manager; }
@@ -166,7 +166,7 @@ class Block
 public:
 	Block();
 	virtual ~Block();
-	void initialize();
+	bool initialize();
 
 	void addInline(Inline* inl);
 	void clearInlines();
@@ -190,7 +190,7 @@ class Paragraph
 public:
 	Paragraph();
 	virtual ~Paragraph();
-	void initialize();
+	bool initialize();
 
 
 private:
@@ -205,7 +205,7 @@ class Inline
 public:
 	Inline();
 	virtual ~Inline();
-	void initialize();
+	bool initialize();
 
 private:
 };
@@ -219,8 +219,8 @@ class Run
 public:
 	Run();
 	virtual ~Run();
-	void initialize();
-	void initialize(const UTF32* str, int len);
+	bool initialize();
+	bool initialize(const UTF32* str, int len);
 
 	void setText(const StringRef& text);
 
@@ -263,7 +263,7 @@ class LineBreak
 public:
 	LineBreak();
 	virtual ~LineBreak();
-	void initialize();
+	bool initialize();
 
 private:
 	virtual InternalTextElementType getInternalTextElementType() const;
@@ -318,7 +318,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	VisualTextFragment();
 	virtual ~VisualTextFragment();
-	void initialize();
+	bool initialize();
 
 LN_INTERNAL_ACCESS:
 	//void measureLayout(const Size& availableSize);
@@ -356,7 +356,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	VisualInline();
 	virtual ~VisualInline();
-	void initialize(Inline* inl);
+	bool initialize(Inline* inl);
 
 LN_INTERNAL_ACCESS:
 	void measureLayout(const Size& availableSize, VisualBlock* rootBlock);
@@ -385,7 +385,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	VisualBlock();
 	virtual ~VisualBlock();
-	void initialize(Block* block);
+	bool initialize(Block* block);
 
 LN_INTERNAL_ACCESS:
 	void measureLayout(const Size& availableSize);
@@ -410,7 +410,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	DocumentView();
 	virtual ~DocumentView();
-	void initialize(Document* document);
+	bool initialize(Document* document);
 
 LN_INTERNAL_ACCESS:
 	void measureLayout(const Size& availableSize);

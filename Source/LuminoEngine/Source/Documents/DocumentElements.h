@@ -38,7 +38,7 @@ class Document
 public:
 	Document();
 	virtual ~Document();
-	void initialize();
+	bool initialize();
 
 	// åªç›ÇÃì‡óeÇÇ∑Ç◊Çƒîjä¸ÇµÇƒÅAêVÇµÇ¢1Ç¬ÇÃ Paragraph ÇçÏÇÈ
 	void setText(const StringRef& text);
@@ -130,7 +130,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 LN_CONSTRUCT_ACCESS:
 	TextElement();
 	virtual ~TextElement();
-	void initialize();
+	bool initialize();
 
 LN_INTERNAL_ACCESS:
 	DocumentsManager* getManager() const { return m_manager; }
@@ -170,7 +170,7 @@ class Block
 public:
 	Block();
 	virtual ~Block();
-	void initialize();
+	bool initialize();
 
 	void addInline(Inline* inl);
 	void clearInlines();
@@ -198,7 +198,7 @@ class Paragraph
 public:
 	Paragraph();
 	virtual ~Paragraph();
-	void initialize();
+	bool initialize();
 
 
 private:
@@ -213,7 +213,7 @@ class Inline
 public:
 	Inline();
 	virtual ~Inline();
-	void initialize();
+	bool initialize();
 
 private:
 };
@@ -227,8 +227,8 @@ class run
 public:
 	run();
 	virtual ~run();
-	void initialize();
-	void initialize(const UTF32* str, int len);
+	bool initialize();
+	bool initialize(const UTF32* str, int len);
 
 	void setText(const StringRef& text);
 
@@ -254,7 +254,7 @@ class Span
 public:
 	Span();
 	virtual ~Span();
-	void initialize();
+	bool initialize();
 
 private:
 	// Inline List
@@ -270,7 +270,7 @@ class LineBreak
 public:
 	LineBreak();
 	virtual ~LineBreak();
-	void initialize();
+	bool initialize();
 
 private:
 	virtual InternalTextElementType getInternalTextElementType() const;
@@ -326,7 +326,7 @@ class DocumentView
 public:
 
 private:
-	void initialize(Document* document);
+	bool initialize(Document* document);
 
 	Document*	m_document;
 };

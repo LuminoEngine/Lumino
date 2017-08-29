@@ -24,9 +24,10 @@ Document::~Document()
 }
 
 //------------------------------------------------------------------------------
-void Document::initialize()
+bool Document::initialize()
 {
 	m_manager = detail::DocumentsManager::getInstance();
+	return Object::initialize();
 }
 
 //------------------------------------------------------------------------------
@@ -140,7 +141,7 @@ TextElement::~TextElement()
 }
 
 //------------------------------------------------------------------------------
-void TextElement::initialize()
+bool TextElement::initialize()
 {
 	m_manager = detail::DocumentsManager::getInstance();
 	m_fontData.Family = String::getEmpty();
@@ -151,6 +152,8 @@ void TextElement::initialize()
 	m_fontDataModified = true;
 
 	m_foreground = Brush::Black;
+
+	return Object::initialize();
 }
 
 //------------------------------------------------------------------------------
@@ -227,9 +230,9 @@ Block::~Block()
 }
 
 //------------------------------------------------------------------------------
-void Block::initialize()
+bool Block::initialize()
 {
-	TextElement::initialize();
+	return TextElement::initialize();
 }
 
 //------------------------------------------------------------------------------
@@ -316,9 +319,9 @@ Paragraph::~Paragraph()
 }
 
 //------------------------------------------------------------------------------
-void Paragraph::initialize()
+bool Paragraph::initialize()
 {
-	Block::initialize();
+	return Block::initialize();
 }
 
 
@@ -338,9 +341,9 @@ Inline::~Inline()
 }
 
 //------------------------------------------------------------------------------
-void Inline::initialize()
+bool Inline::initialize()
 {
-	TextElement::initialize();
+	return TextElement::initialize();
 }
 
 
@@ -360,9 +363,9 @@ run::~run()
 }
 
 //------------------------------------------------------------------------------
-void run::initialize()
+bool run::initialize()
 {
-	Inline::initialize();
+	if (!Inline::initialize()) return false;
 
 	// TODO: 本当に画面に表示されている分だけ作ればいろいろ節約できそう
 	m_glyphRun = Ref<GlyphRun>::makeRef();
@@ -370,9 +373,9 @@ void run::initialize()
 }
 
 //------------------------------------------------------------------------------
-void run::initialize(const UTF32* str, int len)
+bool run::initialize(const UTF32* str, int len)
 {
-	initialize();
+	if (!initialize()) return false;
 
 	m_glyphRun->setText(str, len);
 }
@@ -423,9 +426,9 @@ LineBreak::~LineBreak()
 }
 
 //------------------------------------------------------------------------------
-void LineBreak::initialize()
+bool LineBreak::initialize()
 {
-	Inline::initialize();
+	return Inline::initialize();
 }
 
 //------------------------------------------------------------------------------
@@ -467,9 +470,11 @@ void VisualBlock::rebuildVisualLineList()
 //==============================================================================
 
 //------------------------------------------------------------------------------
-void DocumentView::initialize(Document* document)
+bool DocumentView::initialize(Document* document)
 {
+	LN_BASE_INITIALIZE(Object);
 	m_document = document;
+	return true;
 }
 
 } // namespace detail

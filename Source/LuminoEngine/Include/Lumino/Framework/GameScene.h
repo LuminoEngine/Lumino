@@ -36,7 +36,7 @@ LN_CONSTRUCT_ACCESS:
 
 	/** Initialize */
 	LN_METHOD()
-	void initialize();
+	bool initialize();
 
 private:
 	void addGameObject(WorldObject* obj);

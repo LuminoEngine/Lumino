@@ -56,7 +56,7 @@ public:
 protected:
 	VisualEffect() = default;
 	virtual ~VisualEffect();
-	void initialize(/*detail::EffectCore* core*/);
+	bool initialize(/*detail::EffectCore* core*/);
 	void ReleaseInstance();
 
 	virtual VisualEffectInstance* PlayNewInstance() = 0;

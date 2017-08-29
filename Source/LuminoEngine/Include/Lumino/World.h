@@ -71,7 +71,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	World();
 	virtual ~World();
-	void initialize();
+	bool initialize();
 
 LN_INTERNAL_ACCESS:
 	//const Ref<DrawList>& getInsideWorldRenderer() const { return m_insideWorldRenderer; }
@@ -113,7 +113,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	World2D();
 	virtual ~World2D();
-	void initialize();
+	bool initialize();
 
 LN_INTERNAL_ACCESS:
 	SceneGraph2D* getSceneGraph2D() const;
@@ -144,7 +144,7 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	World3D();
 	virtual ~World3D();
-	void initialize();
+	bool initialize();
 
 LN_INTERNAL_ACCESS:
 	PhysicsWorld* getPhysicsWorld3D() const;
