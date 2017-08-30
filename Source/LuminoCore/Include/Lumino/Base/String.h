@@ -722,11 +722,14 @@ class StringA {};
 /// @see GenericString
 class StringW {};		
 #else
-#ifndef LN_USTRING
+#ifdef LN_USTRING
+typedef std::string		StringA;
+typedef std::wstring	StringW;
+#else
 typedef GenericString<TCHAR>	String;
-#endif
 typedef GenericString<char>		StringA;
 typedef GenericString<wchar_t>	StringW;
+#endif
 #endif
 
 namespace detail {

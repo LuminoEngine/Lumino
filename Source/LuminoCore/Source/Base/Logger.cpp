@@ -78,7 +78,7 @@ public:
 		LogHelper::getTime(&m_time);
 	}
 
-	void setMessage(const StringRefA& message) { m_message = message; }
+	//void setMessage(const StringRefA& message) { m_message = message; }
 
 	LogHelper::Time& getTime() { return m_time; }
 
@@ -201,7 +201,7 @@ static std::stringstream	g_logSS;
 static const int	TEMP_BUFFER_SIZE = 2048;
 static uint64_t		g_logStartTime;
 
-static Char		g_logFilePath[LN_MAX_PATH] = { 0 };
+static TCHAR		g_logFilePath[LN_MAX_PATH] = { 0 };
 
 class FileClose
 {

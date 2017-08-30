@@ -468,6 +468,19 @@ private:
 
 
 
+/**
+	@brief		
+*/
+class UStringConvert
+{
+public:
+	static std::basic_string<TCHAR> toStdTString(const UChar* str);
+};
+
+
+
+
+
 namespace fmt {
 
 template<typename TChar>

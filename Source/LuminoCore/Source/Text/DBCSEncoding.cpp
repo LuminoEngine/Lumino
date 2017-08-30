@@ -44,10 +44,10 @@ const DBCSEncoding::TableInfo DBCSEncoding::Tables[(const int)EncodingType::TERM
 	//{ NULL, NULL, NULL }	// EncodingType_UTF32LN,
 	//{ NULL, NULL, NULL }	// EncodingType_UTF32BN,
 
-	{ _T("Shift_JIS"), g_SJISLeadBytePairs, g_SJISToUTF16Table, g_UTF16ToSJISTable },		// EncodingType_SJIS,
-	{ _T("GB_2312-80"), g_GB2312LeadBytePairs, g_GB2312ToUTF16Table, g_UTF16ToGB2312Table },	// EncodingType_GB2312
-	{ _T("EUC-KR"), g_EUCKRLeadBytePairs, g_EUCKRToUTF16Table, g_UTF16ToEUCKRTable },		// EncodingType_EUCKR
-	{ _T("Big5"), g_Big5LeadBytePairs, g_Big5ToUTF16Table, g_UTF16ToBig5Table },		// EncodingType_BIG5
+	{ _TT("Shift_JIS"), g_SJISLeadBytePairs, g_SJISToUTF16Table, g_UTF16ToSJISTable },		// EncodingType_SJIS,
+	{ _TT("GB_2312-80"), g_GB2312LeadBytePairs, g_GB2312ToUTF16Table, g_UTF16ToGB2312Table },	// EncodingType_GB2312
+	{ _TT("EUC-KR"), g_EUCKRLeadBytePairs, g_EUCKRToUTF16Table, g_UTF16ToEUCKRTable },		// EncodingType_EUCKR
+	{ _TT("Big5"), g_Big5LeadBytePairs, g_Big5ToUTF16Table, g_UTF16ToBig5Table },		// EncodingType_BIG5
 };
 
 //------------------------------------------------------------------------------

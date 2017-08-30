@@ -752,6 +752,21 @@ template void UStringHelper::toStringInt8<wchar_t>(int8_t v, wchar_t* outStr, in
 template void UStringHelper::toStringInt8<char16_t>(int8_t v, char16_t* outStr, int size);
 
 
+
+//==============================================================================
+// UStringConvert
+//==============================================================================
+
+std::basic_string<TCHAR> UStringConvert::toStdTString(const UChar* str)
+{
+	UString t = str;
+#ifdef LN_UNICODE
+	return t.toStdWString();
+#else
+	return t.toStdString();
+#endif
+}
+
 //==============================================================================
 // Path
 //==============================================================================

@@ -64,7 +64,32 @@ Assertion::NotifyFataiErrorHandler Assertion::getNotifyFataiErrorHandler()
 // Exception
 //==============================================================================
 
-static char gDumpFilePath[LN_MAX_PATH] = { 0 }; 
+static void safeCharToUChar(const char* src, Char* dst, int dstSize) LN_NOEXCEPT
+{
+	// TODO: 日本語対応
+	int i = 0;
+	for (; i < dstSize-1 && *src; i++, src++)
+	{
+		dst[i] = *src;
+	}
+	dst[i] = '\0';
+}
+
+static void safeWCharToUChar(const wchar_t* src, Char* dst, int dstSize) LN_NOEXCEPT
+{
+	// TODO: 日本語対応
+	int i = 0;
+	for (; i < dstSize - 1 && *src; i++, src++)
+	{
+		dst[i] = *src;
+	}
+	dst[i] = '\0';
+}
+
+
+
+
+static char gDumpFilePath[LN_MAX_PATH] = { 0 };
 
 //------------------------------------------------------------------------------
 Exception::Exception()
@@ -127,7 +152,9 @@ Exception& Exception::setSourceLocationInfo(const char* filePath, int fileLine)
 	{
 		sprintf_s(m_symbolBuffer, LN_ARRAY_SIZE_OF(m_symbolBuffer), "File:%s Line:%d", filePath, fileLine);
 	}
-
+#ifdef LN_USTRING
+	safeCharToUChar(filePath, m_sourceFilePath, LN_ARRAY_SIZE_OF(m_sourceFilePath));
+#else
 #ifdef LN_UNICODE
 	// ワイド文字列へ変換 (文字コードは考慮しない)
 	memset(m_sourceFilePath, 0, sizeof(m_sourceFilePath));
@@ -138,6 +165,7 @@ Exception& Exception::setSourceLocationInfo(const char* filePath, int fileLine)
 	}
 #else
 	StringTraits::tstrcpy(m_sourceFilePath, sizeof(m_sourceFilePath) / sizeof(Char), filePath);
+#endif
 #endif
 
 	m_sourceFileLine = fileLine;
@@ -163,85 +191,41 @@ bool Exception::initDumpFile(const char* filePath)
 //------------------------------------------------------------------------------
 void Exception::setMessage(const Char* caption)
 {
-	appendMessage(caption, _tcslen(caption));
-	//int captionLen = _tcslen(caption);
-	//_tcscpy_s(m_message, MaxMessageBufferSize, caption);
-
-	//int pos = std::min(captionLen, MaxMessageBufferSize);
-	//m_message[pos] = '\n';
-	//m_message[pos + 1] = '\0';
-	//AppendMessage(m_symbolBuffer, strlen(m_symbolBuffer));
-
+	appendMessage(caption, StringTraits::tcslen(caption));
 }
 
 //------------------------------------------------------------------------------
 void Exception::setMessage(const Char* caption, const char* format, va_list args)
 {
-	appendMessage(caption, _tcslen(caption));
+	// caption
+	appendMessage(caption, StringTraits::tcslen(caption));
 
+	// format char
 	static const int BUFFER_SIZE = MaxMessageBufferSize;
 	char buf[BUFFER_SIZE];
-	//int captionLen = _tcslen(caption) + 1;	// +1 は'\n' の分
-	//int detailsLen = BUFFER_SIZE - captionLen;
-
 	int len = StringTraits::vsprintf(buf, BUFFER_SIZE, format, args);
-	appendMessage(buf, len);
-	//if (len >= detailsLen)
-	//{
-	//	// バッファに収まりきらない場合は終端を ... にして切る
-	//	buf[detailsLen - 4] = '.';
-	//	buf[detailsLen - 3] = '.';
-	//	buf[detailsLen - 2] = '.';
-	//	buf[detailsLen - 1] = '\0';
-	//}
 
-//	// キャプション
-//	_tcscpy_s(m_message, BUFFER_SIZE, caption);
-//	m_message[captionLen - 1] = '\n';
-//
-//	// TCHAR に合わせてメンバに格納
-//#ifdef LN_UNICODE
-//	size_t wlen;
-//	mbstowcs_s(&wlen, m_message + captionLen, detailsLen, buf, _TRUNCATE);
-//#else
-//	strcpy_s(m_message + captionLen, detailsLen, buf);
-//#endif
-	//AppendMessage(m_symbolBuffer, strlen(m_symbolBuffer));
+	// char to UChar
+	Char ucharBuf[BUFFER_SIZE];
+	safeCharToUChar(buf, ucharBuf, LN_ARRAY_SIZE_OF(ucharBuf));
+	appendMessage(ucharBuf, len);
 }
 
 //------------------------------------------------------------------------------
 void Exception::setMessage(const Char* caption, const wchar_t* format, va_list args)
 {
-	appendMessage(caption, _tcslen(caption));
+	// caption
+	appendMessage(caption, StringTraits::tcslen(caption));
 
+	// format char
 	static const int BUFFER_SIZE = MaxMessageBufferSize;
 	wchar_t buf[BUFFER_SIZE];
-	//int captionLen = _tcslen(caption) + 1;	// +1 は'\n' の分
-	//int detailsLen = BUFFER_SIZE - captionLen;
-
 	int len = StringTraits::vsprintf(buf, BUFFER_SIZE, format, args);
-	appendMessage(buf, len);
-//	if (len >= detailsLen)
-//	{
-//		// バッファに収まりきらない場合は終端を ... にして切る
-//		buf[detailsLen - 4] = L'.';
-//		buf[detailsLen - 3] = L'.';
-//		buf[detailsLen - 2] = L'.';
-//		buf[detailsLen - 1] = L'\0';
-//	}
-//
-//	// キャプション
-//	_tcscpy_s(m_message, BUFFER_SIZE, caption);
-//	m_message[captionLen - 1] = '\n';
-//
-//	// TCHAR に合わせてメンバに格納
-//#ifdef LN_UNICODE
-//	wcscpy_s(m_message + captionLen, detailsLen, buf);
-//#else
-//	size_t mbcslen;
-//	wcstombs_s(&mbcslen, m_message + captionLen, detailsLen, buf, _TRUNCATE);
-//#endif
-	//AppendMessage(m_symbolBuffer, strlen(m_symbolBuffer));
+
+	// char to UChar
+	Char ucharBuf[BUFFER_SIZE];
+	safeWCharToUChar(buf, ucharBuf, LN_ARRAY_SIZE_OF(ucharBuf));
+	appendMessage(ucharBuf, len);
 }
 
 //------------------------------------------------------------------------------
@@ -269,6 +253,23 @@ const Char* Exception::getMessageOverride() const
 	return m_message;
 }
 
+#ifdef LN_USTRING
+void Exception::appendMessage(const Char* message, size_t len)
+{
+	// TODO: Char 用の strncpy あったほうがいい気がする・・
+	size_t curLen = StringTraits::tcslen(m_message);
+	size_t remainLen = (MaxMessageBufferSize - curLen) - 2;	// -2 は "\n\0"
+	len = std::min(len, remainLen);
+	Char* head = m_message + curLen;
+
+	for (size_t i = 0; i < len; i++)
+	{
+		head[i] = message[i];
+	}
+	head[len] = '\n';
+	head[len + 1] = '\0';
+}
+#else
 //------------------------------------------------------------------------------
 void Exception::appendMessage(const char* message, size_t len)
 {
@@ -306,6 +307,7 @@ void Exception::appendMessage(const wchar_t* message, size_t len)
 	head[len] = '\n';
 	head[len + 1] = '\0';
 }
+#endif
 
 //==============================================================================
 // VerifyException

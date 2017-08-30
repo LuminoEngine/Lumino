@@ -163,7 +163,7 @@ class LUMINO_EXPORT Exception : public std::exception
 public:
 	Exception();
 	virtual ~Exception() throw();
-	Exception& setSourceLocationInfo( const char* filePath, int fileLine );
+	Exception& setSourceLocationInfo(const char* filePath, int fileLine);
 
 public:
 	
@@ -201,8 +201,12 @@ protected:
 	virtual const Char* getMessageOverride() const;
 
 private:
+#ifdef LN_USTRING
+	void appendMessage(const Char* message, size_t len);
+#else
 	void appendMessage(const char* message, size_t len);
 	void appendMessage(const wchar_t* message, size_t len);
+#endif
 
 private:
 	static const int MaxMessageBufferSize = 1024;
@@ -438,7 +442,7 @@ public:
 
 public:
 	uint32_t/*DWORD*/			getLastErrorCode() const { return m_dwLastErrorCode; }
-	const Char*	getFormatMessage() const { return m_pFormatMessage; }
+	const TCHAR*	getFormatMessage() const { return m_pFormatMessage; }
 
 public:
 	// override Exception
@@ -446,7 +450,7 @@ public:
 
 private:
 	uint32_t/*DWORD*/	m_dwLastErrorCode;
-	Char				m_pFormatMessage[512];	///< FormatMessage() で取得したメッセージ
+	TCHAR				m_pFormatMessage[512];	///< FormatMessage() で取得したメッセージ
 };
 
 /**

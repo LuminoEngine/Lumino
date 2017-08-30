@@ -53,10 +53,19 @@ private:
 private:
 	std::locale		m_stdLocale;
 	NativeLocale_t	m_nativeLocale;
+#ifdef LN_USTRING
+#ifdef LN_OS_WIN32
+	std::wstring		m_nativeName;
+#else
+	std::string			m_nativeName;
+#endif
+
+#else
 #ifdef LN_OS_WIN32
 	StringW			m_nativeName;
 #else
 	StringA			m_nativeName;
+#endif
 #endif
 };
 
