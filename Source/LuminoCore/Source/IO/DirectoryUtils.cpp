@@ -177,7 +177,7 @@ bool GenericFileFinder<TChar>::nextInternal()
 		result = m_impl->next();
 		if (!result) break;
 
-		uint32_t attr = FileSystem::getAttribute(m_impl->getCurrent().c_str()).getValue();
+		uint32_t attr = detail::FileSystemInternal::getAttribute(m_impl->getCurrent().c_str(), m_impl->getCurrent().getLength()).getValue();
 		//uint32_t filter = (FileAttribute::enum_type)m_attr.getValue());
 		uint32_t filter = (uint32_t)m_attr.getValue();
 		if ((attr & filter) != 0)

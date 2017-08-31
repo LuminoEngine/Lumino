@@ -266,144 +266,42 @@ size_t FileSystem::GetFileSize( FILE* stream )
 #endif
 
 
-bool FileSystem::existsFile(const StringRefA& filePath)
+bool FileSystem::existsFile(const StringRef& filePath)
 {
-	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath);
-	return PlatformFileSystem::existsFile(localPath.c_str());
-}
-bool FileSystem::existsFile(const StringRefW& filePath)
-{
-	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath);
-	return PlatformFileSystem::existsFile(localPath.c_str());
-}
-bool FileSystem::existsFile(const UStringRef& filePath)
-{
-	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath);
-	return PlatformFileSystem::existsFile(localPath.c_str());
+	return detail::FileSystemInternal::existsFile(filePath.getBegin(), filePath.getLength());
 }
 
-
-FileAttribute FileSystem::getAttribute(const StringRefA& filePath)
+FileAttribute FileSystem::getAttribute(const StringRef& filePath)
 {
-	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath);
-	FileAttribute attr;
-	bool r = PlatformFileSystem::getAttribute(localPath.c_str(), &attr);
-	LN_THROW(r, FileNotFoundException, localPath.c_str());
-	return attr;
-}
-FileAttribute FileSystem::getAttribute(const StringRefW& filePath)
-{
-	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath);
-	FileAttribute attr;
-	bool r = PlatformFileSystem::getAttribute(localPath.c_str(), &attr);
-	LN_THROW(r, FileNotFoundException, localPath.c_str());
-	return attr;
-}
-FileAttribute FileSystem::getAttribute(const UStringRef& filePath)
-{
-	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath);
-	FileAttribute attr;
-	bool r = PlatformFileSystem::getAttribute(localPath.c_str(), &attr);
-	LN_THROW(r, FileNotFoundException, localPath.c_str());
-	return attr;
+	return detail::FileSystemInternal::getAttribute(filePath.getBegin(), filePath.getLength());
 }
 
-void FileSystem::setAttribute(const StringRefA& filePath, FileAttribute attr)
+void FileSystem::setAttribute(const StringRef& filePath, FileAttribute attr)
 {
-	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath);
-	PlatformFileSystem::setAttribute(localPath.c_str(), attr);
-}
-void FileSystem::setAttribute(const StringRefW& filePath, FileAttribute attr)
-{
-	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath);
-	PlatformFileSystem::setAttribute(localPath.c_str(), attr);
-}
-void FileSystem::setAttribute(const UStringRef& filePath, FileAttribute attr)
-{
-	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath);
-	PlatformFileSystem::setAttribute(localPath.c_str(), attr);
+	detail::FileSystemInternal::setAttribute(filePath.getBegin(), filePath.getLength(), attr);
 }
 
-void FileSystem::copyFile(const StringRefA& sourceFileName, const StringRefA& destFileName, bool overwrite)
+void FileSystem::copyFile(const StringRef& sourceFileName, const StringRef& destFileName, bool overwrite)
 {
-	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath1(sourceFileName);
-	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath2(destFileName);
-	PlatformFileSystem::copyFile(localPath1.c_str(), localPath2.c_str(), overwrite);
-}
-void FileSystem::copyFile(const StringRefW& sourceFileName, const StringRefW& destFileName, bool overwrite)
-{
-	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath1(sourceFileName);
-	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath2(destFileName);
-	PlatformFileSystem::copyFile(localPath1.c_str(), localPath2.c_str(), overwrite);
-}
-void FileSystem::copyFile(const UStringRef& sourceFileName, const UStringRef& destFileName, bool overwrite)
-{
-	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath1(sourceFileName);
-	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath2(destFileName);
-	PlatformFileSystem::copyFile(localPath1.c_str(), localPath2.c_str(), overwrite);
+	detail::FileSystemInternal::copyFile(sourceFileName.getBegin(), sourceFileName.getLength(), destFileName.getBegin(), destFileName.getLength(), overwrite);
 }
 
-void FileSystem::deleteFile(const StringRefA& filePath)
+void FileSystem::deleteFile(const StringRef& filePath)
 {
-	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath);
-	PlatformFileSystem::deleteFile(localPath.c_str());
-}
-void FileSystem::deleteFile(const StringRefW& filePath)
-{
-	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath);
-	PlatformFileSystem::deleteFile(localPath.c_str());
-}
-void FileSystem::deleteFile(const UStringRef& filePath)
-{
-	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath);
-	PlatformFileSystem::deleteFile(localPath.c_str());
+	detail::FileSystemInternal::deleteFile(filePath.getBegin(), filePath.getLength());
 }
 
-template<typename TChar>
-static void createDirectoryInternal2(const TChar* begin, const TChar* end)
+bool FileSystem::existsDirectory(const StringRef& path)
 {
-	std::vector<std::basic_string<TChar>>	pathList;
-	std::basic_string<TChar> dir;
-
-	int i = (end - begin) - 1;//StringTraits::tcslen(path) - 1;	// 一番後ろの文字の位置
-	while (i >= 0)
-	{
-		dir.assign(begin, i + 1);
-		if (FileSystem::existsDirectory(dir))
-		{
-			break;
-		}
-		pathList.push_back(dir);
-
-		// セパレータが見つかるまで探す
-		while (i > 0 && begin[i] != PathTraits::DirectorySeparatorChar && begin[i] != PathTraits::AltDirectorySeparatorChar)
-		{
-			--i;
-		}
-		--i;
-	}
-
-	if (pathList.empty()) { return; }	// path が存在している
-
-	for (int i = pathList.size() - 1; i >= 0; --i)
-	{
-		detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(pathList[i].c_str());
-		PlatformFileSystem::createDirectory(localPath.c_str());
-		//LN_THROW(r, IOException);
-	}
+	FileAttribute attr = detail::FileSystemInternal::getAttribute(path.getBegin(), path.getLength());
+	return attr.TestFlag(FileAttribute::Directory);
 }
-void FileSystem::createDirectory(const StringRefA& path)
+
+void FileSystem::createDirectory(const StringRef& path)
 {
-	createDirectoryInternal2(path.getBegin(), path.getEnd());
+	detail::FileSystemInternal::createDirectory(path.getBegin(), path.getLength());
 }
-void FileSystem::createDirectory(const StringRefW& path)
-{
-	createDirectoryInternal2(path.getBegin(), path.getEnd());
-}
-void FileSystem::createDirectory(const UStringRef& path)
-{
-	createDirectoryInternal2(path.data(), path.data() + path.getLength());
-}
+
 
 void FileSystem::getCurrentDirectory(UString* outPath)
 {
@@ -442,19 +340,20 @@ void FileSystem::getCurrentDirectory(UString* outPath)
 template<typename TChar>
 void FileSystem::deleteDirectoryInternal(const GenericStringRef<TChar>& path, bool recursive)
 {
-	detail::GenericStaticallyLocalPath<TChar> localPath(path);
+	detail::GenericStaticallyLocalPath<TChar> localPath(path.getBegin(), path.getLength());
 	if (recursive)
 	{
 		GenericFileFinder<TChar> finder(localPath.c_str());
 		while (!finder.getCurrent().isEmpty())
 		{
-			if (getAttribute(finder.getCurrent().c_str()) == FileAttribute::Directory)
+			auto& current = finder.getCurrent();
+			if (detail::FileSystemInternal::getAttribute(current.c_str(), current.getLength()) == FileAttribute::Directory)
 			{
-				deleteDirectoryInternal<TChar>(finder.getCurrent(), recursive);	// recursive
+				deleteDirectoryInternal<TChar>(current, recursive);	// recursive
 			}
 			else // TODO: 他の属性みないとダメ。シンボリックリンクとか
 			{
-				deleteFile(finder.getCurrent().c_str());
+				detail::FileSystemInternal::deleteFile(current.c_str(), current.getLength());
 			}
 			finder.next();
 		}
@@ -474,11 +373,11 @@ void FileSystem::copyDirectoryInternal(const GenericStringRef<TChar>& srcPath, c
 	// 上書きしないとき、すでにフォルダが存在してはならない
 	if (!overwrite)
 	{
-		LN_THROW(existsDirectory(srcPath.getBegin()), IOException);	// TODO: range
+		LN_THROW(detail::FileSystemInternal::existsDirectory(srcPath.getBegin(), srcPath.getLength()), IOException);
 	}
 
 	// コピー先フォルダを作っておく
-	FileSystem::createDirectory(destPath.getBegin());	// TODO: range
+	detail::FileSystemInternal::createDirectory(destPath.getBegin(), destPath.getLength());
 
 	GenericFileFinder<TChar> finder(srcPath);
 	while (finder.isWorking())
@@ -500,12 +399,12 @@ void FileSystem::copyDirectoryInternal(const GenericStringRef<TChar>& srcPath, c
 			{
 				if (overwrite)
 				{
-					copyFile(src, dest, true);
+					detail::FileSystemInternal::copyFile(src.c_str(), src.getLength(), dest.c_str(), dest.getLength(), true);
 				}
 			}
 			else
 			{
-				copyFile(src, dest, false);
+				detail::FileSystemInternal::copyFile(src.c_str(), src.getLength(), dest.c_str(), dest.getLength(), false);
 			}
 		}
 		else if (src.existsDirectory())
@@ -531,7 +430,7 @@ template void FileSystem::copyDirectoryInternal<wchar_t>(const GenericStringRef<
 //------------------------------------------------------------------------------
 ByteBuffer FileSystem::readAllBytes(const StringRefA& filePath)
 {
-	detail::GenericStaticallyLocalPath<char> localPath(filePath);
+	detail::GenericStaticallyLocalPath<char> localPath(filePath.getBegin(), filePath.getLength());
 	FILE* fp;
 	errno_t err = fopen_s(&fp, localPath.c_str(), "rb");
 	LN_THROW(err == 0, FileNotFoundException, localPath.c_str());
@@ -543,7 +442,7 @@ ByteBuffer FileSystem::readAllBytes(const StringRefA& filePath)
 }
 ByteBuffer FileSystem::readAllBytes(const StringRefW& filePath)
 {
-	detail::GenericStaticallyLocalPath<wchar_t> localPath(filePath);
+	detail::GenericStaticallyLocalPath<wchar_t> localPath(filePath.getBegin(), filePath.getLength());
 	FILE* fp;
 	errno_t err = _wfopen_s(&fp, localPath.c_str(), L"rb");
 	LN_THROW(err == 0, FileNotFoundException, localPath.c_str());
@@ -634,25 +533,6 @@ int64_t FileSystem::calcSeekPoint(int64_t curPoint, int64_t maxSize, int64_t off
 }
     
 //------------------------------------------------------------------------------
-bool FileSystem::existsDirectory(const char* path)
-{
-	FileAttribute attr;
-	if (!getAttributeInternal(path, &attr)) { return false; }
-	return attr.TestFlag(FileAttribute::Directory);
-}
-bool FileSystem::existsDirectory(const wchar_t* path)
-{
-	FileAttribute attr;
-	if (!getAttributeInternal(path, &attr)) { return false; }
-	return attr.TestFlag(FileAttribute::Directory);
-}
-bool FileSystem::existsDirectory(const UChar* path)
-{
-	FileAttribute attr = getAttribute(path);
-	return attr.TestFlag(FileAttribute::Directory);
-}
-
-//------------------------------------------------------------------------------
 CaseSensitivity FileSystem::getFileSystemCaseSensitivity()
 {
 #ifdef LN_OS_WIN32
@@ -670,8 +550,169 @@ CaseSensitivity FileSystem::getFileSystemCaseSensitivity()
 
 
 
+//==============================================================================
+// FileSystemInternal
+//==============================================================================
+namespace detail {
+
+bool FileSystemInternal::existsFile(const char* filePath, int len)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath, len);
+	return PlatformFileSystem::existsFile(localPath.c_str());
+}
+bool FileSystemInternal::existsFile(const wchar_t* filePath, int len)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath, len);
+	return PlatformFileSystem::existsFile(localPath.c_str());
+}
+bool FileSystemInternal::existsFile(const char16_t* filePath, int len)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath, len);
+	return PlatformFileSystem::existsFile(localPath.c_str());
+}
+
+FileAttribute FileSystemInternal::getAttribute(const char* filePath, int len)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath, len);
+	FileAttribute attr;
+	if (!PlatformFileSystem::getAttribute(localPath.c_str(), &attr)) return FileAttribute::None;
+	return attr;
+}
+FileAttribute FileSystemInternal::getAttribute(const wchar_t* filePath, int len)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath, len);
+	FileAttribute attr;
+	bool r = PlatformFileSystem::getAttribute(localPath.c_str(), &attr);
+	if (!PlatformFileSystem::getAttribute(localPath.c_str(), &attr)) return FileAttribute::None;
+	return attr;
+}
+FileAttribute FileSystemInternal::getAttribute(const char16_t* filePath, int len)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath, len);
+	FileAttribute attr;
+	bool r = PlatformFileSystem::getAttribute(localPath.c_str(), &attr);
+	if (!PlatformFileSystem::getAttribute(localPath.c_str(), &attr)) return FileAttribute::None;
+	return attr;
+}
 
 
+void FileSystemInternal::setAttribute(const char* filePath, int len, FileAttribute attr)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath, len);
+	PlatformFileSystem::setAttribute(localPath.c_str(), attr);
+}
+void FileSystemInternal::setAttribute(const wchar_t* filePath, int len, FileAttribute attr)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath, len);
+	PlatformFileSystem::setAttribute(localPath.c_str(), attr);
+}
+void FileSystemInternal::setAttribute(const char16_t* filePath, int len, FileAttribute attr)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath, len);
+	PlatformFileSystem::setAttribute(localPath.c_str(), attr);
+}
+
+void FileSystemInternal::copyFile(const char* sourceFileName, int sourceFileNameLen, const char* destFileName, int destFileNameLen, bool overwrite)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath1(sourceFileName, sourceFileNameLen);
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath2(destFileName, destFileNameLen);
+	PlatformFileSystem::copyFile(localPath1.c_str(), localPath2.c_str(), overwrite);
+}
+void FileSystemInternal::copyFile(const wchar_t* sourceFileName, int sourceFileNameLen, const wchar_t* destFileName, int destFileNameLen, bool overwrite)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath1(sourceFileName, sourceFileNameLen);
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath2(destFileName, destFileNameLen);
+	PlatformFileSystem::copyFile(localPath1.c_str(), localPath2.c_str(), overwrite);
+}
+void FileSystemInternal::copyFile(const char16_t* sourceFileName, int sourceFileNameLen, const char16_t* destFileName, int destFileNameLen, bool overwrite)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath1(sourceFileName, sourceFileNameLen);
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath2(destFileName, destFileNameLen);
+	PlatformFileSystem::copyFile(localPath1.c_str(), localPath2.c_str(), overwrite);
+}
+
+void FileSystemInternal::deleteFile(const char* filePath, int len)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath, len);
+	PlatformFileSystem::deleteFile(localPath.c_str());
+}
+void FileSystemInternal::deleteFile(const wchar_t* filePath, int len)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath, len);
+	PlatformFileSystem::deleteFile(localPath.c_str());
+}
+void FileSystemInternal::deleteFile(const char16_t* filePath, int len)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath, len);
+	PlatformFileSystem::deleteFile(localPath.c_str());
+}
+
+bool FileSystemInternal::existsDirectory(const char* filePath, int len)
+{
+	FileAttribute attr = detail::FileSystemInternal::getAttribute(filePath, len);
+	return attr.TestFlag(FileAttribute::Directory);
+}
+bool FileSystemInternal::existsDirectory(const wchar_t* filePath, int len)
+{
+	FileAttribute attr = detail::FileSystemInternal::getAttribute(filePath, len);
+	return attr.TestFlag(FileAttribute::Directory);
+}
+bool FileSystemInternal::existsDirectory(const char16_t* filePath, int len)
+{
+	FileAttribute attr = detail::FileSystemInternal::getAttribute(filePath, len);
+	return attr.TestFlag(FileAttribute::Directory);
+}
+
+static void createDirectoryInternal2(const PlatformFileSystem::PathChar* begin, const PlatformFileSystem::PathChar* end)
+{
+	std::vector<std::basic_string<PlatformFileSystem::PathChar>>	pathList;
+	std::basic_string<PlatformFileSystem::PathChar> dir;
+
+	int i = (end - begin) - 1;//StringTraits::tcslen(path) - 1;	// 一番後ろの文字の位置
+	while (i >= 0)
+	{
+		dir.assign(begin, i + 1);
+
+		FileAttribute attr;
+		bool result = PlatformFileSystem::getAttribute(dir.c_str(), &attr);
+		if (result && attr.TestFlag(FileAttribute::Directory))
+		{
+			break;
+		}
+		pathList.push_back(dir);
+
+		// セパレータが見つかるまで探す
+		while (i > 0 && begin[i] != PathTraits::DirectorySeparatorChar && begin[i] != PathTraits::AltDirectorySeparatorChar)
+		{
+			--i;
+		}
+		--i;
+	}
+
+	if (pathList.empty()) { return; }	// path が存在している
+
+	for (int i = pathList.size() - 1; i >= 0; --i)
+	{
+		PlatformFileSystem::createDirectory(pathList[i].c_str());
+	}
+}
+void FileSystemInternal::createDirectory(const char* path, int len)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(path, len);
+	createDirectoryInternal2(localPath.c_str(), localPath.c_str() + localPath.getLength());
+}
+void FileSystemInternal::createDirectory(const wchar_t* path, int len)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(path, len);
+	createDirectoryInternal2(localPath.c_str(), localPath.c_str() + localPath.getLength());
+}
+void FileSystemInternal::createDirectory(const char16_t* path, int len)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(path, len);
+	createDirectoryInternal2(localPath.c_str(), localPath.c_str() + localPath.getLength());
+}
+
+} // namespace detail
 
 
 

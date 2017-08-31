@@ -105,21 +105,43 @@
 //#define LN_USTRING
 
 #ifdef LN_USTRING
+
+#if 1
+#define _TT(x)	(L ## x)
+#define TTCHAR	wchar_t
+#define _U(x)		(L ## x)
+namespace ln { using Char = wchar_t;
+using UChar = wchar_t;
+}
+
+#else
 #define _TT(x)	(u ## x)
 #define TTCHAR	char16_t
 //#define Char		char16_t
 #define _U(x)		u ## x
-namespace ln { using Char = char16_t; }
+namespace ln { using Char = char16_t;
+using UChar = char16_t; }
+
+#endif
+
 #else
+
+
+
 #define _TT		_T
 #define TTCHAR	TCHAR
 //#define Char	TCHAR
 #ifdef LN_UNICODE
 namespace ln { using Char = wchar_t; }
 #else
-namespace ln { using Char = char; }
+namespace ln { using Char = char;
+using UChar = char16_t;
+}
 #endif
 #define _U(x)	u ## x
+
+
+
 #endif
 
 

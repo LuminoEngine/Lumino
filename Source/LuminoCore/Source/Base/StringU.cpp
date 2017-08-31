@@ -1,6 +1,7 @@
 ﻿
 #include "../Internal.h"
 #include <memory>
+#include <cuchar>
 #include <Lumino/Text/Encoding.h>
 #include <Lumino/Base/StringU.h>
 #include <Lumino/Base/StringHelper.h>
@@ -757,15 +758,162 @@ template void UStringHelper::toStringInt8<char16_t>(int8_t v, char16_t* outStr, 
 // UStringConvert
 //==============================================================================
 
-std::basic_string<TCHAR> UStringConvert::toStdTString(const UChar* str)
+//std::basic_string<TCHAR> UStringConvert::toStdTString(const UChar* str)
+//{
+//	UString t = str;
+//#ifdef LN_UNICODE
+//	return t.toStdWString();
+//#else
+//	return t.toStdString();
+//#endif
+//}
+
+int UStringConvert::convertNativeString(const char* src, int srcLen, char* dst, int dstSize)
 {
-	UString t = str;
-#ifdef LN_UNICODE
-	return t.toStdWString();
+	if (!dst || dstSize <= 0) return 0;
+	if (src && srcLen >= 0)
+	{
+		int len = std::min(srcLen, dstSize -1);
+		memcpy_s(dst, dstSize, src, len);
+		dst[len] = '\0';
+		return len;
+	}
+	else
+	{
+		dst[0] = '\0';
+		return 0;
+	}
+}
+
+int UStringConvert::convertNativeString(const char* src, int srcLen, wchar_t* dst, int dstSize)
+{
+	if (!dst || dstSize <= 0) return 0;
+	if (src && srcLen >= 0)
+	{
+		if (srcLen >= dstSize) return -1;
+		size_t size;
+		errno_t err = mbstowcs_s(&size, dst, dstSize, src, srcLen);
+		if (err != 0) return -1;
+		return (int)size;
+	}
+	else
+	{
+		dst[0] = '\0';
+		return 0;
+	}
+}
+
+int UStringConvert::convertNativeString(const wchar_t* src, int srcLen, char* dst, int dstSize)
+{
+	if (!dst || dstSize <= 0) return 0;
+	if (src && srcLen >= 0)
+	{
+		if (srcLen >= dstSize) return -1;
+		size_t size;
+		errno_t err = wcstombs_s(&size, dst, dstSize, src, srcLen);
+		if (err != 0) return -1;
+		return (int)size;
+	}
+	else
+	{
+		dst[0] = '\0';
+		return 0;
+	}
+}
+
+int UStringConvert::convertNativeString(const wchar_t* src, int srcLen, wchar_t* dst, int dstSize)
+{
+	if (!dst || dstSize <= 0) return 0;
+	if (src && srcLen >= 0)
+	{
+		memcpy_s(dst, dstSize * sizeof(wchar_t), src, srcLen * sizeof(wchar_t));
+		dst[dstSize - 1] = '\0';
+		return dstSize - 1;
+	}
+	else
+	{
+		dst[0] = '\0';
+		return 0;
+	}
+}
+
+int UStringConvert::convertNativeString(const char16_t* src, int srcLen, char* dst, int dstSize)
+{
+	if (!dst || dstSize <= 0) return 0;
+	if (src && srcLen >= 0)
+	{
+		mbstate_t state;
+		char* p = dst;
+		for (size_t n = 0; n < srcLen; ++n)
+		{
+			int rc = std::c16rtomb(p, src[n], &state);
+			if (rc == -1) break;
+			p += rc;
+		}
+		return p - dst;
+	}
+	else
+	{
+		dst[0] = '\0';
+		return 0;
+	}
+}
+
+int UStringConvert::convertNativeString(const char16_t* src, int srcSize, wchar_t* dst, int dstSize)
+{
+#ifdef LN_WCHAR_16
+	return convertNativeString((const wchar_t*)src, srcSize, dst, dstSize);
 #else
-	return t.toStdString();
+	LN_NOTIMPLEMENTED();
+	return -1;
 #endif
 }
+
+//int UStringConvert::getMaxNativeStringConverLength(const char* src, int srcLen, const char* dst)
+//{
+//	return srcLen;
+//}
+//int UStringConvert::getMaxNativeStringConverLength(const char* src, int srcLen, const wchar_t* dst)
+//{
+//	int maxCodePoints = srcLen * 4;	// 最悪、UTF-8 と仮定
+//	return maxCodePoints * 2;		// 最悪、全部サロゲートペアで構成されていると仮定
+//}
+//int UStringConvert::getMaxNativeStringConverLength(const wchar_t* src, int srcLen, const char* dst)
+//{
+//	
+//}
+//int UStringConvert::getMaxNativeStringConverLength(const wchar_t* src, int srcLen, const wchar_t* dst);
+//int UStringConvert::getMaxNativeStringConverLength(const char16_t* src, int srcLen, const char* dst);
+//int UStringConvert::getMaxNativeStringConverLength(const char16_t* src, int srcLen, const wchar_t* dst);
+
+
+void UStringConvert::convertToStdString(const char* src, int srcLen, std::string* outString)
+{
+	outString->assign(src, srcLen);
+}
+void UStringConvert::convertToStdString(const char* src, int srcLen, std::wstring* outString)
+{
+	auto str = UString::fromCString(src, srcLen);
+	*outString = str.toStdWString();
+}
+void UStringConvert::convertToStdString(const wchar_t* src, int srcLen, std::string* outString)
+{
+	auto str = UString::fromCString(src, srcLen);
+	*outString = str.toStdString();
+}
+void UStringConvert::convertToStdString(const wchar_t* src, int srcLen, std::wstring* outString)
+{
+	outString->assign(src, srcLen);
+}
+void UStringConvert::convertToStdString(const char16_t* src, int srcLen, std::string* outString)
+{
+	LN_NOTIMPLEMENTED();
+}
+void UStringConvert::convertToStdString(const char16_t* src, int srcLen, std::wstring* outString)
+{
+	LN_NOTIMPLEMENTED();
+}
+
 
 //==============================================================================
 // Path

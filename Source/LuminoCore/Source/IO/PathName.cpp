@@ -239,7 +239,7 @@ bool GenericPathName<TChar>::isRoot() const
 template<typename TChar>
 bool GenericPathName<TChar>::isDirectory() const
 {
-	return FileSystem::existsDirectory(m_path.c_str());
+	return detail::FileSystemInternal::existsDirectory(m_path.c_str(), m_path.getLength());
 }
 
 //------------------------------------------------------------------------------
@@ -288,14 +288,14 @@ std::string GenericPathName<TChar>::toLocalChar() const
 template<typename TChar>
 bool GenericPathName<TChar>::existsFile() const
 {
-	return FileSystem::existsFile(m_path.c_str());
+	return detail::FileSystemInternal::existsFile(m_path.c_str(), m_path.getLength());
 }
 
 //------------------------------------------------------------------------------
 template<typename TChar>
 bool GenericPathName<TChar>::existsDirectory() const
 {
-	return FileSystem::existsDirectory(m_path.c_str());
+	return detail::FileSystemInternal::existsDirectory(m_path.c_str(), m_path.getLength());
 }
 
 //------------------------------------------------------------------------------
@@ -304,7 +304,7 @@ bool GenericPathName<TChar>::existsFileInDirectory(const StringRefT& relPath) co
 {
 	TChar path[LN_MAX_PATH];
 	PathTraits::combine(m_path.c_str(), m_path.getLength(), relPath.getBegin(), relPath.getLength(), path, LN_MAX_PATH);
-	return FileSystem::existsFile(path);
+	return detail::FileSystemInternal::existsFile(path, StringTraits::tcslen(path));
 }
 
 //------------------------------------------------------------------------------
@@ -323,7 +323,7 @@ void GenericPathName<TChar>::createDirectory() const { LN_AFX_FUNCNAME(createDir
 template<typename TChar>
 void GenericPathName<TChar>::LN_AFX_FUNCNAME(createDirectory)() const
 {
-	FileSystem::createDirectory(m_path.c_str());
+	detail::FileSystemInternal::createDirectory(m_path.c_str(), m_path.getLength());
 }
 
 //------------------------------------------------------------------------------
@@ -388,15 +388,15 @@ GenericPathName<TChar> GenericPathName<TChar>::getSpecialFolderPath(SpecialFolde
 	if (option == SpecialFolderOption::None)
 	{
 		// フォルダが無かったら空文字列にして返す
-		if (!FileSystem::existsDirectory(path2)) {
+		if (!detail::FileSystemInternal::existsDirectory(path2.c_str(), path2.getLength())) {
 			path2.clear();
 		}
 		return path2;
 	}
 	else {
 		// フォルダが無かったら作成して返す
-		if (!FileSystem::existsDirectory(path2)) {
-			FileSystem::createDirectory(path2);
+		if (!detail::FileSystemInternal::existsDirectory(path2.c_str(), path2.getLength())) {
+			detail::FileSystemInternal::createDirectory(path2.c_str(), path2.getLength());
 		}
 		return path2;
 	}
@@ -429,7 +429,7 @@ GenericPathName<TChar> GenericPathName<TChar>::getUniqueFilePathInDirectory(cons
 		}
 
 		number++;
-	} while (FileSystem::existsFile(filePath.c_str()));
+	} while (detail::FileSystemInternal::existsFile(filePath.c_str(), filePath.getLength()));
 
 	return PathNameT(filePath.c_str());
 }
@@ -448,84 +448,60 @@ template class GenericPathName<wchar_t>;
 
 
 
-namespace detail
-{
-
-// dst の長さは LocalPathBaseLength であること
-static int ConvertNativeString(const GenericStringRef<char>& src, char* dst)
-{
-	if (src.getLength() >= LocalPathBaseLength) return -1;
-	return src.copyTo(dst, LocalPathBaseLength);
-}
-static int ConvertNativeString(const GenericStringRef<wchar_t>& src, wchar_t* dst)
-{
-	if (src.getLength() >= LocalPathBaseLength) return -1;
-	return src.copyTo(dst, LocalPathBaseLength);
-}
-static int ConvertNativeString(const GenericStringRef<char>& src, wchar_t* dst)
-{
-	if (src.getLength() >= LocalPathBaseLength) return -1;
-	char tmp[LocalPathBaseLength + 1];
-	src.copyTo(tmp, LocalPathBaseLength);
-
-	size_t size;
-	errno_t err = mbstowcs_s(&size, dst, LocalPathBaseLength, tmp, LocalPathBaseLength);
-	if (err != 0) return -1;
-	return size;
-}
-static int ConvertNativeString(const GenericStringRef<wchar_t>& src, char* dst)
-{
-	if (src.getLength() >= LocalPathBaseLength) return -1;
-	wchar_t tmp[LocalPathBaseLength + 1];
-	src.copyTo(tmp, LocalPathBaseLength);
-
-	size_t size;
-	errno_t err = wcstombs_s(&size, dst, LocalPathBaseLength, tmp, LocalPathBaseLength);
-	if (err != 0) return -1;
-	return size;
-}
-
+//==============================================================================
+// GenericStaticallyLocalPath
+//==============================================================================
+namespace detail {
 
 template<typename TChar>
 GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath()
 {
 	m_static[0] = '\0';
+	m_length = 0;
 }
 
 template<typename TChar>
-GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const GenericStringRef<char>& path)
+GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const char* path, int len)
 {
 	m_static[0] = '\0';
-	if (!path.isEmpty() && ConvertNativeString(path, m_static) < 0)
+	m_length = UStringConvert::convertNativeString(path, len, m_static, LocalPathBaseLength + 1);
+	if (m_length < 0 || m_length >= LocalPathBaseLength)
 	{
-		// 文字列が長すぎるなど、変換失敗したら String へ割り当てる
-		m_path.assignCStr(path.getBegin(), path.getLength());
+		// long path
+		UStringConvert::convertToStdString(path, len, &m_path);
+		m_length = m_path.length();
 	}
 }
 
 template<typename TChar>
-GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const GenericStringRef<wchar_t>& path)
+GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const wchar_t* path, int len)
 {
 	m_static[0] = '\0';
-	if (!path.isEmpty() && ConvertNativeString(path, m_static) < 0)
+	m_length = UStringConvert::convertNativeString(path, len, m_static, LocalPathBaseLength + 1);
+	if (m_length < 0 || m_length >= LocalPathBaseLength)
 	{
-		// 文字列が長すぎるなど、変換失敗したら String へ割り当てる
-		m_path.assignCStr(path.getBegin(), path.getLength());
+		// long path
+		UStringConvert::convertToStdString(path, len, &m_path);
+		m_length = m_path.length();
 	}
 }
 
-// TODO
 template<typename TChar>
-GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const UStringRef& path)
-	: GenericStaticallyLocalPath(GenericStringRef<wchar_t>((const wchar_t*)path.data(), path.getLength()))
+GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const char16_t* path, int len)
 {
-#ifndef LN_WCHAR_16
-#error "invalid wchar_t"
-#endif
+	m_static[0] = '\0';
+	m_length = UStringConvert::convertNativeString(path, len, m_static, LocalPathBaseLength + 1);
+	if (m_length < 0 || m_length >= LocalPathBaseLength)
+	{
+		// long path
+		UStringConvert::convertToStdString(path, len, &m_path);
+		m_length = m_path.length();
+	}
 }
 
 template class GenericStaticallyLocalPath<char>;
 template class GenericStaticallyLocalPath<wchar_t>;
+//template class GenericStaticallyLocalPath<char16_t>;
 
 } // namespace detail
 

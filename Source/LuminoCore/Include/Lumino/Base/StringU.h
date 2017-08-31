@@ -6,7 +6,6 @@
 
 LN_NAMESPACE_BEGIN
 namespace detail { class UStringCore; }
-using UChar = char16_t;
 
 namespace detail
 {
@@ -413,6 +412,9 @@ public:
 		return data() + getLength();
 	}
 
+	// TODO: internal
+	const UChar* getBegin() const { return end(); }
+
 private:
 	void clear()
 	{
@@ -474,7 +476,30 @@ private:
 class UStringConvert
 {
 public:
-	static std::basic_string<TCHAR> toStdTString(const UChar* str);
+	//static std::basic_string<TCHAR> toStdTString(const UChar* str);
+	// len: \0 を含まないよう素数
+	// size: \0 を含む要素数
+	// return: \0 を含まない変換後の要素数
+	static int convertNativeString(const char* src, int srcLen, char* dst, int dstSize);
+	static int convertNativeString(const char* src, int srcLen, wchar_t* dst, int dstSize);
+	static int convertNativeString(const wchar_t* src, int srcLen, char* dst, int dstSize);
+	static int convertNativeString(const wchar_t* src, int srcLen, wchar_t* dst, int dstSize);
+	static int convertNativeString(const char16_t* src, int srcLen, char* dst, int dstSize);
+	static int convertNativeString(const char16_t* src, int srcLen, wchar_t* dst, int dstSize);
+
+	static void convertToStdString(const char* src, int srcLen, std::string* outString);
+	static void convertToStdString(const char* src, int srcLen, std::wstring* outString);
+	static void convertToStdString(const wchar_t* src, int srcLen, std::string* outString);
+	static void convertToStdString(const wchar_t* src, int srcLen, std::wstring* outString);
+	static void convertToStdString(const char16_t* src, int srcLen, std::string* outString);
+	static void convertToStdString(const char16_t* src, int srcLen, std::wstring* outString);
+/*
+	static int getMaxNativeStringConverLength(const char* src, int srcLen, const char* dst);
+	static int getMaxNativeStringConverLength(const char* src, int srcLen, const wchar_t* dst);
+	static int getMaxNativeStringConverLength(const wchar_t* src, int srcLen, const char* dst);
+	static int getMaxNativeStringConverLength(const wchar_t* src, int srcLen, const wchar_t* dst);
+	static int getMaxNativeStringConverLength(const char16_t* src, int srcLen, const char* dst);
+	static int getMaxNativeStringConverLength(const char16_t* src, int srcLen, const wchar_t* dst);*/
 };
 
 
@@ -949,7 +974,7 @@ private:
 
 inline const UChar* UString::c_str() const
 {
-	return (isSSO()) ? m_data.sso.buffer : ((m_data.core) ? m_data.core->get() : u"");
+	return (isSSO()) ? m_data.sso.buffer : ((m_data.core) ? m_data.core->get() : _U(""));
 }
 
 inline int UString::getLength() const

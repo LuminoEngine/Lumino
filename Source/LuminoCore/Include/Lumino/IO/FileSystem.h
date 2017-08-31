@@ -30,18 +30,14 @@ public:
 					(ユーザーA は ユーザーB の "マイドキュメント" フォルダのファイルにアクセスできない)
 					また、パスが空文字や NULL の場合も false を返します。
 	*/
-	static bool existsFile(const StringRefA& filePath);
-	static bool existsFile(const StringRefW& filePath);
-	static bool existsFile(const UStringRef& filePath);
+	static bool existsFile(const StringRef& filePath);
 
 	/**
 		@brief		ファイルの属性を取得します。
 		@param[in]	filePath		: ファイル名
 		@return		ファイルの属性 (FileAttribute のビットの組み合わせ)
 	*/
-	static FileAttribute getAttribute(const StringRefA& filePath);
-	static FileAttribute getAttribute(const StringRefW& filePath);
-	static FileAttribute getAttribute(const UStringRef& filePath);
+	static FileAttribute getAttribute(const StringRef& filePath);
 
 	/**
 		@brief		ファイルの属性を設定します。
@@ -50,9 +46,7 @@ public:
 		@details	この関数により変更できる属性は、読み取り属性のみです。(Unix では隠し属性はファイル名で表現されるためです)
 					それ以外のフラグビットは無視されます。
 	*/
-	static void setAttribute(const StringRefA& filePath, FileAttribute attr);
-	static void setAttribute(const StringRefW& filePath, FileAttribute attr);
-	static void setAttribute(const UStringRef& filePath, FileAttribute attr);
+	static void setAttribute(const StringRef& filePath, FileAttribute attr);
 
 	/**
 		@brief		ファイルをコピーする
@@ -61,18 +55,21 @@ public:
 		@param[in]	overwrite		: コピー先を上書きする場合は true
 		@details	読み取り専用ファイルに上書きすることはできません。
 	*/
-	static void copyFile(const StringRefA& sourceFileName, const StringRefA& destFileName, bool overwrite);
-	static void copyFile(const StringRefW& sourceFileName, const StringRefW& destFileName, bool overwrite);
-	static void copyFile(const UStringRef& sourceFileName, const UStringRef& destFileName, bool overwrite);
+	static void copyFile(const StringRef& sourceFileName, const StringRef& destFileName, bool overwrite);
 
 	/**
 		@brief		ファイルを削除する
 		@param[in]	filePath		: 削除するファイルのパス
 		@details	削除するファイルが存在しない場合、例外はスローされません。
 	*/
-	static void deleteFile(const StringRefA& filePath);
-	static void deleteFile(const StringRefW& filePath);
-	static void deleteFile(const UStringRef& filePath);
+	static void deleteFile(const StringRef& filePath);
+
+	/**
+		@brief		指定したディレクトリが存在するかを確認します。
+		@param[in]	path	: ディレクトリのパス
+		@return		ディレクトリが存在すれば true。それ以外の場合は false。
+	*/
+	static bool existsDirectory(const StringRef&path);
 
 	/**
 		@brief		ディレクトリを作成します。
@@ -80,9 +77,7 @@ public:
 		@details	指定したパスへの全てのディレクトリを作成します。
 					既に存在する場合は作成しません。
 	*/
-	static void createDirectory(const StringRefA& path);
-	static void createDirectory(const StringRefW& path);
-	static void createDirectory(const UStringRef& path);
+	static void createDirectory(const StringRef& path);
 
 	/**
 		@brief		ディレクトリを削除します。
@@ -155,15 +150,6 @@ public:
 	static void writeAllText(const TCHAR* filePath, const String& str, const Encoding* encoding = nullptr);
 
 	
-	/**
-		@brief		指定したディレクトリが存在するかを確認します。
-		@param[in]	path	: ディレクトリのパス
-		@return		ディレクトリが存在すれば true。それ以外の場合は false。
-	*/
-	static bool existsDirectory(const char* path);
-	static bool existsDirectory(const wchar_t* path);
-	static bool existsDirectory(const UChar* path);
-	template<typename TString> static inline bool existsDirectory(const TString& path) { return existsDirectory(path.c_str()); }
 
 	// TODO: これだけだと FileSystem::ForEachFilesInDirectory<TCHAR>() のように明示的な型指定が必要
 	template<typename TChar, typename TCallback>
@@ -209,5 +195,42 @@ inline void FileSystem::forEachFilesInDirectory(const GenericStringRef<TChar>& p
 		finder.next();
 	}
 }
+
+
+namespace detail {
+
+class FileSystemInternal
+{
+public:
+	static bool existsFile(const char* filePath, int len);
+	static bool existsFile(const wchar_t* filePath, int len);
+	static bool existsFile(const char16_t* filePath, int len);
+
+	static FileAttribute getAttribute(const char* filePath, int len);
+	static FileAttribute getAttribute(const wchar_t* filePath, int len);
+	static FileAttribute getAttribute(const char16_t* filePath, int len);
+
+	static void setAttribute(const char* filePath, int len, FileAttribute attr);
+	static void setAttribute(const wchar_t* filePath, int len, FileAttribute attr);
+	static void setAttribute(const char16_t* filePath, int len, FileAttribute attr);
+
+	static void copyFile(const char* sourceFileName, int sourceFileNameLen, const char* destFileName, int destFileNameLen, bool overwrite);
+	static void copyFile(const wchar_t* sourceFileName, int sourceFileNameLen, const wchar_t* destFileName, int destFileNameLen, bool overwrite);
+	static void copyFile(const char16_t* sourceFileName, int sourceFileNameLen, const char16_t* destFileName, int destFileNameLen, bool overwrite);
+
+	static void deleteFile(const char* filePath, int len);
+	static void deleteFile(const wchar_t* filePath, int len);
+	static void deleteFile(const char16_t* filePath, int len);
+
+	static bool existsDirectory(const char* path, int len);
+	static bool existsDirectory(const wchar_t* path, int len);
+	static bool existsDirectory(const char16_t* path, int len);
+
+	static void createDirectory(const char* path, int len);
+	static void createDirectory(const wchar_t* path, int len);
+	static void createDirectory(const char16_t* path, int len);
+};
+
+} // namespace detail
 
 LN_NAMESPACE_END

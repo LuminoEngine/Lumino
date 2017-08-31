@@ -53,7 +53,7 @@ void GenericFileStream<TChar>::open(const TChar* filePath, FileOpenMode openMode
 
 	if (m_openModeFlags.TestFlag(FileOpenMode::Deferring))
 	{
-		if (!FileSystem::existsFile(filePath)) {
+		if (!detail::FileSystemInternal::existsFile(filePath, StringTraits::tcslen(filePath))) {
 			LN_THROW(0, FileNotFoundException, filePath);
 		}
 	}

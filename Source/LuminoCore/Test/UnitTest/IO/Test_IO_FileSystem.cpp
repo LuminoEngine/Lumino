@@ -22,13 +22,9 @@ TEST_F(Test_IO_FileSystem, exists)
 	// ディレクトリは false
 	ASSERT_FALSE(FileSystem::existsFile(LN_LOCALFILE("TestData")));
 	// 空文字列は false
-	ASSERT_FALSE(FileSystem::existsFile(""));
-	// 空文字列は false
-	ASSERT_FALSE(FileSystem::existsFile(L""));
+	ASSERT_FALSE(FileSystem::existsFile(_TT("")));
 	// NULL は false
-	ASSERT_FALSE(FileSystem::existsFile((char*)NULL));
-	// NULL は false
-	ASSERT_FALSE(FileSystem::existsFile((wchar_t*)NULL));
+	ASSERT_FALSE(FileSystem::existsFile((const Char*)NULL));
 }
 
 //------------------------------------------------------------------------------
