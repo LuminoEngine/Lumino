@@ -49,6 +49,7 @@ class PlatformFileSystem
 {
 public:
 	using PathChar = wchar_t;
+	using PathString = std::wstring;
 
 	static bool existsFile(const wchar_t* filePath)
 	{
@@ -125,6 +126,76 @@ public:
 	}
 };
 
+class PlatformFileFinderImpl
+{
+public:
+	PlatformFileFinderImpl()
+		: m_fh(INVALID_HANDLE_VALUE)
+		, m_fd()
+		, m_current()
+	{}
+
+	~PlatformFileFinderImpl()
+	{
+		if (m_fh != INVALID_HANDLE_VALUE)
+		{
+			::FindClose(m_fh);
+		}
+	}
+
+	void initialize(const wchar_t* path, int len)
+	{
+		std::wstring pattern;
+		pattern.reserve(len + 2);
+		pattern.append(path, len);
+		if (!PathTraits::isSeparatorChar(pattern[len]))
+		{
+			pattern.append(L"\\");
+		}
+		pattern.append(L"*");
+
+		m_fh = ::FindFirstFileW(pattern.c_str(), &m_fd);
+		if (m_fh != INVALID_HANDLE_VALUE)
+		{
+			// なんでもいいので1つ何らかのパスが current になるようにする
+			next();
+		}
+	}
+
+	const std::wstring& getCurrent() const
+	{
+		return m_current;
+	}
+
+	bool isWorking() const
+	{
+		return !m_current.empty();
+	}
+
+	bool next()
+	{
+		do
+		{
+			if (::FindNextFileW(m_fh, &m_fd) != 0)
+			{
+				m_current = m_fd.cFileName;
+			}
+			else
+			{
+				m_current.clear();
+				break;
+			}
+
+		} while (wcscmp(m_fd.cFileName, L".") == 0 || wcscmp(m_fd.cFileName, L"..") == 0);
+
+		return !m_current.empty();
+	}
+
+private:
+	HANDLE				m_fh;
+	WIN32_FIND_DATAW	m_fd;
+	std::wstring		m_current;
+};
 
 
 //------------------------------------------------------------------------------

@@ -794,7 +794,7 @@ int UStringConvert::convertNativeString(const char* src, int srcLen, wchar_t* ds
 		size_t size;
 		errno_t err = mbstowcs_s(&size, dst, dstSize, src, srcLen);
 		if (err != 0) return -1;
-		return (int)size;
+		return (int)size - 1;
 	}
 	else
 	{
@@ -812,7 +812,7 @@ int UStringConvert::convertNativeString(const wchar_t* src, int srcLen, char* ds
 		size_t size;
 		errno_t err = wcstombs_s(&size, dst, dstSize, src, srcLen);
 		if (err != 0) return -1;
-		return (int)size;
+		return (int)size - 1;
 	}
 	else
 	{

@@ -266,6 +266,124 @@ size_t FileSystem::GetFileSize( FILE* stream )
 #endif
 
 
+//==============================================================================
+// PlatformFileFinder
+//==============================================================================
+class PlatformFileFinder
+{
+public:
+	PlatformFileFinder(const PlatformFileSystem::PathChar* dirPath, int dirPathLen, FileAttribute attr, const PlatformFileSystem::PathChar* pattern, int patternLen);
+	~PlatformFileFinder();
+	bool isWorking() const;
+	const PlatformFileSystem::PathString& getCurrent() const;
+	FileAttribute getFileAttribute() const;
+	bool next();
+
+private:
+	bool nextInternal();
+	void setCurrent(const PlatformFileSystem::PathString& nativeCurrent);
+
+	PlatformFileFinderImpl	m_impl;
+	PlatformFileSystem::PathString m_dirPath;
+	PlatformFileSystem::PathString m_current;
+	FileAttribute m_attr;
+	PlatformFileSystem::PathString	m_pattern;
+};
+
+PlatformFileFinder::PlatformFileFinder(const PlatformFileSystem::PathChar* dirPath, int dirPathLen, FileAttribute attr, const PlatformFileSystem::PathChar* pattern, int patternLen)
+	: m_impl()
+	, m_dirPath(dirPath)
+	, m_current()
+	, m_attr(attr)
+	, m_pattern()
+{
+	if (pattern)
+	{
+		m_pattern.assign(pattern, patternLen);
+	}
+
+	m_current.reserve(m_dirPath.length() + 32);	// min size
+	m_impl.initialize(dirPath, dirPathLen);
+	setCurrent(m_impl.getCurrent());
+}
+
+PlatformFileFinder::~PlatformFileFinder()
+{
+}
+
+bool PlatformFileFinder::isWorking() const
+{
+	return m_impl.isWorking();
+}
+
+const PlatformFileSystem::PathString& PlatformFileFinder::getCurrent() const
+{
+	return m_current;
+}
+
+FileAttribute PlatformFileFinder::getFileAttribute() const
+{
+	if (isWorking())
+	{
+		FileAttribute attr;
+		if (PlatformFileSystem::getAttribute(getCurrent().c_str(), &attr))
+		{
+			return attr;
+		}
+	}
+	return FileAttribute::None;
+}
+
+bool PlatformFileFinder::next()
+{
+	if (m_pattern.empty())
+	{
+		return nextInternal();
+	}
+	else
+	{
+		bool result = false;
+		do
+		{
+			result = nextInternal();
+
+		} while (result && !FileSystem::matchPath(getCurrent().c_str(), m_pattern.c_str()));
+
+		return result;
+	}
+}
+
+bool PlatformFileFinder::nextInternal()
+{
+	bool result = false;
+	while (true)
+	{
+		result = m_impl.next();
+		if (!result) break;
+		setCurrent(m_impl.getCurrent());
+
+		uint32_t attr = detail::FileSystemInternal::getAttribute(getCurrent().c_str(), getCurrent().length()).getValue();
+		uint32_t filter = (uint32_t)m_attr.getValue();
+		if ((attr & filter) != 0)
+		{
+			break;
+		}
+	}
+
+	return result;
+}
+
+void PlatformFileFinder::setCurrent(const PlatformFileSystem::PathString& nativeCurrent)
+{
+	m_current.assign(m_dirPath);
+	m_current.append(1, (PlatformFileSystem::PathChar)PathTraits::DirectorySeparatorChar);
+	m_current.append(m_impl.getCurrent());
+}
+
+//==============================================================================
+// FileSystem
+//==============================================================================
+
 bool FileSystem::existsFile(const StringRef& filePath)
 {
 	return detail::FileSystemInternal::existsFile(filePath.getBegin(), filePath.getLength());
@@ -302,6 +420,11 @@ void FileSystem::createDirectory(const StringRef& path)
 	detail::FileSystemInternal::createDirectory(path.getBegin(), path.getLength());
 }
 
+void FileSystem::deleteDirectory(const StringRef& path, bool recursive)
+{
+	detail::FileSystemInternal::deleteDirectory(path.getBegin(), path.getLength(), recursive);
+}
+
 
 void FileSystem::getCurrentDirectory(UString* outPath)
 {
@@ -310,58 +433,6 @@ void FileSystem::getCurrentDirectory(UString* outPath)
 	*outPath = UString::fromCString(path, len);
 }
 
-//
-//template<typename TChar> static bool Exists2(const TChar* filePath);
-//template<typename TString> static bool Exists2(const TString& filePath);
-
-
-//
-//
-//
-////------------------------------------------------------------------------------
-//FileAttribute FileSystem::getAttribute(const char* filePath)
-//{
-//	FileAttribute attr;
-//	bool r = getAttributeInternal(filePath, &attr);
-//	LN_THROW(r, FileNotFoundException, filePath);
-//	return attr;
-//}
-//FileAttribute FileSystem::getAttribute(const wchar_t* filePath)
-//{
-//	FileAttribute attr;
-//	bool r = getAttributeInternal(filePath, &attr);
-//	LN_THROW(r, FileNotFoundException, filePath);
-//	return attr;
-//}
-//
-
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-void FileSystem::deleteDirectoryInternal(const GenericStringRef<TChar>& path, bool recursive)
-{
-	detail::GenericStaticallyLocalPath<TChar> localPath(path.getBegin(), path.getLength());
-	if (recursive)
-	{
-		GenericFileFinder<TChar> finder(localPath.c_str());
-		while (!finder.getCurrent().isEmpty())
-		{
-			auto& current = finder.getCurrent();
-			if (detail::FileSystemInternal::getAttribute(current.c_str(), current.getLength()) == FileAttribute::Directory)
-			{
-				deleteDirectoryInternal<TChar>(current, recursive);	// recursive
-			}
-			else // TODO: 他の属性みないとダメ。シンボリックリンクとか
-			{
-				detail::FileSystemInternal::deleteFile(current.c_str(), current.getLength());
-			}
-			finder.next();
-		}
-	}
-	RemoveDirectoryImpl(localPath.c_str());
-}
-template void FileSystem::deleteDirectoryInternal<char>(const GenericStringRef<char>& path, bool recursive);
-template void FileSystem::deleteDirectoryInternal<wchar_t>(const GenericStringRef<wchar_t>& path, bool recursive);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
@@ -710,6 +781,43 @@ void FileSystemInternal::createDirectory(const char16_t* path, int len)
 {
 	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(path, len);
 	createDirectoryInternal2(localPath.c_str(), localPath.c_str() + localPath.getLength());
+}
+
+static void deleteDirectoryInternal(const PlatformFileSystem::PathChar* path, int len, bool recursive)
+{
+	if (recursive)
+	{
+		PlatformFileFinder finder(path, len, FileAttribute::All, nullptr, 0);
+		while (finder.isWorking())
+		{
+			auto& current = finder.getCurrent();
+			if (finder.getFileAttribute().TestFlag(FileAttribute::Directory))
+			{
+				deleteDirectoryInternal(current.c_str(), current.length(), recursive);	// recursive
+			}
+			else // TODO: 他の属性みないとダメ。シンボリックリンクとか
+			{
+				PlatformFileSystem::deleteFile(current.c_str());
+			}
+			finder.next();
+		}
+	}
+	PlatformFileSystem::removeDirectory(path);
+}
+void FileSystemInternal::deleteDirectory(const char* path, int len, bool recursive)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(path, len);
+	deleteDirectoryInternal(localPath.c_str(), localPath.getLength(), recursive);
+}
+void FileSystemInternal::deleteDirectory(const wchar_t* path, int len, bool recursive)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(path, len);
+	deleteDirectoryInternal(localPath.c_str(), localPath.getLength(), recursive);
+}
+void FileSystemInternal::deleteDirectory(const char16_t* path, int len, bool recursive)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(path, len);
+	deleteDirectoryInternal(localPath.c_str(), localPath.getLength(), recursive);
 }
 
 } // namespace detail
