@@ -450,20 +450,24 @@ private:
 			break;
 		}
 	}
+	
+	
+	struct UCharData
+	{
+		const UChar*		str;
+		int					length;
+	};
+	
+	struct CharData
+	{
+		UString	str;
+	};
 
 	detail::UStringRefSource	m_type;
 	union
 	{
-		struct UCharData
-		{
-			const UChar*		str;
-			int					length;
-		} m_u;
-
-		struct CharData
-		{
-			UString	str;
-		} m_c;
+		UCharData m_u;
+		CharData m_c;
 	};
 };
 
@@ -992,36 +996,6 @@ inline int UString::getCapacity() const
 //inline UString::const_iterator UString::begin() const { return c_str(); }
 //inline UString::iterator UString::end() { return begin() + getLength(); }
 //inline UString::const_iterator UString::end() const { return begin() + getLength(); }
-
-template<typename... TArgs>
-inline UString UString::format(const UStringRef& format, TArgs&&... args)
-{
-	auto argList = ln::fmt::detail::makeArgList<UChar>(std::forward<TArgs>(args)...);
-	fmt::GenericFormatStringBuilder<UChar> sb;
-	if (fmt::detail::formatInternal<UChar>(Locale::getC(), &sb, format.data(), format.getLength(), argList))
-	{
-		return UString(sb.c_str(), sb.getLength());
-	}
-	else
-	{
-		return UString();
-	}
-}
-
-template<typename... TArgs>
-inline UString UString::format(const Locale& locale, const UStringRef& format, TArgs&&... args)
-{
-	auto argList = ln::fmt::detail::makeArgList<UChar>(std::forward<TArgs>(args)...);
-	fmt::GenericFormatStringBuilder<UChar> sb;
-	if (fmt::detail::formatInternal<UChar>(locale, &sb, format.data(), format.getLength(), argList))
-	{
-		return UString(sb.c_str(), sb.getLength());
-	}
-	else
-	{
-		return UString();
-	}
-}
 
 inline UString& UString::operator=(const UStringRef& rhs) { assign(rhs); return *this; }
 inline UString& UString::operator=(const UChar* rhs) { assign(rhs); return *this; }

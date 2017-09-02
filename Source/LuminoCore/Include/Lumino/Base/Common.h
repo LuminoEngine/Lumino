@@ -132,7 +132,9 @@ using UChar = char16_t; }
 #define TTCHAR	TCHAR
 //#define Char	TCHAR
 #ifdef LN_UNICODE
-namespace ln { using Char = wchar_t; }
+namespace ln { using Char = wchar_t;
+	using UChar = char16_t;
+}
 #else
 namespace ln { using Char = char;
 using UChar = char16_t;

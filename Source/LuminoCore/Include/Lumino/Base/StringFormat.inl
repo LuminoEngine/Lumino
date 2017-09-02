@@ -316,8 +316,8 @@ public:
 		, m_argListInstance LN_FMT_BRACED_INIT_WORKAROUND({ FormatArg<TChar>(args)... })	// extract to -> {FormatArg(e1), FormatArg(e2), FormatArg(e3)} http://en.cppreference.com/w/cpp/language/parameter_pack
 	{
 		static_assert(sizeof...(args) == N, "Invalid args count.");
-		m_argList = &m_argListInstance[0];
-		m_count = N;
+		FormatList<TChar>::m_argList = &m_argListInstance[0];
+		FormatList<TChar>::m_count = N;
 	}
 
 private:
@@ -339,7 +339,7 @@ static FormatListN<TChar, sizeof...(TArgs)> makeArgList(const TArgs&... args)
 }
 
 template<typename TChar>
-bool formatInternal(const Locale& locale, GenericFormatStringBuilder<TChar>* outStr, const TChar* format, int formatLen, typename const FormatList<TChar>& args)
+bool formatInternal(const Locale& locale, GenericFormatStringBuilder<TChar>* outStr, const TChar* format, int formatLen, const FormatList<TChar>& args)
 {
 	GenericStringFormatter<TChar> formatter;
 	formatter.m_locale = &locale.getStdLocale();
@@ -546,3 +546,40 @@ bool formatInternal(const Locale& locale, GenericFormatStringBuilder<TChar>* out
 
 } // namespace detail
 } // namespace fmt
+
+
+
+//==============================================================================
+// String
+//==============================================================================
+
+template<typename... TArgs>
+inline UString UString::format(const UStringRef& format, TArgs&&... args)
+{
+	auto argList = fmt::detail::makeArgList<UChar>(std::forward<TArgs>(args)...);
+	fmt::GenericFormatStringBuilder<UChar> sb;
+	if (fmt::detail::formatInternal<UChar>(Locale::getC(), &sb, format.data(), format.getLength(), argList))
+	{
+		return UString(sb.c_str(), sb.getLength());
+	}
+	else
+	{
+		return UString();
+	}
+}
+
+template<typename... TArgs>
+inline UString UString::format(const Locale& locale, const UStringRef& format, TArgs&&... args)
+{
+	auto argList = fmt::detail::makeArgList<UChar>(std::forward<TArgs>(args)...);
+	fmt::GenericFormatStringBuilder<UChar> sb;
+	if (fmt::detail::formatInternal<UChar>(locale, &sb, format.data(), format.getLength(), argList))
+	{
+		return UString(sb.c_str(), sb.getLength());
+	}
+	else
+	{
+		return UString();
+	}
+}
+
