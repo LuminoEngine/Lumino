@@ -929,6 +929,25 @@ bool FileSystemInternal::matchPath(const char16_t* path, int pathLen, const char
 	return PlatformFileSystem::matchPath(localPath.c_str(), localPattern.c_str());
 }
 
+FILE* FileSystemInternal::fopen(const char* path, int pathLen, const char* mode, int modeLen)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(path, pathLen);
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localMode(mode, modeLen);
+	return PlatformFileSystem::fopen(localPath.c_str(), localMode.c_str());
+}
+FILE* FileSystemInternal::fopen(const wchar_t* path, int pathLen, const wchar_t* mode, int modeLen)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(path, pathLen);
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localMode(mode, modeLen);
+	return PlatformFileSystem::fopen(localPath.c_str(), localMode.c_str());
+}
+FILE* FileSystemInternal::fopen(const char16_t* path, int pathLen, const char16_t* mode, int modeLen)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(path, pathLen);
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localMode(mode, modeLen);
+	return PlatformFileSystem::fopen(localPath.c_str(), localMode.c_str());
+}
+
 // 現在の位置とデータ(ファイル)サイズ、オフセット、基準(SEEK_xxxx)を受け取って、新しいシーク位置を返す
 int64_t FileSystemInternal::calcSeekPoint(int64_t curPoint, int64_t maxSize, int64_t offset, int origin)
 {

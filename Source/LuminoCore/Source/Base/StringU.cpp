@@ -715,8 +715,8 @@ size_t UStringHelper::strlen(const UChar* str)
 
 int UStringHelper::compare(const UChar* str1, const UChar* str2)
 {
-	str1 = (str1) ? str1 : u"";
-	str2 = (str2) ? str2 : u"";
+	str1 = (str1) ? str1 : _U("");
+	str2 = (str2) ? str2 : _U("");
 	for (; *str1; ++str1, ++str2)
 	{
 		if (*str1 != *str2)

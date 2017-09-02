@@ -216,6 +216,10 @@ public:
 	static bool matchPath(const wchar_t* path, int pathLen, const wchar_t* pattern, int patternLen);
 	static bool matchPath(const char16_t* path, int pathLen, const char16_t* pattern, int patternLen);
 
+	static FILE* fopen(const char* path, int pathLen, const char* mode, int modeLen);
+	static FILE* fopen(const wchar_t* path, int pathLen, const wchar_t* mode, int modeLen);
+	static FILE* fopen(const char16_t* path, int pathLen, const char16_t* mode, int modeLen);
+
 	static int64_t calcSeekPoint(int64_t curPoint, int64_t maxSize, int64_t offset, int origin);
 };
 

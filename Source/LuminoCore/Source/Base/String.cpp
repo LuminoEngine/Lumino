@@ -1152,6 +1152,8 @@ LN_NAMESPACE_END
 
 namespace std {
 
+#ifdef LN_USTRING
+#else
 // for unordered_map key
 std::size_t hash<ln::StringA>::operator () (const ln::StringA& key) const
 {
@@ -1162,5 +1164,6 @@ std::size_t hash<ln::StringW>::operator () (const ln::StringW& key) const
 {
 	return ln::Hash::calcHash(key.c_str(), key.getLength());
 }
+#endif
 
 } // namespace std

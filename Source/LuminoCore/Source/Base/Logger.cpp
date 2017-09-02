@@ -14,7 +14,9 @@
 #include <iomanip>
 #include <Lumino/Base/String.h>
 #include <Lumino/Base/Environment.h>
+#include <Lumino/Base/StdStringHelper.h>
 #include <Lumino/Base/Logger.h>
+#include <Lumino/IO/FileSystem.h>
 #include <Lumino/Threading/Thread.h>
 #include <Lumino/Threading/Mutex.h>
 LN_NAMESPACE_BEGIN
@@ -201,7 +203,8 @@ static std::stringstream	g_logSS;
 static const int	TEMP_BUFFER_SIZE = 2048;
 static uint64_t		g_logStartTime;
 
-static TCHAR		g_logFilePath[LN_MAX_PATH] = { 0 };
+//static TCHAR		g_logFilePath[LN_MAX_PATH] = { 0 };
+static std::basic_string<Char>	g_logFilePath;
 
 class FileClose
 {
@@ -209,8 +212,8 @@ public:
 	FileClose() {}
 	~FileClose()
 	{
-		FILE* stream;
-		if (_tfopen_s(&stream, g_logFilePath, _T("a+")) == 0)
+		FILE* stream = detail::FileSystemInternal::fopen(g_logFilePath.c_str(), g_logFilePath.length(), _TT("a+"), 2);
+		if (stream)
 		{
 			_ftprintf(
 				stream,
@@ -238,11 +241,12 @@ bool Logger::initialize(const Char* filePath) throw()
 	//	gLogFilePath[len] = '/';//'\\';
 	//	_tcscpy(&gLogFilePath[len + 1], log_name);
 	//}
-	_tcscpy_s(g_logFilePath, LN_MAX_PATH, filePath);
+	g_logFilePath = filePath;
 
-	FILE* stream;
-	if (_tfopen_s(&stream, g_logFilePath, _T("w+")) != 0) {
-		g_logFilePath[0] = _T('\0');
+	FILE* stream = detail::FileSystemInternal::fopen(g_logFilePath.c_str(), g_logFilePath.length(), _TT("w+"), 2);
+	if (!stream)
+	{
+		g_logFilePath.clear();
 		return false;
 	}
 
@@ -291,8 +295,8 @@ void Logger::writeLine(Level level, const char* format, ...) throw()
 	if (g_logFilePath[0] == '\0') {
 		return;
 	}
-	FILE* stream;
-	if (_tfopen_s(&stream, g_logFilePath, _T("a+")) == 0)
+	FILE* stream = detail::FileSystemInternal::fopen(g_logFilePath.c_str(), g_logFilePath.length(), _TT("a+"), 2);
+	if (stream)
 	{
 		char buf[TEMP_BUFFER_SIZE];
 
@@ -314,8 +318,8 @@ void Logger::writeLine(Level level, const wchar_t* format, ...) throw()
 	if (g_logFilePath[0] == '\0') {
 		return;
 	}
-	FILE* stream;
-	if (_tfopen_s(&stream, g_logFilePath, _T("a+")) == 0)
+	FILE* stream = detail::FileSystemInternal::fopen(g_logFilePath.c_str(), g_logFilePath.length(), _TT("a+"), 2);
+	if (stream)
 	{
 		wchar_t buf[TEMP_BUFFER_SIZE];
 
@@ -337,8 +341,8 @@ void Logger::writeLine(const char* format, ...) throw()
 	if (g_logFilePath[0] == '\0') {
 		return;
 	}
-	FILE* stream;
-	if (_tfopen_s(&stream, g_logFilePath, _T("a+")) == 0)
+	FILE* stream = detail::FileSystemInternal::fopen(g_logFilePath.c_str(), g_logFilePath.length(), _TT("a+"), 2);
+	if (stream)
 	{
 		char buf[TEMP_BUFFER_SIZE];
 
@@ -360,8 +364,8 @@ void Logger::writeLine(const wchar_t* format, ...) throw()
 	if (g_logFilePath[0] == '\0') {
 		return;
 	}
-	FILE* stream;
-	if (_tfopen_s(&stream, g_logFilePath, _T("a+")) == 0)
+	FILE* stream = detail::FileSystemInternal::fopen(g_logFilePath.c_str(), g_logFilePath.length(), _TT("a+"), 2);
+	if (stream)
 	{
 		wchar_t buf[TEMP_BUFFER_SIZE];
 
@@ -413,8 +417,13 @@ const char* LogRecord::getMessage() const
 //------------------------------------------------------------------------------
 LogRecord& LogRecord::operator<<(const wchar_t* str)
 {
+#ifdef LN_USTRING
+	auto s = StdStringHelper::makeStdString(str);
+	m_message << s.c_str();
+#else
 	StringA s = StringA::fromNativeCharString(str);
 	m_message << s.c_str();
+#endif
 	return *this;
 }
 

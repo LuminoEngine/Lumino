@@ -142,6 +142,12 @@ public:
 		return stbuf.st_size;
 	}
 
+	static FILE* fopen(const wchar_t* path, const wchar_t* mode)
+	{
+		FILE* fp;
+		if (_wfopen_s(&fp, path, mode) != 0) return 0;
+		return fp;
+	}
 };
 
 class PlatformFileFinderImpl

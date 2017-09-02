@@ -13,8 +13,12 @@ public:
 
 	static std::string makeStdString(const String& str)
 	{
+#ifdef LN_USTRING
+		return str.toStdString();
+#else
 		auto buf = str.convertTo(Encoding::getSystemMultiByteEncoding());
 		return std::string((const char*)buf.getConstData(), buf.getSize());
+#endif
 	}
 
 	static std::string makeStdString(const char* str)
