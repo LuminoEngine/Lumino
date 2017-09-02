@@ -6,32 +6,28 @@
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
-// GenericStreamReader
+// StreamReader
 //==============================================================================
 //------------------------------------------------------------------------------
-template<typename TChar>
-GenericStreamReader<TChar>::GenericStreamReader(Stream* stream, Encoding* encoding)
+StreamReader::StreamReader(Stream* stream, Encoding* encoding)
 {
 	initReader(stream, encoding);
 }
 
 //------------------------------------------------------------------------------
-template<typename TChar>
-GenericStreamReader<TChar>::GenericStreamReader(const TChar* filePath, Encoding* encoding)
+StreamReader::StreamReader(const Char* filePath, Encoding* encoding)
 {
-	auto stream = GenericFileStream<TChar>::create(filePath, FileOpenMode::read);
+	auto stream = FileStream::create(filePath, FileOpenMode::read);
 	initReader(stream, encoding);
 }
 
 //------------------------------------------------------------------------------
-template<typename TChar>
-GenericStreamReader<TChar>::~GenericStreamReader()
+StreamReader::~StreamReader()
 {
 }
 
 //------------------------------------------------------------------------------
-template<typename TChar>
-int GenericStreamReader<TChar>::peek()
+int StreamReader::peek()
 {
 	// バッファリングデータを最後まで読んでいた場合は追加読み込み。
 	// それでも1つも読み込めなかったら EOF。
@@ -41,13 +37,12 @@ int GenericStreamReader<TChar>::peek()
 			return -1;
 		}
 	}
-	const TChar* buf = (const TChar*)m_converter.getLastBuffer().getConstData();
+	const Char* buf = (const Char*)m_converter.getLastBuffer().getConstData();
 	return buf[m_charPos];
 }
 
 //------------------------------------------------------------------------------
-template<typename TChar>
-int GenericStreamReader<TChar>::read()
+int StreamReader::read()
 {
 	// バッファリングデータを最後まで読んでいた場合は追加読み込み。
 	// それでも1つも読み込めなかったら EOF。
@@ -57,13 +52,12 @@ int GenericStreamReader<TChar>::read()
 			return -1;
 		}
 	}
-	const TChar* buf = (const TChar*)m_converter.getLastBuffer().getConstData();
+	const Char* buf = (const Char*)m_converter.getLastBuffer().getConstData();
 	return buf[m_charPos++];
 }
 
 //------------------------------------------------------------------------------
-template<typename TChar>
-bool GenericStreamReader<TChar>::readLine(GenericString<TChar>* line)
+bool StreamReader::readLine(String* line)
 {
 	// 変換済みの文字列を全て返していれば (または初回)、次のバッファを読みに行く
 	if (m_charPos == m_charElementLen)
@@ -73,14 +67,14 @@ bool GenericStreamReader<TChar>::readLine(GenericString<TChar>* line)
 		}
 	}
 
-	GenericStringBuilder<TChar> builder;
+	StringBuilder builder;
 	do
 	{
 		int i = m_charPos;
 		do
 		{
-			const TChar* buf = (const TChar*)m_converter.getLastBuffer().getConstData();
-			TChar ch = buf[i];
+			const Char* buf = (const Char*)m_converter.getLastBuffer().getConstData();
+			Char ch = buf[i];
 			if (ch == '\r' || ch == '\n')
 			{
 				builder.append(buf + m_charPos, i - m_charPos);
@@ -100,7 +94,7 @@ bool GenericStreamReader<TChar>::readLine(GenericString<TChar>* line)
 
 		// ここに来るのは、charBuffer の現在位置 ～ 終端までに改行が無かったとき。
 		// 現在の残りバッファを str に結合して、次のバッファを ReadBuffer() で読み出す。
-		const TChar* buf = (const TChar*)m_converter.getLastBuffer().getConstData();
+		const Char* buf = (const Char*)m_converter.getLastBuffer().getConstData();
 		builder.append(buf + m_charPos, m_charElementLen - m_charPos);
 
 	} while (readBuffer() > 0);
@@ -110,15 +104,14 @@ bool GenericStreamReader<TChar>::readLine(GenericString<TChar>* line)
 }
 
 //------------------------------------------------------------------------------
-template<typename TChar>
-GenericString<TChar> GenericStreamReader<TChar>::readToEnd()
+String StreamReader::readToEnd()
 {
-	GenericStringBuilder<TChar> builder;
+	GenericStringBuilder<Char> builder;
 	do
 	{
 		if (m_charElementLen - m_charPos > 0)
 		{
-			const TChar* buf = (const TChar*)m_converter.getLastBuffer().getConstData();
+			const Char* buf = (const Char*)m_converter.getLastBuffer().getConstData();
 			builder.append(buf + m_charPos, m_charElementLen - m_charPos);
 			m_charPos = m_charElementLen;
 		}
@@ -129,8 +122,7 @@ GenericString<TChar> GenericStreamReader<TChar>::readToEnd()
 }
 
 //------------------------------------------------------------------------------
-template<typename TChar>
-bool GenericStreamReader<TChar>::isEOF()
+bool StreamReader::isEOF()
 {
 	if (m_charPos < m_charElementLen) {
 		return false;	// まだバッファリングされていて読まれていない文字がある
@@ -139,8 +131,7 @@ bool GenericStreamReader<TChar>::isEOF()
 }
 
 //------------------------------------------------------------------------------
-template<typename TChar>
-void GenericStreamReader<TChar>::initReader(Stream* stream, Encoding* encoding)
+void StreamReader::initReader(Stream* stream, Encoding* encoding)
 {
 	// encoding 未指定であれば UTF8 とする
 	if (encoding == nullptr) {
@@ -149,7 +140,7 @@ void GenericStreamReader<TChar>::initReader(Stream* stream, Encoding* encoding)
 
 	m_stream = stream;
 	m_converter.getSourceEncoding(encoding);
-	m_converter.setDestinationEncoding(Encoding::getEncodingTemplate<TChar>());
+	m_converter.setDestinationEncoding(Encoding::getEncodingTemplate<Char>());
 	m_byteBuffer.resize(DefaultBufferSize, false);
 	m_byteLen = 0;
 	m_charElementLen = 0;
@@ -158,8 +149,7 @@ void GenericStreamReader<TChar>::initReader(Stream* stream, Encoding* encoding)
 
 //------------------------------------------------------------------------------
 // ストリームからバイト列を読み取って変換し、現在バッファリングされている文字要素数(THCAR)を返す。
-template<typename TChar>
-int GenericStreamReader<TChar>::readBuffer()
+int StreamReader::readBuffer()
 {
 	// TODO: BOM チェックするならここで。
 
@@ -171,12 +161,8 @@ int GenericStreamReader<TChar>::readBuffer()
 
 	// 文字コード変換 (ユーザー指定 → TChar)
 	m_converter.convert(m_byteBuffer.getData(), m_byteLen);
-	m_charElementLen = m_converter.getLastResult().BytesUsed / sizeof(TChar);
+	m_charElementLen = m_converter.getLastResult().BytesUsed / sizeof(Char);
 	return m_charElementLen;
 }
-
-// instantiate template
-template class GenericStreamReader<char>;
-template class GenericStreamReader<wchar_t>;
 
 LN_NAMESPACE_END

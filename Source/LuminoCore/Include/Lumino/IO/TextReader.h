@@ -8,12 +8,11 @@ LN_NAMESPACE_BEGIN
 /**
 	@brief	一連の文字を読み取ることができるリーダーを表します。
 */
-template<typename TChar>
-class GenericTextReader
+class TextReader
 	: public RefObject
 {
 public:
-	virtual ~GenericTextReader() = default;
+	virtual ~TextReader() = default;
 	
 public:
 
@@ -38,13 +37,13 @@ public:
 		@details	CRLF("\r\n") は1つの改行とみなします。 
 					line が NULL の場合は現在位置を 1 行すすめるだけで、文字列を返しません。
 	*/
-	virtual bool readLine(GenericString<TChar>* line) = 0;
+	virtual bool readLine(String* line) = 0;
 	
 	/**
 		@brief		現在位置から全ての文字列を読み取ります。
 		@return		読み取った文字列
 	*/
-	virtual GenericString<TChar> readToEnd() = 0;
+	virtual String readToEnd() = 0;
 
 	/**
 		@brief		現在位置が EOF に到達しているかを確認します。
@@ -53,7 +52,6 @@ public:
 
 };
 
-using TextReader = GenericTextReader<TCHAR>;
 
 //
 ///**
