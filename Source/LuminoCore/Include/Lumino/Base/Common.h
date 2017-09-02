@@ -101,7 +101,7 @@
 	#define LN_CONSTEXPR
 #endif
 
-
+//
 //#define LN_USTRING
 
 #ifdef LN_USTRING
@@ -133,11 +133,13 @@ using UChar = char16_t; }
 //#define Char	TCHAR
 #ifdef LN_UNICODE
 namespace ln { using Char = wchar_t;
-	using UChar = char16_t;
+	using UChar = wchar_t;
 }
+#define LN_STRING_FROM_CHAR
+
 #else
 namespace ln { using Char = char;
-using UChar = char16_t;
+using UChar = char;
 }
 #endif
 #define _U(x)	u ## x

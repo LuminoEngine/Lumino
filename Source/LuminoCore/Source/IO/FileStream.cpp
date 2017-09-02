@@ -151,7 +151,7 @@ void FileStream::open() const
 {
 	LN_THROW(m_stream == NULL, InvalidOperationException);
 
-	const TCHAR* mode = NULL;
+	const Char* mode = NULL;
 	if (m_openModeFlags.TestFlag(FileOpenMode::ReadWrite))
 	{
 		if (m_openModeFlags.TestFlag(FileOpenMode::append)) {

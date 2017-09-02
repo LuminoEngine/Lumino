@@ -47,7 +47,7 @@ public:
 		@brief		文字を書き込みます。
 		@param[in]	ch		: 書き込む文字
 	*/
-	void write(TCHAR ch);
+	void write(Char ch);
 
 	/**
 		@brief		整数値を文字列に変換して書き込みます。
@@ -71,7 +71,7 @@ public:
 
 
 	void write(const StringRef& str);
-	void write(const TCHAR* str, int length);
+	void write(const Char* str, int length);
 
 	template<typename... TArgs>
 	void writeFormat(const StringRef& str, const TArgs&... args) { String s = String::format(str, args...); writeInternal(s.c_str(), s.getLength()); }

@@ -264,17 +264,17 @@ void JsonWriter::onKey(const Char* str, int length)
 //------------------------------------------------------------------------------
 void JsonWriter::onNull()
 {
-	m_textWriter->write(_T("null"), 4);
+	m_textWriter->write(_TT("null"), 4);
 }
 
 //------------------------------------------------------------------------------
 void JsonWriter::onBool(bool value)
 {
 	if (value) {
-		m_textWriter->write(_T("true"), 4);
+		m_textWriter->write(_TT("true"), 4);
 	}
 	else {
-		m_textWriter->write(_T("false"), 5);
+		m_textWriter->write(_TT("false"), 5);
 	}
 }
 
@@ -305,9 +305,9 @@ void JsonWriter::onDouble(double value)
 //------------------------------------------------------------------------------
 void JsonWriter::onString(const Char* str, int length)
 {
-	m_textWriter->write(_T("\""), 1);
+	m_textWriter->write(_TT("\""), 1);
 	m_textWriter->write(str, length);
-	m_textWriter->write(_T("\""), 1);
+	m_textWriter->write(_TT("\""), 1);
 }
 
 //------------------------------------------------------------------------------

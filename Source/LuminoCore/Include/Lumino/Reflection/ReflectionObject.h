@@ -25,7 +25,7 @@ namespace tr
 		inline void								initializeProperties() { lnref_typeInfo.initializeProperties(this); }
 
 #define LN_TR_REFLECTION_TYPEINFO_IMPLEMENT_COMMON(typeInfo, classType, baseClassType, ...) \
-	typeInfo						classType::lnref_typeInfo(_T(#classType), ln::tr::ReflectionHelper::getClassTypeInfo<baseClassType>(), &ln::tr::ReflectionHelper::GetLocalValueHavingFlags<classType>, &ln::tr::ReflectionHelper::setBindingTypeInfo<classType>, &ln::tr::ReflectionHelper::getBindingTypeInfo<classType>, {__VA_ARGS__}); \
+	typeInfo						classType::lnref_typeInfo(_TT(#classType), ln::tr::ReflectionHelper::getClassTypeInfo<baseClassType>(), &ln::tr::ReflectionHelper::GetLocalValueHavingFlags<classType>, &ln::tr::ReflectionHelper::setBindingTypeInfo<classType>, &ln::tr::ReflectionHelper::getBindingTypeInfo<classType>, {__VA_ARGS__}); \
 	typeInfo*						classType::lnref_GetThisTypeInfo() const { return &lnref_typeInfo; } \
 	void*							classType::lnref_bindingTypeInfo = nullptr;
 

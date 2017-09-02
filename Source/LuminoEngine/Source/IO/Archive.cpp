@@ -389,7 +389,7 @@ size_t ArchiveStream::read(void* buffer, size_t byteCount)
 //------------------------------------------------------------------------------
 void ArchiveStream::seek(int64_t offset, SeekOrigin origin)
 {
-	m_seekPoint = FileSystem::calcSeekPoint(m_seekPoint, m_dataSize, offset, origin);
+	m_seekPoint = detail::FileSystemInternal::calcSeekPoint(m_seekPoint, m_dataSize, offset, origin);
 }
 
 //==============================================================================

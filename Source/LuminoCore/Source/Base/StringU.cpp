@@ -3,6 +3,7 @@
 #include <memory>
 #include <cuchar>
 #include <Lumino/Text/Encoding.h>
+#include <Lumino/Base/ByteBuffer.h>
 #include <Lumino/Base/StringU.h>
 #include <Lumino/Base/StringHelper.h>
 #include <Lumino/Base/RefObject.h>
@@ -87,17 +88,19 @@ UString::UString(int count, UChar ch)
 	assign(count, ch);
 }
 
-UString::UString(const char* str)
-	: UString()
-{
-	assignFromCStr(str);
-}
-
 UString::UString(const UStringRef& str)
 	: UString()
 {
 	assign(str);
 }
+
+#ifdef LN_STRING_FROM_CHAR
+UString::UString(const char* str)
+	: UString()
+{
+	assignFromCStr(str);
+}
+#endif
 
 bool UString::isEmpty() const
 {
@@ -348,9 +351,30 @@ std::wstring UString::toStdWString() const
 	return std::wstring((const wchar_t*)buf.getConstData());
 }
 
+Encoding* UString::getThisTypeEncoding() const
+{
+	if (sizeof(UChar) == sizeof(char))
+	{
+		return Encoding::getSystemMultiByteEncoding();
+	}
+	else if (sizeof(UChar) == sizeof(wchar_t))
+	{
+		return Encoding::getWideCharEncoding();
+	}
+	else if (sizeof(UChar) == sizeof(char16_t))
+	{
+		return Encoding::getUTF16Encoding();
+	}
+	else
+	{
+		LN_THROW(0, NotImplementedException);
+	}
+}
+
 ByteBuffer UString::convertTo(const UString& str, const Encoding* encoding, bool* outUsedDefaultChar)
 {
-	if (encoding == Encoding::getUTF16Encoding())	// TODO: ポインタ比較ではダメ
+	Encoding* thisEncoding = str.getThisTypeEncoding();
+	if (encoding == thisEncoding)	// TODO: ポインタ比較ではダメ。結果は正しいが。
 	{
 		return ByteBuffer(str.c_str(), (str.getLength() + 1) * sizeof(UChar));
 	}
@@ -360,7 +384,7 @@ ByteBuffer UString::convertTo(const UString& str, const Encoding* encoding, bool
 		options.NullTerminated = true;
 
 		EncodingConversionResult result;
-		ByteBuffer buf = Encoding::convert(str.c_str(), str.getLength() * sizeof(UChar), Encoding::getUTF16Encoding(), encoding, options, &result);
+		ByteBuffer buf = Encoding::convert(str.c_str(), str.getLength() * sizeof(UChar), thisEncoding, encoding, options, &result);
 		if (outUsedDefaultChar != nullptr)
 		{
 			*outUsedDefaultChar = result.UsedDefaultChar;
@@ -684,13 +708,13 @@ void UString::assignFromCStr(const TChar* str, int length)
 const UString& UString::getNewLine()
 {
 #ifdef LN_OS_WIN32
-	static UString nl(u"\r\n");
+	static UString nl(_TT("\r\n"));
 	return nl;
 #elif defined(LN_OS_MAC)
-	static UString nl(u"\r");
+	static UString nl(_TT("\r"));
 	return nl;
 #else
-	static UString nl(u"\n");
+	static UString nl(_TT("\n"));
 	return nl;
 #endif
 }
@@ -715,8 +739,8 @@ size_t UStringHelper::strlen(const UChar* str)
 
 int UStringHelper::compare(const UChar* str1, const UChar* str2)
 {
-	str1 = (str1) ? str1 : _U("");
-	str2 = (str2) ? str2 : _U("");
+	str1 = (str1) ? str1 : _TT("");
+	str2 = (str2) ? str2 : _TT("");
 	for (; *str1; ++str1, ++str2)
 	{
 		if (*str1 != *str2)

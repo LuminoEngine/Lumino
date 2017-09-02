@@ -32,6 +32,7 @@ const TChar* PathTraits::getFileName(const TChar* begin, const TChar* end)
 	if (isSeparatorChar(*pos)) return pos + 1;
 	return begin;
 }
+template const char* PathTraits::getFileName(const char* begin, const char* end);
 template const char16_t* PathTraits::getFileName(const char16_t* begin, const char16_t* end);
 
 template<typename TChar>
@@ -41,6 +42,7 @@ static const TChar* PathTraits::getWithoutExtensionEnd(const TChar* begin, const
 	if (*pos == '.') return pos;
 	return end;
 }
+template const char* PathTraits::getWithoutExtensionEnd(const char* begin, const char* end);
 template const char16_t* PathTraits::getWithoutExtensionEnd(const char16_t* begin, const char16_t* end);
 
 template<typename TChar>
@@ -61,6 +63,7 @@ static const TChar* PathTraits::getExtensionBegin(const TChar* begin, const TCha
 	}
 	return end;
 }
+template const char* PathTraits::getExtensionBegin(const char* begin, const char* end, bool withDot);
 template const char16_t* PathTraits::getExtensionBegin(const char16_t* begin, const char16_t* end, bool withDot);
 
 template<typename TChar>
@@ -111,6 +114,7 @@ const TChar* PathTraits::getDirectoryPathEnd(const TChar* begin, const TChar* en
 	//}
 	//return str;
 }
+template const char* PathTraits::getDirectoryPathEnd(const char* begin, const char* end);
 template const char16_t* PathTraits::getDirectoryPathEnd(const char16_t* begin, const char16_t* end);
 
 

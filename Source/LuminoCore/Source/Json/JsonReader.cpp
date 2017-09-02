@@ -752,7 +752,7 @@ bool JsonReader2::parseTrue()
 		m_reader->read() == 'e')
 	{
 		m_valueData.m_bool = true;
-		return setToken(JsonToken::Boolean, _T("true"), 4);
+		return setToken(JsonToken::Boolean, _TT("true"), 4);
 	}
 	else
 	{
@@ -772,7 +772,7 @@ bool JsonReader2::parseFalse()
 		m_reader->read() == 'e')
 	{
 		m_valueData.m_bool = false;
-		return setToken(JsonToken::Boolean, _T("false"), 5);
+		return setToken(JsonToken::Boolean, _TT("false"), 5);
 	}
 	else
 	{

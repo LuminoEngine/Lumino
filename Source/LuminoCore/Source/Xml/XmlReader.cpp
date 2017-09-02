@@ -90,11 +90,11 @@ struct Entity
 static const int ReservedEntitiesCount = 5;
 static const Entity ReservedEntities[ReservedEntitiesCount] =
 {
-	{ _T("lt"),		2, '<' },
-	{ _T("gt"),		2, '>' },
-	{ _T("amp"),	3, '&' },
-	{ _T("apos"),	4, '\'' },
-	{ _T("quot"),	4, '\"' },
+	{ _TT("lt"),	2, '<' },
+	{ _TT("gt"),	2, '>' },
+	{ _TT("amp"),	3, '&' },
+	{ _TT("apos"),	4, '\'' },
+	{ _TT("quot"),	4, '\"' },
 };
 
 //------------------------------------------------------------------------------
@@ -541,7 +541,7 @@ bool XmlReader::parseElementInner()
 	if (isProcInst)
 	{
 		const Char* name = &m_textCache[namePos];
-		bool isXmlDecl = (nameLen == 3 && StringTraits::strnicmp(name, _T("xml"), 3) == 0);
+		bool isXmlDecl = (nameLen == 3 && StringTraits::strnicmp(name, _TT("xml"), 3) == 0);
 		parseXmlDeclOrPI(namePos, nameLen, isXmlDecl);
 	}
 	// その他の要素

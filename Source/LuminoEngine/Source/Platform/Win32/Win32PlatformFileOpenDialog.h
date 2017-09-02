@@ -76,8 +76,7 @@ public:
 	{
 		LPWSTR wcFileName;
 		HRESULT hr = m_fileDialog->GetFileName(&wcFileName);
-		ln::detail::StaticallyLocalPath path(wcFileName);
-		return path.getPath();
+		return PathName(wcFileName);
 	}
 
 private:

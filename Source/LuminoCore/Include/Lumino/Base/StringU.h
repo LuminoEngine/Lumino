@@ -1,8 +1,11 @@
 ﻿
 #pragma once
 #include <atomic>
+#include <string>
 #include "Common.h"
-#include "StringBuilder.h"
+#include "List.h"
+//#include "StringBuilder.h"
+namespace std { class locale; }
 
 LN_NAMESPACE_BEGIN
 namespace detail { class UStringCore; }
@@ -35,6 +38,7 @@ enum class UStringRefSource
 
 }
 
+class Locale;
 class UStringRef;
 
 /**
@@ -59,8 +63,11 @@ public:
 	UString(const UChar* str, int length);
 	UString(const UChar* begin, const UChar* end);
 	UString(int count, UChar ch);
-	UString(const char* str);
 	UString(const UStringRef& str);
+
+#ifdef LN_STRING_FROM_CHAR
+	UString(const char* str);
+#endif
 
 	/** 文字列が空であるかを確認します。 */
 	bool isEmpty() const;
@@ -295,6 +302,7 @@ private:
 	template<typename TChar> void assignFromCStr(const TChar* str, int length = -1);
 	void append(const UChar* str, int length);
 
+	Encoding* getThisTypeEncoding() const;
 	static ByteBuffer convertTo(const UString& str, const Encoding* encoding, bool* outUsedDefaultChar = nullptr);
 
 	union Data
@@ -978,7 +986,7 @@ private:
 
 inline const UChar* UString::c_str() const
 {
-	return (isSSO()) ? m_data.sso.buffer : ((m_data.core) ? m_data.core->get() : _U(""));
+	return (isSSO()) ? m_data.sso.buffer : ((m_data.core) ? m_data.core->get() : _TT(""));
 }
 
 inline int UString::getLength() const
