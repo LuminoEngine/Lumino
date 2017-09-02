@@ -22,6 +22,9 @@ class FileSystem
 {
 public:
 	
+	/** 現在の環境のファイルシステムが、パス文字列の大文字と小文字を区別するかを確認します。 */
+	static CaseSensitivity getFileSystemCaseSensitivity();
+
 	/**
 		@brief		指定されたファイルが存在するか確認します。
 		@details	この関数は指定されたファイルにアクセスできる場合に true を返します。
@@ -86,39 +89,27 @@ public:
 	*/
 	static void deleteDirectory(const StringRef& path, bool recursive);
 
-
 	/**
 		@brief		
 		@param[in]	overwrite		: コピー先のファイルとディレクトリを上書きする場合は true
 	*/
-	static void copyDirectory(const GenericStringRef<char>& srcPath, const GenericStringRef<char>& destPath, bool overwrite, bool recursive)
-	{
-		copyDirectoryInternal(srcPath, destPath, overwrite, recursive);
-	}
-	static void copyDirectory(const GenericStringRef<wchar_t>& srcPath, const GenericStringRef<wchar_t>& destPath, bool overwrite, bool recursive)
-	{
-		copyDirectoryInternal(srcPath, destPath, overwrite, recursive);
-	}
+	static void copyDirectory(const StringRef& srcPath, const StringRef& dstPath, bool overwrite, bool recursive);
 
-	template<typename TChar>
-	static void copyDirectoryInternal(const GenericStringRef<TChar>& srcPath, const GenericStringRef<TChar>& destPath, bool overwrite, bool recursive);
+	/** パスのファイル名と1つ以上のファイル名パターンを照合します。 */
+	static bool matchPath(const StringRef& filePath, const StringRef& pattern);
 
+	/** ファイルサイズを取得します。 */
+	static uint64_t getFileSize(const StringRef& filePath);
 
-
-
-
-
-
-
-
-
-
-	
-	/// ファイルサイズを取得する
-	static uint64_t getFileSize(const Char* filePath);
-
-	/// ファイルサイズを取得する
+	/** ファイルサイズを取得します。 */
 	static uint64_t getFileSize(FILE* stream);
+
+
+
+
+
+
+
 
 	/// ファイルの内容をすべて読み込む (バイナリ形式)
 	static ByteBuffer readAllBytes(const StringRefA& filePath);
@@ -152,21 +143,8 @@ public:
 	static void forEachFilesInDirectory(const GenericStringRef<TChar>& path, TCallback callback);
 
 
-	static void LN_AFX_FUNCNAME(createDirectory)(const char* path);
-	static void LN_AFX_FUNCNAME(createDirectory)(const wchar_t* path);
-
-
-	/// 現在の位置とデータ(ファイル)サイズ、オフセット、基準(SEEK_xxxx)を受け取って、新しいシーク位置を返す
-	static int64_t calcSeekPoint(int64_t curPoint, int64_t maxSize, int64_t offset, int origin);
 	
-	/**
-		@brief		現在の環境のファイルシステムが、パス文字列の大文字と小文字を区別するかを確認します。
-	*/
-	static CaseSensitivity getFileSystemCaseSensitivity();
 
-	/** パスのファイル名と1つ以上のファイル名パターンを照合します。 */
-	static bool matchPath(const char* filePath, const char* pattern);
-	static bool matchPath(const wchar_t* filePath, const wchar_t* pattern);
 
 	static tr::Enumerator<PathName> getFiles(const StringRef& dirPath, const StringRef& pattern = StringRef());
 
@@ -229,6 +207,16 @@ public:
 	static void deleteDirectory(const char* path, int len, bool recursive);
 	static void deleteDirectory(const wchar_t* path, int len, bool recursive);
 	static void deleteDirectory(const char16_t* path, int len, bool recursive);
+
+	static void copyDirectory(const char* srcPath, int srcPathLen, const char* dstPath, int dstPathLen, bool overwrite, bool recursive);
+	static void copyDirectory(const wchar_t* srcPath, int srcPathLen, const wchar_t* dstPath, int dstPathLen, bool overwrite, bool recursive);
+	static void copyDirectory(const char16_t* srcPath, int srcPathLen, const char16_t* dstPath, int dstPathLen, bool overwrite, bool recursive);
+
+	static bool matchPath(const char* path, int pathLen, const char* pattern, int patternLen);
+	static bool matchPath(const wchar_t* path, int pathLen, const wchar_t* pattern, int patternLen);
+	static bool matchPath(const char16_t* path, int pathLen, const char16_t* pattern, int patternLen);
+
+	static int64_t calcSeekPoint(int64_t curPoint, int64_t maxSize, int64_t offset, int origin);
 };
 
 } // namespace detail

@@ -217,7 +217,7 @@ void MemoryStream::write(const void* data, size_t byteCount)
 void MemoryStream::seek(int64_t offset, SeekOrigin origin)
 {
 	size_t s = (m_fixedBufferSize != 0) ? m_fixedBufferSize : m_buffer.size();
-	m_seekPos = (size_t)FileSystem::calcSeekPoint(m_seekPos, s, offset, origin);
+	m_seekPos = (size_t)detail::FileSystemInternal::calcSeekPoint(m_seekPos, s, offset, origin);
 }
 
 LN_NAMESPACE_END

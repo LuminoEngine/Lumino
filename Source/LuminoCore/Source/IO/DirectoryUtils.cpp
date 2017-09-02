@@ -162,7 +162,7 @@ bool GenericFileFinder<TChar>::next()
 		{
 			result = nextInternal();
 
-		} while (result && !FileSystem::matchPath(m_impl->getCurrent().c_str(), m_pattern.c_str()));
+		} while (result && !detail::FileSystemInternal::matchPath(m_impl->getCurrent().c_str(), m_impl->getCurrent().getLength(), m_pattern.c_str(), m_pattern.getLength()));
 
 		return result;
 	}

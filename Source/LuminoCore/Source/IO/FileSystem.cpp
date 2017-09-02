@@ -276,6 +276,7 @@ public:
 	~PlatformFileFinder();
 	bool isWorking() const;
 	const PlatformFileSystem::PathString& getCurrent() const;
+	const PlatformFileSystem::PathString& getCurrentFileName() const { return m_impl.getCurrentFileName(); }
 	FileAttribute getFileAttribute() const;
 	bool next();
 
@@ -304,7 +305,7 @@ PlatformFileFinder::PlatformFileFinder(const PlatformFileSystem::PathChar* dirPa
 
 	m_current.reserve(m_dirPath.length() + 32);	// min size
 	m_impl.initialize(dirPath, dirPathLen);
-	setCurrent(m_impl.getCurrent());
+	setCurrent(m_impl.getCurrentFileName());
 }
 
 PlatformFileFinder::~PlatformFileFinder()
@@ -347,7 +348,7 @@ bool PlatformFileFinder::next()
 		{
 			result = nextInternal();
 
-		} while (result && !FileSystem::matchPath(getCurrent().c_str(), m_pattern.c_str()));
+		} while (result && !PlatformFileSystem::matchPath(getCurrent().c_str(), m_pattern.c_str()));
 
 		return result;
 	}
@@ -360,9 +361,16 @@ bool PlatformFileFinder::nextInternal()
 	{
 		result = m_impl.next();
 		if (!result) break;
-		setCurrent(m_impl.getCurrent());
+		setCurrent(m_impl.getCurrentFileName());
 
-		uint32_t attr = detail::FileSystemInternal::getAttribute(getCurrent().c_str(), getCurrent().length()).getValue();
+		uint32_t attr = 0;
+		FileAttribute a;
+		if (PlatformFileSystem::getAttribute(getCurrent().c_str(), &a))
+		{
+			attr = a.getValue();
+		}
+
+		//uint32_t attr = detail::FileSystemInternal::getAttribute(getCurrent().c_str(), getCurrent().length()).getValue();
 		uint32_t filter = (uint32_t)m_attr.getValue();
 		if ((attr & filter) != 0)
 		{
@@ -377,12 +385,21 @@ void PlatformFileFinder::setCurrent(const PlatformFileSystem::PathString& native
 {
 	m_current.assign(m_dirPath);
 	m_current.append(1, (PlatformFileSystem::PathChar)PathTraits::DirectorySeparatorChar);
-	m_current.append(m_impl.getCurrent());
+	m_current.append(m_impl.getCurrentFileName());
 }
 
 //==============================================================================
 // FileSystem
 //==============================================================================
+
+CaseSensitivity FileSystem::getFileSystemCaseSensitivity()
+{
+#ifdef LN_OS_WIN32
+	return CaseSensitivity::CaseInsensitive;
+#else
+	return CaseSensitivity::CaseSensitive;
+#endif
+}
 
 bool FileSystem::existsFile(const StringRef& filePath)
 {
@@ -425,6 +442,10 @@ void FileSystem::deleteDirectory(const StringRef& path, bool recursive)
 	detail::FileSystemInternal::deleteDirectory(path.getBegin(), path.getLength(), recursive);
 }
 
+void FileSystem::copyDirectory(const StringRef& srcPath, const StringRef& dstPath, bool overwrite, bool recursive)
+{
+	detail::FileSystemInternal::copyDirectory(srcPath.getBegin(), srcPath.getLength(), dstPath.getBegin(), dstPath.getLength(), overwrite, recursive);
+}
 
 void FileSystem::getCurrentDirectory(UString* outPath)
 {
@@ -433,71 +454,88 @@ void FileSystem::getCurrentDirectory(UString* outPath)
 	*outPath = UString::fromCString(path, len);
 }
 
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-void FileSystem::copyDirectoryInternal(const GenericStringRef<TChar>& srcPath, const GenericStringRef<TChar>& destPath, bool overwrite, bool recursive)
+bool FileSystem::matchPath(const StringRef& filePath, const StringRef& pattern)
 {
-	if (LN_CHECK_ARG(!srcPath.isEmpty())) return;
-	if (LN_CHECK_ARG(!destPath.isEmpty())) return;
-
-	// 上書きしないとき、すでにフォルダが存在してはならない
-	if (!overwrite)
-	{
-		LN_THROW(detail::FileSystemInternal::existsDirectory(srcPath.getBegin(), srcPath.getLength()), IOException);
-	}
-
-	// コピー先フォルダを作っておく
-	detail::FileSystemInternal::createDirectory(destPath.getBegin(), destPath.getLength());
-
-	GenericFileFinder<TChar> finder(srcPath);
-	while (finder.isWorking())
-	{
-		const GenericPathName<TChar>& src = finder.getCurrent();
-		GenericPathName<TChar> dest(destPath, src.getFileName());
-		
-
-		if (src.existsFile())
-		{
-			if (dest.existsDirectory())
-			{
-				// src と dest で同名なのに種類が違う。xcopy 的にはファイルを結合してしまうが・・・
-				LN_NOTIMPLEMENTED();
-			}
-
-			// コピー先にファイルとして存在していて、上書きする場合はコピーする
-			if (dest.existsFile())
-			{
-				if (overwrite)
-				{
-					detail::FileSystemInternal::copyFile(src.c_str(), src.getLength(), dest.c_str(), dest.getLength(), true);
-				}
-			}
-			else
-			{
-				detail::FileSystemInternal::copyFile(src.c_str(), src.getLength(), dest.c_str(), dest.getLength(), false);
-			}
-		}
-		else if (src.existsDirectory())
-		{
-			if (dest.existsFile())
-			{
-				// src と dest で同名なのに種類が違う。xcopy 的にはファイルを結合してしまうが・・・
-				LN_NOTIMPLEMENTED();
-			}
-
-			if (recursive)
-			{
-				copyDirectoryInternal<TChar>(src, dest, overwrite, recursive);
-			}
-		}
-
-		finder.next();
-	}
+	return detail::FileSystemInternal::matchPath(filePath.getBegin(), filePath.getLength(), pattern.getBegin(), pattern.getLength());
 }
-template void FileSystem::copyDirectoryInternal<char>(const GenericStringRef<char>& srcPath, const GenericStringRef<char>& destPath, bool overwrite, bool recursive);
-template void FileSystem::copyDirectoryInternal<wchar_t>(const GenericStringRef<wchar_t>& srcPath, const GenericStringRef<wchar_t>& destPath, bool overwrite, bool recursive);
 
+uint64_t FileSystem::getFileSize(const StringRef& filePath)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath.getBegin(), filePath.getLength());
+	return PlatformFileSystem::getFileSize(localPath.c_str());
+}
+
+uint64_t FileSystem::getFileSize(FILE* stream)
+{
+	return PlatformFileSystem::getFileSize(stream);
+}
+
+
+
+////------------------------------------------------------------------------------
+//template<typename TChar>
+//void FileSystem::copyDirectoryInternal(const GenericStringRef<TChar>& srcPath, const GenericStringRef<TChar>& destPath, bool overwrite, bool recursive)
+//{
+//	if (LN_CHECK_ARG(!srcPath.isEmpty())) return;
+//	if (LN_CHECK_ARG(!destPath.isEmpty())) return;
+//
+//	// 上書きしないとき、すでにフォルダが存在してはならない
+//	if (!overwrite)
+//	{
+//		LN_THROW(detail::FileSystemInternal::existsDirectory(srcPath.getBegin(), srcPath.getLength()), IOException);
+//	}
+//
+//	// コピー先フォルダを作っておく
+//	detail::FileSystemInternal::createDirectory(destPath.getBegin(), destPath.getLength());
+//
+//	GenericFileFinder<TChar> finder(srcPath);
+//	while (finder.isWorking())
+//	{
+//		const GenericPathName<TChar>& src = finder.getCurrent();
+//		GenericPathName<TChar> dest(destPath, src.getFileName());
+//		
+//
+//		if (src.existsFile())
+//		{
+//			if (dest.existsDirectory())
+//			{
+//				// src と dest で同名なのに種類が違う。xcopy 的にはファイルを結合してしまうが・・・
+//				LN_NOTIMPLEMENTED();
+//			}
+//
+//			// コピー先にファイルとして存在していて、上書きする場合はコピーする
+//			if (dest.existsFile())
+//			{
+//				if (overwrite)
+//				{
+//					detail::FileSystemInternal::copyFile(src.c_str(), src.getLength(), dest.c_str(), dest.getLength(), true);
+//				}
+//			}
+//			else
+//			{
+//				detail::FileSystemInternal::copyFile(src.c_str(), src.getLength(), dest.c_str(), dest.getLength(), false);
+//			}
+//		}
+//		else if (src.existsDirectory())
+//		{
+//			if (dest.existsFile())
+//			{
+//				// src と dest で同名なのに種類が違う。xcopy 的にはファイルを結合してしまうが・・・
+//				LN_NOTIMPLEMENTED();
+//			}
+//
+//			if (recursive)
+//			{
+//				copyDirectoryInternal<TChar>(src, dest, overwrite, recursive);
+//			}
+//		}
+//
+//		finder.next();
+//	}
+//}
+//template void FileSystem::copyDirectoryInternal<char>(const GenericStringRef<char>& srcPath, const GenericStringRef<char>& destPath, bool overwrite, bool recursive);
+//template void FileSystem::copyDirectoryInternal<wchar_t>(const GenericStringRef<wchar_t>& srcPath, const GenericStringRef<wchar_t>& destPath, bool overwrite, bool recursive);
+//
 //------------------------------------------------------------------------------
 ByteBuffer FileSystem::readAllBytes(const StringRefA& filePath)
 {
@@ -575,43 +613,6 @@ void FileSystem::writeAllText(const Char* filePath, const String& str, const Enc
 	writeAllBytes(filePath, buffer.getConstData(), buffer.getSize());
 }
 
-//------------------------------------------------------------------------------
-int64_t FileSystem::calcSeekPoint(int64_t curPoint, int64_t maxSize, int64_t offset, int origin)
-{
-	int64_t newPoint = curPoint;
-	switch (origin)
-	{
-	case SEEK_CUR:
-		newPoint += offset;
-		break;
-
-	case SEEK_END:
-		newPoint = maxSize + offset;
-		break;
-
-	default:
-		newPoint = offset;
-		break;
-	}
-
-	if (newPoint < 0) {
-		newPoint = 0;
-	}
-	if (newPoint > maxSize) {
-		newPoint = maxSize;
-	}
-	return newPoint;
-}
-    
-//------------------------------------------------------------------------------
-CaseSensitivity FileSystem::getFileSystemCaseSensitivity()
-{
-#ifdef LN_OS_WIN32
-	return CaseSensitivity::CaseInsensitive;
-#else
-	return CaseSensitivity::CaseSensitive;
-#endif
-}
 
 //bool FileSystem::matchFileName(const TCHAR* filePath, const TCHAR* pattern)
 //{
@@ -818,6 +819,142 @@ void FileSystemInternal::deleteDirectory(const char16_t* path, int len, bool rec
 {
 	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(path, len);
 	deleteDirectoryInternal(localPath.c_str(), localPath.getLength(), recursive);
+}
+
+static void copyDirectoryInternal(
+	const PlatformFileSystem::PathChar* srcPath,
+	const PlatformFileSystem::PathChar* dstPath,
+	bool overwrite, bool recursive)
+{
+	// 上書きしないとき、すでにフォルダが存在してはならない
+	if (!overwrite)
+	{
+		FileAttribute attr;
+		if (PlatformFileSystem::getAttribute(srcPath, &attr) &&
+			attr.TestFlag(FileAttribute::Directory))
+		{
+			LN_THROW(0, IOException);
+		}
+	}
+
+	// コピー先フォルダを作っておく
+	PlatformFileSystem::createDirectory(dstPath);
+
+	PlatformFileFinder finder(srcPath, StringTraits::tcslen(srcPath), FileAttribute::All, nullptr, 0);
+	PlatformFileSystem::PathString dest;
+	while (finder.isWorking())
+	{
+		const PlatformFileSystem::PathString& src = finder.getCurrent();
+		dest.assign(dstPath);
+		dest.append(1, PathTraits::DirectorySeparatorChar);
+		dest.append(finder.getCurrentFileName());
+
+		FileAttribute srcAttr;
+		if (!PlatformFileSystem::getAttribute(src.c_str(), &srcAttr)) srcAttr = FileAttribute::None;
+
+		FileAttribute dstAttr;
+		if (!PlatformFileSystem::getAttribute(dest.c_str(), &dstAttr)) dstAttr = FileAttribute::None;
+
+		if (srcAttr.TestFlag(FileAttribute::Normal))
+		{
+			if (dstAttr.TestFlag(FileAttribute::Directory))
+			{
+				// TODO: src と dest で同名なのに種類が違う。xcopy 的にはファイルを結合してしまうが・・・
+				LN_NOTIMPLEMENTED();
+			}
+			else if (dstAttr.TestFlag(FileAttribute::Normal))
+			{
+				// コピー先にファイルとして存在していて、上書きする場合はコピーする
+				if (overwrite)
+				{
+					PlatformFileSystem::copyFile(src.c_str(), dest.c_str(), true);
+				}
+			}
+			else
+			{
+				PlatformFileSystem::copyFile(src.c_str(), dest.c_str(), false);
+			}
+		}
+		else if (srcAttr.TestFlag(FileAttribute::Directory))
+		{
+			if (dstAttr.TestFlag(FileAttribute::Normal))
+			{
+				// TODO: src と dest で同名なのに種類が違う。xcopy 的にはファイルを結合してしまうが・・・
+				LN_NOTIMPLEMENTED();
+			}
+
+			if (recursive)
+			{
+				copyDirectoryInternal(src.c_str(), dest.c_str(), overwrite, recursive);
+			}
+		}
+
+		finder.next();
+	}
+}
+void FileSystemInternal::copyDirectory(const char* srcPath, int srcPathLen, const char* dstPath, int dstPathLen, bool overwrite, bool recursive)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localSrcPath(srcPath, srcPathLen);
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localDstPath(dstPath, dstPathLen);
+	copyDirectoryInternal(localSrcPath.c_str(), localDstPath.c_str(), overwrite, recursive);
+}
+void FileSystemInternal::copyDirectory(const wchar_t* srcPath, int srcPathLen, const wchar_t* dstPath, int dstPathLen, bool overwrite, bool recursive)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localSrcPath(srcPath, srcPathLen);
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localDstPath(dstPath, dstPathLen);
+	copyDirectoryInternal(localSrcPath.c_str(), localDstPath.c_str(), overwrite, recursive);
+}
+void FileSystemInternal::copyDirectory(const char16_t* srcPath, int srcPathLen, const char16_t* dstPath, int dstPathLen, bool overwrite, bool recursive)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localSrcPath(srcPath, srcPathLen);
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localDstPath(dstPath, dstPathLen);
+	copyDirectoryInternal(localSrcPath.c_str(), localDstPath.c_str(), overwrite, recursive);
+}
+bool FileSystemInternal::matchPath(const char* path, int pathLen, const char* pattern, int patternLen)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(path, pathLen);
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPattern(pattern, patternLen);
+	return PlatformFileSystem::matchPath(localPath.c_str(), localPattern.c_str());
+}
+bool FileSystemInternal::matchPath(const wchar_t* path, int pathLen, const wchar_t* pattern, int patternLen)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(path, pathLen);
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPattern(pattern, patternLen);
+	return PlatformFileSystem::matchPath(localPath.c_str(), localPattern.c_str());
+}
+bool FileSystemInternal::matchPath(const char16_t* path, int pathLen, const char16_t* pattern, int patternLen)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(path, pathLen);
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPattern(pattern, patternLen);
+	return PlatformFileSystem::matchPath(localPath.c_str(), localPattern.c_str());
+}
+
+// 現在の位置とデータ(ファイル)サイズ、オフセット、基準(SEEK_xxxx)を受け取って、新しいシーク位置を返す
+int64_t FileSystemInternal::calcSeekPoint(int64_t curPoint, int64_t maxSize, int64_t offset, int origin)
+{
+	int64_t newPoint = curPoint;
+	switch (origin)
+	{
+	case SEEK_CUR:
+		newPoint += offset;
+		break;
+
+	case SEEK_END:
+		newPoint = maxSize + offset;
+		break;
+
+	default:
+		newPoint = offset;
+		break;
+	}
+
+	if (newPoint < 0) {
+		newPoint = 0;
+	}
+	if (newPoint > maxSize) {
+		newPoint = maxSize;
+	}
+	return newPoint;
 }
 
 } // namespace detail

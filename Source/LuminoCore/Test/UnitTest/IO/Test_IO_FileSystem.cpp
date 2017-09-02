@@ -146,6 +146,13 @@ TEST_F(Test_IO_FileSystem, copyDirectory)
 }
 
 //------------------------------------------------------------------------------
+TEST_F(Test_IO_FileSystem, matchPath)
+{
+	ASSERT_EQ(true, FileSystem::matchPath(_TT("dir/file.txt"), _TT("*.txt")));
+	ASSERT_EQ(false, FileSystem::matchPath(_TT("dir/file.txt"), _TT("*.dat")));
+}
+
+//------------------------------------------------------------------------------
 TEST_F(Test_IO_FileSystem, forEachFilesInDirectory)
 {
 	FileSystem::createDirectory(TEMPFILE("Test_IO_FileSystem/ForEachFilesInDirectory"));

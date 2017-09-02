@@ -124,6 +124,24 @@ public:
 	{
 		return ::GetCurrentDirectoryW(bufferLength, outBuffer);
 	}
+	
+	static uint64_t getFileSize(const wchar_t* filePath)
+	{
+		struct _stat stat_buf;
+		int r = _wstat(filePath, &stat_buf);
+		if (r != 0) return 0;
+		return stat_buf.st_size;
+	}
+
+	static uint64_t getFileSize(FILE* stream)
+	{
+		struct _stat stbuf;
+		int handle = _fileno(stream);
+		if (handle == 0) return 0;
+		if (_fstat(handle, &stbuf) == -1) return 0;
+		return stbuf.st_size;
+	}
+
 };
 
 class PlatformFileFinderImpl
@@ -162,7 +180,7 @@ public:
 		}
 	}
 
-	const std::wstring& getCurrent() const
+	const std::wstring& getCurrentFileName() const
 	{
 		return m_current;
 	}
@@ -354,30 +372,6 @@ static void RemoveDirectoryImpl(LPCWSTR lpPathName)
 //}
 
 //------------------------------------------------------------------------------
-uint64_t FileSystem::getFileSize(const Char* filePath)
-{
-	if (LN_CHECK_ARG(filePath != nullptr)) return 0;
-	struct _stat stat_buf;
-	int r = _tstat(filePath, &stat_buf);
-	LN_THROW(r == 0, FileNotFoundException);
-	return stat_buf.st_size;
-}
-
-//------------------------------------------------------------------------------
-uint64_t FileSystem::getFileSize(FILE* stream)
-{
-	struct _stat stbuf;
-	int handle = _fileno( stream );
-	if ( handle == 0 ) {
-		return 0;
-	}
-	if ( _fstat( handle, &stbuf ) == -1 ) {
-		return 0;
-	}
-	return stbuf.st_size;
-}
-
-//------------------------------------------------------------------------------
 //bool FileSystem::ExistsDirectory(const char* path)
 //{
 //	DWORD attr = ::GetFileAttributesA(path);
@@ -398,42 +392,42 @@ bool FileSystem::mkdir(const wchar_t* path)
 {
 	return ::CreateDirectoryW(path, NULL) != FALSE;
 }
-//------------------------------------------------------------------------------
-bool FileSystem::getAttributeInternal(const char* path, FileAttribute* outAttr)
-{
-	DWORD attr = ::GetFileAttributesA(path);
-	if (attr == -1) { return false; }
-
-	FileAttribute flags = FileAttribute::None;
-	if (attr & FILE_ATTRIBUTE_DIRECTORY)	flags |= FileAttribute::Directory;
-	else									flags |= FileAttribute::Normal;
-	if (attr & FILE_ATTRIBUTE_READONLY)		flags |= FileAttribute::ReadOnly;
-	if (attr & FILE_ATTRIBUTE_HIDDEN)		flags |= FileAttribute::Hidden;
-	*outAttr = flags;
-	return true;
-}
-bool FileSystem::getAttributeInternal(const wchar_t* path, FileAttribute* outAttr)
-{
-	DWORD attr = ::GetFileAttributesW(path);
-	if (attr == -1) { return false; }
-
-	FileAttribute flags = FileAttribute::None;
-	if (attr & FILE_ATTRIBUTE_DIRECTORY)	flags |= FileAttribute::Directory;
-	else									flags |= FileAttribute::Normal;
-	if (attr & FILE_ATTRIBUTE_READONLY)		flags |= FileAttribute::ReadOnly;
-	if (attr & FILE_ATTRIBUTE_HIDDEN)		flags |= FileAttribute::Hidden;
-	*outAttr = flags;
-	return true;
-}
-
-bool FileSystem::matchPath(const char* filePath, const char* pattern)
-{
-	return ::PathMatchSpecExA(filePath, pattern, PMSF_NORMAL) == S_OK;
-}
-
-bool FileSystem::matchPath(const wchar_t* filePath, const wchar_t* pattern)
-{
-	return ::PathMatchSpecExW(filePath, pattern, PMSF_NORMAL) == S_OK;
-}
-
+////------------------------------------------------------------------------------
+//bool FileSystem::getAttributeInternal(const char* path, FileAttribute* outAttr)
+//{
+//	DWORD attr = ::GetFileAttributesA(path);
+//	if (attr == -1) { return false; }
+//
+//	FileAttribute flags = FileAttribute::None;
+//	if (attr & FILE_ATTRIBUTE_DIRECTORY)	flags |= FileAttribute::Directory;
+//	else									flags |= FileAttribute::Normal;
+//	if (attr & FILE_ATTRIBUTE_READONLY)		flags |= FileAttribute::ReadOnly;
+//	if (attr & FILE_ATTRIBUTE_HIDDEN)		flags |= FileAttribute::Hidden;
+//	*outAttr = flags;
+//	return true;
+//}
+//bool FileSystem::getAttributeInternal(const wchar_t* path, FileAttribute* outAttr)
+//{
+//	DWORD attr = ::GetFileAttributesW(path);
+//	if (attr == -1) { return false; }
+//
+//	FileAttribute flags = FileAttribute::None;
+//	if (attr & FILE_ATTRIBUTE_DIRECTORY)	flags |= FileAttribute::Directory;
+//	else									flags |= FileAttribute::Normal;
+//	if (attr & FILE_ATTRIBUTE_READONLY)		flags |= FileAttribute::ReadOnly;
+//	if (attr & FILE_ATTRIBUTE_HIDDEN)		flags |= FileAttribute::Hidden;
+//	*outAttr = flags;
+//	return true;
+//}
+//
+//bool FileSystem::matchPath(const char* filePath, const char* pattern)
+//{
+//	return ::PathMatchSpecExA(filePath, pattern, PMSF_NORMAL) == S_OK;
+//}
+//
+//bool FileSystem::matchPath(const wchar_t* filePath, const wchar_t* pattern)
+//{
+//	return ::PathMatchSpecExW(filePath, pattern, PMSF_NORMAL) == S_OK;
+//}
+//
 LN_NAMESPACE_END
