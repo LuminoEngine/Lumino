@@ -20,7 +20,9 @@ template<typename TChar> class GenericPathName;
 
 namespace detail { template<typename TChar> class GenericStringCore; }
 namespace detail { class StringHelper; }
+#ifdef LN_LEGACY_VARIANT_ENABLED
 namespace tr { class Variant; }
+#endif
 
 
 /**
@@ -601,7 +603,9 @@ public:
 
 private:
 	friend class detail::StringHelper;
+#ifdef LN_LEGACY_VARIANT_ENABLED
 	friend class tr::Variant;
+#endif
 	template<typename T> friend class GenericCharRef;
 	template<typename T> friend class GenericStringRef;
 	

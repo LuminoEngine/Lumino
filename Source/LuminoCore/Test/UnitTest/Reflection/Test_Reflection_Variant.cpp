@@ -5,6 +5,9 @@
 #include <Lumino/Reflection/Variant.h>
 using namespace ln::tr;
 
+
+#ifdef LN_LEGACY_VARIANT_ENABLED
+
 // テスト用
 class Point
 {
@@ -244,3 +247,6 @@ TEST_F(IntegrationTest_Reflection_Variant, Basic)
 		obj1->release();
 	}
 }
+
+#endif
+

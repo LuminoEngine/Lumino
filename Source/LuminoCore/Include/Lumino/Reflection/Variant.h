@@ -3,6 +3,8 @@
 #include <typeinfo>
 #include <type_traits>
 #include "../Base/Common.h"
+
+#ifdef LN_LEGACY_VARIANT_ENABLED
 #include "../Base/RefObject.h"
 #include "../Base/String.h"
 #include "../Base/EnumExtension.h"
@@ -398,3 +400,4 @@ template<typename T> struct Variant::AccessorSelector<T, detail::KindRefPtr>
 } // namespace tr
 LN_NAMESPACE_END
 
+#endif

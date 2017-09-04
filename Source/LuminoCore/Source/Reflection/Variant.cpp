@@ -4,6 +4,7 @@
 #include <Lumino/Reflection/ReflectionArrayObject.h>
 #include <Lumino/Reflection/Variant.h>
 
+#ifdef LN_LEGACY_VARIANT_ENABLED
 LN_NAMESPACE_BEGIN
 namespace tr
 {
@@ -246,3 +247,5 @@ void Variant::release()
 
 } // namespace tr
 LN_NAMESPACE_END
+
+#endif

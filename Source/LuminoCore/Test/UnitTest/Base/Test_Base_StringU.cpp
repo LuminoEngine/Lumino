@@ -1250,22 +1250,22 @@ TEST_F(Test_IO_Path, canonicalizePath)
 	Path path1(Path::getCurrentDirectory(), _T("dir\\Dir"));
 	Path path12 = _T("dir/bin/../Dir");
 	path12 = path12.canonicalizePath();
-	ASSERT_EQ(path1, path12.getString());
+	ASSERT_EQ(path1.getString(), path12.getString());
 
 	Path path2(_T("C:\\file.txt"));
 	Path path22 = _T("C:\\dir/..\\file.txt");
 	path22 = path22.canonicalizePath();
-	ASSERT_EQ(path2, path22.getString());
+	ASSERT_EQ(path2.getString(), path22.getString());
 #else
 	Path path1(Path::GetCurrentDirectory(), _T("dir/Dir"));
 	Path path12 = _T("dir/bin/../Dir");
 	path12 = path12.CanonicalizePath();
-	ASSERT_EQ(path1, path12.getString());
+	ASSERT_EQ(path1.getString(), path12.getString());
 
 	Path path2(_T("/file.txt"));
 	Path path22 = _T("/dir/../file.txt");
 	path22 = path22.CanonicalizePath();
-	ASSERT_EQ(path2, path22.getString());
+	ASSERT_EQ(path2.getString(), path22.getString());
 #endif
 }
 

@@ -77,7 +77,9 @@ protected:
 	void raiseDelegateEvent(DelegateEvent<TArgs...>& ev, TArgs... args) { ev.raise(args...); }
 
 private:
+#ifdef LN_LEGACY_VARIANT_ENABLED
 	void setPropertyValueInternal(const PropertyInfo* prop, const Variant& value, bool reset, PropertySetSource source);
+#endif
 
 	void*	m_userData;
 

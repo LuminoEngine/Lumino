@@ -88,6 +88,7 @@ void ReflectionObject::onPropertyChanged(PropertyChangedEventArgs* e)
 }
 
 //------------------------------------------------------------------------------
+#ifdef LN_LEGACY_VARIANT_ENABLED
 void ReflectionObject::setPropertyValueInternal(const PropertyInfo* prop, const Variant& value, bool reset, PropertySetSource source)
 {
 	//if (prop->isStored())
@@ -125,6 +126,7 @@ void ReflectionObject::setPropertyValueInternal(const PropertyInfo* prop, const 
 
 	//setPropertyValue(prop->getName(), value);	// TODO: getName じゃなくて、型情報も考慮するように。あるいは生ポインタ
 }
+#endif
 
 //------------------------------------------------------------------------------
 detail::WeakRefInfo* ReflectionObject::requestWeakRefInfo()

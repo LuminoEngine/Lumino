@@ -36,9 +36,11 @@ public:
 	PropertyInfo(TypeInfo* ownerClassType, PropertyMetadata* metadata, bool stored);
 	virtual ~PropertyInfo();
 
+#ifdef LN_LEGACY_VARIANT_ENABLED
 	virtual void setValue(ReflectionObject* target, Variant value, PropertySetSource source) const { LN_THROW(0, InvalidOperationException); }
 	virtual Variant getValue(const ReflectionObject* target) const { LN_THROW(0, InvalidOperationException); }
 	virtual void addItem(ReflectionObject* target, const Variant& value) const { LN_THROW(0, InvalidOperationException); }
+#endif
 
 	//virtual bool isReadable() const { return false; }
 	//virtual bool isWritable() const { return false; }

@@ -789,7 +789,8 @@ UStringRef::UStringRef(const Path& path)
 UString UStringRef::mid(int start, int count) const
 {
 	// TODO: Ref で返していいよね？
-	return StringTraits::mid(getBegin(), start, count);
+	//return StringTraits::mid(getBegin(), start, count);
+	return UString(getBegin(), count).substring(start, count);
 }
 
 //==============================================================================
