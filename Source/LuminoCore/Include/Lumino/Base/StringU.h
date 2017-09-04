@@ -5,7 +5,12 @@
 #include "Common.h"
 #include "List.h"
 //#include "StringBuilder.h"
+//#include "../IO/Common.h"	// TODO: for Path
 namespace std { class locale; }
+
+#ifdef LN_UNICODE
+#define LN_STRING_FROM_CHAR
+#endif
 
 LN_NAMESPACE_BEGIN
 namespace detail { class UStringCore; }
@@ -40,6 +45,7 @@ enum class UStringRefSource
 
 class Locale;
 class UStringRef;
+class Path;
 
 /**
 	@brief		文字列を表すクラスです。
@@ -64,6 +70,8 @@ public:
 	UString(const UChar* begin, const UChar* end);
 	UString(int count, UChar ch);
 	UString(const UStringRef& str);
+	UString(const Path& path);
+	// TODO: Path&&
 
 #ifdef LN_STRING_FROM_CHAR
 	UString(const char* str);
@@ -217,6 +225,34 @@ public:
 	/** 指定した文字列を連結します。 */
 	static UString concat(const UStringRef& str1, const UStringRef& str2);
 
+	/**
+		@brief		書式文字列と可変長引数リストから文字列を生成します。
+		@param[in]	format		: 書式文字列 (printf の書式指定構文)
+		@param[in]	...			: 引数リスト
+
+		@details	指定できる書式はC言語標準の printf 等の書式です。
+					~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+					String str1 = String::SPrintf(_T("%d"), 100);			// => "100"
+					~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+					各書式指定子の詳細な仕様は環境に依存します。
+					特にこれらの中には32ビットシステムと64ビットシステムとの間で移植性がはっきりしないものがありますので、
+					そういったシステムで利用する場合はオーバーラン等に注意してください。
+
+					こういった移植性や後述する引数リストにクラスの実体を指定できてしまう問題を回避するため、
+					Format() を使用することを推奨します。
+
+		@attention	引数リストに指定できるのは環境がサポートしているプリミティブ型だけです。
+					String クラス等のクラスや構造体を指定した場合は未定義動作となります。
+					~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+					String str1 = String::SPrintf(_T("%d"), 100);			// => "100"
+					String str2 = String::SPrintf(_T("%ss"), str1);			// => NG (未定義動作)
+					String str2 = String::SPrintf(_T("%ss"), str1.c_str());	// => "100s"
+					~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	*/
+	static UString sprintf(const UString& format, ...);
+
+
 	template<typename... TArgs>
 	static UString format(const UStringRef& format, TArgs&&... args);
 	template<typename... TArgs>
@@ -266,6 +302,8 @@ public:
 	bool isSSO() const LN_NOEXCEPT { return !detail::getLSB<0>(static_cast<uint8_t>(m_data.sso.length)); }
 	bool isNonSSO() const LN_NOEXCEPT { return detail::getLSB<0>(static_cast<uint8_t>(m_data.sso.length)); }
 
+	const Char& operator[](int index) const;
+
 	UString& operator=(const UStringRef& rhs);
 	UString& operator=(const UChar* rhs);
 	UString& operator=(UChar ch);
@@ -287,6 +325,7 @@ private:
 	UChar* lockBuffer(int requestSize);
 	void unlockBuffer(int confirmedSize);
 	UChar* getBuffer();
+	const UChar* getBuffer() const;
 
 	// sso operation
 	void setSSOLength(int len);
@@ -389,6 +428,9 @@ public:
 	//	m_c.str = UString(str);
 	//}
 
+
+	UStringRef(const Path& path);
+
 	UStringRef(const UStringRef& str)
 		: UStringRef()
 	{
@@ -420,8 +462,15 @@ public:
 		return data() + getLength();
 	}
 
+	UString mid(int start, int count) const;
+
+	bool IsNullOrEmpty() const { return (data() == nullptr || getLength() <= 0); }
+
+	const Char& operator[](int index) const { return *(data() + index); }
+
 	// TODO: internal
 	const UChar* getBegin() const { return end(); }
+
 
 private:
 	void clear()
@@ -678,308 +727,6 @@ private:
 
 
 
-
-/**
-	@brief		パス文字列を表すクラス
-	@details	単純にパスセパレータで区切られた文字列を扱います。
-				パスがフォルダを指すかファイルを指すかは区別しません。
-				また、ファイルパスとして使用できない文字が含まれているかは確認しません。
-				パス文字数の上限も確認しません。<br>
-
-				セパレータは環境依存です。Windows では '\\'、UNIX 系では '/' です。
-				※UNIX 系では '\\' をファイル名として使用可能です。
-
-				このクラスに含まれる operator < 等の比較系の機能は、動作中のファイルシステムによって
-				大文字小文字の区別を決定します。
-*/
-class Path
-{
-public:
-	static const UChar Separator;
-	static const UChar AltSeparator;
-	static const UChar VolumeSeparator;
-
-public:
-	Path() {}
-	Path(const Path& obj);
-
-	Path(const UChar* path) { assign(path); }
-	Path(const UString& path) { assign(path); }
-	Path(const UStringRef& path) { assign(path); }
-	Path(const Path& basePath, const UChar* relativePath) { assignUnderBasePath(basePath, UStringRef(relativePath)); }
-	Path(const Path& basePath, const UStringRef& relativePath) { assignUnderBasePath(basePath, relativePath); }
-	Path(const Path& basePath, const Path& relativePath) { assignUnderBasePath(basePath, relativePath); }
-
-	// operators
-	Path& operator = (const UString& str) { assign(str.c_str()); return (*this); }
-	Path& operator = (const UChar* str) { assign(str); return (*this); }
-	//bool operator < (const Path& right) const;
-	//bool operator < (const UChar* right) const;
-
-
-public:
-
-	/**
-		@brief		パス文字列を割り当てる
-		@param[in]	path		: パス文字列
-	*/
-	void assign(const UStringRef& path);
-
-	/**
-		@brief		ベースパスと相対パスを連結して、パスを作成する
-		@param[in]	basePath		: パス文字列
-		@param[in]	relativePath	: パス文字列
-		@details	relativePath がフルパスの場合は basePath を無視します。
-	*/
-	// TODO: 絶対パスにしてほしくない
-	void assignUnderBasePath(const Path& basePath, const UStringRef& relativePath);
-	void assignUnderBasePath(const Path& basePath, const Path& relativePath);
-
-	/**
-		@brief		現在のパスに別のパス文字列を連結します。
-		@param[in]	path		: パス文字列
-		@details	現在のパスの末尾にセパレータが無い場合は付加し、文字列を連結します。
-					path が絶対パスであれば、現在のパスを置き換えます。
-	*/
-	void append(const UStringRef& path);
-	void append(const Path& path) { append(UStringRef(path.m_path)); }
-	void append(const UChar* path) { append(UStringRef(path)); }
-
-	/// 空文字列を設定する
-	void clear() { m_path.clear(); }
-
-	/// パスが空であるかを確認する
-	bool isEmpty() const { return m_path.isEmpty(); }
-
-	/** パス文字列の長さを返します。*/
-	int getLength() const { return m_path.getLength(); }
-
-	/** C言語形式の文字列ポインタを返します。*/
-	const UChar* c_str() const { return m_path.c_str(); }
-
-	const UString& getString() const { return m_path; }
-
-	/** パス文字列の中から拡張子を含むファイル名の部分を返します。 (空パスの場合は空文字列を返す) */
-	UString getFileName() const;
-	
-	/**
-		@brief		このパスから拡張子を取り除いたパスを返します。
-		@code
-					PathName path1("C:/dir/file.txt");
-					PathName path2 = path1.GetWithoutExtension();	// => "C:/dir/file"
-
-					"file.txt"			=> "file"
-					"file"				=> "file"
-					""					=> ""
-					"C:/dir.sub/file"	=> "C:/dir.sub/file"
-					"dir/.git"			=> "dir/"
-					".git"				=> ""
-		@endcode
-	*/
-	Path getWithoutExtension() const;
-
-	/**
-		@brief		ファイルの拡張子を取得します。
-		@param[in]	withDot		: true の場合、結果は '.' を含み、false の場合は含まない
-		@details	拡張子を持たない場合は空文字列を返します。
-		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		PathName("file.txt").GetExtension()			// => ".txt"
-		PathName("file.txt").GetExtension(false)	// => "txt"
-		PathName("file.tmp.txt").GetExtension()		// => ".txt"
-		PathName("file").GetExtension()				// => ""
-		PathName("").GetExtension()					// => ""
-		PathName(".").GetExtension()				// => ""
-		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	*/
-	UStringRef getExtension(bool withDot = true) const;
-
-	Path getParent() const;
-
-#if 0
-	UStringRef getFileNameWithoutExtension() const;
-
-	/**
-		@brief		ファイルの拡張子を取得します。
-		@param[in]	withDot		: true の場合、結果は '.' を含み、false の場合は含まない
-		@details	拡張子を持たない場合は空文字列を返します。
-		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		PathName("file.txt").GetExtension()			// => ".txt"
-		PathName("file.txt").GetExtension(false)	// => "txt"
-		PathName("file.tmp.txt").GetExtension()		// => ".txt"
-		PathName("file").GetExtension()				// => ""
-		PathName("").GetExtension()					// => ""
-		PathName(".").GetExtension()				// => ""
-		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	*/
-	UStringRef getExtension(bool withDot = true) const LN_NOEXCEPT;
-
-	/** パス文字列の長さを返します。*/
-	int getLength() const { return m_path.getLength(); }
-
-	/** C言語形式の文字列ポインタを返します。*/
-	const UChar* c_str() const { return m_path.c_str(); }
-	
-	/// パス文字列を返す
-	const UString& getString() const { return m_path; }	// TODO: ToString()
-
-	//GenericString<TCHAR> toString() const;
-
-	///// パス文字列を返す (末尾に必ずセパレータをひとつ付加する)
-	//const GenericString<TChar> getStrEndSeparator() const;
-
-
-	/**
-		@brief		このパスの拡張子を変更した新しいパスを返します。
-		@param[in]	newExt	: 新しい拡張子 (先頭の . は省略しても良い)
-		@code
-					PathName path1("C:/dir/file.txt");
-					PathName path2 = path1.GetWithoutExtension(_T(".dat"));	// => "C:/dir/file.dat"
-
-					PathName path1("file");
-					PathName path2 = path1.GetWithoutExtension(_T(".dat"));	// => "file.dat"
-		@endcode
-	*/
-	Path<TChar> changeExtension(const TChar* newExt) const;
-
-
-	/// 絶対パスであるかを確認する
-	bool isAbsolute() const;
-
-	/// ルートディレクトリであるかを確認する
-	bool isRoot() const;
-
-	/** パスの示す先がディレクトリであるかを確認します。*/
-	bool isDirectory() const;
-
-	/// 指定された拡張子を持っているかを確認する (ext の . の有無は問わない)
-	bool checkExt(const TChar* ext) const;	// TODO: obsolete
-
-	bool equalExtension(const TChar* ext) const { return checkExt(ext); }
-
-	/**
-		@brief		親ディレクトリの PathName を返す
-		@details	現在のパスがルートパス ('C:\' や '/') の場合、現在のパスを返します。
-					それ以外に親ディレクトリを特定できない場合は空文字を返します。
-					以下の例を参考にしてください。
-		@code
-					"C:/dir1/file1.txt"	→ "C:/dir1"
-					"C:/dir1"			→ "C:/"
-					"C:/"				→ "C:/"
-					"C:"				→ "C:"
-					"/"					→ "/"		(Unix)
-					"file1.txt"			→ ""
-					".."				→ ""
-					"."					→ ""
-					""					→ ""
-		@endcode
-	*/
-	Path getParent() const;
-
-	/**
-		@brief		パスを単純化し、フルパスにしたものを返す
-		@details	パスが相対パスの場合はカレントディレクトリを基準に、フルパスを求めます。
-					また、Windows 環境では / は \ に置き換えられます。
-	*/
-	Path canonicalizePath() const;
-
-	/// ローカルの char 文字列表現として返す
-	std::string toLocalChar() const;
-
-	
-	/** 
-		@brief		このパスの指す先がファイルとして存在しているかを確認します。
-	*/
-	bool existsFile() const;
-
-	/** 
-		@brief		このパスの指す先がディレクトリとして存在しているかを確認します。
-	*/
-	// TODO :↑に同じようなのがある…
-	bool existsDirectory() const;
-
-	/**
-		@brief		このパスの指す先がディレクトリ内に、指定した名前のファイルが存在するかを確認します。
-	*/
-	bool existsFileInDirectory(const StringRefT& relPath) const LN_NOEXCEPT;
-
-	/** 
-		@brief		このパスから指定したパスへの相対パスを取得します。
-		@details	target とこのパスは絶対パスである必要があります。
-					同じパスである場合は . が返ります。
-		@attention	双方のパスはディレクトリパスである必要があります。
-	*/
-	Path<TChar> makeRelative(const Path<TChar>& target) const;
-	// TODO: おしりに / はつかなくていい。
-
-	/**
-		@brief		このパスと、別のパス文字列が等しいかをチェックする
-		@param[in]	path	: 比較対象のパス文字列
-		@details	Separator と AltSeparator は等価とみなします。
-					また、大文字小文字を区別しません。
-		@note		環境による大文字小文字の区別について…<br>
-					区別の有無は、OSではなくファイルシステム依存。
-					http://ja.wikipedia.org/wiki/%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%82%B7%E3%82%B9%E3%83%86%E3%83%A0#.E6.A9.9F.E8.83.BD
-					これをプログラムから調べる有効な手段が見つからなかった…。
-					ちなみに、Adobe等クロスプラットフォームで動く製品を出してるところも、この辺りは十分に対応しきれていない様子。
-					http://helpx.adobe.com/jp/x-productkb/global/cpsid_83180.html
-					http://www.clip-studio.com/clip_site/support/faq/detail/svc/52/tid/37429
-	*/
-	bool equals(const TChar* path) const { return PathTraits::equals(m_path.c_str(), path); }
-	/// @overload Equals
-	bool equals(const Path& path) const { return PathTraits::equals(m_path.c_str(), path.c_str()); }
-	/// @overload Equals
-	bool equals(const UString& path) const { return PathTraits::equals(m_path.c_str(), path.c_str()); }
-	/// @overload Equals
-	bool operator == (const Path& path) const { return equals(path); }
-#endif
-
-	/**
-		このパスが示すディレクトリを作成します。
-		@details	このパスへの全てのディレクトリを作成します。既に存在する場合は作成しません。
-	*/
-	//void createDirectory() const;
-	//void LN_AFX_FUNCNAME(createDirectory)() const;
-
-public:
-
-	///**
-	//	@brief		カレントディレクトリのパスを取得します。
-	//*/
-	//static Path getCurrentDirectory();
-
-	///** アプリケーションを開始した実行ファイルのパスを取得します。*/
-	//static Path getExecutablePath();
-
-	///**
-	//	@brief		システムの特別なフォルダのパスを取得します。
-	//	@param[in]	specialFolder	: フォルダの種類
-	//	@param[in]	childDir		: specialFolder が示すパスの子フォルダとして結合するパス
-	//	@param[in]	option			: 取得オプション
-	//	@exception	ArgumentException	childDir が絶対パスです。
-	//*/
-	//static Path getSpecialFolderPath(SpecialFolder specialFolder, const TChar* childDir = NULL, SpecialFolderOption option = SpecialFolderOption::Create);
-
-	///**	
-	//	@brief		あるフォルダ内でユニークなファイルパス(絶対パス)を生成して返す
-	//	@param[in]	directory	: フォルダパス
-	//	@param[in]	filePrefix	: ファイル名の接頭辞 または NULL
-	//	@param[in]	extName		: ファイルの拡張子 (プレフィックス。.を含めること) または NULL
-	//	@details	生成されるファイルパスは "<directory>/<filePrefix><ID><extName>" となります。
-	//				ID は時間情報をキーとして生成、<br>
-	//				filePrefix、extName が NULL の場合は空文字扱いで結合されます。
-	//				例えば両方 NULL にすると、番号だけのファイル名になります。
-	//*/
-	//static Path getUniqueFilePathInDirectory(const Path& directory, const TChar* filePrefix, const TChar* extName);
-
-	///// (こちらはファイル名だけを返す)
-	//static UString getUniqueFileNameInDirectory(const Path& directory, const TChar* filePrefix, const TChar* extName);
-
-private:
-	UString	m_path;
-
-};
-
-
 //==============================================================================
 // String
 //==============================================================================
@@ -1005,6 +752,7 @@ inline int UString::getCapacity() const
 //inline UString::iterator UString::end() { return begin() + getLength(); }
 //inline UString::const_iterator UString::end() const { return begin() + getLength(); }
 
+inline const Char& UString::operator[](int index) const { return getBuffer()[index]; }	// TODO: check range
 inline UString& UString::operator=(const UStringRef& rhs) { assign(rhs); return *this; }
 inline UString& UString::operator=(const UChar* rhs) { assign(rhs); return *this; }
 inline UString& UString::operator=(UChar ch) { assign(&ch, 1); return *this; }

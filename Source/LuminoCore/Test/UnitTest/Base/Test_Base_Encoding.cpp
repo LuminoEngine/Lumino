@@ -2,6 +2,9 @@
 #include "../../../Source/Text/UTF16Encoding.h"
 #include "../../../Source/Text/UTF32Encoding.h"
 
+#ifdef LN_USTRING
+#else
+
 class Test_Base_Encoding : public ::testing::Test
 {
 protected:
@@ -188,3 +191,5 @@ TEST_F(Test_Base_Encoding, UTF16Encoding)
 	//ASSERT_EQ(0x00, Encoding::getUTF16Encoding()->getPreamble()[2]);
 	
 }
+
+#endif

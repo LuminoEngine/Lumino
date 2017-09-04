@@ -2,6 +2,9 @@
 #include <Lumino/Base/Environment.h>
 #include <Lumino/IO/Console.h>
 
+#ifdef LN_USTRING
+#else
+
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
@@ -136,3 +139,5 @@ void Console::writeInternalError(const wchar_t* str)
 }
 
 LN_NAMESPACE_END
+
+#endif

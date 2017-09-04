@@ -6,7 +6,11 @@
 
 PathName Test_GetTempFilePath(const Char* fileName)
 {
+#ifdef LN_USTRING
+	PathName base(String::fromCString(__FILE__));
+#else
 	PathName base(__FILE__);
+#endif
 	PathName tempDir(base.getParent(), _TT("../../"));
 	tempDir.append(_TT("tmp"));
 	PathName path(tempDir, fileName);
@@ -49,10 +53,10 @@ GTEST_API_ int main(int argc, char **argv)
 #endif
 	setlocale(LC_ALL, "");
 
-#if 0	// 部分的にテストを実行したりする
+#if 1	// 部分的にテストを実行したりする
 	char* testArgs[] = {
 		argv[0],
-		"--gtest_filter=Test_Base_UString.convertNativeCharString"
+		"--gtest_filter=Test_IO_FileSystem.forEachFilesInDirectory"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);

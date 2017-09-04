@@ -267,6 +267,9 @@ int StringTraits::strnicmp(const wchar_t* s1, const wchar_t* s2, size_t count)
 }
 
 
+
+#ifdef LN_USTRING
+#else
 //------------------------------------------------------------------------------
 void StringTraits::convertMultiToWide(std::wstring* out, const char* input, int inputLength)
 {
@@ -274,6 +277,7 @@ void StringTraits::convertMultiToWide(std::wstring* out, const char* input, int 
 	strWide.assignCStr(input, inputLength);
 	(*out) = strWide.c_str();
 }
+#endif
 
 template<typename TChar>
 static int my_strncmp(const TChar* str1, const TChar* str2, size_t count) LN_NOEXCEPT

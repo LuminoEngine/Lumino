@@ -7,8 +7,13 @@ LN_NAMESPACE_BEGIN
 //------------------------------------------------------------------------------
 String TestHelper::getFilePath(const char* baseSourceFilePath, const char* fileName)
 {
+#ifdef LN_USTRING
+	PathName base(UString::fromCString(baseSourceFilePath));
+	PathName path(base.getParent(), UString::fromCString(fileName));
+#else
 	PathName base(baseSourceFilePath);
 	PathName path(base.getParent(), fileName);
+#endif
 	return String(path.c_str());
 }
 

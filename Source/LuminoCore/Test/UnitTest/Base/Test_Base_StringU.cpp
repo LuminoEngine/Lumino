@@ -3,6 +3,7 @@
 #include <regex>
 #include <Lumino/Base/Locale.h>
 #include <Lumino/Base/StringU.h>
+#include <Lumino/IO/FileSystem.h>
 
 class Test_Base_UString : public ::testing::Test
 {
@@ -986,9 +987,9 @@ TEST_F(Test_Base_FormatterU, Basic)
 		ASSERT_EQ(_TT("abc"), UString::format(_TT("{0}"), s));
 	}
 #if 0	// TODO:
-	// <Test> PathName
+	// <Test> Path
 	{
-		PathName s = _TT("abc");
+		Path s = _TT("abc");
 		ASSERT_EQ(_TT("abc"), UString::format(_TT("{0}"), s));
 	}
 #endif
@@ -1183,4 +1184,215 @@ TEST_F(Test_IO_Path, getExtension)
 	ASSERT_EQ(_TT(""), Path(_TT("..")).getExtension());
 	ASSERT_EQ(_TT(""), Path(_TT("a/")).getExtension());
 	ASSERT_EQ(_TT(""), Path(_TT("/")).getExtension());
+}
+
+TEST_F(Test_IO_Path, getFileNameWithoutExtension)
+{
+	ASSERT_EQ(_TT("file"), Path(_TT("dir/file.txt")).getFileNameWithoutExtension());
+}
+
+TEST_F(Test_IO_Path, compare)
+{
+#ifdef LN_OS_WIN32
+	Path path1(_T("C:/dir/file.txt"));
+	Path path2(_T("C:\\dir\\file.txt"));
+	ASSERT_TRUE(path1.equals(path2));
+	ASSERT_TRUE(path1 == path2);
+#endif
+}
+
+TEST_F(Test_IO_Path, canonicalizePath)
+{
+	// いろいろなケースをテストしやすいようにマクロ化
+#define TEST_CASE(result, src) \
+	{ \
+		Char path1[LN_MAX_PATH] = _T(src); \
+		Char path2[LN_MAX_PATH]; \
+		PathTraits::canonicalizePath(path1, _tcslen(path1), path2); \
+		ASSERT_STREQ(_T(result), path2); \
+	}
+
+	TEST_CASE("A/C", "A/B/../C");
+	TEST_CASE("", "");
+	TEST_CASE("B.txt", "A1/../A2/A3/../A4/../../B.txt");
+	TEST_CASE("A2/B.txt", "A1/../A2/A3/../A4/../A5/../B.txt");
+	TEST_CASE("A1/", "A1/");
+
+
+	TEST_CASE("/", "./");
+	TEST_CASE("/", "/.");
+	TEST_CASE("", "A/..");
+	TEST_CASE("/", "A/../");
+	TEST_CASE("", "..");
+
+	TEST_CASE("A/", "A//");		// .NET の動作。
+	TEST_CASE("A/", "A////");	// .NET の動作。[A/][/][/][/] とみなし、[/] は破棄
+	TEST_CASE("A/B", "A//B");
+
+	TEST_CASE("A", "./A");
+	TEST_CASE("A", "././A");
+
+#ifdef LN_OS_WIN32
+	TEST_CASE("C:/Projects/bin/Debug/", "C:/Projects/bin/Debug/");
+	TEST_CASE("C:/Projects/Debug", "C:/../Projects/Debug");
+	TEST_CASE("C:/Debug", "C:/Projects/../Debug");
+	TEST_CASE("C:/Debug", "C:/../../Debug");		// .NET の動作。ルートの外側に出ても、.. が消えるだけでフォルダ名は残る
+	TEST_CASE("C:/", "C:/");
+#endif
+
+#undef TEST_CASE
+	//char path[LN_MAX_PATH] = "C:/../dir/file.txt";
+	//size_t len = strlen(path);
+	//bool r = CanonicalizePath(path, &len);
+
+
+#ifdef LN_OS_WIN32
+	Path path1(Path::getCurrentDirectory(), _T("dir\\Dir"));
+	Path path12 = _T("dir/bin/../Dir");
+	path12 = path12.canonicalizePath();
+	ASSERT_EQ(path1, path12.getString());
+
+	Path path2(_T("C:\\file.txt"));
+	Path path22 = _T("C:\\dir/..\\file.txt");
+	path22 = path22.canonicalizePath();
+	ASSERT_EQ(path2, path22.getString());
+#else
+	Path path1(Path::GetCurrentDirectory(), _T("dir/Dir"));
+	Path path12 = _T("dir/bin/../Dir");
+	path12 = path12.CanonicalizePath();
+	ASSERT_EQ(path1, path12.getString());
+
+	Path path2(_T("/file.txt"));
+	Path path22 = _T("/dir/../file.txt");
+	path22 = path22.CanonicalizePath();
+	ASSERT_EQ(path2, path22.getString());
+#endif
+}
+
+TEST_F(Test_IO_Path, getSpecialFolderPath)
+{
+	// 何が取れるかはすごく環境依存なので、取ったパスの先がフォルダであるかだけを確認しておく。
+
+	// <Test> アプリケーションデータフォルダ
+	{
+		Path path1 = Path::getSpecialFolderPath(SpecialFolder::ApplicationData);
+		ASSERT_TRUE(FileSystem::existsDirectory(path1.c_str()));
+	}
+	// <Test> 一時ファイルフォルダ
+	{
+		Path path1 = Path::getSpecialFolderPath(SpecialFolder::Temporary);
+		ASSERT_TRUE(FileSystem::existsDirectory(path1.c_str()));
+	}
+}
+
+TEST_F(Test_IO_Path, Unit_MakeRelative)
+{
+	// <Test> パスが一致する場合は "." を返す
+	{
+		Path path1(_T("d1/d2/d3"));
+		Path path2(_T("d1/d2/d3"));
+		path1 = path1.canonicalizePath();
+		path2 = path2.canonicalizePath();
+		ASSERT_EQ(_T("."), path1.makeRelative(path2).getString());
+
+		// 末尾がセパレータのパターンを見る
+		{
+			Path path1 = Path(_T("d1/d2/d3/")).canonicalizePath();
+			Path path2 = Path(_T("d1/d2/d3")).canonicalizePath();
+			ASSERT_EQ(_T("."), path1.makeRelative(path2).getString());
+		}
+		{
+			Path path1 = Path(_T("d1/d2/d3")).canonicalizePath();
+			Path path2 = Path(_T("d1/d2/d3/")).canonicalizePath();
+			ASSERT_EQ(_T("."), path1.makeRelative(path2).getString());
+		}
+		{
+			Path path1 = Path(_T("d1/d2/d3/")).canonicalizePath();
+			Path path2 = Path(_T("d1/d2/d3/")).canonicalizePath();
+			ASSERT_EQ(_T("."), path1.makeRelative(path2).getString());
+		}
+	}
+	// <Test> パスの末尾は / があっても無くても良い
+	{
+		Path path1(_T("d1/d2/d3"));
+		Path path2(_T("d1/d2/d3"));
+		path1 = path1.canonicalizePath();
+		path2 = path2.canonicalizePath();
+		ASSERT_EQ(_T("."), path1.makeRelative(path2).getString());
+	}
+	// <Test> 1つ上のディレクトリへ戻る場合は ".." を返す
+	{
+		Path path1(_T("d1/d2/d3/"));
+		Path path2(_T("d1/d2/"));
+		path1 = path1.canonicalizePath();
+		path2 = path2.canonicalizePath();
+		ASSERT_EQ(_T(".."), path1.makeRelative(path2).getString());
+
+		// 末尾がセパレータのパターンを見る
+		{
+			Path path1 = Path(_T("d1/d2/d3")).canonicalizePath();
+			Path path2 = Path(_T("d1/d2/")).canonicalizePath();
+			ASSERT_EQ(_T(".."), path1.makeRelative(path2).getString());
+		}
+		{
+			Path path1 = Path(_T("d1/d2/d3/")).canonicalizePath();
+			Path path2 = Path(_T("d1/d2")).canonicalizePath();
+			ASSERT_EQ(_T(".."), path1.makeRelative(path2).getString());
+		}
+		{
+			Path path1 = Path(_T("d1/d2/d3")).canonicalizePath();
+			Path path2 = Path(_T("d1/d2")).canonicalizePath();
+			ASSERT_EQ(_T(".."), path1.makeRelative(path2).getString());
+		}
+	}
+	// <Test> 2つ上のディレクトリへ戻る場合は "../.." を返す
+	{
+		Path path1 = Path(_T("d1/d2/d3/")).canonicalizePath();
+		Path path2 = Path(_T("d1/")).canonicalizePath();
+		ASSERT_EQ(_T("../.."), path1.makeRelative(path2).getString());
+		// 末尾がセパレータのパターンを見る
+		{
+			Path path1 = Path(_T("d1/d2/d3")).canonicalizePath();
+			Path path2 = Path(_T("d1/")).canonicalizePath();
+			ASSERT_EQ(_T("../.."), path1.makeRelative(path2).getString());
+		}
+		{
+			Path path1 = Path(_T("d1/d2/d3/")).canonicalizePath();
+			Path path2 = Path(_T("d1")).canonicalizePath();
+			ASSERT_EQ(_T("../.."), path1.makeRelative(path2).getString());
+		}
+		{
+			Path path1 = Path(_T("d1/d2/d3")).canonicalizePath();
+			Path path2 = Path(_T("d1")).canonicalizePath();
+			ASSERT_EQ(_T("../.."), path1.makeRelative(path2).getString());
+		}
+	}
+	// <Test> 1つ上のディレクトリへ戻る場合は ".." を返す
+	{
+		Path path1 = Path(_T("d1/d2/")).canonicalizePath();
+		Path path2 = Path(_T("d1/d2/d3/")).canonicalizePath();
+		ASSERT_EQ(_T("d3"), path1.makeRelative(path2).getString());
+		// 末尾がセパレータのパターンを見る
+		{
+			Path path1 = Path(_T("d1/d2")).canonicalizePath();
+			Path path2 = Path(_T("d1/d2/d3/")).canonicalizePath();
+			ASSERT_EQ(_T("d3"), path1.makeRelative(path2).getString());
+		}
+		{
+			Path path1 = Path(_T("d1/d2/")).canonicalizePath();
+			Path path2 = Path(_T("d1/d2/d3")).canonicalizePath();
+			ASSERT_EQ(_T("d3"), path1.makeRelative(path2).getString());
+		}
+		{
+			Path path1 = Path(_T("d1/d2")).canonicalizePath();
+			Path path2 = Path(_T("d1/d2/d3")).canonicalizePath();
+			ASSERT_EQ(_T("d3"), path1.makeRelative(path2).getString());
+		}
+	}
+	// <Test> 2つ上のディレクトリへ戻る場合は "../.." を返す
+	{
+		Path path1 = Path(_T("d1/")).canonicalizePath();
+		Path path2 = Path(_T("d1/d2/d3")).canonicalizePath();
+		ASSERT_EQ(_T("d2/d3"), path1.makeRelative(path2).getString().replace(_T("\\"), _T("/")));
+	}
 }

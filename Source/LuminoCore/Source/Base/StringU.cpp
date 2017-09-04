@@ -4,12 +4,18 @@
 #include <cuchar>
 #include <Lumino/Text/Encoding.h>
 #include <Lumino/Base/ByteBuffer.h>
+//#include <Lumino/IO/Common.h>	// TODO: for Path
+//#include <Lumino/Base/Environment.h>	// TODO: Path
 #include <Lumino/Base/StringU.h>
 #include <Lumino/Base/StringHelper.h>
 #include <Lumino/Base/RefObject.h>
 #include <Lumino/Base/Formatter.h>
+#include <Lumino/Base/Locale.h>
 #include <Lumino/Base/Hash.h>
-#include <Lumino/IO/PathTraits.h>
+#include <Lumino/IO/PathName.h>
+#include <Lumino/IO/PathTraits.h>	// TODO: Path
+#include <Lumino/IO/FileSystem.h>	// TODO: Path
+#include <Lumino/IO/DirectoryUtils.h>	// TODO: Path
 #include <Lumino/Text/Encoding.h>
 
 LN_NAMESPACE_BEGIN
@@ -92,6 +98,11 @@ UString::UString(const UStringRef& str)
 	: UString()
 {
 	assign(str);
+}
+
+UString::UString(const Path& path)
+	: UString(path.getString())
+{
 }
 
 #ifdef LN_STRING_FROM_CHAR
@@ -407,6 +418,38 @@ UString UString::concat(const UStringRef& str1, const UStringRef& str2)
 	return s;
 }
 
+UString UString::sprintf(const UString& format, ...)
+{
+	static const int MaxFormatLength = 256;
+
+	// http://jumble-note.blogspot.jp/2012/09/c-vacopy.html
+	const UChar* fmt = format.c_str();	// VS2015 エラー回避。一度変数に入れる。
+	va_list args1, args2;
+	va_start(args1, fmt);
+	va_copy(args2, args1);
+	int len = StringTraits::tvscprintf_l(format.c_str(), Locale::getC().getNativeLocale(), args1);	// 文字数を求める
+
+																									// 文字数が一定以内ならメモリ確保せずにスタックを使い、速度向上を図る
+	if (len < MaxFormatLength)
+	{
+		UChar buf[MaxFormatLength + 1];
+		memset(buf, 0, sizeof(buf));
+		StringTraits::tvsnprintf_l(buf, MaxFormatLength + 1, format.c_str(), Locale::getDefault().getNativeLocale(), args2);
+		va_end(args1);
+		va_end(args2);
+		return UString(buf);
+	}
+	else
+	{
+		ByteBuffer buf(len + 1);
+		StringTraits::tvsnprintf_l((UChar*)buf.getData(), len + 1, format.c_str(), Locale::getDefault().getNativeLocale(), args2);
+		va_end(args1);
+		va_end(args2);
+		return UString((UChar*)buf.getData());
+	}
+
+}
+
 int UString::compare(const UString& str1, const UString& str2, CaseSensitivity cs)
 {
 	return StringTraits::compare(str1.c_str(), str1.getLength(), str2.c_str(), str2.getLength(), std::max(str1.getLength(), str2.getLength()), cs);
@@ -585,6 +628,11 @@ UChar* UString::getBuffer()
 	return (isSSO()) ? m_data.sso.buffer : m_data.core->get();
 }
 
+const UChar* UString::getBuffer() const
+{
+	return (isSSO()) ? m_data.sso.buffer : m_data.core->get();
+}
+
 void UString::setSSOLength(int len)
 {
 	m_data.sso.length = (static_cast<size_t>(len) & 0x7F) << 1;
@@ -723,6 +771,25 @@ const UString& UString::getEmpty()
 {
 	static UString str;
 	return str;
+}
+
+
+//==============================================================================
+// UStringRef
+//==============================================================================
+
+UStringRef::UStringRef(const Path& path)
+	: UStringRef()
+{
+	m_type = detail::UStringRefSource::ByUChar;
+	m_u.str = path.getString().c_str();
+	m_u.length = path.getString().getLength();
+}
+
+UString UStringRef::mid(int start, int count) const
+{
+	// TODO: Ref で返していいよね？
+	return StringTraits::mid(getBegin(), start, count);
 }
 
 //==============================================================================
@@ -939,94 +1006,6 @@ void UStringConvert::convertToStdString(const char16_t* src, int srcLen, std::ws
 }
 
 
-//==============================================================================
-// Path
-//==============================================================================
-
-const UChar Path::Separator = (UChar)PathTraits::DirectorySeparatorChar;
-const UChar Path::AltSeparator = (UChar)PathTraits::AltDirectorySeparatorChar;
-const UChar Path::VolumeSeparator = (UChar)PathTraits::VolumeSeparatorChar;
-
-void Path::assign(const UStringRef& path)
-{
-	m_path = path;
-}
-
-void Path::assignUnderBasePath(const Path& basePath, const UStringRef& relativePath)
-{
-	// フルパスの場合はそのまま割り当てる
-	// basePath が空なら relativePath を使う
-	if (PathTraits::isAbsolutePath(relativePath.data(), relativePath.getLength()) || basePath.isEmpty())
-	{
-		m_path = relativePath;
-	}
-	// フルパスでなければ結合する
-	else
-	{
-		m_path = basePath.m_path;
-
-		// 末尾にセパレータがなければ付加する
-		if (!PathTraits::endWithSeparator(m_path.c_str(), m_path.getLength()))
-		{
-			m_path += Separator;
-		}
-
-		// relativePath 結合
-		m_path += relativePath;
-	}
-
-	// 単純化する (.NET の Uri の動作に合わせる)
-	//PathTraits::CanonicalizePath(&m_path);
-	// ↑× 相対パスはそのまま扱いたい
-}
-
-void Path::assignUnderBasePath(const Path& basePath, const Path& relativePath)
-{
-	m_path = basePath.m_path;
-	append(relativePath);
-}
-
-void Path::append(const UStringRef& path)
-{
-	if (PathTraits::isAbsolutePath(path.data(), path.getLength()))
-	{
-		m_path = path;
-	}
-	else
-	{
-		if (m_path.getLength() > 0 && !PathTraits::endWithSeparator(m_path.c_str(), m_path.getLength()))/*(*m_path.rbegin()) != Separator)*/	// 末尾セパレータ
-		{
-			m_path += Separator;
-		}
-		m_path += path;
-	}
-}
-
-UString Path::getFileName() const
-{
-	const UChar* end = m_path.c_str() + m_path.getLength();
-	return UString(PathTraits::getFileName(m_path.c_str(), end), end);
-}
-
-Path Path::getWithoutExtension() const
-{
-	const UChar* begin = m_path.c_str();
-	return UString(begin, PathTraits::getWithoutExtensionEnd(begin, begin + m_path.getLength()));
-}
-
-UStringRef Path::getExtension(bool withDot) const
-{
-	const UChar* begin = m_path.c_str();
-	const UChar* end = m_path.c_str() + m_path.getLength();
-	return UStringRef(PathTraits::getExtensionBegin(begin, end, withDot), end);
-}
-
-Path Path::getParent() const
-{
-	const UChar* begin = m_path.c_str();
-	const UChar* end = m_path.c_str() + m_path.getLength();
-	return UStringRef(begin, PathTraits::getDirectoryPathEnd(begin, end));
-}
 
 //bool Path::operator < (const Path& right) const { return PathTraits::compare(m_path.c_str(), right.m_path.c_str()) < 0; }
 //bool Path::operator < (const UChar* right) const { return PathTraits::compare(m_path.c_str(), right) < 0; }

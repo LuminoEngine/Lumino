@@ -81,6 +81,8 @@ TEST_F(Test_Base_Encoding_UTF8, Basic)
 		ASSERT_EQ(0x9E, utf8str[8]);	// L'語'
 	}
 
+#ifdef LN_USTRING
+#else
 	// 不具合修正
 	{
 		// "テスト環境"
@@ -95,6 +97,7 @@ TEST_F(Test_Base_Encoding_UTF8, Basic)
 			ASSERT_EQ(true, utf8str[i] == (uint8_t)str[i]);
 		}
 	}
+#endif
 }
 
 ////---------------------------------------------------------------------

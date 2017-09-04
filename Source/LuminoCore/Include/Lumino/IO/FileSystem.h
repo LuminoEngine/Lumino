@@ -138,10 +138,12 @@ public:
 
 	
 
+#ifdef LN_USTRING
+#else
 	// TODO: これだけだと FileSystem::ForEachFilesInDirectory<TCHAR>() のように明示的な型指定が必要
 	template<typename TChar, typename TCallback>
 	static void forEachFilesInDirectory(const GenericStringRef<TChar>& path, TCallback callback);
-
+#endif
 
 	
 
@@ -158,6 +160,8 @@ private:
 	template<typename TChar> static void createDirectoryInternal(const TChar* path);
 };
 
+#ifdef LN_USTRING
+#else
 //------------------------------------------------------------------------------
 template<typename TChar, typename TCallback>
 inline void FileSystem::forEachFilesInDirectory(const GenericStringRef<TChar>& path, TCallback callback)
@@ -169,7 +173,7 @@ inline void FileSystem::forEachFilesInDirectory(const GenericStringRef<TChar>& p
 		finder.next();
 	}
 }
-
+#endif
 
 namespace detail {
 

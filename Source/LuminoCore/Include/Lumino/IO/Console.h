@@ -4,6 +4,8 @@
 
 LN_NAMESPACE_BEGIN
 
+#ifdef LN_USTRING
+#else
 /**
 	@brief		コンソールウィンドウの操作を行います。
 */
@@ -83,5 +85,6 @@ void Console::writeLineError(const StringRefW& str, const TArgs&... args)
 	writeInternalError(s.c_str());
 	writeLineError();
 }
+#endif
 
 LN_NAMESPACE_END

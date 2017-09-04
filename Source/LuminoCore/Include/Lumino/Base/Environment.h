@@ -4,16 +4,8 @@
 
 #pragma once
 #include "EnumExtension.h"
-#include "StringU.h"
 
 LN_NAMESPACE_BEGIN
-
-/** エンディアンを示す値 */
-enum class ByteOrder
-{
-	Little = 0,		/**< リトルエンディアン */
-	Big,			/**< ビッグエンディアン */
-};
 
 /**
 	@brief	システムの特別なフォルダパスを示す値です。
@@ -31,6 +23,20 @@ LN_ENUM(SpecialFolder)
 	Temporary,
 };
 LN_ENUM_DECLARE(SpecialFolder);
+
+LN_NAMESPACE_END
+
+
+#include "StringU.h"
+
+LN_NAMESPACE_BEGIN
+
+/** エンディアンを示す値 */
+enum class ByteOrder
+{
+	Little = 0,		/**< リトルエンディアン */
+	Big,			/**< ビッグエンディアン */
+};
 
 /**
 	@brief	現在の環境に関する情報にアクセスするためのクラスです。

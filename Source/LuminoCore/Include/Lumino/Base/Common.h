@@ -101,8 +101,9 @@
 	#define LN_CONSTEXPR
 #endif
 
-//
-//#define LN_USTRING
+
+
+#define LN_USTRING
 
 #ifdef LN_USTRING
 

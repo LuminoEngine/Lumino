@@ -152,6 +152,9 @@ TEST_F(Test_IO_FileSystem, matchPath)
 	ASSERT_EQ(false, FileSystem::matchPath(_TT("dir/file.txt"), _TT("*.dat")));
 }
 
+
+#ifdef LN_USTRING
+#else
 //------------------------------------------------------------------------------
 TEST_F(Test_IO_FileSystem, forEachFilesInDirectory)
 {
@@ -174,6 +177,7 @@ TEST_F(Test_IO_FileSystem, forEachFilesInDirectory)
 	ASSERT_EQ(true, list[3].isAbsolute());
 	ASSERT_EQ(_T("file2"), list[3].getFileName());
 }
+#endif
 
 //------------------------------------------------------------------------------
 TEST_F(Test_IO_FileSystem, writeAllText)

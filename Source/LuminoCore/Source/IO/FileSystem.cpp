@@ -270,6 +270,7 @@ size_t FileSystem::GetFileSize( FILE* stream )
 // PlatformFileFinder
 //==============================================================================
 class PlatformFileFinder
+	: public RefObject
 {
 public:
 	PlatformFileFinder(const PlatformFileSystem::PathChar* dirPath, int dirPathLen, FileAttribute attr, const PlatformFileSystem::PathChar* pattern, int patternLen);
@@ -993,7 +994,11 @@ public:
 	{}
 
 	DirectoryIterator(const StringRef dirPath, FileAttribute attr = FileAttribute::All, const StringRef pattern = nullptr)
+#ifdef LN_USTRING
+		: m_finder(Ref<PlatformFileFinder>::makeRef(dirPath.getBegin(), dirPath.getLength(), attr, pattern.getBegin(), pattern.getLength()))
+#else
 		: m_finder(Ref<GenericFileFinder<TCHAR>>::makeRef(dirPath, attr, pattern))
+#endif
 		, m_path()
 	{
 		m_path = m_finder->getCurrent();
@@ -1040,7 +1045,11 @@ public:
 	bool operator != (const DirectoryIterator& othre) const { return m_path != othre.m_path; }
 
 private:
+#ifdef LN_USTRING
+	Ref<PlatformFileFinder>			m_finder;
+#else
 	Ref<GenericFileFinder<TCHAR>>	m_finder;
+#endif
 	PathName						m_path;
 };
 

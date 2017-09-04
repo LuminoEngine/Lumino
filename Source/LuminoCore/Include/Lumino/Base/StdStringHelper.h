@@ -34,13 +34,13 @@ public:
 	static std::string makeStdString(const wchar_t* str)
 	{
 		std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> cv;
-		std::string reconvert = cv.to_bytes(str);
+		return cv.to_bytes(str);
 	}
 
 	static std::string makeStdString(const wchar_t* str, size_t len)
 	{
 		std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> cv;
-		std::string reconvert = cv.to_bytes(str, str + len);
+		return cv.to_bytes(str, str + len);
 	}
 
 	template <class TString, class A1, class A2>
