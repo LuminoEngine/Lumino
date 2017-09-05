@@ -1,9 +1,6 @@
-﻿/**
-	@file	Locale.h
-*/
+﻿
 #pragma once
 #include <locale>
-#include "String.h"
 
 LN_NAMESPACE_BEGIN
 

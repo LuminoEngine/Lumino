@@ -2,9 +2,9 @@
 #pragma once
 #include <atomic>
 #include <string>
+#include <locale>
 #include "Common.h"
 #include "List.h"
-namespace std { class locale; }
 
 #ifdef LN_UNICODE
 #define LN_STRING_FROM_CHAR
