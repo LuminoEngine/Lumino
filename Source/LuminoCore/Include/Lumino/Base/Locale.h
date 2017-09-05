@@ -1,4 +1,4 @@
-/**
+﻿/**
 	@file	Locale.h
 */
 #pragma once
@@ -8,20 +8,20 @@
 LN_NAMESPACE_BEGIN
 
 /**
-	@brief	���P�[����\���܂��B
+	@brief	ロケールを表します。
 */
 class Locale
 {
 public:
 
 	/**
-		@brief		�f�t�H���g�̃��P�[�����g�p���ăI�u�W�F�N�g���\�z���܂��B
-		@details	���̃��P�[���� GetDefault() �ŕԂ���郍�P�[���Ɠ����ɂȂ�܂��B
+		@brief		デフォルトのロケールを使用してオブジェクトを構築します。
+		@details	このロケールは GetDefault() で返されるロケールと同じになります。
 	*/
 	Locale();
 
 	/**
-		@brief		���P�[�������w�肵�ăI�u�W�F�N�g���\�z���܂��B
+		@brief		ロケール名を指定してオブジェクトを構築します。
 	*/
 	explicit Locale(const Char* name);
 
@@ -32,14 +32,14 @@ public:
 public:
 
 	/**
-		@brief		���݂̃f�t�H���g�̃��P�[�����擾���܂��B
-		@details	Windows �̏ꍇ�A���[�U�[���P�[�����g�p���܂��B
+		@brief		現在のデフォルトのロケールを取得します。
+		@details	Windows の場合、ユーザーロケールを使用します。
 	*/
 	static const Locale& getDefault();
 
 	/**
-		@brief		"C" ���P�[�����擾���܂��B
-		@details	"C" ���P�[���� ANSI �ɏ��������ŏ�����\���܂��B
+		@brief		"C" ロケールを取得します。
+		@details	"C" ロケールは ANSI に準拠した最小環境を表します。
 	*/
 	static const Locale& getC();
 
