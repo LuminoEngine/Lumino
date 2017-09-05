@@ -232,7 +232,7 @@ LN_INTERNAL_ACCESS:
 
 	bool isAlphaNum(int ch);
 
-	static void expandReservedEntities(const Char* text, int len, StringBuilder* outBuilder);
+	static void expandReservedEntities(const Char* text, int len, std::basic_string<Char>* outBuilder);
 
 
 
@@ -252,7 +252,8 @@ LN_INTERNAL_ACCESS:
 	int						m_stockElementCount;
 	String					m_tmpName;
 	//String					m_tmpValue;
-	StringBuilder			m_valueCacheBuilder;
+	//StringBuilder			m_valueCacheBuilder;
+	std::basic_string<Char>	m_valueCacheBuilder;
 	String					m_valueCache;
 	int						m_currentAttrCount;		///< 現在のノードの属性数
 };

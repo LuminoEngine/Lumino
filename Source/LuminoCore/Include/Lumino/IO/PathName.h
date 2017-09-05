@@ -369,6 +369,7 @@ public:
 	Path(const UString& path) { assign(path); }
 	Path(const UStringRef& path) { assign(path); }
 	Path(const Path& basePath, const UChar* relativePath) { assignUnderBasePath(basePath, UStringRef(relativePath)); }
+	Path(const Path& basePath, const UString& relativePath) { assignUnderBasePath(basePath, UStringRef(relativePath)); }
 	Path(const Path& basePath, const UStringRef& relativePath) { assignUnderBasePath(basePath, relativePath); }
 	Path(const Path& basePath, const Path& relativePath) { assignUnderBasePath(basePath, relativePath); }
 
@@ -496,8 +497,8 @@ public:
 	bool equals(const Path& path) const;
 	/// @overload Equals
 	bool equals(const UString& path) const;
-	/// @overload Equals
-	bool operator == (const Path& path) const { return equals(path); }
+	///// @overload Equals
+	//bool operator == (const Path& path) const { return equals(path); }
 
 
 	/// パス文字列を返す (末尾に必ずセパレータをひとつ付加する)
@@ -628,6 +629,9 @@ private:
 	UString	m_path;
 
 };
+
+inline bool operator==(const Path& lhs, const Path& rhs) { return lhs.equals(rhs); }
+inline bool operator!=(const Path& lhs, const Path& rhs) { return !operator==(lhs, rhs); }
 
 
 #ifdef LN_USTRING

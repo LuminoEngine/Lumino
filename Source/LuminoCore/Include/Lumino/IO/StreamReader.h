@@ -55,6 +55,7 @@ private:
 	Ref<Stream>			m_stream;
 	EncodingConverter		m_converter;
 	ByteBuffer				m_byteBuffer;
+	std::basic_string<Char>	m_readLineCache;
 	int						m_byteLen;
 	int						m_charElementLen;
 	int						m_charPos;			///< 次に読むべき文字がある文字列バッファの位置。有効最大は m_charElementLen - 1

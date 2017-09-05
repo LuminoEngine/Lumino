@@ -98,6 +98,13 @@ public:
 
 	/** サイズ変更の予定を指示します。 */
 	void reserve(int size);
+
+	void assign(const UChar* str);
+	void assign(const UChar* str, int length);
+	void assign(int count, UChar ch);
+	void assign(const UStringRef& str);
+
+	void append(const UChar* str, int length);
 	
 	/**
 		@brief		指定した文字列がこの文字列内に存在するかを判断します。
@@ -334,12 +341,7 @@ private:
 	void setNonSSO();
 
 	// utils
-	void assign(const UChar* str);
-	void assign(const UChar* str, int length);
-	void assign(int count, UChar ch);
-	void assign(const UStringRef& str);
 	template<typename TChar> void assignFromCStr(const TChar* str, int length = -1);
-	void append(const UChar* str, int length);
 
 	Encoding* getThisTypeEncoding() const;
 	static ByteBuffer convertTo(const UString& str, const Encoding* encoding, bool* outUsedDefaultChar = nullptr);
@@ -469,7 +471,7 @@ public:
 	const Char& operator[](int index) const { return *(data() + index); }
 
 	// TODO: internal
-	const UChar* getBegin() const { return end(); }
+	const UChar* getBegin() const { return data(); }
 
 
 private:
@@ -762,7 +764,11 @@ inline UString& UString::operator+=(const UStringRef& rhs) { append(rhs.data(), 
 inline UString& UString::operator+=(const UChar* rhs) { append(rhs, UStringHelper::strlen(rhs)); return *this; }
 inline UString& UString::operator+=(UChar rhs) { append(&rhs, 1); return *this; }
 
-inline UString operator+(const UStringRef& lhs, const UStringRef& rhs) { return UString::concat(lhs, rhs); }
+inline UString operator+(const UString& lhs, const UString& rhs) { return UString::concat(lhs, rhs); }
+inline UString operator+(const UString& lhs, const UChar* rhs) { return UString::concat(lhs, UStringRef(rhs)); }
+inline UString operator+(const UChar* lhs, const UString& rhs) { return UString::concat(UStringRef(lhs), rhs); }
+inline UString operator+(const UString& lhs, UChar rhs) { return UString::concat(lhs, UStringRef(&rhs, 1)); }
+inline UString operator+(UChar lhs, const UString& rhs) { return UString::concat(UStringRef(&lhs, 1), rhs); }
 
 inline bool operator==(const UChar* lhs, const UString& rhs) { return UStringHelper::compare(lhs, rhs.c_str()) == 0; }
 inline bool operator==(const UString& lhs, const UString& rhs) { return UString::compare(lhs, 0, rhs, 0) == 0; }
@@ -790,6 +796,8 @@ inline bool operator>=(const UString& lhs, const UChar* rhs) { return !operator<
 //==============================================================================
 // StringRef
 //==============================================================================
+inline UString operator+(const UStringRef& lhs, const UStringRef& rhs) { return UString::concat(lhs, rhs); }
+
 inline bool operator==(const UStringRef& lhs, const UStringRef& rhs) { return UString::compare(lhs, 0, rhs, 0, std::max(lhs.getLength(), rhs.getLength())) == 0; }
 inline bool operator==(const UChar* lhs, const UStringRef& rhs) { return UString::compare(UStringRef(lhs), 0, rhs, 0, -1) == 0; }
 inline bool operator==(const UStringRef& lhs, const UChar* rhs) { return UString::compare(lhs, 0, UStringRef(rhs), 0, -1) == 0; }
@@ -797,11 +805,11 @@ inline bool operator!=(const UStringRef& lhs, const UStringRef& rhs) { return !o
 inline bool operator!=(const UChar* lhs, const UStringRef& rhs) { return !operator==(lhs, rhs); }
 inline bool operator!=(const UStringRef& lhs, const UChar* rhs) { return !operator==(lhs, rhs); }
 
-#include "StringFormat.inl"
-
 LN_NAMESPACE_END
 
 // for unordered_map key
 namespace std {
 template <> struct hash<ln::UString> { std::size_t operator () (const ln::UString& key) const; };
 }
+
+#include "StringFormat.inl"

@@ -1,4 +1,5 @@
 ﻿#include "../Internal.h"
+#include <sstream>
 #include <Lumino/Base/StringBuilder.h>
 #include <Lumino/IO/FileStream.h>
 #include <Lumino/IO/StreamReader.h>
@@ -67,7 +68,9 @@ bool StreamReader::readLine(String* line)
 		}
 	}
 
-	StringBuilder builder;
+	//StringBuilder builder;
+	//std::basic_stringstream<Char> builder;
+	m_readLineCache.clear();
 	do
 	{
 		int i = m_charPos;
@@ -77,7 +80,8 @@ bool StreamReader::readLine(String* line)
 			Char ch = buf[i];
 			if (ch == '\r' || ch == '\n')
 			{
-				builder.append(buf + m_charPos, i - m_charPos);
+				//builder.append(buf + m_charPos, i - m_charPos);
+				m_readLineCache.append(buf + m_charPos, i - m_charPos);
 				m_charPos = i + 1;
 
 				// CR+LF 対応。条件式の中に ReadBuffer() があるが、これは現在のバッファ境界で \r と \n が切れている時の対策。
@@ -86,7 +90,7 @@ bool StreamReader::readLine(String* line)
 						m_charPos++;
 					}
 				}
-				*line = builder.toString();
+				*line = m_readLineCache.c_str();// builder.toString();
 				return true;
 			}
 			i++;
@@ -95,30 +99,33 @@ bool StreamReader::readLine(String* line)
 		// ここに来るのは、charBuffer の現在位置 ～ 終端までに改行が無かったとき。
 		// 現在の残りバッファを str に結合して、次のバッファを ReadBuffer() で読み出す。
 		const Char* buf = (const Char*)m_converter.getLastBuffer().getConstData();
-		builder.append(buf + m_charPos, m_charElementLen - m_charPos);
+		//builder.append(buf + m_charPos, m_charElementLen - m_charPos);
+		m_readLineCache.append(buf + m_charPos, m_charElementLen - m_charPos);
 
 	} while (readBuffer() > 0);
 
-	*line = builder.toString();
+	*line = m_readLineCache.c_str();//builder.toString();
 	return true;
 }
 
 //------------------------------------------------------------------------------
 String StreamReader::readToEnd()
 {
-	GenericStringBuilder<Char> builder;
+	//GenericStringBuilder<Char> builder;
+	m_readLineCache.clear();
 	do
 	{
 		if (m_charElementLen - m_charPos > 0)
 		{
 			const Char* buf = (const Char*)m_converter.getLastBuffer().getConstData();
-			builder.append(buf + m_charPos, m_charElementLen - m_charPos);
+			//builder.append(buf + m_charPos, m_charElementLen - m_charPos);
+			m_readLineCache.append(buf + m_charPos, m_charElementLen - m_charPos);
 			m_charPos = m_charElementLen;
 		}
 
 	} while (readBuffer() > 0);
 
-	return builder.toString();
+	return String(m_readLineCache.c_str());//builder.toString();
 }
 
 //------------------------------------------------------------------------------

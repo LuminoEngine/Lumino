@@ -55,6 +55,7 @@ public:
 
 public:
 
+#ifdef LN_LEGACY_VARIANT_ENABLED
 	/**
 		@brief		指定したオブジェクトのプロパティの値を設定します。
 	*/
@@ -64,6 +65,7 @@ public:
 		@brief		指定したオブジェクトのプロパティの値を取得します。
 	*/
 	static Variant getPropertyValue(ReflectionObject* obj, const PropertyInfo* prop);
+#endif
 
 	/**
 		@brief		指定したオブジェクトのプロパティの値を設定します。あらかじめ型が分かっている場合、setPropertyValue() よりも少ないオーバーヘッドで設定できます。
@@ -128,6 +130,7 @@ public:
 public:
 	virtual const String& getName() const { return m_name; }
 
+#ifdef LN_LEGACY_VARIANT_ENABLED
 	virtual void setValue(ReflectionObject* target, Variant value, PropertySetSource source) const
 	{
 		setValueDirect(target, Variant::cast<TValue>(value), source);
@@ -150,6 +153,7 @@ public:
 	//}
 	//virtual bool isReadable() const { return m_getter != nullptr; }	// TODO: virtual やめたほうが高速化できる。
 	//virtual bool isWritable() const { return m_getter != nullptr; }
+#endif
 
 	void setValueDirect(ReflectionObject* target, const TValue& value, PropertySetSource source) const
 	{
@@ -167,6 +171,7 @@ public:
 
 	virtual PropertyBase* getPropertyBase(ReflectionObject* obj) const override { return m_getPropPtr(obj); }
 
+#ifdef LN_LEGACY_VARIANT_ENABLED
 	template<typename T, typename TIsList> struct ListOperationSelector
 	{
 		static bool isList() { return false; }
@@ -177,7 +182,6 @@ public:
 		static bool isList() { return true; }
 		static void addItem(T& list, const Variant& item) { list.AddVariant(item); }
 	};
-
 
 	//template<typename T> struct ListOperationSelector2
 	//{
@@ -194,6 +198,8 @@ public:
 	//		m_propChanged(target, e);
 	//	}
 	//}
+#endif
+
 
 public:	// TODO
 	template<typename T> friend class TypedPropertyInitializer;

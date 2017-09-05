@@ -22,7 +22,11 @@ StringWriter::~StringWriter()
 //------------------------------------------------------------------------------
 String StringWriter::toString() const
 {
+#ifdef LN_USTRING
+	return m_builder.c_str();
+#else
 	return m_builder.toString();
+#endif
 }
 
 //------------------------------------------------------------------------------

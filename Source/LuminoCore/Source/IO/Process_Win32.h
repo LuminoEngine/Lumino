@@ -231,7 +231,7 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo, ProcessStartResult* o
 	{
 		DWORD dwErr = ::GetLastError();
 		if (dwErr == ERROR_FILE_NOT_FOUND) {
-			LN_THROW(0, FileNotFoundException, startInfo.program);
+			LN_THROW(0, FileNotFoundException, startInfo.program.c_str());
 		}
 		LN_THROW(0, Win32Exception, dwErr);
 	}

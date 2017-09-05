@@ -537,33 +537,33 @@ uint64_t FileSystem::getFileSize(FILE* stream)
 //template void FileSystem::copyDirectoryInternal<char>(const GenericStringRef<char>& srcPath, const GenericStringRef<char>& destPath, bool overwrite, bool recursive);
 //template void FileSystem::copyDirectoryInternal<wchar_t>(const GenericStringRef<wchar_t>& srcPath, const GenericStringRef<wchar_t>& destPath, bool overwrite, bool recursive);
 //
-//------------------------------------------------------------------------------
-ByteBuffer FileSystem::readAllBytes(const StringRefA& filePath)
-{
-	detail::GenericStaticallyLocalPath<char> localPath(filePath.getBegin(), filePath.getLength());
-	FILE* fp;
-	errno_t err = fopen_s(&fp, localPath.c_str(), "rb");
-	LN_THROW(err == 0, FileNotFoundException, localPath.c_str());
-	size_t size = (size_t)getFileSize(fp);
 
+ByteBuffer FileSystem::readAllBytes(const StringRef& filePath)
+{
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath.getBegin(), filePath.getLength());
+	const PlatformFileSystem::PathChar mode[] = { 'r', 'b', '\0' };
+	FILE* fp = PlatformFileSystem::fopen(localPath.c_str(), mode);
+	LN_THROW(fp, FileNotFoundException, localPath.c_str());
+
+	size_t size = (size_t)getFileSize(fp);
 	ByteBuffer buffer(size);
 	fread(buffer.getData(), 1, size, fp);
 	return buffer;
 }
-ByteBuffer FileSystem::readAllBytes(const StringRefW& filePath)
-{
-	detail::GenericStaticallyLocalPath<wchar_t> localPath(filePath.getBegin(), filePath.getLength());
-	FILE* fp;
-	errno_t err = _wfopen_s(&fp, localPath.c_str(), L"rb");
-	LN_THROW(err == 0, FileNotFoundException, localPath.c_str());
-	size_t size = (size_t)getFileSize(fp);
+//ByteBuffer FileSystem::readAllBytes(const StringRefW& filePath)
+//{
+//	detail::GenericStaticallyLocalPath<wchar_t> localPath(filePath.getBegin(), filePath.getLength());
+//	FILE* fp;
+//	errno_t err = _wfopen_s(&fp, localPath.c_str(), L"rb");
+//	LN_THROW(err == 0, FileNotFoundException, localPath.c_str());
+//	size_t size = (size_t)getFileSize(fp);
+//
+//	ByteBuffer buffer(size);
+//	fread(buffer.getData(), 1, size, fp);
+//	return buffer;
+//}
 
-	ByteBuffer buffer(size);
-	fread(buffer.getData(), 1, size, fp);
-	return buffer;
-}
-
-static String readAllTextHelper(const ByteBuffer& buffer, const Encoding* encoding)
+static String readAllTextHelper(const ByteBuffer& buffer, Encoding* encoding)
 {
 	if (encoding == nullptr)
 	{
@@ -574,20 +574,24 @@ static String readAllTextHelper(const ByteBuffer& buffer, const Encoding* encodi
 			encoding = Encoding::getUTF8Encoding();
 	}
 
+#ifdef LN_USTRING
+	return Encoding::fromBytes(buffer.getData(), buffer.getSize(), encoding);
+#else
 	String str;
 	str.convertFrom(buffer.getData(), buffer.getSize(), encoding);
 	return str;
+#endif
 }
 
 //------------------------------------------------------------------------------
-String FileSystem::readAllText(const StringRef& filePath, const Encoding* encoding)
+String FileSystem::readAllText(const StringRef& filePath, Encoding* encoding)
 {
 	ByteBuffer buffer(FileSystem::readAllBytes(filePath));
 	return readAllTextHelper(buffer, encoding);
 }
 
 //------------------------------------------------------------------------------
-String FileSystem::readAllText(Stream* stream, const Encoding* encoding)
+String FileSystem::readAllText(Stream* stream, Encoding* encoding)
 {
 	ByteBuffer buffer(stream->getLength());
 	stream->read(buffer.getData(), buffer.getSize());
@@ -602,7 +606,7 @@ void FileSystem::writeAllBytes(const Char* filePath, const void* buffer, size_t 
 }
 
 //------------------------------------------------------------------------------
-void FileSystem::writeAllText(const Char* filePath, const String& str, const Encoding* encoding)
+void FileSystem::writeAllText(const Char* filePath, const String& str, Encoding* encoding)
 {
 	encoding = (encoding == nullptr) ? Encoding::getUTF8Encoding() : encoding;
 
@@ -1001,7 +1005,7 @@ public:
 #endif
 		, m_path()
 	{
-		m_path = m_finder->getCurrent();
+		m_path = m_finder->getCurrent().c_str();
 	}
 
 	DirectoryIterator(const DirectoryIterator& other)
@@ -1021,7 +1025,7 @@ public:
 		if (m_finder != nullptr)
 		{
 			m_finder->next();
-			m_path = m_finder->getCurrent();
+			m_path = m_finder->getCurrent().c_str();
 		}
 		return *this;
 	}
@@ -1031,7 +1035,7 @@ public:
 		if (m_finder != nullptr)
 		{
 			m_finder->next();
-			m_path = m_finder->getCurrent();
+			m_path = m_finder->getCurrent().c_str();
 		}
 		return *this;
 	}

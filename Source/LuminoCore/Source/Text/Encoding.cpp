@@ -314,6 +314,38 @@ void Encoding::convert(
 	}
 }
 
+UString Encoding::fromBytes(const char* bytes, int size, Encoding* encoding, bool* outUsedDefaultChar)
+{
+	encoding = (encoding) ? encoding : getSystemMultiByteEncoding();
+
+	Encoding* thisTypeEncoding = getTCharEncoding();	// TODO: 名前は StringEncoding とかのほうがいいと思う
+
+	// 全く同じエンコーディングなら変換の必要は無い
+	if (thisTypeEncoding == encoding)	// TODO: ポインタ比較はよくない
+	{
+		int byteCount = (size < 0) ? strlen((const char*)bytes) : size;
+		return UString((const Char*)bytes, size);
+	}
+	else
+	{
+		EncodingConversionOptions options;
+		options.NullTerminated = false;
+
+		EncodingConversionResult result;
+		const ByteBuffer tmpBuffer = Encoding::convert(bytes, size, encoding, thisTypeEncoding, options, &result);
+		if (outUsedDefaultChar != nullptr) {
+			*outUsedDefaultChar = result.UsedDefaultChar;
+		}
+
+		return UString((const Char*)tmpBuffer.getData(), result.BytesUsed / sizeof(Char));
+	}
+}
+
+String Encoding::fromBytes(const byte_t* bytes, int size, Encoding* encoding, bool* outUsedDefaultChar)
+{
+	return fromBytes((const char*)bytes, size, encoding, outUsedDefaultChar);
+}
+
 //------------------------------------------------------------------------------
 size_t Encoding::checkPreamble(const void* buffer, size_t bufferSize) const
 {

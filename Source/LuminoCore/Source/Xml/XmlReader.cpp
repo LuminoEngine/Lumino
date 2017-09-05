@@ -175,7 +175,7 @@ const String& XmlReader::getName()
 		else
 		{
 			const Char* name = &m_textCache[m_currentNode->NameStartPos];
-			m_tmpName.assignCStr(name, m_currentNode->NameLen);
+			m_tmpName.assign(name, m_currentNode->NameLen);
 		}
 	}
 	return m_tmpName;
@@ -198,7 +198,7 @@ const String& XmlReader::getValue()
 		{
 			// 定義済み Entity を展開する
 			expandReservedEntities(&m_textCache[m_currentNode->ValueStartPos], m_currentNode->ValueLen, &m_valueCacheBuilder);
-			m_valueCache = m_valueCacheBuilder.toString();
+			m_valueCache = m_valueCacheBuilder.c_str();// m_valueCacheBuilder.toString();
 		}
 	}
 	return m_valueCache;
@@ -1107,7 +1107,7 @@ bool XmlReader::isAlphaNum(int ch)
 }
 
 //------------------------------------------------------------------------------
-void XmlReader::expandReservedEntities(const Char* text, int len, StringBuilder* outBuilder)
+void XmlReader::expandReservedEntities(const Char* text, int len, std::basic_string<Char>* outBuilder)
 {
 	outBuilder->clear();
 
@@ -1123,7 +1123,7 @@ void XmlReader::expandReservedEntities(const Char* text, int len, StringBuilder*
 				if (StringTraits::strncmp(rp + 1, ReservedEntities[i].Pattern, ReservedEntities[i].Length) == 0 &&
 					*(rp + ReservedEntities[i].Length + 1) == ';')
 				{
-					outBuilder->append(ReservedEntities[i].Value);
+					outBuilder->append(1, ReservedEntities[i].Value);
 					rp += ReservedEntities[i].Length + 2;	// +2 は & と ; の分
 					break;
 				}
@@ -1131,13 +1131,13 @@ void XmlReader::expandReservedEntities(const Char* text, int len, StringBuilder*
 			// 予約済み Entity ではなかった
 			if (i == ReservedEntitiesCount)
 			{
-				outBuilder->append(*rp);
+				outBuilder->append(1, *rp);
 				++rp;
 			}
 		}
 		else
 		{
-			outBuilder->append(*rp);
+			outBuilder->append(1, *rp);
 			++rp;
 		}
 	}
@@ -1152,7 +1152,7 @@ XmlFileReader::XmlFileReader(const PathName& filePath, Encoding* encoding)
 	: XmlReader()
 {
 	m_filePath = filePath.canonicalizePath();
-	Ref<StreamReader> file(LN_NEW StreamReader(m_filePath, encoding), false);
+	Ref<StreamReader> file(LN_NEW StreamReader(m_filePath.c_str(), encoding), false);
 	initializeReader(file);
 	m_errorInfo.filePath = filePath;
 }

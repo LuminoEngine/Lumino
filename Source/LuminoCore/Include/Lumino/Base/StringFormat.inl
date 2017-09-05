@@ -1,4 +1,9 @@
 ﻿
+#include <array>
+#include "Locale.h"
+#include "Formatter.h"
+
+LN_NAMESPACE_BEGIN
 namespace fmt {
 
 template<typename TChar>
@@ -254,12 +259,21 @@ public:
 		f.m_sb.appendString(static_cast<const TChar*>(value));
 	}
 
-	// const UString*
+	// UString
 	FormatArg(const UString& value) : m_value(static_cast<const void*>(&value)), m_format(&formatArg_UString) {}
 	static void formatArg_UString(void* formatter, const void* value)
 	{
 		auto& f = *static_cast<GenericStringFormatter<TChar>*>(formatter);
 		f.m_sb.appendString(*static_cast<const UString*>(value));
+	}
+
+	// UStringRef
+	FormatArg(const UStringRef& value) : m_value(static_cast<const void*>(&value)), m_format(&formatArg_UStringRef) {}
+	static void formatArg_UStringRef(void* formatter, const void* value)
+	{
+		auto& f = *static_cast<GenericStringFormatter<TChar>*>(formatter);
+		const UStringRef* ref = static_cast<const UStringRef*>(value);
+		f.m_sb.appendString(ref->getBegin(), ref->getLength());
 	}
 
 	// user-defined type
@@ -583,3 +597,5 @@ inline UString UString::format(const Locale& locale, const UStringRef& format, T
 	}
 }
 
+
+LN_NAMESPACE_END

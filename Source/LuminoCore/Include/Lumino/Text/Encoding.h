@@ -6,6 +6,7 @@ LN_NAMESPACE_BEGIN
 class ByteBuffer;
 class Decoder;
 class Encoder;
+class UString;
 
 /** エンコーディングの種類 */
 enum class EncodingType
@@ -180,6 +181,12 @@ public:
 		const void* src, size_t srcByteCount, Decoder* srcDecoder,
 		void* dest, size_t destByteCount, Encoder* destEncoder,
 		EncodingConversionResult* result);
+
+
+#ifdef LN_USTRING
+	static UString fromBytes(const char* bytes, int size, Encoding* encoding = nullptr, bool* outUsedDefaultChar = nullptr);
+	static UString fromBytes(const byte_t* bytes, int size, Encoding* encoding = nullptr, bool* outUsedDefaultChar = nullptr);
+#endif
 
 public:
 

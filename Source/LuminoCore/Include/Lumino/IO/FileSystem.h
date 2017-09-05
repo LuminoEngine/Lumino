@@ -104,16 +104,13 @@ public:
 	/** ファイルサイズを取得します。 */
 	static uint64_t getFileSize(FILE* stream);
 
+	/** ファイルの内容をすべて読み込みます。 (バイナリ形式)  */
+	static ByteBuffer readAllBytes(const StringRef& filePath);
 
 
 
 
 
-
-
-	/// ファイルの内容をすべて読み込む (バイナリ形式)
-	static ByteBuffer readAllBytes(const StringRefA& filePath);
-	static ByteBuffer readAllBytes(const StringRefW& filePath);
 
 	/// 
 	/// encoding 省略時は UTF8(BOM 無し)
@@ -125,16 +122,16 @@ public:
 		@details	encoding が nullptr である場合、UTF8 テキストとして読み込みます。
 					BOM の有無は自動判別します。
 	*/
-	static String readAllText(const StringRef& filePath, const Encoding* encoding = nullptr);
+	static String readAllText(const StringRef& filePath, Encoding* encoding = nullptr);
 
-	static String readAllText(Stream* stream, const Encoding* encoding = nullptr);
+	static String readAllText(Stream* stream, Encoding* encoding = nullptr);
 
 	/// 配列の内容をバイナリファイルとして書き出す
 	static void writeAllBytes(const TCHAR* filePath, const void* buffer, size_t size);
 
 	/// 文字列をテキストファイルとして書き出す
 	/// encoding 省略時は UTF8 (BOM 無し)
-	static void writeAllText(const TCHAR* filePath, const String& str, const Encoding* encoding = nullptr);
+	static void writeAllText(const TCHAR* filePath, const String& str, Encoding* encoding = nullptr);
 
 	
 

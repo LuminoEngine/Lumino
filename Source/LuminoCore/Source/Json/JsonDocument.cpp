@@ -259,9 +259,13 @@ double JsonValue2::getDouble() const
 //------------------------------------------------------------------------------
 String JsonValue2::getString() const
 {
+#ifdef LN_USTRING
+	return m_stringCore->c_str();
+#else
 	String str;
 	ln::detail::StringHelper::attachStringCore(&str, m_stringCore);
 	return str;
+#endif
 }
 
 //------------------------------------------------------------------------------

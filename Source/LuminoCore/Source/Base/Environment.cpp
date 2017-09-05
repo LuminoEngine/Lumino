@@ -87,10 +87,6 @@ String Environment::LN_AFX_FUNCNAME(getEnvironmentVariable)(const String& variab
 //------------------------------------------------------------------------------
 bool Environment::tryGetEnvironmentVariable(const String& variableName, String* outValue)
 {
-#ifdef LN_USTRING
-	LN_NOTIMPLEMENTED();
-	return false;
-#else
 	String name = variableName;
 #ifdef LN_OS_WIN32
 	size_t len;
@@ -103,7 +99,6 @@ bool Environment::tryGetEnvironmentVariable(const String& variableName, String* 
 	if (outValue) { *outValue = val; }
 	return true;
 #else
-#endif
 #endif
 }
 

@@ -5,6 +5,18 @@
 
 LN_NAMESPACE_BEGIN
 
+
+/**
+	@brief	文字列の配列です。
+*/
+class StringArray
+	: public List<String>
+{
+public:
+
+private:
+};
+
 /**
 	@brief	文字列の配列です。
 */
@@ -60,8 +72,11 @@ public:
 
 };
 
+#ifdef LN_USTRING
+#else
 typedef GenericStringArray<TCHAR>	StringArray;
 typedef GenericStringArray<char>	StringArrayA;
 typedef GenericStringArray<wchar_t>	StringArrayW;
+#endif
 
 LN_NAMESPACE_END

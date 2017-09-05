@@ -127,6 +127,7 @@ bool UString::isEmpty() const
 
 void UString::clear()
 {
+	// TODO: [0] に \0 入れるだけにしたい。バッファは持つ。
 	lockBuffer(0);
 	unlockBuffer(0);
 }

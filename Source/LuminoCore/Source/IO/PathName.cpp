@@ -574,7 +574,7 @@ Path Path::makeRelative(const Path& target) const
 {
 	if (LN_CHECK_ARG(isAbsolute())) return Path();
 	if (LN_CHECK_ARG(target.isAbsolute())) return Path();
-	String rel = PathTraits::diffPath<Char>(m_path.c_str(), m_path.getLength(), target.m_path.c_str(), target.m_path.getLength(), FileSystem::getFileSystemCaseSensitivity());
+	auto rel = PathTraits::diffPath<Char>(m_path.c_str(), m_path.getLength(), target.m_path.c_str(), target.m_path.getLength(), FileSystem::getFileSystemCaseSensitivity());
 	return Path(rel.c_str());	// TODO: un copy
 }
 
@@ -593,29 +593,23 @@ const UString Path::getStrEndSeparator() const
 
 Path Path::getCurrentDirectory()
 {
-	static Path path;
-
+	// TODO: Max Len
 	Char curDir[LN_MAX_PATH];
 	DirectoryUtils::getCurrentDirectory(curDir);
-
-	// メモリ確保を抑える。
-	if (path.m_path != curDir) {
-		path = curDir;
-	}
-	return path;
+	return Path(curDir);
 }
 
 Path Path::getSpecialFolderPath(SpecialFolder specialFolder, const Char* childDir, SpecialFolderOption option)
 {
 	if (childDir != NULL) {
-		if (LN_CHECK_ARG(!PathTraits::isAbsolutePath(childDir))) return GenericPathName<Char>();
+		if (LN_CHECK_ARG(!PathTraits::isAbsolutePath(childDir))) return Path();
 	}
 
 	// TODO: Length
 	Char path[LN_MAX_PATH];
 	Environment::getSpecialFolderPath(specialFolder, path);
 
-	GenericPathName<Char> path2(path);
+	Path path2(path);
 	if (childDir != NULL) {
 		path2.append(childDir);
 	}
