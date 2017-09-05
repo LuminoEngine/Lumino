@@ -4,6 +4,14 @@
 #include "TestConfig.h"
 #include <Lumino/IO/FileSystem.h>
 
+//==============================================================================
+// ScopedMemoryHook
+//==============================================================================
+int ScopedMemoryHook::newCount = 0;
+int ScopedMemoryHook::deleteCount = 0;
+
+
+
 PathName Test_GetTempFilePath(const Char* fileName)
 {
 #ifdef LN_USTRING
@@ -53,7 +61,7 @@ GTEST_API_ int main(int argc, char **argv)
 #endif
 	setlocale(LC_ALL, "");
 
-#if 1	// 部分的にテストを実行したりする
+#if 0	// 部分的にテストを実行したりする
 	char* testArgs[] = {
 		argv[0],
 		"--gtest_filter=Test_Base_UString.*"

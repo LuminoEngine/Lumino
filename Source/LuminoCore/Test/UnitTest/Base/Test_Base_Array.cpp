@@ -459,10 +459,10 @@ TEST_F(Test_Base_Array, contains)
 {
 	// <Test> Contains
 	{
-		PathNameA p1("LuminoCore/include/Lumino/Base/String.h");
-		PathNameA p2("LuminoCore/include/Lumino/Base/String.h");
-		PathNameA p3("LuminoCore/include/Lumino/Base/String.c");
-		List<PathNameA> pathes;
+		PathName p1(_T("LuminoCore/include/Lumino/Base/String.h"));
+		PathName p2(_T("LuminoCore/include/Lumino/Base/String.h"));
+		PathName p3(_T("LuminoCore/include/Lumino/Base/String.c"));
+		List<PathName> pathes;
 		pathes.add(p1);
 		ASSERT_TRUE(pathes.contains(p2));
 		ASSERT_FALSE(pathes.contains(p3));

@@ -876,6 +876,26 @@ TEST_F(Test_Base_UString, concat)
 	ASSERT_EQ(_TT("1234567890123456789012345678901234567890"), s1);
 }
 
+
+TEST_F(Test_Base_UString, MemoryAllocation)
+{
+	// <Test> 共有も SSO も無い状態で clear してもメモリ再確保は発生しないこと
+	{
+		UString str = _T("1234567890123456789012345678901234567890");
+		intptr_t pt1 = (intptr_t)str.c_str();
+		int rr1 = str.getCapacity();
+		str.clear();
+		int rr2 = str.getCapacity();
+		str = _T("123");
+		int rr3 = str.getCapacity();
+		intptr_t pt2 = (intptr_t)str.c_str();
+		ASSERT_EQ(rr1, rr2);
+		ASSERT_EQ(rr1, rr3);
+		ASSERT_EQ(rr1, rr3);
+		ASSERT_EQ(pt1, pt2);
+	}
+}
+
 TEST_F(Test_Base_UString, Issue)
 {
 }

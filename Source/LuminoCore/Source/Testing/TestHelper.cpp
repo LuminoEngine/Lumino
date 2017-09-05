@@ -1,4 +1,5 @@
 ﻿
+#include <Lumino/Base/StdStringHelper.h>
 #include <Lumino/IO/FileSystem.h>
 #include <Lumino/Testing/TestHelper.h>
 
@@ -25,19 +26,15 @@ PathName TestHelper::getDirPath(const char* baseFilePath)
 }
 
 //------------------------------------------------------------------------------
-PathNameA TestHelper::getFilePathA(const char* baseFilePath, const char* fileName)
+std::string TestHelper::getFilePathA(const char* baseFilePath, const char* fileName)
 {
-	PathNameA base(baseFilePath);
-	PathNameA path(base.getParent(), fileName);
-	return path;
+	return StdStringHelper::cat<std::string>(baseFilePath, "/", fileName);
 }
 
 //------------------------------------------------------------------------------
-PathNameW TestHelper::getFilePathW(const char* baseFilePath, const wchar_t* fileName)
+std::wstring TestHelper::getFilePathW(const char* baseFilePath, const wchar_t* fileName)
 {
-	PathNameW base(baseFilePath);
-	PathNameW path(base.getParent(), fileName);
-	return path;
+	return StdStringHelper::cat<std::wstring>(UString::fromCString(baseFilePath).c_str(), L"/", fileName);
 }
 
 #ifdef LN_USTRING

@@ -65,7 +65,6 @@ public:
 private:
 	friend class DiagnosticsItemSet;
 	//DiagnosticsItem();
-	//PathName	m_filePath;		// できるだけ DiagnosticsManager から直接代入するようにし、メモリを共有できるようにする
 	DiagnosticsCode	m_code;
 	int				m_lineNumber;
 	int				m_columnNumber;
@@ -83,7 +82,7 @@ class DiagnosticsItemSet
 	: public Object
 {
 public:
-	DiagnosticsItemSet(const PathNameA& absFilePath);
+	DiagnosticsItemSet(const std::string& absFilePath);
 	~DiagnosticsItemSet() = default;
 
 	const List<DiagnosticsItem>* getItems() { return &m_items; }
@@ -101,7 +100,7 @@ LN_INTERNAL_ACCESS:
 	void Report(DiagnosticsCode code, flString option1);
 
 private:
-	PathNameA	m_absFilePath;
+	std::string	m_absFilePath;
 	int			m_currentLineNumber;
 	int			m_currentColumnNumber;
 	List<DiagnosticsItem>	m_items;
@@ -125,7 +124,7 @@ public:
 	~DiagnosticsManager() = default;
 
 	void clear();
-	DiagnosticsItemSet* CreateItemSet(const PathNameA& absFilePath);
+	DiagnosticsItemSet* CreateItemSet(const std::string& absFilePath);
 
 private:
 	List<Ref<DiagnosticsItemSet>>	m_itemSetList;

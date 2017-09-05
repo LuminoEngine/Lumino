@@ -152,7 +152,6 @@ set(LN_SOURCES_IO
 	Source/IO/DirectoryUtils.cpp
 	Source/IO/File.cpp
 	Source/IO/FileFinder_UNIX.h
-	Source/IO/FileFinder_Win32.h
 	Source/IO/FileStream.cpp
 	Source/IO/FileSystem.cpp
 	Source/IO/FileSystem_Unix.h

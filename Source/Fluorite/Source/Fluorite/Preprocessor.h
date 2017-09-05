@@ -163,7 +163,7 @@ class RawReferenceMap
 class PreprocessedFileCacheItem
 {
 public:
-	PathNameA		filePath;
+	std::string		filePath;
 	MacroMap		inputMacroMap;
 
 	MacroMap		outputMacroMap;

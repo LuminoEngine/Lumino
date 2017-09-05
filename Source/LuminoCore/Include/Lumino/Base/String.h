@@ -16,7 +16,6 @@ class Encoding;
 template<typename TChar> class GenericCharRef;
 template<typename TChar> class GenericStringRef;
 template<typename TChar> class GenericStringArray;
-template<typename TChar> class GenericPathName;
 
 namespace detail { template<typename TChar> class GenericStringCore; }
 namespace detail { class StringHelper; }
@@ -98,7 +97,6 @@ public:
 	GenericString(const TChar* str, int begin, int length);
 	GenericString(TChar ch);
 	GenericString(int count, TChar ch);
-	GenericString(const GenericPathName<TChar>& path);
 	GenericString(GenericString&& str) LN_NOEXCEPT;
 
 	// other char code convertion
@@ -115,7 +113,6 @@ public:
 	GenericString& operator=(const GenericStringRef<TChar>& right);
 	GenericString& operator=(const std::basic_string<TChar>& right);
 	GenericString& operator=(const TChar* right);
-	GenericString& operator=(const GenericPathName<TChar>& right);
 	GenericString& operator=(GenericString&& right) LN_NOEXCEPT;
 
 	GenericString& operator+=(const GenericString& right);

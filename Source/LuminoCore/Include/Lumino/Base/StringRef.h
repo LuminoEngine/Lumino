@@ -6,7 +6,6 @@
 LN_NAMESPACE_BEGIN
 
 namespace detail { template<typename TChar> class GenericStringCore; }
-template<typename TChar> class GenericPathName;
 
 /**
 	@brief	ある文字列に対する部分文字列の参照を保持します。
@@ -61,12 +60,6 @@ public:
 	{
 		m_str = begin;
 		m_len = length;
-	}
-	GenericStringRef(const GenericPathName<TChar>& path)
-		: GenericStringRef()
-	{
-		m_str = path.getString().c_str();
-		m_len = path.getString().getLength();
 	}
 
 

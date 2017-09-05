@@ -157,21 +157,6 @@ private:
 	template<typename TChar> static void createDirectoryInternal(const TChar* path);
 };
 
-#ifdef LN_USTRING
-#else
-//------------------------------------------------------------------------------
-template<typename TChar, typename TCallback>
-inline void FileSystem::forEachFilesInDirectory(const GenericStringRef<TChar>& path, TCallback callback)
-{
-	GenericFileFinder<TChar> finder(path);
-	while (!finder.getCurrent().isEmpty())
-	{
-		callback(finder.getCurrent());
-		finder.next();
-	}
-}
-#endif
-
 namespace detail {
 
 class FileSystemInternal

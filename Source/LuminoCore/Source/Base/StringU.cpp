@@ -127,7 +127,6 @@ bool UString::isEmpty() const
 
 void UString::clear()
 {
-	// TODO: [0] に \0 入れるだけにしたい。バッファは持つ。
 	lockBuffer(0);
 	unlockBuffer(0);
 }
@@ -582,43 +581,51 @@ void UString::reserveBuffer(int length)
 	}
 	else
 	{
-		if (length < SSOCapacity)
+		if (m_data.core && !m_data.core->isShared() && length <= m_data.core->getCapacity())
 		{
-			// NonSSO -> SSO
-			if (m_data.core)
-			{
-				detail::UStringCore* oldCore = m_data.core;
-				setSSO();
-				memcpy(m_data.sso.buffer, oldCore->get(), std::min(oldCore->getLength(), length) * sizeof(UChar));
-				oldCore->release();
-			}
-			else
-			{
-				setSSO();
-			}
+			// NonSSO で、共有されてもいないしサイズも間に合っているならいろいろ作り直す必要は無い
+			m_data.core->get()[length] = '\0';
 		}
 		else
 		{
-			// NonSSO -> NonSSO
-			if (m_data.core)
+			if (length < SSOCapacity)
 			{
-				if (m_data.core->isShared())
+				// NonSSO -> SSO
+				if (m_data.core)
 				{
 					detail::UStringCore* oldCore = m_data.core;
-					m_data.core = LN_NEW detail::UStringCore();
-					m_data.core->reserve(length);
-					memcpy(m_data.core->get(), oldCore->get(), std::min(oldCore->getLength(), length) * sizeof(UChar));
+					setSSO();
+					memcpy(m_data.sso.buffer, oldCore->get(), std::min(oldCore->getLength(), length) * sizeof(UChar));
 					oldCore->release();
 				}
 				else
 				{
-					m_data.core->reserve(length);
+					setSSO();
 				}
 			}
 			else
 			{
-				m_data.core = LN_NEW detail::UStringCore();
-				m_data.core->reserve(length);
+				// NonSSO -> NonSSO
+				if (m_data.core)
+				{
+					if (m_data.core->isShared())
+					{
+						detail::UStringCore* oldCore = m_data.core;
+						m_data.core = LN_NEW detail::UStringCore();
+						m_data.core->reserve(length);
+						memcpy(m_data.core->get(), oldCore->get(), std::min(oldCore->getLength(), length) * sizeof(UChar));
+						oldCore->release();
+					}
+					else
+					{
+						m_data.core->reserve(length);
+					}
+				}
+				else
+				{
+					m_data.core = LN_NEW detail::UStringCore();
+					m_data.core->reserve(length);
+				}
 			}
 		}
 	}
@@ -779,17 +786,19 @@ const UString& UString::getEmpty()
 	return str;
 }
 
+UString& UString::operator=(const Path& rhs)
+{
+	assign(rhs.getString());
+	return *this;
+}
 
 //==============================================================================
 // UStringRef
 //==============================================================================
 
 UStringRef::UStringRef(const Path& path)
-	: UStringRef()
+	: UStringRef(path.getString())
 {
-	m_type = detail::UStringRefSource::ByUChar;
-	m_u.str = path.getString().c_str();
-	m_u.length = path.getString().getLength();
 }
 
 UString UStringRef::mid(int start, int count) const
@@ -948,7 +957,7 @@ int UStringConvert::convertNativeString(const char16_t* src, int srcLen, char* d
 	{
 		mbstate_t state;
 		char* p = dst;
-		for (size_t n = 0; n < srcLen; ++n)
+		for (int n = 0; n < srcLen; ++n)
 		{
 			int rc = std::c16rtomb(p, src[n], &state);
 			if (rc == -1) break;

@@ -38,7 +38,7 @@ bool FileSystem::existsFile(const StringRefA& filePath)
 	//if (filePath == NULL) {
 	//	return false;
 	//}
-	PathNameA path(filePath);
+	std::string path(filePath);
 
 	// ※fopen によるチェックはNG。ファイルが排他ロックで開かれていた時に失敗する。
 	// ※access によるチェックもNG。ディレクトリも考慮してしまう。

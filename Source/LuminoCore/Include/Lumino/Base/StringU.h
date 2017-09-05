@@ -4,8 +4,6 @@
 #include <string>
 #include "Common.h"
 #include "List.h"
-//#include "StringBuilder.h"
-//#include "../IO/Common.h"	// TODO: for Path
 namespace std { class locale; }
 
 #ifdef LN_UNICODE
@@ -86,7 +84,7 @@ public:
 	/** 文字列の長さを取得します。 */
 	int getLength() const;
 
-	/** メモリを再確保せずに格納できる最大の要素数を取得する。 */
+	/** メモリを再確保せずに格納できる最大の要素数を取得します。 */
 	int getCapacity() const;
 
 	/** 文字列をクリアします。 */
@@ -319,6 +317,7 @@ public:
 	UString& operator=(const UStringRef& rhs);
 	UString& operator=(const UChar* rhs);
 	UString& operator=(UChar ch);
+	UString& operator=(const Path& rhs);
 
 	UString& operator+=(const UString& rhs);
 	UString& operator+=(const UStringRef& rhs);
@@ -384,84 +383,60 @@ class UStringRef
 public:
 	UStringRef()
 	{
-		m_type = detail::UStringRefSource::ByUChar;
-		m_u.str = nullptr;
-		m_u.length = 0;
+		m_string = nullptr;
+		m_str = nullptr;
+		m_len = 0;
 	}
 
 	UStringRef(const UString& str)
+		: UStringRef()
 	{
-		m_type = detail::UStringRefSource::ByUChar;
-		m_u.str = str.c_str();
-		m_u.length = str.getLength();
+		m_string = &str;
+		m_str = str.c_str();
+		m_len = str.getLength();
 	}
 
 	UStringRef(const UString& str, int len)
+		: UStringRef()
 	{
-		m_type = detail::UStringRefSource::ByUChar;
-		m_u.str = str.c_str();
-		m_u.length = len;
+		m_string = &str;
+		m_str = str.c_str();
+		m_len = len, str.getLength();
 	}
 
-	UStringRef(const UString& str, int begin, int len)
+	UStringRef(const UString& str, int startIndex, int len)
+		: UStringRef()
 	{
-		m_type = detail::UStringRefSource::ByUChar;
-		m_u.str = str.c_str() + begin;
-		m_u.length = len;
+		m_str = str.c_str() + startIndex;
+		m_len = len;
 	}
-
-	//template<std::size_t N>
-	//UStringRef(const UChar (&str)[N])
-	//{
-	//	m_type = detail::UStringType::UChar;
-	//	m_u.str = str;
-	//	m_u.length = N;
-	//	if (m_u.str[N - 1] == '\0')
-	//	{
-	//		m_u.length--;
-	//	}
-	//}
 
 	UStringRef(const UChar* str)
+		: UStringRef()
 	{
-		m_type = detail::UStringRefSource::ByUChar;
-		m_u.str = str;
-		m_u.length = UStringHelper::strlen(str);
+		m_str = str;
+		m_len = UStringHelper::strlen(str);
 	}
 
-	UStringRef(const UChar* str, int length)
+	UStringRef(const UChar* str, int len)
+		: UStringRef()
 	{
-		m_type = detail::UStringRefSource::ByUChar;
-		m_u.str = str;
-		m_u.length = length;
+		m_str = str;
+		m_len = len;
 	}
 
 	UStringRef(const UChar* begin, const UChar* end)
+		: UStringRef()
 	{
-		m_type = detail::UStringRefSource::ByUChar;
-		m_u.str = begin;
-		m_u.length = end - begin;
+		m_str = begin;
+		m_len = end - begin;
 	}
-
-	//UStringRef(const char* str)
-	//{
-	//	m_type = detail::UStringRefSource::ByChar;
-	//	m_c.str = UString(str);
-	//}
-
 
 	UStringRef(const Path& path);
 
-	UStringRef(const UStringRef& str)
-		: UStringRef()
-	{
-		copy(str);
-	}
+	UStringRef(const UStringRef& str) = default;
 
-	UStringRef& operator=(const UStringRef& str)
-	{
-		copy(str);
-	}
+	UStringRef& operator=(const UStringRef& str) = default;
 
 	~UStringRef()
 	{
@@ -470,12 +445,12 @@ public:
 
 	int getLength() const
 	{
-		return (m_type == detail::UStringRefSource::ByUChar) ? m_u.length : m_c.str.getLength();
+		return m_len;
 	}
 
 	const UChar* data() const
 	{
-		return (m_type == detail::UStringRefSource::ByUChar) ? m_u.str : m_c.str.c_str();
+		return m_str;
 	}
 
 	const UChar* end() const
@@ -497,59 +472,23 @@ public:
 
 
 private:
+	const UString*	m_string;
+	const UChar*	m_str;
+	int				m_len;
+
 	void clear()
 	{
-		switch (m_type)
-		{
-		case detail::UStringRefSource::ByUChar:
-			break;
-		case detail::UStringRefSource::ByChar:
-			m_c.str.~UString();
-			break;
-		default:
-			break;
-		}
-		m_type = detail::UStringRefSource::ByUChar;
-		m_u.str = nullptr;
-		m_u.length = 0;
+		m_string = nullptr;
+		m_str = nullptr;
+		m_len = 0;
 	}
 
-	void copy(const UStringRef& str)
-	{
-		clear();
-		m_type = str.m_type;
-		switch (m_type)
-		{
-		case detail::UStringRefSource::ByUChar:
-			m_u.str = str.m_u.str;
-			m_u.length = str.m_u.length;
-			break;
-		case detail::UStringRefSource::ByChar:
-			m_c.str = str.m_c.str;
-			break;
-		default:
-			break;
-		}
-	}
-	
-	
-	struct UCharData
-	{
-		const UChar*		str;
-		int					length;
-	};
-	
-	struct CharData
-	{
-		UString	str;
-	};
-
-	detail::UStringRefSource	m_type;
-	union
-	{
-		UCharData m_u;
-		CharData m_c;
-	};
+	//void copy(const UStringRef& str)
+	//{
+	//	m_string = str.;
+	//	m_str = nullptr;
+	//	m_len = 0;
+	//}
 };
 
 

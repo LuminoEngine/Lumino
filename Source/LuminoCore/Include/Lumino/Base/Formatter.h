@@ -13,9 +13,6 @@
 
 LN_NAMESPACE_BEGIN
 
-template<typename TChar>
-class GenericPathName;
-
 template<typename TChar, typename TKind, typename TValue>
 struct Formatter;
 
@@ -70,7 +67,6 @@ private:
 			std::enable_if<std::is_same<T, std::basic_string<TChar>>::value,detail::FormatArgType::KindString>,
 			std::enable_if<std::is_same<T, GenericString<TChar>>::value,	detail::FormatArgType::KindString>,
 			std::enable_if<std::is_same<T, GenericStringRef<TChar>>::value,	detail::FormatArgType::KindString>,
-			std::enable_if<std::is_same<T, GenericPathName<TChar>>::value,	detail::FormatArgType::KindString>,
 			std::enable_if<IsCharArray<TChar, T>::value,					detail::FormatArgType::KindPointer>,
 			std::enable_if<IsCharArray<TChar, T>::value,					detail::FormatArgType::KindPointer>,
 			std::enable_if<std::is_same<T, TChar*>::value,					detail::FormatArgType::KindPointer>,

@@ -19,8 +19,8 @@ public:
 	static PathName getDirPath(const char* baseFilePath);
 
 	/// baseFilePath のファイルと同じディレクトリの fileName を指すパスを得る
-	static PathNameA getFilePathA(const char* baseFilePath, const char* fileName);
-	static PathNameW getFilePathW(const char* baseFilePath, const wchar_t* fileName);
+	static std::string getFilePathA(const char* baseFilePath, const char* fileName);
+	static std::wstring getFilePathW(const char* baseFilePath, const wchar_t* fileName);
 #ifdef LN_USTRING
 	static Path getFilePathU(const char* baseFilePath, const UChar* fileName);
 #endif

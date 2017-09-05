@@ -212,12 +212,6 @@ GenericString<TChar>::GenericString(int count, TChar ch)
 }
 
 template<typename TChar>
-GenericString<TChar>::GenericString(const GenericPathName<TChar>& path)
-	: GenericString(path.getString())
-{
-}
-
-template<typename TChar>
 GenericString<TChar>::GenericString(GenericString&& str) LN_NOEXCEPT
 	: m_string(nullptr)
 {
@@ -328,11 +322,6 @@ GenericString<TChar>& GenericString<TChar>::operator=(const TChar* right)
 {
 	assignTString(right, -1);
 	return (*this);
-}
-template<typename TChar>
-GenericString<TChar>& GenericString<TChar>::operator=(const GenericPathName<TChar>& right)
-{
-	return operator=(right.getString());
 }
 template<typename TChar>
 GenericString<TChar>& GenericString<TChar>::operator=(GenericString&& right) LN_NOEXCEPT

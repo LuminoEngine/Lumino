@@ -9,7 +9,7 @@ namespace fl {
 //==============================================================================
 
 //------------------------------------------------------------------------------
-DiagnosticsItemSet::DiagnosticsItemSet(const PathNameA& absFilePath)
+DiagnosticsItemSet::DiagnosticsItemSet(const std::string& absFilePath)
 	: m_absFilePath(absFilePath)
 {
 }
@@ -45,7 +45,7 @@ void DiagnosticsManager::clear()
 }
 
 //------------------------------------------------------------------------------
-DiagnosticsItemSet* DiagnosticsManager::CreateItemSet(const PathNameA& absFilePath)
+DiagnosticsItemSet* DiagnosticsManager::CreateItemSet(const std::string& absFilePath)
 {
 	auto ptr = Ref<DiagnosticsItemSet>::makeRef(absFilePath);
 	m_itemSetList.add(ptr);
