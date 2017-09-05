@@ -958,7 +958,7 @@ bool RpnEvaluator::EvalOperand(RpnTokenType tokenType, const RpnOperand& lhs, co
 		break;
 	}
 	// Error: 指定されたオペランドの型が不正。
-	m_diag->Report(DiagnosticsCode::RpnEvaluator_OperatorInvalidType, rhs.type.toString().toStringA());
+	m_diag->Report(DiagnosticsCode::RpnEvaluator_OperatorInvalidType, rhs.type.toString().toStdString());
 	return false;
 }
 

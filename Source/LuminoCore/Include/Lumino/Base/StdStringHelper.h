@@ -75,6 +75,12 @@ public:
 
 	static size_t len(const char* s) { return strlen(s); }
 	static size_t len(const std::string& s) { return s.length(); }
+
+	template <class TString, class A1>
+	static bool contains(const TString& s1, const A1& a1)
+	{
+		return s1.find(a1) != basic_string::npos;
+	}
 };
 
 LN_NAMESPACE_END

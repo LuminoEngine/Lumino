@@ -1,6 +1,7 @@
 ﻿
 #include "../Internal.h"
 #include <float.h>
+#include <Lumino/IO/Console.h>
 #include <Lumino/Graphics/Color.h>
 #include <Lumino/Rendering/Rendering.h>
 #include <Lumino/Rendering/SceneRenderer.h>	// TODO

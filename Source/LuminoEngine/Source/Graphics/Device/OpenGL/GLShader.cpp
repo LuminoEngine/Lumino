@@ -588,7 +588,7 @@ void GLShader::initialize(GLGraphicsDevice* device, const void* code_, size_t co
 	{
 		int index = StringTraits::indexOf(code, codeByteCount, "#endif", 6);
 		LN_THROW(index >= 0, InvalidFormatException);
-		StringReader reader(String::fromNativeCharString(code + 22, index - 22));
+		StringReader reader(String::fromCString(code + 22, index - 22));
 		tr::JsonReader2 json(&reader);
 		json.readAsStartObject();
 
@@ -599,7 +599,7 @@ void GLShader::initialize(GLGraphicsDevice* device, const void* code_, size_t co
 			while (json.read() && json.getTokenType() != tr::JsonToken::EndArray)
 			{
 				String entry = json.getValue();
-				m_glVertexShaderEntryMap[entry] = compileShader(code, codeByteCount, entry.toStringA().c_str(), GL_VERTEX_SHADER);
+				m_glVertexShaderEntryMap[entry] = compileShader(code, codeByteCount, entry.toStdString().c_str(), GL_VERTEX_SHADER);
 			}
 		}
 		// pixelShaders
@@ -609,7 +609,7 @@ void GLShader::initialize(GLGraphicsDevice* device, const void* code_, size_t co
 			while (json.read() && json.getTokenType() != tr::JsonToken::EndArray)
 			{
 				String entry = json.getValue();
-				m_glPixelShaderEntryMap[entry] = compileShader(code, codeByteCount, entry.toStringA().c_str(), GL_FRAGMENT_SHADER);
+				m_glPixelShaderEntryMap[entry] = compileShader(code, codeByteCount, entry.toStdString().c_str(), GL_FRAGMENT_SHADER);
 			}
 		}
 		// techniques
@@ -1125,7 +1125,7 @@ void GLShaderAnnotation::initialize(const String& type, const String& name, cons
 	{
 		desc.Type = ShaderVariableType_Int;
 		ShaderVariableBase::initialize(desc, name, String::getEmpty());
-		ShaderVariableBase::setInt(value.toInt32());
+		ShaderVariableBase::setInt(toInt32(value));
 	}
 	else if (type.indexOf(_T("string")) == 0)
 	{
@@ -1146,7 +1146,7 @@ void GLShaderAnnotation::initialize(const String& type, const String& name, cons
 			// vector
 			desc.Columns = (type[6] - '0');
 
-			StringArray tokens = value.split(_T(","));
+			auto tokens = value.split(_T(","));
 			Vector4 v;
 			v.x = (float)((tokens.getCount() >= 1) ? StringTraits::toDouble(tokens[0].c_str(), tokens[0].getLength()) : 0);
 			v.y = (float)((tokens.getCount() >= 2) ? StringTraits::toDouble(tokens[1].c_str(), tokens[1].getLength()) : 0);
@@ -1423,8 +1423,7 @@ void GLShaderPass::build()
 		GLShaderVariable::convertVariableTypeGLToLN(name, var_type, var_size, &desc);
 
 		// 名前を String 化
-		String tname;
-		tname.assignCStr(name);
+		String tname = String::fromCString(name);
 		tname = tname.replace(_T("[0]"), _T(""));
 
 		// Location

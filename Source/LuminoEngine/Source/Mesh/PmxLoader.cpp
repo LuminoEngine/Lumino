@@ -803,15 +803,14 @@ String PmxLoader::readString(BinaryReader* reader)
 	m_tmpBuffer.resize(byteSize);
 	reader->read(m_tmpBuffer.getData(), byteSize);
 
-	String str;
-	if (getEncode() == PMX_Encode_UTF16) {
-		str.convertFrom(m_tmpBuffer.getData(), byteSize, Encoding::getUTF16Encoding());
+	if (getEncode() == PMX_Encode_UTF16)
+	{
+		return Encoding::fromBytes(m_tmpBuffer.getData(), byteSize, Encoding::getUTF16Encoding());
 	}
-	else {
-		str.convertFrom(m_tmpBuffer.getData(), byteSize, Encoding::getUTF8Encoding());
+	else
+	{
+		return Encoding::fromBytes(m_tmpBuffer.getData(), byteSize, Encoding::getUTF8Encoding());
 	}
-
-	return str;
 }
 
 //------------------------------------------------------------------------------

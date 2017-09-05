@@ -2,10 +2,25 @@
 #include <Lumino/Base/Environment.h>
 #include <Lumino/IO/Console.h>
 
+LN_NAMESPACE_BEGIN
+
 #ifdef LN_USTRING
+
+//==============================================================================
+// Console
+//==============================================================================
+void Console::writeLine()
+{
+	fwprintf(stdout, L"\n");
+}
+
+void Console::writeLine(const String& str)
+{
+	fwprintf(stdout, L"%s", str.c_str());
+}
+
 #else
 
-LN_NAMESPACE_BEGIN
 
 //==============================================================================
 // Console
@@ -138,6 +153,6 @@ void Console::writeInternalError(const wchar_t* str)
 	fwprintf(stderr, L"%s", str);
 }
 
-LN_NAMESPACE_END
-
 #endif
+
+LN_NAMESPACE_END

@@ -6,8 +6,6 @@
 #endif
 #include <Lumino/Base/DllLoader.h>
 
-#ifdef LN_USTRING
-#else
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
@@ -114,4 +112,3 @@ void* DllLoader::getProcAddress(const char* procName)
 }
 
 LN_NAMESPACE_END
-#endif

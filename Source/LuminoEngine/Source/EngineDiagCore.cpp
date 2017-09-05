@@ -58,12 +58,12 @@ void EngineDiagCore::initialize(EngineManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void EngineDiagCore::reportCapability(int indent, const char* name, const char* value)
-{
-	StringA str(indent, '\t');
-	str = StringA::format("{0}{1} : {2}", str, name, value);
-	Logger::writeLine(str.c_str());
-}
+//void EngineDiagCore::reportCapability(int indent, const char* name, const char* value)
+//{
+//	StringA str(indent, '\t');
+//	str = StringA::format("{0}{1} : {2}", str, name, value);
+//	Logger::writeLine(str.c_str());
+//}
 
 //------------------------------------------------------------------------------
 float EngineDiagCore::getMainFPS() const

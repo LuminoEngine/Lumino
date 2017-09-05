@@ -647,7 +647,7 @@ Ref<StaticMeshModel> MqoImporter::import(ModelManager* manager, const PathName& 
 			int nameEnd = line.indexOf(_T('"'), nameBegin);
 
 
-			loadObject(&reader, line.mid(nameBegin, nameEnd - nameBegin));
+			loadObject(&reader, line.substring(nameBegin, nameEnd - nameBegin));
 		}
 	}
 

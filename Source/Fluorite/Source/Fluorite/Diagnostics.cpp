@@ -31,7 +31,7 @@ void DiagnosticsItemSet::Report(DiagnosticsCode code, flString option1)
 	item.m_code = code;
 	item.m_lineNumber = m_currentLineNumber;
 	item.m_columnNumber = m_currentColumnNumber;
-	item.m_options.add(option1);
+	item.m_options.push_back(option1);
 	m_items.add(item);
 }
 

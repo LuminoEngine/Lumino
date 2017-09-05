@@ -790,6 +790,16 @@ TEST_F(Test_Base_UString, split)
 	}
 }
 
+TEST_F(Test_Base_UString, toStdString)
+{
+	ASSERT_EQ("abc", UString(_T("abc")).toStdString());
+}
+
+TEST_F(Test_Base_UString, toStdWString)
+{
+	ASSERT_EQ(L"abc", UString(_T("abc")).toStdWString());
+}
+
 TEST_F(Test_Base_UString, ToInt)
 {
 	// TODO:

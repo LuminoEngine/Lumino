@@ -225,7 +225,7 @@ void InputController::UpdateOneInputState(InputState* state)
 //------------------------------------------------------------------------------
 const InputController::InputState* InputController::LockupState(const StringRef& bindingName) const
 {
-	if (bindingName.isEmpty())
+	if (bindingName.IsNullOrEmpty())
 	{
 		return &m_inputStateForAny;
 	}

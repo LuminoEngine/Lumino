@@ -39,9 +39,9 @@ bool g_sceneChanging = false;
 SampleMainFunc registerSample(const char* group1, const char* group2, const char* caption, SampleMainFunc func)
 {
 	SampleInfo info;
-	info.group1 = String::fromNativeCharString(group1);
-	info.group2 = String::fromNativeCharString(group2);
-	info.caption = String::fromNativeCharString(caption);
+	info.group1 = String::fromCString(group1);
+	info.group2 = String::fromCString(group2);
+	info.caption = String::fromCString(caption);
 	info.mainFunc = func;
 	SampleManager::getInstance()->m_samples.add(info);
 	return func;

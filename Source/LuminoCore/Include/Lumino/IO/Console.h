@@ -5,6 +5,16 @@
 LN_NAMESPACE_BEGIN
 
 #ifdef LN_USTRING
+
+class Console
+{
+public:
+
+	static void writeLine();
+	static void writeLine(const String& str);
+
+};
+
 #else
 /**
 	@brief		コンソールウィンドウの操作を行います。

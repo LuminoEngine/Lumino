@@ -225,7 +225,10 @@ public:
 	*/
 	List<UString> split(const UStringRef& delim, StringSplitOptions option = StringSplitOptions::None) const;
 
+	/** ローカルの char 型文字列表現に変換します。 */
 	std::string toStdString() const;
+
+	/** ローカルの wchar_t 型文字列表現に変換します。 */
 	std::wstring toStdWString() const;
 
 
@@ -305,6 +308,8 @@ public:
 	static const UString& getEmpty();
 
 	int getByteCount() const { return getLength() * sizeof(UChar); }
+
+	uint32_t getHashCode() const;
 
 	bool isSSO() const LN_NOEXCEPT { return !detail::getLSB<0>(static_cast<uint8_t>(m_data.sso.length)); }
 	bool isNonSSO() const LN_NOEXCEPT { return detail::getLSB<0>(static_cast<uint8_t>(m_data.sso.length)); }
@@ -391,6 +396,20 @@ public:
 		m_u.length = str.getLength();
 	}
 
+	UStringRef(const UString& str, int len)
+	{
+		m_type = detail::UStringRefSource::ByUChar;
+		m_u.str = str.c_str();
+		m_u.length = len;
+	}
+
+	UStringRef(const UString& str, int begin, int len)
+	{
+		m_type = detail::UStringRefSource::ByUChar;
+		m_u.str = str.c_str() + begin;
+		m_u.length = len;
+	}
+
 	//template<std::size_t N>
 	//UStringRef(const UChar (&str)[N])
 	//{
@@ -470,8 +489,11 @@ public:
 
 	const Char& operator[](int index) const { return *(data() + index); }
 
+	size_t getHashCode() const;
+
 	// TODO: internal
 	const UChar* getBegin() const { return data(); }
+	const UChar* getEnd() const { return end(); }
 
 
 private:
@@ -804,6 +826,55 @@ inline bool operator==(const UStringRef& lhs, const UChar* rhs) { return UString
 inline bool operator!=(const UStringRef& lhs, const UStringRef& rhs) { return !operator==(lhs, rhs); }
 inline bool operator!=(const UChar* lhs, const UStringRef& rhs) { return !operator==(lhs, rhs); }
 inline bool operator!=(const UStringRef& lhs, const UChar* rhs) { return !operator==(lhs, rhs); }
+
+
+//==============================================================================
+// String globals
+//==============================================================================
+
+
+/**
+	@brief		この文字列を整数値に変換します。
+	@param[in]	base		: 基数 (0、2、8、10、16 のいずれかであること)
+	@return		変換結果の数値
+	@details	次の書式に従い、文字列を数値に変換します。<br>
+				[whitespace] [{+ | – }] [0 [{ x | X }]] [digits | letters]		<br>
+				16 進数値のアルファベットは大文字と小文字を区別しません。		<br><br>
+					
+				基数に 0 を指定すると、文字列の先頭文字から基数を自動判別します。<br>
+				"0x" または "0X" であれば 16 進数、"0" であれば 8 進数、それ以外であれば 10 進数です。
+				基数に 8 または 16 が指定されている際、文字列の先頭は "0" または "0x" である必要はありません。
+
+	@exception	InvalidFormatException	指定された基数に対して有効な桁を示す数字以外の文字が含まれていました。または、書式の前後に空白以外の文字が存在しました。
+	@exception	OverflowException		数値に変換する際にオーバーフローが発生しました。
+*/
+extern int8_t	toInt8(const UString& str, int base = 0);
+extern int16_t	toInt16(const UString& str, int base = 0);	///< @copydoc toInt8
+extern int32_t	toInt32(const UString& str, int base = 0);	///< @copydoc toInt8
+extern int64_t	toInt64(const UString& str, int base = 0);	///< @copydoc toInt8
+extern uint8_t	toUInt8(const UString& str, int base = 0);	///< @copydoc toInt8
+extern uint16_t	toUInt16(const UString& str, int base = 0);	///< @copydoc toInt8
+extern uint32_t	toUInt32(const UString& str, int base = 0);	///< @copydoc toInt8
+extern uint64_t	toUInt64(const UString& str, int base = 0);	///< @copydoc toInt8
+
+/**
+	@brief		この文字列を整数値に変換し、成否を返します。
+	@param[in]	outValue	: 結果を格納する変数のポインタ (NULL を指定すると成否のみを返す)
+	@param[in]	base		: 基数 (0、2、8、10、16 のいずれかであること)
+	@return		正常に変換された場合は true。それ以外の場合は false。
+	@details	例外が発生しない点を除けば ToInt8 等と同様です。
+				大量のループの内部等、例外によるパフォーマンスへの影響が懸念される場合に使用してください。
+	@see		ToInt8
+*/
+extern bool		tryToInt8(const UString& str, int8_t* outValue, int base = 0);
+extern bool		tryToInt16(const UString& str, int16_t* outValue, int base = 0);		///< @copydoc tryToInt8
+extern bool		tryToInt32(const UString& str, int32_t* outValue, int base = 0);		///< @copydoc tryToInt8
+extern bool		tryToInt64(const UString& str, int64_t* outValue, int base = 0);		///< @copydoc tryToInt8
+extern bool		tryToUInt8(const UString& str, uint8_t* outValue, int base = 0);		///< @copydoc tryToInt8
+extern bool		tryToUInt16(const UString& str, uint16_t* outValue, int base = 0);		///< @copydoc tryToInt8
+extern bool		tryToUInt32(const UString& str, uint32_t* outValue, int base = 0);		///< @copydoc tryToInt8
+extern bool		tryToUInt64(const UString& str, uint64_t* outValue, int base = 0);		///< @copydoc tryToInt8
+
 
 LN_NAMESPACE_END
 

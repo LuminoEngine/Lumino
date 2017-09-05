@@ -877,7 +877,7 @@ void UITextBox::onTextInput(UIKeyEventArgs* e)
 	Char ch = e->getCharCode();
 	m_textArea->getDocument()->replace(
 		m_textArea->getDocumentTextOffset(m_textArea->getCaret()->getVisualPosition()),
-		0, StringRef(ch, 1));
+		0, StringRef(&ch, 1));
 }
 
 //------------------------------------------------------------------------------

@@ -66,7 +66,7 @@ bool VmdLoader::load(Stream* stream)
 		if (itr == m_boneAnimationIndexMap.end())
 		{
 			BoneAnimation anim;
-			anim.TargetBoneName.convertFrom(vmdMotion.szBoneName, 15, Encoding::getEncoding(EncodingType::SJIS));
+			anim.TargetBoneName = Encoding::fromBytes(vmdMotion.szBoneName, 15, Encoding::getEncoding(EncodingType::SJIS));
 
 			// 名前・インデックスの対応
 			m_boneAnimationIndexMap.insert(BoneAnimationIndexPair(vmdMotion.szBoneName, m_boneAnimationList.getCount()));
@@ -110,7 +110,7 @@ bool VmdLoader::load(Stream* stream)
 		if (itr == m_faceAnimationIndexMap.end())
 		{
 			FaceAnimation anim;
-			anim.TargetFaceName.convertFrom(vmdFace.szFaceName, 15, Encoding::getEncoding(EncodingType::SJIS));
+			anim.TargetFaceName = Encoding::fromBytes(vmdFace.szFaceName, 15, Encoding::getEncoding(EncodingType::SJIS));
 			//anim.TargetFaceName = String(vmdFace.szFaceName);
 
 			// 名前・インデックスの対応

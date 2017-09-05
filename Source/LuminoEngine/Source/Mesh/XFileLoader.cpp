@@ -245,7 +245,7 @@ HRESULT AllocateHierarchy::_registMaterialData(
 
             if ( out_->pMaterials[ i ].pTextureFilename != NULL )
             {
-                out_->TextureNames.add(String::fromNativeCharString( out_->pMaterials[ i ].pTextureFilename ) );
+                out_->TextureNames.add(String::fromCString( out_->pMaterials[ i ].pTextureFilename ) );
                 out_->pMaterials[ i ].pTextureFilename = NULL;
             }
             else

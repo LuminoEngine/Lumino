@@ -72,7 +72,7 @@ void InputFile::ReadFile()
 	if (!m_codeRead)
 	{
 		// TODO: 文字コード変換
-		m_code = FileSystem::readAllBytes(m_filePath);
+		m_code = FileSystem::readAllBytes(String::fromCString(m_filePath.c_str()));
 		m_codeRead = true;
 	}
 }

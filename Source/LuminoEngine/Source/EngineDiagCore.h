@@ -28,7 +28,7 @@ public:
 
 	void initialize(EngineManager* manager);
 
-	void reportCapability(int indent, const char* name, const char* value);
+	//void reportCapability(int indent, const char* name, const char* value);
 
 	template<typename... TArgs>
 	void reportCapability(int indent, const char* name, const char* format, const TArgs&... args)

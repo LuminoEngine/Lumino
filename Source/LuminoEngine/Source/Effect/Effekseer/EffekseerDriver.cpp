@@ -251,7 +251,7 @@ void EffekseerEffectEngine::UpdateRenderContents()
 //------------------------------------------------------------------------------
 VisualEffect* EffekseerEffectEngine::CreateEffectCore(const PathName& filePath)
 {
-	CacheKey key(filePath.toString());
+	CacheKey key(filePath.getString());
 
 	// キャッシュ検索
 	Ref<EffekseerEffectCore> core(static_cast<EffekseerEffectCore*>(m_effectCoreCache->findObjectAddRef(key)), false);

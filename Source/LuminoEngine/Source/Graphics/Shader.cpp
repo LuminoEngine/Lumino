@@ -540,8 +540,10 @@ void Shader::tryCommitChanges()
 //------------------------------------------------------------------------------
 ShaderVariable* Shader::findVariable(const Char* name, CaseSensitivity cs) const
 {
-	for (ShaderVariable* var : m_variables) {
-		if (var->getName().compare(name, -1, cs) == 0) {
+	for (ShaderVariable* var : m_variables)
+	{
+		if (String::compare(StringRef(var->getName()), 0, StringRef(name), 0, -1, cs) == 0)
+		{
 			return var;
 		}
 	}
@@ -557,8 +559,10 @@ const List<ShaderTechnique*>& Shader::getTechniques() const
 //------------------------------------------------------------------------------
 ShaderTechnique* Shader::findTechnique(const Char* name, CaseSensitivity cs) const
 {
-	for (auto* var : m_techniques) {
-		if (var->getName().compare(name, -1, cs) == 0) {
+	for (auto* var : m_techniques)
+	{
+		if (String::compare(StringRef(var->getName()), 0, StringRef(name), 0, -1, cs) == 0)
+		{
 			return var;
 		}
 	}
@@ -751,8 +755,7 @@ void ShaderValue::setManagedTexture(Texture* texture)
 void ShaderValue::setString(const char* str)
 {
 	m_type = ShaderVariableType_String;
-	String s;
-	s.assignCStr(str);
+	String s = String::fromCString(str);
 	size_t size = s.getByteCount() + sizeof(Char);
 	allocValueBuffer(size);
 	memcpy(m_value.String, s.c_str(), size);
@@ -1184,8 +1187,10 @@ const List<ShaderVariable*>& ShaderVariable::getAnnotations() const
 //------------------------------------------------------------------------------
 ShaderVariable* ShaderVariable::findAnnotation(const Char* name, CaseSensitivity cs) const
 {
-	for (ShaderVariable* anno : m_annotations) {
-		if (anno->getName().compare(name, -1, cs) == 0) {
+	for (ShaderVariable* anno : m_annotations)
+	{
+		if (String::compare(StringRef(anno->getName()), 0, StringRef(name), 0, -1, cs) == 0)
+		{
 			return anno;
 		}
 	}
@@ -1298,8 +1303,10 @@ const List<ShaderVariable*>& ShaderTechnique::getAnnotations() const
 //------------------------------------------------------------------------------
 ShaderVariable* ShaderTechnique::findAnnotation(const Char* name, CaseSensitivity cs) const
 {
-	for (ShaderVariable* anno : m_annotations) {
-		if (anno->getName().compare(name, -1, cs) == 0) {
+	for (ShaderVariable* anno : m_annotations)
+	{
+		if (String::compare(StringRef(anno->getName()), 0, StringRef(name), 0, -1, cs) == 0)
+		{
 			return anno;
 		}
 	}
@@ -1388,8 +1395,10 @@ const List<ShaderVariable*>& ShaderPass::getAnnotations() const
 //------------------------------------------------------------------------------
 ShaderVariable* ShaderPass::findAnnotation(const Char* name, CaseSensitivity cs) const
 {
-	for (ShaderVariable* anno : m_annotations) {
-		if (anno->getName().compare(name, -1, cs) == 0) {
+	for (ShaderVariable* anno : m_annotations)
+	{
+		if (String::compare(StringRef(anno->getName()), 0, StringRef(name), 0, -1, cs) == 0)
+		{
 			return anno;
 		}
 	}

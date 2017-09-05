@@ -749,6 +749,11 @@ void UString::assignFromCStr(const TChar* str, int length)
 }
 
 
+uint32_t UString::getHashCode() const
+{
+	if (isEmpty()) return 0;
+	return ln::Hash::calcHash(c_str(), getLength());
+}
 
 
 
@@ -792,6 +797,12 @@ UString UStringRef::mid(int start, int count) const
 	// TODO: Ref で返していいよね？
 	//return StringTraits::mid(getBegin(), start, count);
 	return UString(getBegin(), count).substring(start, count);
+}
+
+size_t UStringRef::getHashCode() const
+{
+	if (IsNullOrEmpty()) return 0;
+	return Hash::calcHash(getBegin(), getLength());
 }
 
 //==============================================================================
@@ -1028,6 +1039,54 @@ void UStringConvert::convertToStdString(const char16_t* src, int srcLen, std::ws
 //}
 //
 //} // namespace fmt
+
+
+//==============================================================================
+// String globals
+//==============================================================================
+
+#define TO_INT_DEF(type, func) \
+	const UChar* begin; \
+	const UChar* end; \
+	int len; \
+	NumberConversionResult res; \
+	StringTraits::trim(str.c_str(), str.getLength(), &begin, &len); \
+	type num = StringTraits::func(begin, len, base, &end, &res); \
+	if (res == NumberConversionResult::ArgsError)	{ LN_THROW(0, ArgumentException); } \
+	if (res == NumberConversionResult::FormatError)	{ LN_THROW(0, InvalidFormatException); } \
+	if (res == NumberConversionResult::Overflow)	{ LN_THROW(0, OverflowException); } \
+	LN_THROW(end == begin + len, InvalidFormatException); \
+	return num;
+int8_t toInt8(const UString& str, int base) { TO_INT_DEF(int8_t, toInt8); }
+int16_t toInt16(const UString& str, int base) { TO_INT_DEF(int16_t, toInt16); }
+int32_t toInt32(const UString& str, int base) { TO_INT_DEF(int32_t, toInt32); }
+int64_t toInt64(const UString& str, int base) { TO_INT_DEF(int64_t, toInt64); }
+uint8_t toUInt8(const UString& str, int base) { TO_INT_DEF(uint8_t, toUInt8); }
+uint16_t toUInt16(const UString& str, int base) { TO_INT_DEF(uint16_t, toUInt16); }
+uint32_t toUInt32(const UString& str, int base) { TO_INT_DEF(uint32_t, toUInt32); }
+uint64_t toUInt64(const UString& str, int base) { TO_INT_DEF(uint64_t, toUInt64); }
+#undef TO_INT_DEF
+
+#define TRY_TO_INT_DEF(type, func) \
+	const UChar* begin; \
+	const UChar* end; \
+	int len; \
+	NumberConversionResult res; \
+	StringTraits::trim(str.c_str(), str.getLength(), &begin, &len); \
+	type num = StringTraits::func(begin, len, base, &end, &res); \
+	if (end != begin + len) { return false; } \
+	if (res != NumberConversionResult::Success) { return false; } \
+	if (outValue != nullptr) { *outValue = num; } \
+	return true;
+bool tryToInt8(const UString& str, int8_t* outValue, int base) { TRY_TO_INT_DEF(int8_t, toInt8); }
+bool tryToInt16(const UString& str, int16_t* outValue, int base) { TRY_TO_INT_DEF(int16_t, toInt16); }
+bool tryToInt32(const UString& str, int32_t* outValue, int base) { TRY_TO_INT_DEF(int32_t, toInt32); }
+bool tryToInt64(const UString& str, int64_t* outValue, int base) { TRY_TO_INT_DEF(int64_t, toInt64); }
+bool tryToUInt8(const UString& str, uint8_t* outValue, int base) { TRY_TO_INT_DEF(uint8_t, toUInt8); }
+bool tryToUInt16(const UString& str, uint16_t* outValue, int base) { TRY_TO_INT_DEF(uint16_t, toUInt16); }
+bool tryToUInt32(const UString& str, uint32_t* outValue, int base) { TRY_TO_INT_DEF(uint32_t, toUInt32); }
+bool tryToUInt64(const UString& str, uint64_t* outValue, int base) { TRY_TO_INT_DEF(uint64_t, toUInt64); }
+#undef TRY_TO_INT_DEF
 
 LN_NAMESPACE_END
 

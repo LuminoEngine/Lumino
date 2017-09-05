@@ -95,7 +95,7 @@ void Archive::open(const PathName& filePath, const String& key)
     }
 
 	// アーカイブファイルを開く
-	errno_t err = _tfopen_s(&m_stream, filePath, _T("rb"));
+	errno_t err = _tfopen_s(&m_stream, filePath.c_str(), _T("rb"));
 	LN_THROW(err == 0, FileNotFoundException);
 
     // 終端から16バイト戻ってからそれを読むとファイル数
@@ -122,6 +122,8 @@ void Archive::open(const PathName& filePath, const String& key)
 		LN_THROW(0, InvalidFormatException, "invalid archive key.");
 	}
 
+	// TODO: UTF16ではなく String の内部エンコーディングに合わせる
+
 	// ファイル情報を取得していく
 	uint32_t name_len;
 	Entry entry;
@@ -133,8 +135,7 @@ void Archive::open(const PathName& filePath, const String& key)
 		// ファイル名を読み込むバッファを確保して読み込む
 		ByteBuffer nameBuf(name_len * sizeof(UTF16));
 		readPadding16(nameBuf.getData(), name_len * sizeof(UTF16));
-		String tmpName;
-		tmpName.convertFrom(nameBuf.getData(), nameBuf.getSize(), Encoding::getUTF16Encoding());
+		String tmpName = Encoding::fromBytes(nameBuf.getData(), nameBuf.getSize(), Encoding::getUTF16Encoding());
 		PathName name(m_virtualDirectoryPath, tmpName);	// 絶対パスにする
 		name = name.canonicalizePath();
 			
@@ -411,7 +412,7 @@ bool DummyArchive::tryCreateStream(const PathName& fileFullPath, Ref<Stream>* ou
 
 	FileOpenMode mode = FileOpenMode::read;
 	if (isDeferring) { mode |= FileOpenMode::Deferring; }
-	Ref<FileStream> file = FileStream::create(fileFullPath, mode);
+	Ref<FileStream> file = FileStream::create(fileFullPath.c_str(), mode);
 	*outStream = file;
 	return true;
 }
@@ -468,7 +469,7 @@ bool DirectoryAssetsStorage::tryCreateStream(const PathName& fileFullPath, Ref<S
 		mode |= FileOpenMode::Deferring;
 	}
 
-	Ref<FileStream> file = FileStream::create(fileFullPath, mode);
+	Ref<FileStream> file = FileStream::create(fileFullPath.c_str(), mode);
 	*outStream = file;
 	return true;
 }
@@ -501,7 +502,7 @@ void ArchiveManager::initialize(FileAccessPriority accessPriority)
 	if (!installDir.isEmpty())
 	{
 		PathName dir = installDir;
-		dir.append(LN_COMPILER_KEYWORD);
+		dir.append(_T(LN_COMPILER_KEYWORD));
 		dir.append(_T("Assets"));
 		m_installDirAssetsStorage = Ref<DirectoryAssetsStorage>::makeRef(dir);
 	}

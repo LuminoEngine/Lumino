@@ -110,7 +110,7 @@ Stream* FileManager::createFileStream(const PathName& filePath, bool isDeferring
 		}
 	}
 
-	LN_THROW(stream != NULL, FileNotFoundException, absPath);	// ファイルが見つからなかった
+	LN_THROW(stream != NULL, FileNotFoundException, absPath.c_str());	// ファイルが見つからなかった
 	return stream.detachMove();
 }
 

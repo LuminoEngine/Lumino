@@ -13,15 +13,17 @@ LN_NAMESPACE_BEGIN
 //------------------------------------------------------------------------------
 void Clipboard::setText(PlatformWindow* window, const String& text)
 {
-	ByteBuffer wideStr = text.convertTo(Encoding::getWideCharEncoding());
-	int wideCount = (wideStr.getSize() + 1) * sizeof(WCHAR);
+	//ByteBuffer wideStr = text.convertTo(Encoding::getWideCharEncoding());
+	//int wideCount = (wideStr.getSize() + 1) * sizeof(WCHAR);
+	std::wstring wideStr = text.toStdWString();
+	int byteCount = (wideStr.length() * 1) * sizeof(WCHAR);
 
-	HGLOBAL hGlobal = ::GlobalAlloc(GMEM_MOVEABLE, wideCount);
+	HGLOBAL hGlobal = ::GlobalAlloc(GMEM_MOVEABLE, byteCount);
 	LN_THROW(hGlobal != NULL, Win32Exception, ::GetLastError());
 
 	WCHAR* buf = (WCHAR*)::GlobalLock(hGlobal);
-	memcpy(buf, wideStr.getConstData(), wideCount);
-	buf[wideCount - 1] = L'\0';
+	memcpy(buf, wideStr.c_str(), byteCount);
+	buf[wideStr.length()] = L'\0';
 	::GlobalUnlock(hGlobal);
 
 	HWND hWnd = PlatformSupport::getWindowHandle(window);
@@ -64,7 +66,7 @@ String Clipboard::getText(PlatformWindow* window)
 	String str;
 	try
 	{
-		str.convertFrom(buf, len * sizeof(WCHAR), Encoding::getWideCharEncoding());
+		str = String::fromCString(buf, len);
 	}
 	catch (...)
 	{

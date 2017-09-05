@@ -240,7 +240,7 @@ TEST_F(Test_CppLexer, Example)
 	InputFile* file = ctx.RegisterInputFile(LN_LOCALFILE("Test_CppLexer.cpp"));
 	ctx.LexFile(file);
 	const TokenList& tokens = *file->GetTokenList();
-	tr::XmlFileWriter xml("test.html");
+	tr::XmlFileWriter xml(_T("test.html"));
 	xml.writeStartDocument();
 	xml.writeStartElement(_T("body"));
 	for (Token* t : tokens)
@@ -249,7 +249,7 @@ TEST_F(Test_CppLexer, Example)
 		{
 			xml.writeStartElement(_T("b"));
 			StringA str = t->getString(file);
-			xml.writeString(String::fromNativeCharString(str.c_str(), str.getLength()));
+			xml.writeString(String::fromCString(str.c_str(), str.length()));
 			xml.writeEndElement();
 		}
 		else if(t->GetTokenGroup() == TokenGroup::NewLine)
@@ -260,7 +260,7 @@ TEST_F(Test_CppLexer, Example)
 		else
 		{
 			StringA str = t->getString(file);
-			xml.writeString(String::fromNativeCharString(str.c_str(), str.getLength()));
+			xml.writeString(String::fromCString(str.c_str(), str.length()));
 		}
 	}
 	xml.writeEndElement();

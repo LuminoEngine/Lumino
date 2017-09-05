@@ -273,7 +273,7 @@ static const String& getGamepadElementName(GamepadElement element)
 	};
 	static const NamePair table[] =
 	{
-		{ GamepadElement::None,			nullptr },
+		{ GamepadElement::None,			_T("") },
 		{ GamepadElement::Button1,		_T("Gamepad Button 1") },
 		{ GamepadElement::Button2,		_T("Gamepad Button 2") },
 		{ GamepadElement::Button3,		_T("Gamepad Button 3") },

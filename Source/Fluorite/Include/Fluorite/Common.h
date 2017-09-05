@@ -15,7 +15,7 @@
 using namespace ln;		// TODO: あとで消す
 
 using flChar = char;
-using flStringArray = ln::StringArrayA;
+using flStringArray = std::vector<std::string>;
 using flString = ln::StringA;
 using flStringRef = ln::StringRefA;
 

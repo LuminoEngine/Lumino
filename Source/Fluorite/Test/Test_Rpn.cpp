@@ -403,6 +403,6 @@ TEST_F(Test_Parser_RpnEvaluator, Error)
 		ASSERT_EQ(false, TryEval("7%3.f"));
 		ASSERT_EQ(1, m_diag.getItems()->getCount());
 		ASSERT_EQ(DiagnosticsCode::RpnEvaluator_OperatorInvalidType, m_diag.getItems()->getAt(0).GetCode());
-		ASSERT_EQ("Float", m_diag.getItems()->getAt(0).GetOptions().getAt(0));
+		ASSERT_EQ("Float", m_diag.getItems()->getAt(0).GetOptions().at(0));
 	}
 }
