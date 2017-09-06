@@ -13,6 +13,8 @@
 #include "../Text/Win32CodePageEncoding.h"
 #endif
 
+#if 1
+#else
 LN_NAMESPACE_BEGIN
 
 //------------------------------------------------------------------------------
@@ -75,3 +77,4 @@ template class GenericStringRef<wchar_t>;
 
 
 LN_NAMESPACE_END
+#endif

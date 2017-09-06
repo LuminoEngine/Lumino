@@ -82,8 +82,6 @@ public:
 	*/
 	template<typename TChar>
 	static void getExtension(const TChar* path, TChar* outExt);
-	template<typename TChar>
-	static Result getExtension(const TChar* path, bool withDot, GenericStringRef<TChar>* outRef) LN_NOEXCEPT;
 	
 	/**
 		@brief		パス文字列を結合します。
@@ -104,13 +102,6 @@ public:
 	*/
 	template<typename TChar>
 	static void canonicalizePath(const TChar* srcPath, TChar* outPath);
-
-	/**
-		@brief			パスを単純化する
-		@param[in,out]	path	: 単純化するファイルパスが格納されている変数
-	*/
-	template<typename TChar>
-	static void canonicalizePath(GenericString<TChar>* path);
 
 	/**
 		@brief		パスを単純化する

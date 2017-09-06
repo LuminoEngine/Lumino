@@ -11,6 +11,7 @@
 #endif
 
 LN_NAMESPACE_BEGIN
+class Encoding;
 namespace detail { class UStringCore; }
 
 namespace detail
@@ -647,7 +648,7 @@ public:
 
 	~UStringCore()
 	{
-		delete m_str;
+		delete[] m_str;
 	}
 
 	bool isShared() const LN_NOEXCEPT { return (m_refCount > 1); }

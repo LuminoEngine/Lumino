@@ -184,7 +184,7 @@ private:
 		int64_t	m_int64;
 		float	m_float;
 		double	m_double;
-		ln::detail::GenericStringCore<TCHAR>*	m_stringCore;
+		String*	m_string;
 	};
 
 	friend class JsonDocument2;

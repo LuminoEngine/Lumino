@@ -12,6 +12,8 @@
 #include <Lumino/Base/Hash.h>
 #include <Lumino/IO/PathName.h>
 
+#if 1
+#else
 /*
 basic_string クラス
 https://msdn.microsoft.com/ja-jp/library/syxtdd4f.aspx
@@ -1128,3 +1130,6 @@ std::size_t hash<ln::StringW>::operator () (const ln::StringW& key) const
 #endif
 
 } // namespace std
+
+#endif
+

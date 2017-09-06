@@ -133,17 +133,6 @@ public:
 	/// encoding 省略時は UTF8 (BOM 無し)
 	static void writeAllText(const TCHAR* filePath, const String& str, Encoding* encoding = nullptr);
 
-	
-
-#ifdef LN_USTRING
-#else
-	// TODO: これだけだと FileSystem::ForEachFilesInDirectory<TCHAR>() のように明示的な型指定が必要
-	template<typename TChar, typename TCallback>
-	static void forEachFilesInDirectory(const GenericStringRef<TChar>& path, TCallback callback);
-#endif
-
-	
-
 
 	static tr::Enumerator<PathName> getFiles(const StringRef& dirPath, const StringRef& pattern = StringRef());
 

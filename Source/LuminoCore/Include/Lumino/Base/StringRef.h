@@ -3,6 +3,8 @@
 #include <cstddef>
 #include "StringHelper.h"
 
+#if 1
+#else
 LN_NAMESPACE_BEGIN
 
 namespace detail { template<typename TChar> class GenericStringCore; }
@@ -150,10 +152,12 @@ inline bool operator!=(const GenericStringRef<TChar>& left, const GenericStringR
 }
 
 
-#ifndef LN_USTRING
-typedef GenericStringRef<TCHAR>		StringRef;
-#endif
-typedef GenericStringRef<char>		StringRefA;
-typedef GenericStringRef<wchar_t>	StringRefW;
+//#ifndef LN_USTRING
+//typedef GenericStringRef<TCHAR>		StringRef;
+//#endif
+//typedef GenericStringRef<char>		StringRefA;
+//typedef GenericStringRef<wchar_t>	StringRefW;
 
 LN_NAMESPACE_END
+
+#endif

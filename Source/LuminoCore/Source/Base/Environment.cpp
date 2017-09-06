@@ -94,9 +94,10 @@ bool Environment::tryGetEnvironmentVariable(const String& variableName, String* 
 	if (err != 0 || len == 0) {	// Win32 では環境変数を空にはできない
 		return false;
 	}
-	Char* val = new Char[len];
-	_tgetenv_s(&len, val, len, name.c_str());
-	if (outValue) { *outValue = val; }
+	//Char* val = new Char[len];
+	ByteBuffer val(len * sizeof(Char));
+	_tgetenv_s(&len, (Char*)val.getData(), len, name.c_str());
+	if (outValue) { *outValue = (const Char*)val.getConstData(); }
 	return true;
 #else
 #endif

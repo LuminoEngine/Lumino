@@ -73,10 +73,10 @@ const flChar* Token::GetCStr(InputFile* file) const
 }
 
 //------------------------------------------------------------------------------
-StringA Token::getString(InputFile* file) const
+flString Token::getString(InputFile* file) const
 {
 	const flChar* begin = (const flChar*)file->GetCodeBuffer()->getConstData();
-	return StringA(begin + m_locBegin, m_locEnd - m_locBegin);
+	return flString(begin + m_locBegin, m_locEnd - m_locBegin);
 }
 
 //------------------------------------------------------------------------------

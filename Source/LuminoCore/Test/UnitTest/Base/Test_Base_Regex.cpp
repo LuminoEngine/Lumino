@@ -1,8 +1,7 @@
 ﻿#include <TestConfig.h>
 #include <Lumino/Base/Regex.h>
 
-#ifdef LN_USTRING
-#else
+
 class Test_Base_Regex : public ::testing::Test
 {
 protected:
@@ -55,5 +54,3 @@ TEST_F(Test_Base_Regex, Integrate)
 	//	it++;
 	//}
 }
-
-#endif

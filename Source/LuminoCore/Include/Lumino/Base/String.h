@@ -10,7 +10,11 @@
 #include "List.h"
 #include "ByteBuffer.h"
 
+#if 1
+#else
 LN_NAMESPACE_BEGIN
+
+
 class Locale;
 class Encoding;
 template<typename TChar> class GenericCharRef;
@@ -764,7 +768,6 @@ public:
 
 LN_NAMESPACE_END
 
-
 namespace std {
 
 // for unordered_map key
@@ -772,6 +775,7 @@ template <> struct hash<ln::StringA> { std::size_t operator () (const ln::String
 template <> struct hash<ln::StringW> { std::size_t operator () (const ln::StringW& key) const; };
 
 } // namespace std
+#endif
 
 #include "StringHelper.h"
 #include "StringRef.h"

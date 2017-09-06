@@ -211,8 +211,7 @@ void JsonValue2::setString(const StringRef& value)
 {
 	checkRelease();
 	setType(JsonValueType::String);
-	m_stringCore = LN_NEW ln::detail::GenericStringCore<TCHAR>();
-	m_stringCore->assign(value.getBegin(), value.getLength());
+	m_string = LN_NEW String(value.getBegin(), value.getLength());
 }
 
 //------------------------------------------------------------------------------
@@ -259,13 +258,8 @@ double JsonValue2::getDouble() const
 //------------------------------------------------------------------------------
 String JsonValue2::getString() const
 {
-#ifdef LN_USTRING
-	return m_stringCore->c_str();
-#else
-	String str;
-	ln::detail::StringHelper::attachStringCore(&str, m_stringCore);
-	return str;
-#endif
+	if (LN_CHECK_STATE(getType() == JsonValueType::String)) return String();
+	return *m_string;
 }
 
 //------------------------------------------------------------------------------
@@ -273,7 +267,7 @@ void JsonValue2::checkRelease()
 {
 	if (getType() == JsonValueType::String)
 	{
-		m_stringCore->release();
+		LN_SAFE_DELETE(m_string);
 	}
 	setType(JsonValueType::Null);
 }
@@ -303,7 +297,7 @@ void JsonValue2::onSave(JsonWriter* writer)
 			writer->writeDouble(m_double);
 			break;
 		case JsonValueType::String:
-			writer->writeString(m_stringCore->c_str(), m_stringCore->length());
+			writer->writeString(m_string->c_str(), m_string->getLength());
 			break;
 		default:
 			LN_UNREACHABLE();

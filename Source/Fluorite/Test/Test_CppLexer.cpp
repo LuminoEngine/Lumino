@@ -248,7 +248,7 @@ TEST_F(Test_CppLexer, Example)
 		if (t->GetTokenGroup() == TokenGroup::Keyword)
 		{
 			xml.writeStartElement(_T("b"));
-			StringA str = t->getString(file);
+			flString str = t->getString(file);
 			xml.writeString(String::fromCString(str.c_str(), str.length()));
 			xml.writeEndElement();
 		}
@@ -259,7 +259,7 @@ TEST_F(Test_CppLexer, Example)
 		}
 		else
 		{
-			StringA str = t->getString(file);
+			flString str = t->getString(file);
 			xml.writeString(String::fromCString(str.c_str(), str.length()));
 		}
 	}

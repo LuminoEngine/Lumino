@@ -86,7 +86,7 @@ public:
 
 	LogLevel GetLevel() const { return m_level; }
 
-	const StringA& getMessage() const { return m_message; }
+	const std::string& getMessage() const { return m_message; }
 
 	const char* GetFile() const { return m_file; }
 
@@ -103,7 +103,7 @@ private:
 	const char*		m_func;
 	int				m_line;
 	unsigned int	m_threadId;
-	StringA			m_message;
+	std::string		m_message;
 };
 
 //==============================================================================

@@ -286,46 +286,6 @@ template void PathTraits::getExtension(const wchar_t* path, wchar_t* outExt);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-Result PathTraits::getExtension(const TChar* path, bool withDot, GenericStringRef<TChar>* outRef) LN_NOEXCEPT
-{
-	if (path == nullptr || outRef == nullptr) { return Result::ArgumentError; }
-	outRef->attach(path, 0, 0);
-
-	int len = StringTraits::tcslen(path);
-	for (int i = len; i >= 0; --i)
-	{
-		TChar ch = path[i];
-		if (ch == '.')
-		{
-			if (withDot)
-			{
-				if (i != len - 1) {
-					*outRef = GenericStringRef<TChar>(&path[i], len - i);
-					break;
-				}
-			}
-			else
-			{
-				if (i + 1 != len - 1) {
-					*outRef = GenericStringRef<TChar>(&path[i + 1], len - i);
-					break;
-				}
-			}
-
-			break;	// "file." のようなパターン
-		}
-		
-		if (isSeparatorChar(ch)) {
-			break;		// . の前にセパレータが見つかった
-		}
-	}
-	return Result::Success;
-}
-template Result PathTraits::getExtension(const char* path, bool withDot, GenericStringRef<char>* outRef) LN_NOEXCEPT;
-template Result PathTraits::getExtension(const wchar_t* path, bool withDot, GenericStringRef<wchar_t>* outRef) LN_NOEXCEPT;
-
-//------------------------------------------------------------------------------
-template<typename TChar>
 Result PathTraits::combine(const TChar* path1, int path1Len, const TChar* path2, int path2Len, TChar* outPath, int pathCapacity) LN_NOEXCEPT
 {
 	if (path1 == nullptr) return Result::ArgumentError;
@@ -637,20 +597,6 @@ void PathTraits::canonicalizePath(const TChar* srcPath, TChar* outPath)
 }
 template void PathTraits::canonicalizePath<char>(const char* srcPath, char* outPath);
 template void PathTraits::canonicalizePath<wchar_t>(const wchar_t* srcPath, wchar_t* outPath);
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-void PathTraits::canonicalizePath(GenericString<TChar>* path)
-{
-	if (path == NULL) { return; }
-
-	TChar tmpPath[LN_MAX_PATH + 1];
-	memset(tmpPath, 0, sizeof(tmpPath));
-	PathTraits::canonicalizePath(path->c_str(), tmpPath);
-	*path = tmpPath;
-}
-template void PathTraits::canonicalizePath<char>(GenericString<char>* path);
-template void PathTraits::canonicalizePath<wchar_t>(GenericString<wchar_t>* path);
 
 #if 0
 //------------------------------------------------------------------------------
