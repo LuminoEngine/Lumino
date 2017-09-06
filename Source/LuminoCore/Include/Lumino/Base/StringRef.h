@@ -6,6 +6,7 @@
 LN_NAMESPACE_BEGIN
 
 namespace detail { template<typename TChar> class GenericStringCore; }
+template<typename TChar> class GenericString;
 
 /**
 	@brief	ある文字列に対する部分文字列の参照を保持します。
@@ -105,10 +106,6 @@ public:
 
 	int copyToLocal8Bit(char* dest, int destLen) const;
 
-	GenericString<TChar> mid(int start, int count) const
-	{
-		return StringTraits::mid(getBegin(), start, count);
-	}
 
 	/** この文字列参照のコピーを持つ文字列を作成します。*/
 	GenericString<TChar> toString() const;

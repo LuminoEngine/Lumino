@@ -178,6 +178,30 @@ public:
 	*/
 	UStringRef substring(int start, int count = -1) const;
 
+	/**
+		@brief		文字列の左側(先頭)から指定した文字数を抽出します。
+		@param[in]	str		: 対象の文字列
+		@param[in]	count	: 文字数
+		@return		抽出された文字列
+		@code
+					String s(_T("abcdef"));
+					s.Left(2)		=> _T("ab");
+		@endcode
+	*/
+	UString left(int count) const;
+
+	/**
+		@brief		文字列の右側(末尾)から指定した文字数を抽出します。
+		@param[in]	str		: 対象の文字列
+		@param[in]	count	: 文字数
+		@return		抽出された文字列
+		@code
+					String s(_T("abcdef"));
+					s.Right(2)		=> _T("ef");
+		@endcode
+	*/
+	UString right(int count) const;
+
 	/** 文字列の先頭と末尾の空白を全て削除します。 */
 	UString trim() const;
 
@@ -258,7 +282,7 @@ public:
 					String str2 = String::SPrintf(_T("%ss"), str1.c_str());	// => "100s"
 					~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	*/
-	static UString sprintf(const UString& format, ...);
+	static UString sprintf(const UChar* format, ...);
 
 
 	template<typename... TArgs>

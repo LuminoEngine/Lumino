@@ -15,23 +15,8 @@ class StringArray
 public:
 
 private:
-};
 
-/**
-	@brief	文字列の配列です。
-*/
-template<typename TChar>
-class GenericStringArray
-	: public List< GenericString<TChar> >
-{
-public:
-	typedef List< GenericString<TChar> >	ArrayType;
-	typedef GenericString<TChar>			StringType;
-
-
-public:
-	GenericStringArray() {}
-
+#if 0
 	/** 初期化子リストから作成します。*/
 	GenericStringArray(std::initializer_list<const TChar*> list)
 	{
@@ -69,14 +54,7 @@ public:
 		}
 		return -1;
 	}
-
-};
-
-#ifdef LN_USTRING
-#else
-typedef GenericStringArray<TCHAR>	StringArray;
-typedef GenericStringArray<char>	StringArrayA;
-typedef GenericStringArray<wchar_t>	StringArrayW;
 #endif
+};
 
 LN_NAMESPACE_END

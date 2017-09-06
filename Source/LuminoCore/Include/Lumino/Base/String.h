@@ -15,7 +15,6 @@ class Locale;
 class Encoding;
 template<typename TChar> class GenericCharRef;
 template<typename TChar> class GenericStringRef;
-template<typename TChar> class GenericStringArray;
 
 namespace detail { template<typename TChar> class GenericStringCore; }
 namespace detail { class StringHelper; }
@@ -302,59 +301,6 @@ public:
 					str1 が str2 より大きい → 0 より大きい値
 	*/
 	int compare(const TChar* str, int count = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
-
-	/**
-		@brief		文字列の左側(先頭)から指定した文字数を抽出します。
-		@param[in]	str		: 対象の文字列
-		@param[in]	count	: 文字数
-		@return		抽出された文字列
-		@code
-					String s(_T("abcdef"));
-					s.Left(2)		=> _T("ab");
-		@endcode
-	*/
-	GenericString<TChar> left(int count) const;
-
-	/**
-		@brief		文字列の右側(末尾)から指定した文字数を抽出します。
-		@param[in]	str		: 対象の文字列
-		@param[in]	count	: 文字数
-		@return		抽出された文字列
-		@code
-					String s(_T("abcdef"));
-					s.Right(2)		=> _T("ef");
-		@endcode
-	*/
-	GenericString<TChar> right(int count) const;
-
-	/**
-		@brief		文字列の部分文字列を抽出します。
-		@param[in]	str		: 対象の文字列
-		@param[in]	start	: 開始文字インデックス
-		@param[in]	count	: 文字数 (-1 の場合、末尾まで抽出する)
-		@return		抽出された文字列
-		@code
-					String s(_T("abcdef"));
-					s.Mid(2, 3)		=> _T("cde");
-		@endcode
-	*/
-	GenericString<TChar> mid(int start, int count = -1) const;
-
-	/**
-		@brief		文字列をデリミタで分割する
-		@param[in]	delim	: デリミタ文字列
-		@param[in]	option	: 分割方法
-		@return		分割結果の文字列配列
-		@detail		分割が発生しない場合は文字列全体を持つ要素数1の配列を返します。
-					
-					~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-					auto tokens = String("a,b,c").Split(",");		// => ["a", "b", "c"]
-					auto tokens = String("a").Split(",");			// => ["a"]
-					auto tokens = String(",").Split(",");			// => ["", ""]
-					auto tokens = String("a::b").Split("::");		// => ["a", "b"]
-					~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	*/
-	GenericStringArray<TChar> split(const TChar* delim, StringSplitOptions option = StringSplitOptions::None) const;
 
 	/**
 		@brief		文字列を構成するバイト数を取得する (終端 '\0' は含まない)

@@ -48,7 +48,7 @@ LN_INTERNAL_ACCESS:
 	int getRevision() const { return m_revision; }
 
 private:
-	GenericStringBuilderCore<UTF32>	m_text;				// \n を含む
+	detail::SimpleStringBuilder<UTF32>	m_text;				// \n を含む
 	LineDelimiter					m_lineDelimiter;
 	int								m_revision;
 };
@@ -976,7 +976,7 @@ LN_CONSTRUCT_ACCESS:
 private:
 	void UpdateCaretRectangle();
 
-	GenericStringBuilderCore<UTF32>	m_rawText;
+	detail::SimpleStringBuilder<UTF32>	m_rawText;
 	Ref<GlyphRun>				m_glyphRun;
 	Ref<UITextAreaCaret>			m_caret;
 	Ref<Brush>					m_caretBrush;

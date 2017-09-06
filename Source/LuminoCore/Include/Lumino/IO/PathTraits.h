@@ -56,31 +56,6 @@ public:
 	static bool endWithSeparator(const TChar* path, int len = -1);
 
 	/**
-		@brief		パス文字列からディレクトリ部分を取り出す
-		@param[in]	path	: ファイルまたはディレクトリのパス
-		@details	出力例
-					- "C:\MyDir\MySubDir\myfile.ext" → "C:\MyDir\MySubDir"
-					- "C:\MyDir\MySubDir" → "C:\MyDir"
-					- "C:\MyDir\" → "C:\MyDir"
-					- "C:\MyDir" → "C:\"
-					- "C:\" → ""
-					- "/MyDir/" → "/MyDir"
-					- "/MyDir" → "/"
-					- "/" → ""
-	*/
-	template<typename TChar>
-	static GenericString<TChar> getDirectoryPath(const TChar* path);
-
-	/**
-		@brief		パス文字列の中から拡張子を含むファイル名の部分を返す
-		@param[in]	path	: パス文字列
-		@details	path が NULL の場合は空文字列を返します。
-	*/
-	template<typename TChar>
-	static GenericString<TChar> getFileName(const TChar* path);
-
-
-	/**
 		@brief		パス文字列の中から拡張子を含むファイル名の部分を返す
 	*/
 	template<typename TChar>
@@ -179,7 +154,7 @@ public:
 	static int compare(TChar ch1, TChar ch2, CaseSensitivity cs);
 
 	template<typename TChar>
-	static GenericString<TChar> diffPath(const TChar* path1, int len1, const TChar* path2, int len2, CaseSensitivity cs);
+	static std::basic_string<TChar> diffPath(const TChar* path1, int len1, const TChar* path2, int len2, CaseSensitivity cs);
 };
 
 LN_NAMESPACE_END

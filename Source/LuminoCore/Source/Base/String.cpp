@@ -772,34 +772,6 @@ int GenericString<TChar>::compare(const TChar* str, int count, CaseSensitivity c
 
 //------------------------------------------------------------------------------
 template<typename TChar>
-GenericString<TChar> GenericString<TChar>::left(int count) const
-{
-	return StringTraits::left(c_str(), count);
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericString<TChar> GenericString<TChar>::right(int count) const
-{
-	return StringTraits::right(c_str(), count);
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericString<TChar> GenericString<TChar>::mid(int start, int count) const
-{
-	return StringTraits::mid(c_str(), start, count);
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericStringArray<TChar> GenericString<TChar>::split(const TChar* delim, StringSplitOptions option) const
-{
-	return StringTraits::split(*this, delim, option);
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
 GenericString<TChar> GenericString<TChar>::toUpper() const
 {
 	GenericString<TChar> newStr(c_str(), getLength());

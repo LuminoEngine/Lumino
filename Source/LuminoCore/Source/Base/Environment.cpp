@@ -299,8 +299,7 @@ void Environment::getSpecialFolderPath(SpecialFolder specialFolder, TChar* outPa
 		return;
 	}
 
-	GenericString<TChar> path;
-	path.assignCStr((const char*)buf.getConstData(), buf.getSize());
+	String path = String::fromCString((const char*)buf.getConstData(), buf.getSize());
 	StringTraits::tstrcpy(outPath, LN_MAX_PATH, path.c_str());
 }
 template void Environment::getSpecialFolderPath(SpecialFolder specialFolder, char* outPath);

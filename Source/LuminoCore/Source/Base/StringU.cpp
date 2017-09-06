@@ -234,6 +234,22 @@ UStringRef UString::substring(int start, int count) const
 	return UStringRef(c_str() + start, count);
 }
 
+UString UString::left(int count) const
+{
+	const UChar* begin;
+	const UChar* end;
+	StringTraits::left(c_str(), count, &begin, &end);
+	return UString(begin, end);
+}
+
+UString UString::right(int count) const
+{
+	const UChar* begin;
+	const UChar* end;
+	StringTraits::right(c_str(), count, &begin, &end);
+	return UString(begin, end);
+}
+
 UString UString::trim() const
 {
 	const UChar* begin;
@@ -418,33 +434,28 @@ UString UString::concat(const UStringRef& str1, const UStringRef& str2)
 	return s;
 }
 
-UString UString::sprintf(const UString& format, ...)
+UString UString::sprintf(const UChar* format, ...)
 {
 	static const int MaxFormatLength = 256;
 
-	// http://jumble-note.blogspot.jp/2012/09/c-vacopy.html
-	const UChar* fmt = format.c_str();	// VS2015 エラー回避。一度変数に入れる。
-	va_list args1, args2;
-	va_start(args1, fmt);
-	va_copy(args2, args1);
-	int len = StringTraits::tvscprintf_l(format.c_str(), Locale::getC().getNativeLocale(), args1);	// 文字数を求める
+	va_list args1;
+	va_start(args1, format);
+	int len = StringTraits::tvscprintf_l(format, Locale::getC().getNativeLocale(), args1);	// 文字数を求める
 
-																									// 文字数が一定以内ならメモリ確保せずにスタックを使い、速度向上を図る
+	// 文字数が一定以内ならメモリ確保せずにスタックを使い、速度向上を図る
 	if (len < MaxFormatLength)
 	{
 		UChar buf[MaxFormatLength + 1];
 		memset(buf, 0, sizeof(buf));
-		StringTraits::tvsnprintf_l(buf, MaxFormatLength + 1, format.c_str(), Locale::getDefault().getNativeLocale(), args2);
+		StringTraits::tvsnprintf_l(buf, MaxFormatLength + 1, format, Locale::getDefault().getNativeLocale(), args1);
 		va_end(args1);
-		va_end(args2);
 		return UString(buf);
 	}
 	else
 	{
-		ByteBuffer buf(len + 1);
-		StringTraits::tvsnprintf_l((UChar*)buf.getData(), len + 1, format.c_str(), Locale::getDefault().getNativeLocale(), args2);
+		ByteBuffer buf(sizeof(UChar) * (len + 1));
+		StringTraits::tvsnprintf_l((UChar*)buf.getData(), len + 1, format, Locale::getDefault().getNativeLocale(), args1);
 		va_end(args1);
-		va_end(args2);
 		return UString((UChar*)buf.getData());
 	}
 

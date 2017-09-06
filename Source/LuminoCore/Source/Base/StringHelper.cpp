@@ -565,41 +565,6 @@ template void StringTraits::trim<char>(const char* begin, int length, const char
 template void StringTraits::trim<wchar_t>(const wchar_t* begin, int length, const wchar_t** outBegin, int* outLength);
 template void StringTraits::trim<char16_t>(const char16_t* begin, int length, const char16_t** outBegin, int* outLength);
 
-//------------------------------------------------------------------------------
-//template<typename TChar>
-//GenericString<TChar> StringTraits::Format(const TChar* format, ...)
-//{
-//	GenericString<TChar> str;
-//	va_list args;
-//	va_start(args, format);
-//	try {
-//		StringTraits::FormatVAList(format, args, &str);
-//		va_end(args);
-//	}
-//	catch (...) {
-//		va_end(args);
-//		throw;
-//	}
-//	return str;
-//}
-//template GenericString<char> StringTraits::Format(const char* format, ...);
-//template GenericString<wchar_t> StringTraits::Format(const wchar_t* format, ...);
-//
-//------------------------------------------------------------------------------
-//template<typename TChar>
-//void StringTraits::FormatVAList(const TChar* format, va_list args, GenericString<TChar>* out)
-//{
-//	static const int nMaxLength = GenericString<TChar>::MaxFormatLength;
-//
-//	TChar buf[nMaxLength + 1];
-//	memset(buf, 0, sizeof(buf));
-//	int validSize = VSPrintf(buf, nMaxLength + 1, format, args);
-//
-//	LN_THROW(0 <= validSize && validSize <= nMaxLength, ArgumentException);
-//	*out = buf;
-//}
-//template void StringTraits::FormatVAList<char>(const char* format, va_list args, GenericString<char>* out);
-//template void StringTraits::FormatVAList<wchar_t>(const wchar_t* format, va_list args, GenericString<wchar_t>* out);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
@@ -674,119 +639,70 @@ int StringTraits::countString(const TChar* str1, int str1Len, const TChar* str2,
 template int StringTraits::countString<char>(const char* str1, int str1Len, const char* str2, int str2Len, CaseSensitivity cs);
 template int StringTraits::countString<wchar_t>(const wchar_t* str1, int str1Len, const wchar_t* str2, int str2Len, CaseSensitivity cs);
 
-//------------------------------------------------------------------------------
 template<typename TChar>
-GenericString<TChar> StringTraits::left(const TChar* str, int count)
+void StringTraits::left(const TChar* str, int count, const TChar** outBegin, const TChar** outEnd)
 {
-	if (count < 0) {
+	if (count < 0)
+	{
 		count = 0;
 	}
 
 	int len = (int)tcslen(str);
-	if (count >= len) {
-		return GenericString<TChar>(str);
+	if (count >= len)
+	{
+		*outBegin = str;
+		*outEnd = str + count;
 	}
-	return GenericString<TChar>(str, count);
+	else
+	{
+		*outBegin = str;
+		*outEnd = str + len;
+	}
 }
-template GenericString<char> StringTraits::left<char>(const char* str, int count);
-template GenericString<wchar_t> StringTraits::left<wchar_t>(const wchar_t* str, int count);
+template void StringTraits::left<char>(const char* str, int count, const char** outBegin, const char** outEnd);
+template void StringTraits::left<wchar_t>(const wchar_t* str, int count, const wchar_t** outBegin, const wchar_t** outEnd);
 
-//------------------------------------------------------------------------------
 template<typename TChar>
-GenericString<TChar> StringTraits::right(const TChar* str, int count)
+void StringTraits::right(const TChar* str, int count, const TChar** outBegin, const TChar** outEnd)
 {
-	if (count < 0) {
+	if (count < 0)
+	{
 		count = 0;
 	}
 
 	int len = (int)tcslen(str);
-	if (count >= len) {
-		return GenericString<TChar>(str);
-	}
-	return GenericString<TChar>(str + len - count, count);
+	*outBegin = str + len - count;
+	*outEnd = str + len;
 }
-template GenericString<char> StringTraits::right<char>(const char* str, int count);
-template GenericString<wchar_t> StringTraits::right<wchar_t>(const wchar_t* str, int count);
+template void StringTraits::right<char>(const char* str, int count, const char** outBegin, const char** outEnd);
+template void StringTraits::right<wchar_t>(const wchar_t* str, int count, const wchar_t** outBegin, const wchar_t** outEnd);
 
 //------------------------------------------------------------------------------
-template<typename TChar>
-GenericString<TChar> StringTraits::mid(const TChar* str, int start, int count)
-{
-	int len = (int)tcslen(str);
-
-	if (start < 0) {
-		start = 0;
-	}
-	if (count < 0) {
-		count = len - start;
-	}
-
-	if (start + count > len) {
-		count = len - start;
-	}
-	if (start > len) {
-		count = 0;
-	}
-
-	if (start == 0 && count == len) {
-		return GenericString<TChar>(str);
-	}
-
-	return GenericString<TChar>(str + start, count);
-}
-template GenericString<char> StringTraits::mid<char>(const char* str, int start, int count);
-template GenericString<wchar_t> StringTraits::mid<wchar_t>(const wchar_t* str, int start, int count);
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericStringArray<TChar> StringTraits::split(const GenericString<TChar>& str, const TChar* delim, StringSplitOptions option)
-{
-	GenericStringArray<TChar> result;
-
-	SplitHelper(
-		str.c_str(), str.c_str() + str.getLength(), delim, -1, option, CaseSensitivity::CaseSensitive,
-		[&result](const TChar* begin, const TChar* end){ result.add(GenericString<TChar>(begin, end - begin)); });
-
-	//// 最初の区切り文字を探す
-	//int tokenStart = 0;
-	//int delimIndex = str.IndexOf(delim, 0);
-
-	//if (delimIndex >= 0) {
-	//	if (option == StringSplitOptions::None || delimIndex > tokenStart) {
-	//		result.Add(str.SubString(tokenStart, delimIndex - tokenStart));
-	//	}
-	//}
-	//else {
-	//	if (option == StringSplitOptions::None || tokenStart != str.GetLength()) {
-	//		result.Add(str.SubString(tokenStart));	// 残り全て
-	//	}
-	//	return result;
-	//}
-	//// 次のトークン開始位置を指す
-	//tokenStart = delimIndex + 1;
-
-	//while (tokenStart <= ((int)str.GetLength()))
-	//{
-	//	delimIndex = str.IndexOf(delim, tokenStart);
-	//	if (delimIndex >= 0) {
-	//		if (option == StringSplitOptions::None || delimIndex > tokenStart) {
-	//			result.Add(str.SubString(tokenStart, delimIndex - tokenStart));
-	//		}
-	//	}
-	//	else {
-	//		if (option == StringSplitOptions::None || tokenStart != str.GetLength()) {
-	//			result.Add(str.SubString(tokenStart));	// 残り全て
-	//		}
-	//		break;
-	//	}
-	//	// 次のトークン開始位置を指す
-	//	tokenStart = delimIndex + 1;
-	//}
-
-	return result;
-}
-template GenericStringArray<char> StringTraits::split(const GenericString<char>& str, const char* delim, StringSplitOptions option);
-template GenericStringArray<wchar_t> StringTraits::split(const GenericString<wchar_t>& str, const wchar_t* delim, StringSplitOptions option);
+//template<typename TChar>
+//GenericString<TChar> StringTraits::mid(const TChar* str, int start, int count)
+//{
+//	int len = (int)tcslen(str);
+//
+//	if (start < 0) {
+//		start = 0;
+//	}
+//	if (count < 0) {
+//		count = len - start;
+//	}
+//
+//	if (start + count > len) {
+//		count = len - start;
+//	}
+//	if (start > len) {
+//		count = 0;
+//	}
+//
+//	if (start == 0 && count == len) {
+//		return GenericString<TChar>(str);
+//	}
+//
+//	return GenericString<TChar>(str + start, count);
+//}
 
 //------------------------------------------------------------------------------
 template<typename T>

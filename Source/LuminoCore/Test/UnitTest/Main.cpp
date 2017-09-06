@@ -64,7 +64,7 @@ GTEST_API_ int main(int argc, char **argv)
 #if 0	// 部分的にテストを実行したりする
 	char* testArgs[] = {
 		argv[0],
-		"--gtest_filter=Test_Base_UString.*"
+		"--gtest_filter=Test_IO_Path.Unit_MakeRelative"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);

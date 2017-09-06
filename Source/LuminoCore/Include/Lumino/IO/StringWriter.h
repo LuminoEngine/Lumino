@@ -23,7 +23,7 @@ private:
 	virtual void writeOverride(const void* data, size_t byteCount);
 
 private:
-	StringBuilder	m_builder;
+	detail::SimpleStringBuilder<Char>	m_builder;
 };
 
 LN_NAMESPACE_END
