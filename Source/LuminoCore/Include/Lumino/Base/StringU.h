@@ -626,7 +626,7 @@ private:
 template<typename Formatter>
 void formatArg(Formatter&, ...)
 {
-	static_assert(false, "[Lumino format string error] Cannot format argument. Please overload formatArg.");
+	//static_assert(false, "[Lumino format string error] Cannot format argument. Please overload formatArg.");
 }
 
 } // namespace fmt

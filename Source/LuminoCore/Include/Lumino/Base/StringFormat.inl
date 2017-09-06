@@ -2,6 +2,7 @@
 #include <array>
 #include "Locale.h"
 #include "Formatter.h"
+#include "StringHelper.h"
 
 LN_NAMESPACE_BEGIN
 namespace fmt {

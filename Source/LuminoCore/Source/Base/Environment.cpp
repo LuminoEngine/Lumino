@@ -43,6 +43,7 @@ private:
 	std::vector<TSrcChar> m_longNativeString;
 };
 
+#ifdef LN_WIN32
 // Win32
 class PlatformEnvironment
 {
@@ -56,6 +57,67 @@ public:
 		::GetCurrentDirectoryW(size, out->data());
 	}
 };
+#else
+
+// Unix
+class PlatformEnvironment
+{
+public:
+	using CharType = char;
+	
+	static void getCurrentDirectory(LocalStringConverter<CharType>* out)
+	{
+		char* p = getcwd(NULL, 0);
+		size_t len = strlen(p);
+		out->alloc(len);
+		strncpy(out->data(), p, len);
+		free(p);
+	}
+	
+#ifdef LN_OS_MAC
+	void getSpecialFolderPath(SpecialFolder specialFolder, LocalStringConverter<CharType>* out)
+	{
+#if 0
+		short domain = kOnAppropriateDisk;
+		
+		OSType type = kDesktopFolderType;
+		switch (specialFolder)
+		{
+			case SpecialFolder::ApplicationData:
+				type = kApplicationSupportFolderType;
+				break;
+			case SpecialFolder::Temporary:
+				type = kTemporaryFolderType;
+				break;
+			default:
+				LN_THROW(0, ArgumentException);
+				break;
+		}
+		
+		FSRef ref;
+		if (FSFindFolder(domain, type, false, &ref) != 0) {
+			LN_THROW(0, RuntimeException);
+			return;
+		}
+		
+		
+		
+		ByteBuffer buf(2048);
+		if (FSRefMakePath(&ref, reinterpret_cast<UInt8 *>(buf.getData()), buf.getSize()) != noErr) {
+			LN_THROW(0, RuntimeException);
+			return;
+		}
+		
+		String path = String::fromCString((const char*)buf.getConstData(), buf.getSize());
+		StringTraits::tstrcpy(outPath, LN_MAX_PATH, path.c_str());
+#endif
+	}
+#endif
+};
+#endif
+
+
+
 
 //==============================================================================
 // Environment
@@ -272,36 +334,7 @@ template void Environment::getSpecialFolderPath(SpecialFolder specialFolder, wch
 template<typename TChar>
 void Environment::getSpecialFolderPath(SpecialFolder specialFolder, TChar* outPath)
 {
-	short domain = kOnAppropriateDisk;
-
-	OSType type = kDesktopFolderType;
-	switch (specialFolder)
-	{
-		case SpecialFolder::ApplicationData:
-			type = kApplicationSupportFolderType;
-			break;
-		case SpecialFolder::Temporary:
-			type = kTemporaryFolderType;
-			break;
-		default:
-			LN_THROW(0, ArgumentException);
-			break;
-	}
-
-	FSRef ref;
-	if (FSFindFolder(domain, type, false, &ref) != 0) {
-		LN_THROW(0, RuntimeException);
-		return;
-	}
-
-	ByteBuffer buf(2048);
-	if (FSRefMakePath(&ref, reinterpret_cast<UInt8 *>(buf.getData()), buf.getSize()) != noErr) {
-		LN_THROW(0, RuntimeException);
-		return;
-	}
-
-	String path = String::fromCString((const char*)buf.getConstData(), buf.getSize());
-	StringTraits::tstrcpy(outPath, LN_MAX_PATH, path.c_str());
+	LN_NOTIMPLEMENTED();
 }
 template void Environment::getSpecialFolderPath(SpecialFolder specialFolder, char* outPath);
 template void Environment::getSpecialFolderPath(SpecialFolder specialFolder, wchar_t* outPath);

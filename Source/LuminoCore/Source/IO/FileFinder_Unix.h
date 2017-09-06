@@ -1,4 +1,5 @@
 
+#if 0
 #include "../Internal.h"
 #include <Lumino/IO/DirectoryUtils.h>
 
@@ -92,3 +93,5 @@ private:
 
 } // namespace detail
 LN_NAMESPACE_END
+#endif
+

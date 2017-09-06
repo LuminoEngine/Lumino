@@ -76,7 +76,7 @@ public:
 	template <class TString, class A1>
 	static bool contains(const TString& s1, const A1& a1)
 	{
-		return s1.find(a1) != basic_string::npos;
+		return s1.find(a1) != TString::npos;
 	}
 };
 

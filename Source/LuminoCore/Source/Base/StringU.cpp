@@ -1,7 +1,7 @@
 ﻿
 #include "../Internal.h"
 #include <memory>
-#include <cuchar>
+//#include <uchar>
 #include <Lumino/Text/Encoding.h>
 #include <Lumino/Base/ByteBuffer.h>
 //#include <Lumino/IO/Common.h>	// TODO: for Path
@@ -963,6 +963,7 @@ int UStringConvert::convertNativeString(const wchar_t* src, int srcLen, wchar_t*
 
 int UStringConvert::convertNativeString(const char16_t* src, int srcLen, char* dst, int dstSize)
 {
+#ifdef LN_OS_WIN32
 	if (!dst || dstSize <= 0) return 0;
 	if (src && srcLen >= 0)
 	{
@@ -981,6 +982,9 @@ int UStringConvert::convertNativeString(const char16_t* src, int srcLen, char* d
 		dst[0] = '\0';
 		return 0;
 	}
+#else
+	// not found <uchar>
+#endif
 }
 
 int UStringConvert::convertNativeString(const char16_t* src, int srcSize, wchar_t* dst, int dstSize)

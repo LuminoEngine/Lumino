@@ -37,7 +37,7 @@ template const wchar_t* PathTraits::getFileName(const wchar_t* begin, const wcha
 template const char16_t* PathTraits::getFileName(const char16_t* begin, const char16_t* end);
 
 template<typename TChar>
-static const TChar* PathTraits::getWithoutExtensionEnd(const TChar* begin, const TChar* end)
+const TChar* PathTraits::getWithoutExtensionEnd(const TChar* begin, const TChar* end)
 {
 	const TChar* pos = findLast(begin, end, [](TChar ch) { return isSeparatorChar(ch) || ch == '.'; });
 	if (*pos == '.') return pos;
@@ -48,7 +48,7 @@ template const wchar_t* PathTraits::getWithoutExtensionEnd(const wchar_t* begin,
 template const char16_t* PathTraits::getWithoutExtensionEnd(const char16_t* begin, const char16_t* end);
 
 template<typename TChar>
-static const TChar* PathTraits::getExtensionBegin(const TChar* begin, const TChar* end, bool withDot)
+const TChar* PathTraits::getExtensionBegin(const TChar* begin, const TChar* end, bool withDot)
 {
 	const TChar* pos = findLast(begin, end, [](TChar ch) { return isSeparatorChar(ch) || ch == '.'; });
 	if (*pos == '.')
