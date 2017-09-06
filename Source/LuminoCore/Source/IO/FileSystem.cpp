@@ -926,9 +926,12 @@ public:
 	{}
 
 	DirectoryIterator(const StringRef dirPath, FileAttribute attr = FileAttribute::All, const StringRef pattern = nullptr)
-		: m_finder(Ref<PlatformFileFinder>::makeRef(dirPath.getBegin(), dirPath.getLength(), attr, pattern.getBegin(), pattern.getLength()))
+		: m_finder()
 		, m_path()
 	{
+		detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(dirPath.getBegin(), dirPath.getLength());
+		detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPattern(pattern.getBegin(), pattern.getLength());
+		m_finder = Ref<PlatformFileFinder>::makeRef(localPath.c_str(), localPath.getLength(), attr, localPattern.c_str(), localPattern.getLength());
 		m_path = m_finder->getCurrent().c_str();
 	}
 

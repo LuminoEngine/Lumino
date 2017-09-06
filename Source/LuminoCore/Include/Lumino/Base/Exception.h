@@ -104,8 +104,8 @@
 #define LN_VERIFY_FORMAT(expression, ...)			{ if (!(expression)) ln::detail::notifyException<::ln::InvalidFormatException>(__FILE__, __LINE__, ##__VA_ARGS__); }
 
 // TODO: ln::detail::notifyXXXX へ流す
-#define LN_REQUIRE(expression, ...)					LN_CHECK(expression, ::ln::InvalidOperationException, __VA_ARGS__)
-#define LN_ENSURE(expression, ...)					LN_CHECK(expression, ::ln::InvalidOperationException, __VA_ARGS__)
+#define LN_REQUIRE(expression, ...)					LN_CHECK(expression, ::ln::InvalidOperationException, ##__VA_ARGS__)
+#define LN_ENSURE(expression, ...)					LN_CHECK(expression, ::ln::InvalidOperationException, ##__VA_ARGS__)
 
 #define LN_UNREACHABLE()							LN_VERIFY(0, ::ln::InvalidOperationException)
 #define LN_NOTIMPLEMENTED()							LN_VERIFY(0, ln::NotImplementedException)

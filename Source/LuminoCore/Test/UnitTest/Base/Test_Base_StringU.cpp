@@ -970,7 +970,7 @@ TEST_F(Test_IO_Path, Constructor)
 #ifdef LN_OS_WIN32
 		ASSERT_EQ(_TT("dir1/dir2\\../file1.txt"), path.getString());
 #else
-		ASSERT_STREQ(_TT("dir1/dir2/../file1.txt"), path.getString());
+		ASSERT_EQ(_TT("dir1/dir2/../file1.txt"), path.getString());
 #endif
 	}
 	// <Test> 
@@ -1108,14 +1108,14 @@ TEST_F(Test_IO_Path, canonicalizePath)
 	path22 = path22.canonicalizePath();
 	ASSERT_EQ(path2.getString(), path22.getString());
 #else
-	Path path1(Path::GetCurrentDirectory(), _LT("dir/Dir"));
+	Path path1(Path::getCurrentDirectory(), _LT("dir/Dir"));
 	Path path12 = _LT("dir/bin/../Dir");
-	path12 = path12.CanonicalizePath();
+	path12 = path12.canonicalizePath();
 	ASSERT_EQ(path1.getString(), path12.getString());
 
 	Path path2(_LT("/file.txt"));
 	Path path22 = _LT("/dir/../file.txt");
-	path22 = path22.CanonicalizePath();
+	path22 = path22.canonicalizePath();
 	ASSERT_EQ(path2.getString(), path22.getString());
 #endif
 }

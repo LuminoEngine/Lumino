@@ -1,6 +1,7 @@
 ﻿#include <TestConfig.h>
 #include <Lumino/Base/Enumerable.h>
 
+#if 0
 class Test_Base_Enumerable : public ::testing::Test
 {
 };
@@ -94,3 +95,4 @@ TEST_F(Test_Base_Enumerable, Basic)
 		Select (map・変換)
 	*/
 }
+#endif

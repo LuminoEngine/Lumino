@@ -214,7 +214,7 @@ TEST_F(Test_Base_Formatter, Examples)
 		ASSERT_EQ(_TT("1.234568e+004"), UString::format(_TT("{0:e}"), 12345.6789));
 		ASSERT_EQ(_TT("1.2345678900E+004"), UString::format(_TT("{0:E10}"), 12345.6789));
 		ASSERT_EQ(_TT("1.2346e+004"), UString::format(_TT("{0:e4}"), 12345.6789));
-		ASSERT_EQ(_TT("1,234568E+004"), UString::format(Locale(_TT("fr"), _TT("{0:E}"), 12345.6789));
+		ASSERT_EQ(_TT("1,234568E+004"), UString::format(Locale(_TT("fr")), _TT("{0:E}"), 12345.6789));
 #endif
 	}
 

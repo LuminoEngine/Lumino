@@ -540,8 +540,8 @@ GLuint GLSLUtils::compileShader3(GLuint type, const char* code, GLint codeLen, c
 	};
 	GLint codeLens[] =
 	{
-		strlen(codes[0]),
-		ifdef.length(),
+		(GLint)strlen(codes[0]),
+		(GLint)ifdef.length(),
 		codeLen,
 	};
 

@@ -1,9 +1,14 @@
 
 #pragma once
 
+//#ifdef LN_OS_MAC
+//#include <OpenGL/gl.h>
+//#endif
+
+
 #define GLEW_STATIC
-#include "../External/GL/glew.h"
 //#include <GL/gl.h>
+#include "../External/GL/glew.h"
 #include "../External/GL/glext.h"
 
 #if defined(LN_OS_WIN32)
@@ -17,5 +22,5 @@
 
 #include "LNGL.h"
 
-// glGetError() ‚ÅƒGƒ‰[ƒ`ƒFƒbƒN (Še gl` ‚ÌŒã‚Å•K‚¸ŒÄ‚Î‚È‚¢‚Æ³‚µ‚¢ƒGƒ‰[‚ªæ‚ê‚È‚¢‚Ì‚Å’ˆÓ)
+// glGetError() ï¿½ÅƒGï¿½ï¿½ï¿½[ï¿½`ï¿½Fï¿½bï¿½N (ï¿½e glï¿½` ï¿½ÌŒï¿½Å•Kï¿½ï¿½ï¿½Ä‚Î‚È‚ï¿½ï¿½Æï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Gï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½Ì‚Å’ï¿½ï¿½ï¿½)
 #define LN_CHECK_GLERROR()		{ GLenum lnglerr = glGetError(); LN_THROW(lnglerr == GL_NO_ERROR , OpenGLException, lnglerr); } 

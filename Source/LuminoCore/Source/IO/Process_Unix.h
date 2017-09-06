@@ -59,16 +59,16 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo, ProcessStartResult* o
 	if (pid == 0)
 	{
 		// 子プロセス側はこの if に入る
-		StringA utf8Path;
-		utf8Path.assignCStr(startInfo.program.c_str());
 		
-		StringA utf8Args = startInfo.args.toStringA();
-		List<StringA> argList = utf8Args.split(" ");
+		std::string program = startInfo.program.getString().toStdString();
+		
+		auto argList = startInfo.args.split(_LT(" "));
 		
 		char** argv = new char *[argList.getCount() + 2];
-		argv[0] = ::strdup(utf8Path.c_str());     // 書き込み可能なポインタを渡さなければならないので strdup
-		for (int i = 0; i < argList.getCount(); ++i) {
-			argv[i + 1] = ::strdup(argList[i].c_str());
+		argv[0] = ::strdup(program.c_str());     // 書き込み可能なポインタを渡さなければならないので strdup
+		for (int i = 0; i < argList.getCount(); ++i)
+		{
+			argv[i + 1] = ::strdup(argList[i].toStdString().c_str());
 		}
 		argv[argList.getCount() + 1] = NULL;
 		

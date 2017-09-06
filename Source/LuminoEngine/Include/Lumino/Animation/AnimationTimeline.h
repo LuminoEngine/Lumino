@@ -3,6 +3,7 @@
 #include "Common.h"
 #include <Lumino/Reflection/ReflectionObject.h>
 #include <Lumino/Animation/AnimationTimeline.h>
+#include <Lumino/Animation/AnimationUtilities.h>
 
 LN_NAMESPACE_BEGIN
 class AnimationClock;

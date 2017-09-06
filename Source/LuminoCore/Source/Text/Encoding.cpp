@@ -2,10 +2,11 @@
 #include "../Internal.h"
 #include <memory>
 #include <algorithm>
-#include "../../include/Lumino/Base/RefObject.h"
-#include "../../include/Lumino/Base/ByteBuffer.h"
-#include "../../include/Lumino/Text/UnicodeUtils.h"
-#include "../../include/Lumino/Text/Encoding.h"
+#include <Lumino/Base/RefObject.h>
+#include <Lumino/Base/ByteBuffer.h>
+#include <Lumino/Base/String.h>
+#include <Lumino/Text/UnicodeUtils.h>
+#include <Lumino/Text/Encoding.h>
 #include "ASCIIEncoding.h"
 #include "UTF8Encoding.h"
 #include "UTF16Encoding.h"
