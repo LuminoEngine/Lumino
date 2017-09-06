@@ -703,7 +703,7 @@ bool XmlReader::parseComment()
 			{
 				// コメント終端ではなかった。カウントしていた - をテキスト扱いに戻す
 				hyphenCount = 0;
-				m_textCache.add(_T('-'));	// 正常であれば 1 つしかないはず (コメント内で連続する -- は禁止されている)
+				m_textCache.add(_LT('-'));	// 正常であれば 1 つしかないはず (コメント内で連続する -- は禁止されている)
 			}
 
 			m_textCache.add(ch);

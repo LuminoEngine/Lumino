@@ -119,16 +119,16 @@ void Process::start(const PathName& program, const StringArray& argsList)
 	for (int i = 0; i < argsList.getCount(); ++i)
 	{
 		if (!args.isEmpty()) {
-			args += _T(' ');
+			args += _LT(' ');
 		}
 
 		// スペースが含まれていれば引数を " で囲む
 		String tmp = argsList[i];
-		if (tmp.contains(_T(' ')) || tmp.contains(_T('\t')))
+		if (tmp.contains(_LT(' ')) || tmp.contains(_LT('\t')))
 		{
-			if (!tmp.startsWith(_T('\"')) && !tmp.endsWith(_T('\"')))
+			if (!tmp.startsWith(_LT('\"')) && !tmp.endsWith(_LT('\"')))
 			{
-				tmp = _T('\"') + tmp + _T('\"');
+				tmp = _LT('\"') + tmp + _LT('\"');
 			}
 		}
 

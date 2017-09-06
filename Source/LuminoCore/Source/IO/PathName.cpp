@@ -205,16 +205,16 @@ Path Path::getUniqueFilePathInDirectory(const Path& directory, const Char* fileP
 	do
 	{
 		if (filePrefix != NULL && extName != NULL) {
-			filePath = UString::sprintf(_T("%s%s%llu%d%s"), dirPath.c_str(), filePrefix, key, number, extName);
+			filePath = UString::sprintf(_LT("%s%s%llu%d%s"), dirPath.c_str(), filePrefix, key, number, extName);
 		}
 		else if (filePrefix == NULL && extName != NULL) {
-			filePath = UString::sprintf(_T("%s%llu%d%s"), dirPath.c_str(), key, number, extName);
+			filePath = UString::sprintf(_LT("%s%llu%d%s"), dirPath.c_str(), key, number, extName);
 		}
 		else if (filePrefix != NULL && extName == NULL) {
-			filePath = UString::sprintf(_T("%s%s%llu%d"), dirPath.c_str(), filePrefix, key, number);
+			filePath = UString::sprintf(_LT("%s%s%llu%d"), dirPath.c_str(), filePrefix, key, number);
 		}
 		else {
-			filePath = UString::sprintf(_T("%s%llu%d"), dirPath.c_str(), key, number);
+			filePath = UString::sprintf(_LT("%s%llu%d"), dirPath.c_str(), key, number);
 		}
 
 		number++;

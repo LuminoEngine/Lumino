@@ -240,21 +240,21 @@ TEST_F(Test_CppLexer, Example)
 	InputFile* file = ctx.RegisterInputFile(LN_LOCALFILEA("Test_CppLexer.cpp"));
 	ctx.LexFile(file);
 	const TokenList& tokens = *file->GetTokenList();
-	tr::XmlFileWriter xml(_T("test.html"));
+	tr::XmlFileWriter xml(_LT("test.html"));
 	xml.writeStartDocument();
-	xml.writeStartElement(_T("body"));
+	xml.writeStartElement(_LT("body"));
 	for (Token* t : tokens)
 	{
 		if (t->GetTokenGroup() == TokenGroup::Keyword)
 		{
-			xml.writeStartElement(_T("b"));
+			xml.writeStartElement(_LT("b"));
 			flString str = t->getString(file);
 			xml.writeString(String::fromCString(str.c_str(), str.length()));
 			xml.writeEndElement();
 		}
 		else if(t->GetTokenGroup() == TokenGroup::NewLine)
 		{
-			xml.writeStartElement(_T("br"));
+			xml.writeStartElement(_LT("br"));
 			xml.writeEndElement();
 		}
 		else

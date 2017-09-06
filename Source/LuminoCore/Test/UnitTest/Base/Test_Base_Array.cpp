@@ -329,14 +329,14 @@ TEST_F(Test_Base_Array, add)
 	// <Test> 配列を末尾に結合する。
 	{
 		List<String> a1, a2, a3;
-		a2.add(_T("1")); a2.add(_T("2"));
-		a3.add(_T("3")); a3.add(_T("4"));
+		a2.add(_LT("1")); a2.add(_LT("2"));
+		a3.add(_LT("3")); a3.add(_LT("4"));
 		a1.addRange(a2); a1.addRange(a3);
 		ASSERT_EQ(4, a1.getCount());
-		ASSERT_EQ(_T("1"), a1[0]);
-		ASSERT_EQ(_T("2"), a1[1]);
-		ASSERT_EQ(_T("3"), a1[2]);
-		ASSERT_EQ(_T("4"), a1[3]);
+		ASSERT_EQ(_LT("1"), a1[0]);
+		ASSERT_EQ(_LT("2"), a1[1]);
+		ASSERT_EQ(_LT("3"), a1[2]);
+		ASSERT_EQ(_LT("4"), a1[3]);
 	}
 }
 
@@ -459,9 +459,9 @@ TEST_F(Test_Base_Array, contains)
 {
 	// <Test> Contains
 	{
-		PathName p1(_T("LuminoCore/include/Lumino/Base/String.h"));
-		PathName p2(_T("LuminoCore/include/Lumino/Base/String.h"));
-		PathName p3(_T("LuminoCore/include/Lumino/Base/String.c"));
+		PathName p1(_LT("LuminoCore/include/Lumino/Base/String.h"));
+		PathName p2(_LT("LuminoCore/include/Lumino/Base/String.h"));
+		PathName p3(_LT("LuminoCore/include/Lumino/Base/String.c"));
 		List<PathName> pathes;
 		pathes.add(p1);
 		ASSERT_TRUE(pathes.contains(p2));

@@ -2,8 +2,6 @@
 #include <Lumino/IO/FileSystem.h>
 #include <Lumino/Text/Encoding.h>
 
-#ifdef LN_USTRING
-#else
 class Test_Text_DBCSEncoding : public ::testing::Test
 {
 protected:
@@ -36,4 +34,3 @@ TEST_F(Test_Text_DBCSEncoding, SJIS)
 	ASSERT_EQ(0, cmp);											// 内容一致
 	ASSERT_TRUE(sjisBuf.getSize() == sjisResult.getSize());	// バッファサイズ一致
 }
-#endif

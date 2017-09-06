@@ -416,8 +416,8 @@ TEST_F(Test_Base_UString, sprintf)
 {
 	// <Test> max 文字数チェック
 	{
-		String str1 = String::sprintf(_T("%d"), 10);
-		ASSERT_EQ(_T("10"), str1);
+		String str1 = String::sprintf(_LT("%d"), 10);
+		ASSERT_EQ(_LT("10"), str1);
 	}
 	// <Test> max 文字数チェック
 	{
@@ -427,7 +427,7 @@ TEST_F(Test_Base_UString, sprintf)
 		}
 		buf1[2048] = '\0';
 
-		String str1 = String::sprintf(_T("%s"), buf1);
+		String str1 = String::sprintf(_LT("%s"), buf1);
 		ASSERT_EQ(str1, buf1);	// 同じ文字ができていればOK
 	}
 }
@@ -493,11 +493,11 @@ TEST_F(Test_Base_UString, substring)
 	}
 	// <Test> left
 	{
-		ASSERT_EQ(_T("ab"), UString(_T("abcdef")).left(2));
+		ASSERT_EQ(_LT("ab"), UString(_LT("abcdef")).left(2));
 	}
 	// <Test> right
 	{
-		ASSERT_EQ(_T("ef"), UString(_T("abcdef")).right(2));
+		ASSERT_EQ(_LT("ef"), UString(_LT("abcdef")).right(2));
 	}
 }
 
@@ -824,31 +824,31 @@ TEST_F(Test_Base_UString, split)
 
 TEST_F(Test_Base_UString, toStdString)
 {
-	ASSERT_EQ("abc", UString(_T("abc")).toStdString());
+	ASSERT_EQ("abc", UString(_LT("abc")).toStdString());
 }
 
 TEST_F(Test_Base_UString, toStdWString)
 {
-	ASSERT_EQ(L"abc", UString(_T("abc")).toStdWString());
+	ASSERT_EQ(L"abc", UString(_LT("abc")).toStdWString());
 }
 
 TEST_F(Test_Base_UString, ToInt)
 {
 	// 実行できるか
-	ASSERT_EQ(10, toInt8(_T("10")));
-	ASSERT_EQ(10, toInt16(_T("10")));
-	ASSERT_EQ(10, toInt32(_T("10")));
-	ASSERT_EQ(10, toInt64(_T("10")));
-	ASSERT_EQ(10, toUInt8(_T("10")));
-	ASSERT_EQ(10, toUInt16(_T("10")));
-	ASSERT_EQ(10, toUInt32(_T("10")));
-	ASSERT_EQ(10, toUInt64(_T("10")));
+	ASSERT_EQ(10, toInt8(_LT("10")));
+	ASSERT_EQ(10, toInt16(_LT("10")));
+	ASSERT_EQ(10, toInt32(_LT("10")));
+	ASSERT_EQ(10, toInt64(_LT("10")));
+	ASSERT_EQ(10, toUInt8(_LT("10")));
+	ASSERT_EQ(10, toUInt16(_LT("10")));
+	ASSERT_EQ(10, toUInt32(_LT("10")));
+	ASSERT_EQ(10, toUInt64(_LT("10")));
 
 	// TODO:異常系
-	//ASSERT_THROW(String(_T("10")).toInt8(1), ArgumentException);
-	//ASSERT_THROW(String(_T("-")).toInt8(), InvalidFormatException);
-	//ASSERT_THROW(String(_T("qwer")).toInt8(), InvalidFormatException);
-	//ASSERT_THROW(String(_T("0xfffffffffffffffff")).toInt8(), OverflowException);
+	//ASSERT_THROW(String(_LT("10")).toInt8(1), ArgumentException);
+	//ASSERT_THROW(String(_LT("-")).toInt8(), InvalidFormatException);
+	//ASSERT_THROW(String(_LT("qwer")).toInt8(), InvalidFormatException);
+	//ASSERT_THROW(String(_LT("0xfffffffffffffffff")).toInt8(), OverflowException);
 }
 
 TEST_F(Test_Base_UString, convertNativeCharString)
@@ -927,12 +927,12 @@ TEST_F(Test_Base_UString, MemoryAllocation)
 {
 	// <Test> 共有も SSO も無い状態で clear してもメモリ再確保は発生しないこと
 	{
-		UString str = _T("1234567890123456789012345678901234567890");
+		UString str = _LT("1234567890123456789012345678901234567890");
 		intptr_t pt1 = (intptr_t)str.c_str();
 		int rr1 = str.getCapacity();
 		str.clear();
 		int rr2 = str.getCapacity();
-		str = _T("123");
+		str = _LT("123");
 		int rr3 = str.getCapacity();
 		intptr_t pt2 = (intptr_t)str.c_str();
 		ASSERT_EQ(rr1, rr2);
@@ -1045,8 +1045,8 @@ TEST_F(Test_IO_Path, getFileNameWithoutExtension)
 TEST_F(Test_IO_Path, compare)
 {
 #ifdef LN_OS_WIN32
-	Path path1(_T("C:/dir/file.txt"));
-	Path path2(_T("C:\\dir\\file.txt"));
+	Path path1(_LT("C:/dir/file.txt"));
+	Path path2(_LT("C:\\dir\\file.txt"));
 	ASSERT_TRUE(path1.equals(path2));
 	ASSERT_TRUE(path1 == path2);
 #endif
@@ -1057,10 +1057,10 @@ TEST_F(Test_IO_Path, canonicalizePath)
 	// いろいろなケースをテストしやすいようにマクロ化
 #define TEST_CASE(result, src) \
 	{ \
-		Char path1[LN_MAX_PATH] = _T(src); \
+		Char path1[LN_MAX_PATH] = _LT(src); \
 		Char path2[LN_MAX_PATH]; \
-		PathTraits::canonicalizePath(path1, _tcslen(path1), path2); \
-		ASSERT_STREQ(_T(result), path2); \
+		PathTraits::canonicalizePath(path1, StringTraits::tcslen(path1), path2); \
+		ASSERT_STREQ(_LT(result), path2); \
 	}
 
 	TEST_CASE("A/C", "A/B/../C");
@@ -1098,23 +1098,23 @@ TEST_F(Test_IO_Path, canonicalizePath)
 
 
 #ifdef LN_OS_WIN32
-	Path path1(Path::getCurrentDirectory(), _T("dir\\Dir"));
-	Path path12 = _T("dir/bin/../Dir");
+	Path path1(Path::getCurrentDirectory(), _LT("dir\\Dir"));
+	Path path12 = _LT("dir/bin/../Dir");
 	path12 = path12.canonicalizePath();
 	ASSERT_EQ(path1.getString(), path12.getString());
 
-	Path path2(_T("C:\\file.txt"));
-	Path path22 = _T("C:\\dir/..\\file.txt");
+	Path path2(_LT("C:\\file.txt"));
+	Path path22 = _LT("C:\\dir/..\\file.txt");
 	path22 = path22.canonicalizePath();
 	ASSERT_EQ(path2.getString(), path22.getString());
 #else
-	Path path1(Path::GetCurrentDirectory(), _T("dir/Dir"));
-	Path path12 = _T("dir/bin/../Dir");
+	Path path1(Path::GetCurrentDirectory(), _LT("dir/Dir"));
+	Path path12 = _LT("dir/bin/../Dir");
 	path12 = path12.CanonicalizePath();
 	ASSERT_EQ(path1.getString(), path12.getString());
 
-	Path path2(_T("/file.txt"));
-	Path path22 = _T("/dir/../file.txt");
+	Path path2(_LT("/file.txt"));
+	Path path22 = _LT("/dir/../file.txt");
 	path22 = path22.CanonicalizePath();
 	ASSERT_EQ(path2.getString(), path22.getString());
 #endif
@@ -1140,110 +1140,110 @@ TEST_F(Test_IO_Path, Unit_MakeRelative)
 {
 	// <Test> パスが一致する場合は "." を返す
 	{
-		Path path1(_T("d1/d2/d3"));
-		Path path2(_T("d1/d2/d3"));
+		Path path1(_LT("d1/d2/d3"));
+		Path path2(_LT("d1/d2/d3"));
 		path1 = path1.canonicalizePath();
 		path2 = path2.canonicalizePath();
-		ASSERT_EQ(_T("."), path1.makeRelative(path2).getString());
+		ASSERT_EQ(_LT("."), path1.makeRelative(path2).getString());
 
 		// 末尾がセパレータのパターンを見る
 		{
-			Path path1 = Path(_T("d1/d2/d3/")).canonicalizePath();
-			Path path2 = Path(_T("d1/d2/d3")).canonicalizePath();
-			ASSERT_EQ(_T("."), path1.makeRelative(path2).getString());
+			Path path1 = Path(_LT("d1/d2/d3/")).canonicalizePath();
+			Path path2 = Path(_LT("d1/d2/d3")).canonicalizePath();
+			ASSERT_EQ(_LT("."), path1.makeRelative(path2).getString());
 		}
 		{
-			Path path1 = Path(_T("d1/d2/d3")).canonicalizePath();
-			Path path2 = Path(_T("d1/d2/d3/")).canonicalizePath();
-			ASSERT_EQ(_T("."), path1.makeRelative(path2).getString());
+			Path path1 = Path(_LT("d1/d2/d3")).canonicalizePath();
+			Path path2 = Path(_LT("d1/d2/d3/")).canonicalizePath();
+			ASSERT_EQ(_LT("."), path1.makeRelative(path2).getString());
 		}
 		{
-			Path path1 = Path(_T("d1/d2/d3/")).canonicalizePath();
-			Path path2 = Path(_T("d1/d2/d3/")).canonicalizePath();
-			ASSERT_EQ(_T("."), path1.makeRelative(path2).getString());
+			Path path1 = Path(_LT("d1/d2/d3/")).canonicalizePath();
+			Path path2 = Path(_LT("d1/d2/d3/")).canonicalizePath();
+			ASSERT_EQ(_LT("."), path1.makeRelative(path2).getString());
 		}
 	}
 	// <Test> パスの末尾は / があっても無くても良い
 	{
-		Path path1(_T("d1/d2/d3"));
-		Path path2(_T("d1/d2/d3"));
+		Path path1(_LT("d1/d2/d3"));
+		Path path2(_LT("d1/d2/d3"));
 		path1 = path1.canonicalizePath();
 		path2 = path2.canonicalizePath();
-		ASSERT_EQ(_T("."), path1.makeRelative(path2).getString());
+		ASSERT_EQ(_LT("."), path1.makeRelative(path2).getString());
 	}
 	// <Test> 1つ上のディレクトリへ戻る場合は ".." を返す
 	{
-		Path path1(_T("d1/d2/d3/"));
-		Path path2(_T("d1/d2/"));
+		Path path1(_LT("d1/d2/d3/"));
+		Path path2(_LT("d1/d2/"));
 		path1 = path1.canonicalizePath();
 		path2 = path2.canonicalizePath();
-		ASSERT_EQ(_T(".."), path1.makeRelative(path2).getString());
+		ASSERT_EQ(_LT(".."), path1.makeRelative(path2).getString());
 
 		// 末尾がセパレータのパターンを見る
 		{
-			Path path1 = Path(_T("d1/d2/d3")).canonicalizePath();
-			Path path2 = Path(_T("d1/d2/")).canonicalizePath();
-			ASSERT_EQ(_T(".."), path1.makeRelative(path2).getString());
+			Path path1 = Path(_LT("d1/d2/d3")).canonicalizePath();
+			Path path2 = Path(_LT("d1/d2/")).canonicalizePath();
+			ASSERT_EQ(_LT(".."), path1.makeRelative(path2).getString());
 		}
 		{
-			Path path1 = Path(_T("d1/d2/d3/")).canonicalizePath();
-			Path path2 = Path(_T("d1/d2")).canonicalizePath();
-			ASSERT_EQ(_T(".."), path1.makeRelative(path2).getString());
+			Path path1 = Path(_LT("d1/d2/d3/")).canonicalizePath();
+			Path path2 = Path(_LT("d1/d2")).canonicalizePath();
+			ASSERT_EQ(_LT(".."), path1.makeRelative(path2).getString());
 		}
 		{
-			Path path1 = Path(_T("d1/d2/d3")).canonicalizePath();
-			Path path2 = Path(_T("d1/d2")).canonicalizePath();
-			ASSERT_EQ(_T(".."), path1.makeRelative(path2).getString());
+			Path path1 = Path(_LT("d1/d2/d3")).canonicalizePath();
+			Path path2 = Path(_LT("d1/d2")).canonicalizePath();
+			ASSERT_EQ(_LT(".."), path1.makeRelative(path2).getString());
 		}
 	}
 	// <Test> 2つ上のディレクトリへ戻る場合は "../.." を返す
 	{
-		Path path1 = Path(_T("d1/d2/d3/")).canonicalizePath();
-		Path path2 = Path(_T("d1/")).canonicalizePath();
-		ASSERT_EQ(_T("../.."), path1.makeRelative(path2).getString());
+		Path path1 = Path(_LT("d1/d2/d3/")).canonicalizePath();
+		Path path2 = Path(_LT("d1/")).canonicalizePath();
+		ASSERT_EQ(_LT("../.."), path1.makeRelative(path2).getString());
 		// 末尾がセパレータのパターンを見る
 		{
-			Path path1 = Path(_T("d1/d2/d3")).canonicalizePath();
-			Path path2 = Path(_T("d1/")).canonicalizePath();
-			ASSERT_EQ(_T("../.."), path1.makeRelative(path2).getString());
+			Path path1 = Path(_LT("d1/d2/d3")).canonicalizePath();
+			Path path2 = Path(_LT("d1/")).canonicalizePath();
+			ASSERT_EQ(_LT("../.."), path1.makeRelative(path2).getString());
 		}
 		{
-			Path path1 = Path(_T("d1/d2/d3/")).canonicalizePath();
-			Path path2 = Path(_T("d1")).canonicalizePath();
-			ASSERT_EQ(_T("../.."), path1.makeRelative(path2).getString());
+			Path path1 = Path(_LT("d1/d2/d3/")).canonicalizePath();
+			Path path2 = Path(_LT("d1")).canonicalizePath();
+			ASSERT_EQ(_LT("../.."), path1.makeRelative(path2).getString());
 		}
 		{
-			Path path1 = Path(_T("d1/d2/d3")).canonicalizePath();
-			Path path2 = Path(_T("d1")).canonicalizePath();
-			ASSERT_EQ(_T("../.."), path1.makeRelative(path2).getString());
+			Path path1 = Path(_LT("d1/d2/d3")).canonicalizePath();
+			Path path2 = Path(_LT("d1")).canonicalizePath();
+			ASSERT_EQ(_LT("../.."), path1.makeRelative(path2).getString());
 		}
 	}
 	// <Test> 1つ上のディレクトリへ戻る場合は ".." を返す
 	{
-		Path path1 = Path(_T("d1/d2/")).canonicalizePath();
-		Path path2 = Path(_T("d1/d2/d3/")).canonicalizePath();
-		ASSERT_EQ(_T("d3"), path1.makeRelative(path2).getString());
+		Path path1 = Path(_LT("d1/d2/")).canonicalizePath();
+		Path path2 = Path(_LT("d1/d2/d3/")).canonicalizePath();
+		ASSERT_EQ(_LT("d3"), path1.makeRelative(path2).getString());
 		// 末尾がセパレータのパターンを見る
 		{
-			Path path1 = Path(_T("d1/d2")).canonicalizePath();
-			Path path2 = Path(_T("d1/d2/d3/")).canonicalizePath();
-			ASSERT_EQ(_T("d3"), path1.makeRelative(path2).getString());
+			Path path1 = Path(_LT("d1/d2")).canonicalizePath();
+			Path path2 = Path(_LT("d1/d2/d3/")).canonicalizePath();
+			ASSERT_EQ(_LT("d3"), path1.makeRelative(path2).getString());
 		}
 		{
-			Path path1 = Path(_T("d1/d2/")).canonicalizePath();
-			Path path2 = Path(_T("d1/d2/d3")).canonicalizePath();
-			ASSERT_EQ(_T("d3"), path1.makeRelative(path2).getString());
+			Path path1 = Path(_LT("d1/d2/")).canonicalizePath();
+			Path path2 = Path(_LT("d1/d2/d3")).canonicalizePath();
+			ASSERT_EQ(_LT("d3"), path1.makeRelative(path2).getString());
 		}
 		{
-			Path path1 = Path(_T("d1/d2")).canonicalizePath();
-			Path path2 = Path(_T("d1/d2/d3")).canonicalizePath();
-			ASSERT_EQ(_T("d3"), path1.makeRelative(path2).getString());
+			Path path1 = Path(_LT("d1/d2")).canonicalizePath();
+			Path path2 = Path(_LT("d1/d2/d3")).canonicalizePath();
+			ASSERT_EQ(_LT("d3"), path1.makeRelative(path2).getString());
 		}
 	}
 	// <Test> 2つ上のディレクトリへ戻る場合は "../.." を返す
 	{
-		Path path1 = Path(_T("d1/")).canonicalizePath();
-		Path path2 = Path(_T("d1/d2/d3")).canonicalizePath();
-		ASSERT_EQ(_T("d2/d3"), path1.makeRelative(path2).getString().replace(_T("\\"), _T("/")));
+		Path path1 = Path(_LT("d1/")).canonicalizePath();
+		Path path2 = Path(_LT("d1/d2/d3")).canonicalizePath();
+		ASSERT_EQ(_LT("d2/d3"), path1.makeRelative(path2).getString().replace(_LT("\\"), _LT("/")));
 	}
 }

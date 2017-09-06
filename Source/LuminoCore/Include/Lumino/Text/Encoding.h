@@ -183,10 +183,8 @@ public:
 		EncodingConversionResult* result);
 
 
-#ifdef LN_USTRING
 	static UString fromBytes(const char* bytes, int size, Encoding* encoding = nullptr, bool* outUsedDefaultChar = nullptr);
 	static UString fromBytes(const byte_t* bytes, int size, Encoding* encoding = nullptr, bool* outUsedDefaultChar = nullptr);
-#endif
 
 public:
 

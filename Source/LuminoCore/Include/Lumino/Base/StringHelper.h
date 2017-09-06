@@ -74,17 +74,6 @@ public:
 
 
 
-#ifdef LN_USTRING
-#else
-	/**
-		@brief		マルチバイト文字列をワイド文字列に変換する
-		@details	input の文字コードは setlocale() に依存します。
-					基本的にOSのAPIが返す文字列を変換したい時に使用してください。
-	*/
-	static void convertMultiToWide(std::wstring* out, const char* input, int inputLength);
-#endif
-
-
 	static void strncpy(char* dest, size_t destSize, const char* src, int count) { strncpy_s(dest, destSize, src, count); }
 	static void strncpy(wchar_t* dest, size_t destElementsSize, const wchar_t* src, int count) { wcsncpy_s(dest, destElementsSize, src, count); }	// 文字単位。バイト単位ではない
 

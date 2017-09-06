@@ -508,13 +508,7 @@ static String readAllTextHelper(const ByteBuffer& buffer, Encoding* encoding)
 			encoding = Encoding::getUTF8Encoding();
 	}
 
-#ifdef LN_USTRING
 	return Encoding::fromBytes(buffer.getData(), buffer.getSize(), encoding);
-#else
-	String str;
-	str.convertFrom(buffer.getData(), buffer.getSize(), encoding);
-	return str;
-#endif
 }
 
 //------------------------------------------------------------------------------

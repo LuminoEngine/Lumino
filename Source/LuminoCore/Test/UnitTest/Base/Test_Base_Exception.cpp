@@ -97,7 +97,7 @@ TEST_F(Test_Base_Exception, Basic)
 		}
 		catch (ArgumentException& e)
 		{
-			ASSERT_TRUE(_tcsstr(e.getMessage(), _T("test")) != NULL);
+			ASSERT_TRUE(_tcsstr(e.getMessage(), _LT("test")) != NULL);
 		}
 
 		try
@@ -106,7 +106,7 @@ TEST_F(Test_Base_Exception, Basic)
 		}
 		catch (ArgumentException& e)
 		{
-			ASSERT_TRUE(_tcsstr(e.getMessage(), _T("param:p1")) != NULL);
+			ASSERT_TRUE(_tcsstr(e.getMessage(), _LT("param:p1")) != NULL);
 		}
 	}
 
@@ -118,7 +118,7 @@ TEST_F(Test_Base_Exception, Basic)
 	}
 	catch (IOException& e)
 	{
-		ASSERT_TRUE(_tcsstr(e.getMessage(), _T("test1")) != NULL);
+		ASSERT_TRUE(_tcsstr(e.getMessage(), _LT("test1")) != NULL);
 	}
 	// wchar_t 可変長 message
 	try
@@ -135,7 +135,7 @@ TEST_F(Test_Base_Exception, Basic)
 	}
 	catch (IOException& e)
 	{
-		ASSERT_TRUE(_tcsstr(e.getMessage(), _T("testtest")) != NULL);
+		ASSERT_TRUE(_tcsstr(e.getMessage(), _LT("testtest")) != NULL);
 	}
 }
 

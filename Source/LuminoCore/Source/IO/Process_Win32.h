@@ -210,28 +210,31 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo, ProcessStartResult* o
 	si.wShowWindow = SW_HIDE;
 
 	// exe 名と引数を連結してコマンドライン文字列を作る
-	String cmdArgs = startInfo.program.getString();
-	if (!startInfo.args.isEmpty()) {
-		cmdArgs += _T(" ");
-		cmdArgs += startInfo.args;
+	std::wstring program = startInfo.program.getString().toStdWString();
+	std::wstring cmdArgs = program;
+	if (!startInfo.args.isEmpty())
+	{
+		cmdArgs += L" ";
+		cmdArgs += startInfo.args.toStdWString();
 	}
 
 	// カレントディレクトリ
-	LPCTSTR pCurrentDirectory = NULL;
-	if (!startInfo.workingDirectory.isEmpty()) {
-		pCurrentDirectory = startInfo.workingDirectory.c_str();
+	std::wstring currentDirectory;
+	if (!startInfo.workingDirectory.isEmpty())
+	{
+		currentDirectory = startInfo.workingDirectory.getString().toStdWString();
 	}
 
 	// 子プロセス開始
 	memset(&m_processInfo, 0, sizeof(m_processInfo));
 	bResult = ::CreateProcess(
 		NULL, (LPTSTR)(LPCTSTR)cmdArgs.c_str(), NULL, NULL, TRUE,
-		CREATE_NO_WINDOW, NULL, pCurrentDirectory, &si, &m_processInfo);
+		CREATE_NO_WINDOW, NULL, (currentDirectory.empty()) ? NULL : currentDirectory.c_str(), &si, &m_processInfo);
 	if (bResult == FALSE)
 	{
 		DWORD dwErr = ::GetLastError();
 		if (dwErr == ERROR_FILE_NOT_FOUND) {
-			LN_THROW(0, FileNotFoundException, startInfo.program.c_str());
+			LN_THROW(0, FileNotFoundException, program.c_str());
 		}
 		LN_THROW(0, Win32Exception, dwErr);
 	}

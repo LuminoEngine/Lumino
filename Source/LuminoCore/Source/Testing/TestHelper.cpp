@@ -8,13 +8,8 @@ LN_NAMESPACE_BEGIN
 //------------------------------------------------------------------------------
 String TestHelper::getFilePath(const char* baseSourceFilePath, const char* fileName)
 {
-#ifdef LN_USTRING
 	PathName base(UString::fromCString(baseSourceFilePath));
 	PathName path(base.getParent(), UString::fromCString(fileName));
-#else
-	PathName base(baseSourceFilePath);
-	PathName path(base.getParent(), fileName);
-#endif
 	return String(path.c_str());
 }
 
@@ -37,14 +32,12 @@ std::wstring TestHelper::getFilePathW(const char* baseFilePath, const wchar_t* f
 	return StdStringHelper::cat<std::wstring>(UString::fromCString(baseFilePath).c_str(), L"/", fileName);
 }
 
-#ifdef LN_USTRING
 Path TestHelper::getFilePathU(const char* baseFilePath, const UChar* fileName)
 {
 	Path base(baseFilePath);
 	Path path(base.getParent(), fileName);
 	return path;
 }
-#endif
 
 //------------------------------------------------------------------------------
 bool TestHelper::checkArrays(const void* ary1, const void* ary2, size_t count)

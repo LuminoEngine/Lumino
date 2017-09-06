@@ -417,13 +417,8 @@ const char* LogRecord::getMessage() const
 //------------------------------------------------------------------------------
 LogRecord& LogRecord::operator<<(const wchar_t* str)
 {
-#ifdef LN_USTRING
 	auto s = StdStringHelper::makeStdString(str);
 	m_message << s.c_str();
-#else
-	StringA s = StringA::fromNativeCharString(str);
-	m_message << s.c_str();
-#endif
 	return *this;
 }
 

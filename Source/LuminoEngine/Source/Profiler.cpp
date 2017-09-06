@@ -195,12 +195,12 @@ Profiler::Profiler()
 	, m_commitMutex()
 	, m_enabled(false)
 {
-	Group_MainThread = registerGroup(_T("Main"));
-	Group_RenderThread = registerGroup(_T("Rendering"));
-	Section_MainThread_Update = registerSection(Group_MainThread, _T("Update"));
-	Section_MainThread_PrepareRendering = registerSection(Group_MainThread, _T("Prepare rendering"));
-	Section_MainThread_GUILayput = registerSection(Group_MainThread, _T("GUI layput"));
-	Section_RenderThread_CommandExecute = registerSection(Group_RenderThread, _T("Execute commands"));
+	Group_MainThread = registerGroup(_LT("Main"));
+	Group_RenderThread = registerGroup(_LT("Rendering"));
+	Section_MainThread_Update = registerSection(Group_MainThread, _LT("Update"));
+	Section_MainThread_PrepareRendering = registerSection(Group_MainThread, _LT("Prepare rendering"));
+	Section_MainThread_GUILayput = registerSection(Group_MainThread, _LT("GUI layput"));
+	Section_RenderThread_CommandExecute = registerSection(Group_RenderThread, _LT("Execute commands"));
 }
 
 //------------------------------------------------------------------------------

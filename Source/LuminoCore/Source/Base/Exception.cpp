@@ -152,21 +152,7 @@ Exception& Exception::setSourceLocationInfo(const char* filePath, int fileLine)
 	{
 		sprintf_s(m_symbolBuffer, LN_ARRAY_SIZE_OF(m_symbolBuffer), "File:%s Line:%d", filePath, fileLine);
 	}
-#ifdef LN_USTRING
 	safeCharToUChar(filePath, m_sourceFilePath, LN_ARRAY_SIZE_OF(m_sourceFilePath));
-#else
-#ifdef LN_UNICODE
-	// ワイド文字列へ変換 (文字コードは考慮しない)
-	memset(m_sourceFilePath, 0, sizeof(m_sourceFilePath));
-	size_t size;
-	errno_t err = mbstowcs_s(&size, m_sourceFilePath, LN_MAX_PATH, filePath, LN_MAX_PATH - 1);
-	if (err != 0) {
-		return *this;
-	}
-#else
-	StringTraits::tstrcpy(m_sourceFilePath, sizeof(m_sourceFilePath) / sizeof(Char), filePath);
-#endif
-#endif
 
 	m_sourceFileLine = fileLine;
 	return *this;

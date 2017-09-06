@@ -105,49 +105,33 @@
 
 #define LN_USTRING
 //#define LN_LEGACY_VARIANT_ENABLED
+//#define LN_USTRING16
 
 #ifdef LN_USTRING
 
-#if 1
+#ifdef LN_USTRING16
+#define _TT(x)	(u ## x)
+#define _LT(x)	(u ## x)
+#define TTCHAR	char16_t
+#define _U(x)		u ## x
+namespace ln {
+using Char = char16_t;
+using UChar = char16_t;
+}
+
+#else
 #define _TT(x)	(L ## x)
+#define _LT(x)	(L ## x)
 #define TTCHAR	wchar_t
 #define _U(x)		(L ## x)
-namespace ln { using Char = wchar_t;
+namespace ln {
+using Char = wchar_t;
 using UChar = wchar_t;
 }
 
-#else
-#define _TT(x)	(u ## x)
-#define TTCHAR	char16_t
-//#define Char		char16_t
-#define _U(x)		u ## x
-namespace ln { using Char = char16_t;
-using UChar = char16_t; }
-
 #endif
 
 #else
-
-
-
-#define _TT		_T
-#define TTCHAR	TCHAR
-//#define Char	TCHAR
-#ifdef LN_UNICODE
-namespace ln { using Char = wchar_t;
-	using UChar = wchar_t;
-}
-#define LN_STRING_FROM_CHAR
-
-#else
-namespace ln { using Char = char;
-using UChar = char;
-}
-#endif
-#define _U(x)	u ## x
-
-
-
 #endif
 
 
@@ -277,20 +261,20 @@ LN_NAMESPACE_BEGIN
 
 class ImplAccessor;
 
-template<typename BaseType = char>	// GCC では GenericString 内部に定義できないので外に出している
-class GenericStringTraits
-{
-public:
-	typedef char	XCHAR;	// this
-	typedef wchar_t	YCHAR;	// other
-};
-template<>
-class GenericStringTraits<wchar_t>
-{
-public:
-	typedef wchar_t	XCHAR;	// this
-	typedef char	YCHAR;	// other
-};
+//template<typename BaseType = char>	// GCC では GenericString 内部に定義できないので外に出している
+//class GenericStringTraits
+//{
+//public:
+//	typedef char	XCHAR;	// this
+//	typedef wchar_t	YCHAR;	// other
+//};
+//template<>
+//class GenericStringTraits<wchar_t>
+//{
+//public:
+//	typedef wchar_t	XCHAR;	// this
+//	typedef char	YCHAR;	// other
+//};
 
 /** 大文字と小文字の区別指定 */
 enum class CaseSensitivity

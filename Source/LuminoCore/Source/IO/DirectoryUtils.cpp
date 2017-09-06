@@ -61,7 +61,7 @@ List<String> DirectoryUtils::getFiles(const TTCHAR* drPath, const TTCHAR* patter
 		dirPathKey.append(pattern);
 	}
 	else {
-		dirPathKey.append(_T("*"));
+		dirPathKey.append(_LT("*"));
 	}
 
     // 検索開始

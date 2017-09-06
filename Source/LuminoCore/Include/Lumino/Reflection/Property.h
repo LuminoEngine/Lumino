@@ -304,7 +304,7 @@ public:
 	public:  static const ln::tr::TypedPropertyInfo<valueType>*		propVar##Id;
 
 #define LN_TR_PROPERTY_IMPLEMENT(ownerClass, valueType, propVar, metadata) \
-	static ln::tr::TypedPropertyInfo<valueType>		_##propVar##Id(ln::tr::TypeInfo::getTypeInfo<ownerClass>(), _T(#propVar), nullptr); \
+	static ln::tr::TypedPropertyInfo<valueType>		_##propVar##Id(ln::tr::TypeInfo::getTypeInfo<ownerClass>(), _LT(#propVar), nullptr); \
 	const ln::tr::TypedPropertyInfo<valueType>*		ownerClass::propVar##Id = &_##propVar##Id; \
 	::ln::tr::Property<valueType>*					ownerClass::get_Ptr##propVar(ln::tr::ReflectionObject* obj) { return &static_cast<ownerClass*>(obj)->propVar; } \
 	void											ownerClass::set_##propVar(ln::tr::ReflectionObject* obj, valueType& value) { tr::PropertyHelper::setValue(static_cast<ownerClass*>(obj)->propVar, value); } \

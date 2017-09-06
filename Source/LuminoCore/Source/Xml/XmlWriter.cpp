@@ -18,7 +18,7 @@ XmlWriter::XmlWriter(TextWriter* textWriter)
 	: m_textWriter()
 	, m_state(State_Start)
 	, m_indentString(DefaultIndentString)
-	, m_quoteChar(_T('"'))
+	, m_quoteChar(_LT('"'))
 {
 	initialize(textWriter);
 }
@@ -59,7 +59,7 @@ void XmlWriter::writeEndDocument()
 void XmlWriter::writeStartElement(const String& name)
 {
 	preWrite(XmlNodeType::Element);
-	m_textWriter->write(_T('<'));
+	m_textWriter->write(_LT('<'));
 	m_textWriter->write(name);
 
 	ElementInfo info;
@@ -77,13 +77,13 @@ void XmlWriter::writeEndElement()
 
 	preWrite(XmlNodeType::EndElement);
 	if (m_state == State_StartElement || m_state == State_Attribute) {
-		//m_textWriter->Write(_T(" />"));
+		//m_textWriter->Write(_LT(" />"));
 	}
 	else
 	{
-		m_textWriter->write(_TT("</"));
+		m_textWriter->write(_LT("</"));
 		m_textWriter->write(m_elementStack.getTop().Name);
-		m_textWriter->write(_TT('>'));
+		m_textWriter->write(_LT('>'));
 	}
 
 	m_elementStack.pop();
@@ -188,7 +188,7 @@ void XmlWriter::writeStringInternal(const Char* str, int len, bool inAttribute)
 
 				if (inAttribute) {
 					// 3.3.3 属性値正規化
-					m_textWriter->write(_T(' '));
+					m_textWriter->write(_LT(' '));
 				}
 				else {
 					m_textWriter->write(ch);
@@ -197,23 +197,23 @@ void XmlWriter::writeStringInternal(const Char* str, int len, bool inAttribute)
 			case '<':
 				m_textWriter->write(begin, pos - begin);	// pos の前までを出力
 				begin = pos + 1;
-				m_textWriter->write(_TT("&lt;"), 4);
+				m_textWriter->write(_LT("&lt;"), 4);
 				break;
 			case '>':
 				m_textWriter->write(begin, pos - begin);	// pos の前までを出力
 				begin = pos + 1;
-				m_textWriter->write(_TT("&gt;"), 4);
+				m_textWriter->write(_LT("&gt;"), 4);
 				break;
 			case '&':
 				m_textWriter->write(begin, pos - begin);	// pos の前までを出力
 				begin = pos + 1;
-				m_textWriter->write(_TT("&amp;"), 5);
+				m_textWriter->write(_LT("&amp;"), 5);
 				break;
 			case '\'':
 				m_textWriter->write(begin, pos - begin);	// pos の前までを出力
 				begin = pos + 1;
 				if (inAttribute && m_quoteChar == ch) {
-					m_textWriter->write(_TT("&apos;"), 6);
+					m_textWriter->write(_LT("&apos;"), 6);
 				}
 				else {
 					m_textWriter->write('\'');
@@ -223,7 +223,7 @@ void XmlWriter::writeStringInternal(const Char* str, int len, bool inAttribute)
 				m_textWriter->write(begin, pos - begin);	// pos の前までを出力
 				begin = pos + 1;
 				if (inAttribute && m_quoteChar == ch) {
-					m_textWriter->write(_TT("&quot;"), 6);
+					m_textWriter->write(_LT("&quot;"), 6);
 				}
 				else {
 					m_textWriter->write('"');

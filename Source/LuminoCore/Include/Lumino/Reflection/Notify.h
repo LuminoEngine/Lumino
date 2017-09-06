@@ -119,7 +119,7 @@ private:
 	private: static typeInfo	_init_##eventInfoVar;
 
 #define LN_REFLECTION_EVENT_IMPLEMENT_COMMON(typeInfo, ownerClass, eventArgs, eventInfoVar, name, ev) \
-	typeInfo					ownerClass::_init_##eventInfoVar(tr::TypeInfo::getTypeInfo<ownerClass>(), _T(name), &ownerClass::_raise_##eventInfoVar); \
+	typeInfo					ownerClass::_init_##eventInfoVar(tr::TypeInfo::getTypeInfo<ownerClass>(), _LT(name), &ownerClass::_raise_##eventInfoVar); \
 	const typeInfo*				ownerClass::eventInfoVar = &_init_##eventInfoVar; \
 	void						ownerClass::_raise_##eventInfoVar(tr::ReflectionObject* obj, tr::ReflectionEventArgs* e) { static_cast<ownerClass*>(obj)->raiseReflectionEvent(static_cast<ownerClass*>(obj)->ev, static_cast<eventArgs*>(e)); }
 

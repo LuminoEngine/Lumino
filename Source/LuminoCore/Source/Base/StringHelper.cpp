@@ -266,19 +266,6 @@ int StringTraits::strnicmp(const wchar_t* s1, const wchar_t* s2, size_t count)
 	return 0;//((StringTraits::ToUpper(*s1) - StringTraits::ToUpper(*s2)));
 }
 
-
-
-#ifdef LN_USTRING
-#else
-//------------------------------------------------------------------------------
-void StringTraits::convertMultiToWide(std::wstring* out, const char* input, int inputLength)
-{
-	StringW strWide;
-	strWide.assignCStr(input, inputLength);
-	(*out) = strWide.c_str();
-}
-#endif
-
 template<typename TChar>
 static int my_strncmp(const TChar* str1, const TChar* str2, size_t count) LN_NOEXCEPT
 {
@@ -762,12 +749,12 @@ bool StringTraits::match(const TChar* pattern, const TChar* str)
 {
 	switch (*pattern)
 	{
-	case _T('\0'):
-		return _T('\0') == *str;
-	case _T('*'):
-		return match(pattern + 1, str) || ((_T('\0') != *str) && match(pattern, str + 1));
-	case _T('?'):
-		return (_T('\0') != *str) && match(pattern + 1, str + 1);
+	case '\0':
+		return '\0' == *str;
+	case '*':
+		return match(pattern + 1, str) || (('\0' != *str) && match(pattern, str + 1));
+	case '?':
+		return ('\0' != *str) && match(pattern + 1, str + 1);
 	default:
 		return (*pattern == *str) && match(pattern + 1, str + 1);
 	}

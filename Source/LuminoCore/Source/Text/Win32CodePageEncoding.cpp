@@ -11,15 +11,18 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
+// この関数の中で String のエンコーディング変換系の処理が呼ばれると無限再帰することがあるので注意
 Win32CodePageEncoding::Win32CodePageEncoding(UINT codePage)
 {
 	BOOL r = ::GetCPInfoEx(codePage, 0, &m_cpInfo);
 	LN_THROW(r, Win32Exception, ::GetLastError());
 	
-	// 以前 String::SPrintf を使っていたが、その中から呼ばれて無限再起することがあるのでやめた
-	Char buf[32];
-	_stprintf_s(buf, _T("cp%u"), codePage);
-	m_name = buf;
+	char buf[32];
+	sprintf_s(buf, "cp%u", codePage);
+
+	Char buf2[32];
+	for (int i = 0; i < 32; i++) buf2[i] = buf[i];
+	m_name = buf2;
 }
 
 //------------------------------------------------------------------------------
