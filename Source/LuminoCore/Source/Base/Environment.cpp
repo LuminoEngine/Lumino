@@ -43,7 +43,7 @@ private:
 	std::vector<TSrcChar> m_longNativeString;
 };
 
-#ifdef LN_WIN32
+#ifdef LN_OS_WIN32
 // Win32
 class PlatformEnvironment
 {

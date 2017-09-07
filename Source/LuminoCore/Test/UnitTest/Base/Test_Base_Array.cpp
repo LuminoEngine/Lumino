@@ -478,9 +478,9 @@ TEST_F(Test_Base_Array, contains)
 		St s1 = { 10, 20 };
 		St s2 = { 30, 40 };
 		List<St> ary = { s1, s2, { 50, 60 } };
-		ASSERT_TRUE(ary.contains([](const St& s) { return s.a == 30; }));
-		ASSERT_TRUE(ary.contains([](const St& s) { return s.b == 60; }));
-		ASSERT_FALSE(ary.contains([](const St& s) { return s.a == 0; }));
+		ASSERT_TRUE(ary.containsIf([](const St& s) { return s.a == 30; }));
+		ASSERT_TRUE(ary.containsIf([](const St& s) { return s.b == 60; }));
+		ASSERT_FALSE(ary.containsIf([](const St& s) { return s.a == 0; }));
 	}
 }
 

@@ -4,8 +4,6 @@
 #include <Lumino/IO/FileSystem.h>
 #include <Lumino/IO/TextReader.h>
 
-#ifdef LN_USTRING
-#else
 class Test_IO_TextWriter : public ::testing::Test
 {
 protected:
@@ -88,4 +86,4 @@ TEST_F(Test_IO_TextWriter, writeLine)
 		ASSERT_EQ(_T("ab\ndef\ng\n32767\n2147483647\n9223372036854775807\n65535\n4294967295\n18446744073709551615\n100.000000\n100.000000\n"), s);
 	}
 }
-#endif
+

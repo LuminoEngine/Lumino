@@ -370,7 +370,7 @@ private:
 	void setNonSSO();
 
 	// utils
-	template<typename TChar> void assignFromCStr(const TChar* str, int length = -1);
+	template<typename TChar> void assignFromCStr(const TChar* str, int length = -1, bool* outUsedDefaultChar = nullptr);
 
 	Encoding* getThisTypeEncoding() const;
 	static ByteBuffer convertTo(const UString& str, const Encoding* encoding, bool* outUsedDefaultChar = nullptr);
@@ -676,7 +676,7 @@ public:
 			int oldLen = m_length;
 
 			m_str = LN_NEW UChar[size];
-			m_capacity = size;
+			m_capacity = length;
 
 			if (oldStr != nullptr)
 			{

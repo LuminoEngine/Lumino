@@ -201,12 +201,7 @@ protected:
 	virtual const Char* getMessageOverride() const;
 
 private:
-#ifdef LN_USTRING
 	void appendMessage(const Char* message, size_t len);
-#else
-	void appendMessage(const char* message, size_t len);
-	void appendMessage(const wchar_t* message, size_t len);
-#endif
 
 private:
 	static const int MaxMessageBufferSize = 1024;

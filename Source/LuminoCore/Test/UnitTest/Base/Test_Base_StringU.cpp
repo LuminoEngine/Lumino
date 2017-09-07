@@ -608,6 +608,12 @@ TEST_F(Test_Base_UString, replace)
 
 		ASSERT_EQ(_TT("12345345"), str1);
 	}
+	// <Test> NonSSO の置換
+	{
+		UString s1 = _T("abcdefghij1234567890");
+		UString s2 = s1.replace(_T("cd"), _T("AAAA"));
+		ASSERT_EQ(_TT("abAAAAefghij1234567890"), s2);
+	}
 }
 
 TEST_F(Test_Base_UString, compare)

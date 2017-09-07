@@ -2,8 +2,6 @@
 #include <Lumino/IO/FileStream.h>
 #include <Lumino/IO/BinaryReader.h>
 
-#ifdef LN_USTRING
-#else
 class Test_IO_BinaryReader : public ::testing::Test
 {
 protected:
@@ -96,4 +94,4 @@ TEST_F(Test_IO_BinaryReader, BytesSpecified)
 	// ファイル終端
 	ASSERT_TRUE(reader.isEOF());
 }
-#endif
+

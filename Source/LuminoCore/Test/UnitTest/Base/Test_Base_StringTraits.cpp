@@ -1,9 +1,6 @@
 ﻿#include <TestConfig.h>
 
 
-#ifdef LN_USTRING
-#else
-
 //==============================================================================
 class Test_Base_StringUtils : public ::testing::Test
 {
@@ -581,4 +578,3 @@ TEST_F(Test_Base_StringUtils, toDouble)
 	ASSERT_EQ(NumberConversionResult::Overflow, r);
 }
 
-#endif

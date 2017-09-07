@@ -1,8 +1,6 @@
 ﻿#include <TestConfig.h>
 #include <Lumino/IO/Process.h>
 
-#ifdef LN_USTRING
-#else
 class Test_IO_Process : public ::testing::Test
 {
 protected:
@@ -114,4 +112,4 @@ TEST_F(Test_IO_Process, Issue)
 		ASSERT_EQ(_T("あ"), str);
 	}
 }
-#endif
+

@@ -2,8 +2,6 @@
 #include <Lumino/IO/StreamReader.h>
 #include <Lumino/IO/MemoryStream.h>
 
-#ifdef LN_USTRING
-#else
 class Test_IO_StreamReader : public ::testing::Test
 {
 protected:
@@ -53,8 +51,8 @@ TEST_F(Test_IO_StreamReader, readLine)
 		ASSERT_FALSE(reader.readLine(&line3));
 
 		ASSERT_EQ(StreamReader::DefaultBufferSize - 1, line1.getLength());
-		ASSERT_EQ(0, line1.compare(tcharBuf, StreamReader::DefaultBufferSize - 1));
-		ASSERT_EQ(0, line2.compare(_T("a")));
+		ASSERT_EQ(0, String::compare(line1, String(tcharBuf, StreamReader::DefaultBufferSize - 1)));
+		ASSERT_EQ(0, String::compare(line2, _T("a")));
 	}
 }
-#endif
+

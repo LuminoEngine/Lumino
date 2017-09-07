@@ -6,8 +6,6 @@
 #include <Lumino/Json/JsonReader.h>
 using namespace ln::tr;
 
-#ifdef LN_USTRING
-#else
 class Test_Json_JsonReader : public ::testing::Test
 {
 protected:
@@ -302,5 +300,3 @@ TEST_F(Test_Json_JsonReader, Issues)
 //	ASSERT_EQ(JsonParseError2::NoError, jr.GetError().code);
 //	ASSERT_EQ(true, r.IsEOF());
 //}
-
-#endif

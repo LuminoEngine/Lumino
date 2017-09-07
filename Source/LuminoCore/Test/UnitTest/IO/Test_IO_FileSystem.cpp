@@ -2,9 +2,6 @@
 #include <Lumino/IO/FileSystem.h>
 #include <Lumino/Base/Enumerable.h>
 
-#ifdef LN_USTRING
-#else
-
 class Test_IO_FileSystem : public ::testing::Test
 {
 protected:
@@ -208,9 +205,9 @@ TEST_F(Test_IO_FileSystem, getFiles)
 		List<PathName> list;
 		for (auto& path : files) list.add(path);
 		ASSERT_EQ(3, list.getCount());
-		ASSERT_EQ(true, list.contains([](const PathName& path) { return path.getFileName() == _T("f1.a"); }));
-		ASSERT_EQ(true, list.contains([](const PathName& path) { return path.getFileName() == _T("f2.b"); }));
-		ASSERT_EQ(true, list.contains([](const PathName& path) { return path.getFileName() == _T("f3.a"); }));
+		ASSERT_EQ(true, list.containsIf([](const PathName& path) { return path.getFileName() == _T("f1.a"); }));
+		ASSERT_EQ(true, list.containsIf([](const PathName& path) { return path.getFileName() == _T("f2.b"); }));
+		ASSERT_EQ(true, list.containsIf([](const PathName& path) { return path.getFileName() == _T("f3.a"); }));
 	}
 	// <Test> ファイル列挙(パターン指定)
 	{
@@ -218,8 +215,8 @@ TEST_F(Test_IO_FileSystem, getFiles)
 		List<PathName> list;
 		for (auto& path : files) list.add(path);
 		ASSERT_EQ(2, list.getCount());
-		ASSERT_EQ(true, list.contains([](const PathName& path) { return path.getFileName() == _T("f1.a"); }));
-		ASSERT_EQ(true, list.contains([](const PathName& path) { return path.getFileName() == _T("f3.a"); }));
+		ASSERT_EQ(true, list.containsIf([](const PathName& path) { return path.getFileName() == _T("f1.a"); }));
+		ASSERT_EQ(true, list.containsIf([](const PathName& path) { return path.getFileName() == _T("f3.a"); }));
 	}
 	// <Test> ファイル列挙(パターン指定)
 	{
@@ -227,7 +224,7 @@ TEST_F(Test_IO_FileSystem, getFiles)
 		List<PathName> list;
 		for (auto& path : files) list.add(path);
 		ASSERT_EQ(1, list.getCount());
-		ASSERT_EQ(true, list.contains([](const PathName& path) { return path.getFileName() == _T("f2.b"); }));
+		ASSERT_EQ(true, list.containsIf([](const PathName& path) { return path.getFileName() == _T("f2.b"); }));
 	}
 	// <Test> ファイル列挙(パターン指定)
 	{
@@ -251,7 +248,7 @@ TEST_F(Test_IO_FileSystem, getFiles)
 		List<PathName> list;
 		for (auto& path : files) list.add(path);
 		ASSERT_EQ(1, list.getCount());
-		ASSERT_EQ(true, list.contains([](const PathName& path) { return path.getFileName() == _T("f1.a"); }));
+		ASSERT_EQ(true, list.containsIf([](const PathName& path) { return path.getFileName() == _T("f1.a"); }));
 	}
 	// <Test> . lead
 	//{TODO:
@@ -278,4 +275,3 @@ TEST_F(Test_IO_FileSystem, getFiles)
 	//}
 }
 
-#endif

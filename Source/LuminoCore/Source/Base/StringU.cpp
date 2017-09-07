@@ -1,7 +1,9 @@
 ﻿
 #include "../Internal.h"
 #include <memory>
-//#include <uchar>
+#ifdef LN_OS_WIN32
+#include <cuchar>
+#endif
 #include <Lumino/Text/Encoding.h>
 #include <Lumino/Base/ByteBuffer.h>
 //#include <Lumino/IO/Common.h>	// TODO: for Path
@@ -732,7 +734,7 @@ void UString::assign(const UStringRef& str)
 }
 
 template<typename TChar>
-void UString::assignFromCStr(const TChar* str, int length)
+void UString::assignFromCStr(const TChar* str, int length, bool* outUsedDefaultChar)
 {
 	// ASCII だけの文字列か調べる。ついでに文字数も調べる。
 	length = (length < 0) ? INT_MAX : length;
@@ -758,11 +760,14 @@ void UString::assignFromCStr(const TChar* str, int length)
 	}
 	else
 	{
-		LN_NOTIMPLEMENTED();
-		//Encoding* encoding = Encoding::getSystemMultiByteEncoding();
-		//Ref<Decoder> decoder(encoding->createDecoder(), false);
-		//getMaxByteCount
-		//	decoder->convertToUTF16(str, length, )
+		EncodingConversionOptions options;
+		options.NullTerminated = false;
+
+		EncodingConversionResult result;
+		const ByteBuffer tmpBuffer = Encoding::convert(str, len * sizeof(TChar), Encoding::getEncodingTemplate<TChar>(), getThisTypeEncoding(), options, &result);
+		if (outUsedDefaultChar != nullptr) *outUsedDefaultChar = result.UsedDefaultChar;
+
+		assign((const Char*)tmpBuffer.getData(), result.BytesUsed / sizeof(Char));
 	}
 }
 

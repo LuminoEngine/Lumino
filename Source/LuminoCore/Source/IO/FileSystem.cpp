@@ -284,6 +284,7 @@ public:
 private:
 	bool nextInternal();
 	void setCurrent(const PlatformFileSystem::PathString& nativeCurrent);
+	void clearCurrent();
 
 	PlatformFileFinderImpl	m_impl;
 	PlatformFileSystem::PathString m_dirPath;
@@ -306,7 +307,7 @@ PlatformFileFinder::PlatformFileFinder(const PlatformFileSystem::PathChar* dirPa
 
 	m_current.reserve(m_dirPath.length() + 32);	// min size
 	m_impl.initialize(dirPath, dirPathLen);
-	setCurrent(m_impl.getCurrentFileName());
+	next();
 }
 
 PlatformFileFinder::~PlatformFileFinder()
@@ -361,7 +362,11 @@ bool PlatformFileFinder::nextInternal()
 	while (true)
 	{
 		result = m_impl.next();
-		if (!result) break;
+		if (!result)
+		{
+			clearCurrent();
+			break;
+		}
 		setCurrent(m_impl.getCurrentFileName());
 
 		uint32_t attr = 0;
@@ -387,6 +392,11 @@ void PlatformFileFinder::setCurrent(const PlatformFileSystem::PathString& native
 	m_current.assign(m_dirPath);
 	m_current.append(1, (PlatformFileSystem::PathChar)PathTraits::DirectorySeparatorChar);
 	m_current.append(m_impl.getCurrentFileName());
+}
+
+void PlatformFileFinder::clearCurrent()
+{
+	m_current.clear();
 }
 
 //==============================================================================

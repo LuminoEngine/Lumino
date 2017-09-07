@@ -188,7 +188,7 @@ public:
 
 	/** 指定した条件と一致する要素がこの配列内に存在するかどうかを判断します。*/
 	template<typename TPred>
-	bool contains(TPred pred) const
+	bool containsIf(TPred pred) const
 	{
 		return std::find_if(m_data->m_vector.begin(), m_data->m_vector.end(), pred) != m_data->m_vector.end();
 	}

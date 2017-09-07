@@ -6,8 +6,6 @@
 #include <Lumino/Xml/XmlReader.h>
 using namespace ln::tr;
 
-#ifdef LN_USTRING
-#else
 //==============================================================================
 class Test_Xml_XmlWriter : public ::testing::Test
 {
@@ -649,4 +647,3 @@ TEST_F(Test_Xml_XmlReader, Issues)
 		ASSERT_EQ(_T("Manager..Project..Branch..Project..Project..Branch..Project..ModifiedCommitList..Manager.."), str);
 	}
 }
-#endif

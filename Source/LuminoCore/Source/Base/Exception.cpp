@@ -239,7 +239,6 @@ const Char* Exception::getMessageOverride() const
 	return m_message;
 }
 
-#ifdef LN_USTRING
 void Exception::appendMessage(const Char* message, size_t len)
 {
 	// TODO: Char 用の strncpy あったほうがいい気がする・・
@@ -255,45 +254,6 @@ void Exception::appendMessage(const Char* message, size_t len)
 	head[len] = '\n';
 	head[len + 1] = '\0';
 }
-#else
-//------------------------------------------------------------------------------
-void Exception::appendMessage(const char* message, size_t len)
-{
-	size_t curLen = _tcslen(m_message);
-	size_t remainLen = (MaxMessageBufferSize - curLen) - 2;	// -2 は "\r\0"
-	len = std::min(len, remainLen);
-
-	Char* head = m_message + curLen;
-#ifdef LN_UNICODE
-	size_t wlen;
-	mbstowcs_s(&wlen, head, remainLen + 2, message, _TRUNCATE);
-#else
-	strncpy_s(head, remainLen + 2, message, len);
-#endif
-
-	head[len] = '\n';
-	head[len + 1] = '\0';
-}
-
-//------------------------------------------------------------------------------
-void Exception::appendMessage(const wchar_t* message, size_t len)
-{
-	size_t curLen = _tcslen(m_message);
-	size_t remainLen = (MaxMessageBufferSize - curLen) - 2;	// -2 は "\r\0"
-	len = std::min(len, remainLen);
-
-	Char* head = m_message + curLen;
-#ifdef LN_UNICODE
-	wcsncpy_s(head, remainLen + 2, message, len);
-#else
-	size_t mbcslen;
-	wcstombs_s(&mbcslen, head, remainLen + 2, message, _TRUNCATE);
-#endif
-
-	head[len] = '\n';
-	head[len + 1] = '\0';
-}
-#endif
 
 //==============================================================================
 // VerifyException

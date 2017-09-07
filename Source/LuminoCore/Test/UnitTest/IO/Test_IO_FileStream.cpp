@@ -2,8 +2,6 @@
 #include <Lumino/IO/FileSystem.h>
 #include <Lumino/IO/FileStream.h>
 
-#ifdef LN_USTRING
-#else
 class Test_IO_FileStream : public ::testing::Test
 {
 protected:
@@ -149,4 +147,3 @@ TEST_F(Test_IO_FileStream, FileOpenMode_Deferring)
 		ASSERT_STREQ("F", buf);
 	}
 }
-#endif

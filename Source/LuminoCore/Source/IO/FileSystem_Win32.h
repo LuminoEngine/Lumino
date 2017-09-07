@@ -179,11 +179,7 @@ public:
 		pattern.append(L"*");
 
 		m_fh = ::FindFirstFileW(pattern.c_str(), &m_fd);
-		if (m_fh != INVALID_HANDLE_VALUE)
-		{
-			// なんでもいいので1つ何らかのパスが current になるようにする
-			next();
-		}
+		LN_THROW(m_fh != INVALID_HANDLE_VALUE, IOException, path);
 	}
 
 	const std::wstring& getCurrentFileName() const

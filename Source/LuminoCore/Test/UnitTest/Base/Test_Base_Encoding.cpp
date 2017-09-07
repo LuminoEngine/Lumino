@@ -2,9 +2,6 @@
 #include "../../../Source/Text/UTF16Encoding.h"
 #include "../../../Source/Text/UTF32Encoding.h"
 
-#ifdef LN_USTRING
-#else
-
 class Test_Base_Encoding : public ::testing::Test
 {
 protected:
@@ -108,31 +105,16 @@ TEST_F(Test_Base_Encoding, SystemEncodingTest)
 		ASSERT_TRUE(1 <= e->getMaxByteCount() && e->getMaxByteCount() <= 6);
 	}
 
-	// 同一エンコーディング
-	{
-		StringA str2;
-		str2.convertFrom(str1, 6, Encoding::getSystemMultiByteEncoding());
-
-		ASSERT_EQ(6, str2.getLength());
-	}
-
 	// Multi → Wide
 	{
-		StringW str2;
-#ifdef _WIN32
-		str2.convertFrom(str1, 6, Encoding::getSystemMultiByteEncoding());
-#else
-		str2.convertFrom(str1, 9, Encoding::getSystemMultiByteEncoding());
-#endif
-
+		auto str2 = String::fromCString((const char*)str1, strlen((const char*)str1));
 		ASSERT_EQ(3, str2.getLength());
 		ASSERT_EQ(0x65E5, str2[0]);	// L'日'
 		ASSERT_EQ(0x672C, str2[1]);	// L'本'
 		ASSERT_EQ(0x8A9e, str2[2]);	// L'語'
 
 		// 1文字だけ
-		StringW str3;
-		str3.assignCStr("A");
+		auto str3 = String::fromCString("A");
 		ASSERT_EQ(1, str3.getLength());
 		ASSERT_EQ('A', str3[0]);
 	}
@@ -142,10 +124,8 @@ TEST_F(Test_Base_Encoding, SystemEncodingTest)
 		// "日本語"
 		wchar_t wstr1[] = { 0x65E5, 0x672C, 0x8A9e, 0x0000 };
 
-		StringA str2;
-		str2.convertFrom(wstr1, 3 * sizeof(wchar_t), Encoding::getWideCharEncoding());
-
-		ASSERT_EQ(strlen((char*)str1), str2.getLength());
+		auto str2 = String::fromCString(wstr1).toStdString();
+		ASSERT_EQ(strlen((char*)str1), str2.length());
 		//ASSERT_EQ(0x93, (byte_t)str2.at(0));	// '日'	※ unsingned char で比較しないと一致が取れない
 		//ASSERT_EQ(0xFA, (byte_t)str2.at(1));	// '日'
 		//ASSERT_EQ(0x96, (byte_t)str2.at(2));	// '本'
@@ -155,8 +135,7 @@ TEST_F(Test_Base_Encoding, SystemEncodingTest)
 		ASSERT_TRUE(TestHelper::checkArrays(str2.c_str(), str1, strlen((char*)str1)));
 
 		// 1文字だけ
-		StringA str3;
-		str3.assignCStr(L"A");
+		auto str3 = String::fromCString(L"A");
 		ASSERT_EQ(1, str3.getLength());
 		ASSERT_EQ('A', str3[0]);
 	}
@@ -191,5 +170,3 @@ TEST_F(Test_Base_Encoding, UTF16Encoding)
 	//ASSERT_EQ(0x00, Encoding::getUTF16Encoding()->getPreamble()[2]);
 	
 }
-
-#endif
