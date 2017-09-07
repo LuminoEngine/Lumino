@@ -621,7 +621,7 @@ void FrameCapturerContext::RecordCommand(Driver::ITexture* target, State newStat
 		}
 		else if (newState == State::Recording)
 		{
-			PathName filePath(_T("FrameCapturer.gif"));
+			PathName filePath(_LT("FrameCapturer.gif"));
 			m_gifContext->open(filePath, target->getSize());
 			m_lastTick = 0;
 		}

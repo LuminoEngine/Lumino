@@ -412,7 +412,7 @@ void TileMap::create(/* lnU32 w_size_, lnU32 h_size_, LNTilemapDirection dir_ */
     LRefPtr<SceneShader> shader( 
 		mSceneGraph->getSceneShaderManager()->createSceneShader( 
 			Resource::ID_Shader_Tilemap,
-			lnSharingKey(_T( "LNResource\\Shader\\TileMap.lnfx" ) ) ) );
+			lnSharingKey(_LT( "LNResource\\Shader\\TileMap.lnfx" ) ) ) );
 
     setShader( shader );
 }

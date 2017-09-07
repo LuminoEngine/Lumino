@@ -124,7 +124,7 @@ void EngineDiagViewer::updateFrame()
 {
 	if (m_displayMode == EngineDiagDisplayMode::FpsSummary)
 	{
-		String str = String::format(_T("{0} - MainFPS:{1}/{2}"), m_originalMainWindowTitle, m_diagCore->getMainFPS(), m_diagCore->getMainFPSCapacity());
+		String str = String::format(_LT("{0} - MainFPS:{1}/{2}"), m_originalMainWindowTitle, m_diagCore->getMainFPS(), m_diagCore->getMainFPSCapacity());
 		m_mainWindow->setTitleText(str);
 	}
 }

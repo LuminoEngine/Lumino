@@ -23,9 +23,9 @@ using OpFunc = void(NlVariant* lhs, NlVariant* rhs, NlVariant* outResult);
 //------------------------------------------------------------------------------
 NlNode_Add::NlNode_Add()
 {
-	m_inputLhsPin = createPin(NlGraphPinCategory::DataFlow, NlGraphPinDirection::Input, _T("left"));
-	m_inputRhsPin = createPin(NlGraphPinCategory::DataFlow, NlGraphPinDirection::Input, _T("right"));
-	m_outputPin = createPin(NlGraphPinCategory::DataFlow, NlGraphPinDirection::Output, _T("return"));
+	m_inputLhsPin = createPin(NlGraphPinCategory::DataFlow, NlGraphPinDirection::Input, _LT("left"));
+	m_inputRhsPin = createPin(NlGraphPinCategory::DataFlow, NlGraphPinDirection::Input, _LT("right"));
+	m_outputPin = createPin(NlGraphPinCategory::DataFlow, NlGraphPinDirection::Output, _LT("return"));
 }
 
 //------------------------------------------------------------------------------

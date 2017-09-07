@@ -40,7 +40,7 @@ GlyphIconFontManager::~GlyphIconFontManager()
 
 void GlyphIconFontManager::initialize()
 {
-	auto path = PathName(Assets::standardContentsDirectory, _T("FontAwesome.otf"));
+	auto path = PathName(Assets::standardContentsDirectory, _LT("FontAwesome.otf"));
 	detail::EngineDomain::getGraphicsManager()->getFontManager()->registerFontFile(path);
 }
 
@@ -59,7 +59,7 @@ Font* GlyphIconFontManager::getGlyphIconFont(int size)
 	}
 	else
 	{
-		auto newFont = newObject<Font>(_T("FontAwesome"), size);
+		auto newFont = newObject<Font>(_LT("FontAwesome"), size);
 		m_glyphIconFontMap[size] = newFont;
 		font = newFont;
 	}

@@ -89,37 +89,37 @@ static Mutex	g_mutex;
 void Profiler2::initializeGlobalSections()
 {
 	{
-		auto key = std::make_shared<ProfilingKey>(_T("Engine"));
+		auto key = std::make_shared<ProfilingKey>(_LT("Engine"));
 		g_globalKeys.push_back(key);
 		ProfilingKeys::Engine = key.get();
 		registerProfilingSection(key.get());
 	}
 	{
-		auto key = std::make_shared<ProfilingKey>(ProfilingKeys::Engine, _T("Engine_UpdateFrame"));
+		auto key = std::make_shared<ProfilingKey>(ProfilingKeys::Engine, _LT("Engine_UpdateFrame"));
 		g_globalKeys.push_back(key);
 		ProfilingKeys::Engine_UpdateFrame = key.get();
 		registerProfilingSection(key.get());
 	}
 	{
-		auto key = std::make_shared<ProfilingKey>(ProfilingKeys::Engine, _T("Engine_RenderFrame"));
+		auto key = std::make_shared<ProfilingKey>(ProfilingKeys::Engine, _LT("Engine_RenderFrame"));
 		g_globalKeys.push_back(key);
 		ProfilingKeys::Engine_RenderFrame = key.get();
 		registerProfilingSection(key.get());
 	}
 	{
-		auto key = std::make_shared<ProfilingKey>(ProfilingKeys::Engine, _T("Engine_PresentFrame"));
+		auto key = std::make_shared<ProfilingKey>(ProfilingKeys::Engine, _LT("Engine_PresentFrame"));
 		g_globalKeys.push_back(key);
 		ProfilingKeys::Engine_PresentFrame = key.get();
 		registerProfilingSection(key.get());
 	}
 	{
-		auto key = std::make_shared<ProfilingKey>(_T("Rendering"));
+		auto key = std::make_shared<ProfilingKey>(_LT("Rendering"));
 		g_globalKeys.push_back(key);
 		ProfilingKeys::Rendering = key.get();
 		registerProfilingSection(key.get());
 	}
 	{
-		auto key = std::make_shared<ProfilingKey>(ProfilingKeys::Rendering, _T("Rendering_PresentDevice"));
+		auto key = std::make_shared<ProfilingKey>(ProfilingKeys::Rendering, _LT("Rendering_PresentDevice"));
 		g_globalKeys.push_back(key);
 		ProfilingKeys::Rendering_PresentDevice = key.get();
 		registerProfilingSection(key.get());

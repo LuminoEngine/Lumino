@@ -159,9 +159,9 @@ void EngineInitalize()
 
 
 	RawFont::registerFontFile(LN_LOCALFILE("../../../../Tools/VLGothic/VL-Gothic-Regular.ttf"));
-	RawFont::getDefaultFont()->setName(_T("VL Gothic"));
+	RawFont::getDefaultFont()->setName(_LT("VL Gothic"));
 	RawFont::getDefaultFont()->setSize(20);
-	Font::getDefault()->setFamily(_T("VL Gothic"));
+	Font::getDefault()->setFamily(_LT("VL Gothic"));
 	Font::getDefault()->setSize(20);
 
 	// 背景はグレーにしておくと加算合成のテストとか、いろいろ都合がよい
@@ -177,7 +177,7 @@ void EngineInitalize()
 		buttonNormalBrush->setWrapMode(BrushWrapMode::Stretch);
 
 		auto* res = detail::UIManager::getInstance()->getDefaultStyleTable();
-		auto* style = res->getStyle(_T("UIButton"));
+		auto* style = res->getStyle(_LT("UIButton"));
 		// base
 		{
 			auto* props = style->getPropertyTable();
@@ -208,7 +208,7 @@ GTEST_API_ int main(int argc, char **argv)
 	::testing::AddGlobalTestEnvironment(new TestEnv());
 
 	{
-		Logger::initialize(_T("test_log.txt"));
+		Logger::initialize(_LT("test_log.txt"));
 
 		int scale = 1;
 		EngineSettings::setMainWindowSize(SizeI(160 * scale, 120 * scale));

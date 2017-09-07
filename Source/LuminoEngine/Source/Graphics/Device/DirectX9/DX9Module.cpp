@@ -70,126 +70,126 @@ const Char* DX9Module::GetDxFormatString(D3DFORMAT Format)
 	switch ( Format )
 	{
 	case D3DFMT_UNKNOWN:			
-	    return _T( "UNKNOWN" );
+	    return _LT( "UNKNOWN" );
 	case D3DFMT_R8G8B8:				
-	    return _T( "R8G8B8" );
+	    return _LT( "R8G8B8" );
 	case D3DFMT_A8R8G8B8:			
-	    return _T( "A8R8G8B8" );
+	    return _LT( "A8R8G8B8" );
 	case D3DFMT_X8R8G8B8:			
-	    return _T( "X8R8G8B8" );
+	    return _LT( "X8R8G8B8" );
 	case D3DFMT_R5G6B5:				
-	    return _T( "R5G6B5" );
+	    return _LT( "R5G6B5" );
 	case D3DFMT_X1R5G5B5:			
-	    return _T( "X1R5G5B5" );
+	    return _LT( "X1R5G5B5" );
 	case D3DFMT_A1R5G5B5:			
-	    return _T( "A1R5G5B5" );
+	    return _LT( "A1R5G5B5" );
 	case D3DFMT_A4R4G4B4:			
-	    return _T( "A4R4G4B4" );
+	    return _LT( "A4R4G4B4" );
 	case D3DFMT_R3G3B2:				
-	    return _T( "R3G3B2" );
+	    return _LT( "R3G3B2" );
 	case D3DFMT_A8:					
-	    return _T( "A8" );
+	    return _LT( "A8" );
 	case D3DFMT_A8R3G3B2:			
-	    return _T( "A8R3G3B2" );
+	    return _LT( "A8R3G3B2" );
 	case D3DFMT_X4R4G4B4:			
-	    return _T( "X4R4G4B4" );
+	    return _LT( "X4R4G4B4" );
 	case D3DFMT_A2B10G10R10:		
-	    return _T( "A2B10G10R10" );
+	    return _LT( "A2B10G10R10" );
 	case D3DFMT_A8B8G8R8:			
-	    return _T( "A8B8G8R8" );
+	    return _LT( "A8B8G8R8" );
 	case D3DFMT_X8B8G8R8:			
-	    return _T( "X8B8G8R8" );
+	    return _LT( "X8B8G8R8" );
 	case D3DFMT_G16R16:				
-	    return _T( "G16R16" );
+	    return _LT( "G16R16" );
 	case D3DFMT_A2R10G10B10:		
-	    return _T( "A2R10G10B10" );
+	    return _LT( "A2R10G10B10" );
 	case D3DFMT_A16B16G16R16:		
-	    return _T( "A16B16G16R16" );
+	    return _LT( "A16B16G16R16" );
 	case D3DFMT_A8P8:				
-	    return _T( "A8P8" );
+	    return _LT( "A8P8" );
 	case D3DFMT_P8:					
-	    return _T( "P8" );
+	    return _LT( "P8" );
 	case D3DFMT_L8:					
-	    return _T( "L8" );
+	    return _LT( "L8" );
 	case D3DFMT_L16:				
-	    return _T( "L16" );
+	    return _LT( "L16" );
 	case D3DFMT_A8L8:				
-	    return _T( "A8L8" );
+	    return _LT( "A8L8" );
 	case D3DFMT_A4L4:				
-	    return _T( "A4L4" );
+	    return _LT( "A4L4" );
 	case D3DFMT_V8U8:				
-	    return _T( "V8U8" );
+	    return _LT( "V8U8" );
 	case D3DFMT_Q8W8V8U8:			
-	    return _T( "Q8W8V8U8" );
+	    return _LT( "Q8W8V8U8" );
 	case D3DFMT_V16U16:				
-	    return _T( "V16U16" );
+	    return _LT( "V16U16" );
 	case D3DFMT_Q16W16V16U16:		
-	    return _T( "Q16W16V16U16" );
+	    return _LT( "Q16W16V16U16" );
 	case D3DFMT_CxV8U8:				
-	    return _T( "CxV8U8" );
+	    return _LT( "CxV8U8" );
 	case D3DFMT_L6V5U5:				
-	    return _T( "L6V5U5" );
+	    return _LT( "L6V5U5" );
 	case D3DFMT_X8L8V8U8:			
-	    return _T( "X8L8V8U8" );
+	    return _LT( "X8L8V8U8" );
 	case D3DFMT_A2W10V10U10:		
-	    return _T( "A2W10V10U10" );
+	    return _LT( "A2W10V10U10" );
 	case D3DFMT_G8R8_G8B8:			
-	    return _T( "G8R8_G8B8" );
+	    return _LT( "G8R8_G8B8" );
 	case D3DFMT_R8G8_B8G8:			
-	    return _T( "R8G8_B8G8" );
+	    return _LT( "R8G8_B8G8" );
 	case D3DFMT_DXT1:				
-	    return _T( "DXT1" );
+	    return _LT( "DXT1" );
 	case D3DFMT_DXT2:				
-	    return _T( "DXT2" );
+	    return _LT( "DXT2" );
 	case D3DFMT_DXT3:				
-	    return _T( "DXT3" );
+	    return _LT( "DXT3" );
 	case D3DFMT_DXT4:				
-	    return _T( "DXT4" );
+	    return _LT( "DXT4" );
 	case D3DFMT_DXT5:				
-	    return _T( "DXT5" );
+	    return _LT( "DXT5" );
 	case D3DFMT_UYVY:				
-	    return _T( "UYVY" );
+	    return _LT( "UYVY" );
 	case D3DFMT_YUY2:				
-	    return _T( "YUY2" );
+	    return _LT( "YUY2" );
 	case D3DFMT_D16_LOCKABLE:		
-	    return _T( "D16_LOCKABLE" );
+	    return _LT( "D16_LOCKABLE" );
 	case D3DFMT_D32:				
-	    return _T( "D32" );
+	    return _LT( "D32" );
 	case D3DFMT_D15S1:				
-	    return _T( "D15S1" );
+	    return _LT( "D15S1" );
 	case D3DFMT_D24S8:				
-	    return _T( "D24S8" );
+	    return _LT( "D24S8" );
 	case D3DFMT_D24X8:				
-	    return _T( "D24X8" );
+	    return _LT( "D24X8" );
 	case D3DFMT_D24X4S4:			
-	    return _T( "D24X4S4" );
+	    return _LT( "D24X4S4" );
 	case D3DFMT_D32F_LOCKABLE:		
-	    return _T( "D32F_LOCKABLE" );
+	    return _LT( "D32F_LOCKABLE" );
 	case D3DFMT_D24FS8:				
-	    return _T( "D24FS8" );
+	    return _LT( "D24FS8" );
 	case D3DFMT_D16:				
-	    return _T( "D16" );
+	    return _LT( "D16" );
 	case D3DFMT_VERTEXDATA:			
-	    return _T( "VERTEXDATA" );
+	    return _LT( "VERTEXDATA" );
 	case D3DFMT_INDEX16:			
-	    return _T( "INDEX16" );
+	    return _LT( "INDEX16" );
 	case D3DFMT_INDEX32:			
-	    return _T( "INDEX32" );
+	    return _LT( "INDEX32" );
 	case D3DFMT_R16F:				
-	    return _T( "R16F" );
+	    return _LT( "R16F" );
 	case D3DFMT_G16R16F:			
-	    return _T( "G16R16F" );
+	    return _LT( "G16R16F" );
 	case D3DFMT_A16B16G16R16F:		
-	    return _T( "A16B16G16R16F" );
+	    return _LT( "A16B16G16R16F" );
 	case D3DFMT_R32F:				
-	    return _T( "R32F" );
+	    return _LT( "R32F" );
 	case D3DFMT_G32R32F:			
-	    return _T( "G32R32F" );
+	    return _LT( "G32R32F" );
 	case D3DFMT_A32B32G32R32F:		
-	    return _T( "A32B32G32R32F" );
+	    return _LT( "A32B32G32R32F" );
 	}
 
-	return _T( "-" );
+	return _LT( "-" );
 }
 
 //------------------------------------------------------------------------------

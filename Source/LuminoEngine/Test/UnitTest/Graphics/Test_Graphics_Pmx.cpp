@@ -16,13 +16,13 @@ protected:
 //-----------------------------------------------------------------------------
 TEST_F(Test_Graphics_Pmx, Basic)
 {
-	auto mesh = SkinnedMeshComponent::create(_T("D:/MMD/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
-	//auto clip = AnimationClip::create(_T("D:/MMD/モーション/Love&Joy/love&joyお面無しver.vmd"));
-	//auto clip = AnimationClip::create(_T("D:/MMD/モーション/Zigg-Zagg/ZZ-MikuV2.vmd"));
-	auto clip1 = AnimationClip::create(_T("D:/MMD/モーション/走歩スv2.2full/歩く/A01_SO_女の子歩き_s591_p40.vmd"));
-	auto clip2 = AnimationClip::create(_T("D:/MMD/モーション/ln/Idle.vmd"));
-	clip1->SetName(_T("walk"));
-	clip2->SetName(_T("idle"));
+	auto mesh = SkinnedMeshComponent::create(_LT("D:/MMD/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
+	//auto clip = AnimationClip::create(_LT("D:/MMD/モーション/Love&Joy/love&joyお面無しver.vmd"));
+	//auto clip = AnimationClip::create(_LT("D:/MMD/モーション/Zigg-Zagg/ZZ-MikuV2.vmd"));
+	auto clip1 = AnimationClip::create(_LT("D:/MMD/モーション/走歩スv2.2full/歩く/A01_SO_女の子歩き_s591_p40.vmd"));
+	auto clip2 = AnimationClip::create(_LT("D:/MMD/モーション/ln/Idle.vmd"));
+	clip1->SetName(_LT("walk"));
+	clip2->SetName(_LT("idle"));
 	auto model = mesh->GetSkinnedMeshModel();
 	auto animator = model->GetAnimator();
 	animator->AddAnimationClip(clip1);
@@ -81,19 +81,19 @@ TEST_F(Test_Graphics_Pmx, Skinning)
 	Vector4 invSize;
 	invSize.x = 1.0f / skinnedTex->GetWidth();
 	invSize.y = 1.0f / skinnedTex->GetHeight();
-	mesh->GetMaterials()->GetAt(0)->SetVectorParameter(_T("lnBoneTextureReciprocalSize"), invSize);
-	mesh->GetMaterials()->GetAt(0)->SetTextureParameter(_T("lnBoneTexture"), skinnedTex);
+	mesh->GetMaterials()->GetAt(0)->SetVectorParameter(_LT("lnBoneTextureReciprocalSize"), invSize);
+	mesh->GetMaterials()->GetAt(0)->SetTextureParameter(_LT("lnBoneTexture"), skinnedTex);
 
 
 	mesh->GetMaterials()->GetAt(0)->SetTextureParameter(Material::MaterialTextureParameter, skinnedTex);
 
 	ShaderVariable* v;
-	v = shader->FindVariable(_T("lnBoneTextureReciprocalSize"));
+	v = shader->FindVariable(_LT("lnBoneTextureReciprocalSize"));
 	if (v) {
 		v->SetVector(invSize);
 	}
 
-	v = shader->FindVariable(_T("lnBoneTexture"));
+	v = shader->FindVariable(_LT("lnBoneTexture"));
 	if (v) {
 		v->SetTexture(skinnedTex);
 	}

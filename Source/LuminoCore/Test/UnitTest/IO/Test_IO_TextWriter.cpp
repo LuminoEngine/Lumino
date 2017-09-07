@@ -20,7 +20,7 @@ TEST_F(Test_IO_TextWriter, Basic)
 	}
 
 	String str = FileSystem::readAllText(TEMPFILE("Test1.txt"));
-	ASSERT_EQ(_T("32"), str);
+	ASSERT_EQ(_LT("32"), str);
 }
 
 
@@ -38,9 +38,9 @@ TEST_F(Test_IO_TextWriter, write)
 		double v_double = 100;
 
 		StringWriter writer;
-		writer.write(_T("ab"));
+		writer.write(_LT("ab"));
 		writer.write(String("def"));
-		writer.write(_T('g'));
+		writer.write(_LT('g'));
 		writer.write(v_int16_t);
 		writer.write(v_int32_t);
 		writer.write(v_int64_t);
@@ -51,7 +51,7 @@ TEST_F(Test_IO_TextWriter, write)
 		writer.write(v_double);
 
 		String s = writer.toString();
-		ASSERT_EQ(_T("abdefg327672147483647922337203685477580765535429496729518446744073709551615100.000000100.000000"), s);
+		ASSERT_EQ(_LT("abdefg327672147483647922337203685477580765535429496729518446744073709551615100.000000100.000000"), s);
 	}
 }
 
@@ -69,10 +69,10 @@ TEST_F(Test_IO_TextWriter, writeLine)
 		double v_double = 100;
 
 		StringWriter writer;
-		writer.setNewLine(_T("\n"));
-		writer.writeLine(StringRef(_T("abc"), 2));
+		writer.setNewLine(_LT("\n"));
+		writer.writeLine(StringRef(_LT("abc"), 2));
 		writer.writeLine(String("def"));
-		writer.writeLine(_T('g'));
+		writer.writeLine(_LT('g'));
 		writer.writeLine(v_int16_t);
 		writer.writeLine(v_int32_t);
 		writer.writeLine(v_int64_t);
@@ -83,7 +83,7 @@ TEST_F(Test_IO_TextWriter, writeLine)
 		writer.writeLine(v_double);
 
 		String s = writer.toString();
-		ASSERT_EQ(_T("ab\ndef\ng\n32767\n2147483647\n9223372036854775807\n65535\n4294967295\n18446744073709551615\n100.000000\n100.000000\n"), s);
+		ASSERT_EQ(_LT("ab\ndef\ng\n32767\n2147483647\n9223372036854775807\n65535\n4294967295\n18446744073709551615\n100.000000\n100.000000\n"), s);
 	}
 }
 

@@ -83,7 +83,7 @@ void SkinnedMeshComponent::onUpdateFrame(float elapsedTime)
 //	Shader* core = priorityShader;
 //	ShaderVariable* v;
 //
-//	v = core->findVariable(_T("lnBoneTextureReciprocalSize"));
+//	v = core->findVariable(_LT("lnBoneTextureReciprocalSize"));
 //	if (v) {
 //		Vector4 invSize;
 //		invSize.x = 1.0f / m_meshModel->getSkinningMatricesTexture()->getRealSize().width;
@@ -91,11 +91,11 @@ void SkinnedMeshComponent::onUpdateFrame(float elapsedTime)
 //		v->setVector(invSize);
 //	}
 //
-//	v = core->findVariable(_T("lnBoneTexture"));
+//	v = core->findVariable(_LT("lnBoneTexture"));
 //	if (v) {
 //		v->setTexture(m_meshModel->getSkinningMatricesTexture());
 //	}
-//	v = core->findVariable(_T("lnBoneLocalQuaternionTexture"));
+//	v = core->findVariable(_LT("lnBoneLocalQuaternionTexture"));
 //	if (v) {
 //		v->setTexture(m_meshModel->m_skinningLocalQuaternionsTexture);
 //	}
@@ -196,7 +196,7 @@ LN_NAMESPACE_END
 //	//Shader* core = priorityShader->GetCoreShader();
 //	//ShaderVariable* v;
 //
-//	//v = core->findVariable(_T("lnBoneTextureReciprocalSize"));
+//	//v = core->findVariable(_LT("lnBoneTextureReciprocalSize"));
 //	//if (v) {
 //	//	Vector4 invSize;
 //	//	invSize.X = 1.0f / m_model->getSkinningMatricesTexture()->getRealSize().Width;
@@ -204,7 +204,7 @@ LN_NAMESPACE_END
 //	//	v->setVector(invSize);
 //	//}
 //
-//	//v = core->findVariable(_T("lnBoneTexture"));
+//	//v = core->findVariable(_LT("lnBoneTexture"));
 //	//if (v) {
 //	//	v->setTexture(m_model->getSkinningMatricesTexture());
 //	//}

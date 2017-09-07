@@ -21,7 +21,7 @@ TEST_F(Test_UI_TextBlock, DefaultLayout)
 
 	auto uiRoot = Application::getMainWindow();
 	auto textBlock1 = UITextBlock::create();
-	textBlock1->setText(_T("TextBlock"));
+	textBlock1->setText(_LT("TextBlock"));
 	uiRoot->addChild(textBlock1);
 
 	Engine::update();

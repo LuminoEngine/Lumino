@@ -21,7 +21,7 @@ LN_SAMPLE_MAIN(Lumino, Basic, HelloWorld)
 	Engine::initialize();
 
 	// 文字列を表示するための TextBlock2D オブジェクトを作成する
-	auto text = TextBlock2D::create(_T("Hello, Lumino!"));
+	auto text = TextBlock2D::create(_LT("Hello, Lumino!"));
 
 	// 表示する文字列の中央を原点とする
 	text->setAnchorPoint(0.5, 0.5);

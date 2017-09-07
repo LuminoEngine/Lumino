@@ -205,7 +205,7 @@ Ref<Stream> AssetsManager::openFile(const StringRef& filePath)
 //==============================================================================
 // Assets
 //==============================================================================
-const String Assets::standardContentsDirectory = _T("CommonAssets");
+const String Assets::standardContentsDirectory = _LT("CommonAssets");
 
 //------------------------------------------------------------------------------
 void Assets::addAssetsDirectory(const StringRef& directoryPath)

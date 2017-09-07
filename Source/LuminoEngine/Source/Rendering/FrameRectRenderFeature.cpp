@@ -67,12 +67,12 @@ void FrameRectRendererCore::initialize(GraphicsManager* manager)
 
 	m_shader.technique = m_shader.shader->getTechnique(0);
 	m_shader.pass = m_shader.technique->getPass(0);
-	m_shader.varWorldMatrix = m_shader.shader->getVariableByName(_T("g_worldMatrix"));
-	m_shader.varViewProjMatrix = m_shader.shader->getVariableByName(_T("g_viewProjMatrix"));
-	m_shader.varTone = m_shader.shader->getVariableByName(_T("g_tone"));
-	m_shader.varTexture = m_shader.shader->getVariableByName(_T("g_texture"));
-	m_shader.varGlyphMaskSampler = m_shader.shader->getVariableByName(_T("g_glyphMaskTexture"));
-	m_shader.varViewportSize = m_shader.shader->getVariableByName(_T("g_viewportSize"));
+	m_shader.varWorldMatrix = m_shader.shader->getVariableByName(_LT("g_worldMatrix"));
+	m_shader.varViewProjMatrix = m_shader.shader->getVariableByName(_LT("g_viewProjMatrix"));
+	m_shader.varTone = m_shader.shader->getVariableByName(_LT("g_tone"));
+	m_shader.varTexture = m_shader.shader->getVariableByName(_LT("g_texture"));
+	m_shader.varGlyphMaskSampler = m_shader.shader->getVariableByName(_LT("g_glyphMaskTexture"));
+	m_shader.varViewportSize = m_shader.shader->getVariableByName(_LT("g_viewportSize"));
 
 	m_shader.varWorldMatrix->setMatrix(Matrix::Identity);
 	m_shader.varViewProjMatrix->setMatrix(Matrix::Identity);

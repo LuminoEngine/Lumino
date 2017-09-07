@@ -45,10 +45,10 @@ void UISlider::initialize()
 	vsm->registerVisualState(UIVisualStates::OrientationGroup, UIVisualStates::VerticalState);
 
 	m_track = newObject<UITrack>();
-	m_track->setStyleSubControlName(_T("UISlider"), _T("Track"));
-	m_track->getThumb()->setStyleSubControlName(_T("UISlider"), _T("Thumb"));
-	m_track->getDecreaseButton()->setStyleSubControlName(_T("UISlider"), _T("DecreaseButton"));
-	m_track->getIncreaseButton()->setStyleSubControlName(_T("UISlider"), _T("IncreaseButton"));
+	m_track->setStyleSubControlName(_LT("UISlider"), _LT("Track"));
+	m_track->getThumb()->setStyleSubControlName(_LT("UISlider"), _LT("Thumb"));
+	m_track->getDecreaseButton()->setStyleSubControlName(_LT("UISlider"), _LT("DecreaseButton"));
+	m_track->getIncreaseButton()->setStyleSubControlName(_LT("UISlider"), _LT("IncreaseButton"));
 	m_track->setViewportSize(Math::NaN);	// 値の計算に slider モードを使用する
 	addVisualChild(m_track);
 }

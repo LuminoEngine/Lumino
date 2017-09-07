@@ -121,9 +121,9 @@ void UIThumb::onRoutedEvent(UIEventArgs* e)
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UITrack, UIElement)
 
-const String UITrack::OrientationStates = _T("OrientationStates");
-const String UITrack::HorizontalState = _T("Horizontal");
-const String UITrack::VerticalState = _T("Vertical");
+const String UITrack::OrientationStates = _LT("OrientationStates");
+const String UITrack::HorizontalState = _LT("Horizontal");
+const String UITrack::VerticalState = _LT("Vertical");
 
 //------------------------------------------------------------------------------
 Ref<UITrack> UITrack::create()
@@ -166,8 +166,8 @@ void UITrack::initialize()
 	m_thumb = newObject<UIThumb>();
 	m_increaseButton = newObject<UIButton>();
 
-	m_decreaseButton->setStyleSubControlName(tr::TypeInfo::getTypeInfo<UITrack>()->getName(), _T("DecreaseButton"));
-	m_increaseButton->setStyleSubControlName(tr::TypeInfo::getTypeInfo<UITrack>()->getName(), _T("IncreaseButton"));
+	m_decreaseButton->setStyleSubControlName(tr::TypeInfo::getTypeInfo<UITrack>()->getName(), _LT("DecreaseButton"));
+	m_increaseButton->setStyleSubControlName(tr::TypeInfo::getTypeInfo<UITrack>()->getName(), _LT("IncreaseButton"));
 
 	addVisualChild(m_decreaseButton);
 	addVisualChild(m_thumb);
@@ -461,9 +461,9 @@ void UIScrollEventArgs::initialize(Object* sender, float newValue_, ScrollEventT
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIScrollBar, UIControl)
 LN_ROUTED_EVENT_IMPLEMENT2(UIScrollBar, UIScrollEventArgs, ScrollEvent);
 
-const String UIScrollBar::OrientationStates = _T("OrientationStates");
-const String UIScrollBar::HorizontalState = _T("Horizontal");
-const String UIScrollBar::VerticalState = _T("Vertical");
+const String UIScrollBar::OrientationStates = _LT("OrientationStates");
+const String UIScrollBar::HorizontalState = _LT("Horizontal");
+const String UIScrollBar::VerticalState = _LT("Vertical");
 
 //------------------------------------------------------------------------------
 Ref<UIScrollBar> UIScrollBar::create()
@@ -504,8 +504,8 @@ void UIScrollBar::initialize()
 	addVisualChild(m_lineUpButton);
 	addVisualChild(m_lineDownButton);
 
-	m_lineUpButton->setStyleSubControlName(tr::TypeInfo::getTypeInfo<UIScrollBar>()->getName(), _T("LineUpButton"));
-	m_lineDownButton->setStyleSubControlName(tr::TypeInfo::getTypeInfo<UIScrollBar>()->getName(), _T("LineDownButton"));
+	m_lineUpButton->setStyleSubControlName(tr::TypeInfo::getTypeInfo<UIScrollBar>()->getName(), _LT("LineUpButton"));
+	m_lineDownButton->setStyleSubControlName(tr::TypeInfo::getTypeInfo<UIScrollBar>()->getName(), _LT("LineDownButton"));
 
 	// TODO:
 	m_lineUpButton->setSize(Size(16, 16));
@@ -666,9 +666,9 @@ Size UIScrollBar::arrangeOverride(const Size& finalSize)
 //void UIScrollBar::GetStyleClassName(String* outSubStateName)
 //{
 //	if (m_track->getOrientation() == Orientation::Horizontal)
-//		*outSubStateName = _T("Horizontal");
+//		*outSubStateName = _LT("Horizontal");
 //	else
-//		*outSubStateName = _T("Vertical");
+//		*outSubStateName = _LT("Vertical");
 //}
 
 //------------------------------------------------------------------------------

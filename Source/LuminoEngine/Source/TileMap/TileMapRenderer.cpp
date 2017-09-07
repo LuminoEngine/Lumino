@@ -59,10 +59,10 @@ TileMapRenderer::TileMapRenderer(detail::GraphicsManager* manager)
 	m_shader.shader = LN_NEW Shader();
 	m_shader.shader->initialize(m_graphicsManager, g_TileMapRenderer_fx_Data, g_TileMapRenderer_fx_Len);
 	m_shader.pass = m_shader.shader->getTechniques()[0]->getPasses()[0];
-	m_shader.varWorldMatrix = m_shader.shader->findVariable(_T("g_worldMatrix"));
-	m_shader.varViewProjMatrix = m_shader.shader->findVariable(_T("g_viewProjMatrix"));
-	m_shader.varTexture = m_shader.shader->findVariable(_T("g_texture"));
-	//m_shader.varPixelStep = m_shader.shader->findVariable(_T("g_pixelStep"));
+	m_shader.varWorldMatrix = m_shader.shader->findVariable(_LT("g_worldMatrix"));
+	m_shader.varViewProjMatrix = m_shader.shader->findVariable(_LT("g_viewProjMatrix"));
+	m_shader.varTexture = m_shader.shader->findVariable(_LT("g_texture"));
+	//m_shader.varPixelStep = m_shader.shader->findVariable(_LT("g_pixelStep"));
 }
 
 //------------------------------------------------------------------------------

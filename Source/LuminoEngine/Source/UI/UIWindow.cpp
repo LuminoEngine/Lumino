@@ -93,7 +93,7 @@ void UIWindow::onLogicalChildrenPresenterChanged(UILayoutPanel* newPanel)
 {
 	if (newPanel != nullptr)
 	{
-		newPanel->setStyleSubControlName(_T("UIWindow"), _T("ContentHost"));
+		newPanel->setStyleSubControlName(_LT("UIWindow"), _LT("ContentHost"));
 
 		newPanel->setMargin(Thickness(0, 30, 0, 0));
 	}

@@ -840,11 +840,11 @@ void UITextBox::initialize()
 
 	// Test
 	//auto d = newObject<UITextDocument>();
-	//d->Replace(0, 0, _T("b"));
-	//d->Replace(0, 0, _T("a"));
-	//d->Replace(2, 0, _T("c"));
-	//d->Replace(2, 0, _T("\n"));	// ab\nc
-	//d->Replace(0, 4, _T("\n"));	// \n
+	//d->Replace(0, 0, _LT("b"));
+	//d->Replace(0, 0, _LT("a"));
+	//d->Replace(2, 0, _LT("c"));
+	//d->Replace(2, 0, _LT("\n"));	// ab\nc
+	//d->Replace(0, 4, _LT("\n"));	// \n
 }
 
 //------------------------------------------------------------------------------

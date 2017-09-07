@@ -1,5 +1,6 @@
 
 #include "../Internal.h"
+#include <Lumino/Base/StringHelper.h>
 #include <Lumino/Base/Hash.h>
 
 LN_NAMESPACE_BEGIN
@@ -85,7 +86,7 @@ uint32_t Hash::calcHash(const wchar_t* str, int len)
 
 uint32_t Hash::calcHash(const char16_t* str, int len)
 {
-	len = static_cast<int>(len * sizeof(char16_t));
+	len = static_cast<int>(((len < 0) ? StringTraits::tcslen(str) : len) * sizeof(char16_t));	
 	return CalcCRCHash((const char*)str, len);
 }
 

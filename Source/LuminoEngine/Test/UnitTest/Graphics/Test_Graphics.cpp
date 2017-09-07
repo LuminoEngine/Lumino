@@ -291,7 +291,7 @@ TEST_F(Test_Graphics_Rendering, drawText_)
 		LN_TEST_BEGIN_FRAME;
 		Engine::getWorld2D()->getRenderer()->setFont(font);
 		Engine::getWorld2D()->getRenderer()->setBrush(Brush::White);
-		Engine::getWorld2D()->getRenderer()->drawText_(_T("Lumino"), Rect(0, 0, w, 100), StringFormatFlags::LeftAlignment);
+		Engine::getWorld2D()->getRenderer()->drawText_(_LT("Lumino"), Rect(0, 0, w, 100), StringFormatFlags::LeftAlignment);
 		Engine::renderFrame();
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawText1.png")));
@@ -300,9 +300,9 @@ TEST_F(Test_Graphics_Rendering, drawText_)
 		LN_TEST_BEGIN_FRAME;
 		Engine::getWorld2D()->getRenderer()->setFont(font);
 		Engine::getWorld2D()->getRenderer()->setBrush(Brush::White);
-		Engine::getWorld2D()->getRenderer()->drawText_(_T("Text1"), Rect(0, 0, w, 100), StringFormatFlags::LeftAlignment);
-		Engine::getWorld2D()->getRenderer()->drawText_(_T("Text2"), Rect(0, 0, w, 100), StringFormatFlags::CenterAlignment);
-		Engine::getWorld2D()->getRenderer()->drawText_(_T("Text3"), Rect(0, 0, w, 100), StringFormatFlags::RightAlignment);
+		Engine::getWorld2D()->getRenderer()->drawText_(_LT("Text1"), Rect(0, 0, w, 100), StringFormatFlags::LeftAlignment);
+		Engine::getWorld2D()->getRenderer()->drawText_(_LT("Text2"), Rect(0, 0, w, 100), StringFormatFlags::CenterAlignment);
+		Engine::getWorld2D()->getRenderer()->drawText_(_LT("Text3"), Rect(0, 0, w, 100), StringFormatFlags::RightAlignment);
 		Engine::renderFrame();
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawText2.png")));
@@ -313,7 +313,7 @@ TEST_F(Test_Graphics_Rendering, drawText_)
 		Engine::getWorld2D()->getRenderer()->setFont(font);
 		Engine::getWorld2D()->getRenderer()->setBrush(Brush::White);
 		Engine::getWorld2D()->getRenderer()->setTransform(Matrix::makeTranslation(10, 20, 0));
-		Engine::getWorld2D()->getRenderer()->drawText_(_T("Text1"), Point());
+		Engine::getWorld2D()->getRenderer()->drawText_(_LT("Text1"), Point());
 		Engine::renderFrame();
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawText3.png")));
@@ -548,7 +548,7 @@ TEST_F(Test_Graphics_DrawingContext, drawChar)
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_DrawingContext, drawText_)
 {
-	//auto f = Font::create(_T("Meiryo UI"), 30);
+	//auto f = Font::create(_LT("Meiryo UI"), 30);
 	{
 		LN_TEST_BEGIN_FRAME;
 		Engine::renderFrame();
@@ -557,7 +557,7 @@ TEST_F(Test_Graphics_DrawingContext, drawText_)
 		dc->setBrush(Brush::Gray);
 		//dc->setFont(f);
 		dc->setBlendMode(BlendMode::Alpha);
-		dc->drawText2(_T("テッセレーションとアウトラ\nインフォントの描画ができ\nるようになったんだね！\nすごーい！"), Rect(100, 100, 100, 100));
+		dc->drawText2(_LT("テッセレーションとアウトラ\nインフォントの描画ができ\nるようになったんだね！\nすごーい！"), Rect(100, 100, 100, 100));
 		LN_TEST_END_FRAME;
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_DrawingContext.DrawText1.png"), 90, true));
 	}
@@ -593,9 +593,9 @@ TEST_F(Test_Graphics_Texture, drawText)
 {
 	auto font = Font::create();
 	auto texture = Texture2D::create(160, 120);
-	texture->drawText(_T("Left"), RectI(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Left);
-	texture->drawText(_T("Center"), RectI(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Center);
-	texture->drawText(_T("Rigth"), RectI(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Right);
+	texture->drawText(_LT("Left"), RectI(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Left);
+	texture->drawText(_LT("Center"), RectI(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Center);
+	texture->drawText(_LT("Rigth"), RectI(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Right);
 	//texture->drawText("Justify", Rect(0, 32, 120, 160), font, Color32::White, Color32::White, 0, TextAlignment::Justify);
 	auto sprite = Sprite2D::create(texture);
 	sprite->setBlendMode(BlendMode::Alpha);
@@ -614,15 +614,15 @@ TEST_F(Test_Graphics_Texture, Issues)
 	{
 		auto font = Font::create();
 		auto texture = Texture2D::create(160, 120);
-		texture->drawText(_T("__________"), RectI(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Left);
+		texture->drawText(_LT("__________"), RectI(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Left);
 		auto sprite = Sprite2D::create(texture);
 		Engine::update();
 
 		texture->clear(Color32(0, 0, 0, 0));
-		texture->drawText(_T("Clear1"), RectI(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Left);
+		texture->drawText(_LT("Clear1"), RectI(0, 0, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Left);
 		Engine::update();
 
-		texture->drawText(_T("Clear2"), RectI(0, 32, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Left);
+		texture->drawText(_LT("Clear2"), RectI(0, 32, 160, 120), font, Color32::White, Color32::White, 0, TextAlignment::Left);
 		Engine::update();
 
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Texture.Clear1.png"), 95));

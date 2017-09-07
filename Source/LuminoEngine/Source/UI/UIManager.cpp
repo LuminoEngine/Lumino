@@ -181,8 +181,8 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 {
 	//{
 	//	auto test = UIStyle::create();
-	//	test->AddValue(_T(""), UITextBlock::FontSizeId, 20);
-	//	test->AddValue(_T(""), UITextBlock::foregroundId, Brush::Black);
+	//	test->AddValue(_LT(""), UITextBlock::FontSizeId, 20);
+	//	test->AddValue(_LT(""), UITextBlock::foregroundId, Brush::Black);
 	//	table->AddStyle(tr::TypeInfo::getTypeInfo<UITextBlock>(), test);
 	//}
 
@@ -251,8 +251,8 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 
 	// UIToggleButton : UIButton
 	{
-		auto* style = table->getStyle(_T("UIToggleButton"));
-		style->setBaseOnStyle(table->getStyle(_T("UIButton")));
+		auto* style = table->getStyle(_LT("UIToggleButton"));
+		style->setBaseOnStyle(table->getStyle(_LT("UIButton")));
 
 		// UIToggleButton.Checked
 		{
@@ -285,7 +285,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 
 	// UITrack
 	{
-		auto* style = table->getStyle(_T("UITrack"));
+		auto* style = table->getStyle(_LT("UITrack"));
 		// base
 		{
 			auto* props = style->getPropertyTable();
@@ -294,7 +294,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 	}
 	// UITrack::DecreaseButton
 	{
-		auto* style = table->getSubControlStyle(_T("UITrack"), _T("DecreaseButton"));
+		auto* style = table->getSubControlStyle(_LT("UITrack"), _LT("DecreaseButton"));
 		// base
 		{
 			auto* props = style->getPropertyTable();
@@ -303,7 +303,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 	}
 	// UITrack::IncreaseButton
 	{
-		auto* style = table->getSubControlStyle(_T("UITrack"), _T("IncreaseButton"));
+		auto* style = table->getSubControlStyle(_LT("UITrack"), _LT("IncreaseButton"));
 		// base
 		{
 			auto* props = style->getPropertyTable();
@@ -344,7 +344,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 		buttonMouseOverBrush->getBorderThickness(8, 8, 8, 8);
 		buttonMouseOverBrush->getImageDrawMode(BrushImageDrawMode::BoxFrame);
 
-		auto* style = table->getSubControlStyle(_T("UIScrollBar"), _T("LineUpButton"));
+		auto* style = table->getSubControlStyle(_LT("UIScrollBar"), _LT("LineUpButton"));
 		// base
 		{
 			auto* props = style->getPropertyTable();
@@ -358,7 +358,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 	}
 	// UIScrollBar::LineDownButton
 	{
-		auto* style = table->getSubControlStyle(_T("UIScrollBar"), _T("LineDownButton"));
+		auto* style = table->getSubControlStyle(_LT("UIScrollBar"), _LT("LineDownButton"));
 		// base
 		{
 			auto* props = style->getPropertyTable();
@@ -367,7 +367,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 	}
 	// UIListBox
 	{
-		auto* style = table->getStyle(_T("UIListBox"));
+		auto* style = table->getStyle(_LT("UIListBox"));
 		// base
 		{
 			auto* props = style->getPropertyTable();
@@ -382,7 +382,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 	}
 	// UIListBoxItem
 	{
-		auto* style = table->getStyle(_T("UIListBoxItem"));
+		auto* style = table->getStyle(_LT("UIListBoxItem"));
 		// base
 		{
 			auto* props = style->getPropertyTable();
@@ -397,7 +397,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 
 	// UITextField
 	{
-		auto* style = table->getStyle(_T("UITextField"));
+		auto* style = table->getStyle(_LT("UITextField"));
 		// base
 		{
 			auto* props = style->getPropertyTable();
@@ -406,7 +406,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 	}
 	// UIWindow
 	{
-		auto* style = table->getStyle(_T("UIWindow"));
+		auto* style = table->getStyle(_LT("UIWindow"));
 		// base
 		{
 			auto* props = style->getPropertyTable();
@@ -415,7 +415,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 	}
 	// UIWindow::LineDownButton
 	{
-		auto* style = table->getSubControlStyle(_T("UIWindow"), _T("ContentHost"));
+		auto* style = table->getSubControlStyle(_LT("UIWindow"), _LT("ContentHost"));
 		// base
 		{
 			auto* props = style->getPropertyTable();
@@ -425,7 +425,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 
 	// UISlider
 	{
-		auto* style = table->getStyle(_T("UISlider"));
+		auto* style = table->getStyle(_LT("UISlider"));
 		// base
 		{
 			auto* props = style->getPropertyTable();
@@ -434,7 +434,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 	}
 	// UISlider::Track
 	{
-		auto* style = table->getSubControlStyle(_T("UISlider"), _T("Track"));
+		auto* style = table->getSubControlStyle(_LT("UISlider"), _LT("Track"));
 		// base
 		{
 			auto* props = style->getPropertyTable();
@@ -442,13 +442,13 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 		}
 		// UISlider::Track.Horizontal
 		{
-			auto* props = style->getPropertyTable(_T("Horizontal"));
+			auto* props = style->getPropertyTable(_LT("Horizontal"));
 			//props->height = 4.0f;
 		}
 	}
 	// UISlider::Thumb
 	{
-		auto* style = table->getSubControlStyle(_T("UISlider"), _T("Thumb"));
+		auto* style = table->getSubControlStyle(_LT("UISlider"), _LT("Thumb"));
 		// base
 		{
 			auto* props = style->getPropertyTable();
@@ -460,7 +460,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 	}
 	// UISlider::DecreaseButton
 	{
-		auto* style = table->getSubControlStyle(_T("UISlider"), _T("DecreaseButton"));
+		auto* style = table->getSubControlStyle(_LT("UISlider"), _LT("DecreaseButton"));
 		// base
 		{
 			auto* props = style->getPropertyTable();
@@ -473,7 +473,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 	}
 	// UISlider::IncreaseButton
 	{
-		auto* style = table->getSubControlStyle(_T("UISlider"), _T("IncreaseButton"));
+		auto* style = table->getSubControlStyle(_LT("UISlider"), _LT("IncreaseButton"));
 		// base
 		{
 			auto* props = style->getPropertyTable();
@@ -488,7 +488,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 	//------------------------------------------------------------------------------
 	// UITreeView
 	{
-		auto* style = table->getStyle(_T("UITreeView"));
+		auto* style = table->getStyle(_LT("UITreeView"));
 		// base
 		{
 			auto* props = style->getPropertyTable();
@@ -498,7 +498,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 	}
 	// UITreeViewItem
 	{
-		auto* style = table->getStyle(_T("UITreeViewItem"));
+		auto* style = table->getStyle(_LT("UITreeViewItem"));
 		// base
 		{
 			auto* props = style->getPropertyTable();
@@ -512,7 +512,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 	}
 	// UITreeViewItem::ExpanderButton
 	{
-		auto* style = table->getSubControlStyle(_T("UITreeViewItem"), _T("ExpanderButton"));
+		auto* style = table->getSubControlStyle(_LT("UITreeViewItem"), _LT("ExpanderButton"));
 		{
 			auto* props = style->getPropertyTable();
 		}
@@ -520,14 +520,14 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 		{
 			auto* props = style->getPropertyTable(UIToggleButton::CheckedState);
 			auto r1 = newObject<UIGlyphIconRenderElement>();
-			r1->setGlyph(_T("fa-angle-down"), 16);
+			r1->setGlyph(_LT("fa-angle-down"), 16);
 			props->m_renderElements.add(r1);
 		}
 		// ExpanderButton.Unchecked
 		{
 			auto* props = style->getPropertyTable(UIToggleButton::UncheckedState);
 			auto r1 = newObject<UIGlyphIconRenderElement>();
-			r1->setGlyph(_T("fa-angle-right"), 16);
+			r1->setGlyph(_LT("fa-angle-right"), 16);
 			props->m_renderElements.add(r1);
 		}
 	}
@@ -535,7 +535,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 	//------------------------------------------------------------------------------
 	// UIContextMenu
 	{
-		auto* style = table->getStyle(_T("UIContextMenu"));
+		auto* style = table->getStyle(_LT("UIContextMenu"));
 		// base
 		{
 			auto* props = style->getPropertyTable();
@@ -548,7 +548,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 	//------------------------------------------------------------------------------
 	// UIMenuItem
 	{
-		auto* style = table->getStyle(_T("UIMenuItem"));
+		auto* style = table->getStyle(_LT("UIMenuItem"));
 		// base
 		{
 			auto* props = style->getPropertyTable();

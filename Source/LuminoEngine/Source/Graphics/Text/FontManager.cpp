@@ -83,7 +83,7 @@ uint64_t FontData::calcHash() const
 //------------------------------------------------------------------------------
 FontManager::FontManager()
 {
-	m_defaultFontName = _T("Meiryo UI");
+	m_defaultFontName = _LT("Meiryo UI");
 }
 
 //------------------------------------------------------------------------------

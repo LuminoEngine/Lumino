@@ -34,16 +34,16 @@ void UIControlsGallery()
 	auto tree1 = UITreeView::create();
 	tree1->setWidth(130);
 	//tree1->setBackground(UIColors::getBrush(UIColorIndex::Blue, 9));
-	auto item1 = tree1->addTextItem(_T("item1"));
-	auto item2 = tree1->addTextItem(_T("item2"));
-	auto item2_1 = item2->addTextItem(_T("item2_1"));
-	auto item2_2 = item2->addTextItem(_T("item2_2"));
-	auto item3 = tree1->addTextItem(_T("item3"));
+	auto item1 = tree1->addTextItem(_LT("item1"));
+	auto item2 = tree1->addTextItem(_LT("item2"));
+	auto item2_1 = item2->addTextItem(_LT("item2_1"));
+	auto item2_2 = item2->addTextItem(_LT("item2_2"));
+	auto item3 = tree1->addTextItem(_LT("item3"));
 
 
 	auto menu = newObject<UIContextMenu>();
-	menu->addMenuItem(_T("追加"), [&item1]() { printf("item1\n"); item1->addTextItem(_T("item a1")); });
-	menu->addMenuItem(_T("削除"), [&item1]() { printf("item2\n"); });
+	menu->addMenuItem(_LT("追加"), [&item1]() { printf("item1\n"); item1->addTextItem(_LT("item a1")); });
+	menu->addMenuItem(_LT("削除"), [&item1]() { printf("item2\n"); });
 	item1->setContextMenu(menu);
 #if 0
 	uiRoot->addChild(tree1);
@@ -73,13 +73,13 @@ void UIControlsGallery()
 	{
 		//auto text1 = UITextField::create();
 		////text1->setBackground(Brush::Red);
-		//text1->setText(_T("いんすぺくた"));
+		//text1->setText(_LT("いんすぺくた"));
 		//auto button1 = UIButton::create();
 		//flow1->add(text1);
 		////flow1->add(button1);
 
 		auto text1 = UITextBlock::create();
-		text1->setText(_T("いんすぺくた"));
+		text1->setText(_LT("いんすぺくた"));
 		flow1->add(text1);
 		flow1->setBackground(Brush::White);
 	}
@@ -89,7 +89,7 @@ void UIControlsGallery()
 	//popup->setBackground(Brush::Red);
 	//popup->open(tree1);
 
-	auto meshModel = ln::Assets::loadMeshModel(_T("D:/Proj/LN/HC1/Assets/Graphics/TestMap1.mqo"));
+	auto meshModel = ln::Assets::loadMeshModel(_LT("D:/Proj/LN/HC1/Assets/Graphics/TestMap1.mqo"));
 	auto mesh = ln::StaticMeshComponent::create(meshModel);
 	
 
@@ -107,14 +107,14 @@ void UIControlsGallery()
 	//listBox1->setWidth(200);
 	//uiRoot->addChild(listBox1);
 
-	//auto item = listBox1->addTextItem(_T("スプライト"));
-	//auto button1 = UIButton::create(_T(">"), 20, 20);
+	//auto item = listBox1->addTextItem(_LT("スプライト"));
+	//auto button1 = UIButton::create(_LT(">"), 20, 20);
 	////button1->setPosition(Point(2, 0));
 	//button1->margin = Thickness(2);
 	//button1->setAnchor(AlignmentAnchor::RightOffsets | AlignmentAnchor::VCenter);
 	//item->addChild(button1);
 
-	//listBox1->addTextItem(_T("UI"));
+	//listBox1->addTextItem(_LT("UI"));
 
 
 	//auto slider = UISlider::create(0.75, 0.5, 2.0);
@@ -129,12 +129,12 @@ void UIControlsGallery()
 	//window2->setBackground(SolidColorBrush::White);
 
 
-	//RawFont::registerFontFile(_T("C:/LocalProj/tmp/font-awesome-4.7.0/fonts/FontAwesome.otf"));
-	//auto font = Font::create(_T("FontAwesome"), 32);
+	//RawFont::registerFontFile(_LT("C:/LocalProj/tmp/font-awesome-4.7.0/fonts/FontAwesome.otf"));
+	//auto font = Font::create(_LT("FontAwesome"), 32);
 
 	//auto text = TextBlock2D::create();
 	//text->setFont(font);
-	//text->setText(_T("A"));
+	//text->setText(_LT("A"));
 
 	//auto icon1 = GlyphIcon2D::create("fa-globe", 64);
 	//auto icon2 = GlyphIcon2D::create("fa-play-circle-o", 64);
@@ -165,7 +165,7 @@ void UIControlsGallery()
 //	auto mesh = ln::StaticMeshComponent::createSphere(1);
 //	//mesh->getStaticMeshModel()->
 //	auto material = mesh->getStaticMeshModel()->getMaterial(0);
-//	//material->setMaterialTexture(ln::Assets::loadTexture(_T("D:/GameProjects/Chronicles/sky/incskies_024_png8/incskies_024_8k_.png")));
+//	//material->setMaterialTexture(ln::Assets::loadTexture(_LT("D:/GameProjects/Chronicles/sky/incskies_024_png8/incskies_024_8k_.png")));
 //	material->setMaterialTexture(Texture2D::getBlackTexture());
 //	auto m_map = ln::newObject<ln::WorldObject3D>();
 //	m_map->addComponent(mesh);
@@ -189,7 +189,7 @@ void UIControlsGallery()
 
 
 
-	//auto shader = Shader::create(StringRef(_T("C:/Proj/LuminoStudio/external/Lumino/Source/LuminoEngine/Test/Sandbox/SSBasic2D.fx")), true);
+	//auto shader = Shader::create(StringRef(_LT("C:/Proj/LuminoStudio/external/Lumino/Source/LuminoEngine/Test/Sandbox/SSBasic2D.fx")), true);
 	//auto rect = Rectangle::create(RectF(0, 0, 3, 1));
 	//rect->setShader(shader);
 	//rect->setAngles(Math::PI/2, 0, 0);
@@ -211,7 +211,7 @@ void UIControlsGallery()
 	//grid1->addChild(stack1);
 
 	//auto text1 = UITextBlock::create();
-	//text1->SetText(_T("text"));
+	//text1->SetText(_LT("text"));
 	//stack1->addChild(text1);
 
 	auto ps1 = TransitionPostEffect::create();
@@ -220,7 +220,7 @@ void UIControlsGallery()
 	//auto box1 = StaticMeshComponent::create(LN_LOCALFILE("Assets/cube.mqo"));
 	//auto box1 = StaticMeshComponent::create(LN_LOCALFILE("Assets/cylinder2.mqo"));
 	//auto box1 = StaticMeshComponent::create(LN_LOCALFILE("Assets/Plant1.mqo"));
-	//auto box1 = StaticMeshComponent::create(_T("D:/Documents/Modeling/test4.mqo"));
+	//auto box1 = StaticMeshComponent::create(_LT("D:/Documents/Modeling/test4.mqo"));
 	//auto mesh1 = newObject<WorldObject3D>();
 	//mesh1->addComponent(box1);
 	
@@ -276,17 +276,17 @@ void UIControlsGallery()
 		auto stack1 = UIStackPanel::create();
 
 		auto text1 = UITextBlock::create();
-		text1->SetText(_T("Button"));
+		text1->SetText(_LT("Button"));
 		stack1->AddChild(text1);
 
 		auto button1 = UIButton::create();
 		//button1->setWidth(80);
 		//button1->setHeight(24);
-		button1->SetText(_T("Button2"));
+		button1->SetText(_LT("Button2"));
 		stack1->AddChild(button1);
 
 		auto button2 = UIToggleButton::create();
-		button2->SetText(_T("Button2"));
+		button2->SetText(_LT("Button2"));
 		stack1->AddChild(button2);
 
 		auto slider1 = UISlider::create();
@@ -296,7 +296,7 @@ void UIControlsGallery()
 		auto field1 = UITextField::create();
 		field1->SetWidth(200);
 		field1->SetHeight(32);
-		field1->SetText(_T("field"));
+		field1->SetText(_LT("field"));
 		field1->SetBackground(Brush::Gray);
 		stack1->AddChild(field1);
 
@@ -306,8 +306,8 @@ void UIControlsGallery()
 	}
 #endif
 
-	//auto text = UITextBlock::create();//TextBlock2DComponent::create(_T("Hello, world!"));
-	//text->SetText(_T("Hello"));
+	//auto text = UITextBlock::create();//TextBlock2DComponent::create(_LT("Hello, world!"));
+	//text->SetText(_LT("Hello"));
 	//text->foreground = Brush::Blue;
 	//mainWindow->addChild(text);
 
@@ -315,7 +315,7 @@ void UIControlsGallery()
 	//textbox1->setWidth(300);
 	//textbox1->setHeight(32);
 	//textbox1->setBackground(Brush::Gray);
-	//textbox1->SetText(_T("Hello, world!"));
+	//textbox1->SetText(_LT("Hello, world!"));
 	//textbox1->foreground = Brush::Blue;
 	//mainWindow->addChild(textbox1);
 
@@ -335,7 +335,7 @@ void UIControlsGallery()
 
 	auto button1 = UIButton::create();
 	button1->SetSize(Size(80, 32));
-	//button1->SetText(_T("Button1"));
+	//button1->SetText(_LT("Button1"));
 	mainWindow->AddChild(button1);
 
 	auto button2 = UIButton::create();
@@ -344,12 +344,12 @@ void UIControlsGallery()
 	button2->Focus();	// TODO: addChild した後でないとフォーカス持てない。これでいいの？
 
 	// TODO: 描画時、Brush が変わってない？
-	auto image3 = UIImage::create(_T("C:/Proj/LuminoStudio/external/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/img2.png"));
+	auto image3 = UIImage::create(_LT("C:/Proj/LuminoStudio/external/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/img2.png"));
 	image3->SetSize(Size(20, 20));
 	button2->AddChild(image3);
 
 
-	auto image1 = UIImage::create(_T("C:/Proj/LuminoStudio/external/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/img2.png"));
+	auto image1 = UIImage::create(_LT("C:/Proj/LuminoStudio/external/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/img2.png"));
 	image1->SetSize(Size(64, 64));
 	mainWindow->AddChild(image1);
 
@@ -369,7 +369,7 @@ void UIControlsGallery()
 	scrollViewer1->SetBackground(Brush::Red);
 	mainWindow->AddChild(scrollViewer1);
 
-	auto image2 = UIImage::create(_T("C:/Proj/LuminoStudio/external/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/img2.png"));
+	auto image2 = UIImage::create(_LT("C:/Proj/LuminoStudio/external/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/img2.png"));
 	image2->SetSize(Size(200, 200));
 	scrollViewer1->AddChild(image2);
 
@@ -397,7 +397,7 @@ void UIControlsGallery()
 		//	Vector3(5, 5, 5), Color::White);
 
 			t += 0.016;
-			//shader->findVariable(_T("time"))->SetFloat(t);
+			//shader->findVariable(_LT("time"))->SetFloat(t);
 
 		Engine::presentFrame();
 

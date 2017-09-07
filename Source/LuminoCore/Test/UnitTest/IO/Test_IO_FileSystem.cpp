@@ -70,7 +70,7 @@ TEST_F(Test_IO_FileSystem, getAttribute)
 	//try
 	//{
 	//	// 非常に長いパス
-	//	String longPath(1000, _T('a'));
+	//	String longPath(1000, _LT('a'));
 	//	FileSystem::GetAttribute(longPath);
 	//}
 	//catch (Exception& e)
@@ -120,7 +120,7 @@ TEST_F(Test_IO_FileSystem, Copy_Delete)
 TEST_F(Test_IO_FileSystem, createDirectory)
 {
 	FileSystem::createDirectory(TEMPFILE("Test_IO_FileSystem/CreateDirectory"));
-	FileSystem::writeAllText(TEMPFILE("Test_IO_FileSystem/CreateDirectory/file"), _T("test"));
+	FileSystem::writeAllText(TEMPFILE("Test_IO_FileSystem/CreateDirectory/file"), _LT("test"));
 	FileSystem::deleteDirectory(TEMPFILE("Test_IO_FileSystem"), true);
 	ASSERT_FALSE(FileSystem::existsDirectory(TEMPFILE("Test_IO_FileSystem")));	// 消えている
 }
@@ -131,8 +131,8 @@ TEST_F(Test_IO_FileSystem, copyDirectory)
 	FileSystem::createDirectory(TEMPFILE("Test_IO_FileSystem/CopyDirectory"));
 	FileSystem::createDirectory(TEMPFILE("Test_IO_FileSystem/CopyDirectory/dir1"));
 	FileSystem::createDirectory(TEMPFILE("Test_IO_FileSystem/CopyDirectory/dir2"));
-	FileSystem::writeAllText(TEMPFILE("Test_IO_FileSystem/CopyDirectory/file1.txt"), _T("test"));
-	FileSystem::writeAllText(TEMPFILE("Test_IO_FileSystem/CopyDirectory/dir2/file2.txt"), _T("test"));
+	FileSystem::writeAllText(TEMPFILE("Test_IO_FileSystem/CopyDirectory/file1.txt"), _LT("test"));
+	FileSystem::writeAllText(TEMPFILE("Test_IO_FileSystem/CopyDirectory/dir2/file2.txt"), _LT("test"));
 
 	FileSystem::copyDirectory(TEMPFILE("Test_IO_FileSystem/CopyDirectory"), TEMPFILE("Test_IO_FileSystem/CopyDirectory2"), true, true);
 
@@ -158,28 +158,28 @@ TEST_F(Test_IO_FileSystem, forEachFilesInDirectory)
 	FileSystem::createDirectory(TEMPFILE("Test_IO_FileSystem/ForEachFilesInDirectory"));
 	FileSystem::createDirectory(TEMPFILE("Test_IO_FileSystem/ForEachFilesInDirectory/dir1"));
 	FileSystem::createDirectory(TEMPFILE("Test_IO_FileSystem/ForEachFilesInDirectory/dir2"));
-	FileSystem::writeAllText(TEMPFILE("Test_IO_FileSystem/ForEachFilesInDirectory/file1"), _T("test"));
-	FileSystem::writeAllText(TEMPFILE("Test_IO_FileSystem/ForEachFilesInDirectory/file2"), _T("test"));
+	FileSystem::writeAllText(TEMPFILE("Test_IO_FileSystem/ForEachFilesInDirectory/file1"), _LT("test"));
+	FileSystem::writeAllText(TEMPFILE("Test_IO_FileSystem/ForEachFilesInDirectory/file2"), _LT("test"));
 
 	List<PathName> list;
 	FileSystem::forEachFilesInDirectory<Char>(TEMPFILE("Test_IO_FileSystem/ForEachFilesInDirectory"), [&list](const PathName& path) { list.add(path); });
 
 	ASSERT_EQ(4, list.getCount());
 	ASSERT_EQ(true, list[0].isAbsolute());
-	ASSERT_EQ(_T("dir1"), list[0].getFileName());
+	ASSERT_EQ(_LT("dir1"), list[0].getFileName());
 	ASSERT_EQ(true, list[1].isAbsolute());
-	ASSERT_EQ(_T("dir2"), list[1].getFileName());
+	ASSERT_EQ(_LT("dir2"), list[1].getFileName());
 	ASSERT_EQ(true, list[2].isAbsolute());
-	ASSERT_EQ(_T("file1"), list[2].getFileName());
+	ASSERT_EQ(_LT("file1"), list[2].getFileName());
 	ASSERT_EQ(true, list[3].isAbsolute());
-	ASSERT_EQ(_T("file2"), list[3].getFileName());
+	ASSERT_EQ(_LT("file2"), list[3].getFileName());
 }
 #endif
 
 //------------------------------------------------------------------------------
 TEST_F(Test_IO_FileSystem, writeAllText)
 {
-	String text = _T("abc");
+	String text = _LT("abc");
 	FileSystem::writeAllText(TEMPFILE("Test_IO_FileSystem/WriteAllText1"), text);
 	ASSERT_EQ(true, TestHelper::equalFiles(TEMPFILE("Test_IO_FileSystem/WriteAllText1"), LN_LOCALFILE("TestData/WriteAllText1.txt")));
 }
@@ -205,30 +205,30 @@ TEST_F(Test_IO_FileSystem, getFiles)
 		List<PathName> list;
 		for (auto& path : files) list.add(path);
 		ASSERT_EQ(3, list.getCount());
-		ASSERT_EQ(true, list.containsIf([](const PathName& path) { return path.getFileName() == _T("f1.a"); }));
-		ASSERT_EQ(true, list.containsIf([](const PathName& path) { return path.getFileName() == _T("f2.b"); }));
-		ASSERT_EQ(true, list.containsIf([](const PathName& path) { return path.getFileName() == _T("f3.a"); }));
+		ASSERT_EQ(true, list.containsIf([](const PathName& path) { return path.getFileName() == _LT("f1.a"); }));
+		ASSERT_EQ(true, list.containsIf([](const PathName& path) { return path.getFileName() == _LT("f2.b"); }));
+		ASSERT_EQ(true, list.containsIf([](const PathName& path) { return path.getFileName() == _LT("f3.a"); }));
 	}
 	// <Test> ファイル列挙(パターン指定)
 	{
-		auto files = FileSystem::getFiles(LN_LOCALFILE("TestData/Files2"), _T("*.a"));
+		auto files = FileSystem::getFiles(LN_LOCALFILE("TestData/Files2"), _LT("*.a"));
 		List<PathName> list;
 		for (auto& path : files) list.add(path);
 		ASSERT_EQ(2, list.getCount());
-		ASSERT_EQ(true, list.containsIf([](const PathName& path) { return path.getFileName() == _T("f1.a"); }));
-		ASSERT_EQ(true, list.containsIf([](const PathName& path) { return path.getFileName() == _T("f3.a"); }));
+		ASSERT_EQ(true, list.containsIf([](const PathName& path) { return path.getFileName() == _LT("f1.a"); }));
+		ASSERT_EQ(true, list.containsIf([](const PathName& path) { return path.getFileName() == _LT("f3.a"); }));
 	}
 	// <Test> ファイル列挙(パターン指定)
 	{
-		auto files = FileSystem::getFiles(LN_LOCALFILE("TestData/Files2"), _T("*.b"));
+		auto files = FileSystem::getFiles(LN_LOCALFILE("TestData/Files2"), _LT("*.b"));
 		List<PathName> list;
 		for (auto& path : files) list.add(path);
 		ASSERT_EQ(1, list.getCount());
-		ASSERT_EQ(true, list.containsIf([](const PathName& path) { return path.getFileName() == _T("f2.b"); }));
+		ASSERT_EQ(true, list.containsIf([](const PathName& path) { return path.getFileName() == _LT("f2.b"); }));
 	}
 	// <Test> ファイル列挙(パターン指定)
 	{
-		auto files = FileSystem::getFiles(LN_LOCALFILE("TestData/Files2"), _T("*.c"));
+		auto files = FileSystem::getFiles(LN_LOCALFILE("TestData/Files2"), _LT("*.c"));
 		List<PathName> list;
 		for (auto& path : files) list.add(path);
 		ASSERT_EQ(0, list.getCount());
@@ -248,18 +248,18 @@ TEST_F(Test_IO_FileSystem, getFiles)
 		List<PathName> list;
 		for (auto& path : files) list.add(path);
 		ASSERT_EQ(1, list.getCount());
-		ASSERT_EQ(true, list.containsIf([](const PathName& path) { return path.getFileName() == _T("f1.a"); }));
+		ASSERT_EQ(true, list.containsIf([](const PathName& path) { return path.getFileName() == _LT("f1.a"); }));
 	}
 	// <Test> . lead
 	//{TODO:
-	//	auto files = FileSystem::getFiles(LN_LOCALFILE("TestData/Files2"), _T("*.test"));
+	//	auto files = FileSystem::getFiles(LN_LOCALFILE("TestData/Files2"), _LT("*.test"));
 	//	List<PathName> list;
 	//	for (auto& path : files) list.add(path);
 	//	ASSERT_EQ(1, list.getCount());
-	//	ASSERT_EQ(true, list.contains([](const PathName& path) { return path.getFileName() == _T(".test"); }));
+	//	ASSERT_EQ(true, list.contains([](const PathName& path) { return path.getFileName() == _LT(".test"); }));
 	//}
 
-	//detail::DirectoryIterator itr(LN_LOCALFILE("TestData"), _T("*.dat"));
+	//detail::DirectoryIterator itr(LN_LOCALFILE("TestData"), _LT("*.dat"));
 	//detail::DirectoryIterator end;
 	//auto list = tr::MakeEnumerator::from(itr, end);
 	////for (; itr != end; ++itr)

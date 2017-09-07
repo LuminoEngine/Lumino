@@ -5,7 +5,7 @@ LN_SAMPLE_MAIN(Input, VirtualController, Basic)
 {
 	Engine::initialize();
 
-	auto icon = GlyphIcon2D::create(_T("fa-star"), 64);
+	auto icon = GlyphIcon2D::create(_LT("fa-star"), 64);
 
 	Vector3 pos(100, 100, 0);
 
@@ -45,7 +45,7 @@ LN_SAMPLE_MAIN(Input, VirtualController, KeyConfig)
 	Engine::initialize();
 
 	// 操作キャラクターの画像
-	auto icon = GlyphIcon2D::create(_T("fa-child"), 64);
+	auto icon = GlyphIcon2D::create(_LT("fa-child"), 64);
 
 	// 現在のキーコンフィグを表示するテキスト
 	auto description = TextBlock2D::create();
@@ -53,8 +53,8 @@ LN_SAMPLE_MAIN(Input, VirtualController, KeyConfig)
 
 	// 初期状態のキーコンフィグ ("jump" という名前のボタンにスペースキーを割り当てる)
 	Ref<InputGesture> jumpButton = KeyGesture::create(Keys::Space);
-	Input::addBinding(_T("jump"), jumpButton);
-	description->setText(_T("jump : ") + jumpButton->getDisplayName());
+	Input::addBinding(_LT("jump"), jumpButton);
+	description->setText(_LT("jump : ") + jumpButton->getDisplayName());
 
 	Vector3 pos(100, 100, 0);
 	Vector3 velocity;
@@ -78,7 +78,7 @@ LN_SAMPLE_MAIN(Input, VirtualController, KeyConfig)
 			}
 
 			// ジャンプボタンが押されていたら
-			if (Input::isTriggered(_T("jump")))
+			if (Input::isTriggered(_LT("jump")))
 			{
 				velocity.y = -10.0;
 			}
@@ -87,7 +87,7 @@ LN_SAMPLE_MAIN(Input, VirtualController, KeyConfig)
 			if (Input::isTriggered(InputButtons::Menu))
 			{
 				configMode = true;
-				description->setText(_T("press any key..."));
+				description->setText(_LT("press any key..."));
 			}
 		}
 		// キーコンフィグ中
@@ -97,9 +97,9 @@ LN_SAMPLE_MAIN(Input, VirtualController, KeyConfig)
 			if (jumpButton != nullptr)
 			{
 				configMode = false;
-				Input::clearBindings(_T("jump"));
-				Input::addBinding(_T("jump"), jumpButton);
-				description->setText(_T("jump : ") + jumpButton->getDisplayName());
+				Input::clearBindings(_LT("jump"));
+				Input::addBinding(_LT("jump"), jumpButton);
+				description->setText(_LT("jump : ") + jumpButton->getDisplayName());
 			}
 		}
 

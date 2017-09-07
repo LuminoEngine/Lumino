@@ -35,36 +35,36 @@ namespace detail {
 
 static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_CameraUnit =
 {
-	{ _T("ln_View"), BuiltinSemantics::View },
-	{ _T("ln_Projection"), BuiltinSemantics::Projection },
-	{ _T("ln_ViewportPixelSize"), BuiltinSemantics::ViewportPixelSize },
+	{ _LT("ln_View"), BuiltinSemantics::View },
+	{ _LT("ln_Projection"), BuiltinSemantics::Projection },
+	{ _LT("ln_ViewportPixelSize"), BuiltinSemantics::ViewportPixelSize },
 };
 
 static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_ElementUnit =
 {
-	{ _T("ln_WorldViewProjection"), BuiltinSemantics::WorldViewProjection },
-	{ _T("ln_World"), BuiltinSemantics::World },
-	{ _T("ln_LightEnables"), BuiltinSemantics::LightEnables },
-	{ _T("ln_LightWVPMatrices"), BuiltinSemantics::LightWVPMatrices },
-	{ _T("ln_LightDirections"), BuiltinSemantics::LightDirections },
-	{ _T("ln_LightPositions"), BuiltinSemantics::LightPositions },
-	{ _T("ln_LightZFars"), BuiltinSemantics::LightZFars },
-	{ _T("ln_LightDiffuses"), BuiltinSemantics::LightDiffuses },
-	{ _T("ln_LightAmbients"), BuiltinSemantics::LightAmbients },
-	{ _T("ln_LightSpeculars"), BuiltinSemantics::LightSpeculars },
+	{ _LT("ln_WorldViewProjection"), BuiltinSemantics::WorldViewProjection },
+	{ _LT("ln_World"), BuiltinSemantics::World },
+	{ _LT("ln_LightEnables"), BuiltinSemantics::LightEnables },
+	{ _LT("ln_LightWVPMatrices"), BuiltinSemantics::LightWVPMatrices },
+	{ _LT("ln_LightDirections"), BuiltinSemantics::LightDirections },
+	{ _LT("ln_LightPositions"), BuiltinSemantics::LightPositions },
+	{ _LT("ln_LightZFars"), BuiltinSemantics::LightZFars },
+	{ _LT("ln_LightDiffuses"), BuiltinSemantics::LightDiffuses },
+	{ _LT("ln_LightAmbients"), BuiltinSemantics::LightAmbients },
+	{ _LT("ln_LightSpeculars"), BuiltinSemantics::LightSpeculars },
 };
 
 static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_SubsetUnit =
 {
-	{ _T("ln_MaterialTexture"), BuiltinSemantics::MaterialTexture },
-	{ _T("ln_MaterialDiffuse"), BuiltinSemantics::MaterialDiffuse },
-	{ _T("ln_MaterialAmbient"), BuiltinSemantics::MaterialAmbient },
-	{ _T("ln_MaterialEmmisive"), BuiltinSemantics::MaterialEmmisive },
-	{ _T("ln_MaterialSpecular"), BuiltinSemantics::MaterialSpecular },
-	{ _T("ln_MaterialSpecularPower"), BuiltinSemantics::MaterialSpecularPower },
-	{ _T("ln_ColorScale"), BuiltinSemantics::ColorScale },
-	{ _T("ln_BlendColor"), BuiltinSemantics::BlendColor },
-	{ _T("ln_ToneColor"), BuiltinSemantics::ToneColor },
+	{ _LT("ln_MaterialTexture"), BuiltinSemantics::MaterialTexture },
+	{ _LT("ln_MaterialDiffuse"), BuiltinSemantics::MaterialDiffuse },
+	{ _LT("ln_MaterialAmbient"), BuiltinSemantics::MaterialAmbient },
+	{ _LT("ln_MaterialEmmisive"), BuiltinSemantics::MaterialEmmisive },
+	{ _LT("ln_MaterialSpecular"), BuiltinSemantics::MaterialSpecular },
+	{ _LT("ln_MaterialSpecularPower"), BuiltinSemantics::MaterialSpecularPower },
+	{ _LT("ln_ColorScale"), BuiltinSemantics::ColorScale },
+	{ _LT("ln_BlendColor"), BuiltinSemantics::BlendColor },
+	{ _LT("ln_ToneColor"), BuiltinSemantics::ToneColor },
 };
 
 //------------------------------------------------------------------------------
@@ -445,7 +445,7 @@ void Shader::initialize(detail::GraphicsManager* manager, const void* code, int 
 
 		sb << std::string(cc.data(), cc.size());
 
-		//FileSystem::WriteAllBytes(_T("code.c"), cc.data(), cc.size());
+		//FileSystem::WriteAllBytes(_LT("code.c"), cc.data(), cc.size());
 	}
 	else
 	{

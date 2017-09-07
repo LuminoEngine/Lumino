@@ -37,7 +37,7 @@ Char HexToDigitChar(uint8_t hex)
 }
 
 //------------------------------------------------------------------------------
-void HexToCharPair(uint8_t hex, Char* ch1, TCHAR* ch2)
+void HexToCharPair(uint8_t hex, Char* ch1, Char* ch2)
 {
 	*ch1 = HexToDigitChar((hex >> 4) & 0x0F);
 	*ch2 = HexToDigitChar((hex) & 0x0F);
@@ -95,7 +95,7 @@ Uuid::Uuid(const StringRef& uuidText)
 	for (int i = 0; i < uuidText.getLength(); i++)
 	{
 		Char ch = uuidText[i];
-		if (ch == _T('-') || ch == _T('{') || ch == _T('}')) continue;
+		if (ch == _LT('-') || ch == _LT('{') || ch == _LT('}')) continue;
 
 		if (lookingCh1)
 		{
@@ -145,7 +145,7 @@ bool Uuid::operator!=(const Uuid& other) const
 //------------------------------------------------------------------------------
 String Uuid::toString() const
 {
-	Char str[] = _T("{00000000-0000-0000-0000-000000000000}");
+	Char str[] = _LT("{00000000-0000-0000-0000-000000000000}");
 
 	HexToCharPair(m_data[0], &str[1], &str[2]);
 	HexToCharPair(m_data[1], &str[3], &str[4]);

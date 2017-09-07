@@ -55,7 +55,7 @@ public:
 	virtual void OnStart() override
 	{
 		auto player = WorldObject::create();
-		player->AddComponent(Sprite2DComponent::create(_T("C:/LocalProj/設計ツール/dll_48x48.png")));
+		player->AddComponent(Sprite2DComponent::create(_LT("C:/LocalProj/設計ツール/dll_48x48.png")));
 		player->AddComponent(NewObject<Simple2DCharacterController>());
 	}
 
@@ -142,7 +142,7 @@ void Main()
 
 	Engine::getCamera3D()->addComponent(newObject<CameraMouseMoveBehavior>());
 
-	//auto mesh = SkinnedMeshComponent::create(_T("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
+	//auto mesh = SkinnedMeshComponent::create(_LT("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
 
 	//auto tex = Texture2D::create("D:/Proj/Volkoff/External/Lumino/test/UnitTest/Scene/TestData/Dice1.png");
 	//auto sprite1 = Sprite3DComponent::create(1, 1, tex); sprite1->SetSrcRect(0, 0, 50, 50);
@@ -176,7 +176,7 @@ void Main()
 
 #if 0
 	//Engine::GetMainLight3D()->setPosition();
-	auto mLogoSprite = Sprite2DComponent::create(_T("D:/Proj/Volkoff/Volkoff/Data/Graphics/Frontend/Logo_1.png"));
+	auto mLogoSprite = Sprite2DComponent::create(_LT("D:/Proj/Volkoff/Volkoff/Data/Graphics/Frontend/Logo_1.png"));
 
 	int map[5*5] =
 	{
@@ -187,7 +187,7 @@ void Main()
 		1, 0, 0, 0, 1,
 	};
 
-	auto t = Assets::LoadTexture(_T("D:/Proj/Volkoff/Volkoff/Data/Graphics/MapChip_1.png"));
+	auto t = Assets::LoadTexture(_LT("D:/Proj/Volkoff/Volkoff/Data/Graphics/MapChip_1.png"));
 
 	auto m_tileset = TileSet::create();
 	m_tileset->SetImageSource(t);
@@ -214,12 +214,12 @@ void Main()
 
 	EngineDiag::setDisplayMode(EngineDiagDisplayMode::FpsSummary);
 
-	Input::addBinding(_T("AA"), KeyGesture::create(Keys::C));
-	Input::addBinding(_T("GG"), KeyGesture::create(Keys::A));
+	Input::addBinding(_LT("AA"), KeyGesture::create(Keys::C));
+	Input::addBinding(_LT("GG"), KeyGesture::create(Keys::A));
 
-	//auto spr1 = Sprite2DComponent::create(_T("D:/Proj/LuminoStudio/Engine/External/Lumino/test/UnitTest/Graphics/TestData/Sprite2.png"));
+	//auto spr1 = Sprite2DComponent::create(_LT("D:/Proj/LuminoStudio/Engine/External/Lumino/test/UnitTest/Graphics/TestData/Sprite2.png"));
 
-	//auto text = TextBlock2DComponent::create(_T("Hello, world!"));
+	//auto text = TextBlock2DComponent::create(_LT("Hello, world!"));
 
 #if 0
 
@@ -507,8 +507,8 @@ void Main()
 
 	//auto uiRoot = UIContext::getMainContext()->GetMainWindowView()->getLayoutRoot();
 	//auto listBox = tr::UIListBox::create();
-	//listBox->addTextItem(_T("test"));
-	//listBox->addTextItem(_T("fff"));
+	//listBox->addTextItem(_LT("test"));
+	//listBox->addTextItem(_LT("fff"));
 	//uiRoot->setContent(listBox);
 
 	//GameAudio::playBGM("D:/GameProjects/Materials/BGM/Windsphere/call.mp3");
@@ -517,7 +517,7 @@ void Main()
 
 	//auto gizmo = static_cast<CameraViewportLayer*>(Engine::getDefault3DLayer())->CreateGizmo();
 
-	//auto sp = Sprite3DComponent::create(2, 2, Texture2D::create(_T("D:/GameProjects/Chronicles/110220c_as019.jpg")));
+	//auto sp = Sprite3DComponent::create(2, 2, Texture2D::create(_LT("D:/GameProjects/Chronicles/110220c_as019.jpg")));
 	//sp->setTone(ToneF(0, 0, 1, 1.0));
 	//gizmo->setup(Matrix::Identity, sp->getTransform());//Matrix::MakeTranslation(1, 0, 0));
 	//
@@ -536,8 +536,8 @@ void Main()
 	//tex1->Clear(Color32::Red);
 	//auto box1 = StaticMeshComponent::createBox(Vector3(5, 5, 5));
 	//auto box1 = StaticMeshComponent::createTeapot();
-	//auto box1 = StaticMeshComponent::create(_T("D:/Proj/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/MqoTest1.mqo"));
-	//auto box1 = StaticMeshComponent::create(_T("C:/Proj/FluoriteSolution/External/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/Plant1.mqo"));
+	//auto box1 = StaticMeshComponent::create(_LT("D:/Proj/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/MqoTest1.mqo"));
+	//auto box1 = StaticMeshComponent::create(_LT("C:/Proj/FluoriteSolution/External/Lumino/Source/LuminoEngine/Test/UnitTest/Graphics/TestData/Plant1.mqo"));
 
 	//box1->GetMaterials()->GetAt(0)->setMaterialTexture(tex1);
 	////box1->setTone(ToneF(0, 0, 1, 1.0));
@@ -574,7 +574,7 @@ void Main()
 	////thumb->setPosition(Point(100, 200));
 	//thumb->setSize(Size(30,60));
 	////thumb->setBackground(ColorBrush::Red);
-	////textBlock1->SetText(_T("TextBlock"));
+	////textBlock1->SetText(_LT("TextBlock"));
 	//uiRoot->setContent(thumb);
 	auto track = UIScrollBar::create();
 	//track->setSize(Size(200, NAN));

@@ -14,7 +14,7 @@ TEST_F(Test_IO_Process, Example)
 	// <Example> リダイレクト無しで起動。
 	{
 		Process proc;
-		proc.start(_T("LuminoCore_Test"), _T("--proctest1"));
+		proc.start(_LT("LuminoCore_Test"), _LT("--proctest1"));
 		proc.waitForExit();
 		ASSERT_EQ(5, proc.getExitCode());
 	}
@@ -23,16 +23,16 @@ TEST_F(Test_IO_Process, Example)
 	{
 		Process proc;
 		proc.setRedirectStandardOutput(true);
-		proc.start(_T("LuminoCore_Test"), _T("--proctest1"));
-		ASSERT_EQ(_T("stdout"), proc.getStandardOutput()->readToEnd());
+		proc.start(_LT("LuminoCore_Test"), _LT("--proctest1"));
+		ASSERT_EQ(_LT("stdout"), proc.getStandardOutput()->readToEnd());
 	}
 
 	// <Example> 標準入力をリダイレクトする。
 	{
 		Process proc;
 		proc.setRedirectStandardInput(true);
-		proc.start(_T("LuminoCore_Test"), _T("--proctest2"));
-		proc.getStandardInput()->write(_T("test\n"));	// 改行が必要
+		proc.start(_LT("LuminoCore_Test"), _LT("--proctest2"));
+		proc.getStandardInput()->write(_LT("test\n"));	// 改行が必要
 		proc.waitForExit();
 		ASSERT_EQ(4, proc.getExitCode());				// 文字数が返ってくる
 	}
@@ -42,14 +42,14 @@ TEST_F(Test_IO_Process, Example)
 		Process proc;
 		proc.setRedirectStandardInput(true);
 		proc.setRedirectStandardOutput(true);
-		proc.start(_T("LuminoCore_Test"), _T("--proctest3"));
-		proc.getStandardInput()->write(_T("test\n"));	// 改行が必要
-		ASSERT_EQ(_T("[test]"), proc.getStandardOutput()->readToEnd());
+		proc.start(_LT("LuminoCore_Test"), _LT("--proctest3"));
+		proc.getStandardInput()->write(_LT("test\n"));	// 改行が必要
+		ASSERT_EQ(_LT("[test]"), proc.getStandardOutput()->readToEnd());
 	}
 
 	// <Example> プロセスをシンプルに実行する。
 	{
-		if (Process::execute(_T("LuminoCore_Test"), _T("--proctest1")) != 5) {
+		if (Process::execute(_LT("LuminoCore_Test"), _LT("--proctest1")) != 5) {
 			FAIL();
 		}
 	}
@@ -57,8 +57,8 @@ TEST_F(Test_IO_Process, Example)
 	// <Example> プロセスをシンプルに実行し、標準出力をリダイレクトする。
 	{
 		String stdOutput;
-		if (Process::execute(_T("LuminoCore_Test"), _T("--proctest1"), &stdOutput) == 5) {
-			ASSERT_EQ(_T("stdout"), stdOutput);
+		if (Process::execute(_LT("LuminoCore_Test"), _LT("--proctest1"), &stdOutput) == 5) {
+			ASSERT_EQ(_LT("stdout"), stdOutput);
 		}
 		else {
 			FAIL();
@@ -80,10 +80,10 @@ TEST_F(Test_IO_Process, Example)
 		Process proc;
 		proc.setRedirectStandardOutput(true);
 		proc.setOutputDataReceivedCallback(Delegate<void(String)>(&t, &Test::Callback));
-		proc.start(_T("LuminoCore_Test"), _T("--proctest1"));
+		proc.start(_LT("LuminoCore_Test"), _LT("--proctest1"));
 		proc.beginOutputReadLine();
 		proc.waitForExit();
-		ASSERT_EQ(_T("stdout"), output);
+		ASSERT_EQ(_LT("stdout"), output);
 	}
 }
 
@@ -94,7 +94,7 @@ TEST_F(Test_IO_Process, start)
 	{
 		Process proc;
 		ASSERT_THROW(
-			proc.start(_T("XXXX")),
+			proc.start(_LT("XXXX")),
 			FileNotFoundException);
 	}
 }
@@ -107,9 +107,9 @@ TEST_F(Test_IO_Process, Issue)
 		Process proc;
 		proc.setRedirectStandardOutput(true);
 		proc.setStandardOutputEncoding(Encoding::getUTF8Encoding());	// エンコーディングを明示することで回避する
-		proc.start(_T("LuminoCore_Test"), _T("--proctest4_utf8"));
+		proc.start(_LT("LuminoCore_Test"), _LT("--proctest4_utf8"));
 		String str = proc.getStandardOutput()->readToEnd();
-		ASSERT_EQ(_T("あ"), str);
+		ASSERT_EQ(_LT("あ"), str);
 	}
 }
 

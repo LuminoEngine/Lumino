@@ -149,7 +149,7 @@ void EngineSettings::setD3D9Device(void* device)
 //==============================================================================
 
 EngineManager* EngineManager::Instance = nullptr;
-const Char* EngineManager::LogFileName = _T("EngineLog.txt");
+const Char* EngineManager::LogFileName = _LT("EngineLog.txt");
 
 //------------------------------------------------------------------------------
 EngineManager* EngineManager::getInstance(EngineManager* priority)
@@ -307,7 +307,7 @@ EngineManager::~EngineManager()
 void EngineManager::initialize()
 {
 	String installDir;
-	if (Environment::tryGetEnvironmentVariable(_T("LuminoInstallDir"), &installDir))
+	if (Environment::tryGetEnvironmentVariable(_LT("LuminoInstallDir"), &installDir))
 	{
 		m_installDir = installDir;
 	}

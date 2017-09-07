@@ -17,22 +17,22 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 // UIVisualStates
 //==============================================================================
-const String UIVisualStates::CommonGroup = _T("CommonGroup");
-const String UIVisualStates::FocusGroup = _T("FocusGroup");
-const String UIVisualStates::CheckStates = _T("CheckStates");
-//const String UIVisualStates::ValidationStates = _T("ValidationStates");
-const String UIVisualStates::NormalState = _T("Normal");
-const String UIVisualStates::MouseOverState = _T("MouseOver");
-const String UIVisualStates::PressedState = _T("Pressed");
-const String UIVisualStates::DisabledState = _T("Disabled");
-const String UIVisualStates::UnfocusedState = _T("Unfocused");
-const String UIVisualStates::FocusedState = _T("Focused");
-const String UIVisualStates::ValidState = _T("Valid");
-const String UIVisualStates::InvalidState = _T("Invalid");
+const String UIVisualStates::CommonGroup = _LT("CommonGroup");
+const String UIVisualStates::FocusGroup = _LT("FocusGroup");
+const String UIVisualStates::CheckStates = _LT("CheckStates");
+//const String UIVisualStates::ValidationStates = _LT("ValidationStates");
+const String UIVisualStates::NormalState = _LT("Normal");
+const String UIVisualStates::MouseOverState = _LT("MouseOver");
+const String UIVisualStates::PressedState = _LT("Pressed");
+const String UIVisualStates::DisabledState = _LT("Disabled");
+const String UIVisualStates::UnfocusedState = _LT("Unfocused");
+const String UIVisualStates::FocusedState = _LT("Focused");
+const String UIVisualStates::ValidState = _LT("Valid");
+const String UIVisualStates::InvalidState = _LT("Invalid");
 
-const String UIVisualStates::OrientationGroup = _T("OrientationGroup");
-const String UIVisualStates::HorizontalState = _T("Horizontal");
-const String UIVisualStates::VerticalState = _T("Vertical");
+const String UIVisualStates::OrientationGroup = _LT("OrientationGroup");
+const String UIVisualStates::HorizontalState = _LT("Horizontal");
+const String UIVisualStates::VerticalState = _LT("Vertical");
 
 //==============================================================================
 // UIElement

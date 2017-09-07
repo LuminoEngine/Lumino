@@ -65,7 +65,7 @@ public:
 	SizeI mainBackBufferSize = SizeI(640, 480);
 
 	/** メインウィンドウのタイトル文字列です。*/
-	String mainWindowTitle = _T("Lumino");
+	String mainWindowTitle = _LT("Lumino");
 	
 	/** デバッグ用のログファイルの出力有無を設定します。(初期値:Debug ビルドの場合true、それ以外は false) */
 	bool engineLogEnabled = false;

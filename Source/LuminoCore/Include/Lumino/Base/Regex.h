@@ -5,6 +5,9 @@
 
 LN_NAMESPACE_BEGIN
 
+#ifdef LN_USTRING16
+#else
+
 class MatchResult;
 
 /**
@@ -121,4 +124,5 @@ inline bool Regex::search(const StringRef& input, const StringRef& pattern, Matc
 	return re.search(input, outResult);
 }
 
+#endif
 LN_NAMESPACE_END

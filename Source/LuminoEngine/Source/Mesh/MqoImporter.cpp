@@ -630,7 +630,7 @@ Ref<StaticMeshModel> MqoImporter::import(ModelManager* manager, const PathName& 
 	while (reader.readLine(&line))
 	{
 		// Material
-		int index = line.indexOf(_T("Material"));
+		int index = line.indexOf(_LT("Material"));
 		if (index > -1)
 		{
 			//int count = StringTraits::ToInt32(line.c_str() + index + 9);
@@ -638,13 +638,13 @@ Ref<StaticMeshModel> MqoImporter::import(ModelManager* manager, const PathName& 
 		}
 
 		// Object
-		index = line.indexOf(_T("Object"));
+		index = line.indexOf(_LT("Object"));
 		if (index > -1)
 		{
 			//int count = StringTraits::ToInt32(line.c_str() + index + 7);
 
-			int nameBegin = line.indexOf(_T('"'), index + 6) + 1;
-			int nameEnd = line.indexOf(_T('"'), nameBegin);
+			int nameBegin = line.indexOf(_LT('"'), index + 6) + 1;
+			int nameEnd = line.indexOf(_LT('"'), nameBegin);
 
 
 			loadObject(&reader, line.substring(nameBegin, nameEnd - nameBegin));
@@ -668,7 +668,7 @@ void MqoImporter::loadMaterials(StreamReader* reader)
 	String line;
 	while (reader->readLine(&line))
 	{
-		if (line.indexOf(_T("}")) > -1) break;
+		if (line.indexOf(_LT("}")) > -1) break;
 
 		// マテリアル1つの情報は、\s 区切りの１行になっている。
 		// 最初のデータはマテリアル名。これは飛ばす。
@@ -695,48 +695,48 @@ void MqoImporter::loadMaterials(StreamReader* reader)
 			if (line[numHead] == '"')	// tex("ファイル名") に備える
 			{
 				numHead++;
-				numEnd = line.indexOf(_T("\")"), dataHead);
+				numEnd = line.indexOf(_LT("\")"), dataHead);
 			}
 
-			//if (line.IndexOf(_T("shader"), dataHead, CaseSensitivity::CaseInsensitive)
-			//if (line.IndexOf(_T("vcol"), dataHead, CaseSensitivity::CaseInsensitive)	頂点カラー
-			//if (line.IndexOf(_T("dbls"), dataHead, CaseSensitivity::CaseInsensitive)	両面表示
-			if (line.indexOf(_T("col"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	色（ＲＧＢ）、不透明度
+			//if (line.IndexOf(_LT("shader"), dataHead, CaseSensitivity::CaseInsensitive)
+			//if (line.IndexOf(_LT("vcol"), dataHead, CaseSensitivity::CaseInsensitive)	頂点カラー
+			//if (line.IndexOf(_LT("dbls"), dataHead, CaseSensitivity::CaseInsensitive)	両面表示
+			if (line.indexOf(_LT("col"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	色（ＲＧＢ）、不透明度
 			{
 				readFloats(StringRef(line.c_str() + numHead, line.c_str() + numEnd), reinterpret_cast<float*>(&color), 4);
 			}
-			if (line.indexOf(_T("dif"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	拡散光	0～1
+			if (line.indexOf(_LT("dif"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	拡散光	0～1
 			{
 				diffuse = StringTraits::toFloat(line.c_str() + numHead, dataEnd - numHead);
 			}
-			if (line.indexOf(_T("amb"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	周囲光	0～1
+			if (line.indexOf(_LT("amb"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	周囲光	0～1
 			{
 				ambient = StringTraits::toFloat(line.c_str() + numHead, dataEnd - numHead);
 			}
-			if (line.indexOf(_T("emi"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	自己照明	0～1
+			if (line.indexOf(_LT("emi"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	自己照明	0～1
 			{
 				emissive = StringTraits::toFloat(line.c_str() + numHead, dataEnd - numHead);
 			}
-			if (line.indexOf(_T("spc"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	反射光	0～1
+			if (line.indexOf(_LT("spc"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	反射光	0～1
 			{
 				specular = StringTraits::toFloat(line.c_str() + numHead, dataEnd - numHead);
 			}
-			if (line.indexOf(_T("power"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	反射光の強さ	0～100
+			if (line.indexOf(_LT("power"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	反射光の強さ	0～100
 			{
 				power = StringTraits::toFloat(line.c_str() + numHead, dataEnd - numHead);
 			}
-			//if (line.IndexOf(_T("reflect"), dataHead, CaseSensitivity::CaseInsensitive)	鏡面反射 （Ver4.0以降)	0～1
-			//if (line.IndexOf(_T("refract"), dataHead, CaseSensitivity::CaseInsensitive)	屈折率 （Ver4.0以降)	1～5
-			if (line.indexOf(_T("tex"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	模様マッピング名	相対パスまたは絶対パスで記述
+			//if (line.IndexOf(_LT("reflect"), dataHead, CaseSensitivity::CaseInsensitive)	鏡面反射 （Ver4.0以降)	0～1
+			//if (line.IndexOf(_LT("refract"), dataHead, CaseSensitivity::CaseInsensitive)	屈折率 （Ver4.0以降)	1～5
+			if (line.indexOf(_LT("tex"), dataHead, CaseSensitivity::CaseInsensitive) == dataHead) //	模様マッピング名	相対パスまたは絶対パスで記述
 			{
 				texture = m_manager->createTexture(m_parentDir, StringRef(line.c_str() + numHead, line.c_str() + numEnd), ModelCreationFlag::IgnoreTextureNotFound);
 			}
-			//if (line.IndexOf(_T("aplane"), dataHead, CaseSensitivity::CaseInsensitive)	透明マッピング名	相対パスまたは絶対パスで記述
-			//if (line.IndexOf(_T("bump"), dataHead, CaseSensitivity::CaseInsensitive)	凹凸マッピング名	相対パスまたは絶対パスで記述
-			//if (line.IndexOf(_T("proj_type"), dataHead, CaseSensitivity::CaseInsensitive)	マッピング方式
-			//if (line.IndexOf(_T("proj_pos"), dataHead, CaseSensitivity::CaseInsensitive)	投影位置（ＸＹＺ）
-			//if (line.IndexOf(_T("proj_scale"), dataHead, CaseSensitivity::CaseInsensitive)	投影拡大率（ＸＹＺ）
-			//if (line.IndexOf(_T("proj_angle"), dataHead, CaseSensitivity::CaseInsensitive)	投影角度（ＨＰＢ） - 180～180
+			//if (line.IndexOf(_LT("aplane"), dataHead, CaseSensitivity::CaseInsensitive)	透明マッピング名	相対パスまたは絶対パスで記述
+			//if (line.IndexOf(_LT("bump"), dataHead, CaseSensitivity::CaseInsensitive)	凹凸マッピング名	相対パスまたは絶対パスで記述
+			//if (line.IndexOf(_LT("proj_type"), dataHead, CaseSensitivity::CaseInsensitive)	マッピング方式
+			//if (line.IndexOf(_LT("proj_pos"), dataHead, CaseSensitivity::CaseInsensitive)	投影位置（ＸＹＺ）
+			//if (line.IndexOf(_LT("proj_scale"), dataHead, CaseSensitivity::CaseInsensitive)	投影拡大率（ＸＹＺ）
+			//if (line.IndexOf(_LT("proj_angle"), dataHead, CaseSensitivity::CaseInsensitive)	投影角度（ＨＰＢ） - 180～180
 
 			dataHead = dataEnd + 1;
 		}
@@ -784,19 +784,19 @@ void MqoImporter::loadObject(StreamReader* reader, const String& name)
 	String line;
 	while (reader->readLine(&line))
 	{
-		if (line.indexOf(_T("}")) > -1) break;
+		if (line.indexOf(_LT("}")) > -1) break;
 
-		if ((index = line.indexOf(_T("vertex "))) >= 0)
+		if ((index = line.indexOf(_LT("vertex "))) >= 0)
 		{
 			int count = StringTraits::toInt32(line.c_str() + index + 7);
 			mqoObject->m_mqoVertexList.reserve(count);
 			readVertexChunk(reader, mqoObject);
 		}
-		else if ((index = line.indexOf(_T("BVertex "))) >= 0)
+		else if ((index = line.indexOf(_LT("BVertex "))) >= 0)
 		{
 			LN_NOTIMPLEMENTED();
 		}
-		else if ((index = line.indexOf(_T("face "))) >= 0)
+		else if ((index = line.indexOf(_LT("face "))) >= 0)
 		{
 			int count = StringTraits::toInt32(line.c_str() + index + 5);
 			mqoObject->m_mqoFaceList.reserve(count);
@@ -813,7 +813,7 @@ void MqoImporter::readVertexChunk(StreamReader* reader, MqoObject* mqoObject)
 	String line;
 	while (reader->readLine(&line))
 	{
-		if (line.indexOf(_T("}")) > -1) break;
+		if (line.indexOf(_LT("}")) > -1) break;
 
 		MqoVertex v;
 		readFloats(StringRef(line, 2), reinterpret_cast<float*>(&v.position), 3);
@@ -827,7 +827,7 @@ void MqoImporter::readFaceChunk(StreamReader* reader, MqoObject* mqoObject)
 	String line;
 	while (reader->readLine(&line))
 	{
-		if (line.indexOf(_T("}")) > -1) break;
+		if (line.indexOf(_LT("}")) > -1) break;
 
 		MqoFace face;
 		initMqoFace(&face);
@@ -849,32 +849,32 @@ void MqoImporter::readFaceChunk(StreamReader* reader, MqoObject* mqoObject)
 			if (line[numHead] == '"')	// tex("ファイル名") に備える
 			{
 				numHead++;
-				numEnd = line.indexOf(_T("\")"), dataHead);
+				numEnd = line.indexOf(_LT("\")"), dataHead);
 			}
 
 			// V(%d ...)	頂点インデックス
-			else if (StringTraits::compare(line.c_str() + dataHead, _T("V"), 1, CaseSensitivity::CaseInsensitive) == 0)
+			else if (StringTraits::compare(line.c_str() + dataHead, _LT("V"), 1, CaseSensitivity::CaseInsensitive) == 0)
 			{
 				readInts(StringRef(line, numHead, numEnd - numHead), face.vertexIndices, face.vertexCount);
 				//for (int i = 0; i < face.vertexCount; i++) face.vertexIndices[i] += vertexIndexOffset;
 			}
 			// M(%d)	材質インデックス
-			else if (StringTraits::compare(line.c_str() + dataHead, _T("M"), 1, CaseSensitivity::CaseInsensitive) == 0)
+			else if (StringTraits::compare(line.c_str() + dataHead, _LT("M"), 1, CaseSensitivity::CaseInsensitive) == 0)
 			{
 				face.materialIndex = StringTraits::toInt32(line.c_str() + numHead, numEnd - numHead);
 			}
 			// UV(%.5f %.5f ...)	ＵＶ値
-			else if (StringTraits::compare(line.c_str() + dataHead, _T("UV"), 2, CaseSensitivity::CaseInsensitive) == 0)
+			else if (StringTraits::compare(line.c_str() + dataHead, _LT("UV"), 2, CaseSensitivity::CaseInsensitive) == 0)
 			{
 				readFloats(StringRef(line, numHead, numEnd - numHead), reinterpret_cast<float*>(face.uv), face.vertexCount * 2);
 			}
 			// COL(%u)	頂点カラー
-			else if (StringTraits::compare(line.c_str() + dataHead, _T("COL"), 3, CaseSensitivity::CaseInsensitive) == 0)
+			else if (StringTraits::compare(line.c_str() + dataHead, _LT("COL"), 3, CaseSensitivity::CaseInsensitive) == 0)
 			{
 				readUInts(StringRef(line, numHead, numEnd - numHead), face.colors, face.vertexCount);
 			}
 			// CRS(%f ...)	Catmull-Clark/OpenSubdiv曲面用のエッジの折れ目
-			//else if (line.Compare(_T("CRS"), 3, CaseSensitivity::CaseInsensitive) == 0)
+			//else if (line.Compare(_LT("CRS"), 3, CaseSensitivity::CaseInsensitive) == 0)
 			//{
 			//}
 
@@ -891,7 +891,7 @@ void MqoImporter::readInts(const StringRef& str, int* values, int valuesCount)
 {
 	int* valuesEnd = values + valuesCount;
 	StringTraits::SplitHelper(
-		str.getBegin(), str.getEnd(), _T(" "), 1, StringSplitOptions::RemoveEmptyEntries, CaseSensitivity::CaseSensitive,
+		str.getBegin(), str.getEnd(), _LT(" "), 1, StringSplitOptions::RemoveEmptyEntries, CaseSensitivity::CaseSensitive,
 		[&values, &valuesEnd](const Char* begin, const Char* end)
 		{
 			if (values < valuesEnd)
@@ -907,7 +907,7 @@ void MqoImporter::readUInts(const StringRef& str, uint32_t* values, int valuesCo
 {
 	uint32_t* valuesEnd = values + valuesCount;
 	StringTraits::SplitHelper(
-		str.getBegin(), str.getEnd(), _T(" "), 1, StringSplitOptions::RemoveEmptyEntries, CaseSensitivity::CaseSensitive,
+		str.getBegin(), str.getEnd(), _LT(" "), 1, StringSplitOptions::RemoveEmptyEntries, CaseSensitivity::CaseSensitive,
 		[&values, &valuesEnd](const Char* begin, const Char* end)
 	{
 		if (values < valuesEnd)
@@ -923,7 +923,7 @@ void MqoImporter::readFloats(const StringRef& str, float* values, int valuesCoun
 {
 	float* valuesEnd = values + valuesCount;
 	StringTraits::SplitHelper(
-		str.getBegin(), str.getEnd(), _T(" "), 1, StringSplitOptions::RemoveEmptyEntries, CaseSensitivity::CaseSensitive,
+		str.getBegin(), str.getEnd(), _LT(" "), 1, StringSplitOptions::RemoveEmptyEntries, CaseSensitivity::CaseSensitive,
 		[&values, &valuesEnd](const Char* begin, const Char* end)
 		{
 			if (values < valuesEnd)

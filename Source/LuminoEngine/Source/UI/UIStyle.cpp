@@ -425,7 +425,7 @@ UIStyle::UIStyle()
 void UIStyle::initialize()
 {
 	m_basePropertyTable = Ref<UIStylePropertyTable>::makeRef();
-	m_basePropertyTable->initialize(_T(""));
+	m_basePropertyTable->initialize(_LT(""));
 }
 
 //------------------------------------------------------------------------------

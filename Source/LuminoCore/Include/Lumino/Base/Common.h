@@ -110,8 +110,8 @@
 #ifdef LN_USTRING
 
 #ifdef LN_USTRING16
-#define _TT(x)	(u ## x)
-#define _LT(x)	(u ## x)
+#define _TT(x)	u ## x
+#define _LT(x)	u ## x
 #define TTCHAR	char16_t
 #define _U(x)		u ## x
 namespace ln {
@@ -120,8 +120,9 @@ using UChar = char16_t;
 }
 
 #else
-#define _TT(x)	(L ## x)
-#define _LT(x)	(L ## x)
+#define __LT(x) L ## x
+#define _TT(x)	L ## x
+#define _LT(x)	__LT(x)
 #define TTCHAR	wchar_t
 #define _U(x)		(L ## x)
 namespace ln {

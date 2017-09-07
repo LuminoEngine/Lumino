@@ -75,7 +75,7 @@ EntryPointNode::EntryPointNode()
 //------------------------------------------------------------------------------
 void EntryPointNode::initialize(const StringRef& name)
 {
-	m_flowOutput = createPin(NlGraphPinCategory::CommandFlow, NlGraphPinDirection::Output, _T("name"));
+	m_flowOutput = createPin(NlGraphPinCategory::CommandFlow, NlGraphPinDirection::Output, _LT("name"));
 }
 
 //------------------------------------------------------------------------------
@@ -268,7 +268,7 @@ void NlGraphInterface::initialize()
 
 	// 1つのエントリーポイントは必ず存在している
 	auto ep = Ref<EntryPointNode>::makeRef();
-	ep->initialize(_T(""));
+	ep->initialize(_LT(""));
 	m_graph->addGraphNode(ep);
 	m_entryPoint = ep;
 }
@@ -283,7 +283,7 @@ void NlGraphInterface::initialize()
 //------------------------------------------------------------------------------
 NlNode_Print::NlNode_Print()
 {
-	m_inputValuePin = createPin(NlGraphPinCategory::DataFlow, NlGraphPinDirection::Input, _T("value"));
+	m_inputValuePin = createPin(NlGraphPinCategory::DataFlow, NlGraphPinDirection::Input, _LT("value"));
 }
 
 //------------------------------------------------------------------------------

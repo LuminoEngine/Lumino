@@ -60,14 +60,14 @@ protected:
 inline PathName Test_GetTempFilePath(const Char* fileName)
 {
 	PathName base(__FILE__);
-	PathName tempDir(base.getParent(), _T("../../"));
-	tempDir.append(_T("tmp"));
+	PathName tempDir(base.getParent(), _LT("../../"));
+	tempDir.append(_LT("tmp"));
 	PathName path(tempDir, fileName);
 	FileSystem::createDirectory(path.getParent());
 	return PathName(path.c_str());
 }
 
-#define LN_TEMPFILE(fileName)	Test_GetTempFilePath(_T(fileName)).c_str()
+#define LN_TEMPFILE(fileName)	Test_GetTempFilePath(_LT(fileName)).c_str()
 
 
 /// 頂点データ (位置+頂点カラー)

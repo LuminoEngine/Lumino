@@ -12,10 +12,10 @@ TEST_F(Test_Base_StringArray, Constructor)
 {
 	//// <Test> TODO: 初期化子リスト
 	//{
-	//	StringArray ary = { _T("a"), _T("b") };
+	//	StringArray ary = { _LT("a"), _LT("b") };
 	//	ASSERT_EQ(2, ary.getCount());
-	//	ASSERT_EQ(_T("a"), ary[0]);
-	//	ASSERT_EQ(_T("b"), ary[1]);
+	//	ASSERT_EQ(_LT("a"), ary[0]);
+	//	ASSERT_EQ(_LT("b"), ary[1]);
 	//}
 }
 
@@ -24,15 +24,15 @@ TEST_F(Test_Base_StringArray, Unit_Contains)
 {
 	StringArray ary;
 	ASSERT_EQ(false, ary.contains((const Char*)NULL));
-	ASSERT_EQ(false, ary.contains(_T("")));
+	ASSERT_EQ(false, ary.contains(_LT("")));
 
-	ary.add(_T("a"));
-	ASSERT_EQ(false, ary.contains(_T("")));
+	ary.add(_LT("a"));
+	ASSERT_EQ(false, ary.contains(_LT("")));
 	ASSERT_EQ(false, ary.contains(String()));
-	ASSERT_EQ(true, ary.contains(_T("a")));
+	ASSERT_EQ(true, ary.contains(_LT("a")));
 	ASSERT_EQ(true, ary.contains(String("a")));
 
-	ary.add(_T(" "));
+	ary.add(_LT(" "));
 	ASSERT_EQ(true, ary.contains(String("a")));
 	ASSERT_EQ(true, ary.contains(String(" ")));
 }
