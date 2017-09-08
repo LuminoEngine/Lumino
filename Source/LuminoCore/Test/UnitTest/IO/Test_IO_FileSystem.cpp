@@ -149,33 +149,6 @@ TEST_F(Test_IO_FileSystem, matchPath)
 	ASSERT_EQ(false, FileSystem::matchPath(_TT("dir/file.txt"), _TT("*.dat")));
 }
 
-
-#ifdef LN_USTRING
-#else
-//------------------------------------------------------------------------------
-TEST_F(Test_IO_FileSystem, forEachFilesInDirectory)
-{
-	FileSystem::createDirectory(TEMPFILE("Test_IO_FileSystem/ForEachFilesInDirectory"));
-	FileSystem::createDirectory(TEMPFILE("Test_IO_FileSystem/ForEachFilesInDirectory/dir1"));
-	FileSystem::createDirectory(TEMPFILE("Test_IO_FileSystem/ForEachFilesInDirectory/dir2"));
-	FileSystem::writeAllText(TEMPFILE("Test_IO_FileSystem/ForEachFilesInDirectory/file1"), _LT("test"));
-	FileSystem::writeAllText(TEMPFILE("Test_IO_FileSystem/ForEachFilesInDirectory/file2"), _LT("test"));
-
-	List<PathName> list;
-	FileSystem::forEachFilesInDirectory<Char>(TEMPFILE("Test_IO_FileSystem/ForEachFilesInDirectory"), [&list](const PathName& path) { list.add(path); });
-
-	ASSERT_EQ(4, list.getCount());
-	ASSERT_EQ(true, list[0].isAbsolute());
-	ASSERT_EQ(_LT("dir1"), list[0].getFileName());
-	ASSERT_EQ(true, list[1].isAbsolute());
-	ASSERT_EQ(_LT("dir2"), list[1].getFileName());
-	ASSERT_EQ(true, list[2].isAbsolute());
-	ASSERT_EQ(_LT("file1"), list[2].getFileName());
-	ASSERT_EQ(true, list[3].isAbsolute());
-	ASSERT_EQ(_LT("file2"), list[3].getFileName());
-}
-#endif
-
 //------------------------------------------------------------------------------
 TEST_F(Test_IO_FileSystem, writeAllText)
 {
@@ -183,18 +156,6 @@ TEST_F(Test_IO_FileSystem, writeAllText)
 	FileSystem::writeAllText(TEMPFILE("Test_IO_FileSystem/WriteAllText1"), text);
 	ASSERT_EQ(true, TestHelper::equalFiles(TEMPFILE("Test_IO_FileSystem/WriteAllText1"), LN_LOCALFILE("TestData/WriteAllText1.txt")));
 }
-
-
-
-
-//
-//namespace ln {
-//namespace detail {
-//
-//
-//} // namespace detail
-//}
-
 
 //------------------------------------------------------------------------------
 TEST_F(Test_IO_FileSystem, getFiles)

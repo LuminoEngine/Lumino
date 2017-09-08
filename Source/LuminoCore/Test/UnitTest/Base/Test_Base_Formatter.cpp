@@ -226,3 +226,26 @@ TEST_F(Test_Base_Formatter, Examples)
 	}
 }
 
+//---------------------------------------------------------------------
+TEST_F(Test_Base_Formatter, FixedBuffer)
+{
+	int r;
+	Char buf[8];
+	// <Test>
+	{
+		r = ln::fmt::detail::formatFixed(buf, 8, Locale::getC(), _LT("AB{0}"), 100);
+		ASSERT_EQ(5, r);
+		ASSERT_EQ(String(_TT("AB100")), buf);
+		r = ln::fmt::detail::formatFixed(buf, 8, Locale::getC(), _LT("{0}"), 1234567);
+		ASSERT_EQ(7, r);
+		ASSERT_EQ(String(_TT("1234567")), buf);
+		r = ln::fmt::detail::formatFixed(buf, 8, Locale::getC(), _LT(""), 1234567);
+		ASSERT_EQ(0, r);
+		ASSERT_EQ(String(_TT("")), buf);
+	}
+	// <Test>
+	{
+		r = ln::fmt::detail::formatFixed(buf, 8, Locale::getC(), _LT("{0}"), 12345678);
+		ASSERT_EQ(-1, r);
+	}
+}

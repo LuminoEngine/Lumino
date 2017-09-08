@@ -582,6 +582,7 @@ class GenericFormatStringBuilder
 {
 public:
 	GenericFormatStringBuilder();
+	GenericFormatStringBuilder(TChar* buffer, size_t bufferSize);
 
 	void clear();
 	void appendChar(TChar ch);
@@ -591,12 +592,16 @@ public:
 	void appendString(const UString& str);
 	const TChar* c_str() const;
 	int getLength() const;
+	bool isFixedBufferOver() const { return m_fixedBufferOver; }
 
 private:
 	void appendIntenal(const TChar* str, int length);
 
 	ByteBuffer	m_buffer;
 	size_t		m_bufferUsed;
+	byte_t*		m_fixedBuffer;
+	size_t		m_fixedBufferSize;
+	bool		m_fixedBufferOver;
 };
 
 template<typename TChar>

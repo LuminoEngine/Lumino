@@ -1,7 +1,7 @@
 ﻿cmake_minimum_required (VERSION 3.0.0)
 project (LuminoRuntime)
 
-include(../../Source/LuminoCore/CMake/LNCommon.cmake NO_POLICY_SCOPE)
+include(../../CMake/LuminoCommon.cmake NO_POLICY_SCOPE)
 
 #------------------------------------------------------------------------------
 # Files

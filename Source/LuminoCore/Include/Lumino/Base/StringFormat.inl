@@ -35,7 +35,19 @@ template<typename TChar>
 GenericFormatStringBuilder<TChar>::GenericFormatStringBuilder()
 	: m_buffer()
 	, m_bufferUsed(0)
+	, m_fixedBuffer(nullptr)
+	, m_fixedBufferSize(0)
+	, m_fixedBufferOver(false)
 {
+}
+
+template<typename TChar>
+GenericFormatStringBuilder<TChar>::GenericFormatStringBuilder(TChar* buffer, size_t bufferSize)
+	: GenericFormatStringBuilder()
+{
+	assert(buffer);
+	m_fixedBuffer = (byte_t*)buffer;
+	m_fixedBufferSize = bufferSize * sizeof(TChar);
 }
 
 template<typename TChar>
@@ -93,19 +105,34 @@ template<typename TChar>
 void GenericFormatStringBuilder<TChar>::appendIntenal(const TChar* str, int length)
 {
 	size_t byteCount = sizeof(TChar) * length;
-
-	// バッファが足りなければ拡張する
-	if (m_bufferUsed + byteCount > m_buffer.getSize())
+	byte_t* writeBegin = nullptr;
+	size_t writeSize = 0;
+	if (m_fixedBuffer)
 	{
-		size_t newSize = m_buffer.getSize() + std::max(m_buffer.getSize(), byteCount);	// 最低でも byteCount 分を拡張する
-		m_buffer.resize(newSize, false);
+		// バッファが足りなければエラー
+		if (m_fixedBufferOver || m_bufferUsed + byteCount > m_fixedBufferSize)
+		{
+			m_fixedBufferOver = true;
+			return;
+		}
+
+		writeBegin = m_fixedBuffer + m_bufferUsed;
+		writeSize = m_fixedBufferSize - m_bufferUsed;
+	}
+	else
+	{
+		// バッファが足りなければ拡張する
+		if (m_bufferUsed + byteCount > m_buffer.getSize())
+		{
+			size_t newSize = m_buffer.getSize() + std::max(m_buffer.getSize(), byteCount);	// 最低でも byteCount 分を拡張する
+			m_buffer.resize(newSize, false);
+		}
+
+		writeBegin = &(m_buffer.getData()[m_bufferUsed]);
+		writeSize = m_buffer.getSize() - m_bufferUsed;
 	}
 
-	// 末尾にコピー
-	byte_t* ptr = &(m_buffer.getData()[m_bufferUsed]);
-	size_t size = m_buffer.getSize() - m_bufferUsed;
-	memcpy_s(ptr, size, str, byteCount);
-
+	memcpy_s(writeBegin, writeSize, str, byteCount);
 	m_bufferUsed += byteCount;
 }
 
@@ -553,15 +580,32 @@ bool formatInternal(const Locale& locale, GenericFormatStringBuilder<TChar>* out
 		outStr->appendString(str.c_str(), str.getLength());
 		if (leftJustify && pad > 0) outStr->appendChar(' ', pad);
 
+		if (outStr->isFixedBufferOver())
+		{
+			return false;
+		}
+
 		++pos;
 	}
 
 	return true;
 }
 
+template<typename TChar, typename... TArgs>
+static inline int formatFixed(TChar* buffer, size_t bufferSize, const Locale& locale, const UStringRef& format, TArgs&&... args)
+{
+	auto argList = fmt::detail::makeArgList<UChar>(std::forward<TArgs>(args)...);
+	fmt::GenericFormatStringBuilder<UChar> sb(buffer, bufferSize - 1);
+	if (fmt::detail::formatInternal<UChar>(locale, &sb, format.data(), format.getLength(), argList))
+	{
+		buffer[sb.getLength()] = '\0';
+		return sb.getLength();
+	}
+	return -1;
+}
+
 } // namespace detail
 } // namespace fmt
-
 
 
 //==============================================================================
@@ -597,6 +641,5 @@ inline UString UString::format(const Locale& locale, const UStringRef& format, T
 		return UString();
 	}
 }
-
 
 LN_NAMESPACE_END

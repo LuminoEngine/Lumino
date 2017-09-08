@@ -3,7 +3,7 @@
 cmake_minimum_required (VERSION 3.0.0)
 project (LuminoCore)
 
-include(CMake/LNCommon.cmake NO_POLICY_SCOPE)
+include(${PROJECT_SOURCE_DIR}/../../CMake/LuminoCommon.cmake NO_POLICY_SCOPE)
 
 set(LN_LINK_LIBS "")
 set(LN_UNIT_TEST_LINK_LIBS "")
