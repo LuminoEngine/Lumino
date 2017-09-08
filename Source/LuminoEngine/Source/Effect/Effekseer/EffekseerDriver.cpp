@@ -113,7 +113,7 @@ EffekseerFileInterface::EffekseerFileInterface(FileManager* fileManager)
 //------------------------------------------------------------------------------
 ::Effekseer::FileWriter* EffekseerFileInterface::OpenWrite(const EFK_CHAR* path)
 {
-	LN_THROW(0, NotImplementedException);
+	LN_NOTIMPLEMENTED();
 	return nullptr;
 }
 
@@ -168,7 +168,6 @@ void EffekseerEffectEngine::initialize(EffectManager* manager, int cacheObjectCo
 		m_efkManager = ::Effekseer::Manager::Create(2000, false);
 		m_efkRenderer = ::EffekseerRendererGL::Renderer::Create(maxSpriteCount);
 
-		//LN_THROW(0, NotImplementedException);
 	}
 
 	// 描画用インスタンスから描画機能を設定

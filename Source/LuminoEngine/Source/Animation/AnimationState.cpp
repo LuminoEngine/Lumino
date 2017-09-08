@@ -150,12 +150,12 @@ void AnimationState::setLocalTime(double time)
 		}
 		case ValueType_Vector3:
 		{
-			LN_THROW(0, NotImplementedException);
+			LN_NOTIMPLEMENTED();
 			break;
 		}
 		case ValueType_Quaternion:
 		{
-			LN_THROW(0, NotImplementedException);
+			LN_NOTIMPLEMENTED();
 			break;
 		}
 		case ValueType_SQTTransform:

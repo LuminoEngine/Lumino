@@ -43,7 +43,7 @@ JsonDOMHandler::JsonDOMHandler(JsonDocument* document)
 	, m_valueRawData()
 	, m_writer(&m_valueRawData)
 {
-	if (LN_CHECK_ARG(document != nullptr)) return;
+	if (LN_REQUIRE(document != nullptr)) return;
 	m_valueRawData.initialize(2048);
 }
 
@@ -186,7 +186,7 @@ void JsonDOMHandler::buildValue(BinaryReader* reader, JsonValue* v)
 		break;
 	}
 	default:
-		LN_THROW(0, InvalidOperationException);	// fail safe.
+		LN_UNREACHABLE();
 		break;
 	}
 }

@@ -353,7 +353,7 @@ void TextRenderer::DrawLineHorizontal(const UTF32* text, int length, const RectI
 	else if (m_textAlignment == TextAlignment_Justify)
 	{
 		// 両端揃え
-		LN_THROW(0, NotImplementedException);
+		LN_NOTIMPLEMENTED();
 	}
 
 	// 描画ループ

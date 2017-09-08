@@ -265,7 +265,7 @@ int64_t Sound::getTotalSamples() const
 		}
 		return 0;
 #else
-		LN_THROW(0, NotImplementedException);
+		LN_NOTIMPLEMENTED();
 #endif
 	}
 	if (m_audioStream->checkCreated()) {
@@ -290,7 +290,7 @@ int Sound::getSamplingRate() const
 #ifdef LN_OS_WIN32
 		return detail::DirectMusicManager::MusicTimeBase;
 #else
-		LN_THROW(0, NotImplementedException);
+		LN_NOTIMPLEMENTED();
 #endif
 	}
 	if (m_audioStream->checkCreated()) {

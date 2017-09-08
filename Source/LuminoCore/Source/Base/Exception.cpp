@@ -233,6 +233,19 @@ Exception* NotImplementedException::copy() const
 }
 
 //==============================================================================
+// IOException
+//==============================================================================
+IOException::IOException()
+{
+	setCaption(InternalResource::getString(InternalResource::IOError).c_str());
+}
+
+Exception* IOException::copy() const
+{
+	return LN_NEW IOException(*this);
+}
+
+//==============================================================================
 // FileNotFoundException
 //==============================================================================
 FileNotFoundException::FileNotFoundException()
@@ -256,6 +269,19 @@ EncodingException::EncodingException()
 Exception* EncodingException::copy() const
 {
 	return LN_NEW EncodingException(*this);
+}
+
+//==============================================================================
+// EncodingException
+//==============================================================================
+InvalidFormatException::InvalidFormatException()
+{
+	setCaption(InternalResource::getString(InternalResource::InvalidFormatError).c_str());
+}
+
+Exception* InvalidFormatException::copy() const
+{
+	return LN_NEW InvalidFormatException(*this);
 }
 
 LN_NAMESPACE_END

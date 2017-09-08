@@ -46,11 +46,11 @@ void TextLayoutEngine::layoutText(const UTF32* text, int length, LayoutTextOptio
 	}
 	else if (m_flowDirection == FlowDirection::RightToLeft)
 	{
-		LN_THROW(0, NotImplementedException);
+		LN_NOTIMPLEMENTED();
 	}
 	else if (m_flowDirection == FlowDirection::TopToBottom)
 	{
-		LN_THROW(0, NotImplementedException);
+		LN_NOTIMPLEMENTED();
 	}
 }
 
@@ -186,7 +186,7 @@ void TextLayoutEngine::layoutLineHorizontal(const UTF32* text, int length, const
 			break;
 		}
 		case TextAlignment::Justify:
-			LN_THROW(0, NotImplementedException);
+			LN_NOTIMPLEMENTED();
 			break;
 		}
 
@@ -196,7 +196,7 @@ void TextLayoutEngine::layoutLineHorizontal(const UTF32* text, int length, const
 		case TextTrimming::None:
 			break;
 		case TextTrimming::CharacterEllipsis:
-			LN_THROW(0, NotImplementedException);
+			LN_NOTIMPLEMENTED();
 			break;
 		}
 	}

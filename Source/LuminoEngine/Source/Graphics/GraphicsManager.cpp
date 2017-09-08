@@ -220,7 +220,7 @@ void GraphicsManager::initialize(const ConfigData& configData)
 	ChangeDevice(device);
 	device->Release();
 #else
-	LN_THROW(0, NotImplementedException);
+	LN_NOTIMPLEMENTED();
 #endif
 
 	Driver::IRenderer* renderer = m_graphicsDevice->getRenderer();

@@ -141,7 +141,7 @@ void Animator::create(detail::IAnimationTargetElement* element)
 //------------------------------------------------------------------------------
 bool Animator::isPlaying() const
 {
-	LN_THROW(0, NotImplementedException);
+	LN_NOTIMPLEMENTED();
 	return false;
 }
 
@@ -238,7 +238,7 @@ void AnimationLayer::createStateAndAttachClip(AnimationClip* animationClip)
 void AnimationLayer::removeStateByClip(AnimationClip* animationClip)
 {
 	if (LN_CHECK_ARG(animationClip != nullptr)) return;
-	LN_THROW(0, NotImplementedException);
+	LN_NOTIMPLEMENTED();
 }
 
 //------------------------------------------------------------------------------

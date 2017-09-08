@@ -245,8 +245,9 @@ void Bitmap::convertToDownFlow()
 			}
 		}
 	}
-	else {
-		LN_THROW(0, NotImplementedException);
+	else 
+	{
+		LN_NOTIMPLEMENTED();
 	}
 }
 
@@ -795,7 +796,7 @@ void Bitmap::bitBltInternal(
 		{
 			if (alphaBlend)
 			{
-				LN_THROW(0, NotImplementedException);
+				LN_NOTIMPLEMENTED();
 			}
 			else
 			{

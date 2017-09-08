@@ -166,7 +166,7 @@ void formatInternal_Numeric(GenericStringFormatter<TChar>& formatter, const TVal
 		NumberConversionResult result;
 		const TChar* dummy;
 		precision = StringTraits::toInt32(formatParam.begin(), formatParam.getLength(), 10, &dummy, &result);
-		if (LN_ENSURE(result == NumberConversionResult::Success, InvalidFormatException)) return;
+		if (LN_ENSURE_INVALID_FORMAT(result == NumberConversionResult::Success)) return;
 	}
 
 	auto& format = formatter.m_formatString;

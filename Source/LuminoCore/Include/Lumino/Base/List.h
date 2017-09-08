@@ -91,7 +91,7 @@ public:
 	/** 指定したインデックスの位置に要素を挿入します。*/
 	void insert(int index, const value_type& item)
 	{
-		LN_THROW(0 <= index && index <= getCount(), OutOfRangeException);	// Count と同じインデックスを指定できる
+		if (LN_REQUIRE(0 <= index && index <= getCount())) return;	// Count と同じインデックスを指定できる
 		checkDetachShared();
 		m_data->m_vector.insert(m_data->m_vector.begin() + index, item);
 	}

@@ -88,7 +88,7 @@ public:
 	// TODO: ReadLine と ReadToEnd は Read を実装すれば使えるようにするべき
 	virtual bool readLine(String* line) override
 	{
-		LN_THROW(0, NotImplementedException);
+		LN_NOTIMPLEMENTED();
 		//bool r = m_innter->ReadLine(line);
 		//++m_line;
 		//m_column = 0;
@@ -97,7 +97,7 @@ public:
 
 	virtual String readToEnd() override
 	{
-		LN_THROW(0, NotImplementedException);
+		LN_NOTIMPLEMENTED();
 	}
 
 	virtual bool isEOF() override

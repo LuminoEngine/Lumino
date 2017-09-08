@@ -68,8 +68,6 @@ void InputManager::initialize(const Settings& settings)
 	Ref<CocoaInputDriver> driver(LN_NEW CocoaInputDriver());
 	m_inputDriver = driver;
 #endif
-	
-	LN_THROW(m_inputDriver != nullptr, NotImplementedException);
 
 	// TODO: 今は1つだけ
 	auto pad = Ref<InputController>::makeRef(this);

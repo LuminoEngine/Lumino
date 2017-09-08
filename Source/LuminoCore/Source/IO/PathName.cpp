@@ -134,8 +134,8 @@ Path Path::canonicalizePath() const
 
 Path Path::makeRelative(const Path& target) const
 {
-	if (LN_CHECK_ARG(isAbsolute())) return Path();
-	if (LN_CHECK_ARG(target.isAbsolute())) return Path();
+	if (LN_REQUIRE(isAbsolute())) return Path();
+	if (LN_REQUIRE(target.isAbsolute())) return Path();
 	auto rel = PathTraits::diffPath<Char>(m_path.c_str(), m_path.getLength(), target.m_path.c_str(), target.m_path.getLength(), FileSystem::getFileSystemCaseSensitivity());
 	return Path(rel.c_str());	// TODO: un copy
 }
@@ -164,7 +164,7 @@ Path Path::getCurrentDirectory()
 Path Path::getSpecialFolderPath(SpecialFolder specialFolder, const Char* childDir, SpecialFolderOption option)
 {
 	if (childDir != NULL) {
-		if (LN_CHECK_ARG(!PathTraits::isAbsolutePath(childDir))) return Path();
+		if (LN_REQUIRE(!PathTraits::isAbsolutePath(childDir))) return Path();
 	}
 
 	// TODO: Length

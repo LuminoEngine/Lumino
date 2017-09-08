@@ -162,7 +162,7 @@ template bool PathTraits::isRootPath<wchar_t>(const wchar_t* path);
 template<typename TChar>
 bool PathTraits::isAbsolutePath(const TChar* path, int len)
 {
-	LN_THROW(path != NULL, ArgumentException);
+	if (LN_REQUIRE(path != NULL)) return false;
 	if (len < 0) {
 		len = INT_MAX;
 	}
@@ -195,7 +195,7 @@ template bool PathTraits::isAbsolutePath<char16_t>(const char16_t* path, int len
 template<typename TChar>
 bool PathTraits::endWithSeparator(const TChar* path, int len)
 {
-	if (LN_CHECK_ARG(path != nullptr)) return false;
+	if (LN_REQUIRE(path != nullptr)) return false;
 
 	len = (len < 0) ? StringTraits::tcslen(path) : len;
 	if (len >= 1)

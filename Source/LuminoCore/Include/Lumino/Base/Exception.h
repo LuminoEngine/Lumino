@@ -23,8 +23,10 @@ class Exception;
 // utils
 #define LN_UNREACHABLE()							_LN_CHECK(0, ::ln::LogicException)
 #define LN_NOTIMPLEMENTED()							_LN_CHECK(0, ln::NotImplementedException)
+#define LN_ENSURE_IO(expression)					_LN_CHECK(0, ln::IOException)
 #define LN_ENSURE_FILE_NOT_FOUND(expression, path)	_LN_CHECK(0, ln::FileNotFoundException, path)
 #define LN_ENSURE_ENCODING(expression)				_LN_CHECK(0, ln::EncodingException)
+#define LN_ENSURE_INVALID_FORMAT(expression)		_LN_CHECK(0, ln::InvalidFormatException)
 
 class Assertion
 {
@@ -127,10 +129,21 @@ public:
 };
 
 /**
+	@brief		I/O エラーが発生した場合のエラーを表します。
+*/
+class LUMINO_EXPORT IOException
+	: public RuntimeException
+{
+public:
+	IOException();
+	virtual Exception* copy() const;
+};
+
+/**
 	@brief		ファイルアクセスに失敗した場合のエラーを表します。
 */
 class LUMINO_EXPORT FileNotFoundException
-	: public RuntimeException
+	: public IOException
 {
 public:
 	FileNotFoundException();
@@ -145,6 +158,17 @@ class LUMINO_EXPORT EncodingException
 {
 public:
 	EncodingException();
+	virtual Exception* copy() const;
+};
+
+/**
+	@brief		無効な形式のデータが入力された場合のエラーを表します。
+*/
+class LUMINO_EXPORT InvalidFormatException
+	: public RuntimeException
+{
+public:
+	InvalidFormatException();
 	virtual Exception* copy() const;
 };
 

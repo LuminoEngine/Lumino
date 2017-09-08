@@ -934,7 +934,7 @@ bool RpnEvaluator::CallFunction(const RpnToken& token, List<RpnOperand> args, Rp
 	}
 	else
 	{
-		LN_THROW(0, NotImplementedException);
+		LN_NOTIMPLEMENTED();
 		return false;
 	}
 }

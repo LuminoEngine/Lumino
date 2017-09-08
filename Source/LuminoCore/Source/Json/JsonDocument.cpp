@@ -25,7 +25,7 @@ void JsonDocument::parse(const String& text)
 }
 void JsonDocument::parse(const Char* text, int len)
 {
-	if (LN_CHECK_ARG(text != nullptr)) return;
+	if (LN_REQUIRE(text != nullptr)) return;
 
 	StringReader textReader(String(text, (len < 0) ? (int)StringTraits::tcslen(text) : len));
 	parse(&textReader);
@@ -76,9 +76,9 @@ bool JsonHelper::isValueType(JsonValueType type)
 //------------------------------------------------------------------------------
 JsonParseResult JsonHelper::loadElement(JsonDocument2* doc, JsonReader2* reader, JsonElement2** outElement)
 {
-	if (LN_CHECK_ARG(doc != nullptr)) return JsonParseResult::Error;
-	if (LN_CHECK_ARG(reader != nullptr)) return JsonParseResult::Error;
-	if (LN_CHECK_ARG(outElement != nullptr)) return JsonParseResult::Error;
+	if (LN_REQUIRE(doc != nullptr)) return JsonParseResult::Error;
+	if (LN_REQUIRE(reader != nullptr)) return JsonParseResult::Error;
+	if (LN_REQUIRE(outElement != nullptr)) return JsonParseResult::Error;
 
 	JsonToken type = reader->getTokenType();
 	if (type == JsonToken::StartObject)
@@ -104,7 +104,7 @@ JsonParseResult JsonHelper::loadElement(JsonDocument2* doc, JsonReader2* reader,
 	}
 	else
 	{
-		if (LN_CHECK(0, InvalidFormatException)) return JsonParseResult::Error;
+		if (LN_ENSURE(0, InvalidFormatException)) return JsonParseResult::Error;
 	}
 	return JsonParseResult::Success;
 }
@@ -223,42 +223,42 @@ bool JsonValue2::isNull() const
 //------------------------------------------------------------------------------
 bool JsonValue2::getBool() const
 {
-	if (LN_CHECK_STATE(getType() == JsonValueType::Bool)) return false;
+	if (LN_REQUIRE(getType() == JsonValueType::Bool)) return false;
 	return m_bool;
 }
 
 //------------------------------------------------------------------------------
 int32_t JsonValue2::getInt32() const
 {
-	if (LN_CHECK_STATE(getType() == JsonValueType::Int32)) return 0;
+	if (LN_REQUIRE(getType() == JsonValueType::Int32)) return 0;
 	return m_int32;
 }
 
 //------------------------------------------------------------------------------
 int64_t JsonValue2::getInt64() const
 {
-	if (LN_CHECK_STATE(getType() == JsonValueType::Int64)) return 0;
+	if (LN_REQUIRE(getType() == JsonValueType::Int64)) return 0;
 	return m_int64;
 }
 
 //------------------------------------------------------------------------------
 float JsonValue2::getFloat() const
 {
-	if (LN_CHECK_STATE(getType() == JsonValueType::Float)) return 0;
+	if (LN_REQUIRE(getType() == JsonValueType::Float)) return 0;
 	return m_float;
 }
 
 //------------------------------------------------------------------------------
 double JsonValue2::getDouble() const
 {
-	if (LN_CHECK_STATE(getType() == JsonValueType::Double)) return 0;
+	if (LN_REQUIRE(getType() == JsonValueType::Double)) return 0;
 	return m_double;
 }
 
 //------------------------------------------------------------------------------
 String JsonValue2::getString() const
 {
-	if (LN_CHECK_STATE(getType() == JsonValueType::String)) return String();
+	if (LN_REQUIRE(getType() == JsonValueType::String)) return String();
 	return *m_string;
 }
 
@@ -275,7 +275,7 @@ void JsonValue2::checkRelease()
 //------------------------------------------------------------------------------
 void JsonValue2::onSave(JsonWriter* writer)
 {
-	if (LN_CHECK_ARG(writer != nullptr)) return;
+	if (LN_REQUIRE(writer != nullptr)) return;
 	switch (getType())
 	{
 		case JsonValueType::Null:
@@ -308,7 +308,7 @@ void JsonValue2::onSave(JsonWriter* writer)
 //------------------------------------------------------------------------------
 JsonParseResult JsonValue2::onLoad(JsonReader2* reader)
 {
-	if (LN_CHECK_ARG(reader != nullptr)) return JsonParseResult::Error;
+	if (LN_REQUIRE(reader != nullptr)) return JsonParseResult::Error;
 
 	switch (reader->getTokenType())
 	{
@@ -443,7 +443,7 @@ void JsonArray2::onSave(JsonWriter* writer)
 //------------------------------------------------------------------------------
 JsonParseResult JsonArray2::onLoad(JsonReader2* reader)
 {
-	if (LN_CHECK_ARG(reader != nullptr)) return JsonParseResult::Error;
+	if (LN_REQUIRE(reader != nullptr)) return JsonParseResult::Error;
 
 	// この時点で reader は StartArray('[') を指している
 
@@ -746,7 +746,7 @@ void JsonElementCache::finalize()
 //------------------------------------------------------------------------------
 JsonElement2* JsonElementCache::alloc(size_t size)
 {
-	if (LN_CHECK_ARG(size <= BufferSize)) return nullptr;
+	if (LN_REQUIRE(size <= BufferSize)) return nullptr;
 
 	BufferInfo* cur = &m_buffers.getLast();
 	if (cur->buffer.getSize() - cur->used < size)
@@ -847,10 +847,10 @@ ISerializeElement* JsonDocument2::getRootObject() { return this; }
 void JsonDocument2::parseInternal(JsonReader2* reader)
 {
 	bool result = reader->read();
-	if (LN_CHECK(result, InvalidFormatException)) return;
+	if (LN_ENSURE(result, InvalidFormatException)) return;
 
 	JsonToken type = reader->getTokenType();
-	if (LN_CHECK(type == JsonToken::StartObject, InvalidFormatException)) return;
+	if (LN_ENSURE(type == JsonToken::StartObject, InvalidFormatException)) return;
 
 	JsonElement2::load(reader);
 }

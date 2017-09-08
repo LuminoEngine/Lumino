@@ -60,7 +60,7 @@ public:
 	// index=0 はマッチした全体を返す
 	StringRef getGroup(int index) const
 	{
-		LN_THROW(0 <= index && index < (int)m_matchResults.size(), OutOfRangeException);
+		if (LN_REQUIRE(0 <= index && index < (int)m_matchResults.size())) return StringRef();
 		return StringRef(m_matchResults[index].first, m_matchResults[index].second);
 	}
 	

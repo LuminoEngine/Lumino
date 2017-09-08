@@ -109,7 +109,7 @@ void Document::replaceInternal(int offset, int length, const UTF32* text, int le
 	//}
 	//else
 	//{
-	//	LN_THROW(0, NotImplementedException);
+	//	LN_NOTIMPLEMENTED();
 	//}
 }
 

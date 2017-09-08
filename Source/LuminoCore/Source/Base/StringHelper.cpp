@@ -181,7 +181,7 @@ int				StringTraits::vsprintf(wchar_t* out, int charCount, const wchar_t* format
 int				StringTraits::vsprintf(char* out, int charCount, const char* format, va_list args) { return vsnprintf(out, charCount, format, args); }
 int				StringTraits::vsprintf(wchar_t* out, int charCount, const wchar_t* format, va_list args)
 {
-	LN_THROW(0, NotImplementedException);	// vswprintf は動作保障無し
+	LN_NOTIMPLEMENTED();	// vswprintf は動作保障無し
 	return vswprintf(out, charCount, format, args);
 }
 #endif

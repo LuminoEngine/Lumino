@@ -65,7 +65,7 @@ void BitmapTextRenderer::drawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const 
 			break;
 		}
 		case TextAlignment::Justify:
-			LN_THROW(0, NotImplementedException);
+			LN_NOTIMPLEMENTED();
 			break;
 	}
 

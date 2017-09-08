@@ -724,13 +724,13 @@ IShaderTechnique* GLShader::getTechnique(int index) const
 //------------------------------------------------------------------------------
 void GLShader::onLostDevice()
 {
-	LN_THROW(0, NotImplementedException);
+	LN_NOTIMPLEMENTED();
 }
 
 //------------------------------------------------------------------------------
 void GLShader::onResetDevice()
 {
-	LN_THROW(0, NotImplementedException);
+	LN_NOTIMPLEMENTED();
 }
 
 //------------------------------------------------------------------------------

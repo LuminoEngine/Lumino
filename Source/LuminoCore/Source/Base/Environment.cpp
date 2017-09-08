@@ -232,7 +232,7 @@ uint64_t Environment::getTickCountNS()
     return cpuTime * info.numer / info.denom;
     
 #else
-	LN_THROW(0, NotImplementedException);
+	LN_NOTIMPLEMENTED();
 	return 0;
 #endif
 }

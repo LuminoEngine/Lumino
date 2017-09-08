@@ -106,7 +106,7 @@ void Document::replace(int offset, int length, const UTF32* text, int len)
 	//}
 	//else
 	//{
-	//	LN_THROW(0, NotImplementedException);
+	//	LN_NOTIMPLEMENTED();
 	//}
 }
 

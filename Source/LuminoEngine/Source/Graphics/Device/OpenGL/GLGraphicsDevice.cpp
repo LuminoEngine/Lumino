@@ -209,7 +209,7 @@ Ref<IShader> GLGraphicsDevice::createShaderImplement(const void* textData, size_
 //------------------------------------------------------------------------------
 Ref<ISwapChain> GLGraphicsDevice::createSwapChainImplement(PlatformWindow* window)
 {
-	LN_THROW(0, NotImplementedException);
+	LN_NOTIMPLEMENTED();
 	return nullptr;
 }
 

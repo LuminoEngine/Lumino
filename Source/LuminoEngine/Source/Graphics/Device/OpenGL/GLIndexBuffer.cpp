@@ -52,13 +52,13 @@ void GLIndexBuffer::setSubData(uint32_t offsetBytes, const void* data, uint32_t 
 //------------------------------------------------------------------------------
 void GLIndexBuffer::lock(void** lockedBuffer, size_t* lockedSize)
 {
-	LN_THROW(0, NotImplementedException);
+	LN_NOTIMPLEMENTED();
 }
 
 //------------------------------------------------------------------------------
 void GLIndexBuffer::unlock()
 {
-	LN_THROW(0, NotImplementedException);
+	LN_NOTIMPLEMENTED();
 }
 
 //------------------------------------------------------------------------------

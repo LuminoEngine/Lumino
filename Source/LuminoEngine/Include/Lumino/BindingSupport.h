@@ -128,24 +128,24 @@ public:
 		const_iterator& operator = (const const_iterator& obj) { m_internalItr = obj.m_internalItr; return (*this); }
 
 		reference operator*() const		{ return *m_internalItr; }
-		pointer operator->() const		{ LN_THROW(0, NotImplementedException); return NULL; }
+		pointer operator->() const		{ LN_NOTIMPLEMENTED(); return NULL; }
 		const_iterator& operator++()	{ ++m_internalItr; return (*this); }
 		const_iterator operator++(int)	{ const_iterator tmp = *this; ++(*this); return tmp; }
 		const_iterator& operator--()	{ --m_internalItr; return (*this); }
 		const_iterator operator--(int)	{ const_iterator tmp = *this; --(*this); return tmp; }
-		const_iterator& operator+=(difference_type offset)				{ LN_THROW(0, NotImplementedException); return (*this); }
-		const_iterator operator+(difference_type offset) const			{ LN_THROW(0, NotImplementedException); return const_iterator(); }
-		const_iterator& operator-=(difference_type offset)				{ LN_THROW(0, NotImplementedException); return (*this); }
-		const_iterator operator-(difference_type offset) const			{ LN_THROW(0, NotImplementedException); return const_iterator(); }
-		difference_type operator-(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return 0; }
+		const_iterator& operator+=(difference_type offset)				{ LN_NOTIMPLEMENTED(); return (*this); }
+		const_iterator operator+(difference_type offset) const			{ LN_NOTIMPLEMENTED(); return const_iterator(); }
+		const_iterator& operator-=(difference_type offset)				{ LN_NOTIMPLEMENTED(); return (*this); }
+		const_iterator operator-(difference_type offset) const			{ LN_NOTIMPLEMENTED(); return const_iterator(); }
+		difference_type operator-(const const_iterator& right) const	{ LN_NOTIMPLEMENTED(); return 0; }
 
 		reference operator[](difference_type offset) const	{ return m_internalItr[offset]; }
 //		bool operator==(const const_iterator& right) const	{ return m_internalItr.operator==(right.m_internalItr); }
 //		bool operator!=(const const_iterator& right) const	{ return m_internalItr.operator!=(right.m_internalItr); }
-		bool operator<(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return false; }
-		bool operator>(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return false; }
-		bool operator<=(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return false; }
-		bool operator>=(const const_iterator& right) const	{ LN_THROW(0, NotImplementedException); return false; }
+		bool operator<(const const_iterator& right) const	{ LN_NOTIMPLEMENTED(); return false; }
+		bool operator>(const const_iterator& right) const	{ LN_NOTIMPLEMENTED(); return false; }
+		bool operator<=(const const_iterator& right) const	{ LN_NOTIMPLEMENTED(); return false; }
+		bool operator>=(const const_iterator& right) const	{ LN_NOTIMPLEMENTED(); return false; }
 
 	private:
 		friend class RefObjectListBase;
@@ -169,24 +169,24 @@ public:
 		iterator& operator = (const iterator& obj) { m_internalItr = obj.m_internalItr; return (*this); }
 
 		reference operator*() const		{ return static_cast<reference>(*m_internalItr); }
-		pointer operator->() const		{ LN_THROW(0, NotImplementedException); return NULL; }
+		pointer operator->() const		{ LN_NOTIMPLEMENTED(); return NULL; }
 		iterator& operator++()			{ ++m_internalItr; return (*this); }
 		iterator operator++(int)		{ iterator tmp = *this; ++(*this); return tmp; }
 		iterator& operator--()			{ --m_internalItr; return (*this); }
 		iterator operator--(int)		{ iterator tmp = *this; --(*this); return tmp; }
-		const_iterator& operator+=(difference_type offset)			{ LN_THROW(0, NotImplementedException); return (*this); }
-		const_iterator operator+(difference_type offset) const		{ LN_THROW(0, NotImplementedException); return const_iterator(); }
-		const_iterator& operator-=(difference_type offset)			{ LN_THROW(0, NotImplementedException); return (*this); }
-		const_iterator operator-(difference_type offset) const		{ LN_THROW(0, NotImplementedException); return const_iterator(); }
-		difference_type operator-(const iterator& right) const		{ LN_THROW(0, NotImplementedException); return 0; }
+		const_iterator& operator+=(difference_type offset)			{ LN_NOTIMPLEMENTED(); return (*this); }
+		const_iterator operator+(difference_type offset) const		{ LN_NOTIMPLEMENTED(); return const_iterator(); }
+		const_iterator& operator-=(difference_type offset)			{ LN_NOTIMPLEMENTED(); return (*this); }
+		const_iterator operator-(difference_type offset) const		{ LN_NOTIMPLEMENTED(); return const_iterator(); }
+		difference_type operator-(const iterator& right) const		{ LN_NOTIMPLEMENTED(); return 0; }
 
 		reference operator[](difference_type offset) const	{ return static_cast<reference>(m_internalItr[offset]); }
 		//bool operator==(const iterator& right) const		{ return m_internalItr.operator==(right.m_internalItr); }
 		//bool operator!=(const iterator& right) const		{ return m_internalItr.operator!=(right.m_internalItr); }
-		bool operator<(const iterator& right) const			{ LN_THROW(0, NotImplementedException); return false; }
-		bool operator>(const iterator& right) const			{ LN_THROW(0, NotImplementedException); return false; }
-		bool operator<=(const iterator& right) const		{ LN_THROW(0, NotImplementedException); return false; }
-		bool operator>=(const iterator& right) const		{ LN_THROW(0, NotImplementedException); return false; }
+		bool operator<(const iterator& right) const			{ LN_NOTIMPLEMENTED(); return false; }
+		bool operator>(const iterator& right) const			{ LN_NOTIMPLEMENTED(); return false; }
+		bool operator<=(const iterator& right) const		{ LN_NOTIMPLEMENTED(); return false; }
+		bool operator>=(const iterator& right) const		{ LN_NOTIMPLEMENTED(); return false; }
 
 	private:
 		friend class RefObjectListBase;
