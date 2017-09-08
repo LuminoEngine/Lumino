@@ -192,7 +192,7 @@ public:
 			if (TryParse(str, &value)) {
 				return (TEnum)value;
 			}
-			LN_THROW(0, ArgumentException);
+			LN_ENSURE(0);
 			return TEnum();
 		}
 		static bool TryParse(const Char* str, int* outValue)

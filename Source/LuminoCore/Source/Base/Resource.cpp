@@ -60,7 +60,7 @@ void ResourceSet::LoadResourceFile(const String& filePath)
 const String& ResourceSet::getString(const String& name)
 {
 	std::map<String, String>::iterator itr = m_stringMap.find(name);
-	LN_THROW(itr != m_stringMap.end(), KeyNotFoundException, _T("Not found resource key."));
+	LN_ENSURE(itr != m_stringMap.end(), _LT("Not found resource key."));
 	return itr->second;
 }
 

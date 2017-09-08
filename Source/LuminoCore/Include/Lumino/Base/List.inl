@@ -90,7 +90,7 @@ void List<T, TAllocator>::checkDetachShared()
 template<typename T, typename TAllocator>
 void List<T, TAllocator>::checkOutOfRange(int index) const
 {
-	LN_THROW(!isOutOfRange(index), OutOfRangeException);
+	LN_REQUIRE(!isOutOfRange(index));
 }
 
 //==============================================================================

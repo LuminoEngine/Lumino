@@ -166,7 +166,7 @@ void formatInternal_Numeric(GenericStringFormatter<TChar>& formatter, const TVal
 		NumberConversionResult result;
 		const TChar* dummy;
 		precision = StringTraits::toInt32(formatParam.begin(), formatParam.getLength(), 10, &dummy, &result);
-		LN_THROW(result == NumberConversionResult::Success, InvalidFormatException);
+		if (LN_ENSURE(result == NumberConversionResult::Success, InvalidFormatException)) return;
 	}
 
 	auto& format = formatter.m_formatString;
@@ -218,7 +218,8 @@ void formatInternal_Numeric(GenericStringFormatter<TChar>& formatter, const TVal
 	}
 	else
 	{
-		LN_THROW(0, InvalidFormatException);
+		LN_ENSURE(0);
+		return;
 	}
 	// http://sla0.jp/2012/04/cpp%E3%81%AEiostream%E3%83%95%E3%82%A9%E3%83%BC%E3%83%9E%E3%83%83%E3%83%88%E6%8C%87%E5%AE%9A%E6%97%A9%E8%A6%8B%E8%A1%A8/
 

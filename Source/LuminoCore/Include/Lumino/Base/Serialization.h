@@ -328,7 +328,7 @@ public:
 	}
 	void save(ScVariant& value)
 	{
-		if (LN_CHECK_ARG(value.getType() == ScVariantType::Map)) return;
+		if (LN_ENSURE(value.getType() == ScVariantType::Map)) return;
 		m_currentObject = saveHeaderElement(m_currentObject);
 		doSaveObjectType(*value.m_core->m_map, false);
 	}

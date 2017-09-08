@@ -299,7 +299,7 @@ static int my_strnicmp(const TChar* str1, const TChar* str2, size_t count) LN_NO
 template<typename TChar>
 int StringTraits::indexOf(const TChar* str1, int str1Len, const TChar* str2, int str2Len, int startIndex, CaseSensitivity cs)
 {
-	LN_THROW(str1 && str2, ArgumentException);
+	if (LN_ENSURE(str1 && str2)) return -1;
 
 	if (*str1 == 0) {
 		return -1;
@@ -363,8 +363,8 @@ int StringTraits::lastIndexOf(const TChar* str1, int str1Len, const TChar* str2,
 		return (str2Len == 0) ? 0 : -1;
 	}
 
-	if (LN_CHECK_ARG(startIndex >= 0)) return -1;			// startIndex は 0 以上でなければならない。
-	if (LN_CHECK_ARG(startIndex < str1Len)) return -1;		// startIndex は str1 の長さを超えてはならない。
+	if (LN_ENSURE(startIndex >= 0)) return -1;			// startIndex は 0 以上でなければならない。
+	if (LN_ENSURE(startIndex < str1Len)) return -1;		// startIndex は str1 の長さを超えてはならない。
 
 	// 検索文字数が 0 の場合は必ず検索開始位置でヒットする (strstr と同じ動作)
 	if (str2Len == 0 && count >= 0 && startIndex - count + 1 >= 0) {
@@ -373,7 +373,7 @@ int StringTraits::lastIndexOf(const TChar* str1, int str1Len, const TChar* str2,
 
 	const TChar* pos = str1 + startIndex;							// 検索範囲の末尾の文字を指す。
 	const TChar* end = (count < 0) ? str1 : pos - (count - 1);		// 検索範囲の先頭の文字を指す。
-	if (LN_CHECK_ARG(end <= pos)) return -1;						// 末尾と先頭が逆転してないこと。
+	if (LN_ENSURE(end <= pos)) return -1;						// 末尾と先頭が逆転してないこと。
 
 	if (pos - end < (str2Len-1)) {
 		return -1;	// 検索範囲が検索文字数よりも少ない場合は見つかるはずがない
@@ -514,10 +514,10 @@ template int StringTraits::compare<wchar_t>(wchar_t ch1, wchar_t ch2, CaseSensit
 template<typename TChar>
 void StringTraits::trim(const TChar* begin, int length, const TChar** outBegin, int* outLength)
 {
-	if (LN_CHECK_ARG(begin != nullptr)) return;
-	if (LN_CHECK_ARG(length >= 0)) return;
-	if (LN_CHECK_ARG(outBegin != nullptr)) return;
-	if (LN_CHECK_ARG(outLength != nullptr)) return;
+	if (LN_ENSURE(begin != nullptr)) return;
+	if (LN_ENSURE(length >= 0)) return;
+	if (LN_ENSURE(outBegin != nullptr)) return;
+	if (LN_ENSURE(outLength != nullptr)) return;
 
 	if (length == 0) {
 		*outBegin = begin;

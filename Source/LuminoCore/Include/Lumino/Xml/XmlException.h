@@ -8,6 +8,15 @@ namespace tr {
 /**
 	@brief	不正な XML フォーマットが入力された場合にスローされる例外です。
 */
+#ifdef LN_EXCEPTION2
+class XmlException
+	: public RuntimeException
+{
+public:
+	XmlException();
+	virtual Exception* copy() const;
+};
+#else
 class XmlException
 	: public Exception
 {
@@ -18,6 +27,7 @@ public:
 	// override Exception
 	virtual Exception* copy() const { return LN_NEW XmlException(*this); }
 };
+#endif
 
 namespace detail
 {

@@ -34,9 +34,7 @@ void* LN_CDECL operator new ( size_t size, MemoryFlag flag )
 	catch (std::bad_alloc)
 	{
 	}
-	if (ptr == NULL) {
-		LN_THROW(0, OutOfMemoryException);
-	}
+	LN_FATAL(!ptr);
 	return ptr;
 }
 
@@ -52,9 +50,7 @@ void* LN_CDECL operator new[] ( size_t size, MemoryFlag flag )
 	catch (std::bad_alloc)
 	{
 	}
-	if (ptr == NULL) {
-		LN_THROW(0, OutOfMemoryException);
-	}
+	LN_FATAL(!ptr);
 	return ptr;
 }
 

@@ -142,7 +142,7 @@ String Environment::LN_AFX_FUNCNAME(getEnvironmentVariable)(const String& variab
 {
 	String val;
 	bool r = tryGetEnvironmentVariable(variableName, &val);
-	LN_THROW(r, KeyNotFoundException);
+	LN_ENSURE(r);
 	return val;
 }
 
