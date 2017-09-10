@@ -372,7 +372,7 @@ void SpriteRendererImpl::drawRequestInternal(
 	SpriteBaseDirection baseDir,
 	BillboardType billboardType)
 {
-	if (LN_REQUIRE(m_spriteRequestListUsedCount < m_maxSprites)) return;;
+	if (LN_REQUIRE(m_spriteRequestListUsedCount < m_maxSprites)) return;
 
 	BatchSpriteData& sprite = m_spriteRequestList[m_spriteRequestListUsedCount];
 
