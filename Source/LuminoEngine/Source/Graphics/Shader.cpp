@@ -82,7 +82,7 @@ ShaderSemanticsManager::ShaderSemanticsManager()
 //------------------------------------------------------------------------------
 void ShaderSemanticsManager::initialize(GraphicsManager* manager)
 {
-	if (LN_CHECK_ARG(manager != nullptr)) return;
+	if (LN_REQUIRE(manager != nullptr)) return;
 	m_manager = manager;
 }
 
@@ -580,7 +580,7 @@ void Shader::onChangeDevice(Driver::IGraphicsDevice* device)
 	{
 		ShaderCompileResult result;
 		m_deviceObj = m_manager->getGraphicsDevice()->createShader(m_sourceCode.getConstData(), m_sourceCode.getSize(), &result);
-		LN_THROW(result.Level != ShaderCompileResultLevel_Error, InvalidOperationException);	// 一度生成に成功しているので発生はしないはず
+		LN_ENSURE(result.Level != ShaderCompileResultLevel_Error);	// 一度生成に成功しているので発生はしないはず
 
 		// 変数再割り当て
 		int varCount = m_deviceObj->getVariableCount();
@@ -1290,7 +1290,7 @@ const List<ShaderPass*>& ShaderTechnique::getPasses() const
 ShaderPass* ShaderTechnique::getPass(const Char* name) const
 {
 	auto itr = std::find_if(m_passes.begin(), m_passes.end(), [name](ShaderPass* pass) { return pass->getName() == name; });
-	LN_THROW(itr != m_passes.end(), KeyNotFoundException);
+	if (LN_REQUIRE_KEY(itr != m_passes.end())) return nullptr;
 	return *itr;
 }
 

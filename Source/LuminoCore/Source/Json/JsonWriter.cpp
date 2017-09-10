@@ -14,7 +14,7 @@ JsonWriter::JsonWriter(TextWriter* textWriter)
 	: m_formatting(JsonFormatting::None)
 	, m_textWriter(textWriter)
 {
-	if (LN_CHECK_ARG(m_textWriter != nullptr)) return;
+	if (LN_REQUIRE(m_textWriter != nullptr)) return;
 	m_levelStack.reserve(32);
 }
 
@@ -40,8 +40,8 @@ void JsonWriter::writeStartObject()
 //------------------------------------------------------------------------------
 void JsonWriter::writeEndObject()
 {
-	if (LN_CHECK_ARG(m_levelStack.getCount() >= 1)) return;
-	if (LN_CHECK_ARG(!m_levelStack.getTop().inArray)) return;
+	if (LN_REQUIRE(m_levelStack.getCount() >= 1)) return;
+	if (LN_REQUIRE(!m_levelStack.getTop().inArray)) return;
 
 	autoComplete(JsonToken::EndObject);
 	m_levelStack.pop();
@@ -65,8 +65,8 @@ void JsonWriter::writeStartArray()
 //------------------------------------------------------------------------------
 void JsonWriter::writeEndArray()
 {
-	if (LN_CHECK_ARG(m_levelStack.getCount() >= 2)) return;
-	if (LN_CHECK_ARG(m_levelStack.getTop().inArray)) return;
+	if (LN_REQUIRE(m_levelStack.getCount() >= 2)) return;
+	if (LN_REQUIRE(m_levelStack.getTop().inArray)) return;
 
 	autoComplete(JsonToken::EndArray);
 	m_levelStack.pop();
@@ -78,7 +78,7 @@ void JsonWriter::writeEndArray()
 //------------------------------------------------------------------------------
 void JsonWriter::writePropertyName(const Char* str, int length)
 {
-	if (LN_CHECK_ARG(m_levelStack.getCount() >= 1)) return;
+	if (LN_REQUIRE(m_levelStack.getCount() >= 1)) return;
 	length = (length <= -1) ? (int)StringTraits::tcslen(str) : length;
 
 	autoComplete(JsonToken::PropertyName);
@@ -89,7 +89,7 @@ void JsonWriter::writePropertyName(const Char* str, int length)
 //------------------------------------------------------------------------------
 void JsonWriter::writeNull()
 {
-	if (LN_CHECK_ARG(m_levelStack.getCount() >= 1)) return;
+	if (LN_REQUIRE(m_levelStack.getCount() >= 1)) return;
 
 	autoComplete(JsonToken::Null);
 	onNull();
@@ -99,7 +99,7 @@ void JsonWriter::writeNull()
 //------------------------------------------------------------------------------
 void JsonWriter::writeBool(bool value)
 {
-	if (LN_CHECK_ARG(m_levelStack.getCount() >= 1)) return;
+	if (LN_REQUIRE(m_levelStack.getCount() >= 1)) return;
 
 	autoComplete(JsonToken::Boolean);
 	onBool(value);
@@ -109,7 +109,7 @@ void JsonWriter::writeBool(bool value)
 //------------------------------------------------------------------------------
 void JsonWriter::writeInt32(int32_t value)
 {
-	if (LN_CHECK_ARG(m_levelStack.getCount() >= 1)) return;
+	if (LN_REQUIRE(m_levelStack.getCount() >= 1)) return;
 	autoComplete(JsonToken::Double);
 	onInt32(value);
 	m_levelStack.getTop().valueCount++;
@@ -118,7 +118,7 @@ void JsonWriter::writeInt32(int32_t value)
 //------------------------------------------------------------------------------
 void JsonWriter::writeInt64(int64_t value)
 {
-	if (LN_CHECK_ARG(m_levelStack.getCount() >= 1)) return;
+	if (LN_REQUIRE(m_levelStack.getCount() >= 1)) return;
 	autoComplete(JsonToken::Double);
 	onInt64(value);
 	m_levelStack.getTop().valueCount++;
@@ -127,7 +127,7 @@ void JsonWriter::writeInt64(int64_t value)
 //------------------------------------------------------------------------------
 void JsonWriter::writeFloat(float value)
 {
-	if (LN_CHECK_ARG(m_levelStack.getCount() >= 1)) return;
+	if (LN_REQUIRE(m_levelStack.getCount() >= 1)) return;
 	autoComplete(JsonToken::Double);
 	onFloat(value);
 	m_levelStack.getTop().valueCount++;
@@ -136,7 +136,7 @@ void JsonWriter::writeFloat(float value)
 //------------------------------------------------------------------------------
 void JsonWriter::writeDouble(double value)
 {
-	if (LN_CHECK_ARG(m_levelStack.getCount() >= 1)) return;
+	if (LN_REQUIRE(m_levelStack.getCount() >= 1)) return;
 
 	autoComplete(JsonToken::Double);
 	onDouble(value);
@@ -146,7 +146,7 @@ void JsonWriter::writeDouble(double value)
 //------------------------------------------------------------------------------
 void JsonWriter::writeString(const Char* str, int length)	// TODO: StringRef
 {
-	if (LN_CHECK_ARG(m_levelStack.getCount() >= 1)) return;
+	if (LN_REQUIRE(m_levelStack.getCount() >= 1)) return;
 	length = (length <= -1) ? (int)StringTraits::tcslen(str) : length;
 
 	autoComplete(JsonToken::String);

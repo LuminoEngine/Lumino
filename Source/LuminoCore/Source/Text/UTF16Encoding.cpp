@@ -147,7 +147,7 @@ void UTF16Encoding::UTF16Encoder::convertFromUTF16(const UTF16* input, size_t in
 	// 文字数はカウントする
 	int count;
 	UTFConversionResult r = UnicodeUtils::getUTF16CharCount((UnicodeUtils::UTF16*)input, inputElementSize, true, &count);
-	if (LN_ENSURE_ENCODING(result == UTFConversionResult_Success)) return;
+	if (LN_ENSURE_ENCODING(r == UTFConversionResult_Success)) return;
 
 	*outBytesUsed = inputElementSize * sizeof(UTF16);
 	*outCharsUsed = count;

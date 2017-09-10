@@ -135,8 +135,8 @@ XmlReader::~XmlReader()
 //------------------------------------------------------------------------------
 void XmlReader::initializeReader(TextReader* reader)
 {
-	if (LN_CHECK_ARG(reader != nullptr)) return;
-	if (LN_CHECK_STATE(m_reader == nullptr)) return;
+	if (LN_REQUIRE(reader != nullptr)) return;
+	if (LN_REQUIRE(m_reader == nullptr)) return;
 	m_reader = reader;
 }
 
@@ -145,7 +145,7 @@ void XmlReader::initializeReader(TextReader* reader)
 bool XmlReader::read()
 {
 	bool r = readInternal();
-	if (LN_CHECK(!m_errorInfo.hasError(), XmlException, m_errorInfo.message.c_str())) return false;
+	if (_LN_CHECK(!m_errorInfo.hasError(), XmlException, m_errorInfo.message.c_str())) return false;
 	return r;
 }
 

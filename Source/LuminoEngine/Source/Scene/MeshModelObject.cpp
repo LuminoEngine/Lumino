@@ -40,7 +40,7 @@ SkinnedMeshComponent::~SkinnedMeshComponent()
 //------------------------------------------------------------------------------
 void SkinnedMeshComponent::initialize(SkinnedMeshModel* meshModel)
 {
-	if (LN_CHECK_ARG(meshModel != nullptr)) return;
+	if (LN_REQUIRE(meshModel != nullptr)) return;
 	m_meshModel = meshModel;
 
 	VisualComponent::initialize();

@@ -94,14 +94,14 @@ void GraphicsDeviceBase::gcDeviceResource()
 //------------------------------------------------------------------------------
 void GraphicsDeviceBase::attachRenderingThread()
 {
-	LN_THROW(m_attachRenderingThreadId == 0, InvalidOperationException);
+	if (LN_REQUIRE(m_attachRenderingThreadId == 0)) return;
 	m_attachRenderingThreadId = Thread::getCurrentThreadId();
 }
 
 //------------------------------------------------------------------------------
 void GraphicsDeviceBase::detachRenderingThread()
 {
-	LN_THROW(m_attachRenderingThreadId != 0, InvalidOperationException);
+	if (LN_REQUIRE(m_attachRenderingThreadId == 0)) return;
 	m_attachRenderingThreadId = 0;
 }
 

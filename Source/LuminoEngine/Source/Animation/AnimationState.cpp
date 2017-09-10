@@ -39,7 +39,7 @@ const String& AnimationState::getName() const
 //------------------------------------------------------------------------------
 void AnimationState::refresh(Animator* animator)
 {
-	if (LN_CHECK_ARG(animator != nullptr)) return;
+	if (LN_REQUIRE(animator != nullptr)) return;
 
 	clearTargetList();
 

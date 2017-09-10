@@ -60,11 +60,11 @@ UIManager::~UIManager()
 //------------------------------------------------------------------------------
 void UIManager::initialize(const Settings& settings)
 {
-	if (LN_CHECK_ARG(settings.fileManager != nullptr)) return;
-	if (LN_CHECK_ARG(settings.animationManager != nullptr)) return;
-	if (LN_CHECK_ARG(settings.platformManager != nullptr)) return;
-	if (LN_CHECK_ARG(settings.graphicsManager != nullptr)) return;
-	if (LN_CHECK_ARG(settings.assetsManager != nullptr)) return;
+	if (LN_REQUIRE(settings.fileManager != nullptr)) return;
+	if (LN_REQUIRE(settings.animationManager != nullptr)) return;
+	if (LN_REQUIRE(settings.platformManager != nullptr)) return;
+	if (LN_REQUIRE(settings.graphicsManager != nullptr)) return;
+	if (LN_REQUIRE(settings.assetsManager != nullptr)) return;
 
 	m_eventArgsPool = LN_NEW EventArgsPool();
 	m_fileManager = settings.fileManager;
@@ -122,7 +122,7 @@ void UIManager::dispose()
 //------------------------------------------------------------------------------
 void UIManager::createGameModeMainFrame(World2D* defaultWorld2D, World3D* defaultWorld3D)
 {
-	if (LN_CHECK_STATE(m_mainWindow == nullptr)) return;
+	if (LN_REQUIRE(m_mainWindow == nullptr)) return;
 
 	m_mainWindow = LN_NEW UIMainWindow();
 	m_mainWindow->initialize(m_platformManager->getMainWindow(), defaultWorld2D, defaultWorld3D);
@@ -131,7 +131,7 @@ void UIManager::createGameModeMainFrame(World2D* defaultWorld2D, World3D* defaul
 //------------------------------------------------------------------------------
 //void UIManager::CreateWrapModeMainFrame(void* window, World2D* defaultWorld2D, World3D* defaultWorld3D)
 //{
-//	if (LN_CHECK_STATE(m_mainWindow == nullptr)) return;
+//	if (LN_REQUIRE(m_mainWindow == nullptr)) return;
 //
 //	m_mainWindow = LN_NEW UINativeHostWindow();
 //	m_mainWindow->initialize(this, )

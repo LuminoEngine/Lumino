@@ -192,7 +192,7 @@ void Block::initialize()
 //------------------------------------------------------------------------------
 void Block::addInline(Inline* inl)
 {
-	if (LN_CHECK_ARG(inl != nullptr)) return;
+	if (LN_REQUIRE(inl != nullptr)) return;
 	m_inlines.add(inl);
 	inl->setParentContent(this);
 	increaseRevision();

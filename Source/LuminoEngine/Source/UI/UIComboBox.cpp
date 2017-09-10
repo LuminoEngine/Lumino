@@ -59,7 +59,7 @@ void UIAdornerLayer::add(UIAdorner* adorner)
 
 void UIAdornerLayer::remove(UIAdorner* adorner)
 {
-	if (LN_CHECK_STATE(adorner->getLogicalParent() == this)) return;
+	if (LN_REQUIRE(adorner->getLogicalParent() == this)) return;
 	adorner->setLogicalParent(nullptr);
 	removeVisualChild(adorner);
 	m_adorners.remove(adorner);
@@ -128,7 +128,7 @@ void UIPopup::setContent(UIElement* element)
 //------------------------------------------------------------------------------
 void UIPopup::open(UIElement* owner)
 {
-	if (LN_CHECK_STATE(m_layoutView == nullptr)) return;
+	if (LN_REQUIRE(m_layoutView == nullptr)) return;
 
 	auto* parent = getVisualParent();
 	if (parent == nullptr) parent = owner;
@@ -285,7 +285,7 @@ void UIComboBox::initialize()
 //------------------------------------------------------------------------------
 //UIComboBoxItemPtr UIComboBox::AddItem(UIElement* item)
 //{
-//	if (LN_CHECK_ARG(item != nullptr)) return nullptr;
+//	if (LN_REQUIRE(item != nullptr)) return nullptr;
 //
 //	// 受け取った item を UIComboBoxItem でラップして、UIComboBoxItem をリストに入れる
 //	auto listItem = Ref<UIComboBoxItem>::MakeRef();

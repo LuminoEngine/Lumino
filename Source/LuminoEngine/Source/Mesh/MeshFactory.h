@@ -181,8 +181,8 @@ public:
 
 	void initialize(const Vector2& size, int sliceX, int sliceZ, const Color& color, const Matrix& transform)
 	{
-		if (LN_CHECK_ARG(sliceX >= 1)) return;
-		if (LN_CHECK_ARG(sliceZ >= 1)) return;
+		if (LN_REQUIRE(sliceX >= 1)) return;
+		if (LN_REQUIRE(sliceZ >= 1)) return;
 		m_size = size;
 		m_sliceX = sliceX;
 		m_sliceZ = sliceZ;
@@ -445,8 +445,8 @@ public:
 
 	void initialize(float radius, int slices, int stacks, const Color& color, const Matrix& transform)
 	{
-		if (LN_CHECK_ARG(slices >= 3)) return;
-		if (LN_CHECK_ARG(stacks >= 2)) return;
+		if (LN_REQUIRE(slices >= 3)) return;
+		if (LN_REQUIRE(stacks >= 2)) return;
 		m_radius = radius;
 		m_slices = slices;
 		m_stacks = stacks;
@@ -604,8 +604,8 @@ public:
 
 	void initialize(float radius, float height, int slices, int stacks, const Color& color, const Matrix& transform)
 	{
-		if (LN_CHECK_ARG(slices >= 3)) return;
-		if (LN_CHECK_ARG(stacks >= 1)) return;
+		if (LN_REQUIRE(slices >= 3)) return;
+		if (LN_REQUIRE(stacks >= 1)) return;
 		m_radius = radius;
 		m_height = height;
 		m_slices = slices;
@@ -721,7 +721,7 @@ public:
 
 	void initialize(float radius, float height, int slices, const Color& color, const Matrix& transform)
 	{
-		if (LN_CHECK_ARG(slices >= 3)) return;
+		if (LN_REQUIRE(slices >= 3)) return;
 		m_radius = radius;
 		m_height = height;
 		m_slices = slices;
@@ -827,7 +827,7 @@ public:
 
 	void initialize(float startAngle, float endAngle, float innerRadius, float outerRadius, int slices, const Color& color, const Matrix& transform)
 	{
-		if (LN_CHECK_ARG(slices >= 1)) return;
+		if (LN_REQUIRE(slices >= 1)) return;
 		m_startAngle = startAngle;
 		m_endAngle = endAngle;
 		m_innerRadius = innerRadius;

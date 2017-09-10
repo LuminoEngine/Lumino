@@ -444,9 +444,9 @@ ShaderCompileResultLevel GLSLUtils::makeShaderProgram(const char* vsCode, size_t
 //------------------------------------------------------------------------------
 void GLSLUtils::analyzeLNBasicShaderCode(const char* code, size_t codeLen, GLuint type, const char* entryName, CodeRange* outCode)
 {
-	if (LN_CHECK_ARG(code != nullptr)) return;
-	if (LN_CHECK_ARG(entryName != nullptr)) return;
-	if (LN_CHECK_ARG(outCode != nullptr)) return;
+	if (LN_REQUIRE(code != nullptr)) return;
+	if (LN_REQUIRE(entryName != nullptr)) return;
+	if (LN_REQUIRE(outCode != nullptr)) return;
 	outCode->code = nullptr;
 	outCode->length = 0;
 

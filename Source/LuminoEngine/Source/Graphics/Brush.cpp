@@ -62,7 +62,7 @@ Texture* Brush::getTexture() const
 //------------------------------------------------------------------------------
 void Brush::getRawData(detail::BrushRawData* outData) const
 {
-	if (LN_CHECK_ARG(outData != nullptr)) return;
+	if (LN_REQUIRE(outData != nullptr)) return;
 	outData->color = m_color;
 	outData->texture = (m_texture != nullptr) ? m_texture->resolveDeviceObject() : nullptr;
 	outData->srcRect = m_srcRect;

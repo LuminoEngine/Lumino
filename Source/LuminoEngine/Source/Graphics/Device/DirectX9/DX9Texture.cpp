@@ -236,13 +236,13 @@ void DX9Texture::setSubData(const PointI& point, const void* data, size_t dataBy
 //------------------------------------------------------------------------------
 void DX9Texture::setSubData3D(const Box32& box, const void* data, size_t dataBytes)
 {
-	LN_THROW(0, InvalidOperationException);
+	LN_UNREACHABLE();
 }
 
 //------------------------------------------------------------------------------
 void DX9Texture::getData(const RectI& rect, void* outData)
 {
-	if (LN_CHECK_ARG(outData != nullptr)) return;
+	if (LN_REQUIRE(outData != nullptr)) return;
 
 	if (rect != RectI(0, 0, m_realSize))
 	{
@@ -357,13 +357,13 @@ void DX9Texture3D::initialize(int width, int height, int depth, TextureFormat fo
 //------------------------------------------------------------------------------
 void DX9Texture3D::setSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize)
 {
-	LN_THROW(0, InvalidOperationException);
+	LN_UNREACHABLE();
 }
 
 //------------------------------------------------------------------------------
 void DX9Texture3D::setSubData3D(const Box32& box, const void* data, size_t dataBytes)
 {
-	if (LN_CHECK_ARG(data != nullptr)) return;
+	if (LN_REQUIRE(data != nullptr)) return;
 	if (dataBytes == 0) return;
 
 	D3DBOX d3dBox;
@@ -513,7 +513,7 @@ void DX9RenderTargetTexture::onResetDevice()
 //------------------------------------------------------------------------------
 void DX9RenderTargetTexture::setSubData3D(const Box32& box, const void* data, size_t dataBytes)
 {
-	LN_THROW(0, InvalidOperationException);
+	LN_UNREACHABLE();
 }
 
 //------------------------------------------------------------------------------
@@ -586,7 +586,7 @@ DX9DepthBuffer::DX9DepthBuffer(DX9GraphicsDevice* device, const SizeI& size, Tex
 //------------------------------------------------------------------------------
 void DX9DepthBuffer::setSubData3D(const Box32& box, const void* data, size_t dataBytes)
 {
-	LN_THROW(0, InvalidOperationException);
+	LN_UNREACHABLE();
 }
 
 //------------------------------------------------------------------------------
@@ -663,7 +663,7 @@ void DX9BackBufferTexture::reset(IDirect3DSurface9* backBufferSurface)
 //------------------------------------------------------------------------------
 void DX9BackBufferTexture::setSubData3D(const Box32& box, const void* data, size_t dataBytes)
 {
-	LN_THROW(0, InvalidOperationException);
+	LN_UNREACHABLE();
 }
 
 //------------------------------------------------------------------------------

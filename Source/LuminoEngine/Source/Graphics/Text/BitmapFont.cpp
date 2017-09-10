@@ -186,7 +186,7 @@ FontGlyphBitmap* BitmapFont::lookupGlyphBitmap(UTF32 utf32code, int strokeSize)
 //------------------------------------------------------------------------------
 void BitmapFont::getGlobalMetrics(FontGlobalMetrics* outMetrics)
 {
-	if (LN_CHECK_ARG(outMetrics != nullptr)) return;
+	if (LN_REQUIRE(outMetrics != nullptr)) return;
 	outMetrics->ascender = m_charHeight;
 	outMetrics->descender = 0;
 	outMetrics->lineSpace = m_charHeight;
@@ -195,7 +195,7 @@ void BitmapFont::getGlobalMetrics(FontGlobalMetrics* outMetrics)
 //------------------------------------------------------------------------------
 void BitmapFont::getGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics)
 {
-	if (LN_CHECK_ARG(outMetrics != nullptr)) return;
+	if (LN_REQUIRE(outMetrics != nullptr)) return;
 	outMetrics->size.width = (float)m_charWidth;
 	outMetrics->size.height = (float)m_charHeight;
 	outMetrics->advance.x = m_charWidth;

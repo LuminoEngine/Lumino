@@ -15,7 +15,7 @@ LN_NAMESPACE_BEGIN
 Win32CodePageEncoding::Win32CodePageEncoding(UINT codePage)
 {
 	BOOL r = ::GetCPInfoEx(codePage, 0, &m_cpInfo);
-	LN_THROW(r, Win32Exception, ::GetLastError());
+	if (LN_ENSURE_WIN32(r, ::GetLastError())) return;
 	
 	char buf[32];
 	sprintf_s(buf, "cp%u", codePage);
@@ -143,7 +143,7 @@ void Win32CodePageEncoding::Win32CodePageDecoder::convertToUTF16(const byte_t* i
 	// MultiByteToWideChar じゃ文字数カウントはできないので UnicodeUtils を使う
 	int count;
 	UTFConversionResult r = UnicodeUtils::getUTF16CharCount((UnicodeUtils::UTF16*)output, convertedWideCount, true, &count);
-	if (LN_ENSURE_ENCODING(result == UTFConversionResult_Success)) return;
+	if (LN_ENSURE_ENCODING(r == UTFConversionResult_Success)) return;
 
 	*outBytesUsed = convertedWideCount * sizeof(wchar_t);
 	*outCharsUsed = count;
@@ -213,7 +213,7 @@ void Win32CodePageEncoding::Win32CodePageEncoder::convertFromUTF16(const UTF16* 
 	// WideCharToMultiByte じゃ文字数カウントはできないので UnicodeUtils を使う
 	int count;
 	UTFConversionResult r = UnicodeUtils::getUTF16CharCount((UnicodeUtils::UTF16*)input, inputElementSize, true, &count);
-	if (LN_ENSURE_ENCODING(result == UTFConversionResult_Success)) return;
+	if (LN_ENSURE_ENCODING(r == UTFConversionResult_Success)) return;
 
 	*outBytesUsed = convertedByteCount;
 	*outCharsUsed = count;

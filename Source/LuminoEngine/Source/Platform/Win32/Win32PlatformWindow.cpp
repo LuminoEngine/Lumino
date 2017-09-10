@@ -549,7 +549,7 @@ void Win32NativeWindow::Initilaize(
 	bool fullscreen,
 	bool resizable)
 {
-	if (LN_CHECK_ARG(windowManager != nullptr)) return;
+	if (LN_REQUIRE(windowManager != nullptr)) return;
 	PlatformWindow::initialize(SizeI(width, height));
 
 	mTitleText = windowTitle;
@@ -583,7 +583,7 @@ void Win32NativeWindow::Initilaize(
 		CW_USEDEFAULT, CW_USEDEFAULT,
 		CW_USEDEFAULT, CW_USEDEFAULT,
 		NULL, NULL, windowManager->getInstanceHandle(), NULL);
-	LN_THROW(mWindowHandle, Win32Exception, GetLastError());
+	if (LN_ENSURE_WIN32(mWindowHandle, GetLastError())) return;
 
 	// アクセラレータの作成 (Alt+Enter の警告音を消す)
 	ACCEL accels[1] =
@@ -591,7 +591,7 @@ void Win32NativeWindow::Initilaize(
 		{ FALT | FVIRTKEY, VK_RETURN, 0 }
 	};
 	mAccelerators = ::CreateAcceleratorTable(accels, 1);
-	LN_THROW(mAccelerators, Win32Exception, GetLastError());
+	if (LN_ENSURE_WIN32(mAccelerators, GetLastError())) return;
 
 	// ウィンドウサイズをクライアント領域サイズから再設定
 	Win32WindowManager::setWindowClientSize(mWindowHandle, SizeI(width, height));
@@ -602,7 +602,7 @@ void Win32NativeWindow::Initilaize(
 
 	// ウィンドウハンドルと Win32Window のポインタを関連付ける
 	BOOL r = ::SetProp(mWindowHandle, Win32WindowManager::PROP_WINPROC, this);
-	LN_THROW((r != FALSE), Win32Exception, GetLastError());
+	if (LN_ENSURE_WIN32((r != FALSE), GetLastError())) return;
 
 }
 

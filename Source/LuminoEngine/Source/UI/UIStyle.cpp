@@ -678,7 +678,7 @@ UIStyle* UIStyleTable::getSubControlStyle(const StringRef& subControlOwnerName, 
 //------------------------------------------------------------------------------
 UIStyle* UIStyleTable::findStyle(const tr::TypeInfo* targetType/*, const StringRef& subControlName*/)
 {
-	if (LN_CHECK_ARG(targetType != nullptr)) return nullptr;
+	if (LN_REQUIRE(targetType != nullptr)) return nullptr;
 
 	StyleKey key = targetType->getName().getHashCode();// +subControlName.GetHashCode();
 	Ref<UIStyle>* s = m_table.find(key);
@@ -761,7 +761,7 @@ static const void InitColors()
 //------------------------------------------------------------------------------
 const Color& UIColors::getColor(UIColorIndex index, int depth)
 {
-	if (LN_CHECK_RANGE(depth, 0, UIColors::MaxDepth)) return Color::Black;
+	if (LN_REQUIRE_RANGE(depth, 0, UIColors::MaxDepth)) return Color::Black;
 	InitColors();
 	return g_colors[(int)index][depth];
 }
@@ -769,7 +769,7 @@ const Color& UIColors::getColor(UIColorIndex index, int depth)
 //------------------------------------------------------------------------------
 SolidColorBrush* UIColors::getBrush(UIColorIndex index, int depth)
 {
-	if (LN_CHECK_RANGE(depth, 0, UIColors::MaxDepth)) return nullptr;
+	if (LN_REQUIRE_RANGE(depth, 0, UIColors::MaxDepth)) return nullptr;
 	InitColors();
 	return &g_brushes[(int)index][depth];
 }

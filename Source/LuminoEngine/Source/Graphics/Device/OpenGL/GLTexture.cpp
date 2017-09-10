@@ -261,7 +261,7 @@ void GLRenderTargetTexture::onResetDevice()
 //------------------------------------------------------------------------------
 void GLRenderTargetTexture::setSubData3D(const Box32& box, const void* data, size_t dataBytes)
 {
-	LN_THROW(0, InvalidOperationException);
+	LN_UNREACHABLE();
 }
 
 //------------------------------------------------------------------------------
@@ -312,13 +312,13 @@ GLDepthBuffer::~GLDepthBuffer()
 //------------------------------------------------------------------------------
 void GLDepthBuffer::setSubData3D(const Box32& box, const void* data, size_t dataBytes)
 {
-	LN_THROW(0, InvalidOperationException);
+	LN_UNREACHABLE();
 }
 
 //------------------------------------------------------------------------------
 void GLDepthBuffer::getData(const RectI& rect, void* outData)
 {
-	LN_THROW(0, InvalidOperationException);
+	LN_UNREACHABLE();
 }
 
 //------------------------------------------------------------------------------

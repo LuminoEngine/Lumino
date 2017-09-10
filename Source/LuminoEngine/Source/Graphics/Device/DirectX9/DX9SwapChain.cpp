@@ -78,7 +78,7 @@ void DX9SwapChain::onLostDevice()
 //------------------------------------------------------------------------------
 void DX9SwapChain::onResetDevice()
 {
-	if (LN_CHECK_STATE(m_dxSwapChain == nullptr)) return;
+	if (LN_REQUIRE(m_dxSwapChain == nullptr)) return;
 
 	IDirect3DDevice9* dxDevice = m_graphicsDevice->getIDirect3DDevice9();
 	if (m_isDefault)
@@ -158,7 +158,7 @@ void DX9SwapChain::present(ITexture* /*colorBuffer*/)
 			m_graphicsDevice->setDeviceLostFlag();
 			break;
 		default:
-			LN_THROW(0, COMException, hr);
+			LN_ENSURE_WIN32(0, hr);
 			break;
 		}
 	}

@@ -229,7 +229,7 @@ SpriteRendererImpl::~SpriteRendererImpl()
 //------------------------------------------------------------------------------
 void SpriteRendererImpl::initialize(GraphicsManager* manager, int maxSpriteCount)
 {
-	if (LN_CHECK_ARG(manager != nullptr)) return;
+	if (LN_REQUIRE(manager != nullptr)) return;
 	m_manager = manager;
 	m_maxSprites = maxSpriteCount;
 	auto* device = manager->getGraphicsDevice();
@@ -372,7 +372,7 @@ void SpriteRendererImpl::drawRequestInternal(
 	SpriteBaseDirection baseDir,
 	BillboardType billboardType)
 {
-	LN_THROW(m_spriteRequestListUsedCount < m_maxSprites, InvalidOperationException);
+	if (LN_REQUIRE(m_spriteRequestListUsedCount < m_maxSprites)) return;;
 
 	BatchSpriteData& sprite = m_spriteRequestList[m_spriteRequestListUsedCount];
 

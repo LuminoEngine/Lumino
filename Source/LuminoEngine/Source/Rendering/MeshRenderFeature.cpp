@@ -28,7 +28,7 @@ MeshRenderFeature::~MeshRenderFeature()
 //------------------------------------------------------------------------------
 void MeshRenderFeature::initialize(GraphicsManager* manager)
 {
-	if (LN_CHECK_ARG(manager != nullptr)) return;
+	if (LN_REQUIRE(manager != nullptr)) return;
 	m_manager = manager;
 
 	Driver::IGraphicsDevice* device = m_manager->getGraphicsDevice();
@@ -38,7 +38,7 @@ void MeshRenderFeature::initialize(GraphicsManager* manager)
 //------------------------------------------------------------------------------
 void MeshRenderFeature::drawMesh(MeshResource* mesh, int startIndex, int primitiveCount, PrimitiveType primitiveType)
 {
-	if (LN_CHECK_ARG(mesh != nullptr)) return;
+	if (LN_REQUIRE(mesh != nullptr)) return;
 	auto* _this = this;
 	
 	VertexDeclaration* decls;

@@ -138,7 +138,7 @@ void PlatformManager::initialize(const Settings& settings)
 		m_windowManager = m.detachMove();
 	}
 #endif
-	LN_THROW(m_windowManager != nullptr, ArgumentException);
+	LN_REQUIRE(m_windowManager != nullptr);
 
 	if (m_useThread) {
 		m_mainWindowThreadInitFinished.setFalse();

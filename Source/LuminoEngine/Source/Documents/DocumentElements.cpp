@@ -235,8 +235,8 @@ void Block::initialize()
 //------------------------------------------------------------------------------
 void Block::addInline(Inline* inl)
 {
-	if (LN_CHECK_ARG(inl != nullptr)) return;
-	if (LN_CHECK_ARG(inl->getParent() == nullptr)) return;
+	if (LN_REQUIRE(inl != nullptr)) return;
+	if (LN_REQUIRE(inl->getParent() == nullptr)) return;
 	m_inlines.add(inl);
 	inl->setParent(this);
 }

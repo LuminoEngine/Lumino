@@ -514,7 +514,7 @@ void FrameRectRenderFeature::setState(Brush* brush)
 //------------------------------------------------------------------------------
 void FrameRectRenderFeature::setState(Brush* brush, const Matrix& world, const Matrix& viewProj)	// TODO: world いらない
 {
-	if (LN_CHECK_ARG(brush != nullptr)) return;
+	if (LN_REQUIRE(brush != nullptr)) return;
 
 	FrameRectRendererState state;
 	//state.worldTransform = world;
@@ -524,7 +524,7 @@ void FrameRectRenderFeature::setState(Brush* brush, const Matrix& world, const M
 	state.srcRect = RectI::fromFloatRect(brush->getSourceRect());
 	state.wrapMode = brush->getWrapMode();
 	state.texture = (brush->getTexture() != nullptr) ? brush->getTexture()->resolveDeviceObject() : nullptr;
-	if (LN_CHECK_STATE(state.texture != nullptr)) return;
+	if (LN_REQUIRE(state.texture != nullptr)) return;
 
 	LN_ENQUEUE_RENDER_COMMAND_2(
 		setState, m_manager,

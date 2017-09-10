@@ -360,7 +360,7 @@ void Texture2D::setPixel(int x, int y, const Color& color)
 //------------------------------------------------------------------------------
 void Texture2D::blit(int x, int y, Texture2D* srcTexture, const RectI& srcRect)
 {
-	if (LN_CHECK_ARG(srcTexture != nullptr)) return;
+	if (LN_REQUIRE(srcTexture != nullptr)) return;
 	if (srcTexture->m_primarySurface2 == nullptr)
 	{
 		// TODO: ITexture から読み取るべきかもしれない
@@ -399,7 +399,7 @@ void Texture2D::LN_AFX_FUNCNAME(drawText)(const StringRef& text, const RectI& re
 //------------------------------------------------------------------------------
 void Texture2D::setSubData(const PointI& offset, Bitmap* bitmap)
 {
-	if (LN_CHECK_ARG(bitmap != nullptr)) return;
+	if (LN_REQUIRE(bitmap != nullptr)) return;
 
 	// TODO: 現状、ピクセルフォーマットが一致していることが前提
 	if (bitmap->getPixelFormat() != Utils::translatePixelFormat(m_deviceObj->getTextureFormat()))

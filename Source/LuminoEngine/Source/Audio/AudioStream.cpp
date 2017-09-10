@@ -80,7 +80,7 @@ void AudioStream::onASyncIOProc()
 		m_decoder = LN_NEW MidiDecoder();
 		break;
 	default:
-		LN_THROW(0, InvalidFormatException);
+		LN_UNREACHABLE();
 		break;
 	}
 

@@ -49,11 +49,13 @@ Bitmap::Bitmap(int width, int height, int depth, PixelFormat format, bool upFlow
 Bitmap::Bitmap(Stream* stream, bool flipV)
 {
 	init();
-	LN_THROW(stream != NULL, ArgumentException);
+	if (LN_REQUIRE(stream != NULL)) return;
 
 	PngFile pngFile;
-	if (!pngFile.load(stream, flipV)) {
-		LN_THROW(0, InvalidFormatException);
+	if (!pngFile.load(stream, flipV))
+	{
+		LN_ENSURE(0);
+		return;
 	}
 	m_size = pngFile.m_size;
 	m_depth = 1;
@@ -66,7 +68,7 @@ Bitmap::Bitmap(Stream* stream, bool flipV)
 Bitmap::Bitmap(const Char* filePath)
 {
 	init();
-	LN_THROW(filePath != NULL, ArgumentException);
+	if (LN_ENSURE(filePath != NULL)) return;
 
 	Ref<FileStream> file = FileStream::create(filePath, FileOpenMode::read);
 	PngFile pngFile;
@@ -254,7 +256,7 @@ void Bitmap::convertToDownFlow()
 //------------------------------------------------------------------------------
 void Bitmap::copyRawData(const void* data, size_t byteCount)
 {
-	if (LN_CHECK_ARG(m_bitmapData.getSize() <= byteCount)) return;
+	if (LN_REQUIRE(m_bitmapData.getSize() <= byteCount)) return;
 	m_bitmapData.copy(data, byteCount);
 }
 
@@ -267,10 +269,10 @@ size_t Bitmap::getByteCount() const
 //------------------------------------------------------------------------------
 void Bitmap::setPixel(int x, int y, int z, const Color32& color)
 {
-	if (LN_CHECK_RANGE(x, 0, m_size.width)) return;
-	if (LN_CHECK_RANGE(y, 0, m_size.height)) return;
-	if (LN_CHECK_RANGE(z, 0, m_depth)) return;
-	if (LN_CHECK_STATE(
+	if (LN_REQUIRE_RANGE(x, 0, m_size.width)) return;
+	if (LN_REQUIRE_RANGE(y, 0, m_size.height)) return;
+	if (LN_REQUIRE_RANGE(z, 0, m_depth)) return;
+	if (LN_REQUIRE(
 		m_format == PixelFormat::B8G8R8A8 ||
 		m_format == PixelFormat::B8G8R8X8 ||
 		m_format == PixelFormat::R8G8B8A8 ||

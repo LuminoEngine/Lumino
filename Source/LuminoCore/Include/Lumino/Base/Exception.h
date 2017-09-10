@@ -16,17 +16,24 @@ class Exception;
 #define _LN_CHECK(expression, exception, ...)		(!(expression)) && ln::detail::notifyException<exception>(LN__FILE__, __LINE__, ##__VA_ARGS__)
 
 // core
-#define LN_REQUIRE(expression, ...)					_LN_CHECK(expression, ::ln::LogicException, __VA_ARGS__)
-#define LN_ENSURE(expression, ...)					_LN_CHECK(expression, ::ln::RuntimeException, __VA_ARGS__)
-#define LN_FATAL(expression, ...)					_LN_CHECK(expression, ::ln::FatalException, __VA_ARGS__)
+#define LN_REQUIRE(expression, ...)					_LN_CHECK(expression, ::ln::LogicException, ##__VA_ARGS__)
+#define LN_ENSURE(expression, ...)					_LN_CHECK(expression, ::ln::RuntimeException, ##__VA_ARGS__)
+#define LN_FATAL(expression, ...)					_LN_CHECK(expression, ::ln::FatalException, ##__VA_ARGS__)
 
 // utils
 #define LN_UNREACHABLE()							_LN_CHECK(0, ::ln::LogicException)
 #define LN_NOTIMPLEMENTED()							_LN_CHECK(0, ln::NotImplementedException)
-#define LN_ENSURE_IO(expression)					_LN_CHECK(0, ln::IOException)
-#define LN_ENSURE_FILE_NOT_FOUND(expression, path)	_LN_CHECK(0, ln::FileNotFoundException, path)
-#define LN_ENSURE_ENCODING(expression)				_LN_CHECK(0, ln::EncodingException)
-#define LN_ENSURE_INVALID_FORMAT(expression)		_LN_CHECK(0, ln::InvalidFormatException)
+#define LN_REQUIRE_RANGE(value, begin, end)			_LN_CHECK(begin <= value && value < end, ::ln::LogicException)
+#define LN_REQUIRE_KEY(expression)					_LN_CHECK(expression, ln::LogicException)
+#define LN_ENSURE_IO(expression)					_LN_CHECK(expression, ln::IOException)
+#define LN_ENSURE_FILE_NOT_FOUND(expression, path)	_LN_CHECK(expression, ln::FileNotFoundException, path)
+#define LN_ENSURE_ENCODING(expression)				_LN_CHECK(expression, ln::EncodingException)
+#define LN_ENSURE_INVALID_FORMAT(expression, ...)	_LN_CHECK(expression, ln::InvalidFormatException, ##__VA_ARGS__)
+#define LN_ENSURE_WIN32(expression, err)			_LN_CHECK(expression, ln::Win32Exception, err)
+
+// obsolete
+#define LN_THROW(exp, type, ...)	{ _LN_CHECK(exp, type, ##__VA_ARGS__); }
+#define LN_COMCALL(exp)				{ HRESULT hr = (exp); if (FAILED(hr)) { LN_ENSURE_WIN32(0, hr); } }
 
 class Assertion
 {
@@ -172,6 +179,25 @@ public:
 	virtual Exception* copy() const;
 };
 
+/**
+	@brief	WindowsAPI のエラーを表します。 (GetLastError)
+*/
+class Win32Exception 
+	: public Exception
+{
+public:
+	Win32Exception();
+	virtual Exception* copy() const;
+
+	void setMessage(uint32_t dwLastError);
+
+	uint32_t getLastErrorCode() const { return m_dwLastErrorCode; }
+	const std::basic_string<Char>& getFormatMessage() const { return m_formatMessage; }
+
+private:
+	uint32_t				m_dwLastErrorCode;
+	std::basic_string<Char>	m_formatMessage;
+};
 
 
 

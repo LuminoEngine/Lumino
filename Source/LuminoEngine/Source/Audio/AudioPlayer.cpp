@@ -54,7 +54,7 @@ AudioPlayer::~AudioPlayer()
 //------------------------------------------------------------------------------
 void AudioPlayer::initialize(AudioStream* audioStream, bool enable3d)
 { 
-	LN_THROW(audioStream, ArgumentException);
+	if (LN_REQUIRE(audioStream)) return;
 	LN_REFOBJ_SET(m_audioStream, audioStream);
 	m_decoder = m_audioStream->getDecoder();
 

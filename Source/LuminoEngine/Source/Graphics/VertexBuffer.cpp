@@ -96,7 +96,7 @@ int VertexBuffer::getSize() const
 //------------------------------------------------------------------------------
 void VertexBuffer::reserve(int size)
 {
-	if (LN_CHECK_STATE(!isRHIDirect())) return;		// サイズ変更禁止
+	if (LN_REQUIRE(!isRHIDirect())) return;		// サイズ変更禁止
 
 	size_t newSize = static_cast<size_t>(size);
 	if (newSize != m_buffer.capacity())
@@ -108,7 +108,7 @@ void VertexBuffer::reserve(int size)
 //------------------------------------------------------------------------------
 void VertexBuffer::resize(int size)
 {
-	if (LN_CHECK_STATE(!isRHIDirect())) return;		// サイズ変更禁止
+	if (LN_REQUIRE(!isRHIDirect())) return;		// サイズ変更禁止
 
 	size_t newSize = static_cast<size_t>(size);
 	if (newSize != m_buffer.size())

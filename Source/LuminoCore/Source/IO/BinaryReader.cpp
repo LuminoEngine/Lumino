@@ -36,7 +36,7 @@ int16_t BinaryReader::readInt16(ByteOrder dataByteOrder)
 {
 	byte_t buffer[2];
 	size_t count = m_stream->read(&buffer, 2);
-	LN_THROW(count == 2, EndOfStreamException);
+	if (LN_ENSURE(count == 2)) return 0;
 
 	// 現在の環境と同じエンディアンであればそのまま返す
 	if (dataByteOrder == Environment::getByteOrder()) {
@@ -57,7 +57,7 @@ int32_t BinaryReader::readInt32(ByteOrder dataByteOrder)
 {
 	byte_t buffer[4];
 	size_t count = m_stream->read(&buffer, 4);
-	if (LN_ENSURE(count == 4)) return;
+	if (LN_ENSURE(count == 4)) return 0;
 
 	// 現在の環境と同じエンディアンであればそのまま返す
 	if (dataByteOrder == Environment::getByteOrder()) {
@@ -80,7 +80,7 @@ int64_t BinaryReader::readInt64(ByteOrder dataByteOrder)
 {
 	byte_t buffer[8];
 	size_t count = m_stream->read(&buffer, 8);
-	if (LN_ENSURE(count == 4)) return;
+	if (LN_ENSURE(count == 4)) return 0;
 
 	// 現在の環境と同じエンディアンであればそのまま返す
 	if (dataByteOrder == Environment::getByteOrder()) {
@@ -115,7 +115,7 @@ uint16_t BinaryReader::readUInt16(ByteOrder dataByteOrder)
 {
 	byte_t buffer[2];
 	size_t count = m_stream->read(&buffer, 2);
-	if (LN_ENSURE(count == 2)) return;
+	if (LN_ENSURE(count == 2)) return 0;
 
 	// 現在の環境と同じエンディアンであればそのまま返す
 	if (dataByteOrder == Environment::getByteOrder()) {
@@ -136,7 +136,7 @@ uint32_t BinaryReader::readUInt32(ByteOrder dataByteOrder)
 {
 	byte_t buffer[4];
 	size_t count = m_stream->read(&buffer, 4);
-	if (LN_ENSURE(count == 4)) return;
+	if (LN_ENSURE(count == 4)) return 0;
 
 	// 現在の環境と同じエンディアンであればそのまま返す
 	if (dataByteOrder == Environment::getByteOrder()) {
@@ -159,7 +159,7 @@ uint64_t BinaryReader::readUInt64(ByteOrder dataByteOrder)
 {
 	byte_t buffer[8];
 	size_t count = m_stream->read(&buffer, 8);
-	if (LN_ENSURE(count == 8)) return;
+	if (LN_ENSURE(count == 8)) return 0;
 
 	// 現在の環境と同じエンディアンであればそのまま返す
 	if (dataByteOrder == Environment::getByteOrder()) {

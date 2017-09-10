@@ -284,6 +284,33 @@ Exception* InvalidFormatException::copy() const
 	return LN_NEW InvalidFormatException(*this);
 }
 
+//==============================================================================
+// Win32Exception
+//==============================================================================
+Win32Exception::Win32Exception()
+	: m_dwLastErrorCode(0)
+	, m_formatMessage()
+{
+	setCaption(InternalResource::getString(InternalResource::Win32Error).c_str());
+}
+
+void Win32Exception::setMessage(uint32_t dwLastError)
+{
+	m_dwLastErrorCode = dwLastError;
+#ifdef LN_OS_WIN32
+	TCHAR buf[512];
+	::FormatMessage(
+		FORMAT_MESSAGE_FROM_SYSTEM, NULL, m_dwLastErrorCode,
+		0, buf, sizeof(buf) / sizeof(buf[0]), NULL);
+#endif
+
+}
+
+Exception* Win32Exception::copy() const
+{
+	return LN_NEW Win32Exception(*this);
+}
+
 LN_NAMESPACE_END
 
 

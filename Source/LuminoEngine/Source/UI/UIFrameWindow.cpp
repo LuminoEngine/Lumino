@@ -46,7 +46,7 @@ UIFrameWindow::~UIFrameWindow()
 //------------------------------------------------------------------------------
 void UIFrameWindow::initialize(PlatformWindow* platformWindow, SwapChain* swapChain, UIContext* context)
 {
-	if (LN_CHECK_ARG(platformWindow != nullptr)) return;
+	if (LN_REQUIRE(platformWindow != nullptr)) return;
 	m_manager = detail::EngineDomain::getUIManager();
 	m_platformWindow = platformWindow;
 	m_swapChain = swapChain;
@@ -161,7 +161,7 @@ void UIFrameWindow::onPresentRenderingContexts()
 //------------------------------------------------------------------------------
 //void UIFrameWindow::setSize(const SizeI& size)
 //{
-//	if (LN_CHECK_STATE(m_platformWindow != nullptr)) return;
+//	if (LN_REQUIRE(m_platformWindow != nullptr)) return;
 //	m_platformWindow->setSize(size);
 //}
 
@@ -433,7 +433,7 @@ UINativeHostWindow::~UINativeHostWindow()
 //------------------------------------------------------------------------------
 void UINativeHostWindow::initialize(intptr_t windowHandle)
 {
-	if (LN_CHECK_ARG(windowHandle != 0)) return;
+	if (LN_REQUIRE(windowHandle != 0)) return;
 
 	auto* manager = detail::EngineDomain::getUIManager();
 

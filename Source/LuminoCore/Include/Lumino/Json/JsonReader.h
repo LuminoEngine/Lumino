@@ -89,6 +89,7 @@ public:
 	virtual bool readLine(String* line) override
 	{
 		LN_NOTIMPLEMENTED();
+		return false;
 		//bool r = m_innter->ReadLine(line);
 		//++m_line;
 		//m_column = 0;
@@ -98,6 +99,7 @@ public:
 	virtual String readToEnd() override
 	{
 		LN_NOTIMPLEMENTED();
+		return String();
 	}
 
 	virtual bool isEOF() override

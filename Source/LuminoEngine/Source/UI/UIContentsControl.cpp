@@ -28,7 +28,7 @@ void UIContentsControl::initialize()
 
 void UIContentsControl::addChild(UIElement* element)
 {
-	if (LN_CHECK_ARG(element != nullptr)) return;
+	if (LN_REQUIRE(element != nullptr)) return;
 
 	m_logicalChildren->add(element);
 	element->setLogicalParent(this);

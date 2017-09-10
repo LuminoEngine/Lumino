@@ -332,7 +332,7 @@ FontGlyphLocation* FreeTypeFont::advanceKerning(UTF32 utf32code, int strokeSize,
 		glyphIndex,
 		&glyph,
 		NULL);
-	LN_THROW(err == 0, InvalidOperationException, "failed FTC_ImageCache_Lookup : %d\n", err);
+	if (LN_ENSURE(err == 0, "failed FTC_ImageCache_Lookup : %d\n", err)) return nullptr;
 
 	// キャッシュが効いている時は FT_Load_Glyph を呼ばないと slot->metrics が更新されない。
 	// つまり、レイアウトが正常に行われない。
@@ -340,17 +340,17 @@ FontGlyphLocation* FreeTypeFont::advanceKerning(UTF32 utf32code, int strokeSize,
 	// ここではホントに metrics だけわかればいいので、ビットマップとかを作る必要は無い。
 	// 後で必要最小限のフラグを探す。TODO:
 	err = FT_Load_Glyph(m_ftFace, glyphIndex, m_ftImageType.flags);
-	LN_THROW(err == 0, InvalidOperationException, "failed FTC_ImageCache_Lookup : %d\n", err);
+	if (LN_ENSURE(err == 0, "failed FT_Load_Glyph : %d\n", err)) return nullptr;
 
 	// 太字フォント
 	if (m_fontData.isBold)
 	{
 		// アウトラインフォントである必要がある
-		LN_THROW((glyph->format == FT_GLYPH_FORMAT_OUTLINE), InvalidOperationException, "glyph->format != FT_GLYPH_FORMAT_OUTLINE");
+		if (LN_ENSURE(glyph->format == FT_GLYPH_FORMAT_OUTLINE)) return nullptr;
 
 		FT_Pos strength = (800 - 400) / 8;	// 太さ
 		err = FT_Outline_Embolden(&m_ftFace->glyph->outline, strength);
-		LN_THROW(err == 0, InvalidOperationException, "failed FT_Outline_Embolden : %d\n", err);
+		if (LN_ENSURE(err == 0, "failed FT_Outline_Embolden : %d\n", err)) return nullptr;
 	}
 
 	FT_GlyphSlot slot = m_ftFace->glyph;
@@ -404,17 +404,17 @@ FontGlyphBitmap* FreeTypeFont::lookupGlyphBitmap(UTF32 utf32code, int strokeSize
 		glyphIndex,
 		&glyph,
 		NULL);
-	LN_THROW(err == 0, InvalidOperationException, "failed FTC_ImageCache_Lookup : %d\n", err);
+	if (LN_ENSURE(err == 0, "failed FTC_ImageCache_Lookup : %d\n", err)) return nullptr;
 
 	// 太字フォント
 	if (m_fontData.isBold)
 	{
 		// アウトラインフォントである必要がある
-		LN_THROW((glyph->format == FT_GLYPH_FORMAT_OUTLINE), InvalidOperationException, "glyph->format != FT_GLYPH_FORMAT_OUTLINE");
+		if (LN_ENSURE(glyph->format == FT_GLYPH_FORMAT_OUTLINE)) return nullptr;
 
 		FT_Pos strength = (800 - 400) / 8;	// 太さ
 		err = FT_Outline_Embolden(&m_ftFace->glyph->outline, strength);
-		LN_THROW(err == 0, InvalidOperationException, "failed FT_Outline_Embolden : %d\n", err);
+		if (LN_ENSURE(err == 0, "failed FT_Outline_Embolden : %d\n", err)) return nullptr;
 	}
 	FT_Render_Mode renderMode = (m_fontData.isAntiAlias) ? FT_RENDER_MODE_NORMAL : FT_RENDER_MODE_MONO;
 
@@ -426,13 +426,13 @@ FontGlyphBitmap* FreeTypeFont::lookupGlyphBitmap(UTF32 utf32code, int strokeSize
 	else
 	{
 		err = FT_Glyph_Copy(glyph, &m_fontGlyphBitmap.CopyGlyph);
-		LN_THROW(err == 0, InvalidOperationException, "failed FT_Glyph_Copy : %d\n", err);
+		if (LN_ENSURE(err == 0, "failed FT_Glyph_Copy : %d\n", err)) return nullptr;
 
 		/* FT_RENDER_MODE_NORMALで普通の(256階調)アンチエイリアス
 		* FT_RENDER_MODE_LCDで液晶用アンチエイリアス(サブピクセルレンダリング)
 		*/
 		err = FT_Glyph_To_Bitmap(&m_fontGlyphBitmap.CopyGlyph, renderMode, NULL, 1);
-		LN_THROW(err == 0, InvalidOperationException, "failed FT_Glyph_To_Bitmap : %d\n", err);
+		if (LN_ENSURE(err == 0, "failed FT_Glyph_To_Bitmap : %d\n", err)) return nullptr;
 
 		glyph_bitmap = (FT_BitmapGlyph)m_fontGlyphBitmap.CopyGlyph;
 	}
@@ -445,7 +445,7 @@ FontGlyphBitmap* FreeTypeFont::lookupGlyphBitmap(UTF32 utf32code, int strokeSize
 	if (m_edgeSize > 0)
 	{
 		err = FT_Glyph_Copy(glyph, &m_fontGlyphBitmap.CopyOutlineGlyph);
-		LN_THROW(err == 0, InvalidOperationException, "failed FT_Glyph_Copy : %d\n", err);
+		if (LN_ENSURE(err == 0, "failed FT_Glyph_Copy : %d\n", err)) return nullptr;
 
 		// エッジの描画情報
 		FT_Stroker_Set(m_ftStroker,
@@ -455,10 +455,10 @@ FontGlyphBitmap* FreeTypeFont::lookupGlyphBitmap(UTF32 utf32code, int strokeSize
 			0);
 
 		err = FT_Glyph_StrokeBorder(&m_fontGlyphBitmap.CopyOutlineGlyph, m_ftStroker, 0, 1);
-		LN_THROW(err == 0, InvalidOperationException, "failed FT_Glyph_StrokeBorder : %d\n", err);
+		if (LN_ENSURE(err == 0, "failed FT_Glyph_StrokeBorder : %d\n", err)) return nullptr;
 
 		err = FT_Glyph_To_Bitmap(&m_fontGlyphBitmap.CopyOutlineGlyph, renderMode, NULL, 1);
-		LN_THROW(err == 0, InvalidOperationException, "failed FT_Glyph_To_Bitmap : %d\n", err);
+		if (LN_ENSURE(err == 0, "failed FT_Glyph_To_Bitmap : %d\n", err)) return nullptr;
 
 		glyph_bitmap = (FT_BitmapGlyph)m_fontGlyphBitmap.CopyOutlineGlyph;
 
@@ -481,7 +481,7 @@ FontGlyphBitmap* FreeTypeFont::lookupGlyphBitmap(UTF32 utf32code, int strokeSize
 //------------------------------------------------------------------------------
 void FreeTypeFont::getGlobalMetrics(FontGlobalMetrics* outMetrics)
 {
-	if (LN_CHECK_ARG(outMetrics != nullptr)) return;
+	if (LN_REQUIRE(outMetrics != nullptr)) return;
 	updateFont();
 	outMetrics->ascender = m_ftFace->size->metrics.ascender >> 6;
 	outMetrics->descender = m_ftFace->size->metrics.descender >> 6;
@@ -501,11 +501,11 @@ void FreeTypeFont::decomposeOutline(UTF32 utf32code, RawFont::VectorGlyphInfo* o
 
 	// get glyph index
 	FT_UInt glyphIndex = FTC_CMapCache_Lookup(m_manager->getFTCacheMapCache(), m_ftFaceID, m_ftCacheMapIndex, utf32code);
-	if (LN_CHECK_STATE(glyphIndex != 0)) return;
+	if (LN_ENSURE(glyphIndex != 0)) return;
 
 	// グリフメトリクスにアクセスするため、グリフスロット(m_ftFace->glyph) に glyphIndex で示すグリフの情報をロードする
 	FT_Error err = FT_Load_Glyph(m_ftFace, glyphIndex, FT_LOAD_DEFAULT);
-	if (LN_CHECK_STATE(err == 0)) return;
+	if (LN_ENSURE(err == 0)) return;
 
 	// TODO: FT_Load_Glyph で m_ftFace->glyph 自体はキャッシュされないので、（glyphIndex に同じ値を渡しても同じ値を際ロードする）最後のインデックスをこっち側で覚えておくと効率いいかも。
 	// すぐ後でメトリクス欲しいとき。
@@ -520,7 +520,7 @@ void FreeTypeFont::decomposeOutline(UTF32 utf32code, RawFont::VectorGlyphInfo* o
 	state.delta2 = state.delta1 * state.delta1;
 	state.delta3 = state.delta2 * state.delta1;
 	FT_Error error = FT_Outline_Decompose(&m_ftFace->glyph->outline, &m_ftOutlineFuncs, &state);
-	if (LN_CHECK_STATE(error == 0)) return;
+	if (LN_ENSURE(error == 0)) return;
 
 
 	// 1つ前の Outline があれば、頂点数を確定させる
@@ -551,7 +551,7 @@ Vector2 FreeTypeFont::getKerning(UTF32 prev, UTF32 next)
 		{
 			FT_Vector delta;
 			FT_Error err = FT_Get_Kerning(m_ftFace, glyphIndex1, glyphIndex2, ft_kerning_default, &delta);
-			if (LN_CHECK_STATE(err == 0)) return Vector2::Zero;
+			if (LN_ENSURE(err == 0)) return Vector2::Zero;
 
 			return Vector2(delta.x >> 6, delta.y >> 6);
 		}
@@ -565,17 +565,17 @@ Vector2 FreeTypeFont::getKerning(UTF32 prev, UTF32 next)
 //------------------------------------------------------------------------------
 void FreeTypeFont::getGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics)
 {
-	if (LN_CHECK_ARG(outMetrics != nullptr)) return;
+	if (LN_REQUIRE(outMetrics != nullptr)) return;
 
 	updateFont();
 
 	// get glyph index
 	FT_UInt glyphIndex = FTC_CMapCache_Lookup(m_manager->getFTCacheMapCache(), m_ftFaceID, m_ftCacheMapIndex, utf32Code);
-	if (LN_CHECK_STATE(glyphIndex != 0)) return;
+	if (LN_ENSURE(glyphIndex != 0)) return;
 
 	// グリフメトリクスにアクセスするため、グリフスロット(m_ftFace->glyph) に glyphIndex で示すグリフの情報をロードする
 	FT_Error err = FT_Load_Glyph(m_ftFace, glyphIndex, FT_LOAD_DEFAULT);
-	if (LN_CHECK_STATE(err == 0)) return;
+	if (LN_ENSURE(err == 0)) return;
 
 	outMetrics->size.width = (float)(m_ftFace->glyph->metrics.width >> 6);
 	outMetrics->size.height = (float)(m_ftFace->glyph->metrics.height >> 6);
@@ -855,7 +855,7 @@ void FreeTypeFont::updateFont()
 		m_manager->m_requesterFaceName = name->c_str();
 
 		FT_Error err = FTC_Manager_LookupFace(ftc_manager, m_ftFaceID, &m_ftFace);
-		LN_THROW(err == 0, InvalidOperationException, "failed FTC_Manager_LookupFace : %d\n", err);
+		if (LN_ENSURE(err == 0, "failed FTC_Manager_LookupFace : %d\n", err)) return;
 
 		if (m_fontData.isItalic)
 		{
@@ -892,7 +892,7 @@ void FreeTypeFont::updateFont()
 		scaler.y_res = RESOLUTION_Y;
 		FT_Size ft_size;
 		err = FTC_Manager_LookupSize(ftc_manager, &scaler, &ft_size);
-		LN_THROW(err == 0, InvalidOperationException, "failed FTC_Manager_LookupSize : %d\n", err);
+		if (LN_ENSURE(err == 0, "failed FTC_Manager_LookupSize : %d\n", err)) return;
 
 		m_lineHeight = ft_size->metrics.height >> 6;
 
@@ -1006,7 +1006,8 @@ void FreeTypeFont::refreshBitmap(Bitmap* bitmap, FT_Bitmap* ftBitmap)
 		bitmap->m_format = PixelFormat::A8;
 	}
 	else {
-		LN_THROW(0, InvalidOperationException, "Invalid pixel format.");
+		LN_ENSURE(0, "Invalid pixel format.");
+		return;
 	}
 
 	// ビットマップデータを参照モードでセットする

@@ -113,7 +113,7 @@ Uuid::Uuid(const StringRef& uuidText)
 //------------------------------------------------------------------------------
 Uuid::Uuid(const uint8_t* bytes)
 {
-	if (LN_CHECK_ARG(bytes != nullptr)) return;
+	if (LN_REQUIRE(bytes != nullptr)) return;
 	m_data.assign(bytes, bytes + 16);
 }
 

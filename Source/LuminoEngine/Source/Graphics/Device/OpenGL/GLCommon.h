@@ -22,5 +22,4 @@
 
 #include "LNGL.h"
 
-// glGetError() �ŃG���[�`�F�b�N (�e gl�` �̌�ŕK���Ă΂Ȃ��Ɛ������G���[�����Ȃ��̂Œ���)
 #define LN_CHECK_GLERROR()		{ GLenum lnglerr = glGetError(); LN_THROW(lnglerr == GL_NO_ERROR , OpenGLException, lnglerr); } 

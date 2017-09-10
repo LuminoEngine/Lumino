@@ -104,7 +104,7 @@ JsonParseResult JsonHelper::loadElement(JsonDocument2* doc, JsonReader2* reader,
 	}
 	else
 	{
-		if (LN_ENSURE(0, InvalidFormatException)) return JsonParseResult::Error;
+		if (LN_ENSURE(0)) return JsonParseResult::Error;
 	}
 	return JsonParseResult::Success;
 }
@@ -431,7 +431,7 @@ JsonObject2* JsonArray2::addObject()
 //------------------------------------------------------------------------------
 void JsonArray2::onSave(JsonWriter* writer)
 {
-	if (LN_CHECK_ARG(writer != nullptr)) return;
+	if (LN_REQUIRE(writer != nullptr)) return;
 	writer->writeStartArray();
 	for (JsonElement2* item : m_itemList)
 	{
@@ -592,7 +592,7 @@ JsonElement2* JsonObject2::find(const StringRef& name) const
 //------------------------------------------------------------------------------
 void JsonObject2::onSave(JsonWriter* writer)
 {
-	if (LN_CHECK_ARG(writer != nullptr)) return;
+	if (LN_REQUIRE(writer != nullptr)) return;
 
 	writer->writeStartObject();
 
@@ -608,7 +608,7 @@ void JsonObject2::onSave(JsonWriter* writer)
 //------------------------------------------------------------------------------
 JsonParseResult JsonObject2::onLoad(JsonReader2* reader)
 {
-	if (LN_CHECK_ARG(reader != nullptr)) return JsonParseResult::Error;
+	if (LN_REQUIRE(reader != nullptr)) return JsonParseResult::Error;
 
 	// この時点で reader は StartObject('{') を指している
 
@@ -847,10 +847,10 @@ ISerializeElement* JsonDocument2::getRootObject() { return this; }
 void JsonDocument2::parseInternal(JsonReader2* reader)
 {
 	bool result = reader->read();
-	if (LN_ENSURE(result, InvalidFormatException)) return;
+	if (LN_ENSURE(result)) return;
 
 	JsonToken type = reader->getTokenType();
-	if (LN_ENSURE(type == JsonToken::StartObject, InvalidFormatException)) return;
+	if (LN_ENSURE(type == JsonToken::StartObject)) return;
 
 	JsonElement2::load(reader);
 }

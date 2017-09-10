@@ -55,7 +55,7 @@ template size_t DirectoryUtils::LN_AFX_FUNCNAME(getCurrentDirectory)<wchar_t>(wc
 List<String> DirectoryUtils::getFiles(const TTCHAR* drPath, const TTCHAR* pattern)
 {
 	LN_NOTIMPLEMENTED();
-	return List<String>;
+	return List<String>();
 	//List<String> fileList;
 	//PathName dirPathKey(drPath);
 	//String dirPatternPath(dirPathKey.getStrEndSeparator());

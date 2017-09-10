@@ -29,7 +29,7 @@ TokenStore::~TokenStore()
 //------------------------------------------------------------------------------
 void TokenStore::reserve(int count)
 {
-	if (LN_CHECK_STATE(m_tokenStore.isEmpty())) return;
+	if (LN_REQUIRE(m_tokenStore.isEmpty())) return;
 	m_tokenStore.reserve(count);
 }
 
@@ -124,7 +124,7 @@ InputFile* AnalyzerContext::RegisterInputFile(const std::string& filePath)
 //------------------------------------------------------------------------------
 InputFile* AnalyzerContext::RegisterInputMemoryCode(const std::string& filePath, const char* code, int length)
 {
-	if (LN_CHECK_ARG(code != nullptr)) return nullptr;
+	if (LN_REQUIRE(code != nullptr)) return nullptr;
 	auto ptr = Ref<InputFile>::makeRef(filePath, code, length);
 	m_inputFileList.add(ptr);
 	return ptr;
@@ -148,7 +148,7 @@ void AnalyzerContext::LexAll()
 //------------------------------------------------------------------------------
 void AnalyzerContext::LexFile(InputFile* file)
 {
-	if (LN_CHECK_ARG(file != nullptr)) return;
+	if (LN_REQUIRE(file != nullptr)) return;
 	ResetFileDiagnostics(file);
 	auto lexer = CreateLexer(file);
 	lexer->Tokenize(file);
@@ -166,8 +166,8 @@ void AnalyzerContext::PreprocessAll()
 //------------------------------------------------------------------------------
 void AnalyzerContext::PreprocessFile(InputFile* file)
 {
-	if (LN_CHECK_ARG(file != nullptr)) return;
-	if (LN_CHECK_ARG(file->GetCategory() != InputFileCategory::CompileUnit)) return;
+	if (LN_REQUIRE(file != nullptr)) return;
+	if (LN_REQUIRE(file->GetCategory() != InputFileCategory::CompileUnit)) return;
 
 	LN_NOTIMPLEMENTED();
 }

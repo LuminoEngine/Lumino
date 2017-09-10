@@ -407,7 +407,7 @@ void DirectMusicManager::polling()
 //------------------------------------------------------------------------------
 void DirectMusicManager::internalInitialize(const ConfigData& configData)
 {
-	LN_THROW(configData.WindowHandle, ArgumentException);
+	if (LN_REQUIRE(configData.WindowHandle)) return;
 
     m_windowHandle	= configData.WindowHandle;
     m_initMode		= configData.DMInitMode;

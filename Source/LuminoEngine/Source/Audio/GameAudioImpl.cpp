@@ -82,7 +82,7 @@ void GameAudioImpl::playBGM(const Char* filePath, float volume, float pitch, dou
 //------------------------------------------------------------------------------
 void GameAudioImpl::playBGMFromSound(Sound* sound, float volume, float pitch, double fadeTime)
 {
-	if (LN_CHECK_ARG(sound != nullptr)) return;
+	if (LN_REQUIRE(sound != nullptr)) return;
 
 	// 演奏再開チェック
 	// TODO:フェードアウト中に再開すると無音になる

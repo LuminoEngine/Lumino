@@ -87,7 +87,7 @@ UITreeViewItem* UITreeViewItem::addTextItem(const String& text)
 //------------------------------------------------------------------------------
 UITreeViewItem* UITreeViewItem::addItem(UIElement* item)
 {
-	if (LN_CHECK_ARG(item != nullptr)) return nullptr;
+	if (LN_REQUIRE(item != nullptr)) return nullptr;
 	auto treeItem = newObject<UITreeViewItem>();
 	treeItem->setHeader(item);
 	addChild(treeItem);
@@ -262,7 +262,7 @@ UITreeViewItem* UITreeView::addTextItem(const String& text)
 //------------------------------------------------------------------------------
 UITreeViewItem* UITreeView::addItem(UIElement* item)
 {
-	if (LN_CHECK_ARG(item != nullptr)) return nullptr;
+	if (LN_REQUIRE(item != nullptr)) return nullptr;
 	auto treeItem = newObject<UITreeViewItem>();
 	treeItem->setHeader(item);
 	addChild(treeItem);

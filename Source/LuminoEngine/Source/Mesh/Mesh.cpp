@@ -71,7 +71,7 @@ MeshResource::~MeshResource()
 //------------------------------------------------------------------------------
 void MeshResource::initialize(detail::GraphicsManager* manager, MeshCreationFlags flags)
 {
-	if (LN_CHECK_ARG(manager != nullptr)) return;
+	if (LN_REQUIRE(manager != nullptr)) return;
 	m_manager = manager;
 	m_usage = (flags.TestFlag(MeshCreationFlags::DynamicBuffers)) ? ResourceUsage::Dynamic : ResourceUsage::Static;
 
@@ -369,8 +369,8 @@ void MeshResource::addSquare(const Vertex* virtices)
 //------------------------------------------------------------------------------
 void MeshResource::addLine(const Vertex& v1, const Vertex& v2)
 {
-	if (LN_CHECK_STATE(!m_attributes.isEmpty())) return;
-	if (LN_CHECK_STATE(m_attributes.getLast().primitiveType == PrimitiveType_LineList)) return;
+	if (LN_REQUIRE(!m_attributes.isEmpty())) return;
+	if (LN_REQUIRE(m_attributes.getLast().primitiveType == PrimitiveType_LineList)) return;
 
 	int beginIndex = getVertexCount();
 	Vertex* v = (Vertex*)requestVertexBufferForAdditional(2, VB_BasicVertices);
@@ -499,7 +499,7 @@ void MeshResource::addTeapot(float size, int tessellation)
 ////------------------------------------------------------------------------------
 //void* MeshResource::TryLockVertexBuffer(VertexBufferType type)
 //{
-//	if (LN_CHECK_STATE(m_vertexUsedCount > 0)) return nullptr;
+//	if (LN_REQUIRE(m_vertexUsedCount > 0)) return nullptr;
 //
 //	const size_t strideTable[VB_Count] =
 //	{
@@ -547,7 +547,7 @@ void MeshResource::addTeapot(float size, int tessellation)
 ////------------------------------------------------------------------------------
 //void* MeshResource::TryLockIndexBuffer()
 //{
-//	if (LN_CHECK_STATE(m_indexUsedCount > 0)) return nullptr;
+//	if (LN_REQUIRE(m_indexUsedCount > 0)) return nullptr;
 //
 //	//if (m_usage == ResourceUsage::Dynamic)
 //	{
@@ -627,8 +627,8 @@ uint16_t* MeshResource::requestIndexBufferForAdditional(int additionalIndexCount
 	int begin = (getIndexBuffer() != nullptr) ? getIndexBuffer()->getIndexCount() : 0;
 	int newCount = begin + additionalIndexCount;
 
-	if (LN_CHECK_STATE(m_indexBufferInfo.buffer == nullptr || m_indexBufferInfo.buffer->getIndexStride() == 2)) return nullptr;
-	if (LN_CHECK_STATE(newCount <= UINT16_MAX)) return nullptr;
+	if (LN_REQUIRE(m_indexBufferInfo.buffer == nullptr || m_indexBufferInfo.buffer->getIndexStride() == 2)) return nullptr;
+	if (LN_REQUIRE(newCount <= UINT16_MAX)) return nullptr;
 
 	//TryGlowIndexBuffer(newCount);
 	//m_indexUsedCount = newCount;
@@ -821,15 +821,15 @@ StaticMeshModel::~StaticMeshModel()
 //------------------------------------------------------------------------------
 void StaticMeshModel::initialize(detail::GraphicsManager* manager)
 {
-	LN_VERIFY_ARG(manager != nullptr);
+	if (LN_REQUIRE(manager != nullptr)) return;
 	m_materials = Ref<MaterialList>::makeRef();
 }
 
 //------------------------------------------------------------------------------
 void StaticMeshModel::initialize(detail::GraphicsManager* manager, MeshResource* sharingMesh)
 {
-	if (LN_CHECK_ARG(manager != nullptr)) return;
-	if (LN_CHECK_ARG(sharingMesh != nullptr)) return;
+	if (LN_REQUIRE(manager != nullptr)) return;
+	if (LN_REQUIRE(sharingMesh != nullptr)) return;
 
 	// メッシュ(バッファ類)は共有する
 	m_meshResources.add(sharingMesh);

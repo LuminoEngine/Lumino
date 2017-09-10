@@ -244,7 +244,7 @@ ILayoutElement* UIElement::getVisualChild(int index) const
 		return m_visualChildren->getAt(index);
 	}
 
-	LN_THROW(0, InvalidOperationException);
+	LN_UNREACHABLE();
 	return nullptr;
 }
 
@@ -433,7 +433,8 @@ void UIElement::setLogicalParent(UIElement* parent)
 	if (parent != nullptr)
 	{
 		// 既に親があるとき、新しい親をつけることはできない
-		LN_THROW(getLogicalParent() == nullptr, InvalidOperationException, "the child elements of already other elements.");
+		LN_REQUIRE(getLogicalParent() == nullptr, "the child elements of already other elements.");
+		return;
 	}
 
 	m_logicalParent = parent;
@@ -621,7 +622,7 @@ void UIElement::applyTemplateHierarchy(UIStyleTable* styleTable, detail::UIStyle
 //------------------------------------------------------------------------------
 void UIElement::updateLocalStyleAndApplyProperties(UIStyleTable* styleTable, detail::UIStylePropertyTableInstance* parentStyleInstance)
 {
-	if (LN_CHECK_STATE(m_localStyle != nullptr)) return;
+	if (LN_REQUIRE(m_localStyle != nullptr)) return;
 
 
 	// TODO: styleTable は多分 Context のルート固定でよい。
@@ -811,7 +812,7 @@ const VAlignment* UIElement::getPriorityContentVAlignment()
 //------------------------------------------------------------------------------
 void UIElement::raiseEventInternal(UIEventArgs* e)
 {
-	if (LN_CHECK_ARG(e != nullptr)) return;
+	if (LN_REQUIRE(e != nullptr)) return;
 
 	// まずは this に通知
 	onRoutedEvent(e);
@@ -832,8 +833,8 @@ void UIElement::raiseEventInternal(UIEventArgs* e)
 //------------------------------------------------------------------------------
 void UIElement::addVisualChild(UIElement* element)
 {
-	if (LN_CHECK_ARG(element != nullptr)) return;
-	if (LN_CHECK_ARG(element->m_visualParent == nullptr)) return;
+	if (LN_REQUIRE(element != nullptr)) return;
+	if (LN_REQUIRE(element->m_visualParent == nullptr)) return;
 
 	// リストが作成されていなければ、ここで始めて作る (省メモリ)
 	if (m_visualChildren == nullptr)
