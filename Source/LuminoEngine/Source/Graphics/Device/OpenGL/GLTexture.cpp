@@ -129,8 +129,6 @@ void GLTexture::setSamplerState(const SamplerState& state)
 //------------------------------------------------------------------------------
 void GLTexture::setSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize)
 {
-	//LN_THROW(point.isZero(), NotImplementedException);
-
 	// ※同一フォーマットであることが前提
 
 	// フォーマットが同一ならそのまま転送すればよい
@@ -169,7 +167,7 @@ void GLTexture::setSubData(const PointI& point, const void* data, size_t dataByt
 //------------------------------------------------------------------------------
 void GLTexture::setSubData3D(const Box32& box, const void* data, size_t dataBytes)
 {
-	LN_THROW(0, InvalidOperationException);
+	LN_NOTIMPLEMENTED();
 }
 
 //------------------------------------------------------------------------------
@@ -263,7 +261,7 @@ void GLRenderTargetTexture::onResetDevice()
 //------------------------------------------------------------------------------
 void GLRenderTargetTexture::setSubData3D(const Box32& box, const void* data, size_t dataBytes)
 {
-	LN_THROW(0, InvalidOperationException);
+	LN_UNREACHABLE();
 }
 
 //------------------------------------------------------------------------------
@@ -314,13 +312,13 @@ GLDepthBuffer::~GLDepthBuffer()
 //------------------------------------------------------------------------------
 void GLDepthBuffer::setSubData3D(const Box32& box, const void* data, size_t dataBytes)
 {
-	LN_THROW(0, InvalidOperationException);
+	LN_UNREACHABLE();
 }
 
 //------------------------------------------------------------------------------
 void GLDepthBuffer::getData(const RectI& rect, void* outData)
 {
-	LN_THROW(0, InvalidOperationException);
+	LN_UNREACHABLE();
 }
 
 //------------------------------------------------------------------------------

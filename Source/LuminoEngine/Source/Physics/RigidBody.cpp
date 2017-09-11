@@ -73,7 +73,7 @@ RigidBody::~RigidBody()
 //------------------------------------------------------------------------------
 void RigidBody::initialize(CollisionShape* collider, const ConfigData& configData)
 {
-	if (LN_CHECK_ARG(collider != nullptr)) return;
+	if (LN_REQUIRE(collider != nullptr)) return;
 	PhysicsObject::initialize();
 	m_btShapeManager.addShape(collider);
 	m_data = configData;
@@ -84,7 +84,7 @@ void RigidBody::initialize(CollisionShape* collider, const ConfigData& configDat
 //------------------------------------------------------------------------------
 void RigidBody::initializeCore(CollisionShape* collider, const ConfigData& configData, float scale)
 {
-	if (LN_CHECK_ARG(collider != nullptr)) return;
+	if (LN_REQUIRE(collider != nullptr)) return;
 	PhysicsObject::initialize();
 	m_btShapeManager.addShape(collider);
 	m_data = configData;

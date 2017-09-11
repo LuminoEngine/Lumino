@@ -49,7 +49,7 @@ void SpriteComponent::initialize()
 //------------------------------------------------------------------------------
 void SpriteComponent::setTexture(Texture* texture)
 {
-	//if (LN_CHECK_ARG(m_materialList != nullptr)) return;
+	//if (LN_REQUIRE(m_materialList != nullptr)) return;
 	//m_materialList->GetAt(0)->setMaterialTexture(texture);
 	m_texture = texture;
 	updateVertexData();
@@ -64,7 +64,7 @@ void SpriteComponent::setSize(const Size& size)
 //------------------------------------------------------------------------------
 Texture* SpriteComponent::getTexture() const
 {
-	//if (LN_CHECK_ARG(m_materialList != nullptr)) return nullptr;
+	//if (LN_REQUIRE(m_materialList != nullptr)) return nullptr;
 	//return m_materialList->GetAt(0)->getMaterialTexture(nullptr);
 	return m_texture;
 }

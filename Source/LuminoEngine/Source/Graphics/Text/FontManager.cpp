@@ -108,7 +108,7 @@ void FontManager::initialize(ArchiveManager* archiveManager, GraphicsManager* gr
 
 	// FreeType 初期化
 	FT_Error err = FT_Init_FreeType(&m_ftLibrary);
-	LN_THROW(err == 0, InvalidOperationException, "failed initialize font library : %d\n", err);
+	if (LN_ENSURE(err == 0, "failed initialize font library : %d\n", err)) return;
 
 	// キャッシマネージャ
 	err = FTC_Manager_New(
@@ -117,15 +117,15 @@ void FontManager::initialize(ArchiveManager* archiveManager, GraphicsManager* gr
 		callbackFaceRequester,
 		this,
 		&m_ftCacheManager);
-	LN_THROW(err == 0, InvalidOperationException, "failed initialize font cache manager : %d\n", err);
+	if (LN_ENSURE(err == 0, "failed initialize font cache manager : %d\n", err)) return;
 
 	// キャッシュマップ
 	err = FTC_CMapCache_New(m_ftCacheManager, &m_ftCMapCache);
-	LN_THROW(err == 0, InvalidOperationException, "failed initialize font cache map : %d\n", err);
+	if (LN_ENSURE(err == 0, "failed initialize font cache map : %d\n", err)) return;
 
 	// イメージキャッシュ
 	err = FTC_ImageCache_New(m_ftCacheManager, &m_ftImageCache);
-	LN_THROW(err == 0, InvalidOperationException, "failed initialize font image cache : %d\n", err);
+	if (LN_ENSURE(err == 0, "failed initialize font image cache : %d\n", err)) return;
 
 	// デフォルトフォント
 	m_defaultFont = Ref<Font>::makeRef();
@@ -209,7 +209,7 @@ void FontManager::registerFontFile(const String& fontFilePath)
 		buffer.getSize(),
 		0,
 		&face);
-	LN_THROW(err == FT_Err_Ok, InvalidOperationException, "failed FT_New_Memory_Face : %d\n", err);
+	if (LN_ENSURE(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err)) return;
 
 	// Fase ひとつだけ (.ttf)
 	if (face->num_faces == 1)
@@ -249,7 +249,7 @@ void FontManager::registerFontFile(const String& fontFilePath)
 				buffer.getSize(),
 				i,
 				&face);
-			LN_THROW(err == FT_Err_Ok, InvalidOperationException, "failed FT_New_Memory_Face : %d\n", err);
+			if (LN_ENSURE(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err)) return;
 
 			String familyName(face->family_name);
 			uint32_t key = Hash::calcHash(familyName.c_str());
@@ -273,7 +273,7 @@ void FontManager::registerFontFile(const String& fontFilePath)
 	}
 	else {
 		FT_Done_Face(face);
-		LN_THROW(0, InvalidOperationException);
+		LN_UNREACHABLE();
 	}
 }
 
@@ -341,13 +341,13 @@ FT_Error FontManager::faceRequester(
 			itr->second.DataBuffer.getSize(),
 			itr->second.CollectionIndex,
 			&face);
-		LN_THROW(err == FT_Err_Ok, InvalidOperationException, "failed FT_New_Memory_Face : %d\n", err);
+		if (LN_ENSURE(err == FT_Err_Ok, "failed FT_New_Memory_Face : %d\n", err)) return err;
 
 		err = FT_Select_Charmap(face, FT_ENCODING_UNICODE);
 		if (err != FT_Err_Ok)
 		{
 			FT_Done_Face(face);
-			LN_THROW(err == FT_Err_Ok, InvalidOperationException, "failed FT_Select_Charmap : %d\n", err);
+			if (LN_ENSURE(err == FT_Err_Ok, "failed FT_Select_Charmap : %d\n", err)) return err;
 		}
 
 		*aface = face;

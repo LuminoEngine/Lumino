@@ -141,7 +141,7 @@ void Animator::create(detail::IAnimationTargetElement* element)
 //------------------------------------------------------------------------------
 bool Animator::isPlaying() const
 {
-	LN_THROW(0, NotImplementedException);
+	LN_NOTIMPLEMENTED();
 	return false;
 }
 
@@ -227,7 +227,7 @@ AnimationLayer::AnimationLayer(Animator* owner)
 //------------------------------------------------------------------------------
 void AnimationLayer::createStateAndAttachClip(AnimationClip* animationClip)
 {
-	if (LN_CHECK_ARG(animationClip != nullptr)) return;
+	if (LN_REQUIRE(animationClip != nullptr)) return;
 
 	auto state = Ref<AnimationState>::makeRef(animationClip);
 	m_animationStateList.add(animationClip->getName(), state);
@@ -237,8 +237,8 @@ void AnimationLayer::createStateAndAttachClip(AnimationClip* animationClip)
 //------------------------------------------------------------------------------
 void AnimationLayer::removeStateByClip(AnimationClip* animationClip)
 {
-	if (LN_CHECK_ARG(animationClip != nullptr)) return;
-	LN_THROW(0, NotImplementedException);
+	if (LN_REQUIRE(animationClip != nullptr)) return;
+	LN_NOTIMPLEMENTED();
 }
 
 //------------------------------------------------------------------------------

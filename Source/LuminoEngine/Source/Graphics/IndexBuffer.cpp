@@ -94,7 +94,7 @@ int IndexBuffer::getIndexCount() const
 //------------------------------------------------------------------------------
 void IndexBuffer::reserve(int indexCount)
 {
-	if (LN_CHECK_STATE(!isRHIDirect())) return;		// サイズ変更禁止
+	if (LN_REQUIRE(!isRHIDirect())) return;		// サイズ変更禁止
 
 	size_t newSize = static_cast<size_t>(indexCount * getIndexStride());
 	if (newSize != m_buffer.capacity())
@@ -106,7 +106,7 @@ void IndexBuffer::reserve(int indexCount)
 //------------------------------------------------------------------------------
 void IndexBuffer::resize(int indexCount)
 {
-	if (LN_CHECK_STATE(!isRHIDirect())) return;		// サイズ変更禁止
+	if (LN_REQUIRE(!isRHIDirect())) return;		// サイズ変更禁止
 
 	updateFormat(indexCount);
 	size_t newSize = static_cast<size_t>(indexCount* getIndexStride());

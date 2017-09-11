@@ -580,7 +580,7 @@ void FrameCapturerContext::stopRecording()
 void FrameCapturerContext::updateOnRender()
 {
 	if (m_currentState_main == State::Stoped && m_requestedState == State::Stoped) return;
-	if (LN_CHECK_STATE(m_capturerTarget != nullptr)) return;
+	if (LN_REQUIRE(m_capturerTarget != nullptr)) return;
 
 	if (m_timeMSecs > 0)
 	{

@@ -136,8 +136,8 @@ void EncodingConverter::checkUpdateEncoderDecoder()
 {
 	if (m_encodingModified)
 	{
-		LN_THROW(m_dstEncoding != NULL, InvalidOperationException, "DestinationEncoding is not set.");
-		LN_THROW(m_srcEncoding != NULL, InvalidOperationException, "SourceEncoding is not set.");
+		if (LN_REQUIRE(m_dstEncoding)) return;
+		if (LN_REQUIRE(m_srcEncoding)) return;
 
 		LN_SAFE_DELETE(m_dstEncoder);
 		LN_SAFE_DELETE(m_srcDecoder);
@@ -154,9 +154,9 @@ void EncodingConverter::convertDecoderRemain(
 	void* dest_, size_t destByteCount, Encoder* destEncoder,
 	EncodingConversionResult* outResult)
 {
-	if (LN_CHECK_ARG(srcDecoder != nullptr)) return;
-	if (LN_CHECK_ARG(srcDecoder->canRemain())) return;
-	if (LN_CHECK_ARG(destEncoder != nullptr)) return;
+	if (LN_REQUIRE(srcDecoder != nullptr)) return;
+	if (LN_REQUIRE(srcDecoder->canRemain())) return;
+	if (LN_REQUIRE(destEncoder != nullptr)) return;
 
 	const size_t BufferingElements = 512;
 	UTF16 utf16[BufferingElements];

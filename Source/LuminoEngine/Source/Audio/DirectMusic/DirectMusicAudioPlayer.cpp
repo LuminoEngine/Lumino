@@ -38,7 +38,7 @@ DirectMusicAudioPlayer::~DirectMusicAudioPlayer()
 void DirectMusicAudioPlayer::initialize(AudioStream* audioStream, bool enable3d)
 {
 	m_midiDecoder = dynamic_cast<MidiDecoder*>(audioStream->getDecoder());
-	LN_THROW(m_midiDecoder != NULL, ArgumentException);
+	if (LN_REQUIRE(m_midiDecoder != NULL)) return;
 
 	AudioPlayer::initialize(audioStream, enable3d);
 

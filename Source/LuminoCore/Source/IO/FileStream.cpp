@@ -49,12 +49,15 @@ void FileStream::open(const Char* filePath, FileOpenMode openMode)
 
 	if (m_openModeFlags.TestFlag(FileOpenMode::Deferring))
 	{
-		if (!detail::FileSystemInternal::existsFile(filePath, StringTraits::tcslen(filePath))) {
-			LN_THROW(0, FileNotFoundException, filePath);
+		if (!detail::FileSystemInternal::existsFile(filePath, StringTraits::tcslen(filePath)))
+		{
+			LN_ENSURE_FILE_NOT_FOUND(0, filePath);
+			return;
 		}
 	}
 	// 遅延オープンでなければここで開いてしまう
-	else {
+	else
+	{
 		open();
 	}
 }
@@ -106,7 +109,7 @@ void FileStream::write(const void* data, size_t byteCount)
 {
 	checkOpen();
 	size_t nWriteSize = fwrite( data, 1, byteCount, m_stream );
-	LN_THROW(nWriteSize == byteCount, InvalidOperationException);
+	LN_ENSURE(nWriteSize == byteCount);
 }
 
 //------------------------------------------------------------------------------
@@ -142,14 +145,14 @@ void FileStream::checkOpen() const
 	}
 	else
 	{
-		LN_THROW(m_stream != NULL, InvalidOperationException);
+		LN_ENSURE(m_stream != NULL);
 	}
 }
 
 //------------------------------------------------------------------------------
 void FileStream::open() const
 {
-	LN_THROW(m_stream == NULL, InvalidOperationException);
+	if (LN_REQUIRE(m_stream == NULL)) return;
 
 	const Char* mode = NULL;
 	if (m_openModeFlags.TestFlag(FileOpenMode::ReadWrite))
@@ -188,10 +191,10 @@ void FileStream::open() const
 			mode = _TT("rb");		// 読み込み
 		}
 	}
-	LN_THROW(mode, ArgumentException);
+	if (LN_REQUIRE(mode)) return;
 
 	m_stream = detail::FileSystemInternal::fopen(m_filePath.c_str(), m_filePath.getLength(), mode, StringTraits::tcslen(mode));
-	LN_THROW(m_stream != nullptr, FileNotFoundException);
+	LN_ENSURE_FILE_NOT_FOUND(m_stream != nullptr, m_filePath.c_str());
 }
 
 LN_NAMESPACE_END

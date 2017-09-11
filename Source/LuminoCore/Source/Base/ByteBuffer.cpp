@@ -159,7 +159,7 @@ void ByteBuffer::alloc(size_t size, bool zeroClear)
 //------------------------------------------------------------------------------
 void ByteBuffer::alloc(const void* data, size_t size)
 {
-	if (LN_CHECK_ARG(data != nullptr)) return;
+	if (LN_REQUIRE(data != nullptr)) return;
 
 	alloc(size, false);
 	memcpy_s(m_core->m_buffer, size, data, size);
@@ -214,7 +214,7 @@ void ByteBuffer::attach(void* buffer, size_t size)
 //------------------------------------------------------------------------------
 void ByteBuffer::copy(const void* data, size_t size)
 {
-	LN_THROW(size <= m_size, ArgumentException);
+	if (LN_REQUIRE(size <= m_size)) return;
 	checkDetachShared();
 	memcpy_s(m_core->m_buffer, m_size, data, size);
 }
@@ -222,7 +222,7 @@ void ByteBuffer::copy(const void* data, size_t size)
 //------------------------------------------------------------------------------
 void ByteBuffer::copy(size_t offset, const void* data, size_t size)
 {
-	LN_THROW(offset + size <= m_size, ArgumentException);
+	if (LN_REQUIRE(offset + size <= m_size)) return;
 	checkDetachShared();
 	memcpy_s(m_core->m_buffer + offset, m_size - offset, data, size);
 }
@@ -278,13 +278,13 @@ ByteBuffer& ByteBuffer::operator = (const ByteBuffer& right)
 //------------------------------------------------------------------------------
 byte_t& ByteBuffer::operator[] (size_t index)
 {
-	LN_THROW(index < m_size, ArgumentException);
+	if (LN_REQUIRE(index < m_size)) return m_core->m_buffer[0];	// TODO:
 	checkDetachShared();
 	return m_core->m_buffer[index];
 }
 const byte_t& ByteBuffer::operator[](size_t index) const
 {
-	LN_THROW(index < m_size, ArgumentException);
+	if (LN_REQUIRE(index < m_size)) return m_core->m_buffer[0];	// TODO:
 	return m_core->m_buffer[index];
 }
 

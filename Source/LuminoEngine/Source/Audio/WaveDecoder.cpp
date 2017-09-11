@@ -45,7 +45,7 @@ WaveDecoder::~WaveDecoder()
 //------------------------------------------------------------------------------
 void WaveDecoder::create(Stream* stream)
 {
-	if (LN_CHECK_ARG(stream != nullptr)) return;
+	if (LN_REQUIRE(stream != nullptr)) return;
 	LN_REFOBJ_SET(m_stream, stream);
 
 	// 念のためファイルポインタを先頭に戻す
@@ -61,7 +61,8 @@ void WaveDecoder::create(Stream* stream)
 	if (memcmp(&rh.riff, "RIFF", 4) != 0 ||
 		memcmp(&rh.waveHeader, "WAVE", 4) != 0)
 	{
-		LN_THROW(0, InvalidFormatException);
+		LN_ENSURE_INVALID_FORMAT(0);
+		return;
 	}
 
 	//-------------------------------------------------------------
@@ -121,7 +122,7 @@ void WaveDecoder::create(Stream* stream)
 	}
 
 	// data チャンクは見つかっているはず
-	LN_THROW(m_dataOffset != 0, InvalidFormatException);
+	LN_ENSURE_INVALID_FORMAT(m_dataOffset != 0);
 }
 
 //------------------------------------------------------------------------------
@@ -147,7 +148,7 @@ void WaveDecoder::fillOnmemoryBuffer()
 		int size = m_stream->read(m_onmemoryPCMBuffer, m_onmemoryPCMBufferSize);
 
 		// 読み込んだサイズが変な場合はエラー
-		LN_THROW(size == m_onmemoryPCMBufferSize, InvalidOperationException, "read file size is incorrect.\nThere is a possibility that the file is corrupted.");
+		if (LN_ENSURE_INVALID_FORMAT(size == m_onmemoryPCMBufferSize, "read file size is incorrect.\nThere is a possibility that the file is corrupted.")) return;
 
 		// シーク位置を元に戻す
 		m_stream->seek(old_seek, SeekOrigin_Begin);
@@ -160,7 +161,7 @@ void WaveDecoder::fillOnmemoryBuffer()
 //------------------------------------------------------------------------------
 void WaveDecoder::read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uint32_t* out_read_size, uint32_t* out_write_size)
 {
-	LN_THROW(m_stream != NULL, InvalidOperationException);	// オンメモリ再生とストリーミング再生で同じ AudioStream を共有したときにぶつかる
+	if (LN_REQUIRE(m_stream != NULL)) return;	// オンメモリ再生とストリーミング再生で同じ AudioStream を共有したときにぶつかる
 	MutexScopedLock lock(m_mutex);
 
 	m_stream->seek(m_dataOffset + seekPos, SeekOrigin_Begin);

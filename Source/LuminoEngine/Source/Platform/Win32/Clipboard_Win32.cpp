@@ -19,7 +19,7 @@ void Clipboard::setText(PlatformWindow* window, const String& text)
 	int byteCount = (wideStr.length() * 1) * sizeof(WCHAR);
 
 	HGLOBAL hGlobal = ::GlobalAlloc(GMEM_MOVEABLE, byteCount);
-	LN_THROW(hGlobal != NULL, Win32Exception, ::GetLastError());
+	if (LN_ENSURE_WIN32(hGlobal != NULL, ::GetLastError())) return;
 
 	WCHAR* buf = (WCHAR*)::GlobalLock(hGlobal);
 	memcpy(buf, wideStr.c_str(), byteCount);
@@ -32,7 +32,7 @@ void Clipboard::setText(PlatformWindow* window, const String& text)
 	{
 		DWORD err = ::GetLastError();
 		::GlobalFree(hGlobal);
-		LN_THROW(hGlobal != NULL, Win32Exception, err);
+		if (LN_ENSURE_WIN32(hGlobal != NULL, err)) return;
 	}
 
 	::EmptyClipboard();
@@ -50,14 +50,14 @@ String Clipboard::getText(PlatformWindow* window)
 
 	HWND hWnd = PlatformSupport::getWindowHandle(window);
 	BOOL r = ::OpenClipboard(hWnd);
-	LN_THROW(r != FALSE, Win32Exception, ::GetLastError());
+	if (LN_ENSURE_WIN32(r != FALSE, ::GetLastError())) return String();
 
 	HGLOBAL hGlobal = ::GetClipboardData(CF_UNICODETEXT);
 	if (hGlobal == NULL)
 	{
 		DWORD err = ::GetLastError();
 		::CloseClipboard();
-		LN_THROW(hGlobal != NULL, Win32Exception, err);
+		if (LN_ENSURE_WIN32(hGlobal != NULL, err)) return String();
 	}
 
 	WCHAR* buf = (WCHAR*)::GlobalLock(hGlobal);

@@ -33,7 +33,7 @@ TEST_F(Test_Base_Exception, Check)
 
 	try
 	{
-		if (LN_CHECK_ARG(0)) err += 1;	// NG
+		if (LN_REQUIRE(0)) err += 1;	// NG
 		FAIL();
 	}
 	catch (ArgumentException& e)
@@ -41,12 +41,12 @@ TEST_F(Test_Base_Exception, Check)
 	}
 	ASSERT_EQ(0, err);
 
-	if (LN_CHECK_ARG(1)) err += 10;	// OK
+	if (LN_REQUIRE(1)) err += 10;	// OK
 	ASSERT_EQ(0, err);
 
 #else
-	if (LN_CHECK_ARG(0)) err += 1;	// NG
-	if (LN_CHECK_ARG(1)) err += 10;	// OK
+	if (LN_REQUIRE(0)) err += 1;	// NG
+	if (LN_REQUIRE(1)) err += 10;	// OK
 #endif
 }
 

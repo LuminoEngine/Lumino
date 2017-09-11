@@ -33,7 +33,7 @@ Application::~Application()
 //------------------------------------------------------------------------------
 void Application::initialize(EngineManager* engineManager)
 {
-	if (LN_CHECK_ARG(engineManager != nullptr)) return;
+	if (LN_REQUIRE(engineManager != nullptr)) return;
 	m_engineManager = engineManager;
 }
 

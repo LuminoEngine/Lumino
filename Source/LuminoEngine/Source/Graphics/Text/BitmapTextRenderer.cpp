@@ -29,7 +29,7 @@ BitmapTextRenderer::~BitmapTextRenderer()
 //------------------------------------------------------------------------------
 void BitmapTextRenderer::initialize(detail::GraphicsManager* manager)
 {
-	if (LN_CHECK_ARG(manager != nullptr)) return;
+	if (LN_REQUIRE(manager != nullptr)) return;
 	m_manager = manager;
 
 	m_tmpGlyphRun = LN_NEW GlyphRun();
@@ -39,8 +39,8 @@ void BitmapTextRenderer::initialize(detail::GraphicsManager* manager)
 //------------------------------------------------------------------------------
 void BitmapTextRenderer::drawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const Color32& fillColor, const Color32& strokeColor, int strokeThickness)
 {
-	if (LN_CHECK_ARG(target != nullptr)) return;
-	if (LN_CHECK_ARG(glyphRun != nullptr)) return;
+	if (LN_REQUIRE(target != nullptr)) return;
+	if (LN_REQUIRE(glyphRun != nullptr)) return;
 
 	RawFont* font = glyphRun->getFont();
 
@@ -65,7 +65,7 @@ void BitmapTextRenderer::drawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const 
 			break;
 		}
 		case TextAlignment::Justify:
-			LN_THROW(0, NotImplementedException);
+			LN_NOTIMPLEMENTED();
 			break;
 	}
 

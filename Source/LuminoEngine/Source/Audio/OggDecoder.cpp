@@ -39,7 +39,7 @@ OggDecoder::~OggDecoder()
 //------------------------------------------------------------------------------
 void OggDecoder::create(Stream* stream)
 {
-	if (LN_CHECK_ARG(stream != nullptr)) return;
+	if (LN_REQUIRE(stream != nullptr)) return;
 	
 	LN_REFOBJ_SET(m_stream, stream);
 	m_stream->seek(0, SeekOrigin_Begin);

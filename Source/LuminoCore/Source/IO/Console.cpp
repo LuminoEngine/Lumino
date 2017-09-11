@@ -128,28 +128,28 @@ void Console::writeLineError()
 //------------------------------------------------------------------------------
 void Console::writeInternal(const char* str)
 {
-	if (LN_CHECK_ARG(str != nullptr)) return;
+	if (LN_REQUIRE(str != nullptr)) return;
 	fprintf(stdout, "%s", str);
 }
 
 //------------------------------------------------------------------------------
 void Console::writeInternal(const wchar_t* str)
 {
-	if (LN_CHECK_ARG(str != nullptr)) return;
+	if (LN_REQUIRE(str != nullptr)) return;
 	fwprintf(stdout, L"%s", str);
 }
 
 //------------------------------------------------------------------------------
 void Console::writeInternalError(const char* str)
 {
-	if (LN_CHECK_ARG(str != nullptr)) return;
+	if (LN_REQUIRE(str != nullptr)) return;
 	fprintf(stderr, "%s", str);
 }
 
 //------------------------------------------------------------------------------
 void Console::writeInternalError(const wchar_t* str)
 {
-	if (LN_CHECK_ARG(str != nullptr)) return;
+	if (LN_REQUIRE(str != nullptr)) return;
 	fwprintf(stderr, L"%s", str);
 }
 

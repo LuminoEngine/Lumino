@@ -21,7 +21,7 @@ public:
 	template<typename TPred>
 	static UIElement* findVisualAncestor(UIElement* element, bool self, TPred pred)
 	{
-		if (LN_CHECK_ARG(element != nullptr)) return nullptr;
+		if (LN_REQUIRE(element != nullptr)) return nullptr;
 
 		// 自分もチェックするか
 		if (self)
@@ -51,7 +51,7 @@ public:
 	template<typename TPred>
 	static UIElement* findLogicalAncestor(UIElement* element, bool self, TPred pred)
 	{
-		if (LN_CHECK_ARG(element != nullptr)) return nullptr;
+		if (LN_REQUIRE(element != nullptr)) return nullptr;
 
 		// 自分もチェックするか
 		if (self)

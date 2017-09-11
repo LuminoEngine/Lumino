@@ -68,8 +68,6 @@ void InputManager::initialize(const Settings& settings)
 	Ref<CocoaInputDriver> driver(LN_NEW CocoaInputDriver());
 	m_inputDriver = driver;
 #endif
-	
-	LN_THROW(m_inputDriver != nullptr, NotImplementedException);
 
 	// TODO: 今は1つだけ
 	auto pad = Ref<InputController>::makeRef(this);
@@ -196,7 +194,7 @@ float InputManager::getVirtualButtonState(InputGesture* binding, bool keyboard, 
 			int number = e - (int)GamepadElement::Button1;
 			JoystickDeviceState state;
 			m_inputDriver->getJoystickState(joyNumber, &state);
-			if (LN_CHECK_RANGE(number, 0, JoystickDeviceState::MaxButtons)) return 0.0f;
+			if (LN_REQUIRE_RANGE(number, 0, JoystickDeviceState::MaxButtons)) return 0.0f;
 			return state.Buttons[number] ? 1.0f : 0.0f;
 		}
 		// POV
@@ -216,7 +214,7 @@ float InputManager::getVirtualButtonState(InputGesture* binding, bool keyboard, 
 			int number = e - (int)GamepadElement::Axis1;
 			JoystickDeviceState state;
 			m_inputDriver->getJoystickState(joyNumber, &state);
-			if (LN_CHECK_RANGE(number, 0, JoystickDeviceState::MaxAxis)) return 0.0f;
+			if (LN_REQUIRE_RANGE(number, 0, JoystickDeviceState::MaxAxis)) return 0.0f;
 			return state.Axes[number];
 		}
 		// Axis 0.0 .. 1.0
@@ -227,7 +225,7 @@ float InputManager::getVirtualButtonState(InputGesture* binding, bool keyboard, 
 
 			JoystickDeviceState state;
 			m_inputDriver->getJoystickState(joyNumber, &state);
-			if (LN_CHECK_RANGE(number, 0, JoystickDeviceState::MaxAxis)) return 0.0f;
+			if (LN_REQUIRE_RANGE(number, 0, JoystickDeviceState::MaxAxis)) return 0.0f;
 			return state.Axes[number] * sign;
 		}
 	}

@@ -17,7 +17,7 @@ protected:
 		m_context.LexFile(file);
 		auto tokens = file->GetTokenList();
 		m_parser.ParseCppConstExpression2(tokens->begin(), tokens->end(), file->getDiag());
-		LN_THROW(file->getDiag()->getItems()->isEmpty(), InvalidOperationException);
+		if (LN_ENSURE(file->getDiag()->getItems()->isEmpty())) return nullptr;
 		return m_parser.GetTokenList();
 	}
 };
@@ -181,8 +181,10 @@ protected:
 	void Eval(const char* code)
 	{
 		bool r = TryEval(code);
-		if (!r) {
-			LN_THROW(0, InvalidOperationException);
+		if (!r)
+		{
+			LN_ENSURE(0);
+			return;
 		}
 	}
 

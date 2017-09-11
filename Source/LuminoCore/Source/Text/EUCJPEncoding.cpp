@@ -264,7 +264,8 @@ void EUCJPEncoding::EUCJPEncoder::convertFromUTF16(const UTF16* input, size_t in
 
 		// サロゲートはエラー
 		if (UnicodeUtils::checkUTF16HighSurrogate(ch) || UnicodeUtils::checkUTF16LowSurrogate(ch)) {
-			LN_THROW(0, EncodingException);
+			LN_ENSURE_ENCODING(0);
+			return;
 		}
 
 		// 3Byte 補助漢字か？

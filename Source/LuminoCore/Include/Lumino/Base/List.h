@@ -91,7 +91,7 @@ public:
 	/** 指定したインデックスの位置に要素を挿入します。*/
 	void insert(int index, const value_type& item)
 	{
-		LN_THROW(0 <= index && index <= getCount(), OutOfRangeException);	// Count と同じインデックスを指定できる
+		if (LN_REQUIRE(0 <= index && index <= getCount())) return;	// Count と同じインデックスを指定できる
 		checkDetachShared();
 		m_data->m_vector.insert(m_data->m_vector.begin() + index, item);
 	}
@@ -99,7 +99,7 @@ public:
 	/** 指定したインデックスの位置に要素を挿入します。*/
 	void insertRange(int index, const List<T>& items)
 	{
-		LN_THROW(0 <= index && index <= getCount(), OutOfRangeException);	// Count と同じインデックスを指定できる
+		if (LN_REQUIRE(0 <= index && index <= getCount())) return;	// Count と同じインデックスを指定できる
 		checkDetachShared();
 		m_data->m_vector.insert(m_data->m_vector.begin() + index, items.m_data->m_vector.begin(), items.m_data->m_vector.end());
 	}
@@ -271,7 +271,7 @@ public:
 	/** 先頭要素の参照を返します。*/
 	reference getFront()
 	{
-		LN_VERIFY_STATE(!isEmpty());
+		LN_FATAL(!isEmpty());
 		checkDetachShared();
 		return m_data->m_vector.front();
 	}
@@ -279,14 +279,14 @@ public:
 	/** 先頭要素の参照を返します。*/
 	const_reference getFront() const
 	{
-		LN_VERIFY_STATE(!isEmpty());
+		LN_FATAL(!isEmpty());
 		return m_data->m_vector.front();
 	}
 
 	/** 終端要素の参照を返します。*/
 	reference getLast()
 	{
-		LN_VERIFY_STATE(!isEmpty());
+		LN_FATAL(!isEmpty());
 		checkDetachShared();
 		return m_data->m_vector.back();
 	}
@@ -294,7 +294,7 @@ public:
 	/** 終端要素の参照を返します。*/
 	const_reference getLast() const
 	{
-		LN_VERIFY_STATE(!isEmpty());
+		LN_FATAL(!isEmpty());
 		return m_data->m_vector.back();
 	}
 

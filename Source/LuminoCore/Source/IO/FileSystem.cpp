@@ -301,7 +301,7 @@ ByteBuffer FileSystem::readAllBytes(const StringRef& filePath)
 	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath.getBegin(), filePath.getLength());
 	const PlatformFileSystem::PathChar mode[] = { 'r', 'b', '\0' };
 	FILE* fp = PlatformFileSystem::fopen(localPath.c_str(), mode);
-	LN_THROW(fp, FileNotFoundException, localPath.c_str());
+	if (LN_ENSURE_FILE_NOT_FOUND(fp, localPath.c_str())) return ByteBuffer();
 
 	size_t size = (size_t)getFileSize(fp);
 	ByteBuffer buffer(size);
@@ -590,7 +590,8 @@ static void copyDirectoryInternal(
 		if (PlatformFileSystem::getAttribute(srcPath, &attr) &&
 			attr.TestFlag(FileAttribute::Directory))
 		{
-			LN_THROW(0, IOException);
+			LN_ENSURE_IO(0);
+			return;
 		}
 	}
 

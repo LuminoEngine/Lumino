@@ -396,7 +396,7 @@ Encoding* UString::getThisTypeEncoding() const
 	}
 	else
 	{
-		LN_THROW(0, NotImplementedException);
+		LN_NOTIMPLEMENTED();
 	}
 }
 
@@ -1081,10 +1081,10 @@ void UStringConvert::convertToStdString(const char16_t* src, int srcLen, std::ws
 	NumberConversionResult res; \
 	StringTraits::trim(str.c_str(), str.getLength(), &begin, &len); \
 	type num = StringTraits::func(begin, len, base, &end, &res); \
-	if (res == NumberConversionResult::ArgsError)	{ LN_THROW(0, ArgumentException); } \
-	if (res == NumberConversionResult::FormatError)	{ LN_THROW(0, InvalidFormatException); } \
-	if (res == NumberConversionResult::Overflow)	{ LN_THROW(0, OverflowException); } \
-	LN_THROW(end == begin + len, InvalidFormatException); \
+	if (res == NumberConversionResult::ArgsError)	{ LN_ENSURE(0); } \
+	if (res == NumberConversionResult::FormatError)	{ LN_ENSURE(0); } \
+	if (res == NumberConversionResult::Overflow)	{ LN_ENSURE(0); } \
+	LN_ENSURE(end == begin + len); \
 	return num;
 int8_t toInt8(const UString& str, int base) { TO_INT_DEF(int8_t, toInt8); }
 int16_t toInt16(const UString& str, int base) { TO_INT_DEF(int16_t, toInt16); }

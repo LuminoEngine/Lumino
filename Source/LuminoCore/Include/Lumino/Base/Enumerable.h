@@ -188,8 +188,7 @@ void StreamProvider<T>::Iterator::UpdateInitial()
 template<typename T>
 void StreamProvider<T>::Iterator::CheckConsumed() const
 {
-	assert(m_state != State::Consumed);
-	if (LN_CHECK_STATE(m_state != State::Consumed)) return;
+	if (LN_REQUIRE(m_state != State::Consumed)) return;
 }
 
 //------------------------------------------------------------------------------

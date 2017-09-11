@@ -199,7 +199,7 @@ Ref<GLContext> WGLGraphicsDevice::initializeMainContext(const ConfigData& config
 
 	
 	GLenum result = glewInit();
-	if (LN_CHECK_STATE(result == GLEW_OK)) return nullptr;	// コンテキスト作成後、wglMakeCurrent() しないとエラーが返る
+	if (LN_ENSURE(result == GLEW_OK)) return nullptr;	// コンテキスト作成後、wglMakeCurrent() しないとエラーが返る
 
 	auto mainContext = Ref<WGLContext>::makeRef(this, configData.mainWindow, nullptr);
 

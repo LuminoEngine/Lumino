@@ -47,15 +47,15 @@ TEST_F(Test_Base_Encoding, convert)
 	// src が無い
 	ASSERT_THROW(
 		Encoding::convert(NULL, 0, (Decoder*)NULL, NULL, options, NULL),
-		ArgumentException);
+		Exception);
 	// decoder が無い
 	ASSERT_THROW(
 		Encoding::convert(buf1, 0, (Decoder*)NULL, NULL, options, NULL),
-		ArgumentException);
+		Exception);
 	// encoder が無い
 	ASSERT_THROW(
 		Encoding::convert(buf1, 0, decoder.get(), NULL, options, NULL),
-		ArgumentException);
+		Exception);
 
 	// ↓ストリーミング用状態記憶対応のため、許可する
 	// ×最低でも必要なバイト数が無い

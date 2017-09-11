@@ -165,7 +165,7 @@ void CoreGraphicsRenderFeature::setRenderTarget(int index, Texture* texture)
 //------------------------------------------------------------------------------
 Texture* CoreGraphicsRenderFeature::getRenderTarget(int index) const
 {
-	LN_THROW(0 <= index && index < Graphics::MaxMultiRenderTargets, ArgumentException);
+	if (LN_REQUIRE(0 <= index && index < Graphics::MaxMultiRenderTargets)) return nullptr;
 	return m_currentRenderTargets[index];
 }
 
@@ -424,7 +424,7 @@ void CoreGraphicsRenderFeature::verifyFrameBuffers()
 	// レンダリングターゲットと深度バッファのサイズが一致している必要がある。
 	if (m_currentDepthBuffer != nullptr)
 	{
-		if (LN_CHECK_STATE(m_currentRenderTargets[0]->getSize() == m_currentDepthBuffer->getSize())) return;
+		if (LN_REQUIRE(m_currentRenderTargets[0]->getSize() == m_currentDepthBuffer->getSize())) return;
 	}
 }
 

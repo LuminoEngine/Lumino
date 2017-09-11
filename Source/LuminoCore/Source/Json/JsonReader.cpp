@@ -43,7 +43,7 @@ void JsonReader::parse(const Char* text, int len)
 //------------------------------------------------------------------------------
 void JsonReader::parse(TextReader* textReader)
 {
-	if (LN_CHECK_ARG(textReader != nullptr)) return;
+	if (LN_REQUIRE(textReader != nullptr)) return;
 
 	m_reader = textReader;
 
@@ -560,35 +560,35 @@ const String& JsonReader2::getPropertyName() const
 //------------------------------------------------------------------------------
 bool JsonReader2::getBoolValue() const
 {
-	if (LN_CHECK_STATE(m_currentToken.type == JsonToken::Boolean)) return false;
+	if (LN_REQUIRE(m_currentToken.type == JsonToken::Boolean)) return false;
 	return m_valueData.m_bool;
 }
 
 //------------------------------------------------------------------------------
 int32_t JsonReader2::getInt32Value() const
 {
-	if (LN_CHECK_STATE(m_currentToken.type == JsonToken::Int32)) return 0;
+	if (LN_REQUIRE(m_currentToken.type == JsonToken::Int32)) return 0;
 	return m_valueData.m_int32;
 }
 
 //------------------------------------------------------------------------------
 int64_t JsonReader2::getInt64Value() const
 {
-	if (LN_CHECK_STATE(m_currentToken.type == JsonToken::Int64)) return 0;
+	if (LN_REQUIRE(m_currentToken.type == JsonToken::Int64)) return 0;
 	return m_valueData.m_int64;
 }
 
 //------------------------------------------------------------------------------
 float JsonReader2::getFloatValue() const
 {
-	if (LN_CHECK_STATE(m_currentToken.type == JsonToken::Float)) return 0;
+	if (LN_REQUIRE(m_currentToken.type == JsonToken::Float)) return 0;
 	return m_valueData.m_float;
 }
 
 //------------------------------------------------------------------------------
 double JsonReader2::getDoubleValue() const
 {
-	if (LN_CHECK_STATE(m_currentToken.type == JsonToken::Double)) return 0;
+	if (LN_REQUIRE(m_currentToken.type == JsonToken::Double)) return 0;
 	return m_valueData.m_double;
 }
 
@@ -602,7 +602,7 @@ void JsonReader2::readAsStartObject()
 {
 	if (!read() || getTokenType() != JsonToken::StartObject)
 	{
-		LN_THROW(0, InvalidFormatException);
+		LN_ENSURE(0);
 	}
 }
 
@@ -610,7 +610,7 @@ void JsonReader2::readAsEndObject()
 {
 	if (!read() || getTokenType() != JsonToken::EndObject)
 	{
-		LN_THROW(0, InvalidFormatException);
+		LN_ENSURE(0);
 	}
 }
 
@@ -618,7 +618,7 @@ void JsonReader2::readAsStartArray()
 {
 	if (!read() || getTokenType() != JsonToken::StartArray)
 	{
-		LN_THROW(0, InvalidFormatException);
+		LN_ENSURE(0);
 	}
 }
 
@@ -626,7 +626,7 @@ void JsonReader2::readAsEndArray()
 {
 	if (!read() || getTokenType() != JsonToken::EndArray)
 	{
-		LN_THROW(0, InvalidFormatException);
+		LN_ENSURE(0);
 	}
 }
 
@@ -634,7 +634,8 @@ bool JsonReader2::readAsBool()
 {
 	if (!read() || getTokenType() != JsonToken::Boolean)
 	{
-		LN_THROW(0, InvalidFormatException);
+		LN_ENSURE(0);
+		return false;
 	}
 	return getValue()[0] == 't';
 }
@@ -643,7 +644,8 @@ const String& JsonReader2::readAsPropertyName()
 {
 	if (!read() || getTokenType() != JsonToken::PropertyName)
 	{
-		LN_THROW(0, InvalidFormatException);
+		LN_ENSURE(0);
+		return String::getEmpty();
 	}
 	return getValue();
 }
@@ -652,7 +654,8 @@ const String& JsonReader2::readAsString()
 {
 	if (!read() || getTokenType() != JsonToken::String)
 	{
-		LN_THROW(0, InvalidFormatException);
+		LN_ENSURE(0);
+		return String::getEmpty();
 	}
 	return getValue();
 }
@@ -1059,7 +1062,7 @@ bool JsonReader2::parseString(bool isKey)
 			else if (esc == 'u')
 			{
 				// TODO: 未実装
-				LN_THROW(0, NotImplementedException);
+				LN_NOTIMPLEMENTED();
 				return false;
 			}
 			else

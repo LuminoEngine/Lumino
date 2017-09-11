@@ -5,8 +5,347 @@
 #include <Lumino/Base/CRT.h>
 #include <Lumino/Base/Exception.h>
 #include <Lumino/Base/String.h>
+#include <Lumino/Base/StringHelper.h>
 #include <Lumino/Base/Logger.h>
 #include <Lumino/Base/Resource.h>
+
+#ifdef LN_EXCEPTION2
+
+LN_NAMESPACE_BEGIN
+
+
+//==============================================================================
+// Assertion
+//==============================================================================
+
+static Assertion::NotifyVerificationHandler	g_notifyVerificationHandler = nullptr;
+
+void Assertion::setNotifyVerificationHandler(NotifyVerificationHandler handler)
+{
+	g_notifyVerificationHandler = handler;
+}
+
+Assertion::NotifyVerificationHandler Assertion::getNotifyVerificationHandler()
+{
+	return g_notifyVerificationHandler;
+}
+
+//
+//namespace detail {
+//
+//void makeExceptionMessage(Exception* e)
+//{
+//	e->setme
+//}
+//
+//void makeExceptionMessage(Exception* e, const char* format, ...)
+//{
+//	va_list args;
+//	va_start(args, format);
+//	va_end(args);
+//}
+//
+//void makeExceptionMessage(Exception* e, const wchar_t* format, ...)
+//{
+//	va_list args;
+//	va_start(args, format);
+//	va_end(args);
+//}
+//
+//void makeExceptionMessage(Exception* e, const char16_t* message)
+//{
+//}
+//
+//} // namespace detail
+
+namespace detail {
+
+void Exception_setSourceLocationInfo(Exception& e, const Char* filePath, int fileLine)
+{
+	e.setSourceLocationInfo(filePath, fileLine);
+}
+
+} // namespace detail
+
+//==============================================================================
+// Exception
+//==============================================================================
+static void safeCharToUChar(const char* src, Char* dst, int dstSize) LN_NOEXCEPT
+{
+	// TODO: 日本語対応
+	int i = 0;
+	for (; i < dstSize - 1 && *src; i++, src++)
+	{
+		dst[i] = *src;
+	}
+	dst[i] = '\0';
+}
+
+static void safeWCharToUChar(const wchar_t* src, Char* dst, int dstSize) LN_NOEXCEPT
+{
+	// TODO: 日本語対応
+	int i = 0;
+	for (; i < dstSize - 1 && *src; i++, src++)
+	{
+		dst[i] = *src;
+	}
+	dst[i] = '\0';
+}
+
+Exception::Exception()
+	: m_sourceFilePath(_LT(""))
+	, m_sourceFileLine(0)
+	, m_stackBuffer()
+	, m_stackBufferSize(0)
+	, m_caption()
+	, m_message()
+{
+}
+
+Exception::~Exception()
+{
+}
+
+const Char* Exception::getMessage() const
+{
+	return _LT("ln::Exception");
+}
+Exception* Exception::copy() const
+{
+	return LN_NEW Exception(*this);
+}
+
+std::basic_string<Char> Exception::getCaption()
+{
+	return m_caption;
+}
+
+void Exception::setMessage()
+{
+	m_message.clear();
+}
+
+void Exception::setCaption(const Char* caption)
+{
+	m_caption = caption;
+}
+
+void Exception::setMessage(const char* format, va_list args)
+{
+	// caption
+	m_message = getCaption();
+
+	// format char
+	static const int BUFFER_SIZE = 512;
+	char buf[BUFFER_SIZE];
+	int len = StringTraits::vsprintf(buf, BUFFER_SIZE, format, args);
+
+	// char to UChar
+	Char ucharBuf[BUFFER_SIZE];
+	safeCharToUChar(buf, ucharBuf, LN_ARRAY_SIZE_OF(ucharBuf));
+	appendMessage(ucharBuf, len);
+}
+
+void Exception::setMessage(const wchar_t* format, va_list args)
+{
+	// caption
+	m_message = getCaption();
+
+	// format char
+	static const int BUFFER_SIZE = 512;
+	wchar_t buf[BUFFER_SIZE];
+	int len = StringTraits::vsprintf(buf, BUFFER_SIZE, format, args);
+
+	// char to UChar
+	Char ucharBuf[BUFFER_SIZE];
+	safeWCharToUChar(buf, ucharBuf, LN_ARRAY_SIZE_OF(ucharBuf));
+	appendMessage(ucharBuf, len);
+}
+
+void Exception::setMessage(const char* format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	setMessage(format, args);
+	va_end(args);
+}
+
+void Exception::setMessage(const wchar_t* format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	setMessage(format, args);
+	va_end(args);
+}
+
+void Exception::appendMessage(const Char* message, size_t len)
+{
+	m_message.append(message, len);
+}
+
+void Exception::setSourceLocationInfo(const Char* filePath, int fileLine)
+{
+	StringTraits::tstrcpy(m_sourceFilePath, MaxPathSize - 1, filePath);
+	m_sourceFileLine = fileLine;
+}
+
+//==============================================================================
+// LogicException
+//==============================================================================
+LN_EXCEPTION_FORMATTING_CONSTRUCTOR_IMPLEMENT(LogicException);
+
+LogicException::LogicException()
+{
+	setCaption(_LT("ln::LogicException"));	// TODO
+}
+
+Exception* LogicException::copy() const
+{
+	return LN_NEW LogicException(*this);
+}
+
+//==============================================================================
+// RuntimeException
+//==============================================================================
+LN_EXCEPTION_FORMATTING_CONSTRUCTOR_IMPLEMENT(RuntimeException);
+
+RuntimeException::RuntimeException()
+{
+	setCaption(_LT("ln::RuntimeException"));	// TODO
+}
+
+Exception* RuntimeException::copy() const
+{
+	return LN_NEW RuntimeException(*this);
+}
+
+//==============================================================================
+// FatalException
+//==============================================================================
+LN_EXCEPTION_FORMATTING_CONSTRUCTOR_IMPLEMENT(FatalException);
+
+FatalException::FatalException()
+{
+	setCaption(_LT("ln::FatalException"));
+}
+
+Exception* FatalException::copy() const
+{
+	return LN_NEW FatalException(*this);
+}
+
+//==============================================================================
+// NotImplementedException
+//==============================================================================
+NotImplementedException::NotImplementedException()
+{
+	setCaption(InternalResource::getString(InternalResource::NotImplementedError).c_str());
+}
+
+Exception* NotImplementedException::copy() const
+{
+	return LN_NEW NotImplementedException(*this);
+}
+
+//==============================================================================
+// IOException
+//==============================================================================
+LN_EXCEPTION_FORMATTING_CONSTRUCTOR_IMPLEMENT(IOException);
+
+IOException::IOException()
+{
+	setCaption(InternalResource::getString(InternalResource::IOError).c_str());
+}
+
+Exception* IOException::copy() const
+{
+	return LN_NEW IOException(*this);
+}
+
+//==============================================================================
+// FileNotFoundException
+//==============================================================================
+LN_EXCEPTION_FORMATTING_CONSTRUCTOR_IMPLEMENT(FileNotFoundException);
+
+FileNotFoundException::FileNotFoundException()
+{
+	setCaption(InternalResource::getString(InternalResource::FileNotFoundError).c_str());
+}
+
+Exception* FileNotFoundException::copy() const
+{
+	return LN_NEW FileNotFoundException(*this);
+}
+
+//==============================================================================
+// EncodingException
+//==============================================================================
+LN_EXCEPTION_FORMATTING_CONSTRUCTOR_IMPLEMENT(EncodingException);
+
+EncodingException::EncodingException()
+{
+	setCaption(InternalResource::getString(InternalResource::EncodingError).c_str());
+}
+
+Exception* EncodingException::copy() const
+{
+	return LN_NEW EncodingException(*this);
+}
+
+//==============================================================================
+// InvalidFormatException
+//==============================================================================
+LN_EXCEPTION_FORMATTING_CONSTRUCTOR_IMPLEMENT(InvalidFormatException);
+
+InvalidFormatException::InvalidFormatException()
+{
+	setCaption(InternalResource::getString(InternalResource::InvalidFormatError).c_str());
+}
+
+Exception* InvalidFormatException::copy() const
+{
+	return LN_NEW InvalidFormatException(*this);
+}
+
+//==============================================================================
+// Win32Exception
+//==============================================================================
+Win32Exception::Win32Exception()
+	: m_dwLastErrorCode(0)
+	, m_formatMessage()
+{
+	setCaption(InternalResource::getString(InternalResource::Win32Error).c_str());
+}
+
+Win32Exception::Win32Exception(uint32_t dwLastError)
+	: Win32Exception()
+{
+	setMessage(dwLastError);
+}
+
+Exception* Win32Exception::copy() const
+{
+	return LN_NEW Win32Exception(*this);
+}
+
+void Win32Exception::setMessage(uint32_t dwLastError)
+{
+	m_dwLastErrorCode = dwLastError;
+#ifdef LN_OS_WIN32
+	TCHAR buf[512];
+	::FormatMessage(
+		FORMAT_MESSAGE_FROM_SYSTEM, NULL, m_dwLastErrorCode,
+		0, buf, sizeof(buf) / sizeof(buf[0]), NULL);
+#endif
+}
+
+LN_NAMESPACE_END
+
+
+
+
+
+#else
 
 #ifdef LN_EXCEPTION_BACKTRACE
 	#if defined(LN_OS_WIN32)	// Cygwin もこっち
@@ -370,3 +709,6 @@ Exception* COMException::copy() const
 }
 
 LN_NAMESPACE_END
+
+#endif
+

@@ -96,7 +96,7 @@ void Archive::open(const PathName& filePath, const String& key)
 
 	// アーカイブファイルを開く
 	errno_t err = _tfopen_s(&m_stream, filePath.c_str(), _T("rb"));
-	LN_THROW(err == 0, FileNotFoundException);
+	if (LN_ENSURE_FILE_NOT_FOUND(err == 0)) return;
 
     // 終端から16バイト戻ってからそれを読むとファイル数
 	fseek(m_stream, -16, SEEK_END);
@@ -112,14 +112,17 @@ void Archive::open(const PathName& filePath, const String& key)
 	{
 		fclose( m_stream );
 		m_stream = NULL;
-		LN_THROW(0, InvalidFormatException);
+		LN_ENSURE_INVALID_FORMAT(0);
+		return;
 	}
 
 	// 内部キーのチェック (ユーザーキーは本当に正しいか？)
 	byte_t internalKey[16];
 	readPadding16(internalKey, 16);
-	if (memcmp(internalKey, Archive::InternalKey, 16) != 0) {
-		LN_THROW(0, InvalidFormatException, "invalid archive key.");
+	if (memcmp(internalKey, Archive::InternalKey, 16) != 0)
+	{
+		LN_ENSURE_INVALID_FORMAT(0, "invalid archive key.");
+		return;
 	}
 
 	// TODO: UTF16ではなく String の内部エンコーディングに合わせる

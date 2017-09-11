@@ -49,7 +49,7 @@ void GameScene::onTerminate()
 //------------------------------------------------------------------------------
 void GameScene::addGameObject(WorldObject* obj)
 {
-	if (LN_CHECK_ARG(obj != nullptr)) return;
+	if (LN_REQUIRE(obj != nullptr)) return;
 	m_gameObjectList.add(obj);
 }
 
@@ -96,7 +96,7 @@ void GameSceneManager::dispose()
 //------------------------------------------------------------------------------
 void GameSceneManager::gotoScene(GameScene* scene)
 {
-	if (LN_CHECK_ARG(scene != nullptr)) return;
+	if (LN_REQUIRE(scene != nullptr)) return;
 	EventCommsnd c;
 	c.type = EventType::Goto;
 	c.scene = scene;
@@ -106,7 +106,7 @@ void GameSceneManager::gotoScene(GameScene* scene)
 //------------------------------------------------------------------------------
 void GameSceneManager::callScene(GameScene* scene)
 {
-	if (LN_CHECK_ARG(scene != nullptr)) return;
+	if (LN_REQUIRE(scene != nullptr)) return;
 	EventCommsnd c;
 	c.type = EventType::Call;
 	c.scene = scene;
@@ -116,7 +116,7 @@ void GameSceneManager::callScene(GameScene* scene)
 //------------------------------------------------------------------------------
 void GameSceneManager::returnScene()
 {
-	if (LN_CHECK_STATE(m_activeScene != nullptr)) return;
+	if (LN_REQUIRE(m_activeScene != nullptr)) return;
 	EventCommsnd c;
 	c.type = EventType::Return;
 	c.scene = nullptr;

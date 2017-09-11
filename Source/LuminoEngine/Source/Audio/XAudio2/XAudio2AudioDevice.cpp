@@ -167,7 +167,7 @@ AudioPlayer* XAudio2AudioDevice::createAudioPlayer(AudioStream* audioStream, boo
 			break;
         }
 		default:
-			LN_THROW(0, ArgumentException);
+			LN_UNREACHABLE();
 			break;
 	}
 

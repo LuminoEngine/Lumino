@@ -149,7 +149,7 @@ const String& TypeInfo::getName() const
 //------------------------------------------------------------------------------
 void TypeInfo::registerProperty(PropertyInfo* prop)
 {
-	if (LN_CHECK_ARG(!prop->m_registerd)) return;
+	if (LN_REQUIRE(!prop->m_registerd)) return;
 	m_propertyList.add(prop);
 	prop->m_registerd = true;
 }
@@ -170,7 +170,7 @@ PropertyInfo* TypeInfo::findProperty(size_t memberOffset) const
 //------------------------------------------------------------------------------
 void TypeInfo::registerReflectionEvent(ReflectionEventInfo* ev)
 {
-	if (LN_CHECK_ARG(!ev->m_registerd)) return;
+	if (LN_REQUIRE(!ev->m_registerd)) return;
 	m_routedEventList.add(ev);
 	ev->m_registerd = true;
 }
@@ -223,7 +223,7 @@ void TypeInfo::initializeProperties(ReflectionObject* obj)
 //------------------------------------------------------------------------------
 Ref<Object> TypeInfo::createInstance()
 {
-	if (LN_CHECK_STATE(m_factory != nullptr)) return nullptr;
+	if (LN_REQUIRE(m_factory != nullptr)) return nullptr;
 	return m_factory();
 }
 

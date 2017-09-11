@@ -188,10 +188,10 @@ public:
 	template<typename TChar, typename TLookuped>
 	static void SplitHelper(const TChar* begin, const TChar* end, const TChar* delim, int delimLen, StringSplitOptions option, CaseSensitivity cs, TLookuped callback)
 	{
-		LN_VERIFY_ARG(begin != nullptr);
-		LN_VERIFY_ARG(end != nullptr);
-		LN_VERIFY_ARG(begin <= end);
-		LN_VERIFY_ARG(delim != nullptr);
+		if (LN_REQUIRE(begin != nullptr)) return;
+		if (LN_REQUIRE(end != nullptr)) return;
+		if (LN_REQUIRE(begin <= end)) return;
+		if (LN_REQUIRE(delim != nullptr)) return;
 
 		delimLen = (delimLen < 0) ? tcslen(delim) : delimLen;
 		const TChar* cur = begin;

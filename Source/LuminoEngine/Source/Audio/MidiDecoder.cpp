@@ -81,13 +81,13 @@ void MidiDecoder::fillOnmemoryBuffer()
 //------------------------------------------------------------------------------
 void MidiDecoder::read(uint32_t seekPos, void* buffer, uint32_t bufferSize, uint32_t* outReadSize, uint32_t* outWriteSize)
 {
-	LN_THROW(0, InvalidOperationException);
+	LN_UNREACHABLE();
 }
 
 //------------------------------------------------------------------------------
 void MidiDecoder::reset()
 {
-	LN_THROW(0, InvalidOperationException);
+	LN_UNREACHABLE();
 }
 	
 //------------------------------------------------------------------------------
@@ -146,8 +146,8 @@ bool MidiDecoder::searchTrack(BinaryReader& reader, uint32_t* cc111_time)
 	// トラックチャンクのチェック
 	uint8_t chunk[4];
 	size_t read_size = reader.read(chunk, 4);
-	LN_THROW(read_size == 4, InvalidFormatException);
-	LN_THROW(memcmp(chunk, "MTrk", 4) == 0, InvalidFormatException);
+	if (LN_ENSURE_INVALID_FORMAT(read_size == 4)) return false;
+	if (LN_ENSURE_INVALID_FORMAT(memcmp(chunk, "MTrk", 4) == 0)) return false;
 
 	// トラックの長さ読み込み
 	uint32_t   track_length;
@@ -166,7 +166,7 @@ bool MidiDecoder::searchTrack(BinaryReader& reader, uint32_t* cc111_time)
 
 		// ステータスバイトを読み込む
 		read_size = reader.read(&state, sizeof(uint8_t));
-		LN_THROW(read_size == sizeof(uint8_t), InvalidFormatException);
+		if (LN_ENSURE_INVALID_FORMAT(read_size == sizeof(uint8_t))) return false;
 
 		// ランニングステータスの場合
 		if (!(state & 0x80))
@@ -190,10 +190,10 @@ bool MidiDecoder::searchTrack(BinaryReader& reader, uint32_t* cc111_time)
 
 		case 0xB0:	// コントロールチェンジ
 			read_size = reader.read(&data1, sizeof(uint8_t));
-			LN_THROW(read_size == sizeof(uint8_t), InvalidFormatException);
+			if (LN_ENSURE_INVALID_FORMAT(read_size == sizeof(uint8_t))) return false;
 
 			read_size = reader.read(&data2, sizeof(uint8_t));
-			LN_THROW(read_size == sizeof(uint8_t), InvalidFormatException);
+			if (LN_ENSURE_INVALID_FORMAT(read_size == sizeof(uint8_t))) return false;
 
 			// cc111
 			if (data1 == 0x6F)
@@ -225,7 +225,7 @@ bool MidiDecoder::searchTrack(BinaryReader& reader, uint32_t* cc111_time)
 				int data_length = 0;
 				// データ長読み込み
 				read_size = reader.read(&data_length, sizeof(uint8_t));
-				LN_THROW(read_size == sizeof(uint8_t), InvalidFormatException);
+				if (LN_ENSURE_INVALID_FORMAT(read_size == sizeof(uint8_t))) return false;
 
 				reader.seek(data_length);
 			}
@@ -236,7 +236,7 @@ bool MidiDecoder::searchTrack(BinaryReader& reader, uint32_t* cc111_time)
 
 				// typeの取得
 				read_size = reader.read(&type, sizeof(uint8_t));
-				LN_THROW(read_size == sizeof(uint8_t), InvalidFormatException);
+				if (LN_ENSURE_INVALID_FORMAT(read_size == sizeof(uint8_t))) return false;
 
 				uint32_t data_length = -1;
 
@@ -270,7 +270,7 @@ bool MidiDecoder::searchTrack(BinaryReader& reader, uint32_t* cc111_time)
 				case 0x7F:
 					break;
 				default:
-					LN_THROW(0, InvalidFormatException, "invalid meta event.");
+					LN_UNREACHABLE();
 					return false;
 				}
 
@@ -282,7 +282,7 @@ bool MidiDecoder::searchTrack(BinaryReader& reader, uint32_t* cc111_time)
 					data_length = readDelta(reader);
 					if (data_length != temp)
 					{
-						LN_THROW(0, InvalidFormatException, "invalid meta event data lendth.");
+						LN_ENSURE_INVALID_FORMAT(0);
 						return false;
 					}
 				}
@@ -304,7 +304,8 @@ bool MidiDecoder::searchTrack(BinaryReader& reader, uint32_t* cc111_time)
 			break;
 
 		default:
-			LN_THROW(0, InvalidFormatException, "invalid status byte.");
+			// "invalid status byte."
+			LN_UNREACHABLE();
 			return false;
 
 		}

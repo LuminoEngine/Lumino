@@ -38,7 +38,7 @@ void XmlWriter::initialize(TextWriter* textWriter)
 //------------------------------------------------------------------------------
 void XmlWriter::writeStartDocument()
 {
-	if (LN_CHECK_STATE(m_state == State_Start)) return;
+	if (LN_REQUIRE(m_state == State_Start)) return;
 
 	m_textWriter->write(_TT("<?xml "));
 	m_textWriter->write(_TT("version=\"1.0\""));
@@ -72,8 +72,8 @@ void XmlWriter::writeStartElement(const String& name)
 //------------------------------------------------------------------------------
 void XmlWriter::writeEndElement()
 {
-	if (LN_CHECK_STATE(!m_elementStack.isEmpty())) return;
-	if (LN_CHECK_STATE(m_state == State_Prolog || m_state == State_StartElement || m_state == State_Attribute || m_state == State_Text)) return;
+	if (LN_REQUIRE(!m_elementStack.isEmpty())) return;
+	if (LN_REQUIRE(m_state == State_Prolog || m_state == State_StartElement || m_state == State_Attribute || m_state == State_Text)) return;
 
 	preWrite(XmlNodeType::EndElement);
 	if (m_state == State_StartElement || m_state == State_Attribute) {
@@ -110,8 +110,10 @@ void XmlWriter::writeString(const String& text)
 void XmlWriter::writeComment(const String& text)
 {
 	if (text.indexOf(_TT("--")) >= 0 ||
-		(!text.isEmpty() && text[text.getLength() - 1] == '-')){
-		LN_THROW(0, ArgumentException, _TT("Invalidate Comment chars."))
+		(!text.isEmpty() && text[text.getLength() - 1] == '-'))
+	{
+		LN_REQUIRE(0, _TT("Invalidate Comment chars."));
+		return;
 	}
 
 	preWrite(XmlNodeType::Comment);
@@ -124,7 +126,11 @@ void XmlWriter::writeComment(const String& text)
 //------------------------------------------------------------------------------
 void XmlWriter::writeCData(const String& text)
 {
-	if (text.indexOf(_TT("]]>")) >= 0) { LN_THROW(0, ArgumentException, _TT("Invalidate CDATA chars.")) }
+	if (text.indexOf(_TT("]]>")) >= 0)
+	{
+		LN_REQUIRE(0, _TT("Invalidate CDATA chars."));
+		return;
+	}
 
 	preWrite(XmlNodeType::CDATA);
 	m_textWriter->write(_TT("<![CDATA["), 9);
@@ -144,7 +150,7 @@ void XmlWriter::writeElementString(const String& elementName, const String& text
 //------------------------------------------------------------------------------
 void XmlWriter::writeStartAttribute(const String& name)
 {
-	if (LN_CHECK_STATE(m_state == State_StartElement || m_state == State_Attribute)) return;
+	if (LN_REQUIRE(m_state == State_StartElement || m_state == State_Attribute)) return;
 
 	m_textWriter->write(_TT(' '));
 	m_textWriter->write(name);

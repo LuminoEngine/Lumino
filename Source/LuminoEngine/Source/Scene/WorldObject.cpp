@@ -31,7 +31,7 @@ int LayerMask::GetLayer(BuiltinLayers builtinLayer)
 	case ln::BuiltinLayers::Layer7:
 		return 6;
 	default:
-		LN_CHECK_ARG(0);
+		LN_UNREACHABLE();
 		break;
 	}
 	return 0;
@@ -110,8 +110,8 @@ World* WorldObject::getWorld() const
 //------------------------------------------------------------------------------
 void WorldObject::addComponent(Component* component)
 {
-	if (LN_CHECK_ARG(component != nullptr)) return;
-	if (LN_CHECK_ARG(component->m_owner == nullptr)) return;
+	if (LN_REQUIRE(component != nullptr)) return;
+	if (LN_REQUIRE(component->m_owner == nullptr)) return;
 	component->attach(this);
 	m_components.add(component);
 

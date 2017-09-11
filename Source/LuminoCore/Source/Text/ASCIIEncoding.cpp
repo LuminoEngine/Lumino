@@ -30,7 +30,8 @@ void ASCIIEncoding::ASCIIDecoder::convertToUTF16(const byte_t* inBuffer, size_t 
 		}
 		// ASCII 外で代替文字も無ければエラー
 		else {
-			LN_THROW(0, EncodingException);
+			LN_ENSURE_ENCODING(0);
+			return;
 		}
 	}
 
@@ -55,7 +56,8 @@ void ASCIIEncoding::ASCIIEncoder::convertFromUTF16(const UTF16* input, size_t in
 		}
 		// ASCII 外で代替文字も無ければエラー
 		else {
-			LN_THROW(0, EncodingException);
+			LN_ENSURE_ENCODING(0);
+			return;
 		}
 	}
 

@@ -33,7 +33,7 @@ File::~File()
 //------------------------------------------------------------------------------
 void File::open(FileOpenMode openMode)
 {
-	LN_THROW(m_fileStream == nullptr, InvalidOperationException);	// すでにファイルが開かれている
+	if (LN_REQUIRE(!m_fileStream)) return;	// すでにファイルが開かれている
 	m_fileStream = FileStream::create(m_filePath.c_str(), openMode);
 }
 
@@ -58,56 +58,56 @@ String File::getFileName() const
 //------------------------------------------------------------------------------
 bool File::canRead() const
 {
-	LN_THROW(m_fileStream, InvalidOperationException);
+	if (LN_REQUIRE(m_fileStream)) return false;
 	return m_fileStream->canRead();
 }
 
 //------------------------------------------------------------------------------
 bool File::canWrite() const
 {
-	LN_THROW(m_fileStream, InvalidOperationException);
+	if (LN_REQUIRE(m_fileStream)) return false;
 	return m_fileStream->canWrite();
 }
 
 //------------------------------------------------------------------------------
 int64_t File::getLength() const
 {
-	LN_THROW(m_fileStream, InvalidOperationException);
+	if (LN_REQUIRE(m_fileStream)) return 0;
 	return m_fileStream->getLength();
 }
 
 //------------------------------------------------------------------------------
 int64_t File::getPosition() const
 {
-	LN_THROW(m_fileStream, InvalidOperationException);
+	if (LN_REQUIRE(m_fileStream)) return 0;
 	return m_fileStream->getPosition();
 }
 
 //------------------------------------------------------------------------------
 size_t File::read(void* buffer, size_t readCount)
 {
-	LN_THROW(m_fileStream, InvalidOperationException);
+	if (LN_REQUIRE(m_fileStream)) return 0;
 	return m_fileStream->read(buffer, readCount);
 }
 
 //------------------------------------------------------------------------------
 void File::write(const void* data, size_t byteCount)
 {
-	LN_THROW(m_fileStream, InvalidOperationException);
+	if (LN_REQUIRE(m_fileStream)) return;
 	m_fileStream->write(data, byteCount);
 }
 
 //------------------------------------------------------------------------------
 void File::seek(int64_t offset, SeekOrigin origin)
 {
-	LN_THROW(m_fileStream, InvalidOperationException);
+	if (LN_REQUIRE(m_fileStream)) return;
 	m_fileStream->seek(offset, origin);
 }
 
 //------------------------------------------------------------------------------
 void File::flush()
 {
-	LN_THROW(m_fileStream, InvalidOperationException);
+	if (LN_REQUIRE(m_fileStream)) return;
 	m_fileStream->flush();
 }
 

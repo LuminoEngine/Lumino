@@ -51,7 +51,7 @@ void RenderingThread::dispose()
 //------------------------------------------------------------------------------
 void RenderingThread::pushRenderingCommand(RenderingCommandList* commandList, SwapChain* publisher)
 {
-	if (LN_CHECK_STATE(commandList->m_publisher == nullptr)) return;
+	if (LN_REQUIRE(commandList->m_publisher == nullptr)) return;
 
 	MutexScopedLock lock(m_mutex);
 	m_commandListQueue.push_back(commandList);

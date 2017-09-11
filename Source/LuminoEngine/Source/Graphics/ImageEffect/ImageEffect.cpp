@@ -24,7 +24,7 @@ ImageEffect::~ImageEffect()
 //------------------------------------------------------------------------------
 void ImageEffect::initialize(detail::GraphicsManager* manager)
 {
-	if (LN_CHECK_ARG(manager != nullptr)) return;
+	if (LN_REQUIRE(manager != nullptr)) return;
 	m_manager = manager;
 }
 

@@ -135,7 +135,7 @@ void Profiler2::finalizeGlobalSections()
 //------------------------------------------------------------------------------
 void Profiler2::registerProfilingSection(const ProfilingKey* key)
 {
-	if (LN_CHECK_ARG(key != nullptr)) return;
+	if (LN_REQUIRE(key != nullptr)) return;
 	g_sectionsMap[key] = std::make_shared<ProfilingSection>();
 }
 

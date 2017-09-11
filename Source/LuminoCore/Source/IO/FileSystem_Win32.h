@@ -16,28 +16,29 @@ static void Win32IOErrorToExceptionThrow(DWORD errorCode, const TChar* message)
 {
 	switch (errorCode) {
 	case ERROR_FILE_NOT_FOUND:
-		LN_THROW(0, FileNotFoundException, message);
-
+		_LN_CHECK(0, FileNotFoundException, message);
+		return;
 	case ERROR_PATH_NOT_FOUND:
-		LN_THROW(0, DirectoryNotFoundException, message);
-
+		_LN_CHECK(0, IOException, message);
+		return;
 	case ERROR_ACCESS_DENIED:
-		LN_THROW(0, IOException, LN_T(TChar, "Unauthorized access : %s"), message);
-
+		_LN_CHECK(0, IOException, LN_T(TChar, "Unauthorized access : %s"), message);
+		return;
 	case ERROR_ALREADY_EXISTS:
-		LN_THROW(0, IOException, LN_T(TChar, "Already exists : %s"), message);
-
+		_LN_CHECK(0, IOException, LN_T(TChar, "Already exists : %s"), message);
+		return;
 	case ERROR_FILENAME_EXCED_RANGE:
-		LN_THROW(0, IOException, LN_T(TChar, "Path too long : %s"), message);
-
+		_LN_CHECK(0, IOException, LN_T(TChar, "Path too long : %s"), message);
+		return;
 	case ERROR_INVALID_DRIVE:
-		LN_THROW(0, IOException, LN_T(TChar, "Drive not found : %s"), message);
-
+		_LN_CHECK(0, IOException, LN_T(TChar, "Drive not found : %s"), message);
+		return;
 	case ERROR_FILE_EXISTS:
-		LN_THROW(0, IOException, LN_T(TChar, "File exists : %s"), message);
-
+		_LN_CHECK(0, IOException, LN_T(TChar, "File exists : %s"), message);
+		return;
 	default:
-		LN_THROW(0, Win32Exception, errorCode);
+		_LN_CHECK(0, Win32Exception, errorCode);
+		return;
 	}
 }
 
@@ -179,7 +180,7 @@ public:
 		pattern.append(L"*");
 
 		m_fh = ::FindFirstFileW(pattern.c_str(), &m_fd);
-		LN_THROW(m_fh != INVALID_HANDLE_VALUE, IOException, path);
+		LN_ENSURE_IO(m_fh != INVALID_HANDLE_VALUE, path);
 	}
 
 	const std::wstring& getCurrentFileName() const

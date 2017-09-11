@@ -122,8 +122,10 @@ Encoding* Encoding::getEncoding(EncodingType type)
 			static UTF8Encoding utf8BOMEncoding(true);
 			return &utf8BOMEncoding;
 		}
+		default:
+			LN_UNREACHABLE();
+			break;
 	}
-	LN_THROW(0, ArgumentException);
 }
 
 //------------------------------------------------------------------------------
@@ -150,8 +152,8 @@ Encoding* Encoding::getWin32DefaultCodePageEncoding()
 //------------------------------------------------------------------------------
 size_t Encoding::getConversionRequiredByteCount(Encoding* from, Encoding* to, size_t fromByteCount)
 {
-	LN_THROW(from != NULL, ArgumentException);
-	LN_THROW(to != NULL, ArgumentException);
+	if (LN_REQUIRE(from)) return 0;
+	if (LN_REQUIRE(to)) return 0;
 
 	// from に入っている最悪パターンの文字数
 	size_t srcMaxCharCount = fromByteCount / from->getMinByteCount();
@@ -180,9 +182,9 @@ ByteBuffer Encoding::convert(
 	const EncodingConversionOptions& options,
 	EncodingConversionResult* result)
 {
-	LN_THROW(src != NULL, ArgumentException);
-	LN_THROW(decoder != NULL, ArgumentException);
-	LN_THROW(encoder != NULL, ArgumentException);
+	if (LN_REQUIRE(src)) return ByteBuffer();
+	if (LN_REQUIRE(decoder)) return ByteBuffer();
+	if (LN_REQUIRE(encoder)) return ByteBuffer();
 
 	// src に入っている最悪パターンの文字数
 	size_t srcMaxCharCount = srcByteCount / decoder->getMinByteCount();
@@ -260,10 +262,10 @@ void Encoding::convert(
 	void* dest_, size_t destByteCount, Encoder* destEncoder,
 	EncodingConversionResult* result)
 {
-	if (LN_CHECK_ARG(srcDecoder != nullptr)) return;
-	if (LN_CHECK_ARG(srcDecoder->canRemain())) return;
-	if (LN_CHECK_ARG(destEncoder != nullptr)) return;
-	if (LN_CHECK_ARG(destEncoder->canRemain())) return;
+	if (LN_REQUIRE(srcDecoder != nullptr)) return;
+	if (LN_REQUIRE(srcDecoder->canRemain())) return;
+	if (LN_REQUIRE(destEncoder != nullptr)) return;
+	if (LN_REQUIRE(destEncoder->canRemain())) return;
 
 	const size_t BufferingElements = 512;
 	UTF16 utf16[BufferingElements];
@@ -350,7 +352,7 @@ String Encoding::fromBytes(const byte_t* bytes, int size, Encoding* encoding, bo
 //------------------------------------------------------------------------------
 size_t Encoding::checkPreamble(const void* buffer, size_t bufferSize) const
 {
-	if (LN_CHECK_ARG(buffer == nullptr)) return 0;
+	if (LN_REQUIRE(buffer == nullptr)) return 0;
 
 	const char* bom = (const char*)getPreamble();
 	size_t bomLen = strlen(bom);

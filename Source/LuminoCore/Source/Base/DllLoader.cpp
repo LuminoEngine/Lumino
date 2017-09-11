@@ -81,7 +81,7 @@ void DllLoader::load(const Char* filePath)
 {
 	unload();
 	m_module = LoadDLL(filePath);
-	LN_THROW(m_module != NULL, FileNotFoundException);
+	LN_ENSURE_FILE_NOT_FOUND(m_module, filePath);
 }
 
 //------------------------------------------------------------------------------
@@ -105,9 +105,9 @@ void DllLoader::unload()
 //------------------------------------------------------------------------------
 void* DllLoader::getProcAddress(const char* procName)
 {
-	LN_THROW(m_module != NULL, InvalidOperationException);
+	LN_REQUIRE(m_module);
 	void* proc = GetProcAddr(m_module, procName);
-	LN_THROW(proc != NULL, InvalidOperationException);
+	LN_ENSURE(proc);
 	return proc;
 }
 

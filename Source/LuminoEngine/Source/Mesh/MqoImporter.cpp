@@ -614,7 +614,7 @@ double AngleOf2Vector(Vector3 A, Vector3 B)
 //------------------------------------------------------------------------------
 Ref<StaticMeshModel> MqoImporter::import(ModelManager* manager, const PathName& parentDir, Stream* stream)
 {
-	if (LN_CHECK_ARG(manager != nullptr)) return nullptr;
+	if (LN_REQUIRE(manager != nullptr)) return nullptr;
 
 	m_parentDir = parentDir;
 

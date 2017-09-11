@@ -192,7 +192,7 @@ public:
 			if (TryParse(str, &value)) {
 				return (TEnum)value;
 			}
-			LN_THROW(0, ArgumentException);
+			LN_ENSURE(0);
 			return TEnum();
 		}
 		static bool TryParse(const Char* str, int* outValue)
@@ -238,7 +238,7 @@ public:
 					out += members[i].name;
 				}
 			}
-			LN_THROW(!out.isEmpty(), ArgumentException);
+			LN_THROW(!out.isEmpty(), LogicException);
 			return out;
 		}
 		static TEnum parse(const Char* str, Char separator)
@@ -247,7 +247,7 @@ public:
 			if (TryParse(str, &value, separator)) {
 				return (TEnum)value;
 			}
-			LN_THROW(0, ArgumentException);
+			LN_REQUIRE(0);
 			return TEnum();
 		}
 		static bool TryParse(const Char* str, int* outValue, Char separator)

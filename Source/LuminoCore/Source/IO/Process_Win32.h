@@ -22,11 +22,11 @@ public:
 public:
 	virtual bool canRead() const { return (m_side == ReadSide); }
 	virtual bool canWrite() const { return (m_side == WriteSide); }
-	virtual int64_t getLength() const { LN_THROW(0, InvalidOperationException); return 0; }
-	virtual int64_t getPosition() const { LN_THROW(0, InvalidOperationException); return 0; }
+	virtual int64_t getLength() const { LN_UNREACHABLE(); return 0; }
+	virtual int64_t getPosition() const { LN_UNREACHABLE(); return 0; }
 	virtual size_t read(void* buffer, size_t byteCount)
 	{
-		if (LN_CHECK_STATE(m_side == ReadSide)) return 0;
+		if (LN_REQUIRE(m_side == ReadSide)) return 0;
 
 		DWORD bytesRead = 0;
 
@@ -42,13 +42,13 @@ public:
 	}
 	virtual void write(const void* data, size_t byteCount)
 	{
-		if (LN_CHECK_STATE(m_side == WriteSide)) return;
+		if (LN_REQUIRE(m_side == WriteSide)) return;
 
 		DWORD bytesWrite = 0;
 		BOOL bRes = ::WriteFile(m_hPipe, data, (DWORD)byteCount, &bytesWrite, NULL);
-		LN_THROW(bRes != FALSE, Win32Exception, ::GetLastError());
+		LN_ENSURE_WIN32(bRes != FALSE, ::GetLastError());
 	}
-	virtual void seek(int64_t offset, SeekOrigin origin) { LN_THROW(0, InvalidOperationException); }
+	virtual void seek(int64_t offset, SeekOrigin origin) { LN_UNREACHABLE(); }
 	virtual void flush() {}
 
 private:
@@ -135,7 +135,7 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo, ProcessStartResult* o
 	{
 		HANDLE hPipe[2] = { 0, 0 };
 		bResult = ::CreatePipe(&hPipe[R], &hPipe[W], &sa, 0);
-		LN_THROW(bResult != FALSE, Win32Exception, ::GetLastError());
+		if (LN_ENSURE_WIN32(bResult != FALSE, ::GetLastError())) return;
 
 		// パイプのこのプロセス側を非継承で複製する
 		if (!::DuplicateHandle(hProcess, hPipe[W], hProcess, &m_hInputWrite, 0, FALSE, DUPLICATE_SAME_ACCESS))
@@ -143,7 +143,8 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo, ProcessStartResult* o
 			DWORD dwErr = ::GetLastError();
 			::CloseHandle(hPipe[R]);
 			::CloseHandle(hPipe[W]);
-			LN_THROW(0, Win32Exception, dwErr);
+			LN_ENSURE_WIN32(0, dwErr);
+			return;
 		}
 		::CloseHandle(hPipe[W]);
 		m_hInputRead = hPipe[R];
@@ -158,7 +159,7 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo, ProcessStartResult* o
 	{
 		HANDLE hPipe[2] = { 0, 0 };
 		bResult = ::CreatePipe(&hPipe[R], &hPipe[W], &sa, 0);
-		LN_THROW(bResult != FALSE, Win32Exception, ::GetLastError());
+		if (LN_ENSURE_WIN32(bResult != FALSE, ::GetLastError())) return;
 
 		// パイプのこのプロセス側を非継承で複製する
 		if (!::DuplicateHandle(hProcess, hPipe[R], hProcess, &m_hOutputRead, 0, FALSE, DUPLICATE_SAME_ACCESS))
@@ -166,7 +167,8 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo, ProcessStartResult* o
 			DWORD dwErr = ::GetLastError();
 			::CloseHandle(hPipe[R]);
 			::CloseHandle(hPipe[W]);
-			LN_THROW(0, Win32Exception, dwErr);
+			LN_ENSURE_WIN32(0, dwErr);
+			return;
 		}
 		::CloseHandle(hPipe[R]);
 		m_hOutputWrite = hPipe[W];
@@ -181,7 +183,7 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo, ProcessStartResult* o
 	{
 		HANDLE hPipe[2] = { 0, 0 };
 		bResult = ::CreatePipe(&hPipe[R], &hPipe[W], &sa, 0);
-		LN_THROW(bResult != FALSE, Win32Exception, ::GetLastError());
+		if (LN_ENSURE_WIN32(bResult != FALSE, ::GetLastError())) return;
 
 		// パイプのこのプロセス側を非継承で複製する
 		if (!::DuplicateHandle(hProcess, hPipe[R], hProcess, &m_hErrorRead, 0, FALSE, DUPLICATE_SAME_ACCESS))
@@ -189,7 +191,8 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo, ProcessStartResult* o
 			DWORD dwErr = ::GetLastError();
 			::CloseHandle(hPipe[R]);
 			::CloseHandle(hPipe[W]);
-			LN_THROW(0, Win32Exception, dwErr);
+			LN_ENSURE_WIN32(0, dwErr);
+			return;
 		}
 		::CloseHandle(hPipe[R]);
 		m_hErrorWrite = hPipe[W];
@@ -234,9 +237,11 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo, ProcessStartResult* o
 	{
 		DWORD dwErr = ::GetLastError();
 		if (dwErr == ERROR_FILE_NOT_FOUND) {
-			LN_THROW(0, FileNotFoundException, program.c_str());
+			LN_ENSURE_FILE_NOT_FOUND(0, program.c_str());
+			return;
 		}
-		LN_THROW(0, Win32Exception, dwErr);
+		LN_ENSURE_WIN32(0, dwErr);
+		return;
 	}
 
 	// 子プロセスのスレッドハンドルは不必要なのでクローズしてしまう

@@ -41,7 +41,7 @@ GLGraphicsDevice::~GLGraphicsDevice()
 //------------------------------------------------------------------------------
 void GLGraphicsDevice::initialize(const ConfigData& configData)
 {
-	if (LN_CHECK_ARG(configData.mainWindow != nullptr)) return;
+	if (LN_REQUIRE(configData.mainWindow != nullptr)) return;
 
 	m_mainWindow = configData.mainWindow;
 	m_deviceState = DeviceState_Enabled;
@@ -209,7 +209,7 @@ Ref<IShader> GLGraphicsDevice::createShaderImplement(const void* textData, size_
 //------------------------------------------------------------------------------
 Ref<ISwapChain> GLGraphicsDevice::createSwapChainImplement(PlatformWindow* window)
 {
-	LN_THROW(0, NotImplementedException);
+	LN_NOTIMPLEMENTED();
 	return nullptr;
 }
 
@@ -217,7 +217,7 @@ Ref<ISwapChain> GLGraphicsDevice::createSwapChainImplement(PlatformWindow* windo
 void GLGraphicsDevice::resetDevice()
 {
 	// 先に onLostDevice() を呼ぶこと
-	LN_THROW(m_deviceState == DeviceState_Pausing, InvalidOperationException);
+	LN_REQUIRE(m_deviceState == DeviceState_Pausing);
 }
 
 //------------------------------------------------------------------------------

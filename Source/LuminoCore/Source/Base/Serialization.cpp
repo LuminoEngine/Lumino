@@ -147,7 +147,7 @@ void ScVariant::setInt(int value)
 //------------------------------------------------------------------------------
 int ScVariant::getInt() const
 {
-	if (LN_CHECK_STATE(m_core->m_type == ScVariantType::Int)) return 0;
+	if (LN_ENSURE(m_core->m_type == ScVariantType::Int)) return 0;
 	return m_core->m_int;
 }
 
@@ -161,7 +161,7 @@ void ScVariant::setString(const StringRef& value)
 //------------------------------------------------------------------------------
 const String& ScVariant::getString() const
 {
-	if (LN_CHECK_STATE(m_core->m_type == ScVariantType::String)) return String::getEmpty();
+	if (LN_ENSURE(m_core->m_type == ScVariantType::String)) return String::getEmpty();
 	return *m_core->m_string;
 }
 

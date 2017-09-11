@@ -49,7 +49,7 @@ AudioPlayer* DirectMusicAudioDevice::createAudioPlayer(AudioStream* source, bool
 
 	if (mode == SoundPlayingMode::Midi)
     {
-		LN_THROW(DirectMusicManager::getInstance(), InvalidOperationException);
+		if (LN_REQUIRE(DirectMusicManager::getInstance())) return nullptr;
 		audioPlayer.attach(LN_NEW DirectMusicAudioPlayer(this), false);
 		audioPlayer->initialize(source, enable3d);
     }

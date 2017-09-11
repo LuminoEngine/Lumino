@@ -204,8 +204,8 @@ SkinnedMeshModel::~SkinnedMeshModel()
 //------------------------------------------------------------------------------
 void SkinnedMeshModel::initialize(detail::GraphicsManager* manager, PmxSkinnedMeshResource* sharingMesh)
 {
-	if (LN_CHECK_ARG(manager != nullptr)) return;
-	if (LN_CHECK_ARG(sharingMesh != nullptr)) return;
+	if (LN_REQUIRE(manager != nullptr)) return;
+	if (LN_REQUIRE(sharingMesh != nullptr)) return;
 
 	m_mesh = Object::makeRef<StaticMeshModel>(manager, sharingMesh);
 
@@ -509,8 +509,8 @@ PmxBoneResource* SkinnedMeshBone::getCore() const
 //------------------------------------------------------------------------------
 void SkinnedMeshBone::addChildBone(SkinnedMeshBone* bone)
 {
-	if (LN_CHECK_ARG(bone != nullptr)) return;
-	if (LN_CHECK_ARG(bone->m_parent == nullptr)) return;
+	if (LN_REQUIRE(bone != nullptr)) return;
+	if (LN_REQUIRE(bone->m_parent == nullptr)) return;
 	m_children.add(bone);
 	bone->m_parent = this;
 }
@@ -562,7 +562,7 @@ const String& SkinnedMeshBone::getAnimationTargetName() const
 //------------------------------------------------------------------------------
 void SkinnedMeshBone::setAnimationTargetValue(ValueType type, const void* value)
 {
-	if (LN_CHECK_ARG(type == ValueType_SQTTransform)) return;
+	if (LN_REQUIRE(type == ValueType_SQTTransform)) return;
 	m_localTransform = *((AttitudeTransform*)value);
 }
 
@@ -869,8 +869,8 @@ MmdSkinnedMeshJoint::~MmdSkinnedMeshJoint()
 //------------------------------------------------------------------------------
 void MmdSkinnedMeshJoint::initialize(SkinnedMeshModel* ownerModel, PmxJointResource* jointResource)
 {
-	if (LN_CHECK_ARG(ownerModel != nullptr)) return;
-	if (LN_CHECK_ARG(jointResource != nullptr)) return;
+	if (LN_REQUIRE(ownerModel != nullptr)) return;
+	if (LN_REQUIRE(jointResource != nullptr)) return;
 
 	MmdSkinnedMeshRigidBody* bodyA = ownerModel->m_rigidBodyList[jointResource->RigidBodyAIndex];
 	MmdSkinnedMeshRigidBody* bodyB = ownerModel->m_rigidBodyList[jointResource->RigidBodyBIndex];

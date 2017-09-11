@@ -27,7 +27,7 @@ int UTF8Encoding::getCharacterCount(const void* buffer, size_t bufferSize) const
 {
 	int count;
 	UTFConversionResult result = UnicodeUtils::getUTF8CharCount((const byte_t*)buffer, bufferSize, true, &count);
-	LN_THROW(result == UTFConversionResult_Success, EncodingException);
+	if (LN_ENSURE_ENCODING(result == UTFConversionResult_Success)) return 0;
 	return count;
 }
 
@@ -36,7 +36,7 @@ int UTF8Encoding::getLeadExtraLength(const void* buffer, size_t bufferSize) cons
 {
 	int len;
 	UTFConversionResult result = UnicodeUtils::checkUTF8TrailingBytes(((const byte_t*)buffer), ((const byte_t*)buffer) + bufferSize, true, &len);
-	LN_THROW(result == UTFConversionResult_Success, EncodingException);
+	if (LN_ENSURE_ENCODING(result == UTFConversionResult_Success)) return 0;
 	return len;
 }
 
@@ -75,8 +75,10 @@ void UTF8Encoding::UTF8Decoder::convertToUTF16(const byte_t* input, size_t input
 				--inputByteSize;
 				if (inputByteSize == 0) { return; }
 			}
-			else {
-				LN_THROW(0, EncodingException, _T("bom is required."));
+			else
+			{
+				LN_ENSURE_ENCODING(0, _T("bom is required."));
+				return;
 			}
 		}
 		if (m_bomPhase == 2)
@@ -88,8 +90,10 @@ void UTF8Encoding::UTF8Decoder::convertToUTF16(const byte_t* input, size_t input
 				--inputByteSize;
 				if (inputByteSize == 0) { return; }
 			}
-			else {
-				LN_THROW(0, EncodingException, _T("bom is required."));
+			else
+			{
+				LN_ENSURE_ENCODING(0, _T("bom is required."));
+				return;
 			}
 		}
 	}
@@ -100,7 +104,7 @@ void UTF8Encoding::UTF8Decoder::convertToUTF16(const byte_t* input, size_t input
 	UTF16* dstEnd = dstPos + outputElementSize;
 	while (srcPos < srcEnd)
 	{
-		LN_THROW(m_lastLeadBytesCount < 5, EncodingException, _T("Illegal UTF-8 char."));
+		if (LN_ENSURE_ENCODING(m_lastLeadBytesCount < 5, _T("Illegal UTF-8 char."))) return;
 
 		// 先行バイトの確認
 		if (m_requestLeadBytesCount == 0)
@@ -127,14 +131,14 @@ void UTF8Encoding::UTF8Decoder::convertToUTF16(const byte_t* input, size_t input
 			const UnicodeUtils::UTF8* start = m_lastLeadBytes;
 			const UnicodeUtils::UTF8* end = start + m_lastLeadBytesCount;
 			result = UnicodeUtils::convertCharUTF8toUTF32(&start, end, NULL, &ch);
-			LN_THROW(result == UTFConversionResult_Success, EncodingException);
+			if (LN_ENSURE_ENCODING(result == UTFConversionResult_Success)) return;
 
 			// UTF32 から UTF16 へ 
 			UTF16* prev = dstPos;
 			result = UnicodeUtils::convertCharUTF32toUTF16(ch, &dstPos, dstEnd, &options);
-			LN_THROW(result == UTFConversionResult_Success, EncodingException);
+			if (LN_ENSURE_ENCODING(result == UTFConversionResult_Success)) return;
 
-			bytesUsed += (dstPos - prev)* sizeof(UTF16);
+			bytesUsed += (dstPos - prev) * sizeof(UTF16);
 			++charsUsed;
 			m_lastLeadBytesCount = 0;
 		}
@@ -191,9 +195,11 @@ void UTF8Encoding::UTF8Encoder::convertFromUTF16(const UTF16* input, size_t inpu
 				m_lastBuffer[m_lastBufferCount] = *srcPos;
 				++m_lastBufferCount;
 			}
-			else {
+			else
+			{
 				// High が連続している
-				LN_THROW(0, EncodingException);
+				LN_ENSURE_ENCODING(0);
+				return;
 			}
 		}
 		else
@@ -202,18 +208,22 @@ void UTF8Encoding::UTF8Encoder::convertFromUTF16(const UTF16* input, size_t inpu
 			{
 				if (m_lastBufferCount == 1) {
 				}
-				else {
+				else
+				{
 					// いきなり Low が来た
-					LN_THROW(0, EncodingException);
+					LN_ENSURE_ENCODING(0);
+					return;
 				}
 			}
 			else // 普通の文字
 			{
 				if (m_lastBufferCount == 0) {
 				}
-				else {
+				else
+				{
 					// Low が無かった
-					LN_THROW(0, EncodingException);
+					LN_ENSURE_ENCODING(0);
+					return;
 				}
 			}
 			m_lastBuffer[m_lastBufferCount] = *srcPos;
@@ -226,12 +236,12 @@ void UTF8Encoding::UTF8Encoder::convertFromUTF16(const UTF16* input, size_t inpu
 			const UTF16* bufEnd = m_lastBuffer + m_lastBufferCount;
 			UnicodeUtils::UTF32 ch;
 			result = UnicodeUtils::convertCharUTF16toUTF32(&bufStart, bufEnd, &options, &ch);
-			LN_THROW(result == UTFConversionResult_Success, EncodingException);
+			if (LN_ENSURE_ENCODING(result == UTFConversionResult_Success)) return;
 
 			// UTF-8 文字へ
 			UTF8* prev = dstPos;
 			result = UnicodeUtils::convertCharUTF32toUTF8(ch, &dstPos, dstEnd, &options);
-			LN_THROW(result == UTFConversionResult_Success, EncodingException);
+			if (LN_ENSURE_ENCODING(result == UTFConversionResult_Success)) return;
 
 			m_lastBufferCount = 0;
 			(*outBytesUsed) += (dstPos - prev);

@@ -106,7 +106,7 @@ void TextWriter::setFormatLocale(const Locale& locale)
 ////	void WriteFormat(const TCHAR* format, ...);
 ////void TextWriter::WriteFormat(const TCHAR* format, ...)
 ////{
-////	LN_THROW(0, NotImplementedException);
+////		LN_NOTIMPLEMENTED();
 ////}
 
 //------------------------------------------------------------------------------
@@ -168,7 +168,7 @@ void TextWriter::write(double value)
 	// TODO: 64桁以上だと失敗する
 	Char buf[64];
 	int len = StringTraits::tsnprintf_l(buf, 64, _TT("%lf"), m_locale.getNativeLocale(), value);
-	if (LN_CHECK_STATE(len > 0)) return;
+	if (LN_ENSURE(len > 0)) return;
 	writeInternal(buf, len);
 }
 
@@ -211,7 +211,7 @@ void TextWriter::writeLine()
 //	void WriteLineFormat(const TCHAR* format, ...);
 //void TextWriter::WriteLineFormat(const TCHAR* format, ...)
 //{
-//	LN_THROW(0, NotImplementedException);
+//LN_NOTIMPLEMENTED();
 //}
 
 //------------------------------------------------------------------------------
@@ -330,7 +330,7 @@ void TextWriter::writeInternal(const Char* str, int len)
 		WriteOverride(str, len * sizeof(TCHAR));
 	}
 	else {
-		LN_THROW(0, NotImplementedException);
+		LN_NOTIMPLEMENTED();
 	}
 #endif
 }

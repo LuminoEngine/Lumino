@@ -1135,7 +1135,7 @@ void ShapesRenderFeature::initialize(GraphicsManager* manager)
 //------------------------------------------------------------------------------
 void ShapesRenderFeature::executeCommand(ShapesRendererCommandList* commandList)
 {
-	if (LN_CHECK_ARG(commandList != nullptr)) return;
+	if (LN_REQUIRE(commandList != nullptr)) return;
 
 	LN_ENQUEUE_RENDER_COMMAND_3(
 		executeCommand, m_manager,

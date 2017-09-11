@@ -1102,7 +1102,7 @@ Encoding* GenericString<TChar>::getThisTypeEncoding() const
 	}
 	else
 	{
-		LN_THROW(0, NotImplementedException);
+		LN_NOTIMPLEMENTED();
 	}
 }
 

@@ -37,7 +37,7 @@ void AnimationCurve::getTime(double time)
 	}
 	else
 	{
-		LN_THROW(0, NotImplementedException);
+		LN_NOTIMPLEMENTED();
 	}
 
 	//mTime = time;
