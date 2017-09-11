@@ -736,16 +736,20 @@ void UString::assign(const UStringRef& str)
 template<typename TChar>
 void UString::assignFromCStr(const TChar* str, int length, bool* outUsedDefaultChar)
 {
-	// ASCII だけの文字列か調べる。ついでに文字数も調べる。
-	length = (length < 0) ? INT_MAX : length;
 	int len = 0;
-	const TChar* pos = str;
 	bool ascii = true;
-	for (; *pos && len < length; ++pos, ++len)
+
+	if (str)
 	{
-		if (isascii(*pos) == 0)
+		// ASCII だけの文字列か調べる。ついでに文字数も調べる。
+		length = (length < 0) ? INT_MAX : length;
+		const TChar* pos = str;
+		for (; *pos && len < length; ++pos, ++len)
 		{
-			ascii = false;
+			if (isascii(*pos) == 0)
+			{
+				ascii = false;
+			}
 		}
 	}
 

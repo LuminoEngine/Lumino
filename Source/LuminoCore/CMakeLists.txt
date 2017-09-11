@@ -13,11 +13,7 @@ set(LN_UNIT_TEST_LINK_LIBS "")
 #------------------------------------------------------------------------------
 
 # Unicode char set.
-if (WIN32)
 option(LN_USE_UNICODE_CHAR_SET "Use unicode char set." ON)
-else()
-option(LN_USE_UNICODE_CHAR_SET "Use unicode char set." OFF)
-endif()
 
 # MSVC Runtime library.
 option(LN_MSVC_STATIC_RUNTIME "static runtime (/MT, /MTd) or DLL runtime (/MD, /MDd) or to link either." ON)
