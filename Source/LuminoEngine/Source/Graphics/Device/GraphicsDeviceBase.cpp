@@ -101,7 +101,7 @@ void GraphicsDeviceBase::attachRenderingThread()
 //------------------------------------------------------------------------------
 void GraphicsDeviceBase::detachRenderingThread()
 {
-	if (LN_REQUIRE(m_attachRenderingThreadId == 0)) return;
+	if (LN_REQUIRE(m_attachRenderingThreadId != 0)) return;
 	m_attachRenderingThreadId = 0;
 }
 

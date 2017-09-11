@@ -143,7 +143,7 @@ int MeshResource::getTriangleCount() const	// TODO: face count
 //------------------------------------------------------------------------------
 void MeshResource::setPosition(int index, const Vector3& position)
 {
-	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return;
+	if (LN_REQUIRE_RANGE(index, 0, getVertexCount())) return;
 	Vertex* v = (Vertex*)requestVertexBuffer(VB_BasicVertices)->getMappedData();
 	v[index].position = position;
 }
@@ -151,7 +151,7 @@ void MeshResource::setPosition(int index, const Vector3& position)
 //------------------------------------------------------------------------------
 void MeshResource::setNormal(int index, const Vector3& normal)
 {
-	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return;
+	if (LN_REQUIRE_RANGE(index, 0, getVertexCount())) return;
 	Vertex* v = (Vertex*)requestVertexBuffer(VB_BasicVertices)->getMappedData();
 	v[index].normal = normal;
 }
@@ -159,7 +159,7 @@ void MeshResource::setNormal(int index, const Vector3& normal)
 //------------------------------------------------------------------------------
 void MeshResource::setUV(int index, const Vector2& uv)
 {
-	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return;
+	if (LN_REQUIRE_RANGE(index, 0, getVertexCount())) return;
 	Vertex* v = (Vertex*)requestVertexBuffer(VB_BasicVertices)->getMappedData();
 	v[index].uv = uv;
 }
@@ -167,7 +167,7 @@ void MeshResource::setUV(int index, const Vector2& uv)
 //------------------------------------------------------------------------------
 void MeshResource::setColor(int index, const Color& color)
 {
-	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return;
+	if (LN_REQUIRE_RANGE(index, 0, getVertexCount())) return;
 	Vertex* v = (Vertex*)requestVertexBuffer(VB_BasicVertices)->getMappedData();
 	v[index].color = color;
 }
@@ -175,7 +175,7 @@ void MeshResource::setColor(int index, const Color& color)
 //------------------------------------------------------------------------------
 const Vector3& MeshResource::getPosition(int index)
 {
-	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return Vector3::Zero;
+	if (LN_REQUIRE_RANGE(index, 0, getVertexCount())) return Vector3::Zero;
 	Vertex* v = (Vertex*)requestVertexBuffer(VB_BasicVertices)->getMappedData();
 	return v[index].position;
 }
@@ -183,7 +183,7 @@ const Vector3& MeshResource::getPosition(int index)
 //------------------------------------------------------------------------------
 void MeshResource::setBlendWeight(int index, int blendIndex, float value)
 {
-	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return;
+	if (LN_REQUIRE_RANGE(index, 0, getVertexCount())) return;
 	BlendWeight* v = (BlendWeight*)requestVertexBuffer(VB_BlendWeights)->getMappedData();
 	v[index].weights[blendIndex] = value;
 }
@@ -191,7 +191,7 @@ void MeshResource::setBlendWeight(int index, int blendIndex, float value)
 //------------------------------------------------------------------------------
 void MeshResource::setBlendWeights(int index, float v0, float v1, float v2, float v3)
 {
-	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return;
+	if (LN_REQUIRE_RANGE(index, 0, getVertexCount())) return;
 	BlendWeight* v = (BlendWeight*)requestVertexBuffer(VB_BlendWeights)->getMappedData();
 	v[index].weights[0] = v0;
 	v[index].weights[1] = v1;
@@ -202,7 +202,7 @@ void MeshResource::setBlendWeights(int index, float v0, float v1, float v2, floa
 //------------------------------------------------------------------------------
 void MeshResource::getBlendWeights(int index, float* out0, float* out1, float* out2, float* out3)
 {
-	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return;
+	if (LN_REQUIRE_RANGE(index, 0, getVertexCount())) return;
 	BlendWeight* v = (BlendWeight*)requestVertexBuffer(VB_BlendWeights)->getMappedData();
 	if (out0 != nullptr) *out0 = v[index].weights[0];
 	if (out1 != nullptr) *out1 = v[index].weights[1];
@@ -213,7 +213,7 @@ void MeshResource::getBlendWeights(int index, float* out0, float* out1, float* o
 //------------------------------------------------------------------------------
 void MeshResource::setBlendIndex(int index, int blendIndex, float value)
 {
-	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return;
+	if (LN_REQUIRE_RANGE(index, 0, getVertexCount())) return;
 	BlendWeight* v = (BlendWeight*)requestVertexBuffer(VB_BlendWeights)->getMappedData();
 	v[index].indices[blendIndex] = value;
 }
@@ -221,7 +221,7 @@ void MeshResource::setBlendIndex(int index, int blendIndex, float value)
 //------------------------------------------------------------------------------
 void MeshResource::setBlendIndices(int index, float v0, float v1, float v2, float v3)
 {
-	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return;
+	if (LN_REQUIRE_RANGE(index, 0, getVertexCount())) return;
 	BlendWeight* v = (BlendWeight*)requestVertexBuffer(VB_BlendWeights)->getMappedData();
 	v[index].indices[0] = v0;
 	v[index].indices[1] = v1;
@@ -232,7 +232,7 @@ void MeshResource::setBlendIndices(int index, float v0, float v1, float v2, floa
 //------------------------------------------------------------------------------
 void MeshResource::getBlendIndices(int index, int* out0, int* out1, int* out2, int* out3)
 {
-	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return;
+	if (LN_REQUIRE_RANGE(index, 0, getVertexCount())) return;
 	BlendWeight* v = (BlendWeight*)requestVertexBuffer(VB_BlendWeights)->getMappedData();
 	if (out0 != nullptr) *out0 = (int)v[index].indices[0];
 	if (out1 != nullptr) *out1 = (int)v[index].indices[1];
@@ -249,7 +249,7 @@ void MeshResource::setIndex(int index, int vertexIndex)
 //------------------------------------------------------------------------------
 void MeshResource::setAdditionalUV(int index, int additionalUVIndex, const Vector4& uv)
 {
-	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return;
+	if (LN_REQUIRE_RANGE(index, 0, getVertexCount())) return;
 	AdditionalUVs* v = (AdditionalUVs*)requestVertexBuffer(VB_AdditionalUVs)->getMappedData();
 	v[index].uv[additionalUVIndex] = uv;
 }
@@ -257,7 +257,7 @@ void MeshResource::setAdditionalUV(int index, int additionalUVIndex, const Vecto
 //------------------------------------------------------------------------------
 void MeshResource::setSdefC(int index, const Vector4& value)
 {
-	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return;
+	if (LN_REQUIRE_RANGE(index, 0, getVertexCount())) return;
 	SdefInfo* v = (SdefInfo*)requestVertexBuffer(VB_SdefInfo)->getMappedData();
 	v[index].sdefC = value;
 }
@@ -265,7 +265,7 @@ void MeshResource::setSdefC(int index, const Vector4& value)
 //------------------------------------------------------------------------------
 const Vector4& MeshResource::getSdefC(int index)
 {
-	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return Vector4::Zero;
+	if (LN_REQUIRE_RANGE(index, 0, getVertexCount())) return Vector4::Zero;
 	SdefInfo* v = (SdefInfo*)requestVertexBuffer(VB_SdefInfo)->getMappedData();
 	return v[index].sdefC;
 }
@@ -273,7 +273,7 @@ const Vector4& MeshResource::getSdefC(int index)
 //------------------------------------------------------------------------------
 void MeshResource::setSdefR0(int index, const Vector3& value)
 {
-	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return;
+	if (LN_REQUIRE_RANGE(index, 0, getVertexCount())) return;
 	SdefInfo* v = (SdefInfo*)requestVertexBuffer(VB_SdefInfo)->getMappedData();
 	v[index].sdefR0 = value;
 }
@@ -281,7 +281,7 @@ void MeshResource::setSdefR0(int index, const Vector3& value)
 //------------------------------------------------------------------------------
 const Vector3& MeshResource::getSdefR0(int index)
 {
-	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return Vector3::Zero;
+	if (LN_REQUIRE_RANGE(index, 0, getVertexCount())) return Vector3::Zero;
 	SdefInfo* v = (SdefInfo*)requestVertexBuffer(VB_SdefInfo)->getMappedData();
 	return v[index].sdefR0;
 }
@@ -289,7 +289,7 @@ const Vector3& MeshResource::getSdefR0(int index)
 //------------------------------------------------------------------------------
 void MeshResource::setSdefR1(int index, const Vector3& value)
 {
-	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return;
+	if (LN_REQUIRE_RANGE(index, 0, getVertexCount())) return;
 	SdefInfo* v = (SdefInfo*)requestVertexBuffer(VB_SdefInfo)->getMappedData();
 	v[index].sdefR1 = value;
 }
@@ -297,7 +297,7 @@ void MeshResource::setSdefR1(int index, const Vector3& value)
 //------------------------------------------------------------------------------
 const Vector3& MeshResource::getSdefR1(int index)
 {
-	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return Vector3::Zero;
+	if (LN_REQUIRE_RANGE(index, 0, getVertexCount())) return Vector3::Zero;
 	SdefInfo* v = (SdefInfo*)requestVertexBuffer(VB_SdefInfo)->getMappedData();
 	return v[index].sdefR1;
 }
@@ -305,7 +305,7 @@ const Vector3& MeshResource::getSdefR1(int index)
 //------------------------------------------------------------------------------
 void MeshResource::setEdgeWeight(int index, float weight)
 {
-	if (LN_CHECK_RANGE(index, 0, getVertexCount())) return;
+	if (LN_REQUIRE_RANGE(index, 0, getVertexCount())) return;
 	MmdExtra* v = (MmdExtra*)requestVertexBuffer(VB_MmdExtra)->getMappedData();
 	v[index].edgeWeight = weight;
 }
@@ -388,7 +388,7 @@ void MeshResource::addLine(const Vertex& v1, const Vertex& v2)
 void MeshResource::addPlane(const Vector2& size, int sliceH, int sliceV)
 {
 	int startIndex = getVertexCount();
-	LN_VERIFY_STATE(startIndex <= UINT16_MAX);
+	if (LN_ENSURE(startIndex <= UINT16_MAX)) return;
 
 	// setup factory
 	detail::PlaneMeshFactory3 factory;
@@ -404,7 +404,7 @@ void MeshResource::addPlane(const Vector2& size, int sliceH, int sliceV)
 void MeshResource::addBox(const Vector3& size)
 {
 	int startIndex = getVertexCount();
-	LN_VERIFY_STATE(startIndex <= UINT16_MAX);
+	if (LN_ENSURE(startIndex <= UINT16_MAX)) return;
 
 	// setup factory
 	detail::RegularBoxMeshFactory factory;
@@ -420,7 +420,7 @@ void MeshResource::addBox(const Vector3& size)
 void MeshResource::addSphere(float radius, int slices, int stacks)
 {
 	int startIndex = getVertexCount();
-	LN_VERIFY_STATE(startIndex <= UINT16_MAX);
+	if (LN_ENSURE(startIndex <= UINT16_MAX)) return;
 
 	// setup factory
 	detail::RegularSphereMeshFactory factory;
@@ -436,7 +436,7 @@ void MeshResource::addSphere(float radius, int slices, int stacks)
 void MeshResource::addScreenPlane()
 {
 	int startIndex = getVertexCount();
-	LN_VERIFY_STATE(startIndex <= UINT16_MAX);
+	if (LN_ENSURE(startIndex <= UINT16_MAX)) return;
 
 	// setup factory
 	detail::PlaneMeshFactory factory(Vector2(2.0f, 2.0f));
@@ -484,7 +484,7 @@ IndexBuffer* MeshResource::getIndexBuffer() const
 void MeshResource::addTeapot(float size, int tessellation)
 {
 	int startIndex = getVertexCount();
-	LN_VERIFY_STATE(startIndex <= UINT16_MAX);
+	if (LN_ENSURE(startIndex <= UINT16_MAX)) return;
 
 	// setup factory
 	detail::TeapotMeshFactory factory;
@@ -934,7 +934,7 @@ void StaticMeshModel::addMaterials(int count)
 //------------------------------------------------------------------------------
 void StaticMeshModel::addMaterial(Material* material)
 {
-	LN_VERIFY_STATE(m_materials != nullptr);
+	if (LN_ENSURE(m_materials)) return;
 	m_materials->add(material);
 }
 

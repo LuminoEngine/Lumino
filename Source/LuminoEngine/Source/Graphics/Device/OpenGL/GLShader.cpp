@@ -14,12 +14,7 @@
 #include "GLGraphicsDevice.h"
 #include "GLShader.h"
 
-#if defined(LN_DO_CHECK_THROW)
-#define	LN_FAIL_CHECK_GLERROR()		for (GLenum lnglerr = glGetError(); lnglerr != GL_NO_ERROR && ln::detail::notifyException<OpenGLException>(__FILE__, __LINE__, lnglerr); lnglerr = GL_NO_ERROR)
-#else
-#error no implemented
-#define LN_FAIL_CHECK_GLERROR()		for (GLenum lnglerr = glGetError(); lnglerr != GL_NO_ERROR; lnglerr = GL_NO_ERROR)//{ GLenum lnglerr = glGetError(); LN_THROW(lnglerr == GL_NO_ERROR , OpenGLException, lnglerr); }
-#endif
+#define	LN_FAIL_CHECK_GLERROR()		for (GLenum lnglerr = glGetError(); lnglerr != GL_NO_ERROR && ln::detail::notifyException<OpenGLException>(LN__FILE__, __LINE__, lnglerr); lnglerr = GL_NO_ERROR)
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
@@ -437,8 +432,7 @@ ShaderCompileResultLevel GLSLUtils::makeShaderProgram(const char* vsCode, size_t
 		throw;
 	}
 
-	// ここに来ることは無いはず
-	LN_THROW(0, InvalidOperationException);
+	LN_UNREACHABLE();
 }
 
 //------------------------------------------------------------------------------
@@ -466,10 +460,10 @@ void GLSLUtils::analyzeLNBasicShaderCode(const char* code, size_t codeLen, GLuin
 
 	// find begin - end
 	int codeBegin = StringTraits::indexOf(code, codeLen, ifdef.c_str(), -1);
-	if (LN_CHECK_FORMAT(codeBegin >= 0)) return;
+	if (LN_ENSURE_INVALID_FORMAT(codeBegin >= 0)) return;
 	//int codeEnd = StringTraits::IndexOf(code, codeLen, "LN_GLSL_END", 11, codeBegin);
 	int codeEnd = StringTraits::indexOf(code, codeLen, endKey.c_str(), endKey.length(), codeBegin);
-	if (LN_CHECK_FORMAT(codeEnd >= 0)) return;
+	if (LN_ENSURE_INVALID_FORMAT(codeEnd >= 0)) return;
 
 	// make range
 	const char* begin = code + codeBegin + ifdef.length();
@@ -764,7 +758,7 @@ GLuint GLShader::compileShader(const char* code, size_t codeLen, const char* ent
 GLuint GLShader::getVertexShader(const String& name)
 {
 	auto itr = m_glVertexShaderEntryMap.find(name);
-	LN_THROW(itr != m_glVertexShaderEntryMap.end(), KeyNotFoundException);
+	if (LN_REQUIRE_KEY(itr != m_glVertexShaderEntryMap.end())) return 0;
 	return itr->second;
 }
 
@@ -772,7 +766,7 @@ GLuint GLShader::getVertexShader(const String& name)
 GLuint GLShader::getFlagmentShader(const String& name)
 {
 	auto itr = m_glPixelShaderEntryMap.find(name);
-	LN_THROW(itr != m_glPixelShaderEntryMap.end(), KeyNotFoundException);
+	if (LN_REQUIRE_KEY(itr != m_glPixelShaderEntryMap.end())) return 0;
 	return itr->second;
 }
 

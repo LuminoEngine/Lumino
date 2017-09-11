@@ -27,13 +27,34 @@ class Exception;
 #define LN_REQUIRE_KEY(expression)					_LN_CHECK(expression, ln::LogicException)
 #define LN_ENSURE_IO(expression)					_LN_CHECK(expression, ln::IOException)
 #define LN_ENSURE_FILE_NOT_FOUND(expression, path)	_LN_CHECK(expression, ln::FileNotFoundException, path)
-#define LN_ENSURE_ENCODING(expression)				_LN_CHECK(expression, ln::EncodingException)
+#define LN_ENSURE_ENCODING(expression, ...)			_LN_CHECK(expression, ln::EncodingException)
 #define LN_ENSURE_INVALID_FORMAT(expression, ...)	_LN_CHECK(expression, ln::InvalidFormatException, ##__VA_ARGS__)
 #define LN_ENSURE_WIN32(expression, err)			_LN_CHECK(expression, ln::Win32Exception, err)
 
 // obsolete
 #define LN_THROW(exp, type, ...)	{ _LN_CHECK(exp, type, ##__VA_ARGS__); }
 #define LN_COMCALL(exp)				{ HRESULT hr = (exp); if (FAILED(hr)) { LN_ENSURE_WIN32(0, hr); } }
+
+// internal
+#define LN_EXCEPTION_FORMATTING_CONSTRUCTOR_DECLARE(className) \
+	className(const char* message, ...); \
+	className(const wchar_t* message, ...);
+#define LN_EXCEPTION_FORMATTING_CONSTRUCTOR_IMPLEMENT(className) \
+	className::className(const char* message, ...) \
+	{ \
+		va_list args; \
+		va_start(args, message); \
+		setMessage(message, args); \
+		va_end(args); \
+	} \
+	className::className(const wchar_t* message, ...) \
+	{ \
+		va_list args; \
+		va_start(args, message); \
+		setMessage(message, args); \
+		va_end(args); \
+	}
+
 
 class Assertion
 {
@@ -44,12 +65,27 @@ public:
 	static NotifyVerificationHandler getNotifyVerificationHandler();
 };
 
+
+namespace detail {
+
+template<class TException, typename... TArgs>
+bool notifyException(const Char* file, int line, TArgs... args);
+
+void Exception_setSourceLocationInfo(Exception& e, const Char* filePath, int fileLine);
+
+} // namespace detail
+
+//------------------------------------------------------------------------------
+// core errors
+
 /**
 	@brief		アプリケーションの実行中に発生したエラーを表します。
 */
 class LUMINO_EXPORT Exception
 {
 public:
+	LN_EXCEPTION_FORMATTING_CONSTRUCTOR_DECLARE(Exception);
+
 	Exception();
 	virtual ~Exception();
 	
@@ -62,15 +98,15 @@ public:
 protected:
 	void setCaption(const Char* caption);
 	virtual std::basic_string<Char> getCaption();
-
-public:	// TODO:
-	void setSourceLocationInfo(const Char* filePath, int fileLine);
 	void setMessage();
 	void setMessage(const char* format, va_list args);
 	void setMessage(const wchar_t* format, va_list args);
 	void setMessage(const char* format, ...);
 	void setMessage(const wchar_t* format, ...);
+
+private:
 	void appendMessage(const Char* message, size_t len);
+	void setSourceLocationInfo(const Char* filePath, int fileLine);
 
 	static const int MaxPathSize = 260;
 	Char					m_sourceFilePath[MaxPathSize];
@@ -80,12 +116,8 @@ public:	// TODO:
 	std::basic_string<Char>	m_caption;
 	std::basic_string<Char>	m_message;
 
-	//template<class TException, typename... TArgs>
-	//friend bool notifyException(const Char* file, int line, TArgs... args);
+	friend void detail::Exception_setSourceLocationInfo(Exception& e, const Char* filePath, int fileLine);
 };
-
-//------------------------------------------------------------------------------
-// core errors
 
 /**
 	@brief		前提条件の間違いなどプログラム内の論理的な誤りが原因で発生したエラーを表します。
@@ -94,6 +126,7 @@ class LUMINO_EXPORT LogicException
 	: public Exception
 {
 public:
+	LN_EXCEPTION_FORMATTING_CONSTRUCTOR_DECLARE(LogicException);
 	LogicException();
 	virtual Exception* copy() const;
 };
@@ -105,6 +138,7 @@ class LUMINO_EXPORT RuntimeException
 	: public Exception
 {
 public:
+	LN_EXCEPTION_FORMATTING_CONSTRUCTOR_DECLARE(RuntimeException);
 	RuntimeException();
 	virtual Exception* copy() const;
 };
@@ -116,6 +150,7 @@ class LUMINO_EXPORT FatalException
 	: public Exception
 {
 public:
+	LN_EXCEPTION_FORMATTING_CONSTRUCTOR_DECLARE(FatalException);
 	FatalException();
 	virtual Exception* copy() const;
 };
@@ -142,6 +177,7 @@ class LUMINO_EXPORT IOException
 	: public RuntimeException
 {
 public:
+	LN_EXCEPTION_FORMATTING_CONSTRUCTOR_DECLARE(IOException);
 	IOException();
 	virtual Exception* copy() const;
 };
@@ -153,6 +189,7 @@ class LUMINO_EXPORT FileNotFoundException
 	: public IOException
 {
 public:
+	LN_EXCEPTION_FORMATTING_CONSTRUCTOR_DECLARE(FileNotFoundException);
 	FileNotFoundException();
 	virtual Exception* copy() const;
 };
@@ -164,6 +201,7 @@ class LUMINO_EXPORT EncodingException
 	: public RuntimeException
 {
 public:
+	LN_EXCEPTION_FORMATTING_CONSTRUCTOR_DECLARE(EncodingException);
 	EncodingException();
 	virtual Exception* copy() const;
 };
@@ -175,6 +213,7 @@ class LUMINO_EXPORT InvalidFormatException
 	: public RuntimeException
 {
 public:
+	LN_EXCEPTION_FORMATTING_CONSTRUCTOR_DECLARE(InvalidFormatException);
 	InvalidFormatException();
 	virtual Exception* copy() const;
 };
@@ -187,14 +226,14 @@ class Win32Exception
 {
 public:
 	Win32Exception();
+	Win32Exception(uint32_t dwLastError);
 	virtual Exception* copy() const;
-
-	void setMessage(uint32_t dwLastError);
 
 	uint32_t getLastErrorCode() const { return m_dwLastErrorCode; }
 	const std::basic_string<Char>& getFormatMessage() const { return m_formatMessage; }
 
 private:
+	void setMessage(uint32_t dwLastError);
 	uint32_t				m_dwLastErrorCode;
 	std::basic_string<Char>	m_formatMessage;
 };
@@ -208,9 +247,8 @@ namespace detail {
 template<class TException, typename... TArgs>
 inline bool notifyException(const Char* file, int line, TArgs... args)
 {
-	TException e;
-	e.setMessage(args...);
-	e.setSourceLocationInfo(file, line);
+	TException e(args...);
+	detail::Exception_setSourceLocationInfo(e, file, line);
 	auto h = Assertion::getNotifyVerificationHandler();
 	if (h != nullptr && h(e)) return true;
 	throw e;

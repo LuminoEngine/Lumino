@@ -13,6 +13,7 @@ class XmlException
 	: public RuntimeException
 {
 public:
+	LN_EXCEPTION_FORMATTING_CONSTRUCTOR_DECLARE(XmlException);
 	XmlException();
 	virtual Exception* copy() const;
 };

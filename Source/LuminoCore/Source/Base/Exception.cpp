@@ -58,6 +58,15 @@ Assertion::NotifyVerificationHandler Assertion::getNotifyVerificationHandler()
 //
 //} // namespace detail
 
+namespace detail {
+
+void Exception_setSourceLocationInfo(Exception& e, const Char* filePath, int fileLine)
+{
+	e.setSourceLocationInfo(filePath, fileLine);
+}
+
+} // namespace detail
+
 //==============================================================================
 // Exception
 //==============================================================================
@@ -183,6 +192,8 @@ void Exception::setSourceLocationInfo(const Char* filePath, int fileLine)
 //==============================================================================
 // LogicException
 //==============================================================================
+LN_EXCEPTION_FORMATTING_CONSTRUCTOR_IMPLEMENT(LogicException);
+
 LogicException::LogicException()
 {
 	setCaption(_LT("ln::LogicException"));	// TODO
@@ -196,6 +207,8 @@ Exception* LogicException::copy() const
 //==============================================================================
 // RuntimeException
 //==============================================================================
+LN_EXCEPTION_FORMATTING_CONSTRUCTOR_IMPLEMENT(RuntimeException);
+
 RuntimeException::RuntimeException()
 {
 	setCaption(_LT("ln::RuntimeException"));	// TODO
@@ -209,6 +222,8 @@ Exception* RuntimeException::copy() const
 //==============================================================================
 // FatalException
 //==============================================================================
+LN_EXCEPTION_FORMATTING_CONSTRUCTOR_IMPLEMENT(FatalException);
+
 FatalException::FatalException()
 {
 	setCaption(_LT("ln::FatalException"));
@@ -235,6 +250,8 @@ Exception* NotImplementedException::copy() const
 //==============================================================================
 // IOException
 //==============================================================================
+LN_EXCEPTION_FORMATTING_CONSTRUCTOR_IMPLEMENT(IOException);
+
 IOException::IOException()
 {
 	setCaption(InternalResource::getString(InternalResource::IOError).c_str());
@@ -248,6 +265,8 @@ Exception* IOException::copy() const
 //==============================================================================
 // FileNotFoundException
 //==============================================================================
+LN_EXCEPTION_FORMATTING_CONSTRUCTOR_IMPLEMENT(FileNotFoundException);
+
 FileNotFoundException::FileNotFoundException()
 {
 	setCaption(InternalResource::getString(InternalResource::FileNotFoundError).c_str());
@@ -261,6 +280,8 @@ Exception* FileNotFoundException::copy() const
 //==============================================================================
 // EncodingException
 //==============================================================================
+LN_EXCEPTION_FORMATTING_CONSTRUCTOR_IMPLEMENT(EncodingException);
+
 EncodingException::EncodingException()
 {
 	setCaption(InternalResource::getString(InternalResource::EncodingError).c_str());
@@ -272,8 +293,10 @@ Exception* EncodingException::copy() const
 }
 
 //==============================================================================
-// EncodingException
+// InvalidFormatException
 //==============================================================================
+LN_EXCEPTION_FORMATTING_CONSTRUCTOR_IMPLEMENT(InvalidFormatException);
+
 InvalidFormatException::InvalidFormatException()
 {
 	setCaption(InternalResource::getString(InternalResource::InvalidFormatError).c_str());
@@ -294,6 +317,17 @@ Win32Exception::Win32Exception()
 	setCaption(InternalResource::getString(InternalResource::Win32Error).c_str());
 }
 
+Win32Exception::Win32Exception(uint32_t dwLastError)
+	: Win32Exception()
+{
+	setMessage(dwLastError);
+}
+
+Exception* Win32Exception::copy() const
+{
+	return LN_NEW Win32Exception(*this);
+}
+
 void Win32Exception::setMessage(uint32_t dwLastError)
 {
 	m_dwLastErrorCode = dwLastError;
@@ -303,12 +337,6 @@ void Win32Exception::setMessage(uint32_t dwLastError)
 		FORMAT_MESSAGE_FROM_SYSTEM, NULL, m_dwLastErrorCode,
 		0, buf, sizeof(buf) / sizeof(buf[0]), NULL);
 #endif
-
-}
-
-Exception* Win32Exception::copy() const
-{
-	return LN_NEW Win32Exception(*this);
 }
 
 LN_NAMESPACE_END

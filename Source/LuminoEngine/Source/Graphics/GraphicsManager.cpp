@@ -378,7 +378,7 @@ void GraphicsManager::resumeDevice()
 //------------------------------------------------------------------------------
 void GraphicsManager::changeDevice(Driver::IGraphicsDevice* device)
 {
-	if (LN_REQUIRE(m_renderingThread)) return;
+	if (LN_REQUIRE(!m_renderingThread)) return;
 
 	if (device == NULL)
 	{

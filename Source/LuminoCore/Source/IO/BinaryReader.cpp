@@ -80,7 +80,7 @@ int64_t BinaryReader::readInt64(ByteOrder dataByteOrder)
 {
 	byte_t buffer[8];
 	size_t count = m_stream->read(&buffer, 8);
-	if (LN_ENSURE(count == 4)) return 0;
+	if (LN_ENSURE(count == 8)) return 0;
 
 	// 現在の環境と同じエンディアンであればそのまま返す
 	if (dataByteOrder == Environment::getByteOrder()) {

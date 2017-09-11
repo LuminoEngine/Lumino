@@ -10,6 +10,8 @@ namespace tr {
 // XmlException
 //==============================================================================
 #ifdef LN_EXCEPTION2
+LN_EXCEPTION_FORMATTING_CONSTRUCTOR_IMPLEMENT(XmlException);
+
 XmlException::XmlException()
 {
 	setCaption(InternalResource::getString(InternalResource::XmlException).c_str());
