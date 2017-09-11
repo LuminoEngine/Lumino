@@ -95,8 +95,10 @@ class NameValuePair
 public:
 	const Char* name;
 	TRef& value;
+	const TRef* defaultValue;
 
-	NameValuePair(const Char* n, TRef& v) : name(n), value(v) {}
+	NameValuePair(const Char* n, TRef& v) : name(n), value(v), defaultValue(nullptr) {}
+	NameValuePair(const Char* n, TRef& v, const TRef* d) : name(n), value(v), defaultValue(d) {}
 
 private:
 	NameValuePair & operator=(NameValuePair const &) = delete;
@@ -106,6 +108,11 @@ template<typename TRef>
 NameValuePair<TRef> makeNVP(const Char* name, TRef& valueRef)
 {
 	return NameValuePair<TRef>(name, valueRef);
+}
+template<typename TRef>
+NameValuePair<TRef> makeNVP(const Char* name, TRef& valueRef, const TRef& defaultValue)
+{
+	return NameValuePair<TRef>(name, valueRef, &defaultValue);
 }
 
 
@@ -843,6 +850,6 @@ private:
 
 } // namespace tr
 
-#define LN_NVP(var)	ln::tr::makeNVP(_LT(#var), var)
+#define LN_NVP(var, ...)	ln::tr::makeNVP(_LT(#var), var, ##__VA_ARGS__)
 
 LN_NAMESPACE_END
