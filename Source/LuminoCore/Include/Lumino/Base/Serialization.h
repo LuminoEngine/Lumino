@@ -398,6 +398,7 @@ private:
 	void processRead(const KeyInfo& key, T && value)
 	{
 		ISerializeElement* element = m_currentObject->findSerializeElement(key.name);
+		if (LN_REQUIRE_KEY(element, key.name.data())) return;
 		tryGetValue(element, &value, key.callBase);
 	}
 
@@ -842,6 +843,6 @@ private:
 
 } // namespace tr
 
-#define LN_NVP(var)	ln::tr::makeNVP(#var, var)
+#define LN_NVP(var)	ln::tr::makeNVP(_LT(#var), var)
 
 LN_NAMESPACE_END

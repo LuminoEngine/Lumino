@@ -8,11 +8,11 @@
 	#pragma comment(lib, "Opengl32.lib")
 	#pragma comment(lib, "Shlwapi.lib")
 	
-	#if defined(_DEBUG)
-		#define LN_MSVC_LIBRARY_POSTFIX "d.lib"
-	#else
+	//#if defined(_DEBUG)
+	//	#define LN_MSVC_LIBRARY_POSTFIX "d.lib"
+	//#else
 		#define LN_MSVC_LIBRARY_POSTFIX ".lib"
-	#endif
+	//#endif
 
 	#pragma comment(lib, "bullet" LN_MSVC_LIBRARY_POSTFIX)
 	#pragma comment(lib, "Effekseer" LN_MSVC_LIBRARY_POSTFIX)

@@ -24,7 +24,7 @@ class Exception;
 #define LN_UNREACHABLE()							_LN_CHECK(0, ::ln::LogicException)
 #define LN_NOTIMPLEMENTED()							_LN_CHECK(0, ln::NotImplementedException)
 #define LN_REQUIRE_RANGE(value, begin, end)			_LN_CHECK(begin <= value && value < end, ::ln::LogicException)
-#define LN_REQUIRE_KEY(expression)					_LN_CHECK(expression, ln::LogicException)
+#define LN_REQUIRE_KEY(expression, ...)				_LN_CHECK(expression, ln::LogicException, ##__VA_ARGS__)
 #define LN_ENSURE_IO(expression)					_LN_CHECK(expression, ln::IOException)
 #define LN_ENSURE_FILE_NOT_FOUND(expression, path)	_LN_CHECK(expression, ln::FileNotFoundException, path)
 #define LN_ENSURE_ENCODING(expression, ...)			_LN_CHECK(expression, ln::EncodingException)

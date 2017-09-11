@@ -7,7 +7,6 @@ include(CMake/LuminoCommon.cmake NO_POLICY_SCOPE)
 set(LN_STATIC_LIB_OUTPUT_NAME "Lumino")
 set(LN_LINK_LIBS "")
 set(LN_UNIT_TEST_LINK_LIBS "")
-set(LN_LIB_POSTFIX "")
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "C:/Proj/Lumino/lib/MSVC140")
 
@@ -40,17 +39,8 @@ add_subdirectory(External)
 #-------------------------------------------------------------------------------
 # 
 #-------------------------------------------------------------------------------
-# lib postfix
-if (LN_USE_UNICODE_CHAR_SET)
-	set(LN_LIB_POSTFIX "U")
-	set(LN_STATIC_LIB_POSTFIX "U")
-endif()
-
-# output dir
-#set(LN_LIB_OUTPUT_DIR "${PROJECT_SOURCE_DIR}/${LN_LIB_OUTPUT_LOCAL_DIR}")
-
 macro(ln_add_common_property projectName)
-	set_target_properties(${projectName} PROPERTIES OUTPUT_NAME "${projectName}${LN_STATIC_LIB_POSTFIX}")
+	set_target_properties(${projectName} PROPERTIES OUTPUT_NAME "${projectName}")
 	set_target_properties(${projectName} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
 	set_target_properties(${projectName} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${LN_LIB_DEBUG_OUTPUT_ROOT_DIR}")
 	set_target_properties(${projectName} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${LN_LIB_RELEASE_OUTPUT_ROOT_DIR}")
@@ -72,11 +62,6 @@ add_subdirectory(Source/LuminoExperimental)
 add_subdirectory(Source/LuminoLaunch)
 
 add_subdirectory(Samples)
-
-# Make postfix.
-#ln_make_postfix(LN_LIB_POSTFIX)
-
-
 
 #-------------------------------------------------------------------------------
 # Output
