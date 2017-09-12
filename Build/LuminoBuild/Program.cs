@@ -9,15 +9,11 @@ namespace LuminoBuild
     {
         public static void Main(string[] args)
         {
-#if true
-            args = new string[] { "MakeProjects" };
-#else
             // default
             if (args.Length == 0)
             {
-                args = new string[] { "MakeInstaller" };
+                args = new string[] { "MakeProjects" };
             }
-#endif
 
             Assembly thisAssembly = Assembly.GetEntryAssembly();
             string exeDir = Path.GetDirectoryName(thisAssembly.Location);

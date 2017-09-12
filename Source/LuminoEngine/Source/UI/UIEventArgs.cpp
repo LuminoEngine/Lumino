@@ -31,7 +31,7 @@ UIEventArgsPtr UIEventArgs::create(UIEventType type, Object* sender, bool cachin
 UIEventArgs::UIEventArgs()
 	: sender(nullptr)
 	//, handled(false)
-	, m_type(nullptr)
+	, m_type(0)
 {
 }
 

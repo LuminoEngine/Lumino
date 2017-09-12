@@ -40,8 +40,8 @@ const String UIVisualStates::VerticalState = _LT("Vertical");
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIElement, RuntimeResource);
 
 // Event definition
-LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIEventArgs, GotFocusEvent, "GotFocus", GotFocus);
-LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIEventArgs, LostFocusEvent, "LostFocus", LostFocus);
+//LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIEventArgs, GotFocusEvent, "GotFocus", GotFocus);
+//LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIEventArgs, LostFocusEvent, "LostFocus", LostFocus);
 
 //------------------------------------------------------------------------------
 UIElement::UIElement()
@@ -249,7 +249,7 @@ ILayoutElement* UIElement::getVisualChild(int index) const
 }
 
 //------------------------------------------------------------------------------
-void UIElement::raiseEvent(const UIEventInfo* ev, UIElement* sender, UIEventArgs* e)
+void UIElement::raiseEvent(UIEventType ev, UIElement* sender, UIEventArgs* e)
 {
 	//if (m_parent != nullptr)
 	{
@@ -574,7 +574,7 @@ void UIElement::callOnGotFocus()
 {
 	LN_ASSERT(!m_hasFocus);
 	m_hasFocus = true;
-	onGotFocus(UIEventArgs::create(GotFocusEvent, this));
+	onGotFocus(UIEventArgs::create(UIEvents::GotFocusEvent, this));
 }
 
 //------------------------------------------------------------------------------
@@ -582,7 +582,7 @@ void UIElement::callOnLostFocus()
 {
 	LN_ASSERT(m_hasFocus);
 	m_hasFocus = false;
-	onLostFocus(UIEventArgs::create(LostFocusEvent, this));
+	onLostFocus(UIEventArgs::create(UIEvents::LostFocusEvent, this));
 }
 
 //------------------------------------------------------------------------------
@@ -816,11 +816,6 @@ void UIElement::raiseEventInternal(UIEventArgs* e)
 
 	// まずは this に通知
 	onRoutedEvent(e);
-	if (e->handled) return;
-
-	// this に addHandler されているイベントハンドラを呼び出す
-	tr::TypeInfo* thisType = tr::TypeInfo::getTypeInfo(this);
-	thisType->invokeReflectionEvent(this, e->getType(), e);
 	if (e->handled) return;
 
 	// bubble

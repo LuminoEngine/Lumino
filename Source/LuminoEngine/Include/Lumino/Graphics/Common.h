@@ -8,6 +8,7 @@
 #include <Lumino/Base/String.h>
 #include <Lumino/Base/EnumExtension.h>
 #include <Lumino/Reflection/ReflectionObject.h>
+#include <Lumino/Reflection/ReflectionObjectList.h>
 #include <Lumino/Reflection/Property.h>
 #include <LuminoMath.h>
 #include "../Common.h"
@@ -433,10 +434,11 @@ public:
 	{
 	}
 
-	void reserve(int count)
+	void clearAndReserve(int count)
 	{
 		m_buffer.resize(sizeof(T) * count, false);
 		m_capacity = count;
+		m_count = 0;
 	}
 
 	void add(const T& value)
@@ -471,7 +473,7 @@ private:
 	{
 		if (/*m_count + */requestCount > m_capacity)
 		{
-			reserve(m_capacity * 2);
+			clearAndReserve(m_capacity * 2);
 		}
 	}
 

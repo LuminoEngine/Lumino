@@ -110,8 +110,8 @@ void PrimitiveRendererCore::initialize(GraphicsManager* manager)
 	m_vertexBuffer = device->createVertexBuffer(sizeof(Vertex) * DefaultFaceCount * 4, nullptr, ResourceUsage::Dynamic);
 	m_indexBuffer = device->createIndexBuffer(DefaultFaceCount * 6, nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
 
-	m_vertexCache.reserve(DefaultFaceCount * 4);
-	m_indexCache.reserve(DefaultFaceCount * 6);
+	m_vertexCache.clearAndReserve(DefaultFaceCount * 4);
+	m_indexCache.clearAndReserve(DefaultFaceCount * 6);
 }
 
 //------------------------------------------------------------------------------

@@ -58,6 +58,9 @@ void MeshRenderFeature::drawMesh(MeshResource* mesh, int startIndex, int primiti
 	data.startIndex = startIndex;
 	data.primitiveCount = primitiveCount;
 	data.primitiveType = primitiveType;
+
+	if (LN_REQUIRE(data.vertexBuffers[0])) return;
+
 	LN_ENQUEUE_RENDER_COMMAND_2(
 		flushState, m_manager,
 		MeshRenderFeature*, _this,

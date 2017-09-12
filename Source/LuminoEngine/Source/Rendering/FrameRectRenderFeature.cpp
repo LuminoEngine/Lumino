@@ -50,8 +50,8 @@ void FrameRectRendererCore::initialize(GraphicsManager* manager)
 	// Vertex and Index buffers
 	const int DefaultFaceCount = 512;
 	requestBuffers(512);
-	m_vertexCache.reserve(DefaultFaceCount * 4);
-	m_indexCache.reserve(DefaultFaceCount * 6);
+	m_vertexCache.clearAndReserve(DefaultFaceCount * 4);
+	m_indexCache.clearAndReserve(DefaultFaceCount * 6);
 
 	//-----------------------------------------------------
 	// Shader

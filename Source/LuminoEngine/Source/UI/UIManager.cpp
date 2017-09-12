@@ -159,6 +159,8 @@ void UIManager::releaseMouseCapture(UIElement* element)
 //------------------------------------------------------------------------------
 void UIManager::createGlobalObjects()
 {
+	UIEvents::GotFocusEvent = UIEventManager::RegisterEvent();
+	UIEvents::LostFocusEvent = UIEventManager::RegisterEvent();
 	UIEvents::MouseMoveEvent = UIEventManager::RegisterEvent();
 	UIEvents::MouseDownEvent = UIEventManager::RegisterEvent();
 	UIEvents::MouseUpEvent = UIEventManager::RegisterEvent();
@@ -170,6 +172,11 @@ void UIManager::createGlobalObjects()
 	UIEvents::TextInputEvent = UIEventManager::RegisterEvent();
 	UIEvents::CheckedEvent = UIEventManager::RegisterEvent();
 	UIEvents::UncheckedEvent = UIEventManager::RegisterEvent();
+	UIEvents::DragStartedEvent = UIEventManager::RegisterEvent();
+	UIEvents::DragDeltaEvent = UIEventManager::RegisterEvent();
+	UIEvents::DragCompletedEvent = UIEventManager::RegisterEvent();
+	UIEvents::DragCanceledEvent = UIEventManager::RegisterEvent();
+	UIEvents::ScrollEvent = UIEventManager::RegisterEvent();
 
 	auto cmd = newObject<UIRoutedCommand>();
 	m_allGlobalCommands.add(cmd);

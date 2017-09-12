@@ -239,7 +239,7 @@ void MqoObject::makeMqoFaceRefsAndEdge()
 	// 各面3頂点として MqoFaceRef,MqoEdge を作っておく
 	m_importer->m_mqoFaceRefBuffer.resize(m_mqoFaceList.getCount() * 3);
 	m_importer->m_mqoEdgeBuffer.resize(m_mqoFaceList.getCount() * 3);
-	m_importer->m_mqoFacePointGroupBuffer.reserve(m_mqoFaceList.getCount() * 3);
+	m_importer->m_mqoFacePointGroupBuffer.clearAndReserve(m_mqoFaceList.getCount() * 3);
 	int mqoFaceRefBufferUsed = 0;
 	int mqoEdgeBufferUsed = 0;
 

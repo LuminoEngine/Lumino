@@ -4,6 +4,12 @@
 #include "String.h"
 #include "../Reflection/ReflectionObject.h"
 
+#define LN_SC_SHARED_LIST
+
+#ifdef LN_SC_SHARED_LIST
+#include "SharedList.h"
+#endif
+
 LN_NAMESPACE_BEGIN
 //template <class T> class Ref;
 
@@ -95,10 +101,10 @@ class NameValuePair
 public:
 	const Char* name;
 	TRef& value;
-	const TRef* defaultValue;
+	//const TRef* defaultValue;
 
-	NameValuePair(const Char* n, TRef& v) : name(n), value(v), defaultValue(nullptr) {}
-	NameValuePair(const Char* n, TRef& v, const TRef* d) : name(n), value(v), defaultValue(d) {}
+	NameValuePair(const Char* n, TRef& v) : name(n), value(v)/*, defaultValue(nullptr)*/ {}
+	//NameValuePair(const Char* n, TRef& v, const TRef* d) : name(n), value(v), defaultValue(d) {}
 
 private:
 	NameValuePair & operator=(NameValuePair const &) = delete;
@@ -405,8 +411,14 @@ private:
 	void processRead(const KeyInfo& key, T && value)
 	{
 		ISerializeElement* element = m_currentObject->findSerializeElement(key.name);
-		if (LN_REQUIRE_KEY(element, key.name.data())) return;
-		tryGetValue(element, &value, key.callBase);
+		if (element)	// fuzzy mode
+		{
+			//if (LN_REQUIRE_KEY(element, key.name.data())) return;
+			tryGetValue(element, &value, key.callBase);
+		}
+		else
+		{
+		}
 	}
 
 	// AddMemberValue()
@@ -850,6 +862,7 @@ private:
 
 } // namespace tr
 
-#define LN_NVP(var, ...)	ln::tr::makeNVP(_LT(#var), var, ##__VA_ARGS__)
+#define LN_NVP(var)		ln::tr::makeNVP(_LT(#var), var)
+//#define LN_NVP(var, ...)	ln::tr::makeNVP(_LT(#var), var, ##__VA_ARGS__)
 
 LN_NAMESPACE_END

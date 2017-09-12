@@ -163,8 +163,8 @@ public:
 	//Color					bottomBorderColor;
 	//BorderDirection		borderDirection;
 
-	LN_ROUTED_EVENT(UIEventArgs, GotFocusEvent);
-	LN_ROUTED_EVENT(UIEventArgs, LostFocusEvent);
+	//LN_ROUTED_EVENT(UIEventArgs, GotFocusEvent);
+	//LN_ROUTED_EVENT(UIEventArgs, LostFocusEvent);
 
 public:
 	//--------------------------------------------------------------------------
@@ -300,7 +300,7 @@ public:
 	virtual void arrangeLayout(const Rect& finalLocalRect) override;
 
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
-	void raiseEvent(const UIEventInfo* ev, UIElement* sender, UIEventArgs* e);
+	void raiseEvent(UIEventType ev, UIElement* sender, UIEventArgs* e);
 
 	void applyTemplateHierarchy(UIStyleTable* styleTable, detail::UIStylePropertyTableInstance* parentStyle);
 

@@ -421,12 +421,12 @@ public:
 		m_len = str.getLength();
 	}
 
-	UStringRef(const UString& str, int len)
+	UStringRef(const UString& str, int startIndex)
 		: UStringRef()
 	{
 		m_string = &str;
-		m_str = str.c_str();
-		m_len = len, str.getLength();
+		m_str = str.c_str() + startIndex;
+		m_len = str.getLength() - startIndex;
 	}
 
 	UStringRef(const UString& str, int startIndex, int len)
