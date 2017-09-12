@@ -131,10 +131,10 @@ ShapesRendererCore::~ShapesRendererCore()
 void ShapesRendererCore::initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
-	m_basePoints.reserve(4096);
-	m_outlinePoints.reserve(4096);
-	m_vertexCache.reserve(4096);
-	m_indexCache.reserve(4096);
+	m_basePoints.clearAndReserve(4096);
+	m_outlinePoints.clearAndReserve(4096);
+	m_vertexCache.clearAndReserve(4096);
+	m_indexCache.clearAndReserve(4096);
 }
 
 //------------------------------------------------------------------------------

@@ -434,10 +434,11 @@ public:
 	{
 	}
 
-	void reserve(int count)
+	void clearAndReserve(int count)
 	{
 		m_buffer.resize(sizeof(T) * count, false);
 		m_capacity = count;
+		m_count = 0;
 	}
 
 	void add(const T& value)
@@ -472,7 +473,7 @@ private:
 	{
 		if (/*m_count + */requestCount > m_capacity)
 		{
-			reserve(m_capacity * 2);
+			clearAndReserve(m_capacity * 2);
 		}
 	}
 

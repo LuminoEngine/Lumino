@@ -77,6 +77,7 @@ void VertexBuffer::initialize(detail::GraphicsManager* manager, size_t bufferSiz
 	else
 	{
 		m_buffer.resize(bufferSize);
+		m_locked = true;
 	}
 }
 
@@ -185,6 +186,8 @@ Driver::IVertexBuffer* VertexBuffer::resolveRHIObject()
 			}
 		}
 	}
+
+	if (LN_ENSURE(m_rhiObject)) return nullptr;
 
 	m_initialUpdate = false;
 	m_locked = false;

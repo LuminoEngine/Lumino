@@ -48,8 +48,8 @@ void VectorTextRendererCore::initialize(GraphicsManager* manager)
 	auto* device = m_manager->getGraphicsDevice();
 	m_renderer = device->getRenderer();
 
-	m_vertexCache.reserve(4096);
-	m_indexCache.reserve(4096);
+	m_vertexCache.clearAndReserve(4096);
+	m_indexCache.clearAndReserve(4096);
 }
 
 //------------------------------------------------------------------------------
