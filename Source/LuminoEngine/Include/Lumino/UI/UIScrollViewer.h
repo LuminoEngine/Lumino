@@ -33,10 +33,10 @@ class UIThumb
 {
 	LN_OBJECT;
 public:
-	LN_ROUTED_EVENT2(UIDragDeltaEventArgs, DragStartedEvent);		/**< マウスドラッグを開始したときに発生するイベントを表します。*/
-    LN_ROUTED_EVENT2(UIDragDeltaEventArgs, DragDeltaEvent);			/**< マウスドラッグ中に発生するイベントを表します。*/
-    LN_ROUTED_EVENT2(UIDragDeltaEventArgs, DragCompletedEvent);		/**< マウスドラッグが完了したときに発生するイベントを表します。*/
-    LN_ROUTED_EVENT2(UIDragDeltaEventArgs, DragCanceledEvent);		/**< マウスドラッグを中断したときに発生するイベントを表します。*/
+	//LN_ROUTED_EVENT2(UIDragDeltaEventArgs, DragStartedEvent);		/**< マウスドラッグを開始したときに発生するイベントを表します。*/
+ //   LN_ROUTED_EVENT2(UIDragDeltaEventArgs, DragDeltaEvent);			/**< マウスドラッグ中に発生するイベントを表します。*/
+ //   LN_ROUTED_EVENT2(UIDragDeltaEventArgs, DragCompletedEvent);		/**< マウスドラッグが完了したときに発生するイベントを表します。*/
+ //   LN_ROUTED_EVENT2(UIDragDeltaEventArgs, DragCanceledEvent);		/**< マウスドラッグを中断したときに発生するイベントを表します。*/
 
 public:
 	static Ref<UIThumb> create();
@@ -48,10 +48,10 @@ LN_CONSTRUCT_ACCESS:
 
 protected:
 	virtual void onRoutedEvent(UIEventArgs* e) override;
-	virtual void onDragStarted(UIDragDeltaEventArgs* e) { if (!e->handled) { raiseEvent(DragStartedEventId, this, e); } }
-	virtual void onDragDelta(UIDragDeltaEventArgs* e) { if (!e->handled) { raiseEvent(DragDeltaEventId, this, e); } }
-	virtual void onDragCompleted(UIDragDeltaEventArgs* e) { if (!e->handled) { raiseEvent(DragCompletedEventId, this, e); } }
-	virtual void onDragCanceled(UIDragDeltaEventArgs* e) { if (!e->handled) { raiseEvent(DragCanceledEventId, this, e); } }
+	virtual void onDragStarted(UIDragDeltaEventArgs* e) { if (!e->handled) { raiseEvent(UIEvents::DragStartedEvent, this, e); } }
+	virtual void onDragDelta(UIDragDeltaEventArgs* e) { if (!e->handled) { raiseEvent(UIEvents::DragDeltaEvent, this, e); } }
+	virtual void onDragCompleted(UIDragDeltaEventArgs* e) { if (!e->handled) { raiseEvent(UIEvents::DragCompletedEvent, this, e); } }
+	virtual void onDragCanceled(UIDragDeltaEventArgs* e) { if (!e->handled) { raiseEvent(UIEvents::DragCanceledEvent, this, e); } }
 
 private:
 	Point	m_lastScreenPosition;
@@ -194,7 +194,6 @@ class UIScrollBar
 {
 	LN_OBJECT;
 public:
-	LN_ROUTED_EVENT2(UIScrollEventArgs, ScrollEvent);
 
 	// TODO: 別途、UIScrollBarStyle 見たいなクラスに分けたほうがいいかも
 	static const String OrientationStates;

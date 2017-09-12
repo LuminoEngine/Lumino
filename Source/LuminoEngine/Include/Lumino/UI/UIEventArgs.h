@@ -6,8 +6,7 @@
 LN_NAMESPACE_BEGIN
 class UIEventArgs;
 using UIEventArgsPtr = Ref<UIEventArgs>;
-class UIEventInfo;
-using UIEventType = const UIEventInfo*;
+using UIEventType = int32_t;
 
 /**
 	@brief		

@@ -150,7 +150,7 @@ const String& TypeInfo::getName() const
 void TypeInfo::registerProperty(PropertyInfo* prop)
 {
 	if (LN_REQUIRE(!prop->m_registerd)) return;
-	m_propertyList.add(prop);
+	m_propertyList.push_back(prop);
 	prop->m_registerd = true;
 }
 
@@ -168,33 +168,12 @@ PropertyInfo* TypeInfo::findProperty(size_t memberOffset) const
 }
 
 //------------------------------------------------------------------------------
-void TypeInfo::registerReflectionEvent(ReflectionEventInfo* ev)
-{
-	if (LN_REQUIRE(!ev->m_registerd)) return;
-	m_routedEventList.add(ev);
-	ev->m_registerd = true;
-}
-
-//------------------------------------------------------------------------------
-bool TypeInfo::invokeReflectionEvent(ReflectionObject* target, const ReflectionEventInfo* ev, ReflectionEventArgs* e)
-{
-	for (ReflectionEventInfo* dynamicEvent : m_routedEventList)
-	{
-		if (dynamicEvent == ev)
-		{
-			// owner に addHandler されているイベントハンドラを呼び出す。
-			dynamicEvent->callEvent(target, e);
-			return e->handled;	// ev と同じイベントは1つしかリスト内に無いはずなのですぐ return
-		}
-	}
-
-	// ベースクラスがあれば、さらにベースクラスを見に行く
-	if (m_baseClass != nullptr)
-	{
-		return m_baseClass->invokeReflectionEvent(target, ev, e);
-	}
-	return false;
-}
+//void TypeInfo::registerReflectionEvent(ReflectionEventInfo* ev)
+//{
+//	if (LN_REQUIRE(!ev->m_registerd)) return;
+//	m_routedEventList.add(ev);
+//	ev->m_registerd = true;
+//}
 
 //------------------------------------------------------------------------------
 void TypeInfo::setBindingTypeInfo(void* data)

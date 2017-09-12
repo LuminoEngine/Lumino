@@ -233,6 +233,7 @@ set(LN_SOURCES_Reflection
 	Include/Lumino/Reflection/ReflectionArrayObject.h
 	Include/Lumino/Reflection/ReflectionEventArgs.h
 	Include/Lumino/Reflection/ReflectionObject.h
+	Include/Lumino/Reflection/ReflectionObjectList.h
 	Include/Lumino/Reflection/ReflectionStruct.h
 	Include/Lumino/Reflection/TypeInfo.h
 	Include/Lumino/Reflection/Variant.h

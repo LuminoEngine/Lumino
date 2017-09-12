@@ -20,33 +20,6 @@ namespace tr
 //==============================================================================
 // ReflectionHelper
 //==============================================================================
-//------------------------------------------------------------------------------
-void ReflectionHelper::addGCObject(ReflectionObject* obj, ReflectionObject* child)
-{
-	if (obj == nullptr || child == nullptr) return;
-	obj->m_gcList.add(child);
-}
-
-//------------------------------------------------------------------------------
-void ReflectionHelper::removeGCObject(ReflectionObject* obj, ReflectionObject* child)
-{
-	if (obj == nullptr || child == nullptr) return;
-	obj->m_gcList.remove(child);
-}
-
-//------------------------------------------------------------------------------
-void ReflectionHelper::gcObjects(ReflectionObject* obj)
-{
-	if (obj == nullptr) return;
-	obj->m_gcList.removeAll([](Ref<ReflectionObject>& obj) { return isGCReady(obj); });
-}
-
-//------------------------------------------------------------------------------
-bool ReflectionHelper::isGCReady(ReflectionObject* obj)
-{
-	if (obj == nullptr) return false;
-	return obj->m_autoGC && obj->getReferenceCount() == 1;
-}
 
 //==============================================================================
 // ReflectionObject
@@ -58,7 +31,6 @@ ln::tr::TypeInfo*				ReflectionObject::lnref_GetThisTypeInfo() const { return &l
 ReflectionObject::ReflectionObject()
 	: m_userData(nullptr)
 	, m_weakRefInfo(nullptr)
-	, m_autoGC(true)
 {
 }
 

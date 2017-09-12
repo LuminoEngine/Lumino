@@ -3,7 +3,6 @@
 #include "Common.h"
 #include "../Base/RefObject.h"
 #include "../Base/String.h"
-//#include "../Reflection/ReflectionObject.h"
 
 LN_NAMESPACE_BEGIN
 namespace tr
@@ -78,9 +77,6 @@ public:
 	PropertyInfo* findProperty(const String& name) const;
 	PropertyInfo* findProperty(size_t memberOffset) const;
 
-	void registerReflectionEvent(ReflectionEventInfo* ev);
-	bool invokeReflectionEvent(ReflectionObject* target, const ReflectionEventInfo* ev, ReflectionEventArgs* e);
-
 	//// childObjProp が継承できるプロパティをこの TypeInfo から探す。見つからなければ NULL を返す。
 	//// childObj : childObjProp を持つオブジェクト
 	//Property* FindInheritanceProperty(const Property* childObjProp, CoreObject* childObj) const;
@@ -122,8 +118,7 @@ private:
 
 	String						m_name;						// クラス名
 	TypeInfo*					m_baseClass;				// 継承元クラスを示す TypeInfo
-	List<PropertyInfo*>			m_propertyList;				// この型のクラスがもつプロパティのリスト
-	List<ReflectionEventInfo*>	m_routedEventList;			// この型のクラスがもつReflectionEventのリスト
+	std::vector<PropertyInfo*>	m_propertyList;
 	BindingTypeInfoSetter		m_bindingTypeInfoSetter;
 	BindingTypeInfoGetter		m_bindingTypeInfoGetter;
 	detail::ObjectFactory		m_factory;

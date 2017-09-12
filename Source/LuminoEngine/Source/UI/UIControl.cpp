@@ -171,7 +171,7 @@ UIElement* UIControl::getLogicalChild(int index)
 
 void UIControl::submit()
 {
-	onSubmit(UIEventArgs::create(nullptr, this));
+	onSubmit(UIEventArgs::create(0, this));
 }
 
 //------------------------------------------------------------------------------
