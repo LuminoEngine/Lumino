@@ -171,6 +171,7 @@ public:
 	MqoParser();
 
 	Ref<tr::SrMeshModel> import(ModelManager* manager, const PathName& filePath);
+	Ref<StaticMeshModel> import2(ModelManager* manager, const PathName& filePath);
 
 private:
 	struct MqoFace

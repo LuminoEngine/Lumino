@@ -89,6 +89,7 @@ public:
 	SrEdge*				edge;	// 必須
 	SrFace*				face;	// nullptr である場合、まだ面は張られていない
 
+	Vector3				normal;
 	Vector2				uv;
 	Color				color;
 
@@ -102,6 +103,16 @@ public:
 	List<SrLoop*>	m_loops;
 
 	Material*		m_material;
+
+public:
+	const List<SrLoop*>& getLoops() const { return m_loops; }
+
+private:
+	void setNormal(const Vector3& n) { m_normal = n; }
+
+	Vector3	m_normal;
+
+	friend class SrMesh;
 };
 
 
@@ -118,6 +129,7 @@ public:
 	SrLoop* makeLoop(SrEdge* edge, SrVertex* from, SrVertex* next);
 	SrFace* makeFace(const int* indices, int count);
 
+	void calculateNormals();
 
 	Ref<MeshResource> generateMeshResource();
 
@@ -140,6 +152,8 @@ public:
 	void addMaterial(Material* material);
 
 	Material* getMaterial(int index);
+
+	void calculateNormals();
 
 	Ref<StaticMeshModel> generateStaticMeshModel();
 

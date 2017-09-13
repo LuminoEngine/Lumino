@@ -1077,6 +1077,13 @@ Ref<tr::SrMeshModel> MqoParser::import(ModelManager* manager, const PathName& fi
 	return m_model;
 }
 
+Ref<StaticMeshModel> MqoParser::import2(ModelManager* manager, const PathName& filePath)
+{
+	auto mesh = import(manager, filePath);
+	mesh->calculateNormals();
+	return mesh->generateStaticMeshModel();
+}
+
 void MqoParser::loadMaterials(StreamReader* reader)
 {
 	String line;
