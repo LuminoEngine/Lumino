@@ -1367,6 +1367,19 @@ void MqoParser::visitFaceChunk(int faceCount)
 
 void MqoParser::visitFace(const MqoFace& mqoFace)
 {
+	tr::SrFace* face = m_mesh->makeFace(mqoFace.vertexIndices, mqoFace.vertexCount);
+	for (int i = 0; i < mqoFace.vertexCount; i++)
+	{
+		face->m_material = m_model->getMaterial(mqoFace.materialIndex);
+
+		face->m_loops[i]->uv = mqoFace.uv[i];
+
+		uint32_t c = mqoFace.colors[i];
+		face->m_loops[i]->color.r = static_cast<float>(c & 0x000000FF) / 255.0f;
+		face->m_loops[i]->color.g = static_cast<float>((c & 0x0000FF00) >> 8) / 255.0f;
+		face->m_loops[i]->color.b = static_cast<float>((c & 0x00FF0000) >> 16) / 255.0f;
+		face->m_loops[i]->color.a = static_cast<float>((c & 0xFF000000) >> 24) / 255.0f;
+	}
 }
 
 } // namespace detail

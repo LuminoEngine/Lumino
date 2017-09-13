@@ -52,7 +52,7 @@ Lumino の追加要素
 
 class SrVertex;
 class SrEdge;
-class SrHalfEdge;
+class SrLoop;
 class SrFace;
 class SrMeshOperation;
 
@@ -62,7 +62,7 @@ class SrVertex
 {
 public:
 	Vector3				position;
-	List<SrHalfEdge*>	refHalfEdges;
+	List<SrLoop*>	refHalfEdges;
 
 private:
 	void setPosition(const Vector3& pos) { position = pos; }
@@ -75,20 +75,23 @@ class SrEdge
 	: public Object
 {
 public:
-	SrHalfEdge*			leftHalfEdge;
-	SrHalfEdge*			rightHalfEdge;
+	std::array<SrVertex*, 2>	m_vertices;
 };
 
 /** 半稜線情報 */
-class SrHalfEdge
+class SrLoop
 	: public Object
 {
 public:
 	SrVertex*			vertex;
-	SrHalfEdge*			nextHalfEdge;
-	SrHalfEdge*			prevHalfEdge;
-	SrEdge*				parentEdge;
-	SrFace*				parentLoop;
+	//SrLoop*				nextLoop;
+	//SrLoop*				prevLoop;
+	SrEdge*				edge;	// 必須
+	SrFace*				face;	// nullptr である場合、まだ面は張られていない
+
+	Vector2				uv;
+	Color				color;
+
 };
 
 /** 面情報 */
@@ -96,18 +99,11 @@ class SrFace
 	: public Object
 {
 public:
-	SrHalfEdge*			firstHalfEdge;
+	List<SrLoop*>	m_loops;
+
+	Material*		m_material;
 };
 
-/** 面の角情報 */
-class SrFaceLoop
-	: public Object
-{
-public:
-	SrFace*				parentFace;
-	Vector3				uv;
-	Color				color;
-};
 
 /** メッシュ */
 class SrMesh
@@ -117,8 +113,19 @@ public:
 	void addVertices(int count);
 	SrVertex* getVertex(int index);
 
+
+	SrEdge* makeEdge(SrVertex* v1, SrVertex* v2);
+	SrLoop* makeLoop(SrEdge* edge, SrVertex* from, SrVertex* next);
+	SrFace* makeFace(const int* indices, int count);
+
+
+	Ref<MeshResource> generateMeshResource();
+
 private:
 	List<Ref<SrVertex>>	m_vertices;
+	List<Ref<SrFace>>	m_faces;
+	List<Ref<SrEdge>>	m_edges;
+	List<Ref<SrLoop>>	m_loops;
 };
 
 /** メッシュ */
@@ -131,6 +138,10 @@ public:
 public:
 	SrMesh* addMesh();
 	void addMaterial(Material* material);
+
+	Material* getMaterial(int index);
+
+	Ref<StaticMeshModel> generateStaticMeshModel();
 
 private:
 	List<Ref<SrMesh>>	m_meshes;
