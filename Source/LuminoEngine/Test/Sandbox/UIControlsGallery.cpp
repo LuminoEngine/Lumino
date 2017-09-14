@@ -21,11 +21,12 @@ void UIControlsGallery()
 
 
 
-	//Engine::getWorld3D()->setVisibleGridPlane(true);
+	Engine::getWorld3D()->setVisibleGridPlane(true);
 
 	Engine::getCamera3D()->addComponent(newObject<CameraMouseMoveBehavior>());
 
 
+#if 0
 	//auto* uiRoot = Engine::getMainWindow();
 	auto* uiRoot = Engine::getDefaultUILayer()->GetLayoutView();
 
@@ -88,9 +89,11 @@ void UIControlsGallery()
 	//popup->setSize(Size(50, 50));
 	//popup->setBackground(Brush::Red);
 	//popup->open(tree1);
+#endif
 
+#endif
 	//auto meshModel = ln::Assets::loadMeshModel(_LT("D:/Proj/LN/HC1/Assets/Graphics/TestMap1.mqo"));
-	auto meshModel = ln::Assets::loadMeshModel(_LT("D:/Proj/LN/HC1/Assets/Graphics/test2.mqo"));
+	auto meshModel = ln::Assets::loadMeshModel(LN_LOCALFILE("Assets/Plant1.mqo"));
 	auto res = meshModel->getMeshResource(0);
 	int vc = res->getVertexCount();
 	for (int i = 0; i < vc; i++)
@@ -102,11 +105,11 @@ void UIControlsGallery()
 	//auto mesh = StaticMeshComponent::createBox(2, 1, 1);
 	auto obj3D = newObject<WorldObject3D>();
 	obj3D->addComponent(mesh);
+	obj3D->setScale(0.1);
 
 	
 	
 
-#endif
 
 
 

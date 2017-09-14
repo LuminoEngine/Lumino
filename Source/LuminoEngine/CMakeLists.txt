@@ -360,6 +360,8 @@ set(LN_SOURCES_Mesh
 	Source/Mesh/MeshFactory.h
 	Source/Mesh/MeshFactory.cpp
 	Source/Mesh/SkinnedMeshModel.cpp
+	Source/Mesh/SMesh.h
+	Source/Mesh/SMesh.cpp
 )
 
 set(LN_SOURCES_Scene
