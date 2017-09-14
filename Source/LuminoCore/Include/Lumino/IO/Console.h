@@ -1,6 +1,6 @@
 
 #pragma once
-#include "../Base/StringRef.h"
+#include "../Base/String.h"
 
 LN_NAMESPACE_BEGIN
 

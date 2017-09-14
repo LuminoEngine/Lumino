@@ -124,7 +124,7 @@ Encoding* Encoding::getEncoding(EncodingType type)
 		}
 		default:
 			LN_UNREACHABLE();
-			break;
+			return nullptr;
 	}
 }
 

@@ -1137,7 +1137,6 @@ void UITextField::initialize()
 	setFocusable(true);
 	m_textArea = newObject<UISimpleTextArea>();
 
-	m_textArea->setBackground(Brush::Blue);
 	addVisualChild(m_textArea);
 }
 
@@ -1157,7 +1156,7 @@ Size UITextField::measureOverride(const Size& availableSize)
 //------------------------------------------------------------------------------
 Size UITextField::arrangeOverride(const Size& finalSize)
 {
-	m_textArea->arrangeLayout(Rect(0, 0, finalSize));
+	m_textArea->arrangeLayout(Rect(0, 0, finalSize).makeDeflate(getPadding()));
 	return UIControl::arrangeOverride(finalSize);
 }
 

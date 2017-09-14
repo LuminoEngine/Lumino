@@ -25,6 +25,12 @@ void UIControlsGallery()
 
 	Engine::getCamera3D()->addComponent(newObject<CameraMouseMoveBehavior>());
 
+	auto* uiRoot = Engine::getDefaultUILayer()->GetLayoutView();
+
+	auto text1 = UITextField::create();
+	text1->setPosition(Point(10, 20));
+	text1->setSize(Size(200, 32));
+	uiRoot->addChild(text1);
 
 #if 0
 	//auto* uiRoot = Engine::getMainWindow();
@@ -91,7 +97,6 @@ void UIControlsGallery()
 	//popup->open(tree1);
 #endif
 
-#endif
 	//auto meshModel = ln::Assets::loadMeshModel(_LT("D:/Proj/LN/HC1/Assets/Graphics/TestMap1.mqo"));
 	auto meshModel = ln::Assets::loadMeshModel(LN_LOCALFILE("Assets/Plant1.mqo"));
 	auto res = meshModel->getMeshResource(0);
@@ -106,6 +111,7 @@ void UIControlsGallery()
 	auto obj3D = newObject<WorldObject3D>();
 	obj3D->addComponent(mesh);
 	obj3D->setScale(0.1);
+#endif
 
 	
 	

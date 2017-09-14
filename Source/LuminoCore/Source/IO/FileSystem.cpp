@@ -3,7 +3,6 @@
 #include <sys/stat.h>
 #include "../Internal.h"
 #include <Lumino/Base/String.h>
-#include <Lumino/Base/StringU.h>
 #include <Lumino/Base/ByteBuffer.h>
 #include <Lumino/Text/Encoding.h>
 #include <Lumino/IO/FileStream.h>

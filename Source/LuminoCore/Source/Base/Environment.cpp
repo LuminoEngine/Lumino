@@ -13,7 +13,6 @@
 #include <Lumino/Base/StringHelper.h>
 #include <Lumino/IO/FileSystem.h>
 
-#include <Lumino/Base/StringU.h>
 #include <Lumino/Text/Encoding.h>
 
 LN_NAMESPACE_BEGIN

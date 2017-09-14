@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "../Base/Environment.h"
 #include "../Base/String.h"
-#include "../Base/StringRef.h"
 #include "Common.h"
 #include "PathTraits.h"
 

@@ -27,8 +27,6 @@ LN_ENUM_DECLARE(SpecialFolder);
 LN_NAMESPACE_END
 
 
-#include "StringU.h"
-
 LN_NAMESPACE_BEGIN
 
 /** エンディアンを示す値 */

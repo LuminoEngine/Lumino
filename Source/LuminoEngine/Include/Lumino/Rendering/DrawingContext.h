@@ -49,13 +49,13 @@ public:
 	void drawBoxBorder(
 		const Rect& rect, const Thickness& thickness, const CornerRadius& cornerRadius,
 		const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor,
-		BorderDirection borderDirection);
-
-	void drawBoxBorder(
-		const Rect& rect, const Thickness& thickness,
-		const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor,
-		float ltRad, float rtRad, float lbRad, float rbRad, BorderDirection borderDirection,
+		 BorderDirection borderDirection,
 		const Color& shadowColor, float shadowBlur, float shadowWidth, ShadowDirection shadowDirection);
+
+	void drawBoxBorderLine(
+		const Rect& rect, const Thickness& thickness, const CornerRadius& cornerRadius,
+		const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor,
+		BorderDirection borderDirection);
 
 	void drawBoxShadow(const Rect& rect, const CornerRadius& cornerRadius, const Color& color, float blur, float width, ShadowDirection shadowDirection);
 

@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include "../Base/List.h"
-#include "../Base/StringRef.h"
 #include "../Base/RefObject.h"
 #include "PathName.h"
 

@@ -2,7 +2,6 @@
 #include <time.h>
 #include "../Internal.h"
 #include <Lumino/Base/String.h>
-#include <Lumino/Base/StringU.h>
 #include <Lumino/IO/FileSystem.h>
 #include <Lumino/IO/PathName.h>
 #include <Lumino/IO/DirectoryUtils.h>

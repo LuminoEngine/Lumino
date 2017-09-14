@@ -408,7 +408,9 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 		// base
 		{
 			auto* props = style->getPropertyTable();
-			props->background = Ref<Brush>::staticCast(boarderNormalBrush);
+			props->borderThickness = Thickness(1);
+			props->cornerRadius = 3;
+			props->padding = Thickness(7, 5);
 		}
 	}
 	// UIWindow

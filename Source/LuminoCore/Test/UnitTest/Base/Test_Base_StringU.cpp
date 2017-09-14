@@ -2,7 +2,6 @@
 #include <unordered_map>
 #include <regex>
 #include <Lumino/Base/Locale.h>
-#include <Lumino/Base/StringU.h>
 #include <Lumino/IO/FileSystem.h>
 
 class Test_Base_UString : public ::testing::Test
