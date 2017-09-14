@@ -138,6 +138,11 @@ void World::reginUpdateFrame()
 		m_debugRendererDefaultMaterial->setShader(detail::EngineDomain::getGraphicsManager()->getBuiltinShader(BuiltinShader::Sprite));
 		m_debugRenderer->setDefaultMaterial(m_debugRendererDefaultMaterial);
 	}
+
+	for (auto& obj : m_rootWorldObjectList)
+	{
+		obj->onPreUpdate();
+	}
 }
 
 //------------------------------------------------------------------------------

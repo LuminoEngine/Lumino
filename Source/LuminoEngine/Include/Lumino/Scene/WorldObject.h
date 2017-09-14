@@ -118,8 +118,13 @@ public:
 	/// 開始処理
 	//virtual void onStart();
 
+	// 物理演算・衝突判定の前
+	virtual void onPreUpdate();
+
 	/// フレーム更新
 	virtual void onUpdate();
+
+	
 
 
 	virtual void onRender(DrawList* context);

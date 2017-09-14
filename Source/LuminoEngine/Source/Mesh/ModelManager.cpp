@@ -404,7 +404,7 @@ Animation::AnimationClip* ModelManager::CreateMotion(const PathName& filePath)
 //------------------------------------------------------------------------------
 Ref<Texture> ModelManager::createTexture(const PathName& parentDir, const StringRef& filePath, ModelCreationFlag flags)
 {
-	PathName path(parentDir, filePath.getBegin());	// TODO GetBegin
+	PathName path(parentDir, filePath);
 
 	// FileNotFound を無視する場合
 	if (flags.TestFlag(ModelCreationFlag::IgnoreTextureNotFound))

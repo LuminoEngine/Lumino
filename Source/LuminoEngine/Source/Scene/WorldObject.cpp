@@ -137,6 +137,10 @@ void WorldObject::removeFromWorld()
 //{
 //}
 
+void WorldObject::onPreUpdate()
+{
+}
+
 //------------------------------------------------------------------------------
 void WorldObject::onUpdate()
 {

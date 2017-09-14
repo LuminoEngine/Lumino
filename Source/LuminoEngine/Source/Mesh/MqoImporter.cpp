@@ -1044,6 +1044,7 @@ Ref<tr::SrMeshModel> MqoParser::import(ModelManager* manager, const PathName& fi
 {
 	if (LN_REQUIRE(manager != nullptr)) return nullptr;
 
+	m_manager = manager;
 	m_parentDir = filePath.getParent();
 	m_model = newObject<tr::SrMeshModel>();
 
@@ -1188,6 +1189,7 @@ void MqoParser::loadMaterials(StreamReader* reader)
 		material->setSpecular(c);
 
 		material->setSpecularPower(power);
+		material->setMaterialTexture(texture);
 
 		visitMaterial(material);
 	}
