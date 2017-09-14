@@ -7,6 +7,24 @@
 LN_NAMESPACE_BEGIN
 namespace tr {
 
+static Vector3 triangleNormal(const Vector3& p0, const Vector3& p1, const Vector3& p2)
+{
+	Vector3 v10 = p1 - p0;
+	Vector3 v20 = p2 - p0;
+	Vector3 nor = Vector3::cross(v20, v10);
+	return Vector3::normalize(nor);
+}
+
+//==============================================================================
+// SrEdge
+//==============================================================================
+
+void SrEdge::addLinkFace(SrFace* face)
+{
+	if (LN_REQUIRE(!m_linkFaces.contains(face))) return;
+	m_linkFaces.add(face);
+}
+
 //==============================================================================
 // SrMesh
 //==============================================================================
@@ -33,6 +51,8 @@ SrEdge* SrMesh::makeEdge(SrVertex* v1, SrVertex* v2)
 
 	edge->m_vertices[0] = v1;
 	edge->m_vertices[1] = v2;
+	v1->addLinkEdge(edge);
+	v2->addLinkEdge(edge);
 
 	return edge;
 }
@@ -67,30 +87,47 @@ SrFace* SrMesh::makeFace(const int* indices, int count)
 	auto face = newObject<SrFace>();
 	m_faces.add(face);
 
+	SrLoop* prevLoop = nullptr;
 	for (int i = 0; i < count; i++)
 	{
 		SrVertex* from = getVertex(indices[i]);
 		SrVertex* next = (i == count - 1) ? getVertex(indices[0]) : getVertex(indices[i + 1]);
 
-		SrEdge* edge = makeEdge(from, next);
+		SrEdge* edge = findEdge(from, next);
+		if (!edge) edge = makeEdge(from, next);
+
 		SrLoop* loop = makeLoop(edge, from, next);
+		loop->prevLoop = prevLoop;
 
 		face->m_loops.add(loop);
+		edge->addLinkFace(face);
+
+		prevLoop = loop;
 	}
+
+	face->m_loops.getFront()->prevLoop = prevLoop;
 
 	return face;
 }
 
-static Vector3 triangleNormal(const Vector3& p0, const Vector3& p1, const Vector3& p2)
+SrEdge* SrMesh::findEdge(SrVertex* v1, SrVertex* v2)
 {
-	Vector3 v10 = p1 - p0;
-	Vector3 v20 = p2 - p0;
-	Vector3 nor = Vector3::cross(v20, v10);
-	return Vector3::normalize(nor);
+	for (auto& edge : v1->getLinkEdges())
+	{
+		if (edge->m_vertices[0] == v2 || edge->m_vertices[1] == v2)
+		{
+			return edge;
+		}
+	}
+	return nullptr;
 }
 
-void SrMesh::calculateNormals()
+void SrMesh::calculateNormals(float smoothRadius)
 {
+	smoothRadius /= 2;
+	float smoothThr = (-1.0 * (smoothRadius / Math::PIDiv2)) + 1.0f;	// 0 .. 180 -> 1.0 .. -1.0
+
+	// 各面の法線を求める
 	for (auto& face : m_faces)
 	{
 		Vector3 normal;
@@ -103,13 +140,55 @@ void SrMesh::calculateNormals()
 				loops[iLoop]->vertex->position);
 		}
 		int triangleCount = loops.getCount() - 2;
-		normal /= (float)triangleCount;
-		normal = Vector3::safeNormalize(normal, Vector3::UnitY);
+		normal = Vector3::safeNormalize(normal / (float)triangleCount, Vector3::UnitY);
 		face->setNormal(normal);
+	}
 
-		for (auto& loop : loops)
+	// 各辺の法線を求める (隣接面の平均)
+	for (auto& edge : m_edges)
+	{
+		auto& faces = edge->getLinkFaces();
+		Vector3 normal;
+		for (auto& face : faces)
 		{
-			loop->normal = normal;
+			normal += face->getNormal();
+		}
+		normal = Vector3::safeNormalize(normal / (float)faces.getCount(), Vector3::UnitY);
+		edge->setNormal(normal);
+	}
+
+	// ループの法線を求める (必要に応じてスムージング)
+	for (auto& face : m_faces)
+	{
+		for (auto& loop : face->getLoops())
+		{
+			if (smoothRadius == 0.0f)
+			{
+				loop->normal = face->getNormal();
+			}
+			else
+			{
+				Vector3 normal;
+				int smoothNormalCount = 0;
+				SrEdge* edges[] = { loop->prevLoop->edge, loop->edge };
+				for (int i = 0; i < 2; i++)
+				{
+					float d = Vector3::dot(edges[i]->getNormal(), face->getNormal());
+					if (d >= smoothThr)
+					{
+						normal += edges[i]->getNormal();
+						smoothNormalCount++;
+					}
+				}
+				if (smoothNormalCount > 0)
+				{
+					loop->normal = Vector3::safeNormalize(normal / (float)smoothNormalCount, Vector3::UnitY);
+				}
+				else
+				{
+					loop->normal = face->getNormal();
+				}
+			}
 		}
 	}
 }
@@ -127,7 +206,7 @@ Ref<MeshResource> SrMesh::generateMeshResource()
 		for (auto& loop : face->getLoops())
 		{
 			mesh->setPosition(iVertex, loop->vertex->position);
-			mesh->setNormal(iVertex, loop->normal);	// TODO:
+			mesh->setNormal(iVertex, loop->normal);
 			mesh->setUV(iVertex, loop->uv);
 			mesh->setColor(iVertex, loop->color);
 			iVertex++;
@@ -190,7 +269,7 @@ void SrMeshModel::calculateNormals()
 {
 	for (auto& mesh : m_meshes)
 	{
-		mesh->calculateNormals();
+		mesh->calculateNormals(Math::degreesToRadians(59.5));	// TODO:
 	}
 }
 

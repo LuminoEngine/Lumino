@@ -175,8 +175,6 @@ Ref<IShader> GLGraphicsDevice::createShaderImplement(const void* textData, size_
 	result->Level = shader->getDiag()->level;
 	result->Message = shader->getDiag()->message;
 
-	//printf("▼\n");
-
 	//GLShader* shader = NULL;
 	//result->Level = GLSLUtils::Build(this, textData, size, &shader, &result->Message);
 
@@ -201,7 +199,6 @@ Ref<IShader> GLGraphicsDevice::createShaderImplement(const void* textData, size_
 	//makeCurrentContext(NULL);
 	//makeCurrentContext(getMainContext());
 
-	//printf("▲\n");
 	Ref<IShader> obj(shader, false);
 	return obj;
 }

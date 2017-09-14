@@ -54,6 +54,7 @@ class SrVertex;
 class SrEdge;
 class SrLoop;
 class SrFace;
+class SrMesh;
 class SrMeshOperation;
 
 /** 頂点情報 */
@@ -62,11 +63,17 @@ class SrVertex
 {
 public:
 	Vector3				position;
-	List<SrLoop*>	refHalfEdges;
+	//List<SrLoop*>	refHalfEdges;
+
+	const List<SrEdge*>& getLinkEdges() const { return m_linkEdges; }
 
 private:
 	void setPosition(const Vector3& pos) { position = pos; }
+	void addLinkEdge(SrEdge* edge) { m_linkEdges.add(edge); }
 
+	List<SrEdge*>	m_linkEdges;
+
+	friend class SrMesh;
 	friend class SrMeshOperation;
 };
 
@@ -76,6 +83,19 @@ class SrEdge
 {
 public:
 	std::array<SrVertex*, 2>	m_vertices;
+
+	const List<SrFace*>& getLinkFaces() const { return m_linkFaces; }
+
+	const Vector3& getNormal() const { return m_normal; }
+
+private:
+	void addLinkFace(SrFace* face);
+	void setNormal(const Vector3& n) { m_normal = n; }
+
+	List<SrFace*>	m_linkFaces;
+	Vector3			m_normal;
+
+	friend class SrMesh;
 };
 
 /** 半稜線情報 */
@@ -84,8 +104,8 @@ class SrLoop
 {
 public:
 	SrVertex*			vertex;
-	//SrLoop*				nextLoop;
-	//SrLoop*				prevLoop;
+	SrLoop*				nextLoop = nullptr;
+	SrLoop*				prevLoop = nullptr;
 	SrEdge*				edge;	// 必須
 	SrFace*				face;	// nullptr である場合、まだ面は張られていない
 
@@ -93,6 +113,14 @@ public:
 	Vector2				uv;
 	Color				color;
 
+	//const List<SrEdge*>& getLinkEdges() const { return m_linkEdges; }
+
+private:
+	//void addLinkEdge(SrEdge* edge) { m_linkEdges.add(edge); }
+
+	//List<SrEdge*>	m_linkEdges;
+
+	friend class SrMesh;
 };
 
 /** 面情報 */
@@ -105,6 +133,8 @@ public:
 	Material*		m_material;
 
 public:
+	const Vector3& getNormal() const { return m_normal; }
+
 	const List<SrLoop*>& getLoops() const { return m_loops; }
 
 private:
@@ -129,7 +159,10 @@ public:
 	SrLoop* makeLoop(SrEdge* edge, SrVertex* from, SrVertex* next);
 	SrFace* makeFace(const int* indices, int count);
 
-	void calculateNormals();
+	/** 2つの頂点を結んでいる辺を検索する */
+	SrEdge* findEdge(SrVertex* v1, SrVertex* v2);
+
+	void calculateNormals(float smoothRadius = 0.0f);
 
 	Ref<MeshResource> generateMeshResource();
 

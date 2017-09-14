@@ -93,7 +93,7 @@ void UIControlsGallery()
 
 #endif
 	//auto meshModel = ln::Assets::loadMeshModel(_LT("D:/Proj/LN/HC1/Assets/Graphics/TestMap1.mqo"));
-	auto meshModel = ln::Assets::loadMeshModel(_LT("D:/Proj/LN/HC1/Assets/Graphics/test2.mqo"));
+	auto meshModel = ln::Assets::loadMeshModel(LN_LOCALFILE("Assets/Plant1.mqo"));
 	auto res = meshModel->getMeshResource(0);
 	int vc = res->getVertexCount();
 	for (int i = 0; i < vc; i++)
@@ -105,6 +105,7 @@ void UIControlsGallery()
 	//auto mesh = StaticMeshComponent::createBox(2, 1, 1);
 	auto obj3D = newObject<WorldObject3D>();
 	obj3D->addComponent(mesh);
+	obj3D->setScale(0.1);
 
 	
 	
