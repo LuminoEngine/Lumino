@@ -42,7 +42,7 @@ enum class ByteOrder
 class Environment
 {
 public:
-	static UString getCurrentDirectory();
+	static String getCurrentDirectory();
 
 
 	/**

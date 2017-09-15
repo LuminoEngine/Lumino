@@ -12,8 +12,8 @@
 LN_NAMESPACE_BEGIN
 class Encoding;
 class Stream;
-class UString;
-class UStringRef;
+class String;
+class StringRef;
 
 /**
 	@brief	ファイルユーティリティ
@@ -136,7 +136,7 @@ public:
 
 	static tr::Enumerator<PathName> getFiles(const StringRef& dirPath, const StringRef& pattern = StringRef());
 
-	static void getCurrentDirectory(UString* outPath);
+	static void getCurrentDirectory(String* outPath);
 
 private:
 	static bool mkdir(const char* path);

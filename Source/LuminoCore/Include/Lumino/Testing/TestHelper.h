@@ -17,7 +17,7 @@ public:
 	/// baseFilePath のファイルと同じディレクトリの fileName を指すパスを得る
 	static std::string getFilePathA(const char* baseFilePath, const char* fileName);
 	static std::wstring getFilePathW(const char* baseFilePath, const wchar_t* fileName);
-	static Path getFilePathU(const char* baseFilePath, const UChar* fileName);
+	static Path getFilePathU(const char* baseFilePath, const Char* fileName);
 
 	/// 2 つの配列をバイト単位で比較する
 	static bool checkArrays(const void* ary1, const void* ary2, size_t count);

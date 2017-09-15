@@ -116,7 +116,6 @@
 #define _U(x)		u ## x
 namespace ln {
 using Char = char16_t;
-using UChar = char16_t;
 }
 
 #else
@@ -127,7 +126,6 @@ using UChar = char16_t;
 #define _U(x)		(L ## x)
 namespace ln {
 using Char = wchar_t;
-using UChar = wchar_t;
 }
 
 #endif

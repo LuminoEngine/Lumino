@@ -33,9 +33,9 @@ public:
 		return m_longNativeString.data();
 	}
 
-	UString toUString() const
+	String toUString() const
 	{
-		return UString::fromCString(m_longNativeString.data(), m_longNativeString.size());
+		return String::fromCString(m_longNativeString.data(), m_longNativeString.size());
 	}
 
 private:
@@ -122,7 +122,7 @@ public:
 // Environment
 //==============================================================================
 
-UString getCurrentDirectory()
+String getCurrentDirectory()
 {
 	LocalStringConverter<PlatformEnvironment::CharType> buf;
 	PlatformEnvironment::getCurrentDirectory(&buf);

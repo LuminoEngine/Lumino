@@ -12,7 +12,7 @@ TEST_F(Test_IO_Path, Constructor)
 {
 	// <Test> String から変換できること
 	{
-		Path path = UString("dir");
+		Path path = String("dir");
 	}
 	// <Test> 
 	{

@@ -84,7 +84,7 @@ void GenericFormatStringBuilder<TChar>::appendString(const TChar* str, int lengt
 }
 
 template<typename TChar>
-void GenericFormatStringBuilder<TChar>::appendString(const UString& str)
+void GenericFormatStringBuilder<TChar>::appendString(const String& str)
 {
 	appendIntenal(str.c_str(), str.getLength());
 }
@@ -288,20 +288,20 @@ public:
 		f.m_sb.appendString(static_cast<const TChar*>(value));
 	}
 
-	// UString
-	FormatArg(const UString& value) : m_value(static_cast<const void*>(&value)), m_format(&formatArg_UString) {}
+	// String
+	FormatArg(const String& value) : m_value(static_cast<const void*>(&value)), m_format(&formatArg_UString) {}
 	static void formatArg_UString(void* formatter, const void* value)
 	{
 		auto& f = *static_cast<GenericStringFormatter<TChar>*>(formatter);
-		f.m_sb.appendString(*static_cast<const UString*>(value));
+		f.m_sb.appendString(*static_cast<const String*>(value));
 	}
 
-	// UStringRef
-	FormatArg(const UStringRef& value) : m_value(static_cast<const void*>(&value)), m_format(&formatArg_UStringRef) {}
+	// StringRef
+	FormatArg(const StringRef& value) : m_value(static_cast<const void*>(&value)), m_format(&formatArg_UStringRef) {}
 	static void formatArg_UStringRef(void* formatter, const void* value)
 	{
 		auto& f = *static_cast<GenericStringFormatter<TChar>*>(formatter);
-		const UStringRef* ref = static_cast<const UStringRef*>(value);
+		const StringRef* ref = static_cast<const StringRef*>(value);
 		f.m_sb.appendString(ref->getBegin(), ref->getLength());
 	}
 
@@ -593,11 +593,11 @@ bool formatInternal(const Locale& locale, GenericFormatStringBuilder<TChar>* out
 }
 
 template<typename TChar, typename... TArgs>
-static inline int formatFixed(TChar* buffer, size_t bufferSize, const Locale& locale, const UStringRef& format, TArgs&&... args)
+static inline int formatFixed(TChar* buffer, size_t bufferSize, const Locale& locale, const StringRef& format, TArgs&&... args)
 {
-	auto argList = fmt::detail::makeArgList<UChar>(std::forward<TArgs>(args)...);
-	fmt::GenericFormatStringBuilder<UChar> sb(buffer, bufferSize - 1);
-	if (fmt::detail::formatInternal<UChar>(locale, &sb, format.data(), format.getLength(), argList))
+	auto argList = fmt::detail::makeArgList<Char>(std::forward<TArgs>(args)...);
+	fmt::GenericFormatStringBuilder<Char> sb(buffer, bufferSize - 1);
+	if (fmt::detail::formatInternal<Char>(locale, &sb, format.data(), format.getLength(), argList))
 	{
 		buffer[sb.getLength()] = '\0';
 		return sb.getLength();
@@ -614,32 +614,32 @@ static inline int formatFixed(TChar* buffer, size_t bufferSize, const Locale& lo
 //==============================================================================
 
 template<typename... TArgs>
-inline UString UString::format(const UStringRef& format, TArgs&&... args)
+inline String String::format(const StringRef& format, TArgs&&... args)
 {
-	auto argList = fmt::detail::makeArgList<UChar>(std::forward<TArgs>(args)...);
-	fmt::GenericFormatStringBuilder<UChar> sb;
-	if (fmt::detail::formatInternal<UChar>(Locale::getC(), &sb, format.data(), format.getLength(), argList))
+	auto argList = fmt::detail::makeArgList<Char>(std::forward<TArgs>(args)...);
+	fmt::GenericFormatStringBuilder<Char> sb;
+	if (fmt::detail::formatInternal<Char>(Locale::getC(), &sb, format.data(), format.getLength(), argList))
 	{
-		return UString(sb.c_str(), sb.getLength());
+		return String(sb.c_str(), sb.getLength());
 	}
 	else
 	{
-		return UString();
+		return String();
 	}
 }
 
 template<typename... TArgs>
-inline UString UString::format(const Locale& locale, const UStringRef& format, TArgs&&... args)
+inline String String::format(const Locale& locale, const StringRef& format, TArgs&&... args)
 {
-	auto argList = fmt::detail::makeArgList<UChar>(std::forward<TArgs>(args)...);
-	fmt::GenericFormatStringBuilder<UChar> sb;
-	if (fmt::detail::formatInternal<UChar>(locale, &sb, format.data(), format.getLength(), argList))
+	auto argList = fmt::detail::makeArgList<Char>(std::forward<TArgs>(args)...);
+	fmt::GenericFormatStringBuilder<Char> sb;
+	if (fmt::detail::formatInternal<Char>(locale, &sb, format.data(), format.getLength(), argList))
 	{
-		return UString(sb.c_str(), sb.getLength());
+		return String(sb.c_str(), sb.getLength());
 	}
 	else
 	{
-		return UString();
+		return String();
 	}
 }
 

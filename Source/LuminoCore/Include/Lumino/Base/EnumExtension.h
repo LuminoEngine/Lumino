@@ -329,7 +329,7 @@ public:
 			PairListReference members = EnumParser<TEnum>::GetMemberList();
 			for (int i = 0; i < members.getCount(); ++i)
 			{
-				if (members[i].name == UStringRef(str, len))
+				if (members[i].name == StringRef(str, len))
 				{
 					*outValue = members[i].value;
 					return true;

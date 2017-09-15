@@ -14,9 +14,9 @@ LN_NAMESPACE_BEGIN
 // Path
 //==============================================================================
 
-const UChar Path::Separator = (UChar)PathTraits::DirectorySeparatorChar;
-const UChar Path::AltSeparator = (UChar)PathTraits::AltDirectorySeparatorChar;
-const UChar Path::VolumeSeparator = (UChar)PathTraits::VolumeSeparatorChar;
+const Char Path::Separator = (Char)PathTraits::DirectorySeparatorChar;
+const Char Path::AltSeparator = (Char)PathTraits::AltDirectorySeparatorChar;
+const Char Path::VolumeSeparator = (Char)PathTraits::VolumeSeparatorChar;
 
 Path::Path()
 {
@@ -27,12 +27,12 @@ Path::Path(const Path& path)
 {
 }
 
-void Path::assign(const UStringRef& path)
+void Path::assign(const StringRef& path)
 {
 	m_path = path;
 }
 
-void Path::assignUnderBasePath(const Path& basePath, const UStringRef& relativePath)
+void Path::assignUnderBasePath(const Path& basePath, const StringRef& relativePath)
 {
 	// フルパスの場合はそのまま割り当てる
 	// basePath が空なら relativePath を使う
@@ -66,7 +66,7 @@ void Path::assignUnderBasePath(const Path& basePath, const Path& relativePath)
 	append(relativePath);
 }
 
-void Path::append(const UStringRef& path)
+void Path::append(const StringRef& path)
 {
 	if (PathTraits::isAbsolutePath(path.data(), path.getLength()))
 	{
@@ -82,10 +82,10 @@ void Path::append(const UStringRef& path)
 	}
 }
 
-UString Path::getFileName() const
+String Path::getFileName() const
 {
-	const UChar* end = m_path.c_str() + m_path.getLength();
-	return UString(PathTraits::getFileName(m_path.c_str(), end), end);
+	const Char* end = m_path.c_str() + m_path.getLength();
+	return String(PathTraits::getFileName(m_path.c_str(), end), end);
 }
 
 bool Path::isAbsolute() const
@@ -95,29 +95,29 @@ bool Path::isAbsolute() const
 
 Path Path::getWithoutExtension() const
 {
-	const UChar* begin = m_path.c_str();
-	return UString(begin, PathTraits::getWithoutExtensionEnd(begin, begin + m_path.getLength()));
+	const Char* begin = m_path.c_str();
+	return String(begin, PathTraits::getWithoutExtensionEnd(begin, begin + m_path.getLength()));
 }
 
-UStringRef Path::getExtension(bool withDot) const
+StringRef Path::getExtension(bool withDot) const
 {
-	const UChar* begin = m_path.c_str();
-	const UChar* end = m_path.c_str() + m_path.getLength();
-	return UStringRef(PathTraits::getExtensionBegin(begin, end, withDot), end);
+	const Char* begin = m_path.c_str();
+	const Char* end = m_path.c_str() + m_path.getLength();
+	return StringRef(PathTraits::getExtensionBegin(begin, end, withDot), end);
 }
 
 Path Path::getParent() const
 {
-	const UChar* begin = m_path.c_str();
-	const UChar* end = m_path.c_str() + m_path.getLength();
-	return UStringRef(begin, PathTraits::getDirectoryPathEnd(begin, end));
+	const Char* begin = m_path.c_str();
+	const Char* end = m_path.c_str() + m_path.getLength();
+	return StringRef(begin, PathTraits::getDirectoryPathEnd(begin, end));
 }
 
-UStringRef Path::getFileNameWithoutExtension() const
+StringRef Path::getFileNameWithoutExtension() const
 {
-	const UChar* begin = m_path.c_str();
-	const UChar* end = m_path.c_str() + m_path.getLength();
-	return UStringRef(
+	const Char* begin = m_path.c_str();
+	const Char* end = m_path.c_str() + m_path.getLength();
+	return StringRef(
 		PathTraits::getFileName(m_path.c_str(), end),
 		PathTraits::getExtensionBegin(begin, end, true));
 }
@@ -141,11 +141,11 @@ Path Path::makeRelative(const Path& target) const
 
 bool Path::equals(const Char* path) const { return PathTraits::equals(m_path.c_str(), path); }
 bool Path::equals(const Path& path) const { return PathTraits::equals(m_path.c_str(), path.c_str()); }
-bool Path::equals(const UString& path) const { return PathTraits::equals(m_path.c_str(), path.c_str()); }
+bool Path::equals(const String& path) const { return PathTraits::equals(m_path.c_str(), path.c_str()); }
 
-const UString Path::getStrEndSeparator() const
+const String Path::getStrEndSeparator() const
 {
-	UString newStr = m_path;
+	String newStr = m_path;
 	if (!newStr.isEmpty() && !PathTraits::endWithSeparator(newStr.c_str(), newStr.getLength())/*(*newStr.rbegin()) != Separator*/) {	// 末尾セパレータ
 		newStr += Separator;
 	}
@@ -194,35 +194,35 @@ Path Path::getSpecialFolderPath(SpecialFolder specialFolder, const Char* childDi
 
 Path Path::getUniqueFilePathInDirectory(const Path& directory, const Char* filePrefix, const Char* extName)
 {
-	UString dirPath = directory.getStrEndSeparator();
+	String dirPath = directory.getStrEndSeparator();
 	uint64_t key = static_cast<uint64_t>(::time(NULL));
 
 	// 同番号のファイルがあればインクリメントしつつ空き番号を調べる
 	int number = 1;
-	UString filePath;
-	UString work;
+	String filePath;
+	String work;
 	do
 	{
 		if (filePrefix != NULL && extName != NULL) {
-			filePath = UString::sprintf(_LT("%s%s%llu%d%s"), dirPath.c_str(), filePrefix, key, number, extName);
+			filePath = String::sprintf(_LT("%s%s%llu%d%s"), dirPath.c_str(), filePrefix, key, number, extName);
 		}
 		else if (filePrefix == NULL && extName != NULL) {
-			filePath = UString::sprintf(_LT("%s%llu%d%s"), dirPath.c_str(), key, number, extName);
+			filePath = String::sprintf(_LT("%s%llu%d%s"), dirPath.c_str(), key, number, extName);
 		}
 		else if (filePrefix != NULL && extName == NULL) {
-			filePath = UString::sprintf(_LT("%s%s%llu%d"), dirPath.c_str(), filePrefix, key, number);
+			filePath = String::sprintf(_LT("%s%s%llu%d"), dirPath.c_str(), filePrefix, key, number);
 		}
 		else {
-			filePath = UString::sprintf(_LT("%s%llu%d"), dirPath.c_str(), key, number);
+			filePath = String::sprintf(_LT("%s%llu%d"), dirPath.c_str(), key, number);
 		}
 
 		number++;
 	} while (detail::FileSystemInternal::existsFile(filePath.c_str(), filePath.getLength()));
 
-	return UString(filePath.c_str());
+	return String(filePath.c_str());
 }
 
-UString Path::getUniqueFileNameInDirectory(const Path& directory, const Char* filePrefix, const Char* extName)
+String Path::getUniqueFileNameInDirectory(const Path& directory, const Char* filePrefix, const Char* extName)
 {
 	return getUniqueFilePathInDirectory(directory, filePrefix, extName).getFileName();
 }

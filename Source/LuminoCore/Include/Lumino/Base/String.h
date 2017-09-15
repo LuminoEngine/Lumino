@@ -1,5 +1,4 @@
 ﻿
-
 #pragma once
 #include <vector>
 #include <string>
@@ -47,41 +46,41 @@ enum class UStringRefSource
 }
 
 class Locale;
-class UStringRef;
+class StringRef;
 class Path;
 
 /**
 	@brief		文字列を表すクラスです。				
 */
-class UString
+class String
 {
 public:
-	UString();
-	~UString();
-	UString(const UString& str);
-	UString(UString&& str) LN_NOEXCEPT;
-	UString& operator=(const UString& str);
-	UString& operator=(UString&& str) LN_NOEXCEPT;
+	String();
+	~String();
+	String(const String& str);
+	String(String&& str) LN_NOEXCEPT;
+	String& operator=(const String& str);
+	String& operator=(String&& str) LN_NOEXCEPT;
 
-	UString(const UString& str, int begin);
-	UString(const UString& str, int begin, int length);
-	UString(const UChar* str);
-	UString(const UChar* str, int length);
-	UString(const UChar* begin, const UChar* end);
-	UString(int count, UChar ch);
-	UString(const UStringRef& str);
-	UString(const Path& path);
+	String(const String& str, int begin);
+	String(const String& str, int begin, int length);
+	String(const Char* str);
+	String(const Char* str, int length);
+	String(const Char* begin, const Char* end);
+	String(int count, Char ch);
+	String(const StringRef& str);
+	String(const Path& path);
 	// TODO: Path&&
 
 #ifdef LN_STRING_FROM_CHAR
-	UString(const char* str);
+	String(const char* str);
 #endif
 
 	/** 文字列が空であるかを確認します。 */
 	bool isEmpty() const;
 
 	/** C 言語としての文字列表現を取得します。 */
-	const UChar* c_str() const;
+	const Char* c_str() const;
 
 	/** 文字列の長さを取得します。 */
 	int getLength() const;
@@ -94,17 +93,17 @@ public:
 
 	/** 文字列の長さを変更します。 */
 	void resize(int newLength);
-	void resize(int newLength, UChar ch);
+	void resize(int newLength, Char ch);
 
 	/** サイズ変更の予定を指示します。 */
 	void reserve(int size);
 
-	void assign(const UChar* str);
-	void assign(const UChar* str, int length);
-	void assign(int count, UChar ch);
-	void assign(const UStringRef& str);
+	void assign(const Char* str);
+	void assign(const Char* str, int length);
+	void assign(int count, Char ch);
+	void assign(const StringRef& str);
 
-	void append(const UChar* str, int length);
+	void append(const Char* str, int length);
 	
 	/**
 		@brief		指定した文字列がこの文字列内に存在するかを判断します。
@@ -112,8 +111,8 @@ public:
 		@param[in]	cs		: 大文字と小文字の区別設定
 		@return		文字列が存在すれば true。str が空文字列である場合は必ず true となります。
 	*/
-	bool contains(const UStringRef& str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
-	bool contains(UChar ch, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;					/**< @overload contains */
+	bool contains(const StringRef& str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+	bool contains(Char ch, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;					/**< @overload contains */
 
 	/**
 		@brief		文字列を検索し、見つかった最初の文字のインデックスを返します。
@@ -122,8 +121,8 @@ public:
 		@param[in]	cs			: 大文字と小文字の区別設定
 		@return		見つからなかった場合は -1。str が空文字列である場合は 0。
 	*/
-	int indexOf(const UStringRef& str, int startIndex = 0, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
-	int indexOf(UChar ch, int startIndex = 0, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+	int indexOf(const StringRef& str, int startIndex = 0, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+	int indexOf(Char ch, int startIndex = 0, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
 
 	/**
 		@brief		文字列を検索し、最後に見つかったインデックスを返します。
@@ -142,16 +141,16 @@ public:
 					str.LastIndexOf("bc", 4, 3);	// => -1	(検索範囲 "cde" の中に "bc" は存在しない)
 		@endcode
 	*/
-	int lastIndexOf(const UStringRef& str, int startIndex = -1, int count = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
-	int lastIndexOf(UChar ch, int startIndex = -1, int count = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;	/**< @overload lastIndexOf */
+	int lastIndexOf(const StringRef& str, int startIndex = -1, int count = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+	int lastIndexOf(Char ch, int startIndex = -1, int count = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;	/**< @overload lastIndexOf */
 
 	/**
 		@brief		この文字列の先頭が、指定した文字列と一致するかを判断します。
 		@param[in]	str			: 検索文字列
 		@details	str が空文字の場合は必ず true が返ります。
 	*/
-	bool startsWith(const UStringRef& str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
-	bool startsWith(UChar ch, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;				/**< @overload startsWith */
+	bool startsWith(const StringRef& str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+	bool startsWith(Char ch, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;				/**< @overload startsWith */
 
 	/**
 		@brief		この文字列の末尾が、指定した文字列と一致するかを判断します。
@@ -164,8 +163,8 @@ public:
 					}
 		@endcode
 	*/
-	bool endsWith(const UStringRef& str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
-	bool endsWith(UChar ch, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;					/**< @overload endsWith */
+	bool endsWith(const StringRef& str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+	bool endsWith(Char ch, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;					/**< @overload endsWith */
 
 	/**
 		@brief		文字列の部分文字列を抽出します。
@@ -178,7 +177,7 @@ public:
 					s.Mid(2, 3)		=> "cde";
 		@endcode
 	*/
-	UStringRef substring(int start, int count = -1) const;
+	StringRef substring(int start, int count = -1) const;
 
 	/**
 		@brief		文字列の左側(先頭)から指定した文字数を抽出します。
@@ -190,7 +189,7 @@ public:
 					s.Left(2)		=> _T("ab");
 		@endcode
 	*/
-	UString left(int count) const;
+	String left(int count) const;
 
 	/**
 		@brief		文字列の右側(末尾)から指定した文字数を抽出します。
@@ -202,27 +201,27 @@ public:
 					s.Right(2)		=> _T("ef");
 		@endcode
 	*/
-	UString right(int count) const;
+	String right(int count) const;
 
 	/** 文字列の先頭と末尾の空白を全て削除します。 */
-	UString trim() const;
+	String trim() const;
 
 	/** 小文字を大文字に変換します。(ロケールの影響を受けません) */
-	UString toUpper() const;
+	String toUpper() const;
 
 	/** 大文字を小文字に変換します。(ロケールの影響を受けません) */
-	UString toLower() const;
+	String toLower() const;
 
 	/** 先頭の文字を大文字、以降を小文字に変換します。(ロケールの影響を受けません) */
-	UString toTitleCase() const;
+	String toTitleCase() const;
 
 	/**
 		@brief		この文字列から指定した文字をすべて取り除いた新しい文字列を返します。
 		@param[in]	str		: 削除する文字列
 		@param[in]	cs		: 大文字と小文字の区別設定
 	*/
-	UString remove(const UStringRef& str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
-	UString remove(UChar ch, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+	String remove(const StringRef& str, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+	String remove(Char ch, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
 	
 	/**
 		@brief		文字列の置換を行います。
@@ -231,7 +230,7 @@ public:
 		@return		置換結果の文字列
 		@details	from に一致するすべての文字列を to に置換します。
 	*/
-	UString replace(const UStringRef& from, const UStringRef& to, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
+	String replace(const StringRef& from, const StringRef& to, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
 	
 	/**
 		@brief		文字列をデリミタで分割します。
@@ -247,7 +246,7 @@ public:
 					auto tokens = String("a::b").split("::");		// => ["a", "b"]
 					~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	*/
-	List<UString> split(const UStringRef& delim, StringSplitOptions option = StringSplitOptions::None) const;
+	List<String> split(const StringRef& delim, StringSplitOptions option = StringSplitOptions::None) const;
 
 	/** ローカルの char 型文字列表現に変換します。 */
 	std::string toStdString() const;
@@ -257,7 +256,7 @@ public:
 
 
 	/** 指定した文字列を連結します。 */
-	static UString concat(const UStringRef& str1, const UStringRef& str2);
+	static String concat(const StringRef& str1, const StringRef& str2);
 
 	/**
 		@brief		書式文字列と可変長引数リストから文字列を生成します。
@@ -284,13 +283,13 @@ public:
 					String str2 = String::SPrintf(_T("%ss"), str1.c_str());	// => "100s"
 					~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	*/
-	static UString sprintf(const UChar* format, ...);
+	static String sprintf(const Char* format, ...);
 
 
 	template<typename... TArgs>
-	static UString format(const UStringRef& format, TArgs&&... args);
+	static String format(const StringRef& format, TArgs&&... args);
 	template<typename... TArgs>
-	static UString format(const Locale& locale, const UStringRef& format, TArgs&&... args);	/**< @overload format */
+	static String format(const Locale& locale, const StringRef& format, TArgs&&... args);	/**< @overload format */
 
 	
 	/**
@@ -305,16 +304,16 @@ public:
 					str1 と str2 が等しい   → 0
 					str1 が str2 より大きい → 0 より大きい値
 	*/
-	static int compare(const UString& str1, const UString& str2, CaseSensitivity cs = CaseSensitivity::CaseSensitive);
-	static int compare(const UStringRef& str1, int index1, const UStringRef& str2, int index2, int length = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive);
+	static int compare(const String& str1, const String& str2, CaseSensitivity cs = CaseSensitivity::CaseSensitive);
+	static int compare(const StringRef& str1, int index1, const StringRef& str2, int index2, int length = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive);
 
-	static UString fromCString(const char* str, int length = -1);
-	static UString fromCString(const wchar_t* str, int length = -1);
+	static String fromCString(const char* str, int length = -1);
+	static String fromCString(const wchar_t* str, int length = -1);
 
 	/** @name STL interface */
 	/** @{ */
-	//typedef UChar* iterator;
-	//typedef const UChar* const_iterator;
+	//typedef Char* iterator;
+	//typedef const Char* const_iterator;
 
 	//iterator begin();
 	//const_iterator begin() const;
@@ -326,12 +325,12 @@ public:
 
 
 	/// 現在の環境で定義されている改行文字列を取得する
-	static const UString& getNewLine();
+	static const String& getNewLine();
 
 	/// 空文字列を取得する
-	static const UString& getEmpty();
+	static const String& getEmpty();
 
-	int getByteCount() const { return getLength() * sizeof(UChar); }
+	int getByteCount() const { return getLength() * sizeof(Char); }
 
 	uint32_t getHashCode() const;
 
@@ -340,29 +339,29 @@ public:
 
 	const Char& operator[](int index) const;
 
-	UString& operator=(const UStringRef& rhs);
-	UString& operator=(const UChar* rhs);
-	UString& operator=(UChar ch);
-	UString& operator=(const Path& rhs);
+	String& operator=(const StringRef& rhs);
+	String& operator=(const Char* rhs);
+	String& operator=(Char ch);
+	String& operator=(const Path& rhs);
 
-	UString& operator+=(const UString& rhs);
-	UString& operator+=(const UStringRef& rhs);
-	UString& operator+=(const UChar* rhs);
-	UString& operator+=(UChar rhs);
+	String& operator+=(const String& rhs);
+	String& operator+=(const StringRef& rhs);
+	String& operator+=(const Char* rhs);
+	String& operator+=(Char rhs);
 
 private:
-	static std::size_t const SSOCapacity = 15;//31;//sizeof(uint32_t) * 4 / sizeof(UChar) - 1;
+	static std::size_t const SSOCapacity = 15;//31;//sizeof(uint32_t) * 4 / sizeof(Char) - 1;
 
 	// resource management
 	void init() LN_NOEXCEPT;
 	void release() LN_NOEXCEPT;
-	void copy(const UString& str);
-	void move(UString&& str) LN_NOEXCEPT;
+	void copy(const String& str);
+	void move(String&& str) LN_NOEXCEPT;
 	void reserveBuffer(int length);
-	UChar* lockBuffer(int requestSize);
+	Char* lockBuffer(int requestSize);
 	void unlockBuffer(int confirmedSize);
-	UChar* getBuffer();
-	const UChar* getBuffer() const;
+	Char* getBuffer();
+	const Char* getBuffer() const;
 
 	// sso operation
 	void setSSOLength(int len);
@@ -374,7 +373,7 @@ private:
 	template<typename TChar> void assignFromCStr(const TChar* str, int length = -1, bool* outUsedDefaultChar = nullptr);
 
 	Encoding* getThisTypeEncoding() const;
-	static ByteBuffer convertTo(const UString& str, const Encoding* encoding, bool* outUsedDefaultChar = nullptr);
+	static ByteBuffer convertTo(const String& str, const Encoding* encoding, bool* outUsedDefaultChar = nullptr);
 
 	union Data
 	{
@@ -382,8 +381,8 @@ private:
 
 		struct SSO
 		{
-			UChar		buffer[SSOCapacity];
-			UChar		length;	// ---xxxxy	: x=size y:flag(0=sso,1=non sso)
+			Char		buffer[SSOCapacity];
+			Char		length;	// ---xxxxy	: x=size y:flag(0=sso,1=non sso)
 		} sso;
 	} m_data;
 };
@@ -394,8 +393,8 @@ private:
 class UStringHelper
 {
 public:
-	static size_t strlen(const UChar* str);
-	static int compare(const UChar* str1, const UChar* str2);
+	static size_t strlen(const Char* str);
+	static int compare(const Char* str1, const Char* str2);
 
 	template<typename TChar>
 	static void toStringInt8(int8_t v, TChar* outStr, int size);
@@ -404,67 +403,67 @@ public:
 /**
 	@brief		ある文字列に対する部分文字列の参照を保持します。
 */
-class UStringRef
+class StringRef
 {
 public:
-	UStringRef()
+	StringRef()
 	{
 		m_string = nullptr;
 		m_str = nullptr;
 		m_len = 0;
 	}
 
-	UStringRef(const UString& str)
-		: UStringRef()
+	StringRef(const String& str)
+		: StringRef()
 	{
 		m_string = &str;
 		m_str = str.c_str();
 		m_len = str.getLength();
 	}
 
-	UStringRef(const UString& str, int startIndex)
-		: UStringRef()
+	StringRef(const String& str, int startIndex)
+		: StringRef()
 	{
 		m_string = &str;
 		m_str = str.c_str() + startIndex;
 		m_len = str.getLength() - startIndex;
 	}
 
-	UStringRef(const UString& str, int startIndex, int len)
-		: UStringRef()
+	StringRef(const String& str, int startIndex, int len)
+		: StringRef()
 	{
 		m_str = str.c_str() + startIndex;
 		m_len = len;
 	}
 
-	UStringRef(const UChar* str)
-		: UStringRef()
+	StringRef(const Char* str)
+		: StringRef()
 	{
 		m_str = str;
 		m_len = UStringHelper::strlen(str);
 	}
 
-	UStringRef(const UChar* str, int len)
-		: UStringRef()
+	StringRef(const Char* str, int len)
+		: StringRef()
 	{
 		m_str = str;
 		m_len = len;
 	}
 
-	UStringRef(const UChar* begin, const UChar* end)
-		: UStringRef()
+	StringRef(const Char* begin, const Char* end)
+		: StringRef()
 	{
 		m_str = begin;
 		m_len = end - begin;
 	}
 
-	UStringRef(const Path& path);
+	StringRef(const Path& path);
 
-	UStringRef(const UStringRef& str) = default;
+	StringRef(const StringRef& str) = default;
 
-	UStringRef& operator=(const UStringRef& str) = default;
+	StringRef& operator=(const StringRef& str) = default;
 
-	~UStringRef()
+	~StringRef()
 	{
 		clear();
 	}
@@ -474,17 +473,17 @@ public:
 		return m_len;
 	}
 
-	const UChar* data() const
+	const Char* data() const
 	{
 		return m_str;
 	}
 
-	const UChar* end() const
+	const Char* end() const
 	{
 		return data() + getLength();
 	}
 
-	UString mid(int start, int count) const;
+	String mid(int start, int count) const;
 
 	bool IsNullOrEmpty() const { return (data() == nullptr || getLength() <= 0); }
 
@@ -493,13 +492,13 @@ public:
 	size_t getHashCode() const;
 
 	// TODO: internal
-	const UChar* getBegin() const { return data(); }
-	const UChar* getEnd() const { return end(); }
+	const Char* getBegin() const { return data(); }
+	const Char* getEnd() const { return end(); }
 
 
 private:
-	const UString*	m_string;
-	const UChar*	m_str;
+	const String*	m_string;
+	const Char*	m_str;
 	int				m_len;
 
 	void clear()
@@ -509,7 +508,7 @@ private:
 		m_len = 0;
 	}
 
-	//void copy(const UStringRef& str)
+	//void copy(const StringRef& str)
 	//{
 	//	m_string = str.;
 	//	m_str = nullptr;
@@ -526,7 +525,7 @@ private:
 class UStringConvert
 {
 public:
-	//static std::basic_string<TCHAR> toStdTString(const UChar* str);
+	//static std::basic_string<TCHAR> toStdTString(const Char* str);
 	// len: \0 を含まないよう素数
 	// size: \0 を含む要素数
 	// return: \0 を含まない変換後の要素数
@@ -590,7 +589,7 @@ public:
 	void appendChar(TChar ch, int count);
 	void appendString(const TChar* str);
 	void appendString(const TChar* str, int length);
-	void appendString(const UString& str);
+	void appendString(const String& str);
 	const TChar* c_str() const;
 	int getLength() const;
 	bool isFixedBufferOver() const { return m_fixedBufferOver; }
@@ -668,8 +667,8 @@ public:
 		}
 	}
 
-	UChar* get() LN_NOEXCEPT { return m_str; }
-	const UChar* get() const LN_NOEXCEPT { return m_str; }
+	Char* get() LN_NOEXCEPT { return m_str; }
+	const Char* get() const LN_NOEXCEPT { return m_str; }
 	int getLength() const LN_NOEXCEPT { return m_length; }
 	int getCapacity() const { return m_capacity; }
 	void reserve(int length)
@@ -678,15 +677,15 @@ public:
 		int size = length + 1;
 		if (m_capacity < size)
 		{
-			UChar* oldStr = m_str;
+			Char* oldStr = m_str;
 			int oldLen = m_length;
 
-			m_str = LN_NEW UChar[size];
+			m_str = LN_NEW Char[size];
 			m_capacity = length;
 
 			if (oldStr != nullptr)
 			{
-				memcpy(m_str, oldStr, std::min(length, oldLen) * sizeof(UChar));
+				memcpy(m_str, oldStr, std::min(length, oldLen) * sizeof(Char));
 				delete oldStr;
 			}
 		}
@@ -712,7 +711,7 @@ public:
 
 private:
 	std::atomic<int>	m_refCount;
-	UChar*				m_str;
+	Char*				m_str;
 	int					m_capacity;
 	int					m_length;
 };
@@ -725,77 +724,77 @@ private:
 // String
 //==============================================================================
 
-inline const UChar* UString::c_str() const
+inline const Char* String::c_str() const
 {
 	return (isSSO()) ? m_data.sso.buffer : ((m_data.core) ? m_data.core->get() : _TT(""));
 }
 
-inline int UString::getLength() const
+inline int String::getLength() const
 {
 	return (isSSO()) ? getSSOLength() : ((m_data.core) ? m_data.core->getLength() : 0);
 }
 
-inline int UString::getCapacity() const
+inline int String::getCapacity() const
 {
 	//return (isSSO() || !m_data.core) ? SSOCapacity : m_data.core->getCapacity();
 	return (isSSO()) ? SSOCapacity : ((m_data.core) ? m_data.core->getCapacity() : 0);
 }
 
-//inline UString::iterator UString::begin() { return (isSSO()) ? m_data.sso.buffer : ((m_data.core) ? m_data.core->get() : u""); }
-//inline UString::const_iterator UString::begin() const { return c_str(); }
-//inline UString::iterator UString::end() { return begin() + getLength(); }
-//inline UString::const_iterator UString::end() const { return begin() + getLength(); }
+//inline String::iterator String::begin() { return (isSSO()) ? m_data.sso.buffer : ((m_data.core) ? m_data.core->get() : u""); }
+//inline String::const_iterator String::begin() const { return c_str(); }
+//inline String::iterator String::end() { return begin() + getLength(); }
+//inline String::const_iterator String::end() const { return begin() + getLength(); }
 
-inline const Char& UString::operator[](int index) const { return getBuffer()[index]; }	// TODO: check range
-inline UString& UString::operator=(const UStringRef& rhs) { assign(rhs); return *this; }
-inline UString& UString::operator=(const UChar* rhs) { assign(rhs); return *this; }
-inline UString& UString::operator=(UChar ch) { assign(&ch, 1); return *this; }
+inline const Char& String::operator[](int index) const { return getBuffer()[index]; }	// TODO: check range
+inline String& String::operator=(const StringRef& rhs) { assign(rhs); return *this; }
+inline String& String::operator=(const Char* rhs) { assign(rhs); return *this; }
+inline String& String::operator=(Char ch) { assign(&ch, 1); return *this; }
 
-inline UString& UString::operator+=(const UString& rhs) { append(rhs.c_str(), rhs.getLength()); return *this; }
-inline UString& UString::operator+=(const UStringRef& rhs) { append(rhs.data(), rhs.getLength()); return *this; }
-inline UString& UString::operator+=(const UChar* rhs) { append(rhs, UStringHelper::strlen(rhs)); return *this; }
-inline UString& UString::operator+=(UChar rhs) { append(&rhs, 1); return *this; }
+inline String& String::operator+=(const String& rhs) { append(rhs.c_str(), rhs.getLength()); return *this; }
+inline String& String::operator+=(const StringRef& rhs) { append(rhs.data(), rhs.getLength()); return *this; }
+inline String& String::operator+=(const Char* rhs) { append(rhs, UStringHelper::strlen(rhs)); return *this; }
+inline String& String::operator+=(Char rhs) { append(&rhs, 1); return *this; }
 
-inline UString operator+(const UString& lhs, const UString& rhs) { return UString::concat(lhs, rhs); }
-inline UString operator+(const UString& lhs, const UChar* rhs) { return UString::concat(lhs, UStringRef(rhs)); }
-inline UString operator+(const UChar* lhs, const UString& rhs) { return UString::concat(UStringRef(lhs), rhs); }
-inline UString operator+(const UString& lhs, UChar rhs) { return UString::concat(lhs, UStringRef(&rhs, 1)); }
-inline UString operator+(UChar lhs, const UString& rhs) { return UString::concat(UStringRef(&lhs, 1), rhs); }
+inline String operator+(const String& lhs, const String& rhs) { return String::concat(lhs, rhs); }
+inline String operator+(const String& lhs, const Char* rhs) { return String::concat(lhs, StringRef(rhs)); }
+inline String operator+(const Char* lhs, const String& rhs) { return String::concat(StringRef(lhs), rhs); }
+inline String operator+(const String& lhs, Char rhs) { return String::concat(lhs, StringRef(&rhs, 1)); }
+inline String operator+(Char lhs, const String& rhs) { return String::concat(StringRef(&lhs, 1), rhs); }
 
-inline bool operator==(const UChar* lhs, const UString& rhs) { return UStringHelper::compare(lhs, rhs.c_str()) == 0; }
-inline bool operator==(const UString& lhs, const UString& rhs) { return UString::compare(lhs, 0, rhs, 0) == 0; }
-inline bool operator==(const UString& lhs, const UChar* rhs) { return UStringHelper::compare(lhs.c_str(), rhs) == 0; }
-inline bool operator==(const UString& lhs, const UStringRef& rhs) { return UString::compare(lhs, 0, rhs, 0) == 0; }
-inline bool operator!=(const UChar* lhs, const UString& rhs) { return !operator==(lhs, rhs); }
-inline bool operator!=(const UString& lhs, const UString& rhs) { return !operator==(lhs, rhs); }
-inline bool operator!=(const UString& lhs, const UChar* rhs) { return !operator==(lhs, rhs); }
+inline bool operator==(const Char* lhs, const String& rhs) { return UStringHelper::compare(lhs, rhs.c_str()) == 0; }
+inline bool operator==(const String& lhs, const String& rhs) { return String::compare(lhs, 0, rhs, 0) == 0; }
+inline bool operator==(const String& lhs, const Char* rhs) { return UStringHelper::compare(lhs.c_str(), rhs) == 0; }
+inline bool operator==(const String& lhs, const StringRef& rhs) { return String::compare(lhs, 0, rhs, 0) == 0; }
+inline bool operator!=(const Char* lhs, const String& rhs) { return !operator==(lhs, rhs); }
+inline bool operator!=(const String& lhs, const String& rhs) { return !operator==(lhs, rhs); }
+inline bool operator!=(const String& lhs, const Char* rhs) { return !operator==(lhs, rhs); }
 
-inline bool operator<(const UString& lhs, const UString& rhs) { return UString::compare(lhs, 0, rhs, 0, std::max(lhs.getLength(), rhs.getLength()), CaseSensitivity::CaseSensitive) < 0; }
-inline bool operator<(const UChar* lhs, const UString& rhs) { return UString::compare(lhs, 0, rhs, 0, -1, CaseSensitivity::CaseSensitive) < 0; }
-inline bool operator<(const UString& lhs, const UChar* rhs) { return UString::compare(lhs, 0, rhs, 0, -1, CaseSensitivity::CaseSensitive) < 0; }
-inline bool operator>(const UString& lhs, const UString& rhs) { return UString::compare(lhs, 0, rhs, 0, std::max(lhs.getLength(), rhs.getLength()), CaseSensitivity::CaseSensitive) > 0; }
-inline bool operator>(const UChar* lhs, const UString& rhs) { return UString::compare(lhs, 0, rhs, 0, -1, CaseSensitivity::CaseSensitive) > 0; }
-inline bool operator>(const UString& lhs, const UChar* rhs) { return UString::compare(lhs, 0, rhs, 0, -1, CaseSensitivity::CaseSensitive) > 0; }
+inline bool operator<(const String& lhs, const String& rhs) { return String::compare(lhs, 0, rhs, 0, std::max(lhs.getLength(), rhs.getLength()), CaseSensitivity::CaseSensitive) < 0; }
+inline bool operator<(const Char* lhs, const String& rhs) { return String::compare(lhs, 0, rhs, 0, -1, CaseSensitivity::CaseSensitive) < 0; }
+inline bool operator<(const String& lhs, const Char* rhs) { return String::compare(lhs, 0, rhs, 0, -1, CaseSensitivity::CaseSensitive) < 0; }
+inline bool operator>(const String& lhs, const String& rhs) { return String::compare(lhs, 0, rhs, 0, std::max(lhs.getLength(), rhs.getLength()), CaseSensitivity::CaseSensitive) > 0; }
+inline bool operator>(const Char* lhs, const String& rhs) { return String::compare(lhs, 0, rhs, 0, -1, CaseSensitivity::CaseSensitive) > 0; }
+inline bool operator>(const String& lhs, const Char* rhs) { return String::compare(lhs, 0, rhs, 0, -1, CaseSensitivity::CaseSensitive) > 0; }
 
-inline bool operator<=(const UString& lhs, const UString& rhs) { return !operator>(lhs, rhs); }
-inline bool operator<=(const UChar* lhs, const UString& rhs) { return !operator>(lhs, rhs); }
-inline bool operator<=(const UString& lhs, const UChar* rhs) { return !operator>(lhs, rhs); }
-inline bool operator>=(const UString& lhs, const UString& rhs) { return !operator<(lhs, rhs); }
-inline bool operator>=(const UChar* lhs, const UString& rhs) { return !operator<(lhs, rhs); }
-inline bool operator>=(const UString& lhs, const UChar* rhs) { return !operator<(lhs, rhs); }
+inline bool operator<=(const String& lhs, const String& rhs) { return !operator>(lhs, rhs); }
+inline bool operator<=(const Char* lhs, const String& rhs) { return !operator>(lhs, rhs); }
+inline bool operator<=(const String& lhs, const Char* rhs) { return !operator>(lhs, rhs); }
+inline bool operator>=(const String& lhs, const String& rhs) { return !operator<(lhs, rhs); }
+inline bool operator>=(const Char* lhs, const String& rhs) { return !operator<(lhs, rhs); }
+inline bool operator>=(const String& lhs, const Char* rhs) { return !operator<(lhs, rhs); }
 
 
 //==============================================================================
 // StringRef
 //==============================================================================
-inline UString operator+(const UStringRef& lhs, const UStringRef& rhs) { return UString::concat(lhs, rhs); }
+inline String operator+(const StringRef& lhs, const StringRef& rhs) { return String::concat(lhs, rhs); }
 
-inline bool operator==(const UStringRef& lhs, const UStringRef& rhs) { return UString::compare(lhs, 0, rhs, 0, std::max(lhs.getLength(), rhs.getLength())) == 0; }
-inline bool operator==(const UChar* lhs, const UStringRef& rhs) { return UString::compare(UStringRef(lhs), 0, rhs, 0, -1) == 0; }
-inline bool operator==(const UStringRef& lhs, const UChar* rhs) { return UString::compare(lhs, 0, UStringRef(rhs), 0, -1) == 0; }
-inline bool operator!=(const UStringRef& lhs, const UStringRef& rhs) { return !operator==(lhs, rhs); }
-inline bool operator!=(const UChar* lhs, const UStringRef& rhs) { return !operator==(lhs, rhs); }
-inline bool operator!=(const UStringRef& lhs, const UChar* rhs) { return !operator==(lhs, rhs); }
+inline bool operator==(const StringRef& lhs, const StringRef& rhs) { return String::compare(lhs, 0, rhs, 0, std::max(lhs.getLength(), rhs.getLength())) == 0; }
+inline bool operator==(const Char* lhs, const StringRef& rhs) { return String::compare(StringRef(lhs), 0, rhs, 0, -1) == 0; }
+inline bool operator==(const StringRef& lhs, const Char* rhs) { return String::compare(lhs, 0, StringRef(rhs), 0, -1) == 0; }
+inline bool operator!=(const StringRef& lhs, const StringRef& rhs) { return !operator==(lhs, rhs); }
+inline bool operator!=(const Char* lhs, const StringRef& rhs) { return !operator==(lhs, rhs); }
+inline bool operator!=(const StringRef& lhs, const Char* rhs) { return !operator==(lhs, rhs); }
 
 
 //==============================================================================
@@ -818,14 +817,14 @@ inline bool operator!=(const UStringRef& lhs, const UChar* rhs) { return !operat
 	@exception	InvalidFormatException	指定された基数に対して有効な桁を示す数字以外の文字が含まれていました。または、書式の前後に空白以外の文字が存在しました。
 	@exception	OverflowException		数値に変換する際にオーバーフローが発生しました。
 */
-extern int8_t	toInt8(const UString& str, int base = 0);
-extern int16_t	toInt16(const UString& str, int base = 0);	///< @copydoc toInt8
-extern int32_t	toInt32(const UString& str, int base = 0);	///< @copydoc toInt8
-extern int64_t	toInt64(const UString& str, int base = 0);	///< @copydoc toInt8
-extern uint8_t	toUInt8(const UString& str, int base = 0);	///< @copydoc toInt8
-extern uint16_t	toUInt16(const UString& str, int base = 0);	///< @copydoc toInt8
-extern uint32_t	toUInt32(const UString& str, int base = 0);	///< @copydoc toInt8
-extern uint64_t	toUInt64(const UString& str, int base = 0);	///< @copydoc toInt8
+extern int8_t	toInt8(const String& str, int base = 0);
+extern int16_t	toInt16(const String& str, int base = 0);	///< @copydoc toInt8
+extern int32_t	toInt32(const String& str, int base = 0);	///< @copydoc toInt8
+extern int64_t	toInt64(const String& str, int base = 0);	///< @copydoc toInt8
+extern uint8_t	toUInt8(const String& str, int base = 0);	///< @copydoc toInt8
+extern uint16_t	toUInt16(const String& str, int base = 0);	///< @copydoc toInt8
+extern uint32_t	toUInt32(const String& str, int base = 0);	///< @copydoc toInt8
+extern uint64_t	toUInt64(const String& str, int base = 0);	///< @copydoc toInt8
 
 /**
 	@brief		この文字列を整数値に変換し、成否を返します。
@@ -836,29 +835,21 @@ extern uint64_t	toUInt64(const UString& str, int base = 0);	///< @copydoc toInt8
 				大量のループの内部等、例外によるパフォーマンスへの影響が懸念される場合に使用してください。
 	@see		ToInt8
 */
-extern bool		tryToInt8(const UString& str, int8_t* outValue, int base = 0);
-extern bool		tryToInt16(const UString& str, int16_t* outValue, int base = 0);		///< @copydoc tryToInt8
-extern bool		tryToInt32(const UString& str, int32_t* outValue, int base = 0);		///< @copydoc tryToInt8
-extern bool		tryToInt64(const UString& str, int64_t* outValue, int base = 0);		///< @copydoc tryToInt8
-extern bool		tryToUInt8(const UString& str, uint8_t* outValue, int base = 0);		///< @copydoc tryToInt8
-extern bool		tryToUInt16(const UString& str, uint16_t* outValue, int base = 0);		///< @copydoc tryToInt8
-extern bool		tryToUInt32(const UString& str, uint32_t* outValue, int base = 0);		///< @copydoc tryToInt8
-extern bool		tryToUInt64(const UString& str, uint64_t* outValue, int base = 0);		///< @copydoc tryToInt8
+extern bool		tryToInt8(const String& str, int8_t* outValue, int base = 0);
+extern bool		tryToInt16(const String& str, int16_t* outValue, int base = 0);		///< @copydoc tryToInt8
+extern bool		tryToInt32(const String& str, int32_t* outValue, int base = 0);		///< @copydoc tryToInt8
+extern bool		tryToInt64(const String& str, int64_t* outValue, int base = 0);		///< @copydoc tryToInt8
+extern bool		tryToUInt8(const String& str, uint8_t* outValue, int base = 0);		///< @copydoc tryToInt8
+extern bool		tryToUInt16(const String& str, uint16_t* outValue, int base = 0);		///< @copydoc tryToInt8
+extern bool		tryToUInt32(const String& str, uint32_t* outValue, int base = 0);		///< @copydoc tryToInt8
+extern bool		tryToUInt64(const String& str, uint64_t* outValue, int base = 0);		///< @copydoc tryToInt8
 
 
 LN_NAMESPACE_END
 
 // for unordered_map key
 namespace std {
-template <> struct hash<ln::UString> { std::size_t operator () (const ln::UString& key) const; };
+template <> struct hash<ln::String> { std::size_t operator () (const ln::String& key) const; };
 }
 
 #include "StringFormat.inl"
-
-
-namespace ln
-{
-	typedef UString String;
-	typedef UStringRef StringRef;
-}
-

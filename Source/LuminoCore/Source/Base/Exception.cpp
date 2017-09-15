@@ -140,7 +140,7 @@ void Exception::setMessage(const char* format, va_list args)
 	char buf[BUFFER_SIZE];
 	int len = StringTraits::vsprintf(buf, BUFFER_SIZE, format, args);
 
-	// char to UChar
+	// char to Char
 	Char ucharBuf[BUFFER_SIZE];
 	safeCharToUChar(buf, ucharBuf, LN_ARRAY_SIZE_OF(ucharBuf));
 	appendMessage(ucharBuf, len);
@@ -156,7 +156,7 @@ void Exception::setMessage(const wchar_t* format, va_list args)
 	wchar_t buf[BUFFER_SIZE];
 	int len = StringTraits::vsprintf(buf, BUFFER_SIZE, format, args);
 
-	// char to UChar
+	// char to Char
 	Char ucharBuf[BUFFER_SIZE];
 	safeWCharToUChar(buf, ucharBuf, LN_ARRAY_SIZE_OF(ucharBuf));
 	appendMessage(ucharBuf, len);
@@ -530,7 +530,7 @@ void Exception::setMessage(const Char* caption, const char* format, va_list args
 	char buf[BUFFER_SIZE];
 	int len = StringTraits::vsprintf(buf, BUFFER_SIZE, format, args);
 
-	// char to UChar
+	// char to Char
 	Char ucharBuf[BUFFER_SIZE];
 	safeCharToUChar(buf, ucharBuf, LN_ARRAY_SIZE_OF(ucharBuf));
 	appendMessage(ucharBuf, len);
@@ -547,7 +547,7 @@ void Exception::setMessage(const Char* caption, const wchar_t* format, va_list a
 	wchar_t buf[BUFFER_SIZE];
 	int len = StringTraits::vsprintf(buf, BUFFER_SIZE, format, args);
 
-	// char to UChar
+	// char to Char
 	Char ucharBuf[BUFFER_SIZE];
 	safeWCharToUChar(buf, ucharBuf, LN_ARRAY_SIZE_OF(ucharBuf));
 	appendMessage(ucharBuf, len);

@@ -26,96 +26,96 @@ LN_NAMESPACE_BEGIN
 // String
 //==============================================================================
 
-UString::UString()
+String::String()
 {
 	init();
 }
 
-UString::~UString()
+String::~String()
 {
 	release();
 }
 
-UString::UString(const UString& str)
-	: UString()
+String::String(const String& str)
+	: String()
 {
 	copy(str);
 }
 
-UString::UString(UString&& str) LN_NOEXCEPT
-	: UString()
+String::String(String&& str) LN_NOEXCEPT
+	: String()
 {
-	move(std::forward<UString>(str));
+	move(std::forward<String>(str));
 }
 
-UString& UString::operator=(const UString& str)
+String& String::operator=(const String& str)
 {
 	copy(str);
 	return *this;
 }
 
-UString& UString::operator=(UString&& str) LN_NOEXCEPT
+String& String::operator=(String&& str) LN_NOEXCEPT
 {
-	move(std::forward<UString>(str));
+	move(std::forward<String>(str));
 	return *this;
 }
 
-UString::UString(const UString& str, int begin)
-	: UString()
+String::String(const String& str, int begin)
+	: String()
 {
 	assign(str.c_str() + begin, str.getLength());
 }
 
-UString::UString(const UString& str, int begin, int length)
-	: UString()
+String::String(const String& str, int begin, int length)
+	: String()
 {
 	assign(str.c_str() + begin, length);
 }
 
-UString::UString(const UChar* str)
-	: UString()
+String::String(const Char* str)
+	: String()
 {
 	assign(str);
 }
 
-UString::UString(const UChar* str, int length)
-	: UString()
+String::String(const Char* str, int length)
+	: String()
 {
 	assign(str, length);
 }
 
-UString::UString(const UChar* begin, const UChar* end)
-	: UString()
+String::String(const Char* begin, const Char* end)
+	: String()
 {
 	assign(begin, end - begin);
 }
 
-UString::UString(int count, UChar ch)
-	: UString()
+String::String(int count, Char ch)
+	: String()
 {
 	assign(count, ch);
 }
 
-UString::UString(const UStringRef& str)
-	: UString()
+String::String(const StringRef& str)
+	: String()
 {
 	assign(str);
 }
 
-UString::UString(const Path& path)
-	: UString(path.getString())
+String::String(const Path& path)
+	: String(path.getString())
 {
 }
 
 #ifdef LN_STRING_FROM_CHAR
-UString::UString(const char* str)
-	: UString()
+String::String(const char* str)
+	: String()
 {
 	assignFromCStr(str);
 }
 #endif
 
-bool UString::isEmpty() const
+bool String::isEmpty() const
 {
 	if (isSSO())
 	{
@@ -127,21 +127,21 @@ bool UString::isEmpty() const
 	}
 }
 
-void UString::clear()
+void String::clear()
 {
 	lockBuffer(0);
 	unlockBuffer(0);
 }
 
-void UString::resize(int newLength)
+void String::resize(int newLength)
 {
-	resize(newLength, UChar());
+	resize(newLength, Char());
 }
 
-void UString::resize(int newLength, UChar ch)
+void String::resize(int newLength, Char ch)
 {
 	int oldLen = getLength();
-	UChar* buf = lockBuffer(newLength);
+	Char* buf = lockBuffer(newLength);
 	if (newLength > oldLen)
 	{
 		for (int i = oldLen; i < newLength; i++)
@@ -152,62 +152,62 @@ void UString::resize(int newLength, UChar ch)
 	unlockBuffer(newLength);
 }
 
-void UString::reserve(int size)
+void String::reserve(int size)
 {
 	reserveBuffer(size);
 }
 
-bool UString::contains(const UStringRef& str, CaseSensitivity cs) const
+bool String::contains(const StringRef& str, CaseSensitivity cs) const
 {
 	return indexOf(str, 0, cs) >= 0;
 }
 
-bool UString::contains(UChar ch, CaseSensitivity cs) const
+bool String::contains(Char ch, CaseSensitivity cs) const
 {
 	return indexOf(ch, 0, cs) >= 0;
 }
 
-int UString::indexOf(const UStringRef& str, int startIndex, CaseSensitivity cs) const
+int String::indexOf(const StringRef& str, int startIndex, CaseSensitivity cs) const
 {
 	return StringTraits::indexOf(c_str(), getLength(), str.data(), str.getLength(), startIndex, cs);
 }
 
-int UString::indexOf(UChar ch, int startIndex, CaseSensitivity cs) const
+int String::indexOf(Char ch, int startIndex, CaseSensitivity cs) const
 {
 	return StringTraits::indexOf(c_str(), getLength(), &ch, 1, startIndex, cs);
 }
 
-int UString::lastIndexOf(const UStringRef& str, int startIndex, int count, CaseSensitivity cs) const
+int String::lastIndexOf(const StringRef& str, int startIndex, int count, CaseSensitivity cs) const
 {
 	return StringTraits::lastIndexOf(c_str(), getLength(), str.data(), str.getLength(), startIndex, count, cs);
 }
 
-int UString::lastIndexOf(UChar ch, int startIndex, int count, CaseSensitivity cs) const
+int String::lastIndexOf(Char ch, int startIndex, int count, CaseSensitivity cs) const
 {
 	return StringTraits::lastIndexOf(c_str(), getLength(), &ch, 1, startIndex, count, cs);
 }
 
-bool UString::startsWith(const UStringRef& str, CaseSensitivity cs) const
+bool String::startsWith(const StringRef& str, CaseSensitivity cs) const
 {
 	return StringTraits::startsWith(c_str(), getLength(), str.data(), str.getLength(), cs);
 }
 
-bool UString::startsWith(UChar ch, CaseSensitivity cs) const
+bool String::startsWith(Char ch, CaseSensitivity cs) const
 {
 	return StringTraits::endsWith(c_str(), getLength(), &ch, 1, cs);
 }
 
-bool UString::endsWith(const UStringRef& str, CaseSensitivity cs) const
+bool String::endsWith(const StringRef& str, CaseSensitivity cs) const
 {
 	return StringTraits::endsWith(c_str(), getLength(), str.data(), str.getLength(), cs);
 }
 
-bool UString::endsWith(UChar ch, CaseSensitivity cs) const
+bool String::endsWith(Char ch, CaseSensitivity cs) const
 {
 	return StringTraits::endsWith(c_str(), getLength(), &ch, 1, cs);
 }
 
-UStringRef UString::substring(int start, int count) const
+StringRef String::substring(int start, int count) const
 {
 	int len = getLength();
 
@@ -230,74 +230,74 @@ UStringRef UString::substring(int start, int count) const
 
 	if (start == 0 && count == len)
 	{
-		return UStringRef(c_str());
+		return StringRef(c_str());
 	}
 
-	return UStringRef(c_str() + start, count);
+	return StringRef(c_str() + start, count);
 }
 
-UString UString::left(int count) const
+String String::left(int count) const
 {
-	const UChar* begin;
-	const UChar* end;
+	const Char* begin;
+	const Char* end;
 	StringTraits::left(c_str(), count, &begin, &end);
-	return UString(begin, end);
+	return String(begin, end);
 }
 
-UString UString::right(int count) const
+String String::right(int count) const
 {
-	const UChar* begin;
-	const UChar* end;
+	const Char* begin;
+	const Char* end;
 	StringTraits::right(c_str(), count, &begin, &end);
-	return UString(begin, end);
+	return String(begin, end);
 }
 
-UString UString::trim() const
+String String::trim() const
 {
-	const UChar* begin;
+	const Char* begin;
 	int length;
 	StringTraits::trim(c_str(), getLength(), &begin, &length);
-	return UString(begin, length);
+	return String(begin, length);
 }
 
-UString UString::toUpper() const
+String String::toUpper() const
 {
 	int len = getLength();
-	UString result(c_str(), len);
-	UChar* buf = result.getBuffer();
-	std::transform(buf, buf + len, buf, StringTraits::toUpper<UChar>);
+	String result(c_str(), len);
+	Char* buf = result.getBuffer();
+	std::transform(buf, buf + len, buf, StringTraits::toUpper<Char>);
 	return result;
 }
 
-UString UString::toLower() const
+String String::toLower() const
 {
 	int len = getLength();
-	UString result(c_str(), len);
-	UChar* buf = result.getBuffer();
-	std::transform(buf, buf + len, buf, StringTraits::toLower<UChar>);
+	String result(c_str(), len);
+	Char* buf = result.getBuffer();
+	std::transform(buf, buf + len, buf, StringTraits::toLower<Char>);
 	return result;
 }
 
-UString UString::toTitleCase() const
+String String::toTitleCase() const
 {
 	int len = getLength();
-	UString result(c_str(), len);
-	UChar* buf = result.getBuffer();
-	std::transform(buf, buf + len, buf, StringTraits::toLower<UChar>);
-	if (len > 0) buf[0] = StringTraits::toUpper<UChar>(buf[0]);
+	String result(c_str(), len);
+	Char* buf = result.getBuffer();
+	std::transform(buf, buf + len, buf, StringTraits::toLower<Char>);
+	if (len > 0) buf[0] = StringTraits::toUpper<Char>(buf[0]);
 	return result;
 }
 
-UString UString::remove(const UStringRef& str, CaseSensitivity cs) const
+String String::remove(const StringRef& str, CaseSensitivity cs) const
 {
-	UString result;
-	const UChar* pos = c_str();
-	const UChar* end = pos + getLength();
-	const UChar* fs = str.data();
+	String result;
+	const Char* pos = c_str();
+	const Char* end = pos + getLength();
+	const Char* fs = str.data();
 	int fsLen = str.getLength();
 
-	UChar* buf = result.lockBuffer(end - pos);
-	UChar* bufBegin = buf;
+	Char* buf = result.lockBuffer(end - pos);
+	Char* bufBegin = buf;
 	int bufSize = 0;
 
 	if (fsLen > 0)
@@ -307,7 +307,7 @@ UString UString::remove(const UStringRef& str, CaseSensitivity cs) const
 			int index = StringTraits::indexOf(pos, end - pos, fs, fsLen, 0, cs);
 			if (index >= 0)
 			{
-				memcpy(buf, pos, index * sizeof(UChar));
+				memcpy(buf, pos, index * sizeof(Char));
 				buf += index;
 				pos += index + fsLen;
 			}
@@ -320,7 +320,7 @@ UString UString::remove(const UStringRef& str, CaseSensitivity cs) const
 
 	if (pos < end)
 	{
-		memcpy(buf, pos, (end - pos) * sizeof(UChar));
+		memcpy(buf, pos, (end - pos) * sizeof(Char));
 		buf += (end - pos);
 	}
 	
@@ -328,15 +328,15 @@ UString UString::remove(const UStringRef& str, CaseSensitivity cs) const
 	return result;
 }
 
-UString UString::replace(const UStringRef& from, const UStringRef& to, CaseSensitivity cs) const
+String String::replace(const StringRef& from, const StringRef& to, CaseSensitivity cs) const
 {
-	UString result;
+	String result;
 	result.reserve(getLength());
 
 	int pos = 0;
-	const UChar* src = c_str();
+	const Char* src = c_str();
 	int srcLen = getLength();
-	const UChar* fromStr = from.data();
+	const Char* fromStr = from.data();
 	int fromLen = from.getLength();
 	int start = 0;
 
@@ -359,38 +359,38 @@ UString UString::replace(const UStringRef& from, const UStringRef& to, CaseSensi
 	return result;
 }
 
-List<UString> UString::split(const UStringRef& delim, StringSplitOptions option) const
+List<String> String::split(const StringRef& delim, StringSplitOptions option) const
 {
-	List<UString> result;
+	List<String> result;
 	StringTraits::SplitHelper(
 		c_str(), c_str() + getLength(), delim.data(), delim.getLength(), option, CaseSensitivity::CaseSensitive,
-		[&result](const UChar* begin, const UChar* end) { result.add(UString(begin, end - begin)); });
+		[&result](const Char* begin, const Char* end) { result.add(String(begin, end - begin)); });
 	return result;
 }
 
-std::string UString::toStdString() const
+std::string String::toStdString() const
 {
 	ByteBuffer buf = convertTo(*this, Encoding::getSystemMultiByteEncoding());
 	return std::string((const char*)buf.getConstData());
 }
 
-std::wstring UString::toStdWString() const
+std::wstring String::toStdWString() const
 {
 	ByteBuffer buf = convertTo(*this, Encoding::getWideCharEncoding());
 	return std::wstring((const wchar_t*)buf.getConstData());
 }
 
-Encoding* UString::getThisTypeEncoding() const
+Encoding* String::getThisTypeEncoding() const
 {
-	if (sizeof(UChar) == sizeof(char))
+	if (sizeof(Char) == sizeof(char))
 	{
 		return Encoding::getSystemMultiByteEncoding();
 	}
-	else if (sizeof(UChar) == sizeof(wchar_t))
+	else if (sizeof(Char) == sizeof(wchar_t))
 	{
 		return Encoding::getWideCharEncoding();
 	}
-	else if (sizeof(UChar) == sizeof(char16_t))
+	else if (sizeof(Char) == sizeof(char16_t))
 	{
 		return Encoding::getUTF16Encoding();
 	}
@@ -400,12 +400,12 @@ Encoding* UString::getThisTypeEncoding() const
 	}
 }
 
-ByteBuffer UString::convertTo(const UString& str, const Encoding* encoding, bool* outUsedDefaultChar)
+ByteBuffer String::convertTo(const String& str, const Encoding* encoding, bool* outUsedDefaultChar)
 {
 	Encoding* thisEncoding = str.getThisTypeEncoding();
 	if (encoding == thisEncoding)	// TODO: ポインタ比較ではダメ。結果は正しいが。
 	{
-		return ByteBuffer(str.c_str(), (str.getLength() + 1) * sizeof(UChar));
+		return ByteBuffer(str.c_str(), (str.getLength() + 1) * sizeof(Char));
 	}
 	else
 	{
@@ -413,7 +413,7 @@ ByteBuffer UString::convertTo(const UString& str, const Encoding* encoding, bool
 		options.NullTerminated = true;
 
 		EncodingConversionResult result;
-		ByteBuffer buf = Encoding::convert(str.c_str(), str.getLength() * sizeof(UChar), thisEncoding, encoding, options, &result);
+		ByteBuffer buf = Encoding::convert(str.c_str(), str.getLength() * sizeof(Char), thisEncoding, encoding, options, &result);
 		if (outUsedDefaultChar != nullptr)
 		{
 			*outUsedDefaultChar = result.UsedDefaultChar;
@@ -422,21 +422,21 @@ ByteBuffer UString::convertTo(const UString& str, const Encoding* encoding, bool
 	}
 }
 
-UString UString::remove(UChar ch, CaseSensitivity cs) const
+String String::remove(Char ch, CaseSensitivity cs) const
 {
-	return remove(UStringRef(&ch, 1), cs);
+	return remove(StringRef(&ch, 1), cs);
 }
 
-UString UString::concat(const UStringRef& str1, const UStringRef& str2)
+String String::concat(const StringRef& str1, const StringRef& str2)
 {
-	UString s;
+	String s;
 	s.reserve(str1.getLength() + str2.getLength());
 	s.append(str1.data(), str1.getLength());
 	s.append(str2.data(), str2.getLength());
 	return s;
 }
 
-UString UString::sprintf(const UChar* format, ...)
+String String::sprintf(const Char* format, ...)
 {
 	static const int MaxFormatLength = 256;
 
@@ -447,55 +447,55 @@ UString UString::sprintf(const UChar* format, ...)
 	// 文字数が一定以内ならメモリ確保せずにスタックを使い、速度向上を図る
 	if (len < MaxFormatLength)
 	{
-		UChar buf[MaxFormatLength + 1];
+		Char buf[MaxFormatLength + 1];
 		memset(buf, 0, sizeof(buf));
 		StringTraits::tvsnprintf_l(buf, MaxFormatLength + 1, format, Locale::getDefault().getNativeLocale(), args1);
 		va_end(args1);
-		return UString(buf);
+		return String(buf);
 	}
 	else
 	{
-		ByteBuffer buf(sizeof(UChar) * (len + 1));
-		StringTraits::tvsnprintf_l((UChar*)buf.getData(), len + 1, format, Locale::getDefault().getNativeLocale(), args1);
+		ByteBuffer buf(sizeof(Char) * (len + 1));
+		StringTraits::tvsnprintf_l((Char*)buf.getData(), len + 1, format, Locale::getDefault().getNativeLocale(), args1);
 		va_end(args1);
-		return UString((UChar*)buf.getData());
+		return String((Char*)buf.getData());
 	}
 
 }
 
-int UString::compare(const UString& str1, const UString& str2, CaseSensitivity cs)
+int String::compare(const String& str1, const String& str2, CaseSensitivity cs)
 {
 	return StringTraits::compare(str1.c_str(), str1.getLength(), str2.c_str(), str2.getLength(), std::max(str1.getLength(), str2.getLength()), cs);
 }
 
-int UString::compare(const UStringRef& str1, int index1, const UStringRef& str2, int index2, int length, CaseSensitivity cs)
+int String::compare(const StringRef& str1, int index1, const StringRef& str2, int index2, int length, CaseSensitivity cs)
 {
-	const UChar* s1 = str1.data() + index1;
-	const UChar* s2 = str2.data() + index2;
+	const Char* s1 = str1.data() + index1;
+	const Char* s2 = str2.data() + index2;
 	return StringTraits::compare(s1, str1.getLength() - index1, s2, str2.getLength() - index2, length, cs);
 }
 
-UString UString::fromCString(const char* str, int length)
+String String::fromCString(const char* str, int length)
 {
-	UString result;
+	String result;
 	result.assignFromCStr(str, length);
 	return result;
 }
 
-UString UString::fromCString(const wchar_t* str, int length)
+String String::fromCString(const wchar_t* str, int length)
 {
-	UString result;
+	String result;
 	result.assignFromCStr(str, length);
 	return result;
 }
 
-void UString::init() LN_NOEXCEPT
+void String::init() LN_NOEXCEPT
 {
 	m_data.core = nullptr;
 	m_data.sso.length = 0;
 }
 
-void UString::release() LN_NOEXCEPT
+void String::release() LN_NOEXCEPT
 {
 	if (isNonSSO())
 	{
@@ -503,7 +503,7 @@ void UString::release() LN_NOEXCEPT
 	}
 }
 
-void UString::copy(const UString& str)
+void String::copy(const String& str)
 {
 	if (this != &str)
 	{
@@ -541,7 +541,7 @@ void UString::copy(const UString& str)
 	}
 }
 
-void UString::move(UString&& str) LN_NOEXCEPT
+void String::move(String&& str) LN_NOEXCEPT
 {
 	if (isNonSSO())
 	{
@@ -552,13 +552,13 @@ void UString::move(UString&& str) LN_NOEXCEPT
 	str.init();
 }
 
-UChar* UString::lockBuffer(int requestSize)
+Char* String::lockBuffer(int requestSize)
 {
 	reserveBuffer(requestSize);
 	return getBuffer();
 }
 
-void UString::unlockBuffer(int confirmedSize)
+void String::unlockBuffer(int confirmedSize)
 {
 	if (isSSO())
 	{
@@ -572,7 +572,7 @@ void UString::unlockBuffer(int confirmedSize)
 
 // 領域を確保し、sso かどうかのフラグをセットする。長さは変えない。
 // 中身は以前のものが維持され、新しい領域は不定値となる。
-void UString::reserveBuffer(int length)
+void String::reserveBuffer(int length)
 {
 	if (isSSO())
 	{
@@ -585,7 +585,7 @@ void UString::reserveBuffer(int length)
 			// SSO -> NonSSO
 			std::unique_ptr<detail::UStringCore> core(LN_NEW detail::UStringCore());
 			core->reserve(length);
-			memcpy(core->get(), m_data.sso.buffer, std::min(getSSOLength(), length) * sizeof(UChar));
+			memcpy(core->get(), m_data.sso.buffer, std::min(getSSOLength(), length) * sizeof(Char));
 			core->get()[length] = '\0';
 			m_data.core = core.get();
 			core.release();
@@ -608,7 +608,7 @@ void UString::reserveBuffer(int length)
 				{
 					detail::UStringCore* oldCore = m_data.core;
 					setSSO();
-					memcpy(m_data.sso.buffer, oldCore->get(), std::min(oldCore->getLength(), length) * sizeof(UChar));
+					memcpy(m_data.sso.buffer, oldCore->get(), std::min(oldCore->getLength(), length) * sizeof(Char));
 					oldCore->release();
 				}
 				else
@@ -626,7 +626,7 @@ void UString::reserveBuffer(int length)
 						detail::UStringCore* oldCore = m_data.core;
 						m_data.core = LN_NEW detail::UStringCore();
 						m_data.core->reserve(length);
-						memcpy(m_data.core->get(), oldCore->get(), std::min(oldCore->getLength(), length) * sizeof(UChar));
+						memcpy(m_data.core->get(), oldCore->get(), std::min(oldCore->getLength(), length) * sizeof(Char));
 						oldCore->release();
 					}
 					else
@@ -644,56 +644,56 @@ void UString::reserveBuffer(int length)
 	}
 }
 
-UChar* UString::getBuffer()
+Char* String::getBuffer()
 {
 	return (isSSO()) ? m_data.sso.buffer : m_data.core->get();
 }
 
-const UChar* UString::getBuffer() const
+const Char* String::getBuffer() const
 {
 	return (isSSO()) ? m_data.sso.buffer : m_data.core->get();
 }
 
-void UString::setSSOLength(int len)
+void String::setSSOLength(int len)
 {
 	m_data.sso.length = (static_cast<size_t>(len) & 0x7F) << 1;
 	m_data.sso.buffer[len] = '\0';
 }
 
-int UString::getSSOLength() const
+int String::getSSOLength() const
 {
 	return m_data.sso.length >> 1;
 }
 
-void UString::setSSO()
+void String::setSSO()
 {
 	m_data.sso.length = (static_cast<size_t>(m_data.sso.length) & 0x07) << 1;
 }
 
-void UString::setNonSSO()
+void String::setNonSSO()
 {
 	m_data.sso.length = 0x01;
 }
 
-void UString::append(const UChar* str, int length)
+void String::append(const Char* str, int length)
 {
 	int firstLen = getLength();
-	UChar* b = lockBuffer(firstLen + length) + firstLen;
-	memcpy(b, str, length * sizeof(UChar));
+	Char* b = lockBuffer(firstLen + length) + firstLen;
+	memcpy(b, str, length * sizeof(Char));
 	unlockBuffer(firstLen + length);
 }
 
-void UString::assign(const UChar* str)
+void String::assign(const Char* str)
 {
 	assign(str, UStringHelper::strlen(str));
 }
 
-void UString::assign(const UChar* str, int length)
+void String::assign(const Char* str, int length)
 {
 	if (str && *str)
 	{
-		UChar* buf = lockBuffer(length);
-		memcpy(buf, str, sizeof(UChar) * length);
+		Char* buf = lockBuffer(length);
+		memcpy(buf, str, sizeof(Char) * length);
 		unlockBuffer(length);
 	}
 	else
@@ -702,12 +702,12 @@ void UString::assign(const UChar* str, int length)
 	}
 }
 
-void UString::assign(int count, UChar ch)
+void String::assign(int count, Char ch)
 {
 	if (count > 0)
 	{
-		UChar* buf = lockBuffer(count);
-		std::fill<UChar*, UChar>(buf, buf + count, ch);
+		Char* buf = lockBuffer(count);
+		std::fill<Char*, Char>(buf, buf + count, ch);
 		unlockBuffer(count);
 	}
 	else
@@ -716,15 +716,15 @@ void UString::assign(int count, UChar ch)
 	}
 }
 
-void UString::assign(const UStringRef& str)
+void String::assign(const StringRef& str)
 {
 	// TODO: String 参照のときの特殊化
 
 	int len = str.getLength();
 	if (len > 0)
 	{
-		UChar* buf = lockBuffer(len);
-		memcpy(buf, str.data(), sizeof(UChar) * len);
+		Char* buf = lockBuffer(len);
+		memcpy(buf, str.data(), sizeof(Char) * len);
 		unlockBuffer(len);
 	}
 	else
@@ -734,7 +734,7 @@ void UString::assign(const UStringRef& str)
 }
 
 template<typename TChar>
-void UString::assignFromCStr(const TChar* str, int length, bool* outUsedDefaultChar)
+void String::assignFromCStr(const TChar* str, int length, bool* outUsedDefaultChar)
 {
 	int len = 0;
 	bool ascii = true;
@@ -755,7 +755,7 @@ void UString::assignFromCStr(const TChar* str, int length, bool* outUsedDefaultC
 
 	if (ascii)
 	{
-		UChar* buf = lockBuffer(len);
+		Char* buf = lockBuffer(len);
 		for (int i = 0; i < len; ++i)
 		{
 			buf[i] = str[i];
@@ -776,7 +776,7 @@ void UString::assignFromCStr(const TChar* str, int length, bool* outUsedDefaultC
 }
 
 
-uint32_t UString::getHashCode() const
+uint32_t String::getHashCode() const
 {
 	if (isEmpty()) return 0;
 	return ln::Hash::calcHash(c_str(), getLength());
@@ -786,49 +786,49 @@ uint32_t UString::getHashCode() const
 
 
 
-const UString& UString::getNewLine()
+const String& String::getNewLine()
 {
 #ifdef LN_OS_WIN32
-	static UString nl(_TT("\r\n"));
+	static String nl(_TT("\r\n"));
 	return nl;
 #elif defined(LN_OS_MAC)
-	static UString nl(_TT("\r"));
+	static String nl(_TT("\r"));
 	return nl;
 #else
-	static UString nl(_TT("\n"));
+	static String nl(_TT("\n"));
 	return nl;
 #endif
 }
 
-const UString& UString::getEmpty()
+const String& String::getEmpty()
 {
-	static UString str;
+	static String str;
 	return str;
 }
 
-UString& UString::operator=(const Path& rhs)
+String& String::operator=(const Path& rhs)
 {
 	assign(rhs.getString());
 	return *this;
 }
 
 //==============================================================================
-// UStringRef
+// StringRef
 //==============================================================================
 
-UStringRef::UStringRef(const Path& path)
-	: UStringRef(path.getString())
+StringRef::StringRef(const Path& path)
+	: StringRef(path.getString())
 {
 }
 
-UString UStringRef::mid(int start, int count) const
+String StringRef::mid(int start, int count) const
 {
 	// TODO: Ref で返していいよね？
 	//return StringTraits::mid(getBegin(), start, count);
-	return UString(getBegin(), count).substring(start, count);
+	return String(getBegin(), count).substring(start, count);
 }
 
-size_t UStringRef::getHashCode() const
+size_t StringRef::getHashCode() const
 {
 	if (IsNullOrEmpty()) return 0;
 	return Hash::calcHash(getBegin(), getLength());
@@ -838,7 +838,7 @@ size_t UStringRef::getHashCode() const
 // StringHelper
 //==============================================================================
 
-size_t UStringHelper::strlen(const UChar* str)
+size_t UStringHelper::strlen(const Char* str)
 {
 	if (!str) return 0;
 	size_t count = 0;
@@ -846,7 +846,7 @@ size_t UStringHelper::strlen(const UChar* str)
 	return count;
 }
 
-int UStringHelper::compare(const UChar* str1, const UChar* str2)
+int UStringHelper::compare(const Char* str1, const Char* str2)
 {
 	str1 = (str1) ? str1 : _TT("");
 	str2 = (str2) ? str2 : _TT("");
@@ -891,9 +891,9 @@ template void UStringHelper::toStringInt8<char16_t>(int8_t v, char16_t* outStr, 
 // UStringConvert
 //==============================================================================
 
-//std::basic_string<TCHAR> UStringConvert::toStdTString(const UChar* str)
+//std::basic_string<TCHAR> UStringConvert::toStdTString(const Char* str)
 //{
-//	UString t = str;
+//	String t = str;
 //#ifdef LN_UNICODE
 //	return t.toStdWString();
 //#else
@@ -1030,12 +1030,12 @@ void UStringConvert::convertToStdString(const char* src, int srcLen, std::string
 }
 void UStringConvert::convertToStdString(const char* src, int srcLen, std::wstring* outString)
 {
-	auto str = UString::fromCString(src, srcLen);
+	auto str = String::fromCString(src, srcLen);
 	*outString = str.toStdWString();
 }
 void UStringConvert::convertToStdString(const wchar_t* src, int srcLen, std::string* outString)
 {
-	auto str = UString::fromCString(src, srcLen);
+	auto str = String::fromCString(src, srcLen);
 	*outString = str.toStdString();
 }
 void UStringConvert::convertToStdString(const wchar_t* src, int srcLen, std::wstring* outString)
@@ -1054,7 +1054,7 @@ void UStringConvert::convertToStdString(const char16_t* src, int srcLen, std::ws
 
 
 //bool Path::operator < (const Path& right) const { return PathTraits::compare(m_path.c_str(), right.m_path.c_str()) < 0; }
-//bool Path::operator < (const UChar* right) const { return PathTraits::compare(m_path.c_str(), right) < 0; }
+//bool Path::operator < (const Char* right) const { return PathTraits::compare(m_path.c_str(), right) < 0; }
 
 //namespace fmt {
 
@@ -1079,8 +1079,8 @@ void UStringConvert::convertToStdString(const char16_t* src, int srcLen, std::ws
 //==============================================================================
 
 #define TO_INT_DEF(type, func) \
-	const UChar* begin; \
-	const UChar* end; \
+	const Char* begin; \
+	const Char* end; \
 	int len; \
 	NumberConversionResult res; \
 	StringTraits::trim(str.c_str(), str.getLength(), &begin, &len); \
@@ -1090,19 +1090,19 @@ void UStringConvert::convertToStdString(const char16_t* src, int srcLen, std::ws
 	if (res == NumberConversionResult::Overflow)	{ LN_ENSURE(0); } \
 	LN_ENSURE(end == begin + len); \
 	return num;
-int8_t toInt8(const UString& str, int base) { TO_INT_DEF(int8_t, toInt8); }
-int16_t toInt16(const UString& str, int base) { TO_INT_DEF(int16_t, toInt16); }
-int32_t toInt32(const UString& str, int base) { TO_INT_DEF(int32_t, toInt32); }
-int64_t toInt64(const UString& str, int base) { TO_INT_DEF(int64_t, toInt64); }
-uint8_t toUInt8(const UString& str, int base) { TO_INT_DEF(uint8_t, toUInt8); }
-uint16_t toUInt16(const UString& str, int base) { TO_INT_DEF(uint16_t, toUInt16); }
-uint32_t toUInt32(const UString& str, int base) { TO_INT_DEF(uint32_t, toUInt32); }
-uint64_t toUInt64(const UString& str, int base) { TO_INT_DEF(uint64_t, toUInt64); }
+int8_t toInt8(const String& str, int base) { TO_INT_DEF(int8_t, toInt8); }
+int16_t toInt16(const String& str, int base) { TO_INT_DEF(int16_t, toInt16); }
+int32_t toInt32(const String& str, int base) { TO_INT_DEF(int32_t, toInt32); }
+int64_t toInt64(const String& str, int base) { TO_INT_DEF(int64_t, toInt64); }
+uint8_t toUInt8(const String& str, int base) { TO_INT_DEF(uint8_t, toUInt8); }
+uint16_t toUInt16(const String& str, int base) { TO_INT_DEF(uint16_t, toUInt16); }
+uint32_t toUInt32(const String& str, int base) { TO_INT_DEF(uint32_t, toUInt32); }
+uint64_t toUInt64(const String& str, int base) { TO_INT_DEF(uint64_t, toUInt64); }
 #undef TO_INT_DEF
 
 #define TRY_TO_INT_DEF(type, func) \
-	const UChar* begin; \
-	const UChar* end; \
+	const Char* begin; \
+	const Char* end; \
 	int len; \
 	NumberConversionResult res; \
 	StringTraits::trim(str.c_str(), str.getLength(), &begin, &len); \
@@ -1111,14 +1111,14 @@ uint64_t toUInt64(const UString& str, int base) { TO_INT_DEF(uint64_t, toUInt64)
 	if (res != NumberConversionResult::Success) { return false; } \
 	if (outValue != nullptr) { *outValue = num; } \
 	return true;
-bool tryToInt8(const UString& str, int8_t* outValue, int base) { TRY_TO_INT_DEF(int8_t, toInt8); }
-bool tryToInt16(const UString& str, int16_t* outValue, int base) { TRY_TO_INT_DEF(int16_t, toInt16); }
-bool tryToInt32(const UString& str, int32_t* outValue, int base) { TRY_TO_INT_DEF(int32_t, toInt32); }
-bool tryToInt64(const UString& str, int64_t* outValue, int base) { TRY_TO_INT_DEF(int64_t, toInt64); }
-bool tryToUInt8(const UString& str, uint8_t* outValue, int base) { TRY_TO_INT_DEF(uint8_t, toUInt8); }
-bool tryToUInt16(const UString& str, uint16_t* outValue, int base) { TRY_TO_INT_DEF(uint16_t, toUInt16); }
-bool tryToUInt32(const UString& str, uint32_t* outValue, int base) { TRY_TO_INT_DEF(uint32_t, toUInt32); }
-bool tryToUInt64(const UString& str, uint64_t* outValue, int base) { TRY_TO_INT_DEF(uint64_t, toUInt64); }
+bool tryToInt8(const String& str, int8_t* outValue, int base) { TRY_TO_INT_DEF(int8_t, toInt8); }
+bool tryToInt16(const String& str, int16_t* outValue, int base) { TRY_TO_INT_DEF(int16_t, toInt16); }
+bool tryToInt32(const String& str, int32_t* outValue, int base) { TRY_TO_INT_DEF(int32_t, toInt32); }
+bool tryToInt64(const String& str, int64_t* outValue, int base) { TRY_TO_INT_DEF(int64_t, toInt64); }
+bool tryToUInt8(const String& str, uint8_t* outValue, int base) { TRY_TO_INT_DEF(uint8_t, toUInt8); }
+bool tryToUInt16(const String& str, uint16_t* outValue, int base) { TRY_TO_INT_DEF(uint16_t, toUInt16); }
+bool tryToUInt32(const String& str, uint32_t* outValue, int base) { TRY_TO_INT_DEF(uint32_t, toUInt32); }
+bool tryToUInt64(const String& str, uint64_t* outValue, int base) { TRY_TO_INT_DEF(uint64_t, toUInt64); }
 #undef TRY_TO_INT_DEF
 
 LN_NAMESPACE_END
@@ -1129,7 +1129,7 @@ LN_NAMESPACE_END
 namespace std {
 
 // for unordered_map key
-std::size_t hash<ln::UString>::operator () (const ln::UString& key) const
+std::size_t hash<ln::String>::operator () (const ln::String& key) const
 {
 	return ln::Hash::calcHash(key.c_str(), key.getLength());
 }

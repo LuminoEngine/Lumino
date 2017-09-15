@@ -271,11 +271,11 @@ void FileSystem::copyDirectory(const StringRef& srcPath, const StringRef& dstPat
 	detail::FileSystemInternal::copyDirectory(srcPath.getBegin(), srcPath.getLength(), dstPath.getBegin(), dstPath.getLength(), overwrite, recursive);
 }
 
-void FileSystem::getCurrentDirectory(UString* outPath)
+void FileSystem::getCurrentDirectory(String* outPath)
 {
 	PlatformFileSystem::PathChar path[LN_MAX_PATH];
 	int len = PlatformFileSystem::getCurrentDirectory(LN_MAX_PATH, path);
-	*outPath = UString::fromCString(path, len);
+	*outPath = String::fromCString(path, len);
 }
 
 bool FileSystem::matchPath(const StringRef& filePath, const StringRef& pattern)

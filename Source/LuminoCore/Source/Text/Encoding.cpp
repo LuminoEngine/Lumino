@@ -317,7 +317,7 @@ void Encoding::convert(
 	}
 }
 
-UString Encoding::fromBytes(const char* bytes, int size, Encoding* encoding, bool* outUsedDefaultChar)
+String Encoding::fromBytes(const char* bytes, int size, Encoding* encoding, bool* outUsedDefaultChar)
 {
 	encoding = (encoding) ? encoding : getSystemMultiByteEncoding();
 
@@ -327,7 +327,7 @@ UString Encoding::fromBytes(const char* bytes, int size, Encoding* encoding, boo
 	if (thisTypeEncoding == encoding)	// TODO: ポインタ比較はよくない
 	{
 		int byteCount = (size < 0) ? strlen((const char*)bytes) : size;
-		return UString((const Char*)bytes, size);
+		return String((const Char*)bytes, size);
 	}
 	else
 	{
@@ -340,7 +340,7 @@ UString Encoding::fromBytes(const char* bytes, int size, Encoding* encoding, boo
 			*outUsedDefaultChar = result.UsedDefaultChar;
 		}
 
-		return UString((const Char*)tmpBuffer.getData(), result.BytesUsed / sizeof(Char));
+		return String((const Char*)tmpBuffer.getData(), result.BytesUsed / sizeof(Char));
 	}
 }
 

@@ -26,9 +26,9 @@ LN_NAMESPACE_BEGIN
 class Path
 {
 public:
-	static const UChar Separator;
-	static const UChar AltSeparator;
-	static const UChar VolumeSeparator;
+	static const Char Separator;
+	static const Char AltSeparator;
+	static const Char VolumeSeparator;
 
 public:
 	Path();
@@ -36,19 +36,19 @@ public:
 
 	// TODO: String&&
 
-	Path(const UChar* path) { assign(path); }
-	Path(const UString& path) { assign(path); }
-	Path(const UStringRef& path) { assign(path); }
-	Path(const Path& basePath, const UChar* relativePath) { assignUnderBasePath(basePath, UStringRef(relativePath)); }
-	Path(const Path& basePath, const UString& relativePath) { assignUnderBasePath(basePath, UStringRef(relativePath)); }
-	Path(const Path& basePath, const UStringRef& relativePath) { assignUnderBasePath(basePath, relativePath); }
+	Path(const Char* path) { assign(path); }
+	Path(const String& path) { assign(path); }
+	Path(const StringRef& path) { assign(path); }
+	Path(const Path& basePath, const Char* relativePath) { assignUnderBasePath(basePath, StringRef(relativePath)); }
+	Path(const Path& basePath, const String& relativePath) { assignUnderBasePath(basePath, StringRef(relativePath)); }
+	Path(const Path& basePath, const StringRef& relativePath) { assignUnderBasePath(basePath, relativePath); }
 	Path(const Path& basePath, const Path& relativePath) { assignUnderBasePath(basePath, relativePath); }
 
 	// operators
-	Path& operator = (const UString& str) { assign(str.c_str()); return (*this); }
-	Path& operator = (const UChar* str) { assign(str); return (*this); }
+	Path& operator = (const String& str) { assign(str.c_str()); return (*this); }
+	Path& operator = (const Char* str) { assign(str); return (*this); }
 	//bool operator < (const Path& right) const;
-	//bool operator < (const UChar* right) const;
+	//bool operator < (const Char* right) const;
 
 
 public:
@@ -57,7 +57,7 @@ public:
 		@brief		パス文字列を割り当てる
 		@param[in]	path		: パス文字列
 	*/
-	void assign(const UStringRef& path);
+	void assign(const StringRef& path);
 
 	/**
 		@brief		ベースパスと相対パスを連結して、パスを作成する
@@ -66,7 +66,7 @@ public:
 		@details	relativePath がフルパスの場合は basePath を無視します。
 	*/
 	// TODO: 絶対パスにしてほしくない
-	void assignUnderBasePath(const Path& basePath, const UStringRef& relativePath);
+	void assignUnderBasePath(const Path& basePath, const StringRef& relativePath);
 	void assignUnderBasePath(const Path& basePath, const Path& relativePath);
 
 	/**
@@ -75,9 +75,9 @@ public:
 		@details	現在のパスの末尾にセパレータが無い場合は付加し、文字列を連結します。
 					path が絶対パスであれば、現在のパスを置き換えます。
 	*/
-	void append(const UStringRef& path);
-	void append(const Path& path) { append(UStringRef(path.m_path)); }
-	void append(const UChar* path) { append(UStringRef(path)); }
+	void append(const StringRef& path);
+	void append(const Path& path) { append(StringRef(path.m_path)); }
+	void append(const Char* path) { append(StringRef(path)); }
 
 	/// 空文字列を設定する
 	void clear() { m_path.clear(); }
@@ -89,12 +89,12 @@ public:
 	int getLength() const { return m_path.getLength(); }
 
 	/** C言語形式の文字列ポインタを返します。*/
-	const UChar* c_str() const { return m_path.c_str(); }
+	const Char* c_str() const { return m_path.c_str(); }
 
-	const UString& getString() const { return m_path; }
+	const String& getString() const { return m_path; }
 
 	/** パス文字列の中から拡張子を含むファイル名の部分を返します。 (空パスの場合は空文字列を返す) */
-	UString getFileName() const;
+	String getFileName() const;
 
 	/// 絶対パスであるかを確認する
 	bool isAbsolute() const;
@@ -128,7 +128,7 @@ public:
 		Path(".").GetExtension()				// => ""
 		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	*/
-	UStringRef getExtension(bool withDot = true) const;
+	StringRef getExtension(bool withDot = true) const;
 	
 	/**
 		@brief		親ディレクトリの Path を返す
@@ -149,7 +149,7 @@ public:
 	*/
 	Path getParent() const;
 
-	UStringRef getFileNameWithoutExtension() const;
+	StringRef getFileNameWithoutExtension() const;
 
 	/**
 		@brief		パスを単純化し、フルパスにしたものを返す
@@ -184,13 +184,13 @@ public:
 	/// @overload Equals
 	bool equals(const Path& path) const;
 	/// @overload Equals
-	bool equals(const UString& path) const;
+	bool equals(const String& path) const;
 	///// @overload Equals
 	//bool operator == (const Path& path) const { return equals(path); }
 
 
 	/// パス文字列を返す (末尾に必ずセパレータをひとつ付加する)
-	const UString getStrEndSeparator() const;
+	const String getStrEndSeparator() const;
 
 #if 0
 
@@ -311,10 +311,10 @@ public:
 	static Path getUniqueFilePathInDirectory(const Path& directory, const Char* filePrefix, const Char* extName);
 
 	/// (こちらはファイル名だけを返す)
-	static UString getUniqueFileNameInDirectory(const Path& directory, const Char* filePrefix, const Char* extName);
+	static String getUniqueFileNameInDirectory(const Path& directory, const Char* filePrefix, const Char* extName);
 
 private:
-	UString	m_path;
+	String	m_path;
 
 };
 
@@ -323,7 +323,7 @@ inline bool operator!=(const Path& lhs, const Path& rhs) { return !operator==(lh
 
 
 typedef Path		PathName;
-class UStringRef;
+class StringRef;
 
 namespace detail
 {
