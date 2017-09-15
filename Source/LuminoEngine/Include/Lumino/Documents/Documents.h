@@ -234,7 +234,7 @@ LN_INTERNAL_ACCESS:
 	int getLength() const { return m_text.getLength(); }
 
 private:
-	GenericStringBuilderCore<UTF32>	m_text;
+	ln::detail::SimpleStringBuilder<UTF32>	m_text;
 	//Ref<GlyphRun>				m_glyphRun;
 };
 

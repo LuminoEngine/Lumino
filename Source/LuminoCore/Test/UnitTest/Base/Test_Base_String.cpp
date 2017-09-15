@@ -2,7 +2,8 @@
 #include <unordered_map>
 #include <Lumino/Text/Encoding.h>
 
-
+#ifdef LN_USTRING
+#else
 
 class Test_Base_String : public ::testing::Test
 {
@@ -573,7 +574,7 @@ TEST_F(Test_Base_String, remove)
 TEST_F(Test_Base_String, replace)
 {
 	// <Test> 部分一致を置換できること。
-	// <Test> TCHAR* を渡せること。
+	// <Test> Char* を渡せること。
 	{
 		StringA str1("test");
 		StringA str2 = str1.replace("es", "b");
@@ -598,8 +599,8 @@ TEST_F(Test_Base_String, replace)
 	// <Test> StringRef を渡せること。
 	{
 		String str1(_T("reabcdef"));
-		TCHAR buf1[] = _T("abc");
-		TCHAR buf2[] = _T("def");
+		Char buf1[] = _T("abc");
+		Char buf2[] = _T("def");
 		String str2 = str1.replace(StringRef(buf1, buf1 + 2), StringRef(buf2, buf2 + 2));
 		ASSERT_EQ(_T("redecdef"), str2);
 	}
@@ -873,7 +874,7 @@ TEST_F(Test_Base_String, NewLine)
 	ASSERT_EQ(L'\n', wnl[1]);
 	ASSERT_EQ(L'\0', wnl[2]);
 
-	const TCHAR* tnl = String::getNewLine().c_str();
+	const Char* tnl = String::getNewLine().c_str();
 	ASSERT_EQ(_T('\r'), tnl[0]);
 	ASSERT_EQ(_T('\n'), tnl[1]);
 	ASSERT_EQ(_T('\0'), tnl[2]);
@@ -886,7 +887,7 @@ TEST_F(Test_Base_String, NewLine)
 	ASSERT_EQ(L'\n', wnl[0]);
 	ASSERT_EQ(L'\0', wnl[1]);
 
-	const TCHAR* tnl = String::GetNewLine().c_str();
+	const Char* tnl = String::GetNewLine().c_str();
 	ASSERT_EQ(_T('\n'), tnl[0]);
 	ASSERT_EQ(_T('\0'), tnl[1]);
 #endif
@@ -1078,5 +1079,5 @@ TEST_F(Test_Base_String, Issue)
 	}
 }
 
-
+#endif
 

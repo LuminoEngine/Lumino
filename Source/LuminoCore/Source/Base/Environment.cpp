@@ -13,11 +13,124 @@
 #include <Lumino/Base/StringHelper.h>
 #include <Lumino/IO/FileSystem.h>
 
+#include <Lumino/Text/Encoding.h>
+
 LN_NAMESPACE_BEGIN
+
+// Native -> char or wchar_t or char16_t
+template<typename TSrcChar/*, typename TDstChar*/>
+class LocalStringConverter
+{
+public:
+	void alloc(int length)
+	{
+		// TODO: SSO
+		m_longNativeString.resize(length);
+	}
+
+	TSrcChar* data()
+	{
+		return m_longNativeString.data();
+	}
+
+	String toUString() const
+	{
+		return String::fromCString(m_longNativeString.data(), m_longNativeString.size());
+	}
+
+private:
+	std::vector<TSrcChar> m_longNativeString;
+};
+
+#ifdef LN_OS_WIN32
+// Win32
+class PlatformEnvironment
+{
+public:
+	using CharType = wchar_t;
+
+	static void getCurrentDirectory(LocalStringConverter<CharType>* out)
+	{
+		DWORD size = ::GetCurrentDirectoryW(0, NULL);
+		out->alloc(size);
+		::GetCurrentDirectoryW(size, out->data());
+	}
+};
+#else
+
+// Unix
+class PlatformEnvironment
+{
+public:
+	using CharType = char;
+	
+	static void getCurrentDirectory(LocalStringConverter<CharType>* out)
+	{
+		char* p = getcwd(NULL, 0);
+		size_t len = strlen(p);
+		out->alloc(len);
+		strncpy(out->data(), p, len);
+		free(p);
+	}
+	
+#ifdef LN_OS_MAC
+	void getSpecialFolderPath(SpecialFolder specialFolder, LocalStringConverter<CharType>* out)
+	{
+#if 0
+		short domain = kOnAppropriateDisk;
+		
+		OSType type = kDesktopFolderType;
+		switch (specialFolder)
+		{
+			case SpecialFolder::ApplicationData:
+				type = kApplicationSupportFolderType;
+				break;
+			case SpecialFolder::Temporary:
+				type = kTemporaryFolderType;
+				break;
+			default:
+				LN_THROW(0, ArgumentException);
+				break;
+		}
+		
+		FSRef ref;
+		if (FSFindFolder(domain, type, false, &ref) != 0) {
+			LN_THROW(0, RuntimeException);
+			return;
+		}
+		
+		
+		
+		ByteBuffer buf(2048);
+		if (FSRefMakePath(&ref, reinterpret_cast<UInt8 *>(buf.getData()), buf.getSize()) != noErr) {
+			LN_THROW(0, RuntimeException);
+			return;
+		}
+		
+		String path = String::fromCString((const char*)buf.getConstData(), buf.getSize());
+		StringTraits::tstrcpy(outPath, LN_MAX_PATH, path.c_str());
+#endif
+	}
+#endif
+};
+#endif
+
+
+
 
 //==============================================================================
 // Environment
 //==============================================================================
+
+String getCurrentDirectory()
+{
+	LocalStringConverter<PlatformEnvironment::CharType> buf;
+	PlatformEnvironment::getCurrentDirectory(&buf);
+	return buf.toUString();
+}
+
+
+
 
 //------------------------------------------------------------------------------
 String Environment::getEnvironmentVariable(const String& variableName)
@@ -28,7 +141,7 @@ String Environment::LN_AFX_FUNCNAME(getEnvironmentVariable)(const String& variab
 {
 	String val;
 	bool r = tryGetEnvironmentVariable(variableName, &val);
-	LN_THROW(r, KeyNotFoundException);
+	LN_ENSURE(r);
 	return val;
 }
 
@@ -42,9 +155,10 @@ bool Environment::tryGetEnvironmentVariable(const String& variableName, String* 
 	if (err != 0 || len == 0) {	// Win32 では環境変数を空にはできない
 		return false;
 	}
-	TCHAR* val = new TCHAR[len];
-	_tgetenv_s(&len, val, len, name.c_str());
-	if (outValue) { *outValue = val; }
+	//Char* val = new Char[len];
+	ByteBuffer val(len * sizeof(Char));
+	_tgetenv_s(&len, (Char*)val.getData(), len, name.c_str());
+	if (outValue) { *outValue = (const Char*)val.getConstData(); }
 	return true;
 #else
 #endif
@@ -74,7 +188,7 @@ uint64_t Environment::getTickCount()
 	// GetTickCount() の方が無難かもしれない
 	return ::GetTickCount();
 #elif defined(LN_OS_MAC)
-    return GetTickCountNS() / 1000000;
+    return getTickCountNS() / 1000000;
     
 #else
 	struct timespec ts;
@@ -117,7 +231,7 @@ uint64_t Environment::getTickCountNS()
     return cpuTime * info.numer / info.denom;
     
 #else
-	LN_THROW(0, NotImplementedException);
+	LN_NOTIMPLEMENTED();
 	return 0;
 #endif
 }
@@ -219,37 +333,7 @@ template void Environment::getSpecialFolderPath(SpecialFolder specialFolder, wch
 template<typename TChar>
 void Environment::getSpecialFolderPath(SpecialFolder specialFolder, TChar* outPath)
 {
-	short domain = kOnAppropriateDisk;
-
-	OSType type = kDesktopFolderType;
-	switch (specialFolder)
-	{
-		case SpecialFolder::ApplicationData:
-			type = kApplicationSupportFolderType;
-			break;
-		case SpecialFolder::Temporary:
-			type = kTemporaryFolderType;
-			break;
-		default:
-			LN_THROW(0, ArgumentException);
-			break;
-	}
-
-	FSRef ref;
-	if (FSFindFolder(domain, type, false, &ref) != 0) {
-		LN_THROW(0, RuntimeException);
-		return;
-	}
-
-	ByteBuffer buf(2048);
-	if (FSRefMakePath(&ref, reinterpret_cast<UInt8 *>(buf.GetData()), buf.GetSize()) != noErr) {
-		LN_THROW(0, RuntimeException);
-		return;
-	}
-
-	GenericString<TChar> path;
-	path.AssignCStr((const char*)buf.GetConstData(), buf.GetSize());
-	StringTraits::tstrcpy(outPath, LN_MAX_PATH, path.c_str());
+	LN_NOTIMPLEMENTED();
 }
 template void Environment::getSpecialFolderPath(SpecialFolder specialFolder, char* outPath);
 template void Environment::getSpecialFolderPath(SpecialFolder specialFolder, wchar_t* outPath);

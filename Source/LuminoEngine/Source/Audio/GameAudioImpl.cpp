@@ -59,7 +59,7 @@ GameAudioImpl::~GameAudioImpl()
 }
 
 //------------------------------------------------------------------------------
-void GameAudioImpl::playBGM(const TCHAR* filePath, float volume, float pitch, double fadeTime)
+void GameAudioImpl::playBGM(const Char* filePath, float volume, float pitch, double fadeTime)
 {
 	// 演奏再開チェック
 	//if ( !mBGMRestart && mBGM )
@@ -82,7 +82,7 @@ void GameAudioImpl::playBGM(const TCHAR* filePath, float volume, float pitch, do
 //------------------------------------------------------------------------------
 void GameAudioImpl::playBGMFromSound(Sound* sound, float volume, float pitch, double fadeTime)
 {
-	if (LN_CHECK_ARG(sound != nullptr)) return;
+	if (LN_REQUIRE(sound != nullptr)) return;
 
 	// 演奏再開チェック
 	// TODO:フェードアウト中に再開すると無音になる
@@ -185,7 +185,7 @@ void GameAudioImpl::stopBGM(double fadeTime)
 }
 
 //------------------------------------------------------------------------------
-void GameAudioImpl::playBGS(const TCHAR* filePath, float volume, float pitch, double fadeTime)
+void GameAudioImpl::playBGS(const Char* filePath, float volume, float pitch, double fadeTime)
 {
 	// 演奏再開チェック
 	//if ( !mBGSRestart && mBGS )
@@ -284,7 +284,7 @@ void GameAudioImpl::stopBGS(double fadeTime)
 }
 
 //------------------------------------------------------------------------------
-void GameAudioImpl::playME(const TCHAR* filePath, float volume, float pitch)
+void GameAudioImpl::playME(const Char* filePath, float volume, float pitch)
 {
 	auto sound = createSound(filePath);
 	playMEFromSound(sound, volume, pitch);
@@ -365,7 +365,7 @@ void GameAudioImpl::stopME()
 }
 
 //------------------------------------------------------------------------------
-void GameAudioImpl::playSE(const TCHAR* filePath, float volume, float pitch)
+void GameAudioImpl::playSE(const Char* filePath, float volume, float pitch)
 {
 	auto sound = createSound(filePath);
 	sound->SetPlayingMode(SoundPlayingMode::OnMemory);
@@ -384,7 +384,7 @@ void GameAudioImpl::playSE(const TCHAR* filePath, float volume, float pitch)
 }
 
 //------------------------------------------------------------------------------
-void GameAudioImpl::playSE3D(const TCHAR* filePath, const Vector3& position, float distance, float volume, float pitch)
+void GameAudioImpl::playSE3D(const Char* filePath, const Vector3& position, float distance, float volume, float pitch)
 {
 	// サウンド作成
 	auto sound = createSound(filePath);

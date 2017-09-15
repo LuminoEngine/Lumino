@@ -88,7 +88,7 @@ const ByteBuffer& EncodingConverter::convert(const void* data, size_t byteCount,
 	// デコーダが変換状態を保持できない場合はやむを得ないので一時メモリを確保し、ソースバッファ全体を一度に変換する。
 	else
 	{
-		// TCHAR を UTF16 へ全部変換するのに必要なバイト数で一時メモリ確保
+		// Char を UTF16 へ全部変換するのに必要なバイト数で一時メモリ確保
 		size_t totalByteCount = Encoding::getConversionRequiredByteCount(m_srcEncoding, m_dstEncoding, byteCount);
 		m_tmpBuffer.resize(totalByteCount);
 
@@ -96,7 +96,7 @@ const ByteBuffer& EncodingConverter::convert(const void* data, size_t byteCount,
 		UTF16* utf16Buf = (UTF16*)m_tmpBuffer.getData();
 		int utf16ElementCount = m_tmpBuffer.getSize() / sizeof(UTF16);
 
-		// TCHAR を中間コード(UTF16) へ
+		// Char を中間コード(UTF16) へ
 		size_t outBytesUsed, outCharsUsed;
 		m_srcDecoder->convertToUTF16((const byte_t*)data, byteCount, utf16Buf, utf16ElementCount, &outBytesUsed, &outCharsUsed);
 
@@ -136,8 +136,8 @@ void EncodingConverter::checkUpdateEncoderDecoder()
 {
 	if (m_encodingModified)
 	{
-		LN_THROW(m_dstEncoding != NULL, InvalidOperationException, "DestinationEncoding is not set.");
-		LN_THROW(m_srcEncoding != NULL, InvalidOperationException, "SourceEncoding is not set.");
+		if (LN_REQUIRE(m_dstEncoding)) return;
+		if (LN_REQUIRE(m_srcEncoding)) return;
 
 		LN_SAFE_DELETE(m_dstEncoder);
 		LN_SAFE_DELETE(m_srcDecoder);
@@ -154,9 +154,9 @@ void EncodingConverter::convertDecoderRemain(
 	void* dest_, size_t destByteCount, Encoder* destEncoder,
 	EncodingConversionResult* outResult)
 {
-	if (LN_CHECK_ARG(srcDecoder != nullptr)) return;
-	if (LN_CHECK_ARG(srcDecoder->canRemain())) return;
-	if (LN_CHECK_ARG(destEncoder != nullptr)) return;
+	if (LN_REQUIRE(srcDecoder != nullptr)) return;
+	if (LN_REQUIRE(srcDecoder->canRemain())) return;
+	if (LN_REQUIRE(destEncoder != nullptr)) return;
 
 	const size_t BufferingElements = 512;
 	UTF16 utf16[BufferingElements];

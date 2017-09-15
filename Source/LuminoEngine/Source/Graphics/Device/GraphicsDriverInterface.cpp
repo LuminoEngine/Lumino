@@ -39,7 +39,7 @@ IRenderer::~IRenderer()
 //------------------------------------------------------------------------------
 void IRenderer::begin()
 {
-	if (LN_CHECK_STATE(!m_rendering)) return;
+	if (LN_REQUIRE(!m_rendering)) return;
 	onBeginRendering();
 	m_rendering = true;
 }
@@ -47,7 +47,7 @@ void IRenderer::begin()
 //------------------------------------------------------------------------------
 void IRenderer::end()
 {
-	if (LN_CHECK_STATE(m_rendering)) return;
+	if (LN_REQUIRE(m_rendering)) return;
 	onEndRendering();
 	m_rendering = false;
 }
@@ -55,7 +55,7 @@ void IRenderer::end()
 //------------------------------------------------------------------------------
 void IRenderer::setRenderTarget(int index, ITexture* target)
 {
-	if (LN_CHECK_RANGE(index, 0, Graphics::MaxMultiRenderTargets)) return;
+	if (LN_REQUIRE_RANGE(index, 0, Graphics::MaxMultiRenderTargets)) return;
 	if (m_currentRenderTargets[index] != target)
 	{
 		m_currentRenderTargets[index] = target;
@@ -66,7 +66,7 @@ void IRenderer::setRenderTarget(int index, ITexture* target)
 //------------------------------------------------------------------------------
 ITexture* IRenderer::getRenderTarget(int index)
 {
-	if (LN_CHECK_RANGE(index, 0, Graphics::MaxMultiRenderTargets)) return nullptr;
+	if (LN_REQUIRE_RANGE(index, 0, Graphics::MaxMultiRenderTargets)) return nullptr;
 	return m_currentRenderTargets[index];
 }
 
@@ -160,7 +160,7 @@ void IRenderer::clear(ClearFlags flags, const Color& color, float z, uint8_t ste
 	//   していない場合、エラーとならないがクリアされない。
 	if (m_currentDepthBuffer != nullptr)
 	{
-		if (LN_CHECK_STATE(m_currentRenderTargets[0]->getSize() == m_currentDepthBuffer->getSize())) return;
+		if (LN_REQUIRE(m_currentRenderTargets[0]->getSize() == m_currentDepthBuffer->getSize())) return;
 	}
 
 	flushStates();
@@ -263,7 +263,7 @@ ITexture::~ITexture()
 //==============================================================================
 
 //------------------------------------------------------------------------------
-IShaderVariable* IShader::getVariableByName(const TCHAR* name) const
+IShaderVariable* IShader::getVariableByName(const Char* name) const
 {
 	int count = getVariableCount();
 	for (int i = 0; i < count; ++i)

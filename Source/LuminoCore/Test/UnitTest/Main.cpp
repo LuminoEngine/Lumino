@@ -4,13 +4,21 @@
 #include "TestConfig.h"
 #include <Lumino/IO/FileSystem.h>
 
-PathName Test_GetTempFilePath(const TCHAR* fileName)
+//==============================================================================
+// ScopedMemoryHook
+//==============================================================================
+int ScopedMemoryHook::newCount = 0;
+int ScopedMemoryHook::deleteCount = 0;
+
+
+
+PathName Test_GetTempFilePath(const Char* fileName)
 {
-	PathName base(__FILE__);
-	PathName tempDir(base.getParent(), _T("../../"));
-	tempDir.append(_T("tmp"));
+	PathName base(String::fromCString(__FILE__));
+	PathName tempDir(base.getParent(), _TT("../../"));
+	tempDir.append(_TT("tmp"));
 	PathName path(tempDir, fileName);
-	FileSystem::createDirectory(path.getParent());
+	FileSystem::createDirectory(path.getParent().c_str());
 	return PathName(path.c_str());
 }
 
@@ -52,7 +60,7 @@ GTEST_API_ int main(int argc, char **argv)
 #if 0	// 部分的にテストを実行したりする
 	char* testArgs[] = {
 		argv[0],
-		"--gtest_filter=Test_IO_FileSystem.*"
+		"--gtest_filter=Test_Base_List.*"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);

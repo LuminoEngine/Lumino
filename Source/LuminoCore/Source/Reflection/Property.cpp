@@ -47,6 +47,7 @@ void PropertyInfo::notifyPropertyChanged(ReflectionObject* ownerObject, Property
 	}
 }
 
+#ifdef LN_LEGACY_VARIANT_ENABLED
 //------------------------------------------------------------------------------
 void PropertyInfo::setPropertyValue(ReflectionObject* obj, const PropertyInfo* prop, const Variant& value, PropertySetSource source)
 {
@@ -75,6 +76,7 @@ Variant PropertyInfo::getPropertyValue(ReflectionObject* obj, const PropertyInfo
 		return prop->getValue(obj);
 	//}
 }
+#endif
 
 //==============================================================================
 // PropertyBase

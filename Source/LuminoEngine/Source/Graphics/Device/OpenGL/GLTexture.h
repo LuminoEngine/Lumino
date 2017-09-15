@@ -86,8 +86,8 @@ public:
 	virtual TextureFormat getTextureFormat() const { return m_format; }
 	virtual const SizeI& getSize() const { return m_size; }
 	virtual const SizeI& getRealSize() const { return m_realSize; }
-	virtual void setSamplerState(const SamplerState& state) { LN_THROW(0, InvalidOperationException); }
-	virtual void setSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) { LN_THROW(0, InvalidOperationException); }
+	virtual void setSamplerState(const SamplerState& state) { LN_UNREACHABLE(); }
+	virtual void setSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) { LN_UNREACHABLE(); }
 	virtual void setSubData3D(const Box32& box, const void* data, size_t dataBytes);
 	virtual void getData(const RectI& rect, void* outData) override;
 	virtual Bitmap* lock();
@@ -125,12 +125,12 @@ public:
 	virtual TextureFormat getTextureFormat() const { return m_format; }
 	virtual const SizeI& getSize() const { return m_size; }
 	virtual const SizeI& getRealSize() const { return m_realSize; }
-	virtual void setSamplerState(const SamplerState& state) { LN_THROW(0, InvalidOperationException); }
-	virtual void setSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) { LN_THROW(0, InvalidOperationException); }
+	virtual void setSamplerState(const SamplerState& state) { LN_UNREACHABLE(); }
+	virtual void setSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) { LN_UNREACHABLE(); }
 	virtual void setSubData3D(const Box32& box, const void* data, size_t dataBytes);
 	virtual void getData(const RectI& rect, void* outData) override;
-	virtual Bitmap* lock() { LN_THROW(0, InvalidOperationException); return NULL; }
-	virtual void unlock() { LN_THROW(0, InvalidOperationException); }
+	virtual Bitmap* lock() { LN_UNREACHABLE(); return NULL; }
+	virtual void unlock() { LN_UNREACHABLE(); }
 
 	// override GLTextureBase
 	virtual GLuint getGLTexture() { return m_glBuffer; }

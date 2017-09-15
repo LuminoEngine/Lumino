@@ -17,7 +17,7 @@ protected:
 		m_context.LexFile(file);
 		auto tokens = file->GetTokenList();
 		m_parser.ParseCppConstExpression2(tokens->begin(), tokens->end(), file->getDiag());
-		LN_THROW(file->getDiag()->getItems()->isEmpty(), InvalidOperationException);
+		if (LN_ENSURE(file->getDiag()->getItems()->isEmpty())) return nullptr;
 		return m_parser.GetTokenList();
 	}
 };
@@ -124,8 +124,8 @@ TEST_F(Test_Rpn, parse)
 	//{
 	//	ByteBuffer buf(_T("1 + 2 ? 3 + 4 : 5 + 6"));
 	//	ErrorManager err;
-	//	TokenListPtr tokens(CppLexer<TCHAR>::Lex(&buf, &err));
-	//	RPNTokenListPtr rpnTokens(RPNParser<TCHAR>::ParseCppConstExpression(tokens->begin(), tokens->end(), &err));
+	//	TokenListPtr tokens(CppLexer<Char>::Lex(&buf, &err));
+	//	RPNTokenListPtr rpnTokens(RPNParser<Char>::ParseCppConstExpression(tokens->begin(), tokens->end(), &err));
 	//	ASSERT_EQ(11, rpnTokens->GetCount());
 
 	//	// 1+1 ?   2 ? 1: 2  : 3
@@ -181,8 +181,10 @@ protected:
 	void Eval(const char* code)
 	{
 		bool r = TryEval(code);
-		if (!r) {
-			LN_THROW(0, InvalidOperationException);
+		if (!r)
+		{
+			LN_ENSURE(0);
+			return;
 		}
 	}
 
@@ -403,6 +405,6 @@ TEST_F(Test_Parser_RpnEvaluator, Error)
 		ASSERT_EQ(false, TryEval("7%3.f"));
 		ASSERT_EQ(1, m_diag.getItems()->getCount());
 		ASSERT_EQ(DiagnosticsCode::RpnEvaluator_OperatorInvalidType, m_diag.getItems()->getAt(0).GetCode());
-		ASSERT_EQ("Float", m_diag.getItems()->getAt(0).GetOptions().getAt(0));
+		ASSERT_EQ("Float", m_diag.getItems()->getAt(0).GetOptions().at(0));
 	}
 }

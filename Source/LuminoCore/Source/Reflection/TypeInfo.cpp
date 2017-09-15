@@ -12,6 +12,27 @@ LN_NAMESPACE_BEGIN
 namespace tr {
 
 
+namespace detail
+{
+	// get instance factory
+	template<class TObject, class TIsAbstract> struct ObjectFactorySelector
+	{};
+	template<class TObject> struct ObjectFactorySelector<TObject, std::false_type>
+	{
+		static ObjectFactory getFactory()
+		{
+			return []() { return Ref<ReflectionObject>::staticCast(::ln::newObject<TObject>()); };
+		}
+	};
+	template<class TObject> struct ObjectFactorySelector<TObject, std::true_type>
+	{
+		static ObjectFactory getFactory()
+		{
+			return nullptr;
+		}
+	};
+}
+
 //==============================================================================
 // TypeInfoManager
 //==============================================================================
@@ -94,7 +115,7 @@ TypeInfo* TypeInfo::getTypeInfo(const ReflectionObject* obj)
 
 //------------------------------------------------------------------------------
 TypeInfo::TypeInfo(
-	const TCHAR* className,
+	const Char* className,
 	TypeInfo* baseClass,
 	HasLocalValueFlagsGetter getter,
 	BindingTypeInfoSetter bindingTypeInfoSetter,
@@ -128,8 +149,8 @@ const String& TypeInfo::getName() const
 //------------------------------------------------------------------------------
 void TypeInfo::registerProperty(PropertyInfo* prop)
 {
-	if (LN_CHECK_ARG(!prop->m_registerd)) return;
-	m_propertyList.add(prop);
+	if (LN_REQUIRE(!prop->m_registerd)) return;
+	m_propertyList.push_back(prop);
 	prop->m_registerd = true;
 }
 
@@ -147,33 +168,12 @@ PropertyInfo* TypeInfo::findProperty(size_t memberOffset) const
 }
 
 //------------------------------------------------------------------------------
-void TypeInfo::registerReflectionEvent(ReflectionEventInfo* ev)
-{
-	if (LN_CHECK_ARG(!ev->m_registerd)) return;
-	m_routedEventList.add(ev);
-	ev->m_registerd = true;
-}
-
-//------------------------------------------------------------------------------
-bool TypeInfo::invokeReflectionEvent(ReflectionObject* target, const ReflectionEventInfo* ev, ReflectionEventArgs* e)
-{
-	for (ReflectionEventInfo* dynamicEvent : m_routedEventList)
-	{
-		if (dynamicEvent == ev)
-		{
-			// owner に addHandler されているイベントハンドラを呼び出す。
-			dynamicEvent->callEvent(target, e);
-			return e->handled;	// ev と同じイベントは1つしかリスト内に無いはずなのですぐ return
-		}
-	}
-
-	// ベースクラスがあれば、さらにベースクラスを見に行く
-	if (m_baseClass != nullptr)
-	{
-		return m_baseClass->invokeReflectionEvent(target, ev, e);
-	}
-	return false;
-}
+//void TypeInfo::registerReflectionEvent(ReflectionEventInfo* ev)
+//{
+//	if (LN_REQUIRE(!ev->m_registerd)) return;
+//	m_routedEventList.add(ev);
+//	ev->m_registerd = true;
+//}
 
 //------------------------------------------------------------------------------
 void TypeInfo::setBindingTypeInfo(void* data)
@@ -202,7 +202,7 @@ void TypeInfo::initializeProperties(ReflectionObject* obj)
 //------------------------------------------------------------------------------
 Ref<Object> TypeInfo::createInstance()
 {
-	if (LN_CHECK_STATE(m_factory != nullptr)) return nullptr;
+	if (LN_REQUIRE(m_factory != nullptr)) return nullptr;
 	return m_factory();
 }
 

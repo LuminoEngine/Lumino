@@ -13,8 +13,7 @@ public:
 
 	static std::string makeStdString(const String& str)
 	{
-		auto buf = str.convertTo(Encoding::getSystemMultiByteEncoding());
-		return std::string((const char*)buf.getConstData(), buf.getSize());
+		return str.toStdString();
 	}
 
 	static std::string makeStdString(const char* str)
@@ -30,13 +29,13 @@ public:
 	static std::string makeStdString(const wchar_t* str)
 	{
 		std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> cv;
-		std::string reconvert = cv.to_bytes(str);
+		return cv.to_bytes(str);
 	}
 
 	static std::string makeStdString(const wchar_t* str, size_t len)
 	{
 		std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> cv;
-		std::string reconvert = cv.to_bytes(str, str + len);
+		return cv.to_bytes(str, str + len);
 	}
 
 	template <class TString, class A1, class A2>
@@ -71,6 +70,14 @@ public:
 
 	static size_t len(const char* s) { return strlen(s); }
 	static size_t len(const std::string& s) { return s.length(); }
+	static size_t len(const wchar_t* s) { return wcslen(s); }
+	static size_t len(const std::wstring& s) { return s.length(); }
+
+	template <class TString, class A1>
+	static bool contains(const TString& s1, const A1& a1)
+	{
+		return s1.find(a1) != TString::npos;
+	}
 };
 
 LN_NAMESPACE_END

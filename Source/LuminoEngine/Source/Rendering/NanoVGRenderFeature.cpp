@@ -603,9 +603,9 @@ static int lnnvg__renderCreate(void* uptr)
 	lnc->shader.attach(device->createShader(code.c_str(), code.length(), &result), false);
 	LN_THROW(result.Level != ShaderCompileResultLevel_Error, CompilationException, result);
 	lnc->shaderPass = lnc->shader->getTechnique(0)->getPass(0);
-	lnc->varViewSize = lnc->shader->getVariableByName(_T("viewSize"));
-	lnc->varFrag = lnc->shader->getVariableByName(_T("frag"));
-	lnc->varTex = lnc->shader->getVariableByName(_T("tex"));
+	lnc->varViewSize = lnc->shader->getVariableByName(_LT("viewSize"));
+	lnc->varFrag = lnc->shader->getVariableByName(_LT("frag"));
+	lnc->varTex = lnc->shader->getVariableByName(_LT("tex"));
 
 	int align = 4;
 	lnc->fragSize = sizeof(GLNVGfragUniforms) + align - sizeof(GLNVGfragUniforms) % align;
@@ -961,7 +961,7 @@ void NanoVGRenderFeature::initialize(GraphicsManager* manager)
 //------------------------------------------------------------------------------
 void NanoVGRenderFeature::executeCommand(NanoVGCommandList* commandList)
 {
-	if (LN_CHECK_ARG(commandList != nullptr)) return;
+	if (LN_REQUIRE(commandList != nullptr)) return;
 
 	NanoVGRenderFeature* _this = this;
 	LN_ENQUEUE_RENDER_COMMAND_3(

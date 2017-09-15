@@ -59,10 +59,10 @@ TileMapRenderer::TileMapRenderer(detail::GraphicsManager* manager)
 	m_shader.shader = LN_NEW Shader();
 	m_shader.shader->initialize(m_graphicsManager, g_TileMapRenderer_fx_Data, g_TileMapRenderer_fx_Len);
 	m_shader.pass = m_shader.shader->getTechniques()[0]->getPasses()[0];
-	m_shader.varWorldMatrix = m_shader.shader->findVariable(_T("g_worldMatrix"));
-	m_shader.varViewProjMatrix = m_shader.shader->findVariable(_T("g_viewProjMatrix"));
-	m_shader.varTexture = m_shader.shader->findVariable(_T("g_texture"));
-	//m_shader.varPixelStep = m_shader.shader->findVariable(_T("g_pixelStep"));
+	m_shader.varWorldMatrix = m_shader.shader->findVariable(_LT("g_worldMatrix"));
+	m_shader.varViewProjMatrix = m_shader.shader->findVariable(_LT("g_viewProjMatrix"));
+	m_shader.varTexture = m_shader.shader->findVariable(_LT("g_texture"));
+	//m_shader.varPixelStep = m_shader.shader->findVariable(_LT("g_pixelStep"));
 }
 
 //------------------------------------------------------------------------------
@@ -84,7 +84,7 @@ void TileMapRenderer::setTransform(const Matrix& world, const Matrix& viewProj)
 //------------------------------------------------------------------------------
 void TileMapRenderer::draw(DrawList* context, TileMapModel* tileMap, const Rect& boundingRect, const ViewFrustum& cameraFrustum, int priority)
 {
-	if (LN_CHECK_ARG(tileMap != nullptr)) return;
+	if (LN_REQUIRE(tileMap != nullptr)) return;
 	m_context = context;
 	//m_spriteRenderer = spriteRenderer;
 
@@ -198,8 +198,8 @@ void TileMapRenderer::end()
 //------------------------------------------------------------------------------
 void TileMapRenderer::DrawLayer(TileLayer* layer, const Rect& boundingRect, TileSet* tileSet, const BoundingRect& renderRange, int priority)
 {
-	if (LN_CHECK_ARG(layer != nullptr)) return;
-	if (LN_CHECK_ARG(tileSet != nullptr)) return;
+	if (LN_REQUIRE(layer != nullptr)) return;
+	if (LN_REQUIRE(tileSet != nullptr)) return;
 
 	int tileCount = (renderRange.right - renderRange.left) * (renderRange.bottom - renderRange.top);
 	tileCount = std::min(tileCount, m_maxTileCount);

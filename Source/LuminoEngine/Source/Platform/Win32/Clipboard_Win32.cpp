@@ -13,15 +13,17 @@ LN_NAMESPACE_BEGIN
 //------------------------------------------------------------------------------
 void Clipboard::setText(PlatformWindow* window, const String& text)
 {
-	ByteBuffer wideStr = text.convertTo(Encoding::getWideCharEncoding());
-	int wideCount = (wideStr.getSize() + 1) * sizeof(WCHAR);
+	//ByteBuffer wideStr = text.convertTo(Encoding::getWideCharEncoding());
+	//int wideCount = (wideStr.getSize() + 1) * sizeof(WCHAR);
+	std::wstring wideStr = text.toStdWString();
+	int byteCount = (wideStr.length() * 1) * sizeof(WCHAR);
 
-	HGLOBAL hGlobal = ::GlobalAlloc(GMEM_MOVEABLE, wideCount);
-	LN_THROW(hGlobal != NULL, Win32Exception, ::GetLastError());
+	HGLOBAL hGlobal = ::GlobalAlloc(GMEM_MOVEABLE, byteCount);
+	if (LN_ENSURE_WIN32(hGlobal != NULL, ::GetLastError())) return;
 
 	WCHAR* buf = (WCHAR*)::GlobalLock(hGlobal);
-	memcpy(buf, wideStr.getConstData(), wideCount);
-	buf[wideCount - 1] = L'\0';
+	memcpy(buf, wideStr.c_str(), byteCount);
+	buf[wideStr.length()] = L'\0';
 	::GlobalUnlock(hGlobal);
 
 	HWND hWnd = PlatformSupport::getWindowHandle(window);
@@ -30,7 +32,7 @@ void Clipboard::setText(PlatformWindow* window, const String& text)
 	{
 		DWORD err = ::GetLastError();
 		::GlobalFree(hGlobal);
-		LN_THROW(hGlobal != NULL, Win32Exception, err);
+		if (LN_ENSURE_WIN32(hGlobal != NULL, err)) return;
 	}
 
 	::EmptyClipboard();
@@ -48,14 +50,14 @@ String Clipboard::getText(PlatformWindow* window)
 
 	HWND hWnd = PlatformSupport::getWindowHandle(window);
 	BOOL r = ::OpenClipboard(hWnd);
-	LN_THROW(r != FALSE, Win32Exception, ::GetLastError());
+	if (LN_ENSURE_WIN32(r != FALSE, ::GetLastError())) return String();
 
 	HGLOBAL hGlobal = ::GetClipboardData(CF_UNICODETEXT);
 	if (hGlobal == NULL)
 	{
 		DWORD err = ::GetLastError();
 		::CloseClipboard();
-		LN_THROW(hGlobal != NULL, Win32Exception, err);
+		if (LN_ENSURE_WIN32(hGlobal != NULL, err)) return String();
 	}
 
 	WCHAR* buf = (WCHAR*)::GlobalLock(hGlobal);
@@ -64,7 +66,7 @@ String Clipboard::getText(PlatformWindow* window)
 	String str;
 	try
 	{
-		str.convertFrom(buf, len * sizeof(WCHAR), Encoding::getWideCharEncoding());
+		str = String::fromCString(buf, len);
 	}
 	catch (...)
 	{

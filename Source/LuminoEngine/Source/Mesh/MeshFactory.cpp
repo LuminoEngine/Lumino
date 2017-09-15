@@ -288,7 +288,7 @@ TeapotMeshFactory::TeapotMeshFactory()
 //------------------------------------------------------------------------------
 void TeapotMeshFactory::initialize(float size, int tessellation, const Color& color, const Matrix& transform)
 {
-	if (LN_CHECK_ARG(tessellation >= 1)) return;
+	if (LN_REQUIRE(tessellation >= 1)) return;
 	m_size = size;
 	m_tessellation = tessellation;
 	MeshFactoryBase::initialize(color, transform);

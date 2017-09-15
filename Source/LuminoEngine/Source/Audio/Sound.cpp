@@ -24,7 +24,7 @@ LN_NAMESPACE_AUDIO_BEGIN
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Sound, Object);
 
 //------------------------------------------------------------------------------
-SoundPtr Sound::create(const TCHAR* filePath)
+SoundPtr Sound::create(const Char* filePath)
 {
 	auto ptr = SoundPtr::makeRef();
 	ptr->initialize(filePath);
@@ -80,15 +80,15 @@ void Sound::initialize(const StringRef& filePath)
 {
 	detail::AudioManager* manager = detail::AudioManager::getInstance();
 	Ref<Stream> stream(manager->getFileManager()->createFileStream(filePath, true), false);
-	Ref<detail::AudioStream> audioStream(manager->createAudioStream(stream, CacheKey(PathName(filePath)), SoundLoadingMode::ASync), false);
+	Ref<detail::AudioStream> audioStream(manager->createAudioStream(stream, CacheKey(filePath), SoundLoadingMode::ASync), false);
 
 
 	//manager->createSound(stream, CacheKey(PathName(filePath)), SoundLoadingMode::ASync)
 	//return SoundPtr(, false);
 
 
-	if (LN_CHECK_ARG(manager != nullptr)) return;
-	if (LN_CHECK_ARG(stream != nullptr)) return;
+	if (LN_REQUIRE(manager != nullptr)) return;
+	if (LN_ENSURE(stream != nullptr)) return;
 	m_manager = manager;
 	LN_REFOBJ_SET(m_audioStream, audioStream);
 	m_manager->addSound(this);
@@ -103,8 +103,8 @@ void Sound::initialize(Stream* stream, SoundLoadingMode loadingMode)
 
 	//SoundPtr(manager->createSound(stream, CacheKey::Null, loadingMode), false);
 
-	if (LN_CHECK_ARG(manager != nullptr)) return;
-	if (LN_CHECK_ARG(stream != nullptr)) return;
+	if (LN_REQUIRE(manager != nullptr)) return;
+	if (LN_ENSURE(stream != nullptr)) return;
 	m_manager = manager;
 	LN_REFOBJ_SET(m_audioStream, audioStream);
 
@@ -118,8 +118,8 @@ void Sound::initialize(Stream* stream, SoundLoadingMode loadingMode)
 void Sound::initialize(detail::AudioStream* audioStream)
 {
 	detail::AudioManager* manager = detail::AudioManager::getInstance();
-	if (LN_CHECK_ARG(manager != nullptr)) return;
-	if (LN_CHECK_ARG(audioStream != nullptr)) return;
+	if (LN_REQUIRE(manager != nullptr)) return;
+	if (LN_REQUIRE(audioStream != nullptr)) return;
 	m_manager = manager;
 	LN_REFOBJ_SET(m_audioStream, audioStream);
 	m_manager->addSound(this);
@@ -265,7 +265,7 @@ int64_t Sound::getTotalSamples() const
 		}
 		return 0;
 #else
-		LN_THROW(0, NotImplementedException);
+		LN_NOTIMPLEMENTED();
 #endif
 	}
 	if (m_audioStream->checkCreated()) {
@@ -290,7 +290,7 @@ int Sound::getSamplingRate() const
 #ifdef LN_OS_WIN32
 		return detail::DirectMusicManager::MusicTimeBase;
 #else
-		LN_THROW(0, NotImplementedException);
+		LN_NOTIMPLEMENTED();
 #endif
 	}
 	if (m_audioStream->checkCreated()) {
@@ -340,7 +340,7 @@ bool Sound::isVolumeFading() const
 //------------------------------------------------------------------------------
 void Sound::createAudioPlayerSync()
 {
-	if (LN_CHECK_STATE(m_audioPlayer == NULL && m_audioStream->checkCreated())) return;
+	if (LN_REQUIRE(m_audioPlayer == NULL && m_audioStream->checkCreated())) return;
 	m_audioPlayer = m_manager->createAudioPlayer(m_audioStream, m_playingMode, m_is3DSound);
 }
 

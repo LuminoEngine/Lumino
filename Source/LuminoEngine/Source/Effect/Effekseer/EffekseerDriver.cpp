@@ -113,7 +113,7 @@ EffekseerFileInterface::EffekseerFileInterface(FileManager* fileManager)
 //------------------------------------------------------------------------------
 ::Effekseer::FileWriter* EffekseerFileInterface::OpenWrite(const EFK_CHAR* path)
 {
-	LN_THROW(0, NotImplementedException);
+	LN_NOTIMPLEMENTED();
 	return nullptr;
 }
 
@@ -168,7 +168,6 @@ void EffekseerEffectEngine::initialize(EffectManager* manager, int cacheObjectCo
 		m_efkManager = ::Effekseer::Manager::Create(2000, false);
 		m_efkRenderer = ::EffekseerRendererGL::Renderer::Create(maxSpriteCount);
 
-		//LN_THROW(0, NotImplementedException);
 	}
 
 	// 描画用インスタンスから描画機能を設定
@@ -251,7 +250,7 @@ void EffekseerEffectEngine::UpdateRenderContents()
 //------------------------------------------------------------------------------
 VisualEffect* EffekseerEffectEngine::CreateEffectCore(const PathName& filePath)
 {
-	CacheKey key(filePath);
+	CacheKey key(filePath.getString());
 
 	// キャッシュ検索
 	Ref<EffekseerEffectCore> core(static_cast<EffekseerEffectCore*>(m_effectCoreCache->findObjectAddRef(key)), false);
@@ -261,7 +260,7 @@ VisualEffect* EffekseerEffectEngine::CreateEffectCore(const PathName& filePath)
 	}
 
 	// unicode へ
-	ByteBuffer utf16 = m_TCharToUTF16Converter.convert(filePath.c_str(), _tcslen(filePath.c_str()) * sizeof(TCHAR));
+	ByteBuffer utf16 = m_TCharToUTF16Converter.convert(filePath.c_str(), _tcslen(filePath.c_str()) * sizeof(Char));
 
 	// エフェクトの読込
 	Effekseer::Effect* efkEffect = Effekseer::Effect::Create(

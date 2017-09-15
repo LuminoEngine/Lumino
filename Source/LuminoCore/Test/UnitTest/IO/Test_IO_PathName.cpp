@@ -1,117 +1,117 @@
 ﻿#include <TestConfig.h>
+#include <Lumino/IO/FileSystem.h>
 
-class Test_IO_PathName : public ::testing::Test
+class Test_IO_Path : public ::testing::Test
 {
 protected:
 	virtual void SetUp() {}
 	virtual void TearDown() {}
 };
 
-//------------------------------------------------------------------------------
-TEST_F(Test_IO_PathName, Constructor)
+TEST_F(Test_IO_Path, Constructor)
 {
 	// <Test> String から変換できること
 	{
-		PathName path = String("dir");
+		Path path = String("dir");
 	}
 	// <Test> 
 	{
-		PathName base = _T("dir1/dir2");
-		PathName path(base, _T("../file1.txt"));
+		Path base = _TT("dir1/dir2");
+		Path path(base, _TT("../file1.txt"));
 #ifdef LN_OS_WIN32
-		ASSERT_STREQ(_T("dir1/dir2\\../file1.txt"), path.c_str());
+		ASSERT_EQ(_TT("dir1/dir2\\../file1.txt"), path.getString());
 #else
-		ASSERT_STREQ(_T("dir1/dir2/../file1.txt"), path.c_str());
+		ASSERT_EQ(_TT("dir1/dir2/../file1.txt"), path.getString());
 #endif
 	}
 	// <Test> 
 	{
-		PathName path(_T("a/"), _T("b"));
-		ASSERT_STREQ(_T("a/b"), path.c_str());
+		Path path(_TT("a/"), _TT("b"));
+		ASSERT_EQ(_TT("a/b"), path.getString());
 
 	}
 	// <Test> 空パスとの結合を確認する
 	{
-		PathName path(PathName(), _T("a/b.txt"));
-		ASSERT_STREQ(_T("a/b.txt"), path.c_str());
+		Path path(Path(), _TT("a/b.txt"));
+		ASSERT_EQ(_TT("a/b.txt"), path.getString());
 	}
 }
 
-//------------------------------------------------------------------------------
-TEST_F(Test_IO_PathName, getFileName)
+TEST_F(Test_IO_Path, getFileName)
 {
-	PathName path1(_T("dir/file.txt"));
-	ASSERT_EQ(_T("file.txt"), path1.getFileName());
+	Path path1(_TT("dir/file.txt"));
+	ASSERT_EQ(_TT("file.txt"), path1.getFileName());
 
-	PathName path2(_T("file.txt"));
-	ASSERT_EQ(_T("file.txt"), path2.getFileName());
+	Path path2(_TT("file.txt"));
+	ASSERT_EQ(_TT("file.txt"), path2.getFileName());
 }
 
-//------------------------------------------------------------------------------
-TEST_F(Test_IO_PathName, getWithoutExtension)
+TEST_F(Test_IO_Path, getWithoutExtension)
 {
-	PathName path;
+	Path path;
 
-	path = _T("C:/dir/file.txt");
-	ASSERT_STREQ(_T("C:/dir/file"), path.getWithoutExtension().c_str());
+	path = _TT("C:/dir/file.txt");
+	ASSERT_EQ(_TT("C:/dir/file"), path.getWithoutExtension().getString());
 
-	path = _T("file.txt");
-	ASSERT_STREQ(_T("file"), path.getWithoutExtension().c_str());
+	path = _TT("file.txt");
+	ASSERT_EQ(_TT("file"), path.getWithoutExtension().getString());
 
-	path = _T("file");
-	ASSERT_STREQ(_T("file"), path.getWithoutExtension().c_str());
+	path = _TT("file");
+	ASSERT_EQ(_TT("file"), path.getWithoutExtension().getString());
 
-	path = _T("");
-	ASSERT_STREQ(_T(""), path.getWithoutExtension().c_str());
+	path = _TT("");
+	ASSERT_EQ(_TT(""), path.getWithoutExtension().getString());
 
-	path = _T("C:/dir.sub/file");
-	ASSERT_STREQ(_T("C:/dir.sub/file"), path.getWithoutExtension().c_str());
+	path = _TT("C:/dir.sub/file");
+	ASSERT_EQ(_TT("C:/dir.sub/file"), path.getWithoutExtension().getString());
 
-	path = _T("dir/.git");
-	ASSERT_STREQ(_T("dir/"), path.getWithoutExtension().c_str());
+	path = _TT("dir/.git");
+	ASSERT_EQ(_TT("dir/"), path.getWithoutExtension().getString());
 
-	path = _T(".git");
-	ASSERT_STREQ(_T(""), path.getWithoutExtension().c_str());
+	path = _TT(".git");
+	ASSERT_EQ(_TT(""), path.getWithoutExtension().getString());
 }
 
-//------------------------------------------------------------------------------
-TEST_F(Test_IO_PathName, getExtension)
+TEST_F(Test_IO_Path, getExtension)
 {
-	ASSERT_EQ(_T(".txt"), PathName(_T("file.txt")).getExtension());
-	ASSERT_EQ(_T("txt"), PathName(_T("file.txt")).getExtension(false));
-	ASSERT_EQ(_T(".txt"), PathName(_T("file.tmp.txt")).getExtension());
-	ASSERT_EQ(_T(""), PathName(_T("file")).getExtension());
-	ASSERT_EQ(_T(""), PathName(_T("")).getExtension());
-	ASSERT_EQ(_T(""), PathName(_T(".")).getExtension());
+	ASSERT_EQ(_TT(".txt"), Path(_TT("file.txt")).getExtension());
+	ASSERT_EQ(_TT("txt"), Path(_TT("file.txt")).getExtension(false));
+	ASSERT_EQ(_TT(".txt"), Path(_TT("file.tmp.txt")).getExtension());
+	ASSERT_EQ(_TT(""), Path(_TT("file")).getExtension());
+	ASSERT_EQ(_TT(""), Path(_TT("")).getExtension());
+	ASSERT_EQ(_TT(""), Path(_TT(".")).getExtension());
 
-	ASSERT_EQ(_T(""), PathName(_T("dir.a\file")).getExtension());
-	ASSERT_EQ(_T(""), PathName(_T("file.")).getExtension());
-	ASSERT_EQ(_T(""), PathName(_T("..")).getExtension());
-	ASSERT_EQ(_T(""), PathName(_T("a/")).getExtension());
-	ASSERT_EQ(_T(""), PathName(_T("/")).getExtension());
+	ASSERT_EQ(_TT(""), Path(_TT("dir.a/file")).getExtension());
+	ASSERT_EQ(_TT(""), Path(_TT("file.")).getExtension());
+	ASSERT_EQ(_TT(""), Path(_TT("..")).getExtension());
+	ASSERT_EQ(_TT(""), Path(_TT("a/")).getExtension());
+	ASSERT_EQ(_TT(""), Path(_TT("/")).getExtension());
 }
 
-//------------------------------------------------------------------------------
-TEST_F(Test_IO_PathName, compare)
+TEST_F(Test_IO_Path, getFileNameWithoutExtension)
+{
+	ASSERT_EQ(_TT("file"), Path(_TT("dir/file.txt")).getFileNameWithoutExtension());
+}
+
+TEST_F(Test_IO_Path, compare)
 {
 #ifdef LN_OS_WIN32
-	PathName path1(_T("C:/dir/file.txt"));
-	PathName path2(_T("C:\\dir\\file.txt"));
+	Path path1(_LT("C:/dir/file.txt"));
+	Path path2(_LT("C:\\dir\\file.txt"));
 	ASSERT_TRUE(path1.equals(path2));
 	ASSERT_TRUE(path1 == path2);
 #endif
 }
 
-//------------------------------------------------------------------------------
-TEST_F(Test_IO_PathName, canonicalizePath)
+TEST_F(Test_IO_Path, canonicalizePath)
 {
-// いろいろなケースをテストしやすいようにマクロ化
+	// いろいろなケースをテストしやすいようにマクロ化
 #define TEST_CASE(result, src) \
 	{ \
-		TCHAR path1[LN_MAX_PATH] = _T(src); \
-		TCHAR path2[LN_MAX_PATH]; \
-		PathTraits::canonicalizePath(path1, _tcslen(path1), path2); \
-		ASSERT_STREQ(_T(result), path2); \
+		Char path1[LN_MAX_PATH] = _LT(src); \
+		Char path2[LN_MAX_PATH]; \
+		PathTraits::canonicalizePath(path1, StringTraits::tcslen(path1), path2); \
+		ASSERT_STREQ(_LT(result), path2); \
 	}
 
 	TEST_CASE("A/C", "A/B/../C");
@@ -149,219 +149,152 @@ TEST_F(Test_IO_PathName, canonicalizePath)
 
 
 #ifdef LN_OS_WIN32
-	PathName path1(PathName::getCurrentDirectory(), _T("dir\\Dir"));
-	PathName path12 = _T("dir/bin/../Dir");
+	Path path1(Path::getCurrentDirectory(), _LT("dir\\Dir"));
+	Path path12 = _LT("dir/bin/../Dir");
 	path12 = path12.canonicalizePath();
-	ASSERT_STREQ(path1, path12);
+	ASSERT_EQ(path1.getString(), path12.getString());
 
-	PathName path2(_T("C:\\file.txt"));
-	PathName path22 = _T("C:\\dir/..\\file.txt");
+	Path path2(_LT("C:\\file.txt"));
+	Path path22 = _LT("C:\\dir/..\\file.txt");
 	path22 = path22.canonicalizePath();
-	ASSERT_STREQ(path2, path22);
+	ASSERT_EQ(path2.getString(), path22.getString());
 #else
-	PathName path1(PathName::GetCurrentDirectory(), _T("dir/Dir"));
-	PathName path12 = _T("dir/bin/../Dir");
-	path12 = path12.CanonicalizePath();
-	ASSERT_STREQ(path1, path12);
+	Path path1(Path::getCurrentDirectory(), _LT("dir/Dir"));
+	Path path12 = _LT("dir/bin/../Dir");
+	path12 = path12.canonicalizePath();
+	ASSERT_EQ(path1.getString(), path12.getString());
 
-	PathName path2(_T("/file.txt"));
-	PathName path22 = _T("/dir/../file.txt");
-	path22 = path22.CanonicalizePath();
-	ASSERT_STREQ(path2, path22);
+	Path path2(_LT("/file.txt"));
+	Path path22 = _LT("/dir/../file.txt");
+	path22 = path22.canonicalizePath();
+	ASSERT_EQ(path2.getString(), path22.getString());
 #endif
 }
 
-//------------------------------------------------------------------------------
-TEST_F(Test_IO_PathName, getSpecialFolderPath)
+TEST_F(Test_IO_Path, getSpecialFolderPath)
 {
 	// 何が取れるかはすごく環境依存なので、取ったパスの先がフォルダであるかだけを確認しておく。
 
 	// <Test> アプリケーションデータフォルダ
 	{
-		PathName path1 = PathName::getSpecialFolderPath(SpecialFolder::ApplicationData);
-		ASSERT_TRUE(path1.existsDirectory());
+		Path path1 = Path::getSpecialFolderPath(SpecialFolder::ApplicationData);
+		ASSERT_TRUE(FileSystem::existsDirectory(path1.c_str()));
 	}
 	// <Test> 一時ファイルフォルダ
 	{
-		PathName path1 = PathName::getSpecialFolderPath(SpecialFolder::Temporary);
-		ASSERT_TRUE(path1.existsDirectory());
+		Path path1 = Path::getSpecialFolderPath(SpecialFolder::Temporary);
+		ASSERT_TRUE(FileSystem::existsDirectory(path1.c_str()));
 	}
 }
 
-//------------------------------------------------------------------------------
-TEST_F(Test_IO_PathName, Unit_MakeRelative)
+TEST_F(Test_IO_Path, Unit_MakeRelative)
 {
 	// <Test> パスが一致する場合は "." を返す
 	{
-		PathName path1(_T("d1/d2/d3"));
-		PathName path2(_T("d1/d2/d3"));
+		Path path1(_LT("d1/d2/d3"));
+		Path path2(_LT("d1/d2/d3"));
 		path1 = path1.canonicalizePath();
 		path2 = path2.canonicalizePath();
-		ASSERT_EQ(_T("."), path1.makeRelative(path2).getString());
+		ASSERT_EQ(_LT("."), path1.makeRelative(path2).getString());
 
 		// 末尾がセパレータのパターンを見る
 		{
-			PathName path1 = PathName(_T("d1/d2/d3/")).canonicalizePath();
-			PathName path2 = PathName(_T("d1/d2/d3")).canonicalizePath();
-			ASSERT_EQ(_T("."), path1.makeRelative(path2).getString());
+			Path path1 = Path(_LT("d1/d2/d3/")).canonicalizePath();
+			Path path2 = Path(_LT("d1/d2/d3")).canonicalizePath();
+			ASSERT_EQ(_LT("."), path1.makeRelative(path2).getString());
 		}
 		{
-			PathName path1 = PathName(_T("d1/d2/d3")).canonicalizePath();
-			PathName path2 = PathName(_T("d1/d2/d3/")).canonicalizePath();
-			ASSERT_EQ(_T("."), path1.makeRelative(path2).getString());
+			Path path1 = Path(_LT("d1/d2/d3")).canonicalizePath();
+			Path path2 = Path(_LT("d1/d2/d3/")).canonicalizePath();
+			ASSERT_EQ(_LT("."), path1.makeRelative(path2).getString());
 		}
 		{
-			PathName path1 = PathName(_T("d1/d2/d3/")).canonicalizePath();
-			PathName path2 = PathName(_T("d1/d2/d3/")).canonicalizePath();
-			ASSERT_EQ(_T("."), path1.makeRelative(path2).getString());
+			Path path1 = Path(_LT("d1/d2/d3/")).canonicalizePath();
+			Path path2 = Path(_LT("d1/d2/d3/")).canonicalizePath();
+			ASSERT_EQ(_LT("."), path1.makeRelative(path2).getString());
 		}
 	}
 	// <Test> パスの末尾は / があっても無くても良い
 	{
-		PathName path1(_T("d1/d2/d3"));
-		PathName path2(_T("d1/d2/d3"));
+		Path path1(_LT("d1/d2/d3"));
+		Path path2(_LT("d1/d2/d3"));
 		path1 = path1.canonicalizePath();
 		path2 = path2.canonicalizePath();
-		ASSERT_EQ(_T("."), path1.makeRelative(path2).getString());
+		ASSERT_EQ(_LT("."), path1.makeRelative(path2).getString());
 	}
 	// <Test> 1つ上のディレクトリへ戻る場合は ".." を返す
 	{
-		PathName path1(_T("d1/d2/d3/"));
-		PathName path2(_T("d1/d2/"));
+		Path path1(_LT("d1/d2/d3/"));
+		Path path2(_LT("d1/d2/"));
 		path1 = path1.canonicalizePath();
 		path2 = path2.canonicalizePath();
-		ASSERT_EQ(_T(".."), path1.makeRelative(path2).getString());
+		ASSERT_EQ(_LT(".."), path1.makeRelative(path2).getString());
 
 		// 末尾がセパレータのパターンを見る
 		{
-			PathName path1 = PathName(_T("d1/d2/d3")).canonicalizePath();
-			PathName path2 = PathName(_T("d1/d2/")).canonicalizePath();
-			ASSERT_EQ(_T(".."), path1.makeRelative(path2).getString());
+			Path path1 = Path(_LT("d1/d2/d3")).canonicalizePath();
+			Path path2 = Path(_LT("d1/d2/")).canonicalizePath();
+			ASSERT_EQ(_LT(".."), path1.makeRelative(path2).getString());
 		}
 		{
-			PathName path1 = PathName(_T("d1/d2/d3/")).canonicalizePath();
-			PathName path2 = PathName(_T("d1/d2")).canonicalizePath();
-			ASSERT_EQ(_T(".."), path1.makeRelative(path2).getString());
+			Path path1 = Path(_LT("d1/d2/d3/")).canonicalizePath();
+			Path path2 = Path(_LT("d1/d2")).canonicalizePath();
+			ASSERT_EQ(_LT(".."), path1.makeRelative(path2).getString());
 		}
 		{
-			PathName path1 = PathName(_T("d1/d2/d3")).canonicalizePath();
-			PathName path2 = PathName(_T("d1/d2")).canonicalizePath();
-			ASSERT_EQ(_T(".."), path1.makeRelative(path2).getString());
+			Path path1 = Path(_LT("d1/d2/d3")).canonicalizePath();
+			Path path2 = Path(_LT("d1/d2")).canonicalizePath();
+			ASSERT_EQ(_LT(".."), path1.makeRelative(path2).getString());
 		}
 	}
 	// <Test> 2つ上のディレクトリへ戻る場合は "../.." を返す
 	{
-		PathName path1 = PathName(_T("d1/d2/d3/")).canonicalizePath();
-		PathName path2 = PathName(_T("d1/")).canonicalizePath();
-		ASSERT_EQ(_T("../.."), path1.makeRelative(path2).getString());
+		Path path1 = Path(_LT("d1/d2/d3/")).canonicalizePath();
+		Path path2 = Path(_LT("d1/")).canonicalizePath();
+		ASSERT_EQ(_LT("../.."), path1.makeRelative(path2).getString());
 		// 末尾がセパレータのパターンを見る
 		{
-			PathName path1 = PathName(_T("d1/d2/d3")).canonicalizePath();
-			PathName path2 = PathName(_T("d1/")).canonicalizePath();
-			ASSERT_EQ(_T("../.."), path1.makeRelative(path2).getString());
+			Path path1 = Path(_LT("d1/d2/d3")).canonicalizePath();
+			Path path2 = Path(_LT("d1/")).canonicalizePath();
+			ASSERT_EQ(_LT("../.."), path1.makeRelative(path2).getString());
 		}
 		{
-			PathName path1 = PathName(_T("d1/d2/d3/")).canonicalizePath();
-			PathName path2 = PathName(_T("d1")).canonicalizePath();
-			ASSERT_EQ(_T("../.."), path1.makeRelative(path2).getString());
+			Path path1 = Path(_LT("d1/d2/d3/")).canonicalizePath();
+			Path path2 = Path(_LT("d1")).canonicalizePath();
+			ASSERT_EQ(_LT("../.."), path1.makeRelative(path2).getString());
 		}
 		{
-			PathName path1 = PathName(_T("d1/d2/d3")).canonicalizePath();
-			PathName path2 = PathName(_T("d1")).canonicalizePath();
-			ASSERT_EQ(_T("../.."), path1.makeRelative(path2).getString());
+			Path path1 = Path(_LT("d1/d2/d3")).canonicalizePath();
+			Path path2 = Path(_LT("d1")).canonicalizePath();
+			ASSERT_EQ(_LT("../.."), path1.makeRelative(path2).getString());
 		}
 	}
 	// <Test> 1つ上のディレクトリへ戻る場合は ".." を返す
 	{
-		PathName path1 = PathName(_T("d1/d2/")).canonicalizePath();
-		PathName path2 = PathName(_T("d1/d2/d3/")).canonicalizePath();
-		ASSERT_EQ(_T("d3"), path1.makeRelative(path2).getString());
+		Path path1 = Path(_LT("d1/d2/")).canonicalizePath();
+		Path path2 = Path(_LT("d1/d2/d3/")).canonicalizePath();
+		ASSERT_EQ(_LT("d3"), path1.makeRelative(path2).getString());
 		// 末尾がセパレータのパターンを見る
 		{
-			PathName path1 = PathName(_T("d1/d2")).canonicalizePath();
-			PathName path2 = PathName(_T("d1/d2/d3/")).canonicalizePath();
-			ASSERT_EQ(_T("d3"), path1.makeRelative(path2).getString());
+			Path path1 = Path(_LT("d1/d2")).canonicalizePath();
+			Path path2 = Path(_LT("d1/d2/d3/")).canonicalizePath();
+			ASSERT_EQ(_LT("d3"), path1.makeRelative(path2).getString());
 		}
 		{
-			PathName path1 = PathName(_T("d1/d2/")).canonicalizePath();
-			PathName path2 = PathName(_T("d1/d2/d3")).canonicalizePath();
-			ASSERT_EQ(_T("d3"), path1.makeRelative(path2).getString());
+			Path path1 = Path(_LT("d1/d2/")).canonicalizePath();
+			Path path2 = Path(_LT("d1/d2/d3")).canonicalizePath();
+			ASSERT_EQ(_LT("d3"), path1.makeRelative(path2).getString());
 		}
 		{
-			PathName path1 = PathName(_T("d1/d2")).canonicalizePath();
-			PathName path2 = PathName(_T("d1/d2/d3")).canonicalizePath();
-			ASSERT_EQ(_T("d3"), path1.makeRelative(path2).getString());
+			Path path1 = Path(_LT("d1/d2")).canonicalizePath();
+			Path path2 = Path(_LT("d1/d2/d3")).canonicalizePath();
+			ASSERT_EQ(_LT("d3"), path1.makeRelative(path2).getString());
 		}
 	}
 	// <Test> 2つ上のディレクトリへ戻る場合は "../.." を返す
 	{
-		PathName path1 = PathName(_T("d1/")).canonicalizePath();
-		PathName path2 = PathName(_T("d1/d2/d3")).canonicalizePath();
-		ASSERT_EQ(_T("d2/d3"), path1.makeRelative(path2).getString().replace(_T("\\"), _T("/")));
+		Path path1 = Path(_LT("d1/")).canonicalizePath();
+		Path path2 = Path(_LT("d1/d2/d3")).canonicalizePath();
+		ASSERT_EQ(_LT("d2/d3"), path1.makeRelative(path2).getString().replace(_LT("\\"), _LT("/")));
 	}
 }
-
-//------------------------------------------------------------------------------
-// internal クラスだけど一応テストしておく
-TEST_F(Test_IO_PathName, GenericStaticallyLocalPath)
-{
-	const char* a255 = "123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345";
-	const wchar_t* w255 = L"123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345";
-	const char* a256 = "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456";
-	const wchar_t* w256 = L"1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456";
-
-	{
-		// 基本
-		detail::StaticallyLocalPathA path1("abc");
-		ASSERT_EQ(true, path1.isStatic());
-		ASSERT_STREQ("abc", path1.c_str());
-
-		// 255 文字
-		detail::StaticallyLocalPathA path2(a255);
-		ASSERT_EQ(true, path2.isStatic());
-		ASSERT_STREQ(a255, path2.c_str());
-
-		// 256 文字
-		detail::StaticallyLocalPathA path3(a256);
-		ASSERT_EQ(false, path3.isStatic());
-		ASSERT_STREQ(a256, path3.c_str());
-
-		// 255 変換
-		detail::StaticallyLocalPathA path4(w255);
-		ASSERT_EQ(true, path4.isStatic());
-		ASSERT_STREQ(a255, path4.c_str());
-
-		// 256 変換
-		detail::StaticallyLocalPathA path5(w256);
-		ASSERT_EQ(false, path5.isStatic());
-		ASSERT_STREQ(a256, path5.c_str());
-	}
-
-	{
-		// 基本
-		detail::StaticallyLocalPathW path1("abc");
-		ASSERT_EQ(true, path1.isStatic());
-		ASSERT_STREQ(L"abc", path1.c_str());
-
-		// 255 文字
-		detail::StaticallyLocalPathW path2(w255);
-		ASSERT_EQ(true, path2.isStatic());
-		ASSERT_STREQ(w255, path2.c_str());
-
-		// 256 文字
-		detail::StaticallyLocalPathW path3(w256);
-		ASSERT_EQ(false, path3.isStatic());
-		ASSERT_STREQ(w256, path3.c_str());
-
-		// 255 変換
-		detail::StaticallyLocalPathW path4(a255);
-		ASSERT_EQ(true, path4.isStatic());
-		ASSERT_STREQ(w255, path4.c_str());
-
-		// 256 変換
-		detail::StaticallyLocalPathW path5(a256);
-		ASSERT_EQ(false, path5.isStatic());
-		ASSERT_STREQ(w256, path5.c_str());
-	}
-}
-

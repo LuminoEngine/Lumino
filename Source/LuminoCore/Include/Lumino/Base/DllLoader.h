@@ -21,7 +21,7 @@ public:
 		@brief		指定したライブラリをロードし、インスタンスを初期化します。
 		@param[in]	filePath	: ライブラリの名前またはパス
 	*/
-	DllLoader(const TCHAR* filePath);
+	DllLoader(const Char* filePath);
 
 	/**
 		@brief		ロード済みのライブラリを解放します。
@@ -34,20 +34,20 @@ public:
 		@brief		指定したライブラリが存在するかを確認します。
 		@return		アクセスできれば true、そうでなければ false
 	*/
-	static bool exists(const TCHAR* filePath);
+	static bool exists(const Char* filePath);
 
 	/**
 		@brief		指定したライブラリをロードします。
 		@param[in]	filePath	: ライブラリの名前またはパス
 		@exception	FileNotFoundException
 	*/
-	void load(const TCHAR* filePath);
+	void load(const Char* filePath);
 
 	/**
 		@brief		指定したライブラリをロードします。
 		@param[in]	filePath	: ライブラリの名前またはパス
 	*/
-	bool tryLoad(const TCHAR* filePath);
+	bool tryLoad(const Char* filePath);
 
 	/**
 		@brief		ロード済みのライブラリを解放します。

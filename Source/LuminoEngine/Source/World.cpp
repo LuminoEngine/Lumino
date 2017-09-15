@@ -95,8 +95,8 @@ void World::addWorldObject(WorldObject* obj, bool autoRelease)
 //------------------------------------------------------------------------------
 void World::removeWorldObject(WorldObject* obj)
 {
-	if (LN_CHECK_ARG(obj != nullptr)) return;
-	if (LN_CHECK_STATE(obj->m_world == this)) return;
+	if (LN_REQUIRE(obj != nullptr)) return;
+	if (LN_REQUIRE(obj->m_world == this)) return;
 	m_rootWorldObjectList.remove(obj);
 	obj->m_parent = nullptr;
 	obj->onDetachedWorld(this);
@@ -105,7 +105,7 @@ void World::removeWorldObject(WorldObject* obj)
 //------------------------------------------------------------------------------
 void World::addOffscreenWorldView(OffscreenWorldView* view)
 {
-	if (LN_CHECK_ARG(!m_offscreenIdStorage.isEmpty())) return;
+	if (LN_REQUIRE(!m_offscreenIdStorage.isEmpty())) return;
 	m_offscreenWorldViewList.add(view);
 
 	// assign Id
@@ -137,6 +137,11 @@ void World::reginUpdateFrame()
 		m_debugRenderer->beginMakeElements();
 		m_debugRendererDefaultMaterial->setShader(detail::EngineDomain::getGraphicsManager()->getBuiltinShader(BuiltinShader::Sprite));
 		m_debugRenderer->setDefaultMaterial(m_debugRendererDefaultMaterial);
+	}
+
+	for (auto& obj : m_rootWorldObjectList)
+	{
+		obj->onPreUpdate();
 	}
 }
 

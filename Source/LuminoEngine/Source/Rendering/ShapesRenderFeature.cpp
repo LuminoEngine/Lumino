@@ -33,21 +33,24 @@ void ShapesRendererCommandList::addDrawBoxBackground(const Rect& rect, const Cor
 
 //------------------------------------------------------------------------------
 void ShapesRendererCommandList::addDrawBoxBorder(
-	float x, float y, float w, float h, float l, float t, float r, float b,
+	const Rect& rect, const Thickness& thickness, const CornerRadius& cornerRadius,
 	const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor,
-	float ltRad, float rtRad, float lbRad, float rbRad,
 	const Color& shadowColor, float shadowBlur, float shadowWidth, bool shadowInset, bool borderInset)
 {
 	float cmd[] =
 	{
-		(float)Cmd_DrawBoxBorder, x, y, w, h, l, t, r, b,
+		(float)Cmd_DrawBoxBorder,
+		// [1]
+		rect.x, rect.y, rect.width, rect.height,
+		// [5]
+		thickness.left, thickness.top, thickness.right, thickness.bottom,
 		// [9]
 		leftColor.r, leftColor.g, leftColor.b, leftColor.a,
 		topColor.r, topColor.g, topColor.b, topColor.a,
 		rightColor.r, rightColor.g, rightColor.b, rightColor.a,
 		bottomColor.r, bottomColor.g, bottomColor.b, bottomColor.a,
 		// [25]
-		ltRad, rtRad, lbRad, rbRad,
+		cornerRadius.topLeft, cornerRadius.topRight, cornerRadius.bottomLeft, cornerRadius.bottomRight,
 		// [29]
 		shadowColor.r, shadowColor.g, shadowColor.b, shadowColor.a,
 		shadowBlur, shadowWidth, (shadowInset) ? 1.0f : 0.0f, (borderInset) ? 1.0f : 0.0f,
@@ -56,11 +59,11 @@ void ShapesRendererCommandList::addDrawBoxBorder(
 }
 
 //------------------------------------------------------------------------------s
-void ShapesRendererCommandList::addDrawBoxBorder2(const Rect& rect, const Thickness& thickness, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const CornerRadius& cornerRadius, bool borderInset)
+void ShapesRendererCommandList::drawBoxBorderLine(const Rect& rect, const Thickness& thickness, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const CornerRadius& cornerRadius, bool borderInset)
 {
 	float cmd[] =
 	{
-		(float)Cmd_DrawBoxBorder2,
+		(float)Cmd_DrawBoxBorderLine,
 		// [1]
 		rect.x, rect.y, rect.width, rect.height,
 		// [5]
@@ -131,10 +134,10 @@ ShapesRendererCore::~ShapesRendererCore()
 void ShapesRendererCore::initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
-	m_basePoints.reserve(4096);
-	m_outlinePoints.reserve(4096);
-	m_vertexCache.reserve(4096);
-	m_indexCache.reserve(4096);
+	m_basePoints.clearAndReserve(4096);
+	m_outlinePoints.clearAndReserve(4096);
+	m_vertexCache.clearAndReserve(4096);
+	m_indexCache.clearAndReserve(4096);
 }
 
 //------------------------------------------------------------------------------
@@ -283,7 +286,7 @@ void ShapesRendererCore::extractBasePoints(ShapesRendererCommandList* commandLis
 				break;
 			}
 			//------------------------------------------------------------------
-			case ShapesRendererCommandList::Cmd_DrawBoxBorder2:
+			case ShapesRendererCommandList::Cmd_DrawBoxBorderLine:
 			{
 				BorderComponent components[4];
 				makeBasePointsAndBorderComponent(
@@ -1135,7 +1138,7 @@ void ShapesRenderFeature::initialize(GraphicsManager* manager)
 //------------------------------------------------------------------------------
 void ShapesRenderFeature::executeCommand(ShapesRendererCommandList* commandList)
 {
-	if (LN_CHECK_ARG(commandList != nullptr)) return;
+	if (LN_REQUIRE(commandList != nullptr)) return;
 
 	LN_ENQUEUE_RENDER_COMMAND_3(
 		executeCommand, m_manager,

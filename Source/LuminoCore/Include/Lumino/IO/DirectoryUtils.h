@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include "../Base/List.h"
-#include "../Base/StringRef.h"
 #include "../Base/RefObject.h"
 #include "PathName.h"
 
@@ -34,83 +33,13 @@ public:
 		@param[in]	dirPath	: 検索するディレクトリ
 		@param[in]	pattern	: 検索文字列 (ワイルドカード指定可能)
 	*/
-	static List<String> getFiles(const TCHAR* dirPath, const TCHAR* pattern);
+	static List<String> getFiles(const TTCHAR* dirPath, const TTCHAR* pattern);
 
 
 };
 
 
-/**
-	@brief	
-*/
-template<typename TChar>
-class GenericFileFinder
-	: public RefObject
-{
-public:
-	GenericFileFinder(const GenericStringRef<TChar>& dirPath, FileAttribute attr = FileAttribute::All, const GenericStringRef<TChar>& pattern = GenericStringRef<TChar>());
-	~GenericFileFinder();
-	bool isWorking() const;
-	const GenericPathName<TChar>& getCurrent() const;
-	bool next();
 
-private:
-	bool nextInternal();
-	detail::GenericFileFinderImplBase<TChar>*	m_impl;
-	FileAttribute			m_attr;
-	GenericString<TChar>	m_pattern;
-};
-
-
-
-
-namespace detail {
-
-template<typename TChar>
-class GenericFileFinderImplBase
-{
-public:
-	virtual ~GenericFileFinderImplBase()
-	{}
-
-	bool isWorking() const
-	{
-		return !m_combinedPath.isEmpty();
-	}
-
-	const GenericPathName<TChar>& getCurrent() const
-	{
-		return m_combinedPath;
-	}
-
-	virtual bool next() = 0;
-
-protected:
-	GenericFileFinderImplBase(const GenericStringRef<TChar>& dirPath)
-		: m_dirPath(dirPath)
-	{}
-
-	void setCurrentFileName(const char* fileName)
-	{
-		if (fileName != nullptr)
-			m_combinedPath.assignUnderBasePath(m_dirPath, fileName);
-		else
-			m_combinedPath.clear();
-	}
-	void setCurrentFileName(const wchar_t* fileName)
-	{
-		if (fileName != nullptr)
-			m_combinedPath.assignUnderBasePath(m_dirPath, fileName);
-		else
-			m_combinedPath.clear();
-	}
-
-protected:
-	GenericPathName<TChar>	m_dirPath;
-	GenericPathName<TChar>	m_combinedPath;
-};
-
-} // namespace detail
 
 
 LN_NAMESPACE_END

@@ -130,6 +130,7 @@ void EngineSettings::setDirectMusicReverbLevel(float level)
 	detail::EngineSettings::instance.DirectMusicReverbLevel = level;
 }
 
+#ifdef LN_OS_WIN32
 //------------------------------------------------------------------------------
 void EngineSettings::setUserWindowHandle(intptr_t hWnd)	// Qt とかは windows.h を隠蔽しているので、型を HWND にしてしまうと #include <windows.h> 必要だったりといろいろ面倒。
 {
@@ -141,13 +142,14 @@ void EngineSettings::setD3D9Device(void* device)
 {
 	detail::EngineSettings::instance.D3D9Device = device;
 }
+#endif
 
 //==============================================================================
 // EngineManager
 //==============================================================================
 
 EngineManager* EngineManager::Instance = nullptr;
-const TCHAR* EngineManager::LogFileName = _T("EngineLog.txt");
+const Char* EngineManager::LogFileName = _LT("EngineLog.txt");
 
 //------------------------------------------------------------------------------
 EngineManager* EngineManager::getInstance(EngineManager* priority)
@@ -305,7 +307,7 @@ EngineManager::~EngineManager()
 void EngineManager::initialize()
 {
 	String installDir;
-	if (Environment::tryGetEnvironmentVariable(_T("LuminoInstallDir"), &installDir))
+	if (Environment::tryGetEnvironmentVariable(_LT("LuminoInstallDir"), &installDir))
 	{
 		m_installDir = installDir;
 	}

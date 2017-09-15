@@ -226,18 +226,18 @@ LN_INTERNAL_ACCESS:
 	bool isWhiteSpace(int ch);
 	bool skipWhitespace();
 
-	bool isReservedEntity(const TCHAR* text, int len);	// & と ; は含まないこと
+	bool isReservedEntity(const Char* text, int len);	// & と ; は含まないこと
 
 	bool parseWhiteSpace();
 
 	bool isAlphaNum(int ch);
 
-	static void expandReservedEntities(const TCHAR* text, int len, StringBuilder* outBuilder);
+	static void expandReservedEntities(const Char* text, int len, std::basic_string<Char>* outBuilder);
 
 
 
 	Ref<TextReader>		m_reader;
-	List<TCHAR>				m_textCache;
+	List<Char>				m_textCache;
 	ParsingState			m_parsingState;
 
 	List<NodeData>			m_nodes;
@@ -252,7 +252,8 @@ LN_INTERNAL_ACCESS:
 	int						m_stockElementCount;
 	String					m_tmpName;
 	//String					m_tmpValue;
-	StringBuilder			m_valueCacheBuilder;
+	//StringBuilder			m_valueCacheBuilder;
+	std::basic_string<Char>	m_valueCacheBuilder;
 	String					m_valueCache;
 	int						m_currentAttrCount;		///< 現在のノードの属性数
 };

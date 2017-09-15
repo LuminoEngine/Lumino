@@ -1,4 +1,5 @@
 ﻿
+#include <Lumino/Base/StdStringHelper.h>
 #include <Lumino/IO/FileSystem.h>
 #include <Lumino/Testing/TestHelper.h>
 
@@ -7,8 +8,8 @@ LN_NAMESPACE_BEGIN
 //------------------------------------------------------------------------------
 String TestHelper::getFilePath(const char* baseSourceFilePath, const char* fileName)
 {
-	PathName base(baseSourceFilePath);
-	PathName path(base.getParent(), fileName);
+	PathName base(String::fromCString(baseSourceFilePath));
+	PathName path(base.getParent(), String::fromCString(fileName));
 	return String(path.c_str());
 }
 
@@ -20,18 +21,21 @@ PathName TestHelper::getDirPath(const char* baseFilePath)
 }
 
 //------------------------------------------------------------------------------
-PathNameA TestHelper::getFilePathA(const char* baseFilePath, const char* fileName)
+std::string TestHelper::getFilePathA(const char* baseFilePath, const char* fileName)
 {
-	PathNameA base(baseFilePath);
-	PathNameA path(base.getParent(), fileName);
-	return path;
+	return StdStringHelper::cat<std::string>(baseFilePath, "/", fileName);
 }
 
 //------------------------------------------------------------------------------
-PathNameW TestHelper::getFilePathW(const char* baseFilePath, const wchar_t* fileName)
+std::wstring TestHelper::getFilePathW(const char* baseFilePath, const wchar_t* fileName)
 {
-	PathNameW base(baseFilePath);
-	PathNameW path(base.getParent(), fileName);
+	return StdStringHelper::cat<std::wstring>(String::fromCString(baseFilePath).c_str(), L"/", fileName);
+}
+
+Path TestHelper::getFilePathU(const char* baseFilePath, const Char* fileName)
+{
+	Path base(baseFilePath);
+	Path path(base.getParent(), fileName);
 	return path;
 }
 

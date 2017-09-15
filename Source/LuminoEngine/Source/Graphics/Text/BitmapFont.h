@@ -14,17 +14,17 @@ public:
 	virtual ~BitmapFont();
 	void initialize(Bitmap* bitmap);
 
-	virtual void setName(const String& fontName) { LN_THROW(0, InvalidOperationException); }
+	virtual void setName(const String& fontName) { LN_NOTIMPLEMENTED(); }
 	virtual const String& getName() const { return m_name; }
-	virtual void setSize(int size) { LN_THROW(0, InvalidOperationException); }
+	virtual void setSize(int size) { LN_NOTIMPLEMENTED(); }
 	virtual int getSize() const { return 0; }
-	//virtual void SetEdgeSize(int size) { LN_THROW(0, InvalidOperationException); }
+	//virtual void SetEdgeSize(int size) { LN_NOTIMPLEMENTED(); }
 	//virtual int GetEdgeSize() const { return 0; }
-	virtual void setBold(bool enabled) { LN_THROW(0, InvalidOperationException); }
+	virtual void setBold(bool enabled) { LN_NOTIMPLEMENTED(); }
 	virtual bool isBold() const { return false; }
-	virtual void setItalic(bool enabled) { LN_THROW(0, InvalidOperationException); }
+	virtual void setItalic(bool enabled) { LN_NOTIMPLEMENTED(); }
 	virtual bool isItalic() const { return false; }
-	virtual void setAntiAlias(bool enabled) { LN_THROW(0, InvalidOperationException); }
+	virtual void setAntiAlias(bool enabled) { LN_NOTIMPLEMENTED(); }
 	virtual bool isAntiAlias() const { return false; }
 	virtual RawFontPtr copy() const;
 	virtual int getLineSpacing() { return m_charHeight; }

@@ -188,8 +188,7 @@ void StreamProvider<T>::Iterator::UpdateInitial()
 template<typename T>
 void StreamProvider<T>::Iterator::CheckConsumed() const
 {
-	assert(m_state != State::Consumed);
-	if (LN_CHECK_STATE(m_state != State::Consumed)) return;
+	if (LN_REQUIRE(m_state != State::Consumed)) return;
 }
 
 //------------------------------------------------------------------------------
@@ -364,7 +363,7 @@ public:
 	{
 		if (m_source->Advance())
 		{
-			m_current = m_transform(m_source->get());
+			m_current = Nullable<T>(m_transform(m_source->get()));
 			return true;
 		}
 		m_current.reset();
@@ -425,7 +424,7 @@ public:
 		return *this;
 	}
 
-	template<typename TTransform, typename TResult = std::result_of_t<TTransform(T&&)>>
+	template<typename TTransform, typename TResult = std::result_of<TTransform(T&&)>>
 	Enumerator<TResult> Select(TTransform transform)
 	{
 		Enumerator<TResult> e(std::make_shared<detail::MapProvider<TResult, TTransform, T>>(m_source, transform));

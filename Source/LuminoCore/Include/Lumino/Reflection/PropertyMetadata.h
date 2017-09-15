@@ -48,7 +48,9 @@ class PropertyMetadata
 public:
 	PropertyMetadata()
 	{
+#ifdef LN_LEGACY_VARIANT_ENABLED
 		m_defaultValue = Variant::Null;
+#endif
 		//m_propertyChangedCallback = NULL;
 		m_options = PropertyOptions::None;
 		m_inheritanceTarget = NULL;
@@ -99,7 +101,9 @@ public:
 	}
 
 public:
+#ifdef LN_LEGACY_VARIANT_ENABLED
 	const Variant& getDefaultValue() const { return m_defaultValue; }
+#endif
 	//void CallPropertyChangedCallback(ReflectionObject* obj, PropertyChangedEventArgs* e)
 	//{
 	//	if (m_propertyChangedCallback == nullptr) return;
@@ -115,7 +119,9 @@ public:
 	}
 
 private:
+#ifdef LN_LEGACY_VARIANT_ENABLED
 	Variant					m_defaultValue;
+#endif
 	//CallbackWrapper*		m_propertyChangedCallback;
 	PropertyOptions			m_options;
 	PropertyInfo*			m_inheritanceTarget;

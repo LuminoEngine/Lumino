@@ -47,7 +47,7 @@ public:
 		@brief		文字を書き込みます。
 		@param[in]	ch		: 書き込む文字
 	*/
-	void write(TCHAR ch);
+	void write(Char ch);
 
 	/**
 		@brief		整数値を文字列に変換して書き込みます。
@@ -71,7 +71,7 @@ public:
 
 
 	void write(const StringRef& str);
-	void write(const TCHAR* str, int length);
+	void write(const Char* str, int length);
 
 	template<typename... TArgs>
 	void writeFormat(const StringRef& str, const TArgs&... args) { String s = String::format(str, args...); writeInternal(s.c_str(), s.getLength()); }
@@ -115,7 +115,7 @@ public:
 	void writeLine(float value);
 	void writeLine(double value);		/**< @copydoc WriteLine(float) */
 
-	void writeLine(const StringRef& str) { writeInternal(str.getBegin(), str.getLength()); writeLine(); }
+	void writeLine(const StringRef& str) { writeInternal(str.data(), str.getLength()); writeLine(); }
 
 	template<typename... TArgs>
 	void writeLine(const StringRef& str, const TArgs&... args) { String s = String::format(str, args...); writeInternal(s.c_str(), s.getLength()); writeLine(); }
@@ -133,7 +133,7 @@ protected:
 	virtual void writeOverride(const void* data, size_t byteCount) = 0;
 
 private:
-	void writeInternal(const TCHAR* str, int len);
+	void writeInternal(const Char* str, int len);
 
 private:
 	static const int	BufferSize = 2048;

@@ -211,7 +211,7 @@ Material* SpriteParticleModel::getMaterial() const
 //------------------------------------------------------------------------------
 void SpriteParticleModel::SetSubParticle(SpriteParticleModel* particle)
 {
-	if (LN_CHECK_ARG(particle != this)) return;	// this は NG。無限再帰する
+	if (LN_REQUIRE(particle != this)) return;	// this は NG。無限再帰する
 	m_childModel = particle;
 	m_sourceDataType = ParticleSourceDataType::Particle;
 }
@@ -250,7 +250,7 @@ Ref<detail::SpriteParticleModelInstance> SpriteParticleModel::createInstane()
 //------------------------------------------------------------------------------
 void SpriteParticleModel::updateInstance(detail::SpriteParticleModelInstance* instance, float deltaTime, const Matrix& emitterTransform)
 {
-	if (LN_CHECK_STATE(m_oneSpawnDeltaTime > 0.0f)) return;
+	if (LN_REQUIRE(m_oneSpawnDeltaTime > 0.0f)) return;
 
 	instance->beginUpdate(deltaTime);
 
@@ -724,7 +724,7 @@ ParticleEmitterComponent::~ParticleEmitterComponent()
 //------------------------------------------------------------------------------
 void ParticleEmitterComponent::initialize(SpriteParticleModel* model)
 {
-	if (LN_CHECK_ARG(model != nullptr)) return;
+	if (LN_REQUIRE(model != nullptr)) return;
 
 	VisualComponent::initialize();
 	m_model = model;

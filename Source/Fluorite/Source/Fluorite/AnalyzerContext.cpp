@@ -29,7 +29,7 @@ TokenStore::~TokenStore()
 //------------------------------------------------------------------------------
 void TokenStore::reserve(int count)
 {
-	if (LN_CHECK_STATE(m_tokenStore.isEmpty())) return;
+	if (LN_REQUIRE(m_tokenStore.isEmpty())) return;
 	m_tokenStore.reserve(count);
 }
 
@@ -47,7 +47,7 @@ Token* TokenStore::CreateToken()
 //==============================================================================
 
 //------------------------------------------------------------------------------
-InputFile::InputFile(const PathNameA& filePath)
+InputFile::InputFile(const std::string& filePath)
 	: m_lang(Language::Cpp11)
 	, m_category(InputFileCategory::CompileUnit)
 	, m_filePath(filePath)
@@ -57,7 +57,7 @@ InputFile::InputFile(const PathNameA& filePath)
 }
 
 //------------------------------------------------------------------------------
-InputFile::InputFile(const PathNameA& filePath, const char* code, int length)
+InputFile::InputFile(const std::string& filePath, const char* code, int length)
 	: m_lang(Language::Cpp11)
 	, m_filePath(filePath)
 	, m_code(code, (length < 0) ? strlen(code) : length)
@@ -72,7 +72,7 @@ void InputFile::ReadFile()
 	if (!m_codeRead)
 	{
 		// TODO: 文字コード変換
-		m_code = FileSystem::readAllBytes(m_filePath);
+		m_code = FileSystem::readAllBytes(String::fromCString(m_filePath.c_str()));
 		m_codeRead = true;
 	}
 }
@@ -114,7 +114,7 @@ AnalyzerContext::~AnalyzerContext()
 }
 
 //------------------------------------------------------------------------------
-InputFile* AnalyzerContext::RegisterInputFile(const PathNameA& filePath)
+InputFile* AnalyzerContext::RegisterInputFile(const std::string& filePath)
 {
 	auto ptr = Ref<InputFile>::makeRef(filePath);
 	m_inputFileList.add(ptr);
@@ -122,9 +122,9 @@ InputFile* AnalyzerContext::RegisterInputFile(const PathNameA& filePath)
 }
 
 //------------------------------------------------------------------------------
-InputFile* AnalyzerContext::RegisterInputMemoryCode(const PathNameA& filePath, const char* code, int length)
+InputFile* AnalyzerContext::RegisterInputMemoryCode(const std::string& filePath, const char* code, int length)
 {
-	if (LN_CHECK_ARG(code != nullptr)) return nullptr;
+	if (LN_REQUIRE(code != nullptr)) return nullptr;
 	auto ptr = Ref<InputFile>::makeRef(filePath, code, length);
 	m_inputFileList.add(ptr);
 	return ptr;
@@ -148,7 +148,7 @@ void AnalyzerContext::LexAll()
 //------------------------------------------------------------------------------
 void AnalyzerContext::LexFile(InputFile* file)
 {
-	if (LN_CHECK_ARG(file != nullptr)) return;
+	if (LN_REQUIRE(file != nullptr)) return;
 	ResetFileDiagnostics(file);
 	auto lexer = CreateLexer(file);
 	lexer->Tokenize(file);
@@ -166,8 +166,8 @@ void AnalyzerContext::PreprocessAll()
 //------------------------------------------------------------------------------
 void AnalyzerContext::PreprocessFile(InputFile* file)
 {
-	if (LN_CHECK_ARG(file != nullptr)) return;
-	if (LN_CHECK_ARG(file->GetCategory() != InputFileCategory::CompileUnit)) return;
+	if (LN_REQUIRE(file != nullptr)) return;
+	if (LN_REQUIRE(file->GetCategory() != InputFileCategory::CompileUnit)) return;
 
 	LN_NOTIMPLEMENTED();
 }

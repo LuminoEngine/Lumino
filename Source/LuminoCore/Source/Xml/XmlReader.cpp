@@ -82,19 +82,19 @@ namespace tr {
 
 struct Entity
 {
-	const TCHAR* Pattern;
+	const Char* Pattern;
 	int Length;
-	TCHAR Value;
+	Char Value;
 };
 
 static const int ReservedEntitiesCount = 5;
 static const Entity ReservedEntities[ReservedEntitiesCount] =
 {
-	{ _T("lt"),		2, '<' },
-	{ _T("gt"),		2, '>' },
-	{ _T("amp"),	3, '&' },
-	{ _T("apos"),	4, '\'' },
-	{ _T("quot"),	4, '\"' },
+	{ _TT("lt"),	2, '<' },
+	{ _TT("gt"),	2, '>' },
+	{ _TT("amp"),	3, '&' },
+	{ _TT("apos"),	4, '\'' },
+	{ _TT("quot"),	4, '\"' },
 };
 
 //------------------------------------------------------------------------------
@@ -135,8 +135,8 @@ XmlReader::~XmlReader()
 //------------------------------------------------------------------------------
 void XmlReader::initializeReader(TextReader* reader)
 {
-	if (LN_CHECK_ARG(reader != nullptr)) return;
-	if (LN_CHECK_STATE(m_reader == nullptr)) return;
+	if (LN_REQUIRE(reader != nullptr)) return;
+	if (LN_REQUIRE(m_reader == nullptr)) return;
 	m_reader = reader;
 }
 
@@ -145,7 +145,7 @@ void XmlReader::initializeReader(TextReader* reader)
 bool XmlReader::read()
 {
 	bool r = readInternal();
-	if (LN_CHECK(!m_errorInfo.hasError(), XmlException, m_errorInfo.message.c_str())) return false;
+	if (_LN_CHECK(!m_errorInfo.hasError(), XmlException, m_errorInfo.message.c_str())) return false;
 	return r;
 }
 
@@ -174,8 +174,8 @@ const String& XmlReader::getName()
 		}
 		else
 		{
-			const TCHAR* name = &m_textCache[m_currentNode->NameStartPos];
-			m_tmpName.assignCStr(name, m_currentNode->NameLen);
+			const Char* name = &m_textCache[m_currentNode->NameStartPos];
+			m_tmpName.assign(name, m_currentNode->NameLen);
 		}
 	}
 	return m_tmpName;
@@ -198,7 +198,7 @@ const String& XmlReader::getValue()
 		{
 			// 定義済み Entity を展開する
 			expandReservedEntities(&m_textCache[m_currentNode->ValueStartPos], m_currentNode->ValueLen, &m_valueCacheBuilder);
-			m_valueCache = m_valueCacheBuilder.toString();
+			m_valueCache = m_valueCacheBuilder.c_str();// m_valueCacheBuilder.toString();
 		}
 	}
 	return m_valueCache;
@@ -540,8 +540,8 @@ bool XmlReader::parseElementInner()
 	// "<?xml..." 等
 	if (isProcInst)
 	{
-		const TCHAR* name = &m_textCache[namePos];
-		bool isXmlDecl = (nameLen == 3 && StringTraits::strnicmp(name, _T("xml"), 3) == 0);
+		const Char* name = &m_textCache[namePos];
+		bool isXmlDecl = (nameLen == 3 && StringTraits::strnicmp(name, _TT("xml"), 3) == 0);
 		parseXmlDeclOrPI(namePos, nameLen, isXmlDecl);
 	}
 	// その他の要素
@@ -584,7 +584,7 @@ bool XmlReader::parseElementOuter()
 		if (ch < 0) { break; }		// EOF
 		if (ch == '<') { break; }	// 次のタグの開始かもしれない。終了
 		m_reader->read();			// 1文字進める
-		m_textCache.add((TCHAR)ch);
+		m_textCache.add((Char)ch);
 
 		// Entity 参照の開始を探している状態 (普通の状態)
 		if (entityRefSeq == Seq_FindAmp)
@@ -703,7 +703,7 @@ bool XmlReader::parseComment()
 			{
 				// コメント終端ではなかった。カウントしていた - をテキスト扱いに戻す
 				hyphenCount = 0;
-				m_textCache.add(_T('-'));	// 正常であれば 1 つしかないはず (コメント内で連続する -- は禁止されている)
+				m_textCache.add(_LT('-'));	// 正常であれば 1 つしかないはず (コメント内で連続する -- は禁止されている)
 			}
 
 			m_textCache.add(ch);
@@ -1057,7 +1057,7 @@ bool XmlReader::isTextChar(int ch)
 }
 
 //------------------------------------------------------------------------------
-bool XmlReader::isReservedEntity(const TCHAR* text, int len)
+bool XmlReader::isReservedEntity(const Char* text, int len)
 {
 	if (len < 2 ||			// & と ; と識別文字の最低 3 文字以上はあるはず
 		text[0] != '&' ||
@@ -1107,12 +1107,12 @@ bool XmlReader::isAlphaNum(int ch)
 }
 
 //------------------------------------------------------------------------------
-void XmlReader::expandReservedEntities(const TCHAR* text, int len, StringBuilder* outBuilder)
+void XmlReader::expandReservedEntities(const Char* text, int len, std::basic_string<Char>* outBuilder)
 {
 	outBuilder->clear();
 
-	const TCHAR* rp = text;	// read pointer
-	const TCHAR* end = text + len;
+	const Char* rp = text;	// read pointer
+	const Char* end = text + len;
 	while (rp < end)
 	{
 		if (*rp == '&')
@@ -1123,7 +1123,7 @@ void XmlReader::expandReservedEntities(const TCHAR* text, int len, StringBuilder
 				if (StringTraits::strncmp(rp + 1, ReservedEntities[i].Pattern, ReservedEntities[i].Length) == 0 &&
 					*(rp + ReservedEntities[i].Length + 1) == ';')
 				{
-					outBuilder->append(ReservedEntities[i].Value);
+					outBuilder->append(1, ReservedEntities[i].Value);
 					rp += ReservedEntities[i].Length + 2;	// +2 は & と ; の分
 					break;
 				}
@@ -1131,13 +1131,13 @@ void XmlReader::expandReservedEntities(const TCHAR* text, int len, StringBuilder
 			// 予約済み Entity ではなかった
 			if (i == ReservedEntitiesCount)
 			{
-				outBuilder->append(*rp);
+				outBuilder->append(1, *rp);
 				++rp;
 			}
 		}
 		else
 		{
-			outBuilder->append(*rp);
+			outBuilder->append(1, *rp);
 			++rp;
 		}
 	}
@@ -1152,7 +1152,7 @@ XmlFileReader::XmlFileReader(const PathName& filePath, Encoding* encoding)
 	: XmlReader()
 {
 	m_filePath = filePath.canonicalizePath();
-	Ref<StreamReader> file(LN_NEW StreamReader(m_filePath, encoding), false);
+	Ref<StreamReader> file(LN_NEW StreamReader(m_filePath.c_str(), encoding), false);
 	initializeReader(file);
 	m_errorInfo.filePath = filePath;
 }

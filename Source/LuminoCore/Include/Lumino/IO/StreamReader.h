@@ -10,9 +10,8 @@ LN_NAMESPACE_BEGIN
 /**
 	@brief	特定のエンコーディングのストリームを文字列として読み込む TextReader です。
 */
-template<typename TChar>
-class GenericStreamReader
-	: public GenericTextReader<TChar>
+class StreamReader
+	: public TextReader
 {
 public:
 	static const int DefaultBufferSize = 1024;
@@ -25,7 +24,7 @@ public:
 		@param[in]	encoding	: 読み込むテキストのエンコーディング
 		@details	encoding が nullptr の場合は UTF8Encoding を使用します。
 	*/
-	GenericStreamReader(Stream* stream, Encoding* encoding = nullptr);
+	StreamReader(Stream* stream, Encoding* encoding = nullptr);
 	// TODO: UTF BOM 自動判別
 
 	/**
@@ -34,9 +33,9 @@ public:
 		@param[in]	encoding	: 読み込むテキストのエンコーディング
 		@details	encoding が NULL の場合は UTF8Encoding を使用します。
 	*/
-	GenericStreamReader(const TChar* filePath, Encoding* encoding = nullptr);
+	StreamReader(const Char* filePath, Encoding* encoding = nullptr);
 
-	~GenericStreamReader();
+	~StreamReader();
 
 public:
 	Stream* getStream() const { return m_stream; }
@@ -45,8 +44,8 @@ public:
 	// GenericTextReader interface
 	virtual int peek();
 	virtual int read();
-	virtual bool readLine(GenericString<TChar>* line);
-	virtual GenericString<TChar> readToEnd();
+	virtual bool readLine(String* line);
+	virtual String readToEnd();
 	virtual bool isEOF();
 
 private:
@@ -56,11 +55,10 @@ private:
 	Ref<Stream>			m_stream;
 	EncodingConverter		m_converter;
 	ByteBuffer				m_byteBuffer;
+	std::basic_string<Char>	m_readLineCache;
 	int						m_byteLen;
 	int						m_charElementLen;
 	int						m_charPos;			///< 次に読むべき文字がある文字列バッファの位置。有効最大は m_charElementLen - 1
 };
-
-using StreamReader = GenericStreamReader<TCHAR>;
 
 LN_NAMESPACE_END

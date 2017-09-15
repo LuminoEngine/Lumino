@@ -141,22 +141,12 @@ ResultCode LFManager::ProcException(Exception* e)
 		if (t != NULL) { LastErrorCode = code; return code; } \
 	}
 
-	ERROR_DEF(VerifyException, ResultCode::ErrorVERIFY);
-	ERROR_DEF(ArgumentException, ResultCode::ErrorARGUMENT);
-	ERROR_DEF(InvalidOperationException, ResultCode::ErrorINVALID_OPERATION);
 	ERROR_DEF(NotImplementedException, ResultCode::ErrorNOT_IMPLEMENTED);
-	ERROR_DEF(OutOfMemoryException, ResultCode::ErrorOUT_OF_MEMORY);
-	ERROR_DEF(OutOfRangeException, ResultCode::ErrorOUT_OF_RANGE);
-	ERROR_DEF(KeyNotFoundException, ResultCode::ErrorKEY_NOT_FOUND);
-	ERROR_DEF(OverflowException, ResultCode::ErrorOVERFLOW);
 	ERROR_DEF(IOException, ResultCode::ErrorIO);
 	ERROR_DEF(FileNotFoundException, ResultCode::ErrorFILE_NOT_FOUND);
-	ERROR_DEF(DirectoryNotFoundException, ResultCode::ErrorDIRECTORY_NOT_FOUND);
 	ERROR_DEF(InvalidFormatException, ResultCode::ErrorINVALID_FORMAT);
-	ERROR_DEF(EndOfStreamException, ResultCode::ErrorEND_OF_STREAM);
 	ERROR_DEF(EncodingException, ResultCode::ErrorENCODING);
 	ERROR_DEF(Win32Exception, ResultCode::ErrorWIN32);
-	ERROR_DEF(COMException, ResultCode::ErrorCOM);
 
 #undef ERROR_DEF
 

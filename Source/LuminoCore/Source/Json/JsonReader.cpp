@@ -1,5 +1,6 @@
 ﻿
 #include "../Internal.h"
+#include <float.h>
 #include <Lumino/Base/String.h>
 #include <Lumino/IO/StringReader.h>
 #include <Lumino/Json/JsonReader.h>
@@ -33,7 +34,7 @@ void JsonReader::parse(const String& text)
 }
 
 //------------------------------------------------------------------------------
-void JsonReader::parse(const TCHAR* text, int len)
+void JsonReader::parse(const Char* text, int len)
 {
 	StringReader textReader(String(text, len));
 	parse(&textReader);
@@ -42,7 +43,7 @@ void JsonReader::parse(const TCHAR* text, int len)
 //------------------------------------------------------------------------------
 void JsonReader::parse(TextReader* textReader)
 {
-	if (LN_CHECK_ARG(textReader != nullptr)) return;
+	if (LN_REQUIRE(textReader != nullptr)) return;
 
 	m_reader = textReader;
 
@@ -174,7 +175,7 @@ bool JsonReader::parseNumber()
 	// 数値への変換には strtod を使用する。そのため、まずは数値扱いできる文字を全て読み取る
 	m_tmpStream.seek(0, SeekOrigin_Begin);
 	int len = 0;
-	TCHAR ch;
+	Char ch;
 	while (true)
 	{
 		ch = m_reader->peek();	// 読むだけ。ポインタは進めない
@@ -183,7 +184,7 @@ bool JsonReader::parseNumber()
 			(ch == 'e' || ch == 'E') ||
 			(ch == '+' || ch == '-'))
 		{
-			m_tmpStream.write(&ch, sizeof(TCHAR));
+			m_tmpStream.write(&ch, sizeof(Char));
 			++len;
 			m_reader->read();	// ここで1つ進める
 		}
@@ -198,11 +199,11 @@ bool JsonReader::parseNumber()
 		return false;
 	}
 	ch = '\0';
-	m_tmpStream.write(&ch, sizeof(TCHAR));	// 終端 \0
+	m_tmpStream.write(&ch, sizeof(Char));	// 終端 \0
 
 	// double へ変換する
-	TCHAR* str = (TCHAR*)m_tmpStream.getBuffer();
-	const TCHAR* endptr = NULL;
+	Char* str = (Char*)m_tmpStream.getBuffer();
+	const Char* endptr = NULL;
 	NumberConversionResult result;
 	double value = StringTraits::toDouble(str, len, &endptr, &result);
 	if ((endptr - str) != len)	// 正常に変換できていれば、読み取った文字数が全て消費されるはず
@@ -232,7 +233,7 @@ bool JsonReader::parseNumber()
 bool JsonReader::parseString(bool isKey)
 {
 	// http://json.org/json-ja.html
-	static const TCHAR escapeTable[256] =
+	static const Char escapeTable[256] =
 	{
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
@@ -258,17 +259,17 @@ bool JsonReader::parseString(bool isKey)
 	m_reader->read();	// skip '"'
 	while (true)
 	{
-		TCHAR c = m_reader->peek();
+		Char c = m_reader->peek();
 
 		// エスケープシーケンス
 		if (c == '\\')
 		{
 			m_reader->read();	// skip '\'
-			TCHAR esc = m_reader->read();
+			Char esc = m_reader->read();
 			// 基本的なエスケープ
 			if (unsigned(esc) < 256 && escapeTable[(unsigned char)esc])
 			{
-				m_tmpStream.write(&escapeTable[(unsigned char)esc], sizeof(TCHAR));
+				m_tmpStream.write(&escapeTable[(unsigned char)esc], sizeof(Char));
 			}
 			// Unicode エスケープ
 			else if (esc == 'u')
@@ -306,7 +307,7 @@ bool JsonReader::parseString(bool isKey)
 		// 普通の文字
 		else
 		{
-			m_tmpStream.write(&c, sizeof(TCHAR));
+			m_tmpStream.write(&c, sizeof(Char));
 			m_reader->read();
 		}
 	}
@@ -314,10 +315,10 @@ bool JsonReader::parseString(bool isKey)
 	// Handler に通知
 	bool cont = false;
 	if (isKey) {
-		cont = m_handler->onKey((TCHAR*)m_tmpStream.getBuffer(), ((int)m_tmpStream.getPosition()) / sizeof(TCHAR));
+		cont = m_handler->onKey((Char*)m_tmpStream.getBuffer(), ((int)m_tmpStream.getPosition()) / sizeof(Char));
 	}
 	else {
-		cont = m_handler->onString((TCHAR*)m_tmpStream.getBuffer(), ((int)m_tmpStream.getPosition()) / sizeof(TCHAR));
+		cont = m_handler->onString((Char*)m_tmpStream.getBuffer(), ((int)m_tmpStream.getPosition()) / sizeof(Char));
 	}
 	if (!cont)
 	{
@@ -559,35 +560,35 @@ const String& JsonReader2::getPropertyName() const
 //------------------------------------------------------------------------------
 bool JsonReader2::getBoolValue() const
 {
-	if (LN_CHECK_STATE(m_currentToken.type == JsonToken::Boolean)) return false;
+	if (LN_REQUIRE(m_currentToken.type == JsonToken::Boolean)) return false;
 	return m_valueData.m_bool;
 }
 
 //------------------------------------------------------------------------------
 int32_t JsonReader2::getInt32Value() const
 {
-	if (LN_CHECK_STATE(m_currentToken.type == JsonToken::Int32)) return 0;
+	if (LN_REQUIRE(m_currentToken.type == JsonToken::Int32)) return 0;
 	return m_valueData.m_int32;
 }
 
 //------------------------------------------------------------------------------
 int64_t JsonReader2::getInt64Value() const
 {
-	if (LN_CHECK_STATE(m_currentToken.type == JsonToken::Int64)) return 0;
+	if (LN_REQUIRE(m_currentToken.type == JsonToken::Int64)) return 0;
 	return m_valueData.m_int64;
 }
 
 //------------------------------------------------------------------------------
 float JsonReader2::getFloatValue() const
 {
-	if (LN_CHECK_STATE(m_currentToken.type == JsonToken::Float)) return 0;
+	if (LN_REQUIRE(m_currentToken.type == JsonToken::Float)) return 0;
 	return m_valueData.m_float;
 }
 
 //------------------------------------------------------------------------------
 double JsonReader2::getDoubleValue() const
 {
-	if (LN_CHECK_STATE(m_currentToken.type == JsonToken::Double)) return 0;
+	if (LN_REQUIRE(m_currentToken.type == JsonToken::Double)) return 0;
 	return m_valueData.m_double;
 }
 
@@ -601,7 +602,7 @@ void JsonReader2::readAsStartObject()
 {
 	if (!read() || getTokenType() != JsonToken::StartObject)
 	{
-		LN_THROW(0, InvalidFormatException);
+		LN_ENSURE(0);
 	}
 }
 
@@ -609,7 +610,7 @@ void JsonReader2::readAsEndObject()
 {
 	if (!read() || getTokenType() != JsonToken::EndObject)
 	{
-		LN_THROW(0, InvalidFormatException);
+		LN_ENSURE(0);
 	}
 }
 
@@ -617,7 +618,7 @@ void JsonReader2::readAsStartArray()
 {
 	if (!read() || getTokenType() != JsonToken::StartArray)
 	{
-		LN_THROW(0, InvalidFormatException);
+		LN_ENSURE(0);
 	}
 }
 
@@ -625,7 +626,7 @@ void JsonReader2::readAsEndArray()
 {
 	if (!read() || getTokenType() != JsonToken::EndArray)
 	{
-		LN_THROW(0, InvalidFormatException);
+		LN_ENSURE(0);
 	}
 }
 
@@ -633,7 +634,8 @@ bool JsonReader2::readAsBool()
 {
 	if (!read() || getTokenType() != JsonToken::Boolean)
 	{
-		LN_THROW(0, InvalidFormatException);
+		LN_ENSURE(0);
+		return false;
 	}
 	return getValue()[0] == 't';
 }
@@ -642,7 +644,8 @@ const String& JsonReader2::readAsPropertyName()
 {
 	if (!read() || getTokenType() != JsonToken::PropertyName)
 	{
-		LN_THROW(0, InvalidFormatException);
+		LN_ENSURE(0);
+		return String::getEmpty();
 	}
 	return getValue();
 }
@@ -651,7 +654,8 @@ const String& JsonReader2::readAsString()
 {
 	if (!read() || getTokenType() != JsonToken::String)
 	{
-		LN_THROW(0, InvalidFormatException);
+		LN_ENSURE(0);
+		return String::getEmpty();
 	}
 	return getValue();
 }
@@ -677,7 +681,7 @@ bool JsonReader2::parseValue()
 		//	return false;
 		//}
 
-		TCHAR ch = m_reader->peek();
+		Char ch = m_reader->peek();
 		switch (ch)
 		{
 			//case ' ':
@@ -751,7 +755,7 @@ bool JsonReader2::parseTrue()
 		m_reader->read() == 'e')
 	{
 		m_valueData.m_bool = true;
-		return setToken(JsonToken::Boolean, _T("true"), 4);
+		return setToken(JsonToken::Boolean, _TT("true"), 4);
 	}
 	else
 	{
@@ -771,7 +775,7 @@ bool JsonReader2::parseFalse()
 		m_reader->read() == 'e')
 	{
 		m_valueData.m_bool = false;
-		return setToken(JsonToken::Boolean, _T("false"), 5);
+		return setToken(JsonToken::Boolean, _TT("false"), 5);
 	}
 	else
 	{
@@ -787,7 +791,7 @@ bool JsonReader2::parseNumber()
 	// 数値として使える文字を m_textCache に入れていく
 	int len = 0;
 	bool isDecimal = false;
-	TCHAR ch;
+	Char ch;
 	while (true)
 	{
 		ch = m_reader->peek();	// 読むだけ。ポインタは進めない
@@ -816,8 +820,8 @@ bool JsonReader2::parseNumber()
 
 	if (isDecimal)
 	{
-		const TCHAR* str = &m_textCache[0];
-		const TCHAR* endptr = nullptr;
+		const Char* str = &m_textCache[0];
+		const Char* endptr = nullptr;
 		NumberConversionResult result;
 		double value = StringTraits::toDouble(str, len, &endptr, &result);
 
@@ -847,8 +851,8 @@ bool JsonReader2::parseNumber()
 	}
 	else
 	{
-		const TCHAR* str = &m_textCache[0];
-		const TCHAR* endptr = nullptr;
+		const Char* str = &m_textCache[0];
+		const Char* endptr = nullptr;
 		NumberConversionResult result;
 		int64_t value = StringTraits::toInt64(str, len, 0, &endptr, &result);
 
@@ -882,7 +886,7 @@ bool JsonReader2::parseNumber()
 	// 数値への変換には strtod を使用する。そのため、まずは数値扱いできる文字を全て読み取る
 	m_tmpStream.Seek(0, SeekOrigin_Begin);
 	int len = 0;
-	TCHAR ch;
+	Char ch;
 	while (true)
 	{
 		ch = m_reader->Peek();	// 読むだけ。ポインタは進めない
@@ -891,7 +895,7 @@ bool JsonReader2::parseNumber()
 			(ch == 'e' || ch == 'E') ||
 			(ch == '+' || ch == '-'))
 		{
-			m_tmpStream.Write(&ch, sizeof(TCHAR));
+			m_tmpStream.Write(&ch, sizeof(Char));
 			++len;
 			m_reader->Read();	// ここで1つ進める
 		}
@@ -906,11 +910,11 @@ bool JsonReader2::parseNumber()
 		return false;
 	}
 	ch = '\0';
-	m_tmpStream.Write(&ch, sizeof(TCHAR));	// 終端 \0
+	m_tmpStream.Write(&ch, sizeof(Char));	// 終端 \0
 
 	// double へ変換する
-	TCHAR* str = (TCHAR*)m_tmpStream.GetBuffer();
-	const TCHAR* endptr = NULL;
+	Char* str = (TCHAR*)m_tmpStream.GetBuffer();
+	const Char* endptr = NULL;
 	NumberConversionResult result;
 	double value = StringTraits::ToDouble(str, len, &endptr, &result);
 	if ((endptr - str) != len)	// 正常に変換できていれば、読み取った文字数が全て消費されるはず
@@ -1019,7 +1023,7 @@ bool JsonReader2::parseString(bool isKey)
          unescaped = %x20-21 / %x23-5B / %x5D-10FFFF
 	*/
 	// http://json.org/json-ja.html
-	static const TCHAR escapeTable[256] =
+	static const Char escapeTable[256] =
 	{
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
@@ -1042,13 +1046,13 @@ bool JsonReader2::parseString(bool isKey)
 	m_reader->read();	// skip '"'
 	while (true)
 	{
-		TCHAR c = m_reader->peek();
+		Char c = m_reader->peek();
 
 		// エスケープシーケンス
 		if (c == '\\')
 		{
 			m_reader->read();	// skip '\'
-			TCHAR esc = m_reader->read();
+			Char esc = m_reader->read();
 			// 基本的なエスケープ
 			if (unsigned(esc) < 256 && escapeTable[(unsigned char)esc])
 			{
@@ -1058,7 +1062,7 @@ bool JsonReader2::parseString(bool isKey)
 			else if (esc == 'u')
 			{
 				// TODO: 未実装
-				LN_THROW(0, NotImplementedException);
+				LN_NOTIMPLEMENTED();
 				return false;
 			}
 			else
@@ -1111,10 +1115,10 @@ bool JsonReader2::parseString(bool isKey)
 	//// Handler に通知
 	//bool cont = false;
 	//if (isKey) {
-	//	cont = m_handler->OnKey((TCHAR*)m_tmpStream.getBuffer(), ((int)m_tmpStream.GetPosition()) / sizeof(TCHAR));
+	//	cont = m_handler->OnKey((Char*)m_tmpStream.getBuffer(), ((int)m_tmpStream.GetPosition()) / sizeof(TCHAR));
 	//}
 	//else {
-	//	cont = m_handler->OnString((TCHAR*)m_tmpStream.getBuffer(), ((int)m_tmpStream.GetPosition()) / sizeof(TCHAR));
+	//	cont = m_handler->OnString((Char*)m_tmpStream.getBuffer(), ((int)m_tmpStream.GetPosition()) / sizeof(TCHAR));
 	//}
 	//if (!cont)
 	//{
@@ -1159,7 +1163,7 @@ bool JsonReader2::ParsePostValue(bool* outSkip)
 //------------------------------------------------------------------------------
 // 現在位置の状態を newToken にする
 //------------------------------------------------------------------------------
-bool JsonReader2::setToken(JsonToken newToken, const TCHAR* value, int valueLen)
+bool JsonReader2::setToken(JsonToken newToken, const Char* value, int valueLen)
 {
 	m_currentToken.type = newToken;
 	//m_currentToken.valuePos = valuePos;

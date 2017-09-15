@@ -114,8 +114,8 @@ GLVertexDeclaration::~GLVertexDeclaration()
 //------------------------------------------------------------------------------
 void GLVertexDeclaration::initialize(const VertexElement* elements, int elementsCount)
 {
-	if (LN_CHECK_ARG(elements != nullptr)) return;
-	if (LN_CHECK_ARG(elementsCount >= 0)) return;
+	if (LN_REQUIRE(elements != nullptr)) return;
+	if (LN_REQUIRE(elementsCount >= 0)) return;
 
 	// 頂点宣言作成
 	createGLVertexElements(elements, elementsCount, &m_vertexElements);
@@ -175,7 +175,7 @@ int GLVertexDeclaration::getVertexElementTypeSize(VertexElementType type)
 		case VertexElementType_Short2:	return sizeof(short) * 2;
 		case VertexElementType_Short4:	return sizeof(short) * 4;
 	}
-	LN_THROW(0, ArgumentException);
+	LN_UNREACHABLE();
 	return 0;
 }
 

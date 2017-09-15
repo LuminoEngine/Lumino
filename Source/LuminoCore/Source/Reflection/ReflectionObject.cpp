@@ -20,45 +20,17 @@ namespace tr
 //==============================================================================
 // ReflectionHelper
 //==============================================================================
-//------------------------------------------------------------------------------
-void ReflectionHelper::addGCObject(ReflectionObject* obj, ReflectionObject* child)
-{
-	if (obj == nullptr || child == nullptr) return;
-	obj->m_gcList.add(child);
-}
-
-//------------------------------------------------------------------------------
-void ReflectionHelper::removeGCObject(ReflectionObject* obj, ReflectionObject* child)
-{
-	if (obj == nullptr || child == nullptr) return;
-	obj->m_gcList.remove(child);
-}
-
-//------------------------------------------------------------------------------
-void ReflectionHelper::gcObjects(ReflectionObject* obj)
-{
-	if (obj == nullptr) return;
-	obj->m_gcList.removeAll([](Ref<ReflectionObject>& obj) { return isGCReady(obj); });
-}
-
-//------------------------------------------------------------------------------
-bool ReflectionHelper::isGCReady(ReflectionObject* obj)
-{
-	if (obj == nullptr) return false;
-	return obj->m_autoGC && obj->getReferenceCount() == 1;
-}
 
 //==============================================================================
 // ReflectionObject
 //==============================================================================
-ln::tr::TypeInfo				ReflectionObject::lnref_typeInfo(_T("ReflectionObject"), nullptr, nullptr, nullptr, nullptr, {});
+ln::tr::TypeInfo				ReflectionObject::lnref_typeInfo(_LT("ReflectionObject"), nullptr, nullptr, nullptr, nullptr, {});
 ln::tr::TypeInfo*				ReflectionObject::lnref_GetThisTypeInfo() const { return &lnref_typeInfo; }
 
 //------------------------------------------------------------------------------
 ReflectionObject::ReflectionObject()
 	: m_userData(nullptr)
 	, m_weakRefInfo(nullptr)
-	, m_autoGC(true)
 {
 }
 
@@ -88,6 +60,7 @@ void ReflectionObject::onPropertyChanged(PropertyChangedEventArgs* e)
 }
 
 //------------------------------------------------------------------------------
+#ifdef LN_LEGACY_VARIANT_ENABLED
 void ReflectionObject::setPropertyValueInternal(const PropertyInfo* prop, const Variant& value, bool reset, PropertySetSource source)
 {
 	//if (prop->isStored())
@@ -125,6 +98,7 @@ void ReflectionObject::setPropertyValueInternal(const PropertyInfo* prop, const 
 
 	//setPropertyValue(prop->getName(), value);	// TODO: getName じゃなくて、型情報も考慮するように。あるいは生ポインタ
 }
+#endif
 
 //------------------------------------------------------------------------------
 detail::WeakRefInfo* ReflectionObject::requestWeakRefInfo()

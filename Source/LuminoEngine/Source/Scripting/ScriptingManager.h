@@ -248,8 +248,8 @@ class NlHelper
 public:
 	static void linkPins(NlGraphPin* pin1, NlGraphPin* pin2)
 	{
-		if (LN_CHECK_ARG(pin1 != nullptr)) return;
-		if (LN_CHECK_ARG(pin2 != nullptr)) return;
+		if (LN_REQUIRE(pin1 != nullptr)) return;
+		if (LN_REQUIRE(pin2 != nullptr)) return;
 		// TODO: 接続可否チェック
 		pin1->makeLinkTo(pin2);
 	}

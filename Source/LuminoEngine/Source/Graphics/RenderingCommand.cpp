@@ -116,7 +116,7 @@ void RenderingCommandList::clearCommands()
 	// コマンド(とリソース)のクリアはメインスレッドからのみ許可する。
 	// レンダリングスレッドでもできないことは無いが複雑になる。
 	// そもそも、特に OpenGL リソースはマルチスレッドでの振る舞いが怪しい。確保と解放のスレッドは統一しておく。
-	if (LN_CHECK_STATE(Thread::getCurrentThreadId() == m_mainThreadId)) return;
+	if (LN_REQUIRE(Thread::getCurrentThreadId() == m_mainThreadId)) return;
 
 	m_commandList.clear();
 	m_commandDataBufferUsed = 0;

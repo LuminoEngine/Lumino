@@ -1,5 +1,6 @@
 
 #include "../Internal.h"
+#include <Lumino/Base/StringHelper.h>
 #include <Lumino/Base/Hash.h>
 
 LN_NAMESPACE_BEGIN
@@ -56,15 +57,12 @@ static const unsigned g_crctab[256] =
 };
 
 //------------------------------------------------------------------------------
-static uint32_t CalcCRCHash(const char* str, int len)
+static uint32_t CalcCRCHash(const byte_t* str, int len)
 {
 	uint32_t hash = len;
 	for (int i = 0; i < len; ++i)
 	{
-		if (str[i])
-		{
-			hash = (hash >> 8) ^ g_crctab[(hash & 0xff) ^ str[i]];
-		}
+		hash = (hash >> 8) ^ g_crctab[(hash & 0xff) ^ str[i]];
 	}
 	return hash;
 }
@@ -73,14 +71,20 @@ static uint32_t CalcCRCHash(const char* str, int len)
 uint32_t Hash::calcHash(const char* str, int len)
 {
 	len = static_cast<int>((len < 0) ? strlen(str) : len);
-	return CalcCRCHash(str, len);
+	return CalcCRCHash((const byte_t*)str, len);
 }
 
 //------------------------------------------------------------------------------
 uint32_t Hash::calcHash(const wchar_t* str, int len)
 {
 	len = static_cast<int>(((len < 0) ? wcslen(str) : len) * sizeof(wchar_t));
-	return CalcCRCHash((const char*)str, len);
+	return CalcCRCHash((const byte_t*)str, len);
+}
+
+uint32_t Hash::calcHash(const char16_t* str, int len)
+{
+	len = static_cast<int>(((len < 0) ? StringTraits::tcslen(str) : len) * sizeof(char16_t));	
+	return CalcCRCHash((const byte_t*)str, len);
 }
 
 LN_NAMESPACE_END

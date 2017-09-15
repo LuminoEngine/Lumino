@@ -8,6 +8,16 @@ namespace tr {
 /**
 	@brief	不正な XML フォーマットが入力された場合にスローされる例外です。
 */
+#ifdef LN_EXCEPTION2
+class XmlException
+	: public RuntimeException
+{
+public:
+	LN_EXCEPTION_FORMATTING_CONSTRUCTOR_DECLARE(XmlException);
+	XmlException();
+	virtual Exception* copy() const;
+};
+#else
 class XmlException
 	: public Exception
 {
@@ -18,6 +28,7 @@ public:
 	// override Exception
 	virtual Exception* copy() const { return LN_NEW XmlException(*this); }
 };
+#endif
 
 namespace detail
 {
@@ -55,7 +66,7 @@ public:
 		errorCode = errorCode_;
 		line = line_;
 		col = col_;
-		message = String::format(_T("{3}({0}, {1}): {2}"), line, col, message_, filePath);
+		message = String::format(_TT("{3}({0}, {1}): {2}"), line, col, message_, filePath);
 	}
 	void addError(XmlErrorCode errorCode_, int line_, int col_)	// TODO: 削除予定。エラーメッセージはちゃんとつけてあげよう。
 	{

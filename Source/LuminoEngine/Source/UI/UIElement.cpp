@@ -17,22 +17,22 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 // UIVisualStates
 //==============================================================================
-const String UIVisualStates::CommonGroup = _T("CommonGroup");
-const String UIVisualStates::FocusGroup = _T("FocusGroup");
-const String UIVisualStates::CheckStates = _T("CheckStates");
-//const String UIVisualStates::ValidationStates = _T("ValidationStates");
-const String UIVisualStates::NormalState = _T("Normal");
-const String UIVisualStates::MouseOverState = _T("MouseOver");
-const String UIVisualStates::PressedState = _T("Pressed");
-const String UIVisualStates::DisabledState = _T("Disabled");
-const String UIVisualStates::UnfocusedState = _T("Unfocused");
-const String UIVisualStates::FocusedState = _T("Focused");
-const String UIVisualStates::ValidState = _T("Valid");
-const String UIVisualStates::InvalidState = _T("Invalid");
+const String UIVisualStates::CommonGroup = _LT("CommonGroup");
+const String UIVisualStates::FocusGroup = _LT("FocusGroup");
+const String UIVisualStates::CheckStates = _LT("CheckStates");
+//const String UIVisualStates::ValidationStates = _LT("ValidationStates");
+const String UIVisualStates::NormalState = _LT("Normal");
+const String UIVisualStates::MouseOverState = _LT("MouseOver");
+const String UIVisualStates::PressedState = _LT("Pressed");
+const String UIVisualStates::DisabledState = _LT("Disabled");
+const String UIVisualStates::UnfocusedState = _LT("Unfocused");
+const String UIVisualStates::FocusedState = _LT("Focused");
+const String UIVisualStates::ValidState = _LT("Valid");
+const String UIVisualStates::InvalidState = _LT("Invalid");
 
-const String UIVisualStates::OrientationGroup = _T("OrientationGroup");
-const String UIVisualStates::HorizontalState = _T("Horizontal");
-const String UIVisualStates::VerticalState = _T("Vertical");
+const String UIVisualStates::OrientationGroup = _LT("OrientationGroup");
+const String UIVisualStates::HorizontalState = _LT("Horizontal");
+const String UIVisualStates::VerticalState = _LT("Vertical");
 
 //==============================================================================
 // UIElement
@@ -40,8 +40,8 @@ const String UIVisualStates::VerticalState = _T("Vertical");
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIElement, RuntimeResource);
 
 // Event definition
-LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIEventArgs, GotFocusEvent, "GotFocus", GotFocus);
-LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIEventArgs, LostFocusEvent, "LostFocus", LostFocus);
+//LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIEventArgs, GotFocusEvent, "GotFocus", GotFocus);
+//LN_ROUTED_EVENT_IMPLEMENT(UIElement, UIEventArgs, LostFocusEvent, "LostFocus", LostFocus);
 
 //------------------------------------------------------------------------------
 UIElement::UIElement()
@@ -244,12 +244,12 @@ ILayoutElement* UIElement::getVisualChild(int index) const
 		return m_visualChildren->getAt(index);
 	}
 
-	LN_THROW(0, InvalidOperationException);
+	LN_UNREACHABLE();
 	return nullptr;
 }
 
 //------------------------------------------------------------------------------
-void UIElement::raiseEvent(const UIEventInfo* ev, UIElement* sender, UIEventArgs* e)
+void UIElement::raiseEvent(UIEventType ev, UIElement* sender, UIEventArgs* e)
 {
 	//if (m_parent != nullptr)
 	{
@@ -363,7 +363,8 @@ void UIElement::onRender(DrawingContext* g)
 		g->drawBoxBorder(
 			Rect(0, 0, m_finalGlobalRect.getSize()), m_localStyle->borderThickness.get(), m_localStyle->cornerRadius.get(),
 			Color::Gray, Color::Gray, Color::Gray, Color::Gray,
-			BorderDirection::Inside);
+			BorderDirection::Inside,
+			Color::LimeGreen.withAlpha(0.3), 0, 0, ShadowDirection::Outside);
 	}
 }
 
@@ -433,7 +434,8 @@ void UIElement::setLogicalParent(UIElement* parent)
 	if (parent != nullptr)
 	{
 		// 既に親があるとき、新しい親をつけることはできない
-		LN_THROW(getLogicalParent() == nullptr, InvalidOperationException, "the child elements of already other elements.");
+		LN_REQUIRE(getLogicalParent() == nullptr, "the child elements of already other elements.");
+		return;
 	}
 
 	m_logicalParent = parent;
@@ -573,7 +575,7 @@ void UIElement::callOnGotFocus()
 {
 	LN_ASSERT(!m_hasFocus);
 	m_hasFocus = true;
-	onGotFocus(UIEventArgs::create(GotFocusEvent, this));
+	onGotFocus(UIEventArgs::create(UIEvents::GotFocusEvent, this));
 }
 
 //------------------------------------------------------------------------------
@@ -581,7 +583,7 @@ void UIElement::callOnLostFocus()
 {
 	LN_ASSERT(m_hasFocus);
 	m_hasFocus = false;
-	onLostFocus(UIEventArgs::create(LostFocusEvent, this));
+	onLostFocus(UIEventArgs::create(UIEvents::LostFocusEvent, this));
 }
 
 //------------------------------------------------------------------------------
@@ -621,7 +623,7 @@ void UIElement::applyTemplateHierarchy(UIStyleTable* styleTable, detail::UIStyle
 //------------------------------------------------------------------------------
 void UIElement::updateLocalStyleAndApplyProperties(UIStyleTable* styleTable, detail::UIStylePropertyTableInstance* parentStyleInstance)
 {
-	if (LN_CHECK_STATE(m_localStyle != nullptr)) return;
+	if (LN_REQUIRE(m_localStyle != nullptr)) return;
 
 
 	// TODO: styleTable は多分 Context のルート固定でよい。
@@ -811,15 +813,10 @@ const VAlignment* UIElement::getPriorityContentVAlignment()
 //------------------------------------------------------------------------------
 void UIElement::raiseEventInternal(UIEventArgs* e)
 {
-	if (LN_CHECK_ARG(e != nullptr)) return;
+	if (LN_REQUIRE(e != nullptr)) return;
 
 	// まずは this に通知
 	onRoutedEvent(e);
-	if (e->handled) return;
-
-	// this に addHandler されているイベントハンドラを呼び出す
-	tr::TypeInfo* thisType = tr::TypeInfo::getTypeInfo(this);
-	thisType->invokeReflectionEvent(this, e->getType(), e);
 	if (e->handled) return;
 
 	// bubble
@@ -832,8 +829,8 @@ void UIElement::raiseEventInternal(UIEventArgs* e)
 //------------------------------------------------------------------------------
 void UIElement::addVisualChild(UIElement* element)
 {
-	if (LN_CHECK_ARG(element != nullptr)) return;
-	if (LN_CHECK_ARG(element->m_visualParent == nullptr)) return;
+	if (LN_REQUIRE(element != nullptr)) return;
+	if (LN_REQUIRE(element->m_visualParent == nullptr)) return;
 
 	// リストが作成されていなければ、ここで始めて作る (省メモリ)
 	if (m_visualChildren == nullptr)

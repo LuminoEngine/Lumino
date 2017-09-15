@@ -22,7 +22,7 @@ StringWriter::~StringWriter()
 //------------------------------------------------------------------------------
 String StringWriter::toString() const
 {
-	return m_builder.toString();
+	return String(m_builder.c_str(), m_builder.getLength());
 }
 
 //------------------------------------------------------------------------------

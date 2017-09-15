@@ -110,7 +110,7 @@ Stream* FileManager::createFileStream(const PathName& filePath, bool isDeferring
 		}
 	}
 
-	LN_THROW(stream != NULL, FileNotFoundException, absPath);	// ファイルが見つからなかった
+	LN_ENSURE_FILE_NOT_FOUND(stream != NULL, absPath.c_str());	// ファイルが見つからなかった
 	return stream.detachMove();
 }
 
@@ -134,7 +134,7 @@ void FileManager::requestASyncTask(ASyncIOObject* task)
 	MutexScopedLock lock(m_asyncTaskListMutex);
 
 	// Idle 状態でなければ追加できない
-	LN_THROW(task->m_ayncIOState == ASyncIOState_Idle, InvalidOperationException);
+	if (LN_ENSURE(task->m_ayncIOState == ASyncIOState_Idle)) return;
 
 	task->m_ayncIOState = ASyncIOState_Ready;
 	task->addRef();

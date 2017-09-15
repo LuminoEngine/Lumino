@@ -54,6 +54,7 @@
     <Compile Include="Tasks\MakeVSProjects.Build.cs" />
     <Compile Include="Tasks\RubyPackage.Build.cs" />
     <Compile Include="Tasks\SetupDependencies.Build.cs" />
+    <Compile Include="Tasks\MakeXCodeProjects.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

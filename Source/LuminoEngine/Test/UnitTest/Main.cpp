@@ -15,14 +15,14 @@ void TestEnv::TearDown()
 }
 
 //------------------------------------------------------------------------------
-void TestEnv::saveScreenShot(const TCHAR* filePath)
+void TestEnv::saveScreenShot(const Char* filePath)
 {
 	EngineManager::Instance->getGraphicsManager()->getMainSwapChain()->getBackBuffer()->lock()->save(filePath);
 	EngineManager::Instance->getGraphicsManager()->getMainSwapChain()->getBackBuffer()->unlock();
 }
 
 //------------------------------------------------------------------------------
-bool TestEnv::EqualsScreenShot(const TCHAR* filePath, int passRate)
+bool TestEnv::EqualsScreenShot(const Char* filePath, int passRate)
 {
 	bool r = TestEnv::EqualsBitmapFile(EngineManager::Instance->getGraphicsManager()->getMainSwapChain()->getBackBuffer()->lock(), filePath, passRate);
 	EngineManager::Instance->getGraphicsManager()->getMainSwapChain()->getBackBuffer()->unlock();
@@ -30,7 +30,7 @@ bool TestEnv::EqualsScreenShot(const TCHAR* filePath, int passRate)
 }
 
 //------------------------------------------------------------------------------
-//bool TestEnv::equalsTexture(Texture* texture, const TCHAR* filePath)
+//bool TestEnv::equalsTexture(Texture* texture, const Char* filePath)
 //{
 //	bool r = TestEnv::EqualsBitmapFile(texture->lock(), filePath, 90);
 //	texture->unlock();
@@ -86,7 +86,7 @@ Color32 MixPixels(Bitmap* bmp, int x, int y)
 	return Color32(r / count, g / count, b / count, a / count);
 }
 
-bool TestEnv::EqualsBitmapFile(Bitmap* bmp1, const TCHAR* filePath, int passRate)
+bool TestEnv::EqualsBitmapFile(Bitmap* bmp1, const Char* filePath, int passRate)
 {
 	Bitmap bmp2(filePath);
 
@@ -120,7 +120,7 @@ bool TestEnv::EqualsBitmapFile(Bitmap* bmp1, const TCHAR* filePath, int passRate
 	return pass >= thr;
 }
 
-bool TestEnv::CheckScreenShot(const TCHAR* filePath, int passRate, bool save)
+bool TestEnv::CheckScreenShot(const Char* filePath, int passRate, bool save)
 {
 	if (save)
 	{
@@ -159,9 +159,9 @@ void EngineInitalize()
 
 
 	RawFont::registerFontFile(LN_LOCALFILE("../../../../Tools/VLGothic/VL-Gothic-Regular.ttf"));
-	RawFont::getDefaultFont()->setName(_T("VL Gothic"));
+	RawFont::getDefaultFont()->setName(_LT("VL Gothic"));
 	RawFont::getDefaultFont()->setSize(20);
-	Font::getDefault()->setFamily(_T("VL Gothic"));
+	Font::getDefault()->setFamily(_LT("VL Gothic"));
 	Font::getDefault()->setSize(20);
 
 	// 背景はグレーにしておくと加算合成のテストとか、いろいろ都合がよい
@@ -177,7 +177,7 @@ void EngineInitalize()
 		buttonNormalBrush->setWrapMode(BrushWrapMode::Stretch);
 
 		auto* res = detail::UIManager::getInstance()->getDefaultStyleTable();
-		auto* style = res->getStyle(_T("UIButton"));
+		auto* style = res->getStyle(_LT("UIButton"));
 		// base
 		{
 			auto* props = style->getPropertyTable();
@@ -198,7 +198,7 @@ GTEST_API_ int main(int argc, char **argv)
 #if 0	// 部分的にテストを実行したりする
 	char* testArgs[] = {
 		argv[0],
-		"--gtest_filter=Test_Scene_Sprite.Issues_HC1"
+		"--gtest_filter=Test_Graphics_Rendering.*"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);
@@ -208,7 +208,7 @@ GTEST_API_ int main(int argc, char **argv)
 	::testing::AddGlobalTestEnvironment(new TestEnv());
 
 	{
-		Logger::initialize(_T("test_log.txt"));
+		Logger::initialize(_LT("test_log.txt"));
 
 		int scale = 1;
 		EngineSettings::setMainWindowSize(SizeI(160 * scale, 120 * scale));

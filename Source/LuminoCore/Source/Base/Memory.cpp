@@ -4,6 +4,24 @@
 #include "../../include/Lumino/Base/Memory.h"
 using namespace ln;
 
+static ln::detail::NewCallback g_NewCallback = nullptr;
+static ln::detail::DeleteCallback g_DeleteCallback = nullptr;
+
+LN_NAMESPACE_BEGIN
+namespace detail {
+
+void setNewCallback(NewCallback callback)
+{
+	g_NewCallback = callback;
+}
+void setDeleteCallback(DeleteCallback callback)
+{
+	g_DeleteCallback = callback;
+}
+
+} // namespace detail
+LN_NAMESPACE_END
+
 //------------------------------------------------------------------------------
 void* LN_CDECL operator new ( size_t size, MemoryFlag flag )
 {
@@ -11,13 +29,12 @@ void* LN_CDECL operator new ( size_t size, MemoryFlag flag )
 	try
 	{
 		ptr = ::operator new(size);
+		if (g_NewCallback) g_NewCallback(ptr, size);
 	}
 	catch (std::bad_alloc)
 	{
 	}
-	if (ptr == NULL) {
-		LN_THROW(0, OutOfMemoryException);
-	}
+	LN_FATAL(!ptr);
 	return ptr;
 }
 
@@ -28,25 +45,26 @@ void* LN_CDECL operator new[] ( size_t size, MemoryFlag flag )
 	try
 	{
 		ptr = ::operator new[](size);
+		if (g_NewCallback) g_NewCallback(ptr, size);
 	}
 	catch (std::bad_alloc)
 	{
 	}
-	if (ptr == NULL) {
-		LN_THROW(0, OutOfMemoryException);
-	}
+	LN_FATAL(!ptr);
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
 void  LN_CDECL operator delete ( void* ptr, MemoryFlag flag )
 {
-	return ::operator delete(ptr);
+	::operator delete(ptr);
+	if (g_DeleteCallback) g_DeleteCallback(ptr);
 }
 
 //------------------------------------------------------------------------------
 void  LN_CDECL operator delete[] ( void* ptr, MemoryFlag flag )
 {
-	return ::operator delete[](ptr);
+	::operator delete[](ptr);
+	if (g_DeleteCallback) g_DeleteCallback(ptr);
 }
 

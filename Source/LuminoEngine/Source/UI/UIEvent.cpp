@@ -39,12 +39,14 @@ static int g_eventInfoList = 0;
 UIEventType UIEventManager::RegisterEvent()
 {
 	g_eventInfoList++;
-	return reinterpret_cast<UIEventType>(g_eventInfoList);
+	return g_eventInfoList;
 }
 
 //==============================================================================
 // UIEvents
 //==============================================================================
+UIEventType	UIEvents::GotFocusEvent = 0;
+UIEventType	UIEvents::LostFocusEvent = 0;
 UIEventType	UIEvents::MouseMoveEvent = 0;
 UIEventType	UIEvents::MouseDownEvent = 0;
 UIEventType	UIEvents::MouseUpEvent = 0;
@@ -56,6 +58,10 @@ UIEventType	UIEvents::KeyUpEvent = 0;
 UIEventType	UIEvents::TextInputEvent = 0;
 UIEventType	UIEvents::CheckedEvent = 0;
 UIEventType	UIEvents::UncheckedEvent = 0;
-
+UIEventType	UIEvents::DragStartedEvent = 0;
+UIEventType	UIEvents::DragDeltaEvent = 0;
+UIEventType	UIEvents::DragCompletedEvent = 0;
+UIEventType	UIEvents::DragCanceledEvent = 0;
+UIEventType	UIEvents::ScrollEvent = 0;
 
 LN_NAMESPACE_END

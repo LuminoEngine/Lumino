@@ -1,7 +1,6 @@
 cmake_minimum_required (VERSION 3.0.0)
 project (LuminoExperimental)
 
-include(${PROJECT_SOURCE_DIR}/../LuminoCore/CMake/LNCommon.cmake NO_POLICY_SCOPE)
 
 #------------------------------------------------------------------------------
 # Files
@@ -45,16 +44,6 @@ set(LN_SOURCES
 # Apply options
 #------------------------------------------------------------------------------
 if (WIN32)
-	if (LN_MSVC_STATIC_RUNTIME)
-		foreach (flag CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE)
-			if (${flag} MATCHES "/MD")
-				string(REGEX REPLACE "/MD" "/MT" ${flag} "${${flag}}")
-			endif()
-			if (${flag} MATCHES "/MDd")
-				string(REGEX REPLACE "/MDd" "/MTd" ${flag} "${${flag}}")
-			endif()
-		endforeach()
-	endif()
 
 	add_definitions("/EHsc")	# for VS2015 error
 
@@ -78,6 +67,5 @@ include_directories(${LN_INCLUDE_DIRECTORIES} ${LN_PLATFORM_INCLUDE_DIRS})
 add_library(LuminoExperimental STATIC ${LN_SOURCES})
 ln_add_common_property(LuminoExperimental)
 target_include_directories(LuminoExperimental PUBLIC ${LN_DEPENDENCIES_INCLUDES})
-#target_link_libraries(LuminoExperimental Fluorite ${LN_LINK_LIBS} ${LN_DEPENDENCIES_LIBRARIES})
-ln_add_pch(LuminoExperimental "LuminoExperimental.PCH.h" "Source/LuminoExperimental.PCH.cpp")
+ln_add_pch(LuminoExperimental "Source/LuminoExperimental.PCH.h" "Source/LuminoExperimental.PCH.cpp")
 

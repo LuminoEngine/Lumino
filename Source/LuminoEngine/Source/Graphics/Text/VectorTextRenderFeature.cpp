@@ -48,8 +48,8 @@ void VectorTextRendererCore::initialize(GraphicsManager* manager)
 	auto* device = m_manager->getGraphicsDevice();
 	m_renderer = device->getRenderer();
 
-	m_vertexCache.reserve(4096);
-	m_indexCache.reserve(4096);
+	m_vertexCache.clearAndReserve(4096);
+	m_indexCache.clearAndReserve(4096);
 }
 
 //------------------------------------------------------------------------------
@@ -353,7 +353,7 @@ void TextRenderer::DrawLineHorizontal(const UTF32* text, int length, const RectI
 	else if (m_textAlignment == TextAlignment_Justify)
 	{
 		// 両端揃え
-		LN_THROW(0, NotImplementedException);
+		LN_NOTIMPLEMENTED();
 	}
 
 	// 描画ループ

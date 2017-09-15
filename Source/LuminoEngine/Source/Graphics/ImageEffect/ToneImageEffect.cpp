@@ -51,8 +51,8 @@ void ToneImageEffect::initialize(detail::GraphicsManager* manager)
 
 	//m_shader.shader = LN_NEW Shader();
 	//m_shader.shader->initialize(m_manager, g_ToneImageEffect_fx_Data, g_ToneImageEffect_fx_Len);
-	//m_shader.varTone = m_shader.shader->findVariable(_T("Tone"));
-	//m_shader.varScreenTexture = m_shader.shader->findVariable(_T("ScreenTexture"));
+	//m_shader.varTone = m_shader.shader->findVariable(_LT("Tone"));
+	//m_shader.varScreenTexture = m_shader.shader->findVariable(_LT("ScreenTexture"));
 
 
 	//printf("%p %p\n", m_material.Get(), m_material->getShader());
@@ -79,7 +79,7 @@ void ToneImageEffect::onRender(DrawList* context, RenderTargetTexture* source, R
 	//if (Tone != Vector4::Zero)
 	{
 		//printf("ToneImageEffect::onRender %p > %p\n", source, destination);
-		m_material->setVectorParameter(_T("_Tone"), m_tone);
+		m_material->setVectorParameter(_LT("_Tone"), m_tone);
 		context->blit(source, destination, m_material);
 
 		//m_shader.varTone->setVector(Tone.Get());

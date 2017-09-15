@@ -85,7 +85,7 @@ void FontGlyphTextureCache::lookupGlyphInfo(UTF32 ch, CacheGlyphInfo* outInfo, b
 	{
 		if (m_indexStack.getCount() == 0) {
 			// TODO: 古いキャッシュ破棄
-			LN_THROW(0, NotImplementedException);
+			LN_NOTIMPLEMENTED();
 		}
 
 		// ビットマップを新しく作ってキャッシュに登録したい
@@ -252,7 +252,7 @@ void FontGlyphTextureCache::LookupGlyph(UTF32 ch, int strokeThickness, Texture**
 	{
 		if (m_indexStack.GetCount() == 0) {
 			// TODO: 古いキャッシュ破棄
-			LN_THROW(0, NotImplementedException);
+			LN_NOTIMPLEMENTED();
 		}
 
 		// 新しく作ってキャッシュに登録
@@ -608,7 +608,7 @@ void TextRendererImplemented::DrawChar(UTF32 ch, const Rect& area)
 	{
 		if (m_indexStack.GetCount() == 0) {
 			// TODO: 古いキャッシュ破棄
-			LN_THROW(0, NotImplementedException);
+			LN_NOTIMPLEMENTED();
 		}
 
 		// 新しく作ってキャッシュに登録
@@ -794,7 +794,7 @@ void TextRenderer::DrawChar(UTF32 ch)
 	{
 		if (m_indexStack.GetCount() == 0) {
 			// TODO: 古いキャッシュ破棄
-			LN_THROW(0, NotImplementedException);
+			LN_NOTIMPLEMENTED();
 		}
 
 		// 新しく作ってキャッシュに登録

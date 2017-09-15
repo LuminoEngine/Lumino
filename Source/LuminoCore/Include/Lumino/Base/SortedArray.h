@@ -46,7 +46,7 @@ public:
 	*/
 	void add(const TKey& key, const TValue& value)
 	{
-		LN_THROW(!ContainsKey(key), ArgumentException);
+		if (LN_REQUIRE(!ContainsKey(key))) return;
 		struct Cmp
 		{
 			static bool CmpEventListener(const Pair& left, const Pair& right)

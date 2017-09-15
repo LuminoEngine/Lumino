@@ -11,14 +11,14 @@ namespace tr {
 //==============================================================================
 // XmlWriter
 //==============================================================================
-const TCHAR* XmlWriter::DefaultIndentString = _T("  ");
+const Char* XmlWriter::DefaultIndentString = _TT("  ");
 
 //------------------------------------------------------------------------------
 XmlWriter::XmlWriter(TextWriter* textWriter)
 	: m_textWriter()
 	, m_state(State_Start)
 	, m_indentString(DefaultIndentString)
-	, m_quoteChar(_T('"'))
+	, m_quoteChar(_LT('"'))
 {
 	initialize(textWriter);
 }
@@ -38,14 +38,14 @@ void XmlWriter::initialize(TextWriter* textWriter)
 //------------------------------------------------------------------------------
 void XmlWriter::writeStartDocument()
 {
-	if (LN_CHECK_STATE(m_state == State_Start)) return;
+	if (LN_REQUIRE(m_state == State_Start)) return;
 
-	m_textWriter->write(_T("<?xml "));
-	m_textWriter->write(_T("version=\"1.0\""));
-	m_textWriter->write(_T(" encoding=\""));
+	m_textWriter->write(_TT("<?xml "));
+	m_textWriter->write(_TT("version=\"1.0\""));
+	m_textWriter->write(_TT(" encoding=\""));
 	m_textWriter->write(m_textWriter->getEncoding()->getName());
-	m_textWriter->write(_T("\""));
-	m_textWriter->write(_T("?>"));
+	m_textWriter->write(_TT("\""));
+	m_textWriter->write(_TT("?>"));
 	m_state = State_Prolog;
 }
 
@@ -59,7 +59,7 @@ void XmlWriter::writeEndDocument()
 void XmlWriter::writeStartElement(const String& name)
 {
 	preWrite(XmlNodeType::Element);
-	m_textWriter->write(_T('<'));
+	m_textWriter->write(_LT('<'));
 	m_textWriter->write(name);
 
 	ElementInfo info;
@@ -72,18 +72,18 @@ void XmlWriter::writeStartElement(const String& name)
 //------------------------------------------------------------------------------
 void XmlWriter::writeEndElement()
 {
-	if (LN_CHECK_STATE(!m_elementStack.isEmpty())) return;
-	if (LN_CHECK_STATE(m_state == State_Prolog || m_state == State_StartElement || m_state == State_Attribute || m_state == State_Text)) return;
+	if (LN_REQUIRE(!m_elementStack.isEmpty())) return;
+	if (LN_REQUIRE(m_state == State_Prolog || m_state == State_StartElement || m_state == State_Attribute || m_state == State_Text)) return;
 
 	preWrite(XmlNodeType::EndElement);
 	if (m_state == State_StartElement || m_state == State_Attribute) {
-		//m_textWriter->Write(_T(" />"));
+		//m_textWriter->Write(_LT(" />"));
 	}
 	else
 	{
-		m_textWriter->write(_T("</"));
+		m_textWriter->write(_LT("</"));
 		m_textWriter->write(m_elementStack.getTop().Name);
-		m_textWriter->write(_T('>'));
+		m_textWriter->write(_LT('>'));
 	}
 
 	m_elementStack.pop();
@@ -109,27 +109,33 @@ void XmlWriter::writeString(const String& text)
 //------------------------------------------------------------------------------
 void XmlWriter::writeComment(const String& text)
 {
-	if (text.indexOf(_T("--")) >= 0 ||
-		(!text.isEmpty() && text[text.getLength() - 1] == '-')){
-		LN_THROW(0, ArgumentException, _T("Invalidate Comment chars."))
+	if (text.indexOf(_TT("--")) >= 0 ||
+		(!text.isEmpty() && text[text.getLength() - 1] == '-'))
+	{
+		LN_REQUIRE(0, _TT("Invalidate Comment chars."));
+		return;
 	}
 
 	preWrite(XmlNodeType::Comment);
-	m_textWriter->write(_T("<!--"), 4);
+	m_textWriter->write(_TT("<!--"), 4);
 	m_textWriter->write(text);
-	m_textWriter->write(_T("-->"), 3);
+	m_textWriter->write(_TT("-->"), 3);
 	m_state = State_Prolog;
 }
 
 //------------------------------------------------------------------------------
 void XmlWriter::writeCData(const String& text)
 {
-	if (text.indexOf(_T("]]>")) >= 0) { LN_THROW(0, ArgumentException, _T("Invalidate CDATA chars.")) }
+	if (text.indexOf(_TT("]]>")) >= 0)
+	{
+		LN_REQUIRE(0, _TT("Invalidate CDATA chars."));
+		return;
+	}
 
 	preWrite(XmlNodeType::CDATA);
-	m_textWriter->write(_T("<![CDATA["), 9);
+	m_textWriter->write(_TT("<![CDATA["), 9);
 	m_textWriter->write(text);
-	m_textWriter->write(_T("]]>"), 3);
+	m_textWriter->write(_TT("]]>"), 3);
 	m_state = State_Prolog;
 }
 
@@ -144,30 +150,30 @@ void XmlWriter::writeElementString(const String& elementName, const String& text
 //------------------------------------------------------------------------------
 void XmlWriter::writeStartAttribute(const String& name)
 {
-	if (LN_CHECK_STATE(m_state == State_StartElement || m_state == State_Attribute)) return;
+	if (LN_REQUIRE(m_state == State_StartElement || m_state == State_Attribute)) return;
 
-	m_textWriter->write(_T(' '));
+	m_textWriter->write(_TT(' '));
 	m_textWriter->write(name);
-	m_textWriter->write(_T("=\""));
+	m_textWriter->write(_TT("=\""));
 	m_state = State_Attribute;
 }
 
 //------------------------------------------------------------------------------
 void XmlWriter::writeEndAttribute()
 {
-	m_textWriter->write(_T("\""));
+	m_textWriter->write(_TT("\""));
 	m_state = State_StartElement;
 }
 
 //------------------------------------------------------------------------------
-void XmlWriter::writeStringInternal(const TCHAR* str, int len, bool inAttribute)
+void XmlWriter::writeStringInternal(const Char* str, int len, bool inAttribute)
 {
 	if (str == NULL || len == 0) { return; }
 
 	Encoding* enc = Encoding::getTCharEncoding();
-	const TCHAR* begin = str;
-	const TCHAR* end = begin + len;
-	const TCHAR* pos = begin;
+	const Char* begin = str;
+	const Char* end = begin + len;
+	const Char* pos = begin;
 	while (pos < end)
 	{
 		int extra = enc->getLeadExtraLength(pos, end - pos);
@@ -178,7 +184,7 @@ void XmlWriter::writeStringInternal(const TCHAR* str, int len, bool inAttribute)
 		}
 		else
 		{
-			TCHAR ch = *pos;
+			Char ch = *pos;
 			switch (ch)
 			{
 			case (char)0xA:
@@ -188,7 +194,7 @@ void XmlWriter::writeStringInternal(const TCHAR* str, int len, bool inAttribute)
 
 				if (inAttribute) {
 					// 3.3.3 属性値正規化
-					m_textWriter->write(_T(' '));
+					m_textWriter->write(_LT(' '));
 				}
 				else {
 					m_textWriter->write(ch);
@@ -197,23 +203,23 @@ void XmlWriter::writeStringInternal(const TCHAR* str, int len, bool inAttribute)
 			case '<':
 				m_textWriter->write(begin, pos - begin);	// pos の前までを出力
 				begin = pos + 1;
-				m_textWriter->write(_T("&lt;"), 4);
+				m_textWriter->write(_LT("&lt;"), 4);
 				break;
 			case '>':
 				m_textWriter->write(begin, pos - begin);	// pos の前までを出力
 				begin = pos + 1;
-				m_textWriter->write(_T("&gt;"), 4);
+				m_textWriter->write(_LT("&gt;"), 4);
 				break;
 			case '&':
 				m_textWriter->write(begin, pos - begin);	// pos の前までを出力
 				begin = pos + 1;
-				m_textWriter->write(_T("&amp;"), 5);
+				m_textWriter->write(_LT("&amp;"), 5);
 				break;
 			case '\'':
 				m_textWriter->write(begin, pos - begin);	// pos の前までを出力
 				begin = pos + 1;
 				if (inAttribute && m_quoteChar == ch) {
-					m_textWriter->write(_T("&apos;"), 6);
+					m_textWriter->write(_LT("&apos;"), 6);
 				}
 				else {
 					m_textWriter->write('\'');
@@ -223,7 +229,7 @@ void XmlWriter::writeStringInternal(const TCHAR* str, int len, bool inAttribute)
 				m_textWriter->write(begin, pos - begin);	// pos の前までを出力
 				begin = pos + 1;
 				if (inAttribute && m_quoteChar == ch) {
-					m_textWriter->write(_T("&quot;"), 6);
+					m_textWriter->write(_LT("&quot;"), 6);
 				}
 				else {
 					m_textWriter->write('"');
@@ -295,10 +301,10 @@ void XmlWriter::preWrite(XmlNodeType type)
 void XmlWriter::writeStartTagEnd(bool empty)
 {
 	if (empty) {
-		m_textWriter->write(_T(" />"));
+		m_textWriter->write(_TT(" />"));
 	}
 	else {
-		m_textWriter->write(_T(">"));
+		m_textWriter->write(_TT(">"));
 	}
 }
 

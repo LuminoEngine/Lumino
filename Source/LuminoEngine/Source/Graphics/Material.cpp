@@ -37,12 +37,12 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Material, Object);
 //LN_TR_PROPERTY_IMPLEMENT(Material, bool, depthTestEnabled, tr::PropertyMetadata(Material::onRenderStateChanged));
 //LN_TR_PROPERTY_IMPLEMENT(Material, bool, depthWriteEnabled, tr::PropertyMetadata(Material::onRenderStateChanged));
 
-const String Material::DiffuseParameter(_T("Diffuse"));
-const String Material::AmbientParameter(_T("Ambient"));
-const String Material::SpecularParameter(_T("Specular"));
-const String Material::EmissiveParameter(_T("Emissive"));
-const String Material::PowerParameter(_T("Power"));
-const String Material::MaterialTextureParameter(_T("MaterialTexture"));
+const String Material::DiffuseParameter(_LT("Diffuse"));
+const String Material::AmbientParameter(_LT("Ambient"));
+const String Material::SpecularParameter(_LT("Specular"));
+const String Material::EmissiveParameter(_LT("Emissive"));
+const String Material::PowerParameter(_LT("Power"));
+const String Material::MaterialTextureParameter(_LT("MaterialTexture"));
 
 const Color Material::DefaultDiffuse(1.0f, 1.0f, 1.0f, 1.0f);
 const Color Material::DefaultAmbient(0.0f, 0.0f, 0.0f, 0.0f);
@@ -337,16 +337,16 @@ void Material::onRenderStateChanged(Object* obj)
 static const Color DefaultColorScale(1, 1, 1, 1);
 static const Color DefaultBlendColor(0, 0, 0, 0);
 static const ToneF DefaultTone(0, 0, 0, 0);
-static const uint32_t MaterialTextureHash = Hash::calcHash(_T("MaterialTexture"));
-static const uint32_t OpacityHash = Hash::calcHash(_T("Opacity"));
-static const uint32_t ColorScaleHash = Hash::calcHash(_T("ColorScale"));
-static const uint32_t BlendColorHash = Hash::calcHash(_T("BlendColor"));
-static const uint32_t ToneHash = Hash::calcHash(_T("Tone"));
-static const uint32_t DiffuseHash = Hash::calcHash(_T("Diffuse"));
-static const uint32_t AmbientHash = Hash::calcHash(_T("Ambient"));
-static const uint32_t SpecularHash = Hash::calcHash(_T("Specular"));
-static const uint32_t EmissiveHash = Hash::calcHash(_T("Emissive"));
-static const uint32_t PowerHash = Hash::calcHash(_T("Power"));
+static const uint32_t MaterialTextureHash = Hash::calcHash(_LT("MaterialTexture"));
+static const uint32_t OpacityHash = Hash::calcHash(_LT("Opacity"));
+static const uint32_t ColorScaleHash = Hash::calcHash(_LT("ColorScale"));
+static const uint32_t BlendColorHash = Hash::calcHash(_LT("BlendColor"));
+static const uint32_t ToneHash = Hash::calcHash(_LT("Tone"));
+static const uint32_t DiffuseHash = Hash::calcHash(_LT("Diffuse"));
+static const uint32_t AmbientHash = Hash::calcHash(_LT("Ambient"));
+static const uint32_t SpecularHash = Hash::calcHash(_LT("Specular"));
+static const uint32_t EmissiveHash = Hash::calcHash(_LT("Emissive"));
+static const uint32_t PowerHash = Hash::calcHash(_LT("Power"));
 
 void Material::setMaterialTexture(Texture* v)
 {

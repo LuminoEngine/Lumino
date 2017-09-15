@@ -91,7 +91,7 @@ int APIENTRY WinMain(
 
 		for (int i = 0; i < nArgs; i++)
 		{
-			ln::CommandLine::args.add(ln::String::fromNativeCharString(lplpszArgs[i]));
+			ln::CommandLine::args.add(ln::String::fromCString(lplpszArgs[i]));
 		}
 
 		::LocalFree(lplpszArgs);
@@ -110,7 +110,7 @@ int main(int argc_, char* argv_[])
 {
 	for (int i = 0; i < argc_; i++)
 	{
-		ln::CommandLine::args.add(ln::String::fromNativeCharString(argv_[i]));
+		ln::CommandLine::args.add(ln::String::fromCString(argv_[i]));
 	}
 
 	return ln::EntryPoint();

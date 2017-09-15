@@ -52,7 +52,7 @@ Mp3Decoder::~Mp3Decoder()
 //------------------------------------------------------------------------------
 void Mp3Decoder::create(Stream* stream)
 {
-	LN_THROW(stream != NULL, ArgumentException);
+	if (LN_REQUIRE(stream != NULL)) return;
 	m_stream = stream;
 	m_stream->addRef();
 
@@ -72,12 +72,12 @@ void Mp3Decoder::create(Stream* stream)
 	WAVEFORMATEX wav_fmt_ex;
 	wav_fmt_ex.wFormatTag = WAVE_FORMAT_PCM;
 	MMRESULT mmr = acmFormatSuggest(NULL, &mp3_format->wfx, &wav_fmt_ex, sizeof(WAVEFORMATEX), ACM_FORMATSUGGESTF_WFORMATTAG);
-	LN_THROW(mmr == 0, InvalidOperationException, _T("MMRESULT:%u"), mmr);
+	if (LN_ENSURE(mmr == 0, _T("MMRESULT:%u"), mmr)) return;
 
 	// ACM 変換ストリームを開く ( mp3 → wave )
 	//HACMSTREAM* acm = mACMStreamHandle;//(HACMSTREAM*)&mACMStreamHandle;
 	mmr = acmStreamOpen(&m_hACMStream, NULL, &mp3_format->wfx, &wav_fmt_ex, NULL, 0, 0, 0);
-	LN_THROW(mmr == 0, InvalidOperationException, _T("MMRESULT:%u"), mmr);
+	if (LN_ENSURE(mmr == 0, _T("MMRESULT:%u"), mmr)) return;
 
 	// WAVEFORMATEX → Audio::WaveFormat
 	AudioUtils::convertWAVEFORMATEXToLNWaveFormat(wav_fmt_ex, &m_waveFormat);
@@ -85,13 +85,13 @@ void Mp3Decoder::create(Stream* stream)
 	// 全体を変換した時の PCM サイズを m_onmemoryPCMBufferSize に格納
     DWORD pcm_size = 0;
 	mmr = acmStreamSize(m_hACMStream, m_sourceDataSize, &pcm_size, ACM_STREAMSIZEF_SOURCE);
-	LN_THROW(mmr == 0, InvalidOperationException, _T("MMRESULT:%u"), mmr);
+	if (LN_ENSURE(mmr == 0, _T("MMRESULT:%u"), mmr)) return;
     m_onmemoryPCMBufferSize = pcm_size;
 
 	// 1 秒分の mp3 データを変換した時の、最適な転送先 PCM バッファサイズを取得する
 	DWORD wave_buffer_size;
 	mmr = acmStreamSize(m_hACMStream, mp3_format->wfx.nAvgBytesPerSec, &wave_buffer_size, ACM_STREAMSIZEF_SOURCE);
-	LN_THROW(mmr == 0, InvalidOperationException, _T("MMRESULT:%u"), mmr);
+	if (LN_ENSURE(mmr == 0, _T("MMRESULT:%u"), mmr)) return;
 	m_streamingPCMBufferSize = wave_buffer_size;
 
 	//HACMSTREAM acm2;
@@ -138,7 +138,7 @@ void Mp3Decoder::fillOnmemoryBuffer()
 		// 全体を変換した時の PCM サイズを mPCMSize に格納
 		DWORD pcm_size = 0;
 		mmr = acmStreamSize(m_hACMStream, m_sourceDataSize, &pcm_size, ACM_STREAMSIZEF_SOURCE);
-		LN_THROW(mmr == 0, InvalidOperationException, _T("MMRESULT:%u"), mmr);
+		if (LN_ENSURE(mmr == 0, _T("MMRESULT:%u"), mmr)) return;
 		m_onmemoryPCMBufferSize = pcm_size;
 
 		// 取得したサイズでバッファ確保
@@ -155,11 +155,11 @@ void Mp3Decoder::fillOnmemoryBuffer()
 
 		// コンバート実行
 		mmr = acmStreamPrepareHeader(m_hACMStream, &ash, 0);
-		LN_THROW(mmr == 0, InvalidOperationException, _T("MMRESULT:%u"), mmr);
+		if (LN_ENSURE(mmr == 0, _T("MMRESULT:%u"), mmr)) return;
 		mmr = acmStreamConvert(m_hACMStream, &ash, 0);
-		LN_THROW(mmr == 0, InvalidOperationException, _T("MMRESULT:%u"), mmr);
+		if (LN_ENSURE(mmr == 0, _T("MMRESULT:%u"), mmr)) return;
 		mmr = acmStreamUnprepareHeader(m_hACMStream, &ash, 0);
-		LN_THROW(mmr == 0, InvalidOperationException, _T("MMRESULT:%u"), mmr);
+		if (LN_ENSURE(mmr == 0, _T("MMRESULT:%u"), mmr)) return;
 
 		// 実際に PCM バッファに書き込んだデータサイズを記憶する
 		m_onmemoryPCMBufferSize = ash.cbDstLengthUsed;
@@ -171,7 +171,7 @@ void Mp3Decoder::fillOnmemoryBuffer()
 //------------------------------------------------------------------------------
 void Mp3Decoder::read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uint32_t* out_read_size, uint32_t* out_write_size)
 {
-	LN_THROW(m_stream != NULL, InvalidOperationException);	// オンメモリ再生とストリーミング再生で同じ AudioStream を共有したときにぶつかる
+	if (LN_REQUIRE(m_stream != NULL)) return;	// オンメモリ再生とストリーミング再生で同じ AudioStream を共有したときにぶつかる
 	MutexScopedLock lock(m_mutex);
 
 	//if (m_onmemoryPCMBuffer)
@@ -208,14 +208,14 @@ void Mp3Decoder::read(uint32_t seekPos, void* buffer, uint32_t buffer_size, uint
 
 		// コンバート実行
 		MMRESULT mmr = acmStreamPrepareHeader(m_hACMStream, &ash, 0);
-		LN_THROW(mmr == 0, InvalidOperationException, _T("MMRESULT:%u"), mmr);
+		if (LN_ENSURE(mmr == 0, _T("MMRESULT:%u"), mmr)) return;
 
 		DWORD acm_flag = (m_resetFlag == true) ? ACM_STREAMCONVERTF_START : ACM_STREAMCONVERTF_BLOCKALIGN;
 		mmr = acmStreamConvert(m_hACMStream, &ash, acm_flag);
-		LN_THROW(mmr == 0, InvalidOperationException, _T("MMRESULT:%u"), mmr);
+		if (LN_ENSURE(mmr == 0, _T("MMRESULT:%u"), mmr)) return;
 
 		mmr = acmStreamUnprepareHeader(m_hACMStream, &ash, 0);
-		LN_THROW(mmr == 0, InvalidOperationException, _T("MMRESULT:%u"), mmr);
+		if (LN_ENSURE(mmr == 0, _T("MMRESULT:%u"), mmr)) return;
 
 		// コンバートした結果、実際に使った領域を返す
 		*out_read_size = ash.cbSrcLengthUsed;

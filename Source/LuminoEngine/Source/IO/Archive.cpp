@@ -1,7 +1,7 @@
 ﻿/*	
 	[2015/4/13] ファイル名マップのキーは UTF-16 統一？環境に合わせる？その②
 		
-		TCHAR に合わせる。
+		Char に合わせる。
 		というのも、一部 (ほぼ全て？Ubuntuとか) の Unix 環境では、wchar_t が使いものにならないため。
 
 
@@ -95,8 +95,8 @@ void Archive::open(const PathName& filePath, const String& key)
     }
 
 	// アーカイブファイルを開く
-	errno_t err = _tfopen_s(&m_stream, filePath, _T("rb"));
-	LN_THROW(err == 0, FileNotFoundException);
+	errno_t err = _tfopen_s(&m_stream, filePath.c_str(), _T("rb"));
+	if (LN_ENSURE_FILE_NOT_FOUND(err == 0)) return;
 
     // 終端から16バイト戻ってからそれを読むとファイル数
 	fseek(m_stream, -16, SEEK_END);
@@ -112,15 +112,20 @@ void Archive::open(const PathName& filePath, const String& key)
 	{
 		fclose( m_stream );
 		m_stream = NULL;
-		LN_THROW(0, InvalidFormatException);
+		LN_ENSURE_INVALID_FORMAT(0);
+		return;
 	}
 
 	// 内部キーのチェック (ユーザーキーは本当に正しいか？)
 	byte_t internalKey[16];
 	readPadding16(internalKey, 16);
-	if (memcmp(internalKey, Archive::InternalKey, 16) != 0) {
-		LN_THROW(0, InvalidFormatException, "invalid archive key.");
+	if (memcmp(internalKey, Archive::InternalKey, 16) != 0)
+	{
+		LN_ENSURE_INVALID_FORMAT(0, "invalid archive key.");
+		return;
 	}
+
+	// TODO: UTF16ではなく String の内部エンコーディングに合わせる
 
 	// ファイル情報を取得していく
 	uint32_t name_len;
@@ -133,8 +138,7 @@ void Archive::open(const PathName& filePath, const String& key)
 		// ファイル名を読み込むバッファを確保して読み込む
 		ByteBuffer nameBuf(name_len * sizeof(UTF16));
 		readPadding16(nameBuf.getData(), name_len * sizeof(UTF16));
-		String tmpName;
-		tmpName.convertFrom(nameBuf.getData(), nameBuf.getSize(), Encoding::getUTF16Encoding());
+		String tmpName = Encoding::fromBytes(nameBuf.getData(), nameBuf.getSize(), Encoding::getUTF16Encoding());
 		PathName name(m_virtualDirectoryPath, tmpName);	// 絶対パスにする
 		name = name.canonicalizePath();
 			
@@ -165,7 +169,7 @@ bool Archive::existsFile(const PathName& fileFullPath)
 	if (StringUtils::Compare(fileFullPath.c_str(), m_virtualDirectoryPath.GetCStr(), m_virtualDirectoryPath.getString().getLength(), cs) == 0)
 	{
 		// internalPath は m_virtualDirectoryPath の後ろの部分の開始位置
-		const TCHAR* internalPath = fileFullPath.c_str() + m_virtualDirectoryPath.getString().getLength();
+		const Char* internalPath = fileFullPath.c_str() + m_virtualDirectoryPath.getString().getLength();
 		if (*internalPath != _T('\0'))
 		{
 			// 検索
@@ -199,7 +203,7 @@ bool Archive::tryCreateStream(const PathName& fileFullPath, Ref<Stream>* outStre
 	}
 
 	// internalPath は m_virtualDirectoryPath の後ろの部分の開始位置
-	const TCHAR* internalPath = fileFullPath.c_str() + m_virtualDirectoryPath.getString().getLength();
+	const Char* internalPath = fileFullPath.c_str() + m_virtualDirectoryPath.getString().getLength();
 	LN_THROW((*internalPath != _T('\0')), FileNotFoundException, fileFullPath);	// ファイル名が空だった
 
 	EntriesMap::iterator itr = m_entriesMap.find(internalPath);
@@ -389,7 +393,7 @@ size_t ArchiveStream::read(void* buffer, size_t byteCount)
 //------------------------------------------------------------------------------
 void ArchiveStream::seek(int64_t offset, SeekOrigin origin)
 {
-	m_seekPoint = FileSystem::calcSeekPoint(m_seekPoint, m_dataSize, offset, origin);
+	m_seekPoint = detail::FileSystemInternal::calcSeekPoint(m_seekPoint, m_dataSize, offset, origin);
 }
 
 //==============================================================================
@@ -411,7 +415,7 @@ bool DummyArchive::tryCreateStream(const PathName& fileFullPath, Ref<Stream>* ou
 
 	FileOpenMode mode = FileOpenMode::read;
 	if (isDeferring) { mode |= FileOpenMode::Deferring; }
-	Ref<FileStream> file = FileStream::create(fileFullPath, mode);
+	Ref<FileStream> file = FileStream::create(fileFullPath.c_str(), mode);
 	*outStream = file;
 	return true;
 }
@@ -468,7 +472,7 @@ bool DirectoryAssetsStorage::tryCreateStream(const PathName& fileFullPath, Ref<S
 		mode |= FileOpenMode::Deferring;
 	}
 
-	Ref<FileStream> file = FileStream::create(fileFullPath, mode);
+	Ref<FileStream> file = FileStream::create(fileFullPath.c_str(), mode);
 	*outStream = file;
 	return true;
 }
@@ -501,7 +505,7 @@ void ArchiveManager::initialize(FileAccessPriority accessPriority)
 	if (!installDir.isEmpty())
 	{
 		PathName dir = installDir;
-		dir.append(LN_COMPILER_KEYWORD);
+		dir.append(_T(LN_COMPILER_KEYWORD));
 		dir.append(_T("Assets"));
 		m_installDirAssetsStorage = Ref<DirectoryAssetsStorage>::makeRef(dir);
 	}

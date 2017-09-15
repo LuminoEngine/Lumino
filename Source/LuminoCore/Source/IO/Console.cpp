@@ -4,6 +4,24 @@
 
 LN_NAMESPACE_BEGIN
 
+#ifdef LN_USTRING
+
+//==============================================================================
+// Console
+//==============================================================================
+void Console::writeLine()
+{
+	fwprintf(stdout, L"\n");
+}
+
+void Console::writeLine(const String& str)
+{
+	fwprintf(stdout, L"%s", str.c_str());
+}
+
+#else
+
+
 //==============================================================================
 // Console
 //==============================================================================
@@ -110,29 +128,31 @@ void Console::writeLineError()
 //------------------------------------------------------------------------------
 void Console::writeInternal(const char* str)
 {
-	if (LN_CHECK_ARG(str != nullptr)) return;
+	if (LN_REQUIRE(str != nullptr)) return;
 	fprintf(stdout, "%s", str);
 }
 
 //------------------------------------------------------------------------------
 void Console::writeInternal(const wchar_t* str)
 {
-	if (LN_CHECK_ARG(str != nullptr)) return;
+	if (LN_REQUIRE(str != nullptr)) return;
 	fwprintf(stdout, L"%s", str);
 }
 
 //------------------------------------------------------------------------------
 void Console::writeInternalError(const char* str)
 {
-	if (LN_CHECK_ARG(str != nullptr)) return;
+	if (LN_REQUIRE(str != nullptr)) return;
 	fprintf(stderr, "%s", str);
 }
 
 //------------------------------------------------------------------------------
 void Console::writeInternalError(const wchar_t* str)
 {
-	if (LN_CHECK_ARG(str != nullptr)) return;
+	if (LN_REQUIRE(str != nullptr)) return;
 	fwprintf(stderr, L"%s", str);
 }
+
+#endif
 
 LN_NAMESPACE_END

@@ -89,37 +89,37 @@ static Mutex	g_mutex;
 void Profiler2::initializeGlobalSections()
 {
 	{
-		auto key = std::make_shared<ProfilingKey>(_T("Engine"));
+		auto key = std::make_shared<ProfilingKey>(_LT("Engine"));
 		g_globalKeys.push_back(key);
 		ProfilingKeys::Engine = key.get();
 		registerProfilingSection(key.get());
 	}
 	{
-		auto key = std::make_shared<ProfilingKey>(ProfilingKeys::Engine, _T("Engine_UpdateFrame"));
+		auto key = std::make_shared<ProfilingKey>(ProfilingKeys::Engine, _LT("Engine_UpdateFrame"));
 		g_globalKeys.push_back(key);
 		ProfilingKeys::Engine_UpdateFrame = key.get();
 		registerProfilingSection(key.get());
 	}
 	{
-		auto key = std::make_shared<ProfilingKey>(ProfilingKeys::Engine, _T("Engine_RenderFrame"));
+		auto key = std::make_shared<ProfilingKey>(ProfilingKeys::Engine, _LT("Engine_RenderFrame"));
 		g_globalKeys.push_back(key);
 		ProfilingKeys::Engine_RenderFrame = key.get();
 		registerProfilingSection(key.get());
 	}
 	{
-		auto key = std::make_shared<ProfilingKey>(ProfilingKeys::Engine, _T("Engine_PresentFrame"));
+		auto key = std::make_shared<ProfilingKey>(ProfilingKeys::Engine, _LT("Engine_PresentFrame"));
 		g_globalKeys.push_back(key);
 		ProfilingKeys::Engine_PresentFrame = key.get();
 		registerProfilingSection(key.get());
 	}
 	{
-		auto key = std::make_shared<ProfilingKey>(_T("Rendering"));
+		auto key = std::make_shared<ProfilingKey>(_LT("Rendering"));
 		g_globalKeys.push_back(key);
 		ProfilingKeys::Rendering = key.get();
 		registerProfilingSection(key.get());
 	}
 	{
-		auto key = std::make_shared<ProfilingKey>(ProfilingKeys::Rendering, _T("Rendering_PresentDevice"));
+		auto key = std::make_shared<ProfilingKey>(ProfilingKeys::Rendering, _LT("Rendering_PresentDevice"));
 		g_globalKeys.push_back(key);
 		ProfilingKeys::Rendering_PresentDevice = key.get();
 		registerProfilingSection(key.get());
@@ -135,7 +135,7 @@ void Profiler2::finalizeGlobalSections()
 //------------------------------------------------------------------------------
 void Profiler2::registerProfilingSection(const ProfilingKey* key)
 {
-	if (LN_CHECK_ARG(key != nullptr)) return;
+	if (LN_REQUIRE(key != nullptr)) return;
 	g_sectionsMap[key] = std::make_shared<ProfilingSection>();
 }
 
@@ -195,16 +195,16 @@ Profiler::Profiler()
 	, m_commitMutex()
 	, m_enabled(false)
 {
-	Group_MainThread = registerGroup(_T("Main"));
-	Group_RenderThread = registerGroup(_T("Rendering"));
-	Section_MainThread_Update = registerSection(Group_MainThread, _T("Update"));
-	Section_MainThread_PrepareRendering = registerSection(Group_MainThread, _T("Prepare rendering"));
-	Section_MainThread_GUILayput = registerSection(Group_MainThread, _T("GUI layput"));
-	Section_RenderThread_CommandExecute = registerSection(Group_RenderThread, _T("Execute commands"));
+	Group_MainThread = registerGroup(_LT("Main"));
+	Group_RenderThread = registerGroup(_LT("Rendering"));
+	Section_MainThread_Update = registerSection(Group_MainThread, _LT("Update"));
+	Section_MainThread_PrepareRendering = registerSection(Group_MainThread, _LT("Prepare rendering"));
+	Section_MainThread_GUILayput = registerSection(Group_MainThread, _LT("GUI layput"));
+	Section_RenderThread_CommandExecute = registerSection(Group_RenderThread, _LT("Execute commands"));
 }
 
 //------------------------------------------------------------------------------
-int Profiler::registerGroup(const TCHAR* name)
+int Profiler::registerGroup(const Char* name)
 {
 	std::shared_ptr<Group> group(LN_NEW Group());
 	group->Name = name;
@@ -218,7 +218,7 @@ int Profiler::registerGroup(const TCHAR* name)
 }
 
 //------------------------------------------------------------------------------
-int Profiler::registerSection(int parentGroupIndex, const TCHAR* name)
+int Profiler::registerSection(int parentGroupIndex, const Char* name)
 {
 	std::shared_ptr<Section> section(LN_NEW Section());
 	section->Name;

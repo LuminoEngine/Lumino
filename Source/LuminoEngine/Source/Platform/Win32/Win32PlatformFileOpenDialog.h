@@ -49,7 +49,7 @@ public:
 					IID_PPV_ARGS(&m_fileDialog));
 
 			}
-			LN_THROW(SUCCEEDED(hr), COMException, hr);
+			LN_THROW(SUCCEEDED(hr), Win32Exception, hr);
 		}
 	}
 
@@ -61,7 +61,7 @@ public:
 
 	virtual bool showDialog(PlatformWindow* parent) override
 	{
-		if (LN_CHECK_ARG(parent != nullptr)) return false;
+		if (LN_REQUIRE(parent != nullptr)) return false;
 		auto* win32Window = static_cast<Win32PlatformWindow*>(parent);
 		HWND hParent = win32Window->getWindowHandle();
 		HRESULT hr = m_fileDialog->Show(hParent);
@@ -76,8 +76,7 @@ public:
 	{
 		LPWSTR wcFileName;
 		HRESULT hr = m_fileDialog->GetFileName(&wcFileName);
-		ln::detail::StaticallyLocalPath path(wcFileName);
-		return path.getPath();
+		return PathName(wcFileName);
 	}
 
 private:

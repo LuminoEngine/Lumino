@@ -49,7 +49,7 @@ private:
 	void UpdateOneInputState(InputState* state);
 	const InputState* LockupState(const StringRef& bindingName) const;
 
-	using StatusMap = SortedArray<String, InputState/*, detail::StringCaseInsensitiveLess<String>*/>;
+	using StatusMap = SortedArray<String, InputState>;
 
 	detail::InputManager*			m_manager;
 	uint32_t						m_attachedDevices;		// TODO: 本当ならちゃんとインターフェイス組むべきかも

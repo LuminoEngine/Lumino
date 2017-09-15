@@ -47,7 +47,8 @@ void ContextState::setRenderTarget(int index, Texture* texture)
 	if (index == 0 && texture == nullptr)
 	{
 		// index0 は null であってはならない
-		LN_THROW(0, ArgumentException);
+		LN_REQUIRE(0);
+		return;
 	}
 
 	if (m_renderTargets[index] != texture)
@@ -136,7 +137,8 @@ void BasicContextState::setRenderTarget(int index, Texture* texture)
 	if (index == 0 && texture == nullptr)
 	{
 		// index0 は null であってはならない
-		LN_THROW(0, ArgumentException);
+		LN_REQUIRE(0);
+		return;
 	}
 
 	if (m_renderTargets[index] != texture)

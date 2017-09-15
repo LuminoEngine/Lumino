@@ -16,6 +16,7 @@ set(LN_TEST_SOURCES
 	UnitTest/Base/Test_Base_Event.cpp
 	UnitTest/Base/Test_Base_Exception.cpp
 	UnitTest/Base/Test_Base_Formatter.cpp
+	UnitTest/Base/Test_Base_List.cpp
 	UnitTest/Base/Test_Base_Locale.cpp
 	UnitTest/Base/Test_Base_Regex.cpp
 	UnitTest/Base/Test_Base_Resource.cpp
@@ -23,6 +24,7 @@ set(LN_TEST_SOURCES
 	UnitTest/Base/Test_Base_StringArray.cpp
 	UnitTest/Base/Test_Base_StringRef.cpp
 	UnitTest/Base/Test_Base_StringTraits.cpp
+	UnitTest/Base/Test_Base_StringU.cpp
 	UnitTest/Base/Test_Base_UnicodeUtils.cpp
 	UnitTest/Base/Test_Base_UTF32Encoding.cpp
 	UnitTest/Base/Test_Base_WeakRefPtr.cpp

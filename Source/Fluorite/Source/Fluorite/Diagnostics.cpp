@@ -9,7 +9,7 @@ namespace fl {
 //==============================================================================
 
 //------------------------------------------------------------------------------
-DiagnosticsItemSet::DiagnosticsItemSet(const PathNameA& absFilePath)
+DiagnosticsItemSet::DiagnosticsItemSet(const std::string& absFilePath)
 	: m_absFilePath(absFilePath)
 {
 }
@@ -31,7 +31,7 @@ void DiagnosticsItemSet::Report(DiagnosticsCode code, flString option1)
 	item.m_code = code;
 	item.m_lineNumber = m_currentLineNumber;
 	item.m_columnNumber = m_currentColumnNumber;
-	item.m_options.add(option1);
+	item.m_options.push_back(option1);
 	m_items.add(item);
 }
 
@@ -45,7 +45,7 @@ void DiagnosticsManager::clear()
 }
 
 //------------------------------------------------------------------------------
-DiagnosticsItemSet* DiagnosticsManager::CreateItemSet(const PathNameA& absFilePath)
+DiagnosticsItemSet* DiagnosticsManager::CreateItemSet(const std::string& absFilePath)
 {
 	auto ptr = Ref<DiagnosticsItemSet>::makeRef(absFilePath);
 	m_itemSetList.add(ptr);

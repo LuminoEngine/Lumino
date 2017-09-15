@@ -67,7 +67,7 @@ public:
 	void goToVisualState(const StringRef& stateName)
 	{
 		Group* group = findGroup(stateName);//groups.Find([stateName](const Group& g) { return g.stateNames.Contains([stateName](const String& name) { return name == stateName; }); });
-		if (LN_CHECK_STATE(group != nullptr)) return;
+		if (LN_ENSURE(group != nullptr)) return;
 		activeStateNames[group->index] = stateName;
 	}
 
@@ -163,8 +163,8 @@ public:
 	//Color					bottomBorderColor;
 	//BorderDirection		borderDirection;
 
-	LN_ROUTED_EVENT(UIEventArgs, GotFocusEvent);
-	LN_ROUTED_EVENT(UIEventArgs, LostFocusEvent);
+	//LN_ROUTED_EVENT(UIEventArgs, GotFocusEvent);
+	//LN_ROUTED_EVENT(UIEventArgs, LostFocusEvent);
 
 public:
 	//--------------------------------------------------------------------------
@@ -300,7 +300,7 @@ public:
 	virtual void arrangeLayout(const Rect& finalLocalRect) override;
 
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
-	void raiseEvent(const UIEventInfo* ev, UIElement* sender, UIEventArgs* e);
+	void raiseEvent(UIEventType ev, UIElement* sender, UIEventArgs* e);
 
 	void applyTemplateHierarchy(UIStyleTable* styleTable, detail::UIStylePropertyTableInstance* parentStyle);
 
@@ -359,7 +359,7 @@ protected:
 		@return		要素の最終サイズ。要素の描画時にこのサイズを使用します。
 		@details	派生クラスは finalSize よりも大きいサイズを返すと、描画時に見切れが発生します。
 					また、finalSize には padding プロパティの余白は考慮されません。
-					この余白を正しく反映するためには派生クラスで padding プロパティを参照し、子要素の位置を計算します。
+					余白を正しく反映するためには派生クラスで padding プロパティを参照し、子要素の位置を計算します。
 
 					親要素は、各子要素の Arrange を呼び出し、適切に配置する必要があります。
 					そうでない場合、子要素はレンダリングされません。(UIElement::arrangeOverride() は、子要素の配置は行いません)

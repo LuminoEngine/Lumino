@@ -20,7 +20,7 @@ TEST_F(Test_UI_Button, Basic)
 {
 	auto uiRoot = Engine::GetMainWindow();
 	auto button1 = UIButton::create();
-	button1->SetText(_T("Button"));
+	button1->SetText(_LT("Button"));
 	uiRoot->AddChild(button1);
 
 	while (Engine::Update())

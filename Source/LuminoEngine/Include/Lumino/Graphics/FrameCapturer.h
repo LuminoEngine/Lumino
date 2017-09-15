@@ -50,7 +50,6 @@ private:
 	State						m_requestedState;
 	State						m_currentState_main;
 	
-	PathNameA					m_savingDir;
 	detail::CapturerContext*	m_gifContext;
 	State						m_currentState_render;
 	uint64_t					m_lastTick;

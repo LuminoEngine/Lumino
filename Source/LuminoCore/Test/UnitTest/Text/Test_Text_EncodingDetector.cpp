@@ -34,3 +34,4 @@ TEST_F(Test_Text_EncodingDetector, SJIS)
 	ASSERT_EQ(EncodingType::SJIS, detector.getEncodingType());
 
 }
+

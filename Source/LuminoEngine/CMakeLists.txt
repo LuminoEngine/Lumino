@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.0.0)
 project (LuminoEngine)
 
-include(${PROJECT_SOURCE_DIR}/../LuminoCore/CMake/LNCommon.cmake NO_POLICY_SCOPE)
+include(${PROJECT_SOURCE_DIR}/../../CMake/LuminoCommon.cmake NO_POLICY_SCOPE)
 
 set(LN_LINK_LIBS "")
 set(LN_UNIT_TEST_LINK_LIBS "")
@@ -360,6 +360,8 @@ set(LN_SOURCES_Mesh
 	Source/Mesh/MeshFactory.h
 	Source/Mesh/MeshFactory.cpp
 	Source/Mesh/SkinnedMeshModel.cpp
+	Source/Mesh/SMesh.h
+	Source/Mesh/SMesh.cpp
 )
 
 set(LN_SOURCES_Scene
@@ -694,7 +696,7 @@ elseif (UNIX)
 		${LN_SOURCES_Platform}
 		Source/Platform/X11/X11WindowManager.cpp
 		Source/Platform/X11/X11Window.cpp
-		Source/Platform/X11/PlatformSupport_X11.cp
+		Source/Platform/X11/PlatformSupport_X11.cpp
 	)
 
 	set(LN_SOURCES_Graphics
@@ -782,16 +784,6 @@ set(LN_SOURCES
 find_package(OpenGL REQUIRED)
 
 if (WIN32)
-	if (LN_MSVC_STATIC_RUNTIME)
-		foreach (flag CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE)
-			if (${flag} MATCHES "/MD")
-				string(REGEX REPLACE "/MD" "/MT" ${flag} "${${flag}}")
-			endif()
-			if (${flag} MATCHES "/MDd")
-				string(REGEX REPLACE "/MDd" "/MTd" ${flag} "${${flag}}")
-			endif()
-		endforeach()
-	endif()
 
 	#set(CMAKE_DEBUG_POSTFIX "d")
 
@@ -859,21 +851,12 @@ include_directories(${LN_INCLUDE_DIRECTORIES} ${LN_PLATFORM_INCLUDE_DIRS})
 
 link_libraries(LuminoCore)
 
-# Make postfix.
-#ln_make_postfix(LN_LIB_POSTFIX)
-
 
 #------------------------------------------------------------------------------
 # Output
 #------------------------------------------------------------------------------
 
 add_definitions(-DLUMINO_ROOT_DIR="${PROJECT_SOURCE_DIR}")
-
-#set(CMAKE_CXX_FLAGS "")
-#set(CMAKE_CXX_FLAGS_DEBUG "-g -pg")
-#set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g -pg -O3")
-#set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3")
-#set(CMAKE_CXX_FLAGS_MINSIZEREL "")
 
 if (LN_EXCEPTION_BACKTRACE)
 	add_definitions(-DLN_EXCEPTION_BACKTRACE)
@@ -894,9 +877,9 @@ endif()
 # LuminoEngine
 add_library(LuminoEngine STATIC ${LN_SOURCES})
 ln_add_common_property(LuminoEngine)
-target_include_directories(LuminoEngine PUBLIC ${LN_DEPENDENCIES_INCLUDES})
+target_include_directories(LuminoEngine PUBLIC ${LN_DEPENDENCIES_INCLUDE_DIRECTORIES})
 target_link_libraries(LuminoEngine Fluorite ${LN_LINK_LIBS} ${LN_DEPENDENCIES_LIBRARIES})
-ln_add_pch(LuminoEngine "LuminoEngine.PCH.h" "Source/LuminoEngine.PCH.cpp")
+ln_add_pch(LuminoEngine "Source/LuminoEngine.PCH.h" "Source/LuminoEngine.PCH.cpp")
 
 # Unit test.
 add_subdirectory(Test)

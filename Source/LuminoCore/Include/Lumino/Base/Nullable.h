@@ -1,5 +1,6 @@
 
-#pragma once 
+#pragma once
+#include "Hash.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -55,12 +56,12 @@ public:
 
     T& get() 
 	{
-		if (LN_CHECK_STATE(m_isSet)) return m_value;
+		if (LN_REQUIRE(m_isSet)) return m_value;
         return m_value;
 	}
 	const T& get() const
 	{
-		if (LN_CHECK_STATE(m_isSet)) return m_value;
+		if (LN_REQUIRE(m_isSet)) return m_value;
 		return m_value;
 	}
 

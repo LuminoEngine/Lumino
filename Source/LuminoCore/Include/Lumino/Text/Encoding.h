@@ -6,6 +6,7 @@ LN_NAMESPACE_BEGIN
 class ByteBuffer;
 class Decoder;
 class Encoder;
+class String;
 
 /** エンコーディングの種類 */
 enum class EncodingType
@@ -71,7 +72,7 @@ public:
 	static Encoding* getWideCharEncoding();
 
 	/**
-		@brief		TCHAR 型文字のエンコーディングを取得します。
+		@brief		Char 型文字のエンコーディングを取得します。
 	*/
 	static Encoding* getTCharEncoding();
 
@@ -181,6 +182,10 @@ public:
 		void* dest, size_t destByteCount, Encoder* destEncoder,
 		EncodingConversionResult* result);
 
+
+	static String fromBytes(const char* bytes, int size, Encoding* encoding = nullptr, bool* outUsedDefaultChar = nullptr);
+	static String fromBytes(const byte_t* bytes, int size, Encoding* encoding = nullptr, bool* outUsedDefaultChar = nullptr);
+
 public:
 
 	/**
@@ -188,7 +193,7 @@ public:
 		@details	名前は IANA 文字セット名です。(http://www.iana.org/assignments/character-sets/character-sets.xhtml)
 					Windows コードページによるエンコーディングを使用している場合、"cp437" のようなエイリアス名になることがあります。
 	*/
-	virtual const TCHAR* getName() const = 0;
+	virtual const TTCHAR* getName() const = 0;
 
 	/**
 		@brief		1 文字の最小バイト数を取得する

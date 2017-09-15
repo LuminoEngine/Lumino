@@ -4,6 +4,12 @@
 #include "String.h"
 #include "../Reflection/ReflectionObject.h"
 
+#define LN_SC_SHARED_LIST
+
+#ifdef LN_SC_SHARED_LIST
+#include "SharedList.h"
+#endif
+
 LN_NAMESPACE_BEGIN
 //template <class T> class Ref;
 
@@ -93,19 +99,26 @@ template<typename TRef>
 class NameValuePair
 {
 public:
-	const TCHAR* name;
+	const Char* name;
 	TRef& value;
+	//const TRef* defaultValue;
 
-	NameValuePair(const TCHAR* n, TRef& v) : name(n), value(v) {}
+	NameValuePair(const Char* n, TRef& v) : name(n), value(v)/*, defaultValue(nullptr)*/ {}
+	//NameValuePair(const Char* n, TRef& v, const TRef* d) : name(n), value(v), defaultValue(d) {}
 
 private:
 	NameValuePair & operator=(NameValuePair const &) = delete;
 };
 
 template<typename TRef>
-NameValuePair<TRef> makeNVP(const TCHAR* name, TRef& valueRef)
+NameValuePair<TRef> makeNVP(const Char* name, TRef& valueRef)
 {
 	return NameValuePair<TRef>(name, valueRef);
+}
+template<typename TRef>
+NameValuePair<TRef> makeNVP(const Char* name, TRef& valueRef, const TRef& defaultValue)
+{
+	return NameValuePair<TRef>(name, valueRef, &defaultValue);
 }
 
 
@@ -114,20 +127,14 @@ template<typename TThis>
 class NameValuePairBaseObject
 {
 public:
-	const TCHAR* name;
+	const Char* name;
 	TThis* value;
 
-	NameValuePairBaseObject(const TCHAR* n, TThis* v) : name(n), value(v) {}
+	NameValuePairBaseObject(const Char* n, TThis* v) : name(n), value(v) {}
 
 private:
 	NameValuePairBaseObject & operator=(NameValuePairBaseObject const &) = delete;
 };
-
-template<typename TThis>
-NameValuePairBaseObject<TThis> makeNVPBaseObject(TThis* value)
-{
-	return NameValuePairBaseObject<TThis>(Archive::ClassBaseDefaultNameKey, value);
-}
 
 ///**
 //	@brief
@@ -278,9 +285,9 @@ class Archive
 	};
 
 public:
-	static const TCHAR* ClassNameKey;
-	static const TCHAR* ClassVersionKey;
-	static const TCHAR* ClassBaseDefaultNameKey;
+	static const TTCHAR* ClassNameKey;
+	static const TTCHAR* ClassVersionKey;
+	static const TTCHAR* ClassBaseDefaultNameKey;
 	//Archive(const PathName& filePath, ArchiveMode mode);
 
 	//template<typename T> Archive& operator&(T && arg)
@@ -334,7 +341,7 @@ public:
 	}
 	void save(ScVariant& value)
 	{
-		if (LN_CHECK_ARG(value.getType() == ScVariantType::Map)) return;
+		if (LN_ENSURE(value.getType() == ScVariantType::Map)) return;
 		m_currentObject = saveHeaderElement(m_currentObject);
 		doSaveObjectType(*value.m_core->m_map, false);
 	}
@@ -361,14 +368,14 @@ private:
 	ISerializeElement* saveHeaderElement(ISerializeElement* element)
 	{
 		int version = 1;
-		element->addSerializeMemberValue(_T("version"), SerializationValueType::Int32, &version);
-		return element->addSerializeMemberNewObject(_T("root"));
+		element->addSerializeMemberValue(_TT("version"), SerializationValueType::Int32, &version);
+		return element->addSerializeMemberNewObject(_TT("root"));
 	}
 
 	ISerializeElement* loadHeaderElement(ISerializeElement* element)
 	{
-		ISerializeElement* version = element->findSerializeElement(_T("version"));
-		ISerializeElement* root = element->findSerializeElement(_T("root"));
+		ISerializeElement* version = element->findSerializeElement(_TT("version"));
+		ISerializeElement* root = element->findSerializeElement(_TT("root"));
 		if (version != nullptr && root != nullptr)
 		{
 			return root;
@@ -404,7 +411,14 @@ private:
 	void processRead(const KeyInfo& key, T && value)
 	{
 		ISerializeElement* element = m_currentObject->findSerializeElement(key.name);
-		tryGetValue(element, &value, key.callBase);
+		if (element)	// fuzzy mode
+		{
+			//if (LN_REQUIRE_KEY(element, key.name.data())) return;
+			tryGetValue(element, &value, key.callBase);
+		}
+		else
+		{
+		}
 	}
 
 	// AddMemberValue()
@@ -834,6 +848,13 @@ private:
 
 };
 
+	
+	
+	template<typename TThis>
+	NameValuePairBaseObject<TThis> makeNVPBaseObject(TThis* value)
+	{
+		return NameValuePairBaseObject<TThis>(Archive::ClassBaseDefaultNameKey, value);
+	}
 
 //#define LN_SERIALIZE(ar, version, classVersion) \
 //	static const int lnsl_GetClassVersion() { return classVersion; } \
@@ -841,6 +862,7 @@ private:
 
 } // namespace tr
 
-#define LN_NVP(var)	ln::tr::makeNVP(#var, var)
+#define LN_NVP(var)		ln::tr::makeNVP(_LT(#var), var)
+//#define LN_NVP(var, ...)	ln::tr::makeNVP(_LT(#var), var, ##__VA_ARGS__)
 
 LN_NAMESPACE_END

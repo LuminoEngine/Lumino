@@ -152,7 +152,7 @@ public:
 public:
 
 	/// D3DFORMAT の文字列表現の取得
-    static const TCHAR* GetDxFormatString( D3DFORMAT Format );
+    static const Char* GetDxFormatString( D3DFORMAT Format );
 
 	/// VertexElemenst から D3DVERTEXELEMENT9 の要素に変換
 	static void TranslateElementLNToDX(const VertexElement* element, BYTE* type, BYTE* offset, BYTE* usage);

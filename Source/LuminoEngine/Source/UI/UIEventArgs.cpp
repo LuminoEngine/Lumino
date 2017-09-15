@@ -31,7 +31,7 @@ UIEventArgsPtr UIEventArgs::create(UIEventType type, Object* sender, bool cachin
 UIEventArgs::UIEventArgs()
 	: sender(nullptr)
 	//, handled(false)
-	, m_type(nullptr)
+	, m_type(0)
 {
 }
 
@@ -103,7 +103,7 @@ Point UIMouseEventArgs::getPosition(UIElement* relativeTo) const
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIKeyEventArgs, UIEventArgs)
 
 //------------------------------------------------------------------------------
-Ref<UIKeyEventArgs> UIKeyEventArgs::create(UIEventType type, Keys keyCode, ModifierKeys modifierKeys, TCHAR charCode, bool caching)
+Ref<UIKeyEventArgs> UIKeyEventArgs::create(UIEventType type, Keys keyCode, ModifierKeys modifierKeys, Char charCode, bool caching)
 {
 	if (caching)
 	{
@@ -132,7 +132,7 @@ UIKeyEventArgs::~UIKeyEventArgs()
 }
 
 //------------------------------------------------------------------------------
-void UIKeyEventArgs::initialize(UIEventType type, Keys keyCode, ModifierKeys modifierKeys, TCHAR charCode)
+void UIKeyEventArgs::initialize(UIEventType type, Keys keyCode, ModifierKeys modifierKeys, Char charCode)
 {
 	UIEventArgs::initialize(type);
 	m_keyCode = keyCode;

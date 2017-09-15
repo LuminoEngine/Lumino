@@ -21,7 +21,7 @@ void UIDiagnosticsWindow::initialize()
 	UIFrameWindow::initialize();
 	m_font = Font::getBuiltin(BuiltinFontSize::XXSmall);
 
-	m_recordButton = UIToggleButton::create(_T("Record"), 100, 24);
+	m_recordButton = UIToggleButton::create(_LT("Record"), 100, 24);
 	m_recordButton->setPosition(Point(100, 200));
 	m_recordButton->connectOnChecked([](UIEventArgs* e) { FrameCapturer::startRecording(); });	// TODO: "UIEventArgs* e" ‚ð•`‚­‚Ì‚ª‚ß‚ñ‚Ç‚¢
 	m_recordButton->connectOnUnchecked([](UIEventArgs* e) { FrameCapturer::stopRecording(); });
@@ -50,7 +50,7 @@ void UIDiagnosticsWindow::drawStatistics(DrawingContext* context, const Rect& wi
 	//context->setOpacity(1.0f);
 	context->setFont(m_font);
 	context->setBrush(UIColors::getBrush(UIColorIndex::Grey, 8));
-	context->drawText_(_T("Statistics"), Point(10, 20));
+	context->drawText_(_LT("Statistics"), Point(10, 20));
 
 	//return;
 	loc.y += 24;
@@ -60,11 +60,11 @@ void UIDiagnosticsWindow::drawStatistics(DrawingContext* context, const Rect& wi
 
 	//-----------------------------------------------------
 	// Main info
-	context->drawText_(_T("Main information:"), Point(loc.x + 8, loc.y));
+	context->drawText_(_LT("Main information:"), Point(loc.x + 8, loc.y));
 	loc.y += 16;
 	loc.x += 16;
 
-	TCHAR text[256] = { 0 };
+	Char text[256] = { 0 };
 
 	//StringTraits::sprintf(text, 256, _T("Graphics API    : %s"), m_manager->GetGraphicsAPI().ToString().c_str());
 	//context->drawText_(text, loc);
@@ -151,7 +151,7 @@ void UIDiagnosticsWindow::drawGroupList(DrawingContext* context, const Rect& lis
 		drawSectionGraphBar(context, groups[iGrout], listRect.x + ThreadNameColumnWidth, listRect.y + (iGrout * rowHeight), listRect, &totalElapsed);
 
 		// ms
-		TCHAR fps[256] = { 0 };
+		Char fps[256] = { 0 };
 		StringTraits::sprintf(fps, 256, _T("%.1f ms"), totalElapsed * 1000.0f);
 		pt.y += 16;
 		context->setBrush(UIColors::getBrush(UIColorIndex::Grey, 5));

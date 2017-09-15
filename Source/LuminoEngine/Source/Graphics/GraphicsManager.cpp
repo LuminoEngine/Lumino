@@ -195,8 +195,10 @@ void GraphicsManager::initialize(const ConfigData& configData)
 		changeDevice(device);
 		device->release();
 	}
-	else {
-		LN_THROW(0, ArgumentException);
+	else
+	{
+		LN_UNREACHABLE();
+		return;
     }
     
 #elif defined(LN_OS_MAC)
@@ -220,7 +222,7 @@ void GraphicsManager::initialize(const ConfigData& configData)
 	ChangeDevice(device);
 	device->Release();
 #else
-	LN_THROW(0, NotImplementedException);
+	LN_NOTIMPLEMENTED();
 #endif
 
 	Driver::IRenderer* renderer = m_graphicsDevice->getRenderer();
@@ -376,9 +378,7 @@ void GraphicsManager::resumeDevice()
 //------------------------------------------------------------------------------
 void GraphicsManager::changeDevice(Driver::IGraphicsDevice* device)
 {
-	if (m_renderingThread != NULL) {
-		LN_THROW(0, InvalidOperationException);
-	}
+	if (LN_REQUIRE(!m_renderingThread)) return;
 
 	if (device == NULL)
 	{
@@ -565,7 +565,7 @@ void ShaderVariableCommitSerializeHelper::writeValue(Driver::IShaderVariable* ta
 		break;
 	default:
 		// TODO: シェーダ変数に値が1度もセットされなかった場合ここに来る。デフォルト値を使うべき？
-		LN_THROW(0, ArgumentException);
+		LN_UNREACHABLE();
 		break;
 	}
 }
@@ -658,7 +658,7 @@ void ShaderVariableCommitSerializeHelper::deserialize(const void* data, size_t l
 				variable->setTexture((Driver::ITexture*)reader.readUInt64());
 				break;
 			default:
-				LN_THROW(0, InvalidOperationException);
+				LN_UNREACHABLE();
 				break;
 		}
 	}

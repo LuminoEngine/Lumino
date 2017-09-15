@@ -67,7 +67,7 @@ private:
 	void writeU32Padding16(uint32_t v0, uint32_t v1);
 
 	/// ディレクトリセパレータを / に変換する
-	void normalizePath(StringW* path);
+	void normalizePath(std::wstring* path);
 
 private:
 

@@ -99,14 +99,14 @@ public:
 /**
 	@brief		
 */
-class UIEventInfo
-	: public tr::ReflectionEventInfo
-{
-public:
-	UIEventInfo(tr::TypeInfo* ownerClass, const TCHAR* name, RaiseEventFunc raiseEvent)
-		: tr::ReflectionEventInfo(ownerClass, name, raiseEvent)
-	{}
-};
+//class UIEventInfo
+//	: public tr::ReflectionEventInfo
+//{
+//public:
+//	UIEventInfo(tr::TypeInfo* ownerClass, const Char* name, RaiseEventFunc raiseEvent)
+//		: tr::ReflectionEventInfo(ownerClass, name, raiseEvent)
+//	{}
+//};
 //	// Event を直接参照してはならない。このクラスは Property と同じく、複数の UIElement で共有される。状態を持ってはならない。
 //	// なので、イベントを Raise する関数ポインタを参照する。
 //
@@ -141,22 +141,22 @@ public:
 //	const UIEvent*			ownerClass::eventVar = &_init_##eventVar; \
 //	void					ownerClass::_raise_##eventVar(UIElement* obj, UIEventArgs* e) { static_cast<ownerClass*>(obj)->EmitEventSlot(static_cast<ownerClass*>(obj)->slot, static_cast<eventArgs*>(e)); }
 //
-
-using UIEventId = UIEventInfo*;
-
-// [Obsolete]
-#define LN_ROUTED_EVENT(eventArgs, eventInfoVar) \
-	LN_REFLECTION_EVENT_COMMON(UIEventInfo, eventArgs, eventInfoVar);
-
-// [Obsolete]
-#define LN_ROUTED_EVENT_IMPLEMENT(ownerClass, eventArgs, eventInfoVar, name, ev) \
-	LN_REFLECTION_EVENT_IMPLEMENT_COMMON(UIEventInfo, ownerClass, eventArgs, eventInfoVar, name, ev);
-
-#define LN_ROUTED_EVENT2(eventArgs, eventVar) \
-    static const UIEventId eventVar##Id;
-
-#define LN_ROUTED_EVENT_IMPLEMENT2(ownerClass, eventArgs, eventVar) \
-    const UIEventId ownerClass::eventVar##Id = reinterpret_cast<UIEventId>(ln::Hash::calcHash(#eventVar));
+//
+//using UIEventId = UIEventInfo*;
+//
+//// [Obsolete]
+//#define LN_ROUTED_EVENT(eventArgs, eventInfoVar) \
+//	LN_REFLECTION_EVENT_COMMON(UIEventInfo, eventArgs, eventInfoVar);
+//
+//// [Obsolete]
+//#define LN_ROUTED_EVENT_IMPLEMENT(ownerClass, eventArgs, eventInfoVar, name, ev) \
+//	LN_REFLECTION_EVENT_IMPLEMENT_COMMON(UIEventInfo, ownerClass, eventArgs, eventInfoVar, name, ev);
+//
+//#define LN_ROUTED_EVENT2(eventArgs, eventVar) \
+//    static const UIEventId eventVar##Id;
+//
+//#define LN_ROUTED_EVENT_IMPLEMENT2(ownerClass, eventArgs, eventVar) \
+//    const UIEventId ownerClass::eventVar##Id = reinterpret_cast<UIEventId>(ln::Hash::calcHash(#eventVar));
 
 
 /** */
@@ -170,6 +170,12 @@ public:
 class UIEvents
 {
 public:
+	/** GotFocusEvent イベントの識別子 (UIEventArgs) */
+	static UIEventType	GotFocusEvent;
+
+	/** LostFocusEvent イベントの識別子 (UIEventArgs) */
+	static UIEventType	LostFocusEvent;
+
 	/** MouseMove イベントの識別子 (UIMouseEventArgs) */
 	static UIEventType	MouseMoveEvent;
 
@@ -202,6 +208,21 @@ public:
 
 	/** Unchecked イベントの識別子 (UIEventArgs) */
 	static UIEventType	UncheckedEvent;
+
+	/** DragStartedEvent イベントの識別子 (UIEventArgs) マウスドラッグを開始したときに発生するイベントを表します。*/
+	static UIEventType	DragStartedEvent;
+
+	/** DragDeltaEvent イベントの識別子 (UIEventArgs) マウスドラッグ中に発生するイベントを表します。 */
+	static UIEventType	DragDeltaEvent;
+
+	/** DragCompletedEvent イベントの識別子 (UIEventArgs) マウスドラッグが完了したときに発生するイベントを表します。 */
+	static UIEventType	DragCompletedEvent;
+
+	/** DragCanceledEvent イベントの識別子 (UIEventArgs) マウスドラッグを中断したときに発生するイベントを表します。 */
+	static UIEventType	DragCanceledEvent;
+
+	/** ScrollEvent イベントの識別子 (UIEventArgs) */
+	static UIEventType	ScrollEvent;
 };
 
 /**

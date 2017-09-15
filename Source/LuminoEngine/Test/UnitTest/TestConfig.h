@@ -25,11 +25,11 @@ using namespace ln;
 class TestEnv : public ::testing::Environment
 {
 public:
-	static void saveScreenShot(const TCHAR* filePath);
-	static bool EqualsScreenShot(const TCHAR* filePath, int passRate = 90);
-	//static bool equalsTexture(Texture* texture, const TCHAR* filePath);
-	static bool EqualsBitmapFile(Bitmap* bmp1, const TCHAR* filePath, int passRate);
-	static bool CheckScreenShot(const TCHAR* filePath, int passRate = 99, bool save = false);	// 基本的に 99% 一致していれば良い。グラボによって、色成分+-1 くらいの誤差がある (Radeon HD8490)
+	static void saveScreenShot(const Char* filePath);
+	static bool EqualsScreenShot(const Char* filePath, int passRate = 90);
+	//static bool equalsTexture(Texture* texture, const Char* filePath);
+	static bool EqualsBitmapFile(Bitmap* bmp1, const Char* filePath, int passRate);
+	static bool CheckScreenShot(const Char* filePath, int passRate = 99, bool save = false);	// 基本的に 99% 一致していれば良い。グラボによって、色成分+-1 くらいの誤差がある (Radeon HD8490)
 	static void WaitRendering();
 
 
@@ -57,17 +57,17 @@ protected:
 	Engine::getWorld3D()->RemoveAllObjects();
 
 
-inline PathName Test_GetTempFilePath(const TCHAR* fileName)
+inline PathName Test_GetTempFilePath(const Char* fileName)
 {
 	PathName base(__FILE__);
-	PathName tempDir(base.getParent(), _T("../../"));
-	tempDir.append(_T("tmp"));
+	PathName tempDir(base.getParent(), _LT("../../"));
+	tempDir.append(_LT("tmp"));
 	PathName path(tempDir, fileName);
 	FileSystem::createDirectory(path.getParent());
 	return PathName(path.c_str());
 }
 
-#define LN_TEMPFILE(fileName)	Test_GetTempFilePath(_T(fileName)).c_str()
+#define LN_TEMPFILE(fileName)	Test_GetTempFilePath(_LT(fileName)).c_str()
 
 
 /// 頂点データ (位置+頂点カラー)

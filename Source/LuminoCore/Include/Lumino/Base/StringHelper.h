@@ -7,9 +7,6 @@
 
 LN_NAMESPACE_BEGIN
 
-template<typename TChar> class GenericString;
-template<typename TChar> class GenericStringArray;
-
 /**
 	@brief		文字列ユーティリティ
 	@details	char および wchar_t 型文字列に対する各操作を行うユーティリティ関数郡です。
@@ -75,14 +72,6 @@ public:
 	static int sprintf(char* out, int charCount, const char* format, ...);
 	static int sprintf(wchar_t* out, int charCount, const wchar_t* format, ...);
 
-
-
-	/**
-		@brief		マルチバイト文字列をワイド文字列に変換する
-		@details	input の文字コードは setlocale() に依存します。
-					基本的にOSのAPIが返す文字列を変換したい時に使用してください。
-	*/
-	static void convertMultiToWide(std::wstring* out, const char* input, int inputLength);
 
 
 	static void strncpy(char* dest, size_t destSize, const char* src, int count) { strncpy_s(dest, destSize, src, count); }
@@ -155,26 +144,6 @@ public:
 	static void trim(const TChar* begin, int length, const TChar** outBegin, int* outLength);
 
 	/**
-		@brief		書式文字列と可変長引数リストから文字列を生成する
-		@param[in]	format		: 書式文字列
-		@param[in]	...			: 引数リスト
-		@return		生成された文字列
-		@attention	生成される文字数は MaxFormatLength 以内に収まらなければなりません。(あふれた場合、例外をthrowします)
-					これは、_vsnwprintf に相当する関数がWindows以外では使用できず、あらかじめ生成後の必要バッファサイズを測ることができないためです。<br>
-					Format() は基本的に数値からの変換等、短い文字列にのみ使用し、文字列の連結は += 演算子等を使用してください。
-					また、可変長引数リストに文字列クラスのインスタンスを直接指定することはできません。
-					c_str() 等で取得した文字列ポインタ型を指定してください。
-	*/
-	//template<typename TChar>
-	//static GenericString<TChar> Format(const TChar* format, ...);
-
-	/**
-		@brief		書式文字列と可変長引数リストから文字列を生成する
-	*/
-	//template<typename TChar>
-	//static void FormatVAList(const TChar* format, va_list args, GenericString<TChar>* out);
-
-	/**
 		@brief		文字列の先頭が、指定した文字列と一致するかどうかを判断します。
 		@details	str2 が空文字の場合は必ず true が返ります。
 	*/
@@ -207,51 +176,22 @@ public:
 	template<typename TChar>
 	static int countString(const TChar* str1, int str1Len, const TChar* str2, int str2Len, CaseSensitivity cs = CaseSensitivity::CaseSensitive);
 
-	/**
-		@brief		文字列の左側(先頭)から指定した文字数を抽出します。
-		@param[in]	str		: 対象の文字列
-		@param[in]	count	: 文字数
-		@return		抽出された文字列
-	*/
 	template<typename TChar>
-	static GenericString<TChar> left(const TChar* str, int count);
+	static void left(const TChar* str, int count, const TChar** outBegin, const TChar** outEnd);
 
-	/**
-		@brief		文字列の右側(末尾)から指定した文字数を抽出します。
-		@param[in]	str		: 対象の文字列
-		@param[in]	count	: 文字数
-		@return		抽出された文字列
-	*/
 	template<typename TChar>
-	static GenericString<TChar> right(const TChar* str, int count);
+	static void right(const TChar* str, int count, const TChar** outBegin, const TChar** outEnd);
 
-	/**
-		@brief		文字列の部分文字列を抽出します。
-		@param[in]	str		: 対象の文字列
-		@param[in]	start	: 開始文字インデックス
-		@param[in]	count	: 文字数 (-1 の場合、末尾まで抽出する)
-		@return		抽出された文字列
-	*/
-	template<typename TChar>
-	static GenericString<TChar> mid(const TChar* str, int start, int count = -1);
-
-	/**
-		@brief		文字列をデリミタで分割する
-		@param[in]	str		: 分割対象の文字列
-		@param[in]	delim	: デリミタ文字列
-		@param[in]	option	: 分割方法
-		@return		分割結果の文字列配列
-	*/
-	template<typename TChar>
-	static GenericStringArray<TChar> split(const GenericString<TChar>& str, const TChar* delim, StringSplitOptions option = StringSplitOptions::None);
+	//template<typename TChar>
+	//static GenericString<TChar> mid(const TChar* str, int start, int count = -1);
 
 	template<typename TChar, typename TLookuped>
 	static void SplitHelper(const TChar* begin, const TChar* end, const TChar* delim, int delimLen, StringSplitOptions option, CaseSensitivity cs, TLookuped callback)
 	{
-		LN_VERIFY_ARG(begin != nullptr);
-		LN_VERIFY_ARG(end != nullptr);
-		LN_VERIFY_ARG(begin <= end);
-		LN_VERIFY_ARG(delim != nullptr);
+		if (LN_REQUIRE(begin != nullptr)) return;
+		if (LN_REQUIRE(end != nullptr)) return;
+		if (LN_REQUIRE(begin <= end)) return;
+		if (LN_REQUIRE(delim != nullptr)) return;
 
 		delimLen = (delimLen < 0) ? tcslen(delim) : delimLen;
 		const TChar* cur = begin;

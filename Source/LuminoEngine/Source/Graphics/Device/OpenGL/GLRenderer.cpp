@@ -41,8 +41,8 @@ void GLRenderer::activate()
 	// FBO や他にも共有できないものがある
 	// http://stackoverflow.com/questions/16782279/how-to-render-to-an-fbo-on-a-shared-context
 
-	if (LN_CHECK_STATE(m_vertexArray == 0)) return;
-	if (LN_CHECK_STATE(m_framebuffer == 0)) return;
+	if (LN_REQUIRE(m_vertexArray == 0)) return;
+	if (LN_REQUIRE(m_framebuffer == 0)) return;
 
 	glGenVertexArrays(1, &m_vertexArray);
 	glGenFramebuffers(1, &m_framebuffer);
@@ -415,10 +415,7 @@ void GLRenderer::onClear(ClearFlags flags, const Color& color, float z, uint8_t 
 //------------------------------------------------------------------------------
 void GLRenderer::onDrawPrimitive(PrimitiveType primitive, int startVertex, int primitiveCount)
 {
-	if (m_currentVertexBuffer == NULL) {
-		LN_THROW(0, InvalidOperationException);
-		return;
-	}
+	if (LN_REQUIRE(m_currentVertexBuffer)) return;
 
 	// 描画に必要な情報を最新にする
 	//UpdateRenderState(m_requestedRenderState, m_justSawReset);
@@ -453,12 +450,7 @@ void GLRenderer::onDrawPrimitive(PrimitiveType primitive, int startVertex, int p
 //------------------------------------------------------------------------------
 void GLRenderer::onDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex, int primitiveCount)
 {
-	if (m_currentVertexBuffer == NULL ||
-		m_currentIndexBuffer == NULL ||
-		m_currentShaderPass == NULL) {
-		LN_THROW(0, InvalidOperationException);
-		return;
-	}
+	if (LN_REQUIRE(m_currentVertexBuffer && m_currentIndexBuffer && m_currentShaderPass)) return;
 
 	// 描画に必要な情報を最新にする
 	//UpdateRenderState(m_requestedRenderState, m_justSawReset);
@@ -564,7 +556,7 @@ void GLRenderer::getPrimitiveInfo(PrimitiveType primitive, int primitiveCount, G
 		*vertexCount = primitiveCount;
 		break;
 	default:
-		LN_THROW(0, ArgumentException);
+		LN_UNREACHABLE();
 		break;
 	}
 }

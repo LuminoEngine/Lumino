@@ -1,6 +1,7 @@
 ﻿
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <fnmatch.h>
 #include "../Internal.h"
 #include "../../include/Lumino/Base/ByteBuffer.h"
 #include "../../include/Lumino/Text/Encoding.h"
@@ -10,13 +11,6 @@
 
 LN_NAMESPACE_BEGIN
 
-#define MBCS_FILEPATH(mbcsPath, srcWPath) \
-	char mbcsPath[LN_MAX_PATH + 1]; \
-	if (wcstombs(mbcsPath, srcWPath, LN_MAX_PATH) < 0) { \
-		LN_THROW(0, IOException); \
-	}
-
-//------------------------------------------------------------------------------
 static bool is_stat_writable(struct stat *st, const char *path)
 {
 	// 制限なしに書き込み可であるか
@@ -32,225 +26,233 @@ static bool is_stat_writable(struct stat *st, const char *path)
 	return access(path, W_OK) == 0;
 }
 
-//------------------------------------------------------------------------------
-bool FileSystem::existsFile(const StringRefA& filePath)
+class PlatformFileSystem
 {
-	//if (filePath == NULL) {
-	//	return false;
-	//}
-	PathNameA path(filePath);
+public:
+	using PathChar = char;
+	using PathString = std::string;
 
-	// ※fopen によるチェックはNG。ファイルが排他ロックで開かれていた時に失敗する。
-	// ※access によるチェックもNG。ディレクトリも考慮してしまう。
-	struct stat st;
-	int ret = ::stat(path.c_str(), &st);
-	if (ret == 0)
+	static bool existsFile(const char* filePath)
 	{
-		if (S_ISDIR(st.st_mode)) {
-			return false;		// ディレクトリだった。
+		// ※fopen によるチェックはNG。ファイルが排他ロックで開かれていた時に失敗する。
+		// ※access によるチェックもNG。ディレクトリも考慮してしまう。
+		struct stat st;
+		int ret = ::stat(filePath, &st);
+		if (ret == 0)
+		{
+			if (S_ISDIR(st.st_mode)) {
+				return false;		// ディレクトリだった。
+			}
+			return true;
 		}
-		return true;
-	}
-	return false;
-
-#if 0
-	// http://www.ie.u-ryukyu.ac.jp/?kono/lecture/1999/os/info1/file-2.html
-	//struct stat st;
-	//int ret = ::stat(file, &st);
-	//
-	int ret = access(filePath, F_OK);
-	if (ret == -1) {
-		if (errno == ENOENT) {
-			return false;
-		}
-		else {
-			// パスが長い、メモリが足りない等理由は様々。
-			// http://linuxjm.sourceforge.jp/html/LDP_man-pages/man2/faccessat.2.html
-			LN_THROW(0, IOException, strerror(errno));
-		}
-	}
-	return true;
-#endif
-}
-bool FileSystem::existsFile(const StringRefW& filePath)
-{
-	if (filePath.IsNullOrEmpty()) {
 		return false;
 	}
-	MBCS_FILEPATH(mbcsFilePath, filePath.getBegin());	// TODO: GetBegin
-	return existsFile(mbcsFilePath);
-}
 
-//------------------------------------------------------------------------------
-void FileSystem::setAttribute(const char* filePath, FileAttribute attrs)
-{
-	struct stat st;
-	int ret = ::stat(filePath, &st);
-	LN_THROW(ret != -1, IOException);
-
-	// 変更できるのは読み取り属性だけ。
-	// 隠し属性は Unix ではファイル名で表現する。
-	if (attrs.TestFlag(FileAttribute::ReadOnly)) {
-		ret = ::chmod(filePath, st.st_mode & ~(S_IWUSR | S_IWOTH | S_IWGRP));
-	}
-	else {
-		ret = ::chmod(filePath, st.st_mode | S_IWUSR);
-	}
-	LN_THROW(ret != -1, IOException);
-}
-void FileSystem::setAttribute(const wchar_t* filePath, FileAttribute attrs)
-{
-	MBCS_FILEPATH(mbcsFilePath, filePath);
-	return setAttribute(mbcsFilePath, attrs);
-}
-
-//------------------------------------------------------------------------------
-void FileSystem::copy(const char* sourceFileName, const char* destFileName, bool overwrite)
-{
-	// コピー先ファイルの存在確認
-	if (!overwrite && existsFile(destFileName)) {
-		LN_THROW(0, IOException);
-	}
-
-	// http://ppp-lab.sakura.ne.jp/ProgrammingPlacePlus/c/044.html
-	FILE* fpSrc = fopen(sourceFileName, "rb");
-	if (fpSrc == NULL) {
-		LN_THROW(0, IOException);
-	}
-
-	FILE* fpDest = fopen(destFileName, "wb");
-	if (fpDest == NULL) {
-		LN_THROW(0, IOException);
-	}
-
-	// バイナリデータとして 1byte ずつコピー
-	// (windows ではバッファリングが効くけど、それ以外はわからない。
-	//  Linux とかで極端に遅くなるようならここでバッファリングも考える)
-	while (1)
+	static void setAttribute(const char* filePath, FileAttribute attr)
 	{
-		byte_t b;
-		fread(&b, 1, 1, fpSrc);
-		if (feof(fpSrc)) {
-			break;
+		struct stat st;
+		int ret = ::stat(filePath, &st);
+		LN_THROW(ret != -1, IOException);
+
+		// 変更できるのは読み取り属性だけ。
+		// 隠し属性は Unix ではファイル名で表現する。
+		if (attr.TestFlag(FileAttribute::ReadOnly)) {
+			ret = ::chmod(filePath, st.st_mode & ~(S_IWUSR | S_IWOTH | S_IWGRP));
 		}
-		if (ferror(fpSrc)) {
+		else {
+			ret = ::chmod(filePath, st.st_mode | S_IWUSR);
+		}
+		LN_THROW(ret != -1, IOException);
+	}
+
+	static bool getAttribute(const char* path, FileAttribute* outAttr)
+	{
+		// Unix 系の場合、ファイルの先頭が . であれば隠しファイルである。
+		// mono-master/mono/io-layer/io.c の、_wapi_stat_to_file_attributes が参考になる。
+		struct stat st;
+		int ret = ::stat(path, &st);
+		if (ret == -1) {
+			return false;
+		}
+
+		const char* fileName = PathTraits::getFileNameSub(path);
+		FileAttribute attrs = FileAttribute::None;
+		if (S_ISDIR(st.st_mode))
+		{
+			attrs |= FileAttribute::Directory;
+			if (!is_stat_writable(&st, path)) {
+				attrs |= FileAttribute::ReadOnly;
+			}
+			if (fileName[0] == '.') {
+				attrs |= FileAttribute::Hidden;
+			}
+		}
+		else
+		{
+			attrs |= FileAttribute::Normal;
+			if (!is_stat_writable(&st, path)) {
+				attrs |= FileAttribute::ReadOnly;
+			}
+			if (fileName[0] == '.') {
+				attrs |= FileAttribute::Hidden;
+			}
+		}
+		*outAttr = attrs;
+		return true;
+	}
+
+	static void copyFile(const char* sourceFileName, const char* destFileName, bool overwrite)
+	{
+		// コピー先ファイルの存在確認
+		if (!overwrite && existsFile(destFileName)) {
 			LN_THROW(0, IOException);
 		}
 
-		fwrite(&b, sizeof(b), 1, fpDest);
+		// http://ppp-lab.sakura.ne.jp/ProgrammingPlacePlus/c/044.html
+		FILE* fpSrc = fopen(sourceFileName, "rb");
+		if (fpSrc == NULL) {
+			LN_THROW(0, IOException);
+		}
+
+		FILE* fpDest = fopen(destFileName, "wb");
+		if (fpDest == NULL) {
+			LN_THROW(0, IOException);
+		}
+
+		// バイナリデータとして 1byte ずつコピー
+		// (windows ではバッファリングが効くけど、それ以外はわからない。
+		//  Linux とかで極端に遅くなるようならここでバッファリングも考える)
+		while (1)
+		{
+			byte_t b;
+			fread(&b, 1, 1, fpSrc);
+			if (feof(fpSrc)) {
+				break;
+			}
+			if (ferror(fpSrc)) {
+				LN_THROW(0, IOException);
+			}
+
+			fwrite(&b, sizeof(b), 1, fpDest);
+		}
+
+		fclose(fpDest);
+		fclose(fpSrc);
 	}
 
-	fclose(fpDest);
-	fclose(fpSrc);
-}
+	static void deleteFile(const char* filePath)
+	{
+		int ret = remove(filePath);
+		if (ret == -1) LN_THROW(0, IOException, strerror(errno));
+	}
 
-void FileSystem::copy(const wchar_t* sourceFileName, const wchar_t* destFileName, bool overwrite)
-{
-	MBCS_FILEPATH(mbcsSrc, sourceFileName);
-	MBCS_FILEPATH(mbcsDest, destFileName);
-	copy(mbcsSrc, mbcsDest, overwrite);
-}
+	static bool createDirectory(const char* path)
+	{
+		int ret = ::mkdir(path, 0755);
+		return ret != -1;
+	}
 
-//------------------------------------------------------------------------------
-void FileSystem::deleteFile(const char* filePath)
-{
-	int ret = remove(filePath);
-	if (ret == -1) LN_THROW(0, IOException, strerror(errno));
-}
-void FileSystem::deleteFile(const wchar_t* filePath)
-{
-	MBCS_FILEPATH(mbcsFilePath, filePath);
-	deleteFile(mbcsFilePath);
-}
+	static void removeDirectory(const char* path)
+	{
+		int r = rmdir(path);
+		LN_THROW(r == 0, IOException);
+	}
 
-//------------------------------------------------------------------------------
-uint64_t FileSystem::getFileSize(const TCHAR* filePath)
-{
-	if (LN_CHECK_ARG(filePath != nullptr)) return 0;
-	detail::GenericStaticallyLocalPath<char> localPath(filePath);
-	struct stat stat_buf;
-	int r = stat(localPath.c_str(), &stat_buf);
-	LN_THROW(r == 0, FileNotFoundException);
-	return stat_buf.st_size;
-}
+	static bool matchPath(const char* filePath, const char* pattern)
+	{
+		return fnmatch(pattern, filePath, FNM_PATHNAME) == 0;
+	}
 
-//------------------------------------------------------------------------------
-uint64_t FileSystem::getFileSize(FILE* stream)
-{
-	struct stat stbuf;
-	int handle = fileno(stream);
-	if (handle == 0) {
+	static int getCurrentDirectory(int bufferLength, char* outBuffer)
+	{
+		LN_NOTIMPLEMENTED();
 		return 0;
 	}
-	if (fstat(handle, &stbuf) == -1) {
-		return 0;
-	}
-	return stbuf.st_size;
-}
-//------------------------------------------------------------------------------
-bool FileSystem::mkdir(const char* path)
-{
-	int ret = ::mkdir(path, 0755);
-	return ret != -1;
-}
-bool FileSystem::mkdir(const wchar_t* path)
-{
-	MBCS_FILEPATH(mbcsFilePath, path);
-	return mkdir(mbcsFilePath);
-}
-
-//------------------------------------------------------------------------------
-bool FileSystem::getAttributeInternal(const char* path, FileAttribute* outAttr)
-{
-	// Unix 系の場合、ファイルの先頭が . であれば隠しファイルである。
-	// mono-master/mono/io-layer/io.c の、_wapi_stat_to_file_attributes が参考になる。
-	struct stat st;
-	int ret = ::stat(path, &st);
-	if (ret == -1) {
-		return false;
-	}
-
-	const char* fileName = PathTraits::getFileNameSub(path);
-	FileAttribute attrs = FileAttribute::None;
-	if (S_ISDIR(st.st_mode))
+	
+	static uint64_t getFileSize(const char* filePath)
 	{
-		attrs |= FileAttribute::Directory;
-		if (!is_stat_writable(&st, path)) {
-			attrs |= FileAttribute::ReadOnly;
-		}
-		if (fileName[0] == '.') {
-			attrs |= FileAttribute::Hidden;
-		}
+		struct stat stat_buf;
+		int r = stat(filePath, &stat_buf);
+		LN_THROW(r == 0, FileNotFoundException);
+		return stat_buf.st_size;
 	}
-	else
-	{
-		attrs |= FileAttribute::Normal;
-		if (!is_stat_writable(&st, path)) {
-			attrs |= FileAttribute::ReadOnly;
-		}
-		if (fileName[0] == '.') {
-			attrs |= FileAttribute::Hidden;
-		}
-	}
-	*outAttr = attrs;
-	return true;
-}
-bool FileSystem::getAttributeInternal(const wchar_t* path, FileAttribute* outAttr)
-{
-	MBCS_FILEPATH(mbcsFilePath, path);
-	return getAttributeInternal(mbcsFilePath, outAttr);
-}
 
-//------------------------------------------------------------------------------
-static void RemoveDirectoryImpl(const char* path)
+	static uint64_t getFileSize(FILE* stream)
+	{
+		struct stat stbuf;
+		int handle = fileno(stream);
+		if (handle == 0) {
+			return 0;
+		}
+		if (fstat(handle, &stbuf) == -1) {
+			return 0;
+		}
+		return stbuf.st_size;
+	}
+
+	static FILE* fopen(const char* path, const char* mode)
+	{
+		return fopen(path, mode);
+	}
+};
+
+class PlatformFileFinderImpl
 {
-	int r = rmdir(path);
-	LN_THROW(r == 0, IOException);
-}
-static void RemoveDirectoryImpl(const wchar_t* path)
-{
-	detail::GenericStaticallyLocalPath<char> localPath(path);
-	RemoveDirectoryImpl(localPath.c_str());
-}
+public:
+	PlatformFileFinderImpl()
+		: m_dir(NULL)
+		, m_current()
+	{}
+
+	~PlatformFileFinderImpl()
+	{
+		if (m_dir != NULL)
+		{
+			closedir(m_dir);
+		}
+	}
+
+	void initialize(const char* path, int len)
+	{
+		m_dir = opendir(path);
+		LN_THROW(m_dir != NULL, IOException, path);
+	}
+
+	const std::string& getCurrentFileName() const
+	{
+		return m_current;
+	}
+
+	bool isWorking() const
+	{
+		return !m_current.empty();
+	}
+
+	bool next()
+	{
+		struct dirent* entry;
+		do
+		{
+			entry = readdir(m_dir);
+			if (entry)
+			{
+				m_current = entry->d_name;
+			}
+			else
+			{
+				m_current.clear();
+				break;
+			}
+
+		} while (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0);
+
+		return !m_current.empty();
+	}
+
+private:
+	DIR*			m_dir;
+	std::string		m_current;
+};
+
 
 LN_NAMESPACE_END

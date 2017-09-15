@@ -216,7 +216,7 @@ public:
 	}
 
 	/// 保存 (bitmapData のフォーマットは PixelFormat_BYTE_R8G8B8A8 であること)
-	void save(const TCHAR* filePath, const ByteBuffer& bitmapData, const SizeI& size, bool upFlow)
+	void save(const Char* filePath, const ByteBuffer& bitmapData, const SizeI& size, bool upFlow)
 	{
 		FILE *fp;
 		_tfopen_s(&fp, filePath, _T("wb"));

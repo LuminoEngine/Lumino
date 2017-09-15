@@ -39,6 +39,7 @@
 #include "../Internal.h"
 #include <locale.h>
 #include <Lumino/Base/Locale.h>
+#include <Lumino/Base/StdStringHelper.h>
 
 LN_NAMESPACE_BEGIN
 
@@ -62,7 +63,7 @@ static NativeLocale_t CreateNativeLocale(const wchar_t* locale)
 }
 
 //---------------------------------------------
-static void GetNativeDefaultLocale(NativeLocale_t* outLocale, StringW* outName)
+static void GetNativeDefaultLocale(NativeLocale_t* outLocale, std::wstring* outName)
 {
 	// setlocale を使用した方法は Windows でも可能だが、取得できるのは必ずシステムロケールになってしまう。
 	// Qt 等のほかのフレームワークでもユーザーロケールを優先しているし、
@@ -102,7 +103,7 @@ static NativeLocale_t CreateNativeLocale(const char* locale)
 	return newlocale(LC_ALL_MASK, locale, NULL);
 }
 //---------------------------------------------
-static void GetNativeDefaultLocale(NativeLocale_t* outLocale, StringA* outName)
+static void GetNativeDefaultLocale(NativeLocale_t* outLocale, std::string* outName)
 {
 	//// How Programs Set the Locale
 	//// http://www.gnu.org/software/libc/manual/html_node/Setting-the-Locale.html
@@ -130,22 +131,20 @@ Locale::Locale()
 	, m_nativeName()
 {
 	GetNativeDefaultLocale(&m_nativeLocale, &m_nativeName);
-	StringA name = m_nativeName.toStringA();
-	m_stdLocale = std::locale(name.c_str());
+	m_stdLocale = std::locale(StdStringHelper::makeStdString(m_nativeName.c_str()));
 }
 
 //------------------------------------------------------------------------------
-Locale::Locale(const TCHAR* name)
+Locale::Locale(const Char* name)
 : m_nativeLocale(0)
 #if defined(LN_OS_WIN32)
-	, m_nativeName(StringW::fromNativeCharString(name))
+	, m_nativeName(String(name).toStdWString())
 #else
-    , m_nativeName(StringA::FromNativeCharString(name))
+	, m_nativeName(String(name).toStdString())
 #endif
 {
 	m_nativeLocale = CreateNativeLocale(m_nativeName.c_str());
-	StringA t = m_nativeName.toStringA();
-	m_stdLocale = std::locale(t.c_str());
+	m_stdLocale = std::locale(StdStringHelper::makeStdString(m_nativeName.c_str()));
 }
 
 //------------------------------------------------------------------------------

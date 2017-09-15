@@ -3,7 +3,7 @@
 cmake_minimum_required (VERSION 3.0.0)
 project (LuminoCore)
 
-include(cmake/LNCommon.cmake NO_POLICY_SCOPE)
+include(${PROJECT_SOURCE_DIR}/../../CMake/LuminoCommon.cmake NO_POLICY_SCOPE)
 
 set(LN_LINK_LIBS "")
 set(LN_UNIT_TEST_LINK_LIBS "")
@@ -13,11 +13,7 @@ set(LN_UNIT_TEST_LINK_LIBS "")
 #------------------------------------------------------------------------------
 
 # Unicode char set.
-if (WIN32)
 option(LN_USE_UNICODE_CHAR_SET "Use unicode char set." ON)
-else()
-option(LN_USE_UNICODE_CHAR_SET "Use unicode char set." OFF)
-endif()
 
 # MSVC Runtime library.
 option(LN_MSVC_STATIC_RUNTIME "static runtime (/MT, /MTd) or DLL runtime (/MD, /MDd) or to link either." ON)
@@ -64,13 +60,14 @@ set(LN_SOURCES_Base
 	Include/Lumino/Base/Resource.h
 	Include/Lumino/Base/Resource.h
 	Include/Lumino/Base/Serialization.h
+	Include/Lumino/Base/SharedList.h
 	Include/Lumino/Base/Stack.h
 	Include/Lumino/Base/StdStringHelper.h
 	Include/Lumino/Base/StlHelper.h
 	Include/Lumino/Base/String.h
 	Include/Lumino/Base/StringArray.h
 	Include/Lumino/Base/StringBuilder.h
-	Include/Lumino/Base/StringRef.h
+	Include/Lumino/Base/StringFormat.inl
 	Include/Lumino/Base/StringHelper.h
 	Include/Lumino/Base/Typedef.h
 	Source/Base/ByteBuffer.cpp
@@ -89,7 +86,6 @@ set(LN_SOURCES_Base
 	Source/Base/Serialization.cpp
 	Source/Base/String.cpp
 	Source/Base/StringBuilder.cpp
-	Source/Base/StringRef.cpp
 	Source/Base/StringHelper.cpp
 )
 
@@ -149,7 +145,6 @@ set(LN_SOURCES_IO
 	Source/IO/DirectoryUtils.cpp
 	Source/IO/File.cpp
 	Source/IO/FileFinder_UNIX.h
-	Source/IO/FileFinder_Win32.h
 	Source/IO/FileStream.cpp
 	Source/IO/FileSystem.cpp
 	Source/IO/FileSystem_Unix.h
@@ -234,6 +229,7 @@ set(LN_SOURCES_Reflection
 	Include/Lumino/Reflection/ReflectionArrayObject.h
 	Include/Lumino/Reflection/ReflectionEventArgs.h
 	Include/Lumino/Reflection/ReflectionObject.h
+	Include/Lumino/Reflection/ReflectionObjectList.h
 	Include/Lumino/Reflection/ReflectionStruct.h
 	Include/Lumino/Reflection/TypeInfo.h
 	Include/Lumino/Reflection/Variant.h
@@ -328,7 +324,7 @@ set(LN_SOURCES
 	${LN_SOURCES_Testing})
 
 set(LN_INCLUDE_DIRECTORIES
-	${PROJECT_SOURCE_DIR}/include)
+	${PROJECT_SOURCE_DIR}/Include)
 include_directories(${LN_INCLUDE_DIRECTORIES})
 
 #------------------------------------------------------------------------------
@@ -341,19 +337,6 @@ if (LN_USE_UNICODE_CHAR_SET)
 endif()
 
 if (WIN32)
-	if (LN_MSVC_STATIC_RUNTIME)
-		foreach (flag CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE)
-			if (${flag} MATCHES "/MD")
-				string(REGEX REPLACE "/MD" "/MT" ${flag} "${${flag}}")
-			endif()
-			if (${flag} MATCHES "/MDd")
-				string(REGEX REPLACE "/MDd" "/MTd" ${flag} "${${flag}}")
-			endif()
-		endforeach()
-	endif()
-
-	#set(CMAKE_DEBUG_POSTFIX "d")
-	
 	add_definitions("/EHsc")	# VS2015, cmake
 
 	# link librarys.
@@ -400,7 +383,7 @@ endif()
 add_library(${PROJECT_NAME} STATIC ${LN_SOURCES})
 ln_add_common_property(${PROJECT_NAME})
 target_link_libraries(${PROJECT_NAME} ${LN_LINK_LIBS})
-ln_add_pch(${PROJECT_NAME} "LuminoCore.PCH.h" "Source/LuminoCore.PCH.cpp")
+ln_add_pch(${PROJECT_NAME} "Source/LuminoCore.PCH.h" "Source/LuminoCore.PCH.cpp")
 
 # Unit test.
-add_subdirectory(test)
+add_subdirectory(Test)

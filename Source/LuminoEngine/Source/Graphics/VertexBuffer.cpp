@@ -77,6 +77,7 @@ void VertexBuffer::initialize(detail::GraphicsManager* manager, size_t bufferSiz
 	else
 	{
 		m_buffer.resize(bufferSize);
+		m_locked = true;
 	}
 }
 
@@ -96,7 +97,7 @@ int VertexBuffer::getSize() const
 //------------------------------------------------------------------------------
 void VertexBuffer::reserve(int size)
 {
-	if (LN_CHECK_STATE(!isRHIDirect())) return;		// サイズ変更禁止
+	if (LN_REQUIRE(!isRHIDirect())) return;		// サイズ変更禁止
 
 	size_t newSize = static_cast<size_t>(size);
 	if (newSize != m_buffer.capacity())
@@ -108,7 +109,7 @@ void VertexBuffer::reserve(int size)
 //------------------------------------------------------------------------------
 void VertexBuffer::resize(int size)
 {
-	if (LN_CHECK_STATE(!isRHIDirect())) return;		// サイズ変更禁止
+	if (LN_REQUIRE(!isRHIDirect())) return;		// サイズ変更禁止
 
 	size_t newSize = static_cast<size_t>(size);
 	if (newSize != m_buffer.size())
@@ -185,6 +186,8 @@ Driver::IVertexBuffer* VertexBuffer::resolveRHIObject()
 			}
 		}
 	}
+
+	if (LN_ENSURE(m_rhiObject)) return nullptr;
 
 	m_initialUpdate = false;
 	m_locked = false;

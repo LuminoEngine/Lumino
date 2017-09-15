@@ -177,7 +177,7 @@ public:
 	virtual ~TextureBrush();
 
 public:
-	void create(const TCHAR* filePath, detail::GraphicsManager* manager);
+	void create(const Char* filePath, detail::GraphicsManager* manager);
 	void create(Texture* texture);
 	
 

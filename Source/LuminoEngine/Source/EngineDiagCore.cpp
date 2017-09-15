@@ -53,17 +53,17 @@ EngineDiagCore::~EngineDiagCore()
 //------------------------------------------------------------------------------
 void EngineDiagCore::initialize(EngineManager* manager)
 {
-	if (LN_CHECK_ARG(manager != nullptr)) return;
+	if (LN_REQUIRE(manager != nullptr)) return;
 	m_manager = manager;
 }
 
 //------------------------------------------------------------------------------
-void EngineDiagCore::reportCapability(int indent, const char* name, const char* value)
-{
-	StringA str(indent, '\t');
-	str = StringA::format("{0}{1} : {2}", str, name, value);
-	Logger::writeLine(str.c_str());
-}
+//void EngineDiagCore::reportCapability(int indent, const char* name, const char* value)
+//{
+//	StringA str(indent, '\t');
+//	str = StringA::format("{0}{1} : {2}", str, name, value);
+//	Logger::writeLine(str.c_str());
+//}
 
 //------------------------------------------------------------------------------
 float EngineDiagCore::getMainFPS() const
@@ -101,7 +101,7 @@ EngineDiagViewer::~EngineDiagViewer()
 //------------------------------------------------------------------------------
 void EngineDiagViewer::initialize(EngineManager* manager, EngineDiagCore* diagCore)
 {
-	if (LN_CHECK_ARG(manager != nullptr)) return;
+	if (LN_REQUIRE(manager != nullptr)) return;
 	m_diagCore = diagCore;
 	m_mainWindow = manager->getPlatformManager()->getMainWindow();
 	m_originalMainWindowTitle = m_mainWindow->getTitleText();
@@ -124,7 +124,7 @@ void EngineDiagViewer::updateFrame()
 {
 	if (m_displayMode == EngineDiagDisplayMode::FpsSummary)
 	{
-		String str = String::format(_T("{0} - MainFPS:{1}/{2}"), m_originalMainWindowTitle, m_diagCore->getMainFPS(), m_diagCore->getMainFPSCapacity());
+		String str = String::format(_LT("{0} - MainFPS:{1}/{2}"), m_originalMainWindowTitle, m_diagCore->getMainFPS(), m_diagCore->getMainFPSCapacity());
 		m_mainWindow->setTitleText(str);
 	}
 }
@@ -178,7 +178,7 @@ void EngineDiagViewer::Render(DrawingContext* g, const Vector2& viewSize)
 	location.y += 16;
 	location.x += 16;
 
-	TCHAR text[256] = { 0 };
+	Char text[256] = { 0 };
 
 	//StringTraits::SPrintf(text, 256, _T("Graphics API    : %s"), m_manager->getGraphicsAPI().ToString().c_str());
 	//g->drawText(text, -1, location);

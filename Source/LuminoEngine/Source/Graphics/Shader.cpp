@@ -35,36 +35,36 @@ namespace detail {
 
 static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_CameraUnit =
 {
-	{ _T("ln_View"), BuiltinSemantics::View },
-	{ _T("ln_Projection"), BuiltinSemantics::Projection },
-	{ _T("ln_ViewportPixelSize"), BuiltinSemantics::ViewportPixelSize },
+	{ _LT("ln_View"), BuiltinSemantics::View },
+	{ _LT("ln_Projection"), BuiltinSemantics::Projection },
+	{ _LT("ln_ViewportPixelSize"), BuiltinSemantics::ViewportPixelSize },
 };
 
 static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_ElementUnit =
 {
-	{ _T("ln_WorldViewProjection"), BuiltinSemantics::WorldViewProjection },
-	{ _T("ln_World"), BuiltinSemantics::World },
-	{ _T("ln_LightEnables"), BuiltinSemantics::LightEnables },
-	{ _T("ln_LightWVPMatrices"), BuiltinSemantics::LightWVPMatrices },
-	{ _T("ln_LightDirections"), BuiltinSemantics::LightDirections },
-	{ _T("ln_LightPositions"), BuiltinSemantics::LightPositions },
-	{ _T("ln_LightZFars"), BuiltinSemantics::LightZFars },
-	{ _T("ln_LightDiffuses"), BuiltinSemantics::LightDiffuses },
-	{ _T("ln_LightAmbients"), BuiltinSemantics::LightAmbients },
-	{ _T("ln_LightSpeculars"), BuiltinSemantics::LightSpeculars },
+	{ _LT("ln_WorldViewProjection"), BuiltinSemantics::WorldViewProjection },
+	{ _LT("ln_World"), BuiltinSemantics::World },
+	{ _LT("ln_LightEnables"), BuiltinSemantics::LightEnables },
+	{ _LT("ln_LightWVPMatrices"), BuiltinSemantics::LightWVPMatrices },
+	{ _LT("ln_LightDirections"), BuiltinSemantics::LightDirections },
+	{ _LT("ln_LightPositions"), BuiltinSemantics::LightPositions },
+	{ _LT("ln_LightZFars"), BuiltinSemantics::LightZFars },
+	{ _LT("ln_LightDiffuses"), BuiltinSemantics::LightDiffuses },
+	{ _LT("ln_LightAmbients"), BuiltinSemantics::LightAmbients },
+	{ _LT("ln_LightSpeculars"), BuiltinSemantics::LightSpeculars },
 };
 
 static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_SubsetUnit =
 {
-	{ _T("ln_MaterialTexture"), BuiltinSemantics::MaterialTexture },
-	{ _T("ln_MaterialDiffuse"), BuiltinSemantics::MaterialDiffuse },
-	{ _T("ln_MaterialAmbient"), BuiltinSemantics::MaterialAmbient },
-	{ _T("ln_MaterialEmmisive"), BuiltinSemantics::MaterialEmmisive },
-	{ _T("ln_MaterialSpecular"), BuiltinSemantics::MaterialSpecular },
-	{ _T("ln_MaterialSpecularPower"), BuiltinSemantics::MaterialSpecularPower },
-	{ _T("ln_ColorScale"), BuiltinSemantics::ColorScale },
-	{ _T("ln_BlendColor"), BuiltinSemantics::BlendColor },
-	{ _T("ln_ToneColor"), BuiltinSemantics::ToneColor },
+	{ _LT("ln_MaterialTexture"), BuiltinSemantics::MaterialTexture },
+	{ _LT("ln_MaterialDiffuse"), BuiltinSemantics::MaterialDiffuse },
+	{ _LT("ln_MaterialAmbient"), BuiltinSemantics::MaterialAmbient },
+	{ _LT("ln_MaterialEmmisive"), BuiltinSemantics::MaterialEmmisive },
+	{ _LT("ln_MaterialSpecular"), BuiltinSemantics::MaterialSpecular },
+	{ _LT("ln_MaterialSpecularPower"), BuiltinSemantics::MaterialSpecularPower },
+	{ _LT("ln_ColorScale"), BuiltinSemantics::ColorScale },
+	{ _LT("ln_BlendColor"), BuiltinSemantics::BlendColor },
+	{ _LT("ln_ToneColor"), BuiltinSemantics::ToneColor },
 };
 
 //------------------------------------------------------------------------------
@@ -82,7 +82,7 @@ ShaderSemanticsManager::ShaderSemanticsManager()
 //------------------------------------------------------------------------------
 void ShaderSemanticsManager::initialize(GraphicsManager* manager)
 {
-	if (LN_CHECK_ARG(manager != nullptr)) return;
+	if (LN_REQUIRE(manager != nullptr)) return;
 	m_manager = manager;
 }
 
@@ -445,7 +445,7 @@ void Shader::initialize(detail::GraphicsManager* manager, const void* code, int 
 
 		sb << std::string(cc.data(), cc.size());
 
-		//FileSystem::WriteAllBytes(_T("code.c"), cc.data(), cc.size());
+		//FileSystem::WriteAllBytes(_LT("code.c"), cc.data(), cc.size());
 	}
 	else
 	{
@@ -538,10 +538,12 @@ void Shader::tryCommitChanges()
 }
 
 //------------------------------------------------------------------------------
-ShaderVariable* Shader::findVariable(const TCHAR* name, CaseSensitivity cs) const
+ShaderVariable* Shader::findVariable(const Char* name, CaseSensitivity cs) const
 {
-	for (ShaderVariable* var : m_variables) {
-		if (var->getName().compare(name, -1, cs) == 0) {
+	for (ShaderVariable* var : m_variables)
+	{
+		if (String::compare(StringRef(var->getName()), 0, StringRef(name), 0, -1, cs) == 0)
+		{
 			return var;
 		}
 	}
@@ -555,10 +557,12 @@ const List<ShaderTechnique*>& Shader::getTechniques() const
 }
 
 //------------------------------------------------------------------------------
-ShaderTechnique* Shader::findTechnique(const TCHAR* name, CaseSensitivity cs) const
+ShaderTechnique* Shader::findTechnique(const Char* name, CaseSensitivity cs) const
 {
-	for (auto* var : m_techniques) {
-		if (var->getName().compare(name, -1, cs) == 0) {
+	for (auto* var : m_techniques)
+	{
+		if (String::compare(StringRef(var->getName()), 0, StringRef(name), 0, -1, cs) == 0)
+		{
 			return var;
 		}
 	}
@@ -576,7 +580,7 @@ void Shader::onChangeDevice(Driver::IGraphicsDevice* device)
 	{
 		ShaderCompileResult result;
 		m_deviceObj = m_manager->getGraphicsDevice()->createShader(m_sourceCode.getConstData(), m_sourceCode.getSize(), &result);
-		LN_THROW(result.Level != ShaderCompileResultLevel_Error, InvalidOperationException);	// 一度生成に成功しているので発生はしないはず
+		LN_ENSURE(result.Level != ShaderCompileResultLevel_Error);	// 一度生成に成功しているので発生はしないはず
 
 		// 変数再割り当て
 		int varCount = m_deviceObj->getVariableCount();
@@ -751,9 +755,8 @@ void ShaderValue::setManagedTexture(Texture* texture)
 void ShaderValue::setString(const char* str)
 {
 	m_type = ShaderVariableType_String;
-	String s;
-	s.assignCStr(str);
-	size_t size = s.getByteCount() + sizeof(TCHAR);
+	String s = String::fromCString(str);
+	size_t size = s.getByteCount() + sizeof(Char);
 	allocValueBuffer(size);
 	memcpy(m_value.String, s.c_str(), size);
 	m_hashDirty = true;
@@ -763,7 +766,7 @@ void ShaderValue::setString(const char* str)
 void ShaderValue::setString(const String& s)
 {
 	m_type = ShaderVariableType_String;
-	size_t size = s.getByteCount() + sizeof(TCHAR);
+	size_t size = s.getByteCount() + sizeof(Char);
 	allocValueBuffer(size);
 	memcpy(m_value.String, s.c_str(), size);
 	m_hashDirty = true;
@@ -1152,7 +1155,7 @@ void ShaderVariable::setString(const char* str)
 }
 
 //------------------------------------------------------------------------------
-const TCHAR* ShaderVariable::getString() const
+const Char* ShaderVariable::getString() const
 {
 	return m_value.getString();
 }
@@ -1182,10 +1185,12 @@ const List<ShaderVariable*>& ShaderVariable::getAnnotations() const
 }
 
 //------------------------------------------------------------------------------
-ShaderVariable* ShaderVariable::findAnnotation(const TCHAR* name, CaseSensitivity cs) const
+ShaderVariable* ShaderVariable::findAnnotation(const Char* name, CaseSensitivity cs) const
 {
-	for (ShaderVariable* anno : m_annotations) {
-		if (anno->getName().compare(name, -1, cs) == 0) {
+	for (ShaderVariable* anno : m_annotations)
+	{
+		if (String::compare(StringRef(anno->getName()), 0, StringRef(name), 0, -1, cs) == 0)
+		{
 			return anno;
 		}
 	}
@@ -1282,10 +1287,10 @@ const List<ShaderPass*>& ShaderTechnique::getPasses() const
 }
 
 //------------------------------------------------------------------------------
-ShaderPass* ShaderTechnique::getPass(const TCHAR* name) const
+ShaderPass* ShaderTechnique::getPass(const Char* name) const
 {
 	auto itr = std::find_if(m_passes.begin(), m_passes.end(), [name](ShaderPass* pass) { return pass->getName() == name; });
-	LN_THROW(itr != m_passes.end(), KeyNotFoundException);
+	if (LN_REQUIRE_KEY(itr != m_passes.end())) return nullptr;
 	return *itr;
 }
 
@@ -1296,10 +1301,12 @@ const List<ShaderVariable*>& ShaderTechnique::getAnnotations() const
 }
 
 //------------------------------------------------------------------------------
-ShaderVariable* ShaderTechnique::findAnnotation(const TCHAR* name, CaseSensitivity cs) const
+ShaderVariable* ShaderTechnique::findAnnotation(const Char* name, CaseSensitivity cs) const
 {
-	for (ShaderVariable* anno : m_annotations) {
-		if (anno->getName().compare(name, -1, cs) == 0) {
+	for (ShaderVariable* anno : m_annotations)
+	{
+		if (String::compare(StringRef(anno->getName()), 0, StringRef(name), 0, -1, cs) == 0)
+		{
 			return anno;
 		}
 	}
@@ -1386,10 +1393,12 @@ const List<ShaderVariable*>& ShaderPass::getAnnotations() const
 }
 
 //------------------------------------------------------------------------------
-ShaderVariable* ShaderPass::findAnnotation(const TCHAR* name, CaseSensitivity cs) const
+ShaderVariable* ShaderPass::findAnnotation(const Char* name, CaseSensitivity cs) const
 {
-	for (ShaderVariable* anno : m_annotations) {
-		if (anno->getName().compare(name, -1, cs) == 0) {
+	for (ShaderVariable* anno : m_annotations)
+	{
+		if (String::compare(StringRef(anno->getName()), 0, StringRef(name), 0, -1, cs) == 0)
+		{
 			return anno;
 		}
 	}

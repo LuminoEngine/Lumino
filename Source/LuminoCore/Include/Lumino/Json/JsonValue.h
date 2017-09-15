@@ -29,7 +29,7 @@ public:
 	JsonValue();
 	explicit JsonValue(bool value);
 	JsonValue(double value);
-	explicit JsonValue(const TCHAR* value);
+	explicit JsonValue(const Char* value);
 	explicit JsonValue(const String& value);
 	explicit JsonValue(const JsonValue& value);
 	explicit JsonValue(JsonType::enum_type type);

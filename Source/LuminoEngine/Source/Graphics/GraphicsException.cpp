@@ -11,10 +11,14 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
-CompilationException::CompilationException(const ShaderCompileResult& result)
+CompilationException::CompilationException()
 {
-	m_message.assignCStr(result.Message.c_str());
-	m_messageMBCS = result.Message;
+}
+
+CompilationException::CompilationException(const ShaderCompileResult& result)
+	: CompilationException()
+{
+	setMessage(result);
 }
 
 //------------------------------------------------------------------------------
@@ -22,11 +26,16 @@ CompilationException::~CompilationException() throw()
 {
 }
 
-//------------------------------------------------------------------------------
-const char* CompilationException::what() const throw()
+void CompilationException::setMessage(const ShaderCompileResult& result)
 {
-	return m_messageMBCS.c_str();
+	m_message = String::fromCString(result.Message.c_str());
 }
+
+////------------------------------------------------------------------------------
+//const char* CompilationException::what() const throw()
+//{
+//	return m_messageMBCS.c_str();
+//}
 
 //------------------------------------------------------------------------------
 Exception* CompilationException::copy() const
@@ -35,7 +44,7 @@ Exception* CompilationException::copy() const
 }
 
 //------------------------------------------------------------------------------
-const TCHAR* CompilationException::getMessageOverride() const
+const Char* CompilationException::getMessage() const
 {
 	return m_message.c_str();
 }
@@ -44,29 +53,37 @@ const TCHAR* CompilationException::getMessageOverride() const
 // OpenGLException
 //==============================================================================
 
-//------------------------------------------------------------------------------
-OpenGLException::OpenGLException(unsigned int gl_enum)
+OpenGLException::OpenGLException()
 {
-	const String& caption = InternalResource::getString(InternalResource::OpenGLError);
-	switch (gl_enum)
-	{
-	case GL_INVALID_ENUM:		setMessage(caption.c_str(), _T("GL_INVALID_ENUM")); break;
-	case GL_INVALID_VALUE:		setMessage(caption.c_str(), _T("GL_INVALID_VALUE")); break;
-	case GL_INVALID_OPERATION:	setMessage(caption.c_str(), _T("GL_INVALID_OPERATION")); break;
-	case GL_STACK_OVERFLOW:		setMessage(caption.c_str(), _T("GL_STACK_OVERFLOW")); break;
-	case GL_STACK_UNDERFLOW:	setMessage(caption.c_str(), _T("GL_STACK_UNDERFLOW")); break;
-	case GL_OUT_OF_MEMORY:		setMessage(caption.c_str(), _T("GL_OUT_OF_MEMORY")); break;
-            
-        // 0x0506 1286
-        case GL_INVALID_FRAMEBUFFER_OPERATION:setMessage(caption.c_str(), _T("GL_OUT_OF_MEMORY")); break;
-	default:					setMessage(caption.c_str(), _T("GLenum %d"), gl_enum); break;
-	}
+	setCaption(InternalResource::getString(InternalResource::OpenGLError).c_str());
 }
 
-//------------------------------------------------------------------------------
-OpenGLException::~OpenGLException() throw()
+OpenGLException::OpenGLException(unsigned int gl_enum)
+	: OpenGLException()
 {
+	setMessage(gl_enum);
+}
 
+Exception* OpenGLException::copy() const
+{
+	return LN_NEW OpenGLException(*this);
+}
+
+void OpenGLException::setMessage(unsigned int gl_enum)
+{
+	switch (gl_enum)
+	{
+	case GL_INVALID_ENUM:		RuntimeException::setMessage(_T("GL_INVALID_ENUM")); break;
+	case GL_INVALID_VALUE:		RuntimeException::setMessage(_T("GL_INVALID_VALUE")); break;
+	case GL_INVALID_OPERATION:	RuntimeException::setMessage(_T("GL_INVALID_OPERATION")); break;
+	case GL_STACK_OVERFLOW:		RuntimeException::setMessage(_T("GL_STACK_OVERFLOW")); break;
+	case GL_STACK_UNDERFLOW:	RuntimeException::setMessage(_T("GL_STACK_UNDERFLOW")); break;
+	case GL_OUT_OF_MEMORY:		RuntimeException::setMessage(_T("GL_OUT_OF_MEMORY")); break;
+
+		// 0x0506 1286
+	case GL_INVALID_FRAMEBUFFER_OPERATION: RuntimeException::setMessage(_T("GL_OUT_OF_MEMORY")); break;
+	default:					RuntimeException::setMessage(_T("GLenum %d"), gl_enum); break;
+	}
 }
 
 LN_NAMESPACE_GRAPHICS_END

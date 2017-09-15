@@ -39,7 +39,7 @@ const String& AnimationState::getName() const
 //------------------------------------------------------------------------------
 void AnimationState::refresh(Animator* animator)
 {
-	if (LN_CHECK_ARG(animator != nullptr)) return;
+	if (LN_REQUIRE(animator != nullptr)) return;
 
 	clearTargetList();
 
@@ -150,12 +150,12 @@ void AnimationState::setLocalTime(double time)
 		}
 		case ValueType_Vector3:
 		{
-			LN_THROW(0, NotImplementedException);
+			LN_NOTIMPLEMENTED();
 			break;
 		}
 		case ValueType_Quaternion:
 		{
-			LN_THROW(0, NotImplementedException);
+			LN_NOTIMPLEMENTED();
 			break;
 		}
 		case ValueType_SQTTransform:

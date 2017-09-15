@@ -17,7 +17,6 @@ CacheKey::CacheKey()
 	: m_keyType(Type_Null)
 	, m_hashCode(0)
 	, m_string()
-	, m_pathName()
 {
 }
 
@@ -26,16 +25,14 @@ CacheKey::CacheKey(uint64_t hashCode)
 	: m_keyType(Type_HashCode)
 	, m_hashCode(hashCode)
 	, m_string()
-	, m_pathName()
 {
 }
 
 //------------------------------------------------------------------------------
-CacheKey::CacheKey(const TCHAR* str)
+CacheKey::CacheKey(const Char* str)
 	: m_keyType(Type_String)
 	, m_hashCode(0)
 	, m_string(str)
-	, m_pathName()
 {
 }
 
@@ -44,7 +41,6 @@ CacheKey::CacheKey(const String& str)
 	: m_keyType(Type_String)
 	, m_hashCode(0)
 	, m_string(str)
-	, m_pathName()
 {
 }
 
@@ -53,16 +49,6 @@ CacheKey::CacheKey(const StringRef& str)
 	: m_keyType(Type_String)
 	, m_hashCode(0)
 	, m_string(str)
-	, m_pathName()
-{
-}
-
-//------------------------------------------------------------------------------
-CacheKey::CacheKey(const PathName& path)
-	: m_keyType(Type_PathName)
-	, m_hashCode(0)
-	, m_string()
-	, m_pathName(path)
 {
 }
 
@@ -81,8 +67,6 @@ bool CacheKey::operator == (const CacheKey& key) const
 		return (m_hashCode == key.m_hashCode);
 	case Type_String:
 		return (m_string == key.m_string);
-	case Type_PathName:
-		return (m_pathName == key.m_pathName);
 	}
 
 	LN_ASSERT(0);	// ここに来るのは NG
@@ -104,8 +88,6 @@ bool CacheKey::operator < (const CacheKey& key) const
 		return (m_hashCode < key.m_hashCode);
 	case Type_String:
 		return (m_string < key.m_string);
-	case Type_PathName:
-		return (m_pathName < key.m_pathName);
 	}
 
 	LN_ASSERT(0);	// ここに来るのは NG

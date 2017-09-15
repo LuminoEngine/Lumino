@@ -129,14 +129,14 @@ public:
 	virtual ~GLShaderAnnotation();
 	void initialize(const String& type, const String& name, const String& value);
 
-	virtual void setBool(bool value) { LN_THROW(0, InvalidOperationException); }
-	virtual void setInt(int value) { LN_THROW(0, InvalidOperationException); }
-	virtual void setFloat(float value) { LN_THROW(0, InvalidOperationException); }
-	virtual void setVector(const Vector4& vec) { LN_THROW(0, InvalidOperationException); }
-	virtual void setVectorArray(const Vector4* vectors, int count) { LN_THROW(0, InvalidOperationException); }
-	virtual void setMatrix(const Matrix& matrix) { LN_THROW(0, InvalidOperationException); }
-	virtual void setMatrixArray(const Matrix* matrices, int count) { LN_THROW(0, InvalidOperationException); }
-	virtual void setTexture(ITexture* texture) { LN_THROW(0, InvalidOperationException); }
+	virtual void setBool(bool value) { LN_UNREACHABLE(); }
+	virtual void setInt(int value) { LN_UNREACHABLE(); }
+	virtual void setFloat(float value) { LN_UNREACHABLE(); }
+	virtual void setVector(const Vector4& vec) { LN_UNREACHABLE(); }
+	virtual void setVectorArray(const Vector4* vectors, int count) { LN_UNREACHABLE(); }
+	virtual void setMatrix(const Matrix& matrix) { LN_UNREACHABLE(); }
+	virtual void setMatrixArray(const Matrix* matrices, int count) { LN_UNREACHABLE(); }
+	virtual void setTexture(ITexture* texture) { LN_UNREACHABLE(); }
 	virtual int getAnnotationCount() { return 0; }
 	virtual IShaderVariable* getAnnotation(int index) { return NULL; }
 };
@@ -154,7 +154,7 @@ public:
 	void addPass(GLShaderPass* pass) { m_passes.add(pass); }
 
 public:
-	virtual const TCHAR* getName() const { return m_name.c_str(); }
+	virtual const Char* getName() const { return m_name.c_str(); }
 	virtual int getPassCount() const { return m_passes.getCount(); }
 	virtual IShaderPass* getPass(int index);
 	virtual int getAnnotationCount() { return m_annotations.getCount(); }
@@ -188,7 +188,7 @@ public:
 
 public:
 	virtual IShader* getShader() const { return m_ownerShader; }
-	virtual const TCHAR* getName() const { return m_name.c_str(); }
+	virtual const Char* getName() const { return m_name.c_str(); }
 	virtual int getAnnotationCount() { return m_annotations.getCount(); }
 	virtual IShaderVariable* getAnnotation(int index) { return m_annotations[index]; }
 	virtual void apply();

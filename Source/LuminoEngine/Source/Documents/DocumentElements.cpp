@@ -41,7 +41,7 @@ void Document::setText(const StringRef& text)
 void Document::replace(int offset, int length, const StringRef& text)
 {
 	// UTF32 へ変換
-	const ByteBuffer& utf32Buf = m_manager->getTCharToUTF32Converter()->convert(text.getBegin(), sizeof(TCHAR) * text.getLength());
+	const ByteBuffer& utf32Buf = m_manager->getTCharToUTF32Converter()->convert(text.getBegin(), sizeof(Char) * text.getLength());
 	int len = utf32Buf.getSize() / sizeof(UTF32);
 	replace(offset, length, (const UTF32*)utf32Buf.getConstData(), len);
 }
@@ -106,7 +106,7 @@ void Document::replace(int offset, int length, const UTF32* text, int len)
 	//}
 	//else
 	//{
-	//	LN_THROW(0, NotImplementedException);
+	//	LN_NOTIMPLEMENTED();
 	//}
 }
 
@@ -235,8 +235,8 @@ void Block::initialize()
 //------------------------------------------------------------------------------
 void Block::addInline(Inline* inl)
 {
-	if (LN_CHECK_ARG(inl != nullptr)) return;
-	if (LN_CHECK_ARG(inl->getParent() == nullptr)) return;
+	if (LN_REQUIRE(inl != nullptr)) return;
+	if (LN_REQUIRE(inl->getParent() == nullptr)) return;
 	m_inlines.add(inl);
 	inl->setParent(this);
 }

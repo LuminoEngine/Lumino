@@ -39,9 +39,9 @@ bool g_sceneChanging = false;
 SampleMainFunc registerSample(const char* group1, const char* group2, const char* caption, SampleMainFunc func)
 {
 	SampleInfo info;
-	info.group1 = String::fromNativeCharString(group1);
-	info.group2 = String::fromNativeCharString(group2);
-	info.caption = String::fromNativeCharString(caption);
+	info.group1 = String::fromCString(group1);
+	info.group2 = String::fromCString(group2);
+	info.caption = String::fromCString(caption);
 	info.mainFunc = func;
 	SampleManager::getInstance()->m_samples.add(info);
 	return func;
@@ -56,20 +56,20 @@ Ref<AnimationClock>	g_clock;
 
 void showListWindow()
 {
-	g_pinButton->setText(_T("<"));
+	g_pinButton->setText(_LT("<"));
 	g_clock->start(g_listWindow->getPosition().x, 0, 0.5, EasingMode::EaseOutExpo, [](float v) {g_listWindow->setPosition(Point(v, 0)); }, nullptr);
 }
 
 void closeListWindow()
 {
-	g_pinButton->setText(_T(">"));
+	g_pinButton->setText(_LT(">"));
 	g_clock->start(g_listWindow->getPosition().x, -200, 0.5, EasingMode::EaseOutExpo, [](float v) {g_listWindow->setPosition(Point(v, 0)); }, nullptr);
 }
 
 void Main()
 {
 #if 0	// デバッグ用。指定したのサンプルを実行する
-	CommandLine::args.add(_T("Graphics2D.Sprite2D.AnchorPoint"));
+	CommandLine::args.add(_LT("Graphics2D.Sprite2D.AnchorPoint"));
 #endif
 
 	EngineSettings::addAssetsDirectory(LN_LOCALFILE("Assets"));
@@ -77,7 +77,7 @@ void Main()
 
 	if (CommandLine::args.getCount() == 2)
 	{
-		auto tokens = CommandLine::args[1].split(_T("."));
+		auto tokens = CommandLine::args[1].split(_LT("."));
 		auto* info = SampleManager::getInstance()->m_samples.find([tokens](const SampleInfo& info)
 		{
 			return info.group1 == tokens[0] && info.group2 == tokens[1] && info.caption == tokens[2];
@@ -109,7 +109,7 @@ void Main()
 	for (int i = 0; i < SampleManager::getInstance()->m_samples.getCount(); i++)
 	{
 		auto& info = SampleManager::getInstance()->m_samples[i];
-		String name = info.group1 + _T(".") + info.group2 + _T(".") + info.caption;
+		String name = info.group1 + _LT(".") + info.group2 + _LT(".") + info.caption;
 		UIListBoxItem* item = listBox1->addTextItem(name);
 		item->connectOnSubmit([program, name](UIEventArgs* e) { Process::execute(program, name); });
 	}

@@ -14,8 +14,9 @@ UTF16Encoding::UTF16Encoding(bool bigEndian, bool byteOrderMark)
 	: m_bigEndian(bigEndian)
 	, m_byteOrderMark(byteOrderMark)
 {
-	if (m_bigEndian) {
-		LN_THROW(0, NotImplementedException);
+	if (m_bigEndian)
+	{
+		LN_NOTIMPLEMENTED();
 	}
 }
 
@@ -23,7 +24,7 @@ UTF16Encoding::UTF16Encoding(bool bigEndian, bool byteOrderMark)
 byte_t* UTF16Encoding::getPreamble() const
 {
 	static byte_t bom[] = { 0x00 };
-	LN_THROW(0, NotImplementedException);
+	LN_NOTIMPLEMENTED();
 	return bom;
 };
 
@@ -32,7 +33,7 @@ int UTF16Encoding::getLeadExtraLength(const void* buffer, size_t bufferSize) con
 {
 	bool s;
 	UTFConversionResult result = UnicodeUtils::checkUTF16Surrogate((const UTF16*)buffer, ((const UTF16*)buffer) + bufferSize / sizeof(UTF16), true, &s);
-	LN_THROW(result == UTFConversionResult_Success, EncodingException);
+	if (LN_ENSURE_ENCODING(result == UTFConversionResult_Success)) return 0;
 	return (s) ? 1 : 0;
 }
 
@@ -41,7 +42,7 @@ int UTF16Encoding::getCharacterCount(const void* buffer, size_t bufferSize) cons
 {
 	int count;
 	UTFConversionResult result = UnicodeUtils::getUTF16CharCount((const UTF16*)buffer, bufferSize / sizeof(UTF16), true, &count);
-	LN_THROW(result == UTFConversionResult_Success, EncodingException);
+	if (LN_ENSURE_ENCODING(result == UTFConversionResult_Success)) return 0;
 	return count;
 }
 
@@ -113,7 +114,8 @@ void UTF16Encoding::UTF16Decoder::convertToUTF16(const byte_t* input, size_t inp
 			else 
 			{
 				// 下位サロゲート以外の文字はNG
-				LN_THROW(0, EncodingException);
+				LN_ENSURE_ENCODING(0);
+				return;
 			}
 		}
 
@@ -140,12 +142,12 @@ void UTF16Encoding::UTF16Encoder::convertFromUTF16(const UTF16* input, size_t in
 	 */
 
 	errno_t err = memcpy_s(output, outputByteSize, input, inputElementSize * sizeof(UTF16));
-	LN_THROW(err == 0, ArgumentException);
+	if (LN_REQUIRE(err == 0)) return;
 
 	// 文字数はカウントする
 	int count;
 	UTFConversionResult r = UnicodeUtils::getUTF16CharCount((UnicodeUtils::UTF16*)input, inputElementSize, true, &count);
-	LN_THROW(r == UTFConversionResult_Success, EncodingException);
+	if (LN_ENSURE_ENCODING(r == UTFConversionResult_Success)) return;
 
 	*outBytesUsed = inputElementSize * sizeof(UTF16);
 	*outCharsUsed = count;

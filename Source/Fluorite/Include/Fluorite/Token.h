@@ -39,7 +39,7 @@ public:
 	int GetLastColumn() const { return m_lastColumn; }
 
 	const flChar* GetCStr(InputFile* file) const;	// not null terminator
-	StringA getString(InputFile* file) const;
+	flString getString(InputFile* file) const;
 	flString getString() const;
 
 

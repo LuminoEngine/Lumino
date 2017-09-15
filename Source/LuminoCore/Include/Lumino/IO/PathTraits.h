@@ -19,6 +19,21 @@ public:
 #endif
 
 public:
+	template<typename TChar>
+	static const TChar* getFileName(const TChar* begin, const TChar* end);
+
+	template<typename TChar>
+	static const TChar* getWithoutExtensionEnd(const TChar* begin, const TChar* end);
+
+	template<typename TChar>
+	static const TChar* getExtensionBegin(const TChar* begin, const TChar* end, bool withDot);
+
+	template<typename TChar>
+	static const TChar* getDirectoryPathEnd(const TChar* begin, const TChar* end);
+
+
+
+
 
 	/// 文字がディレクトリセパレータ (DirectorySeparatorChar or AltDirectorySeparatorChar) であるかを判定する
 	template<typename TChar>
@@ -39,30 +54,6 @@ public:
 	/** 文字列の末尾がディレクトリセパレータであるかを確認します。*/
 	template<typename TChar>
 	static bool endWithSeparator(const TChar* path, int len = -1);
-
-	/**
-		@brief		パス文字列からディレクトリ部分を取り出す
-		@param[in]	path	: ファイルまたはディレクトリのパス
-		@details	出力例
-					- "C:\MyDir\MySubDir\myfile.ext" → "C:\MyDir\MySubDir"
-					- "C:\MyDir\MySubDir" → "C:\MyDir"
-					- "C:\MyDir\" → "C:\MyDir"
-					- "C:\MyDir" → "C:\"
-					- "C:\" → ""
-					- "/MyDir/" → "/MyDir"
-					- "/MyDir" → "/"
-					- "/" → ""
-	*/
-	template<typename TChar>
-	static GenericString<TChar> getDirectoryPath(const TChar* path);
-
-	/**
-		@brief		パス文字列の中から拡張子を含むファイル名の部分を返す
-		@param[in]	path	: パス文字列
-		@details	path が NULL の場合は空文字列を返します。
-	*/
-	template<typename TChar>
-	static GenericString<TChar> getFileName(const TChar* path);
 
 	/**
 		@brief		パス文字列の中から拡張子を含むファイル名の部分を返す
@@ -91,8 +82,6 @@ public:
 	*/
 	template<typename TChar>
 	static void getExtension(const TChar* path, TChar* outExt);
-	template<typename TChar>
-	static Result getExtension(const TChar* path, bool withDot, GenericStringRef<TChar>* outRef) LN_NOEXCEPT;
 	
 	/**
 		@brief		パス文字列を結合します。
@@ -113,13 +102,6 @@ public:
 	*/
 	template<typename TChar>
 	static void canonicalizePath(const TChar* srcPath, TChar* outPath);
-
-	/**
-		@brief			パスを単純化する
-		@param[in,out]	path	: 単純化するファイルパスが格納されている変数
-	*/
-	template<typename TChar>
-	static void canonicalizePath(GenericString<TChar>* path);
 
 	/**
 		@brief		パスを単純化する
@@ -163,7 +145,7 @@ public:
 	static int compare(TChar ch1, TChar ch2, CaseSensitivity cs);
 
 	template<typename TChar>
-	static GenericString<TChar> diffPath(const TChar* path1, int len1, const TChar* path2, int len2, CaseSensitivity cs);
+	static std::basic_string<TChar> diffPath(const TChar* path1, int len1, const TChar* path2, int len2, CaseSensitivity cs);
 };
 
 LN_NAMESPACE_END

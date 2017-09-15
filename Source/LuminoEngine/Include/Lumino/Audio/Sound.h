@@ -25,7 +25,7 @@ public:
 	/**
 		@brief	Sound クラスのインスタンスを作成します。
 	*/
-	static SoundPtr create(const TCHAR* filePath);
+	static SoundPtr create(const Char* filePath);
 
 	/**
 		@brief	Sound クラスのインスタンスを作成します。

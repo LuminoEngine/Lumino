@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include "Common.h"
+#include <float.h>	// for FLT_MAX
 #include <Lumino/Math/MathUtils.h>
 #include "../Base/GeometryStructs.h"
 

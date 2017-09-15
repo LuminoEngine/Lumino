@@ -41,7 +41,7 @@ void GlyphRun::initialize()
 //------------------------------------------------------------------------------
 void GlyphRun::initialize(detail::GraphicsManager* manager)
 {
-	if (LN_CHECK_ARG(manager != nullptr)) return;
+	if (LN_REQUIRE(manager != nullptr)) return;
 	m_manager = manager;
 	m_layoutEngine = LN_NEW detail::TextLayoutEngine();
 	m_layoutEngine->setFont(m_manager->getFontManager()->getDefaultRawFont());
@@ -83,7 +83,7 @@ void GlyphRun::setText(const StringRef& text)
 {
 	EncodingConverter* conv = m_manager->getFontManager()->getTCharToUTF32Converter();
 	m_utf32Text.clear();
-	m_utf32Text.append(conv->convert(text.getBegin(), text.getLength() * sizeof(TCHAR)));
+	m_utf32Text.append(conv->convert(text.getBegin(), text.getLength() * sizeof(Char)));
 	m_modifiedRenderSize = true;
 	m_modifiedItems = true;
 }

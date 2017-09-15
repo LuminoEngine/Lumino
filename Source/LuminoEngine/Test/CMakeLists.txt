@@ -55,7 +55,7 @@ include_directories(
 add_executable(LuminoEngine_Test ${LN_TEST_SOURCES})
 target_link_libraries(LuminoEngine_Test LuminoEngine)
 add_dependencies(LuminoEngine_Test LuminoEngine)
-ln_add_pch(LuminoEngine_Test "Test.PCH.h" "UnitTest/Test.PCH.cpp")
+ln_add_pch(LuminoEngine_Test "UnitTest/Test.PCH.h" "UnitTest/Test.PCH.cpp")
 
 #===============================================================================
 set(LN_SANDBOX_SOURCES

@@ -61,7 +61,7 @@ private:
 
 	friend class Helper;
 	detail::GraphicsManager*			m_manager;
-	GenericStringBuilderCore<UTF32>		m_utf32Text;
+	detail::SimpleStringBuilder<UTF32>	m_utf32Text;
 	TextLayoutResult					m_glyphData;
 	detail::TextLayoutEngine*			m_layoutEngine;	// TODO: detail にして new しない
 	detail::FontGlyphTextureCache*		m_glyphTextureCache;

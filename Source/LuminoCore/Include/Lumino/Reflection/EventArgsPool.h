@@ -95,7 +95,8 @@ private:
 	template<class T>
 	T findFreeObject(const List<T>& pool)
 	{
-		LN_FOREACH(T a, pool)
+		//LN_FOREACH(T a, pool)
+		for (T a : pool)
 		{
 			if (a->getReferenceCount() == 1) {
 				return a;

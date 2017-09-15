@@ -5,6 +5,9 @@
 #include <Lumino/Reflection/Variant.h>
 using namespace ln::tr;
 
+
+#ifdef LN_LEGACY_VARIANT_ENABLED
+
 // テスト用
 class Point
 {
@@ -148,7 +151,7 @@ TEST_F(IntegrationTest_Reflection_Variant, Basic)
 		ASSERT_EQ(100, Variant::cast<double>(v1));
 		ASSERT_EQ(100, Variant::cast<float>(v2));		// 算術型ならキャストできる
 	}
-	// <Test> TCHAR* 型
+	// <Test> Char* 型
 	{
 		Variant v1(_T("str"));
 		Variant v2 = v1;	// copy
@@ -244,3 +247,6 @@ TEST_F(IntegrationTest_Reflection_Variant, Basic)
 		obj1->release();
 	}
 }
+
+#endif
+

@@ -5,21 +5,18 @@
 
 LN_NAMESPACE_BEGIN
 
+
 /**
 	@brief	文字列の配列です。
 */
-template<typename TChar>
-class GenericStringArray
-	: public List< GenericString<TChar> >
+class StringArray
+	: public List<String>
 {
 public:
-	typedef List< GenericString<TChar> >	ArrayType;
-	typedef GenericString<TChar>			StringType;
 
+private:
 
-public:
-	GenericStringArray() {}
-
+#if 0
 	/** 初期化子リストから作成します。*/
 	GenericStringArray(std::initializer_list<const TChar*> list)
 	{
@@ -57,11 +54,7 @@ public:
 		}
 		return -1;
 	}
-
+#endif
 };
-
-typedef GenericStringArray<TCHAR>	StringArray;
-typedef GenericStringArray<char>	StringArrayA;
-typedef GenericStringArray<wchar_t>	StringArrayW;
 
 LN_NAMESPACE_END

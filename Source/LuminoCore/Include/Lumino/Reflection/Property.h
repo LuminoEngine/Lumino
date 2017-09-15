@@ -36,9 +36,11 @@ public:
 	PropertyInfo(TypeInfo* ownerClassType, PropertyMetadata* metadata, bool stored);
 	virtual ~PropertyInfo();
 
+#ifdef LN_LEGACY_VARIANT_ENABLED
 	virtual void setValue(ReflectionObject* target, Variant value, PropertySetSource source) const { LN_THROW(0, InvalidOperationException); }
 	virtual Variant getValue(const ReflectionObject* target) const { LN_THROW(0, InvalidOperationException); }
 	virtual void addItem(ReflectionObject* target, const Variant& value) const { LN_THROW(0, InvalidOperationException); }
+#endif
 
 	//virtual bool isReadable() const { return false; }
 	//virtual bool isWritable() const { return false; }
@@ -53,6 +55,7 @@ public:
 
 public:
 
+#ifdef LN_LEGACY_VARIANT_ENABLED
 	/**
 		@brief		指定したオブジェクトのプロパティの値を設定します。
 	*/
@@ -62,6 +65,7 @@ public:
 		@brief		指定したオブジェクトのプロパティの値を取得します。
 	*/
 	static Variant getPropertyValue(ReflectionObject* obj, const PropertyInfo* prop);
+#endif
 
 	/**
 		@brief		指定したオブジェクトのプロパティの値を設定します。あらかじめ型が分かっている場合、setPropertyValue() よりも少ないオーバーヘッドで設定できます。
@@ -114,7 +118,7 @@ public:
 	// ↑※static 関数のポインタでないと、言語バインダを作りにくくなる。
 
 public:
-	TypedPropertyInfo(TypeInfo* ownerTypeInfo, const TCHAR* name, PropertyMetadata* metadata)
+	TypedPropertyInfo(TypeInfo* ownerTypeInfo, const Char* name, PropertyMetadata* metadata)
 		: PropertyInfo(ownerTypeInfo, metadata, false)
 		, m_name(name)
 		, m_setter(nullptr)
@@ -126,6 +130,7 @@ public:
 public:
 	virtual const String& getName() const { return m_name; }
 
+#ifdef LN_LEGACY_VARIANT_ENABLED
 	virtual void setValue(ReflectionObject* target, Variant value, PropertySetSource source) const
 	{
 		setValueDirect(target, Variant::cast<TValue>(value), source);
@@ -148,10 +153,11 @@ public:
 	//}
 	//virtual bool isReadable() const { return m_getter != nullptr; }	// TODO: virtual やめたほうが高速化できる。
 	//virtual bool isWritable() const { return m_getter != nullptr; }
+#endif
 
 	void setValueDirect(ReflectionObject* target, const TValue& value, PropertySetSource source) const
 	{
-		if (LN_CHECK_STATE(m_setter != nullptr)) return;
+		if (LN_REQUIRE(m_setter != nullptr)) return;
 		m_setter(target, const_cast<TValue&>(value));
 		//notifyPropertyChanged(target, this, source);
 	}
@@ -165,6 +171,7 @@ public:
 
 	virtual PropertyBase* getPropertyBase(ReflectionObject* obj) const override { return m_getPropPtr(obj); }
 
+#ifdef LN_LEGACY_VARIANT_ENABLED
 	template<typename T, typename TIsList> struct ListOperationSelector
 	{
 		static bool isList() { return false; }
@@ -175,7 +182,6 @@ public:
 		static bool isList() { return true; }
 		static void addItem(T& list, const Variant& item) { list.AddVariant(item); }
 	};
-
 
 	//template<typename T> struct ListOperationSelector2
 	//{
@@ -192,6 +198,8 @@ public:
 	//		m_propChanged(target, e);
 	//	}
 	//}
+#endif
+
 
 public:	// TODO
 	template<typename T> friend class TypedPropertyInitializer;
@@ -244,8 +252,8 @@ public:
 template<typename TValue>
 void PropertyInfo::setPropertyValueDirect(ReflectionObject* obj, const PropertyInfo* prop, const TValue& value, PropertySetSource source)
 {
-	if (LN_CHECK_ARG(obj != nullptr)) return;
-	if (LN_CHECK_ARG(prop != nullptr)) return;
+	if (LN_REQUIRE(obj != nullptr)) return;
+	if (LN_REQUIRE(prop != nullptr)) return;
 	auto t = static_cast<const TypedPropertyInfo<TValue>*>(prop);
 	t->setValueDirect(obj, value, source);
 }
@@ -254,8 +262,8 @@ void PropertyInfo::setPropertyValueDirect(ReflectionObject* obj, const PropertyI
 template<typename TValue>
 const TValue& PropertyInfo::getPropertyValueDirect(const ReflectionObject* obj, const PropertyInfo* prop)
 {
-	LN_VERIFY_ARG(obj != nullptr);
-	LN_VERIFY_ARG(prop != nullptr);
+	if (LN_REQUIRE(obj != nullptr)) return;
+	if (LN_REQUIRE(prop != nullptr)) return;
 	auto t = static_cast<const TypedPropertyInfo<TValue>*>(prop);
 	return t->getValueDirect(obj);
 }
@@ -296,7 +304,7 @@ public:
 	public:  static const ln::tr::TypedPropertyInfo<valueType>*		propVar##Id;
 
 #define LN_TR_PROPERTY_IMPLEMENT(ownerClass, valueType, propVar, metadata) \
-	static ln::tr::TypedPropertyInfo<valueType>		_##propVar##Id(ln::tr::TypeInfo::getTypeInfo<ownerClass>(), _T(#propVar), nullptr); \
+	static ln::tr::TypedPropertyInfo<valueType>		_##propVar##Id(ln::tr::TypeInfo::getTypeInfo<ownerClass>(), _LT(#propVar), nullptr); \
 	const ln::tr::TypedPropertyInfo<valueType>*		ownerClass::propVar##Id = &_##propVar##Id; \
 	::ln::tr::Property<valueType>*					ownerClass::get_Ptr##propVar(ln::tr::ReflectionObject* obj) { return &static_cast<ownerClass*>(obj)->propVar; } \
 	void											ownerClass::set_##propVar(ln::tr::ReflectionObject* obj, valueType& value) { tr::PropertyHelper::setValue(static_cast<ownerClass*>(obj)->propVar, value); } \

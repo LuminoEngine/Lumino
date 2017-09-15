@@ -6,13 +6,17 @@
 #ifdef _WIN32
 #include <io.h>
 #include <sys/timeb.h>
+#else
+#include <sys/time.h>
 #endif
 #include <time.h>
 #include <sstream>
 #include <iomanip>
 #include <Lumino/Base/String.h>
 #include <Lumino/Base/Environment.h>
+#include <Lumino/Base/StdStringHelper.h>
 #include <Lumino/Base/Logger.h>
+#include <Lumino/IO/FileSystem.h>
 #include <Lumino/Threading/Thread.h>
 #include <Lumino/Threading/Mutex.h>
 LN_NAMESPACE_BEGIN
@@ -31,16 +35,19 @@ public:
 		::ftime(t);
 	}
 #else
+	typedef detail::LogTime Time;
+	/*
 	struct Time
 	{
 		time_t time;
 		unsigned short millitm;
 	};
+	 */
 
-	static void GetTime(Time* t)
+	static void getTime(Time* t)
 	{
 		timeval tv;
-		::gettimeofday(&tv, NULL);
+		gettimeofday(&tv, NULL);
 
 		t->time = tv.tv_sec;
 		t->millitm = static_cast<unsigned short>(tv.tv_usec / 1000);
@@ -73,13 +80,13 @@ public:
 		LogHelper::getTime(&m_time);
 	}
 
-	void setMessage(const StringRefA& message) { m_message = message; }
+	//void setMessage(const StringRefA& message) { m_message = message; }
 
 	LogHelper::Time& getTime() { return m_time; }
 
 	LogLevel GetLevel() const { return m_level; }
 
-	const StringA& getMessage() const { return m_message; }
+	const std::string& getMessage() const { return m_message; }
 
 	const char* GetFile() const { return m_file; }
 
@@ -96,7 +103,7 @@ private:
 	const char*		m_func;
 	int				m_line;
 	unsigned int	m_threadId;
-	StringA			m_message;
+	std::string		m_message;
 };
 
 //==============================================================================
@@ -146,23 +153,23 @@ public:
 		}
 	}
 #else
-	void Open(const char* filePath)
+	void open(const char* filePath)
 	{
-		Close();
-		m_file = ::open(fileName, O_CREAT | O_TRUNC | O_WRONLY, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+		close();
+		m_file = ::open(filePath, O_CREAT | O_TRUNC | O_WRONLY, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 	}
 
-	int Write(const void* buf, size_t count)
+	int write(const void* buf, size_t count)
 	{
 		return (m_file != -1) ? static_cast<int>(::write(m_file, buf, count)) : -1;
 	}
 
-	off_t Seek(off_t offset, int whence)
+	off_t seek(off_t offset, int whence)
 	{
 		return (m_file != -1) ? ::lseek(m_file, offset, whence) : -1;
 	}
 
-	void Close()
+	void close()
 	{
 		if (m_file != -1)
 		{
@@ -196,7 +203,8 @@ static std::stringstream	g_logSS;
 static const int	TEMP_BUFFER_SIZE = 2048;
 static uint64_t		g_logStartTime;
 
-static TCHAR		g_logFilePath[LN_MAX_PATH] = { 0 };
+//static TCHAR		g_logFilePath[LN_MAX_PATH] = { 0 };
+static std::basic_string<Char>	g_logFilePath;
 
 class FileClose
 {
@@ -204,8 +212,8 @@ public:
 	FileClose() {}
 	~FileClose()
 	{
-		FILE* stream;
-		if (_tfopen_s(&stream, g_logFilePath, _T("a+")) == 0)
+		FILE* stream = detail::FileSystemInternal::fopen(g_logFilePath.c_str(), g_logFilePath.length(), _TT("a+"), 2);
+		if (stream)
 		{
 			_ftprintf(
 				stream,
@@ -217,7 +225,7 @@ public:
 static FileClose g_fileClose;
 
 //------------------------------------------------------------------------------
-bool Logger::initialize(const TCHAR* filePath) throw()
+bool Logger::initialize(const Char* filePath) throw()
 {
 	//if (log_dir)
 	//{
@@ -233,11 +241,12 @@ bool Logger::initialize(const TCHAR* filePath) throw()
 	//	gLogFilePath[len] = '/';//'\\';
 	//	_tcscpy(&gLogFilePath[len + 1], log_name);
 	//}
-	_tcscpy_s(g_logFilePath, LN_MAX_PATH, filePath);
+	g_logFilePath = filePath;
 
-	FILE* stream;
-	if (_tfopen_s(&stream, g_logFilePath, _T("w+")) != 0) {
-		g_logFilePath[0] = _T('\0');
+	FILE* stream = detail::FileSystemInternal::fopen(g_logFilePath.c_str(), g_logFilePath.length(), _TT("w+"), 2);
+	if (!stream)
+	{
+		g_logFilePath.clear();
 		return false;
 	}
 
@@ -286,8 +295,8 @@ void Logger::writeLine(Level level, const char* format, ...) throw()
 	if (g_logFilePath[0] == '\0') {
 		return;
 	}
-	FILE* stream;
-	if (_tfopen_s(&stream, g_logFilePath, _T("a+")) == 0)
+	FILE* stream = detail::FileSystemInternal::fopen(g_logFilePath.c_str(), g_logFilePath.length(), _TT("a+"), 2);
+	if (stream)
 	{
 		char buf[TEMP_BUFFER_SIZE];
 
@@ -309,8 +318,8 @@ void Logger::writeLine(Level level, const wchar_t* format, ...) throw()
 	if (g_logFilePath[0] == '\0') {
 		return;
 	}
-	FILE* stream;
-	if (_tfopen_s(&stream, g_logFilePath, _T("a+")) == 0)
+	FILE* stream = detail::FileSystemInternal::fopen(g_logFilePath.c_str(), g_logFilePath.length(), _TT("a+"), 2);
+	if (stream)
 	{
 		wchar_t buf[TEMP_BUFFER_SIZE];
 
@@ -332,8 +341,8 @@ void Logger::writeLine(const char* format, ...) throw()
 	if (g_logFilePath[0] == '\0') {
 		return;
 	}
-	FILE* stream;
-	if (_tfopen_s(&stream, g_logFilePath, _T("a+")) == 0)
+	FILE* stream = detail::FileSystemInternal::fopen(g_logFilePath.c_str(), g_logFilePath.length(), _TT("a+"), 2);
+	if (stream)
 	{
 		char buf[TEMP_BUFFER_SIZE];
 
@@ -355,8 +364,8 @@ void Logger::writeLine(const wchar_t* format, ...) throw()
 	if (g_logFilePath[0] == '\0') {
 		return;
 	}
-	FILE* stream;
-	if (_tfopen_s(&stream, g_logFilePath, _T("a+")) == 0)
+	FILE* stream = detail::FileSystemInternal::fopen(g_logFilePath.c_str(), g_logFilePath.length(), _TT("a+"), 2);
+	if (stream)
 	{
 		wchar_t buf[TEMP_BUFFER_SIZE];
 
@@ -408,7 +417,7 @@ const char* LogRecord::getMessage() const
 //------------------------------------------------------------------------------
 LogRecord& LogRecord::operator<<(const wchar_t* str)
 {
-	StringA s = StringA::fromNativeCharString(str);
+	auto s = StdStringHelper::makeStdString(str);
 	m_message << s.c_str();
 	return *this;
 }

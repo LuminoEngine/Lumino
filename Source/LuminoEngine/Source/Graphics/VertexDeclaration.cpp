@@ -60,8 +60,8 @@ void VertexDeclaration::Dispose()
 //------------------------------------------------------------------------------
 void VertexDeclaration::addVertexElement(int streamIndex, VertexElementType type, VertexElementUsage usage, int usageIndex)
 {
-	if (LN_CHECK_ARG(streamIndex >= 0)) return;
-	if (LN_CHECK_ARG(usageIndex >= 0)) return;
+	if (LN_REQUIRE(streamIndex >= 0)) return;
+	if (LN_REQUIRE(usageIndex >= 0)) return;
 
 	VertexElement e;
 	e.StreamIndex = streamIndex;

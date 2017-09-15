@@ -397,7 +397,7 @@ private:
 		Command,
 	};
 
-	const TCHAR* m_name;
+	const Char* m_name;
 	SubType	m_subType;
 	friend class RenderDiag;
 };
@@ -413,10 +413,10 @@ public:
 	void beginDrawList();
 	void endDrawList();
 	void changeRenderStage();
-	void callCommonElement(const TCHAR* typeName);
+	void callCommonElement(const Char* typeName);
 
 	template<typename TDiagItem>
-	TDiagItem* callElement(const TCHAR* typeName)
+	TDiagItem* callElement(const Char* typeName)
 	{
 		return instantiate<TDiagItem>(typeName);
 	}
@@ -465,7 +465,7 @@ private:
 	};
 
 	template<typename T>
-	T* instantiate(const TCHAR* typeName)
+	T* instantiate(const Char* typeName)
 	{
 		assert(typeName != nullptr);
 

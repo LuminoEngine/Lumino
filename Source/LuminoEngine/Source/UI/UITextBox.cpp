@@ -48,7 +48,7 @@ LN_INTERNAL_ACCESS:
 	int getRevision() const { return m_revision; }
 
 private:
-	GenericStringBuilderCore<UTF32>	m_text;				// \n を含む
+	detail::SimpleStringBuilder<UTF32>	m_text;				// \n を含む
 	LineDelimiter					m_lineDelimiter;
 	int								m_revision;
 };
@@ -312,7 +312,7 @@ void UITextDocument::initialize()
 void UITextDocument::replace(int offset, int length, const StringRef& text)
 {
 	// UTF32 へ変換
-	const ByteBuffer& utf32Buf = m_manager->getGraphicsManager()->getFontManager()->getTCharToUTF32Converter()->convert(text.getBegin(), sizeof(TCHAR) * text.getLength());
+	const ByteBuffer& utf32Buf = m_manager->getGraphicsManager()->getFontManager()->getTCharToUTF32Converter()->convert(text.getBegin(), sizeof(Char) * text.getLength());
 	int len = utf32Buf.getSize() / sizeof(UTF32);
 	replaceInternal(offset, length, (const UTF32*)utf32Buf.getConstData(), len);
 }
@@ -840,11 +840,11 @@ void UITextBox::initialize()
 
 	// Test
 	//auto d = newObject<UITextDocument>();
-	//d->Replace(0, 0, _T("b"));
-	//d->Replace(0, 0, _T("a"));
-	//d->Replace(2, 0, _T("c"));
-	//d->Replace(2, 0, _T("\n"));	// ab\nc
-	//d->Replace(0, 4, _T("\n"));	// \n
+	//d->Replace(0, 0, _LT("b"));
+	//d->Replace(0, 0, _LT("a"));
+	//d->Replace(2, 0, _LT("c"));
+	//d->Replace(2, 0, _LT("\n"));	// ab\nc
+	//d->Replace(0, 4, _LT("\n"));	// \n
 }
 
 //------------------------------------------------------------------------------
@@ -874,10 +874,10 @@ void UITextBox::onKeyDown(UIKeyEventArgs* e)
 //------------------------------------------------------------------------------
 void UITextBox::onTextInput(UIKeyEventArgs* e)
 {
-	TCHAR ch = e->getCharCode();
+	Char ch = e->getCharCode();
 	m_textArea->getDocument()->replace(
 		m_textArea->getDocumentTextOffset(m_textArea->getCaret()->getVisualPosition()),
-		0, StringRef(ch, 1));
+		0, StringRef(&ch, 1));
 }
 
 //------------------------------------------------------------------------------
@@ -976,7 +976,7 @@ LN_CONSTRUCT_ACCESS:
 private:
 	void UpdateCaretRectangle();
 
-	GenericStringBuilderCore<UTF32>	m_rawText;
+	detail::SimpleStringBuilder<UTF32>	m_rawText;
 	Ref<GlyphRun>				m_glyphRun;
 	Ref<UITextAreaCaret>			m_caret;
 	Ref<Brush>					m_caretBrush;
@@ -1012,7 +1012,7 @@ void UISimpleTextArea::initialize()
 void UISimpleTextArea::replace(int offset, int length, const StringRef& text)
 {
 	// to UTF32
-	const ByteBuffer& utf32Buf = getManager()->getGraphicsManager()->getFontManager()->getTCharToUTF32Converter()->convert(text.getBegin(), sizeof(TCHAR) * text.getLength());
+	const ByteBuffer& utf32Buf = getManager()->getGraphicsManager()->getFontManager()->getTCharToUTF32Converter()->convert(text.getBegin(), sizeof(Char) * text.getLength());
 	int len = utf32Buf.getSize() / sizeof(UTF32);
 
 
@@ -1041,7 +1041,7 @@ void UISimpleTextArea::onTextInput(UIKeyEventArgs* e)
 	//	m_textArea->getDocumentTextOffset(m_textArea->getCaret()->getVisualPosition()),
 	//	0, StringRef(&e->charCode, 1));
 
-	TCHAR ch = e->getCharCode();
+	Char ch = e->getCharCode();
 	replace(m_caret->getVisualPosition().column, 0, StringRef(&ch, 1));
 	UITextElement::onTextInput(e);
 }
@@ -1137,7 +1137,6 @@ void UITextField::initialize()
 	setFocusable(true);
 	m_textArea = newObject<UISimpleTextArea>();
 
-	m_textArea->setBackground(Brush::Blue);
 	addVisualChild(m_textArea);
 }
 
@@ -1157,7 +1156,7 @@ Size UITextField::measureOverride(const Size& availableSize)
 //------------------------------------------------------------------------------
 Size UITextField::arrangeOverride(const Size& finalSize)
 {
-	m_textArea->arrangeLayout(Rect(0, 0, finalSize));
+	m_textArea->arrangeLayout(Rect(0, 0, finalSize).makeDeflate(getPadding()));
 	return UIControl::arrangeOverride(finalSize);
 }
 

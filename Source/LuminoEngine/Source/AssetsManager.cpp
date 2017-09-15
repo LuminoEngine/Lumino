@@ -78,7 +78,7 @@ Texture2DPtr AssetsManager::loadTexture(const StringRef& filePath)
 	// TODO: Stream 指定
 	auto path = m_archiveManager->findLocalFilePath(filePath);
 
-	CacheKey key(path);
+	CacheKey key(path.getString());
 	Texture2D* ptr = static_cast<Texture2D*>(m_textureCache->findObjectAddRef(key));
 	if (ptr != nullptr) { return Texture2DPtr(ptr, false); }
 
@@ -205,7 +205,7 @@ Ref<Stream> AssetsManager::openFile(const StringRef& filePath)
 //==============================================================================
 // Assets
 //==============================================================================
-const String Assets::standardContentsDirectory = _T("CommonAssets");
+const String Assets::standardContentsDirectory = _LT("CommonAssets");
 
 //------------------------------------------------------------------------------
 void Assets::addAssetsDirectory(const StringRef& directoryPath)

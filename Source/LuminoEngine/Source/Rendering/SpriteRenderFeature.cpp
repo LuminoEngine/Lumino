@@ -229,7 +229,7 @@ SpriteRendererImpl::~SpriteRendererImpl()
 //------------------------------------------------------------------------------
 void SpriteRendererImpl::initialize(GraphicsManager* manager, int maxSpriteCount)
 {
-	if (LN_CHECK_ARG(manager != nullptr)) return;
+	if (LN_REQUIRE(manager != nullptr)) return;
 	m_manager = manager;
 	m_maxSprites = maxSpriteCount;
 	auto* device = manager->getGraphicsDevice();
@@ -288,10 +288,10 @@ void SpriteRendererImpl::initialize(GraphicsManager* manager, int maxSpriteCount
 	m_shader.Shader.attach(device->createShader(g_SpriteRenderer_fx_Data, g_SpriteRenderer_fx_Len, &r));
 	LN_THROW(r.Level != ShaderCompileResultLevel_Error, CompilationException, r);
 
-	m_shader.varTexture = m_shader.Shader->getVariableByName(_T("gMaterialTexture"));
-	m_shader.varViewProjMatrix = m_shader.Shader->getVariableByName(_T("gViewProjMatrix"));
-	m_shader.varViewPixelSize = m_shader.Shader->getVariableByName(_T("gViewportSize"));
-	m_shader.varTexture = m_shader.Shader->getVariableByName(_T("gMaterialTexture"));
+	m_shader.varTexture = m_shader.Shader->getVariableByName(_LT("gMaterialTexture"));
+	m_shader.varViewProjMatrix = m_shader.Shader->getVariableByName(_LT("gViewProjMatrix"));
+	m_shader.varViewPixelSize = m_shader.Shader->getVariableByName(_LT("gViewportSize"));
+	m_shader.varTexture = m_shader.Shader->getVariableByName(_LT("gMaterialTexture"));
 	m_shader.techMainDraw = m_shader.Shader->getTechnique(0);
 
 	//-----------------------------------------------------
@@ -372,7 +372,7 @@ void SpriteRendererImpl::drawRequestInternal(
 	SpriteBaseDirection baseDir,
 	BillboardType billboardType)
 {
-	LN_THROW(m_spriteRequestListUsedCount < m_maxSprites, InvalidOperationException);
+	if (LN_REQUIRE(m_spriteRequestListUsedCount < m_maxSprites)) return;
 
 	BatchSpriteData& sprite = m_spriteRequestList[m_spriteRequestListUsedCount];
 

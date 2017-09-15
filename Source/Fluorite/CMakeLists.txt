@@ -59,7 +59,16 @@ set(LN_FL_INCLUDE_DIRECTORIES
 #-------------------------------------------------------------------------------
 # Configure
 #-------------------------------------------------------------------------------
-include(${PROJECT_SOURCE_DIR}/../LuminoCore/CMake/LNCommon.cmake NO_POLICY_SCOPE)
+
+if (WIN32)
+
+elseif (APPLE)
+	set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++")
+
+elseif (UNIX)
+	add_definitions("-std=c++11")
+
+endif()
 
 #-------------------------------------------------------------------------------
 # Dependencies
@@ -75,6 +84,6 @@ ln_add_common_property(Fluorite)
 set_target_properties(Fluorite PROPERTIES INCLUDE_DIRECTORIES "${LN_FL_INCLUDE_DIRECTORIES}")
 
 # test
-add_subdirectory(test)
+add_subdirectory(Test)
 
 

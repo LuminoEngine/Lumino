@@ -22,14 +22,14 @@ public:
 	void writeEndObject();
 	void writeStartArray();
 	void writeEndArray();
-	void writePropertyName(const TCHAR* str, int length = -1);
+	void writePropertyName(const Char* str, int length = -1);
 	void writeNull();
 	void writeBool(bool value);
 	void writeInt32(int32_t value);
 	void writeInt64(int64_t value);
 	void writeFloat(float value);
 	void writeDouble(double value);
-	void writeString(const TCHAR* str, int length = -1);
+	void writeString(const Char* str, int length = -1);
 	bool isComplete() const;
 
 protected:
@@ -45,14 +45,14 @@ protected:
 	void onEndObject();
 	void onStartArray();
 	void onEndArray();
-	void onKey(const TCHAR* str, int length);
+	void onKey(const Char* str, int length);
 	void onNull();
 	void onBool(bool value);
 	void onInt32(int32_t value);
 	void onInt64(int64_t value);
 	void onFloat(float value);
 	void onDouble(double value);
-	void onString(const TCHAR* str, int length);
+	void onString(const Char* str, int length);
 	//void OnIndent(int level);
 
 private:

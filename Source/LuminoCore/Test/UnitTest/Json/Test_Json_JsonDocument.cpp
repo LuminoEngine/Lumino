@@ -28,28 +28,28 @@ TEST_F(Test_Json_JsonDocument, Basic)
 TEST_F(Test_Json_JsonDocument, save)
 {
 	tr::JsonDocument2 doc;
-	doc.addMemberBool(_T("b1"), true);
-	doc.addMemberBool(_T("b2"), false);
-	doc.addMemberInt32(_T("i32"), 1);
-	doc.addMemberInt64(_T("i64"), 2147483648LL);
-	doc.addMemberFloat(_T("f"), 1.0f);
-	doc.addMemberDouble(_T("dbl"), 1.0);
-	doc.addMemberString(_T("str"), _T("test"));
+	doc.addMemberBool(_TT("b1"), true);
+	doc.addMemberBool(_TT("b2"), false);
+	doc.addMemberInt32(_TT("i32"), 1);
+	doc.addMemberInt64(_TT("i64"), 2147483648LL);
+	doc.addMemberFloat(_TT("f"), 1.0f);
+	doc.addMemberDouble(_TT("dbl"), 1.0);
+	doc.addMemberString(_TT("str"), _TT("test"));
 
-	auto* ary = doc.addMemberArray(_T("ary"));
+	auto* ary = doc.addMemberArray(_TT("ary"));
 	ary->addBool(true);
 	ary->addInt32(200);
 
-	auto* obj = doc.addMemberObject(_T("obj"));
-	obj->addMemberInt32(_T("i32_2"), 100);
+	auto* obj = doc.addMemberObject(_TT("obj"));
+	obj->addMemberInt32(_TT("i32_2"), 100);
 
-	auto* aryary = doc.addMemberArray(_T("aryary"));
+	auto* aryary = doc.addMemberArray(_TT("aryary"));
 	aryary->addArray()->addInt32(111);
 	aryary->addArray()->addInt32(222);
 
-	auto* objary = doc.addMemberArray(_T("objary"));
-	objary->addObject()->addMemberInt32(_T("int32"), 300);
-	objary->addObject()->addMemberString(_T("str1"), _T("test2"));
+	auto* objary = doc.addMemberArray(_TT("objary"));
+	objary->addObject()->addMemberInt32(_TT("int32"), 300);
+	objary->addObject()->addMemberString(_TT("str1"), _TT("test2"));
 
 	doc.save(TEMPFILE("json.txt"), tr::JsonFormatting::Indented);
 

@@ -72,9 +72,7 @@ struct RpnOperator
 {
 	template<typename T> static void UnaryPlus(T /*lhs*/, T rhs, RpnOperand* out) { out->set(rhs); }
 	template<typename T> static void UnaryMinus(T /*lhs*/, T rhs, RpnOperand* out) { out->set(-rhs); }
-	template<> static void UnaryMinus<uint32_t>(uint32_t /*lhs*/, uint32_t rhs, RpnOperand* out) { out->set((uint32_t)-((int32_t)rhs)); }	// 警告回避
-	template<> static void UnaryMinus<uint64_t>(uint64_t /*lhs*/, uint64_t rhs, RpnOperand* out) { out->set((uint64_t)-((int64_t)rhs)); }	// 警告回避
-
+	
 	template<typename T> static void multiply(T lhs, T rhs, RpnOperand* out)	{ out->set(lhs * rhs); }
 	template<typename T> static void Divide(T lhs, T rhs, RpnOperand* out)		{ out->set(lhs / rhs); }
 	template<typename T> static void Modulus(T lhs, T rhs, RpnOperand* out)		{ out->set(lhs % rhs); }
@@ -99,12 +97,20 @@ struct RpnOperator
 	template<typename T> static void LogicalNot(T /*lhs*/, T rhs, RpnOperand* out)		{ out->set(!(rhs != 0)); }
 	template<typename T> static void LogicalAnd(T lhs, T rhs, RpnOperand* out)			{ out->set((lhs != 0) && (rhs != 0)); }
 	template<typename T> static void LogicalOr(T lhs, T rhs, RpnOperand* out)			{ out->set((lhs != 0) || (rhs != 0)); }
-	template<> static void LogicalNot<bool>(bool /*lhs*/, bool rhs, RpnOperand* out)	{ out->set(!rhs); }
-	template<> static void LogicalAnd<bool>(bool lhs, bool rhs, RpnOperand* out)		{ out->set(lhs && rhs); }
-	template<> static void LogicalOr<bool>(bool lhs, bool rhs, RpnOperand* out)			{ out->set(lhs || rhs); }
 };
+	
+template<> void RpnOperator::UnaryMinus<uint32_t>(uint32_t /*lhs*/, uint32_t rhs, RpnOperand* out) { out->set((uint32_t)-((int32_t)rhs)); }	// 警告回避
+template<> void RpnOperator::UnaryMinus<uint64_t>(uint64_t /*lhs*/, uint64_t rhs, RpnOperand* out) { out->set((uint64_t)-((int64_t)rhs)); }	// 警告回避
 
-typedef void(*NullOperator)(nullptr_t lhs, nullptr_t rhs, RpnOperand* out);
+	
+template<> void RpnOperator::LogicalNot<bool>(bool /*lhs*/, bool rhs, RpnOperand* out)	{ out->set(!rhs); }
+template<> void RpnOperator::LogicalAnd<bool>(bool lhs, bool rhs, RpnOperand* out)		{ out->set(lhs && rhs); }
+template<> void RpnOperator::LogicalOr<bool>(bool lhs, bool rhs, RpnOperand* out)			{ out->set(lhs || rhs); }
+
+
+
+
+typedef void(*NullOperator)(std::nullptr_t lhs, std::nullptr_t rhs, RpnOperand* out);
 typedef void(*BooleanOperator)(bool lhs, bool rhs, RpnOperand* out);
 typedef void(*Int32Operator)(int32_t lhs, int32_t rhs, RpnOperand* out);
 typedef void(*UInt32Operator)(uint32_t lhs, uint32_t rhs, RpnOperand* out);
@@ -928,7 +934,7 @@ bool RpnEvaluator::CallFunction(const RpnToken& token, List<RpnOperand> args, Rp
 	}
 	else
 	{
-		LN_THROW(0, NotImplementedException);
+		LN_NOTIMPLEMENTED();
 		return false;
 	}
 }
@@ -952,7 +958,7 @@ bool RpnEvaluator::EvalOperand(RpnTokenType tokenType, const RpnOperand& lhs, co
 		break;
 	}
 	// Error: 指定されたオペランドの型が不正。
-	m_diag->Report(DiagnosticsCode::RpnEvaluator_OperatorInvalidType, rhs.type.toString().toStringA());
+	m_diag->Report(DiagnosticsCode::RpnEvaluator_OperatorInvalidType, rhs.type.toString().toStdString());
 	return false;
 }
 

@@ -39,26 +39,26 @@ TEST_F(Test_Base_Cache, ObjectCount)
 	CacheTest* obj4 = LN_NEW CacheTest(10);
 
 	// キャッシュに登録
-	manager->registerCacheObject(CacheKey(_T("obj1")), obj1);
-	manager->registerCacheObject(CacheKey(_T("obj2")), obj2);
-	manager->registerCacheObject(CacheKey(_T("obj3")), obj3);
-	manager->registerCacheObject(CacheKey(_T("obj4")), obj4);
+	manager->registerCacheObject(CacheKey(_LT("obj1")), obj1);
+	manager->registerCacheObject(CacheKey(_LT("obj2")), obj2);
+	manager->registerCacheObject(CacheKey(_LT("obj3")), obj3);
+	manager->registerCacheObject(CacheKey(_LT("obj4")), obj4);
 
 	// それぞれ find して参照カウントチェック
 	CacheTest* obj;
-	obj = dynamic_cast<CacheTest*>(manager->findObjectAddRef(CacheKey(_T("obj1"))));
+	obj = dynamic_cast<CacheTest*>(manager->findObjectAddRef(CacheKey(_LT("obj1"))));
 	obj->release();
 	ASSERT_EQ(obj1, obj);
 	ASSERT_EQ(1, obj->getReferenceCount());
-	obj = dynamic_cast<CacheTest*>(manager->findObjectAddRef(CacheKey(_T("obj2"))));
+	obj = dynamic_cast<CacheTest*>(manager->findObjectAddRef(CacheKey(_LT("obj2"))));
 	obj->release();
 	ASSERT_EQ(obj2, obj);
 	ASSERT_EQ(1, obj->getReferenceCount());
-	obj = dynamic_cast<CacheTest*>(manager->findObjectAddRef(CacheKey(_T("obj3"))));
+	obj = dynamic_cast<CacheTest*>(manager->findObjectAddRef(CacheKey(_LT("obj3"))));
 	obj->release();
 	ASSERT_EQ(obj3, obj);
 	ASSERT_EQ(1, obj->getReferenceCount());
-	obj = dynamic_cast<CacheTest*>(manager->findObjectAddRef(CacheKey(_T("obj4"))));
+	obj = dynamic_cast<CacheTest*>(manager->findObjectAddRef(CacheKey(_LT("obj4"))));
 	obj->release();
 	ASSERT_EQ(obj4, obj);
 	ASSERT_EQ(1, obj->getReferenceCount());
@@ -69,12 +69,12 @@ TEST_F(Test_Base_Cache, ObjectCount)
 	obj3->release();
 
 	// サイズ2のキャッシュなので obj1 は完全に消え、他は残る
-	obj = dynamic_cast<CacheTest*>(manager->findObjectAddRef(CacheKey(_T("obj1"))));
+	obj = dynamic_cast<CacheTest*>(manager->findObjectAddRef(CacheKey(_LT("obj1"))));
 	ASSERT_EQ(NULL, obj);
-	obj = dynamic_cast<CacheTest*>(manager->findObjectAddRef(CacheKey(_T("obj2"))));
+	obj = dynamic_cast<CacheTest*>(manager->findObjectAddRef(CacheKey(_LT("obj2"))));
 	ASSERT_EQ(obj2, obj);
 	ASSERT_EQ(1, obj->getReferenceCount());
-	obj = dynamic_cast<CacheTest*>(manager->findObjectAddRef(CacheKey(_T("obj3"))));
+	obj = dynamic_cast<CacheTest*>(manager->findObjectAddRef(CacheKey(_LT("obj3"))));
 	ASSERT_EQ(obj3, obj);
 	ASSERT_EQ(1, obj->getReferenceCount());
 
@@ -83,11 +83,11 @@ TEST_F(Test_Base_Cache, ObjectCount)
 
 	// キャッシュをクリアする。参照の残っている obj3 だけ残る。
 	manager->clearCache();
-	obj = dynamic_cast<CacheTest*>(manager->findObjectAddRef(CacheKey(_T("obj1"))));
+	obj = dynamic_cast<CacheTest*>(manager->findObjectAddRef(CacheKey(_LT("obj1"))));
 	ASSERT_EQ(NULL, obj);
-	obj = dynamic_cast<CacheTest*>(manager->findObjectAddRef(CacheKey(_T("obj2"))));
+	obj = dynamic_cast<CacheTest*>(manager->findObjectAddRef(CacheKey(_LT("obj2"))));
 	ASSERT_EQ(NULL, obj);
-	obj = dynamic_cast<CacheTest*>(manager->findObjectAddRef(CacheKey(_T("obj3"))));
+	obj = dynamic_cast<CacheTest*>(manager->findObjectAddRef(CacheKey(_LT("obj3"))));
 	ASSERT_EQ(obj3, obj);
 	obj->release();
 	ASSERT_EQ(1, obj->getReferenceCount());
@@ -103,11 +103,11 @@ TEST_F(Test_Base_Cache, ObjectCount)
 
 	// Finalize() 後に登録はできない
 	CacheTest* obj5 = LN_NEW CacheTest(10);
-	manager->registerCacheObject(CacheKey(_T("obj5")), obj5);
-	obj = dynamic_cast<CacheTest*>(manager->findObjectAddRef(CacheKey(_T("obj5"))));
+	manager->registerCacheObject(CacheKey(_LT("obj5")), obj5);
+	obj = dynamic_cast<CacheTest*>(manager->findObjectAddRef(CacheKey(_LT("obj5"))));
 	ASSERT_EQ(NULL, obj);
 	obj5->release();	// そのまま消える
-	obj = dynamic_cast<CacheTest*>(manager->findObjectAddRef(CacheKey(_T("obj5"))));
+	obj = dynamic_cast<CacheTest*>(manager->findObjectAddRef(CacheKey(_LT("obj5"))));
 	ASSERT_EQ(NULL, obj);
 
 	// カウントは戻っているはず
@@ -126,19 +126,19 @@ TEST_F(Test_Base_Cache, ObjectSize)
 	CacheTest* obj3 = LN_NEW CacheTest(1);
 	ASSERT_EQ(3, g_count);
 
-	manager->registerCacheObject(CacheKey(_T("obj1")), obj1);
-	manager->registerCacheObject(CacheKey(_T("obj2")), obj2);
-	manager->registerCacheObject(CacheKey(_T("obj3")), obj3);
+	manager->registerCacheObject(CacheKey(_LT("obj1")), obj1);
+	manager->registerCacheObject(CacheKey(_LT("obj2")), obj2);
+	manager->registerCacheObject(CacheKey(_LT("obj3")), obj3);
 
 	// キャッシュには置けないサイズでも、まだ生きていれば FindObjectAddRef() で取れる
 	CacheTest* obj;
-	obj = dynamic_cast<CacheTest*>(manager->findObjectAddRef(CacheKey(_T("obj1"))));
+	obj = dynamic_cast<CacheTest*>(manager->findObjectAddRef(CacheKey(_LT("obj1"))));
 	obj->release();
 	ASSERT_EQ(obj1, obj);
-	obj = dynamic_cast<CacheTest*>(manager->findObjectAddRef(CacheKey(_T("obj2"))));
+	obj = dynamic_cast<CacheTest*>(manager->findObjectAddRef(CacheKey(_LT("obj2"))));
 	obj->release();
 	ASSERT_EQ(obj2, obj);
-	obj = dynamic_cast<CacheTest*>(manager->findObjectAddRef(CacheKey(_T("obj3"))));
+	obj = dynamic_cast<CacheTest*>(manager->findObjectAddRef(CacheKey(_LT("obj3"))));
 	obj->release();
 	ASSERT_EQ(obj3, obj);
 
@@ -167,11 +167,11 @@ TEST_F(Test_Base_Cache, NotUseCache)
 
 	CacheTest* obj1 = LN_NEW CacheTest(1);
 
-	manager->registerCacheObject(CacheKey(_T("obj1")), obj1);
+	manager->registerCacheObject(CacheKey(_LT("obj1")), obj1);
 
 	// 生きていれば FindObjectAddRef() で取れる
 	CacheTest* obj;
-	obj = dynamic_cast<CacheTest*>(manager->findObjectAddRef(CacheKey(_T("obj1"))));
+	obj = dynamic_cast<CacheTest*>(manager->findObjectAddRef(CacheKey(_LT("obj1"))));
 	obj->release();
 	ASSERT_EQ(obj1, obj);
 
@@ -180,6 +180,6 @@ TEST_F(Test_Base_Cache, NotUseCache)
 	ASSERT_EQ(0, g_count);
 
 	// 念のため。もういない
-	obj = dynamic_cast<CacheTest*>(manager->findObjectAddRef(CacheKey(_T("obj1"))));
+	obj = dynamic_cast<CacheTest*>(manager->findObjectAddRef(CacheKey(_LT("obj1"))));
 	ASSERT_EQ(NULL, obj);
 }

@@ -73,16 +73,16 @@ InputGesture* Input::getAnyActiveTriggered()
 //==============================================================================
 // InputButton
 //==============================================================================
-const String InputButtons::Left = _T("left");
-const String InputButtons::Right = _T("right");
-const String InputButtons::Up = _T("up");
-const String InputButtons::Down = _T("down");
-const String InputButtons::Submit = _T("submit");
-const String InputButtons::Cancel = _T("cancel");
-const String InputButtons::Menu = _T("menu");
-const String InputButtons::Shift = _T("shift");
-const String InputButtons::PageUp = _T("pageup");
-const String InputButtons::PageDown = _T("pagedown");
+const String InputButtons::Left = _LT("left");
+const String InputButtons::Right = _LT("right");
+const String InputButtons::Up = _LT("up");
+const String InputButtons::Down = _LT("down");
+const String InputButtons::Submit = _LT("submit");
+const String InputButtons::Cancel = _LT("cancel");
+const String InputButtons::Menu = _LT("menu");
+const String InputButtons::Shift = _LT("shift");
+const String InputButtons::PageUp = _LT("pageup");
+const String InputButtons::PageDown = _LT("pagedown");
 const String InputButtons::Any = String::getEmpty();
 
 LN_NAMESPACE_END

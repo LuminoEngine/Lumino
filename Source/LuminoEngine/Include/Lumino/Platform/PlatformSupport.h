@@ -11,7 +11,7 @@ LN_NAMESPACE_BEGIN
 class PlatformSupport
 {
 public:
-	static void showAlertMessageBox(const TCHAR* message) LN_NOEXCEPT;
+	static void showAlertMessageBox(const Char* message) LN_NOEXCEPT;
 
 #ifdef LN_OS_WIN32
 	/**

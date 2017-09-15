@@ -147,7 +147,7 @@ void ScVariant::setInt(int value)
 //------------------------------------------------------------------------------
 int ScVariant::getInt() const
 {
-	if (LN_CHECK_STATE(m_core->m_type == ScVariantType::Int)) return 0;
+	if (LN_ENSURE(m_core->m_type == ScVariantType::Int)) return 0;
 	return m_core->m_int;
 }
 
@@ -161,7 +161,7 @@ void ScVariant::setString(const StringRef& value)
 //------------------------------------------------------------------------------
 const String& ScVariant::getString() const
 {
-	if (LN_CHECK_STATE(m_core->m_type == ScVariantType::String)) return String::getEmpty();
+	if (LN_ENSURE(m_core->m_type == ScVariantType::String)) return String::getEmpty();
 	return *m_core->m_string;
 }
 
@@ -288,9 +288,9 @@ void ScVariant::loadInternal(ISerializeElement* value)
 //==============================================================================
 // Archive
 //==============================================================================
-const TCHAR* Archive::ClassNameKey = _T("_ln_class_name");
-const TCHAR* Archive::ClassVersionKey = _T("_ln_class_version");
-const TCHAR* Archive::ClassBaseDefaultNameKey = _T("_ln_class_base");
+const TTCHAR* Archive::ClassNameKey = _TT("_ln_class_name");
+const TTCHAR* Archive::ClassVersionKey = _TT("_ln_class_version");
+const TTCHAR* Archive::ClassBaseDefaultNameKey = _TT("_ln_class_base");
 
 //------------------------------------------------------------------------------
 Ref<ReflectionObject> Archive::createObject(const String& className, TypeInfo* requestedType)

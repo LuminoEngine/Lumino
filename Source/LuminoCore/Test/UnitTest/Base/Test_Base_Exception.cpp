@@ -1,5 +1,7 @@
 ﻿#include <TestConfig.h>
 
+#ifdef LN_USTRING
+#else
 class Test_Base_Exception : public ::testing::Test
 {
 protected:
@@ -31,7 +33,7 @@ TEST_F(Test_Base_Exception, Check)
 
 	try
 	{
-		if (LN_CHECK_ARG(0)) err += 1;	// NG
+		if (LN_REQUIRE(0)) err += 1;	// NG
 		FAIL();
 	}
 	catch (ArgumentException& e)
@@ -39,12 +41,12 @@ TEST_F(Test_Base_Exception, Check)
 	}
 	ASSERT_EQ(0, err);
 
-	if (LN_CHECK_ARG(1)) err += 10;	// OK
+	if (LN_REQUIRE(1)) err += 10;	// OK
 	ASSERT_EQ(0, err);
 
 #else
-	if (LN_CHECK_ARG(0)) err += 1;	// NG
-	if (LN_CHECK_ARG(1)) err += 10;	// OK
+	if (LN_REQUIRE(0)) err += 1;	// NG
+	if (LN_REQUIRE(1)) err += 10;	// OK
 #endif
 }
 
@@ -95,7 +97,7 @@ TEST_F(Test_Base_Exception, Basic)
 		}
 		catch (ArgumentException& e)
 		{
-			ASSERT_TRUE(_tcsstr(e.getMessage(), _T("test")) != NULL);
+			ASSERT_TRUE(_tcsstr(e.getMessage(), _LT("test")) != NULL);
 		}
 
 		try
@@ -104,7 +106,7 @@ TEST_F(Test_Base_Exception, Basic)
 		}
 		catch (ArgumentException& e)
 		{
-			ASSERT_TRUE(_tcsstr(e.getMessage(), _T("param:p1")) != NULL);
+			ASSERT_TRUE(_tcsstr(e.getMessage(), _LT("param:p1")) != NULL);
 		}
 	}
 
@@ -116,7 +118,7 @@ TEST_F(Test_Base_Exception, Basic)
 	}
 	catch (IOException& e)
 	{
-		ASSERT_TRUE(_tcsstr(e.getMessage(), _T("test1")) != NULL);
+		ASSERT_TRUE(_tcsstr(e.getMessage(), _LT("test1")) != NULL);
 	}
 	// wchar_t 可変長 message
 	try
@@ -133,7 +135,7 @@ TEST_F(Test_Base_Exception, Basic)
 	}
 	catch (IOException& e)
 	{
-		ASSERT_TRUE(_tcsstr(e.getMessage(), _T("testtest")) != NULL);
+		ASSERT_TRUE(_tcsstr(e.getMessage(), _LT("testtest")) != NULL);
 	}
 }
 
@@ -161,3 +163,4 @@ TEST_F(Test_Base_Exception, Basic)
 //
 //	ASSERT_EQ(0, x);
 //}
+#endif

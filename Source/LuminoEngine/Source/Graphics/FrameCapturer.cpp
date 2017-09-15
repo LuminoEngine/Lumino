@@ -580,7 +580,7 @@ void FrameCapturerContext::stopRecording()
 void FrameCapturerContext::updateOnRender()
 {
 	if (m_currentState_main == State::Stoped && m_requestedState == State::Stoped) return;
-	if (LN_CHECK_STATE(m_capturerTarget != nullptr)) return;
+	if (LN_REQUIRE(m_capturerTarget != nullptr)) return;
 
 	if (m_timeMSecs > 0)
 	{
@@ -621,7 +621,7 @@ void FrameCapturerContext::RecordCommand(Driver::ITexture* target, State newStat
 		}
 		else if (newState == State::Recording)
 		{
-			PathName filePath(_T("FrameCapturer.gif"));
+			PathName filePath(_LT("FrameCapturer.gif"));
 			m_gifContext->open(filePath, target->getSize());
 			m_lastTick = 0;
 		}

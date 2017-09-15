@@ -146,8 +146,8 @@ void UIButton::initialize(const StringRef& text, float width, float height)
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIToggleButton, UIButtonBase);
 
-const String UIToggleButton::CheckedState = _T("Checked");
-const String UIToggleButton::UncheckedState = _T("Unchecked");
+const String UIToggleButton::CheckedState = _LT("Checked");
+const String UIToggleButton::UncheckedState = _LT("Unchecked");
 
 //------------------------------------------------------------------------------
 Ref<UIToggleButton> UIToggleButton::create()

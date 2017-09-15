@@ -1,6 +1,7 @@
 ﻿
 #include "../Internal.h"
 #include <float.h>
+#include <Lumino/IO/Console.h>
 #include <Lumino/Graphics/Color.h>
 #include <Lumino/Rendering/Rendering.h>
 #include <Lumino/Rendering/SceneRenderer.h>	// TODO
@@ -830,7 +831,7 @@ public:
 		e.context->beginBaseRenderer()->clear(flags, color, z, stencil);
 	}
 
-	virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("Clear")); }
+	virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_LT("Clear")); }
 };
 
 } // namespace detail 
@@ -871,35 +872,35 @@ void RenderDiag::clear()
 //------------------------------------------------------------------------------
 void RenderDiag::beginRenderView()
 {
-	instantiate<detail::RenderDiagItem_BeginRenderView>(_T("BeginRenderView"))->m_subType = RenderDiagItem::SubType::ScopeBegin;
+	instantiate<detail::RenderDiagItem_BeginRenderView>(_LT("BeginRenderView"))->m_subType = RenderDiagItem::SubType::ScopeBegin;
 }
 
 //------------------------------------------------------------------------------
 void RenderDiag::endRenderView()
 {
-	instantiate<detail::RenderDiagItem_EndRenderView>(_T("EndRenderView"))->m_subType = RenderDiagItem::SubType::ScopeEnd;
+	instantiate<detail::RenderDiagItem_EndRenderView>(_LT("EndRenderView"))->m_subType = RenderDiagItem::SubType::ScopeEnd;
 }
 
 //------------------------------------------------------------------------------
 void RenderDiag::beginDrawList()
 {
-	instantiate<detail::RenderDiagItem_BeginDrawList>(_T("BeginDrawList"))->m_subType = RenderDiagItem::SubType::ScopeBegin;
+	instantiate<detail::RenderDiagItem_BeginDrawList>(_LT("BeginDrawList"))->m_subType = RenderDiagItem::SubType::ScopeBegin;
 }
 
 //------------------------------------------------------------------------------
 void RenderDiag::endDrawList()
 {
-	instantiate<detail::RenderDiagItem_EndDrawList>(_T("EndDrawList"))->m_subType = RenderDiagItem::SubType::ScopeEnd;
+	instantiate<detail::RenderDiagItem_EndDrawList>(_LT("EndDrawList"))->m_subType = RenderDiagItem::SubType::ScopeEnd;
 }
 
 //------------------------------------------------------------------------------
 void RenderDiag::changeRenderStage()
 {
-	instantiate<detail::RenderDiagItem_EndDrawList>(_T("ChangeRenderStage"));
+	instantiate<detail::RenderDiagItem_EndDrawList>(_LT("ChangeRenderStage"));
 }
 
 //------------------------------------------------------------------------------
-void RenderDiag::callCommonElement(const TCHAR* typeName)
+void RenderDiag::callCommonElement(const Char* typeName)
 {
 	instantiate<detail::RenderDiagItem_Common>(typeName);
 }
@@ -941,7 +942,7 @@ DrawList::~DrawList()
 //------------------------------------------------------------------------------
 void DrawList::initialize(detail::GraphicsManager* manager)
 {
-	if (LN_CHECK_ARG(manager != nullptr)) return;
+	if (LN_REQUIRE(manager != nullptr)) return;
 	m_manager = manager;
 	//m_state.reset();
 
@@ -1098,7 +1099,7 @@ void DrawList::setDepthWriteEnabled(bool enabled)
 //------------------------------------------------------------------------------
 void DrawList::setDefaultMaterial(Material* material)
 {
-	if (LN_CHECK_ARG(material != nullptr)) return;
+	if (LN_REQUIRE(material != nullptr)) return;
 	getCurrentState()->m_material = material;
 }
 
@@ -1175,7 +1176,7 @@ void DrawList::drawLinePrimitive(
 			e.context->beginPrimitiveRenderer()->drawLine(
 				position1, color1, position2, color2);
 		}
-		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("DrawLine")); }
+		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_LT("DrawLine")); }
 	};
 	auto* ptr = resolveDrawElement<DrawElement_DrawLine>(m_manager->getInternalContext()->m_primitiveRenderer, nullptr);
 	ptr->position1 = position1; ptr->color1 = color1;
@@ -1206,7 +1207,7 @@ void DrawList::drawSquarePrimitive(
 				position[2], uv[2], color[2],
 				position[3], uv[3], color[3]);
 		}
-		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("DrawSquarePrimitive")); }
+		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_LT("DrawSquarePrimitive")); }
 	};
 	auto* e = resolveDrawElement<DrawSquarePrimitiveElement>(m_manager->getInternalContext()->m_primitiveRenderer, nullptr);
 	e->position[0] = position1; e->uv[0] = uv1; e->color[0] = color1;
@@ -1229,7 +1230,7 @@ void DrawList::drawSquare(float sizeX, float sizeZ, int slicesX, int slicesZ, co
 			auto* r = e.context->beginPrimitiveRenderer();
 			r->drawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
 		}
-		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("DrawCylinderElement")); }
+		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_LT("DrawCylinderElement")); }
 	};
 	auto* e = resolveDrawElement<DrawCylinderElement>(m_manager->getInternalContext()->m_primitiveRenderer, material);
 	e->factory.initialize(Vector2(sizeX, sizeZ), slicesX, slicesZ, color, localTransform);
@@ -1250,7 +1251,7 @@ void DrawList::drawArc(float startAngle, float endAngle, float innerRadius, floa
 			auto* r = e.context->beginPrimitiveRenderer();
 			r->drawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
 		}
-		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("DrawArcElement")); }
+		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_LT("DrawArcElement")); }
 	};
 	auto* e = resolveDrawElement<DrawArcElement>(m_manager->getInternalContext()->m_primitiveRenderer, material);
 	e->factory.initialize(startAngle, endAngle, innerRadius, outerRadius, slices, color, localTransform);
@@ -1273,7 +1274,7 @@ void DrawList::drawBox(const Box& box, const Color& color, const Matrix& localTr
 			auto* r = e.context->beginPrimitiveRenderer();
 			r->drawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
 		}
-		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("DrawBoxElement")); }
+		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_LT("DrawBoxElement")); }
 	};
 	auto* e = resolveDrawElement<DrawBoxElement>(m_manager->getInternalContext()->m_primitiveRenderer, material);
 	e->factory.initialize(Vector3(box.width, box.height, box.depth), color, localTransform);
@@ -1296,7 +1297,7 @@ void DrawList::drawSphere(float radius, int slices, int stacks, const Color& col
 			auto* r = e.context->beginPrimitiveRenderer();
 			r->drawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
 		}
-		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("DrawSphereElement")); }
+		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_LT("DrawSphereElement")); }
 	};
 	auto* e = resolveDrawElement<DrawSphereElement>(m_manager->getInternalContext()->m_primitiveRenderer, material);
 	e->factory.initialize(radius, slices, stacks, color, localTransform);
@@ -1317,7 +1318,7 @@ void DrawList::drawCylinder(float radius, float	height, int slices, int stacks, 
 			auto* r = e.context->beginPrimitiveRenderer();
 			r->drawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
 		}
-		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("DrawCylinder")); }
+		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_LT("DrawCylinder")); }
 	};
 	auto* e = resolveDrawElement<DrawCylinderElement>(m_manager->getInternalContext()->m_primitiveRenderer, nullptr);
 	e->factory.initialize(radius, height, slices, stacks, color, localTransform);
@@ -1338,7 +1339,7 @@ void DrawList::drawCone(float radius, float height, int slices, const Color& col
 			auto* r = e.context->beginPrimitiveRenderer();
 			r->drawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
 		}
-		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("DrawCone")); }
+		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_LT("DrawCone")); }
 	};
 	auto* e = resolveDrawElement<DrawConeElement>(m_manager->getInternalContext()->m_primitiveRenderer, nullptr);
 	e->factory.initialize(radius, height, slices, color, localTransform);
@@ -1395,7 +1396,7 @@ void DrawList::drawGlyphRun(const Point& position, GlyphRun* glyphRun)
 		{
 			e.context->beginTextRenderer()->drawGlyphRun(getTransform(e.oenerList), position, glyphRun);
 		}
-		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("DrawGlyphRun")); }
+		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_LT("DrawGlyphRun")); }
 	};
 
 
@@ -1434,7 +1435,7 @@ void DrawList::drawText_(const StringRef& text, const Rect& rect, StringFormatFl
 		{
 			e.context->beginTextRenderer()->drawString(getTransform(e.oenerList), text.c_str(), text.getLength(), rect, flags);
 		}
-		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("DrawText")); }
+		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_LT("DrawText")); }
 	};
 
 	BlendMode oldBlendMode = getCurrentState()->m_state.state.getBlendMode();
@@ -1481,7 +1482,7 @@ void DrawList::drawChar(uint32_t codePoint, const Rect& rect, StringFormatFlags 
 			e.context->beginTextRenderer()->drawChar(getTransform(e.oenerList), ch, rect, flags);
 			//e.context->beginVectorTextRenderer()->drawChar(getTransform(e.oenerList), ch, Rect(position, 0, 0), TextLayoutOptions::None);
 		}
-		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("DrawChar")); }
+		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_LT("DrawChar")); }
 	};
 
 	auto* e = resolveDrawElement<DrawElement_DrawChar>(m_manager->getInternalContext()->m_textRenderer, nullptr);
@@ -1510,10 +1511,10 @@ void DrawList::drawText2(const StringRef& text, const Rect& rect)
 				rect,
 				TextLayoutOptions::None);
 		}
-		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("DrawString")); }
+		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_LT("DrawString")); }
 	};
 
-	const ByteBuffer& utf32Data = m_manager->getFontManager()->getTCharToUTF32Converter()->convert(text.getBegin(), text.getLength() * sizeof(TCHAR));
+	const ByteBuffer& utf32Data = m_manager->getFontManager()->getTCharToUTF32Converter()->convert(text.getBegin(), text.getLength() * sizeof(Char));
 
 	auto* e = resolveDrawElement<DrawElement_DrawString>(m_manager->getInternalContext()->m_vectorTextRenderer, nullptr);
 	e->utf32DataHandle = m_drawElementList.allocExtData(utf32Data.getSize());
@@ -1554,7 +1555,7 @@ void DrawList::drawSprite(
 			r->setTransform(getTransform(e.oenerList));
 			r->drawRequest(position, size, anchorRatio, texture, srcRect, color, baseDirection, billboardType);
 		}
-		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("DrawSprite")); }
+		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_LT("DrawSprite")); }
 	};
 
 	auto* ptr = resolveDrawElement<DrawElement_DrawSprite>(m_manager->getInternalContext()->m_spriteRenderer, material);
@@ -1595,7 +1596,7 @@ public:
 		r->executeCommand(m_commandList);
 		m_commandList = nullptr;
 	}
-	virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("DrawNanoVGCommands")); }
+	virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_LT("DrawNanoVGCommands")); }
 };
 
 void DrawList::drawRectangle(const Rect& rect)
@@ -1631,7 +1632,7 @@ void DrawList::addDynamicLightInfo(detail::DynamicLightInfo* lightInfo)
 //------------------------------------------------------------------------------
 void DrawList::pushMetadata(const DrawElementMetadata* metadata)
 {
-	if (LN_CHECK_STATE(m_metadata == nullptr)) return;
+	if (LN_REQUIRE(m_metadata == nullptr)) return;
 	m_metadata = metadata;
 	// TODO: stack
 }
@@ -1696,7 +1697,7 @@ void DrawList::drawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Mat
 		{
 			e.context->beginMeshRenderer()->drawMesh(mesh, startIndex, primitiveCount, primitiveType);
 		}
-		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("DrawMeshResourceInternal")); }
+		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_LT("DrawMeshResourceInternal")); }
 	};
 
 	MeshAttribute attr;
@@ -1773,7 +1774,7 @@ void DrawList::blitInternal(Texture* source, RenderTargetTexture* dest, const Ma
 		{
 			e.context->beginBlitRenderer()->blit();
 		}
-		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("BlitInternal")); }
+		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_LT("BlitInternal")); }
 	};
 
 	if (dest != nullptr)
@@ -1806,7 +1807,7 @@ void DrawList::drawFrameRectangle(const Rect& rect)
 			auto* r = e.context->beginFrameRectRenderer();
 			r->draw(getTransform(e.oenerList), rect);
 		}
-		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("DrawFrameRectangle")); }
+		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_LT("DrawFrameRectangle")); }
 	};
 	auto* ptr = resolveDrawElement<DrawElement_DrawFrameRectangle>(m_manager->getInternalContext()->m_frameRectRenderer, nullptr);
 	ptr->rect = rect;
@@ -1839,7 +1840,7 @@ void DrawList::drawFrameRectangle(const Rect& rect)
 //			// ステート復帰
 //			e.context->applyStatus(status, { e.defaultRenderTarget, e.defaultDepthBuffer });
 //		}
-//		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_T("RenderSubView")); }
+//		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_LT("RenderSubView")); }
 //	};
 //
 //	// TODO: m_frameRectRenderer は違う気がする・・・

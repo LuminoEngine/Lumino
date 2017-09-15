@@ -60,7 +60,7 @@ void ProfilerRenderer::Render(const Vector2& viewSize)
 	location.Y += 16;
 	location.X += 16;
 
-	TCHAR text[256] = { 0 };
+	Char text[256] = { 0 };
 
 	StringTraits::SPrintf(text, 256, _T("Graphics API    : %s"), m_manager->GetGraphicsAPI().ToString().c_str());
 	painter.DrawString(text, -1, location);
@@ -159,7 +159,7 @@ void ProfilerRenderer::DrawGroupList(GraphicsContext& painter, const RectF& list
 		painter.DrawString(groups[iGrout].Name, pt);
 
 		// ms
-		TCHAR fps[256] = { 0 };
+		Char fps[256] = { 0 };
 		StringTraits::SPrintf(fps, 256, _T("%.1f ms"), (groups[iGrout].TotalTime / 1000000.0));	// us → ms の後
 		pt.Y += 16;
 		painter.DrawString(fps, -1, pt);

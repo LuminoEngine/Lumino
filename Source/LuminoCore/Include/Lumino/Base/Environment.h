@@ -7,13 +7,6 @@
 
 LN_NAMESPACE_BEGIN
 
-/** エンディアンを示す値 */
-enum class ByteOrder
-{
-	Little = 0,		/**< リトルエンディアン */
-	Big,			/**< ビッグエンディアン */
-};
-
 /**
 	@brief	システムの特別なフォルダパスを示す値です。
 	@details
@@ -31,12 +24,26 @@ LN_ENUM(SpecialFolder)
 };
 LN_ENUM_DECLARE(SpecialFolder);
 
+LN_NAMESPACE_END
+
+
+LN_NAMESPACE_BEGIN
+
+/** エンディアンを示す値 */
+enum class ByteOrder
+{
+	Little = 0,		/**< リトルエンディアン */
+	Big,			/**< ビッグエンディアン */
+};
+
 /**
 	@brief	現在の環境に関する情報にアクセスするためのクラスです。
 */
 class Environment
 {
 public:
+	static String getCurrentDirectory();
+
 
 	/**
 		@brief		環境変数の値を取得します。

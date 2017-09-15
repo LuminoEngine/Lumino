@@ -30,14 +30,14 @@ uint8_t CharPairToHex(int a, int b)
 }
 
 //------------------------------------------------------------------------------
-TCHAR HexToDigitChar(uint8_t hex)
+Char HexToDigitChar(uint8_t hex)
 {
 	if (hex >= 10) return 'A' + (hex - 10);
 	return '0' + hex;
 }
 
 //------------------------------------------------------------------------------
-void HexToCharPair(uint8_t hex, TCHAR* ch1, TCHAR* ch2)
+void HexToCharPair(uint8_t hex, Char* ch1, Char* ch2)
 {
 	*ch1 = HexToDigitChar((hex >> 4) & 0x0F);
 	*ch2 = HexToDigitChar((hex) & 0x0F);
@@ -88,14 +88,14 @@ Uuid::Uuid()
 //------------------------------------------------------------------------------
 Uuid::Uuid(const StringRef& uuidText)
 {
-	TCHAR ch1;
+	Char ch1;
 	bool lookingCh1 = true;
 
 	// parse UUID text
 	for (int i = 0; i < uuidText.getLength(); i++)
 	{
-		TCHAR ch = uuidText[i];
-		if (ch == _T('-') || ch == _T('{') || ch == _T('}')) continue;
+		Char ch = uuidText[i];
+		if (ch == _LT('-') || ch == _LT('{') || ch == _LT('}')) continue;
 
 		if (lookingCh1)
 		{
@@ -113,7 +113,7 @@ Uuid::Uuid(const StringRef& uuidText)
 //------------------------------------------------------------------------------
 Uuid::Uuid(const uint8_t* bytes)
 {
-	if (LN_CHECK_ARG(bytes != nullptr)) return;
+	if (LN_REQUIRE(bytes != nullptr)) return;
 	m_data.assign(bytes, bytes + 16);
 }
 
@@ -145,7 +145,7 @@ bool Uuid::operator!=(const Uuid& other) const
 //------------------------------------------------------------------------------
 String Uuid::toString() const
 {
-	TCHAR str[] = _T("{00000000-0000-0000-0000-000000000000}");
+	Char str[] = _LT("{00000000-0000-0000-0000-000000000000}");
 
 	HexToCharPair(m_data[0], &str[1], &str[2]);
 	HexToCharPair(m_data[1], &str[3], &str[4]);

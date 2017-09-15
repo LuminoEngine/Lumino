@@ -39,7 +39,7 @@ BtShapeManager::~BtShapeManager()
 //------------------------------------------------------------------------------
 void BtShapeManager::addShape(CollisionShape* shape)
 {
-	if (LN_CHECK_ARG(shape != nullptr)) return;
+	if (LN_REQUIRE(shape != nullptr)) return;
 
 	if (m_collisionShape != nullptr)
 	{

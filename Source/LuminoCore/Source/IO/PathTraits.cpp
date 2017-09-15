@@ -10,6 +10,97 @@ LN_NAMESPACE_BEGIN
 // PathTraits
 //==============================================================================
 
+// 見つからなかったら return begin;
+template<typename TChar, typename TPred>
+static const TChar* findLast(const TChar* begin, const TChar* end, TPred pred)
+{
+	const TChar* pos = end - 1;
+	for (; pos >= begin; --pos)
+	{
+		if (pred(*pos))
+		{
+			return pos/* + 1*/;
+		}
+	}
+	return begin;
+}
+
+template<typename TChar>
+const TChar* PathTraits::getFileName(const TChar* begin, const TChar* end)
+{
+	const TChar* pos = findLast(begin, end, [](TChar ch) { return isSeparatorChar(ch); });
+	if (isSeparatorChar(*pos)) return pos + 1;
+	return begin;
+}
+template const char* PathTraits::getFileName(const char* begin, const char* end);
+template const wchar_t* PathTraits::getFileName(const wchar_t* begin, const wchar_t* end);
+template const char16_t* PathTraits::getFileName(const char16_t* begin, const char16_t* end);
+
+template<typename TChar>
+const TChar* PathTraits::getWithoutExtensionEnd(const TChar* begin, const TChar* end)
+{
+	const TChar* pos = findLast(begin, end, [](TChar ch) { return isSeparatorChar(ch) || ch == '.'; });
+	if (*pos == '.') return pos;
+	return end;
+}
+template const char* PathTraits::getWithoutExtensionEnd(const char* begin, const char* end);
+template const wchar_t* PathTraits::getWithoutExtensionEnd(const wchar_t* begin, const wchar_t* end);
+template const char16_t* PathTraits::getWithoutExtensionEnd(const char16_t* begin, const char16_t* end);
+
+template<typename TChar>
+const TChar* PathTraits::getExtensionBegin(const TChar* begin, const TChar* end, bool withDot)
+{
+	const TChar* pos = findLast(begin, end, [](TChar ch) { return isSeparatorChar(ch) || ch == '.'; });
+	if (*pos == '.')
+	{
+		if (withDot)
+		{
+			if (end - pos == 1)	// .NET implementation
+				return end;
+			else
+				return pos;
+		}
+		else
+			return pos + 1;
+	}
+	return end;
+}
+template const char* PathTraits::getExtensionBegin(const char* begin, const char* end, bool withDot);
+template const wchar_t* PathTraits::getExtensionBegin(const wchar_t* begin, const wchar_t* end, bool withDot);
+template const char16_t* PathTraits::getExtensionBegin(const char16_t* begin, const char16_t* end, bool withDot);
+
+template<typename TChar>
+const TChar* PathTraits::getDirectoryPathEnd(const TChar* begin, const TChar* end)
+{
+	/* 参考：他のライブラリの、空文字やセパレータが無いなどで親ディレクトリが取れない時の動作
+	"C:"	"C:/"	"C:/file"
+	- Qt (QFileInfo)			…	"C:"	"C:/"	"C:/"
+	- wxWidgets (wxFileName)	…
+	- Python (os.path)			…
+	- Ruby (Pathname)			…	"C:.."	"C:/"	"C:/"
+	- Java (os.nio.Paths)		…
+	- C# (Path, Uri)			…	""		"C:/"	"C:/"
+
+	出力例
+	- "C:\MyDir\MySubDir\myfile.ext" → "C:\MyDir\MySubDir"
+	- "C:\MyDir\MySubDir" → "C:\MyDir"
+	- "C:\MyDir\" → "C:\MyDir"
+	- "C:\MyDir" → "C:\"
+	- "C:\" → ""
+	- "/MyDir/" → "/MyDir"
+	- "/MyDir" → "/"
+	- "/" → "
+	*/
+
+	// 後ろから前に調べて、最初に \\ か / が見つかるところを探す
+	const TChar* pos = findLast(begin, end, [](TChar ch) { return isSeparatorChar(ch); });
+	return pos;
+}
+template const char* PathTraits::getDirectoryPathEnd(const char* begin, const char* end);
+template const wchar_t* PathTraits::getDirectoryPathEnd(const wchar_t* begin, const wchar_t* end);
+template const char16_t* PathTraits::getDirectoryPathEnd(const char16_t* begin, const char16_t* end);
+
+
 //------------------------------------------------------------------------------
 template<typename TChar>
 bool PathTraits::isSeparatorChar(TChar ch)
@@ -71,7 +162,7 @@ template bool PathTraits::isRootPath<wchar_t>(const wchar_t* path);
 template<typename TChar>
 bool PathTraits::isAbsolutePath(const TChar* path, int len)
 {
-	LN_THROW(path != NULL, ArgumentException);
+	if (LN_REQUIRE(path != NULL)) return false;
 	if (len < 0) {
 		len = INT_MAX;
 	}
@@ -97,12 +188,14 @@ bool PathTraits::isAbsolutePath(const TChar* path, int len)
 }
 template bool PathTraits::isAbsolutePath<char>(const char* path, int len);
 template bool PathTraits::isAbsolutePath<wchar_t>(const wchar_t* path, int len);
+template bool PathTraits::isAbsolutePath<char16_t>(const char16_t* path, int len);
+
 
 //------------------------------------------------------------------------------
 template<typename TChar>
 bool PathTraits::endWithSeparator(const TChar* path, int len)
 {
-	if (LN_CHECK_ARG(path != nullptr)) return false;
+	if (LN_REQUIRE(path != nullptr)) return false;
 
 	len = (len < 0) ? StringTraits::tcslen(path) : len;
 	if (len >= 1)
@@ -113,78 +206,7 @@ bool PathTraits::endWithSeparator(const TChar* path, int len)
 }
 template bool PathTraits::endWithSeparator<char>(const char* path, int len);
 template bool PathTraits::endWithSeparator<wchar_t>(const wchar_t* path, int len);
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericString<TChar> PathTraits::getDirectoryPath(const TChar* path)
-{
-	LN_THROW(path != NULL, ArgumentException);
-
-
-	/* 参考：他のライブラリの、空文字やセパレータが無いなどで親ディレクトリが取れない時の動作
-									"C:"	"C:/"	"C:/file"
-	- Qt (QFileInfo)			…	"C:"	"C:/"	"C:/"
-	- wxWidgets (wxFileName)	…
-	- Python (os.path)			…
-	- Ruby (Pathname)			…	"C:.."	"C:/"	"C:/"
-	- Java (os.nio.Paths)		… 
-	- C# (Path, Uri)			…	""		"C:/"	"C:/"
-	*/
-
-	// 後ろから前に調べて、最初に \\ か / が見つかるところを探す
-	int pos = StringTraits::tcslen(path);
-	TChar lastSep = 0;
-	for ( ; pos >= 0; --pos ) {
-		if ( path[pos] == '\\' || path[pos] == '/' ) {
-			lastSep = path[pos];
-			break;
-		}
-	}
-
-	GenericString<TChar> str;
-	if (pos >= 0) {
-		str = GenericString<TChar>(path, pos);
-
-		// ルートパスの末尾は必ずセパレータにする
-		if (isRootPath(str.c_str()))
-		{
-			// 末尾がセパレータでなければセパレータを追加する
-			//if ((*str.rbegin() != DirectorySeparatorChar) && (*str.rbegin() != AltDirectorySeparatorChar)) {
-			//if (str.LastIndexOf(DirectorySeparatorChar) != str.GetLength() &&
-			//	str.LastIndexOf(AltDirectorySeparatorChar) != str.GetLength()){
-			if (!str.endsWith((TChar)DirectorySeparatorChar) && !str.endsWith((TChar)AltDirectorySeparatorChar))
-			{
-				if (lastSep != 0) {
-					str += (const char)lastSep;
-				}
-				else {
-					str += (const char)DirectorySeparatorChar;
-				}
-			}
-		}
-
-	}
-	else
-	{
-		// セパレータが見つからなかった。ただし、ルートパスの場合は空文字にしない。
-		if (isRootPath(path)) {
-			str = path;
-		}
-	}
-
-	return str;
-}
-template GenericString<char> PathTraits::getDirectoryPath<char>(const char* path);
-template GenericString<wchar_t> PathTraits::getDirectoryPath<wchar_t>(const wchar_t* path);
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericString<TChar> PathTraits::getFileName(const TChar* path)
-{
-	return GenericString<TChar>(getFileNameSub(path));
-}
-template GenericString<char> PathTraits::getFileName(const char* path);
-template GenericString<wchar_t> PathTraits::getFileName(const wchar_t* path);
+template bool PathTraits::endWithSeparator<char16_t>(const char16_t* path, int len);
 
 
 //------------------------------------------------------------------------------
@@ -261,46 +283,6 @@ void PathTraits::getExtension(const TChar* path, TChar* outExt)
 }
 template void PathTraits::getExtension(const char* path, char* outExt);
 template void PathTraits::getExtension(const wchar_t* path, wchar_t* outExt);
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-Result PathTraits::getExtension(const TChar* path, bool withDot, GenericStringRef<TChar>* outRef) LN_NOEXCEPT
-{
-	if (path == nullptr || outRef == nullptr) { return Result::ArgumentError; }
-	outRef->attach(path, 0, 0);
-
-	int len = StringTraits::tcslen(path);
-	for (int i = len; i >= 0; --i)
-	{
-		TChar ch = path[i];
-		if (ch == '.')
-		{
-			if (withDot)
-			{
-				if (i != len - 1) {
-					*outRef = GenericStringRef<TChar>(&path[i], len - i);
-					break;
-				}
-			}
-			else
-			{
-				if (i + 1 != len - 1) {
-					*outRef = GenericStringRef<TChar>(&path[i + 1], len - i);
-					break;
-				}
-			}
-
-			break;	// "file." のようなパターン
-		}
-		
-		if (isSeparatorChar(ch)) {
-			break;		// . の前にセパレータが見つかった
-		}
-	}
-	return Result::Success;
-}
-template Result PathTraits::getExtension(const char* path, bool withDot, GenericStringRef<char>* outRef) LN_NOEXCEPT;
-template Result PathTraits::getExtension(const wchar_t* path, bool withDot, GenericStringRef<wchar_t>* outRef) LN_NOEXCEPT;
 
 //------------------------------------------------------------------------------
 template<typename TChar>
@@ -606,6 +588,7 @@ void PathTraits::canonicalizePath(const TChar* srcPath, TChar* outPath)
 		src[len2] = DirectorySeparatorChar;
 		++len2;
 		StringTraits::strncpy(src + len2, LN_MAX_PATH - len2, srcPath, srcLen);
+		//memcpy(src + len2, srcPath, srcLen * sizeof(TChar));
 		srcLen += len2;
 		canonicalizePath(src, srcLen, outPath);
 	}
@@ -614,20 +597,6 @@ void PathTraits::canonicalizePath(const TChar* srcPath, TChar* outPath)
 }
 template void PathTraits::canonicalizePath<char>(const char* srcPath, char* outPath);
 template void PathTraits::canonicalizePath<wchar_t>(const wchar_t* srcPath, wchar_t* outPath);
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-void PathTraits::canonicalizePath(GenericString<TChar>* path)
-{
-	if (path == NULL) { return; }
-
-	TChar tmpPath[LN_MAX_PATH + 1];
-	memset(tmpPath, 0, sizeof(tmpPath));
-	PathTraits::canonicalizePath(path->c_str(), tmpPath);
-	*path = tmpPath;
-}
-template void PathTraits::canonicalizePath<char>(GenericString<char>* path);
-template void PathTraits::canonicalizePath<wchar_t>(GenericString<wchar_t>* path);
 
 #if 0
 //------------------------------------------------------------------------------
@@ -808,7 +777,7 @@ static bool IsInternalSeparator(const TChar* path, int i, int len/*, int slen*/)
 	return false;
 }
 template<typename TChar>
-GenericString<TChar> PathTraits::diffPath(const TChar* path1, int len1, const TChar* path2, int len2, CaseSensitivity cs)
+std::basic_string<TChar> PathTraits::diffPath(const TChar* path1, int len1, const TChar* path2, int len2, CaseSensitivity cs)
 {
 	// パス終端がセパレータでなければもう１字見るようにし、以降の処理でそれはセパレータとする
 	int slen1 = (isSeparatorChar(path1[len1 - 1])) ? len1 : len1 + 1;
@@ -851,16 +820,16 @@ GenericString<TChar> PathTraits::diffPath(const TChar* path1, int len1, const TC
 	}
 	// 完全一致
 	if (i == slen1 && i == slen2) {
-		return GenericString<TChar>::fromNativeCharString(_T("."));	// TODO: 共通文字列にしたい。メモリ確保したくない//::GetEmpty();
+		return std::basic_string<TChar>(1, '.');
 	}
 
 	// path1 の残りの部分からセパレータを探す。このセパレータの数が、戻る深さ(..) の数になる。
-	GenericString<TChar> relLead;	// TODO: StringBuilder
+	std::basic_string<TChar> relLead;
 	for (; i < slen1; ++i)
 	{
 		if (IsInternalSeparator(path1, i, len1))
 		{
-			if (!relLead.isEmpty()) {
+			if (!relLead.empty()) {
 				relLead += LN_T(TChar, "/");
 			}
 			relLead += LN_T(TChar, "..");
@@ -875,9 +844,17 @@ GenericString<TChar> PathTraits::diffPath(const TChar* path1, int len1, const TC
 	if (isSeparatorChar(path2[len2-1])) {
 		--subLen;
 	}
-	return relLead + GenericString<TChar>(path2, si + 1, subLen);
+
+	if (subLen < 0)
+	{
+		return relLead + std::basic_string<TChar>(path2 + si + 1);
+	}
+	else
+	{
+		return relLead + std::basic_string<TChar>(path2 + si + 1, subLen);
+	}
 }
-template GenericString<char> PathTraits::diffPath(const char* path1, int len1, const char* path2, int len2, CaseSensitivity cs);
-template GenericString<wchar_t> PathTraits::diffPath(const wchar_t* path1, int len1, const wchar_t* path2, int len2, CaseSensitivity cs);
+template std::basic_string<char> PathTraits::diffPath(const char* path1, int len1, const char* path2, int len2, CaseSensitivity cs);
+template std::basic_string<wchar_t> PathTraits::diffPath(const wchar_t* path1, int len1, const wchar_t* path2, int len2, CaseSensitivity cs);
 
 LN_NAMESPACE_END

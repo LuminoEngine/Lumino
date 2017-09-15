@@ -33,13 +33,13 @@ class InputFile
 	: public Object
 {
 public:
-	InputFile(const PathNameA& filePath);
-	InputFile(const PathNameA& filePath, const char* code, int length);
+	InputFile(const std::string& filePath);
+	InputFile(const std::string& filePath, const char* code, int length);
 	~InputFile() = default;
 
 	Language GetLanguage() const { return m_lang; }
 	InputFileCategory GetCategory() const { return m_category; }
-	const PathNameA& GetRelativeFilePath() const { return m_filePath; }
+	const std::string& GetRelativeFilePath() const { return m_filePath; }
 	DiagnosticsItemSet* getDiag() const { return m_diag; }
 	const TokenList* GetTokenList() const { return &m_tokenList; }
 
@@ -54,7 +54,7 @@ private:
 
 	Language			m_lang;
 	InputFileCategory	m_category;
-	PathNameA			m_filePath;
+	std::string			m_filePath;
 	ByteBuffer			m_code;
 	bool				m_codeRead;
 	TokenStore			m_tokenStore;
@@ -72,10 +72,10 @@ public:
 	virtual ~AnalyzerContext();
 
 	/** ソースファイルを登録する */
-	InputFile* RegisterInputFile(const PathNameA& filePath);
+	InputFile* RegisterInputFile(const std::string& filePath);
 
 	/** メモリ上のデータをファイルである可能に登録する */
-	InputFile* RegisterInputMemoryCode(const PathNameA& filePath, const char* code, int length = -1);
+	InputFile* RegisterInputMemoryCode(const std::string& filePath, const char* code, int length = -1);
 
 	void RemoveAllInputFile();
 

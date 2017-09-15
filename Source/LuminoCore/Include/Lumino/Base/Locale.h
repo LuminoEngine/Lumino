@@ -1,29 +1,26 @@
-/**
-	@file	Locale.h
-*/
+ï»¿
 #pragma once
 #include <locale>
-#include "String.h"
 
 LN_NAMESPACE_BEGIN
 
 /**
-	@brief	ƒƒP[ƒ‹‚ğ•\‚µ‚Ü‚·B
+	@brief	ãƒ­ã‚±ãƒ¼ãƒ«ã‚’è¡¨ã—ã¾ã™ã€‚
 */
 class Locale
 {
 public:
 
 	/**
-		@brief		ƒfƒtƒHƒ‹ƒg‚ÌƒƒP[ƒ‹‚ğg—p‚µ‚ÄƒIƒuƒWƒFƒNƒg‚ğ\’z‚µ‚Ü‚·B
-		@details	‚±‚ÌƒƒP[ƒ‹‚Í GetDefault() ‚Å•Ô‚³‚ê‚éƒƒP[ƒ‹‚Æ“¯‚¶‚É‚È‚è‚Ü‚·B
+		@brief		ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ãƒ­ã‚±ãƒ¼ãƒ«ã‚’ä½¿ç”¨ã—ã¦ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æ§‹ç¯‰ã—ã¾ã™ã€‚
+		@details	ã“ã®ãƒ­ã‚±ãƒ¼ãƒ«ã¯ GetDefault() ã§è¿”ã•ã‚Œã‚‹ãƒ­ã‚±ãƒ¼ãƒ«ã¨åŒã˜ã«ãªã‚Šã¾ã™ã€‚
 	*/
 	Locale();
 
 	/**
-		@brief		ƒƒP[ƒ‹–¼‚ğw’è‚µ‚ÄƒIƒuƒWƒFƒNƒg‚ğ\’z‚µ‚Ü‚·B
+		@brief		ãƒ­ã‚±ãƒ¼ãƒ«åã‚’æŒ‡å®šã—ã¦ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æ§‹ç¯‰ã—ã¾ã™ã€‚
 	*/
-	explicit Locale(const TCHAR* name);
+	explicit Locale(const Char* name);
 
 	Locale(const Locale& locale);
 	Locale& operator=(const Locale& locale);
@@ -32,14 +29,14 @@ public:
 public:
 
 	/**
-		@brief		Œ»İ‚ÌƒfƒtƒHƒ‹ƒg‚ÌƒƒP[ƒ‹‚ğæ“¾‚µ‚Ü‚·B
-		@details	Windows ‚Ìê‡Aƒ†[ƒU[ƒƒP[ƒ‹‚ğg—p‚µ‚Ü‚·B
+		@brief		ç¾åœ¨ã®ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ãƒ­ã‚±ãƒ¼ãƒ«ã‚’å–å¾—ã—ã¾ã™ã€‚
+		@details	Windows ã®å ´åˆã€ãƒ¦ãƒ¼ã‚¶ãƒ¼ãƒ­ã‚±ãƒ¼ãƒ«ã‚’ä½¿ç”¨ã—ã¾ã™ã€‚
 	*/
 	static const Locale& getDefault();
 
 	/**
-		@brief		"C" ƒƒP[ƒ‹‚ğæ“¾‚µ‚Ü‚·B
-		@details	"C" ƒƒP[ƒ‹‚Í ANSI ‚É€‹’‚µ‚½Å¬ŠÂ‹«‚ğ•\‚µ‚Ü‚·B
+		@brief		"C" ãƒ­ã‚±ãƒ¼ãƒ«ã‚’å–å¾—ã—ã¾ã™ã€‚
+		@details	"C" ãƒ­ã‚±ãƒ¼ãƒ«ã¯ ANSI ã«æº–æ‹ ã—ãŸæœ€å°ç’°å¢ƒã‚’è¡¨ã—ã¾ã™ã€‚
 	*/
 	static const Locale& getC();
 
@@ -54,9 +51,9 @@ private:
 	std::locale		m_stdLocale;
 	NativeLocale_t	m_nativeLocale;
 #ifdef LN_OS_WIN32
-	StringW			m_nativeName;
+	std::wstring		m_nativeName;
 #else
-	StringA			m_nativeName;
+	std::string			m_nativeName;
 #endif
 };
 

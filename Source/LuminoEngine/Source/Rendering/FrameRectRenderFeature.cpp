@@ -50,8 +50,8 @@ void FrameRectRendererCore::initialize(GraphicsManager* manager)
 	// Vertex and Index buffers
 	const int DefaultFaceCount = 512;
 	requestBuffers(512);
-	m_vertexCache.reserve(DefaultFaceCount * 4);
-	m_indexCache.reserve(DefaultFaceCount * 6);
+	m_vertexCache.clearAndReserve(DefaultFaceCount * 4);
+	m_indexCache.clearAndReserve(DefaultFaceCount * 6);
 
 	//-----------------------------------------------------
 	// Shader
@@ -67,12 +67,12 @@ void FrameRectRendererCore::initialize(GraphicsManager* manager)
 
 	m_shader.technique = m_shader.shader->getTechnique(0);
 	m_shader.pass = m_shader.technique->getPass(0);
-	m_shader.varWorldMatrix = m_shader.shader->getVariableByName(_T("g_worldMatrix"));
-	m_shader.varViewProjMatrix = m_shader.shader->getVariableByName(_T("g_viewProjMatrix"));
-	m_shader.varTone = m_shader.shader->getVariableByName(_T("g_tone"));
-	m_shader.varTexture = m_shader.shader->getVariableByName(_T("g_texture"));
-	m_shader.varGlyphMaskSampler = m_shader.shader->getVariableByName(_T("g_glyphMaskTexture"));
-	m_shader.varViewportSize = m_shader.shader->getVariableByName(_T("g_viewportSize"));
+	m_shader.varWorldMatrix = m_shader.shader->getVariableByName(_LT("g_worldMatrix"));
+	m_shader.varViewProjMatrix = m_shader.shader->getVariableByName(_LT("g_viewProjMatrix"));
+	m_shader.varTone = m_shader.shader->getVariableByName(_LT("g_tone"));
+	m_shader.varTexture = m_shader.shader->getVariableByName(_LT("g_texture"));
+	m_shader.varGlyphMaskSampler = m_shader.shader->getVariableByName(_LT("g_glyphMaskTexture"));
+	m_shader.varViewportSize = m_shader.shader->getVariableByName(_LT("g_viewportSize"));
 
 	m_shader.varWorldMatrix->setMatrix(Matrix::Identity);
 	m_shader.varViewProjMatrix->setMatrix(Matrix::Identity);
@@ -514,7 +514,7 @@ void FrameRectRenderFeature::setState(Brush* brush)
 //------------------------------------------------------------------------------
 void FrameRectRenderFeature::setState(Brush* brush, const Matrix& world, const Matrix& viewProj)	// TODO: world いらない
 {
-	if (LN_CHECK_ARG(brush != nullptr)) return;
+	if (LN_REQUIRE(brush != nullptr)) return;
 
 	FrameRectRendererState state;
 	//state.worldTransform = world;
@@ -524,7 +524,7 @@ void FrameRectRenderFeature::setState(Brush* brush, const Matrix& world, const M
 	state.srcRect = RectI::fromFloatRect(brush->getSourceRect());
 	state.wrapMode = brush->getWrapMode();
 	state.texture = (brush->getTexture() != nullptr) ? brush->getTexture()->resolveDeviceObject() : nullptr;
-	if (LN_CHECK_STATE(state.texture != nullptr)) return;
+	if (LN_REQUIRE(state.texture != nullptr)) return;
 
 	LN_ENQUEUE_RENDER_COMMAND_2(
 		setState, m_manager,

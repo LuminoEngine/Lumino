@@ -128,9 +128,9 @@ DX9VertexDeclaration::~DX9VertexDeclaration()
 //------------------------------------------------------------------------------
 void DX9VertexDeclaration::initialize(DX9GraphicsDevice* device, const VertexElement* elements, int elementsCount)
 {
-	if (LN_CHECK_ARG(device != nullptr)) return;
-	if (LN_CHECK_ARG(elements != nullptr)) return;
-	if (LN_CHECK_ARG(elementsCount >= 0)) return;
+	if (LN_REQUIRE(device != nullptr)) return;
+	if (LN_REQUIRE(elements != nullptr)) return;
+	if (LN_REQUIRE(elementsCount >= 0)) return;
 	memset(m_vertexStrides, 0, sizeof(m_vertexStrides));
 
 	IDirect3DDevice9* dxDevice = device->getIDirect3DDevice9();

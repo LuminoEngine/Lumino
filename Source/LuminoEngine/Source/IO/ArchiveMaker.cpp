@@ -95,7 +95,7 @@ void ArchiveMaker::close()
 bool ArchiveMaker::addFile(const PathName& filePath, String aliasPath)
 {
 	FILE* stream;
-	errno_t err = _tfopen_s(&stream, filePath, _T("rb"));
+	errno_t err = _tfopen_s(&stream, filePath.c_str(), _T("rb"));
 	if (err == 0)
 	{
         // アクセス用の名前がなければ、ファイル名を代わりに使う
@@ -105,12 +105,12 @@ bool ArchiveMaker::addFile(const PathName& filePath, String aliasPath)
         }
 
         // アクセス用ファイル名のスラッシュをバックスラッシュ化
-		StringW filename = StringW::fromNativeCharString(aliasPath.c_str());
+		std::wstring filename = aliasPath.toStdWString();
 		normalizePath(&filename);
 
         //-------------------------------------------------
         // ファイル名の長さとファイルのサイズを書き込む
-		uint32_t nameSize = filename.getLength();
+		uint32_t nameSize = filename.length();
 		uint32_t fileSize = (uint32_t)FileSystem::getFileSize(stream);
 
 		writeU32Padding16(nameSize, fileSize);
@@ -142,10 +142,12 @@ bool ArchiveMaker::addFile(const PathName& filePath, String aliasPath)
 }
 
 //------------------------------------------------------------------------------
-void ArchiveMaker::normalizePath(StringW* path)
+void ArchiveMaker::normalizePath(std::wstring* path)
 {
-	if (path->getLength() > 0) {
-		for (int i = 0; i < path->getLength(); ++i) {
+	if (path->length() > 0)
+	{
+		for (int i = 0; i < path->length(); ++i)
+		{
 			if ((*path)[i] == L'\\') (*path)[i] = L'/';
 		}
 	}

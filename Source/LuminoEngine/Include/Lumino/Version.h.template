@@ -14,7 +14,7 @@
 #define LUMINO_VERSION_BUILD		%%BuildVersion%%
 
 /** バージョン文字列 */
-#define LUMINO_VERSION_STRING		_T("%%VersionString%%")
+#define LUMINO_VERSION_STRING		_LT("%%VersionString%%")
 
 LN_NAMESPACE_BEGIN
 

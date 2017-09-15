@@ -54,7 +54,7 @@ Token::~Token()
 //------------------------------------------------------------------------------
 const flChar* Token::getBegin() const
 {
-	if (LN_CHECK_STATE(m_ownerFile != nullptr)) return nullptr;
+	if (LN_REQUIRE(m_ownerFile != nullptr)) return nullptr;
 	const flChar* begin = (const flChar*)m_ownerFile->GetCodeBuffer()->getConstData();
 	return begin + m_locBegin;
 }
@@ -73,10 +73,10 @@ const flChar* Token::GetCStr(InputFile* file) const
 }
 
 //------------------------------------------------------------------------------
-StringA Token::getString(InputFile* file) const
+flString Token::getString(InputFile* file) const
 {
 	const flChar* begin = (const flChar*)file->GetCodeBuffer()->getConstData();
-	return StringA(begin + m_locBegin, m_locEnd - m_locBegin);
+	return flString(begin + m_locBegin, m_locEnd - m_locBegin);
 }
 
 //------------------------------------------------------------------------------

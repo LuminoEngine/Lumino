@@ -1,39 +1,14 @@
 
 #pragma once
 #include "Common.h"
-#include "../Base/List.h"
-#include "../Base/String.h"
+//#include "../Base/List.h"
+//#include "../Base/String.h"
 #include "../Base/Delegate.h"
+#include "../Base/StlHelper.h"
 
 LN_NAMESPACE_BEGIN
 namespace tr
 {
-	
-/**
-	@brief		
-*/
-class ReflectionEventInfo
-{
-public:
-	// Event を直接参照してはならない。このクラスは Property と同じく、複数の UIElement で共有される。状態を持ってはならない。
-	// なので、イベントを Raise する関数ポインタを参照する。
-
-	typedef void(*RaiseEventFunc)(ReflectionObject* target, ReflectionEventArgs* e);
-
-public:
-	ReflectionEventInfo(TypeInfo* ownerClass, const TCHAR* name, RaiseEventFunc raiseEvent);
-	~ReflectionEventInfo();
-
-	const String& getName() const { return m_name; }
-	void callEvent(ReflectionObject* target, ReflectionEventArgs* e) const { m_raiseEvent(target, e); }
-
-private:
-	friend class TypeInfo;
-	String			m_name;
-	RaiseEventFunc	m_raiseEvent;
-	bool			m_registerd;
-};
-
 
 /**
 	@brief		
@@ -68,7 +43,7 @@ public:
 	*/
 	void addHandler(const Delegate<void(TArgs*)>& handler)
 	{
-		m_handlerList.add(handler);
+		m_handlerList.push_back(handler);
 	}
 	
 	/**
@@ -76,7 +51,7 @@ public:
 	*/
 	void removeHandler(const Delegate<void(TArgs*)>& handler)
 	{
-		m_handlerList.remove(handler);
+		StlHelper::remove(m_handlerList, handler);
 	}
 	
 	/**
@@ -89,7 +64,7 @@ public:
 
 	void operator += (const Delegate<void(TArgs*)>& handler)
 	{
-		m_handlerList.add(handler);
+		m_handlerList.push_back(handler);
 	}
 	
 	/**
@@ -97,11 +72,11 @@ public:
 	*/
 	void operator -= (const Delegate<void(TArgs*)>& handler)
 	{
-		m_handlerList.remove(handler);
+		StlHelper::remove(m_handlerList, handler);
 	}
 
 private:
-	List< Delegate<void(TArgs*)> > m_handlerList;
+	std::vector< Delegate<void(TArgs*)> > m_handlerList;
 
 	virtual void raise(ReflectionEventArgs* e) const override
 	{
@@ -111,24 +86,6 @@ private:
 		}
 	}
 };
-
-
-#define LN_REFLECTION_EVENT_COMMON(typeInfo, eventArgs, eventInfoVar) \
-	public:  static const typeInfo* eventInfoVar; \
-	private: static void		_raise_##eventInfoVar(tr::ReflectionObject* obj, tr::ReflectionEventArgs* e); \
-	private: static typeInfo	_init_##eventInfoVar;
-
-#define LN_REFLECTION_EVENT_IMPLEMENT_COMMON(typeInfo, ownerClass, eventArgs, eventInfoVar, name, ev) \
-	typeInfo					ownerClass::_init_##eventInfoVar(tr::TypeInfo::getTypeInfo<ownerClass>(), _T(name), &ownerClass::_raise_##eventInfoVar); \
-	const typeInfo*				ownerClass::eventInfoVar = &_init_##eventInfoVar; \
-	void						ownerClass::_raise_##eventInfoVar(tr::ReflectionObject* obj, tr::ReflectionEventArgs* e) { static_cast<ownerClass*>(obj)->raiseReflectionEvent(static_cast<ownerClass*>(obj)->ev, static_cast<eventArgs*>(e)); }
-
-#define LN_REFLECTION_EVENT(eventArgs, eventInfoVar) \
-	LN_REFLECTION_EVENT_COMMON(tr::ReflectionEventInfo, eventArgs, eventInfoVar);
-
-#define LN_REFLECTION_EVENT_IMPLEMENT(ownerClass, eventArgs, eventInfoVar, name, ev) \
-	LN_REFLECTION_EVENT_IMPLEMENT_COMMON(tr::ReflectionEventInfo, ownerClass, eventArgs, eventInfoVar, name, ev);
-
 
 
 
@@ -147,7 +104,7 @@ public:
 
 	void addHandler(const DelegateType& handler)
 	{
-		m_handlerList.add(handler);
+		StlHelper::remove(m_handlerList, handler);
 	}
 
 	void addHandler(const std::function<void(TArgs...)>& handler)	// void operator += (const DelegateType& handler) だけだと暗黙変換が効かずコンパイルエラーとなっていたため用意
@@ -157,7 +114,7 @@ public:
 
 	void removeHandler(const DelegateType& handler)
 	{
-		m_handlerList.remove(handler);
+		StlHelper::remove(m_handlerList, handler);
 	}
 
 	void operator += (const DelegateType& handler)
@@ -178,7 +135,7 @@ public:
 private:
 	friend class ReflectionObject;
 
-	List<DelegateType> m_handlerList;
+	std::vector<DelegateType> m_handlerList;
 
 	void clear()
 	{
@@ -187,12 +144,12 @@ private:
 
 	bool isEmpty() const
 	{
-		return m_handlerList.isEmpty();
+		return m_handlerList.empty();
 	}
 
 	void raise(TArgs... args)
 	{
-		int count = m_handlerList.getCount();
+		int count = m_handlerList.size();
 		if (count > 0)
 		{
 			for (int i = 0; i < count - 1; ++i)

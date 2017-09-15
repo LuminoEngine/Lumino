@@ -119,16 +119,16 @@ void Process::start(const PathName& program, const StringArray& argsList)
 	for (int i = 0; i < argsList.getCount(); ++i)
 	{
 		if (!args.isEmpty()) {
-			args += _T(' ');
+			args += _LT(' ');
 		}
 
 		// スペースが含まれていれば引数を " で囲む
 		String tmp = argsList[i];
-		if (tmp.contains(_T(' ')) || tmp.contains(_T('\t')))
+		if (tmp.contains(_LT(' ')) || tmp.contains(_LT('\t')))
 		{
-			if (!tmp.startsWith(_T('\"')) && !tmp.endsWith(_T('\"')))
+			if (!tmp.startsWith(_LT('\"')) && !tmp.endsWith(_LT('\"')))
 			{
-				tmp = _T('\"') + tmp + _T('\"');
+				tmp = _LT('\"') + tmp + _LT('\"');
 			}
 		}
 
@@ -147,21 +147,21 @@ bool Process::waitForExit(int timeoutMSec)
 //------------------------------------------------------------------------------
 StreamWriter* Process::getStandardInput() const
 {
-	if (LN_CHECK_STATE(m_standardInputWriter != nullptr)) return nullptr;
+	if (LN_REQUIRE(m_standardInputWriter != nullptr)) return nullptr;
 	return m_standardInputWriter;
 }
 
 //------------------------------------------------------------------------------
 StreamReader* Process::getStandardOutput() const
 {
-	if (LN_CHECK_STATE(m_standardOutputReader != nullptr)) return nullptr;
+	if (LN_REQUIRE(m_standardOutputReader != nullptr)) return nullptr;
 	return m_standardOutputReader;
 }
 
 //------------------------------------------------------------------------------
 StreamReader* Process::getStandardError() const
 {
-	if (LN_CHECK_STATE(m_standardErrorReader != nullptr)) return nullptr;
+	if (LN_REQUIRE(m_standardErrorReader != nullptr)) return nullptr;
 	return m_standardErrorReader;
 }
 
@@ -191,7 +191,7 @@ int Process::getExitCode()
 //------------------------------------------------------------------------------
 void Process::beginOutputReadLine()
 {
-	if (LN_CHECK_STATE(m_standardOutputReader != nullptr)) return;
+	if (LN_REQUIRE(m_standardOutputReader != nullptr)) return;
 
 	// 読み取りスレッドを立てる
 #ifdef LN_CPP11
@@ -205,7 +205,7 @@ void Process::beginOutputReadLine()
 //------------------------------------------------------------------------------
 void Process::beginErrorReadLine()
 {
-	if (LN_CHECK_STATE(m_standardErrorReader != nullptr)) return;
+	if (LN_REQUIRE(m_standardErrorReader != nullptr)) return;
 
 	// 読み取りスレッドを立てる
 #ifdef LN_CPP11

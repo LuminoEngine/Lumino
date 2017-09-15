@@ -241,7 +241,7 @@ protected:
 	virtual Size measureOverride(const Size& constraint);
 
 private:
-	GenericStringBuilderCore<UTF32>	m_text;
+	detail::SimpleStringBuilder<UTF32>	m_text;
 	Ref<GlyphRun>				m_glyphRun;
 };
 

@@ -80,7 +80,7 @@ void SceneNode::setName(const String& name)
 //------------------------------------------------------------------------------
 void SceneNode::addChild(SceneNode* child)
 {
-	if (LN_CHECK_ARG(child != nullptr)) return;
+	if (LN_REQUIRE(child != nullptr)) return;
 
 	// 別のノードの子であれば外す
 	// ※ WPF などでは既に別ノードの子であれば例外するが、この SceneGraph ではしない。
@@ -97,7 +97,7 @@ void SceneNode::addChild(SceneNode* child)
 //------------------------------------------------------------------------------
 void SceneNode::removeChild(SceneNode* child)
 {
-	if (LN_CHECK_ARG(child != nullptr)) return;
+	if (LN_REQUIRE(child != nullptr)) return;
 	if (child->m_parentNode == this)
 	{
 		m_children->remove(child);

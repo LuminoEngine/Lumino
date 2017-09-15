@@ -28,7 +28,7 @@ public:
 		{}
 	};
 
-	static const TCHAR*		PROP_WINPROC;		///< SetProp() で使用するキー文字列
+	static const Char*		PROP_WINPROC;		///< SetProp() で使用するキー文字列
 	static const DWORD		FULLSCREEN_STYLE;	///< フルスクリーンモードのときのウィンドウスタイル
 
 public:

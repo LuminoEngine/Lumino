@@ -43,7 +43,7 @@ InputController::~InputController()
 bool InputController::isPressed(const StringRef& bindingName) const
 {
 	auto* state = LockupState(bindingName);
-	LN_THROW(state != nullptr, KeyNotFoundException);
+	if (LN_REQUIRE_KEY(state != nullptr)) return false;
 	return (state->state > 0);
 }
 
@@ -51,7 +51,7 @@ bool InputController::isPressed(const StringRef& bindingName) const
 bool InputController::isTriggered(const StringRef& bindingName) const
 {
 	auto* state = LockupState(bindingName);
-	LN_THROW(state != nullptr, KeyNotFoundException);
+	if (LN_REQUIRE_KEY(state != nullptr)) return false;
 	return (state->state == 1);
 }
 
@@ -59,7 +59,7 @@ bool InputController::isTriggered(const StringRef& bindingName) const
 bool InputController::isOffTriggered(const StringRef& bindingName) const
 {
 	auto* state = LockupState(bindingName);
-	LN_THROW(state != nullptr, KeyNotFoundException);
+	if (LN_REQUIRE_KEY(state != nullptr)) return false;
 	return (state->state == -1);
 }
 
@@ -67,7 +67,7 @@ bool InputController::isOffTriggered(const StringRef& bindingName) const
 bool InputController::isRepeated(const StringRef& bindingName) const
 {
 	auto* state = LockupState(bindingName);
-	LN_THROW(state != nullptr, KeyNotFoundException);
+	if (LN_REQUIRE_KEY(state != nullptr)) return false;
 	int s = state->state;
 	return ((s == 1) || (s > m_repeatIntervalStart && (s % m_repeatIntervalStep) == 0));
 }
@@ -76,7 +76,7 @@ bool InputController::isRepeated(const StringRef& bindingName) const
 float InputController::getAxisValue(const StringRef& bindingName) const
 {
 	auto* state = m_inputStatus.find(bindingName);
-	LN_THROW(state != nullptr, KeyNotFoundException);
+	if (LN_REQUIRE_KEY(state != nullptr)) return 0;
 	return state->current;
 }
 
@@ -225,7 +225,7 @@ void InputController::UpdateOneInputState(InputState* state)
 //------------------------------------------------------------------------------
 const InputController::InputState* InputController::LockupState(const StringRef& bindingName) const
 {
-	if (bindingName.isEmpty())
+	if (bindingName.IsNullOrEmpty())
 	{
 		return &m_inputStateForAny;
 	}

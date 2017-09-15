@@ -35,7 +35,7 @@ template <typename T, typename TAllocator> template <class TIter>
 List<T, TAllocator>::List(TIter begin, TIter end)
 {
 	m_data = LN_NEW ArrayData(1);
-	m_data->m_vector.assign<TIter>(begin, end);
+	m_data->m_vector.template assign<TIter>(begin, end);
 }
 
 //------------------------------------------------------------------------------
@@ -90,7 +90,7 @@ void List<T, TAllocator>::checkDetachShared()
 template<typename T, typename TAllocator>
 void List<T, TAllocator>::checkOutOfRange(int index) const
 {
-	LN_THROW(!isOutOfRange(index), OutOfRangeException);
+	LN_REQUIRE(!isOutOfRange(index));
 }
 
 //==============================================================================

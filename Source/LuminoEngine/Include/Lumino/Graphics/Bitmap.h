@@ -47,7 +47,7 @@ public:
 		@brief		指定したファイルを読み込み、Bitmap を作成します。
 		@param[in]	filePath	: ファイルパス
 	*/
-	Bitmap(const TCHAR* filePath);
+	Bitmap(const Char* filePath);
 
 	/**
 		@brief		指定した ByteBuffer を参照する Bitmap を作成します。
@@ -93,7 +93,7 @@ public:
 		@brief		指定したファイルにビットマップを保存します。
 		@param[in]	filePath	: ファイルパス
 	*/
-	void save(const TCHAR* filePath);
+	void save(const Char* filePath);
 
 	/**
 		@brief		このビットマップと、指定したビットマップを比較します。

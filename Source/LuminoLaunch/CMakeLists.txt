@@ -1,7 +1,6 @@
 ﻿cmake_minimum_required (VERSION 3.0.0)
 project (LuminoLaunch)
 
-include(../LuminoCore/CMake/LNCommon.cmake NO_POLICY_SCOPE)
 
 #------------------------------------------------------------------------------
 # Options
@@ -28,8 +27,8 @@ if (WIN32)
 
 elseif (APPLE)
 	set(LN_SOURCES_Launch
-		${Main_Mac}
-		Source/Main_Win32.cpp
+		${LN_SOURCES_Launch}
+		Source/Main_Mac.cpp
 	)
 
 elseif (UNIX)
@@ -83,5 +82,5 @@ include_directories(
 
 add_library(LuminoLaunch STATIC ${LN_SOURCES})
 ln_add_common_property(LuminoLaunch)
-ln_add_pch(LuminoLaunch "LuminoLaunch.PCH.h" "Source/LuminoLaunch.PCH.cpp")
+ln_add_pch(LuminoLaunch "Source/LuminoLaunch.PCH.h" "Source/LuminoLaunch.PCH.cpp")
 

@@ -430,7 +430,7 @@ public:
 public:
 
 	/// 名前を指定して変数を取得する (見つからなければ NULL を返す)
-	IShaderVariable* getVariableByName(const TCHAR* name) const;
+	IShaderVariable* getVariableByName(const Char* name) const;
 
 protected:
 	virtual ~IShader() {}
@@ -515,7 +515,7 @@ public:
 	//virtual ITexture* getTexture() = 0;
 
 	/// 文字列の取得
-	//virtual const TCHAR* GetString() = 0;
+	//virtual const Char* GetString() = 0;
 
 	virtual const ShaderValue& getValue() const = 0;
 
@@ -536,7 +536,7 @@ class IShaderTechnique
 public:
 
 	/// テクニックの名前を取得する
-	virtual const TCHAR* getName() const = 0;
+	virtual const Char* getName() const = 0;
 
 	/// テクニック内のパスの数を取得する
 	virtual int getPassCount() const = 0;
@@ -563,7 +563,7 @@ public:
 	virtual IShader* getShader() const = 0;
 
 	/// パスの名前を取得する
-	virtual const TCHAR* getName() const = 0;
+	virtual const Char* getName() const = 0;
 
 	/// アノテーションの数を取得する
 	virtual int getAnnotationCount() = 0;

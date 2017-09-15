@@ -197,7 +197,7 @@ public:
 	template<typename T, typename... TArgs>
 	void enqueueCommand(TArgs... args)
 	{
-		if (LN_CHECK_STATE(!checkOnStandaloneRenderingThread())) return;
+		if (LN_REQUIRE(!checkOnStandaloneRenderingThread())) return;
 
 		size_t dataHandle = allocCommand(sizeof(T), NULL);
 		T* t = new (getCommand(dataHandle))T(args...);

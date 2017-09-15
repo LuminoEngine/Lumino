@@ -323,6 +323,16 @@ Ref<PmxSkinnedMeshResource> ModelManager::createSkinnedMeshResource(const PathNa
 //------------------------------------------------------------------------------
 Ref<StaticMeshModel> ModelManager::createStaticMeshModel(const PathName& filePath)
 {
+	Ref<StaticMeshModel> mesh;
+
+	{
+		MqoParser importer;
+		mesh = importer.import2(this, filePath);
+	}
+
+	return mesh;
+
+#if 0
 
 #if defined(LN_OS_WIN32)
 	Ref<StaticMeshModel> mesh;
@@ -354,6 +364,7 @@ Ref<StaticMeshModel> ModelManager::createStaticMeshModel(const PathName& filePat
 	//auto mesh = Ref<StaticMeshModel>::MakeRef();
 	//mesh->initialize(m_graphicsManager, meshResource);
 	//return mesh;
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -393,7 +404,7 @@ Animation::AnimationClip* ModelManager::CreateMotion(const PathName& filePath)
 //------------------------------------------------------------------------------
 Ref<Texture> ModelManager::createTexture(const PathName& parentDir, const StringRef& filePath, ModelCreationFlag flags)
 {
-	PathName path(parentDir, filePath.getBegin());	// TODO GetBegin
+	PathName path(parentDir, filePath);
 
 	// FileNotFound を無視する場合
 	if (flags.TestFlag(ModelCreationFlag::IgnoreTextureNotFound))

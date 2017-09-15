@@ -94,3 +94,4 @@ TEST_F(Test_IO_BinaryReader, BytesSpecified)
 	// ファイル終端
 	ASSERT_TRUE(reader.isEOF());
 }
+

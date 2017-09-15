@@ -15,6 +15,16 @@ enum MemoryFlag
 	LN_MM_NORMAL_BLOCK = 1,
 };
 
+namespace detail {
+
+using NewCallback = void(*)(void* ptr, size_t size);
+using DeleteCallback = void(*)(void* ptr);
+
+void setNewCallback(NewCallback callback);
+void setDeleteCallback(DeleteCallback callback);
+
+} // namespace detail
+
 LN_NAMESPACE_END
 
 //void* LN_CDECL operator new ( size_t size );

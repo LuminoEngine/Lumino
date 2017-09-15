@@ -1,4 +1,5 @@
-﻿/*
+﻿#if 0
+/*
 	一番シンプル
 		static Result<Data> Statement(ParserContext& parser)
 		{
@@ -618,3 +619,4 @@ public:
 
 } // namespace combinators
 } // namespace fl
+#endif

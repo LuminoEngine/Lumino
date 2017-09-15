@@ -1,6 +1,7 @@
 ﻿#include <TestConfig.h>
 #include <Lumino/Base/Regex.h>
 
+
 class Test_Base_Regex : public ::testing::Test
 {
 protected:
@@ -29,6 +30,20 @@ TEST_F(Test_Base_Regex, Integrate)
 		ASSERT_EQ(_T("789"), mr.getGroup(3));
 	}
 
+	// std::regex 動作確認 (. がサロゲートペアの片方にマッチしてしまう)
+	{
+		wchar_t utf16Buf[] = {
+			0x0041,			// 'A'
+			0xD867, 0xDE3D, // '𩸽' (正常なサロゲートペア)
+			0x0041,			// 'A'
+			0x0000,
+		};
+		MatchResult mr;
+		bool r1 = Regex::match(utf16Buf, _T("A.A"), &mr);
+		bool r2 = Regex::match(utf16Buf, _T("A..A"), &mr);
+		printf("");
+	}
+
 	//std::regex re("[0-9]+");
 	//std::match_results<const char *> results2;
 
@@ -53,4 +68,3 @@ TEST_F(Test_Base_Regex, Integrate)
 	//	it++;
 	//}
 }
-

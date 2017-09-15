@@ -10,17 +10,15 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
-template<typename TChar>
-Ref<GenericFileStream<TChar>> GenericFileStream<TChar>::create(const TChar* filePath, FileOpenMode openMode)
+Ref<FileStream> FileStream::create(const Char* filePath, FileOpenMode openMode)
 {
-	Ref<GenericFileStream<TChar>> ptr(LN_NEW GenericFileStream(), false);
+	Ref<FileStream> ptr(LN_NEW FileStream(), false);
 	ptr->open(filePath, openMode);
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
-template<typename TChar>
-GenericFileStream<TChar>::GenericFileStream()
+FileStream::FileStream()
 	: m_stream(nullptr)
 	, m_openModeFlags(FileOpenMode::None)
 {
@@ -35,15 +33,13 @@ GenericFileStream<TChar>::GenericFileStream()
 //}
 
 //------------------------------------------------------------------------------
-template<typename TChar>
-GenericFileStream<TChar>::~GenericFileStream()
+FileStream::~FileStream()
 {
 	close();
 }
 
 //------------------------------------------------------------------------------
-template<typename TChar>
-void GenericFileStream<TChar>::open(const TChar* filePath, FileOpenMode openMode)
+void FileStream::open(const Char* filePath, FileOpenMode openMode)
 {
 	LN_ASSERT( filePath );
 	close();
@@ -53,19 +49,21 @@ void GenericFileStream<TChar>::open(const TChar* filePath, FileOpenMode openMode
 
 	if (m_openModeFlags.TestFlag(FileOpenMode::Deferring))
 	{
-		if (!FileSystem::existsFile(filePath)) {
-			LN_THROW(0, FileNotFoundException, filePath);
+		if (!detail::FileSystemInternal::existsFile(filePath, StringTraits::tcslen(filePath)))
+		{
+			LN_ENSURE_FILE_NOT_FOUND(0, filePath);
+			return;
 		}
 	}
 	// 遅延オープンでなければここで開いてしまう
-	else {
+	else
+	{
 		open();
 	}
 }
 
 //------------------------------------------------------------------------------
-template<typename TChar>
-void GenericFileStream<TChar>::close()
+void FileStream::close()
 {
 	if (m_stream != NULL) {
 		fclose(m_stream);
@@ -73,30 +71,26 @@ void GenericFileStream<TChar>::close()
 }
 
 //------------------------------------------------------------------------------
-template<typename TChar>
-bool GenericFileStream<TChar>::canRead() const
+bool FileStream::canRead() const
 {
 	return (m_openModeFlags.TestFlag(FileOpenMode::read));
 }
 
 //------------------------------------------------------------------------------
-template<typename TChar>
-bool GenericFileStream<TChar>::canWrite() const
+bool FileStream::canWrite() const
 {
 	return (m_openModeFlags.TestFlag(FileOpenMode::write));
 }
 
 //------------------------------------------------------------------------------
-template<typename TChar>
-int64_t GenericFileStream<TChar>::getLength() const
+int64_t FileStream::getLength() const
 {
 	checkOpen();
 	return (size_t)FileSystem::getFileSize(m_stream);
 }
 
 //------------------------------------------------------------------------------
-template<typename TChar>
-int64_t GenericFileStream<TChar>::getPosition() const
+int64_t FileStream::getPosition() const
 {
 	checkOpen();
 	// TODO: 64bit 確認 → ftello?
@@ -104,25 +98,22 @@ int64_t GenericFileStream<TChar>::getPosition() const
 }
 
 //------------------------------------------------------------------------------
-template<typename TChar>
-size_t GenericFileStream<TChar>::read(void* buffer, size_t readCount)
+size_t FileStream::read(void* buffer, size_t readCount)
 {
 	checkOpen();
 	return fread(buffer, 1, readCount, m_stream);
 }
 
 //------------------------------------------------------------------------------
-template<typename TChar>
-void GenericFileStream<TChar>::write(const void* data, size_t byteCount)
+void FileStream::write(const void* data, size_t byteCount)
 {
 	checkOpen();
 	size_t nWriteSize = fwrite( data, 1, byteCount, m_stream );
-	LN_THROW(nWriteSize == byteCount, InvalidOperationException);
+	LN_ENSURE(nWriteSize == byteCount);
 }
 
 //------------------------------------------------------------------------------
-template<typename TChar>
-void GenericFileStream<TChar>::seek(int64_t offset, SeekOrigin origin)
+void FileStream::seek(int64_t offset, SeekOrigin origin)
 {
 	checkOpen();
 
@@ -136,16 +127,14 @@ void GenericFileStream<TChar>::seek(int64_t offset, SeekOrigin origin)
 }
 
 //------------------------------------------------------------------------------
-template<typename TChar>
-void GenericFileStream<TChar>::flush()
+void FileStream::flush()
 {
 	checkOpen();
 	fflush(m_stream);
 }
 
 //------------------------------------------------------------------------------
-template<typename TChar>
-void GenericFileStream<TChar>::checkOpen() const
+void FileStream::checkOpen() const
 {
 	if (m_openModeFlags.TestFlag(FileOpenMode::Deferring))
 	{
@@ -156,39 +145,38 @@ void GenericFileStream<TChar>::checkOpen() const
 	}
 	else
 	{
-		LN_THROW(m_stream != NULL, InvalidOperationException);
+		LN_ENSURE(m_stream != NULL);
 	}
 }
 
 //------------------------------------------------------------------------------
-template<typename TChar>
-void GenericFileStream<TChar>::open() const
+void FileStream::open() const
 {
-	LN_THROW(m_stream == NULL, InvalidOperationException);
+	if (LN_REQUIRE(m_stream == NULL)) return;
 
-	const TCHAR* mode = NULL;
+	const Char* mode = NULL;
 	if (m_openModeFlags.TestFlag(FileOpenMode::ReadWrite))
 	{
 		if (m_openModeFlags.TestFlag(FileOpenMode::append)) {
-			mode = _T("a+b");		// 読み取りと書き込み (末尾に追加する)
+			mode = _TT("a+b");		// 読み取りと書き込み (末尾に追加する)
 		}
 		else if (m_openModeFlags.TestFlag(FileOpenMode::Truncate)) {
-			mode = _T("w+b");		// 読み取りと書き込み (ファイルを空にする)
+			mode = _TT("w+b");		// 読み取りと書き込み (ファイルを空にする)
 		}
 		else {
-			mode = _T("r+b");		// 読み取りと書き込み (ファイルが存在しない場合はエラー)
+			mode = _TT("r+b");		// 読み取りと書き込み (ファイルが存在しない場合はエラー)
 		}
 	}
 	else if (m_openModeFlags.TestFlag(FileOpenMode::write))
 	{
 		if (m_openModeFlags.TestFlag(FileOpenMode::append)) {
-			mode = _T("ab");		// 書き込み (末尾に追加する。ファイルが無ければ新規作成)
+			mode = _TT("ab");		// 書き込み (末尾に追加する。ファイルが無ければ新規作成)
 		}
 		else if (m_openModeFlags.TestFlag(FileOpenMode::Truncate)) {
-			mode = _T("wb");		// 書き込み (ファイルを空にする)
+			mode = _TT("wb");		// 書き込み (ファイルを空にする)
 		}
 		else {
-			mode = _T("wb");		// 書き込み (モード省略。Truncate)
+			mode = _TT("wb");		// 書き込み (モード省略。Truncate)
 		}
 	}
 	else if (m_openModeFlags.TestFlag(FileOpenMode::read))
@@ -200,18 +188,13 @@ void GenericFileStream<TChar>::open() const
 			mode = NULL;			// 読み込みなのにファイルを空にはできない
 		}
 		else {
-			mode = _T("rb");		// 読み込み
+			mode = _TT("rb");		// 読み込み
 		}
 	}
-	LN_THROW(mode, ArgumentException);
+	if (LN_REQUIRE(mode)) return;
 
-	auto path = String(m_filePath.getString());
-	errno_t err = _tfopen_s(&m_stream, path.c_str(), mode);
-	LN_THROW(err == 0, FileNotFoundException);
+	m_stream = detail::FileSystemInternal::fopen(m_filePath.c_str(), m_filePath.getLength(), mode, StringTraits::tcslen(mode));
+	LN_ENSURE_FILE_NOT_FOUND(m_stream != nullptr, m_filePath.c_str());
 }
-
-// instantiate template
-template class GenericFileStream<char>;
-template class GenericFileStream<wchar_t>;
 
 LN_NAMESPACE_END

@@ -5,7 +5,6 @@
 #include "../Threading/Mutex.h"
 #include "../Base/Common.h"
 #include "../Base/RefObject.h"
-#include "../Base/Collection.h"
 #include "TypeInfo.h"
 #include "Notify.h"
 
@@ -25,7 +24,7 @@ namespace tr
 		inline void								initializeProperties() { lnref_typeInfo.initializeProperties(this); }
 
 #define LN_TR_REFLECTION_TYPEINFO_IMPLEMENT_COMMON(typeInfo, classType, baseClassType, ...) \
-	typeInfo						classType::lnref_typeInfo(_T(#classType), ln::tr::ReflectionHelper::getClassTypeInfo<baseClassType>(), &ln::tr::ReflectionHelper::GetLocalValueHavingFlags<classType>, &ln::tr::ReflectionHelper::setBindingTypeInfo<classType>, &ln::tr::ReflectionHelper::getBindingTypeInfo<classType>, {__VA_ARGS__}); \
+	typeInfo						classType::lnref_typeInfo(_TT(#classType), ln::tr::ReflectionHelper::getClassTypeInfo<baseClassType>(), &ln::tr::ReflectionHelper::GetLocalValueHavingFlags<classType>, &ln::tr::ReflectionHelper::setBindingTypeInfo<classType>, &ln::tr::ReflectionHelper::getBindingTypeInfo<classType>, {__VA_ARGS__}); \
 	typeInfo*						classType::lnref_GetThisTypeInfo() const { return &lnref_typeInfo; } \
 	void*							classType::lnref_bindingTypeInfo = nullptr;
 
@@ -38,7 +37,9 @@ namespace tr
 #define LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(classType, baseClassType, ...) \
 	LN_TR_REFLECTION_TYPEINFO_IMPLEMENT_COMMON(ln::tr::TypeInfo, classType, baseClassType, __VA_ARGS__)
 
-
+namespace detail { class WeakRefInfo; }
+typedef uint32_t LocalValueHavingFlags;
+class PropertyInfo;
 
 
 
@@ -75,7 +76,9 @@ protected:
 	void raiseDelegateEvent(DelegateEvent<TArgs...>& ev, TArgs... args) { ev.raise(args...); }
 
 private:
+#ifdef LN_LEGACY_VARIANT_ENABLED
 	void setPropertyValueInternal(const PropertyInfo* prop, const Variant& value, bool reset, PropertySetSource source);
+#endif
 
 	void*	m_userData;
 
@@ -85,8 +88,6 @@ private:
 	detail::WeakRefInfo*	m_weakRefInfo;
 	Mutex					m_weakRefInfoMutex;
 
-	List<Ref<ReflectionObject>>	m_gcList;
-	bool							m_autoGC;
 
 LN_INTERNAL_ACCESS:
 
@@ -98,6 +99,88 @@ LN_INTERNAL_ACCESS:
 		return ptr;
 	}
 };
+	
+
+class ReflectionHelper
+{
+public:
+	template<class T>
+	static ln::tr::LocalValueHavingFlags* GetLocalValueHavingFlags(ReflectionObject* thisObj)
+	{
+		return &static_cast<T*>(thisObj)->lnref_localValueHavingFlags;
+	}
+	template<class T>
+	static TypeInfo* getClassTypeInfo()
+	{
+		return &T::lnref_typeInfo;
+	}
+	template<class T>
+	static void setBindingTypeInfo(void* data)
+	{
+		T::lnref_bindingTypeInfo = data;
+	}
+	template<class T>
+	static void* getBindingTypeInfo()
+	{
+		return T::lnref_bindingTypeInfo;
+	}
+	template<class T>
+	static TypeInfo* getTypeInfo(const T* obj)
+	{
+		return obj->lnref_GetThisTypeInfo();
+	}
+	template<class T>
+	inline static TypeInfo* getTypeInfo()
+	{
+		return &T::lnref_typeInfo;
+	}
+	
+	template<class T>
+	inline static detail::WeakRefInfo* requestWeakRefInfo(T* obj)
+	{
+		return obj->requestWeakRefInfo();
+	}
+	template<class T, class TData>
+	inline static TData* requestAnimationData(T* obj)
+	{
+		if (obj->m_animationData == nullptr)
+		{
+			obj->m_animationData = LN_NEW TData();
+		}
+		return static_cast<TData*>(obj->m_animationData);
+	}
+		
+	template<class TList>
+	inline static void gcObjectList(TList* list)
+	{
+		list->removeAll([](typename TList::value_type& obj) { return isGCReady(obj); });
+	}
+	
+	
+	
+	static int32_t getInternalReferenceCount(RefObject* obj) { return obj->m_internalReferenceCount; }
+	static void addRefInternal(RefObject* obj) { obj->m_internalReferenceCount++; }
+	static void releaseInternal(RefObject* obj) { obj->releaseInternal(); }
+};
+
+namespace detail {
+	
+	
+	// 1つの ReflectionObject に対して1つ作られる
+	class WeakRefInfo final
+	{
+	public:
+		
+		RefObject*			owner;
+		std::atomic<int>	weakRefCount;// = 1;	// GCC で使えなかった
+		//int	weakRefCount;
+		
+		WeakRefInfo();
+		void addRef();
+		void release();
+	};
+
+} // namespace detail
 
 /**
 	@brief
@@ -202,57 +285,13 @@ private:
 	detail::WeakRefInfo*	m_weakRefInfo;
 };
 
-/**
-	@brief		
-*/
-template<typename T>
-class ReflectionObjectList
-	: public RefObject
-	, public Collection<T>
+
+//------------------------------------------------------------------------------
+template<class T>
+inline TypeInfo* TypeInfo::getTypeInfo()
 {
-public:
-	typedef typename Collection<T>::value_type	value_type;
-
-public:
-	ReflectionObjectList()
-	{}
-
-	virtual ~ReflectionObjectList()
-	{
-		Collection<T>::clear();
-	}
-
-protected:
-	virtual void insertItem(int index, const value_type& item) override
-	{
-		Collection<T>::insertItem(index, item);
-		LN_SAFE_ADDREF(item);
-	}
-	virtual void clearItems() override
-	{
-		for (auto* item : *this) {
-			LN_SAFE_RELEASE(item);
-		}
-		Collection<T>::clearItems();
-	}
-	virtual void removeItem(int index) override
-	{
-		if (Collection<T>::getAt(index) != nullptr) {
-			Collection<T>::getAt(index)->release();
-		}
-		Collection<T>::removeItem(index);
-	}
-	virtual void setItem(int index, const value_type& item) override
-	{
-		LN_SAFE_ADDREF(item);
-		if (Collection<T>::getAt(index) != nullptr) {
-			Collection<T>::getAt(index)->release();
-		}
-		Collection<T>::setItem(index, item);
-	}
-
-private:
-};
+	return ReflectionHelper::getTypeInfo<T>();
+}
 
 } // namespace tr
 

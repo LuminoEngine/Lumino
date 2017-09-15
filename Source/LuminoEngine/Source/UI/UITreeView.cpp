@@ -40,7 +40,7 @@ void UITreeViewItem::initialize()
 
 	m_expander = newObject<UIToggleButton>();
 	m_expander->setSize(Size(16, 16));	// TODO:
-	m_expander->setStyleSubControlName(_T("UITreeViewItem"), _T("ExpanderButton"));
+	m_expander->setStyleSubControlName(_LT("UITreeViewItem"), _LT("ExpanderButton"));
 	m_expander->connectOnChecked(createDelegate(this, &UITreeViewItem::expander_OnChecked));
 	m_expander->connectOnUnchecked(createDelegate(this, &UITreeViewItem::expander_OnUnchecked));
 	addVisualChild(m_expander);
@@ -87,7 +87,7 @@ UITreeViewItem* UITreeViewItem::addTextItem(const String& text)
 //------------------------------------------------------------------------------
 UITreeViewItem* UITreeViewItem::addItem(UIElement* item)
 {
-	if (LN_CHECK_ARG(item != nullptr)) return nullptr;
+	if (LN_REQUIRE(item != nullptr)) return nullptr;
 	auto treeItem = newObject<UITreeViewItem>();
 	treeItem->setHeader(item);
 	addChild(treeItem);
@@ -262,7 +262,7 @@ UITreeViewItem* UITreeView::addTextItem(const String& text)
 //------------------------------------------------------------------------------
 UITreeViewItem* UITreeView::addItem(UIElement* item)
 {
-	if (LN_CHECK_ARG(item != nullptr)) return nullptr;
+	if (LN_REQUIRE(item != nullptr)) return nullptr;
 	auto treeItem = newObject<UITreeViewItem>();
 	treeItem->setHeader(item);
 	addChild(treeItem);

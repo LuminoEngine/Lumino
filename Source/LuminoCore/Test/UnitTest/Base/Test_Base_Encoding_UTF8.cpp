@@ -80,21 +80,6 @@ TEST_F(Test_Base_Encoding_UTF8, Basic)
 		ASSERT_EQ(0xAA, utf8str[7]);	// L'語'
 		ASSERT_EQ(0x9E, utf8str[8]);	// L'語'
 	}
-
-	// 不具合修正
-	{
-		// "テスト環境"
-		uint8_t utf8str[] = { 0xE3, 0x83, 0x86, 0xE3, 0x82, 0xB9, 0xE3, 0x83, 0x88, 0xE7, 0x92, 0xB0, 0xE5, 0xA2, 0x83 };
-
-		// 例外とか発生しないこと
-		StringA str;
-		str.assignCStr((const char*)utf8str, 15);
-
-		// 元もまま変換されていないこと
-		for (int i = 0; i < 15; i++) {
-			ASSERT_EQ(true, utf8str[i] == (uint8_t)str[i]);
-		}
-	}
 }
 
 ////---------------------------------------------------------------------

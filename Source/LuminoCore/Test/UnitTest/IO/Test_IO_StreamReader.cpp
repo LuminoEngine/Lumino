@@ -18,7 +18,7 @@ TEST_F(Test_IO_StreamReader, readLine)
 	int count = 0;
 	while (reader.ReadLine(&line))
 	{
-		if (!str.IsEmpty()) { str += _T("\r\n"); }
+		if (!str.IsEmpty()) { str += _LT("\r\n"); }
 		str += line;
 		count++;
 	}
@@ -30,17 +30,17 @@ TEST_F(Test_IO_StreamReader, readLine)
 	// <Test> バッファリングバッファの境界で CRLF 改行文字が途切れていてもデコードできる。
 	{
 		char asciiBuf[StreamReader::DefaultBufferSize + 2];
-		TCHAR tcharBuf[StreamReader::DefaultBufferSize + 2];
+		Char tcharBuf[StreamReader::DefaultBufferSize + 2];
 		for (int i = 0; i < StreamReader::DefaultBufferSize; i++) {
 			asciiBuf[i] = 'a';
-			tcharBuf[i] = _T('a');
+			tcharBuf[i] = _LT('a');
 		}
 		asciiBuf[StreamReader::DefaultBufferSize - 1] = '\r';
 		asciiBuf[StreamReader::DefaultBufferSize + 0] = '\n';
 		asciiBuf[StreamReader::DefaultBufferSize + 1] = 'a';
-		tcharBuf[StreamReader::DefaultBufferSize - 1] = _T('\r');
-		tcharBuf[StreamReader::DefaultBufferSize + 0] = _T('\n');
-		tcharBuf[StreamReader::DefaultBufferSize + 1] = _T('a');
+		tcharBuf[StreamReader::DefaultBufferSize - 1] = _LT('\r');
+		tcharBuf[StreamReader::DefaultBufferSize + 0] = _LT('\n');
+		tcharBuf[StreamReader::DefaultBufferSize + 1] = _LT('a');
 
 		MemoryStreamPtr mem = MemoryStream::create(asciiBuf, LN_ARRAY_SIZE_OF(asciiBuf));
 		StreamReader reader(mem, Encoding::getEncoding(EncodingType::SJIS));
@@ -51,7 +51,8 @@ TEST_F(Test_IO_StreamReader, readLine)
 		ASSERT_FALSE(reader.readLine(&line3));
 
 		ASSERT_EQ(StreamReader::DefaultBufferSize - 1, line1.getLength());
-		ASSERT_EQ(0, line1.compare(tcharBuf, StreamReader::DefaultBufferSize - 1));
-		ASSERT_EQ(0, line2.compare(_T("a")));
+		ASSERT_EQ(0, String::compare(line1, String(tcharBuf, StreamReader::DefaultBufferSize - 1)));
+		ASSERT_EQ(0, String::compare(line2, _LT("a")));
 	}
 }
+

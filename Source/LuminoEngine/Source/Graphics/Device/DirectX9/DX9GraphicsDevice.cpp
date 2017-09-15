@@ -65,7 +65,7 @@ void DX9GraphicsDevice::initialize(const ConfigData& configData)
 
 	// Direct3D 作成
 	m_direct3D = DX9Module::Direct3DCreate9(D3D_SDK_VERSION);
-	LN_THROW(m_direct3D != NULL, InvalidOperationException);
+	if (LN_ENSURE(m_direct3D != NULL)) return;
 
 	// デバイスの性能チェック
 	checkDeviceInformation();
@@ -235,7 +235,7 @@ Ref<ISwapChain> DX9GraphicsDevice::createSwapChainImplement(PlatformWindow* wind
 void DX9GraphicsDevice::resetDevice()
 {
 	// 先に onLostDevice() を呼ぶこと
-	LN_THROW(m_deviceState == DeviceState_Pausing, InvalidOperationException);
+	if (LN_REQUIRE(m_deviceState == DeviceState_Pausing)) return;
 
 	resetDevice(false);
 }
@@ -285,7 +285,8 @@ void DX9GraphicsDevice::checkDeviceInformation()
 				m_deviceType = D3DDEVTYPE_SW;
 			}
 			else {
-				LN_THROW(hr, COMException, hr);
+				LN_ENSURE_WIN32(0, hr);
+				return;
 			}
 		}
 	}
@@ -375,8 +376,8 @@ void DX9GraphicsDevice::checkDeviceInformation()
 	Logger::writeLine("    MSAA レベル(FullScreen)    : %u", m_MSAAQualityFullScreen);
 
 	// シェーダのバージョンチェック
-	LN_THROW((m_dxCaps.VertexShaderVersion >= D3DVS_VERSION(2, 0)), InvalidOperationException, "Invalid vertex shader version.");
-	LN_THROW((m_dxCaps.PixelShaderVersion >= D3DPS_VERSION(2, 0)), InvalidOperationException, "Invalid vertex shader version.");
+	LN_ENSURE((m_dxCaps.VertexShaderVersion >= D3DVS_VERSION(2, 0)), "Invalid vertex shader version.");
+	LN_ENSURE((m_dxCaps.PixelShaderVersion >= D3DPS_VERSION(2, 0)), "Invalid vertex shader version.");
 }
 
 //------------------------------------------------------------------------------

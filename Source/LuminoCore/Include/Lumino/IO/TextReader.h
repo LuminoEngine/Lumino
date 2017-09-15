@@ -8,26 +8,25 @@ LN_NAMESPACE_BEGIN
 /**
 	@brief	一連の文字を読み取ることができるリーダーを表します。
 */
-template<typename TChar>
-class GenericTextReader
+class TextReader
 	: public RefObject
 {
 public:
-	virtual ~GenericTextReader() = default;
+	virtual ~TextReader() = default;
 	
 public:
 
 	/**
 		@brief		現在位置の文字を取得します。
 		@return		EOF に到達しているかエラーが発生した場合は -1 を返します。
-					戻り値が -1 かをチェックした後、TCHAR にキャストすることで文字として使用できます。
+					戻り値が -1 かをチェックした後、Char にキャストすることで文字として使用できます。
 	*/
 	virtual int peek() = 0;
 
 	/**
 		@brief		現在位置の文字を取得し、現在位置を次の文字に移動します。
 		@return		EOF に到達しているかエラーが発生した場合は -1 を返します。
-					戻り値が -1 かをチェックした後、TCHAR にキャストすることで文字として使用できます。
+					戻り値が -1 かをチェックした後、Char にキャストすることで文字として使用できます。
 	*/
 	virtual int read() = 0;
 
@@ -38,13 +37,13 @@ public:
 		@details	CRLF("\r\n") は1つの改行とみなします。 
 					line が NULL の場合は現在位置を 1 行すすめるだけで、文字列を返しません。
 	*/
-	virtual bool readLine(GenericString<TChar>* line) = 0;
+	virtual bool readLine(String* line) = 0;
 	
 	/**
 		@brief		現在位置から全ての文字列を読み取ります。
 		@return		読み取った文字列
 	*/
-	virtual GenericString<TChar> readToEnd() = 0;
+	virtual String readToEnd() = 0;
 
 	/**
 		@brief		現在位置が EOF に到達しているかを確認します。
@@ -53,7 +52,6 @@ public:
 
 };
 
-using TextReader = GenericTextReader<TCHAR>;
 
 //
 ///**
@@ -70,14 +68,14 @@ using TextReader = GenericTextReader<TCHAR>;
 //	/**
 //		@brief		現在位置の文字を取得します。
 //		@return		EOF に到達しているかエラーが発生した場合は -1 を返します。
-//					戻り値が -1 かをチェックした後、TCHAR にキャストすることで文字として使用できます。
+//					戻り値が -1 かをチェックした後、Char にキャストすることで文字として使用できます。
 //	*/
 //	virtual int Peek() = 0;
 //
 //	/**
 //		@brief		現在位置の文字を取得し、現在位置を次の文字に移動します。
 //		@return		EOF に到達しているかエラーが発生した場合は -1 を返します。
-//					戻り値が -1 かをチェックした後、TCHAR にキャストすることで文字として使用できます。
+//					戻り値が -1 かをチェックした後、Char にキャストすることで文字として使用できます。
 //	*/
 //	virtual int Read() = 0;
 //

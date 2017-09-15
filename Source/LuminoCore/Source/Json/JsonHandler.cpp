@@ -43,7 +43,7 @@ JsonDOMHandler::JsonDOMHandler(JsonDocument* document)
 	, m_valueRawData()
 	, m_writer(&m_valueRawData)
 {
-	if (LN_CHECK_ARG(document != nullptr)) return;
+	if (LN_REQUIRE(document != nullptr)) return;
 	m_valueRawData.initialize(2048);
 }
 
@@ -76,11 +76,11 @@ bool JsonDOMHandler::onDouble(double value)
 }
 
 //------------------------------------------------------------------------------
-bool JsonDOMHandler::onString(const TCHAR* str, int len)
+bool JsonDOMHandler::onString(const Char* str, int len)
 {
 	m_writer.writeUInt8(JsonType::String);
 	m_writer.writeInt32(len);
-	m_writer.write(str, sizeof(TCHAR) * len);
+	m_writer.write(str, sizeof(Char) * len);
 	return true;
 }
 
@@ -116,11 +116,11 @@ bool JsonDOMHandler::onStartObject()
 }
 
 //------------------------------------------------------------------------------
-bool JsonDOMHandler::onKey(const TCHAR* str, int len)
+bool JsonDOMHandler::onKey(const Char* str, int len)
 {
 	m_writer.writeUInt8(0x80 | JsonType::String);		// キーであることを示すために最上位 bit を立てておく
 	m_writer.writeInt32(len);
-	m_writer.write(str, sizeof(TCHAR) * len);
+	m_writer.write(str, sizeof(Char) * len);
 	return true;
 }
 
@@ -163,8 +163,8 @@ void JsonDOMHandler::buildValue(BinaryReader* reader, JsonValue* v)
 	case JsonType::String:
 	{
 		int len = reader->readInt32();
-		v->setString(String((TCHAR*)m_valueRawData.getBuffer((size_t)m_valueRawData.getPosition()), len));	// 生メモリから文字列を生成
-		m_valueRawData.seek(len * sizeof(TCHAR), SeekOrigin_Current);								// 直接メモリを読んだので自分で進める
+		v->setString(String((Char*)m_valueRawData.getBuffer((size_t)m_valueRawData.getPosition()), len));	// 生メモリから文字列を生成
+		m_valueRawData.seek(len * sizeof(Char), SeekOrigin_Current);								// 直接メモリを読んだので自分で進める
 		break;
 	}
 	case JsonType::Array:
@@ -186,7 +186,7 @@ void JsonDOMHandler::buildValue(BinaryReader* reader, JsonValue* v)
 		break;
 	}
 	default:
-		LN_THROW(0, InvalidOperationException);	// fail safe.
+		LN_UNREACHABLE();
 		break;
 	}
 }
@@ -201,8 +201,8 @@ void JsonDOMHandler::buildMember(BinaryReader* reader, JsonMember* m)
 	assert(type == (0x80 | JsonType::String));	// 種別は必ず Key であるはず
 
 	int len = reader->readInt32();
-	m->Name = String((TCHAR*)m_valueRawData.getBuffer((size_t)m_valueRawData.getPosition()), len);	// 生メモリから文字列を生成
-	m_valueRawData.seek(len * sizeof(TCHAR), SeekOrigin_Current);							// 直接メモリを読んだので自分で進める
+	m->Name = String((Char*)m_valueRawData.getBuffer((size_t)m_valueRawData.getPosition()), len);	// 生メモリから文字列を生成
+	m_valueRawData.seek(len * sizeof(Char), SeekOrigin_Current);							// 直接メモリを読んだので自分で進める
 
 	// 値
 	buildValue(reader, &m->Value);

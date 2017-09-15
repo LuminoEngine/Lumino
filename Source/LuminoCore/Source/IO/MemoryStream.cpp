@@ -118,7 +118,7 @@ void* MemoryStream::getBuffer(size_t index)
 		size = m_buffer.size();
 	}
 
-	LN_THROW(index < size, ArgumentException);
+	if (LN_ENSURE(index < size)) return 0;
 	return buf + index;
 }
 
@@ -190,13 +190,16 @@ void MemoryStream::write(const void* data, size_t byteCount)
 	// const 固定長のバッファを使用している場合
 	if (m_constfixedBuffer != NULL)
 	{
-		LN_THROW(0, InvalidOperationException);
+		LN_REQUIRE(0);
+		return;
 	}
 	// 固定長のバッファを使用している場合
 	else if (m_fixedBuffer != NULL)
 	{
-		if (newPos > m_fixedBufferSize) {
-			LN_THROW(0, ArgumentException);
+		if (newPos > m_fixedBufferSize)
+		{
+			LN_REQUIRE(0);
+			return;
 		}
 		memcpy_s(m_fixedBuffer, m_fixedBufferSize, data, byteCount);
 	}
@@ -217,7 +220,7 @@ void MemoryStream::write(const void* data, size_t byteCount)
 void MemoryStream::seek(int64_t offset, SeekOrigin origin)
 {
 	size_t s = (m_fixedBufferSize != 0) ? m_fixedBufferSize : m_buffer.size();
-	m_seekPos = (size_t)FileSystem::calcSeekPoint(m_seekPos, s, offset, origin);
+	m_seekPos = (size_t)detail::FileSystemInternal::calcSeekPoint(m_seekPos, s, offset, origin);
 }
 
 LN_NAMESPACE_END

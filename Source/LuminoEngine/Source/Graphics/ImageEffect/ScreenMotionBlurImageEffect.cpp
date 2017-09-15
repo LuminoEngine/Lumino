@@ -101,8 +101,8 @@ void ScreenMotionBlurImageEffect::onRender(DrawList* context, RenderTargetTextur
 	blurMatrix.scale(m_scale);
 	blurMatrix.translate(m_center.x, m_center.y, 0);
 
-	m_material->setVectorParameter(_T("_BlurColor"), Vector4(1, 1, 1, m_amount));
-	m_material->setMatrixParameter(_T("_BlurMatrix"), blurMatrix);
+	m_material->setVectorParameter(_LT("_BlurColor"), Vector4(1, 1, 1, m_amount));
+	m_material->setMatrixParameter(_LT("_BlurMatrix"), blurMatrix);
 
 	//// m_accumTexture > source
 	//context->blit(m_accumTexture, destination, m_material);

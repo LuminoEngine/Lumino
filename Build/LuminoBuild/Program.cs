@@ -9,15 +9,11 @@ namespace LuminoBuild
     {
         public static void Main(string[] args)
         {
-#if false
-            args = new string[] { "MakeProjects" };
-#else
             // default
             if (args.Length == 0)
             {
-                args = new string[] { "MakeInstaller" };
+                args = new string[] { "MakeProjects" };
             }
-#endif
 
             Assembly thisAssembly = Assembly.GetEntryAssembly();
             string exeDir = Path.GetDirectoryName(thisAssembly.Location);
@@ -47,7 +43,8 @@ namespace LuminoBuild
             builder.Tasks = new List<LuminoBuild.BuildTask>();
             builder.Tasks.Add(new SetupDependencies());
             builder.Tasks.Add(new Tasks.MakeVersionHeader());
-            builder.Tasks.Add(new MakeVSProjectsRule());
+			if (Utils.IsWin32) builder.Tasks.Add(new MakeVSProjectsRule());
+            if (Utils.IsMac) builder.Tasks.Add(new Tasks.MakeXCodeProjects());
             builder.Tasks.Add(new LuminoEngineRule());
             builder.Tasks.Add(new CppPackageRule());
             builder.Tasks.Add(new LuminoDotNetRule());

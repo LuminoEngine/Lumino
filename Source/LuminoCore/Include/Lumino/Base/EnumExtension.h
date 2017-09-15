@@ -51,8 +51,8 @@ private: \
 public: \
 	static int getMemberCount() { return GetEnumParser().GetMemberList().getCount(); } \
 	String toString() const { return GetEnumParser().toString(m_value); } \
-	static enumName parse(const TCHAR* str) { return GetEnumParser().parse(str); }; \
-	static bool TryParse(const TCHAR* str, enumName* outValue) { return GetEnumParser().TryParse(str, (outValue) ? (int*)&outValue->m_value : NULL); }
+	static enumName parse(const Char* str) { return GetEnumParser().parse(str); }; \
+	static bool TryParse(const Char* str, enumName* outValue) { return GetEnumParser().TryParse(str, (outValue) ? (int*)&outValue->m_value : NULL); }
 
 /**
 	@brief	ビットフィールドとしてフラグの組み合わせを表す 拡張 enum 型を定義します。
@@ -122,9 +122,9 @@ private: \
 	struct LocalEnumParser : public EnumFlagsParser <_##enumName> { LocalEnumParser() { _##enumName values[] = { __VA_ARGS__ };  init(values, LN_ARRAY_SIZE_OF(values), #__VA_ARGS__); } }; \
 	static LocalEnumParser& GetEnumParser() { static LocalEnumParser parser; return parser; } \
 public: \
-	String toString(const TCHAR* separator = _T("|")) const { return GetEnumParser().toString(m_value, separator); } \
-	static enumName parse(const TCHAR* str, TCHAR separator = '|') { return GetEnumParser().parse(str, separator); }; \
-	static bool TryParse(const TCHAR* str, enumName* outValue, TCHAR separator = '|') { return GetEnumParser().TryParse(str, (outValue) ? &outValue->m_value : NULL, separator); }
+	String toString(const Char* separator = _TT("|")) const { return GetEnumParser().toString(m_value, separator); } \
+	static enumName parse(const Char* str, TCHAR separator = '|') { return GetEnumParser().parse(str, separator); }; \
+	static bool TryParse(const Char* str, enumName* outValue, TCHAR separator = '|') { return GetEnumParser().TryParse(str, (outValue) ? &outValue->m_value : NULL, separator); }
 
 
 LN_NAMESPACE_BEGIN
@@ -164,8 +164,8 @@ public:
 		void init(const TEnum* values, int valuesCount, const char* argNames)
 		{
 			PairList& members = GetMemberList();
-			String names = String::fromNativeCharString(argNames);
-			List<String> tokens = names.split(_T(","));
+			String names = String::fromCString(argNames);
+			List<String> tokens = names.split(_TT(","));
 			for (int i = 0; i < valuesCount; ++i)
 			{
 				Pair p;
@@ -186,16 +186,16 @@ public:
 			LN_ASSERT(0);
 			return String();
 		}
-		static TEnum parse(const TCHAR* str)
+		static TEnum parse(const Char* str)
 		{
 			int value;
 			if (TryParse(str, &value)) {
 				return (TEnum)value;
 			}
-			LN_THROW(0, ArgumentException);
+			LN_ENSURE(0);
 			return TEnum();
 		}
-		static bool TryParse(const TCHAR* str, int* outValue)
+		static bool TryParse(const Char* str, int* outValue)
 		{
 			PairList& members = GetMemberList();
 			for (int i = 0; i < members.getCount(); ++i)
@@ -217,7 +217,7 @@ public:
 		typedef typename EnumParser<TEnum>::Pair Pair;
 		typedef typename EnumParser<TEnum>::PairListReference PairListReference;
 
-		static String toString(int value, const TCHAR* separator)
+		static String toString(int value, const Char* separator)
 		{
 			PairListReference members = EnumParser<TEnum>::GetMemberList();
 			// 先に完全一致を探す (White=Red|Green|Blue のようなパターン用)
@@ -238,23 +238,23 @@ public:
 					out += members[i].name;
 				}
 			}
-			LN_THROW(!out.isEmpty(), ArgumentException);
+			LN_THROW(!out.isEmpty(), LogicException);
 			return out;
 		}
-		static TEnum parse(const TCHAR* str, TCHAR separator)
+		static TEnum parse(const Char* str, Char separator)
 		{
 			int value;
 			if (TryParse(str, &value, separator)) {
 				return (TEnum)value;
 			}
-			LN_THROW(0, ArgumentException);
+			LN_REQUIRE(0);
 			return TEnum();
 		}
-		static bool TryParse(const TCHAR* str, int* outValue, TCHAR separator)
+		static bool TryParse(const Char* str, int* outValue, Char separator)
 		{
 			int state = 0;
-			const TCHAR* pos = str;
-			const TCHAR* tokenBegin = NULL;
+			const Char* pos = str;
+			const Char* tokenBegin = NULL;
 			*outValue = 0;
 
 			while (*pos)
@@ -324,12 +324,12 @@ public:
 			return true;
 		}
 
-		static bool TryParseInternal(const TCHAR* str, int len, int* outValue)
+		static bool TryParseInternal(const Char* str, int len, int* outValue)
 		{
 			PairListReference members = EnumParser<TEnum>::GetMemberList();
 			for (int i = 0; i < members.getCount(); ++i)
 			{
-				if (members[i].name.compare(str, len) == 0)
+				if (members[i].name == StringRef(str, len))
 				{
 					*outValue = members[i].value;
 					return true;

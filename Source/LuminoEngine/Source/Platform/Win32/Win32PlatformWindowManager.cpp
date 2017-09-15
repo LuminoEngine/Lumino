@@ -9,8 +9,8 @@ LN_NAMESPACE_BEGIN
 // Win32WindowManager
 //==============================================================================
 
-const TCHAR*	WINDOW_CLASS_NAME = _T("_LNote_");
-const TCHAR*	Win32WindowManager::PROP_WINPROC = _T("_LNWinProp_");
+const Char*	WINDOW_CLASS_NAME = _T("_LNote_");
+const Char*	Win32WindowManager::PROP_WINPROC = _T("_LNWinProp_");
 const DWORD		Win32WindowManager::FULLSCREEN_STYLE = WS_POPUP;
 
 //------------------------------------------------------------------------------
@@ -29,7 +29,7 @@ Win32WindowManager::Win32WindowManager(int IconResourceID)
 
 	m_windowClassName = WINDOW_CLASS_NAME;
 
-	//const TCHAR*	        WinClassName;   ///< ウィンドウクラスの名前 または NULL ( NULL の場合、L"_LNote_" が使われる )
+	//const Char*	        WinClassName;   ///< ウィンドウクラスの名前 または NULL ( NULL の場合、L"_LNote_" が使われる )
 	//int                     IconResourceID; ///< タイトルバーのアイコン識別子 (IDI_ICON1 等)
 
 	m_hInst = (HINSTANCE)::GetModuleHandle(NULL);

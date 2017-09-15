@@ -1,5 +1,5 @@
 ﻿
-#include "../../../Internal.h"
+#include "../../Internal.h"
 #include "../../../Platform/Cocoa/CocoaPlatformWindow.h"
 #include "NSGLGraphicsDevice.h"
 

@@ -136,7 +136,7 @@ LN_INTERNAL_ACCESS:
 	// つまり、faceRequester() にフォント名を伝えることはできない。なので、外部に一度とっておく必要がある。
 	// この変数には、FTC_Manager_LookupFace() の直前でフォント名をセットしておく。
 	// ローカル変数のポインタでよい。faceRequester() で NULL が格納される。
-	const TCHAR*		m_requesterFaceName;
+	const Char*		m_requesterFaceName;
 
 };
 

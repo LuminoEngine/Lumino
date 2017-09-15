@@ -45,7 +45,7 @@ void MaterialList2::initialize(int subMaterialCount, bool createMainMaterial)
 //------------------------------------------------------------------------------
 void MaterialList2::copyShared(MaterialList* srcList, bool createMainMaterial)
 {
-	if (LN_CHECK_ARG(srcList != nullptr)) return;
+	if (LN_REQUIRE(srcList != nullptr)) return;
 
 	resize(srcList->getCount());
 	for (int i = 0; i < srcList->getCount(); ++i)
@@ -172,7 +172,7 @@ Shader* VisualComponent::getShader() const
 ////------------------------------------------------------------------------------
 //void VisualComponent::setOpacity(float value, int subsetIndex)
 //{
-//	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
+//	if (LN_REQUIRE(m_materialList->GetMainMaterial() != nullptr)) return;
 //	// TODO: サブマテリアルの設定
 //	//m_materialList->GetMainMaterial()->setOpacity(opacity);
 //	m_builtinEffectData.setOpacity(value);
@@ -184,7 +184,7 @@ Shader* VisualComponent::getShader() const
 //
 //void VisualComponent::setColorScale(const Color& value, int subsetIndex)
 //{
-//	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
+//	if (LN_REQUIRE(m_materialList->GetMainMaterial() != nullptr)) return;
 //	// TODO: サブマテリアルの設定
 //	//m_materialList->GetMainMaterial()->setColorScale(color);
 //	m_builtinEffectData.setColorScale(value);
@@ -207,21 +207,21 @@ Shader* VisualComponent::getShader() const
 //}
 //void VisualComponent::setBlendColor(const Color& color, int subsetIndex)
 //{
-//	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
+//	if (LN_REQUIRE(m_materialList->GetMainMaterial() != nullptr)) return;
 //	// TODO: サブマテリアルの設定
 //	//m_materialList->GetMainMaterial()->setBlendColor(color);
 //	m_builtinEffectData.setBlendColor(color);
 //}
 //void VisualComponent::setTone(const ToneF& tone, int subsetIndex)
 //{
-//	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
+//	if (LN_REQUIRE(m_materialList->GetMainMaterial() != nullptr)) return;
 //	// TODO: サブマテリアルの設定
 //	//m_materialList->GetMainMaterial()->setTone(tone);
 //	m_builtinEffectData.setTone(tone);
 //}
 //void VisualComponent::setShader(Shader* value, int subsetIndex)
 //{
-//	if (LN_CHECK_STATE(m_materialList->GetMainMaterial() != nullptr)) return;
+//	if (LN_REQUIRE(m_materialList->GetMainMaterial() != nullptr)) return;
 //	// TODO: サブマテリアルの設定
 //	//m_materialList->GetMainMaterial()->setShader(shader);
 //	m_builtinEffectData.setShader(value);

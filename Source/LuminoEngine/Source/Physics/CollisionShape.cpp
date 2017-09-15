@@ -202,8 +202,8 @@ MeshCollisionShape::~MeshCollisionShape()
 //------------------------------------------------------------------------------
 void MeshCollisionShape::initialize(MeshResource* mesh)
 {
-	if (LN_CHECK_ARG(mesh != nullptr)) return;
-	if (LN_CHECK_STATE(m_btMeshData == nullptr)) return;
+	if (LN_REQUIRE(mesh != nullptr)) return;
+	if (LN_REQUIRE(m_btMeshData == nullptr)) return;
 
 	IndexBuffer* indexBuffer = mesh->getIndexBuffer();
 

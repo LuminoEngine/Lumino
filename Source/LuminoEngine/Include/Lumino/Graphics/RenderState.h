@@ -36,7 +36,6 @@ enum class CullingMode
 	Front,						/**< 前面を描画しない */
 	Back,						/**< 裏面を描画しない */
 };
-CullingMode;
 
 /// 塗りつぶし方法を表します
 enum FillMode

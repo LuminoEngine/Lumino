@@ -9,55 +9,50 @@
 
 LN_NAMESPACE_BEGIN
 
+
 //==============================================================================
-// GenericPathName
+// Path
 //==============================================================================
 
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericPathName<TChar>::GenericPathName(const GenericPathName& obj)
-	: m_path(obj.m_path)
+const Char Path::Separator = (Char)PathTraits::DirectorySeparatorChar;
+const Char Path::AltSeparator = (Char)PathTraits::AltDirectorySeparatorChar;
+const Char Path::VolumeSeparator = (Char)PathTraits::VolumeSeparatorChar;
+
+Path::Path()
 {
-}
-	
-//------------------------------------------------------------------------------
-template<typename TChar>
-void GenericPathName<TChar>::assign(const char* path, int length)
-{
-	m_path.assignCStr(path, length);
 }
 
-//------------------------------------------------------------------------------
-template<typename TChar>
-void GenericPathName<TChar>::assign(const wchar_t* path, int length)
+Path::Path(const Path& path)
+	: m_path(path.m_path)
 {
-	m_path.assignCStr(path, length);
 }
 
-//------------------------------------------------------------------------------
-template<typename TChar>
-void GenericPathName<TChar>::assignUnderBasePath(const PathNameT& basePath, const char* relativePath, int len)
+void Path::assign(const StringRef& path)
+{
+	m_path = path;
+}
+
+void Path::assignUnderBasePath(const Path& basePath, const StringRef& relativePath)
 {
 	// フルパスの場合はそのまま割り当てる
 	// basePath が空なら relativePath を使う
-	if (PathTraits::isAbsolutePath(relativePath, len) ||
-		basePath.isEmpty())
+	if (PathTraits::isAbsolutePath(relativePath.data(), relativePath.getLength()) || basePath.isEmpty())
 	{
-		m_path.assignCStr(relativePath, len);
+		m_path = relativePath;
 	}
 	// フルパスでなければ結合する
 	else
 	{
 		m_path = basePath.m_path;
+
 		// 末尾にセパレータがなければ付加する
-		if (!PathTraits::endWithSeparator(m_path.c_str(), m_path.getLength())) {
+		if (!PathTraits::endWithSeparator(m_path.c_str(), m_path.getLength()))
+		{
 			m_path += Separator;
 		}
 
 		// relativePath 結合
-		GenericStringT rel;
-		rel.assignCStr(relativePath, len);
-		m_path += rel;
+		m_path += relativePath;
 	}
 
 	// 単純化する (.NET の Uri の動作に合わせる)
@@ -65,321 +60,117 @@ void GenericPathName<TChar>::assignUnderBasePath(const PathNameT& basePath, cons
 	// ↑× 相対パスはそのまま扱いたい
 }
 
-//------------------------------------------------------------------------------
-template<typename TChar>
-void GenericPathName<TChar>::assignUnderBasePath(const PathNameT& basePath, const wchar_t* relativePath, int len)
+void Path::assignUnderBasePath(const Path& basePath, const Path& relativePath)
 {
-	// フルパスの場合はそのまま割り当てる
-	// basePath が空なら relativePath を使う
-	if (PathTraits::isAbsolutePath(relativePath, len) ||
-		basePath.isEmpty())
-	{
-		m_path.assignCStr(relativePath, len);
-	}
-	// フルパスでなければ結合する
-	else
-	{
-		m_path = basePath.m_path;
-		// 末尾にセパレータがなければ付加する
-		if (!PathTraits::endWithSeparator(m_path.c_str(), m_path.getLength())) {
-			m_path += Separator;
-		}
-
-		// relativePath 結合
-		GenericStringT rel;
-		rel.assignCStr(relativePath, len);
-		m_path += rel;
-	}
-
-	// 単純化する (.NET の Uri の動作に合わせる)
-	//PathTraits::CanonicalizePath(&m_path);
-	// ↑× 相対パスはそのまま扱いたい
+	m_path = basePath.m_path;
+	append(relativePath);
 }
 
-//------------------------------------------------------------------------------
-template<typename TChar>
-void GenericPathName<TChar>::append(const TChar* path)
+void Path::append(const StringRef& path)
 {
-	if (PathTraits::isAbsolutePath(path)) {
+	if (PathTraits::isAbsolutePath(path.data(), path.getLength()))
+	{
 		m_path = path;
 	}
-	else {
-		if (m_path.getLength() > 0 && !PathTraits::endWithSeparator(m_path.c_str(), m_path.getLength()))/*(*m_path.rbegin()) != Separator)*/ {	// 末尾セパレータ
+	else
+	{
+		if (m_path.getLength() > 0 && !PathTraits::endWithSeparator(m_path.c_str(), m_path.getLength()))/*(*m_path.rbegin()) != Separator)*/	// 末尾セパレータ
+		{
 			m_path += Separator;
 		}
 		m_path += path;
 	}
 }
 
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericPathName<TChar> GenericPathName<TChar>::getFileNameWithoutExtension() const
+String Path::getFileName() const
 {
-	TChar path[LN_MAX_PATH];
-	PathTraits::getFileNameWithoutExtension(m_path.c_str(), path);
-	return GenericPathName<TChar>(path);
+	const Char* end = m_path.c_str() + m_path.getLength();
+	return String(PathTraits::getFileName(m_path.c_str(), end), end);
 }
 
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericStringRef<TChar> GenericPathName<TChar>::getExtension(bool withDot) const LN_NOEXCEPT
+bool Path::isAbsolute() const
 {
-	StringRefT ref;
-	PathTraits::getExtension(m_path.c_str(), withDot, &ref);
-	return ref;
+	return PathTraits::isAbsolutePath(m_path.c_str());
 }
 
-//------------------------------------------------------------------------------
-#if defined(LN_UNICODE)
-template<>
-GenericString<TCHAR> GenericPathName<char>::toString() const
+Path Path::getWithoutExtension() const
 {
-	return GenericString<TCHAR>::fromNativeCharString(m_path.c_str(), m_path.getLength());
+	const Char* begin = m_path.c_str();
+	return String(begin, PathTraits::getWithoutExtensionEnd(begin, begin + m_path.getLength()));
 }
-template<>
-GenericString<TCHAR> GenericPathName<wchar_t>::toString() const
-{
-	return m_path;
-}
-#else
-template<>
-GenericString<TCHAR> GenericPathName<char>::toString() const
-{
-	return m_path;
-}
-template<>
-GenericString<TCHAR> GenericPathName<wchar_t>::toString() const
-{
-	return GenericString<TCHAR>::fromNativeCharString(m_path.c_str(), m_path.getLength());
-}
-#endif
 
-//------------------------------------------------------------------------------
-template<typename TChar>
-const GenericString<TChar> GenericPathName<TChar>::getStrEndSeparator() const
+StringRef Path::getExtension(bool withDot) const
 {
-	GenericStringT newStr = m_path;
+	const Char* begin = m_path.c_str();
+	const Char* end = m_path.c_str() + m_path.getLength();
+	return StringRef(PathTraits::getExtensionBegin(begin, end, withDot), end);
+}
+
+Path Path::getParent() const
+{
+	const Char* begin = m_path.c_str();
+	const Char* end = m_path.c_str() + m_path.getLength();
+	return StringRef(begin, PathTraits::getDirectoryPathEnd(begin, end));
+}
+
+StringRef Path::getFileNameWithoutExtension() const
+{
+	const Char* begin = m_path.c_str();
+	const Char* end = m_path.c_str() + m_path.getLength();
+	return StringRef(
+		PathTraits::getFileName(m_path.c_str(), end),
+		PathTraits::getExtensionBegin(begin, end, true));
+}
+
+Path Path::canonicalizePath() const
+{
+	// TODO: Length 制限無し
+	Char tmpPath[LN_MAX_PATH + 1];
+	memset(tmpPath, 0, sizeof(tmpPath));
+	PathTraits::canonicalizePath(m_path.c_str(), tmpPath);
+	return Path(tmpPath);
+}
+
+Path Path::makeRelative(const Path& target) const
+{
+	if (LN_REQUIRE(isAbsolute())) return Path();
+	if (LN_REQUIRE(target.isAbsolute())) return Path();
+	auto rel = PathTraits::diffPath<Char>(m_path.c_str(), m_path.getLength(), target.m_path.c_str(), target.m_path.getLength(), FileSystem::getFileSystemCaseSensitivity());
+	return Path(rel.c_str());	// TODO: un copy
+}
+
+bool Path::equals(const Char* path) const { return PathTraits::equals(m_path.c_str(), path); }
+bool Path::equals(const Path& path) const { return PathTraits::equals(m_path.c_str(), path.c_str()); }
+bool Path::equals(const String& path) const { return PathTraits::equals(m_path.c_str(), path.c_str()); }
+
+const String Path::getStrEndSeparator() const
+{
+	String newStr = m_path;
 	if (!newStr.isEmpty() && !PathTraits::endWithSeparator(newStr.c_str(), newStr.getLength())/*(*newStr.rbegin()) != Separator*/) {	// 末尾セパレータ
 		newStr += Separator;
 	}
 	return newStr;
 }
 
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericPathName<TChar> GenericPathName<TChar>::getWithoutExtension() const
+Path Path::getCurrentDirectory()
 {
-	CaseSensitivity cs = FileSystem::getFileSystemCaseSensitivity();
-
-	// 最後の . 位置確認
-	int dotPos = m_path.lastIndexOf('.', -1, -1, cs);
-	if (dotPos == -1) {
-		return (*this);		// . が無ければ何もせずそのまま返す
-	}
-
-	// 最後のセパレータ位置確認
-	int separatorPos = m_path.lastIndexOf(Separator, -1, -1, cs);
-	if (AltSeparator != 0) {
-		int altPos = m_path.lastIndexOf(AltSeparator, -1, -1, cs);
-		separatorPos = std::max(separatorPos, altPos);
-	}
-
-	if (dotPos < separatorPos) {
-		return (*this);		// "dir.sub/file" のように、. の後ろにセパレータがあった。ファイル名に付く . ではないので、何もせずそのまま返す
-	}
-
-	return GenericPathName<TChar>(m_path.left(dotPos));
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericPathName<TChar> GenericPathName<TChar>::changeExtension(const TChar* newExt) const
-{
-	GenericString<TChar> newPath;
-	for (int i = m_path.getLength() - 1; i >= 0; --i)
-	{
-		TChar ch = m_path[i];
-		if (ch == '.') {
-			newPath = m_path.mid(0, i);
-			break;
-		}
-		if (PathTraits::isSeparatorChar(ch) || PathTraits::isVolumeSeparatorChar(ch)) { break; }
-	}
-
-	// . が無かった場合
-	if (newPath.isEmpty()) {
-		newPath = m_path;
-	}
-
-	if (newExt != NULL) {
-		if (StringTraits::tcslen(newExt) != 0 && newExt[0] != '.') {
-			newPath += '.';
-		}
-		newPath += newExt;
-	}
-	return GenericPathName<TChar>(newPath);
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-bool GenericPathName<TChar>::isAbsolute() const
-{
-	return PathTraits::isAbsolutePath(m_path.c_str());
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-bool GenericPathName<TChar>::isRoot() const
-{
-	return PathTraits::isRootPath(m_path.c_str());
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-bool GenericPathName<TChar>::isDirectory() const
-{
-	return FileSystem::existsDirectory(m_path.c_str());
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-bool GenericPathName<TChar>::checkExt(const TChar* ext) const
-{
-	// TODO: 大文字小文字の区別をする
-	return StringTraits::endsWith(m_path.c_str(), m_path.getLength(), ext, -1, CaseSensitivity::CaseInsensitive);
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericPathName<TChar> GenericPathName<TChar>::getParent() const
-{
-	/* 参考：他のライブラリの、空文字やセパレータが無いなどで親ディレクトリが取れない時の動作
-		- Qt (QFileInfo::dir())		… "." を返す
-		- wxWidgets (wxFileName)	… "" を返す
-		- Python (os.path)			… "" を返す
-		- Ruby (Pathname)			… ".." を返す
-		- Java (os.nio.Paths)		… null を返す
-		- C# (Path, Uri)			… "" を返す (入力が "" だった場合は例外)
-	*/
-	return GenericPathName(PathTraits::getDirectoryPath(m_path.c_str()).c_str());
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericPathName<TChar> GenericPathName<TChar>::canonicalizePath() const
-{
-	TChar tmpPath[LN_MAX_PATH + 1];
-	memset(tmpPath, 0, sizeof(tmpPath));
-	PathTraits::canonicalizePath(m_path.c_str(), tmpPath);
-	return GenericPathName<TChar>(tmpPath);
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-std::string GenericPathName<TChar>::toLocalChar() const
-{
-	GenericString<char> tmp;
-	tmp.assignCStr(m_path.c_str());
-	return std::string(tmp.c_str());
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-bool GenericPathName<TChar>::existsFile() const
-{
-	return FileSystem::existsFile(m_path.c_str());
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-bool GenericPathName<TChar>::existsDirectory() const
-{
-	return FileSystem::existsDirectory(m_path.c_str());
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-bool GenericPathName<TChar>::existsFileInDirectory(const StringRefT& relPath) const LN_NOEXCEPT
-{
-	TChar path[LN_MAX_PATH];
-	PathTraits::combine(m_path.c_str(), m_path.getLength(), relPath.getBegin(), relPath.getLength(), path, LN_MAX_PATH);
-	return FileSystem::existsFile(path);
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericPathName<TChar> GenericPathName<TChar>::makeRelative(const GenericPathName<TChar>& target) const
-{
-	if (LN_CHECK_ARG(isAbsolute())) return GenericPathName<TChar>();
-	if (LN_CHECK_ARG(target.isAbsolute())) return GenericPathName<TChar>();
-	GenericString<TChar> rel = PathTraits::diffPath<TChar>(m_path.c_str(), m_path.getLength(), target.m_path.c_str(), target.m_path.getLength(), FileSystem::getFileSystemCaseSensitivity());
-	return GenericPathName<TChar>(rel);
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-void GenericPathName<TChar>::createDirectory() const { LN_AFX_FUNCNAME(createDirectory)(); }
-template<typename TChar>
-void GenericPathName<TChar>::LN_AFX_FUNCNAME(createDirectory)() const
-{
-	FileSystem::createDirectory(m_path.c_str());
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericPathName<TChar> GenericPathName<TChar>::getCurrentDirectory() { return LN_AFX_FUNCNAME(getCurrentDirectory)(); }
-template<typename TChar>
-GenericPathName<TChar> GenericPathName<TChar>::LN_AFX_FUNCNAME(getCurrentDirectory)()
-{
-	static GenericPathName<TChar> path;
-
-	TChar curDir[LN_MAX_PATH];
+	// TODO: Max Len
+	Char curDir[LN_MAX_PATH];
 	DirectoryUtils::getCurrentDirectory(curDir);
-
-	// メモリ確保を抑える。
-	if (path.m_path != curDir) {
-		path = curDir;
-	}
-	return path;
+	return Path(curDir);
 }
 
-//------------------------------------------------------------------------------
-template<>
-GenericPathName<char> GenericPathName<char>::getExecutablePath()
-{
-#if defined(LN_OS_WIN32)
-	char path[LN_MAX_PATH];
-	::GetModuleFileNameA(NULL, path, LN_MAX_PATH);
-	return GenericPathName<char>(path);
-#else
-	LN_NOTIMPLEMENTED();
-#endif
-}
-//------------------------------------------------------------------------------
-template<>
-GenericPathName<wchar_t> GenericPathName<wchar_t>::getExecutablePath()
-{
-#if defined(LN_OS_WIN32)
-	wchar_t path[LN_MAX_PATH];
-	::GetModuleFileNameW(NULL, path, LN_MAX_PATH);
-	return GenericPathName<wchar_t>(path);
-#else
-	LN_NOTIMPLEMENTED();
-#endif
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericPathName<TChar> GenericPathName<TChar>::getSpecialFolderPath(SpecialFolder specialFolder, const TChar* childDir, SpecialFolderOption option)
+Path Path::getSpecialFolderPath(SpecialFolder specialFolder, const Char* childDir, SpecialFolderOption option)
 {
 	if (childDir != NULL) {
-		if (LN_CHECK_ARG(!PathTraits::isAbsolutePath(childDir))) return GenericPathName<TChar>();
+		if (LN_REQUIRE(!PathTraits::isAbsolutePath(childDir))) return Path();
 	}
 
-	TChar path[LN_MAX_PATH];
+	// TODO: Length
+	Char path[LN_MAX_PATH];
 	Environment::getSpecialFolderPath(specialFolder, path);
 
-	GenericPathName<TChar> path2(path);
+	Path path2(path);
 	if (childDir != NULL) {
 		path2.append(childDir);
 	}
@@ -387,127 +178,110 @@ GenericPathName<TChar> GenericPathName<TChar>::getSpecialFolderPath(SpecialFolde
 	if (option == SpecialFolderOption::None)
 	{
 		// フォルダが無かったら空文字列にして返す
-		if (!FileSystem::existsDirectory(path2)) {
+		if (!detail::FileSystemInternal::existsDirectory(path2.c_str(), path2.getLength())) {
 			path2.clear();
 		}
 		return path2;
 	}
 	else {
 		// フォルダが無かったら作成して返す
-		if (!FileSystem::existsDirectory(path2)) {
-			FileSystem::createDirectory(path2);
+		if (!detail::FileSystemInternal::existsDirectory(path2.c_str(), path2.getLength())) {
+			detail::FileSystemInternal::createDirectory(path2.c_str(), path2.getLength());
 		}
 		return path2;
 	}
 }
 
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericPathName<TChar> GenericPathName<TChar>::getUniqueFilePathInDirectory(const PathNameT& directory, const TChar* filePrefix, const TChar* extName)
+Path Path::getUniqueFilePathInDirectory(const Path& directory, const Char* filePrefix, const Char* extName)
 {
-	GenericStringT dirPath = directory.getStrEndSeparator();
+	String dirPath = directory.getStrEndSeparator();
 	uint64_t key = static_cast<uint64_t>(::time(NULL));
 
 	// 同番号のファイルがあればインクリメントしつつ空き番号を調べる
 	int number = 1;
-	GenericStringT filePath;
-	GenericStringT work;
+	String filePath;
+	String work;
 	do
 	{
 		if (filePrefix != NULL && extName != NULL) {
-			filePath = GenericStringT::sprintf(LN_T(TChar, "%s%s%llu%d%s"), dirPath.c_str(), filePrefix, key, number, extName);
+			filePath = String::sprintf(_LT("%s%s%llu%d%s"), dirPath.c_str(), filePrefix, key, number, extName);
 		}
 		else if (filePrefix == NULL && extName != NULL) {
-			filePath = GenericStringT::sprintf(LN_T(TChar, "%s%llu%d%s"), dirPath.c_str(), key, number, extName);
+			filePath = String::sprintf(_LT("%s%llu%d%s"), dirPath.c_str(), key, number, extName);
 		}
 		else if (filePrefix != NULL && extName == NULL) {
-			filePath = GenericStringT::sprintf(LN_T(TChar, "%s%s%llu%d"), dirPath.c_str(), filePrefix, key, number);
+			filePath = String::sprintf(_LT("%s%s%llu%d"), dirPath.c_str(), filePrefix, key, number);
 		}
 		else {
-			filePath = GenericStringT::sprintf(LN_T(TChar, "%s%llu%d"), dirPath.c_str(), key, number);
+			filePath = String::sprintf(_LT("%s%llu%d"), dirPath.c_str(), key, number);
 		}
 
 		number++;
-	} while (FileSystem::existsFile(filePath.c_str()));
+	} while (detail::FileSystemInternal::existsFile(filePath.c_str(), filePath.getLength()));
 
-	return PathNameT(filePath.c_str());
+	return String(filePath.c_str());
+}
+
+String Path::getUniqueFileNameInDirectory(const Path& directory, const Char* filePrefix, const Char* extName)
+{
+	return getUniqueFilePathInDirectory(directory, filePrefix, extName).getFileName();
 }
 
 
-/// (こちらはファイル名だけを返す)
+//==============================================================================
+// GenericStaticallyLocalPath
+//==============================================================================
+namespace detail {
+
 template<typename TChar>
-GenericString<TChar> GenericPathName<TChar>::getUniqueFileNameInDirectory(const PathNameT& directory, const TChar* filePrefix, const TChar* extName)
+GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath()
 {
-	return getUniqueFilePathInDirectory(directory,filePrefix, extName).getFileName();
-}
-
-// テンプレートのインスタンス化
-template class GenericPathName<char>;
-template class GenericPathName<wchar_t>;
-
-
-
-namespace detail
-{
-
-// dst の長さは LocalPathBaseLength であること
-static int ConvertNativeString(const GenericStringRef<char>& src, char* dst)
-{
-	if (src.getLength() >= LocalPathBaseLength) return -1;
-	return src.copyTo(dst, LocalPathBaseLength);
-}
-static int ConvertNativeString(const GenericStringRef<wchar_t>& src, wchar_t* dst)
-{
-	if (src.getLength() >= LocalPathBaseLength) return -1;
-	return src.copyTo(dst, LocalPathBaseLength);
-}
-static int ConvertNativeString(const GenericStringRef<char>& src, wchar_t* dst)
-{
-	if (src.getLength() >= LocalPathBaseLength) return -1;
-	char tmp[LocalPathBaseLength + 1];
-	src.copyTo(tmp, LocalPathBaseLength);
-
-	size_t size;
-	errno_t err = mbstowcs_s(&size, dst, LocalPathBaseLength, tmp, LocalPathBaseLength);
-	if (err != 0) return -1;
-	return size;
-}
-static int ConvertNativeString(const GenericStringRef<wchar_t>& src, char* dst)
-{
-	if (src.getLength() >= LocalPathBaseLength) return -1;
-	wchar_t tmp[LocalPathBaseLength + 1];
-	src.copyTo(tmp, LocalPathBaseLength);
-
-	size_t size;
-	errno_t err = wcstombs_s(&size, dst, LocalPathBaseLength, tmp, LocalPathBaseLength);
-	if (err != 0) return -1;
-	return size;
+	m_static[0] = '\0';
+	m_length = 0;
 }
 
 template<typename TChar>
-GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const GenericStringRef<char>& path)
+GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const char* path, int len)
 {
-	m_static[0] = '0';
-	if (ConvertNativeString(path, m_static) < 0)
+	m_static[0] = '\0';
+	m_length = UStringConvert::convertNativeString(path, len, m_static, LocalPathBaseLength + 1);
+	if (m_length < 0 || m_length >= LocalPathBaseLength)
 	{
-		// 文字列が長すぎるなど、変換失敗したら String へ割り当てる
-		m_path.assignCStr(path.getBegin(), path.getLength());
+		// long path
+		UStringConvert::convertToStdString(path, len, &m_path);
+		m_length = m_path.length();
 	}
 }
 
 template<typename TChar>
-GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const GenericStringRef<wchar_t>& path)
+GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const wchar_t* path, int len)
 {
-	m_static[0] = '0';
-	if (ConvertNativeString(path, m_static) < 0)
+	m_static[0] = '\0';
+	m_length = UStringConvert::convertNativeString(path, len, m_static, LocalPathBaseLength + 1);
+	if (m_length < 0 || m_length >= LocalPathBaseLength)
 	{
-		// 文字列が長すぎるなど、変換失敗したら String へ割り当てる
-		m_path.assignCStr(path.getBegin(), path.getLength());
+		// long path
+		UStringConvert::convertToStdString(path, len, &m_path);
+		m_length = m_path.length();
+	}
+}
+
+template<typename TChar>
+GenericStaticallyLocalPath<TChar>::GenericStaticallyLocalPath(const char16_t* path, int len)
+{
+	m_static[0] = '\0';
+	m_length = UStringConvert::convertNativeString(path, len, m_static, LocalPathBaseLength + 1);
+	if (m_length < 0 || m_length >= LocalPathBaseLength)
+	{
+		// long path
+		UStringConvert::convertToStdString(path, len, &m_path);
+		m_length = m_path.length();
 	}
 }
 
 template class GenericStaticallyLocalPath<char>;
 template class GenericStaticallyLocalPath<wchar_t>;
+//template class GenericStaticallyLocalPath<char16_t>;
 
 } // namespace detail
 

@@ -345,7 +345,7 @@ bool UILayoutView::injectKeyUp(Keys keyCode, ModifierKeys modifierKeys)
 }
 
 //------------------------------------------------------------------------------
-bool UILayoutView::injectTextInput(TCHAR ch)
+bool UILayoutView::injectTextInput(Char ch)
 {
 	// フォーカスを持っているUI要素に送る
 	if (m_ownerContext->setFocusElement() != nullptr)

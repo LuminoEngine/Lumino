@@ -78,31 +78,38 @@ void DrawingContext::drawBoxBackground(const Rect& rect, const CornerRadius& cor
 void DrawingContext::drawBoxBorder(
 	const Rect& rect, const Thickness& thickness, const CornerRadius& cornerRadius,
 	const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor,
+	BorderDirection borderDirection,
+	const Color& shadowColor, float shadowBlur, float shadowWidth, ShadowDirection shadowDirection)
+{
+	if (Math::nearEqual(shadowWidth, 0))
+	{
+		drawBoxBorderLine(rect, thickness, cornerRadius, leftColor, topColor, rightColor, bottomColor, borderDirection);
+	}
+	else
+	{
+		auto* ptr = resolveDrawElement<DrawElement_DrawShapesRendererCommandList>(getManager()->getInternalContext()->m_shapesRenderer, nullptr, true);
+		auto* list = ptr->GetGCommandList(this);
+		list->addDrawBoxBorder(
+			rect, thickness, cornerRadius,
+			leftColor, topColor, rightColor, bottomColor,
+			shadowColor, shadowBlur, shadowWidth, (shadowDirection == ShadowDirection::Inside), (borderDirection == BorderDirection::Inside));
+	}
+}
+
+//------------------------------------------------------------------------------
+void DrawingContext::drawBoxBorderLine(
+	const Rect& rect, const Thickness& thickness, const CornerRadius& cornerRadius,
+	const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor,
 	BorderDirection borderDirection)
 {
 	auto* ptr = resolveDrawElement<DrawElement_DrawShapesRendererCommandList>(getManager()->getInternalContext()->m_shapesRenderer, nullptr, true);
 	auto* list = ptr->GetGCommandList(this);
-	list->addDrawBoxBorder2(
+	list->drawBoxBorderLine(
 		rect, thickness,
 		leftColor, topColor, rightColor, bottomColor,
 		cornerRadius, (borderDirection == BorderDirection::Inside));
 }
 
-//------------------------------------------------------------------------------
-void DrawingContext::drawBoxBorder(
-	const Rect& rect, const Thickness& thickness,
-	const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor,
-	float ltRad, float rtRad, float lbRad, float rbRad, BorderDirection borderDirection,
-	const Color& shadowColor, float shadowBlur, float shadowWidth, ShadowDirection shadowDirection)
-{
-	auto* ptr = resolveDrawElement<DrawElement_DrawShapesRendererCommandList>(getManager()->getInternalContext()->m_shapesRenderer, nullptr, true);
-	auto* list = ptr->GetGCommandList(this);
-	list->addDrawBoxBorder(
-		rect.x, rect.y, rect.width, rect.height, thickness.left, thickness.top, thickness.right, thickness.bottom,
-		leftColor, topColor, rightColor, bottomColor,
-		ltRad, rtRad, lbRad, rbRad,
-		shadowColor, shadowBlur, shadowWidth, (shadowDirection == ShadowDirection::Inside), (borderDirection == BorderDirection::Inside));
-}
 
 //------------------------------------------------------------------------------
 void DrawingContext::drawBoxShadow(const Rect& rect, const CornerRadius& cornerRadius, const Color& color, float blur, float width, ShadowDirection shadowDirection)

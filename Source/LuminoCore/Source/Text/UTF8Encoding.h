@@ -14,7 +14,7 @@ public:
 
 public:
 	// override Encoding
-	virtual const TCHAR* getName() const { return _T("UTF-8"); }
+	virtual const Char* getName() const { return _TT("UTF-8"); }
 	virtual int getMinByteCount() const { return 1; }
 	virtual int getMaxByteCount() const { return 6; }
 	virtual Decoder* createDecoder() const { return LN_NEW UTF8Decoder(m_byteOrderMark); }

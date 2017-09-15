@@ -171,7 +171,7 @@ UIElement* UIControl::getLogicalChild(int index)
 
 void UIControl::submit()
 {
-	onSubmit(UIEventArgs::create(nullptr, this));
+	onSubmit(UIEventArgs::create(0, this));
 }
 
 //------------------------------------------------------------------------------
@@ -419,7 +419,7 @@ void UIControl::onChildCollectionChanged(const tr::ChildCollectionChangedArgs& e
 	switch (e.action)
 	{
 	case tr::NotifyCollectionChangedAction::Add:
-		if (LN_CHECK_STATE(e.newItems.getCount() == 1)) return;	// TODO
+		if (LN_REQUIRE(e.newItems.getCount() == 1)) return;	// TODO
 		m_logicalChildrenPresenter->getChildren()->insert(e.newStartingIndex, e.newItems.getAt(0));
 		break;
 	case tr::NotifyCollectionChangedAction::Move:

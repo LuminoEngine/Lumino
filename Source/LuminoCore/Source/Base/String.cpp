@@ -1,569 +1,766 @@
 ﻿
 #include "../Internal.h"
-#include <sstream>
-#include <Lumino/Base/ByteBuffer.h>
+#include <memory>
+#ifdef LN_OS_WIN32
+#include <cuchar>
+#endif
 #include <Lumino/Text/Encoding.h>
-#include <Lumino/Base/RefObject.h>
+#include <Lumino/Base/ByteBuffer.h>
+//#include <Lumino/IO/Common.h>	// TODO: for Path
+//#include <Lumino/Base/Environment.h>	// TODO: Path
 #include <Lumino/Base/String.h>
 #include <Lumino/Base/StringHelper.h>
+#include <Lumino/Base/RefObject.h>
+#include <Lumino/Base/Formatter.h>
 #include <Lumino/Base/Locale.h>
-#include <Lumino/Base/Environment.h>
-#include <Lumino/Base/StringArray.h>
 #include <Lumino/Base/Hash.h>
 #include <Lumino/IO/PathName.h>
-
-/*
-basic_string クラス
-https://msdn.microsoft.com/ja-jp/library/syxtdd4f.aspx
-CString の使用
-https://msdn.microsoft.com/ja-jp/library/ms174288.aspx
-String クラス
-https://msdn.microsoft.com/ja-jp/library/system.string%28v=vs.110%29.aspx
-QString Class
-http://doc.qt.io/qt-5/qstring.html#details
-wxString の概要
-http://murank.github.io/wxwidgetsjp/2.9.4/overview_string.html
-wxWidgets における Unicode 対応
-http://murank.github.io/wxwidgetsjp/2.9.4/overview_unicode.html#overview_unicode_encodings
-Tchar.h における汎用テキストのマッピング
-https://msdn.microsoft.com/ja-jp/library/c426s321.aspx
-
-[2015/1/21] char*, wchar_t* へのキャスト演算子はサポートしない。
-	普段は便利でも、落とし穴に落ちたときの原因がすごくわかりづらいため。
-	・Variant に入れるときとか、String と TCHAR でオーバーロード組む必要があるときに邪魔。 
-	・CStringと三項演算子の問題。
-	http://www.g-ishihara.com/mfc_st_02.htm
-
-[2015/8/3] VS2013 では InterlockedIncrement() を使った参照カウント操作は std::string のコピーよりも高いスコアを出した。
-	他の環境でもよいスコアが出ればスレッドセーフ化も検討するかもしれない。
-
-	1000文字の代入を 100000 回行った平均時間は以下のとおり。
-	- String (Atomic無し)	: 2ms
-	- String (Atomic有り)	: 3ms
-	- wstring (VS2013)		: 10ms
-
-[2015/6/8] 共有空文字列
-	
-	空文字列を表すのに、いちいち char[1] を new したりしない。
-	空文字列は共通の GenericStringCore::m_sharedEmpty を参照する。
-
-	この空文字列は参照カウントを持つ。
-	グローバルなインスタンスなのでプログラム終了時に解放される。
-
-	とすると一見わざわざ GenericStringCore のインスタンスを共有する必要は無く、
-	グローバルな「char g_empty[1] = "";」を共有すれば良いように見える。
-
-	しかしそうすると、String クラスは文字列操作時、
-	「今参照しているのは g_empty か？GenericStringCore か？」を区別しなければならず、冗長になる。
-
-	空文字列もそれ以外も全て GenericStringCore として扱うことで、余計なエラーチェックが必要なくなる。
-
-
-[2015/2/21] 内部文字コードは固定しない
-
-	QString や NSString は内部文字コードを固定しているが、このライブラリの String は固定しない。
-	これは、このライブラリが何かの大規模なフレームワークを作るわけではく、
-	ほかのライブラリやフレームワークをサポートする目的もあるため。
-
-	String は GenericString<> の typedef で、Windows では _UNICODE により <char> または <wchar_t> を使用する。
-	Unix 系は、今のところ <char> だけを使う。(UTF-8)
-	これは、Unix では wchar 系の正常動作が十分に期待できないため。
-	例えば、Ubuntu では wsprintf 使うと、日本語が全て消えてしまう。
-	さらに、wchar_t をサポートしているシステムAPIは無く、必ず UTF-8 に変換してからシステムAPIに渡す必要がある。
-	Unix系はもう OS レベルで wchar_t を見限っていると考えた方がよい。Mac ですら NSString を UTF-16 にしている。
-
-	完全に実装するならば printf も自分で実装する必要がある。
-	ゆくゆくはタイプセーフな printf (https://github.com/c42f/tinyformat) を作ろうかと考えてはいるが、
-	直近ではその重要性は低い。
-
-	最終的には、どのようなパターンを考えても一長一短があり、内部的な理由からは決定しきれない。
-	となるとユーザーが使ったときに、コードを何も変更しなくても別 OS でコンパイルできるようになることが最低条件となる。
-	その次に来るのが、ユーザーが使っている他のフレームワークやライブラリと統合し易いかどうか。そしてパフォーマンス。
-
-	FreeType を使うときは UTF-32 文字列を使えた方が良いし、CEGUI を使うときは UTF-8 文字列を使えた方が良い。
-	Windows ⇔ Unix 間でファイルをやり取りするときのフォーマットは UTF-16 がベターだろう。
-	Ruby と連携するときは UTF-8 だし、Java や C# とは UTF-16。
-	MFC(WinAPI)と使うなら char と wchar_t をマクロで切り替えられるように。
-	そして、例えば内部文字コードを固定すると IndexOf() に指定したリテラルをイチイチ文字コード変換しなければならず、パフォーマンスに影響がかなり出る。
-
-	内部文字コードを固定しても、外部ライブラリと連携するために変換関数を作ればいいだけの話ではあるのだけど、
-	このライブラリのメイン用途 (ゲームエンジン) としてはパフォーマンス解決のための手段は用意しておくべき。
-
-	以下、メモ。
-
-	・UTF-8を内部コードとする場合
-		+ 新しい Unix 系であれば OS の内部コードが UTF-8 となっているため、それほど問題はない。
-		- Windows では printf や API を呼び出すか時に THREAD_ACP に変換する必要がある。
-		- Windows では 文字列リテラルは UTF-8 にコンパイルされないため、日本語文字を含む char* で String::IndexOf できない。
-		  日本語をハードコーディングすることは稀だが、それでもする場合は 0 ではない。
-
-	・UTF-16を内部コードとする場合
-		+ 日本語を扱うとき、メモリ効率は UTF 系の中で一番良いし、当然 Unicode の文字を全て扱える。
-		+ Windows では ≒ wchar_t と考えて wchar 系の標準ライブラリが使える。
-		- ただし、Unix 計では ≠ wchar_t なので標準ライブラリに相当する関数をほぼすべて自分で実装する必要がある。
-
-	・wchar_t を内部コードとする場合
-		+ UTF-16 と比べて_T() のリテラルで、文字列検索とかし易い。
-		- Unix では使い物にならないと考えた方がよい。wsprintf とか日本語が消える。UTF-16と同じく、API呼ぶときは UTF-8への変換必須。
-
-	・ノータッチ(MFC ライク)
-		+ 文字列リテラルで検索とか、printf の可変引数に指定できる。
-		- wprintf とか使い物にならないのは一緒。
-
-	参考：http://www.nubaria.com/en/blog/?p=289
-*/
+#include <Lumino/IO/PathTraits.h>	// TODO: Path
+#include <Lumino/IO/FileSystem.h>	// TODO: Path
+#include <Lumino/IO/DirectoryUtils.h>	// TODO: Path
+#include <Lumino/Text/Encoding.h>
 
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
-// GenericStringCore
-//==============================================================================
-namespace detail {
-
-#if defined(LN_DEBUG)
-// UnitTest 用の変数。とりあえず Atomic じゃなくていい。
-int g_testGenericStringCoreAllocCount = 0;
-#endif
-
-} // namespace detail
-
-template<typename TChar>
-typename detail::GenericStringCore<TChar> detail::GenericStringCore<TChar>::m_sharedEmpty;
-
-//==============================================================================
-// GenericString
+// String
 //==============================================================================
 
-static const int MaxFormatLength = 1024;
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericString<TChar>::GenericString()
-	: m_string(detail::GenericStringCore<TChar>::getSharedEmpty())
+String::String()
 {
+	init();
 }
 
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericString<TChar>::~GenericString()
+String::~String()
 {
-	LN_SAFE_RELEASE(m_string);
+	release();
 }
 
-//------------------------------------------------------------------------------
-// TChar コンストラクタ系
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericString<TChar>::GenericString(const GenericString& str)
-	: m_string(nullptr)
+String::String(const String& str)
+	: String()
 {
-	attach(str.m_string);
-}
-template<typename TChar>
-GenericString<TChar>::GenericString(const GenericString& str, int length)
-	: m_string(nullptr)
-{
-	assignTString(str.m_string->c_str(), length);
-}
-template<typename TChar>
-GenericString<TChar>::GenericString(const GenericString& str, int begin, int length)
-	: m_string(nullptr)
-{
-	assignTString(str.m_string->c_str() + begin, length);	// str+begin にしないと、暗黙的コンストラクタの呼び出しが発生してしまう
-}
-template<typename TChar>
-GenericString<TChar>::GenericString(const StringRefT& str)
-	: m_string(nullptr)
-{
-	if (str.m_string != nullptr)
-		attach(str.m_string);
-	else
-		assignTString(str.getBegin(), str.getLength());
-}
-template<typename TChar>
-GenericString<TChar>::GenericString(const TChar* str)
-	: m_string(nullptr)
-{
-	assignTString(str, -1);
-}
-template<typename TChar>
-GenericString<TChar>::GenericString(const TChar* str, int length)
-	: m_string(nullptr)
-{
-	assignTString(str, length);
-}
-template<typename TChar>
-GenericString<TChar>::GenericString(const TChar* str, int begin, int length)
-	: m_string(nullptr)
-{
-	assignTString(str + begin, length);
-}
-template<typename TChar>
-GenericString<TChar>::GenericString(TChar ch)
-	: GenericString(&ch, 1)
-{
+	copy(str);
 }
 
-template<typename TChar>
-GenericString<TChar>::GenericString(int count, TChar ch)
-	: m_string(nullptr)
+String::String(String&& str) LN_NOEXCEPT
+	: String()
 {
-	assignTString(count, ch);
+	move(std::forward<String>(str));
 }
 
-template<typename TChar>
-GenericString<TChar>::GenericString(const GenericPathName<TChar>& path)
-	: GenericString(path.getString())
+String& String::operator=(const String& str)
 {
-}
-
-template<typename TChar>
-GenericString<TChar>::GenericString(GenericString&& str) LN_NOEXCEPT
-	: m_string(nullptr)
-{
-	*this = std::move(str);
-}
-
-
-//------------------------------------------------------------------------------
-// YCHAR コンストラクタ系
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericString<TChar>::GenericString(const GenericString<YCHAR>& str)
-	: m_string(nullptr)
-{
-	assignCStr(str.c_str(), str.getLength());
-}
-template<typename TChar>
-GenericString<TChar>::GenericString(const GenericString<YCHAR>& str, int length)
-	: m_string(nullptr)
-{
-	assignCStr(str.c_str(), length);
-}
-template<typename TChar>
-GenericString<TChar>::GenericString(const GenericString<YCHAR>& str, int begin, int length)
-	: m_string(nullptr)
-{
-	assignCStr(str.c_str(), begin, length);
-}
-template<typename TChar>
-GenericString<TChar>::GenericString(const YCHAR* str)
-	: m_string(nullptr)
-{
-	assignCStr(str);
-}
-template<typename TChar>
-GenericString<TChar>::GenericString(const YCHAR* str, int length)
-	: m_string(nullptr)
-{
-	assignCStr(str, length);
-}
-
-//template<typename TChar>
-//GenericString<TChar>::GenericString(const GenericString<YCHAR>& str)
-//	: m_ref(nullptr)
-//	, m_string(nullptr)
-//{
-//	AssignCStr(str.c_str());
-//}
-//template<typename TChar>
-//GenericString<TChar>::GenericString(const GenericString<YCHAR>& str, int length)
-//	: m_ref(nullptr)
-//	, m_string(nullptr)
-//{
-//	AssignCStr(str.c_str(), length);
-//}
-//template<typename TChar>
-//GenericString<TChar>::GenericString(const GenericString<YCHAR>& str, int begin, int length)
-//	: m_ref(nullptr)
-//	, m_string(nullptr)
-//{
-//	AssignCStr(str.c_str(), begin, length);
-//}
-//template<typename TChar>
-//GenericString<TChar>::GenericString(const YCHAR* str)
-//	: m_ref(nullptr)
-//	, m_string(nullptr)
-//{
-//	AssignCStr(str);
-//}
-//template<typename TChar>
-//GenericString<TChar>::GenericString(const YCHAR* str, int length)
-//	: m_ref(nullptr)
-//	, m_string(nullptr)
-//{
-//	AssignCStr(str, length);
-//}
-//template<typename TChar>
-//GenericString<TChar>::GenericString(const YCHAR* str, int begin, int length)
-//	: m_ref(nullptr)
-//	, m_string(nullptr)
-//{
-//	AssignCStr(str, begin, length);
-//}
-
-//------------------------------------------------------------------------------
-// operator=
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericString<TChar>& GenericString<TChar>::operator=(const GenericString& right)
-{
-	attach(right.m_string);
-	return (*this);
-}
-template<typename TChar>
-GenericString<TChar>& GenericString<TChar>::operator=(const GenericStringRef<TChar>& right)
-{
-	assignTString(right.getBegin(), right.getLength());
-	return (*this);
-}
-template<typename TChar>
-GenericString<TChar>& GenericString<TChar>::operator=(const std::basic_string<TChar>& right)
-{
-	assignTString(right.c_str(), -1);
-	return (*this);
-}
-template<typename TChar>
-GenericString<TChar>& GenericString<TChar>::operator=(const TChar* right)
-{
-	assignTString(right, -1);
-	return (*this);
-}
-template<typename TChar>
-GenericString<TChar>& GenericString<TChar>::operator=(const GenericPathName<TChar>& right)
-{
-	return operator=(right.getString());
-}
-template<typename TChar>
-GenericString<TChar>& GenericString<TChar>::operator=(GenericString&& right) LN_NOEXCEPT
-{
-	if (m_string != right.m_string)
-	{
-		LN_SAFE_RELEASE(m_string);
-		m_string = right.m_string;
-		right.m_string = nullptr;
-	}
+	copy(str);
 	return *this;
 }
 
-//------------------------------------------------------------------------------
-// operator+=
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericString<TChar>& GenericString<TChar>::operator+=(const GenericString<TChar>& right)
+String& String::operator=(String&& str) LN_NOEXCEPT
 {
-	append(right.m_string->c_str(), right.getLength());
-	return (*this);
-}
-//template<typename TChar>
-//GenericString<TChar>& GenericString<TChar>::operator+=(const std::basic_string<TChar>& right)
-//{
-//	Append(right.c_str(), right.size());
-//	return (*this);
-//}
-template<typename TChar>
-GenericString<TChar>& GenericString<TChar>::operator+=(const TChar* ptr)
-{
-	append(ptr, -1);
-	return (*this);
-}
-template<typename TChar>
-GenericString<TChar>& GenericString<TChar>::operator+=(TChar ch)
-{
-	append(&ch, 1);
-	return (*this);
+	move(std::forward<String>(str));
+	return *this;
 }
 
-//------------------------------------------------------------------------------
-// operator<
-//------------------------------------------------------------------------------
-template<typename TChar>
-bool GenericString<TChar>::operator < (const GenericString& right) const
+String::String(const String& str, int begin)
+	: String()
 {
-	return compare(right.c_str(), right.getLength(), CaseSensitivity::CaseSensitive) < 0;
-}
-template<typename TChar>
-bool GenericString<TChar>::operator < (const GenericStringRef<TChar>& right) const
-{
-	return compare(right.getBegin(), right.getLength(), CaseSensitivity::CaseSensitive) < 0;
-}
-template<typename TChar>
-bool GenericString<TChar>::operator < (const TChar* right) const
-{
-	return compare(right, -1, CaseSensitivity::CaseSensitive) < 0;
+	assign(str.c_str() + begin, str.getLength());
 }
 
-//------------------------------------------------------------------------------
-// operator>
-//------------------------------------------------------------------------------
-template<typename TChar>
-bool GenericString<TChar>::operator > (const GenericString& right) const
+String::String(const String& str, int begin, int length)
+	: String()
 {
-	return compare(right.c_str(), -1, CaseSensitivity::CaseSensitive) > 0;
-}
-template<typename TChar>
-bool GenericString<TChar>::operator > (const GenericStringRef<TChar>& right) const
-{
-	return compare(right.getBegin(), right.getLength(), CaseSensitivity::CaseSensitive) > 0;
-}
-template<typename TChar>
-bool GenericString<TChar>::operator > (const TChar* right) const
-{
-	return compare(right, -1, CaseSensitivity::CaseSensitive) > 0;
+	assign(str.c_str() + begin, length);
 }
 
-//------------------------------------------------------------------------------
-// operator[]
-//------------------------------------------------------------------------------
-//template<typename TChar>
-//TChar& GenericString<TChar>::operator[](int index)
-//{
-//	return InternalGetAt(index);
-//}
-template<typename TChar>
-const TChar& GenericString<TChar>::operator[](int index) const
+String::String(const Char* str)
+	: String()
 {
-	return internalGetAt(index);
+	assign(str);
 }
 
-//------------------------------------------------------------------------------
-// operator  cast
-//------------------------------------------------------------------------------
-//template<typename TChar>
-//GenericString<TChar>::operator const TChar*() const
-//{
-//	return c_str();
-//}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-const TChar* GenericString<TChar>::c_str() const
+String::String(const Char* str, int length)
+	: String()
 {
-	return m_string->c_str();
+	assign(str, length);
 }
 
-//------------------------------------------------------------------------------
-template<typename TChar>
-int GenericString<TChar>::getLength() const
+String::String(const Char* begin, const Char* end)
+	: String()
 {
-	return (int)m_string->size();
+	assign(begin, end - begin);
 }
 
-//------------------------------------------------------------------------------
-template<typename TChar>
-bool GenericString<TChar>::isEmpty() const
+String::String(int count, Char ch)
+	: String()
 {
-	return m_string->empty();
+	assign(count, ch);
 }
 
-//------------------------------------------------------------------------------
-template<typename TChar>
-void GenericString<TChar>::append(const GenericString& str, int len)
+String::String(const StringRef& str)
+	: String()
 {
-	append(str.m_string->c_str(), str.getLength());
-}
-//template<typename TChar>
-//void GenericString<TChar>::Append(const std::basic_string<TChar>& str, int len)
-//{
-//	Append(str.c_str(), str.size());
-//}
-template<typename TChar>
-void GenericString<TChar>::append(const TChar* str, int len)
-{
-	if (str == nullptr || len == 0) {
-		return;		// 空文字列なので何もしない
-	}
-	realloc();	// 共有参照を切る
-	m_string->append(str, (len < 0) ? StringTraits::tcslen(str) : len);
-}
-template<typename TChar>
-void GenericString<TChar>::append(TChar ch)
-{
-	append(&ch, 1);
+	assign(str);
 }
 
-//------------------------------------------------------------------------------
-template<typename TChar>
-void GenericString<TChar>::assignCStr(const char* str, int begin, int length, bool* outUsedDefaultChar)
+String::String(const Path& path)
+	: String(path.getString())
 {
-	if (str == nullptr) {
-		clear();
-		return;
-	}
-	//LN_THROW(str != nullptr, ArgumentException);	// std::string の assign は nullptr が渡されたときの動作は未定義。VS2013 では制御が返ってこなくなった
-
-	if (length <= -1) {
-		length = INT_MAX;
-	}
-	int len = std::min((int)strlen(str), length);
-
-	// サイズ 0 なら空文字列にするだけ
-	if (len == 0) {
-		clear();
-	}
-	else {
-		convertFrom(str + begin, len, Encoding::getSystemMultiByteEncoding());
-	}
-}
-template<typename TChar>
-void GenericString<TChar>::assignCStr(const char* str, int length, bool* usedDefaultChar)
-{
-	assignCStr(str, 0, length, usedDefaultChar);
-}
-template<typename TChar>
-void GenericString<TChar>::assignCStr(const char* str, bool* usedDefaultChar)
-{
-	assignCStr(str, 0, -1, usedDefaultChar);
 }
 
-//------------------------------------------------------------------------------
-template<typename TChar>
-void GenericString<TChar>::assignCStr(const wchar_t* str, int begin, int length, bool* outUsedDefaultChar)
+#ifdef LN_STRING_FROM_CHAR
+String::String(const char* str)
+	: String()
 {
-	if (str == nullptr) {
-		clear();
-		return;
-	}
-	//LN_THROW(str != nullptr, ArgumentException);	// std::string の assign は nullptr が渡されたときの動作は未定義。VS2013 では制御が返ってこなくなった
-
-	if (length <= -1) {
-		length = (int)wcslen(str);
-		//length = INT_MAX;
-	}
-	int len = length * sizeof(wchar_t);
-
-	// サイズ 0 なら空文字列にするだけ
-	if (len == 0) {
-		clear();
-	}
-	else {
-		convertFrom(str + begin, len, Encoding::getWideCharEncoding());
-	}
+	assignFromCStr(str);
 }
-template<typename TChar>
-void GenericString<TChar>::assignCStr(const wchar_t* str, int length, bool* usedDefaultChar)
-{
-	assignCStr(str, 0, length, usedDefaultChar);
-}
-template<typename TChar>
-void GenericString<TChar>::assignCStr(const wchar_t* str, bool* usedDefaultChar)
-{
-	assignCStr(str, 0, -1, usedDefaultChar);
-}
+#endif
 
-//------------------------------------------------------------------------------
-template<typename TChar>
-void GenericString<TChar>::convertFrom(const void* buffer, int byteCount, const Encoding* encoding, bool* outUsedDefaultChar)
+bool String::isEmpty() const
 {
-	LN_THROW(encoding, ArgumentException);
-
-	Encoding* thisTypeEncoding = getThisTypeEncoding();
-
-	// 全く同じエンコーディングなら変換の必要は無い
-	if (thisTypeEncoding == encoding) 
+	if (isSSO())
 	{
-		byteCount = (byteCount < 0) ? strlen((const char*)buffer) : byteCount;
-		assignTString((const TChar*)buffer, byteCount / sizeof(TChar));
+		return getSSOLength() == 0;
+	}
+	else
+	{
+		return !m_data.core || m_data.core->getLength() <= 0;
+	}
+}
+
+void String::clear()
+{
+	lockBuffer(0);
+	unlockBuffer(0);
+}
+
+void String::resize(int newLength)
+{
+	resize(newLength, Char());
+}
+
+void String::resize(int newLength, Char ch)
+{
+	int oldLen = getLength();
+	Char* buf = lockBuffer(newLength);
+	if (newLength > oldLen)
+	{
+		for (int i = oldLen; i < newLength; i++)
+		{
+			buf[i] = ch;
+		}
+	}
+	unlockBuffer(newLength);
+}
+
+void String::reserve(int size)
+{
+	reserveBuffer(size);
+}
+
+bool String::contains(const StringRef& str, CaseSensitivity cs) const
+{
+	return indexOf(str, 0, cs) >= 0;
+}
+
+bool String::contains(Char ch, CaseSensitivity cs) const
+{
+	return indexOf(ch, 0, cs) >= 0;
+}
+
+int String::indexOf(const StringRef& str, int startIndex, CaseSensitivity cs) const
+{
+	return StringTraits::indexOf(c_str(), getLength(), str.data(), str.getLength(), startIndex, cs);
+}
+
+int String::indexOf(Char ch, int startIndex, CaseSensitivity cs) const
+{
+	return StringTraits::indexOf(c_str(), getLength(), &ch, 1, startIndex, cs);
+}
+
+int String::lastIndexOf(const StringRef& str, int startIndex, int count, CaseSensitivity cs) const
+{
+	return StringTraits::lastIndexOf(c_str(), getLength(), str.data(), str.getLength(), startIndex, count, cs);
+}
+
+int String::lastIndexOf(Char ch, int startIndex, int count, CaseSensitivity cs) const
+{
+	return StringTraits::lastIndexOf(c_str(), getLength(), &ch, 1, startIndex, count, cs);
+}
+
+bool String::startsWith(const StringRef& str, CaseSensitivity cs) const
+{
+	return StringTraits::startsWith(c_str(), getLength(), str.data(), str.getLength(), cs);
+}
+
+bool String::startsWith(Char ch, CaseSensitivity cs) const
+{
+	return StringTraits::endsWith(c_str(), getLength(), &ch, 1, cs);
+}
+
+bool String::endsWith(const StringRef& str, CaseSensitivity cs) const
+{
+	return StringTraits::endsWith(c_str(), getLength(), str.data(), str.getLength(), cs);
+}
+
+bool String::endsWith(Char ch, CaseSensitivity cs) const
+{
+	return StringTraits::endsWith(c_str(), getLength(), &ch, 1, cs);
+}
+
+StringRef String::substring(int start, int count) const
+{
+	int len = getLength();
+
+	if (start < 0)
+	{
+		start = 0;
+	}
+	if (count < 0)
+	{
+		count = len - start;
+	}
+	if (start + count > len)
+	{
+		count = len - start;
+	}
+	if (start > len)
+	{
+		count = 0;
+	}
+
+	if (start == 0 && count == len)
+	{
+		return StringRef(c_str());
+	}
+
+	return StringRef(c_str() + start, count);
+}
+
+String String::left(int count) const
+{
+	const Char* begin;
+	const Char* end;
+	StringTraits::left(c_str(), count, &begin, &end);
+	return String(begin, end);
+}
+
+String String::right(int count) const
+{
+	const Char* begin;
+	const Char* end;
+	StringTraits::right(c_str(), count, &begin, &end);
+	return String(begin, end);
+}
+
+String String::trim() const
+{
+	const Char* begin;
+	int length;
+	StringTraits::trim(c_str(), getLength(), &begin, &length);
+	return String(begin, length);
+}
+
+String String::toUpper() const
+{
+	int len = getLength();
+	String result(c_str(), len);
+	Char* buf = result.getBuffer();
+	std::transform(buf, buf + len, buf, StringTraits::toUpper<Char>);
+	return result;
+}
+
+String String::toLower() const
+{
+	int len = getLength();
+	String result(c_str(), len);
+	Char* buf = result.getBuffer();
+	std::transform(buf, buf + len, buf, StringTraits::toLower<Char>);
+	return result;
+}
+
+String String::toTitleCase() const
+{
+	int len = getLength();
+	String result(c_str(), len);
+	Char* buf = result.getBuffer();
+	std::transform(buf, buf + len, buf, StringTraits::toLower<Char>);
+	if (len > 0) buf[0] = StringTraits::toUpper<Char>(buf[0]);
+	return result;
+}
+
+String String::remove(const StringRef& str, CaseSensitivity cs) const
+{
+	String result;
+	const Char* pos = c_str();
+	const Char* end = pos + getLength();
+	const Char* fs = str.data();
+	int fsLen = str.getLength();
+
+	Char* buf = result.lockBuffer(end - pos);
+	Char* bufBegin = buf;
+	int bufSize = 0;
+
+	if (fsLen > 0)
+	{
+		for (; pos < end;)
+		{
+			int index = StringTraits::indexOf(pos, end - pos, fs, fsLen, 0, cs);
+			if (index >= 0)
+			{
+				memcpy(buf, pos, index * sizeof(Char));
+				buf += index;
+				pos += index + fsLen;
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+
+	if (pos < end)
+	{
+		memcpy(buf, pos, (end - pos) * sizeof(Char));
+		buf += (end - pos);
+	}
+	
+	result.unlockBuffer(buf - bufBegin);
+	return result;
+}
+
+String String::replace(const StringRef& from, const StringRef& to, CaseSensitivity cs) const
+{
+	String result;
+	result.reserve(getLength());
+
+	int pos = 0;
+	const Char* src = c_str();
+	int srcLen = getLength();
+	const Char* fromStr = from.data();
+	int fromLen = from.getLength();
+	int start = 0;
+
+	if (fromLen > 0)
+	{
+		do
+		{
+			pos = StringTraits::indexOf(src, srcLen, fromStr, fromLen, start, cs);
+			if (pos >= 0)
+			{
+				result.append(src + start, pos - start);
+				result.append(to.data(), to.getLength());
+				start = pos + fromLen;
+			}
+
+		} while (pos >= 0);
+	}
+
+	result.append(src + start, srcLen - start);
+	return result;
+}
+
+List<String> String::split(const StringRef& delim, StringSplitOptions option) const
+{
+	List<String> result;
+	StringTraits::SplitHelper(
+		c_str(), c_str() + getLength(), delim.data(), delim.getLength(), option, CaseSensitivity::CaseSensitive,
+		[&result](const Char* begin, const Char* end) { result.add(String(begin, end - begin)); });
+	return result;
+}
+
+std::string String::toStdString() const
+{
+	ByteBuffer buf = convertTo(*this, Encoding::getSystemMultiByteEncoding());
+	return std::string((const char*)buf.getConstData());
+}
+
+std::wstring String::toStdWString() const
+{
+	ByteBuffer buf = convertTo(*this, Encoding::getWideCharEncoding());
+	return std::wstring((const wchar_t*)buf.getConstData());
+}
+
+Encoding* String::getThisTypeEncoding() const
+{
+	if (sizeof(Char) == sizeof(char))
+	{
+		return Encoding::getSystemMultiByteEncoding();
+	}
+	else if (sizeof(Char) == sizeof(wchar_t))
+	{
+		return Encoding::getWideCharEncoding();
+	}
+	else if (sizeof(Char) == sizeof(char16_t))
+	{
+		return Encoding::getUTF16Encoding();
+	}
+	else
+	{
+		LN_NOTIMPLEMENTED();
+	}
+}
+
+ByteBuffer String::convertTo(const String& str, const Encoding* encoding, bool* outUsedDefaultChar)
+{
+	Encoding* thisEncoding = str.getThisTypeEncoding();
+	if (encoding == thisEncoding)	// TODO: ポインタ比較ではダメ。結果は正しいが。
+	{
+		return ByteBuffer(str.c_str(), (str.getLength() + 1) * sizeof(Char));
+	}
+	else
+	{
+		EncodingConversionOptions options;
+		options.NullTerminated = true;
+
+		EncodingConversionResult result;
+		ByteBuffer buf = Encoding::convert(str.c_str(), str.getLength() * sizeof(Char), thisEncoding, encoding, options, &result);
+		if (outUsedDefaultChar != nullptr)
+		{
+			*outUsedDefaultChar = result.UsedDefaultChar;
+		}
+		return buf;
+	}
+}
+
+String String::remove(Char ch, CaseSensitivity cs) const
+{
+	return remove(StringRef(&ch, 1), cs);
+}
+
+String String::concat(const StringRef& str1, const StringRef& str2)
+{
+	String s;
+	s.reserve(str1.getLength() + str2.getLength());
+	s.append(str1.data(), str1.getLength());
+	s.append(str2.data(), str2.getLength());
+	return s;
+}
+
+String String::sprintf(const Char* format, ...)
+{
+	static const int MaxFormatLength = 256;
+
+	va_list args1;
+	va_start(args1, format);
+	int len = StringTraits::tvscprintf_l(format, Locale::getC().getNativeLocale(), args1);	// 文字数を求める
+
+	// 文字数が一定以内ならメモリ確保せずにスタックを使い、速度向上を図る
+	if (len < MaxFormatLength)
+	{
+		Char buf[MaxFormatLength + 1];
+		memset(buf, 0, sizeof(buf));
+		StringTraits::tvsnprintf_l(buf, MaxFormatLength + 1, format, Locale::getDefault().getNativeLocale(), args1);
+		va_end(args1);
+		return String(buf);
+	}
+	else
+	{
+		ByteBuffer buf(sizeof(Char) * (len + 1));
+		StringTraits::tvsnprintf_l((Char*)buf.getData(), len + 1, format, Locale::getDefault().getNativeLocale(), args1);
+		va_end(args1);
+		return String((Char*)buf.getData());
+	}
+
+}
+
+int String::compare(const String& str1, const String& str2, CaseSensitivity cs)
+{
+	return StringTraits::compare(str1.c_str(), str1.getLength(), str2.c_str(), str2.getLength(), std::max(str1.getLength(), str2.getLength()), cs);
+}
+
+int String::compare(const StringRef& str1, int index1, const StringRef& str2, int index2, int length, CaseSensitivity cs)
+{
+	const Char* s1 = str1.data() + index1;
+	const Char* s2 = str2.data() + index2;
+	return StringTraits::compare(s1, str1.getLength() - index1, s2, str2.getLength() - index2, length, cs);
+}
+
+String String::fromCString(const char* str, int length)
+{
+	String result;
+	result.assignFromCStr(str, length);
+	return result;
+}
+
+String String::fromCString(const wchar_t* str, int length)
+{
+	String result;
+	result.assignFromCStr(str, length);
+	return result;
+}
+
+void String::init() LN_NOEXCEPT
+{
+	m_data.core = nullptr;
+	m_data.sso.length = 0;
+}
+
+void String::release() LN_NOEXCEPT
+{
+	if (isNonSSO())
+	{
+		LN_SAFE_RELEASE(m_data.core);
+	}
+}
+
+void String::copy(const String& str)
+{
+	if (this != &str)
+	{
+		if (isSSO())
+		{
+			if (str.isSSO())
+			{
+				// SSO -> SSO
+				memcpy(&m_data, &str.m_data, sizeof(m_data));
+			}
+			else
+			{
+				// SSO -> NonSSO
+				m_data.core = str.m_data.core;
+				LN_SAFE_ADDREF(m_data.core);
+				setNonSSO();
+			}
+		}
+		else
+		{
+			if (str.isSSO())
+			{
+				// NonSSO -> SSO
+				release();
+				memcpy(&m_data, &str.m_data, sizeof(m_data));
+			}
+			else
+			{
+				// NonSSO -> NonSSO
+				release();
+				m_data.core = str.m_data.core;
+				LN_SAFE_ADDREF(m_data.core);
+			}
+		}
+	}
+}
+
+void String::move(String&& str) LN_NOEXCEPT
+{
+	if (isNonSSO())
+	{
+		LN_SAFE_RELEASE(m_data.core);
+	}
+
+	memcpy(&m_data, &str.m_data, sizeof(m_data));
+	str.init();
+}
+
+Char* String::lockBuffer(int requestSize)
+{
+	reserveBuffer(requestSize);
+	return getBuffer();
+}
+
+void String::unlockBuffer(int confirmedSize)
+{
+	if (isSSO())
+	{
+		setSSOLength(confirmedSize);
+	}
+	else
+	{
+		m_data.core->fixLength(confirmedSize);
+	}
+}
+
+// 領域を確保し、sso かどうかのフラグをセットする。長さは変えない。
+// 中身は以前のものが維持され、新しい領域は不定値となる。
+void String::reserveBuffer(int length)
+{
+	if (isSSO())
+	{
+		if (length < SSOCapacity)
+		{
+			// SSO -> SSO
+		}
+		else
+		{
+			// SSO -> NonSSO
+			std::unique_ptr<detail::UStringCore> core(LN_NEW detail::UStringCore());
+			core->reserve(length);
+			memcpy(core->get(), m_data.sso.buffer, std::min(getSSOLength(), length) * sizeof(Char));
+			core->get()[length] = '\0';
+			m_data.core = core.get();
+			core.release();
+			setNonSSO();
+		}
+	}
+	else
+	{
+		if (m_data.core && !m_data.core->isShared() && length <= m_data.core->getCapacity())
+		{
+			// NonSSO で、共有されてもいないしサイズも間に合っているならいろいろ作り直す必要は無い
+			m_data.core->get()[length] = '\0';
+		}
+		else
+		{
+			if (length < SSOCapacity)
+			{
+				// NonSSO -> SSO
+				if (m_data.core)
+				{
+					detail::UStringCore* oldCore = m_data.core;
+					setSSO();
+					memcpy(m_data.sso.buffer, oldCore->get(), std::min(oldCore->getLength(), length) * sizeof(Char));
+					oldCore->release();
+				}
+				else
+				{
+					setSSO();
+				}
+			}
+			else
+			{
+				// NonSSO -> NonSSO
+				if (m_data.core)
+				{
+					if (m_data.core->isShared())
+					{
+						detail::UStringCore* oldCore = m_data.core;
+						m_data.core = LN_NEW detail::UStringCore();
+						m_data.core->reserve(length);
+						memcpy(m_data.core->get(), oldCore->get(), std::min(oldCore->getLength(), length) * sizeof(Char));
+						oldCore->release();
+					}
+					else
+					{
+						m_data.core->reserve(length);
+					}
+				}
+				else
+				{
+					m_data.core = LN_NEW detail::UStringCore();
+					m_data.core->reserve(length);
+				}
+			}
+		}
+	}
+}
+
+Char* String::getBuffer()
+{
+	return (isSSO()) ? m_data.sso.buffer : m_data.core->get();
+}
+
+const Char* String::getBuffer() const
+{
+	return (isSSO()) ? m_data.sso.buffer : m_data.core->get();
+}
+
+void String::setSSOLength(int len)
+{
+	m_data.sso.length = (static_cast<size_t>(len) & 0x7F) << 1;
+	m_data.sso.buffer[len] = '\0';
+}
+
+int String::getSSOLength() const
+{
+	return m_data.sso.length >> 1;
+}
+
+void String::setSSO()
+{
+	m_data.sso.length = (static_cast<size_t>(m_data.sso.length) & 0x07) << 1;
+}
+
+void String::setNonSSO()
+{
+	m_data.sso.length = 0x01;
+}
+
+void String::append(const Char* str, int length)
+{
+	int firstLen = getLength();
+	Char* b = lockBuffer(firstLen + length) + firstLen;
+	memcpy(b, str, length * sizeof(Char));
+	unlockBuffer(firstLen + length);
+}
+
+void String::assign(const Char* str)
+{
+	assign(str, UStringHelper::strlen(str));
+}
+
+void String::assign(const Char* str, int length)
+{
+	if (str && *str)
+	{
+		Char* buf = lockBuffer(length);
+		memcpy(buf, str, sizeof(Char) * length);
+		unlockBuffer(length);
+	}
+	else
+	{
+		clear();
+	}
+}
+
+void String::assign(int count, Char ch)
+{
+	if (count > 0)
+	{
+		Char* buf = lockBuffer(count);
+		std::fill<Char*, Char>(buf, buf + count, ch);
+		unlockBuffer(count);
+	}
+	else
+	{
+		clear();
+	}
+}
+
+void String::assign(const StringRef& str)
+{
+	// TODO: String 参照のときの特殊化
+
+	int len = str.getLength();
+	if (len > 0)
+	{
+		Char* buf = lockBuffer(len);
+		memcpy(buf, str.data(), sizeof(Char) * len);
+		unlockBuffer(len);
+	}
+	else
+	{
+		clear();
+	}
+}
+
+template<typename TChar>
+void String::assignFromCStr(const TChar* str, int length, bool* outUsedDefaultChar)
+{
+	int len = 0;
+	bool ascii = true;
+
+	if (str)
+	{
+		// ASCII だけの文字列か調べる。ついでに文字数も調べる。
+		length = (length < 0) ? INT_MAX : length;
+		const TChar* pos = str;
+		for (; *pos && len < length; ++pos, ++len)
+		{
+			if (isascii(*pos) == 0)
+			{
+				ascii = false;
+			}
+		}
+	}
+
+	if (ascii)
+	{
+		Char* buf = lockBuffer(len);
+		for (int i = 0; i < len; ++i)
+		{
+			buf[i] = str[i];
+		}
+		unlockBuffer(len);
 	}
 	else
 	{
@@ -571,594 +768,368 @@ void GenericString<TChar>::convertFrom(const void* buffer, int byteCount, const 
 		options.NullTerminated = false;
 
 		EncodingConversionResult result;
-		const ByteBuffer tmpBuffer = Encoding::convert(buffer, byteCount, encoding, thisTypeEncoding, options, &result);
-		if (outUsedDefaultChar != nullptr) {
-			*outUsedDefaultChar = result.UsedDefaultChar;
-		}
+		const ByteBuffer tmpBuffer = Encoding::convert(str, len * sizeof(TChar), Encoding::getEncodingTemplate<TChar>(), getThisTypeEncoding(), options, &result);
+		if (outUsedDefaultChar != nullptr) *outUsedDefaultChar = result.UsedDefaultChar;
 
-		assignTString((const TChar*)tmpBuffer.getData(), result.BytesUsed / sizeof(TChar));
+		assign((const Char*)tmpBuffer.getData(), result.BytesUsed / sizeof(Char));
 	}
 }
 
-//------------------------------------------------------------------------------
-template<typename TChar>
-ByteBuffer GenericString<TChar>::convertTo(const Encoding* encoding, bool* outUsedDefaultChar) const
+
+uint32_t String::getHashCode() const
 {
-	EncodingConversionOptions options;
-	options.NullTerminated = true;
-
-	EncodingConversionResult result;
-	const ByteBuffer buf = Encoding::convert(c_str(), getByteCount(), getThisTypeEncoding(), encoding, options, &result);
-	if (outUsedDefaultChar != nullptr) {
-		*outUsedDefaultChar = result.UsedDefaultChar;
-	}
-
-	return buf;
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-void GenericString<TChar>::clear()
-{
-	attach(detail::GenericStringCore<TChar>::getSharedEmpty());
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericString<TChar> GenericString<TChar>::subString(int startIndex, int length) const
-{
-	return StringT(*this, startIndex, length);
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericString<TChar> GenericString<TChar>::trim() const
-{
-	const TChar* begin;
-	int length;
-	StringTraits::trim(c_str(), getLength(), &begin, &length);
-	return GenericString<TChar>(begin, length);
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-struct CmpCaseSensitive
-{
-	TChar ch;
-	bool operator()(TChar value) { return ch == value; }
-};
-
-template<typename TChar>
-struct CmpCaseInsensitive
-{
-	TChar ch;
-	bool operator()(TChar value) { return StringTraits::toUpper(ch) == StringTraits::toUpper(value); }
-};
-
-template<typename TChar>
-GenericString<TChar> GenericString<TChar>::remove(TChar ch, CaseSensitivity cs) const
-{
-	GenericString<TChar> newStr(*this);
-	if (newStr.isEmpty()) {
-		// 空文字列なら処理を行う必要は無い。というか、SharedEmpty に対して erase とかしてはいけない。
-		return newStr;
-	}
-
-	// 大文字と小文字を区別する
-	detail::GenericStringCore<TChar>& ss = *newStr.m_string;
-	if (cs == CaseSensitivity::CaseSensitive)
-	{
-		CmpCaseSensitive<TChar> cmp;
-		cmp.ch = ch;
-		ss.erase(std::remove_if(ss.begin(), ss.end(), cmp), ss.end());
-	}
-	// 大文字と小文字を区別しない
-	else //if (cs == CaseSensitivity::CaseSensitive)
-	{
-		CmpCaseInsensitive<TChar> cmp;
-		cmp.ch = ch;
-		ss.erase(std::remove_if(ss.begin(), ss.end(), cmp), ss.end());
-	}
-
-	return newStr;
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericString<TChar> GenericString<TChar>::replace(const StringRefT& from, const StringRefT& to) const
-{
-	GenericString<TChar> newStr;
-	newStr.assignTString(c_str(), getLength());
-	if (newStr.isEmpty()) {
-		// 空文字列なら処理を行う必要は無い。というか、SharedEmpty に対して replace とかしてはいけない。
-		return newStr;
-	}
-
-	size_type pos = 0;
-	size_t fromLength = from.getLength();
-	size_t toLength = to.getLength();
-
-	while (pos = newStr.m_string->find(from.getBegin(), pos, fromLength), pos != std::basic_string<TChar>::npos)
-	{
-		newStr.m_string->replace(pos, fromLength, to.getBegin(), toLength);
-		pos += toLength;
-	}
-
-	return newStr;
-}
-
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-bool GenericString<TChar>::contains(const TChar* str, CaseSensitivity cs) const
-{
-	return indexOf(str, 0, cs) >= 0;
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-bool GenericString<TChar>::contains(TChar ch, CaseSensitivity cs) const
-{
-	TChar str[2] = { ch, 0x00 };
-	return indexOf(str, 0, cs) >= 0;
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-int GenericString<TChar>::indexOf(const StringRefT& str, int startIndex, CaseSensitivity cs) const
-{
-	return StringTraits::indexOf(c_str(), getLength(), str.getBegin(), str.getLength(), startIndex, cs);
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-int GenericString<TChar>::indexOf(TChar ch, int startIndex, CaseSensitivity cs) const
-{
-	TChar str[2] = { ch, 0x00 };
-	return StringTraits::indexOf(c_str(), getLength(), str, (int)StringTraits::tcslen(str), startIndex, cs);
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-int GenericString<TChar>::lastIndexOf(const TChar* str, int startIndex, int count, CaseSensitivity cs) const
-{
-	return StringTraits::lastIndexOf(c_str(), getLength(), str, StringTraits::tcslen(str), startIndex, count, cs);
-}
-template<typename TChar>
-int GenericString<TChar>::lastIndexOf(TChar ch, int startIndex, int count, CaseSensitivity cs) const
-{
-	return StringTraits::lastIndexOf(c_str(), getLength(), &ch, 1, startIndex, count, cs);
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-bool GenericString<TChar>::startsWith(const TChar* str, CaseSensitivity cs) const
-{
-	return StringTraits::startsWith(c_str(), getLength(), str, StringTraits::tcslen(str), cs);
-}
-template<typename TChar>
-bool GenericString<TChar>::startsWith(TChar ch, CaseSensitivity cs ) const
-{
-	return StringTraits::endsWith(c_str(), getLength(), &ch, 1, cs);
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-bool GenericString<TChar>::endsWith(const TChar* str, CaseSensitivity cs) const
-{
-	return StringTraits::endsWith(c_str(), getLength(), str, StringTraits::tcslen(str), cs);
-}
-template<typename TChar>
-bool GenericString<TChar>::endsWith(TChar ch, CaseSensitivity cs) const
-{
-	return StringTraits::endsWith(c_str(), getLength(), &ch, 1, cs);
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-bool GenericString<TChar>::equals(const GenericString& str) const
-{
-	if (getLength() != str.getLength()) {
-		return false;
-	}
-	return compare(str.c_str(), str.getLength(), CaseSensitivity::CaseSensitive) == 0;
-}
-template<typename TChar>
-bool GenericString<TChar>::equals(const GenericStringRef<TChar>& str) const
-{
-	return compare(str.getBegin(), str.getLength(), CaseSensitivity::CaseSensitive) == 0;
-}
-template<typename TChar>
-bool GenericString<TChar>::equals(const TChar* str) const
-{
-	return compare((str) ? str : getEmpty().c_str(), -1, CaseSensitivity::CaseSensitive) == 0;
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-int GenericString<TChar>::compare(const TChar* str, int count, CaseSensitivity cs) const
-{
-	return StringTraits::compare(c_str(), getLength(), str, count, -1/*std::max(GetLength(), count)*/, cs);
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericString<TChar> GenericString<TChar>::left(int count) const
-{
-	return StringTraits::left(c_str(), count);
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericString<TChar> GenericString<TChar>::right(int count) const
-{
-	return StringTraits::right(c_str(), count);
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericString<TChar> GenericString<TChar>::mid(int start, int count) const
-{
-	return StringTraits::mid(c_str(), start, count);
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericStringArray<TChar> GenericString<TChar>::split(const TChar* delim, StringSplitOptions option) const
-{
-	return StringTraits::split(*this, delim, option);
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericString<TChar> GenericString<TChar>::toUpper() const
-{
-	GenericString<TChar> newStr(c_str(), getLength());
-	std::transform(newStr.m_string->begin(), newStr.m_string->end(), newStr.m_string->begin(), StringTraits::toUpper<TChar>);
-	return newStr;
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericString<TChar> GenericString<TChar>::toLower() const
-{
-	GenericString<TChar> newStr(c_str(), getLength());
-	std::transform(newStr.m_string->begin(), newStr.m_string->end(), newStr.m_string->begin(), StringTraits::toLower<TChar>);
-	return newStr;
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericString<TChar> GenericString<TChar>::toTitleCase() const
-{
-	GenericString<TChar> newStr(c_str(), getLength());
-	std::transform(newStr.m_string->begin(), newStr.m_string->end(), newStr.m_string->begin(), StringTraits::toLower<TChar>);
-	if (newStr.m_string->size() > 0) (*newStr.m_string)[0] = StringTraits::toUpper<TChar>((*newStr.m_string)[0]);
-	return newStr;
-}
-
-//------------------------------------------------------------------------------
-#define TO_INT_DEF(type, func) \
-	const TChar* str; \
-	const TChar* end; \
-	int len; \
-	NumberConversionResult res; \
-	StringTraits::trim(c_str(), getLength(), &str, &len); \
-	type num = StringTraits::func(str, len, base, &end, &res); \
-	if (res == NumberConversionResult::ArgsError)	{ LN_THROW(0, ArgumentException); } \
-	if (res == NumberConversionResult::FormatError)	{ LN_THROW(0, InvalidFormatException); } \
-	if (res == NumberConversionResult::Overflow)		{ LN_THROW(0, OverflowException); } \
-	LN_THROW(end == str + len, InvalidFormatException); \
-	return num;
-
-template<typename TChar>
-int8_t GenericString<TChar>::toInt8(int base) const { TO_INT_DEF(int8_t, toInt8); }
-template<typename TChar>
-int16_t GenericString<TChar>::toInt16(int base) const { TO_INT_DEF(int16_t, toInt16); }
-template<typename TChar>
-int32_t GenericString<TChar>::toInt32(int base) const { TO_INT_DEF(int32_t, toInt32); }
-template<typename TChar>
-int64_t GenericString<TChar>::toInt64(int base) const { TO_INT_DEF(int64_t, toInt64); }
-template<typename TChar>
-uint8_t GenericString<TChar>::toUInt8(int base) const { TO_INT_DEF(uint8_t, toUInt8); }
-template<typename TChar>
-uint16_t GenericString<TChar>::toUInt16(int base) const { TO_INT_DEF(uint16_t, toUInt16); }
-template<typename TChar>
-uint32_t GenericString<TChar>::toUInt32(int base) const { TO_INT_DEF(uint32_t, toUInt32); }
-template<typename TChar>
-uint64_t GenericString<TChar>::toUInt64(int base) const { TO_INT_DEF(uint64_t, toUInt64); }
-
-#undef TO_INT_DEF
-
-//------------------------------------------------------------------------------
-#define TRY_TO_INT_DEF(type, func) \
-	const TChar* str; \
-	const TChar* end; \
-	int len; \
-	NumberConversionResult res; \
-	StringTraits::trim(c_str(), getLength(), &str, &len); \
-	type num = StringTraits::func(str, len, base, &end, &res); \
-	if (end != str + len) { return false; } \
-	if (res != NumberConversionResult::Success) { return false; } \
-	if (outValue != nullptr) { *outValue = num; } \
-	return true;
-
-template<typename TChar>
-bool GenericString<TChar>::tryToInt8(int8_t* outValue, int base) const { TRY_TO_INT_DEF(int8_t, toInt8); }
-template<typename TChar>
-bool GenericString<TChar>::tryToInt16(int16_t* outValue, int base) const { TRY_TO_INT_DEF(int16_t, toInt16); }
-template<typename TChar>
-bool GenericString<TChar>::tryToInt32(int32_t* outValue, int base) const { TRY_TO_INT_DEF(int32_t, toInt32); }
-template<typename TChar>
-bool GenericString<TChar>::tryToInt64(int64_t* outValue, int base) const { TRY_TO_INT_DEF(int64_t, toInt64); }
-template<typename TChar>
-bool GenericString<TChar>::tryToUInt8(uint8_t* outValue, int base) const { TRY_TO_INT_DEF(uint8_t, toUInt8); }
-template<typename TChar>
-bool GenericString<TChar>::tryToUInt16(uint16_t* outValue, int base) const { TRY_TO_INT_DEF(uint16_t, toUInt16); }
-template<typename TChar>
-bool GenericString<TChar>::tryToUInt32(uint32_t* outValue, int base) const { TRY_TO_INT_DEF(uint32_t, toUInt32); }
-template<typename TChar>
-bool GenericString<TChar>::tryToUInt64(uint64_t* outValue, int base) const { TRY_TO_INT_DEF(uint64_t, toUInt64); }
-
-#undef TRY_TO_INT_DEF
-
-
-//------------------------------------------------------------------------------
-template<>
-GenericString<char>	GenericString<char>::toStringA() const
-{
-	return *this;
-}
-template<>
-GenericString<char>	GenericString<wchar_t>::toStringA() const
-{
-	GenericString<char> str;
-	str.assignCStr(this->c_str());
-	return str;
-}
-
-//------------------------------------------------------------------------------
-template<>
-GenericString<wchar_t> GenericString<char>::toStringW() const
-{
-	GenericString<wchar_t> str;
-	str.assignCStr(this->c_str());
-	return str;
-}
-template<>
-GenericString<wchar_t>	GenericString<wchar_t>::toStringW() const
-{
-	return *this;
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericString<TChar> GenericString<TChar>::fromNativeCharString(const char* str, int length)
-{
-	GenericString<TChar> out;
-	out.assignCStr(str, (length < 0) ? StringTraits::tcslen(str) : length);
-	return out;
-}
-template<typename TChar>
-GenericString<TChar> GenericString<TChar>::fromNativeCharString(const wchar_t* str, int length)
-{
-	GenericString<TChar> out;
-	out.assignCStr(str, (length < 0) ? StringTraits::tcslen(str) : length);
-	return out;
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-const GenericString<TChar>& GenericString<TChar>::getNewLine()
-{
-	static GenericString<TChar> nl(Environment::getNewLine<TChar>());
-	return nl;
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-const GenericString<TChar>& GenericString<TChar>::getEmpty()
-{
-	static GenericString<TChar> str;
-	return str;
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-size_t GenericString<TChar>::getHashCode() const
-{
-	if (getLength() == 0) return 0;
+	if (isEmpty()) return 0;
 	return ln::Hash::calcHash(c_str(), getLength());
 }
 
-//------------------------------------------------------------------------------
-template<typename TChar>
-TChar* GenericString<TChar>::getData()
+
+
+
+
+const String& String::getNewLine()
 {
-	realloc();
-	return &m_string->at(0);
+#ifdef LN_OS_WIN32
+	static String nl(_TT("\r\n"));
+	return nl;
+#elif defined(LN_OS_MAC)
+	static String nl(_TT("\r"));
+	return nl;
+#else
+	static String nl(_TT("\n"));
+	return nl;
+#endif
 }
 
-//------------------------------------------------------------------------------
-template<typename TChar>
-GenericString<TChar> GenericString<TChar>::sprintf(const GenericString<TChar>& format, ...)
+const String& String::getEmpty()
 {
-	// http://jumble-note.blogspot.jp/2012/09/c-vacopy.html
-	const TChar* fmt = format.c_str();	// VS2015 エラー回避。一度変数に入れる。
-	va_list args1, args2;
-	va_start(args1, fmt);
-	va_copy(args2, args1);
-	int len = StringTraits::tvscprintf_l(format.c_str(), Locale::getC().getNativeLocale(), args1);	// 文字数を求める
+	static String str;
+	return str;
+}
 
-	// 文字数が一定以内ならメモリ確保せずにスタックを使い、速度向上を図る
-	if (len < MaxFormatLength)
+String& String::operator=(const Path& rhs)
+{
+	assign(rhs.getString());
+	return *this;
+}
+
+//==============================================================================
+// StringRef
+//==============================================================================
+
+StringRef::StringRef(const Path& path)
+	: StringRef(path.getString())
+{
+}
+
+String StringRef::mid(int start, int count) const
+{
+	// TODO: Ref で返していいよね？
+	//return StringTraits::mid(getBegin(), start, count);
+	return String(getBegin(), count).substring(start, count);
+}
+
+size_t StringRef::getHashCode() const
+{
+	if (IsNullOrEmpty()) return 0;
+	return Hash::calcHash(getBegin(), getLength());
+}
+
+//==============================================================================
+// StringHelper
+//==============================================================================
+
+size_t UStringHelper::strlen(const Char* str)
+{
+	if (!str) return 0;
+	size_t count = 0;
+	for (; *str; ++str) ++count;
+	return count;
+}
+
+int UStringHelper::compare(const Char* str1, const Char* str2)
+{
+	str1 = (str1) ? str1 : _TT("");
+	str2 = (str2) ? str2 : _TT("");
+	for (; *str1; ++str1, ++str2)
 	{
-		TChar buf[MaxFormatLength + 1];
-		memset(buf, 0, sizeof(buf));
-		StringTraits::tvsnprintf_l(buf, MaxFormatLength + 1, format.c_str(), Locale::getDefault().getNativeLocale(), args2);
-		va_end(args1);
-		va_end(args2);
-		return GenericString<TChar>(buf);
+		if (*str1 != *str2)
+		{
+			return (*str1 < *str2) ? -1 : 1;
+		}
+	}
+	return (0);
+}
+
+template<typename TChar, typename TValue>
+static void toStringIntX(TValue v, TChar* outStr, int size)
+{
+	char buf[64];
+	detail::StdCharArrayBuffer<char> b(buf, 64);
+	std::ostream os(&b);
+	os << v;
+	const char* str = b.GetCStr();
+	int i = 0;
+	for (; *str && i < (size - 1); ++str, ++i)
+	{
+		outStr[i] = *str;
+	}
+	outStr[i] = '\0';
+}
+
+template<typename TChar>
+void UStringHelper::toStringInt8(int8_t v, TChar* outStr, int size)
+{
+	toStringIntX((int32_t)v, outStr, size);
+}
+template void UStringHelper::toStringInt8<char>(int8_t v, char* outStr, int size);
+template void UStringHelper::toStringInt8<wchar_t>(int8_t v, wchar_t* outStr, int size);
+template void UStringHelper::toStringInt8<char16_t>(int8_t v, char16_t* outStr, int size);
+
+
+
+//==============================================================================
+// UStringConvert
+//==============================================================================
+
+//std::basic_string<TCHAR> UStringConvert::toStdTString(const Char* str)
+//{
+//	String t = str;
+//#ifdef LN_UNICODE
+//	return t.toStdWString();
+//#else
+//	return t.toStdString();
+//#endif
+//}
+
+int UStringConvert::convertNativeString(const char* src, int srcLen, char* dst, int dstSize)
+{
+	if (!dst || dstSize <= 0) return 0;
+	if (src && srcLen >= 0)
+	{
+		int len = std::min(srcLen, dstSize -1);
+		memcpy_s(dst, dstSize, src, len);
+		dst[len] = '\0';
+		return len;
 	}
 	else
 	{
-		ByteBuffer buf(len + 1);
-		StringTraits::tvsnprintf_l((TChar*)buf.getData(), len + 1, format.c_str(), Locale::getDefault().getNativeLocale(), args2);
-		va_end(args1);
-		va_end(args2);
-		return GenericString<TChar>((TChar*)buf.getData());
+		dst[0] = '\0';
+		return 0;
 	}
 }
-template<typename TChar>
-GenericString<TChar> GenericString<TChar>::sprintf(const TChar* format, ...)
-{
-	va_list args1, args2;
-	va_start(args1, format);
-	va_copy(args2, args1);
-	int len = StringTraits::tvscprintf_l(format, Locale::getC().getNativeLocale(), args1);	// 文字数を求める
 
-	// 文字数が一定以内ならメモリ確保せずにスタックを使い、速度向上を図る
-	if (len < MaxFormatLength)
+int UStringConvert::convertNativeString(const char* src, int srcLen, wchar_t* dst, int dstSize)
+{
+	if (!dst || dstSize <= 0) return 0;
+	if (src && srcLen >= 0)
 	{
-		TChar buf[MaxFormatLength + 1];
-		memset(buf, 0, sizeof(buf));
-		StringTraits::tvsnprintf_l(buf, MaxFormatLength + 1, format, Locale::getDefault().getNativeLocale(), args2);
-		va_end(args1);
-		va_end(args2);
-		return GenericString<TChar>(buf);
+		if (srcLen >= dstSize) return -1;
+		size_t size;
+		errno_t err = mbstowcs_s(&size, dst, dstSize, src, srcLen);
+		if (err != 0) return -1;
+		return (int)size - 1;
 	}
 	else
 	{
-		ByteBuffer buf((len + 1) * sizeof(TChar));
-		int ll = StringTraits::tvsnprintf_l((TChar*)buf.getData(), len + 1, format, Locale::getDefault().getNativeLocale(), args2);
-		va_end(args1);
-		va_end(args2);
-		return GenericString<TChar>((TChar*)buf.getData(), len);
+		dst[0] = '\0';
+		return 0;
 	}
 }
 
-//------------------------------------------------------------------------------
-template<typename TChar>
-void GenericString<TChar>::detach() LN_NOEXCEPT
+int UStringConvert::convertNativeString(const wchar_t* src, int srcLen, char* dst, int dstSize)
 {
-	LN_SAFE_RELEASE(m_string);
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-void GenericString<TChar>::attach(detail::GenericStringCore<TChar>* core)
-{
-	LN_REFOBJ_SET(m_string, core);
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-void GenericString<TChar>::assignTString(const TChar* str, int len)
-{
-	LN_SAFE_RELEASE(m_string);
-	if (str == nullptr || len == 0)
+	if (!dst || dstSize <= 0) return 0;
+	if (src && srcLen >= 0)
 	{
-		// 空の文字列になる場合は共有の空文字列を参照する
-		attach(detail::GenericStringCore<TChar>::getSharedEmpty());
-	}
-	else 
-	{
-		m_string = LN_NEW detail::GenericStringCore<TChar>();	// 参照カウントは 1
-		m_string->assign(str, (len < 0) ? StringTraits::tcslen(str) : len);
-	}
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-void GenericString<TChar>::assignTString(int count, TChar ch)
-{
-	LN_SAFE_RELEASE(m_string);
-	if (count == 0)
-	{
-		// 空の文字列になる場合は共有の空文字列を参照する
-		attach(detail::GenericStringCore<TChar>::getSharedEmpty());
+		if (srcLen >= dstSize) return -1;
+		size_t size;
+		errno_t err = wcstombs_s(&size, dst, dstSize, src, srcLen);
+		if (err != 0) return -1;
+		return (int)size - 1;
 	}
 	else
 	{
-		m_string = LN_NEW detail::GenericStringCore<TChar>();	// 参照カウントは 1
-		m_string->assign((size_t)count, ch);
+		dst[0] = '\0';
+		return 0;
 	}
 }
 
-//------------------------------------------------------------------------------
-// ソース文字列の共有参照を切り、新しい GenericStringCore を確保する
-//------------------------------------------------------------------------------
-template<typename TChar>
-void GenericString<TChar>::realloc()
+int UStringConvert::convertNativeString(const wchar_t* src, int srcLen, wchar_t* dst, int dstSize)
 {
-	if (m_string->isShared())
+	if (!dst || dstSize <= 0) return 0;
+	if (src && srcLen >= 0)
 	{
-		detail::GenericStringCore<TChar>* old = m_string;
-		m_string = LN_NEW detail::GenericStringCore<TChar>();	// 参照カウントは 1
-		m_string->assign(old->c_str());
-		LN_SAFE_RELEASE(old);
-	}
-	else {
-		// 共有参照されていなければそのまま使い続ければよい
-	}
-}
-
-//------------------------------------------------------------------------------
-// 
-//------------------------------------------------------------------------------
-template<typename TChar>
-TChar& GenericString<TChar>::internalGetAt(int index)
-{
-	LN_ASSERT(0 <= index && index < getLength());
-	return m_string->at(index);
-}
-
-//------------------------------------------------------------------------------
-// 
-//------------------------------------------------------------------------------
-template<typename TChar>
-const TChar& GenericString<TChar>::internalGetAt(int index) const
-{
-	LN_ASSERT(0 <= index && index < getLength());
-	return m_string->at(index);
-}
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-Encoding* GenericString<TChar>::getThisTypeEncoding() const
-{
-	if (sizeof(TChar) == sizeof(char))
-	{
-		// this のエンコーディングはシステム依存である
-		return Encoding::getSystemMultiByteEncoding();
-	}
-	else if (sizeof(TChar) == sizeof(wchar_t))
-	{
-		// this のエンコーディングは wchar_t である
-		return Encoding::getWideCharEncoding();
+		memcpy_s(dst, dstSize * sizeof(wchar_t), src, srcLen * sizeof(wchar_t));
+		dst[dstSize - 1] = '\0';
+		return dstSize - 1;
 	}
 	else
 	{
-		LN_THROW(0, NotImplementedException);
+		dst[0] = '\0';
+		return 0;
 	}
 }
 
-// テンプレートのインスタンス化
-template class GenericString<char>;
-template class GenericString<wchar_t>;
+int UStringConvert::convertNativeString(const char16_t* src, int srcLen, char* dst, int dstSize)
+{
+#ifdef LN_OS_WIN32
+	if (!dst || dstSize <= 0) return 0;
+	if (src && srcLen >= 0)
+	{
+		mbstate_t state;
+		char* p = dst;
+		for (int n = 0; n < srcLen; ++n)
+		{
+			int rc = std::c16rtomb(p, src[n], &state);
+			if (rc == -1) break;
+			p += rc;
+		}
+		return p - dst;
+	}
+	else
+	{
+		dst[0] = '\0';
+		return 0;
+	}
+#else
+	// not found <uchar>
+#endif
+}
+
+int UStringConvert::convertNativeString(const char16_t* src, int srcSize, wchar_t* dst, int dstSize)
+{
+#ifdef LN_WCHAR_16
+	return convertNativeString((const wchar_t*)src, srcSize, dst, dstSize);
+#else
+	LN_NOTIMPLEMENTED();
+	return -1;
+#endif
+}
+
+//int UStringConvert::getMaxNativeStringConverLength(const char* src, int srcLen, const char* dst)
+//{
+//	return srcLen;
+//}
+//int UStringConvert::getMaxNativeStringConverLength(const char* src, int srcLen, const wchar_t* dst)
+//{
+//	int maxCodePoints = srcLen * 4;	// 最悪、UTF-8 と仮定
+//	return maxCodePoints * 2;		// 最悪、全部サロゲートペアで構成されていると仮定
+//}
+//int UStringConvert::getMaxNativeStringConverLength(const wchar_t* src, int srcLen, const char* dst)
+//{
+//	
+//}
+//int UStringConvert::getMaxNativeStringConverLength(const wchar_t* src, int srcLen, const wchar_t* dst);
+//int UStringConvert::getMaxNativeStringConverLength(const char16_t* src, int srcLen, const char* dst);
+//int UStringConvert::getMaxNativeStringConverLength(const char16_t* src, int srcLen, const wchar_t* dst);
+
+
+void UStringConvert::convertToStdString(const char* src, int srcLen, std::string* outString)
+{
+	outString->assign(src, srcLen);
+}
+void UStringConvert::convertToStdString(const char* src, int srcLen, std::wstring* outString)
+{
+	auto str = String::fromCString(src, srcLen);
+	*outString = str.toStdWString();
+}
+void UStringConvert::convertToStdString(const wchar_t* src, int srcLen, std::string* outString)
+{
+	auto str = String::fromCString(src, srcLen);
+	*outString = str.toStdString();
+}
+void UStringConvert::convertToStdString(const wchar_t* src, int srcLen, std::wstring* outString)
+{
+	outString->assign(src, srcLen);
+}
+void UStringConvert::convertToStdString(const char16_t* src, int srcLen, std::string* outString)
+{
+	LN_NOTIMPLEMENTED();
+}
+void UStringConvert::convertToStdString(const char16_t* src, int srcLen, std::wstring* outString)
+{
+	LN_NOTIMPLEMENTED();
+}
+
+
+
+//bool Path::operator < (const Path& right) const { return PathTraits::compare(m_path.c_str(), right.m_path.c_str()) < 0; }
+//bool Path::operator < (const Char* right) const { return PathTraits::compare(m_path.c_str(), right) < 0; }
+
+//namespace fmt {
+
+////==============================================================================
+//// GenericFormatStringBuilder
+////==============================================================================
+//
+//template class GenericFormatStringBuilder<char16_t>;
+//
+//template<typename TChar>
+//GenericFormatStringBuilder<TChar>::GenericFormatStringBuilder()
+//	: m_buffer()
+//	, m_bufferUsed(0)
+//{
+//}
+//
+//} // namespace fmt
+
+
+//==============================================================================
+// String globals
+//==============================================================================
+
+#define TO_INT_DEF(type, func) \
+	const Char* begin; \
+	const Char* end; \
+	int len; \
+	NumberConversionResult res; \
+	StringTraits::trim(str.c_str(), str.getLength(), &begin, &len); \
+	type num = StringTraits::func(begin, len, base, &end, &res); \
+	if (res == NumberConversionResult::ArgsError)	{ LN_ENSURE(0); } \
+	if (res == NumberConversionResult::FormatError)	{ LN_ENSURE(0); } \
+	if (res == NumberConversionResult::Overflow)	{ LN_ENSURE(0); } \
+	LN_ENSURE(end == begin + len); \
+	return num;
+int8_t toInt8(const String& str, int base) { TO_INT_DEF(int8_t, toInt8); }
+int16_t toInt16(const String& str, int base) { TO_INT_DEF(int16_t, toInt16); }
+int32_t toInt32(const String& str, int base) { TO_INT_DEF(int32_t, toInt32); }
+int64_t toInt64(const String& str, int base) { TO_INT_DEF(int64_t, toInt64); }
+uint8_t toUInt8(const String& str, int base) { TO_INT_DEF(uint8_t, toUInt8); }
+uint16_t toUInt16(const String& str, int base) { TO_INT_DEF(uint16_t, toUInt16); }
+uint32_t toUInt32(const String& str, int base) { TO_INT_DEF(uint32_t, toUInt32); }
+uint64_t toUInt64(const String& str, int base) { TO_INT_DEF(uint64_t, toUInt64); }
+#undef TO_INT_DEF
+
+#define TRY_TO_INT_DEF(type, func) \
+	const Char* begin; \
+	const Char* end; \
+	int len; \
+	NumberConversionResult res; \
+	StringTraits::trim(str.c_str(), str.getLength(), &begin, &len); \
+	type num = StringTraits::func(begin, len, base, &end, &res); \
+	if (end != begin + len) { return false; } \
+	if (res != NumberConversionResult::Success) { return false; } \
+	if (outValue != nullptr) { *outValue = num; } \
+	return true;
+bool tryToInt8(const String& str, int8_t* outValue, int base) { TRY_TO_INT_DEF(int8_t, toInt8); }
+bool tryToInt16(const String& str, int16_t* outValue, int base) { TRY_TO_INT_DEF(int16_t, toInt16); }
+bool tryToInt32(const String& str, int32_t* outValue, int base) { TRY_TO_INT_DEF(int32_t, toInt32); }
+bool tryToInt64(const String& str, int64_t* outValue, int base) { TRY_TO_INT_DEF(int64_t, toInt64); }
+bool tryToUInt8(const String& str, uint8_t* outValue, int base) { TRY_TO_INT_DEF(uint8_t, toUInt8); }
+bool tryToUInt16(const String& str, uint16_t* outValue, int base) { TRY_TO_INT_DEF(uint16_t, toUInt16); }
+bool tryToUInt32(const String& str, uint32_t* outValue, int base) { TRY_TO_INT_DEF(uint32_t, toUInt32); }
+bool tryToUInt64(const String& str, uint64_t* outValue, int base) { TRY_TO_INT_DEF(uint64_t, toUInt64); }
+#undef TRY_TO_INT_DEF
 
 LN_NAMESPACE_END
 
-
+//==============================================================================
+//
+//==============================================================================
 namespace std {
 
 // for unordered_map key
-std::size_t hash<ln::StringA>::operator () (const ln::StringA& key) const
-{
-	return ln::Hash::calcHash(key.c_str(), key.getLength());
-}
-
-std::size_t hash<ln::StringW>::operator () (const ln::StringW& key) const
+std::size_t hash<ln::String>::operator () (const ln::String& key) const
 {
 	return ln::Hash::calcHash(key.c_str(), key.getLength());
 }

@@ -3,6 +3,8 @@
 #include <typeinfo>
 #include <type_traits>
 #include "../Base/Common.h"
+
+#ifdef LN_LEGACY_VARIANT_ENABLED
 #include "../Base/RefObject.h"
 #include "../Base/String.h"
 #include "../Base/EnumExtension.h"
@@ -146,7 +148,7 @@ public:
 	//Variant(bool value) : Variant() { SetBool(value); }
 	//Variant(int32_t value) : Variant() {}
 	//Variant(float value);
-	Variant(const TCHAR* value) : Variant() { setString(value); }
+	Variant(const Char* value) : Variant() { setString(value); }
 	//Variant(const String& value);
 	//Variant(const Enum& value) : Variant() { setEnumValue(value.GetValue()); }
 	////Variant(const ReflectionStruct& value) : Variant() { }
@@ -241,7 +243,7 @@ private:
 	void setArithmetic(uint32_t value);
 	void setArithmetic(float value);
 	void setArithmetic(double value);
-	void setString(const TCHAR* value);
+	void setString(const Char* value);
 	void setString(const String& value);
 	String getString() const;
 	void setEnumValue(EnumValueType value);
@@ -333,7 +335,7 @@ private:
 		uint32_t				m_uint32;
 		float					m_float;
 		double					m_double;
-		ln::detail::GenericStringCore<TCHAR>*	m_string;
+		ln::detail::GenericStringCore<Char>*	m_string;
 		EnumValueType			m_enum;
 		ReflectionObject*		m_object;
 		ReflectionArrayObject*	m_arrayObject;
@@ -398,3 +400,4 @@ template<typename T> struct Variant::AccessorSelector<T, detail::KindRefPtr>
 } // namespace tr
 LN_NAMESPACE_END
 
+#endif
