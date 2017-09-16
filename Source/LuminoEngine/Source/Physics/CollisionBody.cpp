@@ -106,18 +106,16 @@ void BtShapeManager::refresh()
 
 } // namespace detail
 
-
-
 //==============================================================================
 // LocalGhostObject
 //	btGhostObject の 衝突開始/終了 をフックして CollisionBody へ通知する
 //==============================================================================
-class CollisionBody::LocalGhostObject : public btGhostObject
+class CollisionBody2::LocalGhostObject : public btGhostObject
 {
 public:
-	CollisionBody*	m_owner;
+	CollisionBody2*	m_owner;
 
-	LocalGhostObject(CollisionBody* owner)
+	LocalGhostObject(CollisionBody2* owner)
 		: m_owner(owner)
 	{}
 
@@ -137,8 +135,8 @@ public:
 			// 通知
 			if (m_owner->isTrigger() && otherObject->getUserPointer() != nullptr)
 			{
-				m_owner->m_contactObjects.add(reinterpret_cast<PhysicsObject*>(otherObject->getUserPointer()));
-				m_owner->onTriggerEnter(reinterpret_cast<PhysicsObject*>(otherObject->getUserPointer()));
+				m_owner->m_contactObjects.add(reinterpret_cast<PhysicsComponent*>(otherObject->getUserPointer()));
+				m_owner->onTriggerEnter(reinterpret_cast<PhysicsComponent*>(otherObject->getUserPointer()));
 			}
 		}
 	}
@@ -156,29 +154,21 @@ public:
 			// 通知
 			if (m_owner->isTrigger() && otherObject->getUserPointer() != nullptr)
 			{
-				m_owner->m_contactObjects.remove(reinterpret_cast<PhysicsObject*>(otherObject->getUserPointer()));
-				m_owner->onTriggerLeave(reinterpret_cast<PhysicsObject*>(otherObject->getUserPointer()));
+				m_owner->m_contactObjects.remove(reinterpret_cast<PhysicsComponent*>(otherObject->getUserPointer()));
+				m_owner->onTriggerLeave(reinterpret_cast<PhysicsComponent*>(otherObject->getUserPointer()));
 			}
 		}
 	}
 };
 
+
 //==============================================================================
-// CollisionBody
+// CollisionBodyComponent
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(CollisionBody, PhysicsObject);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(CollisionBody2, PhysicsObject);
 
 //------------------------------------------------------------------------------
-Ref<CollisionBody> CollisionBody::create(CollisionShape* shape)
-{
-	auto ptr = Ref<CollisionBody>::makeRef();
-	ptr->initialize();
-	ptr->addShape(shape);
-	return ptr;
-}
-
-//------------------------------------------------------------------------------
-CollisionBody::CollisionBody()
+CollisionBody2::CollisionBody2()
 	: PhysicsObject()
 	, m_btGhostObject(nullptr)
 	, m_isTrigger(false)
@@ -187,13 +177,13 @@ CollisionBody::CollisionBody()
 }
 
 //------------------------------------------------------------------------------
-CollisionBody::~CollisionBody()
+CollisionBody2::~CollisionBody2()
 {
 	deleteInternalObject();
 }
 
 //------------------------------------------------------------------------------
-void CollisionBody::initialize()
+void CollisionBody2::initialize()
 {
 	PhysicsObject::initialize();
 	m_initialUpdate = true;
@@ -201,50 +191,203 @@ void CollisionBody::initialize()
 }
 
 //------------------------------------------------------------------------------
-//const Matrix& CollisionBody::getTransform() const
-//{
-//	return m_transform;
-//}
-
-//------------------------------------------------------------------------------
-void CollisionBody::addShape(CollisionShape* shape)
+void CollisionBody2::addShape(CollisionShape* shape)
 {
 	m_btShapeManager.addShape(shape);
 }
 
 //------------------------------------------------------------------------------
-void CollisionBody::setTrigger(bool enabled)
+void CollisionBody2::setTrigger(bool enabled)
 {
 	m_isTrigger = enabled;
 }
 
 //------------------------------------------------------------------------------
-bool CollisionBody::isTrigger() const
+bool CollisionBody2::isTrigger() const
+{
+	return m_isTrigger;
+}
+
+//------------------------------------------------------------------------------
+void CollisionBody2::onBeforeStepSimulation()
+{
+	if (m_initialUpdate)
+	{
+		createInternalObject();
+		m_initialUpdate = false;
+	}
+
+	// btCollisionObject::CF_NO_CONTACT_RESPONSE が付加されると、
+	// 他のオブジェクトと物理シミュレーションで接触しないことを示す (すり抜ける)
+	int flags = m_btGhostObject->getCollisionFlags();
+	m_btGhostObject->setCollisionFlags(
+		m_isTrigger ?
+		flags | btCollisionObject::CF_NO_CONTACT_RESPONSE :
+		flags & ~btCollisionObject::CF_NO_CONTACT_RESPONSE);
+
+	// set shape
+	btCollisionShape* shape = m_btShapeManager.getBtCollisionShape();
+	if (m_btGhostObject->getCollisionShape() != shape)
+	{
+		m_btGhostObject->setCollisionShape(shape);
+	}
+
+
+	auto* transform = getTransform();
+	if (transform != nullptr)
+	{
+		btTransform t;
+		t.setFromOpenGLMatrix((btScalar*)&transform->getWorldMatrix());
+		m_btGhostObject->setWorldTransform(t);
+	}
+}
+
+//------------------------------------------------------------------------------
+void CollisionBody2::onAfterStepSimulation()
+{
+	// get transform
+	m_btGhostObject->getWorldTransform().getOpenGLMatrix((btScalar*)&m_transform);
+
+	// notify onTriggerStay
+	if (isTrigger())
+	{
+		int count = m_btGhostObject->getNumOverlappingObjects();
+		for (int i = 0; i < count; i++)
+		{
+			btCollisionObject* btObj = m_btGhostObject->getOverlappingObject(i);
+			onTriggerStay(reinterpret_cast<PhysicsComponent*>(btObj->getUserPointer()));
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+void CollisionBody2::onRemovedFromWorld()
+{
+	// Bullet の World に追加するのはこのクラスの役目なので、除外もここで行う。
+	if (m_btGhostObject != nullptr)
+	{
+		getOwnerWorld()->getBtWorld()->removeCollisionObject(m_btGhostObject);
+	}
+}
+
+//------------------------------------------------------------------------------
+void CollisionBodyComponent::onTriggerEnter(PhysicsComponent* otherObject)
+{
+}
+
+//------------------------------------------------------------------------------
+void CollisionBodyComponent::onTriggerLeave(PhysicsComponent* otherObject)
+{
+}
+
+//------------------------------------------------------------------------------
+void CollisionBody2::onTriggerStay(PhysicsComponent* otherObject)
+{
+}
+
+//------------------------------------------------------------------------------
+void CollisionBody2::createInternalObject()
+{
+	deleteInternalObject();
+
+	// 現状、この時点で必ず m_shape が無ければならない。
+	LN_ASSERT(!m_btShapeManager.isEmpty());
+
+	m_btGhostObject = new LocalGhostObject(this);
+	m_btGhostObject->setCollisionShape(m_btShapeManager.getBtCollisionShape());
+	m_btGhostObject->setUserPointer(this);
+
+	getOwnerWorld()->getBtWorld()->addCollisionObject(m_btGhostObject, getCollisionFilterGroup(), getCollisionFilterMask());
+}
+
+//------------------------------------------------------------------------------
+void CollisionBody2::deleteInternalObject()
+{
+	LN_SAFE_DELETE(m_btGhostObject);
+}
+
+//==============================================================================
+// CollisionBodyComponent
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(CollisionBodyComponent, PhysicsComponent);
+
+//------------------------------------------------------------------------------
+Ref<CollisionBodyComponent> CollisionBodyComponent::create(CollisionShape* shape)
+{
+	auto ptr = Ref<CollisionBodyComponent>::makeRef();
+	ptr->initialize();
+	ptr->addShape(shape);
+	return ptr;
+}
+
+//------------------------------------------------------------------------------
+CollisionBodyComponent::CollisionBodyComponent()
+	: PhysicsComponent()
+	, m_btGhostObject(nullptr)
+	, m_isTrigger(false)
+	, m_initialUpdate(false)
+{
+}
+
+//------------------------------------------------------------------------------
+CollisionBodyComponent::~CollisionBodyComponent()
+{
+	deleteInternalObject();
+}
+
+//------------------------------------------------------------------------------
+void CollisionBodyComponent::initialize()
+{
+	PhysicsComponent::initialize();
+	m_initialUpdate = true;
+	detail::EngineDomain::getPhysicsWorld3D()->addPhysicsObject(this);
+}
+
+//------------------------------------------------------------------------------
+//const Matrix& CollisionBodyComponent::getTransform() const
+//{
+//	return m_transform;
+//}
+
+//------------------------------------------------------------------------------
+void CollisionBodyComponent::addShape(CollisionShape* shape)
+{
+	m_btShapeManager.addShape(shape);
+}
+
+//------------------------------------------------------------------------------
+void CollisionBodyComponent::setTrigger(bool enabled)
+{
+	m_isTrigger = enabled;
+}
+
+//------------------------------------------------------------------------------
+bool CollisionBodyComponent::isTrigger() const
 {
 	return m_isTrigger;
 }
 
 
 //------------------------------------------------------------------------------
-EventConnection CollisionBody::connectOnTriggerEnter(CollisionEventHandler handler)
+EventConnection CollisionBodyComponent::connectOnTriggerEnter(CollisionEventHandler handler)
 {
 	return m_onTriggerEnter.connect(handler);
 }
 
 //------------------------------------------------------------------------------
-EventConnection CollisionBody::connectOnTriggerLeave(CollisionEventHandler handler)
+EventConnection CollisionBodyComponent::connectOnTriggerLeave(CollisionEventHandler handler)
 {
 	return m_onTriggerLeave.connect(handler);
 }
 
 //------------------------------------------------------------------------------
-EventConnection CollisionBody::connectOnTriggerStay(CollisionEventHandler handler)
+EventConnection CollisionBodyComponent::connectOnTriggerStay(CollisionEventHandler handler)
 {
 	return m_onTriggerStay.connect(handler);
 }
 
 //------------------------------------------------------------------------------
-void CollisionBody::onBeforeStepSimulation()
+void CollisionBodyComponent::onBeforeStepSimulation()
 {
 	if (m_initialUpdate)
 	{
@@ -278,7 +421,7 @@ void CollisionBody::onBeforeStepSimulation()
 }
 
 //------------------------------------------------------------------------------
-void CollisionBody::onAfterStepSimulation()
+void CollisionBodyComponent::onAfterStepSimulation()
 {
 	// get transform
 	m_btGhostObject->getWorldTransform().getOpenGLMatrix((btScalar*)&m_transform);
@@ -290,13 +433,13 @@ void CollisionBody::onAfterStepSimulation()
 		for (int i = 0; i < count; i++)
 		{
 			btCollisionObject* btObj = m_btGhostObject->getOverlappingObject(i);
-			onTriggerStay(reinterpret_cast<PhysicsObject*>(btObj->getUserPointer()));
+			onTriggerStay(reinterpret_cast<PhysicsComponent*>(btObj->getUserPointer()));
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
-void CollisionBody::onRemovedFromWorld()
+void CollisionBodyComponent::onRemovedFromWorld()
 {
 	// Bullet の World に追加するのはこのクラスの役目なので、除外もここで行う。
 	if (m_btGhostObject != nullptr)
@@ -306,25 +449,25 @@ void CollisionBody::onRemovedFromWorld()
 }
 
 //------------------------------------------------------------------------------
-void CollisionBody::onTriggerEnter(PhysicsObject* otherObject)
+void CollisionBodyComponent::onTriggerEnter(PhysicsComponent* otherObject)
 {
 	m_onTriggerEnter.raise(otherObject);
 }
 
 //------------------------------------------------------------------------------
-void CollisionBody::onTriggerLeave(PhysicsObject* otherObject)
+void CollisionBodyComponent::onTriggerLeave(PhysicsComponent* otherObject)
 {
 	m_onTriggerLeave.raise(otherObject);
 }
 
 //------------------------------------------------------------------------------
-void CollisionBody::onTriggerStay(PhysicsObject* otherObject)
+void CollisionBodyComponent::onTriggerStay(PhysicsComponent* otherObject)
 {
 	m_onTriggerStay.raise(otherObject);
 }
 
 //------------------------------------------------------------------------------
-void CollisionBody::createInternalObject()
+void CollisionBodyComponent::createInternalObject()
 {
 	deleteInternalObject();
 
@@ -339,7 +482,7 @@ void CollisionBody::createInternalObject()
 }
 
 //------------------------------------------------------------------------------
-void CollisionBody::deleteInternalObject()
+void CollisionBodyComponent::deleteInternalObject()
 {
 	LN_SAFE_DELETE(m_btGhostObject);
 }

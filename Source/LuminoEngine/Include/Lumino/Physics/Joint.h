@@ -4,7 +4,7 @@
 
 LN_NAMESPACE_BEGIN
 class PhysicsWorld;
-class RigidBody;
+class RigidBodyComponent;
 
 /// ジョイントのベースクラス
 class Joint
@@ -50,12 +50,12 @@ public:
 LN_INTERNAL_ACCESS:
 	DofSpringJoint();
 	virtual ~DofSpringJoint();
-	void initialize(RigidBody* bodyA, RigidBody* bodyB, const Matrix& localOffsetA, const Matrix& localOffsetB);
+	void initialize(RigidBodyComponent* bodyA, RigidBodyComponent* bodyB, const Matrix& localOffsetA, const Matrix& localOffsetB);
 
 private:
 	btGeneric6DofSpringConstraint*	m_btDofSpringConstraint;
-	Ref<RigidBody>				m_bodyA;
-	Ref<RigidBody>				m_bodyB;
+	Ref<RigidBodyComponent>			m_bodyA;
+	Ref<RigidBodyComponent>			m_bodyB;
 
 	//bool			m_enableSpring[6];
 	//float			m_stiffness[6];

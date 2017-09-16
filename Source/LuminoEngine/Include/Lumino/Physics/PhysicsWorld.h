@@ -4,7 +4,7 @@
 #include "Common.h"
 
 LN_NAMESPACE_BEGIN
-class PhysicsObject;
+class PhysicsComponent;
 class Joint;
 class PhysicsDebugDrawer;
 
@@ -40,9 +40,9 @@ LN_INTERNAL_ACCESS:
 	void stepSimulation(float elapsedTime);
 	void drawDebugShapes(IDebugRenderer* renderer);
 
-	void addPhysicsObject(PhysicsObject* physicsObject);
+	void addPhysicsObject(PhysicsComponent* physicsObject);
 	void addJoint(Joint* joint);
-	void removePhysicsObject(PhysicsObject* physicsObject);
+	void removePhysicsObject(PhysicsComponent* physicsObject);
 	void gcPhysicsObjects();
 
 	// AutoAdd interface
@@ -63,7 +63,7 @@ private:
 	btSoftBodyWorldInfo*					m_softBodyWorldInfo;
 	PhysicsDebugDrawer*						m_debugDrawer;
 
-	List<Ref<PhysicsObject>>				m_physicsObjectList;
+	List<Ref<PhysicsComponent>>				m_physicsObjectList;
 	List<Ref<Joint>>						m_jointList;
 };
 

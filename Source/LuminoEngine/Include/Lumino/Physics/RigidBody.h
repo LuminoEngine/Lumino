@@ -42,8 +42,8 @@ LN_ENUM_FLAGS(RigidbodyConstraintFlags)
 LN_ENUM_FLAGS_DECLARE(RigidbodyConstraintFlags);
 
 /// 剛体のクラス
-class RigidBody
-	: public PhysicsObject
+class RigidBodyComponent
+	: public PhysicsComponent
 {
 	LN_OBJECT;
 public:
@@ -81,10 +81,10 @@ public:
 	};
 
 	/**
-		@brief		RigidBody オブジェクトを作成します。
+		@brief		RigidBodyComponent オブジェクトを作成します。
 		@param[in]	collider	: 衝突判定形状
 	*/
-	static Ref<RigidBody> create(CollisionShape* collider);
+	static Ref<RigidBodyComponent> create(CollisionShape* collider);
 
 
 public:
@@ -168,8 +168,8 @@ public:
 
 
 LN_INTERNAL_ACCESS:
-	RigidBody();
-	virtual ~RigidBody();
+	RigidBodyComponent();
+	virtual ~RigidBodyComponent();
 	void initialize(CollisionShape* collider, const ConfigData& configData);
 
 	/// 初期化 (剛体を受け取ってワールドに追加する) (現行PMD用にpublic。後で protected にする)

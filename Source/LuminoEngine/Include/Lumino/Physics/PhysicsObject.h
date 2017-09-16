@@ -6,16 +6,14 @@
 LN_NAMESPACE_BEGIN
 class PhysicsWorld;
 
-
 /**
 	@brief	
 */
 LN_CLASS()
 class PhysicsObject
-	: public Component
+	: public Object
 {
 	LN_OBJECT;
-
 public:
 	void setOwnerWorld(PhysicsWorld* owner);
 	PhysicsWorld* getOwnerWorld() const;
@@ -42,6 +40,30 @@ private:
 	uint16_t		m_collisionFilterMask;
 
 	friend class PhysicsWorld;
+};
+
+/**
+	@brief	
+*/
+LN_CLASS()
+class PhysicsComponent
+	: public Component
+{
+	LN_OBJECT;
+public:
+	void setCollisionFilterGroup(uint16_t flags);
+	uint16_t getCollisionFilterGroup() const;
+
+	void setCollisionFilterMask(uint16_t flags);
+	uint16_t getCollisionFilterMask() const;
+
+LN_CONSTRUCT_ACCESS:
+	PhysicsComponent();
+	virtual ~PhysicsComponent();
+	void initialize(PhysicsObject* physicsObject);
+
+private:
+	Ref<PhysicsObject>	m_physicsObject;
 };
 
 LN_NAMESPACE_END

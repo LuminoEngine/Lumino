@@ -218,7 +218,7 @@ void PhysicsWorld::stepSimulation(float elapsedTime)
 {
 	gcPhysicsObjects();
 
-	for (PhysicsObject* obj : m_physicsObjectList)
+	for (PhysicsComponent* obj : m_physicsObjectList)
 	{
 		obj->onBeforeStepSimulation();
 	}
@@ -241,7 +241,7 @@ void PhysicsWorld::stepSimulation(float elapsedTime)
 	//	b->SyncAfterStepSimulation();
 	//}
 
-	for (PhysicsObject* obj : m_physicsObjectList)
+	for (PhysicsComponent* obj : m_physicsObjectList)
 	{
 		obj->onAfterStepSimulation();
 	}
@@ -258,7 +258,7 @@ void PhysicsWorld::drawDebugShapes(IDebugRenderer* renderer)
 }
 
 //------------------------------------------------------------------------------
-void PhysicsWorld::addPhysicsObject(PhysicsObject* physicsObject)
+void PhysicsWorld::addPhysicsObject(PhysicsComponent* physicsObject)
 {
 	if (LN_REQUIRE(physicsObject != nullptr)) return;
 
@@ -279,7 +279,7 @@ void PhysicsWorld::addJoint(Joint* joint)
 }
 
 //------------------------------------------------------------------------------
-void PhysicsWorld::removePhysicsObject(PhysicsObject* physicsObject)
+void PhysicsWorld::removePhysicsObject(PhysicsComponent* physicsObject)
 {
 	if (LN_REQUIRE(physicsObject != nullptr)) return;
 	if (physicsObject->getOwnerWorld() != this) return;

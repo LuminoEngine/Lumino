@@ -17,9 +17,9 @@ LN_NAMESPACE_BEGIN
 struct SynchronizeMotionState
 	: public btDefaultMotionState
 {
-	RigidBody*	m_owner;
+	RigidBodyComponent*	m_owner;
 
-	SynchronizeMotionState(RigidBody* owner, const btTransform& startTrans = btTransform::getIdentity(), const btTransform& centerOfMassOffset = btTransform::getIdentity())
+	SynchronizeMotionState(RigidBodyComponent* owner, const btTransform& startTrans = btTransform::getIdentity(), const btTransform& centerOfMassOffset = btTransform::getIdentity())
 		: btDefaultMotionState(startTrans, centerOfMassOffset)
 		, m_owner(owner)
 	{
@@ -33,26 +33,26 @@ struct SynchronizeMotionState
 };
 
 //==============================================================================
-// RigidBody
+// RigidBodyComponent
 /*
 	
 */
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(RigidBody, PhysicsObject);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(RigidBodyComponent, PhysicsComponent);
 
 //------------------------------------------------------------------------------
-Ref<RigidBody> RigidBody::create(CollisionShape* collider)
+Ref<RigidBodyComponent> RigidBodyComponent::create(CollisionShape* collider)
 {
 	ConfigData data;
 	data.Mass = 1.0f;
-	auto ptr = Ref<RigidBody>::makeRef();
+	auto ptr = Ref<RigidBodyComponent>::makeRef();
 	ptr->initialize(collider, data);
 	return ptr;
 }
 
 //------------------------------------------------------------------------------
-RigidBody::RigidBody()
-	: PhysicsObject()
+RigidBodyComponent::RigidBodyComponent()
+	: PhysicsComponent()
 	, m_btRigidBody(nullptr)
 	, m_constraintFlags(RigidbodyConstraintFlags::None)
 	, m_modifiedFlags(Modified_None)
@@ -60,7 +60,7 @@ RigidBody::RigidBody()
 }
 
 //------------------------------------------------------------------------------
-RigidBody::~RigidBody()
+RigidBodyComponent::~RigidBodyComponent()
 {
 	if (m_btRigidBody != nullptr)
 	{
@@ -71,10 +71,10 @@ RigidBody::~RigidBody()
 }
 
 //------------------------------------------------------------------------------
-void RigidBody::initialize(CollisionShape* collider, const ConfigData& configData)
+void RigidBodyComponent::initialize(CollisionShape* collider, const ConfigData& configData)
 {
 	if (LN_REQUIRE(collider != nullptr)) return;
-	PhysicsObject::initialize();
+	PhysicsComponent::initialize();
 	m_btShapeManager.addShape(collider);
 	m_data = configData;
 	m_modifiedFlags |= Modified_InitialUpdate;
@@ -82,10 +82,10 @@ void RigidBody::initialize(CollisionShape* collider, const ConfigData& configDat
 }
 
 //------------------------------------------------------------------------------
-void RigidBody::initializeCore(CollisionShape* collider, const ConfigData& configData, float scale)
+void RigidBodyComponent::initializeCore(CollisionShape* collider, const ConfigData& configData, float scale)
 {
 	if (LN_REQUIRE(collider != nullptr)) return;
-	PhysicsObject::initialize();
+	PhysicsComponent::initialize();
 	m_btShapeManager.addShape(collider);
 	m_data = configData;
 	m_data.scale = scale;
@@ -95,7 +95,7 @@ void RigidBody::initializeCore(CollisionShape* collider, const ConfigData& confi
 }
 
 //------------------------------------------------------------------------------
-void RigidBody::setPosition(const Vector3& position)
+void RigidBodyComponent::setPosition(const Vector3& position)
 {
 	//m_btRigidBody->activate();
 
@@ -121,27 +121,27 @@ void RigidBody::setPosition(const Vector3& position)
 
 	//m_btRigidBody->getWorldTransform().getOpenGLMatrix((btScalar*)&mWorldMatrix);
 }
-void RigidBody::setPosition(float x, float y, float z)
+void RigidBodyComponent::setPosition(float x, float y, float z)
 {
 	setPosition(Vector3(x, y, z));
 }
 
 //------------------------------------------------------------------------------
-void RigidBody::setLinearVelocity(const Vector3& velocity)
+void RigidBodyComponent::setLinearVelocity(const Vector3& velocity)
 {
 	// TODO: m_btRigidBody ここで参照しない
 	m_btRigidBody->setLinearVelocity(detail::BulletUtil::LNVector3ToBtVector3(velocity));
 }
 
 //------------------------------------------------------------------------------
-void RigidBody::setAngularVelocity(const Vector3& velocity)
+void RigidBodyComponent::setAngularVelocity(const Vector3& velocity)
 {
 	// TODO: m_btRigidBody ここで参照しない
 	m_btRigidBody->setAngularVelocity(detail::BulletUtil::LNVector3ToBtVector3(velocity));
 }
 
 //------------------------------------------------------------------------------
-void RigidBody::setConstraints(RigidbodyConstraintFlags flags)
+void RigidBodyComponent::setConstraints(RigidbodyConstraintFlags flags)
 {
 	m_constraintFlags = flags;
 	m_modifiedFlags |= Modified_RigidBodyConstraintFlags;
@@ -150,7 +150,7 @@ void RigidBody::setConstraints(RigidbodyConstraintFlags flags)
 
 #if 0
 //------------------------------------------------------------------------------
-void RigidBody::setRotation( const LQuaternion& rotation )
+void RigidBodyComponent::setRotation( const LQuaternion& rotation )
 {
 	btQuaternion q = BulletUtil::LNQuaternionToBtQuaternion( rotation );
 	m_btRigidBody->getWorldTransform().setRotation( q );
@@ -165,7 +165,7 @@ void RigidBody::setRotation( const LQuaternion& rotation )
 }
 
 //------------------------------------------------------------------------------
-void RigidBody::setAngle( const LVector3& euler )
+void RigidBodyComponent::setAngle( const LVector3& euler )
 {
 	btMatrix3x3 m;
 	//m.setEulerZYX( euler.x, euler.y, euler.z );
@@ -184,43 +184,43 @@ void RigidBody::setAngle( const LVector3& euler )
 }
 
 //------------------------------------------------------------------------------
-void RigidBody::setDamping( float linDamping, float angDamping )
+void RigidBodyComponent::setDamping( float linDamping, float angDamping )
 {
 	m_btRigidBody->setDamping( linDamping, angDamping );
 }
 
 //------------------------------------------------------------------------------
-void RigidBody::setRestitution( float value ) 
+void RigidBodyComponent::setRestitution( float value ) 
 { 
 	return m_btRigidBody->setRestitution( value ); 
 }
 
 //------------------------------------------------------------------------------
-float RigidBody::getRestitution() const 
+float RigidBodyComponent::getRestitution() const 
 { 
 	return m_btRigidBody->getRestitution(); 
 }
 
 //------------------------------------------------------------------------------
-void RigidBody::setFriction( float value ) 
+void RigidBodyComponent::setFriction( float value ) 
 { 
 	m_btRigidBody->setFriction( value ); 
 }
 
 //------------------------------------------------------------------------------
-float RigidBody::getFriction() const 
+float RigidBodyComponent::getFriction() const 
 { 
 	return m_btRigidBody->getFriction(); 
 }
 
 //------------------------------------------------------------------------------
-const LMatrix& RigidBody::getWorldMatrix() const
+const LMatrix& RigidBodyComponent::getWorldMatrix() const
 {
 	return mWorldMatrix;
 }
 
 //------------------------------------------------------------------------------
-void RigidBody::setKinematicAlignmentMatrix( const LMatrix& matrix )
+void RigidBodyComponent::setKinematicAlignmentMatrix( const LMatrix& matrix )
 {
 	mKinematicAlignmentMatrix = matrix;
 	if ( mKinematicMotionState )
@@ -238,7 +238,7 @@ void RigidBody::setKinematicAlignmentMatrix( const LMatrix& matrix )
 	
 
 //------------------------------------------------------------------------------
-void RigidBody::setMass(float mass)
+void RigidBodyComponent::setMass(float mass)
 {
 	m_data.Mass = mass;
 	//btVector3 localInertia(0, 0, 0);
@@ -247,46 +247,46 @@ void RigidBody::setMass(float mass)
 }
 
 //------------------------------------------------------------------------------
-void RigidBody::applyForce(const Vector3& force)
+void RigidBodyComponent::applyForce(const Vector3& force)
 {
 	m_appliedForce += force;	// sum up the power to the next simulation
 	m_modifiedFlags |= Modified_ApplyForce;
 }
 
 //------------------------------------------------------------------------------
-void RigidBody::applyImpulse(const Vector3& force)
+void RigidBodyComponent::applyImpulse(const Vector3& force)
 {
 	m_appliedImpulse += force;	// sum up the power to the next simulation
 	m_modifiedFlags |= Modified_ApplyImpulse;
 }
 
 //------------------------------------------------------------------------------
-void RigidBody::activate()
+void RigidBodyComponent::activate()
 {
 	m_modifiedFlags |= Modified_Activate;
 }
 
 //------------------------------------------------------------------------------
-void RigidBody::setWorldTransform(const Matrix& matrix)
+void RigidBodyComponent::setWorldTransform(const Matrix& matrix)
 {
 	m_data.InitialTransform = matrix;
 	m_modifiedFlags |= Modified_WorldTransform;
 }
 
 //------------------------------------------------------------------------------
-const Matrix& RigidBody::getWorldTransform() const
+const Matrix& RigidBodyComponent::getWorldTransform() const
 {
 	return m_data.InitialTransform;
 }
 
 //------------------------------------------------------------------------------
-void RigidBody::clearForces()
+void RigidBodyComponent::clearForces()
 {
 	m_modifiedFlags |= Modified_ClearForces;
 }
 
 //------------------------------------------------------------------------------
-void RigidBody::onBeforeStepSimulation()
+void RigidBodyComponent::onBeforeStepSimulation()
 {
 	auto* transform = getTransform();
 	if (transform != nullptr)
@@ -414,7 +414,7 @@ void RigidBody::onBeforeStepSimulation()
 }
 
 //------------------------------------------------------------------------------
-void RigidBody::onAfterStepSimulation()
+void RigidBodyComponent::onAfterStepSimulation()
 {
 	if (m_btRigidBody != nullptr)
 	{
@@ -452,7 +452,7 @@ void RigidBody::onAfterStepSimulation()
 }
 
 //------------------------------------------------------------------------------
-void RigidBody::setTransformFromMotionState(const btTransform& transform)
+void RigidBodyComponent::setTransformFromMotionState(const btTransform& transform)
 {
 	//if (m_btGhostObject != nullptr)
 	//{
@@ -461,15 +461,15 @@ void RigidBody::setTransformFromMotionState(const btTransform& transform)
 	//}
 }
 
-void RigidBody::markMMDDynamic()
+void RigidBodyComponent::markMMDDynamic()
 {
 	m_btRigidBody->setCollisionFlags(m_btRigidBody->getCollisionFlags() & -3);
 }
 
 //------------------------------------------------------------------------------
-void RigidBody::onRemovedFromWorld()
+void RigidBodyComponent::onRemovedFromWorld()
 {
-	// Bullet の World に追加するのは RigidBody クラスの役目なので、除外もここで行う。
+	// Bullet の World に追加するのは RigidBodyComponent クラスの役目なので、除外もここで行う。
 
 	if (m_btRigidBody != nullptr)
 	{
@@ -482,15 +482,15 @@ void RigidBody::onRemovedFromWorld()
 }
 
 //------------------------------------------------------------------------------
-void RigidBody::onUpdate()
+void RigidBodyComponent::onUpdate()
 {
-	PhysicsObject::onUpdate();
+	PhysicsComponent::onUpdate();
 
 	
 }
 
 //------------------------------------------------------------------------------
-void RigidBody::createBtRigidBody()
+void RigidBodyComponent::createBtRigidBody()
 {
 	btCollisionShape* shape = m_btShapeManager.getBtCollisionShape();
 
@@ -545,7 +545,7 @@ void RigidBody::createBtRigidBody()
 		motionState = new SynchronizeMotionState(this, initialTransform/*initialTransformMatrix * Matrix.Translation(frame.Bone.Position * scale)*/);
 	}
 
-	// RigidBody 作成
+	// RigidBodyComponent 作成
 	btRigidBody::btRigidBodyConstructionInfo bodyInfo(num, motionState, shape, localInertia);
 	bodyInfo.m_linearDamping = m_data.LinearDamping;	// 移動減
 	bodyInfo.m_angularDamping = m_data.AngularDamping;	// 回転減

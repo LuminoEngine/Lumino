@@ -653,7 +653,7 @@ void MmdSkinnedMeshRigidBody::initialize(SkinnedMeshModel* ownerModel, PmxRigidB
 
 	m_offsetBodyToBone = Matrix::makeTranslation(m_bone->getCore()->OrgPosition) * m_boneLocalPosition;
 
-	RigidBody::ConfigData data;
+	RigidBodyComponent::ConfigData data;
 	data.InitialTransform = initialTransform;
 	data.Group = m_resource->Group;
 	data.GroupMask = m_resource->GroupMask;
@@ -673,13 +673,13 @@ void MmdSkinnedMeshRigidBody::initialize(SkinnedMeshModel* ownerModel, PmxRigidB
 		data.KinematicObject = true;
 	}
 
-	m_rigidBody = Ref<RigidBody>::makeRef();
+	m_rigidBody = Ref<RigidBodyComponent>::makeRef();
 	m_rigidBody->initializeCore(collider, data, scale);
 	ownerModel->m_physicsWorld->addPhysicsObject(m_rigidBody);
 }
 
 //------------------------------------------------------------------------------
-RigidBody* MmdSkinnedMeshRigidBody::getRigidBody() const
+RigidBodyComponent* MmdSkinnedMeshRigidBody::getRigidBody() const
 {
 	return m_rigidBody;
 }
