@@ -5,6 +5,7 @@
 
 LN_NAMESPACE_BEGIN
 class CollisionShape;
+class RigidBody;
 
 /**
 	@brief		衝突判定に関係するイベントを処理するハンドラです。
@@ -89,6 +90,7 @@ LN_INTERNAL_ACCESS:
 private:
 	void createInternalObject();
 	void deleteInternalObject();
+	void setTransformFromMotionState(const btTransform& transform);
 
 	class LocalGhostObject;
 
@@ -99,9 +101,13 @@ private:
 	bool					m_isTrigger;
 	bool					m_initialUpdate;
 
+	Matrix	mtmp;
+
 	CollisionEventHandler::EventType	m_onTriggerEnter;
 	CollisionEventHandler::EventType	m_onTriggerLeave;
 	CollisionEventHandler::EventType	m_onTriggerStay;
+
+	friend class RigidBody;
 };
 
 LN_NAMESPACE_END

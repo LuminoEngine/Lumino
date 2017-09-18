@@ -335,6 +335,8 @@ void CollisionBody::createInternalObject()
 	m_btGhostObject->setCollisionShape(m_btShapeManager.getBtCollisionShape());
 	m_btGhostObject->setUserPointer(this);
 
+	m_btGhostObject->setWorldTransform(detail::BulletUtil::LNMatrixToBtTransform(mtmp));
+
 	getOwnerWorld()->getBtWorld()->addCollisionObject(m_btGhostObject, getCollisionFilterGroup(), getCollisionFilterMask());
 }
 
@@ -342,6 +344,21 @@ void CollisionBody::createInternalObject()
 void CollisionBody::deleteInternalObject()
 {
 	LN_SAFE_DELETE(m_btGhostObject);
+}
+
+void CollisionBody::setTransformFromMotionState(const btTransform& transform)
+{
+	
+	if (m_btGhostObject)
+	{
+		m_btGhostObject->setWorldTransform(transform);
+	}
+	else
+	{
+		// まだ作られていないこともある。キャッシュしよう
+		
+		mtmp = detail::BulletUtil::BtTransformToLNMatrix(transform);
+	}
 }
 
 LN_NAMESPACE_END

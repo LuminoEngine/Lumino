@@ -6,6 +6,7 @@
 #include <Lumino/Physics/CollisionShape.h>
 #include <Lumino/Physics/RigidBody.h>
 #include <Lumino/Physics/PhysicsWorld.h>
+#include <Lumino/Physics/CollisionBody.h>
 #include "BulletUtils.h"
 #include "PhysicsManager.h"
 
@@ -336,6 +337,12 @@ void RigidBody::onBeforeStepSimulation()
 		}
 	}
 
+
+	if (m_childCollisionBody)
+	{
+		m_childCollisionBody->setTransformFromMotionState(m_btRigidBody->getWorldTransform());
+	}
+
 	if (m_btRigidBody != nullptr)
 	{
 		// RigidbodyConstraints
@@ -454,11 +461,11 @@ void RigidBody::onAfterStepSimulation()
 //------------------------------------------------------------------------------
 void RigidBody::setTransformFromMotionState(const btTransform& transform)
 {
-	//if (m_btGhostObject != nullptr)
-	//{
-	//	 トリガーオブジェクトの姿勢を transform(剛体) に同期する
-	//	m_btGhostObject->setWorldTransform(transform);
-	//}
+	if (m_childCollisionBody != nullptr)
+	{
+		// トリガーオブジェクトの姿勢を transform(剛体) に同期する
+		m_childCollisionBody->setTransformFromMotionState(transform);
+	}
 }
 
 void RigidBody::markMMDDynamic()
@@ -570,6 +577,7 @@ void RigidBody::createBtRigidBody()
 	m_modifiedFlags |= Modified_Activate;
 
 	//BodyBase::initialize(m_btRigidBody);
+	m_btRigidBody->setUserPointer(this);
 
 	getOwnerWorld()->getBtWorld()->addRigidBody(GetBtRigidBody(), getCollisionFilterGroup(), getCollisionFilterMask());
 

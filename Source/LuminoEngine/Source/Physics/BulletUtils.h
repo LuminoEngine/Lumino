@@ -42,6 +42,13 @@ public:
 		return out;
 	}
 
+	static btTransform LNMatrixToBtTransform(const Matrix& t)
+	{
+		btTransform out;
+		out.setFromOpenGLMatrix((btScalar*)&t);
+		return out;
+	}
+
 
 	static void dumpBtVector3(const btVector3& v)
 	{

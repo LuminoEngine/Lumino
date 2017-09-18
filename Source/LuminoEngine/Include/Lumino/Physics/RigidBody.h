@@ -5,6 +5,7 @@
 
 LN_NAMESPACE_BEGIN
 class CollisionShape;
+class CollisionBody;
 
 LN_ENUM_FLAGS(RigidbodyConstraintFlags)
 {
@@ -166,6 +167,8 @@ public:
 	/// 物理演算の対象であるか (false の場合、衝突判定のみ対象)
 	bool isContactResponse() const { return true; }
 
+public:
+	CollisionBody*	m_childCollisionBody = nullptr;
 
 LN_INTERNAL_ACCESS:
 	RigidBody();
