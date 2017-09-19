@@ -124,7 +124,7 @@ void World::removeOffscreenWorldView(OffscreenWorldView* view)
 }
 
 //------------------------------------------------------------------------------
-void World::reginUpdateFrame()
+void World::beginUpdateFrame()
 {
 	// onRender の外のデバッグ描画などでも使用するため、描画リストのクリアは SceneGraph の更新前でなければならない。
 	// また、出来上がった描画リストを、複数のビューやカメラが描画することを想定する。
@@ -317,12 +317,12 @@ Camera* World2D::getMainCamera() const
 //}
 
 //------------------------------------------------------------------------------
-void World2D::reginUpdateFrame()
+void World2D::beginUpdateFrame()
 {
-	World::reginUpdateFrame();
+	World::beginUpdateFrame();
 
 	//if (m_sceneGraph != nullptr) {
-	//	m_sceneGraph->reginUpdateFrame();
+	//	m_sceneGraph->beginUpdateFrame();
 	//}
 }
 
@@ -412,13 +412,13 @@ Camera* World3D::getMainCamera() const
 //}
 
 //------------------------------------------------------------------------------
-void World3D::reginUpdateFrame()
+void World3D::beginUpdateFrame()
 {
-	World::reginUpdateFrame();
+	World::beginUpdateFrame();
 
 	//if (m_sceneGraph != nullptr)
 	//{
-	//	m_sceneGraph->reginUpdateFrame();
+	//	m_sceneGraph->beginUpdateFrame();
 	//}
 }
 

@@ -75,7 +75,7 @@ LN_CONSTRUCT_ACCESS:
 
 LN_INTERNAL_ACCESS:
 	//const Ref<DrawList>& getInsideWorldRenderer() const { return m_insideWorldRenderer; }
-	virtual void reginUpdateFrame();
+	virtual void beginUpdateFrame();
 	void updateFrame(float elapsedTime);
 
 	// update sequence
@@ -127,7 +127,7 @@ LN_CONSTRUCT_ACCESS:
 LN_INTERNAL_ACCESS:
 	SceneGraph2D* getSceneGraph2D() const;
 	Camera* getMainCamera() const;
-	virtual void reginUpdateFrame() override;
+	virtual void beginUpdateFrame() override;
 	virtual void onUpdate(float elapsedTime) override;
 	virtual void render(RenderingContext* context, WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen) override;
 
@@ -159,7 +159,7 @@ LN_INTERNAL_ACCESS:
 	PhysicsWorld* getPhysicsWorld3D() const;
 	SceneGraph3D* getSceneGraph3D() const;
 	Camera* getMainCamera() const;
-	virtual void reginUpdateFrame() override;
+	virtual void beginUpdateFrame() override;
 	virtual void onInternalPhysicsUpdate(float elapsedTime) override;
 	virtual void render(RenderingContext* context, WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen) override;
 

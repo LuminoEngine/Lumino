@@ -54,7 +54,7 @@ void SceneGraph::createCore(SceneGraphManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void SceneGraph::reginUpdateFrame()
+void SceneGraph::beginUpdateFrame()
 {
 }
 
