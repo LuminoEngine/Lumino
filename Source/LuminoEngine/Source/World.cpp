@@ -124,7 +124,7 @@ void World::removeOffscreenWorldView(OffscreenWorldView* view)
 }
 
 //------------------------------------------------------------------------------
-void World::reginUpdateFrame()
+void World::beginUpdateFrame()
 {
 	// onRender の外のデバッグ描画などでも使用するため、描画リストのクリアは SceneGraph の更新前でなければならない。
 	// また、出来上がった描画リストを、複数のビューやカメラが描画することを想定する。
@@ -145,13 +145,37 @@ void World::reginUpdateFrame()
 	}
 }
 
-//------------------------------------------------------------------------------
 void World::updateFrame(float elapsedTime)
+{
+	onPreUpdate(elapsedTime);
+	onInternalPhysicsUpdate(elapsedTime);
+	onUpdate(elapsedTime);
+	onInternalAnimationUpdate(elapsedTime);
+	onPostUpdate(elapsedTime);
+}
+
+void World::onPreUpdate(float elapsedTime)
+{
+}
+
+void World::onInternalPhysicsUpdate(float elapsedTime)
+{
+}
+
+void World::onUpdate(float elapsedTime)
 {
 	for (auto& obj : m_rootWorldObjectList)
 	{
 		obj->updateFrame();
 	}
+}
+
+void World::onInternalAnimationUpdate(float elapsedTime)
+{
+}
+
+void World::onPostUpdate(float elapsedTime)
+{
 }
 
 //------------------------------------------------------------------------------
@@ -226,6 +250,14 @@ EventConnection World::connectOnUIEvent(UIEventHandler handler)
 	return m_onEvent.connect(handler);
 }
 
+void World::updateObjectsWorldMatrix()
+{
+	for (auto& obj : m_rootWorldObjectList)
+	{
+		obj->updateWorldMatrixHierarchical();
+	}
+}
+
 //==============================================================================
 // World2D
 //==============================================================================
@@ -285,23 +317,19 @@ Camera* World2D::getMainCamera() const
 //}
 
 //------------------------------------------------------------------------------
-void World2D::reginUpdateFrame()
+void World2D::beginUpdateFrame()
 {
-	World::reginUpdateFrame();
+	World::beginUpdateFrame();
 
 	//if (m_sceneGraph != nullptr) {
-	//	m_sceneGraph->reginUpdateFrame();
+	//	m_sceneGraph->beginUpdateFrame();
 	//}
 }
 
 //------------------------------------------------------------------------------
-void World2D::updateFrame(float elapsedTime)
+void World2D::onUpdate(float elapsedTime)
 {
-	World::updateFrame(elapsedTime);
-
-	//if (m_sceneGraph != nullptr) {
-	//	m_sceneGraph->updateFrame(elapsedTime);
-	//}
+	World::onUpdate(elapsedTime);
 }
 
 //------------------------------------------------------------------------------
@@ -384,31 +412,27 @@ Camera* World3D::getMainCamera() const
 //}
 
 //------------------------------------------------------------------------------
-void World3D::reginUpdateFrame()
+void World3D::beginUpdateFrame()
 {
-	World::reginUpdateFrame();
+	World::beginUpdateFrame();
 
 	//if (m_sceneGraph != nullptr)
 	//{
-	//	m_sceneGraph->reginUpdateFrame();
+	//	m_sceneGraph->beginUpdateFrame();
 	//}
 }
 
 //------------------------------------------------------------------------------
-void World3D::updateFrame(float elapsedTime)
+void World3D::onInternalPhysicsUpdate(float elapsedTime)
 {
+	// Physics モジュールの Component が、WorldObject の WorldMatrix を元にシミュレーション前準備を行うことがあるので
+	// ここで WorldMatrix を更新しておく。
+	updateObjectsWorldMatrix();
+
 	if (m_physicsWorld != nullptr)
 	{
 		m_physicsWorld->stepSimulation(elapsedTime);
 	}
-
-	World::updateFrame(elapsedTime);
-
-
-	//if (m_sceneGraph != nullptr)
-	//{
-	//	m_sceneGraph->updateFrame(elapsedTime);
-	//}
 }
 
 //------------------------------------------------------------------------------
@@ -439,6 +463,7 @@ void World3D::render(RenderingContext* context, WorldRenderView* renderView, Wor
 		}
 	}
 }
+
 
 //------------------------------------------------------------------------------
 void World3D::createGridPlane()

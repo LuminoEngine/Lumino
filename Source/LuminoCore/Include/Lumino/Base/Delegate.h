@@ -67,7 +67,7 @@ private:
 		: public HolderBase
 	{
 	private:
-		typedef void (T::*MemberFunction)(TArgs...);
+		typedef TRet(T::*MemberFunction)(TArgs...);
 		T* m_obj;
 		MemberFunction	m_func;
 

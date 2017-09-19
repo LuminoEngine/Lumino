@@ -75,8 +75,15 @@ LN_CONSTRUCT_ACCESS:
 
 LN_INTERNAL_ACCESS:
 	//const Ref<DrawList>& getInsideWorldRenderer() const { return m_insideWorldRenderer; }
-	virtual void reginUpdateFrame();
-	virtual void updateFrame(float elapsedTime);
+	virtual void beginUpdateFrame();
+	void updateFrame(float elapsedTime);
+
+	// update sequence
+	virtual void onPreUpdate(float elapsedTime);
+	virtual void onInternalPhysicsUpdate(float elapsedTime);
+	virtual void onUpdate(float elapsedTime);
+	virtual void onInternalAnimationUpdate(float elapsedTime);
+	virtual void onPostUpdate(float elapsedTime);
 
 	void renderRoot(WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags);
 	virtual void render(RenderingContext* context, WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen = nullptr);
@@ -84,6 +91,7 @@ LN_INTERNAL_ACCESS:
 	virtual void onUIEvent(UIEventArgs* e);	// この World をホストする UIViewport のイベントが流れてくる
 
 	EventConnection connectOnUIEvent(UIEventHandler handler);
+	void updateObjectsWorldMatrix();
 
 
 	List<Ref<WorldObject>>			m_rootWorldObjectList;
@@ -95,6 +103,7 @@ LN_INTERNAL_ACCESS:
 	List<int>							m_offscreenIdStorage;
 
 	UIEventHandler::EventType			m_onEvent;
+
 };
 
 /**
@@ -118,8 +127,8 @@ LN_CONSTRUCT_ACCESS:
 LN_INTERNAL_ACCESS:
 	SceneGraph2D* getSceneGraph2D() const;
 	Camera* getMainCamera() const;
-	virtual void reginUpdateFrame() override;
-	virtual void updateFrame(float elapsedTime) override;
+	virtual void beginUpdateFrame() override;
+	virtual void onUpdate(float elapsedTime) override;
 	virtual void render(RenderingContext* context, WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen) override;
 
 private:
@@ -150,8 +159,8 @@ LN_INTERNAL_ACCESS:
 	PhysicsWorld* getPhysicsWorld3D() const;
 	SceneGraph3D* getSceneGraph3D() const;
 	Camera* getMainCamera() const;
-	virtual void reginUpdateFrame() override;
-	virtual void updateFrame(float elapsedTime) override;
+	virtual void beginUpdateFrame() override;
+	virtual void onInternalPhysicsUpdate(float elapsedTime) override;
 	virtual void render(RenderingContext* context, WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen) override;
 
 private:

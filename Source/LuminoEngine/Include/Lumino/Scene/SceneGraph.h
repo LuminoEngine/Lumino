@@ -51,7 +51,7 @@ protected:
 
 LN_INTERNAL_ACCESS:
 
-	void reginUpdateFrame();
+	void beginUpdateFrame();
 
 private:
 

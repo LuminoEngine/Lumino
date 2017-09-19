@@ -143,6 +143,7 @@ LN_INTERNAL_ACCESS:
 	const List<Ref<Component>>& getComponents() const { return m_components; }
 	void setSpecialObject(bool enalbed) { m_isSpecialObject = true; }
 	bool isSpecialObject() const { return m_isSpecialObject; }
+	void updateWorldMatrixHierarchical();
 
 private:
 	void updateFrame();

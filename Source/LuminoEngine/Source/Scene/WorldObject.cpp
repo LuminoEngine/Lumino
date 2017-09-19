@@ -260,6 +260,15 @@ void WorldObject::releaseComponents()
 	m_components.clear();
 }
 
+void WorldObject::updateWorldMatrixHierarchical()
+{
+	transform.updateWorldMatrix();
+
+	for (auto& child : m_children)
+	{
+		child->updateWorldMatrixHierarchical();
+	}
+}
 
 //==============================================================================
 // WorldObject2D
