@@ -283,7 +283,10 @@ void ScVariant::loadInternal(ISerializeElement* value)
 	}
 }
 
-
+bool ScVariant::equals(int value) const
+{
+	return (getType() == ScVariantType::Int) && (getInt() == value);
+}
 
 //==============================================================================
 // Archive

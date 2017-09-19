@@ -81,6 +81,9 @@ public:
 	void saveInternal(ISerializeElement* value);
 	void loadInternal(ISerializeElement* value);
 
+	// strict equals
+	bool equals(int value) const;
+
 private:
 	friend class Archive;
 	ln::Ref<ScVariantCore>	m_core;
