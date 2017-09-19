@@ -527,6 +527,10 @@ class RenderView
 public:
 	// 描画リストと視点情報のまとまり。
 	// ある1つの視点から、複数の描画リストを結合して描画するために使用する。
+
+	// 今のところ、DrawList 経由でビューサイズや視点情報を、Particle などが知るために用意している。
+
+
 	List<detail::DrawElementList*>	m_lists;
 	detail::CameraInfo				m_cameraInfo;
 

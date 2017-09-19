@@ -20,6 +20,7 @@ class UIEventArgs;
 class OffscreenWorldView;
 class RenderView;
 class RenderingContext;
+class WorldRenderView;
 
 /** */
 LN_ENUM_FLAGS(WorldDebugDrawFlags)
@@ -29,23 +30,6 @@ LN_ENUM_FLAGS(WorldDebugDrawFlags)
 };
 LN_ENUM_FLAGS_DECLARE(WorldDebugDrawFlags)
 
-/**
-	@brief	
-*/
-class WorldRenderView
-	: public RenderView
-{
-public:
-	void setLayerCullingMask(uint32_t mask) { m_layerCullingMask = mask; }
-	uint32_t getLayerCullingMask() const { return m_layerCullingMask; }
-	
-LN_CONSTRUCT_ACCESS:
-	WorldRenderView();
-	virtual ~WorldRenderView();
-
-private:
-	uint32_t	m_layerCullingMask;
-};
 
 /**
 	@brief		

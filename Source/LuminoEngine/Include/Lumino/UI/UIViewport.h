@@ -2,6 +2,7 @@
 #pragma once
 #include "UIElement.h"
 #include "../Graphics/Viewport.h"
+#include "../Rendering/RenderView.h"
 
 LN_NAMESPACE_BEGIN
 class UIViewportLayer;
@@ -71,7 +72,7 @@ private:
 	@brief		
 */
 class UIViewportLayer
-	: public Object
+	: public SceneRenderView
 {
 	//LN_OBJECT;
 public:
@@ -85,7 +86,7 @@ protected:
 	virtual UIElement* hitTestUIElement(const Point& globalPt);	// TODO: globalPt じゃなくて local のほうがやりやすい
 	virtual void onRoutedEvent(UIEventArgs* e);
 	virtual void updateLayout(const Size& viewSize);
-	virtual void render(bool clearColorBuffer) = 0;
+	virtual void render() = 0;
 	virtual void executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, bool clearColorBuffer) = 0;
 
 private:
@@ -116,14 +117,14 @@ protected:
 	virtual UIElement* hitTestUIElement(const Point& globalPt) override;
 	virtual void onRoutedEvent(UIEventArgs* e) override;
 	virtual void updateLayout(const Size& viewSize) override;
-	virtual void render(bool clearColorBuffer) override;
+	virtual void render() override;
 	virtual void executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, bool clearColorBuffer) override;
 
 private:
 	Ref<UILayoutView>				m_root;
 	Ref<DrawingContext>				m_drawingContext;
 	Ref<detail::SceneRenderer>	m_internalRenderer;
-	Ref<RenderView>	m_drawElementListSet;
+	//Ref<RenderView>	m_drawElementListSet;
 };
 
 /**

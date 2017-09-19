@@ -298,6 +298,7 @@ set(LN_SOURCES_Rendering
 	Include/Lumino/Rendering/DrawingContext.h
 	Include/Lumino/Rendering/Rendering.h
 	Include/Lumino/Rendering/RenderingContext.h
+	Include/Lumino/Rendering/RenderView.h
 	Include/Lumino/Rendering/SceneRenderer.h
 	Source/Rendering/DrawingContext.cpp
 	Source/Rendering/FrameRectRenderFeature.cpp
@@ -311,6 +312,7 @@ set(LN_SOURCES_Rendering
 	Source/Rendering/PrimitiveRenderFeature.h
 	Source/Rendering/Rendering.cpp
 	Source/Rendering/RenderingContext.cpp
+	Source/Rendering/RenderView.cpp
 	Source/Rendering/SceneRenderer.cpp
 	Source/Rendering/ShapesRenderFeature.cpp
 	Source/Rendering/ShapesRenderFeature.h

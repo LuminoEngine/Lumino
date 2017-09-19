@@ -153,7 +153,7 @@ class CameraViewportLayer2
 public:
 	void setDebugDrawFlags(WorldDebugDrawFlags flags);
 
-	virtual void render(bool clearColorBuffer) override;
+	virtual void render() override;
 	virtual void executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, bool clearColorBuffer) override;
 
 protected:
@@ -169,7 +169,7 @@ private:
 	World*								m_targetWorld;
 	Ref<CameraComponent>				m_hostingCamera;
 	Ref<detail::SceneRenderer>		m_internalRenderer;
-	Ref<WorldRenderView>				m_mainRenderView;
+	//Ref<WorldRenderView>				m_mainRenderView;
 	WorldDebugDrawFlags					m_debugDrawFlags;
 };
 

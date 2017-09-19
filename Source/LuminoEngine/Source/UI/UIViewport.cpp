@@ -144,17 +144,15 @@ void UIViewport::onRender(DrawingContext* g)
 
 
 
-	bool clearColorBuffer = true;
 	for (auto& layer : m_viewportLayerList)
 	{
-		layer->render(clearColorBuffer);
-		clearColorBuffer = false;
+		layer->render();
 	}
 
 	g->setBuiltinEffectData(detail::BuiltinEffectData::DefaultData);
 
 	// 全てのレイヤーの描画リストを実行し m_primaryLayerTarget へ書き込む
-	clearColorBuffer = true;
+	bool clearColorBuffer = true;
 	for (auto& layer : m_viewportLayerList)
 	{
 		layer->executeDrawListRendering(g, m_primaryLayerTarget, m_depthBuffer, clearColorBuffer);
@@ -273,7 +271,7 @@ void UIViewport::makeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize
 
 //------------------------------------------------------------------------------
 UIViewportLayer::UIViewportLayer()
-	: Object()
+	: SceneRenderView()
 	, m_owner(nullptr)
 {
 }
@@ -348,9 +346,7 @@ void UILayoutLayer::initialize()
 	internalRenderer->initialize(detail::EngineDomain::getGraphicsManager());
 	m_internalRenderer = internalRenderer;
 
-	m_drawElementListSet = newObject<RenderView>();
-	m_drawElementListSet->m_lists.add(m_drawingContext->getDrawElementList());
-
+	m_lists.add(m_drawingContext->getDrawElementList());
 }
 
 //------------------------------------------------------------------------------
@@ -380,7 +376,7 @@ void UILayoutLayer::updateLayout(const Size& viewSize)
 }
 
 //------------------------------------------------------------------------------
-void UILayoutLayer::render(bool clearColorBuffer)
+void UILayoutLayer::render()
 {
 	m_drawingContext->beginMakeElements();
 	m_drawingContext->setBlendMode(BlendMode::Alpha);
@@ -394,21 +390,16 @@ void UILayoutLayer::executeDrawListRendering(DrawList* parentDrawList, RenderTar
 	// TODO: float
 	Size viewPixelSize((float)renderTarget->getWidth(), (float)renderTarget->getHeight());
 
-	m_drawElementListSet->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
-	m_drawElementListSet->m_cameraInfo.viewPixelSize = viewPixelSize;
-	m_drawElementListSet->m_cameraInfo.viewPosition = Vector3::Zero;
-	m_drawElementListSet->m_cameraInfo.viewDirection = Vector3::UnitZ;
-	m_drawElementListSet->m_cameraInfo.viewMatrix = Matrix::Identity;
-	m_drawElementListSet->m_cameraInfo.projMatrix = Matrix::makePerspective2DLH(m_drawElementListSet->m_cameraInfo.viewPixelSize.width, m_drawElementListSet->m_cameraInfo.viewPixelSize.height, 0, 1);
-	m_drawElementListSet->m_cameraInfo.viewProjMatrix = m_drawElementListSet->m_cameraInfo.viewMatrix * m_drawElementListSet->m_cameraInfo.projMatrix;
-	m_drawElementListSet->m_cameraInfo.viewFrustum = ViewFrustum(m_drawElementListSet->m_cameraInfo.projMatrix);
-	m_drawElementListSet->m_cameraInfo.zSortDistanceBase = ZSortDistanceBase::NodeZ;
-	m_internalRenderer->render(m_drawElementListSet, renderTarget, depthBuffer, nullptr, clearColorBuffer, getOwnerViewport()->getViewBackgroundColor());	// TODO: diag
-	//parentDrawList->renderSubView(
-	//	m_drawElementListSet,
-	//	m_internalRenderer,
-	//	renderTarget,
-	//	depthBuffer);
+	this->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
+	this->m_cameraInfo.viewPixelSize = viewPixelSize;
+	this->m_cameraInfo.viewPosition = Vector3::Zero;
+	this->m_cameraInfo.viewDirection = Vector3::UnitZ;
+	this->m_cameraInfo.viewMatrix = Matrix::Identity;
+	this->m_cameraInfo.projMatrix = Matrix::makePerspective2DLH(this->m_cameraInfo.viewPixelSize.width, this->m_cameraInfo.viewPixelSize.height, 0, 1);
+	this->m_cameraInfo.viewProjMatrix = this->m_cameraInfo.viewMatrix * this->m_cameraInfo.projMatrix;
+	this->m_cameraInfo.viewFrustum = ViewFrustum(this->m_cameraInfo.projMatrix);
+	this->m_cameraInfo.zSortDistanceBase = ZSortDistanceBase::NodeZ;
+	m_internalRenderer->render(this, renderTarget, depthBuffer, nullptr, clearColorBuffer, getOwnerViewport()->getViewBackgroundColor());	// TODO: diag
 }
 
 //==============================================================================
