@@ -21,6 +21,7 @@ public:
 	void updateLayout(const Size& viewSize);
 	void onRoutedEvent(UIEventArgs* e);
 	UIElement* checkMouseHoverElement(const Point& globalPt);
+	void render(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
 
 public:
 	List<Ref<UIViewportLayer>>	m_viewportLayerList;
@@ -70,7 +71,7 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 private:
-	void updateFramebufferSizeIfNeeded();
+	void updateFramebufferIfNeeded();
 	void makeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize, Matrix* mat);
 
 	SizeI							m_backbufferSize;
@@ -79,9 +80,7 @@ private:
 	Color							m_backgroundColor;
 
 	detail::RenderViewLayerList		m_layerList;
-	//List<Ref<UIViewportLayer>>	m_viewportLayerList;
 	Ref<RenderTargetTexture>		m_primaryLayerTarget;
-	Ref<RenderTargetTexture>		m_secondaryLayerTarget;
 	Ref<DepthBuffer>				m_depthBuffer;
 
 	// TODO: RenderView
@@ -101,7 +100,7 @@ enum class ViewClearMode
 /**
 	@brief		
 */
-class UIViewportLayer
+class UIViewportLayer	// TODO: UI モジュールではなく Rendering モジュールへ移動
 	: public SceneRenderView
 {
 	//LN_OBJECT;
@@ -121,17 +120,20 @@ protected:
 	virtual UIElement* hitTestUIElement(const Point& globalPt);	// TODO: globalPt じゃなくて local のほうがやりやすい
 	virtual void onRoutedEvent(UIEventArgs* e);
 	virtual void updateLayout(const Size& viewSize);
-	virtual void render() = 0;
-	virtual void executeDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) = 0;
+	virtual void renderScene(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) = 0;
 
 private:
+	void render(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
 	void postRender(DrawList* context, Ref<RenderTargetTexture>* primaryLayerTarget, Ref<RenderTargetTexture>* secondaryLayerTarget);
+	void updateFramebufferIfNeeded();
 
-	ViewClearMode			m_clearMode;
-	Color					m_backgroundColor;
-	List<Ref<PostEffect>>	m_postEffects;
+	ViewClearMode				m_clearMode;
+	Color						m_backgroundColor;
+	List<Ref<PostEffect>>		m_postEffects;
+	Ref<RenderTargetTexture>	m_primaryLayerTarget;
+	Ref<RenderTargetTexture>	m_secondaryLayerTarget;
+	Ref<DepthBuffer>			m_depthBuffer;
 	friend class detail::RenderViewLayerList;
-	friend class UIViewport;
 };
 
 
@@ -155,8 +157,7 @@ protected:
 	virtual UIElement* hitTestUIElement(const Point& globalPt) override;
 	virtual void onRoutedEvent(UIEventArgs* e) override;
 	virtual void updateLayout(const Size& viewSize) override;
-	virtual void render() override;
-	virtual void executeDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
+	virtual void renderScene(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 
 private:
 	Ref<UILayoutView>			m_root;

@@ -816,7 +816,7 @@ void CameraViewportLayer2::setDebugDrawFlags(WorldDebugDrawFlags flags)
 }
 
 //------------------------------------------------------------------------------
-void CameraViewportLayer2::render()
+void CameraViewportLayer2::renderScene(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 	// カメラ行列の更新
 	m_hostingCamera->updateMatrices(getViewSize());
@@ -824,11 +824,10 @@ void CameraViewportLayer2::render()
 
 	//m_targetWorld->renderRoot(m_hostingCamera, m_debugDrawFlags, this);
 	m_targetWorld->renderRoot(this, m_debugDrawFlags);
-}
 
-//------------------------------------------------------------------------------
-void CameraViewportLayer2::executeDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
-{
+
+
+
 	// TODO: float
 	Size targetSize((float)renderTarget->getWidth(), (float)renderTarget->getHeight());
 	m_hostingCamera->updateMatrices(targetSize);

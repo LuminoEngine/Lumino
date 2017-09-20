@@ -104,7 +104,7 @@ UIElement* UIViewport::checkMouseHoverElement(const Point& globalPt)
 //------------------------------------------------------------------------------
 void UIViewport::onRender(DrawingContext* g)
 {
-	updateFramebufferSizeIfNeeded();
+	updateFramebufferIfNeeded();
 
 	//TODO: state push/pop
 
@@ -118,22 +118,16 @@ void UIViewport::onRender(DrawingContext* g)
 
 
 
-	for (auto& layer : m_layerList.m_viewportLayerList)
-	{
-		layer->render();
-	}
+	//for (auto& layer : m_layerList.m_viewportLayerList)
+	//{
+	//	layer->render();
+	//}
 
 	g->setBuiltinEffectData(detail::BuiltinEffectData::DefaultData);
 
-	// 全てのレイヤーの描画リストを実行し m_primaryLayerTarget へ書き込む
-	for (auto& layer : m_layerList.m_viewportLayerList)
-	{
-		layer->executeDrawListRendering(m_primaryLayerTarget, m_depthBuffer);
 
-		// Posteffect
-		layer->postRender(g, &m_primaryLayerTarget, &m_secondaryLayerTarget);
-	}
 
+	m_layerList.render(m_primaryLayerTarget, m_depthBuffer);
 
 
 
@@ -155,7 +149,7 @@ void UIViewport::onRender(DrawingContext* g)
 }
 
 //------------------------------------------------------------------------------
-void UIViewport::updateFramebufferSizeIfNeeded()
+void UIViewport::updateFramebufferIfNeeded()
 {
 	const SizeI& newSize = SizeI::fromFloatSize(m_viewSize);
 
@@ -164,11 +158,8 @@ void UIViewport::updateFramebufferSizeIfNeeded()
 	{
 		// RenderTargetTexture
 		// TODO: できればこういうのは Resize 関数を作りたい。作り直したくない
-		// TODO: というか UE4 みたいにキャッシュしたい
 		m_primaryLayerTarget = Ref<RenderTargetTexture>::makeRef();
 		m_primaryLayerTarget->createImpl(getManager()->getGraphicsManager(), newSize, 1, TextureFormat::R8G8B8X8);
-		m_secondaryLayerTarget = Ref<RenderTargetTexture>::makeRef();
-		m_secondaryLayerTarget->createImpl(getManager()->getGraphicsManager(), newSize, 1, TextureFormat::R8G8B8X8);
 
 		// DepthBuffer
 		m_depthBuffer = Ref<DepthBuffer>::makeRef();
@@ -279,6 +270,14 @@ UIElement* RenderViewLayerList::checkMouseHoverElement(const Point& globalPt)
 	return nullptr;
 }
 
+void RenderViewLayerList::render(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+{
+	for (auto& layer : m_viewportLayerList)
+	{
+		layer->render(renderTarget, depthBuffer);
+	}
+}
+
 } // namespace detail
 
 
@@ -324,6 +323,24 @@ void UIViewportLayer::updateLayout(const Size& viewSize)
 	setViewSize(viewSize);
 }
 
+void UIViewportLayer::render(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+{
+	updateFramebufferIfNeeded();
+
+	if (m_postEffects.isEmpty())
+	{
+		renderScene(renderTarget, depthBuffer);
+	}
+	else
+	{
+		LN_NOTIMPLEMENTED();
+		//layer->renderScene(m_primaryLayerTarget, m_depthBuffer);
+
+		//// Posteffect
+		//layer->postRender(g, &m_primaryLayerTarget, &m_secondaryLayerTarget);
+	}
+}
+
 //------------------------------------------------------------------------------
 void UIViewportLayer::postRender(DrawList* context, Ref<RenderTargetTexture>* primaryLayerTarget, Ref<RenderTargetTexture>* secondaryLayerTarget)
 {
@@ -334,6 +351,35 @@ void UIViewportLayer::postRender(DrawList* context, Ref<RenderTargetTexture>* pr
 	}
 }
 
+void UIViewportLayer::updateFramebufferIfNeeded()
+{
+	if (m_postEffects.isEmpty())
+	{
+		m_primaryLayerTarget.safeRelease();
+		m_secondaryLayerTarget.safeRelease();
+		m_depthBuffer.safeRelease();
+	}
+	else
+	{
+		const SizeI& newSize = SizeI::fromFloatSize(getViewSize());
+
+		if (m_primaryLayerTarget == nullptr ||
+			(m_primaryLayerTarget != nullptr && newSize != m_primaryLayerTarget->getSize()))
+		{
+			// RenderTargetTexture
+			// TODO: できればこういうのは Resize 関数を作りたい。作り直したくない
+			// TODO: というか UE4 みたいにキャッシュしたい
+			m_primaryLayerTarget = Ref<RenderTargetTexture>::makeRef();
+			m_primaryLayerTarget->createImpl(detail::UIManager::getInstance()->getGraphicsManager(), newSize, 1, TextureFormat::R8G8B8X8);
+			m_secondaryLayerTarget = Ref<RenderTargetTexture>::makeRef();
+			m_secondaryLayerTarget->createImpl(detail::UIManager::getInstance()->getGraphicsManager(), newSize, 1, TextureFormat::R8G8B8X8);
+
+			// DepthBuffer
+			m_depthBuffer = Ref<DepthBuffer>::makeRef();
+			m_depthBuffer->createImpl(detail::UIManager::getInstance()->getGraphicsManager(), newSize, TextureFormat::D24S8);
+		}
+	}
+}
 
 //==============================================================================
 // UILayoutLayer
@@ -396,17 +442,16 @@ void UILayoutLayer::updateLayout(const Size& viewSize)
 }
 
 //------------------------------------------------------------------------------
-void UILayoutLayer::render()
+void UILayoutLayer::renderScene(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 	m_drawingContext->beginMakeElements();
 	m_drawingContext->setBlendMode(BlendMode::Alpha);
 	//m_drawingContext->Clear(ClearFlags::All, Color::Black);;	// TODO
 	m_root->render(m_drawingContext);
-}
 
-//------------------------------------------------------------------------------
-void UILayoutLayer::executeDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
-{
+
+
+
 	// TODO: float
 	Size viewPixelSize((float)renderTarget->getWidth(), (float)renderTarget->getHeight());
 
