@@ -11,6 +11,25 @@ namespace detail { class SceneRenderer; }
 namespace detail { class NonShadingRenderer; }
 class RenderView;
 
+namespace detail {
+
+class RenderViewLayerList
+{
+public:
+	void addRenderView(UIViewportLayer* renderView);
+
+	void updateLayout(const Size& viewSize);
+	void onRoutedEvent(UIEventArgs* e);
+	UIElement* checkMouseHoverElement(const Point& globalPt);
+
+public:
+	List<Ref<UIViewportLayer>>	m_viewportLayerList;
+
+};
+
+} // namespace detail
+
+
 /**
 	@brief		
 	@attention	getSize() と getViewSize() で得られるサイズの違いに気を付けてください。
@@ -58,7 +77,9 @@ private:
 	Size							m_viewSize;
 	ViewportPlacement				m_placement;
 	Color							m_backgroundColor;
-	List<Ref<UIViewportLayer>>	m_viewportLayerList;
+
+	detail::RenderViewLayerList		m_layerList;
+	//List<Ref<UIViewportLayer>>	m_viewportLayerList;
 	Ref<RenderTargetTexture>		m_primaryLayerTarget;
 	Ref<RenderTargetTexture>		m_secondaryLayerTarget;
 	Ref<DepthBuffer>				m_depthBuffer;
@@ -101,7 +122,7 @@ protected:
 	virtual void onRoutedEvent(UIEventArgs* e);
 	virtual void updateLayout(const Size& viewSize);
 	virtual void render() = 0;
-	virtual void executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) = 0;
+	virtual void executeDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) = 0;
 
 private:
 	void postRender(DrawList* context, Ref<RenderTargetTexture>* primaryLayerTarget, Ref<RenderTargetTexture>* secondaryLayerTarget);
@@ -109,8 +130,10 @@ private:
 	ViewClearMode			m_clearMode;
 	Color					m_backgroundColor;
 	List<Ref<PostEffect>>	m_postEffects;
+	friend class detail::RenderViewLayerList;
 	friend class UIViewport;
 };
+
 
 
 /**
@@ -133,7 +156,7 @@ protected:
 	virtual void onRoutedEvent(UIEventArgs* e) override;
 	virtual void updateLayout(const Size& viewSize) override;
 	virtual void render() override;
-	virtual void executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
+	virtual void executeDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 
 private:
 	Ref<UILayoutView>			m_root;

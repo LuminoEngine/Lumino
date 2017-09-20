@@ -827,7 +827,7 @@ void CameraViewportLayer2::render()
 }
 
 //------------------------------------------------------------------------------
-void CameraViewportLayer2::executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+void CameraViewportLayer2::executeDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 	// TODO: float
 	Size targetSize((float)renderTarget->getWidth(), (float)renderTarget->getHeight());

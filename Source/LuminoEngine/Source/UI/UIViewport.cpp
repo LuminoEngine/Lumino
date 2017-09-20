@@ -64,33 +64,15 @@ void UIViewport::setBackbufferSize(int width, int height)
 //------------------------------------------------------------------------------
 void UIViewport::addViewportLayer(UIViewportLayer* layer)
 {
-	m_viewportLayerList.add(layer);
+	m_layerList.addRenderView(layer);
 }
-
-//------------------------------------------------------------------------------
-//void UIViewport::RemoveViewportLayer(ViewportLayer* layer)
-//{
-//	if (m_viewportLayerList->Remove(Ref<ViewportLayer>(layer)))
-//	{
-//		layer->SetOwner(nullptr);
-//	}
-//}
 
 //------------------------------------------------------------------------------
 void UIViewport::onRoutedEvent(UIEventArgs* e)
 {
-	// UI 要素は通常 UIViewport の上に張り付けられる。
-	// デフォルトの MainWindow などは全体に UILayoutPanel が乗るので、
-	// 通常のイベントではなく RoutedEvent でなければハンドリングできない。
-
-
-	for (auto& layer : m_viewportLayerList)
-	{
-		layer->onRoutedEvent(e);
-		if (e->handled) return;
-	}
-
-	return UIElement::onRoutedEvent(e);
+	m_layerList.onRoutedEvent(e);
+	if (e->handled) return;
+	UIElement::onRoutedEvent(e);
 }
 
 //------------------------------------------------------------------------------
@@ -98,10 +80,7 @@ Size UIViewport::arrangeOverride(const Size& finalSize)
 {
 	Size renderSize = UIElement::arrangeOverride(finalSize);
 
-	for (auto& layer : m_viewportLayerList)
-	{
-		layer->updateLayout(finalSize);
-	}
+	m_layerList.updateLayout(finalSize);
 
 	// バックバッファサイズの調整
 	{
@@ -117,12 +96,8 @@ Size UIViewport::arrangeOverride(const Size& finalSize)
 //------------------------------------------------------------------------------
 UIElement* UIViewport::checkMouseHoverElement(const Point& globalPt)
 {
-	for (auto& layer : m_viewportLayerList)
-	{
-		auto* element = layer->hitTestUIElement(globalPt);
-		if (element != nullptr) return element;
-	}
-
+	UIElement* element = m_layerList.checkMouseHoverElement(globalPt);
+	if (element != nullptr) return element;
 	return UIElement::checkMouseHoverElement(globalPt);
 }
 
@@ -143,7 +118,7 @@ void UIViewport::onRender(DrawingContext* g)
 
 
 
-	for (auto& layer : m_viewportLayerList)
+	for (auto& layer : m_layerList.m_viewportLayerList)
 	{
 		layer->render();
 	}
@@ -151,9 +126,9 @@ void UIViewport::onRender(DrawingContext* g)
 	g->setBuiltinEffectData(detail::BuiltinEffectData::DefaultData);
 
 	// 全てのレイヤーの描画リストを実行し m_primaryLayerTarget へ書き込む
-	for (auto& layer : m_viewportLayerList)
+	for (auto& layer : m_layerList.m_viewportLayerList)
 	{
-		layer->executeDrawListRendering(g, m_primaryLayerTarget, m_depthBuffer);
+		layer->executeDrawListRendering(m_primaryLayerTarget, m_depthBuffer);
 
 		// Posteffect
 		layer->postRender(g, &m_primaryLayerTarget, &m_secondaryLayerTarget);
@@ -259,6 +234,52 @@ void UIViewport::makeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize
 	mat->scale(new_w / dw, new_h / dh, 1.0f);
 #endif
 }
+
+
+
+
+//==============================================================================
+// RenderViewLayerList
+//==============================================================================
+namespace detail {
+
+void RenderViewLayerList::addRenderView(UIViewportLayer* renderView)
+{
+	m_viewportLayerList.add(renderView);
+}
+
+void RenderViewLayerList::updateLayout(const Size& viewSize)
+{
+	for (auto& layer : m_viewportLayerList)
+	{
+		layer->updateLayout(viewSize);
+	}
+}
+
+void RenderViewLayerList::onRoutedEvent(UIEventArgs* e)
+{
+	// UI 要素は通常 UIViewport の上に張り付けられる。
+	// デフォルトの MainWindow などは全体に UILayoutPanel が乗るので、
+	// 通常のイベントではなく RoutedEvent でなければハンドリングできない。
+
+	for (auto& layer : m_viewportLayerList)
+	{
+		layer->onRoutedEvent(e);
+		if (e->handled) return;
+	}
+}
+
+UIElement* RenderViewLayerList::checkMouseHoverElement(const Point& globalPt)
+{
+	for (auto& layer : m_viewportLayerList)
+	{
+		auto* element = layer->hitTestUIElement(globalPt);
+		if (element != nullptr) return element;
+	}
+	return nullptr;
+}
+
+} // namespace detail
 
 
 //==============================================================================
@@ -384,7 +405,7 @@ void UILayoutLayer::render()
 }
 
 //------------------------------------------------------------------------------
-void UILayoutLayer::executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+void UILayoutLayer::executeDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 	// TODO: float
 	Size viewPixelSize((float)renderTarget->getWidth(), (float)renderTarget->getHeight());

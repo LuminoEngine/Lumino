@@ -154,7 +154,7 @@ public:
 	void setDebugDrawFlags(WorldDebugDrawFlags flags);
 
 	virtual void render() override;
-	virtual void executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
+	virtual void executeDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 
 protected:
 	virtual void onRoutedEvent(UIEventArgs* e) override;
