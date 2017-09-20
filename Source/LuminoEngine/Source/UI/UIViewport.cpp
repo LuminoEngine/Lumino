@@ -299,9 +299,15 @@ UIViewportLayer::~UIViewportLayer()
 {
 }
 
+void UIViewportLayer::addChildRenderView(UIViewportLayer* renderView)
+{
+	m_layerList.addRenderView(renderView);
+}
+
 //------------------------------------------------------------------------------
 void UIViewportLayer::addPostEffect(PostEffect* postEffect)
 {
+	if (LN_REQUIRE(postEffect)) return;
 	m_postEffects.add(postEffect);
 	postEffect->m_ownerLayer = this;
 }
@@ -309,18 +315,20 @@ void UIViewportLayer::addPostEffect(PostEffect* postEffect)
 //------------------------------------------------------------------------------
 UIElement* UIViewportLayer::hitTestUIElement(const Point& globalPt)
 {
-	return nullptr;
+	return m_layerList.checkMouseHoverElement(globalPt);
 }
 
 //------------------------------------------------------------------------------
 void UIViewportLayer::onRoutedEvent(UIEventArgs* e)
 {
+	m_layerList.onRoutedEvent(e);
 }
 
 //------------------------------------------------------------------------------
 void UIViewportLayer::updateLayout(const Size& viewSize)
 {
 	setViewSize(viewSize);
+	m_layerList.updateLayout(viewSize);
 }
 
 void UIViewportLayer::render(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
@@ -330,6 +338,7 @@ void UIViewportLayer::render(RenderTargetTexture* renderTarget, DepthBuffer* dep
 	if (m_postEffects.isEmpty())
 	{
 		renderScene(renderTarget, depthBuffer);
+		m_layerList.render(renderTarget, depthBuffer);
 	}
 	else
 	{

@@ -113,6 +113,8 @@ public:
 	void setBackgroundColor(const Color& color) { m_backgroundColor = color; }
 	const Color& getBackgroundColor() const { return m_backgroundColor; }
 
+	void addChildRenderView(UIViewportLayer* renderView);
+
 protected:
 	UIViewportLayer();
 	virtual ~UIViewportLayer();
@@ -129,6 +131,7 @@ private:
 
 	ViewClearMode				m_clearMode;
 	Color						m_backgroundColor;
+	detail::RenderViewLayerList	m_layerList;
 	List<Ref<PostEffect>>		m_postEffects;
 	Ref<RenderTargetTexture>	m_primaryLayerTarget;
 	Ref<RenderTargetTexture>	m_secondaryLayerTarget;
