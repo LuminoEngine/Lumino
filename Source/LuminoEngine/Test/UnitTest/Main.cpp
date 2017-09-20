@@ -166,6 +166,7 @@ void EngineInitalize()
 
 	// 背景はグレーにしておくと加算合成のテストとか、いろいろ都合がよい
 	Engine::getMainViewport()->setViewBackgroundColor(Color32::Gray);
+	Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 
 	Engine::getCamera3D()->getCameraComponent()->setCameraDirection(CameraDirection::lookAt);
 

@@ -26,6 +26,7 @@ public:
 	/** */
 	const Size& getViewSize() const { return m_viewSize; }
 
+	// Obsolete
 	void setViewBackgroundColor(const Color& color);
 	const Color& getViewBackgroundColor() const { return m_backgroundColor; }
 
@@ -68,6 +69,14 @@ private:
 	Ref<RenderView>					m_renderView;
 };
 
+enum class ViewClearMode
+{
+	None,			/**< クリアしない */
+	ColorDepth,		/**< 色と深度をクリアする */
+	Color,			/**< 色のみをクリアする */
+	Depth,			/**< 深度のみをクリアする */
+};
+
 /**
 	@brief		
 */
@@ -76,8 +85,13 @@ class UIViewportLayer
 {
 	//LN_OBJECT;
 public:
-	UIViewport* getOwnerViewport() const { return m_owner; }
 	void addPostEffect(PostEffect* postEffect);
+
+	void setClearMode(ViewClearMode mode) { m_clearMode = mode; }
+	ViewClearMode getClearMode() const { return m_clearMode; }
+
+	void setBackgroundColor(const Color& color) { m_backgroundColor = color; }
+	const Color& getBackgroundColor() const { return m_backgroundColor; }
 
 protected:
 	UIViewportLayer();
@@ -87,12 +101,13 @@ protected:
 	virtual void onRoutedEvent(UIEventArgs* e);
 	virtual void updateLayout(const Size& viewSize);
 	virtual void render() = 0;
-	virtual void executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, bool clearColorBuffer) = 0;
+	virtual void executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) = 0;
 
 private:
 	void postRender(DrawList* context, Ref<RenderTargetTexture>* primaryLayerTarget, Ref<RenderTargetTexture>* secondaryLayerTarget);
 
-	UIViewport*					m_owner;
+	ViewClearMode			m_clearMode;
+	Color					m_backgroundColor;
 	List<Ref<PostEffect>>	m_postEffects;
 	friend class UIViewport;
 };
@@ -118,13 +133,12 @@ protected:
 	virtual void onRoutedEvent(UIEventArgs* e) override;
 	virtual void updateLayout(const Size& viewSize) override;
 	virtual void render() override;
-	virtual void executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, bool clearColorBuffer) override;
+	virtual void executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 
 private:
-	Ref<UILayoutView>				m_root;
-	Ref<DrawingContext>				m_drawingContext;
+	Ref<UILayoutView>			m_root;
+	Ref<DrawingContext>			m_drawingContext;
 	Ref<detail::SceneRenderer>	m_internalRenderer;
-	//Ref<RenderView>	m_drawElementListSet;
 };
 
 /**

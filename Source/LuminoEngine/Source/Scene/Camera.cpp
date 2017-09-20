@@ -804,12 +804,6 @@ void CameraViewportLayer2::initialize(World* targetWorld, CameraComponent* hosti
 }
 
 //------------------------------------------------------------------------------
-const Size& CameraViewportLayer2::getViewSize() const
-{
-	return getOwnerViewport()->getViewSize();
-}
-
-//------------------------------------------------------------------------------
 CameraViewportLayer2::~CameraViewportLayer2()
 {
 	m_hostingCamera->m_ownerLayer = nullptr;
@@ -833,11 +827,13 @@ void CameraViewportLayer2::render()
 }
 
 //------------------------------------------------------------------------------
-void CameraViewportLayer2::executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, bool clearColorBuffer)
+void CameraViewportLayer2::executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 	// TODO: float
 	Size targetSize((float)renderTarget->getWidth(), (float)renderTarget->getHeight());
 	m_hostingCamera->updateMatrices(targetSize);
+
+	bool clearColorBuffer = (getClearMode() == ViewClearMode::ColorDepth || getClearMode() == ViewClearMode::Color);
 
 	//detail::CameraInfo cameraInfo;
 	this->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera.get());
@@ -849,7 +845,7 @@ void CameraViewportLayer2::executeDrawListRendering(DrawList* parentDrawList, Re
 	this->m_cameraInfo.viewProjMatrix = m_hostingCamera->getViewProjectionMatrix();
 	this->m_cameraInfo.viewFrustum = m_hostingCamera->getViewFrustum();
 	this->m_cameraInfo.zSortDistanceBase = m_hostingCamera->getZSortDistanceBase();
-	m_internalRenderer->render(this, renderTarget, depthBuffer, nullptr, clearColorBuffer, getOwnerViewport()->getViewBackgroundColor());	// TODO: diag
+	m_internalRenderer->render(this, renderTarget, depthBuffer, nullptr, clearColorBuffer, getBackgroundColor());	// TODO: diag
 }
 
 //------------------------------------------------------------------------------

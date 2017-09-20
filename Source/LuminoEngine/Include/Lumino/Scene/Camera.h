@@ -154,7 +154,7 @@ public:
 	void setDebugDrawFlags(WorldDebugDrawFlags flags);
 
 	virtual void render() override;
-	virtual void executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, bool clearColorBuffer) override;
+	virtual void executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 
 protected:
 	virtual void onRoutedEvent(UIEventArgs* e) override;
@@ -163,7 +163,6 @@ LN_INTERNAL_ACCESS:
 	CameraViewportLayer2();
 	virtual ~CameraViewportLayer2();
 	void initialize(World* targetWorld, CameraComponent* hostingCamera);
-	const Size& getViewSize() const;
 
 private:
 	World*								m_targetWorld;

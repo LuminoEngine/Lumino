@@ -65,7 +65,6 @@ void UIViewport::setBackbufferSize(int width, int height)
 void UIViewport::addViewportLayer(UIViewportLayer* layer)
 {
 	m_viewportLayerList.add(layer);
-	layer->m_owner = this;
 }
 
 //------------------------------------------------------------------------------
@@ -152,11 +151,9 @@ void UIViewport::onRender(DrawingContext* g)
 	g->setBuiltinEffectData(detail::BuiltinEffectData::DefaultData);
 
 	// 全てのレイヤーの描画リストを実行し m_primaryLayerTarget へ書き込む
-	bool clearColorBuffer = true;
 	for (auto& layer : m_viewportLayerList)
 	{
-		layer->executeDrawListRendering(g, m_primaryLayerTarget, m_depthBuffer, clearColorBuffer);
-		clearColorBuffer = false;
+		layer->executeDrawListRendering(g, m_primaryLayerTarget, m_depthBuffer);
 
 		// Posteffect
 		layer->postRender(g, &m_primaryLayerTarget, &m_secondaryLayerTarget);
@@ -272,7 +269,8 @@ void UIViewport::makeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize
 //------------------------------------------------------------------------------
 UIViewportLayer::UIViewportLayer()
 	: SceneRenderView()
-	, m_owner(nullptr)
+	, m_clearMode(ViewClearMode::None)
+	, m_backgroundColor(Color::White)
 {
 }
 
@@ -302,6 +300,7 @@ void UIViewportLayer::onRoutedEvent(UIEventArgs* e)
 //------------------------------------------------------------------------------
 void UIViewportLayer::updateLayout(const Size& viewSize)
 {
+	setViewSize(viewSize);
 }
 
 //------------------------------------------------------------------------------
@@ -385,10 +384,12 @@ void UILayoutLayer::render()
 }
 
 //------------------------------------------------------------------------------
-void UILayoutLayer::executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, bool clearColorBuffer)
+void UILayoutLayer::executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 	// TODO: float
 	Size viewPixelSize((float)renderTarget->getWidth(), (float)renderTarget->getHeight());
+
+	bool clearColorBuffer = (getClearMode() == ViewClearMode::ColorDepth || getClearMode() == ViewClearMode::Color);
 
 	this->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
 	this->m_cameraInfo.viewPixelSize = viewPixelSize;
@@ -399,7 +400,7 @@ void UILayoutLayer::executeDrawListRendering(DrawList* parentDrawList, RenderTar
 	this->m_cameraInfo.viewProjMatrix = this->m_cameraInfo.viewMatrix * this->m_cameraInfo.projMatrix;
 	this->m_cameraInfo.viewFrustum = ViewFrustum(this->m_cameraInfo.projMatrix);
 	this->m_cameraInfo.zSortDistanceBase = ZSortDistanceBase::NodeZ;
-	m_internalRenderer->render(this, renderTarget, depthBuffer, nullptr, clearColorBuffer, getOwnerViewport()->getViewBackgroundColor());	// TODO: diag
+	m_internalRenderer->render(this, renderTarget, depthBuffer, nullptr, clearColorBuffer, getBackgroundColor());	// TODO: diag
 }
 
 //==============================================================================
