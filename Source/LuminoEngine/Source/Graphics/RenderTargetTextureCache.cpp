@@ -23,64 +23,108 @@ namespace detail
 // RenderTargetTextureCache
 //==============================================================================
 
-//------------------------------------------------------------------------------
 RenderTargetTextureCache::RenderTargetTextureCache(GraphicsManager* manager)
 	: m_manager(manager)
 {
 }
 
-//------------------------------------------------------------------------------
 RenderTargetTextureCache::~RenderTargetTextureCache()
 {
 }
 
-//------------------------------------------------------------------------------
-Ref<RenderTargetTexture> RenderTargetTextureCache::requestRenderTarget(const SizeI& size, TextureFormat format, int mipLevel)
+RenderTargetTexture* RenderTargetTextureCache::request(const SizeI& size, TextureFormat format, int mipLevel)
 {
-	LN_NOTIMPLEMENTED();
-
-	// 検索キーを作る
-	uint64_t w = (uint64_t)size.width;
-	uint64_t h = (uint64_t)size.height;
-	uint64_t f = (uint64_t)format;
-	uint64_t m = (uint64_t)mipLevel;
-	uint64_t key = m << 40 | f << 32 | h << 16 | w;
+	uint64_t key = makeKey(size, format, mipLevel);
 	
 	// 使えるレンダーターゲットを探す
-	RenderTargetTexture* renderTarget = nullptr;
 	auto itr = m_renderTargetMap.find(key);
 	if (itr != m_renderTargetMap.end())
 	{
-		for (RenderTargetTexture* rt : itr->second)
+		for (Entry& e : itr->second)
 		{
-			if (rt->getReferenceCount() == 1)	// Cache からしか参照されていない？
+			if (e.refCount == 0)
 			{
-				renderTarget = rt;
-				break;
+				e.refCount++;
+				return e.rendertarget;	// 見つかった
 			}
 		}
 	}
 
 	// 見つからなかったら新しく作って map に追加する
-	if (renderTarget == nullptr)
-	{
-		auto rt = Ref<RenderTargetTexture>::makeRef();
-		rt->createImpl(m_manager, size, mipLevel, format);
-		renderTarget = rt.detachMove();
-
-		m_renderTargetMap[key].push_back(renderTarget);
-	}
-
-	// 現在のフレームで使用されたことをマークする
-	renderTarget->m_usedCacheOnFrame = true;
-
-	return Ref<RenderTargetTexture>(renderTarget, true);
+	Entry e;
+	e.rendertarget = Ref<RenderTargetTexture>::makeRef();
+	e.rendertarget->createImpl(m_manager, size, mipLevel, format);
+	e.refCount = 1;
+	e.lifeFrames = 0;
+	m_renderTargetMap[key].push_back(e);
+	return e.rendertarget;
 }
 
-//------------------------------------------------------------------------------
+void RenderTargetTextureCache::release(RenderTargetTexture* rt)
+{
+	if (LN_REQUIRE(rt)) return;
+
+	uint64_t key = makeKey(rt->getSize(), rt->getFormat(), rt->m_mipLevels);
+	auto itr = m_renderTargetMap.find(key);
+	if (itr != m_renderTargetMap.end())
+	{
+		for (Entry& e : itr->second)
+		{
+			if (e.rendertarget == rt)
+			{
+				e.refCount--;
+				if (e.refCount == 0)
+				{
+					e.lifeFrames = 60;
+				}
+				return;
+			}
+		}
+	}
+
+	LN_UNREACHABLE();
+}
+
 void RenderTargetTextureCache::gcRenderTargets()
 {
-	LN_NOTIMPLEMENTED();
+	for (auto itr1 = m_renderTargetMap.begin(); itr1 != m_renderTargetMap.end();)
+	{
+		auto& pair = *itr1;
+		for (auto itr = pair.second.begin(); itr != pair.second.end();)
+		{
+			if (itr->lifeFrames > 0)
+			{
+				itr->lifeFrames--;
+
+				if (itr->lifeFrames <= 0)
+				{
+					itr = pair.second.erase(itr);
+					continue;
+				}
+			}
+
+			++itr;
+		}
+
+		// remove empty key
+		if (pair.second.empty())
+		{
+			itr1 = m_renderTargetMap.erase(itr1);
+		}
+		else
+		{
+			++itr1;
+		}
+	}
+}
+
+uint16_t RenderTargetTextureCache::makeKey(const SizeI& size, TextureFormat format, int mipLevel)
+{
+	uint64_t w = (uint64_t)size.width;
+	uint64_t h = (uint64_t)size.height;
+	uint64_t f = (uint64_t)format;
+	uint64_t m = (uint64_t)mipLevel;
+	return m << 40 | f << 32 | h << 16 | w;
 }
 
 } // namespace detail

@@ -21,7 +21,7 @@ public:
 	void updateLayout(const Size& viewSize);
 	void onRoutedEvent(UIEventArgs* e);
 	UIElement* checkMouseHoverElement(const Point& globalPt);
-	void render(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
+	void render(DrawList* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
 
 public:
 	List<Ref<UIViewportLayer>>	m_viewportLayerList;
@@ -125,7 +125,7 @@ protected:
 	virtual void renderScene(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) = 0;
 
 private:
-	void render(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
+	void render(DrawList* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
 	void postRender(DrawList* context, Ref<RenderTargetTexture>* primaryLayerTarget, Ref<RenderTargetTexture>* secondaryLayerTarget);
 	void updateFramebufferIfNeeded();
 

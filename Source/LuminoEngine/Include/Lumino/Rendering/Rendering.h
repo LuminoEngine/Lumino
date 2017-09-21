@@ -9,6 +9,7 @@
 #include "../Graphics/Material.h"
 
 LN_NAMESPACE_BEGIN
+namespace detail { class RenderTargetTextureCache; }
 class Pen;
 class Font;
 class Material;
@@ -558,7 +559,6 @@ private:
 	detail::SceneRenderer*	m_sceneRenderer;
 };
 
-
 /**
 	@brief	
 */
@@ -756,6 +756,8 @@ private:
 	const DrawElementMetadata*		m_metadata;
 	int								m_currentStateFence;
 	detail::IRenderFeature*			m_lastRenderFeature;
+
+	Ref<detail::RenderTargetTextureCache>	m_renderTargetPool;
 
 	CameraComponent*							m_camera;
 

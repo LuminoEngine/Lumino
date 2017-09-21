@@ -106,34 +106,14 @@ void UIViewport::onRender(DrawingContext* g)
 {
 	updateFramebufferIfNeeded();
 
-	//TODO: state push/pop
-
-	//Ref<RenderTargetTexture> oldRT = g->getRenderTarget(0);
-	//Ref<DepthBuffer> oldDB = g->getDepthBuffer();
-
-	//g->setRenderTarget(0, m_primaryLayerTarget);
-	//g->setDepthBuffer(m_depthBuffer);
-	//g->clear(ClearFlags::All, m_backgroundColor, 1.0f, 0);
-
-
-
-
-	//for (auto& layer : m_layerList.m_viewportLayerList)
-	//{
-	//	layer->render();
-	//}
 
 	g->setBuiltinEffectData(detail::BuiltinEffectData::DefaultData);
 
+	// m_primaryLayerTarget にシーンを描画してもらう
+	g->pushState();
+	m_layerList.render(g, m_primaryLayerTarget, m_depthBuffer);
+	g->popState();
 
-
-	m_layerList.render(m_primaryLayerTarget, m_depthBuffer);
-
-
-
-
-	//g->setRenderTarget(0, oldRT);
-	//g->setDepthBuffer(oldDB);
 
 	Matrix transform;
 	makeViewBoxTransform(SizeI::fromFloatSize(getActualSize()), m_backbufferSize, &transform);
@@ -270,11 +250,11 @@ UIElement* RenderViewLayerList::checkMouseHoverElement(const Point& globalPt)
 	return nullptr;
 }
 
-void RenderViewLayerList::render(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+void RenderViewLayerList::render(DrawList* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 	for (auto& layer : m_viewportLayerList)
 	{
-		layer->render(renderTarget, depthBuffer);
+		layer->render(context, renderTarget, depthBuffer);
 	}
 }
 
@@ -331,22 +311,33 @@ void UIViewportLayer::updateLayout(const Size& viewSize)
 	m_layerList.updateLayout(viewSize);
 }
 
-void UIViewportLayer::render(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+void UIViewportLayer::render(DrawList* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 	updateFramebufferIfNeeded();
 
 	if (m_postEffects.isEmpty())
 	{
 		renderScene(renderTarget, depthBuffer);
-		m_layerList.render(renderTarget, depthBuffer);
+		m_layerList.render(context, renderTarget, depthBuffer);
 	}
 	else
 	{
-		LN_NOTIMPLEMENTED();
-		//layer->renderScene(m_primaryLayerTarget, m_depthBuffer);
+		// m_primaryLayerTarget へ描いてもらう
+		renderScene(m_primaryLayerTarget, m_depthBuffer);
+		m_layerList.render(context, m_primaryLayerTarget, m_depthBuffer);
 
-		//// Posteffect
-		//layer->postRender(g, &m_primaryLayerTarget, &m_secondaryLayerTarget);
+		// Posteffect
+		postRender(context, &m_primaryLayerTarget, &m_secondaryLayerTarget);
+
+		//context->pushState();
+
+		////context->clear(ClearFlags::Depth, Color());
+		//context->setRenderTarget(0, m_primaryLayerTarget);
+		//context->clear(ClearFlags::All, Color::Blue);
+		//context->popState();
+
+		context->blit(m_primaryLayerTarget, renderTarget, Matrix::Identity);
+
 	}
 }
 
