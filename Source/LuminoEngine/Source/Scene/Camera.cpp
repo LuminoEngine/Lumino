@@ -832,7 +832,7 @@ void CameraViewportLayer2::renderScene(RenderTargetTexture* renderTarget, DepthB
 	Size targetSize((float)renderTarget->getWidth(), (float)renderTarget->getHeight());
 	m_hostingCamera->updateMatrices(targetSize);
 
-	bool clearColorBuffer = (getClearMode() == ViewClearMode::ColorDepth || getClearMode() == ViewClearMode::Color);
+	bool clearColorBuffer = (getClearMode() == RenderLayerClearMode::ColorDepth || getClearMode() == RenderLayerClearMode::Color);
 
 	//detail::CameraInfo cameraInfo;
 	this->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera.get());
@@ -853,7 +853,7 @@ void CameraViewportLayer2::onRoutedEvent(UIEventArgs* e)
 	m_targetWorld->onUIEvent(e);
 	if (e->handled) return;
 
-	UIViewportLayer::onRoutedEvent(e);
+	RenderLayer::onRoutedEvent(e);
 }
 
 //==============================================================================

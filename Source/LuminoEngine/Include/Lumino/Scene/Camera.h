@@ -148,7 +148,7 @@ private:
 	@brief
 */
 class CameraViewportLayer2
-	: public UIViewportLayer
+	: public RenderLayer
 {
 public:
 	void setDebugDrawFlags(WorldDebugDrawFlags flags);

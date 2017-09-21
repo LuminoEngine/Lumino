@@ -240,6 +240,7 @@ void UIControlsGallery()
 
 	auto ps1 = TransitionPostEffect::create();
 	Engine::getDefault3DLayer()->addPostEffect(ps1);
+	ps1->transition(1, nullptr, 0);	// フェードイン
 	
 	//auto box1 = StaticMeshComponent::create(LN_LOCALFILE("Assets/cube.mqo"));
 	//auto box1 = StaticMeshComponent::create(LN_LOCALFILE("Assets/cylinder2.mqo"));

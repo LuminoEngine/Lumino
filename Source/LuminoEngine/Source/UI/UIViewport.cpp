@@ -21,7 +21,6 @@ UIViewport::UIViewport()
 	: UIElement()
 	, m_backbufferSize(0, 0)
 	, m_placement(ViewportPlacement::ViewBox)
-	, m_backgroundColor(Color::White)
 {
 }
 
@@ -44,12 +43,6 @@ void UIViewport::initialize()
 }
 
 //------------------------------------------------------------------------------
-void UIViewport::setViewBackgroundColor(const Color& color)
-{
-	m_backgroundColor = color;
-}
-
-//------------------------------------------------------------------------------
 void UIViewport::setPlacement(ViewportPlacement placement)
 {
 	m_placement = placement;
@@ -62,7 +55,7 @@ void UIViewport::setBackbufferSize(int width, int height)
 }
 
 //------------------------------------------------------------------------------
-void UIViewport::addViewportLayer(UIViewportLayer* layer)
+void UIViewport::addViewportLayer(RenderLayer* layer)
 {
 	m_layerList.addRenderView(layer);
 }
@@ -210,178 +203,6 @@ void UIViewport::makeViewBoxTransform(const SizeI& dstSize, const SizeI& srcSize
 
 
 //==============================================================================
-// RenderViewLayerList
-//==============================================================================
-namespace detail {
-
-void RenderViewLayerList::addRenderView(UIViewportLayer* renderView)
-{
-	m_viewportLayerList.add(renderView);
-}
-
-void RenderViewLayerList::updateLayout(const Size& viewSize)
-{
-	for (auto& layer : m_viewportLayerList)
-	{
-		layer->updateLayout(viewSize);
-	}
-}
-
-void RenderViewLayerList::onRoutedEvent(UIEventArgs* e)
-{
-	// UI 要素は通常 UIViewport の上に張り付けられる。
-	// デフォルトの MainWindow などは全体に UILayoutPanel が乗るので、
-	// 通常のイベントではなく RoutedEvent でなければハンドリングできない。
-
-	for (auto& layer : m_viewportLayerList)
-	{
-		layer->onRoutedEvent(e);
-		if (e->handled) return;
-	}
-}
-
-UIElement* RenderViewLayerList::checkMouseHoverElement(const Point& globalPt)
-{
-	for (auto& layer : m_viewportLayerList)
-	{
-		auto* element = layer->hitTestUIElement(globalPt);
-		if (element != nullptr) return element;
-	}
-	return nullptr;
-}
-
-void RenderViewLayerList::render(DrawList* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
-{
-	for (auto& layer : m_viewportLayerList)
-	{
-		layer->render(context, renderTarget, depthBuffer);
-	}
-}
-
-} // namespace detail
-
-
-//==============================================================================
-// UIViewportLayer
-//==============================================================================
-//LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIViewportLayer, Object);
-
-//------------------------------------------------------------------------------
-UIViewportLayer::UIViewportLayer()
-	: SceneRenderView()
-	, m_clearMode(ViewClearMode::None)
-	, m_backgroundColor(Color::White)
-{
-}
-
-//------------------------------------------------------------------------------
-UIViewportLayer::~UIViewportLayer()
-{
-}
-
-void UIViewportLayer::addChildRenderView(UIViewportLayer* renderView)
-{
-	m_layerList.addRenderView(renderView);
-}
-
-//------------------------------------------------------------------------------
-void UIViewportLayer::addPostEffect(PostEffect* postEffect)
-{
-	if (LN_REQUIRE(postEffect)) return;
-	m_postEffects.add(postEffect);
-	postEffect->m_ownerLayer = this;
-}
-
-//------------------------------------------------------------------------------
-UIElement* UIViewportLayer::hitTestUIElement(const Point& globalPt)
-{
-	return m_layerList.checkMouseHoverElement(globalPt);
-}
-
-//------------------------------------------------------------------------------
-void UIViewportLayer::onRoutedEvent(UIEventArgs* e)
-{
-	m_layerList.onRoutedEvent(e);
-}
-
-//------------------------------------------------------------------------------
-void UIViewportLayer::updateLayout(const Size& viewSize)
-{
-	setViewSize(viewSize);
-	m_layerList.updateLayout(viewSize);
-}
-
-void UIViewportLayer::render(DrawList* context, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
-{
-	updateFramebufferIfNeeded();
-
-	if (m_postEffects.isEmpty())
-	{
-		renderScene(renderTarget, depthBuffer);
-		m_layerList.render(context, renderTarget, depthBuffer);
-	}
-	else
-	{
-		// m_primaryLayerTarget へ描いてもらう
-		renderScene(m_primaryLayerTarget, m_depthBuffer);
-		m_layerList.render(context, m_primaryLayerTarget, m_depthBuffer);
-
-		// Posteffect
-		postRender(context, &m_primaryLayerTarget, &m_secondaryLayerTarget);
-
-		//context->pushState();
-
-		////context->clear(ClearFlags::Depth, Color());
-		//context->setRenderTarget(0, m_primaryLayerTarget);
-		//context->clear(ClearFlags::All, Color::Blue);
-		//context->popState();
-
-		context->blit(m_primaryLayerTarget, renderTarget, Matrix::Identity);
-
-	}
-}
-
-//------------------------------------------------------------------------------
-void UIViewportLayer::postRender(DrawList* context, Ref<RenderTargetTexture>* primaryLayerTarget, Ref<RenderTargetTexture>* secondaryLayerTarget)
-{
-	for (auto& e : m_postEffects)
-	{
-		e->onRender(context, *primaryLayerTarget, *secondaryLayerTarget);
-		std::swap(*primaryLayerTarget, *secondaryLayerTarget);
-	}
-}
-
-void UIViewportLayer::updateFramebufferIfNeeded()
-{
-	if (m_postEffects.isEmpty())
-	{
-		m_primaryLayerTarget.safeRelease();
-		m_secondaryLayerTarget.safeRelease();
-		m_depthBuffer.safeRelease();
-	}
-	else
-	{
-		const SizeI& newSize = SizeI::fromFloatSize(getViewSize());
-
-		if (m_primaryLayerTarget == nullptr ||
-			(m_primaryLayerTarget != nullptr && newSize != m_primaryLayerTarget->getSize()))
-		{
-			// RenderTargetTexture
-			// TODO: できればこういうのは Resize 関数を作りたい。作り直したくない
-			// TODO: というか UE4 みたいにキャッシュしたい
-			m_primaryLayerTarget = Ref<RenderTargetTexture>::makeRef();
-			m_primaryLayerTarget->createImpl(detail::UIManager::getInstance()->getGraphicsManager(), newSize, 1, TextureFormat::R8G8B8X8);
-			m_secondaryLayerTarget = Ref<RenderTargetTexture>::makeRef();
-			m_secondaryLayerTarget->createImpl(detail::UIManager::getInstance()->getGraphicsManager(), newSize, 1, TextureFormat::R8G8B8X8);
-
-			// DepthBuffer
-			m_depthBuffer = Ref<DepthBuffer>::makeRef();
-			m_depthBuffer->createImpl(detail::UIManager::getInstance()->getGraphicsManager(), newSize, TextureFormat::D24S8);
-		}
-	}
-}
-
-//==============================================================================
 // UILayoutLayer
 //==============================================================================
 //------------------------------------------------------------------------------
@@ -397,11 +218,11 @@ UILayoutLayer::~UILayoutLayer()
 //------------------------------------------------------------------------------
 void UILayoutLayer::initialize()
 {
-	UIViewportLayer::initialize();
+	RenderLayer::initialize();
 	m_root = newObject<UILayoutView>(UIContext::getMainContext(), nullptr);	// TODO: コンテキスト変更とか
 
-	// このルート要素はビュー全体に広がるが、ヒットテストは行わない。
-	// 行ってしまうと、その後ろにあるシーンのビューにイベントが流れなくなる。
+																			// このルート要素はビュー全体に広がるが、ヒットテストは行わない。
+																			// 行ってしまうと、その後ろにあるシーンのビューにイベントが流れなくなる。
 	m_root->setHitTestVisible(false);
 
 	m_drawingContext = newObject<DrawingContext>();
@@ -426,7 +247,7 @@ UIElement* UILayoutLayer::hitTestUIElement(const Point& globalPt)
 {
 	auto* element = m_root->checkMouseHoverElement(globalPt);
 	if (element != nullptr) return element;
-	return UIViewportLayer::hitTestUIElement(globalPt);
+	return RenderLayer::hitTestUIElement(globalPt);
 }
 
 //------------------------------------------------------------------------------
@@ -455,7 +276,7 @@ void UILayoutLayer::renderScene(RenderTargetTexture* renderTarget, DepthBuffer* 
 	// TODO: float
 	Size viewPixelSize((float)renderTarget->getWidth(), (float)renderTarget->getHeight());
 
-	bool clearColorBuffer = (getClearMode() == ViewClearMode::ColorDepth || getClearMode() == ViewClearMode::Color);
+	bool clearColorBuffer = (getClearMode() == RenderLayerClearMode::ColorDepth || getClearMode() == RenderLayerClearMode::Color);
 
 	this->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
 	this->m_cameraInfo.viewPixelSize = viewPixelSize;
@@ -469,26 +290,6 @@ void UILayoutLayer::renderScene(RenderTargetTexture* renderTarget, DepthBuffer* 
 	m_internalRenderer->render(this, renderTarget, depthBuffer, nullptr, clearColorBuffer, getBackgroundColor());	// TODO: diag
 }
 
-//==============================================================================
-// PostEffect
-//==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(PostEffect, Object);
-
-//------------------------------------------------------------------------------
-PostEffect::PostEffect()
-	: Object()
-{
-}
-
-//------------------------------------------------------------------------------
-PostEffect::~PostEffect()
-{
-}
-
-//------------------------------------------------------------------------------
-void PostEffect::initialize()
-{
-}
 
 
 LN_NAMESPACE_END

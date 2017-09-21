@@ -325,7 +325,7 @@ void UIMainWindow::initialize(PlatformWindow* platformWindow, World2D* defaultWo
 	addChild(m_mainUIViewport);
 
 	m_cameraViewportLayer3D = newObject<CameraViewportLayer2>(defaultWorld3D, defaultWorld3D->getMainCamera()->getCameraComponent());
-	m_cameraViewportLayer3D->setClearMode(ViewClearMode::ColorDepth);
+	m_cameraViewportLayer3D->setClearMode(RenderLayerClearMode::ColorDepth);
 	m_cameraViewportLayer2D = newObject<CameraViewportLayer2>(defaultWorld2D, defaultWorld2D->getMainCamera()->getCameraComponent());
 	m_uiLayer = newObject<UILayoutLayer>();
 
