@@ -148,13 +148,12 @@ private:
 	@brief
 */
 class CameraViewportLayer2
-	: public UIViewportLayer
+	: public RenderLayer
 {
 public:
 	void setDebugDrawFlags(WorldDebugDrawFlags flags);
 
-	virtual void render(bool clearColorBuffer) override;
-	virtual void executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, bool clearColorBuffer) override;
+	virtual void renderScene(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer) override;
 
 protected:
 	virtual void onRoutedEvent(UIEventArgs* e) override;
@@ -163,13 +162,12 @@ LN_INTERNAL_ACCESS:
 	CameraViewportLayer2();
 	virtual ~CameraViewportLayer2();
 	void initialize(World* targetWorld, CameraComponent* hostingCamera);
-	const Size& getViewSize() const;
 
 private:
 	World*								m_targetWorld;
 	Ref<CameraComponent>				m_hostingCamera;
 	Ref<detail::SceneRenderer>		m_internalRenderer;
-	Ref<WorldRenderView>				m_mainRenderView;
+	//Ref<WorldRenderView>				m_mainRenderView;
 	WorldDebugDrawFlags					m_debugDrawFlags;
 };
 

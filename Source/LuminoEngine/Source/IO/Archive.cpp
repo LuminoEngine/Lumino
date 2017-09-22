@@ -96,7 +96,7 @@ void Archive::open(const PathName& filePath, const String& key)
 
 	// アーカイブファイルを開く
 	errno_t err = _tfopen_s(&m_stream, filePath.c_str(), _T("rb"));
-	if (LN_ENSURE_FILE_NOT_FOUND(err == 0)) return;
+	if (LN_ENSURE_FILE_NOT_FOUND(err == 0, filePath.c_str())) return;
 
     // 終端から16バイト戻ってからそれを読むとファイル数
 	fseek(m_stream, -16, SEEK_END);
@@ -579,6 +579,8 @@ PathName ArchiveManager::findLocalFilePath(const StringRef& filePath)
 			return path;
 		}
 	}
+
+	LN_ENSURE_FILE_NOT_FOUND(0, String(filePath).c_str());
 	return PathName();
 }
 

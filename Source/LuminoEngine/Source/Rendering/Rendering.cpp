@@ -10,6 +10,7 @@
 #include "../Graphics/Device/GraphicsDriverInterface.h"
 #include "../Graphics/GraphicsManager.h"
 #include "../Graphics/CoreGraphicsRenderFeature.h"
+#include "../Graphics/RenderTargetTextureCache.h"
 #include "../Graphics/Text/SpriteTextRenderFeature.h"
 #include "../Graphics/Text/VectorTextRenderFeature.h"
 #include "../Graphics/Text/FontManager.h"
@@ -954,6 +955,12 @@ void DrawList::initialize(detail::GraphicsManager* manager)
 		m_freeStateStack.add(Ref<StagingState>::makeRef());
 	}
 	//m_aliveStateStack.add(Ref<StagingState>::makeRef());
+
+	// Lumino はメインループの外側でも RenderingContext を使えるようにしている。
+	// Editor モードでは GC のタイミングをシンプルにつかむことができない。
+	// (最終書き込み先 RT が異なる RenderingContext 間で SetRenderTarget() などで指定する RT を使いまわすと描画順の問題が起こる)
+	// そのため Unity とはことなり、Pool は RenderingContext につけている。
+	m_renderTargetPool = Ref<detail::RenderTargetTextureCache>::makeRef(manager);
 }
 
 //------------------------------------------------------------------------------
@@ -997,7 +1004,7 @@ void DrawList::popState()
 void DrawList::setRenderTarget(int index, RenderTargetTexture* renderTarget)
 {
 	getCurrentState()->m_state.state.setRenderTarget(index, renderTarget);
-	if (index == 0)
+	if (index == 0 && renderTarget)	// TODO: default のサイズにするべき？
 	{
 		setViewportRect(RectI(0, 0, renderTarget->getSize()));
 	}

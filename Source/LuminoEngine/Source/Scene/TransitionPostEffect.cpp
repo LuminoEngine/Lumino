@@ -87,7 +87,7 @@ void TransitionPostEffect::onRender(DrawList* context, RenderTargetTexture* sour
 			// TODO: scoped Ç‹ÇΩÇÕ blit Ç›ÇΩÇ¢Ç… RT íºê⁄éwíËÇÃ Clear
 			Ref<RenderTargetTexture> oldTarget = context->getRenderTarget(0);
 			context->setRenderTarget(0, m_savedTarget);
-			context->clear(ClearFlags::Color, GetOwnerLayer()->getOwnerViewport()->getViewBackgroundColor());
+			context->clear(ClearFlags::Color, GetOwnerLayer()->getBackgroundColor());
 		}
 		else
 		{

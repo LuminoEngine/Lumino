@@ -6,19 +6,29 @@ LN_NAMESPACE_BEGIN
 namespace detail
 {
 
-
+// 
 class RenderTargetTextureCache
-	: public Object
+	: public RefObject
 {
 public:
 	RenderTargetTextureCache(GraphicsManager* manager);
 	virtual ~RenderTargetTextureCache();
 
-	Ref<RenderTargetTexture> requestRenderTarget(const SizeI& size, TextureFormat format, int mipLevel);
+	RenderTargetTexture* request(const SizeI& size, TextureFormat format, int mipLevel);
+	void release(RenderTargetTexture* rt);
+
 	void gcRenderTargets();
 
 private:
-	typedef std::vector<RenderTargetTexture*>	RenderTargetList;
+	uint16_t makeKey(const SizeI& size, TextureFormat format, int mipLevel);
+
+	struct Entry
+	{
+		int							refCount;
+		int							lifeFrames;
+		Ref<RenderTargetTexture>	rendertarget;
+	};
+	typedef std::vector<Entry>	RenderTargetList;
 
 	GraphicsManager*								m_manager;
 	std::unordered_map<uint64_t, RenderTargetList>	m_renderTargetMap;

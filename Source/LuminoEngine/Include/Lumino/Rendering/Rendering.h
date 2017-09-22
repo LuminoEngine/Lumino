@@ -9,6 +9,7 @@
 #include "../Graphics/Material.h"
 
 LN_NAMESPACE_BEGIN
+namespace detail { class RenderTargetTextureCache; }
 class Pen;
 class Font;
 class Material;
@@ -527,6 +528,10 @@ class RenderView
 public:
 	// 描画リストと視点情報のまとまり。
 	// ある1つの視点から、複数の描画リストを結合して描画するために使用する。
+
+	// 今のところ、DrawList 経由でビューサイズや視点情報を、Particle などが知るために用意している。
+
+
 	List<detail::DrawElementList*>	m_lists;
 	detail::CameraInfo				m_cameraInfo;
 
@@ -553,7 +558,6 @@ private:
 	ln::Size    m_viewSize;
 	detail::SceneRenderer*	m_sceneRenderer;
 };
-
 
 /**
 	@brief	
@@ -752,6 +756,8 @@ private:
 	const DrawElementMetadata*		m_metadata;
 	int								m_currentStateFence;
 	detail::IRenderFeature*			m_lastRenderFeature;
+
+	Ref<detail::RenderTargetTextureCache>	m_renderTargetPool;
 
 	CameraComponent*							m_camera;
 

@@ -796,18 +796,11 @@ void CameraViewportLayer2::initialize(World* targetWorld, CameraComponent* hosti
 		m_internalRenderer = internalRenderer;
 	}
 
-	m_mainRenderView = newObject<WorldRenderView>();
-	m_mainRenderView->setLayerCullingMask(0xFFFFFFFF);	// TODO:
-	//m_mainRenderView->m_lists.add(m_targetWorld->getInsideWorldRenderer()->getDrawElementList());
-	m_mainRenderView->m_lists.add(m_targetWorld->getRenderer()->getDrawElementList());
-	m_mainRenderView->m_lists.add(m_targetWorld->GetDebugRenderer()->getDrawElementList());
-	m_mainRenderView->setSceneRenderer(m_internalRenderer);
-}
-
-//------------------------------------------------------------------------------
-const Size& CameraViewportLayer2::getViewSize() const
-{
-	return getOwnerViewport()->getViewSize();
+	this->setLayerCullingMask(0xFFFFFFFF);	// TODO:
+	//this->m_lists.add(m_targetWorld->getInsideWorldRenderer()->getDrawElementList());
+	this->m_lists.add(m_targetWorld->getRenderer()->getDrawElementList());
+	this->m_lists.add(m_targetWorld->GetDebugRenderer()->getDrawElementList());
+	this->setSceneRenderer(m_internalRenderer);
 }
 
 //------------------------------------------------------------------------------
@@ -823,42 +816,35 @@ void CameraViewportLayer2::setDebugDrawFlags(WorldDebugDrawFlags flags)
 }
 
 //------------------------------------------------------------------------------
-void CameraViewportLayer2::render(bool clearColorBuffer)
+void CameraViewportLayer2::renderScene(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
-	
-	//m_targetWorld->getRenderer()->clear(clearColorBuffer ? (ClearFlags::All) : ClearFlags::Depth, getOwnerViewport()->getViewBackgroundColor());
-
 	// カメラ行列の更新
-	m_hostingCamera->updateMatrices(getOwnerViewport()->getViewSize());
-	m_mainRenderView->setViewSize(getOwnerViewport()->getViewSize());
+	m_hostingCamera->updateMatrices(getViewSize());
+	this->setViewSize(getViewSize());
 
-	//m_targetWorld->renderRoot(m_hostingCamera, m_debugDrawFlags, m_mainRenderView);
-	m_targetWorld->renderRoot(m_mainRenderView, m_debugDrawFlags);
-}
+	//m_targetWorld->renderRoot(m_hostingCamera, m_debugDrawFlags, this);
+	m_targetWorld->renderRoot(this, m_debugDrawFlags);
 
-//------------------------------------------------------------------------------
-void CameraViewportLayer2::executeDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer, bool clearColorBuffer)
-{
+
+
+
 	// TODO: float
 	Size targetSize((float)renderTarget->getWidth(), (float)renderTarget->getHeight());
 	m_hostingCamera->updateMatrices(targetSize);
 
+	bool clearColorBuffer = (getClearMode() == RenderLayerClearMode::ColorDepth || getClearMode() == RenderLayerClearMode::Color);
+
 	//detail::CameraInfo cameraInfo;
-	m_mainRenderView->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera.get());
-	m_mainRenderView->m_cameraInfo.viewPixelSize = targetSize;
-	m_mainRenderView->m_cameraInfo.viewPosition = m_hostingCamera->getTransform()->getWorldMatrix().getPosition();
-	m_mainRenderView->m_cameraInfo.viewDirection = m_hostingCamera->getDirectionInternal().GetXYZ();
-	m_mainRenderView->m_cameraInfo.viewMatrix = m_hostingCamera->getViewMatrix();
-	m_mainRenderView->m_cameraInfo.projMatrix = m_hostingCamera->getProjectionMatrix();
-	m_mainRenderView->m_cameraInfo.viewProjMatrix = m_hostingCamera->getViewProjectionMatrix();
-	m_mainRenderView->m_cameraInfo.viewFrustum = m_hostingCamera->getViewFrustum();
-	m_mainRenderView->m_cameraInfo.zSortDistanceBase = m_hostingCamera->getZSortDistanceBase();
-	m_internalRenderer->render(m_mainRenderView, renderTarget, depthBuffer, nullptr, clearColorBuffer, getOwnerViewport()->getViewBackgroundColor());	// TODO: diag
-	//parentDrawList->renderSubView(
-	//	m_mainRenderView,
-	//	m_internalRenderer,
-	//	renderTarget,
-	//	depthBuffer);
+	this->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera.get());
+	this->m_cameraInfo.viewPixelSize = targetSize;
+	this->m_cameraInfo.viewPosition = m_hostingCamera->getTransform()->getWorldMatrix().getPosition();
+	this->m_cameraInfo.viewDirection = m_hostingCamera->getDirectionInternal().GetXYZ();
+	this->m_cameraInfo.viewMatrix = m_hostingCamera->getViewMatrix();
+	this->m_cameraInfo.projMatrix = m_hostingCamera->getProjectionMatrix();
+	this->m_cameraInfo.viewProjMatrix = m_hostingCamera->getViewProjectionMatrix();
+	this->m_cameraInfo.viewFrustum = m_hostingCamera->getViewFrustum();
+	this->m_cameraInfo.zSortDistanceBase = m_hostingCamera->getZSortDistanceBase();
+	m_internalRenderer->render(this, renderTarget, depthBuffer, nullptr, clearColorBuffer, getBackgroundColor());	// TODO: diag
 }
 
 //------------------------------------------------------------------------------
@@ -867,7 +853,7 @@ void CameraViewportLayer2::onRoutedEvent(UIEventArgs* e)
 	m_targetWorld->onUIEvent(e);
 	if (e->handled) return;
 
-	UIViewportLayer::onRoutedEvent(e);
+	RenderLayer::onRoutedEvent(e);
 }
 
 //==============================================================================

@@ -325,11 +325,19 @@ void UIMainWindow::initialize(PlatformWindow* platformWindow, World2D* defaultWo
 	addChild(m_mainUIViewport);
 
 	m_cameraViewportLayer3D = newObject<CameraViewportLayer2>(defaultWorld3D, defaultWorld3D->getMainCamera()->getCameraComponent());
-	m_mainUIViewport->addViewportLayer(m_cameraViewportLayer3D);
+	m_cameraViewportLayer3D->setClearMode(RenderLayerClearMode::ColorDepth);
 	m_cameraViewportLayer2D = newObject<CameraViewportLayer2>(defaultWorld2D, defaultWorld2D->getMainCamera()->getCameraComponent());
-	m_mainUIViewport->addViewportLayer(m_cameraViewportLayer2D);
 	m_uiLayer = newObject<UILayoutLayer>();
+
+#if 1
+	m_mainUIViewport->addViewportLayer(m_cameraViewportLayer3D);
+	m_cameraViewportLayer3D->addChildRenderView(m_cameraViewportLayer2D);
+	m_cameraViewportLayer3D->addChildRenderView(m_uiLayer);
+#else
+	m_mainUIViewport->addViewportLayer(m_cameraViewportLayer3D);
+	m_mainUIViewport->addViewportLayer(m_cameraViewportLayer2D);
 	m_mainUIViewport->addViewportLayer(m_uiLayer);
+#endif
 
 	//setLayoutPanel(panel);
 

@@ -98,6 +98,8 @@ void UIControlsGallery()
 #endif
 
 #endif
+
+#if 0
 	//auto meshModel = ln::Assets::loadMeshModel(_LT("D:/Proj/LN/HC1/Assets/Graphics/TestMap1.mqo"));
 	auto meshModel = ln::Assets::loadMeshModel(_T("D:/Proj/LN/HC1/Assets/Graphics/Map1.mqo"));
 	auto res = meshModel->getMeshResource(0);
@@ -112,7 +114,7 @@ void UIControlsGallery()
 	auto obj3D = newObject<WorldObject3D>();
 	obj3D->addComponent(mesh);
 	obj3D->setScale(0.1);
-
+#endif
 	
 	
 
@@ -237,7 +239,8 @@ void UIControlsGallery()
 	//stack1->addChild(text1);
 
 	auto ps1 = TransitionPostEffect::create();
-	//Engine::getDefault3DLayer()->addPostEffect(ps1);
+	Engine::getDefault3DLayer()->addPostEffect(ps1);
+	ps1->transition(1, nullptr, 0);	// フェードイン
 	
 	//auto box1 = StaticMeshComponent::create(LN_LOCALFILE("Assets/cube.mqo"));
 	//auto box1 = StaticMeshComponent::create(LN_LOCALFILE("Assets/cylinder2.mqo"));
