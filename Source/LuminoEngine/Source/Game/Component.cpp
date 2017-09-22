@@ -50,7 +50,7 @@ void Component::onDetaching()
 }
 
 //------------------------------------------------------------------------------
-void Component::onUpdate()
+void Component::onUpdate(float deltaSceonds)
 {
 }
 
@@ -96,9 +96,9 @@ void Component::detach()
 }
 
 //------------------------------------------------------------------------------
-void Component::updateFrame()
+void Component::updateFrame(float deltaSceonds)
 {
-	onUpdate();
+	onUpdate(deltaSceonds);
 }
 
 //------------------------------------------------------------------------------

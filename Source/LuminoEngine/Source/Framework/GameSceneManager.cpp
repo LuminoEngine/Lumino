@@ -35,10 +35,10 @@ void GameScene::onStart()
 //------------------------------------------------------------------------------
 void GameScene::onUpdate()
 {
-	for (auto& ptr : m_gameObjectList)
-	{
-		ptr->onUpdate();
-	}
+	//for (auto& ptr : m_gameObjectList)
+	//{
+	//	ptr->onUpdate();
+	//}
 }
 
 //------------------------------------------------------------------------------

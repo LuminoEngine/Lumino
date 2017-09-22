@@ -131,36 +131,36 @@ void World::beginUpdateFrame()
 	}
 }
 
-void World::updateFrame(float elapsedTime)
+void World::updateFrame(float deltaSceonds)
 {
-	onPreUpdate(elapsedTime);
-	onInternalPhysicsUpdate(elapsedTime);
-	onUpdate(elapsedTime);
-	onInternalAnimationUpdate(elapsedTime);
-	onPostUpdate(elapsedTime);
+	onPreUpdate(deltaSceonds);
+	onInternalPhysicsUpdate(deltaSceonds);
+	onUpdate(deltaSceonds);
+	onInternalAnimationUpdate(deltaSceonds);
+	onPostUpdate(deltaSceonds);
 }
 
-void World::onPreUpdate(float elapsedTime)
-{
-}
-
-void World::onInternalPhysicsUpdate(float elapsedTime)
+void World::onPreUpdate(float deltaSceonds)
 {
 }
 
-void World::onUpdate(float elapsedTime)
+void World::onInternalPhysicsUpdate(float deltaSceonds)
+{
+}
+
+void World::onUpdate(float deltaSceonds)
 {
 	for (auto& obj : m_rootWorldObjectList)
 	{
-		obj->updateFrame();
+		obj->updateFrame(deltaSceonds);
 	}
 }
 
-void World::onInternalAnimationUpdate(float elapsedTime)
+void World::onInternalAnimationUpdate(float deltaSceonds)
 {
 }
 
-void World::onPostUpdate(float elapsedTime)
+void World::onPostUpdate(float deltaSceonds)
 {
 }
 
@@ -313,9 +313,9 @@ void World2D::beginUpdateFrame()
 }
 
 //------------------------------------------------------------------------------
-void World2D::onUpdate(float elapsedTime)
+void World2D::onUpdate(float deltaSceonds)
 {
-	World::onUpdate(elapsedTime);
+	World::onUpdate(deltaSceonds);
 }
 
 //------------------------------------------------------------------------------
@@ -409,7 +409,7 @@ void World3D::beginUpdateFrame()
 }
 
 //------------------------------------------------------------------------------
-void World3D::onInternalPhysicsUpdate(float elapsedTime)
+void World3D::onInternalPhysicsUpdate(float deltaSceonds)
 {
 	// Physics モジュールの Component が、WorldObject の WorldMatrix を元にシミュレーション前準備を行うことがあるので
 	// ここで WorldMatrix を更新しておく。
@@ -417,7 +417,7 @@ void World3D::onInternalPhysicsUpdate(float elapsedTime)
 
 	if (m_physicsWorld != nullptr)
 	{
-		m_physicsWorld->stepSimulation(elapsedTime);
+		m_physicsWorld->stepSimulation(deltaSceonds);
 	}
 }
 

@@ -142,7 +142,7 @@ public:
 protected:
 
 	// Component interface
-	virtual void onUpdate() override;
+	virtual void onUpdate(float deltaSceonds) override;
 
 LN_INTERNAL_ACCESS:
 	SceneNode();

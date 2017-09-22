@@ -97,7 +97,7 @@ public:	// internal
 protected:
 
 	// Component interface
-	virtual void onUpdate() override;
+	virtual void onUpdate(float deltaSceonds) override;
 	virtual void onUIEvent(UIEventArgs* e) override;
 
 LN_INTERNAL_ACCESS:

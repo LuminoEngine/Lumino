@@ -238,6 +238,56 @@ void UIControlsGallery()
 	//text1->SetText(_LT("text"));
 	//stack1->addChild(text1);
 
+#if 1	// 雨
+Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
+
+	//Camera::GetMain3DCamera()->SetFarClip(10000);
+	auto m1 = SpriteParticleModel::create();
+	m1->m_maxParticles = 10000;
+	m1->setSpawnRate(1000);
+	m1->setLifeTime(1.0);
+	m1->m_loop = true;
+
+	m1->setSize(0.05, 0.05);
+
+	m1->m_shapeType = ParticleEmitterShapeType::Box;
+	m1->m_shapeParam.set(10, 0, 10);
+
+	m1->m_particleDirection = ParticleDirectionType::MovementDirection;
+	m1->m_forwardVelocity.minValue = -12;
+	m1->m_forwardVelocity.maxValue = -12;
+	m1->m_lengthScale = 10;
+
+	auto material = DiffuseMaterial::create();
+	material->setMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	material->setShader(Shader::getBuiltinShader(BuiltinShader::Sprite));
+	m1->setMaterial(material);
+
+	auto particle1 = ParticleEmitter3DComponent::create(m1);
+	//particle1->setBlendMode(BlendMode::Add);
+	//particle1->SetPosition(0, 12, 0);
+	//particle1->setAngles(Math::PI, 0, 0);
+	auto particle1obj = newObject<WorldObject3D>();
+	particle1obj->addComponent(particle1);
+	//particle1obj->setPosition(0, 12, 0);
+
+	//auto m2 = SpriteParticleModel::create();
+	//m2->m_maxParticles = 1000;
+	//m2->SetSpawnRate(200);
+	//m2->SetLifeTime(0.2);
+	//m2->m_loop = true;
+	//m2->SetSize(0.1, 0.1);
+	//m2->m_minSizeVelocity = 3;
+	//m2->m_maxSizeVelocity = 3;
+	//m2->m_shapeType = ParticleEmitterShapeType::Box;
+	//m2->m_shapeParam.Set(10, 0, 10);
+	//m2->m_particleDirection = ParticleDirectionType::Horizontal;
+	//m2->SetMaterial(material);
+
+	//auto particle2 = ParticleEmitter3D::create(m2);
+	//particle2->SetBlendMode(BlendMode::Add);
+#endif
+
 	auto ps1 = TransitionPostEffect::create();
 	Engine::getDefault3DLayer()->addPostEffect(ps1);
 	ps1->transition(1, nullptr, 0);	// フェードイン

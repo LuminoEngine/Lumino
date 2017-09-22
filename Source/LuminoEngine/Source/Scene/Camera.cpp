@@ -178,9 +178,9 @@ void CameraComponent::updateMatrices(const Size& viewSize)
 }
 
 //------------------------------------------------------------------------------
-void CameraComponent::onUpdate()
+void CameraComponent::onUpdate(float deltaSceonds)
 {
-	SceneNode::onUpdate();
+	SceneNode::onUpdate(deltaSceonds);
 }
 
 //------------------------------------------------------------------------------

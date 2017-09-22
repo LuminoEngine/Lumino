@@ -60,14 +60,14 @@ LN_CONSTRUCT_ACCESS:
 LN_INTERNAL_ACCESS:
 	//const Ref<DrawList>& getInsideWorldRenderer() const { return m_insideWorldRenderer; }
 	virtual void beginUpdateFrame();
-	void updateFrame(float elapsedTime);
+	void updateFrame(float deltaSceonds);
 
 	// update sequence
-	virtual void onPreUpdate(float elapsedTime);
-	virtual void onInternalPhysicsUpdate(float elapsedTime);
-	virtual void onUpdate(float elapsedTime);
-	virtual void onInternalAnimationUpdate(float elapsedTime);
-	virtual void onPostUpdate(float elapsedTime);
+	virtual void onPreUpdate(float deltaSceonds);
+	virtual void onInternalPhysicsUpdate(float deltaSceonds);
+	virtual void onUpdate(float deltaSceonds);
+	virtual void onInternalAnimationUpdate(float deltaSceonds);
+	virtual void onPostUpdate(float deltaSceonds);
 
 	void renderRoot(WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags);
 	virtual void render(RenderingContext* context, WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen = nullptr);
@@ -112,7 +112,7 @@ LN_INTERNAL_ACCESS:
 	SceneGraph2D* getSceneGraph2D() const;
 	Camera* getMainCamera() const;
 	virtual void beginUpdateFrame() override;
-	virtual void onUpdate(float elapsedTime) override;
+	virtual void onUpdate(float deltaSceonds) override;
 	virtual void render(RenderingContext* context, WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen) override;
 
 private:
@@ -144,7 +144,7 @@ LN_INTERNAL_ACCESS:
 	SceneGraph3D* getSceneGraph3D() const;
 	Camera* getMainCamera() const;
 	virtual void beginUpdateFrame() override;
-	virtual void onInternalPhysicsUpdate(float elapsedTime) override;
+	virtual void onInternalPhysicsUpdate(float deltaSceonds) override;
 	virtual void render(RenderingContext* context, WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen) override;
 
 private:

@@ -199,7 +199,7 @@ LN_INTERNAL_ACCESS:
 
 
 	// Component interface
-	virtual void onUpdate();
+	virtual void onUpdate(float deltaSceonds) override;
 
 private:
 	void createBtRigidBody();
