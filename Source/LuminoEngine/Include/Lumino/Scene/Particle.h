@@ -325,7 +325,6 @@ public: // TODO
 
 
 class ParticleEmitterComponent;
-class ParticleEmitter3DComponent;
 
 /**
 	パーティクルエミッタのクラスです。
@@ -335,31 +334,18 @@ class ParticleEmitterComponent
 	: public VisualComponent
 {
 	LN_OBJECT;
-protected:
+LN_CONSTRUCT_ACCESS:
 	ParticleEmitterComponent();
 	virtual ~ParticleEmitterComponent();
 	void initialize(SpriteParticleModel* model);
 
+protected:
 	virtual void onUpdateFrame(float deltaTime) override;
 	virtual void onRender2(RenderingContext* renderer) override;
 
 private:
 	Ref<SpriteParticleModel>					m_model;
 	Ref<detail::SpriteParticleModelInstance>	m_instance;
-	Ref<Material>							m_material;
-};
-
-/** 3D 空間に配置されるパーティクルエミッタです。*/
-class ParticleEmitter3DComponent
-	: public ParticleEmitterComponent
-{
-	LN_OBJECT;
-public:
-	static Ref<ParticleEmitter3DComponent> create(SpriteParticleModel* model);
-
-protected:
-	ParticleEmitter3DComponent();
-	virtual ~ParticleEmitter3DComponent();
 };
 
 LN_NAMESPACE_SCENE_END

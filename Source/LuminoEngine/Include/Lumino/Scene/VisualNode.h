@@ -150,7 +150,7 @@ public:
 	/// ノード単位の描画情報の更新。この後すぐ一連のサブセット描画が始まる
 	//virtual void UpdateNodeRenderingParams(MMEShader* priorityShader) {}
 
-
+	// obsolete
 	virtual detail::Sphere getBoundingSphere();
 
 	//void DrawSubsetInternal(SceneGraphRenderingContext* dc, int subsetIndex, MMEShader* shader, ShaderPass* pass);

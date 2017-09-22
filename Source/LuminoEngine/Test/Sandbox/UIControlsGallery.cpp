@@ -263,8 +263,8 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 	material->setShader(Shader::getBuiltinShader(BuiltinShader::Sprite));
 	m1->setMaterial(material);
 
-	auto particle1 = ParticleEmitter3DComponent::create(m1);
-	//particle1->setBlendMode(BlendMode::Add);
+	auto particle1 = newObject<ParticleEmitterComponent>(m1);
+	particle1->setBlendMode(BlendMode::Add);
 	//particle1->SetPosition(0, 12, 0);
 	//particle1->setAngles(Math::PI, 0, 0);
 	auto particle1obj = newObject<WorldObject3D>();
