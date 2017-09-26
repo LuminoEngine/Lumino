@@ -578,27 +578,149 @@ private:
 	//	//m_currentObject = old;
 	//}
 
+#define LN_DEFINE_addItemValue(type, cppType)  \
+	static void addItemValue(ISerializeElement* arrayElement, cppType value) \
+	{ \
+		arrayElement->addSerializeItemValue(SerializationValueType::type, &value); \
+	}
+
+	LN_DEFINE_addItemValue(Bool, bool);
+	LN_DEFINE_addItemValue(Int8, int8_t);
+	LN_DEFINE_addItemValue(Int16, int16_t);
+	LN_DEFINE_addItemValue(Int32, int32_t);
+	LN_DEFINE_addItemValue(Int64, int64_t);
+	LN_DEFINE_addItemValue(UInt8, uint8_t);
+	LN_DEFINE_addItemValue(UInt16, uint16_t);
+	LN_DEFINE_addItemValue(UInt32, uint32_t);
+	LN_DEFINE_addItemValue(UInt64, uint64_t);
+	LN_DEFINE_addItemValue(Float, float);
+	LN_DEFINE_addItemValue(Double, double);
+	LN_DEFINE_addItemValue(String, String);
+
+#undef LN_DEFINE_addItemValue
+
 	//-----------------------------------------------------------------------------
 	// Load
 
-#define LN_DEFINE_TryGetValue(type, cppType) \
-	static bool tryGetValue(ISerializeElement* element, cppType* value, bool) { if (element->getSerializationValueType() == SerializationValueType::type) { *value = element->getSerializeValue##type(); return true; } return false; } \
-	static void addItemValue(ISerializeElement* arrayElement, cppType value) { arrayElement->addSerializeItemValue(SerializationValueType::type, &value); }
+	static bool tryGetIntagerValue(ISerializeElement* element, int64_t* outValue)
+	{
+		assert(element);
+		assert(outValue);
+		SerializationValueType type = element->getSerializationValueType();
+		switch (type)
+		{
+		case SerializationValueType::Int8:
+			*outValue = static_cast<int64_t>(element->getSerializeValueInt8());
+			return true;
+		case SerializationValueType::Int16:
+			*outValue = static_cast<int64_t>(element->getSerializeValueInt16());
+			return true;
+		case SerializationValueType::Int32:
+			*outValue = static_cast<int64_t>(element->getSerializeValueInt32());
+			return true;
+		case SerializationValueType::Int64:
+			*outValue = static_cast<int64_t>(element->getSerializeValueInt64());
+			return true;
+		case SerializationValueType::UInt8:
+			*outValue = static_cast<int64_t>(element->getSerializeValueUInt8());
+			return true;
+		case SerializationValueType::UInt16:
+			*outValue = static_cast<int64_t>(element->getSerializeValueUInt16());
+			return true;
+		case SerializationValueType::UInt32:
+			*outValue = static_cast<int64_t>(element->getSerializeValueUInt32());
+			return true;
+		case SerializationValueType::UInt64:
+			*outValue = static_cast<int64_t>(element->getSerializeValueUInt64());
+			return true;
+		default:
+			return false;
+		}
+	}
 
-	LN_DEFINE_TryGetValue(Bool, bool);
-	LN_DEFINE_TryGetValue(Int8, int8_t);
-	LN_DEFINE_TryGetValue(Int16, int16_t);
-	LN_DEFINE_TryGetValue(Int32, int32_t);
-	LN_DEFINE_TryGetValue(Int64, int64_t);
-	LN_DEFINE_TryGetValue(UInt8, uint8_t);
-	LN_DEFINE_TryGetValue(UInt16, uint16_t);
-	LN_DEFINE_TryGetValue(UInt32, uint32_t);
-	LN_DEFINE_TryGetValue(UInt64, uint64_t);
-	LN_DEFINE_TryGetValue(Float, float);
-	LN_DEFINE_TryGetValue(Double, double);
-	LN_DEFINE_TryGetValue(String, String);
+	static bool tryGetDecimalValue(ISerializeElement* element, double* outValue)
+	{
+		assert(element);
+		assert(outValue);
+		SerializationValueType type = element->getSerializationValueType();
+		switch (type)
+		{
+		case SerializationValueType::Float:
+			*outValue = static_cast<double>(element->getSerializeValueFloat());
+			return true;
+		case SerializationValueType::Double:
+			*outValue = static_cast<double>(element->getSerializeValueDouble());
+			return true;
+		default:
+			return false;
+		}
+	}
+
+#define LN_DEFINE_tryGetValue_Intager(type, cppType) \
+	static bool tryGetValue(ISerializeElement* element, cppType* value, bool) \
+	{ \
+		if (element->getSerializationValueType() == SerializationValueType::type) \
+		{ \
+			*value = element->getSerializeValue##type(); \
+			return true; \
+		} \
+		int64_t fuzzyValue; \
+		if (tryGetIntagerValue(element, &fuzzyValue)) \
+		{ \
+			*value = static_cast<cppType>(fuzzyValue); \
+			return true; \
+		} \
+		return false; \
+	}
+
+	LN_DEFINE_tryGetValue_Intager(Int8, int8_t);
+	LN_DEFINE_tryGetValue_Intager(Int16, int16_t);
+	LN_DEFINE_tryGetValue_Intager(Int32, int32_t);
+	LN_DEFINE_tryGetValue_Intager(Int64, int64_t);
+	LN_DEFINE_tryGetValue_Intager(UInt8, uint8_t);
+	LN_DEFINE_tryGetValue_Intager(UInt16, uint16_t);
+	LN_DEFINE_tryGetValue_Intager(UInt32, uint32_t);
+	LN_DEFINE_tryGetValue_Intager(UInt64, uint64_t);
+
+#undef LN_DEFINE_tryGetValue_Intager
+
+#define LN_DEFINE_tryGetValue(type, cppType)\
+	static bool tryGetValue(ISerializeElement* element, cppType* value, bool) \
+	{ \
+		if (element->getSerializationValueType() == SerializationValueType::type) \
+		{ \
+			*value = element->getSerializeValue##type(); \
+			return true; \
+		} \
+		return false; \
+	}
+
+	LN_DEFINE_tryGetValue(Bool, bool);
+	LN_DEFINE_tryGetValue(String, String);
 
 #undef LN_DEFINE_TryGetValue
+
+#define LN_DEFINE_tryGetValue_Decimal(type, cppType)\
+	static bool tryGetValue(ISerializeElement* element, cppType* value, bool) \
+	{ \
+		if (element->getSerializationValueType() == SerializationValueType::type) \
+		{ \
+			*value = element->getSerializeValue##type(); \
+			return true; \
+		} \
+		double fuzzyValue; \
+		if (tryGetDecimalValue(element, &fuzzyValue)) \
+		{ \
+			*value = static_cast<cppType>(fuzzyValue); \
+			return true; \
+		} \
+		return false; \
+	}
+
+	LN_DEFINE_tryGetValue_Decimal(Float, float);
+	LN_DEFINE_tryGetValue_Decimal(Double, double);
+
+#undef LN_DEFINE_tryGetValue_Decimal
 
 	// for other struct type
 	template<typename T>

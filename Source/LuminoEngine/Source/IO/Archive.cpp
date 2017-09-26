@@ -45,23 +45,23 @@
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
-// Archive
+// ArchiveFileAssetsStorage
 //==============================================================================
 	
-const byte_t Archive::InternalKey[16] = {
+const byte_t ArchiveFileAssetsStorage::InternalKey[16] = {
 	0x6e, 0x36, 0x38, 0x64, 0x35, 0x6f, 0x68, 0x6d,
 	0x33, 0x42, 0x69, 0x61, 0x34, 0x78, 0x37, 0x6c
 };
 
 //------------------------------------------------------------------------------
-Archive::Archive()
+ArchiveFileAssetsStorage::ArchiveFileAssetsStorage()
 	: m_stream(NULL)
 	, m_fileCount(0)
 {
 }
 
 //------------------------------------------------------------------------------
-Archive::~Archive()
+ArchiveFileAssetsStorage::~ArchiveFileAssetsStorage()
 {
 	if (m_stream)
 	{
@@ -73,7 +73,7 @@ Archive::~Archive()
 }
 
 //------------------------------------------------------------------------------
-void Archive::open(const PathName& filePath, const String& key)
+void ArchiveFileAssetsStorage::open(const PathName& filePath, const String& key)
 {
 	m_key = key;
 	m_fileCount = 0;
@@ -119,7 +119,7 @@ void Archive::open(const PathName& filePath, const String& key)
 	// 内部キーのチェック (ユーザーキーは本当に正しいか？)
 	byte_t internalKey[16];
 	readPadding16(internalKey, 16);
-	if (memcmp(internalKey, Archive::InternalKey, 16) != 0)
+	if (memcmp(internalKey, ArchiveFileAssetsStorage::InternalKey, 16) != 0)
 	{
 		LN_ENSURE_INVALID_FORMAT(0, "invalid archive key.");
 		return;
@@ -155,7 +155,7 @@ void Archive::open(const PathName& filePath, const String& key)
 }
 
 //------------------------------------------------------------------------------
-bool Archive::existsFile(const PathName& fileFullPath)
+bool ArchiveFileAssetsStorage::existsFile(const PathName& fileFullPath)
 {
 #if 1 // map のキーを絶対パスにしてみた。メモリ効率は悪いが、検索キー用に PathName を再度作らなくて良くなる。まぁ、携帯機に乗せるときに問題になるようなら改めて見直す…。
 	EntriesMap::iterator itr = m_entriesMap.find(fileFullPath);
@@ -184,7 +184,7 @@ bool Archive::existsFile(const PathName& fileFullPath)
 }
 
 //------------------------------------------------------------------------------
-bool Archive::tryCreateStream(const PathName& fileFullPath, Ref<Stream>* outStream, bool isDeferring)
+bool ArchiveFileAssetsStorage::tryCreateStream(const PathName& fileFullPath, Ref<Stream>* outStream, bool isDeferring)
 {
 #if 1 // map のキーを絶対パスにしてみた。メモリ効率は悪いが、検索キー用に PathName を再度作らなくて良くなる。まぁ、携帯機に乗せるときに問題になるようなら改めて見直す…。
 	EntriesMap::iterator itr = m_entriesMap.find(fileFullPath);
@@ -214,7 +214,7 @@ bool Archive::tryCreateStream(const PathName& fileFullPath, Ref<Stream>* outStre
 }
 
 //------------------------------------------------------------------------------
-size_t Archive::readArchiveStream(byte_t* buffer, size_t count, FILE* stream, uint64_t dataOffset, uint64_t seekPos)
+size_t ArchiveFileAssetsStorage::readArchiveStream(byte_t* buffer, size_t count, FILE* stream, uint64_t dataOffset, uint64_t seekPos)
 {
 	MutexScopedLock lock(m_mutex);
 	byte_t tmpSrcBuf[16];	// 復号前データ
@@ -269,17 +269,14 @@ size_t Archive::readArchiveStream(byte_t* buffer, size_t count, FILE* stream, ui
 }
 
 //------------------------------------------------------------------------------
-uint32_t Archive::readU32Padding16()
+uint32_t ArchiveFileAssetsStorage::readU32Padding16()
 {
 	uint32_t v0, v1;
 	readU32Padding16(&v0, &v1);
 	return v0;
 }
 
-//------------------------------------------------------------------------------
-// 
-//------------------------------------------------------------------------------
-void Archive::readU32Padding16( uint32_t* v0, uint32_t* v1 )
+void ArchiveFileAssetsStorage::readU32Padding16( uint32_t* v0, uint32_t* v1 )
 {
 	byte_t b[16] = { 0 };
 
@@ -317,8 +314,7 @@ void Archive::readU32Padding16( uint32_t* v0, uint32_t* v1 )
 	}
 }
 
-//------------------------------------------------------------------------------
-void Archive::readPadding16(byte_t* buffer, int count)
+void ArchiveFileAssetsStorage::readPadding16(byte_t* buffer, int count)
 {
 	// 復号する場合
 	if (!m_key.isEmpty())
@@ -352,7 +348,7 @@ void Archive::readPadding16(byte_t* buffer, int count)
 //==============================================================================
 
 //------------------------------------------------------------------------------
-ArchiveStream::ArchiveStream(Archive* archive, FILE* stream, uint32_t dataOffset, uint32_t dataSize)
+ArchiveStream::ArchiveStream(ArchiveFileAssetsStorage* archive, FILE* stream, uint32_t dataOffset, uint32_t dataSize)
 	: m_archive(archive)
 	, m_stream(stream)
 	, m_dataOffset(dataOffset)
@@ -499,7 +495,7 @@ void ArchiveManager::initialize(FileAccessPriority accessPriority)
 	m_fileAccessPriority = accessPriority;
 
 	auto storage = Ref<DummyArchive>::makeRef();
-	m_directoryArchiveList.add(Ref<IArchive>::staticCast(storage));
+	m_directoryArchiveList.add(Ref<IAssetsStorage>::staticCast(storage));
 
 	auto installDir = detail::EngineDomain::getEngineManager()->getInstallDir();
 	if (!installDir.isEmpty())
@@ -521,7 +517,7 @@ void ArchiveManager::dispose()
 
 void ArchiveManager::registerArchive(const PathName& filePath, const String& password)
 {
-	auto archive = Ref<Archive>::makeRef();
+	auto archive = Ref<ArchiveFileAssetsStorage>::makeRef();
 	archive->open(filePath, password);
 	m_archiveList.add(archive);
 	refreshArchiveList();
@@ -530,13 +526,13 @@ void ArchiveManager::registerArchive(const PathName& filePath, const String& pas
 void ArchiveManager::addAssetsDirectory(const StringRef& directoryPath)
 {
 	auto storage = Ref<DirectoryAssetsStorage>::makeRef(directoryPath);
-	m_directoryArchiveList.add(Ref<IArchive>::staticCast(storage));
+	m_directoryArchiveList.add(Ref<IAssetsStorage>::staticCast(storage));
 	refreshArchiveList();
 }
 
 bool ArchiveManager::existsFile(const StringRef& filePath)
 {
-	for (IArchive* archive : m_activeArchiveList)
+	for (IAssetsStorage* archive : m_activeArchiveList)
 	{
 		// TODO: PathName に SmallStringOptimaize を実装しよう
 		PathName path(archive->getDirectoryPath(), filePath);
@@ -551,7 +547,7 @@ bool ArchiveManager::existsFile(const StringRef& filePath)
 Ref<Stream> ArchiveManager::createFileStream(const StringRef& filePath, bool isDeferring)
 {
 	Ref<Stream> stream;
-	for (IArchive* archive : m_activeArchiveList)
+	for (IAssetsStorage* archive : m_activeArchiveList)
 	{
 		// TODO: PathName に SmallStringOptimaize を実装しよう
 		PathName path(archive->getDirectoryPath(), filePath);
@@ -570,7 +566,7 @@ Ref<Stream> ArchiveManager::createFileStream(const StringRef& filePath, bool isD
 // これは、ローカルファイルからしかリソースアクセスできない (Stream 対応していない) API を使う場合の逃げ道。
 PathName ArchiveManager::findLocalFilePath(const StringRef& filePath)
 {
-	for (IArchive* archive : m_directoryArchiveList)
+	for (IAssetsStorage* archive : m_directoryArchiveList)
 	{
 		// TODO: PathName に SmallStringOptimaize を実装しよう
 		PathName path(archive->getDirectoryPath(), filePath);

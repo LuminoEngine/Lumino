@@ -238,7 +238,7 @@ void UIControlsGallery()
 	//text1->SetText(_LT("text"));
 	//stack1->addChild(text1);
 
-#if 1	// 雨
+#if 0	// 雨
 Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 
 	//Camera::GetMain3DCamera()->SetFarClip(10000);

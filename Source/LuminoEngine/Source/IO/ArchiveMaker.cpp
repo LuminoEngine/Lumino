@@ -72,7 +72,7 @@ bool ArchiveMaker::open(const PathName& filePath, const char* key)
 	fwrite(&header, sizeof(header), 1, m_stream);
 
 	// 内部キー(シグネチャ)16バイト
-	writePadding16(Archive::InternalKey, 16);
+	writePadding16(ArchiveFileAssetsStorage::InternalKey, 16);
 
 	return true;
 }
@@ -146,7 +146,7 @@ void ArchiveMaker::normalizePath(std::wstring* path)
 {
 	if (path->length() > 0)
 	{
-		for (int i = 0; i < path->length(); ++i)
+		for (size_t i = 0; i < path->length(); ++i)
 		{
 			if ((*path)[i] == L'\\') (*path)[i] = L'/';
 		}

@@ -38,7 +38,7 @@ FileManager::~FileManager()
 	m_endRequested.setTrue();
 	m_asyncProcThread.wait();
 
-	for (IArchive* a : m_archiveList) {
+	for (IAssetsStorage* a : m_archiveList) {
 		a->release();
 	}
 	m_archiveList.clear();
@@ -51,7 +51,7 @@ void FileManager::registerArchive(const PathName& filePath, const String& passwo
 {
 	MutexScopedLock lock(m_mutex);
 
-	Archive* archive = LN_NEW Archive();
+	ArchiveFileAssetsStorage* archive = LN_NEW ArchiveFileAssetsStorage();
 	archive->open(filePath, password);
 	m_archiveList.add(archive);
 
@@ -73,7 +73,7 @@ bool FileManager::existsFile(const wchar_t* filePath)
 //------------------------------------------------------------------------------
 bool FileManager::existsFile(const PathName& filePath)
 {
-	for (IArchive* archive : m_archiveList)
+	for (IAssetsStorage* archive : m_archiveList)
 	{
 		if (archive->existsFile(filePath)) {
 			return true;
@@ -103,7 +103,7 @@ Stream* FileManager::createFileStream(const PathName& filePath, bool isDeferring
 	PathName absPath = filePath.canonicalizePath();
 
 	Ref<Stream> stream;
-	for (IArchive* archive : m_archiveList)
+	for (IAssetsStorage* archive : m_archiveList)
 	{
 		if (archive->tryCreateStream(absPath, &stream, isDeferring)) {
 			break;

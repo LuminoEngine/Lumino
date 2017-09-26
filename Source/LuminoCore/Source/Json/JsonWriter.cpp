@@ -110,7 +110,7 @@ void JsonWriter::writeBool(bool value)
 void JsonWriter::writeInt32(int32_t value)
 {
 	if (LN_REQUIRE(m_levelStack.getCount() >= 1)) return;
-	autoComplete(JsonToken::Double);
+	autoComplete(JsonToken::Int32);
 	onInt32(value);
 	m_levelStack.getTop().valueCount++;
 }
@@ -119,7 +119,7 @@ void JsonWriter::writeInt32(int32_t value)
 void JsonWriter::writeInt64(int64_t value)
 {
 	if (LN_REQUIRE(m_levelStack.getCount() >= 1)) return;
-	autoComplete(JsonToken::Double);
+	autoComplete(JsonToken::Int64);
 	onInt64(value);
 	m_levelStack.getTop().valueCount++;
 }
@@ -128,7 +128,7 @@ void JsonWriter::writeInt64(int64_t value)
 void JsonWriter::writeFloat(float value)
 {
 	if (LN_REQUIRE(m_levelStack.getCount() >= 1)) return;
-	autoComplete(JsonToken::Double);
+	autoComplete(JsonToken::Float);
 	onFloat(value);
 	m_levelStack.getTop().valueCount++;
 }

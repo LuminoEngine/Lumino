@@ -11,6 +11,7 @@
 #include <Lumino/Threading/Mutex.h>
 
 LN_NAMESPACE_BEGIN
+class IAssetsStorage;
 
 /**
 	@brief	
@@ -78,12 +79,12 @@ LN_INTERNAL_ACCESS:
 	void thread_ASyncProc();
 
 private:
-	typedef List<IArchive*>		ArchiveList;
+	typedef List<IAssetsStorage*>		ArchiveList;
 	typedef List<ASyncIOObject*>	ASyncIOObjectList;
 
 	FileAccessPriority		m_fileAccessPriority;
 	ArchiveList				m_archiveList;
-	IArchive*				m_dummyArchive;
+	IAssetsStorage*			m_dummyArchive;
 	Mutex					m_mutex;
 
 	ASyncIOObjectList		m_asyncTaskList;

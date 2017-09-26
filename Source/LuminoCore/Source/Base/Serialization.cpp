@@ -306,9 +306,9 @@ bool ScVariant::equals(int value) const
 const int Archive::ArchiveVersion = 1;
 const Char* Archive::ArchiveVersionKey = _TT("lumino_archive_version");
 const Char* Archive::ArchiveRootObjectKey = _TT("lumino_root_object");
-const Char* Archive::ClassNameKey = _TT("_ln_class_name");
-const Char* Archive::ClassVersionKey = _TT("_ln_class_version");
-const Char* Archive::ClassBaseDefaultNameKey = _TT("_ln_class_base");
+const Char* Archive::ClassNameKey = _TT("lumino_class_name");
+const Char* Archive::ClassVersionKey = _TT("lumino_class_version");
+const Char* Archive::ClassBaseDefaultNameKey = _TT("lumino_class_base");
 
 //------------------------------------------------------------------------------
 Ref<ReflectionObject> Archive::createObject(const String& className, TypeInfo* requestedType)
