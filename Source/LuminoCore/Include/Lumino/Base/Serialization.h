@@ -184,7 +184,6 @@ class ISerializeElement
 public:
 	virtual SerializationElementType getSerializationElementType() const = 0;
 
-	virtual void setValueInt32(const StringRef& name, int32_t value) = 0;
 	//virtual void SetValueDouble(const StringRef& name, int32_t value) = 0;
 	virtual void setValueString(const StringRef& name, const String& value) = 0;
 
@@ -201,6 +200,10 @@ public:
 
 
 	// Value
+	//virtual void setValueInt8(const StringRef& name, int32_t value) = 0;
+	//virtual void setValueInt32(const StringRef& name, int32_t value) = 0;
+	//virtual void setValueInt32(const StringRef& name, int32_t value) = 0;
+	//virtual void setValueInt32(const StringRef& name, int32_t value) = 0;
 	virtual SerializationValueType getSerializationValueType() const = 0;
 	virtual bool getSerializeValueBool() const = 0;
 	virtual int8_t getSerializeValueInt8() const = 0;
@@ -288,9 +291,12 @@ class Archive
 	};
 
 public:
-	static const TTCHAR* ClassNameKey;
-	static const TTCHAR* ClassVersionKey;
-	static const TTCHAR* ClassBaseDefaultNameKey;
+	static const int ArchiveVersion;
+	static const Char* ArchiveVersionKey;
+	static const Char* ArchiveRootObjectKey;
+	static const Char* ClassNameKey;
+	static const Char* ClassVersionKey;
+	static const Char* ClassBaseDefaultNameKey;
 	//Archive(const PathName& filePath, ArchiveMode mode);
 
 	//template<typename T> Archive& operator&(T && arg)
@@ -339,13 +345,13 @@ public:
 	template<typename T>
 	void save(T& value)
 	{
-		m_currentObject = saveHeaderElement(m_currentObject);
+		m_currentObject = saveArchiveHeaderElement(m_currentObject);
 		doSaveObjectType(value, false);
 	}
 	void save(ScVariant& value)
 	{
 		if (LN_ENSURE(value.getType() == ScVariantType::Map)) return;
-		m_currentObject = saveHeaderElement(m_currentObject);
+		m_currentObject = saveArchiveHeaderElement(m_currentObject);
 		doSaveObjectType(*value.m_core->m_map, false);
 	}
 
@@ -353,12 +359,12 @@ public:
 	template<typename T>
 	void load(T& value)
 	{
-		m_currentObject = loadHeaderElement(m_currentObject);
+		m_currentObject = loadArchiveHeaderElement(m_currentObject);
 		tryGetValue(m_currentObject, &value, false);
 	}
 	void load(ScVariant& value)
 	{
-		m_currentObject = loadHeaderElement(m_currentObject);
+		m_currentObject = loadArchiveHeaderElement(m_currentObject);
 		tryGetValue(m_currentObject, &value, false);
 	}
 
@@ -367,24 +373,8 @@ protected:
 	virtual Ref<ReflectionObject> createObject(const String& className, TypeInfo* requestedType);
 
 private:
-
-	ISerializeElement* saveHeaderElement(ISerializeElement* element)
-	{
-		int version = 1;
-		element->addSerializeMemberValue(_TT("version"), SerializationValueType::Int32, &version);
-		return element->addSerializeMemberNewObject(_TT("root"));
-	}
-
-	ISerializeElement* loadHeaderElement(ISerializeElement* element)
-	{
-		ISerializeElement* version = element->findSerializeElement(_TT("version"));
-		ISerializeElement* root = element->findSerializeElement(_TT("root"));
-		if (version != nullptr && root != nullptr)
-		{
-			return root;
-		}
-		return element;
-	}
+	ISerializeElement* saveArchiveHeaderElement(ISerializeElement* element);
+	ISerializeElement* loadArchiveHeaderElement(ISerializeElement* element);
 
 
 
@@ -424,19 +414,23 @@ private:
 		}
 	}
 
+
+	//-----------------------------------------------------------------------------
+	// Save
+
 	// AddMemberValue()
 	//		m_currentObject が示す Object 型へ、指定した名前と値のペアを追加する
 	void addMemberValue(const KeyInfo& key, bool value) { m_currentObject->addSerializeMemberValue(key.name, SerializationValueType::Bool, &value); }
-	void addMemberValue(const KeyInfo& key, int8_t value);
-	void addMemberValue(const KeyInfo& key, int16_t value);
-	void addMemberValue(const KeyInfo& key, int32_t value) { m_currentObject->setValueInt32(key.name, value); }
-	void addMemberValue(const KeyInfo& key, int64_t value);
-	void addMemberValue(const KeyInfo& key, uint8_t value);
-	void addMemberValue(const KeyInfo& key, uint16_t value);
-	void addMemberValue(const KeyInfo& key, uint32_t value);
-	void addMemberValue(const KeyInfo& key, uint64_t value);
+	void addMemberValue(const KeyInfo& key, int8_t value) { m_currentObject->addSerializeMemberValue(key.name, SerializationValueType::Int8, &value); }
+	void addMemberValue(const KeyInfo& key, int16_t value) { m_currentObject->addSerializeMemberValue(key.name, SerializationValueType::Int16, &value); }
+	void addMemberValue(const KeyInfo& key, int32_t value) { m_currentObject->addSerializeMemberValue(key.name, SerializationValueType::Int32, &value); }
+	void addMemberValue(const KeyInfo& key, int64_t value) { m_currentObject->addSerializeMemberValue(key.name, SerializationValueType::Int64, &value); }
+	void addMemberValue(const KeyInfo& key, uint8_t value) { m_currentObject->addSerializeMemberValue(key.name, SerializationValueType::UInt8, &value); }
+	void addMemberValue(const KeyInfo& key, uint16_t value) { m_currentObject->addSerializeMemberValue(key.name, SerializationValueType::UInt16, &value); }
+	void addMemberValue(const KeyInfo& key, uint32_t value) { m_currentObject->addSerializeMemberValue(key.name, SerializationValueType::UInt32, &value); }
+	void addMemberValue(const KeyInfo& key, uint64_t value) { m_currentObject->addSerializeMemberValue(key.name, SerializationValueType::UInt64, &value); }
 	void addMemberValue(const KeyInfo& key, float value) { m_currentObject->addSerializeMemberValue(key.name, SerializationValueType::Float, &value); }
-	void addMemberValue(const KeyInfo& key, double value);
+	void addMemberValue(const KeyInfo& key, double value) { m_currentObject->addSerializeMemberValue(key.name, SerializationValueType::Double, &value); }
 	void addMemberValue(const KeyInfo& key, String& value) { m_currentObject->setValueString(key.name, value); }
 	template<typename T> void addMemberValue(const KeyInfo& key, T& obj)	 // non‐intrusive Object
 	{
@@ -584,6 +578,8 @@ private:
 	//	//m_currentObject = old;
 	//}
 
+	//-----------------------------------------------------------------------------
+	// Load
 
 #define LN_DEFINE_TryGetValue(type, cppType) \
 	static bool tryGetValue(ISerializeElement* element, cppType* value, bool) { if (element->getSerializationValueType() == SerializationValueType::type) { *value = element->getSerializeValue##type(); return true; } return false; } \

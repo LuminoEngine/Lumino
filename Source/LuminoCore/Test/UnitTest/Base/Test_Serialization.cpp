@@ -3,7 +3,41 @@
 #include <Lumino/Json/JsonDocument.h>
 #include <Lumino/Reflection/ReflectionObject.h>
 
+//
+//class Archive2
+//{
+//public:
+//
+//};
+//
+////==============================================================================
+//class Test_Serialization2 : public ::testing::Test
+//{
+//protected:
+//	virtual void SetUp() {}
+//	virtual void TearDown() {}
+//};
+//
+//TEST_F(Test_Serialization, SimpleStruct)
+//{
+//}
+//
+//
+//
 
+
+
+
+
+
+
+
+
+
+
+
+
+//==============================================================================
 struct TkMVSoundData
 {
 	ln::String		name;
@@ -239,6 +273,80 @@ TEST_F(Test_Serialization, Variant)
 		ASSERT_EQ(_TT("test2"), t2->commands[1]->params[1].getString());
 	}
 }
+
+TEST_F(Test_Serialization, PrimitiveValues)
+{
+	struct Test
+	{
+		int8_t v_s8l = 0;
+		int16_t v_s16l = 0;
+		int32_t v_s32l = 0;
+		int64_t v_s64l = 0;
+
+		int8_t v_s8u = 0;
+		int16_t v_s16u = 0;
+		int32_t v_s32u = 0;
+		int64_t v_s64u = 0;
+
+		float v_floatl = 0;
+		double v_doublel = 0;
+
+		float v_floatu = 0;
+		double v_doubleu = 0;
+
+		void serialize(tr::Archive& ar, int version)
+		{
+			ar & LN_NVP(v_s8l);
+			ar & LN_NVP(v_s16l);
+			ar & LN_NVP(v_s32l);
+			ar & LN_NVP(v_s64l);
+
+			ar & LN_NVP(v_s8u);
+			ar & LN_NVP(v_s16u);
+			ar & LN_NVP(v_s32u);
+			ar & LN_NVP(v_s64u);
+
+			ar & LN_NVP(v_floatl);
+			ar & LN_NVP(v_doublel);
+
+			ar & LN_NVP(v_floatu);
+			ar & LN_NVP(v_doubleu);
+		}
+
+	} obj;
+
+	obj.v_s8l = INT8_MIN;
+	obj.v_s16l = INT16_MIN;
+	obj.v_s32l = INT32_MIN;
+	obj.v_s64l = INT64_MIN;
+	obj.v_s8u = INT8_MAX;
+	obj.v_s16u = INT16_MAX;
+	obj.v_s32u = INT32_MAX;
+	obj.v_s64u = INT64_MAX;
+	obj.v_floatl = FLT_MIN;
+	obj.v_doublel = DBL_MIN;
+	obj.v_floatu = FLT_MAX;
+	obj.v_doubleu = DBL_MAX;
+
+	tr::JsonDocument2 doc;
+	tr::Archive ar(&doc, tr::ArchiveMode::save, true);
+	ar.save(obj);
+	String text = doc.toString();
+
+	printf("");
+}
+
+/*
+
+```
+{
+	"lumino_archive_version" : 1,
+	"lumino_root_object" : {
+	}
+}
+```
+
+*/
 
 #if 0
 class TestObject1

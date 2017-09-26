@@ -165,11 +165,21 @@ void TextWriter::write(float value)
 }
 void TextWriter::write(double value)
 {
-	// TODO: 64桁以上だと失敗する
-	Char buf[64];
-	int len = StringTraits::tsnprintf_l(buf, 64, _TT("%lf"), m_locale.getNativeLocale(), value);
-	if (LN_ENSURE(len > 0)) return;
-	writeInternal(buf, len);
+	if (value < FLT_MIN || FLT_MAX < value)
+	{
+		std::vector<Char> buf;
+		buf.resize(512);
+		int len = StringTraits::tsnprintf_l(buf.data(), buf.size(), _TT("%lf"), m_locale.getNativeLocale(), value);
+		if (LN_ENSURE(len > 0)) return;
+		writeInternal(buf.data(), len);
+	}
+	else
+	{
+		Char buf[64];
+		int len = StringTraits::tsnprintf_l(buf, 64, _TT("%lf"), m_locale.getNativeLocale(), value);
+		if (LN_ENSURE(len > 0)) return;
+		writeInternal(buf, len);
+	}
 }
 
 //------------------------------------------------------------------------------

@@ -645,7 +645,6 @@ JsonValue2* JsonObject2::getValue(const StringRef& name)
 }
 
 //------------------------------------------------------------------------------
-void JsonObject2::setValueInt32(const StringRef& name, int32_t value) { addMemberInt32(name, value); }
 void JsonObject2::setValueString(const StringRef& name, const String& value) { addMemberString(name, value); }
 ISerializeElement* JsonObject2::addObject(const StringRef& name)  { return addMemberObject(name); }
 bool JsonObject2::tryGetValueInt32(const StringRef& name, int32_t* outValue)

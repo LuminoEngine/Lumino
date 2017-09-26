@@ -1,24 +1,36 @@
 ﻿/*
+[2017/9/26] SAX スタイルの問題点
+--------------------
+serialize() での ar & MALE_NVP(xxxx) は、まだ実際にはロードせずに、map に xxxx の参照を持つだけにしなければならない。
+serialize() を抜けた後に実際にソースをパースし、値をロードする。
+そのため、serialize() の中でバージョンチェック > ロード後の値の修正 ができなくなる。
+
+最初に DOM でロードするとメモリ消費は多くなるがやむなし。
+ちなみに、cereal(xml.hpp など) も一度 DOM に落とす。
+
+制限つきで高速版を提供するのもありだけど、まずは正しく動くことを目指そう。
 
 
-MyObject*			m_obj1;
-Ref<MyObject>*	m_obj2;
-MyObject			m_obj3;
+XXXX
+--------------------
+	MyObject*			m_obj1;
+	Ref<MyObject>*	m_obj2;
+	MyObject			m_obj3;
 
-ar & NewObjectNVP("obj1", m_obj1);	// 良くない
-ar & MakeNVP("obj1", *m_obj1);		// OK (あらかじめ new)
-ar & NewObjectNVP("obj2", m_obj2);	// OK	→ MakeMVP で Ref<> のみ特殊扱い、で。そうすると List のシリアライズが楽になる
-ar & MakeNVP("obj", m_obj3);		// OK
+	ar & NewObjectNVP("obj1", m_obj1);	// 良くない
+	ar & MakeNVP("obj1", *m_obj1);		// OK (あらかじめ new)
+	ar & NewObjectNVP("obj2", m_obj2);	// OK	→ MakeMVP で Ref<> のみ特殊扱い、で。そうすると List のシリアライズが楽になる
+	ar & MakeNVP("obj", m_obj3);		// OK
 
 
-List<MyObject*>			m_list1;	// だめ
-List<Ref<MyObject>>	m_list2;
+	List<MyObject*>			m_list1;	// だめ
+	List<Ref<MyObject>>	m_list2;
 
-ar & MakeNVP("list2", m_list2);
+	ar & MakeNVP("list2", m_list2);
 
-リストのシリアライズについて・・・
-non‐intrusive Object のシリアライズ扱いにする。
-コレクションは push_back を実装していること。とか。
+	リストのシリアライズについて・・・
+	non‐intrusive Object のシリアライズ扱いにする。
+	コレクションは push_back を実装していること。とか。
 
 
 
@@ -291,9 +303,12 @@ bool ScVariant::equals(int value) const
 //==============================================================================
 // Archive
 //==============================================================================
-const TTCHAR* Archive::ClassNameKey = _TT("_ln_class_name");
-const TTCHAR* Archive::ClassVersionKey = _TT("_ln_class_version");
-const TTCHAR* Archive::ClassBaseDefaultNameKey = _TT("_ln_class_base");
+const int Archive::ArchiveVersion = 1;
+const Char* Archive::ArchiveVersionKey = _TT("lumino_archive_version");
+const Char* Archive::ArchiveRootObjectKey = _TT("lumino_root_object");
+const Char* Archive::ClassNameKey = _TT("_ln_class_name");
+const Char* Archive::ClassVersionKey = _TT("_ln_class_version");
+const Char* Archive::ClassBaseDefaultNameKey = _TT("_ln_class_base");
 
 //------------------------------------------------------------------------------
 Ref<ReflectionObject> Archive::createObject(const String& className, TypeInfo* requestedType)
@@ -328,6 +343,24 @@ Ref<ReflectionObject> Archive::createObject(const String& className, TypeInfo* r
 //		break;
 //	}
 //}
+
+
+ISerializeElement* Archive::saveArchiveHeaderElement(ISerializeElement* element)
+{
+	element->addSerializeMemberValue(ArchiveVersionKey, SerializationValueType::Int32, &ArchiveVersion);
+	return element->addSerializeMemberNewObject(ArchiveRootObjectKey);
+}
+
+ISerializeElement* Archive::loadArchiveHeaderElement(ISerializeElement* element)
+{
+	ISerializeElement* version = element->findSerializeElement(ArchiveVersionKey);
+	ISerializeElement* root = element->findSerializeElement(ArchiveRootObjectKey);
+	if (version != nullptr && root != nullptr)
+	{
+		return root;
+	}
+	return element;
+}
 
 } // namespace tr
 LN_NAMESPACE_END
