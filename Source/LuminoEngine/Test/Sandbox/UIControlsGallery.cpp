@@ -292,26 +292,48 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 	Engine::getDefault3DLayer()->addPostEffect(ps1);
 	ps1->transition(1, nullptr, 0);	// フェードイン
 
+
+	Bitmap heightmap(LN_LOCALFILE("Assets/heightmap.png"));
 	
 	//auto box1 = StaticMeshComponent::create(LN_LOCALFILE("Assets/cube.mqo"));
 	//auto box1 = StaticMeshComponent::create(LN_LOCALFILE("Assets/cylinder2.mqo"));
 	//auto box1 = StaticMeshComponent::create(LN_LOCALFILE("Assets/Plant1.mqo"));
-	auto meshRes1 = MeshResource::create(4, 6);
-	meshRes1->setPosition(0, Vector3(-1, 0, 1));
-	meshRes1->setPosition(1, Vector3(-1, 0, -1));
-	meshRes1->setPosition(2, Vector3(1, 0, 1));
-	meshRes1->setPosition(3, Vector3(1, 0, -1));
-	meshRes1->setIndex(0, 0);
-	meshRes1->setIndex(1, 1);
-	meshRes1->setIndex(2, 2);
-	meshRes1->setIndex(3, 2);
-	meshRes1->setIndex(4, 1);
-	meshRes1->setIndex(5, 3);
+	SizeI size = heightmap.getSize();
+	auto meshRes1 = MeshResource::create(size.width * size.height, (size.width - 1) * (size.height - 1) * 6);
+	for (int y = 0; y < size.height; y++)
+	{
+		for (int x = 0; x < size.width; x++)
+		{
+			int base = x + y * size.width;
+			meshRes1->setPosition(base, Vector3(x,  0.1 * heightmap.getPixel(x, y).r, -y));	//おくから
+			meshRes1->setNormal(base, Vector3::UnitZ);
+			meshRes1->setUV(base, Vector2(static_cast<float>(x) / size.width, static_cast<float>(y) / size.height) * 64.0);
+			meshRes1->setColor(base, Color::White);
+		}
+	}
+	for (int y = 0; y < (size.height - 1); y++)
+	{
+		for (int x = 0; x < (size.width - 1); x++)
+		{
+			int base = (x + y * (size.width - 1)) * 6;
+			meshRes1->setIndex(base + 0, (x + 0) + (y + 0) * size.width);
+			meshRes1->setIndex(base + 1, (x + 0) + (y + 1) * size.width);
+			meshRes1->setIndex(base + 2, (x + 1) + (y + 0) * size.width);
+			meshRes1->setIndex(base + 3, (x + 1) + (y + 0) * size.width);
+			meshRes1->setIndex(base + 4, (x + 0) + (y + 1) * size.width);
+			meshRes1->setIndex(base + 5, (x + 1) + (y + 1) * size.width);
+		}
+	}
+	auto tex1 = Assets::loadTexture(LN_LOCALFILE("Assets/grass.png"));
+	auto material1 = Material::create();
+	material1->setMaterialTexture(tex1);
 	auto meshModel1 = newObject<StaticMeshModel>(meshRes1);
-	meshModel1->addMaterials(1);
+	meshModel1->addMaterial(material1);
 	auto mesh1 = StaticMeshComponent::create(meshModel1);
+	mesh1->setShader(Shader::getBuiltinShader(BuiltinShader::Sprite));
 	auto meshObj1 = newObject<WorldObject3D>();
 	meshObj1->addComponent(mesh1);
+	meshObj1->setPosition(-50, -20, 50);
 	
 #if 0
 	auto font = Font::getDefault();
