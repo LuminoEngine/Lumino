@@ -591,7 +591,7 @@ Ref<StaticMeshModel> XFileLoader::load(ModelManager* manager, Stream* stream, co
 	{
 		auto meshRes = Ref<MeshResource>::makeRef();
 		meshRes->initialize(manager->getGraphicsManager(), MeshCreationFlags::None);
-		auto mesh1 = newObject<StaticMeshModel>(manager->getGraphicsManager(), meshRes);
+		auto mesh1 = newObject<StaticMeshModel>(meshRes);
 
 		// スキンメッシュではない場合
 		if (!dx_anim_controller)

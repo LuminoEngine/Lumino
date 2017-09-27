@@ -34,7 +34,7 @@ Ref<StaticMeshComponent> StaticMeshComponent::createPlane(const Vector2& size, i
 {
 	auto ptr = Ref<StaticMeshComponent>::makeRef();
 	auto mesh = Ref<StaticMeshModel>::makeRef();
-	mesh->initializePlane(SceneGraphManager::Instance->getGraphicsManager(), size, sliceH, sliceV, flags);
+	mesh->initializePlane(size, sliceH, sliceV, flags);
 	ptr->initialize(mesh);
 	return ptr;
 }
@@ -44,7 +44,7 @@ Ref<StaticMeshComponent> StaticMeshComponent::createScreenPlane()
 {
 	auto ptr = Ref<StaticMeshComponent>::makeRef();
 	auto mesh = Ref<StaticMeshModel>::makeRef();
-	mesh->initializeScreenPlane(SceneGraphManager::Instance->getGraphicsManager(), MeshCreationFlags::None);
+	mesh->initializeScreenPlane(MeshCreationFlags::None);
 	ptr->initialize(mesh);
 	return ptr;
 }
@@ -66,7 +66,7 @@ Ref<StaticMeshComponent> StaticMeshComponent::createBox()
 Ref<StaticMeshComponent> StaticMeshComponent::createBox(const Vector3& size)
 {
 	auto mesh = Ref<StaticMeshModel>::makeRef();
-	mesh->initializeBox(SceneGraphManager::Instance->getGraphicsManager(), size, MeshCreationFlags::None);
+	mesh->initializeBox(size, MeshCreationFlags::None);
 
 	auto ptr = Ref<StaticMeshComponent>::makeRef();
 	ptr->initialize(mesh);
@@ -96,7 +96,7 @@ Ref<StaticMeshComponent> StaticMeshComponent::createSphere()
 Ref<StaticMeshComponent> StaticMeshComponent::createSphere(float radius, int tessellation)
 {
 	auto mesh = Ref<StaticMeshModel>::makeRef();
-	mesh->initializeSphere(SceneGraphManager::Instance->getGraphicsManager(), radius, tessellation, tessellation, MeshCreationFlags::None);
+	mesh->initializeSphere(radius, tessellation, tessellation, MeshCreationFlags::None);
 
 	auto ptr = Ref<StaticMeshComponent>::makeRef();
 	ptr->initialize(mesh);
@@ -120,7 +120,7 @@ Ref<StaticMeshComponent> StaticMeshComponent::createTeapot()
 Ref<StaticMeshComponent> StaticMeshComponent::createTeapot(float size, int tessellation)
 {
 	auto mesh = Ref<StaticMeshModel>::makeRef();
-	mesh->initializeTeapot(SceneGraphManager::Instance->getGraphicsManager(), size, tessellation, MeshCreationFlags::None);
+	mesh->initializeTeapot(size, tessellation, MeshCreationFlags::None);
 
 	auto ptr = Ref<StaticMeshComponent>::makeRef();
 	ptr->initialize(mesh);

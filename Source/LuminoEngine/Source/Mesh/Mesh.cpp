@@ -35,6 +35,15 @@ const size_t MeshResource::vertexStrideTable[VB_Count] =
 	sizeof(MmdExtra),		//VB_MmdExtra,
 };
 
+Ref<MeshResource> MeshResource::create(int vertexCount, int indexCount, MeshCreationFlags flags)
+{
+	auto ptr = Ref<MeshResource>::makeRef();
+	ptr->initialize(detail::GraphicsManager::getInstance(), flags);
+	ptr->resizeVertexBuffer(vertexCount);
+	ptr->resizeIndexBuffer(indexCount);
+	return ptr;
+}
+
 //------------------------------------------------------------------------------
 MeshResourcePtr MeshResource::create()
 {
@@ -826,9 +835,8 @@ void StaticMeshModel::initialize(detail::GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::initialize(detail::GraphicsManager* manager, MeshResource* sharingMesh)
+void StaticMeshModel::initialize(MeshResource* sharingMesh)
 {
-	if (LN_REQUIRE(manager != nullptr)) return;
 	if (LN_REQUIRE(sharingMesh != nullptr)) return;
 
 	// メッシュ(バッファ類)は共有する
@@ -848,57 +856,57 @@ void StaticMeshModel::initialize(detail::GraphicsManager* manager, MeshResource*
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::initializeBox(detail::GraphicsManager* manager, const Vector3& size, MeshCreationFlags flags)
+void StaticMeshModel::initializeBox(const Vector3& size, MeshCreationFlags flags)
 {
 	auto res = Ref<MeshResource>::makeRef();
-	res->initialize(manager, flags);
+	res->initialize(detail::GraphicsManager::getInstance(), flags);
 	res->addBox(size);
 	if (flags.TestFlag(MeshCreationFlags::reverseFaces)) res->reverseFaces();
-	initialize(manager, res);
+	initialize(res);
 	addMaterials(1);
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::initializeSphere(detail::GraphicsManager* manager, float radius, int slices, int stacks, MeshCreationFlags flags)
+void StaticMeshModel::initializeSphere(float radius, int slices, int stacks, MeshCreationFlags flags)
 {
 	auto res = Ref<MeshResource>::makeRef();
-	res->initialize(manager, flags);
+	res->initialize(detail::GraphicsManager::getInstance(), flags);
 	res->addSphere(radius, slices, stacks);
 	if (flags.TestFlag(MeshCreationFlags::reverseFaces)) res->reverseFaces();
-	initialize(manager, res);
+	initialize(res);
 	addMaterials(1);
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::initializePlane(detail::GraphicsManager* manager, const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags)
+void StaticMeshModel::initializePlane(const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags)
 {
 	auto res = Ref<MeshResource>::makeRef();
-	res->initialize(manager, flags);
+	res->initialize(detail::GraphicsManager::getInstance(), flags);
 	res->addPlane(size, sliceH, sliceV);
 	if (flags.TestFlag(MeshCreationFlags::reverseFaces)) res->reverseFaces();
-	initialize(manager, res);
+	initialize(res);
 	addMaterials(1);
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::initializeScreenPlane(detail::GraphicsManager* manager, MeshCreationFlags flags)
+void StaticMeshModel::initializeScreenPlane(MeshCreationFlags flags)
 {
 	auto res = Ref<MeshResource>::makeRef();
-	res->initialize(manager, flags);
+	res->initialize(detail::GraphicsManager::getInstance(), flags);
 	res->addScreenPlane();
 	if (flags.TestFlag(MeshCreationFlags::reverseFaces)) res->reverseFaces();
-	initialize(manager, res);
+	initialize(res);
 	addMaterials(1);
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::initializeTeapot(detail::GraphicsManager* manager, float size, int tessellation, MeshCreationFlags flags)
+void StaticMeshModel::initializeTeapot(float size, int tessellation, MeshCreationFlags flags)
 {
 	auto res = Ref<MeshResource>::makeRef();
-	res->initialize(manager, flags);
+	res->initialize(detail::GraphicsManager::getInstance(), flags);
 	res->addTeapot(size, tessellation);
 	if (flags.TestFlag(MeshCreationFlags::reverseFaces)) res->reverseFaces();
-	initialize(manager, res);
+	initialize(res);
 	addMaterials(1);
 }
 

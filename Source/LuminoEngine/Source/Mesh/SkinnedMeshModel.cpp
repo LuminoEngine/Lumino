@@ -207,7 +207,7 @@ void SkinnedMeshModel::initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 	if (LN_REQUIRE(manager != nullptr)) return;
 	if (LN_REQUIRE(sharingMesh != nullptr)) return;
 
-	m_mesh = Object::makeRef<StaticMeshModel>(manager, sharingMesh);
+	m_mesh = Object::makeRef<StaticMeshModel>(sharingMesh);
 
 	// メッシュ(バッファ類)は共有する
 	m_meshResource = sharingMesh;

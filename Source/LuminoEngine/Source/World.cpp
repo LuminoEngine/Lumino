@@ -458,7 +458,7 @@ void World3D::createGridPlane()
 
 	// 適当な四角形メッシュ
 	m_gridPlane = Ref<StaticMeshModel>::makeRef();
-	m_gridPlane->initializeScreenPlane(gm, MeshCreationFlags::DynamicBuffers);
+	m_gridPlane->initializeScreenPlane(MeshCreationFlags::DynamicBuffers);
 	MeshResource* mesh = m_gridPlane->getMeshResource(0);
 	mesh->addSections(1);
 	mesh->getSection(0)->MaterialIndex = 0;

@@ -44,6 +44,10 @@ class MeshResource
 {
 	LN_OBJECT;
 public:
+
+	/** 頂点数とインデックス数を指定してメッシュを作成します。 */
+	static Ref<MeshResource> create(int vertexCount, int indexCount, MeshCreationFlags flags = MeshCreationFlags::None);
+
 	static MeshResourcePtr create();
 
 	static Ref<MeshResource> getUnitSphere(UnitMeshSide side = UnitMeshSide::Outward);
@@ -255,12 +259,12 @@ LN_INTERNAL_ACCESS:
 	StaticMeshModel();
 	virtual ~StaticMeshModel();
 	void initialize(detail::GraphicsManager* manager);
-	void initialize(detail::GraphicsManager* manager, MeshResource* sharingMesh);
-	void initializeBox(detail::GraphicsManager* manager, const Vector3& size, MeshCreationFlags flags);
-	void initializeSphere(detail::GraphicsManager* manager, float radius, int slices, int stacks, MeshCreationFlags flags);
-	void initializePlane(detail::GraphicsManager* manager, const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags);
-	void initializeScreenPlane(detail::GraphicsManager* manager, MeshCreationFlags flags);
-	void initializeTeapot(detail::GraphicsManager* manager, float size, int tessellation, MeshCreationFlags flags);
+	void initialize(MeshResource* sharingMesh);
+	void initializeBox(const Vector3& size, MeshCreationFlags flags);
+	void initializeSphere(float radius, int slices, int stacks, MeshCreationFlags flags);
+	void initializePlane(const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags);
+	void initializeScreenPlane(MeshCreationFlags flags);
+	void initializeTeapot(float size, int tessellation, MeshCreationFlags flags);
 	
 LN_INTERNAL_ACCESS:	// TODO:
 	List<Ref<MeshResource>>	m_meshResources;

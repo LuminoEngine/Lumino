@@ -240,7 +240,7 @@ TEST_F(Test_Graphics_Rendering, drawMesh)
 	//}
 	{
 		auto mesh = Ref<StaticMeshModel>::makeRef();
-		mesh->initializeSphere(detail::GraphicsManager::getInstance(), 2, 8, 4, MeshCreationFlags::None);
+		mesh->initializeSphere(2, 8, 4, MeshCreationFlags::None);
 
 		LN_TEST_BEGIN_FRAME;
 		Engine::getWorld3D()->getRenderer()->drawMesh(mesh->getMeshResource(0), 0, mesh->getMaterial(0));

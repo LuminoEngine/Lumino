@@ -291,13 +291,27 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 	auto ps1 = TransitionPostEffect::create();
 	Engine::getDefault3DLayer()->addPostEffect(ps1);
 	ps1->transition(1, nullptr, 0);	// フェードイン
+
 	
 	//auto box1 = StaticMeshComponent::create(LN_LOCALFILE("Assets/cube.mqo"));
 	//auto box1 = StaticMeshComponent::create(LN_LOCALFILE("Assets/cylinder2.mqo"));
 	//auto box1 = StaticMeshComponent::create(LN_LOCALFILE("Assets/Plant1.mqo"));
-	//auto box1 = StaticMeshComponent::create(_LT("D:/Documents/Modeling/test4.mqo"));
-	//auto mesh1 = newObject<WorldObject3D>();
-	//mesh1->addComponent(box1);
+	auto meshRes1 = MeshResource::create(4, 6);
+	meshRes1->setPosition(0, Vector3(-1, 0, 1));
+	meshRes1->setPosition(1, Vector3(-1, 0, -1));
+	meshRes1->setPosition(2, Vector3(1, 0, 1));
+	meshRes1->setPosition(3, Vector3(1, 0, -1));
+	meshRes1->setIndex(0, 0);
+	meshRes1->setIndex(1, 1);
+	meshRes1->setIndex(2, 2);
+	meshRes1->setIndex(3, 2);
+	meshRes1->setIndex(4, 1);
+	meshRes1->setIndex(5, 3);
+	auto meshModel1 = newObject<StaticMeshModel>(meshRes1);
+	meshModel1->addMaterials(1);
+	auto mesh1 = StaticMeshComponent::create(meshModel1);
+	auto meshObj1 = newObject<WorldObject3D>();
+	meshObj1->addComponent(mesh1);
 	
 #if 0
 	auto font = Font::getDefault();
