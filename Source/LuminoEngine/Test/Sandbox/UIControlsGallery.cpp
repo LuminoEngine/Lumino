@@ -324,16 +324,19 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 			meshRes1->setIndex(base + 5, (x + 1) + (y + 1) * size.width);
 		}
 	}
+	auto clusterdShader = Shader::create(LN_LOCALFILE("Assets/NoLightingRendering.fx"));
 	auto tex1 = Assets::loadTexture(LN_LOCALFILE("Assets/grass.png"));
 	auto material1 = Material::create();
 	material1->setMaterialTexture(tex1);
+	material1->setShader(clusterdShader);
 	auto meshModel1 = newObject<StaticMeshModel>(meshRes1);
 	meshModel1->addMaterial(material1);
 	auto mesh1 = StaticMeshComponent::create(meshModel1);
-	mesh1->setShader(Shader::getBuiltinShader(BuiltinShader::Sprite));
+	//mesh1->setShader(Shader::getBuiltinShader(BuiltinShader::Sprite));
+	mesh1->setShader(clusterdShader);
 	auto meshObj1 = newObject<WorldObject3D>();
 	meshObj1->addComponent(mesh1);
-	meshObj1->setPosition(-50, -20, 50);
+	meshObj1->setPosition(-50, -20, 100);
 
 
 	int ClusterDepth = 32;
@@ -344,22 +347,24 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 
 	
 	{
-		auto vm = Matrix::makeLookAtLH(Vector3(0, 0, 0), Vector3(0, 0, 1), Vector3(0, 1, 0));
+		auto camPos = Engine::getCamera3D()->getPosition();
+
+		auto vm = Matrix::makeLookAtLH(camPos, Vector3(0, 0, 0), Vector3(0, 1, 0));
 		auto pm = Matrix::makePerspectiveFovLH(Math::PI / 4, 640.f / 480.f, 1.0f, 1000.0f);
 		//auto pm = Matrix::makeOrthoLH(640.f, 480.f, 1.0f, 1000.0f);
 
 
 
 
-		Vector3 lightPos(0, 0, 5);
-		float lightRadius = 1;
+		Vector3 lightPos(0, 0, -7.5);
+		float lightRadius = 1.5;
 
 
 		Vector3 cp = Vector3::transformCoord(lightPos, vm);	// カメラから見た位置。奥が Z+。一番手前は 0.0
-		Vector3 minAABB(lightPos - lightRadius);
-		Vector3 maxAABB(lightPos + lightRadius);
+		Vector3 minAABB(cp - lightRadius);
+		Vector3 maxAABB(cp + lightRadius);
 
-		Vector3 vp_pos = Vector3::transformCoord(lightPos, pm);
+		Vector3 vp_pos = Vector3::transformCoord(cp, pm);
 		Vector3 vp_minAABB = Vector3::transformCoord(minAABB, pm);
 		Vector3 vp_maxAABB = Vector3::transformCoord(maxAABB, pm);
 
@@ -368,9 +373,11 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 		Vector3 test_n = Vector3::transformCoord(Vector3(0, 0, 1.f), pm);
 		Vector3 test_f = Vector3::transformCoord(Vector3(0, 0, 1000.f), pm);
 
+		test_n = Vector3::transformCoord(Vector3(0, 0, 1.f), vm);
+		test_f = Vector3::transformCoord(Vector3(0, 0, 1000.f), vm);
 
 		float near = 1.0f;
-		float far = 1000.0f;
+		float far = 100.0f;
 
 		// 深度は 0.0 - 1.0 の線形でほしい
 		vp_minAABB.z = ((cp.z - lightRadius) - near) / (far - near);
@@ -411,15 +418,30 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 							float czf = UF::bias(biasBase, zs * (z + 1));
 							if ((vp_maxAABB.z > czn && vp_minAABB.z < czf))
 							{
-								//printf("%d,%d,%d\n", x, y, z);
+								printf("%d,%d,%d\n", x, y, z);
 
-								clustersTexture->setPixel32(x, y, z, Color32(1, 0, 0, 0));
+								clustersTexture->setPixel32(x, y, z, Color32(255, 255, 255, 0));
 							}
 						}
 					}
 				}
 			}
 		}
+
+		//for (int y = 0; y < ClusterHeight; y++)
+		//{
+		//	for (int x = 0; x < ClusterWidth; x++)
+		//	{
+		//		for (int z = 0; z < ClusterDepth; z++)
+		//		{
+		//			if (y == 2 || x == 8)
+		//			clustersTexture->setPixel32(x, y, z, Color32(255, 255, 255, 0));
+		//		}
+		//	}
+		//}
+		material1->setTextureParameter(_T("clustersTexture"), clustersTexture);
+		material1->setVectorParameter(_T("cam_pos"), Vector4(camPos, 1));
+		//clusterdShader->findVariable()
 
 
 		// printf("%f\n", UF::bias(0.1, 0.1 * i));
