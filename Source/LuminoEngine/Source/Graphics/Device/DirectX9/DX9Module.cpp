@@ -382,21 +382,23 @@ D3DFORMAT DX9Module::TranslateLNFormatToDxFormat(TextureFormat format)
 		対して、D3DFMT はリトルエンディアンのu32をビットシフトしたときの並びで表している。
 		https://msdn.microsoft.com/ja-jp/library/windows/apps/dn166864.aspx
 	*/
-	static const std::array<D3DFORMAT, 10> d3dFormats =
+	static const std::array<D3DFORMAT, 11> d3dFormats =
 	{
-		D3DFMT_UNKNOWN,			// TextureFormat_Unknown
+		D3DFMT_UNKNOWN,			// TextureFormat::Unknown
 
-		D3DFMT_A8B8G8R8,		// TextureFormat_R8G8B8A8
-		D3DFMT_X8B8G8R8,		// TextureFormat_R8G8B8X8
-		D3DFMT_A8R8G8B8,		// TextureFormat_B8G8R8A8 (いつも使ってた D3DFMT_A8R8G8B8)
-		D3DFMT_X8R8G8B8,		// TextureFormat_B8G8R8X8
+		D3DFMT_A8B8G8R8,		// TextureFormat::R8G8B8A8
+		D3DFMT_X8B8G8R8,		// TextureFormat::R8G8B8X8
+		D3DFMT_A8R8G8B8,		// TextureFormat::B8G8R8A8 (いつも使ってた D3DFMT_A8R8G8B8)
+		D3DFMT_X8R8G8B8,		// TextureFormat::B8G8R8X8
 
-		D3DFMT_A16B16G16R16F,	// TextureFormat_R16G16B16A16_Float
-		D3DFMT_A32B32G32R32F,	// TextureFormat_R32G32B32A32_Float
-		D3DFMT_R16F,			// TextureFormat_R16_Float
-		D3DFMT_R32F,			// TextureFormat_R32_Float
+		D3DFMT_A16B16G16R16F,	// TextureFormat::R16G16B16A16_Float
+		D3DFMT_A32B32G32R32F,	// TextureFormat::R32G32B32A32_Float
+		D3DFMT_R16F,			// TextureFormat::R16_Float
+		D3DFMT_R32F,			// TextureFormat::R32_Float
 
-		D3DFMT_D24S8,			// TextureFormat_D24S8
+		D3DFMT_INDEX32,			// TextureFormat::R32_UInt
+
+		D3DFMT_D24S8,			// TextureFormat::D24S8
 	};
 	//assert(LN_ARRAY_SIZE_OF(d3dFormats) == (int)TextureFormat::_Count);
 	return d3dFormats[(int)format];
@@ -417,6 +419,7 @@ TextureFormat DX9Module::TranslateFormatDxToLN(D3DFORMAT dx_format)
 	case D3DFMT_D24S8:			return TextureFormat::D24S8;
 	case D3DFMT_R16F:			return TextureFormat::R16_Float;
 	case D3DFMT_R32F:			return TextureFormat::R32_Float;
+	case D3DFMT_INDEX32:		return TextureFormat::R32_UInt;
     }
 
 	return TextureFormat::Unknown;

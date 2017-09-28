@@ -333,13 +333,13 @@ void DX9Texture3D::initialize(int width, int height, int depth, TextureFormat fo
 	UINT d = depth;
 	UINT miplevels = levels;
 	D3DFORMAT dxFormat = DX9Module::TranslateLNFormatToDxFormat(format);
-	LN_COMCALL(DX9Module::D3DXCheckVolumeTextureRequirements(
-		d3d9Device,
-		&w, &h, &d,
-		&miplevels,
-		0,
-		&dxFormat,
-		D3DPOOL_MANAGED));
+	//LN_COMCALL(DX9Module::D3DXCheckVolumeTextureRequirements(
+	//	d3d9Device,
+	//	&w, &h, &d,
+	//	&miplevels,
+	//	0,
+	//	&dxFormat,
+	//	D3DPOOL_MANAGED));
 	m_realSize.set(w, h);
 	m_depth = d;
 

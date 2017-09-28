@@ -334,6 +334,133 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 	auto meshObj1 = newObject<WorldObject3D>();
 	meshObj1->addComponent(mesh1);
 	meshObj1->setPosition(-50, -20, 50);
+
+
+	int ClusterDepth = 32;
+	int ClusterWidth = 16;
+	int ClusterHeight = 16;
+
+	auto clustersTexture = tr::Texture3D::create(ClusterWidth, ClusterHeight, ClusterDepth);
+
+	
+	{
+		auto vm = Matrix::makeLookAtLH(Vector3(0, 0, 0), Vector3(0, 0, 1), Vector3(0, 1, 0));
+		auto pm = Matrix::makePerspectiveFovLH(Math::PI / 4, 640.f / 480.f, 1.0f, 1000.0f);
+		//auto pm = Matrix::makeOrthoLH(640.f, 480.f, 1.0f, 1000.0f);
+
+
+
+
+		Vector3 lightPos(0, 0, 5);
+		float lightRadius = 1;
+
+
+		Vector3 cp = Vector3::transformCoord(lightPos, vm);	// カメラから見た位置。奥が Z+。一番手前は 0.0
+		Vector3 minAABB(lightPos - lightRadius);
+		Vector3 maxAABB(lightPos + lightRadius);
+
+		Vector3 vp_pos = Vector3::transformCoord(lightPos, pm);
+		Vector3 vp_minAABB = Vector3::transformCoord(minAABB, pm);
+		Vector3 vp_maxAABB = Vector3::transformCoord(maxAABB, pm);
+
+
+
+		Vector3 test_n = Vector3::transformCoord(Vector3(0, 0, 1.f), pm);
+		Vector3 test_f = Vector3::transformCoord(Vector3(0, 0, 1000.f), pm);
+
+
+		float near = 1.0f;
+		float far = 1000.0f;
+
+		// 深度は 0.0 - 1.0 の線形でほしい
+		vp_minAABB.z = ((cp.z - lightRadius) - near) / (far - near);
+		vp_maxAABB.z = ((cp.z + lightRadius) - near) / (far - near);
+
+
+		struct UF
+		{
+			static float bias(float b, float x)
+			{
+				return pow(x, log(b) / log(0.5));
+			}
+		};
+
+		// 先に通常の VFカリングしておこう
+
+		float xs = 2.0f / ClusterWidth;
+		float ys = 2.0f / ClusterHeight;
+		float zs = 1.0f / ClusterDepth;
+		float biasBase = 0.1;
+
+		printf("\n");
+		for (int y = 0; y < ClusterHeight; y++)
+		{
+			float cb = (ys * y) - 1.0f;
+			float ct = (ys * (y + 1)) - 1.0f;
+			if ((vp_maxAABB.y > cb && vp_minAABB.y < ct))
+			{
+				for (int x = 0; x < ClusterWidth; x++)
+				{
+					float cl = (xs * x) - 1.0f;
+					float cr = (xs * (x + 1)) - 1.0f;
+					if ((vp_maxAABB.x > cl && vp_minAABB.x < cr))
+					{
+						for (int z = 0; z < ClusterDepth; z++)
+						{
+							float czn = UF::bias(biasBase, zs * z);
+							float czf = UF::bias(biasBase, zs * (z + 1));
+							if ((vp_maxAABB.z > czn && vp_minAABB.z < czf))
+							{
+								//printf("%d,%d,%d\n", x, y, z);
+
+								clustersTexture->setPixel32(x, y, z, Color32(1, 0, 0, 0));
+							}
+						}
+					}
+				}
+			}
+		}
+
+
+		// printf("%f\n", UF::bias(0.1, 0.1 * i));
+
+		//int line = ((ClusterDepth - 1) - i);	// 奥から
+		//Vector3 pos(0, 0, ((far - near) / ClusterDepth) * line  + near);
+
+
+
+
+		// 10分割程度じゃやくにたたない。
+		/*
+		1	0.99975
+		2	0.999572
+		3	0.999334
+		4	0.999001
+		5	0.998502
+		6	0.997672
+		7	0.996016
+		8	0.99108
+		9	0
+		*/
+
+
+		//int CLUSTER_Z = 32;
+		//int CLUSTER_Y = 8;
+		//int CLUSTER_X = 32;
+
+		/*
+			Viewport 座標系から直接 tex3D できるようにしたい。ちなみにサンプルはワールド上でやっている。
+		*/
+
+		printf("");
+	}
+
+
+
+
+
+
+
 	
 #if 0
 	auto font = Font::getDefault();
