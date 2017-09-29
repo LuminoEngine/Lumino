@@ -136,7 +136,7 @@ float4 PSBasic(PSInput p) : COLOR0
 	//float3 clus = float3(0, 0, p.ViewportPos_z);
 	float4 c = tex3D(clustersSampler, clus);
 	float4 c2 = float4(clus, 1);
-	return c * c2;//c * c2 + mc * 0.5;
+	return c * c2 + mc * 0.5;
 
 	//return float4(cx / sx, cy / sy, cz / sz, 1);
 	//return float4(0, 0, p.ViewportPos.z, 1);

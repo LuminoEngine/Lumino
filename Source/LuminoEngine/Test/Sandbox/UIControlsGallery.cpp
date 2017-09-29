@@ -325,7 +325,7 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 		}
 	}
 	auto clusterdShader = Shader::create(LN_LOCALFILE("Assets/NoLightingRendering.fx"));
-	auto tex1 = Assets::loadTexture(LN_LOCALFILE("Assets/grass.png"));
+	auto tex1 = Assets::loadTexture(LN_LOCALFILE("Assets/grid_uv.png"));
 	auto material1 = Material::create();
 	material1->setMaterialTexture(tex1);
 	material1->setShader(clusterdShader);
@@ -378,41 +378,41 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 			m_proj = Matrix::makePerspectiveFovLH(fov, aspect, nearClip, farClip);
 
 
-			Vector3 cp3 = Vector3::transformCoord(Vector3(cameraPos + cameraDir), m_view);
-			Vector4 cp4 = Vector4::transform(Vector4(cameraPos + cameraDir, 1.0f), m_view);
+			//Vector3 cp3 = Vector3::transformCoord(Vector3(cameraPos + cameraDir), m_view);
+			//Vector4 cp4 = Vector4::transform(Vector4(cameraPos + cameraDir, 1.0f), m_view);
 
-			Vector3 np3 = Vector3::transformCoord(Vector3(cameraPos + cameraDir), m_view * m_proj);
-			Vector4 np4 = Vector4::transform(Vector4(cameraPos + cameraDir, 1.0f), m_view * m_proj);
+			//Vector3 np3 = Vector3::transformCoord(Vector3(cameraPos + cameraDir), m_view * m_proj);
+			//Vector4 np4 = Vector4::transform(Vector4(cameraPos + cameraDir, 1.0f), m_view * m_proj);
 
-			Vector4 np = Vector4::transform(Vector4(0, 0, nearClip, 1.0f), m_proj);
-			Vector4 fp = Vector4::transform(Vector4(0, 0, farClip, 1.0f), m_proj);
-
-
-			Vector4 np41 = Vector4::transform(Vector4(cameraPos + cameraDir * nearClip, 1.0f), m_view * m_proj);
-			Vector4 fp41 = Vector4::transform(Vector4(cameraPos + cameraDir * farClip, 1.0f), m_view * m_proj);
+			//Vector4 np = Vector4::transform(Vector4(0, 0, nearClip, 1.0f), m_proj);
+			//Vector4 fp = Vector4::transform(Vector4(0, 0, farClip, 1.0f), m_proj);
 
 
-			//Vector3 ff = Vector3::transformCoord(Vector3(0, 0, 10), m_view);
-			{
-				Vector3 cpos = Vector3(-10, -1, 0);//cameraPos;
-				auto vm = Matrix::makeLookAtLH(cpos, Vector3(0, 0, 0), cameraUp);
-				//vm.inverse();
-				Vector4 cp4 = Vector4::transform(Vector4(5, 0, 0, 1), vm);
+			//Vector4 np41 = Vector4::transform(Vector4(cameraPos + cameraDir * nearClip, 1.0f), m_view * m_proj);
+			//Vector4 fp41 = Vector4::transform(Vector4(cameraPos + cameraDir * farClip, 1.0f), m_view * m_proj);
 
-				//for (int i = 0; i < 100; i++)
-				//{
-				//	float z = 10.0f * i;
-				//	float cl = bias(0.9, z / 1000.0);
-				//	printf("%d\n", static_cast<int>(cl * m_clusterDepth));
-				//}
 
-				printf("");
-			}
+			////Vector3 ff = Vector3::transformCoord(Vector3(0, 0, 10), m_view);
+			//{
+			//	Vector3 cpos = Vector3(-10, -1, 0);//cameraPos;
+			//	auto vm = Matrix::makeLookAtLH(cpos, Vector3(0, 0, 0), cameraUp);
+			//	//vm.inverse();
+			//	Vector4 cp4 = Vector4::transform(Vector4(5, 0, 0, 1), vm);
 
-			float zn = np41.z / np41.w;
-			float zf = fp41.z / fp41.w;
+			//	//for (int i = 0; i < 100; i++)
+			//	//{
+			//	//	float z = 10.0f * i;
+			//	//	float cl = bias(0.9, z / 1000.0);
+			//	//	printf("%d\n", static_cast<int>(cl * m_clusterDepth));
+			//	//}
 
-			m_clipRange = farClip - nearClip;
+			//	printf("");
+			//}
+
+			//float zn = np41.z / np41.w;
+			//float zf = fp41.z / fp41.w;
+
+			m_clipRange = farClip/* - nearClip*/;
 
 			// clear
 			for (int y = 0; y < m_clusterHeight; y++)
@@ -439,6 +439,12 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 
 			Vector3 vpMin = Vector3::transformCoord(Vector3(cp.x - lightRadius, cp.y - lightRadius, zn), m_proj);
 			Vector3 vpMax = Vector3::transformCoord(Vector3(cp.x + lightRadius, cp.y + lightRadius, zn), m_proj);
+			//Vector3 vpMin = Vector3::transformCoord(Vector3(lightPos - lightRadius), m_view*m_proj);
+			//Vector3 vpMax = Vector3::transformCoord(Vector3(lightPos + lightRadius), m_view*m_proj);
+			//Vector3 vpMin = Vector3::transformCoord(Vector3(lightPos.x - lightRadius, lightPos.y - lightRadius, zn), m_view*m_proj);
+			//Vector3 vpMax = Vector3::transformCoord(Vector3(lightPos.x + lightRadius, lightPos.y + lightRadius, zn), m_view*m_proj);
+
+			
 			float vpZn = zn / m_clipRange;
 			float vpZf = zf / m_clipRange;
 
@@ -456,7 +462,7 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 			float ys = 2.0f / m_clusterHeight;
 			float zs = 1.0f / m_clusterDepth;
 
-			float biasBase = 0.9;
+			float biasBase = 0.1;
 
 			for (int y = 0; y < m_clusterHeight; y++)
 			{
@@ -472,20 +478,32 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 						{
 							for (int z = 0; z < m_clusterDepth; z++)
 							{
+								// 0.0..1.0
 								float cn = zs * z;
 								float cf = zs * (z + 1);
+
 								float czn = bias(biasBase, cn);
 								float czf = bias(biasBase, cf);
+								//printf("d:%f\n", czf - czn);
 								if (vpZf > czn && vpZn < czf)
 								{
-									printf("%d,%d,%d(z:%f)\n", x, y, z, cn);
-									m_clustersTexture->setPixel32(x, y, z, Color32(255, 255, 255, 0));
+									//printf("%d,%d,%d(z:%f)\n", x, y, z, cn);
+									m_clustersTexture->setPixel32(x, y, z+7, Color32(255, 255, 255, 0));
 								}
 							}
 						}
 					}
 				}
 			}
+
+
+			//for (int z = 0; z < m_clusterDepth; z++)
+			//{
+			//	float cn = zs * z;
+			//	float czn = bias(biasBase, cn);
+			//	printf("%f\n", czn);
+			//}
+
 		}
 
 	private:
@@ -826,6 +844,15 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 			camc->getFovY(), 640.0f / 480.0f, camc->getNearClip(), camc->getFarClip());
 
 		lc.addPointLight(Vector3(0, 0, 0), 1);
+		lc.addPointLight(Vector3(5, 0, 5), 1);
+		lc.addPointLight(Vector3(-5, 0, 5), 1);
+		lc.addPointLight(Vector3(5, 0, -5), 1);
+		lc.addPointLight(Vector3(-5, 0, -5), 1);
+
+		lc.addPointLight(Vector3(7, 0, 0), 1);
+		lc.addPointLight(Vector3(-7, 0, 0), 1);
+		lc.addPointLight(Vector3(0, 0, 7), 1);
+		lc.addPointLight(Vector3(0, 0, -7), 1);
 
 
 
