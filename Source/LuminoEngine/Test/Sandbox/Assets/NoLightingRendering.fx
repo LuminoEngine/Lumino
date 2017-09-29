@@ -27,6 +27,8 @@ struct VSOutput
 	float2	UV		: TEXCOORD0;
 	float3	ViewportPos		: TEXCOORD1;
 	float	ViewportPos_z		: TEXCOORD2;
+	
+	float3	Pos2	: TEXCOORD3;
 };
 
 struct PSInput
@@ -35,15 +37,19 @@ struct PSInput
 	float2	UV		: TEXCOORD0;
 	float3	ViewportPos		: TEXCOORD1;
 	float	ViewportPos_z		: TEXCOORD2;
+	
+	float3	Pos2	: TEXCOORD3;
 };
 
 
 
 
-static float near = 1.0;
-static float far = 100.0;
+float near;
+float far;
 
-float3 cam_pos;// = float3(0, 5, 0);
+float3 cam_pos;
+
+float4x4 view;
 
 texture3D clustersTexture;
 sampler	clustersSampler = sampler_state
@@ -61,9 +67,10 @@ VSOutput VSBasic(LN_VSInput v)
 	//float4 cp = mul(float4(v.Pos, 1.0f), ln_World * ln_View);
 	//cp.z /= cp.w;
 	
-	float4 cp = mul(float4(v.Pos, 1.0f), ln_World);	
+	float4 cp = mul(float4(v.Pos, 1.0f), ln_World * ln_View);
 
 	VSOutput o;
+	//o.Pos	= mul(float4(v.Pos, 1.0f), ln_World * ln_View * ln_Projection);
 	o.Pos	= mul(float4(v.Pos, 1.0f), ln_WorldViewProjection);
 	o.ViewportPos = o.Pos.xyz / o.Pos.w;
 	
@@ -72,13 +79,10 @@ VSOutput VSBasic(LN_VSInput v)
 	
 	//float3 viewDir = normalize(-cam_pos);
 	//float d = dot(cp.xyz - cam_pos, viewDir);
-	float d = distance(cp.z, cam_pos.z);
+	//float d = distance(cp.z, cam_pos.z);
+	o.Pos2 = v.Pos.xyz;
 	
-	
-	o.ViewportPos_z = (d - near) / (far - near);
-	//o.ViewportPos.z /= 10;
-	//o.Pos.x -= ViewportOffset2.x;
-	//o.Pos.y += ViewportOffset2.y;
+	o.ViewportPos_z = (cp.z - near) / (far - near);
 	o.UV	= v.UV;// + ViewportOffset;
 	o.Color	= v.Color;
 	return o;
@@ -101,17 +105,38 @@ float bias(float b, float x)
 //------------------------------------------------------------------------------
 float4 PSBasic(PSInput p) : COLOR0
 {
-	float i_cx = trunc((((p.ViewportPos.x + 1.0) / 2.0) * 255.0) / sx);
-	float i_cy = trunc((((p.ViewportPos.y + 1.0) / 2.0) * 255.0) / sy);
-	float i_cz = trunc((p.ViewportPos_z * 255.0) / sz);
+	
+	//float4 cp4 = mul(float4(5, 0, -10, 1), view);
+	//return float4(0, 0, cp4.z / 10.0, 1);
+	
+	//return float4(p.Pos2 / 10.0, 1.0f);
+	
+	
+	// View base
+	float4 cp = mul(float4(p.Pos2, 1.0f), view);//ln_World * ln_View);
+	float cz = cp.z / far; //(cp.z - near) / (far - near);
+	//return float4(0, 0, cz, 1);
+	
+	float4 vp = mul(float4(p.Pos2, 1.0f), ln_WorldViewProjection);
+	vp.xyz /= vp.w;
+	
+	float i_cx = trunc((((vp.x + 1.0) / 2.0) * 255.0) / sx);
+	float i_cy = trunc((((vp.y + 1.0) / 2.0) * 255.0) / sy);
+	float i_cz = trunc(bias(0.9, cz) * sz);//trunc((cz * 255.0) / sz);
 	
 	float4 mc = (tex2D(MaterialTextureSampler, p.UV) * p.Color) * ln_ColorScale;
 	
-	float3 clus = float3(i_cx / dx, i_cy / dy, bias(0.1, i_cz / dz));
+	float3 clus = float3(i_cx / dx, i_cy / dy, i_cz / sz);
+	//clus.z = bias(0.9, clus.z);
+	
+	//clus.x = 0; clus.y = 0;
+	//clus.z *= 2;
+	//clus.z = cz;
+	
 	//float3 clus = float3(0, 0, p.ViewportPos_z);
 	float4 c = tex3D(clustersSampler, clus);
 	float4 c2 = float4(clus, 1);
-	return c * c2 + mc * 0.5;
+	return c * c2;//c * c2 + mc * 0.5;
 
 	//return float4(cx / sx, cy / sy, cz / sz, 1);
 	//return float4(0, 0, p.ViewportPos.z, 1);

@@ -131,7 +131,8 @@ void ShaderSemanticsManager::updateSceneVariables(const SceneInfo& info)
 //------------------------------------------------------------------------------
 void ShaderSemanticsManager::updateCameraVariables(const CameraInfo& info)
 {
-	if (m_lastCameraInfoId != info.dataSourceId)
+	//if (m_lastCameraInfoId != info.dataSourceId)
+	// ↑TODO: 単に id じゃなくて revesion count じゃないとダメ。
 	{
 		m_lastCameraInfoId = info.dataSourceId;
 

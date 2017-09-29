@@ -332,12 +332,186 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 	auto meshModel1 = newObject<StaticMeshModel>(meshRes1);
 	meshModel1->addMaterial(material1);
 	auto mesh1 = StaticMeshComponent::create(meshModel1);
-	//mesh1->setShader(Shader::getBuiltinShader(BuiltinShader::Sprite));
 	mesh1->setShader(clusterdShader);
-	auto meshObj1 = newObject<WorldObject3D>();
-	meshObj1->addComponent(mesh1);
-	meshObj1->setPosition(-50, -20, 100);
+	//auto meshObj1 = newObject<WorldObject3D>();
+	//meshObj1->addComponent(mesh1);
+	//meshObj1->setPosition(-50, -20, 100);
+		
 
+
+
+
+
+
+
+
+	class LightClusters
+	{
+	public:
+		struct AABB
+		{
+			Vector3 min;
+			Vector3 max;
+		};
+
+		int m_clusterWidth = 16;
+		int m_clusterHeight = 16;
+		int m_clusterDepth = 32;
+
+		Ref<tr::Texture3D>	m_clustersTexture;
+
+		Matrix	m_view;
+		Matrix	m_proj;
+		float	m_clipRange;
+
+		void init()
+		{
+			m_clustersTexture = tr::Texture3D::create(m_clusterWidth, m_clusterHeight, m_clusterDepth);
+		}
+
+		void beginMakeClusters(
+			const Vector3& cameraPos, const Vector3& cameraLookAt, const Vector3& cameraUp,
+			float fov, float aspect, float nearClip, float farClip)
+		{
+			Vector3 cameraDir = Vector3::normalize(cameraLookAt - cameraPos);
+			m_view = Matrix::makeLookAtLH(cameraPos, cameraLookAt, cameraUp);
+			m_proj = Matrix::makePerspectiveFovLH(fov, aspect, nearClip, farClip);
+
+
+			Vector3 cp3 = Vector3::transformCoord(Vector3(cameraPos + cameraDir), m_view);
+			Vector4 cp4 = Vector4::transform(Vector4(cameraPos + cameraDir, 1.0f), m_view);
+
+			Vector3 np3 = Vector3::transformCoord(Vector3(cameraPos + cameraDir), m_view * m_proj);
+			Vector4 np4 = Vector4::transform(Vector4(cameraPos + cameraDir, 1.0f), m_view * m_proj);
+
+			Vector4 np = Vector4::transform(Vector4(0, 0, nearClip, 1.0f), m_proj);
+			Vector4 fp = Vector4::transform(Vector4(0, 0, farClip, 1.0f), m_proj);
+
+
+			Vector4 np41 = Vector4::transform(Vector4(cameraPos + cameraDir * nearClip, 1.0f), m_view * m_proj);
+			Vector4 fp41 = Vector4::transform(Vector4(cameraPos + cameraDir * farClip, 1.0f), m_view * m_proj);
+
+
+			//Vector3 ff = Vector3::transformCoord(Vector3(0, 0, 10), m_view);
+			{
+				Vector3 cpos = Vector3(-10, -1, 0);//cameraPos;
+				auto vm = Matrix::makeLookAtLH(cpos, Vector3(0, 0, 0), cameraUp);
+				//vm.inverse();
+				Vector4 cp4 = Vector4::transform(Vector4(5, 0, 0, 1), vm);
+
+				//for (int i = 0; i < 100; i++)
+				//{
+				//	float z = 10.0f * i;
+				//	float cl = bias(0.9, z / 1000.0);
+				//	printf("%d\n", static_cast<int>(cl * m_clusterDepth));
+				//}
+
+				printf("");
+			}
+
+			float zn = np41.z / np41.w;
+			float zf = fp41.z / fp41.w;
+
+			m_clipRange = farClip - nearClip;
+
+			// clear
+			for (int y = 0; y < m_clusterHeight; y++)
+			{
+				for (int x = 0; x < m_clusterWidth; x++)
+				{
+					for (int z = 0; z < m_clusterDepth; z++)
+					{
+						m_clustersTexture->setPixel32(x, y, z, Color32(0, 0, 0, 0));
+					}
+				}
+			}
+		}
+
+		void addPointLight(const Vector3& lightPos, float lightSize)
+		{
+			float lightRadius = lightSize / 2;
+
+			// カメラから見た位置。奥が Z+。一番手前は 0.0
+			Vector4 cp = Vector4::transform(Vector4(lightPos, 1.0f), m_view);
+
+			float zn = cp.z - lightRadius;
+			float zf = cp.z + lightRadius;
+
+			Vector3 vpMin = Vector3::transformCoord(Vector3(cp.x - lightRadius, cp.y - lightRadius, zn), m_proj);
+			Vector3 vpMax = Vector3::transformCoord(Vector3(cp.x + lightRadius, cp.y + lightRadius, zn), m_proj);
+			float vpZn = zn / m_clipRange;
+			float vpZf = zf / m_clipRange;
+
+			//// カメラ座標系内での AABB
+			//AABB cpAABB = { cp.GetXYZ() - lightRadius,  cp.GetXYZ() + lightRadius };
+
+			//// ビューポート座標系内での AABB (厳密には AA でなくなる。奥方向へすぼむ台形となる)
+			//Vector4 vpAABBmin = Vector4::transform(Vector4(cpAABB.min, 1.0f), m_proj);
+			//Vector4 vpAABBmax = Vector4::transform(Vector4(cpAABB.max, 1.0f), m_proj);
+			//AABB vpAABB = { vpAABBmin.GetXYZ() / vpAABBmin.w,  vpAABBmax.GetXYZ() / vpAABBmax.w };
+
+
+			// index -> viewport
+			float xs = 2.0f / m_clusterWidth;
+			float ys = 2.0f / m_clusterHeight;
+			float zs = 1.0f / m_clusterDepth;
+
+			float biasBase = 0.9;
+
+			for (int y = 0; y < m_clusterHeight; y++)
+			{
+				float cb = (ys * y) - 1.0f;
+				float ct = (ys * (y + 1)) - 1.0f;
+				if ((vpMax.y > cb && vpMin.y < ct))
+				{
+					for (int x = 0; x < m_clusterWidth; x++)
+					{
+						float cl = (xs * x) - 1.0f;
+						float cr = (xs * (x + 1)) - 1.0f;
+						if ((vpMax.x > cl && vpMin.x < cr))
+						{
+							for (int z = 0; z < m_clusterDepth; z++)
+							{
+								float cn = zs * z;
+								float cf = zs * (z + 1);
+								float czn = bias(biasBase, cn);
+								float czf = bias(biasBase, cf);
+								if (vpZf > czn && vpZn < czf)
+								{
+									printf("%d,%d,%d(z:%f)\n", x, y, z, cn);
+									m_clustersTexture->setPixel32(x, y, z, Color32(255, 255, 255, 0));
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+	private:
+
+		static float bias(float b, float x)
+		{
+			return pow(x, log(b) / log(0.5));
+		}
+	};
+
+
+
+	LightClusters lc;
+	lc.init();
+
+
+	auto planeMesh = StaticMeshComponent::createPlane(Vector2(20, 20), 1, 1);
+	Material* mat2 = planeMesh->getStaticMeshModel()->m_materials->getAt(0);
+	mat2->setMaterialTexture(tex1);
+	mat2->setShader(clusterdShader);
+	auto planeObj1 = newObject<WorldObject3D>();
+	planeObj1->addComponent(planeMesh);
+
+
+
+#if 0
 
 	int ClusterDepth = 32;
 	int ClusterWidth = 16;
@@ -476,7 +650,7 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 
 		printf("");
 	}
-
+#endif
 
 
 
@@ -639,6 +813,41 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 	float t = 0;
 	while (!Engine::isEndRequested())
 	{
+
+
+
+
+
+		Camera* cam = Engine::getCamera3D();
+		CameraComponent* camc = cam->getCameraComponent();
+		Vector3 camPos = cam->getPosition();//Vector3(0, 0, -10);
+		lc.beginMakeClusters(
+			camPos, Vector3(0, 0, 0), camc->getUpDirection(),
+			camc->getFovY(), 640.0f / 480.0f, camc->getNearClip(), camc->getFarClip());
+
+		lc.addPointLight(Vector3(0, 0, 0), 1);
+
+
+
+		mat2->setTextureParameter(_T("clustersTexture"), lc.m_clustersTexture);
+		mat2->setVectorParameter(_T("cam_pos"), Vector4(camPos, 1));
+
+		mat2->setFloatParameter(_T("near"), camc->getNearClip());
+		mat2->setFloatParameter(_T("far"), camc->getFarClip());
+
+
+		//auto vm = Matrix::makeLookAtLH(Vector3(0, -1, -10), Vector3(1, -1, -10), Vector3::UnitY);
+		//mat2->setMatrixParameter(_T("view"), vm);
+		mat2->setMatrixParameter(_T("view"), camc->getViewMatrix());
+
+
+
+
+
+
+
+
+
 		Engine::updateFrame();
 
 		if (Input::isTriggered(InputButtons::Submit))
