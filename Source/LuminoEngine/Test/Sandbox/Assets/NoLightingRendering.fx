@@ -43,6 +43,17 @@ struct PSInput
 
 
 
+texture m_pointLightInfoTexture;
+sampler2D m_pointLightInfoSampler = sampler_state
+{
+	Texture = <m_pointLightInfoTexture>;
+	MinFilter = Point; 
+	MagFilter = Point;
+	MipFilter = None;
+	AddressU = Clamp;
+	AddressV = Clamp;
+};
+
 
 float near;
 float far;
@@ -55,8 +66,9 @@ texture3D clustersTexture;
 sampler	clustersSampler = sampler_state
 {
 	texture = <clustersTexture>;
-	MINFILTER = LINEAR;
-	MAGFILTER = LINEAR;
+	MinFilter = Point; 
+	MagFilter = Point;
+	MipFilter = None;
 	AddressU = Clamp;
 	AddressV = Clamp;
 };
@@ -102,6 +114,30 @@ float bias(float b, float x)
 	return pow(x, log(b) / log(0.5));
 }
 
+
+
+struct PointLight
+{
+	float4	pos;
+	float4	color;
+};
+
+PointLight LN_GetPointLight(int index)
+{
+	float2 uv = 1.0 / float2(2, 64);//lnBoneTextureReciprocalSize;
+	float4 tc0 = float4((0.0 + 0.5f) * uv.x, (index + 0.5f) * uv.y, 0, 1);	// +0.5 は半ピクセル分
+	float4 tc1 = float4((1.0 + 0.5f) * uv.x, (index + 0.5f) * uv.y, 0, 1);	// +0.5 は半ピクセル分
+	PointLight o;
+	
+	tc0.y = 1.0 - tc0.y;
+	tc1.y = 1.0 - tc1.y;
+	//o.pos = tex2Dlod(m_pointLightInfoSampler, tc0);
+	//o.color = tex2Dlod(m_pointLightInfoSampler, tc1);
+	o.pos = tex2D(m_pointLightInfoSampler, tc0.xy);
+	o.color = tex2D(m_pointLightInfoSampler, tc1.xy);
+	return o;
+}
+
 //------------------------------------------------------------------------------
 float4 PSBasic(PSInput p) : COLOR0
 {
@@ -111,6 +147,9 @@ float4 PSBasic(PSInput p) : COLOR0
 	
 	//return float4(p.Pos2 / 10.0, 1.0f);
 	
+	
+	float4 worldPos = mul(float4(p.Pos2, 1.0f), ln_World);
+
 	
 	// View base
 	float4 cp = mul(float4(p.Pos2, 1.0f), view);//ln_World * ln_View);
@@ -134,9 +173,40 @@ float4 PSBasic(PSInput p) : COLOR0
 	//clus.z = cz;
 	
 	//float3 clus = float3(0, 0, p.ViewportPos_z);
-	float4 c = tex3D(clustersSampler, clus);
+	float4 c = tex3D(clustersSampler, clus);	// TODO: 0.5 オフセット調整が必要かも
+	
+	
 	float4 c2 = float4(clus, 1);
-	return c * c2 + mc * 0.5;
+	
+	
+	if (c.g > 0)
+	{
+		PointLight light = LN_GetPointLight((c.g * 255) + 0.5 - 1);
+		
+		//点光源までの距離
+    	float3 dir = light.pos.xyz - worldPos.xyz;
+    	float r = length(dir);
+		float a = 1.0 - (r / light.pos.w);
+		
+		if (distance(light.pos.xyz, worldPos.xyz) <= light.pos.w)
+		//if (r <= light.pos.w)
+		//if (length(light.pos.xyz) < 2)
+			return mc * 0.5 + light.color * a; 
+		else
+			return mc * 0.5;
+	}
+	else
+	{
+		// no affect lights
+		return mc * 0.5;
+	}
+	
+	
+	
+	
+	
+	
+	//return //c * c2 + mc * 0.5;
 
 	//return float4(cx / sx, cy / sy, cz / sz, 1);
 	//return float4(0, 0, p.ViewportPos.z, 1);

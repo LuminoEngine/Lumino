@@ -354,6 +354,13 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 			Vector3 max;
 		};
 
+		struct PointLightInfo
+		{
+			Vector4 pos;
+			//float	range;
+			Color	color;
+		};
+
 		int m_clusterWidth = 16;
 		int m_clusterHeight = 16;
 		int m_clusterDepth = 32;
@@ -364,9 +371,17 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 		Matrix	m_proj;
 		float	m_clipRange;
 
+		List<PointLightInfo>	m_pointLights;
+
+		Ref<Texture2D>	m_pointLightInfoTexture;
+		const int MaxLights = 64;
+
 		void init()
 		{
 			m_clustersTexture = tr::Texture3D::create(m_clusterWidth, m_clusterHeight, m_clusterDepth);
+			//m_pointLightInfoTexture = Texture2D::create(2, MaxLights, TextureFormat::R32G32B32A32_Float, false);
+			m_pointLightInfoTexture = Texture2D::create(2, MaxLights, TextureFormat::R32G32B32A32_Float, false);
+			m_pointLights.reserve(MaxLights);
 		}
 
 		void beginMakeClusters(
@@ -425,11 +440,15 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 					}
 				}
 			}
+
+			m_pointLights.clear();
+			m_pointLights.add(PointLightInfo{/* Vector3(1, 255, 0), 255, Color::Red*/});	// dummy
 		}
 
-		void addPointLight(const Vector3& lightPos, float lightSize)
+		void addPointLight(const Vector3& lightPos, float lightSize, const Color& color)
 		{
 			float lightRadius = lightSize / 2;
+			float lightId = m_pointLights.getCount() + 1;
 
 			// カメラから見た位置。奥が Z+。一番手前は 0.0
 			Vector4 cp = Vector4::transform(Vector4(lightPos, 1.0f), m_view);
@@ -488,7 +507,7 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 								if (vpZf > czn && vpZn < czf)
 								{
 									//printf("%d,%d,%d(z:%f)\n", x, y, z, cn);
-									m_clustersTexture->setPixel32(x, y, z+7, Color32(255, 255, 255, 0));
+									m_clustersTexture->setPixel32(x, y, z+8, Color32(0, lightId, 0, 0));
 								}
 							}
 						}
@@ -504,6 +523,19 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 			//	printf("%f\n", czn);
 			//}
 
+			PointLightInfo info;
+			info.pos = Vector4( lightPos, lightRadius);
+			//info.range = lightRadius;
+			info.color = color;
+			m_pointLights.add(info);
+		}
+
+		void endMakeClusters()
+		{
+			Bitmap bmp(&m_pointLights[0], SizeI(2, MaxLights), PixelFormat::FloatR32G32B32A32);
+
+			m_pointLightInfoTexture->setSubData(PointI(0, 0), &bmp);
+			//m_pointLightInfoTexture->clear(Color32::Red);
 		}
 
 	private:
@@ -843,17 +875,18 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 			camPos, Vector3(0, 0, 0), camc->getUpDirection(),
 			camc->getFovY(), 640.0f / 480.0f, camc->getNearClip(), camc->getFarClip());
 
-		lc.addPointLight(Vector3(0, 0, 0), 1);
-		lc.addPointLight(Vector3(5, 0, 5), 1);
-		lc.addPointLight(Vector3(-5, 0, 5), 1);
-		lc.addPointLight(Vector3(5, 0, -5), 1);
-		lc.addPointLight(Vector3(-5, 0, -5), 1);
+		lc.addPointLight(Vector3(0, 0, 0), 3, Color::White);
+		lc.addPointLight(Vector3(5, 0, 5), 2, Color::Red);
+		lc.addPointLight(Vector3(-5, 0, 5), 3, Color::Blue);
+		lc.addPointLight(Vector3(5, 0, -5), 4, Color::Green);
+		lc.addPointLight(Vector3(-5, 0, -5), 5, Color::Yellow);
 
-		lc.addPointLight(Vector3(7, 0, 0), 1);
-		lc.addPointLight(Vector3(-7, 0, 0), 1);
-		lc.addPointLight(Vector3(0, 0, 7), 1);
-		lc.addPointLight(Vector3(0, 0, -7), 1);
+		lc.addPointLight(Vector3(7, 0, 0), 5, Color::Magenta);
+		lc.addPointLight(Vector3(-7, 0, 0), 4, Color::Cyan);
+		lc.addPointLight(Vector3(0, 0, 7), 3, Color::AliceBlue);
+		lc.addPointLight(Vector3(0, 0, -7), 2, Color::BlueViolet);
 
+		lc.endMakeClusters();
 
 
 		mat2->setTextureParameter(_T("clustersTexture"), lc.m_clustersTexture);
@@ -867,6 +900,7 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 		//mat2->setMatrixParameter(_T("view"), vm);
 		mat2->setMatrixParameter(_T("view"), camc->getViewMatrix());
 
+		mat2->setTextureParameter(_T("m_pointLightInfoTexture"), lc.m_pointLightInfoTexture);
 
 
 
