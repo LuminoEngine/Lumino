@@ -407,8 +407,8 @@ void SkinnedMeshModel::updateSkinningMatrices()
 	// スキニングテクスチャ更新
 	if (!m_skinningMatricesTexture.isNull())
 	{
-		m_skinningMatricesTexture->setData(&m_skinningMatrices[0]);
-		m_skinningLocalQuaternionsTexture->setData(&m_skinningLocalQuaternions[0]);
+		m_skinningMatricesTexture->setMappedData(&m_skinningMatrices[0]);
+		m_skinningLocalQuaternionsTexture->setMappedData(&m_skinningLocalQuaternions[0]);
 	}
 
 	// 全てのローカルトランスフォームをリセットする

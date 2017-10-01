@@ -532,10 +532,9 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 
 		void endMakeClusters()
 		{
-			Bitmap bmp(&m_pointLights[0], SizeI(2, MaxLights), PixelFormat::FloatR32G32B32A32);
-
-			m_pointLightInfoTexture->setSubData(PointI(0, 0), &bmp);
-			//m_pointLightInfoTexture->clear(Color32::Red);
+			//Bitmap bmp(&m_pointLights[0], SizeI(2, MaxLights), PixelFormat::FloatR32G32B32A32);
+			//m_pointLightInfoTexture->setSubData(PointI(0, 0), &bmp);
+			m_pointLightInfoTexture->setMappedData(&m_pointLights[0]);
 		}
 
 	private:

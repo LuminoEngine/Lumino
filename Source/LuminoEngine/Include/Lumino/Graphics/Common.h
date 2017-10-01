@@ -57,7 +57,7 @@ enum class TextureFormat
 	R32_Float,
 
 	/** 32 ビットの整数フォーマット */
-	R32_UInt,
+	//R32_UInt,
 
 	/** S8 32 ビットの深度バッファフォーマット */
 	D24S8,

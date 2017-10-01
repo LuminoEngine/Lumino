@@ -396,7 +396,7 @@ D3DFORMAT DX9Module::TranslateLNFormatToDxFormat(TextureFormat format)
 		D3DFMT_R16F,			// TextureFormat::R16_Float
 		D3DFMT_R32F,			// TextureFormat::R32_Float
 
-		D3DFMT_INDEX32,			// TextureFormat::R32_UInt
+		//D3DFMT_INDEX32,			// TextureFormat::R32_UInt
 
 		D3DFMT_D24S8,			// TextureFormat::D24S8
 	};
@@ -419,7 +419,7 @@ TextureFormat DX9Module::TranslateFormatDxToLN(D3DFORMAT dx_format)
 	case D3DFMT_D24S8:			return TextureFormat::D24S8;
 	case D3DFMT_R16F:			return TextureFormat::R16_Float;
 	case D3DFMT_R32F:			return TextureFormat::R32_Float;
-	case D3DFMT_INDEX32:		return TextureFormat::R32_UInt;
+	//case D3DFMT_INDEX32:		return TextureFormat::R32_UInt;
     }
 
 	return TextureFormat::Unknown;

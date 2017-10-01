@@ -30,14 +30,6 @@ bool TestEnv::EqualsScreenShot(const Char* filePath, int passRate)
 }
 
 //------------------------------------------------------------------------------
-//bool TestEnv::equalsTexture(Texture* texture, const Char* filePath)
-//{
-//	bool r = TestEnv::EqualsBitmapFile(texture->lock(), filePath, 90);
-//	texture->unlock();
-//	return r;
-//}
-
-//------------------------------------------------------------------------------
 Color32 MixPixels(Bitmap* bmp, int x, int y)
 {
 	const Color32& c = bmp->getPixel(x, y);

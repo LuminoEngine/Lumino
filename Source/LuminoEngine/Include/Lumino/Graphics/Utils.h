@@ -23,8 +23,6 @@ public:
 	
 	static void saveScreenShot(const Char* filePath);
 	static void waitSaveScreenShot();
-
-	static bool equalsTexture(Texture* texture1, Texture* texture2);
 };
 
 LN_NAMESPACE_GRAPHICS_END

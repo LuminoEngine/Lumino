@@ -59,16 +59,5 @@ PixelFormat Utils::translatePixelFormat(TextureFormat format)
 	return table[(int)format];
 }
 
-//------------------------------------------------------------------------------
-bool Utils::equalsTexture(Texture* texture1, Texture* texture2)
-{
-	if (texture1 != texture2) return false;
-	if (texture1 != nullptr)
-	{
-		if (texture1->getDeviceObjectConst() != texture2->getDeviceObjectConst()) return false;
-	}
-	return true;
-}
-
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

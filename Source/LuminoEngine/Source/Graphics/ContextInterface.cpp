@@ -132,7 +132,7 @@ void ContextState::copy(const ContextState& obj)
 
 
 //------------------------------------------------------------------------------
-void BasicContextState::setRenderTarget(int index, Texture* texture)
+void BasicContextState::setRenderTarget(int index, RenderTargetTexture* texture)
 {
 	if (index == 0 && texture == nullptr)
 	{
@@ -154,7 +154,7 @@ void BasicContextState::setRenderTarget(int index, Texture* texture)
 }
 
 //------------------------------------------------------------------------------
-Texture* BasicContextState::getRenderTarget(int index) const
+RenderTargetTexture* BasicContextState::getRenderTarget(int index) const
 {
 	return m_renderTargets[index];
 }
@@ -185,7 +185,7 @@ bool BasicContextState::equals(const BasicContextState& s) const
 	if (depthBuffer != s.depthBuffer) return false;
 	for (int i = 0; i < Graphics::MaxMultiRenderTargets; ++i)
 	{
-		if (!Utils::equalsTexture(m_renderTargets[i], s.m_renderTargets[i])) return false;
+		if (!RenderTargetTexture::equalsRenderTarget(m_renderTargets[i], s.m_renderTargets[i])) return false;
 	}
 	if (m_ownerShader != s.m_ownerShader) return false;
 	if (m_shaderPass != s.m_shaderPass) return false;

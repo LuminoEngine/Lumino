@@ -76,8 +76,8 @@ struct BasicContextState
 	Ref<DepthBuffer>			depthBuffer;
 	//RectI					viewport;
 
-	void setRenderTarget(int index, Texture* texture);
-	Texture* getRenderTarget(int index) const;
+	void setRenderTarget(int index, RenderTargetTexture* texture);
+	RenderTargetTexture* getRenderTarget(int index) const;
 	void setShaderPass(ShaderPass* pass);
 	ShaderPass* getShaderPass() const { return m_shaderPass; }
 
@@ -85,7 +85,7 @@ struct BasicContextState
 	void copy(const BasicContextState& s);
 
 private:
-	std::array<Ref<Texture>, Graphics::MaxMultiRenderTargets>	m_renderTargets;
+	std::array<Ref<RenderTargetTexture>, Graphics::MaxMultiRenderTargets>	m_renderTargets;
 	Ref<Shader>			m_ownerShader;
 	ShaderPass*				m_shaderPass = nullptr;
 };

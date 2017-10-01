@@ -45,14 +45,12 @@ protected:
 	virtual void Dispose() override;
 
 LN_INTERNAL_ACCESS:
-	Driver::ITexture* getDeviceObjectConst() const { return m_deviceObj; }
-	Driver::ITexture* resolveDeviceObject() { applyModifies(); return m_deviceObj; }
+	virtual Driver::ITexture* resolveDeviceObject() = 0;
 	const SizeI& getSize() const;
 
 protected:
 	Texture();
 	virtual ~Texture();
-	virtual void applyModifies();
 
 	friend struct ReadLockTextureCommand;
 	friend struct ReadUnlockTextureCommand;
@@ -144,8 +142,10 @@ public:
 	void LN_AFX_FUNCNAME(drawText)(const StringRef& text, const RectI& rect, Font* font, const Color32& fillColor, const Color32& strokeColor, int strokeThickness, TextAlignment alignment);
 	// TODO: ↑ TextAlignment じゃなくて TextLayoutFlags の方が良いと思う
 
+
 LN_PROTECTED_INTERNAL_ACCESS:
 	void flushPrimarySurface();
+	virtual Driver::ITexture* resolveDeviceObject() override;
 	virtual void onChangeDevice(Driver::IGraphicsDevice* device);
 
 LN_CONSTRUCT_ACCESS:
@@ -160,21 +160,27 @@ LN_CONSTRUCT_ACCESS:
 	void initialize(Stream* stream, TextureFormat format, bool mipmap);
 
 LN_INTERNAL_ACCESS:
-	void tryLock();
 	void setSubData(const PointI& offset, Bitmap* bitmap);
-	void setData(const void* data);
+	void setMappedData(const void* data, int byteCount = -1);
 
 protected:
-	virtual void applyModifies() override;
+	Bitmap* getMappedData();
 
 	//friend struct PresentCommand;
 	bool			m_mipmap;
 	bool			m_isPlatformLoaded;
 	ResourceUsage	m_usage;
 	bool			m_usageReadFast;
-	Ref<Bitmap>	m_primarySurface2;
+	Ref<Bitmap>		m_primarySurface2;
 	bool			m_locked;
-	bool			m_initializing;
+	bool			m_initialUpdate;
+
+	Bitmap*			m_rhiLockedBuffer;
+
+private:
+	bool isRHIDirect() const { return m_initialUpdate && m_deviceObj != nullptr; }
+//private:
+//	void initialize_createBuffers();
 };
 
 /**
@@ -205,6 +211,10 @@ LN_INTERNAL_ACCESS:
 	Bitmap* lock();
 	void unlock();
 	virtual void onChangeDevice(Driver::IGraphicsDevice* device);
+
+	virtual Driver::ITexture* resolveDeviceObject() override;
+	Driver::ITexture* getDeviceObjectConst() const { return m_deviceObj; }
+	static bool equalsRenderTarget(RenderTargetTexture* rt1, RenderTargetTexture* tr2);
 
 private:
 	int				m_mipLevels;
@@ -241,6 +251,8 @@ LN_INTERNAL_ACCESS :
 	Driver::ITexture* resolveDeviceObject() const { return m_deviceObj; }
 	void resize(const SizeI& newSize);
 	virtual void onChangeDevice(Driver::IGraphicsDevice* device);
+
+	Driver::ITexture* resolveDeviceObject();
 
 private:
 	void refreshDeviceResource();
@@ -289,8 +301,9 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	virtual ~Texture3D();
 	void initialize(ln::detail::GraphicsManager* manager, int width, int height, int depth, TextureFormat format, int mipLevels, ResourceUsage usage);
 
+	virtual Driver::ITexture* resolveDeviceObject() override;
+
 protected:
-	virtual void applyModifies() override;
 	virtual void onChangeDevice(Driver::IGraphicsDevice* device) override;
 
 LN_INTERNAL_ACCESS:
@@ -303,7 +316,7 @@ private:
 	ResourceUsage	m_usage;
 	Ref<Bitmap>	m_primarySurface;
 	bool			m_locked;
-	bool			m_initializing;
+	bool			m_initialUpdate;
 };
 
 } // namespace tr
