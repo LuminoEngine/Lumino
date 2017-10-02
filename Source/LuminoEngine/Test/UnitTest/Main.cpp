@@ -187,10 +187,11 @@ GTEST_API_ int main(int argc, char **argv)
 #endif
 	setlocale(LC_ALL, "");
 
-#if 0	// 部分的にテストを実行したりする
+#if 1	// 部分的にテストを実行したりする
 	char* testArgs[] = {
 		argv[0],
-		"--gtest_filter=Test_Graphics_Rendering.*"
+		"--gtest_filter=Test_Scene_Sprite.Basic",
+		"--gtest_break_on_failure",
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);
@@ -210,7 +211,7 @@ GTEST_API_ int main(int argc, char **argv)
 	}
 
 	{
-		EngineSettings::setGraphicsAPI(GraphicsAPI::OpenGL);
+		EngineSettings::setGraphicsAPI(GraphicsAPI::DirectX9);
 
 		EngineInitalize();
 		int r = RUN_ALL_TESTS();

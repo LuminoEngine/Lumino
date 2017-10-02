@@ -744,39 +744,5 @@ struct SetSubDataTextureCommand : public ln::detail::RenderingCommand
 	}
 };
 
-//==============================================================================
-struct ReadLockTextureCommand : public ln::detail::RenderingCommand
-{
-	Texture*	m_targetTexture;
-	void create(Texture* texture)
-	{
-		m_targetTexture = texture;
-		markGC(texture);
-	}
-	void execute()
-	{
-		m_targetTexture->m_primarySurface = m_targetTexture->m_deviceObj->lock();
-		// Texture::lock() はこの後コマンドリストが空になるまで待機する
-		// (実際のところ、このコマンドが最後のコマンドのはず)
-	}
-};
-
-//==============================================================================
-struct ReadUnlockTextureCommand : public ln::detail::RenderingCommand
-{
-	Texture*	m_targetTexture;
-	void create(Texture* texture)
-	{
-		m_targetTexture = texture;
-		markGC(texture);
-	}
-	void execute()
-	{
-		m_targetTexture->m_deviceObj->unlock();
-		m_targetTexture->m_primarySurface = NULL;
-		// ReadLockTextureCommand と同じように、Texture::unlock() で待機している。
-		// (でも、ここまで待機することも無いかも？)
-	}
-};
 
 LN_NAMESPACE_END

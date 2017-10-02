@@ -54,7 +54,6 @@ protected:
 
 	friend struct ReadLockTextureCommand;
 	friend struct ReadUnlockTextureCommand;
-	Driver::ITexture*	m_deviceObj;
 	SizeI				m_size;
 	TextureFormat		m_format;
 	Bitmap*				m_primarySurface;
@@ -164,21 +163,25 @@ LN_INTERNAL_ACCESS:
 	void setMappedData(const void* data, int byteCount = -1);
 
 protected:
+	virtual void Dispose() override;
 	Bitmap* getMappedData();
 
 	//friend struct PresentCommand;
-	bool			m_mipmap;
-	bool			m_isPlatformLoaded;
-	ResourceUsage	m_usage;
-	bool			m_usageReadFast;
-	Ref<Bitmap>		m_primarySurface2;
-	bool			m_locked;
-	bool			m_initialUpdate;
-
-	Bitmap*			m_rhiLockedBuffer;
 
 private:
-	bool isRHIDirect() const { return m_initialUpdate && m_deviceObj != nullptr; }
+	Driver::ITexture*	m_rhiObject;
+	bool				m_mipmap;
+	bool				m_isPlatformLoaded;
+	ResourceUsage		m_usage;
+	bool				m_usageReadFast;
+	Ref<Bitmap>			m_primarySurface2;
+	bool				m_locked;
+	bool				m_initialUpdate;
+
+	Bitmap*				m_rhiLockedBuffer;
+
+private:
+	bool isRHIDirect() const { return m_initialUpdate && m_rhiObject != nullptr; }
 //private:
 //	void initialize_createBuffers();
 };
@@ -199,6 +202,9 @@ public:
 	*/
 	static RenderTargetTexturePtr create(const SizeI& size, TextureFormat format = TextureFormat::R8G8B8A8, int mipLevels = 1);
 
+protected:
+	virtual void Dispose() override;
+
 LN_INTERNAL_ACCESS:
 	RenderTargetTexture();
 	virtual ~RenderTargetTexture();
@@ -213,13 +219,14 @@ LN_INTERNAL_ACCESS:
 	virtual void onChangeDevice(Driver::IGraphicsDevice* device);
 
 	virtual Driver::ITexture* resolveDeviceObject() override;
-	Driver::ITexture* getDeviceObjectConst() const { return m_deviceObj; }
+	Driver::ITexture* getDeviceObjectConst() const { return m_rhiObject; }
 	static bool equalsRenderTarget(RenderTargetTexture* rt1, RenderTargetTexture* tr2);
 
 private:
-	int				m_mipLevels;
-	bool			m_isDefaultBackBuffer;
-	bool			m_usedCacheOnFrame;
+	Driver::ITexture*	m_rhiObject;
+	int					m_mipLevels;
+	bool				m_isDefaultBackBuffer;
+	bool				m_usedCacheOnFrame;
 
 	friend class detail::RenderTargetTextureCache;
 };
@@ -311,12 +318,13 @@ LN_INTERNAL_ACCESS:
 	//Driver::ITexture* getDeviceObject() const { return m_deviceObj; }
 
 private:
-	int				m_depth;
-	int				m_mipLevels;
-	ResourceUsage	m_usage;
-	Ref<Bitmap>	m_primarySurface;
-	bool			m_locked;
-	bool			m_initialUpdate;
+	Driver::ITexture*	m_rhiObject;
+	int					m_depth;
+	int					m_mipLevels;
+	ResourceUsage		m_usage;
+	Ref<Bitmap>			m_primarySurface;
+	bool				m_locked;
+	bool				m_initialUpdate;
 };
 
 } // namespace tr

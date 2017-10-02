@@ -180,7 +180,7 @@ void GLTexture::getData(const RectI& rect, void* outData)
 //------------------------------------------------------------------------------
 Bitmap* GLTexture::lock()
 {
-	m_lockedTexture.attach(LN_NEW Bitmap(m_size, Utils::translatePixelFormat(m_format)));
+	m_lockedTexture.attach(LN_NEW Bitmap(m_size, Utils::translatePixelFormat(m_format), true));
 	return m_lockedTexture;
 }
 

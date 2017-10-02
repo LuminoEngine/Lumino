@@ -21,10 +21,10 @@
 
 #define LN_CALL_TEXTURE_COMMAND(func, command, ...) \
 	if (m_manager->getRenderingType() == GraphicsRenderingType::Threaded) { \
-		m_manager->getRenderer()->m_primaryCommandList->addCommand<command>(m_deviceObj, __VA_ARGS__); \
+		m_manager->getRenderer()->m_primaryCommandList->addCommand<command>(m_rhiObject, __VA_ARGS__); \
 	} \
 	else { \
-		m_deviceObj->func(__VA_ARGS__); \
+		m_rhiObject->func(__VA_ARGS__); \
 	}
 
 LN_NAMESPACE_BEGIN

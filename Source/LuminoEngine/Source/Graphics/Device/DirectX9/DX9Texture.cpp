@@ -103,7 +103,7 @@ DX9Texture::DX9Texture(DX9GraphicsDevice* device, const void* data, uint32_t siz
 	LN_COMCALL(DX9Module::D3DXGetImageInfoFromFileInMemory(data, size, &imageInfo));
 
 	// テクスチャのフォーマットを決める
-	D3DFORMAT dxFormat = (format == TextureFormat::Unknown) ? imageInfo.Format : DX9Module::TranslateLNFormatToDxFormat(format);
+	D3DFORMAT dxFormat = D3DFMT_A8R8G8B8;// (format == TextureFormat::Unknown) ? imageInfo.Format :　DX9Module::TranslateLNFormatToDxFormat(format);
 
 	UINT miplevels = (mipmap) ? 0 : 1;
 	DWORD dxUsage = (mipmap) ? D3DUSAGE_AUTOGENMIPMAP : 0;
@@ -138,10 +138,11 @@ DX9Texture::DX9Texture(DX9GraphicsDevice* device, const void* data, uint32_t siz
 	m_size.set(imageInfo.Width, imageInfo.Height);
 
 	// 実際のテクスチャの大きさを取得
+	D3DFORMAT afm;
 	LN_COMCALL(DX9Module::D3DXCheckTextureRequirements(
 		m_graphicsDevice->getIDirect3DDevice9(),
 		&imageInfo.Width, &imageInfo.Height,
-		&miplevels, dxUsage, NULL, D3DPOOL_MANAGED));
+		&miplevels, dxUsage, &afm, D3DPOOL_MANAGED));
 	m_realSize.set(imageInfo.Width, imageInfo.Height);
 
 	// テクスチャのサーフェイスを取得する
@@ -155,6 +156,24 @@ DX9Texture::DX9Texture(DX9GraphicsDevice* device, const void* data, uint32_t siz
 	D3DSURFACE_DESC desc;
 	m_dxSurface->GetDesc(&desc);
 	m_format = DX9Module::TranslateFormatDxToLN(desc.Format);
+
+
+	D3DLOCKED_RECT lockedRect;
+	LN_COMCALL(m_dxTexture->LockRect(0, &lockedRect, NULL, D3DLOCK_READONLY));
+
+	if (m_size.height == 32)
+	{
+		byte* buf = (byte*)lockedRect.pBits;
+		byte* buf2 = &buf[31 * lockedRect.Pitch];
+
+		// D3DFMT_A8R8G8B8 のとき
+		// [0,0]  red      -> 00 00 ff ff
+		// [0,31] blue(opa)-> ff 00 00 80
+
+		printf("");
+	}
+
+	m_dxTexture->UnlockRect(0);
 }
 
 //------------------------------------------------------------------------------

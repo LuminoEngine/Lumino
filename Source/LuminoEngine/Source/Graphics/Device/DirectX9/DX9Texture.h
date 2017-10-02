@@ -34,6 +34,21 @@ protected:
 };
 
 /// 普通のテクスチャ
+/*
+	基本的なフォーマットは D3DFMT_A8R8G8B8。
+	D3DX の画像ファイル読み込み系 API から作ると、強制的にこのフォーマットになる。
+	D3DFMT_A8B8G8R8 を指定しても成功するが、実際には D3DFMT_A8R8G8B8 となる。
+	実際にどんなフォーマットになったのかを知るため、必ず D3DXCheckTextureRequirements 等で事後確認しなければならない。
+
+	D3DFMT はリトルエンディアンとしてみたときのバイト列を示している。
+	D3DFMT_A8R8G8B8 の実際のメモリ上の並びは BB GG RR AA となる。
+	例えば、
+	- Red(255, 0, 0, 255) は 00 00 ff ff
+	- Blue(0, 0, 255, 128) は ff 00 00 80
+
+	行の並びは Down flow。
+	LockRect した結果の [0] はビットマップの左上となる。
+*/
 class DX9Texture
 	: public DX9TextureBase
 {

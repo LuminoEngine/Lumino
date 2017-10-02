@@ -59,5 +59,33 @@ PixelFormat Utils::translatePixelFormat(TextureFormat format)
 	return table[(int)format];
 }
 
+bool Utils::isSRGBFormat(TextureFormat format)
+{
+	switch (format)
+	{
+	case TextureFormat::R8G8B8A8:
+	case TextureFormat::R8G8B8X8:
+	case TextureFormat::B8G8R8A8:
+	case TextureFormat::B8G8R8X8:
+		return true;
+	default:
+		return false;
+	}
+}
+
+bool Utils::isFloatFormat(TextureFormat format)
+{
+	switch (format)
+	{
+	case TextureFormat::R16G16B16A16_Float:
+	case TextureFormat::R32G32B32A32_Float:
+	case TextureFormat::R16_Float:
+	case TextureFormat::R32_Float:
+		return true;
+	default:
+		return false;
+	}
+}
+
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

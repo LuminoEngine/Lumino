@@ -379,7 +379,6 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 		void init()
 		{
 			m_clustersTexture = tr::Texture3D::create(m_clusterWidth, m_clusterHeight, m_clusterDepth);
-			//m_pointLightInfoTexture = Texture2D::create(2, MaxLights, TextureFormat::R32G32B32A32_Float, false);
 			m_pointLightInfoTexture = Texture2D::create(2, MaxLights, TextureFormat::R32G32B32A32_Float, false);
 			m_pointLights.reserve(MaxLights);
 		}
@@ -524,8 +523,7 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 			//}
 
 			PointLightInfo info;
-			info.pos = Vector4( lightPos, lightRadius);
-			//info.range = lightRadius;
+			info.pos = Vector4(lightPos, lightRadius);
 			info.color = color;
 			m_pointLights.add(info);
 		}
