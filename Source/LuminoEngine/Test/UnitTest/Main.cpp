@@ -190,7 +190,7 @@ GTEST_API_ int main(int argc, char **argv)
 #if 1	// 部分的にテストを実行したりする
 	char* testArgs[] = {
 		argv[0],
-		"--gtest_filter=Test_Scene_Sprite.Basic",
+		"--gtest_filter=Test_Graphics_Texture.setPixel",
 		"--gtest_break_on_failure",
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
@@ -211,7 +211,7 @@ GTEST_API_ int main(int argc, char **argv)
 	}
 
 	{
-		EngineSettings::setGraphicsAPI(GraphicsAPI::DirectX9);
+		EngineSettings::setGraphicsAPI(GraphicsAPI::OpenGL);
 
 		EngineInitalize();
 		int r = RUN_ALL_TESTS();

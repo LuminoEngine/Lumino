@@ -152,28 +152,10 @@ DX9Texture::DX9Texture(DX9GraphicsDevice* device, const void* data, uint32_t siz
 	// ここの時点で m_dxSurface の参照カウントは「 3 」
 	// ここの時点で m_dxTexture の参照カウントは「 2 」
 
-	// サーフェイスフォーマットの取得
+	// 実際に作成されたフォーマットを覚えておく
 	D3DSURFACE_DESC desc;
 	m_dxSurface->GetDesc(&desc);
 	m_format = DX9Module::TranslateFormatDxToLN(desc.Format);
-
-
-	D3DLOCKED_RECT lockedRect;
-	LN_COMCALL(m_dxTexture->LockRect(0, &lockedRect, NULL, D3DLOCK_READONLY));
-
-	if (m_size.height == 32)
-	{
-		byte* buf = (byte*)lockedRect.pBits;
-		byte* buf2 = &buf[31 * lockedRect.Pitch];
-
-		// D3DFMT_A8R8G8B8 のとき
-		// [0,0]  red      -> 00 00 ff ff
-		// [0,31] blue(opa)-> ff 00 00 80
-
-		printf("");
-	}
-
-	m_dxTexture->UnlockRect(0);
 }
 
 //------------------------------------------------------------------------------
@@ -344,7 +326,6 @@ void DX9Texture3D::initialize(int width, int height, int depth, TextureFormat fo
 	IDirect3DDevice9* d3d9Device = m_graphicsDevice->getIDirect3DDevice9();
 
 	m_size.set(width, height);
-	m_format = format;
 
 	// 実際に作成されるべきテクスチャの情報を取得する
 	UINT w = m_size.width;
@@ -371,6 +352,9 @@ void DX9Texture3D::initialize(int width, int height, int depth, TextureFormat fo
 		D3DPOOL_MANAGED,
 		&m_dxTexture,
 		NULL));
+
+	// 実際に作成されたテクスチャのフォーマットを覚えておく
+	m_format = DX9Module::TranslateFormatDxToLN(dxFormat);
 }
 
 //------------------------------------------------------------------------------
