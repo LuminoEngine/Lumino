@@ -536,10 +536,10 @@ void Texture3D::initialize(ln::detail::GraphicsManager* manager, int width, int 
 	m_size.width = width;
 	m_size.height = height;
 	m_depth = depth;
-	m_format = format;
 	m_mipLevels = mipLevels;
 	m_usage = usage;
-	m_rhiObject = m_manager->getGraphicsDevice()->createTexture3D(m_size.width, m_size.height, m_depth, m_mipLevels, m_format, m_usage, nullptr);
+	m_rhiObject = m_manager->getGraphicsDevice()->createTexture3D(m_size.width, m_size.height, m_depth, m_mipLevels, format, m_usage, nullptr);
+	m_format = m_rhiObject->getTextureFormat();
 	m_initialUpdate = true;
 
 	if (m_usage == ResourceUsage::Dynamic)

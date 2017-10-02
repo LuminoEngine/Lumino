@@ -506,7 +506,7 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 								if (vpZf > czn && vpZn < czf)
 								{
 									//printf("%d,%d,%d(z:%f)\n", x, y, z, cn);
-									m_clustersTexture->setPixel32(x, y, z+8, Color32(0, lightId, 0, 0));
+									m_clustersTexture->setPixel32(x, y, z+8, Color32(lightId, 0, 0, 0));
 								}
 							}
 						}

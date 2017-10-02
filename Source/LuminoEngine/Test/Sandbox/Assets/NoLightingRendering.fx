@@ -179,9 +179,9 @@ float4 PSBasic(PSInput p) : COLOR0
 	float4 c2 = float4(clus, 1);
 	
 	
-	if (c.g > 0)
+	if (c.r > 0)
 	{
-		PointLight light = LN_GetPointLight((c.g * 255) + 0.5 - 1);
+		PointLight light = LN_GetPointLight((c.r * 255) + 0.5 - 1);
 		
 		//点光源までの距離
     	float3 dir = light.pos.xyz - worldPos.xyz;
