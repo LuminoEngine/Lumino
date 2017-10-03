@@ -217,8 +217,7 @@ void SceneRenderer::render(
 					material->applyUserShaderValeues(shader);
 
 					auto* stateManager = context->getRenderStateManager();
-					ShaderPass* pass = shader->getTechniques().getAt(0)->getPasses().getAt(0);	// TODO: DrawList の実行者によって決定する
-					stateManager->setShaderPass(pass);
+					stateManager->setShaderPass(policy.shaderPass);
 				}
 			}
 
@@ -492,6 +491,12 @@ void RenderingPass2::selectElementRenderingPolicy(DrawElement* element, Combined
 	else
 	{
 		outPolicy->shader = getDefaultShader();
+	}
+
+	if (outPolicy->shader)
+	{
+		// TODO: DrawList の実行者によって決定する
+		outPolicy->shaderPass = outPolicy->shader->getTechniques().getAt(0)->getPasses().getAt(0);
 	}
 
 	// とありあえず全部可

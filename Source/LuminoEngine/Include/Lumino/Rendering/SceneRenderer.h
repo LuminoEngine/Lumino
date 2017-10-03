@@ -50,8 +50,9 @@ private:
 
 struct ElementRenderingPolicy
 {
-	Shader*	shader;		// null もありえる。Clear など。
-	bool	visible;
+	Shader*		shader;		// null もありえる。Clear など。
+	ShaderPass*	shaderPass;
+	bool		visible;
 };
 
 class RenderingPass2

@@ -300,6 +300,8 @@ set(LN_SOURCES_Rendering
 	Include/Lumino/Rendering/RenderingContext.h
 	Include/Lumino/Rendering/RenderView.h
 	Include/Lumino/Rendering/SceneRenderer.h
+	Source/Rendering/ClusteredShadingSceneRenderer.cpp
+	Source/Rendering/ClusteredShadingSceneRenderer.h
 	Source/Rendering/DrawingContext.cpp
 	Source/Rendering/FrameRectRenderFeature.cpp
 	Source/Rendering/FrameRectRenderFeature.h

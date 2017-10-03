@@ -209,7 +209,7 @@ GTEST_API_ int main(int argc, char **argv)
 		EngineSettings::setGraphicsRenderingType(GraphicsRenderingType::Threaded);//GraphicsRenderingType::Immediate);//
 		detail::EngineSettings::instance.defaultSkinFilePath = LN_LOCALFILE("UI/Data/Skin.png");
 	}
-
+	
 	{
 		EngineSettings::setGraphicsAPI(GraphicsAPI::OpenGL);
 
