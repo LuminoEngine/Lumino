@@ -15,12 +15,18 @@ struct LNVSInput
 struct LNVSOutput
 {
 	float4	svPos		: POSITION;
-	float3	VertexNormal: NORMAL0;
-	float3	WorldNormal	: NORMAL1;
+	float3	Normal		: NORMAL0;
 	float4	Color		: COLOR0;
 	float2	UV			: TEXCOORD0;
-	float3	VertexPos	: TEXCOORD1;
-	float3	WorldPos	: TEXCOORD2;
+};
+
+struct LNSurfaceOutput
+{
+	float4	Albedo;		// diffuse color
+	float3	Normal;		// tangent space normal, if written
+	float3	Emission;
+	float	Specular;	// specular power in 0..1 range
+	float3	Gloss;		// specular intensity
 };
 
 LNVSOutput LNProcessVertex(LNVSInput vsi)
@@ -37,6 +43,13 @@ LNVSOutput LNProcessVertex(LNVSInput vsi)
 }
 
 //------------------------------------------------------------------------------
+
+struct ClusteredForwardVSOutput
+{
+	float3	VertexPos	: TEXCOORD10;
+	float3	WorldPos	: TEXCOORD11;
+};
+
 
 
 static float2	ViewportOffset = (float2(0.5, 0.5) / ln_ViewportPixelSize);
@@ -61,29 +74,74 @@ struct PSInput
 };
 
 
-//------------------------------------------------------------------------------
-// Vertex Shader
-
 
 //------------------------------------------------------------------------------
+// Vertex Shader (auto generation)
 
-// User SurfaceShader (PixelShader) output
-struct LNSurfaceOutput
+struct LNVFInput
 {
-	float4	Albedo;		// diffuse color
-	float3	Normal;		// tangent space normal, if written
-	float3	Emission;
-	float	Specular;	// specular power in 0..1 range
-	float3	Gloss;		// specular intensity
+	// LNVSInput と同じ内容
+	float3	Pos			: POSITION;
+	float3	Normal		: NORMAL0;
+	float4	Color		: COLOR0;
+	float2	UV			: TEXCOORD0;
+	
+	// Scene 固有の処理済み頂点情報
+	/**** Scene Template ****/
+	ClusteredForwardVSOutput	SV;
+	/**** Scene Template ****/
+};
+
+//------------------------------------------------------------------------------
+// Vertex Factory (user code)
+
+struct MyVFOutput
+{
+	float4	WorldPos	: TEXCOORD5;
+};
+
+void MyVFMain(LNVFInput input, inout MyVFOutput output)
+{
+	output.WorldPos = mul(float4(input.Pos, 1.0), ln_World);
+}
+
+//------------------------------------------------------------------------------
+// Vertex Shader (auto generation)
+
+struct VSOutput
+{
+	LNVSOutput		lnvsout;
+	SceneVSOutput	svsout;
+	MyVFOutput		uservsout;	// MyVFMain() の最後の引数をパースして得る
+}
+
+// auto generation
+LNVSOutput VS_ClusteredForward_Default(LNVSInput vsi)
+{
+	VSOutput o;
+	o.lnvsout = LNProcessVertex(vsi);
+	o.svsout = ProcessSceneVS(vsi);
+	o.uservsout = MyVFMain(vsi);
+}
+
+
+//------------------------------------------------------------------------------
+// Surface Shader (user code)
+
+struct MySSInput
+{
+	float4	WorldPos	: TEXCOORD5;
 };
 
 // user code
-LNSurfaceOutput SS_Common(LNSSInput i)
+void MySSMain(MySSInput input, inout LNSurfaceOutput output)
 {
-	LNSurfaceOutput o = LNMakeSurfaceOutput(i);
-	o.Albedo = float(1, 0, 0, 1);
-	return o;
+	output.Albedo = float4(WorldPos.xy, 0, 1);
 }
+
+
+//------------------------------------------------------------------------------
+// Pixel Shader
 
 // auto generation
 float4 PS_ClusteredForward_Default(PSInput psi) : COLOR0
@@ -104,28 +162,24 @@ float4 PS_ClusteredForward_NoLighting(PSInput p) : COLOR0
 
 //------------------------------------------------------------------------------
 
-technique ClusteredForward_Default
+technique ClusteredForward
 {
-	pass ShadowCaster
+	pass ShadowCaster_Default
 	{
 		VertexShader = compile vs_3_0 LNProcessVertex();
 		PixelShader	 = compile ps_3_0 PS_ClusteredForward_Default();
 	}
-	pass Geometry
+	pass ShadowCaster_NoLighting
 	{
 		VertexShader = compile vs_3_0 LNProcessVertex();
 		PixelShader	 = compile ps_3_0 PSBasic();
 	}
-}
-
-technique ClusteredForward_NoLighting
-{
-	pass ShadowCaster
+	pass Geometry_Default
 	{
 		VertexShader = compile vs_3_0 LNProcessVertex();
 		PixelShader	 = compile ps_3_0 PSBasic();
 	}
-	pass Geometry
+	pass Geometry_NoLighting
 	{
 		VertexShader = compile vs_3_0 LNProcessVertex();
 		PixelShader	 = compile ps_3_0 PSBasic();
