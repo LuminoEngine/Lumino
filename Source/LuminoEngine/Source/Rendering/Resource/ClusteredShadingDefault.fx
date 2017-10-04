@@ -1,3 +1,4 @@
+/* Lumino ShadingModel combined HLSL file */
 
 BEGIN_HLSL
 
