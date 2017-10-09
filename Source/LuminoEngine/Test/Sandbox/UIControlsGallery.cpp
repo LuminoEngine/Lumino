@@ -30,7 +30,7 @@ void UIControlsGallery()
 	auto text1 = UITextField::create();
 	text1->setPosition(Point(10, 20));
 	text1->setSize(Size(200, 32));
-	uiRoot->addChild(text1);
+	//uiRoot->addChild(text1);
 
 #if 0
 	//auto* uiRoot = Engine::getMainWindow();
@@ -365,7 +365,9 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 		int m_clusterHeight = 16;
 		int m_clusterDepth = 32;
 
-		Ref<tr::Texture3D>	m_clustersTexture;
+		Ref<tr::Texture3D>		m_clustersTexture;
+		std::vector<int>		m_clustersAddCount;
+		std::vector<Color32>	m_clustersData;		// TODO: Texture3D がまだ setData も getMappedData もサポートしていないので。できれば getMappedData にそのまま書き込みたい
 
 		Matrix	m_view;
 		Matrix	m_proj;
@@ -440,6 +442,11 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 				}
 			}
 
+			m_clustersAddCount.clear();
+			m_clustersData.clear();
+			m_clustersAddCount.resize(m_clusterWidth * m_clusterHeight * m_clusterDepth);
+			m_clustersData.resize(m_clusterWidth * m_clusterHeight * m_clusterDepth);
+
 			m_pointLights.clear();
 			m_pointLights.add(PointLightInfo{/* Vector3(1, 255, 0), 255, Color::Red*/});	// dummy
 		}
@@ -452,19 +459,55 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 			// カメラから見た位置。奥が Z+。一番手前は 0.0
 			Vector4 cp = Vector4::transform(Vector4(lightPos, 1.0f), m_view);
 
+			// ビュー空間での、AABB の前面と後面
 			float zn = cp.z - lightRadius;
 			float zf = cp.z + lightRadius;
 
-			Vector3 vpMin = Vector3::transformCoord(Vector3(cp.x - lightRadius, cp.y - lightRadius, zn), m_proj);
-			Vector3 vpMax = Vector3::transformCoord(Vector3(cp.x + lightRadius, cp.y + lightRadius, zn), m_proj);
+			Vector3 viewPoints[4] =
+			{
+				Vector3::transformCoord(Vector3(cp.x - lightRadius, cp.y - lightRadius, zf), m_proj),	// 左上 奥
+				Vector3::transformCoord(Vector3(cp.x + lightRadius, cp.y + lightRadius, zf), m_proj),	// 右下 奥
+				Vector3::transformCoord(Vector3(cp.x - lightRadius, cp.y - lightRadius, zn), m_proj),	// 左上 手前
+				Vector3::transformCoord(Vector3(cp.x + lightRadius, cp.y + lightRadius, zn), m_proj),	// 右下 手前
+			};
+
+			Vector3 vpMin, vpMax;
+			vpMin.x = std::min(viewPoints[0].x, viewPoints[2].x);
+			vpMin.y = std::min(viewPoints[0].y, viewPoints[2].y);
+			vpMax.x = std::max(viewPoints[1].x, viewPoints[3].x);
+			vpMax.y = std::max(viewPoints[1].y, viewPoints[3].y);
+
+			//Vector3 vpMin = Vector3::transformCoord(Vector3(cp.x - lightRadius, cp.y - lightRadius, zf), m_proj);
+			//Vector3 vpMax = Vector3::transformCoord(Vector3(cp.x + lightRadius, cp.y + lightRadius, zf), m_proj);
 			//Vector3 vpMin = Vector3::transformCoord(Vector3(lightPos - lightRadius), m_view*m_proj);
 			//Vector3 vpMax = Vector3::transformCoord(Vector3(lightPos + lightRadius), m_view*m_proj);
 			//Vector3 vpMin = Vector3::transformCoord(Vector3(lightPos.x - lightRadius, lightPos.y - lightRadius, zn), m_view*m_proj);
 			//Vector3 vpMax = Vector3::transformCoord(Vector3(lightPos.x + lightRadius, lightPos.y + lightRadius, zn), m_view*m_proj);
 
+
+			//Vector3 vpMax2 = Vector3::transformCoord(Vector3(cp.x - lightRadius, cp.y, zn), m_proj);
+			//Vector3 vpMax3 = Vector3::transformCoord(Vector3(cp.x + lightRadius, cp.y, zn), m_proj);
 			
 			float vpZn = zn / m_clipRange;
 			float vpZf = zf / m_clipRange;
+
+
+			// 効率悪そうだけど、クラスタ情報の書き込むみ先を探すには全クラスタ数のインデックスベースで for しなければならない。
+			// bios で指数関数的なクラスタ分割を行うので、座標からクラスタの範囲を求めてループするのはちょっと複雑。
+
+
+
+#if 0
+			for (float dy = vpMin.y; dy < vpMin.y; dy += 1.0f)
+			{
+				for (int y = 0; y < m_clusterHeight; y++)
+				{
+					for (int y = 0; y < m_clusterHeight; y++)
+					{
+					}
+				}
+			}
+#else
 
 			//// カメラ座標系内での AABB
 			//AABB cpAABB = { cp.GetXYZ() - lightRadius,  cp.GetXYZ() + lightRadius };
@@ -480,7 +523,7 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 			float ys = 2.0f / m_clusterHeight;
 			float zs = 1.0f / m_clusterDepth;
 
-			float biasBase = 0.1;
+			float biasBase = 0.9;
 
 			for (int y = 0; y < m_clusterHeight; y++)
 			{
@@ -494,6 +537,21 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 						float cr = (xs * (x + 1)) - 1.0f;
 						if ((vpMax.x > cl && vpMin.x < cr))
 						{
+//							if (x == 1)
+//							{
+//								/*
+//								
+//	[0]							[1]						[2]
+//
+//
+//
+//				-0.875					-0.75
+//vpMin=-14.5					vpMax=-0.8
+//
+//*/
+//								printf("\n");
+//							}
+
 							for (int z = 0; z < m_clusterDepth; z++)
 							{
 								// 0.0..1.0
@@ -505,8 +563,7 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 								//printf("d:%f\n", czf - czn);
 								if (vpZf > czn && vpZn < czf)
 								{
-									//printf("%d,%d,%d(z:%f)\n", x, y, z, cn);
-									m_clustersTexture->setPixel32(x, y, z+8, Color32(lightId, 0, 0, 0));
+									putClusterData(x, y, z, lightId);
 								}
 							}
 						}
@@ -514,7 +571,7 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 				}
 			}
 
-
+#endif
 			//for (int z = 0; z < m_clusterDepth; z++)
 			//{
 			//	float cn = zs * z;
@@ -530,6 +587,18 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 
 		void endMakeClusters()
 		{
+			// m_clustersData -> m_clustersTexture
+			for (int y = 0; y < m_clusterHeight; y++)
+			{
+				for (int x = 0; x < m_clusterWidth; x++)
+				{
+					for (int z = 0; z < m_clusterDepth; z++)
+					{
+						m_clustersTexture->setPixel32(x, y, z, m_clustersData[((m_clusterWidth * m_clusterHeight * z) + (m_clusterWidth * y) + x)]);
+					}
+				}
+			}
+
 			//Bitmap bmp(&m_pointLights[0], SizeI(2, MaxLights), PixelFormat::FloatR32G32B32A32);
 			//m_pointLightInfoTexture->setSubData(PointI(0, 0), &bmp);
 			m_pointLightInfoTexture->setMappedData(&m_pointLights[0]);
@@ -539,8 +608,51 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 
 		static float bias(float b, float x)
 		{
-			return pow(x, log(b) / log(0.5));
+			return x;
+			//return pow(x, log(b) / log(0.5));
 		}
+
+		void putClusterData(int x, int y, int z, int lightId)
+		{
+			int clustersAddCountIndex =
+				((m_clusterWidth * m_clusterHeight * z) + (m_clusterWidth * y) + x);
+			int clustersAddCount = m_clustersAddCount[clustersAddCountIndex];
+			if (clustersAddCount < 4)
+			{
+				Color32& color = m_clustersData[clustersAddCountIndex];
+				switch (clustersAddCount)
+				{
+				case 0:
+					color.r = lightId;
+					break;
+				case 1:
+					color.g = lightId;
+					break;
+				case 2:
+					color.b = lightId;
+					break;
+				case 3:
+					color.a = lightId;
+					break;
+				default:
+					LN_UNREACHABLE();
+					break;
+				}
+				//printf("%d,%d,%d(z:%f)\n", x, y, z, cn);
+				//m_clustersTexture->setPixel32(x, y, z/*+8*/, Color32(lightId, 0, 0, 0));
+
+
+
+				m_clustersAddCount[clustersAddCountIndex]++;
+			}
+		}
+
+		//void setClustersAddCount(int x, int y, int z, int count)
+		//{
+
+		//}
+		//int getClustersAddCount(int x, int y, int z, int count);
+		
 	};
 
 
@@ -872,15 +984,15 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 			camPos, Vector3(0, 0, 0), camc->getUpDirection(),
 			camc->getFovY(), 640.0f / 480.0f, camc->getNearClip(), camc->getFarClip());
 
-		lc.addPointLight(Vector3(0, 0, 0), 3, Color::White);
+		lc.addPointLight(Vector3(0, 0, 0), 10, Color::White);
 		lc.addPointLight(Vector3(5, 0, 5), 2, Color::Red);
 		lc.addPointLight(Vector3(-5, 0, 5), 3, Color::Blue);
 		lc.addPointLight(Vector3(5, 0, -5), 4, Color::Green);
 		lc.addPointLight(Vector3(-5, 0, -5), 5, Color::Yellow);
 
-		lc.addPointLight(Vector3(7, 0, 0), 5, Color::Magenta);
+		lc.addPointLight(Vector3(7, 0, 0), 10, Color::Magenta);
 		lc.addPointLight(Vector3(-7, 0, 0), 4, Color::Cyan);
-		lc.addPointLight(Vector3(0, 0, 7), 3, Color::AliceBlue);
+		lc.addPointLight(Vector3(0, 0, 7), 10, Color::AliceBlue);
 		lc.addPointLight(Vector3(0, 0, -7), 2, Color::BlueViolet);
 
 		lc.endMakeClusters();

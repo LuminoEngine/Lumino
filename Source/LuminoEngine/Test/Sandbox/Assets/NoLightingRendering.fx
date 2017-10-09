@@ -111,7 +111,8 @@ static float dz = 255.0 / sz;
 
 float bias(float b, float x)
 {
-	return pow(x, log(b) / log(0.5));
+	return x;
+	//return pow(x, log(b) / log(0.5));
 }
 
 
@@ -138,6 +139,41 @@ PointLight LN_GetPointLight(int index)
 	return o;
 }
 
+/** 
+ * Calculates attenuation for a spot light.
+ * L normalize vector to light. 
+ * SpotDirection is the direction of the spot light.
+ * SpotAngles.x is CosOuterCone, SpotAngles.y is InvCosConeDifference. 
+ */
+float SpotAttenuation(float3 L, float3 SpotDirection, float2 SpotAngles)
+{
+	float t = saturate((dot(L, -SpotDirection) - SpotAngles.x) * SpotAngles.y);
+	float ConeAngleFalloff = t*t;
+	return ConeAngleFalloff;
+}
+
+
+/** 
+ * Returns a radial attenuation factor for a point light.  
+ * WorldLightVector is the vector from the position being shaded to the light, divided by the radius of the light. 
+ */
+float RadialAttenuation(float3 WorldLightVector, float FalloffExponent)
+{
+	float NormalizeDistanceSquared = dot(WorldLightVector, WorldLightVector);
+
+	// UE3 (fast, but now we not use the default of 2 which looks quite bad):
+	return pow(1.0f - saturate(NormalizeDistanceSquared), FalloffExponent); 
+}
+
+float Square(float x)
+{
+	return x * x;
+}
+float3 Square(float3 x)
+{
+	return x * x;
+}
+
 //------------------------------------------------------------------------------
 float4 PSBasic(PSInput p) : COLOR0
 {
@@ -152,7 +188,8 @@ float4 PSBasic(PSInput p) : COLOR0
 
 	
 	// View base
-	float4 cp = mul(float4(p.Pos2, 1.0f), view);//ln_World * ln_View);
+	//float4 cp = mul(float4(p.Pos2, 1.0f), view);//ln_World * ln_View);
+	float4 cp = mul(worldPos, view);
 	float cz = cp.z / far; //(cp.z - near) / (far - near);
 	//return float4(0, 0, cz, 1);
 	
@@ -178,9 +215,87 @@ float4 PSBasic(PSInput p) : COLOR0
 	
 	float4 c2 = float4(clus, 1);
 	
+	float lightIndices[4] = {c.r, c.g, c.b, c.a};
 	
-	if (c.r > 0)
+	
+	float3 result = float3(0, 0, 0);
+	for (int i = 0; i < 4; i++)
 	{
+		if (lightIndices[i] > 0)
+		{
+			PointLight light = LN_GetPointLight((lightIndices[i] * 255) + 0.5 - 1);
+			
+			
+			
+			float LightRadiusMask = 1.0;
+			{
+				float3 ToLight = light.pos.xyz - worldPos.xyz;
+				float DistanceSqr = dot(ToLight, ToLight);
+				float3 L = ToLight * rsqrt(DistanceSqr);
+				
+				
+				float LightInvRadius = 1.0 / light.pos.w;
+				float LightFalloffExponent = 0;
+				
+				//if (DeferredLightUniforms.LightFalloffExponent == 0)
+				{
+					LightRadiusMask = Square(saturate( 1 - Square(DistanceSqr * Square(LightInvRadius))));
+				}
+				//else
+				//{
+				//	LightRadiusMask = RadialAttenuation(ToLight * DeferredLightUniforms.LightInvRadius, DeferredLightUniforms.LightFalloffExponent);
+				//}
+			}
+				
+			
+			
+			float3 L = normalize(light.pos.xyz - worldPos.xyz);
+			float3 SpotDirection = float3(1, 0, 0);
+			float2 SpotAngle = float2(cos(3.14 / 3), 1.0 / cos(3.14 / 4));
+			result += SpotAttenuation(L, SpotDirection, SpotAngle) * LightRadiusMask;
+#if 0
+			//点光源までの距離
+	    	float3 toLight = light.pos.xyz - worldPos.xyz;
+			float lengthSq = dot(toLight, toLight);
+			lengthSq = max(lengthSq, 0.000001); // My: 0 以下はだめだよ
+			
+			float quadratic_attenuation = 1.0;	// range をもとに作るべき？
+        	float atten = 1.0 / (1.0 + lengthSq * quadratic_attenuation);
+			
+			
+       	 	float diff = 1.0;//max (0, dot (viewN, toLight));
+        	result += light.color.rgb * (diff * atten);
+#endif
+			
+			#if 0
+			
+			//点光源までの距離
+	    	float3 dir = light.pos.xyz - worldPos.xyz;
+	    	float r = length(dir);
+			float a = 1.0 - (r / light.pos.w);
+		
+			if (distance(light.pos.xyz, worldPos.xyz) <= light.pos.w)
+			{
+				result += light.color.rgb * a;
+			}
+#endif
+		}
+	}
+	
+#if 0
+	//result = float3(0, 0, 0);
+	if (lightIndices[0] > 0) result.r += 1;
+	if (lightIndices[1] > 0) result.g += 1;
+	if (lightIndices[2] > 0) result.b += 1;
+#endif
+	
+	return float4(mc.xyz * result, mc.a);
+	
+#if 0
+	if (lightIndices[0] > 0)
+	{
+		
+		
 		PointLight light = LN_GetPointLight((c.r * 255) + 0.5 - 1);
 		
 		//点光源までの距離
@@ -200,6 +315,7 @@ float4 PSBasic(PSInput p) : COLOR0
 		// no affect lights
 		return mc * 0.5;
 	}
+#endif
 	
 	
 	

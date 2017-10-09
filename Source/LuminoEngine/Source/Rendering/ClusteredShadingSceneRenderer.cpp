@@ -22,6 +22,11 @@ void ClusteredShadingSceneRenderer::initialize(GraphicsManager* manager)
 	SceneRenderer::initialize(manager);
 }
 
+void ClusteredShadingSceneRenderer::prepare()
+{
+	SceneRenderer::prepare();
+}
+
 } // namespace detail
 LN_NAMESPACE_END
 

@@ -34,6 +34,11 @@ void SceneRenderer::onPreRender(DrawElementList* elementList)
 {
 }
 
+//ShaderTechnique* SceneRenderer::selectShaderTechnique(Shader* shader)
+//{
+//	return shader->getTechniques().getAt(0);
+//}
+
 //------------------------------------------------------------------------------
 void SceneRenderer::addPass(RenderingPass2* pass)
 {
@@ -71,7 +76,7 @@ void SceneRenderer::render(
 	InternalContext* context = m_manager->getInternalContext();
 	const detail::CameraInfo& cameraInfo = drawElementListSet->m_cameraInfo;
 
-	drawElementListSet->m_renderingElementList.clear();
+	m_renderingElementList.clear();
 
 	// Collect
 	for (auto& elementList : drawElementListSet->m_lists)
@@ -97,7 +102,7 @@ void SceneRenderer::render(
 				cameraInfo.viewFrustum.intersects(boundingSphere.center, boundingSphere.radius))
 			{
 				// このノードは描画できる
-				drawElementListSet->m_renderingElementList.add(element);
+				m_renderingElementList.add(element);
 
 				// calculate distance for ZSort
 				const Matrix& transform = element->getTransform(elementList);
@@ -124,27 +129,7 @@ void SceneRenderer::render(
 	}
 
 	// Prepare
-	{
-		// 距離は降順。遠いほうを先に描画する
-		// 優先度は昇順。高いほうを手前に描画する (UE4 ESceneDepthPriorityGroup)
-		// フェンスID は昇順。高いほうを後に描画する
-		std::stable_sort(
-			drawElementListSet->m_renderingElementList.begin(), drawElementListSet->m_renderingElementList.end(),
-			[](const DrawElement* lhs, const DrawElement* rhs)
-		{
-			if (lhs->m_stateFence == rhs->m_stateFence)
-			{
-				if (lhs->metadata.priority == rhs->metadata.priority)
-					return lhs->zDistance > rhs->zDistance;
-				return lhs->metadata.priority < rhs->metadata.priority;
-			}
-			else
-			{
-				return lhs->m_stateFence < rhs->m_stateFence;
-			}
-		}
-		);
-	}
+	prepare();
 
 	DrawElement::DrawArgs drawArgs;
 	//drawArgs.oenerList = elementList;
@@ -160,7 +145,7 @@ void SceneRenderer::render(
 		//int currentBatchIndex = -1;
 		DrawElementBatch* currentState = nullptr;
 		//Shader* currentShader = nullptr;
-		for (DrawElement* element : drawElementListSet->m_renderingElementList)
+		for (DrawElement* element : m_renderingElementList)
 		{
 			bool visible = true;
 			drawArgs.oenerList = element->m_ownerDrawElementList;
@@ -243,7 +228,28 @@ void SceneRenderer::render(
 	coreRenderer->end();
 }
 
-
+void SceneRenderer::prepare()
+{
+	// 距離は降順。遠いほうを先に描画する
+	// 優先度は昇順。高いほうを手前に描画する (UE4 ESceneDepthPriorityGroup)
+	// フェンスID は昇順。高いほうを後に描画する
+	std::stable_sort(
+		m_renderingElementList.begin(), m_renderingElementList.end(),
+		[](const DrawElement* lhs, const DrawElement* rhs)
+		{
+			if (lhs->m_stateFence == rhs->m_stateFence)
+			{
+				if (lhs->metadata.priority == rhs->metadata.priority)
+					return lhs->zDistance > rhs->zDistance;
+				return lhs->metadata.priority < rhs->metadata.priority;
+			}
+			else
+			{
+				return lhs->m_stateFence < rhs->m_stateFence;
+			}
+		}
+	);
+}
 
 
 //==============================================================================

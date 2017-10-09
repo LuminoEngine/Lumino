@@ -39,12 +39,19 @@ public:
 		const Color& clearColor);
 
 protected:
+	// render
+	virtual void prepare();
 	virtual void onPreRender(DrawElementList* elementList);
+	//virtual ShaderTechnique* selectShaderTechnique(Shader* shader);
+
 	void addPass(RenderingPass2* pass);
 
 private:
 	GraphicsManager*				m_manager;
-	List<Ref<RenderingPass2>>	m_renderingPassList;
+	List<Ref<RenderingPass2>>		m_renderingPassList;
+	List<detail::DrawElement*>		m_renderingElementList;
+
+	//friend class RenderingPass2;
 };
 
 
@@ -69,6 +76,9 @@ public:
 
 	//virtual void RenderElement(DrawList* renderer, DrawElement* element);
 	//virtual void RenderElementSubset(DrawList* renderer, DrawElement* element, int subsetIndex);
+
+protected:
+
 
 private:
 };

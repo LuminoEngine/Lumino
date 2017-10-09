@@ -23,16 +23,24 @@ struct LNVSOutput
 
 struct LNVFInput
 {
-	// LNVSInput �Ɠ������e
+	// LNVSInput と同じ内容
 	float3	Pos			: POSITION;
 	float3	Normal		: NORMAL0;
 	float4	Color		: COLOR0;
 	float2	UV			: TEXCOORD0;
 	
-	// ���̑��AForward, Clusterd, Differd ���ׂĂŕK�v�ɂȂ����
-	// (�^�[�Q�b�g���Ƃɕ������肷��ƔώG�Ȃ̂ł܂Ƃ߂�B����Ȃɐ��͑����Ȃ�Ȃ����낤)
+	// その他、Forward, Clusterd, Differd すべてで必要になるもの
+	// (ターゲットごとに分けたりすると煩雑なのでまとめる。そんなに数は多くならないだろう)
 	float3	VertexPos	: TEXCOORD10;
 	float3	WorldPos	: TEXCOORD11;
+};
+
+struct LNPSInput
+{
+	// POSITION 以外は LNVSInput と同じ
+	float3	Normal		: NORMAL0;
+	float4	Color		: COLOR0;
+	float2	UV			: TEXCOORD0;
 };
 
 struct LNSurfaceOutput
@@ -54,7 +62,9 @@ LNVSOutput _LN_ProcessStandardVertex(LNVSInput vsi)
 	o.Color			= v.Color;
 	return o;
 }
-LNVSOutput _LN_ProcessVertex(LNVSInput vsi)
+
+// ★コア部分の処理は Lib に置く。Auto Generation ではない。ユーザーが vs/ps を直書きするときに使えるようにするため。
+LNVSOutput _LN_ProcessVertexShanding_ClusteredForward(LNVSInput vsi)
 {
 	LNVSOutput o;
 	o.svPos			= mul(float4(v.Pos, 1.0f), ln_WorldViewProjection);
@@ -65,23 +75,19 @@ LNVSOutput _LN_ProcessVertex(LNVSInput vsi)
 }
 
 //------------------------------------------------------------------------------
-
-
-
-//------------------------------------------------------------------------------
-// Vertex Factory (user code)
+// User code
 
 struct MyVFOutput
 {
 	float4	WorldPos	: TEXCOORD5;
 };
 
-void MyVFMain(LNVFInput input, inout MyVFOutput output)	// �� out �����̌^���p�[�X
+struct MySSInput
 {
-	output.WorldPos = mul(float4(input.Pos, 1.0), ln_World);
-}
-
-// Surface Shader (user code)
+	float4	Color		: COLOR0;		// defined
+	float2	UV			: TEXCOORD0;	// defined
+	float4	WorldPos	: TEXCOORD5;
+};
 
 sampler		MaterialTextureSampler = sampler_state
 {
@@ -90,47 +96,56 @@ sampler		MaterialTextureSampler = sampler_state
 	MAGFILTER = LINEAR;
 };
 
-struct MySSInput
+void MyVFMain(LNVFInput input, inout MyVFOutput output)	// ★ out 引数の型をパース
 {
-	float4	Color	: COLOR0;
-	float2	UV		: TEXCOORD0;
-	float4	WorldPos	: TEXCOORD5;
-};
+	output.WorldPos = mul(float4(input.Pos, 1.0), ln_World);
+}
 
-// user code
+// Surface Shader
 void MySSMain(MySSInput input, inout LNSurfaceOutput output)
 {
 	output.Albedo = float4(WorldPos.xy, 0, 1);
 }
 
 //------------------------------------------------------------------------------
-// �� Vertex Shader (auto generation)
+// ★ Vertex Shader (auto generation)
 
 struct VSOutput
 {
 	LNVSOutput		lnvsout;
 	SceneVSOutput	svsout;
-	MyVFOutput		uservsout;	// MyVFMain() �̍Ō�̈������p�[�X���ē���
-}
+	MyVFOutput		uservsout;	// ★ MyVFMain() の最後の引数をパースして得る
+};
 
 // auto generation
-LNVSOutput VS_ClusteredForward_Default(LNVSInput vsi)
+LNVSOutput _VS_ClusteredForward_Geometry(LNVSInput vsi)
 {
 	VSOutput o;
 	o.lnvsout = LNProcessVertex(vsi);
-	o.svsout = ProcessSceneVS(vsi);	// �� Scene�ŗL
-	o.uservsout = MyVFMain(vsi);
+	//o.svsout = ProcessSceneVS(vsi);	//
+	// ★ Scene固有のコードはここに直接生成する (ピクセルシェーダと書き方を合わせたい)
+	o.uservsout = MyVFMain(vsi);	// ★ User定義呼び出し
 }
 
 //------------------------------------------------------------------------------
-// �� Pixel Shader
+// ★ Pixel Shader
+
+struct _PS_Input
+{
+	LNPSInput	lnpsin;
+	MySSInput	userpsin;	// ★ MyVFMain() の最後の引数をパースして得る
+};
 
 // auto generation
-float4 _PS_ClusteredForward(PSInput psi) : COLOR0
+float4 _PS_ClusteredForward(_PS_Input psi) : COLOR0
 {
 	LNSSInput ssi = LNMakeSurfaceInput(psi);
+	MyVFMain(psi.userpsin, vsi);	// ★ User定義呼び出し
 	LNSurfaceOutput so = SS_Common(ssi);
-	// TODO: Lighting
+	
+	// ★ライティングのコードはここに直接生成する (GBuffer生成などではマルチRT書き込みするため、戻り値も変えなければならない)
+	// ・・・というより、ピクセルシェーダ全体を生成する。フラグメントの結合じゃダメ。
+	
 	return so.Albedo;
 }
 

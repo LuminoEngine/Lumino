@@ -536,7 +536,7 @@ public:
 	detail::CameraInfo				m_cameraInfo;
 
 	// 作業用
-	List<detail::DrawElement*>				m_renderingElementList;
+	//List<detail::DrawElement*>				m_renderingElementList;
 
 
 	const ln::Size& getViewSize() const { return m_viewSize; }
