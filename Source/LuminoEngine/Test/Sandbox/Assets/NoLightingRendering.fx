@@ -2,6 +2,7 @@
 //==============================================================================
 #ifdef LN_HLSL_DX9
 
+
 struct LN_VSInput
 {
 	float3	Pos		: POSITION;		// 位置
@@ -31,6 +32,11 @@ struct VSOutput
 	float3	Pos2	: TEXCOORD3;
 };
 
+struct PSInputTest
+{
+	float3	Pos2	: TEXCOORD3;
+};
+
 struct PSInput
 {
 	float4	Color	: COLOR0;
@@ -39,6 +45,8 @@ struct PSInput
 	float	ViewportPos_z		: TEXCOORD2;
 	
 	float3	Pos2	: TEXCOORD3;
+	
+	PSInputTest	test;
 };
 
 
@@ -184,7 +192,7 @@ float4 PSBasic(PSInput p) : COLOR0
 	//return float4(p.Pos2 / 10.0, 1.0f);
 	
 	
-	float4 worldPos = mul(float4(p.Pos2, 1.0f), ln_World);
+	float4 worldPos = mul(float4(p.test.Pos2, 1.0f), ln_World);
 
 	
 	// View base

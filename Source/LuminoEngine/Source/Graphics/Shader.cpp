@@ -350,10 +350,10 @@ ShaderPtr Shader::getBuiltinShader(BuiltinShader shader)
 }
 
 //------------------------------------------------------------------------------
-Ref<Shader> Shader::create(const StringRef& filePath, bool useTRSS)
+Ref<Shader> Shader::create(const StringRef& filePath, ShaderCodeType codeType)
 {
 	Ref<Shader> obj(LN_NEW Shader(), false);
-	obj->initialize(detail::GraphicsManager::getInstance(), filePath, useTRSS);
+	obj->initialize(detail::GraphicsManager::getInstance(), filePath, codeType);
 	return obj;
 }
 
@@ -411,14 +411,14 @@ Shader::~Shader()
 }
 
 //------------------------------------------------------------------------------
-void Shader::initialize(detail::GraphicsManager* manager, const StringRef& filePath, bool useTRSS)
+void Shader::initialize(detail::GraphicsManager* manager, const StringRef& filePath, ShaderCodeType codeType)
 {
 	Ref<Stream> stream(manager->getFileManager()->createFileStream(filePath), false);
 	ByteBuffer buf((size_t)stream->getLength() + 1, false);
 	stream->read(buf.getData(), buf.getSize());
 	buf[(size_t)stream->getLength()] = 0x00;
 
-	initialize(manager, buf.getConstData(), buf.getSize(), useTRSS);
+	initialize(manager, buf.getConstData(), buf.getSize(), codeType);
 
 	//GraphicsResourceObject::initialize(manager);
 	//
@@ -433,12 +433,12 @@ void Shader::initialize(detail::GraphicsManager* manager, const StringRef& fileP
 }
 
 //------------------------------------------------------------------------------
-void Shader::initialize(detail::GraphicsManager* manager, const void* code, int length, bool useTRSS)
+void Shader::initialize(detail::GraphicsManager* manager, const void* code, int length, ShaderCodeType codeType)
 {
 	GraphicsResourceObject::initialize();
 
 	std::stringstream sb;
-	if (useTRSS)
+	if (codeType == ShaderCodeType::TRSS)
 	{
 		detail::ShaderAnalyzer analyzer;
 		analyzer.analyzeLNFX((const char*)code, length);
@@ -447,6 +447,10 @@ void Shader::initialize(detail::GraphicsManager* manager, const void* code, int 
 		sb << std::string(cc.data(), cc.size());
 
 		//FileSystem::WriteAllBytes(_LT("code.c"), cc.data(), cc.size());
+	}
+	else if (codeType == ShaderCodeType::RawIR)
+	{
+		sb << std::string((const char*)code, length);
 	}
 	else
 	{

@@ -39,7 +39,7 @@ void TransitionPostEffect::initialize()
 		{
 #include "Resource/TransitionPostEffectWithoutMask.lnfx.h"
 		};
-		m_withoutMaskShader.shader = newObject<Shader>(detail::EngineDomain::getGraphicsManager(), ShaderData, LN_ARRAY_SIZE_OF(ShaderData), true);
+		m_withoutMaskShader.shader = newObject<Shader>(detail::EngineDomain::getGraphicsManager(), ShaderData, LN_ARRAY_SIZE_OF(ShaderData), ShaderCodeType::TRSS);
 		m_withoutMaskShader.varFactor = m_withoutMaskShader.shader->findVariable(_LT("g_Factor"));
 		m_withoutMaskShader.varFreezedTexture = m_withoutMaskShader.shader->findVariable(_LT("g_FreezedTexture"));
 	}

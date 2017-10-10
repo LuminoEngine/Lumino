@@ -1,9 +1,21 @@
 ﻿
 #include "../Internal.h"
+#include "../Graphics/GraphicsManager.h"
 #include "ClusteredShadingSceneRenderer.h"
 
 LN_NAMESPACE_BEGIN
 namespace detail {
+
+//==============================================================================
+// LightClusters
+//==============================================================================
+LightClusters::LightClusters()
+{
+}
+
+void LightClusters::init()
+{
+}
 
 //==============================================================================
 // ClusteredShadingGeometryRenderingPass
@@ -20,7 +32,9 @@ void ClusteredShadingGeometryRenderingPass::initialize()
 {
 	RenderingPass2::initialize();
 
-	m_defaultShader = manager->getBuiltinShader(BuiltinShader::Sprite);
+	//m_defaultShader = GraphicsManager::getInstance()->getBuiltinShader(BuiltinShader::LegacyDiffuse);
+
+	m_defaultShader = Shader::create(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/ClusteredShadingDefault.fx"), ShaderCodeType::RawIR);
 }
 
 Shader* ClusteredShadingGeometryRenderingPass::getDefaultShader() const
@@ -67,6 +81,16 @@ void ClusteredShadingSceneRenderer::initialize(GraphicsManager* manager)
 void ClusteredShadingSceneRenderer::prepare()
 {
 	SceneRenderer::prepare();
+}
+
+void ClusteredShadingSceneRenderer::collect()
+{
+
+}
+
+void ClusteredShadingSceneRenderer::onCollectLight(DynamicLightInfo* light)
+{
+	SceneRenderer::onCollectLight(light);
 }
 
 void ClusteredShadingSceneRenderer::onShaderPassChainging(ShaderPass* pass)

@@ -142,7 +142,12 @@ private:
 
 
 
-
+enum class ShaderCodeType
+{
+	Normal,
+	TRSS,		// テスト中の機能 (多分 obsolete)
+	RawIR,
+};
 
 
 
@@ -170,7 +175,7 @@ public:
 		@brief		シェーダコードが記述されたテキストファイルをコンパイルし、Shader を作成します。
 		@param[in]	filePath		: ファイルパス
 	*/
-	static Ref<Shader> create(const StringRef& filePath, bool useTRSS = false);
+	static Ref<Shader> create(const StringRef& filePath, ShaderCodeType codeType = ShaderCodeType::Normal);
 
 	/**
 		@brief		メモリ上に展開されたテキストデータをコンパイルし、Shader を作成します。
@@ -250,8 +255,8 @@ protected:
 LN_INTERNAL_ACCESS:
 	friend class detail::RenderingCommandList;
 	Shader();
-	void initialize(detail::GraphicsManager* manager, const StringRef& filePath, bool useTRSS = false);
-	void initialize(detail::GraphicsManager* manager, const void* code, int length, bool useTRSS = false);
+	void initialize(detail::GraphicsManager* manager, const StringRef& filePath, ShaderCodeType codeType = ShaderCodeType::Normal);
+	void initialize(detail::GraphicsManager* manager, const void* code, int length, ShaderCodeType codeType = ShaderCodeType::Normal);
 	void postInitialize();
 	void setModifiedVariables(bool modified) { m_modifiedVariables = modified; }
 	bool isModifiedVariables() const { return m_modifiedVariables; }

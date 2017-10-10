@@ -34,6 +34,10 @@ void SceneRenderer::onPreRender(DrawElementList* elementList)
 {
 }
 
+void SceneRenderer::onCollectLight(DynamicLightInfo* light)
+{
+}
+
 void SceneRenderer::onShaderPassChainging(ShaderPass* pass)
 {
 }
@@ -60,6 +64,9 @@ void SceneRenderer::render(
 	bool clearColorBuffer,
 	const Color& clearColor)
 {
+	m_renderingRenderView = drawElementListSet;
+	m_renderingDefaultRenderTarget = defaultRenderTarget;
+	m_renderingDefaultDepthBuffer = defaultDepthBuffer;
 
 	detail::CoreGraphicsRenderFeature* coreRenderer = m_manager->getRenderer();
 	coreRenderer->begin();
@@ -82,57 +89,8 @@ void SceneRenderer::render(
 
 	m_renderingElementList.clear();
 
-	// Collect
-	for (auto& elementList : drawElementListSet->m_lists)
-	{
-		elementList->setDefaultRenderTarget(defaultRenderTarget);
-		elementList->setDefaultDepthBuffer(defaultDepthBuffer);
+	collect();
 
-		onPreRender(elementList);
-
-		// 視点に関する情報の設定
-		context->setViewInfo(cameraInfo.viewPixelSize, cameraInfo.viewMatrix, cameraInfo.projMatrix);
-
-		// ライブラリ外部への書き込み対応
-		//context->beginBaseRenderer()->Clear(ClearFlags::Depth/* | ClearFlags::Stencil*/, Color());
-
-		// 視錘台カリング
-		for (int i = 0; i < elementList->getElementCount(); ++i)
-		{
-			DrawElement* element = elementList->getElement(i);
-			Sphere boundingSphere = element->getBoundingSphere();
-
-			if (boundingSphere.radius < 0 ||	// マイナス値なら視錐台と衝突判定しない
-				cameraInfo.viewFrustum.intersects(boundingSphere.center, boundingSphere.radius))
-			{
-				// このノードは描画できる
-				m_renderingElementList.add(element);
-
-				// calculate distance for ZSort
-				const Matrix& transform = element->getTransform(elementList);
-				switch (cameraInfo.zSortDistanceBase)
-				{
-				case ZSortDistanceBase::NodeZ:
-					element->zDistance = transform.getPosition().z;
-					break;
-				case ZSortDistanceBase::CameraDistance:
-					element->zDistance = (transform.getPosition() - cameraInfo.viewPosition).getLengthSquared();
-					break;
-				case ZSortDistanceBase::CameraScreenDistance:
-					element->zDistance = Vector3::dot(
-						transform.getPosition() - cameraInfo.viewPosition,
-						cameraInfo.viewDirection);		// 平面と点の距離
-													// TODO: ↑第2引数違くない？要確認
-					break;
-				default:
-					element->zDistance = 0.0f;
-					break;
-				}
-			}
-		}
-	}
-
-	// Prepare
 	prepare();
 
 	DrawElement::DrawArgs drawArgs;
@@ -232,6 +190,66 @@ void SceneRenderer::render(
 	if (diag != nullptr) diag->endRenderView();
 
 	coreRenderer->end();
+}
+
+void SceneRenderer::collect()
+{
+	InternalContext* context = m_manager->getInternalContext();
+	const detail::CameraInfo& cameraInfo = m_renderingRenderView->m_cameraInfo;
+
+	for (auto& elementList : m_renderingRenderView->m_lists)
+	{
+		elementList->setDefaultRenderTarget(m_renderingDefaultRenderTarget);
+		elementList->setDefaultDepthBuffer(m_renderingDefaultDepthBuffer);
+
+		for (DynamicLightInfo* light : elementList->getDynamicLightList())
+		{
+			onCollectLight(light);
+		}
+
+		onPreRender(elementList);
+
+		// 視点に関する情報の設定
+		context->setViewInfo(cameraInfo.viewPixelSize, cameraInfo.viewMatrix, cameraInfo.projMatrix);
+
+		// ライブラリ外部への書き込み対応
+		//context->beginBaseRenderer()->Clear(ClearFlags::Depth/* | ClearFlags::Stencil*/, Color());
+
+		// 視錘台カリング
+		for (int i = 0; i < elementList->getElementCount(); ++i)
+		{
+			DrawElement* element = elementList->getElement(i);
+			Sphere boundingSphere = element->getBoundingSphere();
+
+			if (boundingSphere.radius < 0 ||	// マイナス値なら視錐台と衝突判定しない
+				cameraInfo.viewFrustum.intersects(boundingSphere.center, boundingSphere.radius))
+			{
+				// このノードは描画できる
+				m_renderingElementList.add(element);
+
+				// calculate distance for ZSort
+				const Matrix& transform = element->getTransform(elementList);
+				switch (cameraInfo.zSortDistanceBase)
+				{
+				case ZSortDistanceBase::NodeZ:
+					element->zDistance = transform.getPosition().z;
+					break;
+				case ZSortDistanceBase::CameraDistance:
+					element->zDistance = (transform.getPosition() - cameraInfo.viewPosition).getLengthSquared();
+					break;
+				case ZSortDistanceBase::CameraScreenDistance:
+					element->zDistance = Vector3::dot(
+						transform.getPosition() - cameraInfo.viewPosition,
+						cameraInfo.viewDirection);		// 平面と点の距離
+														// TODO: ↑第2引数違くない？要確認
+					break;
+				default:
+					element->zDistance = 0.0f;
+					break;
+				}
+			}
+		}
+	}
 }
 
 void SceneRenderer::prepare()

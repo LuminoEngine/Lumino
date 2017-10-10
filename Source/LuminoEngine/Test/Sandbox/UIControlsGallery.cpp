@@ -664,7 +664,7 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 	auto planeMesh = StaticMeshComponent::createPlane(Vector2(20, 20), 1, 1);
 	Material* mat2 = planeMesh->getStaticMeshModel()->m_materials->getAt(0);
 	mat2->setMaterialTexture(tex1);
-	mat2->setShader(clusterdShader);
+	//mat2->setShader(clusterdShader);
 	auto planeObj1 = newObject<WorldObject3D>();
 	planeObj1->addComponent(planeMesh);
 

@@ -39,10 +39,22 @@ public:
 		const Color& clearColor);
 
 protected:
+
 	// render
+	RenderView* getRenderView() const { return m_renderingRenderView; }
+
+	// レンダリング準備として、描画に関係する各種オブジェクト (DrawElement や Light) を収集するフェーズ
+	virtual void collect();
+
+	// レンダリング準備として、効率的な描画を行うために収集した各種オブジェクトのソートなどを行う
 	virtual void prepare();
+
 	virtual void onPreRender(DrawElementList* elementList);
 	//virtual ShaderTechnique* selectShaderTechnique(Shader* shader);
+
+	// レンダリング準備時、影響するライトを通知する
+	virtual void onCollectLight(DynamicLightInfo* light);
+
 	virtual void onShaderPassChainging(ShaderPass* pass);
 
 	void addPass(RenderingPass2* pass);
@@ -51,6 +63,10 @@ private:
 	GraphicsManager*				m_manager;
 	List<Ref<RenderingPass2>>		m_renderingPassList;
 	List<detail::DrawElement*>		m_renderingElementList;
+
+	RenderView*				m_renderingRenderView;
+	RenderTargetTexture*	m_renderingDefaultRenderTarget;
+	DepthBuffer*			m_renderingDefaultDepthBuffer;
 
 	//friend class RenderingPass2;
 };
