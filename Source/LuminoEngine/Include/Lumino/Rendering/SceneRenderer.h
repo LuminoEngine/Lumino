@@ -43,6 +43,7 @@ protected:
 	virtual void prepare();
 	virtual void onPreRender(DrawElementList* elementList);
 	//virtual ShaderTechnique* selectShaderTechnique(Shader* shader);
+	virtual void onShaderPassChainging(ShaderPass* pass);
 
 	void addPass(RenderingPass2* pass);
 
@@ -78,7 +79,8 @@ public:
 	//virtual void RenderElementSubset(DrawList* renderer, DrawElement* element, int subsetIndex);
 
 protected:
-
+	//virtual ShaderTechnique* selectShaderTechnique(Shader* shader);
+	virtual ShaderPass* selectShaderPass(Shader* shader);
 
 private:
 };

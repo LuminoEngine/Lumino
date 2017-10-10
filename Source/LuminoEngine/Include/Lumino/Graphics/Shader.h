@@ -476,6 +476,8 @@ public:
 	ShaderVariable* findAnnotation(const Char* name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
 	ShaderVariable* findAnnotation(const String& name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const { return findAnnotation(name.c_str(), cs); }
 
+
+
 protected:
 	virtual ~ShaderTechnique();
 

@@ -1,5 +1,6 @@
 ﻿
 #include "../Internal.h"
+#include "../Rendering/ClusteredShadingSceneRenderer.h"
 #include "SceneGraphManager.h"
 #include <Lumino/Rendering/SceneRenderer.h>
 #include <Lumino/Mesh/GizmoModel.h>
@@ -785,9 +786,15 @@ void CameraViewportLayer2::initialize(World* targetWorld, CameraComponent* hosti
 
 	if (m_hostingCamera->getProjectionMode() == CameraProjection_3D)
 	{
+#if 1
+		auto internalRenderer = Ref<detail::ClusteredShadingSceneRenderer>::makeRef();
+		internalRenderer->initialize(detail::EngineDomain::getGraphicsManager());
+		m_internalRenderer = internalRenderer;
+#else
 		auto internalRenderer = Ref<detail::ForwardShadingRenderer>::makeRef();
 		internalRenderer->initialize(detail::EngineDomain::getGraphicsManager());
 		m_internalRenderer = internalRenderer;
+#endif
 	}
 	else
 	{

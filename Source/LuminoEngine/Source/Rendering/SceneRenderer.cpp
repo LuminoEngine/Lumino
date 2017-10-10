@@ -34,6 +34,10 @@ void SceneRenderer::onPreRender(DrawElementList* elementList)
 {
 }
 
+void SceneRenderer::onShaderPassChainging(ShaderPass* pass)
+{
+}
+
 //ShaderTechnique* SceneRenderer::selectShaderTechnique(Shader* shader)
 //{
 //	return shader->getTechniques().getAt(0);
@@ -201,6 +205,8 @@ void SceneRenderer::render(
 
 					material->applyUserShaderValeues(shader);
 
+					onShaderPassChainging(policy.shaderPass);
+
 					auto* stateManager = context->getRenderStateManager();
 					stateManager->setShaderPass(policy.shaderPass);
 				}
@@ -236,18 +242,18 @@ void SceneRenderer::prepare()
 	std::stable_sort(
 		m_renderingElementList.begin(), m_renderingElementList.end(),
 		[](const DrawElement* lhs, const DrawElement* rhs)
+	{
+		if (lhs->m_stateFence == rhs->m_stateFence)
 		{
-			if (lhs->m_stateFence == rhs->m_stateFence)
-			{
-				if (lhs->metadata.priority == rhs->metadata.priority)
-					return lhs->zDistance > rhs->zDistance;
-				return lhs->metadata.priority < rhs->metadata.priority;
-			}
-			else
-			{
-				return lhs->m_stateFence < rhs->m_stateFence;
-			}
+			if (lhs->metadata.priority == rhs->metadata.priority)
+				return lhs->zDistance > rhs->zDistance;
+			return lhs->metadata.priority < rhs->metadata.priority;
 		}
+		else
+		{
+			return lhs->m_stateFence < rhs->m_stateFence;
+		}
+	}
 	);
 }
 
@@ -501,12 +507,22 @@ void RenderingPass2::selectElementRenderingPolicy(DrawElement* element, Combined
 
 	if (outPolicy->shader)
 	{
-		// TODO: DrawList の実行者によって決定する
-		outPolicy->shaderPass = outPolicy->shader->getTechniques().getAt(0)->getPasses().getAt(0);
+		outPolicy->shaderPass = selectShaderPass(outPolicy->shader);
 	}
 
 	// とありあえず全部可
 	outPolicy->visible = true;
+}
+
+//ShaderTechnique* RenderingPass2::selectShaderTechnique(Shader* shader)
+//{
+//	return shader->getTechniques().getAt(0)->getPasses().getAt(0);
+//}
+
+ShaderPass* RenderingPass2::selectShaderPass(Shader* shader)
+{
+	// TODO: DrawList の実行者によって決定する
+	return shader->getTechniques().getAt(0)->getPasses().getAt(0);
 }
 
 ////------------------------------------------------------------------------------
