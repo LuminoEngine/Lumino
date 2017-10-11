@@ -287,6 +287,8 @@ void UILayoutLayer::renderScene(RenderTargetTexture* renderTarget, DepthBuffer* 
 	this->m_cameraInfo.viewProjMatrix = this->m_cameraInfo.viewMatrix * this->m_cameraInfo.projMatrix;
 	this->m_cameraInfo.viewFrustum = ViewFrustum(this->m_cameraInfo.projMatrix);
 	this->m_cameraInfo.zSortDistanceBase = ZSortDistanceBase::NodeZ;
+	this->m_cameraInfo.nearClip = 0.0;
+	this->m_cameraInfo.farClip = 1.0;
 	m_internalRenderer->render(this, renderTarget, depthBuffer, nullptr, clearColorBuffer, getBackgroundColor());	// TODO: diag
 }
 

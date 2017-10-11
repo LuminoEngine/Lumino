@@ -118,6 +118,8 @@ void OffscreenWorldView::renderWorld(World* world, RenderView* mainRenderView)
 	m_cameraInfo.viewProjMatrix = m_cameraInfo.viewMatrix * m_cameraInfo.projMatrix;
 	m_cameraInfo.viewFrustum = mainRenderView->m_cameraInfo.viewFrustum;//mainViewCamera->getViewFrustum();	// TODO: この View 独自処理にしたい
 	m_cameraInfo.zSortDistanceBase = mainRenderView->m_cameraInfo.zSortDistanceBase;
+	m_cameraInfo.nearClip = mainRenderView->m_cameraInfo.nearClip;
+	m_cameraInfo.farClip = mainRenderView->m_cameraInfo.farClip;
 
 
 

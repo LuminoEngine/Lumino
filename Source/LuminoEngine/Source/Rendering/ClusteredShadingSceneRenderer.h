@@ -10,10 +10,19 @@ class LightClusters
 public:
 	LightClusters();
 	void init();
+
 	void beginMakeClusters(const Matrix& view, const Matrix& proj, const Vector3& cameraPos, float nearClip, float farClip);
 	void endMakeClusters();
+	void addPointLight(const Vector3& pos, const Color& color, float range);
+	void addSpotLight(const Vector3& pos, const Color& color, float range, const Vector3& direction, float outerRadius, float innerRadius);
+
+	const Ref<tr::Texture3D>& getClustersVolumeTexture() const { return m_clustersTexture; }
+	const Ref<Texture2D>& getLightInfoTexture() const { return m_lightInfoTexture; }
 
 private:
+	static float bias(float b, float x) { return pow(x, log(b) / log(0.5)); }
+	void addClusterSpherical(const Vector3& pos, float range);
+	void addClusterData(int x, int y, int z, int lightId);
 
 	// Texture2D の 1 行分として書き込むため、float4 の倍数サイズである必要がある
 	struct LightInfo
@@ -34,6 +43,11 @@ private:
 	static const int		MaxLights = 64;
 	List<LightInfo>			m_lightInofs;		// m_lightInfoTexture に書き込む。TODO: Texture2D が float4 書き込みをちゃんとサポートしたら必要ない。
 	Ref<Texture2D>			m_lightInfoTexture;
+
+	Matrix					m_view;
+	Matrix					m_proj;
+	float					m_nearClip;
+	float					m_farClip;
 };
 
 class ClusteredShadingGeometryRenderingPass
@@ -66,6 +80,9 @@ protected:
 	virtual void prepare() override;
 	virtual void onCollectLight(DynamicLightInfo* light) override;
 	virtual void onShaderPassChainging(ShaderPass* pass) override;
+
+private:
+	LightClusters	m_lightClusters;
 };
 
 } // namespace detail

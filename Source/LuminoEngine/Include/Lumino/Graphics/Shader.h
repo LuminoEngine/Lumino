@@ -81,6 +81,9 @@ struct CameraInfo
 	ViewFrustum	viewFrustum;
 	ZSortDistanceBase	zSortDistanceBase;
 
+	float		nearClip = 0;
+	float		farClip = 0;
+
 	// POD
 };
 

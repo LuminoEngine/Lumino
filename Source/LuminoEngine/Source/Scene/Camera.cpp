@@ -851,6 +851,8 @@ void CameraViewportLayer2::renderScene(RenderTargetTexture* renderTarget, DepthB
 	this->m_cameraInfo.viewProjMatrix = m_hostingCamera->getViewProjectionMatrix();
 	this->m_cameraInfo.viewFrustum = m_hostingCamera->getViewFrustum();
 	this->m_cameraInfo.zSortDistanceBase = m_hostingCamera->getZSortDistanceBase();
+	this->m_cameraInfo.nearClip = m_hostingCamera->getNearClip();
+	this->m_cameraInfo.farClip = m_hostingCamera->getFarClip();
 	m_internalRenderer->render(this, renderTarget, depthBuffer, nullptr, clearColorBuffer, getBackgroundColor());	// TODO: diag
 }
 
