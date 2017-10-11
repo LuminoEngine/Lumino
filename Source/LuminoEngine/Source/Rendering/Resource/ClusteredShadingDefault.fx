@@ -28,16 +28,6 @@ struct LN_VSOutput_Common
 	float2	UV			: TEXCOORD0;
 };
 
-struct LN_VSOutput_ClusteredForward
-{
-	float3	WorldPos	: TEXCOORD10;
-};
-
-struct LN_PSInput_ClusteredForward
-{
-	float3	WorldPos	: TEXCOORD10;
-};
-
 struct LNVFInput
 {
 	// LNVSInput と同じ内容
@@ -88,17 +78,254 @@ LN_VSOutput_Common _LN_ProcessVertex_Common(LN_VSInput input)
 	return o;
 }
 
+
+
+
+
+
+
+
+
+
+//------------------------------------------------------------------------------
+// ClusteredForward
+
+
+struct LN_VSOutput_ClusteredForward
+{
+	float3	WorldPos	: TEXCOORD10;
+	float3	VertexPos	: TEXCOORD11;
+};
+
+struct LN_PSInput_ClusteredForward
+{
+	float3	WorldPos	: TEXCOORD10;
+	float3	VertexPos	: TEXCOORD11;
+};
+
+
+texture ln_pointLightInfoTexture;
+sampler2D pointLightInfoSampler = sampler_state
+{
+	Texture = <ln_pointLightInfoTexture>;
+	MinFilter = Point; 
+	MagFilter = Point;
+	MipFilter = None;
+	AddressU = Clamp;
+	AddressV = Clamp;
+};
+
+
+float		ln_nearClip;
+float		ln_farClip;
+float3		ln_cameraPos;
+float4x4	ln_View;
+
+texture3D ln_clustersTexture;
+sampler	clustersSampler = sampler_state
+{
+	texture = <ln_clustersTexture>;
+	MinFilter = Point; 
+	MagFilter = Point;
+	MipFilter = None;
+	AddressU = Clamp;
+	AddressV = Clamp;
+};
+
+
+
+
+
 // ★コア部分の処理は Lib に置く。Auto Generation ではない。ユーザーが vs/ps を直書きするときに使えるようにするため。
 LN_VSOutput_ClusteredForward _LN_ProcessVertex_ClusteredForward(LN_VSInput input)
 {
 	LN_VSOutput_ClusteredForward output;
-	output.WorldPos = mul(float4(input.Pos, 1.0), ln_World);
+	output.WorldPos = mul(float4(input.Pos, 1.0), ln_World).xyz;
+	output.VertexPos = input.Pos;
 	return output;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+static float sx = 16.0;
+static float sy = 16.0;
+static float sz = 32.0;
+
+static float dx = 255.0 / sx;
+static float dy = 255.0 / sy;
+static float dz = 255.0 / sz;
+
+float bias(float b, float x)
+{
+	return x;
+	//return pow(x, log(b) / log(0.5));
+}
+
+
+
+struct PointLight
+{
+	float4	pos;
+	float4	color;
+};
+
+PointLight LN_GetPointLight(int index)
+{
+	float2 uv = 1.0 / float2(2, 64);//lnBoneTextureReciprocalSize;
+	float4 tc0 = float4((0.0 + 0.5f) * uv.x, (index + 0.5f) * uv.y, 0, 1);	// +0.5 は半ピクセル分
+	float4 tc1 = float4((1.0 + 0.5f) * uv.x, (index + 0.5f) * uv.y, 0, 1);	// +0.5 は半ピクセル分
+	PointLight o;
+	
+	tc0.y = 1.0 - tc0.y;
+	tc1.y = 1.0 - tc1.y;
+	//o.pos = tex2Dlod(m_pointLightInfoSampler, tc0);
+	//o.color = tex2Dlod(m_pointLightInfoSampler, tc1);
+	o.pos = tex2D(pointLightInfoSampler, tc0.xy);
+	o.color = tex2D(pointLightInfoSampler, tc1.xy);
+	return o;
+}
+
+/** 
+ * Calculates attenuation for a spot light.
+ * L normalize vector to light. 
+ * SpotDirection is the direction of the spot light.
+ * SpotAngles.x is CosOuterCone, SpotAngles.y is InvCosConeDifference. 
+ */
+float SpotAttenuation(float3 L, float3 SpotDirection, float2 SpotAngles)
+{
+	float t = saturate((dot(L, -SpotDirection) - SpotAngles.x) * SpotAngles.y);
+	float ConeAngleFalloff = t*t;
+	return ConeAngleFalloff;
+}
+
+
+/** 
+ * Returns a radial attenuation factor for a point light.  
+ * WorldLightVector is the vector from the position being shaded to the light, divided by the radius of the light. 
+ */
+float RadialAttenuation(float3 WorldLightVector, float FalloffExponent)
+{
+	float NormalizeDistanceSquared = dot(WorldLightVector, WorldLightVector);
+
+	// UE3 (fast, but now we not use the default of 2 which looks quite bad):
+	return pow(1.0f - saturate(NormalizeDistanceSquared), FalloffExponent); 
+}
+
+float Square(float x)
+{
+	return x * x;
+}
+float3 Square(float3 x)
+{
+	return x * x;
 }
 
 float4 _LN_ProcessPixel_ClusteredForward(LN_PSInput_Common common, LN_PSInput_ClusteredForward extra, LN_SurfaceOutput surface)
 {
-	return float4(1, 0, 0, 1);
+	
+	
+	//float4 cp4 = mul(float4(5, 0, -10, 1), view);
+	//return float4(0, 0, cp4.z / 10.0, 1);
+	
+	//return float4(p.Pos2 / 10.0, 1.0f);
+	
+	
+	float4 worldPos =  mul(float4(extra.VertexPos, 1.0f), ln_World);
+
+	
+	// View base
+	//float4 cp = mul(float4(p.Pos2, 1.0f), view);//ln_World * ln_View);
+	float4 cp = mul(worldPos, ln_View);
+	float cz = (cp.z - ln_nearClip) / (ln_farClip - ln_nearClip);//cp.z / far; //
+	//return float4(0, 0, cz, 1);
+	
+	float4 vp = mul(float4(extra.VertexPos, 1.0f), ln_WorldViewProjection);
+	vp.xyz /= vp.w;
+	
+	float i_cx = trunc((((vp.x + 1.0) / 2.0) * 255.0) / sx);
+	float i_cy = trunc((((vp.y + 1.0) / 2.0) * 255.0) / sy);
+	float i_cz = trunc(bias(0.9, cz) * sz);//trunc((cz * 255.0) / sz);
+	
+	float4 mc = surface.Albedo;// * ln_ColorScale;//(tex2D(MaterialTextureSampler, p.UV) * p.Color) * ln_ColorScale;
+	
+	float3 clus = float3(i_cx / dx, i_cy / dy, i_cz / sz);
+	//clus.z = bias(0.9, clus.z);
+	
+	//clus.x = 0; clus.y = 0;
+	//clus.z *= 2;
+	//clus.z = cz;
+	
+	//float3 clus = float3(0, 0, p.ViewportPos_z);
+	float4 c = tex3D(clustersSampler, clus);	// TODO: 0.5 オフセット調整が必要かも
+	
+	
+	float4 c2 = float4(clus, 1);
+	
+	float lightIndices[4] = {c.r, c.g, c.b, c.a};
+	
+	
+	float3 result = float3(0, 0, 0);
+	for (int i = 0; i < 4; i++)
+	{
+		if (lightIndices[i] > 0)
+		{
+			PointLight light = LN_GetPointLight((lightIndices[i] * 255) + 0.5 - 1);
+			
+			
+			
+			float LightRadiusMask = 1.0;
+			{
+				float3 ToLight = light.pos.xyz - worldPos.xyz;
+				float DistanceSqr = dot(ToLight, ToLight);
+				float3 L = ToLight * rsqrt(DistanceSqr);
+				
+				
+				float LightInvRadius = 1.0 / light.pos.w;
+				float LightFalloffExponent = 0;
+				
+				//if (DeferredLightUniforms.LightFalloffExponent == 0)
+				{
+					LightRadiusMask = Square(saturate( 1 - Square(DistanceSqr * Square(LightInvRadius))));
+				}
+				//else
+				//{
+				//	LightRadiusMask = RadialAttenuation(ToLight * DeferredLightUniforms.LightInvRadius, DeferredLightUniforms.LightFalloffExponent);
+				//}
+			}
+				
+			
+			
+			float3 L = normalize(light.pos.xyz - worldPos.xyz);
+			float3 SpotDirection = float3(1, 0, 0);
+			float2 SpotAngle = float2(cos(3.14 / 3), 1.0 / cos(3.14 / 4));
+			result += SpotAttenuation(L, SpotDirection, SpotAngle) * LightRadiusMask;
+		}
+	}
+	
+#if 0
+	//result = float3(0, 0, 0);
+	if (lightIndices[0] > 0) result.r += 1;
+	if (lightIndices[1] > 0) result.g += 1;
+	if (lightIndices[2] > 0) result.b += 1;
+#endif
+	
+	return float4(mc.xyz * result, mc.a);
+	
+	
+	//return float4(1, 0, 0, 1);
 }
 
 //------------------------------------------------------------------------------
@@ -130,7 +357,8 @@ sampler		MaterialTextureSampler = sampler_state
 // Surface Shader
 void MySSMain(MySSInput input, inout LN_SurfaceOutput output)
 {
-	output.Albedo = float4(1, 0, 0, 1);
+	output.Albedo = (tex2D(MaterialTextureSampler, input.UV));// * p.Color);
+	//output.Albedo = float4(1, 0, 0, 1);
 }
 
 //------------------------------------------------------------------------------
