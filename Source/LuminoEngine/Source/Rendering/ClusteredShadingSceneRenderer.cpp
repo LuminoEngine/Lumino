@@ -58,7 +58,7 @@ void LightClusters::beginMakeClusters(const Matrix& view, const Matrix& proj, co
 	m_lightInofs.add(LightInfo{});	// dummy
 }
 
-void LightClusters::addPointLight(const Vector3& pos, const Color& color, float range)
+void LightClusters::addPointLight(const Vector3& pos, float range, const Color& color)
 {
 	addClusterSpherical(pos, range);
 
@@ -70,7 +70,7 @@ void LightClusters::addPointLight(const Vector3& pos, const Color& color, float 
 	m_lightInofs.add(info);
 }
 
-void LightClusters::addSpotLight(const Vector3& pos, const Color& color, float range, const Vector3& direction, float outerRadius, float innerRadius)
+void LightClusters::addSpotLight(const Vector3& pos, float range, const Vector3& direction, float outerRadius, float innerRadius, const Color& color)
 {
 	// TODO: とりあえず球と同じ方法でクラスタ化。最悪パターンの想定なので、一般的にはかなり無駄が多い。
 	addClusterSpherical(pos, range);
@@ -275,6 +275,20 @@ void ClusteredShadingSceneRenderer::collect()
 	const CameraInfo& view = getRenderView()->m_cameraInfo;
 	m_lightClusters.beginMakeClusters(view.viewMatrix, view.projMatrix, view.viewPosition, view.nearClip, view.farClip);
 	SceneRenderer::collect();
+
+
+	//lc.addPointLight(Vector3(0, 0, 0), 10, Color::White);
+	m_lightClusters.addPointLight(Vector3(5, 0, 5), 2, Color::Red);
+	m_lightClusters.addPointLight(Vector3(-5, 0, 5), 3, Color::Blue);
+	m_lightClusters.addPointLight(Vector3(5, 0, -5), 4, Color::Green);
+	m_lightClusters.addPointLight(Vector3(-5, 0, -5), 5, Color::Yellow);
+
+	m_lightClusters.addPointLight(Vector3(7, 0, 0), 10, Color::Magenta);
+	m_lightClusters.addPointLight(Vector3(-7, 0, 0), 4, Color::Cyan);
+	m_lightClusters.addPointLight(Vector3(0, 0, 7), 10, Color::AliceBlue);
+	m_lightClusters.addPointLight(Vector3(0, 0, -7), 2, Color::BlueViolet);
+
+
 	m_lightClusters.endMakeClusters();
 }
 

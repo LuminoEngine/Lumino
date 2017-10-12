@@ -13,8 +13,8 @@ public:
 
 	void beginMakeClusters(const Matrix& view, const Matrix& proj, const Vector3& cameraPos, float nearClip, float farClip);
 	void endMakeClusters();
-	void addPointLight(const Vector3& pos, const Color& color, float range);
-	void addSpotLight(const Vector3& pos, const Color& color, float range, const Vector3& direction, float outerRadius, float innerRadius);
+	void addPointLight(const Vector3& pos, float range, const Color& color);
+	void addSpotLight(const Vector3& pos, float range, const Vector3& direction, float outerRadius, float innerRadius, const Color& color);
 
 	const Ref<tr::Texture3D>& getClustersVolumeTexture() const { return m_clustersTexture; }
 	const Ref<Texture2D>& getLightInfoTexture() const { return m_lightInfoTexture; }
