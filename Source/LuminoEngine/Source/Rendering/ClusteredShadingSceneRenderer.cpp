@@ -34,6 +34,7 @@ void LightClusters::beginMakeClusters(const Matrix& view, const Matrix& proj, co
 {
 	m_view = view;
 	m_proj = proj;
+	m_cameraPos = cameraPos;
 	m_nearClip = nearClip;
 	m_farClip = farClip;
 
@@ -277,7 +278,7 @@ void ClusteredShadingSceneRenderer::collect()
 	SceneRenderer::collect();
 
 
-	//lc.addPointLight(Vector3(0, 0, 0), 10, Color::White);
+	m_lightClusters.addPointLight(Vector3(0, 0, 0), 10, Color::White);
 	m_lightClusters.addPointLight(Vector3(5, 0, 5), 2, Color::Red);
 	m_lightClusters.addPointLight(Vector3(-5, 0, 5), 3, Color::Blue);
 	m_lightClusters.addPointLight(Vector3(5, 0, -5), 4, Color::Green);
@@ -299,7 +300,26 @@ void ClusteredShadingSceneRenderer::onCollectLight(DynamicLightInfo* light)
 
 void ClusteredShadingSceneRenderer::onShaderPassChainging(ShaderPass* pass)
 {
-	return SceneRenderer::onShaderPassChainging(pass);
+	SceneRenderer::onShaderPassChainging(pass);
+
+	Shader* shader = pass->getOwnerShader();
+
+	ShaderVariable* v;
+
+	v = shader->findVariable(_T("ln_pointLightInfoTexture"));
+	if (v) v->setTexture(m_lightClusters.getLightInfoTexture());
+
+	v = shader->findVariable(_T("ln_clustersTexture"));
+	if (v) v->setTexture(m_lightClusters.getClustersVolumeTexture());
+
+	v = shader->findVariable(_T("ln_nearClip"));
+	if (v) v->setFloat(m_lightClusters.m_nearClip);
+
+	v = shader->findVariable(_T("ln_farClip"));
+	if (v) v->setFloat(m_lightClusters.m_farClip);
+
+	v = shader->findVariable(_T("ln_cameraPos"));
+	if (v) v->setVector(Vector4(m_lightClusters.m_cameraPos, 0));
 }
 
 } // namespace detail

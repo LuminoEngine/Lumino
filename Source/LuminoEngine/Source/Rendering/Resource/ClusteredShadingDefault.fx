@@ -315,7 +315,7 @@ float4 _LN_ProcessPixel_ClusteredForward(LN_PSInput_Common common, LN_PSInput_Cl
 		}
 	}
 	
-#if 0
+#if 1
 	//result = float3(0, 0, 0);
 	if (lightIndices[0] > 0) result.r += 1;
 	if (lightIndices[1] > 0) result.g += 1;

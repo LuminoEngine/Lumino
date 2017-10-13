@@ -8,6 +8,12 @@ namespace detail {
 class LightClusters
 {
 public:
+	Vector3					m_cameraPos;
+	Matrix					m_view;
+	Matrix					m_proj;
+	float					m_nearClip;
+	float					m_farClip;
+
 	LightClusters();
 	void init();
 
@@ -44,11 +50,6 @@ private:
 	static const int		MaxLights = 64;
 	List<LightInfo>			m_lightInofs;		// m_lightInfoTexture に書き込む。TODO: Texture2D が float4 書き込みをちゃんとサポートしたら必要ない。
 	Ref<Texture2D>			m_lightInfoTexture;
-
-	Matrix					m_view;
-	Matrix					m_proj;
-	float					m_nearClip;
-	float					m_farClip;
 };
 
 class ClusteredShadingGeometryRenderingPass
