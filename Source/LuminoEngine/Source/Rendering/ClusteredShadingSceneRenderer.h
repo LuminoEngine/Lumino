@@ -27,7 +27,7 @@ public:
 
 private:
 	//static float bias(float b, float x) { return pow(x, log(b) / log(0.5)); }
-	static float bias(float b, float x) { return x; }
+	//static float bias(float b, float x) { return x; }
 	void addClusterSpherical(const Vector3& pos, float range);
 	void addClusterData(int x, int y, int z, int lightId);
 

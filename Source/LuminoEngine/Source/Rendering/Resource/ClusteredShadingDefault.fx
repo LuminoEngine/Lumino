@@ -168,10 +168,12 @@ static float dx = 255.0 / sx;
 static float dy = 255.0 / sy;
 static float dz = 255.0 / sz;
 
+static float2 LightInfoTextureSize = float2(4, 64);
+
 float bias(float b, float x)
 {
-	return x;
-	//return pow(x, log(b) / log(0.5));
+	//return x;
+	return pow(x, log(b) / log(0.5));
 }
 
 
@@ -184,7 +186,7 @@ struct PointLight
 
 PointLight LN_GetPointLight(int index)
 {
-	float2 uv = 1.0 / float2(2, 64);//lnBoneTextureReciprocalSize;
+	float2 uv = 1.0 / LightInfoTextureSize;
 	float4 tc0 = float4((0.0 + 0.5f) * uv.x, (index + 0.5f) * uv.y, 0, 1);	// +0.5 は半ピクセル分
 	float4 tc1 = float4((1.0 + 0.5f) * uv.x, (index + 0.5f) * uv.y, 0, 1);	// +0.5 は半ピクセル分
 	PointLight o;
@@ -249,8 +251,11 @@ float4 _LN_ProcessPixel_ClusteredForward(LN_PSInput_Common common, LN_PSInput_Cl
 	// View base
 	//float4 cp = mul(float4(p.Pos2, 1.0f), view);//ln_World * ln_View);
 	float4 cp = mul(worldPos, ln_View);
+	cp.z /= cp.w;
 	float cz = (cp.z - ln_nearClip) / (ln_farClip - ln_nearClip);//cp.z / far; //
 	//return float4(0, 0, cz, 1);
+	
+	//return float4(0, 0, bias(0.1, cz), 1);
 	
 	float4 vp = mul(float4(extra.VertexPos, 1.0f), ln_WorldViewProjection);
 	vp.xyz /= vp.w;
@@ -258,6 +263,8 @@ float4 _LN_ProcessPixel_ClusteredForward(LN_PSInput_Common common, LN_PSInput_Cl
 	float i_cx = trunc((((vp.x + 1.0) / 2.0) * 255.0) / sx);
 	float i_cy = trunc((((vp.y + 1.0) / 2.0) * 255.0) / sy);
 	float i_cz = trunc(bias(0.9, cz) * sz);//trunc((cz * 255.0) / sz);
+	
+	
 	
 	float4 mc = surface.Albedo;// * ln_ColorScale;//(tex2D(MaterialTextureSampler, p.UV) * p.Color) * ln_ColorScale;
 	
@@ -307,15 +314,23 @@ float4 _LN_ProcessPixel_ClusteredForward(LN_PSInput_Common common, LN_PSInput_Cl
 			}
 				
 			
+			if (0)
+			{
+				float3 L = normalize(light.pos.xyz - worldPos.xyz);
+				float3 SpotDirection = float3(1, 0, 0);
+				float2 SpotAngle = float2(cos(3.14 / 3), 1.0 / cos(3.14 / 4));
+				result += SpotAttenuation(L, SpotDirection, SpotAngle) * LightRadiusMask;
+			}
+			else
+			{
+				result += LightRadiusMask;
+			}
 			
-			float3 L = normalize(light.pos.xyz - worldPos.xyz);
-			float3 SpotDirection = float3(1, 0, 0);
-			float2 SpotAngle = float2(cos(3.14 / 3), 1.0 / cos(3.14 / 4));
-			result += SpotAttenuation(L, SpotDirection, SpotAngle) * LightRadiusMask;
+			
 		}
 	}
 	
-#if 1
+#if 0
 	//result = float3(0, 0, 0);
 	if (lightIndices[0] > 0) result.r += 1;
 	if (lightIndices[1] > 0) result.g += 1;

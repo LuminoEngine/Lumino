@@ -101,6 +101,9 @@ void LightClusters::endMakeClusters()
 	m_lightInfoTexture->setMappedData(&m_lightInofs[0]);
 }
 
+static float bias(float b, float x) { return pow(x, log(b) / log(0.5)); }
+//static float bias(float b, float x) { return x; }
+
 void LightClusters::addClusterSpherical(const Vector3& pos, float range)
 {
 	float lightRadius = range;
@@ -128,7 +131,7 @@ void LightClusters::addClusterSpherical(const Vector3& pos, float range)
 	vpMax.x = std::max(viewPoints[1].x, viewPoints[3].x);
 	vpMax.y = std::max(viewPoints[1].y, viewPoints[3].y);
 
-	// Viewport 空間での、AABB の前面と後面
+	// Viewport 空間での、AABB の前面と後面 (0.0..1.0)
 	float vpZn = (zn - m_nearClip) / flipRange;
 	float vpZf = (zf - m_nearClip) / flipRange;
 
@@ -140,7 +143,7 @@ void LightClusters::addClusterSpherical(const Vector3& pos, float range)
 	float ys = 2.0f / ClusterHeight;
 	float zs = 1.0f / ClusterDepth;
 
-	float biasBase = 0.9;
+	float biasBase = 0.1;
 
 	for (int y = 0; y < ClusterHeight; y++)
 	{
@@ -160,8 +163,9 @@ void LightClusters::addClusterSpherical(const Vector3& pos, float range)
 						float cn = zs * z;
 						float cf = zs * (z + 1);
 
-						float czn = bias(biasBase, cn);
-						float czf = bias(biasBase, cf);
+						float czn = bias(biasBase, /*1.0f - */cn);
+						float czf = bias(biasBase, /*1.0f - */cf);
+						//printf("%f\n", czn);
 						if (vpZf > czn && vpZn < czf)
 						{
 							addClusterData(x, y, z, lightId);
@@ -170,6 +174,25 @@ void LightClusters::addClusterSpherical(const Vector3& pos, float range)
 				}
 			}
 		}
+	}
+
+	for (float z = 0; z < 1.0f; z += 0.001)
+	{
+		float cz = bias(1.0-biasBase, z); //z;// bias(biasBase, z);//1.0 - bias(1.0 - biasBase, 1.0 - z);
+		int i_cz = /*ClusterDepth - */(int)/*trunc*/(cz * ClusterDepth);
+		printf("%f (%f): %d\n", z, cz, i_cz);
+	}
+
+	for (int z = 0; z < ClusterDepth; z++)
+	{
+		// index -> viewport.z
+		float cn = zs * z;
+		float cf = zs * (z + 1);
+
+		// viewport.z > cluster range
+		float czn = bias(biasBase, /*1.0f - */cn);
+		float czf = bias(biasBase, /*1.0f - */cf);
+		printf("%d: %f .. %f\n", z, czn, czf);
 	}
 }
 
@@ -201,6 +224,10 @@ void LightClusters::addClusterData(int x, int y, int z, int lightId)
 
 		m_clustersAddCount[clustersAddCountIndex]++;
 	}
+	//else
+	//{
+	//	printf("%d\n", clustersAddCount);
+	//}
 }
 
 //==============================================================================
@@ -278,16 +305,16 @@ void ClusteredShadingSceneRenderer::collect()
 	SceneRenderer::collect();
 
 
-	m_lightClusters.addPointLight(Vector3(0, 0, 0), 10, Color::White);
-	m_lightClusters.addPointLight(Vector3(5, 0, 5), 2, Color::Red);
-	m_lightClusters.addPointLight(Vector3(-5, 0, 5), 3, Color::Blue);
-	m_lightClusters.addPointLight(Vector3(5, 0, -5), 4, Color::Green);
-	m_lightClusters.addPointLight(Vector3(-5, 0, -5), 5, Color::Yellow);
+	m_lightClusters.addPointLight(Vector3(0, 0, 0), 5, Color::White);
+	//m_lightClusters.addPointLight(Vector3(5, 0, 5), 2, Color::Red);
+	//m_lightClusters.addPointLight(Vector3(-5, 0, 5), 3, Color::Blue);
+	//m_lightClusters.addPointLight(Vector3(5, 0, -5), 4, Color::Green);
+	//m_lightClusters.addPointLight(Vector3(-5, 0, -5), 5, Color::Yellow);
 
-	m_lightClusters.addPointLight(Vector3(7, 0, 0), 10, Color::Magenta);
-	m_lightClusters.addPointLight(Vector3(-7, 0, 0), 4, Color::Cyan);
-	m_lightClusters.addPointLight(Vector3(0, 0, 7), 10, Color::AliceBlue);
-	m_lightClusters.addPointLight(Vector3(0, 0, -7), 2, Color::BlueViolet);
+	//m_lightClusters.addPointLight(Vector3(7, 0, 0), 10, Color::Magenta);
+	//m_lightClusters.addPointLight(Vector3(-7, 0, 0), 4, Color::Cyan);
+	//m_lightClusters.addPointLight(Vector3(0, 0, 7), 10, Color::AliceBlue);
+	//m_lightClusters.addPointLight(Vector3(0, 0, -7), 2, Color::BlueViolet);
 
 
 	m_lightClusters.endMakeClusters();
