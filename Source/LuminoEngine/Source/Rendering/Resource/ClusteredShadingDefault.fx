@@ -178,7 +178,8 @@ float bezier(float v1, float v2, float v3, float t)
 
 float bias(float b, float x)
 {
-	return bezier(0.0, 1.0, 1.0, x);
+	return sqrt(x);
+	//return bezier(0.0, 0.0, 1.0, x);
 	//return x;
 	//return pow(x, log(b) / log(0.5));
 }

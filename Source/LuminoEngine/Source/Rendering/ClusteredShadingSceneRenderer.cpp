@@ -106,10 +106,22 @@ static float b3(float v1, float v2, float v3, float t)
 	return (1.0f - t)*(1.0f - t)*v1 + 2.0f * (1.0f - t)*t*v2 + t*t*v3;
 }
 
+static float b3_2(float v1, float v2, float v3, float t)
+{
+	return t*t*v3;
+}
+static float b3_r(float v1, float v2, float v3, float t)
+{
+	//return t*t*v3;
+	//return v3 / ( t * t);
+	return sqrt(t);
+}
+
 static float bias(float b, float x) { return pow(x, log(b) / log(0.5)); }
 //static float bias(float b, float x) { return x; }
 
 static float bias_x1(float x) { return b3(0.0, 0.0, 1.0, x); }
+static float bias_x1_r(float x) { return b3_r(0.0, 0.0, 1.0, x); }
 static float bias_x2(float x) { return b3(0.0, 1.0, 1.0, x); }
 
 
@@ -185,9 +197,18 @@ void LightClusters::addClusterSpherical(const Vector3& pos, float range)
 		}
 	}
 
+	//float aa1 = bias_x1(0.8);
+	//float aa2 = bias_x1(0.2);
+	//float aa3 = bias_x2(0.8);
+	//float aa4 = bias_x2(0.2);
+	//float bb1 = aa2 + aa3;
+	//float bb2 = aa1 + aa4;
+	//float cc1 = bias_x1_r(aa1);
+	////float cc2 = b3_2(0,0,1, aa1);
+
 	//for (float z = 0; z < 1.0f; z += 0.01)
 	//{
-	//	float cz = bias_x2(z); //z;// bias(biasBase, z);//1.0 - bias(1.0 - biasBase, 1.0 - z);
+	//	float cz = bias_x1_r(z); //z;// bias(biasBase, z);//1.0 - bias(1.0 - biasBase, 1.0 - z);
 	//	int i_cz = /*ClusterDepth - */(int)/*trunc*/(cz * ClusterDepth);
 	//	printf("%f (%f): %d\n", z, cz, i_cz);
 	//}
@@ -201,7 +222,9 @@ void LightClusters::addClusterSpherical(const Vector3& pos, float range)
 	//	// viewport.z > cluster range
 	//	float czn = bias_x1(cn);
 	//	float czf = bias_x1(cf);
-	//	printf("%d: %f:%f .. %f:%f\n", z, cn, czn, cf, czf);
+	//	//printf("%d: %f:%f r:%f\n", z, cn, czn, bias_x2(czn));
+	//	printf("%d: %f .. %f\n", z, czn, czf);
+	//	//printf("%d: %f:%f .. %f:%f\n", z, cn, czn, cf, czf);
 	//}
 }
 
@@ -256,7 +279,7 @@ void ClusteredShadingGeometryRenderingPass::initialize()
 
 	//m_defaultShader = GraphicsManager::getInstance()->getBuiltinShader(BuiltinShader::LegacyDiffuse);
 
-	m_defaultShader = Shader::create(_T("C:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/ClusteredShadingDefault.fx"), ShaderCodeType::RawIR);
+	m_defaultShader = Shader::create(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/ClusteredShadingDefault.fx"), ShaderCodeType::RawIR);
 }
 
 Shader* ClusteredShadingGeometryRenderingPass::getDefaultShader() const
@@ -314,16 +337,16 @@ void ClusteredShadingSceneRenderer::collect()
 	SceneRenderer::collect();
 
 
-	m_lightClusters.addPointLight(Vector3(0, 0, 0), 5, Color::White);
-	//m_lightClusters.addPointLight(Vector3(5, 0, 5), 2, Color::Red);
-	//m_lightClusters.addPointLight(Vector3(-5, 0, 5), 3, Color::Blue);
-	//m_lightClusters.addPointLight(Vector3(5, 0, -5), 4, Color::Green);
-	//m_lightClusters.addPointLight(Vector3(-5, 0, -5), 5, Color::Yellow);
+	m_lightClusters.addPointLight(Vector3(0, 0, 0), 2, Color::White);
+	m_lightClusters.addPointLight(Vector3(5, 0, 5), 2, Color::Red);
+	m_lightClusters.addPointLight(Vector3(-5, 0, 5), 3, Color::Blue);
+	m_lightClusters.addPointLight(Vector3(5, 0, -5), 4, Color::Green);
+	m_lightClusters.addPointLight(Vector3(-5, 0, -5), 5, Color::Yellow);
 
-	//m_lightClusters.addPointLight(Vector3(7, 0, 0), 10, Color::Magenta);
-	//m_lightClusters.addPointLight(Vector3(-7, 0, 0), 4, Color::Cyan);
-	//m_lightClusters.addPointLight(Vector3(0, 0, 7), 10, Color::AliceBlue);
-	//m_lightClusters.addPointLight(Vector3(0, 0, -7), 2, Color::BlueViolet);
+	m_lightClusters.addPointLight(Vector3(7, 0, 0), 3, Color::Magenta);
+	m_lightClusters.addPointLight(Vector3(-7, 0, 0), 4, Color::Cyan);
+	m_lightClusters.addPointLight(Vector3(0, 0, 7), 3, Color::AliceBlue);
+	m_lightClusters.addPointLight(Vector3(0, 0, -7), 2, Color::BlueViolet);
 
 
 	m_lightClusters.endMakeClusters();
