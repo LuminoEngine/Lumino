@@ -170,13 +170,18 @@ static float dz = 255.0 / sz;
 
 static float2 LightInfoTextureSize = float2(4, 64);
 
-float bias(float b, float x)
+
+float bezier(float v1, float v2, float v3, float t)
 {
-	//return x;
-	return pow(x, log(b) / log(0.5));
+	return (1.0f - t)*(1.0f - t)*v1 + 2.0f * (1.0f - t)*t*v2 + t*t*v3;
 }
 
-
+float bias(float b, float x)
+{
+	return bezier(0.0, 1.0, 1.0, x);
+	//return x;
+	//return pow(x, log(b) / log(0.5));
+}
 
 struct PointLight
 {

@@ -101,8 +101,17 @@ void LightClusters::endMakeClusters()
 	m_lightInfoTexture->setMappedData(&m_lightInofs[0]);
 }
 
+static float b3(float v1, float v2, float v3, float t)
+{
+	return (1.0f - t)*(1.0f - t)*v1 + 2.0f * (1.0f - t)*t*v2 + t*t*v3;
+}
+
 static float bias(float b, float x) { return pow(x, log(b) / log(0.5)); }
 //static float bias(float b, float x) { return x; }
+
+static float bias_x1(float x) { return b3(0.0, 0.0, 1.0, x); }
+static float bias_x2(float x) { return b3(0.0, 1.0, 1.0, x); }
+
 
 void LightClusters::addClusterSpherical(const Vector3& pos, float range)
 {
@@ -163,8 +172,8 @@ void LightClusters::addClusterSpherical(const Vector3& pos, float range)
 						float cn = zs * z;
 						float cf = zs * (z + 1);
 
-						float czn = bias(biasBase, /*1.0f - */cn);
-						float czf = bias(biasBase, /*1.0f - */cf);
+						float czn = bias_x1(cn);
+						float czf = bias_x1(cf);
 						//printf("%f\n", czn);
 						if (vpZf > czn && vpZn < czf)
 						{
@@ -176,24 +185,24 @@ void LightClusters::addClusterSpherical(const Vector3& pos, float range)
 		}
 	}
 
-	for (float z = 0; z < 1.0f; z += 0.001)
-	{
-		float cz = bias(1.0-biasBase, z); //z;// bias(biasBase, z);//1.0 - bias(1.0 - biasBase, 1.0 - z);
-		int i_cz = /*ClusterDepth - */(int)/*trunc*/(cz * ClusterDepth);
-		printf("%f (%f): %d\n", z, cz, i_cz);
-	}
+	//for (float z = 0; z < 1.0f; z += 0.01)
+	//{
+	//	float cz = bias_x2(z); //z;// bias(biasBase, z);//1.0 - bias(1.0 - biasBase, 1.0 - z);
+	//	int i_cz = /*ClusterDepth - */(int)/*trunc*/(cz * ClusterDepth);
+	//	printf("%f (%f): %d\n", z, cz, i_cz);
+	//}
 
-	for (int z = 0; z < ClusterDepth; z++)
-	{
-		// index -> viewport.z
-		float cn = zs * z;
-		float cf = zs * (z + 1);
+	//for (int z = 0; z < ClusterDepth; z++)
+	//{
+	//	// index -> viewport.z
+	//	float cn = zs * z;
+	//	float cf = zs * (z + 1);
 
-		// viewport.z > cluster range
-		float czn = bias(biasBase, /*1.0f - */cn);
-		float czf = bias(biasBase, /*1.0f - */cf);
-		printf("%d: %f .. %f\n", z, czn, czf);
-	}
+	//	// viewport.z > cluster range
+	//	float czn = bias_x1(cn);
+	//	float czf = bias_x1(cf);
+	//	printf("%d: %f:%f .. %f:%f\n", z, cn, czn, cf, czf);
+	//}
 }
 
 void LightClusters::addClusterData(int x, int y, int z, int lightId)
@@ -247,7 +256,7 @@ void ClusteredShadingGeometryRenderingPass::initialize()
 
 	//m_defaultShader = GraphicsManager::getInstance()->getBuiltinShader(BuiltinShader::LegacyDiffuse);
 
-	m_defaultShader = Shader::create(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/ClusteredShadingDefault.fx"), ShaderCodeType::RawIR);
+	m_defaultShader = Shader::create(_T("C:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/ClusteredShadingDefault.fx"), ShaderCodeType::RawIR);
 }
 
 Shader* ClusteredShadingGeometryRenderingPass::getDefaultShader() const
