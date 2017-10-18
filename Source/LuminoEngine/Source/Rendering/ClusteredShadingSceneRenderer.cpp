@@ -340,12 +340,12 @@ void ClusteredShadingSceneRenderer::collect()
 	m_lightClusters.addPointLight(Vector3(0, 0, 0), 2, Color::White);
 	m_lightClusters.addPointLight(Vector3(5, 0, 5), 2, Color::Red);
 	m_lightClusters.addPointLight(Vector3(-5, 0, 5), 3, Color::Blue);
-	m_lightClusters.addPointLight(Vector3(5, 0, -5), 4, Color::Green);
-	m_lightClusters.addPointLight(Vector3(-5, 0, -5), 5, Color::Yellow);
+	m_lightClusters.addPointLight(Vector3(5, 0, -5), 1, Color::Green);
+	m_lightClusters.addPointLight(Vector3(-5, 0, -5), 1, Color::Yellow);
 
-	m_lightClusters.addPointLight(Vector3(7, 0, 0), 3, Color::Magenta);
-	m_lightClusters.addPointLight(Vector3(-7, 0, 0), 4, Color::Cyan);
-	m_lightClusters.addPointLight(Vector3(0, 0, 7), 3, Color::AliceBlue);
+	m_lightClusters.addPointLight(Vector3(7, 0, 0), 5, Color::Magenta);
+	m_lightClusters.addPointLight(Vector3(-7, 0, 0), 1, Color::Cyan);
+	m_lightClusters.addPointLight(Vector3(0, 0, 7), 1, Color::AliceBlue);
 	m_lightClusters.addPointLight(Vector3(0, 0, -7), 2, Color::BlueViolet);
 
 

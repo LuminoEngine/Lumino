@@ -157,31 +157,12 @@ LN_VSOutput_ClusteredForward _LN_ProcessVertex_ClusteredForward(LN_VSInput input
 
 
 
-
-
-
-static float sx = 16.0;
-static float sy = 16.0;
-static float sz = 32.0;
-
-static float dx = 255.0 / sx;
-static float dy = 255.0 / sy;
-static float dz = 255.0 / sz;
-
 static float2 LightInfoTextureSize = float2(4, 64);
 
-
-float bezier(float v1, float v2, float v3, float t)
+// LightClusters の bias の逆変換
+float _LN_FlustumClustereDepthBias(float z)
 {
-	return (1.0f - t)*(1.0f - t)*v1 + 2.0f * (1.0f - t)*t*v2 + t*t*v3;
-}
-
-float bias(float b, float x)
-{
-	return sqrt(x);
-	//return bezier(0.0, 0.0, 1.0, x);
-	//return x;
-	//return pow(x, log(b) / log(0.5));
+	return sqrt(z);
 }
 
 struct PointLight
@@ -243,51 +224,24 @@ float3 Square(float3 x)
 
 float4 _LN_ProcessPixel_ClusteredForward(LN_PSInput_Common common, LN_PSInput_ClusteredForward extra, LN_SurfaceOutput surface)
 {
-	
-	
-	//float4 cp4 = mul(float4(5, 0, -10, 1), view);
-	//return float4(0, 0, cp4.z / 10.0, 1);
-	
-	//return float4(p.Pos2 / 10.0, 1.0f);
-	
-	
-	float4 worldPos =  mul(float4(extra.VertexPos, 1.0f), ln_World);
-
-	
-	// View base
-	//float4 cp = mul(float4(p.Pos2, 1.0f), view);//ln_World * ln_View);
-	float4 cp = mul(worldPos, ln_View);
-	cp.z /= cp.w;
-	float cz = (cp.z - ln_nearClip) / (ln_farClip - ln_nearClip);//cp.z / far; //
-	//return float4(0, 0, cz, 1);
-	
-	//return float4(0, 0, bias(0.1, cz), 1);
+	float4 worldPos = float4(extra.WorldPos, 1.0f);
+	float4 viewPos = mul(worldPos, ln_View);
+	float depth = (viewPos.z - ln_nearClip) / (ln_farClip - ln_nearClip);
 	
 	float4 vp = mul(float4(extra.VertexPos, 1.0f), ln_WorldViewProjection);
 	vp.xyz /= vp.w;
 	
-	float i_cx = trunc((((vp.x + 1.0) / 2.0) * 255.0) / sx);
-	float i_cy = trunc((((vp.y + 1.0) / 2.0) * 255.0) / sy);
-	float i_cz = trunc(bias(0.9, cz) * sz);//trunc((cz * 255.0) / sz);
+	float cx = (vp.x + 1.0) / 2.0;
+	float cy = (vp.y + 1.0) / 2.0;
+	float cz = _LN_FlustumClustereDepthBias(depth);
 	
+	float4 cluster = tex3D(clustersSampler, float3(cx, cy, cz));
+	float lightIndices[4] = {cluster.r, cluster.g, cluster.b, cluster.a};
 	
 	
 	float4 mc = surface.Albedo;// * ln_ColorScale;//(tex2D(MaterialTextureSampler, p.UV) * p.Color) * ln_ColorScale;
 	
-	float3 clus = float3(i_cx / dx, i_cy / dy, i_cz / sz);
-	//clus.z = bias(0.9, clus.z);
-	
-	//clus.x = 0; clus.y = 0;
-	//clus.z *= 2;
-	//clus.z = cz;
-	
-	//float3 clus = float3(0, 0, p.ViewportPos_z);
-	float4 c = tex3D(clustersSampler, clus);	// TODO: 0.5 オフセット調整が必要かも
-	
-	
-	float4 c2 = float4(clus, 1);
-	
-	float lightIndices[4] = {c.r, c.g, c.b, c.a};
+
 	
 	
 	float3 result = float3(0, 0, 0);
