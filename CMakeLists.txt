@@ -29,12 +29,18 @@ option(LN_USE_EXTERNAL_Effekseer "" ON)
 # Architecture.
 #option(LN_BUILD_X64 "Architecture." OFF)
 
+#
+option(LN_BUILD_CORE_ONLY "Build Core only." OFF)
+
 #-------------------------------------------------------------------------------
 set(LN_DEPENDENCIES_DEBUG_OUTPUT_DIR ${LN_LIB_DEBUG_OUTPUT_ROOT_DIR})
 set(LN_DEPENDENCIES_RELEASE_OUTPUT_DIR ${LN_LIB_RELEASE_OUTPUT_ROOT_DIR})
 set(LN_DEPENDENCIES_POSTFIX "")
 set(LN_DEPENDENCIES_INCLUDE_DIRECTORIES "")
-add_subdirectory(External)
+
+if (NOT LN_BUILD_CORE_ONLY)
+	add_subdirectory(External)
+endif()
 
 #-------------------------------------------------------------------------------
 # 
@@ -47,47 +53,50 @@ macro(ln_add_common_property projectName)
 	set_target_properties(${projectName} PROPERTIES PREFIX "")
 endmacro()
 
-#-------------------------------------------------------------------------------
-# External
-#-------------------------------------------------------------------------------
-
-add_subdirectory(Source/LuminoCore)
-
-add_subdirectory(Source/Fluorite)
-
-add_subdirectory(Source/LuminoEngine)
-
-add_subdirectory(Source/LuminoExperimental)
-
-add_subdirectory(Source/LuminoLaunch)
-
-add_subdirectory(Samples)
-
-#-------------------------------------------------------------------------------
-# Output
-#-------------------------------------------------------------------------------
-add_definitions(-DLUMINO_ROOT_DIR="${CMAKE_SOURCE_DIR}")
-
 if (LN_EXCEPTION_BACKTRACE)
 	add_definitions(-DLN_EXCEPTION_BACKTRACE)
 endif()
 
-#------------------------------
-# library. (Unicode)
-if (LN_USE_EXTERNAL_Effekseer)
-	add_definitions(-DLN_USE_EXTERNAL_Effekseer)
+#-------------------------------------------------------------------------------
+# Output
+#-------------------------------------------------------------------------------
+
+add_subdirectory(Source/LuminoCore)
+
+if (NOT LN_BUILD_CORE_ONLY)
+
+	add_subdirectory(Source/Fluorite)
+
+	add_subdirectory(Source/LuminoEngine)
+
+	add_subdirectory(Source/LuminoExperimental)
+
+	add_subdirectory(Source/LuminoLaunch)
+
+	add_subdirectory(Samples)
+
+
+
+	add_definitions(-DLUMINO_ROOT_DIR="${CMAKE_SOURCE_DIR}")
+
+	#------------------------------
+	# library. (Unicode)
+	if (LN_USE_EXTERNAL_Effekseer)
+		add_definitions(-DLN_USE_EXTERNAL_Effekseer)
+	endif()
+
+	#------------------------------
+	#
+	add_subdirectory(Bindings/Runtime)
+	#add_subdirectory(Bindings/C/Test)
+	if (MSVC)
+		#add_subdirectory(tools/ArchiveMaker)
+	endif()
+
+	if (NOT LN_USE_UNICODE_CHAR_SET)
+		#add_subdirectory(tools/LNSL)
+		add_subdirectory(tools/LWIG)
+	endif()
 endif()
 
-#------------------------------
-#
-add_subdirectory(Bindings/Runtime)
-#add_subdirectory(Bindings/C/Test)
-if (MSVC)
-	#add_subdirectory(tools/ArchiveMaker)
-endif()
-
-if (NOT LN_USE_UNICODE_CHAR_SET)
-	#add_subdirectory(tools/LNSL)
-	add_subdirectory(tools/LWIG)
-endif()
 
