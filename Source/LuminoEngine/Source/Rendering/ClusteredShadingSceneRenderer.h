@@ -36,7 +36,7 @@ private:
 	{
 		Vector4 posAndRange;	// xyz=pos, w=range
 		Vector4	spotDirection;	// xyz=dir, w=NotUse
-		Vector4	spotAngle;		// x > 0 is spot light. x=cos(OuterCone), y=1.0/cos(ConeDifference), zw=NotUse
+		Vector4	spotAngle;		// x > 0 is spot light. x=cos(outerRadius), y=1.0/cos(innerRadius), zw=NotUse
 		Color	color;
 	};
 

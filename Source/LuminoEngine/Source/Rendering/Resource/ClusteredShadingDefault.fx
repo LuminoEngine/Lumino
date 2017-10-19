@@ -88,7 +88,7 @@ LN_VSOutput_Common _LN_ProcessVertex_Common(LN_VSInput input)
 
 
 //------------------------------------------------------------------------------
-// ClusteredForward
+// Lib (ClusteredForward)
 
 
 struct LN_VSOutput_ClusteredForward
@@ -189,15 +189,14 @@ PointLight LN_GetPointLight(int index)
 
 /** 
  * Calculates attenuation for a spot light.
- * L normalize vector to light. 
- * SpotDirection is the direction of the spot light.
- * SpotAngles.x is CosOuterCone, SpotAngles.y is InvCosConeDifference. 
+ * toLight			: normalize vector to light. 
+ * spotDirection	: the direction of the spot light.
+ * spotAngles		: x=cos(outerRadius), y=1.0/cos(innerRadius)
  */
-float SpotAttenuation(float3 L, float3 SpotDirection, float2 SpotAngles)
+float _LN_CalculateSpotAttenuation(float3 toLight, float3 spotDirection, float2 spotAngles)
 {
-	float t = saturate((dot(L, -SpotDirection) - SpotAngles.x) * SpotAngles.y);
-	float ConeAngleFalloff = t*t;
-	return ConeAngleFalloff;
+	float t = saturate((dot(toLight, -spotDirection) - spotAngles.x) * spotAngles.y);
+	return t * t;
 }
 
 
@@ -279,7 +278,7 @@ float4 _LN_ProcessPixel_ClusteredForward(LN_PSInput_Common common, LN_PSInput_Cl
 				float3 L = normalize(light.pos.xyz - worldPos.xyz);
 				float3 SpotDirection = float3(1, 0, 0);
 				float2 SpotAngle = float2(cos(3.14 / 3), 1.0 / cos(3.14 / 4));
-				result += SpotAttenuation(L, SpotDirection, SpotAngle) * LightRadiusMask;
+				result += _LN_CalculateSpotAttenuation(L, SpotDirection, SpotAngle) * LightRadiusMask;
 			}
 			else
 			{
