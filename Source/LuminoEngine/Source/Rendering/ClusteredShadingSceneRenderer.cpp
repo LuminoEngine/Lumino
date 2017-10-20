@@ -73,7 +73,7 @@ void LightClusters::addPointLight(const Vector3& pos, float range, const Color& 
 
 void LightClusters::addSpotLight(const Vector3& pos, float range, const Vector3& direction, float outerRadius, float innerRadius, const Color& color)
 {
-	// TODO: とりあえず球と同じ方法でクラスタ化。最悪パターンの想定なので、一般的にはかなり無駄が多い。
+	// TODO: とりあえず球と同じ方法でクラスタ化。最悪パターンの想定なので不足は無いが、かなり無駄が多い。
 	addClusterSpherical(pos, range);
 
 	LightInfo info;
