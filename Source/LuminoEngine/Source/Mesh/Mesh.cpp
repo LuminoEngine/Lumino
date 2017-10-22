@@ -410,14 +410,14 @@ void MeshResource::addPlane(const Vector2& size, int sliceH, int sliceV)
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::addBox(const Vector3& size)
+void MeshResource::addBox(const Vector3& size, const Matrix& transform)
 {
 	int startIndex = getVertexCount();
 	if (LN_ENSURE(startIndex <= UINT16_MAX)) return;
 
 	// setup factory
 	detail::RegularBoxMeshFactory factory;
-	factory.initialize(size, Color::White, Matrix::Identity);
+	factory.initialize(size, Color::White, transform);
 
 	// alloc buffers, generate mesh
 	Vertex* vb = (Vertex*)requestVertexBufferForAdditional(factory.getVertexCount(), VB_BasicVertices);
@@ -426,14 +426,14 @@ void MeshResource::addBox(const Vector3& size)
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::addSphere(float radius, int slices, int stacks)
+void MeshResource::addSphere(float radius, int slices, int stacks, const Matrix& transform)
 {
 	int startIndex = getVertexCount();
 	if (LN_ENSURE(startIndex <= UINT16_MAX)) return;
 
 	// setup factory
 	detail::RegularSphereMeshFactory factory;
-	factory.initialize(radius, slices, stacks, Color::White, Matrix::Identity);
+	factory.initialize(radius, slices, stacks, Color::White, transform);
 
 	// alloc buffers, generate mesh
 	Vertex* vb = (Vertex*)requestVertexBufferForAdditional(factory.getVertexCount(), VB_BasicVertices);

@@ -213,4 +213,70 @@ void Rectangle::onRender2(RenderingContext* renderer)
 		Vector3(m_rect.getBottomRight(), 0), Vector2(1, 1), Color::White);
 }
 
+//==============================================================================
+// CornellBox
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(CornellBox, StaticMeshComponent);
+
+Ref<CornellBox> CornellBox::create()
+{
+	return newObject<CornellBox>();
+}
+
+CornellBox::CornellBox()
+{
+}
+
+CornellBox::~CornellBox()
+{
+}
+
+void CornellBox::initialize()
+{
+	auto boxMesh = MeshResource::create(4, 6, MeshCreationFlags::None);
+
+	// front
+	boxMesh->addSquare(
+		Vertex{ Vector3(-10, 20, 10), Vector2(0, 0), Vector3(0, 0, 1), Color::White },
+		Vertex{ Vector3(-10, 0, 10), Vector2(0, 0), Vector3(0, 0, 1), Color::White },
+		Vertex{ Vector3(10, 0, 10), Vector2(0, 0), Vector3(0, 0, 1), Color::White },
+		Vertex{ Vector3(10, 20, 10), Vector2(0, 0), Vector3(0, 0, 1), Color::White });
+	// up
+	boxMesh->addSquare(
+		Vertex{ Vector3(-10, 20, -10), Vector2(0, 0), Vector3(0, 0, 1), Color::White },
+		Vertex{ Vector3(-10, 20, 10), Vector2(0, 0), Vector3(0, 0, 1), Color::White },
+		Vertex{ Vector3(10, 20, 10), Vector2(0, 0), Vector3(0, 0, 1), Color::White },
+		Vertex{ Vector3(10, 20, -10), Vector2(0, 0), Vector3(0, 0, 1), Color::White });
+	// down
+	boxMesh->addSquare(
+		Vertex{ Vector3(-10, 0, 10), Vector2(0, 0), Vector3(0, 0, 1), Color::White },
+		Vertex{ Vector3(-10, 0, -10), Vector2(0, 0), Vector3(0, 0, 1), Color::White },
+		Vertex{ Vector3(10, 0, -10), Vector2(0, 0), Vector3(0, 0, 1), Color::White },
+		Vertex{ Vector3(10, 0, 10), Vector2(0, 0), Vector3(0, 0, 1), Color::White });
+	// left
+	boxMesh->addSquare(
+		Vertex{ Vector3(-10, 20, -10), Vector2(0, 0), Vector3::UnitX, Color::Red },
+		Vertex{ Vector3(-10, 0, -10), Vector2(0, 0), Vector3::UnitX, Color::Red },
+		Vertex{ Vector3(-10, 0, 10), Vector2(0, 0), Vector3::UnitX, Color::Red },
+		Vertex{ Vector3(-10, 20, 10), Vector2(0, 0), Vector3::UnitX, Color::Red });
+	// right
+	boxMesh->addSquare(
+		Vertex{ Vector3(10, 20, 10), Vector2(0, 0), -Vector3::UnitX, Color::Green },
+		Vertex{ Vector3(10, 0, 10), Vector2(0, 0), -Vector3::UnitX, Color::Green },
+		Vertex{ Vector3(10, 0, -10), Vector2(0, 0), -Vector3::UnitX, Color::Green },
+		Vertex{ Vector3(10, 20, -10), Vector2(0, 0), -Vector3::UnitX, Color::Green });
+
+
+	boxMesh->addBox(Vector3(4, 12, 4), Matrix::makeTranslation(-3, 6, 2));
+
+	boxMesh->addSphere(3, 16, 16, Matrix::makeTranslation(4, 3, 0));
+
+	auto mesh = newObject<StaticMeshModel>(boxMesh);
+
+	auto material = Material::create();
+	material->setMaterialTexture(Texture2D::getWhiteTexture());
+	mesh->addMaterial(material);
+	StaticMeshComponent::initialize(mesh);
+}
+
 LN_NAMESPACE_END

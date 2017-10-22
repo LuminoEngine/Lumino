@@ -240,7 +240,6 @@ float4 _LN_ProcessPixel_ClusteredForward(LN_PSInput_Common common, LN_PSInput_Cl
 	
 	float4 mc = surface.Albedo;// * ln_ColorScale;//(tex2D(MaterialTextureSampler, p.UV) * p.Color) * ln_ColorScale;
 	
-
 	
 	
 	float3 result = float3(0, 0, 0);
@@ -296,6 +295,9 @@ float4 _LN_ProcessPixel_ClusteredForward(LN_PSInput_Common common, LN_PSInput_Cl
 	if (lightIndices[2] > 0) result.b += 1;
 #endif
 	
+	// 環境色
+	result += 0.5;
+	
 	return float4(mc.xyz * result, mc.a);
 	
 	
@@ -331,7 +333,7 @@ sampler		MaterialTextureSampler = sampler_state
 // Surface Shader
 void MySSMain(MySSInput input, inout LN_SurfaceOutput output)
 {
-	output.Albedo = (tex2D(MaterialTextureSampler, input.UV));// * p.Color);
+	output.Albedo = (tex2D(MaterialTextureSampler, input.UV)) * input.Color;
 	//output.Albedo = float4(1, 0, 0, 1);
 }
 

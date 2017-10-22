@@ -665,10 +665,14 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 	Material* mat2 = planeMesh->getStaticMeshModel()->m_materials->getAt(0);
 	mat2->setMaterialTexture(tex1);
 	//mat2->setShader(clusterdShader);
-	auto planeObj1 = newObject<WorldObject3D>();
-	planeObj1->addComponent(planeMesh);
+	//auto planeObj1 = newObject<WorldObject3D>();
+	//planeObj1->addComponent(planeMesh);
 
+	auto cornellBox = CornellBox::create();
+	auto cornellBoxObj = newObject<WorldObject3D>();
+	cornellBoxObj->addComponent(cornellBox);
 
+	Engine::getCamera3D()->setPosition(0, 10, -30);
 
 #if 0
 
