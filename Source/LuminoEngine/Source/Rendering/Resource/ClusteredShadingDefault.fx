@@ -227,6 +227,9 @@ float4 _LN_ProcessPixel_ClusteredForward(LN_PSInput_Common common, LN_PSInput_Cl
 	float4 viewPos = mul(worldPos, ln_View);
 	float depth = (viewPos.z - ln_nearClip) / (ln_farClip - ln_nearClip);
 	
+	return float4(depth, 0, 0, 1);
+	
+	
 	float4 vp = mul(float4(extra.VertexPos, 1.0f), ln_WorldViewProjection);
 	vp.xyz /= vp.w;
 	

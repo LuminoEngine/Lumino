@@ -4,6 +4,7 @@
 #include <LuminoEngine.h>
 #include <Lumino/Testing/TestHelper.h>
 #include <Lumino/Scene/OffscreenWorldView.h>
+#include <Lumino/Rendering/SSAOImageEffect.h>
 
 using namespace ln;
 
@@ -287,6 +288,12 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 	//auto particle2 = ParticleEmitter3D::create(m2);
 	//particle2->SetBlendMode(BlendMode::Add);
 #endif
+
+
+	auto ssao = newObject<SSAOImageEffect>();
+	Engine::getDefault3DLayer()->addPostEffect(ssao);
+	Engine::getCamera3D()->getCameraComponent()->setFarClip(100);
+
 
 	auto ps1 = TransitionPostEffect::create();
 	Engine::getDefault3DLayer()->addPostEffect(ps1);

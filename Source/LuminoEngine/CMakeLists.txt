@@ -300,6 +300,7 @@ set(LN_SOURCES_Rendering
 	Include/Lumino/Rendering/RenderingContext.h
 	Include/Lumino/Rendering/RenderView.h
 	Include/Lumino/Rendering/SceneRenderer.h
+	Include/Lumino/Rendering/SSAOImageEffect.h
 	Source/Rendering/ClusteredShadingSceneRenderer.cpp
 	Source/Rendering/ClusteredShadingSceneRenderer.h
 	Source/Rendering/DrawingContext.cpp
@@ -320,6 +321,7 @@ set(LN_SOURCES_Rendering
 	Source/Rendering/ShapesRenderFeature.h
 	Source/Rendering/SpriteRenderFeature.cpp
 	Source/Rendering/SpriteRenderFeature.h
+	Source/Rendering/SSAOImageEffect.cpp
 )
 
 set(LN_SOURCES_Effect
