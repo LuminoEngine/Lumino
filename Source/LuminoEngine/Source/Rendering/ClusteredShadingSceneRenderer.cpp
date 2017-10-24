@@ -280,11 +280,21 @@ void ClusteredShadingGeometryRenderingPass::initialize()
 	//m_defaultShader = GraphicsManager::getInstance()->getBuiltinShader(BuiltinShader::LegacyDiffuse);
 
 	m_defaultShader = Shader::create(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/ClusteredShadingDefault.fx"), ShaderCodeType::RawIR);
+
+
+	m_normalRenderTarget = Ref<RenderTargetTexture>::makeRef();
+	m_normalRenderTarget->createImpl(GraphicsManager::getInstance(), SizeI(640, 480), 1, TextureFormat::R8G8B8X8);
 }
 
 Shader* ClusteredShadingGeometryRenderingPass::getDefaultShader() const
 {
 	return m_defaultShader;
+}
+RenderTargetTexture* g_m_normalRenderTarget = nullptr;
+void ClusteredShadingGeometryRenderingPass::onBeginPass(DefaultStatus* defaultStatus)
+{
+	g_m_normalRenderTarget = m_normalRenderTarget;
+	defaultStatus->defaultRenderTarget[1] = m_normalRenderTarget;
 }
 
 ShaderPass* ClusteredShadingGeometryRenderingPass::selectShaderPass(Shader* shader)

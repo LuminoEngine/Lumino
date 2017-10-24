@@ -16,6 +16,7 @@ namespace detail {
 class RenderingPass2;
 class DrawElement;
 class DrawElementList;
+struct DefaultStatus;
 
 /**
 	@brief	シーンの描画方法を定義し、描画コマンドを実行します。
@@ -93,6 +94,9 @@ public:
 
 	//virtual void RenderElement(DrawList* renderer, DrawElement* element);
 	//virtual void RenderElementSubset(DrawList* renderer, DrawElement* element, int subsetIndex);
+
+
+	virtual void onBeginPass(DefaultStatus* defaultStatus);
 
 protected:
 	//virtual ShaderTechnique* selectShaderTechnique(Shader* shader);

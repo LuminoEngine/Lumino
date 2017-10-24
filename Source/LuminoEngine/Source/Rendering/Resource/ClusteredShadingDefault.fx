@@ -371,8 +371,18 @@ struct _PS_Input
 	MySSInput						User;	// ★ MyVFMain() の最後の引数をパースして得る
 };
 
+struct OUTPUT_PS {
+   float4 color0 : COLOR0;
+   float4 color1 : COLOR1;
+};
+
+float3 _LN_PackNormalToColor(float3 n)
+{
+	return (n + 1.0) / 2.0;
+}
+
 // auto generation
-float4 _PS_ClusteredForward_Geometry(_PS_Input input) : COLOR0
+OUTPUT_PS _PS_ClusteredForward_Geometry(_PS_Input input)
 {
 	LN_SurfaceOutput surface;
 	_LN_InitSurfaceOutput(input.Common, surface);
@@ -380,7 +390,11 @@ float4 _PS_ClusteredForward_Geometry(_PS_Input input) : COLOR0
 	
 	// ★ライティングのコードはここに直接生成する (GBuffer生成などではマルチRT書き込みするため、戻り値も変えなければならない)
 	// ・・・というより、ピクセルシェーダ全体を生成する。フラグメントの結合じゃダメ。
-	return _LN_ProcessPixel_ClusteredForward(input.Common, input.Extra, surface);
+	
+	OUTPUT_PS o;
+	o.color0 = _LN_ProcessPixel_ClusteredForward(input.Common, input.Extra, surface);
+	o.color1 = float4(_LN_PackNormalToColor(input.Common.Normal), 0);
+	return o;
 }
 
 //------------------------------------------------------------------------------

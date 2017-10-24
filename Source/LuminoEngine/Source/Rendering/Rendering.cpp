@@ -471,15 +471,16 @@ void BatchState::applyStatus(InternalContext* context, CombinedMaterial* combine
 
 		for (int i = 0; i < Graphics::MaxMultiRenderTargets; ++i)
 		{
-			RenderTargetTexture* target;
-			if (i == 0 && m_renderTargets[i] == nullptr)
-			{
-				target = defaultStatus.defaultRenderTarget;
-			}
-			else
-			{
-				target = m_renderTargets[i];
-			}
+			RenderTargetTexture* target = m_renderTargets[i];
+			if (!target) target = defaultStatus.defaultRenderTarget[i];
+			//if (i == 0 && m_renderTargets[i] == nullptr)
+			//{
+			//	target = defaultStatus.defaultRenderTarget;
+			//}
+			//else
+			//{
+			//	target = m_renderTargets[i];
+			//}
 			stateManager->setRenderTarget(i, target);
 
 			if (i == 0)

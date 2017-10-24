@@ -10,6 +10,12 @@
 
 LN_NAMESPACE_BEGIN
 
+namespace detail
+{
+
+	extern RenderTargetTexture* g_m_normalRenderTarget;
+}
+
 //==============================================================================
 // SSAOImageEffect
 //==============================================================================
@@ -36,6 +42,7 @@ void SSAOImageEffect::onRender(DrawList* context, RenderTargetTexture* source, R
 {
 	//if (Tone != Vector4::Zero)
 	{
+		m_material->setTextureParameter(_T("normalDepth"), detail::g_m_normalRenderTarget);
 		//printf("ToneImageEffect::onRender %p > %p\n", source, destination);
 		//m_material->setVectorParameter(_LT("_Tone"), m_tone);
 		context->blit(source, destination, m_material);

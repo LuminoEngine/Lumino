@@ -63,7 +63,7 @@ class SceneRenderer;
 
 struct DefaultStatus
 {
-	RenderTargetTexture*	defaultRenderTarget;
+	RenderTargetTexture*	defaultRenderTarget[4];
 	DepthBuffer*			defaultDepthBuffer;
 	//BlendMode				blendMode;
 	//CullingMode				cullingMode;

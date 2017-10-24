@@ -62,11 +62,14 @@ public:
 
 	virtual Shader* getDefaultShader() const override;
 
+	virtual void onBeginPass(DefaultStatus* defaultStatus) override;
+
 protected:
 	virtual ShaderPass* selectShaderPass(Shader* shader) override;
 
 private:
 	Ref<Shader>		m_defaultShader;
+	Ref<RenderTargetTexture>	m_normalRenderTarget;
 };
 
 class ClusteredShadingSceneRenderer

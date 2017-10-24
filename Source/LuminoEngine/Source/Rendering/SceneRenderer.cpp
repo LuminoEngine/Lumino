@@ -101,8 +101,15 @@ void SceneRenderer::render(
 	drawArgs.defaultDepthBuffer = defaultDepthBuffer;
 	drawArgs.diag = diag;
 
+	DefaultStatus defaultStatus;
+	defaultStatus.defaultRenderTarget[0] = defaultRenderTarget;
+	defaultStatus.defaultRenderTarget[1] = defaultStatus.defaultRenderTarget[2] = defaultStatus.defaultRenderTarget[3] = nullptr;
+	defaultStatus.defaultDepthBuffer = defaultDepthBuffer;
+
 	for (RenderingPass2* pass : m_renderingPassList)
 	{
+		pass->onBeginPass(&defaultStatus);
+
 		// DrawElement 描画
 		//int currentBatchIndex = -1;
 		DrawElementBatch* currentState = nullptr;
@@ -121,7 +128,7 @@ void SceneRenderer::render(
 				context->flush();
 				//currentBatchIndex = element->batchIndex;
 				currentState = batch;
-				context->applyStatus(currentState, { defaultRenderTarget, defaultDepthBuffer });
+				context->applyStatus(currentState, defaultStatus);
 				context->switchActiveRenderer(currentState->getRenderFeature());
 				if (diag != nullptr) diag->changeRenderStage();
 			}
@@ -536,6 +543,11 @@ void RenderingPass2::selectElementRenderingPolicy(DrawElement* element, Combined
 //{
 //	return shader->getTechniques().getAt(0)->getPasses().getAt(0);
 //}
+
+void RenderingPass2::onBeginPass(DefaultStatus* defaultStatus)
+{
+
+}
 
 ShaderPass* RenderingPass2::selectShaderPass(Shader* shader)
 {
