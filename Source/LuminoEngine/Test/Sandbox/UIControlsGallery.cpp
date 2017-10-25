@@ -11,10 +11,33 @@ using namespace ln;
 
 
 
+float tangent(Vector3 p, Vector3 s) {
+	return (p.z - s.z) / (s.getXY() - p.getXY()).getLength();
+}
 
 
 void UIControlsGallery()
 {
+	// へいたん
+	float tl1 = atan(tangent(Vector3(0.1, 0.1, 0.5), Vector3(0.1 + 0.5, 0.1, 0.5)));
+	float tr1 = atan(tangent(Vector3(0.1, 0.1, 0.5), Vector3(0.1 - 0.5, 0.1, 0.5)));
+	float d1 = ((tl1 + tr1) / Math::PI);	// 0.0
+
+	// おくへすぼむ
+	float tl2 = atan(tangent(Vector3(0.1, 0.1, 0.5), Vector3(0.1 + 0.5, 0.1, 0.25)));
+	float tr2 = atan(tangent(Vector3(0.1, 0.1, 0.5), Vector3(0.1 - 0.5, 0.1, 0.25)));
+	float d2 = ((tl2 + tr2) / Math::PI);	// 0.2
+
+	// おくへもっとすぼむ
+	float tl4 = atan(tangent(Vector3(0.1, 0.1, 0.5), Vector3(0.1 + 0.5, 0.1, 0.05)));
+	float tr4 = atan(tangent(Vector3(0.1, 0.1, 0.5), Vector3(0.1 - 0.5, 0.1, 0.05)));
+	float d4 = ((tl4 + tr4) / Math::PI);	// 0.4
+
+	// おくへひらく
+	float tl3 = atan(tangent(Vector3(0.1, 0.1, 0.5), Vector3(0.1 + 0.5, 0.1, 0.75)));
+	float tr3 = atan(tangent(Vector3(0.1, 0.1, 0.5), Vector3(0.1 - 0.5, 0.1, 0.75)));
+	float d3 = ((tl3 + tr3) / Math::PI);	// -0.2
+
 	EngineSettings::addAssetsDirectory(LN_LOCALFILE("../../../../Samples/Assets"));
 
 	Engine::initialize();
