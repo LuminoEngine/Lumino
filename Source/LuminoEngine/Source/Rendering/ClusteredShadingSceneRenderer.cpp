@@ -283,7 +283,7 @@ void ClusteredShadingGeometryRenderingPass::initialize()
 
 
 	m_normalRenderTarget = Ref<RenderTargetTexture>::makeRef();
-	m_normalRenderTarget->createImpl(GraphicsManager::getInstance(), SizeI(640, 480), 1, TextureFormat::R8G8B8X8);
+	m_normalRenderTarget->createImpl(GraphicsManager::getInstance(), SizeI(640, 480), 1, TextureFormat::R32G32B32A32_Float);
 }
 
 Shader* ClusteredShadingGeometryRenderingPass::getDefaultShader() const

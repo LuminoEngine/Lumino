@@ -180,9 +180,9 @@ void RenderLayer::updateFramebufferIfNeeded()
 			// TODO: できればこういうのは Resize 関数を作りたい。作り直したくない
 			// TODO: というか UE4 みたいにキャッシュしたい
 			m_primaryLayerTarget = Ref<RenderTargetTexture>::makeRef();
-			m_primaryLayerTarget->createImpl(detail::GraphicsManager::getInstance(), newSize, 1, TextureFormat::R8G8B8X8);
+			m_primaryLayerTarget->createImpl(detail::GraphicsManager::getInstance(), newSize, 1, TextureFormat::R32G32B32A32_Float);
 			m_secondaryLayerTarget = Ref<RenderTargetTexture>::makeRef();
-			m_secondaryLayerTarget->createImpl(detail::GraphicsManager::getInstance(), newSize, 1, TextureFormat::R8G8B8X8);
+			m_secondaryLayerTarget->createImpl(detail::GraphicsManager::getInstance(), newSize, 1, TextureFormat::R32G32B32A32_Float);
 
 			// DepthBuffer
 			m_depthBuffer = Ref<DepthBuffer>::makeRef();

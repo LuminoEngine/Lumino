@@ -38,6 +38,11 @@ void UIControlsGallery()
 	float tr3 = atan(tangent(Vector3(0.1, 0.1, 0.5), Vector3(0.1 - 0.5, 0.1, 0.75)));
 	float d3 = ((tl3 + tr3) / Math::PI);	// -0.2
 
+
+	float tl5 = atan(tangent(Vector3(0.1, 0.1, 0.5), Vector3(0.1 + 0.5, 0.1, 0.8)));
+	float tr5 = atan(tangent(Vector3(0.1, 0.1, 0.5), Vector3(0.1 - 0.5, 0.1, 0.3)));
+	float d5 = ((tl5 + tr5) / Math::PI);
+
 	EngineSettings::addAssetsDirectory(LN_LOCALFILE("../../../../Samples/Assets"));
 
 	Engine::initialize();

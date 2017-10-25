@@ -24,6 +24,8 @@ LN_CONSTRUCT_ACCESS:
 
 private:
 	Ref<Material>	m_material;
+	Ref<Material>	m_material2;
+	Ref<RenderTargetTexture>	m_ssaoRenderTarget;
 };
 
 LN_NAMESPACE_END

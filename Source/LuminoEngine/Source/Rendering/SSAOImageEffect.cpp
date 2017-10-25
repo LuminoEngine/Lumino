@@ -36,6 +36,12 @@ void SSAOImageEffect::initialize()
 
 	m_material = Object::makeRef<Material>();
 	m_material->setShader(Object::makeRef<Shader>(detail::GraphicsManager::getInstance(), _T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/SSAOImageEffect.fx")));
+	
+	m_material2 = Object::makeRef<Material>();
+	m_material2->setShader(Object::makeRef<Shader>(detail::GraphicsManager::getInstance(), _T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/SSAOImageEffectBlur.fx")));
+
+	m_ssaoRenderTarget = Ref<RenderTargetTexture>::makeRef();
+	m_ssaoRenderTarget->createImpl(detail::GraphicsManager::getInstance(), SizeI(640, 480), 1, TextureFormat::R8G8B8A8);
 }
 
 void SSAOImageEffect::onRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination)
@@ -45,7 +51,13 @@ void SSAOImageEffect::onRender(DrawList* context, RenderTargetTexture* source, R
 		m_material->setTextureParameter(_T("normalDepth"), detail::g_m_normalRenderTarget);
 		//printf("ToneImageEffect::onRender %p > %p\n", source, destination);
 		//m_material->setVectorParameter(_LT("_Tone"), m_tone);
-		context->blit(source, destination, m_material);
+		context->blit(source, m_ssaoRenderTarget, m_material);
+
+
+
+
+		m_material2->setTextureParameter(_T("_SsaoTexture"), m_ssaoRenderTarget);
+		context->blit(source, destination, m_material2);
 
 		//m_shader.varTone->setVector(Tone.Get());
 		//m_shader.varScreenTexture->setTexture(source);

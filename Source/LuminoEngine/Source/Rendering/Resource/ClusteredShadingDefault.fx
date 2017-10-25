@@ -227,7 +227,6 @@ float4 _LN_ProcessPixel_ClusteredForward(LN_PSInput_Common common, LN_PSInput_Cl
 	float4 viewPos = mul(worldPos, ln_View);
 	float depth = (viewPos.z - ln_nearClip) / (ln_farClip - ln_nearClip);
 	
-	return float4(depth, 0, 0, 1);
 	
 	
 	float4 vp = mul(float4(extra.VertexPos, 1.0f), ln_WorldViewProjection);
@@ -301,7 +300,7 @@ float4 _LN_ProcessPixel_ClusteredForward(LN_PSInput_Common common, LN_PSInput_Cl
 	// 環境色
 	result += 0.5;
 	
-	return float4(mc.xyz * result, mc.a);
+	return float4(mc.xyz * result, depth);//mc.a);
 	
 	
 	//return float4(1, 0, 0, 1);
@@ -393,7 +392,8 @@ OUTPUT_PS _PS_ClusteredForward_Geometry(_PS_Input input)
 	
 	OUTPUT_PS o;
 	o.color0 = _LN_ProcessPixel_ClusteredForward(input.Common, input.Extra, surface);
-	o.color1 = float4(_LN_PackNormalToColor(input.Common.Normal), 0);
+	o.color1 = float4(o.color0.a, 0, 0, 1);
+	o.color0.a = surface.Albedo.a;
 	return o;
 }
 
