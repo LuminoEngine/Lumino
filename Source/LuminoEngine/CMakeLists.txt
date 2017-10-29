@@ -293,6 +293,11 @@ set(LN_SOURCES_Graphics_Text
 	Source/Graphics/Text/VectorTextRenderFeature.h
 )
 
+set(LN_SOURCES_Shader
+	Source/Shader/LinaShader.cpp
+	Source/Shader/LinaShader.h
+)
+
 set(LN_SOURCES_Rendering
 	Include/Lumino/Rendering/Common.h
 	Include/Lumino/Rendering/DrawingContext.h
@@ -744,6 +749,7 @@ source_group("Physics"			FILES ${LN_SOURCES_Physics})
 source_group("Graphics"			FILES ${LN_SOURCES_Graphics})
 source_group("Graphics_Device"	FILES ${LN_SOURCES_Graphics_Device})
 source_group("Graphics_Text"	FILES ${LN_SOURCES_Graphics_Text})
+source_group("Shader"			FILES ${LN_SOURCES_Shader})
 source_group("Rendering"		FILES ${LN_SOURCES_Rendering})
 source_group("Effect"			FILES ${LN_SOURCES_Effect})
 source_group("Tilemap"			FILES ${LN_SOURCES_TileMap})
@@ -769,6 +775,7 @@ set(LN_SOURCES
 	${LN_SOURCES_Graphics}
 	${LN_SOURCES_Graphics_Device}
 	${LN_SOURCES_Graphics_Text}
+	${LN_SOURCES_Shader}
 	${LN_SOURCES_Rendering}
 	${LN_SOURCES_Effect}
 	${LN_SOURCES_TileMap}
