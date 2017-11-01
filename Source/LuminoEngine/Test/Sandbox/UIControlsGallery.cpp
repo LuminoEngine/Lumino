@@ -6,6 +6,8 @@
 #include <Lumino/Scene/OffscreenWorldView.h>
 #include <Lumino/Rendering/SSAOImageEffect.h>
 
+#include "../Source/Shader/LinaShader.h"
+
 using namespace ln;
 
 
@@ -18,6 +20,14 @@ float tangent(Vector3 p, Vector3 s) {
 
 void UIControlsGallery()
 {
+	auto buf = FileSystem::readAllBytes(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/ClusteredShadingDefault.fx"));
+	std::string code((const char*)buf.getConstData(), buf.getSize());
+	LinaShaderIRGenerater lsgen;
+	lsgen.initialize();
+	lsgen.loadRawHLSL(code);
+	lsgen.finalize();
+
+
 	// へいたん
 	float tl1 = atan(tangent(Vector3(0.1, 0.1, 0.5), Vector3(0.1 + 0.5, 0.1, 0.5)));
 	float tr1 = atan(tangent(Vector3(0.1, 0.1, 0.5), Vector3(0.1 - 0.5, 0.1, 0.5)));

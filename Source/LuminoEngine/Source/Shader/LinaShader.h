@@ -7,7 +7,9 @@ LN_NAMESPACE_BEGIN
 class LinaShaderIRGenerater
 {
 public:
-	LinaShader();
+	LinaShaderIRGenerater();
+	void initialize();
+	void finalize();
 
 	void loadRawHLSL(const std::string& code);
 

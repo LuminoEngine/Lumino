@@ -52,6 +52,9 @@ public:
 	/** 文字列が一致するか */
 	bool EqualGroupAndString(TokenGroup group, const char* str, int len = -1) const;
 
+	void setValid(bool valid) { m_valid = valid; }
+	bool isValid() const { return m_valid; }
+
 LN_INTERNAL_ACCESS:
 	void SetFirstLineNumber(int lineNumber) { m_firstLineNumber = lineNumber; }
 	void SetFirstColumn(int column) { m_firstColumn = column; }
@@ -94,18 +97,7 @@ public:
 	//	return sb.ToString();
 	//}
 
-	//String ToStringValidCode() const
-	//{
-	//	StringBuilder sb;
-	//	for (int i = 0; i < GetCount(); ++i)
-	//	{
-	//		if (GetAt(i).isValid())
-	//		{
-	//			sb.Append(GetAt(i).GetBegin(), GetAt(i).GetLength());
-	//		}
-	//	}
-	//	return sb.ToString();
-	//}
+	std::string toStringValidCode() const;
 
 	template <class TPred>
 	int indexOf(int startIndex, int count, TPred pred) const

@@ -34,10 +34,10 @@ public:
 	virtual ~AbstractLexer();
 
 	ResultState Tokenize(InputFile* file);
+	ResultState Tokenize(const char* code, int length, TokenList* outTokenList, DiagnosticsItemSet* diag);
 
 
 protected:
-	ResultState Tokenize(const char* code, int length, TokenList* outTokenList, DiagnosticsItemSet* diag);
 	virtual int ReadToken(const Range& buffer) = 0;
 	virtual void PollingToken(Token* newToken);
 
