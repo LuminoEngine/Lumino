@@ -1,9 +1,13 @@
-
+ï»¿
 #pragma once
 
 LN_NAMESPACE_BEGIN
 
-// rawcode ¨ IRCode + technique data
+
+
+// RawHLSLCode â†’ IRCode + technique data
+// LinaHLSLCode â†’ IRCode + technique data
+// â†‘ã“ã“ã¯è‡ªå‹•åˆ¤åˆ¥ã€‚SurfaceShader ã®æœ‰ç„¡ã§ã€‚
 class LinaShaderIRGenerater
 {
 public:
@@ -28,10 +32,10 @@ public:
 	void loadRawHLSL(const std::string& code);
 
 	// (RawIR:Intermediate Representation)
-	// HLSL, GLSL ‚È‚Ç‚ÌƒR[ƒh”ÍˆÍ‚ğ¦‚·ƒ^ƒO•¶š‚ª–„‚ß‚Ü‚ê‚½ƒR[ƒhB
+	// HLSL, GLSL ãªã©ã®ã‚³ãƒ¼ãƒ‰ç¯„å›²ã‚’ç¤ºã™ã‚¿ã‚°æ–‡å­—ãŒåŸ‹ã‚è¾¼ã¾ã‚ŒãŸã‚³ãƒ¼ãƒ‰ã€‚
 	void loadRawIR(const std::string& code);
 
-	// DirectX API ‚ÅƒRƒ“ƒpƒCƒ‹‰Â”\‚È HLSL ƒR[ƒh‚ğo—Í‚·‚é
+	// DirectX API ã§ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«å¯èƒ½ãª HLSL ã‚³ãƒ¼ãƒ‰ã‚’å‡ºåŠ›ã™ã‚‹
 	std::string generateHLSLCode();
 
 private:

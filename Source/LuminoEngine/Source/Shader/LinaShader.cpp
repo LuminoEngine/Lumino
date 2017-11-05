@@ -1,4 +1,4 @@
-
+ï»¿
 #include "../Internal.h"
 #include <hlsl2glsl.h>
 #include "LinaShader.h"
@@ -11,8 +11,11 @@ LN_NAMESPACE_BEGIN
 
 struct HLSLPass
 {
-	std::string vertexShader;
-	std::string pixelShader;
+	std::string vertexShader;	// for Raw HLSL
+	std::string pixelShader;	// for Raw HLSL
+	std::string shadingModel;	// for Lumino HLSL
+	std::string ligitingModel;	// for Lumino HLSL
+	std::string surfaceShader;	// for Lumino HLSL
 };
 
 struct HLSLTechnique
@@ -129,7 +132,7 @@ bool HLSLMetadataParser::parseTechnique(HLSLTechnique* tech)
 	}
 	if (!closed) return false;
 
-	// hlsl2glsl ‚Í technique ƒuƒƒbƒN‚ğ—‰ğ‚Å‚«‚È‚¢‚Ì‚Å‚·‚×‚Ä–³Œø‰»‚µ‚Ä‚¨‚­
+	// hlsl2glsl ã¯ technique ãƒ–ãƒ­ãƒƒã‚¯ã‚’ç†è§£ã§ããªã„ã®ã§ã™ã¹ã¦ç„¡åŠ¹åŒ–ã—ã¦ãŠã
 	for (int i = begin; i <= m_current; i++)
 	{
 		m_tokens->getAt(i)->setValid(false);
@@ -178,6 +181,18 @@ bool HLSLMetadataParser::parseRenderState(HLSLPass* pass)
 		next();	// skip "compile"
 		next();	// skip "ps_x_x"
 		pass->pixelShader = current()->getString();
+	}
+	else if (name->EqualString("ShadingModel", 12))
+	{
+		pass->shadingModel = current()->getString();
+	}
+	else if (name->EqualString("LigitingModel", 13))
+	{
+		pass->ligitingModel = current()->getString();
+	}
+	else if (name->EqualString("SurfaceShader", 13))
+	{
+		pass->surfaceShader = current()->getString();
 	}
 
 	if (!nextTo(';')) return false;
@@ -261,7 +276,7 @@ static bool Hlsl2Glsl(const std::string& input, const std::string& entryPoint, E
 			//EAttrSemCoverage,
 		};
 		static const char* kAttribString[] =
-		{	// TODO: ‚±‚Ì‚Ö‚ñAg‚¦‚é attr ‚©‚Ç‚¤‚©ƒ`ƒFƒbƒN‚µ‚½‚¢
+		{	// TODO: ã“ã®ã¸ã‚“ã€ä½¿ãˆã‚‹ attr ã‹ã©ã†ã‹ãƒã‚§ãƒƒã‚¯ã—ãŸã„
 			"ln_Vertex", //EAttrSemPosition,
 			"ln_Vertex1", //EAttrSemPosition1,
 			"ln_Vertex2", //EAttrSemPosition2,
