@@ -282,8 +282,8 @@ void ClusteredShadingGeometryRenderingPass::initialize()
 	m_defaultShader = Shader::create(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/ClusteredShadingDefault.fx"), ShaderCodeType::RawIR);
 
 
-	m_normalRenderTarget = Ref<RenderTargetTexture>::makeRef();
-	m_normalRenderTarget->createImpl(GraphicsManager::getInstance(), SizeI(640, 480), 1, TextureFormat::R32G32B32A32_Float);
+	//m_normalRenderTarget = Ref<RenderTargetTexture>::makeRef();
+	//m_normalRenderTarget->createImpl(GraphicsManager::getInstance(), SizeI(640, 480), 1, TextureFormat::R32G32B32A32_Float);
 }
 
 Shader* ClusteredShadingGeometryRenderingPass::getDefaultShader() const
@@ -293,8 +293,8 @@ Shader* ClusteredShadingGeometryRenderingPass::getDefaultShader() const
 RenderTargetTexture* g_m_normalRenderTarget = nullptr;
 void ClusteredShadingGeometryRenderingPass::onBeginPass(DefaultStatus* defaultStatus)
 {
-	g_m_normalRenderTarget = m_normalRenderTarget;
-	defaultStatus->defaultRenderTarget[1] = m_normalRenderTarget;
+	//g_m_normalRenderTarget = m_normalRenderTarget;
+	//defaultStatus->defaultRenderTarget[1] = m_normalRenderTarget;
 }
 
 ShaderPass* ClusteredShadingGeometryRenderingPass::selectShaderPass(Shader* shader)

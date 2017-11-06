@@ -78,6 +78,25 @@ LN_VSOutput_Common _LN_ProcessVertex_Common(LN_VSInput input)
 	return o;
 }
 
+float LN_Square(float x)
+{
+	return x * x;
+}
+
+float2 LN_Square(float2 x)
+{
+	return x * x;
+}
+
+float3 LN_Square(float3 x)
+{
+	return x * x;
+}
+
+float4 LN_Square(float4 x)
+{
+	return x * x;
+}
 
 
 
@@ -212,16 +231,7 @@ float RadialAttenuation(float3 WorldLightVector, float FalloffExponent)
 	return pow(1.0f - saturate(NormalizeDistanceSquared), FalloffExponent); 
 }
 
-float Square(float x)
-{
-	return x * x;
-}
-float3 Square(float3 x)
-{
-	return x * x;
-}
-
-float4 _LN_ProcessPixel_ClusteredForward(LN_PSInput_Common common, LN_PSInput_ClusteredForward extra, LN_SurfaceOutput surface)
+float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_ClusteredForward extra, LN_SurfaceOutput surface)
 {
 	float4 worldPos = float4(extra.WorldPos, 1.0f);
 	float4 viewPos = mul(worldPos, ln_View);
@@ -265,7 +275,7 @@ float4 _LN_ProcessPixel_ClusteredForward(LN_PSInput_Common common, LN_PSInput_Cl
 				
 				//if (DeferredLightUniforms.LightFalloffExponent == 0)
 				{
-					LightRadiusMask = Square(saturate( 1 - Square(DistanceSqr * Square(LightInvRadius))));
+					LightRadiusMask = LN_Square(saturate( 1 - LN_Square(DistanceSqr * LN_Square(LightInvRadius))));
 				}
 				//else
 				//{
@@ -309,10 +319,10 @@ float4 _LN_ProcessPixel_ClusteredForward(LN_PSInput_Common common, LN_PSInput_Cl
 //------------------------------------------------------------------------------
 // User code
 
-//struct MyVFOutput
-//{
+struct MyVFOutput
+{
 //	float4	WorldPos	: TEXCOORD5;
-//};
+};
 
 struct MySSInput
 {
@@ -328,9 +338,9 @@ sampler		MaterialTextureSampler = sampler_state
 	MAGFILTER = LINEAR;
 };
 
-//void MyVFMain(LNVFInput input, inout MyVFOutput output)	// ★ out 引数の型をパース
-//{
-//}
+void MyVFMain(LN_VSInput input, inout MyVFOutput output)	// ★ out 引数の型をパース
+{
+}
 
 // Surface Shader
 void MySSMain(MySSInput input, inout LN_SurfaceOutput output)
@@ -340,59 +350,53 @@ void MySSMain(MySSInput input, inout LN_SurfaceOutput output)
 }
 
 //------------------------------------------------------------------------------
-// ★ Vertex Shader (auto generation)
+// (auto generation)
+// ClusteredShading_Default.template.fx から生成する
 
-struct _VSOutput
+struct _lngs_VSOutput
 {
-	LN_VSOutput_Common				Common;
-	LN_VSOutput_ClusteredForward	Extra;
-	/* VF 定義なし */ //MyVFOutput						User;	// ★ MyVFMain() の最後の引数をパースして得る
+	LN_VSOutput_Common				common;
+	LN_VSOutput_ClusteredForward	extra;
+	/* VF 定義なし */ MyVFOutput						user;	// ★ MyVFMain() の最後の引数をパースして得る
 };
 
 // auto generation
-_VSOutput _VS_ClusteredForward_Geometry(LN_VSInput vsi)
+_lngs_VSOutput _lngs_VS_ClusteredForward_Geometry(LN_VSInput vsi)
 {
-	_VSOutput o;
-	o.Common	= _LN_ProcessVertex_Common(vsi);
-	o.Extra		= _LN_ProcessVertex_ClusteredForward(vsi);
+	_lngs_VSOutput o;
+	o.common	= _LN_ProcessVertex_Common(vsi);
+	o.extra		= _LN_ProcessVertex_ClusteredForward(vsi);
 	// ★ Scene固有のコードはここに直接生成する (ピクセルシェーダと書き方を合わせたい)
-	/* VF 定義なし */ //o.uservsout = MyVFMain(vsi);	// ★ User定義呼び出し
+	MyVFMain(vsi, o.user);	// ★ User定義呼び出し
 	return o;
 }
 
 
-// ★ Pixel Shader
-
-struct _PS_Input
+struct _lngs_PSInput
 {
-	LN_PSInput_Common				Common;
-	LN_PSInput_ClusteredForward		Extra;
-	MySSInput						User;	// ★ MyVFMain() の最後の引数をパースして得る
+	LN_PSInput_Common				common;
+	LN_PSInput_ClusteredForward		extra;
+	MySSInput						user;	// ★ MyVFMain() の最後の引数をパースして得る
 };
 
-struct OUTPUT_PS {
-   float4 color0 : COLOR0;
-   float4 color1 : COLOR1;
+struct _lngs_PSOutput
+{
+	float4 color0 : COLOR0;
+	//float4 color1 : COLOR1;
 };
 
-float3 _LN_PackNormalToColor(float3 n)
-{
-	return (n + 1.0) / 2.0;
-}
-
-// auto generation
-OUTPUT_PS _PS_ClusteredForward_Geometry(_PS_Input input)
+_lngs_PSOutput _lngs_PS_ClusteredForward_Geometry(_lngs_PSInput input)
 {
 	LN_SurfaceOutput surface;
-	_LN_InitSurfaceOutput(input.Common, surface);
-	MySSMain(input.User, surface);	// ★ User定義呼び出し
+	_LN_InitSurfaceOutput(input.common, surface);
+	MySSMain(input.user, surface);	// ★ User定義呼び出し
 	
 	// ★ライティングのコードはここに直接生成する (GBuffer生成などではマルチRT書き込みするため、戻り値も変えなければならない)
 	// ・・・というより、ピクセルシェーダ全体を生成する。フラグメントの結合じゃダメ。
 	
-	OUTPUT_PS o;
-	o.color0 = _LN_ProcessPixel_ClusteredForward(input.Common, input.Extra, surface);
-	o.color1 = float4(o.color0.a, 0, 0, 1);
+	_lngs_PSOutput o;
+	o.color0 = _LN_PS_ClusteredForward_Default(input.common, input.extra, surface);
+	//o.color1 = float4(o.color0.a, 0, 0, 1);
 	o.color0.a = surface.Albedo.a;
 	return o;
 }
@@ -423,8 +427,8 @@ technique ClusteredForward
 	//}
 	pass Geometry
 	{
-		VertexShader = compile vs_3_0 _VS_ClusteredForward_Geometry();
-		PixelShader	 = compile ps_3_0 _PS_ClusteredForward_Geometry();
+		VertexShader = compile vs_3_0 _lngs_VS_ClusteredForward_Geometry();
+		PixelShader	 = compile ps_3_0 _lngs_PS_ClusteredForward_Geometry();
 	}
 }
 

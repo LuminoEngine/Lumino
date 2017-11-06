@@ -20,12 +20,12 @@ float tangent(Vector3 p, Vector3 s) {
 
 void UIControlsGallery()
 {
-	auto buf = FileSystem::readAllBytes(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/ClusteredShadingDefault.fx"));
-	std::string code((const char*)buf.getConstData(), buf.getSize());
-	LinaShaderIRGenerater lsgen;
-	lsgen.initialize();
-	lsgen.loadRawHLSL(code);
-	lsgen.finalize();
+	//auto buf = FileSystem::readAllBytes(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/ClusteredShadingDefault.fx"));
+	//std::string code((const char*)buf.getConstData(), buf.getSize());
+	//LinaShaderIRGenerater lsgen;
+	//lsgen.initialize();
+	//lsgen.loadRawHLSL(code);
+	//lsgen.finalize();
 
 
 	// へいたん
@@ -328,9 +328,9 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 #endif
 
 
-	auto ssao = newObject<SSAOImageEffect>();
-	Engine::getDefault3DLayer()->addPostEffect(ssao);
-	Engine::getCamera3D()->getCameraComponent()->setFarClip(100);
+	//auto ssao = newObject<SSAOImageEffect>();
+	//Engine::getDefault3DLayer()->addPostEffect(ssao);
+	//Engine::getCamera3D()->getCameraComponent()->setFarClip(100);
 
 
 	auto ps1 = TransitionPostEffect::create();
