@@ -80,8 +80,8 @@ public:
 
 	LightType	m_type;				// ライトの種類
 	Color		m_diffuse;			// ディフューズカラー
-	Color		m_ambient;			// アンビエントカラー
-	Color		m_specular;			// スペキュラカラー
+	Color		m_ambient;			// アンビエントカラー [Obsolete]
+	Color		m_specular;			// スペキュラカラー [Obsolete]
 	Vector3		m_direction;		// 向き
 	float		m_shadowZFar;
 
