@@ -134,9 +134,9 @@ void LightClusters::addClusterSpherical(const Vector3& pos, float range)
 	// カメラから見た位置。奥が Z+。一番手前は 0.0
 	Vector4 cp = Vector4::transform(Vector4(pos, 1.0f), m_view);
 
-	// ビュー空間での、AABB の前面と後面
-	float zn = cp.z - lightRadius;
-	float zf = cp.z + lightRadius;
+	// ビュー空間での、AABB の前面と後面 (clip 内に clamp しないと、特に near より手前の時に次の viewPoints を求めるときの符号が反転してしまう)
+	float zn = Math::clamp(cp.z - lightRadius, m_nearClip, m_farClip);
+	float zf = Math::clamp(cp.z + lightRadius, m_nearClip, m_farClip);
 
 	Vector3 viewPoints[4] =
 	{
@@ -174,8 +174,8 @@ void LightClusters::addClusterSpherical(const Vector3& pos, float range)
 		{
 			for (int x = 0; x < ClusterWidth; x++)
 			{
-				float cl = (xs * x) - 1.0f;
-				float cr = (xs * (x + 1)) - 1.0f;
+				float cr = (xs * x) - 1.0f;
+				float cl = (xs * (x + 1)) - 1.0f;
 				if ((vpMax.x > cl && vpMin.x < cr))
 				{
 					for (int z = 0; z < ClusterDepth; z++)
@@ -369,7 +369,7 @@ void ClusteredShadingSceneRenderer::onCollectLight(DynamicLightInfo* light)
 	switch (light->m_type)
 	{
 	case LightType::Directional:
-		LN_NOTIMPLEMENTED();
+		//LN_NOTIMPLEMENTED();
 		break;
 	case LightType::Point:
 		m_lightClusters.addPointLight(light->m_position, light->m_range, light->m_diffuse);

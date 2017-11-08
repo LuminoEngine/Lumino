@@ -165,6 +165,16 @@ LightComponent* Light::GetLightComponent() const
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(PointLight, WorldObject);
 
+Ref<PointLight> PointLight::create()
+{
+	return newObject<PointLight>();
+}
+
+Ref<PointLight> PointLight::create(const Color& color, float range)
+{
+	return newObject<PointLight>(color, range);
+}
+
 PointLight::PointLight()
 	: WorldObject()
 	, m_component(nullptr)

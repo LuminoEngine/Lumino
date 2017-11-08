@@ -188,6 +188,12 @@ class PointLight
 	LN_OBJECT;
 public:
 
+	/** 既定の設定でポイントライトを作成します。 */
+	static Ref<PointLight> create();
+
+	/** 色と範囲を指定してポイントライトを作成します。 */
+	static Ref<PointLight> create(const Color& color, float range);
+
 	/** ライトの有効状態を設定します。false の場合、ライトはシーンに影響しません。(default: true) */
 	void setEnabled(bool enabled) { m_component->setEnabled(enabled); }
 
