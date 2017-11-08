@@ -396,7 +396,7 @@ void ForwardShadingRenderer::updateAffectLights(DrawElement* element, DrawElemen
 		// ソート基準値の計算
 		for (DynamicLightInfo* light : m_selectingLights)
 		{
-			light->tempDistance = Vector3::distanceSquared(element->getTransform(elementList).getPosition(), light->transform.getPosition());
+			light->tempDistance = Vector3::distanceSquared(element->getTransform(elementList).getPosition(), light->m_position);
 		}
 
 		// ソート (昇順)

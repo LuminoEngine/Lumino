@@ -38,6 +38,7 @@ namespace detail {
 
 //------------------------------------------------------------------------------
 DynamicLightInfo::DynamicLightInfo()
+	: m_range(10)
 {
 }
 

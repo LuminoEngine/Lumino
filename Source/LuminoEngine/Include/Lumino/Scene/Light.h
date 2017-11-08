@@ -8,43 +8,37 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 
-/// LightComponent
+/** ライトのコンポーネントです。 */
 class LightComponent
 	: public SceneNode
 {
-public:
-	LightComponent();
-	virtual ~LightComponent();
-	void initialize(LightType type);
 
 public:
 
-	/// ライトの種類の取得
+	/** ライト種類を設定します。 */
+	void setType(LightType type) { m_lightInfo->m_type = type; }
+
+	/** ライト種類を取得します。 */
 	LightType getType() const { return m_lightInfo->m_type; }
 
-	/// ライトの有効、無効を設定する
+	/** ライトの有効状態を設定します。false の場合、ライトはシーンに影響しません。(default: false) */
 	void setEnabled(bool enabled) { m_enabled = enabled; }
 
-	/// ライトの有効、無効を確認する
+	/** ライトの有効状態を取得します。 */
 	bool isEnabled() const { return m_enabled; }
 
-	/// ディフューズカラーの設定
-	void setDiffuseColor(const Color& color) { m_lightInfo->m_diffuse = color; }
+	/** ライトカラーを設定します。(default: White) */
+	void setColor(const Color& color) { m_lightInfo->m_diffuse = color; }
 
-	/// ディフューズカラーの取得
-	const Color& getDiffuseColor() const { return m_lightInfo->m_diffuse; }
+	/** ライトカラーを取得します。 */
+	const Color& getColor() const { return m_lightInfo->m_diffuse; }
 
-	/// アンビエントカラーの設定
-	void setAmbientColor(const Color& color) { m_lightInfo->m_ambient = color; }
+	/** ライトの影響範囲を設定します。(default: 10) */
+	void setRange(float range) { m_lightInfo->m_range = range; }
 
-	/// アンビエントカラーの取得
-	const Color& getAmbientColor() const { return m_lightInfo->m_ambient; }
+	/** ライトの影響範囲を取得します。 */
+	float getRange() const { return m_lightInfo->m_range; }
 
-	/// スペキュラカラーの設定
-	void setSpecularColor(const Color& color) { m_lightInfo->m_specular = color; }
-
-	/// スペキュラカラーの取得
-	const Color& getSpecularColor() const { return m_lightInfo->m_specular; }
 
 	/// スポットライトのコーン角度の設定 (ラジアン単位)
 	void setSpotAngle(float angle) { m_spotAngle = angle; }
@@ -61,7 +55,7 @@ public:
 public:	// internal
 
 	/// 各行列を更新する (SceneNode::updateFrameHierarchy() の後で呼び出すこと)
-	void updateMatrices(/*const Size& viewSize*/);
+	//void updateMatrices(/*const Size& viewSize*/);
 
 	// 向きの取得 (シェーダ設定用。updateMatrices() の後で呼び出すこと)
 	//const Vector4& getDirectionInternal() const { return m_lightInfo->m_direction; }
@@ -84,6 +78,11 @@ public:	// internal
 protected:
 	virtual void onPreRender(DrawList* context) override;
 
+LN_CONSTRUCT_ACCESS:
+	LightComponent();
+	virtual ~LightComponent();
+	void initialize(LightType type);
+
 private:
 	friend class VisualComponent;
 
@@ -95,7 +94,7 @@ private:
 	bool				m_enabled;			///< 有効状態
 	float				m_spotAngle;		///< コーン角度 (ラジアン単位)
 
-	Matrix				m_viewMatrix;		///< ビュー行列
+	//Matrix				m_viewMatrix;		///< ビュー行列
 	//Matrix				m_projMatrix;		///< プロジェクション行列
 	//Matrix				m_viewProjMatrix;	///< ビュー行列とプロジェクション行列の積
 	//Vector4				m_direction;		///< 向き
@@ -117,6 +116,50 @@ private:
 };
 
 
+
+/** ポイントライトのコンポーネントです。 */
+class PointLightComponent
+	: public SceneNode
+{
+	LN_OBJECT;
+public:
+
+	/** ライトの有効状態を設定します。false の場合、ライトはシーンに影響しません。(default: true) */
+	void setEnabled(bool enabled) { m_enabled = enabled; }
+
+	/** ライトの有効状態を取得します。 */
+	bool isEnabled() const { return m_enabled; }
+
+	/** ライトカラーを設定します。(default: White) */
+	void setColor(const Color& color) { m_lightInfo->m_diffuse = color; }
+
+	/** ライトカラーを取得します。 */
+	const Color& getColor() const { return m_lightInfo->m_diffuse; }
+
+	/** ライトの影響範囲を設定します。(default: 10) */
+	void setRange(float range) { m_lightInfo->m_range = range; }
+
+	/** ライトの影響範囲を取得します。 */
+	float getRange() const { return m_lightInfo->m_range; }
+
+protected:
+	virtual void onPreRender(DrawList* context) override;
+
+LN_CONSTRUCT_ACCESS:
+	PointLightComponent();
+	virtual ~PointLightComponent();
+	void initialize();
+
+private:
+	Ref<detail::DynamicLightInfo>	m_lightInfo;
+	bool							m_enabled;
+};
+
+
+
+
+
+
 /**
 	@brief
 */
@@ -136,6 +179,48 @@ LN_INTERNAL_ACCESS:
 
 private:
 	Ref<LightComponent>	m_component;
+};
+
+/** ポイントライトのオブジェクトです。 */
+class PointLight
+	: public WorldObject
+{
+	LN_OBJECT;
+public:
+
+	/** ライトの有効状態を設定します。false の場合、ライトはシーンに影響しません。(default: true) */
+	void setEnabled(bool enabled) { m_component->setEnabled(enabled); }
+
+	/** ライトの有効状態を取得します。 */
+	bool isEnabled() const { return m_component->isEnabled(); }
+
+	/** ライトカラーを設定します。(default: White) */
+	void setColor(const Color& color) { m_component->setColor(color); }
+
+	/** ライトカラーを取得します。 */
+	const Color& getColor() const { return m_component->getColor(); }
+
+	/** ライトの影響範囲を設定します。(default: 10) */
+	void setRange(float range) { m_component->setRange(range); }
+
+	/** ライトの影響範囲を取得します。 */
+	float getRange() const { return m_component->getRange(); }
+
+	/** コンポーネントを取得します。 */
+	PointLightComponent* GetPointLightComponent() const;
+
+LN_CONSTRUCT_ACCESS:
+	PointLight();
+	virtual ~PointLight();
+
+	/** 既定の設定でポイントライトを作成します。 */
+	void initialize();
+
+	/** 色と範囲を指定してポイントライトを作成します。 */
+	void initialize(const Color& color, float range);
+
+private:
+	Ref<PointLightComponent>	m_component;
 };
 
 LN_NAMESPACE_SCENE_END

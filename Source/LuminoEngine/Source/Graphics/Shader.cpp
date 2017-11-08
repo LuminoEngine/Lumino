@@ -215,7 +215,7 @@ void ShaderSemanticsManager::updateElementVariables(const ElementInfo& info)
 					for (int i = 0; i < DynamicLightInfo::MaxLights; i++)
 					{
 						// TODO: Vector4::Zero がほしい
-						Vector4 v = (lights[i] != nullptr) ? Vector4(lights[i]->transform.getPosition(), 0) : Vector4(0, 0, 0, 0);
+						Vector4 v = (lights[i] != nullptr) ? Vector4(lights[i]->m_position, 0) : Vector4(0, 0, 0, 0);
 						m_tempBufferWriter.write(&v, sizeof(Vector4));
 					}
 					varInfo.variable->setVectorArray((const Vector4*)m_tempBuffer.getBuffer(), DynamicLightInfo::MaxLights);

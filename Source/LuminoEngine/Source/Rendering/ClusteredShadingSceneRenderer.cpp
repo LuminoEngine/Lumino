@@ -347,16 +347,16 @@ void ClusteredShadingSceneRenderer::collect()
 	SceneRenderer::collect();
 
 
-	m_lightClusters.addPointLight(Vector3(0, 0, 0), 2, Color::White);
-	m_lightClusters.addPointLight(Vector3(5, 0, 5), 2, Color::Red);
-	m_lightClusters.addPointLight(Vector3(-5, 0, 5), 3, Color::Blue);
-	m_lightClusters.addPointLight(Vector3(5, 0, -5), 1, Color::Green);
-	m_lightClusters.addPointLight(Vector3(-5, 0, -5), 1, Color::Yellow);
+	//m_lightClusters.addPointLight(Vector3(0, 0, 0), 2, Color::White);
+	//m_lightClusters.addPointLight(Vector3(5, 0, 5), 2, Color::Red);
+	//m_lightClusters.addPointLight(Vector3(-5, 0, 5), 3, Color::Blue);
+	//m_lightClusters.addPointLight(Vector3(5, 0, -5), 1, Color::Green);
+	//m_lightClusters.addPointLight(Vector3(-5, 0, -5), 1, Color::Yellow);
 
-	m_lightClusters.addPointLight(Vector3(7, 0, 0), 5, Color::Magenta);
-	m_lightClusters.addPointLight(Vector3(-7, 0, 0), 1, Color::Cyan);
-	m_lightClusters.addPointLight(Vector3(0, 0, 7), 1, Color::AliceBlue);
-	m_lightClusters.addPointLight(Vector3(0, 0, -7), 2, Color::BlueViolet);
+	//m_lightClusters.addPointLight(Vector3(7, 0, 0), 5, Color::Magenta);
+	//m_lightClusters.addPointLight(Vector3(-7, 0, 0), 1, Color::Cyan);
+	//m_lightClusters.addPointLight(Vector3(0, 0, 7), 1, Color::AliceBlue);
+	//m_lightClusters.addPointLight(Vector3(0, 0, -7), 2, Color::BlueViolet);
 
 
 	m_lightClusters.endMakeClusters();
@@ -364,6 +364,24 @@ void ClusteredShadingSceneRenderer::collect()
 
 void ClusteredShadingSceneRenderer::onCollectLight(DynamicLightInfo* light)
 {
+	if (LN_REQUIRE(light)) return;
+
+	switch (light->m_type)
+	{
+	case LightType::Directional:
+		LN_NOTIMPLEMENTED();
+		break;
+	case LightType::Point:
+		m_lightClusters.addPointLight(light->m_position, light->m_range, light->m_diffuse);
+		break;
+	case LightType::Spot:
+		LN_NOTIMPLEMENTED();
+		break;
+	default:
+		LN_UNREACHABLE();
+		break;
+	}
+
 	SceneRenderer::onCollectLight(light);
 }
 

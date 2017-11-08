@@ -15,6 +15,8 @@ TEST_F(Test_Rendering_Light, Basic)
 		auto meshObj1 = newObject<WorldObject3D>();
 		meshObj1->addComponent(mesh1);
 
+		//auto light1 = PointLight::create();
+
 		Engine::update();
 		Engine::update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Rendering_Light.Basic1.png"), 99, true));

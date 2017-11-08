@@ -365,12 +365,17 @@ LN_ENUM_FLAGS(StringFormatFlags)	// TODO: LayoutFlags のほうがいいかな�
 };
 LN_ENUM_FLAGS_DECLARE(StringFormatFlags);
 
-// ライトの種類
-enum LightType
+/** ライトの種類 */
+enum class LightType
 {
-	LightType_Directional = 0,	// ディレクショナルライト
-	LightType_Point,			// ポイントライト
-	LightType_Spot,				// スポットライト
+	/** ディレクショナルライト */
+	Directional,
+
+	/** ポイントライト */
+	Point,
+
+	/** スポットライト */
+	Spot,
 };
 
 enum class BuiltinShader
