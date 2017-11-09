@@ -5,6 +5,7 @@
 //------------------------------------------------------------------------------
 // Lib
 
+#define LN_EPSILON 1e-6
 
 float4x4	ln_World;
 float4x4	ln_WorldViewProjection;
@@ -123,6 +124,17 @@ struct LN_PSInput_ClusteredForward
 };
 
 
+texture ln_GlobalLightInfoTexture;
+sampler2D ln_GlobalLightInfoSampler = sampler_state
+{
+	Texture = <ln_GlobalLightInfoTexture>;
+	MinFilter = Point; 
+	MagFilter = Point;
+	MipFilter = None;
+	AddressU = Clamp;
+	AddressV = Clamp;
+};
+
 texture ln_pointLightInfoTexture;
 sampler2D pointLightInfoSampler = sampler_state
 {
@@ -134,6 +146,7 @@ sampler2D pointLightInfoSampler = sampler_state
 	AddressV = Clamp;
 };
 
+static const int MaxLights = 16;
 
 float		ln_nearClip;
 float		ln_farClip;
@@ -184,6 +197,7 @@ float _LN_FlustumClustereDepthBias(float z)
 	return sqrt(z);
 }
 
+/*
 struct PointLight
 {
 	float4	pos;
@@ -204,6 +218,52 @@ PointLight LN_GetPointLight(int index)
 	o.pos = tex2D(pointLightInfoSampler, tc0.xy);
 	o.color = tex2D(pointLightInfoSampler, tc1.xy);
 	return o;
+}
+*/
+
+struct LightInfo
+{
+	float3	position;
+	float	range;
+	float4	color;
+	float3	direction;
+	float2	spotAngles;
+};
+
+struct GlobalLightInfo
+{
+	float4	color;
+	float4	groundColor;
+	float4	directionAndType;
+};
+
+LightInfo _LN_GetLightInfoClusterd(int index)
+{
+	float2 s = 1.0 / LightInfoTextureSize;
+	float y = index;
+	float4 posAndRange = tex2D(pointLightInfoSampler, float2(0, y) * s);
+	float4 spotDirection = tex2D(pointLightInfoSampler, float2(1, y) * s);
+	float4 spotAngle = tex2D(pointLightInfoSampler, float2(2, y) * s);
+	float4 color = tex2D(pointLightInfoSampler, float2(3, y) * s);
+	
+	LightInfo light;
+	light.position = posAndRange.xyz;
+	light.range = posAndRange.w;
+	light.color = color;
+	light.direction = spotDirection.xyz;
+	light.spotAngles = spotAngle.xy;
+	return light;
+}
+
+GlobalLightInfo _LN_GetGlobalLightInfo(int index)
+{
+	float2 s = 1.0 / LightInfoTextureSize;
+	float y = index;
+	GlobalLightInfo info;
+	info.color = tex2D(ln_GlobalLightInfoSampler, float2(0, y) * s);
+	info.groundColor = tex2D(ln_GlobalLightInfoSampler, float2(1, y) * s);
+	info.directionAndType = tex2D(ln_GlobalLightInfoSampler, float2(2, y) * s);
+	return info;
 }
 
 /** 
@@ -230,6 +290,16 @@ float RadialAttenuation(float3 WorldLightVector, float FalloffExponent)
 	// UE3 (fast, but now we not use the default of 2 which looks quite bad):
 	return pow(1.0f - saturate(NormalizeDistanceSquared), FalloffExponent); 
 }
+
+
+float punctualLightIntensityToIrradianceFactor(float lightDistance, float cutoffDistance, float decayExponent) {
+  if (decayExponent > 0.0) {
+    return pow(saturate(-lightDistance / cutoffDistance + 1.0), decayExponent);
+  }
+
+  return 1.0;
+}
+
 
 float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_ClusteredForward extra, LN_SurfaceOutput surface)
 {
@@ -259,18 +329,18 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 	{
 		if (lightIndices[i] > 0)
 		{
-			PointLight light = LN_GetPointLight((lightIndices[i] * 255) + 0.5 - 1);
-			
+			//PointLight light = LN_GetPointLight((lightIndices[i] * 255) + 0.5 - 1);
+			LightInfo light = _LN_GetLightInfoClusterd((lightIndices[i] * 255) + 0.5 - 1);
 			
 			
 			float LightRadiusMask = 1.0;
 			{
-				float3 ToLight = light.pos.xyz - worldPos.xyz;
+				float3 ToLight = light.position.xyz - worldPos.xyz;
 				float DistanceSqr = dot(ToLight, ToLight);
 				float3 L = ToLight * rsqrt(DistanceSqr);
 				
 				
-				float LightInvRadius = 1.0 / light.pos.w;
+				float LightInvRadius = 1.0 / light.range;
 				float LightFalloffExponent = 0;
 				
 				//if (DeferredLightUniforms.LightFalloffExponent == 0)
@@ -284,12 +354,12 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 			}
 				
 			
-			if (0)
+			if (light.spotAngles.x > 0.0)
 			{
-				float3 L = normalize(light.pos.xyz - worldPos.xyz);
-				float3 SpotDirection = float3(1, 0, 0);
-				float2 SpotAngle = float2(cos(3.14 / 3), 1.0 / cos(3.14 / 4));
-				result += _LN_CalculateSpotAttenuation(L, SpotDirection, SpotAngle) * LightRadiusMask;
+				float3 L = normalize(light.position.xyz - worldPos.xyz);
+				//float3 SpotDirection = float3(1, 0, 0);
+				//float2 SpotAngle = float2(cos(3.14 / 3), 1.0 / cos(3.14 / 4));
+				result += _LN_CalculateSpotAttenuation(L, light.direction, light.spotAngles) * LightRadiusMask;
 			}
 			else
 			{
@@ -300,6 +370,33 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 		}
 	}
 	
+	{
+		float3 baseColor = result.xyz;
+    	float3 color = float3(0, 0, 0);
+		float count = LN_EPSILON;
+	    for (int i = 0; i < MaxLights; i++)
+		{
+			GlobalLightInfo light2 = _LN_GetGlobalLightInfo(i);
+			color += float3(light2.color.xyz + light2.groundColor.xyz + light2.directionAndType.xyz);
+			//return float4(light2.color.xyz + light2.groundColor.xyz + light2.directionAndType.xyz, 1);
+			//return float4(light.directionAndType.w, 1, 0, 1);
+			/*
+			if (light.directionAndType.w > 0.0)
+			{
+	            //color += saturate(AmbientColor[i] + max(0, DiffuseColor[i] * dot(Out.Normal, -LightDirection[i])));
+				color += saturate(max(0, baseColor * dot(surface.Normal, -light.directionAndType.xyz)));
+	            count += 1.0f;//0.95f;
+	        }
+			else
+			{
+				break;
+			}
+			*/
+	    }
+		return float4(color, 1);
+	    result.rgb = saturate(color / count);
+	}
+	
 #if 0
 	//result = float3(0, 0, 0);
 	if (lightIndices[0] > 0) result.r += 1;
@@ -308,7 +405,7 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 #endif
 	
 	// 環境色
-	result += 0.5;
+	//result += 0.5;
 	
 	return float4(mc.xyz * result, depth);//mc.a);
 	

@@ -21,9 +21,11 @@ public:
 	void endMakeClusters();
 	void addPointLight(const Vector3& pos, float range, const Color& color);
 	void addSpotLight(const Vector3& pos, float range, const Vector3& direction, float outerRadius, float innerRadius, const Color& color);
+	void addDirectionalLight(const Vector3& dir, const Color& color);
 
 	const Ref<tr::Texture3D>& getClustersVolumeTexture() const { return m_clustersTexture; }
 	const Ref<Texture2D>& getLightInfoTexture() const { return m_lightInfoTexture; }
+	const Ref<Texture2D>& getGlobalLightInfoTexture() const { return m_globalLightInfoTexture; }
 
 private:
 	//static float bias(float b, float x) { return pow(x, log(b) / log(0.5)); }
@@ -40,6 +42,14 @@ private:
 		Color	color;
 	};
 
+	struct GlobalLightInfo
+	{
+		Color	color;			// DirectionalColor, AmbientColor, SkyAmbient
+		Color	groundColor;
+		Vector4	directionAndType;	// w=Type
+		Vector4	dummy;
+	};
+
 	static const int		ClusterWidth = 16;
 	static const int		ClusterHeight = 16;
 	static const int		ClusterDepth = 32;
@@ -50,6 +60,9 @@ private:
 	static const int		MaxLights = 64;
 	List<LightInfo>			m_lightInofs;		// m_lightInfoTexture に書き込む。TODO: Texture2D が float4 書き込みをちゃんとサポートしたら必要ない。
 	Ref<Texture2D>			m_lightInfoTexture;
+	List<GlobalLightInfo>	m_globalLightInofs;		// m_globalLightInfoTexture に書き込む。TODO: Texture2D が float4 書き込みをちゃんとサポートしたら必要ない。
+	Ref<Texture2D>			m_globalLightInfoTexture;
+
 };
 
 class ClusteredShadingGeometryRenderingPass

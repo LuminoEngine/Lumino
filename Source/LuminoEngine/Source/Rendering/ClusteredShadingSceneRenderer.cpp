@@ -26,8 +26,10 @@ LightClusters::LightClusters()
 void LightClusters::init()
 {
 	m_clustersTexture = tr::Texture3D::create(ClusterWidth, ClusterHeight, ClusterDepth);
-	m_lightInfoTexture = Texture2D::create(sizeof(LightInfo) / sizeof(Vector4), MaxLights, TextureFormat::R32G32B32A32_Float, false);
 	m_lightInofs.reserve(MaxLights);
+	m_lightInfoTexture = Texture2D::create(sizeof(LightInfo) / sizeof(Vector4), MaxLights, TextureFormat::R32G32B32A32_Float, false);
+	m_globalLightInofs.reserve(MaxLights);
+	m_globalLightInfoTexture = Texture2D::create(sizeof(GlobalLightInfo) / sizeof(Vector4), MaxLights, TextureFormat::R32G32B32A32_Float, false);
 }
 
 void LightClusters::beginMakeClusters(const Matrix& view, const Matrix& proj, const Vector3& cameraPos, float nearClip, float farClip)
@@ -57,6 +59,8 @@ void LightClusters::beginMakeClusters(const Matrix& view, const Matrix& proj, co
 
 	m_lightInofs.clear();
 	m_lightInofs.add(LightInfo{});	// dummy
+
+	m_globalLightInofs.clear();
 }
 
 void LightClusters::addPointLight(const Vector3& pos, float range, const Color& color)
@@ -84,21 +88,48 @@ void LightClusters::addSpotLight(const Vector3& pos, float range, const Vector3&
 	m_lightInofs.add(info);
 }
 
+void LightClusters::addDirectionalLight(const Vector3& dir, const Color& color)
+{
+	GlobalLightInfo info{
+		Color(1, 1, 1, 1),
+		Color(1, 1, 1, 1),
+		Vector4(1, 1, 1, 1),
+		Vector4(1, 1, 1, 1),
+	};
+	//info.color = color;
+	//info.directionAndType = Vector4(1, 0, 0, 1);
+	m_globalLightInofs.add(info);
+}
+
 void LightClusters::endMakeClusters()
 {
-	// m_clustersData -> m_clustersTexture
-	for (int y = 0; y < ClusterHeight; y++)
+	// Global lights
 	{
-		for (int x = 0; x < ClusterWidth; x++)
+		// 最大未満であれば番兵を入れることで末尾を検出できるようにする
+		if (m_globalLightInofs.getCount() < MaxLights)
 		{
-			for (int z = 0; z < ClusterDepth; z++)
-			{
-				m_clustersTexture->setPixel32(x, y, z, m_clustersData[((ClusterWidth * ClusterHeight * z) + (ClusterWidth * y) + x)]);
-			}
+			m_globalLightInofs.add(GlobalLightInfo{});
 		}
+
+		m_globalLightInfoTexture->setMappedData(&m_globalLightInofs[0]);
 	}
 
-	m_lightInfoTexture->setMappedData(&m_lightInofs[0]);
+	// Local lights
+	{
+		// m_clustersData -> m_clustersTexture
+		for (int y = 0; y < ClusterHeight; y++)
+		{
+			for (int x = 0; x < ClusterWidth; x++)
+			{
+				for (int z = 0; z < ClusterDepth; z++)
+				{
+					m_clustersTexture->setPixel32(x, y, z, m_clustersData[((ClusterWidth * ClusterHeight * z) + (ClusterWidth * y) + x)]);
+				}
+			}
+		}
+
+		m_lightInfoTexture->setMappedData(&m_lightInofs[0]);
+	}
 }
 
 static float b3(float v1, float v2, float v3, float t)
@@ -279,7 +310,7 @@ void ClusteredShadingGeometryRenderingPass::initialize()
 
 	//m_defaultShader = GraphicsManager::getInstance()->getBuiltinShader(BuiltinShader::LegacyDiffuse);
 
-	m_defaultShader = Shader::create(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/ClusteredShadingDefault.fx"), ShaderCodeType::RawIR);
+	m_defaultShader = Shader::create(_T("C:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/ClusteredShadingDefault.fx"), ShaderCodeType::RawIR);
 
 
 	//m_normalRenderTarget = Ref<RenderTargetTexture>::makeRef();
@@ -344,20 +375,8 @@ void ClusteredShadingSceneRenderer::collect()
 {
 	const CameraInfo& view = getRenderView()->m_cameraInfo;
 	m_lightClusters.beginMakeClusters(view.viewMatrix, view.projMatrix, view.viewPosition, view.nearClip, view.farClip);
+
 	SceneRenderer::collect();
-
-
-	//m_lightClusters.addPointLight(Vector3(0, 0, 0), 2, Color::White);
-	//m_lightClusters.addPointLight(Vector3(5, 0, 5), 2, Color::Red);
-	//m_lightClusters.addPointLight(Vector3(-5, 0, 5), 3, Color::Blue);
-	//m_lightClusters.addPointLight(Vector3(5, 0, -5), 1, Color::Green);
-	//m_lightClusters.addPointLight(Vector3(-5, 0, -5), 1, Color::Yellow);
-
-	//m_lightClusters.addPointLight(Vector3(7, 0, 0), 5, Color::Magenta);
-	//m_lightClusters.addPointLight(Vector3(-7, 0, 0), 1, Color::Cyan);
-	//m_lightClusters.addPointLight(Vector3(0, 0, 7), 1, Color::AliceBlue);
-	//m_lightClusters.addPointLight(Vector3(0, 0, -7), 2, Color::BlueViolet);
-
 
 	m_lightClusters.endMakeClusters();
 }
@@ -369,13 +388,13 @@ void ClusteredShadingSceneRenderer::onCollectLight(DynamicLightInfo* light)
 	switch (light->m_type)
 	{
 	case LightType::Directional:
-		//LN_NOTIMPLEMENTED();
+		m_lightClusters.addDirectionalLight(light->m_direction, light->m_diffuse);
 		break;
 	case LightType::Point:
 		m_lightClusters.addPointLight(light->m_position, light->m_range, light->m_diffuse);
 		break;
 	case LightType::Spot:
-		LN_NOTIMPLEMENTED();
+		m_lightClusters.addSpotLight(light->m_position, light->m_range, light->m_direction, light->m_spotAngle, light->m_spotAngle - (1.0 - light->m_spotPenumbra), light->m_diffuse);
 		break;
 	default:
 		LN_UNREACHABLE();
@@ -392,6 +411,9 @@ void ClusteredShadingSceneRenderer::onShaderPassChainging(ShaderPass* pass)
 	Shader* shader = pass->getOwnerShader();
 
 	ShaderVariable* v;
+	
+	v = shader->findVariable(_T("ln_GlobalLightInfoTexture"));
+	if (v) v->setTexture(m_lightClusters.getGlobalLightInfoTexture());
 
 	v = shader->findVariable(_T("ln_pointLightInfoTexture"));
 	if (v) v->setTexture(m_lightClusters.getLightInfoTexture());

@@ -89,6 +89,40 @@ void LightComponent::onPreRender(DrawList* context)
 }
 
 //==============================================================================
+// DirectionalLightComponent
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(DirectionalLightComponent, SceneNode);
+
+DirectionalLightComponent::DirectionalLightComponent()
+	: m_lightInfo(nullptr)
+	, m_enabled(true)
+{
+}
+
+DirectionalLightComponent::~DirectionalLightComponent()
+{
+}
+
+void DirectionalLightComponent::initialize()
+{
+	SceneNode::initialize();
+	m_lightInfo = Ref<detail::DynamicLightInfo>::makeRef();
+	m_lightInfo->m_type = LightType::Directional;
+	m_lightInfo->m_diffuse.set(1.0f, 1.0f, 1.0f, 1.0f);
+}
+
+void DirectionalLightComponent::onPreRender(DrawList* context)
+{
+	if (m_enabled)
+	{
+		const Matrix& t = getOwnerObject()->transform.getWorldMatrix();
+		m_lightInfo->m_position = t.getPosition();
+		m_lightInfo->m_direction = t.getFront();
+		context->addDynamicLightInfo(m_lightInfo);
+	}
+}
+
+//==============================================================================
 // PointLightComponent
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(PointLightComponent, SceneNode);
@@ -113,6 +147,42 @@ void PointLightComponent::initialize()
 }
 
 void PointLightComponent::onPreRender(DrawList* context)
+{
+	if (m_enabled)
+	{
+		const Matrix& t = getOwnerObject()->transform.getWorldMatrix();
+		m_lightInfo->m_position = t.getPosition();
+		m_lightInfo->m_direction = t.getFront();
+		context->addDynamicLightInfo(m_lightInfo);
+	}
+}
+
+//==============================================================================
+// SpotLightComponent
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SpotLightComponent, SceneNode);
+
+SpotLightComponent::SpotLightComponent()
+	: m_lightInfo(nullptr)
+	, m_enabled(true)
+{
+}
+
+SpotLightComponent::~SpotLightComponent()
+{
+}
+
+void SpotLightComponent::initialize()
+{
+	SceneNode::initialize();
+	m_lightInfo = Ref<detail::DynamicLightInfo>::makeRef();
+	m_lightInfo->m_type = LightType::Spot;
+	m_lightInfo->m_diffuse.set(1.0f, 1.0f, 1.0f, 1.0f);
+	m_lightInfo->m_range = 10.0f;
+	m_lightInfo->m_spotAngle = Math::PI / 3;
+}
+
+void SpotLightComponent::onPreRender(DrawList* context)
 {
 	if (m_enabled)
 	{
@@ -161,6 +231,49 @@ LightComponent* Light::GetLightComponent() const
 }
 
 //==============================================================================
+// DirectionalLight
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(DirectionalLight, WorldObject);
+
+Ref<DirectionalLight> DirectionalLight::create()
+{
+	return newObject<DirectionalLight>();
+}
+
+Ref<DirectionalLight> DirectionalLight::create(const Color& color)
+{
+	return newObject<DirectionalLight>(color);
+}
+
+DirectionalLight::DirectionalLight()
+	: WorldObject()
+	, m_component(nullptr)
+{
+}
+
+DirectionalLight::~DirectionalLight()
+{
+}
+
+void DirectionalLight::initialize()
+{
+	WorldObject::initialize();
+	m_component = newObject<PointLightComponent>();
+	addComponent(m_component);
+}
+
+void DirectionalLight::initialize(const Color& color)
+{
+	initialize();
+	setColor(color);
+}
+
+DirectionalLightComponent* DirectionalLight::getDirectionalLightComponent() const
+{
+	return m_component;
+}
+
+//==============================================================================
 // PointLight
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(PointLight, WorldObject);
@@ -199,7 +312,52 @@ void PointLight::initialize(const Color& color, float range)
 	setRange(range);
 }
 
-PointLightComponent* PointLight::GetPointLightComponent() const
+PointLightComponent* PointLight::getPointLightComponent() const
+{
+	return m_component;
+}
+
+//==============================================================================
+// SpotLight
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SpotLight, WorldObject);
+
+Ref<SpotLight> SpotLight::create()
+{
+	return newObject<SpotLight>();
+}
+
+Ref<SpotLight> SpotLight::create(const Color& color, float range, float angle)
+{
+	return newObject<SpotLight>(color, range, angle);
+}
+
+SpotLight::SpotLight()
+	: WorldObject()
+	, m_component(nullptr)
+{
+}
+
+SpotLight::~SpotLight()
+{
+}
+
+void SpotLight::initialize()
+{
+	WorldObject::initialize();
+	m_component = newObject<SpotLightComponent>();
+	addComponent(m_component);
+}
+
+void SpotLight::initialize(const Color& color, float range, float angle)
+{
+	initialize();
+	setColor(color);
+	setRange(range);
+	setAngle(angle);
+}
+
+SpotLightComponent* SpotLight::getSpotLightComponent() const
 {
 	return m_component;
 }
