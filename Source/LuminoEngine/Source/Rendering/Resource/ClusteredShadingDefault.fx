@@ -403,10 +403,10 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 	
 #if 1
 	{
-		float3 baseColor = result.rgb;
+		//float3 baseColor = mc.xyz;
     	float3 color = float3(0, 0, 0);
 		float count = LN_EPSILON;
-	    for (int i = 0; i < MaxLights; i++)
+	    for (int i = 0; i < 1; i++)
 		{
 			GlobalLightInfo light = _LN_GetGlobalLightInfo(i);
 			//color -= float3(light2.color.xyz + light2.groundColor.xyz + light2.directionAndType.xyz);
@@ -417,8 +417,9 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 			if (light.directionAndType.w > 0.0)
 			{
 	            //color += saturate(AmbientColor[i] + max(0, DiffuseColor[i] * dot(Out.Normal, -LightDirection[i])));
-				color += saturate(max(0, baseColor * dot(surface.Normal, -light.directionAndType.xyz)));
+				color += saturate(max(0, light.color * dot(surface.Normal, -light.directionAndType.xyz)));
 	            count += 1.0f;//0.95f;
+		//return float4(baseColor * dot(surface.Normal, -light.directionAndType.xyz), 0, 0, 1);
 	        }
 			else
 			{
@@ -426,8 +427,7 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 			}
 			
 	    }
-		//return float4(color + 0.5, 1);
-	    result.rgb = saturate(color / count);
+	    result.rgb += color;;
 	}
 #endif
 	
@@ -441,7 +441,7 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 	// 環境色
 	//result += 0.5;
 	
-	return float4(mc.xyz * result, depth);//mc.a);
+	return float4(mc.xyz * result.rgb, depth);//mc.a);
 	
 	
 	//return float4(1, 0, 0, 1);

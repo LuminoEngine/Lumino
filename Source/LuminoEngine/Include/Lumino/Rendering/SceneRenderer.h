@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "Common.h"
 #include "../Graphics/Color.h"
@@ -12,14 +12,35 @@ LN_NAMESPACE_BEGIN
 class RenderView;
 class RenderDiag;
 
+enum class AmbientLightingMode
+{
+
+};
+
 namespace detail {
 class RenderingPass2;
 class DrawElement;
 class DrawElementList;
 struct DefaultStatus;
 
+struct SceneGlobalRenderSettings
+{
+	AmbientLightingMode	ambientLightingMode;
+	Color				ambientColor;
+	Color				ambientGroundColor;
+	Color				ambientSkyColor;
+
+	bool				fogEnabled;
+	Color				fogColor;
+	float				fogDensity;
+
+	// Reflection
+	// flare
+	// sky
+};
+
 /**
-	@brief	ƒV[ƒ“‚Ì•`‰æ•û–@‚ğ’è‹`‚µA•`‰æƒRƒ}ƒ“ƒh‚ğÀs‚µ‚Ü‚·B
+	@brief	ã‚·ãƒ¼ãƒ³ã®æç”»æ–¹æ³•ã‚’å®šç¾©ã—ã€æç”»ã‚³ãƒãƒ³ãƒ‰ã‚’å®Ÿè¡Œã—ã¾ã™ã€‚
 */
 class SceneRenderer
 	: public RefObject
@@ -44,16 +65,16 @@ protected:
 	// render
 	RenderView* getRenderView() const { return m_renderingRenderView; }
 
-	// ƒŒƒ“ƒ_ƒŠƒ“ƒO€”õ‚Æ‚µ‚ÄA•`‰æ‚ÉŠÖŒW‚·‚éŠeíƒIƒuƒWƒFƒNƒg (DrawElement ‚â Light) ‚ğûW‚·‚éƒtƒF[ƒY
+	// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°æº–å‚™ã¨ã—ã¦ã€æç”»ã«é–¢ä¿‚ã™ã‚‹å„ç¨®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ (DrawElement ã‚„ Light) ã‚’åé›†ã™ã‚‹ãƒ•ã‚§ãƒ¼ã‚º
 	virtual void collect();
 
-	// ƒŒƒ“ƒ_ƒŠƒ“ƒO€”õ‚Æ‚µ‚ÄAŒø—¦“I‚È•`‰æ‚ğs‚¤‚½‚ß‚ÉûW‚µ‚½ŠeíƒIƒuƒWƒFƒNƒg‚Ìƒ\[ƒg‚È‚Ç‚ğs‚¤
+	// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°æº–å‚™ã¨ã—ã¦ã€åŠ¹ç‡çš„ãªæç”»ã‚’è¡Œã†ãŸã‚ã«åé›†ã—ãŸå„ç¨®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ã‚½ãƒ¼ãƒˆãªã©ã‚’è¡Œã†
 	virtual void prepare();
 
 	virtual void onPreRender(DrawElementList* elementList);
 	//virtual ShaderTechnique* selectShaderTechnique(Shader* shader);
 
-	// ƒŒƒ“ƒ_ƒŠƒ“ƒO€”õA‰e‹¿‚·‚éƒ‰ƒCƒg‚ğ’Ê’m‚·‚é
+	// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°æº–å‚™æ™‚ã€å½±éŸ¿ã™ã‚‹ãƒ©ã‚¤ãƒˆã‚’é€šçŸ¥ã™ã‚‹
 	virtual void onCollectLight(DynamicLightInfo* light);
 
 	virtual void onShaderPassChainging(ShaderPass* pass);
@@ -75,7 +96,7 @@ private:
 
 struct ElementRenderingPolicy
 {
-	Shader*		shader;		// null ‚à‚ ‚è‚¦‚éBClear ‚È‚ÇB
+	Shader*		shader;		// null ã‚‚ã‚ã‚Šãˆã‚‹ã€‚Clear ãªã©ã€‚
 	ShaderPass*	shaderPass;
 	bool		visible;
 };
@@ -145,7 +166,7 @@ protected:
 private:
 	void updateAffectLights(DrawElement* element, DrawElementList* elementList);
 
-	List<DynamicLightInfo*>	m_selectingLights;	// updateAffectLights() ‚Ìì‹Æ—p•Ï”
+	List<DynamicLightInfo*>	m_selectingLights;	// updateAffectLights() ã®ä½œæ¥­ç”¨å¤‰æ•°
 };
 
 
