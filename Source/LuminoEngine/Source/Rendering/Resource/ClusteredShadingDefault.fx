@@ -196,7 +196,6 @@ float _LN_FlustumClustereDepthBias(float z)
 {
 	return sqrt(z);
 }
-
 /*
 struct PointLight
 {
@@ -220,7 +219,6 @@ PointLight LN_GetPointLight(int index)
 	return o;
 }
 */
-
 struct LightInfo
 {
 	float3	position;
@@ -237,14 +235,27 @@ struct GlobalLightInfo
 	float4	directionAndType;
 };
 
+float2 _LN_FlipV(float2 uv)
+{
+	return float2(uv.x, 1.0 - uv.y);
+}
+
 LightInfo _LN_GetLightInfoClusterd(int index)
 {
 	float2 s = 1.0 / LightInfoTextureSize;
-	float y = index;
-	float4 posAndRange = tex2D(pointLightInfoSampler, float2(0, y) * s);
-	float4 spotDirection = tex2D(pointLightInfoSampler, float2(1, y) * s);
-	float4 spotAngle = tex2D(pointLightInfoSampler, float2(2, y) * s);
-	float4 color = tex2D(pointLightInfoSampler, float2(3, y) * s);
+	float y = (float)index;
+	y += 0.5;
+	//float4 tc0 = float4((0.0 + 0.5f) * s.x, (index + 0.5f) * s.y, 0, 1);	// +0.5 は半ピクセル分
+	//float4 tc1 = float4((1.0 + 0.5f) * s.x, (index + 0.5f) * s.y, 0, 1);	// +0.5 は半ピクセル分
+	//tc0.y = 1.0 - tc0.y;
+	//tc1.y = 1.0 - tc1.y;
+	
+	//float4 posAndRange = tex2D(pointLightInfoSampler, tc0.xy);
+	//float4 spotDirection = tex2D(pointLightInfoSampler, tc1.xy);
+	float4 posAndRange = tex2D(pointLightInfoSampler, _LN_FlipV(float2(0.0, y) * s));
+	float4 spotDirection = tex2D(pointLightInfoSampler, _LN_FlipV(float2(1.0, y) * s));
+	float4 spotAngle = tex2D(pointLightInfoSampler, _LN_FlipV(float2(2.0, y) * s));
+	float4 color = tex2D(pointLightInfoSampler, _LN_FlipV(float2(3.0, y) * s));
 	
 	LightInfo light;
 	light.position = posAndRange.xyz;
@@ -252,17 +263,37 @@ LightInfo _LN_GetLightInfoClusterd(int index)
 	light.color = color;
 	light.direction = spotDirection.xyz;
 	light.spotAngles = spotAngle.xy;
+	
+	/*
+	float2 uv = 1.0 / LightInfoTextureSize;
+	float4 tc0 = float4((0.0 + 0.5f) * uv.x, (index + 0.5f) * uv.y, 0, 1);	// +0.5 は半ピクセル分
+	float4 tc1 = float4((1.0 + 0.5f) * uv.x, (index + 0.5f) * uv.y, 0, 1);	// +0.5 は半ピクセル分
+	LightInfo light;
+	
+	tc0.y = 1.0 - tc0.y;
+	tc1.y = 1.0 - tc1.y;
+	//o.pos = tex2Dlod(m_pointLightInfoSampler, tc0);
+	//o.color = tex2Dlod(m_pointLightInfoSampler, tc1);
+	light.position = tex2D(pointLightInfoSampler, tc0.xy);
+	light.color = tex2D(pointLightInfoSampler, tc1.xy);
+	
+	light.range = 1;
+	light.direction = float3(1, 0, 0);
+	light.spotAngles = float2(0, 0);
+	*/
 	return light;
 }
+
 
 GlobalLightInfo _LN_GetGlobalLightInfo(int index)
 {
 	float2 s = 1.0 / LightInfoTextureSize;
-	float y = index;
+	float y = (float)index;
+	y += 0.5;
 	GlobalLightInfo info;
-	info.color = tex2D(ln_GlobalLightInfoSampler, float2(0, y) * s);
-	info.groundColor = tex2D(ln_GlobalLightInfoSampler, float2(1, y) * s);
-	info.directionAndType = tex2D(ln_GlobalLightInfoSampler, float2(2, y) * s);
+	info.color = tex2D(ln_GlobalLightInfoSampler, _LN_FlipV(float2(0.0, y) * s));
+	info.groundColor = tex2D(ln_GlobalLightInfoSampler, _LN_FlipV(float2(1.5, y) * s));
+	info.directionAndType = tex2D(ln_GlobalLightInfoSampler, _LN_FlipV(float2(2.5, y) * s));
 	return info;
 }
 
@@ -370,17 +401,19 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 		}
 	}
 	
+#if 1
 	{
-		float3 baseColor = result.xyz;
+		float3 baseColor = result.rgb;
     	float3 color = float3(0, 0, 0);
 		float count = LN_EPSILON;
 	    for (int i = 0; i < MaxLights; i++)
 		{
-			GlobalLightInfo light2 = _LN_GetGlobalLightInfo(i);
-			color += float3(light2.color.xyz + light2.groundColor.xyz + light2.directionAndType.xyz);
+			GlobalLightInfo light = _LN_GetGlobalLightInfo(i);
+			//color -= float3(light2.color.xyz + light2.groundColor.xyz + light2.directionAndType.xyz);
 			//return float4(light2.color.xyz + light2.groundColor.xyz + light2.directionAndType.xyz, 1);
-			//return float4(light.directionAndType.w, 1, 0, 1);
-			/*
+			//return light.color;
+			//return float4(light.directionAndType.a, 1, 0, 1);
+			
 			if (light.directionAndType.w > 0.0)
 			{
 	            //color += saturate(AmbientColor[i] + max(0, DiffuseColor[i] * dot(Out.Normal, -LightDirection[i])));
@@ -391,11 +424,12 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 			{
 				break;
 			}
-			*/
+			
 	    }
-		return float4(color, 1);
+		//return float4(color + 0.5, 1);
 	    result.rgb = saturate(color / count);
 	}
+#endif
 	
 #if 0
 	//result = float3(0, 0, 0);

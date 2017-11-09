@@ -90,14 +90,14 @@ void LightClusters::addSpotLight(const Vector3& pos, float range, const Vector3&
 
 void LightClusters::addDirectionalLight(const Vector3& dir, const Color& color)
 {
-	GlobalLightInfo info{
+	GlobalLightInfo info/*{
 		Color(1, 1, 1, 1),
 		Color(1, 1, 1, 1),
 		Vector4(1, 1, 1, 1),
 		Vector4(1, 1, 1, 1),
-	};
-	//info.color = color;
-	//info.directionAndType = Vector4(1, 0, 0, 1);
+	}*/;
+	info.color = color;
+	info.directionAndType = Vector4(dir, 1);
 	m_globalLightInofs.add(info);
 }
 
