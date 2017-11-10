@@ -358,7 +358,10 @@ void World3D::initialize()
 	m_mainLight->setSpecialObject(true);
 	addWorldObject(m_mainLight, true);
 
-	setAmbientColor(Color(0.5, 0.5, 0.5, 1.0));
+	//setAmbientColor(Color(0.25, 0.25, 0.25, 1.0));
+
+	//setAmbientSkyColor(Color::Blue.withAlpha(0.25));
+	//setAmbientGroundColor(Color::Green.withAlpha(0.25));
 
 	createGridPlane();
 }

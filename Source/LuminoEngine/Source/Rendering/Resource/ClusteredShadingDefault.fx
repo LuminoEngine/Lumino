@@ -440,12 +440,22 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 	if (lightIndices[2] > 0) result.b += 1;
 #endif
 	
-	result += ln_AmbientColor.xyz * ln_AmbientColor.a;
 	
-	return float4(mc.xyz * result.rgb, depth);//mc.a);
+	result.rgb = mc.rgb * result.rgb;
 	
+	// calc ambient color
+	float4 ambient = float4(0, 0, 0, 0);
+	{
+		// basic ambient light
+		ambient = ln_AmbientColor.xyz * ln_AmbientColor.a;
+		
+		// hemisphere ambient light
+		float hemisphere = (dot(surface.Normal, float3(0, 1, 0)) + 1.0) * 0.5;
+		float4 c = lerp(ln_AmbientGroundColor, ln_AmbientSkyColor, hemisphere);
+		ambient = saturate(ambient + c.xyz * c.a);
+	}
 	
-	//return float4(1, 0, 0, 1);
+	return float4(result.rgb, depth);
 }
 
 //------------------------------------------------------------------------------
