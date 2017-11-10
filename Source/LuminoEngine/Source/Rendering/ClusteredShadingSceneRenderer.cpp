@@ -310,11 +310,11 @@ void ClusteredShadingGeometryRenderingPass::initialize()
 
 	//m_defaultShader = GraphicsManager::getInstance()->getBuiltinShader(BuiltinShader::LegacyDiffuse);
 
-	m_defaultShader = Shader::create(_T("C:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/ClusteredShadingDefault.fx"), ShaderCodeType::RawIR);
+	m_defaultShader = Shader::create(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/ClusteredShadingDefault.fx"), ShaderCodeType::RawIR);
 
 
-	//m_normalRenderTarget = Ref<RenderTargetTexture>::makeRef();
-	//m_normalRenderTarget->createImpl(GraphicsManager::getInstance(), SizeI(640, 480), 1, TextureFormat::R32G32B32A32_Float);
+	m_normalRenderTarget = Ref<RenderTargetTexture>::makeRef();
+	m_normalRenderTarget->createImpl(GraphicsManager::getInstance(), SizeI(640, 480), 1, TextureFormat::R32G32B32A32_Float);
 }
 
 Shader* ClusteredShadingGeometryRenderingPass::getDefaultShader() const
@@ -324,8 +324,8 @@ Shader* ClusteredShadingGeometryRenderingPass::getDefaultShader() const
 RenderTargetTexture* g_m_normalRenderTarget = nullptr;
 void ClusteredShadingGeometryRenderingPass::onBeginPass(DefaultStatus* defaultStatus)
 {
-	//g_m_normalRenderTarget = m_normalRenderTarget;
-	//defaultStatus->defaultRenderTarget[1] = m_normalRenderTarget;
+	g_m_normalRenderTarget = m_normalRenderTarget;
+	defaultStatus->defaultRenderTarget[1] = m_normalRenderTarget;
 }
 
 ShaderPass* ClusteredShadingGeometryRenderingPass::selectShaderPass(Shader* shader)
@@ -397,7 +397,7 @@ void ClusteredShadingSceneRenderer::onCollectLight(DynamicLightInfo* light)
 		m_lightClusters.addPointLight(light->m_position, light->m_range, light->m_diffuse);
 		break;
 	case LightType::Spot:
-		m_lightClusters.addSpotLight(light->m_position, light->m_range, light->m_direction, light->m_spotAngle, light->m_spotAngle - (1.0 - light->m_spotPenumbra), light->m_diffuse);
+		m_lightClusters.addSpotLight(light->m_position, light->m_range, light->m_direction, light->m_spotAngle, Math::lerp(light->m_spotAngle, 0, light->m_spotPenumbra), light->m_diffuse);
 		break;
 	default:
 		LN_UNREACHABLE();
@@ -442,6 +442,9 @@ void ClusteredShadingSceneRenderer::onShaderPassChainging(ShaderPass* pass)
 
 	v = shader->findVariable(_T("ln_AmbientGroundColor"));
 	if (v) v->setVector(Vector4(m_renderSettings.ambientGroundColor));
+
+	v = shader->findVariable(_T("ln_FogParams"));
+	if (v) v->setVector(Vector4(m_renderSettings.fogColor.rgb() * m_renderSettings.fogColor.a, m_renderSettings.fogDensity));
 }
 
 } // namespace detail

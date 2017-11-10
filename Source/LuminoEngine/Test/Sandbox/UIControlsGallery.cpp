@@ -369,18 +369,16 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 			meshRes1->setIndex(base + 5, (x + 1) + (y + 1) * size.width);
 		}
 	}
-	auto clusterdShader = Shader::create(LN_LOCALFILE("Assets/NoLightingRendering.fx"));
+
 	auto tex1 = Assets::loadTexture(LN_LOCALFILE("Assets/grid_uv.png"));
 	auto material1 = Material::create();
 	material1->setMaterialTexture(tex1);
-	material1->setShader(clusterdShader);
 	auto meshModel1 = newObject<StaticMeshModel>(meshRes1);
 	meshModel1->addMaterial(material1);
 	auto mesh1 = StaticMeshComponent::create(meshModel1);
-	mesh1->setShader(clusterdShader);
-	//auto meshObj1 = newObject<WorldObject3D>();
-	//meshObj1->addComponent(mesh1);
-	//meshObj1->setPosition(-50, -20, 100);
+	auto meshObj1 = newObject<WorldObject3D>();
+	meshObj1->addComponent(mesh1);
+	meshObj1->setPosition(-50, -20, 100);
 		
 
 
@@ -395,9 +393,17 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 
 	Engine::getCamera3D()->setPosition(0, 10, -30);
 
-	//auto spotLight1 = SpotLight::create(Color::White, 30, Math::PI / 3);
+	auto spotLight1 = SpotLight::create(Color::White, 30, Math::PI / 3);
+	spotLight1->transform.lookAt(-Vector3::UnitY);
+	spotLight1->setPosition(0, 20, 0);
+	Engine::getWorld3D()->addWorldObject(spotLight1, true);
 
 
+	Engine::getWorld3D()->setAmbientColor(Color(0.25, 0.25, 0.25, 1.0));
+	Engine::getWorld3D()->setAmbientSkyColor(Color::Blue.withAlpha(0.5));
+	Engine::getWorld3D()->setAmbientGroundColor(Color::Green.withAlpha(0.25));
+	Engine::getWorld3D()->setFogColor(Color(1, 1, 1, 0.5));
+	Engine::getWorld3D()->setFogDensity(0.03);
 #if 0
 
 	int ClusterDepth = 32;

@@ -437,6 +437,9 @@ public:
 
 	Color withAlpha(float alpha) const { return Color(r, g, b, alpha); }
 
+
+	Vector3 rgb() const noexcept { return Vector3(r, g, b); }
+
 public:
 	//ColorF& operator = (const ColorF& src) { r = src.r; g = src.g; b = src.b; a = src.a; return *this; }
 

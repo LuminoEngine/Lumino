@@ -67,8 +67,8 @@ struct SceneGlobalRenderSettings
 	Color				ambientSkyColor = Color(0, 0, 0, 0);
 	Color				ambientGroundColor = Color(0, 0, 0, 0);
 
-	bool				fogEnabled = false;
-	Color				fogColor = Color(0, 0, 0, 0);
+	//bool				fogEnabled = false;
+	Color				fogColor = Color(1, 1, 1, 1);
 	float				fogDensity = 0;
 
 	// Reflection

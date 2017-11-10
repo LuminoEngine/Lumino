@@ -131,23 +131,35 @@ public:
 	void setVisibleGridPlane(bool visible) { m_visibleGridPlane = visible; }
 	//virtual DrawList* getRenderer() const override;
 
-	/** 環境光を取得します。 */
+	/** 環境光の色を取得します。 */
 	const Color& getAmbientColor() { return m_globalRenderSettings.ambientColor; }
 
-	/** 環境光を設定します。アルファ値を影響度とし、シーン全体のオブジェクトへ一様に影響します。(default: Color(0.5, 0.5, 0.5, 1.0)) */
+	/** 環境光の色を設定します。アルファ値を影響度とし、シーン全体のオブジェクトへ一様に影響します。(default: Color(0.25, 0.25, 0.25, 1.0)) */
 	void setAmbientColor(const Color& color) { m_globalRenderSettings.ambientColor = color; }
 
-	/** 半球ライティングのための空の環境光を取得します。 */
+	/** 半球ライティングのための空の環境光の色を取得します。 */
 	const Color& getAmbientSkyColor() { return m_globalRenderSettings.ambientSkyColor; }
 
-	/** 半球ライティングのための空の環境光を取得します。(default: Color(0, 0, 0, 0)) */
+	/** 半球ライティングのための空の環境光の色を設定します。(default: Color(0, 0, 0, 0)) */
 	void setAmbientSkyColor(const Color& color) { m_globalRenderSettings.ambientSkyColor = color; }
 
-	/** 半球ライティングのための地面の環境光を取得します。 */
+	/** 半球ライティングのための地面の環境光の色を取得します。 */
 	const Color& getAmbientGroundColor() { return m_globalRenderSettings.ambientGroundColor; }
 
-	/** 半球ライティングのための地面の環境光を取得します。(default: Color(0, 0, 0, 0)) */
+	/** 半球ライティングのための地面の環境光の色を設定します。(default: Color(0, 0, 0, 0)) */
 	void setAmbientGroundColor(const Color& color) { m_globalRenderSettings.ambientGroundColor = color; }
+
+	/** フォグの色を取得します。 */
+	const Color& getFogColor() { return m_globalRenderSettings.fogColor; }
+
+	/** フォグの色を設定します。(default: Color(1, 1, 1, 1)) */
+	void setFogColor(const Color& color) { m_globalRenderSettings.fogColor = color; }
+	
+	/** フォグの密度指数を取得します。 */
+	float getFogDensity() { return m_globalRenderSettings.fogDensity; }
+
+	/** フォグの密度指数を設定します。(default: 0) */
+	void setFogDensity(float density) { m_globalRenderSettings.fogDensity = density; }
 
 protected:
 	//virtual SceneGraph* GetSceneGraph() override;

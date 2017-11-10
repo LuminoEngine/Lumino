@@ -167,6 +167,7 @@ sampler	clustersSampler = sampler_state
 float4	ln_AmbientColor;
 float4	ln_AmbientSkyColor;
 float4	ln_AmbientGroundColor;
+float4	ln_FogParams;
 
 
 
@@ -333,6 +334,13 @@ float punctualLightIntensityToIrradianceFactor(float lightDistance, float cutoff
   return 1.0;
 }
 
+float _LN_CalcFogFactor(float3 depth)
+{
+	float f = ln_FogParams.a * depth;
+	return exp2(-f);
+	//return exp2(-f*f);
+}
+
 
 float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_ClusteredForward extra, LN_SurfaceOutput surface)
 {
@@ -444,7 +452,7 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 	result.rgb = mc.rgb * result.rgb;
 	
 	// calc ambient color
-	float4 ambient = float4(0, 0, 0, 0);
+	float3 ambient = float3(0, 0, 0);
 	{
 		// basic ambient light
 		ambient = ln_AmbientColor.xyz * ln_AmbientColor.a;
@@ -454,6 +462,11 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 		float4 c = lerp(ln_AmbientGroundColor, ln_AmbientSkyColor, hemisphere);
 		ambient = saturate(ambient + c.xyz * c.a);
 	}
+	
+	result.rgb += ambient;
+	
+	// fog
+	result.rgb = lerp(ln_FogParams.rgb, result.rgb, _LN_CalcFogFactor(viewPos.z));
 	
 	return float4(result.rgb, depth);
 }
