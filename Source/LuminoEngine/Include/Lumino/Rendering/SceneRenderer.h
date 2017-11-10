@@ -12,10 +12,10 @@ LN_NAMESPACE_BEGIN
 class RenderView;
 class RenderDiag;
 
-enum class AmbientLightingMode
-{
-
-};
+//enum class AmbientLightingMode
+//{
+//
+//};
 
 namespace detail {
 class RenderingPass2;
@@ -23,21 +23,6 @@ class DrawElement;
 class DrawElementList;
 struct DefaultStatus;
 
-struct SceneGlobalRenderSettings
-{
-	AmbientLightingMode	ambientLightingMode;
-	Color				ambientColor;
-	Color				ambientGroundColor;
-	Color				ambientSkyColor;
-
-	bool				fogEnabled;
-	Color				fogColor;
-	float				fogDensity;
-
-	// Reflection
-	// flare
-	// sky
-};
 
 /**
 	@brief	シーンの描画方法を定義し、描画コマンドを実行します。

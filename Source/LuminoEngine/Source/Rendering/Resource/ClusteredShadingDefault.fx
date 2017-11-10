@@ -164,7 +164,9 @@ sampler	clustersSampler = sampler_state
 	AddressV = Clamp;
 };
 
-
+float4	ln_AmbientColor;
+float4	ln_AmbientSkyColor;
+float4	ln_AmbientGroundColor;
 
 
 
@@ -438,8 +440,7 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 	if (lightIndices[2] > 0) result.b += 1;
 #endif
 	
-	// 環境色
-	//result += 0.5;
+	result += ln_AmbientColor.xyz * ln_AmbientColor.a;
 	
 	return float4(mc.xyz * result.rgb, depth);//mc.a);
 	

@@ -60,6 +60,21 @@ class DrawElementList;
 class SceneRenderer;
 
 
+struct SceneGlobalRenderSettings
+{
+	//AmbientLightingMode	ambientLightingMode = AmbientLightingMode::;
+	Color				ambientColor = Color(0, 0, 0, 0);
+	Color				ambientSkyColor = Color(0, 0, 0, 0);
+	Color				ambientGroundColor = Color(0, 0, 0, 0);
+
+	bool				fogEnabled = false;
+	Color				fogColor = Color(0, 0, 0, 0);
+	float				fogDensity = 0;
+
+	// Reflection
+	// flare
+	// sky
+};
 
 struct DefaultStatus
 {

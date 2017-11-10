@@ -11,7 +11,7 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 namespace tr { class GizmoModel; }
 class CameraViewportLayer2;
-
+namespace detail { class ClusteredShadingSceneRenderer; }
 
 /**
 	@brief
@@ -164,11 +164,11 @@ LN_INTERNAL_ACCESS:
 	void initialize(World* targetWorld, CameraComponent* hostingCamera);
 
 private:
-	World*								m_targetWorld;
-	Ref<CameraComponent>				m_hostingCamera;
-	Ref<detail::SceneRenderer>		m_internalRenderer;
-	//Ref<WorldRenderView>				m_mainRenderView;
-	WorldDebugDrawFlags					m_debugDrawFlags;
+	World*									m_targetWorld;
+	Ref<CameraComponent>					m_hostingCamera;
+	Ref<detail::SceneRenderer>				m_internalRenderer;
+	detail::ClusteredShadingSceneRenderer*	m_clusteredShadingSceneRenderer;
+	WorldDebugDrawFlags						m_debugDrawFlags;
 };
 
 /**

@@ -131,6 +131,24 @@ public:
 	void setVisibleGridPlane(bool visible) { m_visibleGridPlane = visible; }
 	//virtual DrawList* getRenderer() const override;
 
+	/** 環境光を取得します。 */
+	const Color& getAmbientColor() { return m_globalRenderSettings.ambientColor; }
+
+	/** 環境光を設定します。アルファ値を影響度とし、シーン全体のオブジェクトへ一様に影響します。(default: Color(0.5, 0.5, 0.5, 1.0)) */
+	void setAmbientColor(const Color& color) { m_globalRenderSettings.ambientColor = color; }
+
+	/** 半球ライティングのための空の環境光を取得します。 */
+	const Color& getAmbientSkyColor() { return m_globalRenderSettings.ambientSkyColor; }
+
+	/** 半球ライティングのための空の環境光を取得します。(default: Color(0, 0, 0, 0)) */
+	void setAmbientSkyColor(const Color& color) { m_globalRenderSettings.ambientSkyColor = color; }
+
+	/** 半球ライティングのための地面の環境光を取得します。 */
+	const Color& getAmbientGroundColor() { return m_globalRenderSettings.ambientGroundColor; }
+
+	/** 半球ライティングのための地面の環境光を取得します。(default: Color(0, 0, 0, 0)) */
+	void setAmbientGroundColor(const Color& color) { m_globalRenderSettings.ambientGroundColor = color; }
+
 protected:
 	//virtual SceneGraph* GetSceneGraph() override;
 
@@ -143,9 +161,11 @@ LN_INTERNAL_ACCESS:
 	PhysicsWorld* getPhysicsWorld3D() const;
 	SceneGraph3D* getSceneGraph3D() const;
 	Camera* getMainCamera() const;
+	const detail::SceneGlobalRenderSettings& getGlobalRenderSettings() const { return m_globalRenderSettings; }
 	virtual void beginUpdateFrame() override;
 	virtual void onInternalPhysicsUpdate(float deltaSceonds) override;
 	virtual void render(RenderingContext* context, WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen) override;
+
 
 private:
 	void createGridPlane();
@@ -154,6 +174,7 @@ private:
 
 	Ref<PhysicsWorld>		m_physicsWorld;
 	Ref<SceneGraph3D>		m_sceneGraph;
+	detail::SceneGlobalRenderSettings	m_globalRenderSettings;
 	Ref<Camera>				m_mainCamera;
 	Ref<Light>				m_mainLight;
 	Ref<StaticMeshModel>		m_gridPlane;

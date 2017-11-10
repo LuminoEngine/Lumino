@@ -773,6 +773,7 @@ bool CameraViewportLayer::OnPlatformEvent(const PlatformEventArgs& e)
 CameraViewportLayer2::CameraViewportLayer2()
 	: m_targetWorld(nullptr)
 	, m_hostingCamera(nullptr)
+	, m_clusteredShadingSceneRenderer(nullptr)
 	, m_debugDrawFlags(WorldDebugDrawFlags::None)
 {
 }
@@ -790,6 +791,7 @@ void CameraViewportLayer2::initialize(World* targetWorld, CameraComponent* hosti
 		auto internalRenderer = Ref<detail::ClusteredShadingSceneRenderer>::makeRef();
 		internalRenderer->initialize(detail::EngineDomain::getGraphicsManager());
 		m_internalRenderer = internalRenderer;
+		m_clusteredShadingSceneRenderer = internalRenderer;
 #else
 		auto internalRenderer = Ref<detail::ForwardShadingRenderer>::makeRef();
 		internalRenderer->initialize(detail::EngineDomain::getGraphicsManager());
@@ -832,7 +834,15 @@ void CameraViewportLayer2::renderScene(RenderTargetTexture* renderTarget, DepthB
 	//m_targetWorld->renderRoot(m_hostingCamera, m_debugDrawFlags, this);
 	m_targetWorld->renderRoot(this, m_debugDrawFlags);
 
-
+	if (m_clusteredShadingSceneRenderer)
+	{
+		// TODO: 暫定
+		if (m_hostingCamera->getProjectionMode() == CameraProjection_3D)
+		{
+			m_clusteredShadingSceneRenderer->setSceneGlobalRenderSettings(
+				static_cast<World3D*>(m_targetWorld)->getGlobalRenderSettings());
+		}
+	}
 
 
 	// TODO: float

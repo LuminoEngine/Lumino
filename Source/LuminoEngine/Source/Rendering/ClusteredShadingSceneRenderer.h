@@ -1,5 +1,6 @@
 
 #pragma once
+#include <Lumino/Rendering/Rendering.h>
 #include <Lumino/Rendering/SceneRenderer.h>
 
 LN_NAMESPACE_BEGIN
@@ -92,6 +93,7 @@ public:
 	ClusteredShadingSceneRenderer();
 	virtual ~ClusteredShadingSceneRenderer();
 	void initialize(GraphicsManager* manager);
+	void setSceneGlobalRenderSettings(const SceneGlobalRenderSettings& settings) { m_renderSettings = settings; }
 
 protected:
 	virtual void collect() override;
@@ -100,7 +102,8 @@ protected:
 	virtual void onShaderPassChainging(ShaderPass* pass) override;
 
 private:
-	LightClusters	m_lightClusters;
+	LightClusters				m_lightClusters;
+	SceneGlobalRenderSettings	m_renderSettings;
 };
 
 } // namespace detail

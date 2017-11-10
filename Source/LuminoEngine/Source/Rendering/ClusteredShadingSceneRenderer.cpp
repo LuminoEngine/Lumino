@@ -310,7 +310,7 @@ void ClusteredShadingGeometryRenderingPass::initialize()
 
 	//m_defaultShader = GraphicsManager::getInstance()->getBuiltinShader(BuiltinShader::LegacyDiffuse);
 
-	m_defaultShader = Shader::create(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/ClusteredShadingDefault.fx"), ShaderCodeType::RawIR);
+	m_defaultShader = Shader::create(_T("C:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/ClusteredShadingDefault.fx"), ShaderCodeType::RawIR);
 
 
 	//m_normalRenderTarget = Ref<RenderTargetTexture>::makeRef();
@@ -364,6 +364,9 @@ void ClusteredShadingSceneRenderer::initialize(GraphicsManager* manager)
 
 	// pass "Geometry"
 	addPass(newObject<ClusteredShadingGeometryRenderingPass>());
+
+	// TODO: Test
+	//m_renderSettings.ambientColor = Color(1, 0, 0, 1);
 }
 
 void ClusteredShadingSceneRenderer::prepare()
@@ -429,6 +432,16 @@ void ClusteredShadingSceneRenderer::onShaderPassChainging(ShaderPass* pass)
 
 	v = shader->findVariable(_T("ln_cameraPos"));
 	if (v) v->setVector(Vector4(m_lightClusters.m_cameraPos, 0));
+
+
+	v = shader->findVariable(_T("ln_AmbientColor"));
+	if (v) v->setVector(Vector4(m_renderSettings.ambientColor));	// TODO: Color 直接渡しできるようにしてもいいと思う
+
+	v = shader->findVariable(_T("ln_AmbientSkyColor"));
+	if (v) v->setVector(Vector4(m_renderSettings.ambientSkyColor));
+
+	v = shader->findVariable(_T("ln_AmbientGroundColor"));
+	if (v) v->setVector(Vector4(m_renderSettings.ambientGroundColor));
 }
 
 } // namespace detail
