@@ -62,6 +62,10 @@ static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_SubsetUnit 
 	{ _LT("ln_MaterialEmmisive"), BuiltinSemantics::MaterialEmmisive },
 	{ _LT("ln_MaterialSpecular"), BuiltinSemantics::MaterialSpecular },
 	{ _LT("ln_MaterialSpecularPower"), BuiltinSemantics::MaterialSpecularPower },
+	{ _LT("ln_MaterialM2Color"), BuiltinSemantics::MaterialM2Color },
+	{ _LT("ln_MaterialM2Roughness"), BuiltinSemantics::MaterialM2Roughness },
+	{ _LT("ln_MaterialM2Metallic"), BuiltinSemantics::MaterialM2Metallic },
+	{ _LT("ln_MaterialM2Specular"), BuiltinSemantics::MaterialM2Specular },
 	{ _LT("ln_ColorScale"), BuiltinSemantics::ColorScale },
 	{ _LT("ln_BlendColor"), BuiltinSemantics::BlendColor },
 	{ _LT("ln_ToneColor"), BuiltinSemantics::ToneColor },
@@ -309,6 +313,24 @@ void ShaderSemanticsManager::updateSubsetVariables(const SubsetInfo& info)
 				if (cm != nullptr)
 					varInfo.variable->setFloat(cm->m_power);
 				break;
+
+			case BuiltinSemantics::MaterialM2Color:
+				if (cm != nullptr)
+					varInfo.variable->setVector(cm->m_m2_color);
+				break;
+			case BuiltinSemantics::MaterialM2Roughness:
+				if (cm != nullptr)
+					varInfo.variable->setFloat(cm->m_m2_roughness);
+				break;
+			case BuiltinSemantics::MaterialM2Metallic:
+				if (cm != nullptr)
+					varInfo.variable->setFloat(cm->m_m2_metallic);
+				break;
+			case BuiltinSemantics::MaterialM2Specular:
+				if (cm != nullptr)
+					varInfo.variable->setFloat(cm->m_m2_specular);
+				break;
+
 			case BuiltinSemantics::ColorScale:
 				if (cm != nullptr)
 					varInfo.variable->setVector(cm->m_colorScale);

@@ -36,7 +36,7 @@ void World::initialize()
 	//m_insideWorldRenderer = newObject<DrawList>(detail::EngineDomain::getGraphicsManager());
 	m_debugRenderer = newObject<DrawList>(detail::EngineDomain::getGraphicsManager());
 
-	m_debugRendererDefaultMaterial = newObject<Material>();
+	m_debugRendererDefaultMaterial = newObject<CommonMaterial>();
 
 	for (int i = 0; i < detail::MaxOffscreenId; i++)
 	{

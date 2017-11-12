@@ -273,7 +273,7 @@ void CornellBox::initialize()
 
 	auto mesh = newObject<StaticMeshModel>(boxMesh);
 
-	auto material = Material::create();
+	auto material = CommonMaterial::create();
 	material->setMaterialTexture(Texture2D::getWhiteTexture());
 	mesh->addMaterial(material);
 	StaticMeshComponent::initialize(mesh);

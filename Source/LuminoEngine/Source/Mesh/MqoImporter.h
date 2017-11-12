@@ -192,7 +192,7 @@ private:
 	static void readFloats(const StringRef& str, float* values, int valuesCount);
 
 	void visitMaterialChunk();
-	void visitMaterial(Material* material);
+	void visitMaterial(CommonMaterial* material);
 	void visitObjectChunk(const StringRef& name);
 	void visitVertexChunk(int vertexCount);
 	void visitVertex(const Vector3& vertex, int index);

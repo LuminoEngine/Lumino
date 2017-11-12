@@ -595,7 +595,7 @@ void DrawElementBatch::setRenderFeature(IRenderFeature* renderFeature)
 }
 
 //------------------------------------------------------------------------------
-bool DrawElementBatch::Equal(const DrawElementBatch& state_, Material* material, const BuiltinEffectData& effectData) const
+bool DrawElementBatch::Equal(const DrawElementBatch& state_, CommonMaterial* material, const BuiltinEffectData& effectData) const
 {
 	assert(m_combinedMaterial != nullptr);
 	return
@@ -780,7 +780,7 @@ void DrawElementList::clearCommands()
 }
 
 //------------------------------------------------------------------------------
-void DrawElementList::postAddCommandInternal(const DrawElementBatch& state, Material* availableMaterial, const BuiltinEffectData& effectData, bool forceStateChange, DrawElement* element)
+void DrawElementList::postAddCommandInternal(const DrawElementBatch& state, CommonMaterial* availableMaterial, const BuiltinEffectData& effectData, bool forceStateChange, DrawElement* element)
 {
 	if (forceStateChange || m_batchList.isEmpty() ||
 		!m_batchList.getLast().Equal(state, availableMaterial, effectData))
@@ -951,7 +951,7 @@ void DrawList::initialize(detail::GraphicsManager* manager)
 	m_manager = manager;
 	//m_state.reset();
 
-	m_defaultMaterial = newObject<Material>();
+	m_defaultMaterial = newObject<CommonMaterial>();
 
 	// とりあえず 10 個くらい
 	for (int i = 0; i < 10; i++)
@@ -1108,7 +1108,7 @@ void DrawList::setDepthWriteEnabled(bool enabled)
 }
 
 //------------------------------------------------------------------------------
-void DrawList::setDefaultMaterial(Material* material)
+void DrawList::setDefaultMaterial(CommonMaterial* material)
 {
 	if (LN_REQUIRE(material != nullptr)) return;
 	getCurrentState()->m_material = material;
@@ -1229,7 +1229,7 @@ void DrawList::drawSquarePrimitive(
 }
 
 //------------------------------------------------------------------------------
-void DrawList::drawSquare(float sizeX, float sizeZ, int slicesX, int slicesZ, const Color& color, const Matrix& localTransform, Material* material)
+void DrawList::drawSquare(float sizeX, float sizeZ, int slicesX, int slicesZ, const Color& color, const Matrix& localTransform, CommonMaterial* material)
 {
 	class DrawCylinderElement : public detail::LightingDrawElement	// TODO: LightingDrawElement は忘れやすい。デフォルトありでいいと思う
 	{
@@ -1250,7 +1250,7 @@ void DrawList::drawSquare(float sizeX, float sizeZ, int slicesX, int slicesZ, co
 }
 
 //------------------------------------------------------------------------------
-void DrawList::drawArc(float startAngle, float endAngle, float innerRadius, float outerRadius, int slices, const Color& color, const Matrix& localTransform, Material* material)
+void DrawList::drawArc(float startAngle, float endAngle, float innerRadius, float outerRadius, int slices, const Color& color, const Matrix& localTransform, CommonMaterial* material)
 {
 	class DrawArcElement : public detail::LightingDrawElement	// TODO: LightingDrawElement は忘れやすい。デフォルトありでいいと思う
 	{
@@ -1271,7 +1271,7 @@ void DrawList::drawArc(float startAngle, float endAngle, float innerRadius, floa
 }
 
 //------------------------------------------------------------------------------
-void DrawList::drawBox(const Box& box, const Color& color, const Matrix& localTransform, Material* material)
+void DrawList::drawBox(const Box& box, const Color& color, const Matrix& localTransform, CommonMaterial* material)
 {
 	if (box.center != Vector3::Zero) LN_NOTIMPLEMENTED();
 
@@ -1296,7 +1296,7 @@ void DrawList::drawBox(const Box& box, const Color& color, const Matrix& localTr
 }
 
 //------------------------------------------------------------------------------
-void DrawList::drawSphere(float radius, int slices, int stacks, const Color& color, const Matrix& localTransform, Material* material)
+void DrawList::drawSphere(float radius, int slices, int stacks, const Color& color, const Matrix& localTransform, CommonMaterial* material)
 {
 	class DrawSphereElement : public detail::LightingDrawElement	// TODO: LightingDrawElement は忘れやすい。デフォルトありでいいと思う
 	{
@@ -1359,13 +1359,13 @@ void DrawList::drawCone(float radius, float height, int slices, const Color& col
 }
 
 //------------------------------------------------------------------------------
-void DrawList::drawMesh(MeshResource* mesh, int subsetIndex, Material* material)
+void DrawList::drawMesh(MeshResource* mesh, int subsetIndex, CommonMaterial* material)
 {
 	drawMeshResourceInternal(mesh, subsetIndex, material);
 }
 
 //------------------------------------------------------------------------------
-//void DrawList::drawMesh(StaticMeshModel* mesh, int subsetIndex, Material* material)
+//void DrawList::drawMesh(StaticMeshModel* mesh, int subsetIndex, CommonMaterial* material)
 //{
 //	DrawMeshSubsetInternal(mesh, subsetIndex, material);
 //}
@@ -1389,7 +1389,7 @@ void DrawList::blit(Texture* source, RenderTargetTexture* dest, const Matrix& tr
 }
 
 //------------------------------------------------------------------------------
-void DrawList::blit(Texture* source, RenderTargetTexture* dest, Material* material)
+void DrawList::blit(Texture* source, RenderTargetTexture* dest, CommonMaterial* material)
 {
 	blitInternal(source, dest, Matrix::Identity, material);
 }
@@ -1546,7 +1546,7 @@ void DrawList::drawSprite(
 	const Color& color,
 	SpriteBaseDirection baseDirection,
 	BillboardType billboardType,
-	Material* material)
+	CommonMaterial* material)
 {
 	class DrawElement_DrawSprite : public detail::DrawElement
 	{
@@ -1662,9 +1662,9 @@ void DrawList::popMetadata()
 //
 ////------------------------------------------------------------------------------
 //template<typename TElement>
-//TElement* DrawList::resolveDrawElement(detail::DrawingSectionId sectionId, detail::IRendererPloxy* renderer, Material* userMaterial)
+//TElement* DrawList::resolveDrawElement(detail::DrawingSectionId sectionId, detail::IRendererPloxy* renderer, CommonMaterial* userMaterial)
 //{
-//	Material* availableMaterial = (userMaterial != nullptr) ? userMaterial : m_defaultMaterial.Get();
+//	CommonMaterial* availableMaterial = (userMaterial != nullptr) ? userMaterial : m_defaultMaterial.Get();
 //
 //	// これを決定してから比較を行う
 //	m_state.state.SetStandaloneShaderRenderer(renderer->isStandaloneShader());
@@ -1694,7 +1694,7 @@ void DrawList::popMetadata()
 //}
 
 //------------------------------------------------------------------------------
-void DrawList::drawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Material* material)
+void DrawList::drawMeshResourceInternal(MeshResource* mesh, int subsetIndex, CommonMaterial* material)
 {
 	class DrawElement_DrawMeshResourceInternal : public detail::LightingDrawElement
 	{
@@ -1725,7 +1725,7 @@ void DrawList::drawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Mat
 }
 
 //------------------------------------------------------------------------------
-//void DrawList::DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material)
+//void DrawList::DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, CommonMaterial* material)
 //{
 //	/* 
 //	 * この時点では MeshResource ではなく StaticMeshModel が必要。
@@ -1759,7 +1759,7 @@ void DrawList::drawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Mat
 //}
 
 //------------------------------------------------------------------------------
-void DrawList::blitInternal(Texture* source, RenderTargetTexture* dest, const Matrix& transform, Material* material)
+void DrawList::blitInternal(Texture* source, RenderTargetTexture* dest, const Matrix& transform, CommonMaterial* material)
 {
 
 	class DrawElement_BlitInternal : public detail::DrawElement
@@ -1892,7 +1892,7 @@ void RenderView::filterWorldMatrix(Matrix* outMatrix)
 //------------------------------------------------------------------------------
 DrawList::StagingState::StagingState()
 {
-	//m_defaultMaterial = Ref<Material>::makeRef();
+	//m_defaultMaterial = Ref<CommonMaterial>::makeRef();
 	//m_defaultMaterial->initialize();
 	reset();
 }

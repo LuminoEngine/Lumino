@@ -933,21 +933,21 @@ void StaticMeshModel::addMaterials(int count)
 	{
 		for (int i = oldCount; i < newCount; ++i)
 		{
-			auto m = newObject<Material>();
+			auto m = newObject<CommonMaterial>();
 			m_materials->getAt(i, m);
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
-void StaticMeshModel::addMaterial(Material* material)
+void StaticMeshModel::addMaterial(CommonMaterial* material)
 {
 	if (LN_ENSURE(m_materials)) return;
 	m_materials->add(material);
 }
 
 //------------------------------------------------------------------------------
-Material* StaticMeshModel::getMaterial(int index) const
+CommonMaterial* StaticMeshModel::getMaterial(int index) const
 {
 	return m_materials->getAt(index);
 }

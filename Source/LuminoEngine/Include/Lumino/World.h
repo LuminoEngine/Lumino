@@ -5,7 +5,7 @@
 
 LN_NAMESPACE_BEGIN
 namespace detail { class SceneGraphRenderingProfilerInterface; }
-class Material;
+class CommonMaterial;
 class DrawList;
 class StaticMeshModel;
 class CameraComponent;
@@ -82,7 +82,7 @@ LN_INTERNAL_ACCESS:
 	Ref<RenderingContext>			m_renderer;
 	//Ref<DrawList>					m_insideWorldRenderer;
 	Ref<DrawList>					m_debugRenderer;
-	Ref<Material>					m_debugRendererDefaultMaterial;	// TODO: DebugDrawList みたいに派生させてまとめたほうがいいかな・・・
+	Ref<CommonMaterial>					m_debugRendererDefaultMaterial;	// TODO: DebugDrawList みたいに派生させてまとめたほうがいいかな・・・
 	List<Ref<OffscreenWorldView>>	m_offscreenWorldViewList;
 	List<int>							m_offscreenIdStorage;
 

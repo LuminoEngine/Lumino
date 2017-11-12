@@ -23,8 +23,8 @@ LN_CONSTRUCT_ACCESS:
 	virtual void onRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
 private:
-	Ref<Material>	m_material;
-	Ref<Material>	m_material2;
+	Ref<CommonMaterial>	m_material;
+	Ref<CommonMaterial>	m_material2;
 	Ref<RenderTargetTexture>	m_ssaoRenderTarget;
 };
 

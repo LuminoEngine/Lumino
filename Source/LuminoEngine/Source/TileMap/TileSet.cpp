@@ -36,9 +36,9 @@ TileSet::~TileSet()
 //------------------------------------------------------------------------------
 void TileSet::initialize(detail::GraphicsManager* manager)
 {
-	m_material = Object::makeRef<Material>();
+	m_material = Object::makeRef<CommonMaterial>();
 	// TODO:自己照明
-	m_material->setBuiltinColorParameter(Material::AmbientParameter, Color::White);
+	m_material->setBuiltinColorParameter(CommonMaterial::AmbientParameter, Color::White);
 }
 
 //------------------------------------------------------------------------------
@@ -64,7 +64,7 @@ void TileSet::LookupTileImage(int id, Texture** outTexture, RectI* outSrcRect)
 }
 
 //------------------------------------------------------------------------------
-Material* TileSet::getMaterial() const
+CommonMaterial* TileSet::getMaterial() const
 {
 	return m_material;
 }

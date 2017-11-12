@@ -371,7 +371,7 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 	}
 
 	auto tex1 = Assets::loadTexture(LN_LOCALFILE("Assets/grid_uv.png"));
-	auto material1 = Material::create();
+	auto material1 = CommonMaterial::create();
 	material1->setMaterialTexture(tex1);
 	auto meshModel1 = newObject<StaticMeshModel>(meshRes1);
 	meshModel1->addMaterial(material1);

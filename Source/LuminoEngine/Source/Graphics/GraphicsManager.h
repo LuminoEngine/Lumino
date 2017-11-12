@@ -32,9 +32,9 @@ class NanoVGCommandListCache;
 
 
 
-// ShaderVariable からコミットするルートと、Material からコミットするルートがある。
+// ShaderVariable からコミットするルートと、CommonMaterial からコミットするルートがある。
 // ShaderVariableCommitSerializeHelper は、その同じような処理をまとめたクラス。
-// Material は ShaderVariable を参照するが、Material から ShaderVariable に値をセットしたくない。
+// CommonMaterial は ShaderVariable を参照するが、CommonMaterial から ShaderVariable に値をセットしたくない。
 // ShaderVariable はユーザーに見えるので、知らないうちに値が変わっている、ということが発生してしまう。
 class ShaderVariableCommitSerializeHelper
 {

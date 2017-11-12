@@ -12,7 +12,7 @@ LN_NAMESPACE_BEGIN
 namespace detail { class RenderTargetTextureCache; }
 class Pen;
 class Font;
-class Material;
+class CommonMaterial;
 class MeshResource;
 class StaticMeshModel;
 class DrawList;
@@ -325,7 +325,7 @@ public:
 	void setRenderFeature(IRenderFeature* renderFeature);
 	IRenderFeature* getRenderFeature() const { return m_renderFeature; }
 
-	bool Equal(const DrawElementBatch& state, Material* material, const BuiltinEffectData& effectData) const;
+	bool Equal(const DrawElementBatch& state, CommonMaterial* material, const BuiltinEffectData& effectData) const;
 	void reset();
 	void applyStatus(InternalContext* context, const DefaultStatus& defaultStatus);
 	size_t getHashCode() const;
@@ -360,7 +360,7 @@ public:
 	void clearCommands();
 
 	template<typename T, typename... TArgs>
-	T* addCommand(const DrawElementBatch& state, Material* availableMaterial, const BuiltinEffectData& effectData, bool forceStateChange, TArgs... args)
+	T* addCommand(const DrawElementBatch& state, CommonMaterial* availableMaterial, const BuiltinEffectData& effectData, bool forceStateChange, TArgs... args)
 	{
 		auto handle = m_commandDataCache.allocData(sizeof(T));
 		T* t = new (m_commandDataCache.getData(handle))T(args...);
@@ -386,7 +386,7 @@ public:
 	DepthBuffer* getDefaultDepthBuffer() const { return m_depthBuffer; }
 
 private:
-	void postAddCommandInternal(const DrawElementBatch& state, Material* availableMaterial, const BuiltinEffectData& effectData, bool forceStateChange, DrawElement* element);
+	void postAddCommandInternal(const DrawElementBatch& state, CommonMaterial* availableMaterial, const BuiltinEffectData& effectData, bool forceStateChange, DrawElement* element);
 
 	CommandDataCache		m_commandDataCache;
 	CommandDataCache		m_extDataCache;
@@ -665,25 +665,25 @@ public:
 		ShaderPass* shaderPass*/);
 
 	// TODO: plane かな
-	void drawSquare(float sizeX, float sizeZ, int slicesX, int slicesZ, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity, Material* material = nullptr);
+	void drawSquare(float sizeX, float sizeZ, int slicesX, int slicesZ, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity, CommonMaterial* material = nullptr);
 	
-	void drawArc(float startAngle, float endAngle, float innerRadius, float outerRadius, int slices, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity, Material* material = nullptr);
+	void drawArc(float startAngle, float endAngle, float innerRadius, float outerRadius, int slices, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity, CommonMaterial* material = nullptr);
 
-	void drawBox(const Box& box, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity, Material* material = nullptr);
+	void drawBox(const Box& box, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity, CommonMaterial* material = nullptr);
 
-	void drawSphere(float radius, int slices = 8, int stacks = 8, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity, Material* material = nullptr);
+	void drawSphere(float radius, int slices = 8, int stacks = 8, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity, CommonMaterial* material = nullptr);
 
 	void drawCylinder(float radius, float height, int slices = 8, int stacks = 1, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity);
 
 	void drawCone(float radius, float height, int slices = 8, const Color& color = Color::White, const Matrix& localTransform = Matrix::Identity);
 
-	void drawMesh(MeshResource* mesh, int subsetIndex, Material* material);
-	//void drawMesh(StaticMeshModel* mesh, int subsetIndex, Material* material);
+	void drawMesh(MeshResource* mesh, int subsetIndex, CommonMaterial* material);
+	//void drawMesh(StaticMeshModel* mesh, int subsetIndex, CommonMaterial* material);
 
 	void blit(Texture* source);
 	void blit(Texture* source, const Matrix& transform);
 	void blit(Texture* source, RenderTargetTexture* dest, const Matrix& transform);
-	void blit(Texture* source, RenderTargetTexture* dest, Material* material);
+	void blit(Texture* source, RenderTargetTexture* dest, CommonMaterial* material);
 
 	void drawGlyphRun(const Point& position, GlyphRun* glyphRun);
 
@@ -704,7 +704,7 @@ public:
 		const Color& color,
 		SpriteBaseDirection baseDirection,
 		BillboardType billboardType,
-		Material* material = nullptr);
+		CommonMaterial* material = nullptr);
 
 	void drawRectangle(const Rect& rect);
 
@@ -716,7 +716,7 @@ LN_INTERNAL_ACCESS:
 	void initialize(detail::GraphicsManager* manager);
 	detail::GraphicsManager* getManager() const { return m_manager; }
 	detail::DrawElementList* getDrawElementList() { return &m_drawElementList; }
-	void setDefaultMaterial(Material* material);
+	void setDefaultMaterial(CommonMaterial* material);
 	void setBuiltinEffectData(const detail::BuiltinEffectData& data);
 	void beginMakeElements();
 
@@ -727,10 +727,10 @@ LN_INTERNAL_ACCESS:
 	const DrawElementMetadata* getMetadata();
 	void popMetadata();
 
-	template<typename TElement> TElement* resolveDrawElement(detail::IRenderFeature* renderFeature, Material* userMaterial, bool append = false);
-	void drawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Material* material);
-	//void DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, Material* material);
-	void blitInternal(Texture* source, RenderTargetTexture* dest, const Matrix& transform, Material* material);
+	template<typename TElement> TElement* resolveDrawElement(detail::IRenderFeature* renderFeature, CommonMaterial* userMaterial, bool append = false);
+	void drawMeshResourceInternal(MeshResource* mesh, int subsetIndex, CommonMaterial* material);
+	//void DrawMeshSubsetInternal(StaticMeshModel* mesh, int subsetIndex, CommonMaterial* material);
+	void blitInternal(Texture* source, RenderTargetTexture* dest, const Matrix& transform, CommonMaterial* material);
 	void drawFrameRectangle(const Rect& rect);
 	//void renderSubView(RenderView* listSet, detail::SceneRenderer* renderer = nullptr, RenderTargetTexture* defaultRenderTarget = nullptr, DepthBuffer* defaultDepthBuffer = nullptr);
 
@@ -747,7 +747,7 @@ private:
 	{
 	public:
 		detail::DrawElementBatch		m_state;
-		Ref<Material>				m_material;		// TODO: これは内容を書き換えないようにしたほうがよさそう。今の使い方てきに。
+		Ref<CommonMaterial>				m_material;		// TODO: これは内容を書き換えないようにしたほうがよさそう。今の使い方てきに。
 		detail::BuiltinEffectData		m_builtinEffectData;
 		Ref<Shader>					m_defaultMaterialShader;
 
@@ -765,7 +765,7 @@ private:
 	detail::GraphicsManager*		m_manager;
 	List<Ref<StagingState>>		m_freeStateStack;
 	List<Ref<StagingState>>		m_aliveStateStack;	// size >= 1
-	Ref<Material>				m_defaultMaterial;
+	Ref<CommonMaterial>				m_defaultMaterial;
 
 
 	detail::DrawElementList			m_drawElementList;
@@ -813,11 +813,11 @@ private:
 
 //------------------------------------------------------------------------------
 template<typename TElement>
-inline TElement* DrawList::resolveDrawElement(detail::IRenderFeature* renderFeature, Material* userMaterial, bool append)
+inline TElement* DrawList::resolveDrawElement(detail::IRenderFeature* renderFeature, CommonMaterial* userMaterial, bool append)
 {
-	//Material* availableMaterial = m_defaultMaterial;// = (userMaterial != nullptr) ? userMaterial : getCurrentState()->m_defaultMaterial.get();
+	//CommonMaterial* availableMaterial = m_defaultMaterial;// = (userMaterial != nullptr) ? userMaterial : getCurrentState()->m_defaultMaterial.get();
 	//if (getCurrentState()->m_defaultMaterial != nullptr) availableMaterial = getCurrentState()->m_defaultMaterial;
-	Material* availableMaterial = userMaterial;
+	CommonMaterial* availableMaterial = userMaterial;
 	if (availableMaterial == nullptr) availableMaterial = getCurrentState()->m_material;
 	if (availableMaterial == nullptr) availableMaterial = m_defaultMaterial;
 

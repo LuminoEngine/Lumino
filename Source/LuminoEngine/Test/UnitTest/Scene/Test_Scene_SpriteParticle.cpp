@@ -6,7 +6,7 @@ class Test_Scene_SpriteParticle : public ::testing::Test
 protected:
 	virtual void SetUp()
 	{
-		material = Material::create();
+		material = CommonMaterial::create();
 		material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("TestData/Particle1.png")));
 		material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 

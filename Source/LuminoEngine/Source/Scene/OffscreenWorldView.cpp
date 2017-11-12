@@ -223,7 +223,7 @@ void SkyComponent::initialize()
 	{
 
 		auto shader = ln::Shader::create(_LT("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Scene/Resource/Sky.fx"));
-		m_skyMaterial = newObject<Material>();
+		m_skyMaterial = newObject<CommonMaterial>();
 		m_skyMaterial->setShader(shader);
 	}
 }
@@ -395,7 +395,7 @@ void MirrorComponent::initialize()
 	detail::EngineDomain::getDefaultWorld3D()->addOffscreenWorldView(m_offscreen);
 	m_offscreen->hideVisual(this);
 
-	m_material = newObject<Material>();
+	m_material = newObject<CommonMaterial>();
 	//m_material->setMaterialTexture(Texture2D::getBlackTexture());
 	//m_material->setMaterialTexture(Texture2D::getWhiteTexture());
 	//m_material->setShader(Shader::getBuiltinShader(BuiltinShader::Sprite));

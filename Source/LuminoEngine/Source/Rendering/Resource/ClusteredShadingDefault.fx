@@ -170,6 +170,9 @@ float4	ln_AmbientGroundColor;
 float4	ln_FogParams;
 
 
+// Test
+float4	ln_MaterialM2Color;
+
 
 // ★コア部分の処理は Lib に置く。Auto Generation ではない。ユーザーが vs/ps を直書きするときに使えるようにするため。
 LN_VSOutput_ClusteredForward _LN_ProcessVertex_ClusteredForward(LN_VSInput input)

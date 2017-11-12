@@ -440,7 +440,7 @@ void TileMap::setTilesetTexture( Graphics::Texture* texture_ )
 		//mUVHeight = static_cast< lnFloat >( mTileHeight ) / mTilesetTexture->getRealSize().y;
   //  }
 
-    this->mNodeRenderParam.Subset[ 0 ].Material.setTexture( texture_ );
+    this->mNodeRenderParam.Subset[ 0 ].CommonMaterial.setTexture( texture_ );
 }
 
 //----------------------------------------------------------------------

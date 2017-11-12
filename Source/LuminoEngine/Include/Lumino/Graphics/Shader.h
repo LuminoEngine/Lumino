@@ -8,7 +8,7 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 class ShaderVariable;
-class Material;
+class CommonMaterial;
 class Shader;
 using ShaderPtr = Ref<Shader>;
 
@@ -54,6 +54,10 @@ LN_ENUM(BuiltinSemantics)
 	MaterialEmmisive,		// vector
 	MaterialSpecular,		// vector
 	MaterialSpecularPower,	// float
+	MaterialM2Color,		// vector
+	MaterialM2Roughness,	// float
+	MaterialM2Metallic,		// float
+	MaterialM2Specular,		// float
 	ColorScale,				// vector (Built-in effect)
 	BlendColor,				// vector (Built-in effect)
 	ToneColor,				// vector (Built-in effect)
@@ -277,7 +281,7 @@ LN_INTERNAL_ACCESS:
 
 
 // TODO: Driver でも使っている。初期値を保持するため。
-// Material でも使っている。こちらは ManagedTexture を使う。
+// CommonMaterial でも使っている。こちらは ManagedTexture を使う。
 class ShaderValue
 {
 public:
