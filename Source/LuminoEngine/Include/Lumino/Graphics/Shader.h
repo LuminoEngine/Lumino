@@ -38,6 +38,9 @@ LN_ENUM(BuiltinSemantics)
 	// Element unit
 	WorldViewProjection,
 	World,
+	WorldView,
+	WorldViewIT,			// transpose(inverse(WorldView));
+
 	LightEnables,			// bool[]
 	LightWVPMatrices,		// matrix[]
 	LightDirections,		// vector[]
@@ -121,7 +124,7 @@ public:
 	void tryPushVariable(ShaderVariable* var);
 	void updateSceneVariables(const SceneInfo& info);
 	void updateCameraVariables(const CameraInfo& info);
-	void updateElementVariables(const ElementInfo& info);
+	void updateElementVariables(const CameraInfo& cameraInfo, const ElementInfo& info);
 	void updateSubsetVariables(const SubsetInfo& info);
 
 	// blit 用

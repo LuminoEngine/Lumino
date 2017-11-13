@@ -310,7 +310,7 @@ void ClusteredShadingGeometryRenderingPass::initialize()
 
 	//m_defaultShader = GraphicsManager::getInstance()->getBuiltinShader(BuiltinShader::LegacyDiffuse);
 
-	m_defaultShader = Shader::create(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/ClusteredShadingDefault.fx"), ShaderCodeType::RawIR);
+	m_defaultShader = Shader::create(_T("C:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/ClusteredShadingDefault.fx"), ShaderCodeType::RawIR);
 
 
 	m_normalRenderTarget = Ref<RenderTargetTexture>::makeRef();
@@ -384,14 +384,25 @@ void ClusteredShadingSceneRenderer::collect()
 	m_lightClusters.endMakeClusters();
 }
 
+static Vector3 transformDirection(const Vector3& vec, const Matrix& mat)
+{
+	return Vector3(
+		(((vec.x * mat.m11) + (vec.y * mat.m21)) + (vec.z * mat.m31)),
+		(((vec.x * mat.m12) + (vec.y * mat.m22)) + (vec.z * mat.m32)),
+		(((vec.x * mat.m13) + (vec.y * mat.m23)) + (vec.z * mat.m33)));
+
+}
+
 void ClusteredShadingSceneRenderer::onCollectLight(DynamicLightInfo* light)
 {
 	if (LN_REQUIRE(light)) return;
 
+	const CameraInfo& view = getRenderView()->m_cameraInfo;
+
 	switch (light->m_type)
 	{
 	case LightType::Directional:
-		m_lightClusters.addDirectionalLight(light->m_direction, light->m_diffuse);
+		m_lightClusters.addDirectionalLight(transformDirection(-light->m_direction/* * Vector3(-1,1,1)*/, view.viewMatrix), light->m_diffuse);
 		break;
 	case LightType::Point:
 		m_lightClusters.addPointLight(light->m_position, light->m_range, light->m_diffuse);

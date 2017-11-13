@@ -7,8 +7,11 @@
 
 #define LN_EPSILON 1e-6
 
+float4x4	ln_View;
 float4x4	ln_World;
 float4x4	ln_WorldViewProjection;
+float4x4	ln_WorldView;
+float4x4	ln_WorldViewIT;
 float2		ln_ViewportPixelSize;
 texture		ln_MaterialTexture;
 
@@ -71,9 +74,11 @@ void _LN_InitSurfaceOutput(LN_PSInput_Common common, inout LN_SurfaceOutput surf
 
 LN_VSOutput_Common _LN_ProcessVertex_Common(LN_VSInput input)
 {
+	//float4x4 normalMatrix  = transpose(/*inverse*/(ln_WorldView));
+	
 	LN_VSOutput_Common o;
 	o.svPos			= mul(float4(input.Pos, 1.0f), ln_WorldViewProjection);
-	o.Normal		= mul(float4(input.Normal, 1.0f), ln_World).xyz;
+	o.Normal		= mul(float4(input.Normal, 1.0f), ln_WorldViewIT).xyz;
 	o.UV			= input.UV + (float2(0.5, 0.5) / ln_ViewportPixelSize);
 	o.Color			= input.Color;
 	return o;
@@ -102,8 +107,124 @@ float4 LN_Square(float4 x)
 
 
 
+//------------------------------------------------------------------------------
+// Lib (PBR)
+
+// DirectLightIrradiance 系関数の出力。
+// ピクセルへのライトごとの影響情報
+struct IncidentLight
+{
+	float3 color;
+	float3 direction;
+	bool visible;
+};
+
+// ピクセルへのライトすべての影響情報
+struct ReflectedLight
+{
+	float3 directDiffuse;
+	float3 directSpecular;
+	float3 indirectDiffuse;
+	float3 indirectSpecular;
+};
+
+struct GeometricContext
+{
+	float3 position;
+	float3 normal;
+	float3 viewDir;
+};
+
+struct Material
+{
+	float3 diffuseColor;
+	float specularRoughness;
+	float3 specularColor;
+};
 
 
+struct DirectionalLight
+{
+	float3 direction;
+	float3 color;
+};
+
+void getDirectionalDirectLightIrradiance(const DirectionalLight directionalLight, const GeometricContext geometry, out IncidentLight directLight)
+{
+	directLight.color = directionalLight.color;
+	directLight.direction = directionalLight.direction;
+	directLight.visible = true;
+}
+
+
+
+#define PI 3.14159265359
+#define PI2 6.28318530718
+#define RECIPROCAL_PI 0.31830988618
+#define RECIPROCAL_PI2 0.15915494
+#define LOG2 1.442695
+#define EPSILON 1e-6
+
+
+
+// BRDFs
+
+// Normalized Lambert
+float3 DiffuseBRDF(float3 diffuseColor) {
+  return diffuseColor / PI;
+}
+
+float3 F_Schlick(float3 specularColor, float3 H, float3 V) {
+  return (specularColor + (1.0 - specularColor) * pow(1.0 - saturate(dot(V,H)), 5.0));
+}
+
+float D_GGX(float a, float dotNH) {
+  float a2 = a*a;
+  float dotNH2 = dotNH*dotNH;
+  float d = dotNH2 * (a2 - 1.0) + 1.0;
+  return a2 / (PI * d * d);
+}
+
+float G_Smith_Schlick_GGX(float a, float dotNV, float dotNL) {
+  float k = a*a*0.5 + EPSILON;
+  float gl = dotNL / (dotNL * (1.0 - k) + k);
+  float gv = dotNV / (dotNV * (1.0 - k) + k);
+  return gl*gv;
+}
+
+// Cook-Torrance
+float3 SpecularBRDF(const in IncidentLight directLight, const in GeometricContext geometry, float3 specularColor, float roughnessFactor) {
+
+  float3 N = geometry.normal;
+  float3 V = geometry.viewDir;
+  float3 L = directLight.direction;
+
+  float dotNL = saturate(dot(N,L));
+  float dotNV = saturate(dot(N,V));
+  float3 H = normalize(L+V);
+  float dotNH = saturate(dot(N,H));
+  float dotVH = saturate(dot(V,H));
+  float dotLV = saturate(dot(L,V));
+  float a = roughnessFactor * roughnessFactor;
+
+  float D = D_GGX(a, dotNH);
+  float G = G_Smith_Schlick_GGX(a, dotNV, dotNL);
+  float3 F = F_Schlick(specularColor, V, H);
+  return (F*(G*D))/(4.0*dotNL*dotNV+EPSILON);
+}
+
+// RenderEquations(RE)
+void RE_Direct(const in IncidentLight directLight, const in GeometricContext geometry, const in Material material, inout ReflectedLight reflectedLight) {
+
+  float dotNL = saturate(dot(geometry.normal, directLight.direction));
+  float3 irradiance = dotNL * directLight.color;
+
+  // punctual light
+  irradiance *= PI;
+
+  reflectedLight.directDiffuse += irradiance * DiffuseBRDF(material.diffuseColor);
+  reflectedLight.directSpecular += irradiance * SpecularBRDF(directLight, geometry, material.specularColor, material.specularRoughness);
+}
 
 
 
@@ -115,12 +236,16 @@ struct LN_VSOutput_ClusteredForward
 {
 	float3	WorldPos	: TEXCOORD10;
 	float3	VertexPos	: TEXCOORD11;
+	
+	float3	vViewPosition 	: TEXCOORD12;	// 頂点位置から視点位置までのベクトル
 };
 
 struct LN_PSInput_ClusteredForward
 {
 	float3	WorldPos	: TEXCOORD10;
 	float3	VertexPos	: TEXCOORD11;
+	
+	float3	vViewPosition 	: TEXCOORD12;
 };
 
 
@@ -151,7 +276,7 @@ static const int MaxLights = 16;
 float		ln_nearClip;
 float		ln_farClip;
 float3		ln_cameraPos;
-float4x4	ln_View;
+//float4x4	ln_View;
 
 texture3D ln_clustersTexture;
 sampler	clustersSampler = sampler_state
@@ -180,6 +305,10 @@ LN_VSOutput_ClusteredForward _LN_ProcessVertex_ClusteredForward(LN_VSInput input
 	LN_VSOutput_ClusteredForward output;
 	output.WorldPos = mul(float4(input.Pos, 1.0), ln_World).xyz;
 	output.VertexPos = input.Pos;
+	
+	
+	float4 mvPosition = mul(float4(input.Pos, 1.0), ln_WorldView);
+	output.vViewPosition  = -mvPosition.xyz;
 	return output;
 }
 
@@ -366,6 +495,25 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 	
 	float4 mc = surface.Albedo;// * ln_ColorScale;//(tex2D(MaterialTextureSampler, p.UV) * p.Color) * ln_ColorScale;
 	
+
+	
+	/**/
+	GeometricContext geometry;
+	geometry.position = -extra.vViewPosition;//-vViewPosition;
+	geometry.normal = normalize(surface.Normal);//vNormal);
+	geometry.viewDir = normalize(extra.vViewPosition);//vViewPosition);
+
+	/**/
+	float metallic = 0.5;	// TODO:
+	float roughness = 0.5;	// TODO:
+	Material material;
+	material.diffuseColor = lerp(surface.Albedo.xyz, float3(0, 0, 0), metallic);
+	material.specularColor = lerp(float3(0.04, 0.04, 0.04), surface.Albedo.xyz, metallic);
+	material.specularRoughness = roughness;
+	
+	/**/
+		ReflectedLight reflectedLight = {float3(0,0,0),float3(0,0,0),float3(0,0,0),float3(0,0,0)};
+	IncidentLight directLight;
 	
 	
 	float3 result = float3(0, 0, 0);
@@ -419,7 +567,7 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 		//float3 baseColor = mc.xyz;
     	float3 color = float3(0, 0, 0);
 		float count = LN_EPSILON;
-	    for (int i = 0; i < 1; i++)
+	    for (int i = 0; i < 1; i++)	// TODO: Count
 		{
 			GlobalLightInfo light = _LN_GetGlobalLightInfo(i);
 			//color -= float3(light2.color.xyz + light2.groundColor.xyz + light2.directionAndType.xyz);
@@ -433,6 +581,13 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 				color += saturate(max(0, light.color * dot(surface.Normal, -light.directionAndType.xyz)));
 	            count += 1.0f;//0.95f;
 		//return float4(baseColor * dot(surface.Normal, -light.directionAndType.xyz), 0, 0, 1);
+				
+				/**/
+				DirectionalLight tl;
+				tl.direction = light.directionAndType.xyz;//mul(float4(light.directionAndType.xyz, 1.0), ln_View).xyz;//light.directionAndType.xyz;
+				tl.color = light.color;
+				getDirectionalDirectLightIrradiance(tl, geometry, directLight);
+				RE_Direct(directLight, geometry, material, reflectedLight);
 	        }
 			else
 			{
@@ -450,7 +605,14 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 	if (lightIndices[1] > 0) result.g += 1;
 	if (lightIndices[2] > 0) result.b += 1;
 #endif
-	
+
+
+	/**/
+
+	float3 emissive = float3(0,0,0);
+	float opacity = 1.0;
+	float3 outgoingLight = emissive + reflectedLight.directDiffuse + reflectedLight.directSpecular + reflectedLight.indirectDiffuse + reflectedLight.indirectSpecular;
+	return float4(outgoingLight, opacity);
 	
 	result.rgb = mc.rgb * result.rgb;
 	
@@ -470,6 +632,7 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 	
 	// fog
 	result.rgb = lerp(ln_FogParams.rgb, result.rgb, _LN_CalcFogFactor(viewPos.z));
+	
 	
 	return float4(result.rgb, depth);
 }

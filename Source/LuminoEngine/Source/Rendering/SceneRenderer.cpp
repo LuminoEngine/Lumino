@@ -165,7 +165,7 @@ void SceneRenderer::render(
 					}
 
 					shader->getSemanticsManager()->updateCameraVariables(cameraInfo);
-					shader->getSemanticsManager()->updateElementVariables(elementInfo);
+					shader->getSemanticsManager()->updateElementVariables(cameraInfo, elementInfo);
 					shader->getSemanticsManager()->updateSubsetVariables(subsetInfo);
 
 					material->applyUserShaderValeues(shader);

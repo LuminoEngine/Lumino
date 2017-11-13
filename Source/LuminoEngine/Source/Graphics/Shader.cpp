@@ -44,6 +44,8 @@ static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_ElementUnit
 {
 	{ _LT("ln_WorldViewProjection"), BuiltinSemantics::WorldViewProjection },
 	{ _LT("ln_World"), BuiltinSemantics::World },
+	{ _LT("ln_WorldView"), BuiltinSemantics::WorldView },
+	{ _LT("ln_WorldViewIT"), BuiltinSemantics::WorldViewIT },
 	{ _LT("ln_LightEnables"), BuiltinSemantics::LightEnables },
 	{ _LT("ln_LightWVPMatrices"), BuiltinSemantics::LightWVPMatrices },
 	{ _LT("ln_LightDirections"), BuiltinSemantics::LightDirections },
@@ -161,7 +163,7 @@ void ShaderSemanticsManager::updateCameraVariables(const CameraInfo& info)
 }
 
 //------------------------------------------------------------------------------
-void ShaderSemanticsManager::updateElementVariables(const ElementInfo& info)
+void ShaderSemanticsManager::updateElementVariables(const CameraInfo& cameraInfo, const ElementInfo& info)
 {
 	DynamicLightInfo** lights = info.affectedLights;
 
@@ -175,7 +177,12 @@ void ShaderSemanticsManager::updateElementVariables(const ElementInfo& info)
 			case BuiltinSemantics::World:
 				varInfo.variable->setMatrix(info.WorldMatrix);
 				break;
-
+			case BuiltinSemantics::WorldView:
+				varInfo.variable->setMatrix(info.WorldMatrix * cameraInfo.viewMatrix);
+				break;
+			case BuiltinSemantics::WorldViewIT:
+				varInfo.variable->setMatrix(Matrix::makeTranspose(Matrix::makeInverse(info.WorldMatrix * cameraInfo.viewMatrix)));
+				break;
 
 			// TODO: 以下、ライト列挙時に確定したい。何回もこんな計算するのはちょっと・・
 			case BuiltinSemantics::LightEnables:
