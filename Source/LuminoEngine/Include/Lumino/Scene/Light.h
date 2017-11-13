@@ -167,11 +167,17 @@ public:
 	/** ライトカラーを取得します。 */
 	const Color& getColor() const { return m_lightInfo->m_diffuse; }
 
-	/** ライトの影響範囲を設定します。(default: 10) */
+	/** ライトの影響範囲を設定します。(default: 10.0) */
 	void setRange(float range) { m_lightInfo->m_range = range; }
 
 	/** ライトの影響範囲を取得します。 */
 	float getRange() const { return m_lightInfo->m_range; }
+
+	/** ライトの減衰を設定します。(default: 1.0) */
+	void setAttenuation(float attenuation) { m_lightInfo->m_attenuation = attenuation; }
+
+	/** ライトの減衰を取得します。 */
+	float getAttenuation() const { return m_lightInfo->m_attenuation; }
 
 protected:
 	virtual void onPreRender(DrawList* context) override;
@@ -205,11 +211,17 @@ public:
 	/** ライトカラーを取得します。 */
 	const Color& getColor() const { return m_lightInfo->m_diffuse; }
 
-	/** ライトの影響範囲を設定します。(default: 10) */
+	/** ライトの影響範囲を設定します。(default: 10.0) */
 	void setRange(float range) { m_lightInfo->m_range = range; }
 
 	/** ライトの影響範囲を取得します。 */
 	float getRange() const { return m_lightInfo->m_range; }
+
+	/** ライトの減衰を設定します。(default: 1.0) */
+	void setAttenuation(float attenuation) { m_lightInfo->m_attenuation = attenuation; }
+
+	/** ライトの減衰を取得します。 */
+	float getAttenuation() const { return m_lightInfo->m_attenuation; }
 
 	/** スポットライトのコーン角度を設定します。(ラジアン単位、default: PI / 3) */
 	void setAngle(float angle) { m_lightInfo->m_spotAngle = angle; }
@@ -327,11 +339,17 @@ public:
 	/** ライトカラーを取得します。 */
 	const Color& getColor() const { return m_component->getColor(); }
 
-	/** ライトの影響範囲を設定します。(default: 10) */
+	/** ライトの影響範囲を設定します。(default: 10.0) */
 	void setRange(float range) { m_component->setRange(range); }
 
 	/** ライトの影響範囲を取得します。 */
 	float getRange() const { return m_component->getRange(); }
+
+	/** ライトの減衰を設定します。(default: 1.0) */
+	void setAttenuation(float attenuation) { m_component->setAttenuation(attenuation); }
+
+	/** ライトの減衰を取得します。 */
+	float getAttenuation() const { return m_component->getAttenuation(); }
 
 	/** コンポーネントを取得します。 */
 	PointLightComponent* getPointLightComponent() const;
@@ -375,11 +393,17 @@ public:
 	/** ライトカラーを取得します。 */
 	const Color& getColor() const { return m_component->getColor(); }
 
-	/** ライトの影響範囲を設定します。(default: 10) */
+	/** ライトの影響範囲を設定します。(default: 10.0) */
 	void setRange(float range) { m_component->setRange(range); }
 
 	/** ライトの影響範囲を取得します。 */
 	float getRange() const { return m_component->getRange(); }
+
+	/** ライトの減衰を設定します。(default: 1.0) */
+	void setAttenuation(float attenuation) { m_component->setAttenuation(attenuation); }
+
+	/** ライトの減衰を取得します。 */
+	float getAttenuation() const { return m_component->getAttenuation(); }
 
 	/** スポットライトのコーン角度を設定します。(ラジアン単位、default: PI / 3) */
 	void setAngle(float angle) { m_component->setAngle(angle); }

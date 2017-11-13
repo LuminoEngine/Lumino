@@ -100,6 +100,7 @@ public:
 	Vector3		m_position;
 	Vector3		m_direction;		// 向き
 	float		m_range;
+	float		m_attenuation;
 	float		m_spotAngle;
 	float		m_spotPenumbra;
 	float		m_shadowZFar;

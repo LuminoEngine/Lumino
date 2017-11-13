@@ -310,7 +310,7 @@ void ClusteredShadingGeometryRenderingPass::initialize()
 
 	//m_defaultShader = GraphicsManager::getInstance()->getBuiltinShader(BuiltinShader::LegacyDiffuse);
 
-	m_defaultShader = Shader::create(_T("C:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/ClusteredShadingDefault.fx"), ShaderCodeType::RawIR);
+	m_defaultShader = Shader::create(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/ClusteredShadingDefault.fx"), ShaderCodeType::RawIR);
 
 
 	m_normalRenderTarget = Ref<RenderTargetTexture>::makeRef();

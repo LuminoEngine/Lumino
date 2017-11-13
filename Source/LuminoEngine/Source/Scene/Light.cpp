@@ -144,6 +144,7 @@ void PointLightComponent::initialize()
 	m_lightInfo->m_type = LightType::Point;
 	m_lightInfo->m_diffuse.set(1.0f, 1.0f, 1.0f, 1.0f);
 	m_lightInfo->m_range = 10.0f;
+	m_lightInfo->m_attenuation = 1.0f;
 }
 
 void PointLightComponent::onPreRender(DrawList* context)
@@ -179,6 +180,7 @@ void SpotLightComponent::initialize()
 	m_lightInfo->m_type = LightType::Spot;
 	m_lightInfo->m_diffuse.set(1.0f, 1.0f, 1.0f, 1.0f);
 	m_lightInfo->m_range = 10.0f;
+	m_lightInfo->m_attenuation = 1.0f;
 	m_lightInfo->m_spotAngle = Math::PI / 3;
 }
 

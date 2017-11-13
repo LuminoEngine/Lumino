@@ -149,12 +149,75 @@ struct DirectionalLight
 	float3 color;
 };
 
+struct PointLight
+{
+	float3 position;
+	float3 color;
+	float distance;
+	float decay;
+};
+
+struct SpotLight
+{
+	float3 position;
+	float3 direction;
+	float3 color;
+	float distance;
+	float decay;
+	float coneCos;
+	float penumbraCos;
+};
+
+/*
+bool testLightInRange(const in float lightDistance, const in float cutoffDistance)
+{
+  return any(bvec2(cutoffDistance == 0.0, lightDistance < cutoffDistance));
+}
+
+float punctualLightIntensityToIrradianceFactor(const in float lightDistance, const in float cutoffDistance, const in float decayExponent)
+{
+  if (decayExponent > 0.0) {
+    return pow(saturate(-lightDistance / cutoffDistance + 1.0), decayExponent);
+  }
+
+  return 1.0;
+}
+*/
 void getDirectionalDirectLightIrradiance(const DirectionalLight directionalLight, const GeometricContext geometry, out IncidentLight directLight)
 {
 	directLight.color = directionalLight.color;
 	directLight.direction = directionalLight.direction;
 	directLight.visible = true;
 }
+
+
+
+/*
+void getPointDirectLightIrradiance(const in PointLight pointLight, const in GeometricContext geometry, out IncidentLight directLight)
+{
+  vec3 L = pointLight.position - geometry.position;
+  directLight.direction = normalize(L);
+
+  float lightDistance = length(L);
+  if (testLightInRange(lightDistance, pointLight.distance)) {
+    directLight.color = pointLight.color;
+    directLight.color *= punctualLightIntensityToIrradianceFactor(lightDistance, pointLight.distance, pointLight.decay);
+    directLight.visible = true;
+  } else {
+    directLight.color = vec3(0.0);
+    directLight.visible = false;
+  }
+}
+*/
+
+
+
+
+
+
+
+
+
 
 
 
