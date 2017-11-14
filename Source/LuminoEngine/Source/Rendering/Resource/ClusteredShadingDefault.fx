@@ -168,10 +168,9 @@ struct SpotLight
 	float penumbraCos;
 };
 
-/*
 bool testLightInRange(const in float lightDistance, const in float cutoffDistance)
 {
-  return any(bvec2(cutoffDistance == 0.0, lightDistance < cutoffDistance));
+  return cutoffDistance == 0.0 || lightDistance < cutoffDistance;
 }
 
 float punctualLightIntensityToIrradianceFactor(const in float lightDistance, const in float cutoffDistance, const in float decayExponent)
@@ -182,7 +181,7 @@ float punctualLightIntensityToIrradianceFactor(const in float lightDistance, con
 
   return 1.0;
 }
-*/
+
 void getDirectionalDirectLightIrradiance(const DirectionalLight directionalLight, const GeometricContext geometry, out IncidentLight directLight)
 {
 	directLight.color = directionalLight.color;
@@ -211,7 +210,23 @@ void getPointDirectLightIrradiance(const in PointLight pointLight, const in Geom
 */
 
 
+void getSpotDirectLightIrradiance(const in SpotLight spotLight, const in GeometricContext geometry, out IncidentLight directLight) {
+  float3 L = spotLight.position - geometry.position;
+  directLight.direction = normalize(L);
 
+  float lightDistance = length(L);
+  float angleCos = dot(directLight.direction, spotLight.direction);
+
+  if (angleCos > spotLight.coneCos && testLightInRange(lightDistance, spotLight.distance)) {
+    float spotEffect = smoothstep(spotLight.coneCos, spotLight.penumbraCos, angleCos);
+    directLight.color = spotLight.color;
+    directLight.color *= spotEffect * punctualLightIntensityToIrradianceFactor(lightDistance, spotLight.distance, spotLight.decay);
+    directLight.visible = true;
+  } else {
+    directLight.color = float3(0,0,0);
+    directLight.visible = false;
+  }
+}
 
 
 
@@ -421,6 +436,7 @@ struct LightInfo
 {
 	float3	position;
 	float	range;
+	float	attenuation;
 	float4	color;
 	float3	direction;
 	float2	spotAngles;
@@ -458,6 +474,7 @@ LightInfo _LN_GetLightInfoClusterd(int index)
 	LightInfo light;
 	light.position = posAndRange.xyz;
 	light.range = posAndRange.w;
+	light.attenuation = spotDirection.w;
 	light.color = color;
 	light.direction = spotDirection.xyz;
 	light.spotAngles = spotAngle.xy;
@@ -567,8 +584,8 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 	geometry.viewDir = normalize(extra.vViewPosition);//vViewPosition);
 
 	/**/
-	float metallic = 0.5;	// TODO:
-	float roughness = 0.5;	// TODO:
+	float metallic = 0.7;	// TODO:
+	float roughness = 0.3;	// TODO:
 	Material material;
 	material.diffuseColor = lerp(surface.Albedo.xyz, float3(0, 0, 0), metallic);
 	material.specularColor = lerp(float3(0.04, 0.04, 0.04), surface.Albedo.xyz, metallic);
@@ -587,6 +604,25 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 			//PointLight light = LN_GetPointLight((lightIndices[i] * 255) + 0.5 - 1);
 			LightInfo light = _LN_GetLightInfoClusterd((lightIndices[i] * 255) + 0.5 - 1);
 			
+			
+			
+			if (light.spotAngles.x > 0.0)
+			{
+				SpotLight spotLight;
+				spotLight.position = light.position;
+				spotLight.direction = light.direction;
+				spotLight.color = light.color.xyz;// * light.color.a;
+				spotLight.distance = light.range;
+				spotLight.decay = light.attenuation;
+				spotLight.coneCos = light.spotAngles.x;
+				spotLight.penumbraCos = light.spotAngles.y;
+				getSpotDirectLightIrradiance(spotLight, geometry, directLight);
+				if (directLight.visible)
+				{
+					RE_Direct(directLight, geometry, material, reflectedLight);
+				}
+				
+			}
 			
 			float LightRadiusMask = 1.0;
 			{

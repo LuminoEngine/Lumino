@@ -75,15 +75,25 @@ void LightClusters::addPointLight(const Vector3& pos, float range, float attenua
 	m_lightInofs.add(info);
 }
 
-void LightClusters::addSpotLight(const Vector3& pos, float range, float attenuation, const Vector3& direction, float outerRadius, float innerRadius, const Color& color)
+
+static Vector3 transformDirection(const Vector3& vec, const Matrix& mat)
+{
+	return Vector3(
+		(((vec.x * mat.m11) + (vec.y * mat.m21)) + (vec.z * mat.m31)),
+		(((vec.x * mat.m12) + (vec.y * mat.m22)) + (vec.z * mat.m32)),
+		(((vec.x * mat.m13) + (vec.y * mat.m23)) + (vec.z * mat.m33)));
+
+}
+
+void LightClusters::addSpotLight(const Vector3& pos, float range, float attenuation, const Color& color, const Vector3& direction, float cone, float penumbra)
 {
 	// TODO: とりあえず球と同じ方法でクラスタ化。最悪パターンの想定なので不足は無いが、かなり無駄が多い。
 	addClusterSpherical(pos, range);
 
 	LightInfo info;
-	info.posAndRange = Vector4(pos, range);
-	info.directionAndAtt = Vector4(direction, attenuation);
-	info.spotAngle = Vector4(cos(outerRadius), 1.0f / cos(innerRadius), 0, 0);
+	info.posAndRange = Vector4(Vector3::transform(pos, m_view).GetXYZ(), range);
+	info.directionAndAtt = Vector4(transformDirection(-direction, m_view), attenuation);
+	info.spotAngle = Vector4(cos(cone), cos(cone * (1.0 - penumbra)), 0, 0);
 	info.color = color;
 	m_lightInofs.add(info);
 }
@@ -384,31 +394,26 @@ void ClusteredShadingSceneRenderer::collect()
 	m_lightClusters.endMakeClusters();
 }
 
-static Vector3 transformDirection(const Vector3& vec, const Matrix& mat)
-{
-	return Vector3(
-		(((vec.x * mat.m11) + (vec.y * mat.m21)) + (vec.z * mat.m31)),
-		(((vec.x * mat.m12) + (vec.y * mat.m22)) + (vec.z * mat.m32)),
-		(((vec.x * mat.m13) + (vec.y * mat.m23)) + (vec.z * mat.m33)));
-
-}
-
 void ClusteredShadingSceneRenderer::onCollectLight(DynamicLightInfo* light)
 {
 	if (LN_REQUIRE(light)) return;
 
 	const CameraInfo& view = getRenderView()->m_cameraInfo;
 
+	Color color = light->m_diffuse;
+	color *= light->m_intensity;
+
 	switch (light->m_type)
 	{
 	case LightType::Directional:
-		m_lightClusters.addDirectionalLight(transformDirection(-light->m_direction, view.viewMatrix), light->m_diffuse);
+		m_lightClusters.addDirectionalLight(transformDirection(-light->m_direction, view.viewMatrix), color);
 		break;
 	case LightType::Point:
-		m_lightClusters.addPointLight(light->m_position, light->m_range, light->m_attenuation, light->m_diffuse);
+		m_lightClusters.addPointLight(Vector3::transform(light->m_position, view.viewMatrix).GetXYZ(), light->m_range, light->m_attenuation, color);
 		break;
 	case LightType::Spot:
-		m_lightClusters.addSpotLight(light->m_position, light->m_range, light->m_attenuation, light->m_direction, light->m_spotAngle, Math::lerp(light->m_spotAngle, 0, light->m_spotPenumbra), light->m_diffuse);
+		//m_lightClusters.addSpotLight(Vector3::transform(light->m_position, view.viewMatrix).GetXYZ(), light->m_range, light->m_attenuation, transformDirection(-light->m_direction, view.viewMatrix), light->m_spotAngle, Math::lerp(light->m_spotAngle, 0, light->m_spotPenumbra), light->m_diffuse);
+		m_lightClusters.addSpotLight(light->m_position, light->m_range, light->m_attenuation, color, light->m_direction, light->m_spotAngle, light->m_spotPenumbra);
 		break;
 	default:
 		LN_UNREACHABLE();

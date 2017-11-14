@@ -393,10 +393,11 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 
 	Engine::getCamera3D()->setPosition(0, 10, -30);
 
-	//auto spotLight1 = SpotLight::create(Color::White, 30, Math::PI / 3);
-	//spotLight1->transform.lookAt(-Vector3::UnitY);
-	//spotLight1->setPosition(0, 20, 0);
-	//Engine::getWorld3D()->addWorldObject(spotLight1, true);
+	auto spotLight1 = SpotLight::create(Color::White, 30, Math::PI / 3);
+	spotLight1->transform.lookAt(-Vector3::UnitY);
+	spotLight1->setPosition(0, 20, 0);
+	//spotLight1->setIntensity(2.0f);
+	Engine::getWorld3D()->addWorldObject(spotLight1, true);
 
 
 	Engine::getWorld3D()->setAmbientColor(Color(0.25, 0.25, 0.25, 1.0));

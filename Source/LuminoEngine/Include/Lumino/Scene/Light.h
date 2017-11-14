@@ -135,6 +135,12 @@ public:
 	/** ライトカラーを取得します。 */
 	const Color& getColor() const { return m_lightInfo->m_diffuse; }
 
+	/** ライトの明るさを設定します。(default: 0.5) */
+	void setIntensity(float intensity) { m_lightInfo->m_intensity = intensity; }
+
+	/** ライトの明るさを取得します。 */
+	float getIntensity() const { return m_lightInfo->m_intensity; }
+
 protected:
 	virtual void onPreRender(DrawList* context) override;
 
@@ -166,6 +172,12 @@ public:
 
 	/** ライトカラーを取得します。 */
 	const Color& getColor() const { return m_lightInfo->m_diffuse; }
+
+	/** ライトの明るさを設定します。(default: 1.0) */
+	void setIntensity(float intensity) { m_lightInfo->m_intensity = intensity; }
+
+	/** ライトの明るさを取得します。 */
+	float getIntensity() const { return m_lightInfo->m_intensity; }
 
 	/** ライトの影響範囲を設定します。(default: 10.0) */
 	void setRange(float range) { m_lightInfo->m_range = range; }
@@ -210,6 +222,12 @@ public:
 
 	/** ライトカラーを取得します。 */
 	const Color& getColor() const { return m_lightInfo->m_diffuse; }
+
+	/** ライトの明るさを設定します。(default: 1.0) */
+	void setIntensity(float intensity) { m_lightInfo->m_intensity = intensity; }
+
+	/** ライトの明るさを取得します。 */
+	float getIntensity() const { return m_lightInfo->m_intensity; }
 
 	/** ライトの影響範囲を設定します。(default: 10.0) */
 	void setRange(float range) { m_lightInfo->m_range = range; }
@@ -297,6 +315,12 @@ public:
 	/** ライトカラーを取得します。 */
 	const Color& getColor() const { return m_component->getColor(); }
 
+	/** ライトの明るさを設定します。(default: 0.5) */
+	void setIntensity(float intensity) { m_component->setIntensity(intensity); }
+
+	/** ライトの明るさを取得します。 */
+	float getIntensity() const { return m_component->getIntensity(); }
+
 	/** コンポーネントを取得します。 */
 	DirectionalLightComponent* getDirectionalLightComponent() const;
 
@@ -338,6 +362,12 @@ public:
 
 	/** ライトカラーを取得します。 */
 	const Color& getColor() const { return m_component->getColor(); }
+
+	/** ライトの明るさを設定します。(default: 1.0) */
+	void setIntensity(float intensity) { m_component->setIntensity(intensity); }
+
+	/** ライトの明るさを取得します。 */
+	float getIntensity() const { return m_component->getIntensity(); }
 
 	/** ライトの影響範囲を設定します。(default: 10.0) */
 	void setRange(float range) { m_component->setRange(range); }
@@ -392,6 +422,12 @@ public:
 
 	/** ライトカラーを取得します。 */
 	const Color& getColor() const { return m_component->getColor(); }
+
+	/** ライトの明るさを設定します。(default: 1.0) */
+	void setIntensity(float intensity) { m_component->setIntensity(intensity); }
+
+	/** ライトの明るさを取得します。 */
+	float getIntensity() const { return m_component->getIntensity(); }
 
 	/** ライトの影響範囲を設定します。(default: 10.0) */
 	void setRange(float range) { m_component->setRange(range); }

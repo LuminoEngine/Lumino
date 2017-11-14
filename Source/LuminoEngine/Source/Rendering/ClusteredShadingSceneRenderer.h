@@ -21,7 +21,7 @@ public:
 	void beginMakeClusters(const Matrix& view, const Matrix& proj, const Vector3& cameraPos, float nearClip, float farClip);
 	void endMakeClusters();
 	void addPointLight(const Vector3& pos, float range, float attenuation, const Color& color);
-	void addSpotLight(const Vector3& pos, float range, float attenuation, const Vector3& direction, float outerRadius, float innerRadius, const Color& color);
+	void addSpotLight(const Vector3& pos, float range, float attenuation, const Color& color, const Vector3& direction, float cone, float penumbra);
 	void addDirectionalLight(const Vector3& dir, const Color& color);
 
 	const Ref<tr::Texture3D>& getClustersVolumeTexture() const { return m_clustersTexture; }
@@ -39,7 +39,7 @@ private:
 	{
 		Vector4 posAndRange;		// xyz=pos, w=range
 		Vector4	directionAndAtt;	// xyz=dir, w=attenuation
-		Vector4	spotAngle;			// x > 0 is spot light. x=cos(outerRadius), y=1.0/cos(innerRadius), zw=NotUse
+		Vector4	spotAngle;			// x > 0 is spot light. coneCos, penumbraCos, zw=NotUse
 		Color	color;
 	};
 

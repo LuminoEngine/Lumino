@@ -449,6 +449,7 @@ public:
 	//ColorF& operator = (const LVector4& vec) { r = vec.X; g = vec.Y; b = vec.Z; a = vec.W; return *this; }
 
 	Color& operator *= (const Color& rhs) { r *= rhs.r; g *= rhs.g; b *= rhs.b; a *= rhs.a; return *this; }
+	Color& operator *= (float s) { r *= s; g *= s; b *= s; a *= s; return *this; }
 
 	bool operator == (const Color& color) const { return r == color.r && g == color.g && b == color.b && a == color.a; }
 	bool operator != (const Color& color) const { return !operator==(color); }

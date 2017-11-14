@@ -38,7 +38,8 @@ namespace detail {
 
 //------------------------------------------------------------------------------
 DynamicLightInfo::DynamicLightInfo()
-	: m_range(10)
+	: m_intensity(1)
+	, m_range(10)
 	, m_attenuation(1)
 	, m_spotAngle(Math::PI / 3)
 	, m_spotPenumbra(0)
