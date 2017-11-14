@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include <Lumino/Rendering/Rendering.h>
 #include <Lumino/Rendering/SceneRenderer.h>
@@ -20,8 +20,8 @@ public:
 
 	void beginMakeClusters(const Matrix& view, const Matrix& proj, const Vector3& cameraPos, float nearClip, float farClip);
 	void endMakeClusters();
-	void addPointLight(const Vector3& pos, float range, const Color& color);
-	void addSpotLight(const Vector3& pos, float range, const Vector3& direction, float outerRadius, float innerRadius, const Color& color);
+	void addPointLight(const Vector3& pos, float range, float attenuation, const Color& color);
+	void addSpotLight(const Vector3& pos, float range, float attenuation, const Vector3& direction, float outerRadius, float innerRadius, const Color& color);
 	void addDirectionalLight(const Vector3& dir, const Color& color);
 
 	const Ref<tr::Texture3D>& getClustersVolumeTexture() const { return m_clustersTexture; }
@@ -34,12 +34,12 @@ private:
 	void addClusterSpherical(const Vector3& pos, float range);
 	void addClusterData(int x, int y, int z, int lightId);
 
-	// Texture2D ‚Ì 1 s•ª‚Æ‚µ‚Ä‘‚«‚Ş‚½‚ßAfloat4 ‚Ì”{”ƒTƒCƒY‚Å‚ ‚é•K—v‚ª‚ ‚é
+	// Texture2D ã® 1 è¡Œåˆ†ã¨ã—ã¦æ›¸ãè¾¼ã‚€ãŸã‚ã€float4 ã®å€æ•°ã‚µã‚¤ã‚ºã§ã‚ã‚‹å¿…è¦ãŒã‚ã‚‹
 	struct LightInfo
 	{
-		Vector4 posAndRange;	// xyz=pos, w=range
-		Vector4	spotDirection;	// xyz=dir, w=NotUse
-		Vector4	spotAngle;		// x > 0 is spot light. x=cos(outerRadius), y=1.0/cos(innerRadius), zw=NotUse
+		Vector4 posAndRange;		// xyz=pos, w=range
+		Vector4	directionAndAtt;	// xyz=dir, w=attenuation
+		Vector4	spotAngle;			// x > 0 is spot light. x=cos(outerRadius), y=1.0/cos(innerRadius), zw=NotUse
 		Color	color;
 	};
 
@@ -54,14 +54,14 @@ private:
 	static const int		ClusterWidth = 16;
 	static const int		ClusterHeight = 16;
 	static const int		ClusterDepth = 32;
-	std::vector<Color32>	m_clustersData;		// TODO: Texture3D ‚ª‚Ü‚¾ setData ‚à getMappedData ‚àƒTƒ|[ƒg‚µ‚Ä‚¢‚È‚¢‚Ì‚ÅB‚Å‚«‚ê‚Î getMappedData ‚É‚»‚Ì‚Ü‚Ü‘‚«‚İ‚½‚¢
-	std::vector<int>		m_clustersAddCount;	// ‚ ‚éƒNƒ‰ƒXƒ^‚É‘‚©‚ê‚½ƒf[ƒ^‚Ì”
+	std::vector<Color32>	m_clustersData;		// TODO: Texture3D ãŒã¾ã  setData ã‚‚ getMappedData ã‚‚ã‚µãƒãƒ¼ãƒˆã—ã¦ã„ãªã„ã®ã§ã€‚ã§ãã‚Œã° getMappedData ã«ãã®ã¾ã¾æ›¸ãè¾¼ã¿ãŸã„
+	std::vector<int>		m_clustersAddCount;	// ã‚ã‚‹ã‚¯ãƒ©ã‚¹ã‚¿ã«æ›¸ã‹ã‚ŒãŸãƒ‡ãƒ¼ã‚¿ã®æ•°
 	Ref<tr::Texture3D>		m_clustersTexture;
 
 	static const int		MaxLights = 64;
-	List<LightInfo>			m_lightInofs;		// m_lightInfoTexture ‚É‘‚«‚ŞBTODO: Texture2D ‚ª float4 ‘‚«‚İ‚ğ‚¿‚á‚ñ‚ÆƒTƒ|[ƒg‚µ‚½‚ç•K—v‚È‚¢B
+	List<LightInfo>			m_lightInofs;		// m_lightInfoTexture ã«æ›¸ãè¾¼ã‚€ã€‚TODO: Texture2D ãŒ float4 æ›¸ãè¾¼ã¿ã‚’ã¡ã‚ƒã‚“ã¨ã‚µãƒãƒ¼ãƒˆã—ãŸã‚‰å¿…è¦ãªã„ã€‚
 	Ref<Texture2D>			m_lightInfoTexture;
-	List<GlobalLightInfo>	m_globalLightInofs;		// m_globalLightInfoTexture ‚É‘‚«‚ŞBTODO: Texture2D ‚ª float4 ‘‚«‚İ‚ğ‚¿‚á‚ñ‚ÆƒTƒ|[ƒg‚µ‚½‚ç•K—v‚È‚¢B
+	List<GlobalLightInfo>	m_globalLightInofs;		// m_globalLightInfoTexture ã«æ›¸ãè¾¼ã‚€ã€‚TODO: Texture2D ãŒ float4 æ›¸ãè¾¼ã¿ã‚’ã¡ã‚ƒã‚“ã¨ã‚µãƒãƒ¼ãƒˆã—ãŸã‚‰å¿…è¦ãªã„ã€‚
 	Ref<Texture2D>			m_globalLightInfoTexture;
 
 };
