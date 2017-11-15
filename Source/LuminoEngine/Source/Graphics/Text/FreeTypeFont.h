@@ -76,7 +76,7 @@ public:
 	virtual bool isAntiAlias() const override { return m_fontData.isAntiAlias; }
 
 	virtual RawFontPtr copy() const override;
-	virtual int getLineSpacing() override　{ updateFont(); return m_lineHeight; }	// TODO: [Obsolete]
+	virtual int getLineSpacing() override { updateFont(); return m_lineHeight; }	// TODO: [Obsolete]
 	//virtual Size getTextSize(const char* text, int length);	// TODO: getTextSize もいらなそう。UTF32 のだけあればいいかも？
 	//virtual Size getTextSize(const wchar_t* text, int length);
 	//virtual Size getTextSize(const UTF32* text, int length);
