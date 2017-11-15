@@ -340,7 +340,7 @@ public:
 				if (Math::isNaN(dt))
 					break;
 				t += Math::clamp(dt, -1.0f, 1.0f);//大幅に移動して別の解に到達するのを防止する用
-			} while (abs(dt) > Epsilon);
+			} while (std::abs(dt) > Epsilon);
 			return Math::clamp(fy(t), 0.0f, 1.0f);//念のため、0-1の間に収まるようにした
 		}
 	private:

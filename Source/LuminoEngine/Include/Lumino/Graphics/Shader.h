@@ -260,7 +260,7 @@ public:
 protected:
 	virtual ~Shader();
 	virtual void Dispose() override;
-	virtual void onChangeDevice(Driver::IGraphicsDevice* device);
+	virtual void onChangeDevice(Driver::IGraphicsDevice* device) override;
 
 LN_INTERNAL_ACCESS:
 	friend class detail::RenderingCommandList;

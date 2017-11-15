@@ -161,6 +161,8 @@ bool Environment::tryGetEnvironmentVariable(const String& variableName, String* 
 	if (outValue) { *outValue = (const Char*)val.getConstData(); }
 	return true;
 #else
+	LN_NOTIMPLEMENTED();
+	return false;
 #endif
 }
 

@@ -327,7 +327,7 @@ String Encoding::fromBytes(const char* bytes, int size, Encoding* encoding, bool
 	if (thisTypeEncoding == encoding)	// TODO: ポインタ比較はよくない
 	{
 		int byteCount = (size < 0) ? strlen((const char*)bytes) : size;
-		return String((const Char*)bytes, size);
+		return String((const Char*)bytes, byteCount);
 	}
 	else
 	{

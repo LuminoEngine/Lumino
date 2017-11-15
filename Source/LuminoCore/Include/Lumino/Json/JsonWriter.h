@@ -71,7 +71,7 @@ private:
 	JsonFormatting	m_formatting;
 	TextWriter*		m_textWriter;
 	Stack<Level>	m_levelStack;
-	bool			m_isComplete;
+	//bool			m_isComplete;
 };
 
 } // namespace tr

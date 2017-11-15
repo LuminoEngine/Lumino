@@ -171,8 +171,8 @@ template bool StringTraits::isSpace(UTF32 ch);
 // 標準関数をオーバーロードするための実装
 //static size_t			StrLen(const char* input) { return ::strlen(input); }
 //static size_t			StrLen(const wchar_t* input) { return ::wcslen(input); }
-static const char*		StrStr(const char* s1, const char* s2) { return ::strstr(s1, s2); }
-static const wchar_t*	StrStr(const wchar_t* s1, const wchar_t* s2) { return ::wcsstr(s1, s2); }
+//static const char*		StrStr(const char* s1, const char* s2) { return ::strstr(s1, s2); }
+//static const wchar_t*	StrStr(const wchar_t* s1, const wchar_t* s2) { return ::wcsstr(s1, s2); }
 
 #ifdef _WIN32
 int				StringTraits::vsprintf(char* out, int charCount, const char* format, va_list args) { return _vsnprintf_s(out, charCount, _TRUNCATE, format, args); }

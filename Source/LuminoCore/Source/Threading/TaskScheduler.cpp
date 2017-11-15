@@ -37,8 +37,8 @@ TaskScheduler::TaskScheduler(int threadCount)
 TaskScheduler::~TaskScheduler()
 {
 	m_endRequested.setTrue();		// 終了要求を出して、
-
-	for (auto& thr : m_threadList)	// スレッドの数だけセマフォ増やして全部起こして、
+	
+	for (int i = 0; i < m_threadList.getCount(); i++)	// スレッドの数だけセマフォ増やして全部起こして、
 	{
 		m_semaphore.unlock();
 	}

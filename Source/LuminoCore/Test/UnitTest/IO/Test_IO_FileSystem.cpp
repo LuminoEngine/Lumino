@@ -63,7 +63,7 @@ TEST_F(Test_IO_FileSystem, getAttribute)
 #ifdef LN_OS_WIN32
 #else
 	// 隠しファイル
-	attr = FileSystem::GetAttribute(LN_LOCALFILE("TestData/.test"));
+	attr = FileSystem::getAttribute(LN_LOCALFILE("TestData/.test"));
 	ASSERT_EQ(FileAttribute::Hidden, attr);
 #endif
 

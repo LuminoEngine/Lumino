@@ -1,6 +1,6 @@
 ﻿
-#include "../../include/Lumino/Math/Vector3.h"
-#include "../../include/Lumino/Math/Geometries.h"
+#include "../../Include/Lumino/Math/Vector3.h"
+#include "../../Include/Lumino/Math/Geometries.h"
 
 LN_NAMESPACE_BEGIN
 

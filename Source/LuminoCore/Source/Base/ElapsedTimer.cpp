@@ -13,14 +13,6 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
-static uint64_t TicksToNanoseconds(uint64_t ticks, uint64_t freq) LN_NOEXCEPT
-{
-	uint64_t seconds = ticks / freq;
-	uint64_t nanoSeconds = (ticks - seconds * freq) * 1000000000 / freq;
-	return seconds * 1000000000 + nanoSeconds;
-}
-
-//------------------------------------------------------------------------------
 ElapsedTimer::ElapsedTimer()
 	: m_start(0)
 #if defined(LN_OS_WIN32)
@@ -35,6 +27,14 @@ ElapsedTimer::~ElapsedTimer()
 }
 
 #if defined(LN_OS_WIN32)
+
+static uint64_t TicksToNanoseconds(uint64_t ticks, uint64_t freq) LN_NOEXCEPT
+{
+	uint64_t seconds = ticks / freq;
+	uint64_t nanoSeconds = (ticks - seconds * freq) * 1000000000 / freq;
+	return seconds * 1000000000 + nanoSeconds;
+}
+
 //------------------------------------------------------------------------------
 void ElapsedTimer::start()
 {

@@ -298,7 +298,6 @@ String String::remove(const StringRef& str, CaseSensitivity cs) const
 
 	Char* buf = result.lockBuffer(end - pos);
 	Char* bufBegin = buf;
-	int bufSize = 0;
 
 	if (fsLen > 0)
 	{
@@ -993,6 +992,8 @@ int UStringConvert::convertNativeString(const char16_t* src, int srcLen, char* d
 	}
 #else
 	// not found <uchar>
+	LN_NOTIMPLEMENTED();
+	return 0;
 #endif
 }
 

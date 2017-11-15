@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include "../../include/Lumino/Text/Encoding.h"
+#include "../../Include/Lumino/Text/Encoding.h"
 
 LN_NAMESPACE_BEGIN
 
