@@ -146,7 +146,7 @@ void DirectionalLightComponent::onPreRender(DrawList* context)
 				m_lightInfo->m_position, m_lightInfo->m_direction,
 				Math::PI / 2.0f,
 				//m_shadowCasterPass->m_shadowMap->getSize().toFloatSize(),
-				Size(640.0,480.0),
+				Size(1024.0/8, 1024.0 / 8),	// TODO: LightMapSize
 				0.5f, 100.0f);	// TODO: clip range
 		}
 	}

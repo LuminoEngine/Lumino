@@ -614,7 +614,7 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 	geometry.viewDir = normalize(extra.vViewPosition);//vViewPosition);
 
 	/**/
-	float metallic = 0.7;	// TODO:
+	float metallic = 0.5;	// TODO:
 	float roughness = 0.3;	// TODO:
 	Material material;
 	material.diffuseColor = lerp(surface.Albedo.xyz, float3(0, 0, 0), metallic);
@@ -756,7 +756,7 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 		
 		float depth = posInLight.z/ posInLight.w;
 		
-		if (depth > shadow - 0.0065)
+		if (depth > shadow + 0.0065)
 		{
 			outgoingLight *= 0.5;
 			//return float4(0, 0, 1, 1);
@@ -765,7 +765,7 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 		//{
 			//return float4(0, 0, 1, 1);
 		//}
-		return float4(shadow+0.25, 0, 0, 1);
+		//return float4(shadow, 0, 0, 1);
 		//return float4(shadowUV, 0, 1);
 	}
 	

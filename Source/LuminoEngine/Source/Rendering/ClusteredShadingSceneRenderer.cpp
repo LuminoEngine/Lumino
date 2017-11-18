@@ -369,6 +369,7 @@ ShadowCasterPass::~ShadowCasterPass()
 {
 }
 
+RenderTargetTexture* g_m_shadowMap  = nullptr;
 void ShadowCasterPass::initialize()
 {
 	RenderingPass2::initialize();
@@ -377,6 +378,8 @@ void ShadowCasterPass::initialize()
 
 	m_shadowMap = Ref<RenderTargetTexture>::makeRef();
 	m_shadowMap->createImpl(GraphicsManager::getInstance(), SizeI(1024, 1024), 1, TextureFormat::R32G32B32A32_Float);
+
+	g_m_shadowMap = m_shadowMap;
 }
 
 Shader* ShadowCasterPass::getDefaultShader() const

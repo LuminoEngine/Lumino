@@ -35,6 +35,7 @@ void CameraInfo::makePerspective(const Vector3& viewPos, const Vector3& viewDir,
 	viewDirection = viewDir;
 	viewMatrix = Matrix::makeLookAtLH(viewPos, viewPos + viewDir, Vector3::UnitY);
 	projMatrix = Matrix::makeOrthoLH(size.width, size.height, n, f);//Matrix::makePerspectiveFovLH(fovY, size.width / size.height, n, f);
+	//projMatrix = Matrix::makePerspectiveFovLH(fovY, size.width / size.height, n, f);
 	viewProjMatrix = viewMatrix * projMatrix;
 	viewFrustum = ViewFrustum(viewProjMatrix);
 	zSortDistanceBase = ZSortDistanceBase::CameraScreenDistance;
