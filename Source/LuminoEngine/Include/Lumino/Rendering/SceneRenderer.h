@@ -51,7 +51,7 @@ protected:
 	RenderView* getRenderView() const { return m_renderingRenderView; }
 
 	// レンダリング準備として、描画に関係する各種オブジェクト (DrawElement や Light) を収集するフェーズ
-	virtual void collect();
+	virtual void collect(RenderingPass2* pass, const detail::CameraInfo& cameraInfo);
 
 	// レンダリング準備として、効率的な描画を行うために収集した各種オブジェクトのソートなどを行う
 	virtual void prepare();
@@ -74,7 +74,9 @@ private:
 	RenderView*				m_renderingRenderView;
 	RenderTargetTexture*	m_renderingDefaultRenderTarget;
 	DepthBuffer*			m_renderingDefaultDepthBuffer;
+	List<RenderingPass2*>	m_renderingActualPassList;
 
+	List<detail::ShadowCasterPass*>	m_renderingShadowCasterPassList;
 	//friend class RenderingPass2;
 };
 
@@ -96,13 +98,15 @@ public:
 
 	virtual Shader* getDefaultShader() const = 0;
 
-	void selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy);
+	virtual void selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy);
 
 	//virtual void RenderElement(DrawList* renderer, DrawElement* element);
 	//virtual void RenderElementSubset(DrawList* renderer, DrawElement* element, int subsetIndex);
 
 
 	virtual void onBeginPass(DefaultStatus* defaultStatus);
+
+	virtual void overrideCameraInfo(detail::CameraInfo* cameraInfo);
 
 protected:
 	//virtual ShaderTechnique* selectShaderTechnique(Shader* shader);

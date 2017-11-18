@@ -354,9 +354,9 @@ void World3D::initialize()
 	m_mainCamera->setSpecialObject(true);
 	addWorldObject(m_mainCamera, true);
 
-	m_mainLight = newObject<Light>();
-	m_mainLight->setSpecialObject(true);
-	addWorldObject(m_mainLight, true);
+	//m_mainLight = newObject<Light>();
+	//m_mainLight->setSpecialObject(true);
+	//addWorldObject(m_mainLight, true);
 
 	setAmbientColor(Color(0.25, 0.25, 0.25, 1.0));
 	setAmbientSkyColor(Color(0, 0, 0, 0));

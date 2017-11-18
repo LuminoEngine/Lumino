@@ -8,6 +8,7 @@
 #define LN_EPSILON 1e-6
 
 float4x4	ln_View;
+float4x4	ln_Projection;
 float4x4	ln_World;
 float4x4	ln_WorldViewProjection;
 float4x4	ln_WorldView;
@@ -103,6 +104,25 @@ float4 LN_Square(float4 x)
 {
 	return x * x;
 }
+
+
+
+
+
+	
+
+	float4x4	ln_ViewProjection_Light0;
+	texture		ln_DirectionalShadowMap;
+	sampler2D	ln_DirectionalShadowMap_Sampler = sampler_state
+	{
+		Texture = <ln_DirectionalShadowMap>;
+		MinFilter = Point; 
+		MagFilter = Point;
+		MipFilter = None;
+		AddressU = Clamp;
+		AddressV = Clamp;
+	};
+
 
 
 
@@ -316,6 +336,7 @@ struct LN_VSOutput_ClusteredForward
 	float3	VertexPos	: TEXCOORD11;
 	
 	float3	vViewPosition 	: TEXCOORD12;	// 頂点位置から視点位置までのベクトル
+	float4	vInLightPosition 	: TEXCOORD13;
 };
 
 struct LN_PSInput_ClusteredForward
@@ -324,6 +345,7 @@ struct LN_PSInput_ClusteredForward
 	float3	VertexPos	: TEXCOORD11;
 	
 	float3	vViewPosition 	: TEXCOORD12;
+	float4	vInLightPosition 	: TEXCOORD13;
 };
 
 
@@ -387,6 +409,14 @@ LN_VSOutput_ClusteredForward _LN_ProcessVertex_ClusteredForward(LN_VSInput input
 	
 	float4 mvPosition = mul(float4(input.Pos, 1.0), ln_WorldView);
 	output.vViewPosition  = -mvPosition.xyz;
+	
+	
+	
+	float4 pos = mul(float4(input.Pos, 1.0), ln_World);
+	pos = mul(pos, ln_ViewProjection_Light0);
+	output.vInLightPosition = pos;
+	//output.vInLightPosition = mul(mul(float4(input.Pos, 1.0), ln_World), ln_ViewProjection_Light0);
+	
 	return output;
 }
 
@@ -711,7 +741,40 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 	float3 emissive = float3(0,0,0);
 	float opacity = 1.0;
 	float3 outgoingLight = emissive + reflectedLight.directDiffuse + reflectedLight.directSpecular + reflectedLight.indirectDiffuse + reflectedLight.indirectSpecular;
+	
+	/*Shadow*/
+	{
+		float2 s = float2(0.5, 0.5) / float2(1024, 1024);	// TODO: LightMapSize
+		
+		float4 posInLight = extra.vInLightPosition;//mul(mul(float4(extra.WorldPos.xyz, 1), ln_View), ln_Projection);//
+		float2 shadowUV = 0.5 * (posInLight.xy / posInLight.w) + float2(0.5, 0.5);
+		shadowUV.y = 1.0 - shadowUV.y;
+		shadowUV += s;
+		
+		float shadow = tex2D(ln_DirectionalShadowMap_Sampler, shadowUV).r;
+		//float shadow = tex2D(ln_DirectionalShadowMap_Sampler, float2(0.5,0.5)).r;
+		
+		float depth = posInLight.z/ posInLight.w;
+		
+		if (depth > shadow - 0.0065)
+		{
+			outgoingLight *= 0.5;
+			//return float4(0, 0, 1, 1);
+		}
+		//if (depth >= 1.0)
+		//{
+			//return float4(0, 0, 1, 1);
+		//}
+		return float4(shadow+0.25, 0, 0, 1);
+		//return float4(shadowUV, 0, 1);
+	}
+	
 	return float4(outgoingLight, opacity);
+	
+	
+	
+	
+	
 	
 	result.rgb = mc.rgb * result.rgb;
 	

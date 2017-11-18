@@ -9,6 +9,7 @@
 #include "../Graphics/Material.h"
 
 LN_NAMESPACE_BEGIN
+namespace detail { class ShadowCasterPass; }
 namespace detail { class RenderTargetTextureCache; }
 class Pen;
 class Font;
@@ -106,6 +107,7 @@ public:
 	float		m_spotPenumbra;
 	float		m_shadowZFar;
 
+	detail::ShadowCasterPass*	m_shadowCasterPass;
 	//Matrix		transform;
 
 	float		tempDistance;		// 作業用変数

@@ -43,6 +43,7 @@ DynamicLightInfo::DynamicLightInfo()
 	, m_attenuation(1)
 	, m_spotAngle(Math::PI / 3)
 	, m_spotPenumbra(0)
+	, m_shadowCasterPass(nullptr)
 {
 }
 

@@ -7,6 +7,7 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
+namespace detail { class ShadowCasterPass; }
 
 /** ライトのコンポーネントです。 */
 class LightComponent
@@ -141,6 +142,12 @@ public:
 	/** ライトの明るさを取得します。 */
 	float getIntensity() const { return m_lightInfo->m_intensity; }
 
+	/** 影の有無を設定します。(default: false) */
+	void setShadowCast(bool enabled);
+
+	/** 影の有無を取得します。 */
+	bool isShadowCast() const;
+
 protected:
 	virtual void onPreRender(DrawList* context) override;
 
@@ -151,6 +158,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
 	Ref<detail::DynamicLightInfo>	m_lightInfo;
+	Ref<detail::ShadowCasterPass>	m_shadowCasterPass;
 	bool							m_enabled;
 };
 
@@ -297,10 +305,10 @@ class DirectionalLight
 	LN_OBJECT;
 public:
 
-	/** 既定の設定でポイントライトを作成します。 */
+	/** 既定の設定でディレクショナルライトを作成します。 */
 	static Ref<DirectionalLight> create();
 
-	/** 色を指定してポイントライトを作成します。 */
+	/** 色を指定してディレクショナルライトを作成します。 */
 	static Ref<DirectionalLight> create(const Color& color);
 
 	/** ライトの有効状態を設定します。false の場合、ライトはシーンに影響しません。(default: true) */

@@ -120,12 +120,12 @@ void CameraComponent::updateMatrices(const Size& viewSize)
 		//Perspective2DLH(viewSize.width, viewSize.height, m_nearClip, m_farClip, &m_projMatrix);
 		m_viewProjMatrix = m_viewMatrix * m_projMatrix;
 
-		auto a1 = Vector3::transformCoord(
-			Vector3(48, 0, 10), m_viewProjMatrix);
+		//auto a1 = Vector3::transformCoord(
+		//	Vector3(48, 0, 10), m_viewProjMatrix);
 		
-		auto a2 = Vector3::transformCoord(
-			Vector3(48, 0, 100), m_viewProjMatrix);
-		a2 = Vector3(48, 0, 10);
+		//auto a2 = Vector3::transformCoord(
+		//	Vector3(48, 0, 100), m_viewProjMatrix);
+		//a2 = Vector3(48, 0, 10);
 		//Matrix vp;
 		//vp = Matrix::LookAtLH(Vector3(320, 240, 0), Vector3(320, 240, 1), Vector3(0, 1, 0));
 		//vp *= Matrix::OrthoLH(640, 480, 0, 1000);
@@ -176,6 +176,15 @@ void CameraComponent::updateMatrices(const Size& viewSize)
 	m_viewMatrixIT = Matrix::makeTranspose(m_viewMatrixI);
 	m_projMatrixIT = Matrix::makeTranspose(m_projMatrixI);
 	m_viewProjMatrixIT = Matrix::makeTranspose(m_viewProjMatrixI);
+
+
+
+	//{
+	//	Vector3 pos(1, 1, 300);
+	//	Vector4 tt = Vector3::transform(pos, m_viewProjMatrix);
+	//	float d = tt.z / tt.w;
+	//	printf("");
+	//}
 }
 
 //------------------------------------------------------------------------------

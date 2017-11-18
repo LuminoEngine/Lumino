@@ -86,6 +86,33 @@ private:
 	Ref<RenderTargetTexture>	m_normalRenderTarget;
 };
 
+class ShadowCasterPass
+	: public RenderingPass2
+{
+public:
+	CameraInfo	view;
+
+	ShadowCasterPass();
+	virtual ~ShadowCasterPass();
+	void initialize();
+
+	virtual Shader* getDefaultShader() const override;
+
+	virtual void selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy) override;
+
+	virtual void onBeginPass(DefaultStatus* defaultStatus) override;
+
+	virtual void overrideCameraInfo(detail::CameraInfo* cameraInfo) override;
+
+protected:
+	virtual ShaderPass* selectShaderPass(Shader* shader) override;
+
+public:	// TODO:
+	Ref<Shader>		m_defaultShader;
+	Ref<RenderTargetTexture>	m_shadowMap;
+};
+
+
 class ClusteredShadingSceneRenderer
 	: public SceneRenderer
 {
@@ -96,7 +123,7 @@ public:
 	void setSceneGlobalRenderSettings(const SceneGlobalRenderSettings& settings) { m_renderSettings = settings; }
 
 protected:
-	virtual void collect() override;
+	virtual void collect(RenderingPass2* pass, const detail::CameraInfo& cameraInfo) override;
 	virtual void prepare() override;
 	virtual void onCollectLight(DynamicLightInfo* light) override;
 	virtual void onShaderPassChainging(ShaderPass* pass) override;

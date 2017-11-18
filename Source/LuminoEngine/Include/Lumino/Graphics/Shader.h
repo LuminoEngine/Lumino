@@ -92,6 +92,9 @@ struct CameraInfo
 	float		farClip = 0;
 
 	// POD
+
+
+	void makePerspective(const Vector3& viewPos, const Vector3& viewDir, float fovY, const Size& size, float n, float f);
 };
 
 // 描画要素単位のデータに関する情報

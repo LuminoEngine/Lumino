@@ -4,6 +4,7 @@
 #include <Lumino/Rendering/SceneRenderer.h>
 #include "../Graphics/GraphicsManager.h"
 #include "../Graphics/CoreGraphicsRenderFeature.h"
+#include "ClusteredShadingSceneRenderer.h"
 
 LN_NAMESPACE_BEGIN
 namespace detail {
@@ -40,6 +41,19 @@ void SceneRenderer::onCollectLight(DynamicLightInfo* light)
 
 void SceneRenderer::onShaderPassChainging(ShaderPass* pass)
 {
+	Shader* shader = pass->getOwnerShader();
+
+	ShaderVariable* v;
+
+	// TODO: SceneParam として設定したい
+	if (!m_renderingShadowCasterPassList.isEmpty())
+	{
+		v = shader->findVariable(_T("ln_DirectionalShadowMap"));
+		if (v) v->setTexture(m_renderingShadowCasterPassList[0]->m_shadowMap);
+
+		v = shader->findVariable(_T("ln_ViewProjection_Light0"));
+		if (v) v->setMatrix(m_renderingShadowCasterPassList[0]->view.viewProjMatrix);
+	}
 }
 
 //ShaderTechnique* SceneRenderer::selectShaderTechnique(Shader* shader)
@@ -85,13 +99,8 @@ void SceneRenderer::render(
 	if (diag != nullptr) diag->beginDrawList();
 
 	InternalContext* context = m_manager->getInternalContext();
-	const detail::CameraInfo& cameraInfo = drawElementListSet->m_cameraInfo;
+	//const detail::CameraInfo& cameraInfo = drawElementListSet->m_cameraInfo;
 
-	m_renderingElementList.clear();
-
-	collect();
-
-	prepare();
 
 	DrawElement::DrawArgs drawArgs;
 	//drawArgs.oenerList = elementList;
@@ -101,13 +110,47 @@ void SceneRenderer::render(
 	drawArgs.defaultDepthBuffer = defaultDepthBuffer;
 	drawArgs.diag = diag;
 
-	DefaultStatus defaultStatus;
-	defaultStatus.defaultRenderTarget[0] = defaultRenderTarget;
-	defaultStatus.defaultRenderTarget[1] = defaultStatus.defaultRenderTarget[2] = defaultStatus.defaultRenderTarget[3] = nullptr;
-	defaultStatus.defaultDepthBuffer = defaultDepthBuffer;
+	// TODO: 別 RT への描画は RenderStage 的な感じで分けて、メインの Pass でだけ行うようにしたほうが良い。
+	// こういうものは ShadowCast のパスで実行したくない。無駄になる。
 
+
+	m_renderingActualPassList.clear();
+	m_renderingShadowCasterPassList.clear();
+	for (auto& elementList : m_renderingRenderView->m_lists)
+	{
+		for (DynamicLightInfo* light : elementList->getDynamicLightList())
+		{
+			if (light->m_shadowCasterPass != nullptr)
+			{
+				m_renderingActualPassList.add(light->m_shadowCasterPass);
+				m_renderingShadowCasterPassList.add(light->m_shadowCasterPass);
+			}
+		}
+	}
+	//m_renderingActualPassList.addRange(m_renderingPassList);
 	for (RenderingPass2* pass : m_renderingPassList)
 	{
+		m_renderingActualPassList.add(pass);
+	}
+
+	for (RenderingPass2* pass : m_renderingActualPassList)
+	{
+		m_renderingElementList.clear();
+
+		detail::CameraInfo cameraInfo = drawElementListSet->m_cameraInfo;
+
+		pass->overrideCameraInfo(&cameraInfo);
+
+		collect(pass, cameraInfo);
+
+		prepare();
+
+
+		DefaultStatus defaultStatus;
+		defaultStatus.defaultRenderTarget[0] = defaultRenderTarget;
+		defaultStatus.defaultRenderTarget[1] = defaultStatus.defaultRenderTarget[2] = defaultStatus.defaultRenderTarget[3] = nullptr;
+		defaultStatus.defaultDepthBuffer = defaultDepthBuffer;
+
 		pass->onBeginPass(&defaultStatus);
 
 		// DrawElement 描画
@@ -199,10 +242,10 @@ void SceneRenderer::render(
 	coreRenderer->end();
 }
 
-void SceneRenderer::collect()
+void SceneRenderer::collect(RenderingPass2* pass, const detail::CameraInfo& cameraInfo)
 {
 	InternalContext* context = m_manager->getInternalContext();
-	const detail::CameraInfo& cameraInfo = m_renderingRenderView->m_cameraInfo;
+	//const detail::CameraInfo& cameraInfo = m_renderingRenderView->m_cameraInfo;
 
 	for (auto& elementList : m_renderingRenderView->m_lists)
 	{
@@ -545,6 +588,11 @@ void RenderingPass2::selectElementRenderingPolicy(DrawElement* element, Combined
 //}
 
 void RenderingPass2::onBeginPass(DefaultStatus* defaultStatus)
+{
+
+}
+
+void RenderingPass2::overrideCameraInfo(detail::CameraInfo* cameraInfo)
 {
 
 }

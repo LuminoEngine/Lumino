@@ -400,6 +400,17 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 	Engine::getWorld3D()->addWorldObject(spotLight1, true);
 
 
+	auto directionalLight1 = DirectionalLight::create(Color::White);
+	directionalLight1->getDirectionalLightComponent()->setShadowCast(true);
+	//Quaternion rot;
+	//rot.rotateX(Math::degreesToRadians(50));
+	//rot.rotateY(Math::degreesToRadians(-30));
+	//directionalLight1->setRotation(rot);
+	directionalLight1->setPosition(30, 30, -30);
+	directionalLight1->transform.lookAt(Vector3::Zero);
+	Engine::getWorld3D()->addWorldObject(directionalLight1, true);
+
+
 	Engine::getWorld3D()->setAmbientColor(Color(0.25, 0.25, 0.25, 1.0));
 	Engine::getWorld3D()->setAmbientSkyColor(Color::Blue.withAlpha(0.5));
 	Engine::getWorld3D()->setAmbientGroundColor(Color::Green.withAlpha(0.25));

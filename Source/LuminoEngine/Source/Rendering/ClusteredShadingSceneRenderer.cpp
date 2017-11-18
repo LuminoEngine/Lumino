@@ -334,8 +334,8 @@ Shader* ClusteredShadingGeometryRenderingPass::getDefaultShader() const
 RenderTargetTexture* g_m_normalRenderTarget = nullptr;
 void ClusteredShadingGeometryRenderingPass::onBeginPass(DefaultStatus* defaultStatus)
 {
-	g_m_normalRenderTarget = m_normalRenderTarget;
-	defaultStatus->defaultRenderTarget[1] = m_normalRenderTarget;
+	//g_m_normalRenderTarget = m_normalRenderTarget;
+	//defaultStatus->defaultRenderTarget[1] = m_normalRenderTarget;
 }
 
 ShaderPass* ClusteredShadingGeometryRenderingPass::selectShaderPass(Shader* shader)
@@ -351,6 +351,61 @@ ShaderPass* ClusteredShadingGeometryRenderingPass::selectShaderPass(Shader* shad
 	//	}
 	//}
 
+	return RenderingPass2::selectShaderPass(shader);
+}
+
+
+
+
+
+//==============================================================================
+// ShadowCasterPass
+//==============================================================================
+ShadowCasterPass::ShadowCasterPass() 
+{
+}
+
+ShadowCasterPass::~ShadowCasterPass()
+{
+}
+
+void ShadowCasterPass::initialize()
+{
+	RenderingPass2::initialize();
+
+	m_defaultShader = Shader::create(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/ShadowCaster.fx"), ShaderCodeType::RawIR);
+
+	m_shadowMap = Ref<RenderTargetTexture>::makeRef();
+	m_shadowMap->createImpl(GraphicsManager::getInstance(), SizeI(1024, 1024), 1, TextureFormat::R32G32B32A32_Float);
+}
+
+Shader* ShadowCasterPass::getDefaultShader() const
+{
+	return m_defaultShader;
+}
+
+void ShadowCasterPass::selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy)
+{
+	// TODO: とりあえずデフォルト強制
+	outPolicy->shader = getDefaultShader();
+	outPolicy->shaderPass = selectShaderPass(outPolicy->shader);
+
+	// とありあえず全部可
+	outPolicy->visible = true;
+}
+
+void ShadowCasterPass::onBeginPass(DefaultStatus* defaultStatus)
+{
+	defaultStatus->defaultRenderTarget[0] = m_shadowMap;
+}
+
+void ShadowCasterPass::overrideCameraInfo(detail::CameraInfo* cameraInfo)
+{
+	*cameraInfo = view;
+}
+
+ShaderPass* ShadowCasterPass::selectShaderPass(Shader* shader)
+{
 	return RenderingPass2::selectShaderPass(shader);
 }
 
@@ -384,12 +439,11 @@ void ClusteredShadingSceneRenderer::prepare()
 	SceneRenderer::prepare();
 }
 
-void ClusteredShadingSceneRenderer::collect()
+void ClusteredShadingSceneRenderer::collect(RenderingPass2* pass, const detail::CameraInfo& cameraInfo)
 {
-	const CameraInfo& view = getRenderView()->m_cameraInfo;
-	m_lightClusters.beginMakeClusters(view.viewMatrix, view.projMatrix, view.viewPosition, view.nearClip, view.farClip);
+	m_lightClusters.beginMakeClusters(cameraInfo.viewMatrix, cameraInfo.projMatrix, cameraInfo.viewPosition, cameraInfo.nearClip, cameraInfo.farClip);
 
-	SceneRenderer::collect();
+	SceneRenderer::collect(pass, cameraInfo);
 
 	m_lightClusters.endMakeClusters();
 }

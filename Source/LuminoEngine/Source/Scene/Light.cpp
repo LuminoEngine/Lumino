@@ -2,6 +2,7 @@
 #include "../Internal.h"
 #include <Lumino/Scene/Light.h>
 #include <Lumino/Scene/WorldObject.h>
+#include "../Rendering/ClusteredShadingSceneRenderer.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
@@ -112,6 +113,23 @@ void DirectionalLightComponent::initialize()
 	m_lightInfo->m_intensity = 0.5f;
 }
 
+void DirectionalLightComponent::setShadowCast(bool enabled)
+{
+	if (enabled)
+	{
+		m_shadowCasterPass = newObject<detail::ShadowCasterPass>();
+	}
+	else
+	{
+		m_shadowCasterPass.safeRelease();
+	}
+}
+
+bool DirectionalLightComponent::isShadowCast() const
+{
+	return m_shadowCasterPass != nullptr;
+}
+
 void DirectionalLightComponent::onPreRender(DrawList* context)
 {
 	if (m_enabled)
@@ -119,7 +137,18 @@ void DirectionalLightComponent::onPreRender(DrawList* context)
 		const Matrix& t = getOwnerObject()->transform.getWorldMatrix();
 		m_lightInfo->m_position = t.getPosition();
 		m_lightInfo->m_direction = t.getFront();
+		m_lightInfo->m_shadowCasterPass = m_shadowCasterPass;
 		context->addDynamicLightInfo(m_lightInfo);
+
+		if (m_shadowCasterPass != nullptr)
+		{
+			m_shadowCasterPass->view.makePerspective(
+				m_lightInfo->m_position, m_lightInfo->m_direction,
+				Math::PI / 2.0f,
+				//m_shadowCasterPass->m_shadowMap->getSize().toFloatSize(),
+				Size(640.0,480.0),
+				0.5f, 100.0f);	// TODO: clip range
+		}
 	}
 }
 
@@ -264,7 +293,7 @@ DirectionalLight::~DirectionalLight()
 void DirectionalLight::initialize()
 {
 	WorldObject::initialize();
-	m_component = newObject<PointLightComponent>();
+	m_component = newObject<DirectionalLightComponent>();
 	addComponent(m_component);
 }
 
