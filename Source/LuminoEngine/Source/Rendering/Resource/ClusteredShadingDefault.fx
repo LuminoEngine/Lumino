@@ -584,6 +584,14 @@ float _LN_CalcFogFactor(float3 depth)
 }
 
 
+// シャドウマップからサンプリングした値が compare より奥にあれば 1(影をつける)、そうでなければ 0
+float shadowTexture2DCompare( sampler2D depths, float2 uv, float compareZ ) {
+
+	return step( compareZ, ( tex2D( depths, uv ).r ) );
+
+}
+	
+	
 float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_ClusteredForward extra, LN_SurfaceOutput surface)
 {
 	float4 worldPos = float4(extra.WorldPos, 1.0f);
@@ -745,11 +753,34 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 	/*Shadow*/
 	{
 		float2 s = float2(0.5, 0.5) / float2(1024, 1024);	// TODO: LightMapSize
+		float2 s2 = float2(1.0, 1.0) / float2(1024, 1024);	// TODO: LightMapSize
 		
 		float4 posInLight = extra.vInLightPosition;//mul(mul(float4(extra.WorldPos.xyz, 1), ln_View), ln_Projection);//
 		float2 shadowUV = 0.5 * (posInLight.xy / posInLight.w) + float2(0.5, 0.5);
 		shadowUV.y = 1.0 - shadowUV.y;
 		shadowUV += s;
+		
+		#if 1
+		
+		float depth = posInLight.z/ posInLight.w;
+		float compareZ = depth - 0.0065;
+		float shadow = (
+			shadowTexture2DCompare(ln_DirectionalShadowMap_Sampler, shadowUV + float2(-s2.x, -s2.y), compareZ) +
+			shadowTexture2DCompare(ln_DirectionalShadowMap_Sampler, shadowUV + float2(0    , -s2.y), compareZ) +
+			shadowTexture2DCompare(ln_DirectionalShadowMap_Sampler, shadowUV + float2( s2.x, -s2.y), compareZ) +
+			shadowTexture2DCompare(ln_DirectionalShadowMap_Sampler, shadowUV + float2(-s2.x, 0    ), compareZ) +
+			shadowTexture2DCompare(ln_DirectionalShadowMap_Sampler, shadowUV + float2(0    , 0    ), compareZ) +
+			shadowTexture2DCompare(ln_DirectionalShadowMap_Sampler, shadowUV + float2(+s2.x, 0    ), compareZ) +
+			shadowTexture2DCompare(ln_DirectionalShadowMap_Sampler, shadowUV + float2(-s2.x,  s2.y), compareZ) +
+			shadowTexture2DCompare(ln_DirectionalShadowMap_Sampler, shadowUV + float2(0    ,  s2.y), compareZ) +
+			shadowTexture2DCompare(ln_DirectionalShadowMap_Sampler, shadowUV + float2( s2.x,  s2.y), compareZ)
+		) * ( 1.0 / 9.0 );
+		
+		
+		
+		outgoingLight *= lerp(0.5, 1.0, shadow);
+		
+		#else
 		
 		float shadow = tex2D(ln_DirectionalShadowMap_Sampler, shadowUV).r;
 		//float shadow = tex2D(ln_DirectionalShadowMap_Sampler, float2(0.5,0.5)).r;
@@ -767,6 +798,9 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 		//}
 		//return float4(shadow, 0, 0, 1);
 		//return float4(shadowUV, 0, 1);
+		
+		#endif
+		
 	}
 	
 	return float4(outgoingLight, opacity);
