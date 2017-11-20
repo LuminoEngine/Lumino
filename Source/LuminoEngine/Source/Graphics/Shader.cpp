@@ -12,6 +12,7 @@
 #include "CoreGraphicsRenderFeature.h"
 #include "RenderingCommand.h"
 #include "ShaderAnalyzer.h"
+#include "../Shader/LinaShader.h"
 
 #define LN_CALL_SHADER_COMMAND(func, command, ...) \
 	if (m_owner->getManager()->getRenderingType() == GraphicsRenderingType::Threaded) { \
@@ -501,6 +502,12 @@ void Shader::initialize(detail::GraphicsManager* manager, const void* code, int 
 		sb << std::string(cc.data(), cc.size());
 
 		//FileSystem::WriteAllBytes(_LT("code.c"), cc.data(), cc.size());
+	}
+	else if (codeType == ShaderCodeType::RawHLSL)
+	{
+		LinaShaderIRGenerater gen;
+		gen.loadRawHLSL(std::string((const char*)code, length));
+		sb << gen.generateIRCode();
 	}
 	else if (codeType == ShaderCodeType::RawIR)
 	{

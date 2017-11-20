@@ -4,6 +4,15 @@
 LN_NAMESPACE_BEGIN
 
 
+class LinaShaderContext
+{
+public:
+	LinaShaderContext();
+	void initialize();
+
+private:
+};
+
 
 // RawHLSLCode → IRCode + technique data
 // LinaHLSLCode → IRCode + technique data
@@ -17,6 +26,7 @@ public:
 
 	void loadRawHLSL(const std::string& code);
 
+	std::string generateIncludeResolvedHLSLCode();
 	std::string generateIRCode();
 
 private:

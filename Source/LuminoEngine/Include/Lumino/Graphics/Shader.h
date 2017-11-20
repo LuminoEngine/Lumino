@@ -159,6 +159,7 @@ enum class ShaderCodeType
 {
 	Normal,
 	TRSS,		// テスト中の機能 (多分 obsolete)
+	RawHLSL,
 	RawIR,
 };
 

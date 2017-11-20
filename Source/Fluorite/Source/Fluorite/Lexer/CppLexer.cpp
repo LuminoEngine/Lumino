@@ -114,7 +114,12 @@ void CppLexer::PollingToken(Token* token)
 		{
 			m_seqPPDirective = PPDirectiveSeq::FoundSharp;	// "#" を見つけた
 		}
-		else {
+		else if (token->GetTokenGroup() == TokenGroup::NewLine)
+		{
+			// LineHead のまま
+		}
+		else
+		{
 			m_seqPPDirective = PPDirectiveSeq::Idle;		// "#" 以外のトークンだった。Idle へ。
 		}
 	}

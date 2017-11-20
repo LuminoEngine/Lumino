@@ -10,6 +10,7 @@
 LN_NAMESPACE_BEGIN
 class EngineDiagCore;
 class FileManager;
+class LinaShaderContext;
 
 LN_NAMESPACE_GRAPHICS_BEGIN
 class GraphicsContext;
@@ -195,6 +196,8 @@ private:
 
 	VertexDeclaration*						m_defaultVertexDeclaration;
 	bool									m_platformTextureLoading;
+
+	std::shared_ptr<LinaShaderContext>	m_shaderContext;
 };
 
 } // namespace detail

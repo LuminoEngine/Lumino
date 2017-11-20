@@ -200,6 +200,21 @@ bool HLSLMetadataParser::parseRenderState(HLSLPass* pass)
 	return true;
 }
 
+
+//==============================================================================
+// LinaShaderContext
+//==============================================================================
+LinaShaderContext::LinaShaderContext()
+{
+}
+
+void LinaShaderContext::initialize()
+{
+}
+
+//==============================================================================
+// LinaShaderIRGenerater
+//==============================================================================
 LinaShaderIRGenerater::LinaShaderIRGenerater()
 {
 
@@ -392,6 +407,24 @@ void LinaShaderIRGenerater::loadRawHLSL(const std::string& code)
 	ctx.LexFile(file);
 	auto tokens = file->GetTokenList();
 
+
+
+
+	{
+		for (int i = 0; i < tokens->getCount(); i++)
+		{
+			if (tokens->getAt(i)->getTokenType() == fl::TT_HeaderName)
+			{
+				printf(tokens->getAt(i)->getString().c_str());
+			}
+		}
+	}
+
+
+
+
+
+
 	HLSLMetadataParser parser;
 	parser.parse(tokens);
 
@@ -405,6 +438,11 @@ void LinaShaderIRGenerater::loadRawHLSL(const std::string& code)
 	FileSystem::writeAllBytes(_T("test.frag"), glslCode.c_str(), glslCode.length());
 
 	printf("");
+}
+
+std::string LinaShaderIRGenerater::generateIRCode()
+{
+	return std::string();
 }
 
 LinaShader::LinaShader()
