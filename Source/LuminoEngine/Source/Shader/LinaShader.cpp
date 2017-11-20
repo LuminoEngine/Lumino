@@ -210,6 +210,27 @@ LinaShaderContext::LinaShaderContext()
 
 void LinaShaderContext::initialize()
 {
+	m_flContext = std::make_shared<fl::AnalyzerContext>();
+	
+}
+
+bool LinaShaderContext::findBuiltinShaderCode(const char* pathBegin, const char* pathEnd, const char** codeBegin, const char** codeEnd)
+{
+	int len1 = pathEnd - pathBegin;
+	int len2 = 10;
+	if (StringTraits::compare(pathBegin, len1, "Lumino.fxh", len2, std::max(len1, len2), CaseSensitivity::CaseInsensitive) == 0)
+	{
+		static std::string code;
+		if (code.empty())
+		{
+			ByteBuffer buf = FileSystem::readAllBytes(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/Lumino.fxh"));
+			code = std::string((const char*)buf.getConstData(), buf.getSize());
+		}
+		*codeBegin = code.c_str();
+		*codeEnd = code.c_str() + code.length();
+		return true;
+	}
+	return false;
 }
 
 //==============================================================================
@@ -220,8 +241,9 @@ LinaShaderIRGenerater::LinaShaderIRGenerater()
 
 }
 
-void LinaShaderIRGenerater::initialize()
+void LinaShaderIRGenerater::initialize(LinaShaderContext* context)
 {
+	m_context = context;
 	int r = Hlsl2Glsl_Initialize();
 	LN_ENSURE(r != 0, "failed Hlsl2Glsl_Initialize.");
 }
@@ -415,7 +437,24 @@ void LinaShaderIRGenerater::loadRawHLSL(const std::string& code)
 		{
 			if (tokens->getAt(i)->getTokenType() == fl::TT_HeaderName)
 			{
-				printf(tokens->getAt(i)->getString().c_str());
+				fl::Token* t = tokens->getAt(i);
+				if (*t->getBegin() == '<')
+				{
+					const char* codeBegin;
+					const char* codeEnd;
+					if (m_context->findBuiltinShaderCode(t->getBegin() + 1, t->getEnd() - 1, &codeBegin, &codeEnd))
+					{
+						for (int i2 = i; i2 >= 0; i2--)
+						{
+							tokens->getAt(i2)->setValid(false);
+							if (tokens->getAt(i2)->EqualChar('#'))
+							{
+								break;
+							}
+						}
+					}
+					printf(tokens->getAt(i)->getString().c_str());
+				}
 			}
 		}
 	}

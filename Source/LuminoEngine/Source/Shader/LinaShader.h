@@ -1,8 +1,8 @@
 ﻿
 #pragma once
 
+namespace fl { class AnalyzerContext; }
 LN_NAMESPACE_BEGIN
-
 
 class LinaShaderContext
 {
@@ -10,7 +10,13 @@ public:
 	LinaShaderContext();
 	void initialize();
 
+	const std::shared_ptr<fl::AnalyzerContext>& getFlContext() const { return m_flContext; }
+
+	bool findBuiltinShaderCode(const char* pathBegin, const char* pathEnd, const char** codeBegin, const char** codeEnd);
+
 private:
+
+	std::shared_ptr<fl::AnalyzerContext> m_flContext;
 };
 
 
@@ -21,7 +27,7 @@ class LinaShaderIRGenerater
 {
 public:
 	LinaShaderIRGenerater();
-	void initialize();
+	void initialize(LinaShaderContext* context);
 	void finalize();
 
 	void loadRawHLSL(const std::string& code);
@@ -30,6 +36,7 @@ public:
 	std::string generateIRCode();
 
 private:
+	LinaShaderContext* m_context;
 };
 
 
