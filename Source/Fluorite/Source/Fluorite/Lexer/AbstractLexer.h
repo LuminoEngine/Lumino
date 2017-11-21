@@ -34,16 +34,15 @@ public:
 	virtual ~AbstractLexer();
 
 	ResultState Tokenize(InputFile* file);
-	ResultState Tokenize(const char* code, int length, TokenList* outTokenList, DiagnosticsItemSet* diag);
 
 
 protected:
 	virtual int ReadToken(const Range& buffer) = 0;
-	virtual void PollingToken(Token* newToken);
+	virtual void PollingToken(SourceToken* newToken);
 
 	void AddToken(TokenGroup group, const char* bufBegin, const char* bufEnd, int tokenType = 0);
-	Token* GetLastToken();
-	bool EqualsString(Token* token, const char* str, int length) const;
+	SourceToken* GetLastToken();
+	bool EqualsString(SourceToken* token, const char* str, int length) const;
 	DiagnosticsItemSet* getDiag() const { return m_diag; }
 
 	static AlphaNumTypeFlags GetAlphaNumType(int ch);
@@ -56,6 +55,8 @@ protected:
 	virtual void onStart();
 
 private:
+	ResultState TokenizeInternal(const char* code, int length, TokenList* outTokenList, DiagnosticsItemSet* diag);
+
 	InputFile*			m_inputFile;
 	const char*			m_inputBuffer;
 	//TokenList*			m_tokenList;

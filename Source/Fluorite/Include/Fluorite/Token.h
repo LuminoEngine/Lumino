@@ -10,16 +10,16 @@ using SourceLocation = uint32_t;
 /**
 	@brief	
 */
-class Token
+class SourceToken
 {
 public:
-	Token();
-	Token(const Token& src) = default;
-	Token& operator = (const Token& src) = default;
-	~Token();
+	SourceToken();
+	SourceToken(const SourceToken& src) = default;
+	SourceToken& operator = (const SourceToken& src) = default;
+	~SourceToken();
 
-	Token(InputFile* ownerFile, TokenGroup group, SourceLocation locBegin, SourceLocation locEnd);
-	Token(InputFile* ownerFile, TokenGroup group, SourceLocation locBegin, SourceLocation locEnd, int tokenType);
+	SourceToken(InputFile* ownerFile, TokenGroup group, SourceLocation locBegin, SourceLocation locEnd);
+	SourceToken(InputFile* ownerFile, TokenGroup group, SourceLocation locBegin, SourceLocation locEnd, int tokenType);
 
 	TokenGroup GetTokenGroup() const { return m_group; }
 
@@ -81,7 +81,7 @@ private:
 	@brief	
 */
 class TokenList
-	: public List<Token*>
+	: public List<SourceToken>
 {
 public:
 	TokenList() {}
@@ -109,5 +109,21 @@ public:
 		return -1;
 	}
 };
+
+
+/**
+	@brief
+*/
+class Token
+{
+public:
+
+private:
+	SourceLocation	m_loc;
+};
+
+
+
+
 
 } // namespace fl

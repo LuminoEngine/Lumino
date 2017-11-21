@@ -28,14 +28,14 @@ class HLSLMetadataParser
 public:
 	std::vector<HLSLTechnique>	techniques;
 
-	bool parse(const fl::TokenList* tokens);
+	bool parse(fl::TokenList* tokens);
 
 private:
-	fl::Token* current() { return m_tokens->getAt(m_current); }
+	fl::SourceToken* current() { return &m_tokens->getAt(m_current); }
 	bool next();
 	bool nextTo(char ch) { return nextTo(&ch, 1); }
 	bool nextTo(const char* word, int len);
-	bool isSpaceToken(fl::Token* token) const;
+	bool isSpaceToken(const fl::SourceToken& token) const;
 	bool isEof() const;
 
 	bool parseCompileUnit();
@@ -43,12 +43,12 @@ private:
 	bool parsePass(HLSLPass* pass);
 	bool parseRenderState(HLSLPass* pass);
 
-	const fl::TokenList* m_tokens;
+	fl::TokenList* m_tokens;
 	int m_current;
 
 };
 
-bool HLSLMetadataParser::parse(const fl::TokenList* tokens)
+bool HLSLMetadataParser::parse(fl::TokenList* tokens)
 {
 	m_current = 0;
 	m_tokens = tokens;
@@ -77,22 +77,22 @@ bool HLSLMetadataParser::nextTo(const char* word, int len)
 
 	} while (
 		isSpaceToken(m_tokens->getAt(m_current)) ||
-		!m_tokens->getAt(m_current)->EqualString(word, len));
+		!m_tokens->getAt(m_current).EqualString(word, len));
 
 	return !isEof();
 }
 
-bool HLSLMetadataParser::isSpaceToken(fl::Token* token) const
+bool HLSLMetadataParser::isSpaceToken(const fl::SourceToken& token) const
 {
 	return
-		token->GetTokenGroup() == fl::TokenGroup::SpaceSequence ||
-		token->GetTokenGroup() == fl::TokenGroup::NewLine ||
-		token->GetTokenGroup() == fl::TokenGroup::Comment;
+		token.GetTokenGroup() == fl::TokenGroup::SpaceSequence ||
+		token.GetTokenGroup() == fl::TokenGroup::NewLine ||
+		token.GetTokenGroup() == fl::TokenGroup::Comment;
 }
 
 bool HLSLMetadataParser::isEof() const
 {
-	return m_tokens->getAt(m_current)->GetTokenGroup() == fl::TokenGroup::Eof;
+	return m_tokens->getAt(m_current).GetTokenGroup() == fl::TokenGroup::Eof;
 }
 
 bool HLSLMetadataParser::parseCompileUnit()
@@ -135,7 +135,7 @@ bool HLSLMetadataParser::parseTechnique(HLSLTechnique* tech)
 	// hlsl2glsl は technique ブロックを理解できないのですべて無効化しておく
 	for (int i = begin; i <= m_current; i++)
 	{
-		m_tokens->getAt(i)->setValid(false);
+		m_tokens->getAt(i).setValid(false);
 	}
 
 	return true;
@@ -165,10 +165,10 @@ bool HLSLMetadataParser::parsePass(HLSLPass* pass)
 
 bool HLSLMetadataParser::parseRenderState(HLSLPass* pass)
 {
-	fl::Token* name = current();
+	fl::SourceToken* name = current();
 	if (!nextTo('=')) return false;
 	if (!next()) return false;
-	fl::Token* value = current();
+	fl::SourceToken* value = current();
 	
 	if (name->EqualString("VertexShader", 12))
 	{
@@ -435,25 +435,25 @@ void LinaShaderIRGenerater::loadRawHLSL(const std::string& code)
 	{
 		for (int i = 0; i < tokens->getCount(); i++)
 		{
-			if (tokens->getAt(i)->getTokenType() == fl::TT_HeaderName)
+			if (tokens->getAt(i).getTokenType() == fl::TT_HeaderName)
 			{
-				fl::Token* t = tokens->getAt(i);
-				if (*t->getBegin() == '<')
+				const fl::SourceToken& t = tokens->getAt(i);
+				if (*t.getBegin() == '<')
 				{
 					const char* codeBegin;
 					const char* codeEnd;
-					if (m_context->findBuiltinShaderCode(t->getBegin() + 1, t->getEnd() - 1, &codeBegin, &codeEnd))
+					if (m_context->findBuiltinShaderCode(t.getBegin() + 1, t.getEnd() - 1, &codeBegin, &codeEnd))
 					{
 						for (int i2 = i; i2 >= 0; i2--)
 						{
-							tokens->getAt(i2)->setValid(false);
-							if (tokens->getAt(i2)->EqualChar('#'))
+							tokens->getAt(i2).setValid(false);
+							if (tokens->getAt(i2).EqualChar('#'))
 							{
 								break;
 							}
 						}
 					}
-					printf(tokens->getAt(i)->getString().c_str());
+					printf(tokens->getAt(i).getString().c_str());
 				}
 			}
 		}

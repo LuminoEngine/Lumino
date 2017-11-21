@@ -96,7 +96,7 @@ int CppLexer::ReadToken(const Range& buffer)
 }
 
 //------------------------------------------------------------------------------
-void CppLexer::PollingToken(Token* token)
+void CppLexer::PollingToken(SourceToken* token)
 {
 	// 何もしていない。改行を探す。
 	if (m_seqPPDirective == PPDirectiveSeq::Idle)

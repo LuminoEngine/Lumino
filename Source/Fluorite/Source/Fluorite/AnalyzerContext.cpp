@@ -7,48 +7,48 @@
 
 namespace fl
 {
-
-//==============================================================================
-// TokenStore
-//==============================================================================
-
-//------------------------------------------------------------------------------
-TokenStore::TokenStore()
-{
-}
-
-//------------------------------------------------------------------------------
-TokenStore::~TokenStore()
-{
-	for (Token* t : m_tokenStore)
-	{
-		delete t;
-	}
-}
-
-//------------------------------------------------------------------------------
-void TokenStore::reserve(int count)
-{
-	if (LN_REQUIRE(m_tokenStore.isEmpty())) return;
-	m_tokenStore.reserve(count);
-}
-
-//------------------------------------------------------------------------------
-Token* TokenStore::CreateToken()
-{
-	// TODO: ちゃんとバッファをキャッシュしたい。これだと doxygen みたいにすごく重い。
-	Token* t = LN_NEW Token();
-	m_tokenStore.add(t);
-	return t;
-}
+//
+////==============================================================================
+//// TokenStore
+////==============================================================================
+//
+////------------------------------------------------------------------------------
+//TokenStore::TokenStore()
+//{
+//}
+//
+////------------------------------------------------------------------------------
+//TokenStore::~TokenStore()
+//{
+//	for (SourceToken* t : m_tokenStore)
+//	{
+//		delete t;
+//	}
+//}
+//
+////------------------------------------------------------------------------------
+//void TokenStore::reserve(int count)
+//{
+//	if (LN_REQUIRE(m_tokenStore.isEmpty())) return;
+//	m_tokenStore.reserve(count);
+//}
+//
+////------------------------------------------------------------------------------
+//SourceToken* TokenStore::CreateToken()
+//{
+//	// TODO: ちゃんとバッファをキャッシュしたい。これだと doxygen みたいにすごく重い。
+//	SourceToken* t = LN_NEW SourceToken();
+//	m_tokenStore.add(t);
+//	return t;
+//}
 
 //==============================================================================
 // InputFile
 //==============================================================================
 
-//------------------------------------------------------------------------------
 InputFile::InputFile(const std::string& filePath)
-	: m_lang(Language::Cpp11)
+	: m_context(nullptr)
+	, m_lang(Language::Cpp11)
 	, m_category(InputFileCategory::CompileUnit)
 	, m_filePath(filePath)
 	, m_codeRead(false)
@@ -56,9 +56,9 @@ InputFile::InputFile(const std::string& filePath)
 {
 }
 
-//------------------------------------------------------------------------------
 InputFile::InputFile(const std::string& filePath, const char* code, int length)
-	: m_lang(Language::Cpp11)
+	: m_context(nullptr)
+	, m_lang(Language::Cpp11)
 	, m_filePath(filePath)
 	, m_code(code, (length < 0) ? strlen(code) : length)
 	, m_codeRead(true)
@@ -66,7 +66,13 @@ InputFile::InputFile(const std::string& filePath, const char* code, int length)
 {
 }
 
-//------------------------------------------------------------------------------
+void InputFile::Lex()
+{
+	if (LN_REQUIRE(m_context)) return;
+	auto lexer = m_context->CreateLexer(this);
+	lexer->Tokenize(this);
+}
+
 void InputFile::ReadFile()
 {
 	if (!m_codeRead)
@@ -77,51 +83,46 @@ void InputFile::ReadFile()
 	}
 }
 
-//------------------------------------------------------------------------------
 ByteBuffer* InputFile::GetCodeBuffer()
 {
 	ReadFile();
 	return &m_code;
 }
 
-//------------------------------------------------------------------------------
-Token* InputFile::CreateToken()
+SourceToken* InputFile::addSourceToken(TokenGroup group, const char* begin, const char* end, int tokenType)
 {
 	// 初回、最大のパターンで容量確保
 	if (m_tokenList.isEmpty())
 	{
-		m_tokenStore.reserve(m_code.getSize());
+		m_tokenList.reserve(m_code.getSize());
 	}
 
-	Token* t = m_tokenStore.CreateToken();
-	m_tokenList.add(t);
-	return t;
+	const char* codeBegin = (const char*)m_code.getConstData();
+	m_tokenList.add(SourceToken(this, group, begin - codeBegin, end - codeBegin, tokenType));
+	return &m_tokenList.getLast();
 }
 
 //==============================================================================
 // AnalyzerContext
 //==============================================================================
 
-//------------------------------------------------------------------------------
 AnalyzerContext::AnalyzerContext()
 {
 	m_diagnosticsManager = Ref<DiagnosticsManager>::makeRef();
 }
 
-//------------------------------------------------------------------------------
 AnalyzerContext::~AnalyzerContext()
 {
 }
 
-//------------------------------------------------------------------------------
 InputFile* AnalyzerContext::RegisterInputFile(const std::string& filePath)
 {
 	auto ptr = Ref<InputFile>::makeRef(filePath);
 	m_inputFileList.add(ptr);
+	ptr->setOwnerContext(this);
 	return ptr;
 }
 
-//------------------------------------------------------------------------------
 InputFile* AnalyzerContext::RegisterInputMemoryCode(const std::string& filePath, const char* code, int length)
 {
 	if (LN_REQUIRE(code != nullptr)) return nullptr;
@@ -130,13 +131,11 @@ InputFile* AnalyzerContext::RegisterInputMemoryCode(const std::string& filePath,
 	return ptr;
 }
 
-//------------------------------------------------------------------------------
 void AnalyzerContext::RemoveAllInputFile()
 {
 	m_inputFileList.clear();
 }
 
-//------------------------------------------------------------------------------
 void AnalyzerContext::LexAll()
 {
 	for (InputFile* file : m_inputFileList)
@@ -145,7 +144,6 @@ void AnalyzerContext::LexAll()
 	}
 }
 
-//------------------------------------------------------------------------------
 void AnalyzerContext::LexFile(InputFile* file)
 {
 	if (LN_REQUIRE(file != nullptr)) return;
@@ -154,7 +152,6 @@ void AnalyzerContext::LexFile(InputFile* file)
 	lexer->Tokenize(file);
 }
 
-//------------------------------------------------------------------------------
 void AnalyzerContext::PreprocessAll()
 {
 	for (InputFile* file : m_inputFileList)
@@ -163,7 +160,6 @@ void AnalyzerContext::PreprocessAll()
 	}
 }
 
-//------------------------------------------------------------------------------
 void AnalyzerContext::PreprocessFile(InputFile* file)
 {
 	if (LN_REQUIRE(file != nullptr)) return;
@@ -172,7 +168,6 @@ void AnalyzerContext::PreprocessFile(InputFile* file)
 	LN_NOTIMPLEMENTED();
 }
 
-//------------------------------------------------------------------------------
 void AnalyzerContext::ResetFileDiagnostics(InputFile* file)
 {
 	if (file->getDiag() != nullptr)
@@ -185,7 +180,6 @@ void AnalyzerContext::ResetFileDiagnostics(InputFile* file)
 	}
 }
 
-//------------------------------------------------------------------------------
 Ref<AbstractLexer> AnalyzerContext::CreateLexer(InputFile* file)
 {
 	switch (file->GetLanguage())

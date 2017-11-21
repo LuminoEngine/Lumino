@@ -6,6 +6,7 @@ namespace fl {
 class DiagnosticsItemSet;
 class DiagnosticsManager;
 class AbstractLexer;
+class AnalyzerContext;
 
 enum class InputFileCategory
 {
@@ -13,17 +14,10 @@ enum class InputFileCategory
 	Header,
 };
 
-class TokenStore
+class TranslationUnit
+	: public Object
 {
-public:
-	TokenStore();
-	~TokenStore();	
-
-	void reserve(int count);
-	Token* CreateToken();
-
-private:
-	List<Token*>	m_tokenStore;
+	List<Token>	m_tokens;
 };
 
 /**
@@ -37,29 +31,34 @@ public:
 	InputFile(const std::string& filePath, const char* code, int length);
 	~InputFile() = default;
 
+	void Lex();
+
 	Language GetLanguage() const { return m_lang; }
 	InputFileCategory GetCategory() const { return m_category; }
 	const std::string& GetRelativeFilePath() const { return m_filePath; }
 	DiagnosticsItemSet* getDiag() const { return m_diag; }
-	const TokenList* GetTokenList() const { return &m_tokenList; }
+	TokenList* GetTokenList() { return &m_tokenList; }
 
 LN_INTERNAL_ACCESS:
+	void setOwnerContext(AnalyzerContext* context) { m_context = context; }
 	ByteBuffer* GetCodeBuffer();
 	TokenList* GetTokenListInternal() { return &m_tokenList; }
 	void setDiag(DiagnosticsItemSet* diag) { m_diag = diag; }
-	Token* CreateToken();
+	SourceToken* addSourceToken(TokenGroup group, const char* bufBegin, const char* bufEnd, int tokenType);
 
 private:
 	void ReadFile();
 
+	AnalyzerContext*	m_context;
 	Language			m_lang;
 	InputFileCategory	m_category;
 	std::string			m_filePath;
 	ByteBuffer			m_code;
 	bool				m_codeRead;
-	TokenStore			m_tokenStore;
 	TokenList			m_tokenList;
 	DiagnosticsItemSet*	m_diag;
+
+	Ref<TranslationUnit>	m_translationUnit;	// .h などの場合は null
 };
 
 /**
@@ -87,9 +86,12 @@ public:
 	void PreprocessAll();
 	void PreprocessFile(InputFile* file);
 
+LN_INTERNAL_ACCESS:
+	Ref<AbstractLexer> CreateLexer(InputFile* file);
+
+
 private:
 	void ResetFileDiagnostics(InputFile* file);
-	Ref<AbstractLexer> CreateLexer(InputFile* file);
 
 	List<Ref<InputFile>>		m_inputFileList;
 
