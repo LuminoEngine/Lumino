@@ -5,7 +5,7 @@
 
 namespace fl {
 class InputFile;
-using SourceLocation = uint32_t;
+using SourceLocation = int32_t;
 
 /**
 	@brief	
@@ -52,8 +52,6 @@ public:
 	/** 文字列が一致するか */
 	bool EqualGroupAndString(TokenGroup group, const char* str, int len = -1) const;
 
-	void setValid(bool valid) { m_valid = valid; }
-	bool isValid() const { return m_valid; }
 
 LN_INTERNAL_ACCESS:
 	void SetFirstLineNumber(int lineNumber) { m_firstLineNumber = lineNumber; }
@@ -74,7 +72,6 @@ private:
 
 	TokenGroup		m_group;
 	int				m_tokenType;
-	bool			m_valid;
 };
 
 /**
@@ -97,7 +94,7 @@ public:
 	//	return sb.ToString();
 	//}
 
-	std::string toStringValidCode() const;
+	//std::string toStringValidCode() const;
 
 	template <class TPred>
 	int indexOf(int startIndex, int count, TPred pred) const
@@ -111,15 +108,99 @@ public:
 };
 
 
+class StringRef
+{
+public:
+	typedef const char *iterator;
+	static const size_t npos = ~size_t(0);
+
+private:
+	const char* m_str;
+	size_t m_length;
+
+	static size_t min(size_t a, size_t b) { return a < b ? a : b; }
+
+public:
+	StringRef()
+		: m_str(0)
+		, m_length(0)
+	{}
+
+	StringRef(const char* str)
+		: m_str(str)
+		, m_length(strlen(str))
+	{}
+
+	StringRef(const char* str, size_t length)
+		: m_str(str)
+		, m_length(length)
+	{}
+
+	StringRef(const char* begin, const char* end)
+		: m_str(begin)
+		, m_length(end - begin)
+	{}
+
+	StringRef(const std::string& str)
+		: m_str(str.c_str())
+		, m_length(str.length())
+	{}
+
+	iterator begin() const { return m_str; }
+
+	iterator end() const { return m_str + m_length; }
+
+	size_t length() const { return m_length; }
+
+	bool startswith(StringRef prefix) const
+	{
+		return
+			m_length >= prefix.m_length &&
+			memcmp(m_str, prefix.m_str, prefix.m_length) == 0;
+	}
+
+	bool endswith(StringRef suffix) const
+	{
+		return
+			m_length >= suffix.m_length &&
+			memcmp(end() - suffix.m_length, suffix.m_str, suffix.m_length) == 0;
+	}
+
+	StringRef substr(size_t start, size_t n = npos) const
+	{
+		return StringRef(m_str + start, min(n, m_length - start));
+	}
+
+	const char& operator[](size_t index) const { return m_str[index]; }
+};
+
 /**
 	@brief
 */
 class Token
 {
 public:
+	Token(SourceLocation loc);
 
-private:
+
+	TokenGroup getTokenGroup() const { return (m_sourceToken) ? m_sourceToken->GetTokenGroup() : TokenGroup::Unknown; }
+
+	StringRef strRef() const { return StringRef(m_sourceToken->getBegin(), m_sourceToken->getEnd()); }
+
+	int getTokenType() const { return m_sourceToken->getTokenType(); }
+
+	std::string getString() const { return m_sourceToken->getString(); }
+
+	bool equalString(const char* str, int len = -1) const { return m_sourceToken->EqualString(str, len); }
+	bool equalChar(char ch) const { return m_sourceToken->EqualChar(ch); }
+
+	void setValid(bool valid) { m_valid = valid; }
+	bool isValid() const { return m_valid; }
+
+//private:
 	SourceLocation	m_loc;
+	SourceToken*	m_sourceToken;	// アクセス速度重視のため用意。元の List が変わると使えない
+	bool			m_valid;
 };
 
 

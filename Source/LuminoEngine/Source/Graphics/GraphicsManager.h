@@ -155,6 +155,7 @@ public:
 	const std::string& getCommonShaderHeader() const { return m_commonShaderHeader; }
 	const Ref<Shader>& getBuiltinShader(BuiltinShader shader) const;
 
+	LinaShaderContext* getShaderContext() const { return m_shaderContext.get(); }
 	
 
 private:

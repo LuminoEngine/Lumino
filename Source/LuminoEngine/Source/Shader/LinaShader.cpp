@@ -6,6 +6,7 @@
 #include <Fluorite/AnalyzerContext.h>
 #include <Fluorite/Diagnostics.h>
 #include "../Source/Fluorite/Lexer/CppLexer.h"
+#include "../Graphics/Device/DirectX9/DX9Module.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -28,14 +29,17 @@ class HLSLMetadataParser
 public:
 	std::vector<HLSLTechnique>	techniques;
 
-	bool parse(fl::TokenList* tokens);
+	bool parse(fl::TranslationUnit* translationUnit);
+
+	bool isLuminoShader() const { return m_isLuminoShader; }
+	bool isLazyHLSLShader() const { return !isLuminoShader(); }
 
 private:
-	fl::SourceToken* current() { return &m_tokens->getAt(m_current); }
+	fl::Token* current() { return &m_tokens->getAt(m_current); }
 	bool next();
 	bool nextTo(char ch) { return nextTo(&ch, 1); }
 	bool nextTo(const char* word, int len);
-	bool isSpaceToken(const fl::SourceToken& token) const;
+	bool isSpaceToken(const fl::Token& token) const;
 	bool isEof() const;
 
 	bool parseCompileUnit();
@@ -43,15 +47,17 @@ private:
 	bool parsePass(HLSLPass* pass);
 	bool parseRenderState(HLSLPass* pass);
 
-	fl::TokenList* m_tokens;
+	fl::TranslationUnit* m_translationUnit;
+	List<fl::Token>* m_tokens;
 	int m_current;
-
+	bool m_isLuminoShader;
 };
 
-bool HLSLMetadataParser::parse(fl::TokenList* tokens)
+bool HLSLMetadataParser::parse(fl::TranslationUnit* translationUnit)
 {
 	m_current = 0;
-	m_tokens = tokens;
+	m_tokens = &translationUnit->m_tokens;
+	m_isLuminoShader = false;
 
 	parseCompileUnit();
 
@@ -77,33 +83,36 @@ bool HLSLMetadataParser::nextTo(const char* word, int len)
 
 	} while (
 		isSpaceToken(m_tokens->getAt(m_current)) ||
-		!m_tokens->getAt(m_current).EqualString(word, len));
+		!m_tokens->getAt(m_current).equalString(word, len));
 
 	return !isEof();
 }
 
-bool HLSLMetadataParser::isSpaceToken(const fl::SourceToken& token) const
+bool HLSLMetadataParser::isSpaceToken(const fl::Token& token) const
 {
 	return
-		token.GetTokenGroup() == fl::TokenGroup::SpaceSequence ||
-		token.GetTokenGroup() == fl::TokenGroup::NewLine ||
-		token.GetTokenGroup() == fl::TokenGroup::Comment;
+		token.getTokenGroup() == fl::TokenGroup::SpaceSequence ||
+		token.getTokenGroup() == fl::TokenGroup::NewLine ||
+		token.getTokenGroup() == fl::TokenGroup::Comment;
 }
 
 bool HLSLMetadataParser::isEof() const
 {
-	return m_tokens->getAt(m_current).GetTokenGroup() == fl::TokenGroup::Eof;
+	return m_tokens->getAt(m_current).getTokenGroup() == fl::TokenGroup::Eof;
 }
 
 bool HLSLMetadataParser::parseCompileUnit()
 {
 	while (next())
 	{
-		if (current()->EqualString("technique", 9))
+		if (current()->getTokenGroup() != fl::TokenGroup::Unknown)
 		{
-			HLSLTechnique tech;
-			if (!parseTechnique(&tech)) return false;
-			techniques.push_back(std::move(tech));
+			if (current()->equalString("technique", 9))
+			{
+				HLSLTechnique tech;
+				if (!parseTechnique(&tech)) return false;
+				techniques.push_back(std::move(tech));
+			}
 		}
 	}
 
@@ -118,13 +127,13 @@ bool HLSLMetadataParser::parseTechnique(HLSLTechnique* tech)
 	bool closed = false;
 	while (next())
 	{
-		if (current()->EqualString("pass", 4))
+		if (current()->equalString("pass", 4))
 		{
 			HLSLPass pass;
 			if (!parsePass(&pass)) return false;
 			tech->passes.push_back(std::move(pass));
 		}
-		else if (current()->EqualChar('}'))
+		else if (current()->equalChar('}'))
 		{
 			closed = true;
 			break;
@@ -148,11 +157,11 @@ bool HLSLMetadataParser::parsePass(HLSLPass* pass)
 	bool closed = false;
 	while (next())
 	{
-		if (current()->GetTokenGroup() == fl::TokenGroup::Identifier)
+		if (current()->getTokenGroup() == fl::TokenGroup::Identifier)
 		{
 			if (!parseRenderState(pass)) return false;
 		}
-		else if (current()->EqualChar('}'))
+		else if (current()->equalChar('}'))
 		{
 			closed = true;
 			break;
@@ -165,34 +174,37 @@ bool HLSLMetadataParser::parsePass(HLSLPass* pass)
 
 bool HLSLMetadataParser::parseRenderState(HLSLPass* pass)
 {
-	fl::SourceToken* name = current();
+	fl::Token* name = current();
 	if (!nextTo('=')) return false;
 	if (!next()) return false;
-	fl::SourceToken* value = current();
+	fl::Token* value = current();
 	
-	if (name->EqualString("VertexShader", 12))
+	if (name->equalString("VertexShader", 12))
 	{
 		next();	// skip "compile"
 		next();	// skip "vs_x_x"
 		pass->vertexShader = current()->getString();
 	}
-	else if (name->EqualString("PixelShader", 11))
+	else if (name->equalString("PixelShader", 11))
 	{
 		next();	// skip "compile"
 		next();	// skip "ps_x_x"
 		pass->pixelShader = current()->getString();
 	}
-	else if (name->EqualString("ShadingModel", 12))
+	else if (name->equalString("ShadingModel", 12))
 	{
 		pass->shadingModel = current()->getString();
+		m_isLuminoShader = true;
 	}
-	else if (name->EqualString("LigitingModel", 13))
+	else if (name->equalString("LigitingModel", 13))
 	{
 		pass->ligitingModel = current()->getString();
+		m_isLuminoShader = true;
 	}
-	else if (name->EqualString("SurfaceShader", 13))
+	else if (name->equalString("SurfaceShader", 13))
 	{
 		pass->surfaceShader = current()->getString();
+		m_isLuminoShader = true;
 	}
 
 	if (!nextTo(';')) return false;
@@ -232,6 +244,55 @@ bool LinaShaderContext::findBuiltinShaderCode(const char* pathBegin, const char*
 	}
 	return false;
 }
+
+
+class LinaID3DInclude
+	: public ID3DXInclude
+{
+public:
+	LinaID3DInclude(LinaShaderContext* context)
+		: m_context(context)
+	{
+	}
+
+	virtual HRESULT STDMETHODCALLTYPE Open(D3DXINCLUDE_TYPE IncludeType, LPCSTR pFileName, LPCVOID pParentData, LPCVOID* ppData, UINT* pBytes) override
+	{
+		switch (IncludeType)
+		{
+			case D3DXINC_LOCAL:		// #include ""
+			case D3DXINC_SYSTEM:	// #include <>
+				// 区別しない
+				break;
+			default:
+				return E_FAIL;
+		}
+
+		size_t len = strlen(pFileName);
+		const char* codeBegin;
+		const char* codeEnd;
+		if (m_context->findBuiltinShaderCode(pFileName, pFileName + len, &codeBegin, &codeEnd))
+		{
+			*ppData = codeBegin;
+			*pBytes = codeEnd - codeBegin;
+			return S_OK;
+		}
+		else
+		{
+			// TODO: とりあえず組み込みヘッダだけ許可
+			return E_FAIL;
+		}
+
+		return E_FAIL;
+	}
+
+	virtual HRESULT STDMETHODCALLTYPE Close(LPCVOID pData) override
+	{
+		return S_OK;
+	}
+
+private:
+	LinaShaderContext*	m_context;
+};
 
 //==============================================================================
 // LinaShaderIRGenerater
@@ -416,7 +477,63 @@ static bool Hlsl2Glsl(const std::string& input, const std::string& entryPoint, E
 	return true;
 }
 
-void LinaShaderIRGenerater::loadRawHLSL(const std::string& code)
+bool LinaShaderIRGenerater::convert(const char* input, int len, std::string* outCode, std::string* log)
+{
+	if (LN_REQUIRE(input)) return false;
+
+	fl::AnalyzerContext ctx;
+	auto file = ctx.RegisterInputMemoryCode(std::string{}, input, len);
+	ctx.LexFile(file);
+	file->createTranslationUnit();
+	fl::TranslationUnit* tu = file->getTranslationUnit();
+	tu->expandTokensOneFile(file);
+	List<fl::Token>* tokens = &tu->m_tokens;
+
+	HLSLMetadataParser parser;
+	parser.parse(tu);
+
+	if (parser.isLuminoShader())
+	{
+		LN_NOTIMPLEMENTED();
+		return false;
+	}
+	else if (parser.isLazyHLSLShader())
+	{
+
+	}
+	else
+	{
+		LN_UNREACHABLE();
+		return false;
+	}
+
+	LN_NOTIMPLEMENTED();
+}
+
+bool LinaShaderIRGenerater::convertFromRawHLSL(const char* input, int len, std::string* outCode, std::string* log)
+{
+	if (LN_REQUIRE(input)) return false;
+
+	LinaID3DInclude d3dInclude(m_context);
+	ID3DXBuffer* pShaderText = NULL;
+	ID3DXBuffer* pErrorMsgs = NULL;
+	HRESULT hr = DX9Module::D3DXPreprocessShader(input, len, NULL, &d3dInclude, &pShaderText, &pErrorMsgs);
+	if (pErrorMsgs)
+	{
+		(*log) += std::string((const char*)pErrorMsgs->GetBufferPointer(), pErrorMsgs->GetBufferSize());
+		pErrorMsgs->Release();
+	}
+	if (FAILED(hr))
+	{
+		return false;
+	}
+
+	(*outCode) = std::string((const char*)pShaderText->GetBufferPointer(), pShaderText->GetBufferSize());
+
+	return true;
+}
+
+void LinaShaderIRGenerater::convertRawHLSL_To_IncludeResolvedHLSLCode(const std::string& code)
 {
 	//fl::InputFile f(std::string{}, code.c_str(), code.length());
 	//fl::CppLexer lex;
@@ -427,8 +544,14 @@ void LinaShaderIRGenerater::loadRawHLSL(const std::string& code)
 	fl::AnalyzerContext ctx;
 	auto file = ctx.RegisterInputMemoryCode(std::string{}, code.c_str(), code.length());
 	ctx.LexFile(file);
-	auto tokens = file->GetTokenList();
+	file->createTranslationUnit();
+	fl::TranslationUnit* tu = file->getTranslationUnit();
+	tu->expandTokensOneFile(file);
+	List<fl::Token>* tokens = &tu->m_tokens;
+	//auto tokens = file->GetTokenList();
 
+	HLSLMetadataParser parser;
+	parser.parse(tu);
 
 
 
@@ -437,23 +560,27 @@ void LinaShaderIRGenerater::loadRawHLSL(const std::string& code)
 		{
 			if (tokens->getAt(i).getTokenType() == fl::TT_HeaderName)
 			{
-				const fl::SourceToken& t = tokens->getAt(i);
-				if (*t.getBegin() == '<')
+				const fl::Token& t = tokens->getAt(i);
+				fl::StringRef ts = t.strRef();
+				if (ts[0] == '<')
 				{
 					const char* codeBegin;
 					const char* codeEnd;
-					if (m_context->findBuiltinShaderCode(t.getBegin() + 1, t.getEnd() - 1, &codeBegin, &codeEnd))
+					if (m_context->findBuiltinShaderCode(ts.begin() + 1, ts.end() - 1, &codeBegin, &codeEnd))
 					{
+						// #include 開始の # を探す
 						for (int i2 = i; i2 >= 0; i2--)
 						{
 							tokens->getAt(i2).setValid(false);
-							if (tokens->getAt(i2).EqualChar('#'))
+							if (tokens->getAt(i2).equalChar('#'))
 							{
+								tu->insertToken(i2, std::string(codeBegin, codeEnd));
+								i++;
 								break;
 							}
 						}
 					}
-					printf(tokens->getAt(i).getString().c_str());
+					//printf(tokens->getAt(i).getString().c_str());
 				}
 			}
 		}
@@ -461,28 +588,29 @@ void LinaShaderIRGenerater::loadRawHLSL(const std::string& code)
 
 
 
+	auto minHLSL2 = tu->getStringValidCode();
+	FileSystem::writeAllBytes(_T("test.fx"), minHLSL2.c_str(), minHLSL2.length());
 
 
+	//HLSLMetadataParser parser;
+	//parser.parse(tu);
 
-	HLSLMetadataParser parser;
-	parser.parse(tokens);
+	//auto minHLSL = tu->getStringValidCode();
+	//FileSystem::writeAllBytes(_T("test.fx"), minHLSL.c_str(), minHLSL.length());
 
-	auto minHLSL = tokens->toStringValidCode();
-	FileSystem::writeAllBytes(_T("test.fx"), minHLSL.c_str(), minHLSL.length());
+	//std::string glslCode, log;
+	//Hlsl2Glsl(minHLSL, parser.techniques[0].passes[0].vertexShader, EShLangVertex, &glslCode, &log);
+	//FileSystem::writeAllBytes(_T("test.vert"), glslCode.c_str(), glslCode.length());
+	//Hlsl2Glsl(minHLSL, parser.techniques[0].passes[0].pixelShader, EShLangFragment, &glslCode, &log);
+	//FileSystem::writeAllBytes(_T("test.frag"), glslCode.c_str(), glslCode.length());
 
-	std::string glslCode, log;
-	Hlsl2Glsl(minHLSL, parser.techniques[0].passes[0].vertexShader, EShLangVertex, &glslCode, &log);
-	FileSystem::writeAllBytes(_T("test.vert"), glslCode.c_str(), glslCode.length());
-	Hlsl2Glsl(minHLSL, parser.techniques[0].passes[0].pixelShader, EShLangFragment, &glslCode, &log);
-	FileSystem::writeAllBytes(_T("test.frag"), glslCode.c_str(), glslCode.length());
-
-	printf("");
+	//printf("");
 }
 
-std::string LinaShaderIRGenerater::generateIRCode()
-{
-	return std::string();
-}
+//std::string LinaShaderIRGenerater::generateIRCode()
+//{
+//	return std::string();
+//}
 
 LinaShader::LinaShader()
 {

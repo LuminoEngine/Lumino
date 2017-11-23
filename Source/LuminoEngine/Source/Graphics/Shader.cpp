@@ -492,22 +492,31 @@ void Shader::initialize(detail::GraphicsManager* manager, const void* code, int 
 {
 	GraphicsResourceObject::initialize();
 
+	std::string log;
 	std::stringstream sb;
 	if (codeType == ShaderCodeType::TRSS)
 	{
-		detail::ShaderAnalyzer analyzer;
-		analyzer.analyzeLNFX((const char*)code, length);
-		auto cc = analyzer.makeHLSLCode();
+		//detail::ShaderAnalyzer analyzer;
+		//analyzer.analyzeLNFX((const char*)code, length);
+		//auto cc = analyzer.makeHLSLCode();
 
-		sb << std::string(cc.data(), cc.size());
+		//sb << std::string(cc.data(), cc.size());
+		sb << std::string((const char*)code, length);
 
 		//FileSystem::WriteAllBytes(_LT("code.c"), cc.data(), cc.size());
 	}
 	else if (codeType == ShaderCodeType::RawHLSL)
 	{
 		LinaShaderIRGenerater gen;
-		gen.loadRawHLSL(std::string((const char*)code, length));
-		sb << gen.generateIRCode();
+		gen.initialize(m_manager->getShaderContext());
+		std::string c;
+		if (!gen.convertFromRawHLSL((const char*)code, length, &c, &log))
+		{
+			LN_NOTIMPLEMENTED();
+			return;
+		}
+		//gen.loadRawHLSL(std::string((const char*)code, length));
+		sb << c;
 	}
 	else if (codeType == ShaderCodeType::RawIR)
 	{

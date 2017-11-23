@@ -4,6 +4,12 @@
 namespace fl { class AnalyzerContext; }
 LN_NAMESPACE_BEGIN
 
+//enum class LinaShaderTarget
+//{
+//	HLSL,
+//	IR,
+//};
+
 class LinaShaderContext
 {
 public:
@@ -30,10 +36,15 @@ public:
 	void initialize(LinaShaderContext* context);
 	void finalize();
 
-	void loadRawHLSL(const std::string& code);
+	// LuminoShader or LazyHLSL ->
+	bool convert(const char* input, int len, std::string* outCode, std::string* log);
 
-	std::string generateIncludeResolvedHLSLCode();
-	std::string generateIRCode();
+	bool convertFromRawHLSL(const char* input, int len, std::string* outCode, std::string* log);
+
+	void convertRawHLSL_To_IncludeResolvedHLSLCode(const std::string& code);
+
+	//std::string generateIncludeResolvedHLSLCode();
+	//std::string generateIRCode();
 
 private:
 	LinaShaderContext* m_context;

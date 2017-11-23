@@ -1,6 +1,5 @@
 
 #include "Internal.h"
-#include <sstream>
 #include <Fluorite/AnalyzerContext.h>
 #include <Fluorite/Token.h>
 
@@ -22,7 +21,6 @@ SourceToken::SourceToken()
 	, m_lastColumn(0)
 	, m_group(TokenGroup::Unknown)
 	, m_tokenType(0)
-	, m_valid(true)
 {
 }
 
@@ -111,17 +109,28 @@ bool SourceToken::EqualGroupAndString(TokenGroup group, const char* str, int len
 
 
 
-std::string TokenList::toStringValidCode() const
+//std::string TokenList::toStringValidCode() const
+//{
+//	std::stringstream ss;
+//	for (int i = 0; i < getCount(); ++i)
+//	{
+//		if (getAt(i).isValid())
+//		{
+//			ss << std::string(getAt(i).getBegin(), getAt(i).getLength());
+//		}
+//	}
+//	return ss.str();
+//}
+
+
+//==============================================================================
+// Token
+//==============================================================================
+Token::Token(SourceLocation loc)
+	: m_loc(loc)
+	, m_sourceToken(nullptr)
+	, m_valid(true)
 {
-	std::stringstream ss;
-	for (int i = 0; i < getCount(); ++i)
-	{
-		if (getAt(i).isValid())
-		{
-			ss << std::string(getAt(i).getBegin(), getAt(i).getLength());
-		}
-	}
-	return ss.str();
 }
 
 } // namespace fl

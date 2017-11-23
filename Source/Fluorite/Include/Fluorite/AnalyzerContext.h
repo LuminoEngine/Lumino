@@ -17,8 +17,42 @@ enum class InputFileCategory
 class TranslationUnit
 	: public Object
 {
-	List<Token>	m_tokens;
+public:
+	void expandTokensOneFile(InputFile* file);
+
+	void insertToken(int index, const std::string& str);
+
+	int getTokenLineNumber(SourceLocation loc) const;
+
+	StringRef getSourceString(SourceLocation loc) const;
+
+	std::string getStringValidCode() const;
+
+	struct FileInfo
+	{
+		SourceLocation	unitLocBegin;
+		SourceLocation	unitLocEnd;
+		InputFile*		file;
+	};
+
+	List<FileInfo>		m_fileInfoList;
+	List<Token>			m_tokens;
+	List<std::string>	m_additionalTokenStrings;
 };
+
+//class Rewriter
+//{
+//public:
+//	std::string getRewritedString(TranslationUnit* translationUnit);
+//
+//private:
+//	struct EditItem
+//	{
+//		SourceLocation	loc;	// これの前に挿入。ここから編集開始
+//		int count;				// 置換・削除トークン数。挿入のときは 0
+//		std::string
+//	};
+//};
 
 /**
 	@brief	
@@ -28,10 +62,13 @@ class InputFile
 {
 public:
 	InputFile(const std::string& filePath);
-	InputFile(const std::string& filePath, const char* code, int length);
+	InputFile(AnalyzerContext* context, const std::string& filePath, const char* code, int length);
 	~InputFile() = default;
 
-	void Lex();
+	void lex();
+
+	void createTranslationUnit();
+	TranslationUnit* getTranslationUnit() const { return m_translationUnit; }
 
 	Language GetLanguage() const { return m_lang; }
 	InputFileCategory GetCategory() const { return m_category; }

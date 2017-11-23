@@ -99,13 +99,14 @@ void ShaderAnalyzer::analyzeLNFX(const char* code, int len)
 {
 	m_code = code;
 	m_codeLength = len;
+	LN_NOTIMPLEMENTED();
 
-	fl::InputFile file(std::string{}, code, len);
-	fl::CppLexer lexer;
-	fl::DiagnosticsItemSet diag(std::string{});
-	file.setDiag(&diag);	// TODO: InputFile の中でつくるべきな気がする
-	lexer.Tokenize(&file);
-	parseSimpleShaderMacros(file.GetTokenList());
+	//fl::InputFile file(std::string{}, code, len);
+	//fl::CppLexer lexer;
+	//fl::DiagnosticsItemSet diag(std::string{});
+	//file.setDiag(&diag);	// TODO: InputFile の中でつくるべきな気がする
+	//lexer.Tokenize(&file);
+	//parseSimpleShaderMacros(file.GetTokenList());
 }
 
 //------------------------------------------------------------------------------
