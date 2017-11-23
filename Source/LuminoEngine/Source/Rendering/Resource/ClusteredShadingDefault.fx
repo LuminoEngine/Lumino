@@ -3,6 +3,7 @@
 //BEGIN_HLSL
 
 #include <Lumino.fxh>
+#include <LuminoShadow.fxh>
 
 
 
@@ -12,7 +13,7 @@
 
 // DirectLightIrradiance 系関数の出力。
 // ピクセルへのライトごとの影響情報
-struct IncidentLight
+struct LN_IncidentLight
 {
 	float3 color;
 	float3 direction;
@@ -82,7 +83,7 @@ float punctualLightIntensityToIrradianceFactor(const in float lightDistance, con
   return 1.0;
 }
 
-void getDirectionalDirectLightIrradiance(const DirectionalLight directionalLight, const GeometricContext geometry, out IncidentLight directLight)
+void getDirectionalDirectLightIrradiance(const DirectionalLight directionalLight, const GeometricContext geometry, out LN_IncidentLight directLight)
 {
 	directLight.color = directionalLight.color;
 	directLight.direction = directionalLight.direction;
@@ -92,7 +93,7 @@ void getDirectionalDirectLightIrradiance(const DirectionalLight directionalLight
 
 
 /*
-void getPointDirectLightIrradiance(const in PointLight pointLight, const in GeometricContext geometry, out IncidentLight directLight)
+void getPointDirectLightIrradiance(const in PointLight pointLight, const in GeometricContext geometry, out LN_IncidentLight directLight)
 {
   vec3 L = pointLight.position - geometry.position;
   directLight.direction = normalize(L);
@@ -110,7 +111,7 @@ void getPointDirectLightIrradiance(const in PointLight pointLight, const in Geom
 */
 
 
-void getSpotDirectLightIrradiance(const in SpotLight spotLight, const in GeometricContext geometry, out IncidentLight directLight) {
+void getSpotDirectLightIrradiance(const in SpotLight spotLight, const in GeometricContext geometry, out LN_IncidentLight directLight) {
   float3 L = spotLight.position - geometry.position;
   directLight.direction = normalize(L);
 
@@ -171,7 +172,7 @@ float G_Smith_Schlick_GGX(float a, float dotNV, float dotNL) {
 }
 
 // Cook-Torrance
-float3 SpecularBRDF(const in IncidentLight directLight, const in GeometricContext geometry, float3 specularColor, float roughnessFactor) {
+float3 SpecularBRDF(const in LN_IncidentLight directLight, const in GeometricContext geometry, float3 specularColor, float roughnessFactor) {
 
   float3 N = geometry.normal;
   float3 V = geometry.viewDir;
@@ -192,7 +193,7 @@ float3 SpecularBRDF(const in IncidentLight directLight, const in GeometricContex
 }
 
 // RenderEquations(RE)
-void RE_Direct(const in IncidentLight directLight, const in GeometricContext geometry, const in Material material, inout ReflectedLight reflectedLight) {
+void RE_Direct(const in LN_IncidentLight directLight, const in GeometricContext geometry, const in Material material, inout ReflectedLight reflectedLight) {
 
   float dotNL = saturate(dot(geometry.normal, directLight.direction));
   float3 irradiance = dotNL * directLight.color;
@@ -464,12 +465,6 @@ float _LN_CalcFogFactor(float3 depth)
 }
 
 
-// シャドウマップからサンプリングした値が compare より奥にあれば 1(影をつける)、そうでなければ 0
-float shadowTexture2DCompare( sampler2D depths, float2 uv, float compareZ ) {
-
-	return step( compareZ, ( tex2D( depths, uv ).r ) );
-
-}
 	
 	
 float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_ClusteredForward extra, LN_SurfaceOutput surface)
@@ -511,7 +506,7 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 	
 	/**/
 		ReflectedLight reflectedLight = {float3(0,0,0),float3(0,0,0),float3(0,0,0),float3(0,0,0)};
-	IncidentLight directLight;
+	LN_IncidentLight directLight;
 	
 	
 	float3 result = float3(0, 0, 0);
@@ -630,58 +625,9 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 	float opacity = 1.0;
 	float3 outgoingLight = emissive + reflectedLight.directDiffuse + reflectedLight.directSpecular + reflectedLight.indirectDiffuse + reflectedLight.indirectSpecular;
 	
-	/*Shadow*/
-	{
-		float2 s = float2(0.5, 0.5) / float2(1024, 1024);	// TODO: LightMapSize
-		float2 s2 = float2(1.0, 1.0) / float2(1024, 1024);	// TODO: LightMapSize
-		
-		float4 posInLight = extra.vInLightPosition;//mul(mul(float4(extra.WorldPos.xyz, 1), ln_View), ln_Projection);//
-		float2 shadowUV = 0.5 * (posInLight.xy / posInLight.w) + float2(0.5, 0.5);
-		shadowUV.y = 1.0 - shadowUV.y;
-		shadowUV += s;
-		
-		#if 1
-		
-		float depth = posInLight.z/ posInLight.w;
-		float compareZ = depth - 0.0065;
-		float shadow = (
-			shadowTexture2DCompare(ln_DirectionalShadowMap_Sampler, shadowUV + float2(-s2.x, -s2.y), compareZ) +
-			shadowTexture2DCompare(ln_DirectionalShadowMap_Sampler, shadowUV + float2(0    , -s2.y), compareZ) +
-			shadowTexture2DCompare(ln_DirectionalShadowMap_Sampler, shadowUV + float2( s2.x, -s2.y), compareZ) +
-			shadowTexture2DCompare(ln_DirectionalShadowMap_Sampler, shadowUV + float2(-s2.x, 0    ), compareZ) +
-			shadowTexture2DCompare(ln_DirectionalShadowMap_Sampler, shadowUV + float2(0    , 0    ), compareZ) +
-			shadowTexture2DCompare(ln_DirectionalShadowMap_Sampler, shadowUV + float2(+s2.x, 0    ), compareZ) +
-			shadowTexture2DCompare(ln_DirectionalShadowMap_Sampler, shadowUV + float2(-s2.x,  s2.y), compareZ) +
-			shadowTexture2DCompare(ln_DirectionalShadowMap_Sampler, shadowUV + float2(0    ,  s2.y), compareZ) +
-			shadowTexture2DCompare(ln_DirectionalShadowMap_Sampler, shadowUV + float2( s2.x,  s2.y), compareZ)
-		) * ( 1.0 / 9.0 );
-		
-		
-		
-		outgoingLight *= lerp(0.5, 1.0, shadow);
-		
-		#else
-		
-		float shadow = tex2D(ln_DirectionalShadowMap_Sampler, shadowUV).r;
-		//float shadow = tex2D(ln_DirectionalShadowMap_Sampler, float2(0.5,0.5)).r;
-		
-		float depth = posInLight.z/ posInLight.w;
-		
-		if (depth > shadow + 0.0065)
-		{
-			outgoingLight *= 0.5;
-			//return float4(0, 0, 1, 1);
-		}
-		//if (depth >= 1.0)
-		//{
-			//return float4(0, 0, 1, 1);
-		//}
-		//return float4(shadow, 0, 0, 1);
-		//return float4(shadowUV, 0, 1);
-		
-		#endif
-		
-	}
+	// Shadow
+    float4 posInLight = extra.vInLightPosition;
+    outgoingLight *= LN_CalculateShadow(posInLight);
 	
 	return float4(outgoingLight, opacity);
 	

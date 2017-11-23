@@ -10,7 +10,7 @@
 LN_NAMESPACE_BEGIN
 class EngineDiagCore;
 class FileManager;
-class LinaShaderContext;
+class LuminoShaderContext;
 
 LN_NAMESPACE_GRAPHICS_BEGIN
 class GraphicsContext;
@@ -155,7 +155,7 @@ public:
 	const std::string& getCommonShaderHeader() const { return m_commonShaderHeader; }
 	const Ref<Shader>& getBuiltinShader(BuiltinShader shader) const;
 
-	LinaShaderContext* getShaderContext() const { return m_shaderContext.get(); }
+	LuminoShaderContext* getShaderContext() const { return m_shaderContext.get(); }
 	
 
 private:
@@ -198,7 +198,7 @@ private:
 	VertexDeclaration*						m_defaultVertexDeclaration;
 	bool									m_platformTextureLoading;
 
-	std::shared_ptr<LinaShaderContext>	m_shaderContext;
+	std::shared_ptr<LuminoShaderContext>	m_shaderContext;
 };
 
 } // namespace detail

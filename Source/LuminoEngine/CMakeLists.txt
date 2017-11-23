@@ -294,8 +294,8 @@ set(LN_SOURCES_Graphics_Text
 )
 
 set(LN_SOURCES_Shader
-	Source/Shader/LinaShader.cpp
-	Source/Shader/LinaShader.h
+	Source/Shader/LuminoShader.cpp
+	Source/Shader/LuminoShader.h
 )
 
 set(LN_SOURCES_Rendering

@@ -106,22 +106,4 @@ float4 LN_Square(float4 x)
 }
 
 
-
-
-
-	
-
-	float4x4	ln_ViewProjection_Light0;
-	texture		ln_DirectionalShadowMap;
-	sampler2D	ln_DirectionalShadowMap_Sampler = sampler_state
-	{
-		Texture = <ln_DirectionalShadowMap>;
-		MinFilter = Point; 
-		MagFilter = Point;
-		MipFilter = None;
-		AddressU = Clamp;
-		AddressV = Clamp;
-	};
-
-
 #endif // LUMINO_INCLUDED

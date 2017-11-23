@@ -6,7 +6,7 @@
 #include <Lumino/Scene/OffscreenWorldView.h>
 #include <Lumino/Rendering/SSAOImageEffect.h>
 
-#include "../Source/Shader/LinaShader.h"
+#include "../Source/Shader/LuminoShader.h"
 
 using namespace ln;
 

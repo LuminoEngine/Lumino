@@ -1,7 +1,7 @@
 ﻿
 #include "../Internal.h"
 #include <hlsl2glsl.h>
-#include "LinaShader.h"
+#include "LuminoShader.h"
 
 #include <Fluorite/AnalyzerContext.h>
 #include <Fluorite/Diagnostics.h>
@@ -214,43 +214,45 @@ bool HLSLMetadataParser::parseRenderState(HLSLPass* pass)
 
 
 //==============================================================================
-// LinaShaderContext
+// LuminoShaderContext
 //==============================================================================
-LinaShaderContext::LinaShaderContext()
+LuminoShaderContext::LuminoShaderContext()
 {
 }
 
-void LinaShaderContext::initialize()
+void LuminoShaderContext::initialize()
 {
 	m_flContext = std::make_shared<fl::AnalyzerContext>();
 	
+	ByteBuffer buf;
+
+	buf = FileSystem::readAllBytes(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/Lumino.fxh"));
+	m_builtinShaderList.push_back({ "Lumino.fxh", std::string((const char*)buf.getConstData(), buf.getSize()) });
+	buf = FileSystem::readAllBytes(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/LuminoShadow.fxh"));
+	m_builtinShaderList.push_back({ "LuminoShadow.fxh", std::string((const char*)buf.getConstData(), buf.getSize()) });
 }
 
-bool LinaShaderContext::findBuiltinShaderCode(const char* pathBegin, const char* pathEnd, const char** codeBegin, const char** codeEnd)
+bool LuminoShaderContext::findBuiltinShaderCode(const char* pathBegin, const char* pathEnd, const char** codeBegin, const char** codeEnd)
 {
-	int len1 = pathEnd - pathBegin;
-	int len2 = 10;
-	if (StringTraits::compare(pathBegin, len1, "Lumino.fxh", len2, std::max(len1, len2), CaseSensitivity::CaseInsensitive) == 0)
+	size_t len1 = pathEnd - pathBegin;
+	for (auto& info : m_builtinShaderList)
 	{
-		static std::string code;
-		if (code.empty())
+		if (StringTraits::compare(pathBegin, len1, info.first.c_str(), info.first.length(), std::max(len1, info.first.length()), CaseSensitivity::CaseInsensitive) == 0)
 		{
-			ByteBuffer buf = FileSystem::readAllBytes(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/Lumino.fxh"));
-			code = std::string((const char*)buf.getConstData(), buf.getSize());
+			*codeBegin = info.second.c_str();
+			*codeEnd = info.second.c_str() + info.second.length();
+			return true;
 		}
-		*codeBegin = code.c_str();
-		*codeEnd = code.c_str() + code.length();
-		return true;
 	}
 	return false;
 }
 
 
-class LinaID3DInclude
+class LuminoID3DInclude
 	: public ID3DXInclude
 {
 public:
-	LinaID3DInclude(LinaShaderContext* context)
+	LuminoID3DInclude(LuminoShaderContext* context)
 		: m_context(context)
 	{
 	}
@@ -291,25 +293,25 @@ public:
 	}
 
 private:
-	LinaShaderContext*	m_context;
+	LuminoShaderContext*	m_context;
 };
 
 //==============================================================================
-// LinaShaderIRGenerater
+// LuminoShaderIRGenerater
 //==============================================================================
-LinaShaderIRGenerater::LinaShaderIRGenerater()
+LuminoShaderIRGenerater::LuminoShaderIRGenerater()
 {
 
 }
 
-void LinaShaderIRGenerater::initialize(LinaShaderContext* context)
+void LuminoShaderIRGenerater::initialize(LuminoShaderContext* context)
 {
 	m_context = context;
 	int r = Hlsl2Glsl_Initialize();
 	LN_ENSURE(r != 0, "failed Hlsl2Glsl_Initialize.");
 }
 
-void LinaShaderIRGenerater::finalize()
+void LuminoShaderIRGenerater::finalize()
 {
 	Hlsl2Glsl_Shutdown();
 }
@@ -477,7 +479,7 @@ static bool Hlsl2Glsl(const std::string& input, const std::string& entryPoint, E
 	return true;
 }
 
-bool LinaShaderIRGenerater::convert(const char* input, int len, std::string* outCode, std::string* log)
+bool LuminoShaderIRGenerater::convert(const char* input, int len, std::string* outCode, std::string* log)
 {
 	if (LN_REQUIRE(input)) return false;
 
@@ -510,11 +512,11 @@ bool LinaShaderIRGenerater::convert(const char* input, int len, std::string* out
 	LN_NOTIMPLEMENTED();
 }
 
-bool LinaShaderIRGenerater::convertFromRawHLSL(const char* input, int len, std::string* outCode, std::string* log)
+bool LuminoShaderIRGenerater::convertFromRawHLSL(const char* input, int len, std::string* outCode, std::string* log)
 {
 	if (LN_REQUIRE(input)) return false;
 
-	LinaID3DInclude d3dInclude(m_context);
+	LuminoID3DInclude d3dInclude(m_context);
 	ID3DXBuffer* pShaderText = NULL;
 	ID3DXBuffer* pErrorMsgs = NULL;
 	HRESULT hr = DX9Module::D3DXPreprocessShader(input, len, NULL, &d3dInclude, &pShaderText, &pErrorMsgs);
@@ -533,7 +535,7 @@ bool LinaShaderIRGenerater::convertFromRawHLSL(const char* input, int len, std::
 	return true;
 }
 
-void LinaShaderIRGenerater::convertRawHLSL_To_IncludeResolvedHLSLCode(const std::string& code)
+void LuminoShaderIRGenerater::convertRawHLSL_To_IncludeResolvedHLSLCode(const std::string& code)
 {
 	//fl::InputFile f(std::string{}, code.c_str(), code.length());
 	//fl::CppLexer lex;
@@ -607,12 +609,12 @@ void LinaShaderIRGenerater::convertRawHLSL_To_IncludeResolvedHLSLCode(const std:
 	//printf("");
 }
 
-//std::string LinaShaderIRGenerater::generateIRCode()
+//std::string LuminoShaderIRGenerater::generateIRCode()
 //{
 //	return std::string();
 //}
 
-LinaShader::LinaShader()
+LuminoShader::LuminoShader()
 {
 
 }

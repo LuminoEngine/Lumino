@@ -4,16 +4,16 @@
 namespace fl { class AnalyzerContext; }
 LN_NAMESPACE_BEGIN
 
-//enum class LinaShaderTarget
+//enum class LuminoShaderTarget
 //{
 //	HLSL,
 //	IR,
 //};
 
-class LinaShaderContext
+class LuminoShaderContext
 {
 public:
-	LinaShaderContext();
+	LuminoShaderContext();
 	void initialize();
 
 	const std::shared_ptr<fl::AnalyzerContext>& getFlContext() const { return m_flContext; }
@@ -23,17 +23,18 @@ public:
 private:
 
 	std::shared_ptr<fl::AnalyzerContext> m_flContext;
+	std::vector<std::pair<std::string, std::string>>	m_builtinShaderList;
 };
 
 
 // RawHLSLCode → IRCode + technique data
-// LinaHLSLCode → IRCode + technique data
+// LuminoHLSLCode → IRCode + technique data
 // ↑ここは自動判別。SurfaceShader の有無で。
-class LinaShaderIRGenerater
+class LuminoShaderIRGenerater
 {
 public:
-	LinaShaderIRGenerater();
-	void initialize(LinaShaderContext* context);
+	LuminoShaderIRGenerater();
+	void initialize(LuminoShaderContext* context);
 	void finalize();
 
 	// LuminoShader or LazyHLSL ->
@@ -47,15 +48,15 @@ public:
 	//std::string generateIRCode();
 
 private:
-	LinaShaderContext* m_context;
+	LuminoShaderContext* m_context;
 };
 
 
 
-class LinaShader
+class LuminoShader
 {
 public:
-	LinaShader();
+	LuminoShader();
 
 	void loadRawHLSL(const std::string& code);
 
