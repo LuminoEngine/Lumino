@@ -92,10 +92,9 @@ void getDirectionalDirectLightIrradiance(const DirectionalLight directionalLight
 
 
 
-/*
 void getPointDirectLightIrradiance(const in PointLight pointLight, const in GeometricContext geometry, out LN_IncidentLight directLight)
 {
-  vec3 L = pointLight.position - geometry.position;
+  float3 L = pointLight.position - geometry.position;
   directLight.direction = normalize(L);
 
   float lightDistance = length(L);
@@ -104,11 +103,10 @@ void getPointDirectLightIrradiance(const in PointLight pointLight, const in Geom
     directLight.color *= punctualLightIntensityToIrradianceFactor(lightDistance, pointLight.distance, pointLight.decay);
     directLight.visible = true;
   } else {
-    directLight.color = vec3(0.0);
+    directLight.color = float3(0,0,0);
     directLight.visible = false;
   }
 }
-*/
 
 
 void getSpotDirectLightIrradiance(const in SpotLight spotLight, const in GeometricContext geometry, out LN_IncidentLight directLight) {
@@ -457,7 +455,7 @@ float punctualLightIntensityToIrradianceFactor(float lightDistance, float cutoff
   return 1.0;
 }
 
-float _LN_CalcFogFactor(float3 depth)
+float _LN_CalcFogFactor(float depth)
 {
 	float f = ln_FogParams.a * depth;
 	return exp2(-f);
@@ -534,7 +532,20 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 				{
 					RE_Direct(directLight, geometry, material, reflectedLight);
 				}
-				
+			}
+			else
+			{
+				PointLight pointLight;
+				pointLight.position = light.position;
+				pointLight.color = light.color.xyz;// * light.color.a;
+				pointLight.distance = light.range;
+				pointLight.decay = light.attenuation;
+				getPointDirectLightIrradiance(pointLight, geometry, directLight);
+				if (directLight.visible)
+				{
+					RE_Direct(directLight, geometry, material, reflectedLight);
+	//return float4(1,1,0, 1);
+				}
 			}
 			
 			float LightRadiusMask = 1.0;

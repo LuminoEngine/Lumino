@@ -393,11 +393,17 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 
 	Engine::getCamera3D()->setPosition(0, 10, -30);
 
-	auto spotLight1 = SpotLight::create(Color::White, 30, Math::PI / 3);
-	spotLight1->transform.lookAt(-Vector3::UnitY);
-	spotLight1->setPosition(0, 20, 0);
-	//spotLight1->setIntensity(2.0f);
-	Engine::getWorld3D()->addWorldObject(spotLight1, true);
+	//auto spotLight1 = SpotLight::create(Color::White, 30, Math::PI / 3);
+	//spotLight1->transform.lookAt(-Vector3::UnitY);
+	//spotLight1->setPosition(0, 20, 0);
+	////spotLight1->setIntensity(2.0f);
+	//Engine::getWorld3D()->addWorldObject(spotLight1, true);
+
+
+	auto pointLight1 = PointLight::create(/*Color::White, 2*/);
+	pointLight1->setPosition(-9, 10, 0);
+	//pointLight1->setIntensity(2.0f);
+	Engine::getWorld3D()->addWorldObject(pointLight1, true);
 
 
 	auto directionalLight1 = DirectionalLight::create(Color::White);

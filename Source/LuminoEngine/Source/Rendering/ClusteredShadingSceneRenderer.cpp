@@ -68,14 +68,15 @@ void LightClusters::addPointLight(const Vector3& pos, float range, float attenua
 	addClusterSpherical(pos, range);
 
 	LightInfo info;
-	info.posAndRange = Vector4(pos, range);
+	//info.posAndRange = Vector4(pos, range);
+	info.posAndRange = Vector4(Vector3::transform(pos, m_view).GetXYZ(), range);
 	info.directionAndAtt = Vector4(0, 0, 0, attenuation);
 	info.spotAngle = Vector4::Zero;
 	info.color = color;
 	m_lightInofs.add(info);
 }
 
-
+// TODO: Vector3 クラスへ
 static Vector3 transformDirection(const Vector3& vec, const Matrix& mat)
 {
 	return Vector3(
@@ -466,7 +467,7 @@ void ClusteredShadingSceneRenderer::onCollectLight(DynamicLightInfo* light)
 		m_lightClusters.addDirectionalLight(transformDirection(-light->m_direction, view.viewMatrix), color);
 		break;
 	case LightType::Point:
-		m_lightClusters.addPointLight(Vector3::transform(light->m_position, view.viewMatrix).GetXYZ(), light->m_range, light->m_attenuation, color);
+		m_lightClusters.addPointLight(light->m_position, light->m_range, light->m_attenuation, color);
 		break;
 	case LightType::Spot:
 		//m_lightClusters.addSpotLight(Vector3::transform(light->m_position, view.viewMatrix).GetXYZ(), light->m_range, light->m_attenuation, transformDirection(-light->m_direction, view.viewMatrix), light->m_spotAngle, Math::lerp(light->m_spotAngle, 0, light->m_spotPenumbra), light->m_diffuse);
