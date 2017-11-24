@@ -228,6 +228,8 @@ void LuminoShaderContext::initialize()
 
 	buf = FileSystem::readAllBytes(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/Lumino.fxh"));
 	m_builtinShaderList.push_back({ "Lumino.fxh", std::string((const char*)buf.getConstData(), buf.getSize()) });
+	buf = FileSystem::readAllBytes(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/LuminoPBR.fxh"));
+	m_builtinShaderList.push_back({ "LuminoPBR.fxh", std::string((const char*)buf.getConstData(), buf.getSize()) });
 	buf = FileSystem::readAllBytes(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/LuminoShadow.fxh"));
 	m_builtinShaderList.push_back({ "LuminoShadow.fxh", std::string((const char*)buf.getConstData(), buf.getSize()) });
 }

@@ -3,205 +3,8 @@
 //BEGIN_HLSL
 
 #include <Lumino.fxh>
+#include <LuminoPBR.fxh>
 #include <LuminoShadow.fxh>
-
-
-
-
-//------------------------------------------------------------------------------
-// Lib (PBR)
-
-// DirectLightIrradiance 系関数の出力。
-// ピクセルへのライトごとの影響情報
-struct LN_IncidentLight
-{
-	float3 color;
-	float3 direction;
-	bool visible;
-};
-
-// ピクセルへのライトすべての影響情報
-struct ReflectedLight
-{
-	float3 directDiffuse;
-	float3 directSpecular;
-	float3 indirectDiffuse;
-	float3 indirectSpecular;
-};
-
-struct GeometricContext
-{
-	float3 position;
-	float3 normal;
-	float3 viewDir;
-};
-
-struct Material
-{
-	float3 diffuseColor;
-	float specularRoughness;
-	float3 specularColor;
-};
-
-
-struct DirectionalLight
-{
-	float3 direction;
-	float3 color;
-};
-
-struct PointLight
-{
-	float3 position;
-	float3 color;
-	float distance;
-	float decay;
-};
-
-struct SpotLight
-{
-	float3 position;
-	float3 direction;
-	float3 color;
-	float distance;
-	float decay;
-	float coneCos;
-	float penumbraCos;
-};
-
-bool testLightInRange(const in float lightDistance, const in float cutoffDistance)
-{
-  return cutoffDistance == 0.0 || lightDistance < cutoffDistance;
-}
-
-float punctualLightIntensityToIrradianceFactor(const in float lightDistance, const in float cutoffDistance, const in float decayExponent)
-{
-  if (decayExponent > 0.0) {
-    return pow(saturate(-lightDistance / cutoffDistance + 1.0), decayExponent);
-  }
-
-  return 1.0;
-}
-
-void getDirectionalDirectLightIrradiance(const DirectionalLight directionalLight, const GeometricContext geometry, out LN_IncidentLight directLight)
-{
-	directLight.color = directionalLight.color;
-	directLight.direction = directionalLight.direction;
-	directLight.visible = true;
-}
-
-
-
-void getPointDirectLightIrradiance(const in PointLight pointLight, const in GeometricContext geometry, out LN_IncidentLight directLight)
-{
-  float3 L = pointLight.position - geometry.position;
-  directLight.direction = normalize(L);
-
-  float lightDistance = length(L);
-  if (testLightInRange(lightDistance, pointLight.distance)) {
-    directLight.color = pointLight.color;
-    directLight.color *= punctualLightIntensityToIrradianceFactor(lightDistance, pointLight.distance, pointLight.decay);
-    directLight.visible = true;
-  } else {
-    directLight.color = float3(0,0,0);
-    directLight.visible = false;
-  }
-}
-
-
-void getSpotDirectLightIrradiance(const in SpotLight spotLight, const in GeometricContext geometry, out LN_IncidentLight directLight) {
-  float3 L = spotLight.position - geometry.position;
-  directLight.direction = normalize(L);
-
-  float lightDistance = length(L);
-  float angleCos = dot(directLight.direction, spotLight.direction);
-
-  if (angleCos > spotLight.coneCos && testLightInRange(lightDistance, spotLight.distance)) {
-    float spotEffect = smoothstep(spotLight.coneCos, spotLight.penumbraCos, angleCos);
-    directLight.color = spotLight.color;
-    directLight.color *= spotEffect * punctualLightIntensityToIrradianceFactor(lightDistance, spotLight.distance, spotLight.decay);
-    directLight.visible = true;
-  } else {
-    directLight.color = float3(0,0,0);
-    directLight.visible = false;
-  }
-}
-
-
-
-
-
-
-
-
-
-#define PI 3.14159265359
-#define PI2 6.28318530718
-#define RECIPROCAL_PI 0.31830988618
-#define RECIPROCAL_PI2 0.15915494
-#define LOG2 1.442695
-#define EPSILON 1e-6
-
-
-
-// BRDFs
-
-// Normalized Lambert
-float3 DiffuseBRDF(float3 diffuseColor) {
-  return diffuseColor / PI;
-}
-
-float3 F_Schlick(float3 specularColor, float3 H, float3 V) {
-  return (specularColor + (1.0 - specularColor) * pow(1.0 - saturate(dot(V,H)), 5.0));
-}
-
-float D_GGX(float a, float dotNH) {
-  float a2 = a*a;
-  float dotNH2 = dotNH*dotNH;
-  float d = dotNH2 * (a2 - 1.0) + 1.0;
-  return a2 / (PI * d * d);
-}
-
-float G_Smith_Schlick_GGX(float a, float dotNV, float dotNL) {
-  float k = a*a*0.5 + EPSILON;
-  float gl = dotNL / (dotNL * (1.0 - k) + k);
-  float gv = dotNV / (dotNV * (1.0 - k) + k);
-  return gl*gv;
-}
-
-// Cook-Torrance
-float3 SpecularBRDF(const in LN_IncidentLight directLight, const in GeometricContext geometry, float3 specularColor, float roughnessFactor) {
-
-  float3 N = geometry.normal;
-  float3 V = geometry.viewDir;
-  float3 L = directLight.direction;
-
-  float dotNL = saturate(dot(N,L));
-  float dotNV = saturate(dot(N,V));
-  float3 H = normalize(L+V);
-  float dotNH = saturate(dot(N,H));
-  float dotVH = saturate(dot(V,H));
-  float dotLV = saturate(dot(L,V));
-  float a = roughnessFactor * roughnessFactor;
-
-  float D = D_GGX(a, dotNH);
-  float G = G_Smith_Schlick_GGX(a, dotNV, dotNL);
-  float3 F = F_Schlick(specularColor, V, H);
-  return (F*(G*D))/(4.0*dotNL*dotNV+EPSILON);
-}
-
-// RenderEquations(RE)
-void RE_Direct(const in LN_IncidentLight directLight, const in GeometricContext geometry, const in Material material, inout ReflectedLight reflectedLight) {
-
-  float dotNL = saturate(dot(geometry.normal, directLight.direction));
-  float3 irradiance = dotNL * directLight.color;
-
-  // punctual light
-  irradiance *= PI;
-
-  reflectedLight.directDiffuse += irradiance * DiffuseBRDF(material.diffuseColor);
-  reflectedLight.directSpecular += irradiance * SpecularBRDF(directLight, geometry, material.specularColor, material.specularRoughness);
-}
 
 
 
@@ -447,7 +250,7 @@ float RadialAttenuation(float3 WorldLightVector, float FalloffExponent)
 }
 
 
-float punctualLightIntensityToIrradianceFactor(float lightDistance, float cutoffDistance, float decayExponent) {
+float LN_PunctualLightIntensityToIrradianceFactor(float lightDistance, float cutoffDistance, float decayExponent) {
   if (decayExponent > 0.0) {
     return pow(saturate(-lightDistance / cutoffDistance + 1.0), decayExponent);
   }
@@ -489,7 +292,7 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 
 	
 	/**/
-	GeometricContext geometry;
+	LN_PBRGeometry geometry;
 	geometry.position = -extra.vViewPosition;//-vViewPosition;
 	geometry.normal = normalize(surface.Normal);//vNormal);
 	geometry.viewDir = normalize(extra.vViewPosition);//vViewPosition);
@@ -497,13 +300,13 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 	/**/
 	float metallic = 0.5;	// TODO:
 	float roughness = 0.3;	// TODO:
-	Material material;
+	LN_PBRMaterial material;
 	material.diffuseColor = lerp(surface.Albedo.xyz, float3(0, 0, 0), metallic);
 	material.specularColor = lerp(float3(0.04, 0.04, 0.04), surface.Albedo.xyz, metallic);
 	material.specularRoughness = roughness;
 	
 	/**/
-		ReflectedLight reflectedLight = {float3(0,0,0),float3(0,0,0),float3(0,0,0),float3(0,0,0)};
+	LN_ReflectedLight reflectedLight = {float3(0,0,0),float3(0,0,0),float3(0,0,0),float3(0,0,0)};
 	LN_IncidentLight directLight;
 	
 	
@@ -519,7 +322,7 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 			
 			if (light.spotAngles.x > 0.0)
 			{
-				SpotLight spotLight;
+				LN_SpotLight spotLight;
 				spotLight.position = light.position;
 				spotLight.direction = light.direction;
 				spotLight.color = light.color.xyz;// * light.color.a;
@@ -527,23 +330,23 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 				spotLight.decay = light.attenuation;
 				spotLight.coneCos = light.spotAngles.x;
 				spotLight.penumbraCos = light.spotAngles.y;
-				getSpotDirectLightIrradiance(spotLight, geometry, directLight);
+				LN_GetSpotDirectLightIrradiance(spotLight, geometry, directLight);
 				if (directLight.visible)
 				{
-					RE_Direct(directLight, geometry, material, reflectedLight);
+					LN_RE_Direct(directLight, geometry, material, reflectedLight);
 				}
 			}
 			else
 			{
-				PointLight pointLight;
+				LN_PointLight pointLight;
 				pointLight.position = light.position;
 				pointLight.color = light.color.xyz;// * light.color.a;
 				pointLight.distance = light.range;
 				pointLight.decay = light.attenuation;
-				getPointDirectLightIrradiance(pointLight, geometry, directLight);
+				LN_GetPointDirectLightIrradiance(pointLight, geometry, directLight);
 				if (directLight.visible)
 				{
-					RE_Direct(directLight, geometry, material, reflectedLight);
+					LN_RE_Direct(directLight, geometry, material, reflectedLight);
 	//return float4(1,1,0, 1);
 				}
 			}
@@ -606,11 +409,11 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 		//return float4(baseColor * dot(surface.Normal, -light.directionAndType.xyz), 0, 0, 1);
 				
 				/**/
-				DirectionalLight tl;
+				LN_DirectionalLight tl;
 				tl.direction = light.directionAndType.xyz;//mul(float4(light.directionAndType.xyz, 1.0), ln_View).xyz;//light.directionAndType.xyz;
 				tl.color = light.color;
-				getDirectionalDirectLightIrradiance(tl, geometry, directLight);
-				RE_Direct(directLight, geometry, material, reflectedLight);
+				LN_GetDirectionalDirectLightIrradiance(tl, geometry, directLight);
+				LN_RE_Direct(directLight, geometry, material, reflectedLight);
 	        }
 			else
 			{
