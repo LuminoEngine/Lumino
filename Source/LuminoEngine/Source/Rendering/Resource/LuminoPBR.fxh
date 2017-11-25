@@ -49,6 +49,14 @@ struct LN_PBRMaterial
 //------------------------------------------------------------------------------
 // PBR Light
 
+// 半球ライトの情報
+struct LN_HemisphereLight
+{
+	float3 upDirection;
+	float3 skyColor;
+	float3 groundColor;
+};
+
 // ディレクショナルライトの情報
 struct LN_DirectionalLight
 {
@@ -91,6 +99,29 @@ float LN_PunctualLightIntensityToIrradianceFactor(const in float lightDistance, 
 		return pow(saturate(-lightDistance / cutoffDistance + 1.0), decayExponent);
 	}
 	return 1.0;
+}
+
+// アンビエントライトの放射輝度の計算
+float3 LN_GetAmbientLightIrradiance(const in float3 color)
+{
+	float3 irradiance = color;
+
+	irradiance *= LN_PI;	// PHYSICALLY_CORRECT_LIGHTS
+
+	return irradiance;
+}
+
+// 半球ライトの放射輝度の計算
+float3 LN_GetHemisphereLightIrradiance(const in LN_HemisphereLight hemiLight, const in LN_PBRGeometry geometry)
+{
+	float dotNL = dot(geometry.normal, hemiLight.upDirection);
+	float hemiDiffuseWeight = 0.5 * dotNL + 0.5;
+
+	float3 irradiance = lerp(hemiLight.groundColor, hemiLight.skyColor, hemiDiffuseWeight);
+
+	irradiance *= LN_PI;	// PHYSICALLY_CORRECT_LIGHTS
+
+	return irradiance;
 }
 
 // ディレクショナルライトの放射輝度の計算
@@ -212,6 +243,17 @@ void LN_RE_Direct(const in LN_IncidentLight directLight, const in LN_PBRGeometry
 
 	// 鏡面反射成分
 	reflectedLight.directSpecular += irradiance * LN_SpecularBRDF(directLight, geometry, material.specularColor, material.specularRoughness);
+}
+
+
+float3 BRDF_Diffuse_Lambert(const in float3 diffuseColor)
+{
+	return LN_RECIPROCAL_PI * diffuseColor;
+}
+
+void RE_IndirectDiffuse_BlinnPhong(const in float3 irradiance, const in LN_PBRGeometry geometry, const in LN_PBRMaterial material, inout LN_ReflectedLight reflectedLight)
+{
+	reflectedLight.indirectDiffuse += irradiance * BRDF_Diffuse_Lambert( material.diffuseColor );
 }
 
 #endif // LUMINO_PBR_INCLUDED

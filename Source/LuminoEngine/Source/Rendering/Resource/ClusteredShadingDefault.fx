@@ -390,7 +390,7 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 	}
 	
 #if 1
-	float3 ambientColor = float3(0, 0, 0);
+	float3 ambientIrradiance = float3(0, 0, 0);
 	{
     	float3 color = float3(0, 0, 0);
 		float count = LN_EPSILON;
@@ -401,37 +401,45 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 			// HemisphereLight
 			if (light.directionAndType.w >= 3.0)
 			{
-				float3 up = float3(0, 1, 0);
-				float hemisphere = (dot(surface.Normal, up) + 1.0) * 0.5;
-				float4 c = lerp((light.groundColor.rgb * light.groundColor.a)), (light.color.rgb * light.color.a), hemisphere);
-				ambientColor = saturate(ambientColor + c.xyz * c.a);
+				//float3 up = float3(0, 1, 0);
+				//float hemisphere = (dot(surface.Normal, up) + 1.0) * 0.5;
+				//float4 c = lerp((light.groundColor.rgb * light.groundColor.a)), (light.color.rgb * light.color.a), hemisphere);
+				//ambientColor = saturate(ambientColor + c.xyz * c.a);
+				LN_HemisphereLight tl;
+				tl.upDirection = float3(0, 1, 0);
+				tl.skyColor = (light.color.rgb * light.color.a);
+				tl.groundColor = (light.groundColor.rgb * light.groundColor.a);
+				ambientIrradiance += LN_GetHemisphereLightIrradiance(tl, geometry);
 			}
 			// AmbientLight
 			else if (light.directionAndType.w >= 2.0)
 			{
-				ambientColor = saturate(ambientColor + light.color.rgb * light.color.a);
+				//ambientColor = saturate(ambientColor + light.color.rgb * light.color.a);
+				ambientIrradiance += LN_GetAmbientLightIrradiance(light.color.rgb * light.color.a);
 			}
 			// DirectionalLight
 			else if (light.directionAndType.w >= 1.0)
 			{
-				color += saturate(max(0, light.color * dot(surface.Normal, -light.directionAndType.xyz)));
+				color += saturate(max(0, (light.color.rgb * light.color.a) * dot(surface.Normal, -light.directionAndType.xyz)));
 	            count += 1.0f;
 				
 				/**/
 				LN_DirectionalLight tl;
 				tl.direction = light.directionAndType.xyz;//mul(float4(light.directionAndType.xyz, 1.0), ln_View).xyz;//light.directionAndType.xyz;
-				tl.color = light.color;
+				tl.color = (light.color.rgb * light.color.a);
 				LN_GetDirectionalDirectLightIrradiance(tl, geometry, directLight);
 				LN_RE_Direct(directLight, geometry, material, reflectedLight);
 	        }
-			else
-			{
-				break;
-			}
-			
+			//else
+			//{
+			//	break;
+			//}
 	    }
-	    result.rgb += color;;
+	    result.rgb += color;
 	}
+
+	RE_IndirectDiffuse_BlinnPhong(ambientIrradiance, geometry, material, reflectedLight);
+
 #endif
 	
 #if 0
@@ -451,7 +459,7 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
     float4 posInLight = extra.vInLightPosition;
     outgoingLight *= LN_CalculateShadow(posInLight);
 	
-	return float4(outgoingLight + ambientColor, opacity);
+	return float4(outgoingLight, opacity);
 	
 	
 	
