@@ -101,14 +101,25 @@ void LightClusters::addSpotLight(const Vector3& pos, float range, float attenuat
 
 void LightClusters::addDirectionalLight(const Vector3& dir, const Color& color)
 {
-	GlobalLightInfo info/*{
-		Color(1, 1, 1, 1),
-		Color(1, 1, 1, 1),
-		Vector4(1, 1, 1, 1),
-		Vector4(1, 1, 1, 1),
-	}*/;
+	GlobalLightInfo info;
 	info.color = color;
-	info.directionAndType = Vector4(dir, 1);
+	info.directionAndType = Vector4(dir, 1.0f + FLT_EPSILON);
+	m_globalLightInofs.add(info);
+}
+
+void LightClusters::addAmbientLight(const Color& color)
+{
+	GlobalLightInfo info;
+	info.color = color;
+	info.directionAndType = Vector4(0.0f, 0.0f, 0.0f, 2.0f + FLT_EPSILON);
+	m_globalLightInofs.add(info);
+}
+void LightClusters::addHemisphereLight(const Color& skyColor, const Color& groundColor)
+{
+	GlobalLightInfo info;
+	info.color = skyColor;
+	info.groundColor = groundColor;
+	info.directionAndType = Vector4(0.0f, 0.0f, 0.0f, 3.0f + FLT_EPSILON);
 	m_globalLightInofs.add(info);
 }
 
