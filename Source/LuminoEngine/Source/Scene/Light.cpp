@@ -90,6 +90,71 @@ void LightComponent::onPreRender(DrawList* context)
 }
 
 //==============================================================================
+// AmbientLightComponent
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(AmbientLightComponent, SceneNode);
+
+AmbientLightComponent::AmbientLightComponent()
+	: m_lightInfo(nullptr)
+	, m_enabled(true)
+{
+}
+
+AmbientLightComponent::~AmbientLightComponent()
+{
+}
+
+void AmbientLightComponent::initialize()
+{
+	SceneNode::initialize();
+	m_lightInfo = Ref<detail::DynamicLightInfo>::makeRef();
+	m_lightInfo->m_type = LightType::Ambient;
+	m_lightInfo->m_diffuse.set(1.0f, 1.0f, 1.0f, 1.0f);
+	m_lightInfo->m_intensity = 1.0f;
+}
+
+void AmbientLightComponent::onPreRender(DrawList* context)
+{
+	if (m_enabled)
+	{
+		context->addDynamicLightInfo(m_lightInfo);
+	}
+}
+
+//==============================================================================
+// HemisphereLightComponent
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(HemisphereLightComponent, SceneNode);
+
+HemisphereLightComponent::HemisphereLightComponent()
+	: m_lightInfo(nullptr)
+	, m_enabled(true)
+{
+}
+
+HemisphereLightComponent::~HemisphereLightComponent()
+{
+}
+
+void HemisphereLightComponent::initialize()
+{
+	SceneNode::initialize();
+	m_lightInfo = Ref<detail::DynamicLightInfo>::makeRef();
+	m_lightInfo->m_type = LightType::Hemisphere;
+	m_lightInfo->m_diffuse.set(1.0f, 1.0f, 1.0f, 1.0f);
+	m_lightInfo->m_groundColor.set(1.0f, 1.0f, 1.0f, 1.0f);
+	m_lightInfo->m_intensity = 1.0f;
+}
+
+void HemisphereLightComponent::onPreRender(DrawList* context)
+{
+	if (m_enabled)
+	{
+		context->addDynamicLightInfo(m_lightInfo);
+	}
+}
+
+//==============================================================================
 // DirectionalLightComponent
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(DirectionalLightComponent, SceneNode);
@@ -261,6 +326,93 @@ void Light::initialize()
 
 //------------------------------------------------------------------------------
 LightComponent* Light::GetLightComponent() const
+{
+	return m_component;
+}
+
+//==============================================================================
+// AmbientLight
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(AmbientLight, WorldObject);
+
+Ref<AmbientLight> AmbientLight::create()
+{
+	return newObject<AmbientLight>();
+}
+
+Ref<AmbientLight> AmbientLight::create(const Color& color)
+{
+	return newObject<AmbientLight>(color);
+}
+
+AmbientLight::AmbientLight()
+	: WorldObject()
+	, m_component(nullptr)
+{
+}
+
+AmbientLight::~AmbientLight()
+{
+}
+
+void AmbientLight::initialize()
+{
+	WorldObject::initialize();
+	m_component = newObject<AmbientLightComponent>();
+	addComponent(m_component);
+}
+
+void AmbientLight::initialize(const Color& color)
+{
+	initialize();
+	setColor(color);
+}
+
+AmbientLightComponent* AmbientLight::getAmbientLightComponent() const
+{
+	return m_component;
+}
+
+//==============================================================================
+// HemisphereLight
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(HemisphereLight, WorldObject);
+
+Ref<HemisphereLight> HemisphereLight::create()
+{
+	return newObject<HemisphereLight>();
+}
+
+Ref<HemisphereLight> HemisphereLight::create(const Color& skyColor, const Color& groundColor)
+{
+	return newObject<HemisphereLight>(skyColor, groundColor);
+}
+
+HemisphereLight::HemisphereLight()
+	: WorldObject()
+	, m_component(nullptr)
+{
+}
+
+HemisphereLight::~HemisphereLight()
+{
+}
+
+void HemisphereLight::initialize()
+{
+	WorldObject::initialize();
+	m_component = newObject<HemisphereLightComponent>();
+	addComponent(m_component);
+}
+
+void HemisphereLight::initialize(const Color& skyColor, const Color& groundColor)
+{
+	initialize();
+	setSkyColor(skyColor);
+	setGroundColor(groundColor);
+}
+
+HemisphereLightComponent* HemisphereLight::getHemisphereLightComponent() const
 {
 	return m_component;
 }

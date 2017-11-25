@@ -98,6 +98,7 @@ public:
 	Color		m_diffuse;			// ディフューズカラー
 	Color		m_ambient;			// アンビエントカラー [Obsolete]
 	Color		m_specular;			// スペキュラカラー [Obsolete]
+	Color		m_groundColor;		// 半球ライティング用
 	Vector3		m_position;
 	Vector3		m_direction;		// 向き
 	float		m_intensity;

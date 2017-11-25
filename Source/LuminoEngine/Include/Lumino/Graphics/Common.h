@@ -368,6 +368,12 @@ LN_ENUM_FLAGS_DECLARE(StringFormatFlags);
 /** ライトの種類 */
 enum class LightType
 {
+	/** アンビエントライト */
+	Ambient,
+
+	/** 半球ライト */
+	Hemisphere,
+
 	/** ディレクショナルライト */
 	Directional,
 

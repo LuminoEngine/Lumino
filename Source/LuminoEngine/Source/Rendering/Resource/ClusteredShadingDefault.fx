@@ -30,6 +30,7 @@ struct LN_PSInput_ClusteredForward
 	float4	vInLightPosition 	: TEXCOORD13;
 };
 
+int ln_GlobalLightsCount;
 
 texture ln_GlobalLightInfoTexture;
 sampler2D ln_GlobalLightInfoSampler = sampler_state
@@ -389,24 +390,32 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 	}
 	
 #if 1
+	float3 ambientColor = float3(0, 0, 0);
 	{
-		//float3 baseColor = mc.xyz;
     	float3 color = float3(0, 0, 0);
 		float count = LN_EPSILON;
-	    for (int i = 0; i < 1; i++)	// TODO: Count
+	    for (int i = 0; i < ln_GlobalLightsCount; i++)
 		{
 			GlobalLightInfo light = _LN_GetGlobalLightInfo(i);
-			//color -= float3(light2.color.xyz + light2.groundColor.xyz + light2.directionAndType.xyz);
-			//return float4(light2.color.xyz + light2.groundColor.xyz + light2.directionAndType.xyz, 1);
-			//return light.color;
-			//return float4(light.directionAndType.a, 1, 0, 1);
-			
-			if (light.directionAndType.w > 0.0)
+
+			// HemisphereLight
+			if (light.directionAndType.w >= 3.0)
 			{
-	            //color += saturate(AmbientColor[i] + max(0, DiffuseColor[i] * dot(Out.Normal, -LightDirection[i])));
+				float3 up = float3(0, 1, 0);
+				float hemisphere = (dot(surface.Normal, up) + 1.0) * 0.5;
+				float4 c = lerp((light.groundColor.rgb * light.groundColor.a)), (light.color.rgb * light.color.a), hemisphere);
+				ambientColor = saturate(ambientColor + c.xyz * c.a);
+			}
+			// AmbientLight
+			else if (light.directionAndType.w >= 2.0)
+			{
+				ambientColor = saturate(ambientColor + light.color.rgb * light.color.a);
+			}
+			// DirectionalLight
+			else if (light.directionAndType.w >= 1.0)
+			{
 				color += saturate(max(0, light.color * dot(surface.Normal, -light.directionAndType.xyz)));
-	            count += 1.0f;//0.95f;
-		//return float4(baseColor * dot(surface.Normal, -light.directionAndType.xyz), 0, 0, 1);
+	            count += 1.0f;
 				
 				/**/
 				LN_DirectionalLight tl;
@@ -434,7 +443,6 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 
 
 	/**/
-
 	float3 emissive = float3(0,0,0);
 	float opacity = 1.0;
 	float3 outgoingLight = emissive + reflectedLight.directDiffuse + reflectedLight.directSpecular + reflectedLight.indirectDiffuse + reflectedLight.indirectSpecular;
@@ -443,7 +451,7 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
     float4 posInLight = extra.vInLightPosition;
     outgoingLight *= LN_CalculateShadow(posInLight);
 	
-	return float4(outgoingLight, opacity);
+	return float4(outgoingLight + ambientColor, opacity);
 	
 	
 	
