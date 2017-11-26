@@ -5,7 +5,8 @@
 //------------------------------------------------------------------------------
 // Lib
 
-#define LN_EPSILON 1e-6
+#define LN_EPSILON				1e-6
+#define LN_MAX_GLOBAL_LIGHTS	4
 
 float4x4	ln_View;
 float4x4	ln_Projection;

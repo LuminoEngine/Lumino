@@ -518,9 +518,6 @@ void ClusteredShadingSceneRenderer::onShaderPassChainging(ShaderPass* pass)
 	v = shader->findVariable(_T("ln_cameraPos"));
 	if (v) v->setVector(Vector4(m_lightClusters.m_cameraPos, 0));
 
-	v = shader->findVariable(_T("ln_GlobalLightsCount"));
-	if (v) v->setInt(m_lightClusters.getGlobalLightCount());
-
 
 	v = shader->findVariable(_T("ln_AmbientColor"));
 	if (v) v->setVector(Vector4(m_renderSettings.ambientColor));	// TODO: Color 直接渡しできるようにしてもいいと思う

@@ -30,8 +30,6 @@ struct LN_PSInput_ClusteredForward
 	float4	vInLightPosition 	: TEXCOORD13;
 };
 
-int ln_GlobalLightsCount;
-
 texture ln_GlobalLightInfoTexture;
 sampler2D ln_GlobalLightInfoSampler = sampler_state
 {
@@ -394,7 +392,7 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 	{
     	float3 color = float3(0, 0, 0);
 		float count = LN_EPSILON;
-	    for (int i = 0; i < ln_GlobalLightsCount; i++)
+	    for (int i = 0; i < LN_MAX_GLOBAL_LIGHTS; i++)
 		{
 			GlobalLightInfo light = _LN_GetGlobalLightInfo(i);
 
