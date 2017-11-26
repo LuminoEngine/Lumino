@@ -6,6 +6,12 @@
 LN_NAMESPACE_BEGIN
 namespace detail {
 
+struct FogParams
+{
+	Color	color;
+	float	density = 0.0f;
+};
+
 class LightClusters
 {
 public:
@@ -125,7 +131,8 @@ public:
 	ClusteredShadingSceneRenderer();
 	virtual ~ClusteredShadingSceneRenderer();
 	void initialize(GraphicsManager* manager);
-	void setSceneGlobalRenderSettings(const SceneGlobalRenderSettings& settings) { m_renderSettings = settings; }
+	//void setSceneGlobalRenderSettings(const SceneGlobalRenderSettings& settings) { m_renderSettings = settings; }
+	void setFogParams(const FogParams& params) { m_fogParams = params; }
 
 protected:
 	virtual void collect(RenderingPass2* pass, const detail::CameraInfo& cameraInfo) override;
@@ -135,7 +142,8 @@ protected:
 
 private:
 	LightClusters				m_lightClusters;
-	SceneGlobalRenderSettings	m_renderSettings;
+	//SceneGlobalRenderSettings	m_renderSettings;
+	FogParams					m_fogParams;
 };
 
 } // namespace detail

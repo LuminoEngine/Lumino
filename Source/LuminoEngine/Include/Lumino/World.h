@@ -11,6 +11,7 @@ class StaticMeshModel;
 class CameraComponent;
 class Camera;
 class Light;
+class Fog;
 class SceneGraph;
 class SceneGraph2D;
 class SceneGraph3D;
@@ -161,6 +162,9 @@ public:
 	/** フォグの密度指数を設定します。(default: 0) */
 	void setFogDensity(float density) { m_globalRenderSettings.fogDensity = density; }
 
+	Fog* getFog() const;
+	void setFog(Fog* fog);
+
 protected:
 	//virtual SceneGraph* GetSceneGraph() override;
 
@@ -189,6 +193,7 @@ private:
 	detail::SceneGlobalRenderSettings	m_globalRenderSettings;
 	Ref<Camera>				m_mainCamera;
 	Ref<Light>				m_mainLight;
+	Ref<Fog>				m_fog;
 	Ref<StaticMeshModel>		m_gridPlane;
 	bool						m_visibleGridPlane;
 };

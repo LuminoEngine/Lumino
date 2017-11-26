@@ -380,6 +380,7 @@ set(LN_SOURCES_Scene
 	Include/Lumino/Scene/Common.h
 	Include/Lumino/Scene/Detail.h
 	Include/Lumino/Scene/EffectNode.h
+	Include/Lumino/Scene/Fog.h
 	Include/Lumino/Scene/GlyphIcon.h
 	Include/Lumino/Scene/GpuParticle.h
 	Include/Lumino/Scene/Light.h
@@ -405,6 +406,7 @@ set(LN_SOURCES_Scene
 	Source/Scene/EffectBatchRendererNode.cpp
 	Source/Scene/EffectBatchRendererNode.h
 	Source/Scene/EffectNode.cpp
+	Source/Scene/Fog.cpp
 	Source/Scene/GlyphIcon.cpp
 	Source/Scene/GpuParticle.cpp
 	Source/Scene/Light.cpp

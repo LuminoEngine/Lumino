@@ -6,6 +6,7 @@
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/Camera.h>
 #include <Lumino/Scene/Light.h>
+#include <Lumino/Scene/Fog.h>
 #include <Lumino/World.h>
 #include <Lumino/Scene/WorldObject.h>
 #include <Lumino/Scene/OffscreenWorldView.h>
@@ -403,6 +404,16 @@ Camera* World3D::getMainCamera() const
 //	return m_sceneGraph->GetRenderingProfiler();
 //}
 
+Fog* World3D::getFog() const
+{
+	return m_fog;
+}
+
+void World3D::setFog(Fog* fog)
+{
+	m_fog = fog;
+}
+
 //------------------------------------------------------------------------------
 void World3D::beginUpdateFrame()
 {
@@ -430,6 +441,7 @@ void World3D::onInternalPhysicsUpdate(float deltaSceonds)
 //------------------------------------------------------------------------------
 void World3D::render(RenderingContext* context, WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen)
 {
+
 	World::render(context, renderView, debugDrawFlags, layerMask, offscreen);
 
 	renderGridPlane(context, renderView);

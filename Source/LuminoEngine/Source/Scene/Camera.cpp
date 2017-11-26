@@ -6,6 +6,7 @@
 #include <Lumino/Mesh/GizmoModel.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/Camera.h>
+#include <Lumino/Scene/Fog.h>
 #include <Lumino/World.h>
 #include <Lumino/UI/UIEvent.h>
 
@@ -848,8 +849,17 @@ void CameraViewportLayer2::renderScene(RenderTargetTexture* renderTarget, DepthB
 		// TODO: 暫定
 		if (m_hostingCamera->getProjectionMode() == CameraProjection_3D)
 		{
-			m_clusteredShadingSceneRenderer->setSceneGlobalRenderSettings(
-				static_cast<World3D*>(m_targetWorld)->getGlobalRenderSettings());
+			detail::FogParams params;
+			Fog* fog = static_cast<World3D*>(m_targetWorld)->getFog();
+			if (fog)
+			{
+				params.color = fog->getColor();
+				params.density = fog->getDensity();
+			}
+			m_clusteredShadingSceneRenderer->setFogParams(params);
+
+			//m_clusteredShadingSceneRenderer->setSceneGlobalRenderSettings(
+			//	static_cast<World3D*>(m_targetWorld)->getGlobalRenderSettings());
 		}
 	}
 

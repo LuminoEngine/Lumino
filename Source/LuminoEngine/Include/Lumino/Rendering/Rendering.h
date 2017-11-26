@@ -60,7 +60,7 @@ class CombinedMaterial;
 class DrawElementList;
 class SceneRenderer;
 
-
+// TODO: Obsolete
 struct SceneGlobalRenderSettings
 {
 	//AmbientLightingMode	ambientLightingMode = AmbientLightingMode::;

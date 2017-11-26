@@ -457,7 +457,10 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
     float4 posInLight = extra.vInLightPosition;
     outgoingLight *= LN_CalculateShadow(posInLight);
 	
-	return float4(outgoingLight, opacity);
+	// Fog
+	result.rgb = lerp(ln_FogParams.rgb, outgoingLight, _LN_CalcFogFactor(viewPos.z));
+
+	return float4(result.rgb, opacity);
 	
 	
 	

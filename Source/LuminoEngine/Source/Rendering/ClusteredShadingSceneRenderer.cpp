@@ -474,6 +474,12 @@ void ClusteredShadingSceneRenderer::onCollectLight(DynamicLightInfo* light)
 
 	switch (light->m_type)
 	{
+	case LightType::Ambient:
+		m_lightClusters.addAmbientLight(color);
+		break;
+	case LightType::Hemisphere:
+		m_lightClusters.addHemisphereLight(color, light->m_groundColor * light->m_intensity);
+		break;
 	case LightType::Directional:
 		m_lightClusters.addDirectionalLight(transformDirection(-light->m_direction, view.viewMatrix), color);
 		break;
@@ -519,17 +525,17 @@ void ClusteredShadingSceneRenderer::onShaderPassChainging(ShaderPass* pass)
 	if (v) v->setVector(Vector4(m_lightClusters.m_cameraPos, 0));
 
 
-	v = shader->findVariable(_T("ln_AmbientColor"));
-	if (v) v->setVector(Vector4(m_renderSettings.ambientColor));	// TODO: Color 直接渡しできるようにしてもいいと思う
+	//v = shader->findVariable(_T("ln_AmbientColor"));
+	//if (v) v->setVector(Vector4(m_renderSettings.ambientColor));	// TODO: Color 直接渡しできるようにしてもいいと思う
 
-	v = shader->findVariable(_T("ln_AmbientSkyColor"));
-	if (v) v->setVector(Vector4(m_renderSettings.ambientSkyColor));
+	//v = shader->findVariable(_T("ln_AmbientSkyColor"));
+	//if (v) v->setVector(Vector4(m_renderSettings.ambientSkyColor));
 
-	v = shader->findVariable(_T("ln_AmbientGroundColor"));
-	if (v) v->setVector(Vector4(m_renderSettings.ambientGroundColor));
+	//v = shader->findVariable(_T("ln_AmbientGroundColor"));
+	//if (v) v->setVector(Vector4(m_renderSettings.ambientGroundColor));
 
 	v = shader->findVariable(_T("ln_FogParams"));
-	if (v) v->setVector(Vector4(m_renderSettings.fogColor.rgb() * m_renderSettings.fogColor.a, m_renderSettings.fogDensity));
+	if (v) v->setVector(Vector4(m_fogParams.color.rgb() * m_fogParams.color.a, m_fogParams.density));
 }
 
 } // namespace detail
