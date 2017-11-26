@@ -370,11 +370,18 @@ void NonShadingRenderingPass::initialize(GraphicsManager* manager)
 	m_defaultShader = manager->getBuiltinShader(BuiltinShader::Sprite);
 }
 
-//------------------------------------------------------------------------------
-Shader* NonShadingRenderingPass::getDefaultShader() const
+void NonShadingRenderingPass::selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy)
 {
-	return m_defaultShader;
+	outPolicy->shaderPass = selectShaderPassHelperSimple(material->m_shader, m_defaultShader);
+	outPolicy->shader = outPolicy->shaderPass->getOwnerShader();
+	outPolicy->visible = true;
 }
+
+////------------------------------------------------------------------------------
+//Shader* NonShadingRenderingPass::getDefaultShader() const
+//{
+//	return m_defaultShader;
+//}
 
 
 
@@ -479,11 +486,18 @@ void ForwardShadingRenderingPass::initialize(GraphicsManager* manager)
 	m_defaultShader = manager->getBuiltinShader(BuiltinShader::LegacyDiffuse);
 }
 
-//------------------------------------------------------------------------------
-Shader* ForwardShadingRenderingPass::getDefaultShader() const
+void ForwardShadingRenderingPass::selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy)
 {
-	return m_defaultShader;
+	outPolicy->shaderPass = selectShaderPassHelperSimple(material->m_shader, m_defaultShader);
+	outPolicy->shader = outPolicy->shaderPass->getOwnerShader();
+	outPolicy->visible = true;
 }
+
+////------------------------------------------------------------------------------
+//Shader* ForwardShadingRenderingPass::getDefaultShader() const
+//{
+//	return m_defaultShader;
+//}
 
 
 //==============================================================================
@@ -561,26 +575,26 @@ RenderingPass2::~RenderingPass2()
 }
 
 //------------------------------------------------------------------------------
-void RenderingPass2::selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy)
-{
-	outPolicy->shader = nullptr;
-	if (material != nullptr && material->m_shader != nullptr)
-	{
-		outPolicy->shader = material->m_shader;
-	}
-	else
-	{
-		outPolicy->shader = getDefaultShader();
-	}
-
-	if (outPolicy->shader)
-	{
-		outPolicy->shaderPass = selectShaderPass(outPolicy->shader);
-	}
-
-	// とありあえず全部可
-	outPolicy->visible = true;
-}
+//void RenderingPass2::selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy)
+//{
+//	outPolicy->shader = nullptr;
+//	if (material != nullptr && material->m_shader != nullptr)
+//	{
+//		outPolicy->shader = material->m_shader;
+//	}
+//	else
+//	{
+//		outPolicy->shader = getDefaultShader();
+//	}
+//
+//	if (outPolicy->shader)
+//	{
+//		outPolicy->shaderPass = selectShaderPass(outPolicy->shader);
+//	}
+//
+//	// とありあえず全部可
+//	outPolicy->visible = true;
+//}
 
 //ShaderTechnique* RenderingPass2::selectShaderTechnique(Shader* shader)
 //{
@@ -596,10 +610,34 @@ void RenderingPass2::overrideCameraInfo(detail::CameraInfo* cameraInfo)
 {
 
 }
+//
+//ShaderPass* RenderingPass2::selectShaderPass(Shader* shader)
+//{
+//	// TODO: DrawList の実行者によって決定する
+//	return shader->getTechniques().getAt(0)->getPasses().getAt(0);
+//}
 
-ShaderPass* RenderingPass2::selectShaderPass(Shader* shader)
+ShaderPass* RenderingPass2::selectShaderPassHelper(Shader* materialShader, const String& techniqueName, const String& passName, ShaderPass* defaultPass)
 {
-	// TODO: DrawList の実行者によって決定する
+	if (materialShader)
+	{
+		ShaderTechnique* tech = materialShader->findTechnique(techniqueName);
+		if (tech)
+		{
+			ShaderPass* pass = tech->getPass(passName.c_str());	// TODO:
+			if (pass)
+			{
+				return pass;
+			}
+		}
+	}
+
+	return defaultPass;
+}
+
+ShaderPass* RenderingPass2::selectShaderPassHelperSimple(Shader* materialShader, Shader* defaultShader)
+{
+	Shader* shader = (materialShader) ? materialShader : defaultShader;
 	return shader->getTechniques().getAt(0)->getPasses().getAt(0);
 }
 

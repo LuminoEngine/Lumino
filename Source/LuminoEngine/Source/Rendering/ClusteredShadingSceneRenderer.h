@@ -85,15 +85,17 @@ public:
 	virtual ~ClusteredShadingGeometryRenderingPass();
 	void initialize();
 
-	virtual Shader* getDefaultShader() const override;
+	//virtual Shader* getDefaultShader() const override;
+	virtual void selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy) override;
 
 	virtual void onBeginPass(DefaultStatus* defaultStatus) override;
 
 protected:
-	virtual ShaderPass* selectShaderPass(Shader* shader) override;
+	//virtual ShaderPass* selectShaderPass(Shader* shader) override;
 
 private:
-	Ref<Shader>		m_defaultShader;
+	Ref<Shader>					m_defaultShader;
+	ShaderPass*					m_defaultShaderPass;
 	Ref<RenderTargetTexture>	m_normalRenderTarget;
 };
 
@@ -107,7 +109,7 @@ public:
 	virtual ~ShadowCasterPass();
 	void initialize();
 
-	virtual Shader* getDefaultShader() const override;
+	//virtual Shader* getDefaultShader() const override;
 
 	virtual void selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy) override;
 
@@ -116,7 +118,7 @@ public:
 	virtual void overrideCameraInfo(detail::CameraInfo* cameraInfo) override;
 
 protected:
-	virtual ShaderPass* selectShaderPass(Shader* shader) override;
+	//virtual ShaderPass* selectShaderPass(Shader* shader) override;
 
 public:	// TODO:
 	Ref<Shader>		m_defaultShader;

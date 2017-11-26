@@ -54,7 +54,7 @@ void UIControlsGallery()
 	float d5 = ((tl5 + tr5) / Math::PI);
 
 	EngineSettings::addAssetsDirectory(LN_LOCALFILE("../../../../Samples/Assets"));
-	EngineSettings::setGraphicsAPI(GraphicsAPI::OpenGL);
+	//EngineSettings::setGraphicsAPI(GraphicsAPI::OpenGL);
 	Engine::initialize();
 
 

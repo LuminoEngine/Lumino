@@ -318,6 +318,10 @@ void LightClusters::addClusterData(int x, int y, int z, int lightId)
 //==============================================================================
 // ClusteredShadingGeometryRenderingPass
 //==============================================================================
+
+static const String ClusteredShadingGeometryRenderingPass_TechniqueName = _T("ClusteredForward");
+static const String ClusteredShadingGeometryRenderingPass_PassName = _T("Geometry");
+
 ClusteredShadingGeometryRenderingPass::ClusteredShadingGeometryRenderingPass()
 {
 }
@@ -333,16 +337,32 @@ void ClusteredShadingGeometryRenderingPass::initialize()
 	//m_defaultShader = GraphicsManager::getInstance()->getBuiltinShader(BuiltinShader::LegacyDiffuse);
 
 	m_defaultShader = Shader::create(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/ClusteredShadingDefault.fx"), ShaderCodeType::RawHLSL);
-
+	
+	// TODO: getPass 引数型
+	m_defaultShaderPass = m_defaultShader->findTechnique(ClusteredShadingGeometryRenderingPass_TechniqueName)->getPass(ClusteredShadingGeometryRenderingPass_PassName.c_str());
 
 	m_normalRenderTarget = Ref<RenderTargetTexture>::makeRef();
 	m_normalRenderTarget->createImpl(GraphicsManager::getInstance(), SizeI(640, 480), 1, TextureFormat::R32G32B32A32_Float);
 }
 
-Shader* ClusteredShadingGeometryRenderingPass::getDefaultShader() const
+//Shader* ClusteredShadingGeometryRenderingPass::getDefaultShader() const
+//{
+//	return m_defaultShader;
+//}
+
+
+void ClusteredShadingGeometryRenderingPass::selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy)
 {
-	return m_defaultShader;
+	outPolicy->shaderPass = selectShaderPassHelper(
+		material->m_shader,
+		ClusteredShadingGeometryRenderingPass_TechniqueName,
+		ClusteredShadingGeometryRenderingPass_PassName,
+		m_defaultShaderPass);
+	
+	outPolicy->shader = outPolicy->shaderPass->getOwnerShader();
+	outPolicy->visible = true;
 }
+
 RenderTargetTexture* g_m_normalRenderTarget = nullptr;
 void ClusteredShadingGeometryRenderingPass::onBeginPass(DefaultStatus* defaultStatus)
 {
@@ -350,21 +370,21 @@ void ClusteredShadingGeometryRenderingPass::onBeginPass(DefaultStatus* defaultSt
 	//defaultStatus->defaultRenderTarget[1] = m_normalRenderTarget;
 }
 
-ShaderPass* ClusteredShadingGeometryRenderingPass::selectShaderPass(Shader* shader)
-{
-	//ShaderPass* pass = nullptr;
-	//ShaderTechnique* tech = shader->findTechnique(_T("ClusteredForward"));
-	//if (tech)
-	//{
-	//	pass = tech->getPass(_T("Geometry"));
-	//	if (pass)
-	//	{
-	//		return pass;
-	//	}
-	//}
-
-	return RenderingPass2::selectShaderPass(shader);
-}
+//ShaderPass* ClusteredShadingGeometryRenderingPass::selectShaderPass(Shader* shader)
+//{
+//	//ShaderPass* pass = nullptr;
+//	//ShaderTechnique* tech = shader->findTechnique(_T("ClusteredForward"));
+//	//if (tech)
+//	//{
+//	//	pass = tech->getPass(_T("Geometry"));
+//	//	if (pass)
+//	//	{
+//	//		return pass;
+//	//	}
+//	//}
+//
+//	return RenderingPass2::selectShaderPass(shader);
+//}
 
 
 
@@ -394,16 +414,16 @@ void ShadowCasterPass::initialize()
 	g_m_shadowMap = m_shadowMap;
 }
 
-Shader* ShadowCasterPass::getDefaultShader() const
-{
-	return m_defaultShader;
-}
+//Shader* ShadowCasterPass::getDefaultShader() const
+//{
+//	return m_defaultShader;
+//}
 
 void ShadowCasterPass::selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy)
 {
 	// TODO: とりあえずデフォルト強制
-	outPolicy->shader = getDefaultShader();
-	outPolicy->shaderPass = selectShaderPass(outPolicy->shader);
+	outPolicy->shader = m_defaultShader;
+	outPolicy->shaderPass = m_defaultShader->getTechniques().getAt(0)->getPasses().getAt(0);
 
 	// とありあえず全部可
 	outPolicy->visible = true;
@@ -419,10 +439,10 @@ void ShadowCasterPass::overrideCameraInfo(detail::CameraInfo* cameraInfo)
 	*cameraInfo = view;
 }
 
-ShaderPass* ShadowCasterPass::selectShaderPass(Shader* shader)
-{
-	return RenderingPass2::selectShaderPass(shader);
-}
+//ShaderPass* ShadowCasterPass::selectShaderPass(Shader* shader)
+//{
+//	return RenderingPass2::selectShaderPass(shader);
+//}
 
 //==============================================================================
 // ClusteredShadingSceneRenderer

@@ -96,9 +96,9 @@ public:
 	virtual ~RenderingPass2();
 	//void initialize(GraphicsManager* manager);
 
-	virtual Shader* getDefaultShader() const = 0;
+	//virtual Shader* getDefaultShader() const = 0;
 
-	virtual void selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy);
+	virtual void selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy) = 0;
 
 	//virtual void RenderElement(DrawList* renderer, DrawElement* element);
 	//virtual void RenderElementSubset(DrawList* renderer, DrawElement* element, int subsetIndex);
@@ -110,7 +110,13 @@ public:
 
 protected:
 	//virtual ShaderTechnique* selectShaderTechnique(Shader* shader);
-	virtual ShaderPass* selectShaderPass(Shader* shader);
+	//virtual ShaderPass* selectShaderPass(Shader* shader);
+
+	// TODO: name は hash でもいいかな
+	ShaderPass* selectShaderPassHelper(Shader* materialShader, const String& techniqueName, const String& passName, ShaderPass* defaultPass);
+
+	// Obsolete 古い記述用。
+	ShaderPass* selectShaderPassHelperSimple(Shader* materialShader, Shader* defaultShader);
 
 private:
 };
@@ -133,7 +139,8 @@ public:
 	NonShadingRenderingPass();
 	virtual ~NonShadingRenderingPass();
 	void initialize(GraphicsManager* manager);
-	virtual Shader* getDefaultShader() const override;
+	virtual void selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy) override;
+	//virtual Shader* getDefaultShader() const override;
 
 private:
 	Ref<Shader>	m_defaultShader;
@@ -166,7 +173,8 @@ public:
 	ForwardShadingRenderingPass();
 	virtual ~ForwardShadingRenderingPass();
 	void initialize(GraphicsManager* manager);
-	virtual Shader* getDefaultShader() const override;
+	virtual void selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy) override;
+	//virtual Shader* getDefaultShader() const override;
 
 private:
 	Ref<Shader>	m_defaultShader;
