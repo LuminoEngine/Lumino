@@ -428,10 +428,10 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 				LN_GetDirectionalDirectLightIrradiance(tl, geometry, directLight);
 				LN_RE_Direct(directLight, geometry, material, reflectedLight);
 	        }
-			//else
-			//{
-			//	break;
-			//}
+			else
+			{
+				break;
+			}
 	    }
 	    result.rgb += color;
 	}
