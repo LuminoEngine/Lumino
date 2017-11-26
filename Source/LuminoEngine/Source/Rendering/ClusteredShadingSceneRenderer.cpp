@@ -440,10 +440,11 @@ void ClusteredShadingSceneRenderer::initialize(GraphicsManager* manager)
 {
 	SceneRenderer::initialize(manager);
 
-	m_lightClusters.init();
-
 	// pass "Geometry"
 	addPass(newObject<ClusteredShadingGeometryRenderingPass>());
+
+	m_lightClusters.init();
+
 
 	// TODO: Test
 	//m_renderSettings.ambientColor = Color(1, 0, 0, 1);

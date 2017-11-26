@@ -13,6 +13,7 @@
 #include "RenderingCommand.h"
 #include "ShaderAnalyzer.h"
 #include "../Shader/LuminoShader.h"
+#include "Device/OpenGL/GLGraphicsDevice.h"
 
 #define LN_CALL_SHADER_COMMAND(func, command, ...) \
 	if (m_owner->getManager()->getRenderingType() == GraphicsRenderingType::Threaded) { \
@@ -493,52 +494,73 @@ void Shader::initialize(detail::GraphicsManager* manager, const void* code, int 
 	GraphicsResourceObject::initialize();
 
 	std::string log;
-	std::stringstream sb;
-	if (codeType == ShaderCodeType::TRSS)
-	{
-		//detail::ShaderAnalyzer analyzer;
-		//analyzer.analyzeLNFX((const char*)code, length);
-		//auto cc = analyzer.makeHLSLCode();
 
-		//sb << std::string(cc.data(), cc.size());
-		sb << std::string((const char*)code, length);
-
-		//FileSystem::WriteAllBytes(_LT("code.c"), cc.data(), cc.size());
-	}
-	else if (codeType == ShaderCodeType::RawHLSL)
+	if (m_manager->getGraphicsDevice()->getGraphicsAPI() == GraphicsAPI::OpenGL && codeType == ShaderCodeType::RawHLSL)
 	{
+		std::vector<LuminoShaderIRTechnique> techniques;
 		LuminoShaderIRGenerater gen;
 		gen.initialize(m_manager->getShaderContext());
 		std::string c;
-		if (!gen.convertFromRawHLSL((const char*)code, length, &c, &log))
+		if (!gen.convertRawHLSL_To_IRGLSL((const char*)code, length, &techniques, &log))
 		{
 			LN_NOTIMPLEMENTED();
 			return;
 		}
-		//gen.loadRawHLSL(std::string((const char*)code, length));
-		sb << c;
-	}
-	else if (codeType == ShaderCodeType::RawIR)
-	{
-		sb << std::string((const char*)code, length);
+
+		ShaderCompileResult result;
+		auto sh = static_cast<Driver::GLGraphicsDevice*>(m_manager->getGraphicsDevice())->createShader(techniques, &result);
+		sh->addRef();
+		m_deviceObj = sh;
+		LN_THROW(m_deviceObj != nullptr, CompilationException, result);
 	}
 	else
 	{
-		// ヘッダコード先頭に追加する
-		sb << (manager->getCommonShaderHeader());
-		sb << ("#line 5\n");
-		sb << std::string((const char*)code, length);
-		sb << ("\n");	// 最後には改行を入れておく。環境によっては改行がないとエラーになる。しかもエラーなのにエラー文字列が出ないこともある。
+		std::stringstream sb;
+		if (codeType == ShaderCodeType::TRSS)
+		{
+			//detail::ShaderAnalyzer analyzer;
+			//analyzer.analyzeLNFX((const char*)code, length);
+			//auto cc = analyzer.makeHLSLCode();
+
+			//sb << std::string(cc.data(), cc.size());
+			sb << std::string((const char*)code, length);
+
+			//FileSystem::WriteAllBytes(_LT("code.c"), cc.data(), cc.size());
+		}
+		else if (codeType == ShaderCodeType::RawHLSL)
+		{
+			LuminoShaderIRGenerater gen;
+			gen.initialize(m_manager->getShaderContext());
+			std::string c;
+			if (!gen.convertRawHLSL_To_IRHLSL((const char*)code, length, &c, &log))
+			{
+				LN_NOTIMPLEMENTED();
+				return;
+			}
+			sb << c;
+		}
+		else if (codeType == ShaderCodeType::RawIR)
+		{
+			sb << std::string((const char*)code, length);
+		}
+		else
+		{
+			// ヘッダコード先頭に追加する
+			sb << (manager->getCommonShaderHeader());
+			sb << ("#line 5\n");
+			sb << std::string((const char*)code, length);
+			sb << ("\n");	// 最後には改行を入れておく。環境によっては改行がないとエラーになる。しかもエラーなのにエラー文字列が出ないこともある。
+		}
+
+		std::string newCode = sb.str();
+
+		ShaderCompileResult result;
+		m_deviceObj = m_manager->getGraphicsDevice()->createShader(newCode.c_str(), newCode.length(), &result);
+		LN_THROW(m_deviceObj != nullptr, CompilationException, result);
+
+		// ライブラリ外部からの DeviceContext 再設定に備えてコードを保存する
+		m_sourceCode.alloc(newCode.c_str(), newCode.length());
 	}
-
-	std::string newCode = sb.str();
-
-	ShaderCompileResult result;
-	m_deviceObj = m_manager->getGraphicsDevice()->createShader(newCode.c_str(), newCode.length(), &result);
-	LN_THROW(m_deviceObj != nullptr, CompilationException, result);
-
-	// ライブラリ外部からの DeviceContext 再設定に備えてコードを保存する
-	m_sourceCode.alloc(newCode.c_str(), newCode.length());
 
 	postInitialize();
 }

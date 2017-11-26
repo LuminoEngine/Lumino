@@ -117,7 +117,9 @@ float3 LN_GetHemisphereLightIrradiance(const in LN_HemisphereLight hemiLight, co
 	float dotNL = dot(geometry.normal, hemiLight.upDirection);
 	float hemiDiffuseWeight = 0.5 * dotNL + 0.5;
 
-	float3 irradiance = lerp(hemiLight.groundColor, hemiLight.skyColor, hemiDiffuseWeight);
+	float3 skyColor = hemiLight.skyColor;
+	float3 groundColor = hemiLight.groundColor;
+	float3 irradiance = lerp(groundColor, skyColor, hemiDiffuseWeight);
 
 	irradiance *= LN_PI;	// PHYSICALLY_CORRECT_LIGHTS
 
@@ -206,7 +208,7 @@ float LN_G_Smith_Schlick_GGX(float a, float dotNV, float dotNL)
 }
 
 // Cook-Torrance
-float3 LN_SpecularBRDF(const in LN_IncidentLight directLight, const in LN_PBRGeometry geometry, float3 specularColor, float roughnessFactor)
+float3 LN_SpecularBRDF(const LN_IncidentLight directLight, const LN_PBRGeometry geometry, float3 specularColor, float roughnessFactor)
 {
 	float3 N = geometry.normal;
 	float3 V = geometry.viewDir;
@@ -227,7 +229,7 @@ float3 LN_SpecularBRDF(const in LN_IncidentLight directLight, const in LN_PBRGeo
 }
 
 // RenderEquations(RE)
-void LN_RE_Direct(const in LN_IncidentLight directLight, const in LN_PBRGeometry geometry, const in LN_PBRMaterial material, inout LN_ReflectedLight reflectedLight)
+void LN_RE_Direct(const in LN_IncidentLight directLight, const LN_PBRGeometry geometry, const LN_PBRMaterial material, inout LN_ReflectedLight reflectedLight)
 {
 	// コサイン項
 	float dotNL = saturate(dot(geometry.normal, directLight.direction));
@@ -246,12 +248,12 @@ void LN_RE_Direct(const in LN_IncidentLight directLight, const in LN_PBRGeometry
 }
 
 
-float3 BRDF_Diffuse_Lambert(const in float3 diffuseColor)
+float3 BRDF_Diffuse_Lambert(const float3 diffuseColor)
 {
 	return LN_RECIPROCAL_PI * diffuseColor;
 }
 
-void RE_IndirectDiffuse_BlinnPhong(const in float3 irradiance, const in LN_PBRGeometry geometry, const in LN_PBRMaterial material, inout LN_ReflectedLight reflectedLight)
+void RE_IndirectDiffuse_BlinnPhong(const float3 irradiance, const LN_PBRGeometry geometry, const LN_PBRMaterial material, inout LN_ReflectedLight reflectedLight)
 {
 	reflectedLight.indirectDiffuse += irradiance * BRDF_Diffuse_Lambert( material.diffuseColor );
 }

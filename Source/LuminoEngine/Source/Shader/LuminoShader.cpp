@@ -12,6 +12,7 @@ LN_NAMESPACE_BEGIN
 
 struct HLSLPass
 {
+	std::string	name;
 	std::string vertexShader;	// for Raw HLSL
 	std::string pixelShader;	// for Raw HLSL
 	std::string shadingModel;	// for Lumino HLSL
@@ -21,6 +22,7 @@ struct HLSLPass
 
 struct HLSLTechnique
 {
+	std::string	name;
 	std::vector<HLSLPass>	passes;
 };
 
@@ -122,6 +124,19 @@ bool HLSLMetadataParser::parseCompileUnit()
 bool HLSLMetadataParser::parseTechnique(HLSLTechnique* tech)
 {
 	int begin = m_current;
+
+	// 名前
+	if (!next()) return false;
+	if (current()->getTokenGroup() == fl::TokenGroup::Identifier)
+	{
+		tech->name = current()->getString();
+	}
+	else
+	{
+		LN_NOTIMPLEMENTED();
+		return false;
+	}
+
 	if (!nextTo('{')) return false;
 
 	bool closed = false;
@@ -152,6 +167,18 @@ bool HLSLMetadataParser::parseTechnique(HLSLTechnique* tech)
 
 bool HLSLMetadataParser::parsePass(HLSLPass* pass)
 {
+	// 名前
+	if (!next()) return false;
+	if (current()->getTokenGroup() == fl::TokenGroup::Identifier)
+	{
+		pass->name = current()->getString();
+	}
+	else
+	{
+		LN_NOTIMPLEMENTED();
+		return false;
+	}
+
 	if (!nextTo('{')) return false;
 
 	bool closed = false;
@@ -514,9 +541,11 @@ bool LuminoShaderIRGenerater::convert(const char* input, int len, std::string* o
 	LN_NOTIMPLEMENTED();
 }
 
-bool LuminoShaderIRGenerater::convertFromRawHLSL(const char* input, int len, std::string* outCode, std::string* log)
+bool LuminoShaderIRGenerater::convertRawHLSL_To_IRHLSL(const char* input, int len, std::string* outCode, std::string* log)
 {
 	if (LN_REQUIRE(input)) return false;
+
+	DX9Module::initialize();
 
 	LuminoID3DInclude d3dInclude(m_context);
 	ID3DXBuffer* pShaderText = NULL;
@@ -535,6 +564,69 @@ bool LuminoShaderIRGenerater::convertFromRawHLSL(const char* input, int len, std
 	(*outCode) = std::string((const char*)pShaderText->GetBufferPointer(), pShaderText->GetBufferSize());
 
 	return true;
+}
+
+bool LuminoShaderIRGenerater::convertRawHLSL_To_IRGLSL(const char* input, int len, std::vector<LuminoShaderIRTechnique>* outTechniques, std::string* log)
+{
+	std::string hlslCode;
+	if (!convertRawHLSL_To_IRHLSL(input, len, &hlslCode, log))
+	{
+		LN_NOTIMPLEMENTED();
+		return false;
+	}
+
+	fl::AnalyzerContext ctx;
+	auto file = ctx.RegisterInputMemoryCode(std::string{}, hlslCode.c_str(), hlslCode.length());
+	ctx.LexFile(file);
+	file->createTranslationUnit();
+	fl::TranslationUnit* tu = file->getTranslationUnit();
+	tu->expandTokensOneFile(file);
+	List<fl::Token>* tokens = &tu->m_tokens;
+
+	HLSLMetadataParser parser;
+	if (!parser.parse(tu))
+	{
+		LN_NOTIMPLEMENTED();
+		return false;
+	}
+
+	std::string minHLSL = tu->getStringValidCode();
+	FileSystem::writeAllBytes(_T("test.fx"), minHLSL.c_str(), minHLSL.length());
+	for (auto& tech : parser.techniques)
+	{
+		LuminoShaderIRTechnique irTech;
+		irTech.name = tech.name;
+
+		for (auto& pass : tech.passes)
+		{
+			LuminoShaderIRPass irPass;
+			irPass.name = pass.name;
+			irPass.vertexShaderEntryPoint = pass.vertexShader;
+			irPass.fragmentShaderEntryPoint = pass.pixelShader;
+
+			if (!Hlsl2Glsl(minHLSL, pass.vertexShader, EShLangVertex, &irPass.vertexShaderCode, log))
+			{
+				LN_NOTIMPLEMENTED();
+				return false;
+			}
+			if (!Hlsl2Glsl(minHLSL, pass.pixelShader, EShLangFragment, &irPass.fragmentShaderCode, log))
+			{
+				LN_NOTIMPLEMENTED();
+				return false;
+			}
+
+			irTech.passes.emplace_back(irPass);
+
+			//FileSystem::writeAllBytes(_T("test.frag"), glslCode.c_str(), glslCode.length());
+
+			// TODO: float3 BRDF_Diffuse_Lambert(const in float3 diffuseColor)
+			// のように、"in" キーワードがあると変換エラーになる。これは lex だけでも、警告はできそう。
+
+			// TODO: コンパイル時、sampler キーワードはエラーとなる。sampler2D とか明示する。そんな警告。
+		}
+
+		outTechniques->emplace_back(irTech);
+	}
 }
 
 void LuminoShaderIRGenerater::convertRawHLSL_To_IncludeResolvedHLSLCode(const std::string& code)
@@ -556,8 +648,6 @@ void LuminoShaderIRGenerater::convertRawHLSL_To_IncludeResolvedHLSLCode(const st
 
 	HLSLMetadataParser parser;
 	parser.parse(tu);
-
-
 
 	{
 		for (int i = 0; i < tokens->getCount(); i++)

@@ -54,7 +54,7 @@ void UIControlsGallery()
 	float d5 = ((tl5 + tr5) / Math::PI);
 
 	EngineSettings::addAssetsDirectory(LN_LOCALFILE("../../../../Samples/Assets"));
-
+	EngineSettings::setGraphicsAPI(GraphicsAPI::OpenGL);
 	Engine::initialize();
 
 
@@ -392,6 +392,10 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 	cornellBoxObj->addComponent(cornellBox);
 
 	Engine::getCamera3D()->setPosition(0, 10, -30);
+
+	auto ambientLight1 = AmbientLight::create();
+	Engine::getWorld3D()->addWorldObject(ambientLight1, true);
+
 
 	//auto spotLight1 = SpotLight::create(Color::White, 30, Math::PI / 3);
 	//spotLight1->transform.lookAt(-Vector3::UnitY);

@@ -7,6 +7,8 @@
 #include "GLRenderer.h"
 
 LN_NAMESPACE_BEGIN
+struct LuminoShaderIRTechnique;
+
 LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
 {
@@ -66,6 +68,8 @@ public:
 	GLContext* getMainRenderingContext() const;
 	MemoryStream* getUniformTempBuffer() { return &m_uniformTempBuffer; }
 	BinaryWriter* getUniformTempBufferWriter() { return &m_uniformTempBufferWriter; }
+
+	Ref<IShader> createShader(const std::vector<LuminoShaderIRTechnique>& techniques, ShaderCompileResult* result);
 
 	virtual Ref<GLContext> initializeMainContext(const ConfigData& configData) = 0;
 	virtual Ref<GLContext> createContext(PlatformWindow* window) = 0;

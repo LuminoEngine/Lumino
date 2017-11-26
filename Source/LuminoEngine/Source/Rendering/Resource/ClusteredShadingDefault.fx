@@ -60,7 +60,7 @@ float3		ln_cameraPos;
 //float4x4	ln_View;
 
 texture3D ln_clustersTexture;
-sampler	clustersSampler = sampler_state
+sampler3D	clustersSampler = sampler_state
 {
 	texture = <ln_clustersTexture>;
 	MinFilter = Point; 
@@ -249,13 +249,6 @@ float RadialAttenuation(float3 WorldLightVector, float FalloffExponent)
 }
 
 
-float LN_PunctualLightIntensityToIrradianceFactor(float lightDistance, float cutoffDistance, float decayExponent) {
-  if (decayExponent > 0.0) {
-    return pow(saturate(-lightDistance / cutoffDistance + 1.0), decayExponent);
-  }
-
-  return 1.0;
-}
 
 float _LN_CalcFogFactor(float depth)
 {
@@ -496,6 +489,7 @@ float4 _LN_PS_ClusteredForward_Default(LN_PSInput_Common common, LN_PSInput_Clus
 struct MyVFOutput
 {
 //	float4	WorldPos	: TEXCOORD5;
+	float4	dummy	: TEXCOORD6;
 };
 
 struct MySSInput
@@ -505,7 +499,7 @@ struct MySSInput
 	float4	WorldPos	: TEXCOORD5;
 };
 
-sampler		MaterialTextureSampler = sampler_state
+sampler2D		MaterialTextureSampler = sampler_state
 {
 	texture = <ln_MaterialTexture>;
 	MINFILTER = LINEAR;
@@ -514,6 +508,7 @@ sampler		MaterialTextureSampler = sampler_state
 
 void MyVFMain(LN_VSInput input, inout MyVFOutput output)	// ★ out 引数の型をパース
 {
+	output.dummy = float4(0, 0, 0, 0);
 }
 
 // Surface Shader

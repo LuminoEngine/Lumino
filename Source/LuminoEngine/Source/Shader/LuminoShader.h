@@ -7,7 +7,7 @@ LN_NAMESPACE_BEGIN
 //enum class LuminoShaderTarget
 //{
 //	HLSL,
-//	IR,
+//	//IR,
 //};
 
 class LuminoShaderContext
@@ -27,6 +27,23 @@ private:
 };
 
 
+struct LuminoShaderIRPass
+{
+	std::string	name;
+	std::string	vertexShaderEntryPoint;
+	std::string	fragmentShaderEntryPoint;
+	std::string	vertexShaderCode;
+	std::string	fragmentShaderCode;
+};
+
+// HSLSL を解析して得られた Technique。主に OpenGL 用。
+// SurfaceShader など、Lumino 拡張は含まない。
+struct LuminoShaderIRTechnique
+{
+	std::string	name;
+	std::vector<LuminoShaderIRPass>	passes;
+};
+
 // RawHLSLCode → IRCode + technique data
 // LuminoHLSLCode → IRCode + technique data
 // ↑ここは自動判別。SurfaceShader の有無で。
@@ -40,9 +57,13 @@ public:
 	// LuminoShader or LazyHLSL ->
 	bool convert(const char* input, int len, std::string* outCode, std::string* log);
 
-	bool convertFromRawHLSL(const char* input, int len, std::string* outCode, std::string* log);
+	bool convertRawHLSL_To_IRHLSL(const char* input, int len, std::string* outCode, std::string* log);
+
+
+	bool convertRawHLSL_To_IRGLSL(const char* input, int len, std::vector<LuminoShaderIRTechnique>* outTechniques, std::string* log);
 
 	void convertRawHLSL_To_IncludeResolvedHLSLCode(const std::string& code);
+
 
 	//std::string generateIncludeResolvedHLSLCode();
 	//std::string generateIRCode();

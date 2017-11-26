@@ -305,7 +305,7 @@ bool parameterSizeSortFunction(TParameter left, TParameter right) {
 	else if (IsNumeric(left.type->getBasicType()) && !IsNumeric(right.type->getBasicType()))
 		return false;
 	// then sort according to numeric type's dimension in descending order
-	else return (left.type->getColsCount() >= right.type->getColsCount() && left.type->getRowsCount() >= right.type->getRowsCount());
+	else return (left.type->getColsCount() > right.type->getColsCount() && left.type->getRowsCount() > right.type->getRowsCount());
 }
 
 // This function uses the matching rules as described in the Cg language doc (the closest
