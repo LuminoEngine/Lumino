@@ -62,26 +62,26 @@ public:
 	virtual void disposeFontResource() override;
 
 public:
-	virtual void setName(const String& fontName) { m_fontData.Family = fontName; m_modified = true; }
-	virtual const String& getName() const { return m_fontData.Family; }
-	virtual void setSize(int size) { m_fontData.Size = size; m_modified = true; }
-	virtual int getSize() const  { return m_fontData.Size; }
+	virtual void setName(const String& fontName) override { m_fontData.Family = fontName; m_modified = true; }
+	virtual const String& getName() const  override{ return m_fontData.Family; }
+	virtual void setSize(int size) override { m_fontData.Size = size; m_modified = true; }
+	virtual int getSize() const override { return m_fontData.Size; }
 	//virtual void SetEdgeSize(int size) { m_fontData.EdgeSize = size; m_modified = true; }
 	//virtual int GetEdgeSize() const  { return m_fontData.EdgeSize; }
-	virtual void setBold(bool enabled) { m_fontData.isBold = enabled; m_modified = true; }
-	virtual bool isBold() const  { return m_fontData.isBold; }
-	virtual void setItalic(bool enabled) { m_fontData.isItalic = enabled; m_modified = true; }
-	virtual bool isItalic() const { return m_fontData.isItalic; }
-	virtual void setAntiAlias(bool enabled) { m_fontData.isAntiAlias = enabled; m_modified = true; }
-	virtual bool isAntiAlias() const { return m_fontData.isAntiAlias; }
+	virtual void setBold(bool enabled) override { m_fontData.isBold = enabled; m_modified = true; }
+	virtual bool isBold() const override { return m_fontData.isBold; }
+	virtual void setItalic(bool enabled) override { m_fontData.isItalic = enabled; m_modified = true; }
+	virtual bool isItalic() const override { return m_fontData.isItalic; }
+	virtual void setAntiAlias(bool enabled) override { m_fontData.isAntiAlias = enabled; m_modified = true; }
+	virtual bool isAntiAlias() const override { return m_fontData.isAntiAlias; }
 
-	virtual RawFontPtr copy() const;
-	virtual int getLineSpacing() { updateFont(); return m_lineHeight; }	// TODO: [Obsolete]
+	virtual RawFontPtr copy() const override;
+	virtual int getLineSpacing() override { updateFont(); return m_lineHeight; }	// TODO: [Obsolete]
 	//virtual Size getTextSize(const char* text, int length);	// TODO: getTextSize もいらなそう。UTF32 のだけあればいいかも？
 	//virtual Size getTextSize(const wchar_t* text, int length);
 	//virtual Size getTextSize(const UTF32* text, int length);
-	virtual FontGlyphLocation* advanceKerning(UTF32 utf32code, int strokeSize, FontGlyphLocation* prevData);
-	virtual FontGlyphBitmap* lookupGlyphBitmap(UTF32 utf32code, int strokeSize);
+	virtual FontGlyphLocation* advanceKerning(UTF32 utf32code, int strokeSize, FontGlyphLocation* prevData) override;
+	virtual FontGlyphBitmap* lookupGlyphBitmap(UTF32 utf32code, int strokeSize) override;
 	//virtual FontGlyphData* LookupGlyphData(UTF32 utf32code, FontGlyphData* prevData);
 
 	virtual void getGlobalMetrics(FontGlobalMetrics* outMetrics) override;
@@ -90,7 +90,7 @@ public:
 	virtual Vector2 getKerning(UTF32 prev, UTF32 next) override;
 	virtual void getGlyphMetrics(UTF32 utf32Code, FontGlyphMetrics* outMetrics) override;
 
-	virtual FontManager* getManager() const { return m_manager; }
+	virtual FontManager* getManager() const override { return m_manager; }
 
 	FTC_FaceID getFTCFaceId() const { return m_ftFaceID; }
 	FT_Face getFTFace() const { return m_ftFace; }

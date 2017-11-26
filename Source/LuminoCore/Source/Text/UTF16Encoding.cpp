@@ -1,6 +1,6 @@
 ﻿
 #include "../Internal.h"
-#include "../../include/Lumino/Text/UnicodeUtils.h"
+#include "../../Include/Lumino/Text/UnicodeUtils.h"
 #include "UTF16Encoding.h"
 
 LN_NAMESPACE_BEGIN

@@ -2,7 +2,7 @@
 #pragma once
 
 LN_NAMESPACE_BEGIN
-class Material;
+class CommonMaterial;
 
 namespace tr {
 
@@ -130,7 +130,7 @@ class SrFace
 public:
 	List<SrLoop*>	m_loops;
 
-	Material*		m_material;
+	CommonMaterial*		m_material;
 
 public:
 	const Vector3& getNormal() const { return m_normal; }
@@ -178,13 +178,13 @@ class SrMeshModel
 	: public Object
 {
 public:
-	List<Ref<Material>>	materials;
+	List<Ref<CommonMaterial>>	materials;
 
 public:
 	SrMesh* addMesh();
-	void addMaterial(Material* material);
+	void addMaterial(CommonMaterial* material);
 
-	Material* getMaterial(int index);
+	CommonMaterial* getMaterial(int index);
 
 	void calculateNormals();
 

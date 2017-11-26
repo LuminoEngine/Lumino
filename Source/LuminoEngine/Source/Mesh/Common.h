@@ -22,7 +22,7 @@ class ModelMorphCore;
 class ModelRigidBodyCore;
 class ModelJointCore;
 
-typedef List<Material>				MaterialList;
+typedef List<CommonMaterial>				MaterialList;
 typedef List<ModelBoneCore*>		ModelBoneCoreList;
 typedef List<ModelIKCore*>			ModelIKCoreList;
 typedef List<ModelMorphCore*>		ModelMorphCoreList;

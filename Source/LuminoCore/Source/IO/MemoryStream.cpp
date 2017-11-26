@@ -1,7 +1,7 @@
 ﻿
 #include "../Internal.h"
-#include "../../include/Lumino/IO/MemoryStream.h"
-#include "../../include/Lumino/IO/FileSystem.h"
+#include "../../Include/Lumino/IO/MemoryStream.h"
+#include "../../Include/Lumino/IO/FileSystem.h"
 
 LN_NAMESPACE_BEGIN
 

@@ -105,7 +105,7 @@ private:
 	SizeI					m_viewPixelSize;
 
 	OperationType			m_operationType;
-	Ref<Material>		m_tmat;
+	Ref<CommonMaterial>		m_tmat;
 
 	bool					m_dragging;
 	Plane					m_draggingLocalPlane;

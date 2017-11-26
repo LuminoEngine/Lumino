@@ -32,13 +32,13 @@ void MaterialList2::initialize(int subMaterialCount, bool createMainMaterial)
 	resize(subMaterialCount);
 	for (int i = 0; i < subMaterialCount; ++i)
 	{
-		auto m = Ref<Material>::makeRef();	// TODO
+		auto m = Ref<CommonMaterial>::makeRef();	// TODO
 		getAt(i, m);
 	}
 
 	if (createMainMaterial)
 	{
-		m_mainMaterial = Ref<Material>::makeRef();	// TODO
+		m_mainMaterial = Ref<CommonMaterial>::makeRef();	// TODO
 	}
 }
 
@@ -56,7 +56,7 @@ void MaterialList2::copyShared(MaterialList* srcList, bool createMainMaterial)
 
 	if (createMainMaterial)
 	{
-		m_mainMaterial = Ref<Material>::makeRef();
+		m_mainMaterial = Ref<CommonMaterial>::makeRef();
 	}
 	else if (getCount() > 0)
 	{
@@ -65,7 +65,7 @@ void MaterialList2::copyShared(MaterialList* srcList, bool createMainMaterial)
 }
 
 //------------------------------------------------------------------------------
-Material* MaterialList2::GetMainMaterial() const
+CommonMaterial* MaterialList2::GetMainMaterial() const
 {
 	return m_mainMaterial;
 }
@@ -98,13 +98,13 @@ void VisualComponent::initialize()
 }
 
 ////------------------------------------------------------------------------------
-//Material* VisualComponent::GetMainMaterial() const
+//CommonMaterial* VisualComponent::GetMainMaterial() const
 //{
 //	return m_materialList->GetMainMaterial();
 //}
 //
 ////------------------------------------------------------------------------------
-//tr::ReflectionObjectList<Material*>* VisualComponent::GetMaterials() const
+//tr::ReflectionObjectList<CommonMaterial*>* VisualComponent::GetMaterials() const
 //{
 //	return m_materialList;
 //}

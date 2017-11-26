@@ -252,8 +252,8 @@ public:
 	//int getSubsetCount() const;
 
 	void addMaterials(int count);
-	void addMaterial(Material* material);
-	Material* getMaterial(int index) const;
+	void addMaterial(CommonMaterial* material);
+	CommonMaterial* getMaterial(int index) const;
 
 LN_INTERNAL_ACCESS:
 	StaticMeshModel();

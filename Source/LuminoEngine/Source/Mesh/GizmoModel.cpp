@@ -43,7 +43,7 @@ GizmoModel::~GizmoModel()
 //------------------------------------------------------------------------------
 void GizmoModel::initialize(ln::detail::GraphicsManager* manager)
 {
-	m_tmat = newObject<Material>();
+	m_tmat = newObject<CommonMaterial>();
 	m_tmat->setBlendMode(BlendMode::Alpha);
 	m_tmat->setCullingMode(CullingMode::None);
 }

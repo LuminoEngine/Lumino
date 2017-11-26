@@ -6,6 +6,7 @@
 #include <Lumino/Mesh/GizmoModel.h>
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/Camera.h>
+#include <Lumino/Scene/Fog.h>
 #include <Lumino/World.h>
 #include <Lumino/UI/UIEvent.h>
 
@@ -120,12 +121,12 @@ void CameraComponent::updateMatrices(const Size& viewSize)
 		//Perspective2DLH(viewSize.width, viewSize.height, m_nearClip, m_farClip, &m_projMatrix);
 		m_viewProjMatrix = m_viewMatrix * m_projMatrix;
 
-		auto a1 = Vector3::transformCoord(
-			Vector3(48, 0, 10), m_viewProjMatrix);
+		//auto a1 = Vector3::transformCoord(
+		//	Vector3(48, 0, 10), m_viewProjMatrix);
 		
-		auto a2 = Vector3::transformCoord(
-			Vector3(48, 0, 100), m_viewProjMatrix);
-		a2 = Vector3(48, 0, 10);
+		//auto a2 = Vector3::transformCoord(
+		//	Vector3(48, 0, 100), m_viewProjMatrix);
+		//a2 = Vector3(48, 0, 10);
 		//Matrix vp;
 		//vp = Matrix::LookAtLH(Vector3(320, 240, 0), Vector3(320, 240, 1), Vector3(0, 1, 0));
 		//vp *= Matrix::OrthoLH(640, 480, 0, 1000);
@@ -176,6 +177,15 @@ void CameraComponent::updateMatrices(const Size& viewSize)
 	m_viewMatrixIT = Matrix::makeTranspose(m_viewMatrixI);
 	m_projMatrixIT = Matrix::makeTranspose(m_projMatrixI);
 	m_viewProjMatrixIT = Matrix::makeTranspose(m_viewProjMatrixI);
+
+
+
+	//{
+	//	Vector3 pos(1, 1, 300);
+	//	Vector4 tt = Vector3::transform(pos, m_viewProjMatrix);
+	//	float d = tt.z / tt.w;
+	//	printf("");
+	//}
 }
 
 //------------------------------------------------------------------------------
@@ -773,6 +783,7 @@ bool CameraViewportLayer::OnPlatformEvent(const PlatformEventArgs& e)
 CameraViewportLayer2::CameraViewportLayer2()
 	: m_targetWorld(nullptr)
 	, m_hostingCamera(nullptr)
+	, m_clusteredShadingSceneRenderer(nullptr)
 	, m_debugDrawFlags(WorldDebugDrawFlags::None)
 {
 }
@@ -790,6 +801,7 @@ void CameraViewportLayer2::initialize(World* targetWorld, CameraComponent* hosti
 		auto internalRenderer = Ref<detail::ClusteredShadingSceneRenderer>::makeRef();
 		internalRenderer->initialize(detail::EngineDomain::getGraphicsManager());
 		m_internalRenderer = internalRenderer;
+		m_clusteredShadingSceneRenderer = internalRenderer;
 #else
 		auto internalRenderer = Ref<detail::ForwardShadingRenderer>::makeRef();
 		internalRenderer->initialize(detail::EngineDomain::getGraphicsManager());
@@ -832,7 +844,24 @@ void CameraViewportLayer2::renderScene(RenderTargetTexture* renderTarget, DepthB
 	//m_targetWorld->renderRoot(m_hostingCamera, m_debugDrawFlags, this);
 	m_targetWorld->renderRoot(this, m_debugDrawFlags);
 
+	if (m_clusteredShadingSceneRenderer)
+	{
+		// TODO: 暫定
+		if (m_hostingCamera->getProjectionMode() == CameraProjection_3D)
+		{
+			detail::FogParams params;
+			Fog* fog = static_cast<World3D*>(m_targetWorld)->getFog();
+			if (fog)
+			{
+				params.color = fog->getColor();
+				params.density = fog->getDensity();
+			}
+			m_clusteredShadingSceneRenderer->setFogParams(params);
 
+			//m_clusteredShadingSceneRenderer->setSceneGlobalRenderSettings(
+			//	static_cast<World3D*>(m_targetWorld)->getGlobalRenderSettings());
+		}
+	}
 
 
 	// TODO: float

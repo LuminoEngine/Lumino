@@ -1,9 +1,16 @@
-
+ï»¿
 #pragma once
+#include <Lumino/Rendering/Rendering.h>
 #include <Lumino/Rendering/SceneRenderer.h>
 
 LN_NAMESPACE_BEGIN
 namespace detail {
+
+struct FogParams
+{
+	Color	color;
+	float	density = 0.0f;
+};
 
 class LightClusters
 {
@@ -19,11 +26,18 @@ public:
 
 	void beginMakeClusters(const Matrix& view, const Matrix& proj, const Vector3& cameraPos, float nearClip, float farClip);
 	void endMakeClusters();
-	void addPointLight(const Vector3& pos, float range, const Color& color);
-	void addSpotLight(const Vector3& pos, float range, const Vector3& direction, float outerRadius, float innerRadius, const Color& color);
+
+	void addPointLight(const Vector3& pos, float range, float attenuation, const Color& color);
+	void addSpotLight(const Vector3& pos, float range, float attenuation, const Color& color, const Vector3& direction, float cone, float penumbra);
+	void addDirectionalLight(const Vector3& dir, const Color& color);
+	void addAmbientLight(const Color& color);
+	void addHemisphereLight(const Color& skyColor, const Color& groundColor);
 
 	const Ref<tr::Texture3D>& getClustersVolumeTexture() const { return m_clustersTexture; }
 	const Ref<Texture2D>& getLightInfoTexture() const { return m_lightInfoTexture; }
+	const Ref<Texture2D>& getGlobalLightInfoTexture() const { return m_globalLightInfoTexture; }
+
+	int getGlobalLightCount() const { return m_globalLightInofs.getCount(); }
 
 private:
 	//static float bias(float b, float x) { return pow(x, log(b) / log(0.5)); }
@@ -31,25 +45,36 @@ private:
 	void addClusterSpherical(const Vector3& pos, float range);
 	void addClusterData(int x, int y, int z, int lightId);
 
-	// Texture2D ‚Ì 1 s•ª‚Æ‚µ‚Ä‘‚«‚Ş‚½‚ßAfloat4 ‚Ì”{”ƒTƒCƒY‚Å‚ ‚é•K—v‚ª‚ ‚é
+	// Texture2D ã® 1 è¡Œåˆ†ã¨ã—ã¦æ›¸ãè¾¼ã‚€ãŸã‚ã€float4 ã®å€æ•°ã‚µã‚¤ã‚ºã§ã‚ã‚‹å¿…è¦ãŒã‚ã‚‹
 	struct LightInfo
 	{
-		Vector4 posAndRange;	// xyz=pos, w=range
-		Vector4	spotDirection;	// xyz=dir, w=NotUse
-		Vector4	spotAngle;		// x > 0 is spot light. x=cos(outerRadius), y=1.0/cos(innerRadius), zw=NotUse
+		Vector4 posAndRange;		// xyz=pos, w=range
+		Vector4	directionAndAtt;	// xyz=dir, w=attenuation
+		Vector4	spotAngle;			// x > 0 is spot light. coneCos, penumbraCos, zw=NotUse
 		Color	color;
+	};
+
+	struct GlobalLightInfo
+	{
+		Color	color;			// DirectionalColor, AmbientColor, (sky)Hemisphere
+		Color	groundColor;
+		Vector4	directionAndType;	// w=Type
+		Vector4	dummy;
 	};
 
 	static const int		ClusterWidth = 16;
 	static const int		ClusterHeight = 16;
 	static const int		ClusterDepth = 32;
-	std::vector<Color32>	m_clustersData;		// TODO: Texture3D ‚ª‚Ü‚¾ setData ‚à getMappedData ‚àƒTƒ|[ƒg‚µ‚Ä‚¢‚È‚¢‚Ì‚ÅB‚Å‚«‚ê‚Î getMappedData ‚É‚»‚Ì‚Ü‚Ü‘‚«‚İ‚½‚¢
-	std::vector<int>		m_clustersAddCount;	// ‚ ‚éƒNƒ‰ƒXƒ^‚É‘‚©‚ê‚½ƒf[ƒ^‚Ì”
+	std::vector<Color32>	m_clustersData;		// TODO: Texture3D ãŒã¾ã  setData ã‚‚ getMappedData ã‚‚ã‚µãƒãƒ¼ãƒˆã—ã¦ã„ãªã„ã®ã§ã€‚ã§ãã‚Œã° getMappedData ã«ãã®ã¾ã¾æ›¸ãè¾¼ã¿ãŸã„
+	std::vector<int>		m_clustersAddCount;	// ã‚ã‚‹ã‚¯ãƒ©ã‚¹ã‚¿ã«æ›¸ã‹ã‚ŒãŸãƒ‡ãƒ¼ã‚¿ã®æ•°
 	Ref<tr::Texture3D>		m_clustersTexture;
 
 	static const int		MaxLights = 64;
-	List<LightInfo>			m_lightInofs;		// m_lightInfoTexture ‚É‘‚«‚ŞBTODO: Texture2D ‚ª float4 ‘‚«‚İ‚ğ‚¿‚á‚ñ‚ÆƒTƒ|[ƒg‚µ‚½‚ç•K—v‚È‚¢B
+	List<LightInfo>			m_lightInofs;		// m_lightInfoTexture ã«æ›¸ãè¾¼ã‚€ã€‚TODO: Texture2D ãŒ float4 æ›¸ãè¾¼ã¿ã‚’ã¡ã‚ƒã‚“ã¨ã‚µãƒãƒ¼ãƒˆã—ãŸã‚‰å¿…è¦ãªã„ã€‚
 	Ref<Texture2D>			m_lightInfoTexture;
+	List<GlobalLightInfo>	m_globalLightInofs;		// m_globalLightInfoTexture ã«æ›¸ãè¾¼ã‚€ã€‚TODO: Texture2D ãŒ float4 æ›¸ãè¾¼ã¿ã‚’ã¡ã‚ƒã‚“ã¨ã‚µãƒãƒ¼ãƒˆã—ãŸã‚‰å¿…è¦ãªã„ã€‚
+	Ref<Texture2D>			m_globalLightInfoTexture;
+
 };
 
 class ClusteredShadingGeometryRenderingPass
@@ -72,6 +97,33 @@ private:
 	Ref<RenderTargetTexture>	m_normalRenderTarget;
 };
 
+class ShadowCasterPass
+	: public RenderingPass2
+{
+public:
+	CameraInfo	view;
+
+	ShadowCasterPass();
+	virtual ~ShadowCasterPass();
+	void initialize();
+
+	virtual Shader* getDefaultShader() const override;
+
+	virtual void selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy) override;
+
+	virtual void onBeginPass(DefaultStatus* defaultStatus) override;
+
+	virtual void overrideCameraInfo(detail::CameraInfo* cameraInfo) override;
+
+protected:
+	virtual ShaderPass* selectShaderPass(Shader* shader) override;
+
+public:	// TODO:
+	Ref<Shader>		m_defaultShader;
+	Ref<RenderTargetTexture>	m_shadowMap;
+};
+
+
 class ClusteredShadingSceneRenderer
 	: public SceneRenderer
 {
@@ -79,15 +131,19 @@ public:
 	ClusteredShadingSceneRenderer();
 	virtual ~ClusteredShadingSceneRenderer();
 	void initialize(GraphicsManager* manager);
+	//void setSceneGlobalRenderSettings(const SceneGlobalRenderSettings& settings) { m_renderSettings = settings; }
+	void setFogParams(const FogParams& params) { m_fogParams = params; }
 
 protected:
-	virtual void collect() override;
+	virtual void collect(RenderingPass2* pass, const detail::CameraInfo& cameraInfo) override;
 	virtual void prepare() override;
 	virtual void onCollectLight(DynamicLightInfo* light) override;
 	virtual void onShaderPassChainging(ShaderPass* pass) override;
 
 private:
-	LightClusters	m_lightClusters;
+	LightClusters				m_lightClusters;
+	//SceneGlobalRenderSettings	m_renderSettings;
+	FogParams					m_fogParams;
 };
 
 } // namespace detail

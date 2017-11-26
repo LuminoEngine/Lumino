@@ -81,6 +81,7 @@ uint32_t BitmapPainter::getColorByteSec(const Color32& color, PixelFormat format
 		break;
 	}
 	LN_THROW(0, InvalidFormatException);
+	return 0;
 }
 
 

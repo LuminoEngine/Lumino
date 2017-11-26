@@ -11,6 +11,7 @@
 #include "../../Internal.h"
 #include <Lumino/Base/StdStringHelper.h>
 #include <Lumino/Graphics/GraphicsException.h>
+#include "../../../Shader/LuminoShader.h"
 #include "GLGraphicsDevice.h"
 #include "GLShader.h"
 
@@ -593,7 +594,7 @@ void GLShader::initialize(GLGraphicsDevice* device, const void* code_, size_t co
 			while (json.read() && json.getTokenType() != tr::JsonToken::EndArray)
 			{
 				String entry = json.getValue();
-				m_glVertexShaderEntryMap[entry] = compileShader(code, codeByteCount, entry.toStdString().c_str(), GL_VERTEX_SHADER);
+				m_glVertexShaderEntryMap[entry] = compileShader(code, codeByteCount, entry.toStdString().c_str(), GL_VERTEX_SHADER, true);
 			}
 		}
 		// pixelShaders
@@ -603,7 +604,7 @@ void GLShader::initialize(GLGraphicsDevice* device, const void* code_, size_t co
 			while (json.read() && json.getTokenType() != tr::JsonToken::EndArray)
 			{
 				String entry = json.getValue();
-				m_glPixelShaderEntryMap[entry] = compileShader(code, codeByteCount, entry.toStdString().c_str(), GL_FRAGMENT_SHADER);
+				m_glPixelShaderEntryMap[entry] = compileShader(code, codeByteCount, entry.toStdString().c_str(), GL_FRAGMENT_SHADER, true);
 			}
 		}
 		// techniques
@@ -634,8 +635,8 @@ void GLShader::initialize(GLGraphicsDevice* device, const void* code_, size_t co
 	}
 	else
 	{
-		GLuint vertShader = compileShader(code, codeByteCount, "Main", GL_VERTEX_SHADER);
-		GLuint fragShader = compileShader(code, codeByteCount, "Main", GL_FRAGMENT_SHADER);
+		GLuint vertShader = compileShader(code, codeByteCount, "Main", GL_VERTEX_SHADER, true);
+		GLuint fragShader = compileShader(code, codeByteCount, "Main", GL_FRAGMENT_SHADER, true);
 		m_glVertexShaderEntryMap[_LT("Main")] = vertShader;	// delete のため
 		m_glPixelShaderEntryMap[_LT("Main")] = fragShader;	// delete のため
 		auto* tech = LN_NEW GLShaderTechnique();
@@ -644,6 +645,35 @@ void GLShader::initialize(GLGraphicsDevice* device, const void* code_, size_t co
 		auto* pass = LN_NEW GLShaderPass();
 		pass->initialize(this, _LT("Main"), vertShader, fragShader);
 		tech->addPass(pass);
+	}
+}
+
+void GLShader::initialize(GLGraphicsDevice* device, const std::vector<LuminoShaderIRTechnique>& techniques)
+{
+	m_device = device;
+
+	for (auto& tech : techniques)
+	{
+		auto* gltech = LN_NEW GLShaderTechnique();
+		m_techniques.add(gltech);
+		gltech->initialize(this, String::fromCString(tech.name.c_str(), tech.name.length()));	// TODO: fromStdString
+
+		for (auto& pass : tech.passes)
+		{
+			String vertShaderEntryPoint = String::fromCString(pass.vertexShaderEntryPoint.c_str(), pass.vertexShaderEntryPoint.length());
+			String fragShaderEntryPoint = String::fromCString(pass.fragmentShaderEntryPoint.c_str(), pass.fragmentShaderEntryPoint.length());
+			GLuint vertShader = compileShader(pass.vertexShaderCode.c_str(), pass.vertexShaderCode.length(), pass.vertexShaderEntryPoint.c_str(), GL_VERTEX_SHADER, false);
+			GLuint fragShader = compileShader(pass.fragmentShaderCode.c_str(), pass.fragmentShaderCode.length(), pass.fragmentShaderEntryPoint.c_str(), GL_FRAGMENT_SHADER, false);
+			// TODO: ErrorCheck
+			// TODO: 同名登録の時にメモリリークする
+		
+			m_glVertexShaderEntryMap[vertShaderEntryPoint] = vertShader;
+			m_glPixelShaderEntryMap[fragShaderEntryPoint] = fragShader;
+
+			auto* glpass = LN_NEW GLShaderPass();
+			gltech->addPass(glpass);
+			glpass->initialize(this, String::fromCString(pass.name.c_str(), pass.name.length()), vertShaderEntryPoint, fragShaderEntryPoint);
+		}
 	}
 }
 
@@ -728,7 +758,7 @@ void GLShader::onResetDevice()
 }
 
 //------------------------------------------------------------------------------
-GLuint GLShader::compileShader(const char* code, size_t codeLen, const char* entryName, GLuint type)
+GLuint GLShader::compileShader(const char* code, size_t codeLen, const char* entryName, GLuint type, bool addPreproHeader)
 {
 	//GLSLUtils::CodeRange codeRange;
 	//GLSLUtils::analyzeLNBasicShaderCode(code, codeLen, type, entryName, &codeRange);
@@ -744,8 +774,17 @@ GLuint GLShader::compileShader(const char* code, size_t codeLen, const char* ent
 	//	strlen(codes[1]),
 	//};
 
-	//GLuint shader = GLSLUtils::compileShader2(type, 2, codes, codeLens, &m_diag);
-	GLuint shader = GLSLUtils::compileShader3(type, code, codeLen, entryName, &m_diag);
+	GLuint shader;
+	if (addPreproHeader)
+	{
+		shader = GLSLUtils::compileShader3(type, code, codeLen, entryName, &m_diag);
+	}
+	else
+	{
+		const GLint len = codeLen;
+		shader = GLSLUtils::compileShader2(type, 1, &code, &len, &m_diag);
+	}
+
 	if (shader == 0)	// TODO: エラーメッセージとか
 	{
 		glDeleteShader(shader);

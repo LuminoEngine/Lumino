@@ -4,7 +4,7 @@
 #include <limits>
 
 // 標準ヘッダの math.h と被るので Utils を付けている
-#include "../../include/Lumino/Math/MathUtils.h"
+#include "../../Include/Lumino/Math/MathUtils.h"
 
 LN_NAMESPACE_BEGIN
 

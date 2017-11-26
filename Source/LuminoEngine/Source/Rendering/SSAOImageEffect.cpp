@@ -34,10 +34,10 @@ void SSAOImageEffect::initialize()
 {
 	PostEffect::initialize();
 
-	m_material = Object::makeRef<Material>();
+	m_material = Object::makeRef<CommonMaterial>();
 	m_material->setShader(Object::makeRef<Shader>(detail::GraphicsManager::getInstance(), _T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/SSAOImageEffect.fx")));
 	
-	m_material2 = Object::makeRef<Material>();
+	m_material2 = Object::makeRef<CommonMaterial>();
 	m_material2->setShader(Object::makeRef<Shader>(detail::GraphicsManager::getInstance(), _T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/SSAOImageEffectBlur.fx")));
 
 	m_ssaoRenderTarget = Ref<RenderTargetTexture>::makeRef();

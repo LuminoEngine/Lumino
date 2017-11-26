@@ -726,7 +726,7 @@ Ref<StaticMeshModel> XFileLoader::load(ModelManager* manager, Stream* stream, co
 						if (!c->TextureNames.isEmpty() && !c->TextureNames[i].isEmpty())
 						{
 							materials->getAt(mi)->setTextureParameter(
-								Material::MaterialTextureParameter,
+								CommonMaterial::MaterialTextureParameter,
 								manager->createTexture(parentDir, c->TextureNames[i], flags));
 						}
 
@@ -815,38 +815,38 @@ Ref<StaticMeshModel> XFileLoader::load(ModelManager* manager, Stream* stream, co
 }
 
 //------------------------------------------------------------------------------
-void XFileLoader::DxMaterialToLnMaterial(const D3DMATERIAL9& dx_material, Material* material)
+void XFileLoader::DxMaterialToLnMaterial(const D3DMATERIAL9& dx_material, CommonMaterial* material)
 {
 	material->setColorParameter(
-		Material::DiffuseParameter,
+		CommonMaterial::DiffuseParameter,
 		dx_material.Diffuse.r,
 		dx_material.Diffuse.g,
 		dx_material.Diffuse.b,
 		dx_material.Diffuse.a);
 
 	material->setColorParameter(
-		Material::AmbientParameter,
+		CommonMaterial::AmbientParameter,
 		dx_material.Ambient.r,
 		dx_material.Ambient.g,
 		dx_material.Ambient.b,
 		dx_material.Ambient.a);
 
 	material->setColorParameter(
-		Material::SpecularParameter,
+		CommonMaterial::SpecularParameter,
 		dx_material.Specular.r,
 		dx_material.Specular.g,
 		dx_material.Specular.b,
 		dx_material.Specular.a);
 
 	material->setColorParameter(
-		Material::EmissiveParameter,
+		CommonMaterial::EmissiveParameter,
 		dx_material.Emissive.r,
 		dx_material.Emissive.g,
 		dx_material.Emissive.b,
 		dx_material.Emissive.a);
 
 	material->setFloatParameter(
-		Material::PowerParameter,
+		CommonMaterial::PowerParameter,
 		dx_material.Power);
 }
 

@@ -1,11 +1,11 @@
 ﻿
 #include <math.h>
 #include <cmath>
-#include "../../include/Lumino/Math/Vector3.h"
-#include "../../include/Lumino/Math/Vector4.h"
-#include "../../include/Lumino/Math/Matrix.h"
-#include "../../include/Lumino/Math/Geometries.h"
-#include "../../include/Lumino/Math/Plane.h"
+#include "../../Include/Lumino/Math/Vector3.h"
+#include "../../Include/Lumino/Math/Vector4.h"
+#include "../../Include/Lumino/Math/Matrix.h"
+#include "../../Include/Lumino/Math/Geometries.h"
+#include "../../Include/Lumino/Math/Plane.h"
 #include "Asm.h"
 
 LN_NAMESPACE_BEGIN

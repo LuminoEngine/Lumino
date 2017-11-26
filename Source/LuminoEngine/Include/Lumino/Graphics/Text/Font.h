@@ -313,7 +313,7 @@ LN_CONSTRUCT_ACCESS:
 	RawFont();
 	virtual ~RawFont();
 	void initialize();
-	virtual void finalize_();
+	virtual void finalize_() override;
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	virtual void disposeFontResource();

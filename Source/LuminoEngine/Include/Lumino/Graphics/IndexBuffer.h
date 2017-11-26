@@ -46,7 +46,7 @@ LN_INTERNAL_ACCESS:
 	void initialize(detail::GraphicsManager* manager, int indexCount, const void* initialData, IndexBufferFormat format, ResourceUsage usage, bool sizeConst);
 	int getIndexStride() const;
 	Driver::IIndexBuffer* resolveRHIObject();
-	virtual void onChangeDevice(Driver::IGraphicsDevice* device);
+	virtual void onChangeDevice(Driver::IGraphicsDevice* device) override;
 	void setFormat(IndexBufferFormat format) { m_format = format; }
 
 private:

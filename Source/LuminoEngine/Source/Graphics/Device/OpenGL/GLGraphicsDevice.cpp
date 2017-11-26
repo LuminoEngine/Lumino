@@ -103,6 +103,15 @@ ISwapChain* GLGraphicsDevice::getDefaultSwapChain()
 	return m_defaultSwapChain;
 }
 
+Ref<IShader> GLGraphicsDevice::createShader(const std::vector<LuminoShaderIRTechnique>& techniques, ShaderCompileResult* result)
+{
+	auto shader = Ref<GLShader>::makeRef();
+	shader->initialize(this, techniques);
+	result->Level = shader->getDiag()->level;
+	result->Message = shader->getDiag()->message;
+	return Ref<IShader>::staticCast(shader);
+}
+
 //------------------------------------------------------------------------------
 ISwapChain* GLGraphicsDevice::createSwapChain(PlatformWindow* window)
 {
