@@ -34,6 +34,8 @@ LN_ENUM(BuiltinSemantics)
 	View,
 	Projection,
 	ViewportPixelSize,
+	NearClip,
+	FarClip,
 
 	// Element unit
 	WorldViewProjection,

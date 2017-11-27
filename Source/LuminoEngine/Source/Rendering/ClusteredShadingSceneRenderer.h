@@ -99,6 +99,22 @@ private:
 	Ref<RenderTargetTexture>	m_normalRenderTarget;
 };
 
+class DepthPrepass
+	: public RenderingPass2
+{
+public:
+	DepthPrepass();
+	virtual ~DepthPrepass();
+	void initialize();
+
+	virtual void selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy) override;
+	virtual void onBeginPass(DefaultStatus* defaultStatus) override;
+
+public:	// TODO:
+	Ref<Shader>					m_defaultShader;
+	Ref<RenderTargetTexture>	m_depthMap;
+};
+
 class ShadowCasterPass
 	: public RenderingPass2
 {
@@ -135,6 +151,7 @@ public:
 	void initialize(GraphicsManager* manager);
 	//void setSceneGlobalRenderSettings(const SceneGlobalRenderSettings& settings) { m_renderSettings = settings; }
 	void setFogParams(const FogParams& params) { m_fogParams = params; }
+	DepthPrepass* getDepthPrepass() const { return m_depthPrepass; }
 
 protected:
 	virtual void collect(RenderingPass2* pass, const detail::CameraInfo& cameraInfo) override;
@@ -146,6 +163,7 @@ private:
 	LightClusters				m_lightClusters;
 	//SceneGlobalRenderSettings	m_renderSettings;
 	FogParams					m_fogParams;
+	Ref<DepthPrepass>			m_depthPrepass;
 };
 
 } // namespace detail

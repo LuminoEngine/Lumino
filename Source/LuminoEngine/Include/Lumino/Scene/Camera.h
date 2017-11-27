@@ -163,6 +163,8 @@ LN_INTERNAL_ACCESS:
 	virtual ~CameraViewportLayer2();
 	void initialize(World* targetWorld, CameraComponent* hostingCamera);
 
+	detail::ClusteredShadingSceneRenderer* getClusteredShadingSceneRenderer() const { return m_clusteredShadingSceneRenderer; }
+
 private:
 	World*									m_targetWorld;
 	Ref<CameraComponent>					m_hostingCamera;

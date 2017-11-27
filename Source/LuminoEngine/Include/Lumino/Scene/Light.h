@@ -135,7 +135,7 @@ public:
 	/** ライトカラーを取得します。 */
 	const Color& getColor() const { return m_lightInfo->m_diffuse; }
 
-	/** ライトの明るさを設定します。(default: 1.0) */
+	/** ライトの明るさを設定します。(default: 0.5) */
 	void setIntensity(float intensity) { m_lightInfo->m_intensity = intensity; }
 
 	/** ライトの明るさを取得します。 */
@@ -179,7 +179,7 @@ public:
 	/** 地面の環境光の色を設定します。(default: White) */
 	void setGroundColor(const Color& color) { m_lightInfo->m_groundColor = color; }
 
-	/** ライトの明るさを設定します。(default: 1.0) */
+	/** ライトの明るさを設定します。(default: 0.5) */
 	void setIntensity(float intensity) { m_lightInfo->m_intensity = intensity; }
 
 	/** ライトの明るさを取得します。 */

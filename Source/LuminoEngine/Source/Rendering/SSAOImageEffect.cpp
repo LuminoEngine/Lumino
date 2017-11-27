@@ -1,12 +1,14 @@
-
+﻿
 #include "../Internal.h"
 //#include <Lumino/Graphics/Texture.h>
 //#include <Lumino/Graphics/Shader.h>
 #include <Lumino/Graphics/Material.h>
 #include <Lumino/Rendering/Rendering.h>
 #include <Lumino/Rendering/SSAOImageEffect.h>
+#include <Lumino/Scene/Camera.h>
 #include "../Animation/AnimationManager.h"
 #include "../Graphics/GraphicsManager.h"
+#include "../Rendering/ClusteredShadingSceneRenderer.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -46,9 +48,17 @@ void SSAOImageEffect::initialize()
 
 void SSAOImageEffect::onRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination)
 {
+	// TODO: onAttach で保持
+	auto* layer = dynamic_cast<CameraViewportLayer2*>(GetOwnerLayer());
+	if (!layer) return;
+
+	RenderTargetTexture* depthMap =
+		layer->getClusteredShadingSceneRenderer()->getDepthPrepass()->m_depthMap;
+
+
 	//if (Tone != Vector4::Zero)
 	{
-		m_material->setTextureParameter(_T("normalDepth"), detail::g_m_normalRenderTarget);
+		m_material->setTextureParameter(_T("normalDepth"), depthMap);
 		//printf("ToneImageEffect::onRender %p > %p\n", source, destination);
 		//m_material->setVectorParameter(_LT("_Tone"), m_tone);
 		context->blit(source, m_ssaoRenderTarget, m_material);

@@ -389,6 +389,39 @@ void ClusteredShadingGeometryRenderingPass::onBeginPass(DefaultStatus* defaultSt
 
 
 
+//==============================================================================
+// DepthPrepass
+//==============================================================================
+DepthPrepass::DepthPrepass()
+{
+}
+
+DepthPrepass::~DepthPrepass()
+{
+}
+
+void DepthPrepass::initialize()
+{
+	m_defaultShader = Shader::create(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/DepthPrepass.fx"), ShaderCodeType::RawIR);
+
+	m_depthMap = Ref<RenderTargetTexture>::makeRef();
+	m_depthMap->createImpl(GraphicsManager::getInstance(), SizeI(640, 480), 1, TextureFormat::R32G32B32A32_Float);
+}
+
+void DepthPrepass::selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy)
+{
+	// TODO: とりあえずデフォルト強制
+	outPolicy->shader = m_defaultShader;
+	outPolicy->shaderPass = m_defaultShader->getTechniques().getAt(0)->getPasses().getAt(0);
+
+	// とありあえず全部可
+	outPolicy->visible = true;
+}
+
+void DepthPrepass::onBeginPass(DefaultStatus* defaultStatus)
+{
+	defaultStatus->defaultRenderTarget[0] = m_depthMap;
+}
 
 //==============================================================================
 // ShadowCasterPass
@@ -460,6 +493,9 @@ void ClusteredShadingSceneRenderer::initialize(GraphicsManager* manager)
 {
 	SceneRenderer::initialize(manager);
 
+	m_depthPrepass = newObject<DepthPrepass>();
+	addPass(m_depthPrepass);
+
 	// pass "Geometry"
 	addPass(newObject<ClusteredShadingGeometryRenderingPass>());
 
@@ -468,6 +504,7 @@ void ClusteredShadingSceneRenderer::initialize(GraphicsManager* manager)
 
 	// TODO: Test
 	//m_renderSettings.ambientColor = Color(1, 0, 0, 1);
+
 }
 
 void ClusteredShadingSceneRenderer::prepare()

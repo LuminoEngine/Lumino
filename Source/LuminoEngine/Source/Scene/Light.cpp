@@ -110,7 +110,7 @@ void AmbientLightComponent::initialize()
 	m_lightInfo = Ref<detail::DynamicLightInfo>::makeRef();
 	m_lightInfo->m_type = LightType::Ambient;
 	m_lightInfo->m_diffuse.set(1.0f, 1.0f, 1.0f, 1.0f);
-	m_lightInfo->m_intensity = 1.0f;
+	m_lightInfo->m_intensity = 0.5f;
 }
 
 void AmbientLightComponent::onPreRender(DrawList* context)
@@ -143,7 +143,7 @@ void HemisphereLightComponent::initialize()
 	m_lightInfo->m_type = LightType::Hemisphere;
 	m_lightInfo->m_diffuse.set(1.0f, 1.0f, 1.0f, 1.0f);
 	m_lightInfo->m_groundColor.set(1.0f, 1.0f, 1.0f, 1.0f);
-	m_lightInfo->m_intensity = 1.0f;
+	m_lightInfo->m_intensity = 0.5f;
 }
 
 void HemisphereLightComponent::onPreRender(DrawList* context)
