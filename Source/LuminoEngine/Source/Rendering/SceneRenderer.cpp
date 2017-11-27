@@ -4,6 +4,7 @@
 #include <Lumino/Rendering/SceneRenderer.h>
 #include "../Graphics/GraphicsManager.h"
 #include "../Graphics/CoreGraphicsRenderFeature.h"
+#include "ClusteredShadingSceneRenderer.h"
 
 LN_NAMESPACE_BEGIN
 namespace detail {
@@ -40,6 +41,19 @@ void SceneRenderer::onCollectLight(DynamicLightInfo* light)
 
 void SceneRenderer::onShaderPassChainging(ShaderPass* pass)
 {
+	Shader* shader = pass->getOwnerShader();
+
+	ShaderVariable* v;
+
+	// TODO: SceneParam として設定したい
+	if (!m_renderingShadowCasterPassList.isEmpty())
+	{
+		v = shader->findVariable(_T("ln_DirectionalShadowMap"));
+		if (v) v->setTexture(m_renderingShadowCasterPassList[0]->m_shadowMap);
+
+		v = shader->findVariable(_T("ln_ViewProjection_Light0"));
+		if (v) v->setMatrix(m_renderingShadowCasterPassList[0]->view.viewProjMatrix);
+	}
 }
 
 //ShaderTechnique* SceneRenderer::selectShaderTechnique(Shader* shader)
@@ -85,13 +99,8 @@ void SceneRenderer::render(
 	if (diag != nullptr) diag->beginDrawList();
 
 	InternalContext* context = m_manager->getInternalContext();
-	const detail::CameraInfo& cameraInfo = drawElementListSet->m_cameraInfo;
+	//const detail::CameraInfo& cameraInfo = drawElementListSet->m_cameraInfo;
 
-	m_renderingElementList.clear();
-
-	collect();
-
-	prepare();
 
 	DrawElement::DrawArgs drawArgs;
 	//drawArgs.oenerList = elementList;
@@ -101,8 +110,49 @@ void SceneRenderer::render(
 	drawArgs.defaultDepthBuffer = defaultDepthBuffer;
 	drawArgs.diag = diag;
 
+	// TODO: 別 RT への描画は RenderStage 的な感じで分けて、メインの Pass でだけ行うようにしたほうが良い。
+	// こういうものは ShadowCast のパスで実行したくない。無駄になる。
+
+
+	m_renderingActualPassList.clear();
+	m_renderingShadowCasterPassList.clear();
+	for (auto& elementList : m_renderingRenderView->m_lists)
+	{
+		for (DynamicLightInfo* light : elementList->getDynamicLightList())
+		{
+			if (light->m_shadowCasterPass != nullptr)
+			{
+				m_renderingActualPassList.add(light->m_shadowCasterPass);
+				m_renderingShadowCasterPassList.add(light->m_shadowCasterPass);
+			}
+		}
+	}
+	//m_renderingActualPassList.addRange(m_renderingPassList);
 	for (RenderingPass2* pass : m_renderingPassList)
 	{
+		m_renderingActualPassList.add(pass);
+	}
+
+	for (RenderingPass2* pass : m_renderingActualPassList)
+	{
+		m_renderingElementList.clear();
+
+		detail::CameraInfo cameraInfo = drawElementListSet->m_cameraInfo;
+
+		pass->overrideCameraInfo(&cameraInfo);
+
+		collect(pass, cameraInfo);
+
+		prepare();
+
+
+		DefaultStatus defaultStatus;
+		defaultStatus.defaultRenderTarget[0] = defaultRenderTarget;
+		defaultStatus.defaultRenderTarget[1] = defaultStatus.defaultRenderTarget[2] = defaultStatus.defaultRenderTarget[3] = nullptr;
+		defaultStatus.defaultDepthBuffer = defaultDepthBuffer;
+
+		pass->onBeginPass(&defaultStatus);
+
 		// DrawElement 描画
 		//int currentBatchIndex = -1;
 		DrawElementBatch* currentState = nullptr;
@@ -121,7 +171,7 @@ void SceneRenderer::render(
 				context->flush();
 				//currentBatchIndex = element->batchIndex;
 				currentState = batch;
-				context->applyStatus(currentState, { defaultRenderTarget, defaultDepthBuffer });
+				context->applyStatus(currentState, defaultStatus);
 				context->switchActiveRenderer(currentState->getRenderFeature());
 				if (diag != nullptr) diag->changeRenderStage();
 			}
@@ -158,7 +208,7 @@ void SceneRenderer::render(
 					}
 
 					shader->getSemanticsManager()->updateCameraVariables(cameraInfo);
-					shader->getSemanticsManager()->updateElementVariables(elementInfo);
+					shader->getSemanticsManager()->updateElementVariables(cameraInfo, elementInfo);
 					shader->getSemanticsManager()->updateSubsetVariables(subsetInfo);
 
 					material->applyUserShaderValeues(shader);
@@ -192,10 +242,10 @@ void SceneRenderer::render(
 	coreRenderer->end();
 }
 
-void SceneRenderer::collect()
+void SceneRenderer::collect(RenderingPass2* pass, const detail::CameraInfo& cameraInfo)
 {
 	InternalContext* context = m_manager->getInternalContext();
-	const detail::CameraInfo& cameraInfo = m_renderingRenderView->m_cameraInfo;
+	//const detail::CameraInfo& cameraInfo = m_renderingRenderView->m_cameraInfo;
 
 	for (auto& elementList : m_renderingRenderView->m_lists)
 	{
@@ -320,11 +370,18 @@ void NonShadingRenderingPass::initialize(GraphicsManager* manager)
 	m_defaultShader = manager->getBuiltinShader(BuiltinShader::Sprite);
 }
 
-//------------------------------------------------------------------------------
-Shader* NonShadingRenderingPass::getDefaultShader() const
+void NonShadingRenderingPass::selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy)
 {
-	return m_defaultShader;
+	outPolicy->shaderPass = selectShaderPassHelperSimple(material->m_shader, m_defaultShader);
+	outPolicy->shader = outPolicy->shaderPass->getOwnerShader();
+	outPolicy->visible = true;
 }
+
+////------------------------------------------------------------------------------
+//Shader* NonShadingRenderingPass::getDefaultShader() const
+//{
+//	return m_defaultShader;
+//}
 
 
 
@@ -389,7 +446,7 @@ void ForwardShadingRenderer::updateAffectLights(DrawElement* element, DrawElemen
 		// ソート基準値の計算
 		for (DynamicLightInfo* light : m_selectingLights)
 		{
-			light->tempDistance = Vector3::distanceSquared(element->getTransform(elementList).getPosition(), light->transform.getPosition());
+			light->tempDistance = Vector3::distanceSquared(element->getTransform(elementList).getPosition(), light->m_position);
 		}
 
 		// ソート (昇順)
@@ -429,11 +486,18 @@ void ForwardShadingRenderingPass::initialize(GraphicsManager* manager)
 	m_defaultShader = manager->getBuiltinShader(BuiltinShader::LegacyDiffuse);
 }
 
-//------------------------------------------------------------------------------
-Shader* ForwardShadingRenderingPass::getDefaultShader() const
+void ForwardShadingRenderingPass::selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy)
 {
-	return m_defaultShader;
+	outPolicy->shaderPass = selectShaderPassHelperSimple(material->m_shader, m_defaultShader);
+	outPolicy->shader = outPolicy->shaderPass->getOwnerShader();
+	outPolicy->visible = true;
 }
+
+////------------------------------------------------------------------------------
+//Shader* ForwardShadingRenderingPass::getDefaultShader() const
+//{
+//	return m_defaultShader;
+//}
 
 
 //==============================================================================
@@ -511,35 +575,69 @@ RenderingPass2::~RenderingPass2()
 }
 
 //------------------------------------------------------------------------------
-void RenderingPass2::selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy)
-{
-	outPolicy->shader = nullptr;
-	if (material != nullptr && material->m_shader != nullptr)
-	{
-		outPolicy->shader = material->m_shader;
-	}
-	else
-	{
-		outPolicy->shader = getDefaultShader();
-	}
-
-	if (outPolicy->shader)
-	{
-		outPolicy->shaderPass = selectShaderPass(outPolicy->shader);
-	}
-
-	// とありあえず全部可
-	outPolicy->visible = true;
-}
+//void RenderingPass2::selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy)
+//{
+//	outPolicy->shader = nullptr;
+//	if (material != nullptr && material->m_shader != nullptr)
+//	{
+//		outPolicy->shader = material->m_shader;
+//	}
+//	else
+//	{
+//		outPolicy->shader = getDefaultShader();
+//	}
+//
+//	if (outPolicy->shader)
+//	{
+//		outPolicy->shaderPass = selectShaderPass(outPolicy->shader);
+//	}
+//
+//	// とありあえず全部可
+//	outPolicy->visible = true;
+//}
 
 //ShaderTechnique* RenderingPass2::selectShaderTechnique(Shader* shader)
 //{
 //	return shader->getTechniques().getAt(0)->getPasses().getAt(0);
 //}
 
-ShaderPass* RenderingPass2::selectShaderPass(Shader* shader)
+void RenderingPass2::onBeginPass(DefaultStatus* defaultStatus)
 {
-	// TODO: DrawList の実行者によって決定する
+
+}
+
+void RenderingPass2::overrideCameraInfo(detail::CameraInfo* cameraInfo)
+{
+
+}
+//
+//ShaderPass* RenderingPass2::selectShaderPass(Shader* shader)
+//{
+//	// TODO: DrawList の実行者によって決定する
+//	return shader->getTechniques().getAt(0)->getPasses().getAt(0);
+//}
+
+ShaderPass* RenderingPass2::selectShaderPassHelper(Shader* materialShader, const String& techniqueName, const String& passName, ShaderPass* defaultPass)
+{
+	if (materialShader)
+	{
+		ShaderTechnique* tech = materialShader->findTechnique(techniqueName);
+		if (tech)
+		{
+			ShaderPass* pass = tech->getPass(passName.c_str());	// TODO:
+			if (pass)
+			{
+				return pass;
+			}
+		}
+	}
+
+	return defaultPass;
+}
+
+ShaderPass* RenderingPass2::selectShaderPassHelperSimple(Shader* materialShader, Shader* defaultShader)
+{
+	Shader* shader = (materialShader) ? materialShader : defaultShader;
 	return shader->getTechniques().getAt(0)->getPasses().getAt(0);
 }
 

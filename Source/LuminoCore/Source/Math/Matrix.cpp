@@ -12,13 +12,13 @@
 */
 #include <math.h>
 #include <assert.h>
-#include "../../include/Lumino/Math/MathUtils.h"
-#include "../../include/Lumino/Math/Vector3.h"
-#include "../../include/Lumino/Math/Vector4.h"
-#include "../../include/Lumino/Math/Quaternion.h"
-#include "../../include/Lumino/Math/AttitudeTransform.h"
-#include "../../include/Lumino/Math/Plane.h"
-#include "../../include/Lumino/Math/Matrix.h"
+#include "../../Include/Lumino/Math/MathUtils.h"
+#include "../../Include/Lumino/Math/Vector3.h"
+#include "../../Include/Lumino/Math/Vector4.h"
+#include "../../Include/Lumino/Math/Quaternion.h"
+#include "../../Include/Lumino/Math/AttitudeTransform.h"
+#include "../../Include/Lumino/Math/Plane.h"
+#include "../../Include/Lumino/Math/Matrix.h"
 #include "Asm.h"
 
 //#define USE_D3DX9MATH

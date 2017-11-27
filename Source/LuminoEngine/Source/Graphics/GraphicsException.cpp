@@ -1,6 +1,6 @@
 ﻿
 #include "../Internal.h"
-#include "../../include/Lumino/Graphics/GraphicsException.h"
+#include "../../Include/Lumino/Graphics/GraphicsException.h"
 #include "Device/OpenGL/GLCommon.h"
 
 LN_NAMESPACE_BEGIN

@@ -6,7 +6,7 @@
 #include <Lumino/IO/FileSystem.h>
 #if defined(LN_OS_WIN32)
 #else
-#include "FileFinder_UNIX.h"
+#include "FileFinder_Unix.h"
 #endif
 
 LN_NAMESPACE_BEGIN
@@ -20,7 +20,7 @@ template<typename TChar>
 static size_t GetCurrentDirectoryInternal(TChar* outPath);
 
 template<>
-static size_t GetCurrentDirectoryInternal(char* outPath)
+size_t GetCurrentDirectoryInternal(char* outPath)
 {
 #ifdef LN_OS_WIN32
 	return ::GetCurrentDirectoryA(LN_MAX_PATH, outPath);
@@ -29,12 +29,13 @@ static size_t GetCurrentDirectoryInternal(char* outPath)
 #endif
 }
 template<>
-static size_t GetCurrentDirectoryInternal(wchar_t* outPath)
+size_t GetCurrentDirectoryInternal(wchar_t* outPath)
 {
 #ifdef LN_OS_WIN32
 	return ::GetCurrentDirectoryW(LN_MAX_PATH, outPath);
 #else
 	LN_NOTIMPLEMENTED();
+	return 0;
 #endif
 }
 

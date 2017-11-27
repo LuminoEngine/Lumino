@@ -1,5 +1,5 @@
 
-#pragma once
+
 //#include "../Base/EnumExtension.h"
 //#include "../Base/String.h"
 //

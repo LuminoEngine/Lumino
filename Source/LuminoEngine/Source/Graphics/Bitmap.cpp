@@ -556,7 +556,7 @@ void Bitmap::convertPixelFormat(
 		for (size_t i = 0; i < count; ++i) {
 			uint32_t c = in[i];
 			out[i] =
-				c & 0xff000000 |
+				(c & 0xff000000) |
 				((c & 0x000000ff) << 16) |
 				((c & 0x0000ff00)) |
 				((c & 0x00ff0000) >> 16);

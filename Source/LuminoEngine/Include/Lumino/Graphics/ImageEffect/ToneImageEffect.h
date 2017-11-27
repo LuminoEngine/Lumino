@@ -31,7 +31,7 @@ protected:
 	virtual void onRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
 private:
-	Ref<Material>	m_material;
+	Ref<CommonMaterial>	m_material;
 };
 
 LN_NAMESPACE_GRAPHICS_END

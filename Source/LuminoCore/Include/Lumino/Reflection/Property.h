@@ -163,7 +163,7 @@ public:
 	}
 	const TValue& getValueDirect(const ReflectionObject* target) const
 	{
-		LN_THROW(m_getter != NULL, InvalidOperationException);
+		LN_ASSERT(m_getter);
 		TValue* v;
 		m_getter(const_cast<ReflectionObject*>(target), &v);
 		return *v;

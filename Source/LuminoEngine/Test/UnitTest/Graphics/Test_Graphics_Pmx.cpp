@@ -85,7 +85,7 @@ TEST_F(Test_Graphics_Pmx, Skinning)
 	mesh->GetMaterials()->GetAt(0)->SetTextureParameter(_LT("lnBoneTexture"), skinnedTex);
 
 
-	mesh->GetMaterials()->GetAt(0)->SetTextureParameter(Material::MaterialTextureParameter, skinnedTex);
+	mesh->GetMaterials()->GetAt(0)->SetTextureParameter(CommonMaterial::MaterialTextureParameter, skinnedTex);
 
 	ShaderVariable* v;
 	v = shader->FindVariable(_LT("lnBoneTextureReciprocalSize"));

@@ -237,22 +237,22 @@ void CornellBox::initialize()
 
 	// front
 	boxMesh->addSquare(
-		Vertex{ Vector3(-10, 20, 10), Vector2(0, 0), Vector3(0, 0, 1), Color::White },
-		Vertex{ Vector3(-10, 0, 10), Vector2(0, 0), Vector3(0, 0, 1), Color::White },
-		Vertex{ Vector3(10, 0, 10), Vector2(0, 0), Vector3(0, 0, 1), Color::White },
-		Vertex{ Vector3(10, 20, 10), Vector2(0, 0), Vector3(0, 0, 1), Color::White });
+		Vertex{ Vector3(-10, 20, 10), Vector2(0, 0), -Vector3::UnitZ, Color::White },
+		Vertex{ Vector3(-10, 0, 10), Vector2(0, 0), -Vector3::UnitZ, Color::White },
+		Vertex{ Vector3(10, 0, 10), Vector2(0, 0), -Vector3::UnitZ, Color::White },
+		Vertex{ Vector3(10, 20, 10), Vector2(0, 0), -Vector3::UnitZ, Color::White });
 	// up
 	boxMesh->addSquare(
-		Vertex{ Vector3(-10, 20, -10), Vector2(0, 0), Vector3(0, 0, 1), Color::White },
-		Vertex{ Vector3(-10, 20, 10), Vector2(0, 0), Vector3(0, 0, 1), Color::White },
-		Vertex{ Vector3(10, 20, 10), Vector2(0, 0), Vector3(0, 0, 1), Color::White },
-		Vertex{ Vector3(10, 20, -10), Vector2(0, 0), Vector3(0, 0, 1), Color::White });
+		Vertex{ Vector3(-10, 20, -10), Vector2(0, 0), -Vector3::UnitY, Color::White },
+		Vertex{ Vector3(-10, 20, 10), Vector2(0, 0), -Vector3::UnitY, Color::White },
+		Vertex{ Vector3(10, 20, 10), Vector2(0, 0), -Vector3::UnitY, Color::White },
+		Vertex{ Vector3(10, 20, -10), Vector2(0, 0), -Vector3::UnitY, Color::White });
 	// down
 	boxMesh->addSquare(
-		Vertex{ Vector3(-10, 0, 10), Vector2(0, 0), Vector3(0, 0, 1), Color::White },
-		Vertex{ Vector3(-10, 0, -10), Vector2(0, 0), Vector3(0, 0, 1), Color::White },
-		Vertex{ Vector3(10, 0, -10), Vector2(0, 0), Vector3(0, 0, 1), Color::White },
-		Vertex{ Vector3(10, 0, 10), Vector2(0, 0), Vector3(0, 0, 1), Color::White });
+		Vertex{ Vector3(-10, 0, 10), Vector2(0, 0), Vector3::UnitY, Color::White },
+		Vertex{ Vector3(-10, 0, -10), Vector2(0, 0), Vector3::UnitY, Color::White },
+		Vertex{ Vector3(10, 0, -10), Vector2(0, 0), Vector3::UnitY, Color::White },
+		Vertex{ Vector3(10, 0, 10), Vector2(0, 0), Vector3::UnitY, Color::White });
 	// left
 	boxMesh->addSquare(
 		Vertex{ Vector3(-10, 20, -10), Vector2(0, 0), Vector3::UnitX, Color::Red },
@@ -273,7 +273,7 @@ void CornellBox::initialize()
 
 	auto mesh = newObject<StaticMeshModel>(boxMesh);
 
-	auto material = Material::create();
+	auto material = CommonMaterial::create();
 	material->setMaterialTexture(Texture2D::getWhiteTexture());
 	mesh->addMaterial(material);
 	StaticMeshComponent::initialize(mesh);

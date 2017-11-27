@@ -1,7 +1,7 @@
 
 #include <algorithm>
 #include "../Internal.h"
-#include "../../include/Lumino/Text/EncodingConverter.h"
+#include "../../Include/Lumino/Text/EncodingConverter.h"
 
 LN_NAMESPACE_BEGIN
 

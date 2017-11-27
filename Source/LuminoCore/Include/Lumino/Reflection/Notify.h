@@ -51,7 +51,7 @@ public:
 	*/
 	void removeHandler(const Delegate<void(TArgs*)>& handler)
 	{
-		StlHelper::remove(m_handlerList, handler);
+		ln::detail::StlHelper::remove(m_handlerList, handler);
 	}
 	
 	/**
@@ -72,7 +72,7 @@ public:
 	*/
 	void operator -= (const Delegate<void(TArgs*)>& handler)
 	{
-		StlHelper::remove(m_handlerList, handler);
+		ln::detail::StlHelper::remove(m_handlerList, handler);
 	}
 
 private:
@@ -104,7 +104,7 @@ public:
 
 	void addHandler(const DelegateType& handler)
 	{
-		StlHelper::remove(m_handlerList, handler);
+		ln::detail::StlHelper::remove(m_handlerList, handler);
 	}
 
 	void addHandler(const std::function<void(TArgs...)>& handler)	// void operator += (const DelegateType& handler) だけだと暗黙変換が効かずコンパイルエラーとなっていたため用意
@@ -114,7 +114,7 @@ public:
 
 	void removeHandler(const DelegateType& handler)
 	{
-		StlHelper::remove(m_handlerList, handler);
+		ln::detail::StlHelper::remove(m_handlerList, handler);
 	}
 
 	void operator += (const DelegateType& handler)

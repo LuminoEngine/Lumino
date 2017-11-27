@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <atomic>
+#include <locale>
 #include "Common.h"
 #include "List.h"
 #include "ByteBuffer.h"
@@ -631,7 +632,8 @@ private:
 template<typename Formatter>
 void formatArg(Formatter&, ...)
 {
-	static_assert(false, "[Lumino format string error] Cannot format argument. Please overload formatArg.");
+	assert(0);
+	//static_assert(false, "[Lumino format string error] Cannot format argument. Please overload formatArg.");
 }
 
 } // namespace fmt

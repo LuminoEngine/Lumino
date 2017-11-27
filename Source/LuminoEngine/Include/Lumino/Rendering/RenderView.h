@@ -114,6 +114,7 @@ protected:
 	virtual ~PostEffect();
 	void initialize();
 
+	virtual void onAttached();
 	virtual void onRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination) = 0;
 
 private:

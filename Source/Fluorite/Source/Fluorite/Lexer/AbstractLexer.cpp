@@ -52,11 +52,11 @@ ResultState AbstractLexer::Tokenize(InputFile* file)
 	m_inputFile = file;
 	const char* code = (const char*)file->GetCodeBuffer()->getConstData();
 	int length = (file->GetCodeBuffer()->getSize() / sizeof(char));
-	return Tokenize(code, length, file->GetTokenListInternal(), file->getDiag());
+	return TokenizeInternal(code, length, file->GetTokenListInternal(), file->getDiag());
 }
 
 //------------------------------------------------------------------------------
-ResultState AbstractLexer::Tokenize(const char* code, int length, TokenList* outTokenList, DiagnosticsItemSet* diag)
+ResultState AbstractLexer::TokenizeInternal(const char* code, int length, TokenList* outTokenList, DiagnosticsItemSet* diag)
 {
 	assert(code != nullptr);
 	assert(outTokenList != nullptr);
@@ -85,7 +85,7 @@ ResultState AbstractLexer::Tokenize(const char* code, int length, TokenList* out
 			break;
 		}
 
-		Token* lastToken = GetLastToken();
+		SourceToken* lastToken = GetLastToken();
 		PollingToken(lastToken);
 
 		// トークンの開始位置をセット
@@ -131,27 +131,28 @@ ResultState AbstractLexer::Tokenize(const char* code, int length, TokenList* out
 }
 
 //------------------------------------------------------------------------------
-void AbstractLexer::PollingToken(Token* newToken)
+void AbstractLexer::PollingToken(SourceToken* newToken)
 {
 }
 
 //------------------------------------------------------------------------------
 void AbstractLexer::AddToken(TokenGroup group, const char* bufBegin, const char* bufEnd, int tokenType)
 {
-	Token* token = m_inputFile->CreateToken();
+	m_inputFile->addSourceToken(group, bufBegin, bufEnd, tokenType);
+	//SourceToken* token = m_inputFile->CreateToken();
 
-	const char* begin = m_inputBuffer;
-	*token = Token(m_inputFile, group, bufBegin - begin, bufEnd - begin, tokenType);
+	//const char* begin = m_inputBuffer;
+	//*token = SourceToken(m_inputFile, group, bufBegin - begin, bufEnd - begin, tokenType);
 }
 
 //------------------------------------------------------------------------------
-Token* AbstractLexer::GetLastToken()
+SourceToken* AbstractLexer::GetLastToken()
 {
-	return m_inputFile->GetTokenListInternal()->getLast();
+	return &(m_inputFile->GetTokenListInternal()->getLast());
 }
 
 //------------------------------------------------------------------------------
-bool AbstractLexer::EqualsString(Token* token, const char* str, int length) const
+bool AbstractLexer::EqualsString(SourceToken* token, const char* str, int length) const
 {
 	// TODO: 普通に Token::EqualXXXX使っていいと思う
 	if (token->getLength() != length) return false;

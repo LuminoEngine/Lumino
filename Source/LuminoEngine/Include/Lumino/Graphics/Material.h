@@ -9,9 +9,9 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
-class Material;
+class CommonMaterial;
 class DiffuseMaterial;
-using MaterialPtr = Ref<Material>;
+using MaterialPtr = Ref<CommonMaterial>;
 using DiffuseMaterialPtr = Ref<DiffuseMaterial>;
 
 namespace detail {
@@ -158,7 +158,7 @@ private:
 /**
 	@brief
 */
-class Material
+class CommonMaterial
 	: public Object
 {
 	LN_OBJECT;
@@ -211,8 +211,8 @@ public:
 
 
 LN_CONSTRUCT_ACCESS:
-	Material();
-	virtual ~Material();
+	CommonMaterial();
+	virtual ~CommonMaterial();
 	void initialize();
 
 LN_INTERNAL_ACCESS:
@@ -237,7 +237,7 @@ LN_INTERNAL_ACCESS:
 
 	//const List<ValuePair>& GetLinkedVariableList() { return m_linkedVariableList; }
 
-	Ref<Material> copyShared() const;
+	Ref<CommonMaterial> copyShared() const;
 
 	//void ResolveCombinedMaterial();
 	//detail::CombinedMaterial* getCombinedMaterial() const;
@@ -311,20 +311,42 @@ LN_INTERNAL_ACCESS:
 	@brief
 */
 class MaterialList
-	: public tr::ReflectionObjectList<Material*>	// SubMaterials (0 の場合もある)
+	: public tr::ReflectionObjectList<CommonMaterial*>	// SubMaterials (0 の場合もある)
 {
 LN_INTERNAL_ACCESS:
 	MaterialList();
 	virtual ~MaterialList();
 };
 
+// https://docs.unrealengine.com/latest/JPN/Engine/Rendering/Materials/PhysicallyBased/index.html
+class Material
+	: public CommonMaterial
+{
+	LN_OBJECT;
+public:
+	static Ref<Material> create();
+
+public:
+	void setColor(const Color& value);
+	void setRoughness(float value);
+	void setMetallic(float value);
+	void setSpecular(float value);
+
+	// TODO: 自己発光。必要かな？
+	//void setEmissive(const Color& value);
+
+LN_CONSTRUCT_ACCESS:
+	Material();
+	virtual ~Material();
+	void initialize();
+};
 
 
 /**
 	@brief		非物理ベースレンダリングで使用されるレガシーなマテリアルです。
 */
 class DiffuseMaterial
-	: public Material
+	: public CommonMaterial
 {
 	LN_OBJECT;
 public:
@@ -358,11 +380,18 @@ public:
 	Color			m_blendColor;	// 加算結合済み
 	ToneF			m_tone;			// 加算結合済み
 
+	// Obsolete
 	Color			m_diffuse;
 	Color			m_ambient;
 	Color			m_specular;
 	Color			m_emissive;
 	float			m_power;
+
+	Color			m_m2_color;
+	float			m_m2_roughness;
+	float			m_m2_metallic;
+	float			m_m2_specular;
+
 	Texture*		m_mainTexture;
 
 	Nullable<BlendMode>		m_blendMode;
@@ -370,14 +399,14 @@ public:
 	Nullable<bool>			m_depthTestEnabled;
 	Nullable<bool>			m_depthWriteEnabled;
 
-	void combine(/*Material* owner, */Material* ownerBase, const BuiltinEffectData& builtinEffectData);
+	void combine(/*CommonMaterial* owner, */CommonMaterial* ownerBase, const BuiltinEffectData& builtinEffectData);
 	void applyUserShaderValeues(Shader* targetShader);
 
 	uint32_t getSourceHashCode() const { return m_lastSourceHashCode; }
 
 private:
-	void copyUserValueTable(Material* source);
-	void mergeUserValueTable(Material* source);
+	void copyUserValueTable(CommonMaterial* source);
+	void mergeUserValueTable(CommonMaterial* source);
 
 	struct ValuePair
 	{
@@ -388,7 +417,7 @@ private:
 	List<ValuePair>	m_userValueTable;
 
 	// change monitoring
-	//Material*	m_lastSourceMaterial;
+	//CommonMaterial*	m_lastSourceMaterial;
 	uint32_t	m_lastSourceHashCode;
 	uint32_t	m_lastBuiltinEffectHashCode;
 };

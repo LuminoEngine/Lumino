@@ -4,7 +4,7 @@
 */
 #include "Internal.h"
 #include <gif_lib.h>
-#include "../../../external/jo_gif/jo_gif.cpp"
+#include "../../../External/jo_gif/jo_gif.cpp"
 #include <Lumino/Base/StdStringHelper.h>
 #include <Lumino/Threading/Task.h>
 #include <Lumino/Graphics/Texture.h>

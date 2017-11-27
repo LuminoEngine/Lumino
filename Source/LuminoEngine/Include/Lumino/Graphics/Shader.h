@@ -8,7 +8,7 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 class ShaderVariable;
-class Material;
+class CommonMaterial;
 class Shader;
 using ShaderPtr = Ref<Shader>;
 
@@ -34,10 +34,15 @@ LN_ENUM(BuiltinSemantics)
 	View,
 	Projection,
 	ViewportPixelSize,
+	NearClip,
+	FarClip,
 
 	// Element unit
 	WorldViewProjection,
 	World,
+	WorldView,
+	WorldViewIT,			// transpose(inverse(WorldView));
+
 	LightEnables,			// bool[]
 	LightWVPMatrices,		// matrix[]
 	LightDirections,		// vector[]
@@ -54,6 +59,10 @@ LN_ENUM(BuiltinSemantics)
 	MaterialEmmisive,		// vector
 	MaterialSpecular,		// vector
 	MaterialSpecularPower,	// float
+	MaterialM2Color,		// vector
+	MaterialM2Roughness,	// float
+	MaterialM2Metallic,		// float
+	MaterialM2Specular,		// float
 	ColorScale,				// vector (Built-in effect)
 	BlendColor,				// vector (Built-in effect)
 	ToneColor,				// vector (Built-in effect)
@@ -85,6 +94,9 @@ struct CameraInfo
 	float		farClip = 0;
 
 	// POD
+
+
+	void makePerspective(const Vector3& viewPos, const Vector3& viewDir, float fovY, const Size& size, float n, float f);
 };
 
 // 描画要素単位のデータに関する情報
@@ -117,7 +129,7 @@ public:
 	void tryPushVariable(ShaderVariable* var);
 	void updateSceneVariables(const SceneInfo& info);
 	void updateCameraVariables(const CameraInfo& info);
-	void updateElementVariables(const ElementInfo& info);
+	void updateElementVariables(const CameraInfo& cameraInfo, const ElementInfo& info);
 	void updateSubsetVariables(const SubsetInfo& info);
 
 	// blit 用
@@ -149,6 +161,7 @@ enum class ShaderCodeType
 {
 	Normal,
 	TRSS,		// テスト中の機能 (多分 obsolete)
+	RawHLSL,
 	RawIR,
 };
 
@@ -253,7 +266,7 @@ public:
 protected:
 	virtual ~Shader();
 	virtual void Dispose() override;
-	virtual void onChangeDevice(Driver::IGraphicsDevice* device);
+	virtual void onChangeDevice(Driver::IGraphicsDevice* device) override;
 
 LN_INTERNAL_ACCESS:
 	friend class detail::RenderingCommandList;
@@ -277,7 +290,7 @@ LN_INTERNAL_ACCESS:
 
 
 // TODO: Driver でも使っている。初期値を保持するため。
-// Material でも使っている。こちらは ManagedTexture を使う。
+// CommonMaterial でも使っている。こちらは ManagedTexture を使う。
 class ShaderValue
 {
 public:

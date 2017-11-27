@@ -2,9 +2,9 @@
 #include <stdio.h>
 #include <string.h>
 #include "../Internal.h"
-#include "../../include/Lumino/Base/String.h"
-#include "../../include/Lumino/Text/UnicodeUtils.h"
-#include "../../include/Lumino/Text/EncodingDetector.h"
+#include "../../Include/Lumino/Base/String.h"
+#include "../../Include/Lumino/Text/UnicodeUtils.h"
+#include "../../Include/Lumino/Text/EncodingDetector.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -49,7 +49,6 @@ EncodingType EncodingDetector::detect(const void* bytes, size_t bytesSize)
 	}
 
 	// 有効 Detector の中で一番スコアの大きいものを選択する
-	int maxScore = 0;
 	IMBSCodeDetector* maxScoreDetector = NULL;
 	for (int i = 0; i < mbsDetectorsCount; ++i)
 	{

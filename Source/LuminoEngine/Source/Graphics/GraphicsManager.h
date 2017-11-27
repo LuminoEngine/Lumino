@@ -10,6 +10,7 @@
 LN_NAMESPACE_BEGIN
 class EngineDiagCore;
 class FileManager;
+class LuminoShaderContext;
 
 LN_NAMESPACE_GRAPHICS_BEGIN
 class GraphicsContext;
@@ -32,9 +33,9 @@ class NanoVGCommandListCache;
 
 
 
-// ShaderVariable からコミットするルートと、Material からコミットするルートがある。
+// ShaderVariable からコミットするルートと、CommonMaterial からコミットするルートがある。
 // ShaderVariableCommitSerializeHelper は、その同じような処理をまとめたクラス。
-// Material は ShaderVariable を参照するが、Material から ShaderVariable に値をセットしたくない。
+// CommonMaterial は ShaderVariable を参照するが、CommonMaterial から ShaderVariable に値をセットしたくない。
 // ShaderVariable はユーザーに見えるので、知らないうちに値が変わっている、ということが発生してしまう。
 class ShaderVariableCommitSerializeHelper
 {
@@ -154,6 +155,7 @@ public:
 	const std::string& getCommonShaderHeader() const { return m_commonShaderHeader; }
 	const Ref<Shader>& getBuiltinShader(BuiltinShader shader) const;
 
+	LuminoShaderContext* getShaderContext() const { return m_shaderContext.get(); }
 	
 
 private:
@@ -195,6 +197,8 @@ private:
 
 	VertexDeclaration*						m_defaultVertexDeclaration;
 	bool									m_platformTextureLoading;
+
+	std::shared_ptr<LuminoShaderContext>	m_shaderContext;
 };
 
 } // namespace detail

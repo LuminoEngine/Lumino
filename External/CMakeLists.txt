@@ -19,6 +19,7 @@ project(LuminoDependencies)
 # Visual Studio ソリューションフォルダを作るようにする
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+# サードパーティライブラリ用の共通設定
 macro(ln_add_dependencies_common_property projectName)
 	set_target_properties(${projectName} PROPERTIES OUTPUT_NAME "${projectName}${LN_DEPENDENCIES_POSTFIX}")
 	set_target_properties(${projectName} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "")
@@ -55,6 +56,8 @@ ln_add_dependencies_common_property(libpng)
 add_subdirectory(libvorbis-1.3.5)
 ln_add_dependencies_common_property(libvorbis)
 
+add_subdirectory(hlsl2glslfork-2016.10)
+ln_add_dependencies_common_property(hlsl2glslfork)
 
 #---------------------------------------
 # Effekseer

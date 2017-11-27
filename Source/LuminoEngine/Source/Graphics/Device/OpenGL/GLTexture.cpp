@@ -25,9 +25,9 @@ void GLTextureBase::getGLTextureFormat(TextureFormat format, GLenum* internalFor
 		{ GL_BGRA,				GL_BGRA,			GL_UNSIGNED_BYTE },	// TextureFormat::B8G8R8A8,            ///< 32 ビットのアルファ付きフォーマット
 		{ GL_BGR,				GL_BGRA,			GL_UNSIGNED_BYTE },	// TextureFormat::B8G8R8X8,            ///< 32 ビットのアルファ無しフォーマット
 		{ GL_RGBA16F,			GL_RGBA,			GL_HALF_FLOAT },	// TextureFormat::A16B16G16R16F,       ///< 64 ビットの浮動小数点フォーマット
-		{ GL_RGBA32F,			GL_RGBA,			GL_DOUBLE },		// TextureFormat::A32B32G32R32F,       ///< 128 ビットの浮動小数点フォーマット
+		{ GL_RGBA32F,			GL_RGBA,			GL_FLOAT },			// TextureFormat::A32B32G32R32F,       ///< 128 ビットの浮動小数点フォーマット
 		{ GL_R16F,				GL_RED,				GL_HALF_FLOAT },	// TextureFormat::R16F,
-		{ GL_R32UI,				GL_RED,				GL_DOUBLE },		// TextureFormat::R32F,
+		{ GL_R32UI,				GL_RED,				GL_FLOAT },			// TextureFormat::R32F,
 		//{ GL_R32UI,				GL_RED_INTEGER,		GL_INT },			// TextureFormat::R32_UInt,
 		{ GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE }, // TextureFormat::D24S8,               ///< 32 ビットの Z バッファフォーマット
 	};

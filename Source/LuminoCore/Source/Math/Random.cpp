@@ -1,6 +1,6 @@
 ﻿
 #include <time.h>
-#include "../../include/Lumino/Math/Random.h"
+#include "../../Include/Lumino/Math/Random.h"
 
 LN_NAMESPACE_BEGIN
 

@@ -1,9 +1,9 @@
 ﻿
-#include "../../include/Lumino/Math/MathUtils.h"
-#include "../../include/Lumino/Math/Vector2.h"
-#include "../../include/Lumino/Math/Vector3.h"
-#include "../../include/Lumino/Math/Vector4.h"
-#include "../../include/Lumino/Math/Matrix.h"
+#include "../../Include/Lumino/Math/MathUtils.h"
+#include "../../Include/Lumino/Math/Vector2.h"
+#include "../../Include/Lumino/Math/Vector3.h"
+#include "../../Include/Lumino/Math/Vector4.h"
+#include "../../Include/Lumino/Math/Matrix.h"
 #include "Asm.h"
 
 LN_NAMESPACE_BEGIN

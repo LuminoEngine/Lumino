@@ -81,9 +81,9 @@ public:
 protected: \
 	CacheObjectInfo m_cacheObjectInfo; \
 public: \
-	virtual CacheObjectInfo& getCacheObjectInfo() { return m_cacheObjectInfo; } \
-	virtual int32_t addRef() { return RefObject::addRef(); } \
-	virtual int32_t release() \
+	virtual CacheObjectInfo& getCacheObjectInfo() override { return m_cacheObjectInfo; } \
+	virtual int32_t addRef() override { return RefObject::addRef(); } \
+	virtual int32_t release() override \
 	{ \
 		if (m_cacheObjectInfo.manager == NULL/* || m_cacheObjectInfo.mIsStockObject*/) \
 		{ \

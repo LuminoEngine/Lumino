@@ -120,7 +120,7 @@ public:
 	BlitRenderer();
 	virtual ~BlitRenderer();
 	void initialize(GraphicsManager* manager);
-	Material* getCommonMaterial() const;
+	CommonMaterial* getCommonMaterial() const;
 
 	void blit();
 
@@ -135,7 +135,7 @@ private:
 
 	GraphicsManager*					m_manager;
 	Ref<Driver::IVertexBuffer>		m_vertexBuffer;
-	Ref<Material>					m_commonMaterial;
+	Ref<CommonMaterial>					m_commonMaterial;
 };
 
 } // namespace detail

@@ -145,7 +145,7 @@ public:
 LN_PROTECTED_INTERNAL_ACCESS:
 	void flushPrimarySurface();
 	virtual Driver::ITexture* resolveDeviceObject() override;
-	virtual void onChangeDevice(Driver::IGraphicsDevice* device);
+	virtual void onChangeDevice(Driver::IGraphicsDevice* device) override;
 
 LN_CONSTRUCT_ACCESS:
 	Texture2D();
@@ -257,7 +257,7 @@ LN_INTERNAL_ACCESS :
 	void createImpl(detail::GraphicsManager* manager, const SizeI& size, TextureFormat format);
 	Driver::ITexture* resolveDeviceObject() const { return m_deviceObj; }
 	void resize(const SizeI& newSize);
-	virtual void onChangeDevice(Driver::IGraphicsDevice* device);
+	virtual void onChangeDevice(Driver::IGraphicsDevice* device) override;
 
 	Driver::ITexture* resolveDeviceObject();
 

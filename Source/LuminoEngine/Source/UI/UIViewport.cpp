@@ -94,6 +94,11 @@ UIElement* UIViewport::checkMouseHoverElement(const Point& globalPt)
 	return UIElement::checkMouseHoverElement(globalPt);
 }
 
+namespace detail
+{
+
+	extern RenderTargetTexture* g_m_shadowMap;
+}
 //------------------------------------------------------------------------------
 void UIViewport::onRender(DrawingContext* g)
 {
@@ -113,6 +118,8 @@ void UIViewport::onRender(DrawingContext* g)
 
 	g->setViewportRect(RectI::fromFloatRect(getFinalGlobalRect()));
 	g->blit(m_primaryLayerTarget, transform);
+	//g->blit(detail::g_m_shadowMap, transform);
+
 	g->setViewportRect(RectI(0, 0, -1, -1));
 
 	// TODO: 暫定。blit の中で深度書き込みしないようにしてほしいかも。

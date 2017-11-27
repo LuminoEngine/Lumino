@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "Common.h"
 #include "../Graphics/Color.h"
@@ -12,13 +12,20 @@ LN_NAMESPACE_BEGIN
 class RenderView;
 class RenderDiag;
 
+//enum class AmbientLightingMode
+//{
+//
+//};
+
 namespace detail {
 class RenderingPass2;
 class DrawElement;
 class DrawElementList;
+struct DefaultStatus;
+
 
 /**
-	@brief	ƒV[ƒ“‚Ì•`‰æ•û–@‚ğ’è‹`‚µA•`‰æƒRƒ}ƒ“ƒh‚ğÀs‚µ‚Ü‚·B
+	@brief	ã‚·ãƒ¼ãƒ³ã®æç”»æ–¹æ³•ã‚’å®šç¾©ã—ã€æç”»ã‚³ãƒãƒ³ãƒ‰ã‚’å®Ÿè¡Œã—ã¾ã™ã€‚
 */
 class SceneRenderer
 	: public RefObject
@@ -43,16 +50,16 @@ protected:
 	// render
 	RenderView* getRenderView() const { return m_renderingRenderView; }
 
-	// ƒŒƒ“ƒ_ƒŠƒ“ƒO€”õ‚Æ‚µ‚ÄA•`‰æ‚ÉŠÖŒW‚·‚éŠeíƒIƒuƒWƒFƒNƒg (DrawElement ‚â Light) ‚ğûW‚·‚éƒtƒF[ƒY
-	virtual void collect();
+	// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°æº–å‚™ã¨ã—ã¦ã€æç”»ã«é–¢ä¿‚ã™ã‚‹å„ç¨®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ (DrawElement ã‚„ Light) ã‚’åé›†ã™ã‚‹ãƒ•ã‚§ãƒ¼ã‚º
+	virtual void collect(RenderingPass2* pass, const detail::CameraInfo& cameraInfo);
 
-	// ƒŒƒ“ƒ_ƒŠƒ“ƒO€”õ‚Æ‚µ‚ÄAŒø—¦“I‚È•`‰æ‚ğs‚¤‚½‚ß‚ÉûW‚µ‚½ŠeíƒIƒuƒWƒFƒNƒg‚Ìƒ\[ƒg‚È‚Ç‚ğs‚¤
+	// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°æº–å‚™ã¨ã—ã¦ã€åŠ¹ç‡çš„ãªæç”»ã‚’è¡Œã†ãŸã‚ã«åé›†ã—ãŸå„ç¨®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ã‚½ãƒ¼ãƒˆãªã©ã‚’è¡Œã†
 	virtual void prepare();
 
 	virtual void onPreRender(DrawElementList* elementList);
 	//virtual ShaderTechnique* selectShaderTechnique(Shader* shader);
 
-	// ƒŒƒ“ƒ_ƒŠƒ“ƒO€”õA‰e‹¿‚·‚éƒ‰ƒCƒg‚ğ’Ê’m‚·‚é
+	// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°æº–å‚™æ™‚ã€å½±éŸ¿ã™ã‚‹ãƒ©ã‚¤ãƒˆã‚’é€šçŸ¥ã™ã‚‹
 	virtual void onCollectLight(DynamicLightInfo* light);
 
 	virtual void onShaderPassChainging(ShaderPass* pass);
@@ -67,14 +74,16 @@ private:
 	RenderView*				m_renderingRenderView;
 	RenderTargetTexture*	m_renderingDefaultRenderTarget;
 	DepthBuffer*			m_renderingDefaultDepthBuffer;
+	List<RenderingPass2*>	m_renderingActualPassList;
 
+	List<detail::ShadowCasterPass*>	m_renderingShadowCasterPassList;
 	//friend class RenderingPass2;
 };
 
 
 struct ElementRenderingPolicy
 {
-	Shader*		shader;		// null ‚à‚ ‚è‚¦‚éBClear ‚È‚ÇB
+	Shader*		shader;		// null ã‚‚ã‚ã‚Šãˆã‚‹ã€‚Clear ãªã©ã€‚
 	ShaderPass*	shaderPass;
 	bool		visible;
 };
@@ -87,16 +96,27 @@ public:
 	virtual ~RenderingPass2();
 	//void initialize(GraphicsManager* manager);
 
-	virtual Shader* getDefaultShader() const = 0;
+	//virtual Shader* getDefaultShader() const = 0;
 
-	void selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy);
+	virtual void selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy) = 0;
 
 	//virtual void RenderElement(DrawList* renderer, DrawElement* element);
 	//virtual void RenderElementSubset(DrawList* renderer, DrawElement* element, int subsetIndex);
 
+
+	virtual void onBeginPass(DefaultStatus* defaultStatus);
+
+	virtual void overrideCameraInfo(detail::CameraInfo* cameraInfo);
+
 protected:
 	//virtual ShaderTechnique* selectShaderTechnique(Shader* shader);
-	virtual ShaderPass* selectShaderPass(Shader* shader);
+	//virtual ShaderPass* selectShaderPass(Shader* shader);
+
+	// TODO: name ã¯ hash ã§ã‚‚ã„ã„ã‹ãª
+	ShaderPass* selectShaderPassHelper(Shader* materialShader, const String& techniqueName, const String& passName, ShaderPass* defaultPass);
+
+	// Obsolete å¤ã„è¨˜è¿°ç”¨ã€‚
+	ShaderPass* selectShaderPassHelperSimple(Shader* materialShader, Shader* defaultShader);
 
 private:
 };
@@ -119,7 +139,8 @@ public:
 	NonShadingRenderingPass();
 	virtual ~NonShadingRenderingPass();
 	void initialize(GraphicsManager* manager);
-	virtual Shader* getDefaultShader() const override;
+	virtual void selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy) override;
+	//virtual Shader* getDefaultShader() const override;
 
 private:
 	Ref<Shader>	m_defaultShader;
@@ -141,7 +162,7 @@ protected:
 private:
 	void updateAffectLights(DrawElement* element, DrawElementList* elementList);
 
-	List<DynamicLightInfo*>	m_selectingLights;	// updateAffectLights() ‚Ìì‹Æ—p•Ï”
+	List<DynamicLightInfo*>	m_selectingLights;	// updateAffectLights() ã®ä½œæ¥­ç”¨å¤‰æ•°
 };
 
 
@@ -152,7 +173,8 @@ public:
 	ForwardShadingRenderingPass();
 	virtual ~ForwardShadingRenderingPass();
 	void initialize(GraphicsManager* manager);
-	virtual Shader* getDefaultShader() const override;
+	virtual void selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy) override;
+	//virtual Shader* getDefaultShader() const override;
 
 private:
 	Ref<Shader>	m_defaultShader;

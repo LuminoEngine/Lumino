@@ -320,10 +320,10 @@ void PmxLoader::loadMaterials(BinaryReader* reader)
 		m_modelCore->materials[i] = m;;
 
 		// 材質名
-		/*m_modelCore->Material.Name = */readString(reader);
+		/*m_modelCore->CommonMaterial.Name = */readString(reader);
 
 		// 材質英名
-		/*m_modelCore->Material.EnglishName = */readString(reader);
+		/*m_modelCore->CommonMaterial.EnglishName = */readString(reader);
 
 		// Diffuse
 		reader->read(&m->Diffuse, sizeof(float) * 4);
