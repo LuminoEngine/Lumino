@@ -1,8 +1,5 @@
 
 #pragma once
-//#include "../Animation/EasingValue.h"
-//#include "../Graphics/Color.h"
-//#include "../Graphics/ImageEffect/ImageEffect.h"
 #include "RenderView.h"
 
 LN_NAMESPACE_BEGIN
@@ -20,12 +17,14 @@ LN_CONSTRUCT_ACCESS:
 	SSAOImageEffect();
 	virtual ~SSAOImageEffect();
 	void initialize();
+	virtual void onAttached() override;
 	virtual void onRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
 private:
-	Ref<CommonMaterial>	m_material;
-	Ref<CommonMaterial>	m_material2;
+	Ref<CommonMaterial>			m_material;
+	Ref<CommonMaterial>			m_material2;
 	Ref<RenderTargetTexture>	m_ssaoRenderTarget;
+	RenderTargetTexture*		m_depthMap;
 };
 
 LN_NAMESPACE_END

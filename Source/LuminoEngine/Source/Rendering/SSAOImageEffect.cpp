@@ -24,6 +24,7 @@ namespace detail
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SSAOImageEffect, PostEffect);
 
 SSAOImageEffect::SSAOImageEffect()
+	: m_depthMap(nullptr)
 {
 	initializeProperties();
 }
@@ -46,19 +47,25 @@ void SSAOImageEffect::initialize()
 	m_ssaoRenderTarget->createImpl(detail::GraphicsManager::getInstance(), SizeI(640, 480), 1, TextureFormat::R8G8B8A8);
 }
 
-void SSAOImageEffect::onRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+void SSAOImageEffect::onAttached()
 {
+	m_depthMap = nullptr;
+
 	// TODO: onAttach で保持
 	auto* layer = dynamic_cast<CameraViewportLayer2*>(GetOwnerLayer());
-	if (!layer) return;
-
-	RenderTargetTexture* depthMap =
-		layer->getClusteredShadingSceneRenderer()->getDepthPrepass()->m_depthMap;
-
-
-	//if (Tone != Vector4::Zero)
+	if (layer && layer->getClusteredShadingSceneRenderer())
 	{
-		m_material->setTextureParameter(_T("normalDepth"), depthMap);
+		m_depthMap = layer->getClusteredShadingSceneRenderer()->getDepthPrepass()->m_depthMap;
+	}
+
+	PostEffect::onAttached();
+}
+
+void SSAOImageEffect::onRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination)
+{
+	if (m_depthMap)
+	{
+		m_material->setTextureParameter(_T("normalDepth"), m_depthMap);
 		//printf("ToneImageEffect::onRender %p > %p\n", source, destination);
 		//m_material->setVectorParameter(_LT("_Tone"), m_tone);
 		context->blit(source, m_ssaoRenderTarget, m_material);

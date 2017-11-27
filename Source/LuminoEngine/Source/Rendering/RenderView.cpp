@@ -100,6 +100,7 @@ void RenderLayer::addPostEffect(PostEffect* postEffect)
 	if (LN_REQUIRE(postEffect)) return;
 	m_postEffects.add(postEffect);
 	postEffect->m_ownerLayer = this;
+	postEffect->onAttached();
 }
 
 //------------------------------------------------------------------------------
@@ -196,19 +197,20 @@ void RenderLayer::updateFramebufferIfNeeded()
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(PostEffect, Object);
 
-//------------------------------------------------------------------------------
 PostEffect::PostEffect()
 	: Object()
 {
 }
 
-//------------------------------------------------------------------------------
 PostEffect::~PostEffect()
 {
 }
 
-//------------------------------------------------------------------------------
 void PostEffect::initialize()
+{
+}
+
+void PostEffect::onAttached()
 {
 }
 
