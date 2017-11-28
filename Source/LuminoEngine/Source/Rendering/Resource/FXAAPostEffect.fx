@@ -1,6 +1,6 @@
 
 texture2D	ln_MaterialTexture;
-static float2	_MaterialTextureSize = float2(640, 480);
+static float2	_MaterialTextureSize = float2(640, 480);	// TODO:
 static float2 RcpMaterialTextureSize = float2(
 	1.0 / _MaterialTextureSize.x,
 	1.0 / _MaterialTextureSize.y);
