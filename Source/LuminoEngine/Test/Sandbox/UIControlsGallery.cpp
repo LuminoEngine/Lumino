@@ -5,6 +5,7 @@
 #include <Lumino/Testing/TestHelper.h>
 #include <Lumino/Scene/OffscreenWorldView.h>
 #include <Lumino/Rendering/SSAOImageEffect.h>
+#include <Lumino/Rendering/FXAAPostEffect.h>
 
 #include "../Source/Shader/LuminoShader.h"
 
@@ -331,6 +332,10 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 	auto ssao = newObject<SSAOImageEffect>();
 	Engine::getDefault3DLayer()->addPostEffect(ssao);
 	Engine::getCamera3D()->getCameraComponent()->setFarClip(100);
+
+	//auto fxaa = newObject<FXAAPostEffect>();
+	//Engine::getDefault3DLayer()->addPostEffect(fxaa);
+	
 
 
 	auto ps1 = TransitionPostEffect::create();

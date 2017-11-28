@@ -301,6 +301,7 @@ set(LN_SOURCES_Shader
 set(LN_SOURCES_Rendering
 	Include/Lumino/Rendering/Common.h
 	Include/Lumino/Rendering/DrawingContext.h
+	Include/Lumino/Rendering/FXAAPostEffect.h
 	Include/Lumino/Rendering/Rendering.h
 	Include/Lumino/Rendering/RenderingContext.h
 	Include/Lumino/Rendering/RenderView.h
@@ -311,6 +312,7 @@ set(LN_SOURCES_Rendering
 	Source/Rendering/DrawingContext.cpp
 	Source/Rendering/FrameRectRenderFeature.cpp
 	Source/Rendering/FrameRectRenderFeature.h
+	Source/Rendering/FXAAPostEffect.cpp
 	Source/Rendering/Internal.h
 	Source/Rendering/MeshRenderFeature.cpp
 	Source/Rendering/MeshRenderFeature.h
