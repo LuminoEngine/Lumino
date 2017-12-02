@@ -74,7 +74,7 @@ private:
 
 
 class Joint2
-	: public Object
+	: public PhysicsResource2
 {
 	LN_OBJECT;
 public:

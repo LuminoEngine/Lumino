@@ -175,9 +175,10 @@ void DofSpringJoint::setAngularUpperLimit(const Vector3& angularUpper)
 //==============================================================================
 // Joint2
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Joint2, Object);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Joint2, PhysicsResource2);
 
 Joint2::Joint2()
+	: PhysicsResource2(PhysicsResourceType::Joint)
 {
 }
 
@@ -187,7 +188,7 @@ Joint2::~Joint2()
 
 void Joint2::initialize()
 {
-	Object::initialize();
+	PhysicsResource2::initialize();
 }
 
 
@@ -197,18 +198,13 @@ void Joint2::initialize()
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(DofSpringJoint2, Joint2);
 
 DofSpringJoint2::DofSpringJoint2()
+	: m_btDofSpringConstraint(nullptr)
 {
 }
 
 DofSpringJoint2::~DofSpringJoint2()
 {
-	if (m_btDofSpringConstraint)
-	{
-		g_clBulletPhysics.removeFromWorld(m_btDofSpringConstraint);
-
-		delete m_btDofSpringConstraint;
-		m_btDofSpringConstraint = NULL;
-	}
+	LN_SAFE_DELETE(m_btDofSpringConstraint);
 }
 
 void DofSpringJoint2::initialize(const DofSpringJointSimpleConstructionData& data)
@@ -270,9 +266,6 @@ void DofSpringJoint2::initialize(const DofSpringJointSimpleConstructionData& dat
 	m_btDofSpringConstraint->enableSpring(3, true);	m_btDofSpringConstraint->setStiffness(3, data.vec3SpringRot.x);
 	m_btDofSpringConstraint->enableSpring(4, true);	m_btDofSpringConstraint->setStiffness(4, data.vec3SpringRot.y);
 	m_btDofSpringConstraint->enableSpring(5, true);	m_btDofSpringConstraint->setStiffness(5, data.vec3SpringRot.z);
-
-	// シミュレーションワールドに追加
-	g_clBulletPhysics.addToWorld(m_btDofSpringConstraint);
 }
 
 LN_NAMESPACE_END

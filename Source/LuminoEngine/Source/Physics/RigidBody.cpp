@@ -624,7 +624,7 @@ void RigidBodyComponent::createBtRigidBody()
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(RigidBody2, PhysicsObject2);
 
 RigidBody2::RigidBody2()
-	: PhysicsObject2(PhysicsObjectType::RigidBody)
+	: PhysicsObject2(PhysicsResourceType::RigidBody)
 {
 }
 

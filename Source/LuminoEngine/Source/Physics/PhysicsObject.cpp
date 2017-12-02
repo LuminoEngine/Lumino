@@ -81,18 +81,55 @@ void PhysicsObjectComponent::onRemovedFromWorld()
 
 
 //==============================================================================
-// PhysicsObjectComponent
+// PhysicsResource2
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(PhysicsObject2, Component);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(PhysicsResource2, Component);
 
-PhysicsObject2::PhysicsObject2(PhysicsObjectType type)
+PhysicsResource2::PhysicsResource2(PhysicsResourceType type)
 	: Object()
-	, m_objectType(type)
+	, m_resourceType(type)
 	, m_ownerWorld(nullptr)
+	, m_removingFromWorld(false)
+{
+}
+
+PhysicsResource2::~PhysicsResource2()
+{
+}
+
+void PhysicsResource2::initialize()
+{
+	Object::initialize();
+}
+
+void PhysicsResource2::setWorld(PhysicsWorld2* owner)
+{
+	m_ownerWorld = owner;
+}
+
+PhysicsWorld2* PhysicsResource2::getWorld() const
+{
+	return m_ownerWorld;
+}
+
+void PhysicsResource2::onBeforeStepSimulation()
+{
+}
+
+void PhysicsResource2::onAfterStepSimulation()
+{
+}
+
+//==============================================================================
+// PhysicsObject2
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(PhysicsObject2, PhysicsResource2);
+
+PhysicsObject2::PhysicsObject2(PhysicsResourceType type)
+	: PhysicsResource2(type)
 	, m_collisionFilterGroup(0xFFFF)
 	, m_collisionFilterMask(0xFFFF)
 	, m_collisionFilterChanged(false)
-	, m_removingFromWorld(false)
 {
 }
 
@@ -102,17 +139,7 @@ PhysicsObject2::~PhysicsObject2()
 
 void PhysicsObject2::initialize()
 {
-	Object::initialize();
-}
-
-void PhysicsObject2::setWorld(PhysicsWorld2* owner)
-{
-	m_ownerWorld = owner;
-}
-
-PhysicsWorld2* PhysicsObject2::getWorld() const
-{
-	return m_ownerWorld;
+	PhysicsResource2::initialize();
 }
 
 void PhysicsObject2::setCollisionFilterGroup(uint16_t flags)
@@ -141,14 +168,6 @@ void PhysicsObject2::setCollisionFilterMask(uint16_t flags)
 uint16_t PhysicsObject2::getCollisionFilterMask() const
 {
 	return m_collisionFilterMask;
-}
-
-void PhysicsObject2::onBeforeStepSimulation()
-{
-}
-
-void PhysicsObject2::onAfterStepSimulation()
-{
 }
 
 LN_NAMESPACE_END

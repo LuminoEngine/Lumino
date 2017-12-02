@@ -445,7 +445,7 @@ void PhysicsWorld2::initialize()
 
 void PhysicsWorld2::finalize_()
 {
-	gcPhysicsObjects();
+	gcPhysicsObjects(true);
 }
 
 void PhysicsWorld2::setGravity(const Vector3& gravity)
@@ -453,15 +453,15 @@ void PhysicsWorld2::setGravity(const Vector3& gravity)
 	m_btWorld->setGravity(btVector3(gravity.x, gravity.y, gravity.z));
 }
 
-void PhysicsWorld2::add(PhysicsObject2* obj)
+void PhysicsWorld2::add(PhysicsResource2* obj)
 {
 	if (LN_REQUIRE(obj)) return;
-	m_physicsObjects.add(obj);
+	m_physicsResources.add(obj);
 	obj->setRemovingFromWorld(false);
 	obj->setWorld(this);
 }
 
-void PhysicsWorld2::remove(PhysicsObject2* obj)
+void PhysicsWorld2::remove(PhysicsResource2* obj)
 {
 	if (LN_REQUIRE(obj)) return;
 	obj->setRemovingFromWorld(true);
@@ -470,13 +470,18 @@ void PhysicsWorld2::remove(PhysicsObject2* obj)
 void PhysicsWorld2::stepSimulation(float elapsedTime)
 {
 	// 衝突フィルタ情報が更新されたオブジェクトは再登録
-	for (auto& obj : m_physicsObjects)
+	for (auto& res : m_physicsResources)
 	{
-		if (obj->isCollisionFilterChanged())
+		if (res->getPhysicsResourceType() == PhysicsResourceType::CollisionBody ||
+			res->getPhysicsResourceType() == PhysicsResourceType::RigidBody)
 		{
-			removeObjectInternal(obj);
-			addObjectInternal(obj);
-			obj->setCollisionFilterChanged(false);
+			auto* obj = static_cast<PhysicsObject2*>(res.get());
+			if (obj->isCollisionFilterChanged())
+			{
+				removeObjectInternal(obj);
+				addObjectInternal(obj);
+				obj->setCollisionFilterChanged(false);
+			}
 		}
 	}
 
@@ -508,17 +513,17 @@ void PhysicsWorld2::stepSimulation(float elapsedTime)
 	//	obj->onAfterStepSimulation();
 	//}
 
-	gcPhysicsObjects();
+	gcPhysicsObjects(false);
 }
 
 // stepSimulation() からの衝突コールバック内でオブジェクトが削除されることに備える
-void PhysicsWorld2::gcPhysicsObjects()
+void PhysicsWorld2::gcPhysicsObjects(bool force)
 {
-	for (auto itr = m_physicsObjects.begin(); itr != m_physicsObjects.end();)
+	for (auto itr = m_physicsResources.begin(); itr != m_physicsResources.end();)
 	{
-		if ((*itr)->isRemovingFromWorld() || (*itr)->getReferenceCount() == 1)
+		if (force || (*itr)->isRemovingFromWorld() || (*itr)->getReferenceCount() == 1)
 		{
-			itr = m_physicsObjects.erase(itr);
+			itr = m_physicsResources.erase(itr);
 			removeObjectInternal((*itr));
 		}
 		else
@@ -528,12 +533,12 @@ void PhysicsWorld2::gcPhysicsObjects()
 	}
 }
 
-void PhysicsWorld2::addObjectInternal(PhysicsObject2* obj)
+void PhysicsWorld2::addObjectInternal(PhysicsResource2* obj)
 {
-	switch (obj->getPhysicsObjectType())
+	switch (obj->getPhysicsResourceType())
 	{
-	case PhysicsObjectType::RigidBody:
-		//m_btWorld->addRigidBody(static_cast<Physics3DRigidBody*>(physicsObj)->getRigidBody());
+	case PhysicsResourceType::RigidBody:
+		m_btWorld->addRigidBody(static_cast<RigidBody2*>(obj)->getBtRigidBody());
 		break;
 	default:
 		LN_UNREACHABLE();
@@ -541,12 +546,12 @@ void PhysicsWorld2::addObjectInternal(PhysicsObject2* obj)
 	}
 }
 
-void PhysicsWorld2::removeObjectInternal(PhysicsObject2* obj)
+void PhysicsWorld2::removeObjectInternal(PhysicsResource2* obj)
 {
-	switch (obj->getPhysicsObjectType())
+	switch (obj->getPhysicsResourceType())
 	{
-	case PhysicsObjectType::RigidBody:
-		//m_btWorld->addRigidBody(static_cast<Physics3DRigidBody*>(physicsObj)->getRigidBody());
+	case PhysicsResourceType::RigidBody:
+		m_btWorld->addRigidBody(static_cast<RigidBody2*>(obj)->getBtRigidBody());
 		break;
 	default:
 		LN_UNREACHABLE();

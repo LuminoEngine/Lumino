@@ -28,6 +28,7 @@ class btGeneric6DofSpringConstraint;
 
 LN_NAMESPACE_BEGIN
 class CollisionShape;
+class PhysicsWorld2;
 
 namespace detail {
 
@@ -79,10 +80,13 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 	void setWorld(PhysicsWorld2* owner);
 	PhysicsResourceType getPhysicsResourceType() const { return m_resourceType; }
+	bool isRemovingFromWorld() const { return m_removingFromWorld; }
+	void setRemovingFromWorld(bool value) { m_removingFromWorld = value; }
 
 private:
 	PhysicsResourceType	m_resourceType;
 	PhysicsWorld2*		m_ownerWorld;
+	bool				m_removingFromWorld;
 
 	friend class PhysicsWorld2;
 };

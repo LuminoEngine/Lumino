@@ -75,8 +75,8 @@ class PhysicsWorld2
 public:
 	void setGravity(const Vector3& gravity);
 
-	void add(PhysicsObject2* obj);
-	void remove(PhysicsObject2* obj);
+	void add(PhysicsResource2* obj);
+	void remove(PhysicsResource2* obj);
 
 LN_CONSTRUCT_ACCESS:
 	PhysicsWorld2();
@@ -87,9 +87,9 @@ LN_CONSTRUCT_ACCESS:
 LN_INTERNAL_ACCESS:
 	btDiscreteDynamicsWorld* getBtWorld() { return m_btWorld; }
 	void stepSimulation(float elapsedTime);
-	void gcPhysicsObjects();
-	void addObjectInternal(PhysicsObject2* obj);
-	void removeObjectInternal(PhysicsObject2* obj);
+	void gcPhysicsObjects(bool force);
+	void addObjectInternal(PhysicsResource2* obj);
+	void removeObjectInternal(PhysicsResource2* obj);
 
 private:
 	btDefaultCollisionConfiguration*		m_btCollisionConfig;
@@ -100,9 +100,7 @@ private:
 	btGhostPairCallback*					m_btGhostPairCallback;
 	btSoftBodyWorldInfo*					m_softBodyWorldInfo;
 	PhysicsDebugDrawer*						m_debugDrawer;
-
-	List<Ref<PhysicsObject2>>				m_physicsObjects;
-	//List<Ref<Joint>>						m_jointList;
+	List<Ref<PhysicsResource2>>				m_physicsResources;
 };
 
 LN_NAMESPACE_END
