@@ -21,6 +21,7 @@
 	#pragma comment(lib, "EffekseerSoundXAudio2" LN_MSVC_LIBRARY_POSTFIX)
 	#pragma comment(lib, "freetype" LN_MSVC_LIBRARY_POSTFIX)
 	#pragma comment(lib, "giflib" LN_MSVC_LIBRARY_POSTFIX)
+	#pragma comment(lib, "hlsl2glslfork" LN_MSVC_LIBRARY_POSTFIX)
 	#pragma comment(lib, "libogg" LN_MSVC_LIBRARY_POSTFIX)
 	#pragma comment(lib, "libpng" LN_MSVC_LIBRARY_POSTFIX)
 	#pragma comment(lib, "libvorbis" LN_MSVC_LIBRARY_POSTFIX)

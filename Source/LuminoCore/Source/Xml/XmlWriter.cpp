@@ -261,7 +261,7 @@ void XmlWriter::preWrite(XmlNodeType type)
 	case XmlNodeType::Element:
 	case XmlNodeType::CDATA:
 	case XmlNodeType::Comment:
-		if (m_state == XmlNodeType::Attribute) {	// 要素のネスト
+		if (m_state == State_Attribute) {	// 要素のネスト
 			writeEndAttribute();
 			writeStartTagEnd(false);
 		}

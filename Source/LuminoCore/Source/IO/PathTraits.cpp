@@ -1,8 +1,8 @@
 ﻿
 #include "../Internal.h"
-#include "../../include/Lumino/Base/String.h"
-#include "../../include/Lumino/IO/PathTraits.h"
-#include "../../include/Lumino/IO/DirectoryUtils.h"
+#include "../../Include/Lumino/Base/String.h"
+#include "../../Include/Lumino/IO/PathTraits.h"
+#include "../../Include/Lumino/IO/DirectoryUtils.h"
 
 LN_NAMESPACE_BEGIN
 

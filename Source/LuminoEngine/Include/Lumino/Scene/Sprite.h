@@ -76,7 +76,7 @@ private:
 	Vector2				m_anchor;
 	FlipMode			m_flipMode;
 	Ref<Texture>		m_texture;
-	Ref<Material>	m_material;
+	Ref<CommonMaterial>	m_material;
 	Size				m_renderSize;
 	Rect				m_renderSourceRect;
 };

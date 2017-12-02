@@ -147,7 +147,7 @@ public:
 		DrawingFlags = 0;
 	}
 
-	Ref<Material> MakeCommonMaterial() const;
+	Ref<CommonMaterial> MakeCommonMaterial() const;
 };
 
 /// 共有ボーンデータ

@@ -8,7 +8,7 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 class ShaderVariable;
-class Material;
+class CommonMaterial;
 class Shader;
 using ShaderPtr = Ref<Shader>;
 
@@ -34,10 +34,15 @@ LN_ENUM(BuiltinSemantics)
 	View,
 	Projection,
 	ViewportPixelSize,
+	NearClip,
+	FarClip,
 
 	// Element unit
 	WorldViewProjection,
 	World,
+	WorldView,
+	WorldViewIT,			// transpose(inverse(WorldView));
+
 	LightEnables,			// bool[]
 	LightWVPMatrices,		// matrix[]
 	LightDirections,		// vector[]
@@ -54,6 +59,10 @@ LN_ENUM(BuiltinSemantics)
 	MaterialEmmisive,		// vector
 	MaterialSpecular,		// vector
 	MaterialSpecularPower,	// float
+	MaterialM2Color,		// vector
+	MaterialM2Roughness,	// float
+	MaterialM2Metallic,		// float
+	MaterialM2Specular,		// float
 	ColorScale,				// vector (Built-in effect)
 	BlendColor,				// vector (Built-in effect)
 	ToneColor,				// vector (Built-in effect)
@@ -81,7 +90,13 @@ struct CameraInfo
 	ViewFrustum	viewFrustum;
 	ZSortDistanceBase	zSortDistanceBase;
 
+	float		nearClip = 0;
+	float		farClip = 0;
+
 	// POD
+
+
+	void makePerspective(const Vector3& viewPos, const Vector3& viewDir, float fovY, const Size& size, float n, float f);
 };
 
 // 描画要素単位のデータに関する情報
@@ -114,7 +129,7 @@ public:
 	void tryPushVariable(ShaderVariable* var);
 	void updateSceneVariables(const SceneInfo& info);
 	void updateCameraVariables(const CameraInfo& info);
-	void updateElementVariables(const ElementInfo& info);
+	void updateElementVariables(const CameraInfo& cameraInfo, const ElementInfo& info);
 	void updateSubsetVariables(const SubsetInfo& info);
 
 	// blit 用
@@ -142,7 +157,13 @@ private:
 
 
 
-
+enum class ShaderCodeType
+{
+	Normal,
+	TRSS,		// テスト中の機能 (多分 obsolete)
+	RawHLSL,
+	RawIR,
+};
 
 
 
@@ -170,14 +191,14 @@ public:
 		@brief		シェーダコードが記述されたテキストファイルをコンパイルし、Shader を作成します。
 		@param[in]	filePath		: ファイルパス
 	*/
-	static Ref<Shader> create(const StringRef& filePath, bool useTRSS = false);
+	static Ref<Shader> create(const StringRef& filePath, ShaderCodeType codeType = ShaderCodeType::Normal);
 
 	/**
 		@brief		メモリ上に展開されたテキストデータをコンパイルし、Shader を作成します。
 		@param[in]	code			: シェーダコード文字列
 		@param[in]	length			: 文字列の長さ (-1 で 終端 \0 まで)
 	*/
-	static Ref<Shader> create(const char* code, int length);
+	static Ref<Shader> create(const char* code, int length, ShaderCodeType codeType = ShaderCodeType::Normal);
 	
 	///**
 	//	@brief		文字列をコンパイルし、シェーダを作成します。
@@ -245,13 +266,13 @@ public:
 protected:
 	virtual ~Shader();
 	virtual void Dispose() override;
-	virtual void onChangeDevice(Driver::IGraphicsDevice* device);
+	virtual void onChangeDevice(Driver::IGraphicsDevice* device) override;
 
 LN_INTERNAL_ACCESS:
 	friend class detail::RenderingCommandList;
 	Shader();
-	void initialize(detail::GraphicsManager* manager, const StringRef& filePath, bool useTRSS = false);
-	void initialize(detail::GraphicsManager* manager, const void* code, int length, bool useTRSS = false);
+	void initialize(detail::GraphicsManager* manager, const StringRef& filePath, ShaderCodeType codeType = ShaderCodeType::Normal);
+	void initialize(detail::GraphicsManager* manager, const void* code, int length, ShaderCodeType codeType = ShaderCodeType::Normal);
 	void postInitialize();
 	void setModifiedVariables(bool modified) { m_modifiedVariables = modified; }
 	bool isModifiedVariables() const { return m_modifiedVariables; }
@@ -269,7 +290,7 @@ LN_INTERNAL_ACCESS:
 
 
 // TODO: Driver でも使っている。初期値を保持するため。
-// Material でも使っている。こちらは ManagedTexture を使う。
+// CommonMaterial でも使っている。こちらは ManagedTexture を使う。
 class ShaderValue
 {
 public:
@@ -475,6 +496,8 @@ public:
 	*/
 	ShaderVariable* findAnnotation(const Char* name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const;
 	ShaderVariable* findAnnotation(const String& name, CaseSensitivity cs = CaseSensitivity::CaseSensitive) const { return findAnnotation(name.c_str(), cs); }
+
+
 
 protected:
 	virtual ~ShaderTechnique();

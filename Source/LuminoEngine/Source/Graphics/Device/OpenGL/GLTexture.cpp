@@ -19,16 +19,17 @@ void GLTextureBase::getGLTextureFormat(TextureFormat format, GLenum* internalFor
 	static GLenum table[][3] =
 	{
 		// internalFormat,		pixelFormat,		elementType
-		{ GL_NONE,				GL_NONE,			GL_NONE },			// TextureFormat_Unknown
-		{ GL_RGBA8,				GL_RGBA,			GL_UNSIGNED_BYTE },	// TextureFormat_R8G8B8A8,            ///< 32 ビットのアルファ付きフォーマット (uint32_t アクセス時の表現。lnByte[4] にすると、ABGR)
-		{ GL_RGB,				GL_RGBA,			GL_UNSIGNED_BYTE },	// TextureFormat_R8G8B8X8,            ///< 32 ビットのアルファ無しフォーマット
-		{ GL_BGRA,				GL_BGRA,			GL_UNSIGNED_BYTE },	// TextureFormat_B8G8R8A8,            ///< 32 ビットのアルファ付きフォーマット
-		{ GL_BGR,				GL_BGRA,			GL_UNSIGNED_BYTE },	// TextureFormat_B8G8R8X8,            ///< 32 ビットのアルファ無しフォーマット
-		{ GL_RGBA16F,			GL_RGBA,			GL_HALF_FLOAT },	// TextureFormat_A16B16G16R16F,       ///< 64 ビットの浮動小数点フォーマット
-		{ GL_RGBA32F,			GL_RGBA,			GL_DOUBLE },		// TextureFormat_A32B32G32R32F,       ///< 128 ビットの浮動小数点フォーマット
-		{ GL_R16F,				GL_RED,				GL_HALF_FLOAT },	// TextureFormat_R16F,
-		{ GL_R32F,				GL_RED,				GL_DOUBLE },		// TextureFormat_R32F,
-		{ GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE }, // TextureFormat_D24S8,               ///< 32 ビットの Z バッファフォーマット
+		{ GL_NONE,				GL_NONE,			GL_NONE },			// TextureFormat::Unknown
+		{ GL_RGBA8,				GL_RGBA,			GL_UNSIGNED_BYTE },	// TextureFormat::R8G8B8A8,            ///< 32 ビットのアルファ付きフォーマット (uint32_t アクセス時の表現。lnByte[4] にすると、ABGR)
+		{ GL_RGB,				GL_RGBA,			GL_UNSIGNED_BYTE },	// TextureFormat::R8G8B8X8,            ///< 32 ビットのアルファ無しフォーマット
+		{ GL_BGRA,				GL_BGRA,			GL_UNSIGNED_BYTE },	// TextureFormat::B8G8R8A8,            ///< 32 ビットのアルファ付きフォーマット
+		{ GL_BGR,				GL_BGRA,			GL_UNSIGNED_BYTE },	// TextureFormat::B8G8R8X8,            ///< 32 ビットのアルファ無しフォーマット
+		{ GL_RGBA16F,			GL_RGBA,			GL_HALF_FLOAT },	// TextureFormat::A16B16G16R16F,       ///< 64 ビットの浮動小数点フォーマット
+		{ GL_RGBA32F,			GL_RGBA,			GL_FLOAT },			// TextureFormat::A32B32G32R32F,       ///< 128 ビットの浮動小数点フォーマット
+		{ GL_R16F,				GL_RED,				GL_HALF_FLOAT },	// TextureFormat::R16F,
+		{ GL_R32UI,				GL_RED,				GL_FLOAT },			// TextureFormat::R32F,
+		//{ GL_R32UI,				GL_RED_INTEGER,		GL_INT },			// TextureFormat::R32_UInt,
+		{ GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE }, // TextureFormat::D24S8,               ///< 32 ビットの Z バッファフォーマット
 	};
 	*internalFormat = table[(int)format][0];
 	*pixelFormat = table[(int)format][1];
@@ -179,7 +180,7 @@ void GLTexture::getData(const RectI& rect, void* outData)
 //------------------------------------------------------------------------------
 Bitmap* GLTexture::lock()
 {
-	m_lockedTexture.attach(LN_NEW Bitmap(m_size, Utils::translatePixelFormat(m_format)));
+	m_lockedTexture.attach(LN_NEW Bitmap(m_size, Utils::translatePixelFormat(m_format), true));
 	return m_lockedTexture;
 }
 

@@ -12,6 +12,8 @@
 #include "CoreGraphicsRenderFeature.h"
 #include "RenderingCommand.h"
 #include "ShaderAnalyzer.h"
+#include "../Shader/LuminoShader.h"
+#include "Device/OpenGL/GLGraphicsDevice.h"
 
 #define LN_CALL_SHADER_COMMAND(func, command, ...) \
 	if (m_owner->getManager()->getRenderingType() == GraphicsRenderingType::Threaded) { \
@@ -26,6 +28,31 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 
 namespace detail {
 
+
+void CameraInfo::makePerspective(const Vector3& viewPos, const Vector3& viewDir, float fovY, const Size& size, float n, float f)
+{
+	dataSourceId = 0;
+	viewPixelSize = size;
+	viewPosition = viewPos;
+	viewDirection = viewDir;
+	viewMatrix = Matrix::makeLookAtLH(viewPos, viewPos + viewDir, Vector3::UnitY);
+	projMatrix = Matrix::makeOrthoLH(size.width, size.height, n, f);//Matrix::makePerspectiveFovLH(fovY, size.width / size.height, n, f);
+	//projMatrix = Matrix::makePerspectiveFovLH(fovY, size.width / size.height, n, f);
+	viewProjMatrix = viewMatrix * projMatrix;
+	viewFrustum = ViewFrustum(viewProjMatrix);
+	zSortDistanceBase = ZSortDistanceBase::CameraScreenDistance;
+	nearClip = n;
+	farClip = f;
+
+	//{
+	//	Vector3 pos(1, 1, -1);
+	//	Vector4 tt = Vector3::transform(pos, viewProjMatrix);
+	//	float d = tt.z / tt.w;
+	//	printf("");
+	//}
+
+}
+
 //==============================================================================
 // ShaderSemanticsManager
 //		参考:
@@ -38,12 +65,16 @@ static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_CameraUnit 
 	{ _LT("ln_View"), BuiltinSemantics::View },
 	{ _LT("ln_Projection"), BuiltinSemantics::Projection },
 	{ _LT("ln_ViewportPixelSize"), BuiltinSemantics::ViewportPixelSize },
+	{ _LT("ln_NearClip"), BuiltinSemantics::NearClip },
+	{ _LT("ln_FarClip"), BuiltinSemantics::FarClip },
 };
 
 static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_ElementUnit =
 {
 	{ _LT("ln_WorldViewProjection"), BuiltinSemantics::WorldViewProjection },
 	{ _LT("ln_World"), BuiltinSemantics::World },
+	{ _LT("ln_WorldView"), BuiltinSemantics::WorldView },
+	{ _LT("ln_WorldViewIT"), BuiltinSemantics::WorldViewIT },
 	{ _LT("ln_LightEnables"), BuiltinSemantics::LightEnables },
 	{ _LT("ln_LightWVPMatrices"), BuiltinSemantics::LightWVPMatrices },
 	{ _LT("ln_LightDirections"), BuiltinSemantics::LightDirections },
@@ -62,6 +93,10 @@ static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_SubsetUnit 
 	{ _LT("ln_MaterialEmmisive"), BuiltinSemantics::MaterialEmmisive },
 	{ _LT("ln_MaterialSpecular"), BuiltinSemantics::MaterialSpecular },
 	{ _LT("ln_MaterialSpecularPower"), BuiltinSemantics::MaterialSpecularPower },
+	{ _LT("ln_MaterialM2Color"), BuiltinSemantics::MaterialM2Color },
+	{ _LT("ln_MaterialM2Roughness"), BuiltinSemantics::MaterialM2Roughness },
+	{ _LT("ln_MaterialM2Metallic"), BuiltinSemantics::MaterialM2Metallic },
+	{ _LT("ln_MaterialM2Specular"), BuiltinSemantics::MaterialM2Specular },
 	{ _LT("ln_ColorScale"), BuiltinSemantics::ColorScale },
 	{ _LT("ln_BlendColor"), BuiltinSemantics::BlendColor },
 	{ _LT("ln_ToneColor"), BuiltinSemantics::ToneColor },
@@ -131,7 +166,8 @@ void ShaderSemanticsManager::updateSceneVariables(const SceneInfo& info)
 //------------------------------------------------------------------------------
 void ShaderSemanticsManager::updateCameraVariables(const CameraInfo& info)
 {
-	if (m_lastCameraInfoId != info.dataSourceId)
+	//if (m_lastCameraInfoId != info.dataSourceId)
+	// ↑TODO: 単に id じゃなくて revesion count じゃないとダメ。
 	{
 		m_lastCameraInfoId = info.dataSourceId;
 
@@ -148,6 +184,12 @@ void ShaderSemanticsManager::updateCameraVariables(const CameraInfo& info)
 				case BuiltinSemantics::ViewportPixelSize:
 					varInfo.variable->setVector(Vector4(info.viewPixelSize.width, info.viewPixelSize.height, 0, 0));
 					break;
+				case BuiltinSemantics::NearClip:
+					varInfo.variable->setFloat(info.nearClip);
+					break;
+				case BuiltinSemantics::FarClip:
+					varInfo.variable->setFloat(info.farClip);
+					break;
 				default:
 					break;
 			}
@@ -156,7 +198,7 @@ void ShaderSemanticsManager::updateCameraVariables(const CameraInfo& info)
 }
 
 //------------------------------------------------------------------------------
-void ShaderSemanticsManager::updateElementVariables(const ElementInfo& info)
+void ShaderSemanticsManager::updateElementVariables(const CameraInfo& cameraInfo, const ElementInfo& info)
 {
 	DynamicLightInfo** lights = info.affectedLights;
 
@@ -170,7 +212,12 @@ void ShaderSemanticsManager::updateElementVariables(const ElementInfo& info)
 			case BuiltinSemantics::World:
 				varInfo.variable->setMatrix(info.WorldMatrix);
 				break;
-
+			case BuiltinSemantics::WorldView:
+				varInfo.variable->setMatrix(info.WorldMatrix * cameraInfo.viewMatrix);
+				break;
+			case BuiltinSemantics::WorldViewIT:
+				varInfo.variable->setMatrix(Matrix::makeTranspose(Matrix::makeInverse(info.WorldMatrix * cameraInfo.viewMatrix)));
+				break;
 
 			// TODO: 以下、ライト列挙時に確定したい。何回もこんな計算するのはちょっと・・
 			case BuiltinSemantics::LightEnables:
@@ -214,7 +261,7 @@ void ShaderSemanticsManager::updateElementVariables(const ElementInfo& info)
 					for (int i = 0; i < DynamicLightInfo::MaxLights; i++)
 					{
 						// TODO: Vector4::Zero がほしい
-						Vector4 v = (lights[i] != nullptr) ? Vector4(lights[i]->transform.getPosition(), 0) : Vector4(0, 0, 0, 0);
+						Vector4 v = (lights[i] != nullptr) ? Vector4(lights[i]->m_position, 0) : Vector4(0, 0, 0, 0);
 						m_tempBufferWriter.write(&v, sizeof(Vector4));
 					}
 					varInfo.variable->setVectorArray((const Vector4*)m_tempBuffer.getBuffer(), DynamicLightInfo::MaxLights);
@@ -308,6 +355,24 @@ void ShaderSemanticsManager::updateSubsetVariables(const SubsetInfo& info)
 				if (cm != nullptr)
 					varInfo.variable->setFloat(cm->m_power);
 				break;
+
+			case BuiltinSemantics::MaterialM2Color:
+				if (cm != nullptr)
+					varInfo.variable->setVector(cm->m_m2_color);
+				break;
+			case BuiltinSemantics::MaterialM2Roughness:
+				if (cm != nullptr)
+					varInfo.variable->setFloat(cm->m_m2_roughness);
+				break;
+			case BuiltinSemantics::MaterialM2Metallic:
+				if (cm != nullptr)
+					varInfo.variable->setFloat(cm->m_m2_metallic);
+				break;
+			case BuiltinSemantics::MaterialM2Specular:
+				if (cm != nullptr)
+					varInfo.variable->setFloat(cm->m_m2_specular);
+				break;
+
 			case BuiltinSemantics::ColorScale:
 				if (cm != nullptr)
 					varInfo.variable->setVector(cm->m_colorScale);
@@ -349,18 +414,18 @@ ShaderPtr Shader::getBuiltinShader(BuiltinShader shader)
 }
 
 //------------------------------------------------------------------------------
-Ref<Shader> Shader::create(const StringRef& filePath, bool useTRSS)
+Ref<Shader> Shader::create(const StringRef& filePath, ShaderCodeType codeType)
 {
 	Ref<Shader> obj(LN_NEW Shader(), false);
-	obj->initialize(detail::GraphicsManager::getInstance(), filePath, useTRSS);
+	obj->initialize(detail::GraphicsManager::getInstance(), filePath, codeType);
 	return obj;
 }
 
 //------------------------------------------------------------------------------
-Ref<Shader> Shader::create(const char* code, int length)
+Ref<Shader> Shader::create(const char* code, int length, ShaderCodeType codeType)
 {
 	Ref<Shader> obj(LN_NEW Shader(), false);
-	obj->initialize(detail::GraphicsManager::getInstance(), code, length);
+	obj->initialize(detail::GraphicsManager::getInstance(), code, length, codeType);
 	return obj;
 }
 //
@@ -410,14 +475,14 @@ Shader::~Shader()
 }
 
 //------------------------------------------------------------------------------
-void Shader::initialize(detail::GraphicsManager* manager, const StringRef& filePath, bool useTRSS)
+void Shader::initialize(detail::GraphicsManager* manager, const StringRef& filePath, ShaderCodeType codeType)
 {
 	Ref<Stream> stream(manager->getFileManager()->createFileStream(filePath), false);
 	ByteBuffer buf((size_t)stream->getLength() + 1, false);
 	stream->read(buf.getData(), buf.getSize());
 	buf[(size_t)stream->getLength()] = 0x00;
 
-	initialize(manager, buf.getConstData(), buf.getSize(), useTRSS);
+	initialize(manager, buf.getConstData(), buf.getSize(), codeType);
 
 	//GraphicsResourceObject::initialize(manager);
 	//
@@ -432,38 +497,78 @@ void Shader::initialize(detail::GraphicsManager* manager, const StringRef& fileP
 }
 
 //------------------------------------------------------------------------------
-void Shader::initialize(detail::GraphicsManager* manager, const void* code, int length, bool useTRSS)
+void Shader::initialize(detail::GraphicsManager* manager, const void* code, int length, ShaderCodeType codeType)
 {
 	GraphicsResourceObject::initialize();
 
-	std::stringstream sb;
-	if (useTRSS)
+	std::string log;
+
+	if (m_manager->getGraphicsDevice()->getGraphicsAPI() == GraphicsAPI::OpenGL && codeType == ShaderCodeType::RawHLSL)
 	{
-		detail::ShaderAnalyzer analyzer;
-		analyzer.analyzeLNFX((const char*)code, length);
-		auto cc = analyzer.makeHLSLCode();
+		std::vector<LuminoShaderIRTechnique> techniques;
+		LuminoShaderIRGenerater gen;
+		gen.initialize(m_manager->getShaderContext());
+		std::string c;
+		if (!gen.convertRawHLSL_To_IRGLSL((const char*)code, length, &techniques, &log))
+		{
+			LN_NOTIMPLEMENTED();
+			return;
+		}
 
-		sb << std::string(cc.data(), cc.size());
-
-		//FileSystem::WriteAllBytes(_LT("code.c"), cc.data(), cc.size());
+		ShaderCompileResult result;
+		auto sh = static_cast<Driver::GLGraphicsDevice*>(m_manager->getGraphicsDevice())->createShader(techniques, &result);
+		sh->addRef();
+		m_deviceObj = sh;
+		LN_THROW(m_deviceObj != nullptr, CompilationException, result);
 	}
 	else
 	{
-		// ヘッダコード先頭に追加する
-		sb << (manager->getCommonShaderHeader());
-		sb << ("#line 5\n");
-		sb << std::string((const char*)code, length);
-		sb << ("\n");	// 最後には改行を入れておく。環境によっては改行がないとエラーになる。しかもエラーなのにエラー文字列が出ないこともある。
+		std::stringstream sb;
+		if (codeType == ShaderCodeType::TRSS)
+		{
+			//detail::ShaderAnalyzer analyzer;
+			//analyzer.analyzeLNFX((const char*)code, length);
+			//auto cc = analyzer.makeHLSLCode();
+
+			//sb << std::string(cc.data(), cc.size());
+			sb << std::string((const char*)code, length);
+
+			//FileSystem::WriteAllBytes(_LT("code.c"), cc.data(), cc.size());
+		}
+		else if (codeType == ShaderCodeType::RawHLSL)
+		{
+			LuminoShaderIRGenerater gen;
+			gen.initialize(m_manager->getShaderContext());
+			std::string c;
+			if (!gen.convertRawHLSL_To_IRHLSL((const char*)code, length, &c, &log))
+			{
+				LN_NOTIMPLEMENTED();
+				return;
+			}
+			sb << c;
+		}
+		else if (codeType == ShaderCodeType::RawIR)
+		{
+			sb << std::string((const char*)code, length);
+		}
+		else
+		{
+			// ヘッダコード先頭に追加する
+			sb << (manager->getCommonShaderHeader());
+			sb << ("#line 5\n");
+			sb << std::string((const char*)code, length);
+			sb << ("\n");	// 最後には改行を入れておく。環境によっては改行がないとエラーになる。しかもエラーなのにエラー文字列が出ないこともある。
+		}
+
+		std::string newCode = sb.str();
+
+		ShaderCompileResult result;
+		m_deviceObj = m_manager->getGraphicsDevice()->createShader(newCode.c_str(), newCode.length(), &result);
+		LN_THROW(m_deviceObj != nullptr, CompilationException, result);
+
+		// ライブラリ外部からの DeviceContext 再設定に備えてコードを保存する
+		m_sourceCode.alloc(newCode.c_str(), newCode.length());
 	}
-
-	std::string newCode = sb.str();
-
-	ShaderCompileResult result;
-	m_deviceObj = m_manager->getGraphicsDevice()->createShader(newCode.c_str(), newCode.length(), &result);
-	LN_THROW(m_deviceObj != nullptr, CompilationException, result);
-
-	// ライブラリ外部からの DeviceContext 再設定に備えてコードを保存する
-	m_sourceCode.alloc(newCode.c_str(), newCode.length());
 
 	postInitialize();
 }

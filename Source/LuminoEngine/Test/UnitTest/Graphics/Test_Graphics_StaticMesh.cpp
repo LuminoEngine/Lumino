@@ -12,8 +12,8 @@ protected:
 TEST_F(Test_Graphics_MeshResource, addSquare)
 {
 	// 自己照明
-	auto material = Material::create();
-	material->setBuiltinColorParameter(Material::EmissiveParameter, Color::White);
+	auto material = CommonMaterial::create();
+	material->setBuiltinColorParameter(CommonMaterial::EmissiveParameter, Color::White);
 
 	// <Test> 四角形1つ
 	{
@@ -65,8 +65,8 @@ TEST_F(Test_Graphics_MeshResource, addSquare)
 TEST_F(Test_Graphics_MeshResource, clear)
 {
 	// 自己照明
-	auto material = Material::create();
-	material->setBuiltinColorParameter(Material::AmbientParameter, Color::White);
+	auto material = CommonMaterial::create();
+	material->setBuiltinColorParameter(CommonMaterial::AmbientParameter, Color::White);
 
 	// <Test> 描画しつつ追加
 	{
@@ -103,8 +103,8 @@ TEST_F(Test_Graphics_MeshResource, clear)
 TEST_F(Test_Graphics_MeshResource, addLine)
 {
 	// 自己照明
-	auto material = Material::create();
-	material->setBuiltinColorParameter(Material::EmissiveParameter, Color::White);
+	auto material = CommonMaterial::create();
+	material->setBuiltinColorParameter(CommonMaterial::EmissiveParameter, Color::White);
 
 	// <Test> addLine
 	{

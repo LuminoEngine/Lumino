@@ -122,7 +122,7 @@ public:
 	virtual void onPreUpdate();
 
 	/// フレーム更新
-	virtual void onUpdate();
+	virtual void onUpdate(float deltaSceonds);
 
 	
 
@@ -146,7 +146,7 @@ LN_INTERNAL_ACCESS:
 	void updateWorldMatrixHierarchical();
 
 private:
-	void updateFrame();
+	void updateFrame(float deltaSceonds);
 	void render(DrawList* context);
 	void releaseComponents();
 

@@ -39,7 +39,7 @@ protected:
 	void initialize(detail::GraphicsManager* manager);
 	virtual void onRender(DrawList* context, RenderTargetTexture* source, RenderTargetTexture* destination) override;
 
-	Ref<Material>		m_material;
+	Ref<CommonMaterial>		m_material;
 	RenderTargetTexture*	m_accumTexture;	// 前回の画面描画内容
 	Vector2					m_center;
 	float					m_scale;

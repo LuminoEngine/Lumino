@@ -629,7 +629,7 @@ Ref<StaticMeshModel> MqoImporter::import(ModelManager* manager, const PathName& 
 	String line;
 	while (reader.readLine(&line))
 	{
-		// Material
+		// CommonMaterial
 		int index = line.indexOf(_LT("Material"));
 		if (index > -1)
 		{
@@ -1054,7 +1054,7 @@ Ref<tr::SrMeshModel> MqoParser::import(ModelManager* manager, const PathName& fi
 	String line;
 	while (reader.readLine(&line))
 	{
-		// Material
+		// CommonMaterial
 		int index = line.indexOf(_LT("Material"));
 		if (index > -1)
 		{
@@ -1350,7 +1350,7 @@ void MqoParser::visitMaterialChunk()
 {
 }
 
-void MqoParser::visitMaterial(Material* material)
+void MqoParser::visitMaterial(CommonMaterial* material)
 {
 	m_model->addMaterial(material);
 }

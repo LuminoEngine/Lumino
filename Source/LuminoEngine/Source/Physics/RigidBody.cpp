@@ -489,9 +489,9 @@ void RigidBody::onRemovedFromWorld()
 }
 
 //------------------------------------------------------------------------------
-void RigidBody::onUpdate()
+void RigidBody::onUpdate(float deltaSceonds)
 {
-	PhysicsObject::onUpdate();
+	PhysicsObject::onUpdate(deltaSceonds);
 
 	
 }

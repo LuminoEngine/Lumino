@@ -7,11 +7,11 @@ namespace fl
 {
 
 //==============================================================================
-// Token
+// SourceToken
 //==============================================================================
 
 //------------------------------------------------------------------------------
-Token::Token()
+SourceToken::SourceToken()
 	: m_ownerFile(nullptr)
 	, m_locBegin(0)
 	, m_locEnd(0)
@@ -21,13 +21,12 @@ Token::Token()
 	, m_lastColumn(0)
 	, m_group(TokenGroup::Unknown)
 	, m_tokenType(0)
-	, m_valid(false)
 {
 }
 
 //------------------------------------------------------------------------------
-Token::Token(InputFile* ownerFile, TokenGroup group, SourceLocation locBegin, SourceLocation locEnd)
-	: Token()
+SourceToken::SourceToken(InputFile* ownerFile, TokenGroup group, SourceLocation locBegin, SourceLocation locEnd)
+	: SourceToken()
 {
 	m_ownerFile = ownerFile;
 	m_locBegin = locBegin;
@@ -36,8 +35,8 @@ Token::Token(InputFile* ownerFile, TokenGroup group, SourceLocation locBegin, So
 }
 
 //------------------------------------------------------------------------------
-Token::Token(InputFile* ownerFile, TokenGroup group, SourceLocation locBegin, SourceLocation locEnd, int tokenType)
-	: Token()
+SourceToken::SourceToken(InputFile* ownerFile, TokenGroup group, SourceLocation locBegin, SourceLocation locEnd, int tokenType)
+	: SourceToken()
 {
 	m_ownerFile = ownerFile;
 	m_locBegin = locBegin;
@@ -47,12 +46,12 @@ Token::Token(InputFile* ownerFile, TokenGroup group, SourceLocation locBegin, So
 }
 
 //------------------------------------------------------------------------------
-Token::~Token()
+SourceToken::~SourceToken()
 {
 }
 
 //------------------------------------------------------------------------------
-const flChar* Token::getBegin() const
+const flChar* SourceToken::getBegin() const
 {
 	if (LN_REQUIRE(m_ownerFile != nullptr)) return nullptr;
 	const flChar* begin = (const flChar*)m_ownerFile->GetCodeBuffer()->getConstData();
@@ -60,34 +59,34 @@ const flChar* Token::getBegin() const
 }
 
 //------------------------------------------------------------------------------
-const flChar* Token::getEnd() const
+const flChar* SourceToken::getEnd() const
 {
 	return getBegin() + getLength();
 }
 
 //------------------------------------------------------------------------------
-const flChar* Token::GetCStr(InputFile* file) const
+const flChar* SourceToken::GetCStr(InputFile* file) const
 {
 	const flChar* begin = (const flChar*)file->GetCodeBuffer()->getConstData();
 	return begin + m_locBegin;
 }
 
 //------------------------------------------------------------------------------
-flString Token::getString(InputFile* file) const
+flString SourceToken::getString(InputFile* file) const
 {
 	const flChar* begin = (const flChar*)file->GetCodeBuffer()->getConstData();
 	return flString(begin + m_locBegin, m_locEnd - m_locBegin);
 }
 
 //------------------------------------------------------------------------------
-flString Token::getString() const
+flString SourceToken::getString() const
 {
 	const flChar* begin = (const flChar*)m_ownerFile->GetCodeBuffer()->getConstData();
 	return flString(begin + m_locBegin, m_locEnd - m_locBegin);
 }
 
 //------------------------------------------------------------------------------
-bool Token::EqualString(const char* str, int len) const
+bool SourceToken::EqualString(const char* str, int len) const
 {
 	len = (len < 0) ? strlen(str) : len;
 	if (getLength() != len) return false;
@@ -95,17 +94,43 @@ bool Token::EqualString(const char* str, int len) const
 }
 
 //------------------------------------------------------------------------------
-bool Token::EqualChar(char ch) const
+bool SourceToken::EqualChar(char ch) const
 {
 	if (getLength() != 1) return false;
 	return *getBegin() == ch;	// TODO: Case
 }
 
 //------------------------------------------------------------------------------
-bool Token::EqualGroupAndString(TokenGroup group, const char* str, int len) const
+bool SourceToken::EqualGroupAndString(TokenGroup group, const char* str, int len) const
 {
 	if (m_group != group) return false;
 	return EqualString(str, len);
+}
+
+
+
+//std::string TokenList::toStringValidCode() const
+//{
+//	std::stringstream ss;
+//	for (int i = 0; i < getCount(); ++i)
+//	{
+//		if (getAt(i).isValid())
+//		{
+//			ss << std::string(getAt(i).getBegin(), getAt(i).getLength());
+//		}
+//	}
+//	return ss.str();
+//}
+
+
+//==============================================================================
+// Token
+//==============================================================================
+Token::Token(SourceLocation loc)
+	: m_loc(loc)
+	, m_sourceToken(nullptr)
+	, m_valid(true)
+{
 }
 
 } // namespace fl

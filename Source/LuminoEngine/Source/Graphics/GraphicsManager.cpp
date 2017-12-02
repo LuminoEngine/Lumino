@@ -32,6 +32,7 @@
 #include <Lumino/Graphics/VertexDeclaration.h>
 #include <Lumino/Graphics/Shader.h>
 #include <Lumino/Rendering/Rendering.h>
+#include "../Shader/LuminoShader.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -297,6 +298,8 @@ void GraphicsManager::initialize(const ConfigData& configData)
 		m_builtinShaders[(int)BuiltinShader::LegacyDiffuse] = shader;
 	}
 	
+	m_shaderContext = std::make_shared<LuminoShaderContext>();
+	m_shaderContext->initialize();
 
 
 	if (m_renderingType == GraphicsRenderingType::Threaded)

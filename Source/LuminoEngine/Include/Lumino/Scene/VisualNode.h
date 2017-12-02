@@ -38,9 +38,9 @@ public:
 	/** @name Main material utilities. */
 	/** @{ */
 
-	//Material* GetMainMaterial() const;
+	//CommonMaterial* GetMainMaterial() const;
 
-	//tr::ReflectionObjectList<Material*>* GetMaterials() const;
+	//tr::ReflectionObjectList<CommonMaterial*>* GetMaterials() const;
 
 
 
@@ -150,7 +150,7 @@ public:
 	/// ノード単位の描画情報の更新。この後すぐ一連のサブセット描画が始まる
 	//virtual void UpdateNodeRenderingParams(MMEShader* priorityShader) {}
 
-
+	// obsolete
 	virtual detail::Sphere getBoundingSphere();
 
 	//void DrawSubsetInternal(SceneGraphRenderingContext* dc, int subsetIndex, MMEShader* shader, ShaderPass* pass);
@@ -192,10 +192,10 @@ private:
 	@brief
 */
 class MaterialList2
-	: public tr::ReflectionObjectList<Material*>	// SubMaterials (0 の場合もある)
+	: public tr::ReflectionObjectList<CommonMaterial*>	// SubMaterials (0 の場合もある)
 {
 public:
-	Material* GetMainMaterial() const;
+	CommonMaterial* GetMainMaterial() const;
 	
 LN_INTERNAL_ACCESS:
 	MaterialList2();
@@ -204,7 +204,7 @@ LN_INTERNAL_ACCESS:
 	void copyShared(MaterialList* srcList, bool createMainMaterial);
 	
 LN_INTERNAL_ACCESS:
-	Ref<Material>				m_mainMaterial;
+	Ref<CommonMaterial>				m_mainMaterial;
 };
 
 

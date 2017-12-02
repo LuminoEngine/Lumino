@@ -152,8 +152,8 @@ class SpriteParticleModel
 public:
 	static SpriteParticleModelPtr create();
 
-	void setMaterial(Material* material);
-	Material* getMaterial() const;
+	void setMaterial(CommonMaterial* material);
+	CommonMaterial* getMaterial() const;
 
 	void SetSubParticle(SpriteParticleModel* particle);
 
@@ -195,7 +195,7 @@ public: // TODO
 	//detail::ParticleData* getNextFreeParticleData(float emitterTime);
 	void spawnParticle(const Matrix& emitterTransform, detail::ParticleData* data, float spawnTime);
 	void simulateOneParticle(detail::ParticleData* data, double time, const Vector3& viewPosition, const Vector3& viewDirection, detail::SpriteParticleModelInstance* instance);
-	void render(DrawList* context, detail::SpriteParticleModelInstance* instance, const Matrix& emitterTransform, const Vector3& viewPosition, const Vector3& viewDirection, const Matrix& viewInv, Material* material);
+	void render(DrawList* context, detail::SpriteParticleModelInstance* instance, const Matrix& emitterTransform, const Vector3& viewPosition, const Vector3& viewDirection, const Matrix& viewInv, CommonMaterial* material);
 
 public: // TODO
 	float makeRandom(detail::ParticleData* data, float minValue, float maxValue, ParticleRandomSource source);
@@ -204,7 +204,7 @@ public: // TODO
 	
 	detail::GraphicsManager*	m_manager;
 	Ref<MeshResource>		m_mesh;		// TODO: このあたりは Manager に置いて、全体で共有した方がメモリ効率よいかも？
-	Ref<Material>			m_material;
+	Ref<CommonMaterial>			m_material;
 	Randomizer			m_rand;
 
 
@@ -325,7 +325,6 @@ public: // TODO
 
 
 class ParticleEmitterComponent;
-class ParticleEmitter3DComponent;
 
 /**
 	パーティクルエミッタのクラスです。
@@ -335,31 +334,18 @@ class ParticleEmitterComponent
 	: public VisualComponent
 {
 	LN_OBJECT;
-protected:
+LN_CONSTRUCT_ACCESS:
 	ParticleEmitterComponent();
 	virtual ~ParticleEmitterComponent();
 	void initialize(SpriteParticleModel* model);
 
+protected:
 	virtual void onUpdateFrame(float deltaTime) override;
 	virtual void onRender2(RenderingContext* renderer) override;
 
 private:
 	Ref<SpriteParticleModel>					m_model;
 	Ref<detail::SpriteParticleModelInstance>	m_instance;
-	Ref<Material>							m_material;
-};
-
-/** 3D 空間に配置されるパーティクルエミッタです。*/
-class ParticleEmitter3DComponent
-	: public ParticleEmitterComponent
-{
-	LN_OBJECT;
-public:
-	static Ref<ParticleEmitter3DComponent> create(SpriteParticleModel* model);
-
-protected:
-	ParticleEmitter3DComponent();
-	virtual ~ParticleEmitter3DComponent();
 };
 
 LN_NAMESPACE_SCENE_END

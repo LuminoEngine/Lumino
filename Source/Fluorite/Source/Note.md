@@ -1,4 +1,15 @@
 
+
+InputFile
+	SourceTokens	: 元のトークンリスト
+
+SourceManager : CompileUnit と 1:1
+	AdditionalTokens	: プリプロセスでマクロ展開されたトークン
+	Tokens			: SourceTokens と AdditionalTokens を参照する SourceLocation(+Valid) の配列
+
+
+
+
 clang
 --------------------
 Lex

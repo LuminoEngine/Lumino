@@ -4,9 +4,6 @@
 #include "../Base/Common.h"
 
 LN_NAMESPACE_BEGIN
-class IArchive;
-
-
 
 /** ファイルとディレクトリの属性 */
 LN_ENUM_FLAGS(FileAttribute)

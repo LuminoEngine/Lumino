@@ -53,7 +53,7 @@ public:
 
 	virtual void onAttached();
 	virtual void onDetaching();
-	virtual void onUpdate();
+	virtual void onUpdate(float deltaSceonds);
 	virtual void onPreRender(DrawList* context);	// 全てのオブジェクトに対して、レンダリングフェーズの開始を通知する
 	virtual void onRender(DrawList* context);
 
@@ -66,7 +66,7 @@ protected:
 private:
 	void attach(WorldObject* owner);
 	void detach();
-	void updateFrame();
+	void updateFrame(float deltaSceonds);
 	virtual void render(RenderingContext* context);
 
 LN_INTERNAL_ACCESS:

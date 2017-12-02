@@ -50,7 +50,7 @@ void Component::onDetaching()
 }
 
 //------------------------------------------------------------------------------
-void Component::onUpdate()
+void Component::onUpdate(float deltaSceonds)
 {
 }
 
@@ -96,9 +96,9 @@ void Component::detach()
 }
 
 //------------------------------------------------------------------------------
-void Component::updateFrame()
+void Component::updateFrame(float deltaSceonds)
 {
-	onUpdate();
+	onUpdate(deltaSceonds);
 }
 
 //------------------------------------------------------------------------------
@@ -173,7 +173,20 @@ void Transform::lookAt(const Vector3& target, const Vector3& up)
 
 	// left-hand coord
 	Vector3 f = Vector3::normalize(target - position);
-	Vector3 s = Vector3::normalize(Vector3::cross(up, f));
+
+
+	Vector3 s = Vector3::cross(up, f);
+	if (Vector3::nearEqual(s, Vector3::Zero))
+	{
+		// TODO: https://jp.mathworks.com/help/matlab/ref/circshift.html?requestedDomain=www.mathworks.com
+		// f Ç∆ up Ç™ìØàÍé≤è„Ç…Ç†ÇÈ
+		Vector3 u2 = Vector3::UnitZ;
+		//std::rotate<float*>(&u2.x, (&u2.x)+2, &u2.z);
+		s = Vector3::cross(u2, f);
+	}
+
+	s.normalize();
+
 	Vector3 u = Vector3::cross(f, s);
 	Matrix mat(
 		s.x, s.y, s.z, 0.0f,

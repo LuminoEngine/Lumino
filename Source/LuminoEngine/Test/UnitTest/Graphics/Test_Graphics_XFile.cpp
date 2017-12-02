@@ -23,7 +23,7 @@ TEST_F(Test_Graphics_XFile, Basic)
 	//auto mesh = StaticMeshComponent::createScreenPlane();
 	auto mesh = StaticMeshComponent::CreateSquarePlane(Vector2(1, 2), Vector3::UnitY, MeshCreationFlags::DynamicBuffers);
 	mesh->SetShader(shader);
-	mesh->GetMaterials()->GetAt(0)->SetTextureParameter(Material::MaterialTextureParameter, tex);
+	mesh->GetMaterials()->GetAt(0)->SetTextureParameter(CommonMaterial::MaterialTextureParameter, tex);
 
 
 	auto cb = Ref<CylinderMouseMoveCameraBehavior>::makeRef();

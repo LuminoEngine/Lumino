@@ -142,11 +142,11 @@ void WorldObject::onPreUpdate()
 }
 
 //------------------------------------------------------------------------------
-void WorldObject::onUpdate()
+void WorldObject::onUpdate(float deltaSceonds)
 {
 	for (auto& c : m_components)
 	{
-		c->onUpdate();
+		c->onUpdate(deltaSceonds);
 	}
 }
 
@@ -198,7 +198,7 @@ void WorldObject::onUIEvent(UIEventArgs* e)
 }
 
 //------------------------------------------------------------------------------
-void WorldObject::updateFrame()
+void WorldObject::updateFrame(float deltaSceonds)
 {
 	//Matrix localMatrix = transform.getTransformMatrix();
 
@@ -213,13 +213,13 @@ void WorldObject::updateFrame()
 	//}
 
 
-	onUpdate();
+	onUpdate(deltaSceonds);
 
 	transform.updateWorldMatrix();
 
 	for (auto& c : m_components)
 	{
-		c->updateFrame();
+		c->updateFrame(deltaSceonds);
 	}
 
 	// 子ノード更新
@@ -227,7 +227,7 @@ void WorldObject::updateFrame()
 	for (int i = 0; i < count; )
 	{
 		WorldObject* obj = m_children.getAt(i);
-		obj->updateFrame();
+		obj->updateFrame(deltaSceonds);
 
 		if (obj->m_isAutoRelease && obj->getReferenceCount() == 1)
 		{

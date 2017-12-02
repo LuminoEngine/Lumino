@@ -47,7 +47,7 @@ public:
 	Ref<StaticMeshModel> createStaticMeshModel(const PathName& filePath);
 	Ref<SkinnedMeshModel> createSkinnedMeshModel(const PathName& filePath);
 
-	Material* getDefaultMaterial() const;
+	CommonMaterial* getDefaultMaterial() const;
 	MeshResource* getUnitBoxMeshResource(bool reverseFaces) const;
 	MeshResource* getUnitSphereMeshResource(bool reverseFaces) const;
 	MeshResource* getUnitTeapotMeshResource() const;
@@ -62,7 +62,7 @@ private:
 	//Ref<CacheManager>				m_cacheManager;
 	std::array<Ref<Texture2D>, 10>	m_mmdDefaultToonTexture;
 
-	Ref<Material>		m_defaultMaterial;
+	Ref<CommonMaterial>		m_defaultMaterial;
 	Ref<MeshResource>	m_unitBoxMeshResource;
 	Ref<MeshResource>	m_unitBoxMeshResourceReverseFaces;
 	Ref<MeshResource>	m_unitSphereMeshResource;

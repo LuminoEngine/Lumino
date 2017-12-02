@@ -4,24 +4,64 @@
 #include <LuminoEngine.h>
 #include <Lumino/Testing/TestHelper.h>
 #include <Lumino/Scene/OffscreenWorldView.h>
+#include <Lumino/Rendering/SSAOImageEffect.h>
+#include <Lumino/Rendering/FXAAPostEffect.h>
+
+#include "../Source/Shader/LuminoShader.h"
 
 using namespace ln;
 
 
 
 
+float tangent(Vector3 p, Vector3 s) {
+	return (p.z - s.z) / (s.getXY() - p.getXY()).getLength();
+}
 
 
 void UIControlsGallery()
 {
-	EngineSettings::addAssetsDirectory(LN_LOCALFILE("../../../../Samples/Assets"));
+	//auto buf = FileSystem::readAllBytes(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/ClusteredShadingDefault.fx"));
+	//std::string code((const char*)buf.getConstData(), buf.getSize());
+	//LinaShaderIRGenerater lsgen;
+	//lsgen.initialize();
+	//lsgen.loadRawHLSL(code);
+	//lsgen.finalize();
 
+
+	// へいたん
+	float tl1 = atan(tangent(Vector3(0.1, 0.1, 0.5), Vector3(0.1 + 0.5, 0.1, 0.5)));
+	float tr1 = atan(tangent(Vector3(0.1, 0.1, 0.5), Vector3(0.1 - 0.5, 0.1, 0.5)));
+	float d1 = ((tl1 + tr1) / Math::PI);	// 0.0
+
+	// おくへすぼむ
+	float tl2 = atan(tangent(Vector3(0.1, 0.1, 0.5), Vector3(0.1 + 0.5, 0.1, 0.25)));
+	float tr2 = atan(tangent(Vector3(0.1, 0.1, 0.5), Vector3(0.1 - 0.5, 0.1, 0.25)));
+	float d2 = ((tl2 + tr2) / Math::PI);	// 0.2
+
+	// おくへもっとすぼむ
+	float tl4 = atan(tangent(Vector3(0.1, 0.1, 0.5), Vector3(0.1 + 0.5, 0.1, 0.05)));
+	float tr4 = atan(tangent(Vector3(0.1, 0.1, 0.5), Vector3(0.1 - 0.5, 0.1, 0.05)));
+	float d4 = ((tl4 + tr4) / Math::PI);	// 0.4
+
+	// おくへひらく
+	float tl3 = atan(tangent(Vector3(0.1, 0.1, 0.5), Vector3(0.1 + 0.5, 0.1, 0.75)));
+	float tr3 = atan(tangent(Vector3(0.1, 0.1, 0.5), Vector3(0.1 - 0.5, 0.1, 0.75)));
+	float d3 = ((tl3 + tr3) / Math::PI);	// -0.2
+
+
+	float tl5 = atan(tangent(Vector3(0.1, 0.1, 0.5), Vector3(0.1 + 0.5, 0.1, 0.8)));
+	float tr5 = atan(tangent(Vector3(0.1, 0.1, 0.5), Vector3(0.1 - 0.5, 0.1, 0.3)));
+	float d5 = ((tl5 + tr5) / Math::PI);
+
+	EngineSettings::addAssetsDirectory(LN_LOCALFILE("../../../../Samples/Assets"));
+	//EngineSettings::setGraphicsAPI(GraphicsAPI::OpenGL);
 	Engine::initialize();
 
 
 
 
-	Engine::getWorld3D()->setVisibleGridPlane(true);
+	//Engine::getWorld3D()->setVisibleGridPlane(true);
 
 	Engine::getCamera3D()->addComponent(newObject<CameraMouseMoveBehavior>());
 
@@ -30,7 +70,7 @@ void UIControlsGallery()
 	auto text1 = UITextField::create();
 	text1->setPosition(Point(10, 20));
 	text1->setSize(Size(200, 32));
-	uiRoot->addChild(text1);
+	//uiRoot->addChild(text1);
 
 #if 0
 	//auto* uiRoot = Engine::getMainWindow();
@@ -238,16 +278,306 @@ void UIControlsGallery()
 	//text1->SetText(_LT("text"));
 	//stack1->addChild(text1);
 
+#if 0	// 雨
+Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
+
+	//Camera::GetMain3DCamera()->SetFarClip(10000);
+	auto m1 = SpriteParticleModel::create();
+	m1->m_maxParticles = 10000;
+	m1->setSpawnRate(1000);
+	m1->setLifeTime(1.0);
+	m1->m_loop = true;
+
+	m1->setSize(0.05, 0.05);
+
+	m1->m_shapeType = ParticleEmitterShapeType::Box;
+	m1->m_shapeParam.set(10, 0, 10);
+
+	m1->m_particleDirection = ParticleDirectionType::MovementDirection;
+	m1->m_forwardVelocity.minValue = -12;
+	m1->m_forwardVelocity.maxValue = -12;
+	m1->m_lengthScale = 10;
+
+	auto material = DiffuseMaterial::create();
+	material->setMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
+	material->setShader(Shader::getBuiltinShader(BuiltinShader::Sprite));
+	m1->setMaterial(material);
+
+	auto particle1 = newObject<ParticleEmitterComponent>(m1);
+	particle1->setBlendMode(BlendMode::Add);
+	//particle1->SetPosition(0, 12, 0);
+	//particle1->setAngles(Math::PI, 0, 0);
+	auto particle1obj = newObject<WorldObject3D>();
+	particle1obj->addComponent(particle1);
+	//particle1obj->setPosition(0, 12, 0);
+
+	//auto m2 = SpriteParticleModel::create();
+	//m2->m_maxParticles = 1000;
+	//m2->SetSpawnRate(200);
+	//m2->SetLifeTime(0.2);
+	//m2->m_loop = true;
+	//m2->SetSize(0.1, 0.1);
+	//m2->m_minSizeVelocity = 3;
+	//m2->m_maxSizeVelocity = 3;
+	//m2->m_shapeType = ParticleEmitterShapeType::Box;
+	//m2->m_shapeParam.Set(10, 0, 10);
+	//m2->m_particleDirection = ParticleDirectionType::Horizontal;
+	//m2->SetMaterial(material);
+
+	//auto particle2 = ParticleEmitter3D::create(m2);
+	//particle2->SetBlendMode(BlendMode::Add);
+#endif
+
+
+	auto ssao = newObject<SSAOImageEffect>();
+	Engine::getDefault3DLayer()->addPostEffect(ssao);
+	Engine::getCamera3D()->getCameraComponent()->setFarClip(100);
+
+	//auto fxaa = newObject<FXAAPostEffect>();
+	//Engine::getDefault3DLayer()->addPostEffect(fxaa);
+	
+
+
 	auto ps1 = TransitionPostEffect::create();
 	Engine::getDefault3DLayer()->addPostEffect(ps1);
 	ps1->transition(1, nullptr, 0);	// フェードイン
+
+
+	Bitmap heightmap(LN_LOCALFILE("Assets/heightmap.png"));
 	
 	//auto box1 = StaticMeshComponent::create(LN_LOCALFILE("Assets/cube.mqo"));
 	//auto box1 = StaticMeshComponent::create(LN_LOCALFILE("Assets/cylinder2.mqo"));
 	//auto box1 = StaticMeshComponent::create(LN_LOCALFILE("Assets/Plant1.mqo"));
-	//auto box1 = StaticMeshComponent::create(_LT("D:/Documents/Modeling/test4.mqo"));
-	//auto mesh1 = newObject<WorldObject3D>();
-	//mesh1->addComponent(box1);
+	SizeI size = heightmap.getSize();
+	auto meshRes1 = MeshResource::create(size.width * size.height, (size.width - 1) * (size.height - 1) * 6);
+	for (int y = 0; y < size.height; y++)
+	{
+		for (int x = 0; x < size.width; x++)
+		{
+			int base = x + y * size.width;
+			meshRes1->setPosition(base, Vector3(x,  0.1 * heightmap.getPixel(x, y).r, -y));	//おくから
+			meshRes1->setNormal(base, Vector3::UnitZ);
+			meshRes1->setUV(base, Vector2(static_cast<float>(x) / size.width, static_cast<float>(y) / size.height) * 64.0);
+			meshRes1->setColor(base, Color::White);
+		}
+	}
+	for (int y = 0; y < (size.height - 1); y++)
+	{
+		for (int x = 0; x < (size.width - 1); x++)
+		{
+			int base = (x + y * (size.width - 1)) * 6;
+			meshRes1->setIndex(base + 0, (x + 0) + (y + 0) * size.width);
+			meshRes1->setIndex(base + 1, (x + 0) + (y + 1) * size.width);
+			meshRes1->setIndex(base + 2, (x + 1) + (y + 0) * size.width);
+			meshRes1->setIndex(base + 3, (x + 1) + (y + 0) * size.width);
+			meshRes1->setIndex(base + 4, (x + 0) + (y + 1) * size.width);
+			meshRes1->setIndex(base + 5, (x + 1) + (y + 1) * size.width);
+		}
+	}
+
+	auto tex1 = Assets::loadTexture(LN_LOCALFILE("Assets/grid_uv.png"));
+	auto material1 = CommonMaterial::create();
+	material1->setMaterialTexture(tex1);
+	auto meshModel1 = newObject<StaticMeshModel>(meshRes1);
+	meshModel1->addMaterial(material1);
+	auto mesh1 = StaticMeshComponent::create(meshModel1);
+	//auto meshObj1 = newObject<WorldObject3D>();
+	//meshObj1->addComponent(mesh1);
+	//meshObj1->setPosition(-50, -20, 100);
+		
+
+
+
+
+
+	auto planeMesh = StaticMeshComponent::createPlane(Vector2(20, 20), 1, 1);
+
+	auto cornellBox = CornellBox::create();
+	auto cornellBoxObj = newObject<WorldObject3D>();
+	cornellBoxObj->addComponent(cornellBox);
+
+	Engine::getCamera3D()->setPosition(0, 10, -30);
+
+	//auto ambientLight1 = AmbientLight::create();
+	//ambientLight1->setIntensity(0.05);
+	//Engine::getWorld3D()->addWorldObject(ambientLight1, true);
+
+
+	auto spotLight1 = SpotLight::create(Color::White, 30, Math::PI / 3);
+	spotLight1->transform.lookAt(-Vector3::UnitY);
+	spotLight1->setPosition(0, 20, 0);
+	//spotLight1->setIntensity(2.0f);
+	Engine::getWorld3D()->addWorldObject(spotLight1, true);
+
+
+	//auto pointLight1 = PointLight::create(/*Color::White, 2*/);
+	//pointLight1->setPosition(-9, 10, 0);
+	////pointLight1->setIntensity(2.0f);
+	//Engine::getWorld3D()->addWorldObject(pointLight1, true);
+
+
+	auto directionalLight1 = DirectionalLight::create(Color::White);
+	directionalLight1->getDirectionalLightComponent()->setShadowCast(true);
+	//Quaternion rot;
+	//rot.rotateX(Math::degreesToRadians(50));
+	//rot.rotateY(Math::degreesToRadians(-30));
+	//directionalLight1->setRotation(rot);
+	directionalLight1->setPosition(30, 30, -30);
+	directionalLight1->transform.lookAt(Vector3::Zero);
+	Engine::getWorld3D()->addWorldObject(directionalLight1, true);
+
+
+	Engine::getWorld3D()->setAmbientColor(Color(0.25, 0.25, 0.25, 1.0));
+	Engine::getWorld3D()->setAmbientSkyColor(Color::Blue.withAlpha(0.5));
+	Engine::getWorld3D()->setAmbientGroundColor(Color::Green.withAlpha(0.25));
+	Engine::getWorld3D()->setFogColor(Color(1, 1, 1, 0.5));
+	Engine::getWorld3D()->setFogDensity(0.03);
+#if 0
+
+	int ClusterDepth = 32;
+	int ClusterWidth = 16;
+	int ClusterHeight = 16;
+
+	auto clustersTexture = tr::Texture3D::create(ClusterWidth, ClusterHeight, ClusterDepth);
+
+	
+	{
+		auto camPos = Engine::getCamera3D()->getPosition();
+
+		auto vm = Matrix::makeLookAtLH(camPos, Vector3(0, 0, 0), Vector3(0, 1, 0));
+		auto pm = Matrix::makePerspectiveFovLH(Math::PI / 4, 640.f / 480.f, 1.0f, 1000.0f);
+		//auto pm = Matrix::makeOrthoLH(640.f, 480.f, 1.0f, 1000.0f);
+
+
+
+
+		Vector3 lightPos(0, 0, -7.5);
+		float lightRadius = 1.5;
+
+
+		Vector3 cp = Vector3::transformCoord(lightPos, vm);	// カメラから見た位置。奥が Z+。一番手前は 0.0
+		Vector3 minAABB(cp - lightRadius);
+		Vector3 maxAABB(cp + lightRadius);
+
+		Vector3 vp_pos = Vector3::transformCoord(cp, pm);
+		Vector3 vp_minAABB = Vector3::transformCoord(minAABB, pm);
+		Vector3 vp_maxAABB = Vector3::transformCoord(maxAABB, pm);
+
+
+
+		Vector3 test_n = Vector3::transformCoord(Vector3(0, 0, 1.f), pm);
+		Vector3 test_f = Vector3::transformCoord(Vector3(0, 0, 1000.f), pm);
+
+		test_n = Vector3::transformCoord(Vector3(0, 0, 1.f), vm);
+		test_f = Vector3::transformCoord(Vector3(0, 0, 1000.f), vm);
+
+		float near = 1.0f;
+		float far = 100.0f;
+
+		// 深度は 0.0 - 1.0 の線形でほしい
+		vp_minAABB.z = ((cp.z - lightRadius) - near) / (far - near);
+		vp_maxAABB.z = ((cp.z + lightRadius) - near) / (far - near);
+
+
+		struct UF
+		{
+			static float bias(float b, float x)
+			{
+				return pow(x, log(b) / log(0.5));
+			}
+		};
+
+		// 先に通常の VFカリングしておこう
+
+		float xs = 2.0f / ClusterWidth;
+		float ys = 2.0f / ClusterHeight;
+		float zs = 1.0f / ClusterDepth;
+		float biasBase = 0.1;
+
+		printf("\n");
+		for (int y = 0; y < ClusterHeight; y++)
+		{
+			float cb = (ys * y) - 1.0f;
+			float ct = (ys * (y + 1)) - 1.0f;
+			if ((vp_maxAABB.y > cb && vp_minAABB.y < ct))
+			{
+				for (int x = 0; x < ClusterWidth; x++)
+				{
+					float cl = (xs * x) - 1.0f;
+					float cr = (xs * (x + 1)) - 1.0f;
+					if ((vp_maxAABB.x > cl && vp_minAABB.x < cr))
+					{
+						for (int z = 0; z < ClusterDepth; z++)
+						{
+							float czn = UF::bias(biasBase, zs * z);
+							float czf = UF::bias(biasBase, zs * (z + 1));
+							if ((vp_maxAABB.z > czn && vp_minAABB.z < czf))
+							{
+								printf("%d,%d,%d\n", x, y, z);
+
+								clustersTexture->setPixel32(x, y, z, Color32(255, 255, 255, 0));
+							}
+						}
+					}
+				}
+			}
+		}
+
+		//for (int y = 0; y < ClusterHeight; y++)
+		//{
+		//	for (int x = 0; x < ClusterWidth; x++)
+		//	{
+		//		for (int z = 0; z < ClusterDepth; z++)
+		//		{
+		//			if (y == 2 || x == 8)
+		//			clustersTexture->setPixel32(x, y, z, Color32(255, 255, 255, 0));
+		//		}
+		//	}
+		//}
+		material1->setTextureParameter(_T("clustersTexture"), clustersTexture);
+		material1->setVectorParameter(_T("cam_pos"), Vector4(camPos, 1));
+		//clusterdShader->findVariable()
+
+
+		// printf("%f\n", UF::bias(0.1, 0.1 * i));
+
+		//int line = ((ClusterDepth - 1) - i);	// 奥から
+		//Vector3 pos(0, 0, ((far - near) / ClusterDepth) * line  + near);
+
+
+
+
+		// 10分割程度じゃやくにたたない。
+		/*
+		1	0.99975
+		2	0.999572
+		3	0.999334
+		4	0.999001
+		5	0.998502
+		6	0.997672
+		7	0.996016
+		8	0.99108
+		9	0
+		*/
+
+
+		//int CLUSTER_Z = 32;
+		//int CLUSTER_Y = 8;
+		//int CLUSTER_X = 32;
+
+		/*
+			Viewport 座標系から直接 tex3D できるようにしたい。ちなみにサンプルはワールド上でやっている。
+		*/
+
+		printf("");
+	}
+#endif
+
+
+
+
+
+
 	
 #if 0
 	auto font = Font::getDefault();
@@ -404,6 +734,23 @@ void UIControlsGallery()
 	float t = 0;
 	while (!Engine::isEndRequested())
 	{
+
+
+
+
+
+		Camera* cam = Engine::getCamera3D();
+		CameraComponent* camc = cam->getCameraComponent();
+		Vector3 camPos = cam->getPosition();//Vector3(0, 0, -10);
+		
+
+
+
+
+
+
+
+
 		Engine::updateFrame();
 
 		if (Input::isTriggered(InputButtons::Submit))

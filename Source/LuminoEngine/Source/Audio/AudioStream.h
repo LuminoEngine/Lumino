@@ -35,7 +35,7 @@ public:
 
 protected:
 	//　非同期ロード処理
-	virtual void onASyncIOProc();
+	virtual void onASyncIOProc() override;
 
 private:
 	AudioManager*		m_manager;

@@ -1,6 +1,4 @@
-﻿/**
-	@file	Archive.h
-*/
+﻿
 #pragma once
 
 #include <map>
@@ -12,12 +10,12 @@
 LN_NAMESPACE_BEGIN
 class ArchiveStream;
 
-class IArchive	// TODO: AssetStorage
+class IAssetsStorage
 	: public RefObject
 {
 protected:
-	IArchive() {}
-	virtual ~IArchive() {}
+	IAssetsStorage() = default;
+	virtual ~IAssetsStorage() = default;
 
 public:
 	virtual const PathName& getDirectoryPath() const = 0;
@@ -56,16 +54,16 @@ public:
 			archive.CreateStream( "Data/Image/Map/Ground.png" );
 	@endcode
 */
-class Archive
-	: public IArchive
+class ArchiveFileAssetsStorage
+	: public IAssetsStorage
 {
 public:
 	static const int Version_001 = 001;
 	static const byte_t InternalKey[16];
 
 public:
-	Archive();
-	virtual ~Archive();
+	ArchiveFileAssetsStorage();
+	virtual ~ArchiveFileAssetsStorage();
 
 public:
 
@@ -144,7 +142,7 @@ class ArchiveStream
     : public Stream
 {
 private:
-	ArchiveStream(Archive* archive, FILE* stream, uint32_t dataOffset, uint32_t dataSize);
+	ArchiveStream(ArchiveFileAssetsStorage* archive, FILE* stream, uint32_t dataOffset, uint32_t dataSize);
 	virtual ~ArchiveStream();
 
 public:
@@ -158,18 +156,18 @@ public:
 	virtual void flush() {}
 
 private:
-	friend class Archive;
+	friend class ArchiveFileAssetsStorage;
 
-    Archive*		m_archive;			///< このクラスを作成したアーカイブクラス
-	FILE*			m_stream;			///< アーカイブ本体のファイルストリーム
-	uint32_t		m_dataOffset;		///< ファイルの先頭からデータの先頭位置までのオフセット
-	uint32_t		m_dataSize;			///< データサイズ
-	int64_t			m_seekPoint;		///< シーク位置
+	ArchiveFileAssetsStorage*	m_archive;			///< このクラスを作成したアーカイブクラス
+	FILE*						m_stream;			///< アーカイブ本体のファイルストリーム
+	uint32_t					m_dataOffset;		///< ファイルの先頭からデータの先頭位置までのオフセット
+	uint32_t					m_dataSize;			///< データサイズ
+	int64_t						m_seekPoint;		///< シーク位置
 };
 
 /// FileManager の実装を簡易化するためのダミーアーカイブ (ディレクトリ直接参照)
 class DummyArchive
-	: public IArchive
+	: public IAssetsStorage
 {
 public:
 	virtual const PathName& getDirectoryPath() const override { static PathName dummy; return dummy; }
@@ -182,7 +180,7 @@ public:
 namespace detail {
 
 class DirectoryAssetsStorage
-	: public IArchive
+	: public IAssetsStorage
 {
 public:
 	DirectoryAssetsStorage(const PathName& directoryPath);
@@ -213,11 +211,11 @@ public:
 private:
 	void refreshArchiveList();
 
-	FileAccessPriority		m_fileAccessPriority;
-	Ref<IArchive>			m_installDirAssetsStorage;
-	List<Ref<Archive>>		m_archiveList;
-	List<Ref<IArchive>>		m_directoryArchiveList;
-	List<IArchive*>			m_activeArchiveList;
+	FileAccessPriority					m_fileAccessPriority;
+	Ref<IAssetsStorage>					m_installDirAssetsStorage;
+	List<Ref<ArchiveFileAssetsStorage>>	m_archiveList;
+	List<Ref<IAssetsStorage>>			m_directoryArchiveList;
+	List<IAssetsStorage*>				m_activeArchiveList;
 };
 
 } // namespace detail

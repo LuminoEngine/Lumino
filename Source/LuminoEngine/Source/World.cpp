@@ -6,6 +6,7 @@
 #include <Lumino/Scene/SceneGraph.h>
 #include <Lumino/Scene/Camera.h>
 #include <Lumino/Scene/Light.h>
+#include <Lumino/Scene/Fog.h>
 #include <Lumino/World.h>
 #include <Lumino/Scene/WorldObject.h>
 #include <Lumino/Scene/OffscreenWorldView.h>
@@ -36,7 +37,7 @@ void World::initialize()
 	//m_insideWorldRenderer = newObject<DrawList>(detail::EngineDomain::getGraphicsManager());
 	m_debugRenderer = newObject<DrawList>(detail::EngineDomain::getGraphicsManager());
 
-	m_debugRendererDefaultMaterial = newObject<Material>();
+	m_debugRendererDefaultMaterial = newObject<CommonMaterial>();
 
 	for (int i = 0; i < detail::MaxOffscreenId; i++)
 	{
@@ -131,36 +132,36 @@ void World::beginUpdateFrame()
 	}
 }
 
-void World::updateFrame(float elapsedTime)
+void World::updateFrame(float deltaSceonds)
 {
-	onPreUpdate(elapsedTime);
-	onInternalPhysicsUpdate(elapsedTime);
-	onUpdate(elapsedTime);
-	onInternalAnimationUpdate(elapsedTime);
-	onPostUpdate(elapsedTime);
+	onPreUpdate(deltaSceonds);
+	onInternalPhysicsUpdate(deltaSceonds);
+	onUpdate(deltaSceonds);
+	onInternalAnimationUpdate(deltaSceonds);
+	onPostUpdate(deltaSceonds);
 }
 
-void World::onPreUpdate(float elapsedTime)
-{
-}
-
-void World::onInternalPhysicsUpdate(float elapsedTime)
+void World::onPreUpdate(float deltaSceonds)
 {
 }
 
-void World::onUpdate(float elapsedTime)
+void World::onInternalPhysicsUpdate(float deltaSceonds)
+{
+}
+
+void World::onUpdate(float deltaSceonds)
 {
 	for (auto& obj : m_rootWorldObjectList)
 	{
-		obj->updateFrame();
+		obj->updateFrame(deltaSceonds);
 	}
 }
 
-void World::onInternalAnimationUpdate(float elapsedTime)
+void World::onInternalAnimationUpdate(float deltaSceonds)
 {
 }
 
-void World::onPostUpdate(float elapsedTime)
+void World::onPostUpdate(float deltaSceonds)
 {
 }
 
@@ -313,9 +314,9 @@ void World2D::beginUpdateFrame()
 }
 
 //------------------------------------------------------------------------------
-void World2D::onUpdate(float elapsedTime)
+void World2D::onUpdate(float deltaSceonds)
 {
-	World::onUpdate(elapsedTime);
+	World::onUpdate(deltaSceonds);
 }
 
 //------------------------------------------------------------------------------
@@ -354,9 +355,15 @@ void World3D::initialize()
 	m_mainCamera->setSpecialObject(true);
 	addWorldObject(m_mainCamera, true);
 
-	m_mainLight = newObject<Light>();
-	m_mainLight->setSpecialObject(true);
-	addWorldObject(m_mainLight, true);
+	//m_mainLight = newObject<Light>();
+	//m_mainLight->setSpecialObject(true);
+	//addWorldObject(m_mainLight, true);
+
+	setAmbientColor(Color(0.25, 0.25, 0.25, 1.0));
+	setAmbientSkyColor(Color(0, 0, 0, 0));
+	setAmbientGroundColor(Color(0, 0, 0, 0));
+	setFogColor(Color(1, 1, 1, 1));
+	setFogDensity(0.0);
 
 	createGridPlane();
 }
@@ -397,6 +404,16 @@ Camera* World3D::getMainCamera() const
 //	return m_sceneGraph->GetRenderingProfiler();
 //}
 
+Fog* World3D::getFog() const
+{
+	return m_fog;
+}
+
+void World3D::setFog(Fog* fog)
+{
+	m_fog = fog;
+}
+
 //------------------------------------------------------------------------------
 void World3D::beginUpdateFrame()
 {
@@ -409,7 +426,7 @@ void World3D::beginUpdateFrame()
 }
 
 //------------------------------------------------------------------------------
-void World3D::onInternalPhysicsUpdate(float elapsedTime)
+void World3D::onInternalPhysicsUpdate(float deltaSceonds)
 {
 	// Physics モジュールの Component が、WorldObject の WorldMatrix を元にシミュレーション前準備を行うことがあるので
 	// ここで WorldMatrix を更新しておく。
@@ -417,13 +434,14 @@ void World3D::onInternalPhysicsUpdate(float elapsedTime)
 
 	if (m_physicsWorld != nullptr)
 	{
-		m_physicsWorld->stepSimulation(elapsedTime);
+		m_physicsWorld->stepSimulation(deltaSceonds);
 	}
 }
 
 //------------------------------------------------------------------------------
 void World3D::render(RenderingContext* context, WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen)
 {
+
 	World::render(context, renderView, debugDrawFlags, layerMask, offscreen);
 
 	renderGridPlane(context, renderView);
@@ -458,7 +476,7 @@ void World3D::createGridPlane()
 
 	// 適当な四角形メッシュ
 	m_gridPlane = Ref<StaticMeshModel>::makeRef();
-	m_gridPlane->initializeScreenPlane(gm, MeshCreationFlags::DynamicBuffers);
+	m_gridPlane->initializeScreenPlane(MeshCreationFlags::DynamicBuffers);
 	MeshResource* mesh = m_gridPlane->getMeshResource(0);
 	mesh->addSections(1);
 	mesh->getSection(0)->MaterialIndex = 0;

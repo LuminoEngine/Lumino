@@ -240,7 +240,7 @@ TEST_F(Test_Graphics_Rendering, drawMesh)
 	//}
 	{
 		auto mesh = Ref<StaticMeshModel>::makeRef();
-		mesh->initializeSphere(detail::GraphicsManager::getInstance(), 2, 8, 4, MeshCreationFlags::None);
+		mesh->initializeSphere(2, 8, 4, MeshCreationFlags::None);
 
 		LN_TEST_BEGIN_FRAME;
 		Engine::getWorld3D()->getRenderer()->drawMesh(mesh->getMeshResource(0), 0, mesh->getMaterial(0));
@@ -566,6 +566,24 @@ TEST_F(Test_Graphics_DrawingContext, drawText_)
 
 //==============================================================================
 class Test_Graphics_Texture : public LuminoGraphicsTest {};
+
+//-----------------------------------------------------------------------------
+TEST_F(Test_Graphics_Texture, setPixel)
+{
+	auto tex1 = Texture2D::create(2, 2, TextureFormat::R8G8B8A8);
+	tex1->setPixel(0, 0, Color::Red);
+	tex1->setPixel(0, 1, Color::Green);
+	tex1->setPixel(1, 0, Color::Blue);
+	tex1->setPixel(1, 1, Color::White);
+
+	auto sprite = Sprite2D::create(tex1);
+	sprite->setBlendMode(BlendMode::Alpha);
+	Engine::update();
+
+	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Texture.setPixel1.png"), 100));
+
+	sprite->removeFromWorld();
+}
 
 //-----------------------------------------------------------------------------
 TEST_F(Test_Graphics_Texture, blit)

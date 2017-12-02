@@ -249,3 +249,4 @@ TEST_F(Test_Base_Formatter, FixedBuffer)
 		ASSERT_EQ(-1, r);
 	}
 }
+

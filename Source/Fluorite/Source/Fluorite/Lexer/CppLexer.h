@@ -226,7 +226,7 @@ public:
 	virtual ~CppLexer();
 
 	virtual int ReadToken(const Range& buffer) override;
-	virtual void PollingToken(Token* newToken) override;
+	virtual void PollingToken(SourceToken* newToken) override;
 	virtual void onStart();
 
 

@@ -1,6 +1,6 @@
 
-#include "../../include/Lumino/Math/Matrix.h"
-#include "../../include/Lumino/Math/ViewFrustum.h"
+#include "../../Include/Lumino/Math/Matrix.h"
+#include "../../Include/Lumino/Math/ViewFrustum.h"
 
 LN_NAMESPACE_BEGIN
 

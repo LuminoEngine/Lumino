@@ -5,12 +5,13 @@
 
 LN_NAMESPACE_BEGIN
 namespace detail { class SceneGraphRenderingProfilerInterface; }
-class Material;
+class CommonMaterial;
 class DrawList;
 class StaticMeshModel;
 class CameraComponent;
 class Camera;
 class Light;
+class Fog;
 class SceneGraph;
 class SceneGraph2D;
 class SceneGraph3D;
@@ -60,14 +61,14 @@ LN_CONSTRUCT_ACCESS:
 LN_INTERNAL_ACCESS:
 	//const Ref<DrawList>& getInsideWorldRenderer() const { return m_insideWorldRenderer; }
 	virtual void beginUpdateFrame();
-	void updateFrame(float elapsedTime);
+	void updateFrame(float deltaSceonds);
 
 	// update sequence
-	virtual void onPreUpdate(float elapsedTime);
-	virtual void onInternalPhysicsUpdate(float elapsedTime);
-	virtual void onUpdate(float elapsedTime);
-	virtual void onInternalAnimationUpdate(float elapsedTime);
-	virtual void onPostUpdate(float elapsedTime);
+	virtual void onPreUpdate(float deltaSceonds);
+	virtual void onInternalPhysicsUpdate(float deltaSceonds);
+	virtual void onUpdate(float deltaSceonds);
+	virtual void onInternalAnimationUpdate(float deltaSceonds);
+	virtual void onPostUpdate(float deltaSceonds);
 
 	void renderRoot(WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags);
 	virtual void render(RenderingContext* context, WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen = nullptr);
@@ -82,7 +83,7 @@ LN_INTERNAL_ACCESS:
 	Ref<RenderingContext>			m_renderer;
 	//Ref<DrawList>					m_insideWorldRenderer;
 	Ref<DrawList>					m_debugRenderer;
-	Ref<Material>					m_debugRendererDefaultMaterial;	// TODO: DebugDrawList みたいに派生させてまとめたほうがいいかな・・・
+	Ref<CommonMaterial>					m_debugRendererDefaultMaterial;	// TODO: DebugDrawList みたいに派生させてまとめたほうがいいかな・・・
 	List<Ref<OffscreenWorldView>>	m_offscreenWorldViewList;
 	List<int>							m_offscreenIdStorage;
 
@@ -112,7 +113,7 @@ LN_INTERNAL_ACCESS:
 	SceneGraph2D* getSceneGraph2D() const;
 	Camera* getMainCamera() const;
 	virtual void beginUpdateFrame() override;
-	virtual void onUpdate(float elapsedTime) override;
+	virtual void onUpdate(float deltaSceonds) override;
 	virtual void render(RenderingContext* context, WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen) override;
 
 private:
@@ -131,6 +132,39 @@ public:
 	void setVisibleGridPlane(bool visible) { m_visibleGridPlane = visible; }
 	//virtual DrawList* getRenderer() const override;
 
+	/** 環境光の色を取得します。 */
+	const Color& getAmbientColor() { return m_globalRenderSettings.ambientColor; }
+
+	/** 環境光の色を設定します。アルファ値を影響度とし、シーン全体のオブジェクトへ一様に影響します。(default: Color(0.25, 0.25, 0.25, 1.0)) */
+	void setAmbientColor(const Color& color) { m_globalRenderSettings.ambientColor = color; }
+
+	/** 半球ライティングのための空の環境光の色を取得します。 */
+	const Color& getAmbientSkyColor() { return m_globalRenderSettings.ambientSkyColor; }
+
+	/** 半球ライティングのための空の環境光の色を設定します。(default: Color(0, 0, 0, 0)) */
+	void setAmbientSkyColor(const Color& color) { m_globalRenderSettings.ambientSkyColor = color; }
+
+	/** 半球ライティングのための地面の環境光の色を取得します。 */
+	const Color& getAmbientGroundColor() { return m_globalRenderSettings.ambientGroundColor; }
+
+	/** 半球ライティングのための地面の環境光の色を設定します。(default: Color(0, 0, 0, 0)) */
+	void setAmbientGroundColor(const Color& color) { m_globalRenderSettings.ambientGroundColor = color; }
+
+	/** フォグの色を取得します。 */
+	const Color& getFogColor() { return m_globalRenderSettings.fogColor; }
+
+	/** フォグの色を設定します。(default: Color(1, 1, 1, 1)) */
+	void setFogColor(const Color& color) { m_globalRenderSettings.fogColor = color; }
+	
+	/** フォグの密度指数を取得します。 */
+	float getFogDensity() { return m_globalRenderSettings.fogDensity; }
+
+	/** フォグの密度指数を設定します。(default: 0) */
+	void setFogDensity(float density) { m_globalRenderSettings.fogDensity = density; }
+
+	Fog* getFog() const;
+	void setFog(Fog* fog);
+
 protected:
 	//virtual SceneGraph* GetSceneGraph() override;
 
@@ -143,9 +177,11 @@ LN_INTERNAL_ACCESS:
 	PhysicsWorld* getPhysicsWorld3D() const;
 	SceneGraph3D* getSceneGraph3D() const;
 	Camera* getMainCamera() const;
+	const detail::SceneGlobalRenderSettings& getGlobalRenderSettings() const { return m_globalRenderSettings; }
 	virtual void beginUpdateFrame() override;
-	virtual void onInternalPhysicsUpdate(float elapsedTime) override;
+	virtual void onInternalPhysicsUpdate(float deltaSceonds) override;
 	virtual void render(RenderingContext* context, WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen) override;
+
 
 private:
 	void createGridPlane();
@@ -154,8 +190,10 @@ private:
 
 	Ref<PhysicsWorld>		m_physicsWorld;
 	Ref<SceneGraph3D>		m_sceneGraph;
+	detail::SceneGlobalRenderSettings	m_globalRenderSettings;
 	Ref<Camera>				m_mainCamera;
 	Ref<Light>				m_mainLight;
+	Ref<Fog>				m_fog;
 	Ref<StaticMeshModel>		m_gridPlane;
 	bool						m_visibleGridPlane;
 };

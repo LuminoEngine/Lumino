@@ -87,7 +87,6 @@ protected:
 	virtual JsonParseResult onLoad(JsonReader2* reader) = 0;
 
 	// ISerializeElement interface
-	virtual void setValueInt32(const StringRef& name, int32_t value) override {}
 	virtual void setValueString(const StringRef& name, const String& value) override {}
 	virtual ISerializeElement* addObject(const StringRef& name) override { return nullptr; }
 	virtual bool tryGetValueInt32(const StringRef& name, int32_t* outValue) override { return false; }
@@ -155,7 +154,7 @@ public:
 
 protected:
 	// ISerializeElement interface
-	virtual SerializationElementType getSerializationElementType() const { return SerializationElementType::Value; }
+	virtual SerializationElementType getSerializationElementType() const override { return SerializationElementType::Value; }
 	virtual bool getSerializeValueBool() const override { return getBool(); }
 	virtual int8_t getSerializeValueInt8() const override { return getInt32(); }
 	virtual int16_t getSerializeValueInt16() const override { return getInt32(); }
@@ -260,8 +259,7 @@ protected:
 	virtual JsonParseResult onLoad(JsonReader2* reader) override;
 
 	// ISerializElement interface
-	virtual SerializationElementType getSerializationElementType() const { return SerializationElementType::Object; }
-	virtual void setValueInt32(const StringRef& name, int32_t value) override;
+	virtual SerializationElementType getSerializationElementType() const override { return SerializationElementType::Object; }
 	virtual void setValueString(const StringRef& name, const String& value) override;
 	virtual ISerializeElement* addObject(const StringRef& name) override;
 	virtual bool tryGetValueInt32(const StringRef& name, int32_t* outValue) override;

@@ -556,7 +556,7 @@ void Bitmap::convertPixelFormat(
 		for (size_t i = 0; i < count; ++i) {
 			uint32_t c = in[i];
 			out[i] =
-				c & 0xff000000 |
+				(c & 0xff000000) |
 				((c & 0x000000ff) << 16) |
 				((c & 0x0000ff00)) |
 				((c & 0x00ff0000) >> 16);
@@ -821,6 +821,41 @@ void Bitmap::bitBltInternal(
 	LN_THROW(0, InvalidFormatException);
 #endif
 }
+
+
+//==============================================================================
+// BitmapHelper
+//==============================================================================
+namespace detail {
+
+void BitmapHelper::blitRawSimple(void* dst, const void* src, size_t width, size_t height, size_t pixelBytes, bool flipVertical)
+{
+	if (LN_REQUIRE(dst)) return;
+	if (LN_REQUIRE(src)) return;
+	if (LN_REQUIRE(dst != src)) return;
+	size_t lineBytes = width * pixelBytes;
+
+	if (!flipVertical)
+	{
+		for (size_t y = 0; y < height; y++)
+		{
+			byte_t* d = static_cast<byte_t*>(dst) + (lineBytes * y);
+			const byte_t* s = static_cast<const byte_t*>(src) + (lineBytes * y);
+			memcpy(d, s, lineBytes);
+		}
+	}
+	else
+	{
+		for (size_t y = 0; y < height; y++)
+		{
+			byte_t* d = static_cast<byte_t*>(dst) + (lineBytes * y);
+			const byte_t* s = static_cast<const byte_t*>(src) + (lineBytes * (height - y - 1));
+			memcpy(d, s, lineBytes);
+		}
+	}
+}
+
+} // namespace detail
 
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

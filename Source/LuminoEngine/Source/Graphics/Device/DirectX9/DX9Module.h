@@ -116,6 +116,15 @@ public:
 		CONST DWORD* pFunction,
 		LPD3DXCONSTANTTABLE* ppConstantTable);
 
+	typedef HRESULT(WINAPI *MD_D3DXPreprocessShader)(
+		LPCSTR pSrcData,
+		UINT SrcDataSize,
+		CONST D3DXMACRO* pDefines,
+		LPD3DXINCLUDE pInclude,
+		LPD3DXBUFFER* ppShaderText,
+		LPD3DXBUFFER* ppErrorMsgs
+	);
+
 public:
 
 	/// 初期化
@@ -128,26 +137,13 @@ public:
 	static MD_D3DXCheckVolumeTextureRequirements	D3DXCheckVolumeTextureRequirements;
 	static MD_D3DXCreateEffect						D3DXCreateEffect;
 	static MD_D3DXLoadMeshFromXInMemory				D3DXLoadMeshFromXInMemory;
-	//static MD_D3DXCreateFontIndirectW				D3DXCreateFontIndirectW;
 	static MD_D3DXDeclaratorFromFVF					D3DXDeclaratorFromFVF;
 	static MD_D3DXLoadMeshHierarchyFromXInMemory	D3DXLoadMeshHierarchyFromXInMemory;
 	static MD_D3DXFrameDestroy						D3DXFrameDestroy;
 	static MD_D3DXComputeNormals					D3DXComputeNormals;
 	static MD_D3DXCreateEffectPool					D3DXCreateEffectPool;
 	static MD_D3DXGetShaderConstantTable			D3DXGetShaderConstantTable;
-
-	//static IDirect3D9* Direct3DCreate9(UINT SDKVersion);
-	//static HRESULT D3DXCreateTextureFromFileInMemoryEx(LPDIRECT3DDEVICE9 pDevice, LPCVOID pSrcData, UINT SrcDataSize, UINT Width, UINT Height, UINT MipLevels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, DWORD Filter, DWORD MipFilter, D3DCOLOR ColorKey, D3DXIMAGE_INFO* pSrcInfo, PALETTEENTRY* pPalette, LPDIRECT3DTEXTURE9* ppTexture);
-	//static HRESULT D3DXGetImageInfoFromFileInMemory(LPCVOID pSrcData, UINT SrcDataSize, D3DXIMAGE_INFO* pSrcInfo);
-	//static HRESULT D3DXCheckTextureRequirements(LPDIRECT3DDEVICE9 pDevice, UINT *pWidth, UINT *pHeight, UINT *pNumMipLevels, DWORD Usage, D3DFORMAT *pFormat, D3DPOOL Pool);
-	//static HRESULT D3DXCreateEffect(LPDIRECT3DDEVICE9 pDevice, LPCVOID pSrcData, UINT SrcDataLen, CONST D3DXMACRO* pDefines, LPD3DXINCLUDE pInclude, DWORD Flags, LPD3DXEFFECTPOOL pPool, LPD3DXEFFECT* ppEffect, LPD3DXBUFFER *ppCompilationErrors);
-	//static HRESULT D3DXLoadMeshFromXInMemory(LPCVOID Memory, DWORD SizeOfMemory, DWORD Options, LPDIRECT3DDEVICE9 pD3DDevice, LPD3DXBUFFER * ppAdjacency, LPD3DXBUFFER * ppMaterials, LPD3DXBUFFER * ppEffectInstances, DWORD * pNumMaterials, LPD3DXMESH * ppMesh);
-	//static HRESULT D3DXCreateFontIndirect(LPDIRECT3DDEVICE9 pDevice, CONST D3DXFONT_DESC * pDesc, LPD3DXFONT * ppFont);
-	//static HRESULT D3DXDeclaratorFromFVF(DWORD FVF, D3DVERTEXELEMENT9 pDeclarator[MAX_FVF_DECL_SIZE]);
-	//static HRESULT D3DXLoadMeshHierarchyFromXInMemory(LPCVOID pMemory, DWORD SizeOfMemory, DWORD MeshOptions, LPDIRECT3DDEVICE9 pDevice, LPD3DXALLOCATEHIERARCHY pAlloc, LPD3DXLOADUSERDATA pUserDataLoader, LPD3DXFRAME* ppFrameHeirarchy, LPD3DXANIMATIONCONTROLLER* ppAnimController);
-	//static HRESULT D3DXFrameDestroy(LPD3DXFRAME pFrameRoot, LPD3DXALLOCATEHIERARCHY pAlloc);
-	//static HRESULT D3DXComputeNormals(LPD3DXBASEMESH pMesh, const DWORD *pAdjacency);
-	//static HRESULT D3DXCreateEffectPool(LPD3DXEFFECTPOOL* ppPool);
+	static MD_D3DXPreprocessShader					D3DXPreprocessShader;
 
 public:
 

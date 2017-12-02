@@ -30,14 +30,6 @@ bool TestEnv::EqualsScreenShot(const Char* filePath, int passRate)
 }
 
 //------------------------------------------------------------------------------
-//bool TestEnv::equalsTexture(Texture* texture, const Char* filePath)
-//{
-//	bool r = TestEnv::EqualsBitmapFile(texture->lock(), filePath, 90);
-//	texture->unlock();
-//	return r;
-//}
-
-//------------------------------------------------------------------------------
 Color32 MixPixels(Bitmap* bmp, int x, int y)
 {
 	const Color32& c = bmp->getPixel(x, y);
@@ -195,10 +187,11 @@ GTEST_API_ int main(int argc, char **argv)
 #endif
 	setlocale(LC_ALL, "");
 
-#if 0	// 部分的にテストを実行したりする
+#if 1	// 部分的にテストを実行したりする
 	char* testArgs[] = {
 		argv[0],
-		"--gtest_filter=Test_Graphics_Rendering.*"
+		"--gtest_filter=Test_Rendering_Light.*",
+		"--gtest_break_on_failure",
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);
@@ -216,9 +209,9 @@ GTEST_API_ int main(int argc, char **argv)
 		EngineSettings::setGraphicsRenderingType(GraphicsRenderingType::Threaded);//GraphicsRenderingType::Immediate);//
 		detail::EngineSettings::instance.defaultSkinFilePath = LN_LOCALFILE("UI/Data/Skin.png");
 	}
-
+	
 	{
-		EngineSettings::setGraphicsAPI(GraphicsAPI::OpenGL);
+		EngineSettings::setGraphicsAPI(GraphicsAPI::DirectX9);
 
 		EngineInitalize();
 		int r = RUN_ALL_TESTS();

@@ -57,7 +57,7 @@ LN_INTERNAL_ACCESS:
 
 private:
 
-	Ref<Material>			m_skyMaterial;
+	Ref<CommonMaterial>			m_skyMaterial;
 };
 
 class MirrorComponent
@@ -75,7 +75,7 @@ LN_INTERNAL_ACCESS:
 
 private:
 	Ref<OffscreenWorldView>	m_offscreen;
-	Ref<Material>			m_material;
+	Ref<CommonMaterial>			m_material;
 
 };
 

@@ -164,9 +164,10 @@ void SceneNode::onRender2(RenderingContext* renderer)
 }
 
 //------------------------------------------------------------------------------
-void SceneNode::onUpdate()
+void SceneNode::onUpdate(float deltaSceonds)
 {
-	Component::onUpdate();
+	Component::onUpdate(deltaSceonds);
+	updateFrameHierarchy(this, deltaSceonds);
 }
 
 //==============================================================================

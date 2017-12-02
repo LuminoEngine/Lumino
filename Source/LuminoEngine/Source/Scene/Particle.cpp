@@ -197,13 +197,13 @@ void SpriteParticleModel::initialize(detail::GraphicsManager* manager)
 //}
 
 //------------------------------------------------------------------------------
-void SpriteParticleModel::setMaterial(Material* material)
+void SpriteParticleModel::setMaterial(CommonMaterial* material)
 {
 	m_material = material;
 }
 
 //------------------------------------------------------------------------------
-Material* SpriteParticleModel::getMaterial() const
+CommonMaterial* SpriteParticleModel::getMaterial() const
 {
 	return m_material;
 }
@@ -538,7 +538,7 @@ float SpriteParticleModel::makeRandom(detail::ParticleData* data, float minValue
 }
 
 //------------------------------------------------------------------------------
-void SpriteParticleModel::render(DrawList* context, detail::SpriteParticleModelInstance* instance, const Matrix& emitterTransform, const Vector3& viewPosition, const Vector3& viewDirection, const Matrix& viewInv, Material* material)
+void SpriteParticleModel::render(DrawList* context, detail::SpriteParticleModelInstance* instance, const Matrix& emitterTransform, const Vector3& viewPosition, const Vector3& viewDirection, const Matrix& viewInv, CommonMaterial* material)
 {
 
 	// 更新処理
@@ -730,13 +730,6 @@ void ParticleEmitterComponent::initialize(SpriteParticleModel* model)
 	m_model = model;
 	m_model->commit();
 	m_instance = m_model->createInstane();
-
-	// TODO: なんか良くないやり方な気がする・・・	共有マテリアルは変更禁止にしたほうがいいと思う
-	// TODO: main にはんえいされない
-	//m_materialList->SetAt(0, m_model->getMaterial());
-	//m_materialList->m_mainMaterial = m_model->getMaterial();
-
-	m_material = newObject<Material>();
 }
 
 //------------------------------------------------------------------------------
@@ -749,7 +742,7 @@ void ParticleEmitterComponent::onUpdateFrame(float deltaTime)
 //------------------------------------------------------------------------------
 void ParticleEmitterComponent::onRender2(RenderingContext* renderer)
 {
-	Vector3 dir = renderer->getRenderView()->m_cameraInfo.viewDirection;//->getCurrentCamera()->getDirectionInternal();
+	Vector3 dir = renderer->getRenderView()->m_cameraInfo.viewDirection;
 	m_model->render(
 		renderer,
 		m_instance,
@@ -757,34 +750,8 @@ void ParticleEmitterComponent::onRender2(RenderingContext* renderer)
 		renderer->getRenderView()->m_cameraInfo.viewPosition,
 		dir,
 		Matrix::makeInverse(renderer->getRenderView()->m_cameraInfo.viewMatrix),
-		m_material);
+		m_model->getMaterial());
 }
-
-//==============================================================================
-// ParticleEmitter3DComponent
-//==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ParticleEmitter3DComponent, ParticleEmitterComponent);
-
-//------------------------------------------------------------------------------
-Ref<ParticleEmitter3DComponent> ParticleEmitter3DComponent::create(SpriteParticleModel* model)
-{
-	auto ptr = Ref<ParticleEmitter3DComponent>::makeRef();
-	ptr->initialize(model);
-	//detail::EngineDomain::getDefaultSceneGraph3D()->getRootNode()->addChild(ptr);
-	return ptr;
-
-}
-
-//------------------------------------------------------------------------------
-ParticleEmitter3DComponent::ParticleEmitter3DComponent()
-{
-}
-
-//------------------------------------------------------------------------------
-ParticleEmitter3DComponent::~ParticleEmitter3DComponent()
-{
-}
-
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END

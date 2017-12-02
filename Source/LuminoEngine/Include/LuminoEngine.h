@@ -77,6 +77,8 @@
 
 #include "Lumino/Scene/SceneGraph.h"
 #include "Lumino/Scene/Camera.h"
+#include "Lumino/Scene/Light.h"
+#include "Lumino/Scene/Fog.h"
 #include "Lumino/Scene/Sprite.h"
 #include "Lumino/Scene/TileMap.h"
 #include "Lumino/Scene/Particle.h"

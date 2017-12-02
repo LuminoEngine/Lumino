@@ -46,7 +46,7 @@ void ToneImageEffect::initialize(detail::GraphicsManager* manager)
 {
 	ImageEffect::initialize(manager);
 
-	m_material = Object::makeRef<Material>();
+	m_material = Object::makeRef<CommonMaterial>();
 	m_material->setShader(Object::makeRef<Shader>(m_manager, g_ToneImageEffect_fx_Data, g_ToneImageEffect_fx_Len));
 
 	//m_shader.shader = LN_NEW Shader();

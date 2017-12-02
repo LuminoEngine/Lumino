@@ -37,9 +37,9 @@ public:
 		return m_pos == m_tokenList->getCount();
 	}
 
-	const fl::Token* GetToken() const
+	const fl::SourceToken* GetToken() const
 	{
-		return m_tokenList->getAt(m_pos);
+		return &m_tokenList->getAt(m_pos);
 	}
 
 	TokenPosition next(bool eatSpace = true) const
@@ -53,10 +53,10 @@ public:
 		int i = m_pos;
 		for (; i < m_tokenList->getCount(); i++)
 		{
-			const fl::Token* t = m_tokenList->getAt(i);
-			if (t->GetTokenGroup() == fl::TokenGroup::SpaceSequence ||
-				t->GetTokenGroup() == fl::TokenGroup::NewLine ||
-				t->GetTokenGroup() == fl::TokenGroup::Comment)
+			const fl::SourceToken& t = m_tokenList->getAt(i);
+			if (t.GetTokenGroup() == fl::TokenGroup::SpaceSequence ||
+				t.GetTokenGroup() == fl::TokenGroup::NewLine ||
+				t.GetTokenGroup() == fl::TokenGroup::Comment)
 			{
 			}
 			else
@@ -69,9 +69,9 @@ public:
 
 	TokenPosition FindNext(fl::TokenGroup group, const char* str, int len) const
 	{
-		return FindNext([group, str, len](const fl::Token* t)
+		return FindNext([group, str, len](const fl::SourceToken& t)
 		{
-			return t->EqualGroupAndString(group, str, len);
+			return t.EqualGroupAndString(group, str, len);
 		});
 	}
 
@@ -99,13 +99,14 @@ void ShaderAnalyzer::analyzeLNFX(const char* code, int len)
 {
 	m_code = code;
 	m_codeLength = len;
+	LN_NOTIMPLEMENTED();
 
-	fl::InputFile file(std::string{}, code, len);
-	fl::CppLexer lexer;
-	fl::DiagnosticsItemSet diag(std::string{});
-	file.setDiag(&diag);	// TODO: InputFile の中でつくるべきな気がする
-	lexer.Tokenize(&file);
-	parseSimpleShaderMacros(file.GetTokenList());
+	//fl::InputFile file(std::string{}, code, len);
+	//fl::CppLexer lexer;
+	//fl::DiagnosticsItemSet diag(std::string{});
+	//file.setDiag(&diag);	// TODO: InputFile の中でつくるべきな気がする
+	//lexer.Tokenize(&file);
+	//parseSimpleShaderMacros(file.GetTokenList());
 }
 
 //------------------------------------------------------------------------------
@@ -116,12 +117,12 @@ void ShaderAnalyzer::parseSimpleShaderMacros(const fl::TokenList* tokenList)
 
 	while (true)
 	{
-		TokenPosition keyword = pos.FindNext([](const fl::Token* t)
+		TokenPosition keyword = pos.FindNext([](const fl::SourceToken& t)
 		{
 			return
-				t->EqualGroupAndString(fl::TokenGroup::Identifier, "technique", 9) ||
-				t->EqualGroupAndString(fl::TokenGroup::Identifier, "LN_SURFACE_VS", 13) ||
-				t->EqualGroupAndString(fl::TokenGroup::Identifier, "LN_SURFACE_PS", 13);
+				t.EqualGroupAndString(fl::TokenGroup::Identifier, "technique", 9) ||
+				t.EqualGroupAndString(fl::TokenGroup::Identifier, "LN_SURFACE_VS", 13) ||
+				t.EqualGroupAndString(fl::TokenGroup::Identifier, "LN_SURFACE_PS", 13);
 		});
 		if (keyword.IsEof())
 		{
