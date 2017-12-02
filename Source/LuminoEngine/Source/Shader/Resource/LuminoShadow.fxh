@@ -2,14 +2,12 @@
 #ifndef LUMINO_SHADOW_INCLUDED
 #define LUMINO_SHADOW_INCLUDED
 
-static float2   ln_ShadowMapPixelSize = float2(1024, 1024);  // TODO:
-static float2   ln_DX9ShadowMapBlurPixelStep = float2(1.0, 1.0) / ln_ShadowMapPixelSize;
 float4x4        ln_ViewProjection_Light0;
 texture         ln_DirectionalShadowMap;
+float2          ln_DirectionalShadowMapPixelSize;
 
-#ifdef LN_HLSL_DX9
-static float2   ln_DX9ShadowMapHalfPixelStep = float2(0.5, 0.5) / ln_ShadowMapPixelSize;
-#endif
+static float2   ln_BlurPixelStep = float2(1.0, 1.0) / ln_DirectionalShadowMapPixelSize;
+static float2   ln_DX9ShadowMapHalfPixelStep = float2(0.5, 0.5) / ln_DirectionalShadowMapPixelSize;
 
 sampler2D ln_DirectionalShadowMap_Sampler = sampler_state
 {
@@ -38,7 +36,7 @@ float LN_CalculateShadow(float4 posInLight)
 #endif
 
 #if 1
-    float2 s2 = ln_DX9ShadowMapBlurPixelStep;
+    float2 s2 = ln_BlurPixelStep;
     float depth = posInLight.z/ posInLight.w;
     float compareZ = depth - 0.0065;
     float shadow = (
@@ -56,26 +54,15 @@ float LN_CalculateShadow(float4 posInLight)
     return lerp(0.5, 1.0, shadow);
 
 #else
-
     float shadow = tex2D(ln_DirectionalShadowMap_Sampler, shadowUV).r;
-    //float shadow = tex2D(ln_DirectionalShadowMap_Sampler, float2(0.5,0.5)).r;
 
     float depth = posInLight.z/ posInLight.w;
 
     if (depth > shadow + 0.0065)
     {
         outgoingLight *= 0.5;
-        //return float4(0, 0, 1, 1);
     }
-    //if (depth >= 1.0)
-    //{
-        //return float4(0, 0, 1, 1);
-    //}
-    //return float4(shadow, 0, 0, 1);
-    //return float4(shadowUV, 0, 1);
-
 #endif
-
 }
 
 #endif // LUMINO_SHADOW_INCLUDED

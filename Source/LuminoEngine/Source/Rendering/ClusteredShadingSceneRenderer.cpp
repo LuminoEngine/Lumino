@@ -334,9 +334,14 @@ void ClusteredShadingGeometryRenderingPass::initialize()
 {
 	RenderingPass2::initialize();
 
-	//m_defaultShader = GraphicsManager::getInstance()->getBuiltinShader(BuiltinShader::LegacyDiffuse);
-
-	m_defaultShader = Shader::create(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/ClusteredShadingDefault.fx"), ShaderCodeType::RawHLSL);
+	{
+		static const byte_t data[] =
+		{
+#include "Resource/ClusteredShadingDefault.fx.h"
+		};
+		static const size_t size = LN_ARRAY_SIZE_OF(data);
+		m_defaultShader = Shader::create((const char*)data, size, ShaderCodeType::RawHLSL);
+	}
 	
 	// TODO: getPass 引数型
 	m_defaultShaderPass = m_defaultShader->findTechnique(ClusteredShadingGeometryRenderingPass_TechniqueName)->getPass(ClusteredShadingGeometryRenderingPass_PassName.c_str());
@@ -402,7 +407,14 @@ DepthPrepass::~DepthPrepass()
 
 void DepthPrepass::initialize()
 {
-	m_defaultShader = Shader::create(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/DepthPrepass.fx"), ShaderCodeType::RawIR);
+	{
+		static const byte_t data[] =
+		{
+#include "Resource/DepthPrepass.fx.h"
+		};
+		static const size_t size = LN_ARRAY_SIZE_OF(data);
+		m_defaultShader = Shader::create((const char*)data, size, ShaderCodeType::RawIR);
+	}
 
 	m_depthMap = Ref<RenderTargetTexture>::makeRef();
 	m_depthMap->createImpl(GraphicsManager::getInstance(), SizeI(640, 480), 1, TextureFormat::R32G32B32A32_Float);
@@ -439,7 +451,14 @@ void ShadowCasterPass::initialize()
 {
 	RenderingPass2::initialize();
 
-	m_defaultShader = Shader::create(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/ShadowCaster.fx"), ShaderCodeType::RawIR);
+	{
+		static const byte_t data[] =
+		{
+#include "Resource/ShadowCaster.fx.h"
+		};
+		static const size_t size = LN_ARRAY_SIZE_OF(data);
+		m_defaultShader = Shader::create((const char*)data, size, ShaderCodeType::RawIR);
+	}
 
 	m_shadowMap = Ref<RenderTargetTexture>::makeRef();
 	m_shadowMap->createImpl(GraphicsManager::getInstance(), SizeI(1024, 1024), 1, TextureFormat::R32G32B32A32_Float);

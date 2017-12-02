@@ -198,7 +198,7 @@ public:
 		@param[in]	code			: シェーダコード文字列
 		@param[in]	length			: 文字列の長さ (-1 で 終端 \0 まで)
 	*/
-	static Ref<Shader> create(const char* code, int length);
+	static Ref<Shader> create(const char* code, int length, ShaderCodeType codeType = ShaderCodeType::Normal);
 	
 	///**
 	//	@brief		文字列をコンパイルし、シェーダを作成します。

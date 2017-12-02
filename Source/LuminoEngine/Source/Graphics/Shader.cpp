@@ -422,10 +422,10 @@ Ref<Shader> Shader::create(const StringRef& filePath, ShaderCodeType codeType)
 }
 
 //------------------------------------------------------------------------------
-Ref<Shader> Shader::create(const char* code, int length)
+Ref<Shader> Shader::create(const char* code, int length, ShaderCodeType codeType)
 {
 	Ref<Shader> obj(LN_NEW Shader(), false);
-	obj->initialize(detail::GraphicsManager::getInstance(), code, length);
+	obj->initialize(detail::GraphicsManager::getInstance(), code, length, codeType);
 	return obj;
 }
 //

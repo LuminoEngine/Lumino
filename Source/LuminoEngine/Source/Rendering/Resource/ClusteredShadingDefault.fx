@@ -30,7 +30,7 @@ struct LN_PSInput_ClusteredForward
 	float4	vInLightPosition 	: TEXCOORD13;
 };
 
-texture ln_GlobalLightInfoTexture;
+texture2D ln_GlobalLightInfoTexture;
 sampler2D ln_GlobalLightInfoSampler = sampler_state
 {
 	Texture = <ln_GlobalLightInfoTexture>;
@@ -41,7 +41,7 @@ sampler2D ln_GlobalLightInfoSampler = sampler_state
 	AddressV = Clamp;
 };
 
-texture ln_pointLightInfoTexture;
+texture2D ln_pointLightInfoTexture;
 sampler2D pointLightInfoSampler = sampler_state
 {
 	Texture = <ln_pointLightInfoTexture>;

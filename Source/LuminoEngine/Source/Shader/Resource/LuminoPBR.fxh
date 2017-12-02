@@ -247,7 +247,6 @@ void LN_RE_Direct(const in LN_IncidentLight directLight, const LN_PBRGeometry ge
 	reflectedLight.directSpecular += irradiance * LN_SpecularBRDF(directLight, geometry, material.specularColor, material.specularRoughness);
 }
 
-
 float3 BRDF_Diffuse_Lambert(const float3 diffuseColor)
 {
 	return LN_RECIPROCAL_PI * diffuseColor;

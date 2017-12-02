@@ -253,12 +253,35 @@ void LuminoShaderContext::initialize()
 	
 	ByteBuffer buf;
 
-	buf = FileSystem::readAllBytes(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/Lumino.fxh"));
-	m_builtinShaderList.push_back({ "Lumino.fxh", std::string((const char*)buf.getConstData(), buf.getSize()) });
-	buf = FileSystem::readAllBytes(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/LuminoPBR.fxh"));
-	m_builtinShaderList.push_back({ "LuminoPBR.fxh", std::string((const char*)buf.getConstData(), buf.getSize()) });
-	buf = FileSystem::readAllBytes(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/LuminoShadow.fxh"));
-	m_builtinShaderList.push_back({ "LuminoShadow.fxh", std::string((const char*)buf.getConstData(), buf.getSize()) });
+	// Lumino.fxh.h
+	{
+		static const unsigned char data[] =
+		{
+#include "Resource/Lumino.fxh.h"
+		};
+		static const size_t size = LN_ARRAY_SIZE_OF(data);
+		m_builtinShaderList.push_back({ "Lumino.fxh", std::string((const char*)data, size) });
+	}
+
+	// LuminoPBR.fxh.h
+	{
+		static const unsigned char data[] =
+		{
+#include "Resource/LuminoPBR.fxh.h"
+		};
+		static const size_t size = LN_ARRAY_SIZE_OF(data);
+		m_builtinShaderList.push_back({ "LuminoPBR.fxh", std::string((const char*)data, size) });
+	}
+
+	// LuminoShadow.fxh.h
+	{
+		static const unsigned char data[] =
+		{
+#include "Resource/LuminoShadow.fxh.h"
+		};
+		static const size_t size = LN_ARRAY_SIZE_OF(data);
+		m_builtinShaderList.push_back({ "LuminoShadow.fxh", std::string((const char*)data, size) });
+	}
 }
 
 bool LuminoShaderContext::findBuiltinShaderCode(const char* pathBegin, const char* pathEnd, const char** codeBegin, const char** codeEnd)

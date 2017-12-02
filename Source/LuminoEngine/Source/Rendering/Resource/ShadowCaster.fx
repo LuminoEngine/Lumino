@@ -1,8 +1,3 @@
-/* Lumino ShadingModel combined HLSL file (RawIR:Intermediate Representation) */
-
-//BEGIN_HLSL
-
-//------------------------------------------------------------------------------
 
 float4x4	ln_WorldViewProjection;
 float4x4	ln_World;
@@ -26,43 +21,19 @@ struct PSInput
 
 VSOutput VS_ShadowCaster(VSInput input)
 {
-	float4 pos = mul(float4(input.Pos, 1.0), ln_WorldViewProjection);
-	//pos = mul(pos, ln_ViewProjection_Light0);
-	
 	VSOutput output;
-	output.svPos = pos;
+	output.svPos = mul(float4(input.Pos, 1.0), ln_WorldViewProjection);
 	
-	
-	pos = mul(float4(input.Pos, 1.0), ln_World);
-	//pos.y *=-1;
+	float4 pos = mul(float4(input.Pos, 1.0), ln_World);
 	pos = mul(pos, ln_ViewProjection_Light0);
 	output.Pos = pos;
 	return output;
 }
 
-
-
-struct PSO
+float4 PS_ShadowCaster(PSInput input) : COLOR0
 {
-	float4	c0			: COLOR0;
-	float4	c1			: COLOR1;
-};
-
-PSO PS_ShadowCaster(PSInput input)
-{
-	PSO po;
-	//po.c0 = float4(input.Pos.z, 0, 0, 1);
-	//po.c1 = float4(input.Pos.z, 0, 0, 1);
-	po.c0 = float4(input.Pos.z / input.Pos.w, 0, 1, 1);
-	po.c1 = float4(input.Pos.z / input.Pos.w, 0, 1, 1);
-	
-	return po ;
+	return float4(input.Pos.z / input.Pos.w, 0, 1, 1);
 }
-
-//float4 PS_ShadowCaster(PSInput input) : COLOR0
-//{
-//	return float4(input.Pos.z / input.Pos.w, 0, 0, 0);
-//}
 
 technique Main
 {
@@ -74,6 +45,3 @@ technique Main
 		PixelShader	 = compile ps_3_0 PS_ShadowCaster();
 	}
 }
-
-//END_HLSL
-

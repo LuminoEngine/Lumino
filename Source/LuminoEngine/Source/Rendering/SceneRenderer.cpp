@@ -51,6 +51,9 @@ void SceneRenderer::onShaderPassChainging(ShaderPass* pass)
 		v = shader->findVariable(_T("ln_DirectionalShadowMap"));
 		if (v) v->setTexture(m_renderingShadowCasterPassList[0]->m_shadowMap);
 
+		v = shader->findVariable(_T("ln_DirectionalShadowMapPixelSize"));
+		if (v) v->setVector(Vector4(m_renderingShadowCasterPassList[0]->m_shadowMap->getWidth(), m_renderingShadowCasterPassList[0]->m_shadowMap->getHeight(), 0, 0));	//TODO: implicit
+
 		v = shader->findVariable(_T("ln_ViewProjection_Light0"));
 		if (v) v->setMatrix(m_renderingShadowCasterPassList[0]->view.viewProjMatrix);
 	}
