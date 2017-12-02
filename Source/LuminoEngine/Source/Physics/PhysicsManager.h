@@ -4,7 +4,7 @@
 #include <Lumino/Physics/Common.h>
 
 LN_NAMESPACE_BEGIN
-class RigidBody;
+class RigidBodyComponent;
 class Joint;
 
 namespace detail
@@ -48,7 +48,7 @@ private:
 //	/// メインスレッド、または物理演算スレッドから呼ばれる。
 //	void StepSimulationInternal();
 //
-//	void AddRigidBody(RigidBody* body);
+//	void AddRigidBody(RigidBodyComponent* body);
 //	void addJoint(Joint* joint);
 
 
@@ -56,7 +56,7 @@ private:
 //
 //	// それぞれワールドへの追加メソッドが違うので分けておく
 //	//typedef MultiThreadingRefObjectList<CollisionBody*>	CollisionBodyList;
-//	//typedef MultiThreadingRefObjectList<RigidBody*>		RigidBodyList;		// ソフトボディとはワールドへの追加方法も違うので分けておく
+//	//typedef MultiThreadingRefObjectList<RigidBodyComponent*>		RigidBodyList;		// ソフトボディとはワールドへの追加方法も違うので分けておく
 //	//typedef MultiThreadingRefObjectList<Joint*>			JointList;
 //
 //	SimulationType	m_simulationType;

@@ -5,12 +5,12 @@
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
-// PhysicsObject
+// PhysicsObjectComponent
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(PhysicsObject, Component);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(PhysicsObjectComponent, Component);
 
 //------------------------------------------------------------------------------
-PhysicsObject::PhysicsObject()
+PhysicsObjectComponent::PhysicsObjectComponent()
 	: Component()
 	, m_ownerWorld(nullptr)
 	, m_collisionFilterGroup(0xFFFF)
@@ -19,63 +19,135 @@ PhysicsObject::PhysicsObject()
 }
 
 //------------------------------------------------------------------------------
-PhysicsObject::~PhysicsObject()
+PhysicsObjectComponent::~PhysicsObjectComponent()
 {
 }
 
 //------------------------------------------------------------------------------
-void PhysicsObject::initialize()
+void PhysicsObjectComponent::initialize()
 {
 }
 
 //------------------------------------------------------------------------------
-void PhysicsObject::setOwnerWorld(PhysicsWorld* owner)
+void PhysicsObjectComponent::setOwnerWorld(PhysicsWorld* owner)
 {
 	m_ownerWorld = owner;
 }
 
 //------------------------------------------------------------------------------
-PhysicsWorld* PhysicsObject::getOwnerWorld() const
+PhysicsWorld* PhysicsObjectComponent::getOwnerWorld() const
 {
 	return m_ownerWorld;
 }
 
 //------------------------------------------------------------------------------
-void PhysicsObject::setCollisionFilterGroup(uint16_t flags)
+void PhysicsObjectComponent::setCollisionFilterGroup(uint16_t flags)
 {
 	m_collisionFilterGroup = flags;
 }
 
 //------------------------------------------------------------------------------
-uint16_t PhysicsObject::getCollisionFilterGroup() const
+uint16_t PhysicsObjectComponent::getCollisionFilterGroup() const
 {
 	return m_collisionFilterGroup;
 }
 
 //------------------------------------------------------------------------------
-void PhysicsObject::setCollisionFilterMask(uint16_t flags)
+void PhysicsObjectComponent::setCollisionFilterMask(uint16_t flags)
 {
 	m_collisionFilterMask = flags;
 }
 
 //------------------------------------------------------------------------------
-uint16_t PhysicsObject::getCollisionFilterMask() const
+uint16_t PhysicsObjectComponent::getCollisionFilterMask() const
 {
 	return m_collisionFilterMask;
 }
 
 //------------------------------------------------------------------------------
-void PhysicsObject::onBeforeStepSimulation()
+void PhysicsObjectComponent::onBeforeStepSimulation()
 {
 }
 
 //------------------------------------------------------------------------------
-void PhysicsObject::onAfterStepSimulation()
+void PhysicsObjectComponent::onAfterStepSimulation()
 {
 }
 
 //------------------------------------------------------------------------------
-void PhysicsObject::onRemovedFromWorld()
+void PhysicsObjectComponent::onRemovedFromWorld()
+{
+}
+
+
+//==============================================================================
+// PhysicsObjectComponent
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(PhysicsObject2, Component);
+
+PhysicsObject2::PhysicsObject2(PhysicsObjectType type)
+	: Object()
+	, m_objectType(type)
+	, m_ownerWorld(nullptr)
+	, m_collisionFilterGroup(0xFFFF)
+	, m_collisionFilterMask(0xFFFF)
+	, m_collisionFilterChanged(false)
+	, m_removingFromWorld(false)
+{
+}
+
+PhysicsObject2::~PhysicsObject2()
+{
+}
+
+void PhysicsObject2::initialize()
+{
+	Object::initialize();
+}
+
+void PhysicsObject2::setWorld(PhysicsWorld2* owner)
+{
+	m_ownerWorld = owner;
+}
+
+PhysicsWorld2* PhysicsObject2::getWorld() const
+{
+	return m_ownerWorld;
+}
+
+void PhysicsObject2::setCollisionFilterGroup(uint16_t flags)
+{
+	if (m_collisionFilterGroup != flags)
+	{
+		m_collisionFilterGroup = flags;
+		setCollisionFilterChanged(true);
+	}
+}
+
+uint16_t PhysicsObject2::getCollisionFilterGroup() const
+{
+	return m_collisionFilterGroup;
+}
+
+void PhysicsObject2::setCollisionFilterMask(uint16_t flags)
+{
+	if (m_collisionFilterMask != flags)
+	{
+		m_collisionFilterMask = flags;
+		setCollisionFilterChanged(true);
+	}
+}
+
+uint16_t PhysicsObject2::getCollisionFilterMask() const
+{
+	return m_collisionFilterMask;
+}
+
+void PhysicsObject2::onBeforeStepSimulation()
+{
+}
+
+void PhysicsObject2::onAfterStepSimulation()
 {
 }
 

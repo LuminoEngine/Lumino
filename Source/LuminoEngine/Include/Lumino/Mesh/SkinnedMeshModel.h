@@ -14,7 +14,7 @@ class SkinnedMeshBone;
 using SkinnedMeshModelPtr = Ref<SkinnedMeshModel>;
 using SkinnedMeshBonePtr = Ref<SkinnedMeshBone>;
 
-class RigidBody;	// TODO: MMD でのみ必要
+class RigidBodyComponent;	// TODO: MMD でのみ必要
 class DofSpringJoint;		// TODO: MMD でのみ必要
 class PhysicsWorld;	// TODO: MMD でのみ必要
 namespace detail { class MmdSkinnedMeshRigidBody; }
@@ -172,7 +172,7 @@ LN_INTERNAL_ACCESS:
 	virtual ~MmdSkinnedMeshRigidBody();
 	void initialize(SkinnedMeshModel* ownerModel, PmxRigidBodyResource* rigidBodyResource, float scale);
 
-	RigidBody* getRigidBody() const;
+	RigidBodyComponent* getRigidBody() const;
 	void updateBeforePhysics();
 	void updateAfterPhysics();
 
@@ -180,7 +180,7 @@ private:
 	SkinnedMeshModel*		m_ownerModel;
 	PmxRigidBodyResource*	m_resource;
 	SkinnedMeshBone*		m_bone;
-	Ref<RigidBody>		m_rigidBody;
+	Ref<RigidBodyComponent>		m_rigidBody;
 	Matrix					m_boneLocalPosition;
 	Matrix					m_boneOffset;
 	Matrix					m_offsetBodyToBone;

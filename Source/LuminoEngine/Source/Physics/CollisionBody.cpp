@@ -137,8 +137,8 @@ public:
 			// 通知
 			if (m_owner->isTrigger() && otherObject->getUserPointer() != nullptr)
 			{
-				m_owner->m_contactObjects.add(reinterpret_cast<PhysicsObject*>(otherObject->getUserPointer()));
-				m_owner->onTriggerEnter(reinterpret_cast<PhysicsObject*>(otherObject->getUserPointer()));
+				m_owner->m_contactObjects.add(reinterpret_cast<PhysicsObjectComponent*>(otherObject->getUserPointer()));
+				m_owner->onTriggerEnter(reinterpret_cast<PhysicsObjectComponent*>(otherObject->getUserPointer()));
 			}
 		}
 	}
@@ -156,8 +156,8 @@ public:
 			// 通知
 			if (m_owner->isTrigger() && otherObject->getUserPointer() != nullptr)
 			{
-				m_owner->m_contactObjects.remove(reinterpret_cast<PhysicsObject*>(otherObject->getUserPointer()));
-				m_owner->onTriggerLeave(reinterpret_cast<PhysicsObject*>(otherObject->getUserPointer()));
+				m_owner->m_contactObjects.remove(reinterpret_cast<PhysicsObjectComponent*>(otherObject->getUserPointer()));
+				m_owner->onTriggerLeave(reinterpret_cast<PhysicsObjectComponent*>(otherObject->getUserPointer()));
 			}
 		}
 	}
@@ -166,7 +166,7 @@ public:
 //==============================================================================
 // CollisionBody
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(CollisionBody, PhysicsObject);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(CollisionBody, PhysicsObjectComponent);
 
 //------------------------------------------------------------------------------
 Ref<CollisionBody> CollisionBody::create(CollisionShape* shape)
@@ -179,7 +179,7 @@ Ref<CollisionBody> CollisionBody::create(CollisionShape* shape)
 
 //------------------------------------------------------------------------------
 CollisionBody::CollisionBody()
-	: PhysicsObject()
+	: PhysicsObjectComponent()
 	, m_btGhostObject(nullptr)
 	, m_isTrigger(false)
 	, m_initialUpdate(false)
@@ -195,7 +195,7 @@ CollisionBody::~CollisionBody()
 //------------------------------------------------------------------------------
 void CollisionBody::initialize()
 {
-	PhysicsObject::initialize();
+	PhysicsObjectComponent::initialize();
 	m_initialUpdate = true;
 	detail::EngineDomain::getPhysicsWorld3D()->addPhysicsObject(this);
 }
@@ -290,7 +290,7 @@ void CollisionBody::onAfterStepSimulation()
 		for (int i = 0; i < count; i++)
 		{
 			btCollisionObject* btObj = m_btGhostObject->getOverlappingObject(i);
-			onTriggerStay(reinterpret_cast<PhysicsObject*>(btObj->getUserPointer()));
+			onTriggerStay(reinterpret_cast<PhysicsObjectComponent*>(btObj->getUserPointer()));
 		}
 	}
 }
@@ -306,19 +306,19 @@ void CollisionBody::onRemovedFromWorld()
 }
 
 //------------------------------------------------------------------------------
-void CollisionBody::onTriggerEnter(PhysicsObject* otherObject)
+void CollisionBody::onTriggerEnter(PhysicsObjectComponent* otherObject)
 {
 	m_onTriggerEnter.raise(otherObject);
 }
 
 //------------------------------------------------------------------------------
-void CollisionBody::onTriggerLeave(PhysicsObject* otherObject)
+void CollisionBody::onTriggerLeave(PhysicsObjectComponent* otherObject)
 {
 	m_onTriggerLeave.raise(otherObject);
 }
 
 //------------------------------------------------------------------------------
-void CollisionBody::onTriggerStay(PhysicsObject* otherObject)
+void CollisionBody::onTriggerStay(PhysicsObjectComponent* otherObject)
 {
 	m_onTriggerStay.raise(otherObject);
 }

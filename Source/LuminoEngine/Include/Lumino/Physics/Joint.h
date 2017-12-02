@@ -4,7 +4,7 @@
 
 LN_NAMESPACE_BEGIN
 class PhysicsWorld;
-class RigidBody;
+class RigidBodyComponent;
 
 /// ジョイントのベースクラス
 class Joint
@@ -50,12 +50,12 @@ public:
 LN_INTERNAL_ACCESS:
 	DofSpringJoint();
 	virtual ~DofSpringJoint();
-	void initialize(RigidBody* bodyA, RigidBody* bodyB, const Matrix& localOffsetA, const Matrix& localOffsetB);
+	void initialize(RigidBodyComponent* bodyA, RigidBodyComponent* bodyB, const Matrix& localOffsetA, const Matrix& localOffsetB);
 
 private:
 	btGeneric6DofSpringConstraint*	m_btDofSpringConstraint;
-	Ref<RigidBody>				m_bodyA;
-	Ref<RigidBody>				m_bodyB;
+	Ref<RigidBodyComponent>				m_bodyA;
+	Ref<RigidBodyComponent>				m_bodyB;
 
 	//bool			m_enableSpring[6];
 	//float			m_stiffness[6];
@@ -69,6 +69,58 @@ private:
 
 	//uint32_t		m_modifiedFlags;
 	volatile bool	m_initialUpdate;
+};
+
+
+
+class Joint2
+	: public Object
+{
+	LN_OBJECT;
+public:
+
+LN_CONSTRUCT_ACCESS:
+	Joint2();
+	virtual ~Joint2();
+	void initialize();
+	virtual btTypedConstraint* getBtConstraint() const = 0;
+
+private:
+};
+
+struct DofSpringJointSimpleConstructionData
+{
+	Vector3			position;
+	Vector3			rotationAngles;
+
+	RigidBody2*		bodyA;
+	RigidBody2*		bodyB;
+
+	Vector3			vec3PosLimitL;	// 移動制限1
+	Vector3			vec3PosLimitU;	// 移動制限2
+
+	Vector3			vec3RotLimitL;	// 回転制限1
+	Vector3			vec3RotLimitU;	// 回転制限2
+
+	Vector3			vec3SpringPos;	// ばね移動
+	Vector3			vec3SpringRot;	// ばね回転
+};
+
+class DofSpringJoint2
+	: public Joint2
+{
+	LN_OBJECT;
+public:
+
+LN_CONSTRUCT_ACCESS:
+	DofSpringJoint2();
+	virtual ~DofSpringJoint2();
+	void initialize(const DofSpringJointSimpleConstructionData& data);
+
+private:
+	btGeneric6DofSpringConstraint*	m_btDofSpringConstraint;
+	Ref<RigidBody2>					m_bodyA;
+	Ref<RigidBody2>					m_bodyB;
 };
 
 LN_NAMESPACE_END

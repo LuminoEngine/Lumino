@@ -5,14 +5,14 @@
 
 LN_NAMESPACE_BEGIN
 class CollisionShape;
-class RigidBody;
+class RigidBodyComponent;
 
 /**
 	@brief		衝突判定に関係するイベントを処理するハンドラです。
-	@param[in]	obj		: 衝突した PhysicsObject
+	@param[in]	obj		: 衝突した PhysicsObjectComponent
 */
 LN_DELEGATE()
-using CollisionEventHandler = Delegate<void(PhysicsObject* obj)>;
+using CollisionEventHandler = Delegate<void(PhysicsObjectComponent* obj)>;
 
 
 
@@ -21,13 +21,13 @@ using CollisionEventHandler = Delegate<void(PhysicsObject* obj)>;
 */
 LN_CLASS()
 class CollisionBody
-	: public PhysicsObject
+	: public PhysicsObjectComponent
 {
 	LN_OBJECT;
 public:
 
 	/**
-		@brief		RigidBody オブジェクトを作成します。
+		@brief		RigidBodyComponent オブジェクトを作成します。
 		@param[in]	shape	: 衝突判定形状
 	*/
 	static Ref<CollisionBody> create(CollisionShape* shape);
@@ -49,7 +49,7 @@ public:
 	bool isTrigger() const;
 
 	// TODO: ContactBodies();
-	const List<PhysicsObject*>& getContactPhysicsObjects() const { return m_contactObjects; }
+	const List<PhysicsObjectComponent*>& getContactPhysicsObjects() const { return m_contactObjects; }
 
 	/** onTriggerEnter イベントの通知を受け取るコールバックを登録します。*/
 	LN_METHOD(Event)
@@ -68,14 +68,14 @@ protected:
 	virtual void onAfterStepSimulation() override;
 	virtual void onRemovedFromWorld() override;
 
-	/** 他の CollisionBody または RigidBody が、この CollisionBody との接触を開始したときに呼び出されます。*/
-	void onTriggerEnter(PhysicsObject* otherObject);
+	/** 他の CollisionBody または RigidBodyComponent が、この CollisionBody との接触を開始したときに呼び出されます。*/
+	void onTriggerEnter(PhysicsObjectComponent* otherObject);
 
-	/** 他の CollisionBody または RigidBody が、この CollisionBody との接触を終了したときに呼び出されます。*/
-	virtual void onTriggerLeave(PhysicsObject* otherObject);
+	/** 他の CollisionBody または RigidBodyComponent が、この CollisionBody との接触を終了したときに呼び出されます。*/
+	virtual void onTriggerLeave(PhysicsObjectComponent* otherObject);
 
-	/** 他の CollisionBody または RigidBody が、この Collider との接触している間呼び出されます。*/
-	virtual void onTriggerStay(PhysicsObject* otherObject);
+	/** 他の CollisionBody または RigidBodyComponent が、この Collider との接触している間呼び出されます。*/
+	virtual void onTriggerStay(PhysicsObjectComponent* otherObject);
 
 LN_CONSTRUCT_ACCESS:
 	CollisionBody();
@@ -97,7 +97,7 @@ private:
 	LocalGhostObject*		m_btGhostObject;
 	detail::BtShapeManager	m_btShapeManager;
 	Matrix					m_transform;
-	List<PhysicsObject*>		m_contactObjects;
+	List<PhysicsObjectComponent*>		m_contactObjects;
 	bool					m_isTrigger;
 	bool					m_initialUpdate;
 
@@ -107,7 +107,7 @@ private:
 	CollisionEventHandler::EventType	m_onTriggerLeave;
 	CollisionEventHandler::EventType	m_onTriggerStay;
 
-	friend class RigidBody;
+	friend class RigidBodyComponent;
 };
 
 LN_NAMESPACE_END

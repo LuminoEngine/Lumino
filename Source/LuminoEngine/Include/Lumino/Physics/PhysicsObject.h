@@ -5,13 +5,13 @@
 
 LN_NAMESPACE_BEGIN
 class PhysicsWorld;
-
+class PhysicsWorld2;
 
 /**
 	@brief	
 */
 LN_CLASS()
-class PhysicsObject
+class PhysicsObjectComponent
 	: public Component
 {
 	LN_OBJECT;
@@ -32,8 +32,8 @@ protected:
 	virtual void onRemovedFromWorld();
 
 LN_CONSTRUCT_ACCESS:
-	PhysicsObject();
-	virtual ~PhysicsObject();
+	PhysicsObjectComponent();
+	virtual ~PhysicsObjectComponent();
 	void initialize();
 
 private:
@@ -42,6 +42,49 @@ private:
 	uint16_t		m_collisionFilterMask;
 
 	friend class PhysicsWorld;
+};
+
+
+
+/** */
+class PhysicsObject2
+	: public Object
+{
+	LN_OBJECT;
+
+public:
+	PhysicsWorld2* getWorld() const;
+
+	void setCollisionFilterGroup(uint16_t flags);
+	uint16_t getCollisionFilterGroup() const;
+
+	void setCollisionFilterMask(uint16_t flags);
+	uint16_t getCollisionFilterMask() const;
+
+protected:
+	virtual void onBeforeStepSimulation();
+	virtual void onAfterStepSimulation();
+
+LN_CONSTRUCT_ACCESS:
+	PhysicsObject2(PhysicsObjectType type);
+	virtual ~PhysicsObject2();
+	void initialize();
+	void setWorld(PhysicsWorld2* owner);
+	PhysicsObjectType getPhysicsObjectType() const { return m_objectType; }
+	bool isCollisionFilterChanged() const { return m_collisionFilterChanged; }
+	void setCollisionFilterChanged(bool value) { m_collisionFilterChanged = value; }
+	bool isRemovingFromWorld() const { return m_removingFromWorld; }
+	void setRemovingFromWorld(bool value) { m_removingFromWorld = value; }
+
+private:
+	PhysicsObjectType	m_objectType;
+	PhysicsWorld2*		m_ownerWorld;
+	uint16_t			m_collisionFilterGroup;
+	uint16_t			m_collisionFilterMask;
+	bool				m_collisionFilterChanged;
+	bool				m_removingFromWorld;
+
+	friend class PhysicsWorld2;
 };
 
 LN_NAMESPACE_END

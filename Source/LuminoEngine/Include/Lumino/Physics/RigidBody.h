@@ -43,8 +43,8 @@ LN_ENUM_FLAGS(RigidbodyConstraintFlags)
 LN_ENUM_FLAGS_DECLARE(RigidbodyConstraintFlags);
 
 /// 剛体のクラス
-class RigidBody
-	: public PhysicsObject
+class RigidBodyComponent
+	: public PhysicsObjectComponent
 {
 	LN_OBJECT;
 public:
@@ -82,10 +82,10 @@ public:
 	};
 
 	/**
-		@brief		RigidBody オブジェクトを作成します。
+		@brief		RigidBodyComponent オブジェクトを作成します。
 		@param[in]	collider	: 衝突判定形状
 	*/
-	static Ref<RigidBody> create(CollisionShape* collider);
+	static Ref<RigidBodyComponent> create(CollisionShape* collider);
 
 
 public:
@@ -171,8 +171,8 @@ public:
 	CollisionBody*	m_childCollisionBody = nullptr;
 
 LN_INTERNAL_ACCESS:
-	RigidBody();
-	virtual ~RigidBody();
+	RigidBodyComponent();
+	virtual ~RigidBodyComponent();
 	void initialize(CollisionShape* collider, const ConfigData& configData);
 
 	/// 初期化 (剛体を受け取ってワールドに追加する) (現行PMD用にpublic。後で protected にする)
@@ -235,6 +235,136 @@ private:
 	Vector3						m_appliedImpulse;
 
 	uint32_t					m_modifiedFlags;
+};
+
+
+
+
+/// 初期状態データ (MMD 実装にあわせて用意している。実際に使うときはプロパティ的に Get/Set で編集し、遅延で bt オブジェクトを作るのがスマートかも)
+struct RigidBodySimpleConstructionData
+{
+	Vector3			position;
+	Vector3			rotationAngles;
+	Vector3			offset;
+
+	bool			KinematicObject;	///< Kinematicオブジェクトとする (質量が 0.0 として扱われ、MotionState の getWorldTransform() が呼ばれるようになる)
+
+	float			Mass;				///< 質量
+	float			LinearDamping;	    ///< 移動減
+	float			AngularDamping;		///< 回転減
+	float			Restitution;	    ///< 反発力 (HitFraction)
+	float			Friction;		    ///< 摩擦力
+
+	uint16_t		Group;				///< 衝突グループ
+	uint16_t		GroupMask;			///< 非衝突グループ
+	//Matrix			InitialTransform;	///< 初期姿勢 (NULL で Identity)
+	//bool			AdditionalDamping;	///< 減衰の有効
+	//bool			KinematicObject;	///< Kinematicオブジェクトとする (質量が 0.0 として扱われ、MotionState の getWorldTransform() が呼ばれるようになる)
+	//float			scale;				///< (*Mass に乗算するスケール値)
+};
+
+
+
+
+class RigidBody2
+	: public PhysicsObject2
+{
+	LN_OBJECT;
+public:
+
+	void setPosition(const Vector3& position);
+	void setPosition(float x, float y, float z);
+
+	void setLinearVelocity(const Vector3& velocity);
+	void setAngularVelocity(const Vector3& velocity);
+
+
+	/** 物理演算による各軸への影響を受けるかどうかを設定します。*/
+	void setConstraints(RigidbodyConstraintFlags flags);
+
+#if 0
+	/// 回転の設定
+	void setRotation(const Quaternion& rotation);
+
+	/// 回転角度の設定
+	void setAngle(const Vector3& euler);
+
+	/// 移動・回転減衰値の設定
+	void setDamping(float linDamping, float angDamping);
+
+	/// 反射率の設定
+	void setRestitution(float value_);
+
+	/// 反射率の取得
+	float getRestitution() const;
+
+	/// 摩擦係数の設定
+	void setFriction(float value_);
+
+	/// 摩擦係数の取得
+	float getFriction() const;
+
+	/// ワールド変換行列の取得
+	const Matrix& getWorldMatrix() const;
+
+	/// (キネマティックな剛体用 setWorldMatrix())
+	void setKinematicAlignmentMatrix(const Matrix& matrix);
+#endif
+
+	void setMass(float mass);
+
+
+	void applyForce(const Vector3& force);
+
+
+	/**
+	瞬間的な力を加えます。
+	@param[in]	force	: 力のベクトル
+	*/
+	void applyImpulse(const Vector3& force);
+
+
+	// applyForce は、力を与える間毎フレーム継続的に呼び出す必要がある。
+	// そのフレームで与えられたトータルの力を更新する。そのフレームのシミュレーションが終了すれば 0 にリセットされる。
+	// applyImpulse() は、直ちに速度を更新する。
+	// applyForce のように継続的に呼び出す必要はない。
+
+	/// 剛体の sleep 状態を解除する (公開する必要は無いかも？)
+	void activate();
+
+	/// ワールド変換行列の設定
+	void setWorldTransform(const Matrix& matrix);
+
+	/// ワールド変換行列の取得
+	const Matrix& getWorldTransform() const;
+
+	void clearForces();
+
+	/// 指定の姿勢を強制的に設定する (速度が 0 にリセットされる)
+	//void SetWorldTransformForced(const Matrix& matrix);
+	//void moveToForced(const Matrix& matrix);
+
+	/// 物理演算の対象であるか (false の場合、衝突判定のみ対象)
+	bool isContactResponse() const { return true; }
+
+public:
+	CollisionBody*	m_childCollisionBody = nullptr;
+
+LN_INTERNAL_ACCESS:
+	RigidBody2();
+	virtual ~RigidBody2();
+	void initialize();
+	void initialize(CollisionShape* shape, const RigidBodySimpleConstructionData& data);
+
+	btRigidBody* getBtRigidBody() const { return m_btRigidBody; }
+
+	virtual void onBeforeStepSimulation() override;
+	virtual void onAfterStepSimulation() override;
+
+private:
+	btRigidBody*				m_btRigidBody;
+	detail::BtShapeManager		m_btShapeManager;
+	RigidbodyConstraintFlags	m_constraintFlags;
 };
 
 LN_NAMESPACE_END

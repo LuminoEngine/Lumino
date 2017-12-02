@@ -50,5 +50,42 @@ private:
 };
 
 } // namespace detail
+
+
+enum class PhysicsResourceType
+{
+	RigidBody,
+	CollisionBody,
+	Joint,
+};
+
+
+/** */
+class PhysicsResource2
+	: public Object
+{
+	LN_OBJECT;
+
+public:
+	PhysicsWorld2* getWorld() const;
+
+protected:
+	virtual void onBeforeStepSimulation();
+	virtual void onAfterStepSimulation();
+
+LN_CONSTRUCT_ACCESS:
+	PhysicsResource2(PhysicsResourceType type);
+	virtual ~PhysicsResource2();
+	void initialize();
+	void setWorld(PhysicsWorld2* owner);
+	PhysicsResourceType getPhysicsResourceType() const { return m_resourceType; }
+
+private:
+	PhysicsResourceType	m_resourceType;
+	PhysicsWorld2*		m_ownerWorld;
+
+	friend class PhysicsWorld2;
+};
+
 LN_NAMESPACE_END
 
