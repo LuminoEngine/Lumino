@@ -44,6 +44,10 @@ class MeshResource
 {
 	LN_OBJECT;
 public:
+
+	/** 頂点数とインデックス数を指定してメッシュを作成します。 */
+	static Ref<MeshResource> create(int vertexCount, int indexCount, MeshCreationFlags flags = MeshCreationFlags::None);
+
 	static MeshResourcePtr create();
 
 	static Ref<MeshResource> getUnitSphere(UnitMeshSide side = UnitMeshSide::Outward);
@@ -111,8 +115,8 @@ public:
 	void addLine(const Vertex& v1, const Vertex& v2);
 
 	void addPlane(const Vector2& size, int sliceH = 1, int sliceV = 1);	// TODO: name SquarePlane
-	void addBox(const Vector3& size);
-	void addSphere(float radius, int slices = 16, int stacks = 16);
+	void addBox(const Vector3& size, const Matrix& transform = Matrix::Identity);
+	void addSphere(float radius, int slices = 16, int stacks = 16, const Matrix& transform = Matrix::Identity);
 	void addTeapot(float size, int tessellation = 8);
 	void addScreenPlane();
 
@@ -248,19 +252,19 @@ public:
 	//int getSubsetCount() const;
 
 	void addMaterials(int count);
-	void addMaterial(Material* material);
-	Material* getMaterial(int index) const;
+	void addMaterial(CommonMaterial* material);
+	CommonMaterial* getMaterial(int index) const;
 
 LN_INTERNAL_ACCESS:
 	StaticMeshModel();
 	virtual ~StaticMeshModel();
 	void initialize(detail::GraphicsManager* manager);
-	void initialize(detail::GraphicsManager* manager, MeshResource* sharingMesh);
-	void initializeBox(detail::GraphicsManager* manager, const Vector3& size, MeshCreationFlags flags);
-	void initializeSphere(detail::GraphicsManager* manager, float radius, int slices, int stacks, MeshCreationFlags flags);
-	void initializePlane(detail::GraphicsManager* manager, const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags);
-	void initializeScreenPlane(detail::GraphicsManager* manager, MeshCreationFlags flags);
-	void initializeTeapot(detail::GraphicsManager* manager, float size, int tessellation, MeshCreationFlags flags);
+	void initialize(MeshResource* sharingMesh);
+	void initializeBox(const Vector3& size, MeshCreationFlags flags);
+	void initializeSphere(float radius, int slices, int stacks, MeshCreationFlags flags);
+	void initializePlane(const Vector2& size, int sliceH, int sliceV, MeshCreationFlags flags);
+	void initializeScreenPlane(MeshCreationFlags flags);
+	void initializeTeapot(float size, int tessellation, MeshCreationFlags flags);
 	
 LN_INTERNAL_ACCESS:	// TODO:
 	List<Ref<MeshResource>>	m_meshResources;

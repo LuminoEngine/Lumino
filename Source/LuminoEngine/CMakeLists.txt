@@ -293,16 +293,26 @@ set(LN_SOURCES_Graphics_Text
 	Source/Graphics/Text/VectorTextRenderFeature.h
 )
 
+set(LN_SOURCES_Shader
+	Source/Shader/LuminoShader.cpp
+	Source/Shader/LuminoShader.h
+)
+
 set(LN_SOURCES_Rendering
 	Include/Lumino/Rendering/Common.h
 	Include/Lumino/Rendering/DrawingContext.h
+	Include/Lumino/Rendering/FXAAPostEffect.h
 	Include/Lumino/Rendering/Rendering.h
 	Include/Lumino/Rendering/RenderingContext.h
 	Include/Lumino/Rendering/RenderView.h
 	Include/Lumino/Rendering/SceneRenderer.h
+	Include/Lumino/Rendering/SSAOImageEffect.h
+	Source/Rendering/ClusteredShadingSceneRenderer.cpp
+	Source/Rendering/ClusteredShadingSceneRenderer.h
 	Source/Rendering/DrawingContext.cpp
 	Source/Rendering/FrameRectRenderFeature.cpp
 	Source/Rendering/FrameRectRenderFeature.h
+	Source/Rendering/FXAAPostEffect.cpp
 	Source/Rendering/Internal.h
 	Source/Rendering/MeshRenderFeature.cpp
 	Source/Rendering/MeshRenderFeature.h
@@ -318,6 +328,7 @@ set(LN_SOURCES_Rendering
 	Source/Rendering/ShapesRenderFeature.h
 	Source/Rendering/SpriteRenderFeature.cpp
 	Source/Rendering/SpriteRenderFeature.h
+	Source/Rendering/SSAOImageEffect.cpp
 )
 
 set(LN_SOURCES_Effect
@@ -371,6 +382,7 @@ set(LN_SOURCES_Scene
 	Include/Lumino/Scene/Common.h
 	Include/Lumino/Scene/Detail.h
 	Include/Lumino/Scene/EffectNode.h
+	Include/Lumino/Scene/Fog.h
 	Include/Lumino/Scene/GlyphIcon.h
 	Include/Lumino/Scene/GpuParticle.h
 	Include/Lumino/Scene/Light.h
@@ -396,6 +408,7 @@ set(LN_SOURCES_Scene
 	Source/Scene/EffectBatchRendererNode.cpp
 	Source/Scene/EffectBatchRendererNode.h
 	Source/Scene/EffectNode.cpp
+	Source/Scene/Fog.cpp
 	Source/Scene/GlyphIcon.cpp
 	Source/Scene/GpuParticle.cpp
 	Source/Scene/Light.cpp
@@ -740,6 +753,7 @@ source_group("Physics"			FILES ${LN_SOURCES_Physics})
 source_group("Graphics"			FILES ${LN_SOURCES_Graphics})
 source_group("Graphics_Device"	FILES ${LN_SOURCES_Graphics_Device})
 source_group("Graphics_Text"	FILES ${LN_SOURCES_Graphics_Text})
+source_group("Shader"			FILES ${LN_SOURCES_Shader})
 source_group("Rendering"		FILES ${LN_SOURCES_Rendering})
 source_group("Effect"			FILES ${LN_SOURCES_Effect})
 source_group("Tilemap"			FILES ${LN_SOURCES_TileMap})
@@ -765,6 +779,7 @@ set(LN_SOURCES
 	${LN_SOURCES_Graphics}
 	${LN_SOURCES_Graphics_Device}
 	${LN_SOURCES_Graphics_Text}
+	${LN_SOURCES_Shader}
 	${LN_SOURCES_Rendering}
 	${LN_SOURCES_Effect}
 	${LN_SOURCES_TileMap}

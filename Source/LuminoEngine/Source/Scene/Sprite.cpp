@@ -40,7 +40,7 @@ void SpriteComponent::initialize()
 
 	setBlendMode(BlendMode::Alpha);
 
-	m_material = newObject<Material>();
+	m_material = newObject<CommonMaterial>();
 
 	//owner->getRootNode()->addChild(this);
 	setAutoRemove(true);
@@ -97,7 +97,7 @@ void SpriteComponent::setAnchorPoint(float ratioX, float ratioY)
 //------------------------------------------------------------------------------
 void SpriteComponent::renderSprite(RenderingContext* renderer, SpriteBaseDirection dir)
 {
-	//Material* mat = GetMainMaterial();
+	//CommonMaterial* mat = GetMainMaterial();
 	Color colorScale = getColorScale();
 	colorScale.a *= getOpacity();
 	renderer->drawSprite(

@@ -49,6 +49,7 @@ class EffekseerFileInterface
 {
 public:
 	EffekseerFileInterface(FileManager* fileManager);
+	virtual ~EffekseerFileInterface() = default;
 
 	virtual ::Effekseer::FileReader* OpenRead(const EFK_CHAR* path) override;
 	virtual ::Effekseer::FileWriter* OpenWrite(const EFK_CHAR* path) override;

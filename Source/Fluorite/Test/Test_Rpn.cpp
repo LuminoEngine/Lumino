@@ -193,7 +193,7 @@ protected:
 		auto file = m_context.RegisterInputMemoryCode("test", code);
 		m_context.LexFile(file);
 		auto tokens = file->GetTokenList();
-		m_parser.ParseCppConstExpression2(tokens->begin(), tokens->end(), &m_diag);
+		m_parser.ParseCppConstExpression2(tokens->cbegin(), tokens->cend(), &m_diag);
 		if (!file->getDiag()->getItems()->isEmpty()) return false;
 		ResultState r = m_eval.TryEval(file, m_parser.GetTokenList(), &m_diag, &m_value);
 		if (r != ResultState::Success) return false;

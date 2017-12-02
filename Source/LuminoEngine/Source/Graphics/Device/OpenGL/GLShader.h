@@ -5,6 +5,8 @@
 #include "GLRenderer.h"
 
 LN_NAMESPACE_BEGIN
+struct LuminoShaderIRTechnique;
+
 LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
 {
@@ -59,6 +61,7 @@ public:
 	GLShader();
 	virtual ~GLShader();
 	void initialize(GLGraphicsDevice* device, const void* code, size_t codeByteCount);
+	void initialize(GLGraphicsDevice* device, const std::vector<LuminoShaderIRTechnique>& techniques);
 
 	GLGraphicsDevice* getGraphicsDevice() { return m_device; }
 	GLShaderVariable* findShaderVariable(const String& name);
@@ -77,7 +80,7 @@ public:
 	GLuint getFlagmentShader(const String& name);
 
 private:
-	GLuint compileShader(const char* code, size_t codeLen, const char* entryName, GLuint type);
+	GLuint compileShader(const char* code, size_t codeLen, const char* entryName, GLuint type, bool addPreproHeader);
 
 	GLGraphicsDevice*				m_device;
 

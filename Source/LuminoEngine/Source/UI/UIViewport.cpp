@@ -94,6 +94,11 @@ UIElement* UIViewport::checkMouseHoverElement(const Point& globalPt)
 	return UIElement::checkMouseHoverElement(globalPt);
 }
 
+namespace detail
+{
+
+	extern RenderTargetTexture* g_m_shadowMap;
+}
 //------------------------------------------------------------------------------
 void UIViewport::onRender(DrawingContext* g)
 {
@@ -113,6 +118,8 @@ void UIViewport::onRender(DrawingContext* g)
 
 	g->setViewportRect(RectI::fromFloatRect(getFinalGlobalRect()));
 	g->blit(m_primaryLayerTarget, transform);
+	//g->blit(detail::g_m_shadowMap, transform);
+
 	g->setViewportRect(RectI(0, 0, -1, -1));
 
 	// TODO: 暫定。blit の中で深度書き込みしないようにしてほしいかも。
@@ -287,6 +294,8 @@ void UILayoutLayer::renderScene(RenderTargetTexture* renderTarget, DepthBuffer* 
 	this->m_cameraInfo.viewProjMatrix = this->m_cameraInfo.viewMatrix * this->m_cameraInfo.projMatrix;
 	this->m_cameraInfo.viewFrustum = ViewFrustum(this->m_cameraInfo.projMatrix);
 	this->m_cameraInfo.zSortDistanceBase = ZSortDistanceBase::NodeZ;
+	this->m_cameraInfo.nearClip = 0.0;
+	this->m_cameraInfo.farClip = 1.0;
 	m_internalRenderer->render(this, renderTarget, depthBuffer, nullptr, clearColorBuffer, getBackgroundColor());	// TODO: diag
 }
 

@@ -437,6 +437,9 @@ public:
 
 	Color withAlpha(float alpha) const { return Color(r, g, b, alpha); }
 
+
+	Vector3 rgb() const noexcept { return Vector3(r, g, b); }
+
 public:
 	//ColorF& operator = (const ColorF& src) { r = src.r; g = src.g; b = src.b; a = src.a; return *this; }
 
@@ -446,6 +449,7 @@ public:
 	//ColorF& operator = (const LVector4& vec) { r = vec.X; g = vec.Y; b = vec.Z; a = vec.W; return *this; }
 
 	Color& operator *= (const Color& rhs) { r *= rhs.r; g *= rhs.g; b *= rhs.b; a *= rhs.a; return *this; }
+	Color& operator *= (float s) { r *= s; g *= s; b *= s; a *= s; return *this; }
 
 	bool operator == (const Color& color) const { return r == color.r && g == color.g && b == color.b && a == color.a; }
 	bool operator != (const Color& color) const { return !operator==(color); }

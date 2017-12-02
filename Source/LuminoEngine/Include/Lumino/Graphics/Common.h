@@ -56,6 +56,9 @@ enum class TextureFormat
 	/** 32 ビットの浮動小数点フォーマット */
 	R32_Float,
 
+	/** 32 ビットの整数フォーマット */
+	//R32_UInt,
+
 	/** S8 32 ビットの深度バッファフォーマット */
 	D24S8,
 
@@ -362,12 +365,23 @@ LN_ENUM_FLAGS(StringFormatFlags)	// TODO: LayoutFlags のほうがいいかな�
 };
 LN_ENUM_FLAGS_DECLARE(StringFormatFlags);
 
-// ライトの種類
-enum LightType
+/** ライトの種類 */
+enum class LightType
 {
-	LightType_Directional = 0,	// ディレクショナルライト
-	LightType_Point,			// ポイントライト
-	LightType_Spot,				// スポットライト
+	/** アンビエントライト */
+	Ambient,
+
+	/** 半球ライト */
+	Hemisphere,
+
+	/** ディレクショナルライト */
+	Directional,
+
+	/** ポイントライト */
+	Point,
+
+	/** スポットライト */
+	Spot,
 };
 
 enum class BuiltinShader

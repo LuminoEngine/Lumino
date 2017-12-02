@@ -5,6 +5,7 @@
 	#include <dlfcn.h>	// Ubuntu
 #endif
 #include <Lumino/Base/DllLoader.h>
+#include <Lumino/IO/PathName.h>
 
 LN_NAMESPACE_BEGIN
 
@@ -17,12 +18,8 @@ static void* LoadDLL(const Char* filePath)
 #ifdef _WIN32
 	return ::LoadLibrary(filePath);
 #else
-#ifdef LN_UNICODE
-	LN_LOCAL_MBCS_FILEPATH(mbcsPath, filePath);
-	return dlopen(mbcsPath, RTLD_LAZY);
-#else
-	return dlopen(filePath, RTLD_LAZY);
-#endif
+	detail::GenericStaticallyLocalPath<char> localPath(filePath, StringTraits::tcslen(filePath));
+	return dlopen(localPath.c_str(), RTLD_LAZY);
 #endif
 }
 

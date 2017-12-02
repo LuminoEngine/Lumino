@@ -129,7 +129,7 @@ public:
 		{
 			return m_vector[index].second;
 		}
-		LN_THROW(0, KeyNotFoundException);
+		LN_ENSURE(0);
 		return m_vector.end()->second;
 	}
 

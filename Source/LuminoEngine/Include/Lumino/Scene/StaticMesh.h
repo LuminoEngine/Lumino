@@ -98,4 +98,25 @@ private:
 	Rect	m_rect;
 };
 
+
+/**
+	@brief		
+*/
+LN_CLASS()
+class CornellBox
+	: public StaticMeshComponent
+{
+	LN_OBJECT;
+public:
+	static Ref<CornellBox> create();
+
+
+LN_CONSTRUCT_ACCESS:
+	CornellBox();
+	virtual ~CornellBox();
+	void initialize();
+
+private:
+};
+
 LN_NAMESPACE_END

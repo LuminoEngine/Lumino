@@ -207,7 +207,7 @@ void SkinnedMeshModel::initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 	if (LN_REQUIRE(manager != nullptr)) return;
 	if (LN_REQUIRE(sharingMesh != nullptr)) return;
 
-	m_mesh = Object::makeRef<StaticMeshModel>(manager, sharingMesh);
+	m_mesh = Object::makeRef<StaticMeshModel>(sharingMesh);
 
 	// メッシュ(バッファ類)は共有する
 	m_meshResource = sharingMesh;
@@ -407,8 +407,8 @@ void SkinnedMeshModel::updateSkinningMatrices()
 	// スキニングテクスチャ更新
 	if (!m_skinningMatricesTexture.isNull())
 	{
-		m_skinningMatricesTexture->setData(&m_skinningMatrices[0]);
-		m_skinningLocalQuaternionsTexture->setData(&m_skinningLocalQuaternions[0]);
+		m_skinningMatricesTexture->setMappedData(&m_skinningMatrices[0]);
+		m_skinningLocalQuaternionsTexture->setMappedData(&m_skinningLocalQuaternions[0]);
 	}
 
 	// 全てのローカルトランスフォームをリセットする

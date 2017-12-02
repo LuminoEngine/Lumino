@@ -271,6 +271,8 @@ void UIFrameWindow::executeDrawList_UIRenderer()
 	m_drawElementListSet->m_cameraInfo.viewProjMatrix = m_drawElementListSet->m_cameraInfo.viewMatrix * m_drawElementListSet->m_cameraInfo.projMatrix;
 	m_drawElementListSet->m_cameraInfo.viewFrustum = ViewFrustum(m_drawElementListSet->m_cameraInfo.projMatrix);
 	m_drawElementListSet->m_cameraInfo.zSortDistanceBase = ZSortDistanceBase::NodeZ;
+	m_drawElementListSet->m_cameraInfo.nearClip = 0.0;
+	m_drawElementListSet->m_cameraInfo.farClip = 1.0;
 	m_internalRenderer->render(
 		m_drawElementListSet,
 		//m_drawingContext->getDrawElementList(),

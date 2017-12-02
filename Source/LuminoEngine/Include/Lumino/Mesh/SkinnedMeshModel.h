@@ -74,7 +74,7 @@ LN_INTERNAL_ACCESS:
 	//int getSubsetCount() const;
 
 	// マテリアル取得
-	//const Material& getMaterial(int subsetIndex) const;
+	//const CommonMaterial& getMaterial(int subsetIndex) const;
 
 	// サブセット描画
 	//void drawSubset(int subsetIndex);

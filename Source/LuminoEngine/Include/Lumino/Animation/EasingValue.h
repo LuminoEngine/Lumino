@@ -140,7 +140,7 @@ private:
 				{
 					m_currentTime = -m_currentTime;
 				}
-				time = abs(m_currentTime) / m_totalTime;
+				time = std::abs(m_currentTime) / m_totalTime;
 				break;
 		}
 

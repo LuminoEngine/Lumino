@@ -96,7 +96,7 @@ int CppLexer::ReadToken(const Range& buffer)
 }
 
 //------------------------------------------------------------------------------
-void CppLexer::PollingToken(Token* token)
+void CppLexer::PollingToken(SourceToken* token)
 {
 	// 何もしていない。改行を探す。
 	if (m_seqPPDirective == PPDirectiveSeq::Idle)
@@ -114,7 +114,12 @@ void CppLexer::PollingToken(Token* token)
 		{
 			m_seqPPDirective = PPDirectiveSeq::FoundSharp;	// "#" を見つけた
 		}
-		else {
+		else if (token->GetTokenGroup() == TokenGroup::NewLine)
+		{
+			// LineHead のまま
+		}
+		else
+		{
 			m_seqPPDirective = PPDirectiveSeq::Idle;		// "#" 以外のトークンだった。Idle へ。
 		}
 	}

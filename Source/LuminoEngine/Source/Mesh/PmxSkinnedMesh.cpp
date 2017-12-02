@@ -10,38 +10,38 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 
 //------------------------------------------------------------------------------
-Ref<Material> PmxMaterialResource::MakeCommonMaterial() const
+Ref<CommonMaterial> PmxMaterialResource::MakeCommonMaterial() const
 {
-	auto m = Ref<Material>::makeRef();
+	auto m = Ref<CommonMaterial>::makeRef();
 	m->setBuiltinColorParameter(
-		Material::DiffuseParameter,
+		CommonMaterial::DiffuseParameter,
 		Diffuse.r,
 		Diffuse.g,
 		Diffuse.b,
 		Diffuse.a);
 	m->setBuiltinColorParameter(
-		Material::AmbientParameter,
+		CommonMaterial::AmbientParameter,
 		Ambient.r,
 		Ambient.g,
 		Ambient.b,
 		Ambient.a);
 	m->setBuiltinColorParameter(
-		Material::SpecularParameter,
+		CommonMaterial::SpecularParameter,
 		Specular.r,
 		Specular.g,
 		Specular.b,
 		Specular.a);
 	m->setBuiltinColorParameter(
-		Material::EmissiveParameter,
+		CommonMaterial::EmissiveParameter,
 		Emissive.r,
 		Emissive.g,
 		Emissive.b,
 		Emissive.a);
 	m->setBuiltinFloatParameter(
-		Material::PowerParameter,
+		CommonMaterial::PowerParameter,
 		Power);
 	m->setBuiltinTextureParameter(
-		Material::MaterialTextureParameter,
+		CommonMaterial::MaterialTextureParameter,
 		Texture);
 	return m;
 }

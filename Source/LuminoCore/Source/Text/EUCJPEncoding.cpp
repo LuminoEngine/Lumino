@@ -14,7 +14,7 @@
 
 */
 #include "../Internal.h"
-#include "../../include/Lumino/Text/UnicodeUtils.h"
+#include "../../Include/Lumino/Text/UnicodeUtils.h"
 #include "EUCJPEncoding.h"
 
 LN_NAMESPACE_BEGIN
@@ -129,7 +129,7 @@ inline EUCJPEncoding::EUCGroup EUCJPEncoding::checkEUCGroup(const byte_t* pos, i
 	}
 	// Control (oŒ»•p“x‚Í’á‚¢‚Ì‚Å”»•Ê‚ðŒã‰ñ‚µ‚É‚µ‚Ä‘¬“xŒüã‚ð‘_‚¤)
 	if ((len >= 1) &&
-		(0x80 <= pos[0] && pos[0] <= 0x8D) || (0x90 <= pos[0] && pos[0] <= 0x9F)) {
+		((0x80 <= pos[0] && pos[0] <= 0x8D) || (0x90 <= pos[0] && pos[0] <= 0x9F))) {
 		return EUCGroup_Control;
 	}
 	// •s³•¶Žš

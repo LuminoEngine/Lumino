@@ -34,7 +34,7 @@ Ref<StaticMeshComponent> StaticMeshComponent::createPlane(const Vector2& size, i
 {
 	auto ptr = Ref<StaticMeshComponent>::makeRef();
 	auto mesh = Ref<StaticMeshModel>::makeRef();
-	mesh->initializePlane(SceneGraphManager::Instance->getGraphicsManager(), size, sliceH, sliceV, flags);
+	mesh->initializePlane(size, sliceH, sliceV, flags);
 	ptr->initialize(mesh);
 	return ptr;
 }
@@ -44,7 +44,7 @@ Ref<StaticMeshComponent> StaticMeshComponent::createScreenPlane()
 {
 	auto ptr = Ref<StaticMeshComponent>::makeRef();
 	auto mesh = Ref<StaticMeshModel>::makeRef();
-	mesh->initializeScreenPlane(SceneGraphManager::Instance->getGraphicsManager(), MeshCreationFlags::None);
+	mesh->initializeScreenPlane(MeshCreationFlags::None);
 	ptr->initialize(mesh);
 	return ptr;
 }
@@ -66,7 +66,7 @@ Ref<StaticMeshComponent> StaticMeshComponent::createBox()
 Ref<StaticMeshComponent> StaticMeshComponent::createBox(const Vector3& size)
 {
 	auto mesh = Ref<StaticMeshModel>::makeRef();
-	mesh->initializeBox(SceneGraphManager::Instance->getGraphicsManager(), size, MeshCreationFlags::None);
+	mesh->initializeBox(size, MeshCreationFlags::None);
 
 	auto ptr = Ref<StaticMeshComponent>::makeRef();
 	ptr->initialize(mesh);
@@ -96,7 +96,7 @@ Ref<StaticMeshComponent> StaticMeshComponent::createSphere()
 Ref<StaticMeshComponent> StaticMeshComponent::createSphere(float radius, int tessellation)
 {
 	auto mesh = Ref<StaticMeshModel>::makeRef();
-	mesh->initializeSphere(SceneGraphManager::Instance->getGraphicsManager(), radius, tessellation, tessellation, MeshCreationFlags::None);
+	mesh->initializeSphere(radius, tessellation, tessellation, MeshCreationFlags::None);
 
 	auto ptr = Ref<StaticMeshComponent>::makeRef();
 	ptr->initialize(mesh);
@@ -120,7 +120,7 @@ Ref<StaticMeshComponent> StaticMeshComponent::createTeapot()
 Ref<StaticMeshComponent> StaticMeshComponent::createTeapot(float size, int tessellation)
 {
 	auto mesh = Ref<StaticMeshModel>::makeRef();
-	mesh->initializeTeapot(SceneGraphManager::Instance->getGraphicsManager(), size, tessellation, MeshCreationFlags::None);
+	mesh->initializeTeapot(size, tessellation, MeshCreationFlags::None);
 
 	auto ptr = Ref<StaticMeshComponent>::makeRef();
 	ptr->initialize(mesh);
@@ -211,6 +211,72 @@ void Rectangle::onRender2(RenderingContext* renderer)
 		Vector3(m_rect.getTopRight(), 0), Vector2(1, 0), Color::White,
 		Vector3(m_rect.getBottomLeft(), 0), Vector2(0, 1), Color::White,
 		Vector3(m_rect.getBottomRight(), 0), Vector2(1, 1), Color::White);
+}
+
+//==============================================================================
+// CornellBox
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(CornellBox, StaticMeshComponent);
+
+Ref<CornellBox> CornellBox::create()
+{
+	return newObject<CornellBox>();
+}
+
+CornellBox::CornellBox()
+{
+}
+
+CornellBox::~CornellBox()
+{
+}
+
+void CornellBox::initialize()
+{
+	auto boxMesh = MeshResource::create(4, 6, MeshCreationFlags::None);
+
+	// front
+	boxMesh->addSquare(
+		Vertex{ Vector3(-10, 20, 10), Vector2(0, 0), -Vector3::UnitZ, Color::White },
+		Vertex{ Vector3(-10, 0, 10), Vector2(0, 0), -Vector3::UnitZ, Color::White },
+		Vertex{ Vector3(10, 0, 10), Vector2(0, 0), -Vector3::UnitZ, Color::White },
+		Vertex{ Vector3(10, 20, 10), Vector2(0, 0), -Vector3::UnitZ, Color::White });
+	// up
+	boxMesh->addSquare(
+		Vertex{ Vector3(-10, 20, -10), Vector2(0, 0), -Vector3::UnitY, Color::White },
+		Vertex{ Vector3(-10, 20, 10), Vector2(0, 0), -Vector3::UnitY, Color::White },
+		Vertex{ Vector3(10, 20, 10), Vector2(0, 0), -Vector3::UnitY, Color::White },
+		Vertex{ Vector3(10, 20, -10), Vector2(0, 0), -Vector3::UnitY, Color::White });
+	// down
+	boxMesh->addSquare(
+		Vertex{ Vector3(-10, 0, 10), Vector2(0, 0), Vector3::UnitY, Color::White },
+		Vertex{ Vector3(-10, 0, -10), Vector2(0, 0), Vector3::UnitY, Color::White },
+		Vertex{ Vector3(10, 0, -10), Vector2(0, 0), Vector3::UnitY, Color::White },
+		Vertex{ Vector3(10, 0, 10), Vector2(0, 0), Vector3::UnitY, Color::White });
+	// left
+	boxMesh->addSquare(
+		Vertex{ Vector3(-10, 20, -10), Vector2(0, 0), Vector3::UnitX, Color::Red },
+		Vertex{ Vector3(-10, 0, -10), Vector2(0, 0), Vector3::UnitX, Color::Red },
+		Vertex{ Vector3(-10, 0, 10), Vector2(0, 0), Vector3::UnitX, Color::Red },
+		Vertex{ Vector3(-10, 20, 10), Vector2(0, 0), Vector3::UnitX, Color::Red });
+	// right
+	boxMesh->addSquare(
+		Vertex{ Vector3(10, 20, 10), Vector2(0, 0), -Vector3::UnitX, Color::Green },
+		Vertex{ Vector3(10, 0, 10), Vector2(0, 0), -Vector3::UnitX, Color::Green },
+		Vertex{ Vector3(10, 0, -10), Vector2(0, 0), -Vector3::UnitX, Color::Green },
+		Vertex{ Vector3(10, 20, -10), Vector2(0, 0), -Vector3::UnitX, Color::Green });
+
+
+	boxMesh->addBox(Vector3(4, 12, 4), Matrix::makeTranslation(-3, 6, 2));
+
+	boxMesh->addSphere(3, 16, 16, Matrix::makeTranslation(4, 3, 0));
+
+	auto mesh = newObject<StaticMeshModel>(boxMesh);
+
+	auto material = CommonMaterial::create();
+	material->setMaterialTexture(Texture2D::getWhiteTexture());
+	mesh->addMaterial(material);
+	StaticMeshComponent::initialize(mesh);
 }
 
 LN_NAMESPACE_END

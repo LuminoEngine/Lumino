@@ -174,7 +174,7 @@ LN_NAMESPACE_END
 //	// マテリアルをコピーする (急ぎ足で作ったから、もっとちゃんと考えた方が良いと思う)
 //	//for (int i = 0; i < m_model->getSubsetCount(); i++)
 //	//{
-//	//	m_visualNodeParams.GetSubsetParams(i).Material = m_model->getMaterial(i);
+//	//	m_visualNodeParams.GetSubsetParams(i).CommonMaterial = m_model->getMaterial(i);
 //	//}
 //	LN_NOTIMPLEMENTED();
 //

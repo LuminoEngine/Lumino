@@ -255,12 +255,12 @@ SrMesh* SrMeshModel::addMesh()
 	return mesh;
 }
 
-void SrMeshModel::addMaterial(Material* material)
+void SrMeshModel::addMaterial(CommonMaterial* material)
 {
 	materials.add(material);
 }
 
-Material* SrMeshModel::getMaterial(int index)
+CommonMaterial* SrMeshModel::getMaterial(int index)
 {
 	return materials[index];
 }

@@ -3,11 +3,11 @@
 #include <sys/stat.h>
 #include <fnmatch.h>
 #include "../Internal.h"
-#include "../../include/Lumino/Base/ByteBuffer.h"
-#include "../../include/Lumino/Text/Encoding.h"
-#include "../../include/Lumino/IO/FileStream.h"
-#include "../../include/Lumino/IO/FileSystem.h"
-#include "../../include/Lumino/IO/PathTraits.h"
+#include "../../Include/Lumino/Base/ByteBuffer.h"
+#include "../../Include/Lumino/Text/Encoding.h"
+#include "../../Include/Lumino/IO/FileStream.h"
+#include "../../Include/Lumino/IO/FileSystem.h"
+#include "../../Include/Lumino/IO/PathTraits.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -192,7 +192,7 @@ public:
 
 	static FILE* fopen(const char* path, const char* mode)
 	{
-		return fopen(path, mode);
+		return ::fopen(path, mode);
 	}
 };
 

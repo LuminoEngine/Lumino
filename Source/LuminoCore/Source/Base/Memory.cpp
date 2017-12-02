@@ -1,7 +1,7 @@
 ﻿
 #include <new>
 #include "../Internal.h"
-#include "../../include/Lumino/Base/Memory.h"
+#include "../../Include/Lumino/Base/Memory.h"
 using namespace ln;
 
 static ln::detail::NewCallback g_NewCallback = nullptr;
@@ -34,7 +34,7 @@ void* LN_CDECL operator new ( size_t size, MemoryFlag flag )
 	catch (std::bad_alloc)
 	{
 	}
-	LN_FATAL(!ptr);
+	LN_FATAL(ptr);
 	return ptr;
 }
 
@@ -50,7 +50,7 @@ void* LN_CDECL operator new[] ( size_t size, MemoryFlag flag )
 	catch (std::bad_alloc)
 	{
 	}
-	LN_FATAL(!ptr);
+	LN_FATAL(ptr);
 	return ptr;
 }
 

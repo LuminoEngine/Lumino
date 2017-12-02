@@ -39,7 +39,7 @@ LN_INTERNAL_ACCESS:
 	virtual ~VertexBuffer();
 	void initialize(detail::GraphicsManager* manager, size_t bufferSize, const void* data, ResourceUsage usage, bool sizeConst);
 	Driver::IVertexBuffer* resolveRHIObject();
-	virtual void onChangeDevice(Driver::IGraphicsDevice* device);
+	virtual void onChangeDevice(Driver::IGraphicsDevice* device) override;
 
 private:
 	bool isRHIDirect() const { return m_initialUpdate && m_rhiObject != nullptr; }

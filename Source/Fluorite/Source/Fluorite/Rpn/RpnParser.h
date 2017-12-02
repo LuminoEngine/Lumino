@@ -120,7 +120,7 @@ public:
 	RpnTokenType		Type;
 	int					Precedence;		///< 優先順位
 	OpeatorAssociation	Association;	///< 結合方向
-	const Token*		SourceToken;
+	const SourceToken*	SourceToken;
 	int					GroupLevel;		///< () ネストの深さ。ルートは 0
 
 	int					CondGoto;		///< (Type が CondTrue または CondFalse のときに使用する)
@@ -141,7 +141,7 @@ class RpnTokenList
 class RpnParser
 {
 public:
-	typedef List<Token*>::const_iterator Position;
+	typedef List<SourceToken>::const_iterator Position;
 
 public:
 	// TODO: Ref

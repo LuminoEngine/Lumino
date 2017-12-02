@@ -4,7 +4,7 @@
 
 LN_NAMESPACE_BEGIN
 class Texture;
-class Material;
+class CommonMaterial;
 class TileSet;
 typedef Ref<TileSet> TileSetPtr;
 
@@ -36,7 +36,7 @@ public:
 LN_PROTECTED_INTERNAL_ACCESS:
 	void initialize(detail::GraphicsManager* manager);
 	virtual void LookupTileImage(int id, Texture** outTexture, RectI* outSrcRect);
-	Material* getMaterial() const;
+	CommonMaterial* getMaterial() const;
 
 private:
 	struct TileInfo
@@ -45,7 +45,7 @@ private:
 	};
 	
 	Texture*	m_imageSource;
-	Ref<Material>	m_material;
+	Ref<CommonMaterial>	m_material;
 	SizeI		m_tileSize;
 	int			m_tileCountH;
 	//PathName	m_imageFilePath;

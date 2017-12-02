@@ -138,7 +138,7 @@ LN_INTERNAL_ACCESS:
 	void setParent(TextElement* parent) { m_parent = parent; }
 	TextElement* getParent() const { return m_parent; }
 	const Size& getDesiredSize() const { return m_desiredSize; }
-	const Size& getRenderSize() const { return m_finalLocalRect.getSize(); }
+	Size getRenderSize() const { return m_finalLocalRect.getSize(); }
 
 private:
 	DocumentsManager*		m_manager;
@@ -175,7 +175,7 @@ public:
 	void addInline(Inline* inl);
 	void clearInlines();
 
-	virtual void render(const Matrix& transform, IDocumentsRenderer* renderer);
+	virtual void render(const Matrix& transform, IDocumentsRenderer* renderer) override;
 
 protected:
 	virtual Size measureOverride(const Size& constraint) override;
@@ -238,7 +238,7 @@ protected:
 	virtual void render(const Matrix& transform, IDocumentsRenderer* renderer) override;
 
 	// ILayoutElement interface
-	virtual Size measureOverride(const Size& constraint);
+	virtual Size measureOverride(const Size& constraint) override;
 
 private:
 	detail::SimpleStringBuilder<UTF32>	m_text;

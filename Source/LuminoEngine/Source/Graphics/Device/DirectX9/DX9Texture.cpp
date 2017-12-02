@@ -103,7 +103,7 @@ DX9Texture::DX9Texture(DX9GraphicsDevice* device, const void* data, uint32_t siz
 	LN_COMCALL(DX9Module::D3DXGetImageInfoFromFileInMemory(data, size, &imageInfo));
 
 	// テクスチャのフォーマットを決める
-	D3DFORMAT dxFormat = (format == TextureFormat::Unknown) ? imageInfo.Format : DX9Module::TranslateLNFormatToDxFormat(format);
+	D3DFORMAT dxFormat = D3DFMT_A8R8G8B8;// (format == TextureFormat::Unknown) ? imageInfo.Format :　DX9Module::TranslateLNFormatToDxFormat(format);
 
 	UINT miplevels = (mipmap) ? 0 : 1;
 	DWORD dxUsage = (mipmap) ? D3DUSAGE_AUTOGENMIPMAP : 0;
@@ -138,10 +138,11 @@ DX9Texture::DX9Texture(DX9GraphicsDevice* device, const void* data, uint32_t siz
 	m_size.set(imageInfo.Width, imageInfo.Height);
 
 	// 実際のテクスチャの大きさを取得
+	D3DFORMAT afm;
 	LN_COMCALL(DX9Module::D3DXCheckTextureRequirements(
 		m_graphicsDevice->getIDirect3DDevice9(),
 		&imageInfo.Width, &imageInfo.Height,
-		&miplevels, dxUsage, NULL, D3DPOOL_MANAGED));
+		&miplevels, dxUsage, &afm, D3DPOOL_MANAGED));
 	m_realSize.set(imageInfo.Width, imageInfo.Height);
 
 	// テクスチャのサーフェイスを取得する
@@ -151,7 +152,7 @@ DX9Texture::DX9Texture(DX9GraphicsDevice* device, const void* data, uint32_t siz
 	// ここの時点で m_dxSurface の参照カウントは「 3 」
 	// ここの時点で m_dxTexture の参照カウントは「 2 」
 
-	// サーフェイスフォーマットの取得
+	// 実際に作成されたフォーマットを覚えておく
 	D3DSURFACE_DESC desc;
 	m_dxSurface->GetDesc(&desc);
 	m_format = DX9Module::TranslateFormatDxToLN(desc.Format);
@@ -325,7 +326,6 @@ void DX9Texture3D::initialize(int width, int height, int depth, TextureFormat fo
 	IDirect3DDevice9* d3d9Device = m_graphicsDevice->getIDirect3DDevice9();
 
 	m_size.set(width, height);
-	m_format = format;
 
 	// 実際に作成されるべきテクスチャの情報を取得する
 	UINT w = m_size.width;
@@ -352,6 +352,9 @@ void DX9Texture3D::initialize(int width, int height, int depth, TextureFormat fo
 		D3DPOOL_MANAGED,
 		&m_dxTexture,
 		NULL));
+
+	// 実際に作成されたテクスチャのフォーマットを覚えておく
+	m_format = DX9Module::TranslateFormatDxToLN(dxFormat);
 }
 
 //------------------------------------------------------------------------------

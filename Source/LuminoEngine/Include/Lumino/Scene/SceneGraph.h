@@ -11,7 +11,7 @@ class DrawList;
 class CameraComponent;
 class SceneNode;
 class StaticMeshModel;
-class Material;		// TODO: World temp
+class CommonMaterial;		// TODO: World temp
 class SceneGraph2D;
 class SceneGraph3D;
 using SceneGraph2DPtr = Ref<SceneGraph2D>;

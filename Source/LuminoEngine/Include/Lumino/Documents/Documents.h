@@ -227,7 +227,7 @@ public:
 protected:
 	// TextElement interface
 	virtual void onFontDataChanged(const ln::detail::FontData& newData) override;
-	virtual InternalTextElementType getInternalTextElementType() const;
+	virtual InternalTextElementType getInternalTextElementType() const override;
 
 LN_INTERNAL_ACCESS:
 	const UTF32* getText() const { return m_text.c_str(); }

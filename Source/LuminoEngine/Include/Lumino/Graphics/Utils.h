@@ -20,11 +20,12 @@ public:
 
 	static int getTextureFormatByteCount(TextureFormat format);
 	static PixelFormat translatePixelFormat(TextureFormat format);
+
+	static bool isSRGBFormat(TextureFormat format);
+	static bool isFloatFormat(TextureFormat format);
 	
 	static void saveScreenShot(const Char* filePath);
 	static void waitSaveScreenShot();
-
-	static bool equalsTexture(Texture* texture1, Texture* texture2);
 };
 
 LN_NAMESPACE_GRAPHICS_END

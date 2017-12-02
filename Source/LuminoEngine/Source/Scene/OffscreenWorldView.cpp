@@ -118,6 +118,8 @@ void OffscreenWorldView::renderWorld(World* world, RenderView* mainRenderView)
 	m_cameraInfo.viewProjMatrix = m_cameraInfo.viewMatrix * m_cameraInfo.projMatrix;
 	m_cameraInfo.viewFrustum = mainRenderView->m_cameraInfo.viewFrustum;//mainViewCamera->getViewFrustum();	// TODO: この View 独自処理にしたい
 	m_cameraInfo.zSortDistanceBase = mainRenderView->m_cameraInfo.zSortDistanceBase;
+	m_cameraInfo.nearClip = mainRenderView->m_cameraInfo.nearClip;
+	m_cameraInfo.farClip = mainRenderView->m_cameraInfo.farClip;
 
 
 
@@ -221,7 +223,7 @@ void SkyComponent::initialize()
 	{
 
 		auto shader = ln::Shader::create(_LT("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Scene/Resource/Sky.fx"));
-		m_skyMaterial = newObject<Material>();
+		m_skyMaterial = newObject<CommonMaterial>();
 		m_skyMaterial->setShader(shader);
 	}
 }
@@ -393,7 +395,7 @@ void MirrorComponent::initialize()
 	detail::EngineDomain::getDefaultWorld3D()->addOffscreenWorldView(m_offscreen);
 	m_offscreen->hideVisual(this);
 
-	m_material = newObject<Material>();
+	m_material = newObject<CommonMaterial>();
 	//m_material->setMaterialTexture(Texture2D::getBlackTexture());
 	//m_material->setMaterialTexture(Texture2D::getWhiteTexture());
 	//m_material->setShader(Shader::getBuiltinShader(BuiltinShader::Sprite));
