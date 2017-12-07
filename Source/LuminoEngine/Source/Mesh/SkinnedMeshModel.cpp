@@ -308,22 +308,22 @@ void SkinnedMeshModel::initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 
 	//---------------------------------------------------------
 	// 物理演算
-	m_physicsWorld = newObject<PhysicsWorld>();
-	m_physicsWorld->setGravity(Vector3(0, -9.80f * 10.0f, 0));
+	//m_physicsWorld = newObject<PhysicsWorld>();
+	//m_physicsWorld->setGravity(Vector3(0, -9.80f * 10.0f, 0));
 
-	m_rigidBodyList.resize(m_meshResource->rigidBodys.getCount());
-	for (int i = 0; i < m_meshResource->rigidBodys.getCount(); ++i)
-	{
-		m_rigidBodyList[i] = Ref<detail::MmdSkinnedMeshRigidBody>::makeRef();
-		m_rigidBodyList[i]->initialize(this, m_meshResource->rigidBodys[i], 1.0f);
-	}
+	//m_rigidBodyList.resize(m_meshResource->rigidBodys.getCount());
+	//for (int i = 0; i < m_meshResource->rigidBodys.getCount(); ++i)
+	//{
+	//	m_rigidBodyList[i] = Ref<detail::MmdSkinnedMeshRigidBody>::makeRef();
+	//	m_rigidBodyList[i]->initialize(this, m_meshResource->rigidBodys[i], 1.0f);
+	//}
 
-	m_jointList.resize(m_meshResource->joints.getCount());
-	for (int i = 0; i < m_meshResource->joints.getCount(); ++i)
-	{
-		m_jointList[i] = Ref<detail::MmdSkinnedMeshJoint>::makeRef();
-		m_jointList[i]->initialize(this, m_meshResource->joints[i]);
-	}
+	//m_jointList.resize(m_meshResource->joints.getCount());
+	//for (int i = 0; i < m_meshResource->joints.getCount(); ++i)
+	//{
+	//	m_jointList[i] = Ref<detail::MmdSkinnedMeshJoint>::makeRef();
+	//	m_jointList[i]->initialize(this, m_meshResource->joints[i]);
+	//}
 }
 
 //------------------------------------------------------------------------------
