@@ -346,6 +346,14 @@ void ClusteredShadingGeometryRenderingPass::initialize()
 	// TODO: getPass 引数型
 	m_defaultShaderPass = m_defaultShader->findTechnique(ClusteredShadingGeometryRenderingPass_TechniqueName)->getPass(ClusteredShadingGeometryRenderingPass_PassName.c_str());
 
+
+
+
+	m_unLightingShader = Shader::create(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/UnLighting.fx"), ShaderCodeType::RawHLSL);
+	m_unLightingShaderPass = m_unLightingShader->getTechniques()[0]->getPass(ClusteredShadingGeometryRenderingPass_PassName.c_str());
+
+
+
 	m_normalRenderTarget = Ref<RenderTargetTexture>::makeRef();
 	m_normalRenderTarget->createImpl(GraphicsManager::getInstance(), SizeI(640, 480), 1, TextureFormat::R32G32B32A32_Float);
 }
@@ -358,14 +366,23 @@ void ClusteredShadingGeometryRenderingPass::initialize()
 
 void ClusteredShadingGeometryRenderingPass::selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy)
 {
-	outPolicy->shaderPass = selectShaderPassHelper(
-		material->m_shader,
-		ClusteredShadingGeometryRenderingPass_TechniqueName,
-		ClusteredShadingGeometryRenderingPass_PassName,
-		m_defaultShaderPass);
-	
+	// TODO: ユーザーシェーダから UnLit 取れればそれを使う
+	if (material->m_shadingModel == ShadingModel::UnLighting)
+	{
+		outPolicy->shaderPass = m_unLightingShaderPass;
+	}
+	else
+	{
+		outPolicy->shaderPass = selectShaderPassHelper(
+			material->m_shader,
+			ClusteredShadingGeometryRenderingPass_TechniqueName,
+			ClusteredShadingGeometryRenderingPass_PassName,
+			m_defaultShaderPass);
+	}
+
 	outPolicy->shader = outPolicy->shaderPass->getOwnerShader();
 	outPolicy->visible = true;
+
 }
 
 RenderTargetTexture* g_m_normalRenderTarget = nullptr;

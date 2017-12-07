@@ -1,6 +1,6 @@
 
 float4x4	ln_WorldViewProjection;
-texture2D	ln_MaterialTexture:
+texture2D	ln_MaterialTexture;
 
 sampler2D TextureSampler = sampler_state
 {
@@ -40,7 +40,7 @@ VSOutput VS_ShadowCaster(VSInput input)
 
 float4 PS_ShadowCaster(PSInput input) : COLOR0
 { 
-	return (tex2D(MaterialTextureSampler, input.UV)) * input.Color;
+	return (tex2D(TextureSampler, input.UV)) * input.Color;
 }
 
 technique Main
