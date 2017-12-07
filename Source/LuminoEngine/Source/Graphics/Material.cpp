@@ -577,6 +577,7 @@ void CombinedMaterial::combine(/*CommonMaterial* owner, */CommonMaterial* ownerB
 		m_cullingMode = source1->getCullingMode();
 		m_depthTestEnabled = source1->isDepthTestEnabled();
 		m_depthWriteEnabled = source1->isDepthWriteEnabled();
+		m_shadingModel = source1->shadingModel;
 
 		// source2 (base があるなら owner を後からマージ)
 		if (source2 != nullptr)

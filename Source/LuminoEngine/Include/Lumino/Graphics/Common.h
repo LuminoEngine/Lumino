@@ -384,6 +384,12 @@ enum class LightType
 	Spot,
 };
 
+enum class ShadingModel
+{
+	Default,
+	UnLighting,
+};
+
 enum class BuiltinShader
 {
 	Sprite,

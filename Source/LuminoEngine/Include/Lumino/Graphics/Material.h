@@ -196,6 +196,7 @@ private:
 	Nullable<bool>			depthWriteEnabled;
 
 public:
+	ShadingModel			shadingModel = ShadingModel::Default;
 
 	void setBlendMode(Nullable<BlendMode> mode);
 	Nullable<BlendMode> getBlendMode() const { return blendMode; }
@@ -398,6 +399,7 @@ public:
 	Nullable<CullingMode>	m_cullingMode;
 	Nullable<bool>			m_depthTestEnabled;
 	Nullable<bool>			m_depthWriteEnabled;
+	ShadingModel			m_shadingModel = ShadingModel::Default;
 
 	void combine(/*CommonMaterial* owner, */CommonMaterial* ownerBase, const BuiltinEffectData& builtinEffectData);
 	void applyUserShaderValeues(Shader* targetShader);
