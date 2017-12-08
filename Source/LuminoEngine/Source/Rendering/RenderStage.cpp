@@ -52,6 +52,11 @@ void RenderingContextParameters::copyFrom(const RenderingContextParameters* othe
 	m_hashDirty = true;
 }
 
+bool RenderingContextParameters::equals(const RenderingContextParameters* other) const
+{
+	return getHashCode() == other->getHashCode();
+}
+
 void RenderingContextParameters::setRenderTarget(int index, RenderTargetTexture* renderTarget)
 {
 	if (m_renderTargets[index] != renderTarget)
@@ -225,7 +230,7 @@ bool RenderStage::equals(const RenderStage* other) const
 {
 	if (visualNodeParameters != other->visualNodeParameters) return false;
 
-	return true;
+	return renderingContextParameters.equals(&other->renderingContextParameters);
 }
 
 void RenderStage::combineParameters()
@@ -372,12 +377,8 @@ RenderStage* RenderStageCache::request()
 		}
 	}
 	m_used++;
-	return m_instanceList[m_used - 1];
-}
-
-RenderStage* RenderStageCache::get(int id) const
-{
-	return m_instanceList[id];
+	//getLast()->reset();
+	return getLast();
 }
 
 } // namespace detail

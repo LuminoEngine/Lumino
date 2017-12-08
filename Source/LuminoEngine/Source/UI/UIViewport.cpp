@@ -105,7 +105,8 @@ void UIViewport::onRender(DrawingContext* g)
 	updateFramebufferIfNeeded();
 
 
-	g->setBuiltinEffectData(detail::BuiltinEffectData::DefaultData);
+	//g->setBuiltinEffectData(detail::BuiltinEffectData::DefaultData);
+	g->setVisualNodeParameters(nullptr);
 
 	// m_primaryLayerTarget にシーンを描画してもらう
 	g->pushState();

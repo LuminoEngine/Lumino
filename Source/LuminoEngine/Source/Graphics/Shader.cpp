@@ -14,6 +14,7 @@
 #include "ShaderAnalyzer.h"
 #include "../Shader/LuminoShader.h"
 #include "Device/OpenGL/GLGraphicsDevice.h"
+#include "../Rendering/RenderStage.h"
 
 #define LN_CALL_SHADER_COMMAND(func, command, ...) \
 	if (m_owner->getManager()->getRenderingType() == GraphicsRenderingType::Threaded) { \
@@ -324,7 +325,12 @@ void ShaderSemanticsManager::updateElementVariables(const CameraInfo& cameraInfo
 //------------------------------------------------------------------------------
 void ShaderSemanticsManager::updateSubsetVariables(const SubsetInfo& info)
 {
-	const detail::CombinedMaterial* cm = info.combinedMaterial;
+	PhongMaterialData phongMaterialData;
+	PBRMaterialData pbrMaterialData;
+	info.finalMaterial->translateToPhongMaterialData(&phongMaterialData);
+	info.finalMaterial->translateToPBRMaterialData(&pbrMaterialData);
+
+	//const detail::CombinedMaterial* cm = info.combinedMaterial;
 
 	// TODO: このあたり、もし最適化で変数が消えているなら set しなくて良いようにしたい。
 
@@ -336,54 +342,70 @@ void ShaderSemanticsManager::updateSubsetVariables(const SubsetInfo& info)
 				varInfo.variable->setTexture((info.materialTexture != nullptr) ? info.materialTexture : m_manager->getDummyWhiteTexture());
 				break;
 			case BuiltinSemantics::MaterialDiffuse:
-				if (cm != nullptr)
-					varInfo.variable->setVector(cm->m_diffuse);
+				//if (cm != nullptr)
+				//	varInfo.variable->setVector(cm->m_diffuse);
+				varInfo.variable->setVector(phongMaterialData.diffuse);
 				break;
 			case BuiltinSemantics::MaterialAmbient:
-				if (cm != nullptr)
-					varInfo.variable->setVector(cm->m_ambient);
+				//if (cm != nullptr)
+				//	varInfo.variable->setVector(cm->m_ambient);
+				varInfo.variable->setVector(phongMaterialData.ambient);
 				break;
 			case BuiltinSemantics::MaterialEmmisive:
-				if (cm != nullptr)
-					varInfo.variable->setVector(cm->m_emissive);
+				//if (cm != nullptr)
+				//	varInfo.variable->setVector(cm->m_emissive);
+				varInfo.variable->setVector(phongMaterialData.emissive);
 				break;
 			case BuiltinSemantics::MaterialSpecular:
-				if (cm != nullptr)
-					varInfo.variable->setVector(cm->m_specular);
+				//if (cm != nullptr)
+				//	varInfo.variable->setVector(cm->m_specular);
+				varInfo.variable->setVector(phongMaterialData.specular);
 				break;
 			case BuiltinSemantics::MaterialSpecularPower:
-				if (cm != nullptr)
-					varInfo.variable->setFloat(cm->m_power);
+				//if (cm != nullptr)
+				//	varInfo.variable->setFloat(cm->m_power);
+				varInfo.variable->setFloat(phongMaterialData.power);
 				break;
 
 			case BuiltinSemantics::MaterialM2Color:
-				if (cm != nullptr)
-					varInfo.variable->setVector(cm->m_m2_color);
+				//if (cm != nullptr)
+				//	varInfo.variable->setVector(cm->m_m2_color);
+				varInfo.variable->setVector(pbrMaterialData.color);
 				break;
 			case BuiltinSemantics::MaterialM2Roughness:
-				if (cm != nullptr)
-					varInfo.variable->setFloat(cm->m_m2_roughness);
+				//if (cm != nullptr)
+				//	varInfo.variable->setFloat(cm->m_m2_roughness);
+				varInfo.variable->setFloat(pbrMaterialData.roughness);
 				break;
 			case BuiltinSemantics::MaterialM2Metallic:
-				if (cm != nullptr)
-					varInfo.variable->setFloat(cm->m_m2_metallic);
+				//if (cm != nullptr)
+				//	varInfo.variable->setFloat(cm->m_m2_metallic);
+				varInfo.variable->setFloat(pbrMaterialData.metallic);
 				break;
 			case BuiltinSemantics::MaterialM2Specular:
-				if (cm != nullptr)
-					varInfo.variable->setFloat(cm->m_m2_specular);
+				//if (cm != nullptr)
+				//	varInfo.variable->setFloat(cm->m_m2_specular);
+				varInfo.variable->setFloat(pbrMaterialData.specular);
 				break;
 
 			case BuiltinSemantics::ColorScale:
-				if (cm != nullptr)
-					varInfo.variable->setVector(cm->m_colorScale);
+				//if (cm != nullptr)
+				//	varInfo.variable->setVector(cm->m_colorScale);
+				{
+					Color c = info.renderStage->getColorScaleFinal();
+					c.a *= info.renderStage->getOpacityFinal();
+					varInfo.variable->setVector(c);
+				}
 				break;
 			case BuiltinSemantics::BlendColor:
-				if (cm != nullptr)
-					varInfo.variable->setVector(cm->m_blendColor);
+				//if (cm != nullptr)
+				//	varInfo.variable->setVector(cm->m_blendColor);
+				varInfo.variable->setVector(info.renderStage->getBlendColorFinal());
 				break;
 			case BuiltinSemantics::ToneColor:
-				if (cm != nullptr)
-					varInfo.variable->setVector(cm->m_tone);
+				//if (cm != nullptr)
+				//	varInfo.variable->setVector(cm->m_tone);
+				varInfo.variable->setVector(info.renderStage->getToneFinal());
 				break;
 			default:
 				break;

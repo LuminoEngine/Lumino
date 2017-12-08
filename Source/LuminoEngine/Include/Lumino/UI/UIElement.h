@@ -16,6 +16,7 @@ class UIVisualStateManager;
 namespace detail {
 class UIStylePropertyTableInstance;
 class LayoutHelper2;
+class VisualNodeParameters;
 
 enum UICoreFlags
 {
@@ -503,7 +504,8 @@ private:
 	detail::GridLayoutInfo	m_gridLayoutInfo;
 
 	detail::BuiltinEffectData			m_builtinEffectData;
-	detail::BuiltinEffectData			m_combinedBuiltinEffectData;
+	Ref<detail::VisualNodeParameters>	m_combinedVisualNodeParameters;
+	//detail::BuiltinEffectData			m_combinedBuiltinEffectData;
 
 	UISpecialElementType			m_specialElementType;
 

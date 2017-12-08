@@ -10,6 +10,7 @@
 #include "UIHelper.h"
 #include "UIManager.h"
 #include "LayoutHelper.h"
+#include "../Rendering/RenderStage.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -83,6 +84,8 @@ void UIElement::initialize()
 	RuntimeResource::initialize();
 	m_manager = detail::EngineDomain::getUIManager();
 	m_invalidateFlags |= detail::InvalidateFlags::Initializing;
+
+	m_combinedVisualNodeParameters = Ref<detail::VisualNodeParameters>::makeRef();
 
 	// 要素名を覚えておく。末端のサブクラスの名前となる。
 	m_elementName = tr::TypeInfo::getTypeInfo(this)->getName();
@@ -764,20 +767,25 @@ void UIElement::render(DrawingContext* g)
 		//Point contentOffset;
 		if (m_visualParent != nullptr)
 		{
-			detail::BuiltinEffectData::combine(m_visualParent->m_combinedBuiltinEffectData, m_builtinEffectData, &m_combinedBuiltinEffectData);
+			detail::BuiltinEffectData::combine(
+				m_visualParent->m_combinedVisualNodeParameters->builtinEffectData,
+				m_builtinEffectData,
+				&m_combinedVisualNodeParameters->builtinEffectData);
 			//contentOffset = m_visualParent->m_finalLocalContentRect.getTopLeft();
 		}
 		else
 		{
-			m_combinedBuiltinEffectData = m_builtinEffectData;
+			m_combinedVisualNodeParameters->builtinEffectData = m_builtinEffectData;
 		}
 
 		g->pushState();
 
 		Matrix mat;
 		mat.translate(m_finalGlobalRect.x, m_finalGlobalRect.y, 0);
-		g->setTransform(mat);
-		g->setBuiltinEffectData(m_combinedBuiltinEffectData);
+		m_combinedVisualNodeParameters->transfrom = mat;
+		g->setVisualNodeParameters(m_combinedVisualNodeParameters);
+		//g->setTransform(mat);
+		//g->setBuiltinEffectData(m_combinedBuiltinEffectData);
 
 
 

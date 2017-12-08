@@ -18,6 +18,7 @@
 #include "TextLayoutEngine.h"
 #include "FontGlyphTextureCache.h"
 #include "../GraphicsManager.h"
+#include "../../Rendering/RenderStage.h"
 
 LN_NAMESPACE_BEGIN
 namespace detail {
@@ -347,11 +348,11 @@ void TextRenderer::flush()
 }
 
 //------------------------------------------------------------------------------
-void TextRenderer::onSetState(const DrawElementBatch* state)
+void TextRenderer::onSetState(const RenderStage* state)
 {
 	if (state != nullptr)
 	{
-		Font* font = state->state.getFont();
+		Font* font = state->getFontFinal();
 		LN_ASSERT(font != nullptr);
 
 		RawFont* rawFont = font->resolveRawFont();
@@ -359,9 +360,9 @@ void TextRenderer::onSetState(const DrawElementBatch* state)
 		{
 			m_font = rawFont;
 		}
-		if (m_fillBrush != state->state.getBrush())
+		if (m_fillBrush != state->getBrushFinal())
 		{
-			m_fillBrush = state->state.getBrush();
+			m_fillBrush = state->getBrushFinal();
 		}
 
 		LN_ASSERT(m_fillBrush != nullptr);

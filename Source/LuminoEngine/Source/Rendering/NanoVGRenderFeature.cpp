@@ -30,6 +30,7 @@ lnnvg__renderFlush
 #include "../Graphics/GraphicsManager.h"
 #include "../Graphics/RenderingCommand.h"
 #include "NanoVGRenderFeature.h"
+#include "RenderStage.h"
 
 LN_NAMESPACE_BEGIN
 namespace detail
@@ -974,9 +975,9 @@ void NanoVGRenderFeature::executeCommand(NanoVGCommandList* commandList)
 		});
 }
 //------------------------------------------------------------------------------
-void NanoVGRenderFeature::onSetState(const DrawElementBatch* state)
+void NanoVGRenderFeature::onSetState(const RenderStage* state)
 {
-	NanoVGCommandHelper::expandState(state->getTransfrom(), state->state.getBrush(), state->state.getPen(), &m_state);
+	NanoVGCommandHelper::expandState(state->getTransformFinal(), state->getBrushFinal(), state->getPenFinal(), &m_state);
 }
 
 //------------------------------------------------------------------------------

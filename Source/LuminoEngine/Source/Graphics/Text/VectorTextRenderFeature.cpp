@@ -18,6 +18,7 @@
 #include "TextLayoutEngine.h"
 #include "FontGlyphTextureCache.h"
 #include "../GraphicsManager.h"
+#include "../../Rendering/RenderStage.h"
 
 LN_NAMESPACE_BEGIN
 namespace detail {
@@ -207,18 +208,18 @@ void VectorTextRenderer::flush()
 }
 
 //------------------------------------------------------------------------------
-void VectorTextRenderer::onSetState(const DrawElementBatch* state)
+void VectorTextRenderer::onSetState(const RenderStage* state)
 {
 	if (state == nullptr) return;
-	if (state->state.getFont() != nullptr)
+	if (state->getFontFinal() != nullptr)
 	{
-		m_currentFont = state->state.getFont()->resolveRawFont();
+		m_currentFont = state->getFontFinal()->resolveRawFont();
 	}
 	else
 	{
 		m_currentFont = nullptr;
 	}
-	m_fillBrush = state->state.getBrush();
+	m_fillBrush = state->getBrushFinal();
 }
 
 } // namespace detail

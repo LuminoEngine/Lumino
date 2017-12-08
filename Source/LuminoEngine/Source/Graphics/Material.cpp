@@ -299,6 +299,14 @@ const ShaderValue* CommonMaterial::findUserShaderValueConst(uint32_t hashKey) co
 	return nullptr;
 }
 
+void CommonMaterial::applyUserShaderValeues(Shader* targetShader)
+{
+	for (auto& pair : m_userValueMap)
+	{
+		targetShader->setShaderValue(pair.first, pair.second);
+	}
+}
+
 //------------------------------------------------------------------------------
 uint32_t CommonMaterial::getHashCode()
 {
@@ -506,6 +514,26 @@ void DiffuseMaterial::setSpecularPower(float value)
 	setBuiltinFloatParameter(CommonMaterial::PowerParameter, value);
 }
 
+
+
+void CommonMaterial::translateToPhongMaterialData(detail::PhongMaterialData* data)
+{
+	// TODO: 毎回検索は重い気がする。キャッシュしたい
+	data->diffuse = getBuiltinColor(DiffuseHash, CommonMaterial::DefaultDiffuse);
+	data->ambient = getBuiltinColor(AmbientHash, CommonMaterial::DefaultAmbient);
+	data->specular = getBuiltinColor(SpecularHash, CommonMaterial::DefaultSpecular);
+	data->emissive = getBuiltinColor(EmissiveHash, CommonMaterial::DefaultEmissive);
+	data->power = getBuiltinFloat(PowerHash, CommonMaterial::DefaultPower);
+}
+
+void CommonMaterial::translateToPBRMaterialData(detail::PBRMaterialData* data)
+{
+	// TODO: 毎回検索は重い気がする。キャッシュしたい
+	data->color = getBuiltinColor(Material_ColorPropertyNameId, Material_DefaultColor);
+	data->roughness = getBuiltinFloat(Material_RoughnessPropertyNameId, Material_DefaultRoughness);
+	data->metallic = getBuiltinFloat(Material_MetallicPropertyNameId, Material_DefaultMetallic);
+	data->specular = getBuiltinFloat(Material_SpecularPropertyNameId, Material_DefaultSpecular);
+}
 
 namespace detail {
 

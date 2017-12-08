@@ -34,6 +34,7 @@ class RenderingContextParameters
 public:
 	void reset();
 	void copyFrom(const RenderingContextParameters* other);
+	bool equals(const RenderingContextParameters* other) const;
 
 	void setRenderTarget(int index, RenderTargetTexture* renderTarget);
 	RenderTargetTexture* getRenderTarget(int index) const { return m_renderTargets[index]; }
@@ -127,6 +128,7 @@ public:
 	const Matrix& getTransformFinal() const { return m_combinedWorldMatrix; }
 	CommonMaterial* getMaterialFinal(CommonMaterial* defaultValue, CommonMaterial* priorityValue) const;
 	Brush* getBrushFinal() const { return renderingContextParameters.getBrush(); }
+	Pen* getPenFinal() const { return nullptr; }	// TODO:
 	Font* getFontFinal() const { return renderingContextParameters.getFont(); }
 	//CommonMaterial* getPriorityMaterialFinal() const { return renderingContextParameters.getPriorityMaterial(); }
 	// BuiltinEffectData
@@ -153,8 +155,9 @@ public:
 	RenderStageCache();
 	void initialize(int reserved);
 	void clear();
-	RenderStage* request();
-	RenderStage* get(int id) const;
+	RenderStage* request();	// 戻したインスタンスは、この後すぐに reset または copy で全体を変更するため、初期化はしない
+	RenderStage* get(int id) const { return m_instanceList[id]; }
+	RenderStage* getLast() const { return m_instanceList[m_used - 1]; }
 
 private:
 	List<Ref<RenderStage>>	m_instanceList;

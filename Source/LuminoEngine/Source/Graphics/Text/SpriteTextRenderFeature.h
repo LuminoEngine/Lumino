@@ -99,7 +99,7 @@ public:
 	virtual void flush() override;
 	virtual void onActivated() { }
 	virtual void onDeactivated() { flush(); }
-	virtual void onSetState(const DrawElementBatch* state);
+	virtual void onSetState(const RenderStage* state) override;
 	virtual void onShaderElementInfoOverride(ElementInfo* elementInfo) override;
 	virtual void onShaderSubsetInfoOverride(SubsetInfo* subsetInfo) override;
 

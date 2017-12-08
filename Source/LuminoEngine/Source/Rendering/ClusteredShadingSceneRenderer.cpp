@@ -364,17 +364,17 @@ void ClusteredShadingGeometryRenderingPass::initialize()
 //}
 
 
-void ClusteredShadingGeometryRenderingPass::selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy)
+void ClusteredShadingGeometryRenderingPass::selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy)
 {
 	// TODO: ユーザーシェーダから UnLit 取れればそれを使う
-	if (material->m_shadingModel == ShadingModel::UnLighting)
+	if (stageData.shadingModel == ShadingModel::UnLighting)
 	{
 		outPolicy->shaderPass = m_unLightingShaderPass;
 	}
 	else
 	{
 		outPolicy->shaderPass = selectShaderPassHelper(
-			material->m_shader,
+			stageData.shader,
 			ClusteredShadingGeometryRenderingPass_TechniqueName,
 			ClusteredShadingGeometryRenderingPass_PassName,
 			m_defaultShaderPass);
@@ -437,7 +437,7 @@ void DepthPrepass::initialize()
 	m_depthMap->createImpl(GraphicsManager::getInstance(), SizeI(640, 480), 1, TextureFormat::R32G32B32A32_Float);
 }
 
-void DepthPrepass::selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy)
+void DepthPrepass::selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy)
 {
 	// TODO: とりあえずデフォルト強制
 	outPolicy->shader = m_defaultShader;
@@ -488,7 +488,7 @@ void ShadowCasterPass::initialize()
 //	return m_defaultShader;
 //}
 
-void ShadowCasterPass::selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy)
+void ShadowCasterPass::selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy)
 {
 	// TODO: とりあえずデフォルト強制
 	outPolicy->shader = m_defaultShader;

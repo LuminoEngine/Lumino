@@ -56,7 +56,7 @@ public:
 	virtual void flush() override;
 	virtual void onActivated() override {}
 	virtual void onDeactivated() override { flush(); }
-	virtual void onSetState(const DrawElementBatch* state);
+	virtual void onSetState(const RenderStage* state) override;
 
 	GraphicsManager* getManager() const { return m_manager; }
 

@@ -123,7 +123,8 @@ void World::beginUpdateFrame()
 	{
 		m_debugRenderer->beginMakeElements();
 		m_debugRendererDefaultMaterial->setShader(detail::EngineDomain::getGraphicsManager()->getBuiltinShader(BuiltinShader::Sprite));
-		m_debugRenderer->setDefaultMaterial(m_debugRendererDefaultMaterial);
+		//TODO:
+		//m_debugRenderer->setDefaultMaterial(m_debugRendererDefaultMaterial);
 	}
 
 	for (auto& obj : m_rootWorldObjectList)
@@ -209,8 +210,8 @@ void World::render(RenderingContext* context, WorldRenderView* renderView, World
 	}
 
 	// reset status
-	context->setBuiltinEffectData(detail::BuiltinEffectData::DefaultData);
-
+	//context->setBuiltinEffectData(detail::BuiltinEffectData::DefaultData);
+	context->setVisualNodeParameters(nullptr);
 	context->setRenderView(nullptr);
 }
 

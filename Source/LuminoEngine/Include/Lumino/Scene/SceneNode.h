@@ -10,6 +10,7 @@
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
+namespace detail { class VisualNodeParameters; }
 class RenderingContext;
 class SceneNodeList;
 
@@ -141,7 +142,8 @@ protected:
 	//friend class MMERenderingPass;	// TODO: VisualComponent に持ってくべきかも。ついでに friend も何とかしたい
 	//detail::RenderingPassClientData	m_renderingPassClientDataList[detail::MaxRenderingPass];
 
-	detail::BuiltinEffectData	m_builtinEffectData;
+	//detail::BuiltinEffectData	m_builtinEffectData;
+	Ref<detail::VisualNodeParameters>	m_visualNodeParameters;
 
 	bool				m_isVisible;
 private:

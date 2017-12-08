@@ -59,6 +59,9 @@ class RenderingPass2;
 class CombinedMaterial;
 class DrawElementList;
 class SceneRenderer;
+class RenderStage;
+class RenderStageCache;
+class VisualNodeParameters;
 
 // TODO: Obsolete
 struct SceneGlobalRenderSettings
@@ -143,14 +146,16 @@ public:
 	FrameRectRenderFeature* beginFrameRectRenderer();
 
 	void setViewInfo(const Size& viewPixelSize, const Matrix& viewMatrix, const Matrix& projMatrix);
-	void applyStatus(DrawElementBatch* state, const DefaultStatus& defaultStatus);
-	DrawElementBatch* getCurrentStatus() const { return m_currentStatePtr; }
+	void applyStatus(RenderStage* state, const DefaultStatus& defaultStatus);
+	RenderStage* getCurrentStatus() const { return m_currentStatePtr; }
 	detail::SpriteRenderFeature* getSpriteRenderer();
 
 	void flush();
 
 LN_INTERNAL_ACCESS:
 	void switchActiveRenderer(detail::IRenderFeature* renderer);
+	void applyStatusInternal(RenderStage* stage, const DefaultStatus& defaultStatus);
+	IRenderFeature* getCurrentRenderFeature() const { return m_current; }
 
 	IRenderFeature*					m_current;
 	detail::CoreGraphicsRenderFeature*	m_baseRenderer;
@@ -163,7 +168,7 @@ LN_INTERNAL_ACCESS:
 	Ref<ShapesRenderFeature>		m_shapesRenderer;
 	Ref<NanoVGRenderFeature>		m_nanoVGRenderer;
 	Ref<FrameRectRenderFeature>	m_frameRectRenderer;
-	DrawElementBatch*				m_currentStatePtr;
+	RenderStage*				m_currentStatePtr;
 
 	friend class ::ln::DrawList;
 };
@@ -182,12 +187,13 @@ public:
 	};
 
 	int					batchIndex;
-	detail::Sphere		boundingSphere;		// 位置はワールド座標
+	detail::Sphere		boundingSphere;		// 位置はローカル座標系。最終的にワールドのどこに置くかは drawXXXX() 時点では決められない
 	int					subsetIndex;
 	float				zDistance;
 	DrawElementMetadata	metadata;
 	int					m_stateFence;
-
+	CommonMaterial*		priorityMaterial = nullptr;	// マテリアルを指定する drawMesh() のオーバーライドなどで設定される
+	detail::IRenderFeature* renderFeature = nullptr;
 	DrawElementList*	m_ownerDrawElementList;
 
 	DrawElement();
@@ -196,7 +202,7 @@ public:
 	const Matrix& getTransform(DrawElementList* oenerList) const;
 
 	virtual void makeElementInfo(DrawElementList* oenerList, const CameraInfo& cameraInfo, RenderView* renderView, ElementInfo* outInfo);
-	virtual void makeSubsetInfo(DrawElementList* oenerList, CombinedMaterial* material, SubsetInfo* outInfo);
+	virtual void makeSubsetInfo(DrawElementList* oenerList, RenderStage* stage, SubsetInfo* outInfo);
 
 	virtual void drawSubset(const DrawArgs& e) = 0;
 	const detail::Sphere& getBoundingSphere() const { return boundingSphere; }
@@ -274,7 +280,7 @@ public:
 								
 
 LN_INTERNAL_ACCESS:
-	void applyStatus(InternalContext* context, CombinedMaterial* combinedMaterial, const DefaultStatus& defaultStatus);
+	//void applyStatus(InternalContext* context, CombinedMaterial* combinedMaterial, const DefaultStatus& defaultStatus);
 	uint32_t getHashCode() const;
 	void reset();
 	bool isHashDirty() const { return m_hashDirty; }
@@ -332,7 +338,7 @@ public:
 
 	bool Equal(const DrawElementBatch& state, CommonMaterial* material, const BuiltinEffectData& effectData) const;
 	void reset();
-	void applyStatus(InternalContext* context, const DefaultStatus& defaultStatus);
+	//void applyStatus(InternalContext* context, const DefaultStatus& defaultStatus);
 	size_t getHashCode() const;
 	size_t getBuiltinEffectDataHashCode() const;
 
@@ -360,17 +366,29 @@ public:
 
 	int getElementCount() { return m_commandDataCache.getDataCount(); }
 	DrawElement* getElement(int index) { return reinterpret_cast<DrawElement*>(m_commandDataCache.getDataByIndex(index)); }
-	DrawElementBatch* getBatch(int index) { return &m_batchList[index]; }
+	DrawElement* getLastElement() const { return m_lastElement; }
+	//DrawElementBatch* getBatch(int index) { return &m_batchList[index]; }
 
 	void clearCommands();
 
+	// 最後に確定させた Stage と、現在構築中の stage に差異があるかどうか
+	bool checkChangeRenderStage(const RenderStage* stage) const;
+
+	// 指定した stage の内容をコピーし、新しい Stage を確定させ、その id を返す
+	int submitRenderStage(const RenderStage* stage);
+
+	RenderStage* getRenderStage(int id) const;
+
 	template<typename T, typename... TArgs>
-	T* addCommand(const DrawElementBatch& state, CommonMaterial* availableMaterial, const BuiltinEffectData& effectData, bool forceStateChange, TArgs... args)
+	T* addCommand(
+		//const DrawElementBatch& state, CommonMaterial* availableMaterial, const BuiltinEffectData& effectData, bool forceStateChange,
+		TArgs... args)
 	{
 		auto handle = m_commandDataCache.allocData(sizeof(T));
 		T* t = new (m_commandDataCache.getData(handle))T(args...);
-		postAddCommandInternal(state, availableMaterial, effectData, forceStateChange, t);
+		//postAddCommandInternal(state, availableMaterial, effectData, forceStateChange, t);
 		t->m_ownerDrawElementList = this;
+		m_lastElement = t;
 		return t;
 	}
 
@@ -391,13 +409,16 @@ public:
 	DepthBuffer* getDefaultDepthBuffer() const { return m_depthBuffer; }
 
 private:
-	void postAddCommandInternal(const DrawElementBatch& state, CommonMaterial* availableMaterial, const BuiltinEffectData& effectData, bool forceStateChange, DrawElement* element);
+	//void postAddCommandInternal(const DrawElementBatch& state, CommonMaterial* availableMaterial, const BuiltinEffectData& effectData, bool forceStateChange, DrawElement* element);
 
 	CommandDataCache		m_commandDataCache;
 	CommandDataCache		m_extDataCache;
-	List<DrawElementBatch>	m_batchList;
+	DrawElement*			m_lastElement = nullptr;
 
-	detail::CombinedMaterialCache	m_combinedMaterialCache;
+	//List<DrawElementBatch>	m_batchList;
+
+	//detail::CombinedMaterialCache	m_combinedMaterialCache;
+	std::unique_ptr<detail::RenderStageCache>	m_renderStageCache;
 	List<Ref<DynamicLightInfo>>	m_dynamicLightList;
 
 	Ref<RenderTargetTexture>		m_defaultRenderTarget;
@@ -623,13 +644,13 @@ public:
 	/** @{ */
 	void setOpacity(float opacity);
 
-	void setBlendMode(BlendMode mode);
+	void setBlendMode(Nullable<BlendMode> mode);
 
-	void setCullingMode(CullingMode mode);
+	void setCullingMode(Nullable<CullingMode> mode);
 
-	void setDepthTestEnabled(bool enabled);
+	void setDepthTestEnabled(Nullable<bool> enabled);
 
-	void setDepthWriteEnabled(bool enabled);
+	void setDepthWriteEnabled(Nullable<bool> enabled);
 
 	/** @} */
 
@@ -641,8 +662,8 @@ public:
 
 	void setFont(Font* font);
 
-	void setShader(Shader* shader);
-	Shader* getShader() const;
+	//void setShader(Shader* shader);
+	//Shader* getShader() const;
 
 	void clear(ClearFlags flags, const Color& color, float z = 1.0f, uint8_t stencil = 0x00);
 	
@@ -721,8 +742,9 @@ LN_INTERNAL_ACCESS:
 	void initialize(detail::GraphicsManager* manager);
 	detail::GraphicsManager* getManager() const { return m_manager; }
 	detail::DrawElementList* getDrawElementList() { return &m_drawElementList; }
-	void setDefaultMaterial(CommonMaterial* material);
-	void setBuiltinEffectData(const detail::BuiltinEffectData& data);
+	//void setDefaultMaterial(CommonMaterial* material);
+	//void setBuiltinEffectData(const detail::BuiltinEffectData& data);
+	void setVisualNodeParameters(detail::VisualNodeParameters* params);
 	void beginMakeElements();
 
 	//const detail::BatchStateBlock& getState() const { return m_state; }
@@ -748,71 +770,44 @@ LN_INTERNAL_ACCESS:
 
 private:
 
-	class StagingState : public RefObject
-	{
-	public:
-		detail::DrawElementBatch		m_state;
-		Ref<CommonMaterial>				m_material;		// TODO: これは内容を書き換えないようにしたほうがよさそう。今の使い方てきに。
-		detail::BuiltinEffectData		m_builtinEffectData;
-		Ref<Shader>					m_defaultMaterialShader;
+	//class StagingState : public RefObject
+	//{
+	//public:
+	//	detail::DrawElementBatch		m_state;
+	//	Ref<CommonMaterial>				m_material;		// TODO: これは内容を書き換えないようにしたほうがよさそう。今の使い方てきに。
+	//	detail::BuiltinEffectData		m_builtinEffectData;
+	//	Ref<Shader>					m_defaultMaterialShader;
 
-		StagingState();
+	//	StagingState();
 
-		void reset();
-		void copyFrom(const StagingState* state);
+	//	void reset();
+	//	void copyFrom(const StagingState* state);
 
-	private:
-		LN_DISALLOW_COPY_AND_ASSIGN(StagingState);
-	};
+	//private:
+	//	LN_DISALLOW_COPY_AND_ASSIGN(StagingState);
+	//};
 
-	StagingState* getCurrentState() const { return m_aliveStateStack.getLast(); }
+	detail::RenderStage* getCurrentState() const;
+	bool checkSubmitRenderStage(int* stageId);
 
 	detail::GraphicsManager*		m_manager;
-	List<Ref<StagingState>>		m_freeStateStack;
-	List<Ref<StagingState>>		m_aliveStateStack;	// size >= 1
-	Ref<CommonMaterial>				m_defaultMaterial;
+	List<Ref<detail::RenderStage>>		m_freeStateStack;
+	List<Ref<detail::RenderStage>>		m_aliveStateStack;	// size >= 1
+	//Ref<CommonMaterial>				m_defaultMaterial;
 
 
 	detail::DrawElementList			m_drawElementList;
 
-	detail::DrawElement*			m_currentSectionTopElement;
+	//detail::DrawElement*			m_currentSectionTopElement;
 	//detail::DrawElementBatch		m_stateInSection;
 	const DrawElementMetadata*		m_metadata;
 	int								m_currentStateFence;
 	detail::IRenderFeature*			m_lastRenderFeature;
 
-	Ref<detail::RenderTargetTextureCache>	m_renderTargetPool;
+	Ref<detail::RenderTargetTextureCache>		m_renderTargetPool;
 
 	CameraComponent*							m_camera;
 
-#if 0
-	/** アルファブレンドの有無 (default: false) */
-	void SetAlphaBlendEnabled(bool enabled);
-	/** ブレンディングの演算方法 (default: Add) */
-	void SetBlendOp(BlendOp op);
-	/** ブレンディングの係数 (default: One) */
-	void SetSourceBlend(BlendFactor blend);
-	/** ブレンディングの係数 (default: Zero) */
-	void SetDestinationBlend(BlendFactor blend);
-
-
-	void SetBlendMode(BlendMode mode);
-	void SetCullingMode(CullingMode mode);
-	void SetFillMode(FillMode mode);
-	void SetAlphaTestEnabled(bool enabled);
-
-	void SetDepthStencilState(const DepthStencilState& state);
-
-	void SetDepthTestEnabled(bool enabled);
-	void SetDepthWriteEnabled(bool enabled);
-	void SetDepthTestFunc(CompareFunc func);
-	void SetStencilEnabled(bool enabled);
-	void SetStencilFunc(CompareFunc func);
-	void SetStencilReferenceValue(uint8_t value);
-	void SetStencilFailOp(StencilOp op);
-	void SetStencilDepthFailOp(StencilOp op);
-	void SetStencilPassOp(StencilOp op);
-#endif
 };
 
 
@@ -820,43 +815,76 @@ private:
 template<typename TElement>
 inline TElement* DrawList::resolveDrawElement(detail::IRenderFeature* renderFeature, CommonMaterial* userMaterial, bool append)
 {
-	//CommonMaterial* availableMaterial = m_defaultMaterial;// = (userMaterial != nullptr) ? userMaterial : getCurrentState()->m_defaultMaterial.get();
-	//if (getCurrentState()->m_defaultMaterial != nullptr) availableMaterial = getCurrentState()->m_defaultMaterial;
-	CommonMaterial* availableMaterial = userMaterial;
-	if (availableMaterial == nullptr) availableMaterial = getCurrentState()->m_material;
-	if (availableMaterial == nullptr) availableMaterial = m_defaultMaterial;
+	// stage の更新チェック
+	int stageId;
+	if (checkSubmitRenderStage(&stageId))
+	{
+		append = false;	// stage が変わったので追記はできない
+	}
 
-
-	// これを決定してから比較を行う
-	//getCurrentState()->m_state.SetStandaloneShaderRenderer(renderFeature->isStandaloneShader());
-	getCurrentState()->m_state.setRenderFeature(renderFeature);
-
-	bool forceStateChange = (m_lastRenderFeature != renderFeature);
-
+	// 必要であれば追記チェック
+	if (append)
+	{
+		detail::DrawElement* element = m_drawElementList.getLastElement();
+		if (element &&
+			element->renderFeature == renderFeature &&	// TODO: 種類
+			element->m_stateFence == m_currentStateFence &&
+			element->priorityMaterial == userMaterial
+			)
+		{
+			return static_cast<TElement*>(element);
+		}
+	}
 
 	const DrawElementMetadata* userMetadata = getMetadata();
 	const DrawElementMetadata* metadata = (userMetadata != nullptr) ? userMetadata : &DrawElementMetadata::Default;
 
-
-	// 何か前回追加された DrawElement があり、それと DrawingSectionId、State が一致するならそれに対して追記できる
-	if (m_currentSectionTopElement != nullptr &&
-		append &&
-		m_lastRenderFeature == renderFeature &&
-		m_currentSectionTopElement->metadata.equals(*metadata) &&
-		m_currentSectionTopElement->m_stateFence == m_currentStateFence &&
-		m_drawElementList.getBatch(m_currentSectionTopElement->batchIndex)->Equal(getCurrentState()->m_state, availableMaterial, getCurrentState()->m_builtinEffectData))
-	{
-		return static_cast<TElement*>(m_currentSectionTopElement);
-	}
-
-	m_lastRenderFeature = renderFeature;
-
 	// DrawElement を新しく作る
-	TElement* element = m_drawElementList.addCommand<TElement>(getCurrentState()->m_state, availableMaterial, getCurrentState()->m_builtinEffectData, forceStateChange);
+	TElement* element = m_drawElementList.addCommand<TElement>();
+	element->renderFeature = renderFeature;
 	element->metadata = *metadata;
+	element->batchIndex = stageId;
 	element->m_stateFence = m_currentStateFence;
-	m_currentSectionTopElement = element;
 	return element;
+
+
+	////CommonMaterial* availableMaterial = m_defaultMaterial;// = (userMaterial != nullptr) ? userMaterial : getCurrentState()->m_defaultMaterial.get();
+	////if (getCurrentState()->m_defaultMaterial != nullptr) availableMaterial = getCurrentState()->m_defaultMaterial;
+	//CommonMaterial* availableMaterial = userMaterial;
+	//if (availableMaterial == nullptr) availableMaterial = getCurrentState()->m_material;
+	//if (availableMaterial == nullptr) availableMaterial = m_defaultMaterial;
+
+
+	//// これを決定してから比較を行う
+	////getCurrentState()->m_state.SetStandaloneShaderRenderer(renderFeature->isStandaloneShader());
+	//getCurrentState()->m_state.setRenderFeature(renderFeature);
+
+	//bool forceStateChange = (m_lastRenderFeature != renderFeature);
+
+
+	//const DrawElementMetadata* userMetadata = getMetadata();
+	//const DrawElementMetadata* metadata = (userMetadata != nullptr) ? userMetadata : &DrawElementMetadata::Default;
+
+
+	//// 何か前回追加された DrawElement があり、それと DrawingSectionId、State が一致するならそれに対して追記できる
+	//if (m_currentSectionTopElement != nullptr &&
+	//	append &&
+	//	m_lastRenderFeature == renderFeature &&
+	//	m_currentSectionTopElement->metadata.equals(*metadata) &&
+	//	m_currentSectionTopElement->m_stateFence == m_currentStateFence &&
+	//	m_drawElementList.getBatch(m_currentSectionTopElement->batchIndex)->Equal(getCurrentState()->m_state, availableMaterial, getCurrentState()->m_builtinEffectData))
+	//{
+	//	return static_cast<TElement*>(m_currentSectionTopElement);
+	//}
+
+	//m_lastRenderFeature = renderFeature;
+
+	//// DrawElement を新しく作る
+	//TElement* element = m_drawElementList.addCommand<TElement>(getCurrentState()->m_state, availableMaterial, getCurrentState()->m_builtinEffectData, forceStateChange);
+	//element->metadata = *metadata;
+	//element->m_stateFence = m_currentStateFence;
+	//m_currentSectionTopElement = element;
+	//return element;
 }
 
 

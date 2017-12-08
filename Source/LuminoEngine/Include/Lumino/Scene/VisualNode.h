@@ -119,25 +119,25 @@ public:
 	void setBlendMode(BlendMode mode);
 
 	/** このノードを描画する際の合成方法を取得します。*/
-	BlendMode getBlendMode() const { return m_blendMode; }
+	BlendMode getBlendMode() const;
 
 	/** このノードを描画する際のカリング方法を設定します。デフォルトは CullingMode::Back です。*/
 	void setCullingMode(CullingMode mode);
 
 	/** このノードを描画する際のカリング方法を取得します。*/
-	CullingMode getCullingMode() const { return m_cullingMode; }
+	CullingMode getCullingMode() const;
 
 	/** このノードを描画する際の深度テストの有無を設定します。デフォルトは true です。*/
 	void setDepthTestEnabled(bool enabled);
 
 	/** このノードを描画する際の深度テストの有無を取得します。*/
-	bool isDepthTestEnabled() const { return m_depthTestEnabled; }
+	bool isDepthTestEnabled() const;
 
 	/** このノードを描画する際の深度書き込みの有無を設定します。デフォルトは true です。*/
 	void setDepthWriteEnabled(bool enabled);
 
 	/** このノードを描画する際の深度書き込みの有無を取得します。*/
-	bool isDepthWriteEnabled() const { return m_depthWriteEnabled; }
+	bool isDepthWriteEnabled() const;
 
 	/** @} */
 
@@ -178,11 +178,11 @@ LN_PROTECTED_INTERNAL_ACCESS:
 private:
 	void render(RenderingContext* context) override;
 
-	// TODO: Renderer への設定がまだ
-	BlendMode	m_blendMode;
-	CullingMode	m_cullingMode;
-	bool		m_depthTestEnabled;
-	bool		m_depthWriteEnabled;
+	//// TODO: Renderer への設定がまだ
+	//BlendMode	m_blendMode;
+	//CullingMode	m_cullingMode;
+	//bool		m_depthTestEnabled;
+	//bool		m_depthWriteEnabled;
 
 	detail::OffscreenFilterInfo	m_offscreenFilterInfoList[detail::MaxOffscreenId];
 };

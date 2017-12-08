@@ -35,6 +35,7 @@ private:
 		ShaderVariable*			varFactor;
 		ShaderVariable*			varFreezedTexture;
 	} m_withoutMaskShader;
+	Ref<CommonMaterial>			m_material;
 };
 
 LN_NAMESPACE_END

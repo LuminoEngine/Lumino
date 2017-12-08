@@ -23,6 +23,7 @@ namespace detail {
 class CombinedMaterial;
 class DynamicLightInfo;
 class CoreGraphicsRenderFeature;
+class RenderStage;
 	
 // シェーダ変数セマンティクス
 LN_ENUM(BuiltinSemantics)
@@ -112,7 +113,9 @@ struct ElementInfo
 // サブセット単位のデータに関する情報
 struct SubsetInfo
 {
-	const CombinedMaterial*	combinedMaterial;
+	//const CombinedMaterial*	combinedMaterial;
+	RenderStage*		renderStage;
+	CommonMaterial*		finalMaterial;
 
 	// TODO: これやめたい。blit で使っているが・・・ → オーバーライドするにはRenderingCommand にする前にセットが必要。
 	//TextRendererCore の中でステートを変更したら復元も気を付けなければならないし、変更が頻繁になる。メインスレッドで頑張った意味がなくなる。
