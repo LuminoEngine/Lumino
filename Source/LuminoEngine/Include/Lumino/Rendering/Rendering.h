@@ -844,6 +844,7 @@ inline TElement* DrawList::resolveDrawElement(detail::IRenderFeature* renderFeat
 	element->renderFeature = renderFeature;
 	element->metadata = *metadata;
 	element->batchIndex = stageId;
+	element->priorityMaterial = userMaterial;
 	element->m_stateFence = m_currentStateFence;
 	return element;
 

@@ -173,7 +173,7 @@ void SceneRenderer::render(
 
 			// ステートの変わり目チェック
 			//if (element->batchIndex != currentBatchIndex)
-			if (currentStage == nullptr || currentStage->equals(stage) /*currentState->getHashCode() != batch->getHashCode()*/)
+			if (currentStage == nullptr || !currentStage->equals(stage) /*currentState->getHashCode() != batch->getHashCode()*/)
 			{
 				context->flush();
 				//currentBatchIndex = element->batchIndex;
