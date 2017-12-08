@@ -564,9 +564,11 @@ void Shader::initialize(detail::GraphicsManager* manager, const void* code, int 
 			std::string c;
 			if (!gen.convertRawHLSL_To_IRHLSL((const char*)code, length, &c, &log))
 			{
+				gen.finalize();
 				LN_NOTIMPLEMENTED();
 				return;
 			}
+			gen.finalize();
 			sb << c;
 		}
 		else if (codeType == ShaderCodeType::RawIR)

@@ -548,6 +548,12 @@ void Texture3D::initialize(ln::detail::GraphicsManager* manager, int width, int 
 	}
 }
 
+void Texture3D::Dispose()
+{
+	Texture::Dispose();
+	LN_SAFE_RELEASE(m_rhiObject);
+}
+
 //------------------------------------------------------------------------------
 int Texture3D::getDepth() const
 {

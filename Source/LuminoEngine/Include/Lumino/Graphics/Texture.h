@@ -307,6 +307,7 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	Texture3D();
 	virtual ~Texture3D();
 	void initialize(ln::detail::GraphicsManager* manager, int width, int height, int depth, TextureFormat format, int mipLevels, ResourceUsage usage);
+	virtual void Dispose() override;
 
 	virtual Driver::ITexture* resolveDeviceObject() override;
 
