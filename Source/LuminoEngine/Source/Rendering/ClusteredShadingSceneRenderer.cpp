@@ -319,8 +319,8 @@ void LightClusters::addClusterData(int x, int y, int z, int lightId)
 // ClusteredShadingGeometryRenderingPass
 //==============================================================================
 
-static const String ClusteredShadingGeometryRenderingPass_TechniqueName = _T("ClusteredForward");
-static const String ClusteredShadingGeometryRenderingPass_PassName = _T("Geometry");
+static const String ClusteredShadingGeometryRenderingPass_TechniqueName = _T("Forward_Geometry");
+//static const String ClusteredShadingGeometryRenderingPass_PassName = _T("Geometry");
 
 ClusteredShadingGeometryRenderingPass::ClusteredShadingGeometryRenderingPass()
 {
@@ -344,13 +344,13 @@ void ClusteredShadingGeometryRenderingPass::initialize()
 	}
 	
 	// TODO: getPass 引数型
-	m_defaultShaderPass = m_defaultShader->findTechnique(ClusteredShadingGeometryRenderingPass_TechniqueName)->getPass(ClusteredShadingGeometryRenderingPass_PassName.c_str());
+	m_defaultShaderTechnique = m_defaultShader->findTechnique(ClusteredShadingGeometryRenderingPass_TechniqueName);
 
 
 
 
 	m_unLightingShader = Shader::create(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/UnLighting.fx"), ShaderCodeType::RawHLSL);
-	m_unLightingShaderPass = m_unLightingShader->getTechniques()[0]->getPass(ClusteredShadingGeometryRenderingPass_PassName.c_str());
+	m_unLightingShaderTechnique = m_unLightingShader->getTechniques()[0];
 
 
 
@@ -369,18 +369,18 @@ void ClusteredShadingGeometryRenderingPass::selectElementRenderingPolicy(DrawEle
 	// TODO: ユーザーシェーダから UnLit 取れればそれを使う
 	if (stageData.shadingModel == ShadingModel::UnLighting)
 	{
-		outPolicy->shaderPass = m_unLightingShaderPass;
+		outPolicy->shaderTechnique = m_unLightingShaderTechnique;
 	}
 	else
 	{
-		outPolicy->shaderPass = selectShaderPassHelper(
+		outPolicy->shaderTechnique = selectShaderTechniqueHelper(
 			stageData.shader,
 			ClusteredShadingGeometryRenderingPass_TechniqueName,
-			ClusteredShadingGeometryRenderingPass_PassName,
-			m_defaultShaderPass);
+			//ClusteredShadingGeometryRenderingPass_PassName,
+			m_defaultShaderTechnique);
 	}
 
-	outPolicy->shader = outPolicy->shaderPass->getOwnerShader();
+	outPolicy->shader = outPolicy->shaderTechnique->getOwnerShader();
 	outPolicy->visible = true;
 
 }
@@ -441,7 +441,7 @@ void DepthPrepass::selectElementRenderingPolicy(DrawElement* element, const Rend
 {
 	// TODO: とりあえずデフォルト強制
 	outPolicy->shader = m_defaultShader;
-	outPolicy->shaderPass = m_defaultShader->getTechniques().getAt(0)->getPasses().getAt(0);
+	outPolicy->shaderTechnique = m_defaultShader->getTechniques()[0];
 
 	// とありあえず全部可
 	outPolicy->visible = true;
@@ -492,7 +492,7 @@ void ShadowCasterPass::selectElementRenderingPolicy(DrawElement* element, const 
 {
 	// TODO: とりあえずデフォルト強制
 	outPolicy->shader = m_defaultShader;
-	outPolicy->shaderPass = m_defaultShader->getTechniques().getAt(0)->getPasses().getAt(0);
+	outPolicy->shaderTechnique = m_defaultShader->getTechniques()[0];
 
 	// とありあえず全部可
 	outPolicy->visible = true;

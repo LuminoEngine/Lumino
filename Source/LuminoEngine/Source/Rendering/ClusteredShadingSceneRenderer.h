@@ -95,9 +95,9 @@ protected:
 
 private:
 	Ref<Shader>					m_defaultShader;
-	ShaderPass*					m_defaultShaderPass;
+	ShaderTechnique*			m_defaultShaderTechnique;
 	Ref<Shader>					m_unLightingShader;
-	ShaderPass*					m_unLightingShaderPass;
+	ShaderTechnique*			m_unLightingShaderTechnique;
 	Ref<RenderTargetTexture>	m_normalRenderTarget;
 };
 

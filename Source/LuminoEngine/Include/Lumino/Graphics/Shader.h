@@ -506,6 +506,7 @@ protected:
 	virtual ~ShaderTechnique();
 
 LN_INTERNAL_ACCESS:
+	Shader* getOwnerShader() { return m_owner; }
 	void changeDevice(Driver::IShaderTechnique* obj);
 
 private:

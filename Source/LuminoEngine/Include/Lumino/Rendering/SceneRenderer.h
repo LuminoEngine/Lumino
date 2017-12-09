@@ -85,7 +85,8 @@ private:
 struct ElementRenderingPolicy
 {
 	Shader*		shader;		// null もありえる。Clear など。
-	ShaderPass*	shaderPass;
+	//ShaderPass*	shaderPass;
+	ShaderTechnique*	shaderTechnique;
 	bool		visible;
 };
 
@@ -122,10 +123,10 @@ protected:
 	//virtual ShaderPass* selectShaderPass(Shader* shader);
 
 	// TODO: name は hash でもいいかな
-	ShaderPass* selectShaderPassHelper(Shader* materialShader, const String& techniqueName, const String& passName, ShaderPass* defaultPass);
+	ShaderTechnique* selectShaderTechniqueHelper(Shader* materialShader, const String& techniqueName, ShaderTechnique* defaultTech);
 
 	// Obsolete 古い記述用。
-	ShaderPass* selectShaderPassHelperSimple(Shader* materialShader, Shader* defaultShader);
+	ShaderTechnique* selectShaderTechniqueHelperSimple(Shader* materialShader, Shader* defaultShader);
 
 private:
 };

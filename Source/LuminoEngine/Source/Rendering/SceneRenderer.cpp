@@ -234,19 +234,30 @@ void SceneRenderer::render(
 					//material->applyUserShaderValeues(shader);
 					stageData.material->applyUserShaderValeues(shader);
 
-					onShaderPassChainging(policy.shaderPass);
 
 					auto* stateManager = context->getRenderStateManager();
-					stateManager->setShaderPass(policy.shaderPass);
+
+					const List<ShaderPass*>& passes = policy.shaderTechnique->getPasses();
+					for (ShaderPass* pass : passes)
+					{
+						onShaderPassChainging(pass);
+						stateManager->setShaderPass(pass);
+
+						if (diag != nullptr) element->reportDiag(diag);
+						element->drawSubset(drawArgs);
+					}
+				}
+			}
+			else
+			{
+				// 描画実行
+				if (visible)
+				{
+					if (diag != nullptr) element->reportDiag(diag);
+					element->drawSubset(drawArgs);
 				}
 			}
 
-			// 描画実行
-			if (visible)
-			{
-				if (diag != nullptr) element->reportDiag(diag);
-				element->drawSubset(drawArgs);
-			}
 		}
 
 		context->flush();
@@ -393,8 +404,8 @@ void NonShadingRenderingPass::initialize(GraphicsManager* manager)
 
 void NonShadingRenderingPass::selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy)
 {
-	outPolicy->shaderPass = selectShaderPassHelperSimple(stageData.shader, m_defaultShader);
-	outPolicy->shader = outPolicy->shaderPass->getOwnerShader();
+	outPolicy->shaderTechnique = selectShaderTechniqueHelperSimple(stageData.shader, m_defaultShader);
+	outPolicy->shader = outPolicy->shaderTechnique->getOwnerShader();
 	outPolicy->visible = true;
 }
 
@@ -509,8 +520,8 @@ void ForwardShadingRenderingPass::initialize(GraphicsManager* manager)
 
 void ForwardShadingRenderingPass::selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy)
 {
-	outPolicy->shaderPass = selectShaderPassHelperSimple(stageData.shader, m_defaultShader);
-	outPolicy->shader = outPolicy->shaderPass->getOwnerShader();
+	outPolicy->shaderTechnique = selectShaderTechniqueHelperSimple(stageData.shader, m_defaultShader);
+	outPolicy->shader = outPolicy->shaderTechnique->getOwnerShader();
 	outPolicy->visible = true;
 }
 
@@ -638,28 +649,29 @@ void RenderingPass2::overrideCameraInfo(detail::CameraInfo* cameraInfo)
 //	return shader->getTechniques().getAt(0)->getPasses().getAt(0);
 //}
 
-ShaderPass* RenderingPass2::selectShaderPassHelper(Shader* materialShader, const String& techniqueName, const String& passName, ShaderPass* defaultPass)
+ShaderTechnique* RenderingPass2::selectShaderTechniqueHelper(Shader* materialShader, const String& techniqueName, ShaderTechnique* defaultTech)
 {
 	if (materialShader)
 	{
 		ShaderTechnique* tech = materialShader->findTechnique(techniqueName);
 		if (tech)
 		{
-			ShaderPass* pass = tech->getPass(passName.c_str());	// TODO:
-			if (pass)
-			{
-				return pass;
-			}
+			return tech;
+			//ShaderPass* pass = tech->getPass(passName.c_str());	// TODO:
+			////if (pass)
+			//{
+			//	return pass;
+			//}
 		}
 	}
 
-	return defaultPass;
+	return defaultTech;
 }
 
-ShaderPass* RenderingPass2::selectShaderPassHelperSimple(Shader* materialShader, Shader* defaultShader)
+ShaderTechnique* RenderingPass2::selectShaderTechniqueHelperSimple(Shader* materialShader, Shader* defaultShader)
 {
 	Shader* shader = (materialShader) ? materialShader : defaultShader;
-	return shader->getTechniques().getAt(0)->getPasses().getAt(0);
+	return shader->getTechniques()[0];
 }
 
 ////------------------------------------------------------------------------------

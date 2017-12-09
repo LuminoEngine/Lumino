@@ -587,14 +587,9 @@ technique ClusteredForward
 }
 */
 
-technique ClusteredForward
+technique Forward_Geometry
 {
-	//pass ShadowCaster
-	//{
-	//	VertexShader = compile vs_3_0 _VS_ClusteredForward_ShadowCaster();
-	//	PixelShader	 = compile ps_3_0 _PS_ClusteredForward_ShadowCaster();
-	//}
-	pass Geometry
+	pass Pass1
 	{
 		VertexShader = compile vs_3_0 _lngs_VS_ClusteredForward_Geometry();
 		PixelShader	 = compile ps_3_0 _lngs_PS_ClusteredForward_Geometry();
