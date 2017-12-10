@@ -707,6 +707,12 @@ void DX9ShaderPass::commitSamplerStatus()
 	// 描画スレッドを使っている場合は初期化時に行うことはできないため、ここで行っている。
 	if (!m_resolvedSamplerLink)
 	{
+		auto* current = m_renderer->getCurrentShaderPass();
+		if (current && current != this)
+		{
+			current->endPass();
+		}
+
 		auto* infoList = m_owner->getTextureVarInfoList();
 
 		// 元のテクスチャを覚えておき、検索用のダミーをセット

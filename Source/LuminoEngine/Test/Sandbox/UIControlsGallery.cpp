@@ -396,6 +396,7 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 	auto cornellBox = CornellBox::create();
 	auto cornellBoxObj = newObject<WorldObject3D>();
 	cornellBoxObj->addComponent(cornellBox);
+	cornellBox->setShader(Shader::create(LN_LOCALFILE("Assets/UnLighting.fx"), ShaderCodeType::RawHLSL));
 
 	//auto skinnedMeshComponent = SkinnedMeshComponent::create(_T("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
 	//auto skinnedMeshObj = newObject<WorldObject3D>();
