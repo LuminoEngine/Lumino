@@ -347,15 +347,15 @@ void InternalContext::applyStatusInternal(RenderStage* stage, const DefaultStatu
 			}
 		}
 
-		stateManager->setDepthBuffer(stage->getDepthBufferFinal());
-		//if (m_depthBuffer == nullptr)
-		//{
-		//	stateManager->setDepthBuffer(defaultStatus.defaultDepthBuffer);
-		//}
-		//else
-		//{
-		//	stateManager->setDepthBuffer(m_depthBuffer);
-		//}
+		DepthBuffer* depthBuffer = stage->getDepthBufferFinal();// stateManager->setDepthBuffer(stage->getDepthBufferFinal());
+		if (depthBuffer)
+		{
+			stateManager->setDepthBuffer(depthBuffer);
+		}
+		else
+		{
+			stateManager->setDepthBuffer(defaultStatus.defaultDepthBuffer);
+		}
 	}
 	// Viewport
 	{
@@ -891,6 +891,11 @@ RenderStage* DrawElementList::getRenderStage(int id) const
 	return m_renderStageCache->get(id);
 }
 
+RenderStage* DrawElementList::getLastRenderStage() const
+{
+	return m_renderStageCache->getLast();
+}
+
 //------------------------------------------------------------------------------
 //void DrawElementList::postAddCommandInternal(const DrawElementBatch& state, CommonMaterial* availableMaterial, const BuiltinEffectData& effectData, bool forceStateChange, DrawElement* element)
 //{
@@ -1114,7 +1119,7 @@ bool DrawList::checkSubmitRenderStage(int* stageId)
 	}
 	else
 	{
-		*stageId = getCurrentState()->getId();
+		*stageId = m_drawElementList.getLastRenderStage()->getId();
 		return false;
 	}
 }

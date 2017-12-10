@@ -331,18 +331,19 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 
 
 	auto ssao = newObject<SSAOImageEffect>();
-	Engine::getDefault3DLayer()->addPostEffect(ssao);
+	//Engine::getDefault3DLayer()->addPostEffect(ssao);
 	Engine::getCamera3D()->getCameraComponent()->setFarClip(100);
 
-	//auto fxaa = newObject<FXAAPostEffect>();
-	//Engine::getDefault3DLayer()->addPostEffect(fxaa);
+	auto fxaa = newObject<FXAAPostEffect>();
+	Engine::getDefault3DLayer()->addPostEffect(fxaa);
 	
 
 
 	auto ps1 = TransitionPostEffect::create();
-	Engine::getDefault3DLayer()->addPostEffect(ps1);
+	//Engine::getDefault3DLayer()->addPostEffect(ps1);
 	ps1->transition(1, nullptr, 0);	// フェードイン
 
+	Engine::getCamera3D()->setPosition(0, 15, -10);
 
 	Bitmap heightmap(LN_LOCALFILE("Assets/heightmap.png"));
 	
@@ -393,18 +394,17 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 
 	auto planeMesh = StaticMeshComponent::createPlane(Vector2(20, 20), 1, 1);
 
-	auto cornellBox = CornellBox::create();
-	auto cornellBoxObj = newObject<WorldObject3D>();
-	cornellBoxObj->addComponent(cornellBox);
-	cornellBox->setShader(Shader::create(LN_LOCALFILE("Assets/UnLighting.fx"), ShaderCodeType::RawHLSL));
+	//auto cornellBox = CornellBox::create();
+	//auto cornellBoxObj = newObject<WorldObject3D>();
+	//cornellBoxObj->addComponent(cornellBox);
+	//cornellBox->setShader(Shader::create(LN_LOCALFILE("Assets/UnLighting.fx"), ShaderCodeType::RawHLSL));
 
-	//auto skinnedMeshComponent = SkinnedMeshComponent::create(_T("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
-	//auto skinnedMeshObj = newObject<WorldObject3D>();
-	//skinnedMeshObj->addComponent(skinnedMeshComponent);
-
+	auto skinnedMeshComponent = SkinnedMeshComponent::create(_T("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
+	auto skinnedMeshObj = newObject<WorldObject3D>();
+	skinnedMeshObj->addComponent(skinnedMeshComponent);
+	skinnedMeshComponent->setShader(Shader::create(LN_LOCALFILE("Assets/UnLighting.fx"), ShaderCodeType::RawHLSL));
 	
 
-	Engine::getCamera3D()->setPosition(0, 10, -30);
 
 	//auto ambientLight1 = AmbientLight::create();
 	//ambientLight1->setIntensity(0.05);

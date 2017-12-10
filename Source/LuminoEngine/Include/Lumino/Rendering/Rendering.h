@@ -378,6 +378,7 @@ public:
 	int submitRenderStage(const RenderStage* stage);
 
 	RenderStage* getRenderStage(int id) const;
+	RenderStage* getLastRenderStage() const;
 
 	template<typename T, typename... TArgs>
 	T* addCommand(
