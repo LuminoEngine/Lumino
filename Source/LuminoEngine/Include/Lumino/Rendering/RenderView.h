@@ -58,7 +58,8 @@ enum class RenderLayerClearMode
 	@brief		
 */
 class RenderLayer
-	: public WorldRenderView
+	//: public WorldRenderView
+	: public Object
 {
 	//LN_OBJECT;
 public:
@@ -72,9 +73,12 @@ public:
 
 	void addChildRenderView(RenderLayer* renderView);
 
+	WorldRenderView* getRenderView() const { return m_renderView; }
+
 protected:
 	RenderLayer();
 	virtual ~RenderLayer();
+	void initialize();
 
 	virtual UIElement* hitTestUIElement(const Point& globalPt);	// TODO: globalPt じゃなくて local のほうがやりやすい
 	virtual void onRoutedEvent(UIEventArgs* e);
@@ -89,6 +93,7 @@ private:
 	RenderLayerClearMode				m_clearMode;
 	Color						m_backgroundColor;
 	detail::RenderViewLayerList	m_layerList;
+	Ref<WorldRenderView>			m_renderView;
 	List<Ref<PostEffect>>		m_postEffects;
 	Ref<RenderTargetTexture>	m_primaryLayerTarget;
 	Ref<RenderTargetTexture>	m_secondaryLayerTarget;

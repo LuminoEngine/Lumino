@@ -89,6 +89,12 @@ RenderLayer::~RenderLayer()
 {
 }
 
+void RenderLayer::initialize()
+{
+	Object::initialize();
+	m_renderView = newObject<WorldRenderView>();
+}
+
 void RenderLayer::addChildRenderView(RenderLayer* renderView)
 {
 	m_layerList.addRenderView(renderView);
@@ -118,7 +124,7 @@ void RenderLayer::onRoutedEvent(UIEventArgs* e)
 //------------------------------------------------------------------------------
 void RenderLayer::updateLayout(const Size& viewSize)
 {
-	setViewSize(viewSize);
+	getRenderView()->setViewSize(viewSize);
 	m_layerList.updateLayout(viewSize);
 }
 
@@ -172,7 +178,7 @@ void RenderLayer::updateFramebufferIfNeeded()
 	}
 	else
 	{
-		const SizeI& newSize = SizeI::fromFloatSize(getViewSize());
+		const SizeI& newSize = SizeI::fromFloatSize(getRenderView()->getViewSize());
 
 		if (m_primaryLayerTarget == nullptr ||
 			(m_primaryLayerTarget != nullptr && newSize != m_primaryLayerTarget->getSize()))

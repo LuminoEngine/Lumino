@@ -54,7 +54,6 @@ class VectorTextRenderer;
 class ShapesRenderFeature;
 class NanoVGRenderFeature;
 class FrameRectRenderFeature;
-class DrawElementBatch;
 class RenderingPass2;
 class CombinedMaterial;
 class DrawElementList;
@@ -235,127 +234,6 @@ private:
 	DynamicLightInfo*	m_affectedDynamicLightInfos[DynamicLightInfo::MaxLights];
 };
 
-
-
-
-class BatchState
-{
-public:
-	BatchState();
-
-	//void setBlendMode(BlendMode mode);
-
-	void setRenderTarget(int index, RenderTargetTexture* renderTarget);
-	RenderTargetTexture* getRenderTarget(int index) const { return m_renderTargets[index]; }
-
-	void setDepthBuffer(DepthBuffer* depthBuffer);
-	DepthBuffer* getDepthBuffer() const { return m_depthBuffer; }
-
-	void setViewportRect(const RectI& rect);
-	const RectI& getViewportRect() const { return m_viewportRect; }
-
-	void setScissorRect(const RectI& scissorRect);
-	const RectI& getScissorRect() const { return m_scissorRect; }
-
-	void setBlendMode(BlendMode mode);
-	BlendMode getBlendMode() const { return m_blendMode; }
-
-	void setCullingMode(CullingMode mode);
-	CullingMode getCullingMode() const { return m_cullingMode; }
-
-	void setDepthTestEnabled(bool enabled);
-	bool isDepthTestEnabled() const { return m_depthTestEnabled; }
-
-	void setDepthWriteEnabled(bool enabled);
-	bool isDepthWriteEnabled() const { return m_depthWriteEnabled; }
-
-
-	void setBrush(Brush* brush);
-	Brush* getBrush() const;
-
-	Pen* getPen() const { return nullptr; }	// TODO
-
-	void setFont(Font* font);
-	Font* getFont() const;		// not null (default font)
-								
-
-LN_INTERNAL_ACCESS:
-	//void applyStatus(InternalContext* context, CombinedMaterial* combinedMaterial, const DefaultStatus& defaultStatus);
-	uint32_t getHashCode() const;
-	void reset();
-	bool isHashDirty() const { return m_hashDirty; }
-
-private:
-
-	Ref<RenderTargetTexture>	m_renderTargets[Graphics::MaxMultiRenderTargets];
-	Ref<DepthBuffer>			m_depthBuffer;
-	RectI						m_viewportRect;
-	RectI						m_scissorRect;
-	BlendMode					m_blendMode;
-	CullingMode					m_cullingMode;
-	bool						m_depthTestEnabled;
-	bool						m_depthWriteEnabled;
-
-	Ref<Brush>				m_brush;
-	Ref<Font>				m_font;
-
-	mutable size_t				m_hashCode;
-	mutable bool				m_hashDirty;
-};
-
-class DrawElementBatch
-{
-public:
-	DrawElementBatch();
-
-	// list に入った後は freeze フラグつけておいたほうがいいかも。
-
-
-
-
-
-
-
-
-
-
-
-
-
-	void setTransfrom(const Matrix& value);
-	const Matrix& getTransfrom() const { return m_transfrom; }
-
-	void setCombinedMaterial(CombinedMaterial* value);
-	CombinedMaterial* getCombinedMaterial() const { return m_combinedMaterial; }
-
-
-	void SetBuiltinEffect(const BuiltinEffectData& data);
-
-	//void SetStandaloneShaderRenderer(bool enabled);
-	//bool IsStandaloneShaderRenderer() const;
-	void setRenderFeature(IRenderFeature* renderFeature);
-	IRenderFeature* getRenderFeature() const { return m_renderFeature; }
-
-	bool Equal(const DrawElementBatch& state, CommonMaterial* material, const BuiltinEffectData& effectData) const;
-	void reset();
-	//void applyStatus(InternalContext* context, const DefaultStatus& defaultStatus);
-	size_t getHashCode() const;
-	size_t getBuiltinEffectDataHashCode() const;
-
-
-	BatchState				state;
-
-private:
-	Matrix					m_transfrom;			// WorldTransform. 変わったらシェーダの ln_World* も変える必要がある。
-	CombinedMaterial*		m_combinedMaterial;
-	IRenderFeature*			m_renderFeature;			// この state の下で描画を行う RenderFeature
-	//bool					m_standaloneShaderRenderer;
-	mutable size_t			m_hashCode;
-	mutable bool			m_hashDirty;
-
-	BuiltinEffectData		m_builtinEffectData;
-
-};
 
 class DrawElementList
 {

@@ -241,7 +241,7 @@ void UILayoutLayer::initialize()
 	internalRenderer->initialize(detail::EngineDomain::getGraphicsManager());
 	m_internalRenderer = internalRenderer;
 
-	m_lists.add(m_drawingContext->getDrawElementList());
+	getRenderView()->m_lists.add(m_drawingContext->getDrawElementList());
 }
 
 //------------------------------------------------------------------------------
@@ -286,18 +286,18 @@ void UILayoutLayer::renderScene(RenderTargetTexture* renderTarget, DepthBuffer* 
 
 	bool clearColorBuffer = (getClearMode() == RenderLayerClearMode::ColorDepth || getClearMode() == RenderLayerClearMode::Color);
 
-	this->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
-	this->m_cameraInfo.viewPixelSize = viewPixelSize;
-	this->m_cameraInfo.viewPosition = Vector3::Zero;
-	this->m_cameraInfo.viewDirection = Vector3::UnitZ;
-	this->m_cameraInfo.viewMatrix = Matrix::Identity;
-	this->m_cameraInfo.projMatrix = Matrix::makePerspective2DLH(this->m_cameraInfo.viewPixelSize.width, this->m_cameraInfo.viewPixelSize.height, 0, 1);
-	this->m_cameraInfo.viewProjMatrix = this->m_cameraInfo.viewMatrix * this->m_cameraInfo.projMatrix;
-	this->m_cameraInfo.viewFrustum = ViewFrustum(this->m_cameraInfo.projMatrix);
-	this->m_cameraInfo.zSortDistanceBase = ZSortDistanceBase::NodeZ;
-	this->m_cameraInfo.nearClip = 0.0;
-	this->m_cameraInfo.farClip = 1.0;
-	m_internalRenderer->render(this, renderTarget, depthBuffer, nullptr, clearColorBuffer, getBackgroundColor());	// TODO: diag
+	getRenderView()->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(this);
+	getRenderView()->m_cameraInfo.viewPixelSize = viewPixelSize;
+	getRenderView()->m_cameraInfo.viewPosition = Vector3::Zero;
+	getRenderView()->m_cameraInfo.viewDirection = Vector3::UnitZ;
+	getRenderView()->m_cameraInfo.viewMatrix = Matrix::Identity;
+	getRenderView()->m_cameraInfo.projMatrix = Matrix::makePerspective2DLH(getRenderView()->m_cameraInfo.viewPixelSize.width, getRenderView()->m_cameraInfo.viewPixelSize.height, 0, 1);
+	getRenderView()->m_cameraInfo.viewProjMatrix = getRenderView()->m_cameraInfo.viewMatrix * getRenderView()->m_cameraInfo.projMatrix;
+	getRenderView()->m_cameraInfo.viewFrustum = ViewFrustum(getRenderView()->m_cameraInfo.projMatrix);
+	getRenderView()->m_cameraInfo.zSortDistanceBase = ZSortDistanceBase::NodeZ;
+	getRenderView()->m_cameraInfo.nearClip = 0.0;
+	getRenderView()->m_cameraInfo.farClip = 1.0;
+	m_internalRenderer->render(getRenderView(), renderTarget, depthBuffer, nullptr, clearColorBuffer, getBackgroundColor());	// TODO: diag
 }
 
 

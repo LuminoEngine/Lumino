@@ -87,14 +87,14 @@ void CameraComponent::setCameraBehavior(CameraBehavior* behavior)
 //------------------------------------------------------------------------------
 Vector3 CameraComponent::worldToViewportPoint(const Vector3& position) const
 {
-	const Size& size = m_ownerLayer->getViewSize();
+	const Size& size = m_ownerLayer->getRenderView()->getViewSize();
 	return Vector3::project(position, m_viewProjMatrix, 0.0f, 0.0f, size.width, size.height, m_nearClip, m_farClip);
 }
 
 //------------------------------------------------------------------------------
 Vector3 CameraComponent::viewportToWorldPoint(const Vector3& position) const
 {
-	const Size& size = m_ownerLayer->getViewSize();
+	const Size& size = m_ownerLayer->getRenderView()->getViewSize();
 	Vector3 v;
 	v.x = (((position.x - 0) / size.width) * 2.0f) - 1.0f;
 	v.y = -((((position.y - 0) / size.height) * 2.0f) - 1.0f);
@@ -791,6 +791,8 @@ CameraViewportLayer2::CameraViewportLayer2()
 //------------------------------------------------------------------------------
 void CameraViewportLayer2::initialize(World* targetWorld, CameraComponent* hostingCamera)
 {
+	RenderLayer::initialize();
+
 	m_targetWorld = targetWorld;
 	m_hostingCamera = hostingCamera;
 	m_hostingCamera->m_ownerLayer = this;
@@ -815,11 +817,11 @@ void CameraViewportLayer2::initialize(World* targetWorld, CameraComponent* hosti
 		m_internalRenderer = internalRenderer;
 	}
 
-	this->setLayerCullingMask(0xFFFFFFFF);	// TODO:
-	//this->m_lists.add(m_targetWorld->getInsideWorldRenderer()->getDrawElementList());
-	this->m_lists.add(m_targetWorld->getRenderer()->getDrawElementList());
-	this->m_lists.add(m_targetWorld->GetDebugRenderer()->getDrawElementList());
-	this->setSceneRenderer(m_internalRenderer);
+	getRenderView()->setLayerCullingMask(0xFFFFFFFF);	// TODO:
+	//getRenderView()->m_lists.add(m_targetWorld->getInsideWorldRenderer()->getDrawElementList());
+	getRenderView()->m_lists.add(m_targetWorld->getRenderer()->getDrawElementList());
+	getRenderView()->m_lists.add(m_targetWorld->GetDebugRenderer()->getDrawElementList());
+	getRenderView()->setSceneRenderer(m_internalRenderer);
 }
 
 //------------------------------------------------------------------------------
@@ -838,11 +840,11 @@ void CameraViewportLayer2::setDebugDrawFlags(WorldDebugDrawFlags flags)
 void CameraViewportLayer2::renderScene(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 	// カメラ行列の更新
-	m_hostingCamera->updateMatrices(getViewSize());
-	this->setViewSize(getViewSize());
+	m_hostingCamera->updateMatrices(getRenderView()->getViewSize());
+	getRenderView()->setViewSize(getRenderView()->getViewSize());
 
 	//m_targetWorld->renderRoot(m_hostingCamera, m_debugDrawFlags, this);
-	m_targetWorld->renderRoot(this, m_debugDrawFlags);
+	m_targetWorld->renderRoot(getRenderView(), m_debugDrawFlags);
 
 	if (m_clusteredShadingSceneRenderer)
 	{
@@ -871,18 +873,18 @@ void CameraViewportLayer2::renderScene(RenderTargetTexture* renderTarget, DepthB
 	bool clearColorBuffer = (getClearMode() == RenderLayerClearMode::ColorDepth || getClearMode() == RenderLayerClearMode::Color);
 
 	//detail::CameraInfo cameraInfo;
-	this->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera.get());
-	this->m_cameraInfo.viewPixelSize = targetSize;
-	this->m_cameraInfo.viewPosition = m_hostingCamera->getTransform()->getWorldMatrix().getPosition();
-	this->m_cameraInfo.viewDirection = m_hostingCamera->getDirectionInternal().GetXYZ();
-	this->m_cameraInfo.viewMatrix = m_hostingCamera->getViewMatrix();
-	this->m_cameraInfo.projMatrix = m_hostingCamera->getProjectionMatrix();
-	this->m_cameraInfo.viewProjMatrix = m_hostingCamera->getViewProjectionMatrix();
-	this->m_cameraInfo.viewFrustum = m_hostingCamera->getViewFrustum();
-	this->m_cameraInfo.zSortDistanceBase = m_hostingCamera->getZSortDistanceBase();
-	this->m_cameraInfo.nearClip = m_hostingCamera->getNearClip();
-	this->m_cameraInfo.farClip = m_hostingCamera->getFarClip();
-	m_internalRenderer->render(this, renderTarget, depthBuffer, nullptr, clearColorBuffer, getBackgroundColor());	// TODO: diag
+	getRenderView()->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera.get());
+	getRenderView()->m_cameraInfo.viewPixelSize = targetSize;
+	getRenderView()->m_cameraInfo.viewPosition = m_hostingCamera->getTransform()->getWorldMatrix().getPosition();
+	getRenderView()->m_cameraInfo.viewDirection = m_hostingCamera->getDirectionInternal().GetXYZ();
+	getRenderView()->m_cameraInfo.viewMatrix = m_hostingCamera->getViewMatrix();
+	getRenderView()->m_cameraInfo.projMatrix = m_hostingCamera->getProjectionMatrix();
+	getRenderView()->m_cameraInfo.viewProjMatrix = m_hostingCamera->getViewProjectionMatrix();
+	getRenderView()->m_cameraInfo.viewFrustum = m_hostingCamera->getViewFrustum();
+	getRenderView()->m_cameraInfo.zSortDistanceBase = m_hostingCamera->getZSortDistanceBase();
+	getRenderView()->m_cameraInfo.nearClip = m_hostingCamera->getNearClip();
+	getRenderView()->m_cameraInfo.farClip = m_hostingCamera->getFarClip();
+	m_internalRenderer->render(getRenderView(), renderTarget, depthBuffer, nullptr, clearColorBuffer, getBackgroundColor());	// TODO: diag
 }
 
 //------------------------------------------------------------------------------
