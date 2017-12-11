@@ -793,6 +793,14 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 
 	}
 
+	{
+		auto ofs = newObject<OffscreenWorldRenderView>(Engine::getWorld3D(), Engine::getCamera3D()->getCameraComponent());
+		ofs->setClearMode(RenderLayerClearMode::ColorDepth);
+		ofs->render();
+
+		ofs->getRenderTarget()->lock()->save(_T("test22.png"));
+		ofs->getRenderTarget()->unlock();
+	}
 
 	//while (Engine::update())
 	//{

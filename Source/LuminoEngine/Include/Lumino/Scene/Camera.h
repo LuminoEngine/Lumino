@@ -173,6 +173,23 @@ private:
 	WorldDebugDrawFlags						m_debugDrawFlags;
 };
 
+class OffscreenWorldRenderView
+	: public WorldRenderView
+{
+public:
+	void render();
+	RenderTargetTexture* getRenderTarget() const;
+
+LN_INTERNAL_ACCESS :
+	OffscreenWorldRenderView();
+	virtual ~OffscreenWorldRenderView();
+	void initialize(World* targetWorld, CameraComponent* hostingCamera);
+
+private:
+	Ref<RenderTargetTexture>	m_renderTarget;
+	Ref<DepthBuffer>			m_depthBuffer;
+};
+
 /**
 	@brief
 */

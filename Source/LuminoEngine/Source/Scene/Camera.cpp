@@ -894,6 +894,41 @@ void WorldRenderView::onRoutedEvent(UIEventArgs* e)
 	RenderView::onRoutedEvent(e);
 }
 
+
+
+//==============================================================================
+// OffscreenWorldRenderView
+//==============================================================================
+OffscreenWorldRenderView::OffscreenWorldRenderView()
+	: WorldRenderView()
+{
+}
+
+OffscreenWorldRenderView::~OffscreenWorldRenderView()
+{
+}
+
+void OffscreenWorldRenderView::initialize(World* targetWorld, CameraComponent* hostingCamera)
+{
+	WorldRenderView::initialize(targetWorld, hostingCamera);
+
+	m_renderTarget = Ref<RenderTargetTexture>::makeRef();
+	m_renderTarget->createImpl(detail::GraphicsManager::getInstance(), SizeI(640, 480), 1, TextureFormat::R8G8B8A8);
+
+	m_depthBuffer = DepthBuffer::create(SizeI(640, 480));
+	setViewSize(Size(640, 480));	// TODO:
+}
+
+void OffscreenWorldRenderView::render()
+{
+	renderScene(m_renderTarget, m_depthBuffer);
+}
+
+RenderTargetTexture* OffscreenWorldRenderView::getRenderTarget() const
+{
+	return m_renderTarget;
+}
+
 //==============================================================================
 // CameraBehavior
 //==============================================================================
