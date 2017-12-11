@@ -352,18 +352,7 @@ void ClusteredShadingGeometryRenderingPass::initialize()
 
 	m_unLightingShader = Shader::create(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/UnLighting.fx"), ShaderCodeType::RawHLSL);
 	m_unLightingShaderTechnique = m_unLightingShader->getTechniques()[0];
-
-
-
-	m_normalRenderTarget = Ref<RenderTargetTexture>::makeRef();
-	m_normalRenderTarget->createImpl(GraphicsManager::getInstance(), SizeI(640, 480), 1, TextureFormat::R32G32B32A32_Float);
 }
-
-//Shader* ClusteredShadingGeometryRenderingPass::getDefaultShader() const
-//{
-//	return m_defaultShader;
-//}
-
 
 void ClusteredShadingGeometryRenderingPass::selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy)
 {

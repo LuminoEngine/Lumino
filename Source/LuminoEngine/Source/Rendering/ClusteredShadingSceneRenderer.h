@@ -90,15 +90,11 @@ public:
 
 	virtual void onBeginPass(DefaultStatus* defaultStatus) override;
 
-protected:
-	//virtual ShaderPass* selectShaderPass(Shader* shader) override;
-
 private:
 	Ref<Shader>					m_defaultShader;
 	ShaderTechnique*			m_defaultShaderTechnique;
 	Ref<Shader>					m_unLightingShader;
 	ShaderTechnique*			m_unLightingShaderTechnique;
-	Ref<RenderTargetTexture>	m_normalRenderTarget;
 };
 
 class DepthPrepass

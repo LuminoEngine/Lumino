@@ -115,7 +115,10 @@ void UIViewport::onRender(DrawingContext* g)
 
 
 	Matrix transform;
-	makeViewBoxTransform(SizeI::fromFloatSize(getActualSize()), m_backbufferSize, &transform);
+	if (m_placement != ViewportPlacement::AutoResize)
+	{
+		makeViewBoxTransform(SizeI::fromFloatSize(getActualSize()), m_backbufferSize, &transform);
+	}
 
 	g->setViewportRect(RectI::fromFloatRect(getFinalGlobalRect()));
 	g->blit(m_primaryLayerTarget, transform);

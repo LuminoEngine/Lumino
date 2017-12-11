@@ -68,6 +68,8 @@ void UIControlsGallery()
 
 	auto* uiRoot = Engine::getDefaultUILayer()->GetLayoutView();
 
+	Engine::getMainViewport()->setPlacement(ViewportPlacement::AutoResize);
+
 	auto text1 = UITextField::create();
 	text1->setPosition(Point(10, 20));
 	text1->setSize(Size(200, 32));
