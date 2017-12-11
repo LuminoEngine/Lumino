@@ -1,6 +1,7 @@
 ﻿
 #include "../Internal.h"
 #include <Lumino/Rendering/Rendering.h>
+#include <Lumino/Rendering/RenderView.h>
 #include "../Graphics/GraphicsManager.h"
 #include "ClusteredShadingSceneRenderer.h"
 

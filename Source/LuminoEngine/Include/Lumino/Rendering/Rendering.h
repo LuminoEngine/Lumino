@@ -565,45 +565,6 @@ public:
 } // namespace detail
 
 
-/**
-	@brief	ある視点を起点としたレンダリングのエントリーポイントとなるビューを表します。
-*/
-class RenderView
-	: public Object
-{
-public:
-	// 描画リストと視点情報のまとまり。
-	// ある1つの視点から、複数の描画リストを結合して描画するために使用する。
-
-	// 今のところ、DrawList 経由でビューサイズや視点情報を、Particle などが知るために用意している。
-
-
-	List<detail::DrawElementList*>	m_lists;
-	detail::CameraInfo				m_cameraInfo;
-
-	// 作業用
-	//List<detail::DrawElement*>				m_renderingElementList;
-
-
-	const ln::Size& getViewSize() const { return m_viewSize; }
-	
-	detail::SceneRenderer* getSceneRenderer() { return m_sceneRenderer; }
-	void setSceneRenderer(detail::SceneRenderer* sr) { m_sceneRenderer = sr; }
-
-
-	virtual void filterWorldMatrix(Matrix* outMatrix);
-	
-LN_CONSTRUCT_ACCESS:
-	RenderView();
-	virtual ~RenderView();
-
-LN_INTERNAL_ACCESS:
-	void setViewSize(const ln::Size& size) { m_viewSize = size; }
-
-private:
-	ln::Size    m_viewSize;
-	detail::SceneRenderer*	m_sceneRenderer;
-};
 
 /**
 	@brief	

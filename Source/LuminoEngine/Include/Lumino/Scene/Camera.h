@@ -148,7 +148,7 @@ private:
 	@brief
 */
 class CameraViewportLayer2
-	: public RenderLayer
+	: public WorldRenderView
 {
 public:
 	void setDebugDrawFlags(WorldDebugDrawFlags flags);

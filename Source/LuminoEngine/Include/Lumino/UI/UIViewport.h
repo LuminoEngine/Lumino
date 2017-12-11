@@ -5,7 +5,6 @@
 #include "../Rendering/RenderView.h"
 
 LN_NAMESPACE_BEGIN
-class RenderLayer;
 class PostEffect;
 namespace detail { class SceneRenderer; }
 namespace detail { class NonShadingRenderer; }
@@ -32,7 +31,7 @@ public:
 	/** Placement が Stretch または ViewBox である場合に使用されるビューサイズを設定します。 */
 	void setBackbufferSize(int width, int height);
 
-	void addViewportLayer(RenderLayer* layer);
+	void addViewportLayer(RenderView* layer);
 
 protected:
 	virtual void onRoutedEvent(UIEventArgs* e) override;
@@ -68,7 +67,7 @@ private:
 	@brief		
 */
 class UILayoutLayer
-	: public RenderLayer
+	: public WorldRenderView
 {
 	//LN_OBJECT;
 public:

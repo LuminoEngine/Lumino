@@ -4,6 +4,7 @@
 #include <Lumino/IO/Console.h>
 #include <Lumino/Graphics/Color.h>
 #include <Lumino/Rendering/Rendering.h>
+#include <Lumino/Rendering/RenderView.h>
 #include <Lumino/Rendering/SceneRenderer.h>	// TODO
 #include <Lumino/Graphics/ContextInterface.h>
 #include <Lumino/Mesh/Mesh.h>
@@ -2011,25 +2012,6 @@ void DrawList::drawFrameRectangle(const Rect& rect)
 
 
 
-//==============================================================================
-// RenderView
-//==============================================================================
-//------------------------------------------------------------------------------
-RenderView::RenderView()
-	: m_viewSize()
-	, m_sceneRenderer(nullptr)
-{
-}
-
-//------------------------------------------------------------------------------
-RenderView::~RenderView()
-{
-}
-
-//------------------------------------------------------------------------------
-void RenderView::filterWorldMatrix(Matrix* outMatrix)
-{
-}
 
 //==============================================================================
 // StagingState

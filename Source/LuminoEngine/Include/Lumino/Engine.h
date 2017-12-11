@@ -6,7 +6,7 @@
 LN_NAMESPACE_BEGIN
 class UIMainWindow;
 class UIViewport;
-class RenderLayer;
+class RenderView;
 class UILayoutLayer;
 //class SceneGraph2D;
 //class SceneGraph3D;
@@ -77,8 +77,8 @@ public:
 
 
 
-	static RenderLayer* getDefault2DLayer();
-	static RenderLayer* getDefault3DLayer();
+	static RenderView* getDefault2DLayer();
+	static RenderView* getDefault3DLayer();
 	static UILayoutLayer* getDefaultUILayer();		// TODO: name Builtin
 };
 

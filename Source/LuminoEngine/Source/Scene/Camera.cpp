@@ -891,7 +891,7 @@ void CameraViewportLayer2::onRoutedEvent(UIEventArgs* e)
 	m_targetWorld->onUIEvent(e);
 	if (e->handled) return;
 
-	RenderLayer::onRoutedEvent(e);
+	RenderView::onRoutedEvent(e);
 }
 
 //==============================================================================

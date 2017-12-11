@@ -55,7 +55,7 @@ void UIViewport::setBackbufferSize(int width, int height)
 }
 
 //------------------------------------------------------------------------------
-void UIViewport::addViewportLayer(RenderLayer* layer)
+void UIViewport::addViewportLayer(RenderView* layer)
 {
 	m_layerList.addRenderView(layer);
 }
@@ -226,7 +226,7 @@ UILayoutLayer::~UILayoutLayer()
 //------------------------------------------------------------------------------
 void UILayoutLayer::initialize()
 {
-	RenderLayer::initialize();
+	WorldRenderView::initialize();
 	m_root = newObject<UILayoutView>(UIContext::getMainContext(), nullptr);	// TODO: コンテキスト変更とか
 
 																			// このルート要素はビュー全体に広がるが、ヒットテストは行わない。
@@ -255,7 +255,7 @@ UIElement* UILayoutLayer::hitTestUIElement(const Point& globalPt)
 {
 	auto* element = m_root->checkMouseHoverElement(globalPt);
 	if (element != nullptr) return element;
-	return RenderLayer::hitTestUIElement(globalPt);
+	return WorldRenderView::hitTestUIElement(globalPt);
 }
 
 //------------------------------------------------------------------------------
