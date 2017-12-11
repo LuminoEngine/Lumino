@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include "Rendering/Rendering.h"	// TODO: for WorldRenderView
+#include "Rendering/Rendering.h"	// TODO: for WorldRenderViewBase
 #include "UI/UIEvent.h"
 
 LN_NAMESPACE_BEGIN
@@ -21,7 +21,7 @@ class UIEventArgs;
 class OffscreenWorldSubRenderView;
 class RenderView;
 class RenderingContext;
-class WorldRenderView;
+class WorldRenderViewBase;
 
 /** */
 LN_ENUM_FLAGS(WorldDebugDrawFlags)
@@ -70,8 +70,8 @@ LN_INTERNAL_ACCESS:
 	virtual void onInternalAnimationUpdate(float deltaSceonds);
 	virtual void onPostUpdate(float deltaSceonds);
 
-	void renderRoot(WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags);
-	virtual void render(RenderingContext* context, WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldSubRenderView* offscreen = nullptr);
+	void renderRoot(WorldRenderViewBase* renderView, WorldDebugDrawFlags debugDrawFlags);
+	virtual void render(RenderingContext* context, WorldRenderViewBase* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldSubRenderView* offscreen = nullptr);
 	void executeDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
 	virtual void onUIEvent(UIEventArgs* e);	// この World をホストする UIViewport のイベントが流れてくる
 
@@ -114,7 +114,7 @@ LN_INTERNAL_ACCESS:
 	Camera* getMainCamera() const;
 	virtual void beginUpdateFrame() override;
 	virtual void onUpdate(float deltaSceonds) override;
-	virtual void render(RenderingContext* context, WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldSubRenderView* offscreen) override;
+	virtual void render(RenderingContext* context, WorldRenderViewBase* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldSubRenderView* offscreen) override;
 
 private:
 	Ref<SceneGraph2D>		m_sceneGraph;
@@ -180,7 +180,7 @@ LN_INTERNAL_ACCESS:
 	const detail::SceneGlobalRenderSettings& getGlobalRenderSettings() const { return m_globalRenderSettings; }
 	virtual void beginUpdateFrame() override;
 	virtual void onInternalPhysicsUpdate(float deltaSceonds) override;
-	virtual void render(RenderingContext* context, WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldSubRenderView* offscreen) override;
+	virtual void render(RenderingContext* context, WorldRenderViewBase* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldSubRenderView* offscreen) override;
 
 
 private:

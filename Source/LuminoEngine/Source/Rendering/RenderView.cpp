@@ -131,14 +131,14 @@ void RenderView::updateFramebufferIfNeeded()
 }
 
 //==============================================================================
-// WorldRenderView
+// WorldRenderViewBase
 //==============================================================================
-WorldRenderView::WorldRenderView()
+WorldRenderViewBase::WorldRenderViewBase()
 	: m_layerCullingMask(0)
 {
 }
 
-WorldRenderView::~WorldRenderView()
+WorldRenderViewBase::~WorldRenderViewBase()
 {
 }
 

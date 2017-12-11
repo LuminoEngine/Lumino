@@ -113,7 +113,7 @@ private:
 /**
 	@brief	
 */
-class WorldRenderView
+class WorldRenderViewBase
 	: public RenderView
 {
 public:
@@ -121,8 +121,8 @@ public:
 	uint32_t getLayerCullingMask() const { return m_layerCullingMask; }
 	
 LN_CONSTRUCT_ACCESS:
-	WorldRenderView();
-	virtual ~WorldRenderView();
+	WorldRenderViewBase();
+	virtual ~WorldRenderViewBase();
 
 private:
 	uint32_t	m_layerCullingMask;
@@ -132,7 +132,7 @@ private:
 //	@brief		
 //*/
 //class RenderLayer
-//	: public WorldRenderView
+//	: public WorldRenderViewBase
 //{
 //	//LN_OBJECT;
 //public:

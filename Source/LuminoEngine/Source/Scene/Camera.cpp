@@ -776,11 +776,11 @@ bool CameraViewportLayer::OnPlatformEvent(const PlatformEventArgs& e)
 #endif
 
 //==============================================================================
-// CameraViewportLayer2
+// WorldRenderView
 //==============================================================================
 
 //------------------------------------------------------------------------------
-CameraViewportLayer2::CameraViewportLayer2()
+WorldRenderView::WorldRenderView()
 	: m_targetWorld(nullptr)
 	, m_hostingCamera(nullptr)
 	, m_clusteredShadingSceneRenderer(nullptr)
@@ -789,7 +789,7 @@ CameraViewportLayer2::CameraViewportLayer2()
 }
 
 //------------------------------------------------------------------------------
-void CameraViewportLayer2::initialize(World* targetWorld, CameraComponent* hostingCamera)
+void WorldRenderView::initialize(World* targetWorld, CameraComponent* hostingCamera)
 {
 	m_targetWorld = targetWorld;
 	m_hostingCamera = hostingCamera;
@@ -823,19 +823,19 @@ void CameraViewportLayer2::initialize(World* targetWorld, CameraComponent* hosti
 }
 
 //------------------------------------------------------------------------------
-CameraViewportLayer2::~CameraViewportLayer2()
+WorldRenderView::~WorldRenderView()
 {
 	m_hostingCamera->m_ownerLayer = nullptr;
 }
 
 //------------------------------------------------------------------------------
-void CameraViewportLayer2::setDebugDrawFlags(WorldDebugDrawFlags flags)
+void WorldRenderView::setDebugDrawFlags(WorldDebugDrawFlags flags)
 {
 	m_debugDrawFlags = flags;
 }
 
 //------------------------------------------------------------------------------
-void CameraViewportLayer2::renderScene(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+void WorldRenderView::renderScene(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 	// カメラ行列の更新
 	m_hostingCamera->updateMatrices(getViewSize());
@@ -886,7 +886,7 @@ void CameraViewportLayer2::renderScene(RenderTargetTexture* renderTarget, DepthB
 }
 
 //------------------------------------------------------------------------------
-void CameraViewportLayer2::onRoutedEvent(UIEventArgs* e)
+void WorldRenderView::onRoutedEvent(UIEventArgs* e)
 {
 	m_targetWorld->onUIEvent(e);
 	if (e->handled) return;

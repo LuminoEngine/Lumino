@@ -167,7 +167,7 @@ void World::onPostUpdate(float deltaSceonds)
 }
 
 //------------------------------------------------------------------------------
-void World::renderRoot(WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags)
+void World::renderRoot(WorldRenderViewBase* renderView, WorldDebugDrawFlags debugDrawFlags)
 {
 	// pre render
 	for (auto& view : m_offscreenWorldViewList)
@@ -180,7 +180,7 @@ void World::renderRoot(WorldRenderView* renderView, WorldDebugDrawFlags debugDra
 }
 
 //------------------------------------------------------------------------------
-void World::render(RenderingContext* context, WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldSubRenderView* offscreen)
+void World::render(RenderingContext* context, WorldRenderViewBase* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldSubRenderView* offscreen)
 {
 	LN_ASSERT(context->getRenderView() == nullptr);	// render 下はネスト禁止
 	context->setRenderView(renderView);
@@ -321,7 +321,7 @@ void World2D::onUpdate(float deltaSceonds)
 }
 
 //------------------------------------------------------------------------------
-void World2D::render(RenderingContext* context, WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldSubRenderView* offscreen)
+void World2D::render(RenderingContext* context, WorldRenderViewBase* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldSubRenderView* offscreen)
 {
 	World::render(context, renderView, debugDrawFlags, layerMask, offscreen);
 }
@@ -440,7 +440,7 @@ void World3D::onInternalPhysicsUpdate(float deltaSceonds)
 }
 
 //------------------------------------------------------------------------------
-void World3D::render(RenderingContext* context, WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldSubRenderView* offscreen)
+void World3D::render(RenderingContext* context, WorldRenderViewBase* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldSubRenderView* offscreen)
 {
 
 	World::render(context, renderView, debugDrawFlags, layerMask, offscreen);

@@ -47,7 +47,7 @@ OffscreenWorldSubRenderView::~OffscreenWorldSubRenderView()
 //------------------------------------------------------------------------------
 void OffscreenWorldSubRenderView::initialize()
 {
-	WorldRenderView::initialize();
+	WorldRenderViewBase::initialize();
 	m_renderer = newObject<RenderingContext>();
 
 	//m_renderView = Ref<RenderView>::MakeRef();

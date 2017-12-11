@@ -10,7 +10,7 @@ class VisualComponent;
 	@brief		
 */
 class OffscreenWorldSubRenderView
-	: public WorldRenderView
+	: public WorldRenderViewBase
 {
 public:
 	RenderTargetTexture* getRenderTarget() const;

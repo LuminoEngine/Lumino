@@ -326,9 +326,9 @@ void UIMainWindow::initialize(PlatformWindow* platformWindow, World2D* defaultWo
 																											//addVisualChild(m_mainUIViewport);
 	addChild(m_mainUIViewport);
 
-	m_cameraViewportLayer3D = newObject<CameraViewportLayer2>(defaultWorld3D, defaultWorld3D->getMainCamera()->getCameraComponent());
+	m_cameraViewportLayer3D = newObject<WorldRenderView>(defaultWorld3D, defaultWorld3D->getMainCamera()->getCameraComponent());
 	m_cameraViewportLayer3D->setClearMode(RenderLayerClearMode::ColorDepth);
-	m_cameraViewportLayer2D = newObject<CameraViewportLayer2>(defaultWorld2D, defaultWorld2D->getMainCamera()->getCameraComponent());
+	m_cameraViewportLayer2D = newObject<WorldRenderView>(defaultWorld2D, defaultWorld2D->getMainCamera()->getCameraComponent());
 	m_uiLayer = newObject<UILayoutLayer>();
 
 #if 1
@@ -399,13 +399,13 @@ void UIMainWindow::onPresentRenderingContexts()
 }
 
 //------------------------------------------------------------------------------
-CameraViewportLayer2* UIMainWindow::getDefaultCameraViewportLayer2D() const
+WorldRenderView* UIMainWindow::getDefaultCameraViewportLayer2D() const
 {
 	return m_cameraViewportLayer2D;
 }
 
 //------------------------------------------------------------------------------
-CameraViewportLayer2* UIMainWindow::getDefaultCameraViewportLayer3D() const
+WorldRenderView* UIMainWindow::getDefaultCameraViewportLayer3D() const
 {
 	return m_cameraViewportLayer3D;
 }

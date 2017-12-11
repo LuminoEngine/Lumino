@@ -10,7 +10,7 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 namespace tr { class GizmoModel; }
-class CameraViewportLayer2;
+class WorldRenderView;
 namespace detail { class ClusteredShadingSceneRenderer; }
 
 /**
@@ -109,7 +109,7 @@ LN_INTERNAL_ACCESS:
 
 	void setReflectionPlane(const Plane& plane) { m_reflectionPlane = plane; }
 
-	CameraViewportLayer2*	m_ownerLayer;
+	WorldRenderView*	m_ownerLayer;
 
 	CameraProjection	m_projectionMode;
 
@@ -147,8 +147,8 @@ private:
 /**
 	@brief
 */
-class CameraViewportLayer2
-	: public WorldRenderView
+class WorldRenderView
+	: public WorldRenderViewBase
 {
 public:
 	void setDebugDrawFlags(WorldDebugDrawFlags flags);
@@ -159,8 +159,8 @@ protected:
 	virtual void onRoutedEvent(UIEventArgs* e) override;
 
 LN_INTERNAL_ACCESS:
-	CameraViewportLayer2();
-	virtual ~CameraViewportLayer2();
+	WorldRenderView();
+	virtual ~WorldRenderView();
 	void initialize(World* targetWorld, CameraComponent* hostingCamera);
 
 	detail::ClusteredShadingSceneRenderer* getClusteredShadingSceneRenderer() const { return m_clusteredShadingSceneRenderer; }
