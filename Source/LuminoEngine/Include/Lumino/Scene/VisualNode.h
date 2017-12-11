@@ -10,13 +10,13 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 class MaterialList2;
-class OffscreenWorldView;
+class OffscreenWorldSubRenderView;
 
 namespace detail {
 
 struct OffscreenFilterInfo
 {
-	OffscreenWorldView* ownerOffscreenView = nullptr;
+	OffscreenWorldSubRenderView* ownerOffscreenView = nullptr;
 	int					effectGroup = 0;
 };
 

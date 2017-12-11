@@ -9,7 +9,7 @@
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
-// OffscreenWorldView
+// OffscreenWorldSubRenderView
 /*
 ■[MME メモ] DefaultEffect アノテーションのためのグループ分け
 	ひとつの OffscreenScene 内でのエフェクトファイルの割り当て方法や
@@ -34,18 +34,18 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 bool g_ofs = false;
 //------------------------------------------------------------------------------
-OffscreenWorldView::OffscreenWorldView()
+OffscreenWorldSubRenderView::OffscreenWorldSubRenderView()
 	: m_id(0)
 {
 }
 
 //------------------------------------------------------------------------------
-OffscreenWorldView::~OffscreenWorldView()
+OffscreenWorldSubRenderView::~OffscreenWorldSubRenderView()
 {
 }
 
 //------------------------------------------------------------------------------
-void OffscreenWorldView::initialize()
+void OffscreenWorldSubRenderView::initialize()
 {
 	WorldRenderView::initialize();
 	m_renderer = newObject<RenderingContext>();
@@ -58,26 +58,26 @@ void OffscreenWorldView::initialize()
 }
 
 //------------------------------------------------------------------------------
-RenderTargetTexture* OffscreenWorldView::getRenderTarget() const
+RenderTargetTexture* OffscreenWorldSubRenderView::getRenderTarget() const
 {
 	return m_renderTarget;
 }
 
 //------------------------------------------------------------------------------
-void OffscreenWorldView::hideVisual(VisualComponent* renderObject)
+void OffscreenWorldSubRenderView::hideVisual(VisualComponent* renderObject)
 {
 	auto* filterInfo = updateRenderObjectFilterInfo(renderObject);
 	filterInfo->effectGroup = -1;
 }
 
 //------------------------------------------------------------------------------
-void OffscreenWorldView::filterWorldMatrix(Matrix* outMatrix)
+void OffscreenWorldSubRenderView::filterWorldMatrix(Matrix* outMatrix)
 {
 	//(*outMatrix) = (*outMatrix) * Matrix::makeReflection(Plane(Vector3::UnitY));
 }
 
 //------------------------------------------------------------------------------
-Matrix OffscreenWorldView::calculateViewMatrix(RenderView* mainRenderView)
+Matrix OffscreenWorldSubRenderView::calculateViewMatrix(RenderView* mainRenderView)
 {
 #if 0
 	return Matrix::makeReflection(Vector3::UnitY) * mainRenderView->m_cameraInfo.viewMatrix;
@@ -99,7 +99,7 @@ Matrix OffscreenWorldView::calculateViewMatrix(RenderView* mainRenderView)
 }
 
 //------------------------------------------------------------------------------
-Matrix OffscreenWorldView::calculateProjectionMatrix(RenderView* mainRenderView)
+Matrix OffscreenWorldSubRenderView::calculateProjectionMatrix(RenderView* mainRenderView)
 {
 	// TODO:
 	return Matrix::makePerspectiveFovRH(Math::PI / 3.0f, 640 / 480, 0.3, 1000);
@@ -107,7 +107,7 @@ Matrix OffscreenWorldView::calculateProjectionMatrix(RenderView* mainRenderView)
 }
 
 //------------------------------------------------------------------------------
-void OffscreenWorldView::renderWorld(World* world, RenderView* mainRenderView)
+void OffscreenWorldSubRenderView::renderWorld(World* world, RenderView* mainRenderView)
 {
 	m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(mainRenderView) + 1;
 	m_cameraInfo.viewPixelSize = mainRenderView->getViewSize();
@@ -169,14 +169,14 @@ void OffscreenWorldView::renderWorld(World* world, RenderView* mainRenderView)
 }
 
 //------------------------------------------------------------------------------
-bool OffscreenWorldView::filterRenderObject(VisualComponent* renderObject)
+bool OffscreenWorldSubRenderView::filterRenderObject(VisualComponent* renderObject)
 {
 	auto* filterInfo = updateRenderObjectFilterInfo(renderObject);
 	return filterInfo->effectGroup >= 0;
 }
 
 //------------------------------------------------------------------------------
-detail::OffscreenFilterInfo* OffscreenWorldView::updateRenderObjectFilterInfo(VisualComponent* renderObject)
+detail::OffscreenFilterInfo* OffscreenWorldSubRenderView::updateRenderObjectFilterInfo(VisualComponent* renderObject)
 {
 	auto* filterInfo = renderObject->getOffscreenFilterInfo(m_id);
 
@@ -389,7 +389,7 @@ void MirrorComponent::initialize()
 
 	// TODO: この辺の初期化は OnParentChanged() のようなコールバックで行う。
 	// そうすれば、アタッチされた任意のワールドへ追加できる。
-	m_offscreen = newObject<OffscreenWorldView>();
+	m_offscreen = newObject<OffscreenWorldSubRenderView>();
 
 	// TODO: Remove
 	detail::EngineDomain::getDefaultWorld3D()->addOffscreenWorldView(m_offscreen);

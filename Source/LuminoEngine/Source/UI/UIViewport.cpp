@@ -229,7 +229,7 @@ UILayoutLayer::~UILayoutLayer()
 //------------------------------------------------------------------------------
 void UILayoutLayer::initialize()
 {
-	WorldRenderView::initialize();
+	RenderView::initialize();
 	m_root = newObject<UILayoutView>(UIContext::getMainContext(), nullptr);	// TODO: コンテキスト変更とか
 
 																			// このルート要素はビュー全体に広がるが、ヒットテストは行わない。
@@ -258,7 +258,7 @@ UIElement* UILayoutLayer::hitTestUIElement(const Point& globalPt)
 {
 	auto* element = m_root->checkMouseHoverElement(globalPt);
 	if (element != nullptr) return element;
-	return WorldRenderView::hitTestUIElement(globalPt);
+	return RenderView::hitTestUIElement(globalPt);
 }
 
 //------------------------------------------------------------------------------

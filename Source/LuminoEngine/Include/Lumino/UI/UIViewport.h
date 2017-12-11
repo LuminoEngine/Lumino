@@ -67,7 +67,7 @@ private:
 	@brief		
 */
 class UILayoutLayer
-	: public WorldRenderView
+	: public RenderView
 {
 	//LN_OBJECT;
 public:
