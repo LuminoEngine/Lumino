@@ -38,6 +38,7 @@ CameraComponent::CameraComponent()
 	: SceneNode()
 	, m_cameraWorld()
 	, m_directionMode(CameraDirection::transform)
+	, m_projectionMode(ProjectionMode::Perspective)
 	, m_upDirection(Vector3::UnitY)
 	, m_fovY(Math::PI / 3.0f)	// Unity based.
 	, m_nearClip(0.3f)			// Unity based.
@@ -155,9 +156,18 @@ void CameraComponent::updateMatrices(const Size& viewSize)
 			m_viewMatrix = Matrix::makeReflection(m_reflectionPlane) * m_viewMatrix;
 		}
 
-		// プロジェクション行列の更新
-		// https://sites.google.com/site/mmereference/home/Annotations-and-Semantics-of-the-parameter/2-1-geometry-translation
-		m_projMatrix = Matrix::makePerspectiveFovLH(m_fovY, viewSize.width / viewSize.height, m_nearClip, m_farClip);
+		if (m_projectionMode == ProjectionMode::Perspective)
+		{
+			// プロジェクション行列の更新
+			// https://sites.google.com/site/mmereference/home/Annotations-and-Semantics-of-the-parameter/2-1-geometry-translation
+			m_projMatrix = Matrix::makePerspectiveFovLH(m_fovY, viewSize.width / viewSize.height, m_nearClip, m_farClip);
+		}
+		else
+		{
+			float aspect = viewSize.width / viewSize.height;
+			float width = m_orthographicSize * aspect;
+			m_projMatrix = Matrix::makeOrthoLH(width, m_orthographicSize, m_nearClip, m_farClip);
+		}
 
 		m_viewProjMatrix = m_viewMatrix * m_projMatrix;
 
@@ -796,7 +806,7 @@ void WorldRenderView::initialize(World* targetWorld, CameraComponent* hostingCam
 	m_hostingCamera = hostingCamera;
 	m_hostingCamera->m_ownerLayer = this;
 
-	if (m_hostingCamera->getProjectionMode() == CameraProjection_3D)
+	if (m_hostingCamera->getCameraWorld() == CameraProjection_3D)
 	{
 #if 1
 		auto internalRenderer = Ref<detail::ClusteredShadingSceneRenderer>::makeRef();
@@ -848,7 +858,7 @@ void WorldRenderView::renderScene(RenderTargetTexture* renderTarget, DepthBuffer
 	if (m_clusteredShadingSceneRenderer)
 	{
 		// TODO: 暫定
-		if (m_hostingCamera->getProjectionMode() == CameraProjection_3D)
+		if (m_hostingCamera->getCameraWorld() == CameraProjection_3D)
 		{
 			detail::FogParams params;
 			Fog* fog = static_cast<World3D*>(m_targetWorld)->getFog();

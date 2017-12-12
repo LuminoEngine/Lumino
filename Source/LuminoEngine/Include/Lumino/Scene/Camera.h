@@ -75,6 +75,9 @@ public:
 	// 2D→3D
 	Vector3 viewportToWorldPoint(const Vector3& position) const;
 
+	void setProjectionMode(ProjectionMode value) { m_projectionMode = value; }
+	void setOrthographicSize(float value) { m_orthographicSize = value; }
+
 public:	// internal
 
 	/// 各行列を更新する (SceneNode::updateFrameHierarchy() の後で呼び出すこと)
@@ -112,7 +115,7 @@ LN_INTERNAL_ACCESS:
 	virtual ~CameraComponent();
 	void initialize(CameraWorld proj);
 	void setCameraDirection(CameraDirection mode) { m_directionMode = mode; }
-	CameraWorld getProjectionMode() const { return m_cameraWorld; }
+	CameraWorld getCameraWorld() const { return m_cameraWorld; }
 
 	void setReflectionPlane(const Plane& plane) { m_reflectionPlane = plane; }
 
@@ -123,12 +126,13 @@ LN_INTERNAL_ACCESS:
 private:
 	//ProjectionMode		m_cameraWorld;
 	CameraDirection		m_directionMode;
+	ProjectionMode		m_projectionMode;
 	Vector3				m_lookAt;
 	Vector3				m_upDirection;
 	float				m_fovY;
 	float				m_nearClip;
 	float				m_farClip;
-	float				m_orthographicSize;
+	float				m_orthographicSize;	// 縦方向のサイズ。横はアスペクト比から求める
 	ZSortDistanceBase	m_zSortDistanceBase;
 	CameraBehavior*		m_cameraBehavior;
 
