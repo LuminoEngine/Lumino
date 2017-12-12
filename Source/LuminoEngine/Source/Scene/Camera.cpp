@@ -36,12 +36,13 @@ CameraComponent* CameraComponent::getMain2DCamera()
 //------------------------------------------------------------------------------
 CameraComponent::CameraComponent()
 	: SceneNode()
-	, m_projectionMode()
+	, m_cameraWorld()
 	, m_directionMode(CameraDirection::transform)
 	, m_upDirection(Vector3::UnitY)
 	, m_fovY(Math::PI / 3.0f)	// Unity based.
 	, m_nearClip(0.3f)			// Unity based.
 	, m_farClip(1000.0f)
+	, m_orthographicSize(5.0f)	// Unity based.
 	, m_zSortDistanceBase(ZSortDistanceBase::CameraDistance)
 	, m_cameraBehavior(nullptr)
 {
@@ -55,18 +56,18 @@ CameraComponent::~CameraComponent()
 }
 
 //------------------------------------------------------------------------------
-void CameraComponent::initialize(CameraProjection proj)
+void CameraComponent::initialize(CameraWorld proj)
 {
 	SceneNode::initialize();
-	m_projectionMode = proj;
+	m_cameraWorld = proj;
 
-	if (m_projectionMode == CameraProjection_2D)
+	if (m_cameraWorld == CameraProjection_2D)
 	{
 		m_nearClip = 0.0f;	// TODO
 		m_farClip = 1000.0f;
 		m_zSortDistanceBase = ZSortDistanceBase::CameraScreenDistance;
 	}
-	else if (m_projectionMode == CameraProjection_3D)
+	else if (m_cameraWorld == CameraProjection_3D)
 	{
 		m_nearClip = 0.3f;
 		m_farClip = 1000.0f;
@@ -108,7 +109,7 @@ void CameraComponent::updateMatrices(const Size& viewSize)
 	const Matrix& worldMatrix = getOwnerObject()->transform.getWorldMatrix();
 
 	// 2D モード
-	if (m_projectionMode == CameraProjection_2D)
+	if (m_cameraWorld == CameraProjection_2D)
 	{
 		// 正面方向
 		Vector3 direction = Vector3::transformCoord(Vector3(0, 0, 1), worldMatrix);
@@ -961,7 +962,7 @@ Camera::~Camera()
 }
 
 //------------------------------------------------------------------------------
-void Camera::initialize(CameraProjection proj)
+void Camera::initialize(CameraWorld proj)
 {
 	WorldObject::initialize();
 	m_component = newObject<CameraComponent>(proj);

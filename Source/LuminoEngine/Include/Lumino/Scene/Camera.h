@@ -13,6 +13,13 @@ namespace tr { class GizmoModel; }
 class WorldRenderView;
 namespace detail { class ClusteredShadingSceneRenderer; }
 
+/** カメラの投影方法 */
+enum class ProjectionMode
+{
+	Perspective,	/**< 透視投影 */
+	Orthographic,	/**< 平行投影 */
+};
+
 /**
 	@brief
 */
@@ -103,23 +110,25 @@ protected:
 LN_INTERNAL_ACCESS:
 	CameraComponent();
 	virtual ~CameraComponent();
-	void initialize(CameraProjection proj);
+	void initialize(CameraWorld proj);
 	void setCameraDirection(CameraDirection mode) { m_directionMode = mode; }
-	CameraProjection getProjectionMode() const { return m_projectionMode; }
+	CameraWorld getProjectionMode() const { return m_cameraWorld; }
 
 	void setReflectionPlane(const Plane& plane) { m_reflectionPlane = plane; }
 
 	WorldRenderView*	m_ownerLayer;
 
-	CameraProjection	m_projectionMode;
+	CameraWorld	m_cameraWorld;
 
 private:
+	//ProjectionMode		m_cameraWorld;
 	CameraDirection		m_directionMode;
 	Vector3				m_lookAt;
 	Vector3				m_upDirection;
 	float				m_fovY;
 	float				m_nearClip;
 	float				m_farClip;
+	float				m_orthographicSize;
 	ZSortDistanceBase	m_zSortDistanceBase;
 	CameraBehavior*		m_cameraBehavior;
 
@@ -280,7 +289,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	Camera();
 	virtual ~Camera();
-	void initialize(CameraProjection proj);
+	void initialize(CameraWorld proj);
 
 LN_INTERNAL_ACCESS:
 

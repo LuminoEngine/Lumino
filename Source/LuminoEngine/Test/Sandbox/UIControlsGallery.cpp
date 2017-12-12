@@ -332,20 +332,22 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 #endif
 
 
-	auto ssao = newObject<SSAOImageEffect>();
-	//Engine::getDefault3DLayer()->addPostEffect(ssao);
-	Engine::getCamera3D()->getCameraComponent()->setFarClip(100);
+	//auto ssao = newObject<SSAOImageEffect>();
+	////Engine::getDefault3DLayer()->addPostEffect(ssao);
+	//Engine::getCamera3D()->getCameraComponent()->setFarClip(100);
 
-	auto fxaa = newObject<FXAAPostEffect>();
-	Engine::getDefault3DLayer()->addPostEffect(fxaa);
-	
+	//auto fxaa = newObject<FXAAPostEffect>();
+	//Engine::getDefault3DLayer()->addPostEffect(fxaa);
+	//
 
 
 	auto ps1 = TransitionPostEffect::create();
 	//Engine::getDefault3DLayer()->addPostEffect(ps1);
 	ps1->transition(1, nullptr, 0);	// フェードイン
 
-	Engine::getCamera3D()->setPosition(0, 15, -10);
+	//Engine::getCamera3D()->setPosition(0, 15, -10);
+	Engine::getCamera3D()->setPosition(0, 10, -30);
+
 
 	Bitmap heightmap(LN_LOCALFILE("Assets/heightmap.png"));
 	
@@ -396,15 +398,15 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 
 	auto planeMesh = StaticMeshComponent::createPlane(Vector2(20, 20), 1, 1);
 
-	//auto cornellBox = CornellBox::create();
-	//auto cornellBoxObj = newObject<WorldObject3D>();
-	//cornellBoxObj->addComponent(cornellBox);
+	auto cornellBox = CornellBox::create();
+	auto cornellBoxObj = newObject<WorldObject3D>();
+	cornellBoxObj->addComponent(cornellBox);
 	//cornellBox->setShader(Shader::create(LN_LOCALFILE("Assets/UnLighting.fx"), ShaderCodeType::RawHLSL));
 
-	auto skinnedMeshComponent = SkinnedMeshComponent::create(_T("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
-	auto skinnedMeshObj = newObject<WorldObject3D>();
-	skinnedMeshObj->addComponent(skinnedMeshComponent);
-	skinnedMeshComponent->setShader(Shader::create(LN_LOCALFILE("Assets/UnLighting.fx"), ShaderCodeType::RawHLSL));
+	//auto skinnedMeshComponent = SkinnedMeshComponent::create(_T("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
+	//auto skinnedMeshObj = newObject<WorldObject3D>();
+	//skinnedMeshObj->addComponent(skinnedMeshComponent);
+	//skinnedMeshComponent->setShader(Shader::create(LN_LOCALFILE("Assets/UnLighting.fx"), ShaderCodeType::RawHLSL));
 	
 
 
@@ -755,7 +757,9 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 		
 
 
-
+		float fov = Engine::getCamera3D()->getCameraComponent()->getFovY();
+		fov = std::min(Math::PI / 2, fov + 0.001f);
+		Engine::getCamera3D()->getCameraComponent()->setFovY(fov);
 
 
 
@@ -793,14 +797,14 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 
 	}
 
-	{
-		auto ofs = newObject<OffscreenWorldRenderView>(Engine::getWorld3D(), Engine::getCamera3D()->getCameraComponent());
-		ofs->setClearMode(RenderLayerClearMode::ColorDepth);
-		ofs->render();
+	//{
+	//	auto ofs = newObject<OffscreenWorldRenderView>(Engine::getWorld3D(), Engine::getCamera3D()->getCameraComponent());
+	//	ofs->setClearMode(RenderLayerClearMode::ColorDepth);
+	//	ofs->render();
 
-		ofs->getRenderTarget()->lock()->save(_T("test22.png"));
-		ofs->getRenderTarget()->unlock();
-	}
+	//	ofs->getRenderTarget()->lock()->save(_T("test22.png"));
+	//	ofs->getRenderTarget()->unlock();
+	//}
 
 	//while (Engine::update())
 	//{
