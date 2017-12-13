@@ -415,6 +415,15 @@ void DX9Renderer::onClear(ClearFlags flags, const Color& color, float z, uint8_t
 	c.b = static_cast<uint8_t>(color.b * 255);
 	c.a = static_cast<uint8_t>(color.a * 255);
 	D3DCOLOR dxc = D3DCOLOR_ARGB(c.a, c.r, c.g, c.b);
+
+	IDirect3DSurface9* rt = NULL;
+	m_dxDevice->GetRenderTarget(0, &rt);
+	printf("GetRenderTarget: %p\n", rt);
+	if (rt) rt->Release();
+
+	D3DVIEWPORT9 vp;
+	m_dxDevice->GetViewport(&vp);
+
 	LN_COMCALL(m_dxDevice->Clear(0, NULL, flag, dxc, z, stencil));
 }
 
@@ -498,6 +507,7 @@ void DX9Renderer::onDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex
 			vertexCount,
 			startIndex,
 			primitiveCount));
+
 }
 
 

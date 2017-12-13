@@ -7,7 +7,7 @@
 
 LN_NAMESPACE_BEGIN
 class EngineDiagCore;
-class Bitmap;
+class RawBitmap;
 class PlatformWindow;
 
 LN_NAMESPACE_GRAPHICS_BEGIN
@@ -331,7 +331,7 @@ public:
 
 	//void Clear(const Color& color);
 
-	void setSubData(const PointI& point, Bitmap* bitmap);
+	void setSubData(const PointI& point, RawBitmap* bitmap);
 
 
 
@@ -360,7 +360,7 @@ public:
 	virtual void getData(const RectI& rect, void* outData) = 0;
 
 	/// ロック
-	virtual Bitmap* lock() = 0;
+	virtual RawBitmap* lock() = 0;
 
 	/// アンロック
 	virtual void unlock() = 0;
@@ -381,13 +381,13 @@ public:
 		{
 			m_obj->unlock();
 		}
-		Bitmap* GetBitmap()
+		RawBitmap* GetBitmap()
 		{
 			return m_bitmap;
 		}
 	private:
 		ITexture*			m_obj;
-		Bitmap*	m_bitmap;
+		RawBitmap*	m_bitmap;
 	};
 };
 

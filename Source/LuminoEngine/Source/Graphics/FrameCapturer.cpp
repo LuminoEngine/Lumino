@@ -22,7 +22,7 @@ public:
 	virtual ~CapturerContext() = default;
 	virtual void open(const PathName& filePath, const SizeI& size) = 0;
 	virtual void close() = 0;
-	virtual void addFrame(Bitmap* bitmap, int delayMS, double timestamp) = 0;
+	virtual void addFrame(RawBitmap* bitmap, int delayMS, double timestamp) = 0;
 };
 
 
@@ -143,7 +143,7 @@ public:
 		giflib_closeFile();
 	}
 
-	virtual void addFrame(Bitmap* bitmap, int delayMS, double timestamp) override
+	virtual void addFrame(RawBitmap* bitmap, int delayMS, double timestamp) override
 	{
 		if (delayMS <= 0) return;
 
@@ -411,7 +411,7 @@ public:
 		GifFreeMapObject(m_globalPalette);
 	}
 
-	virtual void addFrame(Bitmap* bitmap, int delayMS, double timestamp) override
+	virtual void addFrame(RawBitmap* bitmap, int delayMS, double timestamp) override
 	{
 		if (delayMS <= 0) return;
 
@@ -639,7 +639,7 @@ void FrameCapturerContext::RecordCommand(Driver::ITexture* target, State newStat
 		if (m_lastTick == 0 || deltaTick > 64)	// FPS15 くらいでプロットする場合はコレ (TODO: fps指定)
 		{
 			// RenderTargetTexture の内容を読み取る
-			Bitmap* bmp = target->lock();	//TODO: Scoped
+			RawBitmap* bmp = target->lock();	//TODO: Scoped
 			m_gifContext->addFrame(bmp, deltaTick, (double)curTick / 1000000);
 			target->unlock();
 

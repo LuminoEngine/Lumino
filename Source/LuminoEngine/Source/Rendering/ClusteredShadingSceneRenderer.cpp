@@ -350,7 +350,7 @@ void ClusteredShadingGeometryRenderingPass::initialize()
 
 
 
-	m_unLightingShader = Shader::create(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/UnLighting.fx"), ShaderCodeType::RawHLSL);
+	m_unLightingShader = Shader::create(_T("C:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/UnLighting.fx"), ShaderCodeType::RawHLSL);
 	m_unLightingShaderTechnique = m_unLightingShader->getTechniques()[0];
 }
 
@@ -520,7 +520,7 @@ void ClusteredShadingSceneRenderer::initialize(GraphicsManager* manager)
 	SceneRenderer::initialize(manager);
 
 	m_depthPrepass = newObject<DepthPrepass>();
-	addPass(m_depthPrepass);
+	//addPass(m_depthPrepass);
 
 	// pass "Geometry"
 	addPass(newObject<ClusteredShadingGeometryRenderingPass>());
@@ -591,6 +591,7 @@ void ClusteredShadingSceneRenderer::onShaderPassChainging(ShaderPass* pass)
 	ShaderVariable* v;
 	
 	v = shader->findVariable(_T("ln_GlobalLightInfoTexture"));
+	printf("lt:");
 	if (v) v->setTexture(m_lightClusters.getGlobalLightInfoTexture());
 
 	v = shader->findVariable(_T("ln_pointLightInfoTexture"));

@@ -89,15 +89,15 @@ void SceneRenderer::render(
 	m_renderingDefaultDepthBuffer = defaultDepthBuffer;
 
 	detail::CoreGraphicsRenderFeature* coreRenderer = m_manager->getRenderer();
-	coreRenderer->begin();
-
-
 	if (clearColorBuffer)
 	{
 		coreRenderer->setRenderTarget(0, defaultRenderTarget);
 		coreRenderer->setDepthBuffer(defaultDepthBuffer);
 		coreRenderer->clear(ClearFlags::All, clearColor);
 	}
+	coreRenderer->begin();
+
+
 
 
 
@@ -245,6 +245,8 @@ void SceneRenderer::render(
 						stateManager->setShaderPass(pass);
 
 						if (diag != nullptr) element->reportDiag(diag);
+						//printf("%s\n", typeid(*element).name());
+						//;
 						element->drawSubset(drawArgs);
 					}
 				}

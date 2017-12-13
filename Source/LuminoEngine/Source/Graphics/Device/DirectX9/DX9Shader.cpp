@@ -501,6 +501,12 @@ void DX9ShaderVariable::setFloatArray(const float* values, int count)
 //------------------------------------------------------------------------------
 void DX9ShaderVariable::setVector(const Vector4& vec)
 {
+	//if (m_name == "ln_ViewportPixelSize")
+	//{
+	//	printf("");
+	//}
+	
+
 	LN_COMCALL(m_dxEffect->SetVector(m_handle, (D3DXVECTOR4*)&vec));
 	ShaderVariableBase::setVector(vec);
 }
@@ -529,6 +535,11 @@ void DX9ShaderVariable::setMatrixArray(const Matrix* matrices, int count)
 //------------------------------------------------------------------------------
 void DX9ShaderVariable::setTexture(ITexture* texture)
 {
+	if (m_name == "ln_GlobalLightInfoTexture")
+	{
+		printf("");
+	}
+
 	if (texture != NULL) {
 		LN_COMCALL(m_dxEffect->SetTexture(m_handle, static_cast<DX9TextureBase*>(texture)->getIDirect3DBaseTexture9()));
 	}

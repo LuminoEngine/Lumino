@@ -215,6 +215,10 @@ private:
 	//void PostGenerated(Vertex* vb, void* ib, MeshCreationFlags flags);
 
 LN_INTERNAL_ACCESS:	// TODO:
+	
+
+	void setBoundingBox(const Box& box);
+		
 	detail::GraphicsManager*	m_manager;
 	String						m_name;
 	ResourceUsage				m_usage;
@@ -230,6 +234,8 @@ LN_INTERNAL_ACCESS:	// TODO:
 	//Ref<MaterialList>		m_materials;
 	MeshAttributeList			m_attributes;
 	bool						m_vertexDeclarationModified;
+
+	Box							m_boundingBox;
 };
 
 

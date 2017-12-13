@@ -9,11 +9,11 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 //==============================================================================
-// Bitmap
+// RawBitmap
 //==============================================================================
 
 //------------------------------------------------------------------------------
-Bitmap::Bitmap()
+RawBitmap::RawBitmap()
 	: m_bitmapData()
 	, m_size()
 	, m_depth(0)
@@ -24,7 +24,7 @@ Bitmap::Bitmap()
 }
 
 //------------------------------------------------------------------------------
-Bitmap::Bitmap(const SizeI& size, PixelFormat format, bool upFlow)
+RawBitmap::RawBitmap(const SizeI& size, PixelFormat format, bool upFlow)
 {
 	init();
 	m_size = size;
@@ -35,7 +35,7 @@ Bitmap::Bitmap(const SizeI& size, PixelFormat format, bool upFlow)
 }
 
 //------------------------------------------------------------------------------
-Bitmap::Bitmap(int width, int height, int depth, PixelFormat format, bool upFlow)
+RawBitmap::RawBitmap(int width, int height, int depth, PixelFormat format, bool upFlow)
 {
 	init();
 	m_size.set(width, height);
@@ -46,7 +46,7 @@ Bitmap::Bitmap(int width, int height, int depth, PixelFormat format, bool upFlow
 }
 
 //------------------------------------------------------------------------------
-Bitmap::Bitmap(Stream* stream, bool flipV)
+RawBitmap::RawBitmap(Stream* stream, bool flipV)
 {
 	init();
 	if (LN_REQUIRE(stream != NULL)) return;
@@ -65,7 +65,7 @@ Bitmap::Bitmap(Stream* stream, bool flipV)
 }
 
 //------------------------------------------------------------------------------
-Bitmap::Bitmap(const Char* filePath)
+RawBitmap::RawBitmap(const Char* filePath)
 {
 	init();
 	if (LN_ENSURE(filePath != NULL)) return;
@@ -82,7 +82,7 @@ Bitmap::Bitmap(const Char* filePath)
 }
 
 //------------------------------------------------------------------------------
-Bitmap::Bitmap(ByteBuffer buffer, const SizeI& size, PixelFormat format)
+RawBitmap::RawBitmap(ByteBuffer buffer, const SizeI& size, PixelFormat format)
 {
 	init();
 	m_size = size;
@@ -90,7 +90,7 @@ Bitmap::Bitmap(ByteBuffer buffer, const SizeI& size, PixelFormat format)
 	m_format = format;
 	m_bitmapData = buffer;
 }
-Bitmap::Bitmap(const ByteBuffer& buffer, const SizeI& size, PixelFormat format, bool upFlow)
+RawBitmap::RawBitmap(const ByteBuffer& buffer, const SizeI& size, PixelFormat format, bool upFlow)
 {
 	init();
 	m_size = size;
@@ -101,7 +101,7 @@ Bitmap::Bitmap(const ByteBuffer& buffer, const SizeI& size, PixelFormat format, 
 }
 
 //------------------------------------------------------------------------------
-Bitmap::Bitmap(void* buffer, const SizeI& size, PixelFormat format, bool upFlow)
+RawBitmap::RawBitmap(void* buffer, const SizeI& size, PixelFormat format, bool upFlow)
 {
 	init();
 	m_size = size;
@@ -112,7 +112,7 @@ Bitmap::Bitmap(void* buffer, const SizeI& size, PixelFormat format, bool upFlow)
 }
 
 //------------------------------------------------------------------------------
-Bitmap::Bitmap(void* buffer, int width, int height, int depth, PixelFormat format)
+RawBitmap::RawBitmap(void* buffer, int width, int height, int depth, PixelFormat format)
 {
 	init();
 	m_size.set(width, height);
@@ -122,12 +122,12 @@ Bitmap::Bitmap(void* buffer, int width, int height, int depth, PixelFormat forma
 }
 
 //------------------------------------------------------------------------------
-Bitmap::~Bitmap()
+RawBitmap::~RawBitmap()
 {
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::init()
+void RawBitmap::init()
 {
 	//m_bitmapData;
 	m_size.set(0, 0);
@@ -137,7 +137,7 @@ void Bitmap::init()
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::clear(const Color32& color)
+void RawBitmap::clear(const Color32& color)
 {
 	// 完全に透明にクリアする場合はバッファクリアでよい。
 	if (color.r == 0x00 && color.g == 0x00 && color.b == 0x00 && color.a == 0x00)
@@ -181,22 +181,22 @@ void Bitmap::clear(const Color32& color)
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::bitBlt(const RectI& destRect, const Bitmap* srcBitmap, const RectI& srcRect, const Color32& mulColor, bool alphaBlend)
+void RawBitmap::bitBlt(const RectI& destRect, const RawBitmap* srcBitmap, const RectI& srcRect, const Color32& mulColor, bool alphaBlend)
 {
 	bitBltInternal(this, destRect, srcBitmap, srcRect, RGBA(mulColor.r, mulColor.g, mulColor.b, mulColor.a), alphaBlend);
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::bitBlt(int x, int y, const Bitmap* srcBitmap, const RectI& srcRect, const Color32& mulColor, bool alphaBlend)
+void RawBitmap::bitBlt(int x, int y, const RawBitmap* srcBitmap, const RectI& srcRect, const Color32& mulColor, bool alphaBlend)
 {
 	bitBltInternal(this, RectI(x, y, INT_MAX, INT_MAX), srcBitmap, srcRect, RGBA(mulColor.r, mulColor.g, mulColor.b, mulColor.a), alphaBlend);
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::save(const Char* filePath)
+void RawBitmap::save(const Char* filePath)
 {
 	// png に保存するときは RGBA
-	Bitmap bitmap(m_size, PixelFormat::R8G8B8A8);
+	RawBitmap bitmap(m_size, PixelFormat::R8G8B8A8);
 	bitmap.m_upFlow = m_upFlow;
 	convertPixelFormat(
 		m_bitmapData.getData(), m_bitmapData.getSize(), m_format,
@@ -212,7 +212,7 @@ void Bitmap::save(const Char* filePath)
 }
 
 //------------------------------------------------------------------------------
-bool Bitmap::equals(const Bitmap* bitmap) const
+bool RawBitmap::equals(const RawBitmap* bitmap) const
 {
 	if (m_size != bitmap->m_size ||
 		m_format != bitmap->m_format ||
@@ -224,7 +224,7 @@ bool Bitmap::equals(const Bitmap* bitmap) const
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::convertToDownFlow()
+void RawBitmap::convertToDownFlow()
 {
 	int pixelSize = getPixelFormatByteCount(m_format);
 	if (pixelSize == 1)
@@ -254,20 +254,20 @@ void Bitmap::convertToDownFlow()
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::copyRawData(const void* data, size_t byteCount)
+void RawBitmap::copyRawData(const void* data, size_t byteCount)
 {
 	if (LN_REQUIRE(m_bitmapData.getSize() <= byteCount)) return;
 	m_bitmapData.copy(data, byteCount);
 }
 
 //------------------------------------------------------------------------------
-size_t Bitmap::getByteCount() const
+size_t RawBitmap::getByteCount() const
 {
 	return m_bitmapData.getSize();
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::setPixel(int x, int y, int z, const Color32& color)
+void RawBitmap::setPixel(int x, int y, int z, const Color32& color)
 {
 	if (LN_REQUIRE_RANGE(x, 0, m_size.width)) return;
 	if (LN_REQUIRE_RANGE(y, 0, m_size.height)) return;
@@ -306,7 +306,7 @@ void Bitmap::setPixel(int x, int y, int z, const Color32& color)
 }
 
 //------------------------------------------------------------------------------
-Color32 Bitmap::getPixel(int x, int y) const
+Color32 RawBitmap::getPixel(int x, int y) const
 {
 	struct U32
 	{
@@ -329,7 +329,7 @@ Color32 Bitmap::getPixel(int x, int y) const
 }
 
 //------------------------------------------------------------------------------
-size_t Bitmap::getSerializeSize() const
+size_t RawBitmap::getSerializeSize() const
 {
 	//return
 	//	sizeof(size_t) +
@@ -342,7 +342,7 @@ size_t Bitmap::getSerializeSize() const
 }
 
 //------------------------------------------------------------------------------
-size_t Bitmap::getSerializeSize(const RectI& rect) const
+size_t RawBitmap::getSerializeSize(const RectI& rect) const
 {
 	RectI clipRect = rect;
 	clipRect.clip(RectI(0, 0, m_size));
@@ -354,7 +354,7 @@ size_t Bitmap::getSerializeSize(const RectI& rect) const
 }
 
 //------------------------------------------------------------------------------
-size_t Bitmap::getPropertySerializeSize() const
+size_t RawBitmap::getPropertySerializeSize() const
 {
 	return
 		sizeof(m_size) +
@@ -365,7 +365,7 @@ size_t Bitmap::getPropertySerializeSize() const
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::serialize(void* buffer)
+void RawBitmap::serialize(void* buffer)
 {
 	//byte_t* b = (byte_t*)buffer;
 
@@ -390,7 +390,7 @@ void Bitmap::serialize(void* buffer)
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::serialize(void* buffer, const RectI& rect)
+void RawBitmap::serialize(void* buffer, const RectI& rect)
 {
 	RectI clipRect = rect;
 	clipRect.clip(RectI(0, 0, m_size));
@@ -427,7 +427,7 @@ void Bitmap::serialize(void* buffer, const RectI& rect)
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::serializeProperty(void* buffer)
+void RawBitmap::serializeProperty(void* buffer)
 {
 	byte_t* b = (byte_t*)buffer;
 
@@ -448,7 +448,7 @@ void Bitmap::serializeProperty(void* buffer)
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::deserialize(void* buffer, bool refMode)
+void RawBitmap::deserialize(void* buffer, bool refMode)
 {
 	byte_t* b = (byte_t*)buffer;
 
@@ -483,7 +483,7 @@ void Bitmap::deserialize(void* buffer, bool refMode)
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::deserializePropertyAndRawData(const void* propData, void* rawData, size_t rawDataSize, bool refMode)
+void RawBitmap::deserializePropertyAndRawData(const void* propData, void* rawData, size_t rawDataSize, bool refMode)
 {
 	const byte_t* b = (const byte_t*)propData;
 
@@ -510,7 +510,7 @@ void Bitmap::deserializePropertyAndRawData(const void* propData, void* rawData, 
 }
 
 //------------------------------------------------------------------------------
-int Bitmap::getPixelFormatByteCount(PixelFormat format)
+int RawBitmap::getPixelFormatByteCount(PixelFormat format)
 {
 	const int table[] =
 	{
@@ -528,14 +528,14 @@ int Bitmap::getPixelFormatByteCount(PixelFormat format)
 }
 
 //------------------------------------------------------------------------------
-int Bitmap::getPixelFormatByteCount(PixelFormat format, const SizeI& size, int depth)
+int RawBitmap::getPixelFormatByteCount(PixelFormat format, const SizeI& size, int depth)
 {
 	int c = getPixelFormatByteCount(format);
 	return c * size.width * size.height * depth;
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::convertPixelFormat(
+void RawBitmap::convertPixelFormat(
 	const byte_t* input, size_t inputSize, PixelFormat inputFormat,
 	byte_t* output, size_t outputSize, PixelFormat outputFormat)
 {
@@ -568,7 +568,7 @@ void Bitmap::convertPixelFormat(
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::fillAlpha(byte_t alpha)
+void RawBitmap::fillAlpha(byte_t alpha)
 {
 	if (m_format == PixelFormat::R8G8B8A8 ||
 		m_format == PixelFormat::B8G8R8A8 ||
@@ -586,7 +586,7 @@ void Bitmap::fillAlpha(byte_t alpha)
 
 //------------------------------------------------------------------------------
 
-//void Bitmap::ConvertPixelU32(U32* p, PixelFormat inputFormat, PixelFormat outputFormat)
+//void RawBitmap::ConvertPixelU32(U32* p, PixelFormat inputFormat, PixelFormat outputFormat)
 //{
 //	// 同じフォーマットなら何もしない
 //	if (inputFormat == outputFormat) {
@@ -596,9 +596,9 @@ void Bitmap::fillAlpha(byte_t alpha)
 
 //------------------------------------------------------------------------------
 template<class TDestConverter, class TSrcConverter>
-void Bitmap::bitBltInternalTemplate(
-	Bitmap* dest, const RectI& destRect,
-	const Bitmap* src, const RectI& srcRect,
+void RawBitmap::bitBltInternalTemplate(
+	RawBitmap* dest, const RectI& destRect,
+	const RawBitmap* src, const RectI& srcRect,
 	ClColor mulColorRGBA, bool alphaBlend) throw()
 {
 	DestBuffer<TDestConverter> dstBuf(dest, destRect);
@@ -681,9 +681,9 @@ void Bitmap::bitBltInternalTemplate(
 
 //------------------------------------------------------------------------------
 template<class TDestConverter>
-void Bitmap::bitBltInternalTemplateHelper(
-	Bitmap* dest, const RectI& destRect,
-	const Bitmap* src, const RectI& srcRect,
+void RawBitmap::bitBltInternalTemplateHelper(
+	RawBitmap* dest, const RectI& destRect,
+	const RawBitmap* src, const RectI& srcRect,
 	ClColor mulColorRGBA, bool alphaBlend)
 {
 	switch (src->m_format)
@@ -713,12 +713,12 @@ void Bitmap::bitBltInternalTemplateHelper(
 }
 
 //------------------------------------------------------------------------------
-void Bitmap::bitBltInternal(
-	Bitmap* dest, const RectI& destRect_,
-	const Bitmap* src, const RectI& srcRect_,
+void RawBitmap::bitBltInternal(
+	RawBitmap* dest, const RectI& destRect_,
+	const RawBitmap* src, const RectI& srcRect_,
 	ClColor mulColorRGBA, bool alphaBlend)
 {
-	// 双方の矩形を Bitmap からはみ出ないようにクリッピングし、範囲の大きさは dest に合わせる。
+	// 双方の矩形を RawBitmap からはみ出ないようにクリッピングし、範囲の大きさは dest に合わせる。
 	// (拡縮はしない。srcRect が小さければ、余分な部分は何もしない)
 	RectI destRect = destRect_;
 	RectI srcRect = srcRect_;
@@ -754,7 +754,7 @@ void Bitmap::bitBltInternal(
 	LN_THROW(0, InvalidFormatException);
 
 #if 0
-	// 双方の矩形を Bitmap からはみ出ないようにクリッピングし、範囲の大きさは dest に合わせる。
+	// 双方の矩形を RawBitmap からはみ出ないようにクリッピングし、範囲の大きさは dest に合わせる。
 	// (拡縮はしない。srcRect が小さければ、余分な部分は何もしない)
 	RectI destRect = destRect_;
 	RectI srcRect = srcRect_;

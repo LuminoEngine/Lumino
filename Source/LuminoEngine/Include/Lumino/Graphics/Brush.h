@@ -164,7 +164,7 @@ public:
 private:
 };
 
-/// Bitmap はソフト的な描画処理を行うため、BitmapBrush という名前はつかわない
+/// RawBitmap はソフト的な描画処理を行うため、BitmapBrush という名前はつかわない
 class TextureBrush
 	: public Brush
 {

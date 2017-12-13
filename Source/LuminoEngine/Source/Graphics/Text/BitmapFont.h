@@ -12,7 +12,7 @@ class BitmapFont
 public:
 	BitmapFont();
 	virtual ~BitmapFont();
-	void initialize(Bitmap* bitmap);
+	void initialize(RawBitmap* bitmap);
 
 	virtual void setName(const String& fontName) { LN_NOTIMPLEMENTED(); }
 	virtual const String& getName() const { return m_name; }
@@ -40,11 +40,11 @@ public:
 private:
 	FontManager*			m_manager;
 	String					m_name;					// 名前。グリフテクスチャのキャッシュで使用する
-	Ref<Bitmap>			m_fontBitmap;
+	Ref<RawBitmap>			m_fontBitmap;
 	int						m_charWidth;			// 1文字分の幅
 	int						m_charHeight;			// 1文字分の高さ
 	FontGlyphLocation		m_fontGlyphLocation;	// advanceKerning() で返すデータ
-	Ref<Bitmap>			m_glyphBitmap;
+	Ref<RawBitmap>			m_glyphBitmap;
 	FontGlyphBitmap			m_fontGlyphBitmap;		// lookupGlyphBitmap() で返すデータ
 };
 

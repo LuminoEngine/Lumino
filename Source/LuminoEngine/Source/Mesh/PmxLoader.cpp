@@ -150,6 +150,8 @@ void PmxLoader::loadVertices(BinaryReader* reader)
 		Vector2	TexUV;
 	} baseVertex;
 
+	Vector3 aabbMin;
+	Vector3 aabbMax;
 	for (int i = 0; i < vertexCount; ++i)
 	{
 		// 頂点、法線、テクスチャUV
@@ -231,7 +233,18 @@ void PmxLoader::loadVertices(BinaryReader* reader)
 
 		// エッジ倍率
 		m_modelCore->setEdgeWeight(i, reader->readFloat());
+
+		// AABB
+		aabbMin.x = std::min(aabbMin.x, baseVertex.Position.x);
+		aabbMin.y = std::min(aabbMin.y, baseVertex.Position.y);
+		aabbMin.z = std::min(aabbMin.z, baseVertex.Position.z);
+		aabbMax.x = std::max(aabbMax.x, baseVertex.Position.x);
+		aabbMax.y = std::max(aabbMin.y, baseVertex.Position.y);
+		aabbMax.z = std::max(aabbMax.z, baseVertex.Position.z);
 	}
+
+	// BoundingBox
+	m_modelCore->setBoundingBox(Box(aabbMin, aabbMax));
 }
 
 //------------------------------------------------------------------------------

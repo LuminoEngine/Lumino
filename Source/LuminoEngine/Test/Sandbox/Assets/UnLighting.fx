@@ -47,6 +47,7 @@ float4 PS_ShadowCaster(PSInput input) : COLOR0
 	float hr = ((input.Pos.y - 10) / 5.0);
 
 	float4 c = (tex2D(TextureSampler, input.UV)) * input.Color;
+	return c;
 	//c *= hr;
 	float bc = 0.6;
 	c = lerp(float4(bc,bc,bc,1), c, hr);
@@ -87,12 +88,14 @@ float4 PS_Outline(PSInput input) : COLOR0
 
 technique Forward_Geometry
 {
+	/*
 	pass Pass1
 	{
 		CULLMODE= CCW;
 		VertexShader = compile vs_3_0 VS_Outline();
 		PixelShader	 = compile ps_3_0 PS_Outline();
 	}
+	*/
 	pass Pass2
 	{
 		VertexShader = compile vs_3_0 VS_ShadowCaster();

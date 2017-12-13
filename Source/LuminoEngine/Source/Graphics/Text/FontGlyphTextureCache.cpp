@@ -230,7 +230,7 @@ FontGlyphTextureCache::FontGlyphTextureCache(GraphicsManager* manager, RawFont* 
 	}
 
 	m_glyphMaxBitmapSize = m_font->GetGlyphMaxSize();
-	m_tmpBitmap.Attach(LN_NEW Bitmap(m_font->GetGlyphMaxSize(), Utils::TranslatePixelFormat(m_glyphCacheTexture->GetFormat())));
+	m_tmpBitmap.Attach(LN_NEW RawBitmap(m_font->GetGlyphMaxSize(), Utils::TranslatePixelFormat(m_glyphCacheTexture->GetFormat())));
 }
 
 //------------------------------------------------------------------------------
@@ -903,7 +903,7 @@ void TextRenderer::CheckResetCache()
 		}
 
 		m_glyphMaxBitmapSize = m_font->GetGlyphMaxSize();
-		m_tmpBitmap.Attach(LN_NEW Bitmap(m_font->GetGlyphMaxSize(), Utils::TranslatePixelFormat(m_glyphCacheTexture->GetFormat())));
+		m_tmpBitmap.Attach(LN_NEW RawBitmap(m_font->GetGlyphMaxSize(), Utils::TranslatePixelFormat(m_glyphCacheTexture->GetFormat())));
 
 
 		m_prevGlyphLocationData = NULL;

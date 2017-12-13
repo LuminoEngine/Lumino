@@ -271,20 +271,20 @@ void DX9Texture::getData(const RectI& rect, void* outData)
 }
 
 //------------------------------------------------------------------------------
-Bitmap* DX9Texture::lock()
+RawBitmap* DX9Texture::lock()
 {
-	DWORD flags = 0;//D3DLOCK_READONLY;
+	DWORD flags = 0;//D3DLOCK_DISCARD;//D3DLOCK_READONLY;
 
 	// lock
 	RECT lockRect = { 0, 0, m_realSize.width, m_realSize.height };
 	D3DLOCKED_RECT lockedRect;
 	LN_COMCALL(m_dxTexture->LockRect(0, &lockedRect, &lockRect, flags));	// TODO: 読むのか書くのか、ロックの種類を指定したい
 
-	// lock したバッファを参照する Bitmap を作成して返す
+	// lock したバッファを参照する RawBitmap を作成して返す
 	PixelFormat pixelFormat = Utils::translatePixelFormat(m_format);
-	size_t size = Bitmap::getPixelFormatByteCount(pixelFormat, m_realSize, 1);
+	size_t size = RawBitmap::getPixelFormatByteCount(pixelFormat, m_realSize, 1);
 	//m_lockedBuffer =  ByteBuffer(lockedRect.pBits, size, true);
-	m_lockedBitmap.attach(LN_NEW Bitmap(lockedRect.pBits, m_realSize, pixelFormat));
+	m_lockedBitmap.attach(LN_NEW RawBitmap(lockedRect.pBits, m_realSize, pixelFormat));
 
 	// TODO: ↑文字列書き込み等でわりと頻繁にロックされる場合がある。できれば new は 1 度にしたいが…
 
@@ -296,7 +296,7 @@ void DX9Texture::unlock()
 {
 	m_lockedBitmap.safeRelease();
 	//m_lockedBuffer.Release();
-	m_dxTexture->UnlockRect(0);
+	LN_COMCALL(m_dxTexture->UnlockRect(0));
 }
 
 //==============================================================================
@@ -392,7 +392,7 @@ void DX9Texture3D::setSubData3D(const Box32& box, const void* data, size_t dataB
 }
 
 //------------------------------------------------------------------------------
-Bitmap* DX9Texture3D::lock()
+RawBitmap* DX9Texture3D::lock()
 {
 	LN_NOTIMPLEMENTED();
 	return nullptr;
@@ -511,6 +511,8 @@ void DX9RenderTargetTexture::onResetDevice()
 
 	// サーフェイスフォーマットの取得
 	m_format = DX9Module::TranslateFormatDxToLN(desc.Format);
+
+	//lock();
 }
 
 //------------------------------------------------------------------------------
@@ -520,9 +522,16 @@ void DX9RenderTargetTexture::setSubData3D(const Box32& box, const void* data, si
 }
 
 //------------------------------------------------------------------------------
-Bitmap* DX9RenderTargetTexture::lock()
+RawBitmap* DX9RenderTargetTexture::lock()
 {
 	IDirect3DDevice9* dxDevice = m_graphicsDevice->getIDirect3DDevice9();
+	//m_graphicsDevice->getDefaultSwapChain()->present(nullptr);
+
+	
+	//LN_COMCALL(dxDevice->Clear(0, NULL, flag, dxc, 1, 0));
+
+
+
 	DX9RenderTargetTexture::lockRenderTarget(dxDevice, m_dxSurface, m_format, m_realSize, &m_lockedSystemSurface, &m_lockedBuffer, &m_lockedBitmap);
 	return m_lockedBitmap;
 }
@@ -534,7 +543,7 @@ void DX9RenderTargetTexture::unlock()
 }
 
 //------------------------------------------------------------------------------
-void DX9RenderTargetTexture::lockRenderTarget(IDirect3DDevice9* dxDevice, IDirect3DSurface9* dxSurface, TextureFormat format, const SizeI& realSize, IDirect3DSurface9** outLockedSystemSurface, ByteBuffer* outLockedBuffer, Bitmap** outLockedBitmap)
+void DX9RenderTargetTexture::lockRenderTarget(IDirect3DDevice9* dxDevice, IDirect3DSurface9* dxSurface, TextureFormat format, const SizeI& realSize, IDirect3DSurface9** outLockedSystemSurface, ByteBuffer* outLockedBuffer, RawBitmap** outLockedBitmap)
 {
 	D3DSURFACE_DESC desc;
 	LN_COMCALL(dxSurface->GetDesc(&desc));
@@ -551,16 +560,16 @@ void DX9RenderTargetTexture::lockRenderTarget(IDirect3DDevice9* dxDevice, IDirec
 	D3DLOCKED_RECT	lockedRect;
 	LN_COMCALL((*outLockedSystemSurface)->LockRect(&lockedRect, NULL, D3DLOCK_READONLY));
 
-	// lock したバッファを参照する Bitmap を作成して返す。
+	// lock したバッファを参照する RawBitmap を作成して返す。
 	// 取得できるビットマップデータの [0] は (0, 0)
 	PixelFormat pixelFormat = Utils::translatePixelFormat(format);
-	size_t size = Bitmap::getPixelFormatByteCount(pixelFormat, realSize, 1);
+	size_t size = RawBitmap::getPixelFormatByteCount(pixelFormat, realSize, 1);
 	*outLockedBuffer = ByteBuffer(lockedRect.pBits, size, true);
-	*outLockedBitmap = LN_NEW Bitmap(*outLockedBuffer, realSize, pixelFormat, false);
+	*outLockedBitmap = LN_NEW RawBitmap(*outLockedBuffer, realSize, pixelFormat, false);
 }
 
 //------------------------------------------------------------------------------
-void DX9RenderTargetTexture::unlockRenderTarget(IDirect3DSurface9** lockedSystemSurface, ByteBuffer* lockedBuffer, Bitmap** lockedBitmap)
+void DX9RenderTargetTexture::unlockRenderTarget(IDirect3DSurface9** lockedSystemSurface, ByteBuffer* lockedBuffer, RawBitmap** lockedBitmap)
 {
 	if ((*lockedSystemSurface) != NULL)
 	{
@@ -670,7 +679,7 @@ void DX9BackBufferTexture::setSubData3D(const Box32& box, const void* data, size
 }
 
 //------------------------------------------------------------------------------
-Bitmap* DX9BackBufferTexture::lock()
+RawBitmap* DX9BackBufferTexture::lock()
 {
 	IDirect3DDevice9* dxDevice = m_graphicsDevice->getIDirect3DDevice9();
 	DX9RenderTargetTexture::lockRenderTarget(dxDevice, m_dxSurface, m_format, m_realSize, &m_lockedSystemSurface, &m_lockedBuffer, &m_lockedBitmap);
@@ -690,12 +699,12 @@ Bitmap* DX9BackBufferTexture::lock()
 	//D3DLOCKED_RECT	lockedRect;
 	//LN_COMCALL(m_lockedSystemSurface->LockRect(&lockedRect, NULL, D3DLOCK_READONLY));
 
-	//// lock したバッファを参照する Bitmap を作成して返す。
+	//// lock したバッファを参照する RawBitmap を作成して返す。
 	//// 取得できるビットマップデータの [0] は (0, 0)
 	//PixelFormat pixelFormat = Utils::translatePixelFormat(m_format);
-	//size_t size = Bitmap::getPixelFormatByteCount(pixelFormat, m_realSize);
+	//size_t size = RawBitmap::getPixelFormatByteCount(pixelFormat, m_realSize);
 	//m_lockedBuffer = ByteBuffer(lockedRect.pBits, size, true);
-	//m_lockedBitmap.Attach(LN_NEW Bitmap(m_lockedBuffer, m_realSize, pixelFormat, false));
+	//m_lockedBitmap.Attach(LN_NEW RawBitmap(m_lockedBuffer, m_realSize, pixelFormat, false));
 
 	return m_lockedBitmap;
 }

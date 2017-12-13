@@ -345,11 +345,11 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 	//Engine::getDefault3DLayer()->addPostEffect(ps1);
 	ps1->transition(1, nullptr, 0);	// フェードイン
 
-	Engine::getCamera3D()->setPosition(0, 17, -10);
-	//Engine::getCamera3D()->setPosition(0, 10, -30);
+	//Engine::getCamera3D()->setPosition(0, 17, -10);
+	Engine::getCamera3D()->setPosition(0, 10, -30);
 
 
-	Bitmap heightmap(LN_LOCALFILE("Assets/heightmap.png"));
+	RawBitmap heightmap(LN_LOCALFILE("Assets/heightmap.png"));
 	
 	//auto box1 = StaticMeshComponent::create(LN_LOCALFILE("Assets/cube.mqo"));
 	//auto box1 = StaticMeshComponent::create(LN_LOCALFILE("Assets/cylinder2.mqo"));
@@ -398,16 +398,16 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 
 	auto planeMesh = StaticMeshComponent::createPlane(Vector2(20, 20), 1, 1);
 
-	//auto cornellBox = CornellBox::create();
-	//auto cornellBoxObj = newObject<WorldObject3D>();
-	//cornellBoxObj->addComponent(cornellBox);
+	auto cornellBox = CornellBox::create();
+	auto cornellBoxObj = newObject<WorldObject3D>();
+	cornellBoxObj->addComponent(cornellBox);
 	//cornellBox->setShader(Shader::create(LN_LOCALFILE("Assets/UnLighting.fx"), ShaderCodeType::RawHLSL));
 
-	auto skinnedMeshComponent = SkinnedMeshComponent::create(_T("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
-	auto skinnedMeshObj = newObject<WorldObject3D>();
-	skinnedMeshObj->addComponent(skinnedMeshComponent);
-	skinnedMeshComponent->setShader(Shader::create(LN_LOCALFILE("Assets/UnLighting.fx"), ShaderCodeType::RawHLSL));
-	
+	//auto skinnedMeshComponent = SkinnedMeshComponent::create(_T("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
+	//auto skinnedMeshObj = newObject<WorldObject3D>();
+	//skinnedMeshObj->addComponent(skinnedMeshComponent);
+	//skinnedMeshComponent->setShader(Shader::create(LN_LOCALFILE("Assets/UnLighting.fx"), ShaderCodeType::RawHLSL));
+	//
 
 
 	//auto ambientLight1 = AmbientLight::create();
@@ -429,7 +429,8 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 
 
 	auto directionalLight1 = DirectionalLight::create(Color::White);
-	directionalLight1->getDirectionalLightComponent()->setShadowCast(true);
+	//directionalLight1->getDirectionalLightComponent()->setShadowCast(true);
+
 	//Quaternion rot;
 	//rot.rotateX(Math::degreesToRadians(50));
 	//rot.rotateY(Math::degreesToRadians(-30));
@@ -444,6 +445,37 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 	Engine::getWorld3D()->setAmbientGroundColor(Color::Green.withAlpha(0.25));
 	Engine::getWorld3D()->setFogColor(Color(1, 1, 1, 0.5));
 	Engine::getWorld3D()->setFogDensity(0.03);
+
+	printf("--------\n");
+	{
+		Engine::getWorld3D()->beginUpdateFrame();
+		Engine::getWorld3D()->updateFrame(0.016);
+		auto ofs = newObject<OffscreenWorldRenderView>(Engine::getWorld3D(), Engine::getCamera3D()->getCameraComponent());
+		ofs->setClearMode(RenderLayerClearMode::ColorDepth);
+		ofs->render();
+		ofs->getRenderTarget()->lock()->save(_T("test22.png"));
+		ofs->getRenderTarget()->unlock();
+		auto* t = ofs->getRenderTarget()->resolveDeviceObject();
+		printf("\nrt: %p\n",t ); ;
+
+
+		ofs->render();
+		ofs->getRenderTarget()->lock()->save(_T("test22_2.png"));
+		ofs->getRenderTarget()->unlock();
+	}
+	printf("--------\n");
+
+	{
+		Engine::getWorld3D()->beginUpdateFrame();
+		Engine::getWorld3D()->updateFrame(0.016);
+		auto ofs = newObject<OffscreenWorldRenderView>(Engine::getWorld3D(), Engine::getCamera3D()->getCameraComponent());
+		ofs->setClearMode(RenderLayerClearMode::ColorDepth);
+		ofs->render();
+
+		ofs->getRenderTarget()->lock()->save(_T("test22.png"));
+		ofs->getRenderTarget()->unlock();
+	}
+
 #if 0
 
 	int ClusterDepth = 32;

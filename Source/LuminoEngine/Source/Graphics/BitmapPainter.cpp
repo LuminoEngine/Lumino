@@ -6,11 +6,11 @@ LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 
 //==============================================================================
-// Bitmap
+// RawBitmap
 //==============================================================================
 
 //------------------------------------------------------------------------------
-BitmapPainter::BitmapPainter(Bitmap* targetBitmap)
+BitmapPainter::BitmapPainter(RawBitmap* targetBitmap)
 	: m_bitmap(NULL)
 {
 	LN_REFOBJ_SET(m_bitmap, targetBitmap);
@@ -90,7 +90,7 @@ uint32_t BitmapPainter::getColorByteSec(const Color32& color, PixelFormat format
 //==============================================================================
 
 //------------------------------------------------------------------------------
-void BitmapFilter::flipVertical(Bitmap* dst, const Bitmap* src)
+void BitmapFilter::flipVertical(RawBitmap* dst, const RawBitmap* src)
 {
 	for (int y = 0; y < dst->getSize().height; ++y)
 	{

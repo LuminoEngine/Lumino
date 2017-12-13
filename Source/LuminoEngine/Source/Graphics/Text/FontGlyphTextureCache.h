@@ -14,7 +14,7 @@ namespace detail {
 
 struct CacheGlyphInfo
 {
-	//Bitmap*	fillGlyphBitmap;
+	//RawBitmap*	fillGlyphBitmap;
 	// TODO: outlinebitmap
 	int		outlineOffset;
 	RectI	srcRect;
@@ -36,7 +36,7 @@ public:
 
 	// まずメインスレッドでこの関数でキャッシュを検索する。
 	// outFlush が true になったらキャッシュが一杯になったので、フラッシュする必要がある。
-	// Bitmap が得られたときは CommitAndGetGlyphTextureInfo() に渡す前に、
+	// RawBitmap が得られたときは CommitAndGetGlyphTextureInfo() に渡す前に、
 	// 描画コマンド用の一時メモリにコピーしてか渡さなければならない。
 	void lookupGlyphInfo(UTF32 ch, CacheGlyphInfo* outInfo, bool* outFlush);
 
@@ -75,7 +75,7 @@ private:
 
 	//Driver::ITexture*		m_glyphsFillTexture;
 	Ref<Texture2D>		m_fillGlyphsTexture;
-	//Bitmap*					m_lockedFillBitmap;
+	//RawBitmap*					m_lockedFillBitmap;
 
 	TextLayoutEngine		m_layoutEngine;	// TODO: GlyphRun に任せていいかも？
 

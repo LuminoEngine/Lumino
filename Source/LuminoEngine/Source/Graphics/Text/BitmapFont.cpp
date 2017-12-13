@@ -22,7 +22,7 @@ static const size_t g_BuiltInBitmapFont_size7_Len = LN_ARRAY_SIZE_OF(g_BuiltInBi
 Ref<RawFont> RawFont::createBuiltInBitmapFontInternal2(int size)
 {
 	MemoryStream stream(g_BuiltInBitmapFont_size7_Data, g_BuiltInBitmapFont_size7_Len);
-	Ref<Bitmap> bitmap(LN_NEW Bitmap(&stream), false);
+	Ref<RawBitmap> bitmap(LN_NEW RawBitmap(&stream), false);
 	auto font = newObject<detail::BitmapFont>(bitmap);
 	return Ref<RawFont>::staticCast(font);
 }
@@ -49,7 +49,7 @@ BitmapFont::BitmapFont()
 }
 
 //------------------------------------------------------------------------------
-void BitmapFont::initialize(Bitmap* bitmap)
+void BitmapFont::initialize(RawBitmap* bitmap)
 {
 	RawFont::initialize();
 	m_manager = detail::EngineDomain::getGraphicsManager()->getFontManager();
@@ -61,7 +61,7 @@ void BitmapFont::initialize(Bitmap* bitmap)
 	m_charHeight = m_fontBitmap->getSize().height / 16;
 
 	// グリフ用の一時ビットマップ
-	m_glyphBitmap.attach(LN_NEW Bitmap(SizeI(m_charWidth, m_charHeight), PixelFormat::R8G8B8A8));
+	m_glyphBitmap.attach(LN_NEW RawBitmap(SizeI(m_charWidth, m_charHeight), PixelFormat::R8G8B8A8));
 
 	m_fontGlyphBitmap.GlyphBitmap = m_glyphBitmap;
 	m_fontGlyphBitmap.OutlineBitmap = NULL;

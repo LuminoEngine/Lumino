@@ -24,49 +24,48 @@ enum class PixelFormat
 };
 
 // TODO: スタックに生成しないようにしたい
-// TODO: やっぱり Graphics に混ぜて良いような気がする・・
 /**
 	@brief	ビットマップ画像のクラスです。
 */
-class Bitmap
+class RawBitmap
 	: public RefObject
 {
 public:
 	/**
-		@brief		指定したサイズとフォーマットで、空の Bitmap を作成します。
+		@brief		指定したサイズとフォーマットで、空の RawBitmap を作成します。
 		@param[in]	size		: ビットマップのサイズ (ピクセル数単位)
 		@param[in]	format		: ピクセルフォーマット
 		@param[in]	upFlow		: 上下逆のイメージとして扱う場合は true
 	*/
-	Bitmap(const SizeI& size, PixelFormat format, bool upFlow = false);
-	Bitmap(int width, int height, int depth, PixelFormat format, bool upFlow = false);
+	RawBitmap(const SizeI& size, PixelFormat format, bool upFlow = false);
+	RawBitmap(int width, int height, int depth, PixelFormat format, bool upFlow = false);
 
-	Bitmap(Stream* stream, bool flipV = false);
+	RawBitmap(Stream* stream, bool flipV = false);
 	
 	/**
-		@brief		指定したファイルを読み込み、Bitmap を作成します。
+		@brief		指定したファイルを読み込み、RawBitmap を作成します。
 		@param[in]	filePath	: ファイルパス
 	*/
-	Bitmap(const Char* filePath);
+	RawBitmap(const Char* filePath);
 
 	/**
-		@brief		指定した ByteBuffer を参照する Bitmap を作成します。
+		@brief		指定した ByteBuffer を参照する RawBitmap を作成します。
 	*/
-	Bitmap(ByteBuffer buffer, const SizeI& size, PixelFormat format);
-	Bitmap(const ByteBuffer& buffer, const SizeI& size, PixelFormat format, bool upFlow);
+	RawBitmap(ByteBuffer buffer, const SizeI& size, PixelFormat format);
+	RawBitmap(const ByteBuffer& buffer, const SizeI& size, PixelFormat format, bool upFlow);
 
 	/**
 		@brief		
 	*/
-	Bitmap(void* buffer, const SizeI& size, PixelFormat format, bool upFlow = false);	// 参照モード
-	Bitmap(void* buffer, int width, int height, int depth, PixelFormat format);	// 参照モード
-	//Bitmap(void* buffer, const Size& size, PixelFormat format, int pitch, bool upFlow);	// 参照モード
+	RawBitmap(void* buffer, const SizeI& size, PixelFormat format, bool upFlow = false);	// 参照モード
+	RawBitmap(void* buffer, int width, int height, int depth, PixelFormat format);	// 参照モード
+	//RawBitmap(void* buffer, const Size& size, PixelFormat format, int pitch, bool upFlow);	// 参照モード
 
 
 
-	Bitmap();
+	RawBitmap();
 
-	virtual ~Bitmap();
+	virtual ~RawBitmap();
 
 public:
 
@@ -86,8 +85,8 @@ public:
 		@brief		指定したビットマップからこのビットマップへブロック転送を行います。
 		(Painter へ移動するべき？)
 	*/
-	void bitBlt(const RectI& destRect, const Bitmap* srcBitmap, const RectI& srcRect, const Color32& mulColor, bool alphaBlend);
-	void bitBlt(int x, int y, const Bitmap* srcBitmap, const RectI& srcRect, const Color32& mulColor, bool alphaBlend);
+	void bitBlt(const RectI& destRect, const RawBitmap* srcBitmap, const RectI& srcRect, const Color32& mulColor, bool alphaBlend);
+	void bitBlt(int x, int y, const RawBitmap* srcBitmap, const RectI& srcRect, const Color32& mulColor, bool alphaBlend);
 
 	/**
 		@brief		指定したファイルにビットマップを保存します。
@@ -99,7 +98,7 @@ public:
 		@brief		このビットマップと、指定したビットマップを比較します。
 		@param[in]	bitmap		: 比較対象
 	*/
-	bool equals(const Bitmap* bitmap) const;
+	bool equals(const RawBitmap* bitmap) const;
 
 	/**
 		@brief		上下逆のイメージを反転します。上下逆でなければ何もしません。
@@ -154,19 +153,19 @@ private:
 
 	template<class TDestConverter, class TSrcConverter>
 	static void bitBltInternalTemplate(
-		Bitmap* dest, const RectI& destRect,
-		const Bitmap* src, const RectI& srcRect,
+		RawBitmap* dest, const RectI& destRect,
+		const RawBitmap* src, const RectI& srcRect,
 		ClColor mulColorRGBA, bool alphaBlend) throw();
 
 	template<class TDestConverter>
 	static void bitBltInternalTemplateHelper(
-		Bitmap* dest, const RectI& destRect,
-		const Bitmap* src, const RectI& srcRect,
+		RawBitmap* dest, const RectI& destRect,
+		const RawBitmap* src, const RectI& srcRect,
 		ClColor mulColorRGBA, bool alphaBlend);
 
 	static void bitBltInternal(
-		Bitmap* dest, const RectI& destRect,
-		const Bitmap* src, const RectI& srcRect,
+		RawBitmap* dest, const RectI& destRect,
+		const RawBitmap* src, const RectI& srcRect,
 		ClColor mulColorRGBA, bool alphaBlend);
 
 
@@ -294,11 +293,11 @@ private:
 	class DestBuffer
 	{
 	public:
-		/// bitmap	: 転送先 Bitmap
-		/// rect	: 転送先領域 (Bitmap のサイズに収まるようにクリッピングされていること)
-		DestBuffer(Bitmap* bitmap, const RectI& rect)
+		/// bitmap	: 転送先 RawBitmap
+		/// rect	: 転送先領域 (RawBitmap のサイズに収まるようにクリッピングされていること)
+		DestBuffer(RawBitmap* bitmap, const RectI& rect)
 			: m_data(bitmap->m_bitmapData.getData())
-			, m_widthByteCount((bitmap->m_format == PixelFormat::A1) ? bitmap->m_pitch : (bitmap->m_size.width * Bitmap::getPixelFormatByteCount(bitmap->getPixelFormat())))
+			, m_widthByteCount((bitmap->m_format == PixelFormat::A1) ? bitmap->m_pitch : (bitmap->m_size.width * RawBitmap::getPixelFormatByteCount(bitmap->getPixelFormat())))
 			, m_rc(rect)
 			, m_bottomLine(rect.getBottom() - 1)	// 転送範囲の最後の行 (0スタート)
 			, m_curLine(NULL)
@@ -337,11 +336,11 @@ private:
 	class SrcBuffer
 	{
 	public:
-		/// bitmap	: 転送元 Bitmap
-		/// rect	: 転送元領域 (Bitmap のサイズに収まるようにクリッピングされていること)
-		SrcBuffer(const Bitmap* bitmap, const RectI& rect)
+		/// bitmap	: 転送元 RawBitmap
+		/// rect	: 転送元領域 (RawBitmap のサイズに収まるようにクリッピングされていること)
+		SrcBuffer(const RawBitmap* bitmap, const RectI& rect)
 			: m_data(bitmap->m_bitmapData.getConstData())
-			, m_widthByteCount((bitmap->m_format == PixelFormat::A1) ? bitmap->m_pitch : bitmap->m_size.width * Bitmap::getPixelFormatByteCount(bitmap->getPixelFormat()))
+			, m_widthByteCount((bitmap->m_format == PixelFormat::A1) ? bitmap->m_pitch : bitmap->m_size.width * RawBitmap::getPixelFormatByteCount(bitmap->getPixelFormat()))
 			, m_rc(rect)
 			, m_bottomLine(rect.getBottom() - 1)	// 転送範囲の最後の行 (0スタート)
 			, m_curLine(NULL)

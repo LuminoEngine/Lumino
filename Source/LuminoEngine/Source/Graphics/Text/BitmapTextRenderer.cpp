@@ -37,7 +37,7 @@ void BitmapTextRenderer::initialize(detail::GraphicsManager* manager)
 }
 
 //------------------------------------------------------------------------------
-void BitmapTextRenderer::drawGlyphRun(Bitmap* target, GlyphRun* glyphRun, const Color32& fillColor, const Color32& strokeColor, int strokeThickness)
+void BitmapTextRenderer::drawGlyphRun(RawBitmap* target, GlyphRun* glyphRun, const Color32& fillColor, const Color32& strokeColor, int strokeThickness)
 {
 	if (LN_REQUIRE(target != nullptr)) return;
 	if (LN_REQUIRE(glyphRun != nullptr)) return;

@@ -231,7 +231,7 @@ void VectorTextRenderer::onSetState(const RenderStage* state)
 //==============================================================================
 
 //------------------------------------------------------------------------------
-TextRenderer::TextRenderer(Bitmap* targetBitmap, RawFont* font)
+TextRenderer::TextRenderer(RawBitmap* targetBitmap, RawFont* font)
 	: m_targetBitmap(targetBitmap)
 	, m_font(font)
 	, m_foreColor(Graphics::Color::Black)
