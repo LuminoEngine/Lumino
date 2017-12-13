@@ -64,7 +64,7 @@ DX9Texture::DX9Texture(DX9GraphicsDevice* device, const SizeI& size, TextureForm
 	UINT h = m_size.height;
 	UINT miplevels = (mipmap) ? 0 : 1;
 	D3DFORMAT dx_fmt = DX9Module::TranslateLNFormatToDxFormat(format);
-	DWORD dxUsage = (mipmap) ? D3DUSAGE_AUTOGENMIPMAP : 0;
+	DWORD dxUsage = D3DUSAGE_DYNAMIC | ((mipmap) ? D3DUSAGE_AUTOGENMIPMAP : 0);
 
 	LN_COMCALL(DX9Module::D3DXCheckTextureRequirements(
 		d3d9Device,
@@ -72,7 +72,7 @@ DX9Texture::DX9Texture(DX9GraphicsDevice* device, const SizeI& size, TextureForm
 		&miplevels,			// 0 の場合は最大数が格納される
 		dxUsage,
 		&dx_fmt,
-		D3DPOOL_MANAGED));
+		D3DPOOL_DEFAULT));
 
 	m_realSize.set(w, h);
 
@@ -81,7 +81,7 @@ DX9Texture::DX9Texture(DX9GraphicsDevice* device, const SizeI& size, TextureForm
 	LN_COMCALL(d3d9Device->CreateTexture(
 		w, h, miplevels,
 		dxUsage,
-		dx_fmt, D3DPOOL_MANAGED, &m_dxTexture, NULL));
+		dx_fmt, D3DPOOL_DEFAULT, &m_dxTexture, NULL));
 
 	// テクスチャのサーフェイスを取得しておく
 	LN_COMCALL(m_dxTexture->GetSurfaceLevel(0, &m_dxSurface));

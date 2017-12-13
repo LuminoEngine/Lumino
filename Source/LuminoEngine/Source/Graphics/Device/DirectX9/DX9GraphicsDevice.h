@@ -5,6 +5,8 @@
 #include "../GraphicsDeviceBase.h"
 #include "DX9Renderer.h"
 
+#define LN_DX9
+
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
@@ -90,9 +92,14 @@ private:
 	DX9Renderer*				m_renderer;
 	DX9SwapChain*				m_defaultSwapChain;
 	volatile DeviceState		m_deviceState;
-	
-	IDirect3D9*		            m_direct3D;
+
+#ifdef LN_DX9
+	IDirect3D9*				m_direct3D;
 	IDirect3DDevice9*	        m_dxDevice;
+#else
+	IDirect3D9Ex*				m_direct3D;
+	IDirect3DDevice9Ex*	        m_dxDevice;
+#endif
 	D3DPRESENT_PARAMETERS       m_presentParameters;
 	ID3DXEffectPool*			m_d3dxEffectPool;
 

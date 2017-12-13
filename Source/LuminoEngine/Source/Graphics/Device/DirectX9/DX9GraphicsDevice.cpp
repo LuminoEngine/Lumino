@@ -64,7 +64,11 @@ void DX9GraphicsDevice::initialize(const ConfigData& configData)
 	DX9Module::initialize(); 
 
 	// Direct3D 作成
+#ifdef LN_DX9
 	m_direct3D = DX9Module::Direct3DCreate9(D3D_SDK_VERSION);
+#else
+	 LN_COMCALL(Direct3DCreate9Ex(D3D_SDK_VERSION, &m_direct3D));
+#endif
 	if (LN_ENSURE(m_direct3D != NULL)) return;
 
 	// デバイスの性能チェック
@@ -94,7 +98,11 @@ void DX9GraphicsDevice::initialize(const ConfigData& configData)
 	}
 	else
 	{
+#ifdef LN_DX9
 		m_dxDevice = configData.D3D9Device;
+#else
+		LN_NOTIMPLEMENTED();
+#endif
 		m_dxDevice->AddRef();
 
 		LN_LOG_INFO << "user IDirect3DDevice9 specified.";
