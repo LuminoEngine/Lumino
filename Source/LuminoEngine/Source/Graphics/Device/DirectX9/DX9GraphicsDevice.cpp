@@ -122,7 +122,11 @@ void DX9GraphicsDevice::initialize(const ConfigData& configData)
 	for (int i = 0; i < m_dxCaps.MaxSimultaneousTextures; ++i)
 	{
 		IDirect3DTexture9* tex = NULL;
+#ifdef LN_DX9
 		LN_COMCALL(m_dxDevice->CreateTexture(2, 2, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &tex, NULL));
+#else
+		LN_COMCALL(m_dxDevice->CreateTexture(2, 2, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &tex, NULL));
+#endif
 		m_dummyTextures.add(tex);
 	}
 
@@ -404,14 +408,34 @@ void DX9GraphicsDevice::resetDevice(bool fullscreen)
 	{
 		// D3Dデバイスの生成
 		DWORD fpu_precision = (m_enableFPUPreserve) ? D3DCREATE_FPU_PRESERVE : 0;
+
+#ifdef LN_DX9
 		LN_COMCALL(
 			m_direct3D->CreateDevice(
+				D3DADAPTER_DEFAULT,
+				m_deviceType,
+				m_presentParameters.hDeviceWindow,
+				fpu_precision | D3DCREATE_HARDWARE_VERTEXPROCESSING/* | D3DCREATE_MULTITHREADED*/,//D3DCREATE_SOFTWARE_VERTEXPROCESSING, | D3DCREATE_MULTITHREADED
+				&m_presentParameters,
+				&m_dxDevice));
+#else
+		D3DDISPLAYMODEEX dm;
+		dm.Format = D3DFMT_X8R8G8B8;
+		dm.Height = m_presentParameters.BackBufferHeight;
+		dm.Width = m_presentParameters.BackBufferWidth;
+		dm.ScanLineOrdering = D3DSCANLINEORDERING_PROGRESSIVE;
+		dm.RefreshRate = m_presentParameters.FullScreen_RefreshRateInHz;
+		dm.Size = sizeof(dm);
+
+		LN_COMCALL(
+			m_direct3D->CreateDeviceEx(
 			D3DADAPTER_DEFAULT,
 			m_deviceType,
 			m_presentParameters.hDeviceWindow,
 			fpu_precision | D3DCREATE_HARDWARE_VERTEXPROCESSING | D3DCREATE_MULTITHREADED,//D3DCREATE_SOFTWARE_VERTEXPROCESSING, | D3DCREATE_MULTITHREADED
-			&m_presentParameters,
-			&m_dxDevice));
+			&m_presentParameters, NULL,
+				&m_dxDevice));
+#endif
 	}
 	// 既に作成されている場合はリセット
 	else

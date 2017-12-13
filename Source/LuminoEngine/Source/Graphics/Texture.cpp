@@ -286,15 +286,15 @@ Driver::ITexture* Texture2D::resolveDeviceObject()
 		if (isRHIDirect())
 		{
 			printf("m_rhiObject: %p\n", m_rhiObject);
-			//m_rhiObject->unlock();
+			m_rhiObject->unlock();
 
-			Driver::ITexture* deviceTexture = m_rhiObject;
-			LN_ENQUEUE_RENDER_COMMAND_1(
-				Texture3D_ApplyModifies2, m_manager,
-				Ref<Driver::ITexture>, deviceTexture,
-				{
-					deviceTexture->unlock();
-				});
+			//Driver::ITexture* deviceTexture = m_rhiObject;
+			//LN_ENQUEUE_RENDER_COMMAND_1(
+			//	Texture3D_ApplyModifies2, m_manager,
+			//	Ref<Driver::ITexture>, deviceTexture,
+			//	{
+			//		deviceTexture->unlock();
+			//	});
 		}
 		else
 		{
@@ -346,7 +346,7 @@ Driver::ITexture* Texture2D::resolveDeviceObject()
 					SizeI, bmpSize,
 					Ref<Driver::ITexture>, deviceTexture,
 					{
-						//deviceTexture->setSubData(PointI::Zero, bmpRawData.getData(), bmpRawData.getSize(), bmpSize);
+						deviceTexture->setSubData(PointI::Zero, bmpRawData.getData(), bmpRawData.getSize(), bmpSize);
 					});
 			}
 

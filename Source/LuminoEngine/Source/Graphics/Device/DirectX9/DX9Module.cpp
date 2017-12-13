@@ -23,6 +23,7 @@ DX9Module::MD_D3DXComputeNormals					DX9Module::D3DXComputeNormals = NULL;
 DX9Module::MD_D3DXCreateEffectPool					DX9Module::D3DXCreateEffectPool = NULL;
 DX9Module::MD_D3DXGetShaderConstantTable			DX9Module::D3DXGetShaderConstantTable = NULL;
 DX9Module::MD_D3DXPreprocessShader					DX9Module::D3DXPreprocessShader = NULL;
+DX9Module::MD_D3DXFilterTexture						DX9Module::D3DXFilterTexture = NULL;
 
 DllLoader	DX9Module::m_D3D9Module;
 DllLoader	DX9Module::m_D3Dx9Module;
@@ -63,6 +64,7 @@ void DX9Module::initialize()
 		D3DXCreateEffectPool = reinterpret_cast< MD_D3DXCreateEffectPool >(m_D3Dx9Module.getProcAddress("D3DXCreateEffectPool"));
 		D3DXGetShaderConstantTable = reinterpret_cast< MD_D3DXGetShaderConstantTable >(m_D3Dx9Module.getProcAddress("D3DXGetShaderConstantTable"));
 		D3DXPreprocessShader = reinterpret_cast< MD_D3DXPreprocessShader >(m_D3Dx9Module.getProcAddress("D3DXPreprocessShader"));
+		D3DXFilterTexture = reinterpret_cast< MD_D3DXFilterTexture >(m_D3Dx9Module.getProcAddress("D3DXFilterTexture"));
 	}
 }
 

@@ -568,7 +568,7 @@ _lngs_PSOutput _lngs_PS_ClusteredForward_Geometry(_lngs_PSInput input)
 	//o.color1 = float4(o.color0.a, 0, 0, 1);
 	o.color0.a = surface.Albedo.a;
 
-	//o.color0 = float4(surface.Normal.xyz, 1);
+	o.color0 = tex2D(ln_GlobalLightInfoSampler, float2(0, 0));
 	return o;
 }
 

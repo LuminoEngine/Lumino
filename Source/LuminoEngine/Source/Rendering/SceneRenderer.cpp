@@ -89,13 +89,6 @@ void SceneRenderer::render(
 	m_renderingDefaultDepthBuffer = defaultDepthBuffer;
 
 	detail::CoreGraphicsRenderFeature* coreRenderer = m_manager->getRenderer();
-	if (clearColorBuffer)
-	{
-		coreRenderer->setRenderTarget(0, defaultRenderTarget);
-		coreRenderer->setDepthBuffer(defaultDepthBuffer);
-		coreRenderer->clear(ClearFlags::All, clearColor);
-	}
-	coreRenderer->begin();
 
 
 
@@ -244,6 +237,13 @@ void SceneRenderer::render(
 						onShaderPassChainging(pass);
 						stateManager->setShaderPass(pass);
 
+						if (clearColorBuffer)
+						{
+							coreRenderer->setRenderTarget(0, defaultRenderTarget);
+							coreRenderer->setDepthBuffer(defaultDepthBuffer);
+							coreRenderer->clear(ClearFlags::All, clearColor);
+						}
+						coreRenderer->begin();
 						if (diag != nullptr) element->reportDiag(diag);
 						//printf("%s\n", typeid(*element).name());
 						//;
@@ -256,6 +256,7 @@ void SceneRenderer::render(
 				// 描画実行
 				if (visible)
 				{
+					coreRenderer->begin();
 					if (diag != nullptr) element->reportDiag(diag);
 					element->drawSubset(drawArgs);
 				}

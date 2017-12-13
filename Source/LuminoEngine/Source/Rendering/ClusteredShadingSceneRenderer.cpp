@@ -134,7 +134,8 @@ void LightClusters::endMakeClusters()
 			m_globalLightInofs.add(GlobalLightInfo{});
 		}
 
-		m_globalLightInfoTexture->setMappedData(&m_globalLightInofs[0]);
+		//m_globalLightInfoTexture->setMappedData(&m_globalLightInofs[0]);
+		//m_globalLightInfoTexture->resolveDeviceObject();
 	}
 
 	// Local lights
@@ -350,7 +351,7 @@ void ClusteredShadingGeometryRenderingPass::initialize()
 
 
 
-	m_unLightingShader = Shader::create(_T("C:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/UnLighting.fx"), ShaderCodeType::RawHLSL);
+	m_unLightingShader = Shader::create(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/UnLighting.fx"), ShaderCodeType::RawHLSL);
 	m_unLightingShaderTechnique = m_unLightingShader->getTechniques()[0];
 }
 

@@ -88,6 +88,8 @@ private:
 	SizeI					m_size;
 	SizeI					m_realSize;
 	Ref<RawBitmap>			m_lockedBitmap;
+
+	LPDIRECT3DTEXTURE9 staging;
 };
 
 class DX9Texture3D

@@ -96,7 +96,7 @@ void DX9IndexBuffer::onResetDevice()
 	{
 		D3DPOOL pool = D3DPOOL_MANAGED;
 		DWORD dxUsage = D3DUSAGE_WRITEONLY;
-		if (m_usage == ResourceUsage::Dynamic)
+		//if (m_usage == ResourceUsage::Dynamic)
 		{
 			pool = D3DPOOL_DEFAULT;
 			dxUsage |= D3DUSAGE_DYNAMIC;

@@ -64,7 +64,7 @@ DX9Texture::DX9Texture(DX9GraphicsDevice* device, const SizeI& size, TextureForm
 	UINT h = m_size.height;
 	UINT miplevels = (mipmap) ? 0 : 1;
 	D3DFORMAT dx_fmt = DX9Module::TranslateLNFormatToDxFormat(format);
-	DWORD dxUsage = D3DUSAGE_DYNAMIC | ((mipmap) ? D3DUSAGE_AUTOGENMIPMAP : 0);
+	DWORD dxUsage = /*D3DUSAGE_DYNAMIC | */((mipmap) ? D3DUSAGE_AUTOGENMIPMAP : 0);
 
 	LN_COMCALL(DX9Module::D3DXCheckTextureRequirements(
 		d3d9Device,
@@ -83,13 +83,29 @@ DX9Texture::DX9Texture(DX9GraphicsDevice* device, const SizeI& size, TextureForm
 		dxUsage,
 		dx_fmt, D3DPOOL_DEFAULT, &m_dxTexture, NULL));
 
-	// テクスチャのサーフェイスを取得しておく
-	LN_COMCALL(m_dxTexture->GetSurfaceLevel(0, &m_dxSurface));
 
-	// サーフェイスフォーマットの取得
-	D3DSURFACE_DESC desc;
-	m_dxSurface->GetDesc(&desc);
-	m_format = DX9Module::TranslateFormatDxToLN(desc.Format);
+	m_format = format;
+	//if (format == TextureFormat::R32G32B32A32_Float)
+	//{
+	//	auto* buf = lock();
+	//	Vector4 v(255,0, 255,255);
+	//	Vector4* d = (Vector4*)buf->getBitmapBuffer()->getData();
+	//	for (int i = 0; i < size.width * size.height; i++)
+	//	{
+	//		d[i] = v;
+	//	}
+
+
+	//	unlock();
+	//}
+	//// テクスチャのサーフェイスを取得しておく
+	//LN_COMCALL(m_dxTexture->GetSurfaceLevel(0, &m_dxSurface));
+
+	//// サーフェイスフォーマットの取得
+	//D3DSURFACE_DESC desc;
+	//m_dxSurface->GetDesc(&desc);
+	//m_format = DX9Module::TranslateFormatDxToLN(desc.Format);
+
 }
 
 //------------------------------------------------------------------------------
@@ -106,7 +122,7 @@ DX9Texture::DX9Texture(DX9GraphicsDevice* device, const void* data, uint32_t siz
 	D3DFORMAT dxFormat = D3DFMT_A8R8G8B8;// (format == TextureFormat::Unknown) ? imageInfo.Format :　DX9Module::TranslateLNFormatToDxFormat(format);
 
 	UINT miplevels = (mipmap) ? 0 : 1;
-	DWORD dxUsage = (mipmap) ? D3DUSAGE_AUTOGENMIPMAP : 0;
+	DWORD dxUsage = D3DUSAGE_DYNAMIC | ((mipmap) ? D3DUSAGE_AUTOGENMIPMAP : 0);
 
 	D3DCOLOR ck = D3DCOLOR_ARGB(colorKey.a, colorKey.r, colorKey.g, colorKey.b);
 	LN_COMCALL(DX9Module::D3DXCreateTextureFromFileInMemoryEx(
@@ -124,7 +140,7 @@ DX9Texture::DX9Texture(DX9GraphicsDevice* device, const void* data, uint32_t siz
 		miplevels,
 		dxUsage,
 		dxFormat,
-		D3DPOOL_MANAGED,
+		D3DPOOL_DEFAULT,
 		D3DX_FILTER_NONE,
 		D3DX_DEFAULT,
 		ck,
@@ -142,7 +158,7 @@ DX9Texture::DX9Texture(DX9GraphicsDevice* device, const void* data, uint32_t siz
 	LN_COMCALL(DX9Module::D3DXCheckTextureRequirements(
 		m_graphicsDevice->getIDirect3DDevice9(),
 		&imageInfo.Width, &imageInfo.Height,
-		&miplevels, dxUsage, &afm, D3DPOOL_MANAGED));
+		&miplevels, dxUsage, &afm, D3DPOOL_DEFAULT));
 	m_realSize.set(imageInfo.Width, imageInfo.Height);
 
 	// テクスチャのサーフェイスを取得する
@@ -273,6 +289,54 @@ void DX9Texture::getData(const RectI& rect, void* outData)
 //------------------------------------------------------------------------------
 RawBitmap* DX9Texture::lock()
 {
+#if 1
+
+	D3DSURFACE_DESC desc;
+	//LN_COMCALL(m_dxSurface->GetDesc(&desc));
+	LN_COMCALL(m_dxTexture->GetLevelDesc(0, &desc));
+
+	IDirect3DDevice9* d3d9Device = m_graphicsDevice->getIDirect3DDevice9();
+	LN_COMCALL(d3d9Device->CreateTexture(
+		desc.Width, desc.Height, 1,
+		0,
+		desc.Format,
+		D3DPOOL_SYSTEMMEM,
+		&staging, NULL));
+
+
+
+	DWORD flags = D3DLOCK_DISCARD;//D3DLOCK_READONLY;
+
+					// lock
+	RECT lockRect = { 0, 0, m_realSize.width, m_realSize.height };
+	D3DLOCKED_RECT lockedRect;
+	LN_COMCALL(staging->LockRect(0, &lockedRect, &lockRect, flags));	// TODO: 読むのか書くのか、ロックの種類を指定したい
+
+																			// lock したバッファを参照する RawBitmap を作成して返す
+	PixelFormat pixelFormat = Utils::translatePixelFormat(m_format);
+	size_t size = RawBitmap::getPixelFormatByteCount(pixelFormat, m_realSize, 1);
+	//m_lockedBuffer =  ByteBuffer(lockedRect.pBits, size, true);
+	m_lockedBitmap.attach(LN_NEW RawBitmap(lockedRect.pBits, m_realSize, pixelFormat));
+
+	// TODO: ↑文字列書き込み等でわりと頻繁にロックされる場合がある。できれば new は 1 度にしたいが…
+
+	//memset(lockedRect.pBits, 0xff, size);
+
+	if (m_format == TextureFormat::R32G32B32A32_Float)
+	{
+		//auto* buf = lock();
+		Vector4 v(255, 0, 255, 255);
+		Vector4* d = (Vector4*)m_lockedBitmap->getBitmapBuffer()->getData();
+		for (int i = 0; i < desc.Width * desc.Height; i++)
+		{
+			d[i] = v;
+		}
+
+
+		//unlock();
+	}
+	return m_lockedBitmap;
+#else
 	DWORD flags = 0;//D3DLOCK_DISCARD;//D3DLOCK_READONLY;
 
 	// lock
@@ -289,14 +353,24 @@ RawBitmap* DX9Texture::lock()
 	// TODO: ↑文字列書き込み等でわりと頻繁にロックされる場合がある。できれば new は 1 度にしたいが…
 
 	return m_lockedBitmap;
+#endif
 }
-
+//#pragma comment(lib, "d3dx9d.lib")
 //------------------------------------------------------------------------------
 void DX9Texture::unlock()
 {
-	m_lockedBitmap.safeRelease();
+#if 1
+	IDirect3DDevice9* d3d9Device = m_graphicsDevice->getIDirect3DDevice9();
+	LN_COMCALL(DX9Module::D3DXFilterTexture(staging, NULL, staging->GetLevelCount() - 1, 0));
+	LN_COMCALL(staging->UnlockRect(0));
+	LN_COMCALL(d3d9Device->UpdateTexture(staging, m_dxTexture));
+
+	staging->Release();
+#else
 	//m_lockedBuffer.Release();
 	LN_COMCALL(m_dxTexture->UnlockRect(0));
+#endif
+	m_lockedBitmap.safeRelease();
 }
 
 //==============================================================================
@@ -337,9 +411,9 @@ void DX9Texture3D::initialize(int width, int height, int depth, TextureFormat fo
 		d3d9Device,
 		&w, &h, &d,
 		&miplevels,
-		0,
+		D3DUSAGE_DYNAMIC,
 		&dxFormat,
-		D3DPOOL_MANAGED));
+		D3DPOOL_DEFAULT));
 	m_realSize.set(w, h);
 	m_depth = d;
 
@@ -347,9 +421,9 @@ void DX9Texture3D::initialize(int width, int height, int depth, TextureFormat fo
 	LN_COMCALL(d3d9Device->CreateVolumeTexture(
 		w, h, d,
 		miplevels,
-		0,
+		D3DUSAGE_DYNAMIC,
 		dxFormat,
-		D3DPOOL_MANAGED,
+		D3DPOOL_DEFAULT,
 		&m_dxTexture,
 		NULL));
 
@@ -384,7 +458,7 @@ void DX9Texture3D::setSubData3D(const Box32& box, const void* data, size_t dataB
 
 	// TODO: level
 	D3DLOCKED_BOX lockedVolume;
-	LN_COMCALL(m_dxTexture->LockBox(0, &lockedVolume, pD3DBox, 0));
+	LN_COMCALL(m_dxTexture->LockBox(0, &lockedVolume, pD3DBox, D3DLOCK_DISCARD));
 
 	memcpy(lockedVolume.pBits, data, dataBytes);
 

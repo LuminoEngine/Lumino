@@ -125,6 +125,13 @@ public:
 		LPD3DXBUFFER* ppErrorMsgs
 	);
 
+	typedef HRESULT( WINAPI
+		*MD_D3DXFilterTexture)(
+			LPDIRECT3DBASETEXTURE9    pBaseTexture,
+			CONST PALETTEENTRY*       pPalette,
+			UINT                      SrcLevel,
+			DWORD                     Filter);
+
 public:
 
 	/// 初期化
@@ -144,7 +151,8 @@ public:
 	static MD_D3DXCreateEffectPool					D3DXCreateEffectPool;
 	static MD_D3DXGetShaderConstantTable			D3DXGetShaderConstantTable;
 	static MD_D3DXPreprocessShader					D3DXPreprocessShader;
-
+	static MD_D3DXFilterTexture						D3DXFilterTexture;
+	
 public:
 
 	/// D3DFORMAT の文字列表現の取得

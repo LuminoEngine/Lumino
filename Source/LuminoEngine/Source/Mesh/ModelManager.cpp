@@ -214,26 +214,26 @@ void ModelManager::initialize(const ConfigData& configData)
 	m_physicsManager = configData.physicsManager;
 	m_graphicsManager = configData.graphicsManager;
 
-	MemoryStream data1(toon01Data, toon01DataLen);
-	m_mmdDefaultToonTexture[0] = newObject<Texture2D>(&data1, TextureFormat::R8G8B8A8, false);
-	MemoryStream data2(toon02Data, toon02DataLen);
-	m_mmdDefaultToonTexture[1] = newObject<Texture2D>(&data2, TextureFormat::R8G8B8A8, false);
-	MemoryStream data3(toon03Data, toon03DataLen);
-	m_mmdDefaultToonTexture[2] = newObject<Texture2D>(&data3, TextureFormat::R8G8B8A8, false);
-	MemoryStream data4(toon04Data, toon04DataLen);
-	m_mmdDefaultToonTexture[3] = newObject<Texture2D>(&data4, TextureFormat::R8G8B8A8, false);
-	MemoryStream data5(toon05Data, toon05DataLen);
-	m_mmdDefaultToonTexture[4] = newObject<Texture2D>(&data5, TextureFormat::R8G8B8A8, false);
-	MemoryStream data6(toon06Data, toon06DataLen);
-	m_mmdDefaultToonTexture[5] = newObject<Texture2D>(&data6, TextureFormat::R8G8B8A8, false);
-	MemoryStream data7(toon07Data, toon07DataLen);
-	m_mmdDefaultToonTexture[6] = newObject<Texture2D>(&data7, TextureFormat::R8G8B8A8, false);
-	MemoryStream data8(toon08Data, toon08DataLen);
-	m_mmdDefaultToonTexture[7] = newObject<Texture2D>(&data8, TextureFormat::R8G8B8A8, false);
-	MemoryStream data9(toon09Data, toon09DataLen);
-	m_mmdDefaultToonTexture[8] = newObject<Texture2D>(&data9, TextureFormat::R8G8B8A8, false);
-	MemoryStream data10(toon10Data, toon10DataLen);
-	m_mmdDefaultToonTexture[9] = newObject<Texture2D>(&data10, TextureFormat::R8G8B8A8, false);
+	//MemoryStream data1(toon01Data, toon01DataLen);
+	//m_mmdDefaultToonTexture[0] = newObject<Texture2D>(&data1, TextureFormat::R8G8B8A8, false);
+	//MemoryStream data2(toon02Data, toon02DataLen);
+	//m_mmdDefaultToonTexture[1] = newObject<Texture2D>(&data2, TextureFormat::R8G8B8A8, false);
+	//MemoryStream data3(toon03Data, toon03DataLen);
+	//m_mmdDefaultToonTexture[2] = newObject<Texture2D>(&data3, TextureFormat::R8G8B8A8, false);
+	//MemoryStream data4(toon04Data, toon04DataLen);
+	//m_mmdDefaultToonTexture[3] = newObject<Texture2D>(&data4, TextureFormat::R8G8B8A8, false);
+	//MemoryStream data5(toon05Data, toon05DataLen);
+	//m_mmdDefaultToonTexture[4] = newObject<Texture2D>(&data5, TextureFormat::R8G8B8A8, false);
+	//MemoryStream data6(toon06Data, toon06DataLen);
+	//m_mmdDefaultToonTexture[5] = newObject<Texture2D>(&data6, TextureFormat::R8G8B8A8, false);
+	//MemoryStream data7(toon07Data, toon07DataLen);
+	//m_mmdDefaultToonTexture[6] = newObject<Texture2D>(&data7, TextureFormat::R8G8B8A8, false);
+	//MemoryStream data8(toon08Data, toon08DataLen);
+	//m_mmdDefaultToonTexture[7] = newObject<Texture2D>(&data8, TextureFormat::R8G8B8A8, false);
+	//MemoryStream data9(toon09Data, toon09DataLen);
+	//m_mmdDefaultToonTexture[8] = newObject<Texture2D>(&data9, TextureFormat::R8G8B8A8, false);
+	//MemoryStream data10(toon10Data, toon10DataLen);
+	//m_mmdDefaultToonTexture[9] = newObject<Texture2D>(&data10, TextureFormat::R8G8B8A8, false);
 
 	m_defaultMaterial = newObject<CommonMaterial>();
 

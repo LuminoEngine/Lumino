@@ -81,8 +81,8 @@ void UIManager::initialize(const Settings& settings)
 #include "Resource/DefaultSkin.png.h"
 		};
 		MemoryStream defaultSkinStream(defaultSkin_data, LN_ARRAY_SIZE_OF(defaultSkin_data));
-		m_defaultSkinTexture = Ref<Texture2D>::makeRef();
-		m_defaultSkinTexture = newObject<Texture2D>(&defaultSkinStream, TextureFormat::R8G8B8A8, false);
+		//m_defaultSkinTexture = Ref<Texture2D>::makeRef();
+		//m_defaultSkinTexture = newObject<Texture2D>(&defaultSkinStream, TextureFormat::R8G8B8A8, false);
 	}
 	else
 	{

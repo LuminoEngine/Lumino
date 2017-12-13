@@ -57,6 +57,7 @@ void UIControlsGallery()
 
 	EngineSettings::addAssetsDirectory(LN_LOCALFILE("../../../../Samples/Assets"));
 	//EngineSettings::setGraphicsAPI(GraphicsAPI::OpenGL);
+	EngineSettings::setGraphicsRenderingType(GraphicsRenderingType::Immediate);
 	Engine::initialize();
 
 
