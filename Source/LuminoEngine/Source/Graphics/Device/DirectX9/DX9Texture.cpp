@@ -190,8 +190,8 @@ void DX9Texture::setSubData(const PointI& point, const void* data, size_t dataBy
 	const byte_t* src = (const byte_t*)data;
 	for (int row = 0; row < lineHeight; ++row)
 	{
-		//byte_t* dstline = dst + (lockedRect.Pitch * row);		// TODO format
-		byte_t* dstline = dst + (lockedRect.Pitch * (lineHeight - row - 1));		// TODO format
+		byte_t* dstline = dst + (lockedRect.Pitch * row);		// TODO format
+		//byte_t* dstline = dst + (lockedRect.Pitch * (lineHeight - row - 1));		// TODO format
 		const byte_t* srcline = src + (srcRowBytes * row);	// TODO format
 		memcpy(dstline, srcline, srcRowBytes);
 	}
@@ -261,8 +261,8 @@ void DX9Texture::getData(const RectI& rect, void* outData)
 	const byte_t* src = (const byte_t*)lockedRect.pBits;
 	for (int row = 0; row < rect.height; ++row)
 	{
-		//byte_t* dstline = dst + (lockedRect.Pitch * row);
-		byte_t* dstline = dst + (lockedRect.Pitch * (rect.height - row - 1));
+		byte_t* dstline = dst + (lockedRect.Pitch * row);
+		//byte_t* dstline = dst + (lockedRect.Pitch * (rect.height - row - 1));
 		const byte_t* srcline = src + (srcRowBytes * row);
 		memcpy(dstline, srcline, srcRowBytes);
 	}
