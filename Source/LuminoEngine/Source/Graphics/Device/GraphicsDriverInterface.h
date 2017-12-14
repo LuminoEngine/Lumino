@@ -359,7 +359,7 @@ public:
 	// (得られるデータは上下反転)
 	virtual void getData(const RectI& rect, void* outData) = 0;
 
-	/// ロック
+	/// ロック (バッファは上下反転)
 	virtual Bitmap* lock() = 0;
 
 	/// アンロック
