@@ -519,6 +519,86 @@ void DX9RenderTargetTexture::setSubData3D(const Box32& box, const void* data, si
 	LN_UNREACHABLE();
 }
 
+void DX9RenderTargetTexture::readData(void* outData)
+{
+	IDirect3DDevice9* dxDevice = m_graphicsDevice->getIDirect3DDevice9();
+	IDirect3DSurface9* dxSurface = nullptr;
+	IDirect3DSurface9* dxSystemSurface = nullptr;
+
+	if (FAILED(m_dxTexture->GetSurfaceLevel(0, &dxSurface)))
+	{
+		goto ERROR_EXIT;
+	}
+
+	D3DSURFACE_DESC desc;
+	if (FAILED(dxSurface->GetDesc(&desc)))
+	{
+		goto ERROR_EXIT;
+	}
+
+	if (FAILED(dxDevice->CreateOffscreenPlainSurface(
+		desc.Width, desc.Height, desc.Format,
+		D3DPOOL_SYSTEMMEM, &dxSystemSurface, nullptr)))
+	{
+		goto ERROR_EXIT;
+	}
+
+	if (FAILED(dxDevice->GetRenderTargetData(dxSurface, dxSystemSurface)))
+	{
+		goto ERROR_EXIT;
+	}
+
+	D3DLOCKED_RECT	lockedRect;
+	if (FAILED(dxSystemSurface->LockRect(&lockedRect, nullptr, D3DLOCK_READONLY)))
+	{
+		goto ERROR_EXIT;
+	}
+
+	const byte_t* src = (const byte_t*)lockedRect.pBits;
+	byte_t* dst = (byte_t*)outData;
+	int rowSize = lockedRect.Pitch;
+
+	switch (desc.Format)
+	{
+	default:
+		for (UINT y = 0; y < desc.Height; y++)
+		{
+			byte_t* dstline = dst + (lockedRect.Pitch * y);
+			const byte_t* srcline = src + (lockedRect.Pitch * y);
+			memcpy(dstline, srcline, lockedRect.Pitch);
+		}
+		break;
+
+	case D3DFMT_X8R8G8B8:
+	case D3DFMT_A8R8G8B8:
+		for (UINT y = 0; y < desc.Height; y++)
+		{
+			const byte_t* s = (const byte_t*)src + (lockedRect.Pitch * y);
+			for (UINT x = 0; x < desc.Width; x++)
+			{
+				dst[2] = *s++;
+				dst[1] = *s++;
+				dst[0] = *s++;
+				dst[3] = *s++;
+				dst += 4;
+			}
+		}
+		break;
+	}
+
+	dxSystemSurface->UnlockRect();
+
+	if (dxSystemSurface) dxSystemSurface->Release();
+	if (dxSurface) dxSurface->Release();
+
+	return;
+
+ERROR_EXIT:
+	if (dxSystemSurface) dxSystemSurface->Release();
+	if (dxSurface) dxSurface->Release();
+	LN_LOG_ERROR << "DX9RenderTargetTexture::readData failed.";
+}
+
 //------------------------------------------------------------------------------
 RawBitmap* DX9RenderTargetTexture::lock()
 {

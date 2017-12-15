@@ -145,6 +145,7 @@ public:
 	virtual const SizeI& getRealSize() const { return m_realSize; }
 	virtual void setSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) { LN_UNREACHABLE(); }
 	virtual void setSubData3D(const Box32& box, const void* data, size_t dataBytes);
+	virtual void readData(void* outData) override;
 	virtual RawBitmap* lock();
 	virtual void unlock();
 

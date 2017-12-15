@@ -761,9 +761,14 @@ bool RenderTargetTexture::equalsRenderTarget(RenderTargetTexture* rt1, RenderTar
 //	}
 //}
 
-//------------------------------------------------------------------------------
-RawBitmap* RenderTargetTexture::lock()
+RawBitmap* RenderTargetTexture::readSurface()
 {
+	if (!m_readCache)
+	{
+		
+		m_readCache = Ref<RawBitmap>::makeRef(getSize(), Utils::translatePixelFormat(getFormat()));
+	}
+
 	if (m_manager->getRenderingType() == GraphicsRenderingType::Threaded)
 	{
 		struct ReadLockTextureCommand : public detail::RenderingCommand
@@ -776,9 +781,8 @@ RawBitmap* RenderTargetTexture::lock()
 			}
 			void execute()
 			{
-				m_targetTexture->m_primarySurface = m_targetTexture->m_rhiObject->lock();
-				// Texture::lock() はこの後コマンドリストが空になるまで待機する
-				// (実際のところ、このコマンドが最後のコマンドのはず)
+				m_targetTexture->m_rhiObject->readData(
+					m_targetTexture->m_readCache->getBitmapBuffer()->getData());
 			}
 		};
 
@@ -791,50 +795,90 @@ RawBitmap* RenderTargetTexture::lock()
 		m_manager->getRenderingThread()->pushRenderingCommand(cmdList);
 		cmdList->waitForIdle();
 		cmdList->clearCommands();
-
-		return m_primarySurface;
 	}
 	else
 	{
-		return m_rhiObject->lock();
+		m_rhiObject->readData(
+			m_readCache->getBitmapBuffer()->getData());
 	}
+
+	return m_readCache;
 }
 
-//------------------------------------------------------------------------------
-void RenderTargetTexture::unlock()
-{
-	if (m_manager->getRenderingType() == GraphicsRenderingType::Threaded)
-	{
-		struct ReadUnlockTextureCommand : public detail::RenderingCommand
-		{
-			RenderTargetTexture*	m_targetTexture;
-			void create(RenderTargetTexture* texture)
-			{
-				m_targetTexture = texture;
-				markGC(texture);
-			}
-			void execute()
-			{
-				m_targetTexture->m_rhiObject->unlock();
-				m_targetTexture->m_primarySurface = NULL;
-				// ReadLockTextureCommand と同じように、Texture::unlock() で待機している。
-				// (でも、ここまで待機することも無いかも？)
-			}
-		};
-
-		auto* cmdList = m_manager->getRenderer()->m_primaryCommandList;
-		cmdList->addCommand<ReadUnlockTextureCommand>(this);
-		//ReadUnlockTextureCommand::addCommand(cmdList, this);
-		//cmdList->ReadUnlockTexture(this);
-		m_manager->getRenderingThread()->pushRenderingCommand(cmdList);
-		cmdList->waitForIdle();
-		cmdList->clearCommands();
-	}
-	else
-	{
-		m_rhiObject->unlock();
-	}
-}
+////------------------------------------------------------------------------------
+//RawBitmap* RenderTargetTexture::lock()
+//{
+//	if (m_manager->getRenderingType() == GraphicsRenderingType::Threaded)
+//	{
+//		struct ReadLockTextureCommand : public detail::RenderingCommand
+//		{
+//			RenderTargetTexture*	m_targetTexture;
+//			void create(RenderTargetTexture* texture)
+//			{
+//				m_targetTexture = texture;
+//				markGC(texture);
+//			}
+//			void execute()
+//			{
+//				m_targetTexture->m_primarySurface = m_targetTexture->m_rhiObject->lock();
+//				// Texture::lock() はこの後コマンドリストが空になるまで待機する
+//				// (実際のところ、このコマンドが最後のコマンドのはず)
+//			}
+//		};
+//
+//		auto* cmdList = m_manager->getRenderer()->m_primaryCommandList;
+//		cmdList->addCommand<ReadLockTextureCommand>(this);
+//
+//		// ここでたまっているコマンドをすべて実行する。
+//		// ReadLockTexture コマンドが実行されると、m_lockedBitmap に
+//		// ロックしたビットマップがセットされる。
+//		m_manager->getRenderingThread()->pushRenderingCommand(cmdList);
+//		cmdList->waitForIdle();
+//		cmdList->clearCommands();
+//
+//		return m_primarySurface;
+//	}
+//	else
+//	{
+//		return m_rhiObject->lock();
+//	}
+//}
+//
+////------------------------------------------------------------------------------
+//void RenderTargetTexture::unlock()
+//{
+//	if (m_manager->getRenderingType() == GraphicsRenderingType::Threaded)
+//	{
+//		struct ReadUnlockTextureCommand : public detail::RenderingCommand
+//		{
+//			RenderTargetTexture*	m_targetTexture;
+//			void create(RenderTargetTexture* texture)
+//			{
+//				m_targetTexture = texture;
+//				markGC(texture);
+//			}
+//			void execute()
+//			{
+//				m_targetTexture->m_rhiObject->unlock();
+//				m_targetTexture->m_primarySurface = NULL;
+//				// ReadLockTextureCommand と同じように、Texture::unlock() で待機している。
+//				// (でも、ここまで待機することも無いかも？)
+//			}
+//		};
+//
+//		auto* cmdList = m_manager->getRenderer()->m_primaryCommandList;
+//		cmdList->addCommand<ReadUnlockTextureCommand>(this);
+//		//ReadUnlockTextureCommand::addCommand(cmdList, this);
+//		//cmdList->ReadUnlockTexture(this);
+//		m_manager->getRenderingThread()->pushRenderingCommand(cmdList);
+//		cmdList->waitForIdle();
+//		cmdList->clearCommands();
+//	}
+//	else
+//	{
+//		m_rhiObject->unlock();
+//	}
+//}
 
 
 //==============================================================================

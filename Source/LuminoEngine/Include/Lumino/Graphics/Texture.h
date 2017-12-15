@@ -213,9 +213,9 @@ LN_INTERNAL_ACCESS:
 	void createCore(detail::GraphicsManager* manager, bool isDefaultBackBuffer);
 	void attachDefaultBackBuffer(Driver::ITexture* deviceObj);
 	void detachDefaultBackBuffer();
-	//RawBitmap* readSurface();
-	RawBitmap* lock();
-	void unlock();
+	RawBitmap* readSurface();
+	//RawBitmap* lock();
+	//void unlock();
 	virtual void onChangeDevice(Driver::IGraphicsDevice* device);
 
 	virtual Driver::ITexture* resolveDeviceObject() override;
@@ -227,6 +227,7 @@ private:
 	int					m_mipLevels;
 	bool				m_isDefaultBackBuffer;
 	bool				m_usedCacheOnFrame;
+	Ref<RawBitmap>		m_readCache;
 
 	friend class detail::RenderTargetTextureCache;
 };
