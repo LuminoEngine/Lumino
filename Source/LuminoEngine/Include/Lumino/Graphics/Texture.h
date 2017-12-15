@@ -214,8 +214,6 @@ LN_INTERNAL_ACCESS:
 	void attachDefaultBackBuffer(Driver::ITexture* deviceObj);
 	void detachDefaultBackBuffer();
 	RawBitmap* readSurface();
-	//RawBitmap* lock();
-	//void unlock();
 	virtual void onChangeDevice(Driver::IGraphicsDevice* device);
 
 	virtual Driver::ITexture* resolveDeviceObject() override;

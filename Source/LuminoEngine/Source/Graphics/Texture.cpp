@@ -732,35 +732,6 @@ bool RenderTargetTexture::equalsRenderTarget(RenderTargetTexture* rt1, RenderTar
 	return true;
 }
 
-////------------------------------------------------------------------------------
-//RawBitmap* RenderTargetTexture::readSurface()
-//{
-//	if (m_manager->getRenderingType() == GraphicsRenderingType::Threaded)
-//	{
-//		RawBitmap* surface = nullptr;
-//		RawBitmap** surfacePtr = &surface;
-//		Mutex localMutex;
-//		Mutex* localMutexPtr = &localMutex;
-//
-//		LN_ENQUEUE_RENDER_COMMAND_3(
-//			readSurface, m_manager,
-//			Driver::ITexture*, m_deviceObj,
-//			RawBitmap**, surfacePtr,
-//			Mutex*, localMutexPtr,
-//			{
-//				MutexScopedLock lock(*localMutexPtr);
-//				*surfacePtr = m_deviceObj->lock();
-//			});
-//
-//		MutexScopedLock lock(*localMutexPtr);
-//		return *surfacePtr;
-//	}
-//	else
-//	{
-//		return m_deviceObj->lock();
-//	}
-//}
-
 RawBitmap* RenderTargetTexture::readSurface()
 {
 	if (!m_readCache)
@@ -804,82 +775,6 @@ RawBitmap* RenderTargetTexture::readSurface()
 
 	return m_readCache;
 }
-
-////------------------------------------------------------------------------------
-//RawBitmap* RenderTargetTexture::lock()
-//{
-//	if (m_manager->getRenderingType() == GraphicsRenderingType::Threaded)
-//	{
-//		struct ReadLockTextureCommand : public detail::RenderingCommand
-//		{
-//			RenderTargetTexture*	m_targetTexture;
-//			void create(RenderTargetTexture* texture)
-//			{
-//				m_targetTexture = texture;
-//				markGC(texture);
-//			}
-//			void execute()
-//			{
-//				m_targetTexture->m_primarySurface = m_targetTexture->m_rhiObject->lock();
-//				// Texture::lock() はこの後コマンドリストが空になるまで待機する
-//				// (実際のところ、このコマンドが最後のコマンドのはず)
-//			}
-//		};
-//
-//		auto* cmdList = m_manager->getRenderer()->m_primaryCommandList;
-//		cmdList->addCommand<ReadLockTextureCommand>(this);
-//
-//		// ここでたまっているコマンドをすべて実行する。
-//		// ReadLockTexture コマンドが実行されると、m_lockedBitmap に
-//		// ロックしたビットマップがセットされる。
-//		m_manager->getRenderingThread()->pushRenderingCommand(cmdList);
-//		cmdList->waitForIdle();
-//		cmdList->clearCommands();
-//
-//		return m_primarySurface;
-//	}
-//	else
-//	{
-//		return m_rhiObject->lock();
-//	}
-//}
-//
-////------------------------------------------------------------------------------
-//void RenderTargetTexture::unlock()
-//{
-//	if (m_manager->getRenderingType() == GraphicsRenderingType::Threaded)
-//	{
-//		struct ReadUnlockTextureCommand : public detail::RenderingCommand
-//		{
-//			RenderTargetTexture*	m_targetTexture;
-//			void create(RenderTargetTexture* texture)
-//			{
-//				m_targetTexture = texture;
-//				markGC(texture);
-//			}
-//			void execute()
-//			{
-//				m_targetTexture->m_rhiObject->unlock();
-//				m_targetTexture->m_primarySurface = NULL;
-//				// ReadLockTextureCommand と同じように、Texture::unlock() で待機している。
-//				// (でも、ここまで待機することも無いかも？)
-//			}
-//		};
-//
-//		auto* cmdList = m_manager->getRenderer()->m_primaryCommandList;
-//		cmdList->addCommand<ReadUnlockTextureCommand>(this);
-//		//ReadUnlockTextureCommand::addCommand(cmdList, this);
-//		//cmdList->ReadUnlockTexture(this);
-//		m_manager->getRenderingThread()->pushRenderingCommand(cmdList);
-//		cmdList->waitForIdle();
-//		cmdList->clearCommands();
-//	}
-//	else
-//	{
-//		m_rhiObject->unlock();
-//	}
-//}
-
 
 //==============================================================================
 // DepthBuffer
