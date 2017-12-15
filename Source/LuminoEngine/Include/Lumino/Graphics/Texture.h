@@ -181,7 +181,7 @@ private:
 	Bitmap*				m_rhiLockedBuffer;
 
 private:
-	bool isRHIDirect() const { return m_initialUpdate && m_rhiObject != nullptr; }
+	//bool isRHIDirect() const { return m_initialUpdate && m_rhiObject != nullptr; }
 //private:
 //	void initialize_createBuffers();
 };

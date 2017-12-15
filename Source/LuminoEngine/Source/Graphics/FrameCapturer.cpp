@@ -638,10 +638,14 @@ void FrameCapturerContext::RecordCommand(Driver::ITexture* target, State newStat
 
 		if (m_lastTick == 0 || deltaTick > 64)	// FPS15 くらいでプロットする場合はコレ (TODO: fps指定)
 		{
+#if 1
+			LN_NOTIMPLEMENTED();
+#else
 			// RenderTargetTexture の内容を読み取る
 			Bitmap* bmp = target->lock();	//TODO: Scoped
 			m_gifContext->addFrame(bmp, deltaTick, (double)curTick / 1000000);
 			target->unlock();
+#endif
 
 			m_lastTick = curTick;
 		}

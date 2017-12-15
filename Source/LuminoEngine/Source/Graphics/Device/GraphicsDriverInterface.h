@@ -359,11 +359,11 @@ public:
 	// (得られるデータは上下反転)
 	virtual void getData(const RectI& rect, void* outData) = 0;
 
-	///// ロック (バッファは上下反転)
-	//virtual Bitmap* lock() = 0;
+	/// ロック (バッファは上下反転)
+	virtual Bitmap* lock() = 0;
 
-	///// アンロック
-	//virtual void unlock() = 0;
+	/// アンロック
+	virtual void unlock() = 0;
 
 protected:
 	virtual ~ITexture();

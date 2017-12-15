@@ -415,9 +415,9 @@ void GraphicsManager::changeDevice(Driver::IGraphicsDevice* device)
 		// ダミーテクスチャ
 		m_dummyDeviceTexture = m_graphicsDevice->createTexture(SizeI(32, 32), false, TextureFormat::R8G8B8A8, NULL);
 		{
-			BitmapPainter painter(m_dummyDeviceTexture->lock());
-			painter.clear(Color32::White);
-			m_dummyDeviceTexture->unlock();
+			ByteBuffer white(32*32*4);	// TODO: fill
+			memset(white.getData(), 0xFF, white.getSize());
+			m_dummyDeviceTexture->setSubData(PointI::Zero, white.getConstData(), white.getSize(), SizeI(32, 32));
 		}
 
 		// 全オブジェクトに通知

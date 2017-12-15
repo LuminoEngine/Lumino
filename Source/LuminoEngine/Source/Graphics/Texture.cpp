@@ -283,11 +283,11 @@ Driver::ITexture* Texture2D::resolveDeviceObject()
 
 	if (m_locked)
 	{
-		if (isRHIDirect())
-		{
-			m_rhiObject->unlock();
-		}
-		else
+		//if (isRHIDirect())
+		//{
+		//	m_rhiObject->unlock();
+		//}
+		//else
 		{
 			if (m_rhiObject == nullptr)
 			{
@@ -439,16 +439,16 @@ Bitmap* Texture2D::getMappedData()
 	Bitmap* result = nullptr;
 
 	// まだ1度もコマンドリストに入っていない場合は直接書き換えできる
-	if (isRHIDirect())
-	{
-		if (m_rhiLockedBuffer == nullptr)
-		{
-			m_rhiLockedBuffer = m_rhiObject->lock();
-		}
-		result = m_rhiLockedBuffer;
-	}
+	//if (isRHIDirect())
+	//{
+	//	if (m_rhiLockedBuffer == nullptr)
+	//	{
+	//		m_rhiLockedBuffer = m_rhiObject->lock();
+	//	}
+	//	result = m_rhiLockedBuffer;
+	//}
 
-	if (!result)
+	//if (!result)
 	{
 		if (m_primarySurface2 == nullptr)
 		{
