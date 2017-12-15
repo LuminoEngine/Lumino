@@ -254,6 +254,7 @@ LN_INTERNAL_ACCESS :
 	DepthBuffer();
 	virtual ~DepthBuffer();
 	void createImpl(detail::GraphicsManager* manager, const SizeI& size, TextureFormat format);
+	TextureFormat getFormat() const { return m_format; }
 	Driver::ITexture* resolveDeviceObject() const { return m_deviceObj; }
 	void resize(const SizeI& newSize);
 	virtual void onChangeDevice(Driver::IGraphicsDevice* device) override;

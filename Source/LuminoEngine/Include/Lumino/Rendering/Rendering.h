@@ -766,7 +766,7 @@ private:
 	int								m_currentStateFence;
 	detail::IRenderFeature*			m_lastRenderFeature;
 
-	Ref<detail::RenderTargetTextureCache>		m_renderTargetPool;
+	//Ref<detail::RenderTargetTextureCache>		m_renderTargetPool;
 
 	CameraComponent*							m_camera;
 

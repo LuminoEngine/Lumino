@@ -1068,7 +1068,7 @@ void DrawList::initialize(detail::GraphicsManager* manager)
 	// Editor モードでは GC のタイミングをシンプルにつかむことができない。
 	// (最終書き込み先 RT が異なる RenderingContext 間で SetRenderTarget() などで指定する RT を使いまわすと描画順の問題が起こる)
 	// そのため Unity とはことなり、Pool は RenderingContext につけている。
-	m_renderTargetPool = Ref<detail::RenderTargetTextureCache>::makeRef(manager);
+	//m_renderTargetPool = Ref<detail::RenderTargetTextureCache>::makeRef(manager);
 }
 
 //------------------------------------------------------------------------------
