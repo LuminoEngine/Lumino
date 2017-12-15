@@ -75,7 +75,7 @@ private:
 	//Driver::ITexture*		m_foreTexture;
 	//Driver::ITexture*		m_glyphsMaskTexture;
 
-	Bitmap					m_tmpBitmap;
+	RawBitmap					m_tmpBitmap;
 	TextRenderer*			m_activeRenderer;
 };
 
@@ -148,7 +148,7 @@ enum FlowDirection
 class TextRenderer
 {
 public:
-	TextRenderer(Bitmap* targetBitmap, RawFont* font);
+	TextRenderer(RawBitmap* targetBitmap, RawFont* font);
 	~TextRenderer();
 
 	void SetForeColor(Graphics::Color color) { m_foreColor = color; }
@@ -170,7 +170,7 @@ private:
 	void DrawLineHorizontal(const UTF32* text, int length, const RectI& lineArea);
 
 private:
-	Bitmap*			m_targetBitmap;
+	RawBitmap*			m_targetBitmap;
 	RawFont*		m_font;
 	Graphics::Color	m_foreColor;
 	Graphics::Color	m_strokeColor;

@@ -9,7 +9,7 @@ LN_NAMESPACE_GRAPHICS_BEGIN
 namespace detail { class FontManager; }
 namespace detail { class FontGlyphTextureCache; }
 namespace detail { class VectorFontGlyphCache; }
-class Bitmap;
+class RawBitmap;
 class Font;
 class RawFont;
 using FontPtr = Ref<Font>;
@@ -144,8 +144,8 @@ struct FontGlyphLocation
 
 struct FontGlyphBitmap
 {
-	Bitmap*			GlyphBitmap;
-	Bitmap*			OutlineBitmap;	///< 縁どり線用 (NULL でなければ先にこれをbltし、その上に GlyphBitmap を blt する)
+	RawBitmap*			GlyphBitmap;
+	RawBitmap*			OutlineBitmap;	///< 縁どり線用 (NULL でなければ先にこれをbltし、その上に GlyphBitmap を blt する)
 	int				OutlineOffset;	///< 縁どり時は、線の分だけサイズが大きくなる。
 };
 
@@ -153,8 +153,8 @@ struct FontGlyphBitmap
 // [Obsolete]
 struct FontGlyphData
 {
-	Bitmap*			GlyphBitmap;
-	Bitmap*			OutlineBitmap;	///< 縁どり線用 (NULL でなければ先にこれをbltし、その上に GlyphBitmap を blt する)
+	RawBitmap*			GlyphBitmap;
+	RawBitmap*			OutlineBitmap;	///< 縁どり線用 (NULL でなければ先にこれをbltし、その上に GlyphBitmap を blt する)
 	int				GlyphOffsetX;   ///< ビットマップを転送するべき座標へのXオフセット
 	int				GlyphOffsetY;   ///< ビットマップを転送するべき座標へのYオフセット
 	int				OutlineOffset;	///< 縁どり時は、線の分だけサイズが大きくなる。

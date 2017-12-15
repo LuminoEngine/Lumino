@@ -353,7 +353,7 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 	//Engine::getCamera3D()->setPosition(0, 10, -30);
 
 
-	Bitmap heightmap(LN_LOCALFILE("Assets/heightmap.png"));
+	RawBitmap heightmap(LN_LOCALFILE("Assets/heightmap.png"));
 	
 	//auto box1 = StaticMeshComponent::create(LN_LOCALFILE("Assets/cube.mqo"));
 	//auto box1 = StaticMeshComponent::create(LN_LOCALFILE("Assets/cylinder2.mqo"));

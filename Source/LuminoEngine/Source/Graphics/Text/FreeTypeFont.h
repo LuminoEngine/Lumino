@@ -98,7 +98,7 @@ public:
 
 LN_INTERNAL_ACCESS:	// TODO
 	void updateFont();
-	void refreshBitmap(Bitmap* bitmap, FT_Bitmap* ftBitmap);
+	void refreshBitmap(RawBitmap* bitmap, FT_Bitmap* ftBitmap);
 	void updateImageFlags();
 	void tryUpdateStroke(int newEdgeSize);
 	bool isOutLineMetrix() const;
@@ -152,8 +152,8 @@ private:
 
 	// TODO: いらないかも
 	FreeTypeGlyphData	m_glyphData;		///< LookupGlyphData() の戻り値として公開されるデータ
-	Ref<Bitmap>		m_glyphBitmap;		///< LookupGlyphData() で生成する一時グリフデータ
-	Ref<Bitmap>		m_outlineBitmap;	///< LookupGlyphData() で生成する一時グリフデータ
+	Ref<RawBitmap>		m_glyphBitmap;		///< LookupGlyphData() で生成する一時グリフデータ
+	Ref<RawBitmap>		m_outlineBitmap;	///< LookupGlyphData() で生成する一時グリフデータ
 };
 
 } // namespace detail

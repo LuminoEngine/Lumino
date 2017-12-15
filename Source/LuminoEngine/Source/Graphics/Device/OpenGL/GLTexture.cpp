@@ -74,7 +74,7 @@ GLTexture::GLTexture(const SizeI& size, TextureFormat format, bool mipmap)
 }
 
 //------------------------------------------------------------------------------
-//GLTexture::GLTexture(const Graphics::Bitmap* bitmap, TextureFormat format, uint32_t mipLevels)
+//GLTexture::GLTexture(const Graphics::RawBitmap* bitmap, TextureFormat format, uint32_t mipLevels)
 //{
 //	LN_THROW(0, InvalidOperationException);
 //}
@@ -178,9 +178,9 @@ void GLTexture::getData(const RectI& rect, void* outData)
 }
 
 //------------------------------------------------------------------------------
-Bitmap* GLTexture::lock()
+RawBitmap* GLTexture::lock()
 {
-	m_lockedTexture.attach(LN_NEW Bitmap(m_size, Utils::translatePixelFormat(m_format), true));
+	m_lockedTexture.attach(LN_NEW RawBitmap(m_size, Utils::translatePixelFormat(m_format), true));
 	return m_lockedTexture;
 }
 
@@ -272,10 +272,10 @@ void GLRenderTargetTexture::getData(const RectI& rect, void* outData)
 }
 
 //------------------------------------------------------------------------------
-Bitmap* GLRenderTargetTexture::lock()
+RawBitmap* GLRenderTargetTexture::lock()
 {
 	// ビットマップデータは上下逆になっていて、[0] は (0, height-1) を指す
-	m_lockingBitmap = LN_NEW Bitmap(m_size, Utils::translatePixelFormat(m_format), true);
+	m_lockingBitmap = LN_NEW RawBitmap(m_size, Utils::translatePixelFormat(m_format), true);
 
 	glBindTexture(GL_TEXTURE_2D, m_glTexture); LN_CHECK_GLERROR();
 	glGetTexImage(GL_TEXTURE_2D, 0, m_pixelFormat, m_elementType, m_lockingBitmap->getBitmapBuffer()->getData()); LN_CHECK_GLERROR();

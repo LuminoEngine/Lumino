@@ -33,7 +33,7 @@ class GLTexture
 {
 public:
 	GLTexture(const SizeI& size, TextureFormat format, bool mipmap);
-	//GLTexture(const Bitmap* bitmap, TextureFormat format, uint32_t mipLevels);
+	//GLTexture(const RawBitmap* bitmap, TextureFormat format, uint32_t mipLevels);
 	virtual ~GLTexture();
 
 public:
@@ -50,7 +50,7 @@ public:
 	virtual void setSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize);
 	virtual void setSubData3D(const Box32& box, const void* data, size_t dataBytes);
 	virtual void getData(const RectI& rect, void* outData) override;
-	virtual Bitmap* lock();
+	virtual RawBitmap* lock();
 	virtual void unlock();
 
 	// override GLTextureBase
@@ -65,7 +65,7 @@ private:
 	GLenum				m_pixelFormat;
 	GLenum				m_elementType;
 	SamplerState		m_samplerState;
-	Ref<Bitmap>	m_lockedTexture;		///< lock ～ unlock で作られる
+	Ref<RawBitmap>	m_lockedTexture;		///< lock ～ unlock で作られる
 };
 
 /// レンダーターゲットテクスチャ
@@ -90,7 +90,7 @@ public:
 	virtual void setSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) { LN_UNREACHABLE(); }
 	virtual void setSubData3D(const Box32& box, const void* data, size_t dataBytes);
 	virtual void getData(const RectI& rect, void* outData) override;
-	virtual Bitmap* lock();
+	virtual RawBitmap* lock();
 	virtual void unlock();
 
 	// override GLTextureBase
@@ -104,7 +104,7 @@ private:
 	int					m_mipLevels;
 	GLenum				m_pixelFormat;
 	GLenum				m_elementType;
-	Bitmap*	m_lockingBitmap;
+	RawBitmap*	m_lockingBitmap;
 };
 
 /// 深度バッファ
@@ -129,7 +129,7 @@ public:
 	virtual void setSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) { LN_UNREACHABLE(); }
 	virtual void setSubData3D(const Box32& box, const void* data, size_t dataBytes);
 	virtual void getData(const RectI& rect, void* outData) override;
-	virtual Bitmap* lock() { LN_UNREACHABLE(); return NULL; }
+	virtual RawBitmap* lock() { LN_UNREACHABLE(); return NULL; }
 	virtual void unlock() { LN_UNREACHABLE(); }
 
 	// override GLTextureBase

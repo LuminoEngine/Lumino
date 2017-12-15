@@ -7,7 +7,7 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
 namespace detail { class RenderTargetTextureCache; }
-class Bitmap;
+class RawBitmap;
 class Font;
 class Texture;
 class DepthBuffer;
@@ -56,7 +56,7 @@ protected:
 	friend struct ReadUnlockTextureCommand;
 	SizeI				m_size;
 	TextureFormat		m_format;
-	Bitmap*				m_primarySurface;
+	RawBitmap*				m_primarySurface;
 };
 
 /**
@@ -134,7 +134,7 @@ public:
 
 	void blit(int x, int y, Texture2D* srcTexture, const RectI& srcRect);	// TODO: アルファブレンド有無
 	
-	void blt(int x, int y, Bitmap* srcBitmap/*, const RectI& srcRect*/);
+	void blt(int x, int y, RawBitmap* srcBitmap/*, const RectI& srcRect*/);
 
 
 	void drawText(const StringRef& text, const RectI& rect, Font* font, const Color32& fillColor, const Color32& strokeColor, int strokeThickness, TextAlignment alignment);
@@ -159,12 +159,12 @@ LN_CONSTRUCT_ACCESS:
 	void initialize(Stream* stream, TextureFormat format, bool mipmap);
 
 LN_INTERNAL_ACCESS:
-	void setSubData(const PointI& offset, Bitmap* bitmap);
+	void setSubData(const PointI& offset, RawBitmap* bitmap);
 	void setMappedData(const void* data, int byteCount = -1);
 
 protected:
 	virtual void Dispose() override;
-	Bitmap* getMappedData();
+	RawBitmap* getMappedData();
 
 	//friend struct PresentCommand;
 
@@ -174,11 +174,11 @@ private:
 	bool				m_isPlatformLoaded;
 	ResourceUsage		m_usage;
 	bool				m_usageReadFast;
-	Ref<Bitmap>			m_primarySurface2;
+	Ref<RawBitmap>			m_primarySurface2;
 	bool				m_locked;
 	bool				m_initialUpdate;
 
-	Bitmap*				m_rhiLockedBuffer;
+	RawBitmap*				m_rhiLockedBuffer;
 
 private:
 	//bool isRHIDirect() const { return m_initialUpdate && m_rhiObject != nullptr; }
@@ -213,8 +213,8 @@ LN_INTERNAL_ACCESS:
 	void createCore(detail::GraphicsManager* manager, bool isDefaultBackBuffer);
 	void attachDefaultBackBuffer(Driver::ITexture* deviceObj);
 	void detachDefaultBackBuffer();
-	//Bitmap* readSurface();
-	Bitmap* lock();
+	//RawBitmap* readSurface();
+	RawBitmap* lock();
 	void unlock();
 	virtual void onChangeDevice(Driver::IGraphicsDevice* device);
 
@@ -323,7 +323,7 @@ private:
 	int					m_depth;
 	int					m_mipLevels;
 	ResourceUsage		m_usage;
-	Ref<Bitmap>			m_primarySurface;
+	Ref<RawBitmap>			m_primarySurface;
 	bool				m_locked;
 	bool				m_initialUpdate;
 };

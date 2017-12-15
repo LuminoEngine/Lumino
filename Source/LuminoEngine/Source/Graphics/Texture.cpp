@@ -124,7 +124,7 @@ Texture2DPtr Texture2D::create(Stream* stream, TextureFormat format, bool mipmap
 	}
 
 	// ビットマップを作る
-	Ref<Bitmap> bitmap(LN_NEW Bitmap(stream), false);
+	Ref<RawBitmap> bitmap(LN_NEW RawBitmap(stream), false);
 	Ref<Texture2D> tex(LN_NEW Texture2D(), false);
 	tex->createImpl(getManager(), bitmap->GetSize(), format, mipLevels, bitmap);
 	tex.SafeAddRef();
@@ -176,7 +176,7 @@ void Texture2D::initialize(const SizeI& size, TextureFormat format, bool mipmap,
 	m_usage = usage;
 
 	// ロック用のビットマップを作る
-	m_primarySurface = LN_NEW Bitmap(size, Utils::translatePixelFormat(format));
+	m_primarySurface = LN_NEW RawBitmap(size, Utils::translatePixelFormat(format));
 
 	// テクスチャを作る
 	m_rhiObject = m_manager->getGraphicsDevice()->createTexture(size, m_mipmap, format, nullptr);
@@ -212,10 +212,10 @@ void Texture2D::initialize(Stream* stream, TextureFormat format, bool mipmap)
 		if (m_rhiObject != nullptr)
 		{
 			SizeI size = m_rhiObject->getSize();
-			Bitmap deviceSurface(size, Utils::translatePixelFormat(m_rhiObject->getTextureFormat()), true);
+			RawBitmap deviceSurface(size, Utils::translatePixelFormat(m_rhiObject->getTextureFormat()), true);
 			m_rhiObject->getData(RectI(0, 0, size), deviceSurface.getBitmapBuffer()->getData());
 
-			m_primarySurface2 = Ref<Bitmap>::makeRef(m_rhiObject->getSize(), Utils::translatePixelFormat(format));
+			m_primarySurface2 = Ref<RawBitmap>::makeRef(m_rhiObject->getSize(), Utils::translatePixelFormat(format));
 			m_primarySurface2->bitBlt(RectI(0, 0, size), &deviceSurface, RectI(0, 0, size), Color32::White, false);
 
 			m_size = size;
@@ -226,7 +226,7 @@ void Texture2D::initialize(Stream* stream, TextureFormat format, bool mipmap)
 	if (m_rhiObject == nullptr)
 	{
 		m_locked = true;
-		m_primarySurface2 = Ref<Bitmap>::makeRef(stream);
+		m_primarySurface2 = Ref<RawBitmap>::makeRef(stream);
 		m_size = m_primarySurface2->getSize();
 
 		//if (m_rhiObject == nullptr)
@@ -242,7 +242,7 @@ void Texture2D::initialize(Stream* stream, TextureFormat format, bool mipmap)
 	m_deviceObj = GetDevice()->CreateTexturePlatformLoading(stream, mipLevels, format);
 	if (m_deviceObj != NULL)
 	{
-		m_primarySurface = LN_NEW Bitmap(m_deviceObj->GetSize(), Utils::TranslatePixelFormat(format));
+		m_primarySurface = LN_NEW RawBitmap(m_deviceObj->GetSize(), Utils::TranslatePixelFormat(format));
 		// TODO: m_primarySurface へ内容をフィードバックする
 		//Driver::ITexture::ScopedLock lock(m_deviceObj);
 		//m_primarySurface->copyRawData(lock.GetBitmap(), m_primarySurface->GetByteCount());
@@ -253,7 +253,7 @@ void Texture2D::initialize(Stream* stream, TextureFormat format, bool mipmap)
 	m_initialUpdate = true;
 }
 
-//Texture2D::Texture(GraphicsManager* manager, Driver::ITexture* deviceObj, Bitmap* primarySurface)
+//Texture2D::Texture(GraphicsManager* manager, Driver::ITexture* deviceObj, RawBitmap* primarySurface)
 //	: m_manager(manager)
 //	, m_deviceObj(deviceObj)
 //	, m_primarySurface(primarySurface)
@@ -305,10 +305,10 @@ Driver::ITexture* Texture2D::resolveDeviceObject()
 			if (Utils::isSRGBFormat(getFormat()))
 			{
 				// 上下反転した一時ビットマップを作ってそれを転送する
-				Bitmap bmpTmp(bmpRawDataBuf, bmpSize, m_primarySurface2->getPixelFormat(), true);
+				RawBitmap bmpTmp(bmpRawDataBuf, bmpSize, m_primarySurface2->getPixelFormat(), true);
 				bmpTmp.bitBlt(0, 0, m_primarySurface2, RectI(0, 0, bmpSize), Color32::White, false);
 			}
-			else if (Utils::isFloatFormat(getFormat())) // Bitmap::bitBlt が対応していないのでとりあえず直接転送
+			else if (Utils::isFloatFormat(getFormat())) // RawBitmap::bitBlt が対応していないのでとりあえず直接転送
 			{
 				detail::BitmapHelper::blitRawSimple(bmpRawDataBuf, bmpData->getConstData(), bmpSize.width, bmpSize.height, Utils::getTextureFormatByteCount(getFormat()), false);
 			}
@@ -384,7 +384,7 @@ void Texture2D::blit(int x, int y, Texture2D* srcTexture, const RectI& srcRect)
 }
 
 //------------------------------------------------------------------------------
-void Texture2D::blt(int x, int y, Bitmap* srcBitmap/*, const RectI& srcRect*/)
+void Texture2D::blt(int x, int y, RawBitmap* srcBitmap/*, const RectI& srcRect*/)
 {
 	SizeI srcSize = srcBitmap->getSize();
 	getMappedData()->bitBlt(RectI(x, y, srcSize), srcBitmap, RectI(0, 0, srcSize), Color32::White, false);
@@ -404,7 +404,7 @@ void Texture2D::LN_AFX_FUNCNAME(drawText)(const StringRef& text, const RectI& re
 }
 
 //------------------------------------------------------------------------------
-void Texture2D::setSubData(const PointI& offset, Bitmap* bitmap)
+void Texture2D::setSubData(const PointI& offset, RawBitmap* bitmap)
 {
 	if (LN_REQUIRE(bitmap != nullptr)) return;
 
@@ -434,9 +434,9 @@ void Texture2D::setMappedData(const void* data, int byteCount)
 	getMappedData()->copyRawData(data, byteCount);
 }
 
-Bitmap* Texture2D::getMappedData()
+RawBitmap* Texture2D::getMappedData()
 {
-	Bitmap* result = nullptr;
+	RawBitmap* result = nullptr;
 
 	// まだ1度もコマンドリストに入っていない場合は直接書き換えできる
 	//if (isRHIDirect())
@@ -453,10 +453,10 @@ Bitmap* Texture2D::getMappedData()
 		if (m_primarySurface2 == nullptr)
 		{
 			// フォーマットは DeviceObject 側のフォーマットに合わせる。
-			// もし合わせていないと、転送時に同じサイズで DeviceObject 側のフォーマットと同じ Bitmap を
+			// もし合わせていないと、転送時に同じサイズで DeviceObject 側のフォーマットと同じ RawBitmap を
 			// いちいち作らなければならなくなる。
 			// 基本的に Texture への直接転送は重い体でいるので、ユーザーがあまり Clear や blit を多用しないような想定でいる。
-			m_primarySurface2 = Ref<Bitmap>::makeRef(m_size, Utils::translatePixelFormat(m_rhiObject->getTextureFormat()));
+			m_primarySurface2 = Ref<RawBitmap>::makeRef(m_size, Utils::translatePixelFormat(m_rhiObject->getTextureFormat()));
 		}
 		result = m_primarySurface2;
 	}
@@ -544,7 +544,7 @@ void Texture3D::initialize(ln::detail::GraphicsManager* manager, int width, int 
 
 	if (m_usage == ResourceUsage::Dynamic)
 	{
-		m_primarySurface = Ref<Bitmap>::makeRef(m_size.width, m_size.height, m_depth, Utils::translatePixelFormat(m_format));
+		m_primarySurface = Ref<RawBitmap>::makeRef(m_size.width, m_size.height, m_depth, Utils::translatePixelFormat(m_format));
 	}
 }
 
@@ -574,7 +574,7 @@ void Texture3D::tryLock()
 	{
 		if (m_usage == ResourceUsage::Static)
 		{
-			m_primarySurface = Ref<Bitmap>::makeRef(m_size.width, m_size.height, m_depth, Utils::translatePixelFormat(m_format));
+			m_primarySurface = Ref<RawBitmap>::makeRef(m_size.width, m_size.height, m_depth, Utils::translatePixelFormat(m_format));
 		}
 		m_locked = true;
 	}
@@ -733,19 +733,19 @@ bool RenderTargetTexture::equalsRenderTarget(RenderTargetTexture* rt1, RenderTar
 }
 
 ////------------------------------------------------------------------------------
-//Bitmap* RenderTargetTexture::readSurface()
+//RawBitmap* RenderTargetTexture::readSurface()
 //{
 //	if (m_manager->getRenderingType() == GraphicsRenderingType::Threaded)
 //	{
-//		Bitmap* surface = nullptr;
-//		Bitmap** surfacePtr = &surface;
+//		RawBitmap* surface = nullptr;
+//		RawBitmap** surfacePtr = &surface;
 //		Mutex localMutex;
 //		Mutex* localMutexPtr = &localMutex;
 //
 //		LN_ENQUEUE_RENDER_COMMAND_3(
 //			readSurface, m_manager,
 //			Driver::ITexture*, m_deviceObj,
-//			Bitmap**, surfacePtr,
+//			RawBitmap**, surfacePtr,
 //			Mutex*, localMutexPtr,
 //			{
 //				MutexScopedLock lock(*localMutexPtr);
@@ -762,7 +762,7 @@ bool RenderTargetTexture::equalsRenderTarget(RenderTargetTexture* rt1, RenderTar
 //}
 
 //------------------------------------------------------------------------------
-Bitmap* RenderTargetTexture::lock()
+RawBitmap* RenderTargetTexture::lock()
 {
 	if (m_manager->getRenderingType() == GraphicsRenderingType::Threaded)
 	{
