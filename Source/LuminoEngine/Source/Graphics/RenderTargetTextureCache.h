@@ -62,6 +62,9 @@ private:
 	GraphicsManager*	m_manager;
 };
 
+// beginRenderSection/endRenderSection は RenderView など、あるシーンの描画の起点で呼び出す。
+// これは RenderView のネストを考慮して GC するための仕組み。レベル 0 で end するとき、GC を走らせる。
+// Editor モードだとどんなタイミングで描画が走るのか予測が難しいが、起点は絶対にあるはずなので、そこで GC をねらう。
 class FrameBufferCache
 	: public RefObject
 {
