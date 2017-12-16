@@ -724,7 +724,7 @@ void DX9ShaderPass::commitSamplerStatus()
 
 		LN_COMCALL(m_dxEffect->SetTechnique(m_technique));
 		UINT dummy;
-		LN_COMCALL(m_dxEffect->Begin(&dummy, D3DXFX_DONOTSAVESTATE | D3DXFX_DONOTSAVESHADERSTATE));
+		LN_COMCALL(m_dxEffect->Begin(&dummy, 0));
 		LN_COMCALL(m_dxEffect->BeginPass(m_passIndex));
 
 		for (int i = 0; i < m_samplerLinkList.getCount(); ++i)
