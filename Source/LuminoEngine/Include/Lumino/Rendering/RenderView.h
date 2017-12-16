@@ -88,11 +88,14 @@ protected:
 LN_CONSTRUCT_ACCESS:
 	RenderView();
 	virtual ~RenderView();
+	void initialize();
 
 LN_INTERNAL_ACCESS:
+	detail::GraphicsManager* getGraphicsManager() const { return m_manager; }
 	void setViewSize(const ln::Size& size) { m_viewSize = size; }
 
 private:
+	detail::GraphicsManager*		m_manager;
 	ln::Size    m_viewSize;
 	detail::SceneRenderer*	m_sceneRenderer;
 

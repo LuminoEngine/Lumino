@@ -190,8 +190,9 @@ class OffscreenWorldRenderView
 	: public WorldRenderView
 {
 public:
-	void render();
+	void setRenderTarget(RenderTargetTexture* renderTarget);
 	RenderTargetTexture* getRenderTarget() const;
+	void render();
 
 LN_INTERNAL_ACCESS :
 	OffscreenWorldRenderView();

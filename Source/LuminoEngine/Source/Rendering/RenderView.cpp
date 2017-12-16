@@ -11,7 +11,8 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 //------------------------------------------------------------------------------
 RenderView::RenderView()
-	: m_viewSize()
+	: m_manager(nullptr)
+	, m_viewSize()
 	, m_sceneRenderer(nullptr)
 	, m_clearMode(RenderLayerClearMode::None)
 	, m_backgroundColor(Color::White)
@@ -21,6 +22,12 @@ RenderView::RenderView()
 //------------------------------------------------------------------------------
 RenderView::~RenderView()
 {
+}
+
+void RenderView::initialize()
+{
+	Object::initialize();
+	m_manager = detail::EngineDomain::getGraphicsManager();
 }
 
 //------------------------------------------------------------------------------

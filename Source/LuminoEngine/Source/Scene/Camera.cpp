@@ -9,6 +9,7 @@
 #include <Lumino/Scene/Fog.h>
 #include <Lumino/World.h>
 #include <Lumino/UI/UIEvent.h>
+#include "../Graphics/RenderTargetTextureCache.h"
 
 // TODO: CameraViewportLayer::GetDefault2D() あたりを見直せばいらなくなる
 #include <Lumino/UI/UIFrameWindow.h>
@@ -802,6 +803,7 @@ WorldRenderView::WorldRenderView()
 //------------------------------------------------------------------------------
 void WorldRenderView::initialize(World* targetWorld, CameraComponent* hostingCamera)
 {
+	RenderView::initialize();
 	m_targetWorld = targetWorld;
 	m_hostingCamera = hostingCamera;
 	m_hostingCamera->m_ownerLayer = this;
@@ -922,22 +924,44 @@ OffscreenWorldRenderView::~OffscreenWorldRenderView()
 void OffscreenWorldRenderView::initialize(World* targetWorld, CameraComponent* hostingCamera)
 {
 	WorldRenderView::initialize(targetWorld, hostingCamera);
-
-	m_renderTarget = Ref<RenderTargetTexture>::makeRef();
-	m_renderTarget->createImpl(detail::GraphicsManager::getInstance(), SizeI(640, 480), 1, TextureFormat::R8G8B8A8);
-
-	m_depthBuffer = DepthBuffer::create(SizeI(640, 480));
-	setViewSize(Size(640, 480));	// TODO:
 }
 
-void OffscreenWorldRenderView::render()
+void OffscreenWorldRenderView::setRenderTarget(RenderTargetTexture* renderTarget)
 {
-	renderScene(m_renderTarget, m_depthBuffer);
+	m_renderTarget = renderTarget;
+
+	if (m_renderTarget)
+	{
+		setViewSize(m_renderTarget->getSize().toFloatSize());
+	}
 }
 
 RenderTargetTexture* OffscreenWorldRenderView::getRenderTarget() const
 {
 	return m_renderTarget;
+}
+
+void OffscreenWorldRenderView::render()
+{
+	if (!m_renderTarget) return;
+
+	detail::FrameBufferCache* fbc = getGraphicsManager()->getFrameBufferCache();
+	detail::FrameBufferCache::ScopedSection fbcs(fbc);
+
+	DepthBuffer* depthBuffer = m_depthBuffer;
+	if (!depthBuffer)
+	{
+		depthBuffer = fbc->depthBufferCache.requestObject(m_renderTarget->getSize(), TextureFormat::D24S8);
+	}
+
+
+	renderScene(m_renderTarget, depthBuffer);
+
+
+	if (depthBuffer != m_depthBuffer)
+	{
+		fbc->depthBufferCache.releaseObject(depthBuffer);
+	}
 }
 
 //==============================================================================

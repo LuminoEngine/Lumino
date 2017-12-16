@@ -32,6 +32,7 @@
 #include <Lumino/Graphics/VertexDeclaration.h>
 #include <Lumino/Graphics/Shader.h>
 #include <Lumino/Rendering/Rendering.h>
+#include "RenderTargetTextureCache.h"
 #include "../Shader/LuminoShader.h"
 
 LN_NAMESPACE_BEGIN
@@ -297,6 +298,8 @@ void GraphicsManager::initialize(const ConfigData& configData)
 		shader->initialize(this, (const char*)shaderData, shaderDataLen);
 		m_builtinShaders[(int)BuiltinShader::LegacyDiffuse] = shader;
 	}
+
+	m_frameBufferCache = Ref<detail::FrameBufferCache>::makeRef(this);
 	
 	m_shaderContext = std::make_shared<LuminoShaderContext>();
 	m_shaderContext->initialize();
@@ -327,6 +330,8 @@ void GraphicsManager::dispose()
 		m_renderingThread->dispose();
 		LN_SAFE_DELETE(m_renderingThread);
 	}
+
+	m_frameBufferCache.safeRelease();
 
 	if (m_glyphIconFontManager != nullptr)
 	{
