@@ -45,7 +45,7 @@ PixelFormat Utils::translatePixelFormat(TextureFormat format)
 		PixelFormat::Unknown,		// TextureFormat_Unknown = 0,
 
 		PixelFormat::R8G8B8A8,	// TextureFormat_R8G8B8A8,            ///< 32 ビットのアルファ付きフォーマット (GPUネイティブフォーマット。D3D_FMT_A8B8G8R8, DXGI_FORMAT_R8G8B8A8_UNORM)
-		PixelFormat::Unknown,		// TextureFormat_R8G8B8X8,            ///< 32 ビットのアルファ無しフォーマット
+		PixelFormat::R8G8B8X8,		// TextureFormat_R8G8B8X8,            ///< 32 ビットのアルファ無しフォーマット
 
 		PixelFormat::B8G8R8A8,	// TextureFormat_B8G8R8A8,            ///< 32 ビットのアルファ付きフォーマット (GDI互換フォーマット。D3D_FMT_A8R8G8B8, DXGI_FORMAT_B8G8R8A8_UNORM)
 		PixelFormat::B8G8R8X8,	// TextureFormat_B8G8R8X8,            ///< 32 ビットのアルファ無しフォーマット

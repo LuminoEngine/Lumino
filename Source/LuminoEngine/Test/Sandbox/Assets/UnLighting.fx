@@ -47,6 +47,9 @@ float4 PS_ShadowCaster(PSInput input) : COLOR0
 	float hr = ((input.Pos.y - 10) / 5.0);
 
 	float4 c = (tex2D(TextureSampler, input.UV)) * input.Color;
+	return c;
+	
+	
 	//c *= hr;
 	float bc = 0.6;
 	c = lerp(float4(bc,bc,bc,1), c, hr);

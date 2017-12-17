@@ -547,6 +547,7 @@ void RawBitmap::convertPixelFormat(
 	// RGBA ⇔ BGRA (R と B を入れ替えるだけなので共用できる)
 	else if (
 		(inputFormat == PixelFormat::R8G8B8A8 && outputFormat == PixelFormat::B8G8R8A8) ||
+		//(inputFormat == PixelFormat::R8G8B8X8 && outputFormat == PixelFormat::R8G8B8A8) ||
 		(inputFormat == PixelFormat::B8G8R8A8 && outputFormat == PixelFormat::R8G8B8A8) ||
 		(inputFormat == PixelFormat::B8G8R8X8 && outputFormat == PixelFormat::R8G8B8A8))
 	{
