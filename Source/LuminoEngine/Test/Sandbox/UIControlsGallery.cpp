@@ -452,9 +452,9 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 	printf("--------\n");
 	{
 		Engine::getWorld3D()->beginUpdateFrame();
-		Engine::getWorld3D()->updateFrame(0.016);
+		//Engine::getWorld3D()->updateFrame(0.016);
 		auto ofs = newObject<OffscreenWorldRenderView>(Engine::getWorld3D(), Engine::getCamera3D()->getCameraComponent());
-		ofs->setRenderTarget(RenderTargetTexture::create(SizeI(512, 512), TextureFormat::R8G8B8A8, 1));
+		ofs->setRenderTarget(RenderTargetTexture::create(SizeI(256, 256), TextureFormat::R8G8B8A8, 1));
 		ofs->setClearMode(RenderLayerClearMode::ColorDepth);
 		ofs->setBackgroundColor(Color(0,0,0,0));
 		ofs->render();
@@ -470,15 +470,15 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 	}
 	printf("--------\n");
 
-	{
-		Engine::getWorld3D()->beginUpdateFrame();
-		Engine::getWorld3D()->updateFrame(0.016);
-		auto ofs = newObject<OffscreenWorldRenderView>(Engine::getWorld3D(), Engine::getCamera3D()->getCameraComponent());
-		ofs->setClearMode(RenderLayerClearMode::ColorDepth);
-		ofs->render();
+	//{
+	//	Engine::getWorld3D()->beginUpdateFrame();
+	//	Engine::getWorld3D()->updateFrame(0.016);
+	//	auto ofs = newObject<OffscreenWorldRenderView>(Engine::getWorld3D(), Engine::getCamera3D()->getCameraComponent());
+	//	ofs->setClearMode(RenderLayerClearMode::ColorDepth);
+	//	ofs->render();
 
-		ofs->getRenderTarget()->readSurface()->save(_T("test22.png"));
-	}
+	//	ofs->getRenderTarget()->readSurface()->save(_T("test22.png"));
+	//}
 
 #if 0
 

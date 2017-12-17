@@ -18,7 +18,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "C:/Proj/Lumino/lib/MSVC140")
 option(LN_USE_UNICODE_CHAR_SET "Use unicode char set." ON)
 
 # MSVC Runtime library.
-option(LN_MSVC_STATIC_RUNTIME "static runtime (/MT, /MTd) or DLL runtime (/MD, /MDd) or to link either." ON)
+option(LN_MSVC_STATIC_RUNTIME "static runtime (/MT, /MTd) or DLL runtime (/MD, /MDd) or to link either." OFF)
 
 # Exceprion Backtrace.
 option(LN_EXCEPTION_BACKTRACE "In some unix environment there is a possibility that can not be compiled." ON)
