@@ -818,6 +818,11 @@ void MeshResource::commitRenderData(VertexDeclaration** outDecl, VertexBuffer** 
 //	}
 //}
 
+void MeshResource::setBoundingBox(const Box& box)
+{
+	m_boundingBox = box;
+}
+
 //==============================================================================
 // StaticMeshModel
 //==============================================================================
