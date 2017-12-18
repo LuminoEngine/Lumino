@@ -43,6 +43,8 @@ void World::initialize()
 	{
 		m_offscreenIdStorage.add(i);
 	}
+
+	beginUpdateFrame();
 }
 
 //------------------------------------------------------------------------------
@@ -126,11 +128,6 @@ void World::beginUpdateFrame()
 		//TODO:
 		//m_debugRenderer->setDefaultMaterial(m_debugRendererDefaultMaterial);
 	}
-
-	for (auto& obj : m_rootWorldObjectList)
-	{
-		obj->onPreUpdate();
-	}
 }
 
 void World::updateFrame(float deltaSceonds)
@@ -144,6 +141,10 @@ void World::updateFrame(float deltaSceonds)
 
 void World::onPreUpdate(float deltaSceonds)
 {
+	for (auto& obj : m_rootWorldObjectList)
+	{
+		obj->onPreUpdate();
+	}
 }
 
 void World::onInternalPhysicsUpdate(float deltaSceonds)

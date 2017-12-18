@@ -896,6 +896,8 @@ void WorldRenderView::renderScene(RenderTargetTexture* renderTarget, DepthBuffer
 	this->m_cameraInfo.nearClip = m_hostingCamera->getNearClip();
 	this->m_cameraInfo.farClip = m_hostingCamera->getFarClip();
 	m_internalRenderer->render(this, renderTarget, depthBuffer, nullptr, clearColorBuffer, getBackgroundColor());	// TODO: diag
+
+	m_targetWorld->beginUpdateFrame();
 }
 
 //------------------------------------------------------------------------------

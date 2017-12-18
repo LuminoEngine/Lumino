@@ -698,12 +698,12 @@ void EngineManager::updateFrame()
 
 	if (m_defaultWorld2D != nullptr)
 	{
-		m_defaultWorld2D->beginUpdateFrame();
+		//m_defaultWorld2D->beginUpdateFrame();
 		m_defaultWorld2D->updateFrame(deltaTime);
 	}
 	if (m_defaultWorld3D != nullptr)
 	{
-		m_defaultWorld3D->beginUpdateFrame();
+		//m_defaultWorld3D->beginUpdateFrame();
 		m_defaultWorld3D->updateFrame(deltaTime);
 	}
 
