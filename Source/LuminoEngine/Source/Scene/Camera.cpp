@@ -985,24 +985,24 @@ CameraBehavior::~CameraBehavior()
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Camera, WorldObject);
 
-//------------------------------------------------------------------------------
 Camera::Camera()
 	: WorldObject()
 	, m_component(nullptr)
 {
 }
 
-//------------------------------------------------------------------------------
 Camera::~Camera()
 {
 }
 
-//------------------------------------------------------------------------------
-void Camera::initialize(CameraWorld proj)
+void Camera::initialize(CameraWorld proj, bool defcmp)
 {
 	WorldObject::initialize();
-	m_component = newObject<CameraComponent>(proj);
-	addComponent(m_component);
+	if (defcmp)
+	{
+		setCameraComponent(newObject<CameraComponent>(proj));
+	}
+
 	transform.lookAt(Vector3::Zero);
 
 	if (proj == CameraProjection_2D)
@@ -1015,10 +1015,71 @@ void Camera::initialize(CameraWorld proj)
 	}
 }
 
-//------------------------------------------------------------------------------
 CameraComponent* Camera::getCameraComponent() const
 {
 	return m_component;
+}
+
+void Camera::setCameraComponent(CameraComponent* component)
+{
+	m_component = component;
+	addComponent(m_component);
+}
+
+//==============================================================================
+// OrthographicCameraComponent
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(OrthographicCameraComponent, CameraComponent);
+
+OrthographicCameraComponent::OrthographicCameraComponent()
+{
+}
+
+OrthographicCameraComponent::~OrthographicCameraComponent()
+{
+}
+
+void OrthographicCameraComponent::initialize()
+{
+	CameraComponent::initialize(CameraWorld::CameraProjection_3D);
+	setProjectionMode(ProjectionMode::Orthographic);
+}
+
+//==============================================================================
+// OrthographicCamera
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(OrthographicCamera, Camera);
+
+Ref<OrthographicCamera> OrthographicCamera::create()
+{
+	return newObject<OrthographicCamera>();
+}
+
+Ref<OrthographicCamera> OrthographicCamera::create(float orthoSize)
+{
+	return newObject<OrthographicCamera>(orthoSize);
+}
+
+OrthographicCamera::OrthographicCamera()
+	: m_component(nullptr)
+{
+}
+
+OrthographicCamera::~OrthographicCamera()
+{
+}
+
+void OrthographicCamera::initialize()
+{
+	Camera::initialize(CameraWorld::CameraProjection_3D, false);
+	m_component = newObject<OrthographicCameraComponent>();
+	setCameraComponent(m_component);
+}
+
+void OrthographicCamera::initialize(float orthoSize)
+{
+	initialize();
+	setOrthographicSize(orthoSize);
 }
 
 LN_NAMESPACE_SCENE_END

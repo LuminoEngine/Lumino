@@ -197,7 +197,6 @@ Rectangle::~Rectangle()
 void Rectangle::initialize(const Rect& rect)
 {
 	VisualComponent::initialize();
-	detail::EngineDomain::getDefaultSceneGraph3D()->getRootNode()->addChild(this);
 	setAutoRemove(true);
 
 	m_rect = rect;

@@ -117,7 +117,6 @@ LN_INTERNAL_ACCESS:
 	virtual void render(RenderingContext* context, WorldRenderViewBase* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldSubRenderView* offscreen) override;
 
 private:
-	Ref<SceneGraph2D>		m_sceneGraph;
 	Ref<Camera>				m_mainCamera;
 };
 
@@ -155,7 +154,6 @@ LN_CONSTRUCT_ACCESS:
 
 LN_INTERNAL_ACCESS:
 	PhysicsWorld* getPhysicsWorld3D() const;
-	SceneGraph3D* getSceneGraph3D() const;
 	Camera* getMainCamera() const;
 	const detail::SceneGlobalRenderSettings& getGlobalRenderSettings() const { return m_globalRenderSettings; }
 	virtual void beginUpdateFrame() override;
@@ -169,7 +167,6 @@ private:
 	void adjustGridPlane(RenderView* renderView);
 
 	Ref<PhysicsWorld>		m_physicsWorld;
-	Ref<SceneGraph3D>		m_sceneGraph;
 	detail::SceneGlobalRenderSettings	m_globalRenderSettings;
 	Ref<Camera>				m_mainCamera;
 	Ref<Light>				m_mainLight;

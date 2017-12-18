@@ -76,6 +76,8 @@ public:
 	Vector3 viewportToWorldPoint(const Vector3& position) const;
 
 	void setProjectionMode(ProjectionMode value) { m_projectionMode = value; }
+
+	
 	void setOrthographicSize(float value) { m_orthographicSize = value; }
 
 public:	// internal
@@ -294,13 +296,75 @@ public:
 LN_CONSTRUCT_ACCESS:
 	Camera();
 	virtual ~Camera();
-	void initialize(CameraWorld proj);
+	void initialize(CameraWorld proj, bool defcmp);
 
 LN_INTERNAL_ACCESS:
+	void setCameraComponent(CameraComponent* component);
 
 private:
 	Ref<CameraComponent>	m_component;
 };
+
+
+
+
+
+
+
+
+
+
+
+/** 正射投影カメラのコンポーネント。 */
+class OrthographicCameraComponent
+	: public CameraComponent
+{
+	LN_OBJECT;
+public:
+
+LN_INTERNAL_ACCESS:
+	OrthographicCameraComponent();
+	virtual ~OrthographicCameraComponent();
+	void initialize();
+};
+
+/** 正射投影カメラのオブジェクト。 */
+class OrthographicCamera
+	: public Camera
+{
+	LN_OBJECT;
+public:
+
+	/** 既定の設定で正射投影カメラを作成します。 */
+	static Ref<OrthographicCamera> create();
+
+	/** 正射投影の高さを指定して正射投影カメラを作成します。 */
+	static Ref<OrthographicCamera> create(float orthoSize);
+
+public:
+	
+	/** 
+		正射投影の高さを設定します。
+	
+		正射影幅はビューの比率に基づいて自動的に計算されます。
+		例えば、2D シーンを dot by dot で描画する場合、この値を縦方向のピクセル数と一致させます。
+	*/
+	void setOrthographicSize(float value) { m_component->setOrthographicSize(value); }
+
+LN_CONSTRUCT_ACCESS:
+	OrthographicCamera();
+	virtual ~OrthographicCamera();
+
+	/** 既定の設定で正射投影カメラを作成します。 */
+	void initialize();
+
+	/** 正射投影の高さを指定して正射投影カメラを作成します。 */
+	void initialize(float orthoSize);
+
+private:
+	Ref<OrthographicCameraComponent>	m_component;
+};
+
 
 LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END

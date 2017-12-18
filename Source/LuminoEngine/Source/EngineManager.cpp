@@ -904,18 +904,6 @@ SceneGraphManager* EngineDomain::getSceneGraphManager()
 }
 
 //------------------------------------------------------------------------------
-SceneGraph2D* EngineDomain::getDefaultSceneGraph2D()
-{
-	return EngineManager::getInstance()->getDefaultWorld2D()->getSceneGraph2D();
-}
-
-//------------------------------------------------------------------------------
-SceneGraph3D* EngineDomain::getDefaultSceneGraph3D()
-{
-	return EngineManager::getInstance()->getDefaultWorld3D()->getSceneGraph3D();
-}
-
-//------------------------------------------------------------------------------
 World2D* EngineDomain::getDefaultWorld2D()
 {
 	return EngineManager::getInstance()->getDefaultWorld2D();
