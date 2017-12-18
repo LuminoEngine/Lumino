@@ -74,7 +74,7 @@ public:
 	virtual void setSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize);
 	virtual void setSubData3D(const Box32& box, const void* data, size_t dataBytes);
 	virtual void getData(const RectI& rect, void* outData) override;
-	virtual Bitmap* lock();
+	virtual RawBitmap* lock();
 	virtual void unlock();
 
 	// DX9TextureBase interface
@@ -87,7 +87,7 @@ private:
 	TextureFormat			m_format;
 	SizeI					m_size;
 	SizeI					m_realSize;
-	Ref<Bitmap>			m_lockedBitmap;
+	Ref<RawBitmap>			m_lockedBitmap;
 };
 
 class DX9Texture3D
@@ -109,7 +109,7 @@ public:
 	virtual const SizeI& getRealSize() const { return m_realSize; }
 	virtual void setSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize);
 	virtual void setSubData3D(const Box32& box, const void* data, size_t dataBytes);
-	virtual Bitmap* lock();
+	virtual RawBitmap* lock();
 	virtual void unlock();
 
 	// DX9TextureBase interface
@@ -122,7 +122,7 @@ private:
 	SizeI						m_size;
 	int							m_depth;
 	SizeI						m_realSize;
-	Ref<Bitmap>				m_lockedBitmap;
+	Ref<RawBitmap>				m_lockedBitmap;
 };
 
 /// レンダーターゲットテクスチャ
@@ -145,15 +145,16 @@ public:
 	virtual const SizeI& getRealSize() const { return m_realSize; }
 	virtual void setSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) { LN_UNREACHABLE(); }
 	virtual void setSubData3D(const Box32& box, const void* data, size_t dataBytes);
-	virtual Bitmap* lock();
+	virtual void readData(void* outData) override;
+	virtual RawBitmap* lock();
 	virtual void unlock();
 
 	// DX9TextureBase interface
 	virtual IDirect3DBaseTexture9* getIDirect3DBaseTexture9() { return m_dxTexture; }
 	virtual IDirect3DSurface9* getIDirect3DSurface9() { return m_dxSurface; }
 
-	static void lockRenderTarget(IDirect3DDevice9* dxDevice, IDirect3DSurface9* dxSurface, TextureFormat format, const SizeI& realSize, IDirect3DSurface9** outLockedSystemSurface, ByteBuffer* outLockedBuffer, Bitmap** outLockedBitmap);
-	static void unlockRenderTarget(IDirect3DSurface9** lockedSystemSurface, ByteBuffer* lockedBuffer, Bitmap** lockedBitmap);
+	static void lockRenderTarget(IDirect3DDevice9* dxDevice, IDirect3DSurface9* dxSurface, TextureFormat format, const SizeI& realSize, IDirect3DSurface9** outLockedSystemSurface, ByteBuffer* outLockedBuffer, RawBitmap** outLockedBitmap);
+	static void unlockRenderTarget(IDirect3DSurface9** lockedSystemSurface, ByteBuffer* lockedBuffer, RawBitmap** lockedBitmap);
 
 private:
 	IDirect3DTexture9*		m_dxTexture;
@@ -165,7 +166,7 @@ private:
 
 	IDirect3DSurface9*		m_lockedSystemSurface;
 	ByteBuffer				m_lockedBuffer;
-	Bitmap*					m_lockedBitmap;
+	RawBitmap*					m_lockedBitmap;
 };
 
 /// 深度バッファ
@@ -189,7 +190,7 @@ public:
 	virtual void setSamplerState(const SamplerState& state) { LN_UNREACHABLE(); }
 	virtual void setSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) { LN_UNREACHABLE(); }
 	virtual void setSubData3D(const Box32& box, const void* data, size_t dataBytes);
-	virtual Bitmap* lock() { LN_UNREACHABLE(); return nullptr; }
+	virtual RawBitmap* lock() { LN_UNREACHABLE(); return nullptr; }
 	virtual void unlock() { LN_UNREACHABLE(); }
 
 	// DX9TextureBase interface
@@ -230,7 +231,7 @@ public:
 	virtual void setSamplerState(const SamplerState& state) { LN_UNREACHABLE(); }
 	virtual void setSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) { LN_UNREACHABLE(); }
 	virtual void setSubData3D(const Box32& box, const void* data, size_t dataBytes);
-	virtual Bitmap* lock();
+	virtual RawBitmap* lock();
 	virtual void unlock();
 
 	// DX9TextureBase interface
@@ -244,7 +245,7 @@ private:
 
 	IDirect3DSurface9*		m_lockedSystemSurface;
 	ByteBuffer				m_lockedBuffer;
-	Bitmap*					m_lockedBitmap;
+	RawBitmap*					m_lockedBitmap;
 };
 
 } // namespace Driver

@@ -30,7 +30,7 @@ class FontGlyphTextureCache;
 class GlyphIconFontManager;
 class ShapesRendererCommandListCache;
 class NanoVGCommandListCache;
-
+class FrameBufferCache;
 
 
 // ShaderVariable からコミットするルートと、CommonMaterial からコミットするルートがある。
@@ -155,6 +155,7 @@ public:
 	const std::string& getCommonShaderHeader() const { return m_commonShaderHeader; }
 	const Ref<Shader>& getBuiltinShader(BuiltinShader shader) const;
 
+	const Ref<detail::FrameBufferCache>& getFrameBufferCache() const { return m_frameBufferCache; }
 	LuminoShaderContext* getShaderContext() const { return m_shaderContext.get(); }
 	
 
@@ -198,6 +199,7 @@ private:
 	VertexDeclaration*						m_defaultVertexDeclaration;
 	bool									m_platformTextureLoading;
 
+	Ref<detail::FrameBufferCache>			m_frameBufferCache;
 	std::shared_ptr<LuminoShaderContext>	m_shaderContext;
 };
 

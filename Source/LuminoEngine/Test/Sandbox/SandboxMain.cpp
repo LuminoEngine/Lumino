@@ -564,7 +564,7 @@ void Main()
 
 #if 0
 	auto col1 = BoxCollisionShape::create(1, 2, 3);
-	auto body1 = RigidBody::create(col1);
+	auto body1 = RigidBodyComponent::create(col1);
 	body1->SetPosition(10, 0, 0);
 #endif
 	//static_cast<CameraViewportLayer*>(Engine::getDefault3DLayer())->setDebugDrawFlags(WorldDebugDrawFlags::PhysicsInfo);

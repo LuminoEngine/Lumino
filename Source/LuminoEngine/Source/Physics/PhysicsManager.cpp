@@ -77,8 +77,8 @@ void PhysicsManager::dispose()
 //	//{
 //	//	m_btWorld->addCollisionObject(b->getBtCollisionObject(), b->getGroup(), b->getGroupMask());
 //	//}
-//	// RigidBody
-//	LN_FOREACH(RigidBody* obj, m_rigidBodyList.GetRegistOrderObjectArray())
+//	// RigidBodyComponent
+//	LN_FOREACH(RigidBodyComponent* obj, m_rigidBodyList.GetRegistOrderObjectArray())
 //	{
 //		m_btWorld->addRigidBody(obj->GetBtRigidBody(), obj->GetGroup(), obj->GetGroupMask());
 //	}
@@ -96,7 +96,7 @@ void PhysicsManager::dispose()
 //	//---------------------------------------------------------
 //	// 剛体の姿勢を同期
 //
-//	LN_FOREACH(RigidBody* b, m_rigidBodyList.GetObjectArray())
+//	LN_FOREACH(RigidBodyComponent* b, m_rigidBodyList.GetObjectArray())
 //	{
 //		b->SyncBeforeStepSimulation();
 //	}
@@ -122,7 +122,7 @@ void PhysicsManager::dispose()
 //}
 //
 ////------------------------------------------------------------------------------
-//void PhysicsManager::AddRigidBody(RigidBody* body)
+//void PhysicsManager::AddRigidBody(RigidBodyComponent* body)
 //{
 //	m_rigidBodyList.AddObject(body);
 //}

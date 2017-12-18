@@ -928,8 +928,8 @@ void FreeTypeFont::updateFont()
 		updateImageFlags();
 
 		// グリフ格納用ビットマップ (仮確保)
-		m_glyphBitmap.attach(LN_NEW Bitmap(SizeI(m_fontData.Size, m_fontData.Size), PixelFormat::A8));
-		m_outlineBitmap.attach(LN_NEW Bitmap(SizeI(m_fontData.Size, m_fontData.Size), PixelFormat::A8));
+		m_glyphBitmap.attach(LN_NEW RawBitmap(SizeI(m_fontData.Size, m_fontData.Size), PixelFormat::A8));
+		m_outlineBitmap.attach(LN_NEW RawBitmap(SizeI(m_fontData.Size, m_fontData.Size), PixelFormat::A8));
 
 		// ラスタライズで使用する
 		//mPixelList = LN_NEW PixelData[m_fontSize * m_fontSize * 4];
@@ -985,7 +985,7 @@ void FreeTypeFont::tryUpdateStroke(int newEdgeSize)
 }
 
 //------------------------------------------------------------------------------
-void FreeTypeFont::refreshBitmap(Bitmap* bitmap, FT_Bitmap* ftBitmap)
+void FreeTypeFont::refreshBitmap(RawBitmap* bitmap, FT_Bitmap* ftBitmap)
 {
 	int width = ftBitmap->width;
 	int height = ftBitmap->rows;
@@ -1013,7 +1013,7 @@ void FreeTypeFont::refreshBitmap(Bitmap* bitmap, FT_Bitmap* ftBitmap)
 	// ビットマップデータを参照モードでセットする
 	bitmap->m_bitmapData.attach(
 		ftBitmap->buffer,
-		Bitmap::getPixelFormatByteCount(bitmap->m_format, bitmap->m_size, 1));
+		RawBitmap::getPixelFormatByteCount(bitmap->m_format, bitmap->m_size, 1));
 }
 
 #if 0

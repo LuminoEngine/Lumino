@@ -63,7 +63,7 @@ DofSpringJoint::~DofSpringJoint()
 }
 
 //------------------------------------------------------------------------------
-void DofSpringJoint::initialize(RigidBody* bodyA, RigidBody* bodyB, const Matrix& localOffsetA, const Matrix& localOffsetB)
+void DofSpringJoint::initialize(RigidBodyComponent* bodyA, RigidBodyComponent* bodyB, const Matrix& localOffsetA, const Matrix& localOffsetB)
 {
 	if (LN_REQUIRE(bodyA != nullptr)) return;
 	if (LN_REQUIRE(bodyB != nullptr)) return;
@@ -168,6 +168,104 @@ void DofSpringJoint::setAngularUpperLimit(const Vector3& angularUpper)
 	if (LN_REQUIRE(m_initialUpdate)) return;	// 初回 stepSimulation() 前のみ可能
 	m_btDofSpringConstraint->setAngularUpperLimit(
 		detail::BulletUtil::LNVector3ToBtVector3(angularUpper));
+}
+
+
+
+//==============================================================================
+// Joint2
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Joint2, PhysicsResource2);
+
+Joint2::Joint2()
+	: PhysicsResource2(PhysicsResourceType::Joint)
+{
+}
+
+Joint2::~Joint2()
+{
+}
+
+void Joint2::initialize()
+{
+	PhysicsResource2::initialize();
+}
+
+
+//==============================================================================
+// DofSpringJoint2
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(DofSpringJoint2, Joint2);
+
+DofSpringJoint2::DofSpringJoint2()
+	: m_btDofSpringConstraint(nullptr)
+{
+}
+
+DofSpringJoint2::~DofSpringJoint2()
+{
+	LN_SAFE_DELETE(m_btDofSpringConstraint);
+}
+
+void DofSpringJoint2::initialize(const DofSpringJointSimpleConstructionData& data)
+{
+	// 回転行列作成
+	btMatrix3x3	btmRotationMat;
+
+	btmRotationMat.setEulerZYX(data.rotationAngles.x, data.rotationAngles.y, data.rotationAngles.z);
+
+	// コンストレイントのトランスフォームを作成
+	btTransform		bttrTransform;
+
+	bttrTransform.setIdentity();
+	bttrTransform.setOrigin(btVector3(data.position.x, data.position.y, data.position.z));
+	bttrTransform.setBasis(btmRotationMat);
+
+	// 剛体A,Bから見たコンストレイントのトランスフォームを作成 
+	btTransform bttrRigidAInvTransform = data.bodyA->getBtRigidBody()->getWorldTransform().inverse(),
+	bttrRigidBInvTransform = data.bodyA->getBtRigidBody()->getWorldTransform().inverse();
+
+	bttrRigidAInvTransform = bttrRigidAInvTransform * bttrTransform;
+	bttrRigidBInvTransform = bttrRigidBInvTransform * bttrTransform;
+
+	m_btDofSpringConstraint = new btGeneric6DofSpringConstraint(
+		*data.bodyA->getBtRigidBody(), *data.bodyA->getBtRigidBody(),
+		bttrRigidAInvTransform, bttrRigidBInvTransform, true);
+
+	// 各種制限パラメータのセット
+	m_btDofSpringConstraint->setLinearLowerLimit(btVector3(data.vec3PosLimitL.x, data.vec3PosLimitL.y, data.vec3PosLimitL.z));
+	m_btDofSpringConstraint->setLinearUpperLimit(btVector3(data.vec3PosLimitU.x, data.vec3PosLimitU.y, data.vec3PosLimitU.z));
+
+	m_btDofSpringConstraint->setAngularLowerLimit(btVector3(data.vec3RotLimitL.x, data.vec3RotLimitL.y, data.vec3RotLimitL.z));
+	m_btDofSpringConstraint->setAngularUpperLimit(btVector3(data.vec3RotLimitU.x, data.vec3RotLimitU.y, data.vec3RotLimitU.z));
+
+	// 0 : translation X
+	if (data.vec3SpringPos.x != 0.0f)
+	{
+		m_btDofSpringConstraint->enableSpring(0, true);
+		m_btDofSpringConstraint->setStiffness(0, data.vec3SpringPos.x);
+	}
+
+	// 1 : translation Y
+	if (data.vec3SpringPos.y != 0.0f)
+	{
+		m_btDofSpringConstraint->enableSpring(1, true);
+		m_btDofSpringConstraint->setStiffness(1, data.vec3SpringPos.y);
+	}
+
+	// 2 : translation Z
+	if (data.vec3SpringPos.z != 0.0f)
+	{
+		m_btDofSpringConstraint->enableSpring(2, true);
+		m_btDofSpringConstraint->setStiffness(2, data.vec3SpringPos.z);
+	}
+
+	// 3 : rotation X (3rd Euler rotational around new position of X axis, range [-PI+epsilon, PI-epsilon] )
+	// 4 : rotation Y (2nd Euler rotational around new position of Y axis, range [-PI/2+epsilon, PI/2-epsilon] )
+	// 5 : rotation Z (1st Euler rotational around Z axis, range [-PI+epsilon, PI-epsilon] )
+	m_btDofSpringConstraint->enableSpring(3, true);	m_btDofSpringConstraint->setStiffness(3, data.vec3SpringRot.x);
+	m_btDofSpringConstraint->enableSpring(4, true);	m_btDofSpringConstraint->setStiffness(4, data.vec3SpringRot.y);
+	m_btDofSpringConstraint->enableSpring(5, true);	m_btDofSpringConstraint->setStiffness(5, data.vec3SpringRot.z);
 }
 
 LN_NAMESPACE_END

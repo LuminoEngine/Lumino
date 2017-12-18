@@ -780,19 +780,6 @@ void EngineManager::renderFrame()
 		{
 			window->renderContents();
 		}
-		//
-		//if (m_uiManager != nullptr) {
-		//	g->Clear(ClearFlags::Depth, ColorF::White);	// TODO
-		//	g->Set2DRenderingMode(-1, 1);	// TODO
-		//	m_uiManager->getMainWindow()->renderUI();
-		//}
-
-		if (m_diagViewer != nullptr)
-		{
-			//m_diagViewer->render(g, Vector2(640, 480));	//TODO
-		}
-
-		//g->PopState();
 	}
 }
 

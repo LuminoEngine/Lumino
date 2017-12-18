@@ -55,7 +55,7 @@ void UIViewport::setBackbufferSize(int width, int height)
 }
 
 //------------------------------------------------------------------------------
-void UIViewport::addViewportLayer(RenderLayer* layer)
+void UIViewport::addViewportLayer(RenderView* layer)
 {
 	m_layerList.addRenderView(layer);
 }
@@ -105,7 +105,8 @@ void UIViewport::onRender(DrawingContext* g)
 	updateFramebufferIfNeeded();
 
 
-	g->setBuiltinEffectData(detail::BuiltinEffectData::DefaultData);
+	//g->setBuiltinEffectData(detail::BuiltinEffectData::DefaultData);
+	g->setVisualNodeParameters(nullptr);
 
 	// m_primaryLayerTarget にシーンを描画してもらう
 	g->pushState();
@@ -114,7 +115,10 @@ void UIViewport::onRender(DrawingContext* g)
 
 
 	Matrix transform;
-	makeViewBoxTransform(SizeI::fromFloatSize(getActualSize()), m_backbufferSize, &transform);
+	if (m_placement != ViewportPlacement::AutoResize)
+	{
+		makeViewBoxTransform(SizeI::fromFloatSize(getActualSize()), m_backbufferSize, &transform);
+	}
 
 	g->setViewportRect(RectI::fromFloatRect(getFinalGlobalRect()));
 	g->blit(m_primaryLayerTarget, transform);
@@ -225,7 +229,7 @@ UILayoutLayer::~UILayoutLayer()
 //------------------------------------------------------------------------------
 void UILayoutLayer::initialize()
 {
-	RenderLayer::initialize();
+	RenderView::initialize();
 	m_root = newObject<UILayoutView>(UIContext::getMainContext(), nullptr);	// TODO: コンテキスト変更とか
 
 																			// このルート要素はビュー全体に広がるが、ヒットテストは行わない。
@@ -254,7 +258,7 @@ UIElement* UILayoutLayer::hitTestUIElement(const Point& globalPt)
 {
 	auto* element = m_root->checkMouseHoverElement(globalPt);
 	if (element != nullptr) return element;
-	return RenderLayer::hitTestUIElement(globalPt);
+	return RenderView::hitTestUIElement(globalPt);
 }
 
 //------------------------------------------------------------------------------

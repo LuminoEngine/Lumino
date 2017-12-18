@@ -56,7 +56,7 @@ public:
 	virtual void flush() override;
 	virtual void onActivated() override {}
 	virtual void onDeactivated() override { flush(); }
-	virtual void onSetState(const DrawElementBatch* state);
+	virtual void onSetState(const RenderStage* state) override;
 
 	GraphicsManager* getManager() const { return m_manager; }
 
@@ -101,7 +101,7 @@ enum FlowDirection
 class TextRenderer
 {
 public:
-	TextRenderer(Bitmap* targetBitmap, RawFont* font);
+	TextRenderer(RawBitmap* targetBitmap, RawFont* font);
 	~TextRenderer();
 
 	void SetForeColor(Graphics::Color color) { m_foreColor = color; }
@@ -123,7 +123,7 @@ private:
 	void DrawLineHorizontal(const UTF32* text, int length, const RectI& lineArea);
 
 private:
-	Bitmap*			m_targetBitmap;
+	RawBitmap*			m_targetBitmap;
 	RawFont*		m_font;
 	Graphics::Color	m_foreColor;
 	Graphics::Color	m_strokeColor;

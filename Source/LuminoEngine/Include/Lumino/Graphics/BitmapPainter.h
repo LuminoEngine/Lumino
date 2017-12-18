@@ -14,9 +14,9 @@ class BitmapPainter
 public:
 
 	/**
-		@brief		指定した Bitmap へ描画を行う BitmapPainter を初期化します。
+		@brief		指定した RawBitmap へ描画を行う BitmapPainter を初期化します。
 	*/
-	BitmapPainter(Bitmap* targetBitmap);
+	BitmapPainter(RawBitmap* targetBitmap);
 
 	~BitmapPainter();
 
@@ -38,14 +38,14 @@ private:
 	uint32_t getColorByteSec(const Color32& color, PixelFormat format);
 
 public:
-	Bitmap*	m_bitmap;
+	RawBitmap*	m_bitmap;
 
 };
 
 class BitmapFilter
 {
 public:
-	void flipVertical(Bitmap* dst, const Bitmap* src);
+	void flipVertical(RawBitmap* dst, const RawBitmap* src);
 };
 
 LN_NAMESPACE_GRAPHICS_END

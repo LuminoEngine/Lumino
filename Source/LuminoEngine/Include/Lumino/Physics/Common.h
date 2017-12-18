@@ -28,6 +28,7 @@ class btGeneric6DofSpringConstraint;
 
 LN_NAMESPACE_BEGIN
 class CollisionShape;
+class PhysicsWorld2;
 
 namespace detail {
 
@@ -50,5 +51,45 @@ private:
 };
 
 } // namespace detail
+
+
+enum class PhysicsResourceType
+{
+	RigidBody,
+	CollisionBody,
+	Joint,
+};
+
+
+/** */
+class PhysicsResource2
+	: public Object
+{
+	LN_OBJECT;
+
+public:
+	PhysicsWorld2* getWorld() const;
+
+protected:
+	virtual void onBeforeStepSimulation();
+	virtual void onAfterStepSimulation();
+
+LN_CONSTRUCT_ACCESS:
+	PhysicsResource2(PhysicsResourceType type);
+	virtual ~PhysicsResource2();
+	void initialize();
+	void setWorld(PhysicsWorld2* owner);
+	PhysicsResourceType getPhysicsResourceType() const { return m_resourceType; }
+	bool isRemovingFromWorld() const { return m_removingFromWorld; }
+	void setRemovingFromWorld(bool value) { m_removingFromWorld = value; }
+
+private:
+	PhysicsResourceType	m_resourceType;
+	PhysicsWorld2*		m_ownerWorld;
+	bool				m_removingFromWorld;
+
+	friend class PhysicsWorld2;
+};
+
 LN_NAMESPACE_END
 

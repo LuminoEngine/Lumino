@@ -1,6 +1,7 @@
 ﻿
 #include "../Internal.h"
 #include <Lumino/Rendering/Rendering.h>
+#include <Lumino/Rendering/RenderView.h>
 #include "../Graphics/GraphicsManager.h"
 #include "ClusteredShadingSceneRenderer.h"
 
@@ -319,8 +320,8 @@ void LightClusters::addClusterData(int x, int y, int z, int lightId)
 // ClusteredShadingGeometryRenderingPass
 //==============================================================================
 
-static const String ClusteredShadingGeometryRenderingPass_TechniqueName = _T("ClusteredForward");
-static const String ClusteredShadingGeometryRenderingPass_PassName = _T("Geometry");
+static const String ClusteredShadingGeometryRenderingPass_TechniqueName = _T("Forward_Geometry");
+//static const String ClusteredShadingGeometryRenderingPass_PassName = _T("Geometry");
 
 ClusteredShadingGeometryRenderingPass::ClusteredShadingGeometryRenderingPass()
 {
@@ -344,28 +345,34 @@ void ClusteredShadingGeometryRenderingPass::initialize()
 	}
 	
 	// TODO: getPass 引数型
-	m_defaultShaderPass = m_defaultShader->findTechnique(ClusteredShadingGeometryRenderingPass_TechniqueName)->getPass(ClusteredShadingGeometryRenderingPass_PassName.c_str());
+	m_defaultShaderTechnique = m_defaultShader->findTechnique(ClusteredShadingGeometryRenderingPass_TechniqueName);
 
-	m_normalRenderTarget = Ref<RenderTargetTexture>::makeRef();
-	m_normalRenderTarget->createImpl(GraphicsManager::getInstance(), SizeI(640, 480), 1, TextureFormat::R32G32B32A32_Float);
+
+
+
+	m_unLightingShader = Shader::create(_T("D:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/UnLighting.fx"), ShaderCodeType::RawHLSL);
+	m_unLightingShaderTechnique = m_unLightingShader->getTechniques()[0];
 }
 
-//Shader* ClusteredShadingGeometryRenderingPass::getDefaultShader() const
-//{
-//	return m_defaultShader;
-//}
-
-
-void ClusteredShadingGeometryRenderingPass::selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy)
+void ClusteredShadingGeometryRenderingPass::selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy)
 {
-	outPolicy->shaderPass = selectShaderPassHelper(
-		material->m_shader,
-		ClusteredShadingGeometryRenderingPass_TechniqueName,
-		ClusteredShadingGeometryRenderingPass_PassName,
-		m_defaultShaderPass);
-	
-	outPolicy->shader = outPolicy->shaderPass->getOwnerShader();
+	// TODO: ユーザーシェーダから UnLit 取れればそれを使う
+	if (stageData.shadingModel == ShadingModel::UnLighting)
+	{
+		outPolicy->shaderTechnique = m_unLightingShaderTechnique;
+	}
+	else
+	{
+		outPolicy->shaderTechnique = selectShaderTechniqueHelper(
+			stageData.shader,
+			ClusteredShadingGeometryRenderingPass_TechniqueName,
+			//ClusteredShadingGeometryRenderingPass_PassName,
+			m_defaultShaderTechnique);
+	}
+
+	outPolicy->shader = outPolicy->shaderTechnique->getOwnerShader();
 	outPolicy->visible = true;
+
 }
 
 RenderTargetTexture* g_m_normalRenderTarget = nullptr;
@@ -420,11 +427,11 @@ void DepthPrepass::initialize()
 	m_depthMap->createImpl(GraphicsManager::getInstance(), SizeI(640, 480), 1, TextureFormat::R32G32B32A32_Float);
 }
 
-void DepthPrepass::selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy)
+void DepthPrepass::selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy)
 {
 	// TODO: とりあえずデフォルト強制
 	outPolicy->shader = m_defaultShader;
-	outPolicy->shaderPass = m_defaultShader->getTechniques().getAt(0)->getPasses().getAt(0);
+	outPolicy->shaderTechnique = m_defaultShader->getTechniques()[0];
 
 	// とありあえず全部可
 	outPolicy->visible = true;
@@ -471,11 +478,11 @@ void ShadowCasterPass::initialize()
 //	return m_defaultShader;
 //}
 
-void ShadowCasterPass::selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy)
+void ShadowCasterPass::selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy)
 {
 	// TODO: とりあえずデフォルト強制
 	outPolicy->shader = m_defaultShader;
-	outPolicy->shaderPass = m_defaultShader->getTechniques().getAt(0)->getPasses().getAt(0);
+	outPolicy->shaderTechnique = m_defaultShader->getTechniques()[0];
 
 	// とありあえず全部可
 	outPolicy->visible = true;

@@ -10,8 +10,15 @@
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
 namespace tr { class GizmoModel; }
-class CameraViewportLayer2;
+class WorldRenderView;
 namespace detail { class ClusteredShadingSceneRenderer; }
+
+/** カメラの投影方法 */
+enum class ProjectionMode
+{
+	Perspective,	/**< 透視投影 */
+	Orthographic,	/**< 平行投影 */
+};
 
 /**
 	@brief
@@ -68,6 +75,9 @@ public:
 	// 2D→3D
 	Vector3 viewportToWorldPoint(const Vector3& position) const;
 
+	void setProjectionMode(ProjectionMode value) { m_projectionMode = value; }
+	void setOrthographicSize(float value) { m_orthographicSize = value; }
+
 public:	// internal
 
 	/// 各行列を更新する (SceneNode::updateFrameHierarchy() の後で呼び出すこと)
@@ -103,23 +113,26 @@ protected:
 LN_INTERNAL_ACCESS:
 	CameraComponent();
 	virtual ~CameraComponent();
-	void initialize(CameraProjection proj);
+	void initialize(CameraWorld proj);
 	void setCameraDirection(CameraDirection mode) { m_directionMode = mode; }
-	CameraProjection getProjectionMode() const { return m_projectionMode; }
+	CameraWorld getCameraWorld() const { return m_cameraWorld; }
 
 	void setReflectionPlane(const Plane& plane) { m_reflectionPlane = plane; }
 
-	CameraViewportLayer2*	m_ownerLayer;
+	WorldRenderView*	m_ownerLayer;
 
-	CameraProjection	m_projectionMode;
+	CameraWorld	m_cameraWorld;
 
 private:
+	//ProjectionMode		m_cameraWorld;
 	CameraDirection		m_directionMode;
+	ProjectionMode		m_projectionMode;
 	Vector3				m_lookAt;
 	Vector3				m_upDirection;
 	float				m_fovY;
 	float				m_nearClip;
 	float				m_farClip;
+	float				m_orthographicSize;	// 縦方向のサイズ。横はアスペクト比から求める
 	ZSortDistanceBase	m_zSortDistanceBase;
 	CameraBehavior*		m_cameraBehavior;
 
@@ -147,8 +160,8 @@ private:
 /**
 	@brief
 */
-class CameraViewportLayer2
-	: public RenderLayer
+class WorldRenderView
+	: public WorldRenderViewBase
 {
 public:
 	void setDebugDrawFlags(WorldDebugDrawFlags flags);
@@ -159,8 +172,8 @@ protected:
 	virtual void onRoutedEvent(UIEventArgs* e) override;
 
 LN_INTERNAL_ACCESS:
-	CameraViewportLayer2();
-	virtual ~CameraViewportLayer2();
+	WorldRenderView();
+	virtual ~WorldRenderView();
 	void initialize(World* targetWorld, CameraComponent* hostingCamera);
 
 	detail::ClusteredShadingSceneRenderer* getClusteredShadingSceneRenderer() const { return m_clusteredShadingSceneRenderer; }
@@ -171,6 +184,24 @@ private:
 	Ref<detail::SceneRenderer>				m_internalRenderer;
 	detail::ClusteredShadingSceneRenderer*	m_clusteredShadingSceneRenderer;
 	WorldDebugDrawFlags						m_debugDrawFlags;
+};
+
+class OffscreenWorldRenderView
+	: public WorldRenderView
+{
+public:
+	void setRenderTarget(RenderTargetTexture* renderTarget);
+	RenderTargetTexture* getRenderTarget() const;
+	void render();
+
+LN_INTERNAL_ACCESS :
+	OffscreenWorldRenderView();
+	virtual ~OffscreenWorldRenderView();
+	void initialize(World* targetWorld, CameraComponent* hostingCamera);
+
+private:
+	Ref<RenderTargetTexture>	m_renderTarget;
+	Ref<DepthBuffer>			m_depthBuffer;
 };
 
 /**
@@ -263,7 +294,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	Camera();
 	virtual ~Camera();
-	void initialize(CameraProjection proj);
+	void initialize(CameraWorld proj);
 
 LN_INTERNAL_ACCESS:
 

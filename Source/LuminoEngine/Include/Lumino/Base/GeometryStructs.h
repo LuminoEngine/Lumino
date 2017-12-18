@@ -400,6 +400,7 @@ class RectI
 {
 public:
 	static const RectI	Zero;
+	static const RectI	Empty;
 
 	int		x;
 	int		y;

@@ -7,6 +7,7 @@
 #include <Lumino/Scene/SceneNode.h>
 #include <Lumino/Scene/WorldObject.h>
 #include <Lumino/Framework/GameScene.h>
+#include "../Rendering/RenderStage.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
@@ -65,6 +66,7 @@ SceneNode::~SceneNode()
 void SceneNode::initialize()
 {
 	m_manager = detail::EngineDomain::getSceneGraphManager();
+	m_visualNodeParameters = Ref<detail::VisualNodeParameters>::makeRef();
 }
 
 //------------------------------------------------------------------------------

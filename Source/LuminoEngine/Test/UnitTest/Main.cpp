@@ -17,20 +17,18 @@ void TestEnv::TearDown()
 //------------------------------------------------------------------------------
 void TestEnv::saveScreenShot(const Char* filePath)
 {
-	EngineManager::Instance->getGraphicsManager()->getMainSwapChain()->getBackBuffer()->lock()->save(filePath);
-	EngineManager::Instance->getGraphicsManager()->getMainSwapChain()->getBackBuffer()->unlock();
+	EngineManager::Instance->getGraphicsManager()->getMainSwapChain()->getBackBuffer()->readSurface()->save(filePath);
 }
 
 //------------------------------------------------------------------------------
 bool TestEnv::EqualsScreenShot(const Char* filePath, int passRate)
 {
-	bool r = TestEnv::EqualsBitmapFile(EngineManager::Instance->getGraphicsManager()->getMainSwapChain()->getBackBuffer()->lock(), filePath, passRate);
-	EngineManager::Instance->getGraphicsManager()->getMainSwapChain()->getBackBuffer()->unlock();
+	bool r = TestEnv::EqualsBitmapFile(EngineManager::Instance->getGraphicsManager()->getMainSwapChain()->getBackBuffer()->readSurface(), filePath, passRate);
 	return r;
 }
 
 //------------------------------------------------------------------------------
-Color32 MixPixels(Bitmap* bmp, int x, int y)
+Color32 MixPixels(RawBitmap* bmp, int x, int y)
 {
 	const Color32& c = bmp->getPixel(x, y);
 	int r = c.r; int g = c.g; int b = c.b; int a = c.a;
@@ -78,9 +76,9 @@ Color32 MixPixels(Bitmap* bmp, int x, int y)
 	return Color32(r / count, g / count, b / count, a / count);
 }
 
-bool TestEnv::EqualsBitmapFile(Bitmap* bmp1, const Char* filePath, int passRate)
+bool TestEnv::EqualsBitmapFile(RawBitmap* bmp1, const Char* filePath, int passRate)
 {
-	Bitmap bmp2(filePath);
+	RawBitmap bmp2(filePath);
 
 	bool ignoreAlpha = true;
 

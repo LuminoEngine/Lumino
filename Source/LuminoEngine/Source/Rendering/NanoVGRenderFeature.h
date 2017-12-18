@@ -165,7 +165,7 @@ protected:
 	virtual void flush() override {}
 	virtual void onActivated() override {}
 	virtual void onDeactivated() override { flush(); }
-	virtual void onSetState(const DrawElementBatch* state);
+	virtual void onSetState(const detail::RenderStage* state) override;
 
 private:
 	void executeCommandInternal(const NanoVGState& state, NanoVGCommandList* commandList);

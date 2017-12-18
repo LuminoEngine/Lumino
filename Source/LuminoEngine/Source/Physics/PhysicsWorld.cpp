@@ -218,7 +218,7 @@ void PhysicsWorld::stepSimulation(float elapsedTime)
 {
 	gcPhysicsObjects();
 
-	for (PhysicsObject* obj : m_physicsObjectList)
+	for (PhysicsObjectComponent* obj : m_physicsObjectList)
 	{
 		obj->onBeforeStepSimulation();
 	}
@@ -236,12 +236,12 @@ void PhysicsWorld::stepSimulation(float elapsedTime)
 
 	//---------------------------------------------------------
 	// 剛体の姿勢を同期 (演算結果 → ユーザー)
-	//LN_FOREACH(RigidBody* b, m_rigidBodyList.GetObjectArray())
+	//LN_FOREACH(RigidBodyComponent* b, m_rigidBodyList.GetObjectArray())
 	//{
 	//	b->SyncAfterStepSimulation();
 	//}
 
-	for (PhysicsObject* obj : m_physicsObjectList)
+	for (PhysicsObjectComponent* obj : m_physicsObjectList)
 	{
 		obj->onAfterStepSimulation();
 	}
@@ -258,7 +258,7 @@ void PhysicsWorld::drawDebugShapes(IDebugRenderer* renderer)
 }
 
 //------------------------------------------------------------------------------
-void PhysicsWorld::addPhysicsObject(PhysicsObject* physicsObject)
+void PhysicsWorld::addPhysicsObject(PhysicsObjectComponent* physicsObject)
 {
 	if (LN_REQUIRE(physicsObject != nullptr)) return;
 
@@ -279,7 +279,7 @@ void PhysicsWorld::addJoint(Joint* joint)
 }
 
 //------------------------------------------------------------------------------
-void PhysicsWorld::removePhysicsObject(PhysicsObject* physicsObject)
+void PhysicsWorld::removePhysicsObject(PhysicsObjectComponent* physicsObject)
 {
 	if (LN_REQUIRE(physicsObject != nullptr)) return;
 	if (physicsObject->getOwnerWorld() != this) return;
@@ -323,7 +323,7 @@ void PhysicsWorld::gcPhysicsObjects()
 
 
 ////------------------------------------------------------------------------------
-//void PhysicsWorld::AddRigidBody(RigidBody* rigidBody)
+//void PhysicsWorld::AddRigidBody(RigidBodyComponent* rigidBody)
 //{
 //	LN_FAIL_CHECK_ARG(rigidBody != nullptr) return;
 //
@@ -334,7 +334,7 @@ void PhysicsWorld::gcPhysicsObjects()
 //}
 //
 ////------------------------------------------------------------------------------
-//void PhysicsWorld::RemoveRigidBody(RigidBody* rigidBody)
+//void PhysicsWorld::RemoveRigidBody(RigidBodyComponent* rigidBody)
 //{
 //	LN_FAIL_CHECK_ARG(rigidBody != nullptr) return;
 //
@@ -355,16 +355,208 @@ void PhysicsWorld::gcPhysicsObjects()
 //void PhysicsWorld::stepSimulation(float elapsedTime)	// TODO: deltaTime? https://docs.unrealengine.com/latest/INT/API/Runtime/Engine/Engine/UWorld/Tick/index.html
 //{
 //	m_rigidBodyList.commit(
-//		[this](RigidBody* child) { m_impl->AddRigidBodyForMmd(child); },
-//		[this](RigidBody* child) { m_impl->remo(child); });
+//		[this](RigidBodyComponent* child) { m_impl->AddRigidBodyForMmd(child); },
+//		[this](RigidBodyComponent* child) { m_impl->remo(child); });
 //
 //	m_impl->stepSimulation(elapsedTime);
 //}
 //
 //------------------------------------------------------------------------------
-//void PhysicsWorld::AutoAddChild(RigidBody* child)
+//void PhysicsWorld::AutoAddChild(RigidBodyComponent* child)
 //{
 //	AddRigidBody(child);
 //}
+
+
+//==============================================================================
+// PhysicsWorld2
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(PhysicsWorld2, Object);
+
+PhysicsWorld2::PhysicsWorld2()
+{
+}
+
+PhysicsWorld2::~PhysicsWorld2()
+{
+}
+
+void PhysicsWorld2::initialize()
+{
+	Object::initialize();
+
+	// ↓以下で出てくる単語とか
+	//		http://nullorempry.jimdo.com/2012/03/10/bullet-physics%E3%81%AE%E3%81%8A%E5%8B%89%E5%BC%B7/
+
+	int maxNumOutstandingTasks = 4;
+
+	// コリジョンコンフィグ
+	btDefaultCollisionConstructionInfo defaultCollisionConstructionInfo;
+	//defaultCollisionConstructionInfo.m_defaultMaxPersistentManifoldPoolSize = 32768;
+	m_btCollisionConfig = new btDefaultCollisionConfiguration(defaultCollisionConstructionInfo);
+	// ソフトボディ使うとき
+	//m_btCollisionConfig = LN_NEW btSoftBodyRigidBodyCollisionConfiguration();// 
+
+	// コリジョンディスパッチャ
+	m_btCollisionDispatcher = LN_NEW btCollisionDispatcher(m_btCollisionConfig);
+
+	// ブロードフェーズアルゴリズム (衝突検出のためのグループ分けアルゴリズム)
+	//		btDbvtBroadphase				AABB木による高速で動的な階層空間を使います。
+	//		btAxisSweep3 bt32BitAxisSweep3	逐次3Dスイープ&プルーン(incremental 3D sweep and prune)を実装しています。
+	//		btCudaBroadphase				GPUを使用した高速な一様グリッドを実装しています。http://bulletjpn.web.fc2.com/05_BulletCollisionDetection.html
+	m_btBroadphase = LN_NEW btDbvtBroadphase();
+
+	// ソルバ
+	m_btSolver = new btSequentialImpulseConstraintSolver();
+
+	// ワールドの作成
+	//m_btWorld = LN_NEW btSoftRigidDynamicsWorld( m_btCollisionDispatcher, m_btBroadphase, m_btSolver, m_btCollisionConfig, NULL );
+	m_btWorld = new btDiscreteDynamicsWorld(m_btCollisionDispatcher, m_btBroadphase, m_btSolver, m_btCollisionConfig);
+
+	m_debugDrawer = LN_NEW PhysicsDebugDrawer();
+	m_btWorld->setDebugDrawer(m_debugDrawer);
+	//m_btWorld->setInternalTickCallback(pickingPreTickCallback,this,true);
+	//m_btWorld->getDispatchInfo().m_enableSPU = true;
+
+	//btOverlapFilterCallback * filterCallback = new FilterCallback();
+	//m_btWorld->getPairCache()->setOverlapFilterCallback( &gFilterCallback );
+
+#if 0	// MMM setting (デフォルトは 10)
+	m_btWorld->getSolverInfo().m_numIterations = 4;
+#endif
+
+	// 重力		TODO: 初期値
+	m_btWorld->setGravity(btVector3(0.0f, -9.81f, 0.0f));
+
+	m_btGhostPairCallback = new btGhostPairCallback();
+	m_btWorld->getPairCache()->setInternalGhostPairCallback(m_btGhostPairCallback);
+
+	m_softBodyWorldInfo = new btSoftBodyWorldInfo();
+	m_softBodyWorldInfo->air_density = 1.2f;
+	m_softBodyWorldInfo->water_density = 0;
+	m_softBodyWorldInfo->water_offset = 0;
+	m_softBodyWorldInfo->water_normal = btVector3(0.0f, 0.0f, 0.0f);
+	m_softBodyWorldInfo->m_gravity = m_btWorld->getGravity();
+	m_softBodyWorldInfo->m_broadphase = m_btBroadphase;
+	m_softBodyWorldInfo->m_dispatcher = m_btCollisionDispatcher;
+	m_softBodyWorldInfo->m_sparsesdf.Initialize();
+	m_softBodyWorldInfo->m_sparsesdf.Reset();
+}
+
+void PhysicsWorld2::finalize_()
+{
+	gcPhysicsObjects(true);
+}
+
+void PhysicsWorld2::setGravity(const Vector3& gravity)
+{
+	m_btWorld->setGravity(btVector3(gravity.x, gravity.y, gravity.z));
+}
+
+void PhysicsWorld2::add(PhysicsResource2* obj)
+{
+	if (LN_REQUIRE(obj)) return;
+	m_physicsResources.add(obj);
+	obj->setRemovingFromWorld(false);
+	obj->setWorld(this);
+}
+
+void PhysicsWorld2::remove(PhysicsResource2* obj)
+{
+	if (LN_REQUIRE(obj)) return;
+	obj->setRemovingFromWorld(true);
+}
+
+void PhysicsWorld2::stepSimulation(float elapsedTime)
+{
+	// 衝突フィルタ情報が更新されたオブジェクトは再登録
+	for (auto& res : m_physicsResources)
+	{
+		if (res->getPhysicsResourceType() == PhysicsResourceType::CollisionBody ||
+			res->getPhysicsResourceType() == PhysicsResourceType::RigidBody)
+		{
+			auto* obj = static_cast<PhysicsObject2*>(res.get());
+			if (obj->isCollisionFilterChanged())
+			{
+				removeObjectInternal(obj);
+				addObjectInternal(obj);
+				obj->setCollisionFilterChanged(false);
+			}
+		}
+	}
+
+	//for (PhysicsObjectComponent* obj : m_physicsObjectList)
+	//{
+	//	obj->onBeforeStepSimulation();
+	//}
+
+	const float internalUnit = 1.0f / 60.0f;
+
+	// http://d.hatena.ne.jp/ousttrue/20100425/1272165711
+	// m_elapsedTime が 1.0(1秒) より小さい間は 16ms を最大 60 回繰り返して追いつこうとする設定。
+	// m_elapsedTime が 1.0 を超えている場合は追いつけずに、物体の移動が遅くなる。
+	m_btWorld->stepSimulation(elapsedTime, 120, 0.008333334f);
+
+	// m_elapsedTime が 16ms より大きい場合は、1回 16ms 分のシミュレーションを可能な限り繰り返して m_elapsedTime に追いついていく設定。
+	// 遅れるほど計算回数が増えるので、最終的に破綻するかもしれない。
+	//m_btWorld->stepSimulation(m_elapsedTime, 1 + (int)(m_elapsedTime / internalUnit), internalUnit);
+
+	//---------------------------------------------------------
+	// 剛体の姿勢を同期 (演算結果 → ユーザー)
+	//LN_FOREACH(RigidBodyComponent* b, m_rigidBodyList.GetObjectArray())
+	//{
+	//	b->SyncAfterStepSimulation();
+	//}
+
+	//for (PhysicsObjectComponent* obj : m_physicsObjectList)
+	//{
+	//	obj->onAfterStepSimulation();
+	//}
+
+	gcPhysicsObjects(false);
+}
+
+// stepSimulation() からの衝突コールバック内でオブジェクトが削除されることに備える
+void PhysicsWorld2::gcPhysicsObjects(bool force)
+{
+	for (auto itr = m_physicsResources.begin(); itr != m_physicsResources.end();)
+	{
+		if (force || (*itr)->isRemovingFromWorld() || (*itr)->getReferenceCount() == 1)
+		{
+			itr = m_physicsResources.erase(itr);
+			removeObjectInternal((*itr));
+		}
+		else
+		{
+			++itr;
+		}
+	}
+}
+
+void PhysicsWorld2::addObjectInternal(PhysicsResource2* obj)
+{
+	switch (obj->getPhysicsResourceType())
+	{
+	case PhysicsResourceType::RigidBody:
+		m_btWorld->addRigidBody(static_cast<RigidBody2*>(obj)->getBtRigidBody());
+		break;
+	default:
+		LN_UNREACHABLE();
+		break;
+	}
+}
+
+void PhysicsWorld2::removeObjectInternal(PhysicsResource2* obj)
+{
+	switch (obj->getPhysicsResourceType())
+	{
+	case PhysicsResourceType::RigidBody:
+		m_btWorld->addRigidBody(static_cast<RigidBody2*>(obj)->getBtRigidBody());
+		break;
+	default:
+		LN_UNREACHABLE();
+		break;
+	}
+}
 
 LN_NAMESPACE_END

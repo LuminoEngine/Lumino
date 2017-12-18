@@ -40,8 +40,8 @@ enum class SceneNodeRenderingMode
 	NonShaderVisible,
 };
 
-/// カメラのプロジェクション
-enum CameraProjection
+/// 
+enum CameraWorld
 {
 	CameraProjection_2D = 0,	///< 2D モード
 	CameraProjection_3D,		///< 3D モード

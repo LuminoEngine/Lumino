@@ -177,10 +177,10 @@ LightInfo _LN_GetLightInfoClusterd(int index)
 	
 	//float4 posAndRange = tex2D(pointLightInfoSampler, tc0.xy);
 	//float4 spotDirection = tex2D(pointLightInfoSampler, tc1.xy);
-	float4 posAndRange = tex2D(pointLightInfoSampler, _LN_FlipV(float2(0.0, y) * s));
-	float4 spotDirection = tex2D(pointLightInfoSampler, _LN_FlipV(float2(1.0, y) * s));
-	float4 spotAngle = tex2D(pointLightInfoSampler, _LN_FlipV(float2(2.0, y) * s));
-	float4 color = tex2D(pointLightInfoSampler, _LN_FlipV(float2(3.0, y) * s));
+	float4 posAndRange = tex2D(pointLightInfoSampler, (float2(0.0, y) * s));
+	float4 spotDirection = tex2D(pointLightInfoSampler, (float2(1.0, y) * s));
+	float4 spotAngle = tex2D(pointLightInfoSampler, (float2(2.0, y) * s));
+	float4 color = tex2D(pointLightInfoSampler, (float2(3.0, y) * s));
 	
 	LightInfo light;
 	light.position = posAndRange.xyz;
@@ -217,9 +217,9 @@ GlobalLightInfo _LN_GetGlobalLightInfo(int index)
 	float y = (float)index;
 	y += 0.5;
 	GlobalLightInfo info;
-	info.color = tex2D(ln_GlobalLightInfoSampler, _LN_FlipV(float2(0.0, y) * s));
-	info.groundColor = tex2D(ln_GlobalLightInfoSampler, _LN_FlipV(float2(1.5, y) * s));
-	info.directionAndType = tex2D(ln_GlobalLightInfoSampler, _LN_FlipV(float2(2.5, y) * s));
+	info.color = tex2D(ln_GlobalLightInfoSampler, (float2(0.0, y) * s));
+	info.groundColor = tex2D(ln_GlobalLightInfoSampler, (float2(1.5, y) * s));
+	info.directionAndType = tex2D(ln_GlobalLightInfoSampler, (float2(2.5, y) * s));
 	return info;
 }
 
@@ -587,14 +587,9 @@ technique ClusteredForward
 }
 */
 
-technique ClusteredForward
+technique Forward_Geometry
 {
-	//pass ShadowCaster
-	//{
-	//	VertexShader = compile vs_3_0 _VS_ClusteredForward_ShadowCaster();
-	//	PixelShader	 = compile ps_3_0 _PS_ClusteredForward_ShadowCaster();
-	//}
-	pass Geometry
+	pass Pass1
 	{
 		VertexShader = compile vs_3_0 _lngs_VS_ClusteredForward_Geometry();
 		PixelShader	 = compile ps_3_0 _lngs_PS_ClusteredForward_Geometry();

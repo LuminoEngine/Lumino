@@ -7,7 +7,7 @@
 
 LN_NAMESPACE_BEGIN
 class EngineDiagCore;
-class Bitmap;
+class RawBitmap;
 class PlatformWindow;
 
 LN_NAMESPACE_GRAPHICS_BEGIN
@@ -331,7 +331,7 @@ public:
 
 	//void Clear(const Color& color);
 
-	void setSubData(const PointI& point, Bitmap* bitmap);
+	void setSubData(const PointI& point, RawBitmap* bitmap);
 
 
 
@@ -359,36 +359,40 @@ public:
 	// (得られるデータは上下反転)
 	virtual void getData(const RectI& rect, void* outData) = 0;
 
-	/// ロック
-	virtual Bitmap* lock() = 0;
+	// 得られるデータは上下反転していない。レイアウトは RGBA
+	virtual void readData(void* outData) {}
 
-	/// アンロック
-	virtual void unlock() = 0;
+
+	///// ロック (バッファは上下反転)
+	//virtual RawBitmap* lock() = 0;
+
+	///// アンロック
+	//virtual void unlock() = 0;
 
 protected:
 	virtual ~ITexture();
 
 public:
-	class ScopedLock
-	{
-	public:
-		ScopedLock(ITexture* obj)
-		{
-			m_obj = obj;
-			m_bitmap = m_obj->lock();
-		}
-		~ScopedLock()
-		{
-			m_obj->unlock();
-		}
-		Bitmap* GetBitmap()
-		{
-			return m_bitmap;
-		}
-	private:
-		ITexture*			m_obj;
-		Bitmap*	m_bitmap;
-	};
+	//class ScopedLock
+	//{
+	//public:
+	//	ScopedLock(ITexture* obj)
+	//	{
+	//		m_obj = obj;
+	//		m_bitmap = m_obj->lock();
+	//	}
+	//	~ScopedLock()
+	//	{
+	//		m_obj->unlock();
+	//	}
+	//	RawBitmap* GetBitmap()
+	//	{
+	//		return m_bitmap;
+	//	}
+	//private:
+	//	ITexture*			m_obj;
+	//	RawBitmap*	m_bitmap;
+	//};
 };
 
 //class ITexture2D

@@ -44,6 +44,9 @@ void TransitionPostEffect::initialize()
 		m_withoutMaskShader.varFreezedTexture = m_withoutMaskShader.shader->findVariable(_LT("g_FreezedTexture"));
 	}
 
+	m_material = CommonMaterial::create();
+	m_material->setShader(m_withoutMaskShader.shader);
+
 	m_factor = 1.0f;
 }
 
@@ -114,13 +117,13 @@ void TransitionPostEffect::onRender(DrawList* context, RenderTargetTexture* sour
 
 
 	// TODO: scoped
-	Ref<Shader> oldShader = context->getShader();
-	context->setShader(shader);
+	//Ref<Shader> oldShader = context->getShader();
+	//context->setShader(shader);
 
 	// エフェクト適用済みの描画結果を前回の描画結果として毎回覚えておく
-	context->blit(source, m_primaryTarget, Matrix::Identity);
+	context->blit(source, m_primaryTarget, m_material);
 
-	context->setShader(oldShader);
+	//context->setShader(oldShader);
 	context->blit(m_primaryTarget, destination, Matrix::Identity);
 }
 

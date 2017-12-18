@@ -5,13 +5,13 @@
 
 LN_NAMESPACE_BEGIN
 class PhysicsWorld;
-
+class PhysicsWorld2;
 
 /**
 	@brief	
 */
 LN_CLASS()
-class PhysicsObject
+class PhysicsObjectComponent
 	: public Component
 {
 	LN_OBJECT;
@@ -32,8 +32,8 @@ protected:
 	virtual void onRemovedFromWorld();
 
 LN_CONSTRUCT_ACCESS:
-	PhysicsObject();
-	virtual ~PhysicsObject();
+	PhysicsObjectComponent();
+	virtual ~PhysicsObjectComponent();
 	void initialize();
 
 private:
@@ -42,6 +42,35 @@ private:
 	uint16_t		m_collisionFilterMask;
 
 	friend class PhysicsWorld;
+};
+
+
+
+/** */
+class PhysicsObject2
+	: public PhysicsResource2
+{
+	LN_OBJECT;
+public:
+	void setCollisionFilterGroup(uint16_t flags);
+	uint16_t getCollisionFilterGroup() const;
+
+	void setCollisionFilterMask(uint16_t flags);
+	uint16_t getCollisionFilterMask() const;
+
+LN_CONSTRUCT_ACCESS:
+	PhysicsObject2(PhysicsResourceType type);
+	virtual ~PhysicsObject2();
+	void initialize();
+	bool isCollisionFilterChanged() const { return m_collisionFilterChanged; }
+	void setCollisionFilterChanged(bool value) { m_collisionFilterChanged = value; }
+
+private:
+	uint16_t			m_collisionFilterGroup;
+	uint16_t			m_collisionFilterMask;
+	bool				m_collisionFilterChanged;
+
+	friend class PhysicsWorld2;
 };
 
 LN_NAMESPACE_END

@@ -9,6 +9,7 @@
 #include <Lumino/Scene/Fog.h>
 #include <Lumino/World.h>
 #include <Lumino/UI/UIEvent.h>
+#include "../Graphics/RenderTargetTextureCache.h"
 
 // TODO: CameraViewportLayer::GetDefault2D() あたりを見直せばいらなくなる
 #include <Lumino/UI/UIFrameWindow.h>
@@ -36,12 +37,14 @@ CameraComponent* CameraComponent::getMain2DCamera()
 //------------------------------------------------------------------------------
 CameraComponent::CameraComponent()
 	: SceneNode()
-	, m_projectionMode()
+	, m_cameraWorld()
 	, m_directionMode(CameraDirection::transform)
+	, m_projectionMode(ProjectionMode::Perspective)
 	, m_upDirection(Vector3::UnitY)
 	, m_fovY(Math::PI / 3.0f)	// Unity based.
 	, m_nearClip(0.3f)			// Unity based.
 	, m_farClip(1000.0f)
+	, m_orthographicSize(5.0f)	// Unity based.
 	, m_zSortDistanceBase(ZSortDistanceBase::CameraDistance)
 	, m_cameraBehavior(nullptr)
 {
@@ -55,18 +58,18 @@ CameraComponent::~CameraComponent()
 }
 
 //------------------------------------------------------------------------------
-void CameraComponent::initialize(CameraProjection proj)
+void CameraComponent::initialize(CameraWorld proj)
 {
 	SceneNode::initialize();
-	m_projectionMode = proj;
+	m_cameraWorld = proj;
 
-	if (m_projectionMode == CameraProjection_2D)
+	if (m_cameraWorld == CameraProjection_2D)
 	{
 		m_nearClip = 0.0f;	// TODO
 		m_farClip = 1000.0f;
 		m_zSortDistanceBase = ZSortDistanceBase::CameraScreenDistance;
 	}
-	else if (m_projectionMode == CameraProjection_3D)
+	else if (m_cameraWorld == CameraProjection_3D)
 	{
 		m_nearClip = 0.3f;
 		m_farClip = 1000.0f;
@@ -108,7 +111,7 @@ void CameraComponent::updateMatrices(const Size& viewSize)
 	const Matrix& worldMatrix = getOwnerObject()->transform.getWorldMatrix();
 
 	// 2D モード
-	if (m_projectionMode == CameraProjection_2D)
+	if (m_cameraWorld == CameraProjection_2D)
 	{
 		// 正面方向
 		Vector3 direction = Vector3::transformCoord(Vector3(0, 0, 1), worldMatrix);
@@ -154,9 +157,18 @@ void CameraComponent::updateMatrices(const Size& viewSize)
 			m_viewMatrix = Matrix::makeReflection(m_reflectionPlane) * m_viewMatrix;
 		}
 
-		// プロジェクション行列の更新
-		// https://sites.google.com/site/mmereference/home/Annotations-and-Semantics-of-the-parameter/2-1-geometry-translation
-		m_projMatrix = Matrix::makePerspectiveFovLH(m_fovY, viewSize.width / viewSize.height, m_nearClip, m_farClip);
+		if (m_projectionMode == ProjectionMode::Perspective)
+		{
+			// プロジェクション行列の更新
+			// https://sites.google.com/site/mmereference/home/Annotations-and-Semantics-of-the-parameter/2-1-geometry-translation
+			m_projMatrix = Matrix::makePerspectiveFovLH(m_fovY, viewSize.width / viewSize.height, m_nearClip, m_farClip);
+		}
+		else
+		{
+			float aspect = viewSize.width / viewSize.height;
+			float width = m_orthographicSize * aspect;
+			m_projMatrix = Matrix::makeOrthoLH(width, m_orthographicSize, m_nearClip, m_farClip);
+		}
 
 		m_viewProjMatrix = m_viewMatrix * m_projMatrix;
 
@@ -776,11 +788,11 @@ bool CameraViewportLayer::OnPlatformEvent(const PlatformEventArgs& e)
 #endif
 
 //==============================================================================
-// CameraViewportLayer2
+// WorldRenderView
 //==============================================================================
 
 //------------------------------------------------------------------------------
-CameraViewportLayer2::CameraViewportLayer2()
+WorldRenderView::WorldRenderView()
 	: m_targetWorld(nullptr)
 	, m_hostingCamera(nullptr)
 	, m_clusteredShadingSceneRenderer(nullptr)
@@ -789,13 +801,14 @@ CameraViewportLayer2::CameraViewportLayer2()
 }
 
 //------------------------------------------------------------------------------
-void CameraViewportLayer2::initialize(World* targetWorld, CameraComponent* hostingCamera)
+void WorldRenderView::initialize(World* targetWorld, CameraComponent* hostingCamera)
 {
+	RenderView::initialize();
 	m_targetWorld = targetWorld;
 	m_hostingCamera = hostingCamera;
 	m_hostingCamera->m_ownerLayer = this;
 
-	if (m_hostingCamera->getProjectionMode() == CameraProjection_3D)
+	if (m_hostingCamera->getCameraWorld() == CameraProjection_3D)
 	{
 #if 1
 		auto internalRenderer = Ref<detail::ClusteredShadingSceneRenderer>::makeRef();
@@ -823,19 +836,19 @@ void CameraViewportLayer2::initialize(World* targetWorld, CameraComponent* hosti
 }
 
 //------------------------------------------------------------------------------
-CameraViewportLayer2::~CameraViewportLayer2()
+WorldRenderView::~WorldRenderView()
 {
 	m_hostingCamera->m_ownerLayer = nullptr;
 }
 
 //------------------------------------------------------------------------------
-void CameraViewportLayer2::setDebugDrawFlags(WorldDebugDrawFlags flags)
+void WorldRenderView::setDebugDrawFlags(WorldDebugDrawFlags flags)
 {
 	m_debugDrawFlags = flags;
 }
 
 //------------------------------------------------------------------------------
-void CameraViewportLayer2::renderScene(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
+void WorldRenderView::renderScene(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 	// カメラ行列の更新
 	m_hostingCamera->updateMatrices(getViewSize());
@@ -847,7 +860,7 @@ void CameraViewportLayer2::renderScene(RenderTargetTexture* renderTarget, DepthB
 	if (m_clusteredShadingSceneRenderer)
 	{
 		// TODO: 暫定
-		if (m_hostingCamera->getProjectionMode() == CameraProjection_3D)
+		if (m_hostingCamera->getCameraWorld() == CameraProjection_3D)
 		{
 			detail::FogParams params;
 			Fog* fog = static_cast<World3D*>(m_targetWorld)->getFog();
@@ -886,12 +899,69 @@ void CameraViewportLayer2::renderScene(RenderTargetTexture* renderTarget, DepthB
 }
 
 //------------------------------------------------------------------------------
-void CameraViewportLayer2::onRoutedEvent(UIEventArgs* e)
+void WorldRenderView::onRoutedEvent(UIEventArgs* e)
 {
 	m_targetWorld->onUIEvent(e);
 	if (e->handled) return;
 
-	RenderLayer::onRoutedEvent(e);
+	RenderView::onRoutedEvent(e);
+}
+
+
+
+//==============================================================================
+// OffscreenWorldRenderView
+//==============================================================================
+OffscreenWorldRenderView::OffscreenWorldRenderView()
+	: WorldRenderView()
+{
+}
+
+OffscreenWorldRenderView::~OffscreenWorldRenderView()
+{
+}
+
+void OffscreenWorldRenderView::initialize(World* targetWorld, CameraComponent* hostingCamera)
+{
+	WorldRenderView::initialize(targetWorld, hostingCamera);
+}
+
+void OffscreenWorldRenderView::setRenderTarget(RenderTargetTexture* renderTarget)
+{
+	m_renderTarget = renderTarget;
+
+	if (m_renderTarget)
+	{
+		setViewSize(m_renderTarget->getSize().toFloatSize());
+	}
+}
+
+RenderTargetTexture* OffscreenWorldRenderView::getRenderTarget() const
+{
+	return m_renderTarget;
+}
+
+void OffscreenWorldRenderView::render()
+{
+	if (!m_renderTarget) return;
+
+	detail::FrameBufferCache* fbc = getGraphicsManager()->getFrameBufferCache();
+	detail::FrameBufferCache::ScopedSection fbcs(fbc);
+
+	DepthBuffer* depthBuffer = m_depthBuffer;
+	if (!depthBuffer)
+	{
+		depthBuffer = fbc->depthBufferCache.requestObject(m_renderTarget->getSize(), TextureFormat::D24S8);
+	}
+
+
+	renderScene(m_renderTarget, depthBuffer);
+
+
+	if (depthBuffer != m_depthBuffer)
+	{
+		fbc->depthBufferCache.releaseObject(depthBuffer);
+	}
 }
 
 //==============================================================================
@@ -926,7 +996,7 @@ Camera::~Camera()
 }
 
 //------------------------------------------------------------------------------
-void Camera::initialize(CameraProjection proj)
+void Camera::initialize(CameraWorld proj)
 {
 	WorldObject::initialize();
 	m_component = newObject<CameraComponent>(proj);

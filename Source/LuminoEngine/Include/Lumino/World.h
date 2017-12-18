@@ -1,6 +1,6 @@
 ﻿
 #pragma once
-#include "Rendering/Rendering.h"	// TODO: for WorldRenderView
+#include "Rendering/Rendering.h"	// TODO: for WorldRenderViewBase
 #include "UI/UIEvent.h"
 
 LN_NAMESPACE_BEGIN
@@ -18,10 +18,10 @@ class SceneGraph3D;
 class PhysicsWorld;
 class WorldObject;
 class UIEventArgs;
-class OffscreenWorldView;
+class OffscreenWorldSubRenderView;
 class RenderView;
 class RenderingContext;
-class WorldRenderView;
+class WorldRenderViewBase;
 
 /** */
 LN_ENUM_FLAGS(WorldDebugDrawFlags)
@@ -48,8 +48,8 @@ public:
 
 	void addWorldObject(WorldObject* obj, bool autoRelease /*= false*/);
 	void removeWorldObject(WorldObject* obj);
-	void addOffscreenWorldView(OffscreenWorldView* view);
-	void removeOffscreenWorldView(OffscreenWorldView* view);
+	void addOffscreenWorldView(OffscreenWorldSubRenderView* view);
+	void removeOffscreenWorldView(OffscreenWorldSubRenderView* view);
 protected:
 	//virtual SceneGraph* GetSceneGraph() = 0;
 
@@ -70,8 +70,8 @@ LN_INTERNAL_ACCESS:
 	virtual void onInternalAnimationUpdate(float deltaSceonds);
 	virtual void onPostUpdate(float deltaSceonds);
 
-	void renderRoot(WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags);
-	virtual void render(RenderingContext* context, WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen = nullptr);
+	void renderRoot(WorldRenderViewBase* renderView, WorldDebugDrawFlags debugDrawFlags);
+	virtual void render(RenderingContext* context, WorldRenderViewBase* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldSubRenderView* offscreen = nullptr);
 	void executeDrawListRendering(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer);
 	virtual void onUIEvent(UIEventArgs* e);	// この World をホストする UIViewport のイベントが流れてくる
 
@@ -84,7 +84,7 @@ LN_INTERNAL_ACCESS:
 	//Ref<DrawList>					m_insideWorldRenderer;
 	Ref<DrawList>					m_debugRenderer;
 	Ref<CommonMaterial>					m_debugRendererDefaultMaterial;	// TODO: DebugDrawList みたいに派生させてまとめたほうがいいかな・・・
-	List<Ref<OffscreenWorldView>>	m_offscreenWorldViewList;
+	List<Ref<OffscreenWorldSubRenderView>>	m_offscreenWorldViewList;
 	List<int>							m_offscreenIdStorage;
 
 	UIEventHandler::EventType			m_onEvent;
@@ -114,16 +114,14 @@ LN_INTERNAL_ACCESS:
 	Camera* getMainCamera() const;
 	virtual void beginUpdateFrame() override;
 	virtual void onUpdate(float deltaSceonds) override;
-	virtual void render(RenderingContext* context, WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen) override;
+	virtual void render(RenderingContext* context, WorldRenderViewBase* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldSubRenderView* offscreen) override;
 
 private:
 	Ref<SceneGraph2D>		m_sceneGraph;
 	Ref<Camera>				m_mainCamera;
 };
 
-/**
-	@brief		
-*/
+/** */
 class World3D
 	: public World
 {
@@ -131,24 +129,6 @@ class World3D
 public:
 	void setVisibleGridPlane(bool visible) { m_visibleGridPlane = visible; }
 	//virtual DrawList* getRenderer() const override;
-
-	/** 環境光の色を取得します。 */
-	const Color& getAmbientColor() { return m_globalRenderSettings.ambientColor; }
-
-	/** 環境光の色を設定します。アルファ値を影響度とし、シーン全体のオブジェクトへ一様に影響します。(default: Color(0.25, 0.25, 0.25, 1.0)) */
-	void setAmbientColor(const Color& color) { m_globalRenderSettings.ambientColor = color; }
-
-	/** 半球ライティングのための空の環境光の色を取得します。 */
-	const Color& getAmbientSkyColor() { return m_globalRenderSettings.ambientSkyColor; }
-
-	/** 半球ライティングのための空の環境光の色を設定します。(default: Color(0, 0, 0, 0)) */
-	void setAmbientSkyColor(const Color& color) { m_globalRenderSettings.ambientSkyColor = color; }
-
-	/** 半球ライティングのための地面の環境光の色を取得します。 */
-	const Color& getAmbientGroundColor() { return m_globalRenderSettings.ambientGroundColor; }
-
-	/** 半球ライティングのための地面の環境光の色を設定します。(default: Color(0, 0, 0, 0)) */
-	void setAmbientGroundColor(const Color& color) { m_globalRenderSettings.ambientGroundColor = color; }
 
 	/** フォグの色を取得します。 */
 	const Color& getFogColor() { return m_globalRenderSettings.fogColor; }
@@ -180,7 +160,7 @@ LN_INTERNAL_ACCESS:
 	const detail::SceneGlobalRenderSettings& getGlobalRenderSettings() const { return m_globalRenderSettings; }
 	virtual void beginUpdateFrame() override;
 	virtual void onInternalPhysicsUpdate(float deltaSceonds) override;
-	virtual void render(RenderingContext* context, WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen) override;
+	virtual void render(RenderingContext* context, WorldRenderViewBase* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldSubRenderView* offscreen) override;
 
 
 private:

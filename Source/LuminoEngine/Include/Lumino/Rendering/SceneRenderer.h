@@ -78,13 +78,15 @@ private:
 
 	List<detail::ShadowCasterPass*>	m_renderingShadowCasterPassList;
 	//friend class RenderingPass2;
+	Ref<CommonMaterial>				m_defaultMaterial;
 };
 
 
 struct ElementRenderingPolicy
 {
 	Shader*		shader;		// null もありえる。Clear など。
-	ShaderPass*	shaderPass;
+	//ShaderPass*	shaderPass;
+	ShaderTechnique*	shaderTechnique;
 	bool		visible;
 };
 
@@ -92,13 +94,21 @@ class RenderingPass2
 	: public Object
 {
 public:
+	struct RenderStageFinalData
+	{
+		RenderStage* stage;
+		CommonMaterial* material;
+		Shader* shader;
+		ShadingModel shadingModel;
+	};
+
 	RenderingPass2();
 	virtual ~RenderingPass2();
 	//void initialize(GraphicsManager* manager);
 
 	//virtual Shader* getDefaultShader() const = 0;
 
-	virtual void selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy) = 0;
+	virtual void selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy) = 0;
 
 	//virtual void RenderElement(DrawList* renderer, DrawElement* element);
 	//virtual void RenderElementSubset(DrawList* renderer, DrawElement* element, int subsetIndex);
@@ -113,10 +123,10 @@ protected:
 	//virtual ShaderPass* selectShaderPass(Shader* shader);
 
 	// TODO: name は hash でもいいかな
-	ShaderPass* selectShaderPassHelper(Shader* materialShader, const String& techniqueName, const String& passName, ShaderPass* defaultPass);
+	ShaderTechnique* selectShaderTechniqueHelper(Shader* materialShader, const String& techniqueName, ShaderTechnique* defaultTech);
 
 	// Obsolete 古い記述用。
-	ShaderPass* selectShaderPassHelperSimple(Shader* materialShader, Shader* defaultShader);
+	ShaderTechnique* selectShaderTechniqueHelperSimple(Shader* materialShader, Shader* defaultShader);
 
 private:
 };
@@ -139,7 +149,7 @@ public:
 	NonShadingRenderingPass();
 	virtual ~NonShadingRenderingPass();
 	void initialize(GraphicsManager* manager);
-	virtual void selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy) override;
+	virtual void selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy) override;
 	//virtual Shader* getDefaultShader() const override;
 
 private:
@@ -173,7 +183,7 @@ public:
 	ForwardShadingRenderingPass();
 	virtual ~ForwardShadingRenderingPass();
 	void initialize(GraphicsManager* manager);
-	virtual void selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy) override;
+	virtual void selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy) override;
 	//virtual Shader* getDefaultShader() const override;
 
 private:

@@ -6,6 +6,7 @@ namespace detail {
 class DrawElementBatch;
 struct ElementInfo;
 struct SubsetInfo;
+class RenderStage;
 
 class IRenderFeature
 {
@@ -15,7 +16,7 @@ public:
 	virtual void onActivated() = 0;
 	virtual void onDeactivated() = 0;
 
-	virtual void onSetState(const DrawElementBatch* state) {}
+	virtual void onSetState(const RenderStage* state/*const DrawElementBatch* state*/) {}
 
 	// RenderFeature の都合で、フレームワークがシェーダに渡す情報に制限をかけたい場合に使用する
 	virtual void onShaderElementInfoOverride(ElementInfo* elementInfo) {}

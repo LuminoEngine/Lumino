@@ -9,8 +9,8 @@ class VisualComponent;
 /**
 	@brief		
 */
-class OffscreenWorldView
-	: public WorldRenderView
+class OffscreenWorldSubRenderView
+	: public WorldRenderViewBase
 {
 public:
 	RenderTargetTexture* getRenderTarget() const;
@@ -23,8 +23,8 @@ protected:
 	virtual Matrix calculateProjectionMatrix(RenderView* mainRenderView);
 
 LN_CONSTRUCT_ACCESS:
-	OffscreenWorldView();
-	virtual ~OffscreenWorldView();
+	OffscreenWorldSubRenderView();
+	virtual ~OffscreenWorldSubRenderView();
 	void initialize();
 
 LN_INTERNAL_ACCESS:
@@ -74,7 +74,7 @@ LN_INTERNAL_ACCESS:
 	void initialize();
 
 private:
-	Ref<OffscreenWorldView>	m_offscreen;
+	Ref<OffscreenWorldSubRenderView>	m_offscreen;
 	Ref<CommonMaterial>			m_material;
 
 };

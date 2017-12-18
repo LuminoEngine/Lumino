@@ -52,7 +52,7 @@ void SSAOImageEffect::onAttached()
 	m_depthMap = nullptr;
 
 	// TODO: onAttach で保持
-	auto* layer = dynamic_cast<CameraViewportLayer2*>(GetOwnerLayer());
+	auto* layer = dynamic_cast<WorldRenderView*>(GetOwnerLayer());
 	if (layer && layer->getClusteredShadingSceneRenderer())
 	{
 		m_depthMap = layer->getClusteredShadingSceneRenderer()->getDepthPrepass()->m_depthMap;

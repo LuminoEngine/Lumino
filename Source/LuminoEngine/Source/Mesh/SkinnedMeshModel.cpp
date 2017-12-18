@@ -308,22 +308,22 @@ void SkinnedMeshModel::initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 
 	//---------------------------------------------------------
 	// 物理演算
-	m_physicsWorld = newObject<PhysicsWorld>();
-	m_physicsWorld->setGravity(Vector3(0, -9.80f * 10.0f, 0));
+	//m_physicsWorld = newObject<PhysicsWorld>();
+	//m_physicsWorld->setGravity(Vector3(0, -9.80f * 10.0f, 0));
 
-	m_rigidBodyList.resize(m_meshResource->rigidBodys.getCount());
-	for (int i = 0; i < m_meshResource->rigidBodys.getCount(); ++i)
-	{
-		m_rigidBodyList[i] = Ref<detail::MmdSkinnedMeshRigidBody>::makeRef();
-		m_rigidBodyList[i]->initialize(this, m_meshResource->rigidBodys[i], 1.0f);
-	}
+	//m_rigidBodyList.resize(m_meshResource->rigidBodys.getCount());
+	//for (int i = 0; i < m_meshResource->rigidBodys.getCount(); ++i)
+	//{
+	//	m_rigidBodyList[i] = Ref<detail::MmdSkinnedMeshRigidBody>::makeRef();
+	//	m_rigidBodyList[i]->initialize(this, m_meshResource->rigidBodys[i], 1.0f);
+	//}
 
-	m_jointList.resize(m_meshResource->joints.getCount());
-	for (int i = 0; i < m_meshResource->joints.getCount(); ++i)
-	{
-		m_jointList[i] = Ref<detail::MmdSkinnedMeshJoint>::makeRef();
-		m_jointList[i]->initialize(this, m_meshResource->joints[i]);
-	}
+	//m_jointList.resize(m_meshResource->joints.getCount());
+	//for (int i = 0; i < m_meshResource->joints.getCount(); ++i)
+	//{
+	//	m_jointList[i] = Ref<detail::MmdSkinnedMeshJoint>::makeRef();
+	//	m_jointList[i]->initialize(this, m_meshResource->joints[i]);
+	//}
 }
 
 //------------------------------------------------------------------------------
@@ -356,8 +356,10 @@ void SkinnedMeshModel::postUpdate()
 		body->updateBeforePhysics();
 	}
 
-	m_physicsWorld->stepSimulation(0.016f);
-
+	if (m_physicsWorld)
+	{
+		m_physicsWorld->stepSimulation(0.016f);
+	}
 
 	for (detail::MmdSkinnedMeshRigidBody* body : m_rigidBodyList)
 	{
@@ -653,7 +655,7 @@ void MmdSkinnedMeshRigidBody::initialize(SkinnedMeshModel* ownerModel, PmxRigidB
 
 	m_offsetBodyToBone = Matrix::makeTranslation(m_bone->getCore()->OrgPosition) * m_boneLocalPosition;
 
-	RigidBody::ConfigData data;
+	RigidBodyComponent::ConfigData data;
 	data.InitialTransform = initialTransform;
 	data.Group = m_resource->Group;
 	data.GroupMask = m_resource->GroupMask;
@@ -673,13 +675,13 @@ void MmdSkinnedMeshRigidBody::initialize(SkinnedMeshModel* ownerModel, PmxRigidB
 		data.KinematicObject = true;
 	}
 
-	m_rigidBody = Ref<RigidBody>::makeRef();
+	m_rigidBody = Ref<RigidBodyComponent>::makeRef();
 	m_rigidBody->initializeCore(collider, data, scale);
 	ownerModel->m_physicsWorld->addPhysicsObject(m_rigidBody);
 }
 
 //------------------------------------------------------------------------------
-RigidBody* MmdSkinnedMeshRigidBody::getRigidBody() const
+RigidBodyComponent* MmdSkinnedMeshRigidBody::getRigidBody() const
 {
 	return m_rigidBody;
 }

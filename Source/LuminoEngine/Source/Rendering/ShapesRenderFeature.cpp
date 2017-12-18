@@ -7,6 +7,7 @@
 #include "../Graphics/GraphicsManager.h"
 #include "../Graphics/RenderingCommand.h"
 #include "ShapesRenderFeature.h"
+#include "RenderStage.h"
 
 LN_NAMESPACE_BEGIN
 namespace detail {
@@ -1150,11 +1151,11 @@ void ShapesRenderFeature::executeCommand(ShapesRendererCommandList* commandList)
 		});
 }
 //------------------------------------------------------------------------------
-void ShapesRenderFeature::onSetState(const DrawElementBatch* state)
+void ShapesRenderFeature::onSetState(const RenderStage* state)
 {
-	if (state->state.getBrush() != nullptr)
+	if (state->getBrushFinal() != nullptr)
 	{
-		state->state.getBrush()->getRawData(&m_fillBrush);
+		state->getBrushFinal()->getRawData(&m_fillBrush);
 	}
 }
 

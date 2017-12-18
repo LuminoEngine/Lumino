@@ -4,6 +4,7 @@
 #include <Lumino/IO/Console.h>
 #include <Lumino/Graphics/Color.h>
 #include <Lumino/Rendering/Rendering.h>
+#include <Lumino/Rendering/RenderView.h>
 #include <Lumino/Rendering/SceneRenderer.h>	// TODO
 #include <Lumino/Graphics/ContextInterface.h>
 #include <Lumino/Mesh/Mesh.h>
@@ -22,6 +23,7 @@
 #include "ShapesRenderFeature.h"
 #include "NanoVGRenderFeature.h"
 #include "FrameRectRenderFeature.h"
+#include "RenderStage.h"
 
 
 
@@ -247,10 +249,11 @@ SpriteRenderFeature* InternalContext::getSpriteRenderer()
 }
 
 //------------------------------------------------------------------------------
-void InternalContext::applyStatus(DrawElementBatch* state, const DefaultStatus& defaultStatus)
+void InternalContext::applyStatus(RenderStage* state, const DefaultStatus& defaultStatus)
 {
 	m_currentStatePtr = state;
-	m_currentStatePtr->applyStatus(this, defaultStatus);
+	//m_currentStatePtr->applyStatus(this, defaultStatus);
+	applyStatusInternal(state, defaultStatus);
 
 	if (m_current != nullptr)
 	{
@@ -281,6 +284,92 @@ void InternalContext::switchActiveRenderer(detail::IRenderFeature* renderer)
 			m_current->onActivated();
 			m_current->onSetState(m_currentStatePtr);
 		}
+	}
+}
+
+void InternalContext::applyStatusInternal(RenderStage* stage, const DefaultStatus& defaultStatus)
+{
+	auto* stateManager = getRenderStateManager();
+
+	// RenderState
+	{
+		//BlendMode blendMode = (combinedMaterial->m_blendMode.isSet()) ? combinedMaterial->m_blendMode.get() : m_blendMode;
+		//CullingMode cullingMode = (combinedMaterial->m_cullingMode.isSet()) ? combinedMaterial->m_cullingMode.get() : m_cullingMode;
+
+
+
+		// TODO: Base
+		RenderState state;
+		ContextInterface::makeBlendMode(stage->getBlendModeFinal(), &state);
+		state.Culling = stage->getCullingModeFinal();
+		//state.AlphaTest = combinedMaterial->m_alphaTest;
+		stateManager->setRenderState(state);
+
+		// スプライトバッチ化のため (TODO: いらないかも。SpriteRenderer では State でそーとしなくなった)
+		getSpriteRenderer()->setState(state);
+	}
+	// DepthStencilState
+	{
+		DepthStencilState state;
+		state.DepthTestEnabled = stage->isDepthTestEnabledFinal();//(combinedMaterial->m_depthTestEnabled.isSet()) ? combinedMaterial->m_depthTestEnabled.get() : m_depthTestEnabled;
+		state.DepthWriteEnabled = stage->isDepthWriteEnabledFinal();// (combinedMaterial->m_depthWriteEnabled.isSet()) ? combinedMaterial->m_depthWriteEnabled.get() : m_depthWriteEnabled;
+		stateManager->setDepthStencilState(state);
+	}
+	// FrameBuffer
+	RenderTargetTexture* renderTarget0 = nullptr;
+	{
+		//if (defaultRenderTarget == nullptr && defaultDepthBuffer == nullptr)
+		//{
+		//	// TODO: 子DrawListが実行された後のステート復帰。
+		//	// もしかしたらオプションにはできないかもしれない。
+		//	return;
+		//}
+
+		for (int i = 0; i < Graphics::MaxMultiRenderTargets; ++i)
+		{
+			//RenderTargetTexture* target = m_renderTargets[i];
+			//if (!target) target = defaultStatus.defaultRenderTarget[i];
+			//if (i == 0 && m_renderTargets[i] == nullptr)
+			//{
+			//	target = defaultStatus.defaultRenderTarget;
+			//}
+			//else
+			//{
+			//	target = m_renderTargets[i];
+			//}
+			//stateManager->setRenderTarget(i, target);
+			RenderTargetTexture* target = stage->getRenderTargetFinal(i);
+			if (!target) target = defaultStatus.defaultRenderTarget[i];
+
+			stateManager->setRenderTarget(i, target);
+			if (i == 0)
+			{
+				renderTarget0 = target;
+			}
+		}
+
+		DepthBuffer* depthBuffer = stage->getDepthBufferFinal();// stateManager->setDepthBuffer(stage->getDepthBufferFinal());
+		if (depthBuffer)
+		{
+			stateManager->setDepthBuffer(depthBuffer);
+		}
+		else
+		{
+			stateManager->setDepthBuffer(defaultStatus.defaultDepthBuffer);
+		}
+	}
+	// Viewport
+	{
+		const RectI& rect = stage->getViewportRectFinal();//getViewportRect();
+		if (rect.width < 0)
+		{
+			stateManager->setViewport(RectI(0, 0, renderTarget0->getSize()));
+		}
+		else
+		{
+			stateManager->setViewport(rect);
+		}
+		// TODO: m_scissorRect
 	}
 }
 
@@ -437,87 +526,87 @@ void BatchState::reset()
 }
 
 //------------------------------------------------------------------------------
-void BatchState::applyStatus(InternalContext* context, CombinedMaterial* combinedMaterial, const DefaultStatus& defaultStatus)
-{
-	auto* stateManager = context->getRenderStateManager();
-
-	// RenderState
-	{
-		BlendMode blendMode = (combinedMaterial->m_blendMode.isSet()) ? combinedMaterial->m_blendMode.get() : m_blendMode;
-		CullingMode cullingMode = (combinedMaterial->m_cullingMode.isSet()) ? combinedMaterial->m_cullingMode.get() : m_cullingMode;
-
-
-
-		// TODO: Base
-		RenderState state;
-		ContextInterface::makeBlendMode(blendMode, &state);
-		state.Culling = cullingMode;
-		//state.AlphaTest = combinedMaterial->m_alphaTest;
-		stateManager->setRenderState(state);
-
-		// スプライトバッチ化のため (TODO: いらないかも。SpriteRenderer では State でそーとしなくなった)
-		context->getSpriteRenderer()->setState(state);
-	}
-	// DepthStencilState
-	{
-		DepthStencilState state;
-		state.DepthTestEnabled = (combinedMaterial->m_depthTestEnabled.isSet()) ? combinedMaterial->m_depthTestEnabled.get() : m_depthTestEnabled;
-		state.DepthWriteEnabled = (combinedMaterial->m_depthWriteEnabled.isSet()) ? combinedMaterial->m_depthWriteEnabled.get() : m_depthWriteEnabled;
-		stateManager->setDepthStencilState(state);
-	}
-	// FrameBuffer
-	RenderTargetTexture* renderTarget0 = nullptr;
-	{
-		//if (defaultRenderTarget == nullptr && defaultDepthBuffer == nullptr)
-		//{
-		//	// TODO: 子DrawListが実行された後のステート復帰。
-		//	// もしかしたらオプションにはできないかもしれない。
-		//	return;
-		//}
-
-		for (int i = 0; i < Graphics::MaxMultiRenderTargets; ++i)
-		{
-			RenderTargetTexture* target = m_renderTargets[i];
-			if (!target) target = defaultStatus.defaultRenderTarget[i];
-			//if (i == 0 && m_renderTargets[i] == nullptr)
-			//{
-			//	target = defaultStatus.defaultRenderTarget;
-			//}
-			//else
-			//{
-			//	target = m_renderTargets[i];
-			//}
-			stateManager->setRenderTarget(i, target);
-
-			if (i == 0)
-			{
-				renderTarget0 = target;
-			}
-		}
-
-		if (m_depthBuffer == nullptr)
-		{
-			stateManager->setDepthBuffer(defaultStatus.defaultDepthBuffer);
-		}
-		else
-		{
-			stateManager->setDepthBuffer(m_depthBuffer);
-		}
-	}
-	// Viewport
-	{
-		const RectI& rect = getViewportRect();
-		if (rect.width < 0)
-		{
-			stateManager->setViewport(RectI(0, 0, renderTarget0->getSize()));
-		}
-		else
-		{
-			stateManager->setViewport(rect);
-		}
-		// TODO: m_scissorRect
-	}
-}
+//void BatchState::applyStatus(InternalContext* context, CombinedMaterial* combinedMaterial, const DefaultStatus& defaultStatus)
+//{
+//	auto* stateManager = context->getRenderStateManager();
+//
+//	// RenderState
+//	{
+//		BlendMode blendMode = (combinedMaterial->m_blendMode.isSet()) ? combinedMaterial->m_blendMode.get() : m_blendMode;
+//		CullingMode cullingMode = (combinedMaterial->m_cullingMode.isSet()) ? combinedMaterial->m_cullingMode.get() : m_cullingMode;
+//
+//
+//
+//		// TODO: Base
+//		RenderState state;
+//		ContextInterface::makeBlendMode(blendMode, &state);
+//		state.Culling = cullingMode;
+//		//state.AlphaTest = combinedMaterial->m_alphaTest;
+//		stateManager->setRenderState(state);
+//
+//		// スプライトバッチ化のため (TODO: いらないかも。SpriteRenderer では State でそーとしなくなった)
+//		context->getSpriteRenderer()->setState(state);
+//	}
+//	// DepthStencilState
+//	{
+//		DepthStencilState state;
+//		state.DepthTestEnabled = (combinedMaterial->m_depthTestEnabled.isSet()) ? combinedMaterial->m_depthTestEnabled.get() : m_depthTestEnabled;
+//		state.DepthWriteEnabled = (combinedMaterial->m_depthWriteEnabled.isSet()) ? combinedMaterial->m_depthWriteEnabled.get() : m_depthWriteEnabled;
+//		stateManager->setDepthStencilState(state);
+//	}
+//	// FrameBuffer
+//	RenderTargetTexture* renderTarget0 = nullptr;
+//	{
+//		//if (defaultRenderTarget == nullptr && defaultDepthBuffer == nullptr)
+//		//{
+//		//	// TODO: 子DrawListが実行された後のステート復帰。
+//		//	// もしかしたらオプションにはできないかもしれない。
+//		//	return;
+//		//}
+//
+//		for (int i = 0; i < Graphics::MaxMultiRenderTargets; ++i)
+//		{
+//			RenderTargetTexture* target = m_renderTargets[i];
+//			if (!target) target = defaultStatus.defaultRenderTarget[i];
+//			//if (i == 0 && m_renderTargets[i] == nullptr)
+//			//{
+//			//	target = defaultStatus.defaultRenderTarget;
+//			//}
+//			//else
+//			//{
+//			//	target = m_renderTargets[i];
+//			//}
+//			stateManager->setRenderTarget(i, target);
+//
+//			if (i == 0)
+//			{
+//				renderTarget0 = target;
+//			}
+//		}
+//
+//		if (m_depthBuffer == nullptr)
+//		{
+//			stateManager->setDepthBuffer(defaultStatus.defaultDepthBuffer);
+//		}
+//		else
+//		{
+//			stateManager->setDepthBuffer(m_depthBuffer);
+//		}
+//	}
+//	// Viewport
+//	{
+//		const RectI& rect = getViewportRect();
+//		if (rect.width < 0)
+//		{
+//			stateManager->setViewport(RectI(0, 0, renderTarget0->getSize()));
+//		}
+//		else
+//		{
+//			stateManager->setViewport(rect);
+//		}
+//		// TODO: m_scissorRect
+//	}
+//}
 
 //------------------------------------------------------------------------------
 uint32_t BatchState::getHashCode() const
@@ -653,10 +742,10 @@ void DrawElementBatch::reset()
 }
 
 //------------------------------------------------------------------------------
-void DrawElementBatch::applyStatus(InternalContext* context, const DefaultStatus& defaultStatus)
-{
-	state.applyStatus(context, m_combinedMaterial, defaultStatus);
-}
+//void DrawElementBatch::applyStatus(InternalContext* context, const DefaultStatus& defaultStatus)
+//{
+//	state.applyStatus(context, m_combinedMaterial, defaultStatus);
+//}
 
 //------------------------------------------------------------------------------
 size_t DrawElementBatch::getHashCode() const
@@ -698,7 +787,7 @@ DrawElement::~DrawElement()
 //------------------------------------------------------------------------------
 const Matrix& DrawElement::getTransform(DrawElementList* oenerList) const
 {
-	return oenerList->getBatch(batchIndex)->getTransfrom();
+	return oenerList->getRenderStage(batchIndex)->getTransformFinal();
 }
 
 //------------------------------------------------------------------------------
@@ -716,10 +805,8 @@ void DrawElement::makeElementInfo(DrawElementList* oenerList, const CameraInfo& 
 }
 
 //------------------------------------------------------------------------------
-void DrawElement::makeSubsetInfo(DrawElementList* oenerList, CombinedMaterial* material, SubsetInfo* outInfo)
+void DrawElement::makeSubsetInfo(DrawElementList* oenerList, RenderStage* stage, SubsetInfo* outInfo)
 {
-	outInfo->combinedMaterial = material;
-	outInfo->materialTexture = (material != nullptr) ? material->m_mainTexture : nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -763,6 +850,8 @@ DrawElementList::DrawElementList()
 {
 	m_commandDataCache.reserve(512, 4096);	// 適当に
 	m_extDataCache.reserve(512, 4096);
+	m_renderStageCache = std::make_unique<detail::RenderStageCache>();
+	m_renderStageCache->initialize(64);
 }
 
 //------------------------------------------------------------------------------
@@ -776,32 +865,58 @@ void DrawElementList::clearCommands()
 
 	m_commandDataCache.clear();
 	m_extDataCache.clear();
-	m_batchList.clear();
+	//m_batchList.clear();
 
-	m_combinedMaterialCache.releaseAll();
+	//m_combinedMaterialCache.releaseAll();
 	m_dynamicLightList.clear();
+	m_renderStageCache->clear();
+	RenderStage* first = m_renderStageCache->request();	// 1個作っておく
+	first->reset();
+}
+
+bool DrawElementList::checkChangeRenderStage(const RenderStage* stage) const
+{
+	return !m_renderStageCache->getLast()->equals(stage);
+}
+
+int DrawElementList::submitRenderStage(const RenderStage* stage)
+{
+	RenderStage* newstage = m_renderStageCache->request();
+	newstage->copyFrom(stage);
+	newstage->combineParameters();
+	return newstage->getId();
+}
+
+RenderStage* DrawElementList::getRenderStage(int id) const
+{
+	return m_renderStageCache->get(id);
+}
+
+RenderStage* DrawElementList::getLastRenderStage() const
+{
+	return m_renderStageCache->getLast();
 }
 
 //------------------------------------------------------------------------------
-void DrawElementList::postAddCommandInternal(const DrawElementBatch& state, CommonMaterial* availableMaterial, const BuiltinEffectData& effectData, bool forceStateChange, DrawElement* element)
-{
-	if (forceStateChange || m_batchList.isEmpty() ||
-		!m_batchList.getLast().Equal(state, availableMaterial, effectData))
-	{
-		// CombinedMaterial を作る
-		CombinedMaterial* cm = m_combinedMaterialCache.queryCommandList();
-		cm->combine(/*nullptr, */availableMaterial, effectData);	// TODO
-
-		// 新しく DrawElementBatch を作る
-		m_batchList.add(DrawElementBatch());
-		m_batchList.getLast().state = state.state;
-		m_batchList.getLast().setRenderFeature(state.getRenderFeature());
-		m_batchList.getLast().setCombinedMaterial(cm);
-		m_batchList.getLast().setTransfrom(state.getTransfrom());
-		m_batchList.getLast().SetBuiltinEffect(effectData);
-	}
-	element->batchIndex = m_batchList.getCount() - 1;
-}
+//void DrawElementList::postAddCommandInternal(const DrawElementBatch& state, CommonMaterial* availableMaterial, const BuiltinEffectData& effectData, bool forceStateChange, DrawElement* element)
+//{
+//	if (forceStateChange || m_batchList.isEmpty() ||
+//		!m_batchList.getLast().Equal(state, availableMaterial, effectData))
+//	{
+//		// CombinedMaterial を作る
+//		CombinedMaterial* cm = m_combinedMaterialCache.queryCommandList();
+//		cm->combine(/*nullptr, */availableMaterial, effectData);	// TODO
+//
+//		// 新しく DrawElementBatch を作る
+//		m_batchList.add(DrawElementBatch());
+//		m_batchList.getLast().state = state.state;
+//		m_batchList.getLast().setRenderFeature(state.getRenderFeature());
+//		m_batchList.getLast().setCombinedMaterial(cm);
+//		m_batchList.getLast().setTransfrom(state.getTransfrom());
+//		m_batchList.getLast().SetBuiltinEffect(effectData);
+//	}
+//	element->batchIndex = m_batchList.getCount() - 1;
+//}
 
 //------------------------------------------------------------------------------
 //void DrawElementList::ResolveCombinedMaterials()
@@ -825,22 +940,6 @@ void DrawElementList::addDynamicLightInfo(DynamicLightInfo* lightInfo)
 
 
 
-//==============================================================================
-class ClearElement : public DrawElement
-{
-public:
-	ClearFlags flags;
-	Color color;
-	float z;
-	uint8_t stencil;
-
-	virtual void drawSubset(const DrawArgs& e) override
-	{
-		e.context->beginBaseRenderer()->clear(flags, color, z, stencil);
-	}
-
-	virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_LT("Clear")); }
-};
 
 } // namespace detail 
 
@@ -935,8 +1034,8 @@ void RenderDiag::print()
 
 //------------------------------------------------------------------------------
 DrawList::DrawList()
-	: m_currentSectionTopElement(nullptr)
-	, m_metadata(nullptr)
+	: /*m_currentSectionTopElement(nullptr)
+	,*/ m_metadata(nullptr)
 	, m_currentStateFence(0)
 {
 }
@@ -954,29 +1053,31 @@ void DrawList::initialize(detail::GraphicsManager* manager)
 	m_manager = manager;
 	//m_state.reset();
 
-	m_defaultMaterial = newObject<CommonMaterial>();
+	//m_defaultMaterial = newObject<CommonMaterial>();
+
 
 	// とりあえず 10 個くらい
 	for (int i = 0; i < 10; i++)
 	{
-		m_freeStateStack.add(Ref<StagingState>::makeRef());
+		m_freeStateStack.add(newObject<detail::RenderStage>(-1));
 	}
 	//m_aliveStateStack.add(Ref<StagingState>::makeRef());
+
 
 	// Lumino はメインループの外側でも RenderingContext を使えるようにしている。
 	// Editor モードでは GC のタイミングをシンプルにつかむことができない。
 	// (最終書き込み先 RT が異なる RenderingContext 間で SetRenderTarget() などで指定する RT を使いまわすと描画順の問題が起こる)
 	// そのため Unity とはことなり、Pool は RenderingContext につけている。
-	m_renderTargetPool = Ref<detail::RenderTargetTextureCache>::makeRef(manager);
+	//m_renderTargetPool = Ref<detail::RenderTargetTextureCache>::makeRef(manager);
 }
 
 //------------------------------------------------------------------------------
 void DrawList::pushState()
 {
-	Ref<StagingState> state;
+	Ref<detail::RenderStage> state;
 	if (m_freeStateStack.isEmpty())
 	{
-		state = Ref<StagingState>::makeRef();
+		state = newObject<detail::RenderStage>(-1);
 	}
 	else
 	{
@@ -1003,124 +1104,147 @@ void DrawList::popState()
 	auto state = m_aliveStateStack.getLast();
 	m_aliveStateStack.removeLast();
 	m_freeStateStack.add(state);
+}
 
-	m_defaultMaterial->setShader(m_aliveStateStack.getLast()->m_defaultMaterialShader);
+detail::RenderStage* DrawList::getCurrentState() const
+{
+	return m_aliveStateStack.getLast();
+}
+
+bool DrawList::checkSubmitRenderStage(int* stageId)
+{
+	if (m_drawElementList.checkChangeRenderStage(getCurrentState()))
+	{
+		*stageId = m_drawElementList.submitRenderStage(getCurrentState());
+		return true;
+	}
+	else
+	{
+		*stageId = m_drawElementList.getLastRenderStage()->getId();
+		return false;
+	}
 }
 
 //------------------------------------------------------------------------------
 void DrawList::setRenderTarget(int index, RenderTargetTexture* renderTarget)
 {
-	getCurrentState()->m_state.state.setRenderTarget(index, renderTarget);
-	if (index == 0 && renderTarget)	// TODO: default のサイズにするべき？
-	{
-		setViewportRect(RectI(0, 0, renderTarget->getSize()));
-	}
+	getCurrentState()->renderingContextParameters.setRenderTarget(index, renderTarget);
+	//getCurrentState()->m_state.state.setRenderTarget(index, renderTarget);
+	//if (index == 0 && renderTarget)	// TODO: default のサイズにするべき？
+	//{
+	//	setViewportRect(RectI(0, 0, renderTarget->getSize()));
+	//}
 	m_currentStateFence++;
 }
 
 //------------------------------------------------------------------------------
 RenderTargetTexture* DrawList::getRenderTarget(int index) const
 {
-	return getCurrentState()->m_state.state.getRenderTarget(index);
+	return getCurrentState()->renderingContextParameters.getRenderTarget(index);
 }
 
 //------------------------------------------------------------------------------
 void DrawList::setDepthBuffer(DepthBuffer* depthBuffer)
 {
-	getCurrentState()->m_state.state.setDepthBuffer(depthBuffer);
+	getCurrentState()->renderingContextParameters.setDepthBuffer(depthBuffer);
 	m_currentStateFence++;
 }
 
 //------------------------------------------------------------------------------
 DepthBuffer* DrawList::getDepthBuffer() const
 {
-	return getCurrentState()->m_state.state.getDepthBuffer();
+	return getCurrentState()->renderingContextParameters.getDepthBuffer();
 }
 
 void DrawList::setViewportRect(const RectI& rect)
 {
-	getCurrentState()->m_state.state.setViewportRect(rect);
+	getCurrentState()->renderingContextParameters.setViewportRect(rect);
 }
 
 const RectI& DrawList::getViewportRect() const
 {
-	return getCurrentState()->m_state.state.getViewportRect();
+	return getCurrentState()->renderingContextParameters.getViewportRect();
 }
 
 //------------------------------------------------------------------------------
 void DrawList::setBrush(Brush* brush)
 {
 	brush = (brush != nullptr) ? brush : Brush::Black;
-	getCurrentState()->m_state.state.setBrush(brush);
+	getCurrentState()->renderingContextParameters.setBrush(brush);
 }
 
 //------------------------------------------------------------------------------
 Brush* DrawList::getBrush() const
 {
-	return getCurrentState()->m_state.state.getBrush();
+	return getCurrentState()->renderingContextParameters.getBrush();
 }
 
 //------------------------------------------------------------------------------
 void DrawList::setFont(Font* font)
 {
 	font = (font != nullptr) ? font : m_manager->getFontManager()->getDefaultFont();
-	getCurrentState()->m_state.state.setFont(font);
+	getCurrentState()->renderingContextParameters.setFont(font);
+}
+
+////------------------------------------------------------------------------------
+//void DrawList::setShader(Shader* shader)
+//{
+//	getCurrentState()->m_defaultMaterialShader = shader;
+//	m_defaultMaterial->setShader(shader);
+//}
+
+////------------------------------------------------------------------------------
+//Shader* DrawList::getShader() const
+//{
+//	return getCurrentState()->m_defaultMaterialShader;
+//}
+
+//------------------------------------------------------------------------------
+void DrawList::setBlendMode(Nullable<BlendMode> mode)
+{
+	getCurrentState()->renderingContextParameters.setBlendMode(mode);
 }
 
 //------------------------------------------------------------------------------
-void DrawList::setShader(Shader* shader)
+void DrawList::setCullingMode(Nullable<CullingMode> mode)
 {
-	getCurrentState()->m_defaultMaterialShader = shader;
-	m_defaultMaterial->setShader(shader);
-}
-
-//------------------------------------------------------------------------------
-Shader* DrawList::getShader() const
-{
-	return getCurrentState()->m_defaultMaterialShader;
-}
-
-//------------------------------------------------------------------------------
-void DrawList::setBlendMode(BlendMode mode)
-{
-	getCurrentState()->m_state.state.setBlendMode(mode);
-}
-
-//------------------------------------------------------------------------------
-void DrawList::setCullingMode(CullingMode mode)
-{
-	getCurrentState()->m_state.state.setCullingMode(mode);
+	getCurrentState()->renderingContextParameters.setCullingMode(mode);
 }
 
 //------------------------------------------------------------------------------
 //void DrawList::setOpacity(float opacity)
 //{
-//	getCurrentState()->m_state.state.
+//	getCurrentState()->renderingContextParameters.
 //}
 
 //------------------------------------------------------------------------------
-void DrawList::setDepthTestEnabled(bool enabled)
+void DrawList::setDepthTestEnabled(Nullable<bool> enabled)
 {
-	getCurrentState()->m_state.state.setDepthTestEnabled(enabled);
+	getCurrentState()->renderingContextParameters.setDepthTestEnabled(enabled);
 }
 
 //------------------------------------------------------------------------------
-void DrawList::setDepthWriteEnabled(bool enabled)
+void DrawList::setDepthWriteEnabled(Nullable<bool> enabled)
 {
-	getCurrentState()->m_state.state.setDepthWriteEnabled(enabled);
+	getCurrentState()->renderingContextParameters.setDepthWriteEnabled(enabled);
 }
 
-//------------------------------------------------------------------------------
-void DrawList::setDefaultMaterial(CommonMaterial* material)
-{
-	if (LN_REQUIRE(material != nullptr)) return;
-	getCurrentState()->m_material = material;
-}
+////------------------------------------------------------------------------------
+//void DrawList::setDefaultMaterial(CommonMaterial* material)
+//{
+//	if (LN_REQUIRE(material != nullptr)) return;
+//	getCurrentState()->m_material = material;
+//}
 
-//------------------------------------------------------------------------------
-void DrawList::setBuiltinEffectData(const detail::BuiltinEffectData& data)
+////------------------------------------------------------------------------------
+//void DrawList::setBuiltinEffectData(const detail::BuiltinEffectData& data)
+//{
+//	getCurrentState()->m_builtinEffectData = data;
+//}
+
+void DrawList::setVisualNodeParameters(detail::VisualNodeParameters* params)
 {
-	getCurrentState()->m_builtinEffectData = data;
+	getCurrentState()->visualNodeParameters = params;
 }
 
 //------------------------------------------------------------------------------
@@ -1136,13 +1260,13 @@ void DrawList::beginMakeElements()
 	pushState();	// 1つスタックに積んでおく。コレがルートのステート
 	getCurrentState()->reset();
 
-	m_defaultMaterial->reset();
+	//m_defaultMaterial->reset();
 	//getCurrentState()->m_state.reset();
 	//m_state.state.state.setFont(m_manager->getFontManager()->getDefaultFont());
 	//m_defaultMaterial->reset();
 	//m_builtinEffectData.reset();
 	//m_defaultMaterial->cullingMode = CullingMode::None;
-	m_currentSectionTopElement = nullptr;
+	//m_currentSectionTopElement = nullptr;
 	m_currentStateFence = 0;
 	setBrush(nullptr);
 	setFont(nullptr);
@@ -1158,14 +1282,32 @@ void DrawList::beginMakeElements()
 //------------------------------------------------------------------------------
 void DrawList::setTransform(const Matrix& transform)
 {
-	getCurrentState()->m_state.setTransfrom(transform);
+	getCurrentState()->renderingContextParameters.setTransform(transform);
 }
 
 //------------------------------------------------------------------------------
 void DrawList::clear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
+	class ClearElement : public detail::DrawElement
+	{
+	public:
+		ClearFlags flags;
+		Color color;
+		float z;
+		uint8_t stencil;
+
+		virtual void drawSubset(const DrawArgs& e) override
+		{
+			e.context->beginBaseRenderer()->clear(flags, color, z, stencil);
+		}
+
+		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_LT("Clear")); }
+	};
+
+	auto* ptr = resolveDrawElement<ClearElement>(m_manager->getInternalContext()->m_baseRenderer, nullptr);
+
 	// TODO: これだけ他と独立していて変更が反映されない
-	auto* ptr = m_drawElementList.addCommand<detail::ClearElement>(getCurrentState()->m_state, m_defaultMaterial, getCurrentState()->m_builtinEffectData, false);
+	//auto* ptr = m_drawElementList.addCommand<detail::ClearElement>(getCurrentState()->m_state, m_defaultMaterial, getCurrentState()->m_builtinEffectData, false);
 	ptr->flags = flags;
 	ptr->color = color;
 	ptr->z = z;
@@ -1452,11 +1594,11 @@ void DrawList::drawText_(const StringRef& text, const Rect& rect, StringFormatFl
 		virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_LT("DrawText")); }
 	};
 
-	BlendMode oldBlendMode = getCurrentState()->m_state.state.getBlendMode();
-	if (oldBlendMode == BlendMode::Normal)
-	{
-		setBlendMode(BlendMode::Alpha);
-	}
+	//BlendMode oldBlendMode = getCurrentState()->m_state.state.getBlendMode();
+	//if (oldBlendMode == BlendMode::Normal)
+	//{
+	//	setBlendMode(BlendMode::Alpha);
+	//}
 
 
 	// TODO: オーバーライドされる場合の動作はちゃんと考えておこう。
@@ -1468,7 +1610,7 @@ void DrawList::drawText_(const StringRef& text, const Rect& rect, StringFormatFl
 	//priorityState.worldTransform = Matrix::Identity;
 	//priorityState.mainTexture = getCurrentState()->m_state.state.getFont()->resolveRawFont()->GetGlyphTextureCache()->getGlyphsFillTexture();
 
-	auto* e = resolveDrawElement<DrawElement_DrawText>(m_manager->getInternalContext()->m_textRenderer, nullptr, nullptr);
+	auto* e = resolveDrawElement<DrawElement_DrawText>(m_manager->getInternalContext()->m_textRenderer, nullptr/*, nullptr*/);
 	e->text = text;
 	e->rect = rect;
 	e->flags = flags;
@@ -1477,7 +1619,7 @@ void DrawList::drawText_(const StringRef& text, const Rect& rect, StringFormatFl
 	//m_defaultMaterial->setMaterialTexture(old);
 
 
-	setBlendMode(oldBlendMode);
+	//setBlendMode(oldBlendMode);
 }
 
 //------------------------------------------------------------------------------
@@ -1582,7 +1724,7 @@ void DrawList::drawSprite(
 	ptr->baseDirection = baseDirection;
 	ptr->billboardType = billboardType;
 	detail::SpriteRenderFeature::makeBoundingSphere(ptr->size, baseDirection, &ptr->boundingSphere);
-	ptr->boundingSphere.center += getCurrentState()->m_state.getTransfrom().getPosition();	// TODO: 他と共通化
+	ptr->boundingSphere.center = Vector3::Zero;
 }
 
 
@@ -1615,8 +1757,8 @@ public:
 
 void DrawList::drawRectangle(const Rect& rect)
 {
-	if (getCurrentState()->m_state.state.getBrush() != nullptr &&
-		(getCurrentState()->m_state.state.getBrush()->getImageDrawMode() == BrushImageDrawMode::BoxFrame || getCurrentState()->m_state.state.getBrush()->getImageDrawMode() == BrushImageDrawMode::BorderFrame))
+	if (getCurrentState()->renderingContextParameters.getBrush() != nullptr &&
+		(getCurrentState()->renderingContextParameters.getBrush()->getImageDrawMode() == BrushImageDrawMode::BoxFrame || getCurrentState()->renderingContextParameters.getBrush()->getImageDrawMode() == BrushImageDrawMode::BorderFrame))
 	{
 		drawFrameRectangle(rect);
 		return;
@@ -1776,9 +1918,9 @@ void DrawList::blitInternal(Texture* source, RenderTargetTexture* dest, const Ma
 			DrawElement::makeElementInfo(oenerList, cameraInfo, renderView, outInfo);
 			outInfo->WorldViewProjectionMatrix = overrideTransform;
 		}
-		virtual void makeSubsetInfo(detail::DrawElementList* oenerList, detail::CombinedMaterial* material, detail::SubsetInfo* outInfo) override
+		virtual void makeSubsetInfo(detail::DrawElementList* oenerList, detail::RenderStage* stage, detail::SubsetInfo* outInfo) override
 		{
-			DrawElement::makeSubsetInfo(oenerList, material, outInfo);
+			DrawElement::makeSubsetInfo(oenerList, stage, outInfo);
 
 			// MaterialTexture を上書きする
 			outInfo->materialTexture = source;
@@ -1809,12 +1951,13 @@ void DrawList::drawFrameRectangle(const Rect& rect)
 	public:
 		Rect rect;
 
-		virtual void makeSubsetInfo(detail::DrawElementList* oenerList, detail::CombinedMaterial* material, detail::SubsetInfo* outInfo) override
+		virtual void makeSubsetInfo(detail::DrawElementList* oenerList, detail::RenderStage* stage, detail::SubsetInfo* outInfo) override
 		{
-			DrawElement::makeSubsetInfo(oenerList, material, outInfo);
+			DrawElement::makeSubsetInfo(oenerList, stage, outInfo);
 
 			// MaterialTexture を上書きする
-			outInfo->materialTexture = oenerList->getBatch(batchIndex)->state.getBrush()->getTexture();
+			//outInfo->materialTexture = oenerList->getBatch(batchIndex)->state.getBrush()->getTexture();
+			outInfo->materialTexture = oenerList->getRenderStage(batchIndex)->getBrushFinal()->getTexture();
 		}
 		virtual void drawSubset(const DrawArgs& e) override
 		{
@@ -1869,54 +2012,35 @@ void DrawList::drawFrameRectangle(const Rect& rect)
 
 
 
-//==============================================================================
-// RenderView
-//==============================================================================
-//------------------------------------------------------------------------------
-RenderView::RenderView()
-	: m_viewSize()
-	, m_sceneRenderer(nullptr)
-{
-}
-
-//------------------------------------------------------------------------------
-RenderView::~RenderView()
-{
-}
-
-//------------------------------------------------------------------------------
-void RenderView::filterWorldMatrix(Matrix* outMatrix)
-{
-}
 
 //==============================================================================
 // StagingState
 //==============================================================================
 //------------------------------------------------------------------------------
-DrawList::StagingState::StagingState()
-{
-	//m_defaultMaterial = Ref<CommonMaterial>::makeRef();
-	//m_defaultMaterial->initialize();
-	reset();
-}
-
-//------------------------------------------------------------------------------
-void DrawList::StagingState::reset()
-{
-	m_state.reset();
-	m_material = nullptr;//->reset();
-	m_builtinEffectData.reset();
-	m_defaultMaterialShader = nullptr;
-}
-
-//------------------------------------------------------------------------------
-void DrawList::StagingState::copyFrom(const StagingState* state)
-{
-	m_state = state->m_state;
-	m_material = state->m_material;
-	m_builtinEffectData = state->m_builtinEffectData;
-	m_defaultMaterialShader = state->m_defaultMaterialShader;
-}
+//DrawList::StagingState::StagingState()
+//{
+//	//m_defaultMaterial = Ref<CommonMaterial>::makeRef();
+//	//m_defaultMaterial->initialize();
+//	reset();
+//}
+//
+////------------------------------------------------------------------------------
+//void DrawList::StagingState::reset()
+//{
+//	m_state.reset();
+//	m_material = nullptr;//->reset();
+//	m_builtinEffectData.reset();
+//	m_defaultMaterialShader = nullptr;
+//}
+//
+////------------------------------------------------------------------------------
+//void DrawList::StagingState::copyFrom(const StagingState* state)
+//{
+//	m_state = state->m_state;
+//	m_material = state->m_material;
+//	m_builtinEffectData = state->m_builtinEffectData;
+//	m_defaultMaterialShader = state->m_defaultMaterialShader;
+//}
 
 LN_NAMESPACE_END
 

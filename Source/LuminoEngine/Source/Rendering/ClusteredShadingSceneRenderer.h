@@ -86,17 +86,15 @@ public:
 	void initialize();
 
 	//virtual Shader* getDefaultShader() const override;
-	virtual void selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy) override;
+	virtual void selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy) override;
 
 	virtual void onBeginPass(DefaultStatus* defaultStatus) override;
 
-protected:
-	//virtual ShaderPass* selectShaderPass(Shader* shader) override;
-
 private:
 	Ref<Shader>					m_defaultShader;
-	ShaderPass*					m_defaultShaderPass;
-	Ref<RenderTargetTexture>	m_normalRenderTarget;
+	ShaderTechnique*			m_defaultShaderTechnique;
+	Ref<Shader>					m_unLightingShader;
+	ShaderTechnique*			m_unLightingShaderTechnique;
 };
 
 class DepthPrepass
@@ -107,7 +105,7 @@ public:
 	virtual ~DepthPrepass();
 	void initialize();
 
-	virtual void selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy) override;
+	virtual void selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy) override;
 	virtual void onBeginPass(DefaultStatus* defaultStatus) override;
 
 public:	// TODO:
@@ -127,7 +125,7 @@ public:
 
 	//virtual Shader* getDefaultShader() const override;
 
-	virtual void selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy) override;
+	virtual void selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy) override;
 
 	virtual void onBeginPass(DefaultStatus* defaultStatus) override;
 

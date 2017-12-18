@@ -322,6 +322,8 @@ set(LN_SOURCES_Rendering
 	Source/Rendering/PrimitiveRenderFeature.h
 	Source/Rendering/Rendering.cpp
 	Source/Rendering/RenderingContext.cpp
+	Source/Rendering/RenderStage.cpp
+	Source/Rendering/RenderStage.h
 	Source/Rendering/RenderView.cpp
 	Source/Rendering/SceneRenderer.cpp
 	Source/Rendering/ShapesRenderFeature.cpp

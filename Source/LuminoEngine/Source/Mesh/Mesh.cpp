@@ -656,9 +656,16 @@ VertexBuffer* MeshResource::getVertexBuffer(VertexBufferType type) const
 //------------------------------------------------------------------------------
 VertexBuffer* MeshResource::requestVertexBuffer(VertexBufferType type)
 {
+
 	if (m_vertexBufferInfos[type].buffer == nullptr)
 	{
-		m_vertexBufferInfos[type].buffer = ln::newObject<VertexBuffer>(m_manager, 0, nullptr, m_usage, false);
+		int size = 0;
+		if (type != VB_BasicVertices)
+		{
+			size = m_vertexBufferInfos[VB_BasicVertices].buffer->getSize();
+		}
+
+		m_vertexBufferInfos[type].buffer = ln::newObject<VertexBuffer>(m_manager, size, nullptr, m_usage, false);
 		m_vertexDeclarationModified = true;
 	}
 	return m_vertexBufferInfos[type].buffer;
@@ -810,6 +817,11 @@ void MeshResource::commitRenderData(VertexDeclaration** outDecl, VertexBuffer** 
 //		}
 //	}
 //}
+
+void MeshResource::setBoundingBox(const Box& box)
+{
+	m_boundingBox = box;
+}
 
 //==============================================================================
 // StaticMeshModel

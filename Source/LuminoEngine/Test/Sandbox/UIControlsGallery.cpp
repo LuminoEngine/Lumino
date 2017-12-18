@@ -1,9 +1,11 @@
 ﻿
 #define LN_INTERNAL_ACCESS				public
 #define LN_PROTECTED_INTERNAL_ACCESS	public
+#include <iostream>
 #include <LuminoEngine.h>
 #include <Lumino/Testing/TestHelper.h>
 #include <Lumino/Scene/OffscreenWorldView.h>
+#include <Lumino/Scene/MeshModelObject.h>
 #include <Lumino/Rendering/SSAOImageEffect.h>
 #include <Lumino/Rendering/FXAAPostEffect.h>
 
@@ -27,6 +29,9 @@ void UIControlsGallery()
 	//lsgen.initialize();
 	//lsgen.loadRawHLSL(code);
 	//lsgen.finalize();
+
+
+
 
 
 	// へいたん
@@ -66,6 +71,8 @@ void UIControlsGallery()
 	Engine::getCamera3D()->addComponent(newObject<CameraMouseMoveBehavior>());
 
 	auto* uiRoot = Engine::getDefaultUILayer()->GetLayoutView();
+
+	Engine::getMainViewport()->setPlacement(ViewportPlacement::AutoResize);
 
 	auto text1 = UITextField::create();
 	text1->setPosition(Point(10, 20));
@@ -329,21 +336,24 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 #endif
 
 
-	auto ssao = newObject<SSAOImageEffect>();
-	Engine::getDefault3DLayer()->addPostEffect(ssao);
-	Engine::getCamera3D()->getCameraComponent()->setFarClip(100);
+	//auto ssao = newObject<SSAOImageEffect>();
+	////Engine::getDefault3DLayer()->addPostEffect(ssao);
+	//Engine::getCamera3D()->getCameraComponent()->setFarClip(100);
 
 	//auto fxaa = newObject<FXAAPostEffect>();
 	//Engine::getDefault3DLayer()->addPostEffect(fxaa);
-	
+	//
 
 
 	auto ps1 = TransitionPostEffect::create();
-	Engine::getDefault3DLayer()->addPostEffect(ps1);
+	//Engine::getDefault3DLayer()->addPostEffect(ps1);
 	ps1->transition(1, nullptr, 0);	// フェードイン
 
+	Engine::getCamera3D()->setPosition(0, 17, -10);
+	//Engine::getCamera3D()->setPosition(0, 10, -30);
 
-	Bitmap heightmap(LN_LOCALFILE("Assets/heightmap.png"));
+
+	RawBitmap heightmap(LN_LOCALFILE("Assets/heightmap.png"));
 	
 	//auto box1 = StaticMeshComponent::create(LN_LOCALFILE("Assets/cube.mqo"));
 	//auto box1 = StaticMeshComponent::create(LN_LOCALFILE("Assets/cylinder2.mqo"));
@@ -392,11 +402,17 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 
 	auto planeMesh = StaticMeshComponent::createPlane(Vector2(20, 20), 1, 1);
 
-	auto cornellBox = CornellBox::create();
-	auto cornellBoxObj = newObject<WorldObject3D>();
-	cornellBoxObj->addComponent(cornellBox);
+	//auto cornellBox = CornellBox::create();
+	//auto cornellBoxObj = newObject<WorldObject3D>();
+	//cornellBoxObj->addComponent(cornellBox);
+	//cornellBox->setShader(Shader::create(LN_LOCALFILE("Assets/UnLighting.fx"), ShaderCodeType::RawHLSL));
 
-	Engine::getCamera3D()->setPosition(0, 10, -30);
+	auto skinnedMeshComponent = SkinnedMeshComponent::create(_T("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
+	auto skinnedMeshObj = newObject<WorldObject3D>();
+	skinnedMeshObj->addComponent(skinnedMeshComponent);
+	skinnedMeshComponent->setShader(Shader::create(LN_LOCALFILE("Assets/UnLighting.fx"), ShaderCodeType::RawHLSL));
+	
+
 
 	//auto ambientLight1 = AmbientLight::create();
 	//ambientLight1->setIntensity(0.05);
@@ -417,7 +433,7 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 
 
 	auto directionalLight1 = DirectionalLight::create(Color::White);
-	directionalLight1->getDirectionalLightComponent()->setShadowCast(true);
+	//directionalLight1->getDirectionalLightComponent()->setShadowCast(true);
 	//Quaternion rot;
 	//rot.rotateX(Math::degreesToRadians(50));
 	//rot.rotateY(Math::degreesToRadians(-30));
@@ -426,12 +442,40 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 	directionalLight1->transform.lookAt(Vector3::Zero);
 	Engine::getWorld3D()->addWorldObject(directionalLight1, true);
 
-
-	Engine::getWorld3D()->setAmbientColor(Color(0.25, 0.25, 0.25, 1.0));
-	Engine::getWorld3D()->setAmbientSkyColor(Color::Blue.withAlpha(0.5));
-	Engine::getWorld3D()->setAmbientGroundColor(Color::Green.withAlpha(0.25));
 	Engine::getWorld3D()->setFogColor(Color(1, 1, 1, 0.5));
 	Engine::getWorld3D()->setFogDensity(0.03);
+
+	printf("--------\n");
+	{
+		Engine::getWorld3D()->beginUpdateFrame();
+		//Engine::getWorld3D()->updateFrame(0.016);
+		auto ofs = newObject<OffscreenWorldRenderView>(Engine::getWorld3D(), Engine::getCamera3D()->getCameraComponent());
+		ofs->setRenderTarget(RenderTargetTexture::create(SizeI(256, 256), TextureFormat::R8G8B8A8, 1));
+		ofs->setClearMode(RenderLayerClearMode::ColorDepth);
+		ofs->setBackgroundColor(Color(0,0,0,0));
+		ofs->render();
+		ofs->getRenderTarget()->readSurface()->save(_T("test22.png"));
+		auto* t = ofs->getRenderTarget()->resolveDeviceObject();
+		printf("\nrt: %p\n", t); ;
+
+
+		Engine::getWorld3D()->beginUpdateFrame();
+		Engine::getWorld3D()->updateFrame(0.016);
+		ofs->render();
+		ofs->getRenderTarget()->readSurface()->save(_T("test22_2.png"));
+	}
+	printf("--------\n");
+
+	//{
+	//	Engine::getWorld3D()->beginUpdateFrame();
+	//	Engine::getWorld3D()->updateFrame(0.016);
+	//	auto ofs = newObject<OffscreenWorldRenderView>(Engine::getWorld3D(), Engine::getCamera3D()->getCameraComponent());
+	//	ofs->setClearMode(RenderLayerClearMode::ColorDepth);
+	//	ofs->render();
+
+	//	ofs->getRenderTarget()->readSurface()->save(_T("test22.png"));
+	//}
+
 #if 0
 
 	int ClusterDepth = 32;
@@ -745,8 +789,13 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 		
 
 
-
-
+		//float fov = Engine::getCamera3D()->getCameraComponent()->getFovY();
+		//fov = std::min(Math::PI / 2, fov + 0.001f);
+		//Engine::getCamera3D()->getCameraComponent()->setFovY(fov);
+		Engine::getCamera3D()->getCameraComponent()->setProjectionMode(ProjectionMode::Orthographic);
+		//Engine::getCamera3D()->getCameraComponent()->setOrthographicSize();
+		Engine::getCamera3D()->getCameraComponent()->setNearClip(t);
+		Engine::getCamera3D()->getCameraComponent()->setFarClip(t+0.05);
 
 
 
@@ -783,6 +832,14 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 
 	}
 
+	//{
+	//	auto ofs = newObject<OffscreenWorldRenderView>(Engine::getWorld3D(), Engine::getCamera3D()->getCameraComponent());
+	//	ofs->setClearMode(RenderLayerClearMode::ColorDepth);
+	//	ofs->render();
+
+	//	ofs->getRenderTarget()->lock()->save(_T("test22.png"));
+	//	ofs->getRenderTarget()->unlock();
+	//}
 
 	//while (Engine::update())
 	//{

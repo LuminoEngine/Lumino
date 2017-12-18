@@ -153,6 +153,23 @@ private:
 	mutable bool	m_hashDirty;
 };
 
+struct PhongMaterialData
+{
+	Color			diffuse;
+	Color			ambient;
+	Color			specular;
+	Color			emissive;
+	float			power;
+};
+
+struct PBRMaterialData
+{
+	Color			color;
+	float			roughness;
+	float			metallic;
+	float			specular;
+};
+
 } // namespace detail
 
 /**
@@ -196,6 +213,7 @@ private:
 	Nullable<bool>			depthWriteEnabled;
 
 public:
+	ShadingModel			shadingModel = ShadingModel::Default;
 
 	void setBlendMode(Nullable<BlendMode> mode);
 	Nullable<BlendMode> getBlendMode() const { return blendMode; }
@@ -225,6 +243,9 @@ LN_INTERNAL_ACCESS:
 	void setBuiltinTextureParameter(const StringRef& name, Texture* value);
 	void setBuiltinColorParameter(const StringRef& name, const Color& value);
 	void setBuiltinColorParameter(const StringRef& name, float r, float g, float b, float a);
+
+	void translateToPhongMaterialData(detail::PhongMaterialData* data);
+	void translateToPBRMaterialData(detail::PBRMaterialData* data);
 
 LN_INTERNAL_ACCESS:
 	//using ShaderValuePtr = std::shared_ptr<ShaderValue>;
@@ -303,6 +324,7 @@ LN_INTERNAL_ACCESS:
 	float getBuiltinFloat(uint32_t hashKey, float defaultValue) const { auto itr = m_builtinValueMap.find(hashKey); return (itr != m_builtinValueMap.end()) ? itr->second.getFloat() : defaultValue; }
 	Texture* getBuiltinTexture(uint32_t hashKey, Texture* defaultValue) const { auto itr = m_builtinValueMap.find(hashKey); return (itr != m_builtinValueMap.end()) ? itr->second.getManagedTexture() : defaultValue; }
 
+	void applyUserShaderValeues(Shader* targetShader);
 	
 	uint32_t getHashCode();
 };
@@ -398,6 +420,7 @@ public:
 	Nullable<CullingMode>	m_cullingMode;
 	Nullable<bool>			m_depthTestEnabled;
 	Nullable<bool>			m_depthWriteEnabled;
+	ShadingModel			m_shadingModel = ShadingModel::Default;
 
 	void combine(/*CommonMaterial* owner, */CommonMaterial* ownerBase, const BuiltinEffectData& builtinEffectData);
 	void applyUserShaderValeues(Shader* targetShader);

@@ -341,7 +341,7 @@ LN_API void LNBoxCollisionShape_SetBindingTypeInfo(void* data)
 }
 LN_API void LNPhysicsObject_SetBindingTypeInfo(void* data)
 {
-    tr::TypeInfo::getTypeInfo<PhysicsObject>()->setBindingTypeInfo(data);
+    tr::TypeInfo::getTypeInfo<PhysicsObjectComponent>()->setBindingTypeInfo(data);
 }
 LN_API LNResultCode LNCollider_AddShape(LNHandle collider, LNHandle shape)
 {

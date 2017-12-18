@@ -1,10 +1,12 @@
 ﻿
 #include "../Internal.h"
 #include <Lumino/Rendering/Rendering.h>
+#include <Lumino/Rendering/RenderView.h>
 #include <Lumino/Rendering/SceneRenderer.h>
 #include "../Graphics/GraphicsManager.h"
 #include "../Graphics/CoreGraphicsRenderFeature.h"
 #include "ClusteredShadingSceneRenderer.h"
+#include "RenderStage.h"
 
 LN_NAMESPACE_BEGIN
 namespace detail {
@@ -28,6 +30,7 @@ SceneRenderer::~SceneRenderer()
 void SceneRenderer::initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
+	m_defaultMaterial = CommonMaterial::create();
 }
 
 //------------------------------------------------------------------------------
@@ -158,34 +161,46 @@ void SceneRenderer::render(
 
 		// DrawElement 描画
 		//int currentBatchIndex = -1;
-		DrawElementBatch* currentState = nullptr;
+		//DrawElementBatch* currentState = nullptr;
 		//Shader* currentShader = nullptr;
+		RenderStage* currentStage = nullptr;
 		for (DrawElement* element : m_renderingElementList)
 		{
 			bool visible = true;
 			drawArgs.oenerList = element->m_ownerDrawElementList;
 
-			DrawElementBatch* batch = element->m_ownerDrawElementList->getBatch(element->batchIndex);
+			//DrawElementBatch* batch = element->m_ownerDrawElementList->getBatch(element->batchIndex);
+			RenderStage* stage = element->m_ownerDrawElementList->getRenderStage(element->batchIndex);
 
 			// ステートの変わり目チェック
 			//if (element->batchIndex != currentBatchIndex)
-			if (currentState == nullptr || currentState->getHashCode() != batch->getHashCode())
+			if (currentStage == nullptr || !currentStage->equals(stage) /*currentState->getHashCode() != batch->getHashCode()*/)
 			{
 				context->flush();
 				//currentBatchIndex = element->batchIndex;
-				currentState = batch;
-				context->applyStatus(currentState, defaultStatus);
-				context->switchActiveRenderer(currentState->getRenderFeature());
+				currentStage = stage;
+				context->applyStatus(currentStage, defaultStatus);
+				//context->switchActiveRenderer(currentState->getRenderFeature());
 				if (diag != nullptr) diag->changeRenderStage();
 			}
 
+			context->switchActiveRenderer(element->renderFeature);
+
 			// 固定の内部シェーダを使わない場合はいろいろ設定する
-			if (currentState->getRenderFeature() == nullptr ||	// TODO: だめ。でもいまやらかしてる人がいるので、後で ASSERT 張って対応する
-				!currentState->getRenderFeature()->isStandaloneShader())
+			//if (currentStage->getRenderFeature() == nullptr ||	// TODO: だめ。でもいまやらかしてる人がいるので、後で ASSERT 張って対応する
+			//	!currentStage->getRenderFeature()->isStandaloneShader())
+			if (context->getCurrentRenderFeature() == nullptr ||	// TODO: だめ。でもいまやらかしてる人がいるので、後で ASSERT 張って対応する
+				!context->getCurrentRenderFeature()->isStandaloneShader())
 			{
-				CombinedMaterial* material = currentState->getCombinedMaterial();
+				//CombinedMaterial* material = currentState->getCombinedMaterial();
+				RenderingPass2::RenderStageFinalData stageData;
+				stageData.stage = currentStage;
+				stageData.material = currentStage->getMaterialFinal(m_defaultMaterial, element->priorityMaterial);
+				stageData.shader = currentStage->getShaderFinal(stageData.material);
+				stageData.shadingModel = currentStage->getShadingModelFinal(stageData.material);
+
 				ElementRenderingPolicy policy;
-				pass->selectElementRenderingPolicy(element, material, &policy);
+				pass->selectElementRenderingPolicy(element, stageData, &policy);
 				visible = policy.visible;
 
 				if (visible)
@@ -200,35 +215,50 @@ void SceneRenderer::render(
 
 
 					SubsetInfo subsetInfo;
-					element->makeSubsetInfo(element->m_ownerDrawElementList, material, &subsetInfo);
+					subsetInfo.renderStage = currentStage;
+					subsetInfo.finalMaterial = stageData.material;
+					subsetInfo.materialTexture = (subsetInfo.finalMaterial != nullptr) ? subsetInfo.finalMaterial->getMaterialTexture(nullptr) : nullptr;
+					element->makeSubsetInfo(element->m_ownerDrawElementList, currentStage, &subsetInfo);
 
 					//currentState->IsStandaloneShaderRenderer
 
-					if (currentState->getRenderFeature() != nullptr)
+					if (context->getCurrentRenderFeature() != nullptr)
 					{
-						currentState->getRenderFeature()->onShaderElementInfoOverride(&elementInfo);
-						currentState->getRenderFeature()->onShaderSubsetInfoOverride(&subsetInfo);
+						context->getCurrentRenderFeature()->onShaderElementInfoOverride(&elementInfo);
+						context->getCurrentRenderFeature()->onShaderSubsetInfoOverride(&subsetInfo);
 					}
 
 					shader->getSemanticsManager()->updateCameraVariables(cameraInfo);
 					shader->getSemanticsManager()->updateElementVariables(cameraInfo, elementInfo);
 					shader->getSemanticsManager()->updateSubsetVariables(subsetInfo);
 
-					material->applyUserShaderValeues(shader);
+					//material->applyUserShaderValeues(shader);
+					stageData.material->applyUserShaderValeues(shader);
 
-					onShaderPassChainging(policy.shaderPass);
 
 					auto* stateManager = context->getRenderStateManager();
-					stateManager->setShaderPass(policy.shaderPass);
+
+					const List<ShaderPass*>& passes = policy.shaderTechnique->getPasses();
+					for (ShaderPass* pass : passes)
+					{
+						onShaderPassChainging(pass);
+						stateManager->setShaderPass(pass);
+
+						if (diag != nullptr) element->reportDiag(diag);
+						element->drawSubset(drawArgs);
+					}
+				}
+			}
+			else
+			{
+				// 描画実行
+				if (visible)
+				{
+					if (diag != nullptr) element->reportDiag(diag);
+					element->drawSubset(drawArgs);
 				}
 			}
 
-			// 描画実行
-			if (visible)
-			{
-				if (diag != nullptr) element->reportDiag(diag);
-				element->drawSubset(drawArgs);
-			}
 		}
 
 		context->flush();
@@ -373,10 +403,10 @@ void NonShadingRenderingPass::initialize(GraphicsManager* manager)
 	m_defaultShader = manager->getBuiltinShader(BuiltinShader::Sprite);
 }
 
-void NonShadingRenderingPass::selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy)
+void NonShadingRenderingPass::selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy)
 {
-	outPolicy->shaderPass = selectShaderPassHelperSimple(material->m_shader, m_defaultShader);
-	outPolicy->shader = outPolicy->shaderPass->getOwnerShader();
+	outPolicy->shaderTechnique = selectShaderTechniqueHelperSimple(stageData.shader, m_defaultShader);
+	outPolicy->shader = outPolicy->shaderTechnique->getOwnerShader();
 	outPolicy->visible = true;
 }
 
@@ -489,10 +519,10 @@ void ForwardShadingRenderingPass::initialize(GraphicsManager* manager)
 	m_defaultShader = manager->getBuiltinShader(BuiltinShader::LegacyDiffuse);
 }
 
-void ForwardShadingRenderingPass::selectElementRenderingPolicy(DrawElement* element, CombinedMaterial* material, ElementRenderingPolicy* outPolicy)
+void ForwardShadingRenderingPass::selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy)
 {
-	outPolicy->shaderPass = selectShaderPassHelperSimple(material->m_shader, m_defaultShader);
-	outPolicy->shader = outPolicy->shaderPass->getOwnerShader();
+	outPolicy->shaderTechnique = selectShaderTechniqueHelperSimple(stageData.shader, m_defaultShader);
+	outPolicy->shader = outPolicy->shaderTechnique->getOwnerShader();
 	outPolicy->visible = true;
 }
 
@@ -620,28 +650,29 @@ void RenderingPass2::overrideCameraInfo(detail::CameraInfo* cameraInfo)
 //	return shader->getTechniques().getAt(0)->getPasses().getAt(0);
 //}
 
-ShaderPass* RenderingPass2::selectShaderPassHelper(Shader* materialShader, const String& techniqueName, const String& passName, ShaderPass* defaultPass)
+ShaderTechnique* RenderingPass2::selectShaderTechniqueHelper(Shader* materialShader, const String& techniqueName, ShaderTechnique* defaultTech)
 {
 	if (materialShader)
 	{
 		ShaderTechnique* tech = materialShader->findTechnique(techniqueName);
 		if (tech)
 		{
-			ShaderPass* pass = tech->getPass(passName.c_str());	// TODO:
-			if (pass)
-			{
-				return pass;
-			}
+			return tech;
+			//ShaderPass* pass = tech->getPass(passName.c_str());	// TODO:
+			////if (pass)
+			//{
+			//	return pass;
+			//}
 		}
 	}
 
-	return defaultPass;
+	return defaultTech;
 }
 
-ShaderPass* RenderingPass2::selectShaderPassHelperSimple(Shader* materialShader, Shader* defaultShader)
+ShaderTechnique* RenderingPass2::selectShaderTechniqueHelperSimple(Shader* materialShader, Shader* defaultShader)
 {
 	Shader* shader = (materialShader) ? materialShader : defaultShader;
-	return shader->getTechniques().getAt(0)->getPasses().getAt(0);
+	return shader->getTechniques()[0];
 }
 
 ////------------------------------------------------------------------------------

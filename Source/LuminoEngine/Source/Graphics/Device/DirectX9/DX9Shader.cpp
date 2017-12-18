@@ -707,6 +707,12 @@ void DX9ShaderPass::commitSamplerStatus()
 	// 描画スレッドを使っている場合は初期化時に行うことはできないため、ここで行っている。
 	if (!m_resolvedSamplerLink)
 	{
+		auto* current = m_renderer->getCurrentShaderPass();
+		if (current && current != this)
+		{
+			current->endPass();
+		}
+
 		auto* infoList = m_owner->getTextureVarInfoList();
 
 		// 元のテクスチャを覚えておき、検索用のダミーをセット
@@ -718,7 +724,7 @@ void DX9ShaderPass::commitSamplerStatus()
 
 		LN_COMCALL(m_dxEffect->SetTechnique(m_technique));
 		UINT dummy;
-		LN_COMCALL(m_dxEffect->Begin(&dummy, D3DXFX_DONOTSAVESTATE | D3DXFX_DONOTSAVESHADERSTATE));
+		LN_COMCALL(m_dxEffect->Begin(&dummy, 0));
 		LN_COMCALL(m_dxEffect->BeginPass(m_passIndex));
 
 		for (int i = 0; i < m_samplerLinkList.getCount(); ++i)

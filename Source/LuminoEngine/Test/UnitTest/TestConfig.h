@@ -27,7 +27,7 @@ class TestEnv : public ::testing::Environment
 public:
 	static void saveScreenShot(const Char* filePath);
 	static bool EqualsScreenShot(const Char* filePath, int passRate = 90);
-	static bool EqualsBitmapFile(Bitmap* bmp1, const Char* filePath, int passRate);
+	static bool EqualsBitmapFile(RawBitmap* bmp1, const Char* filePath, int passRate);
 	static bool CheckScreenShot(const Char* filePath, int passRate = 99, bool save = false);	// 基本的に 99% 一致していれば良い。グラボによって、色成分+-1 くらいの誤差がある (Radeon HD8490)
 	static void WaitRendering();
 

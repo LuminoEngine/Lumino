@@ -8,6 +8,7 @@
 #include <Lumino/Scene/SceneGraph.h>
 #include "../EngineDiagCore.h"
 #include "SceneGraphManager.h"
+#include "../Rendering/RenderStage.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_SCENE_BEGIN
@@ -78,10 +79,10 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(VisualComponent, SceneNode);
 
 //------------------------------------------------------------------------------
 VisualComponent::VisualComponent()
-	: m_blendMode(BlendMode::Normal)
-	, m_cullingMode(CullingMode::Back)
-	, m_depthTestEnabled(true)
-	, m_depthWriteEnabled(true)
+	//: m_blendMode(BlendMode::Normal)
+	//, m_cullingMode(CullingMode::Back)
+	//, m_depthTestEnabled(true)
+	//, m_depthWriteEnabled(true)
 {
 	setSpecialComponentType(SpecialComponentType::Visual);
 }
@@ -112,61 +113,61 @@ void VisualComponent::initialize()
 //------------------------------------------------------------------------------
 void VisualComponent::setOpacity(float value)
 {
-	m_builtinEffectData.setOpacity(value);
+	m_visualNodeParameters->builtinEffectData.setOpacity(value);
 }
 
 //------------------------------------------------------------------------------
 float VisualComponent::getOpacity() const
 {
-	return m_builtinEffectData.getOpacity();
+	return m_visualNodeParameters->builtinEffectData.getOpacity();
 }
 
 //------------------------------------------------------------------------------
 void VisualComponent::setColorScale(const Color& value)
 {
-	m_builtinEffectData.setColorScale(value);
+	m_visualNodeParameters->builtinEffectData.setColorScale(value);
 }
 
 //------------------------------------------------------------------------------
 const Color& VisualComponent::getColorScale() const
 {
-	return m_builtinEffectData.getColorScale();
+	return m_visualNodeParameters->builtinEffectData.getColorScale();
 }
 
 //------------------------------------------------------------------------------
 void VisualComponent::setBlendColor(const Color& value)
 {
-	m_builtinEffectData.setBlendColor(value);
+	m_visualNodeParameters->builtinEffectData.setBlendColor(value);
 }
 
 //------------------------------------------------------------------------------
 const Color& VisualComponent::getBlendColor() const
 {
-	return m_builtinEffectData.getBlendColor();
+	return m_visualNodeParameters->builtinEffectData.getBlendColor();
 }
 
 //------------------------------------------------------------------------------
 void VisualComponent::setTone(const ToneF& value)
 {
-	m_builtinEffectData.setTone(value);
+	m_visualNodeParameters->builtinEffectData.setTone(value);
 }
 
 //------------------------------------------------------------------------------
 const ToneF& VisualComponent::getTone() const
 {
-	return m_builtinEffectData.getTone();
+	return m_visualNodeParameters->builtinEffectData.getTone();
 }
 
 //------------------------------------------------------------------------------
 void VisualComponent::setShader(Shader* value)
 {
-	m_builtinEffectData.setShader(value);
+	m_visualNodeParameters->builtinEffectData.setShader(value);
 }
 
 //------------------------------------------------------------------------------
 Shader* VisualComponent::getShader() const
 {
-	return m_builtinEffectData.getShader();
+	return m_visualNodeParameters->builtinEffectData.getShader();
 }
 
 ////------------------------------------------------------------------------------
@@ -228,28 +229,28 @@ Shader* VisualComponent::getShader() const
 //}
 
 //------------------------------------------------------------------------------
-void VisualComponent::setBlendMode(BlendMode mode) { m_blendMode = mode; }
+void VisualComponent::setBlendMode(BlendMode mode) { m_visualNodeParameters->blendMode = mode; }
 
 //------------------------------------------------------------------------------
-//BlendMode VisualComponent::getBlendMode() const { return GetMainMaterial()->getBlendMode(); }
+BlendMode VisualComponent::getBlendMode() const { return m_visualNodeParameters->blendMode; }
 
 //------------------------------------------------------------------------------
-void VisualComponent::setCullingMode(CullingMode mode) { m_cullingMode = mode; }
+void VisualComponent::setCullingMode(CullingMode mode) { m_visualNodeParameters->cullingMode = mode; }
 
 //------------------------------------------------------------------------------
-//CullingMode VisualComponent::getCullingMode() const { return GetMainMaterial()->getCullingMode(); }
+CullingMode VisualComponent::getCullingMode() const { return m_visualNodeParameters->cullingMode; }
 
 //------------------------------------------------------------------------------
-void VisualComponent::setDepthTestEnabled(bool enabled) { m_depthTestEnabled = enabled; }
+void VisualComponent::setDepthTestEnabled(bool enabled) { m_visualNodeParameters->depthTestEnabled = enabled; }
 
 //------------------------------------------------------------------------------
-//bool VisualComponent::isDepthTestEnabled() const { return GetMainMaterial()->isDepthTestEnabled(); }
+bool VisualComponent::isDepthTestEnabled() const { return m_visualNodeParameters->depthTestEnabled; }
 
 //------------------------------------------------------------------------------
-void VisualComponent::setDepthWriteEnabled(bool enabled) { m_depthWriteEnabled = enabled; }
+void VisualComponent::setDepthWriteEnabled(bool enabled) { m_visualNodeParameters->depthWriteEnabled = enabled; }
 
 //------------------------------------------------------------------------------
-//bool VisualComponent::isDepthWriteEnabled() const { return GetMainMaterial()->isDepthWriteEnabled(); }
+bool VisualComponent::isDepthWriteEnabled() const { return m_visualNodeParameters->depthWriteEnabled; }
 
 //------------------------------------------------------------------------------
 void VisualComponent::updateFrameHierarchy(SceneNode* parent, float deltaTime)
@@ -284,12 +285,14 @@ void VisualComponent::render(RenderingContext* context)
 		context->pushState();
 		context->pushMetadata(&metadata);
 
-		context->setTransform(getOwnerObject()->transform.getWorldMatrix());
-		context->setBlendMode(m_blendMode);
-		context->setCullingMode(m_cullingMode);
-		context->setDepthTestEnabled(m_depthTestEnabled);
-		context->setDepthWriteEnabled(m_depthWriteEnabled);
-		context->setBuiltinEffectData(m_builtinEffectData);
+		m_visualNodeParameters->transfrom = getOwnerObject()->transform.getWorldMatrix();
+		//context->setTransform(getOwnerObject()->transform.getWorldMatrix());
+		//context->setBlendMode(m_blendMode);
+		//context->setCullingMode(m_cullingMode);
+		//context->setDepthTestEnabled(m_depthTestEnabled);
+		//context->setDepthWriteEnabled(m_depthWriteEnabled);
+		//context->setBuiltinEffectData(m_builtinEffectData);
+		context->setVisualNodeParameters(m_visualNodeParameters);
 		onRender(context);
 		onRender2(context);
 

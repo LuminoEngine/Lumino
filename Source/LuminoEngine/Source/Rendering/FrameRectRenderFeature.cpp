@@ -11,6 +11,7 @@
 #include "../Graphics/GraphicsManager.h"
 #include "../Graphics/RenderingCommand.h"
 #include "FrameRectRenderFeature.h"
+#include "../Rendering/RenderStage.h"
 
 LN_NAMESPACE_BEGIN
 LN_NAMESPACE_GRAPHICS_BEGIN
@@ -556,9 +557,9 @@ void FrameRectRenderFeature::flush()
 }
 
 //------------------------------------------------------------------------------
-void FrameRectRenderFeature::onSetState(const DrawElementBatch* state)
+void FrameRectRenderFeature::onSetState(const RenderStage* state)
 {
-	setState(state->state.getBrush());
+	setState(state->getBrushFinal());
 }
 
 } // namespace detail

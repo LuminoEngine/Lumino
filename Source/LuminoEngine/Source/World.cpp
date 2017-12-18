@@ -90,7 +90,7 @@ void World::removeWorldObject(WorldObject* obj)
 }
 
 //------------------------------------------------------------------------------
-void World::addOffscreenWorldView(OffscreenWorldView* view)
+void World::addOffscreenWorldView(OffscreenWorldSubRenderView* view)
 {
 	if (LN_REQUIRE(!m_offscreenIdStorage.isEmpty())) return;
 	m_offscreenWorldViewList.add(view);
@@ -101,7 +101,7 @@ void World::addOffscreenWorldView(OffscreenWorldView* view)
 }
 
 //------------------------------------------------------------------------------
-void World::removeOffscreenWorldView(OffscreenWorldView* view)
+void World::removeOffscreenWorldView(OffscreenWorldSubRenderView* view)
 {
 	m_offscreenWorldViewList.remove(view);
 
@@ -123,7 +123,8 @@ void World::beginUpdateFrame()
 	{
 		m_debugRenderer->beginMakeElements();
 		m_debugRendererDefaultMaterial->setShader(detail::EngineDomain::getGraphicsManager()->getBuiltinShader(BuiltinShader::Sprite));
-		m_debugRenderer->setDefaultMaterial(m_debugRendererDefaultMaterial);
+		//TODO:
+		//m_debugRenderer->setDefaultMaterial(m_debugRendererDefaultMaterial);
 	}
 
 	for (auto& obj : m_rootWorldObjectList)
@@ -166,7 +167,7 @@ void World::onPostUpdate(float deltaSceonds)
 }
 
 //------------------------------------------------------------------------------
-void World::renderRoot(WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags)
+void World::renderRoot(WorldRenderViewBase* renderView, WorldDebugDrawFlags debugDrawFlags)
 {
 	// pre render
 	for (auto& view : m_offscreenWorldViewList)
@@ -179,7 +180,7 @@ void World::renderRoot(WorldRenderView* renderView, WorldDebugDrawFlags debugDra
 }
 
 //------------------------------------------------------------------------------
-void World::render(RenderingContext* context, WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen)
+void World::render(RenderingContext* context, WorldRenderViewBase* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldSubRenderView* offscreen)
 {
 	LN_ASSERT(context->getRenderView() == nullptr);	// render 下はネスト禁止
 	context->setRenderView(renderView);
@@ -209,8 +210,8 @@ void World::render(RenderingContext* context, WorldRenderView* renderView, World
 	}
 
 	// reset status
-	context->setBuiltinEffectData(detail::BuiltinEffectData::DefaultData);
-
+	//context->setBuiltinEffectData(detail::BuiltinEffectData::DefaultData);
+	context->setVisualNodeParameters(nullptr);
 	context->setRenderView(nullptr);
 }
 
@@ -320,7 +321,7 @@ void World2D::onUpdate(float deltaSceonds)
 }
 
 //------------------------------------------------------------------------------
-void World2D::render(RenderingContext* context, WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen)
+void World2D::render(RenderingContext* context, WorldRenderViewBase* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldSubRenderView* offscreen)
 {
 	World::render(context, renderView, debugDrawFlags, layerMask, offscreen);
 }
@@ -359,9 +360,6 @@ void World3D::initialize()
 	//m_mainLight->setSpecialObject(true);
 	//addWorldObject(m_mainLight, true);
 
-	setAmbientColor(Color(0.25, 0.25, 0.25, 1.0));
-	setAmbientSkyColor(Color(0, 0, 0, 0));
-	setAmbientGroundColor(Color(0, 0, 0, 0));
 	setFogColor(Color(1, 1, 1, 1));
 	setFogDensity(0.0);
 
@@ -439,7 +437,7 @@ void World3D::onInternalPhysicsUpdate(float deltaSceonds)
 }
 
 //------------------------------------------------------------------------------
-void World3D::render(RenderingContext* context, WorldRenderView* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldView* offscreen)
+void World3D::render(RenderingContext* context, WorldRenderViewBase* renderView, WorldDebugDrawFlags debugDrawFlags, uint32_t layerMask, OffscreenWorldSubRenderView* offscreen)
 {
 
 	World::render(context, renderView, debugDrawFlags, layerMask, offscreen);

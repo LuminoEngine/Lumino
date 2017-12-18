@@ -258,7 +258,7 @@ public:
 
 };
 
-class LNPhysicsObject : public PhysicsObject
+class LNPhysicsObject : public PhysicsObjectComponent
 {
 public:
 
@@ -287,17 +287,17 @@ public:
     }
 
     Event<void(LNHandle self, LNHandle obj)> m_ConnectOnTriggerEnter_EventWrapper;
-    void ConnectOnTriggerEnter_EventCallback(PhysicsObject* obj)
+    void ConnectOnTriggerEnter_EventCallback(PhysicsObjectComponent* obj)
     {
         m_ConnectOnTriggerEnter_EventWrapper.raise(LWIG_TO_HANDLE(this), LWIG_TO_HANDLE(obj));
     }
     Event<void(LNHandle self, LNHandle obj)> m_ConnectOnTriggerLeave_EventWrapper;
-    void ConnectOnTriggerLeave_EventCallback(PhysicsObject* obj)
+    void ConnectOnTriggerLeave_EventCallback(PhysicsObjectComponent* obj)
     {
         m_ConnectOnTriggerLeave_EventWrapper.raise(LWIG_TO_HANDLE(this), LWIG_TO_HANDLE(obj));
     }
     Event<void(LNHandle self, LNHandle obj)> m_ConnectOnTriggerStay_EventWrapper;
-    void ConnectOnTriggerStay_EventCallback(PhysicsObject* obj)
+    void ConnectOnTriggerStay_EventCallback(PhysicsObjectComponent* obj)
     {
         m_ConnectOnTriggerStay_EventWrapper.raise(LWIG_TO_HANDLE(this), LWIG_TO_HANDLE(obj));
     }

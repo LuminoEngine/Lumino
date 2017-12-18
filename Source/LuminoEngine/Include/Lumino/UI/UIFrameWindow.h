@@ -11,7 +11,7 @@ namespace detail { class SceneRenderer; }
 class PlatformWindow;
 class SwapChain;
 class DrawingContext;
-class CameraViewportLayer2;
+class WorldRenderView;
 class World2D;
 class World3D;
 class UIViewport;
@@ -98,16 +98,16 @@ LN_INTERNAL_ACCESS:
 	void updateLayout(const Size& viewSize);	// TODO: ゆくゆくは SwapChain や Viewport も UIFrameWindow にもってくる。そのとき、この viewSize はいらなくなる
 	void renderUI();
 
-	CameraViewportLayer2* getDefaultCameraViewportLayer2D() const;
-	CameraViewportLayer2* getDefaultCameraViewportLayer3D() const;
+	WorldRenderView* getDefaultCameraViewportLayer2D() const;
+	WorldRenderView* getDefaultCameraViewportLayer3D() const;
 	UILayoutLayer* getDefaultUILayer() const;
 	void setInputManager(detail::InputManager* inputManager) { m_inputManager = inputManager; }
 
 private:
 	UIContext*					m_mainUIContext;
 	Ref<UIViewport>				m_mainUIViewport;
-	Ref<CameraViewportLayer2>	m_cameraViewportLayer3D;
-	Ref<CameraViewportLayer2>	m_cameraViewportLayer2D;
+	Ref<WorldRenderView>	m_cameraViewportLayer3D;
+	Ref<WorldRenderView>	m_cameraViewportLayer2D;
 	Ref<UILayoutLayer>			m_uiLayer;
 	detail::InputManager*		m_inputManager;
 };

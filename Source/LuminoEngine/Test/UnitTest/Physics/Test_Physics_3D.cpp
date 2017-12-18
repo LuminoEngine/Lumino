@@ -13,7 +13,7 @@ TEST_F(Test_Physics_3D, Basic)
 	// <Test> 地面が無いので下のほうへ落ちていく
 	{
 		auto shape1 = BoxCollisionShape::create(1, 2, 3);
-		auto body1 = RigidBody::create(shape1);
+		auto body1 = RigidBodyComponent::create(shape1);
 		for (int i = 0; i < 10; i++) Engine::update();
 		ASSERT_EQ(true, body1->getWorldTransform().getPosition().y < 0);
 	}
@@ -34,12 +34,12 @@ TEST_F(Test_Physics_3D, TriggerCollider)
 		int count1 = 0;
 		int count2 = 0;
 		int count3 = 0;
-		body1->connectOnTriggerEnter([&count1](PhysicsObject* obj) { count1++; });
-		body2->connectOnTriggerEnter([&count1](PhysicsObject* obj) { count1++; });
-		body1->connectOnTriggerStay([&count2](PhysicsObject* obj) { count2++; });
-		body2->connectOnTriggerStay([&count2](PhysicsObject* obj) { count2++; });
-		body1->connectOnTriggerLeave([&count3](PhysicsObject* obj) { count3++; });
-		body2->connectOnTriggerLeave([&count3](PhysicsObject* obj) { count3++; });
+		body1->connectOnTriggerEnter([&count1](PhysicsObjectComponent* obj) { count1++; });
+		body2->connectOnTriggerEnter([&count1](PhysicsObjectComponent* obj) { count1++; });
+		body1->connectOnTriggerStay([&count2](PhysicsObjectComponent* obj) { count2++; });
+		body2->connectOnTriggerStay([&count2](PhysicsObjectComponent* obj) { count2++; });
+		body1->connectOnTriggerLeave([&count3](PhysicsObjectComponent* obj) { count3++; });
+		body2->connectOnTriggerLeave([&count3](PhysicsObjectComponent* obj) { count3++; });
 
 		for (int i = 0; i < 10; i++) Engine::update();
 
@@ -58,7 +58,7 @@ TEST_F(Test_Physics_3D, TriggerCollider)
 //------------------------------------------------------------------------------
 TEST_F(Test_Physics_3D, MeshCollisionShape)
 {
-	//dynamic_cast<ln::CameraViewportLayer2*>(ln::Engine::getDefault3DLayer())->setDebugDrawFlags(ln::WorldDebugDrawFlags::PhysicsInfo);
+	//dynamic_cast<ln::WorldRenderView*>(ln::Engine::getDefault3DLayer())->setDebugDrawFlags(ln::WorldDebugDrawFlags::PhysicsInfo);
 
 	// <Test> YZ 平面で X+ 向きの 四角形 MeshSphere に、左右から剛体をぶつける → 裏表に関係なく、双方に跳ね返る
 	{
@@ -73,11 +73,11 @@ TEST_F(Test_Physics_3D, MeshCollisionShape)
 		auto b1 = CollisionBody::create(s1);
 
 		auto s2 = BoxCollisionShape::create(1, 1, 1);
-		auto b2 = RigidBody::create(s2);
+		auto b2 = RigidBodyComponent::create(s2);
 		b2->setPosition(3, 0, 5);
 		b2->applyImpulse(Vector3(-10, 0, 0));
 
-		auto b3 = RigidBody::create(s2);
+		auto b3 = RigidBodyComponent::create(s2);
 		b3->setPosition(-3, 0, -5);
 		b3->applyImpulse(Vector3(10, 0, 0));
 

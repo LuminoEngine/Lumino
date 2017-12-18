@@ -218,6 +218,7 @@ function(ln_add_pch project_name header_file_path source_file_path)
 endfunction()
 
 #------------------------------------------------------------------------------
+# Note: VisualStudio で Intellisense から参照できるようにするためには、プロジェクトの include パスの設定に header_file_name までのパスを追加する。
 function(ln_add_pch2 project_name header_file_name source_file_path)
 	if (MSVC)
 		set(LN_LOCAL_COMPILE_FLAGS

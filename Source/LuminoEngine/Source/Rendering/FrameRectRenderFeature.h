@@ -104,7 +104,7 @@ public:
 	virtual void flush() override;
 	virtual void onActivated() { }
 	virtual void onDeactivated() { flush(); }
-	virtual void onSetState(const DrawElementBatch* state);
+	virtual void onSetState(const detail::RenderStage* state) override;
 
 private:
 	void setState(Brush* brush, const Matrix& world, const Matrix& viewProj);

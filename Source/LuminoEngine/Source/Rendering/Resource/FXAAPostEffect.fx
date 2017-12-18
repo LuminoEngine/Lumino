@@ -4,6 +4,9 @@ static float2	_MaterialTextureSize = float2(640, 480);	// TODO:
 static float2 RcpMaterialTextureSize = float2(
 	1.0 / _MaterialTextureSize.x,
 	1.0 / _MaterialTextureSize.y);
+static float2 RcpMaterialTextureSize2 = float2(
+	0.5 / _MaterialTextureSize.x,
+	0.5 / _MaterialTextureSize.y);
 
 sampler2D ScreenSampler = sampler_state
 { 
@@ -24,12 +27,12 @@ float FxaaLuma(float3 rgb)
 
 float4 FxaaTexOff(sampler2D tex, float2 pos, float2 offset)
 {
-    return tex2D(tex, pos + offset * RcpMaterialTextureSize);
+    return tex2D(tex, pos + offset * RcpMaterialTextureSize + RcpMaterialTextureSize2);
 }
 
 float4 FxaaTexLod(sampler2D tex, float2 pos)
 {
-    return tex2D(tex, pos);
+    return tex2D(tex, pos + RcpMaterialTextureSize2);
 }
 
 float4 FxaaPixelShader(sampler2D tex, float4 posPos, float2 rcpFrame)
