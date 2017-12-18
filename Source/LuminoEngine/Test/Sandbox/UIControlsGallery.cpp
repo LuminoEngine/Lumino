@@ -784,10 +784,10 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 
 
 
-		Engine::getCamera3D()->getCameraComponent()->setProjectionMode(ProjectionMode::Orthographic);
-		//Engine::getCamera3D()->getCameraComponent()->setOrthographicSize();
-		Engine::getCamera3D()->getCameraComponent()->setNearClip(t);
-		Engine::getCamera3D()->getCameraComponent()->setFarClip(t+0.05);
+		//Engine::getCamera3D()->getCameraComponent()->setProjectionMode(ProjectionMode::Orthographic);
+		////Engine::getCamera3D()->getCameraComponent()->setOrthographicSize();
+		//Engine::getCamera3D()->getCameraComponent()->setNearClip(t);
+		//Engine::getCamera3D()->getCameraComponent()->setFarClip(t+0.05);
 
 
 

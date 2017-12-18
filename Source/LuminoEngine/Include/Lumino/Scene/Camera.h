@@ -92,15 +92,15 @@ public:	// internal
 	const Matrix& getViewMatrix() const { return m_viewMatrix; }
 	const Matrix& getProjectionMatrix() const { return m_projMatrix; }
 	const Matrix& getViewProjectionMatrix() const { return m_viewProjMatrix; }
-	const Matrix& getViewMatrixI() const { return m_viewMatrixI; }
-	const Matrix& getProjectionMatrixI() const { return m_projMatrixI; }
-	const Matrix& getViewProjectionMatrixI() const { return m_viewProjMatrixI; }
-	const Matrix& getViewMatrixT() const { return m_viewMatrixT; }
-	const Matrix& getProjectionMatrixT() const { return m_projMatrixT; }
-	const Matrix& getViewProjectionMatrixT() const { return m_viewProjMatrixT; }
-	const Matrix& getViewMatrixIT() const { return m_viewMatrixIT; }
-	const Matrix& getProjectionMatrixIT() const { return m_projMatrixIT; }
-	const Matrix& getViewProjectionMatrixIT() const { return m_viewProjMatrixIT; }
+	//const Matrix& getViewMatrixI() const { return m_viewMatrixI; }
+	//const Matrix& getProjectionMatrixI() const { return m_projMatrixI; }
+	//const Matrix& getViewProjectionMatrixI() const { return m_viewProjMatrixI; }
+	//const Matrix& getViewMatrixT() const { return m_viewMatrixT; }
+	//const Matrix& getProjectionMatrixT() const { return m_projMatrixT; }
+	//const Matrix& getViewProjectionMatrixT() const { return m_viewProjMatrixT; }
+	//const Matrix& getViewMatrixIT() const { return m_viewMatrixIT; }
+	//const Matrix& getProjectionMatrixIT() const { return m_projMatrixIT; }
+	//const Matrix& getViewProjectionMatrixIT() const { return m_viewProjMatrixIT; }
 
 	//void DoMouseMoveR(float dx, float dy, float width, float height);
 	//void DoMouseMoveM(float offsetX, float offsetY);
@@ -126,7 +126,6 @@ LN_INTERNAL_ACCESS:
 	CameraWorld	m_cameraWorld;
 
 private:
-	//ProjectionMode		m_cameraWorld;
 	CameraDirection		m_directionMode;
 	ProjectionMode		m_projectionMode;
 	Vector3				m_lookAt;
@@ -144,17 +143,7 @@ private:
 	Vector4				m_direction;		///< 向き
 	ViewFrustum			m_viewFrustum;		// 視錐台カリング用 (3D,2D共用)
 
-	// 以下はシェーダ変数への設定用。ライトは個々のノードに比べて参照される回数が多いので
-	// 必要になるたびに計算するのではなく、あらかじめ計算しておく。
-	Matrix				m_viewMatrixI;		///< ビュー行列 (inverse)
-	Matrix				m_projMatrixI;		///< プロジェクション行列 (inverse)
-	Matrix				m_viewProjMatrixI;	///< ビュー行列とプロジェクション行列の積 (inverse)
-	Matrix				m_viewMatrixT;		///< ビュー行列 (transpose)
-	Matrix				m_projMatrixT;		///< プロジェクション行列 (transpose)
-	Matrix				m_viewProjMatrixT;	///< ビュー行列とプロジェクション行列の積 (transpose)
-	Matrix				m_viewMatrixIT;		///< ビュー行列 (inverse * transpose)
-	Matrix				m_projMatrixIT;		///< プロジェクション行列 (inverse * transpose)
-	Matrix				m_viewProjMatrixIT;	///< ビュー行列とプロジェクション行列の積 (inverse * transpose)
+	Matrix				m_viewProjMatrixI;
 
 	Plane				m_reflectionPlane;
 };

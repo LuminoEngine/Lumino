@@ -179,25 +179,7 @@ void CameraComponent::updateMatrices(const Size& viewSize)
 	}
 
 	m_viewFrustum = ViewFrustum(m_viewProjMatrix);
-
-	m_viewMatrixI = Matrix::makeInverse(m_viewMatrix);
-	m_projMatrixI = Matrix::makeInverse(m_projMatrix);
 	m_viewProjMatrixI = Matrix::makeInverse(m_viewProjMatrix);
-	m_viewMatrixT = Matrix::makeTranspose(m_viewMatrix);
-	m_projMatrixT = Matrix::makeTranspose(m_projMatrix);
-	m_viewProjMatrixT = Matrix::makeTranspose(m_viewProjMatrix);
-	m_viewMatrixIT = Matrix::makeTranspose(m_viewMatrixI);
-	m_projMatrixIT = Matrix::makeTranspose(m_projMatrixI);
-	m_viewProjMatrixIT = Matrix::makeTranspose(m_viewProjMatrixI);
-
-
-
-	//{
-	//	Vector3 pos(1, 1, 300);
-	//	Vector4 tt = Vector3::transform(pos, m_viewProjMatrix);
-	//	float d = tt.z / tt.w;
-	//	printf("");
-	//}
 }
 
 //------------------------------------------------------------------------------
