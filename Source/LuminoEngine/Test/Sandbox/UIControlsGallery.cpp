@@ -442,10 +442,6 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 	directionalLight1->transform.lookAt(Vector3::Zero);
 	Engine::getWorld3D()->addWorldObject(directionalLight1, true);
 
-
-	Engine::getWorld3D()->setAmbientColor(Color(0.25, 0.25, 0.25, 1.0));
-	Engine::getWorld3D()->setAmbientSkyColor(Color::Blue.withAlpha(0.5));
-	Engine::getWorld3D()->setAmbientGroundColor(Color::Green.withAlpha(0.25));
 	Engine::getWorld3D()->setFogColor(Color(1, 1, 1, 0.5));
 	Engine::getWorld3D()->setFogDensity(0.03);
 

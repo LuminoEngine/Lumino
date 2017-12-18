@@ -121,9 +121,7 @@ private:
 	Ref<Camera>				m_mainCamera;
 };
 
-/**
-	@brief		
-*/
+/** */
 class World3D
 	: public World
 {
@@ -131,24 +129,6 @@ class World3D
 public:
 	void setVisibleGridPlane(bool visible) { m_visibleGridPlane = visible; }
 	//virtual DrawList* getRenderer() const override;
-
-	/** 環境光の色を取得します。 */
-	const Color& getAmbientColor() { return m_globalRenderSettings.ambientColor; }
-
-	/** 環境光の色を設定します。アルファ値を影響度とし、シーン全体のオブジェクトへ一様に影響します。(default: Color(0.25, 0.25, 0.25, 1.0)) */
-	void setAmbientColor(const Color& color) { m_globalRenderSettings.ambientColor = color; }
-
-	/** 半球ライティングのための空の環境光の色を取得します。 */
-	const Color& getAmbientSkyColor() { return m_globalRenderSettings.ambientSkyColor; }
-
-	/** 半球ライティングのための空の環境光の色を設定します。(default: Color(0, 0, 0, 0)) */
-	void setAmbientSkyColor(const Color& color) { m_globalRenderSettings.ambientSkyColor = color; }
-
-	/** 半球ライティングのための地面の環境光の色を取得します。 */
-	const Color& getAmbientGroundColor() { return m_globalRenderSettings.ambientGroundColor; }
-
-	/** 半球ライティングのための地面の環境光の色を設定します。(default: Color(0, 0, 0, 0)) */
-	void setAmbientGroundColor(const Color& color) { m_globalRenderSettings.ambientGroundColor = color; }
 
 	/** フォグの色を取得します。 */
 	const Color& getFogColor() { return m_globalRenderSettings.fogColor; }
