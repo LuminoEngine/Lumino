@@ -218,7 +218,7 @@ void CameraComponent::onUIEvent(UIEventArgs* e)
 			getCameraBehavior()->injectMouseMove(pos.x, pos.y);
 		}
 	}
-	else if (e->getType() == UIEvents::MouseMoveEvent)
+	else if (e->getType() == UIEvents::MouseWheelEvent)
 	{
 		if (getCameraBehavior() != nullptr)
 		{
@@ -293,23 +293,27 @@ void CameraMouseMoveBehavior::World_onUIEvent(UIEventArgs* e)
 		auto* me = static_cast<UIMouseEventArgs*>(e);
 		auto pos = me->getPosition(me->sender);
 		injectMouseButtonDown(me->getMouseButtons(), pos.x, pos.y);
+		e->handled = true;
 	}
 	else if (e->getType() == UIEvents::MouseUpEvent)
 	{
 		auto* me = static_cast<UIMouseEventArgs*>(e);
 		auto pos = me->getPosition(me->sender);
 		injectMouseButtonUp(me->getMouseButtons(), pos.x, pos.y);
+		e->handled = true;
 	}
 	else if (e->getType() == UIEvents::MouseMoveEvent)
 	{
 		auto* me = static_cast<UIMouseEventArgs*>(e);
 		auto pos = me->getPosition(me->sender);
 		injectMouseMove(pos.x, pos.y);
+		e->handled = true;
 	}
-	else if (e->getType() == UIEvents::MouseMoveEvent)
+	else if (e->getType() == UIEvents::MouseWheelEvent)
 	{
 		auto* me = static_cast<UIMouseWheelEventArgs*>(e);
 		injectMouseWheel(me->getDelta());
+		e->handled = true;
 	}
 	else
 	{
