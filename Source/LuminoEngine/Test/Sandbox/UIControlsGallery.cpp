@@ -784,16 +784,6 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 
 
 
-
-		Camera* cam = Engine::getCamera3D();
-		CameraComponent* camc = cam->getCameraComponent();
-		Vector3 camPos = cam->getPosition();//Vector3(0, 0, -10);
-		
-
-
-		//float fov = Engine::getCamera3D()->getCameraComponent()->getFovY();
-		//fov = std::min(Math::PI / 2, fov + 0.001f);
-		//Engine::getCamera3D()->getCameraComponent()->setFovY(fov);
 		Engine::getCamera3D()->getCameraComponent()->setProjectionMode(ProjectionMode::Orthographic);
 		//Engine::getCamera3D()->getCameraComponent()->setOrthographicSize();
 		Engine::getCamera3D()->getCameraComponent()->setNearClip(t);
