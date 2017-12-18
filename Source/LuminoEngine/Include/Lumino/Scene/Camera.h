@@ -92,19 +92,6 @@ public:	// internal
 	const Matrix& getViewMatrix() const { return m_viewMatrix; }
 	const Matrix& getProjectionMatrix() const { return m_projMatrix; }
 	const Matrix& getViewProjectionMatrix() const { return m_viewProjMatrix; }
-	//const Matrix& getViewMatrixI() const { return m_viewMatrixI; }
-	//const Matrix& getProjectionMatrixI() const { return m_projMatrixI; }
-	//const Matrix& getViewProjectionMatrixI() const { return m_viewProjMatrixI; }
-	//const Matrix& getViewMatrixT() const { return m_viewMatrixT; }
-	//const Matrix& getProjectionMatrixT() const { return m_projMatrixT; }
-	//const Matrix& getViewProjectionMatrixT() const { return m_viewProjMatrixT; }
-	//const Matrix& getViewMatrixIT() const { return m_viewMatrixIT; }
-	//const Matrix& getProjectionMatrixIT() const { return m_projMatrixIT; }
-	//const Matrix& getViewProjectionMatrixIT() const { return m_viewProjMatrixIT; }
-
-	//void DoMouseMoveR(float dx, float dy, float width, float height);
-	//void DoMouseMoveM(float offsetX, float offsetY);
-	//void DoMouseWheel(int pos);
 
 protected:
 
