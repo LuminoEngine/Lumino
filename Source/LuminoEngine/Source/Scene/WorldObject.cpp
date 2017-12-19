@@ -128,7 +128,7 @@ void WorldObject::removeFromWorld()
 {
 	if (m_world != nullptr)
 	{
-		m_world->removeWorldObject(this);
+		m_world->remove(this);
 	}
 }
 
@@ -270,49 +270,49 @@ void WorldObject::updateWorldMatrixHierarchical()
 	}
 }
 
-//==============================================================================
-// WorldObject2D
-//==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(WorldObject2D, WorldObject);
-
-//------------------------------------------------------------------------------
-WorldObject2D::WorldObject2D()
-{
-}
-
-//------------------------------------------------------------------------------
-WorldObject2D::~WorldObject2D()
-{
-}
-
-//------------------------------------------------------------------------------
-void WorldObject2D::initialize()
-{
-	WorldObject::initialize();
-	detail::EngineDomain::getDefaultWorld2D()->addWorldObject(this, true);
-}
-
-
-//==============================================================================
-// WorldObject3D
-//==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(WorldObject3D, WorldObject);
-
-//------------------------------------------------------------------------------
-WorldObject3D::WorldObject3D()
-{
-}
-
-//------------------------------------------------------------------------------
-WorldObject3D::~WorldObject3D()
-{
-}
-
-//------------------------------------------------------------------------------
-void WorldObject3D::initialize()
-{
-	WorldObject::initialize();
-	detail::EngineDomain::getDefaultWorld3D()->addWorldObject(this, true);
-}
+////==============================================================================
+//// WorldObject2D
+////==============================================================================
+//LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(WorldObject2D, WorldObject);
+//
+////------------------------------------------------------------------------------
+//WorldObject2D::WorldObject2D()
+//{
+//}
+//
+////------------------------------------------------------------------------------
+//WorldObject2D::~WorldObject2D()
+//{
+//}
+//
+////------------------------------------------------------------------------------
+//void WorldObject2D::initialize()
+//{
+//	WorldObject::initialize();
+//	detail::EngineDomain::getDefaultWorld2D()->addWorldObject(this, true);
+//}
+//
+//
+////==============================================================================
+//// WorldObject3D
+////==============================================================================
+//LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(WorldObject3D, WorldObject);
+//
+////------------------------------------------------------------------------------
+//WorldObject3D::WorldObject3D()
+//{
+//}
+//
+////------------------------------------------------------------------------------
+//WorldObject3D::~WorldObject3D()
+//{
+//}
+//
+////------------------------------------------------------------------------------
+//void WorldObject3D::initialize()
+//{
+//	WorldObject::initialize();
+//	detail::EngineDomain::getDefaultWorld3D()->addWorldObject(this, true);
+//}
 
 LN_NAMESPACE_END

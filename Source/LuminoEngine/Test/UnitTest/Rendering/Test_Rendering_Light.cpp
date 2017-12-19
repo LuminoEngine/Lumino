@@ -14,11 +14,12 @@ TEST_F(Test_Rendering_Light, Basic)
 		auto mesh1 = StaticMeshComponent::createPlane(Vector2(10, 10), 1, 1);
 		auto material1 = mesh1->getStaticMeshModel()->getMaterial(0);
 		material1->setMaterialTexture(tex1);
-		auto meshObj1 = newObject<WorldObject3D>();
+		auto meshObj1 = newObject<WorldObject>();
 		meshObj1->addComponent(mesh1);
+		Engine::getWorld3D()->add(meshObj1);
 
 		auto light1 = PointLight::create(Color::White, 2);
-		Engine::getWorld3D()->addWorldObject(light1, true);
+		Engine::getWorld3D()->add(light1);
 
 		while(Engine::update());
 		//Engine::update();

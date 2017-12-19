@@ -412,10 +412,10 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 	//cornellBox->setShader(Shader::create(LN_LOCALFILE("Assets/UnLighting.fx"), ShaderCodeType::RawHLSL));
 
 	auto skinnedMeshComponent = SkinnedMeshComponent::create(_T("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
-	auto skinnedMeshObj = newObject<WorldObject3D>();
+	auto skinnedMeshObj = newObject<WorldObject>();
 	skinnedMeshObj->addComponent(skinnedMeshComponent);
 	skinnedMeshComponent->setShader(Shader::create(LN_LOCALFILE("Assets/UnLighting.fx"), ShaderCodeType::RawHLSL));
-	
+	Engine::getWorld3D()->add(skinnedMeshObj);
 
 
 	//auto ambientLight1 = AmbientLight::create();
@@ -427,7 +427,7 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 	spotLight1->transform.lookAt(-Vector3::UnitY);
 	spotLight1->setPosition(0, 20, 0);
 	//spotLight1->setIntensity(2.0f);
-	Engine::getWorld3D()->addWorldObject(spotLight1, true);
+	Engine::getWorld3D()->add(spotLight1);
 
 
 	//auto pointLight1 = PointLight::create(/*Color::White, 2*/);
@@ -444,7 +444,7 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 	//directionalLight1->setRotation(rot);
 	directionalLight1->setPosition(30, 30, -30);
 	directionalLight1->transform.lookAt(Vector3::Zero);
-	Engine::getWorld3D()->addWorldObject(directionalLight1, true);
+	Engine::getWorld3D()->add(directionalLight1);
 
 	Engine::getWorld3D()->setFogColor(Color(1, 1, 1, 0.5));
 	Engine::getWorld3D()->setFogDensity(0.03);

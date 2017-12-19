@@ -55,7 +55,7 @@ TEST_F(Test_Scene_Sprite, BlendMode)
 
 	Engine::update();
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_Sprite.BlendMode1.png")));
-	Engine::getWorld2D()->RemoveAllObjects();
+	Engine::getWorld2D()->removeAllObjects();
 }
 
 //------------------------------------------------------------------------------
@@ -87,7 +87,7 @@ TEST_F(Test_Scene_Sprite, Anchor)
 
 		Engine::update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Scene_Sprite.Anchor.png")));
-		Engine::getWorld2D()->RemoveAllObjects();
+		Engine::getWorld2D()->removeAllObjects();
 	}
 }
 
@@ -109,7 +109,7 @@ TEST_F(Test_Scene_Sprite, DrawCallCount)
 		Engine::update();
 		TestEnv::WaitRendering();
 		ASSERT_EQ(defaultCount + 1, EngineDiag::getGraphicsDeviceDrawCount());
-		Engine::getWorld2D()->RemoveAllObjects();
+		Engine::getWorld2D()->removeAllObjects();
 	}
 }
 
@@ -122,7 +122,7 @@ TEST_F(Test_Scene_Sprite, Issues_Volkoff)
 		sprite1->setSourceRect(32, 0, 32, 32);
 		Engine::update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Scene_Sprite.Issues_Volkoff_1.png")));
-		Engine::getWorld2D()->RemoveAllObjects();
+		Engine::getWorld2D()->removeAllObjects();
 	}
 	// <Issues> 2D では Z ソートの基準がカメラ位置からの直線距離ではなく、スクリーンからの距離でなければならない。
 	{
@@ -136,7 +136,7 @@ TEST_F(Test_Scene_Sprite, Issues_Volkoff)
 		s2->setPosition(15, 25, 100);	// スクリーンが Z 平面に平行なら、Z が同じときはあとから作ったものが常に手前になる。
 		Engine::update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Scene_Sprite.Issues_Volkoff_2.png")));
-		Engine::getWorld2D()->RemoveAllObjects();
+		Engine::getWorld2D()->removeAllObjects();
 	}
 	// <Issues> 2D では Z ソートの基準がカメラ位置からの直線距離ではなく、スクリーンからの距離でなければならない。
 
@@ -151,7 +151,7 @@ TEST_F(Test_Scene_Sprite, Issues_Volkoff)
 		s1->setTexture(tex2);			// 次にテクスチャを変更する
 		Engine::update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Scene_Sprite.Issues_Volkoff_3.png")));
-		Engine::getWorld2D()->RemoveAllObjects();
+		Engine::getWorld2D()->removeAllObjects();
 	}
 }
 
@@ -169,7 +169,7 @@ TEST_F(Test_Scene_Sprite, Issues_HC1)
 
 		Engine::update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Scene_Sprite.Issues_HC1_1.png"), 90));
-		Engine::getWorld2D()->RemoveAllObjects();
+		Engine::getWorld2D()->removeAllObjects();
 	}
 }
 

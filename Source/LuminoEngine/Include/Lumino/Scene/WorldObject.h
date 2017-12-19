@@ -164,36 +164,36 @@ private:
 	friend class World;
 };
 
-/**
-	@brief		
-	@detail		このクラスのインスタンスは作成されると、現在のアクティブな 2D シーンに追加されます。
-*/
-class WorldObject2D
-	: public WorldObject
-{
-	LN_OBJECT;
-public:
-
-LN_CONSTRUCT_ACCESS:
-	WorldObject2D();
-	virtual ~WorldObject2D();
-	void initialize();
-};
-
-/**
-	@brief		
-	@detail		このクラスのインスタンスは作成されると、現在のアクティブな 3D シーンに追加されます。
-*/
-class WorldObject3D
-	: public WorldObject
-{
-	LN_OBJECT;
-public:
-
-LN_CONSTRUCT_ACCESS:
-	WorldObject3D();
-	virtual ~WorldObject3D();
-	void initialize();
-};
+///**
+//	@brief		
+//	@detail		このクラスのインスタンスは作成されると、現在のアクティブな 2D シーンに追加されます。
+//*/
+//class WorldObject2D
+//	: public WorldObject
+//{
+//	LN_OBJECT;
+//public:
+//
+//LN_CONSTRUCT_ACCESS:
+//	WorldObject2D();
+//	virtual ~WorldObject2D();
+//	void initialize();
+//};
+//
+///**
+//	@brief		
+//	@detail		このクラスのインスタンスは作成されると、現在のアクティブな 3D シーンに追加されます。
+//*/
+//class WorldObject3D
+//	: public WorldObject
+//{
+//	LN_OBJECT;
+//public:
+//
+//LN_CONSTRUCT_ACCESS:
+//	WorldObject3D();
+//	virtual ~WorldObject3D();
+//	void initialize();
+//};
 
 LN_NAMESPACE_END

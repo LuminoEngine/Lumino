@@ -352,7 +352,6 @@ void Sprite2D::initialize()
 	m_component = Sprite2DComponent::create();
 	m_component->setLayer(LayerMask::GetLayer(BuiltinLayers::Default2D));
 	addComponent(m_component);
-	detail::EngineDomain::getDefaultWorld2D()->addWorldObject(this, true);
 }
 
 //------------------------------------------------------------------------------
@@ -361,7 +360,6 @@ void Sprite2D::initialize(const StringRef& filePath)
 	SpriteBase::initialize();
 	m_component = Sprite2DComponent::create(filePath);
 	addComponent(m_component);
-	detail::EngineDomain::getDefaultWorld2D()->addWorldObject(this, true);
 }
 
 //------------------------------------------------------------------------------
@@ -370,7 +368,6 @@ void Sprite2D::initialize(Texture* texture)
 	SpriteBase::initialize();
 	m_component = Sprite2DComponent::create(texture);
 	addComponent(m_component);
-	detail::EngineDomain::getDefaultWorld2D()->addWorldObject(this, true);
 }
 
 //------------------------------------------------------------------------------
@@ -422,7 +419,6 @@ void Sprite3D::initialize()
 	m_component = Sprite3DComponent::create();
 	m_component->setLayer(LayerMask::GetLayer(BuiltinLayers::Default3D));
 	addComponent(m_component);
-	detail::EngineDomain::getDefaultWorld3D()->addWorldObject(this, true);
 }
 
 //------------------------------------------------------------------------------
@@ -431,7 +427,6 @@ void Sprite3D::initialize(float width, float height, Texture* texture)
 	SpriteBase::initialize();
 	m_component = Sprite3DComponent::create(width, height, texture);
 	addComponent(m_component);
-	detail::EngineDomain::getDefaultWorld3D()->addWorldObject(this, true);
 }
 
 //------------------------------------------------------------------------------
