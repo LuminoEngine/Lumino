@@ -368,6 +368,9 @@ public:
 	void set(int x_, int y_) { x = x_; y = y_; }
 	bool isZero() const { return (x == 0 && y == 0); }
 
+	Point toFloatPoint() const { return Point((float)x, (float)y); }
+	static PointI fromFloatPoint(const Point& point) { return PointI((int)point.x, (int)point.y); }
+
 	bool operator == (const PointI& rhs) const { return (x == rhs.x && y == rhs.y); }
 	bool operator != (const PointI& rhs) const { return !operator==(rhs); }
 };

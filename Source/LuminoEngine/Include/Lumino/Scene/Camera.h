@@ -80,6 +80,9 @@ public:
 	
 	void setOrthographicSize(float value) { m_orthographicSize = value; }
 
+	void setAspect(float value) { m_aspect = value; }
+
+
 public:	// internal
 
 	/// 各行列を更新する (SceneNode::updateFrameHierarchy() の後で呼び出すこと)
@@ -118,6 +121,7 @@ private:
 	Vector3				m_lookAt;
 	Vector3				m_upDirection;
 	float				m_fovY;
+	float				m_aspect;
 	float				m_nearClip;
 	float				m_farClip;
 	float				m_orthographicSize;	// 縦方向のサイズ。横はアスペクト比から求める
@@ -288,8 +292,18 @@ private:
 
 
 
+/** 透視投影カメラのコンポーネント。 */
+class PerspectiveCameraComponent
+	: public CameraComponent
+{
+	LN_OBJECT;
+public:
 
-
+LN_INTERNAL_ACCESS:
+	PerspectiveCameraComponent();
+	virtual ~PerspectiveCameraComponent();
+	void initialize();
+};
 
 /** 正射投影カメラのコンポーネント。 */
 class OrthographicCameraComponent
@@ -302,6 +316,35 @@ LN_INTERNAL_ACCESS:
 	OrthographicCameraComponent();
 	virtual ~OrthographicCameraComponent();
 	void initialize();
+};
+
+/** 正射投影カメラのオブジェクト。 */
+class PerspectiveCamera
+	: public Camera
+{
+	LN_OBJECT;
+public:
+
+	/** 既定の設定で正射投影カメラを作成します。 */
+	static Ref<PerspectiveCamera> create();
+
+	/** 視錐台の情報を指定して正射投影カメラを作成します。 */
+	static Ref<PerspectiveCamera> create(float fovY, float aspect, float nearClip, float farClip);
+
+public:
+
+LN_CONSTRUCT_ACCESS:
+	PerspectiveCamera();
+	virtual ~PerspectiveCamera();
+
+	/** 既定の設定で正射投影カメラを作成します。 */
+	void initialize();
+
+	/** 視錐台の情報を指定して正射投影カメラを作成します。 */
+	void initialize(float fovY, float aspect, float nearClip, float farClip);
+
+private:
+	Ref<PerspectiveCameraComponent>	m_component;
 };
 
 /** 正射投影カメラのオブジェクト。 */

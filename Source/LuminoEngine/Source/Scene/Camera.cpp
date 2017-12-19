@@ -42,6 +42,7 @@ CameraComponent::CameraComponent()
 	, m_projectionMode(ProjectionMode::Perspective)
 	, m_upDirection(Vector3::UnitY)
 	, m_fovY(Math::PI / 3.0f)	// Unity based.
+	, m_aspect(0.0f)
 	, m_nearClip(0.3f)			// Unity based.
 	, m_farClip(1000.0f)
 	, m_orthographicSize(5.0f)	// Unity based.
@@ -159,9 +160,12 @@ void CameraComponent::updateMatrices(const Size& viewSize)
 
 		if (m_projectionMode == ProjectionMode::Perspective)
 		{
+			float aspect = m_aspect;
+			aspect = (m_aspect > 0.0f) ? m_aspect : viewSize.width / viewSize.height;
+
 			// プロジェクション行列の更新
 			// https://sites.google.com/site/mmereference/home/Annotations-and-Semantics-of-the-parameter/2-1-geometry-translation
-			m_projMatrix = Matrix::makePerspectiveFovLH(m_fovY, viewSize.width / viewSize.height, m_nearClip, m_farClip);
+			m_projMatrix = Matrix::makePerspectiveFovLH(m_fovY, aspect, m_nearClip, m_farClip);
 		}
 		else
 		{
@@ -196,7 +200,7 @@ void CameraComponent::onUIEvent(UIEventArgs* e)
 		if (getCameraBehavior() != nullptr)
 		{
 			auto* me = static_cast<UIMouseEventArgs*>(e);
-			auto pos = me->getPosition(me->sender);
+			auto pos = PointI::fromFloatPoint(me->getPosition(me->sender));
 			getCameraBehavior()->injectMouseButtonDown(me->getMouseButtons(), pos.x, pos.y);
 		}
 	}
@@ -205,7 +209,7 @@ void CameraComponent::onUIEvent(UIEventArgs* e)
 		if (getCameraBehavior() != nullptr)
 		{
 			auto* me = static_cast<UIMouseEventArgs*>(e);
-			auto pos = me->getPosition(me->sender);
+			auto pos = PointI::fromFloatPoint(me->getPosition(me->sender));
 			getCameraBehavior()->injectMouseButtonUp(me->getMouseButtons(), pos.x, pos.y);
 		}
 	}
@@ -214,7 +218,7 @@ void CameraComponent::onUIEvent(UIEventArgs* e)
 		if (getCameraBehavior() != nullptr)
 		{
 			auto* me = static_cast<UIMouseEventArgs*>(e);
-			auto pos = me->getPosition(me->sender);
+			auto pos = PointI::fromFloatPoint(me->getPosition(me->sender));
 			getCameraBehavior()->injectMouseMove(pos.x, pos.y);
 		}
 	}
@@ -291,21 +295,21 @@ void CameraMouseMoveBehavior::World_onUIEvent(UIEventArgs* e)
 	if (e->getType() == UIEvents::MouseDownEvent)
 	{
 		auto* me = static_cast<UIMouseEventArgs*>(e);
-		auto pos = me->getPosition(me->sender);
+		auto pos = PointI::fromFloatPoint(me->getPosition(me->sender));
 		injectMouseButtonDown(me->getMouseButtons(), pos.x, pos.y);
 		e->handled = true;
 	}
 	else if (e->getType() == UIEvents::MouseUpEvent)
 	{
 		auto* me = static_cast<UIMouseEventArgs*>(e);
-		auto pos = me->getPosition(me->sender);
+		auto pos = PointI::fromFloatPoint(me->getPosition(me->sender));
 		injectMouseButtonUp(me->getMouseButtons(), pos.x, pos.y);
 		e->handled = true;
 	}
 	else if (e->getType() == UIEvents::MouseMoveEvent)
 	{
 		auto* me = static_cast<UIMouseEventArgs*>(e);
-		auto pos = me->getPosition(me->sender);
+		auto pos = PointI::fromFloatPoint(me->getPosition(me->sender));
 		injectMouseMove(pos.x, pos.y);
 		e->handled = true;
 	}
@@ -1013,6 +1017,25 @@ void Camera::setCameraComponent(CameraComponent* component)
 }
 
 //==============================================================================
+// PerspectiveCameraComponent
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(PerspectiveCameraComponent, CameraComponent);
+
+PerspectiveCameraComponent::PerspectiveCameraComponent()
+{
+}
+
+PerspectiveCameraComponent::~PerspectiveCameraComponent()
+{
+}
+
+void PerspectiveCameraComponent::initialize()
+{
+	CameraComponent::initialize(CameraWorld::CameraProjection_3D);
+	setProjectionMode(ProjectionMode::Perspective);
+}
+
+//==============================================================================
 // OrthographicCameraComponent
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(OrthographicCameraComponent, CameraComponent);
@@ -1029,6 +1052,46 @@ void OrthographicCameraComponent::initialize()
 {
 	CameraComponent::initialize(CameraWorld::CameraProjection_3D);
 	setProjectionMode(ProjectionMode::Orthographic);
+}
+
+//==============================================================================
+// PerspectiveCamera
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(PerspectiveCamera, Camera);
+
+Ref<PerspectiveCamera> PerspectiveCamera::create()
+{
+	return newObject<PerspectiveCamera>();
+}
+
+Ref<PerspectiveCamera> PerspectiveCamera::create(float fovY, float aspect, float nearClip, float farClip)
+{
+	return newObject<PerspectiveCamera>(fovY, aspect, nearClip, farClip);
+}
+
+PerspectiveCamera::PerspectiveCamera()
+	: m_component(nullptr)
+{
+}
+
+PerspectiveCamera::~PerspectiveCamera()
+{
+}
+
+void PerspectiveCamera::initialize()
+{
+	Camera::initialize(CameraWorld::CameraProjection_3D, false);
+	m_component = newObject<OrthographicCameraComponent>();
+	setCameraComponent(m_component);
+}
+
+void PerspectiveCamera::initialize(float fovY, float aspect, float nearClip, float farClip)
+{
+	initialize();
+	m_component->setFovY(fovY);
+	m_component->setAspect(aspect);
+	m_component->setNearClip(nearClip);
+	m_component->setFarClip(farClip);
 }
 
 //==============================================================================
