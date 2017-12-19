@@ -36,6 +36,7 @@ tmp/
 *.sdf
 *.o
 *.so
+.vs/
 build_*/
 .klocwork*/
 

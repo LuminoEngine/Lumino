@@ -196,11 +196,12 @@ public:
 
 	/**
 		@brief		レンダリングターゲットを作成します。
-		@param[in]	size		: レンダリングターゲットのサイズ (ピクセル単位)
+		@param[in]	width		: レンダリングターゲットの幅 (ピクセル単位)
+		@param[in]	height		: レンダリングターゲットの高さ (ピクセル単位)
 		@param[in]	format		: テクスチャのピクセルフォーマット
 		@param[in]	mipLevels	: ミップマップレベル (0 を指定すると、1x1 までのすべてのミップマップテクスチャを作成する)
 	*/
-	static RenderTargetTexturePtr create(const SizeI& size, TextureFormat format = TextureFormat::R8G8B8A8, int mipLevels = 1);
+	static RenderTargetTexturePtr create(int width, int height, TextureFormat format = TextureFormat::R8G8B8A8, int mipLevels = 1);
 
 protected:
 	virtual void Dispose() override;
