@@ -3,13 +3,11 @@
 #include "../World.h"
 #include "../Graphics/Viewport.h"
 #include "../Rendering/Rendering.h"
-#include "../UI/UIViewport.h"
+#include "../Rendering/RenderView.h"
 #include "SceneNode.h"
 #include "WorldObject.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_SCENE_BEGIN
-namespace tr { class GizmoModel; }
 class WorldRenderView;
 namespace detail { class ClusteredShadingSceneRenderer; }
 
@@ -208,28 +206,6 @@ private:
 	CameraComponent* m_targetCamera;
 };
 
-///**
-//	@brief
-//*/
-//class CylinderMouseMoveCameraBehavior
-//	: public CameraBehavior
-//{
-//public:
-//	CylinderMouseMoveCameraBehavior();
-//	virtual ~CylinderMouseMoveCameraBehavior();
-//
-//	virtual bool injectMouseMove(int x, int y) override;
-//	virtual bool injectMouseButtonDown(MouseButtons button, int x, int y) override;
-//	virtual bool injectMouseButtonUp(MouseButtons button, int x, int y) override;
-//	virtual bool injectMouseWheel(int delta) override;
-//
-//private:
-//	PointI	m_prevPos;
-//	bool	m_RDrag;
-//	bool	m_MDrag;
-//};
-
-
 /**
 	@brief
 */
@@ -384,6 +360,4 @@ private:
 	Ref<OrthographicCameraComponent>	m_component;
 };
 
-
-LN_NAMESPACE_SCENE_END
 LN_NAMESPACE_END
