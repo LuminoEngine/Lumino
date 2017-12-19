@@ -267,30 +267,9 @@ void World2D::initialize()
 {
 	World::initialize();
 
-	m_sceneGraph = Ref<SceneGraph2D>::makeRef();
-	m_sceneGraph->createCore(EngineManager::getInstance()->getSceneGraphManager());
-
-	m_mainCamera = newObject<Camera>(CameraProjection_2D);
+	m_mainCamera = newObject<Camera>(CameraProjection_2D, true);
 	m_mainCamera->setSpecialObject(true);
 	addWorldObject(m_mainCamera, true);
-}
-
-//------------------------------------------------------------------------------
-//SceneGraph* World2D::GetSceneGraph()
-//{
-//	return getSceneGraph2D();
-//}
-
-////------------------------------------------------------------------------------
-//DrawList* World2D::getRenderer() const
-//{
-//	return getSceneGraph2D()->getRenderer();
-//}
-
-//------------------------------------------------------------------------------
-SceneGraph2D* World2D::getSceneGraph2D() const
-{
-	return m_sceneGraph;
 }
 
 //------------------------------------------------------------------------------
@@ -350,10 +329,7 @@ void World3D::initialize()
 
 	m_physicsWorld = newObject<PhysicsWorld>();
 
-	m_sceneGraph = Ref<SceneGraph3D>::makeRef();
-	m_sceneGraph->createCore(EngineManager::getInstance()->getSceneGraphManager());
-
-	m_mainCamera = newObject<Camera>(CameraProjection_3D);
+	m_mainCamera = newObject<Camera>(CameraProjection_3D, true);
 	m_mainCamera->setSpecialObject(true);
 	addWorldObject(m_mainCamera, true);
 
@@ -368,27 +344,9 @@ void World3D::initialize()
 }
 
 //------------------------------------------------------------------------------
-//SceneGraph* World3D::GetSceneGraph()
-//{
-//	return getSceneGraph3D();
-//}
-
-////------------------------------------------------------------------------------
-//DrawList* World3D::getRenderer() const
-//{
-//	return getSceneGraph3D()->getRenderer();
-//}
-//
-//------------------------------------------------------------------------------
 PhysicsWorld* World3D::getPhysicsWorld3D() const
 {
 	return m_physicsWorld;
-}
-
-//------------------------------------------------------------------------------
-SceneGraph3D* World3D::getSceneGraph3D() const
-{
-	return m_sceneGraph;
 }
 
 //------------------------------------------------------------------------------

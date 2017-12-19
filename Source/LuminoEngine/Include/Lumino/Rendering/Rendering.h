@@ -20,9 +20,6 @@ class DrawList;
 class RenderView;
 class RenderDiag;
 
-class CameraComponent;
-
-
 enum class DrawElementCategory
 {
 	SceneObject,
@@ -718,10 +715,6 @@ LN_INTERNAL_ACCESS:
 	void drawFrameRectangle(const Rect& rect);
 	//void renderSubView(RenderView* listSet, detail::SceneRenderer* renderer = nullptr, RenderTargetTexture* defaultRenderTarget = nullptr, DepthBuffer* defaultDepthBuffer = nullptr);
 
-	// TODO: 本質的に DrawList に持たせるべきではない。一応今は一時変数的な扱いでしかないので被害は少ないが・・・
-	//void setCurrentCamera(CameraComponent* camera) { m_camera = camera; }
-	//CameraComponent* getCurrentCamera() const { return m_camera; }
-
 	void pushState();
 	void popState();
 
@@ -762,9 +755,6 @@ private:
 	detail::IRenderFeature*			m_lastRenderFeature;
 
 	//Ref<detail::RenderTargetTextureCache>		m_renderTargetPool;
-
-	CameraComponent*							m_camera;
-
 };
 
 

@@ -3,13 +3,11 @@
 #include "../World.h"
 #include "../Graphics/Viewport.h"
 #include "../Rendering/Rendering.h"
-#include "../UI/UIViewport.h"
+#include "../Rendering/RenderView.h"
 #include "SceneNode.h"
 #include "WorldObject.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_SCENE_BEGIN
-namespace tr { class GizmoModel; }
 class WorldRenderView;
 namespace detail { class ClusteredShadingSceneRenderer; }
 
@@ -76,7 +74,12 @@ public:
 	Vector3 viewportToWorldPoint(const Vector3& position) const;
 
 	void setProjectionMode(ProjectionMode value) { m_projectionMode = value; }
+
+	
 	void setOrthographicSize(float value) { m_orthographicSize = value; }
+
+	void setAspect(float value) { m_aspect = value; }
+
 
 public:	// internal
 
@@ -90,19 +93,6 @@ public:	// internal
 	const Matrix& getViewMatrix() const { return m_viewMatrix; }
 	const Matrix& getProjectionMatrix() const { return m_projMatrix; }
 	const Matrix& getViewProjectionMatrix() const { return m_viewProjMatrix; }
-	const Matrix& getViewMatrixI() const { return m_viewMatrixI; }
-	const Matrix& getProjectionMatrixI() const { return m_projMatrixI; }
-	const Matrix& getViewProjectionMatrixI() const { return m_viewProjMatrixI; }
-	const Matrix& getViewMatrixT() const { return m_viewMatrixT; }
-	const Matrix& getProjectionMatrixT() const { return m_projMatrixT; }
-	const Matrix& getViewProjectionMatrixT() const { return m_viewProjMatrixT; }
-	const Matrix& getViewMatrixIT() const { return m_viewMatrixIT; }
-	const Matrix& getProjectionMatrixIT() const { return m_projMatrixIT; }
-	const Matrix& getViewProjectionMatrixIT() const { return m_viewProjMatrixIT; }
-
-	//void DoMouseMoveR(float dx, float dy, float width, float height);
-	//void DoMouseMoveM(float offsetX, float offsetY);
-	//void DoMouseWheel(int pos);
 
 protected:
 
@@ -124,12 +114,12 @@ LN_INTERNAL_ACCESS:
 	CameraWorld	m_cameraWorld;
 
 private:
-	//ProjectionMode		m_cameraWorld;
 	CameraDirection		m_directionMode;
 	ProjectionMode		m_projectionMode;
 	Vector3				m_lookAt;
 	Vector3				m_upDirection;
 	float				m_fovY;
+	float				m_aspect;
 	float				m_nearClip;
 	float				m_farClip;
 	float				m_orthographicSize;	// 縦方向のサイズ。横はアスペクト比から求める
@@ -142,17 +132,7 @@ private:
 	Vector4				m_direction;		///< 向き
 	ViewFrustum			m_viewFrustum;		// 視錐台カリング用 (3D,2D共用)
 
-	// 以下はシェーダ変数への設定用。ライトは個々のノードに比べて参照される回数が多いので
-	// 必要になるたびに計算するのではなく、あらかじめ計算しておく。
-	Matrix				m_viewMatrixI;		///< ビュー行列 (inverse)
-	Matrix				m_projMatrixI;		///< プロジェクション行列 (inverse)
-	Matrix				m_viewProjMatrixI;	///< ビュー行列とプロジェクション行列の積 (inverse)
-	Matrix				m_viewMatrixT;		///< ビュー行列 (transpose)
-	Matrix				m_projMatrixT;		///< プロジェクション行列 (transpose)
-	Matrix				m_viewProjMatrixT;	///< ビュー行列とプロジェクション行列の積 (transpose)
-	Matrix				m_viewMatrixIT;		///< ビュー行列 (inverse * transpose)
-	Matrix				m_projMatrixIT;		///< プロジェクション行列 (inverse * transpose)
-	Matrix				m_viewProjMatrixIT;	///< ビュー行列とプロジェクション行列の積 (inverse * transpose)
+	Matrix				m_viewProjMatrixI;
 
 	Plane				m_reflectionPlane;
 };
@@ -226,28 +206,6 @@ private:
 	CameraComponent* m_targetCamera;
 };
 
-///**
-//	@brief
-//*/
-//class CylinderMouseMoveCameraBehavior
-//	: public CameraBehavior
-//{
-//public:
-//	CylinderMouseMoveCameraBehavior();
-//	virtual ~CylinderMouseMoveCameraBehavior();
-//
-//	virtual bool injectMouseMove(int x, int y) override;
-//	virtual bool injectMouseButtonDown(MouseButtons button, int x, int y) override;
-//	virtual bool injectMouseButtonUp(MouseButtons button, int x, int y) override;
-//	virtual bool injectMouseWheel(int delta) override;
-//
-//private:
-//	PointI	m_prevPos;
-//	bool	m_RDrag;
-//	bool	m_MDrag;
-//};
-
-
 /**
 	@brief
 */
@@ -294,13 +252,112 @@ public:
 LN_CONSTRUCT_ACCESS:
 	Camera();
 	virtual ~Camera();
-	void initialize(CameraWorld proj);
+	void initialize(CameraWorld proj, bool defcmp);
 
 LN_INTERNAL_ACCESS:
+	void setCameraComponent(CameraComponent* component);
 
 private:
 	Ref<CameraComponent>	m_component;
 };
 
-LN_NAMESPACE_SCENE_END
+
+
+
+
+
+
+
+/** 透視投影カメラのコンポーネント。 */
+class PerspectiveCameraComponent
+	: public CameraComponent
+{
+	LN_OBJECT;
+public:
+
+LN_INTERNAL_ACCESS:
+	PerspectiveCameraComponent();
+	virtual ~PerspectiveCameraComponent();
+	void initialize();
+};
+
+/** 正射投影カメラのコンポーネント。 */
+class OrthographicCameraComponent
+	: public CameraComponent
+{
+	LN_OBJECT;
+public:
+
+LN_INTERNAL_ACCESS:
+	OrthographicCameraComponent();
+	virtual ~OrthographicCameraComponent();
+	void initialize();
+};
+
+/** 正射投影カメラのオブジェクト。 */
+class PerspectiveCamera
+	: public Camera
+{
+	LN_OBJECT;
+public:
+
+	/** 既定の設定で正射投影カメラを作成します。 */
+	static Ref<PerspectiveCamera> create();
+
+	/** 視錐台の情報を指定して正射投影カメラを作成します。 */
+	static Ref<PerspectiveCamera> create(float fovY, float aspect, float nearClip, float farClip);
+
+public:
+
+LN_CONSTRUCT_ACCESS:
+	PerspectiveCamera();
+	virtual ~PerspectiveCamera();
+
+	/** 既定の設定で正射投影カメラを作成します。 */
+	void initialize();
+
+	/** 視錐台の情報を指定して正射投影カメラを作成します。 */
+	void initialize(float fovY, float aspect, float nearClip, float farClip);
+
+private:
+	Ref<PerspectiveCameraComponent>	m_component;
+};
+
+/** 正射投影カメラのオブジェクト。 */
+class OrthographicCamera
+	: public Camera
+{
+	LN_OBJECT;
+public:
+
+	/** 既定の設定で正射投影カメラを作成します。 */
+	static Ref<OrthographicCamera> create();
+
+	/** 正射投影の高さを指定して正射投影カメラを作成します。 */
+	static Ref<OrthographicCamera> create(float orthoSize);
+
+public:
+	
+	/** 
+		正射投影の高さを設定します。
+	
+		正射影幅はビューの比率に基づいて自動的に計算されます。
+		例えば、2D シーンを dot by dot で描画する場合、この値を縦方向のピクセル数と一致させます。
+	*/
+	void setOrthographicSize(float value) { m_component->setOrthographicSize(value); }
+
+LN_CONSTRUCT_ACCESS:
+	OrthographicCamera();
+	virtual ~OrthographicCamera();
+
+	/** 既定の設定で正射投影カメラを作成します。 */
+	void initialize();
+
+	/** 正射投影の高さを指定して正射投影カメラを作成します。 */
+	void initialize(float orthoSize);
+
+private:
+	Ref<OrthographicCameraComponent>	m_component;
+};
+
 LN_NAMESPACE_END

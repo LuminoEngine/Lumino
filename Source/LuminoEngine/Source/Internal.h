@@ -40,8 +40,6 @@ public:
 	static UIManager* getUIManager();
 
 	static SceneGraphManager* getSceneGraphManager();
-	static SceneGraph2D* getDefaultSceneGraph2D();
-	static SceneGraph3D* getDefaultSceneGraph3D();
 	static World2D* getDefaultWorld2D();
 	static World3D* getDefaultWorld3D();
 };

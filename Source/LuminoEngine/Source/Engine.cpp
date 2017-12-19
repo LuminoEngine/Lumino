@@ -135,22 +135,4 @@ UILayoutLayer* Engine::getDefaultUILayer()
 	return EngineManager::Instance->getUIManager()->getMainWindow()->getDefaultUILayer();
 }
 
-////------------------------------------------------------------------------------
-//SceneGraph2D* Engine::getDefaultSceneGraph2D()
-//{
-//	return EngineManager::Instance->getDefaultWorld2D()->getSceneGraph2D();
-//}
-//
-////------------------------------------------------------------------------------
-//SceneGraph3D* Engine::getDefaultSceneGraph3D()
-//{
-//	return EngineManager::Instance->getDefaultWorld3D()->getSceneGraph3D();
-//}
-
-//------------------------------------------------------------------------------
-//LightComponent* Engine::GetMainLight3D()
-//{
-//	return EngineManager::Instance->getDefaultWorld3D()->getSceneGraph3D()->GetMainLight();
-//}
-
 LN_NAMESPACE_END

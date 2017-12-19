@@ -406,15 +406,15 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 
 	auto planeMesh = StaticMeshComponent::createPlane(Vector2(20, 20), 1, 1);
 
-	auto cornellBox = CornellBox::create();
-	auto cornellBoxObj = newObject<WorldObject3D>();
-	cornellBoxObj->addComponent(cornellBox);
-	cornellBox->setShader(Shader::create(LN_LOCALFILE("Assets/UnLighting.fx"), ShaderCodeType::RawHLSL));
+	//auto cornellBox = CornellBox::create();
+	//auto cornellBoxObj = newObject<WorldObject3D>();
+	//cornellBoxObj->addComponent(cornellBox);
+	//cornellBox->setShader(Shader::create(LN_LOCALFILE("Assets/UnLighting.fx"), ShaderCodeType::RawHLSL));
 
-	//auto skinnedMeshComponent = SkinnedMeshComponent::create(_T("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
-	//auto skinnedMeshObj = newObject<WorldObject3D>();
-	//skinnedMeshObj->addComponent(skinnedMeshComponent);
-	//skinnedMeshComponent->setShader(Shader::create(LN_LOCALFILE("Assets/UnLighting.fx"), ShaderCodeType::RawHLSL));
+	auto skinnedMeshComponent = SkinnedMeshComponent::create(_T("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
+	auto skinnedMeshObj = newObject<WorldObject3D>();
+	skinnedMeshObj->addComponent(skinnedMeshComponent);
+	skinnedMeshComponent->setShader(Shader::create(LN_LOCALFILE("Assets/UnLighting.fx"), ShaderCodeType::RawHLSL));
 	
 
 
@@ -784,20 +784,10 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 
 
 
-
-		Camera* cam = Engine::getCamera3D();
-		CameraComponent* camc = cam->getCameraComponent();
-		Vector3 camPos = cam->getPosition();//Vector3(0, 0, -10);
-		
-
-
-		//float fov = Engine::getCamera3D()->getCameraComponent()->getFovY();
-		//fov = std::min(Math::PI / 2, fov + 0.001f);
-		//Engine::getCamera3D()->getCameraComponent()->setFovY(fov);
-		Engine::getCamera3D()->getCameraComponent()->setProjectionMode(ProjectionMode::Orthographic);
-		//Engine::getCamera3D()->getCameraComponent()->setOrthographicSize();
-		Engine::getCamera3D()->getCameraComponent()->setNearClip(t);
-		Engine::getCamera3D()->getCameraComponent()->setFarClip(t+0.05);
+		//Engine::getCamera3D()->getCameraComponent()->setProjectionMode(ProjectionMode::Orthographic);
+		////Engine::getCamera3D()->getCameraComponent()->setOrthographicSize();
+		//Engine::getCamera3D()->getCameraComponent()->setNearClip(t);
+		//Engine::getCamera3D()->getCameraComponent()->setFarClip(t+0.05);
 
 
 

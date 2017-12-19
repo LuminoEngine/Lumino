@@ -3,7 +3,7 @@
 #include "VisualNode.h"
 
 LN_NAMESPACE_BEGIN
-class CameraComponent;
+//class CameraComponent;
 class VisualComponent;
 
 /**

@@ -16,25 +16,21 @@
 #include "../UI/UIManager.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_SCENE_BEGIN
 
 //==============================================================================
 // CameraComponent
 //==============================================================================
 
-//------------------------------------------------------------------------------
 CameraComponent* CameraComponent::getMain3DCamera()
 {
 	return detail::EngineDomain::getDefaultWorld3D()->getMainCamera()->getCameraComponent();
 }
 
-//------------------------------------------------------------------------------
 CameraComponent* CameraComponent::getMain2DCamera()
 {
 	return detail::EngineDomain::getDefaultWorld2D()->getMainCamera()->getCameraComponent();
 }
 
-//------------------------------------------------------------------------------
 CameraComponent::CameraComponent()
 	: SceneNode()
 	, m_cameraWorld()
@@ -42,6 +38,7 @@ CameraComponent::CameraComponent()
 	, m_projectionMode(ProjectionMode::Perspective)
 	, m_upDirection(Vector3::UnitY)
 	, m_fovY(Math::PI / 3.0f)	// Unity based.
+	, m_aspect(0.0f)
 	, m_nearClip(0.3f)			// Unity based.
 	, m_farClip(1000.0f)
 	, m_orthographicSize(5.0f)	// Unity based.
@@ -51,13 +48,11 @@ CameraComponent::CameraComponent()
 	// ※ 2D では m_nearClip を0より大きくしたり、Z位置をマイナスにすると何も見えなくなるので注意。 
 }
 
-//------------------------------------------------------------------------------
 CameraComponent::~CameraComponent()
 {
 	LN_SAFE_RELEASE(m_cameraBehavior);
 }
 
-//------------------------------------------------------------------------------
 void CameraComponent::initialize(CameraWorld proj)
 {
 	SceneNode::initialize();
@@ -77,7 +72,6 @@ void CameraComponent::initialize(CameraWorld proj)
 	}
 }
 
-//------------------------------------------------------------------------------
 void CameraComponent::setCameraBehavior(CameraBehavior* behavior)
 {
 	if (m_cameraBehavior != nullptr) {
@@ -87,14 +81,12 @@ void CameraComponent::setCameraBehavior(CameraBehavior* behavior)
 	m_cameraBehavior->setTargetCamera(this);
 }
 
-//------------------------------------------------------------------------------
 Vector3 CameraComponent::worldToViewportPoint(const Vector3& position) const
 {
 	const Size& size = m_ownerLayer->getViewSize();
 	return Vector3::project(position, m_viewProjMatrix, 0.0f, 0.0f, size.width, size.height, m_nearClip, m_farClip);
 }
 
-//------------------------------------------------------------------------------
 Vector3 CameraComponent::viewportToWorldPoint(const Vector3& position) const
 {
 	const Size& size = m_ownerLayer->getViewSize();
@@ -105,7 +97,6 @@ Vector3 CameraComponent::viewportToWorldPoint(const Vector3& position) const
 	return Vector3::transformCoord(v, m_viewProjMatrixI);
 }
 
-//------------------------------------------------------------------------------
 void CameraComponent::updateMatrices(const Size& viewSize)
 {
 	const Matrix& worldMatrix = getOwnerObject()->transform.getWorldMatrix();
@@ -159,9 +150,12 @@ void CameraComponent::updateMatrices(const Size& viewSize)
 
 		if (m_projectionMode == ProjectionMode::Perspective)
 		{
+			float aspect = m_aspect;
+			aspect = (m_aspect > 0.0f) ? m_aspect : viewSize.width / viewSize.height;
+
 			// プロジェクション行列の更新
 			// https://sites.google.com/site/mmereference/home/Annotations-and-Semantics-of-the-parameter/2-1-geometry-translation
-			m_projMatrix = Matrix::makePerspectiveFovLH(m_fovY, viewSize.width / viewSize.height, m_nearClip, m_farClip);
+			m_projMatrix = Matrix::makePerspectiveFovLH(m_fovY, aspect, m_nearClip, m_farClip);
 		}
 		else
 		{
@@ -179,34 +173,14 @@ void CameraComponent::updateMatrices(const Size& viewSize)
 	}
 
 	m_viewFrustum = ViewFrustum(m_viewProjMatrix);
-
-	m_viewMatrixI = Matrix::makeInverse(m_viewMatrix);
-	m_projMatrixI = Matrix::makeInverse(m_projMatrix);
 	m_viewProjMatrixI = Matrix::makeInverse(m_viewProjMatrix);
-	m_viewMatrixT = Matrix::makeTranspose(m_viewMatrix);
-	m_projMatrixT = Matrix::makeTranspose(m_projMatrix);
-	m_viewProjMatrixT = Matrix::makeTranspose(m_viewProjMatrix);
-	m_viewMatrixIT = Matrix::makeTranspose(m_viewMatrixI);
-	m_projMatrixIT = Matrix::makeTranspose(m_projMatrixI);
-	m_viewProjMatrixIT = Matrix::makeTranspose(m_viewProjMatrixI);
-
-
-
-	//{
-	//	Vector3 pos(1, 1, 300);
-	//	Vector4 tt = Vector3::transform(pos, m_viewProjMatrix);
-	//	float d = tt.z / tt.w;
-	//	printf("");
-	//}
 }
 
-//------------------------------------------------------------------------------
 void CameraComponent::onUpdate(float deltaSceonds)
 {
 	SceneNode::onUpdate(deltaSceonds);
 }
 
-//------------------------------------------------------------------------------
 void CameraComponent::onUIEvent(UIEventArgs* e)
 {
 	if (e->getType() == UIEvents::MouseDownEvent)
@@ -214,7 +188,7 @@ void CameraComponent::onUIEvent(UIEventArgs* e)
 		if (getCameraBehavior() != nullptr)
 		{
 			auto* me = static_cast<UIMouseEventArgs*>(e);
-			auto pos = me->getPosition(me->sender);
+			auto pos = PointI::fromFloatPoint(me->getPosition(me->sender));
 			getCameraBehavior()->injectMouseButtonDown(me->getMouseButtons(), pos.x, pos.y);
 		}
 	}
@@ -223,7 +197,7 @@ void CameraComponent::onUIEvent(UIEventArgs* e)
 		if (getCameraBehavior() != nullptr)
 		{
 			auto* me = static_cast<UIMouseEventArgs*>(e);
-			auto pos = me->getPosition(me->sender);
+			auto pos = PointI::fromFloatPoint(me->getPosition(me->sender));
 			getCameraBehavior()->injectMouseButtonUp(me->getMouseButtons(), pos.x, pos.y);
 		}
 	}
@@ -232,11 +206,11 @@ void CameraComponent::onUIEvent(UIEventArgs* e)
 		if (getCameraBehavior() != nullptr)
 		{
 			auto* me = static_cast<UIMouseEventArgs*>(e);
-			auto pos = me->getPosition(me->sender);
+			auto pos = PointI::fromFloatPoint(me->getPosition(me->sender));
 			getCameraBehavior()->injectMouseMove(pos.x, pos.y);
 		}
 	}
-	else if (e->getType() == UIEvents::MouseMoveEvent)
+	else if (e->getType() == UIEvents::MouseWheelEvent)
 	{
 		if (getCameraBehavior() != nullptr)
 		{
@@ -257,7 +231,6 @@ void CameraComponent::onUIEvent(UIEventArgs* e)
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(CameraMouseMoveBehavior, Behavior);
 
-//------------------------------------------------------------------------------
 CameraMouseMoveBehavior::CameraMouseMoveBehavior()
 	: m_targetCamera(nullptr)
 	, m_onUIEventConnection()
@@ -267,67 +240,64 @@ CameraMouseMoveBehavior::CameraMouseMoveBehavior()
 {
 }
 
-//------------------------------------------------------------------------------
 CameraMouseMoveBehavior::~CameraMouseMoveBehavior()
 {
 }
 
-//------------------------------------------------------------------------------
 void CameraMouseMoveBehavior::initialize()
 {
 	Behavior::initialize();
 }
 
-//------------------------------------------------------------------------------
 void CameraMouseMoveBehavior::onAttached()
 {
 	m_targetCamera = dynamic_cast<Camera*>(getOwnerObject());
 	LN_ASSERT(m_targetCamera != nullptr);	// TODO: この辺はアタッチ前に TypeInfo とかでチェックしたい。そうしないとエディタで使えない。
 }
 
-//------------------------------------------------------------------------------
 void CameraMouseMoveBehavior::onDetaching()
 {
 	m_targetCamera = nullptr;
 }
 
-//------------------------------------------------------------------------------
 void CameraMouseMoveBehavior::onAttachedWorld(World* world)
 {
 	m_onUIEventConnection = world->connectOnUIEvent(createDelegate(this, &CameraMouseMoveBehavior::World_onUIEvent));
 }
 
-//------------------------------------------------------------------------------
 void CameraMouseMoveBehavior::onDetachedWorld(World* world)
 {
 	m_onUIEventConnection.disconnect();
 }
 
-//------------------------------------------------------------------------------
 void CameraMouseMoveBehavior::World_onUIEvent(UIEventArgs* e)
 {
 	if (e->getType() == UIEvents::MouseDownEvent)
 	{
 		auto* me = static_cast<UIMouseEventArgs*>(e);
-		auto pos = me->getPosition(me->sender);
+		auto pos = PointI::fromFloatPoint(me->getPosition(me->sender));
 		injectMouseButtonDown(me->getMouseButtons(), pos.x, pos.y);
+		e->handled = true;
 	}
 	else if (e->getType() == UIEvents::MouseUpEvent)
 	{
 		auto* me = static_cast<UIMouseEventArgs*>(e);
-		auto pos = me->getPosition(me->sender);
+		auto pos = PointI::fromFloatPoint(me->getPosition(me->sender));
 		injectMouseButtonUp(me->getMouseButtons(), pos.x, pos.y);
+		e->handled = true;
 	}
 	else if (e->getType() == UIEvents::MouseMoveEvent)
 	{
 		auto* me = static_cast<UIMouseEventArgs*>(e);
-		auto pos = me->getPosition(me->sender);
+		auto pos = PointI::fromFloatPoint(me->getPosition(me->sender));
 		injectMouseMove(pos.x, pos.y);
+		e->handled = true;
 	}
-	else if (e->getType() == UIEvents::MouseMoveEvent)
+	else if (e->getType() == UIEvents::MouseWheelEvent)
 	{
 		auto* me = static_cast<UIMouseWheelEventArgs*>(e);
 		injectMouseWheel(me->getDelta());
+		e->handled = true;
 	}
 	else
 	{
@@ -335,7 +305,6 @@ void CameraMouseMoveBehavior::World_onUIEvent(UIEventArgs* e)
 	}
 }
 
-//------------------------------------------------------------------------------
 bool CameraMouseMoveBehavior::injectMouseMove(int x, int y)
 {
 	if (m_RDrag)
@@ -547,7 +516,6 @@ bool CameraMouseMoveBehavior::injectMouseMove(int x, int y)
 	return false;
 }
 
-//------------------------------------------------------------------------------
 bool CameraMouseMoveBehavior::injectMouseButtonDown(MouseButtons button, int x, int y)
 {
 	// 右ボタン
@@ -570,7 +538,6 @@ bool CameraMouseMoveBehavior::injectMouseButtonDown(MouseButtons button, int x, 
 	return false;
 }
 
-//------------------------------------------------------------------------------
 bool CameraMouseMoveBehavior::injectMouseButtonUp(MouseButtons button, int x, int y)
 {
 	// 右ボタン
@@ -589,7 +556,6 @@ bool CameraMouseMoveBehavior::injectMouseButtonUp(MouseButtons button, int x, in
 	return false;
 }
 
-//------------------------------------------------------------------------------
 bool CameraMouseMoveBehavior::injectMouseWheel(int delta)
 {
 	//CameraComponent* cameraComponent = m_targetCamera->getCameraComponent();
@@ -604,194 +570,10 @@ bool CameraMouseMoveBehavior::injectMouseWheel(int delta)
 	return true;
 }
 
-#if 0
-//==============================================================================
-// CameraViewportLayer
-//==============================================================================
-
-//------------------------------------------------------------------------------
-CameraViewportLayer* CameraViewportLayer::GetDefault2D()
-{
-	return detail::EngineDomain::GetUIManager()->GetMainWindow()->GetDefault2DCameraViewportLayer();
-}
-
-//------------------------------------------------------------------------------
-CameraViewportLayer* CameraViewportLayer::GetDefault3D()
-{
-	return detail::EngineDomain::GetUIManager()->GetMainWindow()->GetDefault3DCameraViewportLayer();
-}
-
-////------------------------------------------------------------------------------
-//CameraViewportLayerPtr CameraViewportLayer::create(Camera* camera)
-//{
-//	auto ptr = CameraViewportLayerPtr::MakeRef();
-//	ptr->initialize(SceneGraphManager::Instance, camera);
-//	return ptr;
-//}
-
-//------------------------------------------------------------------------------
-CameraViewportLayer::CameraViewportLayer()
-	: m_targetWorld(nullptr)
-	, m_hostingCamera(nullptr)
-	, m_debugDrawFlags(WorldDebugDrawFlags::None)
-{
-}
-
-//------------------------------------------------------------------------------
-void CameraViewportLayer::initialize(SceneGraphManager* manager, World* targetWorld, Camera* hostingCamera)
-{
-	m_targetWorld = targetWorld;
-	m_hostingCamera = hostingCamera;
-	m_hostingCamera->m_ownerLayer = this;
-
-	if (m_hostingCamera->GetProjectionMode() == CameraProjection_3D)
-	{
-		auto internalRenderer = Ref<detail::ForwardShadingRenderer>::makeRef();
-		internalRenderer->initialize(manager->GetGraphicsManager());
-		m_internalRenderer = internalRenderer;
-	}
-	else
-	{
-		auto internalRenderer = Ref<detail::NonShadingRenderer>::makeRef();
-		internalRenderer->initialize(manager->GetGraphicsManager());
-		m_internalRenderer = internalRenderer;
-	}
-
-	//auto pass = Ref<detail::RenderingPass2>::MakeRef();
-	//pass->initialize(manager->getGraphicsManager());
-	//AddRenderingPass(pass);
-}
-
-//------------------------------------------------------------------------------
-CameraViewportLayer::~CameraViewportLayer()
-{
-	m_hostingCamera->m_ownerLayer = nullptr;
-}
-
-//------------------------------------------------------------------------------
-void CameraViewportLayer::SetDebugDrawFlags(WorldDebugDrawFlags flags)
-{
-	m_debugDrawFlags = flags;
-}
-
-//------------------------------------------------------------------------------
-tr::GizmoModel* CameraViewportLayer::CreateGizmo()
-{
-	m_gizmo = Ref<tr::GizmoModel>::makeRef();
-	m_gizmo->initialize(detail::EngineDomain::GetGraphicsManager());
-	return m_gizmo;
-}
-
-//------------------------------------------------------------------------------
-void CameraViewportLayer::Render()
-{
-	// TODO: やめよう
-	m_hostingCamera->GetOwnerSceneGraph()->GetRenderer()->SetCurrentCamera(m_hostingCamera);
-
-	m_hostingCamera->GetOwnerSceneGraph()->GetRenderer()->Clear(ClearFlags::Depth, Color::White);
-
-	// カメラ行列の更新
-	m_hostingCamera->UpdateMatrices(GetSize());
-
-	m_targetWorld->Render(m_hostingCamera, m_debugDrawFlags);
-
-	if (m_gizmo != nullptr)
-	{
-		m_gizmo->Render(m_hostingCamera->GetOwnerSceneGraph()->GetRenderer());
-	}
-}
-
-//------------------------------------------------------------------------------
-void CameraViewportLayer::ExecuteDrawListRendering(DrawList* parentDrawList, RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
-{
-	// TODO: float
-	Size targetSize((float)renderTarget->GetWidth(), (float)renderTarget->GetHeight());
-	m_hostingCamera->UpdateMatrices(targetSize);
-
-	detail::CameraInfo cameraInfo;
-	cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera.get());
-	cameraInfo.viewPixelSize = targetSize;
-	cameraInfo.viewPosition = m_hostingCamera->GetCombinedGlobalMatrix().GetPosition();
-	cameraInfo.viewMatrix = m_hostingCamera->GetViewMatrix();
-	cameraInfo.projMatrix = m_hostingCamera->GetProjectionMatrix();
-	cameraInfo.viewProjMatrix = m_hostingCamera->GetViewProjectionMatrix();
-	cameraInfo.viewFrustum = m_hostingCamera->GetViewFrustum();
-	cameraInfo.zSortDistanceBase = m_hostingCamera->GetZSortDistanceBase();
-	parentDrawList->RenderSubDrawList(
-		m_hostingCamera->GetOwnerSceneGraph()->GetRenderer()->GetDrawElementList(),
-		cameraInfo,
-		m_internalRenderer,
-		renderTarget,
-		depthBuffer);
-	parentDrawList->RenderSubDrawList(
-		m_hostingCamera->GetOwnerSceneGraph()->GetDebugRenderer()->GetDrawElementList(),
-		cameraInfo,
-		m_internalRenderer,
-		renderTarget,
-		depthBuffer);
-	//m_internalRenderer->render(
-	//	m_hostingCamera->GetOwnerSceneGraph()->getRenderer()->getDrawElementList(),
-	//	cameraInfo,
-	//	renderTarget,
-	//	depthBuffer);
-	//m_internalRenderer->render(
-	//	m_hostingCamera->GetOwnerSceneGraph()->GetDebugRenderer()->getDrawElementList(),
-	//	cameraInfo,
-	//	renderTarget,
-	//	depthBuffer);
-	m_hostingCamera->GetOwnerSceneGraph()->GetRenderer()->EndFrame();
-}
-
-//------------------------------------------------------------------------------
-void CameraViewportLayer::UpdateTransform(const Size& viewSize)
-{
-	ViewportLayer::UpdateTransform(viewSize);
-
-	if (m_gizmo != nullptr)
-	{
-		m_gizmo->SetViewInfo(
-			m_hostingCamera->GetCombinedGlobalMatrix().GetPosition(),
-			m_hostingCamera->GetViewMatrix(),
-			m_hostingCamera->GetProjectionMatrix(),
-			SizeI(viewSize.width, viewSize.height));
-	}
-}
-
-//------------------------------------------------------------------------------
-bool CameraViewportLayer::OnPlatformEvent(const PlatformEventArgs& e)
-{
-	if (m_gizmo != nullptr)
-	{
-		switch (e.type)
-		{
-			case PlatformEventType::MouseDown:
-				if (e.mouse.button == MouseButtons::Left)
-				{
-					if (m_gizmo->InjectMouseDown(e.mouse.x, e.mouse.y)) return true;
-				}
-				break;
-			case PlatformEventType::MouseUp:
-				if (e.mouse.button == MouseButtons::Left)
-				{
-					if (m_gizmo->InjectMouseUp(e.mouse.x, e.mouse.y)) return true;
-				}
-				break;
-			case PlatformEventType::MouseMove:
-				if (m_gizmo->InjectMouseMove(e.mouse.x, e.mouse.y)) return true;
-				break;
-			default:
-				break;
-		}
-	}
-	return false;
-}
-#endif
-
 //==============================================================================
 // WorldRenderView
 //==============================================================================
 
-//------------------------------------------------------------------------------
 WorldRenderView::WorldRenderView()
 	: m_targetWorld(nullptr)
 	, m_hostingCamera(nullptr)
@@ -800,7 +582,6 @@ WorldRenderView::WorldRenderView()
 {
 }
 
-//------------------------------------------------------------------------------
 void WorldRenderView::initialize(World* targetWorld, CameraComponent* hostingCamera)
 {
 	RenderView::initialize();
@@ -835,26 +616,22 @@ void WorldRenderView::initialize(World* targetWorld, CameraComponent* hostingCam
 	this->setSceneRenderer(m_internalRenderer);
 }
 
-//------------------------------------------------------------------------------
 WorldRenderView::~WorldRenderView()
 {
 	m_hostingCamera->m_ownerLayer = nullptr;
 }
 
-//------------------------------------------------------------------------------
 void WorldRenderView::setDebugDrawFlags(WorldDebugDrawFlags flags)
 {
 	m_debugDrawFlags = flags;
 }
 
-//------------------------------------------------------------------------------
 void WorldRenderView::renderScene(RenderTargetTexture* renderTarget, DepthBuffer* depthBuffer)
 {
 	// カメラ行列の更新
 	m_hostingCamera->updateMatrices(getViewSize());
 	this->setViewSize(getViewSize());
 
-	//m_targetWorld->renderRoot(m_hostingCamera, m_debugDrawFlags, this);
 	m_targetWorld->renderRoot(this, m_debugDrawFlags);
 
 	if (m_clusteredShadingSceneRenderer)
@@ -883,7 +660,6 @@ void WorldRenderView::renderScene(RenderTargetTexture* renderTarget, DepthBuffer
 
 	bool clearColorBuffer = (getClearMode() == RenderLayerClearMode::ColorDepth || getClearMode() == RenderLayerClearMode::Color);
 
-	//detail::CameraInfo cameraInfo;
 	this->m_cameraInfo.dataSourceId = reinterpret_cast<intptr_t>(m_hostingCamera.get());
 	this->m_cameraInfo.viewPixelSize = targetSize;
 	this->m_cameraInfo.viewPosition = m_hostingCamera->getTransform()->getWorldMatrix().getPosition();
@@ -900,7 +676,6 @@ void WorldRenderView::renderScene(RenderTargetTexture* renderTarget, DepthBuffer
 	m_targetWorld->beginUpdateFrame();
 }
 
-//------------------------------------------------------------------------------
 void WorldRenderView::onRoutedEvent(UIEventArgs* e)
 {
 	m_targetWorld->onUIEvent(e);
@@ -908,8 +683,6 @@ void WorldRenderView::onRoutedEvent(UIEventArgs* e)
 
 	RenderView::onRoutedEvent(e);
 }
-
-
 
 //==============================================================================
 // OffscreenWorldRenderView
@@ -969,13 +742,11 @@ void OffscreenWorldRenderView::render()
 //==============================================================================
 // CameraBehavior
 //==============================================================================
-//------------------------------------------------------------------------------
 CameraBehavior::CameraBehavior()
 	: m_targetCamera(nullptr)
 {
 }
 
-//------------------------------------------------------------------------------
 CameraBehavior::~CameraBehavior()
 {
 }
@@ -985,24 +756,24 @@ CameraBehavior::~CameraBehavior()
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Camera, WorldObject);
 
-//------------------------------------------------------------------------------
 Camera::Camera()
 	: WorldObject()
 	, m_component(nullptr)
 {
 }
 
-//------------------------------------------------------------------------------
 Camera::~Camera()
 {
 }
 
-//------------------------------------------------------------------------------
-void Camera::initialize(CameraWorld proj)
+void Camera::initialize(CameraWorld proj, bool defcmp)
 {
 	WorldObject::initialize();
-	m_component = newObject<CameraComponent>(proj);
-	addComponent(m_component);
+	if (defcmp)
+	{
+		setCameraComponent(newObject<CameraComponent>(proj));
+	}
+
 	transform.lookAt(Vector3::Zero);
 
 	if (proj == CameraProjection_2D)
@@ -1015,11 +786,130 @@ void Camera::initialize(CameraWorld proj)
 	}
 }
 
-//------------------------------------------------------------------------------
 CameraComponent* Camera::getCameraComponent() const
 {
 	return m_component;
 }
 
-LN_NAMESPACE_SCENE_END
+void Camera::setCameraComponent(CameraComponent* component)
+{
+	m_component = component;
+	addComponent(m_component);
+}
+
+//==============================================================================
+// PerspectiveCameraComponent
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(PerspectiveCameraComponent, CameraComponent);
+
+PerspectiveCameraComponent::PerspectiveCameraComponent()
+{
+}
+
+PerspectiveCameraComponent::~PerspectiveCameraComponent()
+{
+}
+
+void PerspectiveCameraComponent::initialize()
+{
+	CameraComponent::initialize(CameraWorld::CameraProjection_3D);
+	setProjectionMode(ProjectionMode::Perspective);
+}
+
+//==============================================================================
+// OrthographicCameraComponent
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(OrthographicCameraComponent, CameraComponent);
+
+OrthographicCameraComponent::OrthographicCameraComponent()
+{
+}
+
+OrthographicCameraComponent::~OrthographicCameraComponent()
+{
+}
+
+void OrthographicCameraComponent::initialize()
+{
+	CameraComponent::initialize(CameraWorld::CameraProjection_3D);
+	setProjectionMode(ProjectionMode::Orthographic);
+}
+
+//==============================================================================
+// PerspectiveCamera
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(PerspectiveCamera, Camera);
+
+Ref<PerspectiveCamera> PerspectiveCamera::create()
+{
+	return newObject<PerspectiveCamera>();
+}
+
+Ref<PerspectiveCamera> PerspectiveCamera::create(float fovY, float aspect, float nearClip, float farClip)
+{
+	return newObject<PerspectiveCamera>(fovY, aspect, nearClip, farClip);
+}
+
+PerspectiveCamera::PerspectiveCamera()
+	: m_component(nullptr)
+{
+}
+
+PerspectiveCamera::~PerspectiveCamera()
+{
+}
+
+void PerspectiveCamera::initialize()
+{
+	Camera::initialize(CameraWorld::CameraProjection_3D, false);
+	m_component = newObject<OrthographicCameraComponent>();
+	setCameraComponent(m_component);
+}
+
+void PerspectiveCamera::initialize(float fovY, float aspect, float nearClip, float farClip)
+{
+	initialize();
+	m_component->setFovY(fovY);
+	m_component->setAspect(aspect);
+	m_component->setNearClip(nearClip);
+	m_component->setFarClip(farClip);
+}
+
+//==============================================================================
+// OrthographicCamera
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(OrthographicCamera, Camera);
+
+Ref<OrthographicCamera> OrthographicCamera::create()
+{
+	return newObject<OrthographicCamera>();
+}
+
+Ref<OrthographicCamera> OrthographicCamera::create(float orthoSize)
+{
+	return newObject<OrthographicCamera>(orthoSize);
+}
+
+OrthographicCamera::OrthographicCamera()
+	: m_component(nullptr)
+{
+}
+
+OrthographicCamera::~OrthographicCamera()
+{
+}
+
+void OrthographicCamera::initialize()
+{
+	Camera::initialize(CameraWorld::CameraProjection_3D, false);
+	m_component = newObject<OrthographicCameraComponent>();
+	setCameraComponent(m_component);
+}
+
+void OrthographicCamera::initialize(float orthoSize)
+{
+	initialize();
+	setOrthographicSize(orthoSize);
+}
+
 LN_NAMESPACE_END
