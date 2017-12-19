@@ -635,10 +635,10 @@ void Texture3D::onChangeDevice(Driver::IGraphicsDevice* device)
 //==============================================================================
 
 //------------------------------------------------------------------------------
-RenderTargetTexturePtr RenderTargetTexture::create(const SizeI& size, TextureFormat format, int mipLevels)
+RenderTargetTexturePtr RenderTargetTexture::create(int width, int height, TextureFormat format, int mipLevels)
 {
 	Ref<RenderTargetTexture> tex(LN_NEW RenderTargetTexture(), false);
-	tex->createImpl(detail::GraphicsManager::getInstance(), size, mipLevels, format);
+	tex->createImpl(detail::GraphicsManager::getInstance(), SizeI(width, height), mipLevels, format);
 	return tex;
 }
 

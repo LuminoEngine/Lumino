@@ -265,7 +265,7 @@ TEST_F(Test_Graphics_Rendering, blit)
 	// <Test> 別のレンダーターゲットへの転送
 	{
 		auto tex = Texture2D::create(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawMesh1.png"));
-		auto rt1 = RenderTargetTexture::create(tex->getSize());
+		auto rt1 = RenderTargetTexture::create(tex->getWidth(), tex->getHeight());
 		LN_TEST_BEGIN_FRAME;
 		Engine::getWorld2D()->getRenderer()->blit(tex, rt1, nullptr);
 		Engine::renderFrame();
