@@ -41,13 +41,22 @@ class World
 	LN_OBJECT;
 public:
 
+	/** オブジェクトを World に追加します。(戻り値は obj) */
+	WorldObject* add(WorldObject* obj);
+
+	/** 空のオブジェクトを作成して World に追加します。 */
+	WorldObject* addEmptyObject();
+
+	/** オブジェクトを World から除外します。 */
+	void remove(WorldObject* obj);
+
+	/** World に含まれている全てのオブジェクトを World から除外します。 */
+	void removeAllObjects();
+
 	DrawList* getRenderer() const;
 	DrawList* GetDebugRenderer() const;
 
-	void RemoveAllObjects();
 
-	void addWorldObject(WorldObject* obj, bool autoRelease /*= false*/);
-	void removeWorldObject(WorldObject* obj);
 	void addOffscreenWorldView(OffscreenWorldSubRenderView* view);
 	void removeOffscreenWorldView(OffscreenWorldSubRenderView* view);
 protected:
@@ -89,6 +98,9 @@ LN_INTERNAL_ACCESS:
 
 	UIEventHandler::EventType			m_onEvent;
 
+private:
+	void addWorldObject(WorldObject* obj, bool autoRelease /*= false*/);
+	void removeWorldObject(WorldObject* obj);
 };
 
 /**

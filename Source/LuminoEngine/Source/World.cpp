@@ -47,6 +47,34 @@ void World::initialize()
 	beginUpdateFrame();
 }
 
+WorldObject* World::add(WorldObject* obj)
+{
+	addWorldObject(obj, false);
+	return obj;
+}
+
+void World::remove(WorldObject* obj)
+{
+	removeWorldObject(obj);
+}
+
+WorldObject* World::addEmptyObject()
+{
+	return add(newObject<WorldObject>());
+}
+
+void World::removeAllObjects()
+{
+	for (int i = m_rootWorldObjectList.getCount() - 1; i >= 0; i--)
+	{
+		if (!m_rootWorldObjectList[i]->isSpecialObject())
+		{
+			m_rootWorldObjectList[i]->m_parent = nullptr;
+			m_rootWorldObjectList.removeAt(i);
+		}
+	}
+}
+
 //------------------------------------------------------------------------------
 DrawList* World::getRenderer() const
 {
@@ -57,19 +85,6 @@ DrawList* World::getRenderer() const
 DrawList* World::GetDebugRenderer() const
 {
 	return m_debugRenderer;
-}
-
-//------------------------------------------------------------------------------
-void World::RemoveAllObjects()
-{
-	for (int i = m_rootWorldObjectList.getCount() - 1; i >= 0; i--)
-	{
-		if (!m_rootWorldObjectList[i]->isSpecialObject())
-		{
-			m_rootWorldObjectList[i]->m_parent = nullptr;
-			m_rootWorldObjectList.removeAt(i);
-		}
-	}
 }
 
 //------------------------------------------------------------------------------
@@ -269,7 +284,7 @@ void World2D::initialize()
 
 	m_mainCamera = newObject<Camera>(CameraProjection_2D, true);
 	m_mainCamera->setSpecialObject(true);
-	addWorldObject(m_mainCamera, true);
+	add(m_mainCamera);
 }
 
 //------------------------------------------------------------------------------
@@ -331,7 +346,7 @@ void World3D::initialize()
 
 	m_mainCamera = newObject<Camera>(CameraProjection_3D, true);
 	m_mainCamera->setSpecialObject(true);
-	addWorldObject(m_mainCamera, true);
+	add(m_mainCamera);
 
 	//m_mainLight = newObject<Light>();
 	//m_mainLight->setSpecialObject(true);

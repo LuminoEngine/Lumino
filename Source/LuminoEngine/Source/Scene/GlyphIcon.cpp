@@ -50,7 +50,6 @@ void GlyphIcon2D::initialize()
 	m_component = newObject<GlyphIconComponent>();
 	m_component->setLayer(LayerMask::GetLayer(BuiltinLayers::Default2D));
 	addComponent(m_component);
-	detail::EngineDomain::getDefaultWorld2D()->addWorldObject(this, true);
 }
 
 void GlyphIcon2D::initialize(const StringRef& glyphName)

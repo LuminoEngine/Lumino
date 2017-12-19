@@ -52,8 +52,8 @@ protected:
 #define LN_TEST_END_FRAME		TestEnv::EndFrame()
 
 #define LN_TEST_CLEAN_SCENE \
-	Engine::getWorld2D()->RemoveAllObjects(); \
-	Engine::getWorld3D()->RemoveAllObjects();
+	Engine::getWorld2D()->removeAllObjects(); \
+	Engine::getWorld3D()->removeAllObjects();
 
 
 inline PathName Test_GetTempFilePath(const Char* fileName)
