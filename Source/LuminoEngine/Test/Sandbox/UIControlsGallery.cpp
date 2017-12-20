@@ -13,9 +13,6 @@
 
 using namespace ln;
 
-
-
-
 float tangent(Vector3 p, Vector3 s) {
 	return (p.z - s.z) / (s.getXY() - p.getXY()).getLength();
 }
@@ -34,8 +31,8 @@ void UIControlsGallery()
 	//lsgen.loadRawHLSL(code);
 	//lsgen.finalize();
 
-
-
+	//Ref<List<int>> test;
+	//int a = test.gg();
 
 
 	// へいたん

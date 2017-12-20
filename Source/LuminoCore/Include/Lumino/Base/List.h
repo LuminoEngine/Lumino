@@ -4,6 +4,7 @@
 #include <algorithm>
 #include "Exception.h"
 #include "StlHelper.h"
+#include "RefObject.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -13,7 +14,7 @@ LN_NAMESPACE_BEGIN
 				内部では、メモリ使用量を削減し、データの不必要なコピーを避けるためにコピーオンライト(COW)の共有を行います。
 */
 template<typename T, typename TAllocator = detail::StlAllocator<T> >
-class List
+class List : public RefObject
 {
 public:
 	typedef typename std::vector<T, TAllocator>		std_vector;
@@ -44,7 +45,7 @@ public:
 	List(TIter begin, TIter end);
 
 	/** デストラクタ */
-	~List();
+	virtual ~List();
 
 public:
 
