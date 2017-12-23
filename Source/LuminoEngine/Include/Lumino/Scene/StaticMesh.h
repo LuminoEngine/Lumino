@@ -63,7 +63,7 @@ public:
 
 	StaticMeshModel* getStaticMeshModel() const { return m_mesh; }
 
-LN_INTERNAL_ACCESS:
+LN_CONSTRUCT_ACCESS:
 	StaticMeshComponent();
 	virtual ~StaticMeshComponent();
 	void initialize(StaticMeshModel* meshModel);

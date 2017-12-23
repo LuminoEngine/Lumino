@@ -174,7 +174,7 @@ public:
 	RenderTargetTexture* getRenderTarget() const;
 	void render();
 
-LN_INTERNAL_ACCESS :
+LN_CONSTRUCT_ACCESS:
 	OffscreenWorldRenderView();
 	virtual ~OffscreenWorldRenderView();
 	void initialize(World* targetWorld, CameraComponent* hostingCamera);
@@ -309,6 +309,18 @@ public:
 
 public:
 
+	/** 最も近いビュープレーン位置を設定します。(0 は無効値です) */
+	void setNearClip(float value) { m_component->setNearClip(value); }
+
+	/** 最も近いビュープレーン位置を取得します。 */
+	float getNearClip() const { return m_component->getNearClip(); }
+
+	/** 最も遠いビュープレーン位置を設定します。 */
+	void setFarClip(float value) { m_component->setFarClip(value); }
+
+	/** 最も遠いビュープレーン位置を取得します。 */
+	float getFarClip() const { return m_component->getFarClip(); }
+
 LN_CONSTRUCT_ACCESS:
 	PerspectiveCamera();
 	virtual ~PerspectiveCamera();
@@ -345,6 +357,18 @@ public:
 		例えば、2D シーンを dot by dot で描画する場合、この値を縦方向のピクセル数と一致させます。
 	*/
 	void setOrthographicSize(float value) { m_component->setOrthographicSize(value); }
+
+	/** 最も近いビュープレーン位置を設定します。(0 は有効値です) */
+	void setNearClip(float value) { m_component->setNearClip(value); }
+
+	/** 最も近いビュープレーン位置を取得します。 */
+	float getNearClip() const { return m_component->getNearClip(); }
+
+	/** 最も遠いビュープレーン位置を設定します。 */
+	void setFarClip(float value) { m_component->setFarClip(value); }
+
+	/** 最も遠いビュープレーン位置を取得します。 */
+	float getFarClip() const { return m_component->getFarClip(); }
 
 LN_CONSTRUCT_ACCESS:
 	OrthographicCamera();

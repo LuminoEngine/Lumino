@@ -115,7 +115,7 @@ public:
 	void addLine(const Vertex& v1, const Vertex& v2);
 
 	void addPlane(const Vector2& size, int sliceH = 1, int sliceV = 1);	// TODO: name SquarePlane
-	void addBox(const Vector3& size, const Matrix& transform = Matrix::Identity);
+	void addBox(const Vector3& size, const Color& color = Color::White, const Matrix& transform = Matrix::Identity);
 	void addSphere(float radius, int slices = 16, int stacks = 16, const Matrix& transform = Matrix::Identity);
 	void addTeapot(float size, int tessellation = 8);
 	void addScreenPlane();
@@ -260,7 +260,8 @@ public:
 	void addMaterial(CommonMaterial* material);
 	CommonMaterial* getMaterial(int index) const;
 
-LN_INTERNAL_ACCESS:
+LN_CONSTRUCT_ACCESS:
+public:	// TODO
 	StaticMeshModel();
 	virtual ~StaticMeshModel();
 	void initialize(detail::GraphicsManager* manager);
