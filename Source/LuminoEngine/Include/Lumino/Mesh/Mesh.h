@@ -123,6 +123,7 @@ public:
 	void reverseFaces();
 
 	IndexBuffer* getIndexBuffer() const;
+	const Box& getBoundingBox() const { return m_boundingBox; }
 
 LN_INTERNAL_ACCESS:
 	enum VertexBufferType
