@@ -46,12 +46,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(LuminoInstallDir)MSVC2017\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(LuminoInstallDir)MSVC2017\Lib\x86_MT;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(LuminoInstallDir)MSVC2017\Lib\MSVC2017-x86-MT;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(LuminoInstallDir)MSVC2017\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(LuminoInstallDir)MSVC2017\Lib\x86_MT;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(LuminoInstallDir)MSVC2017\Lib\MSVC2017-x86-MT;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

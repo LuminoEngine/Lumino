@@ -21,12 +21,13 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # サードパーティライブラリ用の共通設定
 macro(ln_add_dependencies_common_property projectName)
-	set_target_properties(${projectName} PROPERTIES OUTPUT_NAME "${projectName}${LN_DEPENDENCIES_POSTFIX}")
-	set_target_properties(${projectName} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "")
-	set_target_properties(${projectName} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${LN_DEPENDENCIES_DEBUG_OUTPUT_DIR}")
-	set_target_properties(${projectName} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${LN_DEPENDENCIES_RELEASE_OUTPUT_DIR}")
+	#set_target_properties(${projectName} PROPERTIES OUTPUT_NAME "${projectName}${LN_DEPENDENCIES_POSTFIX}")
+	#set_target_properties(${projectName} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "")
+	#set_target_properties(${projectName} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${LN_DEPENDENCIES_DEBUG_OUTPUT_DIR}")
+	#set_target_properties(${projectName} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${LN_DEPENDENCIES_RELEASE_OUTPUT_DIR}")
+	#set_target_properties(${projectName} PROPERTIES DEBUG_POSTFIX "d")
 	set_target_properties(${projectName} PROPERTIES PREFIX "")
-	set_target_properties(${projectName} PROPERTIES FOLDER "Dependencies")
+	set_target_properties(${projectName} PROPERTIES FOLDER "Dependencies")	# Visual Studio solution folder
 	set(LN_DEPENDENCIES_LIBRARIES ${LN_DEPENDENCIES_LIBRARIES} ${projectName})
 endmacro()
 

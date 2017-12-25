@@ -1,7 +1,7 @@
 ﻿
 #include "../Internal.h"
 #include <memory>
-#ifdef LN_OS_WIN32
+#if defined(LN_OS_WIN32) && _MSC_VER >= 1900
 #include <cuchar>
 #endif
 #include <Lumino/Text/Encoding.h>
@@ -971,7 +971,7 @@ int UStringConvert::convertNativeString(const wchar_t* src, int srcLen, wchar_t*
 
 int UStringConvert::convertNativeString(const char16_t* src, int srcLen, char* dst, int dstSize)
 {
-#ifdef LN_OS_WIN32
+#if defined(LN_OS_WIN32) && _MSC_VER >= 1900
 	if (!dst || dstSize <= 0) return 0;
 	if (src && srcLen >= 0)
 	{

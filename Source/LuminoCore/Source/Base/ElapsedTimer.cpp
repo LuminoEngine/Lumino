@@ -67,7 +67,7 @@ void ElapsedTimer::start()
 
 
 //------------------------------------------------------------------------------
-uint64_t ElapsedTimer::getElapsed() const noexcept
+uint64_t ElapsedTimer::getElapsed() const LN_NOEXCEPT
 {
 	timeval t;
 	gettimeofday(&t, NULL);

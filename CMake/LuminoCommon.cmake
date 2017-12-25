@@ -146,7 +146,7 @@ endif()
 macro(ln_add_executable projectName)
 	add_executable(${projectName} ${LN_SOURCES})
 	set_target_properties(${projectName} PROPERTIES OUTPUT_NAME ${projectName}${LN_OUTPUT_POSTFIX})
-	set_target_properties(${projectName} PROPERTIES DEBUG_POSTFIX "d")
+	#set_target_properties(${projectName} PROPERTIES DEBUG_POSTFIX "d")
 	set_target_properties(${projectName} PROPERTIES INCLUDE_DIRECTORIES "${LN_INCLUDE_DIRECTORIES}")
 	add_custom_command(
 		TARGET ${projectName}

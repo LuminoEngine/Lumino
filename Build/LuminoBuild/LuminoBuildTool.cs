@@ -163,7 +163,7 @@ namespace LuminoBuild
         /// 前提条件の確認
         /// </summary>
         /// <returns>この Rule を実行できるなら true</returns>
-        public abstract void CheckPrerequisite(Builder builder);
+        public virtual void CheckPrerequisite(Builder builder) { Buildable = true; }
 
         /// <summary>
         /// このルールをビルドする

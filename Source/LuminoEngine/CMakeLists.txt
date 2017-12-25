@@ -804,8 +804,6 @@ find_package(OpenGL REQUIRED)
 
 if (WIN32)
 
-	#set(CMAKE_DEBUG_POSTFIX "d")
-
 	# platform include dirs.
 	set(LN_PLATFORM_INCLUDE_DIRS "$ENV{DXSDK_DIR}Include")
 
