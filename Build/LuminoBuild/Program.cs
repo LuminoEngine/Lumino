@@ -12,7 +12,7 @@ namespace LuminoBuild
             // default
             if (args.Length == 0)
             {
-                args = new string[] { "MakeProjects" };
+                args = new string[] { "MakeInstaller" };
             }
 
             Assembly thisAssembly = Assembly.GetEntryAssembly();
@@ -40,26 +40,43 @@ namespace LuminoBuild
             builder.LuminoPackageReleaseDir = builder.LuminoRootDir + "Package/Release/Lumino/";
             builder.LuminoDependenciesDir = builder.LuminoRootDir + "External/LuminoDependencies/";
 
-            builder.Tasks = new List<LuminoBuild.BuildTask>();
-            builder.Tasks.Add(new SetupDependencies());
-            builder.Tasks.Add(new Tasks.MakeVersionHeader());
-			if (Utils.IsWin32) builder.Tasks.Add(new MakeVSProjectsRule());
-            if (Utils.IsMac) builder.Tasks.Add(new Tasks.MakeXCodeProjects());
-            builder.Tasks.Add(new LuminoEngineRule());
-            builder.Tasks.Add(new CppPackageRule());
-            builder.Tasks.Add(new LuminoDotNetRule());
-            builder.Tasks.Add(new DotNetPackageRule());
-            builder.Tasks.Add(new LuminoRubyRule());
-            builder.Tasks.Add(new RubyPackageRule());
-            builder.Tasks.Add(new LuminoCRule());
-            builder.Tasks.Add(new CPackageRule());
-            builder.Tasks.Add(new MakeInstaller());
-            builder.Tasks.Add(new Tasks.BuildEngine_MSVCUnicodeMD());
-            if (Utils.IsWin32) builder.Tasks.Add(new LuminoHSPRule());
-            if (Utils.IsWin32) builder.Tasks.Add(new HSPPackageRule());
 
-            builder.Rules.Add(new Rules.MakeProjects());
-            builder.Rules.Add(new Rules.MakeInstaller());
+            Console.WriteLine("RootDir: {0}", builder.LuminoRootDir);
+
+
+            //var fsEntries = Directory.EnumerateFileSystemEntries(builder.LuminoBuildDir + "MSVC2015-x86-MT", "*/Debug/*.lib", SearchOption.AllDirectories);
+            //foreach (var path in fsEntries)
+            //{
+            //    Console.WriteLine(path);
+            //}
+
+
+
+            builder.Tasks = new List<LuminoBuild.BuildTask>();
+            builder.Tasks.Add(new Tasks.SetupDependencies());
+            builder.Tasks.Add(new Tasks.MakeVSProjects());
+            builder.Tasks.Add(new Tasks.BuildEngine());
+            builder.Tasks.Add(new Tasks.MakePackageCpp());
+            builder.Tasks.Add(new Tasks.MakeInstaller());
+            //         builder.Tasks.Add(new SetupDependencies());
+            //         builder.Tasks.Add(new Tasks.MakeVersionHeader());
+            //if (Utils.IsWin32) builder.Tasks.Add(new MakeVSProjectsRule());
+            //         if (Utils.IsMac) builder.Tasks.Add(new Tasks.MakeXCodeProjects());
+            //         builder.Tasks.Add(new LuminoEngineRule());
+            //         builder.Tasks.Add(new CppPackageRule());
+            //         builder.Tasks.Add(new LuminoDotNetRule());
+            //         builder.Tasks.Add(new DotNetPackageRule());
+            //         builder.Tasks.Add(new LuminoRubyRule());
+            //         builder.Tasks.Add(new RubyPackageRule());
+            //         builder.Tasks.Add(new LuminoCRule());
+            //         builder.Tasks.Add(new CPackageRule());
+            //         builder.Tasks.Add(new MakeInstaller());
+            //         builder.Tasks.Add(new Tasks.BuildEngine_MSVCUnicodeMD());
+            //         if (Utils.IsWin32) builder.Tasks.Add(new LuminoHSPRule());
+            //         if (Utils.IsWin32) builder.Tasks.Add(new HSPPackageRule());
+
+            //         builder.Rules.Add(new Rules.MakeProjects());
+            //         builder.Rules.Add(new Rules.MakeInstaller());
 
             if (args.Length >= 1)
             {

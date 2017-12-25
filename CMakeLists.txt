@@ -35,7 +35,7 @@ option(LN_BUILD_CORE_ONLY "Build Core only." OFF)
 #-------------------------------------------------------------------------------
 set(LN_DEPENDENCIES_DEBUG_OUTPUT_DIR ${LN_LIB_DEBUG_OUTPUT_ROOT_DIR})
 set(LN_DEPENDENCIES_RELEASE_OUTPUT_DIR ${LN_LIB_RELEASE_OUTPUT_ROOT_DIR})
-set(LN_DEPENDENCIES_POSTFIX "")
+#set(LN_DEPENDENCIES_POSTFIX "")
 set(LN_DEPENDENCIES_INCLUDE_DIRECTORIES "")
 
 if (NOT LN_BUILD_CORE_ONLY)
@@ -46,11 +46,12 @@ endif()
 # 
 #-------------------------------------------------------------------------------
 macro(ln_add_common_property projectName)
-	set_target_properties(${projectName} PROPERTIES OUTPUT_NAME "${projectName}")
-	set_target_properties(${projectName} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
-	set_target_properties(${projectName} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${LN_LIB_DEBUG_OUTPUT_ROOT_DIR}")
-	set_target_properties(${projectName} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${LN_LIB_RELEASE_OUTPUT_ROOT_DIR}")
-	set_target_properties(${projectName} PROPERTIES PREFIX "")
+	#set_target_properties(${projectName} PROPERTIES OUTPUT_NAME "${projectName}")
+	#set_target_properties(${projectName} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${LN_LIB_OUTPUT_DIR}")
+	#set_target_properties(${projectName} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${LN_LIB_DEBUG_OUTPUT_ROOT_DIR}")
+	#set_target_properties(${projectName} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${LN_LIB_RELEASE_OUTPUT_ROOT_DIR}")
+	#set_target_properties(${projectName} PROPERTIES PREFIX "")
+	#set_target_properties(${projectName} PROPERTIES DEBUG_POSTFIX "d")
 endmacro()
 
 if (LN_EXCEPTION_BACKTRACE)

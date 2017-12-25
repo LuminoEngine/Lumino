@@ -93,7 +93,7 @@ static void safeWCharToUChar(const wchar_t* src, Char* dst, int dstSize) LN_NOEX
 }
 
 Exception::Exception()
-	: m_sourceFilePath(_LT(""))
+	: m_sourceFilePath{}
 	, m_sourceFileLine(0)
 	, m_stackBuffer()
 	, m_stackBufferSize(0)
