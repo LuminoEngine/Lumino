@@ -70,6 +70,7 @@ set(LN_SOURCES_Base
 	Include/Lumino/Base/StringFormat.inl
 	Include/Lumino/Base/StringHelper.h
 	Include/Lumino/Base/Typedef.h
+	Include/Lumino/Base/Uuid.h
 	Source/Base/ByteBuffer.cpp
 	Source/Base/Cache.cpp
 	Source/Base/Diff.cpp
@@ -87,6 +88,7 @@ set(LN_SOURCES_Base
 	Source/Base/String.cpp
 	Source/Base/StringBuilder.cpp
 	Source/Base/StringHelper.cpp
+	Source/Base/Uuid.cpp
 )
 
 set(LN_SOURCES_Text

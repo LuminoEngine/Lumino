@@ -1,4 +1,5 @@
 #pragma once
+#include "String.h"
 
 namespace ln {
 
