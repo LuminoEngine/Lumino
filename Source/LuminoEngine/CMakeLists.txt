@@ -28,10 +28,7 @@ set(LN_SOURCES
 	Source/LuminoEngine.PCH.h
 )
 
-set(LN_SOURCES_Base
-	Include/Lumino/Base/Uuid.h
-	Source/Base/Uuid.cpp
-)
+set(LN_SOURCES_Base "")
 
 set(LN_SOURCES_Animation
 	Include/Lumino/Animation/AnimationClock.h

@@ -1,5 +1,5 @@
 
-#include "../Internal.h"
+#include <Lumino/Base/Common.h>
 #include <Lumino/Base/Uuid.h>
 
 #if defined(LN_OS_WIN32)
