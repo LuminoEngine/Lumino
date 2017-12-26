@@ -84,7 +84,7 @@ private:
 	void updateBestow();
 
 
-LN_INTERNAL_ACCESS:	// TODO:
+public:	// TODO:
 	// TODO: ↓このあたりは StaticMeshModel にして、Renderer::drawMesh に渡せるようにしたい。LOD の選択はそちらで。
 	//Ref<PmxSkinnedMeshResource>	m_meshResource;
 	//Ref<MaterialList>			m_materials;

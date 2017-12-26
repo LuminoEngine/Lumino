@@ -203,6 +203,8 @@ public:
 	*/
 	static RenderTargetTexturePtr create(int width, int height, TextureFormat format = TextureFormat::R8G8B8A8, int mipLevels = 1);
 
+	RawBitmap* readSurface();
+
 protected:
 	virtual void Dispose() override;
 
@@ -214,7 +216,6 @@ LN_INTERNAL_ACCESS:
 	void createCore(detail::GraphicsManager* manager, bool isDefaultBackBuffer);
 	void attachDefaultBackBuffer(Driver::ITexture* deviceObj);
 	void detachDefaultBackBuffer();
-	RawBitmap* readSurface();
 	virtual void onChangeDevice(Driver::IGraphicsDevice* device);
 
 	virtual Driver::ITexture* resolveDeviceObject() override;

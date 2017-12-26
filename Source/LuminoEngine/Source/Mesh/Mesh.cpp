@@ -360,13 +360,27 @@ void MeshResource::addSquare(const Vertex& v1, const Vertex& v2, const Vertex& v
 	v[2] = v3;
 	v[3] = v4;
 
-	uint16_t* i = requestIndexBufferForAdditional(6);
-	i[0] = beginIndex + 0;
-	i[1] = beginIndex + 1;
-	i[2] = beginIndex + 3;
-	i[3] = beginIndex + 3;
-	i[4] = beginIndex + 1;
-	i[5] = beginIndex + 2;
+	void* buf = requestIndexBufferForAdditional(6);
+	if (getIndexBufferFormat() == IndexBufferFormat_UInt16)
+	{
+		uint16_t* i = (uint16_t*)buf;
+		i[0] = beginIndex + 0;
+		i[1] = beginIndex + 1;
+		i[2] = beginIndex + 3;
+		i[3] = beginIndex + 3;
+		i[4] = beginIndex + 1;
+		i[5] = beginIndex + 2;
+	}
+	else
+	{
+		uint32_t* i = (uint32_t*)buf;
+		i[0] = beginIndex + 0;
+		i[1] = beginIndex + 1;
+		i[2] = beginIndex + 3;
+		i[3] = beginIndex + 3;
+		i[4] = beginIndex + 1;
+		i[5] = beginIndex + 2;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -376,22 +390,22 @@ void MeshResource::addSquare(const Vertex* virtices)
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::addLine(const Vertex& v1, const Vertex& v2)
-{
-	if (LN_REQUIRE(!m_attributes.isEmpty())) return;
-	if (LN_REQUIRE(m_attributes.getLast().primitiveType == PrimitiveType_LineList)) return;
-
-	int beginIndex = getVertexCount();
-	Vertex* v = (Vertex*)requestVertexBufferForAdditional(2, VB_BasicVertices);
-	v[0] = v1;
-	v[1] = v2;
-
-	uint16_t* i = requestIndexBufferForAdditional(2);
-	i[0] = beginIndex + 0;
-	i[1] = beginIndex + 1;
-
-	m_attributes.getLast().PrimitiveNum += 1;
-}
+//void MeshResource::addLine(const Vertex& v1, const Vertex& v2)
+//{
+//	if (LN_REQUIRE(!m_attributes.isEmpty())) return;
+//	if (LN_REQUIRE(m_attributes.getLast().primitiveType == PrimitiveType_LineList)) return;
+//
+//	int beginIndex = getVertexCount();
+//	Vertex* v = (Vertex*)requestVertexBufferForAdditional(2, VB_BasicVertices);
+//	v[0] = v1;
+//	v[1] = v2;
+//
+//	uint16_t* i = requestIndexBufferForAdditional(2);
+//	i[0] = beginIndex + 0;
+//	i[1] = beginIndex + 1;
+//
+//	m_attributes.getLast().PrimitiveNum += 1;
+//}
 
 //------------------------------------------------------------------------------
 void MeshResource::addPlane(const Vector2& size, int sliceH, int sliceV)
@@ -405,24 +419,26 @@ void MeshResource::addPlane(const Vector2& size, int sliceH, int sliceV)
 
 	// alloc buffers, generate mesh
 	Vertex* vb = (Vertex*)requestVertexBufferForAdditional(factory.getVertexCount(), VB_BasicVertices);
-	uint16_t* ib = requestIndexBufferForAdditional(factory.getIndexCount());
-	factory.generate(vb, ib, (uint16_t)startIndex);
+	void* ib = requestIndexBufferForAdditional(factory.getIndexCount());
+	factory.setBuffers(vb, ib, getIndexBufferFormat(), startIndex);
+	factory.generate();
 }
 
 //------------------------------------------------------------------------------
-void MeshResource::addBox(const Vector3& size, const Matrix& transform)
+void MeshResource::addBox(const Vector3& size, const Color& color, const Matrix& transform)
 {
 	int startIndex = getVertexCount();
 	if (LN_ENSURE(startIndex <= UINT16_MAX)) return;
 
 	// setup factory
 	detail::RegularBoxMeshFactory factory;
-	factory.initialize(size, Color::White, transform);
+	factory.initialize(size, color, transform);
 
 	// alloc buffers, generate mesh
 	Vertex* vb = (Vertex*)requestVertexBufferForAdditional(factory.getVertexCount(), VB_BasicVertices);
-	uint16_t* ib = requestIndexBufferForAdditional(factory.getIndexCount());
-	factory.generate(vb, ib, (uint16_t)startIndex);
+	void* ib = requestIndexBufferForAdditional(factory.getIndexCount());
+	factory.setBuffers(vb, ib, getIndexBufferFormat(), startIndex);
+	factory.generate();
 }
 
 //------------------------------------------------------------------------------
@@ -437,8 +453,9 @@ void MeshResource::addSphere(float radius, int slices, int stacks, const Matrix&
 
 	// alloc buffers, generate mesh
 	Vertex* vb = (Vertex*)requestVertexBufferForAdditional(factory.getVertexCount(), VB_BasicVertices);
-	uint16_t* ib = requestIndexBufferForAdditional(factory.getIndexCount());
-	factory.generate(vb, ib, (uint16_t)startIndex);
+	void* ib = requestIndexBufferForAdditional(factory.getIndexCount());
+	factory.setBuffers(vb, ib, getIndexBufferFormat(), startIndex);
+	factory.generate();
 }
 
 //------------------------------------------------------------------------------
@@ -452,8 +469,9 @@ void MeshResource::addScreenPlane()
 
 	// alloc buffers, generate mesh
 	Vertex* vb = (Vertex*)requestVertexBufferForAdditional(factory.getVertexCount(), VB_BasicVertices);
-	uint16_t* ib = requestIndexBufferForAdditional(factory.getIndexCount());
-	factory.generate(vb, ib, (uint16_t)startIndex);
+	void* ib = requestIndexBufferForAdditional(factory.getIndexCount());
+	factory.setBuffers(vb, ib, getIndexBufferFormat(), startIndex);
+	factory.generate();
 }
 
 //------------------------------------------------------------------------------
@@ -501,8 +519,9 @@ void MeshResource::addTeapot(float size, int tessellation)
 
 	// alloc buffers, generate mesh
 	Vertex* vb = (Vertex*)requestVertexBufferForAdditional(factory.getVertexCount(), VB_BasicVertices);
-	uint16_t* ib = requestIndexBufferForAdditional(factory.getIndexCount());
-	factory.generate(vb, ib, (uint16_t)startIndex);
+	void* ib = requestIndexBufferForAdditional(factory.getIndexCount());
+	factory.setBuffers(vb, ib, IndexBufferFormat_UInt16, (uint16_t)startIndex);
+	factory.generate();
 }
 
 ////------------------------------------------------------------------------------
@@ -631,20 +650,17 @@ void* MeshResource::requestVertexBufferForAdditional(int additionalVertexCount, 
 }
 
 //------------------------------------------------------------------------------
-uint16_t* MeshResource::requestIndexBufferForAdditional(int additionalIndexCount)
+void* MeshResource::requestIndexBufferForAdditional(int additionalIndexCount)
 {
 	int begin = (getIndexBuffer() != nullptr) ? getIndexBuffer()->getIndexCount() : 0;
 	int newCount = begin + additionalIndexCount;
-
-	if (LN_REQUIRE(m_indexBufferInfo.buffer == nullptr || m_indexBufferInfo.buffer->getIndexStride() == 2)) return nullptr;
-	if (LN_REQUIRE(newCount <= UINT16_MAX)) return nullptr;
-
-	//TryGlowIndexBuffer(newCount);
-	//m_indexUsedCount = newCount;
 	
 	IndexBuffer* indexBuffer = requestIndexBuffer();
-	uint16_t* ib = (uint16_t*)indexBuffer->requestMappedData(newCount);
-	return ib + begin;
+	void* ib = indexBuffer->requestMappedData(newCount);
+	if (indexBuffer->getIndexFormat() == IndexBufferFormat_UInt16)
+		return ((uint16_t*)ib) + begin;
+	else
+		return ((uint32_t*)ib) + begin;
 }
 
 //------------------------------------------------------------------------------
@@ -680,6 +696,11 @@ IndexBuffer* MeshResource::requestIndexBuffer()
 		m_indexBufferInfo.buffer = ln::newObject<IndexBuffer>(m_manager, 0, nullptr, IndexBufferFormat_UInt16, m_usage, false);
 	}
 	return m_indexBufferInfo.buffer;
+}
+
+IndexBufferFormat MeshResource::getIndexBufferFormat() const
+{
+	return (m_indexBufferInfo.buffer) ? m_indexBufferInfo.buffer->getIndexFormat() : IndexBufferFormat_UInt16;
 }
 
 //------------------------------------------------------------------------------
@@ -787,36 +808,6 @@ void MeshResource::commitRenderData(VertexDeclaration** outDecl, VertexBuffer** 
 	//}
 	*outIB = m_indexBufferInfo.buffer;
 }
-
-//------------------------------------------------------------------------------
-//void MeshResource::PostGenerated(Vertex* vb, void* ib, MeshCreationFlags flags)
-//{
-//	for (int i = 0; i < m_vertexUsedCount; ++i)
-//	{
-//		vb[i].color = Color::White;
-//	}
-//
-//	if (flags.TestFlag(MeshCreationFlags::reverseFaces))
-//	{
-//		if (m_indexBufferInfo.buffer->getIndexStride() == 2)
-//		{
-//			for (int i = 0; i < m_vertexUsedCount; ++i)
-//			{
-//				vb[i].normal *= -1.0f;
-//			}
-//
-//			uint16_t* indices = (uint16_t*)ib;
-//			for (int i = 0; i < m_indexUsedCount; i += 3)
-//			{
-//				std::swap(indices[i + 1], indices[i + 2]);
-//			}
-//		}
-//		else
-//		{
-//			LN_NOTIMPLEMENTED();
-//		}
-//	}
-//}
 
 void MeshResource::setBoundingBox(const Box& box)
 {

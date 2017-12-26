@@ -266,7 +266,7 @@ void CornellBox::initialize()
 		Vertex{ Vector3(10, 20, -10), Vector2(0, 0), -Vector3::UnitX, Color::Green });
 
 
-	boxMesh->addBox(Vector3(4, 12, 4), Matrix::makeTranslation(-3, 6, 2));
+	boxMesh->addBox(Vector3(4, 12, 4), Color::White, Matrix::makeTranslation(-3, 6, 2));
 
 	boxMesh->addSphere(3, 16, 16, Matrix::makeTranslation(4, 3, 0));
 

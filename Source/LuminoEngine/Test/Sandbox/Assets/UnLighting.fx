@@ -70,6 +70,7 @@ float4 PS_ShadowCaster(PSInput input) : COLOR0
 
 VSOutput VS_Outline(VSInput input)
 {
+	//float3 offset = input.Normal * 0.035;
 	float3 offset = input.Normal * 0.035;
 
 	VSOutput output;
@@ -83,19 +84,21 @@ VSOutput VS_Outline(VSInput input)
 float4 PS_Outline(PSInput input) : COLOR0
 {
 	float4 c = (tex2D(TextureSampler, input.UV)) * input.Color;
-	//c.xyz *= 0.3;
-	c *= 0.1;
+	c.xyz *= 0.3;
+	//c *= 0.1;
 	return c;
 }
 
 technique Forward_Geometry
 {
+#if 1
 	pass Pass1
 	{
 		CULLMODE= CCW;
 		VertexShader = compile vs_3_0 VS_Outline();
 		PixelShader	 = compile ps_3_0 PS_Outline();
 	}
+#endif
 	pass Pass2
 	{
 		VertexShader = compile vs_3_0 VS_ShadowCaster();

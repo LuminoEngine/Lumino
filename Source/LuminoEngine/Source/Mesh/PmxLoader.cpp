@@ -239,7 +239,7 @@ void PmxLoader::loadVertices(BinaryReader* reader)
 		aabbMin.y = std::min(aabbMin.y, baseVertex.Position.y);
 		aabbMin.z = std::min(aabbMin.z, baseVertex.Position.z);
 		aabbMax.x = std::max(aabbMax.x, baseVertex.Position.x);
-		aabbMax.y = std::max(aabbMin.y, baseVertex.Position.y);
+		aabbMax.y = std::max(aabbMax.y, baseVertex.Position.y);
 		aabbMax.z = std::max(aabbMax.z, baseVertex.Position.z);
 	}
 

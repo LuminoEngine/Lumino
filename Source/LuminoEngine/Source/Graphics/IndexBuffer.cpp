@@ -108,11 +108,31 @@ void IndexBuffer::resize(int indexCount)
 {
 	if (LN_REQUIRE(!isRHIDirect())) return;		// サイズ変更禁止
 
-	updateFormat(indexCount);
+	IndexBufferFormat oldFormat = m_format;
+	m_format = (indexCount > 0xFFFF) ? IndexBufferFormat_UInt32 : IndexBufferFormat_UInt16;
+
 	size_t newSize = static_cast<size_t>(indexCount* getIndexStride());
 	if (newSize != m_buffer.size())
 	{
 		m_buffer.resize(newSize);
+	}
+
+	if (oldFormat == IndexBufferFormat_UInt16 && m_format == IndexBufferFormat_UInt32)
+	{
+		// 16 -> 32
+		auto* rpos16 = (uint16_t*)(m_buffer.data() + (indexCount * sizeof(uint16_t)));
+		auto* rend16 = (uint16_t*)(m_buffer.data());
+		auto* rpos32 = (uint32_t*)(m_buffer.data() + (indexCount * sizeof(uint32_t)));
+		auto* rend32 = (uint32_t*)(m_buffer.data());
+		for (; rpos32 < rend32; rpos32--, rpos16--)
+		{
+			uint16_t t = *rpos16;
+			*rpos32 = t;
+		}
+	}
+	else if (oldFormat == IndexBufferFormat_UInt32 && m_format == IndexBufferFormat_UInt16)
+	{
+		LN_NOTIMPLEMENTED();
 	}
 }
 
@@ -240,15 +260,6 @@ void IndexBuffer::onChangeDevice(Driver::IGraphicsDevice* device)
 	{
 		// 復帰後は次の resolveDeviceObject() で新しい RHI オブジェクトにセットされる
 		m_locked = true;
-	}
-}
-
-//------------------------------------------------------------------------------
-void IndexBuffer::updateFormat(int indexCount)
-{
-	if (m_format == IndexBufferFormat_UInt16 && indexCount > 0xFFFF)
-	{
-		m_format = IndexBufferFormat_UInt32;
 	}
 }
 

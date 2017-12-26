@@ -59,6 +59,7 @@ public:
 
 	void addOffscreenWorldView(OffscreenWorldSubRenderView* view);
 	void removeOffscreenWorldView(OffscreenWorldSubRenderView* view);
+	void updateFrame(float deltaSceonds);
 protected:
 	//virtual SceneGraph* GetSceneGraph() = 0;
 
@@ -70,7 +71,6 @@ LN_CONSTRUCT_ACCESS:
 LN_INTERNAL_ACCESS:
 	//const Ref<DrawList>& getInsideWorldRenderer() const { return m_insideWorldRenderer; }
 	virtual void beginUpdateFrame();
-	void updateFrame(float deltaSceonds);
 
 	// update sequence
 	virtual void onPreUpdate(float deltaSceonds);

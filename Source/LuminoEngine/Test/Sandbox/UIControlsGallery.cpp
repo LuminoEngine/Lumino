@@ -406,16 +406,17 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 
 	auto planeMesh = StaticMeshComponent::createPlane(Vector2(20, 20), 1, 1);
 
-	//auto cornellBox = CornellBox::create();
-	//auto cornellBoxObj = newObject<WorldObject3D>();
-	//cornellBoxObj->addComponent(cornellBox);
-	//cornellBox->setShader(Shader::create(LN_LOCALFILE("Assets/UnLighting.fx"), ShaderCodeType::RawHLSL));
+	auto cornellBox = CornellBox::create();
+	auto cornellBoxObj = newObject<WorldObject>();
+	cornellBoxObj->addComponent(cornellBox);
+	cornellBox->setShader(Shader::create(LN_LOCALFILE("Assets/UnLighting.fx"), ShaderCodeType::RawHLSL));
+	Engine::getWorld3D()->add(cornellBoxObj);
 
-	auto skinnedMeshComponent = SkinnedMeshComponent::create(_T("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
-	auto skinnedMeshObj = newObject<WorldObject>();
-	skinnedMeshObj->addComponent(skinnedMeshComponent);
-	skinnedMeshComponent->setShader(Shader::create(LN_LOCALFILE("Assets/UnLighting.fx"), ShaderCodeType::RawHLSL));
-	Engine::getWorld3D()->add(skinnedMeshObj);
+	//auto skinnedMeshComponent = SkinnedMeshComponent::create(_T("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
+	//auto skinnedMeshObj = newObject<WorldObject>();
+	//skinnedMeshObj->addComponent(skinnedMeshComponent);
+	//skinnedMeshComponent->setShader(Shader::create(LN_LOCALFILE("Assets/UnLighting.fx"), ShaderCodeType::RawHLSL));
+	//Engine::getWorld3D()->add(skinnedMeshObj);
 
 
 	//auto ambientLight1 = AmbientLight::create();
@@ -449,24 +450,24 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 	Engine::getWorld3D()->setFogColor(Color(1, 1, 1, 0.5));
 	Engine::getWorld3D()->setFogDensity(0.03);
 
-	printf("--------\n");
-	{
-		Engine::getWorld3D()->updateFrame(0.016);
-		auto ofs = newObject<OffscreenWorldRenderView>(Engine::getWorld3D(), Engine::getCamera3D()->getCameraComponent());
-		ofs->setRenderTarget(RenderTargetTexture::create(256, 256, TextureFormat::R8G8B8A8, 1));
-		ofs->setClearMode(RenderLayerClearMode::ColorDepth);
-		ofs->setBackgroundColor(Color(0,0,0,0));
-		ofs->render();
-		ofs->getRenderTarget()->readSurface()->save(_T("test22.png"));
-		auto* t = ofs->getRenderTarget()->resolveDeviceObject();
-		printf("\nrt: %p\n", t); ;
+	//printf("--------\n");
+	//{
+	//	Engine::getWorld3D()->updateFrame(0.016);
+	//	auto ofs = newObject<OffscreenWorldRenderView>(Engine::getWorld3D(), Engine::getCamera3D()->getCameraComponent());
+	//	ofs->setRenderTarget(RenderTargetTexture::create(256, 256, TextureFormat::R8G8B8A8, 1));
+	//	ofs->setClearMode(RenderLayerClearMode::ColorDepth);
+	//	ofs->setBackgroundColor(Color(0,0,0,0));
+	//	ofs->render();
+	//	ofs->getRenderTarget()->readSurface()->save(_T("test22.png"));
+	//	auto* t = ofs->getRenderTarget()->resolveDeviceObject();
+	//	printf("\nrt: %p\n", t); ;
 
 
-		Engine::getWorld3D()->updateFrame(0.016);
-		ofs->render();
-		ofs->getRenderTarget()->readSurface()->save(_T("test22_2.png"));
-	}
-	printf("--------\n");
+	//	Engine::getWorld3D()->updateFrame(0.016);
+	//	ofs->render();
+	//	ofs->getRenderTarget()->readSurface()->save(_T("test22_2.png"));
+	//}
+	//printf("--------\n");
 
 	//{
 	//	Engine::getWorld3D()->beginUpdateFrame();
