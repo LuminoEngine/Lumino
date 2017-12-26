@@ -19,7 +19,7 @@ public:
 	/** インデックスバッファの容量を確保します。 */
 	void reserve(int indexCount);
 
-	/** インデックスバッファのサイズを変更します。 */
+	/** インデックスバッファのサイズを変更します。サイズに応じて、フォーマットが変更されます。 */
 	void resize(int indexCount);
 
 	/** インデックスバッファが保持するデータにアクセスします。 */
@@ -50,7 +50,6 @@ LN_INTERNAL_ACCESS:
 	void setFormat(IndexBufferFormat format) { m_format = format; }
 
 private:
-	void updateFormat(int indexCount);
 	bool isRHIDirect() const { return m_initialUpdate && !m_rhiObject.isNull(); }
 
 	Ref<Driver::IIndexBuffer>	m_rhiObject;

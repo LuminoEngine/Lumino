@@ -100,28 +100,28 @@ TEST_F(Test_Graphics_MeshResource, clear)
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_Graphics_MeshResource, addLine)
-{
-	// 自己照明
-	auto material = CommonMaterial::create();
-	material->setBuiltinColorParameter(CommonMaterial::EmissiveParameter, Color::White);
-
-	// <Test> addLine
-	{
-		auto mesh = MeshResource::create();
-		mesh->addSections(1);
-		mesh->getSection(0)->primitiveType = PrimitiveType_LineList;
-		mesh->addLine(
-			Vertex{ Vector3(-2, 0, 0), Vector2(0, 0), Vector3(0, 0, 1), Color::Red },
-			Vertex{ Vector3(2, 0, 0), Vector2(0, 0), Vector3(0, 0, 1), Color::Green });
-
-		LN_TEST_BEGIN_FRAME;
-		Engine::renderFrame();
-		Engine::getWorld3D()->getRenderer()->drawMesh(mesh, 0, material);
-		LN_TEST_END_FRAME;
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_MeshResource.AddLine1.png"), 95));
-	}
-}
+//TEST_F(Test_Graphics_MeshResource, addLine)
+//{
+//	// 自己照明
+//	auto material = CommonMaterial::create();
+//	material->setBuiltinColorParameter(CommonMaterial::EmissiveParameter, Color::White);
+//
+//	// <Test> addLine
+//	{
+//		auto mesh = MeshResource::create();
+//		mesh->addSections(1);
+//		mesh->getSection(0)->primitiveType = PrimitiveType_LineList;
+//		mesh->addLine(
+//			Vertex{ Vector3(-2, 0, 0), Vector2(0, 0), Vector3(0, 0, 1), Color::Red },
+//			Vertex{ Vector3(2, 0, 0), Vector2(0, 0), Vector3(0, 0, 1), Color::Green });
+//
+//		LN_TEST_BEGIN_FRAME;
+//		Engine::renderFrame();
+//		Engine::getWorld3D()->getRenderer()->drawMesh(mesh, 0, material);
+//		LN_TEST_END_FRAME;
+//		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_MeshResource.AddLine1.png"), 95));
+//	}
+//}
 
 //------------------------------------------------------------------------------
 //TEST_F(Test_Graphics_MeshResource, Geometry)

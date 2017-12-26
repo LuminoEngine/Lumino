@@ -112,7 +112,7 @@ public:
 	void addSquare(const Vertex* virtices);
 
 	// TODO: obsolete, triangle only
-	void addLine(const Vertex& v1, const Vertex& v2);
+	//void addLine(const Vertex& v1, const Vertex& v2);
 
 	void addPlane(const Vector2& size, int sliceH = 1, int sliceV = 1);	// TODO: name SquarePlane
 	void addBox(const Vector3& size, const Color& color = Color::White, const Matrix& transform = Matrix::Identity);
@@ -202,11 +202,12 @@ LN_INTERNAL_ACCESS:
 	//void* requestVertexBuffer(int vertexCount, VertexBufferType type);
 	//void* requestIndexBuffer(int indexCount);
 	void* requestVertexBufferForAdditional(int additionalVertexCount, VertexBufferType type);
-	uint16_t* requestIndexBufferForAdditional(int additionalIndexCount);
+	void* requestIndexBufferForAdditional(int additionalIndexCount);
 
 	VertexBuffer* getVertexBuffer(VertexBufferType type) const;
 	VertexBuffer* requestVertexBuffer(VertexBufferType type);
 	IndexBuffer* requestIndexBuffer();
+	IndexBufferFormat getIndexBufferFormat() const;
 
 	void getMeshAttribute(int subsetIndex, MeshAttribute* outAttr);
 	void commitRenderData(VertexDeclaration** outDecl, VertexBuffer** outVBs, int* outVBCount, IndexBuffer** outIB);
