@@ -55,11 +55,45 @@ public:
 		m_transform = transform;
 	}
 
-	Color	m_color;
-	Matrix	m_transform;
+	void setBuffers(Vertex* outVertices, void* outIndices, IndexBufferFormat ibfmt, uint32_t beginIndex)
+	{
+		m_vertices = outVertices;
+		m_indices = outIndices;
+		m_indexBufferFormat = ibfmt;
+		m_beginIndex = beginIndex;
+	}
+
+	void setV2(int index, const Vertex& v)
+	{
+		m_vertices[index] = v;
+	}
+
+	void setV2(int index, const Vector3&	position, const Vector2& uv, const Vector3& normal)
+	{
+		m_vertices[index].position = position;
+		m_vertices[index].uv = uv;
+		m_vertices[index].normal = normal;
+		m_vertices[index].color = m_color;
+	}
+
+	void setI2(int index, uint32_t i)
+	{
+		if (m_indexBufferFormat == IndexBufferFormat_UInt16)
+			((uint16_t*)m_indices)[index] = i + m_beginIndex;
+		else
+			((uint32_t*)m_indices)[index] = i + m_beginIndex;
+	}
+
+	Vertex*				m_vertices;
+	void*				m_indices;
+	IndexBufferFormat	m_indexBufferFormat;
+	uint32_t			m_beginIndex;
+	Color				m_color;
+	Matrix				m_transform;
 };
 
 class PlaneMeshFactory
+	: public MeshFactoryBase
 {
 public:
 	PlaneMeshFactory(const Vector2& size)
@@ -77,88 +111,70 @@ public:
 		return 6;
 	}
 
-	void generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
+	void generate()
 	{
 		Vector2 half = m_size / 2;
-		outVertices[0].position.set(-half.x, half.y, 0);
-		outVertices[0].normal.set(0.0f, 0.0f, -1.0f);
-		outVertices[0].uv.set(0.0f, 0.0f);
-		outVertices[1].position.set(-half.x, -half.y, 0);
-		outVertices[1].normal.set(0.0f, 0.0f, -1.0f);
-		outVertices[1].uv.set(0.0f, 1.0f);
-		outVertices[2].position.set(half.x, half.y, 0);
-		outVertices[2].normal.set(0.0f, 0.0f, -1.0f);
-		outVertices[2].uv.set(1.0f, 0.0f);
-		outVertices[3].position.set(half.x, -half.y, 0);
-		outVertices[3].normal.set(0.0f, 0.0f, -1.0f);
-		outVertices[3].uv.set(1.0f, 1.0f);
-
-		outIndices[0] = beginIndex + 0;
-		outIndices[1] = beginIndex + 1;
-		outIndices[2] = beginIndex + 2;
-		outIndices[3] = beginIndex + 2;
-		outIndices[4] = beginIndex + 1;
-		outIndices[5] = beginIndex + 3;
+		setV2(0, Vector3(-half.x, half.y, 0), Vector2(0.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f));
+		setV2(1, Vector3(-half.x, -half.y, 0), Vector2(0.0f, 1.0f), Vector3(0.0f, 0.0f, -1.0f));
+		setV2(2, Vector3(half.x, half.y, 0), Vector2(1.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f));
+		setV2(3, Vector3(half.x, -half.y, 0), Vector2(1.0f, 1.0f), Vector3(0.0f, 0.0f, -1.0f));
+		setI2(0, 0);
+		setI2(1, 1);
+		setI2(2, 2);
+		setI2(3, 2);
+		setI2(4, 1);
+		setI2(5, 3);
 	}
 
 private:
 	Vector2	m_size;
 };
 
-class PlaneMeshFactory2
-{
-public:
-	PlaneMeshFactory2(const Vector2& size, const Vector3& front)
-		: m_size(size)
-		, m_front(front)
-	{}
-
-	int getVertexCount() const { return 4; }
-	int getIndexCount() const { return 6; }
-
-	void generate(Vertex* outVertices, uint16_t* outIndices)
-	{
-		Vector2 half = m_size / 2;
-		if (m_front == Vector3::UnitY)
-		{
-			outVertices[0].position.set(-half.x, 0, half.y);
-			outVertices[1].position.set(-half.x, 0, -half.y);
-			outVertices[2].position.set(half.x, 0, half.y);
-			outVertices[3].position.set(half.x, 0, -half.y);
-		}
-		else if(m_front == -Vector3::UnitY)
-		{
-			outVertices[0].position.set(half.x, 0, half.y);
-			outVertices[1].position.set(half.x, 0, -half.y);
-			outVertices[2].position.set(-half.x, 0, half.y);
-			outVertices[3].position.set(-half.x, 0, -half.y);
-		}
-		else
-		{
-			LN_NOTIMPLEMENTED();
-		}
-
-		outVertices[0].normal = m_front;
-		outVertices[0].uv.set(0.0f, 0.0f);
-		outVertices[1].normal = m_front;
-		outVertices[1].uv.set(0.0f, 1.0f);
-		outVertices[2].normal = m_front;
-		outVertices[2].uv.set(1.0f, 0.0f);
-		outVertices[3].normal = m_front;
-		outVertices[3].uv.set(1.0f, 1.0f);
-
-		outIndices[0] = 0;
-		outIndices[1] = 1;
-		outIndices[2] = 2;
-		outIndices[3] = 2;
-		outIndices[4] = 1;
-		outIndices[5] = 3;
-	}
-
-private:
-	Vector2	m_size;
-	Vector3	m_front;
-};
+//class PlaneMeshFactory2
+//	: public MeshFactoryBase
+//{
+//public:
+//	PlaneMeshFactory2(const Vector2& size, const Vector3& front)
+//		: m_size(size)
+//		, m_front(front)
+//	{}
+//
+//	int getVertexCount() const { return 4; }
+//	int getIndexCount() const { return 6; }
+//
+//	void generate()
+//	{
+//		Vector2 half = m_size / 2;
+//		if (m_front == Vector3::UnitY)
+//		{
+//			setV2(0, Vector3(-half.x, 0, half.y), Vector2(0.0f, 0.0f), m_front);
+//			setV2(1, Vector3(-half.x, 0, -half.y), Vector2(0.0f, 1.0f), m_front);
+//			setV2(2, Vector3(half.x, 0, half.y), Vector2(1.0f, 0.0f), m_front);
+//			setV2(3, Vector3(half.x, 0, -half.y), Vector2(1.0f, 1.0f), m_front);
+//		}
+//		else if(m_front == -Vector3::UnitY)
+//		{
+//			setV2(0, Vector3(half.x, 0, half.y), Vector2(0.0f, 0.0f), m_front);
+//			setV2(1, Vector3(half.x, 0, -half.y), Vector2(0.0f, 1.0f), m_front);
+//			setV2(2, Vector3(-half.x, 0, half.y), Vector2(1.0f, 0.0f), m_front);
+//			setV2(3, Vector3(-half.x, 0, -half.y), Vector2(1.0f, 1.0f), m_front);
+//		}
+//		else
+//		{
+//			LN_NOTIMPLEMENTED();
+//		}
+//		setI2(0, 0);
+//		setI2(1, 1);
+//		setI2(2, 2);
+//		setI2(3, 2);
+//		setI2(4, 1);
+//		setI2(5, 3);
+//	}
+//
+//private:
+//	Vector2	m_size;
+//	Vector3	m_front;
+//};
 
 // xz 平面。y+ を向く。
 // 頂点の並びは
@@ -192,7 +208,7 @@ public:
 	int getVertexCount() const { return (m_sliceX + 1) * (m_sliceZ + 1); }
 	int getIndexCount() const { return (m_sliceX * m_sliceZ * 2) * 3; }
 
-	void generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
+	void generate()
 	{
 		Vector2 minPos = -m_size / 2;
 		Vector2 maxPos = m_size / 2;
@@ -205,33 +221,33 @@ public:
 		float stepZ = (maxPos.y - minPos.y) / m_sliceZ;
 		float StepU = 1.0f / m_sliceX;
 		float StepV = 1.0f / m_sliceZ;
-		Vertex* v = outVertices;
-		uint16_t* i = (uint16_t*)outIndices;
 
 		// vertices
+		Vector3 pos;
+		int iV = 0;
 		for (int iZ = 0; iZ < m_sliceZ + 1; ++iZ)
 		{
 			for (int iX = 0; iX < m_sliceX + 1; ++iX)
 			{
 				if (iX == m_sliceX)
-					v->position.x = maxX;	// 誤差を出したくないため直接設定
+					pos.x = maxX;	// 誤差を出したくないため直接設定
 				else
-					v->position.x = minX + stepX * iX;
+					pos.x = minX + stepX * iX;
 
 				if (iZ == m_sliceZ)
-					v->position.z = minZ;	// 誤差を出したくないため直接設定
+					pos.z = minZ;	// 誤差を出したくないため直接設定
 				else
-					v->position.z = maxZ - stepZ * iZ;
+					pos.z = maxZ - stepZ * iZ;
 
-				v->position.y = 0.0f;
-				v->normal.set(0.0f, 1.0f, 0.0f);
-				v->uv.set(StepU * iX, 1.0f - StepV * iZ);
-				v->color = m_color;
-				++v;
+				pos.y = 0.0f;
+
+				setV2(iV, pos, Vector2(StepU * iX, 1.0f - StepV * iZ), Vector3(0.0f, 1.0f, 0.0f));
+				iV++;
 			}
 		}
 
 		// indices
+		int iI = 0;
 		for (int iZ = 0; iZ < m_sliceZ; ++iZ)
 		{
 			for (int iX = 0; iX < m_sliceX; ++iX)
@@ -240,18 +256,18 @@ public:
 				int p2 = (iX + 0) + (iZ + 1) * (m_sliceX + 1);	// ┗
 				int p3 = (iX + 1) + (iZ + 0) * (m_sliceX + 1);	// ┓
 				int p4 = (iX + 1) + (iZ + 1) * (m_sliceX + 1);	// ┛
-				i[0] = beginIndex + p1;
-				i[1] = beginIndex + p2;
-				i[2] = beginIndex + p3;
-				i[3] = beginIndex + p3;
-				i[4] = beginIndex + p2;
-				i[5] = beginIndex + p4;
-				i += 6;
+				setI2(iI + 0, p1);
+				setI2(iI + 1, p2);
+				setI2(iI + 2, p3);
+				setI2(iI + 3, p3);
+				setI2(iI + 4, p2);
+				setI2(iI + 5, p4);
+				iI += 6;
 			}
 		}
 
 		if (!m_transform.isIdentity())
-			MeshHelper::transform(outVertices, v, m_transform);
+			MeshHelper::transform(m_vertices, m_vertices + iV, m_transform);
 	}
 
 private:
@@ -260,77 +276,77 @@ private:
 	int		m_sliceZ;
 };
 
-class BoxMeshFactory
-{
-public:
-	BoxMeshFactory(const Vector3& size)
-	{
-		m_size = size;
-	}
-
-	int getVertexCount() const
-	{
-		return 8;
-	}
-
-	int getIndexCount() const
-	{
-		return 36;
-	}
-
-	void generate(Vertex* outVertices, uint16_t* outIndices)
-	{
-		Vector3 minPos = -(m_size / 2);
-		Vector3 maxPos = (m_size / 2);
-
-		// 手前 (Z-)
-		outVertices[0].position.set(minPos.x, maxPos.y, minPos.z);	// 左上
-		outVertices[0].uv.set(0.0f, 0.0f);
-		outVertices[1].position.set(minPos.x, minPos.y, minPos.z);	// 左下
-		outVertices[1].uv.set(0.0f, 1.0f);
-		outVertices[2].position.set(maxPos.x, maxPos.y, minPos.z);	// 右上
-		outVertices[2].uv.set(1.0f, 0.0f);
-		outVertices[3].position.set(maxPos.x, minPos.y, minPos.z);	// 右下
-		outVertices[3].uv.set(1.0f, 1.0f);
-		// 奥 (Z+)
-		outVertices[4].position.set(minPos.x, maxPos.y, maxPos.z);	// 左上
-		outVertices[4].uv.set(1.0f, 0.0f);
-		outVertices[5].position.set(minPos.x, minPos.y, maxPos.z);	// 左下
-		outVertices[5].uv.set(1.0f, 1.0f);
-		outVertices[6].position.set(maxPos.x, maxPos.y, maxPos.z);	// 右上
-		outVertices[6].uv.set(0.0f, 0.0f);
-		outVertices[7].position.set(maxPos.x, minPos.y, maxPos.z);	// 右下
-		outVertices[7].uv.set(0.0f, 1.0f);
-
-		for (int i = 0; i < 8; ++i) outVertices[i].color = Color::White;
-
-		uint16_t indices[] =
-		{
-			// near
-			0, 1, 2,
-			2, 1, 3,
-			// far
-			6, 7, 4,
-			4, 7, 5,
-			// left
-			4, 5, 0,
-			0, 5, 1,
-			// right
-			2, 3, 6,
-			6, 3, 7,
-			// top
-			4, 0, 6,
-			6, 0, 2,
-			// bottom (Z- が面として上方向)
-			1, 5, 3,
-			3, 5, 7,
-		};
-		memcpy(outIndices, indices, sizeof(indices));
-	}
-
-private:
-	Vector3	m_size;
-};
+//class BoxMeshFactory
+//{
+//public:
+//	BoxMeshFactory(const Vector3& size)
+//	{
+//		m_size = size;
+//	}
+//
+//	int getVertexCount() const
+//	{
+//		return 8;
+//	}
+//
+//	int getIndexCount() const
+//	{
+//		return 36;
+//	}
+//
+//	void generate()
+//	{
+//		Vector3 minPos = -(m_size / 2);
+//		Vector3 maxPos = (m_size / 2);
+//
+//		// 手前 (Z-)
+//		outVertices[0].position.set(minPos.x, maxPos.y, minPos.z);	// 左上
+//		outVertices[0].uv.set(0.0f, 0.0f);
+//		outVertices[1].position.set(minPos.x, minPos.y, minPos.z);	// 左下
+//		outVertices[1].uv.set(0.0f, 1.0f);
+//		outVertices[2].position.set(maxPos.x, maxPos.y, minPos.z);	// 右上
+//		outVertices[2].uv.set(1.0f, 0.0f);
+//		outVertices[3].position.set(maxPos.x, minPos.y, minPos.z);	// 右下
+//		outVertices[3].uv.set(1.0f, 1.0f);
+//		// 奥 (Z+)
+//		outVertices[4].position.set(minPos.x, maxPos.y, maxPos.z);	// 左上
+//		outVertices[4].uv.set(1.0f, 0.0f);
+//		outVertices[5].position.set(minPos.x, minPos.y, maxPos.z);	// 左下
+//		outVertices[5].uv.set(1.0f, 1.0f);
+//		outVertices[6].position.set(maxPos.x, maxPos.y, maxPos.z);	// 右上
+//		outVertices[6].uv.set(0.0f, 0.0f);
+//		outVertices[7].position.set(maxPos.x, minPos.y, maxPos.z);	// 右下
+//		outVertices[7].uv.set(0.0f, 1.0f);
+//
+//		for (int i = 0; i < 8; ++i) outVertices[i].color = Color::White;
+//
+//		uint16_t indices[] =
+//		{
+//			// near
+//			0, 1, 2,
+//			2, 1, 3,
+//			// far
+//			6, 7, 4,
+//			4, 7, 5,
+//			// left
+//			4, 5, 0,
+//			0, 5, 1,
+//			// right
+//			2, 3, 6,
+//			6, 3, 7,
+//			// top
+//			4, 0, 6,
+//			6, 0, 2,
+//			// bottom (Z- が面として上方向)
+//			1, 5, 3,
+//			3, 5, 7,
+//		};
+//		memcpy(outIndices, indices, sizeof(indices));
+//	}
+//
+//private:
+//	Vector3	m_size;
+//};
 
 
 // 6面それぞれ独立した頂点を持つ直方体
@@ -355,75 +371,70 @@ public:
 	{
 		return 36;
 	}
-
-	void setV(Vertex* vertex, float x, float y, float z, float u, float v, const Vector3& normal)
+	
+	void setI(uint16_t index, uint16_t begin)
 	{
-		vertex->position.set(x, y, z);
-		vertex->uv.set(u, v);
-		vertex->color = m_color;
-		vertex->normal = normal;
-	}
-	static void setI(uint16_t* index, uint16_t begin)
-	{
-		index[0] = begin + 0;
-		index[1] = begin + 1;
-		index[2] = begin + 2;
-		index[3] = begin + 2;
-		index[4] = begin + 1;
-		index[5] = begin + 3;
+		setI2(index + 0, begin + 0);
+		setI2(index + 1, begin + 1);
+		setI2(index + 2, begin + 2);
+		setI2(index + 3, begin + 2);
+		setI2(index + 4, begin + 1);
+		setI2(index + 5, begin + 3);
 	}
 
-	void generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginVertexIndex)
+	void generate()
 	{
 		Vector3 minPos = -(m_size / 2);
 		Vector3 maxPos = (m_size / 2);
-		Vertex* v = outVertices;
-		uint16_t* i = outIndices;
+		//Vertex* v = outVertices;
+		//uint16_t* i = outIndices;
+		uint32_t v = 0;
+		uint32_t i = 0;
 
 		// 手前 (Z-)
-		setV(v, minPos.x, maxPos.y, minPos.z, 0.0f, 0.0f, -Vector3::UnitZ); ++v;	// ┏
-		setV(v, minPos.x, minPos.y, minPos.z, 0.0f, 1.0f, -Vector3::UnitZ); ++v;	// ┗
-		setV(v, maxPos.x, maxPos.y, minPos.z, 1.0f, 0.0f, -Vector3::UnitZ); ++v;	// ┓
-		setV(v, maxPos.x, minPos.y, minPos.z, 1.0f, 1.0f, -Vector3::UnitZ); ++v;	// ┛
-		setI(i, beginVertexIndex + 0); i += 6;
+		setV2(v, Vector3(minPos.x, maxPos.y, minPos.z), Vector2(0.0f, 0.0f), -Vector3::UnitZ); ++v;	// ┏
+		setV2(v, Vector3(minPos.x, minPos.y, minPos.z), Vector2(0.0f, 1.0f), -Vector3::UnitZ); ++v;	// ┗
+		setV2(v, Vector3(maxPos.x, maxPos.y, minPos.z), Vector2(1.0f, 0.0f), -Vector3::UnitZ); ++v;	// ┓
+		setV2(v, Vector3(maxPos.x, minPos.y, minPos.z), Vector2(1.0f, 1.0f), -Vector3::UnitZ); ++v;	// ┛
+		setI(i, 0); i += 6;
 
 		// 奥 (Z+)
-		setV(v, maxPos.x, maxPos.y, maxPos.z, 0.0f, 0.0f, Vector3::UnitZ); ++v;	// ┏
-		setV(v, maxPos.x, minPos.y, maxPos.z, 0.0f, 1.0f, Vector3::UnitZ); ++v;	// ┗
-		setV(v, minPos.x, maxPos.y, maxPos.z, 1.0f, 0.0f, Vector3::UnitZ); ++v;	// ┓
-		setV(v, minPos.x, minPos.y, maxPos.z, 1.0f, 1.0f, Vector3::UnitZ); ++v;	// ┛
-		setI(i, beginVertexIndex + 4); i += 6;
+		setV2(v, Vector3(maxPos.x, maxPos.y, maxPos.z), Vector2(0.0f, 0.0f), Vector3::UnitZ); ++v;	// ┏
+		setV2(v, Vector3(maxPos.x, minPos.y, maxPos.z), Vector2(0.0f, 1.0f), Vector3::UnitZ); ++v;	// ┗
+		setV2(v, Vector3(minPos.x, maxPos.y, maxPos.z), Vector2(1.0f, 0.0f), Vector3::UnitZ); ++v;	// ┓
+		setV2(v, Vector3(minPos.x, minPos.y, maxPos.z), Vector2(1.0f, 1.0f), Vector3::UnitZ); ++v;	// ┛
+		setI(i, 4); i += 6;
 
 		// 左 (X-)
-		setV(v, minPos.x, maxPos.y, maxPos.z, 0.0f, 0.0f, -Vector3::UnitX); ++v;	// ┏
-		setV(v, minPos.x, minPos.y, maxPos.z, 0.0f, 1.0f, -Vector3::UnitX); ++v;	// ┗
-		setV(v, minPos.x, maxPos.y, minPos.z, 1.0f, 0.0f, -Vector3::UnitX); ++v;	// ┓
-		setV(v, minPos.x, minPos.y, minPos.z, 1.0f, 1.0f, -Vector3::UnitX); ++v;	// ┛
-		setI(i, beginVertexIndex + 8); i += 6;
+		setV2(v, Vector3(minPos.x, maxPos.y, maxPos.z), Vector2(0.0f, 0.0f), -Vector3::UnitX); ++v;	// ┏
+		setV2(v, Vector3(minPos.x, minPos.y, maxPos.z), Vector2(0.0f, 1.0f), -Vector3::UnitX); ++v;	// ┗
+		setV2(v, Vector3(minPos.x, maxPos.y, minPos.z), Vector2(1.0f, 0.0f), -Vector3::UnitX); ++v;	// ┓
+		setV2(v, Vector3(minPos.x, minPos.y, minPos.z), Vector2(1.0f, 1.0f), -Vector3::UnitX); ++v;	// ┛
+		setI(i, 8); i += 6;
 
 		// 右 (X+)
-		setV(v, maxPos.x, maxPos.y, minPos.z, 0.0f, 0.0f, Vector3::UnitX); ++v;	// ┏
-		setV(v, maxPos.x, minPos.y, minPos.z, 0.0f, 1.0f, Vector3::UnitX); ++v;	// ┗
-		setV(v, maxPos.x, maxPos.y, maxPos.z, 1.0f, 0.0f, Vector3::UnitX); ++v;	// ┓
-		setV(v, maxPos.x, minPos.y, maxPos.z, 1.0f, 1.0f, Vector3::UnitX); ++v;	// ┛
-		setI(i, beginVertexIndex + 12); i += 6;
+		setV2(v, Vector3(maxPos.x, maxPos.y, minPos.z), Vector2(0.0f, 0.0f), Vector3::UnitX); ++v;	// ┏
+		setV2(v, Vector3(maxPos.x, minPos.y, minPos.z), Vector2(0.0f, 1.0f), Vector3::UnitX); ++v;	// ┗
+		setV2(v, Vector3(maxPos.x, maxPos.y, maxPos.z), Vector2(1.0f, 0.0f), Vector3::UnitX); ++v;	// ┓
+		setV2(v, Vector3(maxPos.x, minPos.y, maxPos.z), Vector2(1.0f, 1.0f), Vector3::UnitX); ++v;	// ┛
+		setI(i, 12); i += 6;
 
 		// 下 (Y-)(Z- がUVの上方向)
-		setV(v, minPos.x, minPos.y, minPos.z, 0.0f, 0.0f, -Vector3::UnitY); ++v;	// ┏
-		setV(v, minPos.x, minPos.y, maxPos.z, 0.0f, 1.0f, -Vector3::UnitY); ++v;	// ┗
-		setV(v, maxPos.x, minPos.y, minPos.z, 1.0f, 0.0f, -Vector3::UnitY); ++v;	// ┓
-		setV(v, maxPos.x, minPos.y, maxPos.z, 1.0f, 1.0f, -Vector3::UnitY); ++v;	// ┛
-		setI(i, beginVertexIndex + 16); i += 6;
+		setV2(v, Vector3(minPos.x, minPos.y, minPos.z), Vector2(0.0f, 0.0f), -Vector3::UnitY); ++v;	// ┏
+		setV2(v, Vector3(minPos.x, minPos.y, maxPos.z), Vector2(0.0f, 1.0f), -Vector3::UnitY); ++v;	// ┗
+		setV2(v, Vector3(maxPos.x, minPos.y, minPos.z), Vector2(1.0f, 0.0f), -Vector3::UnitY); ++v;	// ┓
+		setV2(v, Vector3(maxPos.x, minPos.y, maxPos.z), Vector2(1.0f, 1.0f), -Vector3::UnitY); ++v;	// ┛
+		setI(i, 16); i += 6;
 
 		// 上 (Y+)(Z+ がUVの上方向)
-		setV(v, minPos.x, maxPos.y, maxPos.z, 0.0f, 0.0f, Vector3::UnitY); ++v;	// ┏
-		setV(v, minPos.x, maxPos.y, minPos.z, 0.0f, 1.0f, Vector3::UnitY); ++v;	// ┗
-		setV(v, maxPos.x, maxPos.y, maxPos.z, 1.0f, 0.0f, Vector3::UnitY); ++v;	// ┓
-		setV(v, maxPos.x, maxPos.y, minPos.z, 1.0f, 1.0f, Vector3::UnitY); ++v;	// ┛
-		setI(i, beginVertexIndex + 20);
+		setV2(v, Vector3(minPos.x, maxPos.y, maxPos.z), Vector2(0.0f, 0.0f), Vector3::UnitY); ++v;	// ┏
+		setV2(v, Vector3(minPos.x, maxPos.y, minPos.z), Vector2(0.0f, 1.0f), Vector3::UnitY); ++v;	// ┗
+		setV2(v, Vector3(maxPos.x, maxPos.y, maxPos.z), Vector2(1.0f, 0.0f), Vector3::UnitY); ++v;	// ┓
+		setV2(v, Vector3(maxPos.x, maxPos.y, minPos.z), Vector2(1.0f, 1.0f), Vector3::UnitY); ++v;	// ┛
+		setI(i, 20);
 
 		if (!m_transform.isIdentity())
-			MeshHelper::transform(outVertices, v, m_transform);
+			MeshHelper::transform(m_vertices, m_vertices + v, m_transform);
 	}
 
 private:
@@ -477,10 +488,10 @@ public:
 		float	cos;
 	};
 
-	void generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
+	void generate()
 	{
-		Vertex* v = outVertices;
-		uint16_t* i = (uint16_t*)outIndices;
+		uint32_t iV = 0;
+		uint32_t iI = 0;
 
 		float stackUVStep = 1.0f / m_stacks;
 		float stackUV = 0.0f;
@@ -494,6 +505,7 @@ public:
 		// Z+ を起点とし、X- 方向へ回っていく
 
 		// rings (Vertex)
+		Vector3 normal;
 		for (int iStack = 0; iStack < m_stacks + 1; ++iStack)
 		{
 			float sin_theta = sinf(theta);
@@ -505,29 +517,27 @@ public:
 				// top
 				if (iStack == 0)
 				{
-					v->normal.x = 0.0f;
-					v->normal.y = 1.0f;
-					v->normal.z = 0.0f;
+					normal.x = 0.0f;
+					normal.y = 1.0f;
+					normal.z = 0.0f;
 				}
 				// bottom
 				else if (iStack == m_stacks)
 				{
-					v->normal.x = 0.0f;
-					v->normal.y = -1.0f;
-					v->normal.z = 0.0f;
+					normal.x = 0.0f;
+					normal.y = -1.0f;
+					normal.z = 0.0f;
 				}
 				// between
 				else
 				{
-					v->normal.x = sin_theta * m_sincosTable[iSlice].cos;
-					v->normal.y = cos_theta;
-					v->normal.z = sin_theta * m_sincosTable[iSlice].sin;
+					normal.x = sin_theta * m_sincosTable[iSlice].cos;
+					normal.y = cos_theta;
+					normal.z = sin_theta * m_sincosTable[iSlice].sin;
 				}
-				v->position = v->normal * m_radius;
-				v->uv.x = sliceUV;
-				v->uv.y = stackUV;
-				v->color = m_color;
-				++v;
+
+				setV2(iV, normal * m_radius, Vector2(sliceUV, stackUV), normal);
+				++iV;
 
 				sliceUV += sliceUVStep;
 			}
@@ -545,18 +555,18 @@ public:
 				int p2 = (iSlice + 0) + (iStack + 1) * (m_slices + 1);	// ┗
 				int p3 = (iSlice + 1) + (iStack + 0) * (m_slices + 1);	// ┓
 				int p4 = (iSlice + 1) + (iStack + 1) * (m_slices + 1);	// ┛
-				i[0] = beginIndex + p1;
-				i[1] = beginIndex + p2;
-				i[2] = beginIndex + p3;
-				i[3] = beginIndex + p3;
-				i[4] = beginIndex + p2;
-				i[5] = beginIndex + p4;
-				i += 6;
+				setI2(iI + 0, p1);
+				setI2(iI + 1, p2);
+				setI2(iI + 2, p3);
+				setI2(iI + 3, p3);
+				setI2(iI + 4, p2);
+				setI2(iI + 5, p4);
+				iI += 6;
 			}
 		}
 
 		if (!m_transform.isIdentity())
-			MeshHelper::transform(outVertices, v, m_transform);
+			MeshHelper::transform(m_vertices, m_vertices + iV, m_transform);
 	}
 
 	static uint16_t vertex_index(int slices, int slice, int stack)
@@ -623,10 +633,10 @@ public:
 		return m_slices * (m_stacks + 2) * 6;
 	}
 
-	void generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
+	void generate()
 	{
-		Vertex* vb = outVertices;
-		uint16_t* ib = (uint16_t*)outIndices;
+		uint32_t iV = 0;
+		uint32_t iI = 0;
 
 		float yStep = m_height / m_stacks;
 		float y;
@@ -644,8 +654,7 @@ public:
 				Vertex v;
 				v.position.set(0, yu, 0);
 				v.normal = Vector3::UnitY;
-				v.color = m_color;
-				addVertex(&vb, v);
+				setV2(iV, v); iV++;
 			}
 			// side
 			y = yu;
@@ -656,8 +665,7 @@ public:
 				v.position.y = y;
 				v.position.z = xz.z;
 				v.normal = n;
-				v.color = m_color;
-				addVertex(&vb, v);
+				setV2(iV, v); iV++;
 				y -= yStep;
 			}
 			// lower base
@@ -665,8 +673,7 @@ public:
 				Vertex v;
 				v.position.set(0, yd, 0);
 				v.normal = -Vector3::UnitY;
-				v.color = m_color;
-				addVertex(&vb, v);
+				setV2(iV, v); iV++;
 			}
 		}
 
@@ -680,24 +687,18 @@ public:
 				int p2 = (iStack + 1) + (iSlice + 0) * (stacks + 1);	// ┗
 				int p3 = (iStack + 0) + (iSlice + 1) * (stacks + 1);	// ┓
 				int p4 = (iStack + 1) + (iSlice + 1) * (stacks + 1);	// ┛
-				ib[0] = beginIndex + p1;
-				ib[1] = beginIndex + p2;
-				ib[2] = beginIndex + p3;
-				ib[3] = beginIndex + p3;
-				ib[4] = beginIndex + p2;
-				ib[5] = beginIndex + p4;
-				ib += 6;
+				setI2(iI + 0, p1);
+				setI2(iI + 1, p2);
+				setI2(iI + 2, p3);
+				setI2(iI + 3, p3);
+				setI2(iI + 4, p2);
+				setI2(iI + 5, p4);
+				iI += 6;
 			}
 		}
 
 		if (!m_transform.isIdentity())
-			MeshHelper::transform(outVertices, vb, m_transform);
-	}
-
-	static void addVertex(Vertex** vb, const Vertex& v)
-	{
-		*(*vb) = v;
-		(*vb)++;
+			MeshHelper::transform(m_vertices, m_vertices + iV, m_transform);
 	}
 
 private:
@@ -738,10 +739,10 @@ public:
 		return m_slices * 3 * 6;
 	}
 
-	void generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
+	void generate()
 	{
-		Vertex* vb = outVertices;
-		uint16_t* ib = (uint16_t*)outIndices;
+		uint32_t iV = 0;
+		uint32_t iI = 0;
 
 		for (int iSlice = m_slices; iSlice >= 0; iSlice--)
 		{
@@ -753,8 +754,7 @@ public:
 				Vertex v;
 				v.position.set(0, m_height / 2, 0);
 				v.normal = Vector3::UnitY;
-				v.color = m_color;
-				addVertex(&vb, v);
+				setV2(iV, v); iV++;
 			}
 			// side
 			float y = -m_height / 2;
@@ -762,16 +762,14 @@ public:
 				Vertex v;
 				v.position.set(xz.x, y, xz.z);
 				v.normal = n;
-				v.color = m_color;
-				addVertex(&vb, v);
+				setV2(iV, v); iV++;
 			}
 			// lower base
 			{
 				Vertex v;
 				v.position.set(0, y, 0);
 				v.normal = -Vector3::UnitY;
-				v.color = m_color;
-				addVertex(&vb, v);
+				setV2(iV, v); iV++;
 			}
 		}
 
@@ -785,24 +783,18 @@ public:
 				int p2 = (iStack + 1) + (iSlice + 0) * (stacks + 1);	// ┗
 				int p3 = (iStack + 0) + (iSlice + 1) * (stacks + 1);	// ┓
 				int p4 = (iStack + 1) + (iSlice + 1) * (stacks + 1);	// ┛
-				ib[0] = beginIndex + p1;
-				ib[1] = beginIndex + p2;
-				ib[2] = beginIndex + p3;
-				ib[3] = beginIndex + p3;
-				ib[4] = beginIndex + p2;
-				ib[5] = beginIndex + p4;
-				ib += 6;
+				setI2(iI + 0, p1);
+				setI2(iI + 1, p2);
+				setI2(iI + 2, p3);
+				setI2(iI + 3, p3);
+				setI2(iI + 4, p2);
+				setI2(iI + 5, p4);
+				iI += 6;
 			}
 		}
 
 		if (!m_transform.isIdentity())
-			MeshHelper::transform(outVertices, vb, m_transform);
-	}
-
-	static void addVertex(Vertex** vb, const Vertex& v)
-	{
-		*(*vb) = v;
-		(*vb)++;
+			MeshHelper::transform(m_vertices, m_vertices + iV, m_transform);
 	}
 
 private:
@@ -846,10 +838,10 @@ public:
 		return m_slices * 6;
 	}
 
-	void generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
+	void generate()
 	{
-		Vertex* vb = outVertices;
-		uint16_t* ib = (uint16_t*)outIndices;
+		uint32_t iV = 0;
+		uint32_t iI = 0;
 
 		for (int iSlice = 0; iSlice < m_slices + 1; iSlice++)
 		{
@@ -860,16 +852,14 @@ public:
 				Vertex v;
 				v.position = n * m_outerRadius;
 				v.normal = Vector3::UnitY;
-				v.color = m_color;
-				addVertex(&vb, v);
+				setV2(iV, v); iV++;
 			}
 			// inner
 			{
 				Vertex v;
 				v.position = n * m_innerRadius;
 				v.normal = Vector3::UnitY;
-				v.color = m_color;
-				addVertex(&vb, v);
+				setV2(iV, v); iV++;
 			}
 		}
 
@@ -880,23 +870,17 @@ public:
 			int p2 = ((iSlice + 0) * 2 + 1);	// ┗
 			int p3 = ((iSlice + 1) * 2 + 0);	// ┓
 			int p4 = ((iSlice + 1) * 2 + 1);	// ┛
-			ib[0] = beginIndex + p1;
-			ib[1] = beginIndex + p2;
-			ib[2] = beginIndex + p3;
-			ib[3] = beginIndex + p3;
-			ib[4] = beginIndex + p2;
-			ib[5] = beginIndex + p4;
-			ib += 6;
+			setI2(iI + 0, p1);
+			setI2(iI + 1, p2);
+			setI2(iI + 2, p3);
+			setI2(iI + 3, p3);
+			setI2(iI + 4, p2);
+			setI2(iI + 5, p4);
+			iI += 6;
 		}
 
 		if (!m_transform.isIdentity())
-			MeshHelper::transform(outVertices, vb, m_transform);
-	}
-
-	static void addVertex(Vertex** vb, const Vertex& v)
-	{
-		*(*vb) = v;
-		(*vb)++;
+			MeshHelper::transform(m_vertices, m_vertices + iV, m_transform);
 	}
 
 private:
@@ -922,11 +906,11 @@ public:
 
 	int getIndexCount() const;
 
-	void generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex);
+	void generate();
 
 private:
 	void addVertex(const Vector3& pos, const Vector3& normal, const Vector2& texUV);
-	void addIndex(uint16_t index);
+	void addIndex(uint32_t index);
 
 	void computeTeapot(float size, size_t tessellation/*, bool rhcoords*/);
 	void tessellatePatch(const TeapotPatch& patch, size_t tessellation, const Vector3& scale, bool isMirrored);
@@ -935,8 +919,8 @@ private:
 	int			m_tessellation;
 	Vertex*		m_vbBegin;
 	Vertex*		m_vbPos;
-	uint16_t*	m_ibPos;
-	uint16_t	m_beginIndex;
+	uint32_t	m_ibPos;
+	//uint16_t	m_beginIndex;
 };
 
 } // namespace detail

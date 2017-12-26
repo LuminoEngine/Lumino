@@ -280,8 +280,8 @@ TeapotMeshFactory::TeapotMeshFactory()
 	, m_tessellation(0)
 	, m_vbBegin(nullptr)
 	, m_vbPos(nullptr)
-	, m_ibPos(nullptr)
-	, m_beginIndex(0)
+	//, m_ibPos(nullptr)
+	//, m_beginIndex(0)
 {
 }
 
@@ -308,12 +308,12 @@ int TeapotMeshFactory::getIndexCount() const
 }
 
 //------------------------------------------------------------------------------
-void TeapotMeshFactory::generate(Vertex* outVertices, uint16_t* outIndices, uint16_t beginIndex)
+void TeapotMeshFactory::generate()
 {
-	m_vbBegin = outVertices;
+	m_vbBegin = m_vertices;
 	m_vbPos = m_vbBegin;
-	m_ibPos = outIndices;
-	m_beginIndex = beginIndex;
+	m_ibPos = 0;
+	//m_beginIndex = beginIndex;
 
 	computeTeapot(m_size, m_tessellation/*, rhcoords*/);
 }
@@ -329,9 +329,9 @@ void TeapotMeshFactory::addVertex(const Vector3& pos, const Vector3& normal, con
 }
 
 //------------------------------------------------------------------------------
-void TeapotMeshFactory::addIndex(uint16_t index)
+void TeapotMeshFactory::addIndex(uint32_t index)
 {
-	*m_ibPos = m_beginIndex + index;
+	setI2(m_ibPos, index);
 	m_ibPos++;
 }
 

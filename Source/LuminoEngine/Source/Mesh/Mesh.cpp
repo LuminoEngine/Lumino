@@ -406,7 +406,8 @@ void MeshResource::addPlane(const Vector2& size, int sliceH, int sliceV)
 	// alloc buffers, generate mesh
 	Vertex* vb = (Vertex*)requestVertexBufferForAdditional(factory.getVertexCount(), VB_BasicVertices);
 	uint16_t* ib = requestIndexBufferForAdditional(factory.getIndexCount());
-	factory.generate(vb, ib, (uint16_t)startIndex);
+	factory.setBuffers(vb, ib, IndexBufferFormat_UInt16, (uint16_t)startIndex);
+	factory.generate();
 }
 
 //------------------------------------------------------------------------------
@@ -422,7 +423,8 @@ void MeshResource::addBox(const Vector3& size, const Color& color, const Matrix&
 	// alloc buffers, generate mesh
 	Vertex* vb = (Vertex*)requestVertexBufferForAdditional(factory.getVertexCount(), VB_BasicVertices);
 	uint16_t* ib = requestIndexBufferForAdditional(factory.getIndexCount());
-	factory.generate(vb, ib, (uint16_t)startIndex);
+	factory.setBuffers(vb, ib, IndexBufferFormat_UInt16, (uint16_t)startIndex);
+	factory.generate();
 }
 
 //------------------------------------------------------------------------------
@@ -438,7 +440,8 @@ void MeshResource::addSphere(float radius, int slices, int stacks, const Matrix&
 	// alloc buffers, generate mesh
 	Vertex* vb = (Vertex*)requestVertexBufferForAdditional(factory.getVertexCount(), VB_BasicVertices);
 	uint16_t* ib = requestIndexBufferForAdditional(factory.getIndexCount());
-	factory.generate(vb, ib, (uint16_t)startIndex);
+	factory.setBuffers(vb, ib, IndexBufferFormat_UInt16, (uint16_t)startIndex);
+	factory.generate();
 }
 
 //------------------------------------------------------------------------------
@@ -453,7 +456,8 @@ void MeshResource::addScreenPlane()
 	// alloc buffers, generate mesh
 	Vertex* vb = (Vertex*)requestVertexBufferForAdditional(factory.getVertexCount(), VB_BasicVertices);
 	uint16_t* ib = requestIndexBufferForAdditional(factory.getIndexCount());
-	factory.generate(vb, ib, (uint16_t)startIndex);
+	factory.setBuffers(vb, ib, IndexBufferFormat_UInt16, (uint16_t)startIndex);
+	factory.generate();
 }
 
 //------------------------------------------------------------------------------
@@ -502,7 +506,8 @@ void MeshResource::addTeapot(float size, int tessellation)
 	// alloc buffers, generate mesh
 	Vertex* vb = (Vertex*)requestVertexBufferForAdditional(factory.getVertexCount(), VB_BasicVertices);
 	uint16_t* ib = requestIndexBufferForAdditional(factory.getIndexCount());
-	factory.generate(vb, ib, (uint16_t)startIndex);
+	factory.setBuffers(vb, ib, IndexBufferFormat_UInt16, (uint16_t)startIndex);
+	factory.generate();
 }
 
 ////------------------------------------------------------------------------------

@@ -88,7 +88,8 @@ public:
 				uint16_t* ib;
 				uint16_t beginVertexIndex;
 				m_core->requestBuffers(factory.getVertexCount(), factory.getIndexCount(), &vb, &ib, &beginVertexIndex);
-				factory.generate(vb, ib, beginVertexIndex);
+				factory.setBuffers(vb, ib, IndexBufferFormat::IndexBufferFormat_UInt16, beginVertexIndex);
+				factory.generate();
 			});
 
 		m_flushRequested = true;
