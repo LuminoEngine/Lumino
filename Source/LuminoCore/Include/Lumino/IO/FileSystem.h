@@ -136,6 +136,8 @@ public:
 
 	static tr::Enumerator<PathName> getFiles(const StringRef& dirPath, const StringRef& pattern = StringRef());
 
+	static tr::Enumerator<PathName> enumerateFiles(const StringRef& dirPath, const StringRef& pattern = StringRef());
+
 	static void getCurrentDirectory(String* outPath);
 
 private:

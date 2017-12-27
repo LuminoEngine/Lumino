@@ -89,6 +89,7 @@ public:
 	PlatformFileFinder(const PlatformFileSystem::PathChar* dirPath, int dirPathLen, FileAttribute attr, const PlatformFileSystem::PathChar* pattern, int patternLen);
 	~PlatformFileFinder();
 	bool isWorking() const;
+	bool isFirst() const;
 	const PlatformFileSystem::PathString& getCurrent() const;
 	const PlatformFileSystem::PathString& getCurrentFileName() const { return m_impl.getCurrentFileName(); }
 	FileAttribute getFileAttribute() const;
@@ -104,6 +105,7 @@ private:
 	PlatformFileSystem::PathString m_current;
 	FileAttribute m_attr;
 	PlatformFileSystem::PathString	m_pattern;
+	bool m_first;
 };
 
 PlatformFileFinder::PlatformFileFinder(const PlatformFileSystem::PathChar* dirPath, int dirPathLen, FileAttribute attr, const PlatformFileSystem::PathChar* pattern, int patternLen)
@@ -112,6 +114,7 @@ PlatformFileFinder::PlatformFileFinder(const PlatformFileSystem::PathChar* dirPa
 	, m_current()
 	, m_attr(attr)
 	, m_pattern()
+	, m_first(true)
 {
 	if (pattern)
 	{
@@ -130,6 +133,11 @@ PlatformFileFinder::~PlatformFileFinder()
 bool PlatformFileFinder::isWorking() const
 {
 	return m_impl.isWorking();
+}
+
+bool PlatformFileFinder::isFirst() const
+{
+	return m_first;
 }
 
 const PlatformFileSystem::PathString& PlatformFileFinder::getCurrent() const
@@ -197,6 +205,7 @@ bool PlatformFileFinder::nextInternal()
 		}
 	}
 
+	m_first = false;
 	return result;
 }
 
@@ -808,6 +817,203 @@ tr::Enumerator<PathName> FileSystem::getFiles(const StringRef& dirPath, const St
 {
 	DirectoryIterator itr(dirPath, FileAttribute::Normal, pattern.IsNullOrEmpty() ? nullptr : pattern.getBegin());
 	DirectoryIterator end;
+	return tr::MakeEnumerator::from(itr, end);
+}
+
+
+
+
+enum class SearchOption
+{
+	TopDirectoryOnly,
+	AllDirectories,
+};
+
+class DirectoryIterator2Impl
+	: public RefObject
+{
+public:
+	DirectoryIterator2Impl(const StringRef& path, const StringRef& searchPattern, SearchOption searchOption)
+		: m_path(path)
+		, m_searchPattern(searchPattern.getBegin(), searchPattern.getLength())	// TODO: check
+		//, m_filterAttr(FileAttribute::All)
+		, m_filterAttr(FileAttribute::Normal)
+		, m_searchOption(searchOption)
+	{
+	}
+
+	const Path& currentPath() const { return m_currentPath; }
+
+	// 頭出し
+	void setup()
+	{
+		pushFilder();
+		nextInternal2(true);
+	}
+
+	bool next()
+	{
+		return nextInternal2(false);
+	}
+
+private:
+	bool nextInternal2(bool setup)
+	{
+		bool first = true;
+		bool result;
+		do
+		{
+			if (setup && first)
+			{
+				result = current()->isWorking();
+			}
+			else
+			{
+				result = nextInternal(setup);
+			}
+			
+			first = false;
+
+			// 内部的にはディレクトリをたどるため、Directory 属性を必ず列挙している。
+			// ここで、ユーザーが欲しい属性をフィルタする。
+		} while (result && !m_filterAttr.TestFlag((FileAttribute::enum_type)current()->getFileAttribute().getValue()));
+
+		if (result)
+		{
+			m_currentPath = current()->getCurrent().c_str();
+		}
+		else
+		{
+			m_currentPath.clear();
+		}
+
+		return result;
+	}
+
+	bool nextInternal(bool setup)
+	{
+		if (current()->getFileAttribute().TestFlag(FileAttribute::Directory))
+		{
+			pushFilder();
+		}
+		else
+		{
+			if (!setup)
+				current()->next();
+		}
+
+		while (!current()->isWorking())
+		{
+			popFinder();		// 戻す
+			if (m_stack.empty()) return false;
+
+			current()->next();	// 戻したフォルダを見ているので1つ進める
+		}
+		return true;
+	}
+
+	// 関数を抜けたとき、stack top は既に次に返すべき Entity を指している
+	// または、Entity が一つもなければ isWorkding が false になっている
+	void pushFilder()
+	{
+		if (m_stack.empty())
+		{
+			detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(m_path.c_str(), m_path.getLength());
+			m_stack.push_back(Ref<PlatformFileFinder>::makeRef(localPath.c_str(), localPath.getLength(), m_filterAttr | FileAttribute::Directory, m_searchPattern.c_str(), m_searchPattern.getLength()));
+		}
+		else
+		{
+			m_stack.push_back(Ref<PlatformFileFinder>::makeRef(m_stack.back()->getCurrent().c_str(), m_stack.back()->getCurrent().length(), m_filterAttr | FileAttribute::Directory, m_searchPattern.c_str(), m_searchPattern.getLength()));
+		}
+	}
+
+	void popFinder()
+	{
+		m_stack.pop_back();
+	}
+
+	PlatformFileFinder* current() const
+	{
+		return m_stack.back();
+	}
+
+	Path m_path;
+	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> m_searchPattern;
+	FileAttribute m_filterAttr;
+	SearchOption m_searchOption;
+	std::list<Ref<PlatformFileFinder>> m_stack;
+	Path m_currentPath;
+};
+
+
+
+
+class DirectoryIterator2
+{
+public:
+	using value_type = PathName;
+
+	DirectoryIterator2()
+		: m_impl()
+	{}
+
+	DirectoryIterator2(const StringRef& dirPath, const StringRef& pattern)
+		: m_impl()
+	{
+		m_impl = Ref<DirectoryIterator2Impl>::makeRef(dirPath, pattern, SearchOption::AllDirectories);
+		m_impl->setup();
+		m_current = m_impl->currentPath();
+	}
+
+	DirectoryIterator2(const DirectoryIterator2& other)
+		: m_impl(other.m_impl)
+		, m_current(other.m_current)
+	{
+	}
+
+	DirectoryIterator2& operator = (const DirectoryIterator2& other)
+	{
+		m_impl = other.m_impl;
+		m_current = other.m_current;
+	}
+
+	DirectoryIterator2& operator ++ ()   // prefix
+	{
+		if (m_impl != nullptr)
+		{
+			m_impl->next();
+			m_current = m_impl->currentPath();
+		}
+		return *this;
+	}
+
+	DirectoryIterator2 operator ++ (int) // postfix
+	{
+		if (m_impl != nullptr)
+		{
+			m_impl->next();
+			m_current = m_impl->currentPath();
+		}
+		return *this;
+	}
+
+	const PathName& operator * () const { return m_current; }
+	PathName& operator * () { return m_current; }
+	const PathName* operator -> () const { return &m_current; }
+	PathName* operator -> () { return &m_current; }
+
+	bool operator == (const DirectoryIterator2& othre) const { return m_current == othre.m_current; }
+	bool operator != (const DirectoryIterator2& othre) const { return m_current != othre.m_current; }
+
+private:
+	Ref<DirectoryIterator2Impl>	m_impl;
+	Path m_current;
+};
+
+tr::Enumerator<PathName> FileSystem::enumerateFiles(const StringRef& dirPath, const StringRef& pattern)
+{
+	DirectoryIterator2 itr(dirPath, pattern);
+	DirectoryIterator2 end;
 	return tr::MakeEnumerator::from(itr, end);
 }
 
