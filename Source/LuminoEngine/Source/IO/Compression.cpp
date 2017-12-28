@@ -3,90 +3,109 @@
 #include <fstream>
 #include "../Internal.h"
 #include <zlib-1.2.7/contrib/minizip/unzip.h>
+#include <Lumino/Text/Encoding.h>
 #include <Lumino/IO/Compression.h>
 
 LN_NAMESPACE_BEGIN
+namespace detail {
 
-void ZipFile::ExtractToDirectory(const Path& sourceArchiveFilePath, const Path& destinationDirectoryPath)
+class ExtractZip
 {
-	// https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT
-	// https://hg.python.org/cpython/file/2.7/Lib/zipfile.py#l1046
-
-	std::string srcPath = sourceArchiveFilePath.getString().toStdString();
-	std::string dstPath = destinationDirectoryPath.getString().toStdString() + "/";
-	std::string m_password;
-
-	static const size_t WRITEBUFFERSIZE = 8192;
-	std::vector<char> buffer;
-	buffer.resize(WRITEBUFFERSIZE);
-
-
-	unzFile m_zf = unzOpen(srcPath.c_str());
-	if (LN_ENSURE(m_zf)) return;
-
-	int err = unzGoToFirstFile(m_zf);
-	if (err == UNZ_OK)
+public:
+	ExtractZip()
+		: m_zipFile(nullptr)
 	{
-		do
+	}
+
+	~ExtractZip()
+	{
+		if (m_zipFile)
 		{
-			unz_file_info64 file_info = { 0 };
-			char filename_inzip[256] = { 0 };
+			unzClose(m_zipFile);
+		}
+	}
 
-			int err = unzGetCurrentFileInfo64(m_zf, &file_info, filename_inzip, sizeof(filename_inzip), NULL, 0, NULL, 0);
-			//if (UNZ_OK != err)
-			//	throw EXCEPTION_CLASS("Error, couln't get the current entry info");
+	void init(
+		const Path& sourceArchiveFilePath,
+		const Path& destinationDirectoryPath)
+	{
+		m_destinationDirectoryPath = destinationDirectoryPath;
+		std::string srcPath = sourceArchiveFilePath.getString().toStdString();
+		m_zipFile = unzOpen(srcPath.c_str());
+		if (LN_ENSURE(m_zipFile)) return;
+	}
 
-			//if ( == '')
+	void extract()
+	{
+		// https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT
+		// https://hg.python.org/cpython/file/2.7/Lib/zipfile.py#l1046
 
+		static const size_t TempBufferSize = 8192;
+		std::vector<char> buffer;
+		buffer.resize(TempBufferSize);
 
-
-
-			if (filename_inzip[file_info.size_filename - 1] == '/')
+		int err = unzGoToFirstFile(m_zipFile);
+		if (err == UNZ_OK)
+		{
+			do
 			{
-				std::string path = dstPath + filename_inzip;
-				detail::FileSystemInternal::createDirectory(path.c_str(), path.length());
-			}
-			else
-			{
-				std::string path = dstPath + filename_inzip;
-				std::ofstream output_file(path, std::ofstream::binary);
-				//FileStream::create(Path())
-				if (output_file.good())
+				unz_file_info64 fileInfo = { 0 };
+				char filePathInZip[256] = { 0 };
+
+				int err = unzGetCurrentFileInfo64(m_zipFile, &fileInfo, filePathInZip, sizeof(filePathInZip), nullptr, 0, nullptr, 0);
+				if (LN_ENSURE(err == UNZ_OK)) return;
+
+				String filePath = filePathInZip;
+
+				// Directory?
+				if (filePathInZip[fileInfo.size_filename - 1] == '/')
+				{
+					Path path = Path(m_destinationDirectoryPath, filePath);
+					FileSystem::createDirectory(path);
+				}
+				// File?
+				else
 				{
 					//err = unzOpenCurrentFilePassword(m_zf, m_password.c_str());
-					err = unzOpenCurrentFile(m_zf);
+					err = unzOpenCurrentFile(m_zipFile);
+					if (LN_ENSURE(err == UNZ_OK)) return;
+
+					Path path = Path(m_destinationDirectoryPath, filePath);
+					auto outputFile = FileStream::create(path.c_str(), FileOpenMode::write | FileOpenMode::Truncate);
 
 					do
 					{
-						err = unzReadCurrentFile(m_zf, buffer.data(), (unsigned int)buffer.size());
+						err = unzReadCurrentFile(m_zipFile, buffer.data(), (unsigned int)buffer.size());
 						if (err < 0 || err == 0)
-							break;
-
-						output_file.write(buffer.data(), err);
-						if (!output_file.good())
 						{
-							err = UNZ_ERRNO;
 							break;
 						}
 
+						outputFile->write(buffer.data(), err);
+
 					} while (err > 0);
 
+					outputFile->flush();
 
-					output_file.flush();
-
-					err = unzCloseCurrentFile(m_zf);
+					err = unzCloseCurrentFile(m_zipFile);
 				}
-			}
 
-			printf("%s\n", filename_inzip);
-
-		} while (unzGoToNextFile(m_zf) != UNZ_END_OF_LIST_OF_FILE);
-
-
+			} while (unzGoToNextFile(m_zipFile) != UNZ_END_OF_LIST_OF_FILE);
+		}
 	}
 
-	unzClose(m_zf);
+private:
+	unzFile m_zipFile;
+	Path m_destinationDirectoryPath;
+};
 
+} // namespace detail
+
+void ZipFile::extractToDirectory(const Path& sourceArchiveFilePath, const Path& destinationDirectoryPath)
+{
+	detail::ExtractZip ez;
+	ez.init(sourceArchiveFilePath, destinationDirectoryPath);
+	ez.extract();
 }
 
 LN_NAMESPACE_END
