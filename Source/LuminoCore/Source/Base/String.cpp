@@ -474,17 +474,17 @@ int String::compare(const StringRef& str1, int index1, const StringRef& str2, in
 	return StringTraits::compare(s1, str1.getLength() - index1, s2, str2.getLength() - index2, length, cs);
 }
 
-String String::fromCString(const char* str, int length)
+String String::fromCString(const char* str, int length, Encoding* encoding)
 {
 	String result;
-	result.assignFromCStr(str, length);
+	result.assignFromCStr(str, length, nullptr, encoding);
 	return result;
 }
 
 String String::fromCString(const wchar_t* str, int length)
 {
 	String result;
-	result.assignFromCStr(str, length);
+	result.assignFromCStr(str, length, nullptr, nullptr);
 	return result;
 }
 
@@ -733,7 +733,7 @@ void String::assign(const StringRef& str)
 }
 
 template<typename TChar>
-void String::assignFromCStr(const TChar* str, int length, bool* outUsedDefaultChar)
+void String::assignFromCStr(const TChar* str, int length, bool* outUsedDefaultChar, Encoding* encoding)
 {
 	int len = 0;
 	bool ascii = true;
@@ -763,11 +763,16 @@ void String::assignFromCStr(const TChar* str, int length, bool* outUsedDefaultCh
 	}
 	else
 	{
+		if (!encoding)
+		{
+			encoding = Encoding::getEncodingTemplate<TChar>();
+		}
+
 		EncodingConversionOptions options;
 		options.NullTerminated = false;
 
 		EncodingConversionResult result;
-		const ByteBuffer tmpBuffer = Encoding::convert(str, len * sizeof(TChar), Encoding::getEncodingTemplate<TChar>(), getThisTypeEncoding(), options, &result);
+		const ByteBuffer tmpBuffer = Encoding::convert(str, len * sizeof(TChar), encoding, getThisTypeEncoding(), options, &result);
 		if (outUsedDefaultChar != nullptr) *outUsedDefaultChar = result.UsedDefaultChar;
 
 		assign((const Char*)tmpBuffer.getData(), result.BytesUsed / sizeof(Char));

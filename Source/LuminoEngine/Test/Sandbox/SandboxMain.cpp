@@ -9,6 +9,7 @@
 #include <Lumino/UI/UIFrameWindow.h>
 #include <Lumino/UI/UIListBox.h>
 #include <Lumino/Testing/TestHelper.h>
+#include <Lumino/IO/Compression.h>
 //#include "../../src/Graphics/Mesh/GizmoModel.h"
 using namespace ln;
 
@@ -86,6 +87,7 @@ void Main()
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
+	ZipFile::extractToDirectory(_T("D:\\MMD\\Materials\\Models\\人物\\にがもん式霊夢V01_s05a.zip"), _T("D:\\tmp\\V01_s05a"));
 
 	//Engine::initialize();
 
