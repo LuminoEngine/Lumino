@@ -56,11 +56,13 @@ set(LN_SOURCES_Animation
 )
 
 set(LN_SOURCES_IO
-	Include/Lumino/IO/FileManager.h
 	Include/Lumino/IO/ASyncIOObject.h
+	Include/Lumino/IO/Compression.h
+	Include/Lumino/IO/FileManager.h
 	Source/IO/ArchiveMaker.cpp
 	Source/IO/ArchiveMaker.h
 	Source/IO/ASyncIOObject.cpp
+	Source/IO/Compression.cpp
 	Source/IO/FileManager.cpp
 	Source/IO/Archive.cpp
 	Source/IO/Archive.h
