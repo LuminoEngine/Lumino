@@ -349,6 +349,68 @@ String Encoding::fromBytes(const byte_t* bytes, int size, Encoding* encoding, bo
 	return fromBytes((const char*)bytes, size, encoding, outUsedDefaultChar);
 }
 
+Encoding* Encoding::detectEncodingSimple(const char* str, int length, bool strict)
+{
+	if (LN_REQUIRE(str)) return nullptr;
+
+	// check UTF8 BOM
+	if (length >= 3)
+	{
+		const byte_t bom[] = { 0xEF, 0xBB, 0xBF };
+		if (memcmp(str, bom, 3) == 0)
+		{
+			return getEncoding(EncodingType::UTF8);
+		}
+	}
+
+	int utf8pt = 0;
+	int localPt = 0;
+	const uint8_t* s = (const uint8_t*)str;
+	const uint8_t* end = (const uint8_t*)str + length;
+	int extra = 0;
+	while (s < end)
+	{
+		if (*s == 0x00)
+		{
+			// 有効範囲内に 0 があった。バイナリかもしれない
+			if (strict)
+				return nullptr;
+			else
+				return getEncoding(EncodingType::ASCII);
+		}
+		else if (*s <= 0x7F)
+		{
+			// ASCII
+			s++;
+		}
+		else if (UnicodeUtils::checkUTF8TrailingBytes((const UTF8*)s, (const UTF8*)end, true, &extra) == UTFConversionResult_Success)
+		{
+			// UTF8
+			utf8pt += extra;
+			s += extra;
+		}
+		else
+		{
+			// それ以外 (SJIS など)
+			localPt++;
+			s++;
+		}
+	}
+
+	if (utf8pt == 0 && localPt == 0)
+	{
+		return getEncoding(EncodingType::ASCII);
+	}
+	else if (utf8pt >= localPt)
+	{
+		return getEncoding(EncodingType::UTF8N);
+	}
+	else
+	{
+		return getSystemMultiByteEncoding();
+	}
+}
+
 //------------------------------------------------------------------------------
 size_t Encoding::checkPreamble(const void* buffer, size_t bufferSize) const
 {

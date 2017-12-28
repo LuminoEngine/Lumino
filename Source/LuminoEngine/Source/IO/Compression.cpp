@@ -55,7 +55,8 @@ public:
 				int err = unzGetCurrentFileInfo64(m_zipFile, &fileInfo, filePathInZip, sizeof(filePathInZip), nullptr, 0, nullptr, 0);
 				if (LN_ENSURE(err == UNZ_OK)) return;
 
-				String filePath = filePathInZip;
+				Encoding* pathEncoding = Encoding::detectEncodingSimple(filePathInZip, fileInfo.size_filename, false);
+				String filePath = String::fromCString(filePathInZip, fileInfo.size_filename, pathEncoding);
 
 				// Directory?
 				if (filePathInZip[fileInfo.size_filename - 1] == '/')

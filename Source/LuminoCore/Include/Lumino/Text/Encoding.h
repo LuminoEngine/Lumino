@@ -186,6 +186,8 @@ public:
 	static String fromBytes(const char* bytes, int size, Encoding* encoding = nullptr, bool* outUsedDefaultChar = nullptr);
 	static String fromBytes(const byte_t* bytes, int size, Encoding* encoding = nullptr, bool* outUsedDefaultChar = nullptr);
 
+	static Encoding* detectEncodingSimple(const char* str, int length, bool strict);
+
 public:
 
 	/**

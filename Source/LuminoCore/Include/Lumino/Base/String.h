@@ -308,7 +308,7 @@ public:
 	static int compare(const String& str1, const String& str2, CaseSensitivity cs = CaseSensitivity::CaseSensitive);
 	static int compare(const StringRef& str1, int index1, const StringRef& str2, int index2, int length = -1, CaseSensitivity cs = CaseSensitivity::CaseSensitive);
 
-	static String fromCString(const char* str, int length = -1);
+	static String fromCString(const char* str, int length = -1, Encoding* encoding = nullptr);
 	static String fromCString(const wchar_t* str, int length = -1);
 
 	/** @name STL interface */
@@ -371,7 +371,7 @@ private:
 	void setNonSSO();
 
 	// utils
-	template<typename TChar> void assignFromCStr(const TChar* str, int length = -1, bool* outUsedDefaultChar = nullptr);
+	template<typename TChar> void assignFromCStr(const TChar* str, int length = -1, bool* outUsedDefaultChar = nullptr, Encoding* encoding = nullptr);
 
 	Encoding* getThisTypeEncoding() const;
 	static ByteBuffer convertTo(const String& str, const Encoding* encoding, bool* outUsedDefaultChar = nullptr);
