@@ -259,7 +259,7 @@ void PmxLoader::loadIndices(BinaryReader* reader)
 		format = IndexBufferFormat_UInt16;
 	}
 	m_modelCore->resizeIndexBuffer(indexCount);
-	m_modelCore->requestIndexBuffer()->setFormat(format);
+	m_modelCore->requestIndexBuffer()->setFormatInternal(format);
 
 	// とりあえずまずは全部読み込む
 	ByteBuffer indicesBuffer(getVertexIndexSize() * indexCount);

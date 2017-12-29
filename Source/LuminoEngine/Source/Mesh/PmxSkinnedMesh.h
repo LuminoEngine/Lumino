@@ -166,7 +166,7 @@ public:
 	//String			EnglishName;				///< ボーン英名
 	Vector3				OrgPosition;				///< モデル原点からの位置
 	int					ParentBoneIndex;			///< 親ボーンのインデックス (-1 は無し)
-	int					TransformLevel;				///< 変形階層  TOOD: IKボーン及びそのIKを親としている系列の変形階層を 0→1、回転影響下以下の変形階層を 0→2 (SortVal の考え方な気がする。MMM では使ってないみたい)
+	int					TransformLevel;				///< [PMX] 変形階層  TOOD: IKボーン及びそのIKを親としている系列の変形階層を 0→1、回転影響下以下の変形階層を 0→2 (SortVal の考え方な気がする。MMM では使ってないみたい)
 
 	// ↓ボーンフラグ
 	BoneConnectType		BoneConnect;				///< 接続先(PMD子ボーン指定)表示方法 -> 0:座標オフセットで指定 1:ボーンで指定
@@ -219,7 +219,7 @@ public:
 	/* ① - ② - ③    ④
 	
 		①② : IK影響下ボーン
-		③	: IKTargetBoneIndex (PMX 仕様書では「IKターゲットボーン」、MMDX 等では「エフェクタ」と呼ばれる)
+		③	: IKTargetBone (PMX 仕様書では「IKターゲットボーン」、MMDX 等では「エフェクタ」と呼ばれる)
 		④	: IKBone (PMX 仕様書 では「IKボーン」、MMDX 等では「ターゲットボーン」と呼ばれる。かかと等、「右足IK」のような名前になっている)
 
 		IKボーン はスキニングに影響しない。

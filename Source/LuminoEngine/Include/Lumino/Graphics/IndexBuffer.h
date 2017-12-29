@@ -19,7 +19,7 @@ public:
 	/** インデックスバッファの容量を確保します。 */
 	void reserve(int indexCount);
 
-	/** インデックスバッファのサイズを変更します。サイズに応じて、フォーマットが変更されます。 */
+	/** インデックスバッファのサイズを変更します。 */
 	void resize(int indexCount);
 
 	/** インデックスバッファが保持するデータにアクセスします。 */
@@ -30,6 +30,9 @@ public:
 
 	/** インデックスバッファをクリアします。 */
 	void clear();
+
+	/** インデックスバッファのフォーマットを設定します。 */
+	void setFormat2(IndexBufferFormat format);
 
 	/** インデックスバッファのフォーマットを取得します。 */
 	IndexBufferFormat getIndexFormat() const { return m_format; }
@@ -47,7 +50,7 @@ LN_INTERNAL_ACCESS:
 	int getIndexStride() const;
 	Driver::IIndexBuffer* resolveRHIObject();
 	virtual void onChangeDevice(Driver::IGraphicsDevice* device) override;
-	void setFormat(IndexBufferFormat format) { m_format = format; }
+	void setFormatInternal(IndexBufferFormat format) { m_format = format; }
 
 private:
 	bool isRHIDirect() const { return m_initialUpdate && !m_rhiObject.isNull(); }

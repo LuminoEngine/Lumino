@@ -63,7 +63,10 @@ public:
 	{
 		for (SkinnedMeshBone* ikBone : owner->m_ikBoneList)
 		{
-			UpdateEachIKBoneTransform(ikBone->m_ikInfo);
+			if (ikBone->m_ikInfo)
+			{
+				UpdateEachIKBoneTransform(ikBone->m_ikInfo);
+			}
 		}
 	}
 
