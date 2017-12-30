@@ -502,6 +502,8 @@ bool FileSystemInternal::existsDirectory(const char16_t* filePath, int len)
 
 static void createDirectoryInternal2(const PlatformFileSystem::PathChar* begin, const PlatformFileSystem::PathChar* end)
 {
+	if (FileSystemInternal::existsDirectory(begin, (end - begin))) return;
+
 	std::vector<std::basic_string<PlatformFileSystem::PathChar>>	pathList;
 	std::basic_string<PlatformFileSystem::PathChar> dir;
 
