@@ -342,6 +342,7 @@ public:
 	const TChar* c_str() const { return m_path.empty() ? m_static : m_path.c_str(); }
 	const std::basic_string<TChar>& getPath() const { return m_path; }
 	int getLength() const { return m_length; }
+	bool isEmpty() const { return m_length == 0; }
 
 	bool isStatic() const { return m_path.empty(); }
 

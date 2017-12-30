@@ -96,7 +96,7 @@ public:
 	bool next();
 
 private:
-	bool nextInternal();
+	bool nextInternal(bool* outIsDir);
 	void setCurrent(const PlatformFileSystem::PathString& nativeCurrent);
 	void clearCurrent();
 
@@ -160,16 +160,24 @@ FileAttribute PlatformFileFinder::getFileAttribute() const
 
 bool PlatformFileFinder::next()
 {
+	bool isDir = false;
 	if (m_pattern.empty())
 	{
-		return nextInternal();
+		return nextInternal(&isDir);
 	}
 	else
 	{
 		bool result = false;
 		do
 		{
-			result = nextInternal();
+			result = nextInternal(&isDir);
+			//if (result)
+			//{
+			//	if (1 &&	// TODO: Dir を列挙するのか、File を列挙するのか。今はとりあえず File だけ
+			//		!isDir)
+			//	{
+			//	}
+			//}
 
 		} while (result && !PlatformFileSystem::matchPath(getCurrent().c_str(), m_pattern.c_str()));
 
@@ -177,7 +185,7 @@ bool PlatformFileFinder::next()
 	}
 }
 
-bool PlatformFileFinder::nextInternal()
+bool PlatformFileFinder::nextInternal(bool* outIsDir)
 {
 	bool result = false;
 	while (true)
@@ -196,6 +204,8 @@ bool PlatformFileFinder::nextInternal()
 		{
 			attr = a.getValue();
 		}
+
+		*outIsDir = ((attr & FileAttribute::Directory) != 0);
 
 		//uint32_t attr = detail::FileSystemInternal::getAttribute(getCurrent().c_str(), getCurrent().length()).getValue();
 		uint32_t filter = (uint32_t)m_attr.getValue();
@@ -824,12 +834,19 @@ tr::Enumerator<PathName> FileSystem::getFiles(const StringRef& dirPath, const St
 
 
 
+enum class SearchTargetEntity
+{
+	File,
+	Directory,
+};
 
 enum class SearchOption
 {
 	TopDirectoryOnly,
 	AllDirectories,
 };
+
+
 
 class DirectoryIterator2Impl
 	: public RefObject
@@ -839,7 +856,7 @@ public:
 		: m_path(path)
 		, m_searchPattern(searchPattern.getBegin(), searchPattern.getLength())	// TODO: check
 		//, m_filterAttr(FileAttribute::All)
-		, m_filterAttr(FileAttribute::Normal)
+		, m_searchTargetEntity(SearchTargetEntity::File)	// TODO:
 		, m_searchOption(searchOption)
 	{
 	}
@@ -874,11 +891,39 @@ private:
 				result = nextInternal(setup);
 			}
 			
-			first = false;
+			setup = first = false;
+
+			if (result)
+			{
+				if (m_searchTargetEntity == SearchTargetEntity::Directory &&
+					current()->getFileAttribute().TestFlag(FileAttribute::Directory))
+				{
+					if (m_searchPattern.isEmpty())
+					{
+						break;
+					}
+					if (PlatformFileSystem::matchPath(current()->getCurrent().c_str(), m_searchPattern.c_str()))
+					{
+						break;
+					}
+				}
+				if (m_searchTargetEntity == SearchTargetEntity::File &&
+					!current()->getFileAttribute().TestFlag(FileAttribute::Directory))
+				{
+					if (m_searchPattern.isEmpty())
+					{
+						break;
+					}
+					if (PlatformFileSystem::matchPath(current()->getCurrent().c_str(), m_searchPattern.c_str()))
+					{
+						break;
+					}
+				}
+			}
 
 			// 内部的にはディレクトリをたどるため、Directory 属性を必ず列挙している。
 			// ここで、ユーザーが欲しい属性をフィルタする。
-		} while (result && !m_filterAttr.TestFlag((FileAttribute::enum_type)current()->getFileAttribute().getValue()));
+		} while (result/* && !m_filterAttr.TestFlag((FileAttribute::enum_type)current()->getFileAttribute().getValue())*/);
 
 		if (result)
 		{
@@ -911,7 +956,7 @@ private:
 
 			current()->next();	// 戻したフォルダを見ているので1つ進める
 		}
-		return true;
+		return current()->isWorking();
 	}
 
 	// 関数を抜けたとき、stack top は既に次に返すべき Entity を指している
@@ -921,11 +966,11 @@ private:
 		if (m_stack.empty())
 		{
 			detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(m_path.c_str(), m_path.getLength());
-			m_stack.push_back(Ref<PlatformFileFinder>::makeRef(localPath.c_str(), localPath.getLength(), m_filterAttr | FileAttribute::Directory, m_searchPattern.c_str(), m_searchPattern.getLength()));
+			m_stack.push_back(Ref<PlatformFileFinder>::makeRef(localPath.c_str(), localPath.getLength(), FileAttribute::All, _T(""), 0/*, m_filterAttr | FileAttribute::Directory, m_searchPattern.c_str(), m_searchPattern.getLength()*/));
 		}
 		else
 		{
-			m_stack.push_back(Ref<PlatformFileFinder>::makeRef(m_stack.back()->getCurrent().c_str(), m_stack.back()->getCurrent().length(), m_filterAttr | FileAttribute::Directory, m_searchPattern.c_str(), m_searchPattern.getLength()));
+			m_stack.push_back(Ref<PlatformFileFinder>::makeRef(m_stack.back()->getCurrent().c_str(), m_stack.back()->getCurrent().length(), FileAttribute::All, _T(""), 0/*, m_filterAttr | FileAttribute::Directory, m_searchPattern.c_str(), m_searchPattern.getLength()*/));
 		}
 	}
 
@@ -941,7 +986,7 @@ private:
 
 	Path m_path;
 	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> m_searchPattern;
-	FileAttribute m_filterAttr;
+	SearchTargetEntity m_searchTargetEntity;
 	SearchOption m_searchOption;
 	std::list<Ref<PlatformFileFinder>> m_stack;
 	Path m_currentPath;

@@ -91,10 +91,10 @@ float4 PS_Outline(PSInput input) : COLOR0
 
 technique Forward_Geometry
 {
-#if 0
+#if 1
 	pass Pass1
 	{
-		CULLMODE= CCW;
+		CULLMODE= CW;
 		VertexShader = compile vs_3_0 VS_Outline();
 		PixelShader	 = compile ps_3_0 PS_Outline();
 	}
