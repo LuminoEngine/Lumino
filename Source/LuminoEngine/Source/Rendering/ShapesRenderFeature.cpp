@@ -59,7 +59,7 @@ void ShapesRendererCommandList::addDrawBoxBorder(
 	allocData(sizeof(cmd), cmd);
 }
 
-//------------------------------------------------------------------------------s
+//------------------------------------------------------------------------------
 void ShapesRendererCommandList::drawBoxBorderLine(const Rect& rect, const Thickness& thickness, const Color& leftColor, const Color& topColor, const Color& rightColor, const Color& bottomColor, const CornerRadius& cornerRadius, bool borderInset)
 {
 	float cmd[] =
@@ -154,6 +154,8 @@ void ShapesRendererCore::requestBuffers(int vertexCount, int indexCount, Vertex*
 //------------------------------------------------------------------------------
 void ShapesRendererCore::renderCommandList(ShapesRendererCommandList* commandList, detail::BrushRawData* fillBrush)
 {
+	LN_NOTIMPLEMENTED();	// TODO: FaceCulling を逆転した合わせこみがまだ
+
 	extractBasePoints(commandList);
 	calcExtrudedDirection();
 

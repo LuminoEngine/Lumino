@@ -265,6 +265,9 @@ void PmxLoader::loadIndices(BinaryReader* reader)
 	ByteBuffer indicesBuffer(getVertexIndexSize() * indexCount);
 	reader->read(indicesBuffer.getData(), indicesBuffer.getSize());
 
+	IndexBuffer* ib = m_modelCore->requestIndexBuffer();
+	void* buf = (uint16_t*)ib->getMappedData();
+
 	// 1 バイトインデックス
 	if (getVertexIndexSize() == 1)
 	{
@@ -274,25 +277,27 @@ void PmxLoader::loadIndices(BinaryReader* reader)
 	else if (getVertexIndexSize() == 2)
 	{
 		auto indices = (const uint16_t*)indicesBuffer.getConstData();
-		for (int i = 0; i < indexCount; i += 3)
-		{
-			// PMX と Lumino では面方向が逆なので反転する
-			m_modelCore->setIndex(i + 0, indices[i + 0]);
-			m_modelCore->setIndex(i + 1, indices[i + 2]);
-			m_modelCore->setIndex(i + 2, indices[i + 1]);
-		}
+		memcpy(buf, indices, sizeof(uint16_t) * indexCount);
+		//for (int i = 0; i < indexCount; i += 3)
+		//{
+		//	// PMX と Lumino では面方向が逆なので反転する
+		//	m_modelCore->setIndex(i + 0, indices[i + 0]);
+		//	m_modelCore->setIndex(i + 1, indices[i + 2]);
+		//	m_modelCore->setIndex(i + 2, indices[i + 1]);
+		//}
 	}
 	// 2 or 4 バイトインデックス
 	else
 	{
 		auto indices = (const uint32_t*)indicesBuffer.getConstData();
-		for (int i = 0; i < indexCount; i += 3)
-		{
-			// PMX と Lumino では面方向が逆なので反転する
-			m_modelCore->setIndex(i + 0, indices[i + 0]);
-			m_modelCore->setIndex(i + 1, indices[i + 2]);
-			m_modelCore->setIndex(i + 2, indices[i + 1]);
-		}
+		memcpy(buf, indices, sizeof(uint32_t) * indexCount);
+		//for (int i = 0; i < indexCount; i += 3)
+		//{
+		//	// PMX と Lumino では面方向が逆なので反転する
+		//	m_modelCore->setIndex(i + 0, indices[i + 0]);
+		//	m_modelCore->setIndex(i + 1, indices[i + 2]);
+		//	m_modelCore->setIndex(i + 2, indices[i + 1]);
+		//}
 	}
 }
 

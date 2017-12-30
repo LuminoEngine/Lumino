@@ -265,11 +265,11 @@ glIsEnabled with argument GL_BLEND
 			break;
 		case CullingMode::Front:
 			glEnable(GL_CULL_FACE); LN_CHECK_GLERROR();
-			glCullFace(GL_FRONT); LN_CHECK_GLERROR();
+			glCullFace(GL_BACK); LN_CHECK_GLERROR();
 			break;
 		case CullingMode::Back:
 			glEnable(GL_CULL_FACE); LN_CHECK_GLERROR();
-			glCullFace(GL_BACK); LN_CHECK_GLERROR();
+			glCullFace(GL_FRONT); LN_CHECK_GLERROR();
 			break;
 		}
 	}

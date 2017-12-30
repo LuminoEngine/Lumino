@@ -270,8 +270,8 @@ void PrimitiveRenderFeature::drawRectangle(const Rect& rect)
 	float b = rect.getBottom();
 	drawSquare(
 		Vector3(l, t, 0), Vector2(0, 0), Color::White,
-		Vector3(l, b, 0), Vector2(0, 1), Color::White,
 		Vector3(r, t, 0), Vector2(1, 0), Color::White,
+		Vector3(l, b, 0), Vector2(0, 1), Color::White,
 		Vector3(r, b, 0), Vector2(1, 1), Color::White);
 }
 
@@ -343,8 +343,8 @@ void BlitRenderer::initialize(GraphicsManager* manager)
 	Vertex vertices[4] =
 	{
 		{ Vector3(-1,  1, 0), Vector2(0, 0), Vector3::Zero, Color::White },
-		{ Vector3(-1, -1, 0), Vector2(0, 1), Vector3::Zero, Color::White },
 		{ Vector3( 1,  1, 0), Vector2(1, 0), Vector3::Zero, Color::White },
+		{ Vector3(-1, -1, 0), Vector2(0, 1), Vector3::Zero, Color::White },
 		{ Vector3( 1, -1, 0), Vector2(1, 1), Vector3::Zero, Color::White },
 	};
 	m_vertexBuffer.attach(device->createVertexBuffer(sizeof(vertices), vertices, ResourceUsage::Static), false);

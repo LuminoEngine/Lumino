@@ -115,8 +115,8 @@ public:
 	{
 		Vector2 half = m_size / 2;
 		setV2(0, Vector3(-half.x, half.y, 0), Vector2(0.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f));
-		setV2(1, Vector3(-half.x, -half.y, 0), Vector2(0.0f, 1.0f), Vector3(0.0f, 0.0f, -1.0f));
 		setV2(2, Vector3(half.x, half.y, 0), Vector2(1.0f, 0.0f), Vector3(0.0f, 0.0f, -1.0f));
+		setV2(1, Vector3(-half.x, -half.y, 0), Vector2(0.0f, 1.0f), Vector3(0.0f, 0.0f, -1.0f));
 		setV2(3, Vector3(half.x, -half.y, 0), Vector2(1.0f, 1.0f), Vector3(0.0f, 0.0f, -1.0f));
 		setI2(0, 0);
 		setI2(1, 1);
@@ -253,8 +253,8 @@ public:
 			for (int iX = 0; iX < m_sliceX; ++iX)
 			{
 				int p1 = (iX + 0) + (iZ + 0) * (m_sliceX + 1);	// ┏
-				int p2 = (iX + 0) + (iZ + 1) * (m_sliceX + 1);	// ┗
-				int p3 = (iX + 1) + (iZ + 0) * (m_sliceX + 1);	// ┓
+				int p2 = (iX + 1) + (iZ + 0) * (m_sliceX + 1);	// ┓
+				int p3 = (iX + 0) + (iZ + 1) * (m_sliceX + 1);	// ┗
 				int p4 = (iX + 1) + (iZ + 1) * (m_sliceX + 1);	// ┛
 				setI2(iI + 0, p1);
 				setI2(iI + 1, p2);
@@ -393,43 +393,43 @@ public:
 
 		// 手前 (Z-)
 		setV2(v, Vector3(minPos.x, maxPos.y, minPos.z), Vector2(0.0f, 0.0f), -Vector3::UnitZ); ++v;	// ┏
-		setV2(v, Vector3(minPos.x, minPos.y, minPos.z), Vector2(0.0f, 1.0f), -Vector3::UnitZ); ++v;	// ┗
 		setV2(v, Vector3(maxPos.x, maxPos.y, minPos.z), Vector2(1.0f, 0.0f), -Vector3::UnitZ); ++v;	// ┓
+		setV2(v, Vector3(minPos.x, minPos.y, minPos.z), Vector2(0.0f, 1.0f), -Vector3::UnitZ); ++v;	// ┗
 		setV2(v, Vector3(maxPos.x, minPos.y, minPos.z), Vector2(1.0f, 1.0f), -Vector3::UnitZ); ++v;	// ┛
 		setI(i, 0); i += 6;
 
 		// 奥 (Z+)
 		setV2(v, Vector3(maxPos.x, maxPos.y, maxPos.z), Vector2(0.0f, 0.0f), Vector3::UnitZ); ++v;	// ┏
-		setV2(v, Vector3(maxPos.x, minPos.y, maxPos.z), Vector2(0.0f, 1.0f), Vector3::UnitZ); ++v;	// ┗
 		setV2(v, Vector3(minPos.x, maxPos.y, maxPos.z), Vector2(1.0f, 0.0f), Vector3::UnitZ); ++v;	// ┓
+		setV2(v, Vector3(maxPos.x, minPos.y, maxPos.z), Vector2(0.0f, 1.0f), Vector3::UnitZ); ++v;	// ┗
 		setV2(v, Vector3(minPos.x, minPos.y, maxPos.z), Vector2(1.0f, 1.0f), Vector3::UnitZ); ++v;	// ┛
 		setI(i, 4); i += 6;
 
 		// 左 (X-)
 		setV2(v, Vector3(minPos.x, maxPos.y, maxPos.z), Vector2(0.0f, 0.0f), -Vector3::UnitX); ++v;	// ┏
-		setV2(v, Vector3(minPos.x, minPos.y, maxPos.z), Vector2(0.0f, 1.0f), -Vector3::UnitX); ++v;	// ┗
 		setV2(v, Vector3(minPos.x, maxPos.y, minPos.z), Vector2(1.0f, 0.0f), -Vector3::UnitX); ++v;	// ┓
+		setV2(v, Vector3(minPos.x, minPos.y, maxPos.z), Vector2(0.0f, 1.0f), -Vector3::UnitX); ++v;	// ┗
 		setV2(v, Vector3(minPos.x, minPos.y, minPos.z), Vector2(1.0f, 1.0f), -Vector3::UnitX); ++v;	// ┛
 		setI(i, 8); i += 6;
 
 		// 右 (X+)
 		setV2(v, Vector3(maxPos.x, maxPos.y, minPos.z), Vector2(0.0f, 0.0f), Vector3::UnitX); ++v;	// ┏
-		setV2(v, Vector3(maxPos.x, minPos.y, minPos.z), Vector2(0.0f, 1.0f), Vector3::UnitX); ++v;	// ┗
 		setV2(v, Vector3(maxPos.x, maxPos.y, maxPos.z), Vector2(1.0f, 0.0f), Vector3::UnitX); ++v;	// ┓
+		setV2(v, Vector3(maxPos.x, minPos.y, minPos.z), Vector2(0.0f, 1.0f), Vector3::UnitX); ++v;	// ┗
 		setV2(v, Vector3(maxPos.x, minPos.y, maxPos.z), Vector2(1.0f, 1.0f), Vector3::UnitX); ++v;	// ┛
 		setI(i, 12); i += 6;
 
 		// 下 (Y-)(Z- がUVの上方向)
 		setV2(v, Vector3(minPos.x, minPos.y, minPos.z), Vector2(0.0f, 0.0f), -Vector3::UnitY); ++v;	// ┏
-		setV2(v, Vector3(minPos.x, minPos.y, maxPos.z), Vector2(0.0f, 1.0f), -Vector3::UnitY); ++v;	// ┗
 		setV2(v, Vector3(maxPos.x, minPos.y, minPos.z), Vector2(1.0f, 0.0f), -Vector3::UnitY); ++v;	// ┓
+		setV2(v, Vector3(minPos.x, minPos.y, maxPos.z), Vector2(0.0f, 1.0f), -Vector3::UnitY); ++v;	// ┗
 		setV2(v, Vector3(maxPos.x, minPos.y, maxPos.z), Vector2(1.0f, 1.0f), -Vector3::UnitY); ++v;	// ┛
 		setI(i, 16); i += 6;
 
 		// 上 (Y+)(Z+ がUVの上方向)
 		setV2(v, Vector3(minPos.x, maxPos.y, maxPos.z), Vector2(0.0f, 0.0f), Vector3::UnitY); ++v;	// ┏
-		setV2(v, Vector3(minPos.x, maxPos.y, minPos.z), Vector2(0.0f, 1.0f), Vector3::UnitY); ++v;	// ┗
 		setV2(v, Vector3(maxPos.x, maxPos.y, maxPos.z), Vector2(1.0f, 0.0f), Vector3::UnitY); ++v;	// ┓
+		setV2(v, Vector3(minPos.x, maxPos.y, minPos.z), Vector2(0.0f, 1.0f), Vector3::UnitY); ++v;	// ┗
 		setV2(v, Vector3(maxPos.x, maxPos.y, minPos.z), Vector2(1.0f, 1.0f), Vector3::UnitY); ++v;	// ┛
 		setI(i, 20);
 
@@ -552,8 +552,8 @@ public:
 			for (int iSlice = 0; iSlice < m_slices; ++iSlice)
 			{
 				int p1 = (iSlice + 0) + (iStack + 0) * (m_slices + 1);	// ┏
-				int p2 = (iSlice + 0) + (iStack + 1) * (m_slices + 1);	// ┗
-				int p3 = (iSlice + 1) + (iStack + 0) * (m_slices + 1);	// ┓
+				int p2 = (iSlice + 1) + (iStack + 0) * (m_slices + 1);	// ┓
+				int p3 = (iSlice + 0) + (iStack + 1) * (m_slices + 1);	// ┗
 				int p4 = (iSlice + 1) + (iStack + 1) * (m_slices + 1);	// ┛
 				setI2(iI + 0, p1);
 				setI2(iI + 1, p2);
@@ -684,8 +684,8 @@ public:
 			for (int iStack = 0; iStack < stacks; ++iStack)	// y
 			{
 				int p1 = (iStack + 0) + (iSlice + 0) * (stacks + 1);	// ┏
-				int p2 = (iStack + 1) + (iSlice + 0) * (stacks + 1);	// ┗
-				int p3 = (iStack + 0) + (iSlice + 1) * (stacks + 1);	// ┓
+				int p2 = (iStack + 0) + (iSlice + 1) * (stacks + 1);	// ┓
+				int p3 = (iStack + 1) + (iSlice + 0) * (stacks + 1);	// ┗
 				int p4 = (iStack + 1) + (iSlice + 1) * (stacks + 1);	// ┛
 				setI2(iI + 0, p1);
 				setI2(iI + 1, p2);
@@ -780,8 +780,8 @@ public:
 			for (int iStack = 0; iStack < stacks; ++iStack)	// y
 			{
 				int p1 = (iStack + 0) + (iSlice + 0) * (stacks + 1);	// ┏
-				int p2 = (iStack + 1) + (iSlice + 0) * (stacks + 1);	// ┗
-				int p3 = (iStack + 0) + (iSlice + 1) * (stacks + 1);	// ┓
+				int p2 = (iStack + 0) + (iSlice + 1) * (stacks + 1);	// ┓
+				int p3 = (iStack + 1) + (iSlice + 0) * (stacks + 1);	// ┗
 				int p4 = (iStack + 1) + (iSlice + 1) * (stacks + 1);	// ┛
 				setI2(iI + 0, p1);
 				setI2(iI + 1, p2);
@@ -867,8 +867,8 @@ public:
 		for (int iSlice = 0; iSlice < m_slices; iSlice++)
 		{
 			int p1 = ((iSlice + 0) * 2 + 0);	// ┏
-			int p2 = ((iSlice + 0) * 2 + 1);	// ┗
-			int p3 = ((iSlice + 1) * 2 + 0);	// ┓
+			int p2 = ((iSlice + 1) * 2 + 0);	// ┓
+			int p3 = ((iSlice + 0) * 2 + 1);	// ┗
 			int p4 = ((iSlice + 1) * 2 + 1);	// ┛
 			setI2(iI + 0, p1);
 			setI2(iI + 1, p2);

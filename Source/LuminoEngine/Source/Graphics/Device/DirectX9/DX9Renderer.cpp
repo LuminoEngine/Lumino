@@ -269,7 +269,7 @@ void DX9Renderer::onUpdateRenderState(const RenderState& newState, const RenderS
 	// カリング
 	if (newState.Culling != oldState.Culling || reset)
 	{
-		const uint32_t tb[] = { D3DCULL_NONE, D3DCULL_CCW, D3DCULL_CW };
+		const uint32_t tb[] = { D3DCULL_NONE, D3DCULL_CW, D3DCULL_CCW };
 		m_dxDevice->SetRenderState(D3DRS_CULLMODE, tb[(int)newState.Culling]);
 	}
 	// 塗りつぶし方法

@@ -615,8 +615,8 @@ void SpriteParticleModel::render(DrawList* context, detail::SpriteParticleModelI
 
 					Vector3 fd = data.currentDirection * m_lengthScale;
 					vb[(iData * 4) + 0].position = pos - (fd * hs) + r * hs;	// 後方右
-					vb[(iData * 4) + 1].position = pos + (fd * hs) + r * hs;	// 前方右
 					vb[(iData * 4) + 2].position = pos - (fd * hs) - r * hs;	// 後方左
+					vb[(iData * 4) + 1].position = pos + (fd * hs) + r * hs;	// 前方右
 					vb[(iData * 4) + 3].position = pos + (fd * hs) - r * hs;	// 前方左
 				}
 				else if (m_particleDirection == ParticleDirectionType::Horizontal)
@@ -630,16 +630,16 @@ void SpriteParticleModel::render(DrawList* context, detail::SpriteParticleModelI
 
 
 					vb[(iData * 4) + 0].position = pos - (fd * hs) + r * hs;	// 後方右
-					vb[(iData * 4) + 1].position = pos + (fd * hs) + r * hs;	// 前方右
 					vb[(iData * 4) + 2].position = pos - (fd * hs) - r * hs;	// 後方左
+					vb[(iData * 4) + 1].position = pos + (fd * hs) + r * hs;	// 前方右
 					vb[(iData * 4) + 3].position = pos + (fd * hs) - r * hs;	// 前方左
 				}
 				else
 				{
 					// Z- 正面
 					vb[(iData * 4) + 0].position.set(-hs, hs, 0.0f);	// 左上
-					vb[(iData * 4) + 1].position.set(-hs, -hs, 0.0f);	// 左下
 					vb[(iData * 4) + 2].position.set(hs, hs, 0.0f);		// 右上
+					vb[(iData * 4) + 1].position.set(-hs, -hs, 0.0f);	// 左下
 					vb[(iData * 4) + 3].position.set(hs, -hs, 0.0f);	// 右下
 					// 視点へ向ける
 					vb[(iData * 4) + 0].position.transformCoord(transform);

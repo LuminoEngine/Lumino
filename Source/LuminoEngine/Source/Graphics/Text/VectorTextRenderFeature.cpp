@@ -66,6 +66,8 @@ void VectorTextRendererCore::requestBuffers(int vertexCount, int indexCount, Ver
 //------------------------------------------------------------------------------
 void VectorTextRendererCore::render(const VectorGlyphData* dataList, int dataCount, VectorFontGlyphCache* cache, Brush* fillBrush)
 {
+	LN_NOTIMPLEMENTED();	// TODO: FaceCulling を逆転した合わせこみがまだ
+
 	for (int i = 0; i < dataCount; i++)
 	{
 		Vertex* vb;

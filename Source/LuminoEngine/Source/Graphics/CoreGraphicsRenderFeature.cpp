@@ -291,8 +291,6 @@ void CoreGraphicsRenderFeature::drawPrimitive(VertexDeclaration* vertexDeclarati
 			m_internal->setVertexBuffer(0, vb);
 			m_internal->drawPrimitive(primitive, startVertex, primitiveCount);
 		});
-
-	//LN_CALL_RENDERER_COMMAND(drawPrimitive, DrawPrimitiveCommand, primitive, startVertex, primitiveCount);
 }
 
 //------------------------------------------------------------------------------
@@ -318,7 +316,6 @@ void CoreGraphicsRenderFeature::drawPrimitiveIndexed(VertexDeclaration* vertexDe
 			m_internal->setIndexBuffer(ib);
 			m_internal->drawPrimitiveIndexed(primitive, startIndex, primitiveCount);
 		});
-	//LN_CALL_RENDERER_COMMAND(drawPrimitiveIndexed, DrawPrimitiveIndexedCommand, primitive, startIndex, primitiveCount);
 }
 
 //------------------------------------------------------------------------------
