@@ -344,12 +344,12 @@ void GraphicsManager::dispose()
 	}
 
 	// TODO: なんか量がすごいことになっている。多分 VertexDecl。Diag で監視する。
-	//auto deleteList = m_resourceObjectList;
-	//for (auto& obj : deleteList)
-	//{
-	//	obj->Dispose();
-	//}
-	//deleteList.clear();
+	auto deleteList = m_resourceObjectList;
+	for (auto& obj : deleteList)
+	{
+		obj->Dispose();
+	}
+	deleteList.clear();
 	m_resourceObjectList.clear();
 
 	m_internalContext.safeRelease();
