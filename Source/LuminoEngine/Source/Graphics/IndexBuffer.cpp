@@ -168,7 +168,7 @@ void IndexBuffer::setFormat2(IndexBufferFormat format)
 		auto* rend16 = (uint16_t*)(m_buffer.data());
 		auto* rpos32 = (uint32_t*)(m_buffer.data() + (indexCount * sizeof(uint32_t)));
 		auto* rend32 = (uint32_t*)(m_buffer.data());
-		for (; rpos32 < rend32; rpos32--, rpos16--)
+		for (; rpos32 >= rend32; rpos32--, rpos16--)
 		{
 			uint16_t t = *rpos16;
 			*rpos32 = t;

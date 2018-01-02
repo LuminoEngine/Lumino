@@ -271,7 +271,13 @@ void PmxLoader::loadIndices(BinaryReader* reader)
 	// 1 バイトインデックス
 	if (getVertexIndexSize() == 1)
 	{
-		LN_NOTIMPLEMENTED();
+		auto indices = (const uint8_t*)indicesBuffer.getConstData();
+		for (int i = 0; i < indexCount; i += 3)
+		{
+			m_modelCore->setIndex(i + 0, indices[i + 0]);
+			m_modelCore->setIndex(i + 1, indices[i + 1]);
+			m_modelCore->setIndex(i + 2, indices[i + 2]);
+		}
 	}
 	// 2 バイトインデックス
 	else if (getVertexIndexSize() == 2)
@@ -584,7 +590,7 @@ void PmxLoader::loadMorphs(BinaryReader* reader)
 				break;
 			case 2:		// ボーンモーフ
 				morph->MorphType = ModelMorphType_Bone;
-				mo->BoneMorphOffset.BoneIndex = (int)reader->readInt(getVertexIndexSize());
+				mo->BoneMorphOffset.BoneIndex = (int)reader->readInt(getBoneIndexSize());
 				reader->read(&mo->BoneMorphOffset.Moving, sizeof(float) * 3);
 				reader->read(&mo->BoneMorphOffset.Rotating, sizeof(float) * 4);
 				break;

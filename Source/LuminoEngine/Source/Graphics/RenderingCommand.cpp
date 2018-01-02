@@ -146,6 +146,8 @@ void RenderingCommandList::execute(Driver::IGraphicsDevice* device/*Driver::IRen
 		cmd->~RenderingCommand();
 	}
 
+	m_currentDevice->gcDeviceResource();
+
 	if (m_publisher != nullptr)
 	{
 		m_publisher->PresentInternal();

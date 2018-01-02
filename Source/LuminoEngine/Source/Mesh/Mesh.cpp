@@ -653,6 +653,12 @@ void* MeshResource::requestVertexBufferForAdditional(int additionalVertexCount, 
 	//TryGlowVertexBuffers(newCount);
 	//m_vertexUsedCount = newCount;
 
+	if (newCount > 0xFFFF)
+	{
+		requestIndexBuffer()->setFormat2(IndexBufferFormat_UInt32);
+	}
+
+
 	VertexBuffer* vertexBuffer = requestVertexBuffer(type);
 	Vertex* vb = (Vertex*)vertexBuffer->requestMappedData(newCount * vertexStrideTable[type]);
 	return vb + begin;

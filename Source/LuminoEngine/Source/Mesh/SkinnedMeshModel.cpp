@@ -166,7 +166,8 @@ public:
 				euler = localRot.toEulerAngles(type, &locked);
 				if (locked)
 				{
-					LN_UNREACHABLE();	// あり得ないはずだが…。localRotの要素がすべて0とか。
+					// localRotの要素がすべて 0 だった
+					euler = Vector3::Zero;
 				}
 			}
 		}
