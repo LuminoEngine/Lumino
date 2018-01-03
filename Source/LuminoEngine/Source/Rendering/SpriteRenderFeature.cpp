@@ -400,38 +400,38 @@ void SpriteRendererImpl::drawRequestInternal(
 		{
 			case SpriteBaseDirection::XPlus:
 				sprite.Vertices[0].Position.set(LN_WRITE_V3(0, t, l));     // 左上
-				sprite.Vertices[1].Position.set(LN_WRITE_V3(0, b, l));     // 左下
-				sprite.Vertices[2].Position.set(LN_WRITE_V3(0, t, r));     // 右上
+				sprite.Vertices[1].Position.set(LN_WRITE_V3(0, t, r));     // 右上
+				sprite.Vertices[2].Position.set(LN_WRITE_V3(0, b, l));     // 左下
 				sprite.Vertices[3].Position.set(LN_WRITE_V3(0, b, r));     // 右下
 				break;
 			case SpriteBaseDirection::YPlus:
 				sprite.Vertices[0].Position.set(LN_WRITE_V3(l, 0, t));
-				sprite.Vertices[1].Position.set(LN_WRITE_V3(l, 0, b));
-				sprite.Vertices[2].Position.set(LN_WRITE_V3(r, 0, t));
+				sprite.Vertices[1].Position.set(LN_WRITE_V3(r, 0, t));
+				sprite.Vertices[2].Position.set(LN_WRITE_V3(l, 0, b));
 				sprite.Vertices[3].Position.set(LN_WRITE_V3(r, 0, b));
 				break;
 			case SpriteBaseDirection::ZPlus:
 				sprite.Vertices[0].Position.set(LN_WRITE_V3(r, t, 0));
-				sprite.Vertices[1].Position.set(LN_WRITE_V3(r, b, 0));
-				sprite.Vertices[2].Position.set(LN_WRITE_V3(l, t, 0));
+				sprite.Vertices[1].Position.set(LN_WRITE_V3(l, t, 0));
+				sprite.Vertices[2].Position.set(LN_WRITE_V3(r, b, 0));
 				sprite.Vertices[3].Position.set(LN_WRITE_V3(l, b, 0));
 				break;
 			case SpriteBaseDirection::XMinus:
 				sprite.Vertices[0].Position.set(LN_WRITE_V3(0, t, r));
-				sprite.Vertices[1].Position.set(LN_WRITE_V3(0, b, r));
-				sprite.Vertices[2].Position.set(LN_WRITE_V3(0, t, l));
+				sprite.Vertices[1].Position.set(LN_WRITE_V3(0, t, l));
+				sprite.Vertices[2].Position.set(LN_WRITE_V3(0, b, r));
 				sprite.Vertices[3].Position.set(LN_WRITE_V3(0, b, l));
 				break;
 			case SpriteBaseDirection::YMinus:
 				sprite.Vertices[0].Position.set(LN_WRITE_V3(r, 0, t));
-				sprite.Vertices[1].Position.set(LN_WRITE_V3(r, 0, b));
-				sprite.Vertices[2].Position.set(LN_WRITE_V3(l, 0, t));
+				sprite.Vertices[1].Position.set(LN_WRITE_V3(l, 0, t));
+				sprite.Vertices[2].Position.set(LN_WRITE_V3(r, 0, b));
 				sprite.Vertices[3].Position.set(LN_WRITE_V3(l, 0, b));
 				break;
 			case SpriteBaseDirection::ZMinus:
 				sprite.Vertices[0].Position.set(LN_WRITE_V3(l, t, 0));
-				sprite.Vertices[1].Position.set(LN_WRITE_V3(l, b, 0));
-				sprite.Vertices[2].Position.set(LN_WRITE_V3(r, t, 0));
+				sprite.Vertices[1].Position.set(LN_WRITE_V3(r, t, 0));
+				sprite.Vertices[2].Position.set(LN_WRITE_V3(l, b, 0));
 				sprite.Vertices[3].Position.set(LN_WRITE_V3(r, b, 0));
 				break;
 		}
@@ -442,8 +442,8 @@ void SpriteRendererImpl::drawRequestInternal(
 	{
 		Vector2 origin(-center);
 		sprite.Vertices[0].Position.set(origin.x, origin.y, 0);
-		sprite.Vertices[1].Position.set(origin.x, origin.y + size.y, 0);
-		sprite.Vertices[2].Position.set(origin.x + size.x, origin.y, 0);
+		sprite.Vertices[1].Position.set(origin.x + size.x, origin.y, 0);
+		sprite.Vertices[2].Position.set(origin.x, origin.y + size.y, 0);
 		sprite.Vertices[3].Position.set(origin.x + size.x, origin.y + size.y, 0);
 	}
 
@@ -533,10 +533,10 @@ void SpriteRendererImpl::drawRequestInternal(
 		float b = (sr.y + sr.height) * texSizeInv.y;
 		sprite.Vertices[0].TexUV.x = l;
 		sprite.Vertices[0].TexUV.y = t;
-		sprite.Vertices[1].TexUV.x = l;
-		sprite.Vertices[1].TexUV.y = b;
-		sprite.Vertices[2].TexUV.x = r;
-		sprite.Vertices[2].TexUV.y = t;
+		sprite.Vertices[1].TexUV.x = r;
+		sprite.Vertices[1].TexUV.y = t;
+		sprite.Vertices[2].TexUV.x = l;
+		sprite.Vertices[2].TexUV.y = b;
 		sprite.Vertices[3].TexUV.x = r;
 		sprite.Vertices[3].TexUV.y = b;
 
@@ -547,10 +547,10 @@ void SpriteRendererImpl::drawRequestInternal(
 	{
 		sprite.Vertices[0].TexUV.x = 0;
 		sprite.Vertices[0].TexUV.y = 0;
-		sprite.Vertices[1].TexUV.x = 0;
-		sprite.Vertices[1].TexUV.y = 1;
-		sprite.Vertices[2].TexUV.x = 1;
-		sprite.Vertices[2].TexUV.y = 0;
+		sprite.Vertices[1].TexUV.x = 1;
+		sprite.Vertices[1].TexUV.y = 0;
+		sprite.Vertices[2].TexUV.x = 0;
+		sprite.Vertices[2].TexUV.y = 1;
 		sprite.Vertices[3].TexUV.x = 1;
 		sprite.Vertices[3].TexUV.y = 1;
 		sprite.Texture = m_manager->getDummyDeviceTexture();

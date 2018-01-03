@@ -263,8 +263,8 @@ void FrameRectRendererCore::putRectangleStretch(const Rect& rect, const Rect& sr
 	v.color.set(1, 1, 1, 1);
 	v.normal.set(0, 0, 1);
 	v.position.set(pos_l, pos_t, 0); v.uv.set(uv_l, uv_t); m_vertexCache.add(v);	// top-left
-	v.position.set(pos_l, pos_b, 0); v.uv.set(uv_l, uv_b); m_vertexCache.add(v);	// bottom-left
 	v.position.set(pos_r, pos_t, 0); v.uv.set(uv_r, uv_t); m_vertexCache.add(v);	// top-right
+	v.position.set(pos_l, pos_b, 0); v.uv.set(uv_l, uv_b); m_vertexCache.add(v);	// bottom-left
 	v.position.set(pos_r, pos_b, 0); v.uv.set(uv_r, uv_b); m_vertexCache.add(v);	// bottom-right
 }
 
@@ -319,8 +319,8 @@ void FrameRectRendererCore::putRectangleTiling(const Rect& rect, const RectI& sr
 			m_indexCache.add(i + 3);
 
 			v.position.set(rect.x + pos_l, rect.y + pos_t, 0); v.uv.set(uv_l, uv_t); m_vertexCache.add(v);	// top-left
-			v.position.set(rect.x + pos_l, rect.y + pos_b, 0); v.uv.set(uv_l, uv_b); m_vertexCache.add(v);	// bottom-left
 			v.position.set(rect.x + pos_r, rect.y + pos_t, 0); v.uv.set(uv_r, uv_t); m_vertexCache.add(v);	// top-right
+			v.position.set(rect.x + pos_l, rect.y + pos_b, 0); v.uv.set(uv_l, uv_b); m_vertexCache.add(v);	// bottom-left
 			v.position.set(rect.x + pos_r, rect.y + pos_b, 0); v.uv.set(uv_r, uv_b); m_vertexCache.add(v);	// bottom-right
 		}
 	}

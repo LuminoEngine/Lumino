@@ -462,6 +462,8 @@ static void glnvg__setUniforms(GLNVGcontext* gl, int uniformOffset, int image)
 
 static void glnvg__fill(LNNVGcontext* gl, GLNVGcall* call)
 {
+	LN_NOTIMPLEMENTED();	// TODO: FaceCulling を逆転した合わせこみがまだ
+
 	GLNVGpath* paths = &gl->paths[call->pathOffset];
 	int i, npaths = call->pathCount;
 
@@ -513,6 +515,8 @@ static void glnvg__fill(LNNVGcontext* gl, GLNVGcall* call)
 
 static void glnvg__convexFill(LNNVGcontext* gl, GLNVGcall* call)
 {
+	LN_NOTIMPLEMENTED();	// TODO: FaceCulling を逆転した合わせこみがまだ
+
 	GLNVGpath* paths = &gl->paths[call->pathOffset];
 	int i, npaths = call->pathCount;
 
@@ -534,6 +538,8 @@ static void glnvg__convexFill(LNNVGcontext* gl, GLNVGcall* call)
 
 static void glnvg__stroke(LNNVGcontext* gl, GLNVGcall* call)
 {
+	LN_NOTIMPLEMENTED();	// TODO: FaceCulling を逆転した合わせこみがまだ
+
 	GLNVGpath* paths = &gl->paths[call->pathOffset];
 	int npaths = call->pathCount, i;
 

@@ -116,6 +116,7 @@
 #include "XFileLoader.h"
 #endif
 #include "MqoImporter.h"
+#include "PmdImporter.h"
 #include "PmxLoader.h"
 //#include "VMDLoader.h"
 #include "ModelManager.h"
@@ -314,6 +315,19 @@ Texture2D* ModelManager::getMMDDefaultToonTexture(int index)
 Ref<PmxSkinnedMeshResource> ModelManager::createSkinnedMeshResource(const PathName& filePath)
 {
 	Ref<Stream> stream(m_fileManager->createFileStream(filePath), false);
+
+	{
+		Ref<PmxSkinnedMeshResource> mesh;
+		PmdImporter pmdImporter;
+		if (pmdImporter.load(this, stream, filePath.getParent(), true, ModelCreationFlag::None, &mesh))
+		{
+			mesh->refreshInitialValues();
+			return mesh;
+		}
+	}
+
+	stream->seek(0, SeekOrigin_Begin);
+
 	PmxLoader loader;
 	Ref<PmxSkinnedMeshResource> mesh = loader.load(this, stream, filePath.getParent(), true, ModelCreationFlag::None);
 	mesh->refreshInitialValues();

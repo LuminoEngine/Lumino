@@ -406,17 +406,18 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 
 	auto planeMesh = StaticMeshComponent::createPlane(Vector2(20, 20), 1, 1);
 
-	auto cornellBox = CornellBox::create();
-	auto cornellBoxObj = newObject<WorldObject>();
-	cornellBoxObj->addComponent(cornellBox);
-	cornellBox->setShader(Shader::create(LN_LOCALFILE("Assets/UnLighting.fx"), ShaderCodeType::RawHLSL));
-	Engine::getWorld3D()->add(cornellBoxObj);
+	//auto cornellBox = CornellBox::create();
+	//auto cornellBoxObj = newObject<WorldObject>();
+	//cornellBoxObj->addComponent(cornellBox);
+	//cornellBox->setShader(Shader::create(LN_LOCALFILE("Assets/UnLighting.fx"), ShaderCodeType::RawHLSL));
+	//Engine::getWorld3D()->add(cornellBoxObj);
 
-	//auto skinnedMeshComponent = SkinnedMeshComponent::create(_T("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
-	//auto skinnedMeshObj = newObject<WorldObject>();
-	//skinnedMeshObj->addComponent(skinnedMeshComponent);
-	//skinnedMeshComponent->setShader(Shader::create(LN_LOCALFILE("Assets/UnLighting.fx"), ShaderCodeType::RawHLSL));
-	//Engine::getWorld3D()->add(skinnedMeshObj);
+	auto skinnedMeshComponent = SkinnedMeshComponent::create(_T("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
+	//auto skinnedMeshComponent = SkinnedMeshComponent::create(_T("D:\\MMD\\Materials\\モデル\\Lat式ミクVer2.3\\Lat式ミクVer2.3_Normal.pmd"));
+	auto skinnedMeshObj = newObject<WorldObject>();
+	skinnedMeshObj->addComponent(skinnedMeshComponent);
+	skinnedMeshComponent->setShader(Shader::create(LN_LOCALFILE("Assets/UnLighting.fx"), ShaderCodeType::RawHLSL));
+	Engine::getWorld3D()->add(skinnedMeshObj);
 
 
 	//auto ambientLight1 = AmbientLight::create();

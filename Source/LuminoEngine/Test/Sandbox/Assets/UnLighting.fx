@@ -91,7 +91,7 @@ float4 PS_Outline(PSInput input) : COLOR0
 
 technique Forward_Geometry
 {
-#if 1
+#if 0
 	pass Pass1
 	{
 		CULLMODE= CCW;

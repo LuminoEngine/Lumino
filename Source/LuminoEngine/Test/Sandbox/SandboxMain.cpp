@@ -87,7 +87,7 @@ void Main()
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-	ZipFile::extractToDirectory(_T("D:\\MMD\\Materials\\Models\\人物\\にがもん式霊夢V01_s05a.zip"), _T("D:\\tmp\\V01_s05a"));
+	//ZipFile::extractToDirectory(_T("D:\\MMD\\Materials\\Models\\人物\\にがもん式霊夢V01_s05a.zip"), _T("D:\\tmp\\V01_s05a"));
 
 	//Engine::initialize();
 

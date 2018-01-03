@@ -111,6 +111,15 @@ void MeshResource::resizeVertexBuffer(int vertexCount)
 			info.buffer->resize(vertexCount * vertexStrideTable[VB_BasicVertices]);
 		}
 	}
+
+	if (vertexCount > 0xFFFF)
+	{
+		requestIndexBuffer()->setFormat2(IndexBufferFormat_UInt32);
+	}
+	//else
+	//{
+	//	requestIndexBuffer()->setFormat(IndexBufferFormat_UInt16);
+	//}
 }
 
 //------------------------------------------------------------------------------

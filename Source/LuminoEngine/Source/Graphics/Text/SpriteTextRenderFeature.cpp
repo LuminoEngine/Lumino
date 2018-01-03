@@ -128,10 +128,10 @@ void TextRendererCore::internalDrawRectangle(const Matrix& transform, const Rect
 	v.position.set(rect.getLeft(), rect.getTop(), 0);	v.uv.set(lu, tv);	// 左上
 	v.position.transformCoord(transform);
 	m_vertexCache.add(v);
-	v.position.set(rect.getLeft(), rect.getBottom(), 0); v.uv.set(lu, bv);	// 左下
+	v.position.set(rect.getRight(), rect.getTop(), 0);	v.uv.set(ru, tv);	// 右上
 	v.position.transformCoord(transform);
 	m_vertexCache.add(v);
-	v.position.set(rect.getRight(), rect.getTop(), 0);	v.uv.set(ru, tv);	// 右上
+	v.position.set(rect.getLeft(), rect.getBottom(), 0); v.uv.set(lu, bv);	// 左下
 	v.position.transformCoord(transform);
 	m_vertexCache.add(v);
 	v.position.set(rect.getRight(), rect.getBottom(), 0); v.uv.set(ru, bv);	// 右下
