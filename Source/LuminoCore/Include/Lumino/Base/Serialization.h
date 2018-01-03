@@ -986,4 +986,10 @@ private:
 #define LN_NVP(var)		ln::tr::makeNVP(_LT(#var), var)
 //#define LN_NVP(var, ...)	ln::tr::makeNVP(_LT(#var), var, ##__VA_ARGS__)
 
+
+
+
+
+
+
 LN_NAMESPACE_END
