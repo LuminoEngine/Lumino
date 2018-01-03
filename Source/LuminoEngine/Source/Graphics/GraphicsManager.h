@@ -170,7 +170,7 @@ private:
 	Ref<GlyphIconFontManager>		m_glyphIconFontManager;
 
 	GraphicsRenderingType			m_renderingType;
-	List<Ref<GraphicsResourceObject>>	m_resourceObjectList;
+	List<GraphicsResourceObject*>	m_resourceObjectList;
 	List<IDeviceResetListener*>		m_deviceResetListenerList;
 	
 	Driver::IGraphicsDevice*		m_graphicsDevice;

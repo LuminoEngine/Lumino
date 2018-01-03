@@ -161,22 +161,25 @@ void IndexBuffer::setFormat2(IndexBufferFormat format)
 	m_format = format;
 
 	size_t indexCount = getIndexCount();
-	if (oldFormat == IndexBufferFormat_UInt16 && m_format == IndexBufferFormat_UInt32)
+	if (indexCount > 0)
 	{
-		// 16 -> 32
-		auto* rpos16 = (uint16_t*)(m_buffer.data() + (indexCount * sizeof(uint16_t)));
-		auto* rend16 = (uint16_t*)(m_buffer.data());
-		auto* rpos32 = (uint32_t*)(m_buffer.data() + (indexCount * sizeof(uint32_t)));
-		auto* rend32 = (uint32_t*)(m_buffer.data());
-		for (; rpos32 < rend32; rpos32--, rpos16--)
+		if (oldFormat == IndexBufferFormat_UInt16 && m_format == IndexBufferFormat_UInt32)
 		{
-			uint16_t t = *rpos16;
-			*rpos32 = t;
+			// 16 -> 32
+			auto* rpos16 = (uint16_t*)(m_buffer.data() + (indexCount * sizeof(uint16_t)));
+			auto* rend16 = (uint16_t*)(m_buffer.data());
+			auto* rpos32 = (uint32_t*)(m_buffer.data() + (indexCount * sizeof(uint32_t)));
+			auto* rend32 = (uint32_t*)(m_buffer.data());
+			for (; rpos32 >= rend32; rpos32--, rpos16--)
+			{
+				uint16_t t = *rpos16;
+				*rpos32 = t;
+			}
 		}
-	}
-	else if (oldFormat == IndexBufferFormat_UInt32 && m_format == IndexBufferFormat_UInt16)
-	{
-		LN_NOTIMPLEMENTED();
+		else if (oldFormat == IndexBufferFormat_UInt32 && m_format == IndexBufferFormat_UInt16)
+		{
+			LN_NOTIMPLEMENTED();
+		}
 	}
 }
 

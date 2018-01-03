@@ -133,6 +133,7 @@ public:
 
 
 	virtual void flushResource() = 0;
+	virtual void gcDeviceResource() = 0;
 
 protected:
 	virtual ~IGraphicsDevice() {}
