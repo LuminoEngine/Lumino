@@ -9,7 +9,7 @@ LN_NAMESPACE_BEGIN
 LN_ENUM_FLAGS(ModelCreationFlag)
 {
 	None = 0x0000,
-	IgnoreTextureNotFound = 0x04,		///< マテリアルに含まれるテクスチャファイルが見つからなくても無視する
+	StrictResourceLoading = 0x04,		///< マテリアルに含まれるテクスチャファイルが見つからなくても無視する
 	//ModelCreateFlag_CopyMaterials = 0x08,		///< マテリアルを共有せずにコピーする
 };
 LN_ENUM_FLAGS_DECLARE(ModelCreationFlag)

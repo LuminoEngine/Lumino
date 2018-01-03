@@ -160,6 +160,8 @@ TEST_F(Test_IO_FileSystem, writeAllText)
 //------------------------------------------------------------------------------
 TEST_F(Test_IO_FileSystem, getFiles)
 {
+
+
 	// <Test> ファイル列挙
 	{
 		auto files = FileSystem::getFiles(LN_LOCALFILE("TestData/Files2"));
@@ -236,3 +238,13 @@ TEST_F(Test_IO_FileSystem, getFiles)
 	//}
 }
 
+TEST_F(Test_IO_FileSystem, enumerateFiles)
+{
+	tr::Enumerator<PathName> pathes = FileSystem::enumerateFiles(_T("D:\\MMD\\Materials\\Models\\人物"), StringRef());
+
+	for (auto& path : pathes)
+	{
+		wprintf(L"%s\n", path.c_str());
+	}
+
+}

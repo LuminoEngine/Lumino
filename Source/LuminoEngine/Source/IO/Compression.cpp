@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 #include <fstream>
 #include "../Internal.h"
@@ -44,6 +44,8 @@ public:
 		std::vector<char> buffer;
 		buffer.resize(TempBufferSize);
 
+		FileSystem::createDirectory(m_destinationDirectoryPath);
+
 		int err = unzGoToFirstFile(m_zipFile);
 		if (err == UNZ_OK)
 		{
@@ -59,7 +61,8 @@ public:
 				String filePath = String::fromCString(filePathInZip, fileInfo.size_filename, pathEncoding);
 
 				// Directory?
-				if (filePathInZip[fileInfo.size_filename - 1] == '/')
+				if (filePathInZip[fileInfo.size_filename - 1] == '/' ||
+					filePathInZip[fileInfo.size_filename - 1] == '\\')
 				{
 					Path path = Path(m_destinationDirectoryPath, filePath);
 					FileSystem::createDirectory(path);
@@ -69,9 +72,13 @@ public:
 				{
 					//err = unzOpenCurrentFilePassword(m_zf, m_password.c_str());
 					err = unzOpenCurrentFile(m_zipFile);
-					if (LN_ENSURE(err == UNZ_OK)) return;
+					if (LN_ENSURE(err == UNZ_OK, "unzOpenCurrentFile (%d)", err)) return;
 
 					Path path = Path(m_destinationDirectoryPath, filePath);
+
+					// ディレクトリのエンティティが含まれていないこともあるのでフォルダ作成を試行する
+					FileSystem::createDirectory(path.getParent());
+
 					auto outputFile = FileStream::create(path.c_str(), FileOpenMode::write | FileOpenMode::Truncate);
 
 					do

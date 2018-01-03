@@ -16,7 +16,7 @@ void Console::writeLine()
 
 void Console::writeLine(const String& str)
 {
-	fwprintf(stdout, L"%s", str.c_str());
+	fwprintf(stdout, L"%s\n", str.c_str());
 }
 
 #else

@@ -421,7 +421,7 @@ Ref<Texture> ModelManager::createTexture(const PathName& parentDir, const String
 	PathName path(parentDir, filePath);
 
 	// FileNotFound を無視する場合
-	if (flags.TestFlag(ModelCreationFlag::IgnoreTextureNotFound))
+	if (!flags.TestFlag(ModelCreationFlag::StrictResourceLoading))
 	{
 		if (!m_fileManager->existsFile(path)) {	// TODO: PathName へ変換するときメモリ確保が走る
 			return nullptr;
