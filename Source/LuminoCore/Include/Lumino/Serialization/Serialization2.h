@@ -42,8 +42,7 @@ public:
 	ArchiveStore()
 		: m_nextName()
 		, m_nextIndex(0)
-		, m_readingNodeType()
-		, m_readingArrayElementCount(0)
+		//, m_readingArrayElementCount(0)
 	{}
 
 	// save のときは、次に write する値の名前。
@@ -54,8 +53,10 @@ public:
 
 	//-----------------------------------------------------------------------------
 	// Save
-	void writeObject() { onWriteObject(); m_nextName.clear(); }
-	void writeArray() { onWriteArray(); m_nextName.clear(); }
+	void writeObject() { onWriteObject(); m_nextName.clear(); /*m_nodeStack.push(NodeInfo{ ArchiveNodeType::Object });*/ }
+	void writeArray() { onWriteArray(); m_nextName.clear(); /*m_nodeStack.push(NodeInfo{ ArchiveNodeType::Array });*/ }
+	void writeObjectEnd() { onWriteObjectEnd(); m_nextName.clear(); /*m_nodeStack.pop();*/ }
+	void writeArrayEnd() { onWriteArrayEnd(); m_nextName.clear(); /*m_nodeStack.pop();*/ }
 	void writeValue(bool value) { onWriteValueBool(value); m_nextName.clear(); }
 	void writeValue(int64_t value) { onWriteValueInt64(value); m_nextName.clear(); }
 	void writeValue(double value) { onWriteValueDouble(value); m_nextName.clear(); }
@@ -63,31 +64,40 @@ public:
 
 	//-----------------------------------------------------------------------------
 	// Load
-	ArchiveNodeType getNodeType() const { return m_readingNodeType; }
-	int getArrayElementCount() const { return m_readingArrayElementCount; }
+	ArchiveNodeType getNodeType() const { return onGetNodeType(); }// { return m_nodeStack.top().m_readingNodeType; }
+	int getArrayElementCount() const { return onReadArrayElementCount(); }
 	void setNextIndex(int index) { m_nextIndex = index; }	// setNextName() と同じように使う Array 版
 	int getNextIndex() const { return m_nextIndex; }
 	bool readNode()
 	{
-		bool r = onReadNode(&m_readingArrayElementCount);
-		m_readingNodeType = (m_readingArrayElementCount >= 0) ? ArchiveNodeType::Array : ArchiveNodeType::Object;
+		int dummy;
+		bool r = onReadNode(&dummy);//&m_readingArrayElementCount);
+		//m_nodeStack.push(NodeInfo{});
+		//m_nodeStack.top().m_readingNodeType = (m_readingArrayElementCount >= 0) ? ArchiveNodeType::Array : ArchiveNodeType::Object;
 		postRead();
 		return r;
 	}		// Object Node をカレントにする
+	void readNodeEnd() { onReadNodeEnd(); /*m_nodeStack.pop();*/ }
 	bool readValue(bool* outValue) { bool r = onReadValueBool(outValue); postRead(); return r; }
 	bool readValue(int64_t* outValue) { bool r = onReadValueInt64(outValue); postRead(); return r; }
 	bool readValue(double* outValue) { bool r = onReadValueDouble(outValue); postRead(); return r; }
 	bool readValue(String* outValue) { bool r = onReadValueString(outValue); postRead(); return r; }
 
 protected:
+	virtual ArchiveNodeType onGetNodeType() const = 0;
+
 	virtual void onWriteObject() = 0;
 	virtual void onWriteArray() = 0;
+	virtual void onWriteObjectEnd() = 0;
+	virtual void onWriteArrayEnd() = 0;
 	virtual void onWriteValueBool(bool value) = 0;
 	virtual void onWriteValueInt64(int64_t value) = 0;
 	virtual void onWriteValueDouble(double value) = 0;
 	virtual void onWriteValueString(const String& value) = 0;
 
 	virtual bool onReadNode(int* outElementCount) = 0;
+	virtual void onReadNodeEnd() = 0;
+	virtual int onReadArrayElementCount() const = 0;
 	virtual bool onReadValueBool(bool* outValue) = 0;
 	virtual bool onReadValueInt64(int64_t* outValue) = 0;
 	virtual bool onReadValueDouble(double* outValue) = 0;
@@ -100,10 +110,15 @@ private:
 		m_nextIndex = 0;
 	}
 
+	//struct NodeInfo
+	//{
+	//	ArchiveNodeType	m_readingNodeType;
+	//};
+
 	String	m_nextName;
 	int		m_nextIndex;
-	ArchiveNodeType	m_readingNodeType;
-	int				m_readingArrayElementCount;
+	//int				m_readingArrayElementCount;
+	//std::stack<NodeInfo>	m_nodeStack;
 };
 
 class JsonArchiveStore
@@ -121,6 +136,16 @@ public:
 	}
 
 protected:
+	virtual ArchiveNodeType onGetNodeType() const override
+	{
+		if (m_nodeStack.top()->getType() == tr::JsonValueType::Object)
+			return ArchiveNodeType::Object;
+		else if (m_nodeStack.top()->getType() == tr::JsonValueType::Array)
+			return ArchiveNodeType::Array;
+		else
+			LN_UNREACHABLE();
+	}
+
 	virtual void onWriteObject() override
 	{
 		if (m_nodeStack.top()->getType() == tr::JsonValueType::Object)
@@ -157,6 +182,16 @@ protected:
 		{
 			LN_UNREACHABLE();
 		}
+	}
+
+	virtual void onWriteObjectEnd() override
+	{
+		m_nodeStack.pop();
+	}
+
+	virtual void onWriteArrayEnd() override
+	{
+		m_nodeStack.pop();
 	}
 
 #define ON_WRITE_VALUE_FUNC(type, name) \
@@ -214,6 +249,21 @@ protected:
 		}
 
 		return true;
+	}
+
+	virtual void onReadNodeEnd() override
+	{
+		m_nodeStack.pop();
+	}
+
+	virtual int onReadArrayElementCount() const override
+	{
+		if (m_nodeStack.top()->getType() == tr::JsonValueType::Object)
+			return -1;
+		else if (m_nodeStack.top()->getType() == tr::JsonValueType::Array)
+			return static_cast<tr::JsonArray2*>(m_nodeStack.top())->getElementCount();
+		else
+			LN_UNREACHABLE();
 	}
 
 	tr::JsonValue2* readValueHelper()
@@ -464,9 +514,15 @@ public:
 		}
 	}
 
-	void makeArrayTag()
+	void makeArrayTag(int* outSize)
 	{
 		moveState(NodeHeadState::Array);
+
+		if (isLoading())
+		{
+			if (LN_REQUIRE(m_store->getNodeType() == ArchiveNodeType::Array)) return;
+			if (outSize) *outSize = m_store->getArrayElementCount();
+		}
 	}
 
 private:
@@ -625,6 +681,11 @@ private:
 		m_nodeInfoStack.push(NodeInfo{});
 		m_nodeInfoStack.top().classVersion = getClassVersion<TValue>();//ln::detail::SerializeClassVersionInfo<TValue>::value;
 		value.serialize(*this);
+		m_nodeInfoStack.pop();
+		if (m_store->getNodeType() == ArchiveNodeType::Object)
+			m_store->writeObjectEnd();
+		else if (m_store->getNodeType() == ArchiveNodeType::Array)
+			m_store->writeArrayEnd();
 	}
 
 	// メンバ関数として serialize を持たない型の writeValue()
@@ -636,6 +697,11 @@ private:
 		m_nodeInfoStack.push(NodeInfo{});
 		m_nodeInfoStack.top().classVersion = getClassVersion<TValue>();//ln::detail::SerializeClassVersionInfo<TValue>::value;
 		serialize(*this, value);
+		m_nodeInfoStack.pop();
+		if (m_store->getNodeType() == ArchiveNodeType::Object)
+			m_store->writeObjectEnd();
+		else if (m_store->getNodeType() == ArchiveNodeType::Array)
+			m_store->writeArrayEnd();
 	}
 
 	void writeClassVersion()
@@ -708,8 +774,11 @@ private:
 	{
 		m_nodeInfoStack.push(NodeInfo{});
 		m_store->readNode();
-		readClassVersion();
+		if (m_store->getNodeType() == ArchiveNodeType::Object)
+			readClassVersion();
 		outValue.serialize(*this);
+		m_store->readNodeEnd();
+		m_nodeInfoStack.pop();
 	}
 
 	// メンバ関数として serialize を持たない型の readValue()
@@ -720,8 +789,11 @@ private:
 	{
 		m_nodeInfoStack.push(NodeInfo{});
 		m_store->readNode();
-		readClassVersion();
+		if (m_store->getNodeType() == ArchiveNodeType::Object)
+			readClassVersion();
 		serialize(*this, outValue);
+		m_store->readNodeEnd();
+		m_nodeInfoStack.pop();
 	}
 
 	void readClassVersion()
@@ -742,11 +814,27 @@ private:
 
 
 template<typename TValue>
-void serialize(Archive2& ar, const Ref<TValue>& ptr)
+void serialize(Archive2& ar, const Ref<TValue>& value)
 {
-	ptr->serialize(ar);
+	value->serialize(ar);
 }
 
+template<typename TValue>
+void serialize(Archive2& ar, List<TValue>& value)
+{
+	int size = 0;
+	ar.makeArrayTag(&size);
+
+	if (ar.isLoading())
+	{
+		value.resize(size);
+	}
+
+	for (TValue& v : value)
+	{
+		ar.process(v);
+	}
+}
 
 
 #define LN_NVP2(var)		::ln::makeNVP(_LT(#var), var)

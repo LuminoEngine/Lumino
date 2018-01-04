@@ -62,6 +62,7 @@ TEST_F(Test_Serialization2, SimpleSave)
 * [ ] ベースクラス
 - [ ] load 時、メンバが見つからなかったとき
 - [ ] 1つもメンバなしで serialize()
+- [ ] JsonArchiveStore コンストラクタ単純化
 */
 
 
@@ -119,7 +120,7 @@ TEST_F(Test_Serialization2, RootNode_Json)
 		int ary[3];
 		void serialize(Archive2& ar)
 		{
-			ar.makeArrayTag();
+			ar.makeArrayTag(nullptr);
 			ar.process(ary[0]);
 			ar.process(ary[1]);
 			ar.process(ary[2]);
@@ -447,10 +448,89 @@ TEST_F(Test_Serialization2, ObjectTest)
 	}
 }
 
-
 //------------------------------------------------------------------------------
-//## List<>
+//## List<> をシリアライズしたい
 
+class ListTest1
+	: public ln::Object
+{
+public:
+	int x = 0;
+
+	void serialize(Archive2& ar)
+	{
+		ar & LN_NVP2(x);
+	}
+};
+
+TEST_F(Test_Serialization2, List)
+{
+	String json;
+
+	//- [ ] プリミティブ型 List の Save
+	{
+		tr::JsonDocument2 doc;
+		JsonArchiveStore s(&doc);
+		Archive2 ar(&s, ArchiveMode::Save);
+
+		List<int> t = { 1, 2, 3 };
+		ar.process(t);
+
+		json = doc.toString();
+		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":[1,2,3]}"), json);
+	}
+
+	//- [ ] プリミティブ型 List のLoad
+	{
+		tr::JsonDocument2 doc;
+		doc.parse(json);
+		JsonArchiveStore s(&doc);
+		Archive2 ar(&s, ArchiveMode::Load);
+
+		List<int> t;
+		ar.process(t);
+
+		ASSERT_EQ(3, t.getCount());
+		ASSERT_EQ(1, t[0]);
+		ASSERT_EQ(2, t[1]);
+		ASSERT_EQ(3, t[2]);
+	}
+
+	//- [ ] Ref<> 型 List の Save
+	{
+		tr::JsonDocument2 doc;
+		JsonArchiveStore s(&doc);
+		Archive2 ar(&s, ArchiveMode::Save);
+
+		List<Ref<ListTest1>> t;
+		t.add(newObject<ListTest1>()); t.getLast()->x = 10;
+		t.add(newObject<ListTest1>()); t.getLast()->x = 20;
+		t.add(newObject<ListTest1>()); t.getLast()->x = 30;
+		ar.process(t);
+
+		json = doc.toString();
+		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":[{\"x\":10},{\"x\":20},{\"x\":30}]}"), json);
+	}
+
+	//- [ ] プリミティブ型 List のLoad (Load 先のオブジェクトをあらかじめ作っておく場合)
+	{
+		tr::JsonDocument2 doc;
+		doc.parse(json);
+		JsonArchiveStore s(&doc);
+		Archive2 ar(&s, ArchiveMode::Load);
+
+		List<Ref<ListTest1>> t;
+		t.add(newObject<ListTest1>());
+		t.add(newObject<ListTest1>());
+		t.add(newObject<ListTest1>());
+		ar.process(t);
+
+		ASSERT_EQ(3, t.getCount());
+		ASSERT_EQ(10, t[0]->x);
+		ASSERT_EQ(20, t[1]->x);
+		ASSERT_EQ(30, t[2]->x);
+	}
+}
 
 
 
