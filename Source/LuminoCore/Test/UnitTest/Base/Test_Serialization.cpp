@@ -273,6 +273,76 @@ TEST_F(Test_Serialization2, PrimitiveValues)
 }
 
 
+//------------------------------------------------------------------------------
+class ClassVersionTest1
+{
+public:
+	int x = 0;
+	bool flag = false;
+	void serialize(Archive2& ar)
+	{
+		ar & LN_NVP2(x);
+		ar & LN_NVP2(flag);
+	}
+};
+LN_SERIALIZE_CLASS_VERSION(ClassVersionTest1, 1);
+
+class ClassVersionTest2
+{
+public:
+	int x = -1;
+	int flags = 0;
+	void serialize(Archive2& ar)
+	{
+		ar & LN_NVP2(x);
+
+		if (ar.isSaving())
+		{
+			ar & LN_NVP2(flags);
+		}
+		else
+		{
+			bool oldFlag = true;
+			ar & ln::makeNVP(_T("flag"), oldFlag);
+			if (!oldFlag) flags = 0xFF;
+		}
+	}
+};
+LN_SERIALIZE_CLASS_VERSION(ClassVersionTest2, 2);
+
+//## クラスバージョンを付けたい
+//## Save と Load で異なる処理をしたい
+TEST_F(Test_Serialization2, ClassVersion)
+{
+	String json;
+
+	// Save
+	{
+		tr::JsonDocument2 doc;
+		JsonArchiveStore s(&doc);
+		Archive2 ar(&s, ArchiveMode::Save);
+
+		ClassVersionTest1 t1;
+		ar.process(t1);
+
+		json = doc.toString();
+		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":{\"lumino_class_version\":1,\"x\":0,\"flag\":false}}"), json);
+	}
+
+	//- [ ] root の名前無し Object を Load
+	{
+		tr::JsonDocument2 doc;
+		doc.parse(json);
+		JsonArchiveStore s(&doc);
+		Archive2 ar(&s, ArchiveMode::Load);
+
+		ClassVersionTest2 t2;
+		ar.process(t2);
+
+		ASSERT_EQ(0, t2.x);
+		ASSERT_EQ(0xFF, t2.flags);
+	}
+}
 
 //
 //class Archive2

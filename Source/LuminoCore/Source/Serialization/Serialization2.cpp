@@ -22,6 +22,8 @@ LN_NAMESPACE_BEGIN
 const int Archive2::ArchiveVersion = 1;
 const Char* Archive2::ArchiveVersionKey = _TT("lumino_archive_version");
 const Char* Archive2::ArchiveRootValueKey = _TT("lumino_archive_root");
+const Char* Archive2::ClassNameKey = _TT("lumino_class_name");
+const Char* Archive2::ClassVersionKey = _TT("lumino_class_version");
 
 //Archive2::Archive2(tr::ISerializationeStore* stream, ArchiveMode mode, bool refrectionSupported)
 //{

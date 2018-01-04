@@ -23,6 +23,12 @@ enum class ArchiveNodeType
 	Array,
 };
 
+enum class SerializeClassFormat
+{
+	Default,
+	String,
+};
+
 // save...
 // サブクラスは作成直後は root を作る必要は無い。
 // 最初はかならず writeObject か writeArray が呼ばれる。
@@ -61,17 +67,17 @@ public:
 	int getArrayElementCount() const { return m_readingArrayElementCount; }
 	void setNextIndex(int index) { m_nextIndex = index; }	// setNextName() と同じように使う Array 版
 	int getNextIndex() const { return m_nextIndex; }
-	void readNode()
+	bool readNode()
 	{
-		onReadNode(&m_readingArrayElementCount);
+		bool r = onReadNode(&m_readingArrayElementCount);
 		m_readingNodeType = (m_readingArrayElementCount >= 0) ? ArchiveNodeType::Array : ArchiveNodeType::Object;
 		postRead();
+		return r;
 	}		// Object Node をカレントにする
-	//void readArray() { m_readingNodeType = ArchiveNodeType::Array; onReadArray(&m_readingArrayElementCount); postRead(); }			// Array Node をカレントにする
-	void readValue(bool* outValue) { onReadValueBool(outValue); postRead(); }
-	void readValue(int64_t* outValue) { onReadValueInt64(outValue); postRead(); }
-	void readValue(double* outValue) { onReadValueDouble(outValue); postRead(); }
-	void readValue(String* outValue) { onReadValueString(outValue); postRead(); }
+	bool readValue(bool* outValue) { bool r = onReadValueBool(outValue); postRead(); return r; }
+	bool readValue(int64_t* outValue) { bool r = onReadValueInt64(outValue); postRead(); return r; }
+	bool readValue(double* outValue) { bool r = onReadValueDouble(outValue); postRead(); return r; }
+	bool readValue(String* outValue) { bool r = onReadValueString(outValue); postRead(); return r; }
 
 protected:
 	virtual void onWriteObject() = 0;
@@ -81,12 +87,11 @@ protected:
 	virtual void onWriteValueDouble(double value) = 0;
 	virtual void onWriteValueString(const String& value) = 0;
 
-	//virtual void onReadObject() = 0;
-	virtual void onReadNode(int* outElementCount) = 0;
-	virtual void onReadValueBool(bool* outValue) = 0;
-	virtual void onReadValueInt64(int64_t* outValue) = 0;
-	virtual void onReadValueDouble(double* outValue) = 0;
-	virtual void onReadValueString(String* outValue) = 0;
+	virtual bool onReadNode(int* outElementCount) = 0;
+	virtual bool onReadValueBool(bool* outValue) = 0;
+	virtual bool onReadValueInt64(int64_t* outValue) = 0;
+	virtual bool onReadValueDouble(double* outValue) = 0;
+	virtual bool onReadValueString(String* outValue) = 0;
 
 private:
 	void postRead()
@@ -179,30 +184,14 @@ protected:
 
 #undef ON_WRITE_VALUE_FUNC
 
-	//virtual void onReadObject() override
-	//{
-	//	if (checkTopType(tr::JsonValueType::Object))
-	//	{
-	//		if (LN_REQUIRE(hasNextName())) return;
-	//		tr::JsonElement2* v = static_cast<tr::JsonObject2*>(m_nodeStack.top())->find(getNextName());
-	//		if (LN_ENSURE(v->getType() == tr::JsonValueType::Object)) return;
-	//		m_nodeStack.push(v);
-	//	}
-	//	else if (checkTopType(tr::JsonValueType::Array))
-	//	{
-	//		tr::JsonElement2* v = static_cast<tr::JsonArray2*>(m_nodeStack.top())->getElement(getNextIndex());
-	//		if (LN_ENSURE(v->getType() == tr::JsonValueType::Object)) return;
-	//		m_nodeStack.push(v);
-	//	}
-	//}
-
-	virtual void onReadNode(int* outElementCount) override
+	virtual bool onReadNode(int* outElementCount) override
 	{
 		tr::JsonElement2* element;
 		if (checkTopType(tr::JsonValueType::Object))
 		{
-			if (LN_REQUIRE(hasNextName())) return;
+			if (LN_REQUIRE(hasNextName())) return false;
 			element = static_cast<tr::JsonObject2*>(m_nodeStack.top())->find(getNextName());
+			if (!element) return false;
 			m_nodeStack.push(element);
 		}
 		else if (checkTopType(tr::JsonValueType::Array))
@@ -223,6 +212,8 @@ protected:
 		{
 			LN_NOTIMPLEMENTED();
 		}
+
+		return true;
 	}
 
 	tr::JsonValue2* readValueHelper()
@@ -249,44 +240,60 @@ protected:
 		}
 	}
 
-	virtual void onReadValueBool(bool* outValue) override
+	virtual bool onReadValueBool(bool* outValue) override
 	{
 		tr::JsonValue2* v = readValueHelper();
+		if (!v) return false;
+
 		if (v->getType() == tr::JsonValueType::Bool)
 			*outValue = v->getBool();
 		else
 			LN_UNREACHABLE();
+
+		return true;
 	}
 
-	virtual void onReadValueInt64(int64_t* outValue) override
+	virtual bool onReadValueInt64(int64_t* outValue) override
 	{
 		tr::JsonValue2* v = readValueHelper();
+		if (!v) return false;
+
 		if (v->getType() == tr::JsonValueType::Int32)
 			*outValue = v->getInt32();
 		else if (v->getType() == tr::JsonValueType::Int64)
 			*outValue = v->getInt64();
 		else
 			LN_UNREACHABLE();
+
+		return true;
 	}
 
-	virtual void onReadValueDouble(double* outValue) override
+	virtual bool onReadValueDouble(double* outValue) override
 	{
 		tr::JsonValue2* v = readValueHelper();
+		if (!v) return false;
+
 		if (v->getType() == tr::JsonValueType::Float)
 			*outValue = v->getFloat();
 		else if (v->getType() == tr::JsonValueType::Double)
 			*outValue = v->getDouble();
 		else
 			LN_UNREACHABLE();
+
+		return true;
 	}
 
-	virtual void onReadValueString(String* outValue) override
+	virtual bool onReadValueString(String* outValue) override
 	{
 		tr::JsonValue2* v = readValueHelper();
+		if (!v) return false;
+
 		if (v->getType() == tr::JsonValueType::String)
 			*outValue = v->getString();
 		else
 			LN_UNREACHABLE();
+
+		return true;
 	}
 
 private:
@@ -340,7 +347,36 @@ public:
 	static bool const value = !type::value;
 };
 
+template <class T> struct SerializeClassVersionInfo
+{
+	static const int value = 0;
+};
+
+template <class T> struct SerializeClassFormatInfo
+{
+	static const SerializeClassFormat value = SerializeClassFormat::Default;
+};
+
 } // namespace detail
+
+
+#define LN_SERIALIZE_CLASS_VERSION(type, version) \
+	namespace ln { namespace detail { \
+		template<> struct SerializeClassVersionInfo<type> \
+		{ \
+			static const int value = version; \
+		}; \
+	} }
+
+#define LN_SERIALIZE_CLASS_FORMAT(type, format)	\
+	namespace ln { namespace detail { \
+		template<> struct SerializeClassFormatInfo<type> \
+		{ \
+			static const SerializeClassFormat value = format; \
+		}; \
+	} }
+
+
 
 
 /**
@@ -354,6 +390,8 @@ public:
 	static const int ArchiveVersion;
 	static const Char* ArchiveVersionKey;
 	static const Char* ArchiveRootValueKey;
+	static const Char* ClassNameKey;
+	static const Char* ClassVersionKey;
 
 	Archive2(ArchiveStore* store, ArchiveMode mode)
 		: m_store(store)
@@ -377,6 +415,12 @@ public:
 	~Archive2()
 	{
 	}
+
+	bool isSaving() const { return m_mode == ArchiveMode::Save; }
+
+	bool isLoading() const { return m_mode == ArchiveMode::Load; }
+
+	int version() const { return m_nodeInfoStack.top().classVersion; }
 
 	template<typename T>
 	Archive2& operator & (T && value)
@@ -423,9 +467,10 @@ private:
 	struct NodeInfo
 	{
 		NodeHeadState	headState = NodeHeadState::Ready;
-		bool			root = false;	// ユーザーデータのルート
+		//bool			root = false;	// ユーザーデータのルート
 		//bool	nodeHeadCommited = false;
 		int				arrayIndex = -1;
+		int classVersion = 0;
 	};
 
 	//-----------------------------------------------------------------------------
@@ -441,8 +486,8 @@ private:
 		m_store->setNextName(ArchiveRootValueKey);
 
 		// "root": の下にいる状態にする
-		m_nodeInfoStack.push(NodeInfo{});	// Object か Array かはまだわからない。待ち。
-		m_nodeInfoStack.top().root = true;
+		//m_nodeInfoStack.push(NodeInfo{});	// Object か Array かはまだわからない。待ち。
+		//m_nodeInfoStack.top().root = true;
 	}
 
 	template<typename TValue>
@@ -471,6 +516,7 @@ private:
 		if (m_nodeInfoStack.top().headState == NodeHeadState::Object)
 		{
 			m_store->writeObject();
+			writeClassVersion();
 			moveState(NodeHeadState::Commited);
 		}
 		else if (m_nodeInfoStack.top().headState == NodeHeadState::Array)
@@ -485,12 +531,7 @@ private:
 		switch (m_nodeInfoStack.top().headState)
 		{
 			case NodeHeadState::Ready:
-				//if (m_nodeInfoStack.top().root)
-				//{
 
-				//}
-
-			//case NodeHeadState::Pending:
 				if (req == NodeHeadState::RequestPrimitiveValue)	// キー名無しでいきなり値を書こうとした。Array 確定
 				{
 					m_nodeInfoStack.top().headState = NodeHeadState::Object;
@@ -498,7 +539,6 @@ private:
 				else
 					m_nodeInfoStack.top().headState = req;
 				break;
-				//break;
 			case NodeHeadState::UserObject:
 				if (req == NodeHeadState::RequestPrimitiveValue)
 				{
@@ -552,6 +592,7 @@ private:
 		void writeValue(TValue& value)	// メンバ serialize() が const 関数とは限らないのでここは非 const 参照
 	{
 		m_nodeInfoStack.push(NodeInfo{});
+		m_nodeInfoStack.top().classVersion = ln::detail::SerializeClassVersionInfo<TValue>::value;
 		value.serialize(*this);
 	}
 
@@ -562,7 +603,17 @@ private:
 		void writeValue(TValue& value)
 	{
 		m_nodeInfoStack.push(NodeInfo{});
+		m_nodeInfoStack.top().classVersion = ln::detail::SerializeClassVersionInfo<TValue>::value;
 		serialize(*this, value);
+	}
+
+	void writeClassVersion()
+	{
+		if (m_nodeInfoStack.top().classVersion > 0)
+		{
+			m_store->setNextName(ClassVersionKey);
+			writeValue(m_nodeInfoStack.top().classVersion);
+		}
 	}
 
 	//-----------------------------------------------------------------------------
@@ -597,23 +648,6 @@ private:
 		}
 	}
 
-	//void preReadValue(NodeHeadSeq type)
-	//{
-	//	if (!m_nodeInfoStack.top().nodeHeadCommited)
-	//	{
-	//		if (type == NodeHeadSeq::Object)
-	//		{
-	//			m_store->readObject();
-	//			m_nodeInfoStack.top().nodeHeadCommited = true;
-	//		}
-	//		else if (type == NodeHeadSeq::Array)
-	//		{
-	//			m_store->readArray();
-	//			m_nodeInfoStack.top().nodeHeadCommited = true;
-	//		}
-	//	}
-	//}
-
 	void readArchiveHeader()
 	{
 		//TODO: JsonDocument2 がルート Object 固定なので今は制御できない
@@ -642,9 +676,9 @@ private:
 		typename std::enable_if<detail::has_member_serialize_function<TValue>::value, std::nullptr_t>::type = nullptr>
 	void readValue(TValue& outValue)
 	{
-		printf("r has_member_serialize_function\n");
-		//m_nodeInfoStack.push(NodeInfo{});
+		m_nodeInfoStack.push(NodeInfo{});
 		m_store->readNode();
+		readClassVersion();
 		outValue.serialize(*this);
 	}
 
@@ -654,10 +688,20 @@ private:
 		typename std::enable_if<detail::non_member_serialize_function<TValue>::value, std::nullptr_t>::type = nullptr>
 	void readValue(TValue& outValue)
 	{
-		printf("r not has_member_serialize_function\n");
-		//m_nodeInfoStack.push(NodeInfo{});
+		m_nodeInfoStack.push(NodeInfo{});
 		m_store->readNode();
+		readClassVersion();
 		serialize(*this, outValue);
+	}
+
+	void readClassVersion()
+	{
+		m_store->setNextName(ClassVersionKey);
+		int64_t version;
+		if (m_store->readValue(&version))
+		{
+			m_nodeInfoStack.top().classVersion = version;
+		}
 	}
 
 	ArchiveStore* m_store;
