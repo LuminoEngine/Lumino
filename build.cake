@@ -26,15 +26,16 @@ Task("Restore-NuGet-Packages")
 {
 });
 
-Task("Build")
-    .IsDependentOn("Restore-NuGet-Packages")
+Task("Build-LuminoBuild")
+    .IsDependentOn("Clean")
     .Does(() =>
 {
     if(IsRunningOnWindows())
     {
       // Use MSBuild
       MSBuild("./Build/LuminoBuild.sln", settings =>
-        settings.SetConfiguration(configuration));
+        settings.SetConfiguration(configuration)
+            .SetPlatformTarget(PlatformTarget.x86));
     }
     else
     {
@@ -42,7 +43,19 @@ Task("Build")
       XBuild("./Build/LuminoBuild.sln", settings =>
         settings.SetConfiguration(configuration));
     }
+});
 
+Task("Make-Projects")
+    .IsDependentOn("Build-LuminoBuild")
+    .Does(() =>
+{
+    StartProcess("./Build/LuminoBuild/bin/Release/LuminoBuild.exe", "MakeVSProjects");
+});
+
+Task("Build")
+    .IsDependentOn("Build-LuminoBuild")
+    .Does(() =>
+{
     StartProcess("./Build/LuminoBuild/bin/Release/LuminoBuild.exe");
 });
 

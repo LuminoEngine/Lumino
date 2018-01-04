@@ -278,6 +278,11 @@ set(LN_SOURCES_Math
 	Source/Math/ViewFrustum.cpp
 )
 
+set(LN_SOURCES_Serialization
+	Include/Lumino/Serialization/Serialization2.h
+	Source/Serialization/Serialization2.cpp
+)
+
 set(LN_SOURCES_Testing
 	Include/Lumino/Testing/TestHelper.h
 	Source/Testing/TestHelper.cpp
@@ -300,15 +305,16 @@ endif()
 
 #--------------------------------------
 # Grouping.
-source_group("Base"			FILES ${LN_SOURCES_Base})
-source_group("Text"			FILES ${LN_SOURCES_Text})
-source_group("IO"			FILES ${LN_SOURCES_IO})
-source_group("Json"			FILES ${LN_SOURCES_Json})
-source_group("Threading"	FILES ${LN_SOURCES_Threading})
-source_group("Xml"			FILES ${LN_SOURCES_Xml})
-source_group("Reflection"	FILES ${LN_SOURCES_Reflection})
-source_group("Math"			FILES ${LN_SOURCES_Math})
-source_group("Testing"		FILES ${LN_SOURCES_Testing})
+source_group("Base"				FILES ${LN_SOURCES_Base})
+source_group("Text"				FILES ${LN_SOURCES_Text})
+source_group("IO"				FILES ${LN_SOURCES_IO})
+source_group("Json"				FILES ${LN_SOURCES_Json})
+source_group("Threading"		FILES ${LN_SOURCES_Threading})
+source_group("Xml"				FILES ${LN_SOURCES_Xml})
+source_group("Reflection"		FILES ${LN_SOURCES_Reflection})
+source_group("Math"				FILES ${LN_SOURCES_Math})
+source_group("Serialization"	FILES ${LN_SOURCES_Serialization})
+source_group("Testing"			FILES ${LN_SOURCES_Testing})
 
 set(LN_SOURCES
 	Include/LuminoCore.h
@@ -323,6 +329,7 @@ set(LN_SOURCES
 	${LN_SOURCES_Xml}
 	${LN_SOURCES_Reflection}
 	${LN_SOURCES_Math}
+	${LN_SOURCES_Serialization}
 	${LN_SOURCES_Testing})
 
 set(LN_INCLUDE_DIRECTORIES
