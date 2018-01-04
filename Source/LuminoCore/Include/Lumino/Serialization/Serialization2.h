@@ -325,7 +325,7 @@ class has_member_serialize_function
 {
 private:
 	template<typename U>
-	static auto check(U v) -> decltype(v.serialize(*reinterpret_cast<Archive2*>(nullptr)), std::true_type());
+	static auto check(U&& v) -> decltype(v.serialize(*reinterpret_cast<Archive2*>(nullptr)), std::true_type());
 	static auto check(...) -> decltype(std::false_type());
 
 public:
@@ -339,7 +339,7 @@ class non_member_serialize_function
 {
 private:
 	template<typename U>
-	static auto check(U v) -> decltype(v.serialize(*reinterpret_cast<Archive2*>(nullptr)), std::true_type());
+	static auto check(U&& v) -> decltype(v.serialize(*reinterpret_cast<Archive2*>(nullptr)), std::true_type());
 	static auto check(...) -> decltype(std::false_type());
 
 public:
@@ -353,7 +353,7 @@ class has_static_member_class_version
 {
 private:
 	template<typename U>
-	static auto check(U v) -> decltype(U::lumino_class_version, std::true_type());
+	static auto check(U&& v) -> decltype(U::lumino_class_version, std::true_type());
 	static auto check(...) -> decltype(std::false_type());
 
 public:
@@ -739,6 +739,15 @@ private:
 	std::stack<NodeInfo>	m_nodeInfoStack;
 	int64_t	m_archiveVersion;
 };
+
+
+template<typename TValue>
+void serialize(Archive2& ar, const Ref<TValue>& ptr)
+{
+	ptr->serialize(ar);
+}
+
+
 
 #define LN_NVP2(var)		::ln::makeNVP(_LT(#var), var)
 

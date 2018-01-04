@@ -14,51 +14,52 @@ protected:
 };
 
 //------------------------------------------------------------------------------
-//TEST_F(Test_Serialization2, SimpleSave)
-//{
-//	class Test1
-//	{
-//		int x = 100;
-//	};
-//	class Test2
-//	{
-//	public:
-//		int x = 200;
-//		void serialize(Archive2& ar)
-//		{
-//			ar & LN_NVP2(x);
-//		}
-//	};
-//
-//	tr::JsonDocument2 doc;
-//	JsonArchiveStore s(&doc);
-//	Archive2 ar(&s, ArchiveMode::Save);
-//
-//	Test1 t1;
-//	Test2 t2;
-//	//ar.process(LN_NVP2(t1));
-//	ar.process(LN_NVP2(t2));
-//
-//	auto json = doc.toString();
-//
-//	{
-//		t2.x = 1;
-//
-//		tr::JsonDocument2 doc;
-//		doc.parse(json);
-//		JsonArchiveStore s(&doc);
-//		Archive2 ar(&s, ArchiveMode::Load);
-//
-//		ar.process(LN_NVP2(t2));
-//
-//
-//		printf("");
-//	}
-//}
+//## Basic
+TEST_F(Test_Serialization2, SimpleSave)
+{
+	class Test1
+	{
+		int x = 100;
+	};
+	class Test2
+	{
+	public:
+		int x = 200;
+		void serialize(Archive2& ar)
+		{
+			ar & LN_NVP2(x);
+		}
+	};
+
+	//- [ ] Save
+	tr::JsonDocument2 doc;
+	JsonArchiveStore s(&doc);
+	Archive2 ar(&s, ArchiveMode::Save);
+
+	Test1 t1;
+	Test2 t2;
+	//ar.process(LN_NVP2(t1));
+	ar.process(LN_NVP2(t2));
+
+	auto json = doc.toString();
+
+	//- [ ] Load
+	{
+		t2.x = 1;
+
+		tr::JsonDocument2 doc;
+		doc.parse(json);
+		JsonArchiveStore s(&doc);
+		Archive2 ar(&s, ArchiveMode::Load);
+
+		ar.process(LN_NVP2(t2));
+	}
+}
 
 /*
+- [ ] List<Ref<MyObject>>
+- [ ] Variant (イベントコマンド引数)
 * [ ] ベースクラス
-- [ ] クラスバージョン
 - [ ] load 時、メンバが見つからなかったとき
 - [ ] 1つもメンバなしで serialize()
 */
@@ -377,6 +378,98 @@ TEST_F(Test_Serialization2, ClassVersionInner)
 		ASSERT_EQ(1, t.ver);
 	}
 }
+
+//------------------------------------------------------------------------------
+//## Ref<> を通した Object の serialize をしてほしい
+// ダムポインタ（つまり、生ポインタなどint *）や参照はサポートしない。cereal と同じ。
+// https://uscilab.github.io/cereal/pointers.html
+// Lumino としては、「強参照」はシリアライズする。「弱参照(生ポインタやweak)」はシリアライズしない。
+// また、オブジェクトを new したりしない。（今後要検討。ただ、デフォルトではしない方向で）
+// 内部で new する場合、リフレクションの仕組みが必要。また、Ref<SceneNode> をシリアライズしようとしても、オブジェクトの実態は Sprite かもしれない。
+// うっかりリフレクション登録を忘れたまま load で new しようとすると、間違えて SceneNode を作ってしまう。ちょっと危険が多い。
+
+class ObjectTest1
+	: public ln::Object
+{
+public:
+	int x = 10;
+		
+	void serialize(Archive2& ar)
+	{
+		ar & LN_NVP2(x);
+	}
+};
+
+class ObjectTestRoot1
+	: public ln::Object
+{
+public:
+	ObjectTest1 * t1 = nullptr;
+	Ref<ObjectTest1> t2;
+
+	void serialize(Archive2& ar)
+	{
+		//ar & LN_NVP2(t1);	// Un supported
+		ar & LN_NVP2(t2);
+	}
+};
+
+TEST_F(Test_Serialization2, ObjectTest)
+{
+	String json;
+
+	//- [ ] Save
+	{
+		tr::JsonDocument2 doc;
+		JsonArchiveStore s(&doc);
+		Archive2 ar(&s, ArchiveMode::Save);
+
+		ObjectTestRoot1 t;
+		t.t2 = newObject<ObjectTest1>();
+		ar.process(t);
+
+		json = doc.toString();
+		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":{\"t2\":{\"x\":10}}}"), json);
+	}
+
+	//- [ ] Load
+	{
+		tr::JsonDocument2 doc;
+		doc.parse(json);
+		JsonArchiveStore s(&doc);
+		Archive2 ar(&s, ArchiveMode::Load);
+
+		ObjectTestRoot1 t;
+		t.t2 = newObject<ObjectTest1>();
+		ar.process(t);
+
+		ASSERT_EQ(10, t.t2->x);
+	}
+}
+
+
+//------------------------------------------------------------------------------
+//## List<>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //LN_SERIALIZE_CLASS_VERSION_NI(ClassVersionTest1, 1);
 
