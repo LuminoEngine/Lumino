@@ -347,6 +347,20 @@ public:
 	static bool const value = !type::value;
 };
 
+// void serialize(Archive2& ar) をメンバ関数として持っているか
+template<typename T>
+class has_static_member_class_version
+{
+private:
+	template<typename U>
+	static auto check(U v) -> decltype(U::lumino_class_version, std::true_type());
+	static auto check(...) -> decltype(std::false_type());
+
+public:
+	typedef decltype(check(std::declval<T>())) type;
+	static bool const value = type::value;
+};
+
 template <class T> struct SerializeClassVersionInfo
 {
 	static const int value = 0;
@@ -359,14 +373,18 @@ template <class T> struct SerializeClassFormatInfo
 
 } // namespace detail
 
-
-#define LN_SERIALIZE_CLASS_VERSION(type, version) \
+// non‐intrusive
+#define LN_SERIALIZE_CLASS_VERSION_NI(type, version) \
 	namespace ln { namespace detail { \
 		template<> struct SerializeClassVersionInfo<type> \
 		{ \
 			static const int value = version; \
 		}; \
 	} }
+
+#define LN_SERIALIZE_CLASS_VERSION(version) \
+	friend class ::ln::Archive2; \
+	static const int lumino_class_version = version;
 
 #define LN_SERIALIZE_CLASS_FORMAT(type, format)	\
 	namespace ln { namespace detail { \
@@ -377,7 +395,7 @@ template <class T> struct SerializeClassFormatInfo
 	} }
 
 
-
+	
 
 /**
 	@brief
@@ -466,10 +484,8 @@ private:
 
 	struct NodeInfo
 	{
-		NodeHeadState	headState = NodeHeadState::Ready;
-		//bool			root = false;	// ユーザーデータのルート
-		//bool	nodeHeadCommited = false;
-		int				arrayIndex = -1;
+		NodeHeadState headState = NodeHeadState::Ready;
+		int arrayIndex = -1;
 		int classVersion = 0;
 	};
 
@@ -497,15 +513,12 @@ private:
 		preWriteValue();
 
 		m_store->setNextName(nvp.name);
-
-		//preWriteValue();
 		writeValue(*nvp.value);
 	}
 
 	template<typename TValue>
 	void processSave(TValue& value)
 	{
-		//preWriteValue();
 		moveState((isPrimitiveType<TValue>()) ? NodeHeadState::RequestPrimitiveValue : NodeHeadState::UserObject);
 		preWriteValue();
 		writeValue(value);
@@ -558,6 +571,24 @@ private:
 		}
 	}
 
+
+
+	template<
+		typename TValue,
+		typename std::enable_if<detail::has_static_member_class_version<TValue>::value, std::nullptr_t>::type = nullptr>
+		int getClassVersion()
+	{
+		return TValue::lumino_class_version;
+	}
+
+	template<
+		typename TValue,
+		typename std::enable_if<!detail::has_static_member_class_version<TValue>::value, std::nullptr_t>::type = nullptr>
+		int getClassVersion()
+	{
+		return ln::detail::SerializeClassVersionInfo<TValue>::value;
+	}
+
 	template<typename T> bool isPrimitiveType() const { return false; }
 	template<> bool isPrimitiveType<bool>() const { return true; }
 	template<> bool isPrimitiveType<int8_t>() const { return true; }
@@ -592,7 +623,7 @@ private:
 		void writeValue(TValue& value)	// メンバ serialize() が const 関数とは限らないのでここは非 const 参照
 	{
 		m_nodeInfoStack.push(NodeInfo{});
-		m_nodeInfoStack.top().classVersion = ln::detail::SerializeClassVersionInfo<TValue>::value;
+		m_nodeInfoStack.top().classVersion = getClassVersion<TValue>();//ln::detail::SerializeClassVersionInfo<TValue>::value;
 		value.serialize(*this);
 	}
 
@@ -603,7 +634,7 @@ private:
 		void writeValue(TValue& value)
 	{
 		m_nodeInfoStack.push(NodeInfo{});
-		m_nodeInfoStack.top().classVersion = ln::detail::SerializeClassVersionInfo<TValue>::value;
+		m_nodeInfoStack.top().classVersion = getClassVersion<TValue>();//ln::detail::SerializeClassVersionInfo<TValue>::value;
 		serialize(*this, value);
 	}
 
@@ -622,7 +653,6 @@ private:
 	template<typename TValue>
 	void processLoad(NameValuePair<TValue>& nvp)
 	{
-		//preReadValue(NodeHeadSeq::Object);	// これから { name, vaue } を読むので、その親ノードは必ず Object
 		m_store->setNextName(nvp.name);
 		preReadValue();
 		readValue(*nvp.value);
@@ -710,16 +740,7 @@ private:
 	int64_t	m_archiveVersion;
 };
 
-//void serialize(Archive2& ar, int value)
-//{
-//
-//}
-//
-
-
-
-
-#define LN_NVP2(var)		ln::makeNVP(_LT(#var), var)
+#define LN_NVP2(var)		::ln::makeNVP(_LT(#var), var)
 
 template<typename TValue>
 NameValuePair<TValue> makeNVP(const Char* name, TValue& valueRef)

@@ -274,6 +274,9 @@ TEST_F(Test_Serialization2, PrimitiveValues)
 
 
 //------------------------------------------------------------------------------
+//## クラスバージョンを付けたい
+//## Save と Load で異なる処理をしたい
+
 class ClassVersionTest1
 {
 public:
@@ -285,7 +288,7 @@ public:
 		ar & LN_NVP2(flag);
 	}
 };
-LN_SERIALIZE_CLASS_VERSION(ClassVersionTest1, 1);
+LN_SERIALIZE_CLASS_VERSION_NI(ClassVersionTest1, 1);
 
 class ClassVersionTest2
 {
@@ -308,15 +311,13 @@ public:
 		}
 	}
 };
-LN_SERIALIZE_CLASS_VERSION(ClassVersionTest2, 2);
+LN_SERIALIZE_CLASS_VERSION_NI(ClassVersionTest2, 2);
 
-//## クラスバージョンを付けたい
-//## Save と Load で異なる処理をしたい
 TEST_F(Test_Serialization2, ClassVersion)
 {
 	String json;
 
-	// Save
+	//- [ ] Save
 	{
 		tr::JsonDocument2 doc;
 		JsonArchiveStore s(&doc);
@@ -329,7 +330,7 @@ TEST_F(Test_Serialization2, ClassVersion)
 		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":{\"lumino_class_version\":1,\"x\":0,\"flag\":false}}"), json);
 	}
 
-	//- [ ] root の名前無し Object を Load
+	//- [ ] Load
 	{
 		tr::JsonDocument2 doc;
 		doc.parse(json);
@@ -343,6 +344,41 @@ TEST_F(Test_Serialization2, ClassVersion)
 		ASSERT_EQ(0xFF, t2.flags);
 	}
 }
+
+
+//------------------------------------------------------------------------------
+//## クラスバージョンを class スコープに書きたい (serialize() に近いところに書きたい)
+
+class ClassVersionTest3
+{
+public:
+	int x = 0;
+	int ver = 0;
+
+	LN_SERIALIZE_CLASS_VERSION(1);
+	void serialize(Archive2& ar)
+	{
+		ar & LN_NVP2(x);
+		ver = ar.version();
+	}
+};
+
+TEST_F(Test_Serialization2, ClassVersionInner)
+{
+	//- [ ] Save
+	{
+		tr::JsonDocument2 doc;
+		JsonArchiveStore s(&doc);
+		Archive2 ar(&s, ArchiveMode::Save);
+
+		ClassVersionTest3 t;
+		ar.process(t);
+
+		ASSERT_EQ(1, t.ver);
+	}
+}
+
+//LN_SERIALIZE_CLASS_VERSION_NI(ClassVersionTest1, 1);
 
 //
 //class Archive2
