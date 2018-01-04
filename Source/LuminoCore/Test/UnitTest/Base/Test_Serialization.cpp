@@ -1,7 +1,278 @@
-#include <TestConfig.h>
+﻿#include <TestConfig.h>
 #include <Lumino/Base/Serialization.h>
 #include <Lumino/Json/JsonDocument.h>
 #include <Lumino/Reflection/ReflectionObject.h>
+#include <Lumino/Serialization/Serialization2.h>
+
+//==============================================================================
+//# シリアライズのテスト
+class Test_Serialization2 : public ::testing::Test
+{
+protected:
+	virtual void SetUp() {}
+	virtual void TearDown() {}
+};
+
+//------------------------------------------------------------------------------
+//TEST_F(Test_Serialization2, SimpleSave)
+//{
+//	class Test1
+//	{
+//		int x = 100;
+//	};
+//	class Test2
+//	{
+//	public:
+//		int x = 200;
+//		void serialize(Archive2& ar)
+//		{
+//			ar & LN_NVP2(x);
+//		}
+//	};
+//
+//	tr::JsonDocument2 doc;
+//	JsonArchiveStore s(&doc);
+//	Archive2 ar(&s, ArchiveMode::Save);
+//
+//	Test1 t1;
+//	Test2 t2;
+//	//ar.process(LN_NVP2(t1));
+//	ar.process(LN_NVP2(t2));
+//
+//	auto json = doc.toString();
+//
+//	{
+//		t2.x = 1;
+//
+//		tr::JsonDocument2 doc;
+//		doc.parse(json);
+//		JsonArchiveStore s(&doc);
+//		Archive2 ar(&s, ArchiveMode::Load);
+//
+//		ar.process(LN_NVP2(t2));
+//
+//
+//		printf("");
+//	}
+//}
+
+/*
+* [ ] ベースクラス
+- [ ] クラスバージョン
+- [ ] load 時、メンバが見つからなかったとき
+- [ ] 1つもメンバなしで serialize()
+*/
+
+
+//------------------------------------------------------------------------------
+//## ルートノードの生成を確認する (JSON)
+TEST_F(Test_Serialization2, RootNode_Json)
+{
+	class Test1
+	{
+	public:
+		int x = 0;
+		int y = 0;
+		void serialize(Archive2& ar)
+		{
+			ar & LN_NVP2(x);
+			ar & LN_NVP2(y);
+		}
+	};
+
+	String json;
+
+	//- [ ] root に名前無しで Object を Save
+	{
+		tr::JsonDocument2 doc;
+		JsonArchiveStore s(&doc);
+		Archive2 ar(&s, ArchiveMode::Save);
+
+		Test1 t1;
+		t1.x = 200;
+		t1.y = 500;
+		ar.process(t1);
+
+		json = doc.toString();
+		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":{\"x\":200,\"y\":500}}"), json);
+	}
+
+	//- [ ] root の名前無し Object を Load
+	{
+		tr::JsonDocument2 doc;
+		doc.parse(json);
+		JsonArchiveStore s(&doc);
+		Archive2 ar(&s, ArchiveMode::Load);
+
+		Test1 t1;
+		ar.process(t1);
+
+		ASSERT_EQ(200, t1.x);
+		ASSERT_EQ(500, t1.y);
+	}
+
+
+	class ArrayTest1
+	{
+	public:
+		int ary[3];
+		void serialize(Archive2& ar)
+		{
+			ar.makeArrayTag();
+			ar.process(ary[0]);
+			ar.process(ary[1]);
+			ar.process(ary[2]);
+		}
+	};
+
+	//- [ ] root に名前無しで Array を Save
+	{
+		tr::JsonDocument2 doc;
+		JsonArchiveStore s(&doc);
+		Archive2 ar(&s, ArchiveMode::Save);
+
+		ArrayTest1 t1;
+		t1.ary[0] = 100; t1.ary[1] = 200; t1.ary[2] = 300;
+		ar.process(t1);
+
+		// これは無し。必ず serialize を介す。
+		// こんなことあまりすることないし、Load が大変。
+		//ar.makeArrayTag();
+		//ar.process(ary[0]);
+		//ar.process(ary[1]);
+		//ar.process(ary[2]);
+
+		json = doc.toString();
+		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":[100,200,300]}"), json);
+	}
+
+	//- [ ] root の名前無し Array を Load
+	{
+		tr::JsonDocument2 doc;
+		doc.parse(json);
+		JsonArchiveStore s(&doc);
+		Archive2 ar(&s, ArchiveMode::Load);
+
+		ArrayTest1 t1;
+		t1.ary[0] = 0; t1.ary[1] = 0; t1.ary[2] = 0;
+		ar.process(t1);
+
+		ASSERT_EQ(100, t1.ary[0]);
+		ASSERT_EQ(200, t1.ary[1]);
+		ASSERT_EQ(300, t1.ary[2]);
+	}
+}
+
+//------------------------------------------------------------------------------
+//## プリミティブ型のテスト
+TEST_F(Test_Serialization2, PrimitiveValues)
+{
+	//- [ ] 各値を save/load できること
+
+	struct Test
+	{
+		int8_t v_s8l = 0;
+		int16_t v_s16l = 0;
+		int32_t v_s32l = 0;
+		int64_t v_s64l = 0;
+
+		int8_t v_s8u = 0;
+		int16_t v_s16u = 0;
+		int32_t v_s32u = 0;
+		int64_t v_s64u = 0;
+
+		float v_floatl = 0;
+		double v_doublel = 0;
+
+		float v_floatu = 0;
+		double v_doubleu = 0;
+
+		float v_floatm = 0;
+		double v_doublem = 0;
+
+		String v_str;
+
+		void serialize(Archive2& ar)
+		{
+			ar & LN_NVP2(v_s8l);
+			ar & LN_NVP2(v_s16l);
+			ar & LN_NVP2(v_s32l);
+			ar & LN_NVP2(v_s64l);
+
+			ar & LN_NVP2(v_s8u);
+			ar & LN_NVP2(v_s16u);
+			ar & LN_NVP2(v_s32u);
+			ar & LN_NVP2(v_s64u);
+
+			ar & LN_NVP2(v_floatl);
+			ar & LN_NVP2(v_doublel);
+
+			ar & LN_NVP2(v_floatu);
+			ar & LN_NVP2(v_doubleu);
+
+			ar & LN_NVP2(v_floatm);
+			ar & LN_NVP2(v_doublem);
+
+			ar & LN_NVP2(v_str);
+		}
+	};
+
+	String json;
+
+	Test obj1;
+	obj1.v_s8l = INT8_MIN;
+	obj1.v_s16l = INT16_MIN;
+	obj1.v_s32l = INT32_MIN;
+	obj1.v_s64l = INT64_MIN;
+	obj1.v_s8u = INT8_MAX;
+	obj1.v_s16u = INT16_MAX;
+	obj1.v_s32u = INT32_MAX;
+	obj1.v_s64u = INT64_MAX;
+	obj1.v_floatl = -FLT_MAX;	// https://stackoverflow.com/questions/2528039/why-is-flt-min-equal-to-zero
+	obj1.v_doublel = -DBL_MAX;	// Json にするとものすごくたくさん桁がでるけどそれでよい
+	obj1.v_floatu = FLT_MAX;
+	obj1.v_doubleu = DBL_MAX;
+	obj1.v_floatm = 1.0f;
+	obj1.v_doublem = 1.0f;
+	obj1.v_str = _LT("text");
+
+	// Save
+	{
+		tr::JsonDocument2 doc;
+		JsonArchiveStore s(&doc);
+		Archive2 ar(&s, ArchiveMode::Save);
+		ar.process(obj1);
+		json = doc.toString();
+	}
+
+	// Load
+	Test obj2;
+	{
+		tr::JsonDocument2 doc;
+		doc.parse(json);
+		JsonArchiveStore s(&doc);
+		Archive2 ar(&s, ArchiveMode::Load);
+		ar.process(obj2);
+	}
+
+	ASSERT_EQ(obj1.v_s8l, obj2.v_s8l);
+	ASSERT_EQ(obj1.v_s16l, obj2.v_s16l);
+	ASSERT_EQ(obj1.v_s32l, obj2.v_s32l);
+	ASSERT_EQ(obj1.v_s64l, obj2.v_s64l);
+	ASSERT_EQ(obj1.v_s8u, obj2.v_s8u);
+	ASSERT_EQ(obj1.v_s16u, obj2.v_s16u);
+	ASSERT_EQ(obj1.v_s32u, obj2.v_s32u);
+	ASSERT_EQ(obj1.v_s64u, obj2.v_s64u);
+	ASSERT_FLOAT_EQ(obj1.v_floatl, obj2.v_floatl);
+	ASSERT_DOUBLE_EQ(obj1.v_doublel, obj2.v_doublel);
+	ASSERT_FLOAT_EQ(obj1.v_floatu, obj2.v_floatu);
+	ASSERT_DOUBLE_EQ(obj1.v_doubleu, obj2.v_doubleu);
+	ASSERT_FLOAT_EQ(obj1.v_floatm, obj2.v_floatm);
+	ASSERT_DOUBLE_EQ(obj1.v_doublem, obj2.v_doublem);
+	ASSERT_EQ(obj1.v_str, obj2.v_str);
+}
+
+
 
 //
 //class Archive2

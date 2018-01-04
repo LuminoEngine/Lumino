@@ -16,8 +16,14 @@ Supported platforms
 
 How to build
 --------------------
-- [Windows](https://github.com/lriki/Lumino/wiki/BuildingWindows.md)
 
+### Winodws
+Create a development project.
 
+```
+PS> ./build.ps1 -Target Make-Projects
+```
+
+After this, please check in the "build/..." folder.
 
 
