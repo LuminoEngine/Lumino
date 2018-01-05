@@ -100,7 +100,8 @@ public:
 	/*----------*/
 
 	void clear();
-	
+
+	// TODO: order
 	/**
 		@brief
 		@param[in]	v1	: 左上の頂点

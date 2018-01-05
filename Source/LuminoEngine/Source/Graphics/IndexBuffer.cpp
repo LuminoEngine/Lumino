@@ -157,15 +157,16 @@ void IndexBuffer::clear()
 
 void IndexBuffer::setFormat2(IndexBufferFormat format)
 {
+	size_t indexCount = getIndexCount();
 	IndexBufferFormat oldFormat = m_format;
 	m_format = format;
 
-	size_t indexCount = getIndexCount();
 	if (indexCount > 0)
 	{
 		if (oldFormat == IndexBufferFormat_UInt16 && m_format == IndexBufferFormat_UInt32)
 		{
 			// 16 -> 32
+			m_buffer.resize(indexCount * sizeof(uint32_t));
 			auto* rpos16 = (uint16_t*)(m_buffer.data() + (indexCount * sizeof(uint16_t)));
 			auto* rend16 = (uint16_t*)(m_buffer.data());
 			auto* rpos32 = (uint32_t*)(m_buffer.data() + (indexCount * sizeof(uint32_t)));
