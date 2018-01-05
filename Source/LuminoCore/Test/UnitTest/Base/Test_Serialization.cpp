@@ -32,6 +32,14 @@ TEST_F(Test_Serialization2, SimpleSave)
 		}
 	};
 
+	class EmptyTest1
+	{
+	public:
+		void serialize(Archive2& ar)
+		{
+		}
+	};
+
 	//- [ ] Save
 	tr::JsonDocument2 doc;
 	JsonArchiveStore s(&doc);
@@ -55,17 +63,106 @@ TEST_F(Test_Serialization2, SimpleSave)
 
 		ar.process(LN_NVP2(t2));
 	}
+
+	//- [ ] 空オブジェクトの Save
+	{
+		tr::JsonDocument2 doc;
+		JsonArchiveStore s(&doc);
+		Archive2 ar(&s, ArchiveMode::Save);
+
+		EmptyTest1 t1;
+		ar.process(t1);
+
+		json = doc.toString();
+		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":{}}"), json);
+	}
+
+	//- [ ] 空オブジェクトの Load
+	{
+		tr::JsonDocument2 doc;
+		doc.parse(json);
+		JsonArchiveStore s(&doc);
+		Archive2 ar(&s, ArchiveMode::Load);
+
+		EmptyTest1 t1;
+		ar.process(t1);
+
+		json = doc.toString();
+	}
 }
 
 /*
 - [ ] List<Ref<MyObject>>
 - [ ] Variant (イベントコマンド引数)
 - [ ] load 時、メンバが見つからなかったとき
-- [ ] 1つもメンバなしで serialize()
 - [ ] JsonArchiveStore コンストラクタ単純化
-- [ ] read が false のときの通知
 */
 
+
+//------------------------------------------------------------------------------
+//## Basic
+TEST_F(Test_Serialization2, EmptyContainer)
+{
+	class Test2
+	{
+	public:
+		int x = 200;
+		void serialize(Archive2& ar)
+		{
+			ar & LN_NVP2(x);
+		}
+	};
+	class EmptyTest1
+	{
+	public:
+		void serialize(Archive2& ar)
+		{
+		}
+	};
+	class EmptyTest2
+	{
+	public:
+		EmptyTest1 t1;
+		List<int> t2;
+		Test2 t3;
+		void serialize(Archive2& ar)
+		{
+			ar & LN_NVP2(t1);
+			ar & LN_NVP2(t2);
+			ar & LN_NVP2(t3);
+		}
+	};
+
+	String json;
+
+	//- [ ] 空オブジェクトの Save
+	{
+		tr::JsonDocument2 doc;
+		JsonArchiveStore s(&doc);
+		Archive2 ar(&s, ArchiveMode::Save);
+
+		EmptyTest2 t;
+		ar.process(t);
+
+		json = doc.toString();
+		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":{\"t1\":{},\"t2\":[],\"t3\":{\"x\":200}}}"), json);
+	}
+
+	//- [ ] 空オブジェクトの Load
+	{
+		tr::JsonDocument2 doc;
+		doc.parse(json);
+		JsonArchiveStore s(&doc);
+		Archive2 ar(&s, ArchiveMode::Load);
+
+		EmptyTest2 t;
+		t.t3.x = 0;
+		ar.process(t);
+
+		ASSERT_EQ(true, t.t2.isEmpty());
+		ASSERT_EQ(200, t.t3.x);
+	}
+}
 
 //------------------------------------------------------------------------------
 //## ルートノードの生成を確認する (JSON)

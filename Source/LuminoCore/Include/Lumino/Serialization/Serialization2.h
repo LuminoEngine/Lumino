@@ -203,9 +203,9 @@ public:
 
 		if (isLoading())
 		{
-			// この時点で size を返したいので、store を ArrayNode まで移動して size を得る必要がある
+			// この時点で size を返したいので、store を ArrayContainer まで移動して size を得る必要がある
 			preReadValue();
-			if (LN_REQUIRE(m_store->getNodeType() == ArchiveNodeType::Array)) return;
+			if (LN_REQUIRE(m_store->getContainerType() == ArchiveContainerType::Array)) return;
 			if (outSize) *outSize = m_store->getArrayElementCount();
 		}
 	}
@@ -231,7 +231,7 @@ private:
 		Object,			// Object 確定状態
 		Array,			// Array 確定状態
 		Value,			
-		Commited,
+		ContainerOpend,	// Object または Array を開始した (Value の場合はこの状態にはならない)
 	};
 
 	struct NodeInfo
@@ -249,7 +249,7 @@ private:
 	{
 		//TODO: JsonDocument2 がルート Object 固定なので今は制御できない
 		//m_store->writeObject();
-		moveState(NodeHeadState::Commited);
+		moveState(NodeHeadState::ContainerOpend);
 		m_store->setNextName(ArchiveVersionKey);
 		m_store->writeValue(static_cast<int64_t>(ArchiveVersion));
 		m_store->setNextName(ArchiveRootValueKey);
@@ -292,12 +292,12 @@ private:
 		{
 			m_store->writeObject();
 			writeClassVersion();
-			moveState(NodeHeadState::Commited);
+			moveState(NodeHeadState::ContainerOpend);
 		}
 		else if (m_nodeInfoStack.top().headState == NodeHeadState::Array)
 		{
 			m_store->writeArray();
-			moveState(NodeHeadState::Commited);
+			moveState(NodeHeadState::ContainerOpend);
 		}
 	}
 
@@ -321,14 +321,16 @@ private:
 				}
 				break;
 			case NodeHeadState::Object:
-				if (req == NodeHeadState::Commited)
-					m_nodeInfoStack.top().headState = NodeHeadState::Commited;
+				if (req == NodeHeadState::ContainerOpend)
+					m_nodeInfoStack.top().headState = NodeHeadState::ContainerOpend;
 				break;
 			case NodeHeadState::Array:
-				if (req == NodeHeadState::Commited)
-					m_nodeInfoStack.top().headState = NodeHeadState::Commited;
+				if (req == NodeHeadState::ContainerOpend)
+					m_nodeInfoStack.top().headState = NodeHeadState::ContainerOpend;
 				break;
-			case NodeHeadState::Commited:
+			case NodeHeadState::Value:
+				break;
+			case NodeHeadState::ContainerOpend:
 				break;
 		}
 	}
@@ -393,12 +395,7 @@ private:
 		else
 			value.serialize(*this);
 
-		m_nodeInfoStack.pop();
-		if (m_store->getNodeType() == ArchiveNodeType::Object)
-			m_store->writeObjectEnd();
-		else if (m_store->getNodeType() == ArchiveNodeType::Array)
-			m_store->writeArrayEnd();
-		m_nodeInfoStack.top().nextBaseCall = false;
+		postContainerWrite();
 	}
 
 	// メンバ関数として serialize を持たない型の writeValue()
@@ -410,11 +407,29 @@ private:
 		m_nodeInfoStack.push(NodeInfo{});
 		m_nodeInfoStack.top().classVersion = getClassVersion<TValue>();//ln::detail::SerializeClassVersionInfo<TValue>::value;
 		serialize(*this, value);
+		postContainerWrite();
+	}
+
+	void postContainerWrite()
+	{
+		if (m_nodeInfoStack.top().headState == NodeHeadState::Ready)
+		{
+			// 空オブジェクトをシリアライズした。コンテナを開始していないので開始する
+			moveState(NodeHeadState::Object);
+		}
+		if (m_nodeInfoStack.top().headState != NodeHeadState::ContainerOpend)
+		{
+			preWriteValue();
+		}
+
+
+
 		m_nodeInfoStack.pop();
-		if (m_store->getNodeType() == ArchiveNodeType::Object)
+		if (m_store->getContainerType() == ArchiveContainerType::Object)
 			m_store->writeObjectEnd();
-		else if (m_store->getNodeType() == ArchiveNodeType::Array)
+		else if (m_store->getContainerType() == ArchiveContainerType::Array)
 			m_store->writeArrayEnd();
+		m_nodeInfoStack.top().nextBaseCall = false;
 	}
 
 	void writeClassVersion()
@@ -457,23 +472,21 @@ private:
 
 	void preReadValue()
 	{
-
-
 		if (m_nodeInfoStack.top().headState == NodeHeadState::Object)
 		{
-			m_store->readNode();
-			if (m_store->getNodeType() == ArchiveNodeType::Object)
+			m_store->readContainer();
+			if (m_store->getContainerType() == ArchiveContainerType::Object)
 				readClassVersion();
-			moveState(NodeHeadState::Commited);
+			moveState(NodeHeadState::ContainerOpend);
 		}
 		else if (m_nodeInfoStack.top().headState == NodeHeadState::Array)
 		{
-			m_store->readNode();
-			moveState(NodeHeadState::Commited);
+			m_store->readContainer();
+			moveState(NodeHeadState::ContainerOpend);
 		}
-		else if (m_nodeInfoStack.top().headState == NodeHeadState::Commited)
+		else if (m_nodeInfoStack.top().headState == NodeHeadState::ContainerOpend)
 		{
-			if (m_store->getNodeType() == ArchiveNodeType::Array)
+			if (m_store->getContainerType() == ArchiveContainerType::Array)
 			{
 				m_nodeInfoStack.top().arrayIndex++;
 				if (m_store->getArrayElementCount() <= m_nodeInfoStack.top().arrayIndex)
@@ -490,22 +503,22 @@ private:
 		//TODO: JsonDocument2 がルート Object 固定なので今は制御できない
 		//m_store->readObject();
 		m_store->setNextName(ArchiveVersionKey);
-		m_store->readValue(&m_archiveVersion);
+		if (!m_store->readValue(&m_archiveVersion)) { onError(); return; }
 		m_store->setNextName(ArchiveRootValueKey);
 	}
 
-	void readValue(bool& outValue) { m_store->readValue(&outValue); }
-	void readValue(int8_t& outValue) { int64_t tmp; m_store->readValue(&tmp); outValue = static_cast<int8_t>(tmp); }
-	void readValue(int16_t& outValue) { int64_t tmp; m_store->readValue(&tmp); outValue = static_cast<int16_t>(tmp); }
-	void readValue(int32_t& outValue) { int64_t tmp; m_store->readValue(&tmp); outValue = static_cast<int32_t>(tmp); }
-	void readValue(int64_t& outValue) { int64_t tmp; m_store->readValue(&tmp); outValue = static_cast<int64_t>(tmp); }
-	void readValue(uint8_t& outValue) { int64_t tmp; m_store->readValue(&tmp); outValue = static_cast<uint8_t>(tmp); }
-	void readValue(uint16_t& outValue) { int64_t tmp; m_store->readValue(&tmp); outValue = static_cast<uint16_t>(tmp); }
-	void readValue(uint32_t& outValue) { int64_t tmp; m_store->readValue(&tmp); outValue = static_cast<uint32_t>(tmp); }
-	void readValue(uint64_t& outValue) { int64_t tmp; m_store->readValue(&tmp); outValue = static_cast<uint64_t>(tmp); }
-	void readValue(float& outValue) { double tmp; m_store->readValue(&tmp); outValue = static_cast<float>(tmp); }
-	void readValue(double& outValue) { double tmp; m_store->readValue(&tmp); outValue = static_cast<double>(tmp); }
-	void readValue(String& outValue) { m_store->readValue(&outValue); }
+	void readValue(bool& outValue) { if (!m_store->readValue(&outValue)) { onError(); } }
+	void readValue(int8_t& outValue) { int64_t tmp; if (!m_store->readValue(&tmp)) { onError(); return; } outValue = static_cast<int8_t>(tmp); }
+	void readValue(int16_t& outValue) { int64_t tmp; if (!m_store->readValue(&tmp)) { onError(); return; } outValue = static_cast<int16_t>(tmp); }
+	void readValue(int32_t& outValue) { int64_t tmp; if (!m_store->readValue(&tmp)) { onError(); return; } outValue = static_cast<int32_t>(tmp); }
+	void readValue(int64_t& outValue) { int64_t tmp; if (!m_store->readValue(&tmp)) { onError(); return; } outValue = static_cast<int64_t>(tmp); }
+	void readValue(uint8_t& outValue) { int64_t tmp; if (!m_store->readValue(&tmp)) { onError(); return; } outValue = static_cast<uint8_t>(tmp); }
+	void readValue(uint16_t& outValue) { int64_t tmp; if (!m_store->readValue(&tmp)) { onError(); return; } outValue = static_cast<uint16_t>(tmp); }
+	void readValue(uint32_t& outValue) { int64_t tmp; if (!m_store->readValue(&tmp)) { onError(); return; } outValue = static_cast<uint32_t>(tmp); }
+	void readValue(uint64_t& outValue) { int64_t tmp; if (!m_store->readValue(&tmp)) { onError(); return; } outValue = static_cast<uint64_t>(tmp); }
+	void readValue(float& outValue) { double tmp; if (!m_store->readValue(&tmp)) { onError(); return; } outValue = static_cast<float>(tmp); }
+	void readValue(double& outValue) { double tmp; if (!m_store->readValue(&tmp)) { onError(); return; } outValue = static_cast<double>(tmp); }
+	void readValue(String& outValue) { if (!m_store->readValue(&outValue)) { onError(); return; } }
 
 	// メンバ関数として serialize を持つ型の readValue()
 	template<
@@ -521,10 +534,7 @@ private:
 		else
 			outValue.serialize(*this);
 
-		if (m_nodeInfoStack.top().headState != NodeHeadState::Value)
-			m_store->readNodeEnd();
-		m_nodeInfoStack.pop();
-		m_nodeInfoStack.top().nextBaseCall = false;
+		postContainerRead();
 	}
 
 	// メンバ関数として serialize を持たない型の readValue()
@@ -537,9 +547,26 @@ private:
 
 		serialize(*this, outValue);
 
-		if (m_nodeInfoStack.top().headState != NodeHeadState::Value)
-			m_store->readNodeEnd();
+		postContainerRead();
+	}
+
+	void postContainerRead()
+	{
+		if (m_nodeInfoStack.top().headState == NodeHeadState::Ready)
+		{
+			// 空オブジェクトをシリアライズした。コンテナを開始していないので開始する
+			moveState(NodeHeadState::Object);
+		}
+		if (m_nodeInfoStack.top().headState != NodeHeadState::ContainerOpend)
+		{
+			preReadValue();
+		}
+
+
+		if (m_nodeInfoStack.top().headState == NodeHeadState::ContainerOpend)
+			m_store->readContainerEnd();
 		m_nodeInfoStack.pop();
+		m_nodeInfoStack.top().nextBaseCall = false;
 	}
 
 	void readClassVersion()
@@ -550,6 +577,11 @@ private:
 		{
 			m_nodeInfoStack.top().classVersion = static_cast<int>(version);
 		}
+	}
+
+	void onError()
+	{
+		LN_UNREACHABLE();	// TODO
 	}
 
 	ArchiveStore* m_store;

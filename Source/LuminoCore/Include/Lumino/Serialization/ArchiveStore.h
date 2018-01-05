@@ -7,7 +7,7 @@
 LN_NAMESPACE_BEGIN
 class Archive2;
 
-enum class ArchiveNodeType
+enum class ArchiveContainerType
 {
 	Object,
 	Array,
@@ -41,27 +41,27 @@ public:
 
 	//-----------------------------------------------------------------------------
 	// Load
-	ArchiveNodeType getNodeType() const { return onGetNodeType(); }// { return m_nodeStack.top().m_readingNodeType; }
+	ArchiveContainerType getContainerType() const { return onGetContainerType(); }// { return m_nodeStack.top().m_readingNodeType; }
 	int getArrayElementCount() const { return onReadArrayElementCount(); }
 	void setNextIndex(int index) { m_nextIndex = index; }	// setNextName() と同じように使う Array 版
 	int getNextIndex() const { return m_nextIndex; }
-	bool readNode()
+	bool readContainer()
 	{
 		int dummy;
-		bool r = onReadNode(&dummy);//&m_readingArrayElementCount);
+		bool r = onReadContainer(&dummy);//&m_readingArrayElementCount);
 		//m_nodeStack.push(NodeInfo{});
 		//m_nodeStack.top().m_readingNodeType = (m_readingArrayElementCount >= 0) ? ArchiveNodeType::Array : ArchiveNodeType::Object;
 		postRead();
 		return r;
-	}		// Object Node をカレントにする
-	void readNodeEnd() { onReadNodeEnd(); /*m_nodeStack.pop();*/ }
+	}		// Object Container をカレントにする
+	void readContainerEnd() { onReadContainerEnd(); /*m_nodeStack.pop();*/ }
 	bool readValue(bool* outValue) { bool r = onReadValueBool(outValue); postRead(); return r; }
 	bool readValue(int64_t* outValue) { bool r = onReadValueInt64(outValue); postRead(); return r; }
 	bool readValue(double* outValue) { bool r = onReadValueDouble(outValue); postRead(); return r; }
 	bool readValue(String* outValue) { bool r = onReadValueString(outValue); postRead(); return r; }
 
 protected:
-	virtual ArchiveNodeType onGetNodeType() const = 0;
+	virtual ArchiveContainerType onGetContainerType() const = 0;
 
 	virtual void onWriteObject() = 0;
 	virtual void onWriteArray() = 0;
@@ -72,8 +72,8 @@ protected:
 	virtual void onWriteValueDouble(double value) = 0;
 	virtual void onWriteValueString(const String& value) = 0;
 
-	virtual bool onReadNode(int* outElementCount) = 0;
-	virtual void onReadNodeEnd() = 0;
+	virtual bool onReadContainer(int* outElementCount) = 0;
+	virtual void onReadContainerEnd() = 0;
 	virtual int onReadArrayElementCount() const = 0;
 	virtual bool onReadValueBool(bool* outValue) = 0;
 	virtual bool onReadValueInt64(int64_t* outValue) = 0;
@@ -113,15 +113,15 @@ public:
 	}
 
 protected:
-	virtual ArchiveNodeType onGetNodeType() const override
+	virtual ArchiveContainerType onGetContainerType() const override
 	{
 		if (m_nodeStack.top()->getType() == tr::JsonValueType::Object)
-			return ArchiveNodeType::Object;
+			return ArchiveContainerType::Object;
 		else if (m_nodeStack.top()->getType() == tr::JsonValueType::Array)
-			return ArchiveNodeType::Array;
+			return ArchiveContainerType::Array;
 		else
 			LN_UNREACHABLE();
-		return ArchiveNodeType::Object;
+		return ArchiveContainerType::Object;
 	}
 
 	virtual void onWriteObject() override
@@ -197,7 +197,7 @@ protected:
 
 #undef ON_WRITE_VALUE_FUNC
 
-	virtual bool onReadNode(int* outElementCount) override
+	virtual bool onReadContainer(int* outElementCount) override
 	{
 		tr::JsonElement2* element;
 		if (checkTopType(tr::JsonValueType::Object))
@@ -229,7 +229,7 @@ protected:
 		return true;
 	}
 
-	virtual void onReadNodeEnd() override
+	virtual void onReadContainerEnd() override
 	{
 		m_nodeStack.pop();
 	}
