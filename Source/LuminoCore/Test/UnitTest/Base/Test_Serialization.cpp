@@ -530,6 +530,22 @@ TEST_F(Test_Serialization2, List)
 		ASSERT_EQ(20, t[1]->x);
 		ASSERT_EQ(30, t[2]->x);
 	}
+
+	//- [ ] プリミティブ型 List のLoad (Load 先が null の場合はオブジェクトが作られる)
+	{
+		tr::JsonDocument2 doc;
+		doc.parse(json);
+		JsonArchiveStore s(&doc);
+		Archive2 ar(&s, ArchiveMode::Load);
+
+		List<Ref<ListTest1>> t;
+		ar.process(t);
+
+		ASSERT_EQ(3, t.getCount());
+		ASSERT_EQ(10, t[0]->x);
+		ASSERT_EQ(20, t[1]->x);
+		ASSERT_EQ(30, t[2]->x);
+	}
 }
 
 

@@ -279,7 +279,10 @@ set(LN_SOURCES_Math
 )
 
 set(LN_SOURCES_Serialization
+	Include/Lumino/Serialization/ArchiveStore.h
 	Include/Lumino/Serialization/Serialization2.h
+	Include/Lumino/Serialization/SerializeTypes.h
+	Source/Serialization/ArchiveStore.cpp
 	Source/Serialization/Serialization2.cpp
 )
 
