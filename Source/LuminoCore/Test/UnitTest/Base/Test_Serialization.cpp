@@ -61,6 +61,7 @@ TEST_F(Test_Serialization2, SimpleSave)
 		JsonArchiveStore s(&doc);
 		Archive2 ar(&s, ArchiveMode::Load);
 
+
 		ar.process(LN_NVP2(t2));
 	}
 
@@ -137,23 +138,18 @@ TEST_F(Test_Serialization2, EmptyContainer)
 
 	//- [ ] 空オブジェクトの Save
 	{
-		tr::JsonDocument2 doc;
-		JsonArchiveStore s(&doc);
-		Archive2 ar(&s, ArchiveMode::Save);
+		JsonTextOutputArchive ar;
 
 		EmptyTest2 t;
 		ar.process(t);
 
-		json = doc.toString();
+		json = ar.toString();
 		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":{\"t1\":{},\"t2\":[],\"t3\":{\"x\":200}}}"), json);
 	}
 
 	//- [ ] 空オブジェクトの Load
 	{
-		tr::JsonDocument2 doc;
-		doc.parse(json);
-		JsonArchiveStore s(&doc);
-		Archive2 ar(&s, ArchiveMode::Load);
+		JsonTextInputArchive ar(json);
 
 		EmptyTest2 t;
 		t.t3.x = 0;
@@ -184,9 +180,6 @@ TEST_F(Test_Serialization2, RootNode_Json)
 
 	//- [ ] root に名前無しで Object を Save
 	{
-		//tr::JsonDocument2 doc;
-		//JsonArchiveStore s(&doc);
-		//Archive2 ar(&s, ArchiveMode::Save);
 		JsonTextOutputArchive ar;
 
 		Test1 t1;
@@ -200,10 +193,6 @@ TEST_F(Test_Serialization2, RootNode_Json)
 
 	//- [ ] root の名前無し Object を Load
 	{
-		//tr::JsonDocument2 doc;
-		//doc.parse(json);
-		//JsonArchiveStore s(&doc);
-		//Archive2 ar(&s, ArchiveMode::Load);
 		JsonTextInputArchive ar(json);
 
 		Test1 t1;
@@ -229,9 +218,7 @@ TEST_F(Test_Serialization2, RootNode_Json)
 
 	//- [ ] root に名前無しで Array を Save
 	{
-		tr::JsonDocument2 doc;
-		JsonArchiveStore s(&doc);
-		Archive2 ar(&s, ArchiveMode::Save);
+		JsonTextOutputArchive ar;
 
 		ArrayTest1 t1;
 		t1.ary[0] = 100; t1.ary[1] = 200; t1.ary[2] = 300;
@@ -244,16 +231,13 @@ TEST_F(Test_Serialization2, RootNode_Json)
 		//ar.process(ary[1]);
 		//ar.process(ary[2]);
 
-		json = doc.toString();
+		json = ar.toString();
 		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":[100,200,300]}"), json);
 	}
 
 	//- [ ] root の名前無し Array を Load
 	{
-		tr::JsonDocument2 doc;
-		doc.parse(json);
-		JsonArchiveStore s(&doc);
-		Archive2 ar(&s, ArchiveMode::Load);
+		JsonTextInputArchive ar(json);
 
 		ArrayTest1 t1;
 		t1.ary[0] = 0; t1.ary[1] = 0; t1.ary[2] = 0;
@@ -340,20 +324,15 @@ TEST_F(Test_Serialization2, PrimitiveValues)
 
 	// Save
 	{
-		tr::JsonDocument2 doc;
-		JsonArchiveStore s(&doc);
-		Archive2 ar(&s, ArchiveMode::Save);
+		JsonTextOutputArchive ar;
 		ar.process(obj1);
-		json = doc.toString();
+		json = ar.toString();
 	}
 
 	// Load
 	Test obj2;
 	{
-		tr::JsonDocument2 doc;
-		doc.parse(json);
-		JsonArchiveStore s(&doc);
-		Archive2 ar(&s, ArchiveMode::Load);
+		JsonTextInputArchive ar(json);
 		ar.process(obj2);
 	}
 
@@ -421,23 +400,18 @@ TEST_F(Test_Serialization2, ClassVersion)
 
 	//- [ ] Save
 	{
-		tr::JsonDocument2 doc;
-		JsonArchiveStore s(&doc);
-		Archive2 ar(&s, ArchiveMode::Save);
+		JsonTextOutputArchive ar;
 
 		ClassVersionTest1 t1;
 		ar.process(t1);
 
-		json = doc.toString();
+		json = ar.toString();
 		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":{\"lumino_class_version\":1,\"x\":0,\"flag\":false}}"), json);
 	}
 
 	//- [ ] Load
 	{
-		tr::JsonDocument2 doc;
-		doc.parse(json);
-		JsonArchiveStore s(&doc);
-		Archive2 ar(&s, ArchiveMode::Load);
+		JsonTextInputArchive ar(json);
 
 		ClassVersionTest2 t2;
 		ar.process(t2);
@@ -469,9 +443,7 @@ TEST_F(Test_Serialization2, ClassVersionInner)
 {
 	//- [ ] Save
 	{
-		tr::JsonDocument2 doc;
-		JsonArchiveStore s(&doc);
-		Archive2 ar(&s, ArchiveMode::Save);
+		JsonTextOutputArchive ar;
 
 		ClassVersionTest3 t;
 		ar.process(t);
@@ -521,24 +493,19 @@ TEST_F(Test_Serialization2, ObjectTest)
 
 	//- [ ] Save
 	{
-		tr::JsonDocument2 doc;
-		JsonArchiveStore s(&doc);
-		Archive2 ar(&s, ArchiveMode::Save);
+		JsonTextOutputArchive ar;
 
 		ObjectTestRoot1 t;
 		t.t2 = newObject<ObjectTest1>();
 		ar.process(t);
 
-		json = doc.toString();
+		json = ar.toString();
 		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":{\"t2\":{\"x\":10}}}"), json);
 	}
 
 	//- [ ] Load
 	{
-		tr::JsonDocument2 doc;
-		doc.parse(json);
-		JsonArchiveStore s(&doc);
-		Archive2 ar(&s, ArchiveMode::Load);
+		JsonTextInputArchive ar(json);
 
 		ObjectTestRoot1 t;
 		t.t2 = newObject<ObjectTest1>();
@@ -569,23 +536,18 @@ TEST_F(Test_Serialization2, List)
 
 	//- [ ] プリミティブ型 List の Save
 	{
-		tr::JsonDocument2 doc;
-		JsonArchiveStore s(&doc);
-		Archive2 ar(&s, ArchiveMode::Save);
+		JsonTextOutputArchive ar;
 
 		List<int> t = { 1, 2, 3 };
 		ar.process(t);
 
-		json = doc.toString();
+		json = ar.toString();
 		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":[1,2,3]}"), json);
 	}
 
 	//- [ ] プリミティブ型 List のLoad
 	{
-		tr::JsonDocument2 doc;
-		doc.parse(json);
-		JsonArchiveStore s(&doc);
-		Archive2 ar(&s, ArchiveMode::Load);
+		JsonTextInputArchive ar(json);
 
 		List<int> t;
 		ar.process(t);
@@ -598,9 +560,7 @@ TEST_F(Test_Serialization2, List)
 
 	//- [ ] Ref<> 型 List の Save
 	{
-		tr::JsonDocument2 doc;
-		JsonArchiveStore s(&doc);
-		Archive2 ar(&s, ArchiveMode::Save);
+		JsonTextOutputArchive ar;
 
 		List<Ref<ListTest1>> t;
 		t.add(newObject<ListTest1>()); t.getLast()->x = 10;
@@ -608,16 +568,13 @@ TEST_F(Test_Serialization2, List)
 		t.add(newObject<ListTest1>()); t.getLast()->x = 30;
 		ar.process(t);
 
-		json = doc.toString();
+		json = ar.toString();
 		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":[{\"x\":10},{\"x\":20},{\"x\":30}]}"), json);
 	}
 
 	//- [ ] プリミティブ型 List のLoad (Load 先のオブジェクトをあらかじめ作っておく場合)
 	{
-		tr::JsonDocument2 doc;
-		doc.parse(json);
-		JsonArchiveStore s(&doc);
-		Archive2 ar(&s, ArchiveMode::Load);
+		JsonTextInputArchive ar(json);
 
 		List<Ref<ListTest1>> t;
 		t.add(newObject<ListTest1>());
@@ -633,10 +590,7 @@ TEST_F(Test_Serialization2, List)
 
 	//- [ ] プリミティブ型 List のLoad (Load 先が null の場合はオブジェクトが作られる)
 	{
-		tr::JsonDocument2 doc;
-		doc.parse(json);
-		JsonArchiveStore s(&doc);
-		Archive2 ar(&s, ArchiveMode::Load);
+		JsonTextInputArchive ar(json);
 
 		List<Ref<ListTest1>> t;
 		ar.process(t);
@@ -670,24 +624,19 @@ TEST_F(Test_Serialization2, Uuid)
 
 	//- [ ]  Save
 	{
-		tr::JsonDocument2 doc;
-		JsonArchiveStore s(&doc);
-		Archive2 ar(&s, ArchiveMode::Save);
+		JsonTextOutputArchive ar;
 
 		UuidTest1 t;
 		t.id = id;
 		ar.process(t);
 
-		json = doc.toString();
+		json = ar.toString();
 		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":{\"id\":\"35BBEEBB-A428-4B7F-B4F6-08AA6D5239AA\"}}"), json);
 	}
 
 	//- [ ] Load
 	{
-		tr::JsonDocument2 doc;
-		doc.parse(json);
-		JsonArchiveStore s(&doc);
-		Archive2 ar(&s, ArchiveMode::Load);
+		JsonTextInputArchive ar(json);
 
 		UuidTest1 t;
 		ar.process(t);
@@ -729,25 +678,20 @@ TEST_F(Test_Serialization2, BaseClass)
 
 	//- [ ]  Save
 	{
-		tr::JsonDocument2 doc;
-		JsonArchiveStore s(&doc);
-		Archive2 ar(&s, ArchiveMode::Save);
+		JsonTextOutputArchive ar;
 
 		DerivedTest1 t;
 		t.x = 55;
 		t.y = 77;
 		ar.process(t);
 
-		json = doc.toString();
+		json = ar.toString();
 		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":{\"lumino_base_class\":{\"x\":55},\"y\":77}}"), json);
 	}
 
 	//- [ ] Load
 	{
-		tr::JsonDocument2 doc;
-		doc.parse(json);
-		JsonArchiveStore s(&doc);
-		Archive2 ar(&s, ArchiveMode::Load);
+		JsonTextInputArchive ar(json);
 
 		DerivedTest1 t;
 		ar.process(t);
