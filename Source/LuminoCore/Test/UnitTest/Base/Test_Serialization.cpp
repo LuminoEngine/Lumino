@@ -184,28 +184,30 @@ TEST_F(Test_Serialization2, RootNode_Json)
 
 	//- [ ] root に名前無しで Object を Save
 	{
-		tr::JsonDocument2 doc;
-		JsonArchiveStore s(&doc);
-		Archive2 ar(&s, ArchiveMode::Save);
+		//tr::JsonDocument2 doc;
+		//JsonArchiveStore s(&doc);
+		//Archive2 ar(&s, ArchiveMode::Save);
+		JsonTextOutputArchive ar;
 
 		Test1 t1;
 		t1.x = 200;
 		t1.y = 500;
-		ar.process(t1);
+		ar.save(t1);
 
-		json = doc.toString();
+		json = ar.toString();
 		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":{\"x\":200,\"y\":500}}"), json);
 	}
 
 	//- [ ] root の名前無し Object を Load
 	{
-		tr::JsonDocument2 doc;
-		doc.parse(json);
-		JsonArchiveStore s(&doc);
-		Archive2 ar(&s, ArchiveMode::Load);
+		//tr::JsonDocument2 doc;
+		//doc.parse(json);
+		//JsonArchiveStore s(&doc);
+		//Archive2 ar(&s, ArchiveMode::Load);
+		JsonTextInputArchive ar(json);
 
 		Test1 t1;
-		ar.process(t1);
+		ar.load(t1);
 
 		ASSERT_EQ(200, t1.x);
 		ASSERT_EQ(500, t1.y);

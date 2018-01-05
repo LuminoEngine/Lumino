@@ -143,22 +143,9 @@ public:
 	static const String ClassBaseKey;
 
 	Archive2(ArchiveStore* store, ArchiveMode mode)
-		: m_store(store)
-		, m_mode(mode)
-		, m_archiveVersion(0)
+		: Archive2()
 	{
-		// コンテナの種類が本当に ArchiveStore に書き込まれるのは、最初の processWrite()
-		m_nodeInfoStack.push(NodeInfo{});
-
-		if (m_mode == ArchiveMode::Save)
-		{
-			m_archiveVersion = ArchiveVersion;
-			writeArchiveHeader();
-		}
-		else
-		{
-			readArchiveHeader();
-		}
+		setup(store, mode);
 	}
 
 	~Archive2()
@@ -218,6 +205,34 @@ public:
 	{
 		moveState(NodeHeadState::Value);
 		process(*str);
+	}
+
+protected:
+
+	Archive2()
+		: m_store(nullptr)
+		, m_mode(ArchiveMode::Save)
+		, m_archiveVersion(0)
+	{
+	}
+
+	void setup(ArchiveStore* store, ArchiveMode mode)
+	{
+		m_store = store;
+		m_mode = mode;
+
+		// コンテナの種類が本当に ArchiveStore に書き込まれるのは、最初の processWrite()
+		m_nodeInfoStack.push(NodeInfo{});
+
+		if (m_mode == ArchiveMode::Save)
+		{
+			m_archiveVersion = ArchiveVersion;
+			writeArchiveHeader();
+		}
+		else
+		{
+			readArchiveHeader();
+		}
 	}
 
 private:
@@ -604,6 +619,54 @@ NameValuePair<TValue> makeNVP(const Char* name, TValue& valueRef, const TValue& 
 {
 	return NameValuePair<TValue>(name, &valueRef, &defaultValue);
 }
+
+
+class JsonTextOutputArchive
+	: public Archive2
+{
+public:
+	JsonTextOutputArchive();
+	virtual ~JsonTextOutputArchive();
+
+	template<typename TValue>
+	void save(TValue && value)
+	{
+		if (LN_REQUIRE(!m_processing)) return;
+		m_processing = true;
+		Archive2::process(std::forward<TValue>(value));
+		m_processing = false;
+	}
+
+	String toString();
+
+private:
+	tr::JsonDocument2	m_localDoc;
+	JsonArchiveStore	m_localStore;
+	bool				m_processing;
+};
+
+
+class JsonTextInputArchive
+	: public Archive2
+{
+public:
+	JsonTextInputArchive(const String& jsonText);
+	virtual ~JsonTextInputArchive();
+
+	template<typename TValue>
+	void load(TValue && value)
+	{
+		if (LN_REQUIRE(!m_processing)) return;
+		m_processing = true;
+		Archive2::process(std::forward<TValue>(value));
+		m_processing = false;
+	}
+
+private:
+	tr::JsonDocument2	m_localDoc;
+	JsonArchiveStore	m_localStore;
+	bool				m_processing;
+};
 
 LN_NAMESPACE_END
 

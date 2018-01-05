@@ -102,6 +102,12 @@ class JsonArchiveStore
 	: public ArchiveStore
 {
 public:
+	//JsonArchiveStore()
+	//	: m_localDoc(Ref<tr::JsonDocument2>::makeRef())
+	//{
+	//	
+	//}
+
 	JsonArchiveStore(tr::JsonDocument2* doc)
 	{
 		// TODO: 今 JsonDocument2 はルート Array に対応していないのでこんな感じ。
@@ -329,6 +335,7 @@ private:
 	bool checkTopType(tr::JsonValueType t) { return m_nodeStack.top()->getType() == t; }
 
 	std::stack<tr::JsonElement2*>	m_nodeStack;
+	//Ref<tr::JsonDocument2>			m_localDoc;
 };
 
 LN_NAMESPACE_END

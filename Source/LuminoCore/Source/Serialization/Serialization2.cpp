@@ -34,4 +34,41 @@ const String Archive2::ClassBaseKey = _TT("lumino_base_class");
 //{
 //}
 
+
+//==============================================================================
+// JsonTextOutputArchive
+//==============================================================================
+JsonTextOutputArchive::JsonTextOutputArchive()
+	: m_localDoc()
+	, m_localStore(&m_localDoc)
+	, m_processing(false)
+{
+	setup(&m_localStore, ArchiveMode::Save);
+}
+
+JsonTextOutputArchive::~JsonTextOutputArchive()
+{
+}
+
+String JsonTextOutputArchive::toString()
+{
+	return m_localDoc.toString();
+}
+
+//==============================================================================
+// JsonTextInputArchive
+//==============================================================================
+JsonTextInputArchive::JsonTextInputArchive(const String& jsonText)
+	: m_localDoc()
+	, m_localStore(&m_localDoc)
+	, m_processing(false)
+{
+	m_localDoc.parse(jsonText);
+	setup(&m_localStore, ArchiveMode::Load);
+}
+
+JsonTextInputArchive::~JsonTextInputArchive()
+{
+}
+
 LN_NAMESPACE_END
