@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include "../Base/Uuid.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -31,18 +32,19 @@ void serialize(Archive2& ar, List<TValue>& value)
 	}
 }
 
-//template<typename TValue>
-//void serialize(Archive2& ar, Uuid& value)
-//{
-//	if (ar.isSaving())
-//	{
-//		String str = value.toString();
-//
-//	}
-//	else
-//	{
-//
-//	}
-//}
+inline void serialize(Archive2& ar, Uuid& value)
+{
+	if (ar.isSaving())
+	{
+		String str = value.toString();
+		ar.makeStringTag(&str);
+	}
+	else
+	{
+		String str;
+		ar.makeStringTag(&str);
+		value = Uuid(str);
+	}
+}
 
 LN_NAMESPACE_END

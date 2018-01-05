@@ -199,8 +199,12 @@ public:
 	{
 		moveState(NodeHeadState::Array);
 
+
+
 		if (isLoading())
 		{
+			// この時点で size を返したいので、store を ArrayNode まで移動して size を得る必要がある
+			preReadValue();
 			if (LN_REQUIRE(m_store->getNodeType() == ArchiveNodeType::Array)) return;
 			if (outSize) *outSize = m_store->getArrayElementCount();
 		}
@@ -212,7 +216,8 @@ public:
 	*/
 	void makeStringTag(String* str)
 	{
-
+		moveState(NodeHeadState::Value);
+		process(*str);
 	}
 
 private:
@@ -225,6 +230,7 @@ private:
 		//Pending,	
 		Object,			// Object 確定状態
 		Array,			// Array 確定状態
+		Value,			
 		Commited,
 	};
 
@@ -426,14 +432,16 @@ private:
 	template<typename TValue>
 	void processLoad(NameValuePair<TValue>& nvp)
 	{
-		m_store->setNextName(nvp.name);
+		moveState(NodeHeadState::Object);	// BaseClass は Object のシリアライズの一部なので、親ノードは必ず Object
 		preReadValue();
+		m_store->setNextName(nvp.name);
 		readValue(*nvp.value);
 	}
 
 	template<typename TValue>
 	void processLoad(BaseClass<TValue>& base)
 	{
+		moveState(NodeHeadState::Object);
 		preReadValue();
 		m_nodeInfoStack.top().nextBaseCall = true;
 		m_store->setNextName(ClassBaseKey);
@@ -449,14 +457,31 @@ private:
 
 	void preReadValue()
 	{
-		if (m_store->getNodeType() == ArchiveNodeType::Array)
+
+
+		if (m_nodeInfoStack.top().headState == NodeHeadState::Object)
 		{
-			m_nodeInfoStack.top().arrayIndex++;
-			if (m_store->getArrayElementCount() <= m_nodeInfoStack.top().arrayIndex)
+			m_store->readNode();
+			if (m_store->getNodeType() == ArchiveNodeType::Object)
+				readClassVersion();
+			moveState(NodeHeadState::Commited);
+		}
+		else if (m_nodeInfoStack.top().headState == NodeHeadState::Array)
+		{
+			m_store->readNode();
+			moveState(NodeHeadState::Commited);
+		}
+		else if (m_nodeInfoStack.top().headState == NodeHeadState::Commited)
+		{
+			if (m_store->getNodeType() == ArchiveNodeType::Array)
 			{
-				LN_UNREACHABLE();
+				m_nodeInfoStack.top().arrayIndex++;
+				if (m_store->getArrayElementCount() <= m_nodeInfoStack.top().arrayIndex)
+				{
+					LN_UNREACHABLE();
+				}
+				m_store->setNextIndex(m_nodeInfoStack.top().arrayIndex);
 			}
-			m_store->setNextIndex(m_nodeInfoStack.top().arrayIndex);
 		}
 	}
 
@@ -490,16 +515,14 @@ private:
 	{
 		bool baseCall = m_nodeInfoStack.top().nextBaseCall;
 		m_nodeInfoStack.push(NodeInfo{});
-		m_store->readNode();
-		if (m_store->getNodeType() == ArchiveNodeType::Object)
-			readClassVersion();
 
 		if (baseCall)
 			outValue.TValue::serialize(*this);
 		else
 			outValue.serialize(*this);
 
-		m_store->readNodeEnd();
+		if (m_nodeInfoStack.top().headState != NodeHeadState::Value)
+			m_store->readNodeEnd();
 		m_nodeInfoStack.pop();
 		m_nodeInfoStack.top().nextBaseCall = false;
 	}
@@ -511,11 +534,11 @@ private:
 	void readValue(TValue& outValue)
 	{
 		m_nodeInfoStack.push(NodeInfo{});
-		m_store->readNode();
-		if (m_store->getNodeType() == ArchiveNodeType::Object)
-			readClassVersion();
+
 		serialize(*this, outValue);
-		m_store->readNodeEnd();
+
+		if (m_nodeInfoStack.top().headState != NodeHeadState::Value)
+			m_store->readNodeEnd();
 		m_nodeInfoStack.pop();
 	}
 

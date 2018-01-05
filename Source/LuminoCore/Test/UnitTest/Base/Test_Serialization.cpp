@@ -63,7 +63,7 @@ TEST_F(Test_Serialization2, SimpleSave)
 - [ ] load 時、メンバが見つからなかったとき
 - [ ] 1つもメンバなしで serialize()
 - [ ] JsonArchiveStore コンストラクタ単純化
-- [ ] GUID
+- [ ] read が false のときの通知
 */
 
 
@@ -552,7 +552,6 @@ TEST_F(Test_Serialization2, List)
 //------------------------------------------------------------------------------
 //## Uuid をシリアライズする
 
-#if 0
 class UuidTest1
 	: public ln::Object
 {
@@ -567,7 +566,7 @@ public:
 
 TEST_F(Test_Serialization2, Uuid)
 {
-	Uuid id = Uuid::generate();
+	Uuid id(_T("35BBEEBB-A428-4B7F-B4F6-08AA6D5239AA"));
 	String json;
 
 	//- [ ]  Save
@@ -581,7 +580,7 @@ TEST_F(Test_Serialization2, Uuid)
 		ar.process(t);
 
 		json = doc.toString();
-		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":{\"lumino_base_class\":{\"x\":55},\"y\":77}}"), json);
+		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":{\"id\":\"35BBEEBB-A428-4B7F-B4F6-08AA6D5239AA\"}}"), json);
 	}
 
 	//- [ ] Load
@@ -597,7 +596,6 @@ TEST_F(Test_Serialization2, Uuid)
 		ASSERT_EQ(id, t.id);
 	}
 }
-#endif
 
 //------------------------------------------------------------------------------
 //## ベースクラスをシリアライズしたい
