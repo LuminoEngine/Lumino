@@ -25,7 +25,7 @@ enum class SerializeClassFormat
 };
 
 template<typename TValue>
-class NameValuePair
+struct NameValuePair
 {
 public:
 	const Char* name;
@@ -36,6 +36,7 @@ public:
 private:
 	NameValuePair & operator=(NameValuePair const &) = delete;
 };
+
 
 
 namespace detail
@@ -127,11 +128,19 @@ template <class T> struct SerializeClassFormatInfo
 class Archive2
 {
 public:
+	template<typename TBase>
+	struct BaseClass
+	{
+		TBase* basePtr;
+		BaseClass(TBase* ptr) : basePtr(ptr) {}
+	};
+
 	static const int ArchiveVersion;
-	static const Char* ArchiveVersionKey;
-	static const Char* ArchiveRootValueKey;
-	static const Char* ClassNameKey;
-	static const Char* ClassVersionKey;
+	static const String ArchiveVersionKey;
+	static const String ArchiveRootValueKey;
+	static const String ClassNameKey;
+	static const String ClassVersionKey;
+	static const String ClassBaseKey;
 
 	Archive2(ArchiveStore* store, ArchiveMode mode)
 		: m_store(store)
@@ -160,7 +169,7 @@ public:
 
 	bool isLoading() const { return m_mode == ArchiveMode::Load; }
 
-	int version() const { return m_nodeInfoStack.top().classVersion; }
+	int classVersion() const { return m_nodeInfoStack.top().classVersion; }
 
 	template<typename T>
 	Archive2& operator & (T && value)
@@ -197,6 +206,15 @@ public:
 		}
 	}
 
+	/**
+	Note: オブジェクトを単純な文字列としてシリアライズする場合に使用します。
+	この関数を呼び出した serialize() 内では他の値をシリアライズすることはできません。
+	*/
+	void makeStringTag(String* str)
+	{
+
+	}
+
 private:
 
 	enum class NodeHeadState
@@ -215,6 +233,7 @@ private:
 		NodeHeadState headState = NodeHeadState::Ready;
 		int arrayIndex = -1;
 		int classVersion = 0;
+		bool nextBaseCall = false;
 	};
 
 	//-----------------------------------------------------------------------------
@@ -239,9 +258,18 @@ private:
 	{
 		moveState(NodeHeadState::Object);	// これから { name, vaue } を追加するので、その親ノードは必ず Object
 		preWriteValue();
-
 		m_store->setNextName(nvp.name);
 		writeValue(*nvp.value);
+	}
+
+	template<typename TValue>
+	void processSave(BaseClass<TValue>& base)
+	{
+		moveState(NodeHeadState::Object);	// BaseClass は Object のシリアライズの一部なので、親ノードは必ず Object
+		preWriteValue();
+		m_nodeInfoStack.top().nextBaseCall = true;
+		m_store->setNextName(ClassBaseKey);
+		writeValue(*base.basePtr);
 	}
 
 	template<typename TValue>
@@ -350,14 +378,21 @@ private:
 		typename std::enable_if<detail::has_member_serialize_function<TValue>::value, std::nullptr_t>::type = nullptr>
 		void writeValue(TValue& value)	// メンバ serialize() が const 関数とは限らないのでここは非 const 参照
 	{
+		bool baseCall = m_nodeInfoStack.top().nextBaseCall;
 		m_nodeInfoStack.push(NodeInfo{});
 		m_nodeInfoStack.top().classVersion = getClassVersion<TValue>();//ln::detail::SerializeClassVersionInfo<TValue>::value;
-		value.serialize(*this);
+
+		if (baseCall)
+			value.TValue::serialize(*this);
+		else
+			value.serialize(*this);
+
 		m_nodeInfoStack.pop();
 		if (m_store->getNodeType() == ArchiveNodeType::Object)
 			m_store->writeObjectEnd();
 		else if (m_store->getNodeType() == ArchiveNodeType::Array)
 			m_store->writeArrayEnd();
+		m_nodeInfoStack.top().nextBaseCall = false;
 	}
 
 	// メンバ関数として serialize を持たない型の writeValue()
@@ -394,6 +429,15 @@ private:
 		m_store->setNextName(nvp.name);
 		preReadValue();
 		readValue(*nvp.value);
+	}
+
+	template<typename TValue>
+	void processLoad(BaseClass<TValue>& base)
+	{
+		preReadValue();
+		m_nodeInfoStack.top().nextBaseCall = true;
+		m_store->setNextName(ClassBaseKey);
+		readValue(*base.basePtr);
 	}
 
 	template<typename TValue>
@@ -444,13 +488,20 @@ private:
 		typename std::enable_if<detail::has_member_serialize_function<TValue>::value, std::nullptr_t>::type = nullptr>
 	void readValue(TValue& outValue)
 	{
+		bool baseCall = m_nodeInfoStack.top().nextBaseCall;
 		m_nodeInfoStack.push(NodeInfo{});
 		m_store->readNode();
 		if (m_store->getNodeType() == ArchiveNodeType::Object)
 			readClassVersion();
-		outValue.serialize(*this);
+
+		if (baseCall)
+			outValue.TValue::serialize(*this);
+		else
+			outValue.serialize(*this);
+
 		m_store->readNodeEnd();
 		m_nodeInfoStack.pop();
+		m_nodeInfoStack.top().nextBaseCall = false;
 	}
 
 	// メンバ関数として serialize を持たない型の readValue()

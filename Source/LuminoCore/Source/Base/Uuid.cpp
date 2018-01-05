@@ -1,4 +1,4 @@
-
+﻿
 #include <Lumino/Base/Common.h>
 #include <Lumino/Base/Uuid.h>
 
@@ -95,7 +95,7 @@ Uuid::Uuid(const StringRef& uuidText)
 	for (int i = 0; i < uuidText.getLength(); i++)
 	{
 		Char ch = uuidText[i];
-		if (ch == _LT('-') || ch == _LT('{') || ch == _LT('}')) continue;
+		if (ch == _LT('-') || ch == _LT('{') || ch == _LT('}') || ch == _LT('(') || ch == _LT(')')) continue;
 
 		if (lookingCh1)
 		{
@@ -145,28 +145,31 @@ bool Uuid::operator!=(const Uuid& other) const
 //------------------------------------------------------------------------------
 String Uuid::toString() const
 {
-	Char str[] = _LT("{00000000-0000-0000-0000-000000000000}");
+	//Char str[] = _LT("{00000000-0000-0000-0000-000000000000}");
+	// https://msdn.microsoft.com/ja-jp/library/97af8hh4(v=vs.80).aspx
+	Char fmtD[] = _LT("00000000-0000-0000-0000-000000000000");
 
-	HexToCharPair(m_data[0], &str[1], &str[2]);
-	HexToCharPair(m_data[1], &str[3], &str[4]);
-	HexToCharPair(m_data[2], &str[5], &str[6]);
-	HexToCharPair(m_data[3], &str[7], &str[8]);
+	Char* str = fmtD;
+	HexToCharPair(m_data[0], &str[0], &str[1]);
+	HexToCharPair(m_data[1], &str[2], &str[3]);
+	HexToCharPair(m_data[2], &str[4], &str[5]);
+	HexToCharPair(m_data[3], &str[6], &str[7]);
 
-	HexToCharPair(m_data[4], &str[10], &str[11]);
-	HexToCharPair(m_data[5], &str[12], &str[13]);
+	HexToCharPair(m_data[4], &str[9], &str[10]);
+	HexToCharPair(m_data[5], &str[11], &str[12]);
 
-	HexToCharPair(m_data[6], &str[15], &str[16]);
-	HexToCharPair(m_data[7], &str[17], &str[18]);
+	HexToCharPair(m_data[6], &str[14], &str[15]);
+	HexToCharPair(m_data[7], &str[16], &str[17]);
 
-	HexToCharPair(m_data[8], &str[20], &str[21]);
-	HexToCharPair(m_data[9], &str[22], &str[23]);
+	HexToCharPair(m_data[8], &str[19], &str[20]);
+	HexToCharPair(m_data[9], &str[21], &str[22]);
 
-	HexToCharPair(m_data[10], &str[25], &str[26]);
-	HexToCharPair(m_data[11], &str[27], &str[28]);
-	HexToCharPair(m_data[12], &str[29], &str[30]);
-	HexToCharPair(m_data[13], &str[31], &str[32]);
-	HexToCharPair(m_data[14], &str[33], &str[34]);
-	HexToCharPair(m_data[15], &str[35], &str[36]);
+	HexToCharPair(m_data[10], &str[24], &str[25]);
+	HexToCharPair(m_data[11], &str[26], &str[27]);
+	HexToCharPair(m_data[12], &str[28], &str[29]);
+	HexToCharPair(m_data[13], &str[30], &str[31]);
+	HexToCharPair(m_data[14], &str[32], &str[33]);
+	HexToCharPair(m_data[15], &str[34], &str[35]);
 
 	return String(str);
 }

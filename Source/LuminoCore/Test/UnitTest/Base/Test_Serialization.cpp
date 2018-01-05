@@ -2,6 +2,7 @@
 #include <Lumino/Base/Serialization.h>
 #include <Lumino/Json/JsonDocument.h>
 #include <Lumino/Reflection/ReflectionObject.h>
+#include <Lumino/Base/Uuid.h>
 #include <Lumino/Serialization/Serialization2.h>
 
 //==============================================================================
@@ -59,10 +60,10 @@ TEST_F(Test_Serialization2, SimpleSave)
 /*
 - [ ] List<Ref<MyObject>>
 - [ ] Variant (イベントコマンド引数)
-* [ ] ベースクラス
 - [ ] load 時、メンバが見つからなかったとき
 - [ ] 1つもメンバなしで serialize()
 - [ ] JsonArchiveStore コンストラクタ単純化
+- [ ] GUID
 */
 
 
@@ -361,7 +362,7 @@ public:
 	void serialize(Archive2& ar)
 	{
 		ar & LN_NVP2(x);
-		ver = ar.version();
+		ver = ar.classVersion();
 	}
 };
 
@@ -449,7 +450,7 @@ TEST_F(Test_Serialization2, ObjectTest)
 }
 
 //------------------------------------------------------------------------------
-//## List<> をシリアライズしたい
+//## List<> をシリアライズする
 
 class ListTest1
 	: public ln::Object
@@ -548,8 +549,116 @@ TEST_F(Test_Serialization2, List)
 	}
 }
 
+//------------------------------------------------------------------------------
+//## Uuid をシリアライズする
 
+#if 0
+class UuidTest1
+	: public ln::Object
+{
+public:
+	Uuid id;
 
+	void serialize(Archive2& ar)
+	{
+		ar & LN_NVP2(id);
+	}
+};
+
+TEST_F(Test_Serialization2, Uuid)
+{
+	Uuid id = Uuid::generate();
+	String json;
+
+	//- [ ]  Save
+	{
+		tr::JsonDocument2 doc;
+		JsonArchiveStore s(&doc);
+		Archive2 ar(&s, ArchiveMode::Save);
+
+		UuidTest1 t;
+		t.id = id;
+		ar.process(t);
+
+		json = doc.toString();
+		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":{\"lumino_base_class\":{\"x\":55},\"y\":77}}"), json);
+	}
+
+	//- [ ] Load
+	{
+		tr::JsonDocument2 doc;
+		doc.parse(json);
+		JsonArchiveStore s(&doc);
+		Archive2 ar(&s, ArchiveMode::Load);
+
+		UuidTest1 t;
+		ar.process(t);
+
+		ASSERT_EQ(id, t.id);
+	}
+}
+#endif
+
+//------------------------------------------------------------------------------
+//## ベースクラスをシリアライズしたい
+
+class BaseTest1
+{
+public:
+	int x = 0;
+
+	void serialize(Archive2& ar)
+	{
+		ar & LN_NVP2(x);
+	}
+};
+
+class DerivedTest1
+	: public BaseTest1
+{
+public:
+	int y = 0;
+
+	void serialize(Archive2& ar)
+	{
+		ar & Archive2::BaseClass<BaseTest1>(this);
+		ar & LN_NVP2(y);
+	}
+};
+
+TEST_F(Test_Serialization2, BaseClass)
+{
+	String json;
+
+	//- [ ]  Save
+	{
+		tr::JsonDocument2 doc;
+		JsonArchiveStore s(&doc);
+		Archive2 ar(&s, ArchiveMode::Save);
+
+		DerivedTest1 t;
+		t.x = 55;
+		t.y = 77;
+		ar.process(t);
+
+		json = doc.toString();
+		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":{\"lumino_base_class\":{\"x\":55},\"y\":77}}"), json);
+	}
+
+	//- [ ] Load
+	{
+		tr::JsonDocument2 doc;
+		doc.parse(json);
+		JsonArchiveStore s(&doc);
+		Archive2 ar(&s, ArchiveMode::Load);
+
+		DerivedTest1 t;
+		ar.process(t);
+
+		ASSERT_EQ(55, t.x);
+		ASSERT_EQ(77, t.y);
+	}
+}
 
 
 

@@ -31,4 +31,18 @@ void serialize(Archive2& ar, List<TValue>& value)
 	}
 }
 
+//template<typename TValue>
+//void serialize(Archive2& ar, Uuid& value)
+//{
+//	if (ar.isSaving())
+//	{
+//		String str = value.toString();
+//
+//	}
+//	else
+//	{
+//
+//	}
+//}
+
 LN_NAMESPACE_END
