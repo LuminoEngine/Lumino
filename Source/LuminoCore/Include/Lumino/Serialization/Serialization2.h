@@ -24,14 +24,23 @@ enum class SerializeClassFormat
 	String,
 };
 
+namespace detail
+{
+
+struct NameValuePairBase {};
+
+} // namespace detail
+
 template<typename TValue>
-struct NameValuePair
+struct NameValuePair : public detail::NameValuePairBase
 {
 public:
 	const Char* name;
 	TValue* value;
+	const TValue* defaultValue;
 
-	NameValuePair(const Char* n, TValue* v) : name(n), value(v) {}
+	NameValuePair(const Char* n, TValue* v) : name(n), value(v), defaultValue(nullptr) {}
+	NameValuePair(const Char* n, TValue* v, const TValue& defaultValue) : name(n), value(v), defaultValue(&defaultValue) {}
 
 private:
 	NameValuePair & operator=(NameValuePair const &) = delete;
@@ -186,8 +195,6 @@ public:
 	{
 		moveState(NodeHeadState::Array);
 
-
-
 		if (isLoading())
 		{
 			// この時点で size を返したいので、store を ArrayContainer まで移動して size を得る必要がある
@@ -255,6 +262,7 @@ private:
 		int arrayIndex = -1;
 		int classVersion = 0;
 		bool nextBaseCall = false;
+		detail::NameValuePairBase*	lastNVP = nullptr;
 	};
 
 	//-----------------------------------------------------------------------------
@@ -464,7 +472,9 @@ private:
 	{
 		moveState(NodeHeadState::Object);	// BaseClass は Object のシリアライズの一部なので、親ノードは必ず Object
 		preReadValue();
+
 		m_store->setNextName(nvp.name);
+		m_nodeInfoStack.top().lastNVP = &nvp;
 		readValue(*nvp.value);
 	}
 
@@ -522,18 +532,31 @@ private:
 		m_store->setNextName(ArchiveRootValueKey);
 	}
 
-	void readValue(bool& outValue) { if (!m_store->readValue(&outValue)) { onError(); } }
-	void readValue(int8_t& outValue) { int64_t tmp; if (!m_store->readValue(&tmp)) { onError(); return; } outValue = static_cast<int8_t>(tmp); }
-	void readValue(int16_t& outValue) { int64_t tmp; if (!m_store->readValue(&tmp)) { onError(); return; } outValue = static_cast<int16_t>(tmp); }
-	void readValue(int32_t& outValue) { int64_t tmp; if (!m_store->readValue(&tmp)) { onError(); return; } outValue = static_cast<int32_t>(tmp); }
-	void readValue(int64_t& outValue) { int64_t tmp; if (!m_store->readValue(&tmp)) { onError(); return; } outValue = static_cast<int64_t>(tmp); }
-	void readValue(uint8_t& outValue) { int64_t tmp; if (!m_store->readValue(&tmp)) { onError(); return; } outValue = static_cast<uint8_t>(tmp); }
-	void readValue(uint16_t& outValue) { int64_t tmp; if (!m_store->readValue(&tmp)) { onError(); return; } outValue = static_cast<uint16_t>(tmp); }
-	void readValue(uint32_t& outValue) { int64_t tmp; if (!m_store->readValue(&tmp)) { onError(); return; } outValue = static_cast<uint32_t>(tmp); }
-	void readValue(uint64_t& outValue) { int64_t tmp; if (!m_store->readValue(&tmp)) { onError(); return; } outValue = static_cast<uint64_t>(tmp); }
-	void readValue(float& outValue) { double tmp; if (!m_store->readValue(&tmp)) { onError(); return; } outValue = static_cast<float>(tmp); }
-	void readValue(double& outValue) { double tmp; if (!m_store->readValue(&tmp)) { onError(); return; } outValue = static_cast<double>(tmp); }
-	void readValue(String& outValue) { if (!m_store->readValue(&outValue)) { onError(); return; } }
+	template<typename TValue>
+	bool setDefaultValueHelper(TValue& outValue)
+	{
+		auto* nvp = static_cast<NameValuePair<TValue>*>(m_nodeInfoStack.top().lastNVP);
+		if (nvp &&
+			nvp->defaultValue)
+		{
+			outValue = *nvp->defaultValue;
+			return true;
+		}
+		return false;
+	}
+
+	void readValue(bool& outValue) { if (!m_store->readValue(&outValue)) { if (!setDefaultValueHelper(outValue)) onError(); return; } }
+	void readValue(int8_t& outValue) { int64_t tmp; if (!m_store->readValue(&tmp)) { if (!setDefaultValueHelper(outValue)) onError(); return; } outValue = static_cast<int8_t>(tmp); }
+	void readValue(int16_t& outValue) { int64_t tmp; if (!m_store->readValue(&tmp)) { if (!setDefaultValueHelper(outValue)) onError(); return; } outValue = static_cast<int16_t>(tmp); }
+	void readValue(int32_t& outValue) { int64_t tmp; if (!m_store->readValue(&tmp)) { if (!setDefaultValueHelper(outValue)) onError(); return; } outValue = static_cast<int32_t>(tmp); }
+	void readValue(int64_t& outValue) { int64_t tmp; if (!m_store->readValue(&tmp)) { if (!setDefaultValueHelper(outValue)) onError(); return; } outValue = static_cast<int64_t>(tmp); }
+	void readValue(uint8_t& outValue) { int64_t tmp; if (!m_store->readValue(&tmp)) { if (!setDefaultValueHelper(outValue)) onError(); return; } outValue = static_cast<uint8_t>(tmp); }
+	void readValue(uint16_t& outValue) { int64_t tmp; if (!m_store->readValue(&tmp)) { if (!setDefaultValueHelper(outValue)) onError(); return; } outValue = static_cast<uint16_t>(tmp); }
+	void readValue(uint32_t& outValue) { int64_t tmp; if (!m_store->readValue(&tmp)) { if (!setDefaultValueHelper(outValue)) onError(); return; } outValue = static_cast<uint32_t>(tmp); }
+	void readValue(uint64_t& outValue) { int64_t tmp; if (!m_store->readValue(&tmp)) { if (!setDefaultValueHelper(outValue)) onError(); return; } outValue = static_cast<uint64_t>(tmp); }
+	void readValue(float& outValue) { double tmp; if (!m_store->readValue(&tmp)) { if (!setDefaultValueHelper(outValue)) onError(); return; } outValue = static_cast<float>(tmp); }
+	void readValue(double& outValue) { double tmp; if (!m_store->readValue(&tmp)) { if (!setDefaultValueHelper(outValue)) onError(); return; } outValue = static_cast<double>(tmp); }
+	void readValue(String& outValue) { if (!m_store->readValue(&outValue)) { if (!setDefaultValueHelper(outValue)) onError(); return; } }
 
 	// メンバ関数として serialize を持つ型の readValue()
 	template<
@@ -541,6 +564,17 @@ private:
 		typename std::enable_if<detail::has_member_serialize_function<TValue>::value, std::nullptr_t>::type = nullptr>
 	void readValue(TValue& outValue)
 	{
+		// ユーザーオブジェクトのシリアライズの場合、実際にコンテナ内に入るのは最初の値が書かれてからになる。
+		// しかし、デフォルト値のためのプロパティ存在チェックはそのタイミングだと遅い。ここで行う。
+		//auto* nvp = static_cast<NameValuePair<TValue>*>(m_nodeInfoStack.top().lastNVP);
+		//if (nvp &&
+		//	nvp->defaultValue &&
+		//	!m_store->hasKey(nvp->name))
+		//{
+		//	outValue = *nvp->defaultValue;
+		//	return;
+		//}
+
 		bool baseCall = m_nodeInfoStack.top().nextBaseCall;
 		m_nodeInfoStack.push(NodeInfo{});
 
@@ -558,6 +592,17 @@ private:
 		typename std::enable_if<detail::non_member_serialize_function<TValue>::value, std::nullptr_t>::type = nullptr>
 	void readValue(TValue& outValue)
 	{
+		// ユーザーオブジェクトのシリアライズの場合、実際にコンテナ内に入るのは最初の値が書かれてからになる。
+		// しかし、デフォルト値のためのプロパティ存在チェックはそのタイミングだと遅い。ここで行う。
+		//auto* nvp = static_cast<NameValuePair<TValue>*>(m_nodeInfoStack.top().lastNVP);
+		//if (nvp &&
+		//	nvp->defaultValue &&
+		//	!m_store->hasKey(nvp->name))
+		//{
+		//	outValue = *nvp->defaultValue;
+		//	return;
+		//}
+
 		m_nodeInfoStack.push(NodeInfo{});
 
 		serialize(*this, outValue);
@@ -606,7 +651,7 @@ private:
 };
 
 
-#define LN_NVP2(var)		::ln::makeNVP(_LT(#var), var)
+#define LN_NVP2(var, ...)		::ln::makeNVP(_LT(#var), var, ##__VA_ARGS__)
 
 template<typename TValue>
 NameValuePair<TValue> makeNVP(const Char* name, TValue& valueRef)
@@ -617,7 +662,7 @@ NameValuePair<TValue> makeNVP(const Char* name, TValue& valueRef)
 template<typename TValue>
 NameValuePair<TValue> makeNVP(const Char* name, TValue& valueRef, const TValue& defaultValue)
 {
-	return NameValuePair<TValue>(name, &valueRef, &defaultValue);
+	return NameValuePair<TValue>(name, &valueRef, defaultValue);
 }
 
 

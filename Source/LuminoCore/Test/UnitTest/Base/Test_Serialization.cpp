@@ -95,8 +95,6 @@ TEST_F(Test_Serialization2, SimpleSave)
 /*
 - [ ] List<Ref<MyObject>>
 - [ ] Variant (イベントコマンド引数)
-- [ ] load 時、メンバが見つからなかったとき
-- [ ] JsonArchiveStore コンストラクタ単純化
 */
 
 
@@ -702,6 +700,57 @@ TEST_F(Test_Serialization2, BaseClass)
 }
 
 
+//------------------------------------------------------------------------------
+//## デフォルト値を指定して Load する
+// ユーザーオブジェクトのデフォルト値は対応しない。というか、RefObject のサブクラスでそれやろうとすると
+// コピー禁止 (コピーコンストラクタ delete) が邪魔する。
+
+TEST_F(Test_Serialization2, DefaultValue)
+{
+	class DefaultTest1
+	{
+	public:
+		int x = 1;
+		int y = 2;
+
+		void serialize(Archive2& ar)
+		{
+			ar & LN_NVP2(x);
+			ar & LN_NVP2(y);
+		}
+	};
+	class DefaultTest2
+	{
+	public:
+		int x = 10;
+		int z = 20;
+
+		void serialize(Archive2& ar)
+		{
+			ar & LN_NVP2(x);
+			ar & LN_NVP2(z, 55);
+		}
+	};
+
+	String json;
+
+	//- [ ]  Save
+	{
+		JsonTextOutputArchive ar;
+		DefaultTest1 t;
+		ar.process(t);
+		json = ar.toString();
+	}
+
+	//- [ ] Load
+	{
+		JsonTextInputArchive ar(json);
+		DefaultTest2 t;
+		ar.process(t);
+		ASSERT_EQ(1, t.x);
+		ASSERT_EQ(55, t.z);
+	}
+}
 
 
 

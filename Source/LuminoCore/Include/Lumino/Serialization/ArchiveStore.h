@@ -45,6 +45,7 @@ public:
 	int getArrayElementCount() const { return onReadArrayElementCount(); }
 	void setNextIndex(int index) { m_nextIndex = index; }	// setNextName() と同じように使う Array 版
 	int getNextIndex() const { return m_nextIndex; }
+	virtual bool hasKey(const String& name) const = 0;
 	bool readContainer()
 	{
 		int dummy;
@@ -203,6 +204,19 @@ protected:
 
 #undef ON_WRITE_VALUE_FUNC
 
+	virtual bool hasKey(const String& name) const override
+	{
+		if (checkTopType(tr::JsonValueType::Object))
+		{
+			return static_cast<tr::JsonObject2*>(m_nodeStack.top())->find(name) != nullptr;
+		}
+		else
+		{
+			LN_NOTIMPLEMENTED();
+			return false;
+		}
+	}
+
 	virtual bool onReadContainer(int* outElementCount) override
 	{
 		tr::JsonElement2* element;
@@ -332,7 +346,7 @@ protected:
 	}
 
 private:
-	bool checkTopType(tr::JsonValueType t) { return m_nodeStack.top()->getType() == t; }
+	bool checkTopType(tr::JsonValueType t) const { return m_nodeStack.top()->getType() == t; }
 
 	std::stack<tr::JsonElement2*>	m_nodeStack;
 	//Ref<tr::JsonDocument2>			m_localDoc;
