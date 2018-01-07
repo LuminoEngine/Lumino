@@ -1,28 +1,36 @@
-#pragma once
+﻿#pragma once
 #include "String.h"
 
 namespace ln {
 
 /**
-	@brief	UUID (Universally Unique Identifier) �̃N���X�ł��B
+	@brief	UUID (Universally Unique Identifier) のクラスです。
 */
 class Uuid
 {
 public:
 	
-	/** �V���� UUID �𐶐����܂��B*/
+	/** 新しい UUID を生成します。*/
 	static Uuid generate();
 
-	/** ��� UUID �𐶐����܂��B"{00000000-0000-0000-0000-000000000000}" */
+	/** 空の UUID を生成します。 */
 	Uuid();
 
-	/** UUID ��������w�肵�ăC���X�^���X�𐶐����܂��B"{xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}" */
+	/** 
+		UUID 文字列を指定してインスタンスを生成します。
+
+		形式は次のいずれかです。
+		- 32 桁 : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+		- ハイフンで区切られた 32 桁 :  "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+		- 中かっこで囲まれ、ハイフンで区切られた 32 桁 :  "{xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}"
+		- 丸かっこで囲まれ、ハイフンで区切られた 32 桁 :  "(xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)"
+	*/
 	Uuid(const StringRef& uuidText);
 	
-	/** 16Byte �̔z����w�肵�ăC���X�^���X�𐶐����܂��B*/
+	/** 16Byte の配列を指定してインスタンスを生成します。*/
 	Uuid(const uint8_t* bytes);
 
-	/** ������ɕϊ����܂��B*/
+	/** 文字列に変換します。*/
 	String toString() const;
 
 	// copy
