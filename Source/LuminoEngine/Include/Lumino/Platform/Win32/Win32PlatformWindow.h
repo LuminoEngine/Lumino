@@ -38,6 +38,7 @@ public:
 
 	virtual void setSize(const SizeI& size) override;
 	virtual void onPlatformEvent(const PlatformEventArgs& e) override;
+	virtual void setAllowDragDrop(bool value) override;
 
 public:
 	static Keys convertVirtualKeyCode(DWORD winVK);
@@ -50,6 +51,9 @@ protected:
 LN_INTERNAL_ACCESS:
 	Win32PlatformWindow(Win32WindowManager* app);
 	virtual ~Win32PlatformWindow();
+
+private:
+	IDropTarget* m_dropTarget;
 };
 
 /**

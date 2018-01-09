@@ -22,23 +22,254 @@
 #include "../MouseCursorVisibility.h"
 
 LN_NAMESPACE_BEGIN
-	
+
+
+class DataObjectUtils
+{
+public:
+	/*
+		IDataObject からフォーマットを取り出すには？
+
+		フォーマットID は CF_TEXT(1) CF_HDROP(15) 等が基本として用意されている。
+		また、独自フォーマットを定義することもできる。
+
+		独自フォーマットまで取りたいときは IDataObject::EnumFormatEtc() で、データについている ID を列挙して調べる必要がある。
+		単にエクスプローラからファイルを D&D しただけでも、	15 のほか、49340 とか 49977 とかたくさん得られる。
+
+		IDataObject::EnumFormatEtc() は少し冗長なので、簡単に調べたければこれが参考になる。
+		https://chromium.googlesource.com/chromium/src/base/+/a57992ebb30cb43a4c1fbb1c30ed470e89afebfd/clipboard_util.cc
+	*/
+
+	static FORMATETC* GetCFHDropFormat();
+	static bool GetFilenames(IDataObject* data_object, List<String>* filenames);
+};
+
+FORMATETC* DataObjectUtils::GetCFHDropFormat()
+{
+	static FORMATETC format = { CF_HDROP, 0, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
+	return &format;
+}
+
+bool DataObjectUtils::GetFilenames(IDataObject* data_object, List<String>* filenames)
+{
+	STGMEDIUM medium;
+	if (FAILED(data_object->GetData(GetCFHDropFormat(), &medium)))
+	{
+		return false;
+	}
+
+	HDROP hdrop = static_cast<HDROP>(GlobalLock(medium.hGlobal));
+	if (!hdrop)
+	{
+		return false;
+	}
+
+	const int MaxFilePathLen = 4096;
+	int count = DragQueryFileW(hdrop, 0xffffffff, 0, 0);
+	for (int i = 0; i < count; i++)
+	{
+		wchar_t filepath[MaxFilePathLen];
+		if (!DragQueryFileW(hdrop, i, filepath, MaxFilePathLen))
+		{
+			continue;
+		}
+		filenames->add(filepath);
+	}
+	DragFinish(hdrop);
+	GlobalUnlock(medium.hGlobal);
+
+	return true;
+}
+
+
+
+
+
+
+
+class OleDropTarget : public IDropTarget
+{
+public:
+	OleDropTarget(Win32PlatformWindow* window);
+	virtual ~OleDropTarget();
+
+	void Register();
+	void Revoke();
+
+	// IUnknown
+	STDMETHOD(QueryInterface)(REFIID riid, void FAR* FAR* ppvObj);
+	STDMETHOD_(ULONG, AddRef)();
+	STDMETHOD_(ULONG, Release)();
+
+	// IDropTarget
+	STDMETHOD(DragEnter)(LPDATAOBJECT pDataObj, DWORD grfKeyState, POINTL pt, LPDWORD pdwEffect);
+	STDMETHOD(DragOver)(DWORD grfKeyState, POINTL pt, LPDWORD pdwEffect);
+	STDMETHOD(DragLeave)();
+	STDMETHOD(Drop)(LPDATAOBJECT pDataObj, DWORD grfKeyState, POINTL pt, LPDWORD pdwEffect);
+
+private:
+
+	Win32PlatformWindow* m_window;
+	ULONG m_refs;
+	BOOL m_bSupportFormat;
+};
+
+
+
+
+OleDropTarget::OleDropTarget(Win32PlatformWindow* window)
+	: m_window(window)
+	, m_refs(1)
+	, m_bSupportFormat(FALSE)
+{
+}
+
+OleDropTarget::~OleDropTarget()
+{
+}
+
+void OleDropTarget::Register()
+{
+	::RegisterDragDrop(m_window->getWindowHandle(), this);
+}
+
+void OleDropTarget::Revoke()
+{
+	::RevokeDragDrop(m_window->getWindowHandle());
+}
+
+STDMETHODIMP
+OleDropTarget::QueryInterface(REFIID iid, void FAR* FAR* ppv)
+{
+	if (IsEqualIID(iid, IID_IUnknown) || IsEqualIID(iid, IID_IDropTarget))
+	{
+		*ppv = this;
+		AddRef();
+		return NOERROR;
+	}
+	*ppv = NULL;
+	return ResultFromScode(E_NOINTERFACE);
+}
+
+STDMETHODIMP_(ULONG)
+OleDropTarget::AddRef()
+{
+	return ++m_refs;
+}
+
+STDMETHODIMP_(ULONG)
+OleDropTarget::Release()
+{
+	if (--m_refs == 0)
+	{
+		delete this;
+		return 0;
+	}
+	return m_refs;
+}
+
+STDMETHODIMP
+OleDropTarget::DragEnter(IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect)
+{
+	HRESULT   hr;
+	FORMATETC formatetc;
+
+	*pdwEffect = DROPEFFECT_COPY;
+
+	//formatetc.cfFormat = 0;
+	//formatetc.ptd = NULL;
+	//formatetc.dwAspect = DVASPECT_CONTENT;
+	//formatetc.lindex = -1;
+	//formatetc.tymed = TYMED_ENHMF;
+
+	hr = pDataObj->QueryGetData(DataObjectUtils::GetCFHDropFormat());
+	if (hr != S_OK) {
+		m_bSupportFormat = FALSE;
+		*pdwEffect = DROPEFFECT_NONE;
+	}
+	else
+		m_bSupportFormat = TRUE;
+
+	return S_OK;
+}
+
+STDMETHODIMP
+OleDropTarget::DragOver(DWORD grfKeyState, POINTL pt, DWORD *pdwEffect)
+{
+	printf("DragOver\n");
+	*pdwEffect = DROPEFFECT_COPY;
+
+	if (!m_bSupportFormat)
+		*pdwEffect = DROPEFFECT_NONE;
+
+	return S_OK;
+}
+
+STDMETHODIMP
+OleDropTarget::DragLeave()
+{
+	return S_OK;
+}
+
+STDMETHODIMP
+OleDropTarget::Drop(IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect)
+{
+	printf("Drop\n");
+	//HRESULT   hr;
+	//FORMATETC formatetc;
+	//STGMEDIUM medium;
+
+	//*pdwEffect = DROPEFFECT_COPY;
+
+	//formatetc.cfFormat = CF_ENHMETAFILE;
+	//formatetc.ptd = NULL;
+	//formatetc.dwAspect = DVASPECT_CONTENT;
+	//formatetc.lindex = -1;
+	//formatetc.tymed = TYMED_ENHMF;
+
+	//hr = pDataObj->GetData(&formatetc, &medium);
+	//if (FAILED(hr)) {
+	//	*pdwEffect = DROPEFFECT_NONE;
+	//	return E_FAIL;
+	//}
+
+	//if (g_nDropDataCount < g_nDropDataMaxCount) {
+	//	g_dropData[g_nDropDataCount].hEnhMetaFile = medium.hEnhMetaFile;
+	//	g_dropData[g_nDropDataCount].pt.x = pt.x;
+	//	g_dropData[g_nDropDataCount].pt.y = pt.y;
+	//	ScreenToClient(m_hwnd, &g_dropData[g_nDropDataCount].pt);
+	//	g_nDropDataCount++;
+	//	InvalidateRect(m_hwnd, NULL, FALSE);
+	//}
+
+	List<String> filePathes;
+	DataObjectUtils::GetFilenames(pDataObj, &filePathes);
+
+	for (auto& f : filePathes)
+	{
+		Console::writeLine(f);
+	}
+
+	return S_OK;
+}
+
 //==============================================================================
 // Win32PlatformWindow
 //==============================================================================
 
-//------------------------------------------------------------------------------
 Win32PlatformWindow::Win32PlatformWindow(Win32WindowManager* app)
 	: PlatformWindow(app)
 	, mLastMouseX(-1)
 	, mLastMouseY(-1)
 	, m_systemMouseShown(true)
+	, m_dropTarget(nullptr)
 {
 }
 
-//------------------------------------------------------------------------------
-	Win32PlatformWindow::~Win32PlatformWindow()
+Win32PlatformWindow::~Win32PlatformWindow()
 {
+	if (m_dropTarget)
+		m_dropTarget->Release();
 }
 
 ////------------------------------------------------------------------------------
@@ -385,6 +616,23 @@ void Win32PlatformWindow::onPlatformEvent(const PlatformEventArgs& e)
 	//return SendEventToAllListener(e);
 }
 
+void Win32PlatformWindow::setAllowDragDrop(bool value)
+{
+	if (!m_dropTarget)
+	{
+		m_dropTarget = new OleDropTarget(this);
+	}
+
+	if (value)
+	{
+		static_cast<OleDropTarget*>(m_dropTarget)->Register();
+	}
+	else
+	{
+		static_cast<OleDropTarget*>(m_dropTarget)->Revoke();
+	}
+}
+
 //------------------------------------------------------------------------------
 Keys Win32PlatformWindow::convertVirtualKeyCode(DWORD winVK)
 {
@@ -603,7 +851,6 @@ void Win32NativeWindow::Initilaize(
 	// ウィンドウハンドルと Win32Window のポインタを関連付ける
 	BOOL r = ::SetProp(mWindowHandle, Win32WindowManager::PROP_WINPROC, this);
 	if (LN_ENSURE_WIN32((r != FALSE), GetLastError())) return;
-
 }
 
 //------------------------------------------------------------------------------

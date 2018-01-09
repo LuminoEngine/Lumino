@@ -200,11 +200,16 @@ EngineManager::EngineManager(const detail::EngineSettings& configData)
 
 #if defined(LN_OS_WIN32)
 	// COM 初期化
-	if (m_configData.autoCoInitialize && SUCCEEDED(::CoInitializeEx(nullptr, COINIT_MULTITHREADED)))
+	// OleInitialize() するためには、CoInitializeEx() が STA(COINIT_APARTMENTTHREADED) で初期化されている必要がある
+	if (m_configData.autoCoInitialize && SUCCEEDED(::CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED)))
 	{
 		// エラーにはしない。別の設定で COM が初期化済みだったりすると失敗することがあるが、COM 自体は使えるようになっている
 		m_comInitialized = true;
 	}
+
+	// OleInitialize() するためには、CoInitializeEx() が STA(COINIT_APARTMENTTHREADED) で初期化されている必要がある
+	HRESULT hr = ::OleInitialize(NULL);
+	if (LN_ENSURE_WIN32(SUCCEEDED(hr), hr)) return;
 #endif
 }
 

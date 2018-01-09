@@ -89,20 +89,17 @@ void Main()
 
 	//ZipFile::extractToDirectory(_T("D:\\MMD\\Materials\\Models\\人物\\にがもん式霊夢V01_s05a.zip"), _T("D:\\tmp\\V01_s05a"));
 
-	//Engine::initialize();
+	Engine::initialize();
 
-	//auto window = newObject<UIFrameWindow>();
+	while (Engine::update())
+	{
+	}
 
+	Engine::terminate();
 
-	//while (Engine::update())
-	//{
-	//}
+	return;
 
-	//Engine::terminate();
-
-	//return;
-
-	UIControlsGallery();
+	//UIControlsGallery();
 	//DxLibMain();
 	return;
 

@@ -9,6 +9,24 @@
 
 LN_NAMESPACE_BEGIN
 
+class DataObject
+	: public Object
+{
+public:
+	bool hasDropFiles() const { return !m_dropFiles.isEmpty(); }
+
+	const List<String>& dropFiles() const { return m_dropFiles; }
+
+	void setDropFiles(const List<String>& files) { m_dropFiles = files; }
+
+LN_CONSTRUCT_ACCESS:
+	DataObject();
+	virtual ~DataObject();
+
+private:
+	List<String>	m_dropFiles;
+};
+
 /**
 	@brief	プラットフォーム固有のウィンドウシステムのウィンドウを抽象化します。
 */
@@ -73,6 +91,8 @@ public:
 	void detachEventListener(IEventListener* listener);
 
 	bool sendPlatformEvent(const PlatformEventArgs& e);
+
+	virtual void setAllowDragDrop(bool value);
 
 protected:
 	PlatformWindow(WindowManagerBase* windowManager);

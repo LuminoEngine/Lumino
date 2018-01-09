@@ -7,6 +7,22 @@
 
 LN_NAMESPACE_BEGIN
 
+//==============================================================================
+// DataObject
+//==============================================================================
+
+DataObject::DataObject()
+{
+}
+
+DataObject::~DataObject()
+{
+}
+
+//==============================================================================
+// PlatformWindow
+//==============================================================================
+
 //------------------------------------------------------------------------------
 //PlatformWindow* PlatformWindow::create(const String& title, const Size& clientSize, bool resizable, PlatformManager* manager)
 //{
@@ -112,6 +128,11 @@ bool PlatformWindow::sendPlatformEvent(const PlatformEventArgs& e)
 	}
 
 	return handled;
+}
+
+void PlatformWindow::setAllowDragDrop(bool value)
+{
+	LN_NOTIMPLEMENTED();
 }
 
 //------------------------------------------------------------------------------

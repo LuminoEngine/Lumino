@@ -204,7 +204,7 @@ void AudioManager::thread_Polling()
 {
 #ifdef LN_OS_WIN32
 	// COM 初期化
-	HRESULT hr = ::CoInitializeEx(NULL, COINIT_MULTITHREADED);
+	HRESULT hr = ::CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
 #endif
 
 	uint64_t lastTime = Environment::getTickCount();
