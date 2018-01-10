@@ -253,7 +253,10 @@ Win32PlatformWindow::Win32PlatformWindow(Win32WindowManager* app)
 Win32PlatformWindow::~Win32PlatformWindow()
 {
 	if (m_dropTarget)
+	{
 		m_dropTarget->Release();
+		m_dropTarget = nullptr;
+	}
 }
 
 ////------------------------------------------------------------------------------
@@ -315,6 +318,13 @@ LRESULT Win32PlatformWindow::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 
 		switch (msg)
 		{
+			case WM_DESTROY:
+				if (m_dropTarget)
+				{
+					static_cast<OleDropTarget*>(m_dropTarget)->Revoke();
+				}
+				return 0;
+
 			/////////////////// ウィンドウが閉じられようとしている
 			case WM_CLOSE:
 			{

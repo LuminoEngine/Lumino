@@ -210,18 +210,16 @@ public:
 	static UIEventType	UncheckedEvent;
 
 	/** DragStartedEvent イベントの識別子 (UIEventArgs) マウスドラッグを開始したときに発生するイベントを表します。*/
-	static UIEventType	DragStartedEvent;
+	static UIEventType	ScrollDragStartedEvent;
 
 	/** DragDeltaEvent イベントの識別子 (UIEventArgs) マウスドラッグ中に発生するイベントを表します。 */
-	static UIEventType	DragDeltaEvent;
+	static UIEventType	ScrollDragDeltaEvent;
 
 	/** DragCompletedEvent イベントの識別子 (UIEventArgs) マウスドラッグが完了したときに発生するイベントを表します。 */
-	static UIEventType	DragCompletedEvent;
+	static UIEventType	ScrollDragCompletedEvent;
 
 	/** DragCanceledEvent イベントの識別子 (UIEventArgs) マウスドラッグを中断したときに発生するイベントを表します。 */
-	static UIEventType	DragCanceledEvent;
-
-	// TODO: ↑ScrollDrag とかしたほうがいいかも。DragDrop と混ざってわかりづらい
+	static UIEventType	ScrollDragCanceledEvent;
 
 	/** ScrollEvent イベントの識別子 (UIEventArgs) */
 	static UIEventType	ScrollEvent;

@@ -172,10 +172,10 @@ void UIManager::createGlobalObjects()
 	UIEvents::TextInputEvent = UIEventManager::RegisterEvent();
 	UIEvents::CheckedEvent = UIEventManager::RegisterEvent();
 	UIEvents::UncheckedEvent = UIEventManager::RegisterEvent();
-	UIEvents::DragStartedEvent = UIEventManager::RegisterEvent();
-	UIEvents::DragDeltaEvent = UIEventManager::RegisterEvent();
-	UIEvents::DragCompletedEvent = UIEventManager::RegisterEvent();
-	UIEvents::DragCanceledEvent = UIEventManager::RegisterEvent();
+	UIEvents::ScrollDragStartedEvent = UIEventManager::RegisterEvent();
+	UIEvents::ScrollDragDeltaEvent = UIEventManager::RegisterEvent();
+	UIEvents::ScrollDragCompletedEvent = UIEventManager::RegisterEvent();
+	UIEvents::ScrollDragCanceledEvent = UIEventManager::RegisterEvent();
 	UIEvents::ScrollEvent = UIEventManager::RegisterEvent();
 	UIEvents::DragEnterEvent = UIEventManager::RegisterEvent();
 	UIEvents::DragDropEvent = UIEventManager::RegisterEvent();

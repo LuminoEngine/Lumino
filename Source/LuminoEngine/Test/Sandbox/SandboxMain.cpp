@@ -92,14 +92,14 @@ void Main()
 	Engine::initialize();
 
 	Engine::getMainWindow()->setAllowDragDrop(true);
-	Engine::getMainWindow()->connectOnDragEnter([](UIDragDropEventArgs* e) { e->setEffect(DragDropEffects::Copy); });
-	Engine::getMainWindow()->connectOnDragDrop([](UIDragDropEventArgs* e)
-	{
-		for (auto& file : e->data()->dropFiles())
-		{
-			Console::writeLine(file);
-		}
-	});
+	//Engine::getMainWindow()->connectOnDragEnter([](UIDragDropEventArgs* e) { e->setEffect(DragDropEffects::Copy); });
+	//Engine::getMainWindow()->connectOnDragDrop([](UIDragDropEventArgs* e)
+	//{
+	//	for (auto& file : e->data()->dropFiles())
+	//	{
+	//		Console::writeLine(file);
+	//	}
+	//});
 
 	//auto* uiRoot = Engine::getDefaultUILayer()->GetLayoutView();
 	//auto text1 = UITextField::create();

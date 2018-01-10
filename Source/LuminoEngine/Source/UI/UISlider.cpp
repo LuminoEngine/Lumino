@@ -90,17 +90,17 @@ Orientation UISlider::getOrientation() const
 //------------------------------------------------------------------------------
 void UISlider::onRoutedEvent(UIEventArgs* e)
 {
-	if (e->getType() == UIEvents::DragStartedEvent)
+	if (e->getType() == UIEvents::ScrollDragStartedEvent)
 	{
 		m_dragStartValue = m_track->getValue();
 	}
-	else if (e->getType() == UIEvents::DragDeltaEvent)
+	else if (e->getType() == UIEvents::ScrollDragDeltaEvent)
 	{
 		auto* e2 = static_cast<UIDragDeltaEventArgs*>(e);
 		float newValue = m_dragStartValue + m_track->valueFromDistance(e2->horizontalChange, e2->verticalChange);
 		updateValue(Math::clamp(newValue, getMinimum(), getMaximum()));
 	}
-	else if (e->getType() == UIEvents::DragCompletedEvent)
+	else if (e->getType() == UIEvents::ScrollDragCompletedEvent)
 	{
 	}
 	UIControl::onRoutedEvent(e);
