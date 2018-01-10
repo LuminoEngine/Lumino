@@ -186,12 +186,13 @@ void DX9Texture::setSubData(const PointI& point, const void* data, size_t dataBy
 	size_t srcRowBytes = pixelByteSize * dataBitmapSize.width;	// 横一列のバイト数
 
 #if 1
+	// 上下反転して転送 (DX9 は downflow)
 	byte_t* dst = (byte_t*)lockedRect.pBits;
 	const byte_t* src = (const byte_t*)data;
 	for (int row = 0; row < lineHeight; ++row)
 	{
-		byte_t* dstline = dst + (lockedRect.Pitch * row);		// TODO format
-		//byte_t* dstline = dst + (lockedRect.Pitch * (lineHeight - row - 1));		// TODO format
+		//byte_t* dstline = dst + (lockedRect.Pitch * row);		// TODO format
+		byte_t* dstline = dst + (lockedRect.Pitch * (lineHeight - row - 1));		// TODO format
 		const byte_t* srcline = src + (srcRowBytes * row);	// TODO format
 		memcpy(dstline, srcline, srcRowBytes);
 	}

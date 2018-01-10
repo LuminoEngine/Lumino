@@ -16,10 +16,10 @@ void RenderingContextParameters::reset()
 	m_depthBuffer = nullptr;
 	m_viewportRect = RectI::Empty;
 	m_scissorRect = RectI::Empty;
-	m_blendMode = BlendMode::Normal;	// TODO: Default
-	m_cullingMode = CullingMode::Back;	// TODO: Default
-	m_depthTestEnabled = true;
-	m_depthWriteEnabled = true;
+	m_blendMode = nullptr; //= BlendMode::Normal;	// TODO: Default
+	m_cullingMode = nullptr;//CullingMode::Back;	// TODO: Default
+	m_depthTestEnabled = nullptr;// true;
+	m_depthWriteEnabled = nullptr;//true;
 
 	m_transfrom = Matrix::Identity;
 

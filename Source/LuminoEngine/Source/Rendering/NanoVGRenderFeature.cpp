@@ -462,8 +462,6 @@ static void glnvg__setUniforms(GLNVGcontext* gl, int uniformOffset, int image)
 
 static void glnvg__fill(LNNVGcontext* gl, GLNVGcall* call)
 {
-	LN_NOTIMPLEMENTED();	// TODO: FaceCulling を逆転した合わせこみがまだ
-
 	GLNVGpath* paths = &gl->paths[call->pathOffset];
 	int i, npaths = call->pathCount;
 
@@ -515,8 +513,6 @@ static void glnvg__fill(LNNVGcontext* gl, GLNVGcall* call)
 
 static void glnvg__convexFill(LNNVGcontext* gl, GLNVGcall* call)
 {
-	LN_NOTIMPLEMENTED();	// TODO: FaceCulling を逆転した合わせこみがまだ
-
 	GLNVGpath* paths = &gl->paths[call->pathOffset];
 	int i, npaths = call->pathCount;
 
@@ -538,8 +534,6 @@ static void glnvg__convexFill(LNNVGcontext* gl, GLNVGcall* call)
 
 static void glnvg__stroke(LNNVGcontext* gl, GLNVGcall* call)
 {
-	LN_NOTIMPLEMENTED();	// TODO: FaceCulling を逆転した合わせこみがまだ
-
 	GLNVGpath* paths = &gl->paths[call->pathOffset];
 	int npaths = call->pathCount, i;
 
@@ -992,6 +986,12 @@ void NanoVGRenderFeature::executeCommandInternal(const NanoVGState& state, NanoV
 	Driver::IRenderer* renderer = m_manager->getGraphicsDevice()->getRenderer();
 	const SizeI& size = renderer->getRenderTarget(0)->getSize();
 
+	// 反時計回りを表にする
+	RenderState oldState = renderer->getRenderState();
+	RenderState newState = oldState;
+	newState.Culling = CullingMode::Front;
+	renderer->setRenderState(newState);
+
 	// 描画開始前にテクスチャテーブルをクリア
 	LNNVGcontext* lnc = (LNNVGcontext*)nvgInternalParams(m_nvgContext)->userPtr;
 	lnc->textureList.clear();
@@ -1005,6 +1005,8 @@ void NanoVGRenderFeature::executeCommandInternal(const NanoVGState& state, NanoV
 
 	// コマンドリストを使い終わった。返却する
 	pushCommandList(commandList);
+
+	renderer->setRenderState(oldState);
 }
 
 //------------------------------------------------------------------------------
