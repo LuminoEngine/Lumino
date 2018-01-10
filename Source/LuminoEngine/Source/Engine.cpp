@@ -111,6 +111,11 @@ Camera* Engine::getCamera3D()
 	return EngineManager::Instance->getDefaultWorld3D()->getMainCamera();
 }
 
+UIFrameWindow* Engine::getMainWindow()
+{
+	return EngineManager::Instance->getUIManager()->getMainWindow();
+}
+
 //------------------------------------------------------------------------------
 UIViewport* Engine::getMainViewport()
 {

@@ -177,6 +177,8 @@ void UIManager::createGlobalObjects()
 	UIEvents::DragCompletedEvent = UIEventManager::RegisterEvent();
 	UIEvents::DragCanceledEvent = UIEventManager::RegisterEvent();
 	UIEvents::ScrollEvent = UIEventManager::RegisterEvent();
+	UIEvents::DragEnterEvent = UIEventManager::RegisterEvent();
+	UIEvents::DragDropEvent = UIEventManager::RegisterEvent();
 
 	auto cmd = newObject<UIRoutedCommand>();
 	m_allGlobalCommands.add(cmd);

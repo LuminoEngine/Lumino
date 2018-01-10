@@ -3,6 +3,16 @@
 #include "PlatformManager.h"
 
 LN_NAMESPACE_BEGIN
+class DataObject;
+
+namespace detail
+{
+struct PlatformDragDropData
+{
+	Ref<DataObject>			data;
+	DragDropEffects			effect;
+};
+} // namespace detail
 
 /**
 	@note	[2015/2/8]
@@ -28,7 +38,7 @@ class WindowManagerBase
 	: public RefObject
 {
 protected:
-	WindowManagerBase() { m_endRequested = false; }
+	WindowManagerBase();
 	virtual ~WindowManagerBase() {}
 
 public:
@@ -44,9 +54,14 @@ public:
 	bool isEndRequested() const { return m_endRequested; }
 	void exit() { m_endRequested = true; }
 
+	detail::PlatformDragDropData* getDragDropData() { return &m_dragDropData; }
+
 protected:
 	List<PlatformWindow*>	m_windowArray;
 	bool					m_endRequested;
+
+private:
+	detail::PlatformDragDropData m_dragDropData;
 };
 
 LN_NAMESPACE_END

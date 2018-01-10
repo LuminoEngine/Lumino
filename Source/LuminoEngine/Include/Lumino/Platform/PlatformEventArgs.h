@@ -3,6 +3,7 @@
 #include "../Common.h"
 
 LN_NAMESPACE_BEGIN
+class DataObject;
 class PlatformWindow;
 
 /** システムイベントの種類 */
@@ -30,8 +31,18 @@ enum class PlatformEventType
 
 	WindowSizeChanged,		/** ウィンドウサイズが変更された */
 
+
+	DragEnter,				/** ドラッグドロップ開始 */
+	DragDrop,				/** ドラッグドロップ確定 */
+
 	//ANDROID_PAUSED = 101,		/** Android APP_CMD_RESUME */
 	//ANDROID_RESUMED = 102,	/** Android APP_CMD_PAUSE */
+};
+
+enum class DragDropEffects
+{
+	None,
+	Copy,
 };
 
 /** イベント引数 */
@@ -77,6 +88,14 @@ struct PlatformEventArgs
 			short			delta;			/** マウスホイールの回転回数 (windows では 1 回につき 120 が格納されるが、これは正または負の回数で、1単位) */
 
 		} wheel;
+
+		/** ドラッグ&ドロップ情報 */
+		struct
+		{
+			DataObject*			data;
+			DragDropEffects*	effect;
+
+		} dragDrop;
 	};
 
 public:
@@ -89,6 +108,7 @@ public:
 	static PlatformEventArgs makeActivateChangedEvent(PlatformWindow* sender, bool active);
 	static PlatformEventArgs makeKeyEvent(PlatformWindow* sender, PlatformEventType type, Keys keyCode, ModifierKeys modifierKeys, char keyChar);
 	static PlatformEventArgs makeMouseWheelEvent(PlatformWindow* sender, int delta);
+	static PlatformEventArgs makeDragDropEvent(PlatformWindow* sender, PlatformEventType type, DataObject* data, DragDropEffects* effect);
 };
 
 LN_NAMESPACE_END

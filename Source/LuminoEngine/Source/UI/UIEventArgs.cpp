@@ -179,4 +179,42 @@ void UIMouseWheelEventArgs::initialize(UIEventType type, int delta)
 	m_delta = delta;
 }
 
+//==============================================================================
+// UIDragDropEventArgs
+//==============================================================================
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(UIDragDropEventArgs, UIEventArgs)
+
+Ref<UIDragDropEventArgs> UIDragDropEventArgs::create(UIEventType type, DataObject* data, DragDropEffects effect, bool caching)
+{
+	if (caching)
+	{
+		detail::EventArgsPool* pool = detail::UIManager::getInstance()->getEventArgsPool();
+		Ref<UIDragDropEventArgs> ptr(pool->create<UIDragDropEventArgs>(type, data, effect), false);
+		return ptr;
+	}
+	else
+	{
+		LN_NOTIMPLEMENTED();
+		return nullptr;
+	}
+}
+
+UIDragDropEventArgs::UIDragDropEventArgs()
+	: m_data(nullptr)
+	, m_effect(DragDropEffects::None)
+{
+}
+
+UIDragDropEventArgs::~UIDragDropEventArgs()
+{
+}
+
+void UIDragDropEventArgs::initialize(UIEventType type, DataObject* data, DragDropEffects effect)
+{
+	UIEventArgs::initialize(type);
+	if (LN_REQUIRE(data)) return;
+	m_data = data;
+	m_effect = effect;
+}
+
 LN_NAMESPACE_END

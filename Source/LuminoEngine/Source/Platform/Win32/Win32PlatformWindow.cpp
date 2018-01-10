@@ -108,6 +108,7 @@ public:
 	STDMETHOD(Drop)(LPDATAOBJECT pDataObj, DWORD grfKeyState, POINTL pt, LPDWORD pdwEffect);
 
 private:
+	static DWORD translateEffect(DragDropEffects effect);
 
 	Win32PlatformWindow* m_window;
 	ULONG m_refs;
@@ -138,8 +139,7 @@ void OleDropTarget::Revoke()
 	::RevokeDragDrop(m_window->getWindowHandle());
 }
 
-STDMETHODIMP
-OleDropTarget::QueryInterface(REFIID iid, void FAR* FAR* ppv)
+STDMETHODIMP OleDropTarget::QueryInterface(REFIID iid, void FAR* FAR* ppv)
 {
 	if (IsEqualIID(iid, IID_IUnknown) || IsEqualIID(iid, IID_IDropTarget))
 	{
@@ -151,14 +151,12 @@ OleDropTarget::QueryInterface(REFIID iid, void FAR* FAR* ppv)
 	return ResultFromScode(E_NOINTERFACE);
 }
 
-STDMETHODIMP_(ULONG)
-OleDropTarget::AddRef()
+STDMETHODIMP_(ULONG) OleDropTarget::AddRef()
 {
 	return ++m_refs;
 }
 
-STDMETHODIMP_(ULONG)
-OleDropTarget::Release()
+STDMETHODIMP_(ULONG) OleDropTarget::Release()
 {
 	if (--m_refs == 0)
 	{
@@ -168,89 +166,75 @@ OleDropTarget::Release()
 	return m_refs;
 }
 
-STDMETHODIMP
-OleDropTarget::DragEnter(IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect)
+STDMETHODIMP OleDropTarget::DragEnter(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect)
 {
-	HRESULT   hr;
-	FORMATETC formatetc;
+	m_bSupportFormat = FALSE;
+	*pdwEffect = DROPEFFECT_NONE;
 
-	*pdwEffect = DROPEFFECT_COPY;
-
-	//formatetc.cfFormat = 0;
-	//formatetc.ptd = NULL;
-	//formatetc.dwAspect = DVASPECT_CONTENT;
-	//formatetc.lindex = -1;
-	//formatetc.tymed = TYMED_ENHMF;
-
-	hr = pDataObj->QueryGetData(DataObjectUtils::GetCFHDropFormat());
-	if (hr != S_OK) {
-		m_bSupportFormat = FALSE;
-		*pdwEffect = DROPEFFECT_NONE;
-	}
-	else
-		m_bSupportFormat = TRUE;
-
-	return S_OK;
-}
-
-STDMETHODIMP
-OleDropTarget::DragOver(DWORD grfKeyState, POINTL pt, DWORD *pdwEffect)
-{
-	printf("DragOver\n");
-	*pdwEffect = DROPEFFECT_COPY;
-
-	if (!m_bSupportFormat)
-		*pdwEffect = DROPEFFECT_NONE;
-
-	return S_OK;
-}
-
-STDMETHODIMP
-OleDropTarget::DragLeave()
-{
-	return S_OK;
-}
-
-STDMETHODIMP
-OleDropTarget::Drop(IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect)
-{
-	printf("Drop\n");
-	//HRESULT   hr;
-	//FORMATETC formatetc;
-	//STGMEDIUM medium;
-
-	//*pdwEffect = DROPEFFECT_COPY;
-
-	//formatetc.cfFormat = CF_ENHMETAFILE;
-	//formatetc.ptd = NULL;
-	//formatetc.dwAspect = DVASPECT_CONTENT;
-	//formatetc.lindex = -1;
-	//formatetc.tymed = TYMED_ENHMF;
-
-	//hr = pDataObj->GetData(&formatetc, &medium);
-	//if (FAILED(hr)) {
-	//	*pdwEffect = DROPEFFECT_NONE;
-	//	return E_FAIL;
-	//}
-
-	//if (g_nDropDataCount < g_nDropDataMaxCount) {
-	//	g_dropData[g_nDropDataCount].hEnhMetaFile = medium.hEnhMetaFile;
-	//	g_dropData[g_nDropDataCount].pt.x = pt.x;
-	//	g_dropData[g_nDropDataCount].pt.y = pt.y;
-	//	ScreenToClient(m_hwnd, &g_dropData[g_nDropDataCount].pt);
-	//	g_nDropDataCount++;
-	//	InvalidateRect(m_hwnd, NULL, FALSE);
-	//}
-
-	List<String> filePathes;
-	DataObjectUtils::GetFilenames(pDataObj, &filePathes);
-
-	for (auto& f : filePathes)
+	HRESULT hr = pDataObj->QueryGetData(DataObjectUtils::GetCFHDropFormat());
+	if (SUCCEEDED(hr))
 	{
-		Console::writeLine(f);
+		List<String> filePathes;
+		if (DataObjectUtils::GetFilenames(pDataObj, &filePathes))
+		{
+			detail::PlatformDragDropData* data = m_window->m_windowManager->getDragDropData();
+			data->data->setDropFiles(filePathes);
+			data->effect = DragDropEffects::None;
+			m_bSupportFormat = TRUE;
+
+			m_window->sendPlatformEvent(PlatformEventArgs::makeDragDropEvent(m_window, PlatformEventType::DragEnter, data->data, &data->effect));
+
+			*pdwEffect = translateEffect(data->effect);
+		}
 	}
 
 	return S_OK;
+}
+
+STDMETHODIMP OleDropTarget::DragOver(DWORD grfKeyState, POINTL pt, DWORD* pdwEffect)
+{
+	*pdwEffect = DROPEFFECT_NONE;
+
+	if (m_bSupportFormat)
+	{
+		detail::PlatformDragDropData* data = m_window->m_windowManager->getDragDropData();
+		*pdwEffect = translateEffect(data->effect);
+	}
+
+	return S_OK;
+}
+
+STDMETHODIMP OleDropTarget::DragLeave()
+{
+	return S_OK;
+}
+
+STDMETHODIMP OleDropTarget::Drop(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect)
+{
+	*pdwEffect = DROPEFFECT_NONE;
+
+	if (m_bSupportFormat)
+	{
+		detail::PlatformDragDropData* data = m_window->m_windowManager->getDragDropData();
+		m_window->sendPlatformEvent(PlatformEventArgs::makeDragDropEvent(m_window, PlatformEventType::DragDrop, data->data, &data->effect));
+		*pdwEffect = translateEffect(data->effect);
+	}
+
+	return S_OK;
+}
+
+DWORD OleDropTarget::translateEffect(DragDropEffects effect)
+{
+	switch (effect)
+	{
+	case ln::DragDropEffects::None:
+		return DROPEFFECT_NONE;
+	case ln::DragDropEffects::Copy:
+		return DROPEFFECT_COPY;
+	default:
+		LN_UNREACHABLE();
+		return 0;
+	}
 }
 
 //==============================================================================

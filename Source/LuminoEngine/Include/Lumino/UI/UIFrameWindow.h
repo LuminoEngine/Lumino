@@ -30,7 +30,7 @@ class UIFrameWindow
 public:
 
 	/*  */
-	void setAllowDropFiles(bool value);
+	void setAllowDragDrop(bool value);
 
 	PlatformWindow* getPlatformWindow() const;
 

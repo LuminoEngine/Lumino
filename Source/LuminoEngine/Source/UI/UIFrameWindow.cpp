@@ -6,6 +6,7 @@
 #include <Lumino/Rendering/DrawingContext.h>
 #include <Lumino/Rendering/SceneRenderer.h>
 #include <Lumino/UI/UIContext.h>
+#include <Lumino/UI/UIEvent.h>
 #include <Lumino/UI/UILayoutView.h>
 #include <Lumino/UI/UIFrameWindow.h>
 #include <Lumino/UI/UIViewport.h>
@@ -83,6 +84,11 @@ void UIFrameWindow::dispose()
 	}
 }
 
+void UIFrameWindow::setAllowDragDrop(bool value)
+{
+	m_platformWindow->setAllowDragDrop(value);
+}
+
 //------------------------------------------------------------------------------
 PlatformWindow* UIFrameWindow::getPlatformWindow() const
 {
@@ -145,6 +151,19 @@ bool UIFrameWindow::onPlatformEvent(const PlatformEventArgs& e)
 		break;
 	case PlatformEventType::WindowSizeChanged:
 		break;
+	case PlatformEventType::DragEnter:
+	{
+		auto args = UIDragDropEventArgs::create(UIEvents::DragEnterEvent, e.dragDrop.data, *e.dragDrop.effect);
+		onDragEnter(args);
+		*e.dragDrop.effect = args->effect();
+		break;
+	}
+	case PlatformEventType::DragDrop:
+	{
+		auto args = UIDragDropEventArgs::create(UIEvents::DragDropEvent, e.dragDrop.data, *e.dragDrop.effect);
+		onDragDrop(args);
+		break;
+	}
 	default:
 		break;
 	}

@@ -63,5 +63,7 @@ UIEventType	UIEvents::DragDeltaEvent = 0;
 UIEventType	UIEvents::DragCompletedEvent = 0;
 UIEventType	UIEvents::DragCanceledEvent = 0;
 UIEventType	UIEvents::ScrollEvent = 0;
+UIEventType	UIEvents::DragEnterEvent = 0;
+UIEventType	UIEvents::DragDropEvent = 0;
 
 LN_NAMESPACE_END

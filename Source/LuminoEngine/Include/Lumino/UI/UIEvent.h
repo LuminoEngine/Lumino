@@ -221,8 +221,16 @@ public:
 	/** DragCanceledEvent イベントの識別子 (UIEventArgs) マウスドラッグを中断したときに発生するイベントを表します。 */
 	static UIEventType	DragCanceledEvent;
 
+	// TODO: ↑ScrollDrag とかしたほうがいいかも。DragDrop と混ざってわかりづらい
+
 	/** ScrollEvent イベントの識別子 (UIEventArgs) */
 	static UIEventType	ScrollEvent;
+
+	/** DragEnter イベントの識別子 (UIDragDropEventArgs) */
+	static UIEventType	DragEnterEvent;
+
+	/** DragDrop イベントの識別子 (UIDragDropEventArgs) */
+	static UIEventType	DragDropEvent;
 };
 
 /**
@@ -239,6 +247,11 @@ using UIEventHandler = Delegate<void(UIEventArgs* e)>;
 LN_DELEGATE()
 using UIMouseEventHandler = Delegate<void(UIMouseEventArgs* e)>;
 
-
+/**
+	@brief		ドラッグアンドドロップ操作が関係する UIイベントを処理するハンドラです。
+	@param[in]	e		: イベントのデータ
+*/
+LN_DELEGATE()
+using UIDragDropEventHandler = Delegate<void(UIDragDropEventArgs* e)>;
 
 LN_NAMESPACE_END
