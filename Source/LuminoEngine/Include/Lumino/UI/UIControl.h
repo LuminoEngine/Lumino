@@ -65,6 +65,14 @@ public:
 	LN_METHOD(Event)
 	EventConnection connectOnSubmit(UIEventHandler handler);
 
+	/** onSubmit イベントの通知を受け取るコールバックを登録します。*/
+	LN_METHOD(Event)
+	EventConnection connectOnDragEnter(UIDragDropEventHandler handler);
+	
+	/** onSubmit イベントの通知を受け取るコールバックを登録します。*/
+	LN_METHOD(Event)
+	EventConnection connectOnDragDrop(UIDragDropEventHandler handler);
+
 protected:
 	void setLogicalChildrenPresenter(UILayoutPanel* presenter);
 	UILayoutPanel* getLogicalChildrenPresenter() const;
@@ -74,6 +82,12 @@ protected:
 
 	virtual void onSubmit(UIEventArgs* e);
 	virtual void onMouseClick(UIMouseEventArgs* e);
+
+	/** オブジェクトがコントロールの境界内にドラッグされたときに呼び出されます。*/
+	virtual void onDragEnter(UIDragDropEventArgs* e);
+
+	/** ドラッグ アンド ドロップ操作が完了したときに呼び出されます。*/
+	virtual void onDragDrop(UIDragDropEventArgs* e);
 
 	// UIElement interface
 	//virtual int getVisualChildrenCount() const override;
@@ -117,6 +131,8 @@ private:
 	bool							m_isPressed;
 
 	UIEventHandler::EventType		m_onSubmit;
+	UIDragDropEventHandler::EventType	m_onDragEnter;
+	UIDragDropEventHandler::EventType	m_onDragDropEnter;
 
 	//bool							m_invalidateItemsHostPanel;
 

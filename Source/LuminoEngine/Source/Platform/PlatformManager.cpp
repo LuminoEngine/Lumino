@@ -58,6 +58,16 @@ PlatformEventArgs PlatformEventArgs::makeMouseWheelEvent(PlatformWindow* sender,
 	return e;
 }
 
+PlatformEventArgs PlatformEventArgs::makeDragDropEvent(PlatformWindow* sender, PlatformEventType type, DataObject* data, DragDropEffects* effect)
+{
+	PlatformEventArgs e;
+	e.type = type;
+	e.sender = sender;
+	e.dragDrop.data = data;
+	e.dragDrop.effect = effect;
+	return e;
+}
+
 //==============================================================================
 // PlatformManager
 //==============================================================================

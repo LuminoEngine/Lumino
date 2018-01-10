@@ -2,8 +2,10 @@
 #pragma once
 #include "Common.h"
 #include <Lumino/Reflection/ReflectionEventArgs.h>
+#include <Lumino/Platform/PlatformEventArgs.h>
 
 LN_NAMESPACE_BEGIN
+class DataObject;
 class UIEventArgs;
 using UIEventArgsPtr = Ref<UIEventArgs>;
 using UIEventType = int32_t;
@@ -123,5 +125,35 @@ LN_CONSTRUCT_ACCESS:
 public:
 	int		m_delta;
 };
+
+/** ドラッグアンドドロップイベントの引数です。 */
+class UIDragDropEventArgs
+	: public UIEventArgs
+{
+	LN_OBJECT;
+public:
+
+	/** ドラッグイベントに関連付けられているデータを取得します。 */
+	DataObject* data() const { return m_data; }
+
+	/** ドラッグ アンド ドロップ操作の効果を取得します。 */
+	DragDropEffects effect() const { return m_effect; }
+
+	/** ドラッグ アンド ドロップ操作の効果を取得します。 */
+	void setEffect(DragDropEffects effect) { m_effect = effect; }
+
+LN_CONSTRUCT_ACCESS:
+	UIDragDropEventArgs();
+	virtual ~UIDragDropEventArgs();
+	void initialize(UIEventType type, DataObject* data, DragDropEffects effect);
+
+LN_INTERNAL_ACCESS:
+	static Ref<UIDragDropEventArgs> create(UIEventType type, DataObject* data, DragDropEffects effect, bool caching = true);
+
+public:
+	DataObject* m_data;
+	DragDropEffects	m_effect;
+};
+
 
 LN_NAMESPACE_END

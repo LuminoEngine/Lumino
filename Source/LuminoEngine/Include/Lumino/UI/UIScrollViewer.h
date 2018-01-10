@@ -48,10 +48,10 @@ LN_CONSTRUCT_ACCESS:
 
 protected:
 	virtual void onRoutedEvent(UIEventArgs* e) override;
-	virtual void onDragStarted(UIDragDeltaEventArgs* e) { if (!e->handled) { raiseEvent(UIEvents::DragStartedEvent, this, e); } }
-	virtual void onDragDelta(UIDragDeltaEventArgs* e) { if (!e->handled) { raiseEvent(UIEvents::DragDeltaEvent, this, e); } }
-	virtual void onDragCompleted(UIDragDeltaEventArgs* e) { if (!e->handled) { raiseEvent(UIEvents::DragCompletedEvent, this, e); } }
-	virtual void onDragCanceled(UIDragDeltaEventArgs* e) { if (!e->handled) { raiseEvent(UIEvents::DragCanceledEvent, this, e); } }
+	virtual void onDragStarted(UIDragDeltaEventArgs* e) { if (!e->handled) { raiseEvent(UIEvents::ScrollDragStartedEvent, this, e); } }
+	virtual void onDragDelta(UIDragDeltaEventArgs* e) { if (!e->handled) { raiseEvent(UIEvents::ScrollDragDeltaEvent, this, e); } }
+	virtual void onDragCompleted(UIDragDeltaEventArgs* e) { if (!e->handled) { raiseEvent(UIEvents::ScrollDragCompletedEvent, this, e); } }
+	virtual void onDragCanceled(UIDragDeltaEventArgs* e) { if (!e->handled) { raiseEvent(UIEvents::ScrollDragCanceledEvent, this, e); } }
 
 private:
 	Point	m_lastScreenPosition;

@@ -59,7 +59,7 @@ void UIThumb::onRoutedEvent(UIEventArgs* e)
 
 			// ドラッグ開始イベント
 			detail::EventArgsPool* pool = getManager()->getEventArgsPool();
-			Ref<UIDragDeltaEventArgs> args(pool->create<UIDragDeltaEventArgs>(UIEvents::DragStartedEvent), false);
+			Ref<UIDragDeltaEventArgs> args(pool->create<UIDragDeltaEventArgs>(UIEvents::ScrollDragStartedEvent), false);
 			args->horizontalChange = pos.x - m_lastScreenPosition.x;
 			args->verticalChange = pos.y - m_lastScreenPosition.y;
 			onDragStarted(args);
@@ -81,7 +81,7 @@ void UIThumb::onRoutedEvent(UIEventArgs* e)
 			// ドラッグ終了イベント
 			// TODO: template 化
 			detail::EventArgsPool* pool = getManager()->getEventArgsPool();
-			Ref<UIDragDeltaEventArgs> args(pool->create<UIDragDeltaEventArgs>(UIEvents::DragCompletedEvent), false);
+			Ref<UIDragDeltaEventArgs> args(pool->create<UIDragDeltaEventArgs>(UIEvents::ScrollDragCompletedEvent), false);
 			args->horizontalChange = pos.x - m_lastScreenPosition.x;
 			args->verticalChange = pos.y - m_lastScreenPosition.y;
 			onDragCompleted(args);
@@ -99,7 +99,7 @@ void UIThumb::onRoutedEvent(UIEventArgs* e)
 
 			// ドラッグ中イベント
 			detail::EventArgsPool* pool = getManager()->getEventArgsPool();
-			Ref<UIDragDeltaEventArgs> args(pool->create<UIDragDeltaEventArgs>(UIEvents::DragDeltaEvent), false);
+			Ref<UIDragDeltaEventArgs> args(pool->create<UIDragDeltaEventArgs>(UIEvents::ScrollDragDeltaEvent), false);
 			args->horizontalChange = pos.x - m_lastScreenPosition.x;
 			args->verticalChange = pos.y - m_lastScreenPosition.y;
 			onDragDelta(args);
@@ -585,11 +585,11 @@ float UIScrollBar::getViewportSize() const
 //------------------------------------------------------------------------------
 void UIScrollBar::onRoutedEvent(UIEventArgs* e)
 {
-	if (e->getType() == UIEvents::DragStartedEvent)
+	if (e->getType() == UIEvents::ScrollDragStartedEvent)
 	{
 		m_dragStartValue = m_track->getValue();
 	}
-	else if (e->getType() == UIEvents::DragDeltaEvent)
+	else if (e->getType() == UIEvents::ScrollDragDeltaEvent)
 	{
 		auto* e2 = static_cast<UIDragDeltaEventArgs*>(e);
 		updateValue(e2->horizontalChange, e2->verticalChange);
@@ -611,7 +611,7 @@ void UIScrollBar::onRoutedEvent(UIEventArgs* e)
 		//	break;
 		//}
 	}
-	else if (e->getType() == UIEvents::DragCompletedEvent)
+	else if (e->getType() == UIEvents::ScrollDragCompletedEvent)
 	{
 		auto args = UIScrollEventArgs::create(this, m_track->getValue(), ScrollEventType::EndScroll);
 		raiseEvent(UIEvents::ScrollEvent, this, args);

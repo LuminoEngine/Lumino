@@ -29,6 +29,9 @@ class UIFrameWindow
 	LN_OBJECT;
 public:
 
+	/*  */
+	void setAllowDragDrop(bool value);
+
 	PlatformWindow* getPlatformWindow() const;
 
 	DrawingContext* getDrawingContext() const;

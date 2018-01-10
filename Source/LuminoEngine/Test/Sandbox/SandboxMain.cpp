@@ -89,20 +89,33 @@ void Main()
 
 	//ZipFile::extractToDirectory(_T("D:\\MMD\\Materials\\Models\\人物\\にがもん式霊夢V01_s05a.zip"), _T("D:\\tmp\\V01_s05a"));
 
-	//Engine::initialize();
+	Engine::initialize();
 
-	//auto window = newObject<UIFrameWindow>();
-
-
-	//while (Engine::update())
+	Engine::getMainWindow()->setAllowDragDrop(true);
+	//Engine::getMainWindow()->connectOnDragEnter([](UIDragDropEventArgs* e) { e->setEffect(DragDropEffects::Copy); });
+	//Engine::getMainWindow()->connectOnDragDrop([](UIDragDropEventArgs* e)
 	//{
-	//}
+	//	for (auto& file : e->data()->dropFiles())
+	//	{
+	//		Console::writeLine(file);
+	//	}
+	//});
 
-	//Engine::terminate();
+	//auto* uiRoot = Engine::getDefaultUILayer()->GetLayoutView();
+	//auto text1 = UITextField::create();
+	//text1->setPosition(Point(10, 20));
+	//text1->setSize(Size(200, 32));
+	//uiRoot->addChild(text1);
 
-	//return;
+	while (Engine::update())
+	{
+	}
 
-	UIControlsGallery();
+	Engine::terminate();
+
+	return;
+
+	//UIControlsGallery();
 	//DxLibMain();
 	return;
 
@@ -569,6 +582,7 @@ void Main()
 	auto body1 = RigidBodyComponent::create(col1);
 	body1->SetPosition(10, 0, 0);
 #endif
+#if 0
 	//static_cast<CameraViewportLayer*>(Engine::getDefault3DLayer())->setDebugDrawFlags(WorldDebugDrawFlags::PhysicsInfo);
 
 	auto uiRoot = Application::getMainWindow();
@@ -630,6 +644,7 @@ void Main()
 	//	}
 	//	//blur->setBlurStatus(0.9f, Vector2::Zero, 1.02);
 	//}
+#endif
 }
 
 #endif

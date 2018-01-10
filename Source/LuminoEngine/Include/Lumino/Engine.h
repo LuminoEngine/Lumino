@@ -4,7 +4,7 @@
 #include "EngineSettings.h"
 
 LN_NAMESPACE_BEGIN
-class UIMainWindow;
+class UIFrameWindow;
 class UIViewport;
 class RenderView;
 class UILayoutLayer;
@@ -71,6 +71,8 @@ public:
 
 	static Camera* getCamera3D();
 
+	/** エンジンによって作成されるデフォルトの UIFrameWindow を取得します。 */
+	static UIFrameWindow* getMainWindow();
 
 	/** エンジンによって作成されるデフォルトの UIViewport を取得します。 */
 	static UIViewport* getMainViewport();

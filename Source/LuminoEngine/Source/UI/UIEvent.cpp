@@ -58,10 +58,12 @@ UIEventType	UIEvents::KeyUpEvent = 0;
 UIEventType	UIEvents::TextInputEvent = 0;
 UIEventType	UIEvents::CheckedEvent = 0;
 UIEventType	UIEvents::UncheckedEvent = 0;
-UIEventType	UIEvents::DragStartedEvent = 0;
-UIEventType	UIEvents::DragDeltaEvent = 0;
-UIEventType	UIEvents::DragCompletedEvent = 0;
-UIEventType	UIEvents::DragCanceledEvent = 0;
+UIEventType	UIEvents::ScrollDragStartedEvent = 0;
+UIEventType	UIEvents::ScrollDragDeltaEvent = 0;
+UIEventType	UIEvents::ScrollDragCompletedEvent = 0;
+UIEventType	UIEvents::ScrollDragCanceledEvent = 0;
 UIEventType	UIEvents::ScrollEvent = 0;
+UIEventType	UIEvents::DragEnterEvent = 0;
+UIEventType	UIEvents::DragDropEvent = 0;
 
 LN_NAMESPACE_END
