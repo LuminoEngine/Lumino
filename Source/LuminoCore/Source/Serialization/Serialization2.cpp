@@ -52,7 +52,7 @@ JsonTextOutputArchive::~JsonTextOutputArchive()
 
 String JsonTextOutputArchive::toString()
 {
-	return m_localDoc.toString();
+	return m_localDoc.toString(tr::JsonFormatting::Indented);
 }
 
 //==============================================================================

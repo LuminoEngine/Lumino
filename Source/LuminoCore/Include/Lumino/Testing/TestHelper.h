@@ -26,16 +26,16 @@ public:
 	static bool equalFiles(const PathName& filePath1, const PathName& filePath2);
 };
 
+LN_NAMESPACE_END
+
 // __FILE__ のあるフォルダパス (PathName) を取得する
-#define LN_TEST_GET_DIR_PATH() TestHelper::getDirPath(__FILE__)
+#define LN_TEST_GET_DIR_PATH() ln::TestHelper::getDirPath(__FILE__)
 
 // __FILE__ と同じフォルダのファイルパス (Char) を取得する
-#define LN_LOCALFILE(fileName) TestHelper::getFilePath(__FILE__, fileName).c_str()
+#define LN_LOCALFILE(fileName) ln::TestHelper::getFilePath(__FILE__, fileName).c_str()
 
 // __FILE__ と同じフォルダのファイルパス (char) を取得する
-#define LN_LOCALFILEA(fileName) TestHelper::getFilePathA(__FILE__, fileName).c_str()
+#define LN_LOCALFILEA(fileName) ln::TestHelper::getFilePathA(__FILE__, fileName).c_str()
 
 // __FILE__ と同じフォルダのファイルパス (wchar_t) を取得する
-#define LN_LOCALFILEW(fileName) TestHelper::getFilePathW(__FILE__, fileName).c_str()
-
-LN_NAMESPACE_END
+#define LN_LOCALFILEW(fileName) ln::TestHelper::getFilePathW(__FILE__, fileName).c_str()

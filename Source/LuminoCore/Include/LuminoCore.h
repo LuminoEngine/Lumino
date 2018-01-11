@@ -61,6 +61,8 @@
 #include "Lumino/Json/JsonWriter.h"
 #include "Lumino/Json/JsonDocument.h"
 
+#include "Lumino/Serialization/Serialization2.h"
+
 #include "Lumino/Threading/AtomicCounter.h"
 #include "Lumino/Threading/ConditionFlag.h"
 #include "Lumino/Threading/Mutex.h"
