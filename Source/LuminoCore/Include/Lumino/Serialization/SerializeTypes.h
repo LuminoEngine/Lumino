@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include "../IO/PathName.h"
 #include "../Base/Uuid.h"
 
 LN_NAMESPACE_BEGIN
@@ -29,6 +30,21 @@ void serialize(Archive2& ar, List<TValue>& value)
 	for (TValue& v : value)
 	{
 		ar.process(v);
+	}
+}
+
+inline void serialize(Archive2& ar, Path& value)
+{
+	if (ar.isSaving())
+	{
+		String str = value.getString();
+		ar.makeStringTag(&str);
+	}
+	else
+	{
+		String str;
+		ar.makeStringTag(&str);
+		value = Path(str);
 	}
 }
 
