@@ -840,18 +840,32 @@ std::basic_string<TChar> PathTraits::diffPath(const TChar* path1, int len1, cons
 		return relLead;
 	}
 
+	// path2 のうちの後ろの不一致部分
 	int subLen = len2 - (si + 1);
 	if (isSeparatorChar(path2[len2-1])) {
 		--subLen;
 	}
 
-	if (subLen < 0)
+	// read が無い。つまり、path2 は path1 以下を指している
+	//if (relLead.empty())
+	//{
+	//	if (subLen < 0)
+	//		return std::basic_string<TChar>(path2 + si + 1);
+	//	else
+	//		return std::basic_string<TChar>(path2 + si + 1, subLen);
+	//}
+	//else
 	{
-		return relLead + std::basic_string<TChar>(path2 + si + 1);
-	}
-	else
-	{
-		return relLead + std::basic_string<TChar>(path2 + si + 1, subLen);
+		if (!relLead.empty() && subLen != 0) relLead += '/';
+
+		if (subLen < 0)
+		{
+			return relLead + std::basic_string<TChar>(path2 + si + 1);
+		}
+		else
+		{
+			return relLead + std::basic_string<TChar>(path2 + si + 1, subLen);
+		}
 	}
 }
 template std::basic_string<char> PathTraits::diffPath(const char* path1, int len1, const char* path2, int len2, CaseSensitivity cs);

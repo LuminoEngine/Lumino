@@ -297,4 +297,11 @@ TEST_F(Test_IO_Path, Unit_MakeRelative)
 		Path path2 = Path(_LT("d1/d2/d3")).canonicalizePath();
 		ASSERT_EQ(_LT("d2/d3"), path1.makeRelative(path2).getString().replace(_LT("\\"), _LT("/")));
 	}
+	// <Issue>
+	{
+		Path path1 = Path(_LT("Proj/Result/Proj1")).canonicalizePath();
+		Path path2 = Path(_LT("Proj/Data/Source1.cpp")).canonicalizePath();
+		auto t = path1.makeRelative(path2);
+		ASSERT_EQ(_LT("../../Data/Source1.cpp"), path1.makeRelative(path2).getString().replace(_LT("\\"), _LT("/")));
+	}
 }
