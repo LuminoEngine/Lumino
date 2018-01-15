@@ -374,20 +374,20 @@ void MeshResource::addSquare(const Vertex& v1, const Vertex& v2, const Vertex& v
 	{
 		uint16_t* i = (uint16_t*)buf;
 		i[0] = beginIndex + 0;
-		i[1] = beginIndex + 1;
-		i[2] = beginIndex + 3;
-		i[3] = beginIndex + 3;
-		i[4] = beginIndex + 1;
+		i[1] = beginIndex + 3;
+		i[2] = beginIndex + 1;
+		i[3] = beginIndex + 1;
+		i[4] = beginIndex + 3;
 		i[5] = beginIndex + 2;
 	}
 	else
 	{
 		uint32_t* i = (uint32_t*)buf;
 		i[0] = beginIndex + 0;
-		i[1] = beginIndex + 1;
-		i[2] = beginIndex + 3;
-		i[3] = beginIndex + 3;
-		i[4] = beginIndex + 1;
+		i[1] = beginIndex + 3;
+		i[2] = beginIndex + 1;
+		i[3] = beginIndex + 1;
+		i[4] = beginIndex + 3;
 		i[5] = beginIndex + 2;
 	}
 }

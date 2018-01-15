@@ -347,10 +347,14 @@ void ClusteredShadingGeometryRenderingPass::initialize()
 	// TODO: getPass 引数型
 	m_defaultShaderTechnique = m_defaultShader->findTechnique(ClusteredShadingGeometryRenderingPass_TechniqueName);
 
-
-
-
-	m_unLightingShader = Shader::create(_T("C:/Proj/LN/HC1/External/Lumino/Source/LuminoEngine/Source/Rendering/Resource/UnLighting.fx"), ShaderCodeType::RawHLSL);
+	{
+		static const byte_t data[] =
+		{
+#include "Resource/UnLighting.fx.h"
+		};
+		static const size_t size = LN_ARRAY_SIZE_OF(data);
+		m_unLightingShader = Shader::create((const char*)data, size, ShaderCodeType::RawHLSL);
+	}
 	m_unLightingShaderTechnique = m_unLightingShader->getTechniques()[0];
 }
 
