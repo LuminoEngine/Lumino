@@ -1,4 +1,63 @@
 ﻿
+/*
+全体の流れ
+--------------------
+1. ベースポイント (m_basePoints) を作る
+2. ベースポイントを元に、アウトラインポイント (m_outlinePoints) と Path を作る
+3. アウトラインポイントと Path を元に、頂点バッファ (m_vertexCache) とインデックスバッファ (m_indexCache) を作る
+構築された書くバッファは Flush で描画された後クリアされる。
+Flush までの間にたくさんシェイプを書くときは、書くバッファにどんどんたまっていく。
+
+なお、(歴史的な理由で) 上記フローではシェイプを反時計回りをベースに構築する。
+Flush で最終的な頂点バッファに書き込むときに、RHI のデフォルトの方向に合わせる。
+
+
+ベースポイント (m_basePoints) を作る
+--------------------
+### ベースポイント
+描画したいシェイプの明確な境界線を構成する点。
+
+この時点ではアンチエイリアス(AA)やシャドウは考慮しないが、
+AAのためにどの方向へ押し出せばよいのか（点ごとに、外側方向はどちらか）は計算しておく。
+
+
+### BorderComponent
+シェイプのエッジを、どこからどこまで上下左右とみなすかどうか。 (Range オブジェクト)
+この範囲に色をつける。
+
+四角形の場合
+lttttr
+l    r
+l    r
+l    r
+l    r
+lbbbbr
+
+RoundRectangle の場合
+   tttttt
+  t      t		← 円弧の途中が境界となる
+ l        r
+l          r
+l          r
+l          r
+l          r
+l          r
+l          r
+ l        r
+  b      b
+   bbbbbb
+
+
+ベースポイントを元に、アウトラインポイント (m_outlinePoints) と Path を作る
+--------------------
+### アウトラインポイント
+線の太さ、AA、シャドウなどの境界線を構成する点。
+
+
+
+*/
+
+
 #include "../Internal.h"
 #include <Lumino/Graphics/Brush.h>
 #include <Lumino/Graphics/VertexDeclaration.h>
@@ -154,8 +213,6 @@ void ShapesRendererCore::requestBuffers(int vertexCount, int indexCount, Vertex*
 //------------------------------------------------------------------------------
 void ShapesRendererCore::renderCommandList(ShapesRendererCommandList* commandList, detail::BrushRawData* fillBrush)
 {
-	LN_NOTIMPLEMENTED();	// TODO: FaceCulling を逆転した合わせこみがまだ
-
 	extractBasePoints(commandList);
 	calcExtrudedDirection();
 
@@ -213,6 +270,15 @@ void ShapesRendererCore::renderCommandList(ShapesRendererCommandList* commandLis
 			LN_SAFE_RELEASE(m_indexBuffer);
 			m_indexBuffer = device->createIndexBuffer(m_indexCache.getBufferUsedByteCount(), nullptr, IndexBufferFormat_UInt16, ResourceUsage::Dynamic);
 		}
+
+
+		// 面方向を反転
+		for (int i = 0; i < m_indexCache.getCount(); i += 3)
+		{
+			std::swap(m_indexCache.getAt(i + 1), m_indexCache.getAt(i + 2));
+		}
+		
+
 
 		// 描画する
 		m_vertexBuffer->setSubData(0, m_vertexCache.getBuffer(), m_vertexCache.getBufferUsedByteCount());
@@ -622,6 +688,13 @@ void ShapesRendererCore::extractBasePoints(ShapesRendererCommandList* commandLis
 				plotCornerBasePointsBezier(Vector2(lt[2].x, lt[3].y), Vector2(-1, 0), Vector2(lt[3].x, lt[2].y), Vector2(0, -1), 0.0, 0.5, lt[2]);
 				shadowComponents[3].lastPoint = m_basePoints.getCount() - 1;
 
+
+
+				// ↑ m_basePoints 作成ここまで
+				//---------------------------------------------------------------
+				// ↓ m_outlinePoints 作成ここから
+
+
 				// shadows
 				if (!shadowInset)
 				{
@@ -683,6 +756,7 @@ void ShapesRendererCore::extractBasePoints(ShapesRendererCommandList* commandLis
 				}
 
 
+				// ↓ AntiAlias
 
 				// left border
 				{
@@ -1082,7 +1156,16 @@ void ShapesRendererCore::expandAntiAliasStroke(const Path& path, int startIndex)
 	}
 }
 
-//------------------------------------------------------------------------------
+/*
+	円弧を描く点を作成して m_basePoints に追加する
+	firstCp		: 開始制御点
+	firstCpDir	: 開始制御点の方向
+	lastCp		: 終了制御点
+	lastCpDir	: 終了制御点の方向
+	firstT		: firstCp ～ lastCp を 0.0～1.0 としたとき、どこから点を打ち始めるか
+	lastT		: firstCp ～ lastCp を 0.0～1.0 としたとき、どこまで点を打つか
+	center		: 生成する円弧の中心点 (AAのための押し出し方向を点に設定するために使用)
+*/
 void ShapesRendererCore::plotCornerBasePointsBezier(const Vector2& first, const Vector2& firstCpDir, const Vector2& last, const Vector2& lastCpDir, float firstT, float lastT, const Vector2& center)
 {
 	LN_ASSERT(firstT < lastT);

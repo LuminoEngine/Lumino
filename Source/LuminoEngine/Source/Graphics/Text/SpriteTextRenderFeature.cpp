@@ -157,6 +157,18 @@ void TextRendererCore::flush(Driver::ITexture* glyphsTexture)
 
 	//auto* old = renderer->getVertexDeclaration();
 
+
+	//// 反時計回りを表にする
+	//RenderState oldState = renderer->getRenderState();
+	//RenderState newState = oldState;
+	//newState.Culling = CullingMode::None;
+	//newState.AlphaTest = false;
+	//renderer->setRenderState(newState);
+
+	//DepthStencilState ss = renderer->getDepthStencilState();
+	//ss.DepthTestEnabled = false;
+	//renderer->setDepthStencilState(ss);
+
 	// 描画する
 	m_vertexBuffer->setSubData(0, m_vertexCache.getBuffer(), m_vertexCache.getBufferUsedByteCount());
 	m_indexBuffer->setSubData(0, m_indexCache.getBuffer(), m_indexCache.getBufferUsedByteCount());

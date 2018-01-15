@@ -1768,7 +1768,9 @@ void DrawList::drawRectangle(const Rect& rect)
 	auto* list = ptr->GetGCommandList(this);
 	detail::NanoVGCommandHelper::nvgBeginPath(list);
 	detail::NanoVGCommandHelper::nvgRect(list, rect.x, rect.y, rect.width, rect.height);
+	//detail::NanoVGCommandHelper::nvgPathWinding(list, NVG_CW);
 	detail::NanoVGCommandHelper::nvgFill(list);
+
 	//ptr->rect = rect;
 	// TODO: カリング
 	

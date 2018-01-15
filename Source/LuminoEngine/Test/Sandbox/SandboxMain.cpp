@@ -101,11 +101,18 @@ void Main()
 	//	}
 	//});
 
-	//auto* uiRoot = Engine::getDefaultUILayer()->GetLayoutView();
+	auto* uiRoot = Engine::getDefaultUILayer()->GetLayoutView();
+	auto button1 = UIButton::create(_T("button1"), 80, 32);
+	uiRoot->addChild(button1);
+
 	//auto text1 = UITextField::create();
 	//text1->setPosition(Point(10, 20));
 	//text1->setSize(Size(200, 32));
 	//uiRoot->addChild(text1);
+
+	//auto text1 = TextBlock2D::create(_T("text"));
+	//text1->setBlendMode(BlendMode::Alpha);
+	//Engine::getWorld2D()->add(text1);
 
 	while (Engine::update())
 	{
