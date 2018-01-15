@@ -383,16 +383,19 @@ Encoding* Encoding::detectEncodingSimple(const char* str, int length, bool stric
 			// ASCII
 			s++;
 		}
-		else if (UnicodeUtils::checkUTF8TrailingBytes((const UTF8*)s, (const UTF8*)end, true, &extra) == UTFConversionResult_Success)
-		{
-			// UTF8
-			utf8pt += extra;
-			s += extra;
-		}
 		else
 		{
-			// それ以外 (SJIS など)
-			localPt++;
+			if (UnicodeUtils::checkUTF8TrailingBytes((const UTF8*)s, (const UTF8*)end, true, &extra) == UTFConversionResult_Success)
+			{
+				// UTF8
+				utf8pt += 1;
+				//s += extra;
+			}
+			
+			{
+				// それ以外 (SJIS など)
+				localPt++;
+			}
 			s++;
 		}
 	}
