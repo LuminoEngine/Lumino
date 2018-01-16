@@ -966,11 +966,11 @@ private:
 		if (m_stack.empty())
 		{
 			detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(m_path.c_str(), m_path.getLength());
-			m_stack.push_back(Ref<PlatformFileFinder>::makeRef(localPath.c_str(), localPath.getLength(), FileAttribute::All, _T(""), 0/*, m_filterAttr | FileAttribute::Directory, m_searchPattern.c_str(), m_searchPattern.getLength()*/));
+			m_stack.push_back(Ref<PlatformFileFinder>::makeRef(localPath.c_str(), localPath.getLength(), FileAttribute::All, nullptr, 0/*, m_filterAttr | FileAttribute::Directory, m_searchPattern.c_str(), m_searchPattern.getLength()*/));
 		}
 		else
 		{
-			m_stack.push_back(Ref<PlatformFileFinder>::makeRef(m_stack.back()->getCurrent().c_str(), m_stack.back()->getCurrent().length(), FileAttribute::All, _T(""), 0/*, m_filterAttr | FileAttribute::Directory, m_searchPattern.c_str(), m_searchPattern.getLength()*/));
+			m_stack.push_back(Ref<PlatformFileFinder>::makeRef(m_stack.back()->getCurrent().c_str(), m_stack.back()->getCurrent().length(), FileAttribute::All, nullptr, 0/*, m_filterAttr | FileAttribute::Directory, m_searchPattern.c_str(), m_searchPattern.getLength()*/));
 		}
 	}
 

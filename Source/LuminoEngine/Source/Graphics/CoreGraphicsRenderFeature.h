@@ -115,13 +115,13 @@ public:
 	void drawPrimitiveIndexed(VertexDeclaration* vertexDeclaration, VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveType primitive, int startIndex, int primitiveCount);
 
 	void flushState(const detail::ContextState& state);
-	virtual bool isStandaloneShader() const { return false; }
+	virtual bool isStandaloneShader() const override { return false; }
 	virtual void flush() override;
-	virtual void onActivated() {}
-	virtual void onDeactivated() { }
+	virtual void onActivated() override {}
+	virtual void onDeactivated() override { }
 
 protected:
-	virtual void onChangeDevice(Driver::IGraphicsDevice* device);
+	virtual void onChangeDevice(Driver::IGraphicsDevice* device) override;
 
 LN_INTERNAL_ACCESS:
 	friend class Helper;

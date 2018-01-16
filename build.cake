@@ -26,7 +26,7 @@ Task("Restore-NuGet-Packages")
 {
 });
 
-Task("Build-LuminoBuild")
+Task("BuildLuminoBuild")
     .IsDependentOn("Clean")
     .Does(() =>
 {
@@ -45,15 +45,30 @@ Task("Build-LuminoBuild")
     }
 });
 
+void RunExe(string program, string args)
+{
+    if(IsRunningOnWindows())
+    {
+        StartProcess(program, args);
+    }
+    else
+    {
+        StartProcess("mono", program + " " + args);
+    }
+}
+
 Task("Make-Projects")
-    .IsDependentOn("Build-LuminoBuild")
+    .IsDependentOn("BuildLuminoBuild")
     .Does(() =>
 {
-    StartProcess("./Build/LuminoBuild/bin/Release/LuminoBuild.exe", "MakeVSProjects");
+    if(IsRunningOnWindows())
+        RunExe("./Build/LuminoBuild/bin/Release/LuminoBuild.exe", "MakeVSProjects");
+    else
+        RunExe("./Build/LuminoBuild/bin/Release/LuminoBuild.exe", "MakeXCodeProjects");
 });
 
 Task("Build")
-    .IsDependentOn("Build-LuminoBuild")
+    .IsDependentOn("BuildLuminoBuild")
     .Does(() =>
 {
     StartProcess("./Build/LuminoBuild/bin/Release/LuminoBuild.exe");

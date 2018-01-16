@@ -6,6 +6,7 @@
 		あくまで ToString() のような余計な呼び出しを書きたくないためのユーティリティ。
 		ちなみに Qt は QTextStream::operator<<。
 */
+#include <float.h>
 #include "../Internal.h"
 #include <Lumino/Base/String.h>
 #include <Lumino/IO/TextWriter.h>

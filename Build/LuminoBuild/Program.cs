@@ -12,7 +12,7 @@ namespace LuminoBuild
             // default
             if (args.Length == 0)
             {
-                args = new string[] { "MakeVSProjects" };
+                args = new string[] { "MakeXCodeProjects" };
             }
 
             Assembly thisAssembly = Assembly.GetEntryAssembly();
@@ -55,6 +55,7 @@ namespace LuminoBuild
             builder.Tasks = new List<LuminoBuild.BuildTask>();
             builder.Tasks.Add(new Tasks.SetupDependencies());
             builder.Tasks.Add(new Tasks.MakeVSProjects());
+            builder.Tasks.Add(new Tasks.MakeXCodeProjects());
             builder.Tasks.Add(new Tasks.BuildEngine());
             builder.Tasks.Add(new Tasks.MakePackageCpp());
             builder.Tasks.Add(new Tasks.MakeInstaller());

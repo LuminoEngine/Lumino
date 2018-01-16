@@ -42,6 +42,7 @@
     <Compile Include="Tasks\MakePackageCpp.cs" />
     <Compile Include="Tasks\MakeVSProjects.cs" />
     <Compile Include="Tasks\SetupDependencies.cs" />
+    <Compile Include="Tasks\MakeXCodeProjects.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
