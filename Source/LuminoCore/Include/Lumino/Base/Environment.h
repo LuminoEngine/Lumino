@@ -3,7 +3,7 @@
 */
 
 #pragma once
-#include "EnumExtension.h"
+#include "EnumFlags.h"
 
 LN_NAMESPACE_BEGIN
 

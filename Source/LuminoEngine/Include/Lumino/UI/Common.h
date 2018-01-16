@@ -37,7 +37,7 @@ LN_ENUM_DECLARE(HAlignment);
 
 
 /** */
-LN_ENUM_FLAGS(AlignmentAnchor)
+enum class AlignmentAnchor : FlagsType
 {
 	None			= 0x0000,			/**< */
 
@@ -56,7 +56,17 @@ LN_ENUM_FLAGS(AlignmentAnchor)
 	HCenter = 0x0400,			/**< */
 	VCenter = 0x0800,			/**< */
 };
-LN_ENUM_FLAGS_DECLARE(AlignmentAnchor);
+//LN_FLAGS_OPERATORS(AlignmentAnchor);
+
+inline bool operator==(AlignmentAnchor lhs, const ln::Flags<AlignmentAnchor>& rhs) { return rhs.operator==(lhs); } \
+inline bool operator!=(AlignmentAnchor lhs, const ln::Flags<AlignmentAnchor>& rhs) { return rhs.operator!=(lhs); } \
+inline ln::Flags<AlignmentAnchor> operator|(AlignmentAnchor lhs, const ln::Flags<AlignmentAnchor>& rhs) { return rhs.operator|(lhs); } \
+inline ln::Flags<AlignmentAnchor> operator&(AlignmentAnchor lhs, const ln::Flags<AlignmentAnchor>& rhs) { return rhs.operator&(lhs); } \
+inline ln::Flags<AlignmentAnchor> operator^(AlignmentAnchor lhs, const ln::Flags<AlignmentAnchor>& rhs) { return rhs.operator^(lhs); } \
+inline ln::Flags<AlignmentAnchor> operator|(AlignmentAnchor lhs, AlignmentAnchor rhs) { return ln::Flags<AlignmentAnchor>(lhs).operator|(lhs); } \
+inline ln::Flags<AlignmentAnchor> operator&(AlignmentAnchor lhs, AlignmentAnchor rhs) { return ln::Flags<AlignmentAnchor>(lhs).operator&(lhs); } \
+inline ln::Flags<AlignmentAnchor> operator^(AlignmentAnchor lhs, AlignmentAnchor rhs) { return ln::Flags<AlignmentAnchor>(lhs).operator^(lhs); } \
+inline ln::Flags<AlignmentAnchor> operator~(AlignmentAnchor a) { return ~ln::Flags<AlignmentAnchor>(a); }
 
 /** コントロールのレイアウト方向を示します。*/
 LN_ENUM(Orientation)
@@ -115,7 +125,7 @@ enum class UIInternalEventType
 //	Vector2	center;
 //};
 
-LN_ENUM_FLAGS(InvalidateFlags)
+enum class InvalidateFlags : FlagsType
 {
 	None = 0x0000,
 	layout = 0x0001,		// レイアウト系プロパティに変更がある
@@ -128,7 +138,7 @@ LN_ENUM_FLAGS(InvalidateFlags)
 
 	All = 0xFFFFFFFF,
 };
-LN_ENUM_FLAGS_DECLARE(InvalidateFlags);
+LN_FLAGS_OPERATORS(InvalidateFlags);
 
 enum class SpcialUIElementType
 {

@@ -259,7 +259,7 @@ public:
 			//size.height = Math::IsNaN(layoutSize.height) ? desiredSize.height : layoutSize.height;
 
 			Rect childRect(child->getPositionInternal(), size/*child->getSizeInternal()*/);
-			AlignmentAnchor anchor = child->getAnchorInternal();
+			Flags<AlignmentAnchor> anchor = child->getAnchorInternal();
 
 			if (anchor != AlignmentAnchor::None)
 			{
@@ -297,30 +297,30 @@ public:
 				//child->arrangeLayout(childRect);
 #if 1
 				float l = NAN, t = NAN, r = NAN, b = NAN;
-				if (anchor.TestFlag(AlignmentAnchor::LeftOffsets))
+				if (anchor.isSet(AlignmentAnchor::LeftOffsets))
 					l = margin.left;
-				else if (anchor.TestFlag(AlignmentAnchor::LeftRatios))
+				else if (anchor.isSet(AlignmentAnchor::LeftRatios))
 					l = childrenBoundSize.width * margin.left;
 
-				if (anchor.TestFlag(AlignmentAnchor::TopOffsets))
+				if (anchor.isSet(AlignmentAnchor::TopOffsets))
 					t = margin.top;
-				else if (anchor.TestFlag(AlignmentAnchor::TopRatios))
+				else if (anchor.isSet(AlignmentAnchor::TopRatios))
 					t = childrenBoundSize.height * margin.top;
 
-				if (anchor.TestFlag(AlignmentAnchor::RightOffsets))
+				if (anchor.isSet(AlignmentAnchor::RightOffsets))
 					r = childrenBoundSize.width - margin.right;
-				else if (anchor.TestFlag(AlignmentAnchor::RightRatios))
+				else if (anchor.isSet(AlignmentAnchor::RightRatios))
 					r = childrenBoundSize.width - (childrenBoundSize.width * margin.right);
 
-				if (anchor.TestFlag(AlignmentAnchor::BottomOffsets))
+				if (anchor.isSet(AlignmentAnchor::BottomOffsets))
 					b = childrenBoundSize.height - margin.bottom;
-				else if (anchor.TestFlag(AlignmentAnchor::BottomRatios))
+				else if (anchor.isSet(AlignmentAnchor::BottomRatios))
 					b = childrenBoundSize.height - (childrenBoundSize.height * margin.bottom);
 
-				if (anchor.TestFlag(AlignmentAnchor::HCenter))
+				if (anchor.isSet(AlignmentAnchor::HCenter))
 					childRect.x = (childrenBoundSize.width - childRect.width) / 2;
 
-				if (anchor.TestFlag(AlignmentAnchor::VCenter))
+				if (anchor.isSet(AlignmentAnchor::VCenter))
 					childRect.y = (childrenBoundSize.height - childRect.height) / 2;
 
 				if (!Math::isNaN(l) || !Math::isNaN(r))

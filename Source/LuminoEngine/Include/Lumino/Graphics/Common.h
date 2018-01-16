@@ -6,7 +6,7 @@
 #include <Lumino/Base/List.h>
 #include <Lumino/Base/RefObject.h>
 #include <Lumino/Base/String.h>
-#include <Lumino/Base/EnumExtension.h>
+#include <Lumino/Base/EnumFlags.h>
 #include <Lumino/Reflection/ReflectionObject.h>
 #include <Lumino/Reflection/ReflectionObjectList.h>
 #include <Lumino/Reflection/Property.h>

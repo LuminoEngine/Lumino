@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include "../Base/RefObject.h"
 #include "../Base/String.h"
-#include "../Base/EnumExtension.h"
+#include "../Base/EnumFlags.h"
 #include "../Base/Enumerable.h"
 #include "DirectoryUtils.h"
 

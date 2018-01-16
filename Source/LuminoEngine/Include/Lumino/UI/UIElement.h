@@ -418,7 +418,7 @@ LN_INTERNAL_ACCESS:
 	//const String& GetStyleSubControlName() const { return m_styleSubControlName; }
 	//const String& GetCurrentVisualStateName() const { return m_currentVisualStateName; }
 	//AnchorInfo* GetAnchorInfo() {return &m_anchorInfo; }
-	detail::InvalidateFlags getInvalidateFlags() const { return m_invalidateFlags; }
+	detail::InvalidateFlags getInvalidateFlags() const { return m_invalidateFlags.get(); }
 	void callOnGotFocus();
 	void callOnLostFocus();
 	const Rect& getFinalGlobalRect() const { return m_finalGlobalRect; }
@@ -512,7 +512,7 @@ private:
 	//Ref<Style>					m_style;
 	float					m_combinedOpacity;
 	//AnchorInfo				m_anchorInfo;
-	detail::InvalidateFlags	m_invalidateFlags;
+	Flags<detail::InvalidateFlags>	m_invalidateFlags;
 	detail::UICoreFlags		m_coreFlags;
 	bool					m_isEnabled;
 	bool					m_isMouseOver;

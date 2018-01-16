@@ -278,7 +278,7 @@ detail::InvalidateFlags UIStylePropertyTableInstance::inheritParentElementStyle(
 //------------------------------------------------------------------------------
 detail::InvalidateFlags UIStylePropertyTableInstance::merge(const UIStylePropertyTable* source/*, UIStyleAttributeInheritSourceType sourceType*/)
 {
-	detail::InvalidateFlags flags = detail::InvalidateFlags::None;
+	Flags<detail::InvalidateFlags> flags = detail::InvalidateFlags::None;
 	{
 		bool changed = false;
 		changed |= width.inherit(source->width);
@@ -511,8 +511,7 @@ UIStylePropertyTable* UIStyle::findStylePropertyTable(const String& visualStateN
 //------------------------------------------------------------------------------
 detail::InvalidateFlags UIStyle::mergeActiveStylePropertyTables(detail::UIStylePropertyTableInstance* store, const List<String>& visualStateNames)
 {
-	detail::InvalidateFlags invalidateFlags = detail::InvalidateFlags::None;
-
+	Flags<detail::InvalidateFlags> invalidateFlags = detail::InvalidateFlags::None;
 
 	for (int i = m_visualStatePropertyTableList.getCount() - 1; i >= 0; i--)
 	{

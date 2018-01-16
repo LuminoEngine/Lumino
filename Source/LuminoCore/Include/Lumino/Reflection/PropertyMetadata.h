@@ -1,7 +1,7 @@
 ﻿
 #pragma once
 #include "../Base/Common.h"
-#include "../Base/EnumExtension.h"
+#include "../Base/EnumFlags.h"
 #include "Variant.h"
 
 LN_NAMESPACE_BEGIN
