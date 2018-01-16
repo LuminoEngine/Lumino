@@ -56,17 +56,7 @@ enum class AlignmentAnchor : FlagsType
 	HCenter = 0x0400,			/**< */
 	VCenter = 0x0800,			/**< */
 };
-//LN_FLAGS_OPERATORS(AlignmentAnchor);
-
-inline bool operator==(AlignmentAnchor lhs, const ln::Flags<AlignmentAnchor>& rhs) { return rhs.operator==(lhs); } \
-inline bool operator!=(AlignmentAnchor lhs, const ln::Flags<AlignmentAnchor>& rhs) { return rhs.operator!=(lhs); } \
-inline ln::Flags<AlignmentAnchor> operator|(AlignmentAnchor lhs, const ln::Flags<AlignmentAnchor>& rhs) { return rhs.operator|(lhs); } \
-inline ln::Flags<AlignmentAnchor> operator&(AlignmentAnchor lhs, const ln::Flags<AlignmentAnchor>& rhs) { return rhs.operator&(lhs); } \
-inline ln::Flags<AlignmentAnchor> operator^(AlignmentAnchor lhs, const ln::Flags<AlignmentAnchor>& rhs) { return rhs.operator^(lhs); } \
-inline ln::Flags<AlignmentAnchor> operator|(AlignmentAnchor lhs, AlignmentAnchor rhs) { return ln::Flags<AlignmentAnchor>(lhs).operator|(lhs); } \
-inline ln::Flags<AlignmentAnchor> operator&(AlignmentAnchor lhs, AlignmentAnchor rhs) { return ln::Flags<AlignmentAnchor>(lhs).operator&(lhs); } \
-inline ln::Flags<AlignmentAnchor> operator^(AlignmentAnchor lhs, AlignmentAnchor rhs) { return ln::Flags<AlignmentAnchor>(lhs).operator^(lhs); } \
-inline ln::Flags<AlignmentAnchor> operator~(AlignmentAnchor a) { return ~ln::Flags<AlignmentAnchor>(a); }
+LN_FLAGS_OPERATORS(AlignmentAnchor);
 
 /** コントロールのレイアウト方向を示します。*/
 LN_ENUM(Orientation)
