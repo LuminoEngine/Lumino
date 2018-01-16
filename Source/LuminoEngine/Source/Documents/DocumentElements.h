@@ -151,7 +151,7 @@ private:
 	Size					m_size;
 	Thickness				m_margin;
 	Thickness				m_padding;
-	AlignmentAnchor			m_anchor;
+	AlignmentAnchor	m_anchor;
 	HAlignment				m_horizontalAlignment;
 	VAlignment				m_verticalAlignment;
 	TextElement*			m_parent;

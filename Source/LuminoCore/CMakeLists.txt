@@ -41,7 +41,7 @@ set(LN_SOURCES_Base
 	Include/Lumino/Base/DllLoader.h
 	Include/Lumino/Base/ElapsedTimer.h
 	Include/Lumino/Base/Enumerable.h
-	Include/Lumino/Base/EnumExtension.h
+	Include/Lumino/Base/EnumFlags.h
 	Include/Lumino/Base/Environment.h
 	Include/Lumino/Base/Event.h
 	Include/Lumino/Base/Event.inl

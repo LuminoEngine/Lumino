@@ -1,6 +1,6 @@
 
 #pragma once
-#include "../Base/EnumExtension.h"
+#include "../Base/EnumFlags.h"
 #include "../Base/List.h"
 #include "../Base/String.h"
 

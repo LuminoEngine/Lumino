@@ -24,7 +24,7 @@
 #include "Lumino/Base/Delegate.h"
 #include "Lumino/Base/Stack.h"
 #include "Lumino/Base/Environment.h"
-#include "Lumino/Base/EnumExtension.h"
+#include "Lumino/Base/EnumFlags.h"
 #include "Lumino/Base/Logger.h"
 #include "Lumino/Base/Nullable.h"
 #include "Lumino/Base/ElapsedTimer.h"

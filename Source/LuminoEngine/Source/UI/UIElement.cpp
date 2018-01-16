@@ -633,13 +633,13 @@ void UIElement::updateLocalStyleAndApplyProperties(UIStyleTable* styleTable, det
 
 	// parent → state の順で local へマージする
 	// TODO: このへんのコピーが時間かかりそうならリビジョンカウント使うとか対策する。毎フレームやってるから多分重い。
-	detail::InvalidateFlags invalidate = detail::InvalidateFlags::None;
+	Flags<detail::InvalidateFlags> invalidate = detail::InvalidateFlags::None;
 	//if (parentStyleInstance != nullptr)       invalidate |= m_localStyle->inheritParentElementStyle(parentStyleInstance);
 
 
 
 	// VisualState の変更がある場合
-	if (m_invalidateFlags.TestFlag(detail::InvalidateFlags::VisualState))
+	if (m_invalidateFlags.isSet(detail::InvalidateFlags::VisualState))
 	{
 		m_localStyle->clearAvailableRenderElements();
 		m_localStyle->readyMergeProcess();
@@ -687,7 +687,7 @@ void UIElement::updateLocalStyleAndApplyProperties(UIStyleTable* styleTable, det
 //------------------------------------------------------------------------------
 void UIElement::onUpdateStyle(detail::UIStylePropertyTableInstance* localStyle, detail::InvalidateFlags invalidateFlags)
 {
-	localStyle->apply(this, !m_invalidateFlags.TestFlag(detail::InvalidateFlags::Initializing));
+	localStyle->apply(this, !m_invalidateFlags.isSet(detail::InvalidateFlags::Initializing));
 	// TODO: UITextElement::onUpdateStyle 参照
 	// TODO: アニメーション
 }
