@@ -1,5 +1,4 @@
 ﻿#include <TestConfig.h>
-#include <Lumino/Base/Diff.h>
 
 class Test_Base_Environment : public ::testing::Test
 {
