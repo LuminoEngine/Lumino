@@ -1,7 +1,6 @@
-﻿
+
 #include <time.h>
 #include <algorithm>
-#include <cuchar>
 #include "../Internal.h"
 #include <Lumino/Base/CRT.h>
 #include <Lumino/Base/Exception.h>

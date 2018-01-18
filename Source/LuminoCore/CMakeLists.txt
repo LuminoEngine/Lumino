@@ -160,8 +160,6 @@ set(LN_SOURCES_IO
 	Source/IO/StringReader.cpp
 	Source/IO/StringWriter.cpp
 	Source/IO/TextWriter.cpp
-	Source/IO/Win32Helper.cpp
-	Source/IO/Win32Helper.h
 )
 
 set(LN_SOURCES_Json
@@ -298,6 +296,12 @@ if (WIN32)
 		${LN_SOURCES_Text}
 		Source/Text/Win32CodePageEncoding.cpp
 		Source/Text/Win32CodePageEncoding.h
+	)
+
+	set(LN_SOURCES_IO
+		${LN_SOURCES_IO}
+		Source/IO/Win32Helper.cpp
+		Source/IO/Win32Helper.h
 	)
 
 elseif (APPLE)

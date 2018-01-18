@@ -21,9 +21,10 @@ How to build
 Create a development project.
 
 ```
-PS> ./build.ps1 -Target Make-Projects
+PS> ./build.ps1 -Target MakeProjects
 ```
 
 After this, please check in the "build/..." folder.
 
-
+o:Lumino lriki$ chmod +x ./build.sh
+lriki-no-MacBook-Pro:Lumino lriki$ ./build.sh -tMakeProjects

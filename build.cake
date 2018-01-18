@@ -57,10 +57,11 @@ void RunExe(string program, string args)
     }
 }
 
-Task("Make-Projects")
+Task("MakeProjects")
     .IsDependentOn("BuildLuminoBuild")
     .Does(() =>
 {
+    RunExe("./Build/LuminoBuild/bin/Release/LuminoBuild.exe", "MakeVersionHeader");
     if(IsRunningOnWindows())
         RunExe("./Build/LuminoBuild/bin/Release/LuminoBuild.exe", "MakeVSProjects");
     else
@@ -68,10 +69,10 @@ Task("Make-Projects")
 });
 
 Task("Build")
-    .IsDependentOn("BuildLuminoBuild")
+    .IsDependentOn("MakeProjects")
     .Does(() =>
 {
-    StartProcess("./Build/LuminoBuild/bin/Release/LuminoBuild.exe");
+    //StartProcess("./Build/LuminoBuild/bin/Release/LuminoBuild.exe");
 });
 
 Task("Run-Unit-Tests")
@@ -84,7 +85,7 @@ Task("Publish")
     .IsDependentOn("Run-Unit-Tests")
     .Does(() =>
 {
-    StartProcess("./Build/LuminoBuild/bin/Release/LuminoBuild.exe MakeInstaller");
+    //StartProcess("./Build/LuminoBuild/bin/Release/LuminoBuild.exe MakeInstaller");
 });
 
 //////////////////////////////////////////////////////////////////////
