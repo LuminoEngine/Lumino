@@ -488,6 +488,77 @@ String String::fromCString(const wchar_t* str, int length)
 	return result;
 }
 
+String String::fromNumber(int32_t value, Char format)
+{
+	return fromNumber((int64_t)value, format);
+}
+
+String String::fromNumber(int64_t value, Char format)
+{
+	char buf[64];
+	ln::detail::StdCharArrayBuffer<char> b(buf, 64);
+	std::basic_ostream<char, std::char_traits<char> > os(&b);
+	//os.imbue(*formatter.m_locale);
+
+	if (format == 'd' || format == 'D')
+	{
+	}
+	else if (format == 'x' || format == 'X')
+	{
+		os << std::hex;
+		if (format == 'X') os << std::uppercase;
+	}
+
+	os << value;
+	return String::fromCString(buf, b.getLength());
+}
+
+String String::fromNumber(uint32_t value, Char format)
+{
+	return fromNumber((uint64_t)value, format);
+}
+
+String String::fromNumber(uint64_t value, Char format)
+{
+	char buf[64];
+	ln::detail::StdCharArrayBuffer<char> b(buf, 64);
+	std::basic_ostream<char, std::char_traits<char> > os(&b);
+	//os.imbue(*formatter.m_locale);
+
+	os << value;
+	return String::fromCString(buf, b.getLength());
+}
+
+String String::fromNumber(float value, Char format, int precision)
+{
+	return fromNumber((double)value, format, precision);
+}
+
+String String::fromNumber(double value, Char format, int precision)
+{
+	char buf[64];
+	ln::detail::StdCharArrayBuffer<char> b(buf, 64);
+	std::basic_ostream<char, std::char_traits<char> > os(&b);
+	//os.imbue(*formatter.m_locale);
+
+	if (format == 'f' || format == 'F')
+	{
+		os << std::fixed;
+	}
+	else if (format == 'e' || format == 'E')
+	{
+		os << std::scientific;
+		if (format == 'E') os << std::uppercase;
+	}
+	if (precision >= 0)
+	{
+		os << std::setprecision(precision);
+	}
+
+	os << value;
+	return String::fromCString(buf, b.getLength());
+}
+
 void String::init() LN_NOEXCEPT
 {
 	m_data.core = nullptr;

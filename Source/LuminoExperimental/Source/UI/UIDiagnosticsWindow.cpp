@@ -74,11 +74,9 @@ void UIDiagnosticsWindow::drawStatistics(DrawingContext* context, const Rect& wi
 	//context->drawText_(text, loc);
 	//loc.y += 16;
 
-	StringTraits::sprintf(text, 256, _T("Average FPS     : %.1f"), Profiler2::GetMainFps());
-	context->drawText_(text, loc);
+	context->drawText_(_T("Average FPS     : ") + String::fromNumber(Profiler2::GetMainFps()), loc);
 
-	StringTraits::sprintf(text, 256, _T(" / Capacity : %.1f"), Profiler2::GetMainFpsCapacity());
-	context->drawText_(text, Point(loc.x + 150, loc.y));
+	context->drawText_(_T(" / Capacity : ") + String::fromNumber(Profiler2::GetMainFpsCapacity()), Point(loc.x + 150, loc.y));
 	loc.y += 16;
 
 	//StringTraits::sprintf(text, 256, _T("Window Size     : %d x %d"), m_profiler->GetCommitedMainWindowSize().Width, m_profiler->GetCommitedMainWindowSize().Height);
