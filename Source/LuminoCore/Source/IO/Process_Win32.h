@@ -1,4 +1,5 @@
 ﻿#include "../Internal.h"
+#include "Win32Helper.h"
 
 LN_NAMESPACE_BEGIN
 namespace detail {
@@ -46,7 +47,7 @@ public:
 
 		DWORD bytesWrite = 0;
 		BOOL bRes = ::WriteFile(m_hPipe, data, (DWORD)byteCount, &bytesWrite, NULL);
-		LN_ENSURE_WIN32(bRes != FALSE, ::GetLastError());
+		if (LN_ENSURE(bRes != FALSE, Win32Helper::getWin32ErrorMessage(::GetLastError()))) return;
 	}
 	virtual void seek(int64_t offset, SeekOrigin origin) { LN_UNREACHABLE(); }
 	virtual void flush() {}
@@ -135,7 +136,7 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo, ProcessStartResult* o
 	{
 		HANDLE hPipe[2] = { 0, 0 };
 		bResult = ::CreatePipe(&hPipe[R], &hPipe[W], &sa, 0);
-		if (LN_ENSURE_WIN32(bResult != FALSE, ::GetLastError())) return;
+		if (LN_ENSURE(bResult != FALSE, Win32Helper::getWin32ErrorMessage(::GetLastError()))) return;
 
 		// パイプのこのプロセス側を非継承で複製する
 		if (!::DuplicateHandle(hProcess, hPipe[W], hProcess, &m_hInputWrite, 0, FALSE, DUPLICATE_SAME_ACCESS))
@@ -143,7 +144,7 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo, ProcessStartResult* o
 			DWORD dwErr = ::GetLastError();
 			::CloseHandle(hPipe[R]);
 			::CloseHandle(hPipe[W]);
-			LN_ENSURE_WIN32(0, dwErr);
+			LN_ENSURE(0, Win32Helper::getWin32ErrorMessage(dwErr));
 			return;
 		}
 		::CloseHandle(hPipe[W]);
@@ -159,7 +160,7 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo, ProcessStartResult* o
 	{
 		HANDLE hPipe[2] = { 0, 0 };
 		bResult = ::CreatePipe(&hPipe[R], &hPipe[W], &sa, 0);
-		if (LN_ENSURE_WIN32(bResult != FALSE, ::GetLastError())) return;
+		if (LN_ENSURE(bResult != FALSE, Win32Helper::getWin32ErrorMessage(::GetLastError()))) return;
 
 		// パイプのこのプロセス側を非継承で複製する
 		if (!::DuplicateHandle(hProcess, hPipe[R], hProcess, &m_hOutputRead, 0, FALSE, DUPLICATE_SAME_ACCESS))
@@ -167,7 +168,7 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo, ProcessStartResult* o
 			DWORD dwErr = ::GetLastError();
 			::CloseHandle(hPipe[R]);
 			::CloseHandle(hPipe[W]);
-			LN_ENSURE_WIN32(0, dwErr);
+			LN_ENSURE(0, Win32Helper::getWin32ErrorMessage(dwErr));
 			return;
 		}
 		::CloseHandle(hPipe[R]);
@@ -183,7 +184,7 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo, ProcessStartResult* o
 	{
 		HANDLE hPipe[2] = { 0, 0 };
 		bResult = ::CreatePipe(&hPipe[R], &hPipe[W], &sa, 0);
-		if (LN_ENSURE_WIN32(bResult != FALSE, ::GetLastError())) return;
+		if (LN_ENSURE(bResult != FALSE, Win32Helper::getWin32ErrorMessage(::GetLastError()))) return;
 
 		// パイプのこのプロセス側を非継承で複製する
 		if (!::DuplicateHandle(hProcess, hPipe[R], hProcess, &m_hErrorRead, 0, FALSE, DUPLICATE_SAME_ACCESS))
@@ -191,7 +192,7 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo, ProcessStartResult* o
 			DWORD dwErr = ::GetLastError();
 			::CloseHandle(hPipe[R]);
 			::CloseHandle(hPipe[W]);
-			LN_ENSURE_WIN32(0, dwErr);
+			LN_ENSURE(0, Win32Helper::getWin32ErrorMessage(dwErr));
 			return;
 		}
 		::CloseHandle(hPipe[R]);
@@ -240,7 +241,7 @@ void ProcessImpl::start(const ProcessStartInfo& startInfo, ProcessStartResult* o
 			LN_ENSURE_FILE_NOT_FOUND(0, program.c_str());
 			return;
 		}
-		LN_ENSURE_WIN32(0, dwErr);
+		LN_ENSURE(0, Win32Helper::getWin32ErrorMessage(dwErr));
 		return;
 	}
 

@@ -160,6 +160,8 @@ set(LN_SOURCES_IO
 	Source/IO/StringReader.cpp
 	Source/IO/StringWriter.cpp
 	Source/IO/TextWriter.cpp
+	Source/IO/Win32Helper.cpp
+	Source/IO/Win32Helper.h
 )
 
 set(LN_SOURCES_Json

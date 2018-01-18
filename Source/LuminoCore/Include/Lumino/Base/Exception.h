@@ -12,6 +12,7 @@
 
 LN_NAMESPACE_BEGIN
 class Exception;
+class String;
 
 #define _LN_CHECK(expression, exception, ...)		(!(expression)) && ln::detail::notifyException<exception>(LN__FILE__, __LINE__, ##__VA_ARGS__)
 
@@ -167,6 +168,7 @@ class LUMINO_EXPORT NotImplementedException
 {
 public:
 	NotImplementedException();
+	NotImplementedException(const Char* message);
 	virtual Exception* copy() const;
 };
 
@@ -221,33 +223,42 @@ public:
 /**
 	@brief	WindowsAPI のエラーを表します。 (GetLastError)
 */
-class Win32Exception 
-	: public Exception
-{
-public:
-	Win32Exception();
-	Win32Exception(uint32_t dwLastError);
-	virtual Exception* copy() const;
-
-	uint32_t getLastErrorCode() const { return m_dwLastErrorCode; }
-	const std::basic_string<Char>& getFormatMessage() const { return m_formatMessage; }
-
-private:
-	void setMessage(uint32_t dwLastError);
-	uint32_t				m_dwLastErrorCode;
-	std::basic_string<Char>	m_formatMessage;
-};
-
-
+//class Win32Exception 
+//	: public Exception
+//{
+//public:
+//	Win32Exception();
+//	Win32Exception(uint32_t dwLastError);
+//	virtual Exception* copy() const;
+//
+//	uint32_t getLastErrorCode() const { return m_dwLastErrorCode; }
+//	const std::basic_string<Char>& getFormatMessage() const { return m_formatMessage; }
+//
+//private:
+//	void setMessage(uint32_t dwLastError);
+//	uint32_t				m_dwLastErrorCode;
+//	std::basic_string<Char>	m_formatMessage;
+//};
+//
+//
 
 
 
 namespace detail {
 
+void errorPrintf(Char* buf, size_t bufSize, const char* format, ...);
+void errorPrintf(Char* buf, size_t bufSize, const wchar_t* format, ...);
+void errorPrintf(Char* buf, size_t bufSize, const char16_t* format);
+void errorPrintf(Char* buf, size_t bufSize, const String& format);
+void errorPrintf(Char* buf, size_t bufSize);
+
 template<class TException, typename... TArgs>
 inline bool notifyException(const Char* file, int line, TArgs... args)
 {
-	TException e(args...);
+	const size_t BUFFER_SIZE = 512;
+	Char str[BUFFER_SIZE] = {};
+	errorPrintf(str, BUFFER_SIZE, args...);
+	TException e(str);
 	detail::Exception_setSourceLocationInfo(e, file, line);
 	auto h = Assertion::getNotifyVerificationHandler();
 	if (h != nullptr && h(e)) return true;
