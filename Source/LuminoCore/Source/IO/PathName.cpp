@@ -203,17 +203,18 @@ Path Path::getUniqueFilePathInDirectory(const Path& directory, const Char* fileP
 	String work;
 	do
 	{
+		// TODO: filePrefix とかは この do ループの前で String にしておき、結合は cat でやれば効率的。
 		if (filePrefix != NULL && extName != NULL) {
-			filePath = String::sprintf(_LT("%s%s%llu%d%s"), dirPath.c_str(), filePrefix, key, number, extName);
+			filePath = String::format(_LT("{0}{1}{2}{3}{4}"), dirPath.c_str(), filePrefix, key, number, extName);
 		}
 		else if (filePrefix == NULL && extName != NULL) {
-			filePath = String::sprintf(_LT("%s%llu%d%s"), dirPath.c_str(), key, number, extName);
+			filePath = String::format(_LT("{0}{1}{2}{3}"), dirPath.c_str(), key, number, extName);
 		}
 		else if (filePrefix != NULL && extName == NULL) {
-			filePath = String::sprintf(_LT("%s%s%llu%d"), dirPath.c_str(), filePrefix, key, number);
+			filePath = String::format(_LT("{0}{1}{2}{3}"), dirPath.c_str(), filePrefix, key, number);
 		}
 		else {
-			filePath = String::sprintf(_LT("%s%llu%d"), dirPath.c_str(), key, number);
+			filePath = String::format(_LT("{0}{1}{2}"), dirPath.c_str(), key, number);
 		}
 
 		number++;

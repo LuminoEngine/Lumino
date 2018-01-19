@@ -200,19 +200,19 @@ TEST_F(Test_Xml_XmlReader, User)
 	while (reader.read())
 	{
 		if (reader.getNodeType() == XmlNodeType::Text) {
-			output += String::sprintf(_LT("type:%s value:%s\n"), reader.getNodeType().toString().c_str(), reader.getValue().c_str());
+			output += String::format(_LT("type:{0} value:{1}\n"), reader.getNodeType().toString(), reader.getValue());
 		}
 		else if (reader.getNodeType() == XmlNodeType::Whitespace) {
-			output += String::sprintf(_LT("type:%s\n"), reader.getNodeType().toString().c_str());
+			output += String::format(_LT("type:{0}\n"), reader.getNodeType().toString());
 		}
 		else {
-			output += String::sprintf(_LT("type:%s name:%s\n"), reader.getNodeType().toString().c_str(), reader.getName().c_str());
+			output += String::format(_LT("type:{0} name:{1}\n"), reader.getNodeType().toString(), reader.getName());
 		}
 
 		if (reader.moveToFirstAttribute())
 		{
 			do {
-				output += String::sprintf(_LT("type:%s name:%s value:%s\n"), reader.getNodeType().toString().c_str(), reader.getName().c_str(), reader.getValue().c_str());
+				output += String::format(_LT("type:{0} name:{1} value:{2}\n"), reader.getNodeType().toString(), reader.getName(), reader.getValue());
 
 			} while (reader.moveToNextAttribute());
 		}

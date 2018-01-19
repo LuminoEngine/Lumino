@@ -111,7 +111,7 @@ TEST_F(Test_IO_Path, canonicalizePath)
 		Char path1[LN_MAX_PATH] = _LT(src); \
 		Char path2[LN_MAX_PATH]; \
 		PathTraits::canonicalizePath(path1, StringTraits::tcslen(path1), path2); \
-		ASSERT_STREQ(_LT(result), path2); \
+		ASSERT_EQ(0, StringTraits::tcscmp(_LT(result), path2)); \
 	}
 
 	TEST_CASE("A/C", "A/B/../C");

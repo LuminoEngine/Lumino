@@ -30,15 +30,15 @@ size_t StringTraits::tcslen(const TChar* str)
 template size_t StringTraits::tcslen<UTF8>(const UTF8* str);
 template size_t StringTraits::tcslen<UTF16>(const UTF16* str);
 template size_t StringTraits::tcslen<UTF32>(const UTF32* str);
-
-void StringTraits::tstrcpy(char* dst, int dstLen, const char* src)
-{
-	strcpy_s(dst, dstLen, src);
-}
-void StringTraits::tstrcpy(wchar_t* dst, int dstLen, const wchar_t* src)
-{
-	wcscpy_s(dst, dstLen, src);
-}
+//
+//void StringTraits::tstrcpy(char* dst, int dstLen, const char* src)
+//{
+//	strcpy_s(dst, dstLen, src);
+//}
+//void StringTraits::tstrcpy(wchar_t* dst, int dstLen, const wchar_t* src)
+//{
+//	wcscpy_s(dst, dstLen, src);
+//}
 int StringTraits::tcsicmp(const char* s1, const char* s2)
 {
 	int len1 = strlen(s1);

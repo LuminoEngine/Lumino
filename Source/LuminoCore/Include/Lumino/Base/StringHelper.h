@@ -23,8 +23,27 @@ public:
 	/** @name ランタイム関数のオーバーロードユーティリティ */
 	/** @{ */
 
-	static void tstrcpy(char* dst, int dstLen, const char* src);
-	static void tstrcpy(wchar_t* dst, int dstLen, const wchar_t* src);
+	//static void tstrcpy(char* dst, int dstLen, const char* src);
+	//static void tstrcpy(wchar_t* dst, int dstLen, const wchar_t* src);
+
+	template<class TChar>
+	static void tstrcpy(TChar* dst, size_t dstLen, const TChar* src)
+	{
+		while (dstLen && *src)
+		{
+			dstLen--;
+			*dst++ = *src++;
+		}
+	}
+
+	template<class TChar>
+	static int tcscmp(const TChar* s1, const TChar* s2)
+	{
+		for (; *s1 == *s2 && *s1 && *s2; s1++, s2++);
+		return *s1 - *s2;
+	}
+
+
 	static int tcsicmp(const char* s1, const char* s2);
 	static int tcsicmp(const wchar_t* s1, const wchar_t* s2);
 	static int tvscprintf_l(const char* format, NativeLocale_t locale, va_list args);

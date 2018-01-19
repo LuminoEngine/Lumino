@@ -39,7 +39,9 @@ class String;
 // internal
 #define LN_EXCEPTION_FORMATTING_CONSTRUCTOR_DECLARE(className) \
 	className(const char* message, ...); \
-	className(const wchar_t* message, ...);
+	className(const wchar_t* message, ...); \
+	className(const Char* message);
+
 #define LN_EXCEPTION_FORMATTING_CONSTRUCTOR_IMPLEMENT(className) \
 	className::className(const char* message, ...) \
 	{ \
@@ -54,6 +56,10 @@ class String;
 		va_start(args, message); \
 		setMessage(message, args); \
 		va_end(args); \
+	} \
+	className::className(const Char* message) \
+	{ \
+		setMessageU(message); \
 	}
 
 
@@ -104,6 +110,7 @@ protected:
 	void setMessage(const wchar_t* format, va_list args);
 	void setMessage(const char* format, ...);
 	void setMessage(const wchar_t* format, ...);
+	void setMessageU(const Char* message);
 
 private:
 	void appendMessage(const Char* message, size_t len);

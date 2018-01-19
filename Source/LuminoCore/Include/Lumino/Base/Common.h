@@ -105,9 +105,9 @@
 
 #define LN_USTRING
 //#define LN_LEGACY_VARIANT_ENABLED
-//#define LN_USTRING16
+#define LN_USTRING16
 
-//#ifdef LN_USTRING
+#ifdef LN_USTRING
 
 #ifdef LN_USTRING16
 #define __LT(x) u ## x
@@ -129,6 +129,8 @@ namespace ln {
 using Char = wchar_t;
 }
 
+#endif
+#else
 #endif
 
 #define LN__FILE__          _LT(__FILE__)

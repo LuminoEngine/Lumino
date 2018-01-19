@@ -435,6 +435,7 @@ String String::concat(const StringRef& str1, const StringRef& str2)
 	return s;
 }
 
+#if !defined(LN_USTRING16)
 String String::sprintf(const Char* format, ...)
 {
 	static const int MaxFormatLength = 256;
@@ -461,6 +462,7 @@ String String::sprintf(const Char* format, ...)
 	}
 
 }
+#endif
 
 int String::compare(const String& str1, const String& str2, CaseSensitivity cs)
 {

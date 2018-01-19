@@ -127,11 +127,11 @@ public:
 	static String readAllText(Stream* stream, Encoding* encoding = nullptr);
 
 	/// 配列の内容をバイナリファイルとして書き出す
-	static void writeAllBytes(const TCHAR* filePath, const void* buffer, size_t size);
+	static void writeAllBytes(const Char* filePath, const void* buffer, size_t size);
 
 	/// 文字列をテキストファイルとして書き出す
 	/// encoding 省略時は UTF8 (BOM 無し)
-	static void writeAllText(const TCHAR* filePath, const String& str, Encoding* encoding = nullptr);
+	static void writeAllText(const Char* filePath, const String& str, Encoding* encoding = nullptr);
 
 
 	static tr::Enumerator<PathName> getFiles(const StringRef& dirPath, const StringRef& pattern = StringRef());

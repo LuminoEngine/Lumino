@@ -251,6 +251,11 @@ void Exception::setMessage(const wchar_t* format, ...)
 	va_end(args);
 }
 
+void Exception::setMessageU(const Char* message)
+{
+	appendMessage(message, StringTraits::tcslen(message));
+}
+
 void Exception::appendMessage(const Char* message, size_t len)
 {
 	m_message.append(message, len);

@@ -148,17 +148,15 @@ String Environment::LN_AFX_FUNCNAME(getEnvironmentVariable)(const String& variab
 //------------------------------------------------------------------------------
 bool Environment::tryGetEnvironmentVariable(const String& variableName, String* outValue)
 {
-	String name = variableName;
 #ifdef LN_OS_WIN32
-	size_t len;
-	errno_t err = _tgetenv_s(&len, NULL, 0, name.c_str());
-	if (err != 0 || len == 0) {	// Win32 では環境変数を空にはできない
-		return false;
-	}
-	//Char* val = new Char[len];
-	ByteBuffer val(len * sizeof(Char));
-	_tgetenv_s(&len, (Char*)val.getData(), len, name.c_str());
-	if (outValue) { *outValue = (const Char*)val.getConstData(); }
+	std::wstring name = variableName.toStdWString();
+	DWORD dwLen = ::GetEnvironmentVariableW(name.c_str(), NULL, 0);
+	if (dwLen == 0) return false;
+
+	std::wstring buf;
+	buf.resize(dwLen);
+	::GetEnvironmentVariableW(name.c_str(), &buf[0], dwLen + 1);
+	if (outValue) { *outValue = String::fromCString(buf.c_str()); }
 	return true;
 #else
 	LN_NOTIMPLEMENTED();
