@@ -105,7 +105,7 @@
 
 #define LN_USTRING
 //#define LN_LEGACY_VARIANT_ENABLED
-#define LN_USTRING16
+//#define LN_USTRING16
 
 #ifdef LN_USTRING
 

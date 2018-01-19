@@ -37,30 +37,40 @@ class String;
 #define LN_COMCALL(exp)				{ HRESULT hr = (exp); if (FAILED(hr)) { LN_ENSURE_WIN32(0, hr); } }
 
 // internal
+#ifdef LN_USTRING16
 #define LN_EXCEPTION_FORMATTING_CONSTRUCTOR_DECLARE(className) \
-	className(const char* message, ...); \
-	className(const wchar_t* message, ...); \
+	className(const char* message); \
+	className(const wchar_t* message); \
 	className(const Char* message);
 
 #define LN_EXCEPTION_FORMATTING_CONSTRUCTOR_IMPLEMENT(className) \
-	className::className(const char* message, ...) \
+	className::className(const char* message) \
 	{ \
-		va_list args; \
-		va_start(args, message); \
-		setMessage(message, args); \
-		va_end(args); \
+		setMessage(message); \
 	} \
-	className::className(const wchar_t* message, ...) \
+	className::className(const wchar_t* message) \
 	{ \
-		va_list args; \
-		va_start(args, message); \
 		setMessage(message, args); \
-		va_end(args); \
 	} \
 	className::className(const Char* message) \
 	{ \
 		setMessageU(message); \
 	}
+#else
+#define LN_EXCEPTION_FORMATTING_CONSTRUCTOR_DECLARE(className) \
+	className(const char* message); \
+	className(const wchar_t* message);
+
+#define LN_EXCEPTION_FORMATTING_CONSTRUCTOR_IMPLEMENT(className) \
+	className::className(const char* message) \
+	{ \
+		setMessage(message); \
+	} \
+	className::className(const wchar_t* message) \
+	{ \
+		setMessage(message); \
+	}
+#endif
 
 
 class Assertion
