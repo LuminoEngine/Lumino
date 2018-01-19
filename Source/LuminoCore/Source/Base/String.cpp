@@ -490,6 +490,16 @@ String String::fromCString(const wchar_t* str, int length)
 	return result;
 }
 
+String String::fromStdString(const std::string& str, Encoding* encoding)
+{
+	return fromCString(str.c_str(), str.length(), encoding);
+}
+
+String String::fromStdString(const std::wstring& str)
+{
+	return fromCString(str.c_str(), str.length());
+}
+
 String String::fromNumber(int32_t value, Char format)
 {
 	return fromNumber((int64_t)value, format);

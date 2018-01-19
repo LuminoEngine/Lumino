@@ -400,6 +400,9 @@ public:
 
 	static String fromCString(const char* str, int length = -1, Encoding* encoding = nullptr);
 	static String fromCString(const wchar_t* str, int length = -1);
+
+	static String fromStdString(const std::string& str, Encoding* encoding = nullptr);
+	static String fromStdString(const std::wstring& str);
 	
 	/**
 		@brief		数値を文字列に変換します。
