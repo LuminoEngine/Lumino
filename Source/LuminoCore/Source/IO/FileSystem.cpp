@@ -770,14 +770,14 @@ public:
 		, m_path()
 	{}
 
-	DirectoryIterator(const StringRef dirPath, FileAttribute attr = FileAttribute::All, const StringRef pattern = nullptr)
+	DirectoryIterator(const StringRef dirPath, FileAttribute attr = FileAttribute::All, const StringRef pattern = StringRef())
 		: m_finder()
 		, m_path()
 	{
 		detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(dirPath.getBegin(), dirPath.getLength());
 		detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPattern(pattern.getBegin(), pattern.getLength());
 		m_finder = Ref<PlatformFileFinder>::makeRef(localPath.c_str(), localPath.getLength(), attr, localPattern.c_str(), localPattern.getLength());
-		m_path = m_finder->getCurrent().c_str();
+		m_path = String::fromStdString(m_finder->getCurrent());
 	}
 
 	DirectoryIterator(const DirectoryIterator& other)
@@ -797,7 +797,7 @@ public:
 		if (m_finder != nullptr)
 		{
 			m_finder->next();
-			m_path = m_finder->getCurrent().c_str();
+			m_path = String::fromStdString(m_finder->getCurrent());
 		}
 		return *this;
 	}
@@ -807,7 +807,7 @@ public:
 		if (m_finder != nullptr)
 		{
 			m_finder->next();
-			m_path = m_finder->getCurrent().c_str();
+			m_path = String::fromStdString(m_finder->getCurrent());
 		}
 		return *this;
 	}
@@ -927,7 +927,7 @@ private:
 
 		if (result)
 		{
-			m_currentPath = current()->getCurrent().c_str();
+			m_currentPath = String::fromStdString(current()->getCurrent());
 		}
 		else
 		{

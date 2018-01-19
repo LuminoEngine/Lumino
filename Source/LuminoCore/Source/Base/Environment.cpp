@@ -122,7 +122,7 @@ public:
 // Environment
 //==============================================================================
 
-String getCurrentDirectory()
+String Environment::getCurrentDirectory()
 {
 	LocalStringConverter<PlatformEnvironment::CharType> buf;
 	PlatformEnvironment::getCurrentDirectory(&buf);

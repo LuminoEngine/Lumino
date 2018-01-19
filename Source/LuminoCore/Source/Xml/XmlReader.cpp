@@ -541,7 +541,7 @@ bool XmlReader::parseElementInner()
 	if (isProcInst)
 	{
 		const Char* name = &m_textCache[namePos];
-		bool isXmlDecl = (nameLen == 3 && StringTraits::strnicmp(name, _TT("xml"), 3) == 0);
+		bool isXmlDecl = (nameLen == 3 && StringTraits::tcsnicmp(name, _TT("xml"), 3) == 0);
 		parseXmlDeclOrPI(namePos, nameLen, isXmlDecl);
 	}
 	// その他の要素
@@ -1070,7 +1070,7 @@ bool XmlReader::isReservedEntity(const Char* text, int len)
 	for (int i = 0; i < ReservedEntitiesCount; ++i)
 	{
 		if (ReservedEntities[i].Length == len &&
-			StringTraits::strncmp(ReservedEntities[i].Pattern, text, len) == 0)
+			StringTraits::tcsncmp(ReservedEntities[i].Pattern, text, len) == 0)
 		{
 			return true;
 		}
@@ -1120,7 +1120,7 @@ void XmlReader::expandReservedEntities(const Char* text, int len, std::basic_str
 			int i = 0;
 			for (; i < ReservedEntitiesCount; ++i)
 			{
-				if (StringTraits::strncmp(rp + 1, ReservedEntities[i].Pattern, ReservedEntities[i].Length) == 0 &&
+				if (StringTraits::tcsncmp(rp + 1, ReservedEntities[i].Pattern, ReservedEntities[i].Length) == 0 &&
 					*(rp + ReservedEntities[i].Length + 1) == ';')
 				{
 					outBuilder->append(1, ReservedEntities[i].Value);

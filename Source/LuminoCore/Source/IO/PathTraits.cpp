@@ -241,20 +241,22 @@ void PathTraits::getFileNameWithoutExtension(const TChar* path, TChar* outExt)
 
 	if (path == NULL) { return; }
 
+	const TChar DOT[] = { '.', '\0' };
 	const TChar* fileName = getFileNameSub(path);
 	int len = StringTraits::tcslen(fileName);
-	int i = StringTraits::lastIndexOf(fileName, len, LN_T(TChar, "."), 1, (len-1), len, CaseSensitivity::CaseSensitive);
+	int i = StringTraits::lastIndexOf(fileName, len, DOT, 1, (len-1), len, CaseSensitivity::CaseSensitive);
 	if (i >= 0) {
-		StringTraits::strncpy(outExt, LN_MAX_PATH, fileName, i);
+		StringTraits::copyString(outExt, LN_MAX_PATH, fileName, i);
 		outExt[i] = '\0';
 	}
 	else {
-		StringTraits::strncpy(outExt, LN_MAX_PATH, fileName, len);
+		StringTraits::copyString(outExt, LN_MAX_PATH, fileName, len);
 		outExt[len] = '\0';
 	}
 }
 template void PathTraits::getFileNameWithoutExtension(const char* path, char* outExt);
 template void PathTraits::getFileNameWithoutExtension(const wchar_t* path, wchar_t* outExt);
+template void PathTraits::getFileNameWithoutExtension(const char16_t* path, char16_t* outExt);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
@@ -570,6 +572,7 @@ int PathTraits::canonicalizePath(const TChar* srcPath, size_t srcLen, TChar* out
 }
 template int PathTraits::canonicalizePath(const char* srcPath, size_t srcLen, char* outPath);
 template int PathTraits::canonicalizePath(const wchar_t* srcPath, size_t srcLen, wchar_t* outPath);
+template int PathTraits::canonicalizePath(const char16_t* srcPath, size_t srcLen, char16_t* outPath);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
@@ -582,21 +585,23 @@ void PathTraits::canonicalizePath(const TChar* srcPath, TChar* outPath)
 	}
 	else
 	{
-		// 相対パスであれば、カレントディレクトリと結合してから変換する
-		TChar src[LN_MAX_PATH];
-		size_t len2 = DirectoryUtils::getCurrentDirectory(src);
-		src[len2] = DirectorySeparatorChar;
-		++len2;
-		StringTraits::strncpy(src + len2, LN_MAX_PATH - len2, srcPath, srcLen);
-		//memcpy(src + len2, srcPath, srcLen * sizeof(TChar));
-		srcLen += len2;
-		canonicalizePath(src, srcLen, outPath);
+		LN_NOTIMPLEMENTED();
+		//// 相対パスであれば、カレントディレクトリと結合してから変換する
+		//TChar src[LN_MAX_PATH];
+		//size_t len2 = DirectoryUtils::getCurrentDirectory(src);
+		//src[len2] = DirectorySeparatorChar;
+		//++len2;
+		//StringTraits::copyString(src + len2, LN_MAX_PATH - len2, srcPath, srcLen);
+		////memcpy(src + len2, srcPath, srcLen * sizeof(TChar));
+		//srcLen += len2;
+		//canonicalizePath(src, srcLen, outPath);
 	}
 	// セパレータを統一する
 	normalizeSeparator(outPath);
 }
 template void PathTraits::canonicalizePath<char>(const char* srcPath, char* outPath);
 template void PathTraits::canonicalizePath<wchar_t>(const wchar_t* srcPath, wchar_t* outPath);
+template void PathTraits::canonicalizePath<char16_t>(const char16_t* srcPath, char16_t* outPath);
 
 #if 0
 //------------------------------------------------------------------------------
@@ -745,6 +750,7 @@ bool PathTraits::equals(const TChar* path1, const TChar* path2)
 }
 template bool PathTraits::equals<char>(const char* path1, const char* path2);
 template bool PathTraits::equals<wchar_t>(const wchar_t* path1, const wchar_t* path2);
+template bool PathTraits::equals<char16_t>(const char16_t* path1, const char16_t* path2);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
@@ -755,6 +761,7 @@ int PathTraits::compare(TChar ch1, TChar ch2, CaseSensitivity cs)
 }
 template int PathTraits::compare<char>(char ch1, char ch2, CaseSensitivity cs);
 template int PathTraits::compare<wchar_t>(wchar_t ch1, wchar_t ch2, CaseSensitivity cs);
+template int PathTraits::compare<char16_t>(char16_t ch1, char16_t ch2, CaseSensitivity cs);
 
 //------------------------------------------------------------------------------
 // path1 から見たときの path2 の相対パス
@@ -824,15 +831,17 @@ std::basic_string<TChar> PathTraits::diffPath(const TChar* path1, int len1, cons
 	}
 
 	// path1 の残りの部分からセパレータを探す。このセパレータの数が、戻る深さ(..) の数になる。
+	const TChar SLASH[] = { '/', '\0' };
+	const TChar DDOT[] = { '.', '.', '\0' };
 	std::basic_string<TChar> relLead;
 	for (; i < slen1; ++i)
 	{
 		if (IsInternalSeparator(path1, i, len1))
 		{
 			if (!relLead.empty()) {
-				relLead += LN_T(TChar, "/");
+				relLead += SLASH;
 			}
-			relLead += LN_T(TChar, "..");
+			relLead += DDOT;
 		}
 	}
 
@@ -870,5 +879,6 @@ std::basic_string<TChar> PathTraits::diffPath(const TChar* path1, int len1, cons
 }
 template std::basic_string<char> PathTraits::diffPath(const char* path1, int len1, const char* path2, int len2, CaseSensitivity cs);
 template std::basic_string<wchar_t> PathTraits::diffPath(const wchar_t* path1, int len1, const wchar_t* path2, int len2, CaseSensitivity cs);
+template std::basic_string<char16_t> PathTraits::diffPath(const char16_t* path1, int len1, const char16_t* path2, int len2, CaseSensitivity cs);
 
 LN_NAMESPACE_END

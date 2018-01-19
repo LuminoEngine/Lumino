@@ -113,6 +113,13 @@ String::String(const char* str)
 {
 	assignFromCStr(str);
 }
+#ifdef LN_USTRING16
+String::String(const wchar_t* str)
+	: String()
+{
+	assignFromCStr(str);
+}
+#endif
 #endif
 
 bool String::isEmpty() const
@@ -508,21 +515,8 @@ String String::fromNumber(int32_t value, Char format)
 String String::fromNumber(int64_t value, Char format)
 {
 	char buf[64];
-	ln::detail::StdCharArrayBuffer<char> b(buf, 64);
-	std::basic_ostream<char, std::char_traits<char> > os(&b);
-	//os.imbue(*formatter.m_locale);
-
-	if (format == 'd' || format == 'D')
-	{
-	}
-	else if (format == 'x' || format == 'X')
-	{
-		os << std::hex;
-		if (format == 'X') os << std::uppercase;
-	}
-
-	os << value;
-	return String::fromCString(buf, b.getLength());
+	int len = StringTraits::int64ToString(value, format, buf, 64);
+	return String::fromCString(buf, len);
 }
 
 String String::fromNumber(uint32_t value, Char format)
@@ -533,12 +527,8 @@ String String::fromNumber(uint32_t value, Char format)
 String String::fromNumber(uint64_t value, Char format)
 {
 	char buf[64];
-	ln::detail::StdCharArrayBuffer<char> b(buf, 64);
-	std::basic_ostream<char, std::char_traits<char> > os(&b);
-	//os.imbue(*formatter.m_locale);
-
-	os << value;
-	return String::fromCString(buf, b.getLength());
+	int len = StringTraits::uint64ToString(value, format, buf, 64);
+	return String::fromCString(buf, len);
 }
 
 String String::fromNumber(float value, Char format, int precision)
@@ -549,26 +539,8 @@ String String::fromNumber(float value, Char format, int precision)
 String String::fromNumber(double value, Char format, int precision)
 {
 	char buf[64];
-	ln::detail::StdCharArrayBuffer<char> b(buf, 64);
-	std::basic_ostream<char, std::char_traits<char> > os(&b);
-	//os.imbue(*formatter.m_locale);
-
-	if (format == 'f' || format == 'F')
-	{
-		os << std::fixed;
-	}
-	else if (format == 'e' || format == 'E')
-	{
-		os << std::scientific;
-		if (format == 'E') os << std::uppercase;
-	}
-	if (precision >= 0)
-	{
-		os << std::setprecision(precision);
-	}
-
-	os << value;
-	return String::fromCString(buf, b.getLength());
+	int len = StringTraits::doubleToString(value, format, precision, buf, 64);
+	return String::fromCString(buf, len);
 }
 
 void String::init() LN_NOEXCEPT

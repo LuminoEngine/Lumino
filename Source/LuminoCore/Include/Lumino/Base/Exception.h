@@ -50,7 +50,7 @@ class String;
 	} \
 	className::className(const wchar_t* message) \
 	{ \
-		setMessage(message, args); \
+		setMessage(message); \
 	} \
 	className::className(const Char* message) \
 	{ \

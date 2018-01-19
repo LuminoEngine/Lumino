@@ -43,6 +43,19 @@ public:
 		return *s1 - *s2;
 	}
 
+	template<class TChar>
+	static int tcsncmp(const TChar* s1, const TChar* s2, size_t count)
+	{
+		for (; count && *s1 == *s2 && *s1 && *s2; count--, s1++, s2++);
+		return count ? *s1 - *s2 : 0;
+	}
+
+	template<class TChar>
+	static int tcsnicmp(const TChar* s1, const TChar* s2, size_t count)
+	{
+		for (; count && toUpper(*s1) == toUpper(*s2) && *s1 && *s2; count--, s1++, s2++);
+		return count ? toUpper(*s1) - toUpper(*s2) : 0;
+	}
 
 	static int tcsicmp(const char* s1, const char* s2);
 	static int tcsicmp(const wchar_t* s1, const wchar_t* s2);
@@ -97,8 +110,8 @@ public:
 	static void strncpy(wchar_t* dest, size_t destElementsSize, const wchar_t* src, int count) { wcsncpy_s(dest, destElementsSize, src, count); }	// 文字単位。バイト単位ではない
 
 	/// strncmp の overload 実装
-	static int strncmp(const char* str1, const char* str2, size_t count) { return ::strncmp(str1, str2, count); }
-	static int strncmp(const wchar_t* str1, const wchar_t* str2, size_t count) { return ::wcsncmp(str1, str2, count); }
+	//static int strncmp(const char* str1, const char* str2, size_t count) { return ::strncmp(str1, str2, count); }
+	//static int strncmp(const wchar_t* str1, const wchar_t* str2, size_t count) { return ::wcsncmp(str1, str2, count); }
 	static int strnicmp(const char* str1, const char* str2, size_t count);
 	static int strnicmp(const wchar_t* str1, const wchar_t* str2, size_t count);
 
@@ -107,6 +120,16 @@ public:
 	static double strtod(const wchar_t* str, wchar_t** endptr) { return:: wcstod(str, endptr); }
 
 	/** @} */
+
+	template<typename TChar>
+	static void copyString(TChar* dst, size_t dstSize, const TChar* src, size_t srcLen)
+	{
+		if (dstSize == 0) return;
+		size_t dstLen = dstSize - 1;
+		size_t len = (dstLen < srcLen) ? dstLen : srcLen;
+		memcpy(dst, src, sizeof(TChar) * len);
+		dst[len] = '\0';
+	}
 
 	//-------------------------------------------------------------------
 
@@ -193,7 +216,20 @@ public:
 		@return		見つかった数。
 	*/
 	template<typename TChar>
-	static int countString(const TChar* str1, int str1Len, const TChar* str2, int str2Len, CaseSensitivity cs = CaseSensitivity::CaseSensitive);
+	static int countString(const TChar* str1, int str1Len, const TChar* str2, int str2Len, CaseSensitivity cs = CaseSensitivity::CaseSensitive)
+	{
+		str1Len = (str1Len < 0) ? ((int)tcslen(str1)) : str1Len;
+		str2Len = (str2Len < 0) ? ((int)tcslen(str2)) : str2Len;
+
+		int count = 0;
+		int i = 0;
+		while ((i = indexOf(str1, str1Len, str2, str2Len, i, cs)) != -1)
+		{
+			i += str2Len;
+			count++;
+		}
+		return count;
+	}
 
 	template<typename TChar>
 	static void left(const TChar* str, int count, const TChar** outBegin, const TChar** outEnd);
@@ -329,6 +365,20 @@ public:
 	template<typename TChar>
 	static float toFloat(const TChar* str, int len = -1, const TChar** outEndPtr = NULL, NumberConversionResult* outResult = NULL);
 
+
+	static int int64ToString(int64_t value, char format, char* outStr, int bufSize);
+	static int uint64ToString(uint64_t value, char format, char* outStr, int bufSize);
+	static int doubleToString(double value, char format, int precision, char* outStr, int bufSize);
+	template<class TDst, class TSrc>
+	static void copySimpleAsciiString(TDst* dst, int dstLen, const TSrc* src, int srcLen)
+	{
+		while (dstLen && srcLen && *src)
+		{
+			dstLen--;
+			srcLen--;
+			*dst++ = *src++;
+		}
+	}
 };
 
 LN_NAMESPACE_END

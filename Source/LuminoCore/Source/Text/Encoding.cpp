@@ -139,6 +139,11 @@ Encoding* Encoding::getEncodingTemplate<wchar_t>()
 {
 	return getWideCharEncoding();
 }
+template<>
+Encoding* Encoding::getEncodingTemplate<char16_t>()
+{
+	return getUTF16Encoding();
+}
 
 //------------------------------------------------------------------------------
 #ifdef LN_OS_WIN32

@@ -509,6 +509,7 @@ int StringTraits::compare(TChar ch1, TChar ch2, CaseSensitivity cs)
 }
 template int StringTraits::compare<char>(char ch1, char ch2, CaseSensitivity cs);
 template int StringTraits::compare<wchar_t>(wchar_t ch1, wchar_t ch2, CaseSensitivity cs);
+template int StringTraits::compare<char16_t>(char16_t ch1, char16_t ch2, CaseSensitivity cs);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
@@ -607,24 +608,6 @@ template bool StringTraits::endsWith<char>(const char* str1, int len1, const cha
 template bool StringTraits::endsWith<wchar_t>(const wchar_t* str1, int len1, const wchar_t* str2, int len2, CaseSensitivity cs);
 template bool StringTraits::endsWith<char16_t>(const char16_t* str1, int len1, const char16_t* str2, int len2, CaseSensitivity cs);
 
-//------------------------------------------------------------------------------
-template<typename TChar>
-int StringTraits::countString(const TChar* str1, int str1Len, const TChar* str2, int str2Len, CaseSensitivity cs)
-{
-	str1Len = (str1Len < 0) ? ((int)tcslen(str1)) : str1Len;
-	str2Len = (str2Len < 0) ? ((int)tcslen(str2)) : str2Len;
-
-	int count = 0;
-	int i = 0;
-	while ((i = indexOf(str1, str1Len, str2, str2Len, i, cs)) != -1)
-	{
-		i += str2Len;
-		count++;
-	}
-	return count;
-}
-template int StringTraits::countString<char>(const char* str1, int str1Len, const char* str2, int str2Len, CaseSensitivity cs);
-template int StringTraits::countString<wchar_t>(const wchar_t* str1, int str1Len, const wchar_t* str2, int str2Len, CaseSensitivity cs);
 
 template<typename TChar>
 void StringTraits::left(const TChar* str, int count, const TChar** outBegin, const TChar** outEnd)
@@ -648,6 +631,7 @@ void StringTraits::left(const TChar* str, int count, const TChar** outBegin, con
 }
 template void StringTraits::left<char>(const char* str, int count, const char** outBegin, const char** outEnd);
 template void StringTraits::left<wchar_t>(const wchar_t* str, int count, const wchar_t** outBegin, const wchar_t** outEnd);
+template void StringTraits::left<char16_t>(const char16_t* str, int count, const char16_t** outBegin, const char16_t** outEnd);
 
 template<typename TChar>
 void StringTraits::right(const TChar* str, int count, const TChar** outBegin, const TChar** outEnd)
@@ -663,6 +647,7 @@ void StringTraits::right(const TChar* str, int count, const TChar** outBegin, co
 }
 template void StringTraits::right<char>(const char* str, int count, const char** outBegin, const char** outEnd);
 template void StringTraits::right<wchar_t>(const wchar_t* str, int count, const wchar_t** outBegin, const wchar_t** outEnd);
+template void StringTraits::right<char16_t>(const char16_t* str, int count, const char16_t** outBegin, const char16_t** outEnd);
 
 //------------------------------------------------------------------------------
 //template<typename TChar>
@@ -925,6 +910,7 @@ int8_t StringTraits::toInt8(const TChar* str, int len, int base, const TChar** o
 }
 template int8_t StringTraits::toInt8<char>(const char* str, int len, int base, const char** outEndPtr, NumberConversionResult* outResult);
 template int8_t StringTraits::toInt8<wchar_t>(const wchar_t* str, int len, int base, const wchar_t** outEndPtr, NumberConversionResult* outResult);
+template int8_t StringTraits::toInt8<char16_t>(const char16_t* str, int len, int base, const char16_t** outEndPtr, NumberConversionResult* outResult);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
@@ -937,6 +923,7 @@ uint8_t StringTraits::toUInt8(const TChar* str, int len, int base, const TChar**
 }
 template uint8_t StringTraits::toUInt8<char>(const char* str, int len, int base, const char** outEndPtr, NumberConversionResult* outResult);
 template uint8_t StringTraits::toUInt8<wchar_t>(const wchar_t* str, int len, int base, const wchar_t** outEndPtr, NumberConversionResult* outResult);
+template uint8_t StringTraits::toUInt8<char16_t>(const char16_t* str, int len, int base, const char16_t** outEndPtr, NumberConversionResult* outResult);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
@@ -949,6 +936,7 @@ int16_t StringTraits::toInt16(const TChar* str, int len, int base, const TChar**
 }
 template int16_t StringTraits::toInt16<char>(const char* str, int len, int base, const char** outEndPtr, NumberConversionResult* outResult);
 template int16_t StringTraits::toInt16<wchar_t>(const wchar_t* str, int len, int base, const wchar_t** outEndPtr, NumberConversionResult* outResult);
+template int16_t StringTraits::toInt16<char16_t>(const char16_t* str, int len, int base, const char16_t** outEndPtr, NumberConversionResult* outResult);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
@@ -961,6 +949,7 @@ uint16_t StringTraits::toUInt16(const TChar* str, int len, int base, const TChar
 }
 template uint16_t StringTraits::toUInt16<char>(const char* str, int len, int base, const char** outEndPtr, NumberConversionResult* outResult);
 template uint16_t StringTraits::toUInt16<wchar_t>(const wchar_t* str, int len, int base, const wchar_t** outEndPtr, NumberConversionResult* outResult);
+template uint16_t StringTraits::toUInt16<char16_t>(const char16_t* str, int len, int base, const char16_t** outEndPtr, NumberConversionResult* outResult);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
@@ -986,6 +975,7 @@ uint32_t StringTraits::toUInt32(const TChar* str, int len, int base, const TChar
 }
 template uint32_t StringTraits::toUInt32<char>(const char* str, int len, int base, const char** outEndPtr, NumberConversionResult* outResult);
 template uint32_t StringTraits::toUInt32<wchar_t>(const wchar_t* str, int len, int base, const wchar_t** outEndPtr, NumberConversionResult* outResult);
+template uint32_t StringTraits::toUInt32<char16_t>(const char16_t* str, int len, int base, const char16_t** outEndPtr, NumberConversionResult* outResult);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
@@ -998,6 +988,7 @@ int64_t StringTraits::toInt64(const TChar* str, int len, int base, const TChar**
 }
 template int64_t StringTraits::toInt64<char>(const char* str, int len, int base, const char** outEndPtr, NumberConversionResult* outResult);
 template int64_t StringTraits::toInt64<wchar_t>(const wchar_t* str, int len, int base, const wchar_t** outEndPtr, NumberConversionResult* outResult);
+template int64_t StringTraits::toInt64<char16_t>(const char16_t* str, int len, int base, const char16_t** outEndPtr, NumberConversionResult* outResult);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
@@ -1010,6 +1001,7 @@ uint64_t StringTraits::toUInt64(const TChar* str, int len, int base, const TChar
 }
 template uint64_t StringTraits::toUInt64<char>(const char* str, int len, int base, const char** outEndPtr, NumberConversionResult* outResult);
 template uint64_t StringTraits::toUInt64<wchar_t>(const wchar_t* str, int len, int base, const wchar_t** outEndPtr, NumberConversionResult* outResult);
+template uint64_t StringTraits::toUInt64<char16_t>(const char16_t* str, int len, int base, const char16_t** outEndPtr, NumberConversionResult* outResult);
 
 //------------------------------------------------------------------------------
 #ifdef _WIN32
@@ -1081,11 +1073,11 @@ double StringTraits::toDouble(const TChar* str, int len, const TChar** outEndPtr
 	// IEEE 形式では仮数部の桁数は 2^53=9007199254740992 で16桁で、指数部は 308。
 	// IBM 形式では仮数部の桁数は 2^24=16777216 で8桁で、指数部は 16^63で、7.237005577332262213973186563043e+75。
 	// 0 は 308 個並べられることになるが、512 文字分のサイズがあれば十分。
-	TChar tmp[512] = { 0 };
-	strncpy(tmp, 512, str, len);
+	char tmp[512] = { 0 };
+	copySimpleAsciiString(tmp, 512, str, len);
 	tmp[len] = '\0';
 
-	TChar* end;
+	char* end;
 	errno = 0;
 	double v = StrToD_L(tmp, &end, GetCLocale());
 
@@ -1099,6 +1091,7 @@ double StringTraits::toDouble(const TChar* str, int len, const TChar** outEndPtr
 }
 template double StringTraits::toDouble<char>(const char* str, int len, const char** outEndPtr, NumberConversionResult* outResult);
 template double StringTraits::toDouble<wchar_t>(const wchar_t* str, int len, const wchar_t** outEndPtr, NumberConversionResult* outResult);
+template double StringTraits::toDouble<char16_t>(const char16_t* str, int len, const char16_t** outEndPtr, NumberConversionResult* outResult);
 
 template<typename TChar>
 float StringTraits::toFloat(const TChar* str, int len, const TChar** outEndPtr, NumberConversionResult* outResult)
@@ -1117,6 +1110,68 @@ float StringTraits::toFloat(const TChar* str, int len, const TChar** outEndPtr, 
 }
 template float StringTraits::toFloat<char>(const char* str, int len, const char** outEndPtr, NumberConversionResult* outResult);
 template float StringTraits::toFloat<wchar_t>(const wchar_t* str, int len, const wchar_t** outEndPtr, NumberConversionResult* outResult);
+template float StringTraits::toFloat<char16_t>(const char16_t* str, int len, const char16_t** outEndPtr, NumberConversionResult* outResult);
 
+int StringTraits::int64ToString(int64_t value, char format, char* outStr, int bufSize)
+{
+	ln::detail::StdCharArrayBuffer<char> b(outStr, bufSize);
+	std::basic_ostream<char, std::char_traits<char> > os(&b);
+	//os.imbue(*formatter.m_locale);
+
+	if (format == 'd' || format == 'D')
+	{
+	}
+	else if (format == 'x' || format == 'X')
+	{
+		os << std::hex;
+		if (format == 'X') os << std::uppercase;
+	}
+
+	os << value;
+	return b.getLength();
+}
+
+int StringTraits::uint64ToString(uint64_t value, char format, char* outStr, int bufSize)
+{
+	ln::detail::StdCharArrayBuffer<char> b(outStr, bufSize);
+	std::basic_ostream<char, std::char_traits<char> > os(&b);
+	//os.imbue(*formatter.m_locale);
+
+	if (format == 'd' || format == 'D')
+	{
+	}
+	else if (format == 'x' || format == 'X')
+	{
+		os << std::hex;
+		if (format == 'X') os << std::uppercase;
+	}
+
+	os << value;
+	return b.getLength();
+}
+
+int StringTraits::doubleToString(double value, char format, int precision, char* outStr, int bufSize)
+{
+	ln::detail::StdCharArrayBuffer<char> b(outStr, bufSize);
+	std::basic_ostream<char, std::char_traits<char> > os(&b);
+	//os.imbue(*formatter.m_locale);
+
+	if (format == 'f' || format == 'F')
+	{
+		os << std::fixed;
+	}
+	else if (format == 'e' || format == 'E')
+	{
+		os << std::scientific;
+		if (format == 'E') os << std::uppercase;
+	}
+	if (precision >= 0)
+	{
+		os << std::setprecision(precision);
+	}
+
+	os << value;
+	return b.getLength();
+}
 
 LN_NAMESPACE_END

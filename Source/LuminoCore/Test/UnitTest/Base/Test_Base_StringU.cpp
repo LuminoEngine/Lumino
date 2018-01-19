@@ -410,6 +410,8 @@ TEST_F(Test_Base_UString, clear)
 	}
 }
 
+#ifdef LN_USTRING16
+#else
 //------------------------------------------------------------------------------
 TEST_F(Test_Base_UString, sprintf)
 {
@@ -430,6 +432,7 @@ TEST_F(Test_Base_UString, sprintf)
 		ASSERT_EQ(str1, buf1);	// 同じ文字ができていればOK
 	}
 }
+#endif
 
 TEST_F(Test_Base_UString, indexOf)
 {

@@ -29,7 +29,7 @@ std::string TestHelper::getFilePathA(const char* baseFilePath, const char* fileN
 //------------------------------------------------------------------------------
 std::wstring TestHelper::getFilePathW(const char* baseFilePath, const wchar_t* fileName)
 {
-	return StdStringHelper::cat<std::wstring>(String::fromCString(baseFilePath).c_str(), L"/", fileName);
+	return StdStringHelper::cat<std::wstring>(String::fromCString(baseFilePath).toStdWString().c_str(), L"/", fileName);
 }
 
 Path TestHelper::getFilePathU(const char* baseFilePath, const Char* fileName)

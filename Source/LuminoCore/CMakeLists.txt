@@ -75,6 +75,8 @@ set(LN_SOURCES_Base
 	Source/Base/DllLoader.cpp
 	Source/Base/ElapsedTimer.cpp
 	Source/Base/Environment.cpp
+	Source/Base/Environment_OSX.h
+	Source/Base/Environment_Win32.h
 	Source/Base/Exception.cpp
 	Source/Base/Hash.cpp
 	Source/Base/Locale.cpp

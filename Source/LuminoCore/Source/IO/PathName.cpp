@@ -124,11 +124,22 @@ StringRef Path::getFileNameWithoutExtension() const
 
 Path Path::canonicalizePath() const
 {
-	// TODO: Length 制限無し
-	Char tmpPath[LN_MAX_PATH + 1];
-	memset(tmpPath, 0, sizeof(tmpPath));
-	PathTraits::canonicalizePath(m_path.c_str(), tmpPath);
-	return Path(tmpPath);
+	if (isAbsolute())
+	{
+		// TODO: Length 制限無し
+		Char tmpPath[LN_MAX_PATH + 1];
+		memset(tmpPath, 0, sizeof(tmpPath));
+		PathTraits::canonicalizePath(m_path.c_str(), tmpPath);
+		return Path(tmpPath);
+	}
+	else
+	{
+		Path absPath(Environment::getCurrentDirectory(), m_path);
+		Char tmpPath[LN_MAX_PATH + 1];
+		memset(tmpPath, 0, sizeof(tmpPath));
+		PathTraits::canonicalizePath(absPath.m_path.c_str(), tmpPath);
+		return Path(tmpPath);
+	}
 }
 
 Path Path::makeRelative(const Path& target) const
@@ -154,10 +165,7 @@ const String Path::getStrEndSeparator() const
 
 Path Path::getCurrentDirectory()
 {
-	// TODO: Max Len
-	Char curDir[LN_MAX_PATH];
-	DirectoryUtils::getCurrentDirectory(curDir);
-	return Path(curDir);
+	return Path(Environment::getCurrentDirectory());
 }
 
 Path Path::getSpecialFolderPath(SpecialFolder specialFolder, const Char* childDir, SpecialFolderOption option)

@@ -75,6 +75,9 @@ public:
 
 #ifdef LN_STRING_FROM_CHAR
 	String(const char* str);
+#ifdef LN_USTRING16
+	String(const wchar_t* str);
+#endif
 #endif
 
 	/** 文字列が空であるかを確認します。 */
@@ -461,6 +464,11 @@ public:
 	String& operator+=(const Char* rhs);
 	String& operator+=(Char rhs);
 
+#ifdef LN_USTRING16_FUZZY_CONVERSION
+	String& operator=(const char* rhs);
+	String& operator+=(const char* rhs);
+#endif
+
 private:
 	static std::size_t const SSOCapacity = 15;//31;//sizeof(uint32_t) * 4 / sizeof(Char) - 1;
 
@@ -523,6 +531,7 @@ public:
 		m_string = nullptr;
 		m_str = nullptr;
 		m_len = 0;
+		m_localAlloc = false;
 	}
 
 	StringRef(const String& str)
@@ -580,6 +589,27 @@ public:
 		clear();
 	}
 
+#ifdef LN_USTRING16_FUZZY_CONVERSION
+	StringRef(const char* str)
+		: StringRef()
+	{
+		m_string = new String(str);
+		m_str = m_string->c_str();
+		m_len = m_string->getLength();
+		m_localAlloc = true;
+	}
+#ifdef LN_USTRING16
+	StringRef(const wchar_t* str)
+		: StringRef()
+	{
+		m_string = new String(str);
+		m_str = m_string->c_str();
+		m_len = m_string->getLength();
+		m_localAlloc = true;
+	}
+#endif
+#endif
+
 	int getLength() const
 	{
 		return m_len;
@@ -612,9 +642,15 @@ private:
 	const String*	m_string;
 	const Char*	m_str;
 	int				m_len;
+	bool			m_localAlloc;
 
 	void clear()
 	{
+		if (m_localAlloc)
+		{
+			delete m_string;
+			m_localAlloc = false;
+		}
 		m_string = nullptr;
 		m_str = nullptr;
 		m_len = 0;
@@ -896,6 +932,27 @@ inline bool operator>=(const String& lhs, const String& rhs) { return !operator<
 inline bool operator>=(const Char* lhs, const String& rhs) { return !operator<(lhs, rhs); }
 inline bool operator>=(const String& lhs, const Char* rhs) { return !operator<(lhs, rhs); }
 
+#ifdef LN_USTRING16_FUZZY_CONVERSION
+inline String& String::operator=(const char* rhs) { assignFromCStr(rhs); return *this; }
+inline String& String::operator+=(const char* rhs) { String s(rhs); append(s.c_str(), s.getLength()); return *this; }
+
+inline String operator+(const char* lhs, const String& rhs) { return operator+(String(lhs), rhs); }
+
+inline bool operator==(const char* lhs, const String& rhs) { return operator==(String(lhs), rhs); }
+inline bool operator==(const String& lhs, const char* rhs) { return operator==(lhs, String(rhs)); }
+inline bool operator!=(const char* lhs, const String& rhs) { return operator!=(String(lhs), rhs); }
+inline bool operator!=(const String& lhs, const char* rhs) { return operator!=(lhs, String(rhs)); }
+
+inline bool operator<(const char* lhs, const String& rhs) { return operator<(String(lhs), rhs); }
+inline bool operator<(const String& lhs, const char* rhs) { return operator<(lhs, String(rhs)); }
+inline bool operator>(const char* lhs, const String& rhs) { return operator>(String(lhs), rhs); }
+inline bool operator>(const String& lhs, const char* rhs) { return operator>(lhs, String(rhs)); }
+
+inline bool operator<=(const char* lhs, const String& rhs) { return operator<=(String(lhs), rhs); }
+inline bool operator<=(const String& lhs, const char* rhs) { return operator<=(lhs, String(rhs)); }
+inline bool operator>=(const char* lhs, const String& rhs) { return operator>=(String(lhs), rhs); }
+inline bool operator>=(const String& lhs, const char* rhs) { return operator>=(lhs, String(rhs)); }
+#endif
 
 //==============================================================================
 // StringRef

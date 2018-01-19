@@ -117,21 +117,27 @@ void TextWriter::write(Char ch)
 }
 void TextWriter::write(int16_t value)
 {
-	Char buf[64];
-	int len = StringTraits::sprintf(buf, 64, _TT("%d"), value);
-	writeInternal(buf, len);
+	char buf1[64];
+	Char buf2[64];
+	int len = StringTraits::int64ToString(value, 'D', buf1, 64);
+	StringTraits::copySimpleAsciiString(buf2, len, buf1, len);
+	writeInternal(buf2, len);
 }
 void TextWriter::write(int32_t value)
 {
-	Char buf[64];
-	int len = StringTraits::sprintf(buf, 64, _TT("%d"), value);
-	writeInternal(buf, len);
+	char buf1[64];
+	Char buf2[64];
+	int len = StringTraits::int64ToString(value, 'D', buf1, 64);
+	StringTraits::copySimpleAsciiString(buf2, len, buf1, len);
+	writeInternal(buf2, len);
 }
 void TextWriter::write(int64_t value)
 {
-	Char buf[64];
-	int len = StringTraits::sprintf(buf, 64, _TT("%lld"), value);
-	writeInternal(buf, len);
+	char buf1[64];
+	Char buf2[64];
+	int len = StringTraits::int64ToString(value, 'D', buf1, 64);
+	StringTraits::copySimpleAsciiString(buf2, len, buf1, len);
+	writeInternal(buf2, len);
 }
 //void Write(byte_t value);
 //void TextWriter::WriteByte(byte_t value)
@@ -142,44 +148,51 @@ void TextWriter::write(int64_t value)
 //}
 void TextWriter::write(uint16_t value)
 {
-	Char buf[64];
-	int len = StringTraits::sprintf(buf, 64, _TT("%u"), value);
-	writeInternal(buf, len);
+	char buf1[64];
+	Char buf2[64];
+	int len = StringTraits::uint64ToString(value, 'D', buf1, 64);
+	StringTraits::copySimpleAsciiString(buf2, len, buf1, len);
+	writeInternal(buf2, len);
 }
 void TextWriter::write(uint32_t value)
 {
-	Char buf[64];
-	int len = StringTraits::sprintf(buf, 64, _TT("%u"), value);
-	writeInternal(buf, len);
+	char buf1[64];
+	Char buf2[64];
+	int len = StringTraits::uint64ToString(value, 'D', buf1, 64);
+	StringTraits::copySimpleAsciiString(buf2, len, buf1, len);
+	writeInternal(buf2, len);
 }
 void TextWriter::write(uint64_t value)
 {
-	Char buf[64];
-	int len = StringTraits::sprintf(buf, 64, _TT("%llu"), value);
-	writeInternal(buf, len);
+	char buf1[64];
+	Char buf2[64];
+	int len = StringTraits::uint64ToString(value, 'D', buf1, 64);
+	StringTraits::copySimpleAsciiString(buf2, len, buf1, len);
+	writeInternal(buf2, len);
 }
 void TextWriter::write(float value)
 {
-	Char buf[64];
-	int len = StringTraits::tsnprintf_l(buf, 64, _TT("%f"), m_locale.getNativeLocale(), value);
-	writeInternal(buf, len);
+	write((double)value);
 }
 void TextWriter::write(double value)
 {
 	if (value < FLT_MIN || FLT_MAX < value)
 	{
-		std::vector<Char> buf;
-		buf.resize(512);
-		int len = StringTraits::tsnprintf_l(buf.data(), buf.size(), _TT("%lf"), m_locale.getNativeLocale(), value);
-		if (LN_ENSURE(len > 0)) return;
-		writeInternal(buf.data(), len);
+		std::vector<char> buf1;
+		std::vector<Char> buf2;
+		buf1.resize(512);
+		buf2.resize(512);
+		int len = StringTraits::doubleToString(value, 'F', -1, buf1.data(), buf1.size());
+		StringTraits::copySimpleAsciiString(buf2.data(), len, buf1.data(), len);
+		writeInternal(buf2.data(), len);
 	}
 	else
 	{
-		Char buf[64];
-		int len = StringTraits::tsnprintf_l(buf, 64, _TT("%lf"), m_locale.getNativeLocale(), value);
-		if (LN_ENSURE(len > 0)) return;
-		writeInternal(buf, len);
+		char buf1[64];
+		Char buf2[64];
+		int len = StringTraits::doubleToString(value, 'F', -1, buf1, 64);
+		StringTraits::copySimpleAsciiString(buf2, len, buf1, len);
+		writeInternal(buf2, len);
 	}
 }
 
