@@ -228,6 +228,13 @@ void MeshResource::getBlendWeights(int index, float* out0, float* out1, float* o
 	if (out3 != nullptr) *out3 = v[index].weights[3];
 }
 
+std::array<float, 4> MeshResource::getBlendWeights(int index)
+{
+	std::array<float, 4> weights;
+	getBlendWeights(index, &weights[0], &weights[1], &weights[2], &weights[3]);
+	return weights;
+}
+
 //------------------------------------------------------------------------------
 void MeshResource::setBlendIndex(int index, int blendIndex, float value)
 {
@@ -256,6 +263,13 @@ void MeshResource::getBlendIndices(int index, int* out0, int* out1, int* out2, i
 	if (out1 != nullptr) *out1 = (int)v[index].indices[1];
 	if (out2 != nullptr) *out2 = (int)v[index].indices[2];
 	if (out3 != nullptr) *out3 = (int)v[index].indices[3];
+}
+
+std::array<int, 4> MeshResource::getBlendIndices(int index)
+{
+	std::array<int, 4> indices;
+	getBlendIndices(index, &indices[0], &indices[1], &indices[2], &indices[3]);
+	return indices;
 }
 
 //------------------------------------------------------------------------------

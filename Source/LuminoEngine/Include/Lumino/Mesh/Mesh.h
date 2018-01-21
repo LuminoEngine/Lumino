@@ -73,10 +73,12 @@ public:
 	void setBlendWeight(int index, int blendIndex, float value);
 	void setBlendWeights(int index, float v0, float v1, float v2, float v3);
 	void getBlendWeights(int index, float* out0, float* out1, float* out2, float* out3);
+	std::array<float, 4> getBlendWeights(int index);
 
 	void setBlendIndex(int index, int blendIndex, float value);
 	void setBlendIndices(int index, float v0, float v1, float v2, float v3);	// TODO: int
 	void getBlendIndices(int index, int* out0, int* out1, int* out2, int* out3);
+	std::array<int, 4> getBlendIndices(int index);
 
 	void setIndex(int index, int vertexIndex);
 

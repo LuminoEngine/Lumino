@@ -190,7 +190,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(SkinnedMeshModel, Object);
 
 //------------------------------------------------------------------------------
 SkinnedMeshModel::SkinnedMeshModel()
-	: m_meshResource(nullptr)
+	: m_meshResources()
 	, /*m_materials(nullptr)
 	, */m_allBoneList()
 	, m_rootBoneList()
@@ -214,7 +214,7 @@ void SkinnedMeshModel::initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 	m_mesh = Object::makeRef<StaticMeshModel>(sharingMesh);
 
 	// メッシュ(バッファ類)は共有する
-	m_meshResource = sharingMesh;
+	m_meshResources.add(sharingMesh);
 
 	//---------------------------------------------------------
 	// マテリアルのインスタンス化
@@ -230,7 +230,7 @@ void SkinnedMeshModel::initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 
 	//---------------------------------------------------------
 	// Bone のインスタンス化
-	int boneCount = m_meshResource->bones.getCount();
+	int boneCount = m_meshResources[0]->bones.getCount();
 	if (boneCount > 0)
 	{
 		m_allBoneList.resize(boneCount);
@@ -238,10 +238,11 @@ void SkinnedMeshModel::initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 		for (int i = 0; i < boneCount; i++)
 		{
 			m_allBoneList[i] = SkinnedMeshBonePtr::makeRef();
-			m_allBoneList[i]->initialize(m_meshResource->bones[i]);
+			m_allBoneList[i]->initialize(m_meshResources[0]->bones[i]);
+			m_allBoneList[i]->setBoneIndex(i);
 			
 			// IK ボーンを集める
-			if (m_meshResource->bones[i]->IsIK)
+			if (m_meshResources[0]->bones[i]->IsIK)
 			{
 				m_ikBoneList.add(m_allBoneList[i]);
 			}
@@ -249,7 +250,7 @@ void SkinnedMeshModel::initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 		// 次に子と親を繋げる
 		for (int i = 0; i < boneCount; i++)
 		{
-			int parentIndex = m_meshResource->bones[i]->ParentBoneIndex;
+			int parentIndex = m_meshResources[0]->bones[i]->ParentBoneIndex;
 			if (0 <= parentIndex && parentIndex < boneCount)
 			{
 				m_allBoneList[parentIndex]->addChildBone(m_allBoneList[i]);
@@ -263,7 +264,7 @@ void SkinnedMeshModel::initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 		{
 			rootBone->postInitialize(this, 0);
 		}
-		for (PmxIKResource* ik : m_meshResource->iks)
+		for (PmxIKResource* ik : m_meshResources[0]->iks)
 		{
 			m_allBoneList[ik->IKBoneIndex]->m_ikInfo = ik;
 		}
@@ -455,6 +456,11 @@ void SkinnedMeshModel::updateBestow()
 	}
 }
 
+MeshResource* SkinnedMeshModel::getMeshResource(int index) const
+{
+	return m_meshResources[index];
+}
+
 //------------------------------------------------------------------------------
 int SkinnedMeshModel::getAnimationTargetAttributeCount() const
 {
@@ -477,6 +483,7 @@ SkinnedMeshBone::SkinnedMeshBone()
 	: m_core(nullptr)
 	, m_parent(nullptr)
 	, m_children()
+	, m_boneIndex(-1)
 	, m_localTransform()
 	, m_combinedMatrix()
 	, m_depth(0)
@@ -504,6 +511,11 @@ void SkinnedMeshBone::postInitialize(SkinnedMeshModel* owner, int depth)
 	{
 		bone->postInitialize(owner, m_depth + 1);
 	}
+}
+
+const String& SkinnedMeshBone::name() const
+{
+	return m_core->Name;
 }
 
 //------------------------------------------------------------------------------

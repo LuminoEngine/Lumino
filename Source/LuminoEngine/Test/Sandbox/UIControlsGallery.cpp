@@ -5,7 +5,6 @@
 #include <LuminoEngine.h>
 #include <Lumino/Testing/TestHelper.h>
 #include <Lumino/Scene/OffscreenWorldView.h>
-#include <Lumino/Scene/MeshModelObject.h>
 #include <Lumino/Rendering/SSAOImageEffect.h>
 #include <Lumino/Rendering/FXAAPostEffect.h>
 

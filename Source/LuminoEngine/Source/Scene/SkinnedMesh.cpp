@@ -4,9 +4,8 @@
 #include <Lumino/Mesh/SkinnedMeshModel.h>
 #include <Lumino/Rendering/RenderingContext.h>
 #include <Lumino/Scene/SceneGraph.h>
-#include <Lumino/Scene/MeshModelObject.h>
+#include <Lumino/Scene/SkinnedMesh.h>
 #include "../Mesh/PmxSkinnedMesh.h"
-//#include "MME/MMEShader.h"
 #include "SceneGraphManager.h"
 
 LN_NAMESPACE_BEGIN

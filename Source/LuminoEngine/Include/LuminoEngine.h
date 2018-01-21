@@ -75,6 +75,8 @@
 #include "Lumino/TileMap/TileLayer.h"
 #include "Lumino/TileMap/TileMapModel.h"
 
+#include "Lumino/Mesh/SkinnedMeshModel.h"
+
 #include "Lumino/Scene/SceneGraph.h"
 #include "Lumino/Scene/Camera.h"
 #include "Lumino/Scene/Light.h"
@@ -85,6 +87,7 @@
 #include "Lumino/Scene/TextBlock.h"
 #include "Lumino/Scene/GlyphIcon.h"
 #include "Lumino/Scene/StaticMesh.h"
+#include "Lumino/Scene/SkinnedMesh.h"
 #include "Lumino/Scene/TransitionPostEffect.h"
 #include "Lumino/Scene/OffscreenWorldView.h"
 

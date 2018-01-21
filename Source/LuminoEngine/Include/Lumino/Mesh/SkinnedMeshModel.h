@@ -36,6 +36,10 @@ public:
 	// TODO: Unity では Mesh からは切り離された独立したコンポーネントである。そうしたほうがいいかな？
 	Animator* getAnimator() const { return m_animator; }
 
+	const List<Ref<SkinnedMeshBone>>& bones() const { return m_allBoneList; }
+	MeshResource* getMeshResource(int index) const;
+	int getMeshResourceCount() const { return m_meshResources.getCount(); }
+
 protected:
 	// IAnimationTargetElement interface
 	virtual int getAnimationTargetAttributeCount() const override;
@@ -89,7 +93,7 @@ public:	// TODO:
 	//Ref<PmxSkinnedMeshResource>	m_meshResource;
 	//Ref<MaterialList>			m_materials;
 	Ref<StaticMeshModel>			m_mesh;
-	Ref<PmxSkinnedMeshResource>	m_meshResource;
+	List<Ref<PmxSkinnedMeshResource>>	m_meshResources;	// 今のところ [0] しか対応していない
 
 	List<SkinnedMeshBonePtr>		m_allBoneList;				// 全ボーンリスト
 	List<SkinnedMeshBone*>			m_rootBoneList;				// ルートボーンリスト (親を持たないボーンリスト)
@@ -119,7 +123,13 @@ class SkinnedMeshBone
 {
 	LN_OBJECT;
 public:
+	const String& name() const;
+
 	SkinnedMeshBone* getParent() const { return m_parent; }
+
+	const List<SkinnedMeshBone*>& children() const { return m_children; }
+
+	int boneIndex() const { return m_boneIndex; }
 
 LN_INTERNAL_ACCESS:
 	SkinnedMeshBone();
@@ -150,9 +160,12 @@ protected:
 	virtual void setAnimationTargetValue(ValueType type, const void* value) override;
 
 LN_INTERNAL_ACCESS:	// TODO
+	void setBoneIndex(int index) { m_boneIndex = index; }
+
 	Ref<PmxBoneResource>	m_core;				// 共有データクラス
 	SkinnedMeshBone*		m_parent;
 	List<SkinnedMeshBone*>	m_children;			// 子ボーンリスト
+	int						m_boneIndex;
 	AttitudeTransform		m_localTransform;	// モーションを書き込むのはここ
 	Matrix					m_combinedMatrix;	// 結合済み行列 ()
 	int						m_depth;			// 0 から

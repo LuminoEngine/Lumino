@@ -389,7 +389,7 @@ set(LN_SOURCES_Scene
 	Include/Lumino/Scene/GlyphIcon.h
 	Include/Lumino/Scene/GpuParticle.h
 	Include/Lumino/Scene/Light.h
-	Include/Lumino/Scene/MeshModelObject.h
+	Include/Lumino/Scene/SkinnedMesh.h
 	Include/Lumino/Scene/OffscreenWorldView.h
 #	Include/Lumino/Scene/MMDSceneGraph.h
 	Include/Lumino/Scene/SceneGraph.h
@@ -415,7 +415,7 @@ set(LN_SOURCES_Scene
 	Source/Scene/GlyphIcon.cpp
 	Source/Scene/GpuParticle.cpp
 	Source/Scene/Light.cpp
-	Source/Scene/MeshModelObject.cpp
+	Source/Scene/SkinnedMesh.cpp
 	Source/Scene/OffscreenWorldView.cpp
 #	Source/Scene/MMDSceneGraph.cpp
 	Source/Scene/SceneGraph.cpp
