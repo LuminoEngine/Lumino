@@ -2,7 +2,6 @@
 #pragma once
 #include "../Base/Common.h"
 #include "../Base/EnumFlags.h"
-#include "Variant.h"
 
 LN_NAMESPACE_BEGIN
 namespace tr
