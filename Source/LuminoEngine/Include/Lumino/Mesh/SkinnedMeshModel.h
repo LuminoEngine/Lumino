@@ -40,6 +40,8 @@ public:
 	MeshResource* getMeshResource(int index) const;
 	int getMeshResourceCount() const { return m_meshResources.getCount(); }
 
+	void updateBoneTransform(const Matrix& worldTransform = Matrix::Identity);
+
 protected:
 	// IAnimationTargetElement interface
 	virtual int getAnimationTargetAttributeCount() const override;
@@ -130,6 +132,11 @@ public:
 	const List<SkinnedMeshBone*>& children() const { return m_children; }
 
 	int boneIndex() const { return m_boneIndex; }
+
+
+	const AttitudeTransform& localTransform() const { return m_localTransform; }
+
+	const Matrix& globalMatrix() const { return m_combinedMatrix; }
 
 LN_INTERNAL_ACCESS:
 	SkinnedMeshBone();

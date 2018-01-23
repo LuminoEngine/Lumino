@@ -461,6 +461,13 @@ MeshResource* SkinnedMeshModel::getMeshResource(int index) const
 	return m_meshResources[index];
 }
 
+void SkinnedMeshModel::updateBoneTransform(const Matrix& worldTransform)
+{
+	setWorldTransform(worldTransform);
+	preUpdate();
+	postUpdate();
+}
+
 //------------------------------------------------------------------------------
 int SkinnedMeshModel::getAnimationTargetAttributeCount() const
 {

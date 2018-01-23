@@ -5,10 +5,10 @@
 #include <stdio.h>
 #include <string.h>
 #include "Common.h"
+#include "Vector3.h"
 #include "Vector4.h"
 
 LN_NAMESPACE_BEGIN
-struct Vector3;
 struct Quaternion;
 struct AttitudeTransform;
 struct Plane;
@@ -406,6 +406,14 @@ public:
 		@details	plane は正規化してから計算を行います。
 	*/
 	static Matrix makeReflection(const Plane& plane);
+
+	/**
+		@brief		
+		@param[in]	target		: 注視点
+		@param[in]	up			: 上方向
+		@return		演算結果の行列
+	*/
+	static Matrix makeLookAtRotation(const Vector3& target, const Vector3& up = Vector3::UnitY);
 
 	/**
 		@brief		左手座標系ビュー行列を作成します。
