@@ -37,6 +37,8 @@
 #include "Lumino/Base/Hash.h"
 #include "Lumino/Base/Uuid.h"
 
+#include "Lumino/Reflection/Variant.h"
+
 #include "Lumino/IO/PathName.h"
 #include "Lumino/IO/PathTraits.h"
 #include "Lumino/IO/Stream.h"

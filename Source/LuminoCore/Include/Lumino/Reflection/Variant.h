@@ -29,6 +29,8 @@ enum class VariantType
 class Variant
 {
 public:
+	static const Variant Empty;
+
 	Variant();
 	Variant(bool value);
 	Variant(Char value);
@@ -48,6 +50,8 @@ public:
 	~Variant();
 
 	void clear() LN_NOEXCEPT;
+
+	bool hasValue() const { return m_type != VariantType::Null; }
 
 	VariantType type() const { return m_type; }
 

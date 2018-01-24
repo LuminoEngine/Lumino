@@ -26,8 +26,8 @@ TEST_F(Test_Variant, PrimitiveNumericTypes)
 	ASSERT_EQ(10, Variant((uint16_t)10).get<uint16_t>());
 	ASSERT_EQ(10, Variant((uint32_t)10).get<uint32_t>());
 	ASSERT_EQ(10, Variant((uint64_t)10).get<uint64_t>());
-	EXPECT_FLOAT_EQ(10.0f, Variant((float)10).get<float>());
-	EXPECT_DOUBLE_EQ(10.0, Variant((double)10).get<double>());
+	ASSERT_FLOAT_EQ(10.0f, Variant((float)10).get<float>());
+	ASSERT_DOUBLE_EQ(10.0, Variant((double)10).get<double>());
 }
 
 //## String 型を扱うテスト
@@ -41,6 +41,11 @@ TEST_F(Test_Variant, StringType)
 	v1 = _T("s2");
 	ASSERT_EQ(_T("s2"), v1.get<String>());
 }
+
+////## List 型を扱うテスト
+//TEST_F(Test_Variant, StringType)
+//{
+//}
 
 #ifdef LN_LEGACY_VARIANT_ENABLED
 
