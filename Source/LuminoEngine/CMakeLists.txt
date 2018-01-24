@@ -31,6 +31,7 @@ set(LN_SOURCES
 set(LN_SOURCES_Base "")
 
 set(LN_SOURCES_Animation
+	Include/Lumino/Animation/A2Animation.h
 	Include/Lumino/Animation/AnimationClock.h
 	Include/Lumino/Animation/AnimationCurve.h
 	Include/Lumino/Animation/AnimationTimeline.h
@@ -38,6 +39,7 @@ set(LN_SOURCES_Animation
 	Include/Lumino/Animation/Common.h
 	Include/Lumino/Animation/EasingFunctions.h
 	Include/Lumino/Animation/EasingValue.h
+	Source/Animation/A2Animation.cpp
 	Source/Animation/AnimationClip.cpp
 	Source/Animation/AnimationClip.h
 	Source/Animation/AnimationClock.cpp
