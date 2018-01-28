@@ -78,11 +78,11 @@ struct AnimationKeyFrame
 	/** 前のキーフレームとの補間方法 */
 	TangentMode leftTangentMode;
 
-	/** 次のキーフレームとの補間方法 */
-	TangentMode rightTangentMode;
-
 	/** 前のキーフレームからこのキーフレームに近づくときの接線 */
 	float leftTangent;
+
+	/** 次のキーフレームとの補間方法 */
+	TangentMode rightTangentMode;
 
 	/** このキーフレームから次のキーフレームに向かうときの接線 */
 	float rightTangent;

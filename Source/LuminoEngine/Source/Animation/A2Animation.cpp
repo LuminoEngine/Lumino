@@ -79,17 +79,19 @@ void KeyFrameAnimationCurve::addKeyFrame(float time, float value, TangentMode ri
 	k.rightTangentMode = rightTangentMode;
 	k.rightTangent = rightTangent;
 
-	if (!m_keyFrames.isEmpty() && m_keyFrames.getFront().time <= time)
-	{
-		const AnimationKeyFrame* key0 = findKeyFrame(time);
-		k.leftTangentMode = key0->rightTangentMode;
-		k.leftTangent = -key0->rightTangent;
-	}
-	else
-	{
-		k.leftTangentMode = TangentMode::Constant;
-		k.leftTangent = 0.0f;
-	}
+	k.leftTangentMode = rightTangentMode;
+	k.leftTangent = rightTangent;
+	//if (!m_keyFrames.isEmpty() && m_keyFrames.getFront().time <= time)
+	//{
+	//	const AnimationKeyFrame* key0 = findKeyFrame(time);
+	//	k.leftTangentMode = key0->rightTangentMode;
+	//	k.leftTangent = -key0->rightTangent;
+	//}
+	//else
+	//{
+	//	k.leftTangentMode = TangentMode::Constant;
+	//	k.leftTangent = 0.0f;
+	//}
 
 	addKeyFrame(k);
 }
@@ -207,11 +209,12 @@ float KeyFrameAnimationCurve::onGetLastFrameTime() const
 AnimationKeyFrame* KeyFrameAnimationCurve::findKeyFrame(float time)
 {
 	// TODO: 二分探索
-	for (auto& key : m_keyFrames)
+	//for (auto& key : m_keyFrames)
+	for (int i = m_keyFrames.getCount() - 1; i >= 0; i--)
 	{
-		if (key.time <= time)
+		if (m_keyFrames[i].time <= time)
 		{
-			return &key;
+			return &m_keyFrames[i];
 		}
 	}
 	return nullptr;

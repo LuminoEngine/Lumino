@@ -530,6 +530,26 @@ IndexBuffer* MeshResource::getIndexBuffer() const
 	return m_indexBufferInfo.buffer;
 }
 
+void MeshResource::calculateBounds()
+{
+	Vertex* vertices = (Vertex*)requestVertexBuffer(VB_BasicVertices)->getMappedData();
+
+	Vector3 aabbMin;
+	Vector3 aabbMax;
+	int count = getVertexCount();
+	for (int i = 0; i < count; ++i)
+	{
+		aabbMin.x = std::min(aabbMin.x, vertices[i].position.x);
+		aabbMin.y = std::min(aabbMin.y, vertices[i].position.y);
+		aabbMin.z = std::min(aabbMin.z, vertices[i].position.z);
+		aabbMax.x = std::max(aabbMax.x, vertices[i].position.x);
+		aabbMax.y = std::max(aabbMax.y, vertices[i].position.y);
+		aabbMax.z = std::max(aabbMax.z, vertices[i].position.z);
+	}
+
+	setBoundingBox(Box(aabbMin, aabbMax));
+}
+
 //------------------------------------------------------------------------------
 void MeshResource::addTeapot(float size, int tessellation)
 {
