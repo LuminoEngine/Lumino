@@ -289,7 +289,7 @@ int CppLexer::IsKeyword(const Range& buffer, int* langTokenType)
 	for (int i = 0; i < len; ++i) 
 	{
 		if (wordList[i].word[0] == buffer.pos[0] &&		// まずは先頭文字を調べて
-			StringTraits::strncmp(wordList[i].word, buffer.pos, wordList[i].length) == 0)	// 先頭が一致したら残りを調べる
+			StringTraits::tcsncmp(wordList[i].word, buffer.pos, wordList[i].length) == 0)	// 先頭が一致したら残りを調べる
 		{ 
 			type = (int)wordList[i].type;
 			keyLen = wordList[i].length;
@@ -917,7 +917,7 @@ int CppLexer::IsOperator(const Range& buffer, int* langTokenType)
 		for (int i = 0; i < count; ++i)
 		{
 			if (wordList[i].word[0] == buffer.pos[0] &&		// まずは先頭文字を調べて
-				StringTraits::strncmp(wordList[i].word, buffer.pos, wordList[i].length) == 0)	// 先頭が一致したら残りを調べる
+				StringTraits::tcsncmp(wordList[i].word, buffer.pos, wordList[i].length) == 0)	// 先頭が一致したら残りを調べる
 			{
 				*langTokenType = (int)wordList[i].type;
 				return wordList[i].length;

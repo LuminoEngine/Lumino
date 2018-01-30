@@ -5,7 +5,6 @@
 #include <Lumino/Reflection/Variant.h>
 using namespace ln::tr;
 
-
 #ifdef LN_LEGACY_VARIANT_ENABLED
 
 // テスト用

@@ -157,7 +157,7 @@ bool AbstractLexer::EqualsString(SourceToken* token, const char* str, int length
 	// TODO: 普通に Token::EqualXXXX使っていいと思う
 	if (token->getLength() != length) return false;
 	const char* begin = m_inputBuffer;
-	return StringTraits::strncmp(begin + token->GetBeginLoc(), str, length) == 0;	// TODO: Case
+	return StringTraits::tcsncmp(begin + token->GetBeginLoc(), str, length) == 0;	// TODO: Case
 }
 
 //------------------------------------------------------------------------------

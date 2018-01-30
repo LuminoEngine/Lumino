@@ -7,13 +7,14 @@ class PlatformEnvironment
 {
 public:
 	using CharType = char;
+	using StringType = std::string;
 	
-	static void getCurrentDirectory(LocalStringConverter<CharType>* out)
+	static void getCurrentDirectory(StringType* outPath)
 	{
 		char* p = getcwd(NULL, 0);
 		size_t len = strlen(p);
-		out->alloc(len);
-		strncpy(out->data(), p, len);
+		outPath->resize(len);
+		strncpy(&((*outPath)[0]), p, len);
 		free(p);
 	}
 	

@@ -6,12 +6,14 @@ class PlatformEnvironment
 {
 public:
 	using CharType = wchar_t;
+	using StringType = std::wstring;
 
-	static void getCurrentDirectory(LocalStringConverter<CharType>* out)
+	static void getCurrentDirectory(StringType* outPath)
 	{
-		DWORD size = ::GetCurrentDirectoryW(0, NULL);
-		out->alloc(size);
-		::GetCurrentDirectoryW(size, out->data());
+		LN_CHECK(outPath);
+		DWORD size = ::GetCurrentDirectoryW(0, NULL);	// size is contains '\0'
+		outPath->resize(size - 1);
+		::GetCurrentDirectoryW(size, &((*outPath)[0]));
 	}
 };
 

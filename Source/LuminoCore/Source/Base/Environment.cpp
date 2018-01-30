@@ -2,9 +2,10 @@
 #include <time.h>
 #include "../Internal.h"
 #ifdef LN_OS_WIN32
-    #include <Shlobj.h>
+#include <Shlobj.h>
+#include "Environment_Win32.h"
 #elif defined(LN_OS_MAC)
-    #include <mach/mach_time.h>
+#include <mach/mach_time.h>
 #include <CoreServices/CoreServices.h>
 #endif
 #include <Lumino/Base/Environment.h>
@@ -17,104 +18,104 @@
 
 LN_NAMESPACE_BEGIN
 
-// Native -> char or wchar_t or char16_t
-template<typename TSrcChar/*, typename TDstChar*/>
-class LocalStringConverter
-{
-public:
-	void alloc(int length)
-	{
-		// TODO: SSO
-		m_longNativeString.resize(length);
-	}
+//// Native -> char or wchar_t or char16_t
+//template<typename TSrcChar/*, typename TDstChar*/>
+//class LocalStringConverter
+//{
+//public:
+//	void alloc(int length)
+//	{
+//		// TODO: SSO
+//		m_longNativeString.resize(length);
+//	}
+//
+//	TSrcChar* data()
+//	{
+//		return m_longNativeString.data();
+//	}
+//
+//	String toUString() const
+//	{
+//		return String::fromCString(m_longNativeString.data(), m_longNativeString.size());
+//	}
+//
+//private:
+//	std::vector<TSrcChar> m_longNativeString;
+//};
 
-	TSrcChar* data()
-	{
-		return m_longNativeString.data();
-	}
-
-	String toUString() const
-	{
-		return String::fromCString(m_longNativeString.data(), m_longNativeString.size());
-	}
-
-private:
-	std::vector<TSrcChar> m_longNativeString;
-};
-
-#ifdef LN_OS_WIN32
-// Win32
-class PlatformEnvironment
-{
-public:
-	using CharType = wchar_t;
-
-	static void getCurrentDirectory(LocalStringConverter<CharType>* out)
-	{
-		DWORD size = ::GetCurrentDirectoryW(0, NULL);
-		out->alloc(size);
-		::GetCurrentDirectoryW(size, out->data());
-	}
-};
-#else
-
-// Unix
-class PlatformEnvironment
-{
-public:
-	using CharType = char;
-	
-	static void getCurrentDirectory(LocalStringConverter<CharType>* out)
-	{
-		char* p = getcwd(NULL, 0);
-		size_t len = strlen(p);
-		out->alloc(len);
-		strncpy(out->data(), p, len);
-		free(p);
-	}
-	
-#ifdef LN_OS_MAC
-	void getSpecialFolderPath(SpecialFolder specialFolder, LocalStringConverter<CharType>* out)
-	{
-#if 0
-		short domain = kOnAppropriateDisk;
-		
-		OSType type = kDesktopFolderType;
-		switch (specialFolder)
-		{
-			case SpecialFolder::ApplicationData:
-				type = kApplicationSupportFolderType;
-				break;
-			case SpecialFolder::Temporary:
-				type = kTemporaryFolderType;
-				break;
-			default:
-				LN_THROW(0, ArgumentException);
-				break;
-		}
-		
-		FSRef ref;
-		if (FSFindFolder(domain, type, false, &ref) != 0) {
-			LN_THROW(0, RuntimeException);
-			return;
-		}
-		
-		
-		
-		ByteBuffer buf(2048);
-		if (FSRefMakePath(&ref, reinterpret_cast<UInt8 *>(buf.getData()), buf.getSize()) != noErr) {
-			LN_THROW(0, RuntimeException);
-			return;
-		}
-		
-		String path = String::fromCString((const char*)buf.getConstData(), buf.getSize());
-		StringTraits::tstrcpy(outPath, LN_MAX_PATH, path.c_str());
-#endif
-	}
-#endif
-};
-#endif
-
+//#ifdef LN_OS_WIN32
+//// Win32
+//class PlatformEnvironment
+//{
+//public:
+//	using CharType = wchar_t;
+//
+//	static void getCurrentDirectory(LocalStringConverter<CharType>* out)
+//	{
+//		DWORD size = ::GetCurrentDirectoryW(0, NULL);
+//		out->alloc(size);
+//		::GetCurrentDirectoryW(size, out->data());
+//	}
+//};
+//#else
+//
+//// Unix
+//class PlatformEnvironment
+//{
+//public:
+//	using CharType = char;
+//	
+//	static void getCurrentDirectory(LocalStringConverter<CharType>* out)
+//	{
+//		char* p = getcwd(NULL, 0);
+//		size_t len = strlen(p);
+//		out->alloc(len);
+//		strncpy(out->data(), p, len);
+//		free(p);
+//	}
+//	
+//#ifdef LN_OS_MAC
+//	void getSpecialFolderPath(SpecialFolder specialFolder, LocalStringConverter<CharType>* out)
+//	{
+//#if 0
+//		short domain = kOnAppropriateDisk;
+//		
+//		OSType type = kDesktopFolderType;
+//		switch (specialFolder)
+//		{
+//			case SpecialFolder::ApplicationData:
+//				type = kApplicationSupportFolderType;
+//				break;
+//			case SpecialFolder::Temporary:
+//				type = kTemporaryFolderType;
+//				break;
+//			default:
+//				LN_THROW(0, ArgumentException);
+//				break;
+//		}
+//		
+//		FSRef ref;
+//		if (FSFindFolder(domain, type, false, &ref) != 0) {
+//			LN_THROW(0, RuntimeException);
+//			return;
+//		}
+//		
+//		
+//		
+//		ByteBuffer buf(2048);
+//		if (FSRefMakePath(&ref, reinterpret_cast<UInt8 *>(buf.getData()), buf.getSize()) != noErr) {
+//			LN_THROW(0, RuntimeException);
+//			return;
+//		}
+//		
+//		String path = String::fromCString((const char*)buf.getConstData(), buf.getSize());
+//		StringTraits::tstrcpy(outPath, LN_MAX_PATH, path.c_str());
+//#endif
+//	}
+//#endif
+//};
+//#endif
+//
 
 
 
@@ -124,9 +125,9 @@ public:
 
 String Environment::getCurrentDirectory()
 {
-	LocalStringConverter<PlatformEnvironment::CharType> buf;
-	PlatformEnvironment::getCurrentDirectory(&buf);
-	return buf.toUString();
+	PlatformEnvironment::StringType path;
+	PlatformEnvironment::getCurrentDirectory(&path);
+	return String::fromStdString(path);
 }
 
 

@@ -90,7 +90,7 @@ bool SourceToken::EqualString(const char* str, int len) const
 {
 	len = (len < 0) ? strlen(str) : len;
 	if (getLength() != len) return false;
-	return StringTraits::strncmp(getBegin(), str, len) == 0;	// TODO: Case
+	return StringTraits::tcsncmp(getBegin(), str, len) == 0;	// TODO: Case
 }
 
 //------------------------------------------------------------------------------
