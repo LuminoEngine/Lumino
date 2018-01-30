@@ -451,17 +451,19 @@ void XInputModule::initialize()
 	{
 #if(_WIN32_WINNT >= _WIN32_WINNT_WIN8)	// XINPUT_DLL が "xinput1_4.dll" なのに、見つからないことがあった。 
 		// がんばって探す
-		if (DllLoader::exists(XINPUT_DLL)) {
-			m_XInputModule.load(XINPUT_DLL);
+		auto primaryDll = String::fromCString(XINPUT_DLL);
+
+		if (DllLoader::exists(primaryDll.c_str())) {
+			m_XInputModule.load(primaryDll.c_str());
 		}
-		else if (DllLoader::exists(_T("xinput1_3.dll"))) {
-			m_XInputModule.load(_T("xinput1_3.dll"));
+		else if (DllLoader::exists(_U("xinput1_3.dll"))) {
+			m_XInputModule.load(_U("xinput1_3.dll"));
 		}
-		else if (DllLoader::exists(_T("xinput1_2.dll"))) {
-			m_XInputModule.load(_T("xinput1_2.dll"));
+		else if (DllLoader::exists(_U("xinput1_2.dll"))) {
+			m_XInputModule.load(_U("xinput1_2.dll"));
 		}
-		else if (DllLoader::exists(_T("xinput1_1.dll"))) {
-			m_XInputModule.load(_T("xinput1_1.dll"));
+		else if (DllLoader::exists(_U("xinput1_1.dll"))) {
+			m_XInputModule.load(_U("xinput1_1.dll"));
 		}
 		else {
 			LN_THROW(0, FileNotFoundException);
