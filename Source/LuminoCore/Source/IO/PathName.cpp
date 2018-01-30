@@ -191,11 +191,7 @@ Path Path::getSpecialFolderPath(SpecialFolder specialFolder, const Char* childDi
 		if (LN_REQUIRE(!PathTraits::isAbsolutePath(childDir))) return Path();
 	}
 
-	// TODO: Length
-	Char path[LN_MAX_PATH];
-	Environment::getSpecialFolderPath(specialFolder, path);
-
-	Path path2(path);
+	Path path2(Environment::getSpecialFolderPath(specialFolder));
 	if (childDir != NULL) {
 		path2.append(childDir);
 	}

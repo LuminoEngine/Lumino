@@ -1,6 +1,7 @@
 ﻿
 #include <time.h>
 #include "../Internal.h"
+#include <Lumino/Base/Environment.h>
 #ifdef LN_OS_WIN32
 #include <Shlobj.h>
 #include "Environment_Win32.h"
@@ -8,7 +9,6 @@
 #include <mach/mach_time.h>
 #include <CoreServices/CoreServices.h>
 #endif
-#include <Lumino/Base/Environment.h>
 
 // linux
 #include <Lumino/Base/StringHelper.h>
@@ -257,36 +257,16 @@ const wchar_t* Environment::getNewLine<wchar_t>()
 #endif
 }
 
+
+String Environment::getSpecialFolderPath(SpecialFolder specialFolder)
+{
+	PlatformEnvironment::StringType path;
+	PlatformEnvironment::getSpecialFolderPath(specialFolder, &path);
+	return String::fromStdString(path);
+}
+
 //------------------------------------------------------------------------------
 #if defined(LN_OS_WIN32)
-template<>
-void Environment::getSpecialFolderPath(SpecialFolder specialFolder, char* outPath)
-{
-	if (outPath == NULL) { return; }
-	switch (specialFolder)
-	{
-	case SpecialFolder::ApplicationData:
-		::SHGetSpecialFolderPathA(NULL, outPath, CSIDL_APPDATA, FALSE);
-		break;
-	case SpecialFolder::Temporary:
-		::GetTempPathA(LN_MAX_PATH, outPath);
-		break;
-	}
-}
-template<>
-void Environment::getSpecialFolderPath(SpecialFolder specialFolder, wchar_t* outPath)
-{
-	if (outPath == NULL) { return; }
-	switch (specialFolder)
-	{
-	case SpecialFolder::ApplicationData:
-		::SHGetSpecialFolderPathW(NULL, outPath, CSIDL_APPDATA, FALSE);
-		break;
-	case SpecialFolder::Temporary:
-		::GetTempPathW(LN_MAX_PATH, outPath);
-		break;
-	}
-}
 #elif defined(LN_OS_LINUX)
 template<typename TChar>
 void Environment::getSpecialFolderPath(SpecialFolder specialFolder, TChar* outPath)
