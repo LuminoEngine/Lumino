@@ -286,7 +286,7 @@ void SpriteRendererImpl::initialize(GraphicsManager* manager, int maxSpriteCount
 
 	ShaderCompileResult r;
 	m_shader.Shader.attach(device->createShader(g_SpriteRenderer_fx_Data, g_SpriteRenderer_fx_Len, &r));
-	LN_THROW(r.Level != ShaderCompileResultLevel_Error, CompilationException, r);
+	if (LN_ENSURE(r.Level != ShaderCompileResultLevel_Error)) return;
 
 	m_shader.varTexture = m_shader.Shader->getVariableByName(_LT("gMaterialTexture"));
 	m_shader.varViewProjMatrix = m_shader.Shader->getVariableByName(_LT("gViewProjMatrix"));

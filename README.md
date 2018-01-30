@@ -26,5 +26,15 @@ PS> ./build.ps1 -Target MakeProjects
 
 After this, please check in the "build/..." folder.
 
-o:Lumino lriki$ chmod +x ./build.sh
-lriki-no-MacBook-Pro:Lumino lriki$ ./build.sh -tMakeProjects
+
+### Mac OS X
+Create a development project.
+
+```
+$ chmod +x ./build.sh
+$ ./build.sh -tMakeProjects
+```
+
+After this, please check in the "build/..." folder.
+
+

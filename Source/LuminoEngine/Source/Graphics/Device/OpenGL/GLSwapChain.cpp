@@ -87,12 +87,7 @@ void GLSwapChain::onResetDevice()
         "}\n";
 	std::string message;
 	ShaderCompileResultLevel r = GLSLUtils::makeShaderProgram(vsCode, sizeof(vsCode), fsCode, sizeof(fsCode), &m_shaderProgram, &message);
-	if (r != ShaderCompileResultLevel_Success) {
-		ShaderCompileResult result;
-		result.Level = r;
-		result.Message = message;
-		LN_THROW(0, CompilationException, result);	// FailSafe. 
-	}
+	if (LN_ENSURE(r == ShaderCompileResultLevel_Success)) return;
 	m_positionLoc = glGetAttribLocation(m_shaderProgram, "position");
 	m_texCoordLoc = glGetAttribLocation(m_shaderProgram, "texCoord");
 	m_textureLoc = glGetUniformLocation(m_shaderProgram, "texture");

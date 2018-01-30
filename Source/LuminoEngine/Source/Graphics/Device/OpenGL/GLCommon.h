@@ -23,3 +23,18 @@
 #include "LNGL.h"
 
 #define LN_CHECK_GLERROR()		{ GLenum lnglerr = glGetError(); LN_THROW(lnglerr == GL_NO_ERROR , OpenGLException, lnglerr); } 
+
+LN_NAMESPACE_BEGIN
+namespace detail
+{
+class GLHelper
+{
+public:
+	static String getErrorMessage(GLenum glerror);
+};
+
+} // namespace detail
+LN_NAMESPACE_END
+
+#define LN_ENSURE_GLERROR(expr, err)	for (GLenum lnglerr = glGetError(); LN_ENSURE(lnglerr == GL_NO_ERROR); lnglerr = GL_NO_ERROR)
+

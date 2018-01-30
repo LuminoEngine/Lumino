@@ -64,7 +64,7 @@ void FrameRectRendererCore::initialize(GraphicsManager* manager)
 
 	ShaderCompileResult r;
 	m_shader.shader = device->createShader(g_Painter_fx_Data, g_Painter_fx_Len, &r);
-	LN_THROW(r.Level != ShaderCompileResultLevel_Error, CompilationException, r);
+	if (LN_ENSURE(r.Level != ShaderCompileResultLevel_Error)) return;
 
 	m_shader.technique = m_shader.shader->getTechnique(0);
 	m_shader.pass = m_shader.technique->getPass(0);

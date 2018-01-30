@@ -13,6 +13,42 @@
 #include "GLGraphicsDevice.h"
 
 LN_NAMESPACE_BEGIN
+namespace detail
+{
+
+//==============================================================================
+// GLHelper
+//==============================================================================
+String GLHelper::getErrorMessage(GLenum glerror)
+{
+	switch (glerror)
+	{
+	case GL_INVALID_ENUM:
+		return (_T("GL_INVALID_ENUM"));
+	case GL_INVALID_VALUE:
+		return (_T("GL_INVALID_VALUE"));
+	case GL_INVALID_OPERATION:
+		return (_T("GL_INVALID_OPERATION"));
+	case GL_STACK_OVERFLOW:
+		return (_T("GL_STACK_OVERFLOW"));
+	case GL_STACK_UNDERFLOW:
+		return (_T("GL_STACK_UNDERFLOW"));
+	case GL_OUT_OF_MEMORY:
+		return (_T("GL_OUT_OF_MEMORY"));
+	case GL_INVALID_FRAMEBUFFER_OPERATION:
+		return (_T("GL_OUT_OF_MEMORY"));
+	default:
+		return String::format(_T("GLenum {0}"), glerror);
+	}
+}
+
+} // namespace detail
+LN_NAMESPACE_END
+
+
+
+LN_NAMESPACE_BEGIN
+
 LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
 {

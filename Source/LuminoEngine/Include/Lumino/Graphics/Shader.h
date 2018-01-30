@@ -176,9 +176,6 @@ enum class ShaderCodeType
 /**
 	@brief		シェーダのクラスです。
 	@details	シェーダコードテキストの文字コードは ASCII または UTF-8 (BOM無し) 推奨です。
-				コンパイルエラーが発生した場合、例外 CompilationException が throw されます。
-				(成功または警告のみの場合は throw されません)
-				例外を throw せず、コンパイル結果の詳細を取得したいときは TryCreate() を使用してください。
 */
 class Shader
 	: public GraphicsResourceObject

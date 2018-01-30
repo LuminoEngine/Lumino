@@ -505,17 +505,6 @@ void Shader::initialize(detail::GraphicsManager* manager, const StringRef& fileP
 	buf[(size_t)stream->getLength()] = 0x00;
 
 	initialize(manager, buf.getConstData(), buf.getSize(), codeType);
-
-	//GraphicsResourceObject::initialize(manager);
-	//
-
-	//
-
-	//ShaderCompileResult result;
-	//m_deviceObj = m_manager->getGraphicsDevice()->createShader(buf.GetConstData(), buf.GetSize(), &result);
-	//LN_THROW(m_deviceObj != nullptr, CompilationException, result);
-
-	//postInitialize();
 }
 
 //------------------------------------------------------------------------------
