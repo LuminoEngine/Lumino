@@ -239,7 +239,6 @@ bool HLSLMetadataParser::parseRenderState(HLSLPass* pass)
 	return true;
 }
 
-
 //==============================================================================
 // LuminoShaderContext
 //==============================================================================
@@ -299,6 +298,27 @@ bool LuminoShaderContext::findBuiltinShaderCode(const char* pathBegin, const cha
 	return false;
 }
 
+void LuminoShaderContext::parseTechniqueClassString(const String& str, ShaderTechniqueClassSet* outClassSet)
+{
+	outClassSet->ligiting = ShaderTechniqueClass_Ligiting::Forward;
+	outClassSet->phase = ShaderTechniqueClass_Phase::Geometry;
+	outClassSet->meshProcess = ShaderTechniqueClass_MeshProcess::StaticMesh;
+	outClassSet->shadingModel = ShaderTechniqueClass_ShadingModel::Default;
+
+	// TODO: splitRef
+	auto tokens = str.split(_U("_"), StringSplitOptions::RemoveEmptyEntries);
+	for (auto& token : tokens)
+	{
+		if (String::compare(token, _U("SkinnedMesh"), CaseSensitivity::CaseInsensitive))
+		{
+			outClassSet->meshProcess = ShaderTechniqueClass_MeshProcess::SkinnedMesh;
+		}
+		else if (String::compare(token, _U("UnLighting"), CaseSensitivity::CaseInsensitive))
+		{
+			outClassSet->shadingModel = ShaderTechniqueClass_ShadingModel::UnLighting;
+		}
+	}
+}
 
 class LuminoID3DInclude
 	: public ID3DXInclude

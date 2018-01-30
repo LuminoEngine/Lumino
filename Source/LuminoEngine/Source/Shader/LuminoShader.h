@@ -4,6 +4,42 @@
 namespace fl { class AnalyzerContext; }
 LN_NAMESPACE_BEGIN
 
+// LigitingModel
+enum class ShaderTechniqueClass_Ligiting
+{
+	Forward,		// default
+	// TODO: Differd
+};
+
+enum class ShaderTechniqueClass_Phase
+{
+	Geometry,		// default
+	// TODO: ShadowCaster
+	// TODO: DepthPrepass
+};
+
+// VertexFactory
+enum class ShaderTechniqueClass_MeshProcess
+{
+	StaticMesh,		// default
+	SkinnedMesh,
+};
+
+// ShadingModel
+enum class ShaderTechniqueClass_ShadingModel
+{
+	Default,		// default
+	UnLighting,
+};
+
+struct ShaderTechniqueClassSet
+{
+	ShaderTechniqueClass_Ligiting		ligiting;
+	ShaderTechniqueClass_Phase			phase;
+	ShaderTechniqueClass_MeshProcess	meshProcess;
+	ShaderTechniqueClass_ShadingModel	shadingModel;
+};
+
 //enum class LuminoShaderTarget
 //{
 //	HLSL,
@@ -19,6 +55,8 @@ public:
 	const std::shared_ptr<fl::AnalyzerContext>& getFlContext() const { return m_flContext; }
 
 	bool findBuiltinShaderCode(const char* pathBegin, const char* pathEnd, const char** codeBegin, const char** codeEnd);
+
+	void parseTechniqueClassString(const String& str, ShaderTechniqueClassSet* outClassSet);
 
 private:
 
