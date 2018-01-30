@@ -7,7 +7,7 @@
 #include "../../include/Lumino/IO/FileStream.h"
 #include "../../include/Lumino/IO/FileSystem.h"
 #include "../../include/Lumino/IO/PathTraits.h"
-#include "Win32Helper.h"
+#include <Lumino/Base/Platform.h>
 
 LN_NAMESPACE_BEGIN
 

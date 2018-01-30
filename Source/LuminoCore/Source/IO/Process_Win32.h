@@ -1,5 +1,5 @@
 ﻿#include "../Internal.h"
-#include "Win32Helper.h"
+#include <Lumino/Base/Platform.h>
 
 LN_NAMESPACE_BEGIN
 namespace detail {

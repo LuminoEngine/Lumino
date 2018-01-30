@@ -74,7 +74,7 @@ TEST_F(Test_Serialization2, SimpleSave)
 		EmptyTest1 t1;
 		ar.process(t1);
 
-		json = doc.toString();
+		json = doc.toString(tr::JsonFormatting::None);
 		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":{}}"), json);
 	}
 
@@ -88,7 +88,7 @@ TEST_F(Test_Serialization2, SimpleSave)
 		EmptyTest1 t1;
 		ar.process(t1);
 
-		json = doc.toString();
+		json = doc.toString(tr::JsonFormatting::None);
 	}
 }
 
@@ -141,7 +141,7 @@ TEST_F(Test_Serialization2, EmptyContainer)
 		EmptyTest2 t;
 		ar.process(t);
 
-		json = ar.toString();
+		json = ar.toString(tr::JsonFormatting::None);
 		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":{\"t1\":{},\"t2\":[],\"t3\":{\"x\":200}}}"), json);
 	}
 
@@ -185,7 +185,7 @@ TEST_F(Test_Serialization2, RootNode_Json)
 		t1.y = 500;
 		ar.save(t1);
 
-		json = ar.toString();
+		json = ar.toString(tr::JsonFormatting::None);
 		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":{\"x\":200,\"y\":500}}"), json);
 	}
 
@@ -229,7 +229,7 @@ TEST_F(Test_Serialization2, RootNode_Json)
 		//ar.process(ary[1]);
 		//ar.process(ary[2]);
 
-		json = ar.toString();
+		json = ar.toString(tr::JsonFormatting::None);
 		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":[100,200,300]}"), json);
 	}
 
@@ -324,7 +324,7 @@ TEST_F(Test_Serialization2, PrimitiveValues)
 	{
 		JsonTextOutputArchive ar;
 		ar.process(obj1);
-		json = ar.toString();
+		json = ar.toString(tr::JsonFormatting::None);
 	}
 
 	// Load
@@ -403,7 +403,7 @@ TEST_F(Test_Serialization2, ClassVersion)
 		ClassVersionTest1 t1;
 		ar.process(t1);
 
-		json = ar.toString();
+		json = ar.toString(tr::JsonFormatting::None);
 		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":{\"lumino_class_version\":1,\"x\":0,\"flag\":false}}"), json);
 	}
 
@@ -497,7 +497,7 @@ TEST_F(Test_Serialization2, ObjectTest)
 		t.t2 = newObject<ObjectTest1>();
 		ar.process(t);
 
-		json = ar.toString();
+		json = ar.toString(tr::JsonFormatting::None);
 		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":{\"t2\":{\"x\":10}}}"), json);
 	}
 
@@ -539,7 +539,7 @@ TEST_F(Test_Serialization2, List)
 		List<int> t = { 1, 2, 3 };
 		ar.process(t);
 
-		json = ar.toString();
+		json = ar.toString(tr::JsonFormatting::None);
 		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":[1,2,3]}"), json);
 	}
 
@@ -566,7 +566,7 @@ TEST_F(Test_Serialization2, List)
 		t.add(newObject<ListTest1>()); t.getLast()->x = 30;
 		ar.process(t);
 
-		json = ar.toString();
+		json = ar.toString(tr::JsonFormatting::None);
 		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":[{\"x\":10},{\"x\":20},{\"x\":30}]}"), json);
 	}
 
@@ -628,7 +628,7 @@ TEST_F(Test_Serialization2, Uuid)
 		t.id = id;
 		ar.process(t);
 
-		json = ar.toString();
+		json = ar.toString(tr::JsonFormatting::None);
 		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":{\"id\":\"35BBEEBB-A428-4B7F-B4F6-08AA6D5239AA\"}}"), json);
 	}
 
@@ -683,7 +683,7 @@ TEST_F(Test_Serialization2, BaseClass)
 		t.y = 77;
 		ar.process(t);
 
-		json = ar.toString();
+		json = ar.toString(tr::JsonFormatting::None);
 		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":{\"lumino_base_class\":{\"x\":55},\"y\":77}}"), json);
 	}
 
@@ -739,7 +739,7 @@ TEST_F(Test_Serialization2, DefaultValue)
 		JsonTextOutputArchive ar;
 		DefaultTest1 t;
 		ar.process(t);
-		json = ar.toString();
+		json = ar.toString(tr::JsonFormatting::None);
 	}
 
 	//- [ ] Load

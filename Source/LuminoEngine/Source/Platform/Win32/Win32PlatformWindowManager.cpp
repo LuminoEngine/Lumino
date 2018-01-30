@@ -55,10 +55,8 @@ Win32WindowManager::Win32WindowManager(int IconResourceID)
 		NULL };							    // 小アイコン（なし）
 
 	// ウィンドウクラスの登録
-	if (!::RegisterClassEx(&wcex))
-	{
-		LN_THROW(0, Win32Exception, GetLastError());
-	}
+	ATOM wc = ::RegisterClassEx(&wcex);
+	if (LN_ENSURE_WIN32(wc, ::GetLastError())) return;
 }
 
 //------------------------------------------------------------------------------
@@ -185,7 +183,7 @@ void Win32WindowManager::setWindowClientSize(HWND hWnd, const SizeI& clientSize)
 	int new_height = (rw.bottom - rw.top) - (rc.bottom - rc.top) + clientSize.height;
 
 	BOOL r = ::SetWindowPos(hWnd, NULL, 0, 0, new_width, new_height, SWP_NOMOVE | SWP_NOZORDER);
-	LN_THROW((r != FALSE), Win32Exception, GetLastError());
+	if (LN_ENSURE_WIN32(r, ::GetLastError())) return;
 }
 
 //------------------------------------------------------------------------------

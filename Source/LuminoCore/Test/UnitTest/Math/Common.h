@@ -59,6 +59,7 @@ using namespace ln;
 //#define D3DX9_TEST
 
 #ifdef D3DX9_TEST
+#define NOMINMAX
 #include <d3dx9math.h>
 #pragma comment(lib, "d3dx9.lib")
 

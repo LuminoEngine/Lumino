@@ -2,6 +2,8 @@
 #include <Lumino/IO/FileSystem.h>
 #include <Lumino/Base/Enumerable.h>
 
+//==============================================================================
+//# FileSystem のテスト
 class Test_IO_FileSystem : public ::testing::Test
 {
 protected:
@@ -10,7 +12,8 @@ protected:
 };
 
 //------------------------------------------------------------------------------
-TEST_F(Test_IO_FileSystem, exists)
+//## ファイルの存在確認
+TEST_F(Test_IO_FileSystem, Exists)
 {
 	// Windows 別ユーザーフォルダは false
 	//ASSERT_FALSE(FileSystem::Exists("C:/Users/user2/Documents/Visual Studio 2013/Settings/CurrentSettings.vssettings"));
@@ -25,7 +28,8 @@ TEST_F(Test_IO_FileSystem, exists)
 }
 
 //------------------------------------------------------------------------------
-TEST_F(Test_IO_FileSystem, getAttribute)
+//## ファイルの属性取得
+TEST_F(Test_IO_FileSystem, GetAttribute)
 {
 	FileAttribute attr;
 
@@ -81,38 +85,39 @@ TEST_F(Test_IO_FileSystem, getAttribute)
 
 
 //------------------------------------------------------------------------------
+//## ファイルのコピーと削除のテスト
 TEST_F(Test_IO_FileSystem, Copy_Delete)
 {
 	String src1 = LN_LOCALFILE("TestData/test1.txt");
 	String src2 = LN_LOCALFILE("TestData/test2.txt");
-	String dest = TEMPFILE("test_copy.txt");
+	String dest = LN_LOCALFILE("TestResult/test_copy.txt");
 	uint64_t src1Size = FileSystem::getFileSize(src1.c_str());
 	uint64_t src2Size = FileSystem::getFileSize(src2.c_str());
 
-	// 最初はコピー先ファイルが無いこと。
+	//- [ ] 最初はコピー先ファイルが無いこと。
 	ASSERT_FALSE(FileSystem::existsFile(dest.c_str()));
 
-	// コピー
+	//- [ ] コピー
 	FileSystem::copyFile(src1.c_str(), dest.c_str(), false);
 
-	// コピーしたファイル(サイズ)が同じ
+	//- [ ] コピーしたファイル(サイズ)が同じ
 	ASSERT_EQ(src1Size, FileSystem::getFileSize(dest.c_str()));
 
-	// 上書きしようとすると IOException
+	//- [ ] 上書きしようとすると Exception
 	ASSERT_THROW(
 		FileSystem::copyFile(src2.c_str(), dest.c_str(), false),
-		IOException);
+		Exception);
 
-	// 上書き許可でコピー
+	//- [ ] 上書き許可でコピー
 	FileSystem::copyFile(src2.c_str(), dest.c_str(), true);
 
-	// コピーしたファイル(サイズ)が同じ
+	//- [ ] コピーしたファイル(サイズ)が同じ
 	ASSERT_EQ(src2Size, FileSystem::getFileSize(dest.c_str()));
 
-	// ファイル削除
+	//- [ ] ファイル削除
 	FileSystem::deleteFile(dest.c_str());
 
-	// 消えている
+	//- [ ] 消えている
 	ASSERT_FALSE(FileSystem::existsFile(dest.c_str()));
 }
 
@@ -238,13 +243,17 @@ TEST_F(Test_IO_FileSystem, getFiles)
 	//}
 }
 
-TEST_F(Test_IO_FileSystem, enumerateFiles)
+TEST_F(Test_IO_FileSystem, EnumerateFiles)
 {
-	tr::Enumerator<PathName> pathes = FileSystem::enumerateFiles(_T("D:\\MMD\\Materials\\Models\\人物"), StringRef());
-
+	tr::Enumerator<PathName> pathes = FileSystem::enumerateFiles(LN_LOCALFILE("TestData/Test_EnumerateFiles"), StringRef());
+	List<Path> list;
 	for (auto& path : pathes)
 	{
-		wprintf(L"%s\n", path.c_str());
+		list.add(path);
 	}
 
+	ASSERT_EQ(true, list.containsIf([](const Path& path) { return path.getString().contains(_T("file1.txt")); }));
+	ASSERT_EQ(true, list.containsIf([](const Path& path) { return path.getString().contains(_T("file2.txt")); }));
+	ASSERT_EQ(true, list.containsIf([](const Path& path) { return path.getString().contains(_T("file3.txt")); }));
+	ASSERT_EQ(true, list.containsIf([](const Path& path) { return path.getString().contains(_T("file4.txt")); }));
 }

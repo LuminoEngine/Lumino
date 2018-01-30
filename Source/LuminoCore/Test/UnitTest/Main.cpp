@@ -60,11 +60,11 @@ GTEST_API_ int main(int argc, char **argv)
 #endif
 	setlocale(LC_ALL, "");
 
-#if 1	// 部分的にテストを実行したりする
+#if 0	// 部分的にテストを実行したりする
 	char* testArgs[] = {
 		argv[0],
 		"--gtest_break_on_failure",
-		"--gtest_filter=Test_Base_Array.contains"
+		"--gtest_filter=Test_Matrix.*"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);

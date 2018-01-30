@@ -146,7 +146,6 @@ ResultCode LFManager::ProcException(Exception* e)
 	ERROR_DEF(FileNotFoundException, ResultCode::ErrorFILE_NOT_FOUND);
 	ERROR_DEF(InvalidFormatException, ResultCode::ErrorINVALID_FORMAT);
 	ERROR_DEF(EncodingException, ResultCode::ErrorENCODING);
-	ERROR_DEF(Win32Exception, ResultCode::ErrorWIN32);
 
 #undef ERROR_DEF
 

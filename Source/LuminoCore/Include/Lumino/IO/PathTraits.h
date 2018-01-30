@@ -55,6 +55,45 @@ public:
 	template<typename TChar>
 	static bool endWithSeparator(const TChar* path, int len = -1);
 
+
+	template<typename TChar>
+	static bool isCanonicalPath(const TChar* path, int len)
+	{
+		bool relSegment = true;
+		bool dotOnly = false;
+		for (int i = 0; i < len; i++)
+		{
+			if (isSeparatorChar(path[i]))
+			{
+				if (relSegment)
+				{
+					// e.g) "//", "./", "../"
+					return false;
+				}
+
+				relSegment = true;
+			}
+			else if (path[i] == '.')
+			{
+				dotOnly = true;
+			}
+			else
+			{
+				// found normal char in Segment. this Segment is no Relative segment.
+				relSegment = false;
+				dotOnly = false;
+			}
+		}
+
+		if (relSegment && dotOnly)
+		{
+			// e.g.) "/.", "/.."
+			return false;
+		}
+
+		return true;
+	}
+
 	/**
 		@brief		パス文字列の中から拡張子を含むファイル名の部分を返す
 	*/
@@ -100,8 +139,8 @@ public:
 		@param[in]	srcPath	: 元ファイルパス
 		@param[in]	outPath	: 単純化したパスの格納先 (LN_MAX_PATH + 1 の領域があること)
 	*/
-	template<typename TChar>
-	static void canonicalizePath(const TChar* srcPath, TChar* outPath);
+	//template<typename TChar>
+	//static void canonicalizePath(const TChar* srcPath, TChar* outPath);
 
 	/**
 		@brief		パスを単純化する
@@ -123,10 +162,11 @@ public:
 		@param[in]	path2	: パス文字列
 		@return		並べ替え順序を示す整数 (0 で一致)
 		@details	DirectorySeparatorChar と AltDirectorySeparatorChar は等価とみなします。
-					また、大文字小文字を区別しません。
 	*/
 	template<typename TChar>
-	static int compare(const TChar* path1, const TChar* path2);
+	static int comparePathString(const TChar* path1, int len1, const TChar* path2, int len);
+
+
 
 
 	/**
@@ -136,8 +176,8 @@ public:
 		@details	DirectorySeparatorChar と AltDirectorySeparatorChar は等価とみなします。
 					また、大文字小文字を区別しません。
 	*/
-	template<typename TChar>
-	static bool equals(const TChar* path1, const TChar* path2);
+	//template<typename TChar>
+	//static bool equals(const TChar* path1, const TChar* path2);
 
 
 

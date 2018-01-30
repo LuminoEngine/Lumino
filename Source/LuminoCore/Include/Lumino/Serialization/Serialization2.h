@@ -746,7 +746,7 @@ public:
 		m_processing = false;
 	}
 
-	String toString();
+	String toString(tr::JsonFormatting formatting = tr::JsonFormatting::Indented);
 
 private:
 	tr::JsonDocument2	m_localDoc;

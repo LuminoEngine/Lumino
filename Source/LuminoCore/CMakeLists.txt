@@ -54,6 +54,7 @@ set(LN_SOURCES_Base
 	Include/Lumino/Base/Logger.h
 	Include/Lumino/Base/Memory.h
 	Include/Lumino/Base/Nullable.h
+	Include/Lumino/Base/Platform.h
 	Include/Lumino/Base/RefObject.h
 	Include/Lumino/Base/Regex.h
 	Include/Lumino/Base/Resource.h
@@ -82,6 +83,7 @@ set(LN_SOURCES_Base
 	Source/Base/Locale.cpp
 	Source/Base/Logger.cpp
 	Source/Base/Memory.cpp
+	Source/Base/Platform.cpp
 	Source/Base/RefObject.cpp
 	Source/Base/Resource.cpp
 	Source/Base/Serialization.cpp
@@ -300,11 +302,9 @@ if (WIN32)
 		Source/Text/Win32CodePageEncoding.h
 	)
 
-	set(LN_SOURCES_IO
-		${LN_SOURCES_IO}
-		Source/IO/Win32Helper.cpp
-		Source/IO/Win32Helper.h
-	)
+	#set(LN_SOURCES_IO
+	#	${LN_SOURCES_IO}
+	#)
 
 elseif (APPLE)
 

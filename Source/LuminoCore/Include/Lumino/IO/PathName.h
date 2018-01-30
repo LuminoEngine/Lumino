@@ -171,25 +171,15 @@ public:
 	// TODO: おしりに / はつかなくていい。
 
 	/**
-		@brief		このパスと、別のパス文字列が等しいかをチェックする
+		@brief		このパスと別のパス文字列が等しいかを確認します。
 		@param[in]	path	: 比較対象のパス文字列
-		@details	Separator と AltSeparator は等価とみなします。
-					また、大文字小文字を区別しません。
-		@note		環境による大文字小文字の区別について…<br>
-					区別の有無は、OSではなくファイルシステム依存。
-					http://ja.wikipedia.org/wiki/%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%82%B7%E3%82%B9%E3%83%86%E3%83%A0#.E6.A9.9F.E8.83.BD
-					これをプログラムから調べる有効な手段が見つからなかった…。
-					ちなみに、Adobe等クロスプラットフォームで動く製品を出してるところも、この辺りは十分に対応しきれていない様子。
-					http://helpx.adobe.com/jp/x-productkb/global/cpsid_83180.html
-					http://www.clip-studio.com/clip_site/support/faq/detail/svc/52/tid/37429
+		@details	字句表現としての等価性を評価します。
+					ディレクトリセパレータ ('/' と '\') は同一として扱います。また、環境によっては大文字小文字を同一視します。
+					2つのパスが同一のファイルシステムオブジェクトを指すかは確認しません。
 	*/
-	bool equals(const Char* path) const;
-	/// @overload Equals
-	bool equals(const Path& path) const;
-	/// @overload Equals
-	bool equals(const String& path) const;
-	///// @overload Equals
-	//bool operator == (const Path& path) const { return equals(path); }
+	int compare(const Char* path) const;
+	int compare(const Path& path) const;	/**< @overload compare */
+	int compare(const String& path) const;	/**< @overload compare */
 
 
 	/// パス文字列を返す (末尾に必ずセパレータをひとつ付加する)
@@ -321,7 +311,7 @@ private:
 
 };
 
-inline bool operator==(const Path& lhs, const Path& rhs) { return lhs.equals(rhs); }
+inline bool operator==(const Path& lhs, const Path& rhs) { return lhs.compare(rhs) == 0; }
 inline bool operator!=(const Path& lhs, const Path& rhs) { return !operator==(lhs, rhs); }
 
 

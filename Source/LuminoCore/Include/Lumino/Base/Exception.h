@@ -30,7 +30,6 @@ class String;
 #define LN_ENSURE_FILE_NOT_FOUND(expr, path)	_LN_CHECK(expr, ln::FileNotFoundException, path)
 #define LN_ENSURE_ENCODING(expr, ...)			_LN_CHECK(expr, ln::EncodingException)
 #define LN_ENSURE_INVALID_FORMAT(expr, ...)		_LN_CHECK(expr, ln::InvalidFormatException, ##__VA_ARGS__)
-#define LN_ENSURE_WIN32(expr, err)				_LN_CHECK(expr, ln::Win32Exception, err)
 
 // obsolete
 #define LN_THROW(expr, type, ...)				{ _LN_CHECK(expr, type, ##__VA_ARGS__); }

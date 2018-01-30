@@ -69,10 +69,10 @@ WGLContext::WGLContext(WGLGraphicsDevice* device, PlatformWindow* window, WGLCon
 		0,		// damagemask
 	};
 	int pfmt = ::ChoosePixelFormat(m_hDC, &pformat);
-	LN_THROW(pfmt, Win32Exception, ::GetLastError());
+	if (LN_ENSURE_WIN32(pfmt, ::GetLastError())) return;
 
 	BOOL r = ::SetPixelFormat(m_hDC, pfmt, &pformat);
-	LN_THROW(r, Win32Exception, ::GetLastError());
+	if (LN_ENSURE_WIN32(r, ::GetLastError())) return;
 
 	if (device->getOpenGLMajorVersion() != 0)
 	{
@@ -100,17 +100,17 @@ WGLContext::WGLContext(WGLGraphicsDevice* device, PlatformWindow* window, WGLCon
 		};
 
 		m_hGLRC = WGLGraphicsDevice::CreateContextAttribsARB(m_hDC, share, attr);	// wglCreateContextAttribsARB なら wglShareLists は必要ない
-		LN_THROW(m_hGLRC, Win32Exception, ::GetLastError());
+		if (LN_ENSURE_WIN32(m_hGLRC, ::GetLastError())) return;
 	}
 	else
 	{
 		m_hGLRC = wglCreateContext(m_hDC);
-		LN_THROW(m_hGLRC, Win32Exception, ::GetLastError());
+		if (LN_ENSURE_WIN32(m_hGLRC, ::GetLastError())) return;
 
 		if (share != NULL)
 		{
 			r = wglShareLists(share, m_hGLRC);
-			LN_THROW(r, Win32Exception, ::GetLastError());
+			if (LN_ENSURE_WIN32(r, ::GetLastError())) return;
 		}
 	}
 }
@@ -130,7 +130,7 @@ WGLContext::~WGLContext()
 void WGLContext::swapBuffers()
 {
 	BOOL r = ::SwapBuffers(m_hDC);
-	LN_THROW(r, Win32Exception, ::GetLastError());
+	if (LN_ENSURE_WIN32(r, ::GetLastError())) return;
 }
 
 //==============================================================================
@@ -229,12 +229,12 @@ void WGLGraphicsDevice::makeCurrentContext(GLContext* context)
 
 		WGLContext* wglContext = static_cast<WGLContext*>(context);
 		BOOL r = wglMakeCurrent(wglContext->GetDC(), wglContext->GetGLRC());
-		LN_THROW(r, Win32Exception, ::GetLastError());
+		if (LN_ENSURE_WIN32(r, ::GetLastError())) return;
 	}
 	else
 	{
 		BOOL r = wglMakeCurrent(NULL, NULL);
-		LN_THROW(r, Win32Exception, ::GetLastError());
+		if (LN_ENSURE_WIN32(r, ::GetLastError())) return;
 	}
 }
 

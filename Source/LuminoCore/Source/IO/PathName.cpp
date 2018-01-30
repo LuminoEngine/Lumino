@@ -124,35 +124,52 @@ StringRef Path::getFileNameWithoutExtension() const
 
 Path Path::canonicalizePath() const
 {
+	if (PathTraits::isCanonicalPath(m_path.c_str(), m_path.getLength()))
+	{
+		return *this;
+	}
+
+	String* path;
+
 	if (isAbsolute())
 	{
-		// TODO: Length 制限無し
-		Char tmpPath[LN_MAX_PATH + 1];
-		memset(tmpPath, 0, sizeof(tmpPath));
-		PathTraits::canonicalizePath(m_path.c_str(), tmpPath);
-		return Path(tmpPath);
+		std::vector<Char> tmpPath(m_path.getLength());
+		int len = PathTraits::canonicalizePath(m_path.c_str(), m_path.getLength(), tmpPath.data());
+		return Path(StringRef(tmpPath.data(), len));
 	}
 	else
 	{
-		Path absPath(Environment::getCurrentDirectory(), m_path);
-		Char tmpPath[LN_MAX_PATH + 1];
-		memset(tmpPath, 0, sizeof(tmpPath));
-		PathTraits::canonicalizePath(absPath.m_path.c_str(), tmpPath);
-		return Path(tmpPath);
+		Path fullPath(Environment::getCurrentDirectory(), m_path);
+		std::vector<Char> tmpPath(fullPath.m_path.getLength());
+		int len = PathTraits::canonicalizePath(fullPath.m_path.c_str(), fullPath.m_path.getLength(), tmpPath.data());
+		return Path(StringRef(tmpPath.data(), len));
 	}
 }
 
 Path Path::makeRelative(const Path& target) const
 {
-	if (LN_REQUIRE(isAbsolute())) return Path();
-	if (LN_REQUIRE(target.isAbsolute())) return Path();
-	auto rel = PathTraits::diffPath<Char>(m_path.c_str(), m_path.getLength(), target.m_path.c_str(), target.m_path.getLength(), FileSystem::getFileSystemCaseSensitivity());
-	return Path(rel.c_str());	// TODO: un copy
+	const Path* path1 = this;
+	const Path* path2 = &target;
+	Path fullPath1;
+	Path fullPath2;
+	if (!isAbsolute())
+	{
+		fullPath1 = canonicalizePath();
+		path1 = &fullPath1;
+	}
+	if (!target.isAbsolute())
+	{
+		fullPath2 = target.canonicalizePath();
+		path2 = &fullPath2;
+	}
+
+	auto relPath = PathTraits::diffPath<Char>(path1->c_str(), path1->getLength(), path2->c_str(), path2->getLength(), FileSystem::getFileSystemCaseSensitivity());
+	return Path(relPath.c_str());	// TODO: un copy
 }
 
-bool Path::equals(const Char* path) const { return PathTraits::equals(m_path.c_str(), path); }
-bool Path::equals(const Path& path) const { return PathTraits::equals(m_path.c_str(), path.c_str()); }
-bool Path::equals(const String& path) const { return PathTraits::equals(m_path.c_str(), path.c_str()); }
+int Path::compare(const Char* path) const { return PathTraits::comparePathString(m_path.c_str(), m_path.getLength(), path, StringTraits::tcslen(path)); }
+int Path::compare(const Path& path) const { return PathTraits::comparePathString(m_path.c_str(), m_path.getLength(), path.c_str(), path.getLength()); }
+int Path::compare(const String& path) const { return PathTraits::comparePathString(m_path.c_str(), m_path.getLength(), path.c_str(), path.getLength()); }
 
 const String Path::getStrEndSeparator() const
 {

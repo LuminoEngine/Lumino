@@ -98,8 +98,8 @@ TEST_F(Test_IO_Path, compare)
 #ifdef LN_OS_WIN32
 	Path path1(_LT("C:/dir/file.txt"));
 	Path path2(_LT("C:\\dir\\file.txt"));
-	ASSERT_TRUE(path1.equals(path2));
-	ASSERT_TRUE(path1 == path2);
+	ASSERT_EQ(0, path1.compare(path2));
+	ASSERT_EQ(true, path1 == path2);
 #endif
 }
 
@@ -111,7 +111,7 @@ TEST_F(Test_IO_Path, canonicalizePath)
 		Char path1[LN_MAX_PATH] = _LT(src); \
 		Char path2[LN_MAX_PATH]; \
 		PathTraits::canonicalizePath(path1, StringTraits::tcslen(path1), path2); \
-		ASSERT_EQ(0, StringTraits::tcscmp(_LT(result), path2)); \
+		ASSERT_EQ(0, PathTraits::comparePathString(_LT(result), StringTraits::tcslen(_LT(result)), path2, StringTraits::tcslen(path2))); \
 	}
 
 	TEST_CASE("A/C", "A/B/../C");

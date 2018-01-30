@@ -557,14 +557,14 @@ TEST_F(Test_Matrix, Basic)
 	// Matrix::makeOrthoLH / Matrix::makeOrthoRH
 	{
 		Matrix mat1 = Matrix::makeOrthoLH(640, 480, 10, 1000);
+		Matrix mat2 = Matrix::makeOrthoRH(640, 480, 10, 1000);
 		ASSERT_MAT_NEAR(
 			0.003125, 0.000000, 0.000000, 0.000000,
 			0.000000, 0.004167, 0.000000, 0.000000,
 			0.000000, 0.000000, 0.001010, 0.000000,
-			0.000000, 0.000000, 0.010101, 1.000000,
+			0.000000, 0.000000, -0.010101, 1.000000,
 			mat1);
 
-		Matrix mat2 = Matrix::makeOrthoRH(640, 480, 10, 1000);
 		ASSERT_MAT_NEAR(
 			0.003125, 0.000000, 0.000000, 0.000000,
 			0.000000, 0.004167, 0.000000, 0.000000,
@@ -731,7 +731,7 @@ TEST_F(Test_Matrix, Basic)
 		D3DXMatrixRotationYawPitchRoll(&dxm, 0.75f, 0.5f, 1.0f);
 		//dumpD3DXMATRIX("D3DXMatrixRotationYawPitchRoll", dxm);
 
-		Vector3 a = ((Matrix*)&dxm)->ToEulerAngles();
+		Vector3 a = ((Matrix*)&dxm)->toEulerAngles();
 		ASSERT_VEC3_NEAR(0.5, 0.75, 1.0, a);
 		//a.print();
 	}

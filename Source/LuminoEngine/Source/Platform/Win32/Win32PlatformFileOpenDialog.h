@@ -49,7 +49,8 @@ public:
 					IID_PPV_ARGS(&m_fileDialog));
 
 			}
-			LN_THROW(SUCCEEDED(hr), Win32Exception, hr);
+			
+			if (LN_ENSURE_HRESULT(hr)) return;
 		}
 	}
 

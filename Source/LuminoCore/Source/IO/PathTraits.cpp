@@ -3,6 +3,7 @@
 #include "../../Include/Lumino/Base/String.h"
 #include "../../Include/Lumino/IO/PathTraits.h"
 #include "../../Include/Lumino/IO/DirectoryUtils.h"
+#include <Lumino/IO/FileSystem.h>
 
 LN_NAMESPACE_BEGIN
 
@@ -352,6 +353,7 @@ int PathTraits::canonicalizePath(const TChar* srcPath, size_t srcLen, TChar* out
 	}
 
 	const TChar*	readPos = (srcPath + srcLen);		// 終端 \0 を指す
+	TChar*			outBegin = outPath;
 	TChar*			writeEnd = (outPath + srcLen);		// 書き込み先の終端。
 	TChar*			writePos = writeEnd;				// 書き込み位置。この1つ前から書ける
 	int				depth = 0;							// /.. の深さ
@@ -449,6 +451,17 @@ int PathTraits::canonicalizePath(const TChar* srcPath, size_t srcLen, TChar* out
 	if (isSeparatorChar(*(srcPath + srcLen - 1)) && !isSeparatorChar(*(outPath - 1))) {
 		*outPath = *(srcPath + srcLen - 1);
 		++outPath;
+	}
+
+	// to native sparator
+	{
+		for (int i = 0; i < outLen; i++)
+		{
+			if (isSeparatorChar(outBegin[i]))
+			{
+				outBegin[i] = DirectorySeparatorChar;
+			}
+		}
 	}
 
 	*outPath = '\0';
@@ -575,34 +588,34 @@ template int PathTraits::canonicalizePath(const wchar_t* srcPath, size_t srcLen,
 template int PathTraits::canonicalizePath(const char16_t* srcPath, size_t srcLen, char16_t* outPath);
 
 //------------------------------------------------------------------------------
-template<typename TChar>
-void PathTraits::canonicalizePath(const TChar* srcPath, TChar* outPath)
-{
-	size_t srcLen = StringTraits::tcslen(srcPath);
-	if (isAbsolutePath(srcPath)) {
-		// 絶対パスであればそのまま出力してしまう
-		canonicalizePath(srcPath, srcLen, outPath);
-	}
-	else
-	{
-		LN_NOTIMPLEMENTED();
-		//// 相対パスであれば、カレントディレクトリと結合してから変換する
-		//TChar src[LN_MAX_PATH];
-		//size_t len2 = DirectoryUtils::getCurrentDirectory(src);
-		//src[len2] = DirectorySeparatorChar;
-		//++len2;
-		//StringTraits::copyString(src + len2, LN_MAX_PATH - len2, srcPath, srcLen);
-		////memcpy(src + len2, srcPath, srcLen * sizeof(TChar));
-		//srcLen += len2;
-		//canonicalizePath(src, srcLen, outPath);
-	}
-	// セパレータを統一する
-	normalizeSeparator(outPath);
-}
-template void PathTraits::canonicalizePath<char>(const char* srcPath, char* outPath);
-template void PathTraits::canonicalizePath<wchar_t>(const wchar_t* srcPath, wchar_t* outPath);
-template void PathTraits::canonicalizePath<char16_t>(const char16_t* srcPath, char16_t* outPath);
-
+//template<typename TChar>
+//void PathTraits::canonicalizePath(const TChar* srcPath, TChar* outPath)
+//{
+//	size_t srcLen = StringTraits::tcslen(srcPath);
+//	if (isAbsolutePath(srcPath)) {
+//		// 絶対パスであればそのまま出力してしまう
+//		canonicalizePath(srcPath, srcLen, outPath);
+//	}
+//	else
+//	{
+//		LN_NOTIMPLEMENTED();
+//		//// 相対パスであれば、カレントディレクトリと結合してから変換する
+//		//TChar src[LN_MAX_PATH];
+//		//size_t len2 = DirectoryUtils::getCurrentDirectory(src);
+//		//src[len2] = DirectorySeparatorChar;
+//		//++len2;
+//		//StringTraits::copyString(src + len2, LN_MAX_PATH - len2, srcPath, srcLen);
+//		////memcpy(src + len2, srcPath, srcLen * sizeof(TChar));
+//		//srcLen += len2;
+//		//canonicalizePath(src, srcLen, outPath);
+//	}
+//	// セパレータを統一する
+//	normalizeSeparator(outPath);
+//}
+//template void PathTraits::canonicalizePath<char>(const char* srcPath, char* outPath);
+//template void PathTraits::canonicalizePath<wchar_t>(const wchar_t* srcPath, wchar_t* outPath);
+//template void PathTraits::canonicalizePath<char16_t>(const char16_t* srcPath, char16_t* outPath);
+//
 #if 0
 //------------------------------------------------------------------------------
 template<>
@@ -683,74 +696,79 @@ void PathTraits::normalizeSeparator(TChar* srcPath)
 また、大文字小文字を区別しません。
 */
 //------------------------------------------------------------------------------
+
+
 template<typename TChar>
-int PathTraits::compare(const TChar* path1, const TChar* path2)
+int PathTraits::comparePathString(const TChar* path1, int len1, const TChar* path2, int len2)
 {
-	// まずは正規化。セキュリティ的推奨事項
-	// https://www.jpcert.or.jp/java-rules/ids02-j.html
-	TChar absPath1[LN_MAX_PATH + 1];
-	TChar absPath2[LN_MAX_PATH + 1];
-	memset(absPath1, 0, sizeof(absPath1));
-	memset(absPath2, 0, sizeof(absPath2));
-	canonicalizePath(path1, absPath1);
-	canonicalizePath(path2, absPath2);
-
-	TChar* s1 = absPath1;
-	TChar* s2 = absPath2;
-
-#ifdef LN_OS_WIN32
-	// 大文字小文字区別せず、文字が等しい間繰り返す
-	while (*s1 && *s2)
+	if (len1 != len2)
 	{
-		if (StringTraits::toUpper(*s1) != StringTraits::toUpper(*s2))
-		{
-			// セパレータの差は区別しない
-			if ((*s1 == DirectorySeparatorChar || *s1 == AltDirectorySeparatorChar) &&
-				(*s2 == DirectorySeparatorChar || *s2 == AltDirectorySeparatorChar)
-				){
-				// 継続
-			}
-			else {
-				return ((StringTraits::toUpper(*s1) - StringTraits::toUpper(*s2)));
-			}
-		}
-		s1++;
-		s2++;
+		return len1 - len2;
 	}
 
-	return ((StringTraits::toUpper(*s1) - StringTraits::toUpper(*s2)));
-#else
-	while (*s1 && *s2)
+	const TChar* s1 = path1;
+	const TChar* s2 = path2;
+
+	if (FileSystem::getFileSystemCaseSensitivity() == CaseSensitivity::CaseInsensitive)
 	{
-		if (*s1 != *s2)
+		while (len1 && *s1 && *s2)
 		{
-			// セパレータの差は区別しない
-			if ((*s1 == DirectorySeparatorChar || *s1 == AltDirectorySeparatorChar) &&
-				(*s2 == DirectorySeparatorChar || *s2 == AltDirectorySeparatorChar)
-				){
-				// 継続
+			if (StringTraits::toUpper(*s1) != StringTraits::toUpper(*s2))
+			{
+				// セパレータの差は区別しない
+				if ((*s1 == DirectorySeparatorChar || *s1 == AltDirectorySeparatorChar) &&
+					(*s2 == DirectorySeparatorChar || *s2 == AltDirectorySeparatorChar)
+					) {
+					// 継続
+				}
+				else {
+					return ((StringTraits::toUpper(*s1) - StringTraits::toUpper(*s2)));
+				}
 			}
-			else {
-				return (*s1 - *s2);
-			}
+			s1++;
+			s2++;
+			len1--;
 		}
-		s1++;
-		s2++;
+
+		return len1 ? ((StringTraits::toUpper(*s1) - StringTraits::toUpper(*s2))) : 0;
 	}
+	else
+	{
+		while (len1 && *s1 && *s2)
+		{
+			if (*s1 != *s2)
+			{
+				// セパレータの差は区別しない
+				if ((*s1 == DirectorySeparatorChar || *s1 == AltDirectorySeparatorChar) &&
+					(*s2 == DirectorySeparatorChar || *s2 == AltDirectorySeparatorChar)
+					) {
+					// 継続
+				}
+				else {
+					return *s1 - *s2;
+				}
+			}
+			s1++;
+			s2++;
+			len1--;
+		}
 
-	return (*s1 - *s2);
-#endif
+		return len1 ? (*s1 - *s2) : 0;
+	}
 }
+template int PathTraits::comparePathString(const char* path1, int len1, const char* path2, int len2);
+template int PathTraits::comparePathString(const wchar_t* path1, int len1, const wchar_t* path2, int len2);
+template int PathTraits::comparePathString(const char16_t* path1, int len1, const char16_t* path2, int len2);
 
-//------------------------------------------------------------------------------
-template<typename TChar>
-bool PathTraits::equals(const TChar* path1, const TChar* path2)
-{
-	return compare(path1, path2) == 0;
-}
-template bool PathTraits::equals<char>(const char* path1, const char* path2);
-template bool PathTraits::equals<wchar_t>(const wchar_t* path1, const wchar_t* path2);
-template bool PathTraits::equals<char16_t>(const char16_t* path1, const char16_t* path2);
+////------------------------------------------------------------------------------
+//template<typename TChar>
+//bool PathTraits::equals(const TChar* path1, const TChar* path2)
+//{
+//	return compare(path1, path2) == 0;
+//}
+//template bool PathTraits::equals<char>(const char* path1, const char* path2);
+//template bool PathTraits::equals<wchar_t>(const wchar_t* path1, const wchar_t* path2);
+//template bool PathTraits::equals<char16_t>(const char16_t* path1, const char16_t* path2);
 
 //------------------------------------------------------------------------------
 template<typename TChar>
