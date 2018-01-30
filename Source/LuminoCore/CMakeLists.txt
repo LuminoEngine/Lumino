@@ -78,7 +78,7 @@ set(LN_SOURCES_Base
 	Source/Base/Environment.cpp
 	Source/Base/Environment_OSX.h
 	Source/Base/Environment_UNIX.h
-	Source/Base/Environment_Win32.h
+	Source/Base/Environment_WIN32.h
 	Source/Base/Exception.cpp
 	Source/Base/Hash.cpp
 	Source/Base/Locale.cpp
