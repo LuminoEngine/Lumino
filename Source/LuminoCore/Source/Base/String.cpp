@@ -19,6 +19,7 @@
 #include <Lumino/IO/FileSystem.h>	// TODO: Path
 #include <Lumino/IO/DirectoryUtils.h>	// TODO: Path
 #include <Lumino/Text/Encoding.h>
+#include <Lumino/Text/UnicodeUtils.h>
 
 LN_NAMESPACE_BEGIN
 
@@ -1109,7 +1110,19 @@ void UStringConvert::convertToStdString(const char16_t* src, int srcLen, std::st
 }
 void UStringConvert::convertToStdString(const char16_t* src, int srcLen, std::wstring* outString)
 {
-	LN_NOTIMPLEMENTED();
+#ifdef LN_WCHAR_16
+	outString->assign((const wchar_t*)(src), srcLen);
+#else
+	// UTF16 -> UTF32
+	UTFConversionOptions options;
+	options.ReplacementChar = '?';
+	outString->resize(srcLen);
+	UnicodeUtils::convertUTF16toUTF32(
+		(const UnicodeUtils::UTF16*)src, srcLen,
+		(UnicodeUtils::UTF32*)&((*outString)[0]), srcLen,
+		&options);
+	outString->shrink_to_fit();
+#endif
 }
 
 

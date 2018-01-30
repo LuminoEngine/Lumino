@@ -858,7 +858,7 @@ TEST_F(Test_Base_UString, ConvertNumeric)
 	//-[ ] 数値 > 文字列
 	{
 		ASSERT_EQ(_T("10"), String::fromNumber(10));
-		ASSERT_EQ(_T("10.5"), String::fromNumber(10.5));
+		ASSERT_EQ(_T("10.500000"), String::fromNumber(10.5, 'F', 6));
 	}
 
 	// TODO:異常系

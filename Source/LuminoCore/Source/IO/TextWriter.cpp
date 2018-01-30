@@ -111,10 +111,25 @@ void TextWriter::setFormatLocale(const Locale& locale)
 ////}
 
 //------------------------------------------------------------------------------
-void TextWriter::write(Char ch)
+void TextWriter::write(char value)
 {
+	Char ch = value;
 	writeInternal(&ch, 1);
 }
+void TextWriter::write(wchar_t value)
+{
+	Char ch = value;
+	writeInternal(&ch, 1);
+}
+void TextWriter::write(char16_t value)
+{
+	Char ch = value;
+	writeInternal(&ch, 1);
+}
+//void TextWriter::write(Char ch)
+//{
+//	writeInternal(&ch, 1);
+//}
 void TextWriter::write(int16_t value)
 {
 	char buf1[64];
@@ -238,12 +253,28 @@ void TextWriter::writeLine()
 //LN_NOTIMPLEMENTED();
 //}
 
-//------------------------------------------------------------------------------
-void TextWriter::writeLine(TCHAR value)
+void TextWriter::writeLine(char value)
 {
 	write(value);
 	writeLine();
 }
+void TextWriter::writeLine(wchar_t value)
+{
+	write(value);
+	writeLine();
+}
+void TextWriter::writeLine(char16_t value)
+{
+	write(value);
+	writeLine();
+}
+
+//------------------------------------------------------------------------------
+//void TextWriter::writeLine(TCHAR value)
+//{
+//	write(value);
+//	writeLine();
+//}
 void TextWriter::writeLine(int16_t value)
 {
 	write(value);
