@@ -56,7 +56,7 @@ using namespace ln;
 	ASSERT_NEAR(z_, plane.Normal.z, LN_FLOAT_THRESHOLD); \
 	ASSERT_NEAR(w_, plane.D, LN_FLOAT_THRESHOLD);
 
-#define D3DX9_TEST
+//#define D3DX9_TEST
 
 #ifdef D3DX9_TEST
 #define NOMINMAX
