@@ -22,8 +22,6 @@
 
 #include "LNGL.h"
 
-#define LN_CHECK_GLERROR()		{ GLenum lnglerr = glGetError(); LN_THROW(lnglerr == GL_NO_ERROR , OpenGLException, lnglerr); } 
-
 LN_NAMESPACE_BEGIN
 namespace detail
 {
@@ -31,10 +29,11 @@ class GLHelper
 {
 public:
 	static String getErrorMessage(GLenum glerror);
+	static bool checkEnsureGLError(int line, const char* file);
 };
 
 } // namespace detail
 LN_NAMESPACE_END
 
-#define LN_ENSURE_GLERROR(expr, err)	for (GLenum lnglerr = glGetError(); LN_ENSURE(lnglerr == GL_NO_ERROR); lnglerr = GL_NO_ERROR)
+#define LN_ENSURE_GLERROR()	!ln::detail::GLHelper::checkEnsureGLError(__LINE__, __FILE__)//LN_ENSURE(GLenum lnglerr = glGetError() == GL_NO_ERROR)
 

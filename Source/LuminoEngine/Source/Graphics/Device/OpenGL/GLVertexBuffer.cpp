@@ -55,9 +55,12 @@ void GLVertexBuffer::create(size_t bufferSize, const void* initialData, Resource
 //------------------------------------------------------------------------------
 void GLVertexBuffer::setSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes)
 {
-	glBindBuffer(GL_ARRAY_BUFFER, m_glVertexBuffer); LN_CHECK_GLERROR();
-	glBufferSubData(GL_ARRAY_BUFFER, offsetBytes, dataBytes, data); LN_CHECK_GLERROR();
-	glBindBuffer(GL_ARRAY_BUFFER, 0); LN_CHECK_GLERROR();
+	glBindBuffer(GL_ARRAY_BUFFER, m_glVertexBuffer);
+	if (LN_ENSURE_GLERROR()) return;
+	glBufferSubData(GL_ARRAY_BUFFER, offsetBytes, dataBytes, data);
+	if (LN_ENSURE_GLERROR()) return;
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	if (LN_ENSURE_GLERROR()) return;
 }
 
 //------------------------------------------------------------------------------
@@ -76,24 +79,32 @@ void* GLVertexBuffer::lock()
 //------------------------------------------------------------------------------
 void GLVertexBuffer::unlock()
 {
-	glBindBuffer(GL_ARRAY_BUFFER, m_glVertexBuffer); LN_CHECK_GLERROR();
-	glBufferSubData(GL_ARRAY_BUFFER, 0, m_byteCount, m_data); LN_CHECK_GLERROR();
-	glBindBuffer(GL_ARRAY_BUFFER, 0); LN_CHECK_GLERROR();
+	glBindBuffer(GL_ARRAY_BUFFER, m_glVertexBuffer);
+	if (LN_ENSURE_GLERROR()) return;
+	glBufferSubData(GL_ARRAY_BUFFER, 0, m_byteCount, m_data);
+	if (LN_ENSURE_GLERROR()) return;
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	if (LN_ENSURE_GLERROR()) return;
 }
 
 //------------------------------------------------------------------------------
 void GLVertexBuffer::onLostDevice()
 {
-	glDeleteBuffers(1, &m_glVertexBuffer); LN_CHECK_GLERROR();
+	glDeleteBuffers(1, &m_glVertexBuffer);
+	if (LN_ENSURE_GLERROR()) return;
 }
 
 //------------------------------------------------------------------------------
 void GLVertexBuffer::onResetDevice()
 {
-	glGenBuffers(1, &m_glVertexBuffer); LN_CHECK_GLERROR();
-	glBindBuffer(GL_ARRAY_BUFFER, m_glVertexBuffer); LN_CHECK_GLERROR();
-	glBufferData(GL_ARRAY_BUFFER, m_byteCount, m_data, m_usage);  LN_CHECK_GLERROR();
-	glBindBuffer(GL_ARRAY_BUFFER, 0); LN_CHECK_GLERROR();
+	glGenBuffers(1, &m_glVertexBuffer);
+	if (LN_ENSURE_GLERROR()) return;
+	glBindBuffer(GL_ARRAY_BUFFER, m_glVertexBuffer);
+	if (LN_ENSURE_GLERROR()) return;
+	glBufferData(GL_ARRAY_BUFFER, m_byteCount, m_data, m_usage);
+	if (LN_ENSURE_GLERROR()) return;
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	if (LN_ENSURE_GLERROR()) return;
 }
 
 //==============================================================================

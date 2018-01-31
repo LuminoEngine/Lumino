@@ -416,7 +416,7 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 	//auto skinnedMeshComponent = SkinnedMeshComponent::create(_T("D:\\MMD\\Materials\\モデル\\Lat式ミクVer2.3\\Lat式ミクVer2.3_Normal.pmd"));
 	auto skinnedMeshObj = newObject<WorldObject>();
 	skinnedMeshObj->addComponent(skinnedMeshComponent);
-	skinnedMeshComponent->setShader(Shader::create(LN_LOCALFILE("Assets/UnLighting.fx"), ShaderCodeType::RawHLSL));
+	skinnedMeshComponent->setShader(Shader::create(LN_LOCALFILE("Assets/UnLighting.fx"), nullptr, ShaderCodeType::RawHLSL));
 	Engine::getWorld3D()->add(skinnedMeshObj);
 
 

@@ -312,7 +312,7 @@ inline bool notifyException(const Char* file, int line, TArgs... args)
 	auto h = Assertion::getNotifyVerificationHandler();
 	if (h != nullptr && h(e)) return true;
 	throw e;
-	return true;
+	return false;
 }
 
 } // namespace detail

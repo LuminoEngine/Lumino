@@ -43,9 +43,14 @@ void GLIndexBuffer::create(int indexCount, const void* initialData, IndexBufferF
 //------------------------------------------------------------------------------
 void GLIndexBuffer::setSubData(uint32_t offsetBytes, const void* data, uint32_t dataBytes)
 {
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBufferObject); LN_CHECK_GLERROR();
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offsetBytes, dataBytes, data); LN_CHECK_GLERROR();
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); LN_CHECK_GLERROR();
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBufferObject);
+	if (LN_ENSURE_GLERROR()) return;
+
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offsetBytes, dataBytes, data);
+	if (LN_ENSURE_GLERROR()) return;
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	if (LN_ENSURE_GLERROR()) return;
 }
 
 
@@ -64,7 +69,9 @@ void GLIndexBuffer::unlock()
 //------------------------------------------------------------------------------
 void GLIndexBuffer::onLostDevice()
 {
-	glDeleteBuffers(1, &m_indexBufferObject); LN_CHECK_GLERROR();
+	glDeleteBuffers(1, &m_indexBufferObject);
+	if (LN_ENSURE_GLERROR()) return;
+
 	m_indexBufferObject = 0;
 }
 
@@ -72,10 +79,17 @@ void GLIndexBuffer::onLostDevice()
 void GLIndexBuffer::onResetDevice()
 {
 	GLenum gl_usage = (m_usage == ResourceUsage::Static) ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW;
-	glGenBuffers(1, &m_indexBufferObject); LN_CHECK_GLERROR();
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBufferObject); LN_CHECK_GLERROR();
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_byteCount, NULL, gl_usage);  LN_CHECK_GLERROR();
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); LN_CHECK_GLERROR();
+	glGenBuffers(1, &m_indexBufferObject);
+	if (LN_ENSURE_GLERROR()) return;
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexBufferObject);
+	if (LN_ENSURE_GLERROR()) return;
+
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_byteCount, NULL, gl_usage);
+	if (LN_ENSURE_GLERROR()) return;
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	if (LN_ENSURE_GLERROR()) return;
 }
 
 } // namespace Driver

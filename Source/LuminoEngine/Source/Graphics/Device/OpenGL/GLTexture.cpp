@@ -49,11 +49,15 @@ void GLTextureBase::setGLSamplerState(const SamplerState& state)
 		GL_CLAMP_TO_EDGE,	// TextureWrapMode_Clamp
 	};
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter[state.FilterMode]); LN_CHECK_GLERROR();
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter[state.FilterMode]); LN_CHECK_GLERROR();
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter[state.FilterMode]);
+	if (LN_ENSURE_GLERROR()) return;
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter[state.FilterMode]);
+	if (LN_ENSURE_GLERROR()) return;
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap[state.WrapMode]); LN_CHECK_GLERROR();
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap[state.WrapMode]); LN_CHECK_GLERROR();
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap[state.WrapMode]);
+	if (LN_ENSURE_GLERROR()) return;
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap[state.WrapMode]);
+	if (LN_ENSURE_GLERROR()) return;
 }
 
 //==============================================================================
@@ -108,9 +112,12 @@ void GLTexture::onResetDevice()
 	getGLTextureFormat(m_format, &internalFormat, &pixelFormat, &elementType);
 
 	// テクスチャ作成
-	glGenTextures(1, &m_glTexture); LN_CHECK_GLERROR();
-	glBindTexture(GL_TEXTURE_2D, m_glTexture); LN_CHECK_GLERROR();
-	glTexImage2D(GL_TEXTURE_2D, levels, internalFormat, m_realSize.width, m_realSize.height, 0, pixelFormat, elementType, NULL); LN_CHECK_GLERROR();
+	glGenTextures(1, &m_glTexture);
+	if (LN_ENSURE_GLERROR()) return;
+	glBindTexture(GL_TEXTURE_2D, m_glTexture);
+	if (LN_ENSURE_GLERROR()) return;
+	glTexImage2D(GL_TEXTURE_2D, levels, internalFormat, m_realSize.width, m_realSize.height, 0, pixelFormat, elementType, NULL);
+	if (LN_ENSURE_GLERROR()) return;
 	
 	// デフォルトのサンプラステート (セットしておかないとサンプリングできない)
 	setGLSamplerState(m_samplerState);
@@ -122,7 +129,8 @@ void GLTexture::onResetDevice()
 void GLTexture::setSamplerState(const SamplerState& state)
 {
 	m_samplerState = state;
-	glGenTextures(1, &m_glTexture); LN_CHECK_GLERROR();
+	glGenTextures(1, &m_glTexture);
+	if (LN_ENSURE_GLERROR()) return;
 	setGLSamplerState(m_samplerState);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
@@ -139,7 +147,8 @@ void GLTexture::setSubData(const PointI& point, const void* data, size_t dataByt
 		GLenum internalFormat, pixelFormat, elementType;
 		getGLTextureFormat(m_format, &internalFormat, &pixelFormat, &elementType);
 
-		glBindTexture(GL_TEXTURE_2D, m_glTexture); LN_CHECK_GLERROR();
+		glBindTexture(GL_TEXTURE_2D, m_glTexture);
+		if (LN_ENSURE_GLERROR()) return;
 		/* テクスチャ画像はバイト単位に詰め込まれている */
 		//glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		glTexSubImage2D(
@@ -151,8 +160,9 @@ void GLTexture::setSubData(const PointI& point, const void* data, size_t dataByt
 			dataBitmapSize.height,///bitmap->GetSize().Height,
 			pixelFormat,
 			elementType,
-			data);
-		LN_CHECK_GLERROR();	// ここで GL_INVALID_VALUE になる場合は MipLevel の指定が間違っているかもしれない
+			data);// ここで GL_INVALID_VALUE になる場合は MipLevel の指定が間違っているかもしれな
+		if (LN_ENSURE_GLERROR()) return;
+
 		//glEnable(GL_TEXTURE_2D);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -229,9 +239,14 @@ void GLRenderTargetTexture::onResetDevice()
 {
 	if (m_glTexture == 0)
 	{        
-		glGenTextures(1, &m_glTexture); LN_CHECK_GLERROR();
-		glBindTexture(GL_TEXTURE_2D, m_glTexture); LN_CHECK_GLERROR();
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1); LN_CHECK_GLERROR();
+		glGenTextures(1, &m_glTexture);
+		if (LN_ENSURE_GLERROR()) return;
+
+		glBindTexture(GL_TEXTURE_2D, m_glTexture);
+		if (LN_ENSURE_GLERROR()) return;
+
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		if (LN_ENSURE_GLERROR()) return;
 
 		GLenum internalFormat;
 		getGLTextureFormat(m_format, &internalFormat, &m_pixelFormat, &m_elementType);
@@ -246,16 +261,24 @@ void GLRenderTargetTexture::onResetDevice()
 			m_pixelFormat,
 			m_elementType,
 			NULL);
-		LN_CHECK_GLERROR();
+		if (LN_ENSURE_GLERROR()) return;
 
 		// glTexParameteri() を一つも指定しないと, テクスチャが正常に使用できない場合がある
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);  LN_CHECK_GLERROR();
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);  LN_CHECK_GLERROR();
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);     LN_CHECK_GLERROR();
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);     LN_CHECK_GLERROR();
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		if (LN_ENSURE_GLERROR()) return;
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		if (LN_ENSURE_GLERROR()) return;
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		if (LN_ENSURE_GLERROR()) return;
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		if (LN_ENSURE_GLERROR()) return;
 		//glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);     LN_CHECK_GLERROR();
 
-		glBindTexture(GL_TEXTURE_2D, 0); LN_CHECK_GLERROR();
+		glBindTexture(GL_TEXTURE_2D, 0);
+		if (LN_ENSURE_GLERROR()) return;
 	}
 }
 
@@ -277,9 +300,12 @@ RawBitmap* GLRenderTargetTexture::lock()
 	// ビットマップデータは上下逆になっていて、[0] は (0, height-1) を指す
 	m_lockingBitmap = LN_NEW RawBitmap(m_size, Utils::translatePixelFormat(m_format), true);
 
-	glBindTexture(GL_TEXTURE_2D, m_glTexture); LN_CHECK_GLERROR();
-	glGetTexImage(GL_TEXTURE_2D, 0, m_pixelFormat, m_elementType, m_lockingBitmap->getBitmapBuffer()->getData()); LN_CHECK_GLERROR();
-	glBindTexture(GL_TEXTURE_2D, 0); LN_CHECK_GLERROR();
+	glBindTexture(GL_TEXTURE_2D, m_glTexture);
+	if (LN_ENSURE_GLERROR()) return nullptr;
+	glGetTexImage(GL_TEXTURE_2D, 0, m_pixelFormat, m_elementType, m_lockingBitmap->getBitmapBuffer()->getData());
+	if (LN_ENSURE_GLERROR()) return nullptr;
+	glBindTexture(GL_TEXTURE_2D, 0);
+	if (LN_ENSURE_GLERROR()) return nullptr;
 
 	return m_lockingBitmap;
 }
@@ -339,9 +365,12 @@ void GLDepthBuffer::onResetDevice()
 		GLenum internalFormat, pixelFormat, elementType;
 		getGLTextureFormat(m_format, &internalFormat, &pixelFormat, &elementType);
 
-		glGenRenderbuffers(1, &m_glBuffer); LN_CHECK_GLERROR();
-		glBindRenderbuffer(GL_RENDERBUFFER, m_glBuffer); LN_CHECK_GLERROR();
-		glRenderbufferStorage(GL_RENDERBUFFER, internalFormat, m_realSize.width, m_realSize.height); LN_CHECK_GLERROR();
+		glGenRenderbuffers(1, &m_glBuffer);
+		if (LN_ENSURE_GLERROR()) return;
+		glBindRenderbuffer(GL_RENDERBUFFER, m_glBuffer);
+		if (LN_ENSURE_GLERROR()) return;
+		glRenderbufferStorage(GL_RENDERBUFFER, internalFormat, m_realSize.width, m_realSize.height);
+		if (LN_ENSURE_GLERROR()) return;
 		glBindRenderbuffer(GL_RENDERBUFFER, 0);
 	}
 }

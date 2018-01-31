@@ -56,12 +56,12 @@ using namespace ln;
 	ASSERT_NEAR(z_, plane.Normal.z, LN_FLOAT_THRESHOLD); \
 	ASSERT_NEAR(w_, plane.D, LN_FLOAT_THRESHOLD);
 
-//#define D3DX9_TEST
+#define D3DX9_TEST
 
 #ifdef D3DX9_TEST
 #define NOMINMAX
-#include <d3dx9math.h>
-#pragma comment(lib, "d3dx9.lib")
+#include <C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\d3dx9math.h>
+#pragma comment(lib, "C:\\Program Files (x86)\\Microsoft DirectX SDK (June 2010)\\Lib\\x86\\d3dx9.lib")
 
 inline void dumpFLOAT(const char* header, FLOAT v)
 {

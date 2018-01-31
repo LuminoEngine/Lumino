@@ -25,6 +25,9 @@ TEST_F(Test_Plane, Basic)
 		// つまり、左手座標系か右手座標系かで、正面が時計回りか反時計回りかが変わる。
 		Plane pl5(Vector3(0, 0, 0), Vector3(0, 0, 1), Vector3(1, 0, 0));
 		ASSERT_PLANE_NEAR(0, 1, 0, 0, pl5);
+
+		Plane pl6(Vector3(0, 0, 0), Vector3(1, 0, 0), Vector3(0, -1, 0));
+		ASSERT_PLANE_NEAR(0, 0, -1, 0, pl6);
 	}
 	// this->normalize
 	{

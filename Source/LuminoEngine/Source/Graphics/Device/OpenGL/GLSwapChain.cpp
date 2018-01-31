@@ -99,10 +99,18 @@ void GLSwapChain::onResetDevice()
 		1.0f, 1.0f, 0.0f, 1.0f, 1.0f,	// 右上
 		1.0f, -1.0f, 0.0f, 1.0f, 0.0f,	// 右下
 	};
-	glGenBuffers(1, &m_vertexBuffer); LN_CHECK_GLERROR();
-	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer); LN_CHECK_GLERROR();
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);  LN_CHECK_GLERROR();
-	glBindBuffer(GL_ARRAY_BUFFER, 0); LN_CHECK_GLERROR();
+
+	glGenBuffers(1, &m_vertexBuffer);
+	if (LN_ENSURE_GLERROR()) return;
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
+	if (LN_ENSURE_GLERROR()) return;
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	if (LN_ENSURE_GLERROR()) return;
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	if (LN_ENSURE_GLERROR()) return;
 }
 
 //------------------------------------------------------------------------------
@@ -150,10 +158,12 @@ void GLSwapChain::internalPresent(ITexture* colorBuffer, GLRenderer* renderer)
 
 	// 各設定をデフォルトに戻す
 	glUseProgram(0);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0); LN_CHECK_GLERROR();
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	if (LN_ENSURE_GLERROR()) return;
 
 	const SizeI& size = m_window->getSize();
-	glViewport(0, 0, size.width, size.height); LN_CHECK_GLERROR();
+	glViewport(0, 0, size.width, size.height);
+	if (LN_ENSURE_GLERROR()) return;
     
     /*
 	GLenum fs = glCheckFramebufferStatus( GL_FRAMEBUFFER );
@@ -176,34 +186,46 @@ void GLSwapChain::internalPresent(ITexture* colorBuffer, GLRenderer* renderer)
 	// VAO はコンテキスト間で共有できない。(WGL では動いたが、GLX では glBindVertexArray() でエラーとなった)
 	// そのため、この SwapChain 用の VAO を、現在のスレッドで作る。(WGL ではスレッド間共有できない)
 	if (m_vertexArray == 0) {
-		glGenVertexArrays(1, &m_vertexArray); LN_CHECK_GLERROR();
+		glGenVertexArrays(1, &m_vertexArray);
+		if (LN_ENSURE_GLERROR()) return;
 	}
 
 
-	glUseProgram(m_shaderProgram); LN_CHECK_GLERROR();
+	glUseProgram(m_shaderProgram);
+	if (LN_ENSURE_GLERROR()) return;
 
 	// テクスチャユニット0に戻す
-	glActiveTexture(GL_TEXTURE0); LN_CHECK_GLERROR();
-	glBindTexture(GL_TEXTURE_2D, static_cast<GLTextureBase*>(colorBuffer)->getGLTexture()); LN_CHECK_GLERROR();
-	glUniform1i(m_textureLoc, 0); LN_CHECK_GLERROR();	// テクスチャユニット 0 を割り当てる
+	glActiveTexture(GL_TEXTURE0);
+	if (LN_ENSURE_GLERROR()) return;
+	glBindTexture(GL_TEXTURE_2D, static_cast<GLTextureBase*>(colorBuffer)->getGLTexture());
+	if (LN_ENSURE_GLERROR()) return;
+	glUniform1i(m_textureLoc, 0);	// テクスチャユニット 0 を割り当てる
+	if (LN_ENSURE_GLERROR()) return;
 
 
 	// VAO と 頂点バッファを指定する
-	glBindVertexArray(m_vertexArray); LN_CHECK_GLERROR();
-	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer); LN_CHECK_GLERROR();
+	glBindVertexArray(m_vertexArray);
+	if (LN_ENSURE_GLERROR()) return;
+	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBuffer);
+	if (LN_ENSURE_GLERROR()) return;
 
 	// 頂点情報の格納場所と書式を指定する (glBindVertexArray の先にしておかないと GL_INVALID_OPERATION になった)
-	glVertexAttribPointer(m_positionLoc, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, 0); LN_CHECK_GLERROR();
-	glVertexAttribPointer(m_texCoordLoc, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, (GLfloat*)0 + 3); LN_CHECK_GLERROR();
+	glVertexAttribPointer(m_positionLoc, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, 0);
+	if (LN_ENSURE_GLERROR()) return;
+	glVertexAttribPointer(m_texCoordLoc, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 5, (GLfloat*)0 + 3);
+	if (LN_ENSURE_GLERROR()) return;
 
 	// attribute 変数を有効にする
-	glEnableVertexAttribArray(m_positionLoc); LN_CHECK_GLERROR();
-	glEnableVertexAttribArray(m_texCoordLoc); LN_CHECK_GLERROR();
+	glEnableVertexAttribArray(m_positionLoc);
+	if (LN_ENSURE_GLERROR()) return;
+	glEnableVertexAttribArray(m_texCoordLoc);
+	if (LN_ENSURE_GLERROR()) return;
 
 	//glClearColor(1, 0, 0, 1);
 	//glClear(GL_COLOR_BUFFER_BIT);
 	// 描画
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4); LN_CHECK_GLERROR();
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	if (LN_ENSURE_GLERROR()) return;
 
 	// attribute 変数を無効にする
 	glDisableVertexAttribArray(1);

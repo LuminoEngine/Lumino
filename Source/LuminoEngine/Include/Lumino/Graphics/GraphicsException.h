@@ -25,17 +25,5 @@ private:
 	//std::string	m_messageMBCS;	
 };
 
-class OpenGLException
-	: public RuntimeException
-{
-public:
-	OpenGLException();
-	OpenGLException(unsigned int gl_enum);
-	virtual Exception* copy() const;
-
-private:
-	void setMessage(unsigned int gl_enum);
-};
-
 LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

@@ -89,6 +89,8 @@ void Main()
 
 	//ZipFile::extractToDirectory(_T("D:\\MMD\\Materials\\Models\\人物\\にがもん式霊夢V01_s05a.zip"), _T("D:\\tmp\\V01_s05a"));
 
+	Plane pp(Vector3(0, 0, 0), Vector3(1, 0, 0), Vector3(0, -1, 0));
+
 	Engine::initialize();
 
 	Engine::getMainWindow()->setAllowDragDrop(true);

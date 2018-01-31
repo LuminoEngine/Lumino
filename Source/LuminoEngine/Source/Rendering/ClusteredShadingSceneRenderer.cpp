@@ -341,7 +341,7 @@ void ClusteredShadingGeometryRenderingPass::initialize()
 #include "Resource/ClusteredShadingDefault.fx.h"
 		};
 		static const size_t size = LN_ARRAY_SIZE_OF(data);
-		m_defaultShader = Shader::create((const char*)data, size, ShaderCodeType::RawHLSL);
+		m_defaultShader = Shader::create((const char*)data, size, nullptr, ShaderCodeType::RawHLSL);
 	}
 	
 	// TODO: getPass 引数型
@@ -353,7 +353,7 @@ void ClusteredShadingGeometryRenderingPass::initialize()
 #include "Resource/UnLighting.fx.h"
 		};
 		static const size_t size = LN_ARRAY_SIZE_OF(data);
-		m_unLightingShader = Shader::create((const char*)data, size, ShaderCodeType::RawHLSL);
+		m_unLightingShader = Shader::create((const char*)data, size, nullptr, ShaderCodeType::RawHLSL);
 	}
 	m_unLightingShaderTechnique = m_unLightingShader->getTechniques()[0];
 }
@@ -424,7 +424,7 @@ void DepthPrepass::initialize()
 #include "Resource/DepthPrepass.fx.h"
 		};
 		static const size_t size = LN_ARRAY_SIZE_OF(data);
-		m_defaultShader = Shader::create((const char*)data, size, ShaderCodeType::RawIR);
+		m_defaultShader = Shader::create((const char*)data, size, nullptr, ShaderCodeType::RawIR);
 	}
 
 	m_depthMap = Ref<RenderTargetTexture>::makeRef();
@@ -468,7 +468,7 @@ void ShadowCasterPass::initialize()
 #include "Resource/ShadowCaster.fx.h"
 		};
 		static const size_t size = LN_ARRAY_SIZE_OF(data);
-		m_defaultShader = Shader::create((const char*)data, size, ShaderCodeType::RawIR);
+		m_defaultShader = Shader::create((const char*)data, size, nullptr, ShaderCodeType::RawIR);
 	}
 
 	m_shadowMap = Ref<RenderTargetTexture>::makeRef();
