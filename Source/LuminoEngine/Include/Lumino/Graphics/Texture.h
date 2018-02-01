@@ -5,7 +5,6 @@
 #include "GraphicsResourceObject.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 namespace detail { class RenderTargetTextureCache; }
 class RawBitmap;
 class Font;
@@ -332,6 +331,5 @@ private:
 
 } // namespace tr
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END
 

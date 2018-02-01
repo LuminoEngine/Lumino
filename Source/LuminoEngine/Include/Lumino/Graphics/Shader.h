@@ -6,7 +6,6 @@
 #include "GraphicsResourceObject.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 class ShaderVariable;
 class CommonMaterial;
 class Shader;
@@ -585,5 +584,4 @@ private:
 	List<ShaderVariable*>		m_annotations;
 };
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

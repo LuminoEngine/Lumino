@@ -4,7 +4,6 @@
 #include "../Graphics/Text/Font.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 
 enum class BrushWrapMode
 {
@@ -209,6 +208,5 @@ private:
 	float			m_thickness;
 };
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END
 

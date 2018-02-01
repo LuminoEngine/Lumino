@@ -6,7 +6,6 @@
 #include "../Graphics/RenderingCommand.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 struct Vertex;
 
 namespace detail
@@ -140,5 +139,4 @@ private:
 };
 
 } // namespace detail
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

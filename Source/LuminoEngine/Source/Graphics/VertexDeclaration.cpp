@@ -6,7 +6,6 @@
 #include "Device/GraphicsDriverInterface.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 
 //==============================================================================
 // VertexDeclaration
@@ -106,5 +105,4 @@ void VertexDeclaration::onChangeDevice(Driver::IGraphicsDevice* device)
 	}
 }
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

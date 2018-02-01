@@ -7,7 +7,6 @@
 #include "FontGlyphTextureCache.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 
 //==============================================================================
 // GlyphRun
@@ -187,5 +186,4 @@ detail::FontGlyphTextureCache* GlyphRun::lookupFontGlyphTextureCache()
 	return m_layoutEngine->getFont()->GetGlyphTextureCache();
 }
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

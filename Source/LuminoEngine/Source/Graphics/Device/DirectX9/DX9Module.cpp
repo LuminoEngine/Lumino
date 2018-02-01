@@ -3,7 +3,6 @@
 #include "../../../Resource.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 
 //==============================================================================
 // DX9Module
@@ -427,5 +426,78 @@ TextureFormat DX9Module::TranslateFormatDxToLN(D3DFORMAT dx_format)
 	return TextureFormat::Unknown;
 }
 
-LN_NAMESPACE_GRAPHICS_END
+
+//==============================================================================
+// DX9Helper
+//==============================================================================
+bool DX9Helper::readRenderTargetData(IDirect3DDevice9* dxDevice, IDirect3DSurface9* dxSurface, void* outData)
+{
+	IDirect3DSurface9* dxSystemSurface = nullptr;
+
+	D3DSURFACE_DESC desc;
+	if (FAILED(dxSurface->GetDesc(&desc)))
+	{
+		goto ERROR_EXIT;
+	}
+
+	if (FAILED(dxDevice->CreateOffscreenPlainSurface(
+		desc.Width, desc.Height, desc.Format,
+		D3DPOOL_SYSTEMMEM, &dxSystemSurface, nullptr)))
+	{
+		goto ERROR_EXIT;
+	}
+
+	if (FAILED(dxDevice->GetRenderTargetData(dxSurface, dxSystemSurface)))
+	{
+		goto ERROR_EXIT;
+	}
+
+	D3DLOCKED_RECT	lockedRect;
+	if (FAILED(dxSystemSurface->LockRect(&lockedRect, nullptr, D3DLOCK_READONLY)))
+	{
+		goto ERROR_EXIT;
+	}
+
+	const byte_t* src = (const byte_t*)lockedRect.pBits;
+	byte_t* dst = (byte_t*)outData;
+	int rowSize = lockedRect.Pitch;
+
+	switch (desc.Format)
+	{
+	default:
+		for (UINT y = 0; y < desc.Height; y++)
+		{
+			byte_t* dstline = dst + (lockedRect.Pitch * y);
+			const byte_t* srcline = src + (lockedRect.Pitch * y);
+			memcpy(dstline, srcline, lockedRect.Pitch);
+		}
+		break;
+
+	case D3DFMT_X8R8G8B8:
+	case D3DFMT_A8R8G8B8:
+		// [B][G][R][A] -> [R][G][B][A]
+		for (UINT y = 0; y < desc.Height; y++)
+		{
+			const byte_t* s = (const byte_t*)src + (lockedRect.Pitch * y);
+			for (UINT x = 0; x < desc.Width; x++)
+			{
+				dst[2] = *s++;
+				dst[1] = *s++;
+				dst[0] = *s++;
+				dst[3] = *s++;
+				dst += 4;
+			}
+		}
+		break;
+	}
+
+	dxSystemSurface->UnlockRect();
+	dxSystemSurface->Release();
+	return true;
+
+ERROR_EXIT:
+	if (dxSystemSurface) dxSystemSurface->Release();
+	return false;
+}
+
 LN_NAMESPACE_END

@@ -18,7 +18,6 @@
 #include "WGLGraphicsDevice.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
 {
 	
@@ -299,5 +298,4 @@ bool WGLGraphicsDevice::CheckContainsExtensionString(const char* string, const G
 }
 
 } // namespace Driver
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

@@ -6,7 +6,6 @@
 #include "DX9Module.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
 {
 class DX9GraphicsDevice;
@@ -231,6 +230,7 @@ public:
 	virtual void setSamplerState(const SamplerState& state) { LN_UNREACHABLE(); }
 	virtual void setSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) { LN_UNREACHABLE(); }
 	virtual void setSubData3D(const Box32& box, const void* data, size_t dataBytes);
+	virtual void readData(void* outData) override;
 	virtual RawBitmap* lock();
 	virtual void unlock();
 
@@ -249,5 +249,4 @@ private:
 };
 
 } // namespace Driver
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

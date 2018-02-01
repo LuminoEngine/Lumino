@@ -26,5 +26,4 @@ private:
 	TextAlignment				m_textAlignment;
 };
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

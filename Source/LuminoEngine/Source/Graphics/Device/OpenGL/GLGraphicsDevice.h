@@ -9,7 +9,6 @@
 LN_NAMESPACE_BEGIN
 struct LuminoShaderIRTechnique;
 
-LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
 {
 class GLContext;
@@ -134,5 +133,4 @@ public:
 };
 
 } // namespace Driver
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

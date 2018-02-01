@@ -7,7 +7,6 @@
 #include "GLRenderer.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
 {
 
@@ -582,5 +581,4 @@ void GLRenderer::getPrimitiveInfo(PrimitiveType primitive, int primitiveCount, G
 }
 
 } // namespace Driver
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

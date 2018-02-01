@@ -13,7 +13,6 @@
 #include "Device/GraphicsDriverInterface.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 namespace detail
 {
 
@@ -398,5 +397,4 @@ void ContextInterface::makeBlendMode(BlendMode mode, RenderState* state)
 }
 
 } // namespace detail
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

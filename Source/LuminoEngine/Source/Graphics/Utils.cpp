@@ -5,7 +5,6 @@
 #include <Lumino/Graphics/Utils.h>
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 	
 //==============================================================================
 // Utils
@@ -87,5 +86,4 @@ bool Utils::isFloatFormat(TextureFormat format)
 	}
 }
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

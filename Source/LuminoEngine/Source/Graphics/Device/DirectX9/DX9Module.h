@@ -6,7 +6,6 @@
 #include <Lumino/Graphics/Common.h>
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 
 class DX9Module
 {
@@ -181,5 +180,11 @@ private:
 	static DllLoader	m_D3Dx9Module;	///< "d3dx9.dll"
 };
 
-LN_NAMESPACE_GRAPHICS_END
+class DX9Helper
+{
+public:
+	static bool readRenderTargetData(IDirect3DDevice9* dxDevice, IDirect3DSurface9* dxSurface, void* outData);
+};
+
+
 LN_NAMESPACE_END

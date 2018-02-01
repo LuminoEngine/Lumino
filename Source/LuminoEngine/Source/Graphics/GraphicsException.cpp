@@ -4,7 +4,6 @@
 #include "Device/OpenGL/GLCommon.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 
 //==============================================================================
 // CompilationException
@@ -49,5 +48,4 @@ const Char* CompilationException::getMessage() const
 	return m_message.c_str();
 }
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

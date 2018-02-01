@@ -5,8 +5,6 @@
 
 LN_NAMESPACE_BEGIN
 class PlatformWindow;
-
-LN_NAMESPACE_GRAPHICS_BEGIN
 class FrameCapturerContext;
 
 /**
@@ -54,5 +52,4 @@ LN_INTERNAL_ACCESS:
 	Ref<FrameCapturerContext>		m_frameCapturerContext;
 };
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

@@ -2,7 +2,6 @@
 #pragma once 
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 
 /** ブレンディングの演算方法 */
 enum class BlendOp
@@ -154,5 +153,4 @@ public:
 	bool operator != (const DepthStencilState& state) const { return !equals(state); }
 };
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

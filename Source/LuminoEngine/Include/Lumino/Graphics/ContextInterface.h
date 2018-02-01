@@ -6,7 +6,6 @@
 #include "RenderState.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 namespace detail {
 class RenderTargetTextureCache;
 class IRenderFeature;
@@ -186,6 +185,5 @@ private:
 };
 
 } // namespace detail
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END
 

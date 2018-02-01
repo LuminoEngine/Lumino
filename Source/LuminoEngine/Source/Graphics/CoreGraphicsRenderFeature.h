@@ -9,7 +9,6 @@
 #include <Lumino/Rendering/Common.h>
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 class SwapChain;
 
 namespace detail
@@ -146,5 +145,4 @@ LN_INTERNAL_ACCESS:
 };
 
 } // namespace detail
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

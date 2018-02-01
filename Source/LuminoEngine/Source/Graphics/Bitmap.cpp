@@ -6,7 +6,6 @@
 #include <Lumino/Graphics/Bitmap.h>
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 
 //==============================================================================
 // RawBitmap
@@ -858,5 +857,4 @@ void BitmapHelper::blitRawSimple(void* dst, const void* src, size_t width, size_
 
 } // namespace detail
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

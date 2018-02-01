@@ -3,7 +3,6 @@
 #include <Lumino/Graphics/BitmapPainter.h>
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 
 //==============================================================================
 // RawBitmap
@@ -101,5 +100,4 @@ void BitmapFilter::flipVertical(RawBitmap* dst, const RawBitmap* src)
 	}
 }
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

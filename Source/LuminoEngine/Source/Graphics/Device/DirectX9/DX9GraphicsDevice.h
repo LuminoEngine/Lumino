@@ -6,7 +6,6 @@
 #include "DX9Renderer.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
 {
 class DX9SwapChain;
@@ -115,5 +114,4 @@ private:
 };
 
 } // namespace Driver
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

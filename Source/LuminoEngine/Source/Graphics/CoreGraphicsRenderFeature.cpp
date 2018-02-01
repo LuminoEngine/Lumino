@@ -26,7 +26,6 @@ static detail::CoreGraphicsRenderFeature* getRenderer()
 // Details::Renderer
 //==============================================================================
 
-LN_NAMESPACE_GRAPHICS_BEGIN
 namespace detail
 {
 
@@ -426,5 +425,4 @@ void CoreGraphicsRenderFeature::verifyFrameBuffers()
 }
 
 } // namespace detail
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END
