@@ -360,18 +360,28 @@ void ClusteredShadingGeometryRenderingPass::initialize()
 
 void ClusteredShadingGeometryRenderingPass::selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy)
 {
-	// TODO: ユーザーシェーダから UnLit 取れればそれを使う
+	ShaderTechniqueClassSet classSet;
+	classSet.ligiting = ShaderTechniqueClass_Ligiting::Forward;
+	classSet.phase = ShaderTechniqueClass_Phase::Geometry;
+	classSet.meshProcess = ShaderTechniqueClass_MeshProcess::StaticMesh;
+
 	if (stageData.shadingModel == ShadingModel::UnLighting)
 	{
-		outPolicy->shaderTechnique = m_unLightingShaderTechnique;
+		classSet.shadingModel = ShaderTechniqueClass_ShadingModel::UnLighting;
+		outPolicy->shaderTechnique = stageData.shader->findTechniqueByClass(classSet);
+		if (!outPolicy->shaderTechnique)
+		{
+			outPolicy->shaderTechnique = m_unLightingShaderTechnique;
+		}
 	}
 	else
 	{
-		outPolicy->shaderTechnique = selectShaderTechniqueHelper(
-			stageData.shader,
-			ClusteredShadingGeometryRenderingPass_TechniqueName,
-			//ClusteredShadingGeometryRenderingPass_PassName,
-			m_defaultShaderTechnique);
+		classSet.shadingModel = ShaderTechniqueClass_ShadingModel::Default;
+		outPolicy->shaderTechnique = stageData.shader->findTechniqueByClass(classSet);
+		if (!outPolicy->shaderTechnique)
+		{
+			outPolicy->shaderTechnique = m_defaultShaderTechnique;
+		}
 	}
 
 	outPolicy->shader = outPolicy->shaderTechnique->getOwnerShader();

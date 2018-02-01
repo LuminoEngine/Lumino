@@ -652,24 +652,24 @@ void RenderingPass2::overrideCameraInfo(detail::CameraInfo* cameraInfo)
 //	return shader->getTechniques().getAt(0)->getPasses().getAt(0);
 //}
 
-ShaderTechnique* RenderingPass2::selectShaderTechniqueHelper(Shader* materialShader, const String& techniqueName, ShaderTechnique* defaultTech)
-{
-	if (materialShader)
-	{
-		ShaderTechnique* tech = materialShader->findTechnique(techniqueName);
-		if (tech)
-		{
-			return tech;
-			//ShaderPass* pass = tech->getPass(passName.c_str());	// TODO:
-			////if (pass)
-			//{
-			//	return pass;
-			//}
-		}
-	}
-
-	return defaultTech;
-}
+//ShaderTechnique* RenderingPass2::selectShaderTechniqueHelper(Shader* materialShader, const String& techniqueName, ShaderTechnique* defaultTech)
+//{
+//	if (materialShader)
+//	{
+//		ShaderTechnique* tech = materialShader->findTechnique(techniqueName);
+//		if (tech)
+//		{
+//			return tech;
+//			//ShaderPass* pass = tech->getPass(passName.c_str());	// TODO:
+//			////if (pass)
+//			//{
+//			//	return pass;
+//			//}
+//		}
+//	}
+//
+//	return defaultTech;
+//}
 
 ShaderTechnique* RenderingPass2::selectShaderTechniqueHelperSimple(Shader* materialShader, Shader* defaultShader)
 {
