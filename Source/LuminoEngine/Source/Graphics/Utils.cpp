@@ -64,8 +64,6 @@ bool Utils::isSRGBFormat(TextureFormat format)
 	{
 	case TextureFormat::R8G8B8A8:
 	case TextureFormat::R8G8B8X8:
-	case TextureFormat::B8G8R8A8:
-	case TextureFormat::B8G8R8X8:
 		return true;
 	default:
 		return false;

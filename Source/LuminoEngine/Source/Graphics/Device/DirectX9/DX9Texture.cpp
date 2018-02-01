@@ -251,23 +251,8 @@ void DX9Texture::getData(const RectI& rect, void* outData)
 		LN_NOTIMPLEMENTED();
 	}
 
-	D3DLOCKED_RECT lockedRect;
-	LN_COMCALL(m_dxTexture->LockRect(0, &lockedRect, NULL, D3DLOCK_READONLY));
-
-	size_t pixelByteSize = lockedRect.Pitch / m_size.width;		// ピクセルバイト数
-	size_t srcRowBytes = pixelByteSize * m_realSize.width;		// 横一列のバイト数
-
-	byte_t* dst = (byte_t*)outData;
-	const byte_t* src = (const byte_t*)lockedRect.pBits;
-	for (int row = 0; row < rect.height; ++row)
-	{
-		byte_t* dstline = dst + (lockedRect.Pitch * row);
-		//byte_t* dstline = dst + (lockedRect.Pitch * (rect.height - row - 1));
-		const byte_t* srcline = src + (srcRowBytes * row);
-		memcpy(dstline, srcline, srcRowBytes);
-	}
-
-	LN_COMCALL(m_dxTexture->UnlockRect(0));
+	bool r = DX9Helper::readTextureData(m_dxTexture, 0, outData);
+	if (LN_ENSURE(r)) return;
 }
 
 //------------------------------------------------------------------------------
@@ -443,12 +428,6 @@ void DX9RenderTargetTexture::onResetDevice()
 	IDirect3DDevice9* dxDevice = m_graphicsDevice->getIDirect3DDevice9();
 
 	// レンダーターゲットは GDI 互換フォーマットでなければならない (Radeon HD8490)
-	if (m_format == TextureFormat::R8G8B8A8) {
-		m_format = TextureFormat::B8G8R8A8;
-	}
-	else if (m_format == TextureFormat::R8G8B8X8) {
-		m_format = TextureFormat::B8G8R8X8;
-	}
 
 	D3DFORMAT dx_fmt = DX9Module::TranslateLNFormatToDxFormat(m_format);
 	//switch (dx_fmt)

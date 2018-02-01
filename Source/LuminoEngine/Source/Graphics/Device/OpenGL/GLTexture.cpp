@@ -21,8 +21,6 @@ void GLTextureBase::getGLTextureFormat(TextureFormat format, GLenum* internalFor
 		{ GL_NONE,				GL_NONE,			GL_NONE },			// TextureFormat::Unknown
 		{ GL_RGBA8,				GL_RGBA,			GL_UNSIGNED_BYTE },	// TextureFormat::R8G8B8A8,            ///< 32 ビットのアルファ付きフォーマット (uint32_t アクセス時の表現。lnByte[4] にすると、ABGR)
 		{ GL_RGB,				GL_RGBA,			GL_UNSIGNED_BYTE },	// TextureFormat::R8G8B8X8,            ///< 32 ビットのアルファ無しフォーマット
-		{ GL_BGRA,				GL_BGRA,			GL_UNSIGNED_BYTE },	// TextureFormat::B8G8R8A8,            ///< 32 ビットのアルファ付きフォーマット
-		{ GL_BGR,				GL_BGRA,			GL_UNSIGNED_BYTE },	// TextureFormat::B8G8R8X8,            ///< 32 ビットのアルファ無しフォーマット
 		{ GL_RGBA16F,			GL_RGBA,			GL_HALF_FLOAT },	// TextureFormat::A16B16G16R16F,       ///< 64 ビットの浮動小数点フォーマット
 		{ GL_RGBA32F,			GL_RGBA,			GL_FLOAT },			// TextureFormat::A32B32G32R32F,       ///< 128 ビットの浮動小数点フォーマット
 		{ GL_R16F,				GL_RED,				GL_HALF_FLOAT },	// TextureFormat::R16F,

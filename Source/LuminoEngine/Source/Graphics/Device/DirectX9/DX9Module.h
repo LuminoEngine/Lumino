@@ -183,7 +183,9 @@ private:
 class DX9Helper
 {
 public:
+	static bool readTextureData(IDirect3DTexture9* dxTexture, UINT level, void* outData);
 	static bool readRenderTargetData(IDirect3DDevice9* dxDevice, IDirect3DSurface9* dxSurface, void* outData);
+	static bool readLockedRectData(const D3DSURFACE_DESC& desc, const D3DLOCKED_RECT& lockedRect, void* outData);
 };
 
 

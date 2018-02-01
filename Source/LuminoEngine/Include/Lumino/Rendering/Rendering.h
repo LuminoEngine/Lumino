@@ -635,7 +635,6 @@ public:
 
 	/**
 		@brief
-		@details	デフォルトでは反時計回りが表面となります。
 	*/
 	void drawSquarePrimitive(
 		const Vector3& position1, const Vector2& uv1, const Color& color1,

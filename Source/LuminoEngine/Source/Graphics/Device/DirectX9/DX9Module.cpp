@@ -387,10 +387,8 @@ D3DFORMAT DX9Module::TranslateLNFormatToDxFormat(TextureFormat format)
 	{
 		D3DFMT_UNKNOWN,			// TextureFormat::Unknown
 
-		D3DFMT_A8B8G8R8,		// TextureFormat::R8G8B8A8
-		D3DFMT_X8B8G8R8,		// TextureFormat::R8G8B8X8
-		D3DFMT_A8R8G8B8,		// TextureFormat::B8G8R8A8 (いつも使ってた D3DFMT_A8R8G8B8)
-		D3DFMT_X8R8G8B8,		// TextureFormat::B8G8R8X8
+		D3DFMT_A8R8G8B8,		// TextureFormat::R8G8B8A8
+		D3DFMT_X8R8G8B8,		// TextureFormat::R8G8B8X8
 
 		D3DFMT_A16B16G16R16F,	// TextureFormat::R16G16B16A16_Float
 		D3DFMT_A32B32G32R32F,	// TextureFormat::R32G32B32A32_Float
@@ -410,26 +408,47 @@ TextureFormat DX9Module::TranslateFormatDxToLN(D3DFORMAT dx_format)
 {
 	switch (dx_format)
     {
-	case D3DFMT_A8B8G8R8:		return TextureFormat::R8G8B8A8;
-	case D3DFMT_X8B8G8R8:		return TextureFormat::R8G8B8X8;
-	case D3DFMT_A8R8G8B8:		return TextureFormat::B8G8R8A8;
-	case D3DFMT_X8R8G8B8:		return TextureFormat::B8G8R8X8;
-
+	case D3DFMT_A8R8G8B8:		return TextureFormat::R8G8B8A8;
+	case D3DFMT_X8R8G8B8:		return TextureFormat::R8G8B8X8;
 	case D3DFMT_A16B16G16R16F:	return TextureFormat::R16G16B16A16_Float;
 	case D3DFMT_A32B32G32R32F:	return TextureFormat::R32G32B32A32_Float;
 	case D3DFMT_D24S8:			return TextureFormat::D24S8;
 	case D3DFMT_R16F:			return TextureFormat::R16_Float;
 	case D3DFMT_R32F:			return TextureFormat::R32_Float;
 	//case D3DFMT_INDEX32:		return TextureFormat::R32_UInt;
+	default:
+		LN_NOTIMPLEMENTED();
+		return TextureFormat::Unknown;
     }
-
-	return TextureFormat::Unknown;
 }
 
 
 //==============================================================================
 // DX9Helper
 //==============================================================================
+bool DX9Helper::readTextureData(IDirect3DTexture9* dxTexture, UINT level, void* outData)
+{
+	LN_CHECK(dxTexture);
+	LN_CHECK(outData);
+
+	D3DSURFACE_DESC desc;
+	if (FAILED(dxTexture->GetLevelDesc(level, &desc)))
+	{
+		return false;
+	}
+
+	D3DLOCKED_RECT lockedRect;
+	if (FAILED(dxTexture->LockRect(level, &lockedRect, NULL, D3DLOCK_READONLY)))
+	{
+		return false;
+	}
+
+	bool result = readLockedRectData(desc, lockedRect, outData);
+
+	dxTexture->UnlockRect(level);
+	return result;
+}
+
 bool DX9Helper::readRenderTargetData(IDirect3DDevice9* dxDevice, IDirect3DSurface9* dxSurface, void* outData)
 {
 	IDirect3DSurface9* dxSystemSurface = nullptr;
@@ -457,6 +476,21 @@ bool DX9Helper::readRenderTargetData(IDirect3DDevice9* dxDevice, IDirect3DSurfac
 	{
 		goto ERROR_EXIT;
 	}
+
+	bool result = readLockedRectData(desc, lockedRect, outData);
+
+	dxSystemSurface->UnlockRect();
+	dxSystemSurface->Release();
+	return result;
+
+ERROR_EXIT:
+	if (dxSystemSurface) dxSystemSurface->Release();
+	return false;
+}
+
+bool DX9Helper::readLockedRectData(const D3DSURFACE_DESC& desc, const D3DLOCKED_RECT& lockedRect, void* outData)
+{
+	LN_CHECK(outData);
 
 	const byte_t* src = (const byte_t*)lockedRect.pBits;
 	byte_t* dst = (byte_t*)outData;
@@ -491,13 +525,7 @@ bool DX9Helper::readRenderTargetData(IDirect3DDevice9* dxDevice, IDirect3DSurfac
 		break;
 	}
 
-	dxSystemSurface->UnlockRect();
-	dxSystemSurface->Release();
 	return true;
-
-ERROR_EXIT:
-	if (dxSystemSurface) dxSystemSurface->Release();
-	return false;
 }
 
 LN_NAMESPACE_END

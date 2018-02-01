@@ -429,7 +429,7 @@ Ref<Texture> ModelManager::createTexture(const PathName& parentDir, const String
 	}
 
 	// TODO: キャッシュが効かない
-	auto tex = newObject<Texture2D>(path, TextureFormat::B8G8R8A8, false);	// TODO: mipmap
+	auto tex = newObject<Texture2D>(path, TextureFormat::R8G8B8A8, false);	// TODO: mipmap
 	return tex;
 }
 
