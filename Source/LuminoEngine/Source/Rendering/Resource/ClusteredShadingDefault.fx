@@ -5,6 +5,7 @@
 #include <Lumino.fxh>
 #include <LuminoPBR.fxh>
 #include <LuminoShadow.fxh>
+#include <LuminoSkinning.fxh>
 
 
 
@@ -539,6 +540,16 @@ _lngs_VSOutput _lngs_VS_ClusteredForward_Geometry(LN_VSInput vsi)
 	MyVFMain(vsi, o.user);	// ★ User定義呼び出し
 	return o;
 }
+// auto generation
+_lngs_VSOutput _lngs_VS_ClusteredForward_Geometry_SkinnedMesh(LN_VSInput vsi)
+{
+	_lngs_VSOutput o;
+	o.common	= _LN_ProcessVertex_SkinnedCommon(vsi);
+	o.extra		= _LN_ProcessVertex_ClusteredForward(vsi);
+	// ★ Scene固有のコードはここに直接生成する (ピクセルシェーダと書き方を合わせたい)
+	MyVFMain(vsi, o.user);	// ★ User定義呼び出し
+	return o;
+}
 
 
 struct _lngs_PSInput
@@ -592,6 +603,15 @@ technique Forward_Geometry
 	pass Pass1
 	{
 		VertexShader = compile vs_3_0 _lngs_VS_ClusteredForward_Geometry();
+		PixelShader	 = compile ps_3_0 _lngs_PS_ClusteredForward_Geometry();
+	}
+}
+
+technique Forward_Geometry_SkinnedMesh
+{
+	pass Pass1
+	{
+		VertexShader = compile vs_3_0 _lngs_VS_ClusteredForward_Geometry_SkinnedMesh();
 		PixelShader	 = compile ps_3_0 _lngs_PS_ClusteredForward_Geometry();
 	}
 }
