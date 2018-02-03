@@ -16,6 +16,7 @@ class Font;
 class CommonMaterial;
 class MeshResource;
 class StaticMeshModel;
+class SkinnedMeshModel;
 class DrawList;
 class RenderView;
 class RenderDiag;
@@ -188,12 +189,14 @@ public:
 	detail::IRenderFeature* renderFeature = nullptr;
 	DrawElementList*	m_ownerDrawElementList;
 	int					subsetCount = 1;
-
+	ShaderTechniqueClass_MeshProcess	vertexProcessing = ShaderTechniqueClass_MeshProcess::StaticMesh;
 
 	DrawElement();
 	virtual ~DrawElement();
 
 	const Matrix& getTransform(DrawElementList* oenerList) const;
+
+	virtual CommonMaterial*	getPriorityMaterial(int subsetIndex) { return priorityMaterial; }
 
 	virtual void makeElementInfo(DrawElementList* oenerList, const CameraInfo& cameraInfo, RenderView* renderView, ElementInfo* outInfo);
 	virtual void makeSubsetInfo(DrawElementList* oenerList, RenderStage* stage, SubsetInfo* outInfo);
@@ -660,6 +663,8 @@ public:
 
 	void drawMesh(MeshResource* mesh, int subsetIndex, CommonMaterial* material);
 	//void drawMesh(StaticMeshModel* mesh, int subsetIndex, CommonMaterial* material);
+
+	void drawSkinnedMesh(SkinnedMeshModel* mesh);
 
 	void blit(Texture* source);
 	void blit(Texture* source, const Matrix& transform);

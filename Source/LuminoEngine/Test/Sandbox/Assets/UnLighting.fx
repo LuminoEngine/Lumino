@@ -1,6 +1,9 @@
 
-float4x4	ln_WorldViewProjection;
-texture2D	ln_MaterialTexture;
+#include <Lumino.fxh>
+#include <LuminoSkinning.fxh>
+
+//float4x4	ln_WorldViewProjection;
+//texture2D	ln_MaterialTexture;
 
 sampler2D TextureSampler = sampler_state
 {
@@ -9,13 +12,6 @@ sampler2D TextureSampler = sampler_state
 	MAGFILTER = LINEAR;
 };
 
-struct VSInput
-{
-	float3	Pos			: POSITION;
-	float2	UV			: TEXCOORD0;
-	float4	Color		: COLOR0;
-	float3	Normal		: NORMAL0;
-};
 
 struct VSOutput
 {
@@ -32,10 +28,28 @@ struct PSInput
 	float3	Pos			: TEXCOORD1;
 };
 
-VSOutput VS_ShadowCaster(VSInput input)
+VSOutput VS_ShadowCaster(LN_VSInput input)
 {
 	VSOutput output;
 	output.svPos	= mul(float4(input.Pos, 1.0), ln_WorldViewProjection);
+	output.UV		= input.UV;
+	output.Color	= input.Color;
+	output.Pos 		= input.Pos;
+	return output;
+}
+
+VSOutput VS_Skinned(LN_VSInput input)
+{
+	LN_SkinningOutput local = LN_SkinningVertex(input.Pos, input.Normal, input.BlendWeight, input.BlendIndices);
+	
+	
+	
+	//float2 uv = ln_BoneTextureReciprocalSize;
+	//float4 tc0 = float4( 0.5f * uv.x, (boneIndex + 0.5f) * uv.y, 0, 1 );	// +0.5 ‚Í”¼ƒsƒNƒZƒ‹•ª
+	
+	VSOutput output;
+	output.svPos	= mul(float4(local.Position, 1.0), ln_WorldViewProjection);
+	//output.svPos	= mul(float4(input.Pos, 1.0), ln_WorldViewProjection);
 	output.UV		= input.UV;
 	output.Color	= input.Color;
 	output.Pos 		= input.Pos;
@@ -68,7 +82,7 @@ float4 PS_ShadowCaster(PSInput input) : COLOR0
 	//return (tex2D(TextureSampler, input.UV)) * input.Color;
 }
 
-VSOutput VS_Outline(VSInput input)
+VSOutput VS_Outline(LN_VSInput input)
 {
 	//float3 offset = input.Normal * 0.035;
 	float3 offset = input.Normal * 0.035;
@@ -102,6 +116,15 @@ technique Forward_Geometry
 	pass Pass2
 	{
 		VertexShader = compile vs_3_0 VS_ShadowCaster();
+		PixelShader	 = compile ps_3_0 PS_ShadowCaster();
+	}
+}
+
+technique Forward_Geometry_SkinnedMesh
+{
+	pass Pass1
+	{
+		VertexShader = compile vs_3_0 VS_Skinned();
 		PixelShader	 = compile ps_3_0 PS_ShadowCaster();
 	}
 }

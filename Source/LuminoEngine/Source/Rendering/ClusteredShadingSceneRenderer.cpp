@@ -363,7 +363,7 @@ void ClusteredShadingGeometryRenderingPass::selectElementRenderingPolicy(DrawEle
 	ShaderTechniqueClassSet classSet;
 	classSet.ligiting = ShaderTechniqueClass_Ligiting::Forward;
 	classSet.phase = ShaderTechniqueClass_Phase::Geometry;
-	classSet.meshProcess = ShaderTechniqueClass_MeshProcess::StaticMesh;
+	classSet.meshProcess = element->vertexProcessing;
 
 	if (stageData.shadingModel == ShadingModel::UnLighting)
 	{

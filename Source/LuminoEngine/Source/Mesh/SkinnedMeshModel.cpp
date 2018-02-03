@@ -425,7 +425,7 @@ void SkinnedMeshModel::updateSkinningMatrices()
 	// TODO: できれば一連の処理の中で必ず通るところに移動したい
 	for (SkinnedMeshBone* bone : m_allBoneList)
 	{
-		bone->resetLocalTransform();
+		//bone->resetLocalTransform();
 	}
 }
 
@@ -546,8 +546,10 @@ void SkinnedMeshBone::updateGlobalTransform(bool hierarchical)
 	// m_localTransform は、ボーンのローカル姿勢でアニメーションが適用されている。
 	// 適用されていなければ Identity。
 	//m_combinedMatrix = m_localTransform;
+	// TODO: * ではなく一気に作ったほうがはやいかも
 	m_combinedMatrix =
 		//Matrix::MakeTranslation(-m_core->OrgPosition) *
+		Matrix::makeScaling(m_localTransform.scale) *
 		Matrix::makeRotationQuaternion(m_localTransform.rotation) *
 		Matrix::makeTranslation(m_localTransform.translation)/* *
 															 Matrix::MakeTranslation(m_core->OrgPosition)*/;

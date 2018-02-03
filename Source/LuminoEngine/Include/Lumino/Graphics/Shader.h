@@ -112,8 +112,8 @@ struct ElementInfo
 	Matrix				WorldViewProjectionMatrix;
 	DynamicLightInfo**	affectedLights;
 
-	Texture*            boneTexture = nullptr;
-	Texture*            boneLocalQuaternionTexture = nullptr;
+	Texture2D*			boneTexture = nullptr;
+	Texture2D*			boneLocalQuaternionTexture = nullptr;
 };
 
 // サブセット単位のデータに関する情報

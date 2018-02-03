@@ -8,6 +8,7 @@
 #include <Lumino/Rendering/SceneRenderer.h>	// TODO
 #include <Lumino/Graphics/ContextInterface.h>
 #include <Lumino/Mesh/Mesh.h>
+#include <Lumino/Mesh/SkinnedMeshModel.h>
 #include "../Graphics/Device/GraphicsDriverInterface.h"
 #include "../Graphics/GraphicsManager.h"
 #include "../Graphics/CoreGraphicsRenderFeature.h"
@@ -1507,6 +1508,69 @@ void DrawList::drawCone(float radius, float height, int slices, const Color& col
 void DrawList::drawMesh(MeshResource* mesh, int subsetIndex, CommonMaterial* material)
 {
 	drawMeshResourceInternal(mesh, subsetIndex, material);
+}
+
+void DrawList::drawSkinnedMesh(SkinnedMeshModel* mesh)
+{
+    class DrawElement_drawSkinnedMesh : public detail::LightingDrawElement
+    {
+    public:
+        Ref<SkinnedMeshModel>    mesh;
+		detail::CommandDataCache::DataHandle skinningMatricesDataHandle;
+
+
+		virtual CommonMaterial*	getPriorityMaterial(int subsetIndex)
+		{
+			MeshResource* m = mesh->getMeshResource(0);
+			MeshAttribute attr;
+			m->getMeshAttribute(subsetIndex, &attr);
+			return mesh->m_mesh->getMaterial(attr.MaterialIndex);
+		}
+
+		virtual void makeElementInfo(detail::DrawElementList* oenerList, const detail::CameraInfo& cameraInfo, RenderView* renderView, detail::ElementInfo* outInfo) override
+		{
+			detail::LightingDrawElement::makeElementInfo(oenerList, cameraInfo, renderView, outInfo);
+
+			outInfo->boneTexture->setMappedData(oenerList->getExtData(skinningMatricesDataHandle));
+		}
+
+        virtual void drawSubset(const DrawArgs& e, int subsetIndex) override
+        {
+			MeshResource* m = mesh->getMeshResource(0);
+			MeshAttribute attr;
+			m->getMeshAttribute(subsetIndex, &attr);
+			//renderer->drawMesh(m, i, mesh->getMaterial(attr.MaterialIndex));
+            e.context->beginMeshRenderer()->drawMesh(m, attr.StartIndex, attr.PrimitiveNum, attr.primitiveType);
+        }
+        virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_LT("DrawMeshResourceInternal")); }
+    };
+
+    ////MeshAttribute attr;
+    ////mesh->getMeshAttribute(subsetIndex, &attr);
+    ////if (attr.PrimitiveNum == 0) return;        // not need draw
+
+    auto* e = resolveDrawElement<DrawElement_drawSkinnedMesh>(m_manager->getInternalContext()->m_meshRenderer, nullptr);
+    //e->subsetIndex = subsetIndex;
+	e->vertexProcessing = detail::ShaderTechniqueClass_MeshProcess::SkinnedMesh;
+    e->mesh = mesh;
+	e->subsetCount = mesh->getMeshResource(0)->getSubsetCount();
+
+	size_t dataSize = mesh->skinningMatrices().getCount() * sizeof(Matrix);
+	e->skinningMatricesDataHandle = m_drawElementList.allocExtData(dataSize);
+
+	memcpy(m_drawElementList.getExtData(e->skinningMatricesDataHandle), &(mesh->skinningMatrices()[0]), dataSize);
+    //e->boundingSphere = ;    // TODO
+
+    /* TODO: 後々、CommandBuffer で描画したい。
+
+    auto commands = renderer->requestObjectCommandBuffer();        // 描画オブジェクト1つ分のコマンド。
+    commands->setBounds(カリングのための境界球など);
+    commands->setBones(Matrix[]);    // BlukData
+    for (サブセット)
+    {
+        commands->drawMesh(subset, material);
+    }
+    */
 }
 
 //------------------------------------------------------------------------------

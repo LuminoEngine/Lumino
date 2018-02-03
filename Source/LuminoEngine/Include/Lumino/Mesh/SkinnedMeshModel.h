@@ -71,7 +71,7 @@ LN_INTERNAL_ACCESS:
 	void updateSkinningMatrices();
 
 	// スキニング行列配列の取得 (要素数は要素数はボーン数。これをそのままスキニングテクスチャに書き込める)
-	//Matrix* GetSkinningMatrices() { return m_skinningMatrices; }
+	const List<Matrix>& skinningMatrices() const { return m_skinningMatrices; }
 
 	// スキニング行列配列を書き込んだテクスチャの取得
 	Texture* getSkinningMatricesTexture() { return m_skinningMatricesTexture; }
@@ -133,6 +133,7 @@ public:
 
 	int boneIndex() const { return m_boneIndex; }
 
+	void setLocalTransform(const AttitudeTransform& transform) { m_localTransform = transform; }
 
 	const AttitudeTransform& localTransform() const { return m_localTransform; }
 

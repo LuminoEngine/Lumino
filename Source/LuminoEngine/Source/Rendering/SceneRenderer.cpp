@@ -221,7 +221,7 @@ void SceneRenderer::render(
 						//CombinedMaterial* material = currentState->getCombinedMaterial();
 						RenderingPass2::RenderStageFinalData stageData;
 						stageData.stage = currentStage;
-						stageData.material = currentStage->getMaterialFinal(m_defaultMaterial, element->priorityMaterial);
+						stageData.material = currentStage->getMaterialFinal(m_defaultMaterial, element->getPriorityMaterial(i));
 						stageData.shader = currentStage->getShaderFinal(stageData.material);
 						stageData.shadingModel = currentStage->getShadingModelFinal(stageData.material);
 
