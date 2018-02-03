@@ -187,6 +187,8 @@ public:
 	CommonMaterial*		priorityMaterial = nullptr;	// マテリアルを指定する drawMesh() のオーバーライドなどで設定される
 	detail::IRenderFeature* renderFeature = nullptr;
 	DrawElementList*	m_ownerDrawElementList;
+	int					subsetCount = 1;
+
 
 	DrawElement();
 	virtual ~DrawElement();

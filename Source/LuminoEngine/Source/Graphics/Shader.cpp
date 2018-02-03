@@ -114,6 +114,9 @@ static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_ElementUnit
 	{ _LT("ln_LightDiffuses"), BuiltinSemantics::LightDiffuses },
 	{ _LT("ln_LightAmbients"), BuiltinSemantics::LightAmbients },
 	{ _LT("ln_LightSpeculars"), BuiltinSemantics::LightSpeculars },
+	{ _LT("ln_BoneTextureReciprocalSize"), BuiltinSemantics::BoneTextureReciprocalSize },
+	{ _LT("ln_BoneTexture"), BuiltinSemantics::BoneTexture },
+	{ _LT("ln_BoneLocalQuaternionTexture"), BuiltinSemantics::BoneLocalQuaternionTexture },
 };
 
 static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_SubsetUnit =
@@ -346,6 +349,18 @@ void ShaderSemanticsManager::updateElementVariables(const CameraInfo& cameraInfo
 				}
 				break;
 
+			case BuiltinSemantics::BoneTextureReciprocalSize:
+			{
+				auto size = info.boneTexture->getSize().toFloatSize();
+				varInfo.variable->setVector(Vector4(size.width, size.height, 0, 0));
+				break;
+			}
+			case BuiltinSemantics::BoneTexture:
+				varInfo.variable->setTexture(info.boneTexture);
+				break;
+			case BuiltinSemantics::BoneLocalQuaternionTexture:
+				varInfo.variable->setTexture(info.boneLocalQuaternionTexture);
+				break;
 			default:
 				break;
 		}

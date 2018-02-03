@@ -52,6 +52,10 @@ LN_ENUM(BuiltinSemantics)
 	LightAmbients,			// vector[]
 	LightSpeculars,			// vector[]
 
+	BoneTextureReciprocalSize,		// internal
+	BoneTexture,					// internal
+	BoneLocalQuaternionTexture,		// internal
+
 	// Subset unit
 	MaterialTexture,
 	MaterialDiffuse,		// vector
@@ -107,6 +111,9 @@ struct ElementInfo
 	Matrix				WorldMatrix;
 	Matrix				WorldViewProjectionMatrix;
 	DynamicLightInfo**	affectedLights;
+
+	Texture*            boneTexture = nullptr;
+	Texture*            boneLocalQuaternionTexture = nullptr;
 };
 
 // サブセット単位のデータに関する情報
