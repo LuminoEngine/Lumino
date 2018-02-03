@@ -198,7 +198,7 @@ public:
 	virtual void makeElementInfo(DrawElementList* oenerList, const CameraInfo& cameraInfo, RenderView* renderView, ElementInfo* outInfo);
 	virtual void makeSubsetInfo(DrawElementList* oenerList, RenderStage* stage, SubsetInfo* outInfo);
 
-	virtual void drawSubset(const DrawArgs& e) = 0;
+	virtual void drawSubset(const DrawArgs& e, int subsetIndex) = 0;
 	const detail::Sphere& getBoundingSphere() const { return boundingSphere; }
 
 	// (ローカル座標系)

@@ -262,7 +262,7 @@ void SceneRenderer::render(
 							stateManager->setShaderPass(pass);
 
 							if (diag != nullptr) element->reportDiag(diag);
-							element->drawSubset(drawArgs);
+							element->drawSubset(drawArgs, i);
 						}
 					}
 				}
@@ -275,7 +275,7 @@ void SceneRenderer::render(
 					if (diag != nullptr) element->reportDiag(diag);
 					for (int i = 0; i < element->subsetCount; i++)
 					{
-						element->drawSubset(drawArgs);
+						element->drawSubset(drawArgs, i);
 					}
 				}
 			}
