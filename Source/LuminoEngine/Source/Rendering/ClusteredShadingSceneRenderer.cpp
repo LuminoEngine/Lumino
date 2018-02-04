@@ -365,24 +365,33 @@ void ClusteredShadingGeometryRenderingPass::selectElementRenderingPolicy(DrawEle
 	classSet.phase = ShaderTechniqueClass_Phase::Geometry;
 	classSet.meshProcess = element->vertexProcessing;
 
-	if (stageData.shadingModel == ShadingModel::UnLighting)
+	outPolicy->shader = (stageData.shader) ? stageData.shader : m_defaultShader;
+
+	classSet.shadingModel = ShaderTechniqueClass_ShadingModel::Default;
+	outPolicy->shaderTechnique = outPolicy->shader->findTechniqueByClass(classSet);
+	if (!outPolicy->shaderTechnique)
 	{
-		classSet.shadingModel = ShaderTechniqueClass_ShadingModel::UnLighting;
-		outPolicy->shaderTechnique = stageData.shader->findTechniqueByClass(classSet);
-		if (!outPolicy->shaderTechnique)
-		{
-			outPolicy->shaderTechnique = m_unLightingShaderTechnique;
-		}
+		outPolicy->shaderTechnique = m_defaultShaderTechnique;
 	}
-	else
-	{
-		classSet.shadingModel = ShaderTechniqueClass_ShadingModel::Default;
-		outPolicy->shaderTechnique = stageData.shader->findTechniqueByClass(classSet);
-		if (!outPolicy->shaderTechnique)
-		{
-			outPolicy->shaderTechnique = m_defaultShaderTechnique;
-		}
-	}
+
+	//if (stageData.shadingModel == ShadingModel::UnLighting)
+	//{
+	//	classSet.shadingModel = ShaderTechniqueClass_ShadingModel::UnLighting;
+	//	outPolicy->shaderTechnique = stageData.shader->findTechniqueByClass(classSet);
+	//	if (!outPolicy->shaderTechnique)
+	//	{
+	//		outPolicy->shaderTechnique = m_unLightingShaderTechnique;
+	//	}
+	//}
+	//else
+	//{
+	//	classSet.shadingModel = ShaderTechniqueClass_ShadingModel::Default;
+	//	outPolicy->shaderTechnique = stageData.shader->findTechniqueByClass(classSet);
+	//	if (!outPolicy->shaderTechnique)
+	//	{
+	//		outPolicy->shaderTechnique = m_defaultShaderTechnique;
+	//	}
+	//}
 
 	outPolicy->shader = outPolicy->shaderTechnique->getOwnerShader();
 	outPolicy->visible = true;

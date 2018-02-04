@@ -425,7 +425,7 @@ void SkinnedMeshModel::updateSkinningMatrices()
 	// TODO: できれば一連の処理の中で必ず通るところに移動したい
 	for (SkinnedMeshBone* bone : m_allBoneList)
 	{
-		//bone->resetLocalTransform();
+		bone->resetLocalTransform();
 	}
 }
 

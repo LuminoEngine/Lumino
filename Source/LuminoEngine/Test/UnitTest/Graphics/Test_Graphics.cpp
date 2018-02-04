@@ -80,7 +80,7 @@ TEST_F(Test_Graphics_Rendering, clear)
 		r1->clear(ClearFlags::Color, Color::Blue);
 		Engine::renderFrame();
 		LN_TEST_END_FRAME;
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/0_Test_Graphics_Rendering.Clear1.png")));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.Clear1.png")));
 	}
 	// <Test> 3D ビューのクリア
 	{
@@ -132,6 +132,7 @@ TEST_F(Test_Graphics_Rendering, drawLinePrimitive)
 	//}
 }
 
+#if 0
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_Rendering, drawSquarePrimitive)
 {
@@ -187,6 +188,7 @@ TEST_F(Test_Graphics_Rendering, drawSphere)
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawSphere1.png"), 95));
 	}
 }
+#endif
 
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_Rendering, drawCylinder)
@@ -280,6 +282,7 @@ TEST_F(Test_Graphics_Rendering, blit)
 	}
 }
 
+#if 0
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_Rendering, drawText_)
 {
@@ -319,6 +322,7 @@ TEST_F(Test_Graphics_Rendering, drawText_)
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.DrawText3.png")));
 	}
 }
+#endif
 
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_Rendering, drawSprite)
@@ -512,6 +516,7 @@ TEST_F(Test_Graphics_Rendering, drawFrameRectangle)
 	}
 }
 
+#if 0
 //------------------------------------------------------------------------------
 TEST_F(Test_Graphics_Rendering, ZSort)
 {
@@ -523,7 +528,7 @@ TEST_F(Test_Graphics_Rendering, ZSort)
 	Engine::update();
 	ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.ZSort1.png"), 90));
 }
-
+#endif
 
 //==============================================================================
 class Test_Graphics_DrawingContext : public LuminoGraphicsTest {};
@@ -567,6 +572,7 @@ TEST_F(Test_Graphics_DrawingContext, drawText_)
 //==============================================================================
 class Test_Graphics_Texture : public LuminoGraphicsTest {};
 
+#if 0
 //-----------------------------------------------------------------------------
 TEST_F(Test_Graphics_Texture, setPixel)
 {
@@ -623,6 +629,7 @@ TEST_F(Test_Graphics_Texture, drawText)
 
 	sprite->removeFromWorld();
 }
+#endif
 
 //-----------------------------------------------------------------------------
 TEST_F(Test_Graphics_Texture, Issues)
