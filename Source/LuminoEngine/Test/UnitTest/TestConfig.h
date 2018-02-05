@@ -31,6 +31,19 @@ public:
 	static bool CheckScreenShot(const Char* filePath, int passRate = 99, bool save = false);	// 基本的に 99% 一致していれば良い。グラボによって、色成分+-1 くらいの誤差がある (Radeon HD8490)
 	static void WaitRendering();
 
+	// Engine::getWorld... を使った追加ユーティリティ。この辺のインターフェイスの変化が激しいので用意した。
+	template<class T>
+	static T addWorld2D(T obj)
+	{
+		Engine::getWorld2D()->add(obj);
+		return obj;
+	}
+	template<class T>
+	static T addWorld3D(T obj)
+	{
+		Engine::getWorld3D()->add(obj);
+		return obj;
+	}
 
 	static void BeginFrame()
 	{

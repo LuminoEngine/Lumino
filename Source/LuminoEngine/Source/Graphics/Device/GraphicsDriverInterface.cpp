@@ -171,7 +171,10 @@ void IRenderer::drawPrimitive(PrimitiveType primitive, int startVertex, int prim
 {
 	flushStates();
 	onDrawPrimitive(primitive, startVertex, primitiveCount);
-	if (m_diag != nullptr) m_diag->increaseGraphicsDeviceDrawCount();
+	if (m_diag != nullptr)
+	{
+		m_diag->increaseGraphicsDeviceDrawCount();
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -179,7 +182,10 @@ void IRenderer::drawPrimitiveIndexed(PrimitiveType primitive, int startIndex, in
 {
 	flushStates();
 	onDrawPrimitiveIndexed(primitive, startIndex, primitiveCount);
-	if (m_diag != nullptr) m_diag->increaseGraphicsDeviceDrawCount();
+	if (m_diag != nullptr)
+	{
+		m_diag->increaseGraphicsDeviceDrawCount();
+	}
 }
 
 //------------------------------------------------------------------------------

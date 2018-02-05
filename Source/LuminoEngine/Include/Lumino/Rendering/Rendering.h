@@ -180,7 +180,6 @@ public:
 	};
 
 	int					batchIndex;
-	detail::Sphere		boundingSphere;		// 位置はローカル座標系。最終的にワールドのどこに置くかは drawXXXX() 時点では決められない
 	int					subsetIndex;
 	float				zDistance;
 	DrawElementMetadata	metadata;
@@ -202,10 +201,12 @@ public:
 	virtual void makeSubsetInfo(DrawElementList* oenerList, RenderStage* stage, SubsetInfo* outInfo);
 
 	virtual void drawSubset(const DrawArgs& e, int subsetIndex) = 0;
-	const detail::Sphere& getBoundingSphere() const { return boundingSphere; }
+	const detail::Sphere& getLocalBoundingSphere() const { return m_localBoundingSphere; }
+	void setLocalBoundingSphere(const detail::Sphere& value) { m_localBoundingSphere = value; }
 
 	// (ローカル座標系)
 	void makeBoundingSphere(const Vector3& minPos, const Vector3& maxPos);
+	void makeBoundingSphere(float radius);
 
 	virtual DynamicLightInfo** getAffectedDynamicLightInfos();
 
@@ -218,6 +219,7 @@ private:
 	//Matrix	m_transform;
 
 	//friend class DrawList;
+	detail::Sphere		m_localBoundingSphere;
 };
 
 class LightingDrawElement

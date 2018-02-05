@@ -528,4 +528,44 @@ bool DX9Helper::readLockedRectData(const D3DSURFACE_DESC& desc, const D3DLOCKED_
 	return true;
 }
 
+bool DX9Helper::writeLockedRectData(const D3DSURFACE_DESC& desc, const D3DLOCKED_RECT& lockedRect, const void* data)
+{
+	LN_CHECK(data);
+
+	const byte_t* src = (const byte_t*)data;
+	byte_t* dst = (byte_t*)lockedRect.pBits;
+	int rowSize = lockedRect.Pitch;
+
+	switch (desc.Format)
+	{
+	default:
+		for (UINT y = 0; y < desc.Height; y++)
+		{
+			byte_t* dstline = dst + (lockedRect.Pitch * y);
+			const byte_t* srcline = src + (lockedRect.Pitch * y);
+			memcpy(dstline, srcline, lockedRect.Pitch);
+		}
+		break;
+
+	case D3DFMT_X8R8G8B8:
+	case D3DFMT_A8R8G8B8:
+		// [R][G][B][A] -> [B][G][R][A]
+		for (UINT y = 0; y < desc.Height; y++)
+		{
+			const byte_t* s = (const byte_t*)src + (lockedRect.Pitch * y);
+			for (UINT x = 0; x < desc.Width; x++)
+			{
+				dst[2] = *s++;
+				dst[1] = *s++;
+				dst[0] = *s++;
+				dst[3] = *s++;
+				dst += 4;
+			}
+		}
+		break;
+	}
+
+	return true;
+}
+
 LN_NAMESPACE_END

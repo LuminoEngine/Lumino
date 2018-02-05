@@ -775,9 +775,8 @@ DrawElement::DrawElement()
 	//, zSortDistanceBase(ZSortDistanceBase::CameraDistance)
 	, zDistance(0.0f)
 	, m_stateFence(0)
+	, m_localBoundingSphere{ Vector3::Zero, -1.0f }
 {
-	boundingSphere.center = Vector3::Zero;
-	boundingSphere.radius = -1.0f;
 }
 
 //------------------------------------------------------------------------------
@@ -810,12 +809,17 @@ void DrawElement::makeSubsetInfo(DrawElementList* oenerList, RenderStage* stage,
 {
 }
 
-//------------------------------------------------------------------------------
 void DrawElement::makeBoundingSphere(const Vector3& minPos, const Vector3& maxPos)
 {
 	Vector3 center = minPos + ((maxPos - minPos) / 2);
-	boundingSphere.center = center;
-	boundingSphere.radius = std::max(Vector3::distance(minPos, center), Vector3::distance(maxPos, center));
+	m_localBoundingSphere.center = center;
+	m_localBoundingSphere.radius = std::max(Vector3::distance(minPos, center), Vector3::distance(maxPos, center));
+}
+
+void DrawElement::makeBoundingSphere(float radius)
+{
+	m_localBoundingSphere.center = Vector3::Zero;
+	m_localBoundingSphere.radius = radius;
 }
 
 //------------------------------------------------------------------------------
@@ -1391,8 +1395,7 @@ void DrawList::drawSquare(float sizeX, float sizeZ, int slicesX, int slicesZ, co
 	};
 	auto* e = resolveDrawElement<DrawCylinderElement>(m_manager->getInternalContext()->m_primitiveRenderer, material);
 	e->factory.initialize(Vector2(sizeX, sizeZ), slicesX, slicesZ, color, localTransform);
-	e->boundingSphere.center = Vector3::Zero;
-	e->boundingSphere.radius = Vector3(sizeX, sizeZ, 0).getLength();
+	e->makeBoundingSphere(Vector3(sizeX, sizeZ, 0).getLength());
 }
 
 //------------------------------------------------------------------------------
@@ -1412,8 +1415,7 @@ void DrawList::drawArc(float startAngle, float endAngle, float innerRadius, floa
 	};
 	auto* e = resolveDrawElement<DrawArcElement>(m_manager->getInternalContext()->m_primitiveRenderer, material);
 	e->factory.initialize(startAngle, endAngle, innerRadius, outerRadius, slices, color, localTransform);
-	e->boundingSphere.center = Vector3::Zero;
-	e->boundingSphere.radius = outerRadius;
+	e->makeBoundingSphere(outerRadius);
 }
 
 //------------------------------------------------------------------------------
@@ -1458,8 +1460,7 @@ void DrawList::drawSphere(float radius, int slices, int stacks, const Color& col
 	};
 	auto* e = resolveDrawElement<DrawSphereElement>(m_manager->getInternalContext()->m_primitiveRenderer, material);
 	e->factory.initialize(radius, slices, stacks, color, localTransform);
-	e->boundingSphere.center = Vector3::Zero;
-	e->boundingSphere.radius = radius;
+	e->makeBoundingSphere(radius);
 }
 
 //------------------------------------------------------------------------------
@@ -1479,8 +1480,7 @@ void DrawList::drawCylinder(float radius, float	height, int slices, int stacks, 
 	};
 	auto* e = resolveDrawElement<DrawCylinderElement>(m_manager->getInternalContext()->m_primitiveRenderer, nullptr);
 	e->factory.initialize(radius, height, slices, stacks, color, localTransform);
-	e->boundingSphere.center = Vector3::Zero;
-	e->boundingSphere.radius = Vector3(radius, height, 0).getLength();
+	e->makeBoundingSphere(Vector3(radius, height, 0).getLength());
 }
 
 //------------------------------------------------------------------------------
@@ -1500,8 +1500,7 @@ void DrawList::drawCone(float radius, float height, int slices, const Color& col
 	};
 	auto* e = resolveDrawElement<DrawConeElement>(m_manager->getInternalContext()->m_primitiveRenderer, nullptr);
 	e->factory.initialize(radius, height, slices, color, localTransform);
-	e->boundingSphere.center = Vector3::Zero;
-	e->boundingSphere.radius = Vector3(radius, height, 0).getLength();
+	e->makeBoundingSphere(Vector3(radius, height, 0).getLength());
 }
 
 //------------------------------------------------------------------------------
@@ -1787,10 +1786,10 @@ void DrawList::drawSprite(
 	ptr->color = color;
 	ptr->baseDirection = baseDirection;
 	ptr->billboardType = billboardType;
-	detail::SpriteRenderFeature::makeBoundingSphere(ptr->size, baseDirection, &ptr->boundingSphere);
-	ptr->boundingSphere.center = Vector3::Zero;
+	detail::Sphere sphere;
+	detail::SpriteRenderFeature::makeBoundingSphere(ptr->size, baseDirection, &sphere);
+	ptr->setLocalBoundingSphere(sphere);
 }
-
 
 //------------------------------------------------------------------------------
 class DrawElement_DrawNanoVGCommands : public detail::DrawElement
@@ -2109,4 +2108,3 @@ void DrawList::drawFrameRectangle(const Rect& rect)
 //}
 
 LN_NAMESPACE_END
-

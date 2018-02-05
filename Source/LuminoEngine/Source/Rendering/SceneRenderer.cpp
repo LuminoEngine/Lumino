@@ -323,7 +323,10 @@ void SceneRenderer::collect(RenderingPass2* pass, const detail::CameraInfo& came
 		for (int i = 0; i < elementList->getElementCount(); ++i)
 		{
 			DrawElement* element = elementList->getElement(i);
-			Sphere boundingSphere = element->getBoundingSphere();
+			const Matrix& transform = element->getTransform(elementList);
+
+			Sphere boundingSphere = element->getLocalBoundingSphere();
+			boundingSphere.center += transform.getPosition();
 
 			if (boundingSphere.radius < 0 ||	// マイナス値なら視錐台と衝突判定しない
 				cameraInfo.viewFrustum.intersects(boundingSphere.center, boundingSphere.radius))
@@ -332,7 +335,6 @@ void SceneRenderer::collect(RenderingPass2* pass, const detail::CameraInfo& came
 				m_renderingElementList.add(element);
 
 				// calculate distance for ZSort
-				const Matrix& transform = element->getTransform(elementList);
 				switch (cameraInfo.zSortDistanceBase)
 				{
 				case ZSortDistanceBase::NodeZ:

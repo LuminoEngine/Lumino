@@ -300,22 +300,22 @@ Driver::ITexture* Texture2D::resolveDeviceObject()
 			auto* cmdList = m_manager->getPrimaryRenderingCommandList();
 			detail::RenderBulkData bmpRawData;
 			void* bmpRawDataBuf = bmpRawData.alloc(cmdList, bmpData->getSize());
-
-			if (Utils::isSRGBFormat(getFormat()))
-			{
-				// 上下反転した一時ビットマップを作ってそれを転送する
-				RawBitmap bmpTmp(bmpRawDataBuf, bmpSize, m_primarySurface2->getPixelFormat(), true);
-				bmpTmp.bitBlt(0, 0, m_primarySurface2, RectI(0, 0, bmpSize), Color32::White, false);
-			}
-			else if (Utils::isFloatFormat(getFormat())) // RawBitmap::bitBlt が対応していないのでとりあえず直接転送
-			{
-				detail::BitmapHelper::blitRawSimple(bmpRawDataBuf, bmpData->getConstData(), bmpSize.width, bmpSize.height, Utils::getTextureFormatByteCount(getFormat()), false);
-			}
-			else
-			{
-				LN_NOTIMPLEMENTED();
-				return nullptr;
-			}
+			detail::BitmapHelper::blitRawSimple(bmpRawDataBuf, bmpData->getConstData(), bmpSize.width, bmpSize.height, Utils::getTextureFormatByteCount(getFormat()), false);
+			//if (Utils::isSRGBFormat(getFormat()))
+			//{
+			//	// 上下反転した一時ビットマップを作ってそれを転送する
+			//	//RawBitmap bmpTmp(bmpRawDataBuf, bmpSize, m_primarySurface2->getPixelFormat(), false);
+			//	//bmpTmp.bitBlt(0, 0, m_primarySurface2, RectI(0, 0, bmpSize), Color32::White, false);
+			//}
+			//else if (Utils::isFloatFormat(getFormat())) // RawBitmap::bitBlt が対応していないのでとりあえず直接転送
+			//{
+			//	detail::BitmapHelper::blitRawSimple(bmpRawDataBuf, bmpData->getConstData(), bmpSize.width, bmpSize.height, Utils::getTextureFormatByteCount(getFormat()), false);
+			//}
+			//else
+			//{
+			//	LN_NOTIMPLEMENTED();
+			//	return nullptr;
+			//}
 
 			if (m_initialUpdate)
 			{

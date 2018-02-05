@@ -189,7 +189,7 @@ GTEST_API_ int main(int argc, char **argv)
 	char* testArgs[] = {
 		argv[0],
 		"--gtest_break_on_failure",
-		//"--gtest_filter=Test_Graphics_Rendering.*",
+		//"--gtest_filter=Test_Scene_TextBlock2D.*",
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);
@@ -205,7 +205,7 @@ GTEST_API_ int main(int argc, char **argv)
 		EngineSettings::setMainWindowSize(SizeI(160 * scale, 120 * scale));
 		EngineSettings::setMainBackBufferSize(SizeI(160 * scale, 120 * scale));
 		EngineSettings::setGraphicsRenderingType(GraphicsRenderingType::Threaded);//GraphicsRenderingType::Immediate);//
-		detail::EngineSettings::instance.defaultSkinFilePath = LN_LOCALFILE("UI/Data/Skin.png");
+		detail::EngineSettings::instance.defaultSkinFilePath = LN_LOCALFILE("UI/TestData/Skin.png");
 	}
 	
 	{
