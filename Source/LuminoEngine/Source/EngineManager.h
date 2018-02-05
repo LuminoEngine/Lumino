@@ -215,6 +215,8 @@ public:
 	EngineDiagViewer* getEngineDiagViewer() const { return m_diagViewer; }
 	World2D* getDefaultWorld2D() const;
 	World3D* getDefaultWorld3D() const;
+	World2D* activeWorld2D() const;
+	World3D* activeWorld3D() const;
 
 protected:
 	EngineManager(const detail::EngineSettings& configData);
@@ -265,6 +267,8 @@ private:
 	EngineDiagViewer*					m_diagViewer;
 	Ref<World2D>						m_defaultWorld2D;
 	Ref<World3D>						m_defaultWorld3D;
+	Ref<World2D>						m_activeWorld2D;
+	Ref<World3D>						m_activeWorld3D;
 
 	//bool								m_frameRenderingSkip;
 	bool								m_frameRenderd;

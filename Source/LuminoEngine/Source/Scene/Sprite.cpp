@@ -338,6 +338,7 @@ Sprite2D::Sprite2D()
 	: SpriteBase()
 	, m_component(nullptr)
 {
+	setCoordinateClass(WorldCoordinateClass::World2D);
 }
 
 //------------------------------------------------------------------------------
@@ -405,6 +406,7 @@ Sprite3D::Sprite3D()
 	: SpriteBase()
 	, m_component(nullptr)
 {
+	setCoordinateClass(WorldCoordinateClass::World3D);
 }
 
 //------------------------------------------------------------------------------

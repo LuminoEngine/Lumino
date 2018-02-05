@@ -391,7 +391,7 @@ public:
 		m_lastElement = t;
 		return t;
 	}
-
+	
 	//byte_t* allocExtData(size_t size) { return m_extDataCache.GetData(m_extDataCache.allocData(size)); }
 	CommandDataCache::DataHandle allocExtData(size_t size) { return m_extDataCache.allocData(size); }
 	void* getExtData(CommandDataCache::DataHandle handle) { return m_extDataCache.getData(handle); }
@@ -400,7 +400,6 @@ public:
 
 	void addDynamicLightInfo(DynamicLightInfo* lightInfo);
 	const List<Ref<DynamicLightInfo>>& getDynamicLightList() const { return m_dynamicLightList; }
-
 
 	// default settings
 	void setDefaultRenderTarget(RenderTargetTexture* value) { m_defaultRenderTarget = value; }

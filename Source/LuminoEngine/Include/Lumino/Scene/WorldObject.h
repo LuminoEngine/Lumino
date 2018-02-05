@@ -10,6 +10,13 @@ class WorldObject;
 using WorldObjectPtr = Ref<WorldObject>;
 class Component;
 
+enum class WorldCoordinateClass
+{
+	None,
+	World2D,
+	World3D,
+};
+
 enum class BuiltinLayers
 {
 	Default2D,
@@ -139,6 +146,7 @@ protected:
 	virtual void onUIEvent(UIEventArgs* e);
 
 LN_INTERNAL_ACCESS:
+	void setCoordinateClass(WorldCoordinateClass value) { m_coordinateClass = value; }
 	//const Matrix& GetCombinedGlobalMatrix() const { return m_combinedGlobalMatrix; }
 	const List<Ref<Component>>& getComponents() const { return m_components; }
 	void setSpecialObject(bool enalbed) { m_isSpecialObject = true; }
@@ -150,6 +158,7 @@ private:
 	void render(DrawList* context);
 	void releaseComponents();
 
+	WorldCoordinateClass		m_coordinateClass;
 	List<Ref<Component>>		m_components;
 
 	World*						m_world;

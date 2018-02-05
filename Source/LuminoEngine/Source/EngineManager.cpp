@@ -332,8 +332,8 @@ void EngineManager::initialize()
 
 	EngineDiagCore::Instance.initialize(this);
 
-	m_defaultWorld2D = newObject<World2D>();
-	m_defaultWorld3D = newObject<World3D>();
+	m_activeWorld2D = m_defaultWorld2D = newObject<World2D>();
+	m_activeWorld3D = m_defaultWorld3D = newObject<World3D>();
 	m_uiManager->createGameModeMainFrame(m_defaultWorld2D, m_defaultWorld3D);
 	m_uiManager->getMainWindow()->setDelayedRenderingSkip(m_configData.delayedRenderingSkip);
 	m_uiManager->getMainWindow()->setInputManager(m_inputManager);
@@ -827,6 +827,16 @@ World2D* EngineManager::getDefaultWorld2D() const
 World3D* EngineManager::getDefaultWorld3D() const
 {
 	return m_defaultWorld3D;
+}
+
+World2D* EngineManager::activeWorld2D() const
+{
+	return m_activeWorld2D;
+}
+
+World3D* EngineManager::activeWorld3D() const
+{
+	return m_activeWorld3D;
 }
 
 //------------------------------------------------------------------------------
