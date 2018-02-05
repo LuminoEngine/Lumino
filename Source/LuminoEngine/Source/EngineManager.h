@@ -213,8 +213,8 @@ public:
 
 	const FpsController& getFpsController() const { return m_fpsController; }
 	EngineDiagViewer* getEngineDiagViewer() const { return m_diagViewer; }
-	World2D* getDefaultWorld2D() const;
-	World3D* getDefaultWorld3D() const;
+	World2D* defaultWorld2D() const;
+	World3D* defaultWorld3D() const;
 	World2D* activeWorld2D() const;
 	World3D* activeWorld3D() const;
 

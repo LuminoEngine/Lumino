@@ -102,9 +102,9 @@ void Main()
 	//	}
 	//});
 
-	auto* uiRoot = Engine::getDefaultUILayer()->GetLayoutView();
-	auto button1 = UIButton::create(_T("button1"), 80, 32);
-	uiRoot->addChild(button1);
+	//auto* uiRoot = Engine::getDefaultUILayer()->GetLayoutView();
+	//auto button1 = UIButton::create(_T("button1"), 80, 32);
+	//uiRoot->addChild(button1);
 
 	//auto text1 = UITextField::create();
 	//text1->setPosition(Point(10, 20));

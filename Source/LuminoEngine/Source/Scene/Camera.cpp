@@ -23,12 +23,12 @@ LN_NAMESPACE_BEGIN
 
 CameraComponent* CameraComponent::getMain3DCamera()
 {
-	return detail::EngineDomain::getDefaultWorld3D()->getMainCamera()->getCameraComponent();
+	return detail::EngineDomain::defaultWorld3D()->getMainCamera()->getCameraComponent();
 }
 
 CameraComponent* CameraComponent::getMain2DCamera()
 {
-	return detail::EngineDomain::getDefaultWorld2D()->getMainCamera()->getCameraComponent();
+	return detail::EngineDomain::defaultWorld2D()->getMainCamera()->getCameraComponent();
 }
 
 CameraComponent::CameraComponent()

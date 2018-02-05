@@ -78,8 +78,7 @@ WorldObjectPtr WorldObject::create()
 }
 
 WorldObject::WorldObject()
-	: m_coordinateClass(WorldCoordinateClass::None)
-	, m_world(nullptr)
+	: m_world(nullptr)
 	, m_children()
 	, m_parent(nullptr)
 	, m_tag()
@@ -90,12 +89,6 @@ WorldObject::WorldObject()
 {
 }
 
-//WorldObject::WorldObject(WorldCoordinateClass coordinateClass)
-//	: WorldObject()
-//{
-//	m_coordinateClass = coordinateClass;
-//}
-
 WorldObject::~WorldObject()
 {
 }
@@ -103,22 +96,6 @@ WorldObject::~WorldObject()
 //------------------------------------------------------------------------------
 void WorldObject::initialize()
 {
-	World* world = nullptr;
-	switch (m_coordinateClass)
-	{
-	case ln::WorldCoordinateClass::World2D:
-		world = detail::EngineDomain::getEngineManager()->activeWorld2D();
-		break;
-	case ln::WorldCoordinateClass::World3D:
-		world = detail::EngineDomain::getEngineManager()->activeWorld3D();
-		break;
-	default:
-		break;
-	}
-	if (world)
-	{
-		world->add(this);
-	}
 }
 
 //------------------------------------------------------------------------------
@@ -291,6 +268,26 @@ void WorldObject::updateWorldMatrixHierarchical()
 	}
 }
 
+void WorldObject::tryAddActiveWorld(WorldCoordinateClass coordinateClass, WorldObject* obj)
+{
+	World* world = nullptr;
+	switch (coordinateClass)
+	{
+	case ln::WorldCoordinateClass::World2D:
+		world = detail::EngineDomain::getEngineManager()->activeWorld2D();
+		break;
+	case ln::WorldCoordinateClass::World3D:
+		world = detail::EngineDomain::getEngineManager()->activeWorld3D();
+		break;
+	default:
+		break;
+	}
+	if (world)
+	{
+		world->add(obj);
+	}
+}
+
 ////==============================================================================
 //// WorldObject2D
 ////==============================================================================
@@ -310,7 +307,7 @@ void WorldObject::updateWorldMatrixHierarchical()
 //void WorldObject2D::initialize()
 //{
 //	WorldObject::initialize();
-//	detail::EngineDomain::getDefaultWorld2D()->addWorldObject(this, true);
+//	detail::EngineDomain::defaultWorld2D()->addWorldObject(this, true);
 //}
 //
 //
@@ -333,7 +330,7 @@ void WorldObject::updateWorldMatrixHierarchical()
 //void WorldObject3D::initialize()
 //{
 //	WorldObject::initialize();
-//	detail::EngineDomain::getDefaultWorld3D()->addWorldObject(this, true);
+//	detail::EngineDomain::defaultWorld3D()->addWorldObject(this, true);
 //}
 
 LN_NAMESPACE_END

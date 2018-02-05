@@ -818,13 +818,13 @@ void EngineManager::exit()
 }
 
 //------------------------------------------------------------------------------
-World2D* EngineManager::getDefaultWorld2D() const
+World2D* EngineManager::defaultWorld2D() const
 {
 	return m_defaultWorld2D;
 }
 
 //------------------------------------------------------------------------------
-World3D* EngineManager::getDefaultWorld3D() const
+World3D* EngineManager::defaultWorld3D() const
 {
 	return m_defaultWorld3D;
 }
@@ -873,7 +873,7 @@ namespace detail {
 //------------------------------------------------------------------------------
 PhysicsWorld* EngineDomain::getPhysicsWorld3D()
 {
-	return EngineManager::getInstance()->getDefaultWorld3D()->getPhysicsWorld3D();
+	return EngineManager::getInstance()->defaultWorld3D()->getPhysicsWorld3D();
 }
 
 //------------------------------------------------------------------------------
@@ -919,15 +919,15 @@ SceneGraphManager* EngineDomain::getSceneGraphManager()
 }
 
 //------------------------------------------------------------------------------
-World2D* EngineDomain::getDefaultWorld2D()
+World2D* EngineDomain::defaultWorld2D()
 {
-	return EngineManager::getInstance()->getDefaultWorld2D();
+	return EngineManager::getInstance()->defaultWorld2D();
 }
 
 //------------------------------------------------------------------------------
-World3D* EngineDomain::getDefaultWorld3D()
+World3D* EngineDomain::defaultWorld3D()
 {
-	return EngineManager::getInstance()->getDefaultWorld3D();
+	return EngineManager::getInstance()->defaultWorld3D();
 }
 
 } // namespace detail

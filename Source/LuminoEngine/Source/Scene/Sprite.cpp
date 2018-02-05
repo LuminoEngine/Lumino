@@ -338,7 +338,6 @@ Sprite2D::Sprite2D()
 	: SpriteBase()
 	, m_component(nullptr)
 {
-	setCoordinateClass(WorldCoordinateClass::World2D);
 }
 
 //------------------------------------------------------------------------------
@@ -350,6 +349,8 @@ Sprite2D::~Sprite2D()
 void Sprite2D::initialize()
 {
 	SpriteBase::initialize();
+	WorldObject::tryAddActiveWorld(WorldCoordinateClass::World2D, this);
+
 	m_component = Sprite2DComponent::create();
 	m_component->setLayer(LayerMask::GetLayer(BuiltinLayers::Default2D));
 	addComponent(m_component);
@@ -359,6 +360,8 @@ void Sprite2D::initialize()
 void Sprite2D::initialize(const StringRef& filePath)
 {
 	SpriteBase::initialize();
+	WorldObject::tryAddActiveWorld(WorldCoordinateClass::World2D, this);
+
 	m_component = Sprite2DComponent::create(filePath);
 	addComponent(m_component);
 }
@@ -367,6 +370,8 @@ void Sprite2D::initialize(const StringRef& filePath)
 void Sprite2D::initialize(Texture* texture)
 {
 	SpriteBase::initialize();
+	WorldObject::tryAddActiveWorld(WorldCoordinateClass::World2D, this);
+
 	m_component = Sprite2DComponent::create(texture);
 	addComponent(m_component);
 }
@@ -406,7 +411,6 @@ Sprite3D::Sprite3D()
 	: SpriteBase()
 	, m_component(nullptr)
 {
-	setCoordinateClass(WorldCoordinateClass::World3D);
 }
 
 //------------------------------------------------------------------------------
@@ -418,6 +422,8 @@ Sprite3D::~Sprite3D()
 void Sprite3D::initialize()
 {
 	SpriteBase::initialize();
+	WorldObject::tryAddActiveWorld(WorldCoordinateClass::World3D, this);
+
 	m_component = Sprite3DComponent::create();
 	m_component->setLayer(LayerMask::GetLayer(BuiltinLayers::Default3D));
 	addComponent(m_component);
@@ -427,6 +433,8 @@ void Sprite3D::initialize()
 void Sprite3D::initialize(float width, float height, Texture* texture)
 {
 	SpriteBase::initialize();
+	WorldObject::tryAddActiveWorld(WorldCoordinateClass::World3D, this);
+
 	m_component = Sprite3DComponent::create(width, height, texture);
 	addComponent(m_component);
 }

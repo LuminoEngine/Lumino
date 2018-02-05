@@ -40,8 +40,8 @@ public:
 	static UIManager* getUIManager();
 
 	static SceneGraphManager* getSceneGraphManager();
-	static World2D* getDefaultWorld2D();
-	static World3D* getDefaultWorld3D();
+	static World2D* defaultWorld2D();
+	static World3D* defaultWorld3D();
 };
 
 } // namespace detail

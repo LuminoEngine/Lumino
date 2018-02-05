@@ -96,19 +96,19 @@ void Engine::resetFrameDelay()
 //------------------------------------------------------------------------------
 World2D* Engine::getWorld2D()
 {
-	return EngineManager::Instance->getDefaultWorld2D();
+	return EngineManager::Instance->defaultWorld2D();
 }
 
 //------------------------------------------------------------------------------
 World3D* Engine::getWorld3D()
 {
-	return EngineManager::Instance->getDefaultWorld3D();
+	return EngineManager::Instance->defaultWorld3D();
 }
 
 //------------------------------------------------------------------------------
 Camera* Engine::getCamera3D()
 {
-	return EngineManager::Instance->getDefaultWorld3D()->getMainCamera();
+	return EngineManager::Instance->defaultWorld3D()->getMainCamera();
 }
 
 UIFrameWindow* Engine::getMainWindow()
