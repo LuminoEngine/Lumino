@@ -1,5 +1,8 @@
 ﻿
 #pragma once
+
+#include "GLCommon.h"	// glew.h needs include prev "Framework/OpenGL"
+
 #if defined(__OBJC__)
 #import <Cocoa/cocoa.h>
 #else

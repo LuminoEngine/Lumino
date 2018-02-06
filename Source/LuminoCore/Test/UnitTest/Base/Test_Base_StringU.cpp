@@ -410,6 +410,8 @@ TEST_F(Test_Base_UString, clear)
 	}
 }
 
+#ifdef LN_USTRING16
+#else
 //------------------------------------------------------------------------------
 TEST_F(Test_Base_UString, sprintf)
 {
@@ -430,6 +432,7 @@ TEST_F(Test_Base_UString, sprintf)
 		ASSERT_EQ(str1, buf1);	// 同じ文字ができていればOK
 	}
 }
+#endif
 
 TEST_F(Test_Base_UString, indexOf)
 {
@@ -837,17 +840,26 @@ TEST_F(Test_Base_UString, toStdWString)
 	ASSERT_EQ(L"abc", String(_LT("abc")).toStdWString());
 }
 
-TEST_F(Test_Base_UString, ToInt)
+//## 文字列と数値の変換
+TEST_F(Test_Base_UString, ConvertNumeric)
 {
-	// 実行できるか
-	ASSERT_EQ(10, toInt8(_LT("10")));
-	ASSERT_EQ(10, toInt16(_LT("10")));
-	ASSERT_EQ(10, toInt32(_LT("10")));
-	ASSERT_EQ(10, toInt64(_LT("10")));
-	ASSERT_EQ(10, toUInt8(_LT("10")));
-	ASSERT_EQ(10, toUInt16(_LT("10")));
-	ASSERT_EQ(10, toUInt32(_LT("10")));
-	ASSERT_EQ(10, toUInt64(_LT("10")));
+	//-[ ] 文字列 > 数値
+	{
+		ASSERT_EQ(10, toInt8(_LT("10")));
+		ASSERT_EQ(10, toInt16(_LT("10")));
+		ASSERT_EQ(10, toInt32(_LT("10")));
+		ASSERT_EQ(10, toInt64(_LT("10")));
+		ASSERT_EQ(10, toUInt8(_LT("10")));
+		ASSERT_EQ(10, toUInt16(_LT("10")));
+		ASSERT_EQ(10, toUInt32(_LT("10")));
+		ASSERT_EQ(10, toUInt64(_LT("10")));
+	}
+
+	//-[ ] 数値 > 文字列
+	{
+		ASSERT_EQ(_T("10"), String::fromNumber(10));
+		ASSERT_EQ(_T("10.500000"), String::fromNumber(10.5, 'F', 6));
+	}
 
 	// TODO:異常系
 	//ASSERT_THROW(String(_LT("10")).toInt8(1), ArgumentException);

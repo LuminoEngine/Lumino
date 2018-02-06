@@ -6,7 +6,6 @@
 #include <Lumino/Graphics/Bitmap.h>
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 
 //==============================================================================
 // RawBitmap
@@ -563,6 +562,16 @@ void RawBitmap::convertPixelFormat(
 				((c & 0x00ff0000) >> 16);
 		}
 	}
+	else if (inputFormat == PixelFormat::R8G8B8X8 && outputFormat == PixelFormat::R8G8B8A8)
+	{
+		const uint32_t* in = (const uint32_t*)input;
+		uint32_t* out = (uint32_t*)output;
+		size_t count = outputSize / sizeof(uint32_t);
+		for (size_t i = 0; i < count; ++i)
+		{
+			out[i] = (0xff000000) | (in[i] & 0x00ffffff);
+		}
+	}
 	else {
 		LN_THROW(0, InvalidFormatException);
 	}
@@ -858,5 +867,4 @@ void BitmapHelper::blitRawSimple(void* dst, const void* src, size_t width, size_
 
 } // namespace detail
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

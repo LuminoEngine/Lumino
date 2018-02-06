@@ -22,8 +22,8 @@ public:
 	//void setContent(UIElement* element);
 
 protected:
-	virtual int getLogicalChildrenCount() const;
-	virtual UIElement* getLogicalChild(int index);
+	virtual int getLogicalChildrenCount() const override;
+	virtual UIElement* getLogicalChild(int index) override;
 
 LN_CONSTRUCT_ACCESS:
 	UIContentsControl();

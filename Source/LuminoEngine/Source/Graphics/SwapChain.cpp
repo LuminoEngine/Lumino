@@ -9,7 +9,6 @@
 #include "RenderingCommand.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 
 //==============================================================================
 // SwapChain
@@ -216,5 +215,4 @@ FrameCapturerContext* SwapChain::getFrameCapturerContext()
 	return m_frameCapturerContext;
 }
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

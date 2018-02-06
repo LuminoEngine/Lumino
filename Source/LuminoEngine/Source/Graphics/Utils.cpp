@@ -5,7 +5,6 @@
 #include <Lumino/Graphics/Utils.h>
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 	
 //==============================================================================
 // Utils
@@ -65,8 +64,6 @@ bool Utils::isSRGBFormat(TextureFormat format)
 	{
 	case TextureFormat::R8G8B8A8:
 	case TextureFormat::R8G8B8X8:
-	case TextureFormat::B8G8R8A8:
-	case TextureFormat::B8G8R8X8:
 		return true;
 	default:
 		return false;
@@ -87,5 +84,4 @@ bool Utils::isFloatFormat(TextureFormat format)
 	}
 }
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

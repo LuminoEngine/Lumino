@@ -12,48 +12,97 @@
 
 LN_NAMESPACE_BEGIN
 class Exception;
+class String;
 
-#define _LN_CHECK(expression, exception, ...)		(!(expression)) && ln::detail::notifyException<exception>(LN__FILE__, __LINE__, ##__VA_ARGS__)
+#define _LN_CHECK(expr, exception, ...)		(!(expr)) && ln::detail::notifyException<exception>(LN__FILE__, __LINE__, ##__VA_ARGS__)
 
 // core
-#define LN_REQUIRE(expression, ...)					_LN_CHECK(expression, ::ln::LogicException, ##__VA_ARGS__)
-#define LN_ENSURE(expression, ...)					_LN_CHECK(expression, ::ln::RuntimeException, ##__VA_ARGS__)
-#define LN_FATAL(expression, ...)					_LN_CHECK(expression, ::ln::FatalException, ##__VA_ARGS__)
+#define LN_REQUIRE(expr, ...)					_LN_CHECK(expr, ::ln::LogicException, ##__VA_ARGS__)
+#define LN_ENSURE(expr, ...)					_LN_CHECK(expr, ::ln::RuntimeException, ##__VA_ARGS__)
+#define LN_FATAL(expr, ...)						_LN_CHECK(expr, ::ln::FatalException, ##__VA_ARGS__)
 
 // utils
-#define LN_UNREACHABLE()							_LN_CHECK(0, ::ln::LogicException)
-#define LN_NOTIMPLEMENTED()							_LN_CHECK(0, ln::NotImplementedException)
-#define LN_REQUIRE_RANGE(value, begin, end)			_LN_CHECK(begin <= value && value < end, ::ln::LogicException)
-#define LN_REQUIRE_KEY(expression, ...)				_LN_CHECK(expression, ln::LogicException, ##__VA_ARGS__)
-#define LN_ENSURE_IO(expression)					_LN_CHECK(expression, ln::IOException)
-#define LN_ENSURE_FILE_NOT_FOUND(expression, path)	_LN_CHECK(expression, ln::FileNotFoundException, path)
-#define LN_ENSURE_ENCODING(expression, ...)			_LN_CHECK(expression, ln::EncodingException)
-#define LN_ENSURE_INVALID_FORMAT(expression, ...)	_LN_CHECK(expression, ln::InvalidFormatException, ##__VA_ARGS__)
-#define LN_ENSURE_WIN32(expression, err)			_LN_CHECK(expression, ln::Win32Exception, err)
+#define LN_UNREACHABLE()						_LN_CHECK(0, ::ln::LogicException)
+#define LN_NOTIMPLEMENTED()						_LN_CHECK(0, ln::NotImplementedException)
+#define LN_REQUIRE_RANGE(value, begin, end)		_LN_CHECK(begin <= value && value < end, ::ln::LogicException)
+#define LN_REQUIRE_KEY(expr, ...)				_LN_CHECK(expr, ln::LogicException, ##__VA_ARGS__)
+#define LN_ENSURE_IO(expr)						_LN_CHECK(expr, ln::IOException)
+#define LN_ENSURE_FILE_NOT_FOUND(expr, path)	_LN_CHECK(expr, ln::FileNotFoundException, path)
+#define LN_ENSURE_ENCODING(expr, ...)			_LN_CHECK(expr, ln::EncodingException)
+#define LN_ENSURE_INVALID_FORMAT(expr, ...)		_LN_CHECK(expr, ln::InvalidFormatException, ##__VA_ARGS__)
 
 // obsolete
-#define LN_THROW(exp, type, ...)	{ _LN_CHECK(exp, type, ##__VA_ARGS__); }
-#define LN_COMCALL(exp)				{ HRESULT hr = (exp); if (FAILED(hr)) { LN_ENSURE_WIN32(0, hr); } }
+#define LN_THROW(expr, type, ...)				{ _LN_CHECK(expr, type, ##__VA_ARGS__); }
+#define LN_COMCALL(expr)						{ HRESULT hr = (expr); if (FAILED(hr)) { LN_ENSURE_WIN32(0, hr); } }
+
+
+//------------------------------------------------------------------------------
+#ifdef LN_DEBUG
+#	define	LN_DCHECK_ENABLED
+#endif
+
+#if defined(__GNUC__) && (__GNUC__ > 2) && defined(__OPTIMIZE__)
+#	define LN_LIKELY(expr) (__builtin_expect(!!(expr), 1))
+#	define LN_UNLIKELY(expr) (__builtin_expect(!!(expr), 0))
+#else
+#	define LN_LIKELY(expr) (1 == !!(expr))
+#	define LN_UNLIKELY(expr) (0 == !!(expr))
+#endif
+
+#ifndef LN_CHECK_ABORT_FUNCTION
+#	include <stdlib.h>
+#	define LN_CHECK_ABORT exit(EXIT_FAILURE);
+#endif
+
+#ifndef LN_CHECK
+#	define LN_CHECK(expr) if (!LN_LIKELY(expr)) { LN_CHECK_ABORT; }
+#endif
+
+#ifdef LN_DCHECK_ENABLED
+#	define LN_DCHECK(...) LN_CHECK(__VA_ARGS__);
+#else
+#	define LN_DCHECK(expr) ((void) expr);
+#endif
+
+
+
+
 
 // internal
+#ifdef LN_USTRING16
 #define LN_EXCEPTION_FORMATTING_CONSTRUCTOR_DECLARE(className) \
-	className(const char* message, ...); \
-	className(const wchar_t* message, ...);
+	className(const char* message); \
+	className(const wchar_t* message); \
+	className(const Char* message);
+
 #define LN_EXCEPTION_FORMATTING_CONSTRUCTOR_IMPLEMENT(className) \
-	className::className(const char* message, ...) \
+	className::className(const char* message) \
 	{ \
-		va_list args; \
-		va_start(args, message); \
-		setMessage(message, args); \
-		va_end(args); \
+		setMessage(message); \
 	} \
-	className::className(const wchar_t* message, ...) \
+	className::className(const wchar_t* message) \
 	{ \
-		va_list args; \
-		va_start(args, message); \
-		setMessage(message, args); \
-		va_end(args); \
+		setMessage(message); \
+	} \
+	className::className(const Char* message) \
+	{ \
+		setMessageU(message); \
 	}
+#else
+#define LN_EXCEPTION_FORMATTING_CONSTRUCTOR_DECLARE(className) \
+	className(const char* message); \
+	className(const wchar_t* message);
+
+#define LN_EXCEPTION_FORMATTING_CONSTRUCTOR_IMPLEMENT(className) \
+	className::className(const char* message) \
+	{ \
+		setMessage(message); \
+	} \
+	className::className(const wchar_t* message) \
+	{ \
+		setMessage(message); \
+	}
+#endif
 
 
 class Assertion
@@ -103,6 +152,7 @@ protected:
 	void setMessage(const wchar_t* format, va_list args);
 	void setMessage(const char* format, ...);
 	void setMessage(const wchar_t* format, ...);
+	void setMessageU(const Char* message);
 
 private:
 	void appendMessage(const Char* message, size_t len);
@@ -167,6 +217,7 @@ class LUMINO_EXPORT NotImplementedException
 {
 public:
 	NotImplementedException();
+	NotImplementedException(const Char* message);
 	virtual Exception* copy() const;
 };
 
@@ -221,43 +272,51 @@ public:
 /**
 	@brief	WindowsAPI のエラーを表します。 (GetLastError)
 */
-class Win32Exception 
-	: public Exception
-{
-public:
-	Win32Exception();
-	Win32Exception(uint32_t dwLastError);
-	virtual Exception* copy() const;
-
-	uint32_t getLastErrorCode() const { return m_dwLastErrorCode; }
-	const std::basic_string<Char>& getFormatMessage() const { return m_formatMessage; }
-
-private:
-	void setMessage(uint32_t dwLastError);
-	uint32_t				m_dwLastErrorCode;
-	std::basic_string<Char>	m_formatMessage;
-};
-
-
+//class Win32Exception 
+//	: public Exception
+//{
+//public:
+//	Win32Exception();
+//	Win32Exception(uint32_t dwLastError);
+//	virtual Exception* copy() const;
+//
+//	uint32_t getLastErrorCode() const { return m_dwLastErrorCode; }
+//	const std::basic_string<Char>& getFormatMessage() const { return m_formatMessage; }
+//
+//private:
+//	void setMessage(uint32_t dwLastError);
+//	uint32_t				m_dwLastErrorCode;
+//	std::basic_string<Char>	m_formatMessage;
+//};
+//
+//
 
 
 
 namespace detail {
 
+void errorPrintf(Char* buf, size_t bufSize, const char* format, ...);
+void errorPrintf(Char* buf, size_t bufSize, const wchar_t* format, ...);
+void errorPrintf(Char* buf, size_t bufSize, const char16_t* format);
+void errorPrintf(Char* buf, size_t bufSize, const String& format);
+void errorPrintf(Char* buf, size_t bufSize);
+
 template<class TException, typename... TArgs>
 inline bool notifyException(const Char* file, int line, TArgs... args)
 {
-	TException e(args...);
+	const size_t BUFFER_SIZE = 512;
+	Char str[BUFFER_SIZE] = {};
+	errorPrintf(str, BUFFER_SIZE, args...);
+	TException e(str);
 	detail::Exception_setSourceLocationInfo(e, file, line);
 	auto h = Assertion::getNotifyVerificationHandler();
 	if (h != nullptr && h(e)) return true;
 	throw e;
-	return true;
+	return false;
 }
 
 } // namespace detail
 LN_NAMESPACE_END
-
 
 
 

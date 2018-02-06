@@ -1,4 +1,4 @@
-#tool nuget:?package=NUnit.ConsoleRunner&version=3.4.0
+
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
 //////////////////////////////////////////////////////////////////////
@@ -26,7 +26,7 @@ Task("Restore-NuGet-Packages")
 {
 });
 
-Task("Build-LuminoBuild")
+Task("BuildLuminoBuild")
     .IsDependentOn("Clean")
     .Does(() =>
 {
@@ -45,18 +45,34 @@ Task("Build-LuminoBuild")
     }
 });
 
-Task("Make-Projects")
-    .IsDependentOn("Build-LuminoBuild")
+void RunExe(string program, string args)
+{
+    if(IsRunningOnWindows())
+    {
+        StartProcess(program, args);
+    }
+    else
+    {
+        StartProcess("mono", program + " " + args);
+    }
+}
+
+Task("MakeProjects")
+    .IsDependentOn("BuildLuminoBuild")
     .Does(() =>
 {
-    StartProcess("./Build/LuminoBuild/bin/Release/LuminoBuild.exe", "MakeVSProjects");
+    RunExe("./Build/LuminoBuild/bin/Release/LuminoBuild.exe", "MakeVersionHeader");
+    if(IsRunningOnWindows())
+        RunExe("./Build/LuminoBuild/bin/Release/LuminoBuild.exe", "MakeVSProjects");
+    else
+        RunExe("./Build/LuminoBuild/bin/Release/LuminoBuild.exe", "MakeXCodeProjects");
 });
 
 Task("Build")
-    .IsDependentOn("Build-LuminoBuild")
+    .IsDependentOn("MakeProjects")
     .Does(() =>
 {
-    StartProcess("./Build/LuminoBuild/bin/Release/LuminoBuild.exe");
+    //StartProcess("./Build/LuminoBuild/bin/Release/LuminoBuild.exe");
 });
 
 Task("Run-Unit-Tests")
@@ -69,7 +85,7 @@ Task("Publish")
     .IsDependentOn("Run-Unit-Tests")
     .Does(() =>
 {
-    StartProcess("./Build/LuminoBuild/bin/Release/LuminoBuild.exe MakeInstaller");
+    //StartProcess("./Build/LuminoBuild/bin/Release/LuminoBuild.exe MakeInstaller");
 });
 
 //////////////////////////////////////////////////////////////////////

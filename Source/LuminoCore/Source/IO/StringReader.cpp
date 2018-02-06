@@ -17,7 +17,7 @@ StringReader::StringReader(const String& str)
 }
 
 //------------------------------------------------------------------------------
-StringReader::StringReader(const TCHAR* str)
+StringReader::StringReader(const Char* str)
 	: m_src(str)
 	, m_range(m_src)
 	, m_pos(0)

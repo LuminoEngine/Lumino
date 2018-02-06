@@ -104,16 +104,18 @@
 
 
 #define LN_USTRING
-//#define LN_LEGACY_VARIANT_ENABLED
+
 //#define LN_USTRING16
+//#define LN_USTRING16_FUZZY_CONVERSION
 
 #ifdef LN_USTRING
 
 #ifdef LN_USTRING16
+#define __LT(x) u ## x
 #define _TT(x)	u ## x
-#define _LT(x)	u ## x
+#define _LT(x)	__LT(x)
 #define TTCHAR	char16_t
-#define _U(x)		u ## x
+#define _U(x)		(u ## x)
 namespace ln {
 using Char = char16_t;
 }
@@ -129,9 +131,9 @@ using Char = wchar_t;
 }
 
 #endif
-
 #else
 #endif
+
 #define LN__FILE__          _LT(__FILE__)
 
 //------------------------------------------------------------------------------

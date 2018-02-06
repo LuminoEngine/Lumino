@@ -47,7 +47,9 @@ public:
 		@brief		文字を書き込みます。
 		@param[in]	ch		: 書き込む文字
 	*/
-	void write(Char ch);
+	void write(char ch);
+	void write(wchar_t ch);
+	void write(char16_t ch);
 
 	/**
 		@brief		整数値を文字列に変換して書き込みます。
@@ -91,9 +93,11 @@ public:
 	
 	/**
 		@brief		文字を書き込みます。
-		@param[in]	ch		: 書き込む文字
+		@param[in]	value		: 書き込む文字
 	*/
-	void writeLine(TCHAR ch);
+	void writeLine(char value);
+	void writeLine(wchar_t value);
+	void writeLine(char16_t value);
 
 	/**
 		@brief		整数値を文字列に変換して書き込み、続けて改行を書き込みます。

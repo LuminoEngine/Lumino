@@ -5,7 +5,6 @@
 #include "ImageEffect.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 
 /**
 	@brief
@@ -34,5 +33,4 @@ private:
 	Ref<CommonMaterial>	m_material;
 };
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

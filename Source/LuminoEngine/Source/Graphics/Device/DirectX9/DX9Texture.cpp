@@ -6,7 +6,6 @@
 #include "DX9Texture.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
 {
 
@@ -252,23 +251,8 @@ void DX9Texture::getData(const RectI& rect, void* outData)
 		LN_NOTIMPLEMENTED();
 	}
 
-	D3DLOCKED_RECT lockedRect;
-	LN_COMCALL(m_dxTexture->LockRect(0, &lockedRect, NULL, D3DLOCK_READONLY));
-
-	size_t pixelByteSize = lockedRect.Pitch / m_size.width;		// ピクセルバイト数
-	size_t srcRowBytes = pixelByteSize * m_realSize.width;		// 横一列のバイト数
-
-	byte_t* dst = (byte_t*)outData;
-	const byte_t* src = (const byte_t*)lockedRect.pBits;
-	for (int row = 0; row < rect.height; ++row)
-	{
-		byte_t* dstline = dst + (lockedRect.Pitch * row);
-		//byte_t* dstline = dst + (lockedRect.Pitch * (rect.height - row - 1));
-		const byte_t* srcline = src + (srcRowBytes * row);
-		memcpy(dstline, srcline, srcRowBytes);
-	}
-
-	LN_COMCALL(m_dxTexture->UnlockRect(0));
+	bool r = DX9Helper::readTextureData(m_dxTexture, 0, outData);
+	if (LN_ENSURE(r)) return;
 }
 
 //------------------------------------------------------------------------------
@@ -444,12 +428,6 @@ void DX9RenderTargetTexture::onResetDevice()
 	IDirect3DDevice9* dxDevice = m_graphicsDevice->getIDirect3DDevice9();
 
 	// レンダーターゲットは GDI 互換フォーマットでなければならない (Radeon HD8490)
-	if (m_format == TextureFormat::R8G8B8A8) {
-		m_format = TextureFormat::B8G8R8A8;
-	}
-	else if (m_format == TextureFormat::R8G8B8X8) {
-		m_format = TextureFormat::B8G8R8X8;
-	}
 
 	D3DFORMAT dx_fmt = DX9Module::TranslateLNFormatToDxFormat(m_format);
 	//switch (dx_fmt)
@@ -522,82 +500,8 @@ void DX9RenderTargetTexture::setSubData3D(const Box32& box, const void* data, si
 
 void DX9RenderTargetTexture::readData(void* outData)
 {
-	IDirect3DDevice9* dxDevice = m_graphicsDevice->getIDirect3DDevice9();
-	IDirect3DSurface9* dxSurface = nullptr;
-	IDirect3DSurface9* dxSystemSurface = nullptr;
-
-	if (FAILED(m_dxTexture->GetSurfaceLevel(0, &dxSurface)))
-	{
-		goto ERROR_EXIT;
-	}
-
-	D3DSURFACE_DESC desc;
-	if (FAILED(dxSurface->GetDesc(&desc)))
-	{
-		goto ERROR_EXIT;
-	}
-
-	if (FAILED(dxDevice->CreateOffscreenPlainSurface(
-		desc.Width, desc.Height, desc.Format,
-		D3DPOOL_SYSTEMMEM, &dxSystemSurface, nullptr)))
-	{
-		goto ERROR_EXIT;
-	}
-
-	if (FAILED(dxDevice->GetRenderTargetData(dxSurface, dxSystemSurface)))
-	{
-		goto ERROR_EXIT;
-	}
-
-	D3DLOCKED_RECT	lockedRect;
-	if (FAILED(dxSystemSurface->LockRect(&lockedRect, nullptr, D3DLOCK_READONLY)))
-	{
-		goto ERROR_EXIT;
-	}
-
-	const byte_t* src = (const byte_t*)lockedRect.pBits;
-	byte_t* dst = (byte_t*)outData;
-	int rowSize = lockedRect.Pitch;
-
-	switch (desc.Format)
-	{
-	default:
-		for (UINT y = 0; y < desc.Height; y++)
-		{
-			byte_t* dstline = dst + (lockedRect.Pitch * y);
-			const byte_t* srcline = src + (lockedRect.Pitch * y);
-			memcpy(dstline, srcline, lockedRect.Pitch);
-		}
-		break;
-
-	case D3DFMT_X8R8G8B8:
-	case D3DFMT_A8R8G8B8:
-		for (UINT y = 0; y < desc.Height; y++)
-		{
-			const byte_t* s = (const byte_t*)src + (lockedRect.Pitch * y);
-			for (UINT x = 0; x < desc.Width; x++)
-			{
-				dst[2] = *s++;
-				dst[1] = *s++;
-				dst[0] = *s++;
-				dst[3] = *s++;
-				dst += 4;
-			}
-		}
-		break;
-	}
-
-	dxSystemSurface->UnlockRect();
-
-	if (dxSystemSurface) dxSystemSurface->Release();
-	if (dxSurface) dxSurface->Release();
-
-	return;
-
-ERROR_EXIT:
-	if (dxSystemSurface) dxSystemSurface->Release();
-	if (dxSurface) dxSurface->Release();
-	LN_LOG_ERROR << "DX9RenderTargetTexture::readData failed.";
+	bool r = DX9Helper::readRenderTargetData(m_graphicsDevice->getIDirect3DDevice9(), m_dxSurface, outData);
+	if (LN_ENSURE(r)) return;
 }
 
 //------------------------------------------------------------------------------
@@ -750,6 +654,12 @@ void DX9BackBufferTexture::setSubData3D(const Box32& box, const void* data, size
 	LN_UNREACHABLE();
 }
 
+void DX9BackBufferTexture::readData(void* outData)
+{
+	bool r = DX9Helper::readRenderTargetData(m_graphicsDevice->getIDirect3DDevice9(), m_dxSurface, outData);
+	if (LN_ENSURE(r)) return;
+}
+
 //------------------------------------------------------------------------------
 RawBitmap* DX9BackBufferTexture::lock()
 {
@@ -795,5 +705,4 @@ void DX9BackBufferTexture::unlock()
 }
 
 } // namespace Driver
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

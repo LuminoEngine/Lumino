@@ -13,7 +13,67 @@
 #include "GLGraphicsDevice.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
+namespace detail
+{
+
+//==============================================================================
+// GLHelper
+//==============================================================================
+String GLHelper::getErrorMessage(GLenum glerror)
+{
+	switch (glerror)
+	{
+	case GL_INVALID_ENUM:
+		return (_T("GL_INVALID_ENUM"));
+	case GL_INVALID_VALUE:
+		return (_T("GL_INVALID_VALUE"));
+	case GL_INVALID_OPERATION:
+		return (_T("GL_INVALID_OPERATION"));
+	case GL_STACK_OVERFLOW:
+		return (_T("GL_STACK_OVERFLOW"));
+	case GL_STACK_UNDERFLOW:
+		return (_T("GL_STACK_UNDERFLOW"));
+	case GL_OUT_OF_MEMORY:
+		return (_T("GL_OUT_OF_MEMORY"));
+	case GL_INVALID_FRAMEBUFFER_OPERATION:
+		return (_T("GL_OUT_OF_MEMORY"));
+	default:
+		return String::format(_T("GLenum {0}"), glerror);
+	}
+}
+
+bool GLHelper::checkEnsureGLError(int line, const char* file)
+{
+	GLenum err = glGetError();
+	if (err != GL_NO_ERROR)
+	{
+		String message;
+		int count = 0;
+		while (err != GL_NO_ERROR)
+		{
+			message += getErrorMessage(err);
+
+			err = glGetError();
+			count++;
+			if (count > 32) break;
+		}
+
+		if (ln::detail::notifyException<::ln::RuntimeException>(String::fromCString(file).c_str(), line, message))
+			return true;
+		else
+			return false;
+	}
+
+	return true;
+}
+
+} // namespace detail
+LN_NAMESPACE_END
+
+
+
+LN_NAMESPACE_BEGIN
+
 namespace Driver
 {
 
@@ -353,5 +413,4 @@ void GLGraphicsDevice::detachRenderingThread()
 }
 
 } // namespace Driver
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

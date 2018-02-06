@@ -4,7 +4,6 @@
 #include "ProfilerRenderer.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 
 //==============================================================================
 // ProfilerRenderer
@@ -203,5 +202,4 @@ void ProfilerRenderer::DrawSectionGraphBar(GraphicsContext& painter, const Profi
 }
 #endif
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

@@ -341,7 +341,7 @@ void ClusteredShadingGeometryRenderingPass::initialize()
 #include "Resource/ClusteredShadingDefault.fx.h"
 		};
 		static const size_t size = LN_ARRAY_SIZE_OF(data);
-		m_defaultShader = Shader::create((const char*)data, size, ShaderCodeType::RawHLSL);
+		m_defaultShader = Shader::create((const char*)data, size, nullptr, ShaderCodeType::RawHLSL);
 	}
 	
 	// TODO: getPass 引数型
@@ -353,7 +353,7 @@ void ClusteredShadingGeometryRenderingPass::initialize()
 #include "Resource/UnLighting.fx.h"
 		};
 		static const size_t size = LN_ARRAY_SIZE_OF(data);
-		m_unLightingShader = Shader::create((const char*)data, size, ShaderCodeType::RawHLSL);
+		m_unLightingShader = Shader::create((const char*)data, size, nullptr, ShaderCodeType::RawHLSL);
 	}
 	m_unLightingShaderTechnique = m_unLightingShader->getTechniques()[0];
 }
@@ -380,7 +380,7 @@ void ClusteredShadingGeometryRenderingPass::selectElementRenderingPolicy(DrawEle
 }
 
 RenderTargetTexture* g_m_normalRenderTarget = nullptr;
-void ClusteredShadingGeometryRenderingPass::onBeginPass(DefaultStatus* defaultStatus)
+void ClusteredShadingGeometryRenderingPass::onBeginPass(DefaultStatus* defaultStatus, RenderView* renderView)
 {
 	//g_m_normalRenderTarget = m_normalRenderTarget;
 	//defaultStatus->defaultRenderTarget[1] = m_normalRenderTarget;
@@ -424,11 +424,8 @@ void DepthPrepass::initialize()
 #include "Resource/DepthPrepass.fx.h"
 		};
 		static const size_t size = LN_ARRAY_SIZE_OF(data);
-		m_defaultShader = Shader::create((const char*)data, size, ShaderCodeType::RawIR);
+		m_defaultShader = Shader::create((const char*)data, size, nullptr, ShaderCodeType::RawIR);
 	}
-
-	m_depthMap = Ref<RenderTargetTexture>::makeRef();
-	m_depthMap->createImpl(GraphicsManager::getInstance(), SizeI(640, 480), 1, TextureFormat::R32G32B32A32_Float);
 }
 
 void DepthPrepass::selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy)
@@ -441,8 +438,15 @@ void DepthPrepass::selectElementRenderingPolicy(DrawElement* element, const Rend
 	outPolicy->visible = true;
 }
 
-void DepthPrepass::onBeginPass(DefaultStatus* defaultStatus)
+void DepthPrepass::onBeginPass(DefaultStatus* defaultStatus, RenderView* renderView)
 {
+	auto viewSize = SizeI::fromFloatSize(renderView->getViewSize());
+	if (!m_depthMap || m_depthMap->getSize() != viewSize)
+	{
+		m_depthMap = Ref<RenderTargetTexture>::makeRef();
+		m_depthMap->createImpl(GraphicsManager::getInstance(), viewSize, 1, TextureFormat::R32G32B32A32_Float);
+	}
+
 	defaultStatus->defaultRenderTarget[0] = m_depthMap;
 }
 
@@ -468,7 +472,7 @@ void ShadowCasterPass::initialize()
 #include "Resource/ShadowCaster.fx.h"
 		};
 		static const size_t size = LN_ARRAY_SIZE_OF(data);
-		m_defaultShader = Shader::create((const char*)data, size, ShaderCodeType::RawIR);
+		m_defaultShader = Shader::create((const char*)data, size, nullptr, ShaderCodeType::RawIR);
 	}
 
 	m_shadowMap = Ref<RenderTargetTexture>::makeRef();
@@ -492,7 +496,7 @@ void ShadowCasterPass::selectElementRenderingPolicy(DrawElement* element, const 
 	outPolicy->visible = true;
 }
 
-void ShadowCasterPass::onBeginPass(DefaultStatus* defaultStatus)
+void ShadowCasterPass::onBeginPass(DefaultStatus* defaultStatus, RenderView* renderView)
 {
 	defaultStatus->defaultRenderTarget[0] = m_shadowMap;
 }

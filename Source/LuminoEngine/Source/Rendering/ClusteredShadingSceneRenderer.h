@@ -88,7 +88,7 @@ public:
 	//virtual Shader* getDefaultShader() const override;
 	virtual void selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy) override;
 
-	virtual void onBeginPass(DefaultStatus* defaultStatus) override;
+	virtual void onBeginPass(DefaultStatus* defaultStatus, RenderView* renderView) override;
 
 private:
 	Ref<Shader>					m_defaultShader;
@@ -106,7 +106,7 @@ public:
 	void initialize();
 
 	virtual void selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy) override;
-	virtual void onBeginPass(DefaultStatus* defaultStatus) override;
+	virtual void onBeginPass(DefaultStatus* defaultStatus, RenderView* renderView) override;
 
 public:	// TODO:
 	Ref<Shader>					m_defaultShader;
@@ -127,7 +127,7 @@ public:
 
 	virtual void selectElementRenderingPolicy(DrawElement* element, const RenderStageFinalData& stageData, ElementRenderingPolicy* outPolicy) override;
 
-	virtual void onBeginPass(DefaultStatus* defaultStatus) override;
+	virtual void onBeginPass(DefaultStatus* defaultStatus, RenderView* renderView) override;
 
 	virtual void overrideCameraInfo(detail::CameraInfo* cameraInfo) override;
 

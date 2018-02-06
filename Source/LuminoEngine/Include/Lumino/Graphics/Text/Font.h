@@ -5,7 +5,6 @@
 #include "../Color.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 namespace detail { class FontManager; }
 namespace detail { class FontGlyphTextureCache; }
 namespace detail { class VectorFontGlyphCache; }
@@ -329,5 +328,4 @@ private:
 
 };
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

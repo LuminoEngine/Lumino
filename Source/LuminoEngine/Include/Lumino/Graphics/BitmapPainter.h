@@ -4,7 +4,6 @@
 #include "Bitmap.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 
 /**
 	@brief	 ビットマップへの描画を行うクラスです。
@@ -48,5 +47,4 @@ public:
 	void flipVertical(RawBitmap* dst, const RawBitmap* src);
 };
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

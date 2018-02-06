@@ -59,8 +59,9 @@ using namespace ln;
 //#define D3DX9_TEST
 
 #ifdef D3DX9_TEST
-#include <d3dx9math.h>
-#pragma comment(lib, "d3dx9.lib")
+#define NOMINMAX
+#include <C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include\d3dx9math.h>
+#pragma comment(lib, "C:\\Program Files (x86)\\Microsoft DirectX SDK (June 2010)\\Lib\\x86\\d3dx9.lib")
 
 inline void dumpFLOAT(const char* header, FLOAT v)
 {

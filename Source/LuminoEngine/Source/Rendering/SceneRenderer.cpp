@@ -159,7 +159,7 @@ void SceneRenderer::render(
 		defaultStatus.defaultRenderTarget[1] = defaultStatus.defaultRenderTarget[2] = defaultStatus.defaultRenderTarget[3] = nullptr;
 		defaultStatus.defaultDepthBuffer = defaultDepthBuffer;
 
-		pass->onBeginPass(&defaultStatus);
+		pass->onBeginPass(&defaultStatus, drawElementListSet);
 
 		// DrawElement 描画
 		//int currentBatchIndex = -1;
@@ -636,7 +636,7 @@ RenderingPass2::~RenderingPass2()
 //	return shader->getTechniques().getAt(0)->getPasses().getAt(0);
 //}
 
-void RenderingPass2::onBeginPass(DefaultStatus* defaultStatus)
+void RenderingPass2::onBeginPass(DefaultStatus* defaultStatus, RenderView* renderView)
 {
 
 }

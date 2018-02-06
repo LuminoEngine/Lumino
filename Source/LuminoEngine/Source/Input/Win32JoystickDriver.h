@@ -6,6 +6,7 @@
 #include <dinput.h>
 #include <xinput.h>
 #include <Lumino/Base/DllLoader.h>
+#include <Lumino/Base/Platform.h>
 #include "InputDriver.h"
 
 LN_NAMESPACE_BEGIN

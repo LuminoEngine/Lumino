@@ -14,14 +14,10 @@
 #include "../Common.h"
 #include "../Base/GeometryStructs.h"
 
-#define LN_NAMESPACE_GRAPHICS_BEGIN		//namespace Graphics {
-#define LN_NAMESPACE_GRAPHICS_END		//}
-
 #define LN_BEGIN_INTERNAL_NAMESPACE(module)	LN_NAMESPACE_BEGIN /*namespace module {*/ namespace Internal {
 #define LN_END_INTERNAL_NAMESPACE	} /*}*/ LN_NAMESPACE_END
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 
 
 
@@ -37,12 +33,6 @@ enum class TextureFormat
 
 	/** 32 ビットのアルファ無しフォーマット */
 	R8G8B8X8,
-
-	/** 32 ビットのアルファ付きフォーマット (GDI互換フォーマット。MME 互換のために定義している) */
-	B8G8R8A8,
-
-	/** 32 ビットのアルファ無しフォーマット */
-	B8G8R8X8,
 
 	/** 64 ビットの浮動小数点フォーマット */
 	R16G16B16A16_Float,
@@ -61,9 +51,6 @@ enum class TextureFormat
 
 	/** S8 32 ビットの深度バッファフォーマット */
 	D24S8,
-
-	//_Count,					///< (terminator)
-
 };
 
 
@@ -526,6 +513,5 @@ private:
 };
 
 } // namespace detail
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END
 

@@ -30,7 +30,7 @@ public:
 	*/
 	StringReader(const String& str);
 
-	StringReader(const TCHAR* str);
+	StringReader(const Char* str);
 
 	StringReader(const StringRef& str);
 

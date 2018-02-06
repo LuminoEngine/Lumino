@@ -89,10 +89,8 @@ public:
 
 	/**
 		@brief		システムの特別なフォルダのパスを取得します。
-		@see	PathName.GetSpecialFolderPath
 	*/
-	template<typename TChar>
-	static void getSpecialFolderPath(SpecialFolder specialFolder, TChar* outPath);
+	static String getSpecialFolderPath(SpecialFolder specialFolder);
 };
 
 LN_NAMESPACE_END

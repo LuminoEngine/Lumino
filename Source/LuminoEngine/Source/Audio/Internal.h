@@ -9,6 +9,7 @@
 #include <Lumino/Base/Common.h>
 #include <Lumino/Base/Logger.h>
 #include <Lumino/Base/Exception.h>
+#include <Lumino/Base/Platform.h>
 
 #if defined(LN_OS_WIN32)
 	#define NOMINMAX

@@ -92,15 +92,15 @@ TEST_F(Test_Json_JsonValue, String)
 	// <Test> IsString() で String 値を確認する。
 	// <Test> GetType() で String 値を確認する。
 	{
-		JsonValue v1(_T("abc"));
+		JsonValue v1(_U("abc"));	// TODO: char16_t モードで _T() 書いてしまうと bool とみなされてしまう
 		JsonValue v2;
-		v2.setString(String(_T("def")));
+		v2.setString(String(_U("def")));
 		ASSERT_TRUE(v1.IsString());
 		ASSERT_EQ(JsonType::String, v1.getType());
-		ASSERT_EQ(_T("abc"), v1.getString());
+		ASSERT_EQ(_U("abc"), v1.getString());
 		ASSERT_TRUE(v2.IsString());
 		ASSERT_EQ(JsonType::String, v2.getType());
-		ASSERT_EQ(_T("def"), v2.getString());
+		ASSERT_EQ(_U("def"), v2.getString());
 	}
 }
 

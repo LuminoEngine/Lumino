@@ -5,7 +5,6 @@
 #include "Device/GraphicsDriverInterface.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 
 //==============================================================================
 // Brush
@@ -258,6 +257,5 @@ void TextureBrush::create(Texture* texture)
 }
 #endif
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END
 

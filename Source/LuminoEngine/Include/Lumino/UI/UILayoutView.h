@@ -47,7 +47,7 @@ public:
 	UIContext* getOwnerContext() const { return m_ownerContext; }
 
 	virtual void updateLayout(const Size& viewSize) override;
-	virtual detail::SpcialUIElementType getSpcialUIElementType() const;
+	virtual detail::SpcialUIElementType getSpcialUIElementType() const override;
 
 
 protected:

@@ -5,7 +5,6 @@ LN_NAMESPACE_BEGIN
 struct Vector3;
 struct Vector4;
 
-LN_NAMESPACE_GRAPHICS_BEGIN
 struct Color;
 	
 /**
@@ -590,5 +589,4 @@ public:
 };
 
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

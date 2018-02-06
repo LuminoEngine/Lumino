@@ -21,7 +21,18 @@ How to build
 Create a development project.
 
 ```
-PS> ./build.ps1 -Target Make-Projects
+PS> ./build.ps1 -Target MakeProjects
+```
+
+After this, please check in the "build/..." folder.
+
+
+### Mac OS X
+Create a development project.
+
+```
+$ chmod +x ./build.sh
+$ ./build.sh -tMakeProjects
 ```
 
 After this, please check in the "build/..." folder.

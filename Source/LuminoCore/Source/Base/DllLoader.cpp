@@ -16,7 +16,8 @@ LN_NAMESPACE_BEGIN
 static void* LoadDLL(const Char* filePath)
 {
 #ifdef _WIN32
-	return ::LoadLibrary(filePath);
+	detail::GenericStaticallyLocalPath<TCHAR> localPath(filePath, StringTraits::tcslen(filePath));
+	return ::LoadLibrary(localPath.c_str());
 #else
 	detail::GenericStaticallyLocalPath<char> localPath(filePath, StringTraits::tcslen(filePath));
 	return dlopen(localPath.c_str(), RTLD_LAZY);

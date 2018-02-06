@@ -114,7 +114,7 @@ public:
 	//virtual void RenderElementSubset(DrawList* renderer, DrawElement* element, int subsetIndex);
 
 
-	virtual void onBeginPass(DefaultStatus* defaultStatus);
+	virtual void onBeginPass(DefaultStatus* defaultStatus, RenderView* renderView);
 
 	virtual void overrideCameraInfo(detail::CameraInfo* cameraInfo);
 

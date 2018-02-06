@@ -4,7 +4,6 @@
 #include "GraphicsResourceObject.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 class VertexDeclaration;
 using VertexDeclarationPtr = Ref<VertexDeclaration>;
 
@@ -45,5 +44,4 @@ private:
 	bool								m_modified;
 };
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

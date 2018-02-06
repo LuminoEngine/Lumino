@@ -7,44 +7,9 @@
 #include "../../include/Lumino/IO/FileStream.h"
 #include "../../include/Lumino/IO/FileSystem.h"
 #include "../../include/Lumino/IO/PathTraits.h"
+#include <Lumino/Base/Platform.h>
 
 LN_NAMESPACE_BEGIN
-
-//------------------------------------------------------------------------------
-template<typename TChar>
-static void Win32IOErrorToExceptionThrow(DWORD errorCode, const TChar* message)
-{
-	switch (errorCode) {
-	case ERROR_FILE_NOT_FOUND:
-		_LN_CHECK(0, FileNotFoundException, message);
-		return;
-	case ERROR_PATH_NOT_FOUND:
-		_LN_CHECK(0, IOException, message);
-		return;
-	case ERROR_ACCESS_DENIED:
-		_LN_CHECK(0, IOException, LN_T(TChar, "Unauthorized access : %s"), message);
-		return;
-	case ERROR_ALREADY_EXISTS:
-		_LN_CHECK(0, IOException, LN_T(TChar, "Already exists : %s"), message);
-		return;
-	case ERROR_FILENAME_EXCED_RANGE:
-		_LN_CHECK(0, IOException, LN_T(TChar, "Path too long : %s"), message);
-		return;
-	case ERROR_INVALID_DRIVE:
-		_LN_CHECK(0, IOException, LN_T(TChar, "Drive not found : %s"), message);
-		return;
-	case ERROR_FILE_EXISTS:
-		_LN_CHECK(0, IOException, LN_T(TChar, "File exists : %s"), message);
-		return;
-	default:
-		_LN_CHECK(0, Win32Exception, errorCode);
-		return;
-	}
-}
-
-
-
-
 
 class PlatformFileSystem
 {
@@ -69,7 +34,7 @@ public:
 		if (attr.TestFlag(FileAttribute::ReadOnly))  dwAttr |= FILE_ATTRIBUTE_READONLY;
 		if (attr.TestFlag(FileAttribute::Hidden))    dwAttr |= FILE_ATTRIBUTE_HIDDEN;
 		BOOL r = ::SetFileAttributesW(filePath, dwAttr);
-		if (r == FALSE) { Win32IOErrorToExceptionThrow(::GetLastError(), filePath); }
+		if (LN_ENSURE(r != FALSE, detail::Win32Helper::getWin32ErrorMessage(::GetLastError()))) return;
 	}
 
 	static bool getAttribute(const wchar_t* path, FileAttribute* outAttr)
@@ -88,19 +53,14 @@ public:
 
 	static void copyFile(const wchar_t* sourceFileName, const wchar_t* destFileName, bool overwrite)
 	{
-		BOOL bRes = ::CopyFileW(sourceFileName, destFileName, (overwrite) ? FALSE : TRUE);
-		if (bRes == FALSE) {
-			// TODO 引数もう一つ増やさないと、どちらが原因かわかりにくい
-			Win32IOErrorToExceptionThrow(::GetLastError(), sourceFileName);
-		}
+		BOOL r = ::CopyFileW(sourceFileName, destFileName, (overwrite) ? FALSE : TRUE);
+		if (LN_ENSURE(r != FALSE, detail::Win32Helper::getWin32ErrorMessage(::GetLastError()))) return;
 	}
 
 	static void deleteFile(const wchar_t* filePath)
 	{
 		BOOL r = ::DeleteFileW(filePath);
-		if (r == FALSE) {
-			Win32IOErrorToExceptionThrow(::GetLastError(), filePath);
-		}
+		if (LN_ENSURE(r != FALSE, detail::Win32Helper::getWin32ErrorMessage(::GetLastError()))) return;
 	}
 
 	static bool createDirectory(const wchar_t* path)
@@ -111,9 +71,7 @@ public:
 	static void removeDirectory(const wchar_t* path)
 	{
 		BOOL r = ::RemoveDirectoryW(path);
-		if (r == FALSE) {
-			Win32IOErrorToExceptionThrow(::GetLastError(), path);
-		}
+		if (LN_ENSURE(r != FALSE, detail::Win32Helper::getWin32ErrorMessage(::GetLastError()))) return;
 	}
 
 	static bool matchPath(const wchar_t* filePath, const wchar_t* pattern)
@@ -218,109 +176,17 @@ private:
 	std::wstring		m_current;
 };
 
-
-//------------------------------------------------------------------------------
-//bool FileSystem::existsFile(const StringRefA& filePath)
-//{
-//	if (filePath.IsNullOrEmpty()) return false;
-//
-//	char tmpPath[MAX_PATH];
-//	filePath.copyTo(tmpPath, MAX_PATH);
-//
-//	// ※fopen によるチェックはNG。ファイルが排他ロックで開かれていた時に失敗する。
-//	DWORD attr = ::GetFileAttributesA(tmpPath);
-//	// 他ユーザーフォルダ内のファイルにアクセスしようとすると attr = -1 になる。
-//	// このとき GetLastError() は ERROR_ACCESS_DENIED である。
-//	// .NET の仕様にあわせ、エラーは一律 false で返している。
-//	return ((attr != -1) &&
-//			(attr & FILE_ATTRIBUTE_DIRECTORY) == 0);
-//}
-//
-//bool FileSystem::existsFile(const StringRefW& filePath)
-//{
-//	if (filePath.IsNullOrEmpty()) return false;
-//
-//	wchar_t tmpPath[MAX_PATH];
-//	filePath.copyTo(tmpPath, MAX_PATH);
-//
-//	DWORD attr = ::GetFileAttributesW(tmpPath);
-//	return ((attr != -1) &&
-//			(attr & FILE_ATTRIBUTE_DIRECTORY) == 0);
-//}
-
-////------------------------------------------------------------------------------
-//void FileSystem::setAttribute(const char* filePath, FileAttribute attr)
-//{
-//	DWORD dwAttr = 0;
-//	if (attr.TestFlag(FileAttribute::Directory)) dwAttr |= FILE_ATTRIBUTE_DIRECTORY;
-//	if (attr.TestFlag(FileAttribute::ReadOnly))  dwAttr |= FILE_ATTRIBUTE_READONLY;
-//	if (attr.TestFlag(FileAttribute::Hidden))    dwAttr |= FILE_ATTRIBUTE_HIDDEN;
-//	BOOL r = ::SetFileAttributesA(filePath, dwAttr);
-//	if (r == FALSE) { Win32IOErrorToExceptionThrow(::GetLastError(), filePath); }
-//}
-//
-//void FileSystem::setAttribute(const wchar_t* filePath, FileAttribute attr)
-//{
-//	DWORD dwAttr = 0;
-//	if (attr.TestFlag(FileAttribute::Directory)) dwAttr |= FILE_ATTRIBUTE_DIRECTORY;
-//	if (attr.TestFlag(FileAttribute::ReadOnly))  dwAttr |= FILE_ATTRIBUTE_READONLY;
-//	if (attr.TestFlag(FileAttribute::Hidden))    dwAttr |= FILE_ATTRIBUTE_HIDDEN;
-//	BOOL r = ::SetFileAttributesW(filePath, dwAttr);
-//	if (r == FALSE) { Win32IOErrorToExceptionThrow(::GetLastError(), filePath); }
-//}
-//
-////------------------------------------------------------------------------------
-//void FileSystem::copy(const char* sourceFileName, const char* destFileName, bool overwrite)
-//{
-//	BOOL bRes = ::CopyFileA(sourceFileName, destFileName, (overwrite) ? FALSE : TRUE);
-//	if (bRes == FALSE) {
-//		// TODO 引数もう一つ増やさないと、どちらが原因かわかりにくい
-//		Win32IOErrorToExceptionThrow(::GetLastError(), sourceFileName);
-//	}
-//}
-//
-//void FileSystem::copy(const wchar_t* sourceFileName, const wchar_t* destFileName, bool overwrite)
-//{
-//	BOOL bRes = ::CopyFileW(sourceFileName, destFileName, (overwrite) ? FALSE : TRUE);
-//	if (bRes == FALSE) {
-//		// TODO 引数もう一つ増やさないと、どちらが原因かわかりにくい
-//		Win32IOErrorToExceptionThrow(::GetLastError(), sourceFileName);
-//	}
-//}
-
-////------------------------------------------------------------------------------
-//void FileSystem::deleteFile(const char* filePath)
-//{
-//	BOOL r = ::DeleteFileA(filePath);
-//	if (r == FALSE) {
-//		Win32IOErrorToExceptionThrow(::GetLastError(), filePath);
-//	}
-//}
-//void FileSystem::deleteFile(const wchar_t* filePath)
-//{
-//	BOOL r = ::DeleteFileW(filePath);
-//	if (r == FALSE) {
-//		Win32IOErrorToExceptionThrow(::GetLastError(), filePath);
-//	}
-//}
-
-//------------------------------------------------------------------------------
 static void RemoveDirectoryImpl(LPCSTR lpPathName)
 {
 	BOOL r = ::RemoveDirectoryA(lpPathName);
-	if (r == FALSE) {
-		Win32IOErrorToExceptionThrow(::GetLastError(), lpPathName);
-	}
+	if (LN_ENSURE(r != FALSE, detail::Win32Helper::getWin32ErrorMessage(::GetLastError()))) return;
 }
 static void RemoveDirectoryImpl(LPCWSTR lpPathName)
 {
 	BOOL r = ::RemoveDirectoryW(lpPathName);
-	if (r == FALSE) {
-		Win32IOErrorToExceptionThrow(::GetLastError(), lpPathName);
-	}
+	if (LN_ENSURE(r != FALSE, detail::Win32Helper::getWin32ErrorMessage(::GetLastError()))) return;
 }
 
-//------------------------------------------------------------------------------
 bool FileSystem::mkdir(const char* path)
 {
 	return ::CreateDirectoryA(path, NULL) != FALSE;
@@ -329,42 +195,5 @@ bool FileSystem::mkdir(const wchar_t* path)
 {
 	return ::CreateDirectoryW(path, NULL) != FALSE;
 }
-////------------------------------------------------------------------------------
-//bool FileSystem::getAttributeInternal(const char* path, FileAttribute* outAttr)
-//{
-//	DWORD attr = ::GetFileAttributesA(path);
-//	if (attr == -1) { return false; }
-//
-//	FileAttribute flags = FileAttribute::None;
-//	if (attr & FILE_ATTRIBUTE_DIRECTORY)	flags |= FileAttribute::Directory;
-//	else									flags |= FileAttribute::Normal;
-//	if (attr & FILE_ATTRIBUTE_READONLY)		flags |= FileAttribute::ReadOnly;
-//	if (attr & FILE_ATTRIBUTE_HIDDEN)		flags |= FileAttribute::Hidden;
-//	*outAttr = flags;
-//	return true;
-//}
-//bool FileSystem::getAttributeInternal(const wchar_t* path, FileAttribute* outAttr)
-//{
-//	DWORD attr = ::GetFileAttributesW(path);
-//	if (attr == -1) { return false; }
-//
-//	FileAttribute flags = FileAttribute::None;
-//	if (attr & FILE_ATTRIBUTE_DIRECTORY)	flags |= FileAttribute::Directory;
-//	else									flags |= FileAttribute::Normal;
-//	if (attr & FILE_ATTRIBUTE_READONLY)		flags |= FileAttribute::ReadOnly;
-//	if (attr & FILE_ATTRIBUTE_HIDDEN)		flags |= FileAttribute::Hidden;
-//	*outAttr = flags;
-//	return true;
-//}
-//
-//bool FileSystem::matchPath(const char* filePath, const char* pattern)
-//{
-//	return ::PathMatchSpecExA(filePath, pattern, PMSF_NORMAL) == S_OK;
-//}
-//
-//bool FileSystem::matchPath(const wchar_t* filePath, const wchar_t* pattern)
-//{
-//	return ::PathMatchSpecExW(filePath, pattern, PMSF_NORMAL) == S_OK;
-//}
-//
+
 LN_NAMESPACE_END

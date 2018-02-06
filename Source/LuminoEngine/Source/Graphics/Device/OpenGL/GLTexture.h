@@ -6,7 +6,6 @@
 #include "GLCommon.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
 {
 
@@ -38,23 +37,23 @@ public:
 
 public:
 	// override IDeviceObject
-	virtual void onLostDevice();
-	virtual void onResetDevice();
+	virtual void onLostDevice() override;
+	virtual void onResetDevice() override;
 
 	// override ITexture
-	virtual TextureType getTextureType() const { return TextureType_Normal; }
-	virtual TextureFormat getTextureFormat() const { return m_format; }
-	virtual const SizeI& getSize() const { return m_size; }
-	virtual const SizeI& getRealSize() const { return m_realSize; }
-	virtual void setSamplerState(const SamplerState& state);
-	virtual void setSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize);
-	virtual void setSubData3D(const Box32& box, const void* data, size_t dataBytes);
+	virtual TextureType getTextureType() const override { return TextureType_Normal; }
+	virtual TextureFormat getTextureFormat() const override { return m_format; }
+	virtual const SizeI& getSize() const override { return m_size; }
+	virtual const SizeI& getRealSize() const override { return m_realSize; }
+	virtual void setSamplerState(const SamplerState& state) override;
+	virtual void setSubData(const PointI& point, const void* data, size_t dataBytes, const SizeI& dataBitmapSize) override;
+	virtual void setSubData3D(const Box32& box, const void* data, size_t dataBytes) override;
 	virtual void getData(const RectI& rect, void* outData) override;
 	virtual RawBitmap* lock();
 	virtual void unlock();
 
 	// override GLTextureBase
-	virtual GLuint getGLTexture() { return m_glTexture; }
+	virtual GLuint getGLTexture() override { return m_glTexture; }
 
 private:
 	GLuint				m_glTexture;
@@ -143,5 +142,4 @@ private:
 };
 
 } // namespace Driver
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

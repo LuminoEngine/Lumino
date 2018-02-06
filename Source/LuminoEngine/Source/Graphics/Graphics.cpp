@@ -9,7 +9,6 @@
 #endif
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 
 //==============================================================================
 // Graphics
@@ -112,5 +111,4 @@ void Graphics::changeDirectX9Device(void* id3d9device)
 //
 //}
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

@@ -37,7 +37,6 @@ set(LN_SOURCES_Base
 	Include/Lumino/Base/CRT.h
 	Include/Lumino/Base/Delegate.h
 	Include/Lumino/Base/Delegate.inl
-	Include/Lumino/Base/Diff.h
 	Include/Lumino/Base/DllLoader.h
 	Include/Lumino/Base/ElapsedTimer.h
 	Include/Lumino/Base/Enumerable.h
@@ -55,6 +54,7 @@ set(LN_SOURCES_Base
 	Include/Lumino/Base/Logger.h
 	Include/Lumino/Base/Memory.h
 	Include/Lumino/Base/Nullable.h
+	Include/Lumino/Base/Platform.h
 	Include/Lumino/Base/RefObject.h
 	Include/Lumino/Base/Regex.h
 	Include/Lumino/Base/Resource.h
@@ -73,15 +73,18 @@ set(LN_SOURCES_Base
 	Include/Lumino/Base/Uuid.h
 	Source/Base/ByteBuffer.cpp
 	Source/Base/Cache.cpp
-	Source/Base/Diff.cpp
 	Source/Base/DllLoader.cpp
 	Source/Base/ElapsedTimer.cpp
 	Source/Base/Environment.cpp
+	Source/Base/Environment_OSX.h
+	Source/Base/Environment_UNIX.h
+	Source/Base/Environment_WIN32.h
 	Source/Base/Exception.cpp
 	Source/Base/Hash.cpp
 	Source/Base/Locale.cpp
 	Source/Base/Logger.cpp
 	Source/Base/Memory.cpp
+	Source/Base/Platform.cpp
 	Source/Base/RefObject.cpp
 	Source/Base/Resource.cpp
 	Source/Base/Serialization.cpp
@@ -299,6 +302,10 @@ if (WIN32)
 		Source/Text/Win32CodePageEncoding.cpp
 		Source/Text/Win32CodePageEncoding.h
 	)
+
+	#set(LN_SOURCES_IO
+	#	${LN_SOURCES_IO}
+	#)
 
 elseif (APPLE)
 

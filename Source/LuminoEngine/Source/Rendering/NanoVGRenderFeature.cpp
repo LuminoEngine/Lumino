@@ -602,7 +602,8 @@ static int lnnvg__renderCreate(void* uptr)
 
 	ShaderCompileResult result;
 	lnc->shader.attach(device->createShader(code.c_str(), code.length(), &result), false);
-	LN_THROW(result.Level != ShaderCompileResultLevel_Error, CompilationException, result);
+	if (LN_ENSURE(result.Level != ShaderCompileResultLevel_Error)) return -1;
+
 	lnc->shaderPass = lnc->shader->getTechnique(0)->getPass(0);
 	lnc->varViewSize = lnc->shader->getVariableByName(_LT("viewSize"));
 	lnc->varFrag = lnc->shader->getVariableByName(_LT("frag"));

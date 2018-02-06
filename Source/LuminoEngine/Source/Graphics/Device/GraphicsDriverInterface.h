@@ -10,8 +10,6 @@ class EngineDiagCore;
 class RawBitmap;
 class PlatformWindow;
 
-LN_NAMESPACE_GRAPHICS_BEGIN
-
 namespace Driver
 {
 static const int MaxVertexStreams = 16;
@@ -589,5 +587,4 @@ protected:
 };
 
 } // namespace Driver
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

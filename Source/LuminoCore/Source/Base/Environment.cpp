@@ -1,13 +1,14 @@
 ﻿
 #include <time.h>
 #include "../Internal.h"
+#include <Lumino/Base/Environment.h>
 #ifdef LN_OS_WIN32
-    #include <Shlobj.h>
+#include <Shlobj.h>
+#include "Environment_Win32.h"
 #elif defined(LN_OS_MAC)
-    #include <mach/mach_time.h>
+#include <mach/mach_time.h>
 #include <CoreServices/CoreServices.h>
 #endif
-#include <Lumino/Base/Environment.h>
 
 // linux
 #include <Lumino/Base/StringHelper.h>
@@ -17,104 +18,104 @@
 
 LN_NAMESPACE_BEGIN
 
-// Native -> char or wchar_t or char16_t
-template<typename TSrcChar/*, typename TDstChar*/>
-class LocalStringConverter
-{
-public:
-	void alloc(int length)
-	{
-		// TODO: SSO
-		m_longNativeString.resize(length);
-	}
+//// Native -> char or wchar_t or char16_t
+//template<typename TSrcChar/*, typename TDstChar*/>
+//class LocalStringConverter
+//{
+//public:
+//	void alloc(int length)
+//	{
+//		// TODO: SSO
+//		m_longNativeString.resize(length);
+//	}
+//
+//	TSrcChar* data()
+//	{
+//		return m_longNativeString.data();
+//	}
+//
+//	String toUString() const
+//	{
+//		return String::fromCString(m_longNativeString.data(), m_longNativeString.size());
+//	}
+//
+//private:
+//	std::vector<TSrcChar> m_longNativeString;
+//};
 
-	TSrcChar* data()
-	{
-		return m_longNativeString.data();
-	}
-
-	String toUString() const
-	{
-		return String::fromCString(m_longNativeString.data(), m_longNativeString.size());
-	}
-
-private:
-	std::vector<TSrcChar> m_longNativeString;
-};
-
-#ifdef LN_OS_WIN32
-// Win32
-class PlatformEnvironment
-{
-public:
-	using CharType = wchar_t;
-
-	static void getCurrentDirectory(LocalStringConverter<CharType>* out)
-	{
-		DWORD size = ::GetCurrentDirectoryW(0, NULL);
-		out->alloc(size);
-		::GetCurrentDirectoryW(size, out->data());
-	}
-};
-#else
-
-// Unix
-class PlatformEnvironment
-{
-public:
-	using CharType = char;
-	
-	static void getCurrentDirectory(LocalStringConverter<CharType>* out)
-	{
-		char* p = getcwd(NULL, 0);
-		size_t len = strlen(p);
-		out->alloc(len);
-		strncpy(out->data(), p, len);
-		free(p);
-	}
-	
-#ifdef LN_OS_MAC
-	void getSpecialFolderPath(SpecialFolder specialFolder, LocalStringConverter<CharType>* out)
-	{
-#if 0
-		short domain = kOnAppropriateDisk;
-		
-		OSType type = kDesktopFolderType;
-		switch (specialFolder)
-		{
-			case SpecialFolder::ApplicationData:
-				type = kApplicationSupportFolderType;
-				break;
-			case SpecialFolder::Temporary:
-				type = kTemporaryFolderType;
-				break;
-			default:
-				LN_THROW(0, ArgumentException);
-				break;
-		}
-		
-		FSRef ref;
-		if (FSFindFolder(domain, type, false, &ref) != 0) {
-			LN_THROW(0, RuntimeException);
-			return;
-		}
-		
-		
-		
-		ByteBuffer buf(2048);
-		if (FSRefMakePath(&ref, reinterpret_cast<UInt8 *>(buf.getData()), buf.getSize()) != noErr) {
-			LN_THROW(0, RuntimeException);
-			return;
-		}
-		
-		String path = String::fromCString((const char*)buf.getConstData(), buf.getSize());
-		StringTraits::tstrcpy(outPath, LN_MAX_PATH, path.c_str());
-#endif
-	}
-#endif
-};
-#endif
-
+//#ifdef LN_OS_WIN32
+//// Win32
+//class PlatformEnvironment
+//{
+//public:
+//	using CharType = wchar_t;
+//
+//	static void getCurrentDirectory(LocalStringConverter<CharType>* out)
+//	{
+//		DWORD size = ::GetCurrentDirectoryW(0, NULL);
+//		out->alloc(size);
+//		::GetCurrentDirectoryW(size, out->data());
+//	}
+//};
+//#else
+//
+//// Unix
+//class PlatformEnvironment
+//{
+//public:
+//	using CharType = char;
+//	
+//	static void getCurrentDirectory(LocalStringConverter<CharType>* out)
+//	{
+//		char* p = getcwd(NULL, 0);
+//		size_t len = strlen(p);
+//		out->alloc(len);
+//		strncpy(out->data(), p, len);
+//		free(p);
+//	}
+//	
+//#ifdef LN_OS_MAC
+//	void getSpecialFolderPath(SpecialFolder specialFolder, LocalStringConverter<CharType>* out)
+//	{
+//#if 0
+//		short domain = kOnAppropriateDisk;
+//		
+//		OSType type = kDesktopFolderType;
+//		switch (specialFolder)
+//		{
+//			case SpecialFolder::ApplicationData:
+//				type = kApplicationSupportFolderType;
+//				break;
+//			case SpecialFolder::Temporary:
+//				type = kTemporaryFolderType;
+//				break;
+//			default:
+//				LN_THROW(0, ArgumentException);
+//				break;
+//		}
+//		
+//		FSRef ref;
+//		if (FSFindFolder(domain, type, false, &ref) != 0) {
+//			LN_THROW(0, RuntimeException);
+//			return;
+//		}
+//		
+//		
+//		
+//		ByteBuffer buf(2048);
+//		if (FSRefMakePath(&ref, reinterpret_cast<UInt8 *>(buf.getData()), buf.getSize()) != noErr) {
+//			LN_THROW(0, RuntimeException);
+//			return;
+//		}
+//		
+//		String path = String::fromCString((const char*)buf.getConstData(), buf.getSize());
+//		StringTraits::tstrcpy(outPath, LN_MAX_PATH, path.c_str());
+//#endif
+//	}
+//#endif
+//};
+//#endif
+//
 
 
 
@@ -122,11 +123,11 @@ public:
 // Environment
 //==============================================================================
 
-String getCurrentDirectory()
+String Environment::getCurrentDirectory()
 {
-	LocalStringConverter<PlatformEnvironment::CharType> buf;
-	PlatformEnvironment::getCurrentDirectory(&buf);
-	return buf.toUString();
+	PlatformEnvironment::StringType path;
+	PlatformEnvironment::getCurrentDirectory(&path);
+	return String::fromStdString(path);
 }
 
 
@@ -148,17 +149,15 @@ String Environment::LN_AFX_FUNCNAME(getEnvironmentVariable)(const String& variab
 //------------------------------------------------------------------------------
 bool Environment::tryGetEnvironmentVariable(const String& variableName, String* outValue)
 {
-	String name = variableName;
 #ifdef LN_OS_WIN32
-	size_t len;
-	errno_t err = _tgetenv_s(&len, NULL, 0, name.c_str());
-	if (err != 0 || len == 0) {	// Win32 では環境変数を空にはできない
-		return false;
-	}
-	//Char* val = new Char[len];
-	ByteBuffer val(len * sizeof(Char));
-	_tgetenv_s(&len, (Char*)val.getData(), len, name.c_str());
-	if (outValue) { *outValue = (const Char*)val.getConstData(); }
+	std::wstring name = variableName.toStdWString();
+	DWORD dwLen = ::GetEnvironmentVariableW(name.c_str(), NULL, 0);
+	if (dwLen == 0) return false;
+
+	std::wstring buf;
+	buf.resize(dwLen);
+	::GetEnvironmentVariableW(name.c_str(), &buf[0], dwLen + 1);
+	if (outValue) { *outValue = String::fromCString(buf.c_str()); }
 	return true;
 #else
 	LN_NOTIMPLEMENTED();
@@ -258,36 +257,16 @@ const wchar_t* Environment::getNewLine<wchar_t>()
 #endif
 }
 
+
+String Environment::getSpecialFolderPath(SpecialFolder specialFolder)
+{
+	PlatformEnvironment::StringType path;
+	PlatformEnvironment::getSpecialFolderPath(specialFolder, &path);
+	return String::fromStdString(path);
+}
+
 //------------------------------------------------------------------------------
 #if defined(LN_OS_WIN32)
-template<>
-void Environment::getSpecialFolderPath(SpecialFolder specialFolder, char* outPath)
-{
-	if (outPath == NULL) { return; }
-	switch (specialFolder)
-	{
-	case SpecialFolder::ApplicationData:
-		::SHGetSpecialFolderPathA(NULL, outPath, CSIDL_APPDATA, FALSE);
-		break;
-	case SpecialFolder::Temporary:
-		::GetTempPathA(LN_MAX_PATH, outPath);
-		break;
-	}
-}
-template<>
-void Environment::getSpecialFolderPath(SpecialFolder specialFolder, wchar_t* outPath)
-{
-	if (outPath == NULL) { return; }
-	switch (specialFolder)
-	{
-	case SpecialFolder::ApplicationData:
-		::SHGetSpecialFolderPathW(NULL, outPath, CSIDL_APPDATA, FALSE);
-		break;
-	case SpecialFolder::Temporary:
-		::GetTempPathW(LN_MAX_PATH, outPath);
-		break;
-	}
-}
 #elif defined(LN_OS_LINUX)
 template<typename TChar>
 void Environment::getSpecialFolderPath(SpecialFolder specialFolder, TChar* outPath)

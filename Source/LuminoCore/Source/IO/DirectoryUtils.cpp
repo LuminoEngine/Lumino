@@ -39,17 +39,17 @@ size_t GetCurrentDirectoryInternal(wchar_t* outPath)
 #endif
 }
 
-template<typename TChar>
-size_t DirectoryUtils::getCurrentDirectory(TChar* outPath) { return LN_AFX_FUNCNAME(getCurrentDirectory)(outPath); }
-template<typename TChar>
-size_t DirectoryUtils::LN_AFX_FUNCNAME(getCurrentDirectory)(TChar* outPath)
-{
-	return GetCurrentDirectoryInternal(outPath);
-}
-template size_t DirectoryUtils::getCurrentDirectory<char>(char* outPath);
-template size_t DirectoryUtils::LN_AFX_FUNCNAME(getCurrentDirectory)<char>(char* outPath);
-template size_t DirectoryUtils::getCurrentDirectory<wchar_t>(wchar_t* outPath);
-template size_t DirectoryUtils::LN_AFX_FUNCNAME(getCurrentDirectory)<wchar_t>(wchar_t* outPath);
+//template<typename TChar>
+//size_t DirectoryUtils::getCurrentDirectory(TChar* outPath) { return LN_AFX_FUNCNAME(getCurrentDirectory)(outPath); }
+//template<typename TChar>
+//size_t DirectoryUtils::LN_AFX_FUNCNAME(getCurrentDirectory)(TChar* outPath)
+//{
+//	return GetCurrentDirectoryInternal(outPath);
+//}
+//template size_t DirectoryUtils::getCurrentDirectory<char>(char* outPath);
+//template size_t DirectoryUtils::LN_AFX_FUNCNAME(getCurrentDirectory)<char>(char* outPath);
+//template size_t DirectoryUtils::getCurrentDirectory<wchar_t>(wchar_t* outPath);
+//template size_t DirectoryUtils::LN_AFX_FUNCNAME(getCurrentDirectory)<wchar_t>(wchar_t* outPath);
 
 //------------------------------------------------------------------------------
 #ifdef _WIN32

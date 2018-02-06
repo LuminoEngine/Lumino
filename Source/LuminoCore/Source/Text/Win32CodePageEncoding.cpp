@@ -15,7 +15,7 @@ LN_NAMESPACE_BEGIN
 Win32CodePageEncoding::Win32CodePageEncoding(UINT codePage)
 {
 	BOOL r = ::GetCPInfoEx(codePage, 0, &m_cpInfo);
-	if (LN_ENSURE_WIN32(r, ::GetLastError())) return;
+	if (LN_ENSURE(r != FALSE)) return;
 	
 	char buf[32];
 	sprintf_s(buf, "cp%u", codePage);

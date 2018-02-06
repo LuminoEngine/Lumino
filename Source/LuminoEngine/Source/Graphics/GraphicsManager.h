@@ -12,7 +12,6 @@ class EngineDiagCore;
 class FileManager;
 class LuminoShaderContext;
 
-LN_NAMESPACE_GRAPHICS_BEGIN
 class GraphicsContext;
 class TextRenderer;
 class BitmapTextRenderer;

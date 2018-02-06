@@ -4,7 +4,6 @@
 #include "GLTexture.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
 {
 class GLGraphicsDevice;
@@ -46,5 +45,4 @@ private:
 };
 
 } // namespace Driver
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

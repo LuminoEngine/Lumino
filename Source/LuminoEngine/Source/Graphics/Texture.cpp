@@ -14,7 +14,6 @@
 #include "Text/BitmapTextRenderer.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 
 //==============================================================================
 // Texture
@@ -693,6 +692,7 @@ void RenderTargetTexture::attachDefaultBackBuffer(Driver::ITexture* deviceObj)
 	assert(m_isDefaultBackBuffer);
 	LN_REFOBJ_SET(m_rhiObject, deviceObj);
 	m_size = m_rhiObject->getSize();
+	m_format = deviceObj->getTextureFormat();
 }
 
 //------------------------------------------------------------------------------
@@ -848,5 +848,4 @@ Driver::ITexture* DepthBuffer::resolveDeviceObject()
 	return m_deviceObj;
 }
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

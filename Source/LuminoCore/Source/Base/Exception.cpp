@@ -1,4 +1,4 @@
-﻿
+
 #include <time.h>
 #include <algorithm>
 #include "../Internal.h"
@@ -8,6 +8,7 @@
 #include <Lumino/Base/StringHelper.h>
 #include <Lumino/Base/Logger.h>
 #include <Lumino/Base/Resource.h>
+#include <Lumino/Text/UnicodeUtils.h>
 
 #ifdef LN_EXCEPTION2
 
@@ -30,35 +31,107 @@ Assertion::NotifyVerificationHandler Assertion::getNotifyVerificationHandler()
 	return g_notifyVerificationHandler;
 }
 
-//
-//namespace detail {
-//
-//void makeExceptionMessage(Exception* e)
-//{
-//	e->setme
-//}
-//
-//void makeExceptionMessage(Exception* e, const char* format, ...)
-//{
-//	va_list args;
-//	va_start(args, format);
-//	va_end(args);
-//}
-//
-//void makeExceptionMessage(Exception* e, const wchar_t* format, ...)
-//{
-//	va_list args;
-//	va_start(args, format);
-//	va_end(args);
-//}
-//
-//void makeExceptionMessage(Exception* e, const char16_t* message)
-//{
-//}
-//
-//} // namespace detail
+namespace detail
+{
 
-namespace detail {
+void convertCharToWChar(const char* inStr, size_t inStrLen, wchar_t* outStr, size_t outStrLen)
+{
+	size_t ret;
+	mbstowcs_s(&ret, outStr, outStrLen, inStr, inStrLen);
+}
+
+void convertWCharToChar16(const wchar_t* inStr, size_t inStrLen, char16_t* outStr, size_t outStrLen)
+{
+#if WCHAR_MAX <= 0xffff	// wchar_t == char16_t
+	// assumed windows
+	memcmp(outStr, inStr, sizeof(char16_t) * std::max(inStrLen, outStrLen));
+#elif WCHAR_MAX <= 0xffffffff
+	// assumed unix
+	ln::UTFConversionOptions opt;
+	opt.ReplacementChar = '?';
+	ln::UnicodeUtils::convertUTF32toUTF16((const UnicodeUtils::UTF32*)inStr, inStrLen, (UnicodeUtils::UTF16*)outStr, outStrLen, &opt);
+#else
+#error "Invalid wchar_t size."
+#endif
+}
+
+void convertChar16ToWChar(const char16_t* inStr, size_t inStrLen, wchar_t* outStr, size_t outStrLen)
+{
+#if WCHAR_MAX <= 0xffff	// wchar_t == char16_t
+	// assumed windows
+	memcmp(outStr, inStr, sizeof(wchar_t) * std::max(inStrLen, outStrLen));
+#elif WCHAR_MAX <= 0xffffffff
+	// assumed unix
+	ln::UTFConversionOptions opt;
+	opt.ReplacementChar = '?';
+	ln::UnicodeUtils::convertUTF16toUTF32((const UnicodeUtils::UTF16*)inStr, inStrLen, (UnicodeUtils::UTF32*)outStr, outStrLen, &opt);
+#else
+#error "Invalid wchar_t size."
+#endif
+}
+
+void errorPrintf(Char* buf, size_t bufSize, const char* format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	
+	const size_t BUFFER_SIZE = 511;
+	char str[BUFFER_SIZE + 1] = {};
+	StringTraits::vsprintf(str, BUFFER_SIZE, format, args);
+	
+#ifdef LN_USTRING16
+	// char -> wchar_t
+	wchar_t wstr[BUFFER_SIZE + 1] = {};
+	convertCharToWChar(str, BUFFER_SIZE, wstr, BUFFER_SIZE);
+
+	// wchar_t -> char16_t
+	convertWCharToChar16(wstr, BUFFER_SIZE, buf, bufSize);
+#else
+	// char -> wchar_t
+	convertCharToWChar(str, BUFFER_SIZE, buf, bufSize - 1);
+#endif
+
+	va_end(args);
+}
+
+void errorPrintf(Char* buf, size_t bufSize, const wchar_t* format, ...)
+{
+	va_list args;
+	va_start(args, format);
+
+#ifdef LN_USTRING16
+	const size_t BUFFER_SIZE = 511;
+	wchar_t str[BUFFER_SIZE + 1] = {};
+	StringTraits::vsprintf(str, BUFFER_SIZE, format, args);
+
+	// wchar_t -> char16_t
+	convertWCharToChar16(str, BUFFER_SIZE, buf, bufSize - 1);
+#else
+	StringTraits::vsprintf(buf, bufSize, format, args);
+#endif
+
+	va_end(args);
+}
+
+void errorPrintf(Char* buf, size_t bufSize, const char16_t* format)
+{
+#ifdef LN_USTRING16
+	memcpy(buf, format, sizeof(Char) * std::max(bufSize, StringTraits::tcslen(format)));
+#else
+	convertChar16ToWChar(format, StringTraits::tcslen(format), buf, bufSize - 1);
+#endif
+}
+
+void errorPrintf(Char* buf, size_t bufSize, const String& format)
+{
+	StringTraits::tstrcpy(buf, bufSize, format.c_str());
+}
+
+void errorPrintf(Char* buf, size_t bufSize)
+{
+	// dummpy
+	buf[0] = '\0';
+}
 
 void Exception_setSourceLocationInfo(Exception& e, const Char* filePath, int fileLine)
 {
@@ -178,6 +251,11 @@ void Exception::setMessage(const wchar_t* format, ...)
 	va_end(args);
 }
 
+void Exception::setMessageU(const Char* message)
+{
+	appendMessage(message, StringTraits::tcslen(message));
+}
+
 void Exception::appendMessage(const Char* message, size_t len)
 {
 	m_message.append(message, len);
@@ -240,6 +318,11 @@ Exception* FatalException::copy() const
 NotImplementedException::NotImplementedException()
 {
 	setCaption(InternalResource::getString(InternalResource::NotImplementedError).c_str());
+}
+
+NotImplementedException::NotImplementedException(const Char* message)
+	: NotImplementedException()
+{
 }
 
 Exception* NotImplementedException::copy() const
@@ -307,38 +390,38 @@ Exception* InvalidFormatException::copy() const
 	return LN_NEW InvalidFormatException(*this);
 }
 
-//==============================================================================
-// Win32Exception
-//==============================================================================
-Win32Exception::Win32Exception()
-	: m_dwLastErrorCode(0)
-	, m_formatMessage()
-{
-	setCaption(InternalResource::getString(InternalResource::Win32Error).c_str());
-}
-
-Win32Exception::Win32Exception(uint32_t dwLastError)
-	: Win32Exception()
-{
-	setMessage(dwLastError);
-}
-
-Exception* Win32Exception::copy() const
-{
-	return LN_NEW Win32Exception(*this);
-}
-
-void Win32Exception::setMessage(uint32_t dwLastError)
-{
-	m_dwLastErrorCode = dwLastError;
-#ifdef LN_OS_WIN32
-	TCHAR buf[512];
-	::FormatMessage(
-		FORMAT_MESSAGE_FROM_SYSTEM, NULL, m_dwLastErrorCode,
-		0, buf, sizeof(buf) / sizeof(buf[0]), NULL);
-#endif
-}
-
+////==============================================================================
+//// Win32Exception
+////==============================================================================
+//Win32Exception::Win32Exception()
+//	: m_dwLastErrorCode(0)
+//	, m_formatMessage()
+//{
+//	setCaption(InternalResource::getString(InternalResource::Win32Error).c_str());
+//}
+//
+//Win32Exception::Win32Exception(uint32_t dwLastError)
+//	: Win32Exception()
+//{
+//	setMessage(dwLastError);
+//}
+//
+//Exception* Win32Exception::copy() const
+//{
+//	return LN_NEW Win32Exception(*this);
+//}
+//
+//void Win32Exception::setMessage(uint32_t dwLastError)
+//{
+//	m_dwLastErrorCode = dwLastError;
+//#ifdef LN_OS_WIN32
+//	TCHAR buf[512];
+//	::FormatMessage(
+//		FORMAT_MESSAGE_FROM_SYSTEM, NULL, m_dwLastErrorCode,
+//		0, buf, sizeof(buf) / sizeof(buf[0]), NULL);
+//#endif
+//}
+//
 LN_NAMESPACE_END
 
 

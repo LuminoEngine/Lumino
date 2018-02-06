@@ -50,9 +50,9 @@ JsonTextOutputArchive::~JsonTextOutputArchive()
 {
 }
 
-String JsonTextOutputArchive::toString()
+String JsonTextOutputArchive::toString(tr::JsonFormatting formatting)
 {
-	return m_localDoc.toString(tr::JsonFormatting::Indented);
+	return m_localDoc.toString(formatting);
 }
 
 //==============================================================================

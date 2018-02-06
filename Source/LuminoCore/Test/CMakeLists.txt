@@ -7,7 +7,6 @@ set(LN_TEST_SOURCES
 	UnitTest/Base/Test_Base_ByteBuffer.cpp
 	UnitTest/Base/Test_Base_Cache.cpp
 	UnitTest/Base/Test_Base_Delegate.cpp
-	UnitTest/Base/Test_Base_Diff.cpp
 	UnitTest/Base/Test_Base_Encoding.cpp
 	UnitTest/Base/Test_Base_Encoding_UTF8.cpp
 	UnitTest/Base/Test_Base_Enum.cpp

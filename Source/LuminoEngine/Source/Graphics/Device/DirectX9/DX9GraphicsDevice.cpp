@@ -12,7 +12,6 @@
 #include "DX9GraphicsDevice.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
 {
 
@@ -474,5 +473,4 @@ void DX9GraphicsDevice::setPresentParameters(const SizeI& backbufferSize, bool f
 }
 
 } // namespace Driver
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

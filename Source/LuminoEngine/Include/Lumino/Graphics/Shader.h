@@ -6,7 +6,6 @@
 #include "GraphicsResourceObject.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 class ShaderVariable;
 class CommonMaterial;
 class Shader;
@@ -171,14 +170,32 @@ enum class ShaderCodeType
 
 
 
+class ShaderDiagnostics
+	: public Object
+{
+public:
+	ShaderCompileResultLevel level() const { return m_level; }
+	const String& message() const { return m_message; }
+
+LN_CONSTRUCT_ACCESS:
+	ShaderDiagnostics();
+	virtual ~ShaderDiagnostics();
+
+private:
+	void setLevel(ShaderCompileResultLevel level) { m_level = level; }
+	void setMessage(const String& message) { m_message = message; }
+
+	ShaderCompileResultLevel	m_level;
+	String						m_message;
+
+	friend class Shader;
+};
+
 
 
 /**
 	@brief		シェーダのクラスです。
 	@details	シェーダコードテキストの文字コードは ASCII または UTF-8 (BOM無し) 推奨です。
-				コンパイルエラーが発生した場合、例外 CompilationException が throw されます。
-				(成功または警告のみの場合は throw されません)
-				例外を throw せず、コンパイル結果の詳細を取得したいときは TryCreate() を使用してください。
 */
 class Shader
 	: public GraphicsResourceObject
@@ -194,14 +211,14 @@ public:
 		@brief		シェーダコードが記述されたテキストファイルをコンパイルし、Shader を作成します。
 		@param[in]	filePath		: ファイルパス
 	*/
-	static Ref<Shader> create(const StringRef& filePath, ShaderCodeType codeType = ShaderCodeType::Normal);
+	static Ref<Shader> create(const StringRef& filePath, ShaderDiagnostics* diag = nullptr, ShaderCodeType codeType = ShaderCodeType::Normal);
 
 	/**
 		@brief		メモリ上に展開されたテキストデータをコンパイルし、Shader を作成します。
 		@param[in]	code			: シェーダコード文字列
 		@param[in]	length			: 文字列の長さ (-1 で 終端 \0 まで)
 	*/
-	static Ref<Shader> create(const char* code, int length, ShaderCodeType codeType = ShaderCodeType::Normal);
+	static Ref<Shader> create(const char* code, int length, ShaderDiagnostics* diag = nullptr, ShaderCodeType codeType = ShaderCodeType::Normal);
 	
 	///**
 	//	@brief		文字列をコンパイルし、シェーダを作成します。
@@ -274,8 +291,8 @@ protected:
 LN_INTERNAL_ACCESS:
 	friend class detail::RenderingCommandList;
 	Shader();
-	void initialize(detail::GraphicsManager* manager, const StringRef& filePath, ShaderCodeType codeType = ShaderCodeType::Normal);
-	void initialize(detail::GraphicsManager* manager, const void* code, int length, ShaderCodeType codeType = ShaderCodeType::Normal);
+	void initialize(detail::GraphicsManager* manager, const StringRef& filePath, ShaderDiagnostics* diag = nullptr, ShaderCodeType codeType = ShaderCodeType::Normal);
+	void initialize(detail::GraphicsManager* manager, const void* code, int length, ShaderDiagnostics* diag = nullptr, ShaderCodeType codeType = ShaderCodeType::Normal);
 	void postInitialize();
 	void setModifiedVariables(bool modified) { m_modifiedVariables = modified; }
 	bool isModifiedVariables() const { return m_modifiedVariables; }
@@ -567,5 +584,4 @@ private:
 	List<ShaderVariable*>		m_annotations;
 };
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

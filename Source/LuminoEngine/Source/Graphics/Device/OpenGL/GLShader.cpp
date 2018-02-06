@@ -15,10 +15,7 @@
 #include "GLGraphicsDevice.h"
 #include "GLShader.h"
 
-#define	LN_FAIL_CHECK_GLERROR()		for (GLenum lnglerr = glGetError(); lnglerr != GL_NO_ERROR && ln::detail::notifyException<OpenGLException>(LN__FILE__, __LINE__, lnglerr); lnglerr = GL_NO_ERROR)
-
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
 {
 
@@ -374,25 +371,25 @@ ShaderCompileResultLevel GLSLUtils::makeShaderProgram(const char* vsCode, size_t
 
 		// プログラムオブジェクトの作成
 		program = glCreateProgram();
-		LN_CHECK_GLERROR();
+		if (LN_ENSURE_GLERROR()) return ShaderCompileResultLevel_Error;	// TODO: この辺 Error というより例外
 
 		// シェーダオブジェクトをシェーダプログラムへの登録
 		glAttachShader(program, vertexShader);
-		LN_CHECK_GLERROR();
+		if (LN_ENSURE_GLERROR()) return ShaderCompileResultLevel_Error;
 		glAttachShader(program, fragmentShader);
-		LN_CHECK_GLERROR();
+		if (LN_ENSURE_GLERROR()) return ShaderCompileResultLevel_Error;
 
 		// シェーダプログラムのリンク
 		glLinkProgram(program);
-		LN_CHECK_GLERROR();
+		if (LN_ENSURE_GLERROR()) return ShaderCompileResultLevel_Error;
 		GLint linked;
 		glGetProgramiv(program, GL_LINK_STATUS, &linked);
-		LN_CHECK_GLERROR();
+		if (LN_ENSURE_GLERROR()) return ShaderCompileResultLevel_Error;
 
 		// ログがあるかチェック
 		int logSize;
 		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logSize);
-		LN_CHECK_GLERROR();
+		if (LN_ENSURE_GLERROR()) return ShaderCompileResultLevel_Error;
 		if (logSize > 1)
 		{
 			char* buf = LN_NEW char[logSize];
@@ -403,7 +400,7 @@ ShaderCompileResultLevel GLSLUtils::makeShaderProgram(const char* vsCode, size_t
 			(*outMessage) += buf;
 			LN_SAFE_DELETE_ARRAY(buf);
 
-			LN_CHECK_GLERROR();
+			if (LN_ENSURE_GLERROR()) return ShaderCompileResultLevel_Error;
 		}
 		if (linked == GL_FALSE) {
 			// リンクエラー
@@ -479,13 +476,13 @@ void GLSLUtils::analyzeLNBasicShaderCode(const char* code, size_t codeLen, GLuin
 GLuint GLSLUtils::compileShader2(GLuint type, int codeCount, const char** codes, const GLint* sizes, ShaderDiag* diag)
 {
 	GLuint shader = glCreateShader(type);
-	LN_FAIL_CHECK_GLERROR() return 0;
+	if (LN_ENSURE_GLERROR()) return 0;
 
 	glShaderSource(shader, codeCount, (const GLchar **)codes, sizes);
-	LN_FAIL_CHECK_GLERROR() { glDeleteShader(shader); return 0; }
+	if (LN_ENSURE_GLERROR()) { glDeleteShader(shader); return 0; }
 
 	glCompileShader(shader);
-	LN_FAIL_CHECK_GLERROR() { glDeleteShader(shader); return 0; }
+	if (LN_ENSURE_GLERROR()) { glDeleteShader(shader); return 0; }
 
 	// result
 	GLint compiled;
@@ -919,7 +916,7 @@ void GLShaderVariable::apply(int location, int textureStageIndex)
 	{
 	case ShaderVariableType_Bool:
 		glUniform1i(location, m_value.getBool());
-		LN_FAIL_CHECK_GLERROR() return;
+		if (LN_ENSURE_GLERROR()) return;
 		break;
 	case ShaderVariableType_BoolArray:
 	{
@@ -928,16 +925,16 @@ void GLShaderVariable::apply(int location, int textureStageIndex)
 
 		std::for_each(begin, end, [&tempWriter](bool v) { GLint i = (v) ? 1 : 0; tempWriter->write(&i, sizeof(GLint)); });
 		glUniform1iv(location, m_desc.Elements, (const GLint*)tempBuffer->getBuffer());
-		LN_FAIL_CHECK_GLERROR() return;
+		if (LN_ENSURE_GLERROR()) return;
 		break;
 	}
 	case ShaderVariableType_Int:
 		glUniform1i(location, m_value.getInt());
-		LN_FAIL_CHECK_GLERROR() return;
+		if (LN_ENSURE_GLERROR()) return;
 		break;
 	case ShaderVariableType_Float:
 		glUniform1f(location, m_value.getFloat());
-		LN_FAIL_CHECK_GLERROR() return;
+		if (LN_ENSURE_GLERROR()) return;
 		break;
 	case ShaderVariableType_Vector:
 		vec = &m_value.getVector();
@@ -950,7 +947,7 @@ void GLShaderVariable::apply(int location, int textureStageIndex)
 		else if (m_desc.Columns == 4) {
 			glUniform4f(location, vec->x, vec->y, vec->z, vec->w);
 		}
-		LN_FAIL_CHECK_GLERROR() return;
+		if (LN_ENSURE_GLERROR()) return;
 		break;
 	case ShaderVariableType_VectorArray:
 	{
@@ -961,18 +958,18 @@ void GLShaderVariable::apply(int location, int textureStageIndex)
 		{
 			std::for_each(begin, end, [&tempWriter](const Vector4& v) { tempWriter->write(&v, sizeof(float) * 2); });
 			glUniform2fv(location, m_desc.Elements, (const GLfloat*)tempBuffer->getBuffer());
-			LN_FAIL_CHECK_GLERROR() return;
+			if (LN_ENSURE_GLERROR()) return;
 		}
 		else if (m_desc.Columns == 3)
 		{
 			std::for_each(begin, end, [&tempWriter](const Vector4& v) { tempWriter->write(&v, sizeof(float) * 3); });
 			glUniform3fv(location, m_desc.Elements, (const GLfloat*)tempBuffer->getBuffer());
-			LN_FAIL_CHECK_GLERROR() return;
+			if (LN_ENSURE_GLERROR()) return;
 		}
 		else if (m_desc.Columns == 4)
 		{
 			glUniform4fv(location, m_desc.Elements, (const GLfloat*)m_value.getVectorArray());
-			LN_FAIL_CHECK_GLERROR() return;
+			if (LN_ENSURE_GLERROR()) return;
 		}
 		else
 		{
@@ -983,7 +980,7 @@ void GLShaderVariable::apply(int location, int textureStageIndex)
 	case ShaderVariableType_Matrix:
 	{
 		glUniformMatrix4fv(location, 1, GL_FALSE, (const GLfloat*)&m_value.getMatrix());
-		LN_FAIL_CHECK_GLERROR();
+		if (LN_ENSURE_GLERROR()) return;
 		break;
 	}
 	case ShaderVariableType_MatrixArray:
@@ -992,13 +989,13 @@ void GLShaderVariable::apply(int location, int textureStageIndex)
 	case ShaderVariableType_DeviceTexture:
 		// textureStageIndex のテクスチャステージにバインド
 		glActiveTexture(GL_TEXTURE0 + textureStageIndex);
-		LN_FAIL_CHECK_GLERROR() return;
+		if (LN_ENSURE_GLERROR()) return;
 
 		if (m_value.getDeviceTexture() != nullptr)
 			glBindTexture(GL_TEXTURE_2D, static_cast<GLTextureBase*>(m_value.getDeviceTexture())->getGLTexture());
 		else
 			glBindTexture(GL_TEXTURE_2D, 0);
-		LN_FAIL_CHECK_GLERROR();
+		if (LN_ENSURE_GLERROR()) return;
 		
 
 		//LNGL::glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, mSamplerState->MinFilter);
@@ -1008,7 +1005,7 @@ void GLShaderVariable::apply(int location, int textureStageIndex)
 
 		// テクスチャステージ番号をセット
 		glUniform1i(location, textureStageIndex);
-		LN_FAIL_CHECK_GLERROR() return;
+		if (LN_ENSURE_GLERROR()) return;
 		break;
 	case ShaderVariableType_String:
 		// GLSL に String 型は無い。この値は本ライブラリで使用しているただのメタデータ。
@@ -1360,7 +1357,8 @@ int GLShaderPass::getUsageAttributeIndex(VertexElementUsage usage, int index)
 //------------------------------------------------------------------------------
 void GLShaderPass::apply()
 {
-	glUseProgram(m_program); LN_CHECK_GLERROR();
+	glUseProgram(m_program);
+	if (LN_ENSURE_GLERROR()) return;
 
 	for (GLShaderPassVariableInfo& v : m_passVarList)
 	{
@@ -1385,25 +1383,25 @@ bool GLShaderPass::linkShader(GLuint vertShader, GLuint fragShader, ShaderDiag* 
 	
 	// プログラムオブジェクトの作成
 	m_program = glCreateProgram();
-	LN_CHECK_GLERROR();
+	if (LN_ENSURE_GLERROR()) return false;
 
 	// シェーダオブジェクトをシェーダプログラムへの登録
 	glAttachShader(m_program, vertShader);
-	LN_CHECK_GLERROR();
+	if (LN_ENSURE_GLERROR()) return false;
 	glAttachShader(m_program, fragShader);
-	LN_CHECK_GLERROR();
+	if (LN_ENSURE_GLERROR()) return false;
 
 	// シェーダプログラムのリンク
 	glLinkProgram(m_program);
-	LN_CHECK_GLERROR();
+	if (LN_ENSURE_GLERROR()) return false;
 	GLint linked;
 	glGetProgramiv(m_program, GL_LINK_STATUS, &linked);
-	LN_CHECK_GLERROR();
+	if (LN_ENSURE_GLERROR()) return false;
 
 	// ログがあるかチェック
 	int logSize;
 	glGetProgramiv(m_program, GL_INFO_LOG_LENGTH, &logSize);
-	LN_CHECK_GLERROR();
+	if (LN_ENSURE_GLERROR()) return false;
 	if (logSize > 1)
 	{
 		char* buf = LN_NEW char[logSize];
@@ -1412,7 +1410,7 @@ bool GLShaderPass::linkShader(GLuint vertShader, GLuint fragShader, ShaderDiag* 
 		diag->message += "Link info:\n";
 		diag->message += buf;
 		LN_SAFE_DELETE_ARRAY(buf);
-		LN_CHECK_GLERROR();
+		if (LN_ENSURE_GLERROR()) return false;
 
 		diag->level = ShaderCompileResultLevel_Warning;
 	}
@@ -1440,7 +1438,9 @@ void GLShaderPass::build()
 	//---------------------------------------------------------
 	// この Pass にが使っているシェーダ変数の ShaderVariable 作成
 	GLint params;
-	glGetProgramiv(m_program, GL_ACTIVE_UNIFORMS, &params); LN_CHECK_GLERROR();
+	glGetProgramiv(m_program, GL_ACTIVE_UNIFORMS, &params);
+	if (LN_ENSURE_GLERROR()) return;
+
 	for (int i = 0; i < params; ++i)
 	{
 		GLShaderPassVariableInfo passVar;
@@ -1449,7 +1449,8 @@ void GLShaderPass::build()
 		GLsizei var_size = 0;   // 配列サイズっぽい
 		GLenum  var_type = 0;
 		GLchar  name[256] = { 0 };
-		glGetActiveUniform(m_program, i, 256, &name_len, &var_size, &var_type, name); LN_CHECK_GLERROR();
+		glGetActiveUniform(m_program, i, 256, &name_len, &var_size, &var_type, name);
+		if (LN_ENSURE_GLERROR()) return;
 
 		// 変数情報作成
 		ShaderVariableBase::ShaderVariableTypeDesc desc;
@@ -1460,7 +1461,8 @@ void GLShaderPass::build()
 		tname = tname.replace(_LT("[0]"), _LT(""));
 
 		// Location
-		passVar.Location = glGetUniformLocation(m_program, name); LN_CHECK_GLERROR();
+		passVar.Location = glGetUniformLocation(m_program, name);
+		if (LN_ENSURE_GLERROR()) return;
 
 		// ShaderVariable を作る
 		passVar.Variable = m_ownerShader->findShaderVariable(tname);
@@ -1534,14 +1536,16 @@ void GLShaderPass::build()
 
 	// attribute 変数の数
 	GLint attrCount;
-	glGetProgramiv(m_program, GL_ACTIVE_ATTRIBUTES, &attrCount);	LN_CHECK_GLERROR();
+	glGetProgramiv(m_program, GL_ACTIVE_ATTRIBUTES, &attrCount);
+	if (LN_ENSURE_GLERROR()) return;
 	for (int i = 0; i < attrCount; ++i)
 	{
 		GLsizei name_len = 0;
 		GLsizei var_size = 0;
 		GLenum  var_type = 0;
 		GLchar  name[256] = { 0 };
-		glGetActiveAttrib(m_program, i, 256, &name_len, &var_size, &var_type, name); LN_CHECK_GLERROR();
+		glGetActiveAttrib(m_program, i, 256, &name_len, &var_size, &var_type, name);
+		if (LN_ENSURE_GLERROR()) return;
 
 		for (int iUsage = 1; iUsage < VertexElementUsage_Max; ++iUsage)	// 0 番はダミーなので 1番から
 		{
@@ -1567,8 +1571,9 @@ void GLShaderPass::build()
 				}
 
 				// Location 取得
-				int loc = glGetAttribLocation(m_program, name); LN_CHECK_GLERROR();
-				m_usageAttrIndexTable[iUsage][usageIndex] = loc; LN_CHECK_GLERROR();
+				int loc = glGetAttribLocation(m_program, name);
+				if (LN_ENSURE_GLERROR()) return;
+				m_usageAttrIndexTable[iUsage][usageIndex] = loc;
 
 				break;
 			}
@@ -1577,5 +1582,4 @@ void GLShaderPass::build()
 }
 
 } // namespace Driver
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

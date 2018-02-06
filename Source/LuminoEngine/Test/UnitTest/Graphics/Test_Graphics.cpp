@@ -80,7 +80,7 @@ TEST_F(Test_Graphics_Rendering, clear)
 		r1->clear(ClearFlags::Color, Color::Blue);
 		Engine::renderFrame();
 		LN_TEST_END_FRAME;
-		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/Test_Graphics_Rendering.Clear1.png")));
+		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("Result/0_Test_Graphics_Rendering.Clear1.png")));
 	}
 	// <Test> 3D ビューのクリア
 	{
@@ -139,13 +139,13 @@ TEST_F(Test_Graphics_Rendering, drawSquarePrimitive)
 		LN_TEST_BEGIN_FRAME;
 		Engine::getWorld3D()->getRenderer()->drawSquarePrimitive(
 			Vector3(-1, 2, 0), Vector2(0, 0), Color::Red,
-			Vector3(-1, -2, 0), Vector2(0, 1), Color::Green,
 			Vector3(1, 2, 0), Vector2(1, 0), Color::Blue,
+			Vector3(-1, -2, 0), Vector2(0, 1), Color::Green,
 			Vector3(1, -2, 0), Vector2(1, 1), Color::White);
 		Engine::getWorld2D()->getRenderer()->drawSquarePrimitive(
 			Vector3(0, 0, 0), Vector2(0, 0), Color::Red,
-			Vector3(0, 50, 0), Vector2(0, 1), Color::Green,
 			Vector3(50, 0, 0), Vector2(1, 0), Color::Blue,
+			Vector3(0, 50, 0), Vector2(0, 1), Color::Green,
 			Vector3(50, 50, 0), Vector2(1, 1), Color::White);
 		Engine::renderFrame();
 		LN_TEST_END_FRAME;

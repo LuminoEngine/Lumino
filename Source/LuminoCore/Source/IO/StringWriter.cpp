@@ -33,7 +33,7 @@ void StringWriter::flash()
 //------------------------------------------------------------------------------
 void StringWriter::writeOverride(const void* data, size_t byteCount)
 {
-	m_builder.append((const TCHAR*)data, byteCount / sizeof(TCHAR));
+	m_builder.append((const Char*)data, byteCount / sizeof(Char));
 }
 
 LN_NAMESPACE_END

@@ -25,7 +25,6 @@
 	}
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 
 namespace detail {
 
@@ -426,6 +425,20 @@ void ShaderSemanticsManager::updateSubsetVariables(const SubsetInfo& info)
 
 
 //==============================================================================
+// ShaderDiagnostics
+//==============================================================================
+
+ShaderDiagnostics::ShaderDiagnostics()
+	: m_level(ShaderCompileResultLevel_Success)
+	, m_message()
+{
+}
+
+ShaderDiagnostics::~ShaderDiagnostics()
+{
+}
+
+//==============================================================================
 // Shader
 //==============================================================================
 
@@ -436,18 +449,18 @@ ShaderPtr Shader::getBuiltinShader(BuiltinShader shader)
 }
 
 //------------------------------------------------------------------------------
-Ref<Shader> Shader::create(const StringRef& filePath, ShaderCodeType codeType)
+Ref<Shader> Shader::create(const StringRef& filePath, ShaderDiagnostics* diag, ShaderCodeType codeType)
 {
 	Ref<Shader> obj(LN_NEW Shader(), false);
-	obj->initialize(detail::GraphicsManager::getInstance(), filePath, codeType);
+	obj->initialize(detail::GraphicsManager::getInstance(), filePath, diag, codeType);
 	return obj;
 }
 
 //------------------------------------------------------------------------------
-Ref<Shader> Shader::create(const char* code, int length, ShaderCodeType codeType)
+Ref<Shader> Shader::create(const char* code, int length, ShaderDiagnostics* diag, ShaderCodeType codeType)
 {
 	Ref<Shader> obj(LN_NEW Shader(), false);
-	obj->initialize(detail::GraphicsManager::getInstance(), code, length, codeType);
+	obj->initialize(detail::GraphicsManager::getInstance(), code, length, diag, codeType);
 	return obj;
 }
 //
@@ -497,29 +510,18 @@ Shader::~Shader()
 }
 
 //------------------------------------------------------------------------------
-void Shader::initialize(detail::GraphicsManager* manager, const StringRef& filePath, ShaderCodeType codeType)
+void Shader::initialize(detail::GraphicsManager* manager, const StringRef& filePath, ShaderDiagnostics* diag, ShaderCodeType codeType)
 {
 	Ref<Stream> stream(manager->getFileManager()->createFileStream(filePath), false);
 	ByteBuffer buf((size_t)stream->getLength() + 1, false);
 	stream->read(buf.getData(), buf.getSize());
 	buf[(size_t)stream->getLength()] = 0x00;
 
-	initialize(manager, buf.getConstData(), buf.getSize(), codeType);
-
-	//GraphicsResourceObject::initialize(manager);
-	//
-
-	//
-
-	//ShaderCompileResult result;
-	//m_deviceObj = m_manager->getGraphicsDevice()->createShader(buf.GetConstData(), buf.GetSize(), &result);
-	//LN_THROW(m_deviceObj != nullptr, CompilationException, result);
-
-	//postInitialize();
+	initialize(manager, buf.getConstData(), buf.getSize(), diag, codeType);
 }
 
 //------------------------------------------------------------------------------
-void Shader::initialize(detail::GraphicsManager* manager, const void* code, int length, ShaderCodeType codeType)
+void Shader::initialize(detail::GraphicsManager* manager, const void* code, int length, ShaderDiagnostics* diag, ShaderCodeType codeType)
 {
 	GraphicsResourceObject::initialize();
 
@@ -541,7 +543,17 @@ void Shader::initialize(detail::GraphicsManager* manager, const void* code, int 
 		auto sh = static_cast<Driver::GLGraphicsDevice*>(m_manager->getGraphicsDevice())->createShader(techniques, &result);
 		sh->addRef();
 		m_deviceObj = sh;
-		LN_THROW(m_deviceObj != nullptr, CompilationException, result);
+
+		auto message = String::fromStdString(result.Message);
+		if (diag)
+		{
+			diag->setLevel(result.Level);
+			diag->setMessage(message);
+		}
+		else
+		{
+			if (LN_ENSURE(m_deviceObj != nullptr, message)) return;
+		}
 	}
 	else
 	{
@@ -588,7 +600,17 @@ void Shader::initialize(detail::GraphicsManager* manager, const void* code, int 
 
 		ShaderCompileResult result;
 		m_deviceObj = m_manager->getGraphicsDevice()->createShader(newCode.c_str(), newCode.length(), &result);
-		LN_THROW(m_deviceObj != nullptr, CompilationException, result);
+
+		auto message = String::fromStdString(result.Message);
+		if (diag)
+		{
+			diag->setLevel(result.Level);
+			diag->setMessage(message);
+		}
+		else
+		{
+			if (LN_ENSURE(m_deviceObj != nullptr, message)) return;
+		}
 
 		// ライブラリ外部からの DeviceContext 再設定に備えてコードを保存する
 		m_sourceCode.alloc(newCode.c_str(), newCode.length());
@@ -1554,5 +1576,4 @@ void ShaderPass::changeDevice(Driver::IShaderPass* obj)
 	}
 }
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

@@ -19,6 +19,7 @@
 #include <Lumino/IO/FileSystem.h>	// TODO: Path
 #include <Lumino/IO/DirectoryUtils.h>	// TODO: Path
 #include <Lumino/Text/Encoding.h>
+#include <Lumino/Text/UnicodeUtils.h>
 
 LN_NAMESPACE_BEGIN
 
@@ -113,6 +114,13 @@ String::String(const char* str)
 {
 	assignFromCStr(str);
 }
+#ifdef LN_USTRING16
+String::String(const wchar_t* str)
+	: String()
+{
+	assignFromCStr(str);
+}
+#endif
 #endif
 
 bool String::isEmpty() const
@@ -435,6 +443,7 @@ String String::concat(const StringRef& str1, const StringRef& str2)
 	return s;
 }
 
+#if !defined(LN_USTRING16)
 String String::sprintf(const Char* format, ...)
 {
 	static const int MaxFormatLength = 256;
@@ -461,6 +470,7 @@ String String::sprintf(const Char* format, ...)
 	}
 
 }
+#endif
 
 int String::compare(const String& str1, const String& str2, CaseSensitivity cs)
 {
@@ -486,6 +496,52 @@ String String::fromCString(const wchar_t* str, int length)
 	String result;
 	result.assignFromCStr(str, length, nullptr, nullptr);
 	return result;
+}
+
+String String::fromStdString(const std::string& str, Encoding* encoding)
+{
+	return fromCString(str.c_str(), str.length(), encoding);
+}
+
+String String::fromStdString(const std::wstring& str)
+{
+	return fromCString(str.c_str(), str.length());
+}
+
+String String::fromNumber(int32_t value, Char format)
+{
+	return fromNumber((int64_t)value, format);
+}
+
+String String::fromNumber(int64_t value, Char format)
+{
+	char buf[64];
+	int len = StringTraits::int64ToString(value, format, buf, 64);
+	return String::fromCString(buf, len);
+}
+
+String String::fromNumber(uint32_t value, Char format)
+{
+	return fromNumber((uint64_t)value, format);
+}
+
+String String::fromNumber(uint64_t value, Char format)
+{
+	char buf[64];
+	int len = StringTraits::uint64ToString(value, format, buf, 64);
+	return String::fromCString(buf, len);
+}
+
+String String::fromNumber(float value, Char format, int precision)
+{
+	return fromNumber((double)value, format, precision);
+}
+
+String String::fromNumber(double value, Char format, int precision)
+{
+	char buf[64];
+	int len = StringTraits::doubleToString(value, format, precision, buf, 64);
+	return String::fromCString(buf, len);
 }
 
 void String::init() LN_NOEXCEPT
@@ -1054,7 +1110,19 @@ void UStringConvert::convertToStdString(const char16_t* src, int srcLen, std::st
 }
 void UStringConvert::convertToStdString(const char16_t* src, int srcLen, std::wstring* outString)
 {
-	LN_NOTIMPLEMENTED();
+#ifdef LN_WCHAR_16
+	outString->assign((const wchar_t*)(src), srcLen);
+#else
+	// UTF16 -> UTF32
+	UTFConversionOptions options;
+	options.ReplacementChar = '?';
+	outString->resize(srcLen);
+	UnicodeUtils::convertUTF16toUTF32(
+		(const UnicodeUtils::UTF16*)src, srcLen,
+		(UnicodeUtils::UTF32*)&((*outString)[0]), srcLen,
+		&options);
+	outString->shrink_to_fit();
+#endif
 }
 
 

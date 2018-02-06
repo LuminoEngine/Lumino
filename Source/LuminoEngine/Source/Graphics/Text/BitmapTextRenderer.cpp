@@ -6,7 +6,6 @@
 #include "../GraphicsManager.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 
 //==============================================================================
 // BitmapTextRenderer
@@ -103,5 +102,4 @@ void BitmapTextRenderer::drawGlyphRun(RawBitmap* target, GlyphRun* glyphRun, con
 	}
 }
 
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

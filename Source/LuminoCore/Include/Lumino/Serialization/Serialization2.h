@@ -35,12 +35,12 @@ template<typename TValue>
 struct NameValuePair : public detail::NameValuePairBase
 {
 public:
-	const Char* name;
+	const StringRef& name;
 	TValue* value;
 	const TValue* defaultValue;
 
-	NameValuePair(const Char* n, TValue* v) : name(n), value(v), defaultValue(nullptr) {}
-	NameValuePair(const Char* n, TValue* v, const TValue& defaultValue) : name(n), value(v), defaultValue(&defaultValue) {}
+	NameValuePair(const StringRef& n, TValue* v) : name(n), value(v), defaultValue(nullptr) {}
+	NameValuePair(const StringRef& n, TValue* v, const TValue& defaultValue) : name(n), value(v), defaultValue(&defaultValue) {}
 
 private:
 	NameValuePair & operator=(NameValuePair const &) = delete;
@@ -57,7 +57,7 @@ class has_member_serialize_function
 {
 private:
 	template<typename U>
-	static auto check(U&& v) -> decltype(v.serialize(*reinterpret_cast<Archive2*>(nullptr)), std::true_type());
+	static auto check(U&& v) -> decltype(v.serialize(*reinterpret_cast<Archive2*>(0)), std::true_type());
 	static auto check(...) -> decltype(std::false_type());
 
 public:
@@ -71,7 +71,7 @@ class non_member_serialize_function
 {
 private:
 	template<typename U>
-	static auto check(U&& v) -> decltype(v.serialize(*reinterpret_cast<Archive2*>(nullptr)), std::true_type());
+	static auto check(U&& v) -> decltype(v.serialize(*reinterpret_cast<Archive2*>(0)), std::true_type());
 	static auto check(...) -> decltype(std::false_type());
 
 public:
@@ -101,6 +101,84 @@ template <class T> struct SerializeClassVersionInfo
 template <class T> struct SerializeClassFormatInfo
 {
 	static const SerializeClassFormat value = SerializeClassFormat::Default;
+};
+
+template<class T>
+struct ArchiveValueTraits
+{
+	static bool isPrimitiveType() { return false; }
+};
+
+template<>
+struct ArchiveValueTraits<bool>
+{
+	static bool isPrimitiveType() { return true; }
+};
+
+template<>
+struct ArchiveValueTraits<int8_t>
+{
+	static bool isPrimitiveType() { return true; }
+};
+
+template<>
+struct ArchiveValueTraits<int16_t>
+{
+	static bool isPrimitiveType() { return true; }
+};
+
+template<>
+struct ArchiveValueTraits<int32_t>
+{
+	static bool isPrimitiveType() { return true; }
+};
+
+template<>
+struct ArchiveValueTraits<int64_t>
+{
+	static bool isPrimitiveType() { return true; }
+};
+
+template<>
+struct ArchiveValueTraits<uint8_t>
+{
+	static bool isPrimitiveType() { return true; }
+};
+
+template<>
+struct ArchiveValueTraits<uint16_t>
+{
+	static bool isPrimitiveType() { return true; }
+};
+
+template<>
+struct ArchiveValueTraits<uint32_t>
+{
+	static bool isPrimitiveType() { return true; }
+};
+
+template<>
+struct ArchiveValueTraits<uint64_t>
+{
+	static bool isPrimitiveType() { return true; }
+};
+
+template<>
+struct ArchiveValueTraits<float>
+{
+	static bool isPrimitiveType() { return true; }
+};
+
+template<>
+struct ArchiveValueTraits<double>
+{
+	static bool isPrimitiveType() { return true; }
+};
+
+template<>
+struct ArchiveValueTraits<String>
+{
+	static bool isPrimitiveType() { return true; }
 };
 
 } // namespace detail
@@ -304,7 +382,7 @@ private:
 	template<typename TValue>
 	void processSave(TValue& value)
 	{
-		moveState((isPrimitiveType<TValue>()) ? NodeHeadState::RequestPrimitiveValue : NodeHeadState::UserObject);
+		moveState((detail::ArchiveValueTraits<TValue>::isPrimitiveType()) ? NodeHeadState::RequestPrimitiveValue : NodeHeadState::UserObject);
 		preWriteValue();
 		writeValue(value);
 	}
@@ -375,20 +453,6 @@ private:
 	{
 		return ln::detail::SerializeClassVersionInfo<TValue>::value;
 	}
-
-	template<typename T> bool isPrimitiveType() const { return false; }
-	template<> bool isPrimitiveType<bool>() const { return true; }
-	template<> bool isPrimitiveType<int8_t>() const { return true; }
-	template<> bool isPrimitiveType<int16_t>() const { return true; }
-	template<> bool isPrimitiveType<int32_t>() const { return true; }
-	template<> bool isPrimitiveType<int64_t>() const { return true; }
-	template<> bool isPrimitiveType<uint8_t>() const { return true; }
-	template<> bool isPrimitiveType<uint16_t>() const { return true; }
-	template<> bool isPrimitiveType<uint32_t>() const { return true; }
-	template<> bool isPrimitiveType<uint64_t>() const { return true; }
-	template<> bool isPrimitiveType<float>() const { return true; }
-	template<> bool isPrimitiveType<double>() const { return true; }
-	template<> bool isPrimitiveType<String>() const { return true; }
 
 	void writeValue(bool value) { m_store->writeValue(value); }
 	void writeValue(int8_t value) { m_store->writeValue(static_cast<int64_t>(value)); }
@@ -654,13 +718,13 @@ private:
 #define LN_NVP2(var, ...)		::ln::makeNVP(_LT(#var), var, ##__VA_ARGS__)
 
 template<typename TValue>
-NameValuePair<TValue> makeNVP(const Char* name, TValue& valueRef)
+NameValuePair<TValue> makeNVP(const StringRef& name, TValue& valueRef)
 {
 	return NameValuePair<TValue>(name, &valueRef);
 }
 
 template<typename TValue>
-NameValuePair<TValue> makeNVP(const Char* name, TValue& valueRef, const TValue& defaultValue)
+NameValuePair<TValue> makeNVP(const StringRef& name, TValue& valueRef, const TValue& defaultValue)
 {
 	return NameValuePair<TValue>(name, &valueRef, defaultValue);
 }
@@ -682,7 +746,7 @@ public:
 		m_processing = false;
 	}
 
-	String toString();
+	String toString(tr::JsonFormatting formatting = tr::JsonFormatting::Indented);
 
 private:
 	tr::JsonDocument2	m_localDoc;

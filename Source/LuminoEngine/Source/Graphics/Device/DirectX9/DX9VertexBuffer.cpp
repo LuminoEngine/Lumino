@@ -5,7 +5,6 @@
 #include "DX9VertexBuffer.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
 {
 
@@ -164,5 +163,4 @@ void DX9VertexDeclaration::initialize(DX9GraphicsDevice* device, const VertexEle
 }
 
 } // namespace Driver
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

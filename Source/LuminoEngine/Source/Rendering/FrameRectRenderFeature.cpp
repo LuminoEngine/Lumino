@@ -14,7 +14,6 @@
 #include "../Rendering/RenderStage.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 namespace detail
 {
 
@@ -64,7 +63,7 @@ void FrameRectRendererCore::initialize(GraphicsManager* manager)
 
 	ShaderCompileResult r;
 	m_shader.shader = device->createShader(g_Painter_fx_Data, g_Painter_fx_Len, &r);
-	LN_THROW(r.Level != ShaderCompileResultLevel_Error, CompilationException, r);
+	if (LN_ENSURE(r.Level != ShaderCompileResultLevel_Error)) return;
 
 	m_shader.technique = m_shader.shader->getTechnique(0);
 	m_shader.pass = m_shader.technique->getPass(0);
@@ -563,5 +562,4 @@ void FrameRectRenderFeature::onSetState(const RenderStage* state)
 }
 
 } // namespace detail
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END

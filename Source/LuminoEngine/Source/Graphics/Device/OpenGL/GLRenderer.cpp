@@ -7,7 +7,6 @@
 #include "GLRenderer.h"
 
 LN_NAMESPACE_BEGIN
-LN_NAMESPACE_GRAPHICS_BEGIN
 namespace Driver
 {
 
@@ -138,15 +137,8 @@ void GLRenderer::onEndRendering()
 //------------------------------------------------------------------------------
 void GLRenderer::onUpdateFrameBuffers(ITexture** renderTargets, int renderTargetsCount, ITexture* depthBuffer)
 {
-
-	//auto cc =wglGetCurrentContext();
-	glBindFramebuffer(GL_FRAMEBUFFER, m_framebuffer); LN_CHECK_GLERROR();
-
-
-	//const SizeI& size = m_currentRenderTargets[0]->GetSize();
-	//glViewport(0, 0, size.width, size.height);
-	//LN_CHECK_GLERROR();
-
+	glBindFramebuffer(GL_FRAMEBUFFER, m_framebuffer);
+	if (LN_ENSURE_GLERROR()) return;
 
 	// カラーバッファ
 	for (int i = 0; i < renderTargetsCount; ++i)
@@ -158,7 +150,7 @@ void GLRenderer::onUpdateFrameBuffers(ITexture** renderTargets, int renderTarget
 			glFramebufferTexture2D(
 				GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D,
 				static_cast<GLTextureBase*>(renderTargets[i])->getGLTexture(), 0);
-			LN_CHECK_GLERROR();
+			if (LN_ENSURE_GLERROR()) return;
 		}
 		else
 		{
@@ -166,7 +158,7 @@ void GLRenderer::onUpdateFrameBuffers(ITexture** renderTargets, int renderTarget
 			glFramebufferTexture2D(
 				GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D,
 				0, 0);
-			LN_CHECK_GLERROR();
+			if (LN_ENSURE_GLERROR()) return;
 		}
 	}
 
@@ -177,7 +169,7 @@ void GLRenderer::onUpdateFrameBuffers(ITexture** renderTargets, int renderTarget
 		glFramebufferRenderbuffer(
 			GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,//GL_DEPTH_STENCIL_ATTACHMENT,
 			GL_RENDERBUFFER, static_cast<GLTextureBase*>(depthBuffer)->getGLTexture());
-		LN_CHECK_GLERROR();
+		if (LN_ENSURE_GLERROR()) return;
 	}
 	else
 	{
@@ -185,20 +177,13 @@ void GLRenderer::onUpdateFrameBuffers(ITexture** renderTargets, int renderTarget
 		glFramebufferRenderbuffer(
 			GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
 			GL_RENDERBUFFER, 0);
-		LN_CHECK_GLERROR();
+		if (LN_ENSURE_GLERROR()) return;
 	}
-
 }
 
 //------------------------------------------------------------------------------
 void GLRenderer::onUpdateRenderState(const RenderState& newState, const RenderState& oldState, bool reset)
 {
-	if (reset)
-	{
-		// 時計回りを表にする
-		//glFrontFace(GL_CW); LN_CHECK_GLERROR();
-	}
-
 	/* TODO: ステート保存 https://www.khronos.org/opengles/sdk/docs/man3/html/glBlendFuncSeparate.xhtml
 	Associated Gets
 glGet with argument GL_BLEND_SRC_RGB
@@ -236,15 +221,18 @@ glIsEnabled with argument GL_BLEND
 	if (newState.alphaBlendEnabled != oldState.alphaBlendEnabled || reset)
 	{
 		if (newState.alphaBlendEnabled) {
-			glEnable(GL_BLEND); LN_CHECK_GLERROR();
+			glEnable(GL_BLEND);
+			if (LN_ENSURE_GLERROR()) return;
 		}
 		else {
-			glDisable(GL_BLEND); LN_CHECK_GLERROR();
+			glDisable(GL_BLEND);
+			if (LN_ENSURE_GLERROR()) return;
 		}
 	}
 	if (newState.blendOp != oldState.blendOp || reset)
 	{
-		glBlendEquation(blendOpTable[(int)newState.blendOp]); LN_CHECK_GLERROR();
+		glBlendEquation(blendOpTable[(int)newState.blendOp]);
+		if (LN_ENSURE_GLERROR()) return;
 	}
 	if (newState.sourceBlend != oldState.sourceBlend || newState.destinationBlend != oldState.destinationBlend || reset)
 	{
@@ -252,7 +240,8 @@ glIsEnabled with argument GL_BLEND
 			blendFactorTable[(int)newState.sourceBlend],
 			blendFactorTable[(int)newState.destinationBlend],
 			blendFactorTable[(int)newState.sourceBlend],
-			blendFactorTable[(int)newState.destinationBlend]); LN_CHECK_GLERROR();
+			blendFactorTable[(int)newState.destinationBlend]);
+		if (LN_ENSURE_GLERROR()) return;
 	}
 	
 	// カリング
@@ -261,15 +250,20 @@ glIsEnabled with argument GL_BLEND
 		switch (newState.Culling)
 		{
 		case CullingMode::None:
-			glDisable(GL_CULL_FACE); LN_CHECK_GLERROR();
+			glDisable(GL_CULL_FACE);
+			if (LN_ENSURE_GLERROR()) return;
 			break;
 		case CullingMode::Front:
-			glEnable(GL_CULL_FACE); LN_CHECK_GLERROR();
-			glCullFace(GL_BACK); LN_CHECK_GLERROR();
+			glEnable(GL_CULL_FACE);
+			if (LN_ENSURE_GLERROR()) return;
+			glCullFace(GL_BACK);
+			if (LN_ENSURE_GLERROR()) return;
 			break;
 		case CullingMode::Back:
-			glEnable(GL_CULL_FACE); LN_CHECK_GLERROR();
-			glCullFace(GL_FRONT); LN_CHECK_GLERROR();
+			glEnable(GL_CULL_FACE);
+			if (LN_ENSURE_GLERROR()) return;
+			glCullFace(GL_FRONT);
+			if (LN_ENSURE_GLERROR()) return;
 			break;
 		}
 	}
@@ -278,7 +272,9 @@ glIsEnabled with argument GL_BLEND
 	if (newState.Fill != oldState.Fill || reset)
 	{
 		const GLenum tb[] = { GL_FILL, GL_LINE, GL_POINT };
-		glPolygonMode(GL_FRONT_AND_BACK, tb[newState.Fill]); LN_CHECK_GLERROR();
+		glPolygonMode(GL_FRONT_AND_BACK, tb[newState.Fill]);
+		if (LN_ENSURE_GLERROR()) return;
+
 		//glPolygonMode(GL_FRONT, GL_FILL) // 表は塗りつぶす
 		//glPolygonMode(GL_BACK, GL_LINE)  // 裏は線
 	}
@@ -287,10 +283,12 @@ glIsEnabled with argument GL_BLEND
 	if (newState.AlphaTest != oldState.AlphaTest || reset)
 	{
 		if (newState.AlphaTest) {
-			glEnable(GL_ALPHA_TEST); LN_CHECK_GLERROR();
+			glEnable(GL_ALPHA_TEST);
+			if (LN_ENSURE_GLERROR()) return;
 		}
 		else {
-			glDisable(GL_ALPHA_TEST); LN_CHECK_GLERROR();
+			glDisable(GL_ALPHA_TEST);
+			if (LN_ENSURE_GLERROR()) return;
 		}
 	}
 }
@@ -314,21 +312,25 @@ void GLRenderer::onUpdateDepthStencilState(const DepthStencilState& newState, co
 	if (newState.DepthTestEnabled != oldState.DepthTestEnabled || reset)
 	{
 		if (newState.DepthTestEnabled) {
-			glEnable(GL_DEPTH_TEST); LN_CHECK_GLERROR();
+			glEnable(GL_DEPTH_TEST);
+			if (LN_ENSURE_GLERROR()) return;
 		}
 		else {
-			glDisable(GL_DEPTH_TEST); LN_CHECK_GLERROR();
+			glDisable(GL_DEPTH_TEST);
+			if (LN_ENSURE_GLERROR()) return;
 		}
 	}
 	// 深度書き込み
 	if (newState.DepthWriteEnabled != oldState.DepthWriteEnabled || reset)
 	{
-		glDepthMask(newState.DepthWriteEnabled ? GL_TRUE : GL_FALSE); LN_CHECK_GLERROR();
+		glDepthMask(newState.DepthWriteEnabled ? GL_TRUE : GL_FALSE);
+		if (LN_ENSURE_GLERROR()) return;
 	}
 	// 深度比較関数
 	if (newState.DepthTestFunc != oldState.DepthTestFunc || reset)
 	{
-		glDepthFunc(cmpFuncTable[newState.DepthTestFunc]); LN_CHECK_GLERROR();
+		glDepthFunc(cmpFuncTable[newState.DepthTestFunc]);
+		if (LN_ENSURE_GLERROR()) return;
 	}
 
 
@@ -336,10 +338,12 @@ void GLRenderer::onUpdateDepthStencilState(const DepthStencilState& newState, co
 	if (newState.StencilEnabled != oldState.StencilEnabled || reset)
 	{
 		if (newState.StencilEnabled) {
-			glEnable(GL_STENCIL_TEST); LN_CHECK_GLERROR();
+			glEnable(GL_STENCIL_TEST);
+			if (LN_ENSURE_GLERROR()) return;
 		}
 		else {
-			glDisable(GL_STENCIL_TEST); LN_CHECK_GLERROR();
+			glDisable(GL_STENCIL_TEST);
+			if (LN_ENSURE_GLERROR()) return;
 		}
 	}
 
@@ -348,7 +352,8 @@ void GLRenderer::onUpdateDepthStencilState(const DepthStencilState& newState, co
 		newState.StencilReferenceValue != oldState.StencilReferenceValue ||
 		reset)
 	{
-		glStencilFunc(cmpFuncTable[newState.StencilFunc], newState.StencilReferenceValue, 0xFFFFFFFF); LN_CHECK_GLERROR();
+		glStencilFunc(cmpFuncTable[newState.StencilFunc], newState.StencilReferenceValue, 0xFFFFFFFF);
+		if (LN_ENSURE_GLERROR()) return;
 	}
 
 	// ステンシルテスト処理
@@ -358,7 +363,8 @@ void GLRenderer::onUpdateDepthStencilState(const DepthStencilState& newState, co
 		newState.StencilPassOp != oldState.StencilPassOp ||
 		reset)
 	{
-		glStencilOp(stencilOpTable[newState.StencilFailOp], stencilOpTable[newState.StencilDepthFailOp], stencilOpTable[newState.StencilPassOp]); LN_CHECK_GLERROR();
+		glStencilOp(stencilOpTable[newState.StencilFailOp], stencilOpTable[newState.StencilDepthFailOp], stencilOpTable[newState.StencilPassOp]);
+		if (LN_ENSURE_GLERROR()) return;
 	}
 }
 
@@ -366,7 +372,7 @@ void GLRenderer::onUpdateViewport(const RectI& viewport)
 {
 	const SizeI& scr =getRenderTarget(0)->getSize();
 	glViewport(viewport.x, scr.height - (viewport.y + viewport.height), viewport.width, viewport.height);
-	LN_CHECK_GLERROR();
+	if (LN_ENSURE_GLERROR()) return;
 }
 
 //------------------------------------------------------------------------------
@@ -382,11 +388,17 @@ void GLRenderer::onUpdatePrimitiveData(IVertexDeclaration* decls, const List<Ref
 //------------------------------------------------------------------------------
 void GLRenderer::onClear(ClearFlags flags, const Color& color, float z, uint8_t stencil)
 {
-	glDepthMask(GL_TRUE);	LN_CHECK_GLERROR();   // これがないと Depth が正常にクリアされない
+	glDepthMask(GL_TRUE);   // これがないと Depth が正常にクリアされない
+	if (LN_ENSURE_GLERROR()) return;
 
-	glClearColor(color.r, color.g, color.b, color.a); LN_CHECK_GLERROR();
-	glClearDepth(z); LN_CHECK_GLERROR();
-	glClearStencil(0); LN_CHECK_GLERROR();
+	glClearColor(color.r, color.g, color.b, color.a);
+	if (LN_ENSURE_GLERROR()) return;
+
+	glClearDepth(z);
+	if (LN_ENSURE_GLERROR()) return;
+
+	glClearStencil(0);
+	if (LN_ENSURE_GLERROR()) return;
 
 	/*
 	GLenum fs = glCheckFramebufferStatus( GL_FRAMEBUFFER );
@@ -409,7 +421,7 @@ void GLRenderer::onClear(ClearFlags flags, const Color& color, float z, uint8_t 
 		((flags.TestFlag(ClearFlags::Color)) ? GL_COLOR_BUFFER_BIT : 0) |
 		((flags.TestFlag(ClearFlags::Depth)) ? GL_DEPTH_BUFFER_BIT : 0) |
 		((flags.TestFlag(ClearFlags::Stencil)) ? GL_STENCIL_BUFFER_BIT : 0));
-	LN_CHECK_GLERROR();
+	if (LN_ENSURE_GLERROR()) return;
 }
 
 //------------------------------------------------------------------------------
@@ -439,7 +451,7 @@ void GLRenderer::onDrawPrimitive(PrimitiveType primitive, int startVertex, int p
 
 	// 描画
 	glDrawArrays(gl_prim, startVertex, vertexCount);
-	LN_CHECK_GLERROR();
+	if (LN_ENSURE_GLERROR()) return;
 
 	// 後始末 (解除)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -485,14 +497,21 @@ void GLRenderer::onDrawPrimitiveIndexed(PrimitiveType primitive, int startIndex,
 //------------------------------------------------------------------------------
 void GLRenderer::updateVAO()
 {
-	glBindVertexArray(m_vertexArray); LN_CHECK_GLERROR();
-	glBindBuffer(GL_ARRAY_BUFFER, m_currentVertexBuffer->getGLVertexBuffer()); LN_CHECK_GLERROR();
+	glBindVertexArray(m_vertexArray);
+	if (LN_ENSURE_GLERROR()) return;
 
-	if (m_currentIndexBuffer != NULL) {
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_currentIndexBuffer->getIndexBufferObject()); LN_CHECK_GLERROR();
+	glBindBuffer(GL_ARRAY_BUFFER, m_currentVertexBuffer->getGLVertexBuffer());
+	if (LN_ENSURE_GLERROR()) return;
+
+	if (m_currentIndexBuffer != NULL)
+	{
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_currentIndexBuffer->getIndexBufferObject());
+		if (LN_ENSURE_GLERROR()) return;
 	}
-	else {
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); LN_CHECK_GLERROR();
+	else
+	{
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		if (LN_ENSURE_GLERROR()) return;
 	}
 }
 
@@ -519,10 +538,10 @@ void GLRenderer::updateVertexAttribPointer()
 			elm.Normalized,
 			elm.Stride,
 			(void*)(elm.ByteOffset));
-		LN_CHECK_GLERROR();
+		if (LN_ENSURE_GLERROR()) return;
 
 		glEnableVertexAttribArray(index);
-		LN_CHECK_GLERROR();
+		if (LN_ENSURE_GLERROR()) return;
 	}
 }
 
@@ -562,5 +581,4 @@ void GLRenderer::getPrimitiveInfo(PrimitiveType primitive, int primitiveCount, G
 }
 
 } // namespace Driver
-LN_NAMESPACE_GRAPHICS_END
 LN_NAMESPACE_END
