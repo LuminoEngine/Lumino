@@ -234,6 +234,6 @@ TEST_F(Test_Scene_Sprite3D, Issues_HC1)
 
 		Engine::update();
 		ASSERT_TRUE(TestEnv::CheckScreenShot(LN_LOCALFILE("TestResult/Test_Scene_Sprite3D.Issues_HC1_1.png"), 90));
-		Engine::getWorld2D()->removeAllObjects();
+		LN_TEST_CLEAN_SCENE;
 	}
 }

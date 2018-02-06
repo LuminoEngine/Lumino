@@ -113,7 +113,7 @@ void Main()
 
 	//auto text1 = TextBlock2D::create(_T("text"));
 	//text1->setBlendMode(BlendMode::Alpha);
-	//Engine::getWorld2D()->add(text1);
+	//Engine::defaultWorld2D()->add(text1);
 
 	while (Engine::update())
 	{

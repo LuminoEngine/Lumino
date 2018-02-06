@@ -60,16 +60,13 @@ GTEST_API_ int main(int argc, char **argv)
 #endif
 	setlocale(LC_ALL, "");
 
-#if 1	// 部分的にテストを実行したりする
-	char* testArgs[] = {
+	char* testArgs[] =
+	{
 		argv[0],
 		"--gtest_break_on_failure",
-		"--gtest_filter=Test_Plane.*"
+		//"--gtest_filter=Test_Plane.*"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);
-#else
-	testing::InitGoogleTest(&argc, argv);
-#endif
 	return RUN_ALL_TESTS();
 }

@@ -839,6 +839,16 @@ World3D* EngineManager::activeWorld3D() const
 	return m_activeWorld3D;
 }
 
+void EngineManager::setActiveWorld2D(World2D* world)
+{
+	m_activeWorld2D = world;
+}
+
+void EngineManager::setActiveWorld3D(World3D* world)
+{
+	m_activeWorld3D = world;
+}
+
 //------------------------------------------------------------------------------
 detail::PhysicsManager* EngineManager::getPhysicsManager() const
 {

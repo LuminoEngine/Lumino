@@ -147,6 +147,9 @@ void EngineInitalize()
 	// テストしやすいように固定フレームレートにする
 	Engine::setFrameUpdateMode(FrameUpdateMode::Fixed);
 
+	// WorldObject を World へ自動追加しない
+	Engine::setActiveWorld2D(nullptr);
+	Engine::setActiveWorld3D(nullptr);
 
 	RawFont::registerFontFile(LN_LOCALFILE("../../../../Tools/VLGothic/VL-Gothic-Regular.ttf"));
 	RawFont::getDefaultFont()->setName(_LT("VL Gothic"));
@@ -185,17 +188,14 @@ GTEST_API_ int main(int argc, char **argv)
 #endif
 	setlocale(LC_ALL, "");
 
-#if 1	// 部分的にテストを実行したりする
-	char* testArgs[] = {
+	char* testArgs[] =
+	{
 		argv[0],
 		"--gtest_break_on_failure",
-		//"--gtest_filter=Test_Scene_TextBlock2D.*",
+		//"--gtest_filter=Test_Scene_Sprite2D.Basic",
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);
-#else
-	testing::InitGoogleTest(&argc, argv);
-#endif
 	::testing::AddGlobalTestEnvironment(new TestEnv());
 
 	{

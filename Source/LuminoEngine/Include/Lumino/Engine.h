@@ -63,18 +63,31 @@ public:
 	*/
 	static void resetFrameDelay();
 
-	/** エンジンによって作成されるデフォルトの World2D を取得します。 */
-	static World2D* getWorld2D();
+	/** エンジンによって作成されたデフォルトの World2D を取得します。 */
+	static World2D* defaultWorld2D();
 
-	/** エンジンによって作成されるデフォルトの World3D を取得します。 */
-	static World3D* getWorld3D();
+	/** エンジンによって作成されたデフォルトの World3D を取得します。 */
+	static World3D* defaultWorld3D();
+
+	/** 現在のアクティブな 2D World を取得します。 */
+	static World2D* activeWorld2D();
+
+	/** 現在のアクティブな 3D World を取得します。 */
+	static World3D* activeWorld3D();
+
+	/** 現在のアクティブな 2D World を設定します。2D の WorldObject はインスタンス作成と同時にこの World へ追加されます。 */
+	static void setActiveWorld2D(World2D* world);
+
+	/** 現在のアクティブな 3D World を設定します。3D の WorldObject はインスタンス作成と同時にこの World へ追加されます。 */
+	static void setActiveWorld3D(World3D* world);
+
 
 	static Camera* getCamera3D();
 
-	/** エンジンによって作成されるデフォルトの UIFrameWindow を取得します。 */
+	/** エンジンによって作成されたデフォルトの UIFrameWindow を取得します。 */
 	static UIFrameWindow* getMainWindow();
 
-	/** エンジンによって作成されるデフォルトの UIViewport を取得します。 */
+	/** エンジンによって作成されたデフォルトの UIViewport を取得します。 */
 	static UIViewport* getMainViewport();
 
 

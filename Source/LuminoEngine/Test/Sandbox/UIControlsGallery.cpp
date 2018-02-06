@@ -69,7 +69,7 @@ void UIControlsGallery()
 
 
 
-	//Engine::getWorld3D()->setVisibleGridPlane(true);
+	//Engine::defaultWorld3D()->setVisibleGridPlane(true);
 
 	Engine::getCamera3D()->addComponent(newObject<CameraMouseMoveBehavior>());
 
@@ -409,32 +409,32 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 	//auto cornellBoxObj = newObject<WorldObject>();
 	//cornellBoxObj->addComponent(cornellBox);
 	//cornellBox->setShader(Shader::create(LN_LOCALFILE("Assets/UnLighting.fx"), ShaderCodeType::RawHLSL));
-	//Engine::getWorld3D()->add(cornellBoxObj);
+	//Engine::defaultWorld3D()->add(cornellBoxObj);
 
 	auto skinnedMeshComponent = SkinnedMeshComponent::create(_T("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
 	//auto skinnedMeshComponent = SkinnedMeshComponent::create(_T("D:\\MMD\\Materials\\モデル\\Lat式ミクVer2.3\\Lat式ミクVer2.3_Normal.pmd"));
 	auto skinnedMeshObj = newObject<WorldObject>();
 	skinnedMeshObj->addComponent(skinnedMeshComponent);
 	skinnedMeshComponent->setShader(Shader::create(LN_LOCALFILE("Assets/UnLighting.fx"), nullptr, ShaderCodeType::RawHLSL));
-	Engine::getWorld3D()->add(skinnedMeshObj);
+	Engine::defaultWorld3D()->add(skinnedMeshObj);
 
 
 	//auto ambientLight1 = AmbientLight::create();
 	//ambientLight1->setIntensity(0.05);
-	//Engine::getWorld3D()->addWorldObject(ambientLight1, true);
+	//Engine::defaultWorld3D()->addWorldObject(ambientLight1, true);
 
 
 	auto spotLight1 = SpotLight::create(Color::White, 30, Math::PI / 3);
 	spotLight1->transform.lookAt(-Vector3::UnitY);
 	spotLight1->setPosition(0, 20, 0);
 	//spotLight1->setIntensity(2.0f);
-	Engine::getWorld3D()->add(spotLight1);
+	Engine::defaultWorld3D()->add(spotLight1);
 
 
 	//auto pointLight1 = PointLight::create(/*Color::White, 2*/);
 	//pointLight1->setPosition(-9, 10, 0);
 	////pointLight1->setIntensity(2.0f);
-	//Engine::getWorld3D()->addWorldObject(pointLight1, true);
+	//Engine::defaultWorld3D()->addWorldObject(pointLight1, true);
 
 
 	auto directionalLight1 = DirectionalLight::create(Color::White);
@@ -445,15 +445,15 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 	//directionalLight1->setRotation(rot);
 	directionalLight1->setPosition(30, 30, -30);
 	directionalLight1->transform.lookAt(Vector3::Zero);
-	Engine::getWorld3D()->add(directionalLight1);
+	Engine::defaultWorld3D()->add(directionalLight1);
 
-	Engine::getWorld3D()->setFogColor(Color(1, 1, 1, 0.5));
-	Engine::getWorld3D()->setFogDensity(0.03);
+	Engine::defaultWorld3D()->setFogColor(Color(1, 1, 1, 0.5));
+	Engine::defaultWorld3D()->setFogDensity(0.03);
 
 	//printf("--------\n");
 	//{
-	//	Engine::getWorld3D()->updateFrame(0.016);
-	//	auto ofs = newObject<OffscreenWorldRenderView>(Engine::getWorld3D(), Engine::getCamera3D()->getCameraComponent());
+	//	Engine::defaultWorld3D()->updateFrame(0.016);
+	//	auto ofs = newObject<OffscreenWorldRenderView>(Engine::defaultWorld3D(), Engine::getCamera3D()->getCameraComponent());
 	//	ofs->setRenderTarget(RenderTargetTexture::create(256, 256, TextureFormat::R8G8B8A8, 1));
 	//	ofs->setClearMode(RenderLayerClearMode::ColorDepth);
 	//	ofs->setBackgroundColor(Color(0,0,0,0));
@@ -463,16 +463,16 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 	//	printf("\nrt: %p\n", t); ;
 
 
-	//	Engine::getWorld3D()->updateFrame(0.016);
+	//	Engine::defaultWorld3D()->updateFrame(0.016);
 	//	ofs->render();
 	//	ofs->getRenderTarget()->readSurface()->save(_T("test22_2.png"));
 	//}
 	//printf("--------\n");
 
 	//{
-	//	Engine::getWorld3D()->beginUpdateFrame();
-	//	Engine::getWorld3D()->updateFrame(0.016);
-	//	auto ofs = newObject<OffscreenWorldRenderView>(Engine::getWorld3D(), Engine::getCamera3D()->getCameraComponent());
+	//	Engine::defaultWorld3D()->beginUpdateFrame();
+	//	Engine::defaultWorld3D()->updateFrame(0.016);
+	//	auto ofs = newObject<OffscreenWorldRenderView>(Engine::defaultWorld3D(), Engine::getCamera3D()->getCameraComponent());
 	//	ofs->setClearMode(RenderLayerClearMode::ColorDepth);
 	//	ofs->render();
 
@@ -826,7 +826,7 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 	}
 
 	//{
-	//	auto ofs = newObject<OffscreenWorldRenderView>(Engine::getWorld3D(), Engine::getCamera3D()->getCameraComponent());
+	//	auto ofs = newObject<OffscreenWorldRenderView>(Engine::defaultWorld3D(), Engine::getCamera3D()->getCameraComponent());
 	//	ofs->setClearMode(RenderLayerClearMode::ColorDepth);
 	//	ofs->render();
 

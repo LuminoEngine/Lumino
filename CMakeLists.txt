@@ -32,6 +32,8 @@ option(LN_USE_EXTERNAL_Effekseer "" ON)
 #
 option(LN_BUILD_CORE_ONLY "Build Core only." OFF)
 
+option(LN_BUILD_LWIG "Build LWIG module." OFF)
+
 #-------------------------------------------------------------------------------
 set(LN_DEPENDENCIES_DEBUG_OUTPUT_DIR ${LN_LIB_DEBUG_OUTPUT_ROOT_DIR})
 set(LN_DEPENDENCIES_RELEASE_OUTPUT_DIR ${LN_LIB_RELEASE_OUTPUT_ROOT_DIR})
@@ -94,8 +96,7 @@ if (NOT LN_BUILD_CORE_ONLY)
 		#add_subdirectory(tools/ArchiveMaker)
 	endif()
 
-	if (NOT LN_USE_UNICODE_CHAR_SET)
-		#add_subdirectory(tools/LNSL)
+	if (LN_BUILD_LWIG)
 		add_subdirectory(tools/LWIG)
 	endif()
 endif()

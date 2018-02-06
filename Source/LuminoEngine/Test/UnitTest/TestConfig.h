@@ -35,13 +35,13 @@ public:
 	template<class T>
 	static T addWorld2D(T obj)
 	{
-		Engine::getWorld2D()->add(obj);
+		Engine::defaultWorld2D()->add(obj);
 		return obj;
 	}
 	template<class T>
 	static T addWorld3D(T obj)
 	{
-		Engine::getWorld3D()->add(obj);
+		Engine::defaultWorld3D()->add(obj);
 		return obj;
 	}
 
@@ -65,8 +65,8 @@ protected:
 #define LN_TEST_END_FRAME		TestEnv::EndFrame()
 
 #define LN_TEST_CLEAN_SCENE \
-	Engine::getWorld2D()->removeAllObjects(); \
-	Engine::getWorld3D()->removeAllObjects();
+	Engine::defaultWorld2D()->removeAllObjects(); \
+	Engine::defaultWorld3D()->removeAllObjects();
 
 
 inline PathName Test_GetTempFilePath(const Char* fileName)
@@ -124,14 +124,14 @@ class ScopedCameraPosition
 public:
 	ScopedCameraPosition(float x, float y, float z)
 	{
-		camera = Engine::getWorld3D()->getMainCamera();
+		camera = Engine::defaultWorld3D()->getMainCamera();
 		oldPos = camera->getPosition();
 		camera->setPosition(x, y, z);
 	}
 
 	ScopedCameraPosition(const Vector3& pos, const Vector3& lookAt)
 	{
-		camera = Engine::getWorld3D()->getMainCamera();
+		camera = Engine::defaultWorld3D()->getMainCamera();
 		oldPos = camera->getPosition();
 		camera->setPosition(pos);
 		camera->getCameraComponent()->setLookAt(lookAt);

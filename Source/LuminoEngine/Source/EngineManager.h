@@ -217,6 +217,8 @@ public:
 	World3D* defaultWorld3D() const;
 	World2D* activeWorld2D() const;
 	World3D* activeWorld3D() const;
+	void setActiveWorld2D(World2D* world);
+	void setActiveWorld3D(World3D* world);
 
 protected:
 	EngineManager(const detail::EngineSettings& configData);
