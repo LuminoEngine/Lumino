@@ -1,871 +1,337 @@
-ï»¿
+#include <memory>
 #include "Parser.h"
-#include <Lumino/Base/Enumerable.h>
-using namespace fl;
 
 
+#ifdef _MSC_VER     // start of disabling MSVC warnings
+#pragma warning(push)
+#pragma warning(disable:4146 4180 4244 4258 4267 4291 4345 4351 4355 4456 4457 4458 4459 4503 4624 4722 4800 4996)
+#endif
+#include <iostream>
+#include "clang/AST/AST.h"
+#include "clang/AST/ASTContext.h"
+#include "clang/AST/ASTConsumer.h"
+#include "clang/AST/DeclVisitor.h"
+#include "clang/Frontend/ASTConsumers.h"
+#include "clang/Frontend/FrontendActions.h"
+#include "clang/Frontend/CompilerInstance.h"
+#include "clang/Lex/Preprocessor.h"
+#include "clang/Lex/MacroArgs.h"
+#include "clang/Tooling/CommonOptionsParser.h"
+#include "clang/Tooling/Tooling.h"
 
-HeaderParser::HeaderParser(SymbolDatabase* database)
-	: m_database(database)
+#include "clang/AST/TypeLoc.h"
+#include "clang/AST/AST.h"
+#include "clang/AST/ASTConsumer.h"
+#include "clang/AST/RecursiveASTVisitor.h"
+#include "clang/Frontend/ASTConsumers.h"
+#include "clang/Frontend/FrontendActions.h"
+#include "clang/Frontend/CompilerInstance.h"
+#include "clang/Tooling/CommonOptionsParser.h"
+#include "clang/Tooling/Tooling.h"
+#include "clang/Rewrite/Core/Rewriter.h"
+#include "llvm/Support/raw_ostream.h"
+#include "clang/AST/Comment.h"
+#include "clang/AST/CommentVisitor.h"
+
+#ifdef _MSC_VER     // end of disabling MSVC warnings
+#pragma warning(pop)
+#endif
+
+
+class SymbolDatabase;
+
+namespace local
 {
-}
+using namespace clang;
+using namespace clang::tooling;
+using namespace llvm;
+using namespace clang;
+using namespace clang::driver;
+using namespace clang::tooling;
 
-void HeaderParser::ParseFiles(const List<PathName>& pathes)
+
+class LWIGVisitor : public DeclVisitor<LWIGVisitor, bool>
 {
-	for (auto& path : pathes)
+private:
+	const SourceManager& m_sourceManager;
+	::SymbolDatabase* m_db;
+
+public:
+	LWIGVisitor(CompilerInstance* CI, ::SymbolDatabase* db)
+		: m_sourceManager(CI->getASTContext().getSourceManager())
+		, m_db(db)
 	{
-		ParseFile(path);
 	}
-}
 
-void HeaderParser::ParseFile(const PathName& path)
-{
-	/*
-	ã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰ã¨ { } ; ã«ç€ç›®ã—ã¦åˆ‡ã‚Šåˆ†ã‘ã‚‹ãƒ‘ãƒ¼ã‚µã€‚
-	â€» LN_CLASS() ã® ( ) ã‚‚ãƒ‘ãƒ¼ã‚¹ã§ããã†ã ãŒã€ãƒ€ãƒ¡ã€‚ãã®å¤–å´ã®å…¨ã¦ã® ( ) ã‚‚è€ƒæ…®ã™ã‚‹å¿…è¦ãŒã‚ã‚‹ã€‚ãã‚Œã¯ã‚‚ã£ã¨å¾Œæ®µã§ã€‚
-	*/
-	struct DeclsParser : public combinators::ParseLib<DeclsParser>
+	std::vector<std::string> getAnnotation(Decl* decl)
 	{
-		static ParserResult<Decl> Parse_EmptyDecl(ParserContext input)
+		std::vector<std::string> attrs;
+		if (decl->hasAttrs())
 		{
-			LN_PARSE_RESULT(r1, TokenChar(';') || TokenChar(','));
-			return input.Success(Decl{ _T("EmptyDecl"), r1.GetMatchBegin(), r1.GetMatchEnd() });
-		}
-
-		static ParserResult<Decl> Parse_EmptyDecl2(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, TokenChar(';'));
-			return input.Success(Decl{ _T("EmptyDecl"), r1.GetMatchBegin(), r1.GetMatchEnd() });
-		}
-
-		static ParserResult<Decl> Parse_LocalBlock(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, TokenChar('{'));
-			LN_PARSE_RESULT(r2, Many(Parser<Decl>(Parse_EmptyDecl) || Parser<Decl>(Parse_LocalBlock) || Parser<Decl>(Parse_DocumentComment) || Parser<Decl>(Parse_AccessLevel)));
-			LN_PARSE_RESULT(r3, TokenChar('}'));
-			return input.Success(Decl{ _T("LocalBlock"), r1.GetMatchBegin(), r3.GetMatchEnd() });
-		}
-		
-		static ParserResult<Decl> Parse_LN_ENUM(ParserContext input)	// ',' ãŒä»–ã®ãƒ‘ãƒ¼ã‚µã®é‚ªé­”ã‚’ã™ã‚‹ã®ã§ã€ã“ã“ã§ã¯ã€€{ï½} ã ã‘ã‚’å–ã‚Šå‡ºã™
-		{
-			LN_PARSE_RESULT(r1, TokenString("LN_ENUM_"));
-			LN_PARSE_RESULT(r2, UntilMore(TokenChar('{')));
-			LN_PARSE_RESULT(r3, Many(Parser<Decl>(Parse_EnumMember) || Parser<Decl>(Parse_DocumentComment)));
-			LN_PARSE_RESULT(r4, TokenChar('}'));
-			return input.Success(Decl{ _T("enum"), r1.GetMatchBegin(), r4.GetMatchEnd(), r3.getValue() });
-		}
-		
-		static ParserResult<Decl> Parse_EnumMember(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, TokenChar(','));
-			return input.Success(Decl{ _T("enum_member"), r1.GetMatchBegin(), r1.GetMatchEnd() });
-		}
-
-		static ParserResult<Decl> Parse_LN_STRUCT(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, TokenString("LN_STRUCT"));
-			LN_PARSE_RESULT(r2, UntilMore(TokenChar('{')));
-			LN_PARSE_RESULT(r3, Many(Parser<Decl>(Parse_LN_FIELD) || Parser<Decl>(Parse_LN_METHOD) || Parser<Decl>(Parse_EmptyDecl) || Parser<Decl>(Parse_LocalBlock) || Parser<Decl>(Parse_DocumentComment) || Parser<Decl>(Parse_AccessLevel)));
-			LN_PARSE_RESULT(r4, TokenChar('}'));
-			return input.Success(Decl{ _T("Struct"), r1.GetMatchBegin(), r4.GetMatchEnd(), r3.getValue() });
-		}
-
-		static ParserResult<Decl> Parse_LN_CLASS(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, TokenString("LN_CLASS"));
-			LN_PARSE_RESULT(r2, UntilMore(TokenChar('{')));
-			LN_PARSE_RESULT(r3, Many(Parser<Decl>(Parse_LN_FIELD) || Parser<Decl>(Parse_LN_METHOD) || Parser<Decl>(Parse_EmptyDecl) || Parser<Decl>(Parse_LocalBlock) || Parser<Decl>(Parse_DocumentComment) || Parser<Decl>(Parse_AccessLevel)));
-			LN_PARSE_RESULT(r4, TokenChar('}'));
-			return input.Success(Decl{ _T("class"), r1.GetMatchBegin(), r4.GetMatchEnd(), r3.getValue() });
-		}
-
-		static ParserResult<Decl> Parse_LN_FIELD(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, TokenString("LN_FIELD"));
-			LN_PARSE_RESULT(r2, UntilMore(Parser<Decl>(Parse_EmptyDecl)));
-			return input.Success(Decl{ _T("field"), r1.GetMatchBegin(), r2.GetMatchEnd() });
-		}
-
-		static ParserResult<Decl> Parse_LN_METHOD(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, TokenString("LN_METHOD"));
-			LN_PARSE_RESULT(r2, UntilMore(Parser<Decl>(Parse_EmptyDecl2) || Parser<Decl>(Parse_LocalBlock)));
-			return input.Success(Decl{ _T("method"), r1.GetMatchBegin(), r2.GetMatchEnd() });
-		}
-
-		static ParserResult<Decl> Parse_LN_DELEGATE(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, TokenString("LN_DELEGATE"));
-			LN_PARSE_RESULT(r2, UntilMore(Parser<Decl>(Parse_EmptyDecl2)));
-			return input.Success(Decl{ _T("delegate"), r1.GetMatchBegin(), r2.GetMatchEnd() });
-		}
-
-		static ParserResult<Decl> Parse_DocumentComment(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, Token(TokenGroup::Comment));
-			return input.Success(Decl{ _T("document"), r1.GetMatchBegin(), r1.GetMatchEnd() });
-		}
-
-		static ParserResult<Decl> Parse_AccessLevel(ParserContext input)
-		{
-			//LN_PARSE_RESULT(r1, TokenString("public") || TokenString("protected") || TokenString("private") || TokenString("LN_INTERNAL_ACCESS"));
-			LN_PARSE_RESULT(r2, TokenChar(':'));
-			return input.Success(Decl{ _T("AccessLevelLike"), r2.GetMatchBegin(), r2.GetMatchEnd() });
-		}
-
-		static ParserResult<List<Decl>> Parse_File(ParserContext input)
-		{
-			LN_PARSE(r1, Many(
-				Parser<Decl>(Parse_LN_ENUM) ||
-				Parser<Decl>(Parse_LN_CLASS) ||
-				Parser<Decl>(Parse_LN_STRUCT) ||
-				Parser<Decl>(Parse_LN_DELEGATE) ||
-				Parser<Decl>(Parse_EmptyDecl2) ||
-				Parser<Decl>(Parse_LocalBlock) ||
-				Parser<Decl>(Parse_DocumentComment) ||
-				Parser<Decl>(Parse_AccessLevel)));
-			return input.Success(r1);
-		}
-
-		static bool FilterToken(fl::Token* token)
-		{
-			if (token->GetTokenGroup() == TokenGroup::Comment &&
-				StringTraits::compare(token->getBegin(), "/**", 3) == 0)
+			for (auto& attr : decl->getAttrs())
 			{
-				return true;
-			}
-			return
-				token->EqualChar(';') || token->EqualChar(',') || token->EqualChar('{') || token->EqualChar('}') ||
-				token->EqualString("LN_ENUM_", 8) ||
-				token->EqualString("LN_STRUCT", 9) ||
-				token->EqualString("LN_CLASS", 8) ||
-				token->EqualString("LN_FIELD", 8) ||
-				token->EqualString("LN_METHOD", 9) ||
-				token->EqualString("LN_DELEGATE", 11) ||
-				//token->EqualString("LN_CONSTRUCT_ACCESS", 19) ||
-				token->EqualChar(':') ||// token->EqualString("public", 6) || token->EqualString("protected", 9) || token->EqualString("private", 6) || token->EqualString("LN_INTERNAL_ACCESS", 18) ||
-				token->GetTokenGroup() == TokenGroup::Eof;	// TODO: ã“ã‚ŒãŒç„¡ãã¦ã‚‚ã„ã„ã‚ˆã†ã«ã—ãŸã„ã€‚ä»Šã¯ã“ã‚ŒãŒãªã„ã¨ã€Manyä¸­ã«EOFã—ãŸã¨ãOutOfRangeã™ã‚‹
-		}
-	};
-
-
-	auto codeStr = FileSystem::readAllText(path);
-	StringA code = codeStr.toStringA();
-
-	fl::AnalyzerContext ctx;
-	auto file = ctx.RegisterInputMemoryCode("memory", code.c_str());
-	ctx.LexFile(file);
-	auto tokens = file->GetTokenList();
-
-	auto result = DeclsParser::TryParse(DeclsParser::Parse_File, tokens);
-	for (auto decl1 : result.getValue())
-	{
-		if (decl1.type == "document") ParseDocument(decl1);
-		if (decl1.type == "Struct") ParseStructDecl(decl1);
-		if (decl1.type == "class") ParseClassDecl(decl1);
-		if (decl1.type == "enum") ParseEnumDecl(decl1);
-		if (decl1.type == "delegate") ParseDelegateDecl(decl1);
-		
-		for (auto decl2 : decl1.decls)
-		{
-		}
-	}
-}
-
-HeaderParser::TokenItr HeaderParser::ParseMetadataDecl(TokenItr begin, TokenItr end)
-{
-	// (...) ã‚’æ¢ã™
-	auto paramBegin = std::find_if(begin, end, [](Token* t) { return t->EqualChar('('); }) + 1;
-	auto paramEnd   = std::find_if(begin, end, [](Token* t) { return t->EqualChar(')'); });
-
-	// (...) ã®ä¸­ã® è­˜åˆ¥å­,ã€€è‹±æ•°å­—, æ–‡å­—åˆ—, ',', '=' ã ã‘ã‚’å–ã‚Šå‡ºã™
-	auto argTokens = tr::MakeEnumerator::from(paramBegin, paramEnd + 1)
-		.Where([](Token* t)
-		{ 
-			return
-				t->GetTokenGroup() == TokenGroup::Identifier ||
-				t->GetTokenGroup() == TokenGroup::ArithmeticLiteral ||
-				t->GetTokenGroup() == TokenGroup::StringLiteral ||
-				t->EqualChar(',') ||
-				t->EqualChar('=');
-		});
-
-	auto info = std::make_shared<MetadataInfo>();
-
-	flString key, value;
-	for (auto itr = argTokens.begin(); itr != argTokens.end();)
-	{
-		key = (*itr)->getString();
-		value = flString::getEmpty();
-		++itr;
-		if (itr != argTokens.end() && (*itr)->EqualChar('='))
-		{
-			++itr;
-			value = (*itr)->getString();
-			++itr;
-		}
-
-		info->AddValue(String(key), String(value));
-	}
-
-	m_lastMetadata = info;
-	return paramEnd + 1;
-}
-
-void HeaderParser::ParseStructDecl(const Decl& decl)
-{
-	auto paramEnd = ParseMetadataDecl(decl.begin, decl.end);
-	auto name = std::find_if(paramEnd, decl.end, [](Token* t) { return t->EqualChar('{'); }) - 2;
-
-	auto info = std::make_shared<TypeInfo>();
-	info->document = MoveLastDocument();
-	info->name = String((*name)->getString());
-	info->isStruct = true;
-	m_database->structs.add(info);
-
-	m_currentAccessLevel = AccessLevel::Public;
-	for (auto& d : decl.decls)
-	{
-		if (d.type == "AccessLevelLike") ParseAccessLevel(d);
-		if (d.type == "document") ParseDocument(d);
-		if (d.type == "field") ParseFieldDecl(d, info);
-		if (d.type == "method") ParseMethodDecl(d, info);
-	}
-}
-
-void HeaderParser::ParseFieldDecl(const Decl& decl, TypeInfoPtr parent)
-{
-	auto paramEnd = ParseMetadataDecl(decl.begin, decl.end);
-	auto name = decl.end - 2;
-	auto type = decl.end - 4;
-
-	auto info = std::make_shared<FieldInfo>();
-	info->document = MoveLastDocument();
-	info->name = String((*name)->getString());
-	info->typeRawName = String((*type)->getString());
-	parent->declaredFields.add(info);
-}
-
-void HeaderParser::ParseMethodDecl(const Decl& decl, TypeInfoPtr parent)
-{
-	auto paramEnd = ParseMetadataDecl(decl.begin, decl.end);
-
-	// param range
-	auto lparen = std::find_if(paramEnd, decl.end, [](Token* t) { return t->EqualChar('('); });
-	TokenItr rparen;
-	{
-		int level = 1;
-		for (auto itr = lparen + 1; itr != decl.end; ++itr)
-		{
-			if ((*itr)->EqualChar('(')) level++;
-			if ((*itr)->EqualChar(')')) level--;
-			if (level == 0)
-			{
-				rparen = itr;
-				break;
+				auto* anno = dyn_cast<AnnotateAttr>(attr);
+				if (anno != nullptr)
+				{
+					attrs.push_back(anno->getAnnotation().str());
+				}
 			}
 		}
+		return attrs;
 	}
 
-	// return type .. method name
-	auto declTokens = tr::MakeEnumerator::from(paramEnd, lparen)
-		.Where([](Token* t) { return t->GetTokenGroup() == TokenGroup::Identifier || t->GetTokenGroup() == TokenGroup::Keyword || t->GetTokenGroup() == TokenGroup::Operator || t->GetTokenGroup() == TokenGroup::ArithmeticLiteral; })
-		.ToList();
-
-	auto info = std::make_shared<MethodInfo>();
-	info->owner = parent;
-	info->metadata = MoveLastMetadata();
-	info->document = MoveLastDocument();
-	info->accessLevel = m_currentAccessLevel;
-	info->name = String((declTokens.getLast())->getString());	// ( ã®ç›´å‰ã‚’é–¢æ•°åã¨ã—ã¦å–ã‚Šå‡ºã™
-
-	if (info->metadata->HasKey("Document"))
-		parent->declaredMethodsForDocument.add(info);	// ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆæŠ½å‡ºç”¨ãƒ¡ã‚½ãƒƒãƒ‰
-	else
-		parent->declaredMethods.add(info);				// æ™®é€šã«ãƒ©ãƒƒãƒ‘ãƒ¼ã‚’ä½œã‚‹ãƒ¡ã‚½ãƒƒãƒ‰
-
-	// struct å‹ã§æˆ»ã‚Šå€¤ãŒç„¡ã‘ã‚Œã°ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
-	if (parent->isStruct && declTokens.begin() + 1 == declTokens.end())
-		info->isConstructor = true;
-
-	// return type
-	if (info->isConstructor)
+	void EnumerateDecl(DeclContext* aDeclContext)
 	{
-		info->returnTypeRawName = "void";
-	}
-	else
-	{
-		auto begin = declTokens.begin();
-		auto end = declTokens.end() - 1;
-		int pointerLevel;
-		bool hasConst;
-		bool hasVirtual;
-		ParseParamType(begin, end, &info->returnTypeRawName, &pointerLevel, &hasConst, &hasVirtual);
-
-		for (auto itr = begin; itr != end; ++itr)
+		for (DeclContext::decl_iterator i = aDeclContext->decls_begin(), e = aDeclContext->decls_end(); i != e; i++)
 		{
-			if ((*itr)->EqualString("static"))
-				info->isStatic = true;
-		}
-		info->isVirtual = hasVirtual;
-	}
+			Decl *D = *i;
+			//if (indentation.IndentLevel == 0) {
+			//	errs() << "TopLevel : " << D->getDeclKindName();                                    // Decl‚ÌŒ^•\¦
+			//	if (NamedDecl *N = dyn_cast<NamedDecl>(D))  errs() << " " << N->getNameAsString();  // NamedDecl‚È‚ç–¼‘O•\¦
+			//	errs() << " (" << D->getLocation().printToString(SM) << ")\n";                      // ƒ\[ƒXã‚ÌêŠ•\¦
+			//}
 
-	if (!info->isStatic)
-	{
-		// class å‹ã§ InitializeXXXX ãªã‚‰ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
-		if (!parent->isStruct &&info->name.indexOf(_T("Initialize")) == 0)
-			info->isConstructor = true;
-	}
+			errs() << "TopLevel : " << D->getDeclKindName();
+			if (NamedDecl *N = dyn_cast<NamedDecl>(D))  errs() << " " << N->getNameAsString();
+			errs() << "\n";
 
-	// mehod params
-	ParseParamListDecl(lparen, rparen, info);
-
-	// method attribute
-	{
-		auto begin = rparen + 1;
-		auto end = std::find_if(begin, decl.end, [](Token* t) { return t->EqualChar('{'); });
-		for (auto itr = begin; itr < end; ++itr)
-		{
-			if ((*itr)->EqualString("const"))
-			{
-				info->isConst = true;
-			}
+			Visit(D);
 		}
 	}
-}
 
-//------------------------------------------------------------------------------
-//	begin	=	'('
-//	end		=	')'
-void HeaderParser::ParseParamListDecl(TokenItr begin, TokenItr end, MethodInfoPtr parent)
-{
-	auto paramBegin = begin + 1;
-	auto itr = paramBegin;
-	//bool isDelegate = false;
-	for (; itr < end; ++itr)
+
+	// class/struct/union‚Ìˆ—
+	bool VisitCXXRecordDecl(CXXRecordDecl *aCXXRecordDecl/*, bool aForce = false*/)
 	{
-		//if ((*itr)->EqualString(_T("Delegate")))
-		//{
-		//	isDelegate = true;	// ä»Šè§£æä¸­ã®å¼•æ•°ã¯ Delegate ã§ã‚ã‚‹
+		// QÆ—p(class foo;‚Ì‚æ‚¤‚ÈéŒ¾)‚È‚ç’ÇÕ‚µ‚È‚¢
+		if (!aCXXRecordDecl->isCompleteDefinition()) {
+			return true;
+		}
+
+		auto attrs = getAnnotation(aCXXRecordDecl);
+
+		//// –¼‘O–³‚µ‚È‚ç•\¦‚µ‚È‚¢(‚½‚¾‚µA‹­§•\¦‚³‚ê‚½‚ç•\¦‚·‚é:Elaborated—p)
+		//if (!aCXXRecordDecl->getIdentifier() && !aForce) {
+		//	return true;
 		//}
 
-		if ((*itr)->EqualChar(','))
+
+		// ƒNƒ‰ƒX’è‹`‚Ìˆ—
+		//errs() << "CXXRecordDecl : " << aCXXRecordDecl->getNameAsString() << " {\n";
 		{
-			ParseParamDecl(paramBegin, itr, parent, false);
-			paramBegin = itr + 1;
+			//INDENTATION;
+
+			//// Œ^‚Ìí—Ş
+			//errs() << indentation << "Kind : ";
+			//switch (aCXXRecordDecl->TagDecl::getTagKind()) {
+			//case TTK_Struct:    errs() << "struct\n";       break;
+			//case TTK_Interface: errs() << "__interface\n";  break;
+			//case TTK_Union:     errs() << "union\n";        break;
+			//case TTK_Class:     errs() << "class\n";        break;
+			//case TTK_Enum:      errs() << "enum\n";         break;
+			//default:            errs() << "unknown!!\n";    break;
+			//}
+
+			//// ƒAƒmƒe[ƒVƒ‡ƒ“(in ƒAƒgƒŠƒrƒ…[ƒg)
+			//printAnnotation(aCXXRecordDecl, "  Annotation : ", "\n");
+
+			//// Šeí“Á’¥ƒtƒ‰ƒO
+			//if (aCXXRecordDecl->isUsed())           errs() << indentation << "  Used\n";
+			//if (aCXXRecordDecl->isReferenced())     errs() << indentation << "  Referenced\n";
+			//if (aCXXRecordDecl->isPolymorphic())    errs() << indentation << "  Polymorphic\n";
+			//if (aCXXRecordDecl->isAbstract())       errs() << indentation << "  Abstract\n";
+			//if (aCXXRecordDecl->isEmpty())          errs() << indentation << "  isEmpty\n";
+			//if (isa<ClassTemplatePartialSpecializationDecl>(aCXXRecordDecl)) {
+			//	errs() << indentation << "  This is a Template-Parcial-Specialization.\n";
+			//}
+			//else if (isa<ClassTemplateSpecializationDecl>(aCXXRecordDecl)) {
+			//	errs() << indentation << "  This is a Template-Specialization.\n";
+			//}
+
+			//// Šî’êƒNƒ‰ƒX‚Ì–‡‹“ˆ—
+			//for (CXXRecordDecl::base_class_iterator Base = aCXXRecordDecl->bases_begin(), BaseEnd = aCXXRecordDecl->bases_end();
+			//	Base != BaseEnd;
+			//	++Base) {                                          // «Œ^–¼‚ğæ‚èo‚·(—á‚¦‚ÎAPolicy.Bool=0‚ÌAboolŒ^‚Í"_Bool"‚Æ‚È‚é)
+			//	errs() << indentation << "Base : ";
+			//	printAccessSpec(Base->getAccessSpecifier());
+			//	if (Base->isVirtual()) errs() << "virtual ";
+			//	errs() << Base->getType().getAsString(Policy) << "\n";
+			//}
+
+			// ƒƒ“ƒo[‚Ì–‡‹“ˆ—
+			EnumerateDecl(aCXXRecordDecl);
 		}
+		//errs() << indentation << "}\n";
+		//errs() << indentation << "====================================>>>\n";
+		return true;
 	}
-	if (paramBegin != end) ParseParamDecl(paramBegin, end, parent, false);
-}
+
+	// ƒƒ“ƒoŠÖ”
+	bool VisitCXXMethodDecl(CXXMethodDecl* D)
+	{
+		auto attrs = getAnnotation(D);
+		return true;
+	}
+
+	// ƒƒ“ƒo•Ï”
+	bool VisitFieldDecl(FieldDecl *aFieldDecl)
+	{
+		return true;
+	}
+
+	// typedef
+	bool VisitTypedefDecl(TypedefDecl *aTypedefDecl)
+	{
+		return true;
+	}
+
+	// namespace
+	bool VisitNamespaceDecl(NamespaceDecl *aNamespaceDecl)
+	{
+		return true;
+	}
+
+	// using
+	bool VisitUsingDirectiveDecl(UsingDirectiveDecl *aUsingDirectiveDecl)
+	{
+		return true;
+	}
+};
 
 //------------------------------------------------------------------------------
-// ä»®å¼•æ•°1ã¤åˆ†ã®è§£æ
-// end = ',' | ')'
-void HeaderParser::ParseParamDecl(TokenItr begin, TokenItr end, MethodInfoPtr parent, bool isDelegate)
+// ˆÈ‰ºAŒˆ‚Ü‚è•¶‹å
+
+// ‚±‚ÌƒCƒ“ƒ^ƒtƒF[ƒX‚ÍAƒvƒŠƒvƒƒZƒbƒT‚Ì“®ì‚ğŠÏ@‚·‚é•û–@‚ğ’ñ‹Ÿ‚µ‚Ü‚·B
+// https://clang.llvm.org/doxygen/classclang_1_1PPCallbacks.html
+// #XXXX ‚ğŒ©‚Â‚¯‚½‚Æ‚«‚âAƒ}ƒNƒ“WŠJ‚ªs‚í‚ê‚½‚Æ‚«‚ÉŒÄ‚Î‚ê‚éƒR[ƒ‹ƒoƒbƒN‚ğ’è‹`‚µ‚½‚è‚·‚éB
+class LocalPPCallbacks : public PPCallbacks
 {
-	// Identifier, Keyword, Operator, ArithmeticLiteral ã ã‘ã®ãƒªã‚¹ãƒˆã«ã™ã‚‹
-	auto declTokens = tr::MakeEnumerator::from(begin, end)
-		.Where([](Token* t) { return t->GetTokenGroup() == TokenGroup::Identifier || t->GetTokenGroup() == TokenGroup::Keyword || t->GetTokenGroup() == TokenGroup::Operator || t->GetTokenGroup() == TokenGroup::ArithmeticLiteral; })
-		.ToList();
-	
-	auto info = std::make_shared<ParameterInfo>();
+public:
+	LocalPPCallbacks(Preprocessor& pp, CompilerInstance* ci)
+		: m_pp(pp)
+		, m_ci(ci)
+	{}
 
-	// Delegate ã®å ´åˆ
-	TokenItr paramEnd;
-	if (isDelegate)
+	virtual void MacroExpands(const Token &MacroNameTok, const MacroDefinition &MD, SourceRange Range, const MacroArgs *Args) override
 	{
-		LN_UNREACHABLE();
-		//paramEnd = end;
+		auto stringRef = Lexer::getSourceText(
+			CharSourceRange::getTokenRange(Range),
+			m_ci->getSourceManager(),
+			m_ci->getLangOpts());
 
-		//// , ã®ç›´å‰ã‚’å¼•æ•°åã¨ã™ã‚‹
-		//auto name = paramEnd - 1;
 
-		//// "void(int, int)" ã® (...) ã‚’æ¢ã™
-		//auto paramListBegin = std::find_if(begin, end, [](Token* t) { return t->EqualChar('('); }) + 1;
-		//auto paramListEnd = std::find_if(begin, end, [](Token* t) { return t->EqualChar(')'); });
+		// Token ‚Ìí—Ş‚Ì–¼‘O‚ğ•Ô‚·B indentifer ‚È‚ÇB
+		//auto* name = MacroNameTok.getName();
+		//printf("%s %d\n", stringRef.str().c_str(), Range.getBegin().getRawEncoding());
+		auto loc = Range.getBegin();
+		std::cout << "  " << m_ci->getSourceManager().getFileID(loc).getHashValue() << " " << loc.getRawEncoding() << "\n";
 
-		//// Delegate ã‚¯ãƒ©ã‚¹ã‚’ä½œã‚‹
-		//auto delegateInfo = std::make_shared<TypeInfo>();
-		//delegateInfo->isDelegate = true;
-		//delegateInfo->name = (*name)->GetString();
+		const MacroInfo* MI = MD.getMacroInfo();
 
-		//// Delegate ã‚¯ãƒ©ã‚¹ã« Invoke ãƒ¡ã‚½ãƒƒãƒ‰ã‚’è¿½åŠ ã™ã‚‹
-		//auto involeMethodInfo = std::make_shared<MethodInfo>();
-		//involeMethodInfo->owner = delegateInfo;
-		//involeMethodInfo->name = "Invoke";
-		//delegateInfo->declaredMethods.Add(involeMethodInfo);
+		MI->dump();
 
-		//// å¼•æ•°ãƒªã‚¹ãƒˆã‚’è§£æã™ã‚‹
-		//ParseParamListDecl(paramListBegin, paramListEnd, involeMethodInfo);
-
-		//Console::WriteLine(delegateInfo->name);
-	}
-	// æ™®é€šã®å¼•æ•°ã®å ´åˆ
-	else
-	{
-		paramEnd = std::find_if(declTokens.begin(), declTokens.end(), [](Token* t) { return t->EqualChar('='); });
-		if (paramEnd != declTokens.end())
+		for (unsigned ArgNo = 0U; ArgNo < MI->getNumArgs(); ++ArgNo)
 		{
-			// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå¼•æ•°ã®è§£æ
-			String value;
-			for (auto itr = paramEnd + 1; itr < declTokens.end(); ++itr) value += (*itr)->getString();
-			info->rawDefaultValue = value;
-		}
-
-		// , ã¾ãŸã¯ =(ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå¼•æ•°) ã®ç›´å‰ã‚’å¼•æ•°åã¨ã™ã‚‹
-		auto name = paramEnd - 1;
-
-
-		String typeName;
-		int pointerLevel;
-		bool hasConst;
-		bool hasVirtual;
-		ParseParamType(declTokens.begin(), paramEnd - 1, &typeName, &pointerLevel, &hasConst, &hasVirtual);
-
-		info->name = String((*name)->getString());
-		info->typeRawName = typeName;
-		info->isIn = hasConst;
-		info->isOut = (!hasConst && pointerLevel > 0);
-	}
-	parent->parameters.add(info);
-
-	// copydoc ç”¨ã‚·ã‚°ãƒãƒãƒ£ã®æŠ½å‡º
-	String sig;
-	for (auto itr = declTokens.begin(); itr < paramEnd; ++itr)
-	{
-		if ((*itr)->GetTokenGroup() == TokenGroup::Identifier ||
-			(*itr)->GetTokenGroup() == TokenGroup::Operator ||
-			(*itr)->GetTokenGroup() == TokenGroup::Keyword)
-		{
-			sig += (*itr)->getString();
+			const IdentifierInfo *Arg = *(MI->arg_begin() + ArgNo);
+			const Token *ResultArgToks = Args->getUnexpArgument(ArgNo);
 		}
 	}
-	if (!parent->paramsRawSignature.isEmpty()) parent->paramsRawSignature += ",";
-	parent->paramsRawSignature += sig;
-}
 
-void HeaderParser::ParseParamType(TokenItr begin, TokenItr end, String* outName, int* outPointerLevel, bool* outHasConst, bool* outHasVirtual)
+private:
+	Preprocessor & m_pp;
+	CompilerInstance*	m_ci;
+};
+
+// ASTConsumer ‚ÍAAST ‚ÌƒGƒ“ƒgƒŠƒ|ƒCƒ“ƒg‚Æ‚È‚é‰½‚ç‚©‚Ì—v‘f‚ğŒ©‚Â‚¯‚½‚Æ‚«‚É‚»‚ê‚ğ’Ê’m‚·‚éB
+// ’Êí‚Í HandleTranslationUnit() ‚¾‚¯À‘•‚·‚ê‚Î‚æ‚¢B
+// https://clang.llvm.org/docs/RAVFrontendAction.html
+// clang ‚ÍFX‚È AST ‚Ìì¬•û–@‚ğ‚Á‚Ä‚¢‚é‚ç‚µ‚­AHandleTranslationUnit() ˆÈŠO‚Í
+// ’Êí‚Ì–|–ó’PˆÊˆÈŠO‚Ì‰ğÍ‚Å‰½‚©‚µ‚½‚¢‚Æ‚«‚Ég‚¤‚æ‚¤‚¾B
+class LocalASTConsumer : public ASTConsumer
 {
-	auto type = begin;
-	auto typeEnd = end;
+private:
+	std::unique_ptr<LWIGVisitor> m_visitor;
 
-	// lookup TypeName and count '*'
-	TokenItr typeName;
-	int pointerLevel = 0;
-	bool hasConst = false;
-	bool hasVirtual = false;
-	for (auto itr = begin; itr != typeEnd; ++itr)
+public:
+	explicit LocalASTConsumer(CompilerInstance* CI, ::SymbolDatabase* db)
+		: m_visitor(std::make_unique<LWIGVisitor>(CI, db))
 	{
-		if ((*itr)->EqualChar('*')) pointerLevel++;
-		if ((*itr)->EqualString("const")) hasConst = true;
-		if ((*itr)->EqualString("virtual")) hasVirtual = true;
-		if ((*itr)->GetTokenGroup() == TokenGroup::Identifier || (*itr)->GetTokenGroup() == TokenGroup::Keyword) typeName = itr;
+		Preprocessor &PP = CI->getPreprocessor();
+		PP.addPPCallbacks(llvm::make_unique<LocalPPCallbacks>(PP, CI));
 	}
 
-	*outName = String((*typeName)->getString());
-	*outPointerLevel = pointerLevel;
-	*outHasConst = hasConst;
-	*outHasVirtual = hasVirtual;
-}
-
-void HeaderParser::ParseClassDecl(const Decl& decl)
-{
-	/*
-	LN_CLASS()
-	template<typename T>
-	class TestList
+	virtual void HandleTranslationUnit(ASTContext& Context)
 	{
+		m_visitor->EnumerateDecl(Context.getTranslationUnitDecl());
+	}
+};
+
+// FrontendAction ‚ÍAƒRƒ“ƒpƒCƒ‰ƒtƒƒ“ƒgƒGƒ“ƒh‚Ì‹¤’Ê‚ÌƒGƒ“ƒgƒŠƒ|ƒCƒ“ƒgB‹ï‘Ì“I‚É‰½‚µ‚½‚¢‚ÌH‚ğ•\‚·‚½‚ß‚Ég‚¤B
+// https://clang.llvm.org/docs/RAVFrontendAction.html
+// https://clang.llvm.org/doxygen/classclang_1_1ASTFrontendAction.html
+// •W€‚¾‚Æ ASTFrontendAction ‚Ì”h¶‚Æ‚µ‚ÄA’P‚É AST ‚ğƒ_ƒ“ƒv‚µ‚½‚èAHTML ‚É•ÏŠ·‚µ‚½‚è‚Æ‚¢‚Á‚½ƒAƒNƒVƒ‡ƒ“‚ª—pˆÓ‚³‚ê‚Ä‚¢‚éB
+// ¡‰ñ‚Í AST ‚ğ‘S•”©•ª‚Åƒgƒ‰ƒo[ƒX‚µ‚½‚¢‚Ì‚Å ASTFrontendAction ‚ğg‚¤B
+class LocalFrontendAction : public ASTFrontendAction
+{
+public:
+	::SymbolDatabase * m_db;
+
+	LocalFrontendAction(::SymbolDatabase* db)
+		: m_db(db)
+	{}
+
+	virtual std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI, llvm::StringRef file)
+	{
+		return llvm::make_unique<LocalASTConsumer>(&CI, m_db);
+	}
+};
+
+
+// SilClangAnalyzer ‚Ìƒ|ƒCƒ“ƒ^‚ğ ª‚ÌƒNƒ‰ƒX‚½‚¿‚É‚í‚½‚·‚½‚ß‚Ìƒtƒ@ƒNƒgƒŠ
+std::unique_ptr<FrontendActionFactory> NewLocalFrontendActionFactory(::SymbolDatabase* db)
+{
+	class SimpleFrontendActionFactory : public FrontendActionFactory
+	{
+	public:
+		::SymbolDatabase * m_db;
+
+		SimpleFrontendActionFactory(::SymbolDatabase* db)
+			: m_db(db)
+		{}
+
+		clang::FrontendAction *create() override { return new LocalFrontendAction(m_db); }
 	};
 
-	LN_CLASS()
-	class TestList2
-		: public TestList<Engine>
-	{
-	};
-	*/
-	struct ClassHeaderParser : public combinators::ParseLib<ClassHeaderParser>
-	{
-		struct TypeName
-		{
-			flString		name;
-			List<flString>	typeArgs;
-		};
-
-		struct ClassHeader
-		{
-			List<flString>	templateTypeParams;
-			flString		className;
-			List<TypeName>	baseClassNames;
-		};
-
-		//----------------------------------------------------------------------
-		// template <...>
-		static ParserResult<List<flString>> Parse_TemplateDecl(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, TokenString("template"));
-			LN_PARSE_RESULT(r2, TokenChar('<'));
-			LN_PARSE_RESULT(r3, Parse_TemplateParamList);
-			LN_PARSE_RESULT(r4, TokenChar('>'));
-			return input.Success(r3.getValue());
-		}
-
-		static ParserResult<List<flString>> Parse_TemplateParamList(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, Parse_TemplateParam);
-			LN_PARSE_RESULT(r2, Many(Parser<flString>(Parse_TemplateParamLater)));
-			List<flString> list{ r1.getValue() };
-			list.addRange(r2.getValue());
-			return input.Success(list);
-		}
-
-		static ParserResult<flString> Parse_TemplateParam(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, TokenString("typename") || TokenString("class"));
-			LN_PARSE_RESULT(r2, Token(TokenGroup::Identifier));
-			return input.Success(r2.getValue()->getString());
-		}
-
-		static ParserResult<flString> Parse_TemplateParamLater(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, TokenChar(','));
-			LN_PARSE_RESULT(r2, TokenString("typename") || TokenString("class"));
-			LN_PARSE_RESULT(r3, Token(TokenGroup::Identifier));
-			return input.Success(r3.getValue()->getString());
-		}
-
-		//----------------------------------------------------------------------
-		// class
-		static ParserResult<flString> Parse_ClassMain(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, TokenString("class"));
-			LN_PARSE_RESULT(r2, Token(TokenGroup::Identifier));
-			return input.Success(r2.getValue()->getString());
-		}
-
-		//----------------------------------------------------------------------
-		// base classes:
-		static ParserResult<List<TypeName>> Parse_BaseClasses(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, TokenChar(':'));
-			LN_PARSE_RESULT(r2, Many(Parser<TypeName>(Parse_BaseTypeName)));
-			LN_PARSE_RESULT(r3, Many(Parser<TypeName>(Parse_BaseTypeNameLater)));
-			auto list = r2.getValue();
-			list.addRange(r3.getValue());
-			return input.Success(list);
-		}
-		
-		static ParserResult<TypeName> Parse_BaseTypeName(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, TokenString("public"));
-			LN_PARSE_RESULT(r2, Token(TokenGroup::Identifier));
-			LN_PARSE_RESULT(r3, Optional(Parser<List<flString>>(Parse_TypeParamList)));
-			return input.Success(TypeName{ r2.getValue()->getString(), r3.getValue().getValue() });
-		}
-
-		static ParserResult<TypeName> Parse_BaseTypeNameLater(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, TokenChar(','));
-			LN_PARSE_RESULT(r2, TokenString("public"));
-			LN_PARSE_RESULT(r3, Token(TokenGroup::Identifier));
-			LN_PARSE_RESULT(r4, Optional(Parser<List<flString>>(Parse_TypeParamList)));
-			return input.Success(TypeName{ r3.getValue()->getString(), r4.getValue().getValue() });
-		}
-
-		static ParserResult<List<flString>> Parse_TypeParamList(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, TokenChar('<'));
-			LN_PARSE_RESULT(r2, Parse_TypeParam);
-			LN_PARSE_RESULT(r3, Many(Parser<flString>(Parse_TypeParamLater)));
-			LN_PARSE_RESULT(r4, TokenChar('>'));
-			List<flString> list{ r2.getValue() };
-			list.addRange(r3.getValue());
-			return input.Success(list);
-		}
-
-		static ParserResult<flString> Parse_TypeParam(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, Token(TokenGroup::Identifier));
-			return input.Success(r1.getValue()->getString());
-		}
-
-		static ParserResult<flString> Parse_TypeParamLater(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, TokenChar(','));
-			LN_PARSE_RESULT(r2, Token(TokenGroup::Identifier));
-			return input.Success(r2.getValue()->getString());
-		}
-
-		//----------------------------------------------------------------------
-		// class header:
-		static ParserResult<ClassHeader> Parse_ClassHeader(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, Optional(Parser<List<flString>>(Parse_TemplateDecl)));
-			LN_PARSE_RESULT(r2, Parse_ClassMain);
-			LN_PARSE_RESULT(r3, Optional(Parser<List<TypeName>>(Parse_BaseClasses)));
-			LN_PARSE_RESULT(r4, TokenChar('{'));
-			return input.Success(ClassHeader{ r1.getValue().getValue(), r2.getValue(), r3.getValue().getValue(), });
-		}
-
-		static bool FilterToken(fl::Token* token)
-		{
-			return
-				token->EqualChar('<') ||
-				token->EqualChar('>') ||
-				token->EqualChar(',') ||
-				token->EqualChar(':') ||
-				token->EqualChar('{') ||
-				token->EqualGroupAndString(TokenGroup::Keyword, "template") ||
-				token->EqualGroupAndString(TokenGroup::Keyword, "typename") ||
-				token->EqualGroupAndString(TokenGroup::Keyword, "class") ||
-				token->EqualGroupAndString(TokenGroup::Keyword, "public") ||
-				token->GetTokenGroup() == TokenGroup::Identifier ||
-				token->GetTokenGroup() == TokenGroup::Eof;	// TODO: ã“ã‚ŒãŒç„¡ãã¦ã‚‚ã„ã„ã‚ˆã†ã«ã—ãŸã„ã€‚ä»Šã¯ã“ã‚ŒãŒãªã„ã¨ã€Manyä¸­ã«EOFã—ãŸã¨ãOutOfRangeã™ã‚‹
-		}
-	};
-
-	auto paramEnd = ParseMetadataDecl(decl.begin, decl.end);
-
-	auto& result = ClassHeaderParser::TryParse(ClassHeaderParser::Parse_ClassHeader, paramEnd, decl.end);
-	auto& classHeader = result.getValue();
-
-
-	//auto name = std::find_if(paramEnd, decl.end, [](Token* t) { return t->EqualChar(':'); }) - 2;
-	//TokenItr name;
-	//TokenItr itr = paramEnd;
-	//for (; itr < decl.end; ++itr)
-	//{
-	//	if ((*itr)->GetTokenGroup() == TokenGroup::Identifier) name = itr;
-	//	if ((*itr)->EqualChar(':') || (*itr)->EqualChar('{')) break;
-	//}
-
-	auto info = std::make_shared<TypeInfo>();
-	info->metadata = MoveLastMetadata();
-	info->document = MoveLastDocument();
-	info->name = String(classHeader.className);
-	if (!classHeader.baseClassNames.isEmpty()) info->baseClassRawName = String(classHeader.baseClassNames[0].name);
-	m_database->classes.add(info);
-
-	// base class name
-	//if ((*itr)->EqualChar(':'))
-	//{
-	//	itr = std::find_if(itr, decl.end, [](Token* t) { return t->GetTokenGroup() == TokenGroup::Identifier; });
-	//	info->baseClassRawName = (*itr)->GetString();
-	//}
-
-	m_currentAccessLevel = AccessLevel::Private;
-	for (auto& d : decl.decls)
-	{
-		if (d.type == "AccessLevelLike") ParseAccessLevel(d);
-		if (d.type == "document") ParseDocument(d);
-		if (d.type == "method") ParseMethodDecl(d, info);
-	}
+	return std::unique_ptr<FrontendActionFactory>(new SimpleFrontendActionFactory(db));
 }
 
-void HeaderParser::ParseEnumDecl(const Decl& decl)
-{
-	auto paramEnd = ParseMetadataDecl(decl.begin, decl.end);
-
-	// find name
-	TokenItr name;
-	TokenItr itr = paramEnd;
-	for (; itr < decl.end; ++itr)
-	{
-		if ((*itr)->GetTokenGroup() == TokenGroup::Identifier) name = itr;
-		if ((*itr)->EqualChar(':') || (*itr)->EqualChar('{')) break;
-	}
-
-	auto info = std::make_shared<TypeInfo>();
-	info->document = MoveLastDocument();
-	info->name = String((*name)->getString());
-	info->isEnum = true;
-	m_database->enums.add(info);
-
-	m_currentEnumValue = 0;
-	TokenItr last = itr;
-	for (auto& d : decl.decls)
-	{
-		if (d.type == "document") ParseDocument(d);
-		if (d.type == "enum_member")
-		{
-			ParseEnumMemberDecl(last, d.end, info);
-			last = d.end;
-		}
-	}
-}
-
-void HeaderParser::ParseEnumMemberDecl(TokenItr begin, TokenItr end, TypeInfoPtr parent)
-{
-	// find name and value
-	TokenItr name;
-	TokenItr value;
-	TokenItr itr = begin;
-	for (; itr < end; ++itr)
-	{
-		if ((*itr)->GetTokenGroup() == TokenGroup::Identifier) name = itr;
-		if ((*itr)->EqualChar(',') || (*itr)->EqualChar('=')) break;
-	}
-	if ((*itr)->EqualChar('='))
-	{
-		for (; itr < end; ++itr)
-		{
-			if ((*itr)->GetTokenGroup() == TokenGroup::ArithmeticLiteral) value = itr;
-			if ((*itr)->EqualChar(',')) break;
-		}
-		m_currentEnumValue = (*value)->getString().toInt32();
-	}
-
-	// create info
-	auto info = std::make_shared<ConstantInfo>();
-	info->document = MoveLastDocument();
-	info->name = String((*name)->getString());
-	info->value = m_currentEnumValue;
-	info->type = parent;
-	parent->declaredConstants.add(info);
-
-	m_currentEnumValue++;
-}
+} // namespace
 
 //------------------------------------------------------------------------------
-// end = ';'
-// LN_DELEGATE() using CollisionEventHandler = Delegate<void(PhysicsObject* obj)>;
-void HeaderParser::ParseDelegateDecl(const Decl& decl)
-{
-	// parse "LN_DELEGATE()"
-	auto paramEnd = ParseMetadataDecl(decl.begin, decl.end);
 
-	// '=' ã‚’æ¢ã™ã€‚ã¾ãŸã€ãã®ç›´å‰ã®è­˜åˆ¥å­ã‚’ delegate åã¨ã™ã‚‹ã€‚
-	TokenItr equal;
-	TokenItr name;
-	for (auto itr = paramEnd; itr != decl.end; ++itr)
+int HeaderParser::parse(const Path& filePath, ::SymbolDatabase* db)
+{
+	// TODO: Path ‚©‚ç’¼Ú toLocalPath
+	std::string localFilePath = filePath.getString().toStdString();
+
+	const char* argv[] =
 	{
-		if ((*itr)->GetTokenGroup() == TokenGroup::Identifier)
-		{
-			name = itr;
-		}
-		if ((*itr)->EqualChar('='))
-		{
-			equal = itr;
-			break;
-		}
-	}
+		"",	// program name
+		localFilePath.c_str(),
+		"--",
+		//"-I", "C:/Proj/LN/Lumino/Source/LuminoCore/Include",
+		//"-I", "C:/Proj/LN/Lumino/Source/LuminoEngine/Include",
+		"-D", "LN_NAMESPACE_BEGIN",
+		"-D", "LN_NAMESPACE_END",
+		"-fms-compatibility",		// Enable full Microsoft Visual C++ compatibility
+		"-fms-extensions",			// Enable full Microsoft Visual C++ compatibility
+		"-fmsc-version=1900",		// Microsoft compiler version number to report in _MSC_VER (0 = don't define it (default))
+	};
+	int argc = sizeof(argv) / sizeof(const char*);
 
-	// '(' ã‚’æ¢ã™
-	auto lparen = std::find_if(equal, decl.end, [](Token* t) { return t->EqualChar('('); });
-
-	// ')' ã‚’æ¢ã™
-	auto rparen = std::find_if(lparen, decl.end, [](Token* t) { return t->EqualChar(')'); });
-
-	// Delegate ã‚¯ãƒ©ã‚¹ã‚’ä½œã‚‹
-	auto delegateInfo = std::make_shared<TypeInfo>();
-	delegateInfo->isDelegate = true;
-	delegateInfo->document = MoveLastDocument();
-	delegateInfo->metadata = MoveLastMetadata();
-	delegateInfo->name = (*name)->getString();
-	m_database->delegates.add(delegateInfo);
-
-	// Delegate ã‚¯ãƒ©ã‚¹ã« Invoke ãƒ¡ã‚½ãƒƒãƒ‰ã‚’è¿½åŠ ã™ã‚‹
-	auto invokeMethodInfo = std::make_shared<MethodInfo>();
-	invokeMethodInfo->owner = delegateInfo;
-	invokeMethodInfo->document = std::make_shared<DocumentInfo>();
-	invokeMethodInfo->metadata = std::make_shared<MetadataInfo>();
-	invokeMethodInfo->returnTypeRawName = "void";
-	invokeMethodInfo->name = "Invoke";
-	delegateInfo->declaredMethods.add(invokeMethodInfo);
-
-	// å¼•æ•°ãƒªã‚¹ãƒˆã‚’è§£æã™ã‚‹
-	ParseParamListDecl(lparen, rparen, invokeMethodInfo);
+	::clang::tooling::CommonOptionsParser op(argc, argv, ::llvm::cl::GeneralCategory);
+	::clang::tooling::ClangTool Tool(op.getCompilations(), op.getSourcePathList());
+	return Tool.run(local::NewLocalFrontendActionFactory(db).get());
 }
 
-void HeaderParser::ParseDocument(const Decl& decl)
-{
-	String doc((*decl.begin)->getString());
 
-	// æ”¹è¡Œã‚³ãƒ¼ãƒ‰çµ±ä¸€ã—ã€ã‚³ãƒ¡ãƒ³ãƒˆé–‹å§‹çµ‚äº†ã‚’å‰Šé™¤ã™ã‚‹
-	doc = doc
-		.replace(_T("\r\n"), _T("\n"))
-		.replace(_T("\r"), _T("\n"))
-		.replace(_T("/**"), _T(""))
-		.replace(_T("*/"), _T(""));
-
-	auto info = std::make_shared<DocumentInfo>();
-
-	List<String> lines = doc.split(_T("\n"));
-	String* target = &info->summary;
-	for (String line : lines)
-	{
-		line = line.trim();
-
-		MatchResult result;
-		if (Regex::search(line, _T("@(\\w+)"), &result))
-		{
-			if (result[1] == _T("brief"))
-			{
-				target = &info->summary;
-				line = line.mid(result.getLength());
-			}
-			else if (result[1] == _T("param"))
-			{
-				String con = line.mid(result.getLength());
-				if (Regex::search(con, R"(\[(\w+)\]\s+(\w+)\s*\:\s*)", &result))
-				{
-					auto paramInfo = std::make_shared<ParameterDocumentInfo>();
-					info->params.add(paramInfo);
-					paramInfo->io = result[1];
-					paramInfo->name = result[2];
-					target = &paramInfo->description;
-					line = con.mid(result.getLength());
-				}
-			}
-			else if (result[1] == _T("return"))
-			{
-				target = &info->returns;
-				line = line.mid(result.getLength());
-			}
-			else if (result[1] == _T("details"))
-			{
-				target = &info->details;
-				line = line.mid(result.getLength());
-			}
-			else if (result[1] == _T("copydoc"))
-			{
-				String con = line.mid(result.getLength());
-				if (Regex::search(con, R"((\w+)(.*))", &result))
-				{
-					info->copydocMethodName = result[1];
-					info->copydocSignature = result[2];
-					info->copydocSignature = info->copydocSignature.remove('(').remove(')').remove(' ').remove('\t');
-					target = &info->details;
-					line.clear();
-				}
-			}
-		}
-
-		(*target) += line.trim();
-	}
-
-	m_lastDocument = info;
-}
-
-void HeaderParser::ParseAccessLevel(const Decl& decl)
-{
-	auto t = decl.begin - 1;
-	if ((*t)->EqualString("public")) m_currentAccessLevel = AccessLevel::Public;
-	if ((*t)->EqualString("protected")) m_currentAccessLevel = AccessLevel::Protected;
-	if ((*t)->EqualString("private")) m_currentAccessLevel = AccessLevel::Private;
-	if ((*t)->EqualString("internal")) m_currentAccessLevel = AccessLevel::Internal;
-	if ((*t)->EqualString("LN_CONSTRUCT_ACCESS")) m_currentAccessLevel = AccessLevel::Public;
-}
-
-DocumentInfoPtr HeaderParser::MoveLastDocument()
-{
-	auto ptr = m_lastDocument;
-	m_lastDocument = nullptr;
-	return ptr;
-}
-
-MetadataInfoPtr HeaderParser::MoveLastMetadata()
-{
-	auto ptr = m_lastMetadata;
-	m_lastMetadata = nullptr;
-	return ptr;
-}

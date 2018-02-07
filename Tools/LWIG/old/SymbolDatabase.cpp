@@ -1,7 +1,6 @@
 ﻿
+#include "Global.h"
 #include "SymbolDatabase.h"
-
-#if 0
 
 TypeInfoPtr	PredefinedTypes::voidType;
 TypeInfoPtr	PredefinedTypes::nullptrType;
@@ -39,7 +38,7 @@ bool MetadataInfo::HasKey(const StringRef& key)
 //==============================================================================
 void MethodInfo::LinkParameters()
 {
-	if (metadata->HasKey(_T("Event")))
+	if (metadata->HasKey("Event"))
 	{
 		Console::writeLine("is event");
 	}
@@ -58,9 +57,9 @@ void MethodInfo::LinkParameters()
 		if (paramInfo->rawDefaultValue != nullptr)
 		{
 			String text = paramInfo->rawDefaultValue.get();
-			if (text.contains(_T("::")))
+			if (text.contains("::"))
 			{
-				auto tokens = text.split(_T("::"));
+				auto tokens = text.split("::");
 				TypeInfoPtr dummy;
 				g_database.FindEnumTypeAndValue(tokens[0], tokens[1], &dummy, &paramInfo->defaultValue);
 			}
@@ -163,7 +162,7 @@ String MethodInfo::GetCApiSetOverrideCallbackFuncName()
 
 String MethodInfo::GetCApiSetOverrideCallbackTypeName()
 {
-	return String::format(_T("LN{0}_{1}_OverrideCaller"), owner->name, name);
+	return String::format("LN{0}_{1}_OverrideCaller", owner->name, name);
 }
 
 String MethodInfo::GetAccessLevelName(AccessLevel accessLevel)
@@ -209,18 +208,18 @@ void TypeInfo::MakeProperties()
 			bool isGetter = false;
 			if (methodInfo->name.indexOf(_T("Get")) == 0)
 			{
-				name = methodInfo->name.substring(3);
+				name = methodInfo->name.mid(3);
 				isGetter = true;
 			}
 			if (methodInfo->name.indexOf(_T("Is")) == 0)
 			{
-				name = methodInfo->name.substring(2);
+				name = methodInfo->name.mid(2);
 				namePrefix = _T("Is");
 				isGetter = true;
 			}
 			if (methodInfo->name.indexOf(_T("Set")) == 0)
 			{
-				name = methodInfo->name.substring(3);
+				name = methodInfo->name.mid(3);
 				isGetter = false;
 			}
 
@@ -242,13 +241,13 @@ void TypeInfo::MakeProperties()
 
 			if (isGetter)
 			{
-				LN_DCHECK(propInfo->getter == nullptr);
+				LN_THROW(propInfo->getter == nullptr, InvalidOperationException);
 				propInfo->getter = methodInfo;
 				if (propInfo->type == nullptr) propInfo->type = methodInfo->returnType;
 			}
 			else
 			{
-				LN_DCHECK(propInfo->setter == nullptr);
+				LN_THROW(propInfo->setter == nullptr, InvalidOperationException);
 				propInfo->setter = methodInfo;
 				if (propInfo->type == nullptr) propInfo->type = methodInfo->parameters[0]->type;
 			}
@@ -425,7 +424,7 @@ void SymbolDatabase::FindEnumTypeAndValue(const String& typeName, const String& 
 		}
 	}
 
-	LN_ENSURE(0, "Undefined enum: %s::%s", typeName.c_str(), memberName.c_str());
+	LN_THROW(0, InvalidOperationException, "Undefined enum: %s::%s", typeName.c_str(), memberName.c_str());
 }
 
 ConstantInfoPtr SymbolDatabase::CreateConstantFromLiteralString(const String& valueStr)
@@ -520,9 +519,6 @@ TypeInfoPtr SymbolDatabase::findTypeInfo(StringRef typeName)
 	if (typeName == _T("StringRef")) return PredefinedTypes::stringType;
 	if (typeName == _T("EventConnection")) return PredefinedTypes::EventConnectionType;
 
-	LN_ENSURE(0, _T("Undefined type: %s"), String(typeName).c_str());
+	LN_THROW(0, InvalidOperationException, "Undefined type: %s", typeName.toString().c_str());
 	return nullptr;
 }
-
-#endif
-

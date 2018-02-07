@@ -4,15 +4,6 @@
 #include <unordered_map>
 #include "Common.h"
 
-
-class SymbolDatabase
-{
-public:
-
-};
-
-#if 0
-
 //class Type
 //{
 //	Class		Generic
@@ -100,7 +91,7 @@ public:
 	ConstantInfoPtr		defaultValue;
 
 	String				typeRawName;
-	Nullable<String>	rawDefaultValue;
+	Nullable<StringA>	rawDefaultValue;
 };
 using ParameterInfoPtr = std::shared_ptr<ParameterInfo>;
 
@@ -178,7 +169,7 @@ public:
 	DocumentInfoPtr		document;
 	String				name;
 	TypeInfoPtr			type;
-	//Variant			value;
+	tr::Variant			value;
 
 	String				typeRawName;
 };
@@ -253,4 +244,3 @@ public:
 	TypeInfoPtr findTypeInfo(StringRef typeName);
 };
 
-#endif
