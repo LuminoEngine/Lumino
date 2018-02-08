@@ -9,7 +9,7 @@
 /**
 	@brief	‰¹º‚ÌÄ¶A§Œä‚ðs‚¢‚Ü‚·B
 */
-LN_CLASS()
+LN_CLASS(A, Prop)
 class Sound
 {
 	LN_OBJECT;

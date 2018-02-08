@@ -115,9 +115,8 @@ public:
 		//	return true;
 		//}
 
-
 		// クラス定義の処理
-		//errs() << "CXXRecordDecl : " << aCXXRecordDecl->getNameAsString() << " {\n";
+		errs() << "CXXRecordDecl : " << aCXXRecordDecl->getNameAsString() << " {\n";
 		{
 			//INDENTATION;
 
@@ -161,6 +160,8 @@ public:
 			// メンバーの枚挙処理
 			EnumerateDecl(aCXXRecordDecl);
 		}
+
+		
 		//errs() << indentation << "}\n";
 		//errs() << indentation << "====================================>>>\n";
 		return true;
@@ -210,10 +211,12 @@ public:
 	LocalPPCallbacks(Preprocessor& pp, CompilerInstance* ci)
 		: m_pp(pp)
 		, m_ci(ci)
-	{}
+	{
+	}
 
 	virtual void MacroExpands(const Token &MacroNameTok, const MacroDefinition &MD, SourceRange Range, const MacroArgs *Args) override
 	{
+		auto op = m_ci->getLangOpts();
 		auto stringRef = Lexer::getSourceText(
 			CharSourceRange::getTokenRange(Range),
 			m_ci->getSourceManager(),
@@ -228,12 +231,44 @@ public:
 
 		const MacroInfo* MI = MD.getMacroInfo();
 
-		MI->dump();
+
+		//MI->dump();
+
+		stringRef = Lexer::getSourceText(
+			CharSourceRange::getTokenRange(MI->getDefinitionLoc()),
+			m_ci->getSourceManager(),
+			m_ci->getLangOpts());
+
+		std::string s = MI->getDefinitionLoc().printToString(m_ci->getSourceManager());
+
+		auto s2 = stringRef.str();
 
 		for (unsigned ArgNo = 0U; ArgNo < MI->getNumArgs(); ++ArgNo)
 		{
-			const IdentifierInfo *Arg = *(MI->arg_begin() + ArgNo);
+			const IdentifierInfo *Arg = *(MI->arg_begin() + ArgNo);		// params
 			const Token *ResultArgToks = Args->getUnexpArgument(ArgNo);
+
+			if (ResultArgToks->is(tok::eof))
+			{
+				// マクロを使っている側の実引数の数が少ない。
+				// あるいは #define AAA(...) のような定義で、実引数が省略されている。
+			}
+
+			//auto tokens = Args->getPreExpArgument(ArgNo, MI, m_pp);
+
+
+			s2 = Arg->getName();
+			s2 = ResultArgToks->getName();
+
+			stringRef = Lexer::getSourceText(
+				CharSourceRange::getTokenRange(ResultArgToks->getLocation()),
+				m_ci->getSourceManager(),
+				m_ci->getLangOpts());
+
+			s2 = stringRef.str();
+
+
+			printf("");
 		}
 	}
 
