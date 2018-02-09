@@ -6,6 +6,8 @@
 #define LN_CLASS(...)
 #define LN_METHOD(...)
 
+#include "Include.h"
+
 /**
 	@brief	音声の再生、制御を行います。
 */
@@ -21,10 +23,15 @@ public:
 	*/
 	static SoundPtr create(const Char* filePath);
 
+
 	/**
 		@brief	Sound クラスのインスタンスを作成します。
+		@param[in] a : test1
 	*/
-	static SoundPtr create(Stream* stream, SoundLoadingMode loadingMode);
+	static SoundPtr create(int a);
+
+	/** @copydoc create(int) */
+	static SoundPtr create(Stream* stream, SoundLoadingMode loadingMode);	
 
 public:
 	

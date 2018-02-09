@@ -48,18 +48,154 @@ using namespace llvm;
 using namespace clang;
 using namespace clang::driver;
 using namespace clang::tooling;
+using namespace clang::comments;
 
+#if 0
+class LWIGCommentVisitor : public ConstCommentVisitor<LWIGCommentVisitor>
+{
+public:
+	const CompilerInstance& m_ci;
+
+	LWIGCommentVisitor(const CompilerInstance& ci)
+		: m_ci(ci)
+	{}
+
+	void dumpFullComment(const FullComment *C)
+	{
+		ConstCommentVisitor<LWIGCommentVisitor>::visitFullComment(C);
+		for (Comment::child_iterator I = C->child_begin(), E = C->child_end(); I != E; ++I)
+		{
+			const Comment *Child = *I;
+			visit(Child);
+		}
+
+
+		//if (!C)
+		//	return;
+
+		//FC = C;
+		//dumpComment(C);
+		//FC = nullptr;
+	}
+
+	// Comments.
+	const char *getCommandName(unsigned CommandID)
+	{
+		const CommandTraits *Traits = nullptr;
+
+
+		if (Traits)
+			return Traits->getCommandInfo(CommandID)->Name;
+		const CommandInfo *Info = CommandTraits::getBuiltinCommandInfo(CommandID);
+		if (Info)
+			return Info->Name;
+		return "<not a builtin command>";
+	}
+
+	//void dumpComment(const Comment *C)
+	//{
+	//	dumpChild([=] {
+	//		if (!C) {
+	//			ColorScope Color(*this, NullColor);
+	//			OS << "<<<NULL>>>";
+	//			return;
+	//		}
+
+	//		{
+	//			ColorScope Color(*this, CommentColor);
+	//			OS << C->getCommentKindName();
+	//		}
+	//		dumpPointer(C);
+	//		dumpSourceRange(C->getSourceRange());
+	//		ConstCommentVisitor<ASTDumper>::visit(C);
+	//		for (Comment::child_iterator I = C->child_begin(), E = C->child_end();
+	//			I != E; ++I)
+	//			dumpComment(*I);
+	//	});
+	//}
+
+	// Inline comments.
+	void visitTextComment(const TextComment *C)
+	{
+		LN_LOG_INFO << "visitTextComment";
+	}
+	void visitInlineCommandComment(const InlineCommandComment *C)
+	{
+		LN_LOG_INFO << "visitInlineCommandComment";
+	}
+	void visitHTMLStartTagComment(const HTMLStartTagComment *C)
+	{
+		LN_LOG_INFO << "visitHTMLStartTagComment";
+	}
+	void visitHTMLEndTagComment(const HTMLEndTagComment *C)
+	{
+		LN_LOG_INFO << "visitHTMLEndTagComment";
+	}
+
+	// Block comments.
+	void visitBlockCommandComment(const BlockCommandComment *C)
+	{
+		auto aa = getCommandName(C->getCommandID());
+		LN_LOG_INFO << "visitBlockCommandComment";
+	}
+	void visitParamCommandComment(const ParamCommandComment *C)
+	{
+		auto s = C->getArgText(0);
+		auto ss = s.str();
+		LN_LOG_INFO << "visitParamCommandComment";
+
+	}
+	void visitTParamCommandComment(const TParamCommandComment *C)
+	{
+		LN_LOG_INFO << "visitTParamCommandComment";
+	}
+	void visitVerbatimBlockComment(const VerbatimBlockComment *C)
+	{
+		LN_LOG_INFO << "visitVerbatimBlockComment";
+	}
+	void visitVerbatimBlockLineComment(const VerbatimBlockLineComment *C)
+	{
+		LN_LOG_INFO << "visitVerbatimBlockLineComment";
+	}
+	void visitVerbatimLineComment(const VerbatimLineComment *C)
+	{
+		LN_LOG_INFO << "visitVerbatimLineComment";
+	}
+	void visitParagraphComment(const ParagraphComment* comment)
+	{
+		auto cct = comment->getCommentKindName();
+		comment->dump();
+		//auto aa = getCommandName(comment->getCommandID());
+
+		for (Comment::child_iterator I = comment->child_begin(), E = comment->child_end(); I != E; ++I)
+		{
+			cct = (*I)->getCommentKindName();
+
+			auto stringRef = Lexer::getSourceText(
+				CharSourceRange::getTokenRange((*I)->getLocation()),
+				m_ci.getSourceManager(),
+				m_ci.getLangOpts());
+
+			printf("");
+		}
+
+		LN_LOG_INFO << "visitParagraphComment";
+	}
+};
+#endif
 
 class LWIGVisitor : public DeclVisitor<LWIGVisitor, bool>
 {
 private:
-	const SourceManager& m_sourceManager;
-	::SymbolDatabase* m_db;
+	CompilerInstance * m_ci;
+	const SourceManager& m_sm;
+	::HeaderParser* m_parser;
 
 public:
-	LWIGVisitor(CompilerInstance* CI, ::SymbolDatabase* db)
-		: m_sourceManager(CI->getASTContext().getSourceManager())
-		, m_db(db)
+	LWIGVisitor(CompilerInstance* CI, ::HeaderParser* parser)
+		: m_ci(CI)
+		, m_sm(CI->getASTContext().getSourceManager())
+		, m_parser(parser)
 	{
 	}
 
@@ -78,6 +214,17 @@ public:
 			}
 		}
 		return attrs;
+	}
+
+	static unsigned getOffsetOnRootFile(const SourceManager& sm, SourceLocation loc)
+	{
+		auto ploc = sm.getPresumedLoc(loc);
+		if (ploc.getIncludeLoc().isInvalid())
+		{
+			auto eloc = sm.getDecomposedExpansionLoc(loc);
+			return eloc.second;
+		}
+		return 0;
 	}
 
 	void EnumerateDecl(DeclContext* aDeclContext)
@@ -101,14 +248,52 @@ public:
 
 
 	// class/struct/unionの処理
-	bool VisitCXXRecordDecl(CXXRecordDecl *aCXXRecordDecl/*, bool aForce = false*/)
+	bool VisitCXXRecordDecl(CXXRecordDecl* decl)
 	{
-		// 参照用(class foo;のような宣言)なら追跡しない
-		if (!aCXXRecordDecl->isCompleteDefinition()) {
+		if (!decl->isCompleteDefinition())
+		{
+			// 宣言
 			return true;
 		}
 
-		auto attrs = getAnnotation(aCXXRecordDecl);
+		auto n = decl->getNameAsString();
+
+		if (unsigned offset = getOffsetOnRootFile(m_sm, decl->getLocation()))
+		{
+			auto* attr = m_parser->findUnlinkedAttrMacro(offset);
+
+			attr->linked = true;
+
+
+
+
+			if (const FullComment *Comment = decl->getASTContext().getLocalCommentForDeclUncached(decl))
+			{
+				auto stringRef = Lexer::getSourceText(
+					CharSourceRange::getTokenRange(Comment->getSourceRange()),
+					m_ci->getSourceManager(),
+					m_ci->getLangOpts());
+				auto ss = stringRef.str();
+
+				//LWIGCommentVisitor cv(*m_ci);
+				//cv.dumpFullComment(Comment);
+				//std::cout << "Comment:" << Comment->getCommentKindName() << "\n";
+
+			} 
+		}
+
+
+
+
+
+		//auto attrs = getAnnotation(aCXXRecordDecl);
+
+		//auto op = m_ci->getLangOpts();
+		//auto stringRef = Lexer::getSourceText(
+		//	CharSourceRange::getTokenRange(aCXXRecordDecl->getLocation()),
+		//	m_ci->getSourceManager(),
+		//	m_ci->getLangOpts());
+		//auto ss = stringRef.str();
 
 		//// 名前無しなら表示しない(ただし、強制表示されたら表示する:Elaborated用)
 		//if (!aCXXRecordDecl->getIdentifier() && !aForce) {
@@ -116,49 +301,10 @@ public:
 		//}
 
 		// クラス定義の処理
-		errs() << "CXXRecordDecl : " << aCXXRecordDecl->getNameAsString() << " {\n";
+		//errs() << "CXXRecordDecl : " << aCXXRecordDecl->getNameAsString() << " {\n";
 		{
-			//INDENTATION;
 
-			//// 型の種類
-			//errs() << indentation << "Kind : ";
-			//switch (aCXXRecordDecl->TagDecl::getTagKind()) {
-			//case TTK_Struct:    errs() << "struct\n";       break;
-			//case TTK_Interface: errs() << "__interface\n";  break;
-			//case TTK_Union:     errs() << "union\n";        break;
-			//case TTK_Class:     errs() << "class\n";        break;
-			//case TTK_Enum:      errs() << "enum\n";         break;
-			//default:            errs() << "unknown!!\n";    break;
-			//}
-
-			//// アノテーション(in アトリビュート)
-			//printAnnotation(aCXXRecordDecl, "  Annotation : ", "\n");
-
-			//// 各種特徴フラグ
-			//if (aCXXRecordDecl->isUsed())           errs() << indentation << "  Used\n";
-			//if (aCXXRecordDecl->isReferenced())     errs() << indentation << "  Referenced\n";
-			//if (aCXXRecordDecl->isPolymorphic())    errs() << indentation << "  Polymorphic\n";
-			//if (aCXXRecordDecl->isAbstract())       errs() << indentation << "  Abstract\n";
-			//if (aCXXRecordDecl->isEmpty())          errs() << indentation << "  isEmpty\n";
-			//if (isa<ClassTemplatePartialSpecializationDecl>(aCXXRecordDecl)) {
-			//	errs() << indentation << "  This is a Template-Parcial-Specialization.\n";
-			//}
-			//else if (isa<ClassTemplateSpecializationDecl>(aCXXRecordDecl)) {
-			//	errs() << indentation << "  This is a Template-Specialization.\n";
-			//}
-
-			//// 基底クラスの枚挙処理
-			//for (CXXRecordDecl::base_class_iterator Base = aCXXRecordDecl->bases_begin(), BaseEnd = aCXXRecordDecl->bases_end();
-			//	Base != BaseEnd;
-			//	++Base) {                                          // ↓型名を取り出す(例えば、Policy.Bool=0の時、bool型は"_Bool"となる)
-			//	errs() << indentation << "Base : ";
-			//	printAccessSpec(Base->getAccessSpecifier());
-			//	if (Base->isVirtual()) errs() << "virtual ";
-			//	errs() << Base->getType().getAsString(Policy) << "\n";
-			//}
-
-			// メンバーの枚挙処理
-			EnumerateDecl(aCXXRecordDecl);
+			EnumerateDecl(decl);
 		}
 
 		
@@ -168,9 +314,29 @@ public:
 	}
 
 	// メンバ関数
-	bool VisitCXXMethodDecl(CXXMethodDecl* D)
+	bool VisitCXXMethodDecl(CXXMethodDecl* decl)
 	{
-		auto attrs = getAnnotation(D);
+		if (unsigned offset = getOffsetOnRootFile(m_sm, decl->getLocation()))
+		{
+			auto* attr = m_parser->findUnlinkedAttrMacro(offset);
+			attr->linked = true;
+
+
+			if (const FullComment *Comment = decl->getASTContext().getLocalCommentForDeclUncached(decl))
+			{
+				auto stringRef = Lexer::getSourceText(
+					CharSourceRange::getTokenRange(Comment->getSourceRange()),
+					m_ci->getSourceManager(),
+					m_ci->getLangOpts());
+				auto ss = stringRef.str();
+
+				//LWIGCommentVisitor cv(*m_ci);
+				//cv.dumpFullComment(Comment);
+				//std::cout << "Comment:" << Comment->getCommentKindName() << "\n";
+
+			}
+		}
+
 		return true;
 	}
 
@@ -199,83 +365,91 @@ public:
 	}
 };
 
-//------------------------------------------------------------------------------
-// 以下、決まり文句
-
 // このインタフェースは、プリプロセッサの動作を観察する方法を提供します。
 // https://clang.llvm.org/doxygen/classclang_1_1PPCallbacks.html
 // #XXXX を見つけたときや、マクロ展開が行われたときに呼ばれるコールバックを定義したりする。
+// ★C++のクラスの属性構文は、class キーワードと名前の間に書く。Lumino のは class の前に書くスタイルなので、
+//   clang と属性構文の機能を使うことができない。そのためマクロを自分で解析する。
 class LocalPPCallbacks : public PPCallbacks
 {
 public:
-	LocalPPCallbacks(Preprocessor& pp, CompilerInstance* ci)
+	LocalPPCallbacks(Preprocessor& pp, CompilerInstance* ci, ::HeaderParser* parser)
 		: m_pp(pp)
 		, m_ci(ci)
+		, m_parser(parser)
 	{
 	}
 
-	virtual void MacroExpands(const Token &MacroNameTok, const MacroDefinition &MD, SourceRange Range, const MacroArgs *Args) override
+	virtual void MacroExpands(const Token& MacroNameTok, const MacroDefinition& MD, SourceRange range, const MacroArgs* args) override
 	{
-		auto op = m_ci->getLangOpts();
-		auto stringRef = Lexer::getSourceText(
-			CharSourceRange::getTokenRange(Range),
-			m_ci->getSourceManager(),
-			m_ci->getLangOpts());
+		const SourceManager& sm = m_ci->getSourceManager();
+		const LangOptions& opts = m_ci->getLangOpts();
+		const MacroInfo* macroInfo = MD.getMacroInfo();
 
-
-		// Token の種類の名前を返す。 indentifer など。
-		//auto* name = MacroNameTok.getName();
-		//printf("%s %d\n", stringRef.str().c_str(), Range.getBegin().getRawEncoding());
-		auto loc = Range.getBegin();
-		std::cout << "  " << m_ci->getSourceManager().getFileID(loc).getHashValue() << " " << loc.getRawEncoding() << "\n";
-
-		const MacroInfo* MI = MD.getMacroInfo();
-
-
-		//MI->dump();
-
-		stringRef = Lexer::getSourceText(
-			CharSourceRange::getTokenRange(MI->getDefinitionLoc()),
-			m_ci->getSourceManager(),
-			m_ci->getLangOpts());
-
-		std::string s = MI->getDefinitionLoc().printToString(m_ci->getSourceManager());
-
-		auto s2 = stringRef.str();
-
-		for (unsigned ArgNo = 0U; ArgNo < MI->getNumArgs(); ++ArgNo)
+		// マクロが書かれている場所は input のルートであるか？ (include ファイルは解析したくない)
+		auto ploc = sm.getPresumedLoc(range.getBegin());
+		if (ploc.getIncludeLoc().isInvalid())
 		{
-			const IdentifierInfo *Arg = *(MI->arg_begin() + ArgNo);		// params
-			const Token *ResultArgToks = Args->getUnexpArgument(ArgNo);
-
-			if (ResultArgToks->is(tok::eof))
+			std::string name = Lexer::getSourceText(CharSourceRange::getTokenRange(range.getBegin()), sm, opts).str();
+			if (name == "LN_CLASS" ||
+				name == "LN_METHOD")
 			{
-				// マクロを使っている側の実引数の数が少ない。
-				// あるいは #define AAA(...) のような定義で、実引数が省略されている。
+				::HeaderParser::AttrMacro attrMacro;
+				attrMacro.name = name;
+
+				std::string args = Lexer::getSourceText(CharSourceRange::getTokenRange(range), sm, opts).str();
+				args = args.substr(args.find('(') + 1);
+				args = args.substr(0, args.find(')'));
+				attrMacro.args = args;
+
+				//
+				//for (int iArg = 0; iArg < args->getNumArguments(); iArg++)
+				//{
+				//	auto a = args->getPreExpArgument(iArg, macroInfo, m_pp);
+				//	//const Token* tok = args->getPreExpArgument(iArg);
+				//	//if (tok->is(tok::eof))
+				//	//{
+				//	//	break;
+				//	//}
+
+				//	attrMacro.args.push_back(Lexer::getSourceText(CharSourceRange::getTokenRange(tok->getLocation()), sm, opts));
+				//}
+
+				//int a2 = args->getArgLength();
+
+				//for (int iArg = 0; i < )
+
+				//std::string tokens = 
+
+				//for (int iArg = 0U; iArg < macroInfo->getNumArgs(); iArg++)
+				//{
+				//	const IdentifierInfo* param = *(macroInfo->arg_begin() + iArg);	// params がほしいときはこっち
+				//	const Token* argToks = args->getUnexpArgument(iArg);				// args がほしいときはこっち
+
+				//	if (argToks->is(tok::eof))
+				//	{
+				//		// マクロを使っている側の実引数の数が少ない。
+				//		// あるいは #define AAA(...) のような定義で、実引数が省略されている。
+				//	}
+
+				//	attrMacro.args.push_back(Lexer::getSourceText(CharSourceRange::getTokenRange(argToks->getLocation()), sm, opts));
+				//}
+
+				auto eloc = sm.getDecomposedExpansionLoc(range.getBegin());
+				attrMacro.offset = eloc.second;
+				m_parser->lnAttrMacros.push_back(attrMacro);
 			}
-
-			//auto tokens = Args->getPreExpArgument(ArgNo, MI, m_pp);
-
-
-			s2 = Arg->getName();
-			s2 = ResultArgToks->getName();
-
-			stringRef = Lexer::getSourceText(
-				CharSourceRange::getTokenRange(ResultArgToks->getLocation()),
-				m_ci->getSourceManager(),
-				m_ci->getLangOpts());
-
-			s2 = stringRef.str();
-
-
-			printf("");
 		}
 	}
 
 private:
 	Preprocessor & m_pp;
-	CompilerInstance*	m_ci;
+	CompilerInstance* m_ci;
+	::HeaderParser* m_parser;
 };
+
+//------------------------------------------------------------------------------
+// 以下、決まり文句
 
 // ASTConsumer は、AST のエントリポイントとなる何らかの要素を見つけたときにそれを通知する。
 // 通常は HandleTranslationUnit() だけ実装すればよい。
@@ -288,11 +462,11 @@ private:
 	std::unique_ptr<LWIGVisitor> m_visitor;
 
 public:
-	explicit LocalASTConsumer(CompilerInstance* CI, ::SymbolDatabase* db)
-		: m_visitor(std::make_unique<LWIGVisitor>(CI, db))
+	explicit LocalASTConsumer(CompilerInstance* CI, ::HeaderParser* parser)
+		: m_visitor(std::make_unique<LWIGVisitor>(CI, parser))
 	{
 		Preprocessor &PP = CI->getPreprocessor();
-		PP.addPPCallbacks(llvm::make_unique<LocalPPCallbacks>(PP, CI));
+		PP.addPPCallbacks(llvm::make_unique<LocalPPCallbacks>(PP, CI, parser));
 	}
 
 	virtual void HandleTranslationUnit(ASTContext& Context)
@@ -309,35 +483,35 @@ public:
 class LocalFrontendAction : public ASTFrontendAction
 {
 public:
-	::SymbolDatabase * m_db;
+	::HeaderParser* m_parser;
 
-	LocalFrontendAction(::SymbolDatabase* db)
-		: m_db(db)
+	LocalFrontendAction(::HeaderParser* parser)
+		: m_parser(parser)
 	{}
 
 	virtual std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI, llvm::StringRef file)
 	{
-		return llvm::make_unique<LocalASTConsumer>(&CI, m_db);
+		return llvm::make_unique<LocalASTConsumer>(&CI, m_parser);
 	}
 };
 
 
 // SilClangAnalyzer のポインタを ↑のクラスたちにわたすためのファクトリ
-std::unique_ptr<FrontendActionFactory> NewLocalFrontendActionFactory(::SymbolDatabase* db)
+std::unique_ptr<FrontendActionFactory> NewLocalFrontendActionFactory(::HeaderParser* parser)
 {
 	class SimpleFrontendActionFactory : public FrontendActionFactory
 	{
 	public:
-		::SymbolDatabase * m_db;
+		::HeaderParser* m_parser;
 
-		SimpleFrontendActionFactory(::SymbolDatabase* db)
-			: m_db(db)
+		SimpleFrontendActionFactory(::HeaderParser* parser)
+			: m_parser(parser)
 		{}
 
-		clang::FrontendAction *create() override { return new LocalFrontendAction(m_db); }
+		clang::FrontendAction *create() override { return new LocalFrontendAction(m_parser); }
 	};
 
-	return std::unique_ptr<FrontendActionFactory>(new SimpleFrontendActionFactory(db));
+	return std::unique_ptr<FrontendActionFactory>(new SimpleFrontendActionFactory(parser));
 }
 
 } // namespace
@@ -346,6 +520,9 @@ std::unique_ptr<FrontendActionFactory> NewLocalFrontendActionFactory(::SymbolDat
 
 int HeaderParser::parse(const Path& filePath, ::SymbolDatabase* db)
 {
+	LN_CHECK(db);
+	m_db = db;
+
 	// TODO: Path から直接 toLocalPath
 	std::string localFilePath = filePath.getString().toStdString();
 
@@ -366,7 +543,21 @@ int HeaderParser::parse(const Path& filePath, ::SymbolDatabase* db)
 
 	::clang::tooling::CommonOptionsParser op(argc, argv, ::llvm::cl::GeneralCategory);
 	::clang::tooling::ClangTool Tool(op.getCompilations(), op.getSourcePathList());
-	return Tool.run(local::NewLocalFrontendActionFactory(db).get());
+	return Tool.run(local::NewLocalFrontendActionFactory(this).get());
 }
 
+HeaderParser::AttrMacro* HeaderParser::findUnlinkedAttrMacro(unsigned offset)
+{
+	for (size_t i = 0; lnAttrMacros.size(); i++)
+	{
+		if (!lnAttrMacros[i].linked && lnAttrMacros[i].offset > offset)
+		{
+			if (i == 0)
+				return nullptr;
+			else
+				return &lnAttrMacros[i - 1];
+		}
+	}
+	return nullptr;
+}
 

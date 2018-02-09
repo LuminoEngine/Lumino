@@ -45,7 +45,8 @@ int main()
 	{
 		SymbolDatabase db;
 
-		HeaderParser::parse(files[0], &db);
+		HeaderParser parser;
+		parser.parse(files[0], &db);
 
 		//HeaderParser parser(&g_database);
 		//parser.ParseFiles(files/*, &database*/);
