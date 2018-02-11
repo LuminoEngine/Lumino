@@ -4,6 +4,7 @@
 
 class SymbolDatabase;
 class DocumentInfo;
+class MetadataInfo;
 
 class HeaderParser
 {
@@ -18,6 +19,9 @@ public:
 
 	std::vector<AttrMacro>	lnAttrMacros;		// <ファイル先頭からのオフセット, 属性情報>
 
+
+	void addIncludePath(const Path& path) { m_includePathes.add(path); }
+
 	int parse(const Path& filePath, ::SymbolDatabase* db);
 	AttrMacro* findUnlinkedAttrMacro(unsigned offset);
 
@@ -26,9 +30,11 @@ public:
 
 
 	static Ref<DocumentInfo> parseDocument(const std::string& comment);
-private:
+	static Ref<MetadataInfo> parseMetadata(std::string name, const std::string& args);
 
+private:
 	::SymbolDatabase*	m_db;
+	List<Path>	m_includePathes;
 };
 
 

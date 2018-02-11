@@ -17,9 +17,9 @@ int main()
 {
 	List<Path> files =
 	{
-		L"D:/Proj/LN/LiveDot/External/Lumino/Tools/LWIG/Test.cpp",
+		//L"D:/Proj/Lumino/Tools/LWIG/Test.cpp",
 		//_T(LUMINO_ROOT_DIR"/Bindings/Runtime/include/Common.h"),
-		//LUMINO_ROOT_DIR"/Source/LuminoCore/Include/Lumino/Math/Vector3.h",
+		_T(LUMINO_ROOT_DIR"/Source/LuminoCore/Include/Lumino/Math/Vector3.h"),
 		//LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Engine.h",
 		//_T(LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Audio/Sound.h"),
 		//LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Base/GeometryStructs.h",
@@ -46,7 +46,12 @@ int main()
 		SymbolDatabase db;
 
 		HeaderParser parser;
+		parser.addIncludePath(_T("D:/Proj/Lumino/Source/LuminoCore/Include"));
+		parser.addIncludePath(_T("D:/Proj/Lumino/Source/LuminoEngine/Include"));
+
 		parser.parse(files[0], &db);
+
+		db.Link();
 
 		//HeaderParser parser(&g_database);
 		//parser.ParseFiles(files/*, &database*/);

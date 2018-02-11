@@ -15,7 +15,6 @@ enum class AccessLevel
 	Public,
 	Protected,
 	Private,
-	Internal,
 };
 
 class ParameterDocumentInfo : public RefObject

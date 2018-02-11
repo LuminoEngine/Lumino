@@ -1,14 +1,9 @@
 
 #pragma once
 
-#define LN_OBJECT
-
-#define LN_CLASS(...)
-#define LN_METHOD(...)
 
 #include "Include.h"
 
-class Object {};
 
 /**
 	@brief	‰¹º‚ÌÄ¶A§Œä‚ğs‚¢‚Ü‚·B

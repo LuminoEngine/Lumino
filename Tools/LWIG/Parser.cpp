@@ -192,6 +192,7 @@ private:
 	const SourceManager& m_sm;
 	::HeaderParser* m_parser;
 	//Ref<DocumentInfo> m_lastDocument;
+	::TypeInfo* m_currentRecord;
 
 public:
 	LWIGVisitor(CompilerInstance* CI, ::HeaderParser* parser)
@@ -239,6 +240,22 @@ public:
 		return stringRef.str();
 	}
 
+	::AccessLevel tlanslateAccessLevel(AccessSpecifier ac)
+	{
+		switch (ac)
+		{
+		case clang::AS_public:
+			return ::AccessLevel::Public;
+		case clang::AS_protected:
+			return ::AccessLevel::Protected;
+		case clang::AS_private:
+			return ::AccessLevel::Private;
+		default:
+			LN_UNREACHABLE();
+			return ::AccessLevel::Private;
+		}
+	}
+
 	void EnumerateDecl(DeclContext* aDeclContext)
 	{
 		for (DeclContext::decl_iterator i = aDeclContext->decls_begin(), e = aDeclContext->decls_end(); i != e; i++)
@@ -268,41 +285,22 @@ public:
 			return true;
 		}
 
-
 		if (unsigned offset = getOffsetOnRootFile(m_sm, decl->getLocation()))
 		{
 			auto* attr = m_parser->findUnlinkedAttrMacro(offset);
 			if (attr)
 			{
-
 				attr->linked = true;
-
 
 				auto info = Ref<::TypeInfo>::makeRef();
 				info->name = String::fromStdString(decl->getNameAsString());
 
 				// documentation
-				Ref<DocumentInfo> doc;
 				if (const FullComment *Comment = decl->getASTContext().getLocalCommentForDeclUncached(decl))
-				{
 					info->document = HeaderParser::parseDocument(getSourceText(Comment->getSourceRange()));
-				}
 
 				// metadata
-				auto metadata = Ref<MetadataInfo>::makeRef();
-				auto args = String::fromStdString(attr->args).split(_T(","), StringSplitOptions::RemoveEmptyEntries);
-				for (auto& arg : args)
-				{
-					String key, value;
-					auto tokens = String::fromStdString(attr->args).split(_T("="), StringSplitOptions::RemoveEmptyEntries);
-					key = tokens[0].trim();
-					if (tokens.getCount() >= 2)
-					{
-						value = tokens[1].trim();
-					}
-					metadata->AddValue(String(key), String(value));
-				}
-				info->metadata = metadata;
+				info->metadata = HeaderParser::parseMetadata(attr->name, attr->args);
 
 				// base classes
 				auto bases = decl->getDefinition()->bases();
@@ -312,41 +310,24 @@ public:
 					info->baseClassRawName = String::fromStdString(cxx->getNameAsString());
 				}
 
+				if (decl->getDefinition()->isStruct())
+				{
+					info->isStruct = true;
+					m_parser->getDB()->structs.add(info);
+				}
+				else
+				{
+					m_parser->getDB()->classes.add(info);
+				}
 
-				//info->metadata = MoveLastMetadata();
-				//if (!classHeader.baseClassNames.isEmpty()) info->baseClassRawName = String(classHeader.baseClassNames[0].name);
-				m_parser->getDB()->classes.add(info);
+
+
+				m_currentRecord = info;
+				EnumerateDecl(decl);
+				m_currentRecord = nullptr;
 			}
 		}
 
-
-
-
-
-		//auto attrs = getAnnotation(aCXXRecordDecl);
-
-		//auto op = m_ci->getLangOpts();
-		//auto stringRef = Lexer::getSourceText(
-		//	CharSourceRange::getTokenRange(aCXXRecordDecl->getLocation()),
-		//	m_ci->getSourceManager(),
-		//	m_ci->getLangOpts());
-		//auto ss = stringRef.str();
-
-		//// 名前無しなら表示しない(ただし、強制表示されたら表示する:Elaborated用)
-		//if (!aCXXRecordDecl->getIdentifier() && !aForce) {
-		//	return true;
-		//}
-
-		// クラス定義の処理
-		//errs() << "CXXRecordDecl : " << aCXXRecordDecl->getNameAsString() << " {\n";
-		{
-
-			EnumerateDecl(decl);
-		}
-
-		
-		//errs() << indentation << "}\n";
-		//errs() << indentation << "====================================>>>\n";
 		return true;
 	}
 
@@ -356,21 +337,23 @@ public:
 		if (unsigned offset = getOffsetOnRootFile(m_sm, decl->getLocation()))
 		{
 			auto* attr = m_parser->findUnlinkedAttrMacro(offset);
-			attr->linked = true;
-
-
-			if (const FullComment *Comment = decl->getASTContext().getLocalCommentForDeclUncached(decl))
+			if (attr)
 			{
-				auto stringRef = Lexer::getSourceText(
-					CharSourceRange::getTokenRange(Comment->getSourceRange()),
-					m_ci->getSourceManager(),
-					m_ci->getLangOpts());
-				auto ss = stringRef.str();
+				attr->linked = true;
 
-				//LWIGCommentVisitor cv(*m_ci);
-				//cv.dumpFullComment(Comment);
-				//std::cout << "Comment:" << Comment->getCommentKindName() << "\n";
+				auto info = Ref<MethodInfo>::makeRef();
+				info->owner = m_currentRecord;
+				info->name = String::fromStdString(decl->getNameAsString());
+				info->accessLevel = tlanslateAccessLevel(decl->getAccess());
 
+				// documentation
+				if (const FullComment *Comment = decl->getASTContext().getLocalCommentForDeclUncached(decl))
+					info->document = HeaderParser::parseDocument(getSourceText(Comment->getSourceRange()));
+
+				// metadata
+				info->metadata = HeaderParser::parseMetadata(attr->name, attr->args);
+
+				info->owner->declaredMethods.add(info);
 			}
 		}
 
@@ -390,8 +373,9 @@ public:
 	}
 
 	// namespace
-	bool VisitNamespaceDecl(NamespaceDecl *aNamespaceDecl)
+	bool VisitNamespaceDecl(NamespaceDecl* decl)
 	{
+		EnumerateDecl(decl);
 		return true;
 	}
 
@@ -429,6 +413,7 @@ public:
 		{
 			std::string name = Lexer::getSourceText(CharSourceRange::getTokenRange(range.getBegin()), sm, opts).str();
 			if (name == "LN_CLASS" ||
+				name == "LN_STRUCT" ||
 				name == "LN_METHOD")
 			{
 				::HeaderParser::AttrMacro attrMacro;
@@ -560,39 +545,71 @@ int HeaderParser::parse(const Path& filePath, ::SymbolDatabase* db)
 	LN_CHECK(db);
 	m_db = db;
 
+
+	Path tempFilePath(filePath.getString() + _T(".cpp"));
+	FileSystem::copyFile(filePath, tempFilePath, true);
+
+
+
 	// TODO: Path から直接 toLocalPath
-	std::string localFilePath = filePath.getString().toStdString();
+	std::string localFilePath = tempFilePath.getString().toStdString();
 
-	const char* argv[] =
+	std::vector<std::string> args;
+	args.push_back("");	// program name
+	args.push_back(localFilePath.c_str());
+	args.push_back("--");
+
+	for (auto& path : m_includePathes)
 	{
-		"",	// program name
-		localFilePath.c_str(),
-		"--",
-		//"-I", "C:/Proj/LN/Lumino/Source/LuminoCore/Include",
-		//"-I", "C:/Proj/LN/Lumino/Source/LuminoEngine/Include",
-		"-D", "LN_NAMESPACE_BEGIN",
-		"-D", "LN_NAMESPACE_END",
-		"-fms-compatibility",		// Enable full Microsoft Visual C++ compatibility
-		"-fms-extensions",			// Enable full Microsoft Visual C++ compatibility
-		"-fmsc-version=1900",		// Microsoft compiler version number to report in _MSC_VER (0 = don't define it (default))
-	};
-	int argc = sizeof(argv) / sizeof(const char*);
+		args.push_back("-I");
+		args.push_back(path.getString().toStdString());
+	}
 
-	::clang::tooling::CommonOptionsParser op(argc, argv, ::llvm::cl::GeneralCategory);
+	args.push_back("-fsyntax-only");
+	args.push_back("-fms-compatibility");		// Enable full Microsoft Visual C++ compatibility
+	args.push_back("-fms-extensions");			// Enable full Microsoft Visual C++ compatibility
+	args.push_back("-fmsc-version=1900");		// Microsoft compiler version number to report in _MSC_VER (0 = don't define it (default))
+
+	//const char* argv[] =
+	//{
+	//	"",	
+	//	localFilePath.c_str(),
+	//	"--",
+	//	//"-I", "C:/Proj/LN/Lumino/Source/LuminoCore/Include",
+	//	//"-I", "C:/Proj/LN/Lumino/Source/LuminoEngine/Include",
+	//	"-D", "LN_NAMESPACE_BEGIN",
+	//	"-D", "LN_NAMESPACE_END",
+	//	"-fms-compatibility",
+	//	"-fms-extensions",
+	//	"-fmsc-version=1900",
+	//};
+	std::vector<const char*> argv;
+	for (auto& arg : args)
+	{
+		argv.push_back(arg.c_str());
+	}
+	int argc = argv.size();
+
+	::clang::tooling::CommonOptionsParser op(argc, argv.data(), ::llvm::cl::GeneralCategory);
 	::clang::tooling::ClangTool Tool(op.getCompilations(), op.getSourcePathList());
-	return Tool.run(local::NewLocalFrontendActionFactory(this).get());
+	int result = Tool.run(local::NewLocalFrontendActionFactory(this).get());
+
+	FileSystem::deleteFile(tempFilePath);
+	return result;
 }
 
 HeaderParser::AttrMacro* HeaderParser::findUnlinkedAttrMacro(unsigned offset)
 {
-	for (size_t i = 0; lnAttrMacros.size(); i++)
+	for (size_t i = 0; i < lnAttrMacros.size(); i++)
 	{
-		if (!lnAttrMacros[i].linked && lnAttrMacros[i].offset > offset)
+		if (!lnAttrMacros[i].linked)
 		{
-			if (i == 0)
-				return nullptr;
-			else
-				return &lnAttrMacros[i - 1];
+			unsigned o1 = lnAttrMacros[i].offset;
+			unsigned o2 = (i < lnAttrMacros.size() - 1) ? lnAttrMacros[i + 1].offset : UINT32_MAX;
+			if (o1 <= offset && offset < o2)
+			{
+				return &lnAttrMacros[i];
+			}
 		}
 	}
 	return nullptr;
@@ -603,7 +620,7 @@ Ref<DocumentInfo> HeaderParser::parseDocument(const std::string& comment)
 	auto info = Ref<DocumentInfo>::makeRef();
 
 
-	String doc = String::fromStdString(comment);
+	String doc = String::fromStdString(comment, Encoding::getUTF8Encoding());
 
 	// 改行コード統一し、コメント開始終了を削除する
 	doc = doc
@@ -668,4 +685,23 @@ Ref<DocumentInfo> HeaderParser::parseDocument(const std::string& comment)
 	}
 
 	return info;
+}
+
+Ref<MetadataInfo> HeaderParser::parseMetadata(std::string name, const std::string& args)
+{
+	auto metadata = Ref<MetadataInfo>::makeRef();
+	metadata->name = String::fromStdString(name);
+	auto argEntries = String::fromStdString(args).split(_T(","), StringSplitOptions::RemoveEmptyEntries);
+	for (auto& arg : argEntries)
+	{
+		String key, value;
+		auto tokens = arg.split(_T("="), StringSplitOptions::RemoveEmptyEntries);
+		key = tokens[0].trim();
+		if (tokens.getCount() >= 2)
+		{
+			value = tokens[1].trim();
+		}
+		metadata->AddValue(String(key), String(value));
+	}
+	return metadata;
 }

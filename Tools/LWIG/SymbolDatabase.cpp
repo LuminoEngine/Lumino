@@ -176,8 +176,11 @@ String MethodInfo::GetAccessLevelName(AccessLevel accessLevel)
 		return "protected";
 	case AccessLevel::Private:
 		return "private";
-	case AccessLevel::Internal:
-		return "internal";
+	//case AccessLevel::Internal:
+	//	return "internal";
+	default:
+		LN_UNREACHABLE();
+		break;
 	}
 	return "";
 }
