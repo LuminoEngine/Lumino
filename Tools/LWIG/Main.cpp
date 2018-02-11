@@ -17,7 +17,7 @@ int main()
 {
 	List<Path> files =
 	{
-		L"C:/Proj/LN/Lumino/Tools/LWIG/Test.cpp",
+		L"D:/Proj/LN/LiveDot/External/Lumino/Tools/LWIG/Test.cpp",
 		//_T(LUMINO_ROOT_DIR"/Bindings/Runtime/include/Common.h"),
 		//LUMINO_ROOT_DIR"/Source/LuminoCore/Include/Lumino/Math/Vector3.h",
 		//LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Engine.h",

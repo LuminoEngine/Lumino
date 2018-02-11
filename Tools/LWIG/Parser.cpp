@@ -1,4 +1,5 @@
 #include <memory>
+#include "SymbolDatabase.h"
 #include "Parser.h"
 
 
@@ -190,6 +191,7 @@ private:
 	CompilerInstance * m_ci;
 	const SourceManager& m_sm;
 	::HeaderParser* m_parser;
+	//Ref<DocumentInfo> m_lastDocument;
 
 public:
 	LWIGVisitor(CompilerInstance* CI, ::HeaderParser* parser)
@@ -227,6 +229,16 @@ public:
 		return 0;
 	}
 
+
+	std::string getSourceText(SourceRange range) const
+	{
+		auto stringRef = Lexer::getSourceText(
+			CharSourceRange::getTokenRange(range),
+			m_ci->getSourceManager(),
+			m_ci->getLangOpts());
+		return stringRef.str();
+	}
+
 	void EnumerateDecl(DeclContext* aDeclContext)
 	{
 		for (DeclContext::decl_iterator i = aDeclContext->decls_begin(), e = aDeclContext->decls_end(); i != e; i++)
@@ -256,30 +268,55 @@ public:
 			return true;
 		}
 
-		auto n = decl->getNameAsString();
 
 		if (unsigned offset = getOffsetOnRootFile(m_sm, decl->getLocation()))
 		{
 			auto* attr = m_parser->findUnlinkedAttrMacro(offset);
-
-			attr->linked = true;
-
-
-
-
-			if (const FullComment *Comment = decl->getASTContext().getLocalCommentForDeclUncached(decl))
+			if (attr)
 			{
-				auto stringRef = Lexer::getSourceText(
-					CharSourceRange::getTokenRange(Comment->getSourceRange()),
-					m_ci->getSourceManager(),
-					m_ci->getLangOpts());
-				auto ss = stringRef.str();
 
-				//LWIGCommentVisitor cv(*m_ci);
-				//cv.dumpFullComment(Comment);
-				//std::cout << "Comment:" << Comment->getCommentKindName() << "\n";
+				attr->linked = true;
 
-			} 
+
+				auto info = Ref<::TypeInfo>::makeRef();
+				info->name = String::fromStdString(decl->getNameAsString());
+
+				// documentation
+				Ref<DocumentInfo> doc;
+				if (const FullComment *Comment = decl->getASTContext().getLocalCommentForDeclUncached(decl))
+				{
+					info->document = HeaderParser::parseDocument(getSourceText(Comment->getSourceRange()));
+				}
+
+				// metadata
+				auto metadata = Ref<MetadataInfo>::makeRef();
+				auto args = String::fromStdString(attr->args).split(_T(","), StringSplitOptions::RemoveEmptyEntries);
+				for (auto& arg : args)
+				{
+					String key, value;
+					auto tokens = String::fromStdString(attr->args).split(_T("="), StringSplitOptions::RemoveEmptyEntries);
+					key = tokens[0].trim();
+					if (tokens.getCount() >= 2)
+					{
+						value = tokens[1].trim();
+					}
+					metadata->AddValue(String(key), String(value));
+				}
+				info->metadata = metadata;
+
+				// base classes
+				auto bases = decl->getDefinition()->bases();
+				for (auto& base : bases)
+				{
+					auto cxx = base.getType()->getAsCXXRecordDecl();
+					info->baseClassRawName = String::fromStdString(cxx->getNameAsString());
+				}
+
+
+				//info->metadata = MoveLastMetadata();
+				//if (!classHeader.baseClassNames.isEmpty()) info->baseClassRawName = String(classHeader.baseClassNames[0].name);
+				m_parser->getDB()->classes.add(info);
+			}
 		}
 
 
@@ -561,3 +598,74 @@ HeaderParser::AttrMacro* HeaderParser::findUnlinkedAttrMacro(unsigned offset)
 	return nullptr;
 }
 
+Ref<DocumentInfo> HeaderParser::parseDocument(const std::string& comment)
+{
+	auto info = Ref<DocumentInfo>::makeRef();
+
+
+	String doc = String::fromStdString(comment);
+
+	// 改行コード統一し、コメント開始終了を削除する
+	doc = doc
+		.replace(_T("\r\n"), _T("\n"))
+		.replace(_T("\r"), _T("\n"))
+		.replace(_T("/**"), _T(""))
+		.replace(_T("*/"), _T(""));
+
+
+	List<String> lines = doc.split(_T("\n"));
+	String* target = &info->summary;
+	for (String line : lines)
+	{
+		line = line.trim();
+
+		MatchResult result;
+		if (Regex::search(line, _T("@(\\w+)"), &result))
+		{
+			if (result[1] == _T("brief"))
+			{
+				target = &info->summary;
+				line = line.substring(result.getLength());
+			}
+			else if (result[1] == _T("param"))
+			{
+				String con = line.substring(result.getLength());
+				if (Regex::search(con, _T(R"(\[(\w+)\]\s+(\w+)\s*\:\s*)"), &result))
+				{
+					auto paramInfo = Ref<ParameterDocumentInfo>::makeRef();
+					info->params.add(paramInfo);
+					paramInfo->io = result[1];
+					paramInfo->name = result[2];
+					target = &paramInfo->description;
+					line = con.substring(result.getLength());
+				}
+			}
+			else if (result[1] == _T("return"))
+			{
+				target = &info->returns;
+				line = line.substring(result.getLength());
+			}
+			else if (result[1] == _T("details"))
+			{
+				target = &info->details;
+				line = line.substring(result.getLength());
+			}
+			else if (result[1] == _T("copydoc"))
+			{
+				String con = line.substring(result.getLength());
+				if (Regex::search(con, _T(R"((\w+)(.*))"), &result))
+				{
+					info->copydocMethodName = result[1];
+					info->copydocSignature = result[2];
+					info->copydocSignature = info->copydocSignature.remove('(').remove(')').remove(' ').remove('\t');
+					target = &info->details;
+					line.clear();
+				}
+			}
+		}
+
+		(*target) += line.trim();
+	}
+
+	return info;
+}

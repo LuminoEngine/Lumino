@@ -1,6 +1,7 @@
 
-set(CLANG_DIR C:/Proj/Tech/llvm/1_Package_5.0.0/Debug/lib/cmake/clang)
-set(LLVM_DIR C:/Proj/Tech/llvm/1_Package_5.0.0/Debug/lib/cmake/llvm)
+set(LWIG_LLVM_PACKAGE_DIR D:/Proj/Tech/llvm/1_Package_release_60/Debug)
+set(CLANG_DIR ${LWIG_LLVM_PACKAGE_DIR}/lib/cmake/clang)
+set(LLVM_DIR ${LWIG_LLVM_PACKAGE_DIR}/lib/cmake/llvm)
 find_package(CLANG REQUIRED CONFIG)
 find_package(LLVM REQUIRED CONFIG)
 
@@ -18,7 +19,7 @@ set(LN_SOURCES
 source_group("Source"	FILES ${LN_SOURCES})
 
 include_directories(
-	"C:/Proj/Tech/llvm/1_Package_5.0.0/Debug/include"
+	"${LWIG_LLVM_PACKAGE_DIR}/include"
 	"${PROJECT_SOURCE_DIR}/Source/LuminoCore/Include"
 	"${PROJECT_SOURCE_DIR}/Source/Fluorite/Include"
 )

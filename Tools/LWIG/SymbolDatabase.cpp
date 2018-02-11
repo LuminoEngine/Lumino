@@ -1,17 +1,16 @@
 ﻿
 #include "SymbolDatabase.h"
 
-#if 0
 
-TypeInfoPtr	PredefinedTypes::voidType;
-TypeInfoPtr	PredefinedTypes::nullptrType;
-TypeInfoPtr	PredefinedTypes::boolType;
-TypeInfoPtr	PredefinedTypes::intType;
-TypeInfoPtr	PredefinedTypes::uint32Type;
-TypeInfoPtr	PredefinedTypes::floatType;
-TypeInfoPtr	PredefinedTypes::stringType;
-TypeInfoPtr	PredefinedTypes::objectType;
-TypeInfoPtr	PredefinedTypes::EventConnectionType;
+Ref<TypeInfo>	PredefinedTypes::voidType;
+Ref<TypeInfo>	PredefinedTypes::nullptrType;
+Ref<TypeInfo>	PredefinedTypes::boolType;
+Ref<TypeInfo>	PredefinedTypes::intType;
+Ref<TypeInfo>	PredefinedTypes::uint32Type;
+Ref<TypeInfo>	PredefinedTypes::floatType;
+Ref<TypeInfo>	PredefinedTypes::stringType;
+Ref<TypeInfo>	PredefinedTypes::objectType;
+Ref<TypeInfo>	PredefinedTypes::EventConnectionType;
 
 //==============================================================================
 // MetadataInfo
@@ -37,7 +36,7 @@ bool MetadataInfo::HasKey(const StringRef& key)
 //==============================================================================
 // MethodInfo
 //==============================================================================
-void MethodInfo::LinkParameters()
+void MethodInfo::LinkParameters(SymbolDatabase* db)
 {
 	if (metadata->HasKey(_T("Event")))
 	{
@@ -46,7 +45,7 @@ void MethodInfo::LinkParameters()
 
 	for (auto& paramInfo : parameters)
 	{
-		paramInfo->type = g_database.findTypeInfo(paramInfo->typeRawName);
+		paramInfo->type = db->findTypeInfo(paramInfo->typeRawName);
 
 		// 今のところ、Class 型の 出力変数は許可しない
 		if (paramInfo->isOut && paramInfo->type->IsClass())
@@ -61,18 +60,19 @@ void MethodInfo::LinkParameters()
 			if (text.contains(_T("::")))
 			{
 				auto tokens = text.split(_T("::"));
-				TypeInfoPtr dummy;
-				g_database.FindEnumTypeAndValue(tokens[0], tokens[1], &dummy, &paramInfo->defaultValue);
+				Ref<TypeInfo> dummy;
+				db->FindEnumTypeAndValue(tokens[0], tokens[1], &dummy, &paramInfo->defaultValue);
 			}
 			else
 			{
-				paramInfo->defaultValue = g_database.CreateConstantFromLiteralString(text);
+				paramInfo->defaultValue = db->CreateConstantFromLiteralString(text);
 			}
 		}
 	}
 }
 
-void MethodInfo::ExpandCAPIParameters()
+// capiParameters を構築する
+void MethodInfo::ExpandCAPIParameters(SymbolDatabase* db)
 {
 	// 第1引数
 	{
@@ -80,9 +80,9 @@ void MethodInfo::ExpandCAPIParameters()
 		{
 			if (owner->isStruct)
 			{
-				auto info = std::make_shared<ParameterInfo>();
+				auto info = Ref<ParameterInfo>::makeRef();
 				info->name = owner->name.toLower();
-				info->type = g_database.findTypeInfo(owner->name);
+				info->type = db->findTypeInfo(owner->name);
 				info->isThis = true;
 				capiParameters.add(info);
 			}
@@ -91,7 +91,7 @@ void MethodInfo::ExpandCAPIParameters()
 			}
 			else if (owner->isDelegate)
 			{
-				auto info = std::make_shared<ParameterInfo>();
+				auto info = Ref<ParameterInfo>::makeRef();
 				info->name = _T("sender");
 				info->type = PredefinedTypes::objectType;
 				info->isThis = true;
@@ -99,9 +99,9 @@ void MethodInfo::ExpandCAPIParameters()
 			}
 			else
 			{
-				auto info = std::make_shared<ParameterInfo>();
+				auto info = Ref<ParameterInfo>::makeRef();
 				info->name = owner->name.toLower();
-				info->type = g_database.findTypeInfo(owner->name);
+				info->type = db->findTypeInfo(owner->name);
 				info->isThis = true;
 				capiParameters.add(info);
 			}
@@ -122,7 +122,7 @@ void MethodInfo::ExpandCAPIParameters()
 	}
 	else
 	{
-		auto info = std::make_shared<ParameterInfo>();
+		auto info = Ref<ParameterInfo>::makeRef();
 		info->name = "outReturn";
 		info->type = returnType;
 		info->isIn = false;
@@ -139,9 +139,9 @@ void MethodInfo::ExpandCAPIParameters()
 		}
 		else
 		{
-			auto info = std::make_shared<ParameterInfo>();
+			auto info = Ref<ParameterInfo>::makeRef();
 			info->name = String::format(_T("out{0}"), owner->name);
-			info->type = g_database.findTypeInfo(owner->name);
+			info->type = db->findTypeInfo(owner->name);
 			info->isReturn = true;
 			capiParameters.add(info);
 		}
@@ -185,7 +185,7 @@ String MethodInfo::GetAccessLevelName(AccessLevel accessLevel)
 //==============================================================================
 // TypeInfo
 //==============================================================================
-void TypeInfo::Link()
+void TypeInfo::Link(SymbolDatabase* db)
 {
 	MakeProperties();
 	LinkOverload();
@@ -194,7 +194,7 @@ void TypeInfo::Link()
 	// find base class
 	if (!baseClassRawName.isEmpty())
 	{
-		baseClass = g_database.findTypeInfo(baseClassRawName);
+		baseClass = db->findTypeInfo(baseClassRawName);
 	}
 }
 
@@ -224,12 +224,12 @@ void TypeInfo::MakeProperties()
 				isGetter = false;
 			}
 
-			PropertyInfoPtr propInfo;
+			Ref<PropertyInfo> propInfo;
 			{
-				auto* ptr = declaredProperties.find([name](PropertyInfoPtr info) {return info->name == name; });
+				auto* ptr = declaredProperties.find([name](Ref<PropertyInfo> info) {return info->name == name; });
 				if (ptr == nullptr)
 				{
-					propInfo = std::make_shared<PropertyInfo>();
+					propInfo = Ref<PropertyInfo>::makeRef();
 					propInfo->name = name;
 					declaredProperties.add(propInfo);
 				}
@@ -310,7 +310,7 @@ void TypeInfo::ResolveCopyDoc()
 //==============================================================================
 void PropertyInfo::MakeDocument()
 {
-	document = std::make_shared<DocumentInfo>();
+	document = Ref<DocumentInfo>::makeRef();
 
 	if (getter != nullptr)
 	{
@@ -345,11 +345,11 @@ void SymbolDatabase::Link()
 		{
 			methodInfo->returnType = findTypeInfo(methodInfo->returnTypeRawName);
 
-			methodInfo->LinkParameters();
-			methodInfo->ExpandCAPIParameters();
+			methodInfo->LinkParameters(this);
+			methodInfo->ExpandCAPIParameters(this);
 		}
 
-		structInfo->Link();
+		structInfo->Link(this);
 	}
 
 	// classes
@@ -359,11 +359,11 @@ void SymbolDatabase::Link()
 		{
 			methodInfo->returnType = findTypeInfo(methodInfo->returnTypeRawName);
 
-			methodInfo->LinkParameters();
-			methodInfo->ExpandCAPIParameters();
+			methodInfo->LinkParameters(this);
+			methodInfo->ExpandCAPIParameters(this);
 		}
 
-		classInfo->Link();
+		classInfo->Link(this);
 	}
 
 	// enums
@@ -382,17 +382,17 @@ void SymbolDatabase::Link()
 		{
 			methodInfo->returnType = findTypeInfo(methodInfo->returnTypeRawName);
 
-			methodInfo->LinkParameters();
-			methodInfo->ExpandCAPIParameters();
+			methodInfo->LinkParameters(this);
+			methodInfo->ExpandCAPIParameters(this);
 		}
 
-		classInfo->Link();
+		classInfo->Link(this);
 	}
 }
 
-tr::Enumerator<MethodInfoPtr> SymbolDatabase::GetAllMethods()
+tr::Enumerator<Ref<MethodInfo>> SymbolDatabase::GetAllMethods()
 {
-	List<MethodInfoPtr> dummy;
+	List<Ref<MethodInfo>> dummy;
 	auto e = tr::MakeEnumerator::from(dummy);
 
 	for (auto& structInfo : structs)
@@ -407,7 +407,7 @@ tr::Enumerator<MethodInfoPtr> SymbolDatabase::GetAllMethods()
 	return e;
 }
 
-void SymbolDatabase::FindEnumTypeAndValue(const String& typeName, const String& memberName, TypeInfoPtr* outEnum, ConstantInfoPtr* outMember)
+void SymbolDatabase::FindEnumTypeAndValue(const String& typeName, const String& memberName, Ref<TypeInfo>* outEnum, Ref<ConstantInfo>* outMember)
 {
 	for (auto& enumInfo : enums)
 	{
@@ -428,9 +428,9 @@ void SymbolDatabase::FindEnumTypeAndValue(const String& typeName, const String& 
 	LN_ENSURE(0, "Undefined enum: %s::%s", typeName.c_str(), memberName.c_str());
 }
 
-ConstantInfoPtr SymbolDatabase::CreateConstantFromLiteralString(const String& valueStr)
+Ref<ConstantInfo> SymbolDatabase::CreateConstantFromLiteralString(const String& valueStr)
 {
-	auto info = std::make_shared<ConstantInfo>();
+	auto info = Ref<ConstantInfo>::makeRef();
 	if (valueStr == "true")
 	{
 		info->type = PredefinedTypes::boolType;
@@ -462,58 +462,58 @@ ConstantInfoPtr SymbolDatabase::CreateConstantFromLiteralString(const String& va
 
 void SymbolDatabase::InitializePredefineds()
 {
-	predefineds.add(std::make_shared<TypeInfo>(_T("void")));
+	predefineds.add(Ref<TypeInfo>::makeRef(_T("void")));
 	predefineds.getLast()->isVoid = true;
 	PredefinedTypes::voidType = predefineds.getLast();
 
-	predefineds.add(std::make_shared<TypeInfo>(_T("nullptr")));
+	predefineds.add(Ref<TypeInfo>::makeRef(_T("nullptr")));
 	predefineds.getLast()->isVoid = true;
 	PredefinedTypes::nullptrType = predefineds.getLast();
 
-	predefineds.add(std::make_shared<TypeInfo>(_T("bool")));
+	predefineds.add(Ref<TypeInfo>::makeRef(_T("bool")));
 	predefineds.getLast()->isPrimitive = true;
 	PredefinedTypes::boolType = predefineds.getLast();
 
-	predefineds.add(std::make_shared<TypeInfo>(_T("int")));
+	predefineds.add(Ref<TypeInfo>::makeRef(_T("int")));
 	predefineds.getLast()->isPrimitive = true;
 	PredefinedTypes::intType = predefineds.getLast();
 
-	predefineds.add(std::make_shared<TypeInfo>(_T("uint32_t")));
+	predefineds.add(Ref<TypeInfo>::makeRef(_T("uint32_t")));
 	predefineds.getLast()->isPrimitive = true;
 	PredefinedTypes::uint32Type = predefineds.getLast();
 
-	predefineds.add(std::make_shared<TypeInfo>(_T("float")));
+	predefineds.add(Ref<TypeInfo>::makeRef(_T("float")));
 	predefineds.getLast()->isPrimitive = true;
 	PredefinedTypes::floatType = predefineds.getLast();
 
-	predefineds.add(std::make_shared<TypeInfo>(_T("String")));
+	predefineds.add(Ref<TypeInfo>::makeRef(_T("String")));
 	predefineds.getLast()->isPrimitive = true;
 	PredefinedTypes::stringType = predefineds.getLast();
 
-	predefineds.add(std::make_shared<TypeInfo>(_T("Object")));
+	predefineds.add(Ref<TypeInfo>::makeRef(_T("Object")));
 	PredefinedTypes::objectType = predefineds.getLast();
 
-	predefineds.add(std::make_shared<TypeInfo>(_T("EventConnection")));
+	predefineds.add(Ref<TypeInfo>::makeRef(_T("EventConnection")));
 	PredefinedTypes::EventConnectionType = predefineds.getLast();
 }
 
-TypeInfoPtr SymbolDatabase::findTypeInfo(StringRef typeName)
+Ref<TypeInfo> SymbolDatabase::findTypeInfo(StringRef typeName)
 {
-	TypeInfoPtr* type;
+	Ref<TypeInfo>* type;
 	
-	type = predefineds.find([typeName](TypeInfoPtr type) { return type->name == typeName; });
+	type = predefineds.find([typeName](Ref<TypeInfo> type) { return type->name == typeName; });
 	if (type != nullptr) return *type;
 
-	type = structs.find([typeName](TypeInfoPtr type) { return type->name == typeName; });
+	type = structs.find([typeName](Ref<TypeInfo> type) { return type->name == typeName; });
 	if (type != nullptr) return *type;
 
-	type = classes.find([typeName](TypeInfoPtr type) { return type->name == typeName; });
+	type = classes.find([typeName](Ref<TypeInfo> type) { return type->name == typeName; });
 	if (type != nullptr) return *type;
 
-	type = enums.find([typeName](TypeInfoPtr type) { return type->name == typeName; });
+	type = enums.find([typeName](Ref<TypeInfo> type) { return type->name == typeName; });
 	if (type != nullptr) return *type;
 
-	type = delegates.find([typeName](TypeInfoPtr type) { return type->name == typeName; });
+	type = delegates.find([typeName](Ref<TypeInfo> type) { return type->name == typeName; });
 	if (type != nullptr)
 		return *type;
 
@@ -524,5 +524,4 @@ TypeInfoPtr SymbolDatabase::findTypeInfo(StringRef typeName)
 	return nullptr;
 }
 
-#endif
 

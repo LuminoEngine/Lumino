@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include "Common.h"
 
+class SymbolDatabase;
 class TypeInfo;
 class ConstantInfo;
 class DocumentInfo;
@@ -110,8 +111,8 @@ public:
 	bool IsRuntimeInitializer() const { return metadata->HasKey(_T("RuntimeInitializer")); }
 	bool IsEventSetter() const { return metadata->HasKey(_T("Event")); }
 
-	void LinkParameters();
-	void ExpandCAPIParameters();
+	void LinkParameters(SymbolDatabase* db);
+	void ExpandCAPIParameters(SymbolDatabase* db);
 	String GetCAPIFuncName();
 	String GetCApiSetOverrideCallbackFuncName();
 	String GetCApiSetOverrideCallbackTypeName();
@@ -171,7 +172,7 @@ public:
 	bool isStatic() const { return metadata->HasKey(_T("Static")); }
 	bool IsClass() const { return !isValueType() && !isVoid; }
 
-	void Link();
+	void Link(SymbolDatabase* db);
 
 private:
 	void MakeProperties();

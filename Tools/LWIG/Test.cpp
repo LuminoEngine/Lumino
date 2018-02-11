@@ -8,11 +8,14 @@
 
 #include "Include.h"
 
+class Object {};
+
 /**
 	@brief	‰¹º‚ÌÄ¶A§Œä‚ğs‚¢‚Ü‚·B
 */
 LN_CLASS(A, Prop)
 class Sound
+	: public Object
 {
 	LN_OBJECT;
 public:

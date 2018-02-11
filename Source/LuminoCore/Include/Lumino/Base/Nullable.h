@@ -49,9 +49,6 @@ public:
 	}
 
 	T& operator=(const T& value) { set(value); return m_value; }
-	bool operator==(const T& value) const { return m_isSet && value == m_value; }
-	bool operator==(const Nullable& right) const { return equals(right); }
-	bool operator!=(const Nullable& right) const { return !equals(right); }
     operator T() const { return get(); }
 
     T& get() 
@@ -90,5 +87,18 @@ private:
     T m_value;
     bool m_isSet;
 };
+
+template <class T>
+LN_CONSTEXPR bool operator==(const Nullable<T>& lhs, const T& rhs) { return lhs.isSet() && lhs.get() == rhs; }
+template <class T>
+LN_CONSTEXPR bool operator==(const Nullable<T>& lhs, const Nullable<T>& rhs) { return lhs.equals(rhs); }
+template <class T>
+LN_CONSTEXPR bool operator==(const Nullable<T>& lhs, nullptr_t rhs) { return lhs.isNull(); }
+template <class T>
+LN_CONSTEXPR bool operator!=(const Nullable<T>& lhs, const T& rhs) { return !operator==(lhs, rhs); }
+template <class T>
+LN_CONSTEXPR bool operator!=(const Nullable<T>& lhs, const Nullable<T>& rhs) { return !operator==(lhs, rhs); }
+template <class T>
+LN_CONSTEXPR bool operator!=(const Nullable<T>& lhs, nullptr_t rhs) { return !operator==(lhs, rhs); }
 
 LN_NAMESPACE_END

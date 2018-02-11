@@ -3,6 +3,7 @@
 #include <unordered_map>
 
 class SymbolDatabase;
+class DocumentInfo;
 
 class HeaderParser
 {
@@ -24,7 +25,10 @@ public:
 
 
 
+	static Ref<DocumentInfo> parseDocument(const std::string& comment);
 private:
+
 	::SymbolDatabase*	m_db;
 };
+
 
