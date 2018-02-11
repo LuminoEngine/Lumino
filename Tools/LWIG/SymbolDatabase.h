@@ -140,7 +140,7 @@ public:
 	Ref<DocumentInfo>		document;
 	String				name;
 	Ref<TypeInfo>			type;
-	//Variant			value;
+	Variant			value;
 
 	String				typeRawName;
 };

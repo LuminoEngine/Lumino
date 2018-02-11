@@ -73,15 +73,15 @@ public:
 		return (m_isSet) ? Hash::calcHash(reinterpret_cast<const char*>(&m_value), sizeof(m_value)) : 0;
 	}
 
-private:
-    void set(T value) { m_value = value; m_isSet = true; }
-
 	bool equals(const Nullable& right) const
 	{
 		if (m_isSet != right.m_isSet) return false;
 		if (!m_isSet && !right.m_isSet) return true;
 		return m_value == right.m_value;
 	}
+
+private:
+    void set(T value) { m_value = value; m_isSet = true; }
 
 private:
     T m_value;
