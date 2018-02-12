@@ -10,10 +10,6 @@
 
 #include "StringHelper.h"
 
-#ifdef LN_UNICODE
-#define LN_STRING_FROM_CHAR
-#endif
-
 LN_NAMESPACE_BEGIN
 class Encoding;
 namespace detail { class UStringCore; }
@@ -73,7 +69,7 @@ public:
 	String(const Path& path);
 	// TODO: Path&&
 
-#ifdef LN_STRING_FROM_CHAR
+#ifdef LN_STRING_FUZZY_CONVERSION
 	String(const char* str);
 #ifdef LN_USTRING16
 	String(const wchar_t* str);
@@ -108,6 +104,7 @@ public:
 	void assign(const StringRef& str);
 
 	void append(const Char* str, int length);
+	void append(const String& str);
 	
 	/**
 		@brief		指定した文字列がこの文字列内に存在するかを判断します。
@@ -464,7 +461,7 @@ public:
 	String& operator+=(const Char* rhs);
 	String& operator+=(Char rhs);
 
-#ifdef LN_USTRING16_FUZZY_CONVERSION
+#ifdef LN_STRING_FUZZY_CONVERSION
 	String& operator=(const char* rhs);
 	String& operator+=(const char* rhs);
 #endif
@@ -589,7 +586,7 @@ public:
 		clear();
 	}
 
-#ifdef LN_USTRING16_FUZZY_CONVERSION
+#ifdef LN_STRING_FUZZY_CONVERSION
 	StringRef(const char* str)
 		: StringRef()
 	{
@@ -932,7 +929,7 @@ inline bool operator>=(const String& lhs, const String& rhs) { return !operator<
 inline bool operator>=(const Char* lhs, const String& rhs) { return !operator<(lhs, rhs); }
 inline bool operator>=(const String& lhs, const Char* rhs) { return !operator<(lhs, rhs); }
 
-#ifdef LN_USTRING16_FUZZY_CONVERSION
+#ifdef LN_STRING_FUZZY_CONVERSION
 inline String& String::operator=(const char* rhs) { assignFromCStr(rhs); return *this; }
 inline String& String::operator+=(const char* rhs) { String s(rhs); append(s.c_str(), s.getLength()); return *this; }
 

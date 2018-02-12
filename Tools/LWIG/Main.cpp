@@ -1,12 +1,13 @@
 
 //#include "Global.h"
+#include <Lumino/Testing/TestHelper.h>
 #include "Parser.h"
 #include "SymbolDatabase.h"
 //#include "DotNet/DotNetPInvokeLibGenerator.h"
 //#include "DotNet/DotNetClassLibGenerator.h"
 //#include "DotNet/CSClassLibGenerator.h"
 //#include "DotNet/DotNetCommon.h"
-//#include "WrapperIF/WrapperIFGenerator.h"
+#include "WrapperIF/WrapperIFGenerator.h"
 //#include "WrapperIF/WrapperIFClassesGenerator.h"
 //
 //PathName		g_templateDir;
@@ -61,10 +62,10 @@ int main()
 
 		//DotNetCommon::initialize();
 
-		//{
-		//	WrapperIFGenerator gen;
-		//	gen.generate(&g_database);
-		//}
+		{
+			WrapperIFGenerator gen(&db, LN_LOCALFILE("WrapperIF/Templates"), _T("."));
+			gen.generate();
+		}
 		//{
 		//	WrapperIFClassesGenerator gen;
 		//	gen.generate();

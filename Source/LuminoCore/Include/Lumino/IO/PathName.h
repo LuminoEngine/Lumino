@@ -50,7 +50,7 @@ public:
 	//bool operator < (const Path& right) const;
 	//bool operator < (const Char* right) const;
 
-#ifdef LN_USTRING16_FUZZY_CONVERSION
+#ifdef LN_STRING_FUZZY_CONVERSION
 	Path(const char* path) : Path(String(path)) {}
 #endif
 

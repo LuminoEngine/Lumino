@@ -10,10 +10,16 @@ set(LN_SOURCES
 	LWIG.PCH.h
 	Main.cpp
 	Common.h
+	OutputBuffer.cpp
+	OutputBuffer.h
 	Parser.cpp
 	Parser.h
 	SymbolDatabase.cpp
 	SymbolDatabase.h
+	WrapperIF/WrapperIFClassesGenerator.cpp
+	WrapperIF/WrapperIFClassesGenerator.h
+	WrapperIF/WrapperIFGenerator.cpp
+	WrapperIF/WrapperIFGenerator.h
 )
 
 source_group("Source"	FILES ${LN_SOURCES})

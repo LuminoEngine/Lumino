@@ -108,7 +108,7 @@ String::String(const Path& path)
 {
 }
 
-#ifdef LN_STRING_FROM_CHAR
+#ifdef LN_STRING_FUZZY_CONVERSION
 String::String(const char* str)
 	: String()
 {
@@ -736,6 +736,11 @@ void String::append(const Char* str, int length)
 	Char* b = lockBuffer(firstLen + length) + firstLen;
 	memcpy(b, str, length * sizeof(Char));
 	unlockBuffer(firstLen + length);
+}
+
+void String::append(const String& str)
+{
+	append(str.c_str(), str.getLength());
 }
 
 void String::assign(const Char* str)
