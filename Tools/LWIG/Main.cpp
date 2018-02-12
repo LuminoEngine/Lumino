@@ -19,7 +19,8 @@ int main()
 	{
 		//L"D:/Proj/Lumino/Tools/LWIG/Test.cpp",
 		//_T(LUMINO_ROOT_DIR"/Bindings/Runtime/include/Common.h"),
-		_T(LUMINO_ROOT_DIR"/Source/LuminoCore/Include/Lumino/Math/Vector3.h"),
+		_T(LUMINO_ROOT_DIR"/Source/LuminoCore/Include/Lumino/Math/Vector3_.h"),
+		//_T(LUMINO_ROOT_DIR"/Source/LuminoCore/Include/Lumino/Audio/Sound.h"),
 		//LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Engine.h",
 		//_T(LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Audio/Sound.h"),
 		//LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Base/GeometryStructs.h",

@@ -240,6 +240,13 @@ public:
 		return stringRef.str();
 	}
 
+	Ref<DocumentInfo> parseDocument(Decl* decl)
+	{
+		if (const FullComment *Comment = decl->getASTContext().getLocalCommentForDeclUncached(decl))
+			return HeaderParser::parseDocument(getSourceText(Comment->getSourceRange()));
+		return nullptr;
+	}
+
 	::AccessLevel tlanslateAccessLevel(AccessSpecifier ac)
 	{
 		switch (ac)
@@ -253,6 +260,40 @@ public:
 		default:
 			LN_UNREACHABLE();
 			return ::AccessLevel::Private;
+		}
+	}
+
+	//std::string getQualTypeNameSymple(QualType* type)
+	//{
+	//	type->getAsString()
+	//	type->dump()
+	//	PrintingPolicy PrintPolicy;
+
+	//	SplitQualType T_split = type->split();
+	//	std::string name = QualType::getAsString(T_split/*, PrintPolicy*/);
+
+	//	if (Desugar && !T.isNull()) {
+	//		// If the type is sugared, also dump a (shallow) desugared type.
+	//		SplitQualType D_split = T.getSplitDesugaredType();
+	//		if (T_split != D_split)
+	//			OS << ":'" << QualType::getAsString(D_split, PrintPolicy) << "'";
+	//	}
+	//}
+
+	String getRawTypeName(const QualType& type)
+	{
+		SplitQualType st = type.split();
+		if (st.Ty->isRecordType())
+		{
+			// type.getAsString() だと完全週修飾名になる。"struct ln::Vector3" など。
+			// Decl から定義名をとると、"Vector3" などが取れる。
+			CXXRecordDecl* rd = st.Ty->getAsCXXRecordDecl();
+			DeclarationName name = rd->getDeclName();
+			return String::fromStdString(name.getAsString());
+		}
+		else
+		{
+			return String::fromStdString(type.getAsString());
 		}
 	}
 
@@ -296,8 +337,7 @@ public:
 				info->name = String::fromStdString(decl->getNameAsString());
 
 				// documentation
-				if (const FullComment *Comment = decl->getASTContext().getLocalCommentForDeclUncached(decl))
-					info->document = HeaderParser::parseDocument(getSourceText(Comment->getSourceRange()));
+				info->document = parseDocument(decl);
 
 				// metadata
 				info->metadata = HeaderParser::parseMetadata(attr->name, attr->args);
@@ -347,13 +387,35 @@ public:
 				info->accessLevel = tlanslateAccessLevel(decl->getAccess());
 
 				// documentation
-				if (const FullComment *Comment = decl->getASTContext().getLocalCommentForDeclUncached(decl))
-					info->document = HeaderParser::parseDocument(getSourceText(Comment->getSourceRange()));
+				info->document = parseDocument(decl);
 
 				// metadata
 				info->metadata = HeaderParser::parseMetadata(attr->name, attr->args);
 
+				// return type
+				info->returnTypeRawName = getRawTypeName(decl->getReturnType());
+
+				// qualifiers
+				info->isVirtual = decl->isVirtual();
+				info->isStatic = decl->isStatic();
+				info->isConst = decl->isConst();
+
 				info->owner->declaredMethods.add(info);
+
+				for (unsigned int iParam = 0; iParam < decl->getNumParams(); iParam++)
+				{
+					ParmVarDecl* param = decl->getParamDecl(iParam);
+					QualType& type = param->getType();
+					bool hasConst = type.getQualifiers().hasConst();
+					SplitQualType sp = type.split();
+					//PointerType
+					
+					auto info = Ref<ParameterInfo>::makeRef();
+					info->name = String::fromStdString(param->getNameAsString());
+					info->typeRawName = getRawTypeName(type);
+					info->isIn = hasConst;
+					info->isOut = (!hasConst && sp.Ty->isPointerType());
+				}
 			}
 		}
 
@@ -361,8 +423,22 @@ public:
 	}
 
 	// メンバ変数
-	bool VisitFieldDecl(FieldDecl *aFieldDecl)
+	bool VisitFieldDecl(FieldDecl* decl)
 	{
+		if (unsigned offset = getOffsetOnRootFile(m_sm, decl->getLocation()))
+		{
+			if (auto* attr = m_parser->findUnlinkedAttrMacro(offset))
+			{
+				attr->linked = true;
+
+				auto info = Ref<FieldInfo>::makeRef();
+				info->name = String::fromStdString(decl->getNameAsString());
+				info->document = parseDocument(decl);
+				info->typeRawName = getRawTypeName(decl->getType());
+				m_currentRecord->declaredFields.add(info);
+			}
+		}
+
 		return true;
 	}
 
@@ -414,6 +490,7 @@ public:
 			std::string name = Lexer::getSourceText(CharSourceRange::getTokenRange(range.getBegin()), sm, opts).str();
 			if (name == "LN_CLASS" ||
 				name == "LN_STRUCT" ||
+				name == "LN_FIELD" ||
 				name == "LN_METHOD")
 			{
 				::HeaderParser::AttrMacro attrMacro;
