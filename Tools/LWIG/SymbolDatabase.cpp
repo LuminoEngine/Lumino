@@ -74,15 +74,15 @@ void MethodInfo::LinkParameters(SymbolDatabase* db)
 // capiParameters を構築する
 void MethodInfo::ExpandCAPIParameters(SymbolDatabase* db)
 {
-	// 第1引数
+	// 第1引数 (種類によって this など)
 	{
 		if (!isStatic)
 		{
 			if (owner->isStruct)
 			{
 				auto info = Ref<ParameterInfo>::makeRef();
-				info->name = owner->name.toLower();
-				info->type = db->findTypeInfo(owner->name);
+				info->name = owner->shortName().toLower();
+				info->type = db->findTypeInfo(owner->fullName());
 				info->isThis = true;
 				capiParameters.add(info);
 			}
@@ -100,8 +100,8 @@ void MethodInfo::ExpandCAPIParameters(SymbolDatabase* db)
 			else
 			{
 				auto info = Ref<ParameterInfo>::makeRef();
-				info->name = owner->name.toLower();
-				info->type = db->findTypeInfo(owner->name);
+				info->name = owner->shortName().toLower();
+				info->type = db->findTypeInfo(owner->fullName());
 				info->isThis = true;
 				capiParameters.add(info);
 			}
@@ -140,8 +140,8 @@ void MethodInfo::ExpandCAPIParameters(SymbolDatabase* db)
 		else
 		{
 			auto info = Ref<ParameterInfo>::makeRef();
-			info->name = String::format(_T("out{0}"), owner->name);
-			info->type = db->findTypeInfo(owner->name);
+			info->name = String::format(_T("out{0}"), owner->shortName());
+			info->type = db->findTypeInfo(owner->fullName());
 			info->isReturn = true;
 			capiParameters.add(info);
 		}
@@ -150,7 +150,7 @@ void MethodInfo::ExpandCAPIParameters(SymbolDatabase* db)
 
 String MethodInfo::GetCAPIFuncName()
 {
-	String n = String::format(_T("LN{0}_{1}"), owner->name, name);
+	String n = String::format(_T("LN{0}_{1}"), owner->shortName(), name);
 	if (IsOverloadChild())
 		n += overloadSuffix;
 	return n;
@@ -163,7 +163,7 @@ String MethodInfo::GetCApiSetOverrideCallbackFuncName()
 
 String MethodInfo::GetCApiSetOverrideCallbackTypeName()
 {
-	return String::format(_T("LN{0}_{1}_OverrideCaller"), owner->name, name);
+	return String::format(_T("LN{0}_{1}_OverrideCaller"), owner->shortName(), name);
 }
 
 String MethodInfo::GetAccessLevelName(AccessLevel accessLevel)
@@ -199,6 +199,17 @@ void TypeInfo::Link(SymbolDatabase* db)
 	{
 		baseClass = db->findTypeInfo(baseClassRawName);
 	}
+}
+
+void TypeInfo::setRawFullName(const String& value)
+{
+	rawFullName = value;
+
+	int c = value.lastIndexOf(':');
+	if (c >= 0)
+		m_shortName = value.substring(c + 1);
+	else
+		m_shortName = value;
 }
 
 void TypeInfo::MakeProperties()
@@ -410,11 +421,11 @@ tr::Enumerator<Ref<MethodInfo>> SymbolDatabase::GetAllMethods()
 	return e;
 }
 
-void SymbolDatabase::FindEnumTypeAndValue(const String& typeName, const String& memberName, Ref<TypeInfo>* outEnum, Ref<ConstantInfo>* outMember)
+void SymbolDatabase::FindEnumTypeAndValue(const String& typeFullName, const String& memberName, Ref<TypeInfo>* outEnum, Ref<ConstantInfo>* outMember)
 {
 	for (auto& enumInfo : enums)
 	{
-		if (enumInfo->name == typeName)
+		if (enumInfo->fullName() == typeFullName)
 		{
 			for (auto& constantInfo : enumInfo->declaredConstants)
 			{
@@ -428,7 +439,7 @@ void SymbolDatabase::FindEnumTypeAndValue(const String& typeName, const String& 
 		}
 	}
 
-	LN_ENSURE(0, "Undefined enum: %s::%s", typeName.c_str(), memberName.c_str());
+	LN_ENSURE(0, "Undefined enum: %s::%s", typeFullName.c_str(), memberName.c_str());
 }
 
 Ref<ConstantInfo> SymbolDatabase::CreateConstantFromLiteralString(const String& valueStr)
@@ -489,41 +500,41 @@ void SymbolDatabase::InitializePredefineds()
 	predefineds.getLast()->isPrimitive = true;
 	PredefinedTypes::floatType = predefineds.getLast();
 
-	predefineds.add(Ref<TypeInfo>::makeRef(_T("String")));
+	predefineds.add(Ref<TypeInfo>::makeRef(_T("ln::String")));
 	predefineds.getLast()->isPrimitive = true;
 	PredefinedTypes::stringType = predefineds.getLast();
 
-	predefineds.add(Ref<TypeInfo>::makeRef(_T("Object")));
+	predefineds.add(Ref<TypeInfo>::makeRef(_T("ln::Object")));
 	PredefinedTypes::objectType = predefineds.getLast();
 
-	predefineds.add(Ref<TypeInfo>::makeRef(_T("EventConnection")));
+	predefineds.add(Ref<TypeInfo>::makeRef(_T("ln::EventConnection")));
 	PredefinedTypes::EventConnectionType = predefineds.getLast();
 }
 
-Ref<TypeInfo> SymbolDatabase::findTypeInfo(StringRef typeName)
+Ref<TypeInfo> SymbolDatabase::findTypeInfo(StringRef typeFullName)
 {
 	Ref<TypeInfo>* type;
 	
-	type = predefineds.find([typeName](Ref<TypeInfo> type) { return type->name == typeName; });
+	type = predefineds.find([typeFullName](Ref<TypeInfo> type) { return type->fullName() == typeFullName; });
 	if (type != nullptr) return *type;
 
-	type = structs.find([typeName](Ref<TypeInfo> type) { return type->name == typeName; });
+	type = structs.find([typeFullName](Ref<TypeInfo> type) { return type->fullName() == typeFullName; });
 	if (type != nullptr) return *type;
 
-	type = classes.find([typeName](Ref<TypeInfo> type) { return type->name == typeName; });
+	type = classes.find([typeFullName](Ref<TypeInfo> type) { return type->fullName() == typeFullName; });
 	if (type != nullptr) return *type;
 
-	type = enums.find([typeName](Ref<TypeInfo> type) { return type->name == typeName; });
+	type = enums.find([typeFullName](Ref<TypeInfo> type) { return type->fullName() == typeFullName; });
 	if (type != nullptr) return *type;
 
-	type = delegates.find([typeName](Ref<TypeInfo> type) { return type->name == typeName; });
+	type = delegates.find([typeFullName](Ref<TypeInfo> type) { return type->fullName() == typeFullName; });
 	if (type != nullptr)
 		return *type;
 
-	if (typeName == _T("StringRef")) return PredefinedTypes::stringType;
-	if (typeName == _T("EventConnection")) return PredefinedTypes::EventConnectionType;
+	if (typeFullName == _T("StringRef")) return PredefinedTypes::stringType;
+	if (typeFullName == _T("EventConnection")) return PredefinedTypes::EventConnectionType;
 
-	LN_ENSURE(0, _T("Undefined type: %s"), String(typeName).c_str());
+	LN_ENSURE(0, _T("Undefined type: %s"), String(typeFullName).c_str());
 	return nullptr;
 }
 

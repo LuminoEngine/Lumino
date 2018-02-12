@@ -1,4 +1,4 @@
-#include <memory>
+ï»¿#include <memory>
 #include "SymbolDatabase.h"
 #include "Parser.h"
 
@@ -282,19 +282,24 @@ public:
 
 	String getRawTypeName(const QualType& type)
 	{
-		SplitQualType st = type.split();
-		if (st.Ty->isRecordType())
-		{
-			// type.getAsString() ‚¾‚ÆŠ®‘STCü–¼‚É‚È‚éB"struct ln::Vector3" ‚È‚ÇB
-			// Decl ‚©‚ç’è‹`–¼‚ğ‚Æ‚é‚ÆA"Vector3" ‚È‚Ç‚ªæ‚ê‚éB
-			CXXRecordDecl* rd = st.Ty->getAsCXXRecordDecl();
-			DeclarationName name = rd->getDeclName();
-			return String::fromStdString(name.getAsString());
-		}
-		else
-		{
-			return String::fromStdString(type.getAsString());
-		}
+		// type.getAsString() ã ã¨å®Œå…¨é€±ä¿®é£¾åã«ãªã‚‹ã€‚"struct ln::Vector3" ãªã©ã€‚
+		auto name = String::fromStdString(type.getAsString());
+		name = name.replace(_T("struct"), "");
+		name = name.replace(_T("class"), "");
+		return name.trim();
+		//SplitQualType st = type.split();
+		//if (st.Ty->isRecordType())
+		//{
+		//	// type.getAsString() ã ã¨å®Œå…¨é€±ä¿®é£¾åã«ãªã‚‹ã€‚"struct ln::Vector3" ãªã©ã€‚
+		//	// Decl ã‹ã‚‰å®šç¾©åã‚’ã¨ã‚‹ã¨ã€"Vector3" ãªã©ãŒå–ã‚Œã‚‹ã€‚
+		//	CXXRecordDecl* rd = st.Ty->getAsCXXRecordDecl();
+		//	DeclarationName name = rd->getDeclName();
+		//	return String::fromStdString(name.getAsString());
+		//}
+		//else
+		//{
+		//	return String::fromStdString(type.getAsString());
+		//}
 	}
 
 	void EnumerateDecl(DeclContext* aDeclContext)
@@ -303,9 +308,9 @@ public:
 		{
 			Decl *D = *i;
 			//if (indentation.IndentLevel == 0) {
-			//	errs() << "TopLevel : " << D->getDeclKindName();                                    // Decl‚ÌŒ^•\¦
-			//	if (NamedDecl *N = dyn_cast<NamedDecl>(D))  errs() << " " << N->getNameAsString();  // NamedDecl‚È‚ç–¼‘O•\¦
-			//	errs() << " (" << D->getLocation().printToString(SM) << ")\n";                      // ƒ\[ƒXã‚ÌêŠ•\¦
+			//	errs() << "TopLevel : " << D->getDeclKindName();                                    // Declã®å‹è¡¨ç¤º
+			//	if (NamedDecl *N = dyn_cast<NamedDecl>(D))  errs() << " " << N->getNameAsString();  // NamedDeclãªã‚‰åå‰è¡¨ç¤º
+			//	errs() << " (" << D->getLocation().printToString(SM) << ")\n";                      // ã‚½ãƒ¼ã‚¹ä¸Šã®å ´æ‰€è¡¨ç¤º
 			//}
 
 			errs() << "TopLevel : " << D->getDeclKindName();
@@ -317,12 +322,12 @@ public:
 	}
 
 
-	// class/struct/union‚Ìˆ—
+	// class/struct/unionã®å‡¦ç†
 	bool VisitCXXRecordDecl(CXXRecordDecl* decl)
 	{
 		if (!decl->isCompleteDefinition())
 		{
-			// éŒ¾
+			// å®£è¨€
 			return true;
 		}
 
@@ -334,7 +339,7 @@ public:
 				attr->linked = true;
 
 				auto info = Ref<::TypeInfo>::makeRef();
-				info->name = String::fromStdString(decl->getNameAsString());
+				info->setRawFullName(getRawTypeName(QualType(decl->getTypeForDecl(), 0)));
 
 				// documentation
 				info->document = parseDocument(decl);
@@ -371,7 +376,7 @@ public:
 		return true;
 	}
 
-	// ƒƒ“ƒoŠÖ”
+	// ãƒ¡ãƒ³ãƒé–¢æ•°
 	bool VisitCXXMethodDecl(CXXMethodDecl* decl)
 	{
 		if (unsigned offset = getOffsetOnRootFile(m_sm, decl->getLocation()))
@@ -422,7 +427,7 @@ public:
 		return true;
 	}
 
-	// ƒƒ“ƒo•Ï”
+	// ãƒ¡ãƒ³ãƒå¤‰æ•°
 	bool VisitFieldDecl(FieldDecl* decl)
 	{
 		if (unsigned offset = getOffsetOnRootFile(m_sm, decl->getLocation()))
@@ -462,11 +467,11 @@ public:
 	}
 };
 
-// ‚±‚ÌƒCƒ“ƒ^ƒtƒF[ƒX‚ÍAƒvƒŠƒvƒƒZƒbƒT‚Ì“®ì‚ğŠÏ@‚·‚é•û–@‚ğ’ñ‹Ÿ‚µ‚Ü‚·B
+// ã“ã®ã‚¤ãƒ³ã‚¿ãƒ•ã‚§ãƒ¼ã‚¹ã¯ã€ãƒ—ãƒªãƒ—ãƒ­ã‚»ãƒƒã‚µã®å‹•ä½œã‚’è¦³å¯Ÿã™ã‚‹æ–¹æ³•ã‚’æä¾›ã—ã¾ã™ã€‚
 // https://clang.llvm.org/doxygen/classclang_1_1PPCallbacks.html
-// #XXXX ‚ğŒ©‚Â‚¯‚½‚Æ‚«‚âAƒ}ƒNƒ“WŠJ‚ªs‚í‚ê‚½‚Æ‚«‚ÉŒÄ‚Î‚ê‚éƒR[ƒ‹ƒoƒbƒN‚ğ’è‹`‚µ‚½‚è‚·‚éB
-// šC++‚ÌƒNƒ‰ƒX‚Ì‘®«\•¶‚ÍAclass ƒL[ƒ[ƒh‚Æ–¼‘O‚ÌŠÔ‚É‘‚­BLumino ‚Ì‚Í class ‚Ì‘O‚É‘‚­ƒXƒ^ƒCƒ‹‚È‚Ì‚ÅA
-//   clang ‚Æ‘®«\•¶‚Ì‹@”\‚ğg‚¤‚±‚Æ‚ª‚Å‚«‚È‚¢B‚»‚Ì‚½‚ßƒ}ƒNƒ‚ğ©•ª‚Å‰ğÍ‚·‚éB
+// #XXXX ã‚’è¦‹ã¤ã‘ãŸã¨ãã‚„ã€ãƒã‚¯ãƒ­å±•é–‹ãŒè¡Œã‚ã‚ŒãŸã¨ãã«å‘¼ã°ã‚Œã‚‹ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã‚’å®šç¾©ã—ãŸã‚Šã™ã‚‹ã€‚
+// â˜…C++ã®ã‚¯ãƒ©ã‚¹ã®å±æ€§æ§‹æ–‡ã¯ã€class ã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰ã¨åå‰ã®é–“ã«æ›¸ãã€‚Lumino ã®ã¯ class ã®å‰ã«æ›¸ãã‚¹ã‚¿ã‚¤ãƒ«ãªã®ã§ã€
+//   clang ã¨å±æ€§æ§‹æ–‡ã®æ©Ÿèƒ½ã‚’ä½¿ã†ã“ã¨ãŒã§ããªã„ã€‚ãã®ãŸã‚ãƒã‚¯ãƒ­ã‚’è‡ªåˆ†ã§è§£æã™ã‚‹ã€‚
 class LocalPPCallbacks : public PPCallbacks
 {
 public:
@@ -483,7 +488,7 @@ public:
 		const LangOptions& opts = m_ci->getLangOpts();
 		const MacroInfo* macroInfo = MD.getMacroInfo();
 
-		// ƒ}ƒNƒ‚ª‘‚©‚ê‚Ä‚¢‚éêŠ‚Í input ‚Ìƒ‹[ƒg‚Å‚ ‚é‚©H (include ƒtƒ@ƒCƒ‹‚Í‰ğÍ‚µ‚½‚­‚È‚¢)
+		// ãƒã‚¯ãƒ­ãŒæ›¸ã‹ã‚Œã¦ã„ã‚‹å ´æ‰€ã¯ input ã®ãƒ«ãƒ¼ãƒˆã§ã‚ã‚‹ã‹ï¼Ÿ (include ãƒ•ã‚¡ã‚¤ãƒ«ã¯è§£æã—ãŸããªã„)
 		auto ploc = sm.getPresumedLoc(range.getBegin());
 		if (ploc.getIncludeLoc().isInvalid())
 		{
@@ -522,13 +527,13 @@ public:
 
 				//for (int iArg = 0U; iArg < macroInfo->getNumArgs(); iArg++)
 				//{
-				//	const IdentifierInfo* param = *(macroInfo->arg_begin() + iArg);	// params ‚ª‚Ù‚µ‚¢‚Æ‚«‚Í‚±‚Á‚¿
-				//	const Token* argToks = args->getUnexpArgument(iArg);				// args ‚ª‚Ù‚µ‚¢‚Æ‚«‚Í‚±‚Á‚¿
+				//	const IdentifierInfo* param = *(macroInfo->arg_begin() + iArg);	// params ãŒã»ã—ã„ã¨ãã¯ã“ã£ã¡
+				//	const Token* argToks = args->getUnexpArgument(iArg);				// args ãŒã»ã—ã„ã¨ãã¯ã“ã£ã¡
 
 				//	if (argToks->is(tok::eof))
 				//	{
-				//		// ƒ}ƒNƒ‚ğg‚Á‚Ä‚¢‚é‘¤‚ÌÀˆø”‚Ì”‚ª­‚È‚¢B
-				//		// ‚ ‚é‚¢‚Í #define AAA(...) ‚Ì‚æ‚¤‚È’è‹`‚ÅAÀˆø”‚ªÈ—ª‚³‚ê‚Ä‚¢‚éB
+				//		// ãƒã‚¯ãƒ­ã‚’ä½¿ã£ã¦ã„ã‚‹å´ã®å®Ÿå¼•æ•°ã®æ•°ãŒå°‘ãªã„ã€‚
+				//		// ã‚ã‚‹ã„ã¯ #define AAA(...) ã®ã‚ˆã†ãªå®šç¾©ã§ã€å®Ÿå¼•æ•°ãŒçœç•¥ã•ã‚Œã¦ã„ã‚‹ã€‚
 				//	}
 
 				//	attrMacro.args.push_back(Lexer::getSourceText(CharSourceRange::getTokenRange(argToks->getLocation()), sm, opts));
@@ -548,13 +553,13 @@ private:
 };
 
 //------------------------------------------------------------------------------
-// ˆÈ‰ºAŒˆ‚Ü‚è•¶‹å
+// ä»¥ä¸‹ã€æ±ºã¾ã‚Šæ–‡å¥
 
-// ASTConsumer ‚ÍAAST ‚ÌƒGƒ“ƒgƒŠƒ|ƒCƒ“ƒg‚Æ‚È‚é‰½‚ç‚©‚Ì—v‘f‚ğŒ©‚Â‚¯‚½‚Æ‚«‚É‚»‚ê‚ğ’Ê’m‚·‚éB
-// ’Êí‚Í HandleTranslationUnit() ‚¾‚¯À‘•‚·‚ê‚Î‚æ‚¢B
+// ASTConsumer ã¯ã€AST ã®ã‚¨ãƒ³ãƒˆãƒªãƒã‚¤ãƒ³ãƒˆã¨ãªã‚‹ä½•ã‚‰ã‹ã®è¦ç´ ã‚’è¦‹ã¤ã‘ãŸã¨ãã«ãã‚Œã‚’é€šçŸ¥ã™ã‚‹ã€‚
+// é€šå¸¸ã¯ HandleTranslationUnit() ã ã‘å®Ÿè£…ã™ã‚Œã°ã‚ˆã„ã€‚
 // https://clang.llvm.org/docs/RAVFrontendAction.html
-// clang ‚ÍFX‚È AST ‚Ìì¬•û–@‚ğ‚Á‚Ä‚¢‚é‚ç‚µ‚­AHandleTranslationUnit() ˆÈŠO‚Í
-// ’Êí‚Ì–|–ó’PˆÊˆÈŠO‚Ì‰ğÍ‚Å‰½‚©‚µ‚½‚¢‚Æ‚«‚Ég‚¤‚æ‚¤‚¾B
+// clang ã¯è‰²ã€…ãª AST ã®ä½œæˆæ–¹æ³•ã‚’æŒã£ã¦ã„ã‚‹ã‚‰ã—ãã€HandleTranslationUnit() ä»¥å¤–ã¯
+// é€šå¸¸ã®ç¿»è¨³å˜ä½ä»¥å¤–ã®è§£æã§ä½•ã‹ã—ãŸã„ã¨ãã«ä½¿ã†ã‚ˆã†ã ã€‚
 class LocalASTConsumer : public ASTConsumer
 {
 private:
@@ -574,11 +579,11 @@ public:
 	}
 };
 
-// FrontendAction ‚ÍAƒRƒ“ƒpƒCƒ‰ƒtƒƒ“ƒgƒGƒ“ƒh‚Ì‹¤’Ê‚ÌƒGƒ“ƒgƒŠƒ|ƒCƒ“ƒgB‹ï‘Ì“I‚É‰½‚µ‚½‚¢‚ÌH‚ğ•\‚·‚½‚ß‚Ég‚¤B
+// FrontendAction ã¯ã€ã‚³ãƒ³ãƒ‘ã‚¤ãƒ©ãƒ•ãƒ­ãƒ³ãƒˆã‚¨ãƒ³ãƒ‰ã®å…±é€šã®ã‚¨ãƒ³ãƒˆãƒªãƒã‚¤ãƒ³ãƒˆã€‚å…·ä½“çš„ã«ä½•ã—ãŸã„ã®ï¼Ÿã‚’è¡¨ã™ãŸã‚ã«ä½¿ã†ã€‚
 // https://clang.llvm.org/docs/RAVFrontendAction.html
 // https://clang.llvm.org/doxygen/classclang_1_1ASTFrontendAction.html
-// •W€‚¾‚Æ ASTFrontendAction ‚Ì”h¶‚Æ‚µ‚ÄA’P‚É AST ‚ğƒ_ƒ“ƒv‚µ‚½‚èAHTML ‚É•ÏŠ·‚µ‚½‚è‚Æ‚¢‚Á‚½ƒAƒNƒVƒ‡ƒ“‚ª—pˆÓ‚³‚ê‚Ä‚¢‚éB
-// ¡‰ñ‚Í AST ‚ğ‘S•”©•ª‚Åƒgƒ‰ƒo[ƒX‚µ‚½‚¢‚Ì‚Å ASTFrontendAction ‚ğg‚¤B
+// æ¨™æº–ã ã¨ ASTFrontendAction ã®æ´¾ç”Ÿã¨ã—ã¦ã€å˜ã« AST ã‚’ãƒ€ãƒ³ãƒ—ã—ãŸã‚Šã€HTML ã«å¤‰æ›ã—ãŸã‚Šã¨ã„ã£ãŸã‚¢ã‚¯ã‚·ãƒ§ãƒ³ãŒç”¨æ„ã•ã‚Œã¦ã„ã‚‹ã€‚
+// ä»Šå›ã¯ AST ã‚’å…¨éƒ¨è‡ªåˆ†ã§ãƒˆãƒ©ãƒãƒ¼ã‚¹ã—ãŸã„ã®ã§ ASTFrontendAction ã‚’ä½¿ã†ã€‚
 class LocalFrontendAction : public ASTFrontendAction
 {
 public:
@@ -595,7 +600,7 @@ public:
 };
 
 
-// SilClangAnalyzer ‚Ìƒ|ƒCƒ“ƒ^‚ğ ª‚ÌƒNƒ‰ƒX‚½‚¿‚É‚í‚½‚·‚½‚ß‚Ìƒtƒ@ƒNƒgƒŠ
+// SilClangAnalyzer ã®ãƒã‚¤ãƒ³ã‚¿ã‚’ â†‘ã®ã‚¯ãƒ©ã‚¹ãŸã¡ã«ã‚ãŸã™ãŸã‚ã®ãƒ•ã‚¡ã‚¯ãƒˆãƒª
 std::unique_ptr<FrontendActionFactory> NewLocalFrontendActionFactory(::HeaderParser* parser)
 {
 	class SimpleFrontendActionFactory : public FrontendActionFactory
@@ -628,7 +633,7 @@ int HeaderParser::parse(const Path& filePath, ::SymbolDatabase* db)
 
 
 
-	// TODO: Path ‚©‚ç’¼Ú toLocalPath
+	// TODO: Path ã‹ã‚‰ç›´æ¥ toLocalPath
 	std::string localFilePath = tempFilePath.getString().toStdString();
 
 	std::vector<std::string> args;
@@ -699,7 +704,7 @@ Ref<DocumentInfo> HeaderParser::parseDocument(const std::string& comment)
 
 	String doc = String::fromStdString(comment, Encoding::getUTF8Encoding());
 
-	// ‰üsƒR[ƒh“ˆê‚µAƒRƒƒ“ƒgŠJnI—¹‚ğíœ‚·‚é
+	// æ”¹è¡Œã‚³ãƒ¼ãƒ‰çµ±ä¸€ã—ã€ã‚³ãƒ¡ãƒ³ãƒˆé–‹å§‹çµ‚äº†ã‚’å‰Šé™¤ã™ã‚‹
 	doc = doc
 		.replace(_T("\r\n"), _T("\n"))
 		.replace(_T("\r"), _T("\n"))

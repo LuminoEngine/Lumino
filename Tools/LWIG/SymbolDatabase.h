@@ -149,7 +149,6 @@ class TypeInfo : public RefObject
 public:
 	Ref<MetadataInfo>			metadata;
 	Ref<DocumentInfo>			document;
-	String	name;
 	bool	isStruct = false;
 	bool			isVoid = false;
 	bool				isPrimitive = false;
@@ -163,9 +162,13 @@ public:
 	Ref<TypeInfo>				baseClass;
 
 	String					baseClassRawName;
+	String					rawFullName;
 
 	TypeInfo() {}
-	TypeInfo(StringRef name_) : name(name_) {}
+	TypeInfo(StringRef rawFullName_) { setRawFullName(rawFullName_); }
+
+	String fullName() const { return rawFullName; }
+	String shortName() const { return m_shortName; }
 
 	bool isValueType() const { return isStruct || isPrimitive || isEnum; }
 	bool isStatic() const { return metadata->HasKey(_T("Static")); }
@@ -173,10 +176,14 @@ public:
 
 	void Link(SymbolDatabase* db);
 
+	void setRawFullName(const String& value);
+
 private:
 	void MakeProperties();
 	void LinkOverload();
 	void ResolveCopyDoc();
+
+	String m_shortName;
 };
 
 class PredefinedTypes
@@ -206,12 +213,12 @@ public:
 
 	tr::Enumerator<Ref<MethodInfo>> GetAllMethods();
 
-	void FindEnumTypeAndValue(const String& typeName, const String& memberName, Ref<TypeInfo>* outEnum, Ref<ConstantInfo>* outMember);
+	void FindEnumTypeAndValue(const String& typeFullName, const String& memberName, Ref<TypeInfo>* outEnum, Ref<ConstantInfo>* outMember);
 	Ref<ConstantInfo> CreateConstantFromLiteralString(const String& valueStr);
 
 public:
 	void InitializePredefineds();
-	Ref<TypeInfo> findTypeInfo(StringRef typeName);
+	Ref<TypeInfo> findTypeInfo(StringRef typeFullName);
 };
 
 
