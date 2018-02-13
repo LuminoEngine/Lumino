@@ -13,6 +13,7 @@
 LN_NAMESPACE_BEGIN
 class Encoding;
 namespace detail { class UStringCore; }
+namespace detail { class StringLockContext; }
 
 namespace detail
 {
@@ -474,8 +475,8 @@ private:
 	void release() LN_NOEXCEPT;
 	void copy(const String& str);
 	void move(String&& str) LN_NOEXCEPT;
-	Char* lockBuffer(int requestSize, void** outReserved);
-	void unlockBuffer(int confirmedSize, void* reserved);
+	Char* lockBuffer(int requestSize, detail::StringLockContext* context);
+	void unlockBuffer(int confirmedSize, detail::StringLockContext* context);
 	Char* getBuffer();
 	const Char* getBuffer() const;
 

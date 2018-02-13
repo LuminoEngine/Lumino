@@ -963,6 +963,7 @@ TEST_F(Test_Base_UString, Issue)
 {
 }
 
+//## 自己代入のテスト (this ではなく c_str() 等で取れる char* 経由)
 TEST_F(Test_Base_UString, SelfAssign)
 {
 	//- [ ] NonSSO -> NonSSO 
