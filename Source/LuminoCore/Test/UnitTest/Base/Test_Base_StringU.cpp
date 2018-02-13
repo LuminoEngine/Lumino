@@ -963,5 +963,35 @@ TEST_F(Test_Base_UString, Issue)
 {
 }
 
-
+TEST_F(Test_Base_UString, SelfAssign)
+{
+	//- [ ] NonSSO -> NonSSO 
+	{
+		String str = _LT("1234567890abcdefg");
+		StringRef r1 = str.substring(1);
+		str = r1;
+		ASSERT_EQ("234567890abcdefg", str);
+	}
+	//- [ ] SSO -> SSO 
+	{
+		String str = _LT("123");
+		StringRef r1 = str.substring(1);
+		str = r1;
+		ASSERT_EQ("23", str);
+	}
+	//- [ ] NonSSO -> SSO 
+	{
+		String str = _LT("1234567890abcdefg");
+		StringRef r1 = str.substring(10);
+		str = r1;
+		ASSERT_EQ("abcdefg", str);
+	}
+	//- [ ] SSO ->  NonSSO
+	{
+		String str = _LT("1234567890");
+		StringRef r1 = str;
+		str += r1;
+		ASSERT_EQ("12345678901234567890", str);
+	}
+}
 

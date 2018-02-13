@@ -23,6 +23,15 @@
 
 LN_NAMESPACE_BEGIN
 
+static bool checkOverRange(const String& this_, const Char* str, int len)
+{
+	const Char* b1 = this_.c_str();
+	const Char* e1 = b1 + this_.getLength();
+	const Char* b2 = str;
+	const Char* e2 = str + len;
+	return !(e1 <= b2 || e2 <= b1);
+}
+
 //==============================================================================
 // String
 //==============================================================================
@@ -137,8 +146,9 @@ bool String::isEmpty() const
 
 void String::clear()
 {
-	lockBuffer(0);
-	unlockBuffer(0);
+	void* lockData = nullptr;
+	lockBuffer(0, &lockData);
+	unlockBuffer(0, lockData);
 }
 
 void String::resize(int newLength)
@@ -149,7 +159,8 @@ void String::resize(int newLength)
 void String::resize(int newLength, Char ch)
 {
 	int oldLen = getLength();
-	Char* buf = lockBuffer(newLength);
+	void* lockData = nullptr;
+	Char* buf = lockBuffer(newLength, &lockData);
 	if (newLength > oldLen)
 	{
 		for (int i = oldLen; i < newLength; i++)
@@ -157,12 +168,16 @@ void String::resize(int newLength, Char ch)
 			buf[i] = ch;
 		}
 	}
-	unlockBuffer(newLength);
+	unlockBuffer(newLength, lockData);
 }
 
 void String::reserve(int size)
 {
-	reserveBuffer(size);
+	int cur = getLength();
+	//reserveBuffer(size);
+	void* lockData = nullptr;
+	lockBuffer(size, &lockData);
+	unlockBuffer(cur, lockData);
 }
 
 bool String::contains(const StringRef& str, CaseSensitivity cs) const
@@ -304,7 +319,8 @@ String String::remove(const StringRef& str, CaseSensitivity cs) const
 	const Char* fs = str.data();
 	int fsLen = str.getLength();
 
-	Char* buf = result.lockBuffer(end - pos);
+	void* lockData = nullptr;
+	Char* buf = result.lockBuffer(end - pos, &lockData);
 	Char* bufBegin = buf;
 
 	if (fsLen > 0)
@@ -331,7 +347,7 @@ String String::remove(const StringRef& str, CaseSensitivity cs) const
 		buf += (end - pos);
 	}
 	
-	result.unlockBuffer(buf - bufBegin);
+	result.unlockBuffer(buf - bufBegin, lockData);
 	return result;
 }
 
@@ -607,31 +623,17 @@ void String::move(String&& str) LN_NOEXCEPT
 	str.init();
 }
 
-Char* String::lockBuffer(int requestSize)
-{
-	reserveBuffer(requestSize);
-	return getBuffer();
-}
-
-void String::unlockBuffer(int confirmedSize)
-{
-	if (isSSO())
-	{
-		setSSOLength(confirmedSize);
-	}
-	else
-	{
-		m_data.core->fixLength(confirmedSize);
-	}
-}
-
 // 領域を確保し、sso かどうかのフラグをセットする。長さは変えない。
 // 中身は以前のものが維持され、新しい領域は不定値となる。
-void String::reserveBuffer(int length)
+// 後で必ず unlockBuffer() を呼び出すこと。
+// outReserved は lockBuffer() と unlockBuffer() 間で渡しあうデータ。
+// 今は自己代入回避のための細工に使っている。必ず unlockBuffer() に渡すこと。
+// unlock するまでは \0 終端を保障しない。
+Char* String::lockBuffer(int requestSize, void** outReserved)
 {
 	if (isSSO())
 	{
-		if (length < SSOCapacity)
+		if (requestSize < SSOCapacity)
 		{
 			// SSO -> SSO
 		}
@@ -639,9 +641,9 @@ void String::reserveBuffer(int length)
 		{
 			// SSO -> NonSSO
 			std::unique_ptr<detail::UStringCore> core(LN_NEW detail::UStringCore());
-			core->reserve(length);
-			memcpy(core->get(), m_data.sso.buffer, std::min(getSSOLength(), length) * sizeof(Char));
-			core->get()[length] = '\0';
+			core->reserve(requestSize);
+			memcpy(core->get(), m_data.sso.buffer, std::min(getSSOLength(), requestSize) * sizeof(Char));
+			//core->get()[requestSize] = '\0';
 			m_data.core = core.get();
 			core.release();
 			setNonSSO();
@@ -649,22 +651,23 @@ void String::reserveBuffer(int length)
 	}
 	else
 	{
-		if (m_data.core && !m_data.core->isShared() && length <= m_data.core->getCapacity())
+		if (m_data.core && !m_data.core->isShared() && requestSize <= m_data.core->getCapacity())
 		{
 			// NonSSO で、共有されてもいないしサイズも間に合っているならいろいろ作り直す必要は無い
-			m_data.core->get()[length] = '\0';
+			//m_data.core->get()[requestSize] = '\0';
 		}
 		else
 		{
-			if (length < SSOCapacity)
+			if (requestSize < SSOCapacity)
 			{
 				// NonSSO -> SSO
 				if (m_data.core)
 				{
 					detail::UStringCore* oldCore = m_data.core;
 					setSSO();
-					memcpy(m_data.sso.buffer, oldCore->get(), std::min(oldCore->getLength(), length) * sizeof(Char));
-					oldCore->release();
+					memcpy(m_data.sso.buffer, oldCore->get(), std::min(oldCore->getLength(), requestSize) * sizeof(Char));
+					//oldCore->release();
+					*outReserved = oldCore;	// release old buffer (on unlock)
 				}
 				else
 				{
@@ -680,22 +683,44 @@ void String::reserveBuffer(int length)
 					{
 						detail::UStringCore* oldCore = m_data.core;
 						m_data.core = LN_NEW detail::UStringCore();
-						m_data.core->reserve(length);
-						memcpy(m_data.core->get(), oldCore->get(), std::min(oldCore->getLength(), length) * sizeof(Char));
-						oldCore->release();
+						m_data.core->reserve(requestSize);
+						memcpy(m_data.core->get(), oldCore->get(), std::min(oldCore->getLength(), requestSize) * sizeof(Char));
+						//oldCore->release();
+						*outReserved = oldCore;	// release old buffer (on unlock)
 					}
 					else
 					{
-						m_data.core->reserve(length);
+						m_data.core->reserve(requestSize);
 					}
 				}
 				else
 				{
 					m_data.core = LN_NEW detail::UStringCore();
-					m_data.core->reserve(length);
+					m_data.core->reserve(requestSize);
 				}
 			}
 		}
+	}
+
+	return getBuffer();
+}
+
+// 実際のサイズを確定する
+void String::unlockBuffer(int confirmedSize, void* reserved)
+{
+	if (auto* oldCore = reinterpret_cast<detail::UStringCore*>(reserved))
+	{
+		oldCore->release();
+	}
+
+	if (isSSO())
+	{
+		setSSOLength(confirmedSize);
+	}
+	else
+	{
+		m_data.core->get()[confirmedSize] = '\0';
+		m_data.core->fixLength(confirmedSize);
 	}
 }
 
@@ -733,9 +758,10 @@ void String::setNonSSO()
 void String::append(const Char* str, int length)
 {
 	int firstLen = getLength();
-	Char* b = lockBuffer(firstLen + length) + firstLen;
-	memcpy(b, str, length * sizeof(Char));
-	unlockBuffer(firstLen + length);
+	void* lockData = nullptr;
+	Char* b = lockBuffer(firstLen + length, &lockData) + firstLen;
+	memmove(b, str, length * sizeof(Char));
+	unlockBuffer(firstLen + length, lockData);
 }
 
 void String::append(const String& str)
@@ -752,9 +778,18 @@ void String::assign(const Char* str, int length)
 {
 	if (str && *str)
 	{
-		Char* buf = lockBuffer(length);
-		memcpy(buf, str, sizeof(Char) * length);
-		unlockBuffer(length);
+		//bool over = false;
+		//if (checkOverRange(this, str, length))
+		//{
+
+		//	over = true;
+		//}
+
+
+		void* lockData = nullptr;
+		Char* buf = lockBuffer(length, &lockData);
+		memmove(buf, str, sizeof(Char) * length);
+		unlockBuffer(length, lockData);
 	}
 	else
 	{
@@ -766,9 +801,10 @@ void String::assign(int count, Char ch)
 {
 	if (count > 0)
 	{
-		Char* buf = lockBuffer(count);
+		void* lockData = nullptr;
+		Char* buf = lockBuffer(count, &lockData);
 		std::fill<Char*, Char>(buf, buf + count, ch);
-		unlockBuffer(count);
+		unlockBuffer(count, lockData);
 	}
 	else
 	{
@@ -779,18 +815,7 @@ void String::assign(int count, Char ch)
 void String::assign(const StringRef& str)
 {
 	// TODO: String 参照のときの特殊化
-
-	int len = str.getLength();
-	if (len > 0)
-	{
-		Char* buf = lockBuffer(len);
-		memcpy(buf, str.data(), sizeof(Char) * len);
-		unlockBuffer(len);
-	}
-	else
-	{
-		clear();
-	}
+	assign(str.data(), str.getLength());
 }
 
 template<typename TChar>
@@ -815,12 +840,13 @@ void String::assignFromCStr(const TChar* str, int length, bool* outUsedDefaultCh
 
 	if (ascii)
 	{
-		Char* buf = lockBuffer(len);
+		void* lockData = nullptr;
+		Char* buf = lockBuffer(len, &lockData);
 		for (int i = 0; i < len; ++i)
 		{
 			buf[i] = str[i];
 		}
-		unlockBuffer(len);
+		unlockBuffer(len, lockData);
 	}
 	else
 	{

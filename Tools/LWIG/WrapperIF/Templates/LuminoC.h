@@ -19,7 +19,11 @@
 
 typedef intptr_t LNUserData;
 
-%Enums%
+%%Structs%%
 
-%Delegates%
+%%Enums%%
+
+%%Delegates%%
+
+%%StructMemberFuncDecls%%
 

@@ -1,5 +1,6 @@
 
-set(LWIG_LLVM_PACKAGE_DIR D:/Proj/Tech/llvm/1_Package_release_60/Debug)
+#set(LWIG_LLVM_PACKAGE_DIR D:/Proj/Tech/llvm/1_Package_release_60/Debug)
+set(LWIG_LLVM_PACKAGE_DIR C:/Proj/llvm/build_debug/package)
 set(CLANG_DIR ${LWIG_LLVM_PACKAGE_DIR}/lib/cmake/clang)
 set(LLVM_DIR ${LWIG_LLVM_PACKAGE_DIR}/lib/cmake/llvm)
 find_package(CLANG REQUIRED CONFIG)
@@ -10,6 +11,7 @@ set(LN_SOURCES
 	LWIG.PCH.h
 	Main.cpp
 	Common.h
+	Generator.h
 	OutputBuffer.cpp
 	OutputBuffer.h
 	Parser.cpp
@@ -20,6 +22,10 @@ set(LN_SOURCES
 	WrapperIF/WrapperIFClassesGenerator.h
 	WrapperIF/WrapperIFGenerator.cpp
 	WrapperIF/WrapperIFGenerator.h
+	DotNet/CSCommon.cpp
+	DotNet/CSCommon.h
+	DotNet/CSStructsGenerator.cpp
+	DotNet/CSStructsGenerator.h
 )
 
 source_group("Source"	FILES ${LN_SOURCES})

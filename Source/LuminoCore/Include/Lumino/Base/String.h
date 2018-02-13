@@ -474,9 +474,8 @@ private:
 	void release() LN_NOEXCEPT;
 	void copy(const String& str);
 	void move(String&& str) LN_NOEXCEPT;
-	void reserveBuffer(int length);
-	Char* lockBuffer(int requestSize);
-	void unlockBuffer(int confirmedSize);
+	Char* lockBuffer(int requestSize, void** outReserved);
+	void unlockBuffer(int confirmedSize, void* reserved);
 	Char* getBuffer();
 	const Char* getBuffer() const;
 

@@ -4,7 +4,7 @@
 #include "Parser.h"
 #include "SymbolDatabase.h"
 //#include "DotNet/DotNetPInvokeLibGenerator.h"
-//#include "DotNet/DotNetClassLibGenerator.h"
+#include "DotNet/CSStructsGenerator.h"
 //#include "DotNet/CSClassLibGenerator.h"
 //#include "DotNet/DotNetCommon.h"
 #include "WrapperIF/WrapperIFGenerator.h"
@@ -20,7 +20,7 @@ int main()
 	{
 		//L"D:/Proj/Lumino/Tools/LWIG/Test.cpp",
 		//_T(LUMINO_ROOT_DIR"/Bindings/Runtime/include/Common.h"),
-		_T(LUMINO_ROOT_DIR"/Source/LuminoCore/Include/Lumino/Math/Vector3_.h"),
+		_T(LUMINO_ROOT_DIR"/Source/LuminoCore/Include/Lumino/Math/Vector3.h"),
 		//_T(LUMINO_ROOT_DIR"/Source/LuminoCore/Include/Lumino/Audio/Sound.h"),
 		//LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Engine.h",
 		//_T(LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Audio/Sound.h"),
@@ -40,6 +40,10 @@ int main()
 		//LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Physics/Collider.h",
 	};
 
+	String moduleFullName = "Lumino";
+	String moduleShortName = "LN";
+	Path outputDir = _T(".");//_T(LUMINO_ROOT_DIR"\Bindings\Runtime\src");
+
 	//g_templateDir = LUMINO_ROOT_DIR"/Tools/LWIG/";
 	//g_csOutputDir = LUMINO_ROOT_DIR"/Bindings/DotNet/LuminoDotNet/";
 
@@ -48,8 +52,11 @@ int main()
 		SymbolDatabase db;
 
 		HeaderParser parser;
-		parser.addIncludePath(_T("D:/Proj/Lumino/Source/LuminoCore/Include"));
-		parser.addIncludePath(_T("D:/Proj/Lumino/Source/LuminoEngine/Include"));
+		//parser.addIncludePath(_T("D:/Proj/Lumino/Source/LuminoCore/Include"));
+		//parser.addIncludePath(_T("D:/Proj/Lumino/Source/LuminoEngine/Include"));
+		parser.addIncludePath(_T("C:\\Proj\\LN\\Lumino\\Source\\LuminoCore\\Include"));
+		parser.addIncludePath(_T("C:/Proj/LN/Lumino/Source/LuminoEngine/Include"));
+
 
 		parser.parse(files[0], &db);
 
@@ -63,7 +70,13 @@ int main()
 		//DotNetCommon::initialize();
 
 		{
-			WrapperIFGenerator gen(&db, LN_LOCALFILE("WrapperIF/Templates"), _T("."));
+			WrapperIFGenerator gen;
+			gen.setup(&db, LN_LOCALFILE("WrapperIF/Templates"), outputDir, moduleFullName, moduleShortName);
+			gen.generate();
+		}
+		{
+			CSStructsGenerator gen;
+			gen.setup(&db, LN_LOCALFILE("Templates"), outputDir, moduleFullName, moduleShortName);
 			gen.generate();
 		}
 		//{
