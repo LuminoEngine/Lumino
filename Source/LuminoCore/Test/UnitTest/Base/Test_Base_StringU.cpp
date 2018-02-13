@@ -996,3 +996,16 @@ TEST_F(Test_Base_UString, SelfAssign)
 	}
 }
 
+//## Char 代入
+TEST_F(Test_Base_UString, SetAt)
+{
+	//- [ ] インデックス指定の代入で文字列を変更できる
+	{
+		String str1 = _LT("12345");
+		String str2 = str1;
+		str1[2] = '_';
+		ASSERT_EQ("12_45", str1);
+		ASSERT_EQ("12345", str2);	// 共有解除。変更されない。
+	}
+}
+

@@ -451,6 +451,7 @@ public:
 	bool isSSO() const LN_NOEXCEPT { return !detail::getLSB<0>(static_cast<uint8_t>(m_data.sso.length)); }
 	bool isNonSSO() const LN_NOEXCEPT { return detail::getLSB<0>(static_cast<uint8_t>(m_data.sso.length)); }
 
+	CharRef operator[](int index);
 	const Char& operator[](int index) const;
 
 	String& operator=(const StringRef& rhs);
@@ -504,6 +505,8 @@ private:
 			Char		length;	// ---xxxxy	: x=size y:flag(0=sso,1=non sso)
 		} sso;
 	} m_data;
+
+	friend class CharRef;
 };
 
 class CharRef
@@ -512,6 +515,12 @@ public:
 	operator Char() const
 	{
 		return m_str.c_str()[m_index];
+	}
+
+	CharRef& operator=(Char ch)
+	{
+		m_str.setAt(m_index, ch);
+		return *this;
 	}
 
 private:
@@ -913,7 +922,9 @@ inline int String::getCapacity() const
 //inline String::iterator String::end() { return begin() + getLength(); }
 //inline String::const_iterator String::end() const { return begin() + getLength(); }
 
+inline CharRef String::operator[](int index) { return CharRef(*this, index); }
 inline const Char& String::operator[](int index) const { return getBuffer()[index]; }	// TODO: check range
+
 inline String& String::operator=(const StringRef& rhs) { assign(rhs); return *this; }
 inline String& String::operator=(const Char* rhs) { assign(rhs); return *this; }
 inline String& String::operator=(Char ch) { assign(&ch, 1); return *this; }
