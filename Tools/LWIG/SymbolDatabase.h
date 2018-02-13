@@ -167,8 +167,8 @@ public:
 	TypeInfo() {}
 	TypeInfo(StringRef rawFullName_) { setRawFullName(rawFullName_); }
 
-	String fullName() const { return rawFullName; }
-	String shortName() const { return m_shortName; }
+	const String& fullName() const { return rawFullName; }
+	const String& shortName() const { return m_shortName; }
 
 	bool isValueType() const { return isStruct || isPrimitive || isEnum; }
 	bool isStatic() const { return metadata->HasKey(_T("Static")); }

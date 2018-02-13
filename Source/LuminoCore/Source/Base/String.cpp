@@ -639,6 +639,7 @@ void String::move(String&& str) LN_NOEXCEPT
 // context は lockBuffer() と unlockBuffer() 間で渡しあうデータ。
 // 今は自己代入回避のための細工に使っている。必ず unlockBuffer() に渡すこと。
 // unlock するまでは \0 終端を保障しない。
+// また、lock 前後でサイズが変わらなくても変更であるとみなし、COW 共有は解除され独立したバッファになる。
 Char* String::lockBuffer(int requestSize, detail::StringLockContext* context)
 {
 	context->newCore = nullptr;
@@ -884,6 +885,14 @@ void String::assignFromCStr(const TChar* str, int length, bool* outUsedDefaultCh
 	}
 }
 
+void String::setAt(int index, Char ch)
+{
+	LN_CHECK(0 <= index && index < getLength());
+	detail::StringLockContext context;
+	Char* buf = lockBuffer(getLength(), &context);
+	buf[index] = ch;
+	unlockBuffer(getLength(), &context);
+}
 
 uint32_t String::getHashCode() const
 {

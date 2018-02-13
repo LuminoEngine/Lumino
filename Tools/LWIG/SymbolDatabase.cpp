@@ -150,7 +150,10 @@ void MethodInfo::ExpandCAPIParameters(SymbolDatabase* db)
 
 String MethodInfo::GetCAPIFuncName()
 {
-	String n = String::format(_T("LN{0}_{1}"), owner->shortName(), name);
+	String sname = owner->shortName();
+	sname[0] = StringTraits::toUpper(sname[0]);	// 先頭大文字
+
+	String n = String::format(_T("LN{0}_{1}"), sname, name);
 	if (IsOverloadChild())
 		n += overloadSuffix;
 	return n;

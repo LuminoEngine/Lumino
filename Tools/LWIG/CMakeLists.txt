@@ -34,6 +34,7 @@ include_directories(
 	"${LWIG_LLVM_PACKAGE_DIR}/include"
 	"${PROJECT_SOURCE_DIR}/Source/LuminoCore/Include"
 	"${PROJECT_SOURCE_DIR}/Source/Fluorite/Include"
+	"."
 )
 
 add_executable(LWIG ${LN_SOURCES})

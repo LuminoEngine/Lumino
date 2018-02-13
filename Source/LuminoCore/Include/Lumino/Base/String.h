@@ -44,6 +44,7 @@ enum class UStringRefSource
 }
 
 class Locale;
+class CharRef;
 class StringRef;
 class Path;
 
@@ -488,6 +489,7 @@ private:
 
 	// utils
 	template<typename TChar> void assignFromCStr(const TChar* str, int length = -1, bool* outUsedDefaultChar = nullptr, Encoding* encoding = nullptr);
+	void setAt(int index, Char ch);
 
 	Encoding* getThisTypeEncoding() const;
 	static ByteBuffer convertTo(const String& str, const Encoding* encoding, bool* outUsedDefaultChar = nullptr);
@@ -502,6 +504,26 @@ private:
 			Char		length;	// ---xxxxy	: x=size y:flag(0=sso,1=non sso)
 		} sso;
 	} m_data;
+};
+
+class CharRef
+{
+public:
+	operator Char() const
+	{
+		return m_str.c_str()[m_index];
+	}
+
+private:
+	CharRef(String& str, int index)
+		: m_str(str)
+		, m_index(index)
+	{}
+
+	String& m_str;
+	int m_index;
+
+	friend class String;
 };
 
 /**
