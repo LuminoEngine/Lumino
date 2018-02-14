@@ -286,6 +286,15 @@ public:
 		auto name = String::fromStdString(type.getAsString());
 		name = name.replace(_T("struct"), "");
 		name = name.replace(_T("class"), "");
+		name = name.replace(_T("const"), "");
+		name = name.replace(_T("*"), "");
+		name = name.replace(_T("&"), "");
+
+		if (name == _T("_Bool"))
+		{
+			return _T("bool");
+		}
+
 		return name.trim();
 		//SplitQualType st = type.split();
 		//if (st.Ty->isRecordType())
@@ -313,9 +322,9 @@ public:
 			//	errs() << " (" << D->getLocation().printToString(SM) << ")\n";                      // ソース上の場所表示
 			//}
 
-			errs() << "TopLevel : " << D->getDeclKindName();
-			if (NamedDecl *N = dyn_cast<NamedDecl>(D))  errs() << " " << N->getNameAsString();
-			errs() << "\n";
+			//errs() << "TopLevel : " << D->getDeclKindName();
+			//if (NamedDecl *N = dyn_cast<NamedDecl>(D))  errs() << " " << N->getNameAsString();
+			//errs() << "\n";
 
 			Visit(D);
 		}
@@ -409,17 +418,18 @@ public:
 
 				for (unsigned int iParam = 0; iParam < decl->getNumParams(); iParam++)
 				{
-					ParmVarDecl* param = decl->getParamDecl(iParam);
-					QualType& type = param->getType();
+					ParmVarDecl* paramDecl = decl->getParamDecl(iParam);
+					QualType& type = paramDecl->getType();
 					bool hasConst = type.getQualifiers().hasConst();
 					SplitQualType sp = type.split();
 					//PointerType
 					
-					auto info = Ref<ParameterInfo>::makeRef();
-					info->name = String::fromStdString(param->getNameAsString());
-					info->typeRawName = getRawTypeName(type);
-					info->isIn = hasConst;
-					info->isOut = (!hasConst && sp.Ty->isPointerType());
+					auto paramInfo = Ref<ParameterInfo>::makeRef();
+					paramInfo->name = String::fromStdString(paramDecl->getNameAsString());
+					paramInfo->typeRawName = getRawTypeName(type);
+					paramInfo->isIn = hasConst;
+					paramInfo->isOut = (!hasConst && sp.Ty->isPointerType());
+					info->parameters.add(paramInfo);
 				}
 			}
 		}
@@ -646,6 +656,10 @@ int HeaderParser::parse(const Path& filePath, ::SymbolDatabase* db)
 		args.push_back("-I");
 		args.push_back(path.getString().toStdString());
 	}
+
+	
+	args.push_back("-include");
+	args.push_back("C:/Proj/LN/Lumino/Source/LuminoEngine/Source/LuminoEngine.PCH.h");
 
 	args.push_back("-fsyntax-only");
 	args.push_back("-fms-compatibility");		// Enable full Microsoft Visual C++ compatibility

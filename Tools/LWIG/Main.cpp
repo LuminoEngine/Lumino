@@ -7,8 +7,8 @@
 #include "DotNet/CSStructsGenerator.h"
 //#include "DotNet/CSClassLibGenerator.h"
 //#include "DotNet/DotNetCommon.h"
+#include "WrapperIF/WrapperIFClassesGenerator.h"
 #include "WrapperIF/WrapperIFGenerator.h"
-//#include "WrapperIF/WrapperIFClassesGenerator.h"
 //
 //PathName		g_templateDir;
 //SymbolDatabase	g_database;
@@ -19,9 +19,8 @@ int main()
 	List<Path> files =
 	{
 		//L"D:/Proj/Lumino/Tools/LWIG/Test.cpp",
-		//_T(LUMINO_ROOT_DIR"/Bindings/Runtime/include/Common.h"),
-		_T(LUMINO_ROOT_DIR"/Source/LuminoCore/Include/Lumino/Math/Vector3.h"),
-		//_T(LUMINO_ROOT_DIR"/Source/LuminoCore/Include/Lumino/Audio/Sound.h"),
+		//_T(LUMINO_ROOT_DIR"/Source/LuminoCore/Include/Lumino/Math/Vector3.h"),
+		_T(LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Audio/Sound.h"),
 		//LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Engine.h",
 		//_T(LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Audio/Sound.h"),
 		//LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Base/GeometryStructs.h",
@@ -42,7 +41,7 @@ int main()
 
 	String moduleFullName = "Lumino";
 	String moduleShortName = "LN";
-	Path outputDir = _T(".");//_T(LUMINO_ROOT_DIR"\Bindings\Runtime\src");
+	Path outputDir = _T(LUMINO_ROOT_DIR"/Bindings/Runtime/src");//_T(".");//
 
 	//g_templateDir = LUMINO_ROOT_DIR"/Tools/LWIG/";
 	//g_csOutputDir = LUMINO_ROOT_DIR"/Bindings/DotNet/LuminoDotNet/";
@@ -57,8 +56,10 @@ int main()
 		parser.addIncludePath(_T("C:\\Proj\\LN\\Lumino\\Source\\LuminoCore\\Include"));
 		parser.addIncludePath(_T("C:/Proj/LN/Lumino/Source/LuminoEngine/Include"));
 
-
-		parser.parse(files[0], &db);
+		for (auto& file : files)
+		{
+			parser.parse(file, &db);
+		}
 
 		db.Link();
 
@@ -70,6 +71,11 @@ int main()
 		//DotNetCommon::initialize();
 
 		{
+			WrapperIFClassesGenerator gen;
+			gen.setup(&db, LN_LOCALFILE("WrapperIF/Templates"), outputDir, moduleFullName, moduleShortName);
+			gen.generate();
+		}
+		{
 			WrapperIFGenerator gen;
 			gen.setup(&db, LN_LOCALFILE("WrapperIF/Templates"), outputDir, moduleFullName, moduleShortName);
 			gen.generate();
@@ -79,6 +85,7 @@ int main()
 			gen.setup(&db, LN_LOCALFILE("Templates"), outputDir, moduleFullName, moduleShortName);
 			gen.generate();
 		}
+
 		//{
 		//	WrapperIFClassesGenerator gen;
 		//	gen.generate();

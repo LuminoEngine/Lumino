@@ -18,6 +18,8 @@ set(LN_SOURCES
 	Parser.h
 	SymbolDatabase.cpp
 	SymbolDatabase.h
+	WrapperIF/FlatCCommon.cpp
+	WrapperIF/FlatCCommon.h
 	WrapperIF/WrapperIFClassesGenerator.cpp
 	WrapperIF/WrapperIFClassesGenerator.h
 	WrapperIF/WrapperIFGenerator.cpp

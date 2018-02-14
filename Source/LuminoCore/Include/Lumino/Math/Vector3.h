@@ -84,7 +84,6 @@ public:
 		@brief		このベクトルを正規化します。
 		@details	ベクトルの長さが 0 の場合は正規化を行いません。
 	*/
-	LN_METHOD()
     void normalize();
 
 	/**
@@ -92,7 +91,6 @@ public:
 		@param[in]	minVec	: 最小値
 		@param[in]	maxVec	: 最大値
 	*/
-	LN_METHOD()
 	void clamp(const Vector3& minVec, const Vector3& maxVec);
 
 	/**

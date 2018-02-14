@@ -1,7 +1,6 @@
 ﻿
 #include "SymbolDatabase.h"
 
-
 Ref<TypeInfo>	PredefinedTypes::voidType;
 Ref<TypeInfo>	PredefinedTypes::nullptrType;
 Ref<TypeInfo>	PredefinedTypes::boolType;
@@ -150,10 +149,10 @@ void MethodInfo::ExpandCAPIParameters(SymbolDatabase* db)
 
 String MethodInfo::GetCAPIFuncName()
 {
-	String sname = owner->shortName();
-	sname[0] = StringTraits::toUpper(sname[0]);	// 先頭大文字
+	String sname = name;
+	sname[0] = StringTraits::toUpper<Char>(sname[0]);	// 先頭大文字
 
-	String n = String::format(_T("LN{0}_{1}"), sname, name);
+	String n = String::format(_T("LN{0}_{1}"), owner->shortName(), sname);
 	if (IsOverloadChild())
 		n += overloadSuffix;
 	return n;
@@ -224,21 +223,27 @@ void TypeInfo::MakeProperties()
 			String name;
 			String namePrefix;
 			bool isGetter = false;
-			if (methodInfo->name.indexOf(_T("Get")) == 0)
+			if (methodInfo->name.indexOf(_T("get"), 0, CaseSensitivity::CaseInsensitive) == 0)
 			{
 				name = methodInfo->name.substring(3);
 				isGetter = true;
 			}
-			if (methodInfo->name.indexOf(_T("Is")) == 0)
+			else if (methodInfo->name.indexOf(_T("is"), 0, CaseSensitivity::CaseInsensitive) == 0)
 			{
 				name = methodInfo->name.substring(2);
-				namePrefix = _T("Is");
+				namePrefix = _T("is");
 				isGetter = true;
 			}
-			if (methodInfo->name.indexOf(_T("Set")) == 0)
+			else if (methodInfo->name.indexOf(_T("set"), 0, CaseSensitivity::CaseInsensitive) == 0)
 			{
 				name = methodInfo->name.substring(3);
 				isGetter = false;
+			}
+			else
+			{
+				// 上記以外 (longName() など名詞系) は getter とする
+				name = methodInfo->name;
+				isGetter = true;
 			}
 
 			Ref<PropertyInfo> propInfo;
@@ -261,13 +266,15 @@ void TypeInfo::MakeProperties()
 			{
 				LN_DCHECK(propInfo->getter == nullptr);
 				propInfo->getter = methodInfo;
-				if (propInfo->type == nullptr) propInfo->type = methodInfo->returnType;
+				if (propInfo->type == nullptr)	// return 型をプロパティの型とする
+					propInfo->type = methodInfo->returnType;
 			}
 			else
 			{
 				LN_DCHECK(propInfo->setter == nullptr);
 				propInfo->setter = methodInfo;
-				if (propInfo->type == nullptr) propInfo->type = methodInfo->parameters[0]->type;
+				if (propInfo->type == nullptr)	// 第1引数の型をプロパティの型とする
+					propInfo->type = methodInfo->parameters[0]->type;
 			}
 
 			methodInfo->ownerProperty = propInfo;
@@ -514,6 +521,7 @@ void SymbolDatabase::InitializePredefineds()
 	PredefinedTypes::EventConnectionType = predefineds.getLast();
 }
 
+// typeFullName : const や &, * は除かれていること
 Ref<TypeInfo> SymbolDatabase::findTypeInfo(StringRef typeFullName)
 {
 	Ref<TypeInfo>* type;
@@ -534,8 +542,10 @@ Ref<TypeInfo> SymbolDatabase::findTypeInfo(StringRef typeFullName)
 	if (type != nullptr)
 		return *type;
 
-	if (typeFullName == _T("StringRef")) return PredefinedTypes::stringType;
-	if (typeFullName == _T("EventConnection")) return PredefinedTypes::EventConnectionType;
+	// aliases
+	if (typeFullName == _T("ln::RefrectionObject")) return PredefinedTypes::stringType;
+	if (typeFullName == _T("ln::StringRef")) return PredefinedTypes::stringType;
+	if (typeFullName == _T("ln::EventConnection")) return PredefinedTypes::EventConnectionType;
 
 	LN_ENSURE(0, _T("Undefined type: %s"), String(typeFullName).c_str());
 	return nullptr;

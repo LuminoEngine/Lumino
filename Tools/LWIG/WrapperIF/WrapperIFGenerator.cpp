@@ -1,5 +1,5 @@
 
-#include "../SymbolDatabase.h"
+#include "FlatCCommon.h"
 #include "WrapperIFGenerator.h"
 
 const String funcHeaderTemplate =
@@ -12,24 +12,6 @@ const String funcBodyTemplate =
 	"    LWIG_FUNC_TRY_END_RETURN;\n"
 	"}\n";
 
-const String wrapperIFClassTemplate =
-	"class LN%ClassName% : public %ClassName%\n"
-	"{\n"
-	"public:\n"
-	"\n"
-	"    void PostInitialize()\n"
-	"    {\n"
-	"%PostInitializeExps%\n"
-	"    }\n"
-	"\n"
-	"%EventWrappers%\n"
-	"\n"
-	"%OverrideFuncPtrs%\n"
-	"\n"
-	"%OverrideMethods%\n"
-	"};\n"
-	"%OverrideFuncPtrImpls%\n";
-
 WrapperIFGenerator::WrapperIFGenerator()
 {
 }
@@ -39,6 +21,7 @@ void WrapperIFGenerator::generate()
 	// structs
 	OutputBuffer structsText;
 	OutputBuffer structMemberFuncDeclsText;
+	OutputBuffer structMemberFuncImplsText;
 	for (auto& structInfo : db()->structs)
 	{
 		structsText.AppendLine("struct LN{0}", structInfo->shortName());
@@ -61,7 +44,11 @@ void WrapperIFGenerator::generate()
 			structMemberFuncDeclsText.AppendLines(MakeMethodHeader(methodInfo)).append(";").NewLine(2);
 		}
 
-		//structsText.AppendLines(MakeMethods(structInfo));
+		// function impls
+		for (auto& methodInfo : structInfo->declaredMethods)
+		{
+			structMemberFuncImplsText.AppendLines(MakeMethod(structInfo, methodInfo)).NewLine();
+		}
 	}
 
 	//// classes
@@ -111,7 +98,7 @@ void WrapperIFGenerator::generate()
 			OutputBuffer params;
 			for (auto& paramInfo : involeMethod->capiParameters)
 			{
-				params.AppendCommad("{0} {1}", MakeCApiParamTypeName(involeMethod, paramInfo), paramInfo->name);
+				params.AppendCommad("{0} {1}", FlatCCommon::MakeCApiParamTypeName(involeMethod, paramInfo), paramInfo->name);
 			}
 
 			//enumsText.AppendLine("/** {0} */", MakeDocumentComment(delegateInfo->document));
@@ -119,161 +106,28 @@ void WrapperIFGenerator::generate()
 		}
 	}
 
-	//{
-	//	String src = FileSystem::readAllText(makeTemplateFilePath(_T("Source.cpp")));
-	//	src = src.replace("%Contents%", buffer.toString());
-	//	FileSystem::writeAllText(makeOutputFilePath(_T("WrapperIF.generated.cpp")).c_str(), src);
-	//}
-	{
-		String src = FileSystem::readAllText(makeTemplateFilePath(_T("WrapperIF.h")));
-		src = src.replace("%OverrideCallerFuncPtrs%", GenerateOverrideCallerFuncPtrs());
-		src = src.replace("%WrapperClasses%", GenerateWrapperIFClasses());
-		FileSystem::writeAllText(makeOutputFilePath(_T("WrapperIF.generated.h")).c_str(), src);
-	}
+
+	// save C API Header
 	{
 		String src = FileSystem::readAllText(makeTemplateFilePath(_T("LuminoC.h")));
 		src = src.replace("%%Structs%%", structsText.toString());
 		src = src.replace("%%Enums%%", enumsText.toString());
 		src = src.replace("%%Delegates%%", delegatesText.toString());
 		src = src.replace("%%StructMemberFuncDecls%%", structMemberFuncDeclsText.toString());
-		FileSystem::writeAllText(makeOutputFilePath(_T("LuminoC.generated.h")).c_str(), src, Encoding::getUTF8Encoding());
-	}
-}
 
-String WrapperIFGenerator::GenerateOverrideCallerFuncPtrs()
-{
-	OutputBuffer funcPtrDefs;
-	for (auto& classInfo : db()->classes)
+		String fileName = String::format("{0}.FlatC.generated.h", moduleFullName());
+		FileSystem::writeAllText(makeOutputFilePath(fileName).c_str(), src, Encoding::getUTF8Encoding());
+	}
+	// save C API Source
 	{
-		if (!classInfo->isStatic())
-		{
-			for (auto& methodInfo : classInfo->declaredMethods)
-			{
-				if (!methodInfo->isVirtual) continue;
+		String src = FileSystem::readAllText(makeTemplateFilePath(_T("Source.cpp")));
+		src = src.replace("%Contents%", structMemberFuncImplsText.toString());
 
-				// make params
-				OutputBuffer params;
-				for (auto& paramInfo : methodInfo->capiParameters)
-				{
-					params.AppendCommad("{0} {1}", MakeCApiParamTypeName(methodInfo, paramInfo), paramInfo->name);
-				}
-
-				funcPtrDefs.append("typedef LNResultCode (*{0}_{1}_OverrideCaller)({2});", classInfo->shortName(), methodInfo->name, params.toString()).NewLine();
-				//funcPtrDefs.Append("{0}_OverrideCaller	m_{0}_OverrideCaller;", methodInfo->name).NewLine();
-			}
-		}
+		String fileName = String::format("{0}.FlatC.generated.cpp", moduleFullName());
+		FileSystem::writeAllText(makeOutputFilePath(fileName).c_str(), src);
 	}
-
-	return funcPtrDefs.toString();
 }
 
-String WrapperIFGenerator::GenerateWrapperIFClasses()
-{
-	OutputBuffer classes;
-	for (auto& classInfo : db()->classes)
-	{
-		m_eventWrappers.clear();
-		m_eventWrappers.IncreaseIndent();
-		m_eventWrapperConnectExps.clear();
-		m_eventWrapperConnectExps.IncreaseIndent(2);
-
-		if (!classInfo->isStatic())
-		{
-			// ‰¼‘zŠÖ”‚Ì override
-			OutputBuffer overrideCallersDecl(1);
-			OutputBuffer overrideCallersImpl(0);
-			OutputBuffer overrideMethods(1);
-			for (auto& methodInfo : classInfo->declaredMethods)
-			{
-				if (methodInfo->isVirtual)
-				{
-					// member variable decl
-					String typeName = String::format("{0}_{1}_OverrideCaller", classInfo->shortName(), methodInfo->name);
-					String varName = String::format("m_{0}_OverrideCaller", methodInfo->name);
-					overrideCallersDecl.append("static {0} {1};", typeName, varName).NewLine();
-
-					// member variable impl
-					overrideCallersImpl.append("{0} LN{1}::{2} = nullptr;", typeName, classInfo->shortName(), varName).NewLine();
-
-					// call args
-					OutputBuffer args;
-					for (auto& paramInfo : methodInfo->capiParameters)
-					{
-						if (paramInfo->isThis)
-							args.AppendCommad("LWIG_TO_HANDLE(this)");
-						else
-							LN_NOTIMPLEMENTED();
-					}
-
-					// member method
-					overrideMethods.append("virtual {0} {1}() override", MakeCppTypeName(methodInfo->returnType), methodInfo->name).NewLine();
-					overrideMethods.append("{").NewLine();
-					overrideMethods.IncreaseIndent();
-					overrideMethods.append("{0}({1});", varName, args.toString()).NewLine();
-					overrideMethods.DecreaseIndent();
-					overrideMethods.append("}").NewLine();
-
-					// member method
-					overrideMethods.append("template<typename... TArgs>").NewLine();
-					overrideMethods.append("{0} {1}_CallBase(TArgs... args)", MakeCppTypeName(methodInfo->returnType), methodInfo->name).NewLine();
-					overrideMethods.append("{").NewLine();
-					overrideMethods.IncreaseIndent();
-					overrideMethods.append("return {0}::{1}(args...);", methodInfo->owner->shortName(), methodInfo->name).NewLine();
-					overrideMethods.DecreaseIndent();
-					overrideMethods.append("}").NewLine();
-				}
-
-				if (methodInfo->IsEventSetter())
-				{
-					// ¦Event ‚Íˆø”1‚Â‚ª‘O’ñ
-					auto delegateClass = methodInfo->parameters[0]->type;
-					auto invokeMethod = delegateClass->declaredMethods[0];
-
-					// make params
-					OutputBuffer params;
-					OutputBuffer funcParams;
-					OutputBuffer args;
-					for (auto& paramInfo : invokeMethod->parameters)
-					{
-						params.AppendCommad("{0} {1}", MakeCApiParamTypeName(invokeMethod, paramInfo), paramInfo->name);
-						funcParams.AppendCommad("{0} {1}", MakeCppTypeName(paramInfo->type), paramInfo->name);
-
-						if (paramInfo->type->IsClass())
-							args.AppendCommad("LWIG_TO_HANDLE({0})", paramInfo->name);
-						else
-							args.AppendCommad("{0}", paramInfo->name);
-					}
-					m_eventWrappers.AppendLine("Event<void(LNHandle self, {0})> {1};", params.toString(), MakeEventWrapperMemberVariableName(methodInfo));
-
-					// wrapper method
-					String eventCallbackName = String::format("{0}_EventCallback", methodInfo->name);
-					m_eventWrappers.AppendLines(
-						"void {0}_EventCallback({1})\n"
-						"{{\n"
-						"    {2}.Raise(LWIG_TO_HANDLE(this), {3});\n"
-						"}}\n",
-						methodInfo->name,
-						funcParams.toString(),
-						MakeEventWrapperMemberVariableName(methodInfo),
-						args.toString());
-
-					// initialize
-					m_eventWrapperConnectExps.AppendLine("{0}(CreateDelegate(this, &LN{1}::{2}));", methodInfo->name, classInfo->shortName(), eventCallbackName);
-				}
-			}
-
-			classes.append(wrapperIFClassTemplate
-				.replace("%ClassName%", classInfo->shortName())
-				.replace("%OverrideFuncPtrs%", overrideCallersDecl.toString())
-				.replace("%OverrideMethods%", overrideMethods.toString())
-				.replace("%OverrideFuncPtrImpls%", overrideCallersImpl.toString())
-				.replace("%PostInitializeExps%", m_eventWrapperConnectExps.toString())
-				.replace("%EventWrappers%", m_eventWrappers.toString()));
-		}
-	}
-
-	return classes.toString();
-}
 
 String WrapperIFGenerator::MakeInstanceParamName(Ref<TypeInfo> info)
 {
@@ -329,7 +183,7 @@ String WrapperIFGenerator::MakeMethodHeader(Ref<MethodInfo> methodInfo)
 	OutputBuffer params;
 	for (auto& paramInfo : methodInfo->capiParameters)
 	{
-		params.AppendCommad("{0} {1}", MakeCApiParamTypeName(methodInfo, paramInfo), paramInfo->name);
+		params.AppendCommad("{0} {1}", FlatCCommon::MakeCApiParamTypeName(methodInfo, paramInfo), paramInfo->name);
 	}
 
 	String suffix = (methodInfo->isVirtual) ? "_CallVirtualBase" : "";
@@ -340,7 +194,7 @@ String WrapperIFGenerator::MakeMethodHeader(Ref<MethodInfo> methodInfo)
 		.replace("%%ParamList%%", params.toString());
 }
 
-String WrapperIFGenerator::MakeMethod(Ref<TypeInfo> typeInfo, Ref<MethodInfo> methodInfo, bool virtualBase)
+String WrapperIFGenerator::MakeMethod(Ref<TypeInfo> typeInfo, Ref<MethodInfo> methodInfo)
 {
 	// function header
 	String funcHeader = MakeMethodHeader(methodInfo);
@@ -455,7 +309,7 @@ String WrapperIFGenerator::MakeMethod(Ref<TypeInfo> typeInfo, Ref<MethodInfo> me
 			else
 			{
 				String name = methodInfo->name;
-				if (virtualBase) 
+				if (methodInfo->isVirtual)
 					name = ("LN" + typeInfo->shortName() + "::" + name + "_CallBase");
 				callExp = String::format("(LWIG_TO_OBJECT(LN{0}, {1})->{2}({3}));", typeInfo->shortName(), MakeInstanceParamName(typeInfo), name, args.toString());
 			}
@@ -471,67 +325,6 @@ String WrapperIFGenerator::MakeMethod(Ref<TypeInfo> typeInfo, Ref<MethodInfo> me
 		.replace("%%FuncBody%%", body.toString());
 }
 
-String WrapperIFGenerator::MakeCApiParamTypeName(Ref<MethodInfo> methodInfo, Ref<ParameterInfo> paramInfo)
-{
-	auto typeInfo = paramInfo->type;
-
-	if (typeInfo->isStruct)
-	{
-		String modifer;
-		if (paramInfo->isThis && methodInfo->isConst)
-			modifer = "const ";
-		if (!paramInfo->isThis && !paramInfo->isOut)
-			modifer = "const ";
-		return String::format("{0}LN{1}*", modifer, typeInfo->shortName());
-	}
-
-	String name;
-	if (typeInfo == PredefinedTypes::stringType)
-		name = "const LNChar*";
-	else if (typeInfo->IsClass())
-		name = "LNHandle";
-	else
-		name = typeInfo->shortName();
-
-	if (paramInfo->isOut || paramInfo->isReturn)
-		name += "*";
-
-	//if (typeInfo->isStruct && paramInfo->isThis)
-	//{
-	//	if (methodInfo->isConst)
-	//		name = "const " + name;
-	//	name += "*";
-	//}
-
-	return name;
-//	String name;
-//
-//	if (isOut)
-//	{
-//		name = typeInfo->name;
-//		name += "*";
-//	}
-//	else
-//	{
-//		if (typeInfo == PredefinedTypes::stringType)
-//			name = "const LNChar*";
-//		else if (typeInfo->IsClass())
-//			name = "LNHandle";
-//		else
-//			name = typeInfo->name;
-//	}
-//	return name;
-}
-
-String WrapperIFGenerator::MakeCppTypeName(Ref<TypeInfo> typeInfo)
-{
-	if (typeInfo->IsClass())
-	{
-		return typeInfo->shortName() + _T("*");
-	}
-
-	return typeInfo->shortName();
-}
 
 String WrapperIFGenerator::MakeDocumentComment(Ref<DocumentInfo> doc)
 {
@@ -562,8 +355,3 @@ String WrapperIFGenerator::MakeDocumentComment(Ref<DocumentInfo> doc)
 	return text.toString();
 }
 
-
-String WrapperIFGenerator::MakeEventWrapperMemberVariableName(Ref<MethodInfo> connectMethod)
-{
-	return _T("m_") + connectMethod->name + _T("_EventWrapper");
-}

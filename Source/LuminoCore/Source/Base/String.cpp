@@ -887,11 +887,12 @@ void String::assignFromCStr(const TChar* str, int length, bool* outUsedDefaultCh
 
 void String::setAt(int index, Char ch)
 {
-	LN_CHECK(0 <= index && index < getLength());
+	int length = getLength();
+	LN_CHECK(0 <= index && index < length);
 	detail::StringLockContext context;
-	Char* buf = lockBuffer(getLength(), &context);
+	Char* buf = lockBuffer(length, &context);
 	buf[index] = ch;
-	unlockBuffer(getLength(), &context);
+	unlockBuffer(length, &context);
 }
 
 uint32_t String::getHashCode() const

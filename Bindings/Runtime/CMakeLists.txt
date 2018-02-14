@@ -10,12 +10,12 @@ include(../../CMake/LuminoCommon.cmake NO_POLICY_SCOPE)
 set(LN_SOURCES_Runtime
 	include/Common.h
 	src/Internal.h
-	src/WrapperIF.generated.h
 	src/BindingManager.cpp
 	src/BindingManager.h
 	src/InternalAPI.cpp
-	src/LuminoC.generated.h
-	src/WrapperIF.generated.cpp
+	src/Lumino.FlatC.generated.cpp
+	src/Lumino.FlatC.generated.h
+	src/Lumino.Wrapper.generated.h
 )
 
 source_group("Runtime"	FILES ${LN_SOURCES_Runtime})
