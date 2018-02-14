@@ -14,8 +14,6 @@ LN_NAMESPACE_BEGIN
 //template <class T> class Ref;
 
 namespace tr {
-//class ReflectionObject;
-//class TypeInfo;
 class Archive;
 
 class ScVariant;
@@ -370,7 +368,7 @@ public:
 
 
 protected:
-	virtual Ref<ReflectionObject> createObject(const String& className, TypeInfo* requestedType);
+	virtual Ref<Object> createObject(const String& className, TypeInfo* requestedType);
 
 private:
 	ISerializeElement* saveArchiveHeaderElement(ISerializeElement* element);

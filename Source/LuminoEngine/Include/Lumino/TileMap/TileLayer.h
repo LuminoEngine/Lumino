@@ -11,7 +11,7 @@ typedef Ref<TileLayer> TileLayerPtr;
 	@brief	
 */
 class TileLayer
-	: public tr::ReflectionObject
+	: public Object
 {
 	LN_OBJECT;
 public:

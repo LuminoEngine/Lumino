@@ -74,7 +74,7 @@ LN_ENUM(VariantTestEnum1)
 };
 LN_ENUM_DECLARE(VariantTestEnum1);
 
-class RefTest1 : public ReflectionObject
+class RefTest1 : public Object
 {
 };
 class ArrayTest1 : public ReflectionArrayObject
@@ -136,7 +136,7 @@ TEST_F(IntegrationTest_Reflection_Variant, Basic)
 		ASSERT_EQ(VariantType::Null, v1.getType());
 		ASSERT_EQ(VariantType::Null, v2.getType());
         ASSERT_EQ(nullptr, Variant::cast<std::nullptr_t>(v1));
-		ASSERT_EQ(nullptr, Variant::cast<RefTest1*>(v2));	// ReflectionObject で cast すると nullptr が返ってくる
+		ASSERT_EQ(nullptr, Variant::cast<RefTest1*>(v2));	// Object で cast すると nullptr が返ってくる
 		ASSERT_EQ(nullptr, Variant::cast<ArrayTest1*>(v2));	// ReflectionArrayObject で cast すると nullptr が返ってくる
 		ASSERT_EQ(NULL, Variant::cast<RefTest1*>(v2));
 	}
@@ -250,7 +250,7 @@ TEST_F(IntegrationTest_Reflection_Variant, Basic)
 		ASSERT_EQ(10, Variant::cast<const Point&>(v2).x);	// 参照で取り出せる
 		ASSERT_EQ(30, Variant::cast<Point>(v3).x);
 	}
-	// <Test> ReflectionObject 型
+	// <Test> Object 型
 	{
 		RefTest1* obj1 = new RefTest1();
 		Variant v1(obj1);
@@ -258,7 +258,7 @@ TEST_F(IntegrationTest_Reflection_Variant, Basic)
 		ASSERT_EQ(VariantType::Object, v1.getType());
 		ASSERT_EQ(VariantType::Object, v2.getType());
 		ASSERT_EQ(obj1, Variant::cast<RefTest1*>(v1));
-		ASSERT_EQ(obj1, Variant::cast<ReflectionObject*>(v1));
+		ASSERT_EQ(obj1, Variant::cast<Object*>(v1));
 		ASSERT_EQ(obj1, Variant::cast<RefTest1*>(v2));
 		obj1->release();
 	}
@@ -270,7 +270,7 @@ TEST_F(IntegrationTest_Reflection_Variant, Basic)
 		ASSERT_EQ(VariantType::Object, v1.getType());
 		ASSERT_EQ(VariantType::Object, v2.getType());
 		ASSERT_EQ(obj1.get(), Variant::cast<RefTest1*>(v1));
-		ASSERT_EQ(obj1.get(), Variant::cast<ReflectionObject*>(v1));
+		ASSERT_EQ(obj1.get(), Variant::cast<Object*>(v1));
 		ASSERT_EQ(obj1.get(), Variant::cast<RefTest1*>(v2));
 		ASSERT_EQ(obj1, Variant::cast<Ref<RefTest1>>(v2));
 	}
@@ -283,7 +283,7 @@ TEST_F(IntegrationTest_Reflection_Variant, Basic)
 		ASSERT_EQ(VariantType::ArrayObject, v2.getType());
 		ASSERT_EQ(obj1, Variant::cast<ArrayTest1*>(v1));
 		ASSERT_EQ(obj1, Variant::cast<ReflectionArrayObject*>(v1));
-		ASSERT_EQ(obj1, Variant::cast<ReflectionObject*>(v1));
+		ASSERT_EQ(obj1, Variant::cast<Object*>(v1));
 		ASSERT_EQ(obj1, Variant::cast<ArrayTest1*>(v2));
 		obj1->release();
 	}

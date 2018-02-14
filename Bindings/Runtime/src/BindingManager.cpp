@@ -68,7 +68,7 @@ void LFManager::terminate()
 }
 
 //------------------------------------------------------------------------------
-LNHandle LFManager::CheckRegisterObject(tr::ReflectionObject* obj)
+LNHandle LFManager::CheckRegisterObject(Object* obj)
 {
 	if (obj == nullptr) return NULL;
 

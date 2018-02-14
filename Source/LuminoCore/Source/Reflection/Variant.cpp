@@ -398,13 +398,13 @@ const void* Variant::getStruct() const
 	if (LN_REQUIRE(m_type == VariantType::Struct)) return nullptr;
 	return (const void*)m_struct;
 }
-void Variant::setReflectionObject(ReflectionObject* obj)
+void Variant::setReflectionObject(Object* obj)
 {
 	release();
 	m_type = VariantType::Object;
 	LN_REFOBJ_SET(m_object, obj);
 }
-ReflectionObject* Variant::getReflectionObject() const
+Object* Variant::getReflectionObject() const
 {
 	if (m_type == VariantType::Null) return nullptr;
 	if (LN_REQUIRE(m_type == VariantType::Object || m_type == VariantType::ArrayObject)) return nullptr;	// List も Object の一部。

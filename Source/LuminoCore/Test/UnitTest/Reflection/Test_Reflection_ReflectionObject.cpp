@@ -33,21 +33,21 @@ protected:
 	virtual void TearDown() {}
 };
 
-class RefTest1 : public tr::ReflectionObject
+class RefTest1 : public Object
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 };
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(RefTest1, tr::ReflectionObject);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(RefTest1, Object);
 
 class RefTest2 : public RefTest1
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
 };
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(RefTest2, tr::ReflectionObject);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(RefTest2, Object);
 
-class EventTest1 : public tr::ReflectionObject
+class EventTest1 : public Object
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
@@ -59,7 +59,7 @@ public:
 	void OnClicked() { tr::ReflectionEventArgs e; raiseReflectionEvent(Clicked, &e); }
 	void OnClicked2(int a) { raiseDelegateEvent(Clicked2, a); }
 };
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(EventTest1, tr::ReflectionObject);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(EventTest1, Object);
 LN_REFLECTION_EVENT_IMPLEMENT(EventTest1, tr::ReflectionEventArgs, ClickedEvent, "Clicked", Clicked);
 
 //---------------------------------------------------------------------
@@ -136,7 +136,7 @@ protected:
 };
 
 class PropertyTest1
-	: public tr::ReflectionObject
+	: public Object
 {
 	LN_TR_REFLECTION_TYPEINFO_DECLARE();
 public:
@@ -189,12 +189,12 @@ public:
 	int m_v6ChangedCount;
 
 private:
-	static void V6Changed(tr::ReflectionObject* obj)
+	static void V6Changed(Object* obj)
 	{
 		static_cast<PropertyTest1*>(obj)->m_v6ChangedCount++;
 	}
 };
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(PropertyTest1, tr::ReflectionObject);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(PropertyTest1, Object);
 LN_TR_PROPERTY_IMPLEMENT(PropertyTest1, int, V1, tr::PropertyMetadata());
 LN_TR_PROPERTY_IMPLEMENT(PropertyTest1, RefTest1*, V2, tr::PropertyMetadata());
 LN_TR_PROPERTY_IMPLEMENT(PropertyTest1, Point, V3, tr::PropertyMetadata());
@@ -418,10 +418,10 @@ TEST_F(Test_Reflection_Property, NonMetadataProperty)
 
 //==============================================================================================================================================================
 #if 0
+class Object;
 
 namespace tr2 {
 class PropertyInfo;
-class Object;
 
 namespace detail {
 

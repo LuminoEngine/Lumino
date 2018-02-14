@@ -10,7 +10,7 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 // VisualEffect
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(VisualEffect, tr::ReflectionObject);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(VisualEffect, Object);
 
 //------------------------------------------------------------------------------
 //VisualEffectPtr VisualEffect::create(const StringRef& filePath)
@@ -106,6 +106,6 @@ void VisualEffect::SetWorldMatrix(const Matrix& matrix)
 //==============================================================================
 // VisualEffectInstance
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(VisualEffectInstance, tr::ReflectionObject);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(VisualEffectInstance, Object);
 
 LN_NAMESPACE_END

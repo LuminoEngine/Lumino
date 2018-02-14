@@ -3,10 +3,11 @@
 #include "../Base/Common.h"
 
 LN_NAMESPACE_BEGIN
+class Object;
+
 namespace tr
 {
 class TypeInfo;
-class ReflectionObject;
 class ReflectionEventInfo;
 class ReflectionEventBase;
 class ReflectionEventArgs;

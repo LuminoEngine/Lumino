@@ -9,7 +9,7 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 // TileLayer
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TileLayer, tr::ReflectionObject);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TileLayer, Object);
 
 //------------------------------------------------------------------------------
 TileLayerPtr TileLayer::create()

@@ -30,7 +30,7 @@ PropertyInfo::~PropertyInfo()
 }
 
 //------------------------------------------------------------------------------
-void PropertyInfo::notifyPropertyChanged(ReflectionObject* ownerObject, PropertyBase* target, const PropertyInfo* prop, PropertySetSource source)
+void PropertyInfo::notifyPropertyChanged(Object* ownerObject, PropertyBase* target, const PropertyInfo* prop, PropertySetSource source)
 {
 	Ref<PropertyChangedEventArgs> e(g_eventArgsPool.create<PropertyChangedEventArgs>(prop, source), false);
 	//target->onPropertyChanged(e);
@@ -49,13 +49,13 @@ void PropertyInfo::notifyPropertyChanged(ReflectionObject* ownerObject, Property
 
 #ifdef LN_LEGACY_VARIANT_ENABLED
 //------------------------------------------------------------------------------
-void PropertyInfo::setPropertyValue(ReflectionObject* obj, const PropertyInfo* prop, const Variant& value, PropertySetSource source)
+void PropertyInfo::setPropertyValue(Object* obj, const PropertyInfo* prop, const Variant& value, PropertySetSource source)
 {
 	obj->setPropertyValueInternal(prop, value, false, source);
 }
 
 //------------------------------------------------------------------------------
-Variant PropertyInfo::getPropertyValue(ReflectionObject* obj, const PropertyInfo* prop)
+Variant PropertyInfo::getPropertyValue(Object* obj, const PropertyInfo* prop)
 {
 	//if (prop->isStored())
 	//{

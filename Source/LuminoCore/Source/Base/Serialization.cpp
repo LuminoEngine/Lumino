@@ -311,7 +311,7 @@ const Char* Archive::ClassVersionKey = _TT("lumino_class_version");
 const Char* Archive::ClassBaseDefaultNameKey = _TT("lumino_class_base");
 
 //------------------------------------------------------------------------------
-Ref<ReflectionObject> Archive::createObject(const String& className, TypeInfo* requestedType)
+Ref<Object> Archive::createObject(const String& className, TypeInfo* requestedType)
 {
 	if (className == requestedType->getName())
 	{

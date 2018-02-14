@@ -14,9 +14,10 @@
         ((type*)0)->member)))
 
 LN_NAMESPACE_BEGIN
+class Object;
+
 namespace tr
 {
-class ReflectionObject;
 class IPropertyChangedListener;
 class PropertyBase;
 template<typename TValue> class Property;
@@ -27,7 +28,7 @@ template<typename TValue> class TypedPropertyInitializer;
 
 
 /**
-	@brief		ReflectionObject のサブクラスが実装できるプロパティを表します。
+	@brief		Object のサブクラスが実装できるプロパティを表します。
 	@details	プロパティは、メンバ変数に対する簡易的なリフレクションを提供します。		
 */
 class PropertyInfo
@@ -37,9 +38,9 @@ public:
 	virtual ~PropertyInfo();
 
 #ifdef LN_LEGACY_VARIANT_ENABLED
-	virtual void setValue(ReflectionObject* target, Variant value, PropertySetSource source) const { LN_THROW(0, InvalidOperationException); }
-	virtual Variant getValue(const ReflectionObject* target) const { LN_THROW(0, InvalidOperationException); }
-	virtual void addItem(ReflectionObject* target, const Variant& value) const { LN_THROW(0, InvalidOperationException); }
+	virtual void setValue(Object* target, Variant value, PropertySetSource source) const { LN_THROW(0, InvalidOperationException); }
+	virtual Variant getValue(const Object* target) const { LN_THROW(0, InvalidOperationException); }
+	virtual void addItem(Object* target, const Variant& value) const { LN_THROW(0, InvalidOperationException); }
 #endif
 
 	//virtual bool isReadable() const { return false; }
@@ -49,7 +50,7 @@ public:
 	TypeInfo* getOwnerClassType() const { return m_ownerClassType; }
 	bool isStored() const { return m_stored; }
 
-	virtual PropertyBase* getPropertyBase(ReflectionObject* obj) const = 0;
+	virtual PropertyBase* getPropertyBase(Object* obj) const = 0;
 
 	const PropertyMetadata& getMetadata() const { return m_metadata; }
 
@@ -59,30 +60,30 @@ public:
 	/**
 		@brief		指定したオブジェクトのプロパティの値を設定します。
 	*/
-	static void setPropertyValue(ReflectionObject* obj, const PropertyInfo* prop, const Variant& value, PropertySetSource source = PropertySetSource::ByLocal);
+	static void setPropertyValue(Object* obj, const PropertyInfo* prop, const Variant& value, PropertySetSource source = PropertySetSource::ByLocal);
 	
 	/**
 		@brief		指定したオブジェクトのプロパティの値を取得します。
 	*/
-	static Variant getPropertyValue(ReflectionObject* obj, const PropertyInfo* prop);
+	static Variant getPropertyValue(Object* obj, const PropertyInfo* prop);
 #endif
 
 	/**
 		@brief		指定したオブジェクトのプロパティの値を設定します。あらかじめ型が分かっている場合、setPropertyValue() よりも少ないオーバーヘッドで設定できます。
 	*/
 	template<typename TValue>
-	static void setPropertyValueDirect(ReflectionObject* obj, const PropertyInfo* prop, const TValue& value, PropertySetSource source = PropertySetSource::ByLocal);
+	static void setPropertyValueDirect(Object* obj, const PropertyInfo* prop, const TValue& value, PropertySetSource source = PropertySetSource::ByLocal);
 
 	/**
 		@brief		指定したオブジェクトのプロパティの値を取得します。あらかじめ型が分かっている場合、getPropertyValue() よりも少ないオーバーヘッドで設定できます。
 	*/
 	template<typename TValue>
-	static const TValue& getPropertyValueDirect(const ReflectionObject* obj, const PropertyInfo* prop);
+	static const TValue& getPropertyValueDirect(const Object* obj, const PropertyInfo* prop);
 
 	template<typename TValue>
-	static PropertyRef<TValue> getProperty(ReflectionObject* obj, const TypedPropertyInfo<TValue>* prop);
+	static PropertyRef<TValue> getProperty(Object* obj, const TypedPropertyInfo<TValue>* prop);
 
-	static void notifyPropertyChanged(ReflectionObject* ownerObject, PropertyBase* target, const PropertyInfo* prop, PropertySetSource source);
+	static void notifyPropertyChanged(Object* ownerObject, PropertyBase* target, const PropertyInfo* prop, PropertySetSource source);
 
 
 
@@ -111,10 +112,10 @@ class TypedPropertyInfo
 	: public PropertyInfo
 {
 public:
-	typedef Property<TValue>*(*GetPrpertyPtrFunc)(ReflectionObject* obj);
-	typedef void(*SetterFunc)(ReflectionObject* obj, TValue& value);
-	typedef void(*GetterFunc)(ReflectionObject* obj, TValue** valuePtr);
-	typedef void(*OnPropertyChangedFunc)(ReflectionObject* obj, PropertyChangedEventArgs* e);
+	typedef Property<TValue>*(*GetPrpertyPtrFunc)(Object* obj);
+	typedef void(*SetterFunc)(Object* obj, TValue& value);
+	typedef void(*GetterFunc)(Object* obj, TValue** valuePtr);
+	typedef void(*OnPropertyChangedFunc)(Object* obj, PropertyChangedEventArgs* e);
 	// ↑※static 関数のポインタでないと、言語バインダを作りにくくなる。
 
 public:
@@ -131,18 +132,18 @@ public:
 	virtual const String& getName() const { return m_name; }
 
 #ifdef LN_LEGACY_VARIANT_ENABLED
-	virtual void setValue(ReflectionObject* target, Variant value, PropertySetSource source) const
+	virtual void setValue(Object* target, Variant value, PropertySetSource source) const
 	{
 		setValueDirect(target, Variant::cast<TValue>(value), source);
 	}
-	virtual Variant getValue(const ReflectionObject* target) const
+	virtual Variant getValue(const Object* target) const
 	{
 		LN_THROW(m_getter != NULL, InvalidOperationException);
 		TValue* v;
-		m_getter(const_cast<ReflectionObject*>(target), &v);
+		m_getter(const_cast<Object*>(target), &v);
 		return Variant(*v);
 	}
-	//virtual void AddItem(ReflectionObject* target, const Variant& value) const
+	//virtual void AddItem(Object* target, const Variant& value) const
 	//{
 	//	LN_THROW(m_getter != NULL, InvalidOperationException);
 	//	//VariantList* list = m_getter(target);
@@ -155,21 +156,21 @@ public:
 	//virtual bool isWritable() const { return m_getter != nullptr; }
 #endif
 
-	void setValueDirect(ReflectionObject* target, const TValue& value, PropertySetSource source) const
+	void setValueDirect(Object* target, const TValue& value, PropertySetSource source) const
 	{
 		if (LN_REQUIRE(m_setter != nullptr)) return;
 		m_setter(target, const_cast<TValue&>(value));
 		//notifyPropertyChanged(target, this, source);
 	}
-	const TValue& getValueDirect(const ReflectionObject* target) const
+	const TValue& getValueDirect(const Object* target) const
 	{
 		LN_ASSERT(m_getter);
 		TValue* v;
-		m_getter(const_cast<ReflectionObject*>(target), &v);
+		m_getter(const_cast<Object*>(target), &v);
 		return *v;
 	}
 
-	virtual PropertyBase* getPropertyBase(ReflectionObject* obj) const override { return m_getPropPtr(obj); }
+	virtual PropertyBase* getPropertyBase(Object* obj) const override { return m_getPropPtr(obj); }
 
 #ifdef LN_LEGACY_VARIANT_ENABLED
 	template<typename T, typename TIsList> struct ListOperationSelector
@@ -192,7 +193,7 @@ public:
 	//	static bool isList() { return ListOperationSelector<T, std::is_base_of<ReflectionObjectList, T>::type>::isList(); }
 	//};
 
-	//virtual void NotifyPropertyChange(ReflectionObject* target, PropertyChangedEventArgs* e) const
+	//virtual void NotifyPropertyChange(Object* target, PropertyChangedEventArgs* e) const
 	//{
 	//	if (m_propChanged != NULL) {
 	//		m_propChanged(target, e);
@@ -225,9 +226,9 @@ class TypedPropertyInitializer
 	//		→	マクロで生成される各種アクセサにアクセスできなくなる。
 
 public:
-	typedef Property<TValue>*(*GetPrpertyPtrFunc)(ReflectionObject* obj);
-	typedef void(*SetterFunc)(ReflectionObject* obj, TValue& value);
-	typedef void(*GetterFunc)(ReflectionObject* obj, TValue** outValuePtr);
+	typedef Property<TValue>*(*GetPrpertyPtrFunc)(Object* obj);
+	typedef void(*SetterFunc)(Object* obj, TValue& value);
+	typedef void(*GetterFunc)(Object* obj, TValue** outValuePtr);
 
 	//template<typename TPropertyChangedCallbackCaster>
 	TypedPropertyInitializer(
@@ -250,7 +251,7 @@ public:
 
 //------------------------------------------------------------------------------
 template<typename TValue>
-void PropertyInfo::setPropertyValueDirect(ReflectionObject* obj, const PropertyInfo* prop, const TValue& value, PropertySetSource source)
+void PropertyInfo::setPropertyValueDirect(Object* obj, const PropertyInfo* prop, const TValue& value, PropertySetSource source)
 {
 	if (LN_REQUIRE(obj != nullptr)) return;
 	if (LN_REQUIRE(prop != nullptr)) return;
@@ -260,7 +261,7 @@ void PropertyInfo::setPropertyValueDirect(ReflectionObject* obj, const PropertyI
 
 //------------------------------------------------------------------------------
 template<typename TValue>
-const TValue& PropertyInfo::getPropertyValueDirect(const ReflectionObject* obj, const PropertyInfo* prop)
+const TValue& PropertyInfo::getPropertyValueDirect(const Object* obj, const PropertyInfo* prop)
 {
 	if (LN_REQUIRE(obj != nullptr)) return;
 	if (LN_REQUIRE(prop != nullptr)) return;
@@ -297,18 +298,18 @@ public:
 
 
 #define LN_TR_PROPERTY(valueType, propVar) \
-	private: static ::ln::tr::Property<valueType>*					get_Ptr##propVar(ln::tr::ReflectionObject* obj); \
-	private: static void											set_##propVar(ln::tr::ReflectionObject* obj, valueType& value); \
-	private: static void											get_##propVar(ln::tr::ReflectionObject* obj, valueType** outValuePtr); \
+	private: static ::ln::tr::Property<valueType>*					get_Ptr##propVar(ln::Object* obj); \
+	private: static void											set_##propVar(ln::Object* obj, valueType& value); \
+	private: static void											get_##propVar(ln::Object* obj, valueType** outValuePtr); \
 	private: static ln::tr::TypedPropertyInitializer<valueType>		init_##propVar; \
 	public:  static const ln::tr::TypedPropertyInfo<valueType>*		propVar##Id;
 
 #define LN_TR_PROPERTY_IMPLEMENT(ownerClass, valueType, propVar, metadata) \
 	static ln::tr::TypedPropertyInfo<valueType>		_##propVar##Id(ln::tr::TypeInfo::getTypeInfo<ownerClass>(), _LT(#propVar), nullptr); \
 	const ln::tr::TypedPropertyInfo<valueType>*		ownerClass::propVar##Id = &_##propVar##Id; \
-	::ln::tr::Property<valueType>*					ownerClass::get_Ptr##propVar(ln::tr::ReflectionObject* obj) { return &static_cast<ownerClass*>(obj)->propVar; } \
-	void											ownerClass::set_##propVar(ln::tr::ReflectionObject* obj, valueType& value) { tr::PropertyHelper::setValue(static_cast<ownerClass*>(obj)->propVar, value); } \
-	void											ownerClass::get_##propVar(ln::tr::ReflectionObject* obj, valueType** outValuePtr) { tr::PropertyHelper::getValue<valueType>(static_cast<ownerClass*>(obj)->propVar, outValuePtr); } \
+	::ln::tr::Property<valueType>*					ownerClass::get_Ptr##propVar(ln::Object* obj) { return &static_cast<ownerClass*>(obj)->propVar; } \
+	void											ownerClass::set_##propVar(ln::Object* obj, valueType& value) { tr::PropertyHelper::setValue(static_cast<ownerClass*>(obj)->propVar, value); } \
+	void											ownerClass::get_##propVar(ln::Object* obj, valueType** outValuePtr) { tr::PropertyHelper::getValue<valueType>(static_cast<ownerClass*>(obj)->propVar, outValuePtr); } \
 	ln::tr::TypedPropertyInitializer<valueType>		ownerClass::init_##propVar(&_##propVar##Id, LN_MEMBER_OFFSETOF(ownerClass, propVar), &ownerClass::get_Ptr##propVar, &ownerClass::set_##propVar, &ownerClass::get_##propVar, metadata); \
 
 
@@ -328,7 +329,7 @@ public:
 class PropertyBase
 {
 public:
-	PropertyBase(/*ReflectionObject* owner*/)
+	PropertyBase()
 		: m_owner(nullptr)
 		, m_propId(nullptr)
 		, m_staticListenerOwner(nullptr)
@@ -336,14 +337,14 @@ public:
 	{
 	}
 
-	ReflectionObject* getOwnerObject() const { return m_owner; }
+	Object* getOwnerObject() const { return m_owner; }
 	//void AddListener(IPropertyChangedListener* listener) { m_listeners.Add(listener); }
 	//void RemoveListener(IPropertyChangedListener* listener) { m_listeners.Remove(listener); }
 	//void CallListener(PropertyChangedEventArgs* e) const;
 
 	// TODO: internal
-	typedef void(*OnPropertyChangedFunc)(ReflectionObject* obj, PropertyChangedEventArgs* e);
-	void setStaticListener(ReflectionObject* owner, OnPropertyChangedFunc callback)
+	typedef void(*OnPropertyChangedFunc)(Object* obj, PropertyChangedEventArgs* e);
+	void setStaticListener(Object* owner, OnPropertyChangedFunc callback)
 	{
 		m_staticListenerOwner = owner;
 		m_staticListener = callback;
@@ -354,10 +355,10 @@ public:	// TODO
 	List<IPropertyChangedListener*>	m_listeners;
 	
 	// set from TypeInfo::initializeProperties
-	ReflectionObject*		m_owner;
+	Object*		m_owner;
 	const PropertyInfo*		m_propId;
 
-	ReflectionObject*		m_staticListenerOwner;
+	Object*		m_staticListenerOwner;
 	OnPropertyChangedFunc	m_staticListener;
 };
 
@@ -371,15 +372,15 @@ class Property
 	: public PropertyBase
 {
 public:
-	Property(/*ReflectionObject* owner*/)
-		: PropertyBase(/*owner*/)
+	Property()
+		: PropertyBase()
 		, m_defaultValue()
 		, m_value()
 		, m_valueSource(PropertySetSource::Default)
 	{
 	}
 
-	Property(/*ReflectionObject* owner, */const TValue& value)
+	Property(const TValue& value)
 		: PropertyBase(/*owner*/)
 		, m_defaultValue(value)
 		, m_value(value)
@@ -497,12 +498,12 @@ template<typename TValue>
 class PropertyRef
 {
 public:
-	PropertyRef(ReflectionObject* propOwner, const PropertyInfo* propInfo)
+	PropertyRef(Object* propOwner, const PropertyInfo* propInfo)
 		: PropertyRef(propOwner, *static_cast<const TypedPropertyInfo<TValue>*>(propInfo)->m_getPropPtr(propOwner))
 	{
 	}
 
-	PropertyRef(ReflectionObject* propOwner, Property<TValue>& prop)
+	PropertyRef(Object* propOwner, Property<TValue>& prop)
 		: m_propOwner(propOwner)
 		, m_prop(prop)
 	{
@@ -527,7 +528,7 @@ public:
 		if (ptr != nullptr) return m_prop.clearValue();
 	}
 
-	Ref<ReflectionObject> getOwenr()
+	Ref<Object> getOwenr()
 	{
 		return m_propOwner.resolve();
 	}
@@ -543,7 +544,7 @@ public:
 	}
 
 private:
-	WeakRefPtr<ReflectionObject>	m_propOwner;
+	WeakRefPtr<Object>	m_propOwner;
 	Property<TValue>&				m_prop;
 };
 
@@ -552,7 +553,7 @@ private:
 
 //------------------------------------------------------------------------------
 template<typename TValue>
-PropertyRef<TValue> PropertyInfo::getProperty(ReflectionObject* obj, const TypedPropertyInfo<TValue>* prop)
+PropertyRef<TValue> PropertyInfo::getProperty(Object* obj, const TypedPropertyInfo<TValue>* prop)
 {
 	return tr::PropertyRef<TValue>(obj, prop);
 }

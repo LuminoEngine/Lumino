@@ -21,7 +21,7 @@ namespace detail
 	{
 		static ObjectFactory getFactory()
 		{
-			return []() { return Ref<ReflectionObject>::staticCast(::ln::newObject<TObject>()); };
+			return []() { return Ref<Object>::staticCast(::ln::newObject<TObject>()); };
 		}
 	};
 	template<class TObject> struct ObjectFactorySelector<TObject, std::true_type>
@@ -86,7 +86,7 @@ private:
 // ReflectionHelper
 //==============================================================================
 //------------------------------------------------------------------------------
-//void ReflectionHelper::raiseReflectionEvent(ReflectionObject* obj, ReflectionEventBase* ev, ReflectionEventArgs* e)
+//void ReflectionHelper::raiseReflectionEvent(Object* obj, ReflectionEventBase* ev, ReflectionEventArgs* e)
 //{
 //	ev->Raise(e);
 //}
@@ -97,9 +97,9 @@ private:
 
 /*
 	HasLocalValueFlagsGetter はクラスごとに必要となる。
-	ReflectionObject に仮想関数を持たせて取得するわけには行かない。
+	Object に仮想関数を持たせて取得するわけには行かない。
 	例えば、
-		ReflectionObject
+		Object
 			UIElement
 				Control
 					Button
@@ -108,7 +108,7 @@ private:
 */
 
 //------------------------------------------------------------------------------
-TypeInfo* TypeInfo::getTypeInfo(const ReflectionObject* obj)
+TypeInfo* TypeInfo::getTypeInfo(const Object* obj)
 {
 	return ReflectionHelper::getTypeInfo(obj);
 }
@@ -182,14 +182,14 @@ void TypeInfo::setBindingTypeInfo(void* data)
 }
 
 //------------------------------------------------------------------------------
-void* TypeInfo::getBindingTypeInfo(const ReflectionObject* obj)
+void* TypeInfo::getBindingTypeInfo(const Object* obj)
 {
 	TypeInfo* type = getTypeInfo(obj);
 	return type->m_bindingTypeInfoGetter();
 }
 
 //------------------------------------------------------------------------------
-void TypeInfo::initializeProperties(ReflectionObject* obj)
+void TypeInfo::initializeProperties(Object* obj)
 {
 	for (PropertyInfo* info : m_propertyList)
 	{

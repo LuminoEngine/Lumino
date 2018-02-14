@@ -7,7 +7,7 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 // InputGesture
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(InputGesture, tr::ReflectionObject);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(InputGesture, Object);
 
 //------------------------------------------------------------------------------
 InputGesture::InputGesture()

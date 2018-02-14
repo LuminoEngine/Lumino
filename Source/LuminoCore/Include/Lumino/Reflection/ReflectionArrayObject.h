@@ -9,7 +9,7 @@ namespace tr
 	@brief		
 */
 class ReflectionArrayObject
-	: public ReflectionObject
+	: public Object
 {
 public:
 	ReflectionArrayObject();
