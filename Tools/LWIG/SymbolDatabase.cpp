@@ -543,7 +543,6 @@ Ref<TypeInfo> SymbolDatabase::findTypeInfo(StringRef typeFullName)
 		return *type;
 
 	// aliases
-	if (typeFullName == _T("ln::RefrectionObject")) return PredefinedTypes::stringType;
 	if (typeFullName == _T("ln::StringRef")) return PredefinedTypes::stringType;
 	if (typeFullName == _T("ln::EventConnection")) return PredefinedTypes::EventConnectionType;
 
