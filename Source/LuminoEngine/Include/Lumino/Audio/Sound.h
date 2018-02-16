@@ -194,8 +194,13 @@ public:
 LN_INTERNAL_ACCESS:
 	Sound();
 	virtual ~Sound();
+	
+	/**
+		@brief	Sound クラスのインスタンスを作成します。
+	*/
 	LN_METHOD()
 	void initialize(const StringRef& filePath);
+
 	void initialize(Stream* stream, SoundLoadingMode loadingMode);
 	void initialize(detail::AudioStream* audioStream);
 	void createAudioPlayerSync();

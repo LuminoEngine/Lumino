@@ -167,7 +167,7 @@ TEST_F(Test_Base_EnumClassBitFlags, SimpleAccessors)
 
 
 
-
+#if 0
 
 
 class Test_Base_Enum : public ::testing::Test
@@ -574,3 +574,4 @@ TEST_F(Test_Base_EnumFlags, FlagsOperators)
 		ASSERT_EQ(TestFlags1::Option0, v1);	// 全部消えている
 	}
 }
+#endif

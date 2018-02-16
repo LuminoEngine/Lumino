@@ -41,8 +41,8 @@ public:
 			EasingFunctions::easeOutCirc,
 			EasingFunctions::easeInOutCirc,
 		};
-		assert(LN_ARRAY_SIZE_OF(table) == EasingMode::getMemberCount());
-		return table[mode];
+		assert(LN_ARRAY_SIZE_OF(table) == 22);
+		return table[(int)mode];
 	}
 
 

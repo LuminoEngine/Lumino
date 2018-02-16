@@ -2,7 +2,7 @@
 #include "../SymbolDatabase.h"
 #include "FlatCCommon.h"
 
-String FlatCCommon::MakeCppTypeName(Ref<TypeInfo> typeInfo)
+String FlatCCommon::MakeCppTypeName(Ref<TypeSymbol> typeInfo)
 {
 	if (typeInfo->IsClass())
 	{
@@ -12,7 +12,7 @@ String FlatCCommon::MakeCppTypeName(Ref<TypeInfo> typeInfo)
 	return typeInfo->shortName();
 }
 
-String FlatCCommon::MakeCApiParamTypeName(Ref<MethodInfo> methodInfo, Ref<ParameterInfo> paramInfo)
+String FlatCCommon::MakeCApiParamTypeName(Ref<MethodSymbol> methodInfo, Ref<ParameterSymbol> paramInfo)
 {
 	auto typeInfo = paramInfo->type;
 

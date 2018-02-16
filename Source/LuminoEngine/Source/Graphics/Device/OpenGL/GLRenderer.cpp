@@ -329,7 +329,7 @@ void GLRenderer::onUpdateDepthStencilState(const DepthStencilState& newState, co
 	// 深度比較関数
 	if (newState.DepthTestFunc != oldState.DepthTestFunc || reset)
 	{
-		glDepthFunc(cmpFuncTable[newState.DepthTestFunc]);
+		glDepthFunc(cmpFuncTable[(int)newState.DepthTestFunc]);
 		if (LN_ENSURE_GLERROR()) return;
 	}
 
@@ -352,7 +352,7 @@ void GLRenderer::onUpdateDepthStencilState(const DepthStencilState& newState, co
 		newState.StencilReferenceValue != oldState.StencilReferenceValue ||
 		reset)
 	{
-		glStencilFunc(cmpFuncTable[newState.StencilFunc], newState.StencilReferenceValue, 0xFFFFFFFF);
+		glStencilFunc(cmpFuncTable[(int)newState.StencilFunc], newState.StencilReferenceValue, 0xFFFFFFFF);
 		if (LN_ENSURE_GLERROR()) return;
 	}
 
@@ -363,7 +363,7 @@ void GLRenderer::onUpdateDepthStencilState(const DepthStencilState& newState, co
 		newState.StencilPassOp != oldState.StencilPassOp ||
 		reset)
 	{
-		glStencilOp(stencilOpTable[newState.StencilFailOp], stencilOpTable[newState.StencilDepthFailOp], stencilOpTable[newState.StencilPassOp]);
+		glStencilOp(stencilOpTable[(int)newState.StencilFailOp], stencilOpTable[(int)newState.StencilDepthFailOp], stencilOpTable[(int)newState.StencilPassOp]);
 		if (LN_ENSURE_GLERROR()) return;
 	}
 }

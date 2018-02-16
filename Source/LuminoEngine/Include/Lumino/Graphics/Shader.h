@@ -25,7 +25,7 @@ class CoreGraphicsRenderFeature;
 class RenderStage;
 	
 // シェーダ変数セマンティクス
-LN_ENUM(BuiltinSemantics)
+enum class BuiltinSemantics
 {
 	// Scene unit
 	Dummy,
@@ -73,7 +73,6 @@ LN_ENUM(BuiltinSemantics)
 
 	_Count,
 };
-LN_ENUM_DECLARE(BuiltinSemantics);
 
 // シーン単位のデータに関する情報
 struct SceneInfo

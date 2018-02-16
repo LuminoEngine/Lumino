@@ -1,6 +1,27 @@
 Import Rule
 ====================
 
+クラス
+--------------------
+`LN_CLASS(...)` で修飾します。
+
+```
+LN_CLASS([specifier, ...])
+class ClassName { };
+```
+
+### Specifiers
+
+#### Static
+static クラスであることを示します。
+
+static クラスは、static であるメンバしか持つことはできません。
+（C# の static クラスと同様です）
+
+
+
+
+
 プロパティ
 --------------------
 `LN_METHOD(Property)` で修飾します。

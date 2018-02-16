@@ -7,7 +7,7 @@ static const String wrapperIFClassTemplate =
 	"{\n"
 	"public:\n"
 	"\n"
-	"    void PostInitialize()\n"
+	"    void postInitialize()\n"
 	"    {\n"
 	"%PostInitializeExps%\n"
 	"    }\n"
@@ -45,7 +45,6 @@ String WrapperIFClassesGenerator::GenerateWrapperIFClasses()
 
 		if (!classInfo->isStatic())
 		{
-			// ‰¼‘zŠÖ”‚Ì override
 			OutputBuffer overrideCallersDecl(1);
 			OutputBuffer overrideCallersImpl(0);
 			OutputBuffer overrideMethods(1);
@@ -88,8 +87,7 @@ String WrapperIFClassesGenerator::GenerateWrapperIFClasses()
 					overrideMethods.DecreaseIndent();
 					overrideMethods.append("}").NewLine();
 				}
-
-				if (methodInfo->IsEventSetter())
+				else if (methodInfo->IsEventSetter())
 				{
 					// ¦Event ‚Íˆø”1‚Â‚ª‘O’ñ
 					auto delegateClass = methodInfo->parameters[0]->type;
@@ -168,7 +166,7 @@ String WrapperIFClassesGenerator::GenerateOverrideCallerFuncPtrs()
 	return funcPtrDefs.toString();
 }
 
-String WrapperIFClassesGenerator::MakeEventWrapperMemberVariableName(Ref<MethodInfo> connectMethod)
+String WrapperIFClassesGenerator::MakeEventWrapperMemberVariableName(Ref<MethodSymbol> connectMethod)
 {
 	return _T("m_") + connectMethod->name + _T("_EventWrapper");
 }

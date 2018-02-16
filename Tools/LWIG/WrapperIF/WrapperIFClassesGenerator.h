@@ -12,7 +12,7 @@ public:
 private:
 	String GenerateWrapperIFClasses();
 	String GenerateOverrideCallerFuncPtrs();
-	String MakeEventWrapperMemberVariableName(Ref<MethodInfo> connectMethod);
+	String MakeEventWrapperMemberVariableName(Ref<MethodSymbol> connectMethod);
 
 	OutputBuffer	m_eventWrapperConnectExps;
 	OutputBuffer	m_eventWrappers;

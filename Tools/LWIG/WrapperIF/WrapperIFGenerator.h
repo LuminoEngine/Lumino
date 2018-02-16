@@ -15,12 +15,12 @@ public:
 private:
 	String GenerateOverrideCallerFuncPtrs();
 
-	String MakeInstanceParamName(Ref<TypeInfo> info);
-	//String MakeMethods(Ref<TypeInfo> typeInfo);
-	String MakeMethodHeader(Ref<MethodInfo> methodInfo);
-	String MakeMethod(Ref<TypeInfo> typeInfo, Ref<MethodInfo> methodInfo);
+	String MakeInstanceParamName(Ref<TypeSymbol> info);
+	//String MakeMethods(Ref<TypeSymbol> typeInfo);
+	String MakeFuncHeader(Ref<MethodSymbol> methodInfo);
+	String MakeFuncBody(Ref<TypeSymbol> typeInfo, Ref<MethodSymbol> methodInfo);
 
-	String MakeDocumentComment(Ref<DocumentInfo> doc);
+	String MakeDocumentComment(Ref<DocumentSymbol> doc);
 
 
 };

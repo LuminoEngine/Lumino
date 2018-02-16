@@ -7,7 +7,7 @@
 */
 
 /** 結果・エラーコード */
-LN_ENUM_()
+LN_ENUM()
 enum class ResultCode
 {
 	/** 成功 */

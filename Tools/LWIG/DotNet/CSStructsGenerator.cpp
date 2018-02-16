@@ -68,7 +68,7 @@ void CSStructsGenerator::generate()
 			structText.AppendLines(CSCommon::MakeXmlDocument(methodInfo->document));
 
 			// method header
-			String modifier = MethodInfo::GetAccessLevelName(methodInfo->accessLevel);
+			String modifier = MethodSymbol::GetAccessLevelName(methodInfo->accessLevel);
 			if (methodInfo->isStatic) modifier += " static";
 			if (methodInfo->isVirtual) modifier += " virtual";
 			if (methodInfo->isConstructor)
@@ -120,7 +120,7 @@ void CSStructsGenerator::generate()
 	}
 }
 
-String CSStructsGenerator::MakeMethodBody(Ref<MethodInfo> methodInfo, bool isSetProperty)
+String CSStructsGenerator::MakeMethodBody(Ref<MethodSymbol> methodInfo, bool isSetProperty)
 {
 	OutputBuffer methodBody;
 
@@ -163,7 +163,7 @@ String CSStructsGenerator::MakeMethodBody(Ref<MethodInfo> methodInfo, bool isSet
 	return methodBody.toString();
 }
 
-bool CSStructsGenerator::CheckAllMemberSetConstructor(Ref<TypeInfo> structInfo, Ref<MethodInfo> methodInfo)
+bool CSStructsGenerator::CheckAllMemberSetConstructor(Ref<TypeSymbol> structInfo, Ref<MethodSymbol> methodInfo)
 {
 	if (!methodInfo->isConstructor) return false;
 

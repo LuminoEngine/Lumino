@@ -4,7 +4,7 @@
 #include <Lumino/Reflection/ReflectionObject.h>
 #include <Lumino/Engine.h>
 #include "../include/Common.h"
-#include "LuminoC.generated.h"
+#include "Lumino.FlatC.generated.h"
 
 /// Handle の管理リストの要素
 struct ObjectEntry
@@ -36,7 +36,7 @@ class LFManager
 public:
 
 	/// Engine 初期化前処理
-	static void PreInitialize();
+	static void preInitialize();
 
 	/// Engine 初期化後処理
 	static void postInitialize();

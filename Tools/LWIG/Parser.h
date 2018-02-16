@@ -3,8 +3,8 @@
 #include <unordered_map>
 
 class SymbolDatabase;
-class DocumentInfo;
-class MetadataInfo;
+class DocumentSymbol;
+class MetadataSymbol;
 
 class HeaderParser
 {
@@ -29,8 +29,8 @@ public:
 
 
 
-	static Ref<DocumentInfo> parseDocument(const std::string& comment);
-	static Ref<MetadataInfo> parseMetadata(std::string name, const std::string& args);
+	static Ref<DocumentSymbol> parseDocument(const std::string& comment);
+	static Ref<MetadataSymbol> parseMetadata(std::string name, const std::string& args);
 
 private:
 	::SymbolDatabase*	m_db;

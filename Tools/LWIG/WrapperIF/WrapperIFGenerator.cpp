@@ -41,32 +41,51 @@ void WrapperIFGenerator::generate()
 			structMemberFuncDeclsText.AppendLines(MakeDocumentComment(methodInfo->document));
 
 			// decl
-			structMemberFuncDeclsText.AppendLines(MakeMethodHeader(methodInfo)).append(";").NewLine(2);
+			structMemberFuncDeclsText.AppendLines(MakeFuncHeader(methodInfo)).append(";").NewLine(2);
 		}
 
 		// function impls
 		for (auto& methodInfo : structInfo->declaredMethods)
 		{
-			structMemberFuncImplsText.AppendLines(MakeMethod(structInfo, methodInfo)).NewLine();
+			structMemberFuncImplsText.AppendLines(MakeFuncBody(structInfo, methodInfo)).NewLine();
 		}
 	}
 
-	//// classes
-	//OutputBuffer buffer;
-	//for (auto& classInfo : db()->classes)
-	//{
-	//	buffer.AppendLines(MakeMethods(classInfo));
+	// classes
+	OutputBuffer classMemberFuncDeclsText;
+	OutputBuffer classMemberFuncImplsText;
+	for (auto& classInfo : db()->classes)
+	{
+		classMemberFuncDeclsText.AppendLine("//==============================================================================");
+		classMemberFuncDeclsText.AppendLine("// {0}", classInfo->fullName());
+		classMemberFuncDeclsText.AppendLine("//==============================================================================").NewLine();
 
-	//	if (!classInfo->isStatic())
-	//	{
-	//		static const String setBindingTypeInfo =
-	//			"LN_API void LN%ClassName%_SetBindingTypeInfo(void* data)\n"
-	//			"{\n"
-	//			"    tr::TypeInfo::GetTypeInfo<%ClassName%>()->SetBindingTypeInfo(data);\n"
-	//			"}\n";
-	//		buffer.AppendLines(setBindingTypeInfo.replace("%ClassName%", classInfo->shortName()));
-	//	}
-	//}
+		// function decls
+		for (auto& methodInfo : classInfo->declaredMethods)
+		{
+			// comment
+			classMemberFuncDeclsText.AppendLines(MakeDocumentComment(methodInfo->document));
+
+			// decl
+			classMemberFuncDeclsText.AppendLines(MakeFuncHeader(methodInfo)).append(";").NewLine(2);
+		}
+
+		// function impls
+		for (auto& methodInfo : classInfo->declaredMethods)
+		{
+			classMemberFuncImplsText.AppendLines(MakeFuncBody(classInfo, methodInfo)).NewLine();
+		}
+
+		if (!classInfo->isStatic())
+		{
+			static const String setBindingTypeInfo =
+				"LN_API void LN%ClassName%_SetBindingTypeInfo(void* data)\n"
+				"{\n"
+				"    tr::TypeInfo::getTypeInfo<%ClassName%>()->setBindingTypeInfo(data);\n"
+				"}\n";
+			classMemberFuncImplsText.AppendLines(setBindingTypeInfo.replace("%ClassName%", classInfo->shortName()));
+		}
+	}
 
 	// enums
 	OutputBuffer enumsText;
@@ -114,6 +133,7 @@ void WrapperIFGenerator::generate()
 		src = src.replace("%%Enums%%", enumsText.toString());
 		src = src.replace("%%Delegates%%", delegatesText.toString());
 		src = src.replace("%%StructMemberFuncDecls%%", structMemberFuncDeclsText.toString());
+		src = src.replace("%%ClassMemberFuncDecls%%", classMemberFuncDeclsText.toString());
 
 		String fileName = String::format("{0}.FlatC.generated.h", moduleFullName());
 		FileSystem::writeAllText(makeOutputFilePath(fileName).c_str(), src, Encoding::getUTF8Encoding());
@@ -121,7 +141,8 @@ void WrapperIFGenerator::generate()
 	// save C API Source
 	{
 		String src = FileSystem::readAllText(makeTemplateFilePath(_T("Source.cpp")));
-		src = src.replace("%Contents%", structMemberFuncImplsText.toString());
+		src = src.replace("%%StructMemberFuncImpls%%", structMemberFuncImplsText.toString());
+		src = src.replace("%%ClassMemberFuncImpls%%", classMemberFuncImplsText.toString());
 
 		String fileName = String::format("{0}.FlatC.generated.cpp", moduleFullName());
 		FileSystem::writeAllText(makeOutputFilePath(fileName).c_str(), src);
@@ -129,12 +150,12 @@ void WrapperIFGenerator::generate()
 }
 
 
-String WrapperIFGenerator::MakeInstanceParamName(Ref<TypeInfo> info)
+String WrapperIFGenerator::MakeInstanceParamName(Ref<TypeSymbol> info)
 {
 	return info->shortName().toLower();
 }
 
-//String WrapperIFGenerator::MakeMethods(Ref<TypeInfo> typeInfo)
+//String WrapperIFGenerator::MakeMethods(Ref<TypeSymbol> typeInfo)
 //{
 //	OutputBuffer buffer;
 //
@@ -155,13 +176,13 @@ String WrapperIFGenerator::MakeInstanceParamName(Ref<TypeInfo> info)
 //		}
 //		else
 //		{
-//			buffer.AppendLines(MakeMethod(typeInfo, methodInfo, false));
+//			buffer.AppendLines(MakeFuncBody(typeInfo, methodInfo, false));
 //
 //			// override
 //			if (methodInfo->isVirtual)
 //			{
 //				// base caller
-//				buffer.AppendLines(MakeMethod(typeInfo, methodInfo, true));
+//				buffer.AppendLines(MakeFuncBody(typeInfo, methodInfo, true));
 //
 //				// override setter
 //				buffer.AppendLines(funcBodyTemplate
@@ -177,7 +198,7 @@ String WrapperIFGenerator::MakeInstanceParamName(Ref<TypeInfo> info)
 //}
 
 // 宣言文の作成。ドキュメンテーションコメントは含まない。
-String WrapperIFGenerator::MakeMethodHeader(Ref<MethodInfo> methodInfo)
+String WrapperIFGenerator::MakeFuncHeader(Ref<MethodSymbol> methodInfo)
 {
 	// make params
 	OutputBuffer params;
@@ -194,10 +215,10 @@ String WrapperIFGenerator::MakeMethodHeader(Ref<MethodInfo> methodInfo)
 		.replace("%%ParamList%%", params.toString());
 }
 
-String WrapperIFGenerator::MakeMethod(Ref<TypeInfo> typeInfo, Ref<MethodInfo> methodInfo)
+String WrapperIFGenerator::MakeFuncBody(Ref<TypeSymbol> typeInfo, Ref<MethodSymbol> methodInfo)
 {
 	// function header
-	String funcHeader = MakeMethodHeader(methodInfo);
+	String funcHeader = MakeFuncHeader(methodInfo);
 
 	//{
 	//	// 第1引数
@@ -240,7 +261,10 @@ String WrapperIFGenerator::MakeMethod(Ref<TypeInfo> typeInfo, Ref<MethodInfo> me
 	// make func body
 	OutputBuffer body;
 	if (methodInfo->IsRuntimeInitializer())
-		body.append("LFManager::PreInitialize();");
+	{
+		body.AppendLine("LFManager::preInitialize();");
+	}
+
 	{
 		// make call args
 		OutputBuffer args;
@@ -315,18 +339,20 @@ String WrapperIFGenerator::MakeMethod(Ref<TypeInfo> typeInfo, Ref<MethodInfo> me
 			}
 		}
 
-		body.append(callExp);
+		body.AppendLine(callExp);
 	}
 
 	if (methodInfo->IsRuntimeInitializer())
-		body.append("LFManager::PostInitialize();");
+	{
+		body.AppendLine("LFManager::postInitialize();");
+	}
 
 	return funcHeader + NewLine + funcBodyTemplate
 		.replace("%%FuncBody%%", body.toString());
 }
 
 
-String WrapperIFGenerator::MakeDocumentComment(Ref<DocumentInfo> doc)
+String WrapperIFGenerator::MakeDocumentComment(Ref<DocumentSymbol> doc)
 {
 	OutputBuffer text;
 	text.AppendLine("/**");

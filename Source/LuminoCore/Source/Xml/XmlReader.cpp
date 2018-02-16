@@ -1163,6 +1163,47 @@ XmlFileReader::~XmlFileReader()
 
 }
 
+//==============================================================================
+// XmlHelper
+//==============================================================================
+
+String XmlHelper::getNodeTypeString(XmlNodeType nodeType)
+{
+	switch (nodeType)
+	{
+	case ln::tr::XmlNodeType::None:
+		return _T("None");
+	case ln::tr::XmlNodeType::Element:
+		return _T("Element");
+	case ln::tr::XmlNodeType::EndElement:
+		return _T("EndElement");
+	case ln::tr::XmlNodeType::Attribute:
+		return _T("Attribute");
+	case ln::tr::XmlNodeType::Comment:
+		return _T("Comment");
+	case ln::tr::XmlNodeType::Whitespace:
+		return _T("Whitespace");
+	case ln::tr::XmlNodeType::Text:
+		return _T("Text");
+	case ln::tr::XmlNodeType::CDATA:
+		return _T("CDATA");
+	case ln::tr::XmlNodeType::EntityReference:
+		return _T("EntityReference");
+	case ln::tr::XmlNodeType::DocumentType:
+		return _T("DocumentType");
+	case ln::tr::XmlNodeType::Entity:
+		return _T("Entity");
+	case ln::tr::XmlNodeType::Notation:
+		return _T("Notation");
+	case ln::tr::XmlNodeType::ProcessingInstruction:
+		return _T("ProcessingInstruction");
+	case ln::tr::XmlNodeType::XmlDeclaration:
+		return _T("XmlDeclaration");
+	default:
+		LN_UNREACHABLE();
+		return _T("");
+	}
+}
 
 } // namespace tr
 LN_NAMESPACE_END

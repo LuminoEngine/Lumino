@@ -1,4 +1,7 @@
-﻿#include <memory>
+﻿/*
+	clang -Xclang -ast-dump Test.cpp
+*/
+#include <memory>
 #include "SymbolDatabase.h"
 #include "Parser.h"
 
@@ -191,8 +194,8 @@ private:
 	CompilerInstance * m_ci;
 	const SourceManager& m_sm;
 	::HeaderParser* m_parser;
-	//Ref<DocumentInfo> m_lastDocument;
-	::TypeInfo* m_currentRecord;
+	//Ref<DocumentSymbol> m_lastDocument;
+	::TypeSymbol* m_currentRecord;
 
 public:
 	LWIGVisitor(CompilerInstance* CI, ::HeaderParser* parser)
@@ -240,7 +243,7 @@ public:
 		return stringRef.str();
 	}
 
-	Ref<DocumentInfo> parseDocument(Decl* decl)
+	Ref<DocumentSymbol> parseDocument(Decl* decl)
 	{
 		if (const FullComment *Comment = decl->getASTContext().getLocalCommentForDeclUncached(decl))
 			return HeaderParser::parseDocument(getSourceText(Comment->getSourceRange()));
@@ -280,7 +283,7 @@ public:
 	//	}
 	//}
 
-	String getRawTypeName(const QualType& type)
+	String getRawTypeFullName(const QualType& type)
 	{
 		// type.getAsString() だと完全週修飾名になる。"struct ln::Vector3" など。
 		auto name = String::fromStdString(type.getAsString());
@@ -347,8 +350,8 @@ public:
 			{
 				attr->linked = true;
 
-				auto info = Ref<::TypeInfo>::makeRef();
-				info->setRawFullName(getRawTypeName(QualType(decl->getTypeForDecl(), 0)));
+				auto info = Ref<::TypeSymbol>::makeRef();
+				info->setRawFullName(getRawTypeFullName(QualType(decl->getTypeForDecl(), 0)));
 
 				// documentation
 				info->document = parseDocument(decl);
@@ -360,8 +363,9 @@ public:
 				auto bases = decl->getDefinition()->bases();
 				for (auto& base : bases)
 				{
-					auto cxx = base.getType()->getAsCXXRecordDecl();
-					info->baseClassRawName = String::fromStdString(cxx->getNameAsString());
+					//auto cxx = base.getType()->getAsCXXRecordDecl();
+					//info->baseClassRawName = String::fromStdString(cxx->getNameAsString());
+					info->baseClassRawName = getRawTypeFullName(base.getType());
 				}
 
 				if (decl->getDefinition()->isStruct())
@@ -395,7 +399,7 @@ public:
 			{
 				attr->linked = true;
 
-				auto info = Ref<MethodInfo>::makeRef();
+				auto info = Ref<MethodSymbol>::makeRef();
 				info->owner = m_currentRecord;
 				info->name = String::fromStdString(decl->getNameAsString());
 				info->accessLevel = tlanslateAccessLevel(decl->getAccess());
@@ -407,7 +411,7 @@ public:
 				info->metadata = HeaderParser::parseMetadata(attr->name, attr->args);
 
 				// return type
-				info->returnTypeRawName = getRawTypeName(decl->getReturnType());
+				info->returnTypeRawName = getRawTypeFullName(decl->getReturnType());
 
 				// qualifiers
 				info->isVirtual = decl->isVirtual();
@@ -424,9 +428,9 @@ public:
 					SplitQualType sp = type.split();
 					//PointerType
 					
-					auto paramInfo = Ref<ParameterInfo>::makeRef();
+					auto paramInfo = Ref<ParameterSymbol>::makeRef();
 					paramInfo->name = String::fromStdString(paramDecl->getNameAsString());
-					paramInfo->typeRawName = getRawTypeName(type);
+					paramInfo->typeRawName = getRawTypeFullName(type);
 					paramInfo->isIn = hasConst;
 					paramInfo->isOut = (!hasConst && sp.Ty->isPointerType());
 					info->parameters.add(paramInfo);
@@ -446,14 +450,40 @@ public:
 			{
 				attr->linked = true;
 
-				auto info = Ref<FieldInfo>::makeRef();
+				auto info = Ref<FieldSymbol>::makeRef();
 				info->name = String::fromStdString(decl->getNameAsString());
 				info->document = parseDocument(decl);
-				info->typeRawName = getRawTypeName(decl->getType());
+				info->typeRawName = getRawTypeFullName(decl->getType());
 				m_currentRecord->declaredFields.add(info);
 			}
 		}
 
+		return true;
+	}
+
+	bool VisitEnumDecl(EnumDecl* decl)
+	{
+		if (unsigned offset = getOffsetOnRootFile(m_sm, decl->getLocation()))
+		{
+			if (auto* attr = m_parser->findUnlinkedAttrMacro(offset))
+			{
+				attr->linked = true;
+
+				auto ss = decl->getNameAsString();
+				auto s2 = decl->getQualifiedNameAsString();
+
+				decl->dump();
+
+				auto symbol = Ref<TypeSymbol>::makeRef();
+				symbol->setRawFullName(getRawTypeFullName(QualType(decl->getTypeForDecl(), 0)));
+
+				// documentation
+				symbol->document = parseDocument(decl);
+
+				// metadata
+				symbol->metadata = HeaderParser::parseMetadata(attr->name, attr->args);
+			}
+		}
 		return true;
 	}
 
@@ -506,7 +536,8 @@ public:
 			if (name == "LN_CLASS" ||
 				name == "LN_STRUCT" ||
 				name == "LN_FIELD" ||
-				name == "LN_METHOD")
+				name == "LN_METHOD" ||
+				name == "LN_ENUM")
 			{
 				::HeaderParser::AttrMacro attrMacro;
 				attrMacro.name = name;
@@ -661,6 +692,8 @@ int HeaderParser::parse(const Path& filePath, ::SymbolDatabase* db)
 	args.push_back("-include");
 	args.push_back("C:/Proj/LN/Lumino/Source/LuminoEngine/Source/LuminoEngine.PCH.h");
 
+	
+	args.push_back("-std=c++11");
 	args.push_back("-fsyntax-only");
 	args.push_back("-fms-compatibility");		// Enable full Microsoft Visual C++ compatibility
 	args.push_back("-fms-extensions");			// Enable full Microsoft Visual C++ compatibility
@@ -711,9 +744,9 @@ HeaderParser::AttrMacro* HeaderParser::findUnlinkedAttrMacro(unsigned offset)
 	return nullptr;
 }
 
-Ref<DocumentInfo> HeaderParser::parseDocument(const std::string& comment)
+Ref<DocumentSymbol> HeaderParser::parseDocument(const std::string& comment)
 {
-	auto info = Ref<DocumentInfo>::makeRef();
+	auto info = Ref<DocumentSymbol>::makeRef();
 
 
 	String doc = String::fromStdString(comment, Encoding::getUTF8Encoding());
@@ -745,7 +778,7 @@ Ref<DocumentInfo> HeaderParser::parseDocument(const std::string& comment)
 				String con = line.substring(result.getLength());
 				if (Regex::search(con, _T(R"(\[(\w+)\]\s+(\w+)\s*\:\s*)"), &result))
 				{
-					auto paramInfo = Ref<ParameterDocumentInfo>::makeRef();
+					auto paramInfo = Ref<ParameterDocumentSymbol>::makeRef();
 					info->params.add(paramInfo);
 					paramInfo->io = result[1];
 					paramInfo->name = result[2];
@@ -783,9 +816,9 @@ Ref<DocumentInfo> HeaderParser::parseDocument(const std::string& comment)
 	return info;
 }
 
-Ref<MetadataInfo> HeaderParser::parseMetadata(std::string name, const std::string& args)
+Ref<MetadataSymbol> HeaderParser::parseMetadata(std::string name, const std::string& args)
 {
-	auto metadata = Ref<MetadataInfo>::makeRef();
+	auto metadata = Ref<MetadataSymbol>::makeRef();
 	metadata->name = String::fromStdString(name);
 	auto argEntries = String::fromStdString(args).split(_T(","), StringSplitOptions::RemoveEmptyEntries);
 	for (auto& arg : argEntries)

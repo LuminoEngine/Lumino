@@ -313,7 +313,7 @@ void DX9Renderer::onUpdateDepthStencilState(const DepthStencilState& newState, c
 	// 深度比較関数
 	if (newState.DepthTestFunc != oldState.DepthTestFunc || reset)
 	{
-		m_dxDevice->SetRenderState(D3DRS_ZFUNC, cmpFuncTable[newState.DepthTestFunc]);
+		m_dxDevice->SetRenderState(D3DRS_ZFUNC, cmpFuncTable[(int)newState.DepthTestFunc]);
 	}
 
 	// ステンシルテスト有無
@@ -325,7 +325,7 @@ void DX9Renderer::onUpdateDepthStencilState(const DepthStencilState& newState, c
 	// ステンシルテスト比較関数
 	if (newState.StencilFunc != oldState.StencilFunc || reset)
 	{
-		m_dxDevice->SetRenderState(D3DRS_STENCILFUNC, cmpFuncTable[newState.StencilFunc]);
+		m_dxDevice->SetRenderState(D3DRS_STENCILFUNC, cmpFuncTable[(int)newState.StencilFunc]);
 	}
 
 	// ステンシルテスト参照値
@@ -338,15 +338,15 @@ void DX9Renderer::onUpdateDepthStencilState(const DepthStencilState& newState, c
 	DWORD stencilOpTable[] = { D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE };
 	if (newState.StencilFailOp != oldState.StencilFailOp || reset)
 	{
-		m_dxDevice->SetRenderState(D3DRS_STENCILFAIL, stencilOpTable[newState.StencilFailOp]);
+		m_dxDevice->SetRenderState(D3DRS_STENCILFAIL, stencilOpTable[(int)newState.StencilFailOp]);
 	}
 	if (newState.StencilDepthFailOp != oldState.StencilDepthFailOp || reset)
 	{
-		m_dxDevice->SetRenderState(D3DRS_STENCILZFAIL, stencilOpTable[newState.StencilDepthFailOp]);
+		m_dxDevice->SetRenderState(D3DRS_STENCILZFAIL, stencilOpTable[(int)newState.StencilDepthFailOp]);
 	}
 	if (newState.StencilPassOp != oldState.StencilPassOp || reset)
 	{
-		m_dxDevice->SetRenderState(D3DRS_STENCILPASS, stencilOpTable[newState.StencilPassOp]);
+		m_dxDevice->SetRenderState(D3DRS_STENCILPASS, stencilOpTable[(int)newState.StencilPassOp]);
 	}
 }
 

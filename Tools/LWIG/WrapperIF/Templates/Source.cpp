@@ -1,8 +1,11 @@
 #include "Internal.h"
-#include "WrapperIF.generated.h"
+#include "Lumino.Wrapper.generated.h"
 
-extern "C" {
+extern "C"
+{
 
-%Contents%
+%%StructMemberFuncImpls%%
 
+%%ClassMemberFuncImpls%%
+	
 } // extern "C"

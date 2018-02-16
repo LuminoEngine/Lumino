@@ -174,7 +174,7 @@ private:
 
 
 /** RPN 評価に使用するオペランドの型 */
-LN_ENUM(RpnOperandType)
+enum class RpnOperandType
 {
 	Unknown,
 	Null,
@@ -188,8 +188,8 @@ LN_ENUM(RpnOperandType)
 
 	/* 後ろへ行くほど優先度が高い */
 };
-LN_ENUM_REFLECTION(RpnOperandType, Null, Boolean, Int32, UInt32, Int64, UInt64, Float, Double);
-LN_ENUM_DECLARE(RpnOperandType);
+//LN_ENUM_REFLECTION(RpnOperandType, Null, Boolean, Int32, UInt32, Int64, UInt64, Float, Double);
+//LN_ENUM_DECLARE(RpnOperandType);
 
 /** RPN 評価に使用するオペランド */
 class RpnOperand

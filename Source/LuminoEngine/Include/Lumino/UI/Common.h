@@ -16,24 +16,22 @@ class UIFrameWindow;
 class UIMainWindow;
 
 /** 縦方向の表示位置を示します。*/
-LN_ENUM(VAlignment)
+enum class VAlignment
 {
 	Top = 0,			/**< 子要素を、親のレイアウト スロットの上端に揃えて配置します。*/
 	Center,				/**< 子要素を、親のレイアウト スロットの中央に揃えて配置します。*/
 	Bottom,				/**< 子要素を、親のレイアウト スロットの下端に揃えて配置します。*/
 	Stretch,			/**< 子要素を、親のレイアウト スロット全体に引き伸ばします。*/
 };
-LN_ENUM_DECLARE(VAlignment);
 
 /** 横方向の表示位置を示します。*/
-LN_ENUM(HAlignment)
+enum class HAlignment
 {
 	Left = 0,			/**< 子要素を、親のレイアウト スロットの左側に揃えて配置します。*/
 	Center,				/**< 子要素を、親のレイアウト スロットの中央に揃えて配置します。*/
 	Right,				/**< 子要素を、親のレイアウト スロットの右側に揃えて配置します。*/
 	Stretch,			/**< 子要素を、親のレイアウト スロット全体に引き伸ばします。*/
 };
-LN_ENUM_DECLARE(HAlignment);
 
 
 /** */
@@ -59,14 +57,13 @@ enum class AlignmentAnchor : FlagsType
 LN_FLAGS_OPERATORS(AlignmentAnchor);
 
 /** コントロールのレイアウト方向を示します。*/
-LN_ENUM(Orientation)
+enum class Orientation
 {
 	Horizontal = 0,		/**< 水平方向に配置します。*/
 	Vertical,			/**< 垂直方向に配置します。*/
 	ReverseHorizontal,	/**< 水平方向（右から左）に配置します。*/
 	ReverseVertical,	/**< 垂直方向（下から上）に配置します。*/
 };
-LN_ENUM_DECLARE(Orientation);
 
 /** コンテンツのサイズを変更する方法を示します。*/
 enum class StretchMode

@@ -24,6 +24,7 @@ set(LN_SOURCES
 	Include/LuminoDxLib.h
 	Include/LuminoGraphics.h
 	Include/LuminoScene.h
+	Include/Lumino/FlatCCommon.h
 	Source/LuminoEngine.PCH.cpp
 	Source/LuminoEngine.PCH.h
 )

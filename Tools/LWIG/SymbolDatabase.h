@@ -3,12 +3,13 @@
 #include <memory>
 #include <unordered_map>
 #include "Common.h"
+#include "Diagnostics.h"
 
 class SymbolDatabase;
-class TypeInfo;
-class ConstantInfo;
-class DocumentInfo;
-class PropertyInfo;
+class TypeSymbol;
+class ConstantSymbol;
+class DocumentSymbol;
+class PropertySymbol;
 
 enum class AccessLevel
 {
@@ -17,7 +18,7 @@ enum class AccessLevel
 	Private,
 };
 
-class ParameterDocumentInfo : public RefObject
+class ParameterDocumentSymbol : public RefObject
 {
 public:
 	String name;
@@ -25,11 +26,11 @@ public:
 	String description;
 };
 
-class DocumentInfo : public RefObject
+class DocumentSymbol : public RefObject
 {
 public:
 	String summary;
-	List<Ref<ParameterDocumentInfo>> params;
+	List<Ref<ParameterDocumentSymbol>> params;
 	String returns;
 	String details;
 	String copydocMethodName;
@@ -39,7 +40,7 @@ public:
 };
 
 // 属性マクロの ( ) 内に記述されたパラメータ
-class MetadataInfo : public RefObject
+class MetadataSymbol : public RefObject
 {
 public:
 	String name;
@@ -50,58 +51,58 @@ public:
 	bool HasKey(const StringRef& key);
 };
 
-class ParameterInfo : public RefObject
+class ParameterSymbol : public RefObject
 {
 public:
 	String name;
-	Ref<TypeInfo> type;
+	Ref<TypeSymbol> type;
 	bool isIn = false;
 	bool isOut = false;
 	bool isThis = false;
 	bool isReturn = false;
-	Ref<ConstantInfo> defaultValue;
+	Ref<ConstantSymbol> defaultValue;
 
 	// parsing data (link source)
 	String typeRawName;
 	Nullable<String> rawDefaultValue;
 };
 
-class FieldInfo : public RefObject
+class FieldSymbol : public RefObject
 {
 public:
-	Ref<DocumentInfo> document;
-	Ref<TypeInfo> type;
+	Ref<DocumentSymbol> document;
+	Ref<TypeSymbol> type;
 	String name;
 
 	// parsing data (link source)
 	String	typeRawName;
 };
 
-class MethodInfo : public RefObject
+class MethodSymbol : public RefObject
 {
 public:
 	// 
-	Ref<TypeInfo> owner;
-	Ref<MetadataInfo> metadata;
-	Ref<DocumentInfo> document;
+	Ref<TypeSymbol> owner;
+	Ref<MetadataSymbol> metadata;
+	Ref<DocumentSymbol> document;
 	AccessLevel accessLevel = AccessLevel::Public;
 	String name;
-	Ref<TypeInfo> returnType;
+	Ref<TypeSymbol> returnType;
 	//IsConstructor
 	//IsStatic
 	//IsVirtual
-	bool isConst = false;		// const メンバ関数であるか
-	bool isStatic = false;
-	bool isVirtual = false;
+	bool isConst = false;		// [set from Parser] const メンバ関数であるか
+	bool isStatic = false;		// [set from Parser]
+	bool isVirtual = false;		// [set from Parser]
 	bool isConstructor = false;
-	Ref<PropertyInfo> ownerProperty;		// このメソッドがプロパティに含まれていればそのプロパティを指す
-	List<Ref<ParameterInfo>> parameters;
+	Ref<PropertySymbol> ownerProperty;		// このメソッドがプロパティに含まれていればそのプロパティを指す
+	List<Ref<ParameterSymbol>> parameters;
 
 	String overloadSuffix;
-	Ref<MethodInfo> overloadParent;			// このメソッドはどのメソッドをオーバーロードするか (基本的に一番最初に見つかった定義)
-	List<Ref<MethodInfo>> overloadChildren;	// このメソッドはどのメソッドにオーバーロードされるか
+	Ref<MethodSymbol> overloadParent;			// このメソッドはどのメソッドをオーバーロードするか (基本的に一番最初に見つかった定義)
+	List<Ref<MethodSymbol>> overloadChildren;	// このメソッドはどのメソッドにオーバーロードされるか
 	// 
-	List<Ref<ParameterInfo>> capiParameters;
+	List<Ref<ParameterSymbol>> capiParameters;
 
 	String	returnTypeRawName;
 	String	paramsRawSignature;		// 型名と引数名を抽出したもの (デフォルト引数は除く) e.g) "constVector3&minVec,constVector3&maxVec"
@@ -111,61 +112,65 @@ public:
 	bool IsEventSetter() const { return metadata->HasKey(_T("Event")); }
 
 	void LinkParameters(SymbolDatabase* db);
-	void ExpandCAPIParameters(SymbolDatabase* db);
 	String GetCAPIFuncName();
 	String GetCApiSetOverrideCallbackFuncName();
 	String GetCApiSetOverrideCallbackTypeName();
 
 	static String GetAccessLevelName(AccessLevel accessLevel);
+
+	void link(SymbolDatabase* db);
+
+private:
+	void ExpandCAPIParameters(SymbolDatabase* db);
 };
 
-class PropertyInfo : public RefObject
+class PropertySymbol : public RefObject
 {
 public:
-	Ref<TypeInfo>			owner;
-	Ref<DocumentInfo>		document;
+	Ref<TypeSymbol>			owner;
+	Ref<DocumentSymbol>		document;
 	String				name;
 	String				namePrefix;	// Is
-	Ref<TypeInfo>			type;
-	Ref<MethodInfo>		getter;
-	Ref<MethodInfo>		setter;
+	Ref<TypeSymbol>			type;
+	Ref<MethodSymbol>		getter;
+	Ref<MethodSymbol>		setter;
 
 	void MakeDocument();
 };
 
-class ConstantInfo : public RefObject
+class ConstantSymbol : public RefObject
 {
 public:
-	Ref<DocumentInfo>		document;
+	Ref<DocumentSymbol>		document;
 	String				name;
-	Ref<TypeInfo>			type;
+	Ref<TypeSymbol>			type;
 	Variant			value;
 
 	String				typeRawName;
 };
 
-class TypeInfo : public RefObject
+class TypeSymbol : public RefObject
 {
 public:
-	Ref<MetadataInfo>			metadata;
-	Ref<DocumentInfo>			document;
+	Ref<MetadataSymbol>			metadata;
+	Ref<DocumentSymbol>			document;
 	bool	isStruct = false;
 	bool			isVoid = false;
 	bool				isPrimitive = false;
 	bool					isEnum = false;
 	bool					isDelegate = false;
-	List<Ref<FieldInfo>>		declaredFields;
-	List<Ref<MethodInfo>>		declaredMethods;
-	List<Ref<PropertyInfo>>	declaredProperties;
-	List<Ref<ConstantInfo>>	declaredConstants;		// enum メンバ
-	List<Ref<MethodInfo>>		declaredMethodsForDocument;	// LN_METHOD(Docuent)
-	Ref<TypeInfo>				baseClass;
+	List<Ref<FieldSymbol>>		declaredFields;
+	List<Ref<MethodSymbol>>		declaredMethods;
+	List<Ref<PropertySymbol>>	declaredProperties;
+	List<Ref<ConstantSymbol>>	declaredConstants;		// enum メンバ
+	List<Ref<MethodSymbol>>		declaredMethodsForDocument;	// LN_METHOD(Docuent)
+	Ref<TypeSymbol>				baseClass;
 
 	String					baseClassRawName;
 	String					rawFullName;
 
-	TypeInfo() {}
-	TypeInfo(StringRef rawFullName_) { setRawFullName(rawFullName_); }
+	TypeSymbol() {}
+	TypeSymbol(StringRef rawFullName_) { setRawFullName(rawFullName_); }
 
 	const String& fullName() const { return rawFullName; }
 	const String& shortName() const { return m_shortName; }
@@ -189,36 +194,38 @@ private:
 class PredefinedTypes
 {
 public:
-	static Ref<TypeInfo>	voidType;
-	static Ref<TypeInfo>	nullptrType;
-	static Ref<TypeInfo>	boolType;
-	static Ref<TypeInfo>	intType;
-	static Ref<TypeInfo>	uint32Type;
-	static Ref<TypeInfo>	floatType;
-	static Ref<TypeInfo>	stringType;
-	static Ref<TypeInfo>	objectType;
-	static Ref<TypeInfo>	EventConnectionType;
+	static Ref<TypeSymbol>	voidType;
+	static Ref<TypeSymbol>	nullptrType;
+	static Ref<TypeSymbol>	boolType;
+	static Ref<TypeSymbol>	intType;
+	static Ref<TypeSymbol>	uint32Type;
+	static Ref<TypeSymbol>	floatType;
+	static Ref<TypeSymbol>	stringType;
+	static Ref<TypeSymbol>	objectType;
+	static Ref<TypeSymbol>	EventConnectionType;
 };
 
 class SymbolDatabase
 {
 public:
-	List<Ref<TypeInfo>>	predefineds;
-	List<Ref<TypeInfo>>	structs;
-	List<Ref<TypeInfo>>	classes;
-	List<Ref<TypeInfo>>	enums;
-	List<Ref<TypeInfo>>	delegates;
+	List<Ref<TypeSymbol>>	predefineds;
+	List<Ref<TypeSymbol>>	structs;
+	List<Ref<TypeSymbol>>	classes;
+	List<Ref<TypeSymbol>>	enums;
+	List<Ref<TypeSymbol>>	delegates;
 
 	void Link();
 
-	tr::Enumerator<Ref<MethodInfo>> GetAllMethods();
+	tr::Enumerator<Ref<MethodSymbol>> GetAllMethods();
 
-	void FindEnumTypeAndValue(const String& typeFullName, const String& memberName, Ref<TypeInfo>* outEnum, Ref<ConstantInfo>* outMember);
-	Ref<ConstantInfo> CreateConstantFromLiteralString(const String& valueStr);
+	void FindEnumTypeAndValue(const String& typeFullName, const String& memberName, Ref<TypeSymbol>* outEnum, Ref<ConstantSymbol>* outMember);
+	Ref<ConstantSymbol> CreateConstantFromLiteralString(const String& valueStr);
+
+	void verify(DiagManager* diag);
 
 public:
 	void InitializePredefineds();
-	Ref<TypeInfo> findTypeInfo(StringRef typeFullName);
+	Ref<TypeSymbol> findTypeInfo(StringRef typeFullName);
 };
 
 
@@ -241,20 +248,20 @@ public:
 
 
 
-class TypeInfo;
-class DocumentInfo;
-class ParameterDocumentInfo;
-class MetadataInfo;
-class MethodInfo;
-class PropertyInfo;
-class ConstantInfo;
-using Ref<TypeInfo> = std::shared_ptr<TypeInfo>;
-using Ref<DocumentInfo> = std::shared_ptr<DocumentInfo>;
-using ParameterDocumentInfoPtr = std::shared_ptr<ParameterDocumentInfo>;
-using Ref<MetadataInfo> = std::shared_ptr<MetadataInfo>;
-using Ref<MethodInfo> = std::shared_ptr<MethodInfo>;
-using Ref<PropertyInfo> = std::shared_ptr<PropertyInfo>;
-using Ref<ConstantInfo> = std::shared_ptr<ConstantInfo>;
+class TypeSymbol;
+class DocumentSymbol;
+class ParameterDocumentSymbol;
+class MetadataSymbol;
+class MethodSymbol;
+class PropertySymbol;
+class ConstantSymbol;
+using Ref<TypeSymbol> = std::shared_ptr<TypeSymbol>;
+using Ref<DocumentSymbol> = std::shared_ptr<DocumentSymbol>;
+using ParameterDocumentInfoPtr = std::shared_ptr<ParameterDocumentSymbol>;
+using Ref<MetadataSymbol> = std::shared_ptr<MetadataSymbol>;
+using Ref<MethodSymbol> = std::shared_ptr<MethodSymbol>;
+using Ref<PropertySymbol> = std::shared_ptr<PropertySymbol>;
+using Ref<ConstantSymbol> = std::shared_ptr<ConstantSymbol>;
 
 enum class AccessLevel
 {
@@ -264,7 +271,7 @@ enum class AccessLevel
 	Internal,
 };
 
-class ParameterDocumentInfo
+class ParameterDocumentSymbol
 {
 public:
 	String	name;
@@ -272,7 +279,7 @@ public:
 	String	description;
 };
 
-class DocumentInfo
+class DocumentSymbol
 {
 public:
 	String							summary;
@@ -285,7 +292,7 @@ public:
 	bool IsCopyDoc() const { return !copydocMethodName.isEmpty(); }
 };
 
-class MetadataInfo
+class MetadataSymbol
 {
 public:
 	String								name;
@@ -297,45 +304,45 @@ public:
 };
 
 
-class ParameterInfo
+class ParameterSymbol
 {
 public:
 	//DefaultValue
 	//ParameterType
 	String	name;
-	Ref<TypeInfo>	type;
+	Ref<TypeSymbol>	type;
 	bool	isIn = false;
 	bool	isOut = false;
 	bool	isThis = false;
 	bool	isReturn = false;
-	Ref<ConstantInfo>		defaultValue;
+	Ref<ConstantSymbol>		defaultValue;
 
 	String				typeRawName;
 	Nullable<String>	rawDefaultValue;
 };
-using Ref<ParameterInfo> = std::shared_ptr<ParameterInfo>;
+using Ref<ParameterSymbol> = std::shared_ptr<ParameterSymbol>;
 
-class FieldInfo
+class FieldSymbol
 {
 public:
-	Ref<DocumentInfo>	document;
-	Ref<TypeInfo>		type;
+	Ref<DocumentSymbol>	document;
+	Ref<TypeSymbol>		type;
 	String			name;
 
 	String	typeRawName;
 };
-using Ref<FieldInfo> = std::shared_ptr<FieldInfo>;
+using Ref<FieldSymbol> = std::shared_ptr<FieldSymbol>;
 
-class MethodInfo
+class MethodSymbol
 {
 public:
 	// 
-	Ref<TypeInfo>		owner;
-	Ref<MetadataInfo>	metadata;
-	Ref<DocumentInfo>	document;
+	Ref<TypeSymbol>		owner;
+	Ref<MetadataSymbol>	metadata;
+	Ref<DocumentSymbol>	document;
 	AccessLevel		accessLevel = AccessLevel::Public;
 	String			name;
-	Ref<TypeInfo>		returnType;
+	Ref<TypeSymbol>		returnType;
 	//IsConstructor
 	//IsStatic
 	//IsVirtual
@@ -343,14 +350,14 @@ public:
 	bool			isStatic = false;
 	bool			isVirtual = false;
 	bool			isConstructor = false;
-	Ref<PropertyInfo>	ownerProperty;
-	List<Ref<ParameterInfo>>	parameters;
+	Ref<PropertySymbol>	ownerProperty;
+	List<Ref<ParameterSymbol>>	parameters;
 
 	String					overloadSuffix;
-	Ref<MethodInfo>			overloadParent;
-	List<Ref<MethodInfo>>		overloadChildren;
+	Ref<MethodSymbol>			overloadParent;
+	List<Ref<MethodSymbol>>		overloadChildren;
 	// 
-	List<Ref<ParameterInfo>>	capiParameters;
+	List<Ref<ParameterSymbol>>	capiParameters;
 
 	String	returnTypeRawName;
 	String	paramsRawSignature;		// 型名と引数名を抽出したもの (デフォルト引数は除く) e.g) "constVector3&minVec,constVector3&maxVec"
@@ -369,53 +376,53 @@ public:
 };
 
 
-class PropertyInfo
+class PropertySymbol
 {
 public:
-	Ref<TypeInfo>			owner;
-	Ref<DocumentInfo>		document;
+	Ref<TypeSymbol>			owner;
+	Ref<DocumentSymbol>		document;
 	String				name;
 	String				namePrefix;	// Is
-	Ref<TypeInfo>			type;
-	Ref<MethodInfo>		getter;
-	Ref<MethodInfo>		setter;
+	Ref<TypeSymbol>			type;
+	Ref<MethodSymbol>		getter;
+	Ref<MethodSymbol>		setter;
 
 	void MakeDocument();
 };
 
-class ConstantInfo
+class ConstantSymbol
 {
 public:
-	Ref<DocumentInfo>		document;
+	Ref<DocumentSymbol>		document;
 	String				name;
-	Ref<TypeInfo>			type;
+	Ref<TypeSymbol>			type;
 	//Variant			value;
 
 	String				typeRawName;
 };
 
-class TypeInfo
+class TypeSymbol
 {
 public:
-	Ref<MetadataInfo>			metadata;
-	Ref<DocumentInfo>			document;
+	Ref<MetadataSymbol>			metadata;
+	Ref<DocumentSymbol>			document;
 	String	name;
 	bool	isStruct = false;
 	bool			isVoid = false;
 	bool				isPrimitive = false;
 	bool					isEnum = false;
 	bool					isDelegate = false;
-	List<Ref<FieldInfo>>		declaredFields;
-	List<Ref<MethodInfo>>		declaredMethods;
-	List<Ref<PropertyInfo>>	declaredProperties;
-	List<Ref<ConstantInfo>>	declaredConstants;		// enum メンバ
-	List<Ref<MethodInfo>>		declaredMethodsForDocument;	// LN_METHOD(Docuent)
-	Ref<TypeInfo>				baseClass;
+	List<Ref<FieldSymbol>>		declaredFields;
+	List<Ref<MethodSymbol>>		declaredMethods;
+	List<Ref<PropertySymbol>>	declaredProperties;
+	List<Ref<ConstantSymbol>>	declaredConstants;		// enum メンバ
+	List<Ref<MethodSymbol>>		declaredMethodsForDocument;	// LN_METHOD(Docuent)
+	Ref<TypeSymbol>				baseClass;
 
 	String					baseClassRawName;
 
-	TypeInfo() {}
-	TypeInfo(StringRef name_) : name(name_) {}
+	TypeSymbol() {}
+	TypeSymbol(StringRef name_) : name(name_) {}
 
 	bool isValueType() const { return isStruct || isPrimitive || isEnum; }
 	bool isStatic() const { return metadata->HasKey(_T("Static")); }
@@ -432,36 +439,36 @@ private:
 class PredefinedTypes
 {
 public:
-	static Ref<TypeInfo>	voidType;
-	static Ref<TypeInfo>	nullptrType;
-	static Ref<TypeInfo>	boolType;
-	static Ref<TypeInfo>	intType;
-	static Ref<TypeInfo>	uint32Type;
-	static Ref<TypeInfo>	floatType;
-	static Ref<TypeInfo>	stringType;
-	static Ref<TypeInfo>	objectType;
-	static Ref<TypeInfo>	EventConnectionType;
+	static Ref<TypeSymbol>	voidType;
+	static Ref<TypeSymbol>	nullptrType;
+	static Ref<TypeSymbol>	boolType;
+	static Ref<TypeSymbol>	intType;
+	static Ref<TypeSymbol>	uint32Type;
+	static Ref<TypeSymbol>	floatType;
+	static Ref<TypeSymbol>	stringType;
+	static Ref<TypeSymbol>	objectType;
+	static Ref<TypeSymbol>	EventConnectionType;
 };
 
 class SymbolDatabase
 {
 public:
-	List<Ref<TypeInfo>>	predefineds;
-	List<Ref<TypeInfo>>	structs;
-	List<Ref<TypeInfo>>	classes;
-	List<Ref<TypeInfo>>	enums;
-	List<Ref<TypeInfo>>	delegates;
+	List<Ref<TypeSymbol>>	predefineds;
+	List<Ref<TypeSymbol>>	structs;
+	List<Ref<TypeSymbol>>	classes;
+	List<Ref<TypeSymbol>>	enums;
+	List<Ref<TypeSymbol>>	delegates;
 
 	void Link();
 
-	tr::Enumerator<Ref<MethodInfo>> GetAllMethods();
+	tr::Enumerator<Ref<MethodSymbol>> GetAllMethods();
 
-	void FindEnumTypeAndValue(const String& typeName, const String& memberName, Ref<TypeInfo>* outEnum, Ref<ConstantInfo>* outMember);
-	Ref<ConstantInfo> CreateConstantFromLiteralString(const String& valueStr);
+	void FindEnumTypeAndValue(const String& typeName, const String& memberName, Ref<TypeSymbol>* outEnum, Ref<ConstantSymbol>* outMember);
+	Ref<ConstantSymbol> CreateConstantFromLiteralString(const String& valueStr);
 
 public:
 	void InitializePredefineds();
-	Ref<TypeInfo> findTypeInfo(StringRef typeName);
+	Ref<TypeSymbol> findTypeInfo(StringRef typeName);
 };
 
 #endif

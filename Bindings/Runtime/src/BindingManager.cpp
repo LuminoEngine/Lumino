@@ -17,7 +17,7 @@ LFManager::ObjectEntryList	LFManager::m_objectEntryList;
 Stack<int>					LFManager::m_objectIndexStack;
 
 //------------------------------------------------------------------------------
-void LFManager::PreInitialize()
+void LFManager::preInitialize()
 {
 	if (Engine == nullptr)
 	{

@@ -47,7 +47,7 @@ JsonValue::JsonValue(const JsonValue& value)
 {
 	copy(value);
 }
-JsonValue::JsonValue(JsonType::enum_type type)
+JsonValue::JsonValue(JsonType type)
 	: m_type(JsonType::Null)
 	, m_uint(0)
 {

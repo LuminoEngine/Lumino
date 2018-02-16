@@ -11,6 +11,8 @@ set(LN_SOURCES
 	LWIG.PCH.h
 	Main.cpp
 	Common.h
+	Diagnostics.cpp
+	Diagnostics.h
 	Generator.h
 	OutputBuffer.cpp
 	OutputBuffer.h

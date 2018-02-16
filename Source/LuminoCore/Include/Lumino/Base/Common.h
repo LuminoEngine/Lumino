@@ -243,7 +243,7 @@ using Char = wchar_t;
 // Binding / Refrection
 #define LN_CLASS(...)
 #define LN_STRUCT(...)
-#define LN_ENUM_(...)
+#define LN_ENUM(...)
 #define LN_FIELD(...)
 #define LN_METHOD(...)
 #define LN_DELEGATE(...)

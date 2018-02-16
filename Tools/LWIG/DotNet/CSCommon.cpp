@@ -2,7 +2,7 @@
 #include "../OutputBuffer.h"
 #include "CSCommon.h"
 
-std::unordered_map<TypeInfo*, String>	CSCommon::primitiveTypesMap;
+std::unordered_map<TypeSymbol*, String>	CSCommon::primitiveTypesMap;
 
 void CSCommon::initialize()
 {
@@ -14,7 +14,7 @@ void CSCommon::initialize()
 	primitiveTypesMap[PredefinedTypes::stringType] = "string";
 }
 
-String CSCommon::MakePInvokeTypeName(Ref<TypeInfo> typeInfo)
+String CSCommon::MakePInvokeTypeName(Ref<TypeSymbol> typeInfo)
 {
 	if (typeInfo->IsClass())
 		return "IntPtr";
@@ -22,7 +22,7 @@ String CSCommon::MakePInvokeTypeName(Ref<TypeInfo> typeInfo)
 	return MakeTypeName(typeInfo);
 }
 
-String CSCommon::MakeTypeName(Ref<TypeInfo> typeInfo)
+String CSCommon::MakeTypeName(Ref<TypeSymbol> typeInfo)
 {
 	auto itr = primitiveTypesMap.find(typeInfo);
 	if (itr != primitiveTypesMap.end())
@@ -31,7 +31,7 @@ String CSCommon::MakeTypeName(Ref<TypeInfo> typeInfo)
 	return typeInfo->shortName();
 }
 
-String CSCommon::MakeParamTypeName(Ref<ParameterInfo> paramInfo)
+String CSCommon::MakeParamTypeName(Ref<ParameterSymbol> paramInfo)
 {
 	String m;
 	if (paramInfo->isOut) m += "out ";
@@ -40,7 +40,7 @@ String CSCommon::MakeParamTypeName(Ref<ParameterInfo> paramInfo)
 	return m + MakeTypeName(paramInfo->type);
 }
 
-String CSCommon::MakeXmlDocument(Ref<DocumentInfo> doc)
+String CSCommon::MakeXmlDocument(Ref<DocumentSymbol> doc)
 {
 	OutputBuffer buffer;
 	if (doc != nullptr)
@@ -73,7 +73,7 @@ String CSCommon::MakeXmlDocument(Ref<DocumentInfo> doc)
 	return buffer.toString();
 }
 
-String CSCommon::MakeLiteral(Ref<ConstantInfo> constantInfo)
+String CSCommon::MakeLiteral(Ref<ConstantSymbol> constantInfo)
 {
 	if (constantInfo->type == PredefinedTypes::boolType)
 	{
