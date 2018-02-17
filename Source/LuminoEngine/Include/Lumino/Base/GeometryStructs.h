@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include <Lumino/Math/Vector2.h>
 #include <Lumino/Math/Vector3.h>
 
 LN_NAMESPACE_BEGIN

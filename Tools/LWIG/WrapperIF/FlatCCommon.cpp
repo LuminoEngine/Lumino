@@ -25,11 +25,6 @@ String FlatCCommon::makeFlatCParamTypeName(Ref<MethodSymbol> methodInfo, Ref<Par
 {
 	auto typeInfo = paramInfo->type;
 
-	if (typeInfo == PredefinedTypes::boolType)
-	{
-		return _T("LNBool");
-	}
-
 	if (typeInfo->isStruct)
 	{
 		String modifer;
@@ -45,9 +40,17 @@ String FlatCCommon::makeFlatCParamTypeName(Ref<MethodSymbol> methodInfo, Ref<Par
 		return _T("LN") + typeInfo->shortName();
 	}
 
-	String name;
 	if (typeInfo == PredefinedTypes::stringType)
-		name = "const LNChar*";
+	{
+		if (paramInfo->isOut || paramInfo->isReturn)
+			return "const LNChar**";
+		else
+			return "const LNChar*";
+	}
+
+	String name;
+	if (typeInfo == PredefinedTypes::boolType)
+		name = _T("LNBool");
 	else if (typeInfo->IsClass())
 		name = "LNHandle";
 	else

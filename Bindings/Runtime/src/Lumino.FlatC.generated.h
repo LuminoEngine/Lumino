@@ -104,29 +104,29 @@ LN_API LNResultCode LNVector3_GetLengthSquared(const LNVector3* vector3, float* 
 
 /**
     @brief 指定ベクトルを正規化したベクトルを返します。
-    @param[in] x : 処理の基になるベクトルの X 要
-    @param[in] y : 処理の基になるベクトルの Y 要
-    @param[in] z : 処理の基になるベクトルの Z 要
-    @return 正規化されたベクトル
-*/
-LN_API LNResultCode LNVector3_Normalize(float x, float y, float z, LNVector3* outReturn);
-
-/**
-    @brief 指定ベクトルを正規化したベクトルを返します。
     @param[in] vec : 処理の基になるベクトル
     @return 正規化されたベクトル
 */
 LN_API LNResultCode LNVector3_Normalize(const LNVector3* vec, LNVector3* outReturn);
 
 /**
+    @brief 指定ベクトルを正規化したベクトルを返します。
+    @param[in] x : 処理の基になるベクトルの X 要
+    @param[in] y : 処理の基になるベクトルの Y 要
+    @param[in] z : 処理の基になるベクトルの Z 要
+    @return 正規化されたベクトル
+*/
+LN_API LNResultCode LNVector3_NormalizeXYZ(float x, float y, float z, LNVector3* outReturn);
+
+/**
     @brief すべての要素を 0 で初期化します。
 */
-LN_API LNResultCode LNRect_Rect(LNRect* rect);
+LN_API LNResultCode LNRect_Clear(LNRect* rect);
 
 /**
     @brief 位置とサイズを指定して初期化します。
 */
-LN_API LNResultCode LNRect_Rect(LNRect* rect, float x, float y, float width, float height);
+LN_API LNResultCode LNRect_Set(LNRect* rect, float x, float y, float width, float height);
 
 /**
     @brief 左辺の x 軸の値を取得します。
@@ -152,7 +152,7 @@ LN_API LNResultCode LNRect_GetSize(const LNRect* rect, LNSize* outReturn);
 /**
     @brief エンジンの初期化処理を行います。
 */
-LN_API LNResultCode LNEngine_Create(LNHandle* outEngine);
+LN_API LNResultCode LNEngine_Initialize();
 
 /**
     @brief エンジンの終了処理を行います。
@@ -164,7 +164,77 @@ LN_API LNResultCode LNEngine_Terminate();
     @return アプリケーションの終了が要求されている場合は false を返します。
     @details この関数はグラフィックスと入力を更新し、指定されたフレームレートになるように待機します。
 */
-LN_API LNResultCode LNEngine_Update(LNBool outReturn);
+LN_API LNResultCode LNEngine_Update(LNBool* outReturn);
+
+//==============================================================================
+// ln::Sound
+//==============================================================================
+
+/**
+    @brief Sound クラスのインスタンスを作成します。
+*/
+LN_API LNResultCode LNSound_Create(const LNChar* filePath, LNHandle* outSound);
+
+/**
+    @brief この音声の音量を設定します。
+    @param[in] volume : 音量 (0.0～1.0。初期値は 1.0)
+*/
+LN_API LNResultCode LNSound_SetVolume(LNHandle sound, float volume);
+
+/**
+    @brief この音声の音量を取得します。
+*/
+LN_API LNResultCode LNSound_GetVolume(LNHandle sound, float* outReturn);
+
+/**
+    @brief この音声のピッチ (音高) を設定します。
+    @param[in] volume : ピッチ (0.5～2.0。初期値は 1.0)
+*/
+LN_API LNResultCode LNSound_SetPitch(LNHandle sound, float pitch);
+
+/**
+    @brief この音声のピッチ (音高) を取得します。
+*/
+LN_API LNResultCode LNSound_GetPitch(LNHandle sound, float* outReturn);
+
+/**
+    @brief ループ再生の有無を設定します。
+    @param[in] enabled : ループ再生するか
+*/
+LN_API LNResultCode LNSound_SetLoopEnabled(LNHandle sound, LNBool enabled);
+
+/**
+    @brief ループ再生が有効かを確認します。
+*/
+LN_API LNResultCode LNSound_IsLoopEnabled(LNHandle sound, LNBool* outReturn);
+
+/**
+    @brief ループ範囲を設定します。
+    @param[in] begin : ループ範囲の開始サンプル
+    @param[in] length : ループ範囲のサンプル数
+    @details MIDI の場合、ループ範囲はミュージックタイム単位 (四分音符ひとつ分を 768 で表す) で指定します。
+*/
+LN_API LNResultCode LNSound_SetLoopRange(LNHandle sound, uint32_t begin, uint32_t length);
+
+/**
+    @brief この音声の再生を開始します。
+*/
+LN_API LNResultCode LNSound_Play(LNHandle sound);
+
+/**
+    @brief この音声の再生を停止します。
+*/
+LN_API LNResultCode LNSound_Stop(LNHandle sound);
+
+/**
+    @brief この音声の再生を一時停止します。
+*/
+LN_API LNResultCode LNSound_Pause(LNHandle sound);
+
+/**
+    @brief 一時停止中の再生を再開します。
+*/
+LN_API LNResultCode LNSound_Resume(LNHandle sound);
 
 //==============================================================================
 // ln::GraphicsResourceObject
@@ -200,7 +270,7 @@ LN_API LNResultCode LNWorldObject_SetPosition(LNHandle worldobject, const LNVect
 /**
     @brief このオブジェクトの位置を設定します。
 */
-LN_API LNResultCode LNWorldObject_SetPosition(LNHandle worldobject, float x, float y, float z);
+LN_API LNResultCode LNWorldObject_SetPositionXYZ(LNHandle worldobject, float x, float y, float z);
 
 /**
     @brief このオブジェクトの位置を位置を取得します。
@@ -230,12 +300,12 @@ LN_API LNResultCode LNWorldObject_SetScale(LNHandle worldobject, const LNVector3
 /**
     @brief このオブジェクトの拡大率を設定します。
 */
-LN_API LNResultCode LNWorldObject_SetScale(LNHandle worldobject, float xyz);
+LN_API LNResultCode LNWorldObject_SetScaleS(LNHandle worldobject, float xyz);
 
 /**
     @brief このオブジェクトの拡大率を設定します。
 */
-LN_API LNResultCode LNWorldObject_SetScale(LNHandle worldobject, float x, float y, float z);
+LN_API LNResultCode LNWorldObject_SetScaleXYZ(LNHandle worldobject, float x, float y, float z);
 
 /**
     @brief このオブジェクトの拡大率を取得します。
@@ -245,12 +315,12 @@ LN_API LNResultCode LNWorldObject_GetScale(LNHandle worldobject, LNVector3* outR
 /**
     @brief このオブジェクトにタグ文字列を設定します。
 */
-LN_API LNResultCode LNWorldObject_SetTag(LNHandle worldobject, int tag);
+LN_API LNResultCode LNWorldObject_SetTag(LNHandle worldobject, const LNChar* tag);
 
 /**
     @brief このオブジェクトのタグ文字列を取得します。
 */
-LN_API LNResultCode LNWorldObject_GetTag(LNHandle worldobject, int* outReturn);
+LN_API LNResultCode LNWorldObject_GetTag(LNHandle worldobject, const LNChar** outReturn);
 
 /**
     @brief このオブジェクトが属するレイヤーを設定します。
@@ -298,7 +368,7 @@ LN_API LNResultCode LNSceneNode_SetVisible(LNHandle scenenode, LNBool visible);
 /**
     @brief 可視状態を取得します。
 */
-LN_API LNResultCode LNSceneNode_IsVisible(LNHandle scenenode, LNBool outReturn);
+LN_API LNResultCode LNSceneNode_IsVisible(LNHandle scenenode, LNBool* outReturn);
 
 //==============================================================================
 // ln::VisualComponent
@@ -334,7 +404,7 @@ LN_API LNResultCode LNSprite2DComponent_Create(LNHandle* outSprite2DComponent);
 /**
     @brief 
 */
-LN_API LNResultCode LNSprite2DComponent_Create(LNHandle texture, LNHandle* outSprite2DComponent);
+LN_API LNResultCode LNSprite2DComponent_CreateFromTexture(LNHandle texture, LNHandle* outSprite2DComponent);
 
 //==============================================================================
 // ln::Sprite3DComponent
@@ -362,7 +432,7 @@ LN_API LNResultCode LNSpriteBase_SetSourceRect(LNHandle spritebase, const LNRect
 /**
     @brief @overload setSourceRect *
 */
-LN_API LNResultCode LNSpriteBase_SetSourceRect(LNHandle spritebase, float x, float y, float width, float height);
+LN_API LNResultCode LNSpriteBase_SetSourceRectXYWH(LNHandle spritebase, float x, float y, float width, float height);
 
 /**
     @brief テクスチャのどの部分を表示するかを示す転送矩形を取得します。(ピクセル単位)
@@ -376,14 +446,9 @@ LN_API LNResultCode LNSpriteBase_GetSourceRect(LNHandle spritebase, LNRect* outR
 LN_API LNResultCode LNSpriteBase_SetAnchorPoint(LNHandle spritebase, const LNVector2* ratio);
 
 /**
-    @brief @overload setSourceRect *
+    @brief @overload setAnchorPoint *
 */
-LN_API LNResultCode LNSpriteBase_SetAnchorPoint(LNHandle spritebase, float ratioX, float ratioY);
-
-/**
-    @brief 
-*/
-LN_API LNResultCode LNSpriteBase_Create(LNHandle* outSpriteBase);
+LN_API LNResultCode LNSpriteBase_SetAnchorPointXY(LNHandle spritebase, float ratioX, float ratioY);
 
 //==============================================================================
 // ln::Sprite2D

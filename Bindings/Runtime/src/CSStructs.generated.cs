@@ -80,6 +80,23 @@ namespace Lumino
         /// <summary>
         /// 指定ベクトルを正規化したベクトルを返します。
         /// </summary>
+        /// <param name="vec">
+        /// 処理の基になるベクトル
+        /// </param>
+        /// <returns>
+        /// 正規化されたベクトル
+        /// </returns>
+        public static Vector3 normalize(Vector3 vec)
+        {
+            Vector3 outReturn = new Vector3();
+            var result = API.LNVector3_Normalize(ref vec, out outReturn);
+            if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
+            return outReturn;
+        }
+
+        /// <summary>
+        /// 指定ベクトルを正規化したベクトルを返します。
+        /// </summary>
         /// <param name="x">
         /// 処理の基になるベクトルの X 要
         /// </param>
@@ -95,24 +112,7 @@ namespace Lumino
         public static Vector3 normalize(float x, float y, float z)
         {
             Vector3 outReturn = new Vector3();
-            var result = API.LNVector3_Normalize(x, y, z, out outReturn);
-            if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
-            return outReturn;
-        }
-
-        /// <summary>
-        /// 指定ベクトルを正規化したベクトルを返します。
-        /// </summary>
-        /// <param name="vec">
-        /// 処理の基になるベクトル
-        /// </param>
-        /// <returns>
-        /// 正規化されたベクトル
-        /// </returns>
-        public static Vector3 normalize(Vector3 vec)
-        {
-            Vector3 outReturn = new Vector3();
-            var result = API.LNVector3_Normalize(ref vec, out outReturn);
+            var result = API.LNVector3_NormalizeXYZ(x, y, z, out outReturn);
             if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
             return outReturn;
         }
@@ -234,28 +234,6 @@ namespace Lumino
             Y = y;
             Width = width;
             Height = height;
-        }
-
-        /// <summary>
-        /// すべての要素を 0 で初期化します。
-        /// </summary>
-        public void Rect()
-        {
-            
-            var result = API.LNRect_Rect(ref this);
-            if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
-            
-        }
-
-        /// <summary>
-        /// 位置とサイズを指定して初期化します。
-        /// </summary>
-        public void Rect(float x, float y, float width, float height)
-        {
-            
-            var result = API.LNRect_Rect(ref this, x, y, width, height);
-            if (result != ResultCode.OK) throw LuminoException.MakeExceptionFromLastError(result);
-            
         }
 
         /// <summary>

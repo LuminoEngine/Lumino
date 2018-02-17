@@ -1,5 +1,5 @@
 #pragma once
-
+#include <stdint.h>
 
 #if defined(LUMINO_BUILD_DLL) && defined(LN_MSVC)
 #define LN_API	__declspec(dllexport)
@@ -7,16 +7,12 @@
 #define LN_API
 #endif
 
-#ifdef LN_UNICODE
 typedef wchar_t		LNChar;
 #define __T(x)      L ## x
-#else
-typedef char		LNChar;
-#define __T(x)      x
-#endif
 
 #define LN_OK	LN_RESULTCODE_OK
 
+typedef int		LNHandle;
 typedef void* LNUserData;
 
 /** ê^ãUíl */

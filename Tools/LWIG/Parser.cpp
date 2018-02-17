@@ -315,8 +315,18 @@ public:
 					auto paramInfo = Ref<ParameterSymbol>::makeRef();
 					paramInfo->name = String::fromStdString(paramDecl->getNameAsString());
 					paramInfo->src.typeRawName = getRawTypeFullName(type);
-					paramInfo->isIn = hasConst;
-					paramInfo->isOut = (!hasConst && sp.Ty->isPointerType());
+
+					if (sp.Ty->isPointerType())
+					{
+						paramInfo->isIn = hasConst;
+						paramInfo->isOut = !hasConst;
+					}
+					else
+					{
+						paramInfo->isIn = true;
+						paramInfo->isOut = false;
+					}
+
 					info->parameters.add(paramInfo);
 
 					// check sema error
@@ -620,7 +630,10 @@ int HeaderParser::parse(const Path& filePath, ::SymbolDatabase* db, DiagManager*
 	args.push_back("-fsyntax-only");
 	args.push_back("-fms-compatibility");		// Enable full Microsoft Visual C++ compatibility
 	args.push_back("-fms-extensions");			// Enable full Microsoft Visual C++ compatibility
-	args.push_back("-fmsc-version=1900");		// Microsoft compiler version number to report in _MSC_VER (0 = don't define it (default))
+	args.push_back("-fmsc-version=1910");		// Microsoft compiler version number to report in _MSC_VER (0 = don't define it (default))
+
+	// 基本的にヘッダを入力するので、warning: #pragma once in main file を隠す。https://clang.llvm.org/docs/UsersManual.html#options-to-control-error-and-warning-messages
+	args.push_back("-Wno-pragma-once-outside-header");
 
 	//const char* argv[] =
 	//{

@@ -71,18 +71,6 @@ bool Vector3::isNaNOrInf() const
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
-Vector3 Vector3::normalize(float x, float y, float z)
-{
-	float t = 1.0f / Asm::sqrt(x * x + y * y + z * z);
-	return Vector3(
-		x * t,
-		y * t,
-		z * t);
-}
-
-//------------------------------------------------------------------------------
-// static
-//------------------------------------------------------------------------------
 Vector3 Vector3::normalize(const Vector3& vec)
 {
 	float t = 1.0f / Asm::sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
@@ -90,6 +78,18 @@ Vector3 Vector3::normalize(const Vector3& vec)
 		vec.x * t,
 		vec.y * t,
 		vec.z * t);
+}
+
+//------------------------------------------------------------------------------
+// static
+//------------------------------------------------------------------------------
+Vector3 Vector3::normalize(float x, float y, float z)
+{
+	float t = 1.0f / Asm::sqrt(x * x + y * y + z * z);
+	return Vector3(
+		x * t,
+		y * t,
+		z * t);
 }
 
 //------------------------------------------------------------------------------

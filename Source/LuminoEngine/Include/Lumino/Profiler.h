@@ -6,6 +6,7 @@
 #include <Lumino/Base/ElapsedTimer.h>
 #include <Lumino/Threading/Mutex.h>
 #include <Lumino/Threading/ConditionFlag.h>
+#include "Base/GeometryStructs.h"
 
 LN_NAMESPACE_BEGIN
 class Profiler2;

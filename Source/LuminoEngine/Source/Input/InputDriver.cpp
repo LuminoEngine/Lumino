@@ -1,5 +1,5 @@
 ﻿
-#include "../Internal.h"
+#include "Internal.h"
 #include "InputDriver.h"
 
 LN_NAMESPACE_BEGIN

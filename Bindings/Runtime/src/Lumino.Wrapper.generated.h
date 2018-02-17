@@ -9,6 +9,22 @@ extern "C"
 
 
 
+class LNSound : public Sound
+{
+public:
+
+    void postInitialize()
+    {
+
+    }
+
+
+
+
+
+
+};
+
 class LNGraphicsResourceObject : public GraphicsResourceObject
 {
 public:

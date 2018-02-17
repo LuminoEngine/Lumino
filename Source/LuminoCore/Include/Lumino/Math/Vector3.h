@@ -108,21 +108,21 @@ public:
 
 	/**
 		@brief		指定ベクトルを正規化したベクトルを返します。
-		@param[in]	x		: 処理の基になるベクトルの X 要素
-		@param[in]	y		: 処理の基になるベクトルの Y 要素
-		@param[in]	z		: 処理の基になるベクトルの Z 要素
-		@return		正規化されたベクトル
-	*/
-	LN_METHOD()
-	static Vector3 normalize(float x, float y, float z);
-
-	/**
-		@brief		指定ベクトルを正規化したベクトルを返します。
 		@param[in]	vec		: 処理の基になるベクトル
 		@return		正規化されたベクトル
 	*/
 	LN_METHOD()
 	static Vector3 normalize(const Vector3& vec);
+
+	/**
+		@brief		指定ベクトルを正規化したベクトルを返します。
+		@param[in]	x		: 処理の基になるベクトルの X 要素
+		@param[in]	y		: 処理の基になるベクトルの Y 要素
+		@param[in]	z		: 処理の基になるベクトルの Z 要素
+		@return		正規化されたベクトル
+	*/
+	LN_METHOD(OverloadPostfix="XYZ")
+	static Vector3 normalize(float x, float y, float z);
 
 	static Vector3 safeNormalize(const Vector3& vec);
 	static Vector3 safeNormalize(const Vector3& vec, const Vector3& alt);

@@ -116,10 +116,13 @@ public:
 LN_PROTECTED_INTERNAL_ACCESS:
 	Sprite2DComponent();
 	virtual ~Sprite2DComponent();
+
 	LN_METHOD()
 	void initialize();
-	LN_METHOD()
+
+	LN_METHOD(OverloadPostfix = "FromTexture")
 	void initialize(Texture* texture);
+
 	virtual void onRender2(RenderingContext* renderer) override;
 };
 
@@ -188,7 +191,7 @@ public:
 	void setSourceRect(const Rect& rect);
 
 	/** @overload setSourceRect */
-	LN_METHOD()
+	LN_METHOD(OverloadPostfix = "XYWH")
 	void setSourceRect(float x, float y, float width, float height);
 
 	/** テクスチャのどの部分を表示するかを示す転送矩形を取得します。(ピクセル単位) */
@@ -204,8 +207,8 @@ public:
 	LN_METHOD(Property)
 	void setAnchorPoint(const Vector2& ratio);
 
-	/** @overload setSourceRect */
-	LN_METHOD()
+	/** @overload setAnchorPoint */
+	LN_METHOD(OverloadPostfix = "XY")
 	void setAnchorPoint(float ratioX, float ratioY);
 
 protected:
@@ -215,7 +218,6 @@ LN_CONSTRUCT_ACCESS:
 	SpriteBase();
 	virtual ~SpriteBase();
 
-	LN_METHOD()
 	void initialize();
 };
 

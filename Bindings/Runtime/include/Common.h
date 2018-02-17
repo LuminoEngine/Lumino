@@ -65,7 +65,6 @@ enum class ResultCode
 	ErrorCOM					= 17,
 };
 
-typedef int		LNHandle;
 
 //#ifdef __cplusplus
 //extern "C" {

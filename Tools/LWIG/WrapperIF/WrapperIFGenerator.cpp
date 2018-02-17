@@ -41,13 +41,13 @@ void WrapperIFGenerator::generate()
 			structMemberFuncDeclsText.AppendLines(MakeDocumentComment(methodInfo->document));
 
 			// decl
-			structMemberFuncDeclsText.AppendLines(MakeFuncHeader(methodInfo)).append(";").NewLine(2);
+			structMemberFuncDeclsText.AppendLines(makeFuncHeader(methodInfo)).append(";").NewLine(2);
 		}
 
 		// function impls
 		for (auto& methodInfo : structInfo->declaredMethods)
 		{
-			structMemberFuncImplsText.AppendLines(MakeFuncBody(structInfo, methodInfo)).NewLine();
+			structMemberFuncImplsText.AppendLines(makeFuncBody(structInfo, methodInfo)).NewLine();
 		}
 	}
 
@@ -67,13 +67,13 @@ void WrapperIFGenerator::generate()
 			classMemberFuncDeclsText.AppendLines(MakeDocumentComment(methodInfo->document));
 
 			// decl
-			classMemberFuncDeclsText.AppendLines(MakeFuncHeader(methodInfo)).append(";").NewLine(2);
+			classMemberFuncDeclsText.AppendLines(makeFuncHeader(methodInfo)).append(";").NewLine(2);
 		}
 
 		// function impls
 		for (auto& methodInfo : classInfo->declaredMethods)
 		{
-			classMemberFuncImplsText.AppendLines(MakeFuncBody(classInfo, methodInfo)).NewLine();
+			classMemberFuncImplsText.AppendLines(makeFuncBody(classInfo, methodInfo)).NewLine();
 		}
 
 		if (!classInfo->isStatic())
@@ -180,13 +180,13 @@ String WrapperIFGenerator::MakeInstanceParamName(Ref<TypeSymbol> info)
 //		}
 //		else
 //		{
-//			buffer.AppendLines(MakeFuncBody(typeInfo, methodInfo, false));
+//			buffer.AppendLines(makeFuncBody(typeInfo, methodInfo, false));
 //
 //			// override
 //			if (methodInfo->isVirtual)
 //			{
 //				// base caller
-//				buffer.AppendLines(MakeFuncBody(typeInfo, methodInfo, true));
+//				buffer.AppendLines(makeFuncBody(typeInfo, methodInfo, true));
 //
 //				// override setter
 //				buffer.AppendLines(funcBodyTemplate
@@ -202,7 +202,7 @@ String WrapperIFGenerator::MakeInstanceParamName(Ref<TypeSymbol> info)
 //}
 
 // 宣言文の作成。ドキュメンテーションコメントは含まない。
-String WrapperIFGenerator::MakeFuncHeader(Ref<MethodSymbol> methodInfo)
+String WrapperIFGenerator::makeFuncHeader(Ref<MethodSymbol> methodInfo)
 {
 	// make params
 	OutputBuffer params;
@@ -219,10 +219,10 @@ String WrapperIFGenerator::MakeFuncHeader(Ref<MethodSymbol> methodInfo)
 		.replace("%%ParamList%%", params.toString());
 }
 
-String WrapperIFGenerator::MakeFuncBody(Ref<TypeSymbol> typeInfo, Ref<MethodSymbol> methodInfo)
+String WrapperIFGenerator::makeFuncBody(Ref<TypeSymbol> typeInfo, Ref<MethodSymbol> methodInfo)
 {
 	// function header
-	String funcHeader = MakeFuncHeader(methodInfo);
+	String funcHeader = makeFuncHeader(methodInfo);
 
 	//{
 	//	// 第1引数
@@ -288,6 +288,10 @@ String WrapperIFGenerator::MakeFuncBody(Ref<TypeSymbol> typeInfo, Ref<MethodSymb
 			{
 				args.AppendCommad("static_cast<{0}>({1})", paramInfo->type->shortName(), paramInfo->name);
 			}
+			else if (paramInfo->type == PredefinedTypes::boolType)
+			{
+				args.AppendCommad("LWIG_TO_BOOL({0})", paramInfo->name);
+			}
 			else
 			{
 				args.AppendCommad(paramInfo->name);
@@ -301,6 +305,10 @@ String WrapperIFGenerator::MakeFuncBody(Ref<TypeSymbol> typeInfo, Ref<MethodSymb
 				body.append("*outReturn = reinterpret_cast<const LN{0}&>", methodInfo->returnType->shortName());
 			else if (methodInfo->returnType->IsClass())
 				body.append("*outReturn = LWIG_TO_HANDLE");
+			else if (methodInfo->returnType == PredefinedTypes::boolType)
+				body.append("*outReturn = LWIG_TO_LNBOOL");
+			else if (methodInfo->returnType == PredefinedTypes::stringType)
+				body.append("*outReturn = LWIG_STRING_TO_STRPTR");
 			else
 				body.append("*outReturn = ");
 		}

@@ -24,7 +24,7 @@ int main()
 		_T(LUMINO_ROOT_DIR"/Source/LuminoCore/Include/Lumino/Math/Vector3.h"),
 		_T(LUMINO_ROOT_DIR"/Source/LuminoCore/Include/Lumino/Math/Quaternion.h"),
 		_T(LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Engine.h"),
-		//_T(LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Audio/Sound.h"),
+		_T(LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Audio/Sound.h"),
 		_T(LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Graphics/Common.h"),
 		_T(LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Graphics/GraphicsResourceObject.h"),
 		_T(LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Graphics/Texture.h"),

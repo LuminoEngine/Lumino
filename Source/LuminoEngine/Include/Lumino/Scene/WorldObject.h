@@ -1,5 +1,6 @@
 ﻿
 #pragma once
+#include <Lumino/Base/String.h>
 #include "../Common.h"
 #include "../Game/Component.h"
 
@@ -66,7 +67,7 @@ public:
 	void setPosition(const Vector3& pos) { transform.position = pos; }
 
 	/** このオブジェクトの位置を設定します。 */
-	LN_METHOD()
+	LN_METHOD(OverloadPostfix = "XYZ")
 	void setPosition(float x, float y, float z = 0.0f) { setPosition(Vector3(x, y, z)); }
 
 	/** このオブジェクトの位置を位置を取得します。 */
@@ -79,7 +80,7 @@ public:
 
 	/** このオブジェクトの回転をオイラー角から設定します。(radian) */
 	LN_METHOD()
-	void SetEulerAngles(float x, float y, float z) { transform.rotation = Quaternion::makeFromEulerAngles(Vector3(x, y, z)); }
+	void setEulerAngles(float x, float y, float z) { transform.rotation = Quaternion::makeFromEulerAngles(Vector3(x, y, z)); }
 
 	/** このオブジェクトの回転を取得します。 */
 	LN_METHOD(Property)
@@ -90,11 +91,11 @@ public:
 	void setScale(const Vector3& scale) { transform.scale = scale; }
 
 	/** このオブジェクトの拡大率を設定します。 */
-	LN_METHOD()
+	LN_METHOD(OverloadPostfix = "S")
 	void setScale(float xyz) { transform.scale = Vector3(xyz, xyz, xyz); }
 
 	/** このオブジェクトの拡大率を設定します。 */
-	LN_METHOD()
+	LN_METHOD(OverloadPostfix = "XYZ")
 	void setScale(float x, float y, float z = 1.0f) { transform.scale = Vector3(x, y, z); }
 
 	/** このオブジェクトの拡大率を取得します。 */

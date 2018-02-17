@@ -165,7 +165,15 @@ String MethodSymbol::GetCAPIFuncName()
 	String funcName;
 	if (isConstructor)
 	{
-		funcName = _T("Create");
+		if (owner->isStruct)
+		{
+			if (isConstructor && parameters.isEmpty())
+				funcName = _T("Clear");
+			else
+				funcName = _T("Set");
+		}
+		else
+			funcName = _T("Create");
 	}
 	else
 	{
@@ -210,7 +218,14 @@ String MethodSymbol::GetAccessLevelName(AccessLevel accessLevel)
 
 void MethodSymbol::link(SymbolDatabase* db)
 {
-	if (name == _T("initialize"))
+	if (!isStatic &&
+		name == _T("initialize"))
+	{
+		isConstructor = true;
+	}
+
+	if (owner->isStruct &&
+		owner->shortName() == name)
 	{
 		isConstructor = true;
 	}
@@ -223,10 +238,6 @@ void MethodSymbol::link(SymbolDatabase* db)
 //==============================================================================
 void TypeSymbol::Link(SymbolDatabase* db)
 {
-	MakeProperties();
-	LinkOverload();
-	ResolveCopyDoc();
-
 	// find base class
 	if (!src.baseClassRawName.isEmpty())
 	{
@@ -237,6 +248,11 @@ void TypeSymbol::Link(SymbolDatabase* db)
 	{
 		methodInfo->link(db);
 	}
+
+	MakeProperties();
+	LinkOverload();
+	ResolveCopyDoc();
+
 }
 
 void TypeSymbol::setRawFullName(const String& value)
@@ -328,18 +344,45 @@ void TypeSymbol::LinkOverload()
 {
 	for (auto& methodInfo1 : declaredMethods)
 	{
-		if (methodInfo1->IsOverloadChild()) continue;
+		if (!methodInfo1->overloadChildren.isEmpty() || methodInfo1->overloadParent)
+			continue;	// processed
 
-		// find overload child
+		// find same names
+		List<MethodSymbol*> sameNames;
 		for (auto& methodInfo2 : declaredMethods)
 		{
-			if (methodInfo2 == methodInfo1) continue;
+			if (isStruct && methodInfo2->isConstructor && methodInfo2->parameters.isEmpty())
+			{
+				// 構造体の引数無しコンストラクタは Clear という別名にしたい。
+				continue;
+			}
 
 			if (methodInfo1->name == methodInfo2->name)
 			{
-				methodInfo1->overloadChildren.add(methodInfo2);
-				methodInfo2->overloadParent = methodInfo1;
+				sameNames.add(methodInfo2);
 			}
+		}
+
+		// select parent
+		auto f = sameNames.find([](MethodSymbol* m) { return !m->metadata->HasKey(MetadataSymbol::OverloadPostfixAttr); });
+		if (!f)
+		{
+			LN_NOTIMPLEMENTED();
+		}
+		MethodSymbol* parent = *f;
+
+		// link
+		for (auto& method2 : sameNames)
+		{
+			if (method2 == parent) continue;
+
+			if (!method2->metadata->HasKey(MetadataSymbol::OverloadPostfixAttr))
+			{
+				LN_NOTIMPLEMENTED();
+			}
+
+			parent->overloadChildren.add(method2);
+			method2->overloadParent = parent;
 		}
 	}
 }
@@ -422,6 +465,14 @@ void SymbolDatabase::Link()
 		}
 
 		classInfo->Link(this);
+
+		// ドキュメントとしてみるときのために、コンストラクタを先頭に出すようにする
+		std::stable_sort(classInfo->declaredMethods.begin(), classInfo->declaredMethods.end(), [](MethodSymbol* lhs, MethodSymbol* rhs)
+		{
+			int lv = lhs->isConstructor ? 0 : 1;
+			int rv = rhs->isConstructor ? 0 : 1;
+			return lv < rv;
+		});
 	}
 
 	// enums

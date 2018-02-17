@@ -6,6 +6,7 @@
 
 LN_NAMESPACE_BEGIN
 namespace detail { class RenderTargetTextureCache; }
+class Stream;
 class RawBitmap;
 class Font;
 class Texture;

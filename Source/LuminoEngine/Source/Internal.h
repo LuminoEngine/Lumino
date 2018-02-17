@@ -8,7 +8,7 @@
 #include <Windows.h>
 #endif
 #include <LuminoCore.h>
-//#include "../Include/Lumino/Graphics/Common.h"	// TODO: Internal.h には置きたくない
+#include "../Include/Lumino/Graphics/Common.h"	// TODO: Internal.h には置きたくない
 
 
 namespace ln {

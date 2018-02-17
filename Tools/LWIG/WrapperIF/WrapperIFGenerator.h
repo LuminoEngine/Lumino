@@ -17,8 +17,8 @@ private:
 
 	String MakeInstanceParamName(Ref<TypeSymbol> info);
 	//String MakeMethods(Ref<TypeSymbol> typeInfo);
-	String MakeFuncHeader(Ref<MethodSymbol> methodInfo);
-	String MakeFuncBody(Ref<TypeSymbol> typeInfo, Ref<MethodSymbol> methodInfo);
+	String makeFuncHeader(Ref<MethodSymbol> methodInfo);
+	String makeFuncBody(Ref<TypeSymbol> typeInfo, Ref<MethodSymbol> methodInfo);
 
 	String MakeDocumentComment(Ref<DocumentSymbol> doc);
 
