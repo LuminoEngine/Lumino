@@ -1,6 +1,6 @@
 
-#set(LWIG_LLVM_PACKAGE_DIR D:/Proj/Tech/llvm/1_Package_release_60/Debug)
-set(LWIG_LLVM_PACKAGE_DIR C:/Proj/llvm/build_debug/package)
+set(LWIG_LLVM_PACKAGE_DIR D:/Proj/Tech/llvm/1_Package_release_60/Debug)
+#set(LWIG_LLVM_PACKAGE_DIR C:/Proj/llvm/build_debug/package)
 set(CLANG_DIR ${LWIG_LLVM_PACKAGE_DIR}/lib/cmake/clang)
 set(LLVM_DIR ${LWIG_LLVM_PACKAGE_DIR}/lib/cmake/llvm)
 find_package(CLANG REQUIRED CONFIG)

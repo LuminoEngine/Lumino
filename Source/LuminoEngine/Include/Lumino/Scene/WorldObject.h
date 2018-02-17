@@ -4,6 +4,8 @@
 #include "../Game/Component.h"
 
 LN_NAMESPACE_BEGIN
+struct Vector3;
+struct Quaternion;
 class DrawList;
 class World;
 class WorldObject;
@@ -44,6 +46,7 @@ struct LayerMask
 /**
 	@brief		
 */
+LN_CLASS()
 class WorldObject
 	: public Object
 {

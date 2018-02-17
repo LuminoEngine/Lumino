@@ -2,8 +2,6 @@
 #ifndef LUMINO_MATH_MATRIX_H
 #define LUMINO_MATH_MATRIX_H
 
-#include <stdio.h>
-#include <string.h>
 #include "Common.h"
 #include "Vector3.h"
 #include "Vector4.h"
@@ -259,14 +257,6 @@ public:
 		@brief		要素のいずれかが NaN または Inf かを判別します。
 	*/
 	bool isNaNOrInf() const;
-
-	/**
-		@brief		デバッグ用に文字列を標準出力します。
-		@param[in]	format	: 書式指定文字列
-		@param[in]	stream	: 出力先ストリーム
-		@details	format が NULL の場合、書式は "%f, %f, %f, %f\n %f, %f, %f, %f\n %f, %f, %f, %f\n %f, %f, %f, %f\n" を使用します。
-	*/
-	void print(const char* format = NULL, FILE* stream = NULL) const;
 
 public:
 

@@ -71,7 +71,7 @@ String WrapperIFClassesGenerator::GenerateWrapperIFClasses()
 					}
 
 					// member method
-					overrideMethods.append("virtual {0} {1}() override", FlatCCommon::MakeCppTypeName(methodInfo->returnType), methodInfo->name).NewLine();
+					overrideMethods.append("virtual {0} {1}() override", FlatCCommon::makeCppTypeName(methodInfo->returnType), methodInfo->name).NewLine();
 					overrideMethods.append("{").NewLine();
 					overrideMethods.IncreaseIndent();
 					overrideMethods.append("{0}({1});", varName, args.toString()).NewLine();
@@ -80,7 +80,7 @@ String WrapperIFClassesGenerator::GenerateWrapperIFClasses()
 
 					// member method
 					overrideMethods.append("template<typename... TArgs>").NewLine();
-					overrideMethods.append("{0} {1}_CallBase(TArgs... args)", FlatCCommon::MakeCppTypeName(methodInfo->returnType), methodInfo->name).NewLine();
+					overrideMethods.append("{0} {1}_CallBase(TArgs... args)", FlatCCommon::makeCppTypeName(methodInfo->returnType), methodInfo->name).NewLine();
 					overrideMethods.append("{").NewLine();
 					overrideMethods.IncreaseIndent();
 					overrideMethods.append("return {0}::{1}(args...);", methodInfo->owner->shortName(), methodInfo->name).NewLine();
@@ -99,8 +99,8 @@ String WrapperIFClassesGenerator::GenerateWrapperIFClasses()
 					OutputBuffer args;
 					for (auto& paramInfo : invokeMethod->parameters)
 					{
-						params.AppendCommad("{0} {1}", FlatCCommon::MakeCApiParamTypeName(invokeMethod, paramInfo), paramInfo->name);
-						funcParams.AppendCommad("{0} {1}", FlatCCommon::MakeCppTypeName(paramInfo->type), paramInfo->name);
+						params.AppendCommad("{0} {1}", FlatCCommon::makeFlatCParamTypeName(invokeMethod, paramInfo), paramInfo->name);
+						funcParams.AppendCommad("{0} {1}", FlatCCommon::makeCppTypeName(paramInfo->type), paramInfo->name);
 
 						if (paramInfo->type->IsClass())
 							args.AppendCommad("LWIG_TO_HANDLE({0})", paramInfo->name);
@@ -154,7 +154,7 @@ String WrapperIFClassesGenerator::GenerateOverrideCallerFuncPtrs()
 				OutputBuffer params;
 				for (auto& paramInfo : methodInfo->capiParameters)
 				{
-					params.AppendCommad("{0} {1}", FlatCCommon::MakeCApiParamTypeName(methodInfo, paramInfo), paramInfo->name);
+					params.AppendCommad("{0} {1}", FlatCCommon::makeFlatCParamTypeName(methodInfo, paramInfo), paramInfo->name);
 				}
 
 				funcPtrDefs.append("typedef LNResultCode (*{0}_{1}_OverrideCaller)({2});", classInfo->shortName(), methodInfo->name, params.toString()).NewLine();

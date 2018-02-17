@@ -14,13 +14,16 @@ public:
 
 	Level	level;
 	String	message;
+	String	location;
 };
 
 class DiagManager
 {
 public:
-	void add(DiagItem::Level level, const String& message);
-	void addError(const String& message) { add(DiagItem::Level::Error, message); }
+	void add(DiagItem::Level level, const String& message, const String& location);
+	void addError(const String& message, const String& location) { add(DiagItem::Level::Error, message, location); }
+
+	void dump();
 
 private:
 	std::vector<DiagItem>	m_items;

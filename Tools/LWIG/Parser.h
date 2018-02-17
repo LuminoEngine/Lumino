@@ -5,6 +5,7 @@
 class SymbolDatabase;
 class DocumentSymbol;
 class MetadataSymbol;
+class DiagManager;
 
 class HeaderParser
 {
@@ -22,10 +23,11 @@ public:
 
 	void addIncludePath(const Path& path) { m_includePathes.add(path); }
 
-	int parse(const Path& filePath, ::SymbolDatabase* db);
+	int parse(const Path& filePath, ::SymbolDatabase* db, DiagManager* diag);
 	AttrMacro* findUnlinkedAttrMacro(unsigned offset);
 
 	::SymbolDatabase* getDB() const { return m_db; }
+	DiagManager* diag() const { return m_diag; }
 
 
 
@@ -35,6 +37,7 @@ public:
 private:
 	::SymbolDatabase*	m_db;
 	List<Path>	m_includePathes;
+	DiagManager* m_diag;
 };
 
 

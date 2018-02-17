@@ -213,6 +213,7 @@ LN_INTERNAL_ACCESS:
 /**
 	@brief		
 */
+LN_CLASS()
 class VisualObject
 	: public WorldObject
 {

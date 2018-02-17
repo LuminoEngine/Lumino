@@ -69,18 +69,6 @@ bool Vector3::isNaNOrInf() const
 }
 
 //------------------------------------------------------------------------------
-void Vector3::print(const char* format, FILE* stream) const
-{
-	if (!format) {
-		format = "%f, %f, %f\n";
-	}
-	if (!stream) {
-		stream = stdout;
-	}
-	fprintf(stream, format, x, y, z);
-}
-
-//------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
 Vector3 Vector3::normalize(float x, float y, float z)

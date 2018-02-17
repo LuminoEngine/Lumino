@@ -2,7 +2,6 @@
 #ifndef LUMINO_MATH_QUATERNION_H
 #define LUMINO_MATH_QUATERNION_H
 
-#include <stdio.h>
 #include "Common.h"
 
 LN_NAMESPACE_BEGIN
@@ -20,14 +19,26 @@ struct Matrix;
 				この動作がほぼ一般的なので、これに合わせています。<br>
 				(DirectX(D3DX)、XNA、Unity、cocos2dx 等はこの動作)
 */
+LN_STRUCT()
 struct LUMINO_EXPORT Quaternion
 {
 public:
 
-	float	x;		///< X 要素
-	float	y;		///< Y 要素
-	float	z;		///< Z 要素
-	float	w;		///< W 要素
+	/** X 要素 */
+	LN_FIELD()
+	float	x;
+
+	/** Y 要素 */
+	LN_FIELD()
+	float	y;
+
+	/** Z 要素 */
+	LN_FIELD()
+	float	z;
+
+	/** W 要素 */
+	LN_FIELD()
+	float	w;
 
 public:
 
@@ -136,14 +147,6 @@ public:
 		@brief		要素のいずれかが NaN または Inf かを判別します。
 	*/
 	bool isNaNOrInf() const;
-
-	/**
-		@brief		デバッグ用に文字列を標準出力します。
-		@param[in]	format	: 書式指定文字列
-		@param[in]	stream	: 出力先ストリーム
-		@details	format が NULL の場合、書式は "(%f, %f, %f, %f)\n" を使用します。
-	*/
-	void print(const char* format = nullptr, FILE* stream = nullptr) const;
 
 public:
 

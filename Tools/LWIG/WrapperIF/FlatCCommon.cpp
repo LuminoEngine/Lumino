@@ -2,7 +2,7 @@
 #include "../SymbolDatabase.h"
 #include "FlatCCommon.h"
 
-String FlatCCommon::MakeCppTypeName(Ref<TypeSymbol> typeInfo)
+String FlatCCommon::makeCppTypeName(TypeSymbol* typeInfo)
 {
 	if (typeInfo->IsClass())
 	{
@@ -12,9 +12,23 @@ String FlatCCommon::MakeCppTypeName(Ref<TypeSymbol> typeInfo)
 	return typeInfo->shortName();
 }
 
-String FlatCCommon::MakeCApiParamTypeName(Ref<MethodSymbol> methodInfo, Ref<ParameterSymbol> paramInfo)
+String FlatCCommon::makeFlatCTypeName(TypeSymbol* typeInfo)
+{
+	if (typeInfo->IsClass())
+	{
+		return typeInfo->shortName() + _T("*");
+	}
+	return typeInfo->shortName();
+}
+
+String FlatCCommon::makeFlatCParamTypeName(Ref<MethodSymbol> methodInfo, Ref<ParameterSymbol> paramInfo)
 {
 	auto typeInfo = paramInfo->type;
+
+	if (typeInfo == PredefinedTypes::boolType)
+	{
+		return _T("LNBool");
+	}
 
 	if (typeInfo->isStruct)
 	{
@@ -24,6 +38,11 @@ String FlatCCommon::MakeCApiParamTypeName(Ref<MethodSymbol> methodInfo, Ref<Para
 		if (!paramInfo->isThis && !paramInfo->isOut)
 			modifer = "const ";
 		return String::format("{0}LN{1}*", modifer, typeInfo->shortName());
+	}
+
+	if (typeInfo->isEnum)
+	{
+		return _T("LN") + typeInfo->shortName();
 	}
 
 	String name;

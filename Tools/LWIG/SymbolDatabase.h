@@ -43,17 +43,26 @@ public:
 class MetadataSymbol : public RefObject
 {
 public:
+	static const String OverloadPostfixAttr;
+
 	String name;
 	std::unordered_map<String, String> values;
 
 	void AddValue(const String& key, const String& value);
 	String* FindValue(const StringRef& key);
+	String getValue(const StringRef& key, const String& defaultValue = String());
 	bool HasKey(const StringRef& key);
 };
 
 class ParameterSymbol : public RefObject
 {
 public:
+	struct SoueceData
+	{
+		String typeRawName;
+		Nullable<String> rawDefaultValue;
+	} src;
+
 	String name;
 	Ref<TypeSymbol> type;
 	bool isIn = false;
@@ -61,10 +70,6 @@ public:
 	bool isThis = false;
 	bool isReturn = false;
 	Ref<ConstantSymbol> defaultValue;
-
-	// parsing data (link source)
-	String typeRawName;
-	Nullable<String> rawDefaultValue;
 };
 
 class FieldSymbol : public RefObject
@@ -98,12 +103,12 @@ public:
 	Ref<PropertySymbol> ownerProperty;		// このメソッドがプロパティに含まれていればそのプロパティを指す
 	List<Ref<ParameterSymbol>> parameters;
 
-	String overloadSuffix;
 	Ref<MethodSymbol> overloadParent;			// このメソッドはどのメソッドをオーバーロードするか (基本的に一番最初に見つかった定義)
 	List<Ref<MethodSymbol>> overloadChildren;	// このメソッドはどのメソッドにオーバーロードされるか
 	// 
 	List<Ref<ParameterSymbol>> capiParameters;
 
+	// parsing data
 	String	returnTypeRawName;
 	String	paramsRawSignature;		// 型名と引数名を抽出したもの (デフォルト引数は除く) e.g) "constVector3&minVec,constVector3&maxVec"
 
@@ -152,6 +157,12 @@ public:
 class TypeSymbol : public RefObject
 {
 public:
+	struct SoueceData
+	{
+		String baseClassRawName;
+		String rawFullName;
+	} src;
+
 	Ref<MetadataSymbol>			metadata;
 	Ref<DocumentSymbol>			document;
 	bool	isStruct = false;
@@ -166,13 +177,11 @@ public:
 	List<Ref<MethodSymbol>>		declaredMethodsForDocument;	// LN_METHOD(Docuent)
 	Ref<TypeSymbol>				baseClass;
 
-	String					baseClassRawName;
-	String					rawFullName;
 
 	TypeSymbol() {}
 	TypeSymbol(StringRef rawFullName_) { setRawFullName(rawFullName_); }
 
-	const String& fullName() const { return rawFullName; }
+	const String& fullName() const { return src.rawFullName; }
 	const String& shortName() const { return m_shortName; }
 
 	bool isValueType() const { return isStruct || isPrimitive || isEnum; }
@@ -198,6 +207,7 @@ public:
 	static Ref<TypeSymbol>	nullptrType;
 	static Ref<TypeSymbol>	boolType;
 	static Ref<TypeSymbol>	intType;
+	static Ref<TypeSymbol>	int16Type;
 	static Ref<TypeSymbol>	uint32Type;
 	static Ref<TypeSymbol>	floatType;
 	static Ref<TypeSymbol>	stringType;

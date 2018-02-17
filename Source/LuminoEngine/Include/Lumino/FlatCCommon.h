@@ -19,6 +19,16 @@ typedef char		LNChar;
 
 typedef void* LNUserData;
 
+/** ê^ãUíl */
+typedef enum tagLNBool
+{
+	/** ãU */
+	LN_FALSE	= 0,
+
+	/** ê^ */
+	LN_TRUE		= 1,
+
+} LNBool;
 
 typedef enum
 {

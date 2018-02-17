@@ -92,14 +92,18 @@ void WrapperIFGenerator::generate()
 	{
 		for (auto& enumInfo : db()->enums)
 		{
-			enumsText.AppendLine("/** {0} */", MakeDocumentComment(enumInfo->document));
+			enumsText.AppendLines(MakeDocumentComment(enumInfo->document));
 			enumsText.AppendLine("typedef enum tagLN{0}", enumInfo->shortName());
 			enumsText.AppendLine("{");
 			enumsText.IncreaseIndent();
 			for (auto& constantInfo : enumInfo->declaredConstants)
 			{
+				// comment
+				enumsText.AppendLines(MakeDocumentComment(constantInfo->document));
+
+				// member
 				String name = (enumInfo->shortName() + "_" + constantInfo->name).toUpper();
-				enumsText.AppendLine("LN_{0} = {1},", name, constantInfo->value.get<int>());
+				enumsText.AppendLine("LN_{0} = {1},", name, constantInfo->value.get<int>()).NewLine();
 			}
 			enumsText.DecreaseIndent();
 			enumsText.AppendLine("}} LN{0};", enumInfo->shortName());
@@ -117,7 +121,7 @@ void WrapperIFGenerator::generate()
 			OutputBuffer params;
 			for (auto& paramInfo : involeMethod->capiParameters)
 			{
-				params.AppendCommad("{0} {1}", FlatCCommon::MakeCApiParamTypeName(involeMethod, paramInfo), paramInfo->name);
+				params.AppendCommad("{0} {1}", FlatCCommon::makeFlatCParamTypeName(involeMethod, paramInfo), paramInfo->name);
 			}
 
 			//enumsText.AppendLine("/** {0} */", MakeDocumentComment(delegateInfo->document));
@@ -204,7 +208,7 @@ String WrapperIFGenerator::MakeFuncHeader(Ref<MethodSymbol> methodInfo)
 	OutputBuffer params;
 	for (auto& paramInfo : methodInfo->capiParameters)
 	{
-		params.AppendCommad("{0} {1}", FlatCCommon::MakeCApiParamTypeName(methodInfo, paramInfo), paramInfo->name);
+		params.AppendCommad("{0} {1}", FlatCCommon::makeFlatCParamTypeName(methodInfo, paramInfo), paramInfo->name);
 	}
 
 	String suffix = (methodInfo->isVirtual) ? "_CallVirtualBase" : "";
@@ -279,6 +283,10 @@ String WrapperIFGenerator::MakeFuncBody(Ref<TypeSymbol> typeInfo, Ref<MethodSymb
 				String castTo = paramInfo->type->shortName();
 				if (paramInfo->isIn) castTo = "const " + castTo;
 				args.AppendCommad("*reinterpret_cast<{0}*>({1})", castTo, paramInfo->name);
+			}
+			else if (paramInfo->type->isEnum)
+			{
+				args.AppendCommad("static_cast<{0}>({1})", paramInfo->type->shortName(), paramInfo->name);
 			}
 			else
 			{

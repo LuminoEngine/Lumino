@@ -4,7 +4,7 @@
 #include <memory>
 #include "SymbolDatabase.h"
 #include "Parser.h"
-
+#include "Diagnostics.h"
 
 #ifdef _MSC_VER     // start of disabling MSVC warnings
 #pragma warning(push)
@@ -54,140 +54,6 @@ using namespace clang::driver;
 using namespace clang::tooling;
 using namespace clang::comments;
 
-#if 0
-class LWIGCommentVisitor : public ConstCommentVisitor<LWIGCommentVisitor>
-{
-public:
-	const CompilerInstance& m_ci;
-
-	LWIGCommentVisitor(const CompilerInstance& ci)
-		: m_ci(ci)
-	{}
-
-	void dumpFullComment(const FullComment *C)
-	{
-		ConstCommentVisitor<LWIGCommentVisitor>::visitFullComment(C);
-		for (Comment::child_iterator I = C->child_begin(), E = C->child_end(); I != E; ++I)
-		{
-			const Comment *Child = *I;
-			visit(Child);
-		}
-
-
-		//if (!C)
-		//	return;
-
-		//FC = C;
-		//dumpComment(C);
-		//FC = nullptr;
-	}
-
-	// Comments.
-	const char *getCommandName(unsigned CommandID)
-	{
-		const CommandTraits *Traits = nullptr;
-
-
-		if (Traits)
-			return Traits->getCommandInfo(CommandID)->Name;
-		const CommandInfo *Info = CommandTraits::getBuiltinCommandInfo(CommandID);
-		if (Info)
-			return Info->Name;
-		return "<not a builtin command>";
-	}
-
-	//void dumpComment(const Comment *C)
-	//{
-	//	dumpChild([=] {
-	//		if (!C) {
-	//			ColorScope Color(*this, NullColor);
-	//			OS << "<<<NULL>>>";
-	//			return;
-	//		}
-
-	//		{
-	//			ColorScope Color(*this, CommentColor);
-	//			OS << C->getCommentKindName();
-	//		}
-	//		dumpPointer(C);
-	//		dumpSourceRange(C->getSourceRange());
-	//		ConstCommentVisitor<ASTDumper>::visit(C);
-	//		for (Comment::child_iterator I = C->child_begin(), E = C->child_end();
-	//			I != E; ++I)
-	//			dumpComment(*I);
-	//	});
-	//}
-
-	// Inline comments.
-	void visitTextComment(const TextComment *C)
-	{
-		LN_LOG_INFO << "visitTextComment";
-	}
-	void visitInlineCommandComment(const InlineCommandComment *C)
-	{
-		LN_LOG_INFO << "visitInlineCommandComment";
-	}
-	void visitHTMLStartTagComment(const HTMLStartTagComment *C)
-	{
-		LN_LOG_INFO << "visitHTMLStartTagComment";
-	}
-	void visitHTMLEndTagComment(const HTMLEndTagComment *C)
-	{
-		LN_LOG_INFO << "visitHTMLEndTagComment";
-	}
-
-	// Block comments.
-	void visitBlockCommandComment(const BlockCommandComment *C)
-	{
-		auto aa = getCommandName(C->getCommandID());
-		LN_LOG_INFO << "visitBlockCommandComment";
-	}
-	void visitParamCommandComment(const ParamCommandComment *C)
-	{
-		auto s = C->getArgText(0);
-		auto ss = s.str();
-		LN_LOG_INFO << "visitParamCommandComment";
-
-	}
-	void visitTParamCommandComment(const TParamCommandComment *C)
-	{
-		LN_LOG_INFO << "visitTParamCommandComment";
-	}
-	void visitVerbatimBlockComment(const VerbatimBlockComment *C)
-	{
-		LN_LOG_INFO << "visitVerbatimBlockComment";
-	}
-	void visitVerbatimBlockLineComment(const VerbatimBlockLineComment *C)
-	{
-		LN_LOG_INFO << "visitVerbatimBlockLineComment";
-	}
-	void visitVerbatimLineComment(const VerbatimLineComment *C)
-	{
-		LN_LOG_INFO << "visitVerbatimLineComment";
-	}
-	void visitParagraphComment(const ParagraphComment* comment)
-	{
-		auto cct = comment->getCommentKindName();
-		comment->dump();
-		//auto aa = getCommandName(comment->getCommandID());
-
-		for (Comment::child_iterator I = comment->child_begin(), E = comment->child_end(); I != E; ++I)
-		{
-			cct = (*I)->getCommentKindName();
-
-			auto stringRef = Lexer::getSourceText(
-				CharSourceRange::getTokenRange((*I)->getLocation()),
-				m_ci.getSourceManager(),
-				m_ci.getLangOpts());
-
-			printf("");
-		}
-
-		LN_LOG_INFO << "visitParagraphComment";
-	}
-};
-#endif
-
 class LWIGVisitor : public DeclVisitor<LWIGVisitor, bool>
 {
 private:
@@ -224,8 +90,9 @@ public:
 
 	static unsigned getOffsetOnRootFile(const SourceManager& sm, SourceLocation loc)
 	{
-		auto ploc = sm.getPresumedLoc(loc);
-		if (ploc.getIncludeLoc().isInvalid())
+		if (sm.getFileID(loc) == sm.getMainFileID())
+		//auto ploc = sm.getPresumedLoc(loc);
+		//if (ploc.getIncludeLoc().isInvalid())
 		{
 			auto eloc = sm.getDecomposedExpansionLoc(loc);
 			return eloc.second;
@@ -243,11 +110,20 @@ public:
 		return stringRef.str();
 	}
 
+	String getLocString(SourceLocation loc)
+	{
+		return String::fromStdString(loc.printToString(m_ci->getSourceManager()));
+	}
+	String getLocString(Decl* decl)
+	{
+		return getLocString(decl->getLocation());
+	}
+
 	Ref<DocumentSymbol> parseDocument(Decl* decl)
 	{
 		if (const FullComment *Comment = decl->getASTContext().getLocalCommentForDeclUncached(decl))
 			return HeaderParser::parseDocument(getSourceText(Comment->getSourceRange()));
-		return nullptr;
+		return Ref<DocumentSymbol>::makeRef();
 	}
 
 	::AccessLevel tlanslateAccessLevel(AccessSpecifier ac)
@@ -289,6 +165,7 @@ public:
 		auto name = String::fromStdString(type.getAsString());
 		name = name.replace(_T("struct"), "");
 		name = name.replace(_T("class"), "");
+		name = name.replace(_T("enum"), "");
 		name = name.replace(_T("const"), "");
 		name = name.replace(_T("*"), "");
 		name = name.replace(_T("&"), "");
@@ -363,9 +240,8 @@ public:
 				auto bases = decl->getDefinition()->bases();
 				for (auto& base : bases)
 				{
-					//auto cxx = base.getType()->getAsCXXRecordDecl();
-					//info->baseClassRawName = String::fromStdString(cxx->getNameAsString());
-					info->baseClassRawName = getRawTypeFullName(base.getType());
+					info->src.baseClassRawName = getRawTypeFullName(base.getType());
+					break;	// first only
 				}
 
 				if (decl->getDefinition()->isStruct())
@@ -418,22 +294,36 @@ public:
 				info->isStatic = decl->isStatic();
 				info->isConst = decl->isConst();
 
+				// check sema error (未定義の型など)
+				if (decl->isInvalidDecl())
+				{
+					m_parser->diag()->addError(String::format(_T("Invalid declaration {0}"), String::fromStdString(getSourceText(decl->getSourceRange()))), getLocString(decl));
+				}
+
 				info->owner->declaredMethods.add(info);
 
 				for (unsigned int iParam = 0; iParam < decl->getNumParams(); iParam++)
 				{
 					ParmVarDecl* paramDecl = decl->getParamDecl(iParam);
 					QualType& type = paramDecl->getType();
+
 					bool hasConst = type.getQualifiers().hasConst();
 					SplitQualType sp = type.split();
 					//PointerType
 					
+					
 					auto paramInfo = Ref<ParameterSymbol>::makeRef();
 					paramInfo->name = String::fromStdString(paramDecl->getNameAsString());
-					paramInfo->typeRawName = getRawTypeFullName(type);
+					paramInfo->src.typeRawName = getRawTypeFullName(type);
 					paramInfo->isIn = hasConst;
 					paramInfo->isOut = (!hasConst && sp.Ty->isPointerType());
 					info->parameters.add(paramInfo);
+
+					// check sema error
+					if (paramDecl->isInvalidDecl())
+					{
+						m_parser->diag()->addError(String::format(_T("Invalid declaration {0}"), String::fromStdString(getSourceText(paramDecl->getSourceRange()))), getLocString(paramDecl));
+					}
 				}
 			}
 		}
@@ -469,21 +359,37 @@ public:
 			{
 				attr->linked = true;
 
-				auto ss = decl->getNameAsString();
-				auto s2 = decl->getQualifiedNameAsString();
-
-				decl->dump();
-
 				auto symbol = Ref<TypeSymbol>::makeRef();
-				symbol->setRawFullName(getRawTypeFullName(QualType(decl->getTypeForDecl(), 0)));
+				symbol->setRawFullName(String::fromStdString(decl->getQualifiedNameAsString()));
 
 				// documentation
 				symbol->document = parseDocument(decl);
 
 				// metadata
 				symbol->metadata = HeaderParser::parseMetadata(attr->name, attr->args);
+
+				m_parser->getDB()->enums.add(symbol);
+
+				m_currentRecord = symbol;
+				EnumerateDecl(decl);
+				m_currentRecord = nullptr;
 			}
 		}
+		return true;
+	}
+
+	bool VisitEnumConstantDecl(EnumConstantDecl* decl)
+	{
+		if (m_currentRecord)
+		{
+			auto symbol = Ref<ConstantSymbol>::makeRef();
+			symbol->document = parseDocument(decl);
+			symbol->name = String::fromStdString(decl->getNameAsString());
+			symbol->value = decl->getInitVal().getSExtValue();
+			symbol->type = m_currentRecord;
+			m_currentRecord->declaredConstants.add(symbol);
+		}
+
 		return true;
 	}
 
@@ -528,9 +434,13 @@ public:
 		const LangOptions& opts = m_ci->getLangOpts();
 		const MacroInfo* macroInfo = MD.getMacroInfo();
 
+		//clang::FileEntry
+		//sm.getOrCreateFileID
+
 		// マクロが書かれている場所は input のルートであるか？ (include ファイルは解析したくない)
-		auto ploc = sm.getPresumedLoc(range.getBegin());
-		if (ploc.getIncludeLoc().isInvalid())
+		//auto ploc = sm.getPresumedLoc(range.getBegin());
+		//if (ploc.getIncludeLoc().isInvalid())
+		if (sm.getFileID(range.getBegin()) == sm.getMainFileID())
 		{
 			std::string name = Lexer::getSourceText(CharSourceRange::getTokenRange(range.getBegin()), sm, opts).str();
 			if (name == "LN_CLASS" ||
@@ -610,6 +520,9 @@ public:
 	explicit LocalASTConsumer(CompilerInstance* CI, ::HeaderParser* parser)
 		: m_visitor(std::make_unique<LWIGVisitor>(CI, parser))
 	{
+		//auto fe = CI->getSourceManager().getFileManager().getFile(, false);
+		//CI->getSourceManager().file
+
 		Preprocessor &PP = CI->getPreprocessor();
 		PP.addPPCallbacks(llvm::make_unique<LocalPPCallbacks>(PP, CI, parser));
 	}
@@ -632,7 +545,8 @@ public:
 
 	LocalFrontendAction(::HeaderParser* parser)
 		: m_parser(parser)
-	{}
+	{
+	}
 
 	virtual std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI, llvm::StringRef file)
 	{
@@ -663,24 +577,31 @@ std::unique_ptr<FrontendActionFactory> NewLocalFrontendActionFactory(::HeaderPar
 
 //------------------------------------------------------------------------------
 
-int HeaderParser::parse(const Path& filePath, ::SymbolDatabase* db)
+int HeaderParser::parse(const Path& filePath, ::SymbolDatabase* db, DiagManager* diag)
 {
 	LN_CHECK(db);
 	m_db = db;
+	m_diag = diag;
 
-
-	Path tempFilePath(filePath.getString() + _T(".cpp"));
-	FileSystem::copyFile(filePath, tempFilePath, true);
+	//Path tempFilePath(filePath.getString() + _T(".cpp"));
+	//FileSystem::copyFile(filePath, tempFilePath, true);
 
 
 
 	// TODO: Path から直接 toLocalPath
-	std::string localFilePath = tempFilePath.getString().toStdString();
+	std::string localFilePath = filePath.getString().toStdString();
 
 	std::vector<std::string> args;
 	args.push_back("");	// program name
 	args.push_back(localFilePath.c_str());
 	args.push_back("--");
+	
+	args.push_back("-x");
+	args.push_back("c++");
+
+	//args.push_back("-target");
+	//args.push_back("unknown-unknown-unknown-msvc");
+	
 
 	for (auto& path : m_includePathes)
 	{
@@ -689,11 +610,13 @@ int HeaderParser::parse(const Path& filePath, ::SymbolDatabase* db)
 	}
 
 	
-	args.push_back("-include");
-	args.push_back("C:/Proj/LN/Lumino/Source/LuminoEngine/Source/LuminoEngine.PCH.h");
+	//args.push_back("-include");
+	//args.push_back(LUMINO_ROOT_DIR"/Source/LuminoEngine/Source/LuminoEngine.PCH.h");
 
 	
-	args.push_back("-std=c++11");
+	args.push_back("-Xclang");
+
+
 	args.push_back("-fsyntax-only");
 	args.push_back("-fms-compatibility");		// Enable full Microsoft Visual C++ compatibility
 	args.push_back("-fms-extensions");			// Enable full Microsoft Visual C++ compatibility
@@ -719,11 +642,13 @@ int HeaderParser::parse(const Path& filePath, ::SymbolDatabase* db)
 	}
 	int argc = argv.size();
 
+	std::vector<std::string> sourcePathList = { localFilePath.c_str() };
+
 	::clang::tooling::CommonOptionsParser op(argc, argv.data(), ::llvm::cl::GeneralCategory);
-	::clang::tooling::ClangTool Tool(op.getCompilations(), op.getSourcePathList());
+	::clang::tooling::ClangTool Tool(op.getCompilations(), sourcePathList/*op.getSourcePathList()*/);
 	int result = Tool.run(local::NewLocalFrontendActionFactory(this).get());
 
-	FileSystem::deleteFile(tempFilePath);
+	//FileSystem::deleteFile(tempFilePath);
 	return result;
 }
 
@@ -828,9 +753,12 @@ Ref<MetadataSymbol> HeaderParser::parseMetadata(std::string name, const std::str
 		key = tokens[0].trim();
 		if (tokens.getCount() >= 2)
 		{
-			value = tokens[1].trim();
+			value = tokens[1].trim()
+				.replace(_T("'"), _T(""))
+				.replace(_T("\""), _T(""));
 		}
 		metadata->AddValue(String(key), String(value));
 	}
 	return metadata;
 }
+

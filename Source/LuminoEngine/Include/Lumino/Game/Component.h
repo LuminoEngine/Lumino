@@ -1,7 +1,6 @@
 ﻿
 #pragma once
 #include "../Common.h"
-#include "../Game/Component.h"
 
 LN_NAMESPACE_BEGIN
 class DrawList;

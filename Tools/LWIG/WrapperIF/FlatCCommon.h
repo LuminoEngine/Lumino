@@ -5,6 +5,7 @@
 class FlatCCommon
 {
 public:
-	static String MakeCppTypeName(Ref<TypeSymbol> typeInfo);
-	static String MakeCApiParamTypeName(Ref<MethodSymbol> methodInfo, Ref<ParameterSymbol> paramInfo);
+	static String makeCppTypeName(TypeSymbol* typeInfo);
+	static String makeFlatCTypeName(TypeSymbol* typeInfo);
+	static String makeFlatCParamTypeName(Ref<MethodSymbol> methodInfo, Ref<ParameterSymbol> paramInfo);
 };

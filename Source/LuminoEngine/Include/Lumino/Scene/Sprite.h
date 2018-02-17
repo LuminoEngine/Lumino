@@ -262,10 +262,10 @@ LN_CONSTRUCT_ACCESS:
 	LN_METHOD()
 	void initialize();
 
-	LN_METHOD()
+	LN_METHOD(OverloadPostfix="FromFile")
 	void initialize(const StringRef& filePath);
 
-	LN_METHOD()
+	LN_METHOD(OverloadPostfix = "FromTexture")
 	void initialize(Texture* texture);
 
 private:
@@ -319,7 +319,7 @@ LN_CONSTRUCT_ACCESS:
 	LN_METHOD()
 	void initialize();
 
-	LN_METHOD()
+	LN_METHOD(OverloadPostfix = "FromTexture")
 	void initialize(float width, float height, Texture* texture);
 
 private:

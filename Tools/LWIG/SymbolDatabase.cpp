@@ -5,6 +5,7 @@ Ref<TypeSymbol>	PredefinedTypes::voidType;
 Ref<TypeSymbol>	PredefinedTypes::nullptrType;
 Ref<TypeSymbol>	PredefinedTypes::boolType;
 Ref<TypeSymbol>	PredefinedTypes::intType;
+Ref<TypeSymbol>	PredefinedTypes::int16Type;
 Ref<TypeSymbol>	PredefinedTypes::uint32Type;
 Ref<TypeSymbol>	PredefinedTypes::floatType;
 Ref<TypeSymbol>	PredefinedTypes::stringType;
@@ -14,6 +15,8 @@ Ref<TypeSymbol>	PredefinedTypes::EventConnectionType;
 //==============================================================================
 // MetadataSymbol
 //==============================================================================
+const String MetadataSymbol::OverloadPostfixAttr = _T("OverloadPostfix");
+
 void MetadataSymbol::AddValue(const String& key, const String& value)
 {
 	values[key] = value;
@@ -24,6 +27,15 @@ String* MetadataSymbol::FindValue(const StringRef& key)
 	auto itr = values.find(key);
 	if (itr != values.end()) return &(itr->second);
 	return nullptr;
+}
+
+String MetadataSymbol::getValue(const StringRef& key, const String& defaultValue)
+{
+	auto* s = FindValue(key);
+	if (s)
+		return *s;
+	else
+		return defaultValue;
 }
 
 bool MetadataSymbol::HasKey(const StringRef& key)
@@ -44,7 +56,7 @@ void MethodSymbol::LinkParameters(SymbolDatabase* db)
 
 	for (auto& paramInfo : parameters)
 	{
-		paramInfo->type = db->findTypeInfo(paramInfo->typeRawName);
+		paramInfo->type = db->findTypeInfo(paramInfo->src.typeRawName);
 
 		// 今のところ、Class 型の 出力変数は許可しない
 		if (paramInfo->isOut && paramInfo->type->IsClass())
@@ -53,9 +65,9 @@ void MethodSymbol::LinkParameters(SymbolDatabase* db)
 			paramInfo->isOut = false;
 		}
 
-		if (paramInfo->rawDefaultValue != nullptr)
+		if (paramInfo->src.rawDefaultValue != nullptr)
 		{
-			String text = paramInfo->rawDefaultValue.get();
+			String text = paramInfo->src.rawDefaultValue.get();
 			if (text.contains(_T("::")))
 			{
 				auto tokens = text.split(_T("::"));
@@ -112,7 +124,7 @@ void MethodSymbol::ExpandCAPIParameters(SymbolDatabase* db)
 	for (auto& paramInfo : parameters)
 	{
 		capiParameters.add(paramInfo);
-		overloadSuffix += StringTraits::toUpper((Char)paramInfo->name[0]);
+		//overloadSuffix += StringTraits::toUpper((Char)paramInfo->name[0]);
 	}
 
 	// return value
@@ -150,12 +162,20 @@ void MethodSymbol::ExpandCAPIParameters(SymbolDatabase* db)
 
 String MethodSymbol::GetCAPIFuncName()
 {
-	String sname = name;
-	sname[0] = StringTraits::toUpper<Char>(sname[0]);	// 先頭大文字
+	String funcName;
+	if (isConstructor)
+	{
+		funcName = _T("Create");
+	}
+	else
+	{
+		funcName = name;
+		funcName[0] = StringTraits::toUpper<Char>(funcName[0]);	// 先頭大文字
+	}
 
-	String n = String::format(_T("LN{0}_{1}"), owner->shortName(), sname);
+	String n = String::format(_T("LN{0}_{1}"), owner->shortName(), funcName);
 	if (IsOverloadChild())
-		n += overloadSuffix;
+		n += metadata->getValue(MetadataSymbol::OverloadPostfixAttr);
 	return n;
 }
 
@@ -208,9 +228,9 @@ void TypeSymbol::Link(SymbolDatabase* db)
 	ResolveCopyDoc();
 
 	// find base class
-	if (!baseClassRawName.isEmpty())
+	if (!src.baseClassRawName.isEmpty())
 	{
-		baseClass = db->findTypeInfo(baseClassRawName);
+		baseClass = db->findTypeInfo(src.baseClassRawName);
 	}
 
 	for (auto methodInfo : declaredMethods)
@@ -221,7 +241,7 @@ void TypeSymbol::Link(SymbolDatabase* db)
 
 void TypeSymbol::setRawFullName(const String& value)
 {
-	rawFullName = value;
+	src.rawFullName = value;
 
 	int c = value.lastIndexOf(':');
 	if (c >= 0)
@@ -405,13 +425,10 @@ void SymbolDatabase::Link()
 	}
 
 	// enums
-	//for (auto enumInfo : enums)
-	//{
-	//	for (auto constantInfo : enumInfo->declaredConstants)
-	//	{
-	//		constantInfo->type = findTypeInfo(constantInfo->typeRawName);
-	//	}
-	//}
+	for (auto enumInfo : enums)
+	{
+		enumInfo->isEnum = true;
+	}
 
 	// delegates
 	for (auto classInfo : delegates)
@@ -515,6 +532,10 @@ void SymbolDatabase::InitializePredefineds()
 	predefineds.getLast()->isPrimitive = true;
 	PredefinedTypes::intType = predefineds.getLast();
 
+	predefineds.add(Ref<TypeSymbol>::makeRef(_T("int16_t")));
+	predefineds.getLast()->isPrimitive = true;
+	PredefinedTypes::int16Type = predefineds.getLast();
+
 	predefineds.add(Ref<TypeSymbol>::makeRef(_T("uint32_t")));
 	predefineds.getLast()->isPrimitive = true;
 	PredefinedTypes::uint32Type = predefineds.getLast();
@@ -556,6 +577,7 @@ Ref<TypeSymbol> SymbolDatabase::findTypeInfo(StringRef typeFullName)
 		return *type;
 
 	// aliases
+	if (typeFullName == _T("short")) return PredefinedTypes::int16Type;
 	if (typeFullName == _T("ln::StringRef")) return PredefinedTypes::stringType;
 	if (typeFullName == _T("ln::EventConnection")) return PredefinedTypes::EventConnectionType;
 

@@ -77,13 +77,7 @@ typedef int		LNHandle;
 //
 //typedef int		LNHandle;
 //
-///** 真偽値 */
-//typedef enum tagLNBool
-//{
-//	LN_FALSE	= 0,	/**< 偽 */
-//	LN_TRUE		= 1,	/**< 真 */
-//
-//} LNBool;
+
 //
 ///** 結果・エラーコード */
 //typedef enum tagLNResult

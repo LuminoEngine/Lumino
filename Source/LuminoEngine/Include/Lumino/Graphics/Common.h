@@ -2,38 +2,6 @@
 #pragma once
 
 
-/** テクスチャのピクセルフォーマット */
-LN_ENUM()
-enum class TextureFormat2
-{
-	/** Unknown */
-	Unknown = 0,
-
-	/** 32 ビットのアルファ付きフォーマット (GPUネイティブフォーマット。D3D_FMT_A8B8G8R8, DXGI_FORMAT_R8G8B8A8_UNORM) */
-	R8G8B8A8,
-
-	/** 32 ビットのアルファ無しフォーマット */
-	R8G8B8X8,
-
-	/** 64 ビットの浮動小数点フォーマット */
-	R16G16B16A16_Float,
-
-	/** 128 ビットの浮動小数点フォーマット */
-	R32G32B32A32_Float,
-
-	/** 16 ビットの浮動小数点フォーマット */
-	R16_Float,
-
-	/** 32 ビットの浮動小数点フォーマット */
-	R32_Float,
-
-	/** 32 ビットの整数フォーマット */
-	//R32_UInt,
-
-	/** S8 32 ビットの深度バッファフォーマット */
-	D24S8,
-};
-
 #include <string>
 #include <Lumino/Base/Typedef.h>
 #include <Lumino/Base/List.h>
