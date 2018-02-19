@@ -30,12 +30,14 @@ int main()
 		_T(LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Graphics/Texture.h"),
 
 		_T(LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Scene/WorldObject.h"),
-		//_T(LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Audio/Sound.h"),
 		_T(LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Base/GeometryStructs.h"),
 		_T(LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Game/Component.h"),
 		_T(LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Scene/SceneNode.h"),
 		_T(LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Scene/VisualNode.h"),
 		_T(LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Scene/Sprite.h"),
+
+		_T(LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Scene/Input.h"),
+
 		//LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Scene/StaticMesh.h",
 		//LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Framework/Application.h",
 		//LUMINO_ROOT_DIR"/Source/LuminoEngine/Include/Lumino/Framework/GameScene.h",
