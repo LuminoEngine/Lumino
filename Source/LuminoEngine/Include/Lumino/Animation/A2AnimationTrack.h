@@ -52,6 +52,7 @@ class AnimationClip
 	: public Object
 {
 public:
+	const List<Ref<AbstractAnimationTrack>>& tracks() const { return m_tracks; }
 
 private:
 	List<Ref<AbstractAnimationTrack>>	m_tracks;
