@@ -50,8 +50,9 @@ class AnimationLayer
 public:
 
 LN_CONSTRUCT_ACCESS:
-	AnimationLayer(AnimatorController* owner);
+	AnimationLayer();
 	virtual ~AnimationLayer();
+	void initialize(AnimatorController* owner);
 
 LN_INTERNAL_ACCESS:
 	void addClipAndCreateState(AnimationClip* animationClip);
