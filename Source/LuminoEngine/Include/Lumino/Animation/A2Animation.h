@@ -39,7 +39,7 @@ public:
 	void setWrapMode(WrapMode mode) { m_wrapMode = mode; }
 
 protected:
-	virtual float onEevaluate(float time) = 0;
+	virtual float onEvaluate(float time) = 0;
 	virtual float onGetLastFrameTime() const = 0;
 
 LN_CONSTRUCT_ACCESS:
@@ -111,7 +111,7 @@ LN_CONSTRUCT_ACCESS:
 
 protected:
 	// override AnimationCurve
-	virtual float onEevaluate(float time) override;
+	virtual float onEvaluate(float time) override;
 	virtual float onGetLastFrameTime() const override;
 
 private:

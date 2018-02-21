@@ -2,6 +2,7 @@
 #pragma once
 #include "../../../Source/Animation/AnimationState.h"		//  TODO
 #include "../../../Source/Animation/Animator.h"		//  TODO
+#include "../Animation/A2AnimatorController.h"
 #include "Mesh.h"
 
 LN_NAMESPACE_BEGIN
@@ -29,6 +30,7 @@ class PmxJointResource;
 class SkinnedMeshModel
 	: public Object
 	, public detail::IAnimationTargetElement
+	, public a2::IAnimationTargetObject
 {
 	LN_OBJECT;
 public:
@@ -46,6 +48,12 @@ protected:
 	// IAnimationTargetElement interface
 	virtual int getAnimationTargetAttributeCount() const override;
 	virtual detail::IAnimationTargetAttribute* getAnimationTargetAttribute(int index) override;
+
+	// IAnimationTargetObject interface
+	virtual int getAnimationTargetElementCount() const override;
+	virtual const String& getAnimationTargetElementName(int index) const override;
+	virtual a2::AnimationValueType getAnimationTargetElementValueType(int index) const override;
+	virtual void setAnimationTargetElementValue(int index, const a2::AnimationValue& value) override;
 
 LN_INTERNAL_ACCESS:
 	SkinnedMeshModel();
@@ -104,6 +112,7 @@ public:	// TODO:
 	Ref<Texture2D>				m_skinningMatricesTexture;	// Texture fetch による GPU スキニング用のテクスチャ
 	Ref<Texture2D>				m_skinningLocalQuaternionsTexture;	// Texture fetch による GPU スキニング用のテクスチャ
 	Ref<Animator>				m_animator;
+	Ref<a2::AnimatorController>	m_animatorController;
 	List<SkinnedMeshBone*>			m_ikBoneList;
 
 	// TODO: これは物理演算機能を持つサブクラスを作ったほうがいい気がする

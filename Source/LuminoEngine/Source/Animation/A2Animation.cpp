@@ -21,7 +21,7 @@ AnimationCurve::~AnimationCurve()
 
 float AnimationCurve::evaluate(float time)
 {
-	return onEevaluate(time);
+	return onEvaluate(time);
 }
 
 float AnimationCurve::lastFrameTime() const
@@ -96,7 +96,7 @@ void KeyFrameAnimationCurve::addKeyFrame(float time, float value, TangentMode ri
 	addKeyFrame(k);
 }
 
-float KeyFrameAnimationCurve::onEevaluate(float time)
+float KeyFrameAnimationCurve::onEvaluate(float time)
 {
 	if (m_keyFrames.isEmpty())
 	{

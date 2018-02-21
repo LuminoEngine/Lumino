@@ -115,6 +115,14 @@ void Main()
 	//text1->setBlendMode(BlendMode::Alpha);
 	//Engine::defaultWorld2D()->add(text1);
 
+
+	auto meshCom = SkinnedMeshComponent::create(_T("D:\\MMD\\Materials\\モデル\\ぜかまし1.2\\島風.pmd"));
+	meshCom->setShader(Shader::create(_T("D:/Proj/LN/LiveDot/External/Lumino/Source/LuminoEngine/Test/Sandbox/Assets/UnLighting.fx"), nullptr, ShaderCodeType::RawHLSL));
+	SkinnedMeshModel* model = meshCom->getSkinnedMeshModel();
+	//auto* ac = model->animationController();
+	//ac->addClip(a2::AnimationClip::create("", "walk"));
+	//ac->play("walk");
+
 	while (Engine::update())
 	{
 	}

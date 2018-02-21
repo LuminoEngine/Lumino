@@ -279,6 +279,8 @@ void SkinnedMeshModel::initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 		// アニメーション管理
 		m_animator = Ref<Animator>::makeRef();
 		m_animator->create(this);
+
+		m_animatorController = newObject<a2::AnimatorController>(this);
 	}
 
 
@@ -478,6 +480,29 @@ int SkinnedMeshModel::getAnimationTargetAttributeCount() const
 detail::IAnimationTargetAttribute* SkinnedMeshModel::getAnimationTargetAttribute(int index)
 {
 	return m_allBoneList[index].get();
+}
+
+int SkinnedMeshModel::getAnimationTargetElementCount() const
+{
+	return m_allBoneList.getCount();
+}
+
+const String& SkinnedMeshModel::getAnimationTargetElementName(int index) const
+{
+	return m_allBoneList[index]->name();
+}
+
+a2::AnimationValueType SkinnedMeshModel::getAnimationTargetElementValueType(int index) const
+{
+	return a2::AnimationValueType::Transform;
+}
+
+void SkinnedMeshModel::setAnimationTargetElementValue(int index, const a2::AnimationValue& value)
+{
+	if (value.type() == a2::AnimationValueType::Transform)
+	{
+		(*m_allBoneList[index]->getLocalTransformPtr()) = value.getTransform();
+	}
 }
 
 //==============================================================================

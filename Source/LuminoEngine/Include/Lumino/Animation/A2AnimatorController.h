@@ -1,12 +1,15 @@
 ﻿
 #pragma once
 #include <Lumino/Animation/Common.h>
+#include "A2AnimationTrack.h"
 
 LN_NAMESPACE_BEGIN
 class Variant;
 namespace a2
 {
-class AbstractAnimationTrack;
+namespace detail { class AnimationTargetElementBlendLink; }
+class AnimationValue;
+class AnimationTrack;
 class AnimationLayer;
 class AnimatorController;
 
@@ -16,8 +19,11 @@ class IAnimationTargetObject
 public:
 	virtual int getAnimationTargetElementCount() const = 0;
 	virtual const String& getAnimationTargetElementName(int index) const = 0;
-	virtual void setAnimationTargetElementValue(int index, const Variant& value) = 0;
+	virtual AnimationValueType getAnimationTargetElementValueType(int index) const = 0;
+	virtual void setAnimationTargetElementValue(int index, const AnimationValue& value) = 0;
 };
+
+
 
 /** AnimationClip の再生状態を表すクラスです。 */
 class AnimationState
@@ -28,22 +34,29 @@ public:
 	/** この AnimationState に関連付けられている AnimationClip を取得します。 */
 	AnimationClip* animationClip() const { return m_clip; }
 
+LN_CONSTRUCT_ACCESS:
+	AnimationState();
+	virtual ~AnimationState();
+	void initialize(AnimationClip* clip);
+
 private:
 	struct AnimationTrackInstance
 	{
-		AbstractAnimationTrack* track;
-		int targetElementIndex;
+		AnimationTrack* track;
+		detail::AnimationTargetElementBlendLink* blendLink;
 	};
 
 	void attachToTarget(AnimatorController* animatorController);
+	void updateTargetElements(float time);
 
 	AnimationClip* m_clip;
 	List<AnimationTrackInstance> m_trackInstances;
+	float m_blendWeight;
 
 	friend class AnimationLayer;
 };
 
-/** AnimationState をグループ化しアニメーションの適用範囲や方法を制御します。 */
+/** AnimationState をグループ化しアニメーションの適用範囲や方法を制御します。(体と表情のアニメーションを別々に扱う場合などに使用します) */
 class AnimationLayer
 	: public Object
 {
@@ -57,6 +70,7 @@ LN_CONSTRUCT_ACCESS:
 LN_INTERNAL_ACCESS:
 	void addClipAndCreateState(AnimationClip* animationClip);
 	void removeClipAndDeleteState(AnimationClip* animationClip);
+	void updateTargetElements(float time);
 
 	AnimatorController* m_owner;
 	List<Ref<AnimationState>> m_animationStatus;
@@ -122,11 +136,14 @@ LN_CONSTRUCT_ACCESS:
 
 LN_INTERNAL_ACCESS:
 	void advanceTime(float elapsedTime);
-	int findAnimationTargetElementIndex(const StringRef& name);
+	void updateTargetElements();
+	detail::AnimationTargetElementBlendLink* findAnimationTargetElementBlendLink(const StringRef& name);
 
 private:
 	IAnimationTargetObject* m_targetObject;
 	List<Ref<AnimationLayer>> m_layers;
+	List<Ref<detail::AnimationTargetElementBlendLink>> m_targetElementBlendLinks;
+	float m_currentTime;
 };
 
 // AnimationState
