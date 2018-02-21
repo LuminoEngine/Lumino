@@ -57,7 +57,9 @@ void AnimationValue::clearValue()
 		v_Quaternion = Quaternion();
 		break;
 	case AnimationValueType::Transform:
-		v_Transform = AttitudeTransform();
+		v_Transform.scale = Vector3();	// 補間した値にウェイトかけてどんどん足していくので 0 で初期化しておく
+		v_Transform.rotation = Quaternion();
+		v_Transform.translation = Vector3();
 		break;
 	default:
 		break;
@@ -100,18 +102,18 @@ void VMDBezierTransformAnimationTrack::evaluate(float time, AnimationValue* outR
 {
 	AttitudeTransform result;
 
-	int keyIndex = 0;
-	for (; m_vmdTrack->frames[keyIndex].frameTime < time; keyIndex++);
-	keyIndex = (keyIndex > 0) ? keyIndex - 1 : keyIndex;
-
 	if (!m_vmdTrack->frames.isEmpty())
 	{
+		int keyIndex = 0;
+		for (; keyIndex < m_vmdTrack->frames.getCount() && m_vmdTrack->frames[keyIndex].frameTime < time; keyIndex++);
+		keyIndex = (keyIndex > 0) ? keyIndex - 1 : keyIndex;
+
 		if (keyIndex + 1 < m_vmdTrack->frames.getCount())
 		{
 			auto& lk = m_vmdTrack->frames[keyIndex];
 			auto& rk = m_vmdTrack->frames[keyIndex + 1];
 
-			float diffTime = lk.frameTime - rk.frameTime;
+			float diffTime = rk.frameTime - lk.frameTime;
 			float t = (time - lk.frameTime) / (float)diffTime;
 
 			Quaternion rot;
@@ -143,7 +145,10 @@ void VMDBezierTransformAnimationTrack::evaluate(float time, AnimationValue* outR
 		result.rotation = Quaternion::Identity;
 		result.translation = Vector3::Zero;
 	}
+
+	outResult->setTransform(result);
 }
+
 
 //==============================================================================
 // AnimationClip
@@ -175,6 +180,9 @@ void AnimationClip::initialize(const Path& filePath)
 		{
 			m_tracks.add(newObject<VMDBezierTransformAnimationTrack>(track));
 		}
+
+		// 参照を持っておく
+		m_srcData = vmdData;
 	}
 }
 

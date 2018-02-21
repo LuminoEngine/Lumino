@@ -65,7 +65,9 @@ void SkinnedMeshComponent::onUpdateFrame(float elapsedTime)
 	// TODO: OnLateUpdate へ
 	m_meshModel->setWorldTransform(getOwnerObject()->transform.getWorldMatrix());
 
-	m_meshModel->getAnimator()->advanceTime(elapsedTime);
+	//m_meshModel->getAnimator()->advanceTime(elapsedTime);
+	m_meshModel->animationController()->advanceTime(elapsedTime);
+	m_meshModel->animationController()->updateTargetElements();
 	//static bool init = false;
 	//if (!init)
 	//{

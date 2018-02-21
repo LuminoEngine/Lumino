@@ -9,6 +9,7 @@
 #include <Lumino/UI/UIListBox.h>
 #include <Lumino/Testing/TestHelper.h>
 #include <Lumino/IO/Compression.h>
+#include <Lumino/Animation/A2AnimatorController.h>
 //#include "../../src/Graphics/Mesh/GizmoModel.h"
 using namespace ln;
 
@@ -115,13 +116,20 @@ void Main()
 	//text1->setBlendMode(BlendMode::Alpha);
 	//Engine::defaultWorld2D()->add(text1);
 
+	Engine::getCamera3D()->addComponent(newObject<CameraMouseMoveBehavior>());
 
-	auto meshCom = SkinnedMeshComponent::create(_T("D:\\MMD\\Materials\\モデル\\ぜかまし1.2\\島風.pmd"));
+
+	auto meshCom = SkinnedMeshComponent::create(_T("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
 	meshCom->setShader(Shader::create(_T("D:/Proj/LN/LiveDot/External/Lumino/Source/LuminoEngine/Test/Sandbox/Assets/UnLighting.fx"), nullptr, ShaderCodeType::RawHLSL));
 	SkinnedMeshModel* model = meshCom->getSkinnedMeshModel();
-	//auto* ac = model->animationController();
-	//ac->addClip(a2::AnimationClip::create("", "walk"));
+	auto* ac = model->animationController();
+	//ac->addClip(a2::AnimationClip::create(_T("D:/MMD/Materials/モーション/Love&Joy/love&joyお面無しver.vmd")/*, "walk"*/));
+	ac->addClip(a2::AnimationClip::create(_T("D:/MMD/Materials/モーション/Zigg-Zagg/ZZ-Marisa.vmd")/*, "walk"*/));
 	//ac->play("walk");
+
+	auto obj3D = newObject<WorldObject>();
+	obj3D->addComponent(meshCom);
+	Engine::defaultWorld3D()->add(obj3D);
 
 	while (Engine::update())
 	{

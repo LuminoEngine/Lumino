@@ -17,7 +17,7 @@ public:
 	int targetIndex;
 
 	AnimationValue rootValue;	// アニメーション・ブレンドされた値。これを AnimationTargetElement へ送る。
-
+	bool affectAnimation = false;		// 更新処理の中で、実際に値がセットされたかどうか。セットされていないボーンにはデフォルト値をセットしたりする。
 };
 
 } // namespace detail
@@ -45,7 +45,7 @@ void AnimationState::initialize(AnimationClip* clip)
 	m_clip = clip;
 }
 
-void AnimationState::attachToTarget(AnimatorController* animatorController)
+void AnimationState::attachToTarget(AnimationController* animatorController)
 {
 	m_trackInstances.clear();
 
@@ -76,12 +76,15 @@ void AnimationState::updateTargetElements(float time)
 		{
 			case AnimationValueType::Float:
 				LN_NOTIMPLEMENTED();
+				trackInstance.blendLink->affectAnimation = true;
 				break;
 			case AnimationValueType::Vector3:
 				LN_NOTIMPLEMENTED();
+				trackInstance.blendLink->affectAnimation = true;
 				break;
 			case AnimationValueType::Quaternion:
 				LN_NOTIMPLEMENTED();
+				trackInstance.blendLink->affectAnimation = true;
 				break;
 			case AnimationValueType::Transform:
 			{
@@ -90,6 +93,7 @@ void AnimationState::updateTargetElements(float time)
 				t.scale += s.scale * m_blendWeight;
 				t.rotation *= Quaternion::slerp(Quaternion::Identity, s.rotation, m_blendWeight);
 				t.translation += s.translation * m_blendWeight;
+				trackInstance.blendLink->affectAnimation = true;
 				break;
 			}
 			default:
@@ -113,7 +117,7 @@ AnimationLayer::~AnimationLayer()
 {
 }
 
-void AnimationLayer::initialize(AnimatorController* owner)
+void AnimationLayer::initialize(AnimationController* owner)
 {
 	Object::initialize();
 	m_owner = owner;
@@ -143,21 +147,21 @@ void AnimationLayer::updateTargetElements(float time)
 }
 
 //==============================================================================
-// AnimatorController
+// AnimationController
 //==============================================================================
 
-AnimatorController::AnimatorController()
+AnimationController::AnimationController()
 	: m_targetObject(nullptr)
 	, m_layers()
 	, m_currentTime(0)
 {
 }
 
-AnimatorController::~AnimatorController()
+AnimationController::~AnimationController()
 {
 }
 
-void AnimatorController::initialize(IAnimationTargetObject* targetObject)
+void AnimationController::initialize(IAnimationTargetObject* targetObject)
 {
 	Object::initialize();
 	m_targetObject = targetObject;
@@ -174,27 +178,28 @@ void AnimatorController::initialize(IAnimationTargetObject* targetObject)
 	}
 }
 
-void AnimatorController::addClip(AnimationClip* animationClip)
+void AnimationController::addClip(AnimationClip* animationClip)
 {
 	m_layers[0]->addClipAndCreateState(animationClip);
 }
 
-void AnimatorController::removeClip(AnimationClip* animationClip)
+void AnimationController::removeClip(AnimationClip* animationClip)
 {
 	m_layers[0]->removeClipAndDeleteState(animationClip);
 }
 
-void AnimatorController::advanceTime(float elapsedTime)
+void AnimationController::advanceTime(float elapsedTime)
 {
 	m_currentTime += elapsedTime;
 }
 
-void AnimatorController::updateTargetElements()
+void AnimationController::updateTargetElements()
 {
 	// reset
 	for (auto& link : m_targetElementBlendLinks)
 	{
 		link->rootValue.clearValue();
+		link->affectAnimation = false;
 	}
 
 	// update
@@ -206,11 +211,19 @@ void AnimatorController::updateTargetElements()
 	// set
 	for (auto& link : m_targetElementBlendLinks)
 	{
+		if (!link->affectAnimation)
+		{
+			if (link->rootValue.type() == AnimationValueType::Transform)
+			{
+				link->rootValue.setTransform(AttitudeTransform());
+			}
+		}
+
 		m_targetObject->setAnimationTargetElementValue(link->targetIndex, link->rootValue);
 	}
 }
 
-detail::AnimationTargetElementBlendLink* AnimatorController::findAnimationTargetElementBlendLink(const StringRef& name)
+detail::AnimationTargetElementBlendLink* AnimationController::findAnimationTargetElementBlendLink(const StringRef& name)
 {
 	auto data = m_targetElementBlendLinks.find([name](const Ref<detail::AnimationTargetElementBlendLink>& data) { return data->name == name; });
 	if (data)
@@ -218,6 +231,7 @@ detail::AnimationTargetElementBlendLink* AnimatorController::findAnimationTarget
 	else
 		return nullptr;
 }
+
 
 } // namespace a2
 LN_NAMESPACE_END

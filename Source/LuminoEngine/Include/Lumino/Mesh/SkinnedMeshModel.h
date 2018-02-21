@@ -38,6 +38,8 @@ public:
 	// TODO: Unity では Mesh からは切り離された独立したコンポーネントである。そうしたほうがいいかな？
 	Animator* getAnimator() const { return m_animator; }
 
+	a2::AnimationController* animationController() const { return m_animationController; }
+
 	const List<Ref<SkinnedMeshBone>>& bones() const { return m_allBoneList; }
 	MeshResource* getMeshResource(int index) const;
 	int getMeshResourceCount() const { return m_meshResources.getCount(); }
@@ -112,7 +114,7 @@ public:	// TODO:
 	Ref<Texture2D>				m_skinningMatricesTexture;	// Texture fetch による GPU スキニング用のテクスチャ
 	Ref<Texture2D>				m_skinningLocalQuaternionsTexture;	// Texture fetch による GPU スキニング用のテクスチャ
 	Ref<Animator>				m_animator;
-	Ref<a2::AnimatorController>	m_animatorController;
+	Ref<a2::AnimationController>	m_animationController;
 	List<SkinnedMeshBone*>			m_ikBoneList;
 
 	// TODO: これは物理演算機能を持つサブクラスを作ったほうがいい気がする

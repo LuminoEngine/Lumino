@@ -11,7 +11,7 @@ namespace detail { class AnimationTargetElementBlendLink; }
 class AnimationValue;
 class AnimationTrack;
 class AnimationLayer;
-class AnimatorController;
+class AnimationController;
 
 /** ブレンドされた値を設定するオブジェクトのインターフェイスです。 */
 class IAnimationTargetObject
@@ -46,10 +46,10 @@ private:
 		detail::AnimationTargetElementBlendLink* blendLink;
 	};
 
-	void attachToTarget(AnimatorController* animatorController);
+	void attachToTarget(AnimationController* animatorController);
 	void updateTargetElements(float time);
 
-	AnimationClip* m_clip;
+	Ref<AnimationClip> m_clip;
 	List<AnimationTrackInstance> m_trackInstances;
 	float m_blendWeight;
 
@@ -65,14 +65,14 @@ public:
 LN_CONSTRUCT_ACCESS:
 	AnimationLayer();
 	virtual ~AnimationLayer();
-	void initialize(AnimatorController* owner);
+	void initialize(AnimationController* owner);
 
 LN_INTERNAL_ACCESS:
 	void addClipAndCreateState(AnimationClip* animationClip);
 	void removeClipAndDeleteState(AnimationClip* animationClip);
 	void updateTargetElements(float time);
 
-	AnimatorController* m_owner;
+	AnimationController* m_owner;
 	List<Ref<AnimationState>> m_animationStatus;
 
 
@@ -90,7 +90,7 @@ LN_INTERNAL_ACCESS:
 };
 
 /** スキンメッシュアニメーションにおいてキャラクターの挙動を操作するためのクラスです。 */
-class AnimatorController
+class AnimationController
 	: public Object
 {
 public:
@@ -130,8 +130,8 @@ public:
 	//detail::AnimationTargetAttributeEntity* findAnimationTargetAttributeEntity(const String& name);
 
 LN_CONSTRUCT_ACCESS:
-	AnimatorController();
-	~AnimatorController();
+	AnimationController();
+	~AnimationController();
 	void initialize(IAnimationTargetObject* targetObject);
 
 LN_INTERNAL_ACCESS:

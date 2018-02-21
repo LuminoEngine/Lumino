@@ -280,7 +280,7 @@ void SkinnedMeshModel::initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 		m_animator = Ref<Animator>::makeRef();
 		m_animator->create(this);
 
-		m_animatorController = newObject<a2::AnimatorController>(this);
+		m_animationController = newObject<a2::AnimationController>(this);
 	}
 
 

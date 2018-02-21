@@ -125,6 +125,7 @@ LN_CONSTRUCT_ACCESS:
 
 private:
 	List<Ref<AnimationTrack>>	m_tracks;
+	Ref<RefObject> m_srcData;
 };
 
 } // namespace a2
