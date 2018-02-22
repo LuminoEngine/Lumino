@@ -100,6 +100,16 @@ LN_INTERNAL_ACCESS:
 	void advanceTime(float elapsedTime);
 	void updateTargetElements();
 
+private:
+
+	struct Transition
+	{
+		AnimationState* stateFrom;
+		AnimationState* stateTo;
+		float time;
+		float timeLength;
+	};
+
 	AnimationController* m_owner;
 	List<Ref<AnimationState>> m_animationStatus;
 
