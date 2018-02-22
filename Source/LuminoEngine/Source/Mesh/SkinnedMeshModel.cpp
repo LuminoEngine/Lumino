@@ -196,7 +196,7 @@ SkinnedMeshModel::SkinnedMeshModel()
 	, m_rootBoneList()
 	, m_skinningMatrices()
 	, m_skinningMatricesTexture(nullptr)
-	, m_animator(nullptr)
+	//, m_animator(nullptr)
 {
 }
 
@@ -277,8 +277,8 @@ void SkinnedMeshModel::initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 		m_skinningLocalQuaternionsTexture = newObject<Texture2D>(SizeI(1, boneCount), TextureFormat::R32G32B32A32_Float, false, ResourceUsage::Static);	// TODO: Dynamic、NoManaged
 
 		// アニメーション管理
-		m_animator = Ref<Animator>::makeRef();
-		m_animator->create(this);
+		//m_animator = Ref<Animator>::makeRef();
+		//m_animator->create(this);
 
 		m_animationController = newObject<a2::AnimationController>(this);
 	}

@@ -34,6 +34,14 @@ public:
 	/** この AnimationState に関連付けられている AnimationClip を取得します。 */
 	AnimationClip* animationClip() const { return m_clip; }
 
+	/**
+		@brief		この AnimationState のアクティブ状態を設定します。
+		@details	アクティブではない AnimationState は、インスタンスとしては存在していても、アニメーション更新時にブレンドされた値をターゲットに設定しません。
+					このフラグは AnimationController を使わずに細かい制御を行う場合に使用します。
+					AnimationController を使う場合、このフラグはアニメーションの再生管理によって頻繁に変更されます。
+	*/
+	void setActive(bool value);
+
 LN_CONSTRUCT_ACCESS:
 	AnimationState();
 	virtual ~AnimationState();
@@ -52,6 +60,7 @@ private:
 	Ref<AnimationClip> m_clip;
 	List<AnimationTrackInstance> m_trackInstances;
 	float m_blendWeight;
+	bool m_active;
 
 	friend class AnimationLayer;
 };

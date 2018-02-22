@@ -36,7 +36,7 @@ class SkinnedMeshModel
 public:
 
 	// TODO: Unity では Mesh からは切り離された独立したコンポーネントである。そうしたほうがいいかな？
-	Animator* getAnimator() const { return m_animator; }
+	//Animator* getAnimator() const { return m_animator; }
 
 	a2::AnimationController* animationController() const { return m_animationController; }
 
@@ -113,7 +113,7 @@ public:	// TODO:
 	List<Quaternion>				m_skinningLocalQuaternions;
 	Ref<Texture2D>				m_skinningMatricesTexture;	// Texture fetch による GPU スキニング用のテクスチャ
 	Ref<Texture2D>				m_skinningLocalQuaternionsTexture;	// Texture fetch による GPU スキニング用のテクスチャ
-	Ref<Animator>				m_animator;
+	//Ref<Animator>				m_animator;
 	Ref<a2::AnimationController>	m_animationController;
 	List<SkinnedMeshBone*>			m_ikBoneList;
 
@@ -125,7 +125,6 @@ public:	// TODO:
 	Matrix		m_worldTransform;
 	Matrix		m_worldTransformInverse;
 };
-
 
 /**
 	@brief

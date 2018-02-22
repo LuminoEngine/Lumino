@@ -39,23 +39,23 @@ const String& AnimationState::getName() const
 //------------------------------------------------------------------------------
 void AnimationState::refresh(Animator* animator)
 {
-	if (LN_REQUIRE(animator != nullptr)) return;
+	//if (LN_REQUIRE(animator != nullptr)) return;
 
-	clearTargetList();
+	//clearTargetList();
 
-	// Curve の適用先を element から探し、見つかれば t に持っておく
-	for (const AnimationClip::AnimationCurveEntry& e : m_clip->getAnimationCurveEntryList())
-	{
-		detail::AnimationTargetAttributeEntity* target = animator->findAnimationTargetAttributeEntity(e.RelativePath);
-		if (target != NULL)
-		{
-			AnimationTarget t;
-			t.Curve = e.Curve;
-			t.Target = target;
-			LN_SAFE_ADDREF(t.Curve);
-			m_animationTargetList.add(t);
-		}
-	}
+	//// Curve の適用先を element から探し、見つかれば t に持っておく
+	//for (const AnimationClip::AnimationCurveEntry& e : m_clip->getAnimationCurveEntryList())
+	//{
+	//	detail::AnimationTargetAttributeEntity* target = animator->findAnimationTargetAttributeEntity(e.RelativePath);
+	//	if (target != NULL)
+	//	{
+	//		AnimationTarget t;
+	//		t.Curve = e.Curve;
+	//		t.Target = target;
+	//		LN_SAFE_ADDREF(t.Curve);
+	//		m_animationTargetList.add(t);
+	//	}
+	//}
 }
 
 //------------------------------------------------------------------------------

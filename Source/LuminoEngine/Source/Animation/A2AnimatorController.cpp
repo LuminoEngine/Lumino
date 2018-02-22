@@ -32,6 +32,7 @@ AnimationState::AnimationState()
 	: m_clip(nullptr)
 	, m_trackInstances()
 	, m_blendWeight(1.0f)
+	, m_active(false)
 {
 }
 
@@ -43,6 +44,11 @@ void AnimationState::initialize(AnimationClip* clip)
 {
 	Object::initialize();
 	m_clip = clip;
+}
+
+void AnimationState::setActive(bool value)
+{
+	m_active = value;
 }
 
 void AnimationState::attachToTarget(AnimationController* animatorController)
@@ -65,15 +71,17 @@ void AnimationState::attachToTarget(AnimationController* animatorController)
 
 void AnimationState::updateTargetElements(float time)
 {
-	for (auto& trackInstance : m_trackInstances)
+	if (m_active)
 	{
-		AnimationValue value(trackInstance.track->type());
-		AnimationValue& rootValue = trackInstance.blendLink->rootValue;
-
-		trackInstance.track->evaluate(time, &value);
-
-		switch (value.type())
+		for (auto& trackInstance : m_trackInstances)
 		{
+			AnimationValue value(trackInstance.track->type());
+			AnimationValue& rootValue = trackInstance.blendLink->rootValue;
+
+			trackInstance.track->evaluate(time, &value);
+
+			switch (value.type())
+			{
 			case AnimationValueType::Float:
 				LN_NOTIMPLEMENTED();
 				trackInstance.blendLink->affectAnimation = true;
@@ -99,6 +107,7 @@ void AnimationState::updateTargetElements(float time)
 			default:
 				LN_UNREACHABLE();
 				break;
+			}
 		}
 	}
 }

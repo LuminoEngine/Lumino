@@ -102,113 +102,113 @@
 
 LN_NAMESPACE_BEGIN
 
-//==============================================================================
-// Animator
-//==============================================================================
-
-//------------------------------------------------------------------------------
-Animator::Animator()
-	: m_element(nullptr)
-	, m_layerList()
-{
-}
-
-//------------------------------------------------------------------------------
-Animator::~Animator()
-{
-}
-
-//------------------------------------------------------------------------------
-void Animator::create(detail::IAnimationTargetElement* element)
-{
-	m_element = element;
-
-	for (int i = 0; i < MaxLayers; ++i)
-	{
-		m_layerList[i] = Ref<detail::AnimationLayer>::makeRef(this);
-	}
-
-	int count = m_element->getAnimationTargetAttributeCount();
-	m_animationTargetAttributeEntityList.resize(count);
-	for (int i = 0; i < count; i++)
-	{
-		m_animationTargetAttributeEntityList[i].Target = m_element->getAnimationTargetAttribute(i);
-		m_animationTargetAttributeEntityList[i].Type = ValueType_Float;	// とりあえず初期化
-		memset(m_animationTargetAttributeEntityList[i].Buffer, 0, sizeof(m_animationTargetAttributeEntityList[i].Buffer));
-	}
-}
-
-//------------------------------------------------------------------------------
-bool Animator::isPlaying() const
-{
-	LN_NOTIMPLEMENTED();
-	return false;
-}
-
-//------------------------------------------------------------------------------
-void Animator::play(const Char* name, float duration)
-{
-	for (detail::AnimationLayer* layer : m_layerList)
-	{
-		layer->transitionState(name, duration);
-	}
-}
-
-//------------------------------------------------------------------------------
-void Animator::advanceTime(double elapsedTime)
-{
-	// 一時バッファをクリアする (TODO: Valiant 型みたいなのを作って、各値毎に適切なクリア処理を実装する方が良いかもしれない…)
-	for (detail::AnimationTargetAttributeEntity& e : m_animationTargetAttributeEntityList)
-	{
-		memset(e.Buffer, 0, sizeof(e.Buffer));
-		e.Modified = false;
-
-		// TODO: 暫定。ちゃんと Variant っぽくして初期化しよう
-		if (e.Type == ValueType_SQTTransform)
-		{
-			AttitudeTransform* t = (AttitudeTransform*)e.Buffer;
-			*t = AttitudeTransform::Identity;
-		}
-	}
-
-	// レイヤーの時間を進める
-	for (detail::AnimationLayer* layer : m_layerList)
-	{
-		layer->advanceTime(elapsedTime);
-	}
-
-	for (detail::AnimationTargetAttributeEntity& e : m_animationTargetAttributeEntityList)
-	{
-		// 一連の処理の中で本当に値がセットされたものだけ通知する
-		if (e.Modified) {
-			e.Target->setAnimationTargetValue(e.Type, e.Buffer);
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
-void Animator::addAnimationClip(AnimationClip* animationClip, int layer)
-{
-	m_layerList[layer]->createStateAndAttachClip(animationClip);
-}
-
-//------------------------------------------------------------------------------
-void Animator::removeAnimationClip(AnimationClip* animationClip, int layer)
-{
-	m_layerList[layer]->removeStateByClip(animationClip);
-}
-
-//------------------------------------------------------------------------------
-detail::AnimationTargetAttributeEntity* Animator::findAnimationTargetAttributeEntity(const String& name)
-{
-	for (detail::AnimationTargetAttributeEntity& e : m_animationTargetAttributeEntityList)
-	{
-		if (e.Target->getAnimationTargetName() == name) {
-			return &e;
-		}
-	}
-	return nullptr;
-}
+////==============================================================================
+//// Animator
+////==============================================================================
+//
+////------------------------------------------------------------------------------
+//Animator::Animator()
+//	: m_element(nullptr)
+//	, m_layerList()
+//{
+//}
+//
+////------------------------------------------------------------------------------
+//Animator::~Animator()
+//{
+//}
+//
+////------------------------------------------------------------------------------
+//void Animator::create(detail::IAnimationTargetElement* element)
+//{
+//	m_element = element;
+//
+//	for (int i = 0; i < MaxLayers; ++i)
+//	{
+//		m_layerList[i] = Ref<detail::AnimationLayer>::makeRef(this);
+//	}
+//
+//	int count = m_element->getAnimationTargetAttributeCount();
+//	m_animationTargetAttributeEntityList.resize(count);
+//	for (int i = 0; i < count; i++)
+//	{
+//		m_animationTargetAttributeEntityList[i].Target = m_element->getAnimationTargetAttribute(i);
+//		m_animationTargetAttributeEntityList[i].Type = ValueType_Float;	// とりあえず初期化
+//		memset(m_animationTargetAttributeEntityList[i].Buffer, 0, sizeof(m_animationTargetAttributeEntityList[i].Buffer));
+//	}
+//}
+//
+////------------------------------------------------------------------------------
+//bool Animator::isPlaying() const
+//{
+//	LN_NOTIMPLEMENTED();
+//	return false;
+//}
+//
+////------------------------------------------------------------------------------
+//void Animator::play(const Char* name, float duration)
+//{
+//	for (detail::AnimationLayer* layer : m_layerList)
+//	{
+//		layer->transitionState(name, duration);
+//	}
+//}
+//
+////------------------------------------------------------------------------------
+//void Animator::advanceTime(double elapsedTime)
+//{
+//	// 一時バッファをクリアする (TODO: Valiant 型みたいなのを作って、各値毎に適切なクリア処理を実装する方が良いかもしれない…)
+//	for (detail::AnimationTargetAttributeEntity& e : m_animationTargetAttributeEntityList)
+//	{
+//		memset(e.Buffer, 0, sizeof(e.Buffer));
+//		e.Modified = false;
+//
+//		// TODO: 暫定。ちゃんと Variant っぽくして初期化しよう
+//		if (e.Type == ValueType_SQTTransform)
+//		{
+//			AttitudeTransform* t = (AttitudeTransform*)e.Buffer;
+//			*t = AttitudeTransform::Identity;
+//		}
+//	}
+//
+//	// レイヤーの時間を進める
+//	for (detail::AnimationLayer* layer : m_layerList)
+//	{
+//		layer->advanceTime(elapsedTime);
+//	}
+//
+//	for (detail::AnimationTargetAttributeEntity& e : m_animationTargetAttributeEntityList)
+//	{
+//		// 一連の処理の中で本当に値がセットされたものだけ通知する
+//		if (e.Modified) {
+//			e.Target->setAnimationTargetValue(e.Type, e.Buffer);
+//		}
+//	}
+//}
+//
+////------------------------------------------------------------------------------
+//void Animator::addAnimationClip(AnimationClip* animationClip, int layer)
+//{
+//	m_layerList[layer]->createStateAndAttachClip(animationClip);
+//}
+//
+////------------------------------------------------------------------------------
+//void Animator::removeAnimationClip(AnimationClip* animationClip, int layer)
+//{
+//	m_layerList[layer]->removeStateByClip(animationClip);
+//}
+//
+////------------------------------------------------------------------------------
+//detail::AnimationTargetAttributeEntity* Animator::findAnimationTargetAttributeEntity(const String& name)
+//{
+//	for (detail::AnimationTargetAttributeEntity& e : m_animationTargetAttributeEntityList)
+//	{
+//		if (e.Target->getAnimationTargetName() == name) {
+//			return &e;
+//		}
+//	}
+//	return nullptr;
+//}
 
 
 namespace detail
