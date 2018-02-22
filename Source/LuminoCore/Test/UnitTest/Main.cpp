@@ -64,7 +64,7 @@ GTEST_API_ int main(int argc, char **argv)
 	{
 		argv[0],
 		"--gtest_break_on_failure",
-		"--gtest_filter=Test_Base_UString.*"
+		"--gtest_filter=Test_Base_UString.Issue"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);

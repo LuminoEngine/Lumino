@@ -123,9 +123,9 @@ void Main()
 	meshCom->setShader(Shader::create(_T("D:/Proj/LN/LiveDot/External/Lumino/Source/LuminoEngine/Test/Sandbox/Assets/UnLighting.fx"), nullptr, ShaderCodeType::RawHLSL));
 	SkinnedMeshModel* model = meshCom->getSkinnedMeshModel();
 	auto* ac = model->animationController();
-	//ac->addClip(a2::AnimationClip::create(_T("D:/MMD/Materials/モーション/Love&Joy/love&joyお面無しver.vmd")/*, "walk"*/));
-	ac->addClip(a2::AnimationClip::create(_T("D:/MMD/Materials/モーション/Zigg-Zagg/ZZ-Marisa.vmd")/*, "walk"*/));
-	//ac->play("walk");
+	ac->addClip( "walk", a2::AnimationClip::create(_T("D:/MMD/Materials/モーション/Love&Joy/love&joyお面無しver.vmd")));
+	//ac->addClip(a2::AnimationClip::create(_T("D:/MMD/Materials/モーション/Zigg-Zagg/ZZ-Marisa.vmd"), "walk"));
+	ac->play("walk");
 
 	auto obj3D = newObject<WorldObject>();
 	obj3D->addComponent(meshCom);

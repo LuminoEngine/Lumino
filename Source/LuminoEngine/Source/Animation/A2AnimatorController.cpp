@@ -31,6 +31,7 @@ public:
 AnimationState::AnimationState()
 	: m_clip(nullptr)
 	, m_trackInstances()
+	, m_localTime(0.0f)
 	, m_blendWeight(1.0f)
 	, m_active(false)
 {
@@ -51,6 +52,11 @@ void AnimationState::setActive(bool value)
 	m_active = value;
 }
 
+void AnimationState::setLocalTime(float time)
+{
+	m_localTime = time;
+}
+
 void AnimationState::attachToTarget(AnimationController* animatorController)
 {
 	m_trackInstances.clear();
@@ -69,7 +75,15 @@ void AnimationState::attachToTarget(AnimationController* animatorController)
 	}
 }
 
-void AnimationState::updateTargetElements(float time)
+void AnimationState::advanceTime(float elapsedTime)
+{
+	if (m_active)
+	{
+		m_localTime += elapsedTime;
+	}
+}
+
+void AnimationState::updateTargetElements()
 {
 	if (m_active)
 	{
@@ -78,7 +92,7 @@ void AnimationState::updateTargetElements(float time)
 			AnimationValue value(trackInstance.track->type());
 			AnimationValue& rootValue = trackInstance.blendLink->rootValue;
 
-			trackInstance.track->evaluate(time, &value);
+			trackInstance.track->evaluate(m_localTime, &value);
 
 			switch (value.type())
 			{
@@ -132,13 +146,14 @@ void AnimationLayer::initialize(AnimationController* owner)
 	m_owner = owner;
 }
 
-void AnimationLayer::addClipAndCreateState(AnimationClip* animationClip)
+AnimationState* AnimationLayer::addClipAndCreateState(AnimationClip* animationClip)
 {
-	if (LN_REQUIRE(animationClip != nullptr)) return;
+	if (LN_REQUIRE(animationClip != nullptr)) return nullptr;
 
 	auto state = newObject<AnimationState>(animationClip);
 	m_animationStatus.add(state);
 	state->attachToTarget(m_owner);
+	return state;
 }
 
 void AnimationLayer::removeClipAndDeleteState(AnimationClip* animationClip)
@@ -147,11 +162,28 @@ void AnimationLayer::removeClipAndDeleteState(AnimationClip* animationClip)
 	m_animationStatus.removeIf([animationClip](const Ref<AnimationState>& state) { return state->animationClip() == animationClip; });
 }
 
-void AnimationLayer::updateTargetElements(float time)
+AnimationState* AnimationLayer::findAnimationState(const StringRef& name)
+{
+	auto state = m_animationStatus.find([name](const Ref<AnimationState>& state) { return state->name() == name; });
+	if (state)
+		return *state;
+	else
+		return nullptr;
+}
+
+void AnimationLayer::advanceTime(float elapsedTime)
 {
 	for (auto& state : m_animationStatus)
 	{
-		state->updateTargetElements(time);
+		state->advanceTime(elapsedTime);
+	}
+}
+
+void AnimationLayer::updateTargetElements()
+{
+	for (auto& state : m_animationStatus)
+	{
+		state->updateTargetElements();
 	}
 }
 
@@ -162,7 +194,6 @@ void AnimationLayer::updateTargetElements(float time)
 AnimationController::AnimationController()
 	: m_targetObject(nullptr)
 	, m_layers()
-	, m_currentTime(0)
 {
 }
 
@@ -187,9 +218,16 @@ void AnimationController::initialize(IAnimationTargetObject* targetObject)
 	}
 }
 
-void AnimationController::addClip(AnimationClip* animationClip)
+AnimationState* AnimationController::addClip(AnimationClip* animationClip)
 {
-	m_layers[0]->addClipAndCreateState(animationClip);
+	return m_layers[0]->addClipAndCreateState(animationClip);
+}
+
+AnimationState* AnimationController::addClip(const StringRef& stateName, AnimationClip* animationClip)
+{
+	AnimationState* state = addClip(animationClip);
+	state->setName(stateName);
+	return state;
 }
 
 void AnimationController::removeClip(AnimationClip* animationClip)
@@ -197,9 +235,22 @@ void AnimationController::removeClip(AnimationClip* animationClip)
 	m_layers[0]->removeClipAndDeleteState(animationClip);
 }
 
+void AnimationController::play(const StringRef& clipName)
+{
+	AnimationState* state = m_layers[0]->findAnimationState(clipName);
+	if (state)
+	{
+		state->setActive(true);
+		state->setLocalTime(0.0f);
+	}
+}
+
 void AnimationController::advanceTime(float elapsedTime)
 {
-	m_currentTime += elapsedTime;
+	for (auto& layer : m_layers)
+	{
+		layer->advanceTime(elapsedTime);
+	}
 }
 
 void AnimationController::updateTargetElements()
@@ -214,7 +265,7 @@ void AnimationController::updateTargetElements()
 	// update
 	for (auto& layer : m_layers)
 	{
-		layer->updateTargetElements(m_currentTime);
+		layer->updateTargetElements();
 	}
 
 	// set

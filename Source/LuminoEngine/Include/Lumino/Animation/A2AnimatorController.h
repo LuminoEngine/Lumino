@@ -34,13 +34,26 @@ public:
 	/** この AnimationState に関連付けられている AnimationClip を取得します。 */
 	AnimationClip* animationClip() const { return m_clip; }
 
+	/** 名前を取得します。 */
+	const String& name() const { return m_name; }
+
+	/** 名前を設定します。 */
+	void setName(const String& name) { m_name = name; }
+
 	/**
 		@brief		この AnimationState のアクティブ状態を設定します。
 		@details	アクティブではない AnimationState は、インスタンスとしては存在していても、アニメーション更新時にブレンドされた値をターゲットに設定しません。
-					このフラグは AnimationController を使わずに細かい制御を行う場合に使用します。
-					AnimationController を使う場合、このフラグはアニメーションの再生管理によって頻繁に変更されます。
+					この機能は AnimationController を使わずに細かい制御を行う場合に使用します。
+					AnimationController を使う場合、この値はアニメーションの再生管理によって頻繁に変更されます。
 	*/
 	void setActive(bool value);
+
+	/**
+		@brief		この AnimationState のアニメーション時間を設定します。
+		@details	この機能は AnimationController を使わずに細かい制御を行う場合に使用します。
+					AnimationController を使う場合、この値はアニメーションの再生管理によって頻繁に変更されます。
+	*/
+	void setLocalTime(float time);
 
 LN_CONSTRUCT_ACCESS:
 	AnimationState();
@@ -55,14 +68,18 @@ private:
 	};
 
 	void attachToTarget(AnimationController* animatorController);
-	void updateTargetElements(float time);
+	void advanceTime(float elapsedTime);
+	void updateTargetElements();
 
 	Ref<AnimationClip> m_clip;
+	String m_name;
 	List<AnimationTrackInstance> m_trackInstances;
+	float m_localTime;
 	float m_blendWeight;
 	bool m_active;
 
 	friend class AnimationLayer;
+	friend class AnimationController;
 };
 
 /** AnimationState をグループ化しアニメーションの適用範囲や方法を制御します。(体と表情のアニメーションを別々に扱う場合などに使用します) */
@@ -77,9 +94,11 @@ LN_CONSTRUCT_ACCESS:
 	void initialize(AnimationController* owner);
 
 LN_INTERNAL_ACCESS:
-	void addClipAndCreateState(AnimationClip* animationClip);
+	AnimationState* addClipAndCreateState(AnimationClip* animationClip);
 	void removeClipAndDeleteState(AnimationClip* animationClip);
-	void updateTargetElements(float time);
+	AnimationState* findAnimationState(const StringRef& name);
+	void advanceTime(float elapsedTime);
+	void updateTargetElements();
 
 	AnimationController* m_owner;
 	List<Ref<AnimationState>> m_animationStatus;
@@ -104,17 +123,20 @@ class AnimationController
 {
 public:
 
-	/** アニメーションクリップの追加 (レイヤー0 へ追加されます) */
-	void addClip(AnimationClip* animationClip);
+	/** アニメーションクリップを追加します。 (レイヤー0 へ追加されます) */
+	AnimationState* addClip(AnimationClip* animationClip);
 
-	/** アニメーションクリップの除外 (レイヤー0 から除外されます) */
+	/** ステート名を指定してアニメーションクリップを追加します。 (レイヤー0 へ追加されます) */
+	AnimationState* addClip(const StringRef& stateName, AnimationClip* animationClip);
+
+	/** アニメーションクリップを除外します。 (レイヤー0 から除外されます) */
 	void removeClip(AnimationClip* animationClip);
 
 	/// 再生中であるかを確認する
 	bool isPlaying() const;
 
 	/// 再生
-	void play(const StringRef& clipName, float duration = 0.3f/*, PlayMode mode = PlayMode_StopSameLayer*/);
+	void play(const StringRef& clipName/*, float duration = 0.3f*//*, PlayMode mode = PlayMode_StopSameLayer*/);
 
 	///// ブレンド (アニメーションの再生には影響しない。停止中のアニメーションがこの関数によって再生開始されることはない)
 	//void Blend(const lnKeyChar* animName, lnFloat targetWeight, lnFloat fadeLength);
@@ -152,11 +174,7 @@ private:
 	IAnimationTargetObject* m_targetObject;
 	List<Ref<AnimationLayer>> m_layers;
 	List<Ref<detail::AnimationTargetElementBlendLink>> m_targetElementBlendLinks;
-	float m_currentTime;
 };
-
-// AnimationState
-// AnimationLayer
 
 } // namespace a2
 LN_NAMESPACE_END
