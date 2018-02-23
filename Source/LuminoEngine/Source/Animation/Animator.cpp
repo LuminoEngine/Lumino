@@ -211,74 +211,74 @@ LN_NAMESPACE_BEGIN
 //}
 
 
-namespace detail
-{
-//==============================================================================
-// AnimationLayer
-//==============================================================================
-
-//------------------------------------------------------------------------------
-AnimationLayer::AnimationLayer(Animator* owner)
-	: m_owner(owner)
-	, m_animationStateList()
-{
-}
-
-//------------------------------------------------------------------------------
-void AnimationLayer::createStateAndAttachClip(AnimationClip* animationClip)
-{
-	if (LN_REQUIRE(animationClip != nullptr)) return;
-
-	auto state = Ref<AnimationState>::makeRef(animationClip);
-	m_animationStateList.add(animationClip->getName(), state);
-	state->refresh(m_owner);
-}
-
-//------------------------------------------------------------------------------
-void AnimationLayer::removeStateByClip(AnimationClip* animationClip)
-{
-	if (LN_REQUIRE(animationClip != nullptr)) return;
-	LN_NOTIMPLEMENTED();
-}
-
-//------------------------------------------------------------------------------
-void AnimationLayer::transitionState(const StringRef& name, float duration)
-{
-	AnimationState* state = findAnimationState(name);
-	if (state != nullptr)
-	{
-		// 再生中状態にする
-		state->fadeInLinerInternal(duration);
-		//state->setPlayState(PlayState_Playing);
-	}
-
-	// state 以外の再生中ステートに対してフェードアウトさせる
-	for (auto& pair : m_animationStateList)
-	{
-		if (pair.second != state && pair.second->setPlayState() == PlayState_Playing)
-		{
-			pair.second->fadeOutLinerInternal(duration);
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
-void AnimationLayer::advanceTime(float elapsedTime)
-{
-	for (auto& pair : m_animationStateList)
-	{
-		pair.second->advanceTime(elapsedTime);
-	}
-}
-
-//------------------------------------------------------------------------------
-AnimationState* AnimationLayer::findAnimationState(const StringRef& clipName)
-{
-	Ref<AnimationState>* state = m_animationStateList.find(clipName);
-	if (state == nullptr) return nullptr;
-	return *state;
-}
-
-} // namespace detail
+//namespace detail
+//{
+////==============================================================================
+//// AnimationLayer
+////==============================================================================
+//
+////------------------------------------------------------------------------------
+//AnimationLayer::AnimationLayer(Animator* owner)
+//	: m_owner(owner)
+//	, m_animationStateList()
+//{
+//}
+//
+////------------------------------------------------------------------------------
+//void AnimationLayer::createStateAndAttachClip(AnimationClip* animationClip)
+//{
+//	if (LN_REQUIRE(animationClip != nullptr)) return;
+//
+//	auto state = Ref<AnimationState>::makeRef(animationClip);
+//	m_animationStateList.add(animationClip->getName(), state);
+//	state->refresh(m_owner);
+//}
+//
+////------------------------------------------------------------------------------
+//void AnimationLayer::removeStateByClip(AnimationClip* animationClip)
+//{
+//	if (LN_REQUIRE(animationClip != nullptr)) return;
+//	LN_NOTIMPLEMENTED();
+//}
+//
+////------------------------------------------------------------------------------
+//void AnimationLayer::transitionState(const StringRef& name, float duration)
+//{
+//	AnimationState* state = findAnimationState(name);
+//	if (state != nullptr)
+//	{
+//		// 再生中状態にする
+//		state->fadeInLinerInternal(duration);
+//		//state->setPlayState(PlayState_Playing);
+//	}
+//
+//	// state 以外の再生中ステートに対してフェードアウトさせる
+//	for (auto& pair : m_animationStateList)
+//	{
+//		if (pair.second != state && pair.second->setPlayState() == PlayState_Playing)
+//		{
+//			pair.second->fadeOutLinerInternal(duration);
+//		}
+//	}
+//}
+//
+////------------------------------------------------------------------------------
+//void AnimationLayer::advanceTime(float elapsedTime)
+//{
+//	for (auto& pair : m_animationStateList)
+//	{
+//		pair.second->advanceTime(elapsedTime);
+//	}
+//}
+//
+////------------------------------------------------------------------------------
+//AnimationState* AnimationLayer::findAnimationState(const StringRef& clipName)
+//{
+//	Ref<AnimationState>* state = m_animationStateList.find(clipName);
+//	if (state == nullptr) return nullptr;
+//	return *state;
+//}
+//
+//} // namespace detail
 
 LN_NAMESPACE_END

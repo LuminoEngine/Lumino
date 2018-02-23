@@ -85,26 +85,26 @@ namespace detail { class AnimationLayer; }
 //	//AnimationApplyTargetStateArray	mAnimationApplyTargetStateArray;
 //};
 //
-namespace detail
-{
-
-class AnimationLayer
-	: public RefObject
-{
-public:
-	typedef SortedArray<String, Ref<AnimationState>>	AnimationStateList;
-
-	Animator*			m_owner;
-	AnimationStateList	m_animationStateList;
-
-	AnimationLayer(Animator* owner);
-	void createStateAndAttachClip(AnimationClip* animationClip);
-	void removeStateByClip(AnimationClip* animationClip);
-	void transitionState(const StringRef& name, float duration);
-	void advanceTime(float elapsedTime);
-	AnimationState* findAnimationState(const StringRef& clipName);
-};
-
-} // namespace detail
+//namespace detail
+//{
+//
+//class AnimationLayer
+//	: public RefObject
+//{
+//public:
+//	typedef SortedArray<String, Ref<AnimationState>>	AnimationStateList;
+//
+//	Animator*			m_owner;
+//	AnimationStateList	m_animationStateList;
+//
+//	AnimationLayer(Animator* owner);
+//	void createStateAndAttachClip(AnimationClip* animationClip);
+//	void removeStateByClip(AnimationClip* animationClip);
+//	void transitionState(const StringRef& name, float duration);
+//	void advanceTime(float elapsedTime);
+//	AnimationState* findAnimationState(const StringRef& clipName);
+//};
+//
+//} // namespace detail
 
 LN_NAMESPACE_END

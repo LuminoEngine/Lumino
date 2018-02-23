@@ -5,7 +5,6 @@
 LN_NAMESPACE_BEGIN
 namespace a2
 {
-class AnimationClock;
 
 /** アニメーションの繰り返し方法 */
 enum class WrapMode

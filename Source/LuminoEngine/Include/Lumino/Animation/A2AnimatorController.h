@@ -48,12 +48,18 @@ public:
 	*/
 	void setActive(bool value);
 
+	/** この AnimationState のアクティブ状態を取得します。 */
+	bool isActive() const { return m_active; }
+
 	/**
 		@brief		この AnimationState のアニメーション時間を設定します。
 		@details	この機能は AnimationController を使わずに細かい制御を行う場合に使用します。
 					AnimationController を使う場合、この値はアニメーションの再生管理によって頻繁に変更されます。
 	*/
 	void setLocalTime(float time);
+
+	/** この AnimationState のアニメーション時間を取得します。 */
+	float localTime() const { return m_localTime; }
 
 LN_CONSTRUCT_ACCESS:
 	AnimationState();
@@ -68,7 +74,8 @@ private:
 	};
 
 	void attachToTarget(AnimationController* animatorController);
-	void advanceTime(float elapsedTime);
+	float getBlendWeight() const { return m_blendWeight; }
+	void setBlendWeight(float weight) { m_blendWeight = weight; }
 	void updateTargetElements();
 
 	Ref<AnimationClip> m_clip;
@@ -98,33 +105,24 @@ LN_INTERNAL_ACCESS:
 	void removeClipAndDeleteState(AnimationClip* animationClip);
 	AnimationState* findAnimationState(const StringRef& name);
 	void advanceTime(float elapsedTime);
+	void updateStateWeights();
 	void updateTargetElements();
+	void transitionTo(AnimationState* state, float duration);
 
 private:
-
 	struct Transition
 	{
 		AnimationState* stateFrom;
 		AnimationState* stateTo;
-		float time;
-		float timeLength;
+		float duration;
+		float time;		// 0.0 ~ duration
+		float startingOffsetTime;
 	};
 
 	AnimationController* m_owner;
 	List<Ref<AnimationState>> m_animationStatus;
-
-
-	////typedef SortedArray<String, Ref<AnimationState>>	AnimationStateList;
-
-	//Animator*			m_owner;
-	//AnimationStateList	m_animationStateList;
-
-	//AnimationLayer(Animator* owner);
-	//void createStateAndAttachClip(AnimationClip* animationClip);
-	//void removeStateByClip(AnimationClip* animationClip);
-	//void transitionState(const StringRef& name, float duration);
-	//void advanceTime(float elapsedTime);
-	//AnimationState* findAnimationState(const StringRef& clipName);
+	AnimationState* m_currentState;
+	Transition m_transition;
 };
 
 /** スキンメッシュアニメーションにおいてキャラクターの挙動を操作するためのクラスです。 */
@@ -146,7 +144,7 @@ public:
 	bool isPlaying() const;
 
 	/// 再生
-	void play(const StringRef& clipName/*, float duration = 0.3f*//*, PlayMode mode = PlayMode_StopSameLayer*/);
+	void play(const StringRef& clipName, float duration = 0.3f/*, PlayMode mode = PlayMode_StopSameLayer*/);
 
 	///// ブレンド (アニメーションの再生には影響しない。停止中のアニメーションがこの関数によって再生開始されることはない)
 	//void Blend(const lnKeyChar* animName, lnFloat targetWeight, lnFloat fadeLength);

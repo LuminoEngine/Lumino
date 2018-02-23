@@ -75,14 +75,6 @@ void AnimationState::attachToTarget(AnimationController* animatorController)
 	}
 }
 
-void AnimationState::advanceTime(float elapsedTime)
-{
-	if (m_active)
-	{
-		m_localTime += elapsedTime;
-	}
-}
-
 void AnimationState::updateTargetElements()
 {
 	if (m_active)
@@ -133,6 +125,7 @@ void AnimationState::updateTargetElements()
 AnimationLayer::AnimationLayer()
 	: m_owner(nullptr)
 	, m_animationStatus()
+	, m_currentState(nullptr)
 {
 }
 
@@ -173,9 +166,64 @@ AnimationState* AnimationLayer::findAnimationState(const StringRef& name)
 
 void AnimationLayer::advanceTime(float elapsedTime)
 {
+	if (m_transition.stateFrom != nullptr || m_transition.stateTo != nullptr)
+	{
+		m_transition.time += elapsedTime;
+		if (m_transition.duration <= m_transition.time)
+		{
+			// finish
+			m_transition.stateFrom = nullptr;
+			m_transition.stateTo = nullptr;
+			m_transition.duration = 0.0f;
+		}
+	}
+
 	for (auto& state : m_animationStatus)
 	{
-		state->advanceTime(elapsedTime);
+		if (state->isActive())
+		{
+			state->setLocalTime(state->localTime() + elapsedTime);
+		}
+	}
+}
+
+void AnimationLayer::updateStateWeights()
+{
+	// reset
+	for (auto& state : m_animationStatus)
+	{
+		state->setBlendWeight(1.0f);
+	}
+
+	// apply transition
+	if (m_transition.duration > 0.0f)
+	{
+		float blendWeight = m_transition.time / m_transition.duration;
+		if (m_transition.stateFrom) m_transition.stateFrom->setBlendWeight(1.0f - blendWeight);
+		if (m_transition.stateTo) m_transition.stateTo->setBlendWeight(blendWeight);
+	}
+
+	// calc divisor for normalize
+	float totalWeight = 0.0f;
+	float weightCount = 0.0f;
+	float divisor = 0.0f;
+	for (auto& state : m_animationStatus)
+	{
+		// TODO: 加算モードであれば +1 しない
+		if (state->isActive())
+		{
+			divisor += state->getBlendWeight() * state->getBlendWeight();
+		}
+	}
+	float t = 1.0f / std::sqrt(divisor);
+
+	// normalize
+	for (auto& state : m_animationStatus)
+	{
+		if (state->isActive())
+		{
+			state->setBlendWeight(t * state->getBlendWeight());
+		}
 	}
 }
 
@@ -184,6 +232,33 @@ void AnimationLayer::updateTargetElements()
 	for (auto& state : m_animationStatus)
 	{
 		state->updateTargetElements();
+	}
+}
+
+void AnimationLayer::transitionTo(AnimationState* state, float duration)
+{
+	if (Math::nearEqual(duration, 0.0f))
+	{
+		m_transition.stateFrom = nullptr;
+		m_transition.stateTo = nullptr;
+		m_transition.duration = 0.0f;
+		m_transition.time = 0.0f;
+		m_transition.startingOffsetTime = 0.0f;
+	}
+	else
+	{
+		m_transition.stateFrom = m_currentState;
+		m_transition.stateTo = state;
+		m_transition.duration = duration;
+		m_transition.time = 0.0f;
+		m_transition.startingOffsetTime = 0.0f;	// TODO: 再生中の他のアニメと同期したい場合はここを変更
+	}
+
+	m_currentState = state;
+	if (m_currentState)
+	{
+		m_currentState->setActive(true);
+		m_currentState->setLocalTime(0.0f);
 	}
 }
 
@@ -235,14 +310,10 @@ void AnimationController::removeClip(AnimationClip* animationClip)
 	m_layers[0]->removeClipAndDeleteState(animationClip);
 }
 
-void AnimationController::play(const StringRef& clipName)
+void AnimationController::play(const StringRef& clipName, float duration)
 {
 	AnimationState* state = m_layers[0]->findAnimationState(clipName);
-	if (state)
-	{
-		state->setActive(true);
-		state->setLocalTime(0.0f);
-	}
+	m_layers[0]->transitionTo(state, duration);
 }
 
 void AnimationController::advanceTime(float elapsedTime)
@@ -265,6 +336,7 @@ void AnimationController::updateTargetElements()
 	// update
 	for (auto& layer : m_layers)
 	{
+		layer->updateStateWeights();
 		layer->updateTargetElements();
 	}
 
@@ -291,7 +363,6 @@ detail::AnimationTargetElementBlendLink* AnimationController::findAnimationTarge
 	else
 		return nullptr;
 }
-
 
 } // namespace a2
 LN_NAMESPACE_END
