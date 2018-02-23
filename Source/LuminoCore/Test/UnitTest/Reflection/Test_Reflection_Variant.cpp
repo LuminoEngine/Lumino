@@ -5,6 +5,48 @@
 #include <Lumino/Reflection/Variant.h>
 using namespace ln::tr;
 
+
+
+//# Variant のテスト
+class Test_Variant : public ::testing::Test
+{
+protected:
+	virtual void SetUp() {}
+	virtual void TearDown() {}
+};
+
+//## プリミティブ数値型を扱うテスト
+TEST_F(Test_Variant, PrimitiveNumericTypes)
+{
+	ASSERT_EQ(10, Variant((int8_t)10).get<int8_t>());
+	ASSERT_EQ(10, Variant((int16_t)10).get<int16_t>());
+	ASSERT_EQ(10, Variant((int32_t)10).get<int32_t>());
+	ASSERT_EQ(10, Variant((int64_t)10).get<int64_t>());
+	ASSERT_EQ(10, Variant((uint8_t)10).get<uint8_t>());
+	ASSERT_EQ(10, Variant((uint16_t)10).get<uint16_t>());
+	ASSERT_EQ(10, Variant((uint32_t)10).get<uint32_t>());
+	ASSERT_EQ(10, Variant((uint64_t)10).get<uint64_t>());
+	ASSERT_FLOAT_EQ(10.0f, Variant((float)10).get<float>());
+	ASSERT_DOUBLE_EQ(10.0, Variant((double)10).get<double>());
+}
+
+//## String 型を扱うテスト
+TEST_F(Test_Variant, StringType)
+{
+	Variant v1(_T("s1"));
+
+	auto s = v1.get<String>();
+	ASSERT_EQ(_T("s1"), v1.get<String>());
+
+	v1 = _T("s2");
+	ASSERT_EQ(_T("s2"), v1.get<String>());
+}
+
+////## List 型を扱うテスト
+//TEST_F(Test_Variant, StringType)
+//{
+//}
+
 #ifdef LN_LEGACY_VARIANT_ENABLED
 
 // テスト用
