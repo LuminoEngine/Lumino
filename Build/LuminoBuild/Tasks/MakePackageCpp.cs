@@ -23,7 +23,7 @@ namespace LuminoBuild.Tasks
         {
             //string zipFilePath = builder.LuminoPackageReleaseDir + "LuminoCpp.zip";
 
-            VSBuildFlags vsTarget = VSBuildFlags.VS2015 | VSBuildFlags.VS2017;
+            VSBuildFlags vsTarget = /*VSBuildFlags.VS2015 | */VSBuildFlags.VS2017;
 
             if (vsTarget.HasFlag(VSBuildFlags.VS2015))
             {
@@ -34,7 +34,7 @@ namespace LuminoBuild.Tasks
                 // lib, dll
                 {
                     Logger.WriteLine("copy lib files...");
-                    string outputLibDir = releaseDir + "Lib/";
+                    string outputLibDir = releaseDir + "lib/";
 
                     string target = "MSVC2015-x86-MT";
                     CopyFileFlat(builder.LuminoBuildDir + target, outputLibDir + target, "Debug", "*.lib");
@@ -44,7 +44,7 @@ namespace LuminoBuild.Tasks
                 }
 
                 Logger.WriteLine("copy other files...");
-                Directory.CreateDirectory(releaseDir + "Tools/VS2015ProjectTemplate");
+                Directory.CreateDirectory(releaseDir + "tools/VS2015ProjectTemplate");
                 Utils.CreateZipFile(builder.LuminoToolsDir + "VS2015ProjectTemplate/LuminoProjectCpp", releaseDir + "Tools/VS2015ProjectTemplate/LuminoProjectCpp.zip", false);
             }
 
@@ -57,7 +57,7 @@ namespace LuminoBuild.Tasks
                 // lib, dll
                 {
                     Logger.WriteLine("copy lib files...");
-                    string outputLibDir = releaseDir + "Lib/";
+                    string outputLibDir = releaseDir + "lib/";
 
                     string target = "MSVC2017-x86-MT";
                     CopyFileFlat(builder.LuminoBuildDir + target, outputLibDir + target, "Debug", "*.lib");
@@ -67,7 +67,7 @@ namespace LuminoBuild.Tasks
                 }
 
                 Logger.WriteLine("copy other files...");
-                Directory.CreateDirectory(releaseDir + "Tools/VS2017ProjectTemplate");
+                Directory.CreateDirectory(releaseDir + "tools/VS2017ProjectTemplate");
                 Utils.CreateZipFile(builder.LuminoToolsDir + "VS2017ProjectTemplate/LuminoProjectCpp", releaseDir + "Tools/VS2017ProjectTemplate/LuminoProjectCpp.zip", false);
                 // ↑ Kaspersky で、このタイミングでのzip圧縮でウィルス扱いされることがあった。
                 // clone 直後など、クリーンな状態では発生しない。Release フォルダに上書きコピー → zpi 化がキーだろうか？
@@ -85,13 +85,13 @@ namespace LuminoBuild.Tasks
 
             // include
             Logger.WriteLine("copy include files...");
-            string releaseIncludeDir = Path.Combine(releaseDir, "Include");
+            string releaseIncludeDir = Path.Combine(releaseDir, "include");
             Utils.CopyDirectory(Path.Combine(builder.LuminoRootDir, "Source/LuminoCore/Include"), releaseIncludeDir, true);
             Utils.CopyDirectory(Path.Combine(builder.LuminoRootDir, "Source/LuminoEngine/Include"), releaseIncludeDir, true);
 
             // Assets
             Logger.WriteLine("copy Assets files...");
-            Utils.CopyDirectory(Path.Combine(builder.LuminoRootDir, "Samples/Assets"), releaseDir + "Assets", true);
+            Utils.CopyDirectory(Path.Combine(builder.LuminoRootDir, "Samples/Assets"), releaseDir + "assets", true);
 
             // Readme.txt (バージョン名を埋め込む)
             string text = File.ReadAllText(pkgSrcDir + "Readme.template.txt");

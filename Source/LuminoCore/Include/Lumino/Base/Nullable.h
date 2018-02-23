@@ -49,9 +49,6 @@ public:
 	}
 
 	T& operator=(const T& value) { set(value); return m_value; }
-	bool operator==(const T& value) const { return m_isSet && value == m_value; }
-	bool operator==(const Nullable& right) const { return equals(right); }
-	bool operator!=(const Nullable& right) const { return !equals(right); }
     operator T() const { return get(); }
 
     T& get() 
@@ -76,9 +73,6 @@ public:
 		return (m_isSet) ? Hash::calcHash(reinterpret_cast<const char*>(&m_value), sizeof(m_value)) : 0;
 	}
 
-private:
-    void set(T value) { m_value = value; m_isSet = true; }
-
 	bool equals(const Nullable& right) const
 	{
 		if (m_isSet != right.m_isSet) return false;
@@ -87,8 +81,24 @@ private:
 	}
 
 private:
+    void set(T value) { m_value = value; m_isSet = true; }
+
+private:
     T m_value;
     bool m_isSet;
 };
+
+template <class T>
+LN_CONSTEXPR bool operator==(const Nullable<T>& lhs, const T& rhs) { return lhs.isSet() && lhs.get() == rhs; }
+template <class T>
+LN_CONSTEXPR bool operator==(const Nullable<T>& lhs, const Nullable<T>& rhs) { return lhs.equals(rhs); }
+template <class T>
+LN_CONSTEXPR bool operator==(const Nullable<T>& lhs, nullptr_t rhs) { return lhs.isNull(); }
+template <class T>
+LN_CONSTEXPR bool operator!=(const Nullable<T>& lhs, const T& rhs) { return !operator==(lhs, rhs); }
+template <class T>
+LN_CONSTEXPR bool operator!=(const Nullable<T>& lhs, const Nullable<T>& rhs) { return !operator==(lhs, rhs); }
+template <class T>
+LN_CONSTEXPR bool operator!=(const Nullable<T>& lhs, nullptr_t rhs) { return !operator==(lhs, rhs); }
 
 LN_NAMESPACE_END

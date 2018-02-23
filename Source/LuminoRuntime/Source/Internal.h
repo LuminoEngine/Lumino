@@ -21,10 +21,10 @@ using namespace ln;
 
 #define LWIG_CREATE_OBJECT(out, type, initFunc, ...)	{ auto ptr = ln::newObject<type>(__VA_ARGS__); ptr->postInitialize(); *out = LFManager::CheckRegisterObject(ptr); }
 
-// bool → LNBool
-#define LNOTE_BOOL_TO_LNBOOL( x )	( x ) ? LN_TRUE : LN_FALSE
-#define LNC_TO_LNBOOL( x )	( x ) ? LN_TRUE : LN_FALSE
-#define LNC_TO_BOOL( x )	(x != LN_FALSE)
+#define LWIG_TO_LNBOOL(x)			((x) ? LN_TRUE : LN_FALSE)
+#define LWIG_TO_BOOL(x)				(x != LN_FALSE)
+
+#define LWIG_STRING_TO_STRPTR(x)	(x.c_str())
 
 // ポインタの int キャスト
 #define LN_TO_INT( ptr )			reinterpret_cast<intptr_t>( ptr )

@@ -23,6 +23,25 @@
 
 LN_NAMESPACE_BEGIN
 
+static bool checkOverRange(const String& this_, const Char* str, int len)
+{
+	const Char* b1 = this_.c_str();
+	const Char* e1 = b1 + this_.getLength();
+	const Char* b2 = str;
+	const Char* e2 = str + len;
+	return !(e1 <= b2 || e2 <= b1);
+}
+
+namespace detail
+{
+struct StringLockContext
+{
+	detail::UStringCore*	newCore;
+	detail::UStringCore*	oldCore;
+};
+}
+
+
 //==============================================================================
 // String
 //==============================================================================
@@ -108,7 +127,7 @@ String::String(const Path& path)
 {
 }
 
-#ifdef LN_STRING_FROM_CHAR
+#ifdef LN_STRING_FUZZY_CONVERSION
 String::String(const char* str)
 	: String()
 {
@@ -137,8 +156,9 @@ bool String::isEmpty() const
 
 void String::clear()
 {
-	lockBuffer(0);
-	unlockBuffer(0);
+	detail::StringLockContext context;
+	lockBuffer(0, &context);
+	unlockBuffer(0, &context);
 }
 
 void String::resize(int newLength)
@@ -149,7 +169,8 @@ void String::resize(int newLength)
 void String::resize(int newLength, Char ch)
 {
 	int oldLen = getLength();
-	Char* buf = lockBuffer(newLength);
+	detail::StringLockContext context;
+	Char* buf = lockBuffer(newLength, &context);
 	if (newLength > oldLen)
 	{
 		for (int i = oldLen; i < newLength; i++)
@@ -157,12 +178,16 @@ void String::resize(int newLength, Char ch)
 			buf[i] = ch;
 		}
 	}
-	unlockBuffer(newLength);
+	unlockBuffer(newLength, &context);
 }
 
 void String::reserve(int size)
 {
-	reserveBuffer(size);
+	int cur = getLength();
+	//reserveBuffer(size);
+	detail::StringLockContext context;
+	lockBuffer(size, &context);
+	unlockBuffer(cur, &context);
 }
 
 bool String::contains(const StringRef& str, CaseSensitivity cs) const
@@ -304,7 +329,8 @@ String String::remove(const StringRef& str, CaseSensitivity cs) const
 	const Char* fs = str.data();
 	int fsLen = str.getLength();
 
-	Char* buf = result.lockBuffer(end - pos);
+	detail::StringLockContext context;
+	Char* buf = result.lockBuffer(end - pos, &context);
 	Char* bufBegin = buf;
 
 	if (fsLen > 0)
@@ -331,7 +357,7 @@ String String::remove(const StringRef& str, CaseSensitivity cs) const
 		buf += (end - pos);
 	}
 	
-	result.unlockBuffer(buf - bufBegin);
+	result.unlockBuffer(buf - bufBegin, &context);
 	return result;
 }
 
@@ -607,31 +633,20 @@ void String::move(String&& str) LN_NOEXCEPT
 	str.init();
 }
 
-Char* String::lockBuffer(int requestSize)
-{
-	reserveBuffer(requestSize);
-	return getBuffer();
-}
-
-void String::unlockBuffer(int confirmedSize)
-{
-	if (isSSO())
-	{
-		setSSOLength(confirmedSize);
-	}
-	else
-	{
-		m_data.core->fixLength(confirmedSize);
-	}
-}
-
-// 領域を確保し、sso かどうかのフラグをセットする。長さは変えない。
+// 領域を確保し、sso かどうかのフラグをセットする。バッファサイズは変えるが長さ(getLength() で取れる値)は変えない。
 // 中身は以前のものが維持され、新しい領域は不定値となる。
-void String::reserveBuffer(int length)
+// 後で必ず unlockBuffer() を呼び出すこと。
+// context は lockBuffer() と unlockBuffer() 間で渡しあうデータ。
+// 今は自己代入回避のための細工に使っている。必ず unlockBuffer() に渡すこと。
+// unlock するまでは \0 終端を保障しない。
+// また、lock 前後でサイズが変わらなくても変更であるとみなし、COW 共有は解除され独立したバッファになる。
+Char* String::lockBuffer(int requestSize, detail::StringLockContext* context)
 {
+	context->newCore = nullptr;
+	context->oldCore = nullptr;
 	if (isSSO())
 	{
-		if (length < SSOCapacity)
+		if (requestSize < SSOCapacity)
 		{
 			// SSO -> SSO
 		}
@@ -639,32 +654,35 @@ void String::reserveBuffer(int length)
 		{
 			// SSO -> NonSSO
 			std::unique_ptr<detail::UStringCore> core(LN_NEW detail::UStringCore());
-			core->reserve(length);
-			memcpy(core->get(), m_data.sso.buffer, std::min(getSSOLength(), length) * sizeof(Char));
-			core->get()[length] = '\0';
-			m_data.core = core.get();
+			core->reserve(requestSize);
+			memcpy(core->get(), m_data.sso.buffer, std::min(getSSOLength(), requestSize) * sizeof(Char));
+			//core->get()[requestSize] = '\0';
+			//m_data.core = core.get();
+			context->newCore = core.get();	// 自己代入対策。unlock で メンバ変数に設定する
 			core.release();
 			setNonSSO();
+			return context->newCore->get();
 		}
 	}
 	else
 	{
-		if (m_data.core && !m_data.core->isShared() && length <= m_data.core->getCapacity())
+		if (m_data.core && !m_data.core->isShared() && requestSize <= m_data.core->getCapacity())
 		{
 			// NonSSO で、共有されてもいないしサイズも間に合っているならいろいろ作り直す必要は無い
-			m_data.core->get()[length] = '\0';
+			//m_data.core->get()[requestSize] = '\0';
 		}
 		else
 		{
-			if (length < SSOCapacity)
+			if (requestSize < SSOCapacity)
 			{
 				// NonSSO -> SSO
 				if (m_data.core)
 				{
 					detail::UStringCore* oldCore = m_data.core;
 					setSSO();
-					memcpy(m_data.sso.buffer, oldCore->get(), std::min(oldCore->getLength(), length) * sizeof(Char));
-					oldCore->release();
+					memcpy(m_data.sso.buffer, oldCore->get(), std::min(oldCore->getLength(), requestSize) * sizeof(Char));
+					//oldCore->release();
+					context->oldCore = oldCore;	// release old buffer (on unlock)
 				}
 				else
 				{
@@ -680,22 +698,48 @@ void String::reserveBuffer(int length)
 					{
 						detail::UStringCore* oldCore = m_data.core;
 						m_data.core = LN_NEW detail::UStringCore();
-						m_data.core->reserve(length);
-						memcpy(m_data.core->get(), oldCore->get(), std::min(oldCore->getLength(), length) * sizeof(Char));
-						oldCore->release();
+						m_data.core->reserve(requestSize);
+						memcpy(m_data.core->get(), oldCore->get(), std::min(oldCore->getLength(), requestSize) * sizeof(Char));
+						//oldCore->release();
+						context->oldCore = oldCore;	// release old buffer (on unlock)
 					}
 					else
 					{
-						m_data.core->reserve(length);
+						m_data.core->reserve(requestSize);
 					}
 				}
 				else
 				{
 					m_data.core = LN_NEW detail::UStringCore();
-					m_data.core->reserve(length);
+					m_data.core->reserve(requestSize);
 				}
 			}
 		}
+	}
+
+	return getBuffer();
+}
+
+// 実際のサイズを確定する
+void String::unlockBuffer(int confirmedSize, detail::StringLockContext* context)
+{
+	if (context->oldCore)
+	{
+		context->oldCore->release();
+	}
+	if (context->newCore)
+	{
+		m_data.core = context->newCore;
+	}
+
+	if (isSSO())
+	{
+		setSSOLength(confirmedSize);
+	}
+	else
+	{
+		m_data.core->get()[confirmedSize] = '\0';
+		m_data.core->fixLength(confirmedSize);
 	}
 }
 
@@ -733,9 +777,15 @@ void String::setNonSSO()
 void String::append(const Char* str, int length)
 {
 	int firstLen = getLength();
-	Char* b = lockBuffer(firstLen + length) + firstLen;
-	memcpy(b, str, length * sizeof(Char));
-	unlockBuffer(firstLen + length);
+	detail::StringLockContext context;
+	Char* b = lockBuffer(firstLen + length, &context) + firstLen;
+	memmove(b, str, length * sizeof(Char));
+	unlockBuffer(firstLen + length, &context);
+}
+
+void String::append(const String& str)
+{
+	append(str.c_str(), str.getLength());
 }
 
 void String::assign(const Char* str)
@@ -747,9 +797,18 @@ void String::assign(const Char* str, int length)
 {
 	if (str && *str)
 	{
-		Char* buf = lockBuffer(length);
-		memcpy(buf, str, sizeof(Char) * length);
-		unlockBuffer(length);
+		//bool over = false;
+		//if (checkOverRange(this, str, length))
+		//{
+
+		//	over = true;
+		//}
+
+
+		detail::StringLockContext context;
+		Char* buf = lockBuffer(length, &context);
+		memmove(buf, str, sizeof(Char) * length);
+		unlockBuffer(length, &context);
 	}
 	else
 	{
@@ -761,9 +820,10 @@ void String::assign(int count, Char ch)
 {
 	if (count > 0)
 	{
-		Char* buf = lockBuffer(count);
+		detail::StringLockContext context;
+		Char* buf = lockBuffer(count, &context);
 		std::fill<Char*, Char>(buf, buf + count, ch);
-		unlockBuffer(count);
+		unlockBuffer(count, &context);
 	}
 	else
 	{
@@ -774,18 +834,7 @@ void String::assign(int count, Char ch)
 void String::assign(const StringRef& str)
 {
 	// TODO: String 参照のときの特殊化
-
-	int len = str.getLength();
-	if (len > 0)
-	{
-		Char* buf = lockBuffer(len);
-		memcpy(buf, str.data(), sizeof(Char) * len);
-		unlockBuffer(len);
-	}
-	else
-	{
-		clear();
-	}
+	assign(str.data(), str.getLength());
 }
 
 template<typename TChar>
@@ -810,12 +859,13 @@ void String::assignFromCStr(const TChar* str, int length, bool* outUsedDefaultCh
 
 	if (ascii)
 	{
-		Char* buf = lockBuffer(len);
+		detail::StringLockContext context;
+		Char* buf = lockBuffer(len, &context);
 		for (int i = 0; i < len; ++i)
 		{
 			buf[i] = str[i];
 		}
-		unlockBuffer(len);
+		unlockBuffer(len, &context);
 	}
 	else
 	{
@@ -835,6 +885,15 @@ void String::assignFromCStr(const TChar* str, int length, bool* outUsedDefaultCh
 	}
 }
 
+void String::setAt(int index, Char ch)
+{
+	int length = getLength();
+	LN_CHECK(0 <= index && index < length);
+	detail::StringLockContext context;
+	Char* buf = lockBuffer(length, &context);
+	buf[index] = ch;
+	unlockBuffer(length, &context);
+}
 
 uint32_t String::getHashCode() const
 {

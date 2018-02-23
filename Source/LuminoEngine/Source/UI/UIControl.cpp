@@ -302,7 +302,7 @@ Size UIControl::arrangeOverride(const Size& finalSize)
 //------------------------------------------------------------------------------
 const HAlignment* UIControl::getPriorityContentHAlignment()
 {
-	if (HContentAlignment == VAlignment::Stretch) return nullptr;
+	if (HContentAlignment == HAlignment::Stretch) return nullptr;
 	return &HContentAlignment;
 }
 //------------------------------------------------------------------------------

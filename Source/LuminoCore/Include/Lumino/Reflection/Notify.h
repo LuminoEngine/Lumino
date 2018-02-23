@@ -20,7 +20,7 @@ protected:
 	virtual ~ReflectionEventBase() = default;
 
 private:
-	friend class ReflectionObject;
+	friend class Object;
 	virtual void raise(ReflectionEventArgs* e) const = 0;
 };
 
@@ -133,7 +133,7 @@ public:
 	}
 
 private:
-	friend class ReflectionObject;
+	friend class Object;
 
 	std::vector<DelegateType> m_handlerList;
 

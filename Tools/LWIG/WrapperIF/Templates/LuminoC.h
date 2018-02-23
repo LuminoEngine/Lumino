@@ -1,25 +1,19 @@
 
 #pragma once
+#include <Lumino/FlatCCommon.h>
 
-#if defined(LUMINO_BUILD_DLL) && defined(LN_MSVC)
-	#define LN_API	__declspec(dllexport)
-#else
-	#define LN_API
-#endif
+extern "C"
+{
 
-#ifdef LN_UNICODE
-	typedef wchar_t		LNChar;
-	#define __T(x)      L ## x
-#else
-	typedef char		LNChar;
-	#define __T(x)      x
-#endif
+%%Structs%%
 
-#define LN_OK	LN_RESULTCODE_OK
+%%Enums%%
 
-typedef intptr_t LNUserData;
+%%Delegates%%
 
-%Enums%
+%%StructMemberFuncDecls%%
 
-%Delegates%
+%%ClassMemberFuncDecls%%
+
+} // extern "C"
 

@@ -10,13 +10,10 @@
 
 #include "StringHelper.h"
 
-#ifdef LN_UNICODE
-#define LN_STRING_FROM_CHAR
-#endif
-
 LN_NAMESPACE_BEGIN
 class Encoding;
 namespace detail { class UStringCore; }
+namespace detail { class StringLockContext; }
 
 namespace detail
 {
@@ -47,6 +44,7 @@ enum class UStringRefSource
 }
 
 class Locale;
+class CharRef;
 class StringRef;
 class Path;
 
@@ -73,7 +71,7 @@ public:
 	String(const Path& path);
 	// TODO: Path&&
 
-#ifdef LN_STRING_FROM_CHAR
+#ifdef LN_STRING_FUZZY_CONVERSION
 	String(const char* str);
 #ifdef LN_USTRING16
 	String(const wchar_t* str);
@@ -108,6 +106,7 @@ public:
 	void assign(const StringRef& str);
 
 	void append(const Char* str, int length);
+	void append(const String& str);
 	
 	/**
 		@brief		指定した文字列がこの文字列内に存在するかを判断します。
@@ -452,6 +451,7 @@ public:
 	bool isSSO() const LN_NOEXCEPT { return !detail::getLSB<0>(static_cast<uint8_t>(m_data.sso.length)); }
 	bool isNonSSO() const LN_NOEXCEPT { return detail::getLSB<0>(static_cast<uint8_t>(m_data.sso.length)); }
 
+	CharRef operator[](int index);
 	const Char& operator[](int index) const;
 
 	String& operator=(const StringRef& rhs);
@@ -464,7 +464,7 @@ public:
 	String& operator+=(const Char* rhs);
 	String& operator+=(Char rhs);
 
-#ifdef LN_USTRING16_FUZZY_CONVERSION
+#ifdef LN_STRING_FUZZY_CONVERSION
 	String& operator=(const char* rhs);
 	String& operator+=(const char* rhs);
 #endif
@@ -477,9 +477,8 @@ private:
 	void release() LN_NOEXCEPT;
 	void copy(const String& str);
 	void move(String&& str) LN_NOEXCEPT;
-	void reserveBuffer(int length);
-	Char* lockBuffer(int requestSize);
-	void unlockBuffer(int confirmedSize);
+	Char* lockBuffer(int requestSize, detail::StringLockContext* context);
+	void unlockBuffer(int confirmedSize, detail::StringLockContext* context);
 	Char* getBuffer();
 	const Char* getBuffer() const;
 
@@ -491,6 +490,7 @@ private:
 
 	// utils
 	template<typename TChar> void assignFromCStr(const TChar* str, int length = -1, bool* outUsedDefaultChar = nullptr, Encoding* encoding = nullptr);
+	void setAt(int index, Char ch);
 
 	Encoding* getThisTypeEncoding() const;
 	static ByteBuffer convertTo(const String& str, const Encoding* encoding, bool* outUsedDefaultChar = nullptr);
@@ -505,6 +505,34 @@ private:
 			Char		length;	// ---xxxxy	: x=size y:flag(0=sso,1=non sso)
 		} sso;
 	} m_data;
+
+	friend class CharRef;
+};
+
+class CharRef
+{
+public:
+	operator Char() const
+	{
+		return m_str.c_str()[m_index];
+	}
+
+	CharRef& operator=(Char ch)
+	{
+		m_str.setAt(m_index, ch);
+		return *this;
+	}
+
+private:
+	CharRef(String& str, int index)
+		: m_str(str)
+		, m_index(index)
+	{}
+
+	String& m_str;
+	int m_index;
+
+	friend class String;
 };
 
 /**
@@ -589,7 +617,7 @@ public:
 		clear();
 	}
 
-#ifdef LN_USTRING16_FUZZY_CONVERSION
+#ifdef LN_STRING_FUZZY_CONVERSION
 	StringRef(const char* str)
 		: StringRef()
 	{
@@ -894,7 +922,9 @@ inline int String::getCapacity() const
 //inline String::iterator String::end() { return begin() + getLength(); }
 //inline String::const_iterator String::end() const { return begin() + getLength(); }
 
+inline CharRef String::operator[](int index) { return CharRef(*this, index); }
 inline const Char& String::operator[](int index) const { return getBuffer()[index]; }	// TODO: check range
+
 inline String& String::operator=(const StringRef& rhs) { assign(rhs); return *this; }
 inline String& String::operator=(const Char* rhs) { assign(rhs); return *this; }
 inline String& String::operator=(Char ch) { assign(&ch, 1); return *this; }
@@ -932,7 +962,7 @@ inline bool operator>=(const String& lhs, const String& rhs) { return !operator<
 inline bool operator>=(const Char* lhs, const String& rhs) { return !operator<(lhs, rhs); }
 inline bool operator>=(const String& lhs, const Char* rhs) { return !operator<(lhs, rhs); }
 
-#ifdef LN_USTRING16_FUZZY_CONVERSION
+#ifdef LN_STRING_FUZZY_CONVERSION
 inline String& String::operator=(const char* rhs) { assignFromCStr(rhs); return *this; }
 inline String& String::operator+=(const char* rhs) { String s(rhs); append(s.c_str(), s.getLength()); return *this; }
 

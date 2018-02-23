@@ -1,51 +1,62 @@
 ﻿
-#include "Global.h"
 #include "SymbolDatabase.h"
 
-TypeInfoPtr	PredefinedTypes::voidType;
-TypeInfoPtr	PredefinedTypes::nullptrType;
-TypeInfoPtr	PredefinedTypes::boolType;
-TypeInfoPtr	PredefinedTypes::intType;
-TypeInfoPtr	PredefinedTypes::uint32Type;
-TypeInfoPtr	PredefinedTypes::floatType;
-TypeInfoPtr	PredefinedTypes::stringType;
-TypeInfoPtr	PredefinedTypes::objectType;
-TypeInfoPtr	PredefinedTypes::EventConnectionType;
+Ref<TypeSymbol>	PredefinedTypes::voidType;
+Ref<TypeSymbol>	PredefinedTypes::nullptrType;
+Ref<TypeSymbol>	PredefinedTypes::boolType;
+Ref<TypeSymbol>	PredefinedTypes::intType;
+Ref<TypeSymbol>	PredefinedTypes::int16Type;
+Ref<TypeSymbol>	PredefinedTypes::uint32Type;
+Ref<TypeSymbol>	PredefinedTypes::floatType;
+Ref<TypeSymbol>	PredefinedTypes::stringType;
+Ref<TypeSymbol>	PredefinedTypes::objectType;
+Ref<TypeSymbol>	PredefinedTypes::EventConnectionType;
 
 //==============================================================================
-// MetadataInfo
+// MetadataSymbol
 //==============================================================================
-void MetadataInfo::AddValue(const String& key, const String& value)
+const String MetadataSymbol::OverloadPostfixAttr = _T("OverloadPostfix");
+
+void MetadataSymbol::AddValue(const String& key, const String& value)
 {
 	values[key] = value;
 }
 
-String* MetadataInfo::FindValue(const StringRef& key)
+String* MetadataSymbol::FindValue(const StringRef& key)
 {
 	auto itr = values.find(key);
 	if (itr != values.end()) return &(itr->second);
 	return nullptr;
 }
 
-bool MetadataInfo::HasKey(const StringRef& key)
+String MetadataSymbol::getValue(const StringRef& key, const String& defaultValue)
+{
+	auto* s = FindValue(key);
+	if (s)
+		return *s;
+	else
+		return defaultValue;
+}
+
+bool MetadataSymbol::HasKey(const StringRef& key)
 {
 	auto itr = values.find(key);
 	return (itr != values.end());
 }
 
 //==============================================================================
-// MethodInfo
+// MethodSymbol
 //==============================================================================
-void MethodInfo::LinkParameters()
+void MethodSymbol::LinkParameters(SymbolDatabase* db)
 {
-	if (metadata->HasKey("Event"))
+	if (metadata->HasKey(_T("Event")))
 	{
 		Console::writeLine("is event");
 	}
 
 	for (auto& paramInfo : parameters)
 	{
-		paramInfo->type = g_database.findTypeInfo(paramInfo->typeRawName);
+		paramInfo->type = db->findTypeInfo(paramInfo->src.typeRawName);
 
 		// 今のところ、Class 型の 出力変数は許可しない
 		if (paramInfo->isOut && paramInfo->type->IsClass())
@@ -54,43 +65,45 @@ void MethodInfo::LinkParameters()
 			paramInfo->isOut = false;
 		}
 
-		if (paramInfo->rawDefaultValue != nullptr)
+		if (paramInfo->src.rawDefaultValue != nullptr)
 		{
-			String text = paramInfo->rawDefaultValue.get();
-			if (text.contains("::"))
+			String text = paramInfo->src.rawDefaultValue.get();
+			if (text.contains(_T("::")))
 			{
-				auto tokens = text.split("::");
-				TypeInfoPtr dummy;
-				g_database.FindEnumTypeAndValue(tokens[0], tokens[1], &dummy, &paramInfo->defaultValue);
+				auto tokens = text.split(_T("::"));
+				Ref<TypeSymbol> dummy;
+				db->FindEnumTypeAndValue(tokens[0], tokens[1], &dummy, &paramInfo->defaultValue);
 			}
 			else
 			{
-				paramInfo->defaultValue = g_database.CreateConstantFromLiteralString(text);
+				paramInfo->defaultValue = db->CreateConstantFromLiteralString(text);
 			}
 		}
 	}
 }
 
-void MethodInfo::ExpandCAPIParameters()
+// capiParameters を構築する
+void MethodSymbol::ExpandCAPIParameters(SymbolDatabase* db)
 {
-	// 第1引数
+	// 第1引数 (種類によって this など)
 	{
 		if (!isStatic)
 		{
 			if (owner->isStruct)
 			{
-				auto info = std::make_shared<ParameterInfo>();
-				info->name = owner->name.toLower();
-				info->type = g_database.findTypeInfo(owner->name);
+				auto info = Ref<ParameterSymbol>::makeRef();
+				info->name = owner->shortName().toLower();
+				info->type = db->findTypeInfo(owner->fullName());
 				info->isThis = true;
 				capiParameters.add(info);
 			}
 			else if (isConstructor)
 			{
+				// none
 			}
 			else if (owner->isDelegate)
 			{
-				auto info = std::make_shared<ParameterInfo>();
+				auto info = Ref<ParameterSymbol>::makeRef();
 				info->name = _T("sender");
 				info->type = PredefinedTypes::objectType;
 				info->isThis = true;
@@ -98,9 +111,9 @@ void MethodInfo::ExpandCAPIParameters()
 			}
 			else
 			{
-				auto info = std::make_shared<ParameterInfo>();
-				info->name = owner->name.toLower();
-				info->type = g_database.findTypeInfo(owner->name);
+				auto info = Ref<ParameterSymbol>::makeRef();
+				info->name = owner->shortName().toLower();
+				info->type = db->findTypeInfo(owner->fullName());
 				info->isThis = true;
 				capiParameters.add(info);
 			}
@@ -111,7 +124,7 @@ void MethodInfo::ExpandCAPIParameters()
 	for (auto& paramInfo : parameters)
 	{
 		capiParameters.add(paramInfo);
-		overloadSuffix += StringTraits::toUpper((Char)paramInfo->name[0]);
+		//overloadSuffix += StringTraits::toUpper((Char)paramInfo->name[0]);
 	}
 
 	// return value
@@ -121,7 +134,7 @@ void MethodInfo::ExpandCAPIParameters()
 	}
 	else
 	{
-		auto info = std::make_shared<ParameterInfo>();
+		auto info = Ref<ParameterSymbol>::makeRef();
 		info->name = "outReturn";
 		info->type = returnType;
 		info->isIn = false;
@@ -138,34 +151,53 @@ void MethodInfo::ExpandCAPIParameters()
 		}
 		else
 		{
-			auto info = std::make_shared<ParameterInfo>();
-			info->name = String::format(_T("out{0}"), owner->name);
-			info->type = g_database.findTypeInfo(owner->name);
+			auto info = Ref<ParameterSymbol>::makeRef();
+			info->name = String::format(_T("out{0}"), owner->shortName());
+			info->type = db->findTypeInfo(owner->fullName());
 			info->isReturn = true;
 			capiParameters.add(info);
 		}
 	}
 }
 
-String MethodInfo::GetCAPIFuncName()
+String MethodSymbol::GetCAPIFuncName()
 {
-	String n = String::format(_T("LN{0}_{1}"), owner->name, name);
+	String funcName;
+	if (isConstructor)
+	{
+		if (owner->isStruct)
+		{
+			if (isConstructor && parameters.isEmpty())
+				funcName = _T("Clear");
+			else
+				funcName = _T("Set");
+		}
+		else
+			funcName = _T("Create");
+	}
+	else
+	{
+		funcName = name;
+		funcName[0] = StringTraits::toUpper<Char>(funcName[0]);	// 先頭大文字
+	}
+
+	String n = String::format(_T("LN{0}_{1}"), owner->shortName(), funcName);
 	if (IsOverloadChild())
-		n += overloadSuffix;
+		n += metadata->getValue(MetadataSymbol::OverloadPostfixAttr);
 	return n;
 }
 
-String MethodInfo::GetCApiSetOverrideCallbackFuncName()
+String MethodSymbol::GetCApiSetOverrideCallbackFuncName()
 {
 	return GetCAPIFuncName() + "_SetOverrideCaller";
 }
 
-String MethodInfo::GetCApiSetOverrideCallbackTypeName()
+String MethodSymbol::GetCApiSetOverrideCallbackTypeName()
 {
-	return String::format("LN{0}_{1}_OverrideCaller", owner->name, name);
+	return String::format(_T("LN{0}_{1}_OverrideCaller"), owner->shortName(), name);
 }
 
-String MethodInfo::GetAccessLevelName(AccessLevel accessLevel)
+String MethodSymbol::GetAccessLevelName(AccessLevel accessLevel)
 {
 	switch (accessLevel)
 	{
@@ -175,29 +207,66 @@ String MethodInfo::GetAccessLevelName(AccessLevel accessLevel)
 		return "protected";
 	case AccessLevel::Private:
 		return "private";
-	case AccessLevel::Internal:
-		return "internal";
+	//case AccessLevel::Internal:
+	//	return "internal";
+	default:
+		LN_UNREACHABLE();
+		break;
 	}
 	return "";
 }
 
-//==============================================================================
-// TypeInfo
-//==============================================================================
-void TypeInfo::Link()
+void MethodSymbol::link(SymbolDatabase* db)
 {
+	if (!isStatic &&
+		name == _T("initialize"))
+	{
+		isConstructor = true;
+	}
+
+	if (owner->isStruct &&
+		owner->shortName() == name)
+	{
+		isConstructor = true;
+	}
+
+	ExpandCAPIParameters(db);
+}
+
+//==============================================================================
+// TypeSymbol
+//==============================================================================
+void TypeSymbol::Link(SymbolDatabase* db)
+{
+	// find base class
+	if (!src.baseClassRawName.isEmpty())
+	{
+		baseClass = db->findTypeInfo(src.baseClassRawName);
+	}
+
+	for (auto methodInfo : declaredMethods)
+	{
+		methodInfo->link(db);
+	}
+
 	MakeProperties();
 	LinkOverload();
 	ResolveCopyDoc();
 
-	// find base class
-	if (!baseClassRawName.isEmpty())
-	{
-		baseClass = g_database.findTypeInfo(baseClassRawName);
-	}
 }
 
-void TypeInfo::MakeProperties()
+void TypeSymbol::setRawFullName(const String& value)
+{
+	src.rawFullName = value;
+
+	int c = value.lastIndexOf(':');
+	if (c >= 0)
+		m_shortName = value.substring(c + 1);
+	else
+		m_shortName = value;
+}
+
+void TypeSymbol::MakeProperties()
 {
 	for (auto& methodInfo : declaredMethods)
 	{
@@ -206,29 +275,35 @@ void TypeInfo::MakeProperties()
 			String name;
 			String namePrefix;
 			bool isGetter = false;
-			if (methodInfo->name.indexOf(_T("Get")) == 0)
+			if (methodInfo->name.indexOf(_T("get"), 0, CaseSensitivity::CaseInsensitive) == 0)
 			{
-				name = methodInfo->name.mid(3);
+				name = methodInfo->name.substring(3);
 				isGetter = true;
 			}
-			if (methodInfo->name.indexOf(_T("Is")) == 0)
+			else if (methodInfo->name.indexOf(_T("is"), 0, CaseSensitivity::CaseInsensitive) == 0)
 			{
-				name = methodInfo->name.mid(2);
-				namePrefix = _T("Is");
+				name = methodInfo->name.substring(2);
+				namePrefix = _T("is");
 				isGetter = true;
 			}
-			if (methodInfo->name.indexOf(_T("Set")) == 0)
+			else if (methodInfo->name.indexOf(_T("set"), 0, CaseSensitivity::CaseInsensitive) == 0)
 			{
-				name = methodInfo->name.mid(3);
+				name = methodInfo->name.substring(3);
 				isGetter = false;
 			}
-
-			PropertyInfoPtr propInfo;
+			else
 			{
-				auto* ptr = declaredProperties.find([name](PropertyInfoPtr info) {return info->name == name; });
+				// 上記以外 (longName() など名詞系) は getter とする
+				name = methodInfo->name;
+				isGetter = true;
+			}
+
+			Ref<PropertySymbol> propInfo;
+			{
+				auto* ptr = declaredProperties.find([name](Ref<PropertySymbol> info) {return info->name == name; });
 				if (ptr == nullptr)
 				{
-					propInfo = std::make_shared<PropertyInfo>();
+					propInfo = Ref<PropertySymbol>::makeRef();
 					propInfo->name = name;
 					declaredProperties.add(propInfo);
 				}
@@ -241,15 +316,17 @@ void TypeInfo::MakeProperties()
 
 			if (isGetter)
 			{
-				LN_THROW(propInfo->getter == nullptr, InvalidOperationException);
+				LN_DCHECK(propInfo->getter == nullptr);
 				propInfo->getter = methodInfo;
-				if (propInfo->type == nullptr) propInfo->type = methodInfo->returnType;
+				if (propInfo->type == nullptr)	// return 型をプロパティの型とする
+					propInfo->type = methodInfo->returnType;
 			}
 			else
 			{
-				LN_THROW(propInfo->setter == nullptr, InvalidOperationException);
+				LN_DCHECK(propInfo->setter == nullptr);
 				propInfo->setter = methodInfo;
-				if (propInfo->type == nullptr) propInfo->type = methodInfo->parameters[0]->type;
+				if (propInfo->type == nullptr)	// 第1引数の型をプロパティの型とする
+					propInfo->type = methodInfo->parameters[0]->type;
 			}
 
 			methodInfo->ownerProperty = propInfo;
@@ -263,27 +340,54 @@ void TypeInfo::MakeProperties()
 	}
 }
 
-void TypeInfo::LinkOverload()
+void TypeSymbol::LinkOverload()
 {
 	for (auto& methodInfo1 : declaredMethods)
 	{
-		if (methodInfo1->IsOverloadChild()) continue;
+		if (!methodInfo1->overloadChildren.isEmpty() || methodInfo1->overloadParent)
+			continue;	// processed
 
-		// find overload child
+		// find same names
+		List<MethodSymbol*> sameNames;
 		for (auto& methodInfo2 : declaredMethods)
 		{
-			if (methodInfo2 == methodInfo1) continue;
+			if (isStruct && methodInfo2->isConstructor && methodInfo2->parameters.isEmpty())
+			{
+				// 構造体の引数無しコンストラクタは Clear という別名にしたい。
+				continue;
+			}
 
 			if (methodInfo1->name == methodInfo2->name)
 			{
-				methodInfo1->overloadChildren.add(methodInfo2);
-				methodInfo2->overloadParent = methodInfo1;
+				sameNames.add(methodInfo2);
 			}
+		}
+
+		// select parent
+		auto f = sameNames.find([](MethodSymbol* m) { return !m->metadata->HasKey(MetadataSymbol::OverloadPostfixAttr); });
+		if (!f)
+		{
+			LN_NOTIMPLEMENTED();
+		}
+		MethodSymbol* parent = *f;
+
+		// link
+		for (auto& method2 : sameNames)
+		{
+			if (method2 == parent) continue;
+
+			if (!method2->metadata->HasKey(MetadataSymbol::OverloadPostfixAttr))
+			{
+				LN_NOTIMPLEMENTED();
+			}
+
+			parent->overloadChildren.add(method2);
+			method2->overloadParent = parent;
 		}
 	}
 }
 
-void TypeInfo::ResolveCopyDoc()
+void TypeSymbol::ResolveCopyDoc()
 {
 	for (auto& methodInfo : declaredMethods)
 	{
@@ -305,11 +409,11 @@ void TypeInfo::ResolveCopyDoc()
 }
 
 //==============================================================================
-// PropertyInfo
+// PropertySymbol
 //==============================================================================
-void PropertyInfo::MakeDocument()
+void PropertySymbol::MakeDocument()
 {
-	document = std::make_shared<DocumentInfo>();
+	document = Ref<DocumentSymbol>::makeRef();
 
 	if (getter != nullptr)
 	{
@@ -344,11 +448,10 @@ void SymbolDatabase::Link()
 		{
 			methodInfo->returnType = findTypeInfo(methodInfo->returnTypeRawName);
 
-			methodInfo->LinkParameters();
-			methodInfo->ExpandCAPIParameters();
+			methodInfo->LinkParameters(this);
 		}
 
-		structInfo->Link();
+		structInfo->Link(this);
 	}
 
 	// classes
@@ -358,21 +461,25 @@ void SymbolDatabase::Link()
 		{
 			methodInfo->returnType = findTypeInfo(methodInfo->returnTypeRawName);
 
-			methodInfo->LinkParameters();
-			methodInfo->ExpandCAPIParameters();
+			methodInfo->LinkParameters(this);
 		}
 
-		classInfo->Link();
+		classInfo->Link(this);
+
+		// ドキュメントとしてみるときのために、コンストラクタを先頭に出すようにする
+		std::stable_sort(classInfo->declaredMethods.begin(), classInfo->declaredMethods.end(), [](MethodSymbol* lhs, MethodSymbol* rhs)
+		{
+			int lv = lhs->isConstructor ? 0 : 1;
+			int rv = rhs->isConstructor ? 0 : 1;
+			return lv < rv;
+		});
 	}
 
 	// enums
-	//for (auto enumInfo : enums)
-	//{
-	//	for (auto constantInfo : enumInfo->declaredConstants)
-	//	{
-	//		constantInfo->type = findTypeInfo(constantInfo->typeRawName);
-	//	}
-	//}
+	for (auto enumInfo : enums)
+	{
+		enumInfo->isEnum = true;
+	}
 
 	// delegates
 	for (auto classInfo : delegates)
@@ -381,17 +488,16 @@ void SymbolDatabase::Link()
 		{
 			methodInfo->returnType = findTypeInfo(methodInfo->returnTypeRawName);
 
-			methodInfo->LinkParameters();
-			methodInfo->ExpandCAPIParameters();
+			methodInfo->LinkParameters(this);
 		}
 
-		classInfo->Link();
+		classInfo->Link(this);
 	}
 }
 
-tr::Enumerator<MethodInfoPtr> SymbolDatabase::GetAllMethods()
+tr::Enumerator<Ref<MethodSymbol>> SymbolDatabase::GetAllMethods()
 {
-	List<MethodInfoPtr> dummy;
+	List<Ref<MethodSymbol>> dummy;
 	auto e = tr::MakeEnumerator::from(dummy);
 
 	for (auto& structInfo : structs)
@@ -406,11 +512,11 @@ tr::Enumerator<MethodInfoPtr> SymbolDatabase::GetAllMethods()
 	return e;
 }
 
-void SymbolDatabase::FindEnumTypeAndValue(const String& typeName, const String& memberName, TypeInfoPtr* outEnum, ConstantInfoPtr* outMember)
+void SymbolDatabase::FindEnumTypeAndValue(const String& typeFullName, const String& memberName, Ref<TypeSymbol>* outEnum, Ref<ConstantSymbol>* outMember)
 {
 	for (auto& enumInfo : enums)
 	{
-		if (enumInfo->name == typeName)
+		if (enumInfo->fullName() == typeFullName)
 		{
 			for (auto& constantInfo : enumInfo->declaredConstants)
 			{
@@ -424,12 +530,12 @@ void SymbolDatabase::FindEnumTypeAndValue(const String& typeName, const String& 
 		}
 	}
 
-	LN_THROW(0, InvalidOperationException, "Undefined enum: %s::%s", typeName.c_str(), memberName.c_str());
+	LN_ENSURE(0, "Undefined enum: %s::%s", typeFullName.c_str(), memberName.c_str());
 }
 
-ConstantInfoPtr SymbolDatabase::CreateConstantFromLiteralString(const String& valueStr)
+Ref<ConstantSymbol> SymbolDatabase::CreateConstantFromLiteralString(const String& valueStr)
 {
-	auto info = std::make_shared<ConstantInfo>();
+	auto info = Ref<ConstantSymbol>::makeRef();
 	if (valueStr == "true")
 	{
 		info->type = PredefinedTypes::boolType;
@@ -461,64 +567,77 @@ ConstantInfoPtr SymbolDatabase::CreateConstantFromLiteralString(const String& va
 
 void SymbolDatabase::InitializePredefineds()
 {
-	predefineds.add(std::make_shared<TypeInfo>(_T("void")));
+	predefineds.add(Ref<TypeSymbol>::makeRef(_T("void")));
 	predefineds.getLast()->isVoid = true;
 	PredefinedTypes::voidType = predefineds.getLast();
 
-	predefineds.add(std::make_shared<TypeInfo>(_T("nullptr")));
+	predefineds.add(Ref<TypeSymbol>::makeRef(_T("nullptr")));
 	predefineds.getLast()->isVoid = true;
 	PredefinedTypes::nullptrType = predefineds.getLast();
 
-	predefineds.add(std::make_shared<TypeInfo>(_T("bool")));
+	predefineds.add(Ref<TypeSymbol>::makeRef(_T("bool")));
 	predefineds.getLast()->isPrimitive = true;
 	PredefinedTypes::boolType = predefineds.getLast();
 
-	predefineds.add(std::make_shared<TypeInfo>(_T("int")));
+	predefineds.add(Ref<TypeSymbol>::makeRef(_T("int")));
 	predefineds.getLast()->isPrimitive = true;
 	PredefinedTypes::intType = predefineds.getLast();
 
-	predefineds.add(std::make_shared<TypeInfo>(_T("uint32_t")));
+	predefineds.add(Ref<TypeSymbol>::makeRef(_T("int16_t")));
+	predefineds.getLast()->isPrimitive = true;
+	PredefinedTypes::int16Type = predefineds.getLast();
+
+	predefineds.add(Ref<TypeSymbol>::makeRef(_T("uint32_t")));
 	predefineds.getLast()->isPrimitive = true;
 	PredefinedTypes::uint32Type = predefineds.getLast();
 
-	predefineds.add(std::make_shared<TypeInfo>(_T("float")));
+	predefineds.add(Ref<TypeSymbol>::makeRef(_T("float")));
 	predefineds.getLast()->isPrimitive = true;
 	PredefinedTypes::floatType = predefineds.getLast();
 
-	predefineds.add(std::make_shared<TypeInfo>(_T("String")));
+	predefineds.add(Ref<TypeSymbol>::makeRef(_T("ln::String")));
 	predefineds.getLast()->isPrimitive = true;
 	PredefinedTypes::stringType = predefineds.getLast();
 
-	predefineds.add(std::make_shared<TypeInfo>(_T("Object")));
+	predefineds.add(Ref<TypeSymbol>::makeRef(_T("ln::Object")));
 	PredefinedTypes::objectType = predefineds.getLast();
 
-	predefineds.add(std::make_shared<TypeInfo>(_T("EventConnection")));
+	predefineds.add(Ref<TypeSymbol>::makeRef(_T("ln::EventConnection")));
 	PredefinedTypes::EventConnectionType = predefineds.getLast();
 }
 
-TypeInfoPtr SymbolDatabase::findTypeInfo(StringRef typeName)
+// typeFullName : const や &, * は除かれていること
+Ref<TypeSymbol> SymbolDatabase::findTypeInfo(StringRef typeFullName)
 {
-	TypeInfoPtr* type;
+	Ref<TypeSymbol>* type;
 	
-	type = predefineds.find([typeName](TypeInfoPtr type) { return type->name == typeName; });
+	type = predefineds.find([typeFullName](Ref<TypeSymbol> type) { return type->fullName() == typeFullName; });
 	if (type != nullptr) return *type;
 
-	type = structs.find([typeName](TypeInfoPtr type) { return type->name == typeName; });
+	type = structs.find([typeFullName](Ref<TypeSymbol> type) { return type->fullName() == typeFullName; });
 	if (type != nullptr) return *type;
 
-	type = classes.find([typeName](TypeInfoPtr type) { return type->name == typeName; });
+	type = classes.find([typeFullName](Ref<TypeSymbol> type) { return type->fullName() == typeFullName; });
 	if (type != nullptr) return *type;
 
-	type = enums.find([typeName](TypeInfoPtr type) { return type->name == typeName; });
+	type = enums.find([typeFullName](Ref<TypeSymbol> type) { return type->fullName() == typeFullName; });
 	if (type != nullptr) return *type;
 
-	type = delegates.find([typeName](TypeInfoPtr type) { return type->name == typeName; });
+	type = delegates.find([typeFullName](Ref<TypeSymbol> type) { return type->fullName() == typeFullName; });
 	if (type != nullptr)
 		return *type;
 
-	if (typeName == _T("StringRef")) return PredefinedTypes::stringType;
-	if (typeName == _T("EventConnection")) return PredefinedTypes::EventConnectionType;
+	// aliases
+	if (typeFullName == _T("short")) return PredefinedTypes::int16Type;
+	if (typeFullName == _T("ln::StringRef")) return PredefinedTypes::stringType;
+	if (typeFullName == _T("ln::EventConnection")) return PredefinedTypes::EventConnectionType;
 
-	LN_THROW(0, InvalidOperationException, "Undefined type: %s", typeName.toString().c_str());
+	LN_ENSURE(0, _T("Undefined type: %s"), String(typeFullName).c_str());
 	return nullptr;
 }
+
+void SymbolDatabase::verify(DiagManager* diag)
+{
+}
+
+

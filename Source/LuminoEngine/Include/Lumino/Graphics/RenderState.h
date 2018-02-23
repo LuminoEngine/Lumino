@@ -47,7 +47,7 @@ enum FillMode
 };
 
 /// 比較関数の定数
-LN_ENUM(CompareFunc)
+enum class CompareFunc
 {
 	Never = 0,					///< 常に失敗します。
 	Less,						///< (新しいピクセル値 < 現在のピクセル値) 新しいピクセル値が、現在のピクセル値未満の場合に、新しいピクセル値を採用します。
@@ -58,15 +58,13 @@ LN_ENUM(CompareFunc)
 	NotEqual,					///< (新しいピクセル値 != 現在のピクセル値) 新しいピクセル値が、現在のピクセル値と等しくない場合に、新しいピクセル値を採用します。
 	Always,						///< 常に成功します。
 };
-LN_ENUM_DECLARE(CompareFunc);
 
 /// ステンシルテストの結果に応じたステンシル処理方法です。
-LN_ENUM(StencilOp)
+enum class StencilOp
 {
 	Keep = 0,					///< 既存のステンシル データを保持します。(何もしません)
 	replace,					///< ステンシルデータをステンシル参照値に設定します。
 };
-LN_ENUM_DECLARE(StencilOp);
 
 /** 合成方法 */
 enum class BlendMode

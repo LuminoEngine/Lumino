@@ -106,7 +106,7 @@
 #define LN_USTRING
 
 //#define LN_USTRING16
-//#define LN_USTRING16_FUZZY_CONVERSION
+#define LN_STRING_FUZZY_CONVERSION
 
 #ifdef LN_USTRING
 
@@ -243,7 +243,7 @@ using Char = wchar_t;
 // Binding / Refrection
 #define LN_CLASS(...)
 #define LN_STRUCT(...)
-#define LN_ENUM_(...)
+#define LN_ENUM(...)
 #define LN_FIELD(...)
 #define LN_METHOD(...)
 #define LN_DELEGATE(...)

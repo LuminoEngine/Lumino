@@ -1,7 +1,7 @@
 ﻿
 #pragma once
-#include <Lumino/Reflection/ReflectionObject.h>
 #include "../Common.h"
+#include <Lumino/Reflection/ReflectionObject.h>
 
 LN_NAMESPACE_BEGIN
 class InputController;

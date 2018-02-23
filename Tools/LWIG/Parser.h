@@ -1,52 +1,43 @@
 
 #pragma once
-#include <memory>
-#include <Fluorite/AnalyzerContext.h>
-#include <Fluorite/ParserCombinators.h>
-#include "SymbolDatabase.h"
+#include <unordered_map>
 
-namespace fl { class TokenList; }
+class SymbolDatabase;
+class DocumentSymbol;
+class MetadataSymbol;
+class DiagManager;
 
-/** */
 class HeaderParser
 {
 public:
-	using TokenItr = fl::combinators::Iterator;
-
-	HeaderParser(SymbolDatabase* database);
-	void ParseFiles(const List<PathName>& pathes);
-	
-private:
-	struct Decl
+	struct AttrMacro
 	{
-		flString	type;
-		TokenItr	begin;
-		TokenItr	end;
-		List<Decl>	decls;
+		unsigned offset = 0;
+		std::string name;
+		std::string args;
+		bool linked = false;
 	};
 
-	void ParseFile(const PathName& path);
-	TokenItr ParseMetadataDecl(TokenItr begin, TokenItr end);
-	void ParseStructDecl(const Decl& decl);
-	void ParseFieldDecl(const Decl& decl, TypeInfoPtr parent);
-	void ParseMethodDecl(const Decl& decl, TypeInfoPtr parent);
-	void ParseParamListDecl(TokenItr begin, TokenItr end, MethodInfoPtr parent);
-	void ParseParamDecl(TokenItr begin, TokenItr end, MethodInfoPtr parent, bool isDelegate);
-	void ParseParamType(TokenItr begin, TokenItr end, String* outName, int* outPointerLevel, bool* outHasConst, bool* outHasVirtual);
-	void ParseClassDecl(const Decl& decl);
-	void ParseEnumDecl(const Decl& decl);
-	void ParseEnumMemberDecl(TokenItr begin, TokenItr end, TypeInfoPtr parent);
-	void ParseDelegateDecl(const Decl& decl);
-	void ParseDocument(const Decl& decl);
-	void ParseAccessLevel(const Decl& decl);
+	std::vector<AttrMacro>	lnAttrMacros;		// <ファイル先頭からのオフセット, 属性情報>
 
-	DocumentInfoPtr MoveLastDocument();
-	MetadataInfoPtr MoveLastMetadata();
 
-	SymbolDatabase*	m_database;
-	DocumentInfoPtr	m_lastDocument;
-	MetadataInfoPtr	m_lastMetadata;
-	AccessLevel		m_currentAccessLevel;
-	int				m_currentEnumValue;
+	void addIncludePath(const Path& path) { m_includePathes.add(path); }
+
+	int parse(const Path& filePath, ::SymbolDatabase* db, DiagManager* diag);
+	AttrMacro* findUnlinkedAttrMacro(unsigned offset);
+
+	::SymbolDatabase* getDB() const { return m_db; }
+	DiagManager* diag() const { return m_diag; }
+
+
+
+	static Ref<DocumentSymbol> parseDocument(const std::string& comment);
+	static Ref<MetadataSymbol> parseMetadata(std::string name, const std::string& args);
+
+private:
+	::SymbolDatabase*	m_db;
+	List<Path>	m_includePathes;
+	DiagManager* m_diag;
 };
+
 

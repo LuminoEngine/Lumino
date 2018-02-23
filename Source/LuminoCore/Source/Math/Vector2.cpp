@@ -52,18 +52,6 @@ bool Vector2::isNaNOrInf() const
 }
 
 //------------------------------------------------------------------------------
-void Vector2::print(const char* format, FILE* stream) const
-{
-	if (!format) {
-		format = "%f, %f\n";
-	}
-	if (!stream) {
-		stream = stdout;
-	}
-	fprintf(stream, format, x, y);
-}
-
-//------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------
 Vector2 Vector2::normalize(const Vector2& vec)

@@ -14,28 +14,27 @@
 #include <Lumino/Reflection/Property.h>
 
 LN_NAMESPACE_BEGIN
-namespace tr
-{
+
 
 //==============================================================================
 // ReflectionHelper
 //==============================================================================
 
 //==============================================================================
-// ReflectionObject
+// Object
 //==============================================================================
-ln::tr::TypeInfo				ReflectionObject::lnref_typeInfo(_LT("ReflectionObject"), nullptr, nullptr, nullptr, nullptr, {});
-ln::tr::TypeInfo*				ReflectionObject::lnref_GetThisTypeInfo() const { return &lnref_typeInfo; }
+ln::tr::TypeInfo				Object::lnref_typeInfo(_LT("ReflectionObject"), nullptr, nullptr, nullptr, nullptr, {});
+ln::tr::TypeInfo*				Object::lnref_GetThisTypeInfo() const { return &lnref_typeInfo; }
 
 //------------------------------------------------------------------------------
-ReflectionObject::ReflectionObject()
+Object::Object()
 	: m_userData(nullptr)
 	, m_weakRefInfo(nullptr)
 {
 }
 
 //------------------------------------------------------------------------------
-ReflectionObject::~ReflectionObject()
+Object::~Object()
 {
 	MutexScopedLock lock(m_weakRefInfoMutex);
 	if (m_weakRefInfo != nullptr)
@@ -47,13 +46,13 @@ ReflectionObject::~ReflectionObject()
 }
 
 //------------------------------------------------------------------------------
-void ReflectionObject::raiseReflectionEvent(const ReflectionEventBase& ev, ReflectionEventArgs* args)
+void Object::raiseReflectionEvent(const ReflectionEventBase& ev, ReflectionEventArgs* args)
 {
 	ev.raise(args);
 }
 
 //------------------------------------------------------------------------------
-void ReflectionObject::onPropertyChanged(PropertyChangedEventArgs* e)
+void Object::onPropertyChanged(PropertyChangedEventArgs* e)
 {
 	// e->Property を持つクラスのコールバックを呼び出す
 	//e->changedProperty->NotifyPropertyChange(this, e);
@@ -61,7 +60,7 @@ void ReflectionObject::onPropertyChanged(PropertyChangedEventArgs* e)
 
 //------------------------------------------------------------------------------
 #ifdef LN_LEGACY_VARIANT_ENABLED
-void ReflectionObject::setPropertyValueInternal(const PropertyInfo* prop, const Variant& value, bool reset, PropertySetSource source)
+void Object::setPropertyValueInternal(const PropertyInfo* prop, const Variant& value, bool reset, PropertySetSource source)
 {
 	//if (prop->isStored())
 	//{
@@ -101,18 +100,19 @@ void ReflectionObject::setPropertyValueInternal(const PropertyInfo* prop, const 
 #endif
 
 //------------------------------------------------------------------------------
-detail::WeakRefInfo* ReflectionObject::requestWeakRefInfo()
+tr::detail::WeakRefInfo* Object::requestWeakRefInfo()
 {
 	MutexScopedLock lock(m_weakRefInfoMutex);
 	if (m_weakRefInfo == nullptr)
 	{
-		m_weakRefInfo = LN_NEW detail::WeakRefInfo();
+		m_weakRefInfo = LN_NEW tr::detail::WeakRefInfo();
 		m_weakRefInfo->owner = this;
 	}
 	return m_weakRefInfo;
 }
 
-
+namespace tr
+{
 //==============================================================================
 // ReflectionArrayObject
 //==============================================================================

@@ -214,7 +214,7 @@ void Assets::addAssetsDirectory(const StringRef& directoryPath)
 }
 
 //------------------------------------------------------------------------------
-Texture2DPtr Assets::loadTexture(const StringRef& filePath)
+Ref<Texture2D> Assets::loadTexture(const StringRef& filePath)
 {
 	return AssetsManager::getInstance()->loadTexture(filePath);
 }

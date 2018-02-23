@@ -10,7 +10,7 @@ LN_NAMESPACE_BEGIN
 namespace tr {
 
 /** ノードの種類 */
-LN_ENUM(XmlNodeType)
+enum class XmlNodeType
 {
 	/** Read メソッドが呼び出されなかった場合に、XmlReader によって返されます。*/
 	None = 0,
@@ -54,8 +54,8 @@ LN_ENUM(XmlNodeType)
 	/** XML 宣言 (例 : <?xml version='1.0'?>) */
 	XmlDeclaration,
 };
-LN_ENUM_REFLECTION(XmlNodeType, None, Element, EndElement, Attribute, Comment, Whitespace, Text, CDATA, EntityReference, DocumentType, Entity, Notation, ProcessingInstruction, XmlDeclaration);
-LN_ENUM_DECLARE(XmlNodeType);
+//LN_ENUM_REFLECTION(XmlNodeType, None, Element, EndElement, Attribute, Comment, Whitespace, Text, CDATA, EntityReference, DocumentType, Entity, Notation, ProcessingInstruction, XmlDeclaration);
+//LN_ENUM_DECLARE(XmlNodeType);
 
 
 /**
@@ -282,6 +282,12 @@ public:
 
 private:
 	PathName	m_filePath;
+};
+
+class XmlHelper
+{
+public:
+	static String getNodeTypeString(XmlNodeType nodeType);
 };
 
 } // namespace tr

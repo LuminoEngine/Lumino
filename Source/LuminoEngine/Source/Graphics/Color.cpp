@@ -514,7 +514,14 @@ Color Color::lerp(const Color& color1, const Color& color2, float t)
 
 const ToneF ToneF::Zero(0, 0, 0, 0);
 
-//------------------------------------------------------------------------------
+ToneF::ToneF(const Vector4& vec)
+{
+	r = vec.x;
+	g = vec.y;
+	b = vec.z;
+	gray = vec.w;
+}
+
 void ToneF::addClamp(const ToneF& tone)
 {
 	r = Math::clamp(r + tone.r, 0.0f, 1.0f);

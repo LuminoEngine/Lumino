@@ -1,30 +1,27 @@
 
 #pragma once
-#include "../OutputBuffer.h"
+#include "../Generator.h"
 class SymbolDatabase;
 
 /** CåæåÍÇÃópÇÃ API ÇèoóÕÇ∑ÇÈ */
 class WrapperIFGenerator
+	: public Generator
 {
 public:
-	void generate(SymbolDatabase* database);
+	WrapperIFGenerator();
+	void generate();
+
 
 private:
 	String GenerateOverrideCallerFuncPtrs();
-	String GenerateWrapperIFClasses();
 
-	StringA MakeInstanceParamName(TypeInfoPtr info);
-	StringA MakeMethods(TypeInfoPtr typeInfo);
-	StringA MakeMethod(TypeInfoPtr typeInfo, MethodInfoPtr methodInfo, bool virtualBase);
-	StringA MakeCApiParamTypeName(MethodInfoPtr methodInfo, ParameterInfoPtr paramInfo);
-	StringA MakeCppTypeName(TypeInfoPtr typeInfo);
-	String MakeDocumentComment(DocumentInfoPtr doc);
+	String MakeInstanceParamName(Ref<TypeSymbol> info);
+	//String MakeMethods(Ref<TypeSymbol> typeInfo);
+	String makeFuncHeader(Ref<MethodSymbol> methodInfo);
+	String makeFuncBody(Ref<TypeSymbol> typeInfo, Ref<MethodSymbol> methodInfo);
 
-	String MakeEventWrapperMemberVariableName(MethodInfoPtr connectMethod);
+	String MakeDocumentComment(Ref<DocumentSymbol> doc);
 
-	SymbolDatabase*	m_database;
 
-	OutputBuffer	m_eventWrapperConnectExps;
-	OutputBuffer	m_eventWrappers;
 };
 

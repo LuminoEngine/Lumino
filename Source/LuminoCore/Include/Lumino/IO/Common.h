@@ -128,20 +128,18 @@ enum ASyncIOState
 };
 
 /** プロセスの状態 */
-LN_ENUM(ProcessStatus)
+enum class ProcessStatus
 {
 	Running = 0,			/**< 実行中 */
 	Finished,				/**< 正常終了した */
 	Crashed,				/**< 異常終了した */
 };
-LN_ENUM_DECLARE(ProcessStatus);
 
 /** 特別なフォルダのパスを取得を取得する際のオプションです。*/
-LN_ENUM(SpecialFolderOption)
+enum class SpecialFolderOption
 {
 	None = 0,				/**< フォルダが存在しない場合空の文字列を返します。*/
 	Create,					/**< フォルダが存在しない場合は作成します。*/
 };
-LN_ENUM_DECLARE(SpecialFolderOption);
 
 LN_NAMESPACE_END

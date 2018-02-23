@@ -268,9 +268,10 @@ LN_NAMESPACE_END
 #include "../Base/StlHelper.h"
 
 LN_NAMESPACE_BEGIN
+class Object;
+
 namespace tr
 {
-class ReflectionObject;
 class ReflectionArrayObject;
 struct ReflectionStruct;
 
@@ -369,7 +370,7 @@ public:
 	{
 		using typeKind = ::ln::detail::StlHelper::first_enabled_t<
 			std::enable_if<std::is_base_of<ReflectionArrayObject, T>::value, detail::KindReflectionArrayObject>,
-			std::enable_if<std::is_base_of<ReflectionObject, T>::value, detail::KindReflectionObject>,
+			std::enable_if<std::is_base_of<Object, T>::value, detail::KindReflectionObject>,
 			std::false_type>;
 
 		static void setValue(Variant* variant, T* value)
@@ -391,7 +392,7 @@ public:
 	 * VisualC++ ではコレ相当のことを勝手にやってくれるが、GCC では自分で外さなければならない。
 	 *
 	 * ポインタ型用の AccessorSelectorHelper は必ず必要になる。
-	 * ReflectionObject と ReflectionArrayObject だけであればコンストラクタオーバーロードで解決できるが、
+	 * Object と ReflectionArrayObject だけであればコンストラクタオーバーロードで解決できるが、
 	 * それらの派生クラスのポインタを渡した場合はテンプレートコンストラクタの方が呼ばれる。
 	 * このときは特殊化しないとダメ。
 	 */
@@ -409,7 +410,7 @@ public:
 	//Variant(const String& value);
 	//Variant(const Enum& value) : Variant() { setEnumValue(value.GetValue()); }
 	////Variant(const ReflectionStruct& value) : Variant() { }
-	//Variant(ReflectionObject* value) : Variant() { setReflectionObject(value); }
+	//Variant(Object* value) : Variant() { setReflectionObject(value); }
 	//Variant(ReflectionArrayObject* value) : Variant() { setReflectionArrayObject(value); }
 
 	~Variant() { release(); }
@@ -507,8 +508,8 @@ private:
 	EnumValueType getEnumValue() const;
 	void setStruct(const void* value, size_t size, const std::type_info& typeInfo);
 	const void* getStruct() const;
-	void setReflectionObject(ReflectionObject* obj);
-	ReflectionObject* getReflectionObject() const;
+	void setReflectionObject(Object* obj);
+	Object* getReflectionObject() const;
 	void setReflectionArrayObject(ReflectionArrayObject* obj);
 	ReflectionArrayObject* getReflectionArrayObject() const;
 
@@ -526,7 +527,7 @@ private:
 	}
 
 	//void setValue(bool value) { SetBool(value); }
-	//void setValue(ReflectionObject* value) { setReflectionObject(value); }
+	//void setValue(Object* value) { setReflectionObject(value); }
 	//void setValue(ReflectionArrayObject* value) { setReflectionArrayObject(value); }
 
 	
@@ -552,7 +553,7 @@ private:
 	//		// KindReflectionArrayObject または KindReflectionObject のサブクラスであるかを確認する。
 	//		using typeKind = first_enabled_t<
 	//			std::enable_if<std::is_base_of<ReflectionArrayObject, T>::value, detail::KindReflectionArrayObject>,
-	//			std::enable_if<std::is_base_of<ReflectionObject, T>::value, detail::KindReflectionObject>,
+	//			std::enable_if<std::is_base_of<Object, T>::value, detail::KindReflectionObject>,
 	//			std::false_type>;
 	//		return AccessorSelector<T*, typeKind>::GetValue(&value);
 	//	}
@@ -594,7 +595,7 @@ private:
 		double					m_double;
 		ln::detail::GenericStringCore<Char>*	m_string;
 		EnumValueType			m_enum;
-		ReflectionObject*		m_object;
+		Object*		m_object;
 		ReflectionArrayObject*	m_arrayObject;
 		byte_t					m_struct[32];
 	};

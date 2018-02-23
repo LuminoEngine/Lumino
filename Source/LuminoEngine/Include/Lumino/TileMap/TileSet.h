@@ -12,7 +12,7 @@ typedef Ref<TileSet> TileSetPtr;
 	@brief	
 */
 class TileSet
-	: public tr::ReflectionObject
+	: public Object
 {
 	LN_OBJECT;
 public:
@@ -55,7 +55,7 @@ private:
 	@brief	
 */
 //class RGSS1TileSet
-//	: public tr::ReflectionObject
+//	: public Object
 //{
 //	LN_OBJECT;
 //public:

@@ -8,7 +8,7 @@ LN_NAMESPACE_BEGIN
 	@brief	再生中の視覚効果を操作します。
 */
 class VisualEffectInstance
-	: public tr::ReflectionObject
+	: public Object
 {
 	LN_OBJECT;
 public:

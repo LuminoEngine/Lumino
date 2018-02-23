@@ -8,7 +8,7 @@ protected:
 	virtual void TearDown() {}
 };
 
-class WeakRefTest1 : public tr::ReflectionObject
+class WeakRefTest1 : public Object
 {
 public:
 	WeakRefTest1() { count++; }

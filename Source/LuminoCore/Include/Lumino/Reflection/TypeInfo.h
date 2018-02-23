@@ -5,16 +5,17 @@
 #include "../Base/String.h"
 
 LN_NAMESPACE_BEGIN
+class Object;
+
 namespace tr
 {
 class TypeInfo;
-class ReflectionObject;
 class PropertyInfo;
 typedef uint32_t LocalValueHavingFlags;
 
 namespace detail
 {
-	using ObjectFactory = Ref<ReflectionObject>(*)();
+	using ObjectFactory = Ref<Object>(*)();
 }
 
 	/**
@@ -23,7 +24,7 @@ namespace detail
 class TypeInfo
 {
 public:
-	typedef LocalValueHavingFlags* (*HasLocalValueFlagsGetter)(ReflectionObject* _this);
+	typedef LocalValueHavingFlags* (*HasLocalValueFlagsGetter)(Object* _this);
 	typedef void (*BindingTypeInfoSetter)(void* data);
 	typedef void* (*BindingTypeInfoGetter)();
 	typedef uint8_t RevisionCount;
@@ -46,7 +47,7 @@ public:
 	/**
 		@brief	指定したオブジェクトの型情報を取得します。
 	*/
-	static TypeInfo* getTypeInfo(const ReflectionObject* obj);
+	static TypeInfo* getTypeInfo(const Object* obj);
 
 	/**
 		@brief	型引数に指定したクラス型の型情報を取得します。
@@ -97,17 +98,17 @@ public:
 
 
 	void setBindingTypeInfo(void* data);
-	static void* getBindingTypeInfo(const ReflectionObject* obj);
+	static void* getBindingTypeInfo(const Object* obj);
 
 	bool operator == (const TypeInfo& info) const { return m_name == info.m_name; }
 	bool operator < (const TypeInfo& info) const { return m_name < info.m_name; }
 
 	intptr_t getInternalGroup() const { return m_internalGroup; }
 
-	void initializeProperties(ReflectionObject* obj);
+	void initializeProperties(Object* obj);
 
 
-	Ref<ReflectionObject> createInstance();
+	Ref<Object> createInstance();
 	int getSerializeClassVersion() const { return m_serializeClassVersion; }
 
 protected:

@@ -40,7 +40,7 @@ LN_ENUM_FLAGS(AlphaNumTypeFlags)
 LN_ENUM_FLAGS_DECLARE(AlphaNumTypeFlags);
 
 /** 基本的なトークン種別 (言語間共通) */
-LN_ENUM(TokenGroup)
+enum class TokenGroup
 {
 	Unknown = 0,			/**< 共通種別としては分類されない */
 	SpaceSequence,			/**< 空白並び (Cの EscapeNewLine も含む) */
@@ -55,7 +55,6 @@ LN_ENUM(TokenGroup)
 	TextTokens,				/**< プリプロセッサなどで使われるメッセージ文字列 */
 	Eof,					/**< バッファ EOF */
 };
-LN_ENUM_DECLARE(TokenGroup);
 
 
 enum class ResultState

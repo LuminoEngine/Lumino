@@ -127,6 +127,7 @@ public:
 
 #ifndef LN_DOXYGEN
 
+#if 0
 /**
 	@brief	拡張 enum 型を定義します。
 	@see	Doc_EnumExtension_1
@@ -171,6 +172,7 @@ public: \
 	String toString() const { return GetEnumParser().toString(m_value); } \
 	static enumName parse(const Char* str) { return GetEnumParser().parse(str); }; \
 	static bool TryParse(const Char* str, enumName* outValue) { return GetEnumParser().TryParse(str, (outValue) ? (int*)&outValue->m_value : NULL); }
+#endif
 
 /**
 	@brief	ビットフィールドとしてフラグの組み合わせを表す 拡張 enum 型を定義します。

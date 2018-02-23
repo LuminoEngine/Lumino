@@ -69,15 +69,15 @@ bool Vector3::isNaNOrInf() const
 }
 
 //------------------------------------------------------------------------------
-void Vector3::print(const char* format, FILE* stream) const
+// static
+//------------------------------------------------------------------------------
+Vector3 Vector3::normalize(const Vector3& vec)
 {
-	if (!format) {
-		format = "%f, %f, %f\n";
-	}
-	if (!stream) {
-		stream = stdout;
-	}
-	fprintf(stream, format, x, y, z);
+	float t = 1.0f / Asm::sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
+	return Vector3(
+		vec.x * t,
+		vec.y * t,
+		vec.z * t);
 }
 
 //------------------------------------------------------------------------------
@@ -90,18 +90,6 @@ Vector3 Vector3::normalize(float x, float y, float z)
 		x * t,
 		y * t,
 		z * t);
-}
-
-//------------------------------------------------------------------------------
-// static
-//------------------------------------------------------------------------------
-Vector3 Vector3::normalize(const Vector3& vec)
-{
-	float t = 1.0f / Asm::sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
-	return Vector3(
-		vec.x * t,
-		vec.y * t,
-		vec.z * t);
 }
 
 //------------------------------------------------------------------------------

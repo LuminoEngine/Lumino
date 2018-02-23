@@ -2,7 +2,6 @@
 #ifndef LUMINO_MATH_VECTOR2_H
 #define LUMINO_MATH_VECTOR2_H
 
-#include <stdio.h>
 #include "Common.h"
 
 LN_NAMESPACE_BEGIN
@@ -12,12 +11,18 @@ struct Matrix;
 /**
 	@brief	2次元のベクトルを定義します。
 */
+LN_STRUCT()
 struct LUMINO_EXPORT Vector2
 {
 public:
+	
+	/** X 要素 */
+	LN_FIELD()
+	float	x;
 
-	float	x;		///< X 要素
-	float	y;		///< Y 要素
+	/** Y 要素 */
+	LN_FIELD()
+	float	y;
 
 public:
 
@@ -72,14 +77,6 @@ public:
 		@brief		要素のいずれかが NaN または Inf かを判別します。
 	*/
 	bool isNaNOrInf() const;
-
-	/**
-		@brief		デバッグ用に文字列を標準出力します。
-		@param[in]	format	: 書式指定文字列
-		@param[in]	stream	: 出力先ストリーム
-		@details	format が NULL の場合、書式は "%f, %f\n" を使用します。
-	*/
-	void print(const char* format = NULL, FILE* stream = NULL) const;
 
 public:
 

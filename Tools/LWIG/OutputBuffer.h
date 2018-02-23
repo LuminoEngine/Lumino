@@ -1,5 +1,6 @@
 
 #pragma once
+#include <Lumino/Base/StringBuilder.h>
 
 /** コード出力用バッファ */
 class OutputBuffer
@@ -73,7 +74,8 @@ private:
 		Text,
 	};
 
-	StringBuilder	m_buffer;
+	//detail::SimpleStringBuilder<Char>	m_buffer;
+	String			m_buffer;
 	int				m_indentLevel;
 	String			m_indent;
 	String			m_newLineCode;

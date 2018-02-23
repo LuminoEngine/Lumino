@@ -11,7 +11,7 @@ namespace tr
 	@brief		
 */
 class ReflectionEventArgs
-	: public tr::ReflectionObject
+	: public Object
 {
 	LN_OBJECT;
 public:

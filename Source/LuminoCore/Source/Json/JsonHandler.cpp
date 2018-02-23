@@ -55,14 +55,14 @@ JsonDOMHandler::~JsonDOMHandler()
 //------------------------------------------------------------------------------
 bool JsonDOMHandler::onNull()
 {
-	m_writer.writeUInt8(JsonType::Null);
+	m_writer.writeUInt8((uint8_t)JsonType::Null);
 	return true;
 }
 
 //------------------------------------------------------------------------------
 bool JsonDOMHandler::onBool(bool value)
 {
-	m_writer.writeUInt8(JsonType::Bool);
+	m_writer.writeUInt8((uint8_t)JsonType::Bool);
 	m_writer.writeUInt8(value ? 1 : 0);
 	return true;
 }
@@ -70,7 +70,7 @@ bool JsonDOMHandler::onBool(bool value)
 //------------------------------------------------------------------------------
 bool JsonDOMHandler::onDouble(double value)
 {
-	m_writer.writeUInt8(JsonType::Double);
+	m_writer.writeUInt8((uint8_t)JsonType::Double);
 	m_writer.writeDouble(value);
 	return true;
 }
@@ -78,7 +78,7 @@ bool JsonDOMHandler::onDouble(double value)
 //------------------------------------------------------------------------------
 bool JsonDOMHandler::onString(const Char* str, int len)
 {
-	m_writer.writeUInt8(JsonType::String);
+	m_writer.writeUInt8((uint8_t)JsonType::String);
 	m_writer.writeInt32(len);
 	m_writer.write(str, sizeof(Char) * len);
 	return true;
@@ -87,7 +87,7 @@ bool JsonDOMHandler::onString(const Char* str, int len)
 //------------------------------------------------------------------------------
 bool JsonDOMHandler::onStartArray()
 {
-	m_writer.writeUInt8(JsonType::Array);
+	m_writer.writeUInt8((uint8_t)JsonType::Array);
 	m_startIndexStack.push((size_t)m_writer.getPosition());	// 現在位置を Array の開始点として覚えておく
 	m_writer.writeUInt32(0);						// 要素数 (ダミー)
 	return true;
@@ -109,7 +109,7 @@ bool JsonDOMHandler::onEndArray(int elementCount)
 //------------------------------------------------------------------------------
 bool JsonDOMHandler::onStartObject()
 {
-	m_writer.writeUInt8(JsonType::Object);
+	m_writer.writeUInt8((uint8_t)JsonType::Object);
 	m_startIndexStack.push((size_t)m_writer.getPosition());	// 現在位置を Object の開始点として覚えておく
 	m_writer.writeUInt32(0);						// 要素数 (ダミー)
 	return true;
@@ -118,7 +118,7 @@ bool JsonDOMHandler::onStartObject()
 //------------------------------------------------------------------------------
 bool JsonDOMHandler::onKey(const Char* str, int len)
 {
-	m_writer.writeUInt8(0x80 | JsonType::String);		// キーであることを示すために最上位 bit を立てておく
+	m_writer.writeUInt8(0x80 | ((uint8_t)JsonType::String));		// キーであることを示すために最上位 bit を立てておく
 	m_writer.writeInt32(len);
 	m_writer.write(str, sizeof(Char) * len);
 	return true;
@@ -148,7 +148,7 @@ void JsonDOMHandler::build()
 //------------------------------------------------------------------------------
 void JsonDOMHandler::buildValue(BinaryReader* reader, JsonValue* v)
 {
-	uint8_t type = reader->readUInt8();
+	auto type = (JsonType)reader->readUInt8();
 	switch (type)
 	{
 	case JsonType::Null:
@@ -198,7 +198,7 @@ void JsonDOMHandler::buildMember(BinaryReader* reader, JsonMember* m)
 
 	// キー文字列
 	uint8_t type = reader->readUInt8();
-	assert(type == (0x80 | JsonType::String));	// 種別は必ず Key であるはず
+	assert(type == (0x80 | ((uint8_t)JsonType::String)));	// 種別は必ず Key であるはず
 
 	int len = reader->readInt32();
 	m->Name = String((Char*)m_valueRawData.getBuffer((size_t)m_valueRawData.getPosition()), len);	// 生メモリから文字列を生成

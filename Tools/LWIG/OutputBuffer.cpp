@@ -1,11 +1,14 @@
 
+#include "Generator.h"
 #include "OutputBuffer.h"
+
+const String Generator::NewLine = _T("\n");
 
 OutputBuffer::OutputBuffer()
 	: m_buffer()
 	, m_indentLevel(0)
 	, m_indent()
-	, m_newLineCode(_T("\r\n"))
+	, m_newLineCode(_T("\n"))
 	, m_state(State::LineHead)
 {
 }
@@ -56,7 +59,8 @@ void OutputBuffer::indent()
 
 String OutputBuffer::toString() const
 {
-	return m_buffer.toString();
+	//return m_buffer.toString();
+	return m_buffer;
 }
 
 void OutputBuffer::AppendInternal(const StringRef& str)

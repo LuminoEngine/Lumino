@@ -9,16 +9,14 @@
 #include "Notify.h"
 
 LN_NAMESPACE_BEGIN
-namespace tr
-{
 
 #define LN_TR_REFLECTION_TYPEINFO_DECLARE_COMMON(typeInfo) \
 	private: \
 		template<typename T> friend class ln::Ref; \
 		friend class ln::tr::ReflectionHelper; \
-		friend class ln::tr::ReflectionObject; \
+		friend class ln::Object; \
 		static typeInfo							lnref_typeInfo; \
-		ln::tr::LocalValueHavingFlags			lnref_localValueHavingFlags; \
+		ln::LocalValueHavingFlags				lnref_localValueHavingFlags; \
 		virtual typeInfo*						lnref_GetThisTypeInfo() const override; \
 		static void*							lnref_bindingTypeInfo; \
 		inline void								initializeProperties() { lnref_typeInfo.initializeProperties(this); }
@@ -37,16 +35,22 @@ namespace tr
 #define LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(classType, baseClassType, ...) \
 	LN_TR_REFLECTION_TYPEINFO_IMPLEMENT_COMMON(ln::tr::TypeInfo, classType, baseClassType, __VA_ARGS__)
 
+namespace tr
+{
 namespace detail { class WeakRefInfo; }
-typedef uint32_t LocalValueHavingFlags;
 class PropertyInfo;
+}
 
-
+typedef uint32_t LocalValueHavingFlags;
+using TypeInfo = tr::TypeInfo;
+using ReflectionEventBase = tr::ReflectionEventBase;
+using ReflectionEventArgs = tr::ReflectionEventArgs;
+using PropertyChangedEventArgs = tr::PropertyChangedEventArgs;
 
 /**
 	@brief	Lumino が提供するオブジェクトのベースクラスです。
 */
-class ReflectionObject
+class Object
 	: public RefObject
 {
 private:
@@ -59,8 +63,8 @@ private:
     static void*					lnref_bindingTypeInfo;
     
 public:
-	ReflectionObject();
-	virtual ~ReflectionObject();
+	Object();
+	virtual ~Object();
 	void initialize() {}
 
 	void setUserData(void* data) { m_userData = data; }
@@ -68,12 +72,12 @@ public:
 
 
 protected:
-	friend class PropertyInfo;
+	friend class tr::PropertyInfo;
 	void raiseReflectionEvent(const ReflectionEventBase& ev, ReflectionEventArgs* args);
 	virtual void onPropertyChanged(PropertyChangedEventArgs* e);
 
 	template<typename... TArgs>
-	void raiseDelegateEvent(DelegateEvent<TArgs...>& ev, TArgs... args) { ev.raise(args...); }
+	void raiseDelegateEvent(tr::DelegateEvent<TArgs...>& ev, TArgs... args) { ev.raise(args...); }
 
 private:
 #ifdef LN_LEGACY_VARIANT_ENABLED
@@ -82,10 +86,10 @@ private:
 
 	void*	m_userData;
 
-	friend class ReflectionHelper;
-	detail::WeakRefInfo* requestWeakRefInfo();
+	friend class tr::ReflectionHelper;
+	tr::detail::WeakRefInfo* requestWeakRefInfo();
 
-	detail::WeakRefInfo*	m_weakRefInfo;
+	tr::detail::WeakRefInfo*	m_weakRefInfo;
 	Mutex					m_weakRefInfoMutex;
 
 
@@ -100,12 +104,13 @@ LN_INTERNAL_ACCESS:
 	}
 };
 	
-
+namespace tr
+{
 class ReflectionHelper
 {
 public:
 	template<class T>
-	static ln::tr::LocalValueHavingFlags* GetLocalValueHavingFlags(ReflectionObject* thisObj)
+	static ln::tr::LocalValueHavingFlags* GetLocalValueHavingFlags(Object* thisObj)
 	{
 		return &static_cast<T*>(thisObj)->lnref_localValueHavingFlags;
 	}
@@ -166,7 +171,7 @@ public:
 namespace detail {
 	
 	
-	// 1つの ReflectionObject に対して1つ作られる
+	// 1つの Object に対して1つ作られる
 	class WeakRefInfo final
 	{
 	public:
@@ -294,9 +299,6 @@ inline TypeInfo* TypeInfo::getTypeInfo()
 }
 
 } // namespace tr
-
-typedef tr::ReflectionObject Object;
-
 
 template<class T, typename... TArgs>
 Ref<T> newObject(TArgs&&... args)

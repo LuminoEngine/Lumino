@@ -1,784 +1,693 @@
-﻿
+﻿/*
+	clang -Xclang -ast-dump Test.cpp
+*/
+#include <memory>
+#include "SymbolDatabase.h"
 #include "Parser.h"
-#include <Lumino/Base/Enumerable.h>
-using namespace fl;
+#include "Diagnostics.h"
+
+#ifdef _MSC_VER     // start of disabling MSVC warnings
+#pragma warning(push)
+#pragma warning(disable:4146 4180 4244 4258 4267 4291 4345 4351 4355 4456 4457 4458 4459 4503 4624 4722 4800 4996)
+#endif
+#include <iostream>
+#include "clang/AST/AST.h"
+#include "clang/AST/ASTContext.h"
+#include "clang/AST/ASTConsumer.h"
+#include "clang/AST/DeclVisitor.h"
+#include "clang/Frontend/ASTConsumers.h"
+#include "clang/Frontend/FrontendActions.h"
+#include "clang/Frontend/CompilerInstance.h"
+#include "clang/Lex/Preprocessor.h"
+#include "clang/Lex/MacroArgs.h"
+#include "clang/Tooling/CommonOptionsParser.h"
+#include "clang/Tooling/Tooling.h"
+
+#include "clang/AST/TypeLoc.h"
+#include "clang/AST/AST.h"
+#include "clang/AST/ASTConsumer.h"
+#include "clang/AST/RecursiveASTVisitor.h"
+#include "clang/Frontend/ASTConsumers.h"
+#include "clang/Frontend/FrontendActions.h"
+#include "clang/Frontend/CompilerInstance.h"
+#include "clang/Tooling/CommonOptionsParser.h"
+#include "clang/Tooling/Tooling.h"
+#include "clang/Rewrite/Core/Rewriter.h"
+#include "llvm/Support/raw_ostream.h"
+#include "clang/AST/Comment.h"
+#include "clang/AST/CommentVisitor.h"
+
+#ifdef _MSC_VER     // end of disabling MSVC warnings
+#pragma warning(pop)
+#endif
 
 
+class SymbolDatabase;
 
-HeaderParser::HeaderParser(SymbolDatabase* database)
-	: m_database(database)
+namespace local
 {
-}
+using namespace clang;
+using namespace clang::tooling;
+using namespace llvm;
+using namespace clang;
+using namespace clang::driver;
+using namespace clang::tooling;
+using namespace clang::comments;
 
-void HeaderParser::ParseFiles(const List<PathName>& pathes)
+class LWIGVisitor : public DeclVisitor<LWIGVisitor, bool>
 {
-	for (auto& path : pathes)
+private:
+	CompilerInstance * m_ci;
+	const SourceManager& m_sm;
+	::HeaderParser* m_parser;
+	//Ref<DocumentSymbol> m_lastDocument;
+	::TypeSymbol* m_currentRecord;
+
+public:
+	LWIGVisitor(CompilerInstance* CI, ::HeaderParser* parser)
+		: m_ci(CI)
+		, m_sm(CI->getASTContext().getSourceManager())
+		, m_parser(parser)
 	{
-		ParseFile(path);
 	}
-}
 
-void HeaderParser::ParseFile(const PathName& path)
-{
-	/*
-	キーワードと { } ; に着目して切り分けるパーサ。
-	※ LN_CLASS() の ( ) もパースできそうだが、ダメ。その外側の全ての ( ) も考慮する必要がある。それはもっと後段で。
-	*/
-	struct DeclsParser : public combinators::ParseLib<DeclsParser>
+	std::vector<std::string> getAnnotation(Decl* decl)
 	{
-		static ParserResult<Decl> Parse_EmptyDecl(ParserContext input)
+		std::vector<std::string> attrs;
+		if (decl->hasAttrs())
 		{
-			LN_PARSE_RESULT(r1, TokenChar(';') || TokenChar(','));
-			return input.Success(Decl{ _T("EmptyDecl"), r1.GetMatchBegin(), r1.GetMatchEnd() });
-		}
-
-		static ParserResult<Decl> Parse_EmptyDecl2(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, TokenChar(';'));
-			return input.Success(Decl{ _T("EmptyDecl"), r1.GetMatchBegin(), r1.GetMatchEnd() });
-		}
-
-		static ParserResult<Decl> Parse_LocalBlock(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, TokenChar('{'));
-			LN_PARSE_RESULT(r2, Many(Parser<Decl>(Parse_EmptyDecl) || Parser<Decl>(Parse_LocalBlock) || Parser<Decl>(Parse_DocumentComment) || Parser<Decl>(Parse_AccessLevel)));
-			LN_PARSE_RESULT(r3, TokenChar('}'));
-			return input.Success(Decl{ _T("LocalBlock"), r1.GetMatchBegin(), r3.GetMatchEnd() });
-		}
-		
-		static ParserResult<Decl> Parse_LN_ENUM(ParserContext input)	// ',' が他のパーサの邪魔をするので、ここでは　{～} だけを取り出す
-		{
-			LN_PARSE_RESULT(r1, TokenString("LN_ENUM_"));
-			LN_PARSE_RESULT(r2, UntilMore(TokenChar('{')));
-			LN_PARSE_RESULT(r3, Many(Parser<Decl>(Parse_EnumMember) || Parser<Decl>(Parse_DocumentComment)));
-			LN_PARSE_RESULT(r4, TokenChar('}'));
-			return input.Success(Decl{ _T("enum"), r1.GetMatchBegin(), r4.GetMatchEnd(), r3.getValue() });
-		}
-		
-		static ParserResult<Decl> Parse_EnumMember(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, TokenChar(','));
-			return input.Success(Decl{ _T("enum_member"), r1.GetMatchBegin(), r1.GetMatchEnd() });
-		}
-
-		static ParserResult<Decl> Parse_LN_STRUCT(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, TokenString("LN_STRUCT"));
-			LN_PARSE_RESULT(r2, UntilMore(TokenChar('{')));
-			LN_PARSE_RESULT(r3, Many(Parser<Decl>(Parse_LN_FIELD) || Parser<Decl>(Parse_LN_METHOD) || Parser<Decl>(Parse_EmptyDecl) || Parser<Decl>(Parse_LocalBlock) || Parser<Decl>(Parse_DocumentComment) || Parser<Decl>(Parse_AccessLevel)));
-			LN_PARSE_RESULT(r4, TokenChar('}'));
-			return input.Success(Decl{ _T("Struct"), r1.GetMatchBegin(), r4.GetMatchEnd(), r3.getValue() });
-		}
-
-		static ParserResult<Decl> Parse_LN_CLASS(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, TokenString("LN_CLASS"));
-			LN_PARSE_RESULT(r2, UntilMore(TokenChar('{')));
-			LN_PARSE_RESULT(r3, Many(Parser<Decl>(Parse_LN_FIELD) || Parser<Decl>(Parse_LN_METHOD) || Parser<Decl>(Parse_EmptyDecl) || Parser<Decl>(Parse_LocalBlock) || Parser<Decl>(Parse_DocumentComment) || Parser<Decl>(Parse_AccessLevel)));
-			LN_PARSE_RESULT(r4, TokenChar('}'));
-			return input.Success(Decl{ _T("class"), r1.GetMatchBegin(), r4.GetMatchEnd(), r3.getValue() });
-		}
-
-		static ParserResult<Decl> Parse_LN_FIELD(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, TokenString("LN_FIELD"));
-			LN_PARSE_RESULT(r2, UntilMore(Parser<Decl>(Parse_EmptyDecl)));
-			return input.Success(Decl{ _T("field"), r1.GetMatchBegin(), r2.GetMatchEnd() });
-		}
-
-		static ParserResult<Decl> Parse_LN_METHOD(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, TokenString("LN_METHOD"));
-			LN_PARSE_RESULT(r2, UntilMore(Parser<Decl>(Parse_EmptyDecl2) || Parser<Decl>(Parse_LocalBlock)));
-			return input.Success(Decl{ _T("method"), r1.GetMatchBegin(), r2.GetMatchEnd() });
-		}
-
-		static ParserResult<Decl> Parse_LN_DELEGATE(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, TokenString("LN_DELEGATE"));
-			LN_PARSE_RESULT(r2, UntilMore(Parser<Decl>(Parse_EmptyDecl2)));
-			return input.Success(Decl{ _T("delegate"), r1.GetMatchBegin(), r2.GetMatchEnd() });
-		}
-
-		static ParserResult<Decl> Parse_DocumentComment(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, Token(TokenGroup::Comment));
-			return input.Success(Decl{ _T("document"), r1.GetMatchBegin(), r1.GetMatchEnd() });
-		}
-
-		static ParserResult<Decl> Parse_AccessLevel(ParserContext input)
-		{
-			//LN_PARSE_RESULT(r1, TokenString("public") || TokenString("protected") || TokenString("private") || TokenString("LN_INTERNAL_ACCESS"));
-			LN_PARSE_RESULT(r2, TokenChar(':'));
-			return input.Success(Decl{ _T("AccessLevelLike"), r2.GetMatchBegin(), r2.GetMatchEnd() });
-		}
-
-		static ParserResult<List<Decl>> Parse_File(ParserContext input)
-		{
-			LN_PARSE(r1, Many(
-				Parser<Decl>(Parse_LN_ENUM) ||
-				Parser<Decl>(Parse_LN_CLASS) ||
-				Parser<Decl>(Parse_LN_STRUCT) ||
-				Parser<Decl>(Parse_LN_DELEGATE) ||
-				Parser<Decl>(Parse_EmptyDecl2) ||
-				Parser<Decl>(Parse_LocalBlock) ||
-				Parser<Decl>(Parse_DocumentComment) ||
-				Parser<Decl>(Parse_AccessLevel)));
-			return input.Success(r1);
-		}
-
-		static bool FilterToken(fl::Token* token)
-		{
-			if (token->GetTokenGroup() == TokenGroup::Comment &&
-				StringTraits::compare(token->getBegin(), "/**", 3) == 0)
+			for (auto& attr : decl->getAttrs())
 			{
-				return true;
-			}
-			return
-				token->EqualChar(';') || token->EqualChar(',') || token->EqualChar('{') || token->EqualChar('}') ||
-				token->EqualString("LN_ENUM_", 8) ||
-				token->EqualString("LN_STRUCT", 9) ||
-				token->EqualString("LN_CLASS", 8) ||
-				token->EqualString("LN_FIELD", 8) ||
-				token->EqualString("LN_METHOD", 9) ||
-				token->EqualString("LN_DELEGATE", 11) ||
-				//token->EqualString("LN_CONSTRUCT_ACCESS", 19) ||
-				token->EqualChar(':') ||// token->EqualString("public", 6) || token->EqualString("protected", 9) || token->EqualString("private", 6) || token->EqualString("LN_INTERNAL_ACCESS", 18) ||
-				token->GetTokenGroup() == TokenGroup::Eof;	// TODO: これが無くてもいいようにしたい。今はこれがないと、Many中にEOFしたときOutOfRangeする
-		}
-	};
-
-
-	auto codeStr = FileSystem::readAllText(path);
-	StringA code = codeStr.toStringA();
-
-	fl::AnalyzerContext ctx;
-	auto file = ctx.RegisterInputMemoryCode("memory", code.c_str());
-	ctx.LexFile(file);
-	auto tokens = file->GetTokenList();
-
-	auto result = DeclsParser::TryParse(DeclsParser::Parse_File, tokens);
-	for (auto decl1 : result.getValue())
-	{
-		if (decl1.type == "document") ParseDocument(decl1);
-		if (decl1.type == "Struct") ParseStructDecl(decl1);
-		if (decl1.type == "class") ParseClassDecl(decl1);
-		if (decl1.type == "enum") ParseEnumDecl(decl1);
-		if (decl1.type == "delegate") ParseDelegateDecl(decl1);
-		
-		for (auto decl2 : decl1.decls)
-		{
-		}
-	}
-}
-
-HeaderParser::TokenItr HeaderParser::ParseMetadataDecl(TokenItr begin, TokenItr end)
-{
-	// (...) を探す
-	auto paramBegin = std::find_if(begin, end, [](Token* t) { return t->EqualChar('('); }) + 1;
-	auto paramEnd   = std::find_if(begin, end, [](Token* t) { return t->EqualChar(')'); });
-
-	// (...) の中の 識別子,　英数字, 文字列, ',', '=' だけを取り出す
-	auto argTokens = tr::MakeEnumerator::from(paramBegin, paramEnd + 1)
-		.Where([](Token* t)
-		{ 
-			return
-				t->GetTokenGroup() == TokenGroup::Identifier ||
-				t->GetTokenGroup() == TokenGroup::ArithmeticLiteral ||
-				t->GetTokenGroup() == TokenGroup::StringLiteral ||
-				t->EqualChar(',') ||
-				t->EqualChar('=');
-		});
-
-	auto info = std::make_shared<MetadataInfo>();
-
-	flString key, value;
-	for (auto itr = argTokens.begin(); itr != argTokens.end();)
-	{
-		key = (*itr)->getString();
-		value = flString::getEmpty();
-		++itr;
-		if (itr != argTokens.end() && (*itr)->EqualChar('='))
-		{
-			++itr;
-			value = (*itr)->getString();
-			++itr;
-		}
-
-		info->AddValue(String(key), String(value));
-	}
-
-	m_lastMetadata = info;
-	return paramEnd + 1;
-}
-
-void HeaderParser::ParseStructDecl(const Decl& decl)
-{
-	auto paramEnd = ParseMetadataDecl(decl.begin, decl.end);
-	auto name = std::find_if(paramEnd, decl.end, [](Token* t) { return t->EqualChar('{'); }) - 2;
-
-	auto info = std::make_shared<TypeInfo>();
-	info->document = MoveLastDocument();
-	info->name = String((*name)->getString());
-	info->isStruct = true;
-	m_database->structs.add(info);
-
-	m_currentAccessLevel = AccessLevel::Public;
-	for (auto& d : decl.decls)
-	{
-		if (d.type == "AccessLevelLike") ParseAccessLevel(d);
-		if (d.type == "document") ParseDocument(d);
-		if (d.type == "field") ParseFieldDecl(d, info);
-		if (d.type == "method") ParseMethodDecl(d, info);
-	}
-}
-
-void HeaderParser::ParseFieldDecl(const Decl& decl, TypeInfoPtr parent)
-{
-	auto paramEnd = ParseMetadataDecl(decl.begin, decl.end);
-	auto name = decl.end - 2;
-	auto type = decl.end - 4;
-
-	auto info = std::make_shared<FieldInfo>();
-	info->document = MoveLastDocument();
-	info->name = String((*name)->getString());
-	info->typeRawName = String((*type)->getString());
-	parent->declaredFields.add(info);
-}
-
-void HeaderParser::ParseMethodDecl(const Decl& decl, TypeInfoPtr parent)
-{
-	auto paramEnd = ParseMetadataDecl(decl.begin, decl.end);
-
-	// param range
-	auto lparen = std::find_if(paramEnd, decl.end, [](Token* t) { return t->EqualChar('('); });
-	TokenItr rparen;
-	{
-		int level = 1;
-		for (auto itr = lparen + 1; itr != decl.end; ++itr)
-		{
-			if ((*itr)->EqualChar('(')) level++;
-			if ((*itr)->EqualChar(')')) level--;
-			if (level == 0)
-			{
-				rparen = itr;
-				break;
+				auto* anno = dyn_cast<AnnotateAttr>(attr);
+				if (anno != nullptr)
+				{
+					attrs.push_back(anno->getAnnotation().str());
+				}
 			}
 		}
+		return attrs;
 	}
 
-	// return type .. method name
-	auto declTokens = tr::MakeEnumerator::from(paramEnd, lparen)
-		.Where([](Token* t) { return t->GetTokenGroup() == TokenGroup::Identifier || t->GetTokenGroup() == TokenGroup::Keyword || t->GetTokenGroup() == TokenGroup::Operator || t->GetTokenGroup() == TokenGroup::ArithmeticLiteral; })
-		.ToList();
-
-	auto info = std::make_shared<MethodInfo>();
-	info->owner = parent;
-	info->metadata = MoveLastMetadata();
-	info->document = MoveLastDocument();
-	info->accessLevel = m_currentAccessLevel;
-	info->name = String((declTokens.getLast())->getString());	// ( の直前を関数名として取り出す
-
-	if (info->metadata->HasKey("Document"))
-		parent->declaredMethodsForDocument.add(info);	// ドキュメント抽出用メソッド
-	else
-		parent->declaredMethods.add(info);				// 普通にラッパーを作るメソッド
-
-	// struct 型で戻り値が無ければコンストラクタ
-	if (parent->isStruct && declTokens.begin() + 1 == declTokens.end())
-		info->isConstructor = true;
-
-	// return type
-	if (info->isConstructor)
+	static unsigned getOffsetOnRootFile(const SourceManager& sm, SourceLocation loc)
 	{
-		info->returnTypeRawName = "void";
-	}
-	else
-	{
-		auto begin = declTokens.begin();
-		auto end = declTokens.end() - 1;
-		int pointerLevel;
-		bool hasConst;
-		bool hasVirtual;
-		ParseParamType(begin, end, &info->returnTypeRawName, &pointerLevel, &hasConst, &hasVirtual);
-
-		for (auto itr = begin; itr != end; ++itr)
+		if (sm.getFileID(loc) == sm.getMainFileID())
+		//auto ploc = sm.getPresumedLoc(loc);
+		//if (ploc.getIncludeLoc().isInvalid())
 		{
-			if ((*itr)->EqualString("static"))
-				info->isStatic = true;
+			auto eloc = sm.getDecomposedExpansionLoc(loc);
+			return eloc.second;
 		}
-		info->isVirtual = hasVirtual;
+		return 0;
 	}
 
-	if (!info->isStatic)
+
+	std::string getSourceText(SourceRange range) const
 	{
-		// class 型で InitializeXXXX ならコンストラクタ
-		if (!parent->isStruct &&info->name.indexOf(_T("Initialize")) == 0)
-			info->isConstructor = true;
+		auto stringRef = Lexer::getSourceText(
+			CharSourceRange::getTokenRange(range),
+			m_ci->getSourceManager(),
+			m_ci->getLangOpts());
+		return stringRef.str();
 	}
 
-	// mehod params
-	ParseParamListDecl(lparen, rparen, info);
-
-	// method attribute
+	String getLocString(SourceLocation loc)
 	{
-		auto begin = rparen + 1;
-		auto end = std::find_if(begin, decl.end, [](Token* t) { return t->EqualChar('{'); });
-		for (auto itr = begin; itr < end; ++itr)
+		return String::fromStdString(loc.printToString(m_ci->getSourceManager()));
+	}
+	String getLocString(Decl* decl)
+	{
+		return getLocString(decl->getLocation());
+	}
+
+	Ref<DocumentSymbol> parseDocument(Decl* decl)
+	{
+		if (const FullComment *Comment = decl->getASTContext().getLocalCommentForDeclUncached(decl))
+			return HeaderParser::parseDocument(getSourceText(Comment->getSourceRange()));
+		return Ref<DocumentSymbol>::makeRef();
+	}
+
+	::AccessLevel tlanslateAccessLevel(AccessSpecifier ac)
+	{
+		switch (ac)
 		{
-			if ((*itr)->EqualString("const"))
-			{
-				info->isConst = true;
-			}
+		case clang::AS_public:
+			return ::AccessLevel::Public;
+		case clang::AS_protected:
+			return ::AccessLevel::Protected;
+		case clang::AS_private:
+			return ::AccessLevel::Private;
+		default:
+			LN_UNREACHABLE();
+			return ::AccessLevel::Private;
 		}
 	}
-}
 
-//------------------------------------------------------------------------------
-//	begin	=	'('
-//	end		=	')'
-void HeaderParser::ParseParamListDecl(TokenItr begin, TokenItr end, MethodInfoPtr parent)
-{
-	auto paramBegin = begin + 1;
-	auto itr = paramBegin;
-	//bool isDelegate = false;
-	for (; itr < end; ++itr)
+	//std::string getQualTypeNameSymple(QualType* type)
+	//{
+	//	type->getAsString()
+	//	type->dump()
+	//	PrintingPolicy PrintPolicy;
+
+	//	SplitQualType T_split = type->split();
+	//	std::string name = QualType::getAsString(T_split/*, PrintPolicy*/);
+
+	//	if (Desugar && !T.isNull()) {
+	//		// If the type is sugared, also dump a (shallow) desugared type.
+	//		SplitQualType D_split = T.getSplitDesugaredType();
+	//		if (T_split != D_split)
+	//			OS << ":'" << QualType::getAsString(D_split, PrintPolicy) << "'";
+	//	}
+	//}
+
+	String getRawTypeFullName(const QualType& type)
 	{
-		//if ((*itr)->EqualString(_T("Delegate")))
+		// type.getAsString() だと完全週修飾名になる。"struct ln::Vector3" など。
+		auto name = String::fromStdString(type.getAsString());
+		name = name.replace(_T("struct"), "");
+		name = name.replace(_T("class"), "");
+		name = name.replace(_T("enum"), "");
+		name = name.replace(_T("const"), "");
+		name = name.replace(_T("*"), "");
+		name = name.replace(_T("&"), "");
+
+		if (name == _T("_Bool"))
+		{
+			return _T("bool");
+		}
+
+		return name.trim();
+		//SplitQualType st = type.split();
+		//if (st.Ty->isRecordType())
 		//{
-		//	isDelegate = true;	// 今解析中の引数は Delegate である
+		//	// type.getAsString() だと完全週修飾名になる。"struct ln::Vector3" など。
+		//	// Decl から定義名をとると、"Vector3" などが取れる。
+		//	CXXRecordDecl* rd = st.Ty->getAsCXXRecordDecl();
+		//	DeclarationName name = rd->getDeclName();
+		//	return String::fromStdString(name.getAsString());
 		//}
+		//else
+		//{
+		//	return String::fromStdString(type.getAsString());
+		//}
+	}
 
-		if ((*itr)->EqualChar(','))
+	void EnumerateDecl(DeclContext* aDeclContext)
+	{
+		for (DeclContext::decl_iterator i = aDeclContext->decls_begin(), e = aDeclContext->decls_end(); i != e; i++)
 		{
-			ParseParamDecl(paramBegin, itr, parent, false);
-			paramBegin = itr + 1;
+			Decl *D = *i;
+			//if (indentation.IndentLevel == 0) {
+			//	errs() << "TopLevel : " << D->getDeclKindName();                                    // Declの型表示
+			//	if (NamedDecl *N = dyn_cast<NamedDecl>(D))  errs() << " " << N->getNameAsString();  // NamedDeclなら名前表示
+			//	errs() << " (" << D->getLocation().printToString(SM) << ")\n";                      // ソース上の場所表示
+			//}
+
+			//errs() << "TopLevel : " << D->getDeclKindName();
+			//if (NamedDecl *N = dyn_cast<NamedDecl>(D))  errs() << " " << N->getNameAsString();
+			//errs() << "\n";
+
+			Visit(D);
 		}
 	}
-	if (paramBegin != end) ParseParamDecl(paramBegin, end, parent, false);
-}
+
+
+	// class/struct/unionの処理
+	bool VisitCXXRecordDecl(CXXRecordDecl* decl)
+	{
+		if (!decl->isCompleteDefinition())
+		{
+			// 宣言
+			return true;
+		}
+
+		if (unsigned offset = getOffsetOnRootFile(m_sm, decl->getLocation()))
+		{
+			auto* attr = m_parser->findUnlinkedAttrMacro(offset);
+			if (attr)
+			{
+				attr->linked = true;
+
+				auto info = Ref<::TypeSymbol>::makeRef();
+				info->setRawFullName(getRawTypeFullName(QualType(decl->getTypeForDecl(), 0)));
+
+				// documentation
+				info->document = parseDocument(decl);
+
+				// metadata
+				info->metadata = HeaderParser::parseMetadata(attr->name, attr->args);
+
+				// base classes
+				auto bases = decl->getDefinition()->bases();
+				for (auto& base : bases)
+				{
+					info->src.baseClassRawName = getRawTypeFullName(base.getType());
+					break;	// first only
+				}
+
+				if (decl->getDefinition()->isStruct())
+				{
+					info->isStruct = true;
+					m_parser->getDB()->structs.add(info);
+				}
+				else
+				{
+					m_parser->getDB()->classes.add(info);
+				}
+
+
+
+				m_currentRecord = info;
+				EnumerateDecl(decl);
+				m_currentRecord = nullptr;
+			}
+		}
+
+		return true;
+	}
+
+	// メンバ関数
+	bool VisitCXXMethodDecl(CXXMethodDecl* decl)
+	{
+		if (unsigned offset = getOffsetOnRootFile(m_sm, decl->getLocation()))
+		{
+			auto* attr = m_parser->findUnlinkedAttrMacro(offset);
+			if (attr)
+			{
+				attr->linked = true;
+
+				auto info = Ref<MethodSymbol>::makeRef();
+				info->owner = m_currentRecord;
+				info->name = String::fromStdString(decl->getNameAsString());
+				info->accessLevel = tlanslateAccessLevel(decl->getAccess());
+
+				// documentation
+				info->document = parseDocument(decl);
+
+				// metadata
+				info->metadata = HeaderParser::parseMetadata(attr->name, attr->args);
+
+				// return type
+				info->returnTypeRawName = getRawTypeFullName(decl->getReturnType());
+
+				// qualifiers
+				info->isVirtual = decl->isVirtual();
+				info->isStatic = decl->isStatic();
+				info->isConst = decl->isConst();
+
+				// check sema error (未定義の型など)
+				if (decl->isInvalidDecl())
+				{
+					m_parser->diag()->addError(String::format(_T("Invalid declaration {0}"), String::fromStdString(getSourceText(decl->getSourceRange()))), getLocString(decl));
+				}
+
+				info->owner->declaredMethods.add(info);
+
+				for (unsigned int iParam = 0; iParam < decl->getNumParams(); iParam++)
+				{
+					ParmVarDecl* paramDecl = decl->getParamDecl(iParam);
+					QualType& type = paramDecl->getType();
+
+					bool hasConst = type.getQualifiers().hasConst();
+					SplitQualType sp = type.split();
+					//PointerType
+					
+					
+					auto paramInfo = Ref<ParameterSymbol>::makeRef();
+					paramInfo->name = String::fromStdString(paramDecl->getNameAsString());
+					paramInfo->src.typeRawName = getRawTypeFullName(type);
+
+					if (sp.Ty->isPointerType())
+					{
+						paramInfo->isIn = hasConst;
+						paramInfo->isOut = !hasConst;
+					}
+					else
+					{
+						paramInfo->isIn = true;
+						paramInfo->isOut = false;
+					}
+
+					info->parameters.add(paramInfo);
+
+					// check sema error
+					if (paramDecl->isInvalidDecl())
+					{
+						m_parser->diag()->addError(String::format(_T("Invalid declaration {0}"), String::fromStdString(getSourceText(paramDecl->getSourceRange()))), getLocString(paramDecl));
+					}
+				}
+			}
+		}
+
+		return true;
+	}
+
+	// メンバ変数
+	bool VisitFieldDecl(FieldDecl* decl)
+	{
+		if (unsigned offset = getOffsetOnRootFile(m_sm, decl->getLocation()))
+		{
+			if (auto* attr = m_parser->findUnlinkedAttrMacro(offset))
+			{
+				attr->linked = true;
+
+				auto info = Ref<FieldSymbol>::makeRef();
+				info->name = String::fromStdString(decl->getNameAsString());
+				info->document = parseDocument(decl);
+				info->typeRawName = getRawTypeFullName(decl->getType());
+				m_currentRecord->declaredFields.add(info);
+			}
+		}
+
+		return true;
+	}
+
+	bool VisitEnumDecl(EnumDecl* decl)
+	{
+		if (unsigned offset = getOffsetOnRootFile(m_sm, decl->getLocation()))
+		{
+			if (auto* attr = m_parser->findUnlinkedAttrMacro(offset))
+			{
+				attr->linked = true;
+
+				auto symbol = Ref<TypeSymbol>::makeRef();
+				symbol->setRawFullName(String::fromStdString(decl->getQualifiedNameAsString()));
+
+				// documentation
+				symbol->document = parseDocument(decl);
+
+				// metadata
+				symbol->metadata = HeaderParser::parseMetadata(attr->name, attr->args);
+
+				m_parser->getDB()->enums.add(symbol);
+
+				m_currentRecord = symbol;
+				EnumerateDecl(decl);
+				m_currentRecord = nullptr;
+			}
+		}
+		return true;
+	}
+
+	bool VisitEnumConstantDecl(EnumConstantDecl* decl)
+	{
+		if (m_currentRecord)
+		{
+			auto symbol = Ref<ConstantSymbol>::makeRef();
+			symbol->document = parseDocument(decl);
+			symbol->name = String::fromStdString(decl->getNameAsString());
+			symbol->value = decl->getInitVal().getSExtValue();
+			symbol->type = m_currentRecord;
+			m_currentRecord->declaredConstants.add(symbol);
+		}
+
+		return true;
+	}
+
+	// typedef
+	bool VisitTypedefDecl(TypedefDecl *aTypedefDecl)
+	{
+		return true;
+	}
+
+	// namespace
+	bool VisitNamespaceDecl(NamespaceDecl* decl)
+	{
+		EnumerateDecl(decl);
+		return true;
+	}
+
+	// using
+	bool VisitUsingDirectiveDecl(UsingDirectiveDecl *aUsingDirectiveDecl)
+	{
+		return true;
+	}
+};
+
+// このインタフェースは、プリプロセッサの動作を観察する方法を提供します。
+// https://clang.llvm.org/doxygen/classclang_1_1PPCallbacks.html
+// #XXXX を見つけたときや、マクロ展開が行われたときに呼ばれるコールバックを定義したりする。
+// ★C++のクラスの属性構文は、class キーワードと名前の間に書く。Lumino のは class の前に書くスタイルなので、
+//   clang と属性構文の機能を使うことができない。そのためマクロを自分で解析する。
+class LocalPPCallbacks : public PPCallbacks
+{
+public:
+	LocalPPCallbacks(Preprocessor& pp, CompilerInstance* ci, ::HeaderParser* parser)
+		: m_pp(pp)
+		, m_ci(ci)
+		, m_parser(parser)
+	{
+	}
+
+	virtual void MacroExpands(const Token& MacroNameTok, const MacroDefinition& MD, SourceRange range, const MacroArgs* args) override
+	{
+		const SourceManager& sm = m_ci->getSourceManager();
+		const LangOptions& opts = m_ci->getLangOpts();
+		const MacroInfo* macroInfo = MD.getMacroInfo();
+
+		//clang::FileEntry
+		//sm.getOrCreateFileID
+
+		// マクロが書かれている場所は input のルートであるか？ (include ファイルは解析したくない)
+		//auto ploc = sm.getPresumedLoc(range.getBegin());
+		//if (ploc.getIncludeLoc().isInvalid())
+		if (sm.getFileID(range.getBegin()) == sm.getMainFileID())
+		{
+			std::string name = Lexer::getSourceText(CharSourceRange::getTokenRange(range.getBegin()), sm, opts).str();
+			if (name == "LN_CLASS" ||
+				name == "LN_STRUCT" ||
+				name == "LN_FIELD" ||
+				name == "LN_METHOD" ||
+				name == "LN_ENUM")
+			{
+				::HeaderParser::AttrMacro attrMacro;
+				attrMacro.name = name;
+
+				std::string args = Lexer::getSourceText(CharSourceRange::getTokenRange(range), sm, opts).str();
+				args = args.substr(args.find('(') + 1);
+				args = args.substr(0, args.find(')'));
+				attrMacro.args = args;
+
+				//
+				//for (int iArg = 0; iArg < args->getNumArguments(); iArg++)
+				//{
+				//	auto a = args->getPreExpArgument(iArg, macroInfo, m_pp);
+				//	//const Token* tok = args->getPreExpArgument(iArg);
+				//	//if (tok->is(tok::eof))
+				//	//{
+				//	//	break;
+				//	//}
+
+				//	attrMacro.args.push_back(Lexer::getSourceText(CharSourceRange::getTokenRange(tok->getLocation()), sm, opts));
+				//}
+
+				//int a2 = args->getArgLength();
+
+				//for (int iArg = 0; i < )
+
+				//std::string tokens = 
+
+				//for (int iArg = 0U; iArg < macroInfo->getNumArgs(); iArg++)
+				//{
+				//	const IdentifierInfo* param = *(macroInfo->arg_begin() + iArg);	// params がほしいときはこっち
+				//	const Token* argToks = args->getUnexpArgument(iArg);				// args がほしいときはこっち
+
+				//	if (argToks->is(tok::eof))
+				//	{
+				//		// マクロを使っている側の実引数の数が少ない。
+				//		// あるいは #define AAA(...) のような定義で、実引数が省略されている。
+				//	}
+
+				//	attrMacro.args.push_back(Lexer::getSourceText(CharSourceRange::getTokenRange(argToks->getLocation()), sm, opts));
+				//}
+
+				auto eloc = sm.getDecomposedExpansionLoc(range.getBegin());
+				attrMacro.offset = eloc.second;
+				m_parser->lnAttrMacros.push_back(attrMacro);
+			}
+		}
+	}
+
+private:
+	Preprocessor & m_pp;
+	CompilerInstance* m_ci;
+	::HeaderParser* m_parser;
+};
 
 //------------------------------------------------------------------------------
-// 仮引数1つ分の解析
-// end = ',' | ')'
-void HeaderParser::ParseParamDecl(TokenItr begin, TokenItr end, MethodInfoPtr parent, bool isDelegate)
+// 以下、決まり文句
+
+// ASTConsumer は、AST のエントリポイントとなる何らかの要素を見つけたときにそれを通知する。
+// 通常は HandleTranslationUnit() だけ実装すればよい。
+// https://clang.llvm.org/docs/RAVFrontendAction.html
+// clang は色々な AST の作成方法を持っているらしく、HandleTranslationUnit() 以外は
+// 通常の翻訳単位以外の解析で何かしたいときに使うようだ。
+class LocalASTConsumer : public ASTConsumer
 {
-	// Identifier, Keyword, Operator, ArithmeticLiteral だけのリストにする
-	auto declTokens = tr::MakeEnumerator::from(begin, end)
-		.Where([](Token* t) { return t->GetTokenGroup() == TokenGroup::Identifier || t->GetTokenGroup() == TokenGroup::Keyword || t->GetTokenGroup() == TokenGroup::Operator || t->GetTokenGroup() == TokenGroup::ArithmeticLiteral; })
-		.ToList();
+private:
+	std::unique_ptr<LWIGVisitor> m_visitor;
+
+public:
+	explicit LocalASTConsumer(CompilerInstance* CI, ::HeaderParser* parser)
+		: m_visitor(std::make_unique<LWIGVisitor>(CI, parser))
+	{
+		//auto fe = CI->getSourceManager().getFileManager().getFile(, false);
+		//CI->getSourceManager().file
+
+		Preprocessor &PP = CI->getPreprocessor();
+		PP.addPPCallbacks(llvm::make_unique<LocalPPCallbacks>(PP, CI, parser));
+	}
+
+	virtual void HandleTranslationUnit(ASTContext& Context)
+	{
+		m_visitor->EnumerateDecl(Context.getTranslationUnitDecl());
+	}
+};
+
+// FrontendAction は、コンパイラフロントエンドの共通のエントリポイント。具体的に何したいの？を表すために使う。
+// https://clang.llvm.org/docs/RAVFrontendAction.html
+// https://clang.llvm.org/doxygen/classclang_1_1ASTFrontendAction.html
+// 標準だと ASTFrontendAction の派生として、単に AST をダンプしたり、HTML に変換したりといったアクションが用意されている。
+// 今回は AST を全部自分でトラバースしたいので ASTFrontendAction を使う。
+class LocalFrontendAction : public ASTFrontendAction
+{
+public:
+	::HeaderParser* m_parser;
+
+	LocalFrontendAction(::HeaderParser* parser)
+		: m_parser(parser)
+	{
+	}
+
+	virtual std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI, llvm::StringRef file)
+	{
+		return llvm::make_unique<LocalASTConsumer>(&CI, m_parser);
+	}
+};
+
+
+// SilClangAnalyzer のポインタを ↑のクラスたちにわたすためのファクトリ
+std::unique_ptr<FrontendActionFactory> NewLocalFrontendActionFactory(::HeaderParser* parser)
+{
+	class SimpleFrontendActionFactory : public FrontendActionFactory
+	{
+	public:
+		::HeaderParser* m_parser;
+
+		SimpleFrontendActionFactory(::HeaderParser* parser)
+			: m_parser(parser)
+		{}
+
+		clang::FrontendAction *create() override { return new LocalFrontendAction(m_parser); }
+	};
+
+	return std::unique_ptr<FrontendActionFactory>(new SimpleFrontendActionFactory(parser));
+}
+
+} // namespace
+
+//------------------------------------------------------------------------------
+
+int HeaderParser::parse(const Path& filePath, ::SymbolDatabase* db, DiagManager* diag)
+{
+	LN_CHECK(db);
+	m_db = db;
+	m_diag = diag;
+
+	//Path tempFilePath(filePath.getString() + _T(".cpp"));
+	//FileSystem::copyFile(filePath, tempFilePath, true);
+
+
+
+	// TODO: Path から直接 toLocalPath
+	std::string localFilePath = filePath.getString().toStdString();
+
+	std::vector<std::string> args;
+	args.push_back("");	// program name
+	args.push_back(localFilePath.c_str());
+	args.push_back("--");
 	
-	auto info = std::make_shared<ParameterInfo>();
+	args.push_back("-x");
+	args.push_back("c++");
 
-	// Delegate の場合
-	TokenItr paramEnd;
-	if (isDelegate)
+	//args.push_back("-target");
+	//args.push_back("unknown-unknown-unknown-msvc");
+	
+
+	for (auto& path : m_includePathes)
 	{
-		LN_UNREACHABLE();
-		//paramEnd = end;
-
-		//// , の直前を引数名とする
-		//auto name = paramEnd - 1;
-
-		//// "void(int, int)" の (...) を探す
-		//auto paramListBegin = std::find_if(begin, end, [](Token* t) { return t->EqualChar('('); }) + 1;
-		//auto paramListEnd = std::find_if(begin, end, [](Token* t) { return t->EqualChar(')'); });
-
-		//// Delegate クラスを作る
-		//auto delegateInfo = std::make_shared<TypeInfo>();
-		//delegateInfo->isDelegate = true;
-		//delegateInfo->name = (*name)->GetString();
-
-		//// Delegate クラスに Invoke メソッドを追加する
-		//auto involeMethodInfo = std::make_shared<MethodInfo>();
-		//involeMethodInfo->owner = delegateInfo;
-		//involeMethodInfo->name = "Invoke";
-		//delegateInfo->declaredMethods.Add(involeMethodInfo);
-
-		//// 引数リストを解析する
-		//ParseParamListDecl(paramListBegin, paramListEnd, involeMethodInfo);
-
-		//Console::WriteLine(delegateInfo->name);
-	}
-	// 普通の引数の場合
-	else
-	{
-		paramEnd = std::find_if(declTokens.begin(), declTokens.end(), [](Token* t) { return t->EqualChar('='); });
-		if (paramEnd != declTokens.end())
-		{
-			// デフォルト引数の解析
-			String value;
-			for (auto itr = paramEnd + 1; itr < declTokens.end(); ++itr) value += (*itr)->getString();
-			info->rawDefaultValue = value;
-		}
-
-		// , または =(デフォルト引数) の直前を引数名とする
-		auto name = paramEnd - 1;
-
-
-		String typeName;
-		int pointerLevel;
-		bool hasConst;
-		bool hasVirtual;
-		ParseParamType(declTokens.begin(), paramEnd - 1, &typeName, &pointerLevel, &hasConst, &hasVirtual);
-
-		info->name = String((*name)->getString());
-		info->typeRawName = typeName;
-		info->isIn = hasConst;
-		info->isOut = (!hasConst && pointerLevel > 0);
-	}
-	parent->parameters.add(info);
-
-	// copydoc 用シグネチャの抽出
-	String sig;
-	for (auto itr = declTokens.begin(); itr < paramEnd; ++itr)
-	{
-		if ((*itr)->GetTokenGroup() == TokenGroup::Identifier ||
-			(*itr)->GetTokenGroup() == TokenGroup::Operator ||
-			(*itr)->GetTokenGroup() == TokenGroup::Keyword)
-		{
-			sig += (*itr)->getString();
-		}
-	}
-	if (!parent->paramsRawSignature.isEmpty()) parent->paramsRawSignature += ",";
-	parent->paramsRawSignature += sig;
-}
-
-void HeaderParser::ParseParamType(TokenItr begin, TokenItr end, String* outName, int* outPointerLevel, bool* outHasConst, bool* outHasVirtual)
-{
-	auto type = begin;
-	auto typeEnd = end;
-
-	// lookup TypeName and count '*'
-	TokenItr typeName;
-	int pointerLevel = 0;
-	bool hasConst = false;
-	bool hasVirtual = false;
-	for (auto itr = begin; itr != typeEnd; ++itr)
-	{
-		if ((*itr)->EqualChar('*')) pointerLevel++;
-		if ((*itr)->EqualString("const")) hasConst = true;
-		if ((*itr)->EqualString("virtual")) hasVirtual = true;
-		if ((*itr)->GetTokenGroup() == TokenGroup::Identifier || (*itr)->GetTokenGroup() == TokenGroup::Keyword) typeName = itr;
+		args.push_back("-I");
+		args.push_back(path.getString().toStdString());
 	}
 
-	*outName = String((*typeName)->getString());
-	*outPointerLevel = pointerLevel;
-	*outHasConst = hasConst;
-	*outHasVirtual = hasVirtual;
-}
+	
+	//args.push_back("-include");
+	//args.push_back(LUMINO_ROOT_DIR"/Source/LuminoEngine/Source/LuminoEngine.PCH.h");
 
-void HeaderParser::ParseClassDecl(const Decl& decl)
-{
-	/*
-	LN_CLASS()
-	template<typename T>
-	class TestList
-	{
-	};
-
-	LN_CLASS()
-	class TestList2
-		: public TestList<Engine>
-	{
-	};
-	*/
-	struct ClassHeaderParser : public combinators::ParseLib<ClassHeaderParser>
-	{
-		struct TypeName
-		{
-			flString		name;
-			List<flString>	typeArgs;
-		};
-
-		struct ClassHeader
-		{
-			List<flString>	templateTypeParams;
-			flString		className;
-			List<TypeName>	baseClassNames;
-		};
-
-		//----------------------------------------------------------------------
-		// template <...>
-		static ParserResult<List<flString>> Parse_TemplateDecl(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, TokenString("template"));
-			LN_PARSE_RESULT(r2, TokenChar('<'));
-			LN_PARSE_RESULT(r3, Parse_TemplateParamList);
-			LN_PARSE_RESULT(r4, TokenChar('>'));
-			return input.Success(r3.getValue());
-		}
-
-		static ParserResult<List<flString>> Parse_TemplateParamList(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, Parse_TemplateParam);
-			LN_PARSE_RESULT(r2, Many(Parser<flString>(Parse_TemplateParamLater)));
-			List<flString> list{ r1.getValue() };
-			list.addRange(r2.getValue());
-			return input.Success(list);
-		}
-
-		static ParserResult<flString> Parse_TemplateParam(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, TokenString("typename") || TokenString("class"));
-			LN_PARSE_RESULT(r2, Token(TokenGroup::Identifier));
-			return input.Success(r2.getValue()->getString());
-		}
-
-		static ParserResult<flString> Parse_TemplateParamLater(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, TokenChar(','));
-			LN_PARSE_RESULT(r2, TokenString("typename") || TokenString("class"));
-			LN_PARSE_RESULT(r3, Token(TokenGroup::Identifier));
-			return input.Success(r3.getValue()->getString());
-		}
-
-		//----------------------------------------------------------------------
-		// class
-		static ParserResult<flString> Parse_ClassMain(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, TokenString("class"));
-			LN_PARSE_RESULT(r2, Token(TokenGroup::Identifier));
-			return input.Success(r2.getValue()->getString());
-		}
-
-		//----------------------------------------------------------------------
-		// base classes:
-		static ParserResult<List<TypeName>> Parse_BaseClasses(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, TokenChar(':'));
-			LN_PARSE_RESULT(r2, Many(Parser<TypeName>(Parse_BaseTypeName)));
-			LN_PARSE_RESULT(r3, Many(Parser<TypeName>(Parse_BaseTypeNameLater)));
-			auto list = r2.getValue();
-			list.addRange(r3.getValue());
-			return input.Success(list);
-		}
-		
-		static ParserResult<TypeName> Parse_BaseTypeName(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, TokenString("public"));
-			LN_PARSE_RESULT(r2, Token(TokenGroup::Identifier));
-			LN_PARSE_RESULT(r3, Optional(Parser<List<flString>>(Parse_TypeParamList)));
-			return input.Success(TypeName{ r2.getValue()->getString(), r3.getValue().getValue() });
-		}
-
-		static ParserResult<TypeName> Parse_BaseTypeNameLater(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, TokenChar(','));
-			LN_PARSE_RESULT(r2, TokenString("public"));
-			LN_PARSE_RESULT(r3, Token(TokenGroup::Identifier));
-			LN_PARSE_RESULT(r4, Optional(Parser<List<flString>>(Parse_TypeParamList)));
-			return input.Success(TypeName{ r3.getValue()->getString(), r4.getValue().getValue() });
-		}
-
-		static ParserResult<List<flString>> Parse_TypeParamList(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, TokenChar('<'));
-			LN_PARSE_RESULT(r2, Parse_TypeParam);
-			LN_PARSE_RESULT(r3, Many(Parser<flString>(Parse_TypeParamLater)));
-			LN_PARSE_RESULT(r4, TokenChar('>'));
-			List<flString> list{ r2.getValue() };
-			list.addRange(r3.getValue());
-			return input.Success(list);
-		}
-
-		static ParserResult<flString> Parse_TypeParam(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, Token(TokenGroup::Identifier));
-			return input.Success(r1.getValue()->getString());
-		}
-
-		static ParserResult<flString> Parse_TypeParamLater(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, TokenChar(','));
-			LN_PARSE_RESULT(r2, Token(TokenGroup::Identifier));
-			return input.Success(r2.getValue()->getString());
-		}
-
-		//----------------------------------------------------------------------
-		// class header:
-		static ParserResult<ClassHeader> Parse_ClassHeader(ParserContext input)
-		{
-			LN_PARSE_RESULT(r1, Optional(Parser<List<flString>>(Parse_TemplateDecl)));
-			LN_PARSE_RESULT(r2, Parse_ClassMain);
-			LN_PARSE_RESULT(r3, Optional(Parser<List<TypeName>>(Parse_BaseClasses)));
-			LN_PARSE_RESULT(r4, TokenChar('{'));
-			return input.Success(ClassHeader{ r1.getValue().getValue(), r2.getValue(), r3.getValue().getValue(), });
-		}
-
-		static bool FilterToken(fl::Token* token)
-		{
-			return
-				token->EqualChar('<') ||
-				token->EqualChar('>') ||
-				token->EqualChar(',') ||
-				token->EqualChar(':') ||
-				token->EqualChar('{') ||
-				token->EqualGroupAndString(TokenGroup::Keyword, "template") ||
-				token->EqualGroupAndString(TokenGroup::Keyword, "typename") ||
-				token->EqualGroupAndString(TokenGroup::Keyword, "class") ||
-				token->EqualGroupAndString(TokenGroup::Keyword, "public") ||
-				token->GetTokenGroup() == TokenGroup::Identifier ||
-				token->GetTokenGroup() == TokenGroup::Eof;	// TODO: これが無くてもいいようにしたい。今はこれがないと、Many中にEOFしたときOutOfRangeする
-		}
-	};
-
-	auto paramEnd = ParseMetadataDecl(decl.begin, decl.end);
-
-	auto& result = ClassHeaderParser::TryParse(ClassHeaderParser::Parse_ClassHeader, paramEnd, decl.end);
-	auto& classHeader = result.getValue();
+	
+	args.push_back("-Xclang");
 
 
-	//auto name = std::find_if(paramEnd, decl.end, [](Token* t) { return t->EqualChar(':'); }) - 2;
-	//TokenItr name;
-	//TokenItr itr = paramEnd;
-	//for (; itr < decl.end; ++itr)
+	args.push_back("-fsyntax-only");
+	args.push_back("-fms-compatibility");		// Enable full Microsoft Visual C++ compatibility
+	args.push_back("-fms-extensions");			// Enable full Microsoft Visual C++ compatibility
+	args.push_back("-fmsc-version=1910");		// Microsoft compiler version number to report in _MSC_VER (0 = don't define it (default))
+
+	// 基本的にヘッダを入力するので、warning: #pragma once in main file を隠す。https://clang.llvm.org/docs/UsersManual.html#options-to-control-error-and-warning-messages
+	args.push_back("-Wno-pragma-once-outside-header");
+
+	//const char* argv[] =
 	//{
-	//	if ((*itr)->GetTokenGroup() == TokenGroup::Identifier) name = itr;
-	//	if ((*itr)->EqualChar(':') || (*itr)->EqualChar('{')) break;
-	//}
-
-	auto info = std::make_shared<TypeInfo>();
-	info->metadata = MoveLastMetadata();
-	info->document = MoveLastDocument();
-	info->name = String(classHeader.className);
-	if (!classHeader.baseClassNames.isEmpty()) info->baseClassRawName = String(classHeader.baseClassNames[0].name);
-	m_database->classes.add(info);
-
-	// base class name
-	//if ((*itr)->EqualChar(':'))
-	//{
-	//	itr = std::find_if(itr, decl.end, [](Token* t) { return t->GetTokenGroup() == TokenGroup::Identifier; });
-	//	info->baseClassRawName = (*itr)->GetString();
-	//}
-
-	m_currentAccessLevel = AccessLevel::Private;
-	for (auto& d : decl.decls)
+	//	"",	
+	//	localFilePath.c_str(),
+	//	"--",
+	//	//"-I", "C:/Proj/LN/Lumino/Source/LuminoCore/Include",
+	//	//"-I", "C:/Proj/LN/Lumino/Source/LuminoEngine/Include",
+	//	"-D", "LN_NAMESPACE_BEGIN",
+	//	"-D", "LN_NAMESPACE_END",
+	//	"-fms-compatibility",
+	//	"-fms-extensions",
+	//	"-fmsc-version=1900",
+	//};
+	std::vector<const char*> argv;
+	for (auto& arg : args)
 	{
-		if (d.type == "AccessLevelLike") ParseAccessLevel(d);
-		if (d.type == "document") ParseDocument(d);
-		if (d.type == "method") ParseMethodDecl(d, info);
+		argv.push_back(arg.c_str());
 	}
+	int argc = argv.size();
+
+	std::vector<std::string> sourcePathList = { localFilePath.c_str() };
+
+	::clang::tooling::CommonOptionsParser op(argc, argv.data(), ::llvm::cl::GeneralCategory);
+	::clang::tooling::ClangTool Tool(op.getCompilations(), sourcePathList/*op.getSourcePathList()*/);
+	int result = Tool.run(local::NewLocalFrontendActionFactory(this).get());
+
+	//FileSystem::deleteFile(tempFilePath);
+	return result;
 }
 
-void HeaderParser::ParseEnumDecl(const Decl& decl)
+HeaderParser::AttrMacro* HeaderParser::findUnlinkedAttrMacro(unsigned offset)
 {
-	auto paramEnd = ParseMetadataDecl(decl.begin, decl.end);
-
-	// find name
-	TokenItr name;
-	TokenItr itr = paramEnd;
-	for (; itr < decl.end; ++itr)
+	for (size_t i = 0; i < lnAttrMacros.size(); i++)
 	{
-		if ((*itr)->GetTokenGroup() == TokenGroup::Identifier) name = itr;
-		if ((*itr)->EqualChar(':') || (*itr)->EqualChar('{')) break;
-	}
-
-	auto info = std::make_shared<TypeInfo>();
-	info->document = MoveLastDocument();
-	info->name = String((*name)->getString());
-	info->isEnum = true;
-	m_database->enums.add(info);
-
-	m_currentEnumValue = 0;
-	TokenItr last = itr;
-	for (auto& d : decl.decls)
-	{
-		if (d.type == "document") ParseDocument(d);
-		if (d.type == "enum_member")
+		if (!lnAttrMacros[i].linked)
 		{
-			ParseEnumMemberDecl(last, d.end, info);
-			last = d.end;
+			unsigned o1 = lnAttrMacros[i].offset;
+			unsigned o2 = (i < lnAttrMacros.size() - 1) ? lnAttrMacros[i + 1].offset : UINT32_MAX;
+			if (o1 <= offset && offset < o2)
+			{
+				return &lnAttrMacros[i];
+			}
 		}
 	}
+	return nullptr;
 }
 
-void HeaderParser::ParseEnumMemberDecl(TokenItr begin, TokenItr end, TypeInfoPtr parent)
+Ref<DocumentSymbol> HeaderParser::parseDocument(const std::string& comment)
 {
-	// find name and value
-	TokenItr name;
-	TokenItr value;
-	TokenItr itr = begin;
-	for (; itr < end; ++itr)
-	{
-		if ((*itr)->GetTokenGroup() == TokenGroup::Identifier) name = itr;
-		if ((*itr)->EqualChar(',') || (*itr)->EqualChar('=')) break;
-	}
-	if ((*itr)->EqualChar('='))
-	{
-		for (; itr < end; ++itr)
-		{
-			if ((*itr)->GetTokenGroup() == TokenGroup::ArithmeticLiteral) value = itr;
-			if ((*itr)->EqualChar(',')) break;
-		}
-		m_currentEnumValue = (*value)->getString().toInt32();
-	}
+	auto info = Ref<DocumentSymbol>::makeRef();
 
-	// create info
-	auto info = std::make_shared<ConstantInfo>();
-	info->document = MoveLastDocument();
-	info->name = String((*name)->getString());
-	info->value = m_currentEnumValue;
-	info->type = parent;
-	parent->declaredConstants.add(info);
 
-	m_currentEnumValue++;
-}
-
-//------------------------------------------------------------------------------
-// end = ';'
-// LN_DELEGATE() using CollisionEventHandler = Delegate<void(PhysicsObject* obj)>;
-void HeaderParser::ParseDelegateDecl(const Decl& decl)
-{
-	// parse "LN_DELEGATE()"
-	auto paramEnd = ParseMetadataDecl(decl.begin, decl.end);
-
-	// '=' を探す。また、その直前の識別子を delegate 名とする。
-	TokenItr equal;
-	TokenItr name;
-	for (auto itr = paramEnd; itr != decl.end; ++itr)
-	{
-		if ((*itr)->GetTokenGroup() == TokenGroup::Identifier)
-		{
-			name = itr;
-		}
-		if ((*itr)->EqualChar('='))
-		{
-			equal = itr;
-			break;
-		}
-	}
-
-	// '(' を探す
-	auto lparen = std::find_if(equal, decl.end, [](Token* t) { return t->EqualChar('('); });
-
-	// ')' を探す
-	auto rparen = std::find_if(lparen, decl.end, [](Token* t) { return t->EqualChar(')'); });
-
-	// Delegate クラスを作る
-	auto delegateInfo = std::make_shared<TypeInfo>();
-	delegateInfo->isDelegate = true;
-	delegateInfo->document = MoveLastDocument();
-	delegateInfo->metadata = MoveLastMetadata();
-	delegateInfo->name = (*name)->getString();
-	m_database->delegates.add(delegateInfo);
-
-	// Delegate クラスに Invoke メソッドを追加する
-	auto invokeMethodInfo = std::make_shared<MethodInfo>();
-	invokeMethodInfo->owner = delegateInfo;
-	invokeMethodInfo->document = std::make_shared<DocumentInfo>();
-	invokeMethodInfo->metadata = std::make_shared<MetadataInfo>();
-	invokeMethodInfo->returnTypeRawName = "void";
-	invokeMethodInfo->name = "Invoke";
-	delegateInfo->declaredMethods.add(invokeMethodInfo);
-
-	// 引数リストを解析する
-	ParseParamListDecl(lparen, rparen, invokeMethodInfo);
-}
-
-void HeaderParser::ParseDocument(const Decl& decl)
-{
-	String doc((*decl.begin)->getString());
+	String doc = String::fromStdString(comment, Encoding::getUTF8Encoding());
 
 	// 改行コード統一し、コメント開始終了を削除する
 	doc = doc
@@ -787,7 +696,6 @@ void HeaderParser::ParseDocument(const Decl& decl)
 		.replace(_T("/**"), _T(""))
 		.replace(_T("*/"), _T(""));
 
-	auto info = std::make_shared<DocumentInfo>();
 
 	List<String> lines = doc.split(_T("\n"));
 	String* target = &info->summary;
@@ -801,35 +709,35 @@ void HeaderParser::ParseDocument(const Decl& decl)
 			if (result[1] == _T("brief"))
 			{
 				target = &info->summary;
-				line = line.mid(result.getLength());
+				line = line.substring(result.getLength());
 			}
 			else if (result[1] == _T("param"))
 			{
-				String con = line.mid(result.getLength());
-				if (Regex::search(con, R"(\[(\w+)\]\s+(\w+)\s*\:\s*)", &result))
+				String con = line.substring(result.getLength());
+				if (Regex::search(con, _T(R"(\[(\w+)\]\s+(\w+)\s*\:\s*)"), &result))
 				{
-					auto paramInfo = std::make_shared<ParameterDocumentInfo>();
+					auto paramInfo = Ref<ParameterDocumentSymbol>::makeRef();
 					info->params.add(paramInfo);
 					paramInfo->io = result[1];
 					paramInfo->name = result[2];
 					target = &paramInfo->description;
-					line = con.mid(result.getLength());
+					line = con.substring(result.getLength());
 				}
 			}
 			else if (result[1] == _T("return"))
 			{
 				target = &info->returns;
-				line = line.mid(result.getLength());
+				line = line.substring(result.getLength());
 			}
 			else if (result[1] == _T("details"))
 			{
 				target = &info->details;
-				line = line.mid(result.getLength());
+				line = line.substring(result.getLength());
 			}
 			else if (result[1] == _T("copydoc"))
 			{
-				String con = line.mid(result.getLength());
-				if (Regex::search(con, R"((\w+)(.*))", &result))
+				String con = line.substring(result.getLength());
+				if (Regex::search(con, _T(R"((\w+)(.*))"), &result))
 				{
 					info->copydocMethodName = result[1];
 					info->copydocSignature = result[2];
@@ -843,29 +751,27 @@ void HeaderParser::ParseDocument(const Decl& decl)
 		(*target) += line.trim();
 	}
 
-	m_lastDocument = info;
+	return info;
 }
 
-void HeaderParser::ParseAccessLevel(const Decl& decl)
+Ref<MetadataSymbol> HeaderParser::parseMetadata(std::string name, const std::string& args)
 {
-	auto t = decl.begin - 1;
-	if ((*t)->EqualString("public")) m_currentAccessLevel = AccessLevel::Public;
-	if ((*t)->EqualString("protected")) m_currentAccessLevel = AccessLevel::Protected;
-	if ((*t)->EqualString("private")) m_currentAccessLevel = AccessLevel::Private;
-	if ((*t)->EqualString("internal")) m_currentAccessLevel = AccessLevel::Internal;
-	if ((*t)->EqualString("LN_CONSTRUCT_ACCESS")) m_currentAccessLevel = AccessLevel::Public;
+	auto metadata = Ref<MetadataSymbol>::makeRef();
+	metadata->name = String::fromStdString(name);
+	auto argEntries = String::fromStdString(args).split(_T(","), StringSplitOptions::RemoveEmptyEntries);
+	for (auto& arg : argEntries)
+	{
+		String key, value;
+		auto tokens = arg.split(_T("="), StringSplitOptions::RemoveEmptyEntries);
+		key = tokens[0].trim();
+		if (tokens.getCount() >= 2)
+		{
+			value = tokens[1].trim()
+				.replace(_T("'"), _T(""))
+				.replace(_T("\""), _T(""));
+		}
+		metadata->AddValue(String(key), String(value));
+	}
+	return metadata;
 }
 
-DocumentInfoPtr HeaderParser::MoveLastDocument()
-{
-	auto ptr = m_lastDocument;
-	m_lastDocument = nullptr;
-	return ptr;
-}
-
-MetadataInfoPtr HeaderParser::MoveLastMetadata()
-{
-	auto ptr = m_lastMetadata;
-	m_lastMetadata = nullptr;
-	return ptr;
-}

@@ -1,39 +1,48 @@
 
+set(LWIG_LLVM_PACKAGE_DIR D:/Proj/Tech/llvm/1_Package_release_60/Debug)
+#set(LWIG_LLVM_PACKAGE_DIR C:/Proj/llvm/build_debug/package)
+set(CLANG_DIR ${LWIG_LLVM_PACKAGE_DIR}/lib/cmake/clang)
+set(LLVM_DIR ${LWIG_LLVM_PACKAGE_DIR}/lib/cmake/llvm)
+find_package(CLANG REQUIRED CONFIG)
+find_package(LLVM REQUIRED CONFIG)
+
 set(LN_SOURCES
 	LWIG.PCH.cpp
 	LWIG.PCH.h
-	Common.h
-	Global.h
 	Main.cpp
+	Common.h
+	Diagnostics.cpp
+	Diagnostics.h
+	Generator.h
 	OutputBuffer.cpp
 	OutputBuffer.h
 	Parser.cpp
 	Parser.h
 	SymbolDatabase.cpp
 	SymbolDatabase.h
-	DotNet/CSClassLibGenerator.cpp
-	DotNet/CSClassLibGenerator.h
-	DotNet/DotNetClassLibGenerator.cpp
-	DotNet/DotNetClassLibGenerator.h
-	DotNet/DotNetCommon.cpp
-	DotNet/DotNetCommon.h
-	DotNet/DotNetPInvokeLibGenerator.cpp
-	DotNet/DotNetPInvokeLibGenerator.h
-	WrapperIF/WrapperIFClassesGenerator.h
+	WrapperIF/FlatCCommon.cpp
+	WrapperIF/FlatCCommon.h
 	WrapperIF/WrapperIFClassesGenerator.cpp
-	WrapperIF/WrapperIFGenerator.h
+	WrapperIF/WrapperIFClassesGenerator.h
 	WrapperIF/WrapperIFGenerator.cpp
+	WrapperIF/WrapperIFGenerator.h
+	DotNet/CSCommon.cpp
+	DotNet/CSCommon.h
+	DotNet/CSStructsGenerator.cpp
+	DotNet/CSStructsGenerator.h
 )
 
-source_group("Souece"	FILES ${LN_SOURCES})
+source_group("Source"	FILES ${LN_SOURCES})
 
 include_directories(
+	"${LWIG_LLVM_PACKAGE_DIR}/include"
 	"${PROJECT_SOURCE_DIR}/Source/LuminoCore/Include"
 	"${PROJECT_SOURCE_DIR}/Source/Fluorite/Include"
+	"."
 )
 
 add_executable(LWIG ${LN_SOURCES})
 target_link_libraries(LWIG LuminoEngine)
 target_link_libraries(LWIG Fluorite)
+target_link_libraries(LWIG clangToolingCore clangAnalysis clangARCMigrate clangAST clangASTMatchers clangBasic clangCodeGen clangDriver clangDynamicASTMatchers clangEdit clangFormat clangFrontend clangFrontendTool clangIndex clangLex clangParse clangRewrite clangRewriteFrontend clangSema clangSerialization clangTooling LLVMSupport LLVMCore LLVMOption LLVMProfileData LLVMBitReader LLVMMC LLVMMCParser LLVMBinaryFormat Version)
 ln_add_pch(LWIG "LWIG.PCH.h" "LWIG.PCH.cpp")
-

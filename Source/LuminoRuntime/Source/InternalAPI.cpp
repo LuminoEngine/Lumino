@@ -1,5 +1,5 @@
 #include "Internal.h"
-#include "LuminoC.generated.h"
+#include "Lumino.FlatC.generated.h"
 
 extern "C" {
 

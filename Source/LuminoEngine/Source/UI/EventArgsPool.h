@@ -39,10 +39,10 @@ public:
 	}
 
 private:
-	typedef List<tr::ReflectionObject*>	ObjectList;
+	typedef List<Object*>	ObjectList;
 	ObjectList					m_poolList;
 
-	tr::ReflectionObject* findFreeObject(tr::TypeInfo* typeId)
+	Object* findFreeObject(tr::TypeInfo* typeId)
 	{
 		for (auto* e : m_poolList)
 		{
@@ -53,7 +53,7 @@ private:
 		return nullptr;
 	}
 
-	void registerObject(tr::ReflectionObject* obj)
+	void registerObject(Object* obj)
 	{
 		m_poolList.add(obj);
 	}

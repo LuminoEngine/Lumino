@@ -62,7 +62,7 @@ enum PlayState
 };
 
 /** イージング関数の種類を表します。*/
-LN_ENUM(EasingMode)
+enum class EasingMode
 {
 	Linear = 0,
 	EaseInQuad,
@@ -87,29 +87,29 @@ LN_ENUM(EasingMode)
 	EaseOutCirc,
 	EaseInOutCirc,
 };
-LN_ENUM_REFLECTION(EasingMode,
-	Linear,
-	EaseInQuad,
-	EaseOutQuad,
-	EaseInOutQuad,
-	EaseInCubic,
-	EaseOutCubic,
-	EaseInOutCubic,
-	EaseInQuart,
-	EaseOutQuart,
-	EaseInOutQuart,
-	EaseInQuint,
-	EaseOutQuint,
-	EaseInOutQuint,
-	EaseInSine,
-	EaseOutSine,
-	EaseInOutSine,
-	EaseInExpo,
-	EaseOutExpo,
-	EaseInOutExpo,
-	EaseInCirc,
-	EaseOutCirc,
-	EaseInOutCirc);
-LN_ENUM_DECLARE(EasingMode);
+//LN_ENUM_REFLECTION(EasingMode,
+//	Linear,
+//	EaseInQuad,
+//	EaseOutQuad,
+//	EaseInOutQuad,
+//	EaseInCubic,
+//	EaseOutCubic,
+//	EaseInOutCubic,
+//	EaseInQuart,
+//	EaseOutQuart,
+//	EaseInOutQuart,
+//	EaseInQuint,
+//	EaseOutQuint,
+//	EaseInOutQuint,
+//	EaseInSine,
+//	EaseOutSine,
+//	EaseInOutSine,
+//	EaseInExpo,
+//	EaseOutExpo,
+//	EaseInOutExpo,
+//	EaseInCirc,
+//	EaseOutCirc,
+//	EaseInOutCirc);
+//LN_ENUM_DECLARE(EasingMode);
 
 LN_NAMESPACE_END

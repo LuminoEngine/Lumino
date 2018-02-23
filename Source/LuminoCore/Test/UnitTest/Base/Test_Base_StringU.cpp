@@ -963,5 +963,49 @@ TEST_F(Test_Base_UString, Issue)
 {
 }
 
+//## 自己代入のテスト (this ではなく c_str() 等で取れる char* 経由)
+TEST_F(Test_Base_UString, SelfAssign)
+{
+	//- [ ] NonSSO -> NonSSO 
+	{
+		String str = _LT("1234567890abcdefg");
+		StringRef r1 = str.substring(1);
+		str = r1;
+		ASSERT_EQ("234567890abcdefg", str);
+	}
+	//- [ ] SSO -> SSO 
+	{
+		String str = _LT("123");
+		StringRef r1 = str.substring(1);
+		str = r1;
+		ASSERT_EQ("23", str);
+	}
+	//- [ ] NonSSO -> SSO 
+	{
+		String str = _LT("1234567890abcdefg");
+		StringRef r1 = str.substring(10);
+		str = r1;
+		ASSERT_EQ("abcdefg", str);
+	}
+	//- [ ] SSO ->  NonSSO
+	{
+		String str = _LT("1234567890");
+		StringRef r1 = str;
+		str += r1;
+		ASSERT_EQ("12345678901234567890", str);
+	}
+}
 
+//## Char 代入
+TEST_F(Test_Base_UString, SetAt)
+{
+	//- [ ] インデックス指定の代入で文字列を変更できる
+	{
+		String str1 = _LT("12345");
+		String str2 = str1;
+		str1[2] = '_';
+		ASSERT_EQ("12_45", str1);
+		ASSERT_EQ("12345", str2);	// 共有解除。変更されない。
+	}
+}
 

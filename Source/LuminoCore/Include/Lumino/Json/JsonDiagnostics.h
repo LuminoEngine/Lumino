@@ -7,7 +7,7 @@ LN_NAMESPACE_BEGIN
 namespace tr {
 
 /** JSON 解析のエラーコード */
-LN_ENUM(JsonParseError)
+enum class JsonParseError
 {
 	NoError = 0,						///< エラーは発生していない
 	DocumentEmpty,						///< 入力文字列が空だった
@@ -26,7 +26,6 @@ LN_ENUM(JsonParseError)
 
 	Termination,						///< Hander で中断された
 };
-LN_ENUM_DECLARE(JsonParseError);
 
 /**
 	@brief	JSON 解析中のエラーを表します。
@@ -54,7 +53,7 @@ public:
 
 
 /** JSON 解析のエラーコード */
-LN_ENUM(JsonParseError2)
+enum class JsonParseError2
 {
 	NoError = 0,						/**< エラーは発生していない */
 
@@ -70,7 +69,6 @@ LN_ENUM(JsonParseError2)
 
 	ValueInvalid,			/**< 無効な値 */
 };
-LN_ENUM_DECLARE(JsonParseError2);
 
 /**
 	@brief	JSON 解析中のエラーを表します。

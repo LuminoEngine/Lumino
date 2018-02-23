@@ -10,7 +10,7 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 // TileSet
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TileSet, tr::ReflectionObject);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TileSet, Object);
 
 //------------------------------------------------------------------------------
 TileSetPtr TileSet::create()

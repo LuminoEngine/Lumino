@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 
+
 #include <string>
 #include <Lumino/Base/Typedef.h>
 #include <Lumino/Base/List.h>
@@ -22,7 +23,7 @@ LN_NAMESPACE_BEGIN
 
 
 /** テクスチャのピクセルフォーマット */
-LN_ENUM_()
+LN_ENUM()
 enum class TextureFormat
 {
 	/** Unknown */
@@ -107,14 +108,12 @@ class RenderingThread;
 } // namespace detail
 
 /// グラフィックス API
-LN_ENUM(GraphicsAPI)
+enum class GraphicsAPI
 {
 	DirectX9 = 0,	///< DirectX9
 	//DIRECTX11,	///< DirectX11
 	OpenGL,			///< OpenGL
 };
-LN_ENUM_REFLECTION(GraphicsAPI, DirectX9, OpenGL);
-LN_ENUM_DECLARE(GraphicsAPI);
 
 LN_ENUM_FLAGS(ClearFlags)
 {
@@ -260,13 +259,11 @@ enum LockMode
 };
 
 /** 描画方式 */
-LN_ENUM(GraphicsRenderingType)
+enum class GraphicsRenderingType
 {
 	Immediate,			/**< 即時描画 */
 	Threaded,			/**< 遅延描画 */
 };
-LN_ENUM_REFLECTION(GraphicsRenderingType, Immediate, Threaded);
-LN_ENUM_DECLARE(GraphicsRenderingType)
 
 
 /** 3D 空間での基準方向を表す値 */
@@ -314,31 +311,28 @@ enum class TextLayoutOptions
 };
 
 /// テキストの配置方法
-LN_ENUM(TextAlignment)
+enum class TextAlignment
 {
 	Left = 0,				///< 左揃え
 	Center,					///< 中央揃え
 	Right,					///< 右揃え
 	Justify,				///< 両端揃え
 };
-LN_ENUM_DECLARE(TextAlignment)
 
 /// 描画領域にテキストが収まりきらない場合に、テキストを切り取る方法
-LN_ENUM(TextTrimming)
+enum class TextTrimming
 {
 	None = 0,				///< 切り取りを行わない。
 	CharacterEllipsis,		///< 略記号(...) を描画する。
 };
-LN_ENUM_DECLARE(TextTrimming)
 
 /// テキストの描画方向
-LN_ENUM(FlowDirection)
+enum class FlowDirection
 {
 	LeftToRight = 0,		///< テキストを左から右に描画する。
 	RightToLeft,			///< テキストを左から右に描画する。
 	TopToBottom,			///< テキストを上から下に描画する。 (試験実装)
 };
-LN_ENUM_DECLARE(FlowDirection)
 
 LN_ENUM_FLAGS(StringFormatFlags)	// TODO: LayoutFlags のほうがいいかな？
 {

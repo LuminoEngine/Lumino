@@ -26,7 +26,7 @@ class PropertyMetadata
 	//{
 	//public:
 	//	virtual ~CallbackWrapper() {}
-	//	virtual void Call(ReflectionObject* obj, PropertyChangedEventArgs* e) = 0;
+	//	virtual void Call(Object* obj, PropertyChangedEventArgs* e) = 0;
 	//};
 
 	//template<typename TClass, typename TCallback>
@@ -36,13 +36,13 @@ class PropertyMetadata
 	//	SimpleCallbackWrapper(TCallback callback) : m_callback(callback) {}
 	//	TCallback GetCallback() { return m_callback; }
 	//	TCallback m_callback;
-	//	virtual void Call(ReflectionObject* obj, PropertyChangedEventArgs* e) override
+	//	virtual void Call(Object* obj, PropertyChangedEventArgs* e) override
 	//	{
 	//		(static_cast<TClass*>(obj)->*m_callback)(e);
 	//	}
 	//};
 
-	using StaticPropertyChangedCallback = void(*)(ReflectionObject* obj);
+	using StaticPropertyChangedCallback = void(*)(Object* obj);
 
 public:
 	PropertyMetadata()
@@ -103,7 +103,7 @@ public:
 #ifdef LN_LEGACY_VARIANT_ENABLED
 	const Variant& getDefaultValue() const { return m_defaultValue; }
 #endif
-	//void CallPropertyChangedCallback(ReflectionObject* obj, PropertyChangedEventArgs* e)
+	//void CallPropertyChangedCallback(Object* obj, PropertyChangedEventArgs* e)
 	//{
 	//	if (m_propertyChangedCallback == nullptr) return;
 	//	return m_propertyChangedCallback->Call(obj, e);
@@ -111,7 +111,7 @@ public:
 	PropertyOptions getPropertyOptions() const { return m_options; }
 	PropertyInfo* getInheritanceTarget() const { return m_inheritanceTarget; }
 
-	void callStaticPropertyChanged(ReflectionObject* obj) const
+	void callStaticPropertyChanged(Object* obj) const
 	{
 		if (m_staticPropertyChangedCallback != nullptr)
 			m_staticPropertyChangedCallback(obj);

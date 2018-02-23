@@ -25,8 +25,6 @@ enum class DepthPriority
 LN_CLASS()
 class SceneNode
 	: public Component
-	//: public tr::ReflectionObject
-	//, public IMMESceneObject
 {
 	LN_OBJECT;
 public:

@@ -17,12 +17,11 @@ LN_NAMESPACE_BEGIN
 		                |                           |         | /usr/share/
 		Temporary       | <USER>/AppData/Local/Temp |         | /tmp
 */
-LN_ENUM(SpecialFolder)
+enum class SpecialFolder
 {
 	ApplicationData = 0,
 	Temporary,
 };
-LN_ENUM_DECLARE(SpecialFolder);
 
 LN_NAMESPACE_END
 

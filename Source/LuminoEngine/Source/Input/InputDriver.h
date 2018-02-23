@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 #include <array>
+#include <Lumino/Base/GeometryStructs.h>
 #include <Lumino/Platform/PlatformEventArgs.h>
 #include <Lumino/Input/Common.h>
 #include <Lumino/Input/InputBinding.h>

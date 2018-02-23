@@ -9,7 +9,7 @@ namespace tr
 //==============================================================================
 // ReflectionEventArgs
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ReflectionEventArgs, ReflectionObject);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(ReflectionEventArgs, Object);
 
 //------------------------------------------------------------------------------
 ReflectionEventArgs::ReflectionEventArgs()

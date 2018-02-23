@@ -12,7 +12,7 @@ using TileMapModelPtr = Ref<TileMapModel>;
 	@brief	
 */
 class TileMapModel
-	: public tr::ReflectionObject
+	: public Object
 {
 	LN_OBJECT;
 

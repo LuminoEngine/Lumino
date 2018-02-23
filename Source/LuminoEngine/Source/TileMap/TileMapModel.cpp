@@ -8,7 +8,7 @@ LN_NAMESPACE_BEGIN
 //==============================================================================
 // TileMapModel
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TileMapModel, tr::ReflectionObject);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(TileMapModel, Object);
 
 //------------------------------------------------------------------------------
 TileMapModelPtr TileMapModel::create()

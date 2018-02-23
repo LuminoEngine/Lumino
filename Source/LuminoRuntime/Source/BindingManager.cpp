@@ -17,7 +17,7 @@ LFManager::ObjectEntryList	LFManager::m_objectEntryList;
 Stack<int>					LFManager::m_objectIndexStack;
 
 //------------------------------------------------------------------------------
-void LFManager::PreInitialize()
+void LFManager::preInitialize()
 {
 	if (Engine == nullptr)
 	{
@@ -68,7 +68,7 @@ void LFManager::terminate()
 }
 
 //------------------------------------------------------------------------------
-LNHandle LFManager::CheckRegisterObject(tr::ReflectionObject* obj)
+LNHandle LFManager::CheckRegisterObject(Object* obj)
 {
 	if (obj == nullptr) return NULL;
 

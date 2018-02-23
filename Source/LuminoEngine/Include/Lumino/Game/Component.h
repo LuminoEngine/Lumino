@@ -1,7 +1,8 @@
 ﻿
 #pragma once
+#include <Lumino/Math/Vector3.h>
+#include <Lumino/Math/Quaternion.h>
 #include "../Common.h"
-#include "../Game/Component.h"
 
 LN_NAMESPACE_BEGIN
 class DrawList;

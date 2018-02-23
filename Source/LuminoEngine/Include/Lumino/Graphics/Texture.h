@@ -6,6 +6,7 @@
 
 LN_NAMESPACE_BEGIN
 namespace detail { class RenderTargetTextureCache; }
+class Stream;
 class RawBitmap;
 class Font;
 class Texture;
@@ -153,7 +154,7 @@ LN_CONSTRUCT_ACCESS:
 	void initialize(const SizeI& size, TextureFormat format, bool mipmap, ResourceUsage usage);
 	LN_METHOD()
 	void initialize(int width, int height, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
-	LN_METHOD()
+	LN_METHOD(OverloadPostfix="FromFile")
 	void initialize(const StringRef& filePath, TextureFormat format = TextureFormat::R8G8B8A8, bool mipmap = false);
 	void initialize(Stream* stream, TextureFormat format, bool mipmap);
 

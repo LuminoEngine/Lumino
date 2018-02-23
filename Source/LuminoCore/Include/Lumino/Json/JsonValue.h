@@ -9,7 +9,7 @@ namespace tr {
 class JsonMember;
 
 /** Json の値の型を示します。*/
-LN_ENUM(JsonType)
+enum class JsonType
 {
 	Null = 0,
 	Bool,
@@ -18,7 +18,6 @@ LN_ENUM(JsonType)
 	Array,
 	Object,
 };
-LN_ENUM_DECLARE(JsonType);
 
 /**
 	@brief	JSONの値を表します。
@@ -32,7 +31,7 @@ public:
 	explicit JsonValue(const Char* value);
 	explicit JsonValue(const String& value);
 	explicit JsonValue(const JsonValue& value);
-	explicit JsonValue(JsonType::enum_type type);
+	explicit JsonValue(JsonType type);
 	virtual ~JsonValue();
 	JsonValue& operator=(const JsonValue& obj);
 

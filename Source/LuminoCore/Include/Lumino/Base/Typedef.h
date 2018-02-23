@@ -112,42 +112,6 @@ typedef wchar_t		UTF32;
 LN_NAMESPACE_END
 
 //----------------------------------------------------------------------
-// LN_T … テンプレート引数による _T マクロ
-
-template<typename TChar>
-inline const TChar* LN_T_ChooseCW(const char* c, const wchar_t* w);
-
-template<>
-inline const char* LN_T_ChooseCW<char>(const char* c, const wchar_t* /*w*/)
-{
-	return c;
-}
-
-template<>
-inline const wchar_t* LN_T_ChooseCW<wchar_t>(const char* /*c*/, const wchar_t* w)
-{
-	return w;
-}
-
-
-template<typename TChar>
-inline TChar LN_T_ChooseCW(const char c, const wchar_t w);
-
-template<>
-inline char LN_T_ChooseCW<char>(const char c, const wchar_t /*w*/)
-{
-	return c;
-}
-
-template<>
-inline wchar_t LN_T_ChooseCW<wchar_t>(const char /*c*/, const wchar_t w)
-{
-	return w;
-}
-
-#define LN_T(type, str) LN_T_ChooseCW<type>(str, L##str)
-
-//----------------------------------------------------------------------
 // TChar Macros
 
 #ifdef LN_UNICODE

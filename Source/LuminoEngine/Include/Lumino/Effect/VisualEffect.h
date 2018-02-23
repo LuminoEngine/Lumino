@@ -9,7 +9,7 @@ LN_NAMESPACE_BEGIN
 	@brief		視覚効果オブジェクトを操作する機能を提供します。
 */
 class VisualEffect
-	: public tr::ReflectionObject
+	: public Object
 {
 	LN_OBJECT;
 public:

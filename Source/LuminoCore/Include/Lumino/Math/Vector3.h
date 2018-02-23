@@ -2,7 +2,6 @@
 #ifndef LUMINO_MATH_VECTOR3_H
 #define LUMINO_MATH_VECTOR3_H
 
-#include <stdio.h>
 #include "Common.h"
 
 LN_NAMESPACE_BEGIN
@@ -84,7 +83,6 @@ public:
 		@brief		このベクトルを正規化します。
 		@details	ベクトルの長さが 0 の場合は正規化を行いません。
 	*/
-	LN_METHOD()
     void normalize();
 
 	/**
@@ -92,7 +90,6 @@ public:
 		@param[in]	minVec	: 最小値
 		@param[in]	maxVec	: 最大値
 	*/
-	LN_METHOD()
 	void clamp(const Vector3& minVec, const Vector3& maxVec);
 
 	/**
@@ -106,26 +103,8 @@ public:
 		@brief		要素のいずれかが NaN または Inf かを判別します。
 	*/
 	bool isNaNOrInf() const;
-
-	/**
-		@brief		デバッグ用に文字列を標準出力します。
-		@param[in]	format	: 書式指定文字列
-		@param[in]	stream	: 出力先ストリーム
-		@details	format が NULL の場合、書式は "%f, %f, %f\n" を使用します。
-	*/
-	void print(const char* format = NULL, FILE* stream = NULL) const;
 	
 public:
-
-	/**
-		@brief		指定ベクトルを正規化したベクトルを返します。
-		@param[in]	x		: 処理の基になるベクトルの X 要素
-		@param[in]	y		: 処理の基になるベクトルの Y 要素
-		@param[in]	z		: 処理の基になるベクトルの Z 要素
-		@return		正規化されたベクトル
-	*/
-	LN_METHOD()
-	static Vector3 normalize(float x, float y, float z);
 
 	/**
 		@brief		指定ベクトルを正規化したベクトルを返します。
@@ -134,6 +113,16 @@ public:
 	*/
 	LN_METHOD()
 	static Vector3 normalize(const Vector3& vec);
+
+	/**
+		@brief		指定ベクトルを正規化したベクトルを返します。
+		@param[in]	x		: 処理の基になるベクトルの X 要素
+		@param[in]	y		: 処理の基になるベクトルの Y 要素
+		@param[in]	z		: 処理の基になるベクトルの Z 要素
+		@return		正規化されたベクトル
+	*/
+	LN_METHOD(OverloadPostfix="XYZ")
+	static Vector3 normalize(float x, float y, float z);
 
 	static Vector3 safeNormalize(const Vector3& vec);
 	static Vector3 safeNormalize(const Vector3& vec, const Vector3& alt);
