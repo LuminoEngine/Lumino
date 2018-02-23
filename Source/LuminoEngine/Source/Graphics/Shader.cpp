@@ -29,6 +29,37 @@ LN_NAMESPACE_BEGIN
 namespace detail {
 
 
+void ShaderTechniqueClassSet::parseTechniqueClassString(const String& str, ShaderTechniqueClassSet* outClassSet)
+{
+	outClassSet->ligiting = ShaderTechniqueClass_Ligiting::Forward;
+	outClassSet->phase = ShaderTechniqueClass_Phase::Geometry;
+	outClassSet->meshProcess = ShaderTechniqueClass_MeshProcess::StaticMesh;
+	outClassSet->shadingModel = ShaderTechniqueClass_ShadingModel::Default;
+
+	// TODO: splitRef
+	auto tokens = str.split(_U("_"), StringSplitOptions::RemoveEmptyEntries);
+	for (auto& token : tokens)
+	{
+		if (String::compare(token, _U("SkinnedMesh"), CaseSensitivity::CaseInsensitive) == 0)
+		{
+			outClassSet->meshProcess = ShaderTechniqueClass_MeshProcess::SkinnedMesh;
+		}
+		else if (String::compare(token, _U("UnLighting"), CaseSensitivity::CaseInsensitive) == 0)
+		{
+			outClassSet->shadingModel = ShaderTechniqueClass_ShadingModel::UnLighting;
+		}
+	}
+}
+
+bool ShaderTechniqueClassSet::equals(const ShaderTechniqueClassSet& a, const ShaderTechniqueClassSet& b)
+{
+	return
+		a.ligiting == b.ligiting &&
+		a.phase == b.phase &&
+		a.meshProcess == b.meshProcess &&
+		a.shadingModel == b.shadingModel;
+}
+
 void CameraInfo::makePerspective(const Vector3& viewPos, const Vector3& viewDir, float fovY, const Size& size, float n, float f)
 {
 	dataSourceId = 0;
@@ -83,6 +114,9 @@ static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_ElementUnit
 	{ _LT("ln_LightDiffuses"), BuiltinSemantics::LightDiffuses },
 	{ _LT("ln_LightAmbients"), BuiltinSemantics::LightAmbients },
 	{ _LT("ln_LightSpeculars"), BuiltinSemantics::LightSpeculars },
+	{ _LT("ln_BoneTextureReciprocalSize"), BuiltinSemantics::BoneTextureReciprocalSize },
+	{ _LT("ln_BoneTexture"), BuiltinSemantics::BoneTexture },
+	{ _LT("ln_BoneLocalQuaternionTexture"), BuiltinSemantics::BoneLocalQuaternionTexture },
 };
 
 static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_SubsetUnit =
@@ -315,6 +349,18 @@ void ShaderSemanticsManager::updateElementVariables(const CameraInfo& cameraInfo
 				}
 				break;
 
+			case BuiltinSemantics::BoneTextureReciprocalSize:
+			{
+				auto size = info.boneTexture->getSize().toFloatSize();
+				varInfo.variable->setVector(Vector4(1.0f / size.width, 1.0f / size.height, 0, 0));
+				break;
+			}
+			case BuiltinSemantics::BoneTexture:
+				varInfo.variable->setTexture(info.boneTexture);
+				break;
+			case BuiltinSemantics::BoneLocalQuaternionTexture:
+				varInfo.variable->setTexture(info.boneLocalQuaternionTexture);
+				break;
 			default:
 				break;
 		}
@@ -766,6 +812,17 @@ void Shader::setShaderValue(uint32_t variableNameHash, const ShaderValue& value)
 	}
 }
 
+ShaderTechnique* Shader::findTechniqueByClass(const detail::ShaderTechniqueClassSet& classSet) const
+{
+	for (auto& tech : m_techniques)
+	{
+		if (detail::ShaderTechniqueClassSet::equals(tech->getTechniqueClassSet(), classSet))
+		{
+			return tech;
+		}
+	}
+	return nullptr;
+}
 
 //==============================================================================
 // ShaderValue
@@ -1412,6 +1469,8 @@ ShaderTechnique::ShaderTechnique(Shader* owner, Driver::IShaderTechnique* device
 	for (int i = 0; i < m_deviceObj->getAnnotationCount(); ++i) {
 		m_annotations.add(LN_NEW ShaderVariable(m_owner, m_deviceObj->getAnnotation(i)));
 	}
+
+	detail::ShaderTechniqueClassSet::parseTechniqueClassString(m_name, &m_shaderTechniqueClassSet);
 }
 
 //------------------------------------------------------------------------------

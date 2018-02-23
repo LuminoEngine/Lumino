@@ -24,9 +24,6 @@ class DrawElementList;
 struct DefaultStatus;
 
 
-/**
-	@brief	シーンの描画方法を定義し、描画コマンドを実行します。
-*/
 class SceneRenderer
 	: public RefObject
 {
@@ -79,6 +76,10 @@ private:
 	List<detail::ShadowCasterPass*>	m_renderingShadowCasterPassList;
 	//friend class RenderingPass2;
 	Ref<CommonMaterial>				m_defaultMaterial;
+
+	Ref<Texture2D>    m_skinningMatricesTexture;            // GPU スキニング用のテクスチャ
+	Ref<Texture2D>    m_skinningLocalQuaternionsTexture;    // GPU スキニング用のテクスチャ
+
 };
 
 
@@ -123,7 +124,7 @@ protected:
 	//virtual ShaderPass* selectShaderPass(Shader* shader);
 
 	// TODO: name は hash でもいいかな
-	ShaderTechnique* selectShaderTechniqueHelper(Shader* materialShader, const String& techniqueName, ShaderTechnique* defaultTech);
+	//ShaderTechnique* selectShaderTechniqueHelper(Shader* materialShader, const String& techniqueName, ShaderTechnique* defaultTech);
 
 	// Obsolete 古い記述用。
 	ShaderTechnique* selectShaderTechniqueHelperSimple(Shader* materialShader, Shader* defaultShader);

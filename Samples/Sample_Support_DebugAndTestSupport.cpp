@@ -3,7 +3,7 @@ using namespace ln;
 
 LN_SAMPLE_MAIN(Support, DebugAndTestSupport, Sample1)
 {
-	Engine::getWorld3D()->setVisibleGridPlane(true);
+	Engine::defaultWorld3D()->setVisibleGridPlane(true);
 
 
 	//auto cb = RefPtr<CylinderMouseMoveCameraBehavior>::makeRef();

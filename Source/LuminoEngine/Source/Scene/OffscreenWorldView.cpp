@@ -392,7 +392,7 @@ void MirrorComponent::initialize()
 	m_offscreen = newObject<OffscreenWorldSubRenderView>();
 
 	// TODO: Remove
-	detail::EngineDomain::getDefaultWorld3D()->addOffscreenWorldView(m_offscreen);
+	detail::EngineDomain::defaultWorld3D()->addOffscreenWorldView(m_offscreen);
 	m_offscreen->hideVisual(this);
 
 	m_material = newObject<CommonMaterial>();

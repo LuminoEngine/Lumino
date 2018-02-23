@@ -16,6 +16,7 @@ class Font;
 class CommonMaterial;
 class MeshResource;
 class StaticMeshModel;
+class SkinnedMeshModel;
 class DrawList;
 class RenderView;
 class RenderDiag;
@@ -179,7 +180,6 @@ public:
 	};
 
 	int					batchIndex;
-	detail::Sphere		boundingSphere;		// 位置はローカル座標系。最終的にワールドのどこに置くかは drawXXXX() 時点では決められない
 	int					subsetIndex;
 	float				zDistance;
 	DrawElementMetadata	metadata;
@@ -187,20 +187,26 @@ public:
 	CommonMaterial*		priorityMaterial = nullptr;	// マテリアルを指定する drawMesh() のオーバーライドなどで設定される
 	detail::IRenderFeature* renderFeature = nullptr;
 	DrawElementList*	m_ownerDrawElementList;
+	int					subsetCount = 1;
+	ShaderTechniqueClass_MeshProcess	vertexProcessing = ShaderTechniqueClass_MeshProcess::StaticMesh;
 
 	DrawElement();
 	virtual ~DrawElement();
 
 	const Matrix& getTransform(DrawElementList* oenerList) const;
 
+	virtual CommonMaterial*	getPriorityMaterial(int subsetIndex) { return priorityMaterial; }
+
 	virtual void makeElementInfo(DrawElementList* oenerList, const CameraInfo& cameraInfo, RenderView* renderView, ElementInfo* outInfo);
 	virtual void makeSubsetInfo(DrawElementList* oenerList, RenderStage* stage, SubsetInfo* outInfo);
 
-	virtual void drawSubset(const DrawArgs& e) = 0;
-	const detail::Sphere& getBoundingSphere() const { return boundingSphere; }
+	virtual void drawSubset(const DrawArgs& e, int subsetIndex) = 0;
+	const detail::Sphere& getLocalBoundingSphere() const { return m_localBoundingSphere; }
+	void setLocalBoundingSphere(const detail::Sphere& value) { m_localBoundingSphere = value; }
 
 	// (ローカル座標系)
 	void makeBoundingSphere(const Vector3& minPos, const Vector3& maxPos);
+	void makeBoundingSphere(float radius);
 
 	virtual DynamicLightInfo** getAffectedDynamicLightInfos();
 
@@ -213,6 +219,7 @@ private:
 	//Matrix	m_transform;
 
 	//friend class DrawList;
+	detail::Sphere		m_localBoundingSphere;
 };
 
 class LightingDrawElement
@@ -384,7 +391,7 @@ public:
 		m_lastElement = t;
 		return t;
 	}
-
+	
 	//byte_t* allocExtData(size_t size) { return m_extDataCache.GetData(m_extDataCache.allocData(size)); }
 	CommandDataCache::DataHandle allocExtData(size_t size) { return m_extDataCache.allocData(size); }
 	void* getExtData(CommandDataCache::DataHandle handle) { return m_extDataCache.getData(handle); }
@@ -393,7 +400,6 @@ public:
 
 	void addDynamicLightInfo(DynamicLightInfo* lightInfo);
 	const List<Ref<DynamicLightInfo>>& getDynamicLightList() const { return m_dynamicLightList; }
-
 
 	// default settings
 	void setDefaultRenderTarget(RenderTargetTexture* value) { m_defaultRenderTarget = value; }
@@ -658,6 +664,8 @@ public:
 
 	void drawMesh(MeshResource* mesh, int subsetIndex, CommonMaterial* material);
 	//void drawMesh(StaticMeshModel* mesh, int subsetIndex, CommonMaterial* material);
+
+	void drawSkinnedMesh(SkinnedMeshModel* mesh);
 
 	void blit(Texture* source);
 	void blit(Texture* source, const Matrix& transform);

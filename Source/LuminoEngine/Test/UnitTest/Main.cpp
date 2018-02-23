@@ -147,6 +147,9 @@ void EngineInitalize()
 	// テストしやすいように固定フレームレートにする
 	Engine::setFrameUpdateMode(FrameUpdateMode::Fixed);
 
+	// WorldObject を World へ自動追加しない
+	Engine::setActiveWorld2D(nullptr);
+	Engine::setActiveWorld3D(nullptr);
 
 	RawFont::registerFontFile(LN_LOCALFILE("../../../../Tools/VLGothic/VL-Gothic-Regular.ttf"));
 	RawFont::getDefaultFont()->setName(_LT("VL Gothic"));
@@ -185,17 +188,14 @@ GTEST_API_ int main(int argc, char **argv)
 #endif
 	setlocale(LC_ALL, "");
 
-#if 1	// 部分的にテストを実行したりする
-	char* testArgs[] = {
+	char* testArgs[] =
+	{
 		argv[0],
 		"--gtest_break_on_failure",
-		"--gtest_filter=Test_Graphics_Rendering.drawSquarePrimitive",
+		//"--gtest_filter=Test_Scene_Sprite2D.Basic",
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 	testing::InitGoogleTest(&argc, (char**)testArgs);
-#else
-	testing::InitGoogleTest(&argc, argv);
-#endif
 	::testing::AddGlobalTestEnvironment(new TestEnv());
 
 	{
@@ -205,7 +205,7 @@ GTEST_API_ int main(int argc, char **argv)
 		EngineSettings::setMainWindowSize(SizeI(160 * scale, 120 * scale));
 		EngineSettings::setMainBackBufferSize(SizeI(160 * scale, 120 * scale));
 		EngineSettings::setGraphicsRenderingType(GraphicsRenderingType::Threaded);//GraphicsRenderingType::Immediate);//
-		detail::EngineSettings::instance.defaultSkinFilePath = LN_LOCALFILE("UI/Data/Skin.png");
+		detail::EngineSettings::instance.defaultSkinFilePath = LN_LOCALFILE("UI/TestData/Skin.png");
 	}
 	
 	{

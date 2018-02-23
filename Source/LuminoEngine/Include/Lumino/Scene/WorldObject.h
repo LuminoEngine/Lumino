@@ -10,6 +10,13 @@ class WorldObject;
 using WorldObjectPtr = Ref<WorldObject>;
 class Component;
 
+enum class WorldCoordinateClass
+{
+	None,
+	World2D,
+	World3D,
+};
+
 enum class BuiltinLayers
 {
 	Default2D,
@@ -139,11 +146,11 @@ protected:
 	virtual void onUIEvent(UIEventArgs* e);
 
 LN_INTERNAL_ACCESS:
-	//const Matrix& GetCombinedGlobalMatrix() const { return m_combinedGlobalMatrix; }
 	const List<Ref<Component>>& getComponents() const { return m_components; }
 	void setSpecialObject(bool enalbed) { m_isSpecialObject = true; }
 	bool isSpecialObject() const { return m_isSpecialObject; }
 	void updateWorldMatrixHierarchical();
+	static void tryAddActiveWorld(WorldCoordinateClass coordinateClass, WorldObject* obj);
 
 private:
 	void updateFrame(float deltaSceonds);

@@ -1503,6 +1503,30 @@ Matrix Matrix::makeReflection(const Plane& plane_)
 		x2 * plane.D, y2 * plane.D, z2 * plane.D, 1.0f);
 }
 
+Matrix Matrix::makeLookAtRotation(const Vector3& target, const Vector3& up)
+{
+	Vector3 f = Vector3::normalize(target);
+
+	Vector3 s = Vector3::cross(up, f);
+	if (Vector3::nearEqual(s, Vector3::Zero))
+	{
+		// TODO: https://jp.mathworks.com/help/matlab/ref/circshift.html?requestedDomain=www.mathworks.com
+		// f と up が同一軸上にある
+		Vector3 u2 = Vector3::UnitZ;
+		//std::rotate<float*>(&u2.x, (&u2.x)+2, &u2.z);
+		s = Vector3::cross(u2, f);
+	}
+
+	s.normalize();
+
+	Vector3 u = Vector3::cross(f, s);
+	return Matrix(
+		s.x, s.y, s.z, 0.0f,
+		u.x, u.y, u.z, 0.0f,
+		f.x, f.y, f.z, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f);
+}
+
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------

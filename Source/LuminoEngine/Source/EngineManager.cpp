@@ -332,8 +332,8 @@ void EngineManager::initialize()
 
 	EngineDiagCore::Instance.initialize(this);
 
-	m_defaultWorld2D = newObject<World2D>();
-	m_defaultWorld3D = newObject<World3D>();
+	m_activeWorld2D = m_defaultWorld2D = newObject<World2D>();
+	m_activeWorld3D = m_defaultWorld3D = newObject<World3D>();
 	m_uiManager->createGameModeMainFrame(m_defaultWorld2D, m_defaultWorld3D);
 	m_uiManager->getMainWindow()->setDelayedRenderingSkip(m_configData.delayedRenderingSkip);
 	m_uiManager->getMainWindow()->setInputManager(m_inputManager);
@@ -818,15 +818,35 @@ void EngineManager::exit()
 }
 
 //------------------------------------------------------------------------------
-World2D* EngineManager::getDefaultWorld2D() const
+World2D* EngineManager::defaultWorld2D() const
 {
 	return m_defaultWorld2D;
 }
 
 //------------------------------------------------------------------------------
-World3D* EngineManager::getDefaultWorld3D() const
+World3D* EngineManager::defaultWorld3D() const
 {
 	return m_defaultWorld3D;
+}
+
+World2D* EngineManager::activeWorld2D() const
+{
+	return m_activeWorld2D;
+}
+
+World3D* EngineManager::activeWorld3D() const
+{
+	return m_activeWorld3D;
+}
+
+void EngineManager::setActiveWorld2D(World2D* world)
+{
+	m_activeWorld2D = world;
+}
+
+void EngineManager::setActiveWorld3D(World3D* world)
+{
+	m_activeWorld3D = world;
 }
 
 //------------------------------------------------------------------------------
@@ -863,7 +883,7 @@ namespace detail {
 //------------------------------------------------------------------------------
 PhysicsWorld* EngineDomain::getPhysicsWorld3D()
 {
-	return EngineManager::getInstance()->getDefaultWorld3D()->getPhysicsWorld3D();
+	return EngineManager::getInstance()->defaultWorld3D()->getPhysicsWorld3D();
 }
 
 //------------------------------------------------------------------------------
@@ -909,15 +929,15 @@ SceneGraphManager* EngineDomain::getSceneGraphManager()
 }
 
 //------------------------------------------------------------------------------
-World2D* EngineDomain::getDefaultWorld2D()
+World2D* EngineDomain::defaultWorld2D()
 {
-	return EngineManager::getInstance()->getDefaultWorld2D();
+	return EngineManager::getInstance()->defaultWorld2D();
 }
 
 //------------------------------------------------------------------------------
-World3D* EngineDomain::getDefaultWorld3D()
+World3D* EngineDomain::defaultWorld3D()
 {
-	return EngineManager::getInstance()->getDefaultWorld3D();
+	return EngineManager::getInstance()->defaultWorld3D();
 }
 
 } // namespace detail

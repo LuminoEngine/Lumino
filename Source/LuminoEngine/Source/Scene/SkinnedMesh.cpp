@@ -4,9 +4,8 @@
 #include <Lumino/Mesh/SkinnedMeshModel.h>
 #include <Lumino/Rendering/RenderingContext.h>
 #include <Lumino/Scene/SceneGraph.h>
-#include <Lumino/Scene/MeshModelObject.h>
+#include <Lumino/Scene/SkinnedMesh.h>
 #include "../Mesh/PmxSkinnedMesh.h"
-//#include "MME/MMEShader.h"
 #include "SceneGraphManager.h"
 
 LN_NAMESPACE_BEGIN
@@ -110,20 +109,21 @@ void SkinnedMeshComponent::onUpdateFrame(float elapsedTime)
 //------------------------------------------------------------------------------
 void SkinnedMeshComponent::onRender2(RenderingContext* renderer)
 {
-	StaticMeshModel* mesh = m_meshModel->m_mesh;
+	renderer->drawSkinnedMesh(m_meshModel);
+	//StaticMeshModel* mesh = m_meshModel->m_mesh;
 
 
-	for (int iMesh = 0; iMesh < mesh->getMeshResourceCount(); iMesh++)
-	{
-		MeshResource* m = mesh->getMeshResource(iMesh);
-		for (int i = 0; i < m->getSubsetCount(); i++)
-		{
-			MeshAttribute attr;
-			m->getMeshAttribute(i, &attr);
-			renderer->drawMesh(m, i, mesh->getMaterial(attr.MaterialIndex));
-			//renderer->drawMesh(m, i, /*GetMaterials()->GetAt(i)*/);
-		}
-	}
+	//for (int iMesh = 0; iMesh < mesh->getMeshResourceCount(); iMesh++)
+	//{
+	//	MeshResource* m = mesh->getMeshResource(iMesh);
+	//	for (int i = 0; i < m->getSubsetCount(); i++)
+	//	{
+	//		MeshAttribute attr;
+	//		m->getMeshAttribute(i, &attr);
+	//		renderer->drawMesh(m, i, mesh->getMaterial(attr.MaterialIndex));
+	//		//renderer->drawMesh(m, i, /*GetMaterials()->GetAt(i)*/);
+	//	}
+	//}
 
 	//int subsetCount = mesh->getSubsetCount();
 	//for (int i = 0; i < subsetCount; i++)

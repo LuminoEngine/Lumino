@@ -239,7 +239,6 @@ bool HLSLMetadataParser::parseRenderState(HLSLPass* pass)
 	return true;
 }
 
-
 //==============================================================================
 // LuminoShaderContext
 //==============================================================================
@@ -282,6 +281,16 @@ void LuminoShaderContext::initialize()
 		static const size_t size = LN_ARRAY_SIZE_OF(data);
 		m_builtinShaderList.push_back({ "LuminoShadow.fxh", std::string((const char*)data, size) });
 	}
+
+	// LuminoSkinning.fxh.h
+	{
+		static const unsigned char data[] =
+		{
+#include "Resource/LuminoSkinning.fxh.h"
+		};
+		static const size_t size = LN_ARRAY_SIZE_OF(data);
+		m_builtinShaderList.push_back({ "LuminoSkinning.fxh", std::string((const char*)data, size) });
+	}
 }
 
 bool LuminoShaderContext::findBuiltinShaderCode(const char* pathBegin, const char* pathEnd, const char** codeBegin, const char** codeEnd)
@@ -298,7 +307,6 @@ bool LuminoShaderContext::findBuiltinShaderCode(const char* pathBegin, const cha
 	}
 	return false;
 }
-
 
 class LuminoID3DInclude
 	: public ID3DXInclude

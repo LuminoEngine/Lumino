@@ -8,6 +8,7 @@
 #include <Lumino/Rendering/SceneRenderer.h>	// TODO
 #include <Lumino/Graphics/ContextInterface.h>
 #include <Lumino/Mesh/Mesh.h>
+#include <Lumino/Mesh/SkinnedMeshModel.h>
 #include "../Graphics/Device/GraphicsDriverInterface.h"
 #include "../Graphics/GraphicsManager.h"
 #include "../Graphics/CoreGraphicsRenderFeature.h"
@@ -774,9 +775,8 @@ DrawElement::DrawElement()
 	//, zSortDistanceBase(ZSortDistanceBase::CameraDistance)
 	, zDistance(0.0f)
 	, m_stateFence(0)
+	, m_localBoundingSphere{ Vector3::Zero, -1.0f }
 {
-	boundingSphere.center = Vector3::Zero;
-	boundingSphere.radius = -1.0f;
 }
 
 //------------------------------------------------------------------------------
@@ -809,12 +809,17 @@ void DrawElement::makeSubsetInfo(DrawElementList* oenerList, RenderStage* stage,
 {
 }
 
-//------------------------------------------------------------------------------
 void DrawElement::makeBoundingSphere(const Vector3& minPos, const Vector3& maxPos)
 {
 	Vector3 center = minPos + ((maxPos - minPos) / 2);
-	boundingSphere.center = center;
-	boundingSphere.radius = std::max(Vector3::distance(minPos, center), Vector3::distance(maxPos, center));
+	m_localBoundingSphere.center = center;
+	m_localBoundingSphere.radius = std::max(Vector3::distance(minPos, center), Vector3::distance(maxPos, center));
+}
+
+void DrawElement::makeBoundingSphere(float radius)
+{
+	m_localBoundingSphere.center = Vector3::Zero;
+	m_localBoundingSphere.radius = radius;
 }
 
 //------------------------------------------------------------------------------
@@ -1296,7 +1301,7 @@ void DrawList::clear(ClearFlags flags, const Color& color, float z, uint8_t sten
 		float z;
 		uint8_t stencil;
 
-		virtual void drawSubset(const DrawArgs& e) override
+		virtual void drawSubset(const DrawArgs& e, int subsetIndex) override
 		{
 			e.context->beginBaseRenderer()->clear(flags, color, z, stencil);
 		}
@@ -1327,7 +1332,7 @@ void DrawList::drawLinePrimitive(
 		Vector3 position1; Color color1;
 		Vector3 position2; Color color2;
 
-		virtual void drawSubset(const DrawArgs& e) override
+		virtual void drawSubset(const DrawArgs& e, int subsetIndex) override
 		{
 			e.context->beginPrimitiveRenderer()->drawLine(
 				position1, color1, position2, color2);
@@ -1355,7 +1360,7 @@ void DrawList::drawSquarePrimitive(
 		Vector2 uv[4];
 		Color color[4];
 
-		virtual void drawSubset(const DrawArgs& e) override
+		virtual void drawSubset(const DrawArgs& e, int subsetIndex) override
 		{
 			e.context->beginPrimitiveRenderer()->drawSquare(
 				position[0], uv[0], color[0],
@@ -1381,7 +1386,7 @@ void DrawList::drawSquare(float sizeX, float sizeZ, int slicesX, int slicesZ, co
 	public:
 		detail::PlaneMeshFactory3 factory;
 
-		virtual void drawSubset(const DrawArgs& e) override
+		virtual void drawSubset(const DrawArgs& e, int subsetIndex) override
 		{
 			auto* r = e.context->beginPrimitiveRenderer();
 			r->drawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
@@ -1390,8 +1395,7 @@ void DrawList::drawSquare(float sizeX, float sizeZ, int slicesX, int slicesZ, co
 	};
 	auto* e = resolveDrawElement<DrawCylinderElement>(m_manager->getInternalContext()->m_primitiveRenderer, material);
 	e->factory.initialize(Vector2(sizeX, sizeZ), slicesX, slicesZ, color, localTransform);
-	e->boundingSphere.center = Vector3::Zero;
-	e->boundingSphere.radius = Vector3(sizeX, sizeZ, 0).getLength();
+	e->makeBoundingSphere(Vector3(sizeX, sizeZ, 0).getLength());
 }
 
 //------------------------------------------------------------------------------
@@ -1402,7 +1406,7 @@ void DrawList::drawArc(float startAngle, float endAngle, float innerRadius, floa
 	public:
 		detail::ArcMeshFactory factory;
 
-		virtual void drawSubset(const DrawArgs& e) override
+		virtual void drawSubset(const DrawArgs& e, int subsetIndex) override
 		{
 			auto* r = e.context->beginPrimitiveRenderer();
 			r->drawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
@@ -1411,8 +1415,7 @@ void DrawList::drawArc(float startAngle, float endAngle, float innerRadius, floa
 	};
 	auto* e = resolveDrawElement<DrawArcElement>(m_manager->getInternalContext()->m_primitiveRenderer, material);
 	e->factory.initialize(startAngle, endAngle, innerRadius, outerRadius, slices, color, localTransform);
-	e->boundingSphere.center = Vector3::Zero;
-	e->boundingSphere.radius = outerRadius;
+	e->makeBoundingSphere(outerRadius);
 }
 
 //------------------------------------------------------------------------------
@@ -1425,7 +1428,7 @@ void DrawList::drawBox(const Box& box, const Color& color, const Matrix& localTr
 	public:
 		detail::RegularBoxMeshFactory factory;
 
-		virtual void drawSubset(const DrawArgs& e) override
+		virtual void drawSubset(const DrawArgs& e, int subsetIndex) override
 		{
 			auto* r = e.context->beginPrimitiveRenderer();
 			r->drawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
@@ -1448,7 +1451,7 @@ void DrawList::drawSphere(float radius, int slices, int stacks, const Color& col
 	public:
 		detail::RegularSphereMeshFactory factory;
 
-		virtual void drawSubset(const DrawArgs& e) override
+		virtual void drawSubset(const DrawArgs& e, int subsetIndex) override
 		{
 			auto* r = e.context->beginPrimitiveRenderer();
 			r->drawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
@@ -1457,8 +1460,7 @@ void DrawList::drawSphere(float radius, int slices, int stacks, const Color& col
 	};
 	auto* e = resolveDrawElement<DrawSphereElement>(m_manager->getInternalContext()->m_primitiveRenderer, material);
 	e->factory.initialize(radius, slices, stacks, color, localTransform);
-	e->boundingSphere.center = Vector3::Zero;
-	e->boundingSphere.radius = radius;
+	e->makeBoundingSphere(radius);
 }
 
 //------------------------------------------------------------------------------
@@ -1469,7 +1471,7 @@ void DrawList::drawCylinder(float radius, float	height, int slices, int stacks, 
 	public:
 		detail::RegularCylinderMeshFactory factory;
 
-		virtual void drawSubset(const DrawArgs& e) override
+		virtual void drawSubset(const DrawArgs& e, int subsetIndex) override
 		{
 			auto* r = e.context->beginPrimitiveRenderer();
 			r->drawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
@@ -1478,8 +1480,7 @@ void DrawList::drawCylinder(float radius, float	height, int slices, int stacks, 
 	};
 	auto* e = resolveDrawElement<DrawCylinderElement>(m_manager->getInternalContext()->m_primitiveRenderer, nullptr);
 	e->factory.initialize(radius, height, slices, stacks, color, localTransform);
-	e->boundingSphere.center = Vector3::Zero;
-	e->boundingSphere.radius = Vector3(radius, height, 0).getLength();
+	e->makeBoundingSphere(Vector3(radius, height, 0).getLength());
 }
 
 //------------------------------------------------------------------------------
@@ -1490,7 +1491,7 @@ void DrawList::drawCone(float radius, float height, int slices, const Color& col
 	public:
 		detail::RegularConeMeshFactory factory;
 
-		virtual void drawSubset(const DrawArgs& e) override
+		virtual void drawSubset(const DrawArgs& e, int subsetIndex) override
 		{
 			auto* r = e.context->beginPrimitiveRenderer();
 			r->drawMeshFromFactory(factory, detail::PrimitiveRendererMode::TriangleList);
@@ -1499,14 +1500,76 @@ void DrawList::drawCone(float radius, float height, int slices, const Color& col
 	};
 	auto* e = resolveDrawElement<DrawConeElement>(m_manager->getInternalContext()->m_primitiveRenderer, nullptr);
 	e->factory.initialize(radius, height, slices, color, localTransform);
-	e->boundingSphere.center = Vector3::Zero;
-	e->boundingSphere.radius = Vector3(radius, height, 0).getLength();
+	e->makeBoundingSphere(Vector3(radius, height, 0).getLength());
 }
 
 //------------------------------------------------------------------------------
 void DrawList::drawMesh(MeshResource* mesh, int subsetIndex, CommonMaterial* material)
 {
 	drawMeshResourceInternal(mesh, subsetIndex, material);
+}
+
+void DrawList::drawSkinnedMesh(SkinnedMeshModel* mesh)
+{
+    class DrawElement_drawSkinnedMesh : public detail::LightingDrawElement
+    {
+    public:
+        Ref<SkinnedMeshModel>    mesh;
+		detail::CommandDataCache::DataHandle skinningMatricesDataHandle;
+
+
+		virtual CommonMaterial*	getPriorityMaterial(int subsetIndex)
+		{
+			MeshResource* m = mesh->getMeshResource(0);
+			MeshAttribute attr;
+			m->getMeshAttribute(subsetIndex, &attr);
+			return mesh->m_mesh->getMaterial(attr.MaterialIndex);
+		}
+
+		virtual void makeElementInfo(detail::DrawElementList* oenerList, const detail::CameraInfo& cameraInfo, RenderView* renderView, detail::ElementInfo* outInfo) override
+		{
+			detail::LightingDrawElement::makeElementInfo(oenerList, cameraInfo, renderView, outInfo);
+
+			outInfo->boneTexture->setMappedData(oenerList->getExtData(skinningMatricesDataHandle));
+		}
+
+        virtual void drawSubset(const DrawArgs& e, int subsetIndex) override
+        {
+			MeshResource* m = mesh->getMeshResource(0);
+			MeshAttribute attr;
+			m->getMeshAttribute(subsetIndex, &attr);
+			//renderer->drawMesh(m, i, mesh->getMaterial(attr.MaterialIndex));
+            e.context->beginMeshRenderer()->drawMesh(m, attr.StartIndex, attr.PrimitiveNum, attr.primitiveType);
+        }
+        virtual void reportDiag(RenderDiag* diag) override { diag->callCommonElement(_LT("DrawMeshResourceInternal")); }
+    };
+
+    ////MeshAttribute attr;
+    ////mesh->getMeshAttribute(subsetIndex, &attr);
+    ////if (attr.PrimitiveNum == 0) return;        // not need draw
+
+    auto* e = resolveDrawElement<DrawElement_drawSkinnedMesh>(m_manager->getInternalContext()->m_meshRenderer, nullptr);
+    //e->subsetIndex = subsetIndex;
+	e->vertexProcessing = detail::ShaderTechniqueClass_MeshProcess::SkinnedMesh;
+    e->mesh = mesh;
+	e->subsetCount = mesh->getMeshResource(0)->getSubsetCount();
+
+	size_t dataSize = mesh->skinningMatrices().getCount() * sizeof(Matrix);
+	e->skinningMatricesDataHandle = m_drawElementList.allocExtData(dataSize);
+
+	memcpy(m_drawElementList.getExtData(e->skinningMatricesDataHandle), &(mesh->skinningMatrices()[0]), dataSize);
+    //e->boundingSphere = ;    // TODO
+
+    /* TODO: 後々、CommandBuffer で描画したい。
+
+    auto commands = renderer->requestObjectCommandBuffer();        // 描画オブジェクト1つ分のコマンド。
+    commands->setBounds(カリングのための境界球など);
+    commands->setBones(Matrix[]);    // BlukData
+    for (サブセット)
+    {
+        commands->drawMesh(subset, material);
+    }
+    */
 }
 
 //------------------------------------------------------------------------------
@@ -1548,7 +1611,7 @@ void DrawList::drawGlyphRun(const Point& position, GlyphRun* glyphRun)
 		Ref<GlyphRun>	glyphRun;
 		Point position;
 
-		virtual void drawSubset(const DrawArgs& e) override
+		virtual void drawSubset(const DrawArgs& e, int subsetIndex) override
 		{
 			e.context->beginTextRenderer()->drawGlyphRun(getTransform(e.oenerList), position, glyphRun);
 		}
@@ -1587,7 +1650,7 @@ void DrawList::drawText_(const StringRef& text, const Rect& rect, StringFormatFl
 		Rect rect;
 		StringFormatFlags flags;
 
-		virtual void drawSubset(const DrawArgs& e) override
+		virtual void drawSubset(const DrawArgs& e, int subsetIndex) override
 		{
 			e.context->beginTextRenderer()->drawString(getTransform(e.oenerList), text.c_str(), text.getLength(), rect, flags);
 		}
@@ -1633,7 +1696,7 @@ void DrawList::drawChar(uint32_t codePoint, const Rect& rect, StringFormatFlags 
 		StringFormatFlags flags;
 		//Point position;
 
-		virtual void drawSubset(const DrawArgs& e) override
+		virtual void drawSubset(const DrawArgs& e, int subsetIndex) override
 		{
 			e.context->beginTextRenderer()->drawChar(getTransform(e.oenerList), ch, rect, flags);
 			//e.context->beginVectorTextRenderer()->drawChar(getTransform(e.oenerList), ch, Rect(position, 0, 0), TextLayoutOptions::None);
@@ -1658,7 +1721,7 @@ void DrawList::drawText2(const StringRef& text, const Rect& rect)
 		int length;
 		Rect rect;
 
-		virtual void drawSubset(const DrawArgs& e) override
+		virtual void drawSubset(const DrawArgs& e, int subsetIndex) override
 		{
 			e.context->beginVectorTextRenderer()->drawString(
 				getTransform(e.oenerList), 
@@ -1705,7 +1768,7 @@ void DrawList::drawSprite(
 		SpriteBaseDirection baseDirection;
 		BillboardType billboardType;
 
-		virtual void drawSubset(const DrawArgs& e) override
+		virtual void drawSubset(const DrawArgs& e, int subsetIndex) override
 		{
 			auto* r = e.context->beginSpriteRenderer();
 			r->setTransform(getTransform(e.oenerList));
@@ -1723,10 +1786,10 @@ void DrawList::drawSprite(
 	ptr->color = color;
 	ptr->baseDirection = baseDirection;
 	ptr->billboardType = billboardType;
-	detail::SpriteRenderFeature::makeBoundingSphere(ptr->size, baseDirection, &ptr->boundingSphere);
-	ptr->boundingSphere.center = Vector3::Zero;
+	detail::Sphere sphere;
+	detail::SpriteRenderFeature::makeBoundingSphere(ptr->size, baseDirection, &sphere);
+	ptr->setLocalBoundingSphere(sphere);
 }
-
 
 //------------------------------------------------------------------------------
 class DrawElement_DrawNanoVGCommands : public detail::DrawElement
@@ -1743,7 +1806,7 @@ public:
 		return m_commandList;
 	}
 
-	virtual void drawSubset(const DrawArgs& e) override
+	virtual void drawSubset(const DrawArgs& e, int subsetIndex) override
 	{
 		auto* r = e.context->beginNanoVGRenderer();
 		//auto cl = r->TakeCommandList();
@@ -1851,7 +1914,7 @@ void DrawList::drawMeshResourceInternal(MeshResource* mesh, int subsetIndex, Com
 		int primitiveCount;
 		PrimitiveType primitiveType;
 
-		virtual void drawSubset(const DrawArgs& e) override
+		virtual void drawSubset(const DrawArgs& e, int subsetIndex) override
 		{
 			e.context->beginMeshRenderer()->drawMesh(mesh, startIndex, primitiveCount, primitiveType);
 		}
@@ -1928,7 +1991,7 @@ void DrawList::blitInternal(Texture* source, RenderTargetTexture* dest, const Ma
 			outInfo->materialTexture = source;
 		}
 
-		virtual void drawSubset(const DrawArgs& e) override
+		virtual void drawSubset(const DrawArgs& e, int subsetIndex) override
 		{
 			e.context->beginBlitRenderer()->blit();
 		}
@@ -1961,7 +2024,7 @@ void DrawList::drawFrameRectangle(const Rect& rect)
 			//outInfo->materialTexture = oenerList->getBatch(batchIndex)->state.getBrush()->getTexture();
 			outInfo->materialTexture = oenerList->getRenderStage(batchIndex)->getBrushFinal()->getTexture();
 		}
-		virtual void drawSubset(const DrawArgs& e) override
+		virtual void drawSubset(const DrawArgs& e, int subsetIndex) override
 		{
 			auto* r = e.context->beginFrameRectRenderer();
 			r->draw(getTransform(e.oenerList), rect);
@@ -2045,4 +2108,3 @@ void DrawList::drawFrameRectangle(const Rect& rect)
 //}
 
 LN_NAMESPACE_END
-

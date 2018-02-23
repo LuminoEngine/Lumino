@@ -94,21 +94,41 @@ void Engine::resetFrameDelay()
 }
 
 //------------------------------------------------------------------------------
-World2D* Engine::getWorld2D()
+World2D* Engine::defaultWorld2D()
 {
-	return EngineManager::Instance->getDefaultWorld2D();
+	return EngineManager::Instance->defaultWorld2D();
 }
 
 //------------------------------------------------------------------------------
-World3D* Engine::getWorld3D()
+World3D* Engine::defaultWorld3D()
 {
-	return EngineManager::Instance->getDefaultWorld3D();
+	return EngineManager::Instance->defaultWorld3D();
+}
+
+World2D* Engine::activeWorld2D()
+{
+	return EngineManager::Instance->activeWorld2D();
+}
+
+World3D* Engine::activeWorld3D()
+{
+	return EngineManager::Instance->activeWorld3D();
+}
+
+void Engine::setActiveWorld2D(World2D* world)
+{
+	return EngineManager::Instance->setActiveWorld2D(world);
+}
+
+void Engine::setActiveWorld3D(World3D* world)
+{
+	return EngineManager::Instance->setActiveWorld3D(world);
 }
 
 //------------------------------------------------------------------------------
 Camera* Engine::getCamera3D()
 {
-	return EngineManager::Instance->getDefaultWorld3D()->getMainCamera();
+	return EngineManager::Instance->defaultWorld3D()->getMainCamera();
 }
 
 UIFrameWindow* Engine::getMainWindow()

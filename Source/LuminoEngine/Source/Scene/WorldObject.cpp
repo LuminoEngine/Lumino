@@ -4,6 +4,7 @@
 #include <Lumino/Scene/WorldObject.h>
 #include <Lumino/UI/UIEventArgs.h>
 #include "../Framework/GameSceneManager.h"
+#include "../EngineManager.h"
 
 LN_NAMESPACE_BEGIN
 
@@ -69,7 +70,6 @@ bool LayerMask::filterComponent(Component* obj, uint32_t layerMask)
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(WorldObject, Object);
 
-//------------------------------------------------------------------------------
 WorldObjectPtr WorldObject::create()
 {
 	auto ptr = WorldObjectPtr::makeRef();
@@ -77,7 +77,6 @@ WorldObjectPtr WorldObject::create()
 	return ptr;
 }
 
-//------------------------------------------------------------------------------
 WorldObject::WorldObject()
 	: m_world(nullptr)
 	, m_children()
@@ -90,7 +89,6 @@ WorldObject::WorldObject()
 {
 }
 
-//------------------------------------------------------------------------------
 WorldObject::~WorldObject()
 {
 }
@@ -270,6 +268,26 @@ void WorldObject::updateWorldMatrixHierarchical()
 	}
 }
 
+void WorldObject::tryAddActiveWorld(WorldCoordinateClass coordinateClass, WorldObject* obj)
+{
+	World* world = nullptr;
+	switch (coordinateClass)
+	{
+	case ln::WorldCoordinateClass::World2D:
+		world = detail::EngineDomain::getEngineManager()->activeWorld2D();
+		break;
+	case ln::WorldCoordinateClass::World3D:
+		world = detail::EngineDomain::getEngineManager()->activeWorld3D();
+		break;
+	default:
+		break;
+	}
+	if (world)
+	{
+		world->add(obj);
+	}
+}
+
 ////==============================================================================
 //// WorldObject2D
 ////==============================================================================
@@ -289,7 +307,7 @@ void WorldObject::updateWorldMatrixHierarchical()
 //void WorldObject2D::initialize()
 //{
 //	WorldObject::initialize();
-//	detail::EngineDomain::getDefaultWorld2D()->addWorldObject(this, true);
+//	detail::EngineDomain::defaultWorld2D()->addWorldObject(this, true);
 //}
 //
 //
@@ -312,7 +330,7 @@ void WorldObject::updateWorldMatrixHierarchical()
 //void WorldObject3D::initialize()
 //{
 //	WorldObject::initialize();
-//	detail::EngineDomain::getDefaultWorld3D()->addWorldObject(this, true);
+//	detail::EngineDomain::defaultWorld3D()->addWorldObject(this, true);
 //}
 
 LN_NAMESPACE_END

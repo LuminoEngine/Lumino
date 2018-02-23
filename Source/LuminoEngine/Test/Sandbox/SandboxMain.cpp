@@ -1,7 +1,6 @@
 ﻿
 #include <LuminoEngine.h>
 #include <Lumino/Mesh/GizmoModel.h>
-#include <Lumino/Scene/MeshModelObject.h>
 #include <Lumino/Scene/StaticMesh.h>
 #include <Lumino/Scene/Light.h>
 #include <Lumino/Framework/Application.h>
@@ -103,9 +102,9 @@ void Main()
 	//	}
 	//});
 
-	auto* uiRoot = Engine::getDefaultUILayer()->GetLayoutView();
-	auto button1 = UIButton::create(_T("button1"), 80, 32);
-	uiRoot->addChild(button1);
+	//auto* uiRoot = Engine::getDefaultUILayer()->GetLayoutView();
+	//auto button1 = UIButton::create(_T("button1"), 80, 32);
+	//uiRoot->addChild(button1);
 
 	//auto text1 = UITextField::create();
 	//text1->setPosition(Point(10, 20));
@@ -114,7 +113,7 @@ void Main()
 
 	//auto text1 = TextBlock2D::create(_T("text"));
 	//text1->setBlendMode(BlendMode::Alpha);
-	//Engine::getWorld2D()->add(text1);
+	//Engine::defaultWorld2D()->add(text1);
 
 	while (Engine::update())
 	{

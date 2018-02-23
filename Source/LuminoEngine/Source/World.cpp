@@ -90,6 +90,8 @@ DrawList* World::GetDebugRenderer() const
 //------------------------------------------------------------------------------
 void World::addWorldObject(WorldObject* obj, bool autoRelease)
 {
+	if (LN_REQUIRE(obj)) return;
+	if (LN_REQUIRE(!obj->m_world)) return;
 	m_rootWorldObjectList.add(obj);
 	obj->m_world = this;
 	obj->m_isAutoRelease = autoRelease;
@@ -99,7 +101,7 @@ void World::addWorldObject(WorldObject* obj, bool autoRelease)
 //------------------------------------------------------------------------------
 void World::removeWorldObject(WorldObject* obj)
 {
-	if (LN_REQUIRE(obj != nullptr)) return;
+	if (LN_REQUIRE(obj)) return;
 	if (LN_REQUIRE(obj->m_world == this)) return;
 	m_rootWorldObjectList.remove(obj);
 	obj->m_parent = nullptr;

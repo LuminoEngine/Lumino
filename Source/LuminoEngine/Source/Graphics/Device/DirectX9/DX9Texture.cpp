@@ -178,58 +178,65 @@ void DX9Texture::setSubData(const PointI& point, const void* data, size_t dataBy
 	int lineWidth = lockRect.right - lockRect.left;
 	int lineHeight = lockRect.bottom - lockRect.top;
 
+	D3DSURFACE_DESC desc;
+	LN_COMCALL(m_dxTexture->GetLevelDesc(0, &desc));
+
 	D3DLOCKED_RECT lockedRect;
 	LN_COMCALL(m_dxTexture->LockRect(0, &lockedRect, &lockRect, D3DLOCK_DISCARD));
 
-	size_t pixelByteSize = lockedRect.Pitch / m_size.width;		// ピクセルバイト数
-	size_t srcRowBytes = pixelByteSize * dataBitmapSize.width;	// 横一列のバイト数
+	DX9Helper::writeLockedRectData(desc, lockedRect, data);
 
-#if 1
-	// 上下反転して転送 (DX9 は downflow)
-	byte_t* dst = (byte_t*)lockedRect.pBits;
-	const byte_t* src = (const byte_t*)data;
-	for (int row = 0; row < lineHeight; ++row)
-	{
-		//byte_t* dstline = dst + (lockedRect.Pitch * row);		// TODO format
-		byte_t* dstline = dst + (lockedRect.Pitch * (lineHeight - row - 1));		// TODO format
-		const byte_t* srcline = src + (srcRowBytes * row);	// TODO format
-		memcpy(dstline, srcline, srcRowBytes);
-	}
-#endif
-#if 0
-	byte_t* dst = (byte_t*)lockedRect.pBits;
-	dst += lockedRect.Pitch * point.y;
-	size_t ofs = pixelSize * point.x;
-	const byte_t* src = (const byte_t*)data;
-	for (int row = 0; row < lineHeight; ++row)
-	{
-		byte_t* dstline = dst + (ofs + lockedRect.Pitch * row);		// TODO format
-		const byte_t* srcline = src + (srcRowBytes * row);	// TODO format
-		memcpy(dstline, srcline, srcRowBytes);
-	}
-#endif
-#if 0
-	byte_t* dst = (byte_t*)lockedRect.pBits;
-	const byte_t* src = (const byte_t*)data;
-	for (int row = 0; row < lineHeight; ++row)
-	{
-		byte_t* dstline = dst + (srcRowBytes * row);		// TODO format
-		const byte_t* srcline = src + (srcRowBytes * row);	// TODO format
-		memcpy(dstline, srcline, srcRowBytes);
-	}
-#endif
-#if 0
-	const byte_t* d = (const byte_t*)data;
-	byte_t* w = (byte_t*)lockedRect.pBits;
-	w += lockedRect.Pitch * point.y;
-	size_t ofs = pixelSize * point.x;
-	for (int row = 0; row < lineHeight; ++row)
-	{
-		byte_t* dstline = &w[lockedRect.Pitch * row + ofs];	// TODO format
-		const byte_t* srcline = &d[srcRowBytes * row];	// TODO format
-		memcpy(dstline, srcline, lockedRect.Pitch);
-	}
-#endif
+
+//
+//	size_t pixelByteSize = lockedRect.Pitch / m_size.width;		// ピクセルバイト数
+//	size_t srcRowBytes = pixelByteSize * dataBitmapSize.width;	// 横一列のバイト数
+//
+//#if 0
+//	// 上下反転して転送 (DX9 は downflow)
+//	byte_t* dst = (byte_t*)lockedRect.pBits;
+//	const byte_t* src = (const byte_t*)data;
+//	for (int row = 0; row < lineHeight; ++row)
+//	{
+//		//byte_t* dstline = dst + (lockedRect.Pitch * row);		// TODO format
+//		byte_t* dstline = dst + (lockedRect.Pitch * (lineHeight - row - 1));		// TODO format
+//		const byte_t* srcline = src + (srcRowBytes * row);	// TODO format
+//		memcpy(dstline, srcline, srcRowBytes);
+//	}
+//#endif
+//#if 0
+//	byte_t* dst = (byte_t*)lockedRect.pBits;
+//	dst += lockedRect.Pitch * point.y;
+//	size_t ofs = pixelSize * point.x;
+//	const byte_t* src = (const byte_t*)data;
+//	for (int row = 0; row < lineHeight; ++row)
+//	{
+//		byte_t* dstline = dst + (ofs + lockedRect.Pitch * row);		// TODO format
+//		const byte_t* srcline = src + (srcRowBytes * row);	// TODO format
+//		memcpy(dstline, srcline, srcRowBytes);
+//	}
+//#endif
+//#if 1
+//	byte_t* dst = (byte_t*)lockedRect.pBits;
+//	const byte_t* src = (const byte_t*)data;
+//	for (int row = 0; row < lineHeight; ++row)
+//	{
+//		byte_t* dstline = dst + (srcRowBytes * row);		// TODO format
+//		const byte_t* srcline = src + (srcRowBytes * row);	// TODO format
+//		memcpy(dstline, srcline, srcRowBytes);
+//	}
+//#endif
+//#if 0
+//	const byte_t* d = (const byte_t*)data;
+//	byte_t* w = (byte_t*)lockedRect.pBits;
+//	w += lockedRect.Pitch * point.y;
+//	size_t ofs = pixelSize * point.x;
+//	for (int row = 0; row < lineHeight; ++row)
+//	{
+//		byte_t* dstline = &w[lockedRect.Pitch * row + ofs];	// TODO format
+//		const byte_t* srcline = &d[srcRowBytes * row];	// TODO format
+//		memcpy(dstline, srcline, lockedRect.Pitch);
+//	}
+//#endif
 
 	m_dxTexture->UnlockRect(0);
 }

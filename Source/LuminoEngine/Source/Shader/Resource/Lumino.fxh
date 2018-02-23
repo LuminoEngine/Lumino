@@ -20,10 +20,12 @@ texture		ln_MaterialTexture;
 
 struct LN_VSInput
 {
-	float3	Pos			: POSITION;
-	float3	Normal		: NORMAL0;
-	float4	Color		: COLOR0;
-	float2	UV			: TEXCOORD0;
+	float3	Pos				: POSITION;
+	float3	Normal			: NORMAL0;
+	float4	Color			: COLOR0;
+	float2	UV				: TEXCOORD0;
+	float4	BlendWeight		: BLENDWEIGHT;
+	float4	BlendIndices	: BLENDINDICES;
 };
 
 struct LN_VSOutput_Common

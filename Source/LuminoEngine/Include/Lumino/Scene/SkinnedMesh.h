@@ -32,6 +32,7 @@ private:
 	Ref<SkinnedMeshModel>	m_meshModel;
 };
 
+
 LN_NAMESPACE_END
 
 //#include "../../../src/Modeling/Model.h"	// TODO

@@ -52,6 +52,10 @@ LN_ENUM(BuiltinSemantics)
 	LightAmbients,			// vector[]
 	LightSpeculars,			// vector[]
 
+	BoneTextureReciprocalSize,		// internal
+	BoneTexture,					// internal
+	BoneLocalQuaternionTexture,		// internal
+
 	// Subset unit
 	MaterialTexture,
 	MaterialDiffuse,		// vector
@@ -107,6 +111,9 @@ struct ElementInfo
 	Matrix				WorldMatrix;
 	Matrix				WorldViewProjectionMatrix;
 	DynamicLightInfo**	affectedLights;
+
+	Texture2D*			boneTexture = nullptr;
+	Texture2D*			boneLocalQuaternionTexture = nullptr;
 };
 
 // サブセット単位のデータに関する情報
@@ -154,6 +161,48 @@ private:
 	MemoryStream			m_tempBuffer;
 	BinaryWriter			m_tempBufferWriter;
 };
+
+
+// LigitingModel
+enum class ShaderTechniqueClass_Ligiting : uint8_t
+{
+	Forward,		// default
+	// TODO: Differd
+};
+
+enum class ShaderTechniqueClass_Phase : uint8_t
+{
+	Geometry,		// default
+	// TODO: ShadowCaster
+	// TODO: DepthPrepass
+};
+
+// VertexFactory
+enum class ShaderTechniqueClass_MeshProcess : uint8_t
+{
+	StaticMesh,		// default
+	SkinnedMesh,
+};
+
+// ShadingModel
+// TODO: ShadingModel という enum があるのでそれにする
+enum class ShaderTechniqueClass_ShadingModel : uint8_t
+{
+	Default,		// default
+	UnLighting,
+};
+
+struct ShaderTechniqueClassSet
+{
+	ShaderTechniqueClass_Ligiting		ligiting;
+	ShaderTechniqueClass_Phase			phase;
+	ShaderTechniqueClass_MeshProcess	meshProcess;
+	ShaderTechniqueClass_ShadingModel	shadingModel;
+
+	static void parseTechniqueClassString(const String& str, ShaderTechniqueClassSet* outClassSet);
+	static bool equals(const ShaderTechniqueClassSet& a, const ShaderTechniqueClassSet& b);
+};
+
 
 } // namespace detail
 
@@ -299,6 +348,7 @@ LN_INTERNAL_ACCESS:
 	void tryCommitChanges();
 	detail::ShaderSemanticsManager* getSemanticsManager() { return &m_semanticsManager; }
 	void setShaderValue(uint32_t variableNameHash, const ShaderValue& value);
+	ShaderTechnique* findTechniqueByClass(const detail::ShaderTechniqueClassSet& classSet) const;
 
 	ByteBuffer						m_sourceCode;
 	Driver::IShader*				m_deviceObj;
@@ -525,6 +575,7 @@ protected:
 LN_INTERNAL_ACCESS:
 	Shader* getOwnerShader() { return m_owner; }
 	void changeDevice(Driver::IShaderTechnique* obj);
+	const detail::ShaderTechniqueClassSet& getTechniqueClassSet() const { return m_shaderTechniqueClassSet; }
 
 private:
 	friend class Shader;
@@ -534,6 +585,7 @@ private:
 	String						m_name;
 	List<ShaderPass*>			m_passes;
 	List<ShaderVariable*>		m_annotations;
+	detail::ShaderTechniqueClassSet	m_shaderTechniqueClassSet;
 };
 
 /**

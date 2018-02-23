@@ -20,6 +20,7 @@ public:
 
 	bool findBuiltinShaderCode(const char* pathBegin, const char* pathEnd, const char** codeBegin, const char** codeEnd);
 
+
 private:
 
 	std::shared_ptr<fl::AnalyzerContext> m_flContext;

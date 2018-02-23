@@ -31,6 +31,11 @@ void SceneRenderer::initialize(GraphicsManager* manager)
 {
 	m_manager = manager;
 	m_defaultMaterial = CommonMaterial::create();
+
+	// TODO: Dynamic、NoManaged
+	m_skinningMatricesTexture = newObject<Texture2D>(SizeI(4, 512), TextureFormat::R32G32B32A32_Float, false, ResourceUsage::Static);
+	m_skinningLocalQuaternionsTexture = newObject<Texture2D>(SizeI(1, 512), TextureFormat::R32G32B32A32_Float, false, ResourceUsage::Static);
+
 }
 
 //------------------------------------------------------------------------------
@@ -60,6 +65,7 @@ void SceneRenderer::onShaderPassChainging(ShaderPass* pass)
 		v = shader->findVariable(_T("ln_ViewProjection_Light0"));
 		if (v) v->setMatrix(m_renderingShadowCasterPassList[0]->view.viewProjMatrix);
 	}
+
 }
 
 //ShaderTechnique* SceneRenderer::selectShaderTechnique(Shader* shader)
@@ -194,60 +200,70 @@ void SceneRenderer::render(
 			if (context->getCurrentRenderFeature() == nullptr ||	// TODO: だめ。でもいまやらかしてる人がいるので、後で ASSERT 張って対応する
 				!context->getCurrentRenderFeature()->isStandaloneShader())
 			{
-				//CombinedMaterial* material = currentState->getCombinedMaterial();
-				RenderingPass2::RenderStageFinalData stageData;
-				stageData.stage = currentStage;
-				stageData.material = currentStage->getMaterialFinal(m_defaultMaterial, element->priorityMaterial);
-				stageData.shader = currentStage->getShaderFinal(stageData.material);
-				stageData.shadingModel = currentStage->getShadingModelFinal(stageData.material);
-
-				ElementRenderingPolicy policy;
-				pass->selectElementRenderingPolicy(element, stageData, &policy);
-				visible = policy.visible;
-
 				if (visible)
 				{
-					Shader* shader = policy.shader;
-
 					ElementInfo elementInfo;
+					elementInfo.boneTexture = m_skinningMatricesTexture;
+					elementInfo.boneLocalQuaternionTexture = m_skinningLocalQuaternionsTexture;
 					element->makeElementInfo(element->m_ownerDrawElementList, cameraInfo, drawElementListSet, &elementInfo);
 					//drawElementListSet->filterWorldMatrix(&elementInfo.WorldMatrix);
 					//elementInfo.WorldViewProjectionMatrix = elementInfo.WorldMatrix * cameraInfo.viewMatrix * cameraInfo.projMatrix;	// TODO: viewProj はまとめたい
-
-
-
-					SubsetInfo subsetInfo;
-					subsetInfo.renderStage = currentStage;
-					subsetInfo.finalMaterial = stageData.material;
-					subsetInfo.materialTexture = (subsetInfo.finalMaterial != nullptr) ? subsetInfo.finalMaterial->getMaterialTexture(nullptr) : nullptr;
-					element->makeSubsetInfo(element->m_ownerDrawElementList, currentStage, &subsetInfo);
-
-					//currentState->IsStandaloneShaderRenderer
-
-					if (context->getCurrentRenderFeature() != nullptr)
+					//if (context->getCurrentRenderFeature() != nullptr)
 					{
 						context->getCurrentRenderFeature()->onShaderElementInfoOverride(&elementInfo);
-						context->getCurrentRenderFeature()->onShaderSubsetInfoOverride(&subsetInfo);
 					}
 
-					shader->getSemanticsManager()->updateCameraVariables(cameraInfo);
-					shader->getSemanticsManager()->updateElementVariables(cameraInfo, elementInfo);
-					shader->getSemanticsManager()->updateSubsetVariables(subsetInfo);
-
-					//material->applyUserShaderValeues(shader);
-					stageData.material->applyUserShaderValeues(shader);
 
 
-					auto* stateManager = context->getRenderStateManager();
 
-					const List<ShaderPass*>& passes = policy.shaderTechnique->getPasses();
-					for (ShaderPass* pass : passes)
+					for (int i = 0; i < element->subsetCount; i++)
 					{
-						onShaderPassChainging(pass);
-						stateManager->setShaderPass(pass);
+						//CombinedMaterial* material = currentState->getCombinedMaterial();
+						RenderingPass2::RenderStageFinalData stageData;
+						stageData.stage = currentStage;
+						stageData.material = currentStage->getMaterialFinal(m_defaultMaterial, element->getPriorityMaterial(i));
+						stageData.shader = currentStage->getShaderFinal(stageData.material);
+						stageData.shadingModel = currentStage->getShadingModelFinal(stageData.material);
 
-						if (diag != nullptr) element->reportDiag(diag);
-						element->drawSubset(drawArgs);
+						ElementRenderingPolicy policy;
+						pass->selectElementRenderingPolicy(element, stageData, &policy);
+						visible = policy.visible;
+
+						Shader* shader = policy.shader;
+
+
+						SubsetInfo subsetInfo;
+						subsetInfo.renderStage = currentStage;
+						subsetInfo.finalMaterial = stageData.material;
+						subsetInfo.materialTexture = (subsetInfo.finalMaterial != nullptr) ? subsetInfo.finalMaterial->getMaterialTexture(nullptr) : nullptr;
+						element->makeSubsetInfo(element->m_ownerDrawElementList, currentStage, &subsetInfo);
+
+						//currentState->IsStandaloneShaderRenderer
+
+						if (context->getCurrentRenderFeature() != nullptr)
+						{
+							context->getCurrentRenderFeature()->onShaderSubsetInfoOverride(&subsetInfo);
+						}
+
+						shader->getSemanticsManager()->updateCameraVariables(cameraInfo);
+						shader->getSemanticsManager()->updateElementVariables(cameraInfo, elementInfo);
+						shader->getSemanticsManager()->updateSubsetVariables(subsetInfo);
+
+						//material->applyUserShaderValeues(shader);
+						stageData.material->applyUserShaderValeues(shader);
+
+
+						auto* stateManager = context->getRenderStateManager();
+
+						const List<ShaderPass*>& passes = policy.shaderTechnique->getPasses();
+						for (ShaderPass* pass : passes)
+						{
+							onShaderPassChainging(pass);
+							stateManager->setShaderPass(pass);
+
+							if (diag != nullptr) element->reportDiag(diag);
+							element->drawSubset(drawArgs, i);
+						}
 					}
 				}
 			}
@@ -257,7 +273,10 @@ void SceneRenderer::render(
 				if (visible)
 				{
 					if (diag != nullptr) element->reportDiag(diag);
-					element->drawSubset(drawArgs);
+					for (int i = 0; i < element->subsetCount; i++)
+					{
+						element->drawSubset(drawArgs, i);
+					}
 				}
 			}
 
@@ -304,7 +323,10 @@ void SceneRenderer::collect(RenderingPass2* pass, const detail::CameraInfo& came
 		for (int i = 0; i < elementList->getElementCount(); ++i)
 		{
 			DrawElement* element = elementList->getElement(i);
-			Sphere boundingSphere = element->getBoundingSphere();
+			const Matrix& transform = element->getTransform(elementList);
+
+			Sphere boundingSphere = element->getLocalBoundingSphere();
+			boundingSphere.center += transform.getPosition();
 
 			if (boundingSphere.radius < 0 ||	// マイナス値なら視錐台と衝突判定しない
 				cameraInfo.viewFrustum.intersects(boundingSphere.center, boundingSphere.radius))
@@ -313,7 +335,6 @@ void SceneRenderer::collect(RenderingPass2* pass, const detail::CameraInfo& came
 				m_renderingElementList.add(element);
 
 				// calculate distance for ZSort
-				const Matrix& transform = element->getTransform(elementList);
 				switch (cameraInfo.zSortDistanceBase)
 				{
 				case ZSortDistanceBase::NodeZ:
@@ -652,24 +673,24 @@ void RenderingPass2::overrideCameraInfo(detail::CameraInfo* cameraInfo)
 //	return shader->getTechniques().getAt(0)->getPasses().getAt(0);
 //}
 
-ShaderTechnique* RenderingPass2::selectShaderTechniqueHelper(Shader* materialShader, const String& techniqueName, ShaderTechnique* defaultTech)
-{
-	if (materialShader)
-	{
-		ShaderTechnique* tech = materialShader->findTechnique(techniqueName);
-		if (tech)
-		{
-			return tech;
-			//ShaderPass* pass = tech->getPass(passName.c_str());	// TODO:
-			////if (pass)
-			//{
-			//	return pass;
-			//}
-		}
-	}
-
-	return defaultTech;
-}
+//ShaderTechnique* RenderingPass2::selectShaderTechniqueHelper(Shader* materialShader, const String& techniqueName, ShaderTechnique* defaultTech)
+//{
+//	if (materialShader)
+//	{
+//		ShaderTechnique* tech = materialShader->findTechnique(techniqueName);
+//		if (tech)
+//		{
+//			return tech;
+//			//ShaderPass* pass = tech->getPass(passName.c_str());	// TODO:
+//			////if (pass)
+//			//{
+//			//	return pass;
+//			//}
+//		}
+//	}
+//
+//	return defaultTech;
+//}
 
 ShaderTechnique* RenderingPass2::selectShaderTechniqueHelperSimple(Shader* materialShader, Shader* defaultShader)
 {

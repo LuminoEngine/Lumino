@@ -22,7 +22,7 @@ public:
 		return m_commandList;
 	}
 
-	virtual void drawSubset(const DrawArgs& e) override
+	virtual void drawSubset(const DrawArgs& e, int subsetIndex) override
 	{
 		auto* r = e.context->beginShapesRenderer();
 		r->executeCommand(m_commandList);

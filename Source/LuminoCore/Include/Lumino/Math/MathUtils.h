@@ -37,6 +37,9 @@ public:
 
 	static void sinCos(float value, float* outSin, float* outCos);
 
+	template <typename T>
+	static int sign(T val) { return (T(0) < val) - (val < T(0)); }
+
 	/// 誤差を考慮し、浮動小数点の比較を行います。
 	static bool nearEqual(float value1, float value2);
 

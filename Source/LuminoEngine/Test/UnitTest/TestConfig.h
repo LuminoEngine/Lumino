@@ -31,6 +31,19 @@ public:
 	static bool CheckScreenShot(const Char* filePath, int passRate = 99, bool save = false);	// 基本的に 99% 一致していれば良い。グラボによって、色成分+-1 くらいの誤差がある (Radeon HD8490)
 	static void WaitRendering();
 
+	// Engine::getWorld... を使った追加ユーティリティ。この辺のインターフェイスの変化が激しいので用意した。
+	template<class T>
+	static T addWorld2D(T obj)
+	{
+		Engine::defaultWorld2D()->add(obj);
+		return obj;
+	}
+	template<class T>
+	static T addWorld3D(T obj)
+	{
+		Engine::defaultWorld3D()->add(obj);
+		return obj;
+	}
 
 	static void BeginFrame()
 	{
@@ -52,8 +65,8 @@ protected:
 #define LN_TEST_END_FRAME		TestEnv::EndFrame()
 
 #define LN_TEST_CLEAN_SCENE \
-	Engine::getWorld2D()->removeAllObjects(); \
-	Engine::getWorld3D()->removeAllObjects();
+	Engine::defaultWorld2D()->removeAllObjects(); \
+	Engine::defaultWorld3D()->removeAllObjects();
 
 
 inline PathName Test_GetTempFilePath(const Char* fileName)
@@ -111,14 +124,14 @@ class ScopedCameraPosition
 public:
 	ScopedCameraPosition(float x, float y, float z)
 	{
-		camera = Engine::getWorld3D()->getMainCamera();
+		camera = Engine::defaultWorld3D()->getMainCamera();
 		oldPos = camera->getPosition();
 		camera->setPosition(x, y, z);
 	}
 
 	ScopedCameraPosition(const Vector3& pos, const Vector3& lookAt)
 	{
-		camera = Engine::getWorld3D()->getMainCamera();
+		camera = Engine::defaultWorld3D()->getMainCamera();
 		oldPos = camera->getPosition();
 		camera->setPosition(pos);
 		camera->getCameraComponent()->setLookAt(lookAt);

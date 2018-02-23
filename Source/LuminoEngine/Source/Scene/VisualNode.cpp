@@ -310,6 +310,7 @@ LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(VisualObject, WorldObject);
 
 //------------------------------------------------------------------------------
 VisualObject::VisualObject()
+	: WorldObject()
 {
 }
 
