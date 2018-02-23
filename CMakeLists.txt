@@ -76,6 +76,8 @@ if (NOT LN_BUILD_CORE_ONLY)
 
 	add_subdirectory(Source/LuminoLaunch)
 
+	add_subdirectory(Source/LuminoRuntime)
+
 	add_subdirectory(Samples)
 
 
@@ -90,7 +92,6 @@ if (NOT LN_BUILD_CORE_ONLY)
 
 	#------------------------------
 	#
-	add_subdirectory(Bindings/Runtime)
 	#add_subdirectory(Bindings/C/Test)
 	if (MSVC)
 		#add_subdirectory(tools/ArchiveMaker)

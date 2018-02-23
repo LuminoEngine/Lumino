@@ -16,6 +16,5 @@ include_directories(
 
 add_executable(SampleBrowser ${LN_SOURCES_SampleBrowser})
 target_link_libraries(SampleBrowser LuminoEngine LuminoLaunch)
-add_dependencies(SampleBrowser LuminoEngine LuminoLaunch)
 ln_add_pch(SampleBrowser "SampleBrowser.PCH.h" "SampleBrowser.PCH.cpp")
 

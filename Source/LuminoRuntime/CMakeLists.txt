@@ -1,5 +1,5 @@
 ﻿cmake_minimum_required (VERSION 3.0.0)
-project (LuminoRuntime)
+project (Lumino)
 
 include(../../CMake/LuminoCommon.cmake NO_POLICY_SCOPE)
 
@@ -8,14 +8,14 @@ include(../../CMake/LuminoCommon.cmake NO_POLICY_SCOPE)
 #------------------------------------------------------------------------------
 
 set(LN_SOURCES_Runtime
-	include/Common.h
-	src/Internal.h
-	src/BindingManager.cpp
-	src/BindingManager.h
-	src/InternalAPI.cpp
-	src/Lumino.FlatC.generated.cpp
-	src/Lumino.FlatC.generated.h
-	src/Lumino.Wrapper.generated.h
+	Include/Common.h
+	Source/Internal.h
+	Source/BindingManager.cpp
+	Source/BindingManager.h
+	Source/InternalAPI.cpp
+	Source/Lumino.FlatC.generated.cpp
+	Source/Lumino.FlatC.generated.h
+	Source/Lumino.Wrapper.generated.h
 )
 
 source_group("Runtime"	FILES ${LN_SOURCES_Runtime})
@@ -36,15 +36,8 @@ set(LN_INCLUDE_DIRECTORIES
 # Output
 #------------------------------------------------------------------------------
 
-#------------------------------
-# external deps.
-link_libraries(LuminoEngine)
-
-#------------------------------
-# Shared library.
 add_library(${PROJECT_NAME} SHARED ${LN_SOURCES})
-target_link_libraries(${PROJECT_NAME} ${LN_LINK_LIBS})
-set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "Lumino")
+target_link_libraries(${PROJECT_NAME} LuminoEngine)
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_DEFINITIONS "LUMINO_BUILD_DLL")
 set_target_properties(${PROJECT_NAME} PROPERTIES INCLUDE_DIRECTORIES "${LN_INCLUDE_DIRECTORIES}")
 
