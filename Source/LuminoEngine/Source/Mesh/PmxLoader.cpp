@@ -52,7 +52,7 @@ Ref<PmxSkinnedMeshResource> PmxLoader::load(detail::ModelManager* manager, Strea
 
 	BinaryReader reader(stream);
 	m_modelCore = Ref<PmxSkinnedMeshResource>::makeRef();
-	m_modelCore->initialize(manager->getGraphicsManager(), MeshCreationFlags::None);
+	m_modelCore->initialize(manager->getGraphicsManager(), MeshCreationFlags::DynamicBuffers);
 	m_modelCore->Format = ModelFormat_PMX;
 	
 	//-----------------------------------------------------
@@ -546,6 +546,8 @@ void PmxLoader::loadBones(BinaryReader* reader)
 //------------------------------------------------------------------------------
 void PmxLoader::loadMorphs(BinaryReader* reader)
 {
+	m_modelCore->morphBase = Ref<PmxMorphBaseResource>::makeRef();
+
 	// モーフ数
 	int boneCount = reader->readInt32();
 	m_modelCore->morphs.resize(boneCount);
@@ -645,6 +647,24 @@ void PmxLoader::loadMorphs(BinaryReader* reader)
 				reader->read(&mo->ImpulseMorphOffset.Moving, sizeof(float) * 3);
 				reader->read(&mo->ImpulseMorphOffset.Rotating, sizeof(float) * 3);
 				break;
+			}
+		}
+
+		// build MorphBase
+		if (morph->MorphType == ModelMorphType_Vertex ||
+			morph->MorphType == ModelMorphType_UV ||
+			morph->MorphType == ModelMorphType_AdditionalUV1 ||
+			morph->MorphType == ModelMorphType_AdditionalUV2 ||
+			morph->MorphType == ModelMorphType_AdditionalUV3 ||
+			morph->MorphType == ModelMorphType_AdditionalUV1)
+		{
+			for (int iOffset = 0; iOffset < offsetCount; iOffset++)
+			{
+				const PmxMorphResource::MorphOffset& mo = morph->MorphOffsets[iOffset];
+				int vertexIndex = (morph->MorphType == ModelMorphType_Vertex) ? mo.VertexMorphOffset.VertexIndex : mo.UVMorphOffset.VertexIndex;
+				const Vector3& pos = m_modelCore->getPosition(vertexIndex);
+				const Vector2& uv = m_modelCore->getUV(vertexIndex);
+				m_modelCore->morphBase->addVertex(vertexIndex, pos, Vector4(uv, 0, 0));
 			}
 		}
 	}

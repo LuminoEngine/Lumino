@@ -197,6 +197,7 @@ SkinnedMeshModel::SkinnedMeshModel()
 	, m_skinningMatrices()
 	, m_skinningMatricesTexture(nullptr)
 	//, m_animator(nullptr)
+	, m_needResetMorph(false)
 {
 }
 
@@ -313,6 +314,20 @@ void SkinnedMeshModel::initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 
 	std::sort(m_ikBoneList.begin(), m_ikBoneList.end(), cmp);
 
+
+	//---------------------------------------------------------
+	// Morph のインスタンス化
+	int morphCount = m_meshResources[0]->morphs.getCount();
+	if (morphCount > 0)
+	{
+		for (int i = 0; i < morphCount; i++)
+		{
+			auto morph = newObject<SkinnedMeshMorph>(m_meshResources[0]->morphs[i]);
+			m_morphs.add(morph);
+		}
+	}
+
+
 	//---------------------------------------------------------
 	// 物理演算
 	//m_physicsWorld = newObject<PhysicsWorld>();
@@ -340,6 +355,11 @@ void SkinnedMeshModel::initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 void SkinnedMeshModel::preUpdate()
 {
 	updateBoneTransformHierarchy();
+
+	if (m_needResetMorph)
+	{
+		m_meshResources[0]->morphBase->apply(m_meshResources[0]);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -350,6 +370,8 @@ void SkinnedMeshModel::preUpdate()
 //		・スキニング行列の作成
 void SkinnedMeshModel::postUpdate()
 {
+	updateMorph();
+
 	// IK 更新
 	updateIK();
 	updateBoneTransformHierarchy();
@@ -431,6 +453,19 @@ void SkinnedMeshModel::updateSkinningMatrices()
 	}
 }
 
+void SkinnedMeshModel::updateMorph()
+{
+	for (auto& morph : m_morphs)
+	{
+		if (morph->apply(this))
+		{
+			// モーフにより頂点バッファが変更された。
+			// 次回の更新の初めにリセットしたい。
+			// (もしリセットする必要がなければ頂点バッファに触らないようにし、デバイスへの送信がされないようにする)
+			m_needResetMorph = true;
+		}
+	}
+}
 
 //------------------------------------------------------------------------------
 void SkinnedMeshModel::updateIK()
@@ -618,6 +653,97 @@ void SkinnedMeshBone::setAnimationTargetValue(ValueType type, const void* value)
 	m_localTransform = *((AttitudeTransform*)value);
 }
 
+
+//==============================================================================
+// SkinnedMeshMorph
+//==============================================================================
+SkinnedMeshMorph::SkinnedMeshMorph()
+	: m_core(nullptr)
+	, m_weight(0.0f)
+{
+}
+
+SkinnedMeshMorph::~SkinnedMeshMorph()
+{
+}
+
+void SkinnedMeshMorph::initialize(PmxMorphResource* core)
+{
+	Object::initialize();
+	m_core = core;
+}
+
+const String& SkinnedMeshMorph::name() const
+{
+	return m_core->Name;
+}
+
+void SkinnedMeshMorph::setWeight(float value)
+{
+	m_weight = value;
+}
+
+bool SkinnedMeshMorph::active() const
+{
+	return Math::nearEqual(m_weight, 0.0f);
+}
+
+bool SkinnedMeshMorph::apply(SkinnedMeshModel* model)
+{
+	if (active())
+	{
+		switch (m_core->MorphType)
+		{
+		case ModelMorphType_Vertex:
+		{
+			MeshResource* targetMesh = model->m_meshResources[0];
+			for (auto& mo : m_core->MorphOffsets)
+			{
+				const Vector3& v1 = targetMesh->getPosition(mo.VertexMorphOffset.VertexIndex);
+				const Vector3* v2 = reinterpret_cast<Vector3*>(mo.VertexMorphOffset.PositionOffset);
+				targetMesh->setPosition(mo.VertexMorphOffset.VertexIndex, Vector3::lerp(v1, *v2, m_weight));
+			}
+			break;
+		}
+		case ModelMorphType_UV:
+			LN_NOTIMPLEMENTED();
+			break;
+		case ModelMorphType_AdditionalUV1:
+			LN_NOTIMPLEMENTED();
+			break;
+		case ModelMorphType_AdditionalUV2:
+			LN_NOTIMPLEMENTED();
+			break;
+		case ModelMorphType_AdditionalUV3:
+			LN_NOTIMPLEMENTED();
+			break;
+		case ModelMorphType_AdditionalUV4:
+			LN_NOTIMPLEMENTED();
+			break;
+		case ModelMorphType_Bone:
+			LN_NOTIMPLEMENTED();
+			break;
+		case ModelMorphType_Matrial:
+			LN_NOTIMPLEMENTED();
+			break;
+		case ModelMorphType_Group:
+			LN_NOTIMPLEMENTED();
+			break;
+		case ModelMorphType_Flip:
+			LN_NOTIMPLEMENTED();
+			break;
+		case ModelMorphType_Impulse:
+			LN_NOTIMPLEMENTED();
+			break;
+		default:
+			break;
+		}
+
+		return true;
+	}
+
+	return false;
+}
 
 namespace detail
 {

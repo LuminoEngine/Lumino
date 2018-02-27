@@ -198,6 +198,13 @@ const Vector3& MeshResource::getPosition(int index)
 	return v[index].position;
 }
 
+const Vector2& MeshResource::getUV(int index)
+{
+	if (LN_REQUIRE_RANGE(index, 0, getVertexCount())) return Vector2::Zero;
+	Vertex* v = (Vertex*)requestVertexBuffer(VB_BasicVertices)->getMappedData();
+	return v[index].uv;
+}
+
 //------------------------------------------------------------------------------
 void MeshResource::setBlendWeight(int index, int blendIndex, float value)
 {

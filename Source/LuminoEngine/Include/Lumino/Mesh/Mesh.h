@@ -68,6 +68,7 @@ public:
 	void setUV(int index, const Vector2& uv);
 	void setColor(int index, const Color& color);
 	const Vector3& getPosition(int index);
+	const Vector2& getUV(int index);
 
 
 	void setBlendWeight(int index, int blendIndex, float value);

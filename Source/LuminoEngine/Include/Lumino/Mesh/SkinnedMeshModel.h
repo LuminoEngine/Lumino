@@ -9,9 +9,11 @@ LN_NAMESPACE_BEGIN
 class Animator;
 class PmxSkinnedMeshResource;	// TODO: 抽象化したい
 class PmxBoneResource;			// TODO: 抽象化したい
+class PmxMorphResource;
 class PmxIKResource;
 class SkinnedMeshModel;
 class SkinnedMeshBone;
+class SkinnedMeshMorph;
 using SkinnedMeshModelPtr = Ref<SkinnedMeshModel>;
 using SkinnedMeshBonePtr = Ref<SkinnedMeshBone>;
 
@@ -41,6 +43,7 @@ public:
 	a2::AnimationController* animationController() const { return m_animationController; }
 
 	const List<Ref<SkinnedMeshBone>>& bones() const { return m_allBoneList; }
+	const List<Ref<SkinnedMeshMorph>>& morphs() const { return m_morphs; }
 	MeshResource* getMeshResource(int index) const;
 	int getMeshResourceCount() const { return m_meshResources.getCount(); }
 
@@ -96,6 +99,7 @@ LN_INTERNAL_ACCESS:
 	//void drawSubset(int subsetIndex);
 
 private:
+	void updateMorph();
 	void updateIK();
 	void updateBestow();
 
@@ -109,6 +113,7 @@ public:	// TODO:
 
 	List<SkinnedMeshBonePtr>		m_allBoneList;				// 全ボーンリスト
 	List<SkinnedMeshBone*>			m_rootBoneList;				// ルートボーンリスト (親を持たないボーンリスト)
+	List<Ref<SkinnedMeshMorph>>		m_morphs;
 	List<Matrix>					m_skinningMatrices;			// スキニングに使用する最終ボーン行列 (要素数はボーン数)
 	List<Quaternion>				m_skinningLocalQuaternions;
 	Ref<Texture2D>				m_skinningMatricesTexture;	// Texture fetch による GPU スキニング用のテクスチャ
@@ -124,6 +129,8 @@ public:	// TODO:
 
 	Matrix		m_worldTransform;
 	Matrix		m_worldTransformInverse;
+
+	bool	m_needResetMorph;
 };
 
 /**
@@ -192,8 +199,56 @@ LN_INTERNAL_ACCESS:	// TODO
 	friend class SkinnedMeshModel;
 };
 
+
+class SkinnedMeshMorph
+	: public Object
+{
+public:
+	const String& name() const;
+
+	float weight() const { return m_weight; }
+	void setWeight(float value);
+
+LN_CONSTRUCT_ACCESS:
+	SkinnedMeshMorph();
+	virtual ~SkinnedMeshMorph();
+	void initialize(PmxMorphResource* core);
+
+LN_INTERNAL_ACCESS:
+	bool active() const;
+	bool apply(SkinnedMeshModel* model);
+
+private:
+	Ref<PmxMorphResource> m_core;
+	float m_weight;
+};
+
 namespace detail
 {
+
+//class SkinnedMeshMorphBase
+//	: public Object
+//{
+//public:
+//	const String& name() const;
+//
+//	float weight() const { return m_weight; }
+//	void setWeight(float value);
+//
+//LN_CONSTRUCT_ACCESS:
+//	SkinnedMeshMorph();
+//	virtual ~SkinnedMeshMorph();
+//	void initialize(PmxMorphResource* core);
+//
+//LN_INTERNAL_ACCESS:
+//	bool active() const;
+//	void apply(SkinnedMeshModel* model);
+//
+//private:
+//	Ref<PmxMorphResource> m_core;
+//	float m_weight;
+//};
+
 
 class MmdSkinnedMeshRigidBody
 	: public RefObject

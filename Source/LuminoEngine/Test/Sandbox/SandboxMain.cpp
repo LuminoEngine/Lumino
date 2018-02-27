@@ -125,7 +125,10 @@ void Main()
 	auto* ac = model->animationController();
 	ac->addClip( "walk", a2::AnimationClip::create(_T("D:/MMD/Materials/モーション/Love&Joy/love&joyお面無しver.vmd")));
 	//ac->addClip(a2::AnimationClip::create(_T("D:/MMD/Materials/モーション/Zigg-Zagg/ZZ-Marisa.vmd"), "walk"));
-	ac->play("walk");
+	//ac->play("walk");
+
+	auto morph = model->morphs()[0];
+	morph->setWeight(1.0f);
 
 	auto obj3D = newObject<WorldObject>();
 	obj3D->addComponent(meshCom);

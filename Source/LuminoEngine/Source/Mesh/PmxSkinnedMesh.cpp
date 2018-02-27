@@ -99,6 +99,29 @@ void PmxBoneResource::refreshInitialValues()
 }
 
 //==============================================================================
+// PmxMorphBaseResource
+//==============================================================================
+
+void PmxMorphBaseResource::addVertex(int vertexIndex, const Vector3& pos, const Vector4& uv)
+{
+	auto itr = m_vertexMap.find(vertexIndex);
+	if (itr == m_vertexMap.end())
+	{
+		m_vertexMap[vertexIndex] = BaseVertex{ pos, uv };
+	}
+}
+
+void PmxMorphBaseResource::apply(MeshResource* mesh)
+{
+	// TODO: vector に直しておいたほうが 8 倍くらい早いこともある
+	for (auto& v : m_vertexMap)
+	{
+		mesh->setPosition(v.first, v.second.pos);
+		mesh->setUV(v.first, v.second.uv.getXY());
+	}
+}
+
+//==============================================================================
 // ModelCore
 //==============================================================================
 
