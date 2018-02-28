@@ -255,7 +255,7 @@ void RawBitmap::convertToDownFlow()
 //------------------------------------------------------------------------------
 void RawBitmap::copyRawData(const void* data, size_t byteCount)
 {
-	if (LN_REQUIRE(m_bitmapData.getSize() <= byteCount)) return;
+	if (LN_REQUIRE(byteCount <= m_bitmapData.getSize())) return;
 	m_bitmapData.copy(data, byteCount);
 }
 

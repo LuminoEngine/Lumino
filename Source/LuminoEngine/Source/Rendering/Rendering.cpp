@@ -1516,6 +1516,7 @@ void DrawList::drawSkinnedMesh(SkinnedMeshModel* mesh)
     public:
         Ref<SkinnedMeshModel>    mesh;
 		detail::CommandDataCache::DataHandle skinningMatricesDataHandle;
+		size_t skinningMatricesDataSize;
 
 
 		virtual CommonMaterial*	getPriorityMaterial(int subsetIndex)
@@ -1530,7 +1531,7 @@ void DrawList::drawSkinnedMesh(SkinnedMeshModel* mesh)
 		{
 			detail::LightingDrawElement::makeElementInfo(oenerList, cameraInfo, renderView, outInfo);
 
-			outInfo->boneTexture->setMappedData(oenerList->getExtData(skinningMatricesDataHandle));
+			outInfo->boneTexture->setMappedData(oenerList->getExtData(skinningMatricesDataHandle), skinningMatricesDataSize);
 		}
 
         virtual void drawSubset(const DrawArgs& e, int subsetIndex) override
@@ -1556,6 +1557,7 @@ void DrawList::drawSkinnedMesh(SkinnedMeshModel* mesh)
 
 	size_t dataSize = mesh->skinningMatrices().getCount() * sizeof(Matrix);
 	e->skinningMatricesDataHandle = m_drawElementList.allocExtData(dataSize);
+	e->skinningMatricesDataSize = dataSize;
 
 	memcpy(m_drawElementList.getExtData(e->skinningMatricesDataHandle), &(mesh->skinningMatrices()[0]), dataSize);
     //e->boundingSphere = ;    // TODO

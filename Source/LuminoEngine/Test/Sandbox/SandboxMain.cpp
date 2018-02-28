@@ -130,6 +130,8 @@ void Main()
 	auto morph = model->morphs()[0];
 	morph->setWeight(1.0f);
 
+	model->morphs()[16]->setWeight(1.0f);
+
 	auto obj3D = newObject<WorldObject>();
 	obj3D->addComponent(meshCom);
 	Engine::defaultWorld3D()->add(obj3D);

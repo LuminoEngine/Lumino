@@ -685,7 +685,7 @@ void SkinnedMeshMorph::setWeight(float value)
 
 bool SkinnedMeshMorph::active() const
 {
-	return Math::nearEqual(m_weight, 0.0f);
+	return !Math::nearEqual(m_weight, 0.0f);
 }
 
 bool SkinnedMeshMorph::apply(SkinnedMeshModel* model)
@@ -701,7 +701,7 @@ bool SkinnedMeshMorph::apply(SkinnedMeshModel* model)
 			{
 				const Vector3& v1 = targetMesh->getPosition(mo.VertexMorphOffset.VertexIndex);
 				const Vector3* v2 = reinterpret_cast<Vector3*>(mo.VertexMorphOffset.PositionOffset);
-				targetMesh->setPosition(mo.VertexMorphOffset.VertexIndex, Vector3::lerp(v1, *v2, m_weight));
+				targetMesh->setPosition(mo.VertexMorphOffset.VertexIndex, Vector3::lerp(v1, v1 + (*v2), m_weight));
 			}
 			break;
 		}
@@ -744,6 +744,7 @@ bool SkinnedMeshMorph::apply(SkinnedMeshModel* model)
 
 	return false;
 }
+
 
 namespace detail
 {

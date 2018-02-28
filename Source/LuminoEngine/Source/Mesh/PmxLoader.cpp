@@ -66,18 +66,6 @@ Ref<PmxSkinnedMeshResource> PmxLoader::load(detail::ModelManager* manager, Strea
 		return nullptr;
 	}
 	if (m_pmxHeader.Version < 2.0f) return nullptr;
-#if 1
-	//_p( m_pmxHeader.Version );
-	printf( "DataSize              : %d\n", m_pmxHeader.DataSize );
-	printf( "エンコード方式        : %d\n", m_pmxHeader.Data[0]);
-	printf( "追加UV数              : %d\n", m_pmxHeader.Data[1]);
-	printf( "頂点Indexサイズ       : %d\n", m_pmxHeader.Data[2]);
-	printf( "テクスチャIndexサイズ : %d\n", m_pmxHeader.Data[3]);
-	printf( "材質Indexサイズ       : %d\n", m_pmxHeader.Data[4]);
-	printf( "ボーンIndexサイズ     : %d\n", m_pmxHeader.Data[5]);
-	printf( "モーフIndexサイズ     : %d\n", m_pmxHeader.Data[6]);
-	printf( "剛体Indexサイズ       : %d\n", m_pmxHeader.Data[7]);
-#endif
 		
 	// モデル情報
 	loadModelInfo( &reader );
