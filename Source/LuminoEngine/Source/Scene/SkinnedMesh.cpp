@@ -75,6 +75,22 @@ void SkinnedMeshComponent::onUpdateFrame(float elapsedTime)
 	//	init = true;
 	//}
 	m_meshModel->preUpdate();
+
+
+
+	//for (int i = 0; i < m_meshModel->bones().getCount(); i++)
+	//{
+	//	SkinnedMeshBone* bone = m_meshModel->bones()[i];
+	//	if (bone->name() == _T("左足首"))
+	//	{
+	//		AttitudeTransform t;
+	//		t.scale = Vector3(1, 1, 0.2);
+	//		bone->setLocalTransform(t);
+	//	}
+	//}
+
+
+
 	m_meshModel->postUpdate();
 }
 

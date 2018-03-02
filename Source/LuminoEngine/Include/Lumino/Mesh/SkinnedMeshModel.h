@@ -49,6 +49,8 @@ public:
 
 	void updateBoneTransform(const Matrix& worldTransform = Matrix::Identity);
 
+	SkinnedMeshBone* findBone(const StringRef& boneName) const;
+
 protected:
 	// IAnimationTargetElement interface
 	virtual int getAnimationTargetAttributeCount() const override;

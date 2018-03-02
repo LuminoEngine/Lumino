@@ -498,6 +498,16 @@ MeshResource* SkinnedMeshModel::getMeshResource(int index) const
 	return m_meshResources[index];
 }
 
+SkinnedMeshBone* SkinnedMeshModel::findBone(const StringRef& boneName) const
+{
+	for (auto& bone : m_allBoneList)
+	{
+		if (bone->name() == boneName)
+			return bone;
+	}
+	return nullptr;
+}
+
 void SkinnedMeshModel::updateBoneTransform(const Matrix& worldTransform)
 {
 	setWorldTransform(worldTransform);

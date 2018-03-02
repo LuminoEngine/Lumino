@@ -86,6 +86,22 @@ public:
 		@return		正規化されたベクトル
 	*/
 	static Vector2 normalize(const Vector2& vec);
+	
+	/**
+		@brief		2つのベクトル間の距離を計算します。
+		@param[in]	vec1	: 処理の基になるベクトル
+		@param[in]	vec2	: 処理の基になるベクトル
+		@return		2つのベクトル間の距離
+	*/
+	static float distance(const Vector2& vec1, const Vector2& vec2);
+	
+	/**
+		@brief		2つのベクトル間の距離の2乗を計算します。
+		@param[in]	vec1	: 処理の基になるベクトル
+		@param[in]	vec2	: 処理の基になるベクトル
+		@return		2つのベクトル間の距離の2乗
+	*/
+	static float distanceSquared(const Vector2& vec1, const Vector2& vec2);
 
 	/**
 		@brief		2つのベクトルの内積を計算します。
