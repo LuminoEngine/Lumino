@@ -142,10 +142,10 @@ void WorldObject::onPreUpdate()
 //------------------------------------------------------------------------------
 void WorldObject::onUpdate(float deltaSceonds)
 {
-	for (auto& c : m_components)
-	{
-		c->onUpdate(deltaSceonds);
-	}
+	//for (auto& c : m_components)
+	//{
+	//	c->onUpdate(deltaSceonds);
+	//}
 }
 
 //------------------------------------------------------------------------------

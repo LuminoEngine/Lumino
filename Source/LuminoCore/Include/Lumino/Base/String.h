@@ -608,7 +608,12 @@ public:
 
 	StringRef(const Path& path);
 
-	StringRef(const StringRef& str) = default;
+	StringRef(const StringRef& str)
+		: StringRef()
+	{
+		m_str = str.data();
+		m_len = str.getLength();
+	}
 
 	StringRef& operator=(const StringRef& str) = default;
 

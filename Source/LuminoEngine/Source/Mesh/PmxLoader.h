@@ -67,6 +67,8 @@ private:
 
 	String readString(BinaryReader* reader);
 	void calcSDEFCorrection();
+	void adjustPosition(Vector3* pos) const;
+	void adjustAngle(Vector3* angles) const;
 
 private:
 	detail::ModelManager*			m_manager;
@@ -77,6 +79,9 @@ private:
 	List<Ref<Texture>>			m_textureTable;
 	ByteBuffer						m_tmpBuffer;
 	bool							m_hasSDEF;
+
+	bool m_rotateY180;
+	Matrix m_adjustMatrix;
 };
 
 LN_NAMESPACE_END

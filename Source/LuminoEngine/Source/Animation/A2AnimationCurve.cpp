@@ -1,17 +1,15 @@
 ﻿
 #include "../Internal.h"
-#include <Lumino/Animation/A2Animation.h>
+#include <Lumino/Animation/A2AnimationCurve.h>
 
 LN_NAMESPACE_BEGIN
-namespace a2
-{
 
 //==============================================================================
 // AnimationCurve
 //==============================================================================
 
 AnimationCurve::AnimationCurve()
-	: m_wrapMode(WrapMode::Once)
+	: m_wrapMode(AnimationWrapMode::Once)
 {
 }
 
@@ -21,7 +19,7 @@ AnimationCurve::~AnimationCurve()
 
 float AnimationCurve::evaluate(float time)
 {
-	return onEevaluate(time);
+	return onEvaluate(time);
 }
 
 float AnimationCurve::lastFrameTime() const
@@ -96,7 +94,7 @@ void KeyFrameAnimationCurve::addKeyFrame(float time, float value, TangentMode ri
 	addKeyFrame(k);
 }
 
-float KeyFrameAnimationCurve::onEevaluate(float time)
+float KeyFrameAnimationCurve::onEvaluate(float time)
 {
 	if (m_keyFrames.isEmpty())
 	{
@@ -237,5 +235,4 @@ AnimationKeyFrame* KeyFrameAnimationCurve::findKeyFrame(float time)
 	//return (AnimationKeyFrame*)bsearch(&time, &(m_keyFrames[0]), m_keyFrames.getCount(), sizeof(AnimationKeyFrame), Compare::cmpKey);
 }
 
-} // namespace a2
 LN_NAMESPACE_END

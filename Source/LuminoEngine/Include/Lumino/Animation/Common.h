@@ -3,17 +3,7 @@
 #include <Lumino/Reflection/ReflectionObject.h>
 
 LN_NAMESPACE_BEGIN
-
-namespace detail
-{
-class AnimationManager;
-}
-
 class AnimationCurve;
-class AnimationClip;
-class AnimationState;
-class Animator;
-
 
 /// AnimationCurve の値の種類
 enum ValueType
@@ -46,21 +36,6 @@ enum WrapMode
 	//WrapMode_ClampForever,
 };
 
-/// 
-enum PlayMode
-{
-	StopSameLayer = 0,	///< 同レイヤーのアニメーションをすべて停止する
-	StopAll,			///< 全てのアニメーションを停止する
-};
-
-/// 
-enum PlayState
-{
-	PlayState_Stopped = 0,	///< 停止中
-	PlayState_Playing,		///< 再生中
-	PlayState_Pausing,		///< 一時停止中
-};
-
 /** イージング関数の種類を表します。*/
 enum class EasingMode
 {
@@ -87,29 +62,18 @@ enum class EasingMode
 	EaseOutCirc,
 	EaseInOutCirc,
 };
-//LN_ENUM_REFLECTION(EasingMode,
-//	Linear,
-//	EaseInQuad,
-//	EaseOutQuad,
-//	EaseInOutQuad,
-//	EaseInCubic,
-//	EaseOutCubic,
-//	EaseInOutCubic,
-//	EaseInQuart,
-//	EaseOutQuart,
-//	EaseInOutQuart,
-//	EaseInQuint,
-//	EaseOutQuint,
-//	EaseInOutQuint,
-//	EaseInSine,
-//	EaseOutSine,
-//	EaseInOutSine,
-//	EaseInExpo,
-//	EaseOutExpo,
-//	EaseInOutExpo,
-//	EaseInCirc,
-//	EaseOutCirc,
-//	EaseInOutCirc);
-//LN_ENUM_DECLARE(EasingMode);
+
+/** アニメーションの繰り返し方法 */
+enum class AnimationWrapMode
+{
+	/** 繰り返しを行わず、1度だけ再生します。 */
+	Once,
+
+	/** 最後まで再生された後、先頭に戻ってループします。 */
+	Loop,
+
+	/** 最後まで再生された後、逆方向に戻ってループします。 */
+	//RoundTrip,
+};
 
 LN_NAMESPACE_END

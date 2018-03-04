@@ -3,22 +3,6 @@
 #include <Lumino/Animation/Common.h>
 
 LN_NAMESPACE_BEGIN
-namespace a2
-{
-class AnimationClock;
-
-/** アニメーションの繰り返し方法 */
-enum class WrapMode
-{
-	/** 最後まで再生された後、停止します。 */
-	Once,
-
-	/** 最後まで再生された後、先頭に戻ってループします。 */
-	Loop,
-
-	/** 最後まで再生された後、逆方向に戻ってループします。 */
-	RoundTrip,
-};
 
 /** 時間の経過をとおして値を評価します。アニメーションが生成する値の最小単位です。 */
 class AnimationCurve
@@ -32,14 +16,14 @@ public:
 	/** アニメーションの終端の時間を取得します。 */
 	float lastFrameTime() const;
 
-	/** 最後のキーフレーム後の動作を取得します。 */
-	WrapMode wrapMode() const { return m_wrapMode; }
+	/** アニメーションの繰り返しの動作を取得します。 */
+	AnimationWrapMode wrapMode() const { return m_wrapMode; }
 
-	/** 最後のキーフレーム後の動作を設定します。(default: Once) */
-	void setWrapMode(WrapMode mode) { m_wrapMode = mode; }
+	/**　アニメーションの繰り返しの動作を設定します。(default: Once) */
+	void setWrapMode(AnimationWrapMode mode) { m_wrapMode = mode; }
 
 protected:
-	virtual float onEevaluate(float time) = 0;
+	virtual float onEvaluate(float time) = 0;
 	virtual float onGetLastFrameTime() const = 0;
 
 LN_CONSTRUCT_ACCESS:
@@ -47,7 +31,7 @@ LN_CONSTRUCT_ACCESS:
 	virtual ~AnimationCurve();
 
 private:
-	WrapMode	m_wrapMode;
+	AnimationWrapMode m_wrapMode;
 };
 
 /** キーフレームアニメーションの補間方法 */
@@ -111,7 +95,7 @@ LN_CONSTRUCT_ACCESS:
 
 protected:
 	// override AnimationCurve
-	virtual float onEevaluate(float time) override;
+	virtual float onEvaluate(float time) override;
 	virtual float onGetLastFrameTime() const override;
 
 private:
@@ -121,5 +105,4 @@ private:
 	float m_defaultValue;
 };
 
-} // namespace a2
 LN_NAMESPACE_END

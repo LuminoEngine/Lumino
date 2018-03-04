@@ -961,6 +961,10 @@ TEST_F(Test_Base_UString, MemoryAllocation)
 
 TEST_F(Test_Base_UString, Issue)
 {
+	{
+		StringRef s1 = "aaa";
+		StringRef s2 = s1;
+	}
 }
 
 //## 自己代入のテスト (this ではなく c_str() 等で取れる char* 経由)

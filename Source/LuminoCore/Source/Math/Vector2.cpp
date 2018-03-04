@@ -61,6 +61,20 @@ Vector2 Vector2::normalize(const Vector2& vec)
 	return t;
 }
 
+float Vector2::distance(const Vector2& vec1, const Vector2& vec2)
+{
+	float x = vec1.x - vec2.x;
+	float y = vec1.y - vec2.y;
+	return Asm::sqrt((x * x) + (y * y));
+}
+
+float Vector2::distanceSquared(const Vector2& vec1, const Vector2& vec2)
+{
+	float x = vec1.x - vec2.x;
+	float y = vec1.y - vec2.y;
+	return (x * x) + (y * y);
+}
+
 //------------------------------------------------------------------------------
 // static
 //------------------------------------------------------------------------------

@@ -1,8 +1,8 @@
-/*
-	[x] ƒƒbƒVƒ…
-	[x] ƒ{[ƒ“
+ï»¿/*
+	[x] ãƒ¡ãƒƒã‚·ãƒ¥
+	[x] ãƒœãƒ¼ãƒ³
 	[ ]
-	[ ] •t—^
+	[ ] ä»˜ä¸
 */
 #pragma once
 #include <Lumino/Mesh/Mesh.h>
@@ -10,7 +10,7 @@
 LN_NAMESPACE_BEGIN
 class PmxSkinnedMeshResource;
 
-/// ƒ‚ƒfƒ‹ƒtƒ@ƒCƒ‹‚ÌƒtƒH[ƒ}ƒbƒg
+/// ãƒ¢ãƒ‡ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
 enum ModelFormat
 {
 	ModelFormat_Unknown = 0,
@@ -28,8 +28,8 @@ LN_ENUM_FLAGS(BoneType)
 	IK = 32,
 	IK_Child = 64,
 	Unvisible = 128,
-	InhereRotate = 256, // ‰ñ“]•t—^
-	InhereXYZ = 512,       // ˆÚ“®•t—^
+	InhereRotate = 256, // å›è»¢ä»˜ä¸
+	InhereXYZ = 512,       // ç§»å‹•ä»˜ä¸
 	FixAxis = 1024,
 	LocalAxis = 2048,
 	TransformAfterPhysics = 4096,
@@ -37,21 +37,21 @@ LN_ENUM_FLAGS(BoneType)
 };
 LN_ENUM_FLAGS_DECLARE(BoneType);
 
-/// ƒ{[ƒ“ƒtƒ‰ƒO Ú‘±æ(PMDqƒ{[ƒ“w’è)•\¦•û–@
+/// ãƒœãƒ¼ãƒ³ãƒ•ãƒ©ã‚° æ¥ç¶šå…ˆ(PMDå­ãƒœãƒ¼ãƒ³æŒ‡å®š)è¡¨ç¤ºæ–¹æ³•
 enum BoneConnectType
 {
-	BoneConnectType_PositionOffset = 0,		///< À•WƒIƒtƒZƒbƒg‚Åw’è
-	BoneConnectType_Bone,					///< ƒ{[ƒ“‚Åw’è
+	BoneConnectType_PositionOffset = 0,		///< åº§æ¨™ã‚ªãƒ•ã‚»ãƒƒãƒˆã§æŒ‡å®š
+	BoneConnectType_Bone,					///< ãƒœãƒ¼ãƒ³ã§æŒ‡å®š
 };
 
-/// ƒ{[ƒ“ƒtƒ‰ƒO ƒ[ƒJƒ‹•t—^ 
+/// ãƒœãƒ¼ãƒ³ãƒ•ãƒ©ã‚° ãƒ­ãƒ¼ã‚«ãƒ«ä»˜ä¸ 
 enum LocalProvideType
 {
-	LocalProvideType_UserTransformValue = 0,	///< ƒ†[ƒU[•ÏŒ`’l^IKƒŠƒ“ƒN^‘½d•t—^
-	LocalProvideType_ParentLocalTransformValue,	///< e‚Ìƒ[ƒJƒ‹•ÏŒ`—Ê
+	LocalProvideType_UserTransformValue = 0,	///< ãƒ¦ãƒ¼ã‚¶ãƒ¼å¤‰å½¢å€¤ï¼IKãƒªãƒ³ã‚¯ï¼å¤šé‡ä»˜ä¸
+	LocalProvideType_ParentLocalTransformValue,	///< è¦ªã®ãƒ­ãƒ¼ã‚«ãƒ«å¤‰å½¢é‡
 };
 
-/// ƒ‚[ƒtí•Ê
+/// ãƒ¢ãƒ¼ãƒ•ç¨®åˆ¥
 enum ModelMorphType
 {
 	ModelMorphType_Vertex = 0,
@@ -67,69 +67,69 @@ enum ModelMorphType
 	ModelMorphType_Impulse,
 };
 
-/// „‘Ì‚ÌŒ`ó
+/// å‰›ä½“ã®å½¢çŠ¶
 enum CollisionShapeType
 {
-	CollisionShapeType_Sphere = 0,		///< ‹…
-	CollisionShapeType_Box,				///< ” 
-	CollisionShapeType_Capsule,			///< ƒJƒvƒZƒ‹    
+	CollisionShapeType_Sphere = 0,		///< çƒ
+	CollisionShapeType_Box,				///< ç®±
+	CollisionShapeType_Capsule,			///< ã‚«ãƒ—ã‚»ãƒ«    
 };
 
-/// „‘Ì‚Ì‰‰Zí•Ê
+/// å‰›ä½“ã®æ¼”ç®—ç¨®åˆ¥
 enum RigidBodyType
 {
-	RigidBodyType_ControlledByBone = 0,	///< Bone’Ç]
-	RigidBodyType_Physics,				///< •¨—‰‰Z
-	RigidBodyType_PhysicsAlignment,		///< •¨—‰‰Z(BoneˆÊ’u‡‚¹)
+	RigidBodyType_ControlledByBone = 0,	///< Boneè¿½å¾“
+	RigidBodyType_Physics,				///< ç‰©ç†æ¼”ç®—
+	RigidBodyType_PhysicsAlignment,		///< ç‰©ç†æ¼”ç®—(Boneä½ç½®åˆã›)
 };
 
-/// ‹¤—Lƒ}ƒeƒŠƒAƒ‹ƒf[ƒ^
+/// å…±æœ‰ãƒãƒ†ãƒªã‚¢ãƒ«ãƒ‡ãƒ¼ã‚¿
 class PmxMaterialResource
 	: public RefObject
 {
 public:
 
-	/// •`‰æƒIƒvƒVƒ‡ƒ“
+	/// æç”»ã‚ªãƒ—ã‚·ãƒ§ãƒ³
 	enum DrawingFlags
 	{
-		DrawingFlag_CullingDouble = 0x01,	///< —¼–Ê•`‰æ
-		DrawingFlag_GroundShadow = 0x02,	///< ’n–Ê‰e
-		DrawingFlag_SelfShadowMap = 0x04,	///< ƒZƒ‹ƒtƒVƒƒƒhƒEƒ}ƒbƒv‚Ö‚Ì•`‰æ
-		DrawingFlag_SelfShadow = 0x08,		///< ƒZƒ‹ƒtƒVƒƒƒhƒE‚Ì•`‰æ
-		DrawingFlag_Edge = 0x10,			///< ƒGƒbƒW•`‰æ
+		DrawingFlag_CullingDouble = 0x01,	///< ä¸¡é¢æç”»
+		DrawingFlag_GroundShadow = 0x02,	///< åœ°é¢å½±
+		DrawingFlag_SelfShadowMap = 0x04,	///< ã‚»ãƒ«ãƒ•ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ã¸ã®æç”»
+		DrawingFlag_SelfShadow = 0x08,		///< ã‚»ãƒ«ãƒ•ã‚·ãƒ£ãƒ‰ã‚¦ã®æç”»
+		DrawingFlag_Edge = 0x10,			///< ã‚¨ãƒƒã‚¸æç”»
 	};
 
-	/// ƒXƒtƒBƒAƒeƒNƒXƒ`ƒƒ‚Ì‡¬ƒ‚[ƒh
+	/// ã‚¹ãƒ•ã‚£ã‚¢ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®åˆæˆãƒ¢ãƒ¼ãƒ‰
 	enum SphereMode
 	{
-		SphereMode_Disable = 0,				///< –³Œø
-		SphereMode_Mul = 1,					///< æZ(sph)
-		SphereMode_Add = 2,					///< ‰ÁZ(spa)
-		SphereMode_SubTexture = 3,			///< ƒTƒuƒeƒNƒXƒ`ƒƒ(’Ç‰ÁUV1‚Ìx,y‚ğUVQÆ‚µ‚Ä’ÊíƒeƒNƒXƒ`ƒƒ•`‰æ‚ğs‚¤)
+		SphereMode_Disable = 0,				///< ç„¡åŠ¹
+		SphereMode_Mul = 1,					///< ä¹—ç®—(sph)
+		SphereMode_Add = 2,					///< åŠ ç®—(spa)
+		SphereMode_SubTexture = 3,			///< ã‚µãƒ–ãƒ†ã‚¯ã‚¹ãƒãƒ£(è¿½åŠ UV1ã®x,yã‚’UVå‚ç…§ã—ã¦é€šå¸¸ãƒ†ã‚¯ã‚¹ãƒãƒ£æç”»ã‚’è¡Œã†)
 	};
 
 public:
-	// TODO: Ş¿–¼ ‚È‚Ç‚à
+	// TODO: æè³ªå ãªã©ã‚‚
 
-	Color						Diffuse;			///< •¨‘Ì‚ÌF
-	Color						Ambient;			///< ŠÂ‹«Œõ
-	Color						Specular;			///< Œõ‘ò
-	Color						Emissive;			///< •¨‘Ì‚Ì”­ŒõF ( ŒõŒ¹‚Ì‰e‹¿‚ğó‚¯‚È‚¢F )
-	float						Power;				///< Œõ‘ò‚Ì‹­‚³
+	Color						Diffuse;			///< ç‰©ä½“ã®è‰²
+	Color						Ambient;			///< ç’°å¢ƒå…‰
+	Color						Specular;			///< å…‰æ²¢
+	Color						Emissive;			///< ç‰©ä½“ã®ç™ºå…‰è‰² ( å…‰æºã®å½±éŸ¿ã‚’å—ã‘ãªã„è‰² )
+	float						Power;				///< å…‰æ²¢ã®å¼·ã•
 
-	Ref<Shader>				Shader;				///< ƒVƒF[ƒ_
-	Ref<ln::Texture>			Texture;			///< ƒeƒNƒXƒ`ƒƒ
-	Ref<ln::Texture>			ToonTexture;		///< [PMD] ƒgƒD[ƒ“ƒeƒNƒXƒ`ƒƒ
-	Ref<ln::Texture>			SphereTexture;		///< [PMD] ƒXƒtƒBƒAƒeƒNƒXƒ`ƒƒ
+	Ref<Shader>				Shader;				///< ã‚·ã‚§ãƒ¼ãƒ€
+	Ref<ln::Texture>			Texture;			///< ãƒ†ã‚¯ã‚¹ãƒãƒ£
+	Ref<ln::Texture>			ToonTexture;		///< [PMD] ãƒˆã‚¥ãƒ¼ãƒ³ãƒ†ã‚¯ã‚¹ãƒãƒ£
+	Ref<ln::Texture>			SphereTexture;		///< [PMD] ã‚¹ãƒ•ã‚£ã‚¢ãƒ†ã‚¯ã‚¹ãƒãƒ£
 
-	Color						ToonColor;			///< [PMD] ƒgƒD[ƒ“ƒJƒ‰[
-	Color						EdgeColor;			///< [PMX] ƒGƒbƒWƒJƒ‰[
-	float						EdgeSize;			///< [PMX] ƒGƒbƒWƒTƒCƒY
-	Color						TextureCoe;			///< [PMX] ƒeƒNƒXƒ`ƒƒŒW”
-	Color						SphereTextureCoe;	///< [PMX] ƒXƒtƒBƒAƒeƒNƒXƒ`ƒƒŒW”
-	Color						ToonTextureCoe;		///< [PMX] ToonƒeƒNƒXƒ`ƒƒŒW”
-	uint32_t					DrawingFlags;		///< [PMX] •`‰æƒIƒvƒVƒ‡ƒ“ (MMDDrawingFlags ‚Ì‘g‚İ‡‚í‚¹)
-	SphereMode					SphereMode;			///< [PMX] ƒXƒtƒBƒAƒeƒNƒXƒ`ƒƒ‚Ì‡¬ƒ‚[ƒh
+	Color						ToonColor;			///< [PMD] ãƒˆã‚¥ãƒ¼ãƒ³ã‚«ãƒ©ãƒ¼
+	Color						EdgeColor;			///< [PMX] ã‚¨ãƒƒã‚¸ã‚«ãƒ©ãƒ¼
+	float						EdgeSize;			///< [PMX] ã‚¨ãƒƒã‚¸ã‚µã‚¤ã‚º
+	Color						TextureCoe;			///< [PMX] ãƒ†ã‚¯ã‚¹ãƒãƒ£ä¿‚æ•°
+	Color						SphereTextureCoe;	///< [PMX] ã‚¹ãƒ•ã‚£ã‚¢ãƒ†ã‚¯ã‚¹ãƒãƒ£ä¿‚æ•°
+	Color						ToonTextureCoe;		///< [PMX] Toonãƒ†ã‚¯ã‚¹ãƒãƒ£ä¿‚æ•°
+	uint32_t					DrawingFlags;		///< [PMX] æç”»ã‚ªãƒ—ã‚·ãƒ§ãƒ³ (MMDDrawingFlags ã®çµ„ã¿åˆã‚ã›)
+	SphereMode					SphereMode;			///< [PMX] ã‚¹ãƒ•ã‚£ã‚¢ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®åˆæˆãƒ¢ãƒ¼ãƒ‰
 
 public:
 
@@ -150,7 +150,7 @@ public:
 	Ref<CommonMaterial> MakeCommonMaterial() const;
 };
 
-/// ‹¤—Lƒ{[ƒ“ƒf[ƒ^
+/// å…±æœ‰ãƒœãƒ¼ãƒ³ãƒ‡ãƒ¼ã‚¿
 class PmxBoneResource
 	: public RefObject
 {
@@ -162,87 +162,87 @@ public:
 	const Matrix& getInitialTranstormInv() const { return m_initialTranstormInv; }
 
 public:
-	String				Name;						///< ƒ{[ƒ“–¼
-	//String			EnglishName;				///< ƒ{[ƒ“‰p–¼
-	Vector3				OrgPosition;				///< ƒ‚ƒfƒ‹Œ´“_‚©‚ç‚ÌˆÊ’u
-	int					ParentBoneIndex;			///< eƒ{[ƒ“‚ÌƒCƒ“ƒfƒbƒNƒX (-1 ‚Í–³‚µ)
-	int					TransformLevel;				///< [PMX] •ÏŒ`ŠK‘w  TOOD: IKƒ{[ƒ“‹y‚Ñ‚»‚ÌIK‚ğe‚Æ‚µ‚Ä‚¢‚éŒn—ñ‚Ì•ÏŒ`ŠK‘w‚ğ 0¨1A‰ñ“]‰e‹¿‰ºˆÈ‰º‚Ì•ÏŒ`ŠK‘w‚ğ 0¨2 (SortVal ‚Ìl‚¦•û‚È‹C‚ª‚·‚éBMMM ‚Å‚Íg‚Á‚Ä‚È‚¢‚İ‚½‚¢)
+	String				Name;						///< ãƒœãƒ¼ãƒ³å
+	//String			EnglishName;				///< ãƒœãƒ¼ãƒ³è‹±å
+	Vector3				OrgPosition;				///< ãƒ¢ãƒ‡ãƒ«åŸç‚¹ã‹ã‚‰ã®ä½ç½®
+	int					ParentBoneIndex;			///< è¦ªãƒœãƒ¼ãƒ³ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ (-1 ã¯ç„¡ã—)
+	int					TransformLevel;				///< [PMX] å¤‰å½¢éšå±¤  TOOD: IKãƒœãƒ¼ãƒ³åŠã³ãã®IKã‚’è¦ªã¨ã—ã¦ã„ã‚‹ç³»åˆ—ã®å¤‰å½¢éšå±¤ã‚’ 0â†’1ã€å›è»¢å½±éŸ¿ä¸‹ä»¥ä¸‹ã®å¤‰å½¢éšå±¤ã‚’ 0â†’2 (SortVal ã®è€ƒãˆæ–¹ãªæ°—ãŒã™ã‚‹ã€‚MMM ã§ã¯ä½¿ã£ã¦ãªã„ã¿ãŸã„)
 
-	// «ƒ{[ƒ“ƒtƒ‰ƒO
-	BoneConnectType		BoneConnect;				///< Ú‘±æ(PMDqƒ{[ƒ“w’è)•\¦•û–@ -> 0:À•WƒIƒtƒZƒbƒg‚Åw’è 1:ƒ{[ƒ“‚Åw’è
-	bool				CanRotate;					///< ‰ñ“]‰Â”\
-	bool				CanMove;					///< ˆÚ“®‰Â”\
-	bool				isVisible;					///< •\¦
-	bool				CanOperate;					///< ‘€ì‰Â
+	// â†“ãƒœãƒ¼ãƒ³ãƒ•ãƒ©ã‚°
+	BoneConnectType		BoneConnect;				///< æ¥ç¶šå…ˆ(PMDå­ãƒœãƒ¼ãƒ³æŒ‡å®š)è¡¨ç¤ºæ–¹æ³• -> 0:åº§æ¨™ã‚ªãƒ•ã‚»ãƒƒãƒˆã§æŒ‡å®š 1:ãƒœãƒ¼ãƒ³ã§æŒ‡å®š
+	bool				CanRotate;					///< å›è»¢å¯èƒ½
+	bool				CanMove;					///< ç§»å‹•å¯èƒ½
+	bool				isVisible;					///< è¡¨ç¤º
+	bool				CanOperate;					///< æ“ä½œå¯
 	bool				IsIK;						///< IK
-	LocalProvideType	LocalProvide;				///< ƒ[ƒJƒ‹•t—^ | •t—^‘ÎÛ 0:ƒ†[ƒU[•ÏŒ`’l^IKƒŠƒ“ƒN^‘½d•t—^ 1:e‚Ìƒ[ƒJƒ‹•ÏŒ`—Ê
-	bool				IsRotateProvided;			///< ‰ñ“]•t—^
-	bool				IsMoveProvided;				///< ˆÚ“®•t—^
-	bool				IsFixAxis;					///< ²ŒÅ’è
-	bool				IsLocalAxis;				///< ƒ[ƒJƒ‹²
-	bool				TransformAfterPhysics;		///< •¨—Œã•ÏŒ`
-	bool				ParentTransform;			///< ŠO•”e•ÏŒ`
-	// ªƒ{[ƒ“ƒtƒ‰ƒO
+	LocalProvideType	LocalProvide;				///< ãƒ­ãƒ¼ã‚«ãƒ«ä»˜ä¸ | ä»˜ä¸å¯¾è±¡ 0:ãƒ¦ãƒ¼ã‚¶ãƒ¼å¤‰å½¢å€¤ï¼IKãƒªãƒ³ã‚¯ï¼å¤šé‡ä»˜ä¸ 1:è¦ªã®ãƒ­ãƒ¼ã‚«ãƒ«å¤‰å½¢é‡
+	bool				IsRotateProvided;			///< å›è»¢ä»˜ä¸
+	bool				IsMoveProvided;				///< ç§»å‹•ä»˜ä¸
+	bool				IsFixAxis;					///< è»¸å›ºå®š
+	bool				IsLocalAxis;				///< ãƒ­ãƒ¼ã‚«ãƒ«è»¸
+	bool				TransformAfterPhysics;		///< ç‰©ç†å¾Œå¤‰å½¢
+	bool				ParentTransform;			///< å¤–éƒ¨è¦ªå¤‰å½¢
+	// â†‘ãƒœãƒ¼ãƒ³ãƒ•ãƒ©ã‚°
 
-	// «ƒ{[ƒ“ƒtƒ‰ƒO‚É‚æ‚èg—p‚·‚éƒf[ƒ^
-	Vector3				PositionOffset;				///< [Ú‘±æ:0 ‚Ìê‡] À•WƒIƒtƒZƒbƒg, ƒ{[ƒ“ˆÊ’u‚©‚ç‚Ì‘Š‘Î•ª (ƒGƒfƒBƒ^‚Åƒ{[ƒ“‚ğ•\¦‚·‚é‚Æ‚«‚ÌAæ’[•ûŒüBƒQ[ƒ€‚Æ‚µ‚Ä‚Í•K—v‚È‚¢BƒfƒoƒbƒOî•ñ‚Æ‚µ‚Äƒ{[ƒ“‚ğ•\¦‚·‚é‚Æ‚«‚É—˜—p‚Å‚«‚é)
-	int					ConnectedBoneIndex;			///< [Ú‘±æ:1 ‚Ìê‡] Ú‘±æƒ{[ƒ“‚Ìƒ{[ƒ“Index (ƒGƒfƒBƒ^‚Åƒ{[ƒ“‚ğ•\¦‚·‚é‚Æ‚«‚ÌAæ’[•ûŒüBƒQ[ƒ€‚Æ‚µ‚Ä‚Í•K—v‚È‚¢BƒfƒoƒbƒOî•ñ‚Æ‚µ‚Äƒ{[ƒ“‚ğ•\¦‚·‚é‚Æ‚«‚É—˜—p‚Å‚«‚é)
-	int					ProvidedParentBoneIndex;	///< [‰ñ“]•t—^:1 ‚Ü‚½‚Í ˆÚ“®•t—^:1 ‚Ìê‡] •t—^eƒ{[ƒ“‚Ìƒ{[ƒ“Index
-	float				ProvidedRatio;				///< [‰ñ“]•t—^:1 ‚Ü‚½‚Í ˆÚ“®•t—^:1 ‚Ìê‡] •t—^—¦
-	Vector3				AxisDirectionVector;		///< [²ŒÅ’è:1 ‚Ìê‡] ²‚Ì•ûŒüƒxƒNƒgƒ‹ (TODO: ”P‚¶‚ê‚Ì§ŒÀ‚ğ‚Â‚¯‚éBPMXE ‚Ìƒ{[ƒ“ƒŠƒXƒg‚Å‚Í‡‚ÌƒAƒCƒRƒ“‚Å•\¦‚³‚ê‚éBMMF ‚Å‚Í–¢‘Î‰‚¾‚Á‚½)
-	Vector3				DimentionXDirectionVector;	///< [ƒ[ƒJƒ‹²:1 ‚Ìê‡] X²‚Ì•ûŒüƒxƒNƒgƒ‹ (TODO: ƒCƒ“ƒpƒ‹ƒXƒ‚[ƒt‚Åg—p‚·‚é‚æ‚¤‚¾B¡‚Í–¢‘Î‰)
-	Vector3				DimentionZDirectionVector;	///< [ƒ[ƒJƒ‹²:1 ‚Ìê‡] Z²‚Ì•ûŒüƒxƒNƒgƒ‹ (TODO: ƒCƒ“ƒpƒ‹ƒXƒ‚[ƒt‚Åg—p‚·‚é‚æ‚¤‚¾B¡‚Í–¢‘Î‰)
-	int					KeyValue;					///< [ŠO•”e•ÏŒ`:1 ‚Ìê‡] Key’l
+	// â†“ãƒœãƒ¼ãƒ³ãƒ•ãƒ©ã‚°ã«ã‚ˆã‚Šä½¿ç”¨ã™ã‚‹ãƒ‡ãƒ¼ã‚¿
+	Vector3				PositionOffset;				///< [æ¥ç¶šå…ˆ:0 ã®å ´åˆ] åº§æ¨™ã‚ªãƒ•ã‚»ãƒƒãƒˆ, ãƒœãƒ¼ãƒ³ä½ç½®ã‹ã‚‰ã®ç›¸å¯¾åˆ† (ã‚¨ãƒ‡ã‚£ã‚¿ã§ãƒœãƒ¼ãƒ³ã‚’è¡¨ç¤ºã™ã‚‹ã¨ãã®ã€å…ˆç«¯æ–¹å‘ã€‚ã‚²ãƒ¼ãƒ ã¨ã—ã¦ã¯å¿…è¦ãªã„ã€‚ãƒ‡ãƒãƒƒã‚°æƒ…å ±ã¨ã—ã¦ãƒœãƒ¼ãƒ³ã‚’è¡¨ç¤ºã™ã‚‹ã¨ãã«åˆ©ç”¨ã§ãã‚‹)
+	int					ConnectedBoneIndex;			///< [æ¥ç¶šå…ˆ:1 ã®å ´åˆ] æ¥ç¶šå…ˆãƒœãƒ¼ãƒ³ã®ãƒœãƒ¼ãƒ³Index (ã‚¨ãƒ‡ã‚£ã‚¿ã§ãƒœãƒ¼ãƒ³ã‚’è¡¨ç¤ºã™ã‚‹ã¨ãã®ã€å…ˆç«¯æ–¹å‘ã€‚ã‚²ãƒ¼ãƒ ã¨ã—ã¦ã¯å¿…è¦ãªã„ã€‚ãƒ‡ãƒãƒƒã‚°æƒ…å ±ã¨ã—ã¦ãƒœãƒ¼ãƒ³ã‚’è¡¨ç¤ºã™ã‚‹ã¨ãã«åˆ©ç”¨ã§ãã‚‹)
+	int					ProvidedParentBoneIndex;	///< [å›è»¢ä»˜ä¸:1 ã¾ãŸã¯ ç§»å‹•ä»˜ä¸:1 ã®å ´åˆ] ä»˜ä¸è¦ªãƒœãƒ¼ãƒ³ã®ãƒœãƒ¼ãƒ³Index
+	float				ProvidedRatio;				///< [å›è»¢ä»˜ä¸:1 ã¾ãŸã¯ ç§»å‹•ä»˜ä¸:1 ã®å ´åˆ] ä»˜ä¸ç‡
+	Vector3				AxisDirectionVector;		///< [è»¸å›ºå®š:1 ã®å ´åˆ] è»¸ã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ« (TODO: æ»ã˜ã‚Œã®åˆ¶é™ã‚’ã¤ã‘ã‚‹ã€‚PMXE ã®ãƒœãƒ¼ãƒ³ãƒªã‚¹ãƒˆã§ã¯ç´«ã®ã‚¢ã‚¤ã‚³ãƒ³ã§è¡¨ç¤ºã•ã‚Œã‚‹ã€‚MMF ã§ã¯æœªå¯¾å¿œã ã£ãŸ)
+	Vector3				DimentionXDirectionVector;	///< [ãƒ­ãƒ¼ã‚«ãƒ«è»¸:1 ã®å ´åˆ] Xè»¸ã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ« (TODO: ã‚¤ãƒ³ãƒ‘ãƒ«ã‚¹ãƒ¢ãƒ¼ãƒ•ã§ä½¿ç”¨ã™ã‚‹ã‚ˆã†ã ã€‚ä»Šã¯æœªå¯¾å¿œ)
+	Vector3				DimentionZDirectionVector;	///< [ãƒ­ãƒ¼ã‚«ãƒ«è»¸:1 ã®å ´åˆ] Zè»¸ã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ« (TODO: ã‚¤ãƒ³ãƒ‘ãƒ«ã‚¹ãƒ¢ãƒ¼ãƒ•ã§ä½¿ç”¨ã™ã‚‹ã‚ˆã†ã ã€‚ä»Šã¯æœªå¯¾å¿œ)
+	int					KeyValue;					///< [å¤–éƒ¨è¦ªå¤‰å½¢:1 ã®å ´åˆ] Keyå€¤
 
 private:
 	PmxSkinnedMeshResource*	m_owner;
 	int						m_boneIndex;
-	Vector3					m_offsetFromParent;			///< (refreshInitialValues() ‚Åİ’è‚³‚ê‚é) eƒ{[ƒ“‚Ì‚©‚ç‚Ì‘Š‘ÎˆÊ’u (eOrgPosition - OrgPosition)
-	Matrix					m_initialTranstormInv;		///< (refreshInitialValues() ‚Åİ’è‚³‚ê‚é) ƒ‚ƒfƒ‹À•WŒn“à‚Ì‰Šúp¨‚Ì‹ts—ñ
+	Vector3					m_offsetFromParent;			///< (refreshInitialValues() ã§è¨­å®šã•ã‚Œã‚‹) è¦ªãƒœãƒ¼ãƒ³ã®ã‹ã‚‰ã®ç›¸å¯¾ä½ç½® (è¦ªOrgPosition - OrgPosition)
+	Matrix					m_initialTranstormInv;		///< (refreshInitialValues() ã§è¨­å®šã•ã‚Œã‚‹) ãƒ¢ãƒ‡ãƒ«åº§æ¨™ç³»å†…ã®åˆæœŸå§¿å‹¢ã®é€†è¡Œåˆ—
 };
 
 
-/// ‹¤—LIKƒf[ƒ^
+/// å…±æœ‰IKãƒ‡ãƒ¼ã‚¿
 class PmxIKResource
 	: public RefObject
 {
 public:
 	struct IKLink
 	{
-		int			LinkBoneIndex;		///< IK\¬ƒ{[ƒ“”Ô†
-		bool		IsRotateLimit;		///< ‰ñ“]§ŒÀ‚ğ‚·‚é‚©
-		Vector3		MinLimit;			///< ‰ºŒÀ
-		Vector3		MaxLimit;			///< ãŒÀ
+		int			LinkBoneIndex;		///< IKæ§‹æˆãƒœãƒ¼ãƒ³ç•ªå·
+		bool		IsRotateLimit;		///< å›è»¢åˆ¶é™ã‚’ã™ã‚‹ã‹
+		Vector3		MinLimit;			///< ä¸‹é™
+		Vector3		MaxLimit;			///< ä¸Šé™
 	};
 
 public:
-	/* ‡@ - ‡A - ‡B    ‡C
+	/* â‘  - â‘¡ - â‘¢    â‘£
 	
-		‡@‡A : IK‰e‹¿‰ºƒ{[ƒ“
-		‡B	: IKTargetBone (PMX d—l‘‚Å‚ÍuIKƒ^[ƒQƒbƒgƒ{[ƒ“vAMMDX “™‚Å‚ÍuƒGƒtƒFƒNƒ^v‚ÆŒÄ‚Î‚ê‚é)
-		‡C	: IKBone (PMX d—l‘ ‚Å‚ÍuIKƒ{[ƒ“vAMMDX “™‚Å‚Íuƒ^[ƒQƒbƒgƒ{[ƒ“v‚ÆŒÄ‚Î‚ê‚éB‚©‚©‚Æ“™Au‰E‘«IKv‚Ì‚æ‚¤‚È–¼‘O‚É‚È‚Á‚Ä‚¢‚é)
+		â‘ â‘¡ : IKå½±éŸ¿ä¸‹ãƒœãƒ¼ãƒ³
+		â‘¢	: IKTargetBone (PMX ä»•æ§˜æ›¸ã§ã¯ã€ŒIKã‚¿ãƒ¼ã‚²ãƒƒãƒˆãƒœãƒ¼ãƒ³ã€ã€MMDX ç­‰ã§ã¯ã€Œã‚¨ãƒ•ã‚§ã‚¯ã‚¿ã€ã¨å‘¼ã°ã‚Œã‚‹)
+		â‘£	: IKBone (PMX ä»•æ§˜æ›¸ ã§ã¯ã€ŒIKãƒœãƒ¼ãƒ³ã€ã€MMDX ç­‰ã§ã¯ã€Œã‚¿ãƒ¼ã‚²ãƒƒãƒˆãƒœãƒ¼ãƒ³ã€ã¨å‘¼ã°ã‚Œã‚‹ã€‚ã‹ã‹ã¨ç­‰ã€ã€Œå³è¶³IKã€ã®ã‚ˆã†ãªåå‰ã«ãªã£ã¦ã„ã‚‹)
 
-		IKƒ{[ƒ“ ‚ÍƒXƒLƒjƒ“ƒO‚É‰e‹¿‚µ‚È‚¢B
-		IKƒ{[ƒ“ ‚ğƒS[ƒ‹‚Æ‚µ‚Äƒ\ƒ‹ƒu‚µ‚½ IKƒ^[ƒQƒbƒgƒ{[ƒ“ ‹y‚Ñ IK‰e‹¿‰ºƒ{[ƒ“ ‚ªƒXƒLƒjƒ“ƒO‚É‰e‹¿‚·‚éB
+		IKãƒœãƒ¼ãƒ³ ã¯ã‚¹ã‚­ãƒ‹ãƒ³ã‚°ã«å½±éŸ¿ã—ãªã„ã€‚
+		IKãƒœãƒ¼ãƒ³ ã‚’ã‚´ãƒ¼ãƒ«ã¨ã—ã¦ã‚½ãƒ«ãƒ–ã—ãŸ IKã‚¿ãƒ¼ã‚²ãƒƒãƒˆãƒœãƒ¼ãƒ³ åŠã³ IKå½±éŸ¿ä¸‹ãƒœãƒ¼ãƒ³ ãŒã‚¹ã‚­ãƒ‹ãƒ³ã‚°ã«å½±éŸ¿ã™ã‚‹ã€‚
 
-		‚à‚µ©•ª‚Å IK ‚ğ‘€‚è‚½‚¢‚Æ‚«‚ÍAIKƒ{[ƒ“ ‚ÌˆÊ’u‚ğ‘€ì‚·‚é‚±‚Æ‚É‚È‚éB
-		‚±‚ê‚Í MMD ã‚Åƒ‚[ƒVƒ‡ƒ“‚ğì‚é‚à“¯‚¶B
+		ã‚‚ã—è‡ªåˆ†ã§ IK ã‚’æ“ã‚ŠãŸã„ã¨ãã¯ã€IKãƒœãƒ¼ãƒ³ ã®ä½ç½®ã‚’æ“ä½œã™ã‚‹ã“ã¨ã«ãªã‚‹ã€‚
+		ã“ã‚Œã¯ MMD ä¸Šã§ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ã‚’ä½œã‚‹æ™‚ã‚‚åŒã˜ã€‚
 	*/
 
-	int			IKBoneIndex;			///< IKƒ{[ƒ“ (PMX ‚Å‚ÍA‚±‚Ì IK î•ñ‚ğ‚Âƒ{[ƒ“‚ğw‚·) TODO: ‚¢‚ç‚È‚¢
-	int			IKTargetBoneIndex;		///< IKƒ^[ƒQƒbƒgƒ{[ƒ“
-	int			LoopCount;				///< ‰‰Z‰ñ”
-	float		IKRotateLimit;			///< IKƒ‹[ƒvŒvZ‚Ì1‰ñ‚ ‚½‚è‚Ì§ŒÀŠp“x -> ƒ‰ƒWƒAƒ“Šp | PMD‚ÌIK’l‚Æ‚Í4”{ˆÙ‚È‚é‚Ì‚Å’ˆÓ
+	int			IKBoneIndex;			///< IKãƒœãƒ¼ãƒ³ (PMX ã§ã¯ã€ã“ã® IK æƒ…å ±ã‚’æŒã¤ãƒœãƒ¼ãƒ³ã‚’æŒ‡ã™) TODO: ã„ã‚‰ãªã„
+	int			IKTargetBoneIndex;		///< IKã‚¿ãƒ¼ã‚²ãƒƒãƒˆãƒœãƒ¼ãƒ³
+	int			LoopCount;				///< æ¼”ç®—å›æ•°
+	float		IKRotateLimit;			///< IKãƒ«ãƒ¼ãƒ—è¨ˆç®—æ™‚ã®1å›ã‚ãŸã‚Šã®åˆ¶é™è§’åº¦ -> ãƒ©ã‚¸ã‚¢ãƒ³è§’ | PMDã®IKå€¤ã¨ã¯4å€ç•°ãªã‚‹ã®ã§æ³¨æ„
 
-	List<IKLink> IKLinks;			///< IK‰e‹¿ƒ{[ƒ“‚Æ§ŒÀ‚ÌƒŠƒXƒg
+	List<IKLink> IKLinks;			///< IKå½±éŸ¿ãƒœãƒ¼ãƒ³ã¨åˆ¶é™ã®ãƒªã‚¹ãƒˆ
 
-	/* PMD ‚Ìê‡‚Ì IKRotateLimit ‚ÍˆÈ‰º‚ÌŒvZŒ‹‰Ê‚ğŠi”[‚·‚é
+	/* PMD ã®å ´åˆã® IKRotateLimit ã¯ä»¥ä¸‹ã®è¨ˆç®—çµæœã‚’æ ¼ç´ã™ã‚‹
 	*		PI * Fact * (iLink + 1)
 	*/
 };
 
 
-/// ‹¤—Lƒ‚[ƒtƒf[ƒ^
+/// å…±æœ‰ãƒ¢ãƒ¼ãƒ•ãƒ‡ãƒ¼ã‚¿
 class PmxMorphResource
 	: public RefObject
 {
@@ -252,52 +252,52 @@ public:
 
 public:
 
-	String		Name;						///< ƒ‚[ƒt–¼
-	//String	EnglishName;				///< ƒ‚[ƒt‰p–¼
+	String		Name;						///< ãƒ¢ãƒ¼ãƒ•å
+	//String	EnglishName;				///< ãƒ¢ãƒ¼ãƒ•è‹±å
 
-	int				OperationPanel;			///< ‘€ìƒpƒlƒ‹ (PMD:ƒJƒeƒSƒŠ) 1:”û(¶‰º) 2:–Ú(¶ã) 3:Œû(‰Eã) 4:‚»‚Ì‘¼(‰E‰º)  | 0:ƒVƒXƒeƒ€—\–ñ
+	int				OperationPanel;			///< æ“ä½œãƒ‘ãƒãƒ« (PMD:ã‚«ãƒ†ã‚´ãƒª) 1:çœ‰(å·¦ä¸‹) 2:ç›®(å·¦ä¸Š) 3:å£(å³ä¸Š) 4:ãã®ä»–(å³ä¸‹)  | 0:ã‚·ã‚¹ãƒ†ãƒ äºˆç´„
 	ModelMorphType	MorphType;
 
 	union MorphOffset
 	{
 		struct
 		{
-			int			MorphIndex;			///< ƒ‚[ƒtIndex
-			float		MorphRatio;			///< ƒ‚[ƒt—¦ : ƒOƒ‹[ƒvƒ‚[ƒt‚Ìƒ‚[ƒt’l * ƒ‚[ƒt—¦ = ‘ÎÛƒ‚[ƒt‚Ìƒ‚[ƒt’l
+			int			MorphIndex;			///< ãƒ¢ãƒ¼ãƒ•Index
+			float		MorphRatio;			///< ãƒ¢ãƒ¼ãƒ•ç‡ : ã‚°ãƒ«ãƒ¼ãƒ—ãƒ¢ãƒ¼ãƒ•ã®ãƒ¢ãƒ¼ãƒ•å€¤ * ãƒ¢ãƒ¼ãƒ•ç‡ = å¯¾è±¡ãƒ¢ãƒ¼ãƒ•ã®ãƒ¢ãƒ¼ãƒ•å€¤
 		} GroupMorphOffset;
 		struct
 		{
-			int			VertexIndex;		///< ’¸“_Index
-			float		PositionOffset[3];	///< À•WƒIƒtƒZƒbƒg—Ê(x,y,z)
+			int			VertexIndex;		///< é ‚ç‚¹Index
+			float		PositionOffset[3];	///< åº§æ¨™ã‚ªãƒ•ã‚»ãƒƒãƒˆé‡(x,y,z)
 		} VertexMorphOffset;
 		struct
 		{
-			int			BoneIndex;			///< ƒ{[ƒ“Index
-			float		Moving[3];			///< ˆÚ“®—Ê(x,y,z)
-			float		Rotating[4];		///< ‰ñ“]—Ê-ƒNƒH[ƒ^ƒjƒIƒ“(x,y,z,w)
+			int			BoneIndex;			///< ãƒœãƒ¼ãƒ³Index
+			float		Moving[3];			///< ç§»å‹•é‡(x,y,z)
+			float		Rotating[4];		///< å›è»¢é‡-ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³(x,y,z,w)
 		} BoneMorphOffset;
 		struct
 		{
-			int			VertexIndex;		///< ’¸“_Index
-			float		UVOffset[4];		///< UVƒIƒtƒZƒbƒg—Ê(x,y,z,w) ¦’ÊíUV‚Íz,w‚ª•s—v€–Ú‚É‚È‚é‚ªƒ‚[ƒt‚Æ‚µ‚Ä‚Ìƒf[ƒ^’l‚Í‹L˜^‚µ‚Ä‚¨‚­
+			int			VertexIndex;		///< é ‚ç‚¹Index
+			float		UVOffset[4];		///< UVã‚ªãƒ•ã‚»ãƒƒãƒˆé‡(x,y,z,w) â€»é€šå¸¸UVã¯z,wãŒä¸è¦é …ç›®ã«ãªã‚‹ãŒãƒ¢ãƒ¼ãƒ•ã¨ã—ã¦ã®ãƒ‡ãƒ¼ã‚¿å€¤ã¯è¨˜éŒ²ã—ã¦ãŠã
 		} UVMorphOffset;
 		struct
 		{
-			int			MaterialIndex;		///< Ş¿Index -> -1:‘SŞ¿‘ÎÛ
-			uint8_t		OffsetCalcType;		///< ƒIƒtƒZƒbƒg‰‰ZŒ`® | 0:æZ, 1:‰ÁZ - Ú×‚ÍŒãq
-			float		Diffuse[4];			///< Diffuse (R,G,B,A) - æZ:1.0^‰ÁZ:0.0 ‚ª‰Šú’l‚Æ‚È‚é(“¯ˆÈ‰º)
+			int			MaterialIndex;		///< æè³ªIndex -> -1:å…¨æè³ªå¯¾è±¡
+			uint8_t		OffsetCalcType;		///< ã‚ªãƒ•ã‚»ãƒƒãƒˆæ¼”ç®—å½¢å¼ | 0:ä¹—ç®—, 1:åŠ ç®— - è©³ç´°ã¯å¾Œè¿°
+			float		Diffuse[4];			///< Diffuse (R,G,B,A) - ä¹—ç®—:1.0ï¼åŠ ç®—:0.0 ãŒåˆæœŸå€¤ã¨ãªã‚‹(åŒä»¥ä¸‹)
 			float		Specular[3];		///< Specular (R,G,B)
-			float		SpecularCoe;		///< SpecularŒW”
+			float		SpecularCoe;		///< Specularä¿‚æ•°
 			float		Ambient[3];			///< Ambient (R,G,B)
-			float		EdgeColor[4];		///< ƒGƒbƒWF (R,G,B,A)
-			float		EdgeSize;			///< ƒGƒbƒWƒTƒCƒY
-			float		TextureCoe[4];		///< ƒeƒNƒXƒ`ƒƒŒW” (R,G,B,A)
-			float		SphereTextureCoe[4];///< ƒXƒtƒBƒAƒeƒNƒXƒ`ƒƒŒW” (R,G,B,A)
-			float		ToonTextureCoe[4];	///< ToonƒeƒNƒXƒ`ƒƒŒW” (R,G,B,A)
+			float		EdgeColor[4];		///< ã‚¨ãƒƒã‚¸è‰² (R,G,B,A)
+			float		EdgeSize;			///< ã‚¨ãƒƒã‚¸ã‚µã‚¤ã‚º
+			float		TextureCoe[4];		///< ãƒ†ã‚¯ã‚¹ãƒãƒ£ä¿‚æ•° (R,G,B,A)
+			float		SphereTextureCoe[4];///< ã‚¹ãƒ•ã‚£ã‚¢ãƒ†ã‚¯ã‚¹ãƒãƒ£ä¿‚æ•° (R,G,B,A)
+			float		ToonTextureCoe[4];	///< Toonãƒ†ã‚¯ã‚¹ãƒãƒ£ä¿‚æ•° (R,G,B,A)
 		} MaterialMorphOffset;
 		struct
 		{
-			int			MorphIndex;			///< ƒ‚[ƒtIndex
+			int			MorphIndex;			///< ãƒ¢ãƒ¼ãƒ•Index
 			float		MorphValue;
 		} FlipMorphOffset;
 		struct
@@ -312,13 +312,33 @@ public:
 	List<MorphOffset>	MorphOffsets;
 };
 
-/// ‹¤—L„‘Ìƒf[ƒ^
+// ãƒ¢ãƒ¼ãƒ•ã‚£ãƒ³ã‚°ã®å¤‰å½¢å‰ãƒ‡ãƒ¼ã‚¿
+class PmxMorphBaseResource
+	: public RefObject
+{
+public:
+	void addVertex(int vertexIndex, const Vector3& pos, const Vector4& uv);
+
+	void apply(MeshResource* mesh);
+
+private:
+	struct BaseVertex
+	{
+		Vector3 pos;	// MorphType ãŒ Offset ã®ã¨ãã«ä½¿ç”¨
+		Vector4 uv;		// MorphType ãŒ UV ã®ã¨ãã«ä½¿ç”¨	TODO: Vec2 ã§ã‚ˆã„ã€‚ç„¡é§„
+	};
+
+	std::unordered_map<int, BaseVertex>	m_vertexMap;	// <VertexIndex, BaseVertex>
+};
+
+
+/// å…±æœ‰å‰›ä½“ãƒ‡ãƒ¼ã‚¿
 class PmxRigidBodyResource
 	: public RefObject
 {
 public:
 
-	/// Œ`óƒf[ƒ^
+	/// å½¢çŠ¶ãƒ‡ãƒ¼ã‚¿
 	struct CollisionShapeData
 	{
 		CollisionShapeType Type;
@@ -345,49 +365,49 @@ public:
 	};
 
 public:
-	String				Name;				///< „‘Ì–¼
-	//String			EnglishName;		///< „‘Ì‰p–¼
-	int					RelatedBoneIndex;	///< ŠÖ˜Aƒ{[ƒ“ (ŠÖ˜A‚È‚µ‚Ìê‡‚Í-1)
-	uint16_t			Group;				///< Õ“ËƒOƒ‹[ƒv
-	uint16_t			GroupMask;			///< Õ“ËƒOƒ‹[ƒvƒ}ƒXƒN
-	RigidBodyType		RigidBodyType;		///< Œ`ó
-	CollisionShapeData	ColShapeData;		///< Œ`óƒTƒCƒY
-	Matrix				InitialTransform;	///< ƒ‚ƒfƒ‹À•W‹óŠÔ“à‚Å‚Ì‰Šúp¨ (‚»‚Ì‚Ü‚Ü„‘Ì‚Ì‰Šúp¨‚É‚È‚é)
+	String				Name;				///< å‰›ä½“å
+	//String			EnglishName;		///< å‰›ä½“è‹±å
+	int					RelatedBoneIndex;	///< é–¢é€£ãƒœãƒ¼ãƒ³ (é–¢é€£ãªã—ã®å ´åˆã¯-1)
+	uint16_t			Group;				///< è¡çªã‚°ãƒ«ãƒ¼ãƒ—
+	uint16_t			GroupMask;			///< è¡çªã‚°ãƒ«ãƒ¼ãƒ—ãƒã‚¹ã‚¯
+	RigidBodyType		RigidBodyType;		///< å½¢çŠ¶
+	CollisionShapeData	ColShapeData;		///< å½¢çŠ¶ã‚µã‚¤ã‚º
+	Matrix				InitialTransform;	///< ãƒ¢ãƒ‡ãƒ«åº§æ¨™ç©ºé–“å†…ã§ã®åˆæœŸå§¿å‹¢ (ãã®ã¾ã¾å‰›ä½“ã®åˆæœŸå§¿å‹¢ã«ãªã‚‹)
 
 
 
-	//Matrix				BoneOffset;			///< ƒ{[ƒ“s—ñ ¨ „‘Ìs—ñ•ÏŠ·—p (ƒOƒ[ƒoƒ‹s—ñ‚Å‚Í‚È‚¢)
-	//Matrix				InvBoneOffset;		///< „‘Ìs—ñ ¨ ƒ{[ƒ“s—ñ•ÏŠ·—p
+	//Matrix				BoneOffset;			///< ãƒœãƒ¼ãƒ³è¡Œåˆ— â†’ å‰›ä½“è¡Œåˆ—å¤‰æ›ç”¨ (ã‚°ãƒ­ãƒ¼ãƒãƒ«è¡Œåˆ—ã§ã¯ãªã„)
+	//Matrix				InvBoneOffset;		///< å‰›ä½“è¡Œåˆ— â†’ ãƒœãƒ¼ãƒ³è¡Œåˆ—å¤‰æ›ç”¨
 
 
-	float				Mass;				///< ¿—Ê
-	float				LinearDamping;		///< ˆÚ“®Œ¸
-	float				AngularDamping;		///< ‰ñ“]Œ¸
-	float				Restitution;		///< ”½”­—Í
-	float				Friction;			///< –€C—Í
+	float				Mass;				///< è³ªé‡
+	float				LinearDamping;		///< ç§»å‹•æ¸›
+	float				AngularDamping;		///< å›è»¢æ¸›
+	float				Restitution;		///< åç™ºåŠ›
+	float				Friction;			///< æ‘©æ“¦åŠ›
 
 };
 
-/// ‹¤—LƒWƒ‡ƒCƒ“ƒgƒf[ƒ^
+/// å…±æœ‰ã‚¸ãƒ§ã‚¤ãƒ³ãƒˆãƒ‡ãƒ¼ã‚¿
 class PmxJointResource
 	: public RefObject
 {
 public:
-	String				Name;						///< ƒWƒ‡ƒCƒ“ƒg–¼
-	//String			EnglishName;				///< ƒWƒ‡ƒCƒ“ƒg‰p–¼
-	int					RigidBodyAIndex;			///< Œ‹‡„‘Ì A
-	int					RigidBodyBIndex;			///< Œ‹‡„‘Ì B
-	Vector3				Position;					///< ˆÊ’u(ƒ‚ƒfƒ‹Œ´“_’†S)
-	Vector3				Rotation;					///< ‰ñ“](radian)
-	Vector3				PositionLimitLower;			///< ˆÚ“®§ŒÀ1
-	Vector3				PositionLimitUpper;			///< ˆÚ“®§ŒÀ2
-	Vector3				RotationLimitLower;			///< ‰ñ“]§ŒÀ1
-	Vector3				RotationLimitUpper;			///< ‰ñ“]§ŒÀ2
-	Vector3				SpringPositionStiffness;	///< ‚Î‚ËˆÚ“®
-	Vector3				SpringRotationStiffness;	///< ‚Î‚Ë‰ñ“]
+	String				Name;						///< ã‚¸ãƒ§ã‚¤ãƒ³ãƒˆå
+	//String			EnglishName;				///< ã‚¸ãƒ§ã‚¤ãƒ³ãƒˆè‹±å
+	int					RigidBodyAIndex;			///< çµåˆå‰›ä½“ A
+	int					RigidBodyBIndex;			///< çµåˆå‰›ä½“ B
+	Vector3				Position;					///< ä½ç½®(ãƒ¢ãƒ‡ãƒ«åŸç‚¹ä¸­å¿ƒ)
+	Vector3				Rotation;					///< å›è»¢(radian)
+	Vector3				PositionLimitLower;			///< ç§»å‹•åˆ¶é™1
+	Vector3				PositionLimitUpper;			///< ç§»å‹•åˆ¶é™2
+	Vector3				RotationLimitLower;			///< å›è»¢åˆ¶é™1
+	Vector3				RotationLimitUpper;			///< å›è»¢åˆ¶é™2
+	Vector3				SpringPositionStiffness;	///< ã°ã­ç§»å‹•
+	Vector3				SpringRotationStiffness;	///< ã°ã­å›è»¢
 };
 
-/// ƒ‚ƒfƒ‹‚Ì‹¤—Lƒf[ƒ^ƒNƒ‰ƒX
+/// ãƒ¢ãƒ‡ãƒ«ã®å…±æœ‰ãƒ‡ãƒ¼ã‚¿ã‚¯ãƒ©ã‚¹
 class PmxSkinnedMeshResource
 	: public MeshResource
 	, public ICacheObject
@@ -400,17 +420,19 @@ public:
 public:
 	ModelFormat				Format;
 
-	String					Name;				///< ƒ‚ƒfƒ‹–¼
-	//String				EnglishName;		///< ƒ‚ƒfƒ‹‰p–¼
-	//String				Comment;			///< ƒRƒƒ“ƒg
-	//String				EnglishComment;		///< ƒRƒƒ“ƒg‰p
+	String					Name;				///< ãƒ¢ãƒ‡ãƒ«å
+	//String				EnglishName;		///< ãƒ¢ãƒ‡ãƒ«è‹±å
+	//String				Comment;			///< ã‚³ãƒ¡ãƒ³ãƒˆ
+	//String				EnglishComment;		///< ã‚³ãƒ¡ãƒ³ãƒˆè‹±
 
-	List<Ref<PmxMaterialResource>>	materials;	// ƒ}ƒeƒŠƒAƒ‹ƒŠƒXƒg
-	List<Ref<PmxBoneResource>>		bones;		// ƒ{[ƒ“ƒŠƒXƒg
-	List<Ref<PmxIKResource>>		iks;		// IK ƒŠƒXƒg
-	List<Ref<PmxMorphResource>>		morphs;		// ƒ‚[ƒtƒŠƒXƒg
-	List<Ref<PmxRigidBodyResource>>	rigidBodys;	// „‘ÌƒŠƒXƒg
-	List<Ref<PmxJointResource>>		joints;		// ƒWƒ‡ƒCƒ“ƒgƒŠƒXƒg
+	List<Ref<PmxMaterialResource>>	materials;	// ãƒãƒ†ãƒªã‚¢ãƒ«ãƒªã‚¹ãƒˆ
+	List<Ref<PmxBoneResource>>		bones;		// ãƒœãƒ¼ãƒ³ãƒªã‚¹ãƒˆ
+	List<Ref<PmxIKResource>>		iks;		// IK ãƒªã‚¹ãƒˆ
+	List<Ref<PmxMorphResource>>		morphs;		// ãƒ¢ãƒ¼ãƒ•ãƒªã‚¹ãƒˆ
+	List<Ref<PmxRigidBodyResource>>	rigidBodys;	// å‰›ä½“ãƒªã‚¹ãƒˆ
+	List<Ref<PmxJointResource>>		joints;		// ã‚¸ãƒ§ã‚¤ãƒ³ãƒˆãƒªã‚¹ãƒˆ
+
+	Ref<PmxMorphBaseResource> morphBase;
 };
 
 LN_NAMESPACE_END

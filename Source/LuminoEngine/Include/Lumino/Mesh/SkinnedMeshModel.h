@@ -1,16 +1,17 @@
 ﻿
 #pragma once
-#include "../../../Source/Animation/AnimationState.h"		//  TODO
-#include "../../../Source/Animation/Animator.h"		//  TODO
+#include "../Animation/A2AnimatorController.h"
 #include "Mesh.h"
 
 LN_NAMESPACE_BEGIN
 class Animator;
 class PmxSkinnedMeshResource;	// TODO: 抽象化したい
 class PmxBoneResource;			// TODO: 抽象化したい
+class PmxMorphResource;
 class PmxIKResource;
 class SkinnedMeshModel;
 class SkinnedMeshBone;
+class SkinnedMeshMorph;
 using SkinnedMeshModelPtr = Ref<SkinnedMeshModel>;
 using SkinnedMeshBonePtr = Ref<SkinnedMeshBone>;
 
@@ -28,24 +29,27 @@ class PmxJointResource;
 */
 class SkinnedMeshModel
 	: public Object
-	, public detail::IAnimationTargetElement
+	, public IAnimationTargetObject
 {
 	LN_OBJECT;
 public:
-
-	// TODO: Unity では Mesh からは切り離された独立したコンポーネントである。そうしたほうがいいかな？
-	Animator* getAnimator() const { return m_animator; }
+	AnimationController* animationController() const { return m_animationController; }
 
 	const List<Ref<SkinnedMeshBone>>& bones() const { return m_allBoneList; }
+	const List<Ref<SkinnedMeshMorph>>& morphs() const { return m_morphs; }
 	MeshResource* getMeshResource(int index) const;
 	int getMeshResourceCount() const { return m_meshResources.getCount(); }
 
 	void updateBoneTransform(const Matrix& worldTransform = Matrix::Identity);
 
+	SkinnedMeshBone* findBone(const StringRef& boneName) const;
+
 protected:
-	// IAnimationTargetElement interface
-	virtual int getAnimationTargetAttributeCount() const override;
-	virtual detail::IAnimationTargetAttribute* getAnimationTargetAttribute(int index) override;
+	// IAnimationTargetObject interface
+	virtual int getAnimationTargetElementCount() const override;
+	virtual const String& getAnimationTargetElementName(int index) const override;
+	virtual AnimationValueType getAnimationTargetElementValueType(int index) const override;
+	virtual void setAnimationTargetElementValue(int index, const AnimationValue& value) override;
 
 LN_INTERNAL_ACCESS:
 	SkinnedMeshModel();
@@ -86,6 +90,7 @@ LN_INTERNAL_ACCESS:
 	//void drawSubset(int subsetIndex);
 
 private:
+	void updateMorph();
 	void updateIK();
 	void updateBestow();
 
@@ -99,11 +104,12 @@ public:	// TODO:
 
 	List<SkinnedMeshBonePtr>		m_allBoneList;				// 全ボーンリスト
 	List<SkinnedMeshBone*>			m_rootBoneList;				// ルートボーンリスト (親を持たないボーンリスト)
+	List<Ref<SkinnedMeshMorph>>		m_morphs;
 	List<Matrix>					m_skinningMatrices;			// スキニングに使用する最終ボーン行列 (要素数はボーン数)
 	List<Quaternion>				m_skinningLocalQuaternions;
 	Ref<Texture2D>				m_skinningMatricesTexture;	// Texture fetch による GPU スキニング用のテクスチャ
 	Ref<Texture2D>				m_skinningLocalQuaternionsTexture;	// Texture fetch による GPU スキニング用のテクスチャ
-	Ref<Animator>				m_animator;
+	Ref<AnimationController>	m_animationController;
 	List<SkinnedMeshBone*>			m_ikBoneList;
 
 	// TODO: これは物理演算機能を持つサブクラスを作ったほうがいい気がする
@@ -113,15 +119,15 @@ public:	// TODO:
 
 	Matrix		m_worldTransform;
 	Matrix		m_worldTransformInverse;
-};
 
+	bool	m_needResetMorph;
+};
 
 /**
 	@brief
 */
 class SkinnedMeshBone
 	: public Object
-	, public detail::IAnimationTargetAttribute
 {
 	LN_OBJECT;
 public:
@@ -162,11 +168,6 @@ LN_INTERNAL_ACCESS:
 
 	AttitudeTransform* getLocalTransformPtr() { return &m_localTransform; }
 
-protected:
-	// IAnimationTargetAttribute interface
-	virtual const String& getAnimationTargetName() const override;
-	virtual void setAnimationTargetValue(ValueType type, const void* value) override;
-
 LN_INTERNAL_ACCESS:	// TODO
 	void setBoneIndex(int index) { m_boneIndex = index; }
 
@@ -182,8 +183,56 @@ LN_INTERNAL_ACCESS:	// TODO
 	friend class SkinnedMeshModel;
 };
 
+
+class SkinnedMeshMorph
+	: public Object
+{
+public:
+	const String& name() const;
+
+	float weight() const { return m_weight; }
+	void setWeight(float value);
+
+LN_CONSTRUCT_ACCESS:
+	SkinnedMeshMorph();
+	virtual ~SkinnedMeshMorph();
+	void initialize(PmxMorphResource* core);
+
+LN_INTERNAL_ACCESS:
+	bool active() const;
+	bool apply(SkinnedMeshModel* model);
+
+private:
+	Ref<PmxMorphResource> m_core;
+	float m_weight;
+};
+
 namespace detail
 {
+
+//class SkinnedMeshMorphBase
+//	: public Object
+//{
+//public:
+//	const String& name() const;
+//
+//	float weight() const { return m_weight; }
+//	void setWeight(float value);
+//
+//LN_CONSTRUCT_ACCESS:
+//	SkinnedMeshMorph();
+//	virtual ~SkinnedMeshMorph();
+//	void initialize(PmxMorphResource* core);
+//
+//LN_INTERNAL_ACCESS:
+//	bool active() const;
+//	void apply(SkinnedMeshModel* model);
+//
+//private:
+//	Ref<PmxMorphResource> m_core;
+//	float m_weight;
+//};
+
 
 class MmdSkinnedMeshRigidBody
 	: public RefObject

@@ -54,7 +54,6 @@ public:
 
 private:
 	Ref<PmxSkinnedMeshResource> createSkinnedMeshResource(const PathName& filePath);
-	//Animation::AnimationClip* CreateMotion(const PathName& filePath);
 
 	FileManager*			m_fileManager;
 	PhysicsManager*		m_physicsManager;

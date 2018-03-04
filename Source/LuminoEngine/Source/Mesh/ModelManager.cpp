@@ -390,31 +390,6 @@ Ref<SkinnedMeshModel> ModelManager::createSkinnedMeshModel(const PathName& fileP
 	return mesh;
 }
 
-#if 0
-//------------------------------------------------------------------------------
-Animation::AnimationClip* ModelManager::CreateMotion(const PathName& filePath)
-{
-	Ref<Stream> stream(m_fileManager->CreateFileStream(filePath));
-	VMDLoader loader;
-	if (!loader.Load(stream)) {
-		LN_THROW(0, InvalidFormatException);
-	}
-
-	// TODO: ボーンと表情のアニメーションは分けた方が良い気がする…
-	Ref<Animation::AnimationClip> clip(LN_NEW Animation::AnimationClip());
-	LN_FOREACH(VMDLoader::BoneAnimation& anim, loader.GetBoneAnimationList())
-	{
-		clip->AddAnimationCurve(anim.TargetBoneName, anim.AnimationCurve);
-	}
-	LN_FOREACH(VMDLoader::FaceAnimation& anim, loader.GetFaceAnimationList())
-	{
-		clip->AddAnimationCurve(anim.TargetFaceName, anim.AnimationCurve);
-	}
-	clip.safeAddRef();
-	return clip;
-}
-#endif
-
 //------------------------------------------------------------------------------
 Ref<Texture> ModelManager::createTexture(const PathName& parentDir, const StringRef& filePath, ModelCreationFlag flags)
 {

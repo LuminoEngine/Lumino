@@ -25,13 +25,15 @@ public:
 
 template<typename TValue> class ValueEasingCurve;
 
+#if 0
+
 /// 値を補完するクラスのベースクラス
-class AnimationCurve
+class AnimationCurveLG
 	: public RefObject
 {
 public:
-	AnimationCurve();
-	virtual ~AnimationCurve();
+	AnimationCurveLG();
+	virtual ~AnimationCurveLG();
 
 public:
 	/// 値の種類
@@ -102,7 +104,7 @@ private:
 
 template<typename TValue>
 class ValueEasingCurve
-	: public AnimationCurve
+	: public AnimationCurveLG
 {
 public:
 
@@ -220,7 +222,7 @@ public:
 
 /// float 用
 class FloatAnimationCurve
-	: public AnimationCurve
+	: public AnimationCurveLG
 {
 public:
 	FloatAnimationCurve();
@@ -272,7 +274,7 @@ private:
 
 /// VMD用
 class VMDBezierAttitudeTransformAnimation
-	: public AnimationCurve
+	: public AnimationCurveLG
 {
 public:
 	struct KeyFrame
@@ -319,7 +321,7 @@ private:
 };
 
 class VMDBezierSQTTransformAnimation2
-	: public AnimationCurve
+	: public AnimationCurveLG
 {
 public:
 	struct BezierCurve
@@ -400,5 +402,6 @@ private:
 	KeyFrameList		m_keyFrameList;
 	AttitudeTransform	m_transform;
 };
+#endif
 
 LN_NAMESPACE_END
