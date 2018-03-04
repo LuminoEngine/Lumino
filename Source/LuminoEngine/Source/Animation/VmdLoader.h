@@ -148,7 +148,7 @@ public:
 	//List<CameraPropertyData> CameraPropertyData;
 	//List<LightFrameData> LightData;
 
-	static Quaternion interpolateQuaternionStrict(const MotionFrameData& left, const MotionFrameData& right, float x, float motionpos, long framediff, float* outT);
+	static Quaternion interpolateQuaternionStrict(const MotionFrameData& left, const MotionFrameData& right, float x, float motionpos, float framediff, float* outT);
 	static float interpolateStrict(const Point& _p2, const Point& _p3, float x, float start, double framediff, float* t);
 
 private:

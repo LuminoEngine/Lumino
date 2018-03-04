@@ -144,9 +144,9 @@ namespace detail
 // VmdData
 //==============================================================================
 
-Quaternion VmdData::interpolateQuaternionStrict(const MotionFrameData& left, const MotionFrameData& right, float x, float motionpos, long framediff, float* outT)
+Quaternion VmdData::interpolateQuaternionStrict(const MotionFrameData& left, const MotionFrameData& right, float x, float motionpos, float framediff, float* outT)
 {
-	return Quaternion::slerp(left.quaternion, right.quaternion, interpolateStrict(right.interpolRA, right.interpolRB, x, motionpos, (double)framediff, outT));
+	return Quaternion::slerp(left.quaternion, right.quaternion, interpolateStrict(right.interpolRA, right.interpolRB, x, motionpos, framediff, outT));
 }
 
 float VmdData::interpolateStrict(const Point& pointF, const Point& pointF2, float x, float start, double framediff, float* outT)
