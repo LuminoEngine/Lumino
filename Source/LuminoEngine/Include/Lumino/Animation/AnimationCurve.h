@@ -25,6 +25,8 @@ public:
 
 template<typename TValue> class ValueEasingCurve;
 
+#if 0
+
 /// 値を補完するクラスのベースクラス
 class AnimationCurveLG
 	: public RefObject
@@ -400,5 +402,6 @@ private:
 	KeyFrameList		m_keyFrameList;
 	AttitudeTransform	m_transform;
 };
+#endif
 
 LN_NAMESPACE_END

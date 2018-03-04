@@ -3,7 +3,7 @@
 #include <Lumino/Animation/AnimationCurve.h>
 
 LN_NAMESPACE_BEGIN
-
+#if 0
 //==============================================================================
 // AnimationCurveLG
 //==============================================================================
@@ -541,5 +541,5 @@ double VMDBezierSQTTransformAnimation2::getLastFrameTime() const
 	return m_keyFrameList.getLast().Time;
 }
 
-
+#endif
 LN_NAMESPACE_END
