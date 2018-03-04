@@ -35,6 +35,7 @@ struct PMX_Vertex
 //------------------------------------------------------------------------------
 PmxLoader::PmxLoader()
 {
+	m_rotateY180 = true;
 }
 
 //------------------------------------------------------------------------------
@@ -49,6 +50,9 @@ Ref<PmxSkinnedMeshResource> PmxLoader::load(detail::ModelManager* manager, Strea
 	m_isDynamic = isDynamic;
 	m_flags = flags;
 	m_hasSDEF = false;
+
+	if (m_rotateY180)
+		m_adjustMatrix = Matrix::makeRotationY(Math::PI);
 
 	BinaryReader reader(stream);
 	m_modelCore = Ref<PmxSkinnedMeshResource>::makeRef();
@@ -144,6 +148,8 @@ void PmxLoader::loadVertices(BinaryReader* reader)
 	{
 		// 頂点、法線、テクスチャUV
 		reader->read(&baseVertex, sizeof(BaseVertex));
+		adjustPosition(&baseVertex.Position);
+
 		m_modelCore->setPosition(i, baseVertex.Position);
 		m_modelCore->setNormal(i, baseVertex.Normal);
 		m_modelCore->setUV(i, baseVertex.TexUV);
@@ -432,6 +438,7 @@ void PmxLoader::loadBones(BinaryReader* reader)
 
 		// 初期位置
 		reader->read(&bone->OrgPosition, sizeof(float) * 3);
+		adjustPosition(&bone->OrgPosition);
 
 		// 親ボーンのボーンIndex
 		bone->ParentBoneIndex = (int)reader->readInt(getBoneIndexSize());
@@ -516,6 +523,10 @@ void PmxLoader::loadBones(BinaryReader* reader)
 					Vector3 minLimit, maxLimit;
 					reader->read(&minLimit, sizeof(float) * 3);
 					reader->read(&maxLimit, sizeof(float) * 3);
+
+					adjustAngle(&minLimit);
+					adjustAngle(&maxLimit);
+
 					ikLink.MinLimit = Vector3::min(minLimit, maxLimit);
 					ikLink.MaxLimit = Vector3::max(minLimit, maxLimit);
 
@@ -577,12 +588,14 @@ void PmxLoader::loadMorphs(BinaryReader* reader)
 				morph->MorphType = ModelMorphType_Vertex;
 				mo->VertexMorphOffset.VertexIndex = (int)reader->readInt(getVertexIndexSize());
 				reader->read(&mo->VertexMorphOffset.PositionOffset, sizeof(float) * 3);
+				adjustPosition((Vector3*)&mo->VertexMorphOffset.PositionOffset);
 				break;
 			case 2:		// ボーンモーフ
 				morph->MorphType = ModelMorphType_Bone;
 				mo->BoneMorphOffset.BoneIndex = (int)reader->readInt(getBoneIndexSize());
 				reader->read(&mo->BoneMorphOffset.Moving, sizeof(float) * 3);
 				reader->read(&mo->BoneMorphOffset.Rotating, sizeof(float) * 4);
+				adjustPosition((Vector3*)&mo->BoneMorphOffset.Moving);
 				break;
 			case 3:		// UVモーフ
 				morph->MorphType = ModelMorphType_UV;
@@ -634,6 +647,7 @@ void PmxLoader::loadMorphs(BinaryReader* reader)
 				mo->ImpulseMorphOffset.LocalFlag = reader->readUInt8();
 				reader->read(&mo->ImpulseMorphOffset.Moving, sizeof(float) * 3);
 				reader->read(&mo->ImpulseMorphOffset.Rotating, sizeof(float) * 3);
+				adjustPosition((Vector3*)&mo->ImpulseMorphOffset.Moving);
 				break;
 			}
 		}
@@ -752,6 +766,7 @@ void PmxLoader::loadRigidBodys(BinaryReader* reader)
 		// 位置(x,y,z) (グローバル座標空間)
 		Vector3 Position;
 		reader->read(&Position, sizeof(float) * 3);
+		adjustPosition(&Position);
 
 		// 回転(x,y,z) (グローバル座標空間) -> ラジアン角
 		Vector3 Rotation;
@@ -759,6 +774,7 @@ void PmxLoader::loadRigidBodys(BinaryReader* reader)
 		if (Math::isNaN(Rotation.x)) Rotation.x = 0;	// モデルによっては壊れていることがあったのでリセットしておく
 		if (Math::isNaN(Rotation.y)) Rotation.y = 0;
 		if (Math::isNaN(Rotation.z)) Rotation.z = 0;
+		adjustAngle(&Rotation);
 
 		// オフセット行列化
 		body->InitialTransform = Matrix::makeRotationYawPitchRoll(Rotation.y, Rotation.x, Rotation.z) * Matrix::makeTranslation(Position);
@@ -879,6 +895,26 @@ void PmxLoader::calcSDEFCorrection()
 		}
 	}
 #endif
+}
+
+void PmxLoader::adjustPosition(Vector3* pos) const
+{
+	if (m_rotateY180)
+	{
+		pos->transformCoord(m_adjustMatrix);
+	}
+}
+
+void PmxLoader::adjustAngle(Vector3* angles) const
+{
+	if (m_rotateY180)
+	{
+		angles->x *= -1;
+		angles->z *= -1;
+		//(*y) += Math::PI;
+		//if ((*y) >= Math::PI) 
+		//	(*y) -= Math::PI;
+	}
 }
 
 LN_NAMESPACE_END

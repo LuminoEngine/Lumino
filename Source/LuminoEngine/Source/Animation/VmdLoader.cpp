@@ -203,6 +203,8 @@ Ref<VmdData> VmdFile::load(Stream* stream)
 	static const float FrameRate = 30.0f;
 	static const Point DefaultInterpolA = Point(20.0f / 127.0f, 20.0f / 127.0f);
 	static const Point DefaultInterpolB = Point(107.0f / 127.0f, 107.0f / 127.0f);
+	static const bool rotateY180 = true;	// MMD モデルは Z- が正面になっていて、モーションもこれを前提としている。それを Z+ に直す
+	static const Matrix adjustMatrix = Matrix::makeRotationY(Math::PI);
 
 	auto vmdData = Ref<VmdData>::makeRef();
 
@@ -246,6 +248,15 @@ Ref<VmdData> VmdFile::load(Stream* stream)
 		frame.interpolYB.y = vmdMotion.Interpolation[13] / 127.0f;
 		frame.interpolZB.y = vmdMotion.Interpolation[14] / 127.0f;
 		frame.interpolRB.y = vmdMotion.Interpolation[15] / 127.0f;
+
+		if (rotateY180)
+		{
+			frame.position.transformCoord(adjustMatrix);
+			Vector3 angles = frame.quaternion.toEulerAngles();
+			angles.x *= -1;
+			angles.z *= -1;
+			frame.quaternion = Quaternion::makeFromEulerAngles(angles);
+		}
 
 		// add frame to track
 		auto itr = m_boneTrackMap.find(vmdMotion.szBoneName);
