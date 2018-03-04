@@ -50,7 +50,7 @@ LN_NAMESPACE_BEGIN
 
 Application::Application()
 {
-	//detail::EngineDomain::getEngineManager()->setApplication(this);
+	detail::EngineDomain::getEngineManager()->setApplication(this);
 }
 
 Application::~Application()

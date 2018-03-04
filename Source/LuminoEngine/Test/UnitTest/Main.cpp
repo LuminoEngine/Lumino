@@ -1,6 +1,7 @@
 ﻿#include "TestConfig.h"
 #include <Lumino/UI/UIFrameWindow.h>
 #include "../../../Source/EngineManager.h"
+#include "../../../Source/EngineDomain.h"
 #include "../../../Source/Graphics/GraphicsManager.h"
 #include "../../../Source/UI/UIManager.h"
 
@@ -17,13 +18,13 @@ void TestEnv::TearDown()
 //------------------------------------------------------------------------------
 void TestEnv::saveScreenShot(const Char* filePath)
 {
-	EngineManager::Instance->getGraphicsManager()->getMainSwapChain()->getBackBuffer()->readSurface()->save(filePath);
+	detail::EngineDomain::getEngineManager()->getGraphicsManager()->getMainSwapChain()->getBackBuffer()->readSurface()->save(filePath);
 }
 
 //------------------------------------------------------------------------------
 bool TestEnv::EqualsScreenShot(const Char* filePath, int passRate)
 {
-	bool r = TestEnv::EqualsBitmapFile(EngineManager::Instance->getGraphicsManager()->getMainSwapChain()->getBackBuffer()->readSurface(), filePath, passRate);
+	bool r = TestEnv::EqualsBitmapFile(detail::EngineDomain::getEngineManager()->getGraphicsManager()->getMainSwapChain()->getBackBuffer()->readSurface(), filePath, passRate);
 	return r;
 }
 

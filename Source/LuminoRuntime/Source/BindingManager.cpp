@@ -1,5 +1,6 @@
 ﻿
 #include "Internal.h"
+#include "../../LuminoEngine/Source/EngineDomain.h"
 #include "BindingManager.h"
 
 //==============================================================================
@@ -21,7 +22,8 @@ void LFManager::preInitialize()
 {
 	if (Engine == nullptr)
 	{
-		Engine = EngineManager::create(ConfigData);
+		Engine = detail::EngineDomain::getEngineManager();
+		Engine->initialize(ConfigData);
 		IsSystemInitialized = true;
 	}
 }

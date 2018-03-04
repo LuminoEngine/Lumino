@@ -10,7 +10,7 @@
 #include <Lumino/EngineSettings.h>
 
 LN_NAMESPACE_BEGIN
-
+namespace detail {	class EngineDomain; }
 namespace detail { class AnimationManager; }
 namespace detail { class InputManager; }
 namespace detail { class GraphicsManager; }
@@ -170,19 +170,7 @@ class EngineManager
 	: public RefObject
 {
 public:
-	static EngineManager*	Instance;
-
-	static EngineManager* getInstance(EngineManager* priority = nullptr);
-
-public:
 	static const Char*	LogFileName;
-
-public:
-
-	/**
-		@brief		
-	*/
-	static EngineManager* create(const detail::EngineSettings& configData);
 
 public:
 	void setFrameUpdateMode(FrameUpdateMode mode) { m_frameUpdateMode = mode; }
@@ -221,12 +209,13 @@ public:
 	void setActiveWorld2D(World2D* world);
 	void setActiveWorld3D(World3D* world);
 
-protected:
-	EngineManager(const detail::EngineSettings& configData);
+private:
+	// create from EngineDomain
+	EngineManager();
 	virtual ~EngineManager();
 
 public:
-	void initialize();
+	void initialize(const detail::EngineSettings& configData);
 	void initializeCommon();
 	void initializeAnimationManager();
 	void initializeFileManager();
@@ -282,6 +271,8 @@ private:
 	bool								m_commonInitied;
 	bool								m_endRequested;
 	bool								m_comInitialized;
+
+	friend class detail::EngineDomain;
 };
 
 LN_NAMESPACE_END

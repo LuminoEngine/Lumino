@@ -367,6 +367,8 @@ void UIMainWindow::postInitializeAndAttachDefaultObjects(PlatformWindow* platfor
 
 
 	setSizeInternal(platformWindow->getSize().toFloatSize());
+
+	onReady();
 }
 
 //------------------------------------------------------------------------------
