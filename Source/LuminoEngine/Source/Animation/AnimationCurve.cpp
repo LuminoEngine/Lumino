@@ -5,22 +5,22 @@
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
-// AnimationCurve
+// AnimationCurveLG
 //==============================================================================
 
 //------------------------------------------------------------------------------
-AnimationCurve::AnimationCurve()
+AnimationCurveLG::AnimationCurveLG()
 	: m_wrapMode(WrapMode_Once)
 {
 }
 
 //------------------------------------------------------------------------------
-AnimationCurve::~AnimationCurve()
+AnimationCurveLG::~AnimationCurveLG()
 {
 }
 
 //------------------------------------------------------------------------------
-void AnimationCurve::getTime(double time)
+void AnimationCurveLG::getTime(double time)
 {
 	if (m_wrapMode == WrapMode_Once)
 	{

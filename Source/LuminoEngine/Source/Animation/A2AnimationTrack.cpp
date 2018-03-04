@@ -4,8 +4,6 @@
 #include "VmdLoader.h"
 
 LN_NAMESPACE_BEGIN
-namespace a2
-{
 
 //==============================================================================
 // AnimationValue
@@ -64,5 +62,4 @@ AnimationTrack::~AnimationTrack()
 {
 }
 
-} // namespace a2
 LN_NAMESPACE_END

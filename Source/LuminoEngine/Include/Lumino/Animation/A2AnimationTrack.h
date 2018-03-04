@@ -3,8 +3,6 @@
 #include <Lumino/Animation/Common.h>
 
 LN_NAMESPACE_BEGIN
-namespace a2
-{
 class AnimationState;
 
 /** 補間されたアニメーション値の型 */
@@ -106,5 +104,4 @@ class TransformAnimationTrack
 public:
 };
 
-} // namespace a2
 LN_NAMESPACE_END

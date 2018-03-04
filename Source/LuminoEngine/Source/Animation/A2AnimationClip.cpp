@@ -5,8 +5,6 @@
 #include "VmdLoader.h"
 
 LN_NAMESPACE_BEGIN
-namespace a2
-{
 
 //==============================================================================
 // VMDBezierTransformAnimationTrack
@@ -155,5 +153,4 @@ void VmdAnimationClip::initialize(const Path& filePath)
 	}
 }
 
-} // namespace a2
 LN_NAMESPACE_END

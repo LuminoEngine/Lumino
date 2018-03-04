@@ -3,8 +3,6 @@
 #include <Lumino/Animation/A2AnimationCurve.h>
 
 LN_NAMESPACE_BEGIN
-namespace a2
-{
 
 //==============================================================================
 // AnimationCurve
@@ -237,5 +235,4 @@ AnimationKeyFrame* KeyFrameAnimationCurve::findKeyFrame(float time)
 	//return (AnimationKeyFrame*)bsearch(&time, &(m_keyFrames[0]), m_keyFrames.getCount(), sizeof(AnimationKeyFrame), Compare::cmpKey);
 }
 
-} // namespace a2
 LN_NAMESPACE_END

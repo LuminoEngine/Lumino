@@ -63,9 +63,6 @@ enum class EasingMode
 	EaseInOutCirc,
 };
 
-namespace a2
-{
-
 /** アニメーションの繰り返し方法 */
 enum class AnimationWrapMode
 {
@@ -79,5 +76,4 @@ enum class AnimationWrapMode
 	//RoundTrip,
 };
 
-} // namespace a2
 LN_NAMESPACE_END

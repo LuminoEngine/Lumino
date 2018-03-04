@@ -3,8 +3,6 @@
 #include <Lumino/Animation/Common.h>
 
 LN_NAMESPACE_BEGIN
-namespace a2
-{
 class AnimationTrack;
 
 /**
@@ -53,5 +51,4 @@ LN_CONSTRUCT_ACCESS:
 	void initialize(const Path& filePath);
 };
 
-} // namespace a2
 LN_NAMESPACE_END

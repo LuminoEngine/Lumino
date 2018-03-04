@@ -4,8 +4,6 @@
 #include <Lumino/Animation/A2AnimatorController.h>
 
 LN_NAMESPACE_BEGIN
-namespace a2
-{
 namespace detail
 {
 
@@ -383,5 +381,4 @@ detail::AnimationTargetElementBlendLink* AnimationController::findAnimationTarge
 		return nullptr;
 }
 
-} // namespace a2
 LN_NAMESPACE_END

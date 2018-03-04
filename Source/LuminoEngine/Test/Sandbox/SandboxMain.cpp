@@ -125,8 +125,8 @@ void Main()
 	auto* ac = model->animationController();
 	//ac->addClip( "walk", a2::AnimationClip::create(_T("D:/MMD/Materials/モーション/Love&Joy/love&joyお面無しver.vmd")));
 	//ac->addClip(a2::AnimationClip::create(_T("D:/MMD/Materials/モーション/Zigg-Zagg/ZZ-Marisa.vmd"), "walk"));
-	ac->addClip("walk", a2::VmdAnimationClip::create(_T("D:/MMD/Materials/モーション/走歩スv2.2full/歩く/A01_SO_女の子歩き_s591_p40.vmd")));
-	ac->addClip("run", a2::VmdAnimationClip::create(_T("D:/MMD/Materials/モーション/走歩スv2.2full/走る/H02_SO_女の子走り_s1475_p20.vmd")));
+	ac->addClip("walk", VmdAnimationClip::create(_T("D:/MMD/Materials/モーション/走歩スv2.2full/歩く/A01_SO_女の子歩き_s591_p40.vmd")));
+	ac->addClip("run", VmdAnimationClip::create(_T("D:/MMD/Materials/モーション/走歩スv2.2full/走る/H02_SO_女の子走り_s1475_p20.vmd")));
 	
 	ac->play("walk", 5);
 

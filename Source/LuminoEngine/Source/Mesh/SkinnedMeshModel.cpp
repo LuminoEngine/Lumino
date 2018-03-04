@@ -278,7 +278,7 @@ void SkinnedMeshModel::initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 		m_skinningLocalQuaternionsTexture = newObject<Texture2D>(SizeI(1, boneCount), TextureFormat::R32G32B32A32_Float, false, ResourceUsage::Static);	// TODO: Dynamic、NoManaged
 
 		// animation
-		m_animationController = newObject<a2::AnimationController>(this);
+		m_animationController = newObject<AnimationController>(this);
 	}
 
 
@@ -522,14 +522,14 @@ const String& SkinnedMeshModel::getAnimationTargetElementName(int index) const
 	return m_allBoneList[index]->name();
 }
 
-a2::AnimationValueType SkinnedMeshModel::getAnimationTargetElementValueType(int index) const
+AnimationValueType SkinnedMeshModel::getAnimationTargetElementValueType(int index) const
 {
-	return a2::AnimationValueType::Transform;
+	return AnimationValueType::Transform;
 }
 
-void SkinnedMeshModel::setAnimationTargetElementValue(int index, const a2::AnimationValue& value)
+void SkinnedMeshModel::setAnimationTargetElementValue(int index, const AnimationValue& value)
 {
-	if (value.type() == a2::AnimationValueType::Transform)
+	if (value.type() == AnimationValueType::Transform)
 	{
 		(*m_allBoneList[index]->getLocalTransformPtr()) = value.getTransform();
 	}

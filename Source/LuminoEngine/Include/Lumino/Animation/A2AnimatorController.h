@@ -6,8 +6,6 @@
 
 LN_NAMESPACE_BEGIN
 class Variant;
-namespace a2
-{
 namespace detail { class AnimationTargetElementBlendLink; }
 class AnimationValue;
 class AnimationTrack;
@@ -185,5 +183,4 @@ private:
 	List<Ref<detail::AnimationTargetElementBlendLink>> m_targetElementBlendLinks;
 };
 
-} // namespace a2
 LN_NAMESPACE_END

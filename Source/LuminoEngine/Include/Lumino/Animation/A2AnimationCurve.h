@@ -3,8 +3,6 @@
 #include <Lumino/Animation/Common.h>
 
 LN_NAMESPACE_BEGIN
-namespace a2
-{
 
 /** 時間の経過をとおして値を評価します。アニメーションが生成する値の最小単位です。 */
 class AnimationCurve
@@ -107,5 +105,4 @@ private:
 	float m_defaultValue;
 };
 
-} // namespace a2
 LN_NAMESPACE_END

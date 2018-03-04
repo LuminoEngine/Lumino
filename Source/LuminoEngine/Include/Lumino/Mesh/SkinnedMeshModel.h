@@ -29,11 +29,11 @@ class PmxJointResource;
 */
 class SkinnedMeshModel
 	: public Object
-	, public a2::IAnimationTargetObject
+	, public IAnimationTargetObject
 {
 	LN_OBJECT;
 public:
-	a2::AnimationController* animationController() const { return m_animationController; }
+	AnimationController* animationController() const { return m_animationController; }
 
 	const List<Ref<SkinnedMeshBone>>& bones() const { return m_allBoneList; }
 	const List<Ref<SkinnedMeshMorph>>& morphs() const { return m_morphs; }
@@ -48,8 +48,8 @@ protected:
 	// IAnimationTargetObject interface
 	virtual int getAnimationTargetElementCount() const override;
 	virtual const String& getAnimationTargetElementName(int index) const override;
-	virtual a2::AnimationValueType getAnimationTargetElementValueType(int index) const override;
-	virtual void setAnimationTargetElementValue(int index, const a2::AnimationValue& value) override;
+	virtual AnimationValueType getAnimationTargetElementValueType(int index) const override;
+	virtual void setAnimationTargetElementValue(int index, const AnimationValue& value) override;
 
 LN_INTERNAL_ACCESS:
 	SkinnedMeshModel();
@@ -109,7 +109,7 @@ public:	// TODO:
 	List<Quaternion>				m_skinningLocalQuaternions;
 	Ref<Texture2D>				m_skinningMatricesTexture;	// Texture fetch による GPU スキニング用のテクスチャ
 	Ref<Texture2D>				m_skinningLocalQuaternionsTexture;	// Texture fetch による GPU スキニング用のテクスチャ
-	Ref<a2::AnimationController>	m_animationController;
+	Ref<AnimationController>	m_animationController;
 	List<SkinnedMeshBone*>			m_ikBoneList;
 
 	// TODO: これは物理演算機能を持つサブクラスを作ったほうがいい気がする
