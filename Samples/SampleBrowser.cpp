@@ -97,7 +97,7 @@ void Main()
 	Engine::initialize();
 
 
-	auto* mainWindow = Application::getMainWindow();
+	auto* mainWindow = Engine::getMainWindow();
 
 
 	g_clock = AnimationClock::create();

@@ -24,6 +24,7 @@ class FileManager;
 namespace detail { class ArchiveManager; }
 class SceneGraphManager;
 class Application;
+class UIMainWindow;
 class EngineDiagViewer;
 class AssetsManager;
 class World2D;
@@ -243,6 +244,8 @@ public:
 	//void onLostDevice();
 	//void onResetDevice();
 
+	void setApplication(Application* app) { m_application = app; }
+
 private:
 	//class NativeWindowEventListener;
 
@@ -251,6 +254,7 @@ private:
 	FpsController						m_fpsController;
 	FrameUpdateMode						m_frameUpdateMode;
 
+	Application*						m_application = nullptr;
 	detail::AnimationManager*			m_animationManager;
 	FileManager*						m_fileManager;
 	Ref<detail::ArchiveManager>			m_archiveManager;
@@ -267,6 +271,7 @@ private:
 	AssetsManager*						m_assetsManager;
 
 	EngineDiagViewer*					m_diagViewer;
+	Ref<UIMainWindow>					m_mainWindow;
 	Ref<World2D>						m_defaultWorld2D;
 	Ref<World3D>						m_defaultWorld3D;
 	Ref<World2D>						m_activeWorld2D;

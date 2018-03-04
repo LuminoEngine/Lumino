@@ -323,8 +323,11 @@ UIMainWindow::~UIMainWindow()
 	LN_SAFE_RELEASE(m_mainUIContext);
 }
 
-//------------------------------------------------------------------------------
-void UIMainWindow::initialize(PlatformWindow* platformWindow, World2D* defaultWorld2D, World3D* defaultWorld3D)
+void UIMainWindow::initialize()
+{
+}
+
+void UIMainWindow::postInitializeAndAttachDefaultObjects(PlatformWindow* platformWindow, World2D* defaultWorld2D, World3D* defaultWorld3D)
 {
 	auto* manager = detail::EngineDomain::getUIManager();
 
@@ -386,6 +389,10 @@ void UIMainWindow::updateLayout(const Size& viewSize)
 
 //------------------------------------------------------------------------------
 void UIMainWindow::renderUI()
+{
+}
+
+void UIMainWindow::onReady()
 {
 }
 

@@ -218,7 +218,7 @@ EngineManager::~EngineManager()
 {
 	if (m_uiManager != nullptr)
 	{
-		m_uiManager->releaseGameModeMainFrame();
+		m_mainWindow.safeRelease();
 	}
 
 	m_defaultWorld2D.safeRelease();
@@ -334,13 +334,23 @@ void EngineManager::initialize()
 
 	m_activeWorld2D = m_defaultWorld2D = newObject<World2D>();
 	m_activeWorld3D = m_defaultWorld3D = newObject<World3D>();
-	m_uiManager->createGameModeMainFrame(m_defaultWorld2D, m_defaultWorld3D);
-	m_uiManager->getMainWindow()->setDelayedRenderingSkip(m_configData.delayedRenderingSkip);
-	m_uiManager->getMainWindow()->setInputManager(m_inputManager);
+	//m_uiManager->createGameModeMainFrame(m_defaultWorld2D, m_defaultWorld3D);
+	if (m_application)
+	{
+		m_mainWindow = m_application->onCreateMainWindow();
+	}
+	if (!m_mainWindow)
+	{
+		m_mainWindow = newObject<UIMainWindow>();
+	}
 
+	m_uiManager->setMainWindow(m_mainWindow);
+
+	m_mainWindow->postInitializeAndAttachDefaultObjects(m_platformManager->getMainWindow(), m_defaultWorld2D, m_defaultWorld3D);
+	m_mainWindow->setDelayedRenderingSkip(m_configData.delayedRenderingSkip);
+	m_mainWindow->setInputManager(m_inputManager);
 	// for UIViewport::getViewSize() immediately after initialize
-	auto* mainWindow = m_uiManager->getMainWindow();
-	mainWindow->updateLayout(mainWindow->getPlatformWindow()->getSize().toFloatSize());
+	m_mainWindow->updateLayout(m_mainWindow->getPlatformWindow()->getSize().toFloatSize());
 }
 
 //------------------------------------------------------------------------------
@@ -879,6 +889,8 @@ detail::PhysicsManager* EngineManager::getPhysicsManager() const
 // EngineDomain
 //==============================================================================
 namespace detail {
+
+//Application* EngineDomain::application = nullptr;
 
 //------------------------------------------------------------------------------
 PhysicsWorld* EngineDomain::getPhysicsWorld3D()

@@ -9,42 +9,56 @@ class GameScene;
 namespace detail { class GameSceneManager; }
 class UIMainWindow;
 
-/**
-	@brief		アプリケーションを表します。
-*/
+///**
+//	@brief		アプリケーションを表します。
+//*/
+//class Application
+//	: public RefObject
+//{
+//public:
+//
+//	/** アプリケーションのメインウィンドウを取得します。 */
+//	static UIMainWindow* getMainWindow();
+//
+//
+//	PlatformWindow* getNativeMainWindow();
+//
+//protected:
+//	Application();
+//	virtual ~Application();
+//
+//LN_INTERNAL_ACCESS:
+//	void initialize(EngineManager* engineManager);
+//
+//private:
+//	EngineManager*	m_engineManager;
+//};
+
+//namespace detail
+//{
+//class InternalApplicationImpl
+//	: public Application
+//{
+//public:
+//	InternalApplicationImpl() = default;
+//	virtual ~InternalApplicationImpl() = default;
+//};
+//} // namespace detail
+
+
+ /** */
 class Application
-	: public RefObject
+	: public Object
 {
 public:
-
-	/** アプリケーションのメインウィンドウを取得します。 */
-	static UIMainWindow* getMainWindow();
-
-
-	PlatformWindow* getNativeMainWindow();
-
-protected:
 	Application();
 	virtual ~Application();
 
-LN_INTERNAL_ACCESS:
-	void initialize(EngineManager* engineManager);
+protected:
+	virtual Ref<UIMainWindow> onCreateMainWindow();
 
-private:
-	EngineManager*	m_engineManager;
+	friend class EngineManager;
 };
-
-namespace detail
-{
-class InternalApplicationImpl
-	: public Application
-{
-public:
-	InternalApplicationImpl() = default;
-	virtual ~InternalApplicationImpl() = default;
-};
-} // namespace detail
-
 
 /**
 	@brief		ゲームアプリケーションを表します。
@@ -76,6 +90,22 @@ LN_CONSTRUCT_ACCESS:
 private:
 	Ref<detail::GameSceneManager>	m_gameSceneManager;
 	
+};
+
+/** */
+class ToolApplication
+	: public Application
+{
+public:
+	ToolApplication();
+	virtual ~ToolApplication();
+
+	/** アプリケーションを実行します。 */
+	void run();
+
+protected:
+
+private:
 };
 
 LN_NAMESPACE_END

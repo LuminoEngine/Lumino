@@ -11,7 +11,9 @@
 #include "../Include/Lumino/Graphics/Common.h"	// TODO: Internal.h には置きたくない
 
 
-namespace ln {
+namespace ln
+{
+class Application;
 class PhysicsWorld;
 class SceneGraphManager;
 class SceneGraph2D;
@@ -20,7 +22,8 @@ class World2D;
 class World3D;
 class EngineManager;
 
-namespace detail {
+namespace detail
+{
 class ArchiveManager;
 class AnimationManager;
 class GraphicsManager;
@@ -30,6 +33,8 @@ class UIManager;
 class EngineDomain
 {
 public:
+	//static Application* application;
+
 	static PhysicsWorld* getPhysicsWorld3D();
 
 	static EngineManager* getEngineManager();

@@ -42,9 +42,11 @@ public:
 
 	void initialize(const Settings& settings);
 	void dispose();
-	void createGameModeMainFrame(World2D* defaultWorld2D, World3D* defaultWorld3D);
-	//void CreateWrapModeMainFrame(void* window, World2D* defaultWorld2D, World3D* defaultWorld3D);
-	void releaseGameModeMainFrame();
+	//void createGameModeMainFrame(World2D* defaultWorld2D, World3D* defaultWorld3D);
+	////void CreateWrapModeMainFrame(void* window, World2D* defaultWorld2D, World3D* defaultWorld3D);
+	//void releaseGameModeMainFrame();
+	void setMainWindow(UIMainWindow* window) { m_mainWindow = window; }
+
 	EventArgsPool* getEventArgsPool() const { return m_eventArgsPool; }
 	const Ref<Texture2D>& getDefaultSkinTexture() const { return m_defaultSkinTexture; }
 	UIStyleTable* getDefaultStyleTable() const { return m_defaultStyleTable; }

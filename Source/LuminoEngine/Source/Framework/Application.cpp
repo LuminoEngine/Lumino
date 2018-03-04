@@ -3,44 +3,63 @@
 #include <Lumino/Engine.h>
 #include <Lumino/Framework/Application.h>
 #include <Lumino/Framework/GameScene.h>
+#include <Lumino/UI/UIFrameWindow.h>
 #include "GameSceneManager.h"
 #include "../EngineManager.h"
 #include "../UI/UIManager.h"
 
 LN_NAMESPACE_BEGIN
 
+////==============================================================================
+//// Application
+////==============================================================================
+//
+////------------------------------------------------------------------------------
+//UIMainWindow* Application::getMainWindow()
+//{
+//	return EngineManager::Instance->getUIManager()->getMainWindow();
+//}
+//
+////------------------------------------------------------------------------------
+//Application::Application()
+//	: m_engineManager(nullptr)
+//{
+//}
+//
+////------------------------------------------------------------------------------
+//Application::~Application()
+//{
+//}
+//
+////------------------------------------------------------------------------------
+//void Application::initialize(EngineManager* engineManager)
+//{
+//	if (LN_REQUIRE(engineManager != nullptr)) return;
+//	m_engineManager = engineManager;
+//}
+//
+////------------------------------------------------------------------------------
+//PlatformWindow* Application::getNativeMainWindow()
+//{
+//	return m_engineManager->getPlatformManager()->getMainWindow();
+//}
+
 //==============================================================================
 // Application
 //==============================================================================
 
-//------------------------------------------------------------------------------
-UIMainWindow* Application::getMainWindow()
-{
-	return EngineManager::Instance->getUIManager()->getMainWindow();
-}
-
-//------------------------------------------------------------------------------
 Application::Application()
-	: m_engineManager(nullptr)
 {
+	//detail::EngineDomain::getEngineManager()->setApplication(this);
 }
 
-//------------------------------------------------------------------------------
 Application::~Application()
 {
 }
 
-//------------------------------------------------------------------------------
-void Application::initialize(EngineManager* engineManager)
+Ref<UIMainWindow> Application::onCreateMainWindow()
 {
-	if (LN_REQUIRE(engineManager != nullptr)) return;
-	m_engineManager = engineManager;
-}
-
-//------------------------------------------------------------------------------
-PlatformWindow* Application::getNativeMainWindow()
-{
-	return m_engineManager->getPlatformManager()->getMainWindow();
+	return nullptr;
 }
 
 //==============================================================================
@@ -90,6 +109,21 @@ void GameApplication::run(GameScene* initialScene)
 	} while (Engine::update());
 
 	//Engine::terminate();
+}
+
+//==============================================================================
+// ToolApplication
+//==============================================================================
+ToolApplication::ToolApplication()
+{
+}
+
+ToolApplication::~ToolApplication()
+{
+}
+
+void ToolApplication::run()
+{
 }
 
 LN_NAMESPACE_END
