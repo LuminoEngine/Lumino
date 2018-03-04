@@ -205,6 +205,7 @@ Ref<VmdData> VmdFile::load(Stream* stream)
 	static const Point DefaultInterpolB = Point(107.0f / 127.0f, 107.0f / 127.0f);
 	static const bool rotateY180 = true;	// MMD モデルは Z- が正面になっていて、モーションもこれを前提としている。それを Z+ に直す
 	static const Matrix adjustMatrix = Matrix::makeRotationY(Math::PI);
+	static const uint8_t name_AllParents[] = { 0x91, 0x53, 0x82, 0xc4, 0x82, 0xcc, 0x90, 0x65, 0x00 };	// "全ての親"
 
 	auto vmdData = Ref<VmdData>::makeRef();
 
@@ -226,6 +227,9 @@ Ref<VmdData> VmdFile::load(Stream* stream)
 	{
 		VMD_Motion vmdMotion;
 		reader.read(&vmdMotion, sizeof(VMD_Motion));
+
+		if (strcmp(vmdMotion.szBoneName, (const char*)name_AllParents) == 0)
+			continue;
 
 		// make frame data
 		MotionFrameData frame;

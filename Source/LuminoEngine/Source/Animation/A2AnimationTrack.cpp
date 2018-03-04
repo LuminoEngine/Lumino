@@ -170,7 +170,49 @@ AnimationClip::~AnimationClip()
 {
 }
 
+void AnimationClip::initialize()
+{
+	Object::initialize();
+}
+
 void AnimationClip::initialize(const Path& filePath)
+{
+	Object::initialize();
+
+	detail::VmdFile vmdFile;
+	auto vmdData = vmdFile.load(FileStream::create(filePath.c_str(), FileOpenMode::read));
+	if (vmdData)
+	{
+		for (auto& track : vmdData->MotionData)
+		{
+			m_tracks.add(newObject<VMDBezierTransformAnimationTrack>(track));
+		}
+
+		m_lastFrameTime = vmdData->lastFrameTime;
+
+		// VmdData が持っているトラックの情報を後で使いたいので、参照を持っておく
+		m_srcData = vmdData;
+	}
+}
+
+//==============================================================================
+// VmdAnimationClip
+//==============================================================================
+
+Ref<VmdAnimationClip> VmdAnimationClip::create(const Path& filePath)
+{
+	return newObject<VmdAnimationClip>(filePath);
+}
+
+VmdAnimationClip::VmdAnimationClip()
+{
+}
+
+VmdAnimationClip::~VmdAnimationClip()
+{
+}
+
+void VmdAnimationClip::initialize(const Path& filePath)
 {
 	Object::initialize();
 

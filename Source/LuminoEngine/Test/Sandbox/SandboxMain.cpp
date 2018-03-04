@@ -125,10 +125,10 @@ void Main()
 	auto* ac = model->animationController();
 	//ac->addClip( "walk", a2::AnimationClip::create(_T("D:/MMD/Materials/モーション/Love&Joy/love&joyお面無しver.vmd")));
 	//ac->addClip(a2::AnimationClip::create(_T("D:/MMD/Materials/モーション/Zigg-Zagg/ZZ-Marisa.vmd"), "walk"));
-	ac->addClip("walk", a2::AnimationClip::create(_T("D:/MMD/Materials/モーション/走歩スv2.2full/歩く/A01_SO_女の子歩き_s591_p40.vmd")));
-	ac->addClip("run", a2::AnimationClip::create(_T("D:/MMD/Materials/モーション/走歩スv2.2full/走る/H02_SO_女の子走り_s1475_p20.vmd")));
+	ac->addClip("walk", a2::VmdAnimationClip::create(_T("D:/MMD/Materials/モーション/走歩スv2.2full/歩く/A01_SO_女の子歩き_s591_p40.vmd")));
+	ac->addClip("run", a2::VmdAnimationClip::create(_T("D:/MMD/Materials/モーション/走歩スv2.2full/走る/H02_SO_女の子走り_s1475_p20.vmd")));
 	
-	ac->play("run");
+	ac->play("walk", 5);
 
 	//auto morph = model->morphs()[0];
 	//morph->setWeight(1.0f);
@@ -144,12 +144,12 @@ void Main()
 		if (Input::isTriggered(InputButtons::Submit))
 		{
 			printf("s\n");
-			ac->play("run", 0);
+			ac->play("run");
 		}
 		if (Input::isTriggered(InputButtons::Cancel))
 		{
 			printf("c\n");
-			ac->play("walk", 0);
+			ac->play("walk");
 		}
 	}
 

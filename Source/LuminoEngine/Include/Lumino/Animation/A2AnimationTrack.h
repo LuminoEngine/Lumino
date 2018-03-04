@@ -33,6 +33,7 @@ public:
 	const Quaternion& getQuaternion() const { return v_Quaternion; }
 	const AttitudeTransform& getTransform() const { return v_Transform; }
 
+
 LN_INTERNAL_ACCESS:
 	AnimationValue();
 	AnimationValue(AnimationValueType type);
@@ -123,12 +124,28 @@ public:
 LN_CONSTRUCT_ACCESS:
 	AnimationClip();
 	virtual ~AnimationClip();
+	void initialize();
 	void initialize(const Path& filePath);
 
-private:
+protected:
 	List<Ref<AnimationTrack>> m_tracks;
 	Ref<RefObject> m_srcData;
 	float m_lastFrameTime;
+};
+
+/**
+	@brief		Vocaloid Motion Data (.vmd) ファイル
+*/
+class VmdAnimationClip
+	: public AnimationClip
+{
+public:
+	static Ref<VmdAnimationClip> create(const Path& filePath);
+
+LN_CONSTRUCT_ACCESS:
+	VmdAnimationClip();
+	virtual ~VmdAnimationClip();
+	void initialize(const Path& filePath);
 };
 
 } // namespace a2

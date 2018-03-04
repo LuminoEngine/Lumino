@@ -174,6 +174,7 @@ void AnimationLayer::advanceTime(float elapsedTime)
 		if (m_transition.duration <= m_transition.time)
 		{
 			// finish
+			if (m_transition.stateFrom) m_transition.stateFrom->setActive(false);
 			m_transition.stateFrom = nullptr;
 			m_transition.stateTo = nullptr;
 			m_transition.duration = 0.0f;
@@ -209,17 +210,18 @@ void AnimationLayer::updateStateWeights()
 	float totalWeight = 0.0f;
 	float weightCount = 0.0f;
 	float divisor = 0.0f;
+	float count = 0.0f;
 	for (auto& state : m_animationStatus)
 	{
 		// TODO: 加算モードであれば +1 しない
 		if (state->isActive())
 		{
-			divisor += state->getBlendWeight() * state->getBlendWeight();
+			divisor += state->getBlendWeight();
 		}
 	}
-	float t = 1.0f / std::sqrt(divisor);
 
 	// normalize
+	float t = 1.0f / divisor;
 	for (auto& state : m_animationStatus)
 	{
 		if (state->isActive())
@@ -246,6 +248,12 @@ void AnimationLayer::transitionTo(AnimationState* state, float duration)
 		m_transition.duration = 0.0f;
 		m_transition.time = 0.0f;
 		m_transition.startingOffsetTime = 0.0f;
+
+		// stop current animation immediately
+		if (m_currentState)
+		{
+			m_currentState->setActive(false);
+		}
 	}
 	else
 	{
@@ -254,6 +262,11 @@ void AnimationLayer::transitionTo(AnimationState* state, float duration)
 		m_transition.duration = duration;
 		m_transition.time = 0.0f;
 		m_transition.startingOffsetTime = 0.0f;	// TODO: 再生中の他のアニメと同期したい場合はここを変更
+
+		if (m_currentState)
+		{
+			m_transition.startingOffsetTime = m_currentState->localTime();
+		}
 	}
 
 	m_currentState = state;
