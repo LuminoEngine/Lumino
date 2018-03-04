@@ -3,7 +3,8 @@
 #include "VmdLoader.h"
 
 LN_NAMESPACE_BEGIN
-  
+
+#if 0
 //==============================================================================
 // VmdLoader
 //==============================================================================
@@ -136,6 +137,8 @@ bool VmdLoader::load(Stream* stream)
 	//}
 	return true;
 }
+#endif
+
 
 namespace detail
 {
@@ -349,3 +352,4 @@ Ref<VmdData> VmdFile::load(Stream* stream)
 
 } // namespace detail
 LN_NAMESPACE_END
+

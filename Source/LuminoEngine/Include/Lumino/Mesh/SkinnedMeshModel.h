@@ -1,7 +1,5 @@
 ﻿
 #pragma once
-#include "../../../Source/Animation/AnimationState.h"		//  TODO
-#include "../../../Source/Animation/Animator.h"		//  TODO
 #include "../Animation/A2AnimatorController.h"
 #include "Mesh.h"
 
@@ -31,15 +29,10 @@ class PmxJointResource;
 */
 class SkinnedMeshModel
 	: public Object
-	, public detail::IAnimationTargetElement
 	, public a2::IAnimationTargetObject
 {
 	LN_OBJECT;
 public:
-
-	// TODO: Unity では Mesh からは切り離された独立したコンポーネントである。そうしたほうがいいかな？
-	//Animator* getAnimator() const { return m_animator; }
-
 	a2::AnimationController* animationController() const { return m_animationController; }
 
 	const List<Ref<SkinnedMeshBone>>& bones() const { return m_allBoneList; }
@@ -52,10 +45,6 @@ public:
 	SkinnedMeshBone* findBone(const StringRef& boneName) const;
 
 protected:
-	// IAnimationTargetElement interface
-	virtual int getAnimationTargetAttributeCount() const override;
-	virtual detail::IAnimationTargetAttribute* getAnimationTargetAttribute(int index) override;
-
 	// IAnimationTargetObject interface
 	virtual int getAnimationTargetElementCount() const override;
 	virtual const String& getAnimationTargetElementName(int index) const override;
@@ -120,7 +109,6 @@ public:	// TODO:
 	List<Quaternion>				m_skinningLocalQuaternions;
 	Ref<Texture2D>				m_skinningMatricesTexture;	// Texture fetch による GPU スキニング用のテクスチャ
 	Ref<Texture2D>				m_skinningLocalQuaternionsTexture;	// Texture fetch による GPU スキニング用のテクスチャ
-	//Ref<Animator>				m_animator;
 	Ref<a2::AnimationController>	m_animationController;
 	List<SkinnedMeshBone*>			m_ikBoneList;
 
@@ -140,7 +128,6 @@ public:	// TODO:
 */
 class SkinnedMeshBone
 	: public Object
-	, public detail::IAnimationTargetAttribute
 {
 	LN_OBJECT;
 public:
@@ -180,11 +167,6 @@ LN_INTERNAL_ACCESS:
 	void resetLocalTransform() { m_localTransform = AttitudeTransform::Identity; }
 
 	AttitudeTransform* getLocalTransformPtr() { return &m_localTransform; }
-
-protected:
-	// IAnimationTargetAttribute interface
-	virtual const String& getAnimationTargetName() const override;
-	virtual void setAnimationTargetValue(ValueType type, const void* value) override;
 
 LN_INTERNAL_ACCESS:	// TODO
 	void setBoneIndex(int index) { m_boneIndex = index; }

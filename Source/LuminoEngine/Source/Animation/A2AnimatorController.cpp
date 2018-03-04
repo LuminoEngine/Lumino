@@ -79,7 +79,11 @@ void AnimationState::updateTargetElements()
 {
 	if (m_active)
 	{
-		float time = std::fmod(m_localTime, m_clip->lastFrameTime());
+		float time = 0.0f;
+		if (m_clip->wrapMode() == AnimationWrapMode::Loop)
+			time = std::fmod(m_localTime, m_clip->lastFrameTime());
+		else
+			time = m_localTime;
 
 		for (auto& trackInstance : m_trackInstances)
 		{

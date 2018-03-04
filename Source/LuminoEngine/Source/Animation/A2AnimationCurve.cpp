@@ -1,6 +1,6 @@
 ﻿
 #include "../Internal.h"
-#include <Lumino/Animation/A2Animation.h>
+#include <Lumino/Animation/A2AnimationCurve.h>
 
 LN_NAMESPACE_BEGIN
 namespace a2
@@ -11,7 +11,7 @@ namespace a2
 //==============================================================================
 
 AnimationCurve::AnimationCurve()
-	: m_wrapMode(WrapMode::Once)
+	: m_wrapMode(AnimationWrapMode::Once)
 {
 }
 

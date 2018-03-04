@@ -277,10 +277,7 @@ void SkinnedMeshModel::initialize(detail::GraphicsManager* manager, PmxSkinnedMe
 		m_skinningLocalQuaternions.resize(boneCount);
 		m_skinningLocalQuaternionsTexture = newObject<Texture2D>(SizeI(1, boneCount), TextureFormat::R32G32B32A32_Float, false, ResourceUsage::Static);	// TODO: Dynamic、NoManaged
 
-		// アニメーション管理
-		//m_animator = Ref<Animator>::makeRef();
-		//m_animator->create(this);
-
+		// animation
 		m_animationController = newObject<a2::AnimationController>(this);
 	}
 
@@ -515,18 +512,6 @@ void SkinnedMeshModel::updateBoneTransform(const Matrix& worldTransform)
 	postUpdate();
 }
 
-//------------------------------------------------------------------------------
-int SkinnedMeshModel::getAnimationTargetAttributeCount() const
-{
-	return m_allBoneList.getCount();
-}
-
-//------------------------------------------------------------------------------
-detail::IAnimationTargetAttribute* SkinnedMeshModel::getAnimationTargetAttribute(int index)
-{
-	return m_allBoneList[index].get();
-}
-
 int SkinnedMeshModel::getAnimationTargetElementCount() const
 {
 	return m_allBoneList.getCount();
@@ -649,20 +634,6 @@ void SkinnedMeshBone::updateGlobalTransform(bool hierarchical)
 		}
 	}
 }
-
-//------------------------------------------------------------------------------
-const String& SkinnedMeshBone::getAnimationTargetName() const
-{
-	return m_core->Name;
-}
-
-//------------------------------------------------------------------------------
-void SkinnedMeshBone::setAnimationTargetValue(ValueType type, const void* value)
-{
-	if (LN_REQUIRE(type == ValueType_SQTTransform)) return;
-	m_localTransform = *((AttitudeTransform*)value);
-}
-
 
 //==============================================================================
 // SkinnedMeshMorph

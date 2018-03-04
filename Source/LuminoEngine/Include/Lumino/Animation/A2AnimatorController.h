@@ -2,6 +2,7 @@
 #pragma once
 #include <Lumino/Animation/Common.h>
 #include "A2AnimationTrack.h"
+#include "A2AnimationClip.h"
 
 LN_NAMESPACE_BEGIN
 class Variant;

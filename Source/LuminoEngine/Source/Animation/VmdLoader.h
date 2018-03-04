@@ -2,10 +2,10 @@
 #pragma once
 #include <map>
 #include <unordered_map>
-#include "../Animation/AnimationClip.h"
 
 LN_NAMESPACE_BEGIN
 
+#if 0
 // VMD モーションファイルの読み取り
 class VmdLoader
 {
@@ -85,7 +85,7 @@ private:
 	FaceAnimationIndexMap   m_faceAnimationIndexMap;
 };
 
-
+#endif
 
 
 

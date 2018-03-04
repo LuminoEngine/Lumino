@@ -32,7 +32,8 @@ set(LN_SOURCES
 set(LN_SOURCES_Base "")
 
 set(LN_SOURCES_Animation
-	Include/Lumino/Animation/A2Animation.h
+	Include/Lumino/Animation/A2AnimationClip.h
+	Include/Lumino/Animation/A2AnimationCurve.h
 	Include/Lumino/Animation/A2AnimationTrack.h
 	Include/Lumino/Animation/A2AnimatorController.h
 	Include/Lumino/Animation/AnimationClock.h
@@ -42,21 +43,15 @@ set(LN_SOURCES_Animation
 	Include/Lumino/Animation/Common.h
 	Include/Lumino/Animation/EasingFunctions.h
 	Include/Lumino/Animation/EasingValue.h
-	Source/Animation/A2Animation.cpp
+	Source/Animation/A2AnimationClip.cpp
+	Source/Animation/A2AnimationCurve.cpp
 	Source/Animation/A2AnimationTrack.cpp
 	Source/Animation/A2AnimatorController.cpp
-	Source/Animation/AnimationClip.cpp
-	Source/Animation/AnimationClip.h
 	Source/Animation/AnimationClock.cpp
 	Source/Animation/AnimationCurve.cpp
 	Source/Animation/AnimationManager.cpp
 	Source/Animation/AnimationManager.h
-	Source/Animation/AnimationState.cpp
-	Source/Animation/AnimationState.h
 	Source/Animation/AnimationTimeline.cpp
-	Source/Animation/Animator.cpp
-	Source/Animation/Animator.h
-	Source/Animation/Detail.h
 	Source/Animation/Internal.h
 	Source/Animation/VmdLoader.cpp
 	Source/Animation/VmdLoader.h

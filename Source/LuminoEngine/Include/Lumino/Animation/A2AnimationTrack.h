@@ -106,47 +106,5 @@ class TransformAnimationTrack
 public:
 };
 
-/**
-	@brief		オブジェクトやそのプロパティに影響を与えるアニメーションデータです。
-	@details	スキンメッシュアニメーションでは、「歩く」「走る」といった 1 モーションの単位です。
-*/
-class AnimationClip
-	: public Object
-{
-public:
-	/* モーションファイルから AnimationClip を作成します。(.vmd) */
-	static Ref<AnimationClip> create(const Path& filePath);
-
-	const List<Ref<AnimationTrack>>& tracks() const { return m_tracks; }
-
-	float lastFrameTime() const { return m_lastFrameTime; }
-
-LN_CONSTRUCT_ACCESS:
-	AnimationClip();
-	virtual ~AnimationClip();
-	void initialize();
-	void initialize(const Path& filePath);
-
-protected:
-	List<Ref<AnimationTrack>> m_tracks;
-	Ref<RefObject> m_srcData;
-	float m_lastFrameTime;
-};
-
-/**
-	@brief		Vocaloid Motion Data (.vmd) ファイル
-*/
-class VmdAnimationClip
-	: public AnimationClip
-{
-public:
-	static Ref<VmdAnimationClip> create(const Path& filePath);
-
-LN_CONSTRUCT_ACCESS:
-	VmdAnimationClip();
-	virtual ~VmdAnimationClip();
-	void initialize(const Path& filePath);
-};
-
 } // namespace a2
 LN_NAMESPACE_END
