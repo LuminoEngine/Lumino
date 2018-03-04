@@ -79,12 +79,14 @@ void AnimationState::updateTargetElements()
 {
 	if (m_active)
 	{
+		float time = std::fmod(m_localTime, m_clip->lastFrameTime());
+
 		for (auto& trackInstance : m_trackInstances)
 		{
 			AnimationValue value(trackInstance.track->type());
 			AnimationValue& rootValue = trackInstance.blendLink->rootValue;
 
-			trackInstance.track->evaluate(m_localTime, &value);
+			trackInstance.track->evaluate(time, &value);
 
 			switch (value.type())
 			{

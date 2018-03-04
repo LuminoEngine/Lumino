@@ -161,6 +161,8 @@ Ref<AnimationClip> AnimationClip::create(const Path& filePath)
 
 AnimationClip::AnimationClip()
 	: m_tracks()
+	, m_srcData(nullptr)
+	, m_lastFrameTime(0)
 {
 }
 
@@ -181,7 +183,9 @@ void AnimationClip::initialize(const Path& filePath)
 			m_tracks.add(newObject<VMDBezierTransformAnimationTrack>(track));
 		}
 
-		// 参照を持っておく
+		m_lastFrameTime = vmdData->lastFrameTime;
+
+		// VmdData が持っているトラックの情報を後で使いたいので、参照を持っておく
 		m_srcData = vmdData;
 	}
 }

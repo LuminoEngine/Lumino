@@ -118,14 +118,17 @@ public:
 
 	const List<Ref<AnimationTrack>>& tracks() const { return m_tracks; }
 
+	float lastFrameTime() const { return m_lastFrameTime; }
+
 LN_CONSTRUCT_ACCESS:
 	AnimationClip();
 	virtual ~AnimationClip();
 	void initialize(const Path& filePath);
 
 private:
-	List<Ref<AnimationTrack>>	m_tracks;
+	List<Ref<AnimationTrack>> m_tracks;
 	Ref<RefObject> m_srcData;
+	float m_lastFrameTime;
 };
 
 } // namespace a2

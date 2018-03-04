@@ -123,9 +123,12 @@ void Main()
 	meshCom->setShader(Shader::create(_T("D:/Proj/LN/LiveDot/External/Lumino/Source/LuminoEngine/Test/Sandbox/Assets/UnLighting.fx"), nullptr, ShaderCodeType::RawHLSL));
 	SkinnedMeshModel* model = meshCom->getSkinnedMeshModel();
 	auto* ac = model->animationController();
-	ac->addClip( "walk", a2::AnimationClip::create(_T("D:/MMD/Materials/モーション/Love&Joy/love&joyお面無しver.vmd")));
+	//ac->addClip( "walk", a2::AnimationClip::create(_T("D:/MMD/Materials/モーション/Love&Joy/love&joyお面無しver.vmd")));
 	//ac->addClip(a2::AnimationClip::create(_T("D:/MMD/Materials/モーション/Zigg-Zagg/ZZ-Marisa.vmd"), "walk"));
-	ac->play("walk");
+	ac->addClip("walk", a2::AnimationClip::create(_T("D:/MMD/Materials/モーション/走歩スv2.2full/歩く/A01_SO_女の子歩き_s591_p40.vmd")));
+	ac->addClip("run", a2::AnimationClip::create(_T("D:/MMD/Materials/モーション/走歩スv2.2full/走る/H02_SO_女の子走り_s1475_p20.vmd")));
+	
+	ac->play("run");
 
 	//auto morph = model->morphs()[0];
 	//morph->setWeight(1.0f);
@@ -138,6 +141,16 @@ void Main()
 
 	while (Engine::update())
 	{
+		if (Input::isTriggered(InputButtons::Submit))
+		{
+			printf("s\n");
+			ac->play("run", 0);
+		}
+		if (Input::isTriggered(InputButtons::Cancel))
+		{
+			printf("c\n");
+			ac->play("walk", 0);
+		}
 	}
 
 	Engine::terminate();
