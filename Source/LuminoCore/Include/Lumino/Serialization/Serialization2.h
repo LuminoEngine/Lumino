@@ -592,7 +592,8 @@ private:
 		//TODO: JsonDocument2 がルート Object 固定なので今は制御できない
 		//m_store->readObject();
 		m_store->setNextName(ArchiveVersionKey);
-		if (!m_store->readValue(&m_archiveVersion)) { onError(); return; }
+		//if (!m_store->readValue(&m_archiveVersion)) { onError(); return; }
+		m_store->readValue(&m_archiveVersion);
 		m_store->setNextName(ArchiveRootValueKey);
 	}
 

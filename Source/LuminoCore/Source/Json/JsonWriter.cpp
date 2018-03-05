@@ -65,14 +65,18 @@ void JsonWriter::writeStartArray()
 //------------------------------------------------------------------------------
 void JsonWriter::writeEndArray()
 {
-	if (LN_REQUIRE(m_levelStack.getCount() >= 2)) return;
+	//if (LN_REQUIRE(m_levelStack.getCount() >= 2)) return;
 	if (LN_REQUIRE(m_levelStack.getTop().inArray)) return;
 
 	autoComplete(JsonToken::EndArray);
 	m_levelStack.pop();
 	onEndArray();
-	m_levelStack.getTop().valueCount++;
-	m_levelStack.getTop().justSawContainerEnd = true;
+
+	if (!m_levelStack.isEmpty())
+	{
+		m_levelStack.getTop().valueCount++;
+		m_levelStack.getTop().justSawContainerEnd = true;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -306,7 +310,50 @@ void JsonWriter::onDouble(double value)
 void JsonWriter::onString(const Char* str, int length)
 {
 	m_textWriter->write(_TT("\""), 1);
-	m_textWriter->write(str, length);
+
+	// TODO: 1文字ずつじゃ少し重いか・・・？
+	for (int i = 0; i < length; i++)
+	{
+		switch (str[i])
+		{
+		case '"':
+			m_textWriter->write(_T('\\'));
+			m_textWriter->write(_T('"'));
+			break;
+		case '\\':
+			m_textWriter->write(_T('\\'));
+			m_textWriter->write(_T('\\'));
+			break;
+		case '/':
+			m_textWriter->write(_T('\\'));
+			m_textWriter->write(_T('/'));
+			break;
+		case '\b':
+			m_textWriter->write(_T('\\'));
+			m_textWriter->write(_T('b'));
+			break;
+		case '\f':
+			m_textWriter->write(_T('\\'));
+			m_textWriter->write(_T('f'));
+			break;
+		case '\n':
+			m_textWriter->write(_T('\\'));
+			m_textWriter->write(_T('n'));
+			break;
+		case '\r':
+			m_textWriter->write(_T('\\'));
+			m_textWriter->write(_T('r'));
+			break;
+		case '\t':
+			m_textWriter->write(_T('\\'));
+			m_textWriter->write(_T('t'));
+			break;
+		default:
+			m_textWriter->write(str[i]);
+			break;
+		}
+	}
+
 	m_textWriter->write(_TT("\""), 1);
 }
 
