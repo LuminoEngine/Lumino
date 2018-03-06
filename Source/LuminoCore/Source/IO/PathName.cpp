@@ -180,9 +180,14 @@ const String Path::getStrEndSeparator() const
 	return newStr;
 }
 
-Path Path::getCurrentDirectory()
+Path Path::currentDirectory()
 {
 	return Path(Environment::getCurrentDirectory());
+}
+
+Path Path::executablePath()
+{
+	return Path(detail::EnvironmentInternal::getExecutablePath());
 }
 
 Path Path::getSpecialFolderPath(SpecialFolder specialFolder, const Char* childDir, SpecialFolderOption option)

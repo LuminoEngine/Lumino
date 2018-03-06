@@ -149,7 +149,7 @@ TEST_F(Test_IO_Path, canonicalizePath)
 
 
 #ifdef LN_OS_WIN32
-	Path path1(Path::getCurrentDirectory(), _LT("dir\\Dir"));
+	Path path1(Path::currentDirectory(), _LT("dir\\Dir"));
 	Path path12 = _LT("dir/bin/../Dir");
 	path12 = path12.canonicalizePath();
 	ASSERT_EQ(path1.getString(), path12.getString());

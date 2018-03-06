@@ -16,6 +16,13 @@ public:
 		::GetCurrentDirectoryW(size, &((*outPath)[0]));
 	}
 
+	static StringType getExecutablePath()
+	{
+		CharType result[MAX_PATH] = { 0 };
+		GetModuleFileName(NULL, result, MAX_PATH);
+		return result;
+	}
+
 	static void getSpecialFolderPath(SpecialFolder specialFolder, StringType* outPath)
 	{
 		LN_CHECK(outPath);
