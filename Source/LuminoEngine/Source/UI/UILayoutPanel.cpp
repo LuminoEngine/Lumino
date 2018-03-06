@@ -5,6 +5,8 @@
 #include "LayoutImpl.h"
 #include "LayoutHelper.h"
 
+#include <Lumino/UI/UIScrollViewer.h>	// fot Thumb
+
 LN_NAMESPACE_BEGIN
 
 //==============================================================================
@@ -39,6 +41,7 @@ void UILayoutPanel::addChild(UIElement* element)
 {
 	m_children->add(element);
 	element->setLogicalParent(this);
+	addVisualChild(element);
 }
 
 //------------------------------------------------------------------------------
@@ -46,19 +49,20 @@ void UILayoutPanel::removeChild(UIElement* element)
 {
 	m_children->remove(element);
 	element->setLogicalParent(nullptr);
+	addVisualChild(element);
 }
 
-//------------------------------------------------------------------------------
-int UILayoutPanel::getVisualChildrenCount() const
-{
-	return m_children->getCount();
-}
-
-//------------------------------------------------------------------------------
-UIElement* UILayoutPanel::getVisualChild(int index) const
-{
-	return m_children->getAt(index);
-}
+////------------------------------------------------------------------------------
+//int UILayoutPanel::getVisualChildrenCount() const
+//{
+//	return m_children->getCount();
+//}
+//
+////------------------------------------------------------------------------------
+//UIElement* UILayoutPanel::getVisualChild(int index) const
+//{
+//	return m_children->getAt(index);
+//}
 
 //------------------------------------------------------------------------------
 Size UILayoutPanel::measureOverride(const Size& constraint)
@@ -458,6 +462,71 @@ void UIFlowLayout::newLine()
 {
 	m_nextRow = 0;
 	m_nextColumn++;
+}
+
+//==============================================================================
+// UISplitPanel
+//==============================================================================
+UISplitPanel::UISplitPanel()
+	: m_orientation(Orientation::Horizontal)
+{
+}
+
+UISplitPanel::~UISplitPanel()
+{
+}
+
+void UISplitPanel::initialize()
+{
+	UILayoutPanel::initialize();
+
+	auto sp = newObject<UIThumb>();
+	sp->setSize(Size(10, 100));
+	sp->setBackground(Brush::Red);
+	addVisualChild(sp);
+	m_splitters.add(sp);
+}
+
+void UISplitPanel::onRoutedEvent(UIEventArgs* e)
+{
+	if (e->getType() == UIEvents::ScrollDragStartedEvent)
+	{
+		printf("ScrollDragStartedEvent\n");
+		//m_dragStartValue = m_track->getValue();
+	}
+	else if (e->getType() == UIEvents::ScrollDragDeltaEvent)
+	{
+		printf("ScrollDragDeltaEvent\n");
+		//auto* e2 = static_cast<UIDragDeltaEventArgs*>(e);
+		//float newValue = m_dragStartValue + m_track->valueFromDistance(e2->horizontalChange, e2->verticalChange);
+		//updateValue(Math::clamp(newValue, getMinimum(), getMaximum()));
+	}
+	else if (e->getType() == UIEvents::ScrollDragCompletedEvent)
+	{
+		printf("ScrollDragCompletedEvent\n");
+	}
+
+	UILayoutPanel::onRoutedEvent(e);
+}
+
+Size UISplitPanel::measureOverride(const Size& constraint)
+{
+	for (auto& c : m_splitters)
+	{
+		c->measureLayout(constraint);
+	}
+
+	return UIElement::measureOverride(constraint);
+}
+
+Size UISplitPanel::arrangeOverride(const Size& finalSize)
+{
+	for (auto& c : m_splitters)
+	{
+		c->arrangeLayout(Rect(0, 0, finalSize));
+	}
+
+	return UIElement::arrangeOverride(finalSize);
 }
 
 LN_NAMESPACE_END

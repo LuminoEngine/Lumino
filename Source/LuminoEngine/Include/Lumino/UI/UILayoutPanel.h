@@ -4,6 +4,7 @@
 #include "UIElementCollection.h"
 
 LN_NAMESPACE_BEGIN
+class UIThumb;
 class UIStackPanel;
 class UIAbsoluteLayout;
 class UIGridLayout;
@@ -124,8 +125,8 @@ LN_PROTECTED_INTERNAL_ACCESS:
 	UIElementCollection* getChildren() const { return m_children; }
 
 	// UIElement interface
-	virtual int getVisualChildrenCount() const override;
-	virtual UIElement* getVisualChild(int index) const override;
+	//virtual int getVisualChildrenCount() const override;
+	//virtual UIElement* getVisualChild(int index) const override;
 	virtual Size measureOverride(const Size& constraint) override;
 	virtual Size arrangeOverride(const Size& finalSize) override;
 
@@ -287,6 +288,32 @@ LN_CONSTRUCT_ACCESS:
 private:
 	int		m_nextRow;
 	int		m_nextColumn;
+};
+
+/**
+	@brief		
+*/
+class UISplitPanel
+	: public UILayoutPanel
+{
+public:
+	void setOrientation(Orientation orientation) { m_orientation = orientation; }
+	Orientation getOrientation() const { return m_orientation; }
+
+LN_CONSTRUCT_ACCESS:
+	UISplitPanel();
+	virtual ~UISplitPanel();
+	void initialize();
+
+protected:
+	// UIElement interface
+	virtual void onRoutedEvent(UIEventArgs* e) override;
+	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
+
+private:
+	Orientation	m_orientation;
+	List<Ref<UIThumb>> m_splitters;
 };
 
 LN_NAMESPACE_END
