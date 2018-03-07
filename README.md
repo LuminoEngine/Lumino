@@ -23,8 +23,10 @@ Create a development project.
 ```
 PS> ./build.ps1 -Target MakeProjects
 ```
+Note: It is necessary to change ExecutionPolicy. `PS> Set-ExecutionPolicy RemoteSigned`
 
 After this, please check in the "build/..." folder.
+
 
 
 ### Mac OS X
