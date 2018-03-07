@@ -30,7 +30,7 @@ class UIFrameWindow
 public:
 
 	/*  */
-	void setAllowDragDrop(bool value);
+	void setAllowNativeDragDrop(bool value);
 
 	PlatformWindow* getPlatformWindow() const;
 
@@ -88,7 +88,7 @@ public:
 	UIViewport* getViewport() const;
 
 protected:
-	virtual void onReady();
+	virtual void onInitialized();
 
 	virtual void onPresentRenderingContexts() override;
 	virtual Size arrangeOverride(const Size& finalSize) override;

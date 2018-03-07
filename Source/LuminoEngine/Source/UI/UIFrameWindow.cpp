@@ -84,7 +84,7 @@ void UIFrameWindow::dispose()
 	}
 }
 
-void UIFrameWindow::setAllowDragDrop(bool value)
+void UIFrameWindow::setAllowNativeDragDrop(bool value)
 {
 	m_platformWindow->setAllowDragDrop(value);
 }
@@ -368,7 +368,7 @@ void UIMainWindow::postInitializeAndAttachDefaultObjects(PlatformWindow* platfor
 
 	setSizeInternal(platformWindow->getSize().toFloatSize());
 
-	onReady();
+	onInitialized();
 }
 
 //------------------------------------------------------------------------------
@@ -394,7 +394,7 @@ void UIMainWindow::renderUI()
 {
 }
 
-void UIMainWindow::onReady()
+void UIMainWindow::onInitialized()
 {
 }
 

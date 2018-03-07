@@ -179,15 +179,15 @@ EventConnection UIControl::connectOnSubmit(UIEventHandler handler)
 	return m_onSubmit.connect(handler);
 }
 
-EventConnection UIControl::connectOnDragEnter(UIDragDropEventHandler handler)
-{
-	return m_onDragEnter.connect(handler);
-}
-
-EventConnection UIControl::connectOnDragDrop(UIDragDropEventHandler handler)
-{
-	return m_onDragDropEnter.connect(handler);
-}
+//EventConnection UIControl::connectOnDragEnter(UIDragDropEventHandler handler)
+//{
+//	return m_onDragEnter.connect(handler);
+//}
+//
+//EventConnection UIControl::connectOnDragDrop(UIDragDropEventHandler handler)
+//{
+//	return m_onDragDropEnter.connect(handler);
+//}
 
 void UIControl::onSubmit(UIEventArgs* e)
 {
@@ -198,14 +198,14 @@ void UIControl::onMouseClick(UIMouseEventArgs* e)
 {
 }
 
-void UIControl::onDragEnter(UIDragDropEventArgs* e)
+void UIControl::onHandleDragEnter(UIDragDropEventArgs* e)
 {
-	m_onDragEnter.raise(e);
+	onDragEnter.raise(e);
 }
 
-void UIControl::onDragDrop(UIDragDropEventArgs* e)
+void UIControl::onHandleDragDrop(UIDragDropEventArgs* e)
 {
-	m_onDragDropEnter.raise(e);
+	onDragDrop.raise(e);
 }
 
 ////------------------------------------------------------------------------------
