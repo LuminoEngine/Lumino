@@ -520,8 +520,8 @@ private:
 	bool					m_isFocusable;
 	bool					m_hasFocus;
 
-	UIEventHandler::EventType	m_onGotFocus;
-	UIEventHandler::EventType	m_onLostFocus;
+	Event<UIEventArgs*>	m_onGotFocus;
+	Event<UIEventArgs*>	m_onLostFocus;
 
 	friend class UILayoutView;
 	friend class UIPopup;

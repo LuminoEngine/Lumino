@@ -96,7 +96,7 @@ LN_INTERNAL_ACCESS:
 	List<Ref<OffscreenWorldSubRenderView>>	m_offscreenWorldViewList;
 	List<int>							m_offscreenIdStorage;
 
-	UIEventHandler::EventType			m_onEvent;
+	Event<UIEventArgs*>			m_onEvent;
 
 private:
 	void addWorldObject(WorldObject* obj, bool autoRelease /*= false*/);

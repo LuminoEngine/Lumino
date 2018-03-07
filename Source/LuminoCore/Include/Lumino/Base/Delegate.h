@@ -118,7 +118,7 @@ private:
 
 public:
 
-	using EventType = Event<TRet(TArgs...)>;
+	//using EventType = Event<TRet(TArgs...)>;
 
 	/** Default constructor */
 	Delegate()

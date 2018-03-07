@@ -48,7 +48,7 @@ private:
 	Ref<UITextBlock>	m_textContent;
 	ClickMode			m_clickMode;
 	bool				m_isPressed;
-	UIEventHandler::EventType	m_onClick;
+	Event<UIEventArgs*>	m_onClick;
 
 };
 
@@ -109,8 +109,8 @@ private:
 	void checkChanged();
 
 	UICheckState				m_checkState;
-	UIEventHandler::EventType	m_onChecked;
-	UIEventHandler::EventType	m_onUnchecked;
+	Event<UIEventArgs*>	m_onChecked;
+	Event<UIEventArgs*>	m_onUnchecked;
 	//Nullable<bool>			m_isChecked;
 	//UIEventHandler::EventType	m_onIndeterminate; 
 };

@@ -72,9 +72,9 @@ public:
 	///** onSubmit イベントの通知を受け取るコールバックを登録します。*/
 	//LN_METHOD(Event)
 	//EventConnection connectOnDragDrop(UIDragDropEventHandler handler);
-
-	UIDragDropEventHandler::EventType	onDragEnter;
-	UIDragDropEventHandler::EventType	onDragDrop;
+	
+	Event<UIDragDropEventArgs*>	onDragEnter;
+	Event<UIDragDropEventArgs*>	onDragDrop;
 
 protected:
 	void setLogicalChildrenPresenter(UILayoutPanel* presenter);
@@ -133,7 +133,7 @@ private:
 	ClickMode						m_clickMode;
 	bool							m_isPressed;
 
-	UIEventHandler::EventType		m_onSubmit;
+	Event<UIEventArgs*>		m_onSubmit;
 
 	//bool							m_invalidateItemsHostPanel;
 

@@ -17,10 +17,11 @@ LN_NAMESPACE_BEGIN
 //------------------------------------------------------------------------------
 Ref<SkinnedMeshComponent> SkinnedMeshComponent::create(const StringRef& filePath)
 {
-	auto ptr = Ref<SkinnedMeshComponent>::makeRef();
-	auto mesh = SceneGraphManager::Instance->getModelManager()->createSkinnedMeshModel(filePath);
-	ptr->initialize(mesh);
-	return ptr;
+	return newObject<SkinnedMeshComponent>(filePath);
+	//auto ptr = Ref<SkinnedMeshComponent>::makeRef();
+	//auto mesh = SceneGraphManager::Instance->getModelManager()->createSkinnedMeshModel(filePath);
+	//ptr->initialize(mesh);
+	//return ptr;
 }
 
 //------------------------------------------------------------------------------
@@ -51,6 +52,12 @@ void SkinnedMeshComponent::initialize(SkinnedMeshModel* meshModel)
 	setAutoRemove(true);
 
 
+}
+
+void SkinnedMeshComponent::initialize(const StringRef& filePath)
+{
+	auto mesh = SceneGraphManager::Instance->getModelManager()->createSkinnedMeshModel(filePath);
+	initialize(mesh);
 }
 
 //------------------------------------------------------------------------------
@@ -148,6 +155,38 @@ void SkinnedMeshComponent::onRender2(RenderingContext* renderer)
 	//{
 	//	renderer->drawMesh(mesh, i, mesh->getMaterial(i));
 	//}
+}
+
+//==============================================================================
+// SkinnedMeshComponent
+//==============================================================================
+
+Ref<SkinnedMesh> SkinnedMesh::create(const StringRef& filePath)
+{
+	return newObject<SkinnedMesh>(filePath);
+}
+
+SkinnedMesh::SkinnedMesh()
+{
+}
+
+SkinnedMesh::~SkinnedMesh()
+{
+}
+
+void SkinnedMesh::initialize(const StringRef& filePath)
+{
+	VisualObject::initialize();
+	WorldObject::tryAddActiveWorld(WorldCoordinateClass::World3D, this);
+
+	m_component = newObject<SkinnedMeshComponent>(filePath);
+	m_component->setLayer(LayerMask::GetLayer(BuiltinLayers::Default3D));
+	addComponent(m_component);
+}
+
+VisualComponent* SkinnedMesh::getMainVisualComponent() const
+{
+	return m_component;
 }
 
 LN_NAMESPACE_END
