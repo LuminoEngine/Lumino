@@ -170,6 +170,17 @@ Shader* VisualComponent::getShader() const
 	return m_visualNodeParameters->builtinEffectData.getShader();
 }
 
+void VisualComponent::setShadingModel(ShadingModel value)
+{
+	m_visualNodeParameters->shadingModel = value;
+}
+
+ShadingModel VisualComponent::getShadingModel() const
+{
+	return m_visualNodeParameters->shadingModel;
+}
+
+
 ////------------------------------------------------------------------------------
 //void VisualComponent::setOpacity(float value, int subsetIndex)
 //{
@@ -389,6 +400,16 @@ void VisualObject::setShader(Shader* value)
 Shader* VisualObject::getShader() const
 {
 	return getMainVisualComponent()->getShader();
+}
+
+void VisualObject::setShadingModel(ShadingModel value)
+{
+	getMainVisualComponent()->setShadingModel(value);
+}
+
+ShadingModel VisualObject::getShadingModel() const
+{
+	return getMainVisualComponent()->getShadingModel();
 }
 
 //------------------------------------------------------------------------------

@@ -185,18 +185,18 @@ enum class ShaderTechniqueClass_MeshProcess : uint8_t
 
 // ShadingModel
 // TODO: ShadingModel という enum があるのでそれにする
-enum class ShaderTechniqueClass_ShadingModel : uint8_t
-{
-	Default,		// default
-	UnLighting,
-};
+//enum class ShaderTechniqueClass_ShadingModel : uint8_t
+//{
+//	Default,		// default
+//	UnLighting,
+//};
 
 struct ShaderTechniqueClassSet
 {
 	ShaderTechniqueClass_Ligiting		ligiting;
 	ShaderTechniqueClass_Phase			phase;
 	ShaderTechniqueClass_MeshProcess	meshProcess;
-	ShaderTechniqueClass_ShadingModel	shadingModel;
+	ShadingModel	shadingModel;
 
 	static void parseTechniqueClassString(const String& str, ShaderTechniqueClassSet* outClassSet);
 	static bool equals(const ShaderTechniqueClassSet& a, const ShaderTechniqueClassSet& b);

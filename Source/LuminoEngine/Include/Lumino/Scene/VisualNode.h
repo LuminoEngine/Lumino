@@ -75,6 +75,11 @@ public:
 	/** シェーダを取得します。 */
 	Shader* getShader() const;
 
+	/** ShadingModel を設定します。(default: ShadingModel::Default) */
+	void setShadingModel(ShadingModel value);
+
+	/** ShadingModel を取得します。 */
+	ShadingModel getShadingModel() const;
 
 
 
@@ -252,6 +257,12 @@ public:
 
 	/** シェーダを取得します。 */
 	Shader* getShader() const;
+
+	/** ShadingModel を設定します。(default: ShadingModel::Default) */
+	void setShadingModel(ShadingModel value);
+
+	/** ShadingModel を取得します。 */
+	ShadingModel getShadingModel() const;
 
 	/** このノードを描画する際の合成方法を設定します。デフォルトは BlendMode::Normal です。*/
 	void setBlendMode(BlendMode mode);
