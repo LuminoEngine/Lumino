@@ -235,7 +235,7 @@ void UIManager::makeDefaultStyle(UIStyleTable* table)
 			auto* props = s->getPropertyTable();
 			//st->background = Ref<Brush>::StaticCast(buttonNormalBrush);
 			props->borderThickness = Thickness(1);
-			props->cornerRadius = 4;
+			props->cornerRadius = 2;
 
 			//props->background = UIColors::getBrush(UIColorIndex::LightGreen);
 		}

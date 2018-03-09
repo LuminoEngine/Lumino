@@ -277,21 +277,21 @@ void UIElement::measureLayout(const Size& availableSize)
 //------------------------------------------------------------------------------
 void UIElement::arrangeLayout(const Rect& finalLocalRect)
 {
-	const HAlignment* parentHAlign = (m_logicalParent != nullptr) ? m_logicalParent->getLayoutContentHAlignment() : nullptr;
-	const VAlignment* parentVAlign = (m_logicalParent != nullptr) ? m_logicalParent->getLayoutContentVAlignment() : nullptr;
+	//const HAlignment* parentHAlign = (m_logicalParent != nullptr) ? m_logicalParent->getLayoutContentHAlignment() : nullptr;
+	//const VAlignment* parentVAlign = (m_logicalParent != nullptr) ? m_logicalParent->getLayoutContentVAlignment() : nullptr;
 
 	Rect alignd = finalLocalRect;
-	Size ds = getLayoutDesiredSize();
-	if (parentHAlign != nullptr)
-	{
-		detail::LayoutHelper::adjustHorizontalAlignment(finalLocalRect.getSize(), ds, true, *parentHAlign, &alignd);
-		alignd.x += finalLocalRect.x;
-	}
-	if (parentVAlign != nullptr)
-	{
-		detail::LayoutHelper::adjustVerticalAlignment(finalLocalRect.getSize(), ds, true, *parentVAlign, &alignd);
-		alignd.y += finalLocalRect.y;
-	}
+	//Size ds = getLayoutDesiredSize();
+	//if (parentHAlign != nullptr)
+	//{
+	//	detail::LayoutHelper::adjustHorizontalAlignment(finalLocalRect.getSize(), ds, true, *parentHAlign, &alignd);
+	//	alignd.x += finalLocalRect.x;
+	//}
+	//if (parentVAlign != nullptr)
+	//{
+	//	detail::LayoutHelper::adjustVerticalAlignment(finalLocalRect.getSize(), ds, true, *parentVAlign, &alignd);
+	//	alignd.y += finalLocalRect.y;
+	//}
 
 
 	//ILayoutElement::arrangeLayout(alignd/*finalLocalRect*/);
@@ -367,7 +367,7 @@ void UIElement::onRender(DrawingContext* g)
 			Rect(0, 0, m_finalGlobalRect.getSize()), m_localStyle->borderThickness.get(), m_localStyle->cornerRadius.get(),
 			Color::Gray, Color::Gray, Color::Gray, Color::Gray,
 			BorderDirection::Inside,
-			Color::LimeGreen.withAlpha(0.3), 0, 0, ShadowDirection::Outside);
+			Color::LimeGreen.withAlpha(0.3), 3, 3, ShadowDirection::Outside);
 	}
 }
 
@@ -649,6 +649,7 @@ void UIElement::updateLocalStyleAndApplyProperties(UIStyleTable* styleTable, det
 		UIStyle* style = styleTable->findSubControlStyle(m_styleSubControlOwnerName, m_styleSubControlName);
 		if (style != nullptr)
 		{
+			// UIScrollBar::LineUpButton のような UIElement
 			invalidate |= style->mergeActiveStylePropertyTables(m_localStyle, vm->getActiveStateNames());
 		}
 		else

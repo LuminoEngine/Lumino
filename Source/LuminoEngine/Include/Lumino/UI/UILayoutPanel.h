@@ -102,9 +102,7 @@ public:
 };
 
 /**
-	@brief		1つ以上の子 UIElement を持つ UI 要素のベースクラスです。
-
-	@details	HAlignment 及び VAlignment の規定値は Stretch です。
+	@brief		
 */
 class UILayoutPanel
 	: public UIElement

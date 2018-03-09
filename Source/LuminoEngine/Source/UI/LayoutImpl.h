@@ -2,7 +2,8 @@
 #pragma once
 
 LN_NAMESPACE_BEGIN
-namespace detail {
+namespace detail
+{
 
 template<class TPanel>
 class LayoutImpl

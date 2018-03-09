@@ -5,6 +5,7 @@
 #include <Lumino/UI/UILayoutView.h>
 #include <Lumino/UI/UIElement.h>
 #include <Lumino/UI/UIComboBox.h>	// TODO: UIPopup
+#include <Lumino/UI/UILayoutPanel.h>
 #include "UIManager.h"
 #include "EventArgsPool.h"
 
@@ -72,6 +73,11 @@ void UILayoutView::initialize(UIContext* ownerContext, PlatformWindow* ownerNati
 	m_ownerNativeWindow = ownerNativeWindow;
 	m_adornerLayer = newObject<UIAdornerLayer>();
 	addVisualChild(m_adornerLayer);
+
+
+	// TODO: Control のデフォルトを null にしたが、Window はデフォルトこれにしたいのでとりあえずここに持ってきた。
+	auto panel = newObject<UIAbsoluteLayout>();
+	setLayoutPanel(panel);
 }
 
 //------------------------------------------------------------------------------
@@ -116,7 +122,9 @@ Size UILayoutView::measureOverride(const Size& constraint)
 
 Size UILayoutView::arrangeOverride(const Size& finalSize)
 {
-	m_adornerLayer->arrangeLayout(Rect(0, 0, finalSize));
+	auto pad = getPadding();
+	auto area = Rect(0, 0, finalSize).makeDeflate(pad);
+	m_adornerLayer->arrangeLayout(area);
 	return UIContentsControl::arrangeOverride(finalSize);
 }
 

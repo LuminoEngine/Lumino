@@ -207,10 +207,10 @@ public:
 	/** 要素の margin 値 (外側の余白) を取得します。 */
 	const Thickness& getMargin() const;
 
-	/** 要素の padding 値 (内側の余白) を設定します。 */
+	/** 要素の padding 値 (内側の余白) を設定します。この余白は論理ツリーの子要素のレイアウトに影響します。 */
 	void setPadding(const Thickness& padding);
 
-	/** 要素の padding 値 (内側の余白) を取得します。 */
+	/** 要素の padding 値 (内側の余白) を取得します。この余白は論理ツリーの子要素のレイアウトに影響します。 */
 	const Thickness& getPadding() const;
 
 	void setMinWidth(float value) { m_minSize.width = value; }
@@ -298,7 +298,8 @@ public:
 
 
 	virtual void measureLayout(const Size& availableSize) override;
-	virtual void arrangeLayout(const Rect& finalLocalRect) override;
+	virtual void arrangeLayout(const Rect& finalLocalRect) override;	// finalLocalRect 親要素から見て、子要素を実際に配置可能な領域。そのあと、子要素は自分のサイズなどから最終的な位置を決定する。
+
 
 	// 登録されているハンドラと、(Bubbleの場合)論理上の親へイベントを通知する
 	void raiseEvent(UIEventType ev, UIElement* sender, UIEventArgs* e);

@@ -41,7 +41,10 @@ GlyphIconFontManager::~GlyphIconFontManager()
 void GlyphIconFontManager::initialize()
 {
 	auto path = PathName(Assets::standardContentsDirectory, _LT("FontAwesome.otf"));
-	detail::EngineDomain::getGraphicsManager()->getFontManager()->registerFontFile(path);
+	if (FileSystem::existsDirectory(path))
+	{
+		detail::EngineDomain::getGraphicsManager()->getFontManager()->registerFontFile(path);
+	}
 }
 
 void GlyphIconFontManager::dispose()

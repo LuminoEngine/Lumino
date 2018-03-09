@@ -103,9 +103,10 @@ void Main()
 	//	}
 	//});
 
-	//auto* uiRoot = Engine::getDefaultUILayer()->GetLayoutView();
-	//auto button1 = UIButton::create(_T("button1"), 80, 32);
-	//uiRoot->addChild(button1);
+	auto* uiRoot = Engine::getDefaultUILayer()->GetLayoutView();
+	auto button1 = UIButton::create(_T("button1"), 100, 64);
+	uiRoot->setPadding(Thickness(4));
+	uiRoot->addChild(button1);
 
 	//auto text1 = UITextField::create();
 	//text1->setPosition(Point(10, 20));
@@ -119,38 +120,42 @@ void Main()
 	Engine::getCamera3D()->addComponent(newObject<CameraMouseMoveBehavior>());
 
 
-	auto meshCom = SkinnedMeshComponent::create(_T("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
-	meshCom->setShader(Shader::create(_T("D:/Proj/LN/LiveDot/External/Lumino/Source/LuminoEngine/Test/Sandbox/Assets/UnLighting.fx"), nullptr, ShaderCodeType::RawHLSL));
-	SkinnedMeshModel* model = meshCom->getSkinnedMeshModel();
-	auto* ac = model->animationController();
-	//ac->addClip( "walk", a2::AnimationClip::create(_T("D:/MMD/Materials/モーション/Love&Joy/love&joyお面無しver.vmd")));
-	//ac->addClip(a2::AnimationClip::create(_T("D:/MMD/Materials/モーション/Zigg-Zagg/ZZ-Marisa.vmd"), "walk"));
-	ac->addClip("walk", VmdAnimationClip::create(_T("D:/MMD/Materials/モーション/走歩スv2.2full/歩く/A01_SO_女の子歩き_s591_p40.vmd")));
-	ac->addClip("run", VmdAnimationClip::create(_T("D:/MMD/Materials/モーション/走歩スv2.2full/走る/H02_SO_女の子走り_s1475_p20.vmd")));
+	//auto meshCom = SkinnedMeshComponent::create(_T("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
+	//meshCom->setShader(Shader::create(_T("D:/Proj/LN/LiveDot/External/Lumino/Source/LuminoEngine/Test/Sandbox/Assets/UnLighting.fx"), nullptr, ShaderCodeType::RawHLSL));
+	//SkinnedMeshModel* model = meshCom->getSkinnedMeshModel();
+	//auto* ac = model->animationController();
+	////ac->addClip( "walk", a2::AnimationClip::create(_T("D:/MMD/Materials/モーション/Love&Joy/love&joyお面無しver.vmd")));
+	////ac->addClip(a2::AnimationClip::create(_T("D:/MMD/Materials/モーション/Zigg-Zagg/ZZ-Marisa.vmd"), "walk"));
+	//ac->addClip("walk", VmdAnimationClip::create(_T("D:/MMD/Materials/モーション/走歩スv2.2full/歩く/A01_SO_女の子歩き_s591_p40.vmd")));
+	//ac->addClip("run", VmdAnimationClip::create(_T("D:/MMD/Materials/モーション/走歩スv2.2full/走る/H02_SO_女の子走り_s1475_p20.vmd")));
+	//
+	//ac->play("walk", 5);
+
+	////auto morph = model->morphs()[0];
+	////morph->setWeight(1.0f);
+
+	////model->morphs()[16]->setWeight(1.0f);
+
+	//auto obj3D = newObject<WorldObject>();
+	//obj3D->addComponent(meshCom);
+	//Engine::defaultWorld3D()->add(obj3D);
+
+
+
 	
-	ac->play("walk", 5);
-
-	//auto morph = model->morphs()[0];
-	//morph->setWeight(1.0f);
-
-	//model->morphs()[16]->setWeight(1.0f);
-
-	auto obj3D = newObject<WorldObject>();
-	obj3D->addComponent(meshCom);
-	Engine::defaultWorld3D()->add(obj3D);
 
 	while (Engine::update())
 	{
-		if (Input::isTriggered(InputButtons::Submit))
-		{
-			printf("s\n");
-			ac->play("run");
-		}
-		if (Input::isTriggered(InputButtons::Cancel))
-		{
-			printf("c\n");
-			ac->play("walk");
-		}
+		//if (Input::isTriggered(InputButtons::Submit))
+		//{
+		//	printf("s\n");
+		//	ac->play("run");
+		//}
+		//if (Input::isTriggered(InputButtons::Cancel))
+		//{
+		//	printf("c\n");
+		//	ac->play("walk");
+		//}
 	}
 
 	Engine::terminate();
