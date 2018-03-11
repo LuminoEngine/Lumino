@@ -12,7 +12,7 @@ LN_NAMESPACE_BEGIN
 //------------------------------------------------------------------------------
 Ref<CommonMaterial> PmxMaterialResource::MakeCommonMaterial() const
 {
-	auto m = Ref<CommonMaterial>::makeRef();
+	auto m = Ref<DiffuseMaterial>::makeRef();
 	m->setBuiltinColorParameter(
 		CommonMaterial::DiffuseParameter,
 		Diffuse.r,
@@ -43,6 +43,9 @@ Ref<CommonMaterial> PmxMaterialResource::MakeCommonMaterial() const
 	m->setBuiltinTextureParameter(
 		CommonMaterial::MaterialTextureParameter,
 		Texture);
+
+	//detail::PhongMaterialData ddd;
+	//m->translateToPhongMaterialData(&ddd);
 	return m;
 }
 

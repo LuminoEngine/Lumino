@@ -26,7 +26,7 @@ public:
 	void addAssetsDirectory(const StringRef& directoryPath);
 
 	Texture2DPtr loadTexture(const StringRef& filePath);
-	Ref<Shader> loadShader(const StringRef& filePath);
+	Ref<Shader> loadShader(const StringRef& filePath, ShaderCodeType codeType = ShaderCodeType::Normal);
 
 	Ref<StaticMeshModel> loadMeshModel(const StringRef& filePath);
 

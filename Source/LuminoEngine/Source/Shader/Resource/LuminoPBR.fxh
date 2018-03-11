@@ -1,6 +1,17 @@
 
+
 #ifndef LUMINO_PBR_INCLUDED
 #define LUMINO_PBR_INCLUDED
+
+//------------------------------------------------------------------------------
+// Built-in Variables
+
+float4	ln_MaterialM2Color;
+float	ln_MaterialM2Roughness;
+float	ln_MaterialM2Metallic;
+float	ln_MaterialM2Specular;
+
+//------------------------------------------------------------------------------
 
 #define LN_PI 3.14159265359
 #define LN_PI2 6.28318530718
