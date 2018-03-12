@@ -265,7 +265,7 @@ LN_SkinningOutput LN_SkinningVertex(
 	return o;
 }
 
-LN_VSOutput_Common _LN_ProcessVertex_SkinnedCommon(LN_VSInput input)
+LN_VSOutput_Common LN_ProcessVertex_SkinnedCommon(LN_VSInput input)
 {
 	LN_SkinningOutput local = LN_SkinningVertex(input.Pos, input.Normal, input.BlendWeight, input.BlendIndices);
 

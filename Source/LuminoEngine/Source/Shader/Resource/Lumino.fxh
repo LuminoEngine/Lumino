@@ -76,7 +76,7 @@ void _LN_InitSurfaceOutput(LN_PSInput_Common common, inout LN_SurfaceOutput surf
 	surface.Gloss = float3(0, 0, 0);
 }
 
-LN_VSOutput_Common _LN_ProcessVertex_Common(LN_VSInput input)
+LN_VSOutput_Common LN_ProcessVertex_Common(LN_VSInput input)
 {
 	//float4x4 normalMatrix  = transpose(/*inverse*/(ln_WorldView));
 	

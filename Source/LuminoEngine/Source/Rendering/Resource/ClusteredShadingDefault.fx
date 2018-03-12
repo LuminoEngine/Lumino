@@ -3,6 +3,7 @@
 //BEGIN_HLSL
 
 #include <Lumino.fxh>
+#include <LuminoForward.fxh>
 #include <LuminoPBR.fxh>
 #include <LuminoShadow.fxh>
 #include <LuminoSkinning.fxh>
@@ -13,23 +14,6 @@
 // Lib (ClusteredForward)
 
 
-struct LN_VSOutput_ClusteredForward
-{
-	float3	WorldPos	: TEXCOORD10;
-	float3	VertexPos	: TEXCOORD11;
-	
-	float3	vViewPosition 	: TEXCOORD12;	// 頂点位置から視点位置までのベクトル
-	float4	vInLightPosition 	: TEXCOORD13;
-};
-
-struct LN_PSInput_ClusteredForward
-{
-	float3	WorldPos	: TEXCOORD10;
-	float3	VertexPos	: TEXCOORD11;
-	
-	float3	vViewPosition 	: TEXCOORD12;
-	float4	vInLightPosition 	: TEXCOORD13;
-};
 
 texture2D ln_GlobalLightInfoTexture;
 sampler2D ln_GlobalLightInfoSampler = sampler_state
@@ -75,30 +59,6 @@ float4	ln_AmbientColor;
 float4	ln_AmbientSkyColor;
 float4	ln_AmbientGroundColor;
 float4	ln_FogParams;
-
-
-
-// ★コア部分の処理は Lib に置く。Auto Generation ではない。ユーザーが vs/ps を直書きするときに使えるようにするため。
-LN_VSOutput_ClusteredForward _LN_ProcessVertex_ClusteredForward(LN_VSInput input)
-{
-	LN_VSOutput_ClusteredForward output;
-	output.WorldPos = mul(float4(input.Pos, 1.0), ln_World).xyz;
-	output.VertexPos = input.Pos;
-	
-	
-	float4 mvPosition = mul(float4(input.Pos, 1.0), ln_WorldView);
-	output.vViewPosition  = -mvPosition.xyz;
-	
-	
-	
-	float4 pos = mul(float4(input.Pos, 1.0), ln_World);
-	pos = mul(pos, ln_ViewProjection_Light0);
-	output.vInLightPosition = pos;
-	//output.vInLightPosition = mul(mul(float4(input.Pos, 1.0), ln_World), ln_ViewProjection_Light0);
-	
-	return output;
-}
-
 
 
 
@@ -531,8 +491,8 @@ struct _lngs_VSOutput
 _lngs_VSOutput _lngs_VS_ClusteredForward_Geometry(LN_VSInput vsi)
 {
 	_lngs_VSOutput o;
-	o.common	= _LN_ProcessVertex_Common(vsi);
-	o.extra		= _LN_ProcessVertex_ClusteredForward(vsi);
+	o.common	= LN_ProcessVertex_Common(vsi);
+	o.extra		= LN_ProcessVertex_ClusteredForward(vsi);
 	// ★ Scene固有のコードはここに直接生成する (ピクセルシェーダと書き方を合わせたい)
 	MyVFMain(vsi, o.user);	// ★ User定義呼び出し
 	return o;
@@ -541,8 +501,8 @@ _lngs_VSOutput _lngs_VS_ClusteredForward_Geometry(LN_VSInput vsi)
 _lngs_VSOutput _lngs_VS_ClusteredForward_Geometry_SkinnedMesh(LN_VSInput vsi)
 {
 	_lngs_VSOutput o;
-	o.common	= _LN_ProcessVertex_SkinnedCommon(vsi);
-	o.extra		= _LN_ProcessVertex_ClusteredForward(vsi);
+	o.common	= LN_ProcessVertex_SkinnedCommon(vsi);
+	o.extra		= LN_ProcessVertex_ClusteredForward(vsi);
 	// ★ Scene固有のコードはここに直接生成する (ピクセルシェーダと書き方を合わせたい)
 	MyVFMain(vsi, o.user);	// ★ User定義呼び出し
 	return o;
