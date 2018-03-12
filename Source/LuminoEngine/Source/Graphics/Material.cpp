@@ -458,72 +458,70 @@ void Material::setSpecular(float value)
 	m_data.specular = value;
 }
 
-void Material::translateToPBRMaterialData(detail::PBRMaterialData* outData)
+void Material::translateToPBRMaterialData(detail::PbrMaterialData* outData)
 {
 	// メンバ変数をそのままセットすることで効率化を図る。毎回検索しない。
 	*outData = m_data;
 }
 
 //==============================================================================
-// DiffuseMaterial
+// PhongMaterial
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(DiffuseMaterial, CommonMaterial);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(PhongMaterial, CommonMaterial);
 
 //------------------------------------------------------------------------------
-DiffuseMaterialPtr DiffuseMaterial::create()
+Ref<PhongMaterial> PhongMaterial::create()
 {
-	auto ptr = DiffuseMaterialPtr::makeRef();
-	ptr->initialize();
-	return ptr;
+	return newObject<PhongMaterial>();
 }
 
 //------------------------------------------------------------------------------
-DiffuseMaterial::DiffuseMaterial()
+PhongMaterial::PhongMaterial()
 {
 }
 
 //------------------------------------------------------------------------------
-DiffuseMaterial::~DiffuseMaterial()
+PhongMaterial::~PhongMaterial()
 {
 }
 
 //------------------------------------------------------------------------------
-void DiffuseMaterial::initialize()
+void PhongMaterial::initialize()
 {
 	CommonMaterial::initialize(detail::MaterialType::Diffuse);
 }
 
 //------------------------------------------------------------------------------
-void DiffuseMaterial::setDiffuse(const Color& value)
+void PhongMaterial::setDiffuse(const Color& value)
 {
 	setBuiltinColorParameter(CommonMaterial::DiffuseParameter, value);
 }
 
 //------------------------------------------------------------------------------
-void DiffuseMaterial::setAmbient(const Color& value)
+void PhongMaterial::setAmbient(const Color& value)
 {
 	setBuiltinColorParameter(CommonMaterial::AmbientParameter, value);
 }
 
 //------------------------------------------------------------------------------
-void DiffuseMaterial::setSpecular(const Color& value)
+void PhongMaterial::setSpecular(const Color& value)
 {
 	setBuiltinColorParameter(CommonMaterial::SpecularParameter, value);
 }
 
 //------------------------------------------------------------------------------
-void DiffuseMaterial::setEmissive(const Color& value)
+void PhongMaterial::setEmissive(const Color& value)
 {
 	setBuiltinColorParameter(CommonMaterial::EmissiveParameter, value);
 }
 
 //------------------------------------------------------------------------------
-void DiffuseMaterial::setSpecularPower(float value)
+void PhongMaterial::setSpecularPower(float value)
 {
 	setBuiltinFloatParameter(CommonMaterial::PowerParameter, value);
 }
 
-void DiffuseMaterial::translateToPBRMaterialData(detail::PBRMaterialData* outData)
+void PhongMaterial::translateToPBRMaterialData(detail::PbrMaterialData* outData)
 {
 	// TODO: 効率悪すぎ。メンバ変数に持っておこう
 	detail::PhongMaterialData phongdata;
@@ -533,7 +531,7 @@ void DiffuseMaterial::translateToPBRMaterialData(detail::PBRMaterialData* outDat
 	outData->color = phongdata.diffuse;
 }
 
-void DiffuseMaterial::translateToPhongMaterialData(detail::PhongMaterialData* outData)
+void PhongMaterial::translateToPhongMaterialData(detail::PhongMaterialData* outData)
 {
 	// TODO: メンバ変数に持っておくようにし、それを渡す。いちいち検索を走らせない。
 	CommonMaterial::translateToPhongMaterialData(outData);
@@ -549,7 +547,7 @@ void CommonMaterial::translateToPhongMaterialData(detail::PhongMaterialData* dat
 	data->power = getBuiltinFloat(PowerHash, CommonMaterial::DefaultPower);
 }
 
-void CommonMaterial::translateToPBRMaterialData(detail::PBRMaterialData* data)
+void CommonMaterial::translateToPBRMaterialData(detail::PbrMaterialData* data)
 {
 	// TODO: 毎回検索は重い気がする。キャッシュしたい
 	data->color = getBuiltinColor(Material_ColorPropertyNameId, Material_DefaultColor);

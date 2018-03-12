@@ -3,6 +3,8 @@ using System.IO;
 using LuminoBuild;
 using System.Text;
 using System.IO.Compression;
+using System.Net.Security;
+using System.Net;
 
 namespace LuminoBuild.Tasks
 {
@@ -19,8 +21,11 @@ namespace LuminoBuild.Tasks
 
             var extractDir = builder.LuminoRootDir + "External";
 
+            // default is Tls3 | Tls. bat could not connected.
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+
             Logger.WriteLine("Downloading dependencies...");
-            var wc = new System.Net.WebClient();
+            var wc = new WebClient();
             wc.DownloadFile(
                 "https://github.com/lriki/LuminoDependencies/archive/v2.zip",
                 zipPath);

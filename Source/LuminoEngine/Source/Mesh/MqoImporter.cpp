@@ -744,7 +744,7 @@ void MqoImporter::loadMaterials(StreamReader* reader)
 		Color c;
 		c.a = color.a;
 
-		auto material = newObject<DiffuseMaterial>();
+		auto material = newObject<PhongMaterial>();
 
 		c.r = diffuse * color.r;
 		c.g = diffuse * color.g;
@@ -1166,7 +1166,7 @@ void MqoParser::loadMaterials(StreamReader* reader)
 		Color c;
 		c.a = color.a;
 
-		auto material = newObject<DiffuseMaterial>();
+		auto material = newObject<PhongMaterial>();
 
 		c.r = diffuse * color.r;
 		c.g = diffuse * color.g;

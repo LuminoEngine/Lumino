@@ -371,7 +371,7 @@ void ShaderSemanticsManager::updateElementVariables(const CameraInfo& cameraInfo
 void ShaderSemanticsManager::updateSubsetVariables(const SubsetInfo& info)
 {
 	PhongMaterialData phongMaterialData;
-	PBRMaterialData pbrMaterialData;
+	PbrMaterialData pbrMaterialData;
 	info.finalMaterial->translateToPhongMaterialData(&phongMaterialData);
 	info.finalMaterial->translateToPBRMaterialData(&pbrMaterialData);
 

@@ -30,9 +30,9 @@ public:
 	static void setAttribute(const wchar_t* filePath, FileAttribute attr)
 	{
 		DWORD dwAttr = 0;
-		if (attr.TestFlag(FileAttribute::Directory)) dwAttr |= FILE_ATTRIBUTE_DIRECTORY;
-		if (attr.TestFlag(FileAttribute::ReadOnly))  dwAttr |= FILE_ATTRIBUTE_READONLY;
-		if (attr.TestFlag(FileAttribute::Hidden))    dwAttr |= FILE_ATTRIBUTE_HIDDEN;
+		if (testFlag(attr, FileAttribute::Directory)) dwAttr |= FILE_ATTRIBUTE_DIRECTORY;
+		if (testFlag(attr, FileAttribute::ReadOnly))  dwAttr |= FILE_ATTRIBUTE_READONLY;
+		if (testFlag(attr, FileAttribute::Hidden))    dwAttr |= FILE_ATTRIBUTE_HIDDEN;
 		BOOL r = ::SetFileAttributesW(filePath, dwAttr);
 		if (LN_ENSURE(r != FALSE, detail::Win32Helper::getWin32ErrorMessage(::GetLastError()))) return;
 	}
@@ -42,7 +42,7 @@ public:
 		DWORD attr = ::GetFileAttributesW(path);
 		if (attr == -1) { return false; }
 
-		FileAttribute flags = FileAttribute::None;
+		Flags<FileAttribute> flags = FileAttribute::None;
 		if (attr & FILE_ATTRIBUTE_DIRECTORY)	flags |= FileAttribute::Directory;
 		else									flags |= FileAttribute::Normal;
 		if (attr & FILE_ATTRIBUTE_READONLY)		flags |= FileAttribute::ReadOnly;

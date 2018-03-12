@@ -302,7 +302,7 @@ void Main()
 	m->SetVelocity(Vector3(0, -3, 0));
 	//m->SetAccel(Vector3(0, -8, 0));
 
-	auto material = DiffuseMaterial::create();
+	auto material = PhongMaterial::create();
 	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetEmissive(Color::White);
 	m->SetMaterial(material);
@@ -337,7 +337,7 @@ void Main()
 	m2->m_shapeParam.y = 2;
 	m1->SetSubParticle(m2);
 
-	auto material = DiffuseMaterial::create();
+	auto material = PhongMaterial::create();
 	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 	m1->SetMaterial(material);
@@ -361,7 +361,7 @@ void Main()
 	m1->SetSize(0.5);
 	//m1->m_loop = false;
 
-	auto material = DiffuseMaterial::create();
+	auto material = PhongMaterial::create();
 	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 	m1->SetMaterial(material);
@@ -386,7 +386,7 @@ void Main()
 	m1->m_forwardPosition.maxValue = 2;
 	m1->SetSize(0.5);
 
-	auto material = DiffuseMaterial::create();
+	auto material = PhongMaterial::create();
 	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 	m1->SetMaterial(material);
@@ -413,7 +413,7 @@ void Main()
 	m1->m_forwardPosition.maxValue = 10;
 	m1->SetSize(0.5);
 
-	auto material = DiffuseMaterial::create();
+	auto material = PhongMaterial::create();
 	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 	m1->SetMaterial(material);
@@ -442,7 +442,7 @@ void Main()
 	m1->m_forwardVelocity.maxValue = 0;
 	m1->SetSize(0.5);
 
-	auto material = DiffuseMaterial::create();
+	auto material = PhongMaterial::create();
 	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 	m1->SetMaterial(material);
@@ -472,7 +472,7 @@ void Main()
 	m1->m_trailTime = 0.5f;
 	m1->m_loop = false;
 
-	auto material = DiffuseMaterial::create();
+	auto material = PhongMaterial::create();
 	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 	m1->SetMaterial(material);
@@ -510,7 +510,7 @@ void Main()
 	m1->m_forwardVelocity.randomSource = ParticleRandomSource::ByBaseValueInverse;	// 速度が大きい
 
 
-	auto material = DiffuseMaterial::create();
+	auto material = PhongMaterial::create();
 	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 	m1->SetMaterial(material);
@@ -538,7 +538,7 @@ void Main()
 	m1->m_forwardVelocity.maxValue = -12;
 	m1->m_lengthScale = 10;
 
-	auto material = DiffuseMaterial::create();
+	auto material = PhongMaterial::create();
 	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 	m1->SetMaterial(material);

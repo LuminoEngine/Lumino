@@ -9,9 +9,8 @@
 
 LN_NAMESPACE_BEGIN
 class CommonMaterial;
-class DiffuseMaterial;
+class PhongMaterial;
 using MaterialPtr = Ref<CommonMaterial>;
-using DiffuseMaterialPtr = Ref<DiffuseMaterial>;
 
 namespace detail {
 
@@ -167,7 +166,7 @@ struct PhongMaterialData
 	float			power;
 };
 
-struct PBRMaterialData
+struct PbrMaterialData
 {
 	Color			color;
 	float			roughness;
@@ -251,7 +250,7 @@ LN_INTERNAL_ACCESS:
 
 LN_PROTECTED_INTERNAL_ACCESS:
 	virtual void translateToPhongMaterialData(detail::PhongMaterialData* outData);
-	virtual void translateToPBRMaterialData(detail::PBRMaterialData* outData);
+	virtual void translateToPBRMaterialData(detail::PbrMaterialData* outData);
 
 LN_INTERNAL_ACCESS:
 	//using ShaderValuePtr = std::shared_ptr<ShaderValue>;
@@ -365,7 +364,7 @@ public:
 	//void setEmissive(const Color& value);
 
 protected:
-	virtual void translateToPBRMaterialData(detail::PBRMaterialData* outData) override;
+	virtual void translateToPBRMaterialData(detail::PbrMaterialData* outData) override;
 
 LN_CONSTRUCT_ACCESS:
 	Material();
@@ -373,19 +372,19 @@ LN_CONSTRUCT_ACCESS:
 	void initialize();
 
 private:
-	detail::PBRMaterialData m_data;
+	detail::PbrMaterialData m_data;
 };
 
 
 /**
-	@brief		非物理ベースレンダリングで使用されるレガシーなマテリアルです。
+	@brief		非物理ベースレンダリングで使用される Phong シェーディング用のマテリアルです。
 */
-class DiffuseMaterial
+class PhongMaterial
 	: public CommonMaterial
 {
 	LN_OBJECT;
 public:
-	static DiffuseMaterialPtr create();
+	static Ref<PhongMaterial> create();
 
 public:
 	void setDiffuse(const Color& value);
@@ -395,12 +394,12 @@ public:
 	void setSpecularPower(float value);
 
 protected:
-	virtual void translateToPBRMaterialData(detail::PBRMaterialData* outData) override;
+	virtual void translateToPBRMaterialData(detail::PbrMaterialData* outData) override;
 	virtual void translateToPhongMaterialData(detail::PhongMaterialData* outData) override;
 
 LN_CONSTRUCT_ACCESS:
-	DiffuseMaterial();
-	virtual ~DiffuseMaterial();
+	PhongMaterial();
+	virtual ~PhongMaterial();
 	void initialize();
 };
 
