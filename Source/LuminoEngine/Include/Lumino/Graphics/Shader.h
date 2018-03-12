@@ -36,6 +36,8 @@ enum class BuiltinSemantics
 	ViewportPixelSize,
 	NearClip,
 	FarClip,
+	CameraPosition,
+	CameraDirection,
 
 	// Element unit
 	WorldViewProjection,

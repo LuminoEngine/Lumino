@@ -98,6 +98,8 @@ static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_CameraUnit 
 	{ _LT("ln_ViewportPixelSize"), BuiltinSemantics::ViewportPixelSize },
 	{ _LT("ln_NearClip"), BuiltinSemantics::NearClip },
 	{ _LT("ln_FarClip"), BuiltinSemantics::FarClip },
+	{ _LT("ln_CameraPosition"), BuiltinSemantics::CameraPosition },
+	{ _LT("ln_CameraDirection"), BuiltinSemantics::CameraDirection },
 };
 
 static std::unordered_map<String, BuiltinSemantics> g_builtinNameMap_ElementUnit =
@@ -223,6 +225,12 @@ void ShaderSemanticsManager::updateCameraVariables(const CameraInfo& info)
 					break;
 				case BuiltinSemantics::FarClip:
 					varInfo.variable->setFloat(info.farClip);
+					break;
+				case BuiltinSemantics::CameraPosition:
+					varInfo.variable->setVector(Vector4(info.viewPosition, 0));
+					break;
+				case BuiltinSemantics::CameraDirection:
+					varInfo.variable->setVector(Vector4(info.viewDirection, 0));
 					break;
 				default:
 					break;
