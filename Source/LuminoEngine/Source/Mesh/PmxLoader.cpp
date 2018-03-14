@@ -149,6 +149,7 @@ void PmxLoader::loadVertices(BinaryReader* reader)
 		// 頂点、法線、テクスチャUV
 		reader->read(&baseVertex, sizeof(BaseVertex));
 		adjustPosition(&baseVertex.Position);
+		adjustPosition(&baseVertex.Normal);
 
 		m_modelCore->setPosition(i, baseVertex.Position);
 		m_modelCore->setNormal(i, baseVertex.Normal);
