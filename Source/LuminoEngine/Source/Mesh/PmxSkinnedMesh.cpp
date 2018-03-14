@@ -44,6 +44,16 @@ Ref<CommonMaterial> PmxMaterialResource::MakeCommonMaterial() const
 		CommonMaterial::MaterialTextureParameter,
 		Texture);
 
+	if (DrawingFlags & PmxMaterialResource::DrawingFlag_Edge)
+		m->setFloatParameter(_T("_edgeWidth"), 1.0);
+	else
+		m->setFloatParameter(_T("_edgeWidth"), 0.0);
+
+	if (DrawingFlags & PmxMaterialResource::DrawingFlag_CullingDouble)
+		m->setCullingMode(CullingMode::None);
+	else
+		m->setCullingMode(CullingMode::Back);
+
 	//detail::PhongMaterialData ddd;
 	//m->translateToPhongMaterialData(&ddd);
 	return m;

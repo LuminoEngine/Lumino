@@ -579,52 +579,52 @@ void PmxLoader::loadMorphs(BinaryReader* reader)
 			{
 			case 0:		// グループモーフ
 				morph->MorphType = ModelMorphType_Group;
-				mo->GroupMorphOffset.MorphIndex = (int)reader->readInt(getMorphIndexSize());
+				mo->GroupMorphOffset.MorphIndex = (int)reader->readUInt(getMorphIndexSize());
 				mo->GroupMorphOffset.MorphRatio = reader->readFloat();
 				break;
 			case 1:		// 頂点モーフ
 				// VertexIndex はモデル本体の頂点インデックス
 				// PositionOffset は元の位置からの相対位置
 				morph->MorphType = ModelMorphType_Vertex;
-				mo->VertexMorphOffset.VertexIndex = (int)reader->readInt(getVertexIndexSize());
+				mo->VertexMorphOffset.VertexIndex = (int)reader->readUInt(getVertexIndexSize());
 				reader->read(&mo->VertexMorphOffset.PositionOffset, sizeof(float) * 3);
 				adjustPosition((Vector3*)&mo->VertexMorphOffset.PositionOffset);
 				break;
 			case 2:		// ボーンモーフ
 				morph->MorphType = ModelMorphType_Bone;
-				mo->BoneMorphOffset.BoneIndex = (int)reader->readInt(getBoneIndexSize());
+				mo->BoneMorphOffset.BoneIndex = (int)reader->readUInt(getBoneIndexSize());
 				reader->read(&mo->BoneMorphOffset.Moving, sizeof(float) * 3);
 				reader->read(&mo->BoneMorphOffset.Rotating, sizeof(float) * 4);
 				adjustPosition((Vector3*)&mo->BoneMorphOffset.Moving);
 				break;
 			case 3:		// UVモーフ
 				morph->MorphType = ModelMorphType_UV;
-				mo->UVMorphOffset.VertexIndex = (int)reader->readInt(getVertexIndexSize());
+				mo->UVMorphOffset.VertexIndex = (int)reader->readUInt(getVertexIndexSize());
 				reader->read(&mo->UVMorphOffset.UVOffset, sizeof(float) * 4);
 				break;
 			case 4:		// 追加UVモーフ1
 				morph->MorphType = ModelMorphType_AdditionalUV1;
-				mo->UVMorphOffset.VertexIndex = (int)reader->readInt(getVertexIndexSize());
+				mo->UVMorphOffset.VertexIndex = (int)reader->readUInt(getVertexIndexSize());
 				reader->read(&mo->UVMorphOffset.UVOffset, sizeof(float) * 4);
 				break;
 			case 5:		// 追加UVモーフ2
 				morph->MorphType = ModelMorphType_AdditionalUV2;
-				mo->UVMorphOffset.VertexIndex = (int)reader->readInt(getVertexIndexSize());
+				mo->UVMorphOffset.VertexIndex = (int)reader->readUInt(getVertexIndexSize());
 				reader->read(&mo->UVMorphOffset.UVOffset, sizeof(float) * 4);
 				break;
 			case 6:		// 追加UVモーフ3
 				morph->MorphType = ModelMorphType_AdditionalUV3;
-				mo->UVMorphOffset.VertexIndex = (int)reader->readInt(getVertexIndexSize());
+				mo->UVMorphOffset.VertexIndex = (int)reader->readUInt(getVertexIndexSize());
 				reader->read(&mo->UVMorphOffset.UVOffset, sizeof(float) * 4);
 				break;
 			case 7:		// 追加UVモーフ4
 				morph->MorphType = ModelMorphType_AdditionalUV4;
-				mo->UVMorphOffset.VertexIndex = (int)reader->readInt(getVertexIndexSize());
+				mo->UVMorphOffset.VertexIndex = (int)reader->readUInt(getVertexIndexSize());
 				reader->read(&mo->UVMorphOffset.UVOffset, sizeof(float) * 4);
 				break;
 			case 8:		// 材質モーフ
 				morph->MorphType = ModelMorphType_Matrial;
-				mo->MaterialMorphOffset.MaterialIndex = (int)reader->readInt(getMaterialIndexSize());
+				mo->MaterialMorphOffset.MaterialIndex = (int)reader->readUInt(getMaterialIndexSize());
 				mo->MaterialMorphOffset.OffsetCalcType = reader->readUInt8();
 				reader->read(&mo->MaterialMorphOffset.Diffuse, sizeof(float) * 4);
 				reader->read(&mo->MaterialMorphOffset.Specular, sizeof(float) * 3);
@@ -638,12 +638,12 @@ void PmxLoader::loadMorphs(BinaryReader* reader)
 				break;
 			case 9:		// Flipモーフ
 				morph->MorphType = ModelMorphType_Flip;
-				mo->FlipMorphOffset.MorphIndex = (int)reader->readInt(getMorphIndexSize());
+				mo->FlipMorphOffset.MorphIndex = (int)reader->readUInt(getMorphIndexSize());
 				mo->FlipMorphOffset.MorphValue = reader->readFloat();
 				break;
 			case 10:	// Impulseモーフ
 				morph->MorphType = ModelMorphType_Impulse;
-				mo->ImpulseMorphOffset.RigidIndex = (int)reader->readInt(getMorphIndexSize());
+				mo->ImpulseMorphOffset.RigidIndex = (int)reader->readUInt(getMorphIndexSize());
 				mo->ImpulseMorphOffset.LocalFlag = reader->readUInt8();
 				reader->read(&mo->ImpulseMorphOffset.Moving, sizeof(float) * 3);
 				reader->read(&mo->ImpulseMorphOffset.Rotating, sizeof(float) * 3);

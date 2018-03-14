@@ -101,6 +101,8 @@ private:
 	mutable bool				m_hashDirty;
 };
 
+// TODO: FrameBuffer に付く RT と、ジオメトリに付く RT は分けたほうが良い。
+// Vulkan でいうところの RenderPass と、ほかのステート。
 class RenderStage
 	: public Object
 {
@@ -121,10 +123,10 @@ public:
 	DepthBuffer* getDepthBufferFinal() const { return renderingContextParameters.getDepthBuffer(); }
 	const RectI& getViewportRectFinal() const { return renderingContextParameters.getViewportRect(); }
 	const RectI& getScissorRectFinal() const { return renderingContextParameters.getScissorRect(); }
-	BlendMode getBlendModeFinal() const;
-	CullingMode getCullingModeFinal() const;
-	bool isDepthTestEnabledFinal() const;
-	bool isDepthWriteEnabledFinal() const;
+	BlendMode getBlendModeFinal(CommonMaterial* finalMaterial = nullptr) const;
+	CullingMode getCullingModeFinal(CommonMaterial* finalMaterial = nullptr) const;
+	bool isDepthTestEnabledFinal(CommonMaterial* finalMaterial = nullptr) const;
+	bool isDepthWriteEnabledFinal(CommonMaterial* finalMaterial = nullptr) const;
 	const Matrix& getTransformFinal() const { return m_combinedWorldMatrix; }
 	CommonMaterial* getMaterialFinal(CommonMaterial* defaultValue, CommonMaterial* priorityValue) const;
 	Brush* getBrushFinal() const { return renderingContextParameters.getBrush(); }

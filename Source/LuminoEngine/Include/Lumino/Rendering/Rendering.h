@@ -147,7 +147,8 @@ public:
 
 LN_INTERNAL_ACCESS:
 	void switchActiveRenderer(detail::IRenderFeature* renderer);
-	void applyStatusInternal(RenderStage* stage, const DefaultStatus& defaultStatus);
+	void applyFrameBufferStatusInternal(RenderStage* stage, const DefaultStatus& defaultStatus);
+	void applyGeometryStatusInternal(RenderStage* stage, CommonMaterial* priorityMaterial = nullptr);
 	IRenderFeature* getCurrentRenderFeature() const { return m_current; }
 
 	IRenderFeature*					m_current;

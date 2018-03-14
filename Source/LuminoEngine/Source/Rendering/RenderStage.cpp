@@ -246,8 +246,11 @@ void RenderStage::combineParameters()
 	}
 }
 
-BlendMode RenderStage::getBlendModeFinal() const
+BlendMode RenderStage::getBlendModeFinal(CommonMaterial* finalMaterial) const
 {
+	if (finalMaterial && finalMaterial->getBlendMode().isSet())
+		return finalMaterial->getBlendMode();
+
 	// specified context->setXXXX()
 	if (renderingContextParameters.getBlendMode().isSet())
 		return renderingContextParameters.getBlendMode();
@@ -260,8 +263,11 @@ BlendMode RenderStage::getBlendModeFinal() const
 	return BlendMode::Alpha;
 }
 
-CullingMode RenderStage::getCullingModeFinal() const
+CullingMode RenderStage::getCullingModeFinal(CommonMaterial* finalMaterial) const
 {
+	if (finalMaterial && finalMaterial->getCullingMode().isSet())
+		return finalMaterial->getCullingMode();
+
 	// specified context->setXXXX()
 	if (renderingContextParameters.getCullingMode().isSet())
 		return renderingContextParameters.getCullingMode();
@@ -274,8 +280,11 @@ CullingMode RenderStage::getCullingModeFinal() const
 	return CullingMode::Back;
 }
 
-bool RenderStage::isDepthTestEnabledFinal() const
+bool RenderStage::isDepthTestEnabledFinal(CommonMaterial* finalMaterial) const
 {
+	if (finalMaterial && finalMaterial->isDepthTestEnabled().isSet())
+		return finalMaterial->isDepthTestEnabled();
+
 	// specified context->setXXXX()
 	if (renderingContextParameters.isDepthTestEnabled().isSet())
 		return renderingContextParameters.isDepthTestEnabled();
@@ -288,8 +297,11 @@ bool RenderStage::isDepthTestEnabledFinal() const
 	return true;
 }
 
-bool RenderStage::isDepthWriteEnabledFinal() const
+bool RenderStage::isDepthWriteEnabledFinal(CommonMaterial* finalMaterial) const
 {
+	if (finalMaterial && finalMaterial->isDepthWriteEnabled().isSet())
+		return finalMaterial->isDepthWriteEnabled();
+
 	// specified context->setXXXX()
 	if (renderingContextParameters.isDepthWriteEnabled().isSet())
 		return renderingContextParameters.isDepthWriteEnabled();
