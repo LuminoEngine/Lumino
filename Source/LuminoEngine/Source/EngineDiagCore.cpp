@@ -18,7 +18,7 @@ LN_NAMESPACE_BEGIN
 //------------------------------------------------------------------------------
 void EngineDiag::setDisplayMode(EngineDiagDisplayMode mode)
 {
-	EngineManager::getInstance()->getEngineDiagViewer()->setDisplayMode(mode);
+	detail::EngineDomain::getEngineManager()->getEngineDiagViewer()->setDisplayMode(mode);
 }
 
 //------------------------------------------------------------------------------

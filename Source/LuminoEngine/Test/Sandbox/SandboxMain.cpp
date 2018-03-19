@@ -93,7 +93,7 @@ void Main()
 
 	Engine::initialize();
 
-	Engine::getMainWindow()->setAllowDragDrop(true);
+	Engine::getMainWindow()->setAllowNativeDragDrop(true);
 	//Engine::getMainWindow()->connectOnDragEnter([](UIDragDropEventArgs* e) { e->setEffect(DragDropEffects::Copy); });
 	//Engine::getMainWindow()->connectOnDragDrop([](UIDragDropEventArgs* e)
 	//{

@@ -30,7 +30,7 @@ class UIFrameWindow
 public:
 
 	/*  */
-	void setAllowDragDrop(bool value);
+	void setAllowNativeDragDrop(bool value);
 
 	PlatformWindow* getPlatformWindow() const;
 
@@ -88,14 +88,19 @@ public:
 	UIViewport* getViewport() const;
 
 protected:
+	virtual void onInitialized();
+
 	virtual void onPresentRenderingContexts() override;
 	virtual Size arrangeOverride(const Size& finalSize) override;
 	virtual bool onPlatformEvent(const PlatformEventArgs& e) override;
 
-LN_INTERNAL_ACCESS:
+LN_CONSTRUCT_ACCESS:
 	UIMainWindow();
 	virtual ~UIMainWindow();
-	void initialize(PlatformWindow* platformWindow, World2D* defaultWorld2D, World3D* defaultWorld3D);
+	void initialize();
+
+public:	// TODO
+	void postInitializeAndAttachDefaultObjects(PlatformWindow* platformWindow, World2D* defaultWorld2D, World3D* defaultWorld3D);
 
 	//void injectElapsedTime(float elapsedTime);
 	void updateLayout(const Size& viewSize);	// TODO: ゆくゆくは SwapChain や Viewport も UIFrameWindow にもってくる。そのとき、この viewSize はいらなくなる

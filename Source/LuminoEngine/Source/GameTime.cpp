@@ -12,25 +12,25 @@ LN_NAMESPACE_BEGIN
 //------------------------------------------------------------------------------
 double GameTime::getElapsedGameTime()
 {
-	return EngineManager::getInstance()->getFpsController().getElapsedGameTime();
+	return detail::EngineDomain::getEngineManager()->getFpsController().getElapsedGameTime();
 }
 
 //------------------------------------------------------------------------------
 double GameTime::getElapsedRealTime()
 {
-	return EngineManager::getInstance()->getFpsController().getElapsedRealTime();
+	return detail::EngineDomain::getEngineManager()->getFpsController().getElapsedRealTime();
 }
 
 //------------------------------------------------------------------------------
 double GameTime::getTotalGameTime()
 {
-	return EngineManager::getInstance()->getFpsController().getTotalGameTime();
+	return detail::EngineDomain::getEngineManager()->getFpsController().getTotalGameTime();
 }
 
 //------------------------------------------------------------------------------
 double GameTime::getTotalRealTime()
 {
-	return EngineManager::getInstance()->getFpsController().getTotalRealTime();
+	return detail::EngineDomain::getEngineManager()->getFpsController().getTotalRealTime();
 }
 
 LN_NAMESPACE_END

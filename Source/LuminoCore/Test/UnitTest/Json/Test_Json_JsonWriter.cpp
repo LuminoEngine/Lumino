@@ -1,6 +1,9 @@
 #include <TestConfig.h>
 #include <Lumino/IO/StringWriter.h>
 #include <Lumino/Json/JsonWriter.h>
+
+#include <Lumino/IO/StringReader.h>
+#include <Lumino/Json/JsonReader.h>
 using namespace ln::tr;
 
 //==============================================================================
@@ -74,5 +77,36 @@ TEST_F(Test_Json_JsonWriter, Formatting)
 		ASSERT_EQ(
 			_LT("{\n  \"hello\": \"world\"\n}"),
 			s.toString());
+	}
+}
+
+//------------------------------------------------------------------------------
+//## 
+TEST_F(Test_Json_JsonWriter, Issues_Escape)
+{
+	StringWriter s;
+	JsonWriter writer(&s);
+
+	writer.writeStartObject();
+	writer.writePropertyName(_T("prop"));
+	writer.writeString(_T("\" \\ / \b \f \n \r \t"));
+	writer.writeEndObject();
+
+	auto ss = s.toString();
+
+	auto actual = _T(R"({"prop":"\" \\ \/ \b \f \n \r \t"})");
+	ASSERT_EQ(actual, s.toString());
+
+	{
+
+		StringReader r(ss);
+		JsonReader2 jr(&r);
+		jr.read();	// StartObject
+		jr.read();	// PropName
+		jr.read();	// String
+		auto str = jr.getValue();
+
+		auto actual = _T("\" \\ / \b \f \n \r \t");
+		ASSERT_EQ(actual, str);
 	}
 }

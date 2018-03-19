@@ -14,33 +14,33 @@ class JsonObject2;
 class JsonDocument2;
 namespace detail { class JsonElementCache; }
 
-// JSON データのルート要素です。
-class JsonDocument
-	: public JsonValue
-{
-public:
-
-	/*
-		@brief	指定した JSON 形式文字列を解析し、ドキュメントを構築します。
-	*/
-	void parse(const String& text);
-
-	/*
-		@brief	指定した JSON 形式文字列を解析し、ドキュメントを構築します。
-	*/
-	void parse(const Char* text, int len = -1);
-
-	/*
-		@brief	指定した TextReader から JSON 形式文字列を解析し、ドキュメントを構築します。
-	*/
-	void parse(TextReader* textReader);
-
-	//void Load();
-
-private:
-};
-
-
+//// JSON データのルート要素です。
+//class JsonDocument
+//	: public JsonValue
+//{
+//public:
+//
+//	/*
+//		@brief	指定した JSON 形式文字列を解析し、ドキュメントを構築します。
+//	*/
+//	void parse(const String& text);
+//
+//	/*
+//		@brief	指定した JSON 形式文字列を解析し、ドキュメントを構築します。
+//	*/
+//	void parse(const Char* text, int len = -1);
+//
+//	/*
+//		@brief	指定した TextReader から JSON 形式文字列を解析し、ドキュメントを構築します。
+//	*/
+//	void parse(TextReader* textReader);
+//
+//	//void Load();
+//
+//private:
+//};
+//
+//
 
 
 

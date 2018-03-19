@@ -22,6 +22,7 @@ LN_INTERNAL_ACCESS:
 	SkinnedMeshComponent();
 	virtual ~SkinnedMeshComponent();
 	void initialize(SkinnedMeshModel* meshModel);
+	void initialize(const StringRef& filePath);
 	virtual void onUpdateFrame(float elapsedTime) override;
 	virtual void onRender2(RenderingContext* renderer) override;
 
@@ -32,6 +33,29 @@ private:
 	Ref<SkinnedMeshModel>	m_meshModel;
 };
 
+/**
+	@brief	
+*/
+class SkinnedMesh
+	: public VisualObject
+{
+public:
+	static Ref<SkinnedMesh> create(const StringRef& filePath);
+
+public:
+	SkinnedMeshComponent* skinnedMeshComponent() const { return m_component; }
+
+protected:
+	virtual VisualComponent* getMainVisualComponent() const override;
+
+LN_CONSTRUCT_ACCESS:
+	SkinnedMesh();
+	virtual ~SkinnedMesh();
+	void initialize(const StringRef& filePath);
+
+private:
+	Ref<SkinnedMeshComponent> m_component;
+};
 
 LN_NAMESPACE_END
 

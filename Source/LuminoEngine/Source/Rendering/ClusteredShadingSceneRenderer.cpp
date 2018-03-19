@@ -367,7 +367,7 @@ void ClusteredShadingGeometryRenderingPass::selectElementRenderingPolicy(DrawEle
 
 	outPolicy->shader = (stageData.shader) ? stageData.shader : m_defaultShader;
 
-	classSet.shadingModel = ShaderTechniqueClass_ShadingModel::Default;
+	classSet.shadingModel = stageData.shadingModel;
 	outPolicy->shaderTechnique = outPolicy->shader->findTechniqueByClass(classSet);
 	if (!outPolicy->shaderTechnique)
 	{

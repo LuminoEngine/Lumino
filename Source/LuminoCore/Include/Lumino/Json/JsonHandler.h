@@ -34,36 +34,36 @@ public:
 /**
 	@brief	JsonDocument を構築するための JsonHandler の実装です。
 */
-class JsonDOMHandler
-	: public JsonHandler
-{
-public:
-	JsonDOMHandler(JsonDocument* document);
-	virtual ~JsonDOMHandler();
-
-public:
-	virtual bool onNull();
-	virtual bool onBool(bool value);
-	virtual bool onDouble(double value);
-	virtual bool onString(const Char* str, int len);
-	virtual bool onStartArray();
-	virtual bool onEndArray(int elementCount);
-	virtual bool onStartObject();
-	virtual bool onKey(const Char* str, int len);
-	virtual bool onEndObject(int memberCount);
-
-	void build();	// Parse が終わった後に呼び出す
-
-private:
-	void buildValue(BinaryReader* reader, JsonValue* v);
-	void buildMember(BinaryReader* reader, JsonMember* m);
-
-private:
-	JsonDocument*	m_document;
-	MemoryStream	m_valueRawData;
-	BinaryWriter	m_writer;
-	Stack<size_t>	m_startIndexStack;
-};
+//class JsonDOMHandler
+//	: public JsonHandler
+//{
+//public:
+//	JsonDOMHandler(JsonDocument* document);
+//	virtual ~JsonDOMHandler();
+//
+//public:
+//	virtual bool onNull();
+//	virtual bool onBool(bool value);
+//	virtual bool onDouble(double value);
+//	virtual bool onString(const Char* str, int len);
+//	virtual bool onStartArray();
+//	virtual bool onEndArray(int elementCount);
+//	virtual bool onStartObject();
+//	virtual bool onKey(const Char* str, int len);
+//	virtual bool onEndObject(int memberCount);
+//
+//	void build();	// Parse が終わった後に呼び出す
+//
+//private:
+//	void buildValue(BinaryReader* reader, JsonValue* v);
+//	void buildMember(BinaryReader* reader, JsonMember* m);
+//
+//private:
+//	JsonDocument*	m_document;
+//	MemoryStream	m_valueRawData;
+//	BinaryWriter	m_writer;
+//	Stack<size_t>	m_startIndexStack;
+//};
 
 } // namespace tr
 LN_NAMESPACE_END

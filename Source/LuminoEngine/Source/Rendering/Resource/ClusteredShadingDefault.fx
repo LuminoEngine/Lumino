@@ -548,7 +548,6 @@ _lngs_VSOutput _lngs_VS_ClusteredForward_Geometry_SkinnedMesh(LN_VSInput vsi)
 	o.extra		= _LN_ProcessVertex_ClusteredForward(vsi);
 	// ★ Scene固有のコードはここに直接生成する (ピクセルシェーダと書き方を合わせたい)
 	MyVFMain(vsi, o.user);	// ★ User定義呼び出し
-	o.common.Color = float4(1,0,0,1);
 	return o;
 }
 
@@ -580,6 +579,11 @@ _lngs_PSOutput _lngs_PS_ClusteredForward_Geometry(_lngs_PSInput input)
 	//o.color1 = float4(o.color0.a, 0, 0, 1);
 	o.color0.a = surface.Albedo.a;
 	return o;
+}
+
+float4 _lngs_PS_UnLighting(_lngs_PSInput input) : COLOR0
+{
+	return (tex2D(MaterialTextureSampler, input.common.UV)) * input.common.Color;
 }
 
 //------------------------------------------------------------------------------
@@ -614,6 +618,15 @@ technique Forward_Geometry_SkinnedMesh
 	{
 		VertexShader = compile vs_3_0 _lngs_VS_ClusteredForward_Geometry_SkinnedMesh();
 		PixelShader	 = compile ps_3_0 _lngs_PS_ClusteredForward_Geometry();
+	}
+}
+
+technique Forward_Geometry_SkinnedMesh_UnLighting
+{
+	pass Pass1
+	{
+		VertexShader = compile vs_3_0 _lngs_VS_ClusteredForward_Geometry_SkinnedMesh();
+		PixelShader	 = compile ps_3_0 _lngs_PS_UnLighting();
 	}
 }
 

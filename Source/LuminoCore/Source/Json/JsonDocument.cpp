@@ -13,33 +13,33 @@
 LN_NAMESPACE_BEGIN
 namespace tr {
 
-//==============================================================================
-// JsonDocument
-//==============================================================================
-
-//------------------------------------------------------------------------------
-void JsonDocument::parse(const String& text)
-{
-	StringReader textReader(text);
-	parse(&textReader);
-}
-void JsonDocument::parse(const Char* text, int len)
-{
-	if (LN_REQUIRE(text != nullptr)) return;
-
-	StringReader textReader(String(text, (len < 0) ? (int)StringTraits::tcslen(text) : len));
-	parse(&textReader);
-}
-
-//------------------------------------------------------------------------------
-void JsonDocument::parse(TextReader* textReader)
-{
-	JsonDOMHandler handler(this);
-	JsonReader reader(&handler);
-	reader.parse(textReader);
-	handler.build();
-}
-
+////==============================================================================
+//// JsonDocument
+////==============================================================================
+//
+////------------------------------------------------------------------------------
+//void JsonDocument::parse(const String& text)
+//{
+//	StringReader textReader(text);
+//	parse(&textReader);
+//}
+//void JsonDocument::parse(const Char* text, int len)
+//{
+//	if (LN_REQUIRE(text != nullptr)) return;
+//
+//	StringReader textReader(String(text, (len < 0) ? (int)StringTraits::tcslen(text) : len));
+//	parse(&textReader);
+//}
+//
+////------------------------------------------------------------------------------
+//void JsonDocument::parse(TextReader* textReader)
+//{
+//	JsonDOMHandler handler(this);
+//	JsonReader reader(&handler);
+//	reader.parse(textReader);
+//	handler.build();
+//}
+//
 
 
 //==============================================================================

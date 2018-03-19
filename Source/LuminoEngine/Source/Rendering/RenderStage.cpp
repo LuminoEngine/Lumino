@@ -257,7 +257,7 @@ BlendMode RenderStage::getBlendModeFinal() const
 		return visualNodeParameters->blendMode;
 
 	// default
-	return BlendMode::Normal;
+	return BlendMode::Alpha;
 }
 
 CullingMode RenderStage::getCullingModeFinal() const

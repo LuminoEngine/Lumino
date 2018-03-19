@@ -323,4 +323,17 @@ template void Environment::getSpecialFolderPath(SpecialFolder specialFolder, wch
 #endif
 
 
+//==============================================================================
+// EnvironmentInternal
+//==============================================================================
+namespace detail
+{
+
+String EnvironmentInternal::getExecutablePath()
+{
+	return String::fromStdString(PlatformEnvironment::getExecutablePath());
+}
+
+} // namespace detail
+
 LN_NAMESPACE_END

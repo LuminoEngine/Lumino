@@ -131,6 +131,11 @@ AnimationLayer::AnimationLayer()
 	, m_animationStatus()
 	, m_currentState(nullptr)
 {
+	m_transition.stateFrom = nullptr;
+	m_transition.stateTo = nullptr;
+	m_transition.duration = 0;
+	m_transition.time = 0;
+	m_transition.startingOffsetTime = 0;
 }
 
 AnimationLayer::~AnimationLayer()

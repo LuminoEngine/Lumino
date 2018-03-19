@@ -34,7 +34,7 @@ void ShaderTechniqueClassSet::parseTechniqueClassString(const String& str, Shade
 	outClassSet->ligiting = ShaderTechniqueClass_Ligiting::Forward;
 	outClassSet->phase = ShaderTechniqueClass_Phase::Geometry;
 	outClassSet->meshProcess = ShaderTechniqueClass_MeshProcess::StaticMesh;
-	outClassSet->shadingModel = ShaderTechniqueClass_ShadingModel::Default;
+	outClassSet->shadingModel = ShadingModel::Default;
 
 	// TODO: splitRef
 	auto tokens = str.split(_U("_"), StringSplitOptions::RemoveEmptyEntries);
@@ -46,7 +46,7 @@ void ShaderTechniqueClassSet::parseTechniqueClassString(const String& str, Shade
 		}
 		else if (String::compare(token, _U("UnLighting"), CaseSensitivity::CaseInsensitive) == 0)
 		{
-			outClassSet->shadingModel = ShaderTechniqueClass_ShadingModel::UnLighting;
+			outClassSet->shadingModel = ShadingModel::UnLighting;
 		}
 	}
 }

@@ -92,4 +92,12 @@ public:
 	static String getSpecialFolderPath(SpecialFolder specialFolder);
 };
 
+namespace detail
+{
+class EnvironmentInternal
+{
+public:
+	static String getExecutablePath();
+};
+} // namespace detail
 LN_NAMESPACE_END

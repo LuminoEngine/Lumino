@@ -64,13 +64,13 @@ private:
 /**
 	@brief	イベントがトリガーされたときに通知を受け取るメソッドコールバックを登録するためのクラスです。
 */
-template<typename>
-class Event {};
-template<typename TRet, typename... TArgs>
-class Event<TRet(TArgs...)>
+//template<typename>
+//class Event {};
+template<typename TArg>
+class Event//<TRet(TArgs...)>
 {
 public:
-	typedef Delegate<TRet(TArgs...)> DelegateType;
+	typedef Delegate<void(TArg)> DelegateType;
 
 	Event()
 		: m_internalData(std::make_shared<EventInternalData>())
@@ -101,13 +101,13 @@ public:
 		return m_internalData->connectionDataList.isEmpty();
 	}
 
-	void raise(TArgs... args)
+	void raise(TArg arg)//... args)
 	{
 		if (!isEmpty())
 		{
 			for (auto& data : m_internalData->connectionDataList)
 			{
-				if (data->m_active) data->handler.call(args...);
+				if (data->m_active) data->handler.call(arg);
 			}
 		}
 	}
@@ -118,14 +118,14 @@ public:
 		return connectInternal(handler);
 	}
 
-	EventConnection operator += (const std::function<TRet(TArgs...)>& handler)
+	EventConnection operator += (const std::function<void(TArg)>& handler)
 	{
 		return connectInternal(handler);
 	}
 
-	void operator () (TArgs... args)
+	void operator () (TArg arg)
 	{
-		raise(args...);
+		raise(arg);
 	}
 
 private:

@@ -103,9 +103,9 @@ private:
 
 	Matrix	mtmp;
 
-	CollisionEventHandler::EventType	m_onTriggerEnter;
-	CollisionEventHandler::EventType	m_onTriggerLeave;
-	CollisionEventHandler::EventType	m_onTriggerStay;
+	Event<PhysicsObjectComponent*>	m_onTriggerEnter;
+	Event<PhysicsObjectComponent*>	m_onTriggerLeave;
+	Event<PhysicsObjectComponent*>	m_onTriggerStay;
 
 	friend class RigidBodyComponent;
 };

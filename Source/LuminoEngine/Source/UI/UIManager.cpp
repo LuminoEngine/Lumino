@@ -108,8 +108,6 @@ void UIManager::dispose()
 	{
 		p->dispose();
 	}
-
-	LN_SAFE_RELEASE(m_mainWindow);
 	LN_SAFE_RELEASE(m_defaultStyleTable);
 	LN_SAFE_DELETE(m_eventArgsPool);
 
@@ -119,30 +117,30 @@ void UIManager::dispose()
 	}
 }
 
-//------------------------------------------------------------------------------
-void UIManager::createGameModeMainFrame(World2D* defaultWorld2D, World3D* defaultWorld3D)
-{
-	if (LN_REQUIRE(m_mainWindow == nullptr)) return;
-
-	m_mainWindow = LN_NEW UIMainWindow();
-	m_mainWindow->initialize(m_platformManager->getMainWindow(), defaultWorld2D, defaultWorld3D);
-}
-
-//------------------------------------------------------------------------------
-//void UIManager::CreateWrapModeMainFrame(void* window, World2D* defaultWorld2D, World3D* defaultWorld3D)
+////------------------------------------------------------------------------------
+//void UIManager::createGameModeMainFrame(World2D* defaultWorld2D, World3D* defaultWorld3D)
 //{
 //	if (LN_REQUIRE(m_mainWindow == nullptr)) return;
 //
-//	m_mainWindow = LN_NEW UINativeHostWindow();
-//	m_mainWindow->initialize(this, )
+//	m_mainWindow = LN_NEW UIMainWindow();
+//	m_mainWindow->initialize(m_platformManager->getMainWindow(), defaultWorld2D, defaultWorld3D);
 //}
-
-//------------------------------------------------------------------------------
-void UIManager::releaseGameModeMainFrame()
-{
-	// TODO: MainWindow は UIManager の中で作るのではなく Engine のほうがいい気がしてきた。
-	LN_SAFE_RELEASE(m_mainWindow);
-}
+//
+////------------------------------------------------------------------------------
+////void UIManager::CreateWrapModeMainFrame(void* window, World2D* defaultWorld2D, World3D* defaultWorld3D)
+////{
+////	if (LN_REQUIRE(m_mainWindow == nullptr)) return;
+////
+////	m_mainWindow = LN_NEW UINativeHostWindow();
+////	m_mainWindow->initialize(this, )
+////}
+//
+////------------------------------------------------------------------------------
+//void UIManager::releaseGameModeMainFrame()
+//{
+//	// TODO: MainWindow は UIManager の中で作るのではなく Engine のほうがいい気がしてきた。
+//	LN_SAFE_RELEASE(m_mainWindow);
+//}
 
 //------------------------------------------------------------------------------
 void UIManager::captureMouse(UIElement* element)

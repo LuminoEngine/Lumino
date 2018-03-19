@@ -6,19 +6,19 @@
 #pragma once
 
 /** メジャーバージョン */
-#define LUMINO_VERSION_MAJOR		%%MajorVersion%%
+#define LUMINO_VERSION_MAJOR		0
 
 /** マイナーバージョン */
-#define LUMINO_VERSION_MINOR		%%MinorVersion%%
+#define LUMINO_VERSION_MINOR		4
 
 /** リビジョンバージョン */
-#define LUMINO_VERSION_REVISION		%%RevisionVersion%%
+#define LUMINO_VERSION_REVISION		0
 
 /** ビルドバージョン */
-#define LUMINO_VERSION_BUILD		%%BuildVersion%%
+#define LUMINO_VERSION_BUILD		0
 
 /** バージョン文字列 */
-#define LUMINO_VERSION_STRING		_LT("%%VersionString%%")
+#define LUMINO_VERSION_STRING		_LT("0.4.0.0")
 
 LN_NAMESPACE_BEGIN
 

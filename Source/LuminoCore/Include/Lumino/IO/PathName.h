@@ -277,10 +277,10 @@ public:
 	/**
 		@brief		カレントディレクトリのパスを取得します。
 	*/
-	static Path getCurrentDirectory();
+	static Path currentDirectory();
 
-	///** アプリケーションを開始した実行ファイルのパスを取得します。*/
-	//static Path getExecutablePath();
+	/** アプリケーションを開始した実行ファイルのパスを取得します。*/
+	static Path executablePath();
 
 	/**
 		@brief		システムの特別なフォルダのパスを取得します。
