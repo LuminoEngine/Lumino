@@ -1,6 +1,0 @@
-﻿
-
-namespace ln
-{
-int EntryPoint();
-}

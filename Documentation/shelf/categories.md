@@ -1,8 +1,0 @@
-- index.md
-- about/about.md
-- download/download.md
-- "Documentation"
-	- documentation_tutorial_lumino/
-	- documentation_sample_lumino/
-	- documentation_sample_lumino_core/
-	- documentation_reference/reference.md
