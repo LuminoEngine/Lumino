@@ -90,12 +90,12 @@ Texture2DPtr AssetsManager::loadTexture(const StringRef& filePath)
 }
 
 //------------------------------------------------------------------------------
-Ref<Shader> AssetsManager::loadShader(const StringRef& filePath)
+Ref<Shader> AssetsManager::loadShader(const StringRef& filePath, ShaderCodeType codeType)
 {
 	// TODO: キャッシュ
 	// TODO: Stream 指定
 	auto path = m_archiveManager->findLocalFilePath(filePath);
-	return Shader::create(path);
+	return Shader::create(path, nullptr, codeType);
 }
 
 //------------------------------------------------------------------------------
@@ -220,9 +220,9 @@ Ref<Texture2D> Assets::loadTexture(const StringRef& filePath)
 }
 
 //------------------------------------------------------------------------------
-Ref<Shader> Assets::loadShader(const StringRef& filePath)
+Ref<Shader> Assets::loadShader(const StringRef& filePath, ShaderCodeType codeType)
 {
-	return AssetsManager::getInstance()->loadShader(filePath);
+	return AssetsManager::getInstance()->loadShader(filePath, codeType);
 }
 
 //------------------------------------------------------------------------------

@@ -225,6 +225,9 @@ void SceneRenderer::render(
 						stageData.shader = currentStage->getShaderFinal(stageData.material);
 						stageData.shadingModel = currentStage->getShadingModelFinal(stageData.material);
 
+
+						context->applyGeometryStatusInternal(currentStage, stageData.material);
+
 						ElementRenderingPolicy policy;
 						pass->selectElementRenderingPolicy(element, stageData, &policy);
 						visible = policy.visible;

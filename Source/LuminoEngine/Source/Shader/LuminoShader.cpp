@@ -262,6 +262,16 @@ void LuminoShaderContext::initialize()
 		m_builtinShaderList.push_back({ "Lumino.fxh", std::string((const char*)data, size) });
 	}
 
+	// LuminoForward.fxh.h
+	{
+		static const unsigned char data[] =
+		{
+#include "Resource/LuminoForward.fxh.h"
+		};
+		static const size_t size = LN_ARRAY_SIZE_OF(data);
+		m_builtinShaderList.push_back({ "LuminoForward.fxh", std::string((const char*)data, size) });
+	}
+
 	// LuminoPBR.fxh.h
 	{
 		static const unsigned char data[] =

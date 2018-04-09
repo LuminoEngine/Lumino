@@ -168,7 +168,11 @@ public:
 			Size childDesiredSize = child->getDesiredSize();
 			childDesiredSize.width = std::max(finalSize.width, childDesiredSize.width);
 			childDesiredSize.height = std::max(finalSize.height, childDesiredSize.height);
-			child->arrangeLayout(Rect(0.0f, 0.0f, childDesiredSize));
+
+			auto pad = element->getPadding();
+			auto area = Rect(0, 0, childDesiredSize).makeDeflate(pad);
+
+			child->arrangeLayout(area);
 		}
 
 		return element->TElementBaseClass::arrangeOverride(finalSize);

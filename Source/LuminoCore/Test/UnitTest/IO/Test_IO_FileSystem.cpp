@@ -31,7 +31,7 @@ TEST_F(Test_IO_FileSystem, Exists)
 //## ファイルの属性取得
 TEST_F(Test_IO_FileSystem, GetAttribute)
 {
-	FileAttribute attr;
+	Flags<FileAttribute> attr;
 
 	// <Test> ファイルを読み取り専用にする
 	// <Test> ファイルの読み取り専用を確認する

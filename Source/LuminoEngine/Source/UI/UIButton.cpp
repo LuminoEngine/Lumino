@@ -1,4 +1,4 @@
-
+ï»¿
 #include "Internal.h"
 #include <Lumino/UI/UITextBlock.h>
 #include <Lumino/UI/UIButton.h>
@@ -31,10 +31,6 @@ void UIButtonBase::initialize()
 
 	HContentAlignment = HAlignment::Center;
 	VContentAlignment = VAlignment::Center;
-
-	// TODO: UIContentsControl::initialize() ‚Ì’†‚Å‚àì‚Á‚Ä‚é‚©‚çA‚»‚Á‚¿‚ª–³‘Ê‚É‚È‚éB
-	// UIContentsControl ‚Å‚Í‰½‚àì‚ç‚È‚­‚Ä‚à‚¢‚¢‚©‚àBnull ‚Ìê‡AUILayoutPanel ‚Æ“¯‚¶ƒŒƒCƒAƒEƒg‚É‚·‚é‚Æ‚©B
-	setLayoutPanel(newObject<UIStackPanel>());
 }
 
 //------------------------------------------------------------------------------

@@ -9,14 +9,19 @@
 
 LN_NAMESPACE_BEGIN
 class CommonMaterial;
-class DiffuseMaterial;
+class PhongMaterial;
 using MaterialPtr = Ref<CommonMaterial>;
-using DiffuseMaterialPtr = Ref<DiffuseMaterial>;
 
 namespace detail {
 
 class CombinedMaterial;
 
+enum class MaterialType : uint8_t
+{
+	Common,
+	PBR,
+	Diffuse,
+};
 
 struct BuiltinEffectData
 {
@@ -161,7 +166,7 @@ struct PhongMaterialData
 	float			power;
 };
 
-struct PBRMaterialData
+struct PbrMaterialData
 {
 	Color			color;
 	float			roughness;
@@ -230,7 +235,7 @@ public:
 LN_CONSTRUCT_ACCESS:
 	CommonMaterial();
 	virtual ~CommonMaterial();
-	void initialize();
+	void initialize(detail::MaterialType type = detail::MaterialType::Common);
 
 LN_INTERNAL_ACCESS:
 	void reset();
@@ -243,8 +248,9 @@ LN_INTERNAL_ACCESS:
 	void setBuiltinColorParameter(const StringRef& name, const Color& value);
 	void setBuiltinColorParameter(const StringRef& name, float r, float g, float b, float a);
 
-	void translateToPhongMaterialData(detail::PhongMaterialData* data);
-	void translateToPBRMaterialData(detail::PBRMaterialData* data);
+LN_PROTECTED_INTERNAL_ACCESS:
+	virtual void translateToPhongMaterialData(detail::PhongMaterialData* outData);
+	virtual void translateToPBRMaterialData(detail::PbrMaterialData* outData);
 
 LN_INTERNAL_ACCESS:
 	//using ShaderValuePtr = std::shared_ptr<ShaderValue>;
@@ -307,6 +313,7 @@ private:
 
 
 LN_INTERNAL_ACCESS:
+	detail::MaterialType m_type;
 	Ref<Shader>						m_shader;
 	int									m_revisionCount;
 	uint32_t							m_hashCode;
@@ -356,22 +363,28 @@ public:
 	// TODO: 自己発光。必要かな？
 	//void setEmissive(const Color& value);
 
+protected:
+	virtual void translateToPBRMaterialData(detail::PbrMaterialData* outData) override;
+
 LN_CONSTRUCT_ACCESS:
 	Material();
 	virtual ~Material();
 	void initialize();
+
+private:
+	detail::PbrMaterialData m_data;
 };
 
 
 /**
-	@brief		非物理ベースレンダリングで使用されるレガシーなマテリアルです。
+	@brief		非物理ベースレンダリングで使用される Phong シェーディング用のマテリアルです。
 */
-class DiffuseMaterial
+class PhongMaterial
 	: public CommonMaterial
 {
 	LN_OBJECT;
 public:
-	static DiffuseMaterialPtr create();
+	static Ref<PhongMaterial> create();
 
 public:
 	void setDiffuse(const Color& value);
@@ -380,9 +393,13 @@ public:
 	void setEmissive(const Color& value);
 	void setSpecularPower(float value);
 
+protected:
+	virtual void translateToPBRMaterialData(detail::PbrMaterialData* outData) override;
+	virtual void translateToPhongMaterialData(detail::PhongMaterialData* outData) override;
+
 LN_CONSTRUCT_ACCESS:
-	DiffuseMaterial();
-	virtual ~DiffuseMaterial();
+	PhongMaterial();
+	virtual ~PhongMaterial();
 	void initialize();
 };
 

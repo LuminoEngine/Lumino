@@ -47,7 +47,7 @@ void FileStream::open(const Char* filePath, FileOpenMode openMode)
 	m_filePath = PathName(filePath).canonicalizePath();
 	m_openModeFlags = openMode;
 
-	if (m_openModeFlags.TestFlag(FileOpenMode::Deferring))
+	if (testFlag(m_openModeFlags, FileOpenMode::Deferring))
 	{
 		if (!detail::FileSystemInternal::existsFile(filePath, StringTraits::tcslen(filePath)))
 		{
@@ -73,13 +73,13 @@ void FileStream::close()
 //------------------------------------------------------------------------------
 bool FileStream::canRead() const
 {
-	return (m_openModeFlags.TestFlag(FileOpenMode::read));
+	return testFlag(m_openModeFlags, FileOpenMode::read);
 }
 
 //------------------------------------------------------------------------------
 bool FileStream::canWrite() const
 {
-	return (m_openModeFlags.TestFlag(FileOpenMode::write));
+	return testFlag(m_openModeFlags, FileOpenMode::write);
 }
 
 //------------------------------------------------------------------------------
@@ -136,7 +136,7 @@ void FileStream::flush()
 //------------------------------------------------------------------------------
 void FileStream::checkOpen() const
 {
-	if (m_openModeFlags.TestFlag(FileOpenMode::Deferring))
+	if (testFlag(m_openModeFlags, FileOpenMode::Deferring))
 	{
 		if (m_stream == NULL)
 		{
@@ -155,36 +155,36 @@ void FileStream::open() const
 	if (LN_REQUIRE(m_stream == NULL)) return;
 
 	const Char* mode = NULL;
-	if (m_openModeFlags.TestFlag(FileOpenMode::ReadWrite))
+	if (testFlag(m_openModeFlags, FileOpenMode::ReadWrite))
 	{
-		if (m_openModeFlags.TestFlag(FileOpenMode::append)) {
+		if (testFlag(m_openModeFlags, FileOpenMode::append)) {
 			mode = _TT("a+b");		// 読み取りと書き込み (末尾に追加する)
 		}
-		else if (m_openModeFlags.TestFlag(FileOpenMode::Truncate)) {
+		else if (testFlag(m_openModeFlags, FileOpenMode::Truncate)) {
 			mode = _TT("w+b");		// 読み取りと書き込み (ファイルを空にする)
 		}
 		else {
 			mode = _TT("r+b");		// 読み取りと書き込み (ファイルが存在しない場合はエラー)
 		}
 	}
-	else if (m_openModeFlags.TestFlag(FileOpenMode::write))
+	else if (testFlag(m_openModeFlags, FileOpenMode::write))
 	{
-		if (m_openModeFlags.TestFlag(FileOpenMode::append)) {
+		if (testFlag(m_openModeFlags, FileOpenMode::append)) {
 			mode = _TT("ab");		// 書き込み (末尾に追加する。ファイルが無ければ新規作成)
 		}
-		else if (m_openModeFlags.TestFlag(FileOpenMode::Truncate)) {
+		else if (testFlag(m_openModeFlags, FileOpenMode::Truncate)) {
 			mode = _TT("wb");		// 書き込み (ファイルを空にする)
 		}
 		else {
 			mode = _TT("wb");		// 書き込み (モード省略。Truncate)
 		}
 	}
-	else if (m_openModeFlags.TestFlag(FileOpenMode::read))
+	else if (testFlag(m_openModeFlags, FileOpenMode::read))
 	{
-		if (m_openModeFlags.TestFlag(FileOpenMode::append)) {
+		if (testFlag(m_openModeFlags, FileOpenMode::append)) {
 			mode = NULL;			// 読み込みなのに末尾追加はできない
 		}
-		else if (m_openModeFlags.TestFlag(FileOpenMode::Truncate)) {
+		else if (testFlag(m_openModeFlags, FileOpenMode::Truncate)) {
 			mode = NULL;			// 読み込みなのにファイルを空にはできない
 		}
 		else {

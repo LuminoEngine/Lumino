@@ -254,7 +254,7 @@ void InternalContext::applyStatus(RenderStage* state, const DefaultStatus& defau
 {
 	m_currentStatePtr = state;
 	//m_currentStatePtr->applyStatus(this, defaultStatus);
-	applyStatusInternal(state, defaultStatus);
+	applyFrameBufferStatusInternal(state, defaultStatus);
 
 	if (m_current != nullptr)
 	{
@@ -288,7 +288,7 @@ void InternalContext::switchActiveRenderer(detail::IRenderFeature* renderer)
 	}
 }
 
-void InternalContext::applyStatusInternal(RenderStage* stage, const DefaultStatus& defaultStatus)
+void InternalContext::applyFrameBufferStatusInternal(RenderStage* stage, const DefaultStatus& defaultStatus)
 {
 	auto* stateManager = getRenderStateManager();
 
@@ -371,6 +371,36 @@ void InternalContext::applyStatusInternal(RenderStage* stage, const DefaultStatu
 			stateManager->setViewport(rect);
 		}
 		// TODO: m_scissorRect
+	}
+}
+
+void InternalContext::applyGeometryStatusInternal(RenderStage* stage, CommonMaterial* priorityMaterial)
+{
+	auto* stateManager = getRenderStateManager();
+
+	// RenderState
+	{
+		//BlendMode blendMode = (combinedMaterial->m_blendMode.isSet()) ? combinedMaterial->m_blendMode.get() : m_blendMode;
+		//CullingMode cullingMode = (combinedMaterial->m_cullingMode.isSet()) ? combinedMaterial->m_cullingMode.get() : m_cullingMode;
+
+
+
+		// TODO: Base
+		RenderState state;
+		ContextInterface::makeBlendMode(stage->getBlendModeFinal(priorityMaterial), &state);
+		state.Culling = stage->getCullingModeFinal(priorityMaterial);
+		//state.AlphaTest = combinedMaterial->m_alphaTest;
+		stateManager->setRenderState(state);
+
+		// スプライトバッチ化のため (TODO: いらないかも。SpriteRenderer では State でそーとしなくなった)
+		getSpriteRenderer()->setState(state);
+	}
+	// DepthStencilState
+	{
+		DepthStencilState state;
+		state.DepthTestEnabled = stage->isDepthTestEnabledFinal(priorityMaterial);//(combinedMaterial->m_depthTestEnabled.isSet()) ? combinedMaterial->m_depthTestEnabled.get() : m_depthTestEnabled;
+		state.DepthWriteEnabled = stage->isDepthWriteEnabledFinal(priorityMaterial);// (combinedMaterial->m_depthWriteEnabled.isSet()) ? combinedMaterial->m_depthWriteEnabled.get() : m_depthWriteEnabled;
+		stateManager->setDepthStencilState(state);
 	}
 }
 

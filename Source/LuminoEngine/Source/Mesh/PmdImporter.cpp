@@ -304,6 +304,9 @@ bool PmdImporter::loadMaterials(BinaryReader* reader)
 		m->Ambient.b = pmdMaterial.col3Ambient.z;
 		m->Ambient.a = 1.0f;
 
+		m->DrawingFlags |= (m->Diffuse.a < 1.0f) ? PmxMaterialResource::DrawingFlag_CullingDouble : 0;
+		m->DrawingFlags |= (pmdMaterial.EdgeFlag) ? PmxMaterialResource::DrawingFlag_Edge : 0;
+
 		// テクスチャ名がある場合はテクスチャ作成
 		if (pmdMaterial.szTextureFileName[0] != '\0')
 		{

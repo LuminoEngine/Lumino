@@ -2,7 +2,6 @@
 #ifndef LUMINO_SHADOW_INCLUDED
 #define LUMINO_SHADOW_INCLUDED
 
-float4x4        ln_ViewProjection_Light0;
 texture         ln_DirectionalShadowMap;
 float2          ln_DirectionalShadowMapPixelSize;
 

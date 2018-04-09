@@ -6,7 +6,7 @@
 LN_NAMESPACE_BEGIN
 
 /** ファイルとディレクトリの属性 */
-LN_ENUM_FLAGS(FileAttribute)
+enum class FileAttribute
 {
 	None		= 0x0000,
 	Normal		= 0x0001,	/**< 特に属性を持たない通常のファイル */
@@ -15,7 +15,22 @@ LN_ENUM_FLAGS(FileAttribute)
 	Hidden		= 0x0008,	/**< 隠しファイル */
 	All			= 0xFFFF,
 };
-LN_ENUM_FLAGS_DECLARE(FileAttribute)
+LN_FLAGS_OPERATORS(FileAttribute);
+//inline bool operator==(FileAttribute lhs, FileAttribute rhs) { return static_cast<ln::Flags<FileAttribute>::BitsType>(lhs) == static_cast<ln::Flags<FileAttribute>::BitsType>(rhs); }
+//inline bool operator==(const ln::Flags<FileAttribute>& lhs, FileAttribute rhs) { return static_cast<ln::Flags<FileAttribute>::BitsType>(lhs.get()) == static_cast<ln::Flags<FileAttribute>::BitsType>(rhs); }
+//inline bool operator!=(FileAttribute lhs, FileAttribute rhs) { return static_cast<ln::Flags<FileAttribute>::BitsType>(lhs) != static_cast<ln::Flags<FileAttribute>::BitsType>(rhs); }
+//inline ln::Flags<FileAttribute> operator|(FileAttribute lhs, FileAttribute rhs) { ln::Flags<FileAttribute> r(static_cast<ln::Flags<FileAttribute>::BitsType>(lhs) | static_cast<ln::Flags<FileAttribute>::BitsType>(rhs)); return r; }
+//inline ln::Flags<FileAttribute> operator&(FileAttribute lhs, FileAttribute rhs) { ln::Flags<FileAttribute> r(static_cast<ln::Flags<FileAttribute>::BitsType>(lhs) & static_cast<ln::Flags<FileAttribute>::BitsType>(rhs)); return r; }
+//inline ln::Flags<FileAttribute> operator^(FileAttribute lhs, FileAttribute rhs) { ln::Flags<FileAttribute> r(static_cast<ln::Flags<FileAttribute>::BitsType>(lhs) ^ static_cast<ln::Flags<FileAttribute>::BitsType>(rhs)); return r; }
+//inline ln::Flags<FileAttribute> operator~(FileAttribute a) { return ~ln::Flags<FileAttribute>(a); }
+//inline bool testFlag(FileAttribute lhs, FileAttribute rhs)
+//{
+//	auto lv = static_cast<ln::Flags<FileAttribute>::BitsType>(lhs);
+//	auto rv = static_cast<ln::Flags<FileAttribute>::BitsType>(rhs);
+//	return (lv & rv) == rv && (rv != 0 || lv == rv);
+//}
+
+
 
 //
 //
@@ -42,7 +57,7 @@ LN_ENUM_FLAGS_DECLARE(FileAttribute)
 //	//}
 
 /** ファイルを開く際のアクセスモードを表します。*/
-LN_ENUM_FLAGS(FileOpenMode)
+enum class FileOpenMode
 {
 	None = 0x0000,
 	read = 0x0001,				/**< 読み取りアクセス*/
@@ -54,7 +69,7 @@ LN_ENUM_FLAGS(FileOpenMode)
 
 	Deferring = 0x0100,			/**< ファイルを遅延モードで開く*/
 };
-LN_ENUM_FLAGS_DECLARE(FileOpenMode);
+LN_FLAGS_OPERATORS(FileOpenMode);
 
 
 ///< ファイルを書き込みモードでオープンする際の概要

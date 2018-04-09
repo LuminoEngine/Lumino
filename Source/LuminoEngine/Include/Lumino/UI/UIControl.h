@@ -48,7 +48,11 @@ public:
 	void setVContentAlignment(VAlignment value) { VContentAlignment = value; }
 	VAlignment getVContentAlignment() const { return VContentAlignment; }
 	
-
+	/**
+		子要素をレイアウトするための UILayoutPanel を設定します。
+		この UILayoutPanel はこの要素のビジュアルツリーに組み込まれ、子要素の直接のビジュアル親要素となります。
+		デフォルトは nullptr です。
+	*/
 	void setLayoutPanel(UILayoutPanel* panel);
 	UILayoutPanel* getLayoutPanel() const;
 

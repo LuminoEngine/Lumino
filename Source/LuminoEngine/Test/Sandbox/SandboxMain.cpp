@@ -103,9 +103,10 @@ void Main()
 	//	}
 	//});
 
-	//auto* uiRoot = Engine::getDefaultUILayer()->GetLayoutView();
-	//auto button1 = UIButton::create(_T("button1"), 80, 32);
-	//uiRoot->addChild(button1);
+	auto* uiRoot = Engine::getDefaultUILayer()->GetLayoutView();
+	auto button1 = UIButton::create(_T("button1"), 100, 64);
+	uiRoot->setPadding(Thickness(4));
+	uiRoot->addChild(button1);
 
 	//auto text1 = UITextField::create();
 	//text1->setPosition(Point(10, 20));
@@ -119,38 +120,42 @@ void Main()
 	Engine::getCamera3D()->addComponent(newObject<CameraMouseMoveBehavior>());
 
 
-	auto meshCom = SkinnedMeshComponent::create(_T("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
-	meshCom->setShader(Shader::create(_T("D:/Proj/LN/LiveDot/External/Lumino/Source/LuminoEngine/Test/Sandbox/Assets/UnLighting.fx"), nullptr, ShaderCodeType::RawHLSL));
-	SkinnedMeshModel* model = meshCom->getSkinnedMeshModel();
-	auto* ac = model->animationController();
-	//ac->addClip( "walk", a2::AnimationClip::create(_T("D:/MMD/Materials/モーション/Love&Joy/love&joyお面無しver.vmd")));
-	//ac->addClip(a2::AnimationClip::create(_T("D:/MMD/Materials/モーション/Zigg-Zagg/ZZ-Marisa.vmd"), "walk"));
-	ac->addClip("walk", VmdAnimationClip::create(_T("D:/MMD/Materials/モーション/走歩スv2.2full/歩く/A01_SO_女の子歩き_s591_p40.vmd")));
-	ac->addClip("run", VmdAnimationClip::create(_T("D:/MMD/Materials/モーション/走歩スv2.2full/走る/H02_SO_女の子走り_s1475_p20.vmd")));
+	//auto meshCom = SkinnedMeshComponent::create(_T("D:/MMD/Materials/モデル/Appearance Miku/Appearance Miku_BDEF.pmx"));
+	//meshCom->setShader(Shader::create(_T("D:/Proj/LN/LiveDot/External/Lumino/Source/LuminoEngine/Test/Sandbox/Assets/UnLighting.fx"), nullptr, ShaderCodeType::RawHLSL));
+	//SkinnedMeshModel* model = meshCom->getSkinnedMeshModel();
+	//auto* ac = model->animationController();
+	////ac->addClip( "walk", a2::AnimationClip::create(_T("D:/MMD/Materials/モーション/Love&Joy/love&joyお面無しver.vmd")));
+	////ac->addClip(a2::AnimationClip::create(_T("D:/MMD/Materials/モーション/Zigg-Zagg/ZZ-Marisa.vmd"), "walk"));
+	//ac->addClip("walk", VmdAnimationClip::create(_T("D:/MMD/Materials/モーション/走歩スv2.2full/歩く/A01_SO_女の子歩き_s591_p40.vmd")));
+	//ac->addClip("run", VmdAnimationClip::create(_T("D:/MMD/Materials/モーション/走歩スv2.2full/走る/H02_SO_女の子走り_s1475_p20.vmd")));
+	//
+	//ac->play("walk", 5);
+
+	////auto morph = model->morphs()[0];
+	////morph->setWeight(1.0f);
+
+	////model->morphs()[16]->setWeight(1.0f);
+
+	//auto obj3D = newObject<WorldObject>();
+	//obj3D->addComponent(meshCom);
+	//Engine::defaultWorld3D()->add(obj3D);
+
+
+
 	
-	ac->play("walk", 5);
-
-	//auto morph = model->morphs()[0];
-	//morph->setWeight(1.0f);
-
-	//model->morphs()[16]->setWeight(1.0f);
-
-	auto obj3D = newObject<WorldObject>();
-	obj3D->addComponent(meshCom);
-	Engine::defaultWorld3D()->add(obj3D);
 
 	while (Engine::update())
 	{
-		if (Input::isTriggered(InputButtons::Submit))
-		{
-			printf("s\n");
-			ac->play("run");
-		}
-		if (Input::isTriggered(InputButtons::Cancel))
-		{
-			printf("c\n");
-			ac->play("walk");
-		}
+		//if (Input::isTriggered(InputButtons::Submit))
+		//{
+		//	printf("s\n");
+		//	ac->play("run");
+		//}
+		//if (Input::isTriggered(InputButtons::Cancel))
+		//{
+		//	printf("c\n");
+		//	ac->play("walk");
+		//}
 	}
 
 	Engine::terminate();
@@ -297,7 +302,7 @@ void Main()
 	m->SetVelocity(Vector3(0, -3, 0));
 	//m->SetAccel(Vector3(0, -8, 0));
 
-	auto material = DiffuseMaterial::create();
+	auto material = PhongMaterial::create();
 	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetEmissive(Color::White);
 	m->SetMaterial(material);
@@ -332,7 +337,7 @@ void Main()
 	m2->m_shapeParam.y = 2;
 	m1->SetSubParticle(m2);
 
-	auto material = DiffuseMaterial::create();
+	auto material = PhongMaterial::create();
 	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 	m1->SetMaterial(material);
@@ -356,7 +361,7 @@ void Main()
 	m1->SetSize(0.5);
 	//m1->m_loop = false;
 
-	auto material = DiffuseMaterial::create();
+	auto material = PhongMaterial::create();
 	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 	m1->SetMaterial(material);
@@ -381,7 +386,7 @@ void Main()
 	m1->m_forwardPosition.maxValue = 2;
 	m1->SetSize(0.5);
 
-	auto material = DiffuseMaterial::create();
+	auto material = PhongMaterial::create();
 	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 	m1->SetMaterial(material);
@@ -408,7 +413,7 @@ void Main()
 	m1->m_forwardPosition.maxValue = 10;
 	m1->SetSize(0.5);
 
-	auto material = DiffuseMaterial::create();
+	auto material = PhongMaterial::create();
 	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 	m1->SetMaterial(material);
@@ -437,7 +442,7 @@ void Main()
 	m1->m_forwardVelocity.maxValue = 0;
 	m1->SetSize(0.5);
 
-	auto material = DiffuseMaterial::create();
+	auto material = PhongMaterial::create();
 	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 	m1->SetMaterial(material);
@@ -467,7 +472,7 @@ void Main()
 	m1->m_trailTime = 0.5f;
 	m1->m_loop = false;
 
-	auto material = DiffuseMaterial::create();
+	auto material = PhongMaterial::create();
 	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 	m1->SetMaterial(material);
@@ -505,7 +510,7 @@ void Main()
 	m1->m_forwardVelocity.randomSource = ParticleRandomSource::ByBaseValueInverse;	// 速度が大きい
 
 
-	auto material = DiffuseMaterial::create();
+	auto material = PhongMaterial::create();
 	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 	m1->SetMaterial(material);
@@ -533,7 +538,7 @@ void Main()
 	m1->m_forwardVelocity.maxValue = -12;
 	m1->m_lengthScale = 10;
 
-	auto material = DiffuseMaterial::create();
+	auto material = PhongMaterial::create();
 	material->SetMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->SetShader(Shader::GetBuiltinShader(BuiltinShader::Sprite));
 	m1->SetMaterial(material);

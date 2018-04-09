@@ -54,7 +54,7 @@ const float CommonMaterial::DefaultPower = 50.0f;
 MaterialPtr CommonMaterial::create()
 {
 	auto ptr = MaterialPtr::makeRef();
-	ptr->initialize();
+	ptr->initialize(detail::MaterialType::Common);
 	return ptr;
 }
 
@@ -76,8 +76,10 @@ CommonMaterial::~CommonMaterial()
 }
 
 //------------------------------------------------------------------------------
-void CommonMaterial::initialize()
+void CommonMaterial::initialize(detail::MaterialType type)
 {
+	Object::initialize();
+	m_type = type;
 	//m_combinedMaterial = Ref<detail::CombinedMaterial>::MakeRef();
 }
 
@@ -107,8 +109,9 @@ void CommonMaterial::setBuiltinColorParameter(const StringRef& name, float r, fl
 //------------------------------------------------------------------------------
 Ref<CommonMaterial> CommonMaterial::copyShared() const
 {
+	LN_NOTIMPLEMENTED();	// TODO: 型が変わる。危険
 	auto m = Ref<CommonMaterial>::makeRef();
-	m->initialize();	// TODO: base
+	m->initialize(detail::MaterialType::Common);	// TODO: base
 	m->m_shader = m_shader;
 	//m->m_shader = m_shader;
 	////m->m_valueList = m_valueList;
@@ -398,10 +401,10 @@ Texture* CommonMaterial::getMaterialTexture(Texture* defaultValue) const { auto 
 //==============================================================================
 LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(Material, CommonMaterial);
 
-static const String Material_ColorPropertyName(_LT("Color"));
-static const String Material_RoughnessPropertyName(_LT("Roughness"));
-static const String Material_MetallicPropertyName(_LT("Metallic"));
-static const String Material_SpecularPropertyName(_LT("Specular"));
+//static const String Material_ColorPropertyName(_LT("Color"));
+//static const String Material_RoughnessPropertyName(_LT("Roughness"));
+//static const String Material_MetallicPropertyName(_LT("Metallic"));
+//static const String Material_SpecularPropertyName(_LT("Specular"));
 
 static const uint32_t Material_ColorPropertyNameId = Hash::calcHash(_LT("Color"));
 static const uint32_t Material_RoughnessPropertyNameId = Hash::calcHash(_LT("Roughness"));
@@ -420,6 +423,10 @@ Ref<Material> Material::create()
 
 Material::Material()
 {
+	m_data.color = Material_DefaultColor;
+	m_data.roughness = Material_DefaultRoughness;
+	m_data.metallic = Material_DefaultMetallic;
+	m_data.specular = Material_DefaultSpecular;
 }
 
 Material::~Material()
@@ -428,93 +435,107 @@ Material::~Material()
 
 void Material::initialize()
 {
-	CommonMaterial::initialize();
-	setColor(Material_DefaultColor);
-	setRoughness(Material_DefaultRoughness);
-	setMetallic(Material_DefaultMetallic);
-	setSpecular(Material_DefaultSpecular);
+	CommonMaterial::initialize(detail::MaterialType::PBR);
 }
 
 void Material::setColor(const Color& value)
 {
-	setBuiltinColorParameter(Material_ColorPropertyName, value);
+	m_data.color = value;
 }
 
 void Material::setRoughness(float value)
 {
-	setBuiltinFloatParameter(Material_RoughnessPropertyName, value);
+	m_data.roughness = value;
 }
 
 void Material::setMetallic(float value)
 {
-	setBuiltinFloatParameter(Material_MetallicPropertyName, value);
+	m_data.metallic = value;
 }
 
 void Material::setSpecular(float value)
 {
-	setBuiltinFloatParameter(Material_SpecularPropertyName, value);
+	m_data.specular = value;
+}
+
+void Material::translateToPBRMaterialData(detail::PbrMaterialData* outData)
+{
+	// メンバ変数をそのままセットすることで効率化を図る。毎回検索しない。
+	*outData = m_data;
 }
 
 //==============================================================================
-// DiffuseMaterial
+// PhongMaterial
 //==============================================================================
-LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(DiffuseMaterial, CommonMaterial);
+LN_TR_REFLECTION_TYPEINFO_IMPLEMENT(PhongMaterial, CommonMaterial);
 
 //------------------------------------------------------------------------------
-DiffuseMaterialPtr DiffuseMaterial::create()
+Ref<PhongMaterial> PhongMaterial::create()
 {
-	auto ptr = DiffuseMaterialPtr::makeRef();
-	ptr->initialize();
-	return ptr;
+	return newObject<PhongMaterial>();
 }
 
 //------------------------------------------------------------------------------
-DiffuseMaterial::DiffuseMaterial()
+PhongMaterial::PhongMaterial()
 {
 }
 
 //------------------------------------------------------------------------------
-DiffuseMaterial::~DiffuseMaterial()
+PhongMaterial::~PhongMaterial()
 {
 }
 
 //------------------------------------------------------------------------------
-void DiffuseMaterial::initialize()
+void PhongMaterial::initialize()
 {
-	CommonMaterial::initialize();
+	CommonMaterial::initialize(detail::MaterialType::Diffuse);
 }
 
 //------------------------------------------------------------------------------
-void DiffuseMaterial::setDiffuse(const Color& value)
+void PhongMaterial::setDiffuse(const Color& value)
 {
 	setBuiltinColorParameter(CommonMaterial::DiffuseParameter, value);
 }
 
 //------------------------------------------------------------------------------
-void DiffuseMaterial::setAmbient(const Color& value)
+void PhongMaterial::setAmbient(const Color& value)
 {
 	setBuiltinColorParameter(CommonMaterial::AmbientParameter, value);
 }
 
 //------------------------------------------------------------------------------
-void DiffuseMaterial::setSpecular(const Color& value)
+void PhongMaterial::setSpecular(const Color& value)
 {
 	setBuiltinColorParameter(CommonMaterial::SpecularParameter, value);
 }
 
 //------------------------------------------------------------------------------
-void DiffuseMaterial::setEmissive(const Color& value)
+void PhongMaterial::setEmissive(const Color& value)
 {
 	setBuiltinColorParameter(CommonMaterial::EmissiveParameter, value);
 }
 
 //------------------------------------------------------------------------------
-void DiffuseMaterial::setSpecularPower(float value)
+void PhongMaterial::setSpecularPower(float value)
 {
 	setBuiltinFloatParameter(CommonMaterial::PowerParameter, value);
 }
 
+void PhongMaterial::translateToPBRMaterialData(detail::PbrMaterialData* outData)
+{
+	// TODO: 効率悪すぎ。メンバ変数に持っておこう
+	detail::PhongMaterialData phongdata;
+	CommonMaterial::translateToPhongMaterialData(&phongdata);
 
+	CommonMaterial::translateToPBRMaterialData(outData);
+	outData->color = phongdata.diffuse;
+}
+
+void PhongMaterial::translateToPhongMaterialData(detail::PhongMaterialData* outData)
+{
+	// TODO: メンバ変数に持っておくようにし、それを渡す。いちいち検索を走らせない。
+	CommonMaterial::translateToPhongMaterialData(outData);
+}
 
 void CommonMaterial::translateToPhongMaterialData(detail::PhongMaterialData* data)
 {
@@ -526,7 +547,7 @@ void CommonMaterial::translateToPhongMaterialData(detail::PhongMaterialData* dat
 	data->power = getBuiltinFloat(PowerHash, CommonMaterial::DefaultPower);
 }
 
-void CommonMaterial::translateToPBRMaterialData(detail::PBRMaterialData* data)
+void CommonMaterial::translateToPBRMaterialData(detail::PbrMaterialData* data)
 {
 	// TODO: 毎回検索は重い気がする。キャッシュしたい
 	data->color = getBuiltinColor(Material_ColorPropertyNameId, Material_DefaultColor);

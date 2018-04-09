@@ -409,7 +409,7 @@ bool DummyArchive::tryCreateStream(const PathName& fileFullPath, Ref<Stream>* ou
 		return false;
 	}
 
-	FileOpenMode mode = FileOpenMode::read;
+	Flags<FileOpenMode> mode = FileOpenMode::read;
 	if (isDeferring) { mode |= FileOpenMode::Deferring; }
 	Ref<FileStream> file = FileStream::create(fileFullPath.c_str(), mode);
 	*outStream = file;
@@ -462,7 +462,7 @@ bool DirectoryAssetsStorage::tryCreateStream(const PathName& fileFullPath, Ref<S
 		return false;
 	}
 
-	FileOpenMode mode = FileOpenMode::read;
+	Flags<FileOpenMode> mode = FileOpenMode::read;
 	if (isDeferring)
 	{
 		mode |= FileOpenMode::Deferring;

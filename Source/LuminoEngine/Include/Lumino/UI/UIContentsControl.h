@@ -25,6 +25,10 @@ protected:
 	virtual int getLogicalChildrenCount() const override;
 	virtual UIElement* getLogicalChild(int index) override;
 
+	// UIElement interface
+	virtual Size measureOverride(const Size& constraint) override;
+	virtual Size arrangeOverride(const Size& finalSize) override;
+
 LN_CONSTRUCT_ACCESS:
 	UIContentsControl();
 	virtual ~UIContentsControl();

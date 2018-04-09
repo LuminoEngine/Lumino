@@ -23,7 +23,7 @@ namespace LuminoBuild.Tasks
         {
             //string zipFilePath = builder.LuminoPackageReleaseDir + "LuminoCpp.zip";
 
-            VSBuildFlags vsTarget = /*VSBuildFlags.VS2015 | */VSBuildFlags.VS2017;
+            VSBuildFlags vsTarget = VSBuildFlags.VS2015 | VSBuildFlags.VS2017;
 
             if (vsTarget.HasFlag(VSBuildFlags.VS2015))
             {

@@ -49,8 +49,8 @@ void UIControl::initialize()
 
 
 	//m_items = Ref<UIElementCollection>::makeRef(this);
-	auto panel = newObject<UIAbsoluteLayout>();
-	setLayoutPanel(panel);
+	//auto panel = newObject<UIAbsoluteLayout>();
+	//setLayoutPanel(panel);
 }
 //
 ////------------------------------------------------------------------------------
@@ -123,6 +123,8 @@ void UIControl::setLogicalChildrenPresenter(UILayoutPanel* presenter)
 			int count = getLogicalChildrenCount();
 			for (int i = 0; i < count; i++)
 			{
+				// TODO: レイアウトを行ってほしいので、 Panel の論理的な子要素として追加する。
+				// ただし、子要素から見た LogicalParent は Panel ではなく this のままである。その確認をしておく。
 				m_logicalChildrenPresenter->getChildren()->remove(getLogicalChild(i));
 			}
 
@@ -224,9 +226,11 @@ void UIControl::onHandleDragDrop(UIDragDropEventArgs* e)
 //------------------------------------------------------------------------------
 Size UIControl::measureOverride(const Size& constraint)
 {
-	UIElement* child = (readCoreFlag(detail::UICoreFlags_LogicalChildrenPresenterAutoManagement)) ? m_logicalChildrenPresenter : nullptr;
-	return detail::LayoutHelper2::measureOverride_SimpleOneChild<UIControl, UIElement>(this, constraint, child);
-
+	if (m_logicalChildrenPresenter)
+	{
+		UIElement* child = (readCoreFlag(detail::UICoreFlags_LogicalChildrenPresenterAutoManagement)) ? m_logicalChildrenPresenter : nullptr;
+		return detail::LayoutHelper2::measureOverride_SimpleOneChild<UIControl, UIElement>(this, constraint, child);
+	}
 	//if (m_invalidateItemsHostPanel)
 	//{
 
@@ -269,10 +273,12 @@ Size UIControl::measureOverride(const Size& constraint)
 //------------------------------------------------------------------------------
 Size UIControl::arrangeOverride(const Size& finalSize)
 {
-	UIElement* child = (readCoreFlag(detail::UICoreFlags_LogicalChildrenPresenterAutoManagement)) ? m_logicalChildrenPresenter : nullptr;
-	return detail::LayoutHelper2::arrangeOverride_SimpleOneChild<UIControl, UIElement>(this, finalSize, child);
+	if (m_logicalChildrenPresenter)
+	{
+		UIElement* child = (readCoreFlag(detail::UICoreFlags_LogicalChildrenPresenterAutoManagement)) ? m_logicalChildrenPresenter : nullptr;
+		return detail::LayoutHelper2::arrangeOverride_SimpleOneChild<UIControl, UIElement>(this, finalSize, child);
 
-
+	}
 
 //#if 1
 //	if (readCoreFlag(detail::UICoreFlags_LogicalChildrenPresenterAutoManagement))
@@ -434,26 +440,29 @@ void UIControl::onLogicalChildrenPresenterChanged(UILayoutPanel* presenter)
 //------------------------------------------------------------------------------
 void UIControl::onChildCollectionChanged(const tr::ChildCollectionChangedArgs& e)
 {
-	switch (e.action)
+	if (m_logicalChildrenPresenter)
 	{
-	case tr::NotifyCollectionChangedAction::Add:
-		if (LN_REQUIRE(e.newItems.getCount() == 1)) return;	// TODO
-		m_logicalChildrenPresenter->getChildren()->insert(e.newStartingIndex, e.newItems.getAt(0));
-		break;
-	case tr::NotifyCollectionChangedAction::Move:
-		LN_NOTIMPLEMENTED();
-		break;
-	case tr::NotifyCollectionChangedAction::Remove:
-		m_logicalChildrenPresenter->getChildren()->removeAt(e.oldStartingIndex);
-		break;
-	case tr::NotifyCollectionChangedAction::replace:
-		LN_NOTIMPLEMENTED();
-		break;
-	case tr::NotifyCollectionChangedAction::reset:
-		m_logicalChildrenPresenter->getChildren()->clear();
-		break;
-	default:
-		break;
+		switch (e.action)
+		{
+		case tr::NotifyCollectionChangedAction::Add:
+			if (LN_REQUIRE(e.newItems.getCount() == 1)) return;	// TODO
+			m_logicalChildrenPresenter->getChildren()->insert(e.newStartingIndex, e.newItems.getAt(0));
+			break;
+		case tr::NotifyCollectionChangedAction::Move:
+			LN_NOTIMPLEMENTED();
+			break;
+		case tr::NotifyCollectionChangedAction::Remove:
+			m_logicalChildrenPresenter->getChildren()->removeAt(e.oldStartingIndex);
+			break;
+		case tr::NotifyCollectionChangedAction::replace:
+			LN_NOTIMPLEMENTED();
+			break;
+		case tr::NotifyCollectionChangedAction::reset:
+			m_logicalChildrenPresenter->getChildren()->clear();
+			break;
+		default:
+			break;
+		}
 	}
 }
 

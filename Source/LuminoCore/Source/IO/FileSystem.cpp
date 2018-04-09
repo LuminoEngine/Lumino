@@ -202,13 +202,13 @@ bool PlatformFileFinder::nextInternal(bool* outIsDir)
 		FileAttribute a;
 		if (PlatformFileSystem::getAttribute(getCurrent().c_str(), &a))
 		{
-			attr = a.getValue();
+			attr = static_cast<uint32_t>(a);
 		}
 
-		*outIsDir = ((attr & FileAttribute::Directory) != 0);
+		*outIsDir = ((attr & static_cast<uint32_t>(FileAttribute::Directory)) != 0);
 
 		//uint32_t attr = detail::FileSystemInternal::getAttribute(getCurrent().c_str(), getCurrent().length()).getValue();
-		uint32_t filter = (uint32_t)m_attr.getValue();
+		uint32_t filter = (uint32_t)m_attr;
 		if ((attr & filter) != 0)
 		{
 			break;
@@ -272,7 +272,7 @@ void FileSystem::deleteFile(const StringRef& filePath)
 bool FileSystem::existsDirectory(const StringRef& path)
 {
 	FileAttribute attr = detail::FileSystemInternal::getAttribute(path.getBegin(), path.getLength());
-	return attr.TestFlag(FileAttribute::Directory);
+	return testFlag(attr, FileAttribute::Directory);
 }
 
 void FileSystem::createDirectory(const StringRef& path)
@@ -497,17 +497,17 @@ void FileSystemInternal::deleteFile(const char16_t* filePath, int len)
 bool FileSystemInternal::existsDirectory(const char* filePath, int len)
 {
 	FileAttribute attr = detail::FileSystemInternal::getAttribute(filePath, len);
-	return attr.TestFlag(FileAttribute::Directory);
+	return testFlag(attr, FileAttribute::Directory);
 }
 bool FileSystemInternal::existsDirectory(const wchar_t* filePath, int len)
 {
 	FileAttribute attr = detail::FileSystemInternal::getAttribute(filePath, len);
-	return attr.TestFlag(FileAttribute::Directory);
+	return testFlag(attr, FileAttribute::Directory);
 }
 bool FileSystemInternal::existsDirectory(const char16_t* filePath, int len)
 {
 	FileAttribute attr = detail::FileSystemInternal::getAttribute(filePath, len);
-	return attr.TestFlag(FileAttribute::Directory);
+	return testFlag(attr, FileAttribute::Directory);
 }
 
 static void createDirectoryInternal2(const PlatformFileSystem::PathChar* begin, const PlatformFileSystem::PathChar* end)
@@ -524,7 +524,7 @@ static void createDirectoryInternal2(const PlatformFileSystem::PathChar* begin, 
 
 		FileAttribute attr;
 		bool result = PlatformFileSystem::getAttribute(dir.c_str(), &attr);
-		if (result && attr.TestFlag(FileAttribute::Directory))
+		if (result && testFlag(attr, FileAttribute::Directory))
 		{
 			break;
 		}
@@ -569,7 +569,7 @@ static void deleteDirectoryInternal(const PlatformFileSystem::PathChar* path, in
 		while (finder.isWorking())
 		{
 			auto& current = finder.getCurrent();
-			if (finder.getFileAttribute().TestFlag(FileAttribute::Directory))
+			if (testFlag(finder.getFileAttribute(), FileAttribute::Directory))
 			{
 				deleteDirectoryInternal(current.c_str(), current.length(), recursive);	// recursive
 			}
@@ -608,7 +608,7 @@ static void copyDirectoryInternal(
 	{
 		FileAttribute attr;
 		if (PlatformFileSystem::getAttribute(srcPath, &attr) &&
-			attr.TestFlag(FileAttribute::Directory))
+			testFlag(attr, FileAttribute::Directory))
 		{
 			LN_ENSURE_IO(0);
 			return;
@@ -633,14 +633,14 @@ static void copyDirectoryInternal(
 		FileAttribute dstAttr;
 		if (!PlatformFileSystem::getAttribute(dest.c_str(), &dstAttr)) dstAttr = FileAttribute::None;
 
-		if (srcAttr.TestFlag(FileAttribute::Normal))
+		if (testFlag(srcAttr, FileAttribute::Normal))
 		{
-			if (dstAttr.TestFlag(FileAttribute::Directory))
+			if (testFlag(dstAttr, FileAttribute::Directory))
 			{
 				// TODO: src と dest で同名なのに種類が違う。xcopy 的にはファイルを結合してしまうが・・・
 				LN_NOTIMPLEMENTED();
 			}
-			else if (dstAttr.TestFlag(FileAttribute::Normal))
+			else if (testFlag(dstAttr, FileAttribute::Normal))
 			{
 				// コピー先にファイルとして存在していて、上書きする場合はコピーする
 				if (overwrite)
@@ -653,9 +653,9 @@ static void copyDirectoryInternal(
 				PlatformFileSystem::copyFile(src.c_str(), dest.c_str(), false);
 			}
 		}
-		else if (srcAttr.TestFlag(FileAttribute::Directory))
+		else if (testFlag(srcAttr, FileAttribute::Directory))
 		{
-			if (dstAttr.TestFlag(FileAttribute::Normal))
+			if (testFlag(dstAttr, FileAttribute::Normal))
 			{
 				// TODO: src と dest で同名なのに種類が違う。xcopy 的にはファイルを結合してしまうが・・・
 				LN_NOTIMPLEMENTED();
@@ -896,7 +896,7 @@ private:
 			if (result)
 			{
 				if (m_searchTargetEntity == SearchTargetEntity::Directory &&
-					current()->getFileAttribute().TestFlag(FileAttribute::Directory))
+					testFlag(current()->getFileAttribute(), FileAttribute::Directory))
 				{
 					if (m_searchPattern.isEmpty())
 					{
@@ -908,7 +908,7 @@ private:
 					}
 				}
 				if (m_searchTargetEntity == SearchTargetEntity::File &&
-					!current()->getFileAttribute().TestFlag(FileAttribute::Directory))
+					!testFlag(current()->getFileAttribute(), FileAttribute::Directory))
 				{
 					if (m_searchPattern.isEmpty())
 					{
@@ -939,7 +939,7 @@ private:
 
 	bool nextInternal(bool setup)
 	{
-		if (current()->getFileAttribute().TestFlag(FileAttribute::Directory))
+		if (testFlag(current()->getFileAttribute(), FileAttribute::Directory))
 		{
 			pushFilder();
 		}

@@ -71,15 +71,33 @@ public:
 		return *this;
 	}
 
+	Flags<EnumType> & operator|=(EnumType rhs)
+	{
+		m_bits |= static_cast<BitsType>(rhs);
+		return *this;
+	}
+
 	Flags<EnumType> & operator&=(const Flags<EnumType>& rhs)
 	{
 		m_bits &= rhs.m_bits;
 		return *this;
 	}
 
+	Flags<EnumType> & operator&=(EnumType rhs)
+	{
+		m_bits &= static_cast<BitsType>(rhs);
+		return *this;
+	}
+
 	Flags<EnumType> & operator^=(const Flags<EnumType>& rhs)
 	{
 		m_bits ^= rhs.m_bits;
+		return *this;
+	}
+
+	Flags<EnumType> & operator^=(EnumType rhs)
+	{
+		m_bits ^= static_cast<BitsType>(rhs);
 		return *this;
 	}
 
@@ -116,11 +134,23 @@ public:
 
 #define LN_FLAGS_OPERATORS(EnumType) \
 	inline bool operator==(EnumType lhs, EnumType rhs) { return static_cast<ln::Flags<EnumType>::BitsType>(lhs) == static_cast<ln::Flags<EnumType>::BitsType>(rhs); } \
-	inline bool operator!=(EnumType lhs, EnumType rhs) { return static_cast<ln::Flags<EnumType>::BitsType>(lhs) != static_cast<ln::Flags<EnumType>::BitsType>(rhs); } \
+	inline bool operator==(const ln::Flags<EnumType>& lhs, EnumType rhs) { return static_cast<ln::Flags<EnumType>::BitsType>(lhs.get()) == static_cast<ln::Flags<EnumType>::BitsType>(rhs); } \
+	inline bool operator==(EnumType lhs, const ln::Flags<EnumType>& rhs) { return static_cast<ln::Flags<EnumType>::BitsType>(lhs) == static_cast<ln::Flags<EnumType>::BitsType>(rhs.get()); } \
+	inline bool operator==(const ln::Flags<EnumType>& lhs, const ln::Flags<EnumType>& rhs) { return static_cast<ln::Flags<EnumType>::BitsType>(lhs.get()) == static_cast<ln::Flags<EnumType>::BitsType>(rhs.get()); } \
+	inline bool operator!=(EnumType lhs, EnumType rhs) { return !operator==(lhs, rhs); } \
+	inline bool operator!=(const ln::Flags<EnumType>& lhs, EnumType rhs) { return !operator==(lhs, rhs); } \
+	inline bool operator!=(EnumType lhs, const ln::Flags<EnumType>& rhs) { return !operator==(lhs, rhs); } \
+	inline bool operator!=(const ln::Flags<EnumType>& lhs, const ln::Flags<EnumType>& rhs) { return !operator==(lhs, rhs); } \
 	inline ln::Flags<EnumType> operator|(EnumType lhs, EnumType rhs) { ln::Flags<EnumType> r(static_cast<ln::Flags<EnumType>::BitsType>(lhs) | static_cast<ln::Flags<EnumType>::BitsType>(rhs)); return r; } \
 	inline ln::Flags<EnumType> operator&(EnumType lhs, EnumType rhs) { ln::Flags<EnumType> r(static_cast<ln::Flags<EnumType>::BitsType>(lhs) & static_cast<ln::Flags<EnumType>::BitsType>(rhs)); return r; } \
 	inline ln::Flags<EnumType> operator^(EnumType lhs, EnumType rhs) { ln::Flags<EnumType> r(static_cast<ln::Flags<EnumType>::BitsType>(lhs) ^ static_cast<ln::Flags<EnumType>::BitsType>(rhs)); return r; } \
-	inline ln::Flags<EnumType> operator~(EnumType a) { return ~ln::Flags<EnumType>(a); }
+	inline ln::Flags<EnumType> operator~(EnumType a) { return ~ln::Flags<EnumType>(a); } \
+	inline bool testFlag(EnumType lhs, EnumType rhs) \
+	{ \
+		auto lv = static_cast<ln::Flags<EnumType>::BitsType>(lhs); \
+		auto rv = static_cast<ln::Flags<EnumType>::BitsType>(rhs); \
+		return (lv & rv) == rv && (rv != 0 || lv == rv); \
+	}
 
 } // namespace ln
 

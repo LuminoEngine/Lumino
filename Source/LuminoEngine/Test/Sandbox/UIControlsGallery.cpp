@@ -308,7 +308,7 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 	m1->m_forwardVelocity.maxValue = -12;
 	m1->m_lengthScale = 10;
 
-	auto material = DiffuseMaterial::create();
+	auto material = PhongMaterial::create();
 	material->setMaterialTexture(Texture2D::create(LN_LOCALFILE("../UnitTest/Scene/TestData/Particle1.png")));
 	material->setShader(Shader::getBuiltinShader(BuiltinShader::Sprite));
 	m1->setMaterial(material);
@@ -657,7 +657,7 @@ Engine::getDefault3DLayer()->setBackgroundColor(Color::Gray);
 	}
 
 	auto mesh1 = NewObject<StaticMeshModel>(meshRes->m_manager, meshRes);
-	auto mat1 = DiffuseMaterial::create();
+	auto mat1 = PhongMaterial::create();
 	mat1->SetBlendMode(BlendMode::Alpha);
 	mesh1->AddMaterial(mat1);
 
