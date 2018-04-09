@@ -69,7 +69,8 @@ Ref<PmxSkinnedMeshResource> PmxLoader::load(detail::ModelManager* manager, Strea
 	{
 		return nullptr;
 	}
-	if (m_pmxHeader.Version < 2.0f) return nullptr;
+	if (m_pmxHeader.Version < 2.0f)
+		return nullptr;
 		
 	// モデル情報
 	loadModelInfo( &reader );
@@ -156,13 +157,13 @@ void PmxLoader::loadVertices(BinaryReader* reader)
 		m_modelCore->setUV(i, baseVertex.TexUV);
 		m_modelCore->setColor(i, Color::White);
 
-		// 追加UV
-		for (int iAddUV = 0; iAddUV < getAdditionalUVCount(); iAddUV++)
-		{
-			Vector4 uv;
-			reader->read(&uv, sizeof(Vector4));
-			m_modelCore->setAdditionalUV(i, iAddUV, uv);
-		}
+		// TODO: 追加UV
+		//for (int iAddUV = 0; iAddUV < getAdditionalUVCount(); iAddUV++)
+		//{
+		//	Vector4 uv;
+		//	reader->read(&uv, sizeof(Vector4));
+		//	m_modelCore->setAdditionalUV(i, iAddUV, uv);
+		//}
 
 		// ブレンドウェイト
 		int defType = reader->readInt8();
@@ -249,12 +250,13 @@ void PmxLoader::loadIndices(BinaryReader* reader)
 	int indexCount = reader->readInt32();
 
 	// インデックスバッファ作成
-	IndexBufferFormat format = IndexBufferFormat_UInt16;
-	if (getVertexIndexSize() > 2) {
-		format = IndexBufferFormat_UInt16;
-	}
-	m_modelCore->resizeIndexBuffer(indexCount);
-	m_modelCore->requestIndexBuffer()->setFormatInternal(format);
+	//IndexBufferFormat format = IndexBufferFormat_UInt16;
+	//if (getVertexIndexSize() > 2) {
+	//	format = IndexBufferFormat_UInt16;
+	//}
+	//m_modelCore->resizeIndexBuffer(indexCount);
+	//m_modelCore->requestIndexBuffer()->setFormatInternal(format);
+	m_modelCore->requestIndexBufferForAdditional(indexCount);
 
 	// とりあえずまずは全部読み込む
 	ByteBuffer indicesBuffer(getVertexIndexSize() * indexCount);
@@ -354,8 +356,12 @@ void PmxLoader::loadMaterials(BinaryReader* reader)
 		// Specular係数
 		m->Power = reader->readFloat();
 
+		// Emissive
+		reader->read(&m->Emissive, sizeof(float) * 3);
+		m->Emissive.a = 1.0f;
+
 		// Ambient
-		reader->read(&m->Ambient, sizeof(float) * 3);
+		m->Ambient = m->Diffuse;
 		m->Ambient.a = 1.0f;
 
 		// 描画フラグ (MMDDrawingFlags)

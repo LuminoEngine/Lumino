@@ -159,6 +159,7 @@ struct PMD_Constraint
 
 PmdImporter::PmdImporter()
 {
+	m_rotateY180 = true;
 }
 
 PmdImporter::~PmdImporter()
@@ -170,6 +171,9 @@ bool PmdImporter::load(detail::ModelManager* manager, Stream* stream, const Path
 	m_manager = manager;
 	m_baseDir = baseDir;
 	m_flags = flags;
+
+	if (m_rotateY180)
+		m_adjustMatrix = Matrix::makeRotationY(Math::PI);
 
 	m_model = Ref<PmxSkinnedMeshResource>::makeRef();
 	m_model->initialize(manager->getGraphicsManager(), MeshCreationFlags::None);
@@ -232,6 +236,8 @@ bool PmdImporter::loadVertices(BinaryReader* reader)
 	{
 		PMD_Vertex pmdVertex;
 		reader->read(&pmdVertex, sizeof(PMD_Vertex));
+		adjustPosition(&pmdVertex.vec3Pos);
+		adjustPosition(&pmdVertex.vec3Normal);
 
 		// 頂点、法線、テクスチャUV
 		m_model->setPosition(i, pmdVertex.vec3Pos);
@@ -299,9 +305,13 @@ bool PmdImporter::loadMaterials(BinaryReader* reader)
 		m->Specular.b = pmdMaterial.col3Specular.z;
 		m->Specular.a = 1.0f;
 
-		m->Ambient.r = pmdMaterial.col3Ambient.x;
-		m->Ambient.g = pmdMaterial.col3Ambient.y;
-		m->Ambient.b = pmdMaterial.col3Ambient.z;
+		m->Emissive.r = pmdMaterial.col3Ambient.x;
+		m->Emissive.g = pmdMaterial.col3Ambient.y;
+		m->Emissive.b = pmdMaterial.col3Ambient.z;
+		m->Emissive.a = 1.0f;
+
+		// Ambient
+		m->Ambient = m->Diffuse;
 		m->Ambient.a = 1.0f;
 
 		m->DrawingFlags |= (m->Diffuse.a < 1.0f) ? PmxMaterialResource::DrawingFlag_CullingDouble : 0;
@@ -372,6 +382,7 @@ bool PmdImporter::loadBones(BinaryReader* reader)
 
 		// 初期位置
 		bone->OrgPosition = pmdBone.vec3Position;
+		adjustPosition(&bone->OrgPosition);
 
 		// 親ボーンのボーンIndex
 		bone->ParentBoneIndex = pmdBone.nParentNo;
@@ -445,6 +456,9 @@ bool PmdImporter::loadIKs(BinaryReader* reader)
 				ikLink.IsRotateLimit = true;
 				ikLink.MinLimit = Vector3(-3.14159f, 0, 0);
 				ikLink.MaxLimit = Vector3(-0.002f, 0, 0);
+
+				adjustAngle(&ikLink.MinLimit);
+				adjustAngle(&ikLink.MaxLimit);
 			}
 			ik->IKLinks.add(ikLink);
 		}
@@ -497,6 +511,8 @@ bool PmdImporter::loadMorphs(BinaryReader* reader)
 			{
 				PMD_FaceVtx vtx;
 				reader->read(&vtx, sizeof(PMD_FaceVtx));
+				adjustPosition(&vtx.vec3Pos);
+
 				morph->MorphOffsets[i].VertexMorphOffset.VertexIndex = vtx.ulIndex;
 				morph->MorphOffsets[i].VertexMorphOffset.PositionOffset[0] = vtx.vec3Pos.x;
 				morph->MorphOffsets[i].VertexMorphOffset.PositionOffset[1] = vtx.vec3Pos.y;
@@ -600,6 +616,8 @@ bool PmdImporter::loadRigidBodys(BinaryReader* reader)
 
 			PMD_RigidBody pmdBody;
 			reader->read(&pmdBody, sizeof(PMD_RigidBody));
+			adjustPosition(&pmdBody.vec3Position);
+			adjustAngle(&pmdBody.vec3Rotation);
 
 			// 剛体の種類
 			switch (pmdBody.cbRigidBodyType)
@@ -716,6 +734,26 @@ bool PmdImporter::loadJoints(BinaryReader* reader)
 	}
 
 	return true;
+}
+
+void PmdImporter::adjustPosition(Vector3* pos) const
+{
+	if (m_rotateY180)
+	{
+		pos->transformCoord(m_adjustMatrix);
+	}
+}
+
+void PmdImporter::adjustAngle(Vector3* angles) const
+{
+	if (m_rotateY180)
+	{
+		angles->x *= -1;
+		angles->z *= -1;
+		//(*y) += Math::PI;
+		//if ((*y) >= Math::PI) 
+		//	(*y) -= Math::PI;
+	}
 }
 
 LN_NAMESPACE_END

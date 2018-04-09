@@ -285,6 +285,11 @@ void MeshResource::setIndex(int index, int vertexIndex)
 	m_indexBufferInfo.buffer->setIndex(index, vertexIndex);
 }
 
+int MeshResource::getIndex(int index)
+{
+	return m_indexBufferInfo.buffer->getIndex(index);
+}
+
 //------------------------------------------------------------------------------
 void MeshResource::setAdditionalUV(int index, int additionalUVIndex, const Vector4& uv)
 {

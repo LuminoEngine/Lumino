@@ -26,6 +26,9 @@ public:
 	bool loadRigidBodys(BinaryReader* reader);
 	bool loadJoints(BinaryReader* reader);
 
+	void adjustPosition(Vector3* pos) const;
+	void adjustAngle(Vector3* angles) const;
+
 
 	detail::ModelManager*		m_manager;
 	Path						m_baseDir;
@@ -35,6 +38,9 @@ public:
 	int m_rightKneeBoneIndex;
 	int m_centerBoneIndex;
 	int m_boneDispCount;
+
+	bool m_rotateY180;
+	Matrix m_adjustMatrix;
 };
 
 LN_NAMESPACE_END
