@@ -33,8 +33,8 @@ void SceneRenderer::initialize(GraphicsManager* manager)
 	m_defaultMaterial = CommonMaterial::create();
 
 	// TODO: Dynamic、NoManaged
-	m_skinningMatricesTexture = newObject<Texture2D>(SizeI(4, 512), TextureFormat::R32G32B32A32_Float, false, ResourceUsage::Static);
-	m_skinningLocalQuaternionsTexture = newObject<Texture2D>(SizeI(1, 512), TextureFormat::R32G32B32A32_Float, false, ResourceUsage::Static);
+	m_skinningMatricesTexture = newObject<Texture2D>(SizeI(4, 1024), TextureFormat::R32G32B32A32_Float, false, ResourceUsage::Static);
+	m_skinningLocalQuaternionsTexture = newObject<Texture2D>(SizeI(1, 1024), TextureFormat::R32G32B32A32_Float, false, ResourceUsage::Static);
 
 }
 

@@ -205,6 +205,26 @@ void IndexBuffer::setIndex(int index, int vertexIndex)
 	}
 }
 
+int IndexBuffer::getIndex(int index)
+{
+	void* indexBuffer = getMappedData();
+
+	if (m_format == IndexBufferFormat_UInt16)
+	{
+		uint16_t* i = (uint16_t*)indexBuffer;
+		return i[index];
+	}
+	else if (m_format == IndexBufferFormat_UInt32)
+	{
+		uint32_t* i = (uint32_t*)indexBuffer;
+		return i[index];
+	}
+	else
+	{
+		LN_NOTIMPLEMENTED();
+	}
+}
+
 //------------------------------------------------------------------------------
 Driver::IIndexBuffer* IndexBuffer::resolveRHIObject()
 {

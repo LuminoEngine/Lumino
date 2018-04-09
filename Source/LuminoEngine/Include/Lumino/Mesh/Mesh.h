@@ -82,6 +82,7 @@ public:
 	std::array<int, 4> getBlendIndices(int index);
 
 	void setIndex(int index, int vertexIndex);
+	int getIndex(int index);
 
 	// PMX
 	void setAdditionalUV(int index, int additionalUVIndex, const Vector4& uv);
@@ -193,7 +194,7 @@ LN_INTERNAL_ACCESS:
 
 	// for PMX
 	void resizeVertexBuffer(int vertexCount);
-	void resizeIndexBuffer(int indexCount);
+	void resizeIndexBuffer(int indexCount/*, IndexBufferFormat format = IndexBufferFormat_UInt16*/);
 	//void resizeIndexBuffer(int indexCount, IndexBufferFormat format);
 
 	//void SetIndexInternal(void* indexBuffer, int vertexIndex, int value);
@@ -222,9 +223,10 @@ LN_INTERNAL_ACCESS:
 private:
 	//void PostGenerated(Vertex* vb, void* ib, MeshCreationFlags flags);
 
-LN_INTERNAL_ACCESS:	// TODO:
+public:	// TODO:
 	void setBoundingBox(const Box& box);
 
+LN_INTERNAL_ACCESS:	// TODO:
 	detail::GraphicsManager*	m_manager;
 	String						m_name;
 	ResourceUsage				m_usage;

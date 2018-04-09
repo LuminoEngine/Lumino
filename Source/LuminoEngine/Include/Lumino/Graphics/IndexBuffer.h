@@ -40,6 +40,8 @@ public:
 	/** インデックスの値を設定します。 */
 	void setIndex(int index, int vertexIndex);
 
+	int getIndex(int index);
+
 protected:
 	virtual void Dispose() override;
 

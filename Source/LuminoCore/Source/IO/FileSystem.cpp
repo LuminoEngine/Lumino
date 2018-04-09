@@ -324,6 +324,7 @@ ByteBuffer FileSystem::readAllBytes(const StringRef& filePath)
 	size_t size = (size_t)getFileSize(fp);
 	ByteBuffer buffer(size);
 	fread(buffer.getData(), 1, size, fp);
+	fclose(fp);
 	return buffer;
 }
 //ByteBuffer FileSystem::readAllBytes(const StringRefW& filePath)

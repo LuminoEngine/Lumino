@@ -509,13 +509,14 @@ private:
 			preWriteValue();
 		}
 
-
-
+		if (m_nodeInfoStack.top().headState != NodeHeadState::Value)
+		{
+			if (m_store->getContainerType() == ArchiveContainerType::Object)
+				m_store->writeObjectEnd();
+			else if (m_store->getContainerType() == ArchiveContainerType::Array)
+				m_store->writeArrayEnd();
+		}
 		m_nodeInfoStack.pop();
-		if (m_store->getContainerType() == ArchiveContainerType::Object)
-			m_store->writeObjectEnd();
-		else if (m_store->getContainerType() == ArchiveContainerType::Array)
-			m_store->writeArrayEnd();
 		m_nodeInfoStack.top().nextBaseCall = false;
 	}
 

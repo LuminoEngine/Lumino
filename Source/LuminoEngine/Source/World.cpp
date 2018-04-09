@@ -105,6 +105,7 @@ void World::removeWorldObject(WorldObject* obj)
 	if (LN_REQUIRE(obj->m_world == this)) return;
 	m_rootWorldObjectList.remove(obj);
 	obj->m_parent = nullptr;
+	obj->m_world = nullptr;
 	obj->onDetachedWorld(this);
 }
 
