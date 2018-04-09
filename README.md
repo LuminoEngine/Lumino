@@ -1,5 +1,10 @@
 ﻿Lumino
 ====================
+
+Development after 0.5.0 will continue on the `dev` branch for a while.
+
+--------------------
+
 Lumino is an open source framework for real-time graphics applications.
 Currently, it is developing as a game engine.
 
