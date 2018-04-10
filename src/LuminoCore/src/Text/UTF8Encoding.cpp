@@ -23,7 +23,7 @@ int UTF8Encoding::getCharacterCount(const void* buffer, size_t bufferSize) const
 {
     int count;
     UTFConversionResult result = UnicodeUtils::getUTF8CharCount((const byte_t*)buffer, bufferSize, true, &count);
-    if (LN_ENSURE_ENCODING(result == UTFConversionResult_Success))
+    if (LN_ENSURE(result == UTFConversionResult_Success))
         return 0;
     return count;
 }
@@ -32,7 +32,7 @@ int UTF8Encoding::getLeadExtraLength(const void* buffer, size_t bufferSize) cons
 {
     int len;
     UTFConversionResult result = UnicodeUtils::checkUTF8TrailingBytes(((const byte_t*)buffer), ((const byte_t*)buffer) + bufferSize, true, &len);
-    if (LN_ENSURE_ENCODING(result == UTFConversionResult_Success))
+    if (LN_ENSURE(result == UTFConversionResult_Success))
         return 0;
     return len;
 }

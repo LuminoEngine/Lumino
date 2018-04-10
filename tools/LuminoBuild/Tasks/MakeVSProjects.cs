@@ -43,7 +43,7 @@ namespace LuminoBuild.Tasks
                 {
                     Directory.CreateDirectory(builder.LuminoBuildDir + t.DirName);
                     Directory.SetCurrentDirectory(builder.LuminoBuildDir + t.DirName);
-                    Utils.CallProcess("cmake", string.Format("-G\"{0}\" -DLN_MSVC_STATIC_RUNTIME={1} ../..", t.VSTarget, t.MSVCStaticRuntime));
+                    Utils.CallProcess("cmake", string.Format("-G\"{0}\" -DLN_MSVC_STATIC_RUNTIME={1} -DLN_BUILD_TESTS=ON ../..", t.VSTarget, t.MSVCStaticRuntime));
                 }
             }
             else

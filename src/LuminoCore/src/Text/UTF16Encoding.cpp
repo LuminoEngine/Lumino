@@ -28,7 +28,7 @@ int UTF16Encoding::getLeadExtraLength(const void* buffer, size_t bufferSize) con
 {
     bool s;
     UTFConversionResult result = UnicodeUtils::checkUTF16Surrogate((const UTF16*)buffer, ((const UTF16*)buffer) + bufferSize / sizeof(UTF16), true, &s);
-    if (LN_ENSURE_ENCODING(result == UTFConversionResult_Success))
+    if (LN_ENSURE(result == UTFConversionResult_Success))
         return 0;
     return (s) ? 1 : 0;
 }
@@ -37,7 +37,7 @@ int UTF16Encoding::getCharacterCount(const void* buffer, size_t bufferSize) cons
 {
     int count;
     UTFConversionResult result = UnicodeUtils::getUTF16CharCount((const UTF16*)buffer, bufferSize / sizeof(UTF16), true, &count);
-    if (LN_ENSURE_ENCODING(result == UTFConversionResult_Success))
+    if (LN_ENSURE(result == UTFConversionResult_Success))
         return 0;
     return count;
 }

@@ -372,51 +372,6 @@ Exception* IOException::copy() const
 	return LN_NEW IOException(*this);
 }
 
-//==============================================================================
-// FileNotFoundException
-//==============================================================================
-LN_EXCEPTION_FORMATTING_CONSTRUCTOR_IMPLEMENT(FileNotFoundException);
-
-FileNotFoundException::FileNotFoundException()
-{
-	setCaption(_LT("ln::FileNotFoundException"));
-}
-
-Exception* FileNotFoundException::copy() const
-{
-	return LN_NEW FileNotFoundException(*this);
-}
-
-//==============================================================================
-// EncodingException
-//==============================================================================
-LN_EXCEPTION_FORMATTING_CONSTRUCTOR_IMPLEMENT(EncodingException);
-
-EncodingException::EncodingException()
-{
-	setCaption(_LT("ln::EncodingException"));
-}
-
-Exception* EncodingException::copy() const
-{
-	return LN_NEW EncodingException(*this);
-}
-
-//==============================================================================
-// InvalidFormatException
-//==============================================================================
-LN_EXCEPTION_FORMATTING_CONSTRUCTOR_IMPLEMENT(InvalidFormatException);
-
-InvalidFormatException::InvalidFormatException()
-{
-	setCaption(_LT("ln::InvalidFormatException"));
-}
-
-Exception* InvalidFormatException::copy() const
-{
-	return LN_NEW InvalidFormatException(*this);
-}
-
 } // namespace ln
 
 

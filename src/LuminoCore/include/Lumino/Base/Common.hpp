@@ -177,6 +177,7 @@ enum class StringSplitOptions
 #error "size of wchar_t is too large."
 #endif
 
+/** Lumino namespace */
 namespace ln {
 
 using byte_t = unsigned char;

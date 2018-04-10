@@ -120,18 +120,18 @@ bool Win32CodePageEncoding::Win32CodePageDecoder::convertToUTF16(const byte_t* i
 
         // 変換
         convertedWideCount = ::MultiByteToWideChar(m_codePage, MB_ERR_INVALID_CHARS, (LPCSTR)tmpInBuffer.data(), tmpInBuffer.size() - defectCount, (LPWSTR)output, outputElementSize);
-        if (LN_ENSURE_ENCODING(convertedWideCount > 0))
+        if (LN_ENSURE(convertedWideCount > 0))
             return false;
     } else {
         convertedWideCount = ::MultiByteToWideChar(m_codePage, MB_ERR_INVALID_CHARS, (LPCSTR)input, inputByteSize, (LPWSTR)output, outputElementSize);
-        if (LN_ENSURE_ENCODING(convertedWideCount > 0))
+        if (LN_ENSURE(convertedWideCount > 0))
             return false;
     }
 
     // MultiByteToWideChar じゃ文字数カウントはできないので UnicodeUtils を使う
     int count;
     UTFConversionResult r = UnicodeUtils::getUTF16CharCount((UTF16*)output, convertedWideCount, true, &count);
-    if (LN_ENSURE_ENCODING(r == UTFConversionResult_Success))
+    if (LN_ENSURE(r == UTFConversionResult_Success))
         return false;
 
     outResult->usedByteCount = inputByteSize;
@@ -194,14 +194,14 @@ bool Win32CodePageEncoding::Win32CodePageEncoder::convertFromUTF16(const UTF16* 
             outputByteSize,
             pDefault,
             &bUsedDefaultChar);
-        if (LN_ENSURE_ENCODING(convertedByteCount > 0))
+        if (LN_ENSURE(convertedByteCount > 0))
             return false;
     }
 
     // WideCharToMultiByte じゃ文字数カウントはできないので UnicodeUtils を使う
     int count;
     UTFConversionResult r = UnicodeUtils::getUTF16CharCount((UTF16*)input, inputElementSize, true, &count);
-    if (LN_ENSURE_ENCODING(r == UTFConversionResult_Success))
+    if (LN_ENSURE(r == UTFConversionResult_Success))
         return false;
 
     outResult->usedElementCount = inputElementSize;

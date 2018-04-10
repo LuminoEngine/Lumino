@@ -7,8 +7,6 @@
 # options
 #------------------------------------------------------------------------------
 
-# MSVC Runtime library.
-option(LN_MSVC_STATIC_RUNTIME "static runtime (/MT, /MTd) or DLL runtime (/MD, /MDd) or to link either." OFF)
 
 
 #add_definitions("-std=c++14")

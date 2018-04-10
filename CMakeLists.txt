@@ -10,6 +10,9 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # build unit test projects
 option(LN_BUILD_TESTS "build unit test projects." OFF)
 
+# MSVC Runtime library.
+option(LN_MSVC_STATIC_RUNTIME "static runtime (/MT, /MTd) or DLL runtime (/MD, /MDd) or to link either." OFF)
+
 #------------------------------------------------------------------------------
 
 include(src/LuminoCommon.cmake)
@@ -24,4 +27,5 @@ set(LUMINO_INCLUDE_DIRECTORIES
 include(external/External.cmake)
 add_subdirectory(src/LuminoCore)
 add_subdirectory(src/LuminoEngine)
+add_subdirectory(src/LuminoRuntime)
 

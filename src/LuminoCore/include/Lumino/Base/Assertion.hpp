@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2018 lriki. Distributed under the MIT license.
 
+/** @file */
 #pragma once
 #include <string>
 #include <iostream>
@@ -12,23 +13,50 @@ class String;
 #define _LN_CHECK(expr, exception, ...)			(!(expr)) && ln::detail::notifyException<exception>(LN__FILE__, __LINE__, ##__VA_ARGS__)
 
 // core
+/**
+ * コードを実行する前の前提条件を検証するためのマクロです。
+ * 
+ * 式が false である場合、例外ハンドラが呼び出されます。デフォルトではエラーをロギングし、このマクロは true を返します。
+ * ~~~
+ * void func(int* ptr) {
+ *     if (LN_REQUIRE(ptr != nullptr, "invalid args.")) return;
+ * 	   ...
+ * }
+ * ~~~
+ */
 #define LN_REQUIRE(expr, ...)					_LN_CHECK(expr, ::ln::LogicException, ##__VA_ARGS__)
+
+/**
+ * 処理の実行結果を検証するためのマクロです。
+ * 
+ * 式が false である場合、例外ハンドラが呼び出されます。デフォルトではエラーをロギングし、このマクロは true を返します。
+ * ~~~
+ * void func() {
+ *     int result = test();
+ *     if (LN_ENSURE(result != -1, "invalid call.")) return;
+ * }
+ * ~~~
+ */
 #define LN_ENSURE(expr, ...)					_LN_CHECK(expr, ::ln::RuntimeException, ##__VA_ARGS__)
+
+/**
+ * アプリケーションの継続が難しい致命的なエラーを通知するためのマクロです。
+ */
 #define LN_FATAL(expr, ...)						_LN_CHECK(expr, ::ln::FatalException, ##__VA_ARGS__)
 
-// utils
-#define LN_UNREACHABLE()						_LN_CHECK(0, ::ln::LogicException)
+/**
+ * 到達不能コードをマークするためのマクロです。
+ */
+#define LN_UNREACHABLE()						_LN_CHECK(0, ::ln::LogicException, "Unreachable code.")
+
+/**
+ * 未実装の機能をマークするためのマクロです。
+ */
 #define LN_NOTIMPLEMENTED()						_LN_CHECK(0, ln::NotImplementedException)
+
 #define LN_REQUIRE_RANGE(value, begin, end)		_LN_CHECK(begin <= value && value < end, ::ln::LogicException)
 #define LN_REQUIRE_KEY(expr, ...)				_LN_CHECK(expr, ln::LogicException, ##__VA_ARGS__)
 #define LN_ENSURE_IO(expr)						_LN_CHECK(expr, ln::IOException)
-#define LN_ENSURE_FILE_NOT_FOUND(expr, path)	_LN_CHECK(expr, ln::FileNotFoundException, path)
-#define LN_ENSURE_ENCODING(expr, ...)			_LN_CHECK(expr, ln::EncodingException)
-#define LN_ENSURE_INVALID_FORMAT(expr, ...)		_LN_CHECK(expr, ln::InvalidFormatException, ##__VA_ARGS__)
-
-
-
-
 
 // internal
 #ifdef LN_USTRING16
@@ -89,9 +117,7 @@ void Exception_setSourceLocationInfo(Exception& e, const Char* filePath, int fil
 //------------------------------------------------------------------------------
 // core errors
 
-/**
-	@brief		アプリケーションの実行中に発生したエラーを表します。
-*/
+/** アプリケーションの実行中に発生したエラーを表します。 */
 class LN_API Exception
 {
 public:
@@ -131,9 +157,7 @@ private:
 	friend void detail::Exception_setSourceLocationInfo(Exception& e, const Char* filePath, int fileLine);
 };
 
-/**
-	@brief		前提条件の間違いなどプログラム内の論理的な誤りが原因で発生したエラーを表します。
-*/
+/** 前提条件の間違いなどプログラム内の論理的な誤りが原因で発生したエラーを表します。 */
 class LN_API LogicException
 	: public Exception
 {
@@ -143,9 +167,7 @@ public:
 	virtual Exception* copy() const;
 };
 
-/**
-	@brief		主にアプリケーションの実行環境が原因で発生したエラーを表します。
-*/
+/** 主にアプリケーションの実行環境が原因で発生したエラーを表します。 */
 class LN_API RuntimeException
 	: public Exception
 {
@@ -155,9 +177,7 @@ public:
 	virtual Exception* copy() const;
 };
 
-/**
-	@brief		アプリケーションの継続が難しい致命的なエラーを表します。
-*/
+/** アプリケーションの継続が難しい致命的なエラーを表します。 */
 class LN_API FatalException
 	: public Exception
 {
@@ -171,9 +191,7 @@ public:
 //------------------------------------------------------------------------------
 // extension errors
 
-/**
-	@brief		未実装の機能を呼び出した場合のエラーを表します。
-*/
+/** 未実装の機能を呼び出した場合のエラーを表します。 */
 class LN_API NotImplementedException
 	: public LogicException
 {
@@ -183,9 +201,7 @@ public:
 	virtual Exception* copy() const;
 };
 
-/**
-	@brief		I/O エラーが発生した場合のエラーを表します。
-*/
+/** I/O エラーが発生した場合のエラーを表します。 */
 class LN_API IOException
 	: public RuntimeException
 {
@@ -194,65 +210,6 @@ public:
 	IOException();
 	virtual Exception* copy() const;
 };
-
-/**
-	@brief		ファイルアクセスに失敗した場合のエラーを表します。
-*/
-class LN_API FileNotFoundException
-	: public IOException
-{
-public:
-	LN_EXCEPTION_FORMATTING_CONSTRUCTOR_DECLARE(FileNotFoundException);
-	FileNotFoundException();
-	virtual Exception* copy() const;
-};
-
-/**
-	@brief		エンコーディングの変換に失敗した場合のエラーを表します。
-*/
-class LN_API EncodingException
-	: public RuntimeException
-{
-public:
-	LN_EXCEPTION_FORMATTING_CONSTRUCTOR_DECLARE(EncodingException);
-	EncodingException();
-	virtual Exception* copy() const;
-};
-
-/**
-	@brief		無効な形式のデータが入力された場合のエラーを表します。
-*/
-class LN_API InvalidFormatException
-	: public RuntimeException
-{
-public:
-	LN_EXCEPTION_FORMATTING_CONSTRUCTOR_DECLARE(InvalidFormatException);
-	InvalidFormatException();
-	virtual Exception* copy() const;
-};
-
-/**
-	@brief	WindowsAPI のエラーを表します。 (GetLastError)
-*/
-//class Win32Exception 
-//	: public Exception
-//{
-//public:
-//	Win32Exception();
-//	Win32Exception(uint32_t dwLastError);
-//	virtual Exception* copy() const;
-//
-//	uint32_t getLastErrorCode() const { return m_dwLastErrorCode; }
-//	const std::basic_string<Char>& getFormatMessage() const { return m_formatMessage; }
-//
-//private:
-//	void setMessage(uint32_t dwLastError);
-//	uint32_t				m_dwLastErrorCode;
-//	std::basic_string<Char>	m_formatMessage;
-//};
-//
-//
-
 
 
 namespace detail {

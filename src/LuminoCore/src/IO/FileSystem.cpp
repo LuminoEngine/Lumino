@@ -310,7 +310,7 @@ ByteBuffer FileSystem::readAllBytes(const StringRef& filePath)
 	detail::GenericStaticallyLocalPath<PlatformFileSystem::PathChar> localPath(filePath.getBegin(), filePath.length());
 	const PlatformFileSystem::PathChar mode[] = { 'r', 'b', '\0' };
 	FILE* fp = PlatformFileSystem::fopen(localPath.c_str(), mode);
-	if (LN_ENSURE_FILE_NOT_FOUND(fp, localPath.c_str())) return ByteBuffer();
+	if (LN_ENSURE_IO(fp, localPath.c_str())) return ByteBuffer();
 
 	size_t size = (size_t)getFileSize(fp);
 	ByteBuffer buffer(size);
