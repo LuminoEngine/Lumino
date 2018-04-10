@@ -19,6 +19,9 @@ set(LUMINO_INCLUDE_DIRECTORIES
     "${LUMINO_ROOT_PATH}/src/LuminoCore/include"
     "${LUMINO_ROOT_PATH}/src/LuminoEngine/include")
 
+#------------------------------------------------------------------------------
+
+include(external/External.cmake)
 add_subdirectory(src/LuminoCore)
 add_subdirectory(src/LuminoEngine)
 

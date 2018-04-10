@@ -11,3 +11,15 @@ Lumino はゲームやデジタルアートなどのリアルタイムグラフ�
 
 [Contributing](.github/CONTRIBUTING.md)
 
+
+
+How to build
+--------------------
+
+on Developer Command Prompt for VS2017
+```
+> dotnet run
+```
+
+After this, please check in the "build/..." folder.
+

@@ -1,10 +1,186 @@
 ﻿
 #include <stdio.h>
-#include "Common.hpp"
+#include "Common.h"
+
+
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+
+
+static volatile bool g_ioDione = false;
+extern "C" void setIODone()
+{
+	printf("called setIODone()\n");
+	g_ioDione = true;
+}
+
+
+
+void pre1(void *arg)
+{
+	EM_ASM(
+		//create your directory where we keep our persistent data
+		FS.mkdir('/persistent_data'); 
+	
+		//mount persistent directory as IDBFS
+		FS.mount(IDBFS,{},'/persistent_data');
+	
+		Module.print("start file sync..");
+		//flag to check when data are synchronized
+		Module.syncdone = 0;
+	
+		//populate persistent_data directory with existing persistent source data 
+		//stored with Indexed Db
+		//first parameter = "true" mean synchronize from Indexed Db to 
+		//Emscripten file system,
+		// "false" mean synchronize from Emscripten file system to Indexed Db
+		//second parameter = function called when data are synchronized
+		FS.syncfs(true, function(err) {
+						assert(!err);
+						Module.print("end file sync..");
+						Module.syncdone = 1;
+						//Module.ccall('setIODone', "");
+		});
+	);
+
+	printf("waiting\n");
+	//while (!g_ioDione) {
+
+	//}
+	printf("wait end\n");
+}
+
+static void ems_loop()
+{
+	static int count = 0;
+
+	if (count == 10)
+	{
+
+		{
+			FILE* fp = fopen("/persistent_data/out.txt", "r");
+			if (fp) {
+				printf("open file.");
+				char str[256];
+				fgets(str, 256, fp);
+				printf(str);
+			}
+			else {
+				printf("no file.");
+			}
+		}
+
+
+			
+		FILE* fp = fopen("/persistent_data/out.txt", "w");
+		if (!fp) {
+			printf("failed fp.");
+			return;
+		}
+		printf("fp:%p\n", fp);
+		fprintf(fp, "test");
+		fclose(fp);
+		
+		//persist Emscripten current data to Indexed Db
+		EM_ASM(
+				Module.print("Start File sync..");
+				Module.syncdone = 0;
+				FS.syncfs(false, function(err) {
+								assert(!err);
+								Module.print("End File sync..");
+								Module.syncdone = 1;
+								});
+		);
+	}
+
+
+	if (count == 50)
+	{
+
+		{
+			FILE* fp = fopen("/persistent_data/out.txt", "r");
+			if (fp) {
+				printf("open file.\n");
+				char str[256];
+				fgets(str, 256, fp);
+				printf(str);
+			}
+			else {
+				printf("no file.\n");
+			}
+		}
+
+	}
+
+	if (count == 60)
+	{
+		emscripten_cancel_main_loop();
+	}
+
+	printf("count:%d\n", count);
+
+	count++;
+}
+
+static void main_loop()
+{
+	static int init = 0;
+	if (!init)
+	{
+		init = 1;
+
+		char* testArgs[] =
+		{
+			"",
+			"--gtest_break_on_failure",
+			"--gtest_filter=Test_IO_FileSystem.*"
+		};
+		int argc = sizeof(testArgs) / sizeof(char*);
+		testing::InitGoogleTest(&argc, (char**)testArgs);
+		RUN_ALL_TESTS();
+	}
+}
 
 int main(int argc, char** argv)
 {
-	printf("run test.");
+	setlocale(LC_ALL, "");
+
+	printf("Running test.\n");
+	emscripten_set_main_loop(main_loop, 1, true);
 	return 0;
 }
 
+#else
+
+int main(int argc, char** argv)
+{
+#ifdef _WIN32
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
+	setlocale(LC_ALL, "");
+
+#ifdef __EMSCRIPTEN__
+	{
+
+		emscripten_push_main_loop_blocker(pre1, (void*)123);
+
+
+		emscripten_set_main_loop(ems_loop, 60, true);
+	}
+#endif
+
+
+	char* testArgs[] =
+	{
+		argv[0],
+		"--gtest_break_on_failure",
+		//"--gtest_filter=Test_IO_FileSystem.GetFilesOrDirectory"
+	};
+	argc = sizeof(testArgs) / sizeof(char*);
+
+	printf("Running test.\n");
+	testing::InitGoogleTest(&argc, (char**)testArgs);
+	return RUN_ALL_TESTS();
+}
+
+#endif
