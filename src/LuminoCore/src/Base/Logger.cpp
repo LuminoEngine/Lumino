@@ -217,15 +217,15 @@ static const char* GetLogLevelString(LogLevel level)
 {
     switch (level) {
         case LogLevel::Fatal:
-            return "Fatal";
+            return "Fatal  ";
         case LogLevel::Error:
-            return "Error";
+            return "Error  ";
         case LogLevel::Warning:
             return "Warning";
         case LogLevel::Info:
-            return "Info";
+            return "Info   ";
         case LogLevel::Debug:
-            return "Debug";
+            return "Debug  ";
         case LogLevel::Verbose:
             return "Verbose";
         default:

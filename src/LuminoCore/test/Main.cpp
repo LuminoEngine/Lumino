@@ -171,6 +171,10 @@ int main(int argc, char** argv)
 #endif
 	GlobalLogger::addStdErrAdapter();
 	LN_LOG_INFO << "Running test.";
+	LN_LOG_INFO << "Start title game scene.";
+	LN_LOG_WARNING << "UserId: " << 0;
+	LN_LOG_INFO << "End title game scene.";
+	LN_LOG_ERROR << "File not found. " << "save1.dat";
 
 
 	char* testArgs[] =

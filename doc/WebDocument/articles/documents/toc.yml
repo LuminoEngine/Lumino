@@ -1,3 +1,10 @@
+
+- name: Core
+  items:
+    - name: ログ出力
+      href: Base_Logging.md
+
+
 - name: エンジン
   href: index.md
   items:
