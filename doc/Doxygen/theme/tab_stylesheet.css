@@ -1,0 +1,42 @@
+
+.ln_lang_tabs ul.ln_tab_menu
+{
+    list-style-type : none;
+    margin          : 0px;
+    padding         : 0px;
+}
+
+.ln_lang_tabs ul.ln_tab_menu li
+{
+    display         : inline;
+    background      : #dddddd;
+    padding         : 2px;
+    margin          : 0px;
+    border                  : 1px #777777 solid;
+    border-top-left-radius  : 3px;
+    border-top-right-radius : 3px;
+}
+
+.ln_lang_tabs ul.ln_tab_menu li.active
+{
+    background      : #ffffff;
+    border-color    : #777777 #777777 #ffffff;
+    z-index         : 2;
+}
+
+.ln_lang_tabs ul.ln_tab_menu a
+{
+    text-decoration : none;
+    margin          : 3px;
+    color           : #333333;
+    cursor          : pointer;
+}
+
+.ln_lang_tabs .ln_tab_content
+{
+    width           : 80%;
+    padding         : 0px;
+    margin          : 0px;
+    border          : 1px #777777 solid;
+}
+
