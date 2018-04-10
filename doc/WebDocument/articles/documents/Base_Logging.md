@@ -1,6 +1,13 @@
 ログ出力
 ====================
 
+> [!Note]
+> Draft
+
+
+Lumino はアプリケーションの利用状況やプログラムの実行状況を記録するための簡易的なロギング機能を持っています。
+
+
 ```cpp
 LN_LOG_INFO << "Running test.";
 LN_LOG_INFO << "Start title game scene.";
