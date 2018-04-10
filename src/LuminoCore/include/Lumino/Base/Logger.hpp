@@ -15,7 +15,7 @@
 #define LN_FUNC_MACRO __PRETTY_FUNCTION__
 #endif
 
-#define LN_LOG(level) !(::ln::detail::LoggerInterface::getInstance() && ::ln::detail::LoggerInterface::getInstance()->CheckLevel(level)) ? (void)0 : (*::ln::detail::LoggerInterface::getInstance()) += ::ln::detail::LogRecord(level, __FILE__, LN_FUNC_MACRO, __LINE__)
+#define LN_LOG(level) !(::ln::detail::LoggerInterface::getInstance() && ::ln::detail::LoggerInterface::getInstance()->checkLevel(level)) ? (void)0 : (*::ln::detail::LoggerInterface::getInstance()) += ::ln::detail::LogRecord(level, __FILE__, LN_FUNC_MACRO, __LINE__)
 #define LN_LOG_FATAL LN_LOG(::ln::LogLevel::Fatal)
 #define LN_LOG_ERROR LN_LOG(::ln::LogLevel::Error)
 #define LN_LOG_WARNING LN_LOG(::ln::LogLevel::Warning)
@@ -46,7 +46,7 @@ public:
      * @param[in]   filePath : ログファイルのパス
      * @return      true=成功 / false=失敗
      */
-    static bool addFileAdapter(const StringRef& filePath);
+    static bool addFileAdapter(const std::string& filePath);
 
     /** 
      * ログを標準エラーへ出力するためのアダプタを追加します。 
@@ -112,7 +112,7 @@ public:
 
     LoggerInterface();
     ~LoggerInterface();
-    bool CheckLevel(LogLevel level);
+    bool checkLevel(LogLevel level);
     void operator+=(const LogRecord& record);
 
     class Impl;

@@ -171,6 +171,18 @@ ILoggerAdapter::~ILoggerAdapter()
 }
 
 //==============================================================================
+// FileLoggerAdapter
+
+class FileLoggerAdapter : public ILoggerAdapter
+{
+public:
+	virtual void write(const char* str, size_t len) override
+	{
+		g_logFile.write(str, len);
+	}
+};
+
+//==============================================================================
 // StdErrLoggerAdapter
 
 class StdErrLoggerAdapter : public ILoggerAdapter
@@ -188,6 +200,8 @@ public:
 class LoggerInterface::Impl
 {
 public:
+	bool hasAdapter() const { return !m_adapters.empty(); }
+
     std::vector<std::shared_ptr<ILoggerAdapter>> m_adapters;
 };
 
@@ -238,36 +252,34 @@ LoggerInterface::~LoggerInterface()
     }
 }
 
-bool LoggerInterface::CheckLevel(LogLevel level)
+bool LoggerInterface::checkLevel(LogLevel level)
 {
     return level <= g_maxLevel;
 }
 
 void LoggerInterface::operator+=(const LogRecord& record)
 {
-    if (!g_logFile.IsOpend()) {
-        g_logFile.open(g_logFilePath.c_str());
-    }
+	if (m_impl->hasAdapter())
+	{
+		tm t;
+		char date[64];
+		LogHelper::GetLocalTime(&t, &record.getTime().time);
+		strftime(date, sizeof(date), "%Y/%m/%d %H:%M:%S", &t);
 
-    tm t;
-    char date[64];
-    LogHelper::GetLocalTime(&t, &record.getTime().time);
-    strftime(date, sizeof(date), "%Y/%m/%d %H:%M:%S", &t);
+		g_logSS.str("");                           // バッファをクリアする。
+		g_logSS.clear(std::stringstream::goodbit); // ストリームの状態をクリアする。この行がないと意図通りに動作しない
+		g_logSS << date << " ";
+		g_logSS << std::setw(5) << std::left << GetLogLevelString(record.GetLevel()) << " ";
+		g_logSS << "[" << record.getThreadId() << "]";
+		g_logSS << "[" << record.GetFunc() << "(" << record.GetLine() << ")] ";
+		g_logSS << record.getMessage() << std::endl;
 
-    g_logSS.str("");                           // バッファをクリアする。
-    g_logSS.clear(std::stringstream::goodbit); // ストリームの状態をクリアする。この行がないと意図通りに動作しない
-    g_logSS << date << " ";
-    g_logSS << std::setw(5) << std::left << GetLogLevelString(record.GetLevel()) << " ";
-    g_logSS << "[" << record.getThreadId() << "]";
-    g_logSS << "[" << record.GetFunc() << "(" << record.GetLine() << ")] ";
-    g_logSS << record.getMessage() << std::endl;
+		auto str = g_logSS.str();
 
-    auto str = g_logSS.str();
-    g_logFile.write(str.c_str(), str.length());
-
-    for (auto& adapter : m_impl->m_adapters) {
-        adapter->write(str.c_str(), str.length());
-    }
+		for (auto& adapter : m_impl->m_adapters) {
+			adapter->write(str.c_str(), str.length());
+		}
+	}
 }
 
 } // namespace detail
@@ -275,9 +287,18 @@ void LoggerInterface::operator+=(const LogRecord& record)
 //==============================================================================
 // GlobalLogger
 
-bool GlobalLogger::addFileAdapter(const StringRef& filePath)
+bool GlobalLogger::addFileAdapter(const std::string& filePath)
 {
-    return false;
+	if (g_logFile.IsOpend()) {
+		return false;
+	}
+
+	g_logFile.open(filePath.c_str());
+
+	detail::LoggerInterface::getInstance()->m_impl->m_adapters.push_back(
+		std::make_shared<detail::FileLoggerAdapter>());
+
+    return true;
 }
 
 void GlobalLogger::addStdErrAdapter()
