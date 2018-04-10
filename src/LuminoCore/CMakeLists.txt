@@ -18,6 +18,7 @@ set(LN_SOURCES_Base
 	include/Lumino/Base/List.hpp
 	include/Lumino/Base/List.inl
 	include/Lumino/Base/Locale.hpp
+	include/Lumino/Base/Logger.hpp
 	include/Lumino/Base/Platform.hpp
 	include/Lumino/Base/RefObject.hpp
 	include/Lumino/Base/StlHelper.hpp
@@ -34,6 +35,7 @@ set(LN_SOURCES_Base
 	src/Base/Environment_Mac.hpp
 	src/Base/Environment_Win32.hpp
 	src/Base/Locale.cpp
+	src/Base/Logger.cpp
 	src/Base/Platform.cpp
 	src/Base/RefObject.cpp
 	src/Base/StlHelper.cpp

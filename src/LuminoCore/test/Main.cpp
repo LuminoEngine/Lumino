@@ -1,6 +1,7 @@
 ﻿
 #include <stdio.h>
 #include "Common.h"
+#include <Lumino/Base/Logger.hpp>
 
 
 #ifdef __EMSCRIPTEN__
@@ -168,6 +169,8 @@ int main(int argc, char** argv)
 		emscripten_set_main_loop(ems_loop, 60, true);
 	}
 #endif
+	GlobalLogger::addStdErrAdapter();
+	LN_LOG_INFO << "Running test.";
 
 
 	char* testArgs[] =
@@ -178,7 +181,7 @@ int main(int argc, char** argv)
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 
-	printf("Running test.\n");
+	//printf();
 	testing::InitGoogleTest(&argc, (char**)testArgs);
 	return RUN_ALL_TESTS();
 }
