@@ -15,6 +15,7 @@ set(LN_SOURCES_Base
 	include/Lumino/Base/CRCHash.hpp
 	include/Lumino/Base/EnumFlags.hpp
 	include/Lumino/Base/Environment.hpp
+	include/Lumino/Base/Event.hpp
 	include/Lumino/Base/List.hpp
 	include/Lumino/Base/List.inl
 	include/Lumino/Base/Locale.hpp

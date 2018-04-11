@@ -1,6 +1,6 @@
 ﻿
 #include <stdio.h>
-#include "Common.h"
+#include "Common.hpp"
 #include <Lumino/Base/Logger.hpp>
 
 
@@ -177,7 +177,7 @@ int main(int argc, char** argv)
 	{
 		argv[0],
 		"--gtest_break_on_failure",
-		//"--gtest_filter=Test_IO_FileSystem.GetFilesOrDirectory"
+		"--gtest_filter=Test_Base_EventConnection.*"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 

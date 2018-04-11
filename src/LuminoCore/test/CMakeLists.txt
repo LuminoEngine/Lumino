@@ -3,9 +3,10 @@ project(LuminoCore_Test)
 
 set(LN_SOURCES
 	${LN_SOURCES_gtest}
-	Common.h
+	Common.hpp
 	Main.cpp
 	Test_Base_EnumFlags.cpp
+	Test_Base_Event.cpp
 	Test_Base_Formatter.cpp
 	Test_Base_Logger.cpp
 	Test_Base_String.cpp

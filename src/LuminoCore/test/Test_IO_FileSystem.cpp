@@ -1,4 +1,4 @@
-#include "Common.h"
+#include "Common.hpp"
 #include <Lumino/IO/FileSystem.hpp>
 
 //==============================================================================

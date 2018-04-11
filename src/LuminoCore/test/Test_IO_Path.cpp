@@ -1,4 +1,4 @@
-#include "Common.h"
+#include "Common.hpp"
 #include <Lumino/Base/Environment.hpp>
 #include <Lumino/IO/Path.hpp>
 #include "../src/IO/PathHelper.hpp"
