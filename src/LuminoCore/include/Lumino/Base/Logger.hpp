@@ -3,6 +3,7 @@
 #pragma once
 
 #include <sstream>
+#include <thread>
 #ifdef _WIN32
 #include <sys/timeb.h>
 #else
@@ -52,6 +53,13 @@ public:
      * ログを標準エラーへ出力するためのアダプタを追加します。 
      */
     static void addStdErrAdapter();
+
+	/**
+	 * どの程度詳細にログを生成するかを設定します。(defailt: Debug)
+	 *
+	 * 例えば LogLevel::Warning を指定した場合、Fatal, Error, Warning のレベルについてログを生成します。
+	 */
+	static void setLevel(LogLevel level);
 };
 
 namespace detail {
@@ -76,7 +84,7 @@ public:
     const char* GetFile() const { return m_file; }
     const char* GetFunc() const { return m_func; }
     int GetLine() const { return m_line; }
-    unsigned int getThreadId() const { return m_threadId; }
+    const std::thread::id& getThreadId() const { return m_threadId; }
 
     //LogRecord& operator<<(const wchar_t* str);
 
@@ -93,7 +101,7 @@ private:
     const char* m_file;
     const char* m_func;
     int m_line;
-    unsigned int m_threadId;
+	std::thread::id m_threadId;
     std::stringstream m_message;
     mutable std::string m_messageStr;
 };

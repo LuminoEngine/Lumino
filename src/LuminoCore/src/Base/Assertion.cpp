@@ -5,6 +5,7 @@
 #include <Lumino/Base/Assertion.hpp>
 #include <Lumino/Base/String.hpp>
 #include <Lumino/Base/StringHelper.hpp>
+#include <Lumino/Base/Logger.hpp>
 #include "../Text/UnicodeUtils.hpp"
 
 namespace ln {
@@ -140,21 +141,12 @@ void errorPrintf(Char* buf, size_t bufSize)
 	buf[0] = '\0';
 }
 
-//void errorStderr(const Char* str)
-//{
-//	const size_t BUFFER_SIZE = 512;
-//	char buf[BUFFER_SIZE] = {};
-//	convertChar16ToLocalChar(str, BUFFER_SIZE, buf, BUFFER_SIZE);
-//	std::cout << "Lumino assertion: " << buf << std::endl;
-//}
-
-
-void errorStderr(const Exception& e)
+void printError(const Exception& e)
 {
 	const size_t BUFFER_SIZE = 512;
 	char buf[BUFFER_SIZE] = {};
 	convertChar16ToLocalChar(e.getMessage(), BUFFER_SIZE, buf, BUFFER_SIZE);
-	std::cout << "Lumino assertion: " << buf << std::endl;
+	LN_LOG_ERROR << buf;
 }
 
 void Exception_setSourceLocationInfo(Exception& e, const Char* filePath, int fileLine)

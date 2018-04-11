@@ -1,6 +1,5 @@
 ﻿
 #include "Internal.hpp"
-#include <thread>
 #include <cstdio>
 #include <vector>
 #include <memory>
@@ -148,7 +147,7 @@ LogRecord::LogRecord(LogLevel level, const char* file, const char* func, int lin
     , m_file(file)
     , m_func(func)
     , m_line(line)
-    , m_threadId(0) //Thread::getCurrentThreadId())
+    , m_threadId(std::this_thread::get_id())
 {
     LogHelper::getTime(&m_time);
 }
@@ -211,25 +210,25 @@ public:
 static LoggerInterface g_logger;
 static bool g_logEnabled = true;
 static std::string g_logFilePath = "LuminoLog.txt";
-static LogLevel g_maxLevel = LogLevel::Info;
+static LogLevel g_maxLevel = LogLevel::Debug;
 
 static const char* GetLogLevelString(LogLevel level)
 {
     switch (level) {
         case LogLevel::Fatal:
-            return "Fatal  ";
+            return "F";
         case LogLevel::Error:
-            return "Error  ";
+            return "E";
         case LogLevel::Warning:
-            return "Warning";
+            return "W";
         case LogLevel::Info:
-            return "Info   ";
+            return "I";
         case LogLevel::Debug:
-            return "Debug  ";
+            return "D";
         case LogLevel::Verbose:
-            return "Verbose";
+            return "V";
         default:
-            return "";
+            return "-";
     }
 }
 
@@ -269,7 +268,7 @@ void LoggerInterface::operator+=(const LogRecord& record)
 		g_logSS.str("");                           // バッファをクリアする。
 		g_logSS.clear(std::stringstream::goodbit); // ストリームの状態をクリアする。この行がないと意図通りに動作しない
 		g_logSS << date << " ";
-		g_logSS << std::setw(5) << std::left << GetLogLevelString(record.GetLevel()) << " ";
+		g_logSS << GetLogLevelString(record.GetLevel()) << " ";
 		g_logSS << "[" << record.getThreadId() << "]";
 		g_logSS << "[" << record.GetFunc() << "(" << record.GetLine() << ")] ";
 		g_logSS << record.getMessage() << std::endl;

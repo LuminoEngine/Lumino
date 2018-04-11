@@ -219,7 +219,7 @@ void errorPrintf(Char* buf, size_t bufSize, const wchar_t* format, ...);
 void errorPrintf(Char* buf, size_t bufSize, const char16_t* format);
 void errorPrintf(Char* buf, size_t bufSize, const String& format);
 void errorPrintf(Char* buf, size_t bufSize);
-void errorStderr(const Exception& e);
+void printError(const Exception& e);
 
 template<class TException, typename... TArgs>
 inline bool notifyException(const Char* file, int line, TArgs... args)
@@ -232,7 +232,7 @@ inline bool notifyException(const Char* file, int line, TArgs... args)
 	auto h = Assertion::getNotifyVerificationHandler();
 	if (h != nullptr && h(e)) return true;
 #if 1
-	errorStderr(str);
+	printError(str);
 #else
 	throw e;
 #endif

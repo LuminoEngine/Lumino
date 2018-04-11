@@ -884,6 +884,9 @@ inline bool operator>=(const char* lhs, const String& rhs) { return operator>=(S
 inline bool operator>=(const String& lhs, const char* rhs) { return operator>=(lhs, String(rhs)); }
 #endif
 
+inline std::ostream& operator<<(std::ostream& os, const String& str) { os << str.toStdString(); return os; }
+inline std::wostream& operator<<(std::wostream& os, const String& str) { os << str.toStdWString(); return os; }
+
 //==============================================================================
 // StringRef
 //==============================================================================
