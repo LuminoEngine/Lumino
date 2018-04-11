@@ -129,7 +129,7 @@ TEST_F(Test_Base_EventConnection, MultiArgs)
 	ASSERT_EQ(26, g_Value);
 }
 
-//---------------------------------------------------------------------
+//## raise
 TEST_F(Test_Base_EventConnection, raise)
 {
 	g_Value = 0;
@@ -137,21 +137,21 @@ TEST_F(Test_Base_EventConnection, raise)
 	Event<void(int)> ev01;
 	EventConnection conn;
 
-	// <Test> 1つのイベントハンドラを呼び出せること。
+	//* [ ] 1つのイベントハンドラを呼び出せること。
 	{
 		conn = ev01.connect(ln::bind(&c1, &Class1::Callback01_1));
 		ev01.raise(2);
 		ASSERT_EQ(2, g_Value);
 	}
 
-	// <Test> 複数のイベントハンドラを呼び出せること。
+	//* [ ] 複数のイベントハンドラを呼び出せること。
 	{
 		ev01 += ln::bind(&c1, &Class1::Callback01_2);	// operator += で追加してみる
 		ev01(2);	// ln::bind() で呼んでみる。
 		ASSERT_EQ(24, g_Value);
 	}
 
-	// <Test> イベントハンドラを1つ除外した後、残りを呼び出せること。
+	//* [ ] イベントハンドラを1つ除外した後、残りを呼び出せること。
 	{
 		conn.disconnect();
 		ev01.raise(2);
