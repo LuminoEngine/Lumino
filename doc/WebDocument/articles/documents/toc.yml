@@ -4,6 +4,17 @@
     - name: ログ出力
       href: Base_Logging.md
 
+- name: Math
+  href: Math/Index.md
+  items: 
+    - name: ベクトル
+      href: Math/Vector.md
+    - name: 行列
+      href: Math/Matrix.md
+    - name: クォータニオン
+      href: Math/Quaternion.md
+    - name: ユーティリティ
+      href: Math/Utilities.md
 
 - name: エンジン
   href: index.md
