@@ -67,6 +67,36 @@ set(LN_SOURCES_Json
 
 set(LN_SOURCES_Math
 	include/Lumino/Math/Common.hpp
+	include/Lumino/Math/Geometries.hpp
+	include/Lumino/Math/Quaternion.inl
+	include/Lumino/Math/Random.hpp
+	include/Lumino/Math/AttitudeTransform.hpp
+	include/Lumino/Math/Vector2.hpp
+	include/Lumino/Math/Vector2.inl
+	include/Lumino/Math/Vector3.hpp
+	include/Lumino/Math/Vector3.inl
+	include/Lumino/Math/Vector4.hpp
+	include/Lumino/Math/Vector4.inl
+	include/Lumino/Math/MathUtils.hpp
+	include/Lumino/Math/Matrix.hpp
+	include/Lumino/Math/Matrix.inl
+	include/Lumino/Math/Plane.hpp
+	include/Lumino/Math/Plane.inl
+	include/Lumino/Math/Quaternion.hpp
+	include/Lumino/Math/ViewFrustum.hpp
+	src/Math/Internal.hpp
+	src/Math/Asm.h
+	src/Math/Geometries.cpp
+	src/Math/Random.cpp
+	src/Math/AttitudeTransform.cpp
+	src/Math/Vector2.cpp
+	src/Math/Vector3.cpp
+	src/Math/Vector4.cpp
+	src/Math/MathUtils.cpp
+	src/Math/Matrix.cpp
+	src/Math/Plane.cpp
+	src/Math/Quaternion.cpp
+	src/Math/ViewFrustum.cpp
 )
 
 set(LN_SOURCES_Serialization
@@ -145,7 +175,7 @@ set(LN_SOURCES
 	${LN_SOURCES_Testing})
 
 set(LN_INCLUDE_DIRECTORIES
-	${PROJECT_SOURCE_DIR}/Include)
+	${PROJECT_SOURCE_DIR}/include)
 include_directories(${LN_INCLUDE_DIRECTORIES})
 
 #------------------------------------------------------------------------------

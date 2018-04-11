@@ -12,6 +12,16 @@ set(LN_SOURCES
 	Test_Base_String.cpp
 	Test_IO_FileSystem.cpp
 	Test_IO_Path.cpp
+	Test_Math_Common.hpp
+	Test_Math.cpp
+	Test_Math_Matrix.cpp
+	Test_Math_Plane.cpp
+	Test_Math_Quaternion.cpp
+	Test_Math_AttitudeTransform.cpp
+	Test_Math_Vector2.cpp
+	Test_Math_Vector3.cpp
+	Test_Math_Vector4.cpp
+	Test_Math_ViewFrustum.cpp
 	Test_Text_Encoding.cpp
 )
 
