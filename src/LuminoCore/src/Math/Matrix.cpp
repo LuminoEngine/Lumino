@@ -944,22 +944,22 @@ void Matrix::decompose(Vector3* scale, Quaternion* rot, Vector3* trans) const
 	}
 }
 #endif
-//
-////void Matrix::print(const char* format, FILE* stream) const
-//{
-//	if (!format) {
-//		format = "%f, %f, %f, %f,\n%f, %f, %f, %f,\n%f, %f, %f, %f,\n%f, %f, %f, %f\n";
-//	}
-//	if (!stream) {
-//		stream = stdout;
-//	}
-//
-//	fprintf(stream, format,
-//		m[0][0], m[0][1], m[0][2], m[0][3],
-//		m[1][0], m[1][1], m[1][2], m[1][3],
-//		m[2][0], m[2][1], m[2][2], m[2][3],
-//		m[3][0], m[3][1], m[3][2], m[3][3]);
-//}
+
+void Matrix::print(const char* format, FILE* stream) const
+{
+	if (!format) {
+		format = "%f, %f, %f, %f,\n%f, %f, %f, %f,\n%f, %f, %f, %f,\n%f, %f, %f, %f\n";
+	}
+	if (!stream) {
+		stream = stdout;
+	}
+
+	fprintf(stream, format,
+		m[0][0], m[0][1], m[0][2], m[0][3],
+		m[1][0], m[1][1], m[1][2], m[1][3],
+		m[2][0], m[2][1], m[2][2], m[2][3],
+		m[3][0], m[3][1], m[3][2], m[3][3]);
+}
 
 static bool EulerAnglesXYZ(const Matrix& mat, float* xRot, float* yRot, float* zRot)
 {
@@ -1097,6 +1097,20 @@ bool Matrix::isNaNOrInf() const
            Math::isNaNOrInf(m[1][0]) || Math::isNaNOrInf(m[1][1]) || Math::isNaNOrInf(m[1][2]) || Math::isNaNOrInf(m[1][3]) ||
            Math::isNaNOrInf(m[2][0]) || Math::isNaNOrInf(m[2][1]) || Math::isNaNOrInf(m[2][2]) || Math::isNaNOrInf(m[2][3]) ||
            Math::isNaNOrInf(m[3][0]) || Math::isNaNOrInf(m[3][1]) || Math::isNaNOrInf(m[3][2]) || Math::isNaNOrInf(m[3][3]);
+}
+
+const float& Matrix::operator()(int row, int column) const
+{
+	LN_CHECK(0 <= row && row <= 3);
+	LN_CHECK(0 <= column && column <= 3);
+	return m[row][column];
+}
+
+float & Matrix::operator()(int row, int column)
+{
+	LN_CHECK(0 <= row && row <= 3);
+	LN_CHECK(0 <= column && column <= 3);
+	return m[row][column];
 }
 
 // static

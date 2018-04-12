@@ -7,6 +7,13 @@ protected:
 	virtual void TearDown() {}
 };
 
+TEST_F(Test_Matrix, Accessor)
+{
+	Matrix m1;
+	m1(1, 2) = 100.0f;
+	ASSERT_NEAR(100.0f, m1(1, 2), LN_FLOAT_THRESHOLD);
+}
+
 //------------------------------------------------------------------------------
 TEST_F(Test_Matrix, Basic)
 {

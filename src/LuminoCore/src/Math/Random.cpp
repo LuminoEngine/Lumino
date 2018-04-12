@@ -5,26 +5,24 @@
 namespace ln {
 
 //==============================================================================
-// Randomizer
-
-Randomizer Random;
+// Random
 
 #define DEFAULT_X 123456789
 #define DEFAULT_Y 362436069
 #define DEFAULT_Z 521288629
 #define DEFAULT_W 88675123
 
-Randomizer::Randomizer()
+Random::Random()
 {
     setSeed((int)::time(NULL));
 }
 
-Randomizer::Randomizer(int seed)
+Random::Random(int seed)
 {
     setSeed(seed);
 }
 
-void Randomizer::setSeed(int seed)
+void Random::setSeed(int seed)
 {
     x = DEFAULT_X;
     y = DEFAULT_Y;
@@ -32,7 +30,7 @@ void Randomizer::setSeed(int seed)
     w = (seed <= 0) ? 88675123 : seed;
 }
 
-int Randomizer::getInt()
+int Random::getInt()
 {
     unsigned t = x ^ (x << 11);
     x = y;
@@ -42,7 +40,7 @@ int Randomizer::getInt()
     return static_cast<int>(w & 0x7fffffff); // 符号を消す
 }
 
-int Randomizer::getInt(int maxValue)
+int Random::getInt(int maxValue)
 {
     if (maxValue == 0) {
         return 0;
@@ -52,7 +50,7 @@ int Randomizer::getInt(int maxValue)
     return r;
 }
 
-int Randomizer::getIntRange(int minValue, int maxValue)
+int Random::getIntRange(int minValue, int maxValue)
 {
     if (maxValue - minValue == 0) {
         return 0;
@@ -63,12 +61,12 @@ int Randomizer::getIntRange(int minValue, int maxValue)
     return r;
 }
 
-int Randomizer::getIntWidth(int median, int width)
+int Random::getIntWidth(int median, int width)
 {
     return getIntRange(median - width, median + width);
 }
 
-float Randomizer::getFloat()
+float Random::getFloat()
 {
     int r = getInt();
     r = (r & 0x007fffff) | 0x3f800000; // 0x3f800000 は指数部が 1111111で、これは指数1を示す。r & 0x007fffff で仮数部を適当に決めている。
@@ -76,14 +74,14 @@ float Randomizer::getFloat()
     return f - 1.f;
 }
 
-float Randomizer::getFloat(float maxValue)
+float Random::getFloat(float maxValue)
 {
     float r = getFloat();
     r *= maxValue;
     return r;
 }
 
-float Randomizer::getFloatRange(float minValue, float maxValue)
+float Random::getFloatRange(float minValue, float maxValue)
 {
     float r = getFloat();
     r *= (maxValue - minValue);
@@ -91,7 +89,7 @@ float Randomizer::getFloatRange(float minValue, float maxValue)
     return r;
 }
 
-float Randomizer::getFloatWidth(float median, float width)
+float Random::getFloatWidth(float median, float width)
 {
     return getFloatRange(median - width, median + width);
 }

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2018 lriki. Distributed under the MIT license.
 #pragma once
 
+#include <stdio.h>
 #include "Common.hpp"
 #include "Vector4.hpp"
 
@@ -13,7 +14,7 @@ struct Plane;
 /**
  * 4x4 の行列を定義します。
  * 
- * 行列は行優先で、これは DirectX の定義と同じです。
+ * 行列は数学的な定義とメモリレイアウト共に行優先です。
  * 
  * このクラスは似た機能の static 関数とインスタンス関数があります。
  * 例えば makeRotationX(static 関数) と rotateX(インスタンス関数) です。
@@ -44,7 +45,6 @@ public:
             float m41, m42, m43, m44;
         };
         float m[4][4];
-        float elements[16];
     };
 
     /** 単位行列 */
@@ -227,6 +227,13 @@ public:
      */
     bool isNaNOrInf() const;
 
+	/** 行列の要素にアクセスします。 */
+	const float& operator()(int row, int column) const;
+
+	/** 行列の要素にアクセスします。 */
+	float & operator()(int row, int column);
+
+	void print(const char* format, FILE* stream) const;
 public:
     /**
      * 2つの行列の積を計算します。

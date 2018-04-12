@@ -294,6 +294,31 @@ TEST_F(Test_Quaternion, Basic)
 
 	}
 
+	{
+		Matrix mat1;
+		mat1.rotateX(Math::PI);
+		mat1.rotateY(Math::PI / 2);
+
+		//mat1.print(NULL, NULL);
+
+		Quaternion q1;
+		Quaternion q2;
+		q1.rotateX(Math::PI);
+		q2.rotateY(Math::PI / 2);
+
+		//Quaternion q3 = Quaternion::multiply(q1, q2);
+		//Quaternion q3 = q1 * q2;
+		Quaternion q3 = q1;
+		q3 *= q2;
+
+		Matrix mat2 = Matrix::makeRotationQuaternion(q3);
+
+		//mat2.print(NULL, NULL);
+
+		//printf("");
+
+	}
+
 #ifdef D3DX9_TEST
 
 	D3DXQUATERNION dxsample1;

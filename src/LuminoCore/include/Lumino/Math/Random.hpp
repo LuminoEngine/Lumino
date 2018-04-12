@@ -10,19 +10,19 @@ namespace ln {
  * 
  * アルゴリズムは Xorshift 法です。
  */
-class LN_API Randomizer
+class LN_API Random
 {
 public:
     /**
      * 現在の時間に応じて決定されるシード値を使用してインスタンスを初期化します。
      */
-    Randomizer();
+    Random();
 
     /**
      * 指定したシード値を使用してインスタンスを初期化します。
      * @param[in]    seed    : シード値
      */
-    Randomizer(int seed);
+    Random(int seed);
 
 public:
     /**
@@ -92,8 +92,5 @@ public:
 private:
     unsigned int x, y, z, w;
 };
-
-/** Randomizer のグローバルインスタンス */
-extern Randomizer Random;
 
 } // namespace ln

@@ -69,7 +69,7 @@ public:
     /**
      * このベクトルの X Y 要素を Vector2 として返します。
      */
-    const Vector2& getXY() const;
+    const Vector2& xy() const;
 
     /**
      * ベクトルの長さを返します。
@@ -362,7 +362,7 @@ inline void Vector3::set(float x_, float y_, float z_)
     z = z_;
 }
 
-inline const Vector2& Vector3::getXY() const
+inline const Vector2& Vector3::xy() const
 {
     return *reinterpret_cast<const Vector2*>(this);
 }
