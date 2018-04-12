@@ -50,6 +50,7 @@ set(LN_SOURCES_IO
 	include/Lumino/IO/FileSystem.hpp
 	include/Lumino/IO/Path.hpp
 	include/Lumino/IO/Stream.hpp
+	#include/Lumino/IO/TextWriter.hpp
 	src/IO/Internal.hpp
 	#src/IO/FileStream.cpp
 	src/IO/Path.cpp
@@ -59,6 +60,7 @@ set(LN_SOURCES_IO
 	src/IO/PathHelper.cpp
 	src/IO/PathHelper.hpp
 	src/IO/Stream.cpp
+	#src/IO/TextWriter.cpp
 )
 
 set(LN_SOURCES_Json
@@ -107,7 +109,9 @@ set(LN_SOURCES_Testing
 set(LN_SOURCES_Text
 	include/Lumino/Text/Common.hpp
 	include/Lumino/Text/Encoding.hpp
+	include/Lumino/Text/EncodingConverter.hpp
 	src/Text/Encoding.cpp
+	src/Text/EncodingConverter.cpp
 	src/Text/UnicodeUtils.cpp
 	src/Text/UnicodeUtils.hpp
 	src/Text/ASCIIEncoding.cpp

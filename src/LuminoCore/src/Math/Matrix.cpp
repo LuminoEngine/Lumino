@@ -892,6 +892,7 @@ void Matrix::decomposeMatrices(Matrix* scale, Matrix* rot, Matrix* trans) const
         rot->m[3][3] = 1.0f;
     }
 }
+
 #if 0
 void Matrix::decompose(Vector3* scale, Matrix* rot, Vector3* trans)
 {

@@ -23,6 +23,7 @@ set(LN_SOURCES
 	Test_Math_Vector4.cpp
 	Test_Math_ViewFrustum.cpp
 	Test_Text_Encoding.cpp
+	Test_Text_EncodingConverter.cpp
 )
 
 include_directories(

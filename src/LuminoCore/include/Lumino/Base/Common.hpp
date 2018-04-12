@@ -113,6 +113,9 @@ using Char = wchar_t;
 
 #define LN__FILE__ _LT(__FILE__)
 
+#if !defined(_T)
+#define _T(x) _TT(x) 
+#endif
 
 
 /** 大文字と小文字の区別指定 */
