@@ -29,20 +29,20 @@ TEST_F(Test_Vector4, Basic)
 		v1.set(1, 2, 3, 4);
 		ASSERT_VEC4_NEAR(1, 2, 3, 4, v1);
 	}
-	// this->getXY
+	// this->xy
 	{
-		Vector2 v = sample1.getXY();
+		Vector2 v = sample1.xy();
 		ASSERT_VEC2_NEAR(1, 2, v);
 	}
-	// this->GetXYZ
+	// this->xyz
 	{
-		Vector3 v = sample1.GetXYZ();
+		Vector3 v = sample1.xyz();
 		ASSERT_VEC3_NEAR(1, 2, 3, v);
 	}
-	// this->GetLength / getLengthSquared
+	// this->GetLength / lengthSquared
 	{
-		ASSERT_NEAR(5.477226, sample1.getLength(), LN_FLOAT_THRESHOLD);
-		ASSERT_NEAR(30.000000, sample1.getLengthSquared(), LN_FLOAT_THRESHOLD);
+		ASSERT_NEAR(5.477226, sample1.length(), LN_FLOAT_THRESHOLD);
+		ASSERT_NEAR(30.000000, sample1.lengthSquared(), LN_FLOAT_THRESHOLD);
 	}
 	// this->Clamp
 	{

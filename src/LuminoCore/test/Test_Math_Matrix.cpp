@@ -41,10 +41,10 @@ TEST_F(Test_Matrix, Basic)
 			4, 5, 6, 7,
 			8, 9, 10, 11,
 			12, 13, 14, 15);
-		ASSERT_VEC4_NEAR(0, 1, 2, 3, m.getRow(0));
-		ASSERT_VEC4_NEAR(4, 5, 6, 7, m.getRow(1));
-		ASSERT_VEC4_NEAR(8, 9, 10, 11, m.getRow(2));
-		ASSERT_VEC4_NEAR(12, 13, 14, 15, m.getRow(3));
+		ASSERT_VEC4_NEAR(0, 1, 2, 3, m.row(0));
+		ASSERT_VEC4_NEAR(4, 5, 6, 7, m.row(1));
+		ASSERT_VEC4_NEAR(8, 9, 10, 11, m.row(2));
+		ASSERT_VEC4_NEAR(12, 13, 14, 15, m.row(3));
 	}
 	// this->IsIdentity
 	{
@@ -54,26 +54,26 @@ TEST_F(Test_Matrix, Basic)
 		Matrix m2 = Matrix::Identity;
 		ASSERT_EQ(true, m2.isIdentity());
 	}
-	// this->getRight/getUp/GetFront/GetPosition
+	// this->right/up/GetFront/GetPosition
 	{
 		Matrix m;
 		m.m[3][0] = 5;
-		ASSERT_VEC3_NEAR(1, 0, 0, m.getRight());
-		ASSERT_VEC3_NEAR(0, 1, 0, m.getUp());
-		ASSERT_VEC3_NEAR(0, 0, 1, m.getFront());
-		ASSERT_VEC3_NEAR(5, 0, 0, m.getPosition());
+		ASSERT_VEC3_NEAR(1, 0, 0, m.right());
+		ASSERT_VEC3_NEAR(0, 1, 0, m.up());
+		ASSERT_VEC3_NEAR(0, 0, 1, m.front());
+		ASSERT_VEC3_NEAR(5, 0, 0, m.position());
 	}
-	// this->setRow/getRow
+	// this->setRow/row
 	{
 		Matrix m;
 		m.setRow(0, Vector4(0, 1, 2, 3));
 		m.setRow(1, Vector4(4, 5, 6, 7));
 		m.setRow(2, Vector4(8, 9, 10, 11));
 		m.setRow(3, Vector4(12, 13, 14, 15));
-		ASSERT_VEC4_NEAR(0, 1, 2, 3, m.getRow(0));
-		ASSERT_VEC4_NEAR(4, 5, 6, 7, m.getRow(1));
-		ASSERT_VEC4_NEAR(8, 9, 10, 11, m.getRow(2));
-		ASSERT_VEC4_NEAR(12, 13, 14, 15, m.getRow(3));
+		ASSERT_VEC4_NEAR(0, 1, 2, 3, m.row(0));
+		ASSERT_VEC4_NEAR(4, 5, 6, 7, m.row(1));
+		ASSERT_VEC4_NEAR(8, 9, 10, 11, m.row(2));
+		ASSERT_VEC4_NEAR(12, 13, 14, 15, m.row(3));
 	}
 	// this->translate
 	{
@@ -301,10 +301,10 @@ TEST_F(Test_Matrix, Basic)
 			Vector4(8, 9, 10, 11),
 			Vector4(12, 13, 14, 15));
 		Matrix m2 = m1.getRotationMatrix();
-		ASSERT_VEC4_NEAR(0, 1, 2, 0, m2.getRow(0));
-		ASSERT_VEC4_NEAR(4, 5, 6, 0, m2.getRow(1));
-		ASSERT_VEC4_NEAR(8, 9, 10, 0, m2.getRow(2));
-		ASSERT_VEC4_NEAR(0, 0, 0, 1, m2.getRow(3));
+		ASSERT_VEC4_NEAR(0, 1, 2, 0, m2.row(0));
+		ASSERT_VEC4_NEAR(4, 5, 6, 0, m2.row(1));
+		ASSERT_VEC4_NEAR(8, 9, 10, 0, m2.row(2));
+		ASSERT_VEC4_NEAR(0, 0, 0, 1, m2.row(3));
 	}
 	// IsNaNOrInf
 	{

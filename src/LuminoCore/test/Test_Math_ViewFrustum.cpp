@@ -16,21 +16,21 @@ TEST_F(Test_ViewFrustum, Basic)
 
 		Matrix m2 = Matrix::makeLookAtLH(Vector3(0, 0, 0), Vector3(0, 0, 1), Vector3(0, 1, 0)) * Matrix::makePerspectiveFovLH(Math::PI / 4, 640.0f / 480.0f, 1, 1000);
 		ViewFrustum v2(m2);
-		ASSERT_PLANE_NEAR(-0.000000, -0.000000, -1.000000, 1.000000, v2.getPlane(FrustumPlane::Near));
-		ASSERT_PLANE_NEAR(0.000000, 0.000000, 1.000000, -1000.000610, v2.getPlane(FrustumPlane::Far));
-		ASSERT_PLANE_NEAR(-0.875370, -0.000000, -0.483454, -0.000000, v2.getPlane(FrustumPlane::Left));
-		ASSERT_PLANE_NEAR(0.875370, 0.000000, -0.483454, 0.000000, v2.getPlane(FrustumPlane::Right));
-		ASSERT_PLANE_NEAR(0.000000, 0.923880, -0.382683, 0.000000, v2.getPlane(FrustumPlane::Top));
-		ASSERT_PLANE_NEAR(-0.000000, -0.923880, -0.382683, -0.000000, v2.getPlane(FrustumPlane::Bottom));
+		ASSERT_PLANE_NEAR(-0.000000, -0.000000, -1.000000, 1.000000, v2.plane(FrustumPlane::Near));
+		ASSERT_PLANE_NEAR(0.000000, 0.000000, 1.000000, -1000.000610, v2.plane(FrustumPlane::Far));
+		ASSERT_PLANE_NEAR(-0.875370, -0.000000, -0.483454, -0.000000, v2.plane(FrustumPlane::Left));
+		ASSERT_PLANE_NEAR(0.875370, 0.000000, -0.483454, 0.000000, v2.plane(FrustumPlane::Right));
+		ASSERT_PLANE_NEAR(0.000000, 0.923880, -0.382683, 0.000000, v2.plane(FrustumPlane::Top));
+		ASSERT_PLANE_NEAR(-0.000000, -0.923880, -0.382683, -0.000000, v2.plane(FrustumPlane::Bottom));
 		
 		// Ortho
 		ViewFrustum v3(Matrix::makeLookAtRH(Vector3(0, 0, 0), Vector3(0, 0, 1), Vector3(0, 1, 0)) * Matrix::makeOrthoRH(640, 480, 0, 1000));
-		ASSERT_PLANE_NEAR(-0.000000, -0.000000, -1.000000, -0.000000, v3.getPlane(FrustumPlane::Near));
-		ASSERT_PLANE_NEAR(0.000000, 0.000000, 1.000000, -999.999939, v3.getPlane(FrustumPlane::Far));
-		ASSERT_PLANE_NEAR(1.000000, -0.000000, -0.000000, -320.000000, v3.getPlane(FrustumPlane::Left));
-		ASSERT_PLANE_NEAR(-1.000000, 0.000000, 0.000000, -320.000000, v3.getPlane(FrustumPlane::Right));
-		ASSERT_PLANE_NEAR(0.000000, 1.000000, 0.000000, -239.999985, v3.getPlane(FrustumPlane::Top));
-		ASSERT_PLANE_NEAR(-0.000000, -1.000000, -0.000000, -239.999985, v3.getPlane(FrustumPlane::Bottom));
+		ASSERT_PLANE_NEAR(-0.000000, -0.000000, -1.000000, -0.000000, v3.plane(FrustumPlane::Near));
+		ASSERT_PLANE_NEAR(0.000000, 0.000000, 1.000000, -999.999939, v3.plane(FrustumPlane::Far));
+		ASSERT_PLANE_NEAR(1.000000, -0.000000, -0.000000, -320.000000, v3.plane(FrustumPlane::Left));
+		ASSERT_PLANE_NEAR(-1.000000, 0.000000, 0.000000, -320.000000, v3.plane(FrustumPlane::Right));
+		ASSERT_PLANE_NEAR(0.000000, 1.000000, 0.000000, -239.999985, v3.plane(FrustumPlane::Top));
+		ASSERT_PLANE_NEAR(-0.000000, -1.000000, -0.000000, -239.999985, v3.plane(FrustumPlane::Bottom));
 	}
 }
 

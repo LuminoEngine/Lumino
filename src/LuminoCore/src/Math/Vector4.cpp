@@ -29,12 +29,12 @@ Vector4::Vector4(const Vector3& vec, float w_)
     w = w_;
 }
 
-float Vector4::getLength() const
+float Vector4::length() const
 {
     return Asm::sqrt(x * x + y * y + z * z + w * w);
 }
 
-float Vector4::getLengthSquared() const
+float Vector4::lengthSquared() const
 {
     return x * x + y * y + z * z + w * w;
 }

@@ -70,22 +70,22 @@ public:
     bool isIdentity() const;
 
     /** この行列の右方向を示すベクトルを取得します。 */
-    const Vector3& getRight() const;
+    const Vector3& right() const;
 
     /** この行列の上方向を示すベクトルを取得します。 */
-    const Vector3& getUp() const;
+    const Vector3& up() const;
 
     /** この行列の正面方向を示すベクトルを取得します。 */
-    const Vector3& getFront() const;
+    const Vector3& front() const;
 
     /** この行列の平行移動量を示すベクトルを取得します。 */
-    const Vector3& getPosition() const;
+    const Vector3& position() const;
 
     /** この行列の行要素を設定します。 */
     void setRow(int index, const Vector4& row);
 
     /** この行列の行要素を取得します。 */
-    const Vector4& getRow(int index) const;
+    const Vector4& row(int index) const;
 
     /**
 	 * この行列を平行移動します。
@@ -481,22 +481,22 @@ public:
 #endif
 };
 
-inline const Vector3& Matrix::getRight() const
+inline const Vector3& Matrix::right() const
 {
     return (Vector3&)m[0][0];
 }
 
-inline const Vector3& Matrix::getUp() const
+inline const Vector3& Matrix::up() const
 {
     return (Vector3&)m[1][0];
 }
 
-inline const Vector3& Matrix::getFront() const
+inline const Vector3& Matrix::front() const
 {
     return (Vector3&)m[2][0];
 }
 
-inline const Vector3& Matrix::getPosition() const
+inline const Vector3& Matrix::position() const
 {
     return (Vector3&)m[3][0];
 }
@@ -506,7 +506,7 @@ inline void Matrix::setRow(int index, const Vector4& row)
     ((Vector4&)m[index][0]) = row;
 }
 
-inline const Vector4& Matrix::getRow(int index) const
+inline const Vector4& Matrix::row(int index) const
 {
     return (Vector4&)m[index][0];
 }

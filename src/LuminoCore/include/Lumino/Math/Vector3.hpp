@@ -75,13 +75,13 @@ public:
      * ベクトルの長さを返します。
      */
     LN_METHOD()
-    float getLength() const;
+    float length() const;
 
     /**
      * ベクトルの長さの 2 乗を返します。
      */
     LN_METHOD()
-    float getLengthSquared() const;
+    float lengthSquared() const;
 
     /**
      * このベクトルを正規化します。
@@ -367,7 +367,7 @@ inline const Vector2& Vector3::xy() const
     return *reinterpret_cast<const Vector2*>(this);
 }
 
-inline float Vector3::getLengthSquared() const
+inline float Vector3::lengthSquared() const
 {
     return x * x + y * y + z * z;
 }

@@ -605,7 +605,7 @@ void Matrix::rotateEulerAngles(const Vector3& angles, RotationOrder order)
 void Matrix::rotateAxis(const Vector3& axis_, float r)
 {
     Vector3 axis = axis_;
-    if (axis.getLengthSquared() != 1.0f) {
+    if (axis.lengthSquared() != 1.0f) {
         axis.normalize();
     }
 
@@ -861,7 +861,7 @@ void Matrix::decompose(Vector3* scale, Quaternion* rot, Vector3* trans) const
 void Matrix::decomposeMatrices(Matrix* scale, Matrix* rot, Matrix* trans) const
 {
     if (trans) {
-        *trans = Matrix::makeTranslation(getPosition());
+        *trans = Matrix::makeTranslation(position());
     }
 
     Vector3 sc(
@@ -1186,7 +1186,7 @@ Matrix Matrix::makeRotationZ(float r)
 Matrix Matrix::makeRotationAxis(const Vector3& axis_, float r)
 {
     Vector3 axis = axis_;
-    if (axis.getLengthSquared() != 1.0f) {
+    if (axis.lengthSquared() != 1.0f) {
         axis.normalize();
     }
 

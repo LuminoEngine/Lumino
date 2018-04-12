@@ -52,12 +52,12 @@ public:
     /**
      * このベクトルの長さを返します。
      */
-    float getLength() const;
+    float length() const;
 
     /**
      * このベクトルの長さの 2 乗を返します。
      */
-    float getLengthSquared() const;
+    float lengthSquared() const;
 
     /**
      * このベクトルを正規化します。

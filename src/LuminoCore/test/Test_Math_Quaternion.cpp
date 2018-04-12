@@ -31,14 +31,14 @@ TEST_F(Test_Quaternion, Basic)
 		q1.set(1, 2, 3, 4);
 		ASSERT_QUA_NEAR(1, 2, 3, 4, q1);
 	}
-	// this->GetLength / getLengthSquared
+	// this->GetLength / lengthSquared
 	{
-		ASSERT_FLOAT_EQ(1.0f, sample1.getLength());
-		ASSERT_FLOAT_EQ(1.0f, sample1.getLengthSquared());
+		ASSERT_FLOAT_EQ(1.0f, sample1.length());
+		ASSERT_FLOAT_EQ(1.0f, sample1.lengthSquared());
 
 		Quaternion q1(1, 2, 3, 4);
-		ASSERT_FLOAT_EQ(5.477226f, q1.getLength());
-		ASSERT_FLOAT_EQ(30.000000, q1.getLengthSquared());
+		ASSERT_FLOAT_EQ(5.477226f, q1.length());
+		ASSERT_FLOAT_EQ(30.000000, q1.lengthSquared());
 	}
 	// this->normalize
 	{

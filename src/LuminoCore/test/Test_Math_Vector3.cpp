@@ -37,15 +37,15 @@ TEST_F(Test_Vector3, Basic)
 		v1.set(1, 2 ,3);
 		ASSERT_VEC3_NEAR(1, 2, 3, v1);
 	}
-	// this->getXY
+	// this->xy
 	{
-		Vector2 v = sample1.getXY();
+		Vector2 v = sample1.xy();
 		ASSERT_VEC2_NEAR(1, 2, v);
 	}
-	// this->GetLength / getLengthSquared
+	// this->GetLength / lengthSquared
 	{
-		ASSERT_NEAR(3.741657, sample1.getLength(), LN_FLOAT_THRESHOLD);
-		ASSERT_NEAR(14.000000, sample1.getLengthSquared(), LN_FLOAT_THRESHOLD);
+		ASSERT_NEAR(3.741657, sample1.length(), LN_FLOAT_THRESHOLD);
+		ASSERT_NEAR(14.000000, sample1.lengthSquared(), LN_FLOAT_THRESHOLD);
 	}
 	// this->normalize
 	{
@@ -89,15 +89,15 @@ TEST_F(Test_Vector3, Basic)
 	{
 		Vector3 v1(1, 2, 3);
 		Vector3 v2(4, 5, 6);
-		ASSERT_NEAR((v2 - v1).getLength(), Vector3::distance(v1, v2), LN_FLOAT_THRESHOLD);
-		ASSERT_NEAR((v2 - v1).getLength(), Vector3::distance(v2, v1), LN_FLOAT_THRESHOLD);
+		ASSERT_NEAR((v2 - v1).length(), Vector3::distance(v1, v2), LN_FLOAT_THRESHOLD);
+		ASSERT_NEAR((v2 - v1).length(), Vector3::distance(v2, v1), LN_FLOAT_THRESHOLD);
 	}
 	// Vector3::distanceSquared
 	{
 		Vector3 v1(1, 2, 3);
 		Vector3 v2(4, 5, 6);
-		ASSERT_NEAR((v2 - v1).getLengthSquared(), Vector3::distanceSquared(v1, v2), LN_FLOAT_THRESHOLD);
-		ASSERT_NEAR((v2 - v1).getLengthSquared(), Vector3::distanceSquared(v2, v1), LN_FLOAT_THRESHOLD);
+		ASSERT_NEAR((v2 - v1).lengthSquared(), Vector3::distanceSquared(v1, v2), LN_FLOAT_THRESHOLD);
+		ASSERT_NEAR((v2 - v1).lengthSquared(), Vector3::distanceSquared(v2, v1), LN_FLOAT_THRESHOLD);
 	}
 	// Vector3::dot
 	{

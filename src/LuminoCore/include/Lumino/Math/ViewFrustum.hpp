@@ -61,7 +61,7 @@ public:
      * 錐台の指定した面を取得します。
      * @param[in]    plane    : 取得する面
      */
-    const Plane& getPlane(FrustumPlane plane) const { return m_planes[static_cast<int>(plane)]; }
+    const Plane& plane(FrustumPlane plane) const { return m_planes[static_cast<int>(plane)]; }
 
 private:
     static const int FrustumPlane_Max = 6;

@@ -36,19 +36,19 @@ Quaternion::Quaternion(const Vector3& axis, float r)
     w = c;
 }
 
-float Quaternion::getLength() const
+float Quaternion::length() const
 {
     return Asm::sqrt((x * x) + (y * y) + (z * z) + (w * w));
 }
 
-float Quaternion::getLengthSquared() const
+float Quaternion::lengthSquared() const
 {
     return (x * x) + (y * y) + (z * z) + (w * w);
 }
 
 void Quaternion::normalize()
 {
-    float t = 1.0f / getLength();
+    float t = 1.0f / length();
     x *= t;
     y *= t;
     z *= t;
@@ -158,7 +158,7 @@ void Quaternion::print(const char* format, FILE* stream) const
 // static
 Quaternion Quaternion::normalize(const Quaternion& qua)
 {
-    float length = 1.0f / qua.getLength();
+    float length = 1.0f / qua.length();
     return Quaternion(
         qua.x * length,
         qua.y * length,

@@ -177,7 +177,7 @@ int main(int argc, char** argv)
 	{
 		argv[0],
 		"--gtest_break_on_failure",
-		"--gtest_filter=Test_Quaternion.*"
+		//"--gtest_filter=Test_Quaternion.*"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 

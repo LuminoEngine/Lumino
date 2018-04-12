@@ -2,8 +2,6 @@
 #include <math.h>
 #include <float.h>
 #include <limits>
-
-// 標準ヘッダの math.h と被るので Utils を付けている
 #include <Lumino/Math/Math.hpp>
 
 namespace ln {

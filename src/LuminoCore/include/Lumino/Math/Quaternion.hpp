@@ -61,12 +61,12 @@ public:
     /**
      * このクォータニオンの長さを返します。
      */
-    float getLength() const;
+    float length() const;
 
     /**
      * このクォータニオンの長さの 2 乗を返します。
      */
-    float getLengthSquared() const;
+    float lengthSquared() const;
 
     /**
      * このクォータニオンを正規化します。

@@ -59,22 +59,22 @@ public:
     /**
      * このベクトルの X Y 要素を Vector2 として返します。
      */
-    const Vector2& getXY() const;
+    const Vector2& xy() const;
 
     /**
      * このベクトルの X Y Z 要素を Vector3 として返します。
      */
-    const Vector3& GetXYZ() const;
+    const Vector3& xyz() const;
 
     /**
      * ベクトルの長さを返します。
      */
-    float getLength() const;
+    float length() const;
 
     /**
      * ベクトルの長さの 2 乗を返します。
      */
-    float getLengthSquared() const;
+    float lengthSquared() const;
 
     /**
      * このベクトルを指定された最大値と最小値の範囲にクランプします。
@@ -217,12 +217,12 @@ inline void Vector4::set(float x_, float y_, float z_, float w_)
     w = w_;
 }
 
-inline const Vector2& Vector4::getXY() const
+inline const Vector2& Vector4::xy() const
 {
     return *reinterpret_cast<const Vector2*>(this);
 }
 
-inline const Vector3& Vector4::GetXYZ() const
+inline const Vector3& Vector4::xyz() const
 {
     return *reinterpret_cast<const Vector3*>(this);
 }

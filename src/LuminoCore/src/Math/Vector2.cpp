@@ -15,19 +15,19 @@ const Vector2 Vector2::UnitX = Vector2(1, 0);
 const Vector2 Vector2::UnitY = Vector2(0, 1);
 const Vector2 Vector2::Ones = Vector2(1, 1);
 
-float Vector2::getLength() const
+float Vector2::length() const
 {
     return Asm::sqrt(x * x + y * y);
 }
 
-float Vector2::getLengthSquared() const
+float Vector2::lengthSquared() const
 {
     return (x * x + y * y);
 }
 
 void Vector2::normalize()
 {
-    float t = getLength();
+    float t = length();
     if (t == 0.0f)
         return;
     t = 1.0f / t;

@@ -15,10 +15,10 @@ public:
     /** positive infinity */
     static const float Inf;
 
-    /** 円周率    (3.14159265...) */
+    /** 円周率 (3.14159265...) */
     static const float PI;
 
-    /** 円周率 * 2    (3.14159265...) */
+    /** 円周率 * 2 (3.14159265...) */
     static const float PI2;
 
     /** 円周率 / 2 */

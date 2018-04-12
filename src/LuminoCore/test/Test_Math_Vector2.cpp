@@ -27,12 +27,12 @@ TEST_F(Test_Vector2, Basic)
 	// this->GetLength()
 	{
 		Vector2 v1(1, 2);
-		ASSERT_FLOAT_EQ(2.236068f, v1.getLength());
+		ASSERT_FLOAT_EQ(2.236068f, v1.length());
 	}
-	// this->getLengthSquared()
+	// this->lengthSquared()
 	{
 		Vector2 v1(1, 2);
-		ASSERT_FLOAT_EQ(5, v1.getLengthSquared());
+		ASSERT_FLOAT_EQ(5, v1.lengthSquared());
 	}
 	// this->Normaize()
 	{
