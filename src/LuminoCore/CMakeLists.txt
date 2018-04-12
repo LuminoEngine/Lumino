@@ -68,20 +68,14 @@ set(LN_SOURCES_Json
 set(LN_SOURCES_Math
 	include/Lumino/Math/Common.hpp
 	include/Lumino/Math/Geometries.hpp
-	include/Lumino/Math/Quaternion.inl
 	include/Lumino/Math/Random.hpp
 	include/Lumino/Math/AttitudeTransform.hpp
 	include/Lumino/Math/Vector2.hpp
-	include/Lumino/Math/Vector2.inl
 	include/Lumino/Math/Vector3.hpp
-	include/Lumino/Math/Vector3.inl
 	include/Lumino/Math/Vector4.hpp
-	include/Lumino/Math/Vector4.inl
-	include/Lumino/Math/MathUtils.hpp
+	include/Lumino/Math/Math.hpp
 	include/Lumino/Math/Matrix.hpp
-	include/Lumino/Math/Matrix.inl
 	include/Lumino/Math/Plane.hpp
-	include/Lumino/Math/Plane.inl
 	include/Lumino/Math/Quaternion.hpp
 	include/Lumino/Math/ViewFrustum.hpp
 	src/Math/Internal.hpp
@@ -92,7 +86,7 @@ set(LN_SOURCES_Math
 	src/Math/Vector2.cpp
 	src/Math/Vector3.cpp
 	src/Math/Vector4.cpp
-	src/Math/MathUtils.cpp
+	src/Math/Math.cpp
 	src/Math/Matrix.cpp
 	src/Math/Plane.cpp
 	src/Math/Quaternion.cpp

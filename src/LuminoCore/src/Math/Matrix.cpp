@@ -1,18 +1,8 @@
-﻿/*
-	[2016/3/30] m[4][4] vs m[16]
-
-	m[4][4]
-		UE4
-		Unity (m[4,4])
-		DirectX::XMMATRIX
-		Eigen (m(4,4))
-
-	m[16]
-		cocos2d-x
-*/
+﻿
 #include <math.h>
 #include <assert.h>
-#include <Lumino/Math/MathUtils.hpp>
+#include <string.h>
+#include <Lumino/Math/Math.hpp>
 #include <Lumino/Math/Vector3.hpp>
 #include <Lumino/Math/Vector4.hpp>
 #include <Lumino/Math/Quaternion.hpp>
@@ -24,50 +14,69 @@
 //#define USE_D3DX9MATH
 #ifdef USE_D3DX9MATH
 #include <d3dx9math.h>
-#pragma comment (lib, "d3dx9.lib")
+#pragma comment(lib, "d3dx9.lib")
 #endif
 
 namespace ln {
 
 //==============================================================================
 // Matrix
-//==============================================================================
-	
+
 const Matrix Matrix::Identity = Matrix();
 
-//------------------------------------------------------------------------------
 Matrix::Matrix()
 {
-	m[0][0] = m[1][1] = m[2][2] = m[3][3] = 1.0f;
-	m[0][1] = m[0][2] = m[0][3] = 0.0f;
-	m[1][0] = m[1][2] = m[1][3] = 0.0f;
-	m[2][0] = m[2][1] = m[2][3] = 0.0f;
-	m[3][0] = m[3][1] = m[3][2] = 0.0f;
+    m[0][0] = m[1][1] = m[2][2] = m[3][3] = 1.0f;
+    m[0][1] = m[0][2] = m[0][3] = 0.0f;
+    m[1][0] = m[1][2] = m[1][3] = 0.0f;
+    m[2][0] = m[2][1] = m[2][3] = 0.0f;
+    m[3][0] = m[3][1] = m[3][2] = 0.0f;
 }
 
-//------------------------------------------------------------------------------
 Matrix::Matrix(
-	float m11, float m12, float m13, float m14,
-	float m21, float m22, float m23, float m24,
-	float m31, float m32, float m33, float m34,
-	float m41, float m42, float m43, float m44)
+    float m11,
+    float m12,
+    float m13,
+    float m14,
+    float m21,
+    float m22,
+    float m23,
+    float m24,
+    float m31,
+    float m32,
+    float m33,
+    float m34,
+    float m41,
+    float m42,
+    float m43,
+    float m44)
 {
-	m[0][0] = m11; m[0][1] = m12; m[0][2] = m13; m[0][3] = m14;
-	m[1][0] = m21; m[1][1] = m22; m[1][2] = m23; m[1][3] = m24;
-	m[2][0] = m31; m[2][1] = m32; m[2][2] = m33; m[2][3] = m34;
-	m[3][0] = m41; m[3][1] = m42; m[3][2] = m43; m[3][3] = m44;
+    m[0][0] = m11;
+    m[0][1] = m12;
+    m[0][2] = m13;
+    m[0][3] = m14;
+    m[1][0] = m21;
+    m[1][1] = m22;
+    m[1][2] = m23;
+    m[1][3] = m24;
+    m[2][0] = m31;
+    m[2][1] = m32;
+    m[2][2] = m33;
+    m[2][3] = m34;
+    m[3][0] = m41;
+    m[3][1] = m42;
+    m[3][2] = m43;
+    m[3][3] = m44;
 }
 
-//------------------------------------------------------------------------------
 Matrix::Matrix(const Vector4& row1, const Vector4& row2, const Vector4& row3, const Vector4& row4)
 {
-	*((Vector4*)this->m[0]) = row1;
-	*((Vector4*)this->m[1]) = row2;
-	*((Vector4*)this->m[2]) = row3;
-	*((Vector4*)this->m[3]) = row4;
+    *((Vector4*)this->m[0]) = row1;
+    *((Vector4*)this->m[1]) = row2;
+    *((Vector4*)this->m[2]) = row3;
+    *((Vector4*)this->m[3]) = row4;
 }
 
-//------------------------------------------------------------------------------
 //Matrix::Matrix(const Quaternion& q)
 //{
 //	float xx = q.X * q.X;
@@ -97,62 +106,86 @@ Matrix::Matrix(const Vector4& row1, const Vector4& row2, const Vector4& row3, co
 //	M44 = 1.0f;
 //}
 
-//------------------------------------------------------------------------------
 Matrix::Matrix(const AttitudeTransform& transform)
 {
-	m[0][0] = m[1][1] = m[2][2] = m[3][3] = 1.0f;
-	m[0][1] = m[0][2] = m[0][3] = 0.0f;
-	m[1][0] = m[1][2] = m[1][3] = 0.0f;
-	m[2][0] = m[2][1] = m[2][3] = 0.0f;
-	m[3][0] = m[3][1] = m[3][2] = 0.0f;
+    m[0][0] = m[1][1] = m[2][2] = m[3][3] = 1.0f;
+    m[0][1] = m[0][2] = m[0][3] = 0.0f;
+    m[1][0] = m[1][2] = m[1][3] = 0.0f;
+    m[2][0] = m[2][1] = m[2][3] = 0.0f;
+    m[3][0] = m[3][1] = m[3][2] = 0.0f;
 
-	scale(transform.scale);
-	rotateQuaternion(transform.rotation);
-	translate(transform.translation);
+    scale(transform.scale);
+    rotateQuaternion(transform.rotation);
+    translate(transform.translation);
 }
 
-//------------------------------------------------------------------------------
 void Matrix::set(
-	float m11, float m12, float m13, float m14,
-	float m21, float m22, float m23, float m24,
-	float m31, float m32, float m33, float m34,
-	float m41, float m42, float m43, float m44)
+    float m11,
+    float m12,
+    float m13,
+    float m14,
+    float m21,
+    float m22,
+    float m23,
+    float m24,
+    float m31,
+    float m32,
+    float m33,
+    float m34,
+    float m41,
+    float m42,
+    float m43,
+    float m44)
 {
-	m[0][0] = m11; m[0][1] = m12; m[0][2] = m13; m[0][3] = m14;
-	m[1][0] = m21; m[1][1] = m22; m[1][2] = m23; m[1][3] = m24;
-	m[2][0] = m31; m[2][1] = m32; m[2][2] = m33; m[2][3] = m34;
-	m[3][0] = m41; m[3][1] = m42; m[3][2] = m43; m[3][3] = m44;
+    m[0][0] = m11;
+    m[0][1] = m12;
+    m[0][2] = m13;
+    m[0][3] = m14;
+    m[1][0] = m21;
+    m[1][1] = m22;
+    m[1][2] = m23;
+    m[1][3] = m24;
+    m[2][0] = m31;
+    m[2][1] = m32;
+    m[2][2] = m33;
+    m[2][3] = m34;
+    m[3][0] = m41;
+    m[3][1] = m42;
+    m[3][2] = m43;
+    m[3][3] = m44;
 }
 
-//------------------------------------------------------------------------------
+bool Matrix::isIdentity() const
+{
+    return (memcmp(this, &Matrix::Identity, sizeof(Matrix)) == 0);
+}
+
 void Matrix::translate(float x, float y, float z)
 {
-	m[3][0] += x;
-	m[3][1] += y;
-	m[3][2] += z;
+    m[3][0] += x;
+    m[3][1] += y;
+    m[3][2] += z;
 }
 
-//------------------------------------------------------------------------------
 void Matrix::translate(const Vector3& vec)
 {
-	m[3][0] += vec.x;
-	m[3][1] += vec.y;
-	m[3][2] += vec.z;
+    m[3][0] += vec.x;
+    m[3][1] += vec.y;
+    m[3][2] += vec.z;
 }
 
-//------------------------------------------------------------------------------
 void Matrix::rotateX(float r)
 {
-	float c, s;
-	Asm::sincos(r, &s, &c);
+    float c, s;
+    Asm::sincos(r, &s, &c);
 
-	/* 普通の行列計算
+    /* 普通の行列計算
 	m[0][0], m[0][1], m[0][2], m[0][3]   1, 0, 0, 0
 	m[1][0], m[1][1], m[1][2], m[1][3]   0, c,-s, 0
 	m[2][0], m[2][1], m[2][2], m[2][3] * 0, s, c, 0
 	m[3][0], m[3][1], m[3][2], m[3][3]   0, 0, 0, 1
 	*/
-	/* 計算イメージ
+    /* 計算イメージ
 	m[0][0] = m[0][0] * 1 + m[0][1] * 0 + m[0][2] * 0 + m[0][3] * 0;
 	m[0][1] = m[0][0] * 0 + m[0][1] * c + m[0][2] * s + m[0][3] * 0;
 	m[0][2] = m[0][0] * 0 + m[0][1] *-s + m[0][2] * c + m[0][3] * 0;
@@ -173,7 +206,7 @@ void Matrix::rotateX(float r)
 	m[3][2] = m[3][0] * 0 + m[3][1] *-s + m[3][2] * c + m[3][3] * 0;
 	m[3][3] = m[3][0] * 0 + m[3][1] * 0 + m[3][2] * 0 + m[3][3] * 1;
 	*/
-	/* 正しく計算できるようにしたもの
+    /* 正しく計算できるようにしたもの
 	lfloat mx0 = m[0][0];
 	lfloat mx1 = m[0][1];
 	lfloat mx2 = m[0][2];
@@ -206,7 +239,7 @@ void Matrix::rotateX(float r)
 	m[3][2] = mx0 * 0 + mx1 *-s + mx2 * c + m[3][3] * 0;
 	m[3][3] = mx0 * 0 + mx1 * 0 + mx2 * 0 + m[3][3] * 1;
 	*/
-	/* 単純に * 0 とかの無駄なところを切る
+    /* 単純に * 0 とかの無駄なところを切る
 	lfloat mx0 = m[0][0];
 	lfloat mx1 = m[0][1];
 	lfloat mx2 = m[0][2];
@@ -240,24 +273,24 @@ void Matrix::rotateX(float r)
 	m[3][3] = m[3][3];
 	*/
 
-	// 自分自身を代入しているところを切る
-	float mx1 = m[0][1];
-	m[0][1] = mx1 * c + m[0][2] * -s;
-	m[0][2] = mx1 * s + m[0][2] * c;
+    // 自分自身を代入しているところを切る
+    float mx1 = m[0][1];
+    m[0][1] = mx1 * c + m[0][2] * -s;
+    m[0][2] = mx1 * s + m[0][2] * c;
 
-	mx1 = m[1][1];
-	m[1][1] = mx1 * c + m[1][2] * -s;
-	m[1][2] = mx1 * s + m[1][2] * c;
+    mx1 = m[1][1];
+    m[1][1] = mx1 * c + m[1][2] * -s;
+    m[1][2] = mx1 * s + m[1][2] * c;
 
-	mx1 = m[2][1];
-	m[2][1] = mx1 * c + m[2][2] * -s;
-	m[2][2] = mx1 * s + m[2][2] * c;
+    mx1 = m[2][1];
+    m[2][1] = mx1 * c + m[2][2] * -s;
+    m[2][2] = mx1 * s + m[2][2] * c;
 
-	mx1 = m[3][1];
-	m[3][1] = mx1 * c + m[3][2] * -s;
-	m[3][2] = mx1 * s + m[3][2] * c;
+    mx1 = m[3][1];
+    m[3][1] = mx1 * c + m[3][2] * -s;
+    m[3][2] = mx1 * s + m[3][2] * c;
 
-	/* OpenGL
+    /* OpenGL
 	lnFloat mx1 = m[0][1];
 	m[0][1] = mx1 * c + m[0][2] * s;
 	m[0][2] = mx1 *-s + m[0][2] * c;
@@ -276,19 +309,18 @@ void Matrix::rotateX(float r)
 	*/
 }
 
-//------------------------------------------------------------------------------
 void Matrix::rotateY(float r)
 {
-	float c, s;
-	Asm::sincos(r, &s, &c);
+    float c, s;
+    Asm::sincos(r, &s, &c);
 
-	/* 普通の行列計算
+    /* 普通の行列計算
 	m[0][0], m[0][1], m[0][2], m[0][3]    c, 0, s, 0
 	m[1][0], m[1][1], m[1][2], m[1][3]    0, 1, 0, 0
 	m[2][0], m[2][1], m[2][2], m[2][3] * -s, 0, c, 0
 	m[3][0], m[3][1], m[3][2], m[3][3]    0, 0, 0, 1
 	*/
-	/* 計算イメージ
+    /* 計算イメージ
 	m[0][0] = m[0][0] * c + m[0][1] * 0 + m[0][2] *-s + m[0][3] * 0;
 	m[0][1] = m[0][0] * 0 + m[0][1] * 1 + m[0][2] * 0 + m[0][3] * 0;
 	m[0][2] = m[0][0] * s + m[0][1] * 0 + m[0][2] * c + m[0][3] * 0;
@@ -309,7 +341,7 @@ void Matrix::rotateY(float r)
 	m[3][2] = m[3][0] * s + m[3][1] * 0 + m[3][2] * c + m[3][3] * 0;
 	m[3][3] = m[3][0] * 0 + m[3][1] * 0 + m[3][2] * 0 + m[3][3] * 1;
 	*/
-	/* 正しく計算できるようにしたもの
+    /* 正しく計算できるようにしたもの
 	lfloat mx0 = m[0][0];
 	lfloat mx1 = m[0][1];
 	lfloat mx2 = m[0][2];
@@ -342,7 +374,7 @@ void Matrix::rotateY(float r)
 	m[3][2] = mx0 * s + mx1 * 0 + mx2 * c + m[3][3] * 0;
 	m[3][3] = mx0 * 0 + mx1 * 0 + mx2 * 0 + m[3][3] * 1;
 	*/
-	/* 単純に * 0 とかの無駄なところを切る
+    /* 単純に * 0 とかの無駄なところを切る
 	lfloat mx0 = m[0][0];
 	lfloat mx1 = m[0][1];
 	lfloat mx2 = m[0][2];
@@ -376,24 +408,24 @@ void Matrix::rotateY(float r)
 	m[3][3] = m[3][3];
 	*/
 
-	// 自分自身を代入しているところを切る
-	float mx0 = m[0][0];
-	m[0][0] = mx0 * c + m[0][2] * s;
-	m[0][2] = mx0 *-s + m[0][2] * c;
+    // 自分自身を代入しているところを切る
+    float mx0 = m[0][0];
+    m[0][0] = mx0 * c + m[0][2] * s;
+    m[0][2] = mx0 * -s + m[0][2] * c;
 
-	mx0 = m[1][0];
-	m[1][0] = mx0 * c + m[1][2] * s;
-	m[1][2] = mx0 *-s + m[1][2] * c;
+    mx0 = m[1][0];
+    m[1][0] = mx0 * c + m[1][2] * s;
+    m[1][2] = mx0 * -s + m[1][2] * c;
 
-	mx0 = m[2][0];
-	m[2][0] = mx0 * c + m[2][2] * s;
-	m[2][2] = mx0 *-s + m[2][2] * c;
+    mx0 = m[2][0];
+    m[2][0] = mx0 * c + m[2][2] * s;
+    m[2][2] = mx0 * -s + m[2][2] * c;
 
-	mx0 = m[3][0];
-	m[3][0] = mx0 * c + m[3][2] * s;
-	m[3][2] = mx0 *-s + m[3][2] * c;
+    mx0 = m[3][0];
+    m[3][0] = mx0 * c + m[3][2] * s;
+    m[3][2] = mx0 * -s + m[3][2] * c;
 
-	/* OpenGL
+    /* OpenGL
 	lnFloat mx0 = m[0][0];
 	m[0][0] = mx0 * c + m[0][2] *-s;
 	m[0][2] = mx0 * s + m[0][2] * c;
@@ -412,13 +444,12 @@ void Matrix::rotateY(float r)
 	*/
 }
 
-//------------------------------------------------------------------------------
 void Matrix::rotateZ(float r)
 {
-	float c, s;
-	Asm::sincos(r, &s, &c);
+    float c, s;
+    Asm::sincos(r, &s, &c);
 
-	/* 基本の計算イメージ
+    /* 基本の計算イメージ
 	m[0][0] = m[0][0] * c + m[0][1] * s + m[0][2] * 0 + m[0][3] * 0;
 	m[0][1] = m[0][0] *-s + m[0][1] * c + m[0][2] * 0 + m[0][3] * 0;
 	m[0][2] = m[0][0] * 0 + m[0][1] * 0 + m[0][2] * 1 + m[0][3] * 0;
@@ -439,7 +470,7 @@ void Matrix::rotateZ(float r)
 	m[3][2] = m[3][0] * 0 + m[3][1] * 0 + m[3][2] * 1 + m[3][3] * 0;
 	m[3][3] = m[3][0] * 0 + m[3][1] * 0 + m[3][2] * 0 + m[3][3] * 1;
 	*/
-	/* 正しく計算できるようにしたもの
+    /* 正しく計算できるようにしたもの
 	lfloat mx0 = m[0][0];
 	lfloat mx1 = m[0][1];
 	lfloat mx2 = m[0][2];
@@ -472,7 +503,7 @@ void Matrix::rotateZ(float r)
 	m[3][2] = mx0 * 0 + mx1 * 0 + mx2 * 1 + m[3][3] * 0;
 	m[3][3] = mx0 * 0 + mx1 * 0 + mx2 * 0 + m[3][3] * 1;
 	*/
-	/* 単純に * 0 とかの無駄なところを切る
+    /* 単純に * 0 とかの無駄なところを切る
 	lfloat mx0 = m[0][0];
 	lfloat mx1 = m[0][1];
 	lfloat mx2 = m[0][2];
@@ -505,25 +536,25 @@ void Matrix::rotateZ(float r)
 	m[3][2] = mx2;
 	m[3][3] = m[3][3];
 	*/
-	// 自分自身を代入しているところを切る
-	float mx0 = m[0][0];
-	m[0][0] = mx0 * c + m[0][1] * -s;
-	m[0][1] = mx0 * s + m[0][1] * c;
+    // 自分自身を代入しているところを切る
+    float mx0 = m[0][0];
+    m[0][0] = mx0 * c + m[0][1] * -s;
+    m[0][1] = mx0 * s + m[0][1] * c;
 
-	mx0 = m[1][0];
-	m[1][0] = mx0 * c + m[1][1] * -s;
-	m[1][1] = mx0 * s + m[1][1] * c;
+    mx0 = m[1][0];
+    m[1][0] = mx0 * c + m[1][1] * -s;
+    m[1][1] = mx0 * s + m[1][1] * c;
 
-	mx0 = m[2][0];
-	m[2][0] = mx0 * c + m[2][1] * -s;
-	m[2][1] = mx0 * s + m[2][1] * c;
+    mx0 = m[2][0];
+    m[2][0] = mx0 * c + m[2][1] * -s;
+    m[2][1] = mx0 * s + m[2][1] * c;
 
-	mx0 = m[3][0];
-	m[3][0] = mx0 * c + m[3][1] * -s;
-	m[3][1] = mx0 * s + m[3][1] * c;
+    mx0 = m[3][0];
+    m[3][0] = mx0 * c + m[3][1] * -s;
+    m[3][1] = mx0 * s + m[3][1] * c;
 
-	// OpenGL
-	/*
+    // OpenGL
+    /*
 	lnFloat mx0 = m[0][0];
 	m[0][0] = mx0 * c + m[0][1] * s;
 	m[0][1] = mx0 *-s + m[0][1] * c;
@@ -542,42 +573,47 @@ void Matrix::rotateZ(float r)
 	*/
 }
 
-//------------------------------------------------------------------------------
 void Matrix::rotateEulerAngles(float x, float y, float z, RotationOrder order)
 {
-	rotateEulerAngles(Vector3(x, y, z), order);
+    rotateEulerAngles(Vector3(x, y, z), order);
 }
 
-//------------------------------------------------------------------------------
 void Matrix::rotateEulerAngles(const Vector3& angles, RotationOrder order)
 {
-	switch (order)
-	{
-		case RotationOrder::XYZ:
-			rotateX(angles.x); rotateY(angles.y); rotateZ(angles.z); break;
-		case RotationOrder::YZX:
-			rotateY(angles.y); rotateZ(angles.z); rotateX(angles.x); break;
-		case RotationOrder::ZXY:
-			rotateZ(angles.z); rotateX(angles.x); rotateY(angles.y); break;	// RotationYawPitchRoll
-		default:
-			assert(0);
-			break;
-	}
+    switch (order) {
+        case RotationOrder::XYZ:
+            rotateX(angles.x);
+            rotateY(angles.y);
+            rotateZ(angles.z);
+            break;
+        case RotationOrder::YZX:
+            rotateY(angles.y);
+            rotateZ(angles.z);
+            rotateX(angles.x);
+            break;
+        case RotationOrder::ZXY:
+            rotateZ(angles.z);
+            rotateX(angles.x);
+            rotateY(angles.y);
+            break; // RotationYawPitchRoll
+        default:
+            assert(0);
+            break;
+    }
 }
 
-//------------------------------------------------------------------------------
 void Matrix::rotateAxis(const Vector3& axis_, float r)
 {
-	Vector3 axis = axis_;
-	if (axis.getLengthSquared() != 1.0f) {
-		axis.normalize();
-	}
+    Vector3 axis = axis_;
+    if (axis.getLengthSquared() != 1.0f) {
+        axis.normalize();
+    }
 
-	float s, c;
-	Asm::sincos(r, &s, &c);
-	float mc = 1.0f - c;
+    float s, c;
+    Asm::sincos(r, &s, &c);
+    float mc = 1.0f - c;
 
-	/* 計算イメージ
+    /* 計算イメージ
 	_00 = ( axis_.x * axis_.x ) * mc + c;
 	_01 = ( axis_.x * axis_.y ) * mc + ( axis_.z * s );
 	_02 = ( axis_.x * axis_.z ) * mc - ( axis_.y * s );
@@ -617,7 +653,7 @@ void Matrix::rotateAxis(const Vector3& axis_, float r)
 	m[3][3] = m[3][0] * _03 + m[3][1] * _13 + m[3][2] * _23 + m[3][3] * _33;
 	*/
 
-	/* 正しく計算できるようにしたもの
+    /* 正しく計算できるようにしたもの
 	lfloat mx0 = m[0][0];
 	lfloat mx1 = m[0][1];
 	lfloat mx2 = m[0][2];
@@ -651,7 +687,7 @@ void Matrix::rotateAxis(const Vector3& axis_, float r)
 	m[3][3] = mx0 * _03 + mx1 * _13 + mx2 * _23 + m[3][3] * _33;
 	*/
 
-	/* 0 を乗算してるところと、*1 で自分自身代入しているところを切る
+    /* 0 を乗算してるところと、*1 で自分自身代入しているところを切る
 	lfloat mx0 = m[0][0];
 	lfloat mx1 = m[0][1];
 	lfloat mx2 = m[0][2];
@@ -681,189 +717,180 @@ void Matrix::rotateAxis(const Vector3& axis_, float r)
 	m[3][2] = mx0 * _02 + mx1 * _12 + mx2 * _22;
 	*/
 
-	// ※古いコードのなので変数名が 0 スタートになっている点に注意
-	float _00 = (axis.x * axis.x) * mc + c;
-	float _01 = (axis.x * axis.y) * mc + (axis.z * s);
-	float _02 = (axis.x * axis.z) * mc - (axis.y * s);
+    // ※古いコードのなので変数名が 0 スタートになっている点に注意
+    float _00 = (axis.x * axis.x) * mc + c;
+    float _01 = (axis.x * axis.y) * mc + (axis.z * s);
+    float _02 = (axis.x * axis.z) * mc - (axis.y * s);
 
-	float _10 = (axis.x * axis.y) * mc - (axis.z * s);
-	float _11 = (axis.y * axis.y) * mc + c;
-	float _12 = (axis.y * axis.z) * mc + (axis.x * s);
+    float _10 = (axis.x * axis.y) * mc - (axis.z * s);
+    float _11 = (axis.y * axis.y) * mc + c;
+    float _12 = (axis.y * axis.z) * mc + (axis.x * s);
 
-	float _20 = (axis.x * axis.z) * mc + (axis.y * s);
-	float _21 = (axis.y * axis.z) * mc - (axis.x * s);
-	float _22 = (axis.z * axis.z) * mc + c;
+    float _20 = (axis.x * axis.z) * mc + (axis.y * s);
+    float _21 = (axis.y * axis.z) * mc - (axis.x * s);
+    float _22 = (axis.z * axis.z) * mc + c;
 
-	float mx0 = m[0][0];
-	float mx1 = m[0][1];
-	m[0][0] = mx0 * _00 + mx1 * _10 + m[0][2] * _20;
-	m[0][1] = mx0 * _01 + mx1 * _11 + m[0][2] * _21;
-	m[0][2] = mx0 * _02 + mx1 * _12 + m[0][2] * _22;
+    float mx0 = m[0][0];
+    float mx1 = m[0][1];
+    m[0][0] = mx0 * _00 + mx1 * _10 + m[0][2] * _20;
+    m[0][1] = mx0 * _01 + mx1 * _11 + m[0][2] * _21;
+    m[0][2] = mx0 * _02 + mx1 * _12 + m[0][2] * _22;
 
-	mx0 = m[1][0];
-	mx1 = m[1][1];
-	m[1][0] = mx0 * _00 + mx1 * _10 + m[1][2] * _20;
-	m[1][1] = mx0 * _01 + mx1 * _11 + m[1][2] * _21;
-	m[1][2] = mx0 * _02 + mx1 * _12 + m[1][2] * _22;
+    mx0 = m[1][0];
+    mx1 = m[1][1];
+    m[1][0] = mx0 * _00 + mx1 * _10 + m[1][2] * _20;
+    m[1][1] = mx0 * _01 + mx1 * _11 + m[1][2] * _21;
+    m[1][2] = mx0 * _02 + mx1 * _12 + m[1][2] * _22;
 
-	mx0 = m[2][0];
-	mx1 = m[2][1];
-	m[2][0] = mx0 * _00 + mx1 * _10 + m[2][2] * _20;
-	m[2][1] = mx0 * _01 + mx1 * _11 + m[2][2] * _21;
-	m[2][2] = mx0 * _02 + mx1 * _12 + m[2][2] * _22;
+    mx0 = m[2][0];
+    mx1 = m[2][1];
+    m[2][0] = mx0 * _00 + mx1 * _10 + m[2][2] * _20;
+    m[2][1] = mx0 * _01 + mx1 * _11 + m[2][2] * _21;
+    m[2][2] = mx0 * _02 + mx1 * _12 + m[2][2] * _22;
 
-	mx0 = m[3][0];
-	mx1 = m[3][1];
-	m[3][0] = mx0 * _00 + mx1 * _10 + m[3][2] * _20;
-	m[3][1] = mx0 * _01 + mx1 * _11 + m[3][2] * _21;
-	m[3][2] = mx0 * _02 + mx1 * _12 + m[3][2] * _22;
+    mx0 = m[3][0];
+    mx1 = m[3][1];
+    m[3][0] = mx0 * _00 + mx1 * _10 + m[3][2] * _20;
+    m[3][1] = mx0 * _01 + mx1 * _11 + m[3][2] * _21;
+    m[3][2] = mx0 * _02 + mx1 * _12 + m[3][2] * _22;
 }
 
-//------------------------------------------------------------------------------
 void Matrix::rotateQuaternion(const Quaternion& q)
 {
-	float xx = q.x * q.x;
-	float yy = q.y * q.y;
-	float zz = q.z * q.z;
-	float xy = q.x * q.y;
-	float zw = q.z * q.w;
-	float zx = q.z * q.x;
-	float yw = q.y * q.w;
-	float yz = q.y * q.z;
-	float xw = q.x * q.w;
+    float xx = q.x * q.x;
+    float yy = q.y * q.y;
+    float zz = q.z * q.z;
+    float xy = q.x * q.y;
+    float zw = q.z * q.w;
+    float zx = q.z * q.x;
+    float yw = q.y * q.w;
+    float yz = q.y * q.z;
+    float xw = q.x * q.w;
 
-	// ※古いコードのなので変数名が 0 スタートになっている点に注意
-	float _00 = 1.0f - (2.0f * (yy + zz));
-	float _01 = 2.0f * (xy + zw);
-	float _02 = 2.0f * (zx - yw);
+    // ※古いコードのなので変数名が 0 スタートになっている点に注意
+    float _00 = 1.0f - (2.0f * (yy + zz));
+    float _01 = 2.0f * (xy + zw);
+    float _02 = 2.0f * (zx - yw);
 
-	float _10 = 2.0f * (xy - zw);
-	float _11 = 1.0f - (2.0f * (zz + xx));
-	float _12 = 2.0f * (yz + xw);
+    float _10 = 2.0f * (xy - zw);
+    float _11 = 1.0f - (2.0f * (zz + xx));
+    float _12 = 2.0f * (yz + xw);
 
-	float _20 = 2.0f * (zx + yw);
-	float _21 = 2.0f * (yz - xw);
-	float _22 = 1.0f - (2.0f * (yy + xx));
+    float _20 = 2.0f * (zx + yw);
+    float _21 = 2.0f * (yz - xw);
+    float _22 = 1.0f - (2.0f * (yy + xx));
 
-	float mx0 = m[0][0];
-	float mx1 = m[0][1];
-	m[0][0] = mx0 * _00 + mx1 * _10 + m[0][2] * _20;
-	m[0][1] = mx0 * _01 + mx1 * _11 + m[0][2] * _21;
-	m[0][2] = mx0 * _02 + mx1 * _12 + m[0][2] * _22;
+    float mx0 = m[0][0];
+    float mx1 = m[0][1];
+    m[0][0] = mx0 * _00 + mx1 * _10 + m[0][2] * _20;
+    m[0][1] = mx0 * _01 + mx1 * _11 + m[0][2] * _21;
+    m[0][2] = mx0 * _02 + mx1 * _12 + m[0][2] * _22;
 
-	mx0 = m[1][0];
-	mx1 = m[1][1];
-	m[1][0] = mx0 * _00 + mx1 * _10 + m[1][2] * _20;
-	m[1][1] = mx0 * _01 + mx1 * _11 + m[1][2] * _21;
-	m[1][2] = mx0 * _02 + mx1 * _12 + m[1][2] * _22;
+    mx0 = m[1][0];
+    mx1 = m[1][1];
+    m[1][0] = mx0 * _00 + mx1 * _10 + m[1][2] * _20;
+    m[1][1] = mx0 * _01 + mx1 * _11 + m[1][2] * _21;
+    m[1][2] = mx0 * _02 + mx1 * _12 + m[1][2] * _22;
 
-	mx0 = m[2][0];
-	mx1 = m[2][1];
-	m[2][0] = mx0 * _00 + mx1 * _10 + m[2][2] * _20;
-	m[2][1] = mx0 * _01 + mx1 * _11 + m[2][2] * _21;
-	m[2][2] = mx0 * _02 + mx1 * _12 + m[2][2] * _22;
+    mx0 = m[2][0];
+    mx1 = m[2][1];
+    m[2][0] = mx0 * _00 + mx1 * _10 + m[2][2] * _20;
+    m[2][1] = mx0 * _01 + mx1 * _11 + m[2][2] * _21;
+    m[2][2] = mx0 * _02 + mx1 * _12 + m[2][2] * _22;
 
-	mx0 = m[3][0];
-	mx1 = m[3][1];
-	m[3][0] = mx0 * _00 + mx1 * _10 + m[3][2] * _20;
-	m[3][1] = mx0 * _01 + mx1 * _11 + m[3][2] * _21;
-	m[3][2] = mx0 * _02 + mx1 * _12 + m[3][2] * _22;
+    mx0 = m[3][0];
+    mx1 = m[3][1];
+    m[3][0] = mx0 * _00 + mx1 * _10 + m[3][2] * _20;
+    m[3][1] = mx0 * _01 + mx1 * _11 + m[3][2] * _21;
+    m[3][2] = mx0 * _02 + mx1 * _12 + m[3][2] * _22;
 }
 
-//------------------------------------------------------------------------------
 void Matrix::scale(float x, float y, float z)
 {
-	m[0][0] *= x;
-	m[0][1] *= y;
-	m[0][2] *= z;
-	m[1][0] *= x;
-	m[1][1] *= y;
-	m[1][2] *= z;
-	m[2][0] *= x;
-	m[2][1] *= y;
-	m[2][2] *= z;
-	m[3][0] *= x;
-	m[3][1] *= y;
-	m[3][2] *= z;
+    m[0][0] *= x;
+    m[0][1] *= y;
+    m[0][2] *= z;
+    m[1][0] *= x;
+    m[1][1] *= y;
+    m[1][2] *= z;
+    m[2][0] *= x;
+    m[2][1] *= y;
+    m[2][2] *= z;
+    m[3][0] *= x;
+    m[3][1] *= y;
+    m[3][2] *= z;
 }
 
 void Matrix::scale(const Vector3& vec)
 {
-	scale(vec.x, vec.y, vec.z);
+    scale(vec.x, vec.y, vec.z);
 }
 
 void Matrix::scale(float xyz)
 {
-	scale(xyz, xyz, xyz);
+    scale(xyz, xyz, xyz);
 }
 
-//------------------------------------------------------------------------------
 void Matrix::inverse()
 {
-	(*this) = Matrix::makeInverse(*this);
+    (*this) = Matrix::makeInverse(*this);
 }
 
-//------------------------------------------------------------------------------
-void  Matrix::transpose()
+void Matrix::transpose()
 {
-	(*this) = Matrix::makeTranspose(*this);
+    (*this) = Matrix::makeTranspose(*this);
 }
 
-//------------------------------------------------------------------------------
 void Matrix::decompose(Vector3* scale, Quaternion* rot, Vector3* trans) const
 {
-	Matrix scaleMat;
-	Matrix rotMat;
-	Matrix transMat;
-	decomposeMatrices(&scaleMat, &rotMat, &transMat);
-	if (scale) {
-		scale->set(scaleMat.m[0][0], scaleMat.m[1][1], scaleMat.m[2][2]);
-	}
-	if (rot) {
-		*rot = Quaternion::makeFromRotationMatrix(rotMat);
-	}
-	if (trans) {
-		trans->set(transMat.m[3][0], transMat.m[3][1], transMat.m[3][2]);
-	}
+    Matrix scaleMat;
+    Matrix rotMat;
+    Matrix transMat;
+    decomposeMatrices(&scaleMat, &rotMat, &transMat);
+    if (scale) {
+        scale->set(scaleMat.m[0][0], scaleMat.m[1][1], scaleMat.m[2][2]);
+    }
+    if (rot) {
+        *rot = Quaternion::makeFromRotationMatrix(rotMat);
+    }
+    if (trans) {
+        trans->set(transMat.m[3][0], transMat.m[3][1], transMat.m[3][2]);
+    }
 }
 
-//------------------------------------------------------------------------------
 void Matrix::decomposeMatrices(Matrix* scale, Matrix* rot, Matrix* trans) const
 {
-	if (trans)
-	{
-		*trans = Matrix::makeTranslation(getPosition());
-	}
+    if (trans) {
+        *trans = Matrix::makeTranslation(getPosition());
+    }
 
-	Vector3 sc(
-		sqrtf(m[0][0] * m[0][0] + m[0][1] * m[0][1] + m[0][2] * m[0][2]),
-		sqrtf(m[1][0] * m[1][0] + m[1][1] * m[1][1] + m[1][2] * m[1][2]),
-		sqrtf(m[2][0] * m[2][0] + m[2][1] * m[2][1] + m[2][2] * m[2][2]));
-	if (scale)
-	{
-		*scale = Matrix::makeScaling(sc);
-	}
+    Vector3 sc(
+        sqrtf(m[0][0] * m[0][0] + m[0][1] * m[0][1] + m[0][2] * m[0][2]),
+        sqrtf(m[1][0] * m[1][0] + m[1][1] * m[1][1] + m[1][2] * m[1][2]),
+        sqrtf(m[2][0] * m[2][0] + m[2][1] * m[2][1] + m[2][2] * m[2][2]));
+    if (scale) {
+        *scale = Matrix::makeScaling(sc);
+    }
 
-	if (rot)
-	{
-		*rot = Identity;
-		rot->m[0][0] = (sc.x != 0.0f) ? m[0][0] / sc.x : 0.0f;
-		rot->m[0][1] = (sc.x != 0.0f) ? m[0][1] / sc.x : 0.0f;
-		rot->m[0][2] = (sc.x != 0.0f) ? m[0][2] / sc.x : 0.0f;
-		rot->m[0][3] = 0.0f;
-		rot->m[1][0] = (sc.y != 0.0f) ? m[1][0] / sc.y : 0.0f;
-		rot->m[1][1] = (sc.y != 0.0f) ? m[1][1] / sc.y : 0.0f;
-		rot->m[1][2] = (sc.y != 0.0f) ? m[1][2] / sc.y : 0.0f;
-		rot->m[1][3] = 0.0f;
-		rot->m[2][0] = (sc.z != 0.0f) ? m[2][0] / sc.z : 0.0f;
-		rot->m[2][1] = (sc.z != 0.0f) ? m[2][1] / sc.z : 0.0f;
-		rot->m[2][2] = (sc.z != 0.0f) ? m[2][2] / sc.z : 0.0f;
-		rot->m[2][3] = 0.0f;
-		rot->m[3][0] = 0.0f;
-		rot->m[3][1] = 0.0f;
-		rot->m[3][2] = 0.0f;
-		rot->m[3][3] = 1.0f;
-	}
+    if (rot) {
+        *rot = Identity;
+        rot->m[0][0] = (sc.x != 0.0f) ? m[0][0] / sc.x : 0.0f;
+        rot->m[0][1] = (sc.x != 0.0f) ? m[0][1] / sc.x : 0.0f;
+        rot->m[0][2] = (sc.x != 0.0f) ? m[0][2] / sc.x : 0.0f;
+        rot->m[0][3] = 0.0f;
+        rot->m[1][0] = (sc.y != 0.0f) ? m[1][0] / sc.y : 0.0f;
+        rot->m[1][1] = (sc.y != 0.0f) ? m[1][1] / sc.y : 0.0f;
+        rot->m[1][2] = (sc.y != 0.0f) ? m[1][2] / sc.y : 0.0f;
+        rot->m[1][3] = 0.0f;
+        rot->m[2][0] = (sc.z != 0.0f) ? m[2][0] / sc.z : 0.0f;
+        rot->m[2][1] = (sc.z != 0.0f) ? m[2][1] / sc.z : 0.0f;
+        rot->m[2][2] = (sc.z != 0.0f) ? m[2][2] / sc.z : 0.0f;
+        rot->m[2][3] = 0.0f;
+        rot->m[3][0] = 0.0f;
+        rot->m[3][1] = 0.0f;
+        rot->m[3][2] = 0.0f;
+        rot->m[3][3] = 1.0f;
+    }
 }
 #if 0
 void Matrix::decompose(Vector3* scale, Matrix* rot, Vector3* trans)
@@ -918,8 +945,7 @@ void Matrix::decompose(Vector3* scale, Quaternion* rot, Vector3* trans) const
 }
 #endif
 //
-////------------------------------------------------------------------------------
-//void Matrix::print(const char* format, FILE* stream) const
+////void Matrix::print(const char* format, FILE* stream) const
 //{
 //	if (!format) {
 //		format = "%f, %f, %f, %f,\n%f, %f, %f, %f,\n%f, %f, %f, %f,\n%f, %f, %f, %f\n";
@@ -935,447 +961,396 @@ void Matrix::decompose(Vector3* scale, Quaternion* rot, Vector3* trans) const
 //		m[3][0], m[3][1], m[3][2], m[3][3]);
 //}
 
-//------------------------------------------------------------------------------
 static bool EulerAnglesXYZ(const Matrix& mat, float* xRot, float* yRot, float* zRot)
 {
-	static const float Threshold = 0.0001f;
-	
-	if (mat.m[0][2] > 1.0f - Threshold || mat.m[0][2] < -1.0f + Threshold)	// ジンバルロック判定
-	{
-		*xRot = 0.0f;
-		*yRot = (mat.m[0][2] < 0 ? Math::PIDiv2 : -Math::PIDiv2);
-		*zRot = -atan2f(-mat.m[1][0], mat.m[1][1]);
-		return false;
-	}
+    static const float Threshold = 0.0001f;
 
-	*yRot = -asinf(mat.m[0][2]);
-	*xRot = asinf(mat.m[1][2] / cosf(*yRot));
+    if (mat.m[0][2] > 1.0f - Threshold || mat.m[0][2] < -1.0f + Threshold) // ジンバルロック判定
+    {
+        *xRot = 0.0f;
+        *yRot = (mat.m[0][2] < 0 ? Math::PIDiv2 : -Math::PIDiv2);
+        *zRot = -atan2f(-mat.m[1][0], mat.m[1][1]);
+        return false;
+    }
 
-	if (Math::isNaN(*xRot))	// ジンバルロック判定
-	{
-		*xRot = 0.0f;
-		*yRot = (mat.m[0][2] < 0 ? Math::PIDiv2 : -Math::PIDiv2);
-		*zRot = -atan2f(-mat.m[1][0], mat.m[1][1]);
-		return false;
-	}
+    *yRot = -asinf(mat.m[0][2]);
+    *xRot = asinf(mat.m[1][2] / cosf(*yRot));
 
-	if (mat.m[2][2] < 0.0f) {
-		*xRot = Math::PI - (*xRot);
-	}
+    if (Math::isNaN(*xRot)) // ジンバルロック判定
+    {
+        *xRot = 0.0f;
+        *yRot = (mat.m[0][2] < 0 ? Math::PIDiv2 : -Math::PIDiv2);
+        *zRot = -atan2f(-mat.m[1][0], mat.m[1][1]);
+        return false;
+    }
 
-	*zRot = atan2f(mat.m[0][1], mat.m[0][0]);
-	return true;
+    if (mat.m[2][2] < 0.0f) {
+        *xRot = Math::PI - (*xRot);
+    }
+
+    *zRot = atan2f(mat.m[0][1], mat.m[0][0]);
+    return true;
 }
 
 static bool EulerAnglesYZX(const Matrix& mat, float* xRot, float* yRot, float* zRot)
 {
-	static const float Threshold = 0.0001f;
+    static const float Threshold = 0.0001f;
 
-	if (mat.m[1][0] > 1.0f - Threshold || mat.m[1][0] < -1.0f + Threshold)	// ジンバルロック判定
-	{
-		*xRot = -atan2f(-mat.m[2][1], mat.m[2][2]);
-		*yRot = 0.0f;
-		*zRot = (mat.m[1][0] < 0 ? Math::PIDiv2 : -Math::PIDiv2);
-		return false;
-	}
+    if (mat.m[1][0] > 1.0f - Threshold || mat.m[1][0] < -1.0f + Threshold) // ジンバルロック判定
+    {
+        *xRot = -atan2f(-mat.m[2][1], mat.m[2][2]);
+        *yRot = 0.0f;
+        *zRot = (mat.m[1][0] < 0 ? Math::PIDiv2 : -Math::PIDiv2);
+        return false;
+    }
 
-	*zRot = -asinf(mat.m[1][0]);
-	*yRot = asinf(mat.m[2][0] / cosf(*zRot));
+    *zRot = -asinf(mat.m[1][0]);
+    *yRot = asinf(mat.m[2][0] / cosf(*zRot));
 
-	if (Math::isNaN(*yRot))	// ジンバルロック判定
-	{
-		*xRot = -atan2f(-mat.m[2][1], mat.m[2][2]);
-		*yRot = 0.0f;
-		*zRot = (mat.m[1][0] < 0 ? Math::PIDiv2 : -Math::PIDiv2);
-		return false;
-	}
+    if (Math::isNaN(*yRot)) // ジンバルロック判定
+    {
+        *xRot = -atan2f(-mat.m[2][1], mat.m[2][2]);
+        *yRot = 0.0f;
+        *zRot = (mat.m[1][0] < 0 ? Math::PIDiv2 : -Math::PIDiv2);
+        return false;
+    }
 
-	if (mat.m[0][0] < 0.0f) {
-		*yRot = Math::PI - (*yRot);
-	}
+    if (mat.m[0][0] < 0.0f) {
+        *yRot = Math::PI - (*yRot);
+    }
 
-	*xRot = atan2f(mat.m[1][2], mat.m[1][1]);
-	return true;
+    *xRot = atan2f(mat.m[1][2], mat.m[1][1]);
+    return true;
 }
 
 static bool EulerAnglesZXY(const Matrix& mat, float* xRot, float* yRot, float* zRot)
 {
-	static const float Threshold = 0.0001f;
-	//if (locked) { *locked = true; }		// 最初にジンバルロック発生状態にしておく
+    static const float Threshold = 0.0001f;
+    //if (locked) { *locked = true; }		// 最初にジンバルロック発生状態にしておく
 
-	if (mat.m[2][1] > 1.0f - Threshold || mat.m[2][1]  < -1.0f + Threshold)	// ジンバルロック判定
-	{
-		*xRot = (mat.m[2][1] < 0 ? Math::PIDiv2 : -Math::PIDiv2);
-		*yRot = (float)atan2f(-mat.m[0][2], mat.m[0][0]);
-		*zRot = 0.0f;
-		return false;
-	}
+    if (mat.m[2][1] > 1.0f - Threshold || mat.m[2][1] < -1.0f + Threshold) // ジンバルロック判定
+    {
+        *xRot = (mat.m[2][1] < 0 ? Math::PIDiv2 : -Math::PIDiv2);
+        *yRot = (float)atan2f(-mat.m[0][2], mat.m[0][0]);
+        *zRot = 0.0f;
+        return false;
+    }
 
-	*xRot = -(float)asinf(mat.m[2][1]);
-	*zRot = (float)asinf(mat.m[0][1] / cosf(*xRot));
+    *xRot = -(float)asinf(mat.m[2][1]);
+    *zRot = (float)asinf(mat.m[0][1] / cosf(*xRot));
 
-	if (Math::isNaN(*zRot))	// ジンバルロック判定
-	{
-		*xRot = (mat.m[2][1] < 0 ? Math::PIDiv2 : -Math::PIDiv2);
-		*yRot = (float)atan2f(-mat.m[0][2], mat.m[0][0]);
-		*zRot = 0.0f;
-		return false;
-	}
-	if (mat.m[1][1] < 0.0f) {
-		*zRot = Math::PI - (*zRot);
-	}
+    if (Math::isNaN(*zRot)) // ジンバルロック判定
+    {
+        *xRot = (mat.m[2][1] < 0 ? Math::PIDiv2 : -Math::PIDiv2);
+        *yRot = (float)atan2f(-mat.m[0][2], mat.m[0][0]);
+        *zRot = 0.0f;
+        return false;
+    }
+    if (mat.m[1][1] < 0.0f) {
+        *zRot = Math::PI - (*zRot);
+    }
 
-	*yRot = (float)atan2f(mat.m[2][0], mat.m[2][2]);
+    *yRot = (float)atan2f(mat.m[2][0], mat.m[2][2]);
 
-	//if (locked) { *locked = false; }	// ジンバルロックは発生しなかった
-	//return Vector3(xRot, yRot, zRot);
-	return true;
+    //if (locked) { *locked = false; }	// ジンバルロックは発生しなかった
+    //return Vector3(xRot, yRot, zRot);
+    return true;
 }
 
 Vector3 Matrix::toEulerAngles(RotationOrder order, bool* locked_) const
 {
-	bool locked;
-	float xRot, yRot, zRot;
-	switch (order)
-	{
-		case RotationOrder::XYZ:
-			locked = !EulerAnglesXYZ(*this, &xRot, &yRot, &zRot);
-			break;
-		//case RotationOrder_XZY: break;
-		//case RotationOrder_YXZ: break;
-		case RotationOrder::YZX:
-			locked = !EulerAnglesYZX(*this, &xRot, &yRot, &zRot);
-			break;
-		case RotationOrder::ZXY:
-			locked = !EulerAnglesZXY(*this, &xRot, &yRot, &zRot);	// RotationYawPitchRoll
-			break;
-		//case RotationOrder_ZYX: break;
-		default:
-			assert(0);
-			return Vector3();
-	}
+    bool locked;
+    float xRot, yRot, zRot;
+    switch (order) {
+        case RotationOrder::XYZ:
+            locked = !EulerAnglesXYZ(*this, &xRot, &yRot, &zRot);
+            break;
+        //case RotationOrder_XZY: break;
+        //case RotationOrder_YXZ: break;
+        case RotationOrder::YZX:
+            locked = !EulerAnglesYZX(*this, &xRot, &yRot, &zRot);
+            break;
+        case RotationOrder::ZXY:
+            locked = !EulerAnglesZXY(*this, &xRot, &yRot, &zRot); // RotationYawPitchRoll
+            break;
+        //case RotationOrder_ZYX: break;
+        default:
+            assert(0);
+            return Vector3();
+    }
 
-	if (locked_ != NULL) { *locked_ = locked; }
-	return Vector3(xRot, yRot, zRot);
+    if (locked_ != NULL) {
+        *locked_ = locked;
+    }
+    return Vector3(xRot, yRot, zRot);
 }
 
-//------------------------------------------------------------------------------
 Matrix Matrix::getRotationMatrix() const
 {
-	return Matrix(
-		m[0][0], m[0][1], m[0][2], 0.0f,
-		m[1][0], m[1][1], m[1][2], 0.0f,
-		m[2][0], m[2][1], m[2][2], 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f);
+    return Matrix(
+        m[0][0], m[0][1], m[0][2], 0.0f, m[1][0], m[1][1], m[1][2], 0.0f, m[2][0], m[2][1], m[2][2], 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 }
 
-//------------------------------------------------------------------------------
 bool Matrix::isNaNOrInf() const
 {
-	return
-		Math::isNaNOrInf(m[0][0]) || Math::isNaNOrInf(m[0][1]) || Math::isNaNOrInf(m[0][2]) || Math::isNaNOrInf(m[0][3]) ||
-		Math::isNaNOrInf(m[1][0]) || Math::isNaNOrInf(m[1][1]) || Math::isNaNOrInf(m[1][2]) || Math::isNaNOrInf(m[1][3]) ||
-		Math::isNaNOrInf(m[2][0]) || Math::isNaNOrInf(m[2][1]) || Math::isNaNOrInf(m[2][2]) || Math::isNaNOrInf(m[2][3]) ||
-		Math::isNaNOrInf(m[3][0]) || Math::isNaNOrInf(m[3][1]) || Math::isNaNOrInf(m[3][2]) || Math::isNaNOrInf(m[3][3]);
+    return Math::isNaNOrInf(m[0][0]) || Math::isNaNOrInf(m[0][1]) || Math::isNaNOrInf(m[0][2]) || Math::isNaNOrInf(m[0][3]) ||
+           Math::isNaNOrInf(m[1][0]) || Math::isNaNOrInf(m[1][1]) || Math::isNaNOrInf(m[1][2]) || Math::isNaNOrInf(m[1][3]) ||
+           Math::isNaNOrInf(m[2][0]) || Math::isNaNOrInf(m[2][1]) || Math::isNaNOrInf(m[2][2]) || Math::isNaNOrInf(m[2][3]) ||
+           Math::isNaNOrInf(m[3][0]) || Math::isNaNOrInf(m[3][1]) || Math::isNaNOrInf(m[3][2]) || Math::isNaNOrInf(m[3][3]);
 }
 
-//------------------------------------------------------------------------------
 // static
-//------------------------------------------------------------------------------
 Matrix Matrix::multiply(const Matrix& mat1, const Matrix& mat2)
 {
-	Matrix out;
+    Matrix out;
 
-	out.m[0][0] = mat1.m[0][0] * mat2.m[0][0] + mat1.m[0][1] * mat2.m[1][0] + mat1.m[0][2] * mat2.m[2][0] + mat1.m[0][3] * mat2.m[3][0];
-	out.m[0][1] = mat1.m[0][0] * mat2.m[0][1] + mat1.m[0][1] * mat2.m[1][1] + mat1.m[0][2] * mat2.m[2][1] + mat1.m[0][3] * mat2.m[3][1];
-	out.m[0][2] = mat1.m[0][0] * mat2.m[0][2] + mat1.m[0][1] * mat2.m[1][2] + mat1.m[0][2] * mat2.m[2][2] + mat1.m[0][3] * mat2.m[3][2];
-	out.m[0][3] = mat1.m[0][0] * mat2.m[0][3] + mat1.m[0][1] * mat2.m[1][3] + mat1.m[0][2] * mat2.m[2][3] + mat1.m[0][3] * mat2.m[3][3];
+    out.m[0][0] = mat1.m[0][0] * mat2.m[0][0] + mat1.m[0][1] * mat2.m[1][0] + mat1.m[0][2] * mat2.m[2][0] + mat1.m[0][3] * mat2.m[3][0];
+    out.m[0][1] = mat1.m[0][0] * mat2.m[0][1] + mat1.m[0][1] * mat2.m[1][1] + mat1.m[0][2] * mat2.m[2][1] + mat1.m[0][3] * mat2.m[3][1];
+    out.m[0][2] = mat1.m[0][0] * mat2.m[0][2] + mat1.m[0][1] * mat2.m[1][2] + mat1.m[0][2] * mat2.m[2][2] + mat1.m[0][3] * mat2.m[3][2];
+    out.m[0][3] = mat1.m[0][0] * mat2.m[0][3] + mat1.m[0][1] * mat2.m[1][3] + mat1.m[0][2] * mat2.m[2][3] + mat1.m[0][3] * mat2.m[3][3];
 
-	out.m[1][0] = mat1.m[1][0] * mat2.m[0][0] + mat1.m[1][1] * mat2.m[1][0] + mat1.m[1][2] * mat2.m[2][0] + mat1.m[1][3] * mat2.m[3][0];
-	out.m[1][1] = mat1.m[1][0] * mat2.m[0][1] + mat1.m[1][1] * mat2.m[1][1] + mat1.m[1][2] * mat2.m[2][1] + mat1.m[1][3] * mat2.m[3][1];
-	out.m[1][2] = mat1.m[1][0] * mat2.m[0][2] + mat1.m[1][1] * mat2.m[1][2] + mat1.m[1][2] * mat2.m[2][2] + mat1.m[1][3] * mat2.m[3][2];
-	out.m[1][3] = mat1.m[1][0] * mat2.m[0][3] + mat1.m[1][1] * mat2.m[1][3] + mat1.m[1][2] * mat2.m[2][3] + mat1.m[1][3] * mat2.m[3][3];
+    out.m[1][0] = mat1.m[1][0] * mat2.m[0][0] + mat1.m[1][1] * mat2.m[1][0] + mat1.m[1][2] * mat2.m[2][0] + mat1.m[1][3] * mat2.m[3][0];
+    out.m[1][1] = mat1.m[1][0] * mat2.m[0][1] + mat1.m[1][1] * mat2.m[1][1] + mat1.m[1][2] * mat2.m[2][1] + mat1.m[1][3] * mat2.m[3][1];
+    out.m[1][2] = mat1.m[1][0] * mat2.m[0][2] + mat1.m[1][1] * mat2.m[1][2] + mat1.m[1][2] * mat2.m[2][2] + mat1.m[1][3] * mat2.m[3][2];
+    out.m[1][3] = mat1.m[1][0] * mat2.m[0][3] + mat1.m[1][1] * mat2.m[1][3] + mat1.m[1][2] * mat2.m[2][3] + mat1.m[1][3] * mat2.m[3][3];
 
-	out.m[2][0] = mat1.m[2][0] * mat2.m[0][0] + mat1.m[2][1] * mat2.m[1][0] + mat1.m[2][2] * mat2.m[2][0] + mat1.m[2][3] * mat2.m[3][0];
-	out.m[2][1] = mat1.m[2][0] * mat2.m[0][1] + mat1.m[2][1] * mat2.m[1][1] + mat1.m[2][2] * mat2.m[2][1] + mat1.m[2][3] * mat2.m[3][1];
-	out.m[2][2] = mat1.m[2][0] * mat2.m[0][2] + mat1.m[2][1] * mat2.m[1][2] + mat1.m[2][2] * mat2.m[2][2] + mat1.m[2][3] * mat2.m[3][2];
-	out.m[2][3] = mat1.m[2][0] * mat2.m[0][3] + mat1.m[2][1] * mat2.m[1][3] + mat1.m[2][2] * mat2.m[2][3] + mat1.m[2][3] * mat2.m[3][3];
+    out.m[2][0] = mat1.m[2][0] * mat2.m[0][0] + mat1.m[2][1] * mat2.m[1][0] + mat1.m[2][2] * mat2.m[2][0] + mat1.m[2][3] * mat2.m[3][0];
+    out.m[2][1] = mat1.m[2][0] * mat2.m[0][1] + mat1.m[2][1] * mat2.m[1][1] + mat1.m[2][2] * mat2.m[2][1] + mat1.m[2][3] * mat2.m[3][1];
+    out.m[2][2] = mat1.m[2][0] * mat2.m[0][2] + mat1.m[2][1] * mat2.m[1][2] + mat1.m[2][2] * mat2.m[2][2] + mat1.m[2][3] * mat2.m[3][2];
+    out.m[2][3] = mat1.m[2][0] * mat2.m[0][3] + mat1.m[2][1] * mat2.m[1][3] + mat1.m[2][2] * mat2.m[2][3] + mat1.m[2][3] * mat2.m[3][3];
 
-	out.m[3][0] = mat1.m[3][0] * mat2.m[0][0] + mat1.m[3][1] * mat2.m[1][0] + mat1.m[3][2] * mat2.m[2][0] + mat1.m[3][3] * mat2.m[3][0];
-	out.m[3][1] = mat1.m[3][0] * mat2.m[0][1] + mat1.m[3][1] * mat2.m[1][1] + mat1.m[3][2] * mat2.m[2][1] + mat1.m[3][3] * mat2.m[3][1];
-	out.m[3][2] = mat1.m[3][0] * mat2.m[0][2] + mat1.m[3][1] * mat2.m[1][2] + mat1.m[3][2] * mat2.m[2][2] + mat1.m[3][3] * mat2.m[3][2];
-	out.m[3][3] = mat1.m[3][0] * mat2.m[0][3] + mat1.m[3][1] * mat2.m[1][3] + mat1.m[3][2] * mat2.m[2][3] + mat1.m[3][3] * mat2.m[3][3];
+    out.m[3][0] = mat1.m[3][0] * mat2.m[0][0] + mat1.m[3][1] * mat2.m[1][0] + mat1.m[3][2] * mat2.m[2][0] + mat1.m[3][3] * mat2.m[3][0];
+    out.m[3][1] = mat1.m[3][0] * mat2.m[0][1] + mat1.m[3][1] * mat2.m[1][1] + mat1.m[3][2] * mat2.m[2][1] + mat1.m[3][3] * mat2.m[3][1];
+    out.m[3][2] = mat1.m[3][0] * mat2.m[0][2] + mat1.m[3][1] * mat2.m[1][2] + mat1.m[3][2] * mat2.m[2][2] + mat1.m[3][3] * mat2.m[3][2];
+    out.m[3][3] = mat1.m[3][0] * mat2.m[0][3] + mat1.m[3][1] * mat2.m[1][3] + mat1.m[3][2] * mat2.m[2][3] + mat1.m[3][3] * mat2.m[3][3];
 
-	return out;
+    return out;
 }
 
-//------------------------------------------------------------------------------
 // static
-//------------------------------------------------------------------------------
 Matrix Matrix::makeTranslation(float x, float y, float z)
 {
-	return Matrix(
-		1.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
-		x, y, z, 1.0f);
+    return Matrix(
+        1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, x, y, z, 1.0f);
 }
 
-//------------------------------------------------------------------------------
 // static
-//------------------------------------------------------------------------------
 Matrix Matrix::makeTranslation(const Vector3& vec)
 {
-	return Matrix(
-		1.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
-		vec.x, vec.y, vec.z, 1.0f);
+    return Matrix(
+        1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, vec.x, vec.y, vec.z, 1.0f);
 }
 
-//------------------------------------------------------------------------------
 // static
-//------------------------------------------------------------------------------
 Matrix Matrix::makeRotationX(float r)
 {
-	float c, s;
-	Asm::sincos(r, &s, &c);
-	return Matrix(
-		1.0f,	0.0f,	0.0f,	0.0f,
-		0.0f,	c,		s,		0.0f,
-		0.0f,	-s,		c,		0.0f,
-		0.0f,	0.0f,	0.0f,	1.0f);
+    float c, s;
+    Asm::sincos(r, &s, &c);
+    return Matrix(
+        1.0f, 0.0f, 0.0f, 0.0f, 0.0f, c, s, 0.0f, 0.0f, -s, c, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 }
 
-//------------------------------------------------------------------------------
 // static
-//------------------------------------------------------------------------------
 Matrix Matrix::makeRotationY(float r)
 {
-	float c, s;
-	Asm::sincos(r, &s, &c);
-	return Matrix(
-		c,		0.0f,	-s,		0.0f,
-		0.0f,	1.0f,	0.0f,	0.0f,
-		s,		0.0f,	c,		0.0f,
-		0.0f,	0.0f,	0.0f,	1.0f);
+    float c, s;
+    Asm::sincos(r, &s, &c);
+    return Matrix(
+        c, 0.0f, -s, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, s, 0.0f, c, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 }
 
-//------------------------------------------------------------------------------
 // static
-//------------------------------------------------------------------------------
 Matrix Matrix::makeRotationZ(float r)
 {
-	float c, s;
-	Asm::sincos(r, &s, &c);
-	return Matrix(
-		c,		s,		0.0f,	0.0f,
-		-s,		c,		0.0f,	0.0f,
-		0.0f,	0.0f,	1.0f,	0.0f,
-		0.0f,	0.0f,	0.0f,	1.0f);
+    float c, s;
+    Asm::sincos(r, &s, &c);
+    return Matrix(
+        c, s, 0.0f, 0.0f, -s, c, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 }
 
-//------------------------------------------------------------------------------
 // static
-//------------------------------------------------------------------------------
 Matrix Matrix::makeRotationAxis(const Vector3& axis_, float r)
 {
-	Vector3 axis = axis_;
-	if (axis.getLengthSquared() != 1.0f) {
-		axis.normalize();
-	}
+    Vector3 axis = axis_;
+    if (axis.getLengthSquared() != 1.0f) {
+        axis.normalize();
+    }
 
-	float s, c;
-	Asm::sincos(r, &s, &c);
-	float mc = 1.0f - c;
+    float s, c;
+    Asm::sincos(r, &s, &c);
+    float mc = 1.0f - c;
 
-	return Matrix(
-		(axis.x * axis.x) * mc + c,				(axis.x * axis.y) * mc + (axis.z * s),	(axis.x * axis.z) * mc - (axis.y * s),	0.0f,
-		(axis.x * axis.y) * mc - (axis.z * s),	(axis.y * axis.y) * mc + c,				(axis.y * axis.z) * mc + (axis.x * s),	0.0f,
-		(axis.x * axis.z) * mc + (axis.y * s),	(axis.y * axis.z) * mc - (axis.x * s),	(axis.z * axis.z) * mc + c,				0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f);
+    return Matrix(
+        (axis.x * axis.x) * mc + c, (axis.x * axis.y) * mc + (axis.z * s), (axis.x * axis.z) * mc - (axis.y * s), 0.0f, (axis.x * axis.y) * mc - (axis.z * s), (axis.y * axis.y) * mc + c, (axis.y * axis.z) * mc + (axis.x * s), 0.0f, (axis.x * axis.z) * mc + (axis.y * s), (axis.y * axis.z) * mc - (axis.x * s), (axis.z * axis.z) * mc + c, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 }
 
-//------------------------------------------------------------------------------
 // static
-//------------------------------------------------------------------------------
 Matrix Matrix::makeRotationQuaternion(const Quaternion& qua)
 {
-	float xx = qua.x * qua.x;
-	float yy = qua.y * qua.y;
-	float zz = qua.z * qua.z;
-	float xy = qua.x * qua.y;
-	float zw = qua.z * qua.w;
-	float zx = qua.z * qua.x;
-	float yw = qua.y * qua.w;
-	float yz = qua.y * qua.z;
-	float xw = qua.x * qua.w;
+    float xx = qua.x * qua.x;
+    float yy = qua.y * qua.y;
+    float zz = qua.z * qua.z;
+    float xy = qua.x * qua.y;
+    float zw = qua.z * qua.w;
+    float zx = qua.z * qua.x;
+    float yw = qua.y * qua.w;
+    float yz = qua.y * qua.z;
+    float xw = qua.x * qua.w;
 
-	return Matrix(
-		1.0f - (2.0f * (yy + zz)),	2.0f * (xy + zw),			2.0f * (zx - yw),			0.0f,
-		2.0f * (xy - zw),			1.0f - (2.0f * (zz + xx)),	2.0f * (yz + xw),			0.0f,
-		2.0f * (zx + yw),			2.0f * (yz - xw),			1.0f - (2.0f * (yy + xx)),	0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f);
+    return Matrix(
+        1.0f - (2.0f * (yy + zz)), 2.0f * (xy + zw), 2.0f * (zx - yw), 0.0f, 2.0f * (xy - zw), 1.0f - (2.0f * (zz + xx)), 2.0f * (yz + xw), 0.0f, 2.0f * (zx + yw), 2.0f * (yz - xw), 1.0f - (2.0f * (yy + xx)), 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 }
 
-//------------------------------------------------------------------------------
 // static
-//------------------------------------------------------------------------------
 Matrix Matrix::makeRotationEulerAngles(const Vector3& angles, RotationOrder order)
 {
-	Matrix m;
-	switch (order)
-	{
-		case RotationOrder::XYZ:
-			m.rotateX(angles.x); m.rotateY(angles.y); m.rotateZ(angles.z); break;
-		//case RotationOrder_XZY:
-		//	m.rotateX(angles.X); m.rotateZ(angles.Z); m.rotateY(angles.Y); break;
-		//case RotationOrder_YXZ:
-		//	m.rotateY(angles.Y); m.rotateX(angles.X); m.rotateZ(angles.Z); break;
-		case RotationOrder::YZX:
-			m.rotateY(angles.y); m.rotateZ(angles.z); m.rotateX(angles.x); break;
-		case RotationOrder::ZXY:
-			m.rotateZ(angles.z); m.rotateX(angles.x); m.rotateY(angles.y); break;	// RotationYawPitchRoll
-		//case RotationOrder_ZYX:
-		//	m.rotateZ(angles.Z); m.rotateY(angles.Y); m.rotateX(angles.X); break;
-		default:
-			assert(0);
-			return m;
-	}
-	return m;
+    Matrix m;
+    switch (order) {
+        case RotationOrder::XYZ:
+            m.rotateX(angles.x);
+            m.rotateY(angles.y);
+            m.rotateZ(angles.z);
+            break;
+        //case RotationOrder_XZY:
+        //	m.rotateX(angles.X); m.rotateZ(angles.Z); m.rotateY(angles.Y); break;
+        //case RotationOrder_YXZ:
+        //	m.rotateY(angles.Y); m.rotateX(angles.X); m.rotateZ(angles.Z); break;
+        case RotationOrder::YZX:
+            m.rotateY(angles.y);
+            m.rotateZ(angles.z);
+            m.rotateX(angles.x);
+            break;
+        case RotationOrder::ZXY:
+            m.rotateZ(angles.z);
+            m.rotateX(angles.x);
+            m.rotateY(angles.y);
+            break; // RotationYawPitchRoll
+        //case RotationOrder_ZYX:
+        //	m.rotateZ(angles.Z); m.rotateY(angles.Y); m.rotateX(angles.X); break;
+        default:
+            assert(0);
+            return m;
+    }
+    return m;
 }
 
-//------------------------------------------------------------------------------
 // static
-//------------------------------------------------------------------------------
 Matrix Matrix::makeRotationEulerAngles(float x, float y, float z, RotationOrder order)
 {
-	Matrix m;
-	switch (order)
-	{
-		case RotationOrder::XYZ:
-			m.rotateX(x); m.rotateY(y); m.rotateZ(z); break;
-		case RotationOrder::YZX:
-			m.rotateY(y); m.rotateZ(z); m.rotateX(y); break;
-		case RotationOrder::ZXY:
-			m.rotateZ(z); m.rotateX(x); m.rotateY(y); break;	// RotationYawPitchRoll
-		default:
-			assert(0);
-			return m;
-	}
-	return m;
+    Matrix m;
+    switch (order) {
+        case RotationOrder::XYZ:
+            m.rotateX(x);
+            m.rotateY(y);
+            m.rotateZ(z);
+            break;
+        case RotationOrder::YZX:
+            m.rotateY(y);
+            m.rotateZ(z);
+            m.rotateX(y);
+            break;
+        case RotationOrder::ZXY:
+            m.rotateZ(z);
+            m.rotateX(x);
+            m.rotateY(y);
+            break; // RotationYawPitchRoll
+        default:
+            assert(0);
+            return m;
+    }
+    return m;
 }
 
-//------------------------------------------------------------------------------
 // static
-//------------------------------------------------------------------------------
 Matrix Matrix::makeRotationYawPitchRoll(float yaw, float pitch, float roll)
 {
-	Quaternion q = Quaternion::makeFromYawPitchRoll(yaw, pitch, roll);
-	return Matrix::makeRotationQuaternion(q);
+    Quaternion q = Quaternion::makeFromYawPitchRoll(yaw, pitch, roll);
+    return Matrix::makeRotationQuaternion(q);
 }
 
-//------------------------------------------------------------------------------
 // static
-//------------------------------------------------------------------------------
 Matrix Matrix::makeScaling(float x, float y, float z)
 {
-	return Matrix(
-		x, 0.0f, 0.0f, 0.0f,
-		0.0f, y, 0.0f, 0.0f,
-		0.0f, 0.0f, z, 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f);
+    return Matrix(
+        x, 0.0f, 0.0f, 0.0f, 0.0f, y, 0.0f, 0.0f, 0.0f, 0.0f, z, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 }
 
-//------------------------------------------------------------------------------
 // static
-//------------------------------------------------------------------------------
 Matrix Matrix::makeScaling(const Vector3& vec)
 {
-	return Matrix(
-		vec.x, 0.0f, 0.0f, 0.0f,
-		0.0f, vec.y, 0.0f, 0.0f,
-		0.0f, 0.0f, vec.z, 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f);
+    return Matrix(
+        vec.x, 0.0f, 0.0f, 0.0f, 0.0f, vec.y, 0.0f, 0.0f, 0.0f, 0.0f, vec.z, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 }
 
-//------------------------------------------------------------------------------
 // static
-//------------------------------------------------------------------------------
 Matrix Matrix::makeScaling(float xyz)
 {
-	return Matrix(
-		xyz, 0.0f, 0.0f, 0.0f,
-		0.0f, xyz, 0.0f, 0.0f,
-		0.0f, 0.0f, xyz, 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f);
+    return Matrix(
+        xyz, 0.0f, 0.0f, 0.0f, 0.0f, xyz, 0.0f, 0.0f, 0.0f, 0.0f, xyz, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 }
 
-//------------------------------------------------------------------------------
 // static
-//------------------------------------------------------------------------------
 Matrix Matrix::makeInverse(const Matrix& mat)
 {
-#if 1	// 速度は D3DXMatrixInverse の 2～3倍 (100000 回で 3000us。コンストラクタとかが足引っ張ってそうな気がする…)
-	float coef00 = mat.m[2][2] * mat.m[3][3] - mat.m[3][2] * mat.m[2][3];
-	float coef02 = mat.m[1][2] * mat.m[3][3] - mat.m[3][2] * mat.m[1][3];
-	float coef03 = mat.m[1][2] * mat.m[2][3] - mat.m[2][2] * mat.m[1][3];
+#if 1 // 速度は D3DXMatrixInverse の 2～3倍 (100000 回で 3000us。コンストラクタとかが足引っ張ってそうな気がする…)
+    float coef00 = mat.m[2][2] * mat.m[3][3] - mat.m[3][2] * mat.m[2][3];
+    float coef02 = mat.m[1][2] * mat.m[3][3] - mat.m[3][2] * mat.m[1][3];
+    float coef03 = mat.m[1][2] * mat.m[2][3] - mat.m[2][2] * mat.m[1][3];
 
-	float coef04 = mat.m[2][1] * mat.m[3][3] - mat.m[3][1] * mat.m[2][3];
-	float coef06 = mat.m[1][1] * mat.m[3][3] - mat.m[3][1] * mat.m[1][3];
-	float coef07 = mat.m[1][1] * mat.m[2][3] - mat.m[2][1] * mat.m[1][3];
+    float coef04 = mat.m[2][1] * mat.m[3][3] - mat.m[3][1] * mat.m[2][3];
+    float coef06 = mat.m[1][1] * mat.m[3][3] - mat.m[3][1] * mat.m[1][3];
+    float coef07 = mat.m[1][1] * mat.m[2][3] - mat.m[2][1] * mat.m[1][3];
 
-	float coef08 = mat.m[2][1] * mat.m[3][2] - mat.m[3][1] * mat.m[2][2];
-	float coef10 = mat.m[1][1] * mat.m[3][2] - mat.m[3][1] * mat.m[1][2];
-	float coef11 = mat.m[1][1] * mat.m[2][2] - mat.m[2][1] * mat.m[1][2];
+    float coef08 = mat.m[2][1] * mat.m[3][2] - mat.m[3][1] * mat.m[2][2];
+    float coef10 = mat.m[1][1] * mat.m[3][2] - mat.m[3][1] * mat.m[1][2];
+    float coef11 = mat.m[1][1] * mat.m[2][2] - mat.m[2][1] * mat.m[1][2];
 
-	float coef12 = mat.m[2][0] * mat.m[3][3] - mat.m[3][0] * mat.m[2][3];
-	float coef14 = mat.m[1][0] * mat.m[3][3] - mat.m[3][0] * mat.m[1][3];
-	float coef15 = mat.m[1][0] * mat.m[2][3] - mat.m[2][0] * mat.m[1][3];
+    float coef12 = mat.m[2][0] * mat.m[3][3] - mat.m[3][0] * mat.m[2][3];
+    float coef14 = mat.m[1][0] * mat.m[3][3] - mat.m[3][0] * mat.m[1][3];
+    float coef15 = mat.m[1][0] * mat.m[2][3] - mat.m[2][0] * mat.m[1][3];
 
-	float coef16 = mat.m[2][0] * mat.m[3][2] - mat.m[3][0] * mat.m[2][2];
-	float coef18 = mat.m[1][0] * mat.m[3][2] - mat.m[3][0] * mat.m[1][2];
-	float coef19 = mat.m[1][0] * mat.m[2][2] - mat.m[2][0] * mat.m[1][2];
+    float coef16 = mat.m[2][0] * mat.m[3][2] - mat.m[3][0] * mat.m[2][2];
+    float coef18 = mat.m[1][0] * mat.m[3][2] - mat.m[3][0] * mat.m[1][2];
+    float coef19 = mat.m[1][0] * mat.m[2][2] - mat.m[2][0] * mat.m[1][2];
 
-	float coef20 = mat.m[2][0] * mat.m[3][1] - mat.m[3][0] * mat.m[2][1];
-	float coef22 = mat.m[1][0] * mat.m[3][1] - mat.m[3][0] * mat.m[1][1];
-	float coef23 = mat.m[1][0] * mat.m[2][1] - mat.m[2][0] * mat.m[1][1];
+    float coef20 = mat.m[2][0] * mat.m[3][1] - mat.m[3][0] * mat.m[2][1];
+    float coef22 = mat.m[1][0] * mat.m[3][1] - mat.m[3][0] * mat.m[1][1];
+    float coef23 = mat.m[1][0] * mat.m[2][1] - mat.m[2][0] * mat.m[1][1];
 
-	Vector4 fac0(coef00, coef00, coef02, coef03);
-	Vector4 fac1(coef04, coef04, coef06, coef07);
-	Vector4 fac2(coef08, coef08, coef10, coef11);
-	Vector4 fac3(coef12, coef12, coef14, coef15);
-	Vector4 fac4(coef16, coef16, coef18, coef19);
-	Vector4 fac5(coef20, coef20, coef22, coef23);
+    Vector4 fac0(coef00, coef00, coef02, coef03);
+    Vector4 fac1(coef04, coef04, coef06, coef07);
+    Vector4 fac2(coef08, coef08, coef10, coef11);
+    Vector4 fac3(coef12, coef12, coef14, coef15);
+    Vector4 fac4(coef16, coef16, coef18, coef19);
+    Vector4 fac5(coef20, coef20, coef22, coef23);
 
-	Vector4 vec0(mat.m[1][0], mat.m[0][0], mat.m[0][0], mat.m[0][0]);
-	Vector4 vec1(mat.m[1][1], mat.m[0][1], mat.m[0][1], mat.m[0][1]);
-	Vector4 vec2(mat.m[1][2], mat.m[0][2], mat.m[0][2], mat.m[0][2]);
-	Vector4 vec3(mat.m[1][3], mat.m[0][3], mat.m[0][3], mat.m[0][3]);
+    Vector4 vec0(mat.m[1][0], mat.m[0][0], mat.m[0][0], mat.m[0][0]);
+    Vector4 vec1(mat.m[1][1], mat.m[0][1], mat.m[0][1], mat.m[0][1]);
+    Vector4 vec2(mat.m[1][2], mat.m[0][2], mat.m[0][2], mat.m[0][2]);
+    Vector4 vec3(mat.m[1][3], mat.m[0][3], mat.m[0][3], mat.m[0][3]);
 
-	Vector4 inv0(vec1 * fac0 - vec2 * fac1 + vec3 * fac2);
-	Vector4 inv1(vec0 * fac0 - vec2 * fac3 + vec3 * fac4);
-	Vector4 inv2(vec0 * fac1 - vec1 * fac3 + vec3 * fac5);
-	Vector4 inv3(vec0 * fac2 - vec1 * fac4 + vec2 * fac5);
+    Vector4 inv0(vec1 * fac0 - vec2 * fac1 + vec3 * fac2);
+    Vector4 inv1(vec0 * fac0 - vec2 * fac3 + vec3 * fac4);
+    Vector4 inv2(vec0 * fac1 - vec1 * fac3 + vec3 * fac5);
+    Vector4 inv3(vec0 * fac2 - vec1 * fac4 + vec2 * fac5);
 
-	Vector4 signA(+1, -1, +1, -1);
-	Vector4 signB(-1, +1, -1, +1);
-	Matrix inverse(inv0 * signA, inv1 * signB, inv2 * signA, inv3 * signB);
+    Vector4 signA(+1, -1, +1, -1);
+    Vector4 signB(-1, +1, -1, +1);
+    Matrix inverse(inv0 * signA, inv1 * signB, inv2 * signA, inv3 * signB);
 
-	Vector4 dot0(mat.m[0][0] * inverse.m[0][0], mat.m[0][1] * inverse.m[1][0], mat.m[0][2] * inverse.m[2][0], mat.m[0][3] * inverse.m[3][0]);
-	float dot1 = (dot0.x + dot0.y) + (dot0.z + dot0.w);
+    Vector4 dot0(mat.m[0][0] * inverse.m[0][0], mat.m[0][1] * inverse.m[1][0], mat.m[0][2] * inverse.m[2][0], mat.m[0][3] * inverse.m[3][0]);
+    float dot1 = (dot0.x + dot0.y) + (dot0.z + dot0.w);
 
-	if (dot1 == 0.0)
-	{
-		// 計算できない。D3D に合わせて、単位行列で返す
-		return Identity;
-	}
+    if (dot1 == 0.0) {
+        // 計算できない。D3D に合わせて、単位行列で返す
+        return Identity;
+    }
 
-	float oneOverDeterminant = 1.0f / dot1;
+    float oneOverDeterminant = 1.0f / dot1;
 
-	return inverse * oneOverDeterminant;
+    return inverse * oneOverDeterminant;
 #endif
-#if 0	// 速度は D3DXMatrixInverse の 10倍
+#if 0 // 速度は D3DXMatrixInverse の 10倍
 	int i, j;
 	float buf;
 
@@ -1409,9 +1384,9 @@ Matrix Matrix::makeInverse(const Matrix& mat)
 	}
 #endif
 #ifdef USE_D3DX9MATH
-	Matrix out;
-	D3DXMatrixInverse((D3DXMATRIX*)&out, NULL, (D3DXMATRIX*)&mat);
-	return out;
+    Matrix out;
+    D3DXMatrixInverse((D3DXMATRIX*)&out, NULL, (D3DXMATRIX*)&mat);
+    return out;
 #endif
 #if 0
 	// http://www.cg.info.hiroshima-cu.ac.jp/~miyazaki/knowledge/tech23.html
@@ -1471,247 +1446,180 @@ Matrix Matrix::makeInverse(const Matrix& mat)
 #endif
 }
 
-//------------------------------------------------------------------------------
 // static
-//------------------------------------------------------------------------------
 Matrix Matrix::makeTranspose(const Matrix& mat)
 {
-	return Matrix(
-		mat.m[0][0], mat.m[1][0], mat.m[2][0], mat.m[3][0],
-		mat.m[0][1], mat.m[1][1], mat.m[2][1], mat.m[3][1],
-		mat.m[0][2], mat.m[1][2], mat.m[2][2], mat.m[3][2],
-		mat.m[0][3], mat.m[1][3], mat.m[2][3], mat.m[3][3]);
+    return Matrix(
+        mat.m[0][0], mat.m[1][0], mat.m[2][0], mat.m[3][0], mat.m[0][1], mat.m[1][1], mat.m[2][1], mat.m[3][1], mat.m[0][2], mat.m[1][2], mat.m[2][2], mat.m[3][2], mat.m[0][3], mat.m[1][3], mat.m[2][3], mat.m[3][3]);
 }
 
-//------------------------------------------------------------------------------
 // static
-//------------------------------------------------------------------------------
 Matrix Matrix::makeReflection(const Plane& plane_)
 {
-	Plane plane = Plane::normalize(plane_);
-	float x = plane.Normal.x;
-	float y = plane.Normal.y;
-	float z = plane.Normal.z;
-	float x2 = -2.0f * x;
-	float y2 = -2.0f * y;
-	float z2 = -2.0f * z;
-	
-	return Matrix(
-		(x2 * x) + 1.0f, y2 * x, z2 * x, 0.0f,
-		x2 * y, (y2 * y) + 1.0f, z2 * y, 0.0f,
-		x2 * z, y2 * z, (z2 * z) + 1.0f, 0.0f,
-		x2 * plane.D, y2 * plane.D, z2 * plane.D, 1.0f);
+    Plane plane = Plane::normalize(plane_);
+    float x = plane.normal.x;
+    float y = plane.normal.y;
+    float z = plane.normal.z;
+    float x2 = -2.0f * x;
+    float y2 = -2.0f * y;
+    float z2 = -2.0f * z;
+
+    return Matrix(
+        (x2 * x) + 1.0f, y2 * x, z2 * x, 0.0f, x2 * y, (y2 * y) + 1.0f, z2 * y, 0.0f, x2 * z, y2 * z, (z2 * z) + 1.0f, 0.0f, x2 * plane.distance, y2 * plane.distance, z2 * plane.distance, 1.0f);
 }
 
-//------------------------------------------------------------------------------
 // static
-//------------------------------------------------------------------------------
 Matrix Matrix::makeLookAtLH(const Vector3& position, const Vector3& lookAt, const Vector3& up)
 {
-	Vector3 xaxis, yaxis, zaxis;
-	// 注視点からカメラ位置までのベクトルをZ軸とする
-	zaxis = lookAt;
-	zaxis -= position;
-	zaxis.normalize();
-	// Z軸と上方向のベクトルの外積をとるとX軸が分かる
-	xaxis = Vector3::cross(up, zaxis);
-	xaxis.normalize();
-	// 2つの軸がわかったので、その2つの外積は残りの軸(Y軸)になる
-	yaxis = Vector3::cross(zaxis, xaxis);
+    Vector3 xaxis, yaxis, zaxis;
+    // 注視点からカメラ位置までのベクトルをZ軸とする
+    zaxis = lookAt;
+    zaxis -= position;
+    zaxis.normalize();
+    // Z軸と上方向のベクトルの外積をとるとX軸が分かる
+    xaxis = Vector3::cross(up, zaxis);
+    xaxis.normalize();
+    // 2つの軸がわかったので、その2つの外積は残りの軸(Y軸)になる
+    yaxis = Vector3::cross(zaxis, xaxis);
 
-	return Matrix(
-		xaxis.x, yaxis.x, zaxis.x, 0.0f,
-		xaxis.y, yaxis.y, zaxis.y, 0.0f,
-		xaxis.z, yaxis.z, zaxis.z, 0.0f,
-		-(xaxis.x * position.x + xaxis.y * position.y + xaxis.z * position.z),
-		-(yaxis.x * position.x + yaxis.y * position.y + yaxis.z * position.z),
-		-(zaxis.x * position.x + zaxis.y * position.y + zaxis.z * position.z),
-		1.0f);
+    return Matrix(
+        xaxis.x, yaxis.x, zaxis.x, 0.0f, xaxis.y, yaxis.y, zaxis.y, 0.0f, xaxis.z, yaxis.z, zaxis.z, 0.0f, -(xaxis.x * position.x + xaxis.y * position.y + xaxis.z * position.z), -(yaxis.x * position.x + yaxis.y * position.y + yaxis.z * position.z), -(zaxis.x * position.x + zaxis.y * position.y + zaxis.z * position.z), 1.0f);
 }
 
-//------------------------------------------------------------------------------
 // static
-//------------------------------------------------------------------------------
 Matrix Matrix::makeLookAtRH(const Vector3& position, const Vector3& lookAt, const Vector3& up)
 {
-	Vector3 xaxis, yaxis, zaxis;
-	// 注視点からカメラ位置までのベクトルをZ軸とする
-	zaxis = position;
-	zaxis -= lookAt;
-	zaxis.normalize();
-	// Z軸と上方向のベクトルの外積をとるとX軸が分かる
-	xaxis = Vector3::cross(up, zaxis);
-	xaxis.normalize();
-	// 2つの軸がわかったので、その2つの外積は残りの軸(Y軸)になる
-	yaxis = Vector3::cross(zaxis, xaxis);
+    Vector3 xaxis, yaxis, zaxis;
+    // 注視点からカメラ位置までのベクトルをZ軸とする
+    zaxis = position;
+    zaxis -= lookAt;
+    zaxis.normalize();
+    // Z軸と上方向のベクトルの外積をとるとX軸が分かる
+    xaxis = Vector3::cross(up, zaxis);
+    xaxis.normalize();
+    // 2つの軸がわかったので、その2つの外積は残りの軸(Y軸)になる
+    yaxis = Vector3::cross(zaxis, xaxis);
 
-	return Matrix(
-		xaxis.x, yaxis.x, zaxis.x, 0.0f,
-		xaxis.y, yaxis.y, zaxis.y, 0.0f,
-		xaxis.z, yaxis.z, zaxis.z, 0.0f,
-		-(xaxis.x * position.x + xaxis.y * position.y + xaxis.z * position.z),
-		-(yaxis.x * position.x + yaxis.y * position.y + yaxis.z * position.z),
-		-(zaxis.x * position.x + zaxis.y * position.y + zaxis.z * position.z),
-		1.0f);
+    return Matrix(
+        xaxis.x, yaxis.x, zaxis.x, 0.0f, xaxis.y, yaxis.y, zaxis.y, 0.0f, xaxis.z, yaxis.z, zaxis.z, 0.0f, -(xaxis.x * position.x + xaxis.y * position.y + xaxis.z * position.z), -(yaxis.x * position.x + yaxis.y * position.y + yaxis.z * position.z), -(zaxis.x * position.x + zaxis.y * position.y + zaxis.z * position.z), 1.0f);
 }
 
-//------------------------------------------------------------------------------
 // static
-//------------------------------------------------------------------------------
 Matrix Matrix::makePerspectiveFovLH(float fovY, float aspect, float nearZ, float farZ)
 {
-	float h = 1.f / tanf(fovY * 0.5f);	// cot(fovY/2)
-	return Matrix(
-		h / aspect, 0.0f, 0.0f, 0.0f,
-		0.0f, h, 0.0f, 0.0f,
-		0.0f, 0.0f, farZ / (farZ - nearZ), 1.0f,
-		0.0f, 0.0f, (-nearZ * farZ) / (farZ - nearZ), 0.0f);
+    float h = 1.f / tanf(fovY * 0.5f); // cot(fovY/2)
+    return Matrix(
+        h / aspect, 0.0f, 0.0f, 0.0f, 0.0f, h, 0.0f, 0.0f, 0.0f, 0.0f, farZ / (farZ - nearZ), 1.0f, 0.0f, 0.0f, (-nearZ * farZ) / (farZ - nearZ), 0.0f);
 }
 
-//------------------------------------------------------------------------------
 // static
-//------------------------------------------------------------------------------
 Matrix Matrix::makePerspectiveFovRH(float fovY, float aspect, float nearZ, float farZ)
 {
-	float h = 1.f / tanf(fovY * 0.5f);	// cot(fovY/2)
-	return Matrix(
-		h / aspect, 0.0f, 0.0f, 0.0f,
-		0.0f, h, 0.0f, 0.0f,
-		0.0f, 0.0f, farZ / (nearZ - farZ), -1.0f,
-		0.0f, 0.0f, (nearZ * farZ) / (nearZ - farZ), 0.0f);
+    float h = 1.f / tanf(fovY * 0.5f); // cot(fovY/2)
+    return Matrix(
+        h / aspect, 0.0f, 0.0f, 0.0f, 0.0f, h, 0.0f, 0.0f, 0.0f, 0.0f, farZ / (nearZ - farZ), -1.0f, 0.0f, 0.0f, (nearZ * farZ) / (nearZ - farZ), 0.0f);
 }
 
-//------------------------------------------------------------------------------
 // static
-//------------------------------------------------------------------------------
 Matrix Matrix::makeOrthoLH(float width, float height, float nearZ, float farZ)
 {
-	return Matrix(
-		2.0f / width, 0.0f, 0.0f, 0.0f,
-		0.0f, 2.0f / height, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f / (farZ - nearZ), 0.0f,
-		0.0f, 0.0f, -nearZ / (nearZ - farZ), 1.0f);
+    return Matrix(
+        2.0f / width, 0.0f, 0.0f, 0.0f, 0.0f, 2.0f / height, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f / (farZ - nearZ), 0.0f, 0.0f, 0.0f, -nearZ / (nearZ - farZ), 1.0f);
 }
 
-//------------------------------------------------------------------------------
 // static
-//------------------------------------------------------------------------------
 Matrix Matrix::makeOrthoRH(float width, float height, float nearZ, float farZ)
 {
-	return Matrix(
-		2.0f / width, 0.0f, 0.0f, 0.0f,
-		0.0f, 2.0f / height, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f / (nearZ - farZ), 0.0f,
-		0.0f, 0.0f, nearZ / (nearZ - farZ), 1.0f);
+    return Matrix(
+        2.0f / width, 0.0f, 0.0f, 0.0f, 0.0f, 2.0f / height, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f / (nearZ - farZ), 0.0f, 0.0f, 0.0f, nearZ / (nearZ - farZ), 1.0f);
 }
 
-//------------------------------------------------------------------------------
 // static
-//------------------------------------------------------------------------------
 Matrix Matrix::makePerspective2DLH(float width, float height, float nearZ, float farZ)
 {
-	return Matrix(
-		2.0f / width, 0.0f, 0.0f, 0.0f,
-		0.0f, -2.0f / height, 0.0f, 0.0f,
-		0.0f, 0.0f, -1.0f / (farZ - nearZ), 0.0f,
-		-1.0f, 1.0f, -nearZ / (nearZ - farZ) + 1.0f, 1.0f);
+    return Matrix(
+        2.0f / width, 0.0f, 0.0f, 0.0f, 0.0f, -2.0f / height, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f / (farZ - nearZ), 0.0f, -1.0f, 1.0f, -nearZ / (nearZ - farZ) + 1.0f, 1.0f);
 }
 
-//------------------------------------------------------------------------------
 // static
-//------------------------------------------------------------------------------
 Matrix Matrix::makePerspective2DRH(float width, float height, float nearZ, float farZ)
 {
-	return Matrix(
-		2.0f / width, 0.0f, 0.0f, 0.0f,
-		0.0f, -2.0f / height, 0.0f, 0.0f,
-		0.0f, 0.0f, -1.0f / (nearZ - farZ), 0.0f,
-		-1.0f, 1.0f, nearZ / (nearZ - farZ) + 1.0f, 1.0f);
+    return Matrix(
+        2.0f / width, 0.0f, 0.0f, 0.0f, 0.0f, -2.0f / height, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f / (nearZ - farZ), 0.0f, -1.0f, 1.0f, nearZ / (nearZ - farZ) + 1.0f, 1.0f);
 }
 
-//------------------------------------------------------------------------------
 // static
-//------------------------------------------------------------------------------
 Matrix Matrix::makeAffineTransformation(const Vector3& scaling, const Vector3& rotationCenter, const Quaternion& rotation, const Vector3& translation)
 {
-	Matrix m = Matrix::makeScaling(scaling);
-	m.translate(-rotationCenter);
-	m.rotateQuaternion(rotation);
-	m.translate(rotationCenter);
-	m.translate(translation);
-	return m;
+    Matrix m = Matrix::makeScaling(scaling);
+    m.translate(-rotationCenter);
+    m.rotateQuaternion(rotation);
+    m.translate(rotationCenter);
+    m.translate(translation);
+    return m;
 }
 
-//------------------------------------------------------------------------------
-Matrix& Matrix::operator *= (const Matrix& matrix)
+Matrix& Matrix::operator*=(const Matrix& matrix)
 {
-	float mx0 = m[0][0];
-	float mx1 = m[0][1];
-	float mx2 = m[0][2];
-	m[0][0] = mx0 * matrix.m[0][0] + mx1 * matrix.m[1][0] + mx2 * matrix.m[2][0] + m[0][3] * matrix.m[3][0];
-	m[0][1] = mx0 * matrix.m[0][1] + mx1 * matrix.m[1][1] + mx2 * matrix.m[2][1] + m[0][3] * matrix.m[3][1];
-	m[0][2] = mx0 * matrix.m[0][2] + mx1 * matrix.m[1][2] + mx2 * matrix.m[2][2] + m[0][3] * matrix.m[3][2];
-	m[0][3] = mx0 * matrix.m[0][3] + mx1 * matrix.m[1][3] + mx2 * matrix.m[2][3] + m[0][3] * matrix.m[3][3];
-	mx0 = m[1][0];
-	mx1 = m[1][1];
-	mx2 = m[1][2];
-	m[1][0] = mx0 * matrix.m[0][0] + mx1 * matrix.m[1][0] + mx2 * matrix.m[2][0] + m[1][3] * matrix.m[3][0];
-	m[1][1] = mx0 * matrix.m[0][1] + mx1 * matrix.m[1][1] + mx2 * matrix.m[2][1] + m[1][3] * matrix.m[3][1];
-	m[1][2] = mx0 * matrix.m[0][2] + mx1 * matrix.m[1][2] + mx2 * matrix.m[2][2] + m[1][3] * matrix.m[3][2];
-	m[1][3] = mx0 * matrix.m[0][3] + mx1 * matrix.m[1][3] + mx2 * matrix.m[2][3] + m[1][3] * matrix.m[3][3];
-	mx0 = m[2][0];
-	mx1 = m[2][1];
-	mx2 = m[2][2];
-	m[2][0] = mx0 * matrix.m[0][0] + mx1 * matrix.m[1][0] + mx2 * matrix.m[2][0] + m[2][3] * matrix.m[3][0];
-	m[2][1] = mx0 * matrix.m[0][1] + mx1 * matrix.m[1][1] + mx2 * matrix.m[2][1] + m[2][3] * matrix.m[3][1];
-	m[2][2] = mx0 * matrix.m[0][2] + mx1 * matrix.m[1][2] + mx2 * matrix.m[2][2] + m[2][3] * matrix.m[3][2];
-	m[2][3] = mx0 * matrix.m[0][3] + mx1 * matrix.m[1][3] + mx2 * matrix.m[2][3] + m[2][3] * matrix.m[3][3];
-	mx0 = m[3][0];
-	mx1 = m[3][1];
-	mx2 = m[3][2];
-	m[3][0] = mx0 * matrix.m[0][0] + mx1 * matrix.m[1][0] + mx2 * matrix.m[2][0] + m[3][3] * matrix.m[3][0];
-	m[3][1] = mx0 * matrix.m[0][1] + mx1 * matrix.m[1][1] + mx2 * matrix.m[2][1] + m[3][3] * matrix.m[3][1];
-	m[3][2] = mx0 * matrix.m[0][2] + mx1 * matrix.m[1][2] + mx2 * matrix.m[2][2] + m[3][3] * matrix.m[3][2];
-	m[3][3] = mx0 * matrix.m[0][3] + mx1 * matrix.m[1][3] + mx2 * matrix.m[2][3] + m[3][3] * matrix.m[3][3];
-	return (*this);
+    float mx0 = m[0][0];
+    float mx1 = m[0][1];
+    float mx2 = m[0][2];
+    m[0][0] = mx0 * matrix.m[0][0] + mx1 * matrix.m[1][0] + mx2 * matrix.m[2][0] + m[0][3] * matrix.m[3][0];
+    m[0][1] = mx0 * matrix.m[0][1] + mx1 * matrix.m[1][1] + mx2 * matrix.m[2][1] + m[0][3] * matrix.m[3][1];
+    m[0][2] = mx0 * matrix.m[0][2] + mx1 * matrix.m[1][2] + mx2 * matrix.m[2][2] + m[0][3] * matrix.m[3][2];
+    m[0][3] = mx0 * matrix.m[0][3] + mx1 * matrix.m[1][3] + mx2 * matrix.m[2][3] + m[0][3] * matrix.m[3][3];
+    mx0 = m[1][0];
+    mx1 = m[1][1];
+    mx2 = m[1][2];
+    m[1][0] = mx0 * matrix.m[0][0] + mx1 * matrix.m[1][0] + mx2 * matrix.m[2][0] + m[1][3] * matrix.m[3][0];
+    m[1][1] = mx0 * matrix.m[0][1] + mx1 * matrix.m[1][1] + mx2 * matrix.m[2][1] + m[1][3] * matrix.m[3][1];
+    m[1][2] = mx0 * matrix.m[0][2] + mx1 * matrix.m[1][2] + mx2 * matrix.m[2][2] + m[1][3] * matrix.m[3][2];
+    m[1][3] = mx0 * matrix.m[0][3] + mx1 * matrix.m[1][3] + mx2 * matrix.m[2][3] + m[1][3] * matrix.m[3][3];
+    mx0 = m[2][0];
+    mx1 = m[2][1];
+    mx2 = m[2][2];
+    m[2][0] = mx0 * matrix.m[0][0] + mx1 * matrix.m[1][0] + mx2 * matrix.m[2][0] + m[2][3] * matrix.m[3][0];
+    m[2][1] = mx0 * matrix.m[0][1] + mx1 * matrix.m[1][1] + mx2 * matrix.m[2][1] + m[2][3] * matrix.m[3][1];
+    m[2][2] = mx0 * matrix.m[0][2] + mx1 * matrix.m[1][2] + mx2 * matrix.m[2][2] + m[2][3] * matrix.m[3][2];
+    m[2][3] = mx0 * matrix.m[0][3] + mx1 * matrix.m[1][3] + mx2 * matrix.m[2][3] + m[2][3] * matrix.m[3][3];
+    mx0 = m[3][0];
+    mx1 = m[3][1];
+    mx2 = m[3][2];
+    m[3][0] = mx0 * matrix.m[0][0] + mx1 * matrix.m[1][0] + mx2 * matrix.m[2][0] + m[3][3] * matrix.m[3][0];
+    m[3][1] = mx0 * matrix.m[0][1] + mx1 * matrix.m[1][1] + mx2 * matrix.m[2][1] + m[3][3] * matrix.m[3][1];
+    m[3][2] = mx0 * matrix.m[0][2] + mx1 * matrix.m[1][2] + mx2 * matrix.m[2][2] + m[3][3] * matrix.m[3][2];
+    m[3][3] = mx0 * matrix.m[0][3] + mx1 * matrix.m[1][3] + mx2 * matrix.m[2][3] + m[3][3] * matrix.m[3][3];
+    return (*this);
 }
 
-//------------------------------------------------------------------------------
-Matrix operator * (const Matrix& mat1, const Matrix& mat2)
+Matrix operator*(const Matrix& mat1, const Matrix& mat2)
 {
-	return Matrix::multiply(mat1, mat2);
+    return Matrix::multiply(mat1, mat2);
 }
 
-//------------------------------------------------------------------------------
-Matrix operator * (const Matrix& mat1, float v)
+Matrix operator*(const Matrix& mat1, float v)
 {
-	return Matrix(
-		mat1.m[0][0] * v, mat1.m[0][1] * v, mat1.m[0][2] * v, mat1.m[0][3] * v,
-		mat1.m[1][0] * v, mat1.m[1][1] * v, mat1.m[1][2] * v, mat1.m[1][3] * v,
-		mat1.m[2][0] * v, mat1.m[2][1] * v, mat1.m[2][2] * v, mat1.m[2][3] * v,
-		mat1.m[3][0] * v, mat1.m[3][1] * v, mat1.m[3][2] * v, mat1.m[3][3] * v);
+    return Matrix(
+        mat1.m[0][0] * v, mat1.m[0][1] * v, mat1.m[0][2] * v, mat1.m[0][3] * v, mat1.m[1][0] * v, mat1.m[1][1] * v, mat1.m[1][2] * v, mat1.m[1][3] * v, mat1.m[2][0] * v, mat1.m[2][1] * v, mat1.m[2][2] * v, mat1.m[2][3] * v, mat1.m[3][0] * v, mat1.m[3][1] * v, mat1.m[3][2] * v, mat1.m[3][3] * v);
 }
 
-//------------------------------------------------------------------------------
 static bool equals(const Matrix& value1, const Matrix& value2)
 {
-	return (
-		value1.m11 == value2.m11 && value1.m12 == value2.m12 && value1.m13 == value2.m13 && value1.m14 == value2.m14 &&
-		value1.m21 == value2.m21 && value1.m22 == value2.m22 && value1.m23 == value2.m23 && value1.m24 == value2.m24 &&
-		value1.m31 == value2.m31 && value1.m32 == value2.m32 && value1.m33 == value2.m33 && value1.m34 == value2.m34 &&
-		value1.m41 == value2.m41 && value1.m42 == value2.m42 && value1.m43 == value2.m43 && value1.m44 == value2.m44);
+    return (
+        value1.m11 == value2.m11 && value1.m12 == value2.m12 && value1.m13 == value2.m13 && value1.m14 == value2.m14 &&
+        value1.m21 == value2.m21 && value1.m22 == value2.m22 && value1.m23 == value2.m23 && value1.m24 == value2.m24 &&
+        value1.m31 == value2.m31 && value1.m32 == value2.m32 && value1.m33 == value2.m33 && value1.m34 == value2.m34 &&
+        value1.m41 == value2.m41 && value1.m42 == value2.m42 && value1.m43 == value2.m43 && value1.m44 == value2.m44);
 }
 
-//------------------------------------------------------------------------------
-bool Matrix::operator == (const Matrix& mat) const
+bool Matrix::operator==(const Matrix& mat) const
 {
-	return equals(*this, mat);
+    return equals(*this, mat);
 }
 
-//------------------------------------------------------------------------------
-bool Matrix::operator != (const Matrix& mat) const
+bool Matrix::operator!=(const Matrix& mat) const
 {
-	return !equals(*this, mat);
+    return !equals(*this, mat);
 }
 
 } // namespace ln

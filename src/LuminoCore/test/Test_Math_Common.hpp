@@ -4,7 +4,7 @@
 #include <limits.h>
 #include <math.h>
 
-#include <Lumino/Math/MathUtils.hpp>
+#include <Lumino/Math/Math.hpp>
 #include <Lumino/Math/Vector2.hpp>
 #include <Lumino/Math/Vector3.hpp>
 #include <Lumino/Math/Vector4.hpp>
@@ -63,10 +63,10 @@ using namespace ln;
 	ASSERT_NEAR(M44_, M.m44, LN_FLOAT_THRESHOLD);
 
 #define ASSERT_PLANE_NEAR(x_, y_, z_, w_, plane) \
-	ASSERT_NEAR(x_, plane.Normal.x, LN_FLOAT_THRESHOLD); \
-	ASSERT_NEAR(y_, plane.Normal.y, LN_FLOAT_THRESHOLD); \
-	ASSERT_NEAR(z_, plane.Normal.z, LN_FLOAT_THRESHOLD); \
-	ASSERT_NEAR(w_, plane.D, LN_FLOAT_THRESHOLD);
+	ASSERT_NEAR(x_, plane.normal.x, LN_FLOAT_THRESHOLD); \
+	ASSERT_NEAR(y_, plane.normal.y, LN_FLOAT_THRESHOLD); \
+	ASSERT_NEAR(z_, plane.normal.z, LN_FLOAT_THRESHOLD); \
+	ASSERT_NEAR(w_, plane.distance, LN_FLOAT_THRESHOLD);
 
 //#define D3DX9_TEST
 

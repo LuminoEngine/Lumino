@@ -10,7 +10,7 @@ class Asm
 {
 public:
 
-	/// sqrt
+	// sqrt
 	static inline float sqrt( float r )
 	{
 #if defined(_MSC_VER) && !defined(_WIN64)
@@ -28,7 +28,7 @@ public:
 #endif
 	}
 
-	/// sincos
+	// sincos
 	static inline void sincos(float r_, float* sin_, float* cos_)
 	{
 #if defined(_MSC_VER) && !defined(_WIN64)
