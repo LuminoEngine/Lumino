@@ -83,8 +83,8 @@ public:
 
     /**
      * このベクトルを指定された最大値と最小値の範囲にクランプします。
-     * @param[in]    minVec    : 最小値
-     * @param[in]    maxVec    : 最大値
+     * @param[in]   minVec      : 最小値
+     * @param[in]   maxVec      : 最大値
      */
     void clamp(const Vector4& minVec, const Vector4& maxVec);
 
@@ -96,74 +96,74 @@ public:
 public:
     /**
      * 指定ベクトルを正規化したベクトルを返します。
-     * @param[in]    vec        : 処理の基になるベクトル
-     * @return        正規化されたベクトル
+     * @param[in]   vec         : 処理の基になるベクトル
+     * @return      正規化されたベクトル
      */
     static Vector4 normalize(const Vector4& vec);
 
     /**
      * 2つのベクトルの内積を計算します。
-     * @param[in]    vec1    : 処理の基になるベクトル
-     * @param[in]    vec2    : 処理の基になるベクトル
-     * @return        2つのベクトルの内積
+     * @param[in]   vec1        : 処理の基になるベクトル
+     * @param[in]   vec2        : 処理の基になるベクトル
+     * @return      2つのベクトルの内積
      */
     static float dot(const Vector4& vec1, const Vector4& vec2);
 
     /**
      * 2つのベクトルの最小値で構成されるベクトルを返します。
-     * @param[in]    vec1    : 処理の基になるベクトル
-     * @param[in]    vec2    : 処理の基になるベクトル
-     * @return        最小値から作成されたベクトル
+     * @param[in]   vec1        : 処理の基になるベクトル
+     * @param[in]   vec2        : 処理の基になるベクトル
+     * @return      最小値から作成されたベクトル
      */
     static Vector4 min(const Vector4& vec1, const Vector4& vec2);
 
     /**
      * 2つのベクトルの最大値で構成されるベクトルを返します。
-     * @param[in]    vec1    : 処理の基になるベクトル
-     * @param[in]    vec2    : 処理の基になるベクトル
-     * @return        最大値から作成されたベクトル
+     * @param[in]   vec1       : 処理の基になるベクトル
+     * @param[in]   vec2         : 処理の基になるベクトル
+     * @return      最大値から作成されたベクトル
      */
     static Vector4 max(const Vector4& vec1, const Vector4& vec2);
 
     /**
      * 指定された行列を使用してベクトルを座標変換します。
-     * @param[in]    vec        : 処理の基になるベクトル
-     * @param[in]    mat        : 処理の基になる行列
-     * @return        変換されたベクトル
+     * @param[in]   vec        : 処理の基になるベクトル
+     * @param[in]   mat        : 処理の基になる行列
+     * @return      変換されたベクトル
      */
     static Vector4 transform(const Vector4& vec, const Matrix& mat);
 
     /**
      * 2 つのベクトル間の線形補間を行います。
-     * @param[in]    start    : 開始ベクトル (t = 0.0 のときの値)
-     * @param[in]    end        : 終了ベクトル (t = 1.0 のときの値)
-     * @param[in]    t        : 加重係数
-     * @return        補間結果のベクトル
-     *     t は通常、0.0～1.0 を指定します。
+     * @param[in]   start       : 開始ベクトル (t = 0.0 のときの値)
+     * @param[in]   end         : 終了ベクトル (t = 1.0 のときの値)
+     * @param[in]   t           : 加重係数
+     * @return      補間結果のベクトル
+     * t は通常、0.0～1.0 を指定します。
      */
     static Vector4 lerp(const Vector4& start, const Vector4& end, float t);
 
     /**
      * 指定されたベクトルを使用して エルミートスプライン補間を実行します。
-     * @param[in]    v1    : 開始ベクトル
-     * @param[in]    a1    : 開始ベクトルの接線ベクトル(速度)
-     * @param[in]    v2    : 終了ベクトル
-     * @param[in]    a2    : 終了ベクトルの接線ベクトル(速度)
-     * @param[in]    t    : 加重係数
-     * @return        補間結果の値
-     *     t は通常、0.0～1.0 を指定します。
+     * @param[in]   v1      : 開始ベクトル
+     * @param[in]   a1      : 開始ベクトルの接線ベクトル(速度)
+     * @param[in]   v2      : 終了ベクトル
+     * @param[in]   a2      : 終了ベクトルの接線ベクトル(速度)
+     * @param[in]   t       : 加重係数
+     * @return      補間結果の値
+     * t は通常、0.0～1.0 を指定します。
      */
     static Vector4 hermite(const Vector4& v1, const Vector4& a1, const Vector4& v2, const Vector4& a2, float t);
 
     /**
      * 指定されたベクトルを使用して Catmull-Rom 補間を行います。
-     * @param[in]    vec1    : 1番目の位置
-     * @param[in]    vec2    : 2番目の位置 (t = 0.0 のときの値)
-     * @param[in]    vec3    : 3番目の位置 (t = 1.0 のときの値)
-     * @param[in]    vec4    : 4番目の位置
-     * @param[in]    t        : 加重係数
-     * @return        補間結果のベクトル
-     *     t は通常、0.0～1.0 を指定します。
+     * @param[in]   vec1    : 1番目の位置
+     * @param[in]   vec2    : 2番目の位置 (t = 0.0 のときの値)
+     * @param[in]   vec3    : 3番目の位置 (t = 1.0 のときの値)
+     * @param[in]   vec4    : 4番目の位置
+     * @param[in]   t       : 加重係数
+     * @return      補間結果のベクトル
+     * t は通常、0.0～1.0 を指定します。
      */
     static Vector4 catmullRom(const Vector4& vec1, const Vector4& vec2, const Vector4& vec3, const Vector4& vec4, float t);
 

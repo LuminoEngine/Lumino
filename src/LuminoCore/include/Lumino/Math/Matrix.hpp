@@ -89,85 +89,86 @@ public:
 
     /**
 	 * この行列を平行移動します。
-	 * @param[in]    x        : X 軸の移動量
-	 * @param[in]    y        : Y 軸の移動量
-	 * @param[in]    z        : Z 軸の移動量
+	 * @param[in]   x   : X 軸の移動量
+	 * @param[in]   y   : Y 軸の移動量
+	 * @param[in]   z   : Z 軸の移動量
       */
     void translate(float x, float y, float z);
 
     /**
 	 * この行列を平行移動します。
-	 * @param[in]    vec        : 移動量
+	 * @param[in]   vec        : 移動量
 	 */
     void translate(const Vector3& vec);
 
     /**
 	 * この行列を X 軸で回転します。
-	 * @param[in]    r        : 回転角度 (ラジアン単位)
+	 * @param[in]   r   : 回転角度 (ラジアン単位)
 	 */
     void rotateX(float r);
 
     /**
 	 * この行列を Y 軸で回転します。
-	 * @param[in]    r        : 回転角度 (ラジアン単位)
+	 * @param[in]   r   : 回転角度 (ラジアン単位)
 	 */
     void rotateY(float r);
 
     /**
 	 * この行列を Z 軸で回転します。
-	 * @param[in]    r        : 回転角度 (ラジアン単位)
+	 * @param[in]   r   : 回転角度 (ラジアン単位)
 	 */
     void rotateZ(float r);
 
     /**
 	 * この行列を XYZ 各軸のオイラー角を指定して回転します。
-	 * @param[in]  x        : X 軸の回転角度 (ラジアン単位)
-	 * @param[in]  y        : Y 軸の回転角度 (ラジアン単位)
-	 * @param[in]  z        : Z 軸の回転角度 (ラジアン単位)
-	 * @param[in]  order    : 回転順序
-	 * @return        演算結果の行列
+	 * @param[in]   x        : X 軸の回転角度 (ラジアン単位)
+	 * @param[in]   y        : Y 軸の回転角度 (ラジアン単位)
+	 * @param[in]   z        : Z 軸の回転角度 (ラジアン単位)
+	 * @param[in]   order    : 回転順序
+	 * @return      演算結果の行列
 	 */
     void rotateEulerAngles(float x, float y, float z, RotationOrder order = RotationOrder::ZXY);
 
     /**
      * この行列を XYZ 各軸のオイラー角を指定して回転します。
-     * @param[in]  angles    : XYZ 各軸の回転角度 (ラジアン単位)
-     * @param[in]  order    : 回転順序
-     * @return        演算結果の行列
+     * @param[in]   angles  : XYZ 各軸の回転角度 (ラジアン単位)
+     * @param[in]   order   : 回転順序
+     * @return      演算結果の行列
      */
     void rotateEulerAngles(const Vector3& angles, RotationOrder order = RotationOrder::ZXY);
 
     /**
      * この行列を任意軸で回転します。
-     * @param[in]  axis    : 回転軸
-     * @param[in]  r        : 回転角度 (ラジアン単位)
+     * @param[in]   axis    : 回転軸
+     * @param[in]   r       : 回転角度 (ラジアン単位)
+     * 
      * axis が単位ベクトルでない場合は正規化してから計算を行います。
      */
     void rotateAxis(const Vector3& axis, float r);
 
     /**
      * この行列を指定したクォータニオンで回転します。
-     * @param[in]  qua        : 処理の基になるクォータニオン
+     * @param[in]   qua     : 処理の基になるクォータニオン
      */
     void rotateQuaternion(const Quaternion& qua);
 
     /**
      * この行列を各軸にそってスケーリングします。
-     * @param[in]    x        : X 軸の拡縮率
-     * @param[in]    y        : Y 軸の拡縮率
-     * @param[in]    z        : Z 軸の拡縮率
+     * @param[in]   x       : X 軸の拡縮率
+     * @param[in]   y       : Y 軸の拡縮率
+     * @param[in]   z       : Z 軸の拡縮率
      */
     void scale(float x, float y, float z);
 
     /**
      * この行列を各軸にそってスケーリングします。
-     * @param[in]    vec        : 各軸の拡縮率
+     * @param[in]   vec     : 各軸の拡縮率
      */
     void scale(const Vector3& vec);
 
     /**
      * この行列を各軸にそってスケーリングします。
-     * @param[in]    xyz        : 全ての軸の拡縮率
+     * @param[in]   xyz     : 全ての軸の拡縮率
      */
     void scale(float xyz);
 
@@ -183,9 +184,9 @@ public:
 
     /**
      * この行列をスケーリング、回転、移動要素に分解します。
-     * @param[in]    scale        : スケーリング要素を格納するベクトルのポインタ
-     * @param[in]    rotation    : 回転要素を格納するクォータニオンのポインタ
-     * @param[in]    translation    : 平行移動要素を格納するベクトルのポインタ
+     * @param[in]   scale       : スケーリング要素を格納するベクトルのポインタ
+     * @param[in]   rotation    : 回転要素を格納するクォータニオンのポインタ
+     * @param[in]   translation : 平行移動要素を格納するベクトルのポインタ
 	 * 
      * 各引数は必要が無ければ NULL を指定できます。
      */
@@ -193,9 +194,9 @@ public:
 
     /**
      * この行列をスケーリング、回転、移動行列に分解します。
-     * @param[in]    scale        : スケーリング行列を格納する変数のポインタ
-     * @param[in]    rotation    : 回転行列を格納する変数のポインタ
-     * @param[in]    translation    : 平行移動行列を格納する変数のポインタ
+     * @param[in]   scale       : スケーリング行列を格納する変数のポインタ
+     * @param[in]   rotation    : 回転行列を格納する変数のポインタ
+     * @param[in]   translation : 平行移動行列を格納する変数のポインタ
 	 * 
      * 各引数は必要が無ければ NULL を指定できます。
      */
@@ -204,8 +205,8 @@ public:
     /**
      * この回転行列を XYZ 各軸のオイラー角度に変換します。
      * @param[in]  order        : 回転順序
-     * @param[in]  locked        : ジンバルロックの発生有無を格納する変数へのポインタ (ジンバルロックが発生した場合 true)
-     * @return        XYZ 各軸のオイラー角度 (ラジアン単位) を格納したベクトル
+     * @param[in]  locked       : ジンバルロックの発生有無を格納する変数へのポインタ (ジンバルロックが発生した場合 true)
+     * @return      XYZ 各軸のオイラー角度 (ラジアン単位) を格納したベクトル
 	 * 
      * 回転行列は order に指定された順序で乗算されたものでなければ本来の回転角度が取得できないことに注意してください。
 	 * 
@@ -237,54 +238,54 @@ public:
 public:
     /**
      * 2つの行列の積を計算します。
-     * @param[in]    mat1    : 処理の基になる行列
-     * @param[in]    mat2    : 処理の基になる行列
-     * @return        演算結果の行列
+     * @param[in]   mat1    : 処理の基になる行列
+     * @param[in]   mat2    : 処理の基になる行列
+     * @return      演算結果の行列
      */
     static Matrix multiply(const Matrix& mat1, const Matrix& mat2);
 
     /**
      * 平行移動行列を作成します。
-     * @param[in]    x        : X 軸の移動量
-     * @param[in]    y        : Y 軸の移動量
-     * @param[in]    z        : Z 軸の移動量
-     * @return        演算結果の行列
+     * @param[in]   x        : X 軸の移動量
+     * @param[in]   y        : Y 軸の移動量
+     * @param[in]   z        : Z 軸の移動量
+     * @return      演算結果の行列
      */
     static Matrix makeTranslation(float x, float y, float z);
 
     /**
      * 平行移動行列を作成します。
-     * @param[in]    vec        : 移動量
-     * @return        演算結果の行列
+     * @param[in]   vec     : 移動量
+     * @return      演算結果の行列
      */
     static Matrix makeTranslation(const Vector3& vec);
 
     /**
      * X 軸を回転軸にして回転する行列を作成します。
-     * @param[in]    r        : 回転角度 (ラジアン単位)
-     * @return        演算結果の行列
+     * @param[in]   r       : 回転角度 (ラジアン単位)
+     * @return      演算結果の行列
      */
     static Matrix makeRotationX(float r);
 
     /**
      * Y 軸を回転軸にして回転する行列を作成します。
-     * @param[in]    r        : 回転角度 (ラジアン単位)
-     * @return        演算結果の行列
+     * @param[in]   r       : 回転角度 (ラジアン単位)
+     * @return      演算結果の行列
      */
     static Matrix makeRotationY(float r);
 
     /**
      * Z 軸を回転軸にして回転する行列を作成します。
-     * @param[in]    r        : 回転角度 (ラジアン単位)
-     * @return        演算結果の行列
+     * @param[in]   r       : 回転角度 (ラジアン単位)
+     * @return      演算結果の行列
      */
     static Matrix makeRotationZ(float r);
 
     /**
      * 回転軸と角度を指定して行列を作成します。
-     * @param[in]  axis    : 回転軸
-     * @param[in]  r        : 回転角度 (ラジアン単位)
-     * @return        演算結果の行列
+     * @param[in]   axis     : 回転軸
+     * @param[in]   r        : 回転角度 (ラジアン単位)
+     * @return      演算結果の行列
 	 * 
      * axis が単位ベクトルでない場合は正規化してから計算を行います。
      */
@@ -292,35 +293,35 @@ public:
 
     /**
      * クォータニオンから回転行列を作成します。
-     * @param[in]  qua        : 処理の基になるクォータニオン
-     * @return        演算結果の行列
+     * @param[in]   qua      : 処理の基になるクォータニオン
+     * @return      演算結果の行列
      */
     static Matrix makeRotationQuaternion(const Quaternion& qua);
 
     /**
      * XYZ 各軸のオイラー角から回転行列を作成します。
-     * @param[in]  x        : X 軸の回転角度 (ラジアン単位)
-     * @param[in]  y        : Y 軸の回転角度 (ラジアン単位)
-     * @param[in]  z        : Z 軸の回転角度 (ラジアン単位)
-     * @param[in]  order    : 回転順序
-     * @return        演算結果の行列
+     * @param[in]   x       : X 軸の回転角度 (ラジアン単位)
+     * @param[in]   y       : Y 軸の回転角度 (ラジアン単位)
+     * @param[in]   z       : Z 軸の回転角度 (ラジアン単位)
+     * @param[in]   order   : 回転順序
+     * @return      演算結果の行列
      */
     static Matrix makeRotationEulerAngles(float x, float y, float z, RotationOrder order = RotationOrder::ZXY);
 
     /**
      * XYZ 各軸のオイラー角から回転行列を作成します。
-     * @param[in]  angles    : XYZ 各軸の回転角度 (ラジアン単位)
-     * @param[in]  order    : 回転順序
-     * @return        演算結果の行列
+     * @param[in]   angles  : XYZ 各軸の回転角度 (ラジアン単位)
+     * @param[in]   order   : 回転順序
+     * @return      演算結果の行列
      */
     static Matrix makeRotationEulerAngles(const Vector3& angles, RotationOrder order = RotationOrder::ZXY);
 
     /**
      * ヨー、ピッチ、ロールを指定して行列を作成します。
-     * @param[in]    yaw        : y 軸を中心とするヨー (ラジアン単位)
-     * @param[in]    pitch    : x 軸を中心とするピッチ (ラジアン単位)
-     * @param[in]    roll    : z 軸を中心とするロール (ラジアン単位)
-     * @return        演算結果の行列
+     * @param[in]   yaw     : y 軸を中心とするヨー (ラジアン単位)
+     * @param[in]	pitch	: x 軸を中心とするピッチ (ラジアン単位)
+     * @param[in]	roll	: z 軸を中心とするロール (ラジアン単位)
+     * @return      演算結果の行列
 	 * 
      * 回転順序は Z → X → Y です。引数の並びとは逆順であることに注意してください。
      * これは  D3DXMatrixRotationYawPitchRoll の回転順序と同じで、
@@ -330,46 +331,46 @@ public:
 
     /**
      * 各軸にそってスケーリングする行列を作成します。
-     * @param[in]    x        : X 軸の拡縮率
-     * @param[in]    y        : Y 軸の拡縮率
-     * @param[in]    z        : Z 軸の拡縮率
-     * @return        演算結果の行列
+     * @param[in]   x   : X 軸の拡縮率
+     * @param[in]   y   : Y 軸の拡縮率
+     * @param[in]   z   : Z 軸の拡縮率
+     * @return      演算結果の行列
      */
     static Matrix makeScaling(float x, float y, float z);
 
     /**
      * 各軸にそってスケーリングする行列を作成します。
-     * @param[in]    vec        : 各軸の拡縮率
-     * @return        演算結果の行列
+     * @param[in]   vec : 各軸の拡縮率
+     * @return      演算結果の行列
      */
     static Matrix makeScaling(const Vector3& vec);
 
     /**
      * 各軸にそってスケーリングする行列を作成します。
-     * @param[in]    xyz        : 全ての軸の拡縮率
-     * @return        演算結果の行列
+     * @param[in]   xyz : 全ての軸の拡縮率
+     * @return      演算結果の行列
      */
     static Matrix makeScaling(float xyz);
 
     /**
      * 指定された行列の逆行列を作成します。
-     * @param[in]  mat        : 処理の基になる行列
-     * @return        作成された逆行列
+     * @param[in]   mat : 処理の基になる行列
+     * @return      作成された逆行列
      */
     static Matrix makeInverse(const Matrix& mat);
 
     /**
      * 指定された行列の転置行列を作成します。
-     * @param[in]  mat        : 処理の基になる行列
-     * @return        作成された転置行列
+     * @param[in]   mat : 処理の基になる行列
+     * @return      作成された転置行列
      */
     static Matrix makeTranspose(const Matrix& mat);
 
     /**
      * 平面に対して座標系を反転するための行列を作成します。
-     * @param[in]  mat            : 処理の基になる行列
-     * @param[in]  plane        : 処理の基になる平面
-     * @return        演算結果の行列
+     * @param[in]   mat     : 処理の基になる行列
+     * @param[in]   plane   : 処理の基になる平面
+     * @return      演算結果の行列
 	 * 
      * plane は正規化してから計算を行います。
      */
@@ -377,69 +378,69 @@ public:
 
     /**
      * 左手座標系ビュー行列を作成します。
-     * @param[in]    position    : 視点の位置
-     * @param[in]    lookAt        : 注視点
-     * @param[in]    up            : 上方向
-     * @return        演算結果の行列
+     * @param[in]   position    : 視点の位置
+     * @param[in]   lookAt      : 注視点
+     * @param[in]   up          : 上方向
+     * @return      演算結果の行列
      */
     static Matrix makeLookAtLH(const Vector3& position, const Vector3& lookAt, const Vector3& up);
 
     /**
      * 右手座標系ビュー行列を作成します。
-     * @param[in]    position    : 視点の位置
-     * @param[in]    lookAt        : 注視点
-     * @param[in]    up            : 上方向
-     * @return        演算結果の行列
+     * @param[in]   position    : 視点の位置
+     * @param[in]   lookAt      : 注視点
+     * @param[in]   up          : 上方向
+     * @return      演算結果の行列
      */
     static Matrix makeLookAtRH(const Vector3& position, const Vector3& lookAt, const Vector3& up);
 
     /**
      * 左手座標系パースペクティブ射影行列を作成します。
-     * @param[in]  fovY        : Y 方向への視野角 (ラジアン単位)
-     * @param[in]  aspect        : アスペクト比 (横幅/高さ)
-     * @param[in]  near        : 近いビュー平面の Z 値
-     * @param[in]  far            : 遠いビュー平面の Z 値
-     * @return        演算結果の行列
+     * @param[in]   fovY        : Y 方向への視野角 (ラジアン単位)
+     * @param[in]   aspect      : アスペクト比 (横幅/高さ)
+     * @param[in]   near        : 近いビュー平面の Z 値
+     * @param[in]   far         : 遠いビュー平面の Z 値
+     * @return      演算結果の行列
      */
     static Matrix makePerspectiveFovLH(float fovY, float aspect, float near, float far);
 
     /**
      * 右手座標系パースペクティブ射影行列を作成します。
-     * @param[in]  fovY        : Y 方向への視野角 (ラジアン単位)
-     * @param[in]  aspect        : アスペクト比 (横幅/高さ)
-     * @param[in]  near        : 近いビュー平面の Z 値
-     * @param[in]  far            : 遠いビュー平面の Z 値
-     * @return        演算結果の行列
+     * @param[in]   fovY        : Y 方向への視野角 (ラジアン単位)
+     * @param[in]   aspect      : アスペクト比 (横幅/高さ)
+     * @param[in]   near        : 近いビュー平面の Z 値
+     * @param[in]   far         : 遠いビュー平面の Z 値
+     * @return      演算結果の行列
      */
     static Matrix makePerspectiveFovRH(float fovY, float aspect, float near, float far);
 
     /**
      * 左手座標系正射影行列を作成します。
-     * @param[in]  width        : スクリーンの幅
-     * @param[in]  height        : スクリーンの高さ
-     * @param[in]  near        : 一番近いビュー平面の Z 値
-     * @param[in]  far            : 一番遠いビュー平面の Z 値
-     * @return        演算結果の行列
+     * @param[in]   width       : スクリーンの幅
+     * @param[in]   height      : スクリーンの高さ
+     * @param[in]   near        : 一番近いビュー平面の Z 値
+     * @param[in]   far         : 一番遠いビュー平面の Z 値
+     * @return      演算結果の行列
      */
     static Matrix makeOrthoLH(float width, float height, float near, float far);
 
     /**
      * 右手座標系正射影行列を作成します。
-     * @param[in]  width        : スクリーンの幅
-     * @param[in]  height        : スクリーンの高さ
-     * @param[in]  near        : 一番近いビュー平面の Z 値
-     * @param[in]  far            : 一番遠いビュー平面の Z 値
-     * @return        演算結果の行列
+     * @param[in]   width       : スクリーンの幅
+     * @param[in]   height      : スクリーンの高さ
+     * @param[in]   near        : 一番近いビュー平面の Z 値
+     * @param[in]   far         : 一番遠いビュー平面の Z 値
+     * @return      演算結果の行列
      */
     static Matrix makeOrthoRH(float width, float height, float near, float far);
 
     /**
      * 2D 座標系用の左手座標系正射影行列を作成します。
-     * @param[in]  width        : スクリーンの幅
-     * @param[in]  height        : スクリーンの高さ
-     * @param[in]  near        : 一番近いビュー平面の Z 値
-     * @param[in]  far            : 一番遠いビュー平面の Z 値
-     * @return        演算結果の行列
+     * @param[in]   width       : スクリーンの幅
+     * @param[in]   height      : スクリーンの高さ
+     * @param[in]   near        : 一番近いビュー平面の Z 値
+     * @param[in]   far         : 一番遠いビュー平面の Z 値
+     * @return      演算結果の行列
 	 * 
      * ビューの左上を原点とし、右方向を X+、下方向を Y+、手前方向を Z+ とします。
      */
@@ -447,11 +448,11 @@ public:
 
     /**
      * 2D 座標系用の右手座標系正射影行列を作成します。
-     * @param[in]  width        : スクリーンの幅
-     * @param[in]  height        : スクリーンの高さ
-     * @param[in]  near        : 一番近いビュー平面の Z 値
-     * @param[in]  far            : 一番遠いビュー平面の Z 値
-     * @return        演算結果の行列
+     * @param[in]   width       : スクリーンの幅
+     * @param[in]   height      : スクリーンの高さ
+     * @param[in]   near        : 一番近いビュー平面の Z 値
+     * @param[in]   far         : 一番遠いビュー平面の Z 値
+     * @return      演算結果の行列
 	 * 
      * ビューの左上を原点とし、右方向を X+、下方向を Y+、奥方向を Z+ とします。
      */
@@ -459,11 +460,11 @@ public:
 
     /**
      * アフィン変換行列を作成します。
-     * @param[in]  scaling            : スケーリング係数
-     * @param[in]  rotationCenter    : 回転の中心位置
-     * @param[in]  rotation        : 回転
-     * @param[in]  translation        : 平行移動
-     * @return        演算結果の行列
+     * @param[in]   scaling         : スケーリング係数
+     * @param[in]   rotationCenter  : 回転の中心位置
+     * @param[in]   rotation        : 回転
+     * @param[in]   translation     : 平行移動
+     * @return      演算結果の行列
      */
     static Matrix makeAffineTransformation(const Vector3& scaling, const Vector3& rotationCenter, const Quaternion& rotation, const Vector3& translation);
 
