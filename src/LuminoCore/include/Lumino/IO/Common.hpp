@@ -75,6 +75,16 @@ enum class SeekOrigin
 	End,
 };
 
+/** ファイルを書き込みモードでオープンする際の動作 */
+enum FileWriteMode
+{
+	/** ファイルが存在する場合、サイズを 0 にする */
+	Truncate,
+
+	/** ファイルを開き、ファイルの末尾をシークする (追記モード) */
+	Append,
+};
+
 } // namespace ln
 
 // TODO: 間髪入れずに fclose → fopen,fread とかすると落ちる。その回避。詳細調査は TODO

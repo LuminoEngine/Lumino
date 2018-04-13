@@ -12,6 +12,7 @@
 */
 
 #include "Internal.hpp"
+#include <Lumino/IO/FileSystem.hpp>
 #include <Lumino/IO/FileStream.hpp>
 
 namespace ln {
@@ -28,10 +29,16 @@ Ref<FileStream> FileStream::create(const Char* filePath, FileOpenMode openMode)
 	return ptr;
 }
 
+Ref<FileStream> FileStream::create(const StringRef& filePath, FileOpenMode openMode)
+{
+	return create(filePath.getBegin(), openMode);
+}
+
 //------------------------------------------------------------------------------
 FileStream::FileStream()
 	: m_stream(nullptr)
 	, m_openModeFlags(FileOpenMode::None)
+	, m_writeLen(0)
 {
 }
 
@@ -61,10 +68,10 @@ bool FileStream::open(const Char* filePath, FileOpenMode openMode)
 
 	if (m_openModeFlags.hasFlag(FileOpenMode::Deferring))
 	{
-		if (!detail::FileSystemInternal::existsFile(filePath, StringTraits::tcslen(filePath)))
+		if (!detail::FileSystemInternal::existsFile(filePath, StringHelper::strlen(filePath)))
 		{
-			LN_ENSURE_FILE_NOT_FOUND(0, filePath);
-			return;
+			LN_ENSURE_IO(0, filePath);
+			return false;
 		}
 	}
 	// 遅延オープンでなければここで開いてしまう
@@ -72,6 +79,13 @@ bool FileStream::open(const Char* filePath, FileOpenMode openMode)
 	{
 		open();
 	}
+
+
+	if (m_openModeFlags.hasFlag(FileOpenMode::append)) {
+		m_writeLen = FileSystem::getFileSize(m_stream);
+	}
+
+	return true;
 }
 
 //------------------------------------------------------------------------------
@@ -85,24 +99,25 @@ void FileStream::close()
 //------------------------------------------------------------------------------
 bool FileStream::canRead() const
 {
-	return (m_openModeFlags.TestFlag(FileOpenMode::read));
+	return (m_openModeFlags.hasFlag(FileOpenMode::read));
 }
 
 //------------------------------------------------------------------------------
 bool FileStream::canWrite() const
 {
-	return (m_openModeFlags.TestFlag(FileOpenMode::write));
+	return (m_openModeFlags.hasFlag(FileOpenMode::write));
 }
 
 //------------------------------------------------------------------------------
-int64_t FileStream::getLength() const
+int64_t FileStream::length() const
 {
 	checkOpen();
-	return (size_t)FileSystem::getFileSize(m_stream);
+	int64_t rawLen = FileSystem::getFileSize(m_stream);
+	return (rawLen < m_writeLen) ? m_writeLen : rawLen;
 }
 
 //------------------------------------------------------------------------------
-int64_t FileStream::getPosition() const
+int64_t FileStream::position() const
 {
 	checkOpen();
 	// TODO: 64bit 確認 → ftello?
@@ -120,8 +135,9 @@ size_t FileStream::read(void* buffer, size_t readCount)
 void FileStream::write(const void* data, size_t byteCount)
 {
 	checkOpen();
-	size_t nWriteSize = fwrite( data, 1, byteCount, m_stream );
-	LN_ENSURE(nWriteSize == byteCount);
+	size_t size = fwrite(data, 1, byteCount, m_stream);
+	LN_ENSURE(size == byteCount);
+	m_writeLen += size;
 }
 
 //------------------------------------------------------------------------------
@@ -130,11 +146,11 @@ void FileStream::seek(int64_t offset, SeekOrigin origin)
 	checkOpen();
 
 #ifdef LN_OS_WIN32
-	_fseeki64(m_stream, offset, origin);
+	_fseeki64(m_stream, offset, static_cast<int>(origin));
 #else
 	// TODO:
 	// http://stackoverflow.com/questions/1035657/seeking-and-reading-large-files-in-a-linux-c-application
-	fseek(m_stream, offset, origin);
+	fseek(m_stream, offset, static_cast<int>(origin));
 #endif
 }
 
@@ -148,7 +164,7 @@ void FileStream::flush()
 //------------------------------------------------------------------------------
 void FileStream::checkOpen() const
 {
-	if (m_openModeFlags.TestFlag(FileOpenMode::Deferring))
+	if (m_openModeFlags.hasFlag(FileOpenMode::Deferring))
 	{
 		if (m_stream == NULL)
 		{
@@ -167,36 +183,36 @@ void FileStream::open() const
 	if (LN_REQUIRE(m_stream == NULL)) return;
 
 	const Char* mode = NULL;
-	if (m_openModeFlags.TestFlag(FileOpenMode::ReadWrite))
+	if (m_openModeFlags.hasFlag(FileOpenMode::ReadWrite))
 	{
-		if (m_openModeFlags.TestFlag(FileOpenMode::append)) {
+		if (m_openModeFlags.hasFlag(FileOpenMode::append)) {
 			mode = _TT("a+b");		// 読み取りと書き込み (末尾に追加する)
 		}
-		else if (m_openModeFlags.TestFlag(FileOpenMode::Truncate)) {
+		else if (m_openModeFlags.hasFlag(FileOpenMode::Truncate)) {
 			mode = _TT("w+b");		// 読み取りと書き込み (ファイルを空にする)
 		}
 		else {
 			mode = _TT("r+b");		// 読み取りと書き込み (ファイルが存在しない場合はエラー)
 		}
 	}
-	else if (m_openModeFlags.TestFlag(FileOpenMode::write))
+	else if (m_openModeFlags.hasFlag(FileOpenMode::write))
 	{
-		if (m_openModeFlags.TestFlag(FileOpenMode::append)) {
+		if (m_openModeFlags.hasFlag(FileOpenMode::append)) {
 			mode = _TT("ab");		// 書き込み (末尾に追加する。ファイルが無ければ新規作成)
 		}
-		else if (m_openModeFlags.TestFlag(FileOpenMode::Truncate)) {
+		else if (m_openModeFlags.hasFlag(FileOpenMode::Truncate)) {
 			mode = _TT("wb");		// 書き込み (ファイルを空にする)
 		}
 		else {
 			mode = _TT("wb");		// 書き込み (モード省略。Truncate)
 		}
 	}
-	else if (m_openModeFlags.TestFlag(FileOpenMode::read))
+	else if (m_openModeFlags.hasFlag(FileOpenMode::read))
 	{
-		if (m_openModeFlags.TestFlag(FileOpenMode::append)) {
+		if (m_openModeFlags.hasFlag(FileOpenMode::append)) {
 			mode = NULL;			// 読み込みなのに末尾追加はできない
 		}
-		else if (m_openModeFlags.TestFlag(FileOpenMode::Truncate)) {
+		else if (m_openModeFlags.hasFlag(FileOpenMode::Truncate)) {
 			mode = NULL;			// 読み込みなのにファイルを空にはできない
 		}
 		else {
@@ -205,8 +221,8 @@ void FileStream::open() const
 	}
 	if (LN_REQUIRE(mode)) return;
 
-	m_stream = detail::FileSystemInternal::fopen(m_filePath.c_str(), m_filePath.getLength(), mode, StringTraits::tcslen(mode));
-	LN_ENSURE_FILE_NOT_FOUND(m_stream != nullptr, m_filePath.c_str());
+	m_stream = detail::FileSystemInternal::fopen(m_filePath.c_str(), m_filePath.length(), mode, StringHelper::strlen(mode));
+	LN_ENSURE_IO(m_stream != nullptr, m_filePath.c_str());
 }
 
 } // namespace ln

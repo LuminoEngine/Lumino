@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2018 lriki. Distributed under the MIT license.
 #pragma once
 
+#include "Common.hpp"
+
 namespace ln {
 typedef uint32_t FlagsType;
 

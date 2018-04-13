@@ -168,6 +168,25 @@ enum class StringSplitOptions
 #	define LN_DCHECK(expr) ((void)(expr));
 #endif
 
+#ifndef LN_SAFE_FREE
+#define LN_SAFE_FREE( p ) { if ( p ) { free( ( p ) ); ( p ) = NULL; } }
+#endif
+
+#ifndef LN_SAFE_DELETE
+#define LN_SAFE_DELETE( p ) { if ( p ) { delete ( p ); ( p ) = NULL; } }
+#endif
+
+#ifndef LN_SAFE_DELETE_ARRAY
+#define LN_SAFE_DELETE_ARRAY( p ) { if ( p ) { delete[] ( p ); ( p ) = NULL; } }
+#endif
+
+#ifndef LN_INTERNAL_ACCESS
+#define LN_INTERNAL_ACCESS				private
+#endif
+
+#ifndef LN_PROTECTED_INTERNAL_ACCESS
+#define LN_PROTECTED_INTERNAL_ACCESS	protected
+#endif
 
 //------------------------------------------------------------------------------
 #include <stdint.h>

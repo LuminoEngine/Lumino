@@ -1,0 +1,66 @@
+﻿
+#pragma once
+#include "../IO/Path.hpp"
+//#include "../Base/Uuid.hpp"
+
+namespace ln {
+
+template<typename TValue>
+void serialize(Archive2& ar, Ref<TValue>& value)
+{
+	if (value.isNull())
+	{
+		value = newObject<TValue>();
+	}
+
+	value->serialize(ar);
+}
+
+template<typename TValue>
+void serialize(Archive2& ar, List<TValue>& value)
+{
+	int size = 0;
+	ar.makeArrayTag(&size);
+
+	if (ar.isLoading())
+	{
+		value.resize(size);
+	}
+
+	for (TValue& v : value)
+	{
+		ar.process(v);
+	}
+}
+
+inline void serialize(Archive2& ar, Path& value)
+{
+	if (ar.isSaving())
+	{
+		String str = value.str();
+		ar.makeStringTag(&str);
+	}
+	else
+	{
+		String str;
+		ar.makeStringTag(&str);
+		value = Path(str);
+	}
+}
+
+//inline void serialize(Archive2& ar, Uuid& value)
+//{
+//	if (ar.isSaving())
+//	{
+//		String str = value.toString();
+//		ar.makeStringTag(&str);
+//	}
+//	else
+//	{
+//		String str;
+//		ar.makeStringTag(&str);
+//		value = Uuid(str);
+//	}
+//}
+
+} // namespace ln

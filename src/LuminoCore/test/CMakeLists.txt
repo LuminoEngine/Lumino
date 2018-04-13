@@ -10,8 +10,10 @@ set(LN_SOURCES
 	Test_Base_Formatter.cpp
 	Test_Base_Logger.cpp
 	Test_Base_String.cpp
+	Test_IO_FileStream.cpp
 	Test_IO_FileSystem.cpp
 	Test_IO_Path.cpp
+	Test_IO_TextWriter.cpp
 	Test_Math_Common.hpp
 	Test_Math.cpp
 	Test_Math_Matrix.cpp
@@ -22,6 +24,7 @@ set(LN_SOURCES
 	Test_Math_Vector3.cpp
 	Test_Math_Vector4.cpp
 	Test_Math_ViewFrustum.cpp
+	Test_Serialization_Archive.cpp
 	Test_Text_Encoding.cpp
 	Test_Text_EncodingConverter.cpp
 )

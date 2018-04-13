@@ -46,13 +46,18 @@ set(LN_SOURCES_Base
 
 set(LN_SOURCES_IO
 	include/Lumino/IO/Common.hpp
-	#include/Lumino/IO/FileStream.hpp
+	include/Lumino/IO/FileStream.hpp
 	include/Lumino/IO/FileSystem.hpp
 	include/Lumino/IO/Path.hpp
 	include/Lumino/IO/Stream.hpp
-	#include/Lumino/IO/TextWriter.hpp
+	include/Lumino/IO/StreamReader.hpp
+	include/Lumino/IO/StreamWriter.hpp
+	include/Lumino/IO/StringReader.hpp
+	include/Lumino/IO/StringWriter.hpp
+	include/Lumino/IO/TextReader.hpp
+	include/Lumino/IO/TextWriter.hpp
 	src/IO/Internal.hpp
-	#src/IO/FileStream.cpp
+	src/IO/FileStream.cpp
 	src/IO/Path.cpp
 	src/IO/FileSystem.cpp
 	src/IO/FileSystem_Unix.hpp
@@ -60,11 +65,26 @@ set(LN_SOURCES_IO
 	src/IO/PathHelper.cpp
 	src/IO/PathHelper.hpp
 	src/IO/Stream.cpp
-	#src/IO/TextWriter.cpp
+	src/IO/StreamReader.cpp
+	src/IO/StreamWriter.cpp
+	src/IO/StringReader.cpp
+	src/IO/StringWriter.cpp
+	src/IO/TextReader.cpp
+	src/IO/TextWriter.cpp
 )
 
 set(LN_SOURCES_Json
 	include/Lumino/Json/Common.hpp
+	include/Lumino/Json/JsonDiagnostics.h
+	include/Lumino/Json/JsonDocument.h
+	include/Lumino/Json/JsonReader.h
+	include/Lumino/Json/JsonValue.h
+	include/Lumino/Json/JsonWriter.h
+	src/Json/JsonDiagnostics.cpp
+	src/Json/JsonDocument.cpp
+	src/Json/JsonReader.cpp
+	src/Json/JsonValue.cpp
+	src/Json/JsonWriter.cpp
 )
 
 set(LN_SOURCES_Math
@@ -97,6 +117,12 @@ set(LN_SOURCES_Math
 
 set(LN_SOURCES_Serialization
 	include/Lumino/Serialization/Common.hpp
+	include/Lumino/Serialization/ArchiveStore.h
+	include/Lumino/Serialization/Serialization2.h
+	include/Lumino/Serialization/SerializeTypes.h
+	src/Serialization/Internal.hpp
+	src/Serialization/ArchiveStore.cpp
+	src/Serialization/Serialization2.cpp
 )
 
 set(LN_SOURCES_Testing

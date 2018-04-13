@@ -18,6 +18,9 @@ public:
 	*/
     static Ref<FileStream> create(const Char* filePath, FileOpenMode openMode);
 
+	static Ref<FileStream> create(const StringRef& filePath, FileOpenMode openMode);
+
+
     /** ファイルを閉じます。*/
     void close();
 
@@ -46,6 +49,7 @@ private:
     mutable FILE* m_stream;
 	Path m_filePath;
     Flags<FileOpenMode> m_openModeFlags;
+	int64_t m_writeLen;
 };
 
 } // namespace ln

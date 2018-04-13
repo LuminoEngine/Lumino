@@ -56,7 +56,7 @@ class String;
 
 #define LN_REQUIRE_RANGE(value, begin, end)		_LN_CHECK(begin <= value && value < end, ::ln::LogicException)
 #define LN_REQUIRE_KEY(expr, ...)				_LN_CHECK(expr, ln::LogicException, ##__VA_ARGS__)
-#define LN_ENSURE_IO(expr)						_LN_CHECK(expr, ln::IOException)
+#define LN_ENSURE_IO(expr, ...)					_LN_CHECK(expr, ln::IOException, ##__VA_ARGS__)
 
 // internal
 #ifdef LN_USTRING16
