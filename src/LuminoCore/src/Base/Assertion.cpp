@@ -200,7 +200,7 @@ Exception::~Exception()
 
 const Char* Exception::getMessage() const
 {
-	return _LT("ln::Exception");
+	return m_message.c_str();
 }
 Exception* Exception::copy() const
 {

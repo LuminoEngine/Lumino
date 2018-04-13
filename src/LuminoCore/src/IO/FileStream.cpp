@@ -18,49 +18,30 @@
 namespace ln {
 
 //==============================================================================
-// GenericFileStream
-//==============================================================================
+// FileStream
 
-//------------------------------------------------------------------------------
-Ref<FileStream> FileStream::create(const Char* filePath, FileOpenMode openMode)
+Ref<FileStream> FileStream::create(const StringRef& filePath, FileOpenMode openMode)
 {
 	Ref<FileStream> ptr(LN_NEW FileStream(), false);
 	ptr->open(filePath, openMode);
 	return ptr;
 }
 
-Ref<FileStream> FileStream::create(const StringRef& filePath, FileOpenMode openMode)
-{
-	return create(filePath.getBegin(), openMode);
-}
-
-//------------------------------------------------------------------------------
 FileStream::FileStream()
 	: m_stream(nullptr)
 	, m_openModeFlags(FileOpenMode::None)
 	, m_writeLen(0)
 {
+	setValidObject(false);
 }
 
-//------------------------------------------------------------------------------
-//GenericFileStream::GenericFileStream(const TChar* filePath, FileOpenMode openMode)
-//	: m_stream(NULL)
-//	, m_openModeFlags(FileOpenMode::None)
-//{
-//	Open(filePath, openMode);
-//}
-
-//------------------------------------------------------------------------------
 FileStream::~FileStream()
 {
 	close();
 }
 
-//------------------------------------------------------------------------------
-bool FileStream::open(const Char* filePath, FileOpenMode openMode)
+bool FileStream::open(const StringRef& filePath, FileOpenMode openMode)
 {
-	if (LN_REQUIRE(filePath)) return false;
-
 	close();
 
 	m_filePath = Path(filePath).canonicalize();
@@ -68,7 +49,7 @@ bool FileStream::open(const Char* filePath, FileOpenMode openMode)
 
 	if (m_openModeFlags.hasFlag(FileOpenMode::Deferring))
 	{
-		if (!detail::FileSystemInternal::existsFile(filePath, StringHelper::strlen(filePath)))
+		if (!detail::FileSystemInternal::existsFile(m_filePath.c_str(), m_filePath.length()))
 		{
 			LN_ENSURE_IO(0, filePath);
 			return false;
@@ -78,17 +59,19 @@ bool FileStream::open(const Char* filePath, FileOpenMode openMode)
 	else
 	{
 		open();
+
+		if (m_openModeFlags.hasFlag(FileOpenMode::append)) {
+			m_writeLen = FileSystem::getFileSize(m_stream);
+		}
+
 	}
 
-
-	if (m_openModeFlags.hasFlag(FileOpenMode::append)) {
-		m_writeLen = FileSystem::getFileSize(m_stream);
+	if (m_stream) {
+		setValidObject(true);
 	}
-
 	return true;
 }
 
-//------------------------------------------------------------------------------
 void FileStream::close()
 {
 	if (m_stream != NULL) {
@@ -96,19 +79,16 @@ void FileStream::close()
 	}
 }
 
-//------------------------------------------------------------------------------
 bool FileStream::canRead() const
 {
 	return (m_openModeFlags.hasFlag(FileOpenMode::read));
 }
 
-//------------------------------------------------------------------------------
 bool FileStream::canWrite() const
 {
 	return (m_openModeFlags.hasFlag(FileOpenMode::write));
 }
 
-//------------------------------------------------------------------------------
 int64_t FileStream::length() const
 {
 	checkOpen();
@@ -116,7 +96,6 @@ int64_t FileStream::length() const
 	return (rawLen < m_writeLen) ? m_writeLen : rawLen;
 }
 
-//------------------------------------------------------------------------------
 int64_t FileStream::position() const
 {
 	checkOpen();
@@ -124,14 +103,12 @@ int64_t FileStream::position() const
 	return ftell(m_stream);
 }
 
-//------------------------------------------------------------------------------
 size_t FileStream::read(void* buffer, size_t readCount)
 {
 	checkOpen();
 	return fread(buffer, 1, readCount, m_stream);
 }
 
-//------------------------------------------------------------------------------
 void FileStream::write(const void* data, size_t byteCount)
 {
 	checkOpen();
@@ -140,7 +117,6 @@ void FileStream::write(const void* data, size_t byteCount)
 	m_writeLen += size;
 }
 
-//------------------------------------------------------------------------------
 void FileStream::seek(int64_t offset, SeekOrigin origin)
 {
 	checkOpen();
@@ -154,14 +130,12 @@ void FileStream::seek(int64_t offset, SeekOrigin origin)
 #endif
 }
 
-//------------------------------------------------------------------------------
 void FileStream::flush()
 {
 	checkOpen();
 	fflush(m_stream);
 }
 
-//------------------------------------------------------------------------------
 void FileStream::checkOpen() const
 {
 	if (m_openModeFlags.hasFlag(FileOpenMode::Deferring))
@@ -177,7 +151,6 @@ void FileStream::checkOpen() const
 	}
 }
 
-//------------------------------------------------------------------------------
 void FileStream::open() const
 {
 	if (LN_REQUIRE(m_stream == NULL)) return;

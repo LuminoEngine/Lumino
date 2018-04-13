@@ -39,6 +39,10 @@ protected:
 	/** 参照がなくなったときに呼び出されます。実装コードでは仮想関数を呼び出すことができます。主にデストラクタの制限を回避するために使用します。 */
 	virtual void finalize();
 
+	// experimental
+	void setValidObject(bool valid = true) { m_ojectFlags = valid; }
+	bool isValidObject() const { return m_ojectFlags; }
+
 public:
 
 	/** 参照カウントを取得します。*/
@@ -58,7 +62,21 @@ private:
 	void releaseInternal();
 
 	std::atomic<int32_t>	m_internalReferenceCount;
+	uint32_t m_ojectFlags;
+
+	friend bool valid(const RefObject* obj);
+	friend bool valid(const RefObject& obj);
 };
+
+inline bool valid(const RefObject* obj)
+{
+	return obj && obj->isValidObject();
+}
+
+inline bool valid(const RefObject& obj)
+{
+	return obj.isValidObject();
+}
 
 //namespace detail
 //{

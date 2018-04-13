@@ -12,44 +12,40 @@ class FileStream
 {
 public:
     /**
-		@brief	ファイルを開きます。
-		@param	filePath	: ファイル名
-		@param	openMode	: ファイルを開く方法 (FileOpenMode のフラグの組み合わせ)
-	*/
-    static Ref<FileStream> create(const Char* filePath, FileOpenMode openMode);
-
-	static Ref<FileStream> create(const StringRef& filePath, FileOpenMode openMode);
-
+     * ファイルを開き、FileStream を作成します。
+     * @param[in] filePath	: ファイル名
+     * @param[in] openMode	: ファイルを開く方法 (FileOpenMode のフラグの組み合わせ)
+     */
+    static Ref<FileStream> create(const StringRef& filePath, FileOpenMode openMode);
 
     /** ファイルを閉じます。*/
     void close();
 
     /** ファイルの絶対パスを取得します。*/
-    const Path& getFilePath() const { return m_filePath; }
+    const Path& filePath() const { return m_filePath; }
 
 public:
     // Stream interface
-    virtual bool canRead() const;
-    virtual bool canWrite() const;
-    virtual int64_t length() const;
-    virtual int64_t position() const;
-    virtual size_t read(void* buffer, size_t byteCount);
-    virtual void write(const void* data, size_t byteCount);
-    virtual void seek(int64_t offset, SeekOrigin origin);
-    virtual void flush();
+    virtual bool canRead() const override;
+    virtual bool canWrite() const override;
+    virtual int64_t length() const override;
+    virtual int64_t position() const override;
+    virtual size_t read(void* buffer, size_t byteCount) override;
+    virtual void write(const void* data, size_t byteCount) override;
+    virtual void seek(int64_t offset, SeekOrigin origin) override;
+    virtual void flush() override;
 
 private:
     FileStream();
     virtual ~FileStream();
-    bool open(const Char* filePath, FileOpenMode openMode);
+    bool open(const StringRef& filePath, FileOpenMode openMode);
     void checkOpen() const;
     void open() const;
 
-private:
     mutable FILE* m_stream;
-	Path m_filePath;
+    Path m_filePath;
     Flags<FileOpenMode> m_openModeFlags;
-	int64_t m_writeLen;
+    int64_t m_writeLen;
 };
 
 } // namespace ln

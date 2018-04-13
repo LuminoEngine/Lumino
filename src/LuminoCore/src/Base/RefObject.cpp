@@ -11,6 +11,7 @@ namespace ln {
 RefObject::RefObject()
 	: m_referenceCount(1)
 	, m_internalReferenceCount(0)
+	, m_ojectFlags(1)
 {
 }
 

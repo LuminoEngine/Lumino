@@ -232,7 +232,7 @@ inline bool notifyException(const Char* file, int line, TArgs... args)
 	auto h = Assertion::getNotifyVerificationHandler();
 	if (h != nullptr && h(e)) return true;
 #if 1
-	printError(str);
+	printError(e);
 #else
 	throw e;
 #endif

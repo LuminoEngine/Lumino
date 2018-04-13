@@ -28,6 +28,17 @@ TEST_F(Test_IO_FileStream, getFileSize)
 }
 
 //------------------------------------------------------------------------------
+//## FileNotFound test
+TEST_F(Test_IO_FileStream, FileNotFound)
+{
+	auto f1 = FileStream::create(_T("aaa"), FileOpenMode::read);
+	ASSERT_EQ(false, valid(f1));
+
+	//auto f2 = FileStream(_T("bbb"), FileOpenMode::read);
+	//ASSERT_EQ(false, valid(f1));
+}
+
+//------------------------------------------------------------------------------
 //## open mode test
 TEST_F(Test_IO_FileStream, open)
 {
@@ -39,6 +50,7 @@ TEST_F(Test_IO_FileStream, open)
 	// Write
 	{
 		auto file1 = FileStream::create(filePath, FileOpenMode::write);
+		ASSERT_EQ(true, valid(file1));
 		ASSERT_EQ(0, file1->length());	// 空ファイルになる
 		file1->write("A", 1);
 		ASSERT_EQ(1, file1->length());
@@ -63,7 +75,6 @@ TEST_F(Test_IO_FileStream, open)
 		ASSERT_EQ('B', data[0]);
 		ASSERT_EQ('C', data[1]);
 	}
-#if 0
 	// ReadWrite
 	{
 		auto file1 = FileStream::create(filePath, FileOpenMode::ReadWrite);
@@ -103,13 +114,13 @@ TEST_F(Test_IO_FileStream, open)
 		file1->read(buf, 1);
 		ASSERT_STREQ("F", buf);
 	}
-#endif
 }
 
-#if 0
 //------------------------------------------------------------------------------
 TEST_F(Test_IO_FileStream, FileOpenMode_Deferring)
 {
+	Path filePath = LN_TEMPFILE("Test_IO_FileStream1");
+
 	// Write
 	{
 		auto file1 = FileStream::create(filePath, FileOpenMode::write | FileOpenMode::Deferring);
@@ -168,4 +179,3 @@ TEST_F(Test_IO_FileStream, FileOpenMode_Deferring)
 		ASSERT_STREQ("F", buf);
 	}
 }
-#endif
