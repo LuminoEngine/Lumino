@@ -177,11 +177,10 @@ int main(int argc, char** argv)
 	{
 		argv[0],
 		"--gtest_break_on_failure",
-		"--gtest_filter=Test_Text_EncodingConverter.*"
+		//"--gtest_filter=Test_IO_TextWriter.*"
 	};
 	argc = sizeof(testArgs) / sizeof(char*);
 
-	//printf();
 	testing::InitGoogleTest(&argc, (char**)testArgs);
 	return RUN_ALL_TESTS();
 }

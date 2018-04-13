@@ -4,10 +4,10 @@
 //#include "../Base/ByteBuffer.h"
 #include "../Base/Locale.hpp"
 #include "../Base/String.hpp"
-#include "../Text/Encoding.h"
-#include "../Text/EncodingConverter.h"
+#include "../Text/Encoding.hpp"
+#include "../Text/EncodingConverter.hpp"
 
-LN_NAMESPACE_BEGIN
+namespace ln {
 
 /**
 	@brief		各種データを文字列として書き込みを行う機能のベースクラスです。機能を使用するには StreamWriter や StringWriter を使用します。
@@ -25,12 +25,12 @@ public:
 		@brief		この TextWriter が出力する文字列のエンコーディングを指定します。
 		@details	設定する場合、初回の書き込みの前に設定する必要があります。途中から変更はできません。
 	*/
-	void setEncoding(Encoding* encoding);
+	void setEncoding(TextEncoding* encoding);
 
 	/**
 		@brief		この TextWriter が出力する文字列のエンコーディングを取得します。
 	*/
-	Encoding* getEncoding() const;
+	TextEncoding* getEncoding() const;
 
 	/**
 		@brief		この TextWriter で使用する改行文字列を設定します。
@@ -83,13 +83,6 @@ public:
 	*/
 	void writeLine();
 
-	/**
-		@brief		文字列を書き込み、続けて改行を書き込みます。
-		@param[in]	str		: 書き込む文字列
-		@param[in]	len		: 書き込む文字数 (-1 の場合は \0 まで)
-	*/
-	//void WriteLine(const StringRef& str);
-	//void WriteLine(const String& str);
 	
 	/**
 		@brief		文字を書き込みます。
@@ -119,10 +112,10 @@ public:
 	void writeLine(float value);
 	void writeLine(double value);		/**< @copydoc WriteLine(float) */
 
-	void writeLine(const StringRef& str) { writeInternal(str.data(), str.getLength()); writeLine(); }
+	void writeLine(const StringRef& str) { writeInternal(str.data(), str.length()); writeLine(); }
 
 	template<typename... TArgs>
-	void writeLine(const StringRef& str, const TArgs&... args) { String s = String::format(str, args...); writeInternal(s.c_str(), s.getLength()); writeLine(); }
+	void writeLine(const StringRef& str, const TArgs&... args) { String s = String::format(str, args...); writeInternal(s.c_str(), s.length()); writeLine(); }
 
 	/**
 		@brief		バッファリングデータを全てストリームに書き出します。
@@ -147,4 +140,4 @@ private:
 	bool				m_writtenPreamble;
 };
 
-LN_NAMESPACE_END
+} // namespace ln

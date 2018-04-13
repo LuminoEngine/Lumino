@@ -69,6 +69,9 @@ public:
 	*/
 	static TextEncoding* wideCharEncoding();
 
+	/* 互換性のために残されています */
+	static TextEncoding* tcharEncoding();
+
 	/**
 		@brief		UTF-8 (BOM 無し)エンコーディングを取得します。
 	*/

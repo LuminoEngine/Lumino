@@ -11,7 +11,7 @@
 #include <Lumino/Base/String.hpp>
 #include <Lumino/IO/TextWriter.hpp>
 
-LN_NAMESPACE_BEGIN
+namespace ln {
 
 //==============================================================================
 // TextWriter
@@ -24,12 +24,9 @@ TextWriter::TextWriter()
 	//, m_utf16Buffer(BufferSize, false)
 	, m_writtenPreamble(true)
 {
-	// String を中間文字コード (UTF16) に変換するためのデコーダ
-	//m_decoder.Attach(Encoding::getTCharEncoding()->createDecoder());
-
-	// デフォルト Encoding
-	m_converter.getSourceEncoding(Encoding::getTCharEncoding());
-	m_converter.setDestinationEncoding(Encoding::getTCharEncoding());
+	// デフォルト TextEncoding
+	m_converter.getSourceEncoding(TextEncoding::tcharEncoding());
+	m_converter.setDestinationEncoding(TextEncoding::tcharEncoding());
 }
 
 //------------------------------------------------------------------------------
@@ -38,7 +35,7 @@ TextWriter::~TextWriter()
 }
 
 //------------------------------------------------------------------------------
-void TextWriter::setEncoding(Encoding* encoding)
+void TextWriter::setEncoding(TextEncoding* encoding)
 {
 	m_converter.setDestinationEncoding(encoding);
 #if 0
@@ -49,11 +46,11 @@ void TextWriter::setEncoding(Encoding* encoding)
 		m_encoder.Attach(m_encoding->CreateEncoder());
 
 		// 中間バッファを指定エンコーディングに全て変換したときに必要になる最大バッファサイズを計算し、メモリ確保
-		size_t maxSize = Encoding::GetConversionRequiredByteCount(Text::Encoding::GetUTF16Encoding(), m_encoding, m_utf16Buffer.GetSize());
+		size_t maxSize = TextEncoding::GetConversionRequiredByteCount(Text::TextEncoding::GetUTF16Encoding(), m_encoding, m_utf16Buffer.GetSize());
 		m_outputBuffer.Resize(maxSize, false);
 
 		// TCHAR → 中間バッファ (UTF16) 時、中間バッファに納められる TCHAR 文字数
-		m_safeTCharCount = m_utf16Buffer.GetSize() / Encoding::GetTCharEncoding()->GetMaxByteCount();
+		m_safeTCharCount = m_utf16Buffer.GetSize() / TextEncoding::GetTCharEncoding()->GetMaxByteCount();
 
 		// BOM が必要か
 		if (m_encoding->GetPreamble() != NULL) {
@@ -68,7 +65,7 @@ void TextWriter::setEncoding(Encoding* encoding)
 }
 
 //------------------------------------------------------------------------------
-Encoding* TextWriter::getEncoding() const
+TextEncoding* TextWriter::getEncoding() const
 {
 	return m_converter.getDestinationEncoding();
 }
@@ -88,7 +85,7 @@ void TextWriter::setFormatLocale(const Locale& locale)
 ////------------------------------------------------------------------------------
 //void TextWriter::Write(const TCHAR* str, int len)
 //{
-//	WriteInternal(str, (len < 0) ? StringTraits::StrLen(str) : len);
+//	WriteInternal(str, (len < 0) ? StringHelper::StrLen(str) : len);
 //}
 //
 ////------------------------------------------------------------------------------
@@ -134,55 +131,55 @@ void TextWriter::write(int16_t value)
 {
 	char buf1[64];
 	Char buf2[64];
-	int len = StringTraits::int64ToString(value, 'D', buf1, 64);
-	StringTraits::copySimpleAsciiString(buf2, len, buf1, len);
+	int len = StringHelper::int64ToString(value, 'D', buf1, 64);
+	StringHelper::copySimpleAsciiString(buf2, len, buf1, len);
 	writeInternal(buf2, len);
 }
 void TextWriter::write(int32_t value)
 {
 	char buf1[64];
 	Char buf2[64];
-	int len = StringTraits::int64ToString(value, 'D', buf1, 64);
-	StringTraits::copySimpleAsciiString(buf2, len, buf1, len);
+	int len = StringHelper::int64ToString(value, 'D', buf1, 64);
+	StringHelper::copySimpleAsciiString(buf2, len, buf1, len);
 	writeInternal(buf2, len);
 }
 void TextWriter::write(int64_t value)
 {
 	char buf1[64];
 	Char buf2[64];
-	int len = StringTraits::int64ToString(value, 'D', buf1, 64);
-	StringTraits::copySimpleAsciiString(buf2, len, buf1, len);
+	int len = StringHelper::int64ToString(value, 'D', buf1, 64);
+	StringHelper::copySimpleAsciiString(buf2, len, buf1, len);
 	writeInternal(buf2, len);
 }
 //void Write(byte_t value);
 //void TextWriter::WriteByte(byte_t value)
 //{
 //	TCHAR buf[64];
-//	int len = StringTraits::SPrintf(buf, 64, _T("%u"), value);
+//	int len = StringHelper::SPrintf(buf, 64, _T("%u"), value);
 //	WriteInternal(buf, len);
 //}
 void TextWriter::write(uint16_t value)
 {
 	char buf1[64];
 	Char buf2[64];
-	int len = StringTraits::uint64ToString(value, 'D', buf1, 64);
-	StringTraits::copySimpleAsciiString(buf2, len, buf1, len);
+	int len = StringHelper::uint64ToString(value, 'D', buf1, 64);
+	StringHelper::copySimpleAsciiString(buf2, len, buf1, len);
 	writeInternal(buf2, len);
 }
 void TextWriter::write(uint32_t value)
 {
 	char buf1[64];
 	Char buf2[64];
-	int len = StringTraits::uint64ToString(value, 'D', buf1, 64);
-	StringTraits::copySimpleAsciiString(buf2, len, buf1, len);
+	int len = StringHelper::uint64ToString(value, 'D', buf1, 64);
+	StringHelper::copySimpleAsciiString(buf2, len, buf1, len);
 	writeInternal(buf2, len);
 }
 void TextWriter::write(uint64_t value)
 {
 	char buf1[64];
 	Char buf2[64];
-	int len = StringTraits::uint64ToString(value, 'D', buf1, 64);
-	StringTraits::copySimpleAsciiString(buf2, len, buf1, len);
+	int len = StringHelper::uint64ToString(value, 'D', buf1, 64);
+	StringHelper::copySimpleAsciiString(buf2, len, buf1, len);
 	writeInternal(buf2, len);
 }
 void TextWriter::write(float value)
@@ -197,16 +194,16 @@ void TextWriter::write(double value)
 		std::vector<Char> buf2;
 		buf1.resize(512);
 		buf2.resize(512);
-		int len = StringTraits::doubleToString(value, 'F', -1, buf1.data(), buf1.size());
-		StringTraits::copySimpleAsciiString(buf2.data(), len, buf1.data(), len);
+		int len = StringHelper::doubleToString(value, 'F', -1, buf1.data(), buf1.size());
+		StringHelper::copySimpleAsciiString(buf2.data(), len, buf1.data(), len);
 		writeInternal(buf2.data(), len);
 	}
 	else
 	{
 		char buf1[64];
 		Char buf2[64];
-		int len = StringTraits::doubleToString(value, 'F', -1, buf1, 64);
-		StringTraits::copySimpleAsciiString(buf2, len, buf1, len);
+		int len = StringHelper::doubleToString(value, 'F', -1, buf1, 64);
+		StringHelper::copySimpleAsciiString(buf2, len, buf1, len);
 		writeInternal(buf2, len);
 	}
 }
@@ -214,7 +211,7 @@ void TextWriter::write(double value)
 //------------------------------------------------------------------------------
 void TextWriter::write(const StringRef& str)
 {
-	writeInternal(str.getBegin(), str.getLength());
+	writeInternal(str.getBegin(), str.length());
 }
 
 //------------------------------------------------------------------------------
@@ -226,7 +223,7 @@ void TextWriter::write(const Char* str, int length)
 //------------------------------------------------------------------------------
 void TextWriter::writeLine()
 {
-	writeInternal(m_newLine.c_str(), m_newLine.getLength());
+	writeInternal(m_newLine.c_str(), m_newLine.length());
 }
 //void TextWriter::WriteLine(const StringRef& str)
 //{
@@ -339,7 +336,7 @@ void TextWriter::writeInternal(const Char* str, int len)
 		return;
 	}
 
-	const ByteBuffer buf = m_converter.convert(str, len * sizeof(TCHAR));
+	const ByteBuffer buf = m_converter.convert(str, len * sizeof(Char));
 
 	writeOverride(buf.getConstData(), buf.getSize());
 
@@ -347,7 +344,7 @@ void TextWriter::writeInternal(const Char* str, int len)
 
 	if (m_decoder != NULL && m_encoder != NULL)
 	{
-		// 変換状態を保持できる Encoding であれば余分にメモリを確保しないで変換できる。
+		// 変換状態を保持できる TextEncoding であれば余分にメモリを確保しないで変換できる。
 		if (m_decoder->CanRemain()/* && m_encoder->canRemain()*/)	// encoder 側は状態保存できなくても良い
 		{
 			// 後のコードがキャストだらけにならないように
@@ -390,5 +387,4 @@ void TextWriter::writeInternal(const Char* str, int len)
 #endif
 }
 
-
-LN_NAMESPACE_END
+} // namespace ln

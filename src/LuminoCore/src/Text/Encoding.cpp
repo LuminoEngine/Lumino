@@ -54,6 +54,11 @@ TextEncoding* TextEncoding::wideCharEncoding()
 #endif
 }
 
+TextEncoding* TextEncoding::tcharEncoding()
+{
+	return utf16Encoding();
+}
+
 TextEncoding* TextEncoding::utf8Encoding()
 {
     static UTF8Encoding encoding(false);
