@@ -367,44 +367,5 @@ private:
 	detail::JsonElementCache	m_cache;
 };
 
-
-
-class JsonSerializer
-{
-public:
-	template<typename T>
-	static String save(T& value)
-	{
-		tr::JsonDocument2 doc;
-		tr::Archive ar(&doc, tr::ArchiveMode::save, true);
-		ar.save(value);
-		return doc.toString();
-	}
-
-	template<typename T>
-	static T load(const StringRef& json)
-	{
-		tr::JsonDocument2 doc;
-		doc.parse(json);
-		tr::Archive ar(&doc, tr::ArchiveMode::load, true);
-		T t;
-		ar.load(t);
-		return t;
-	}
-
-	template<typename T>
-	static Ref<T> loadObject(const StringRef& json)
-	{
-		tr::JsonDocument2 doc;
-		doc.parse(json);
-		tr::Archive ar(&doc, tr::ArchiveMode::load, true);
-		auto t = newObject<T>();
-		ar.load(t);
-		return t;
-	}
-
-	
-};
-
 } // namespace tr
 } // namespace ln

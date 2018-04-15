@@ -15,6 +15,13 @@ protected:
 };
 
 //------------------------------------------------------------------------------
+//## Examples
+TEST_F(Test_Serialization2, Examples)
+{
+
+}
+
+//------------------------------------------------------------------------------
 //## Basic
 TEST_F(Test_Serialization2, SimpleSave)
 {
@@ -91,6 +98,80 @@ TEST_F(Test_Serialization2, SimpleSave)
 		json = doc.toString(tr::JsonFormatting::None);
 	}
 }
+
+//------------------------------------------------------------------------------
+//## Array
+#if 0
+TEST_F(Test_Serialization2, Array)
+{
+	class Test2
+	{
+	public:
+		int x = 200;
+		void serialize(Archive2& ar)
+		{
+			ar & LN_NVP2(x);
+		}
+	};
+
+	//* [ ] Save
+	{
+		List<int> list1 = { 1, 2, 3 };
+
+		tr::JsonDocument2 doc;
+		JsonArchiveStore s(&doc);
+		Archive2 ar(&s, ArchiveMode::Save);
+		auto json = doc.toString();
+
+	}
+
+	//Test1 t1;
+	//Test2 t2;
+	////ar.process(LN_NVP2(t1));
+	//ar.process(LN_NVP2(t2));
+
+	//auto json = doc.toString();
+
+	////- [ ] Load
+	//{
+	//	t2.x = 1;
+
+	//	tr::JsonDocument2 doc;
+	//	doc.parse(json);
+	//	JsonArchiveStore s(&doc);
+	//	Archive2 ar(&s, ArchiveMode::Load);
+
+
+	//	ar.process(LN_NVP2(t2));
+	//}
+
+	////- [ ] 空オブジェクトの Save
+	//{
+	//	tr::JsonDocument2 doc;
+	//	JsonArchiveStore s(&doc);
+	//	Archive2 ar(&s, ArchiveMode::Save);
+
+	//	EmptyTest1 t1;
+	//	ar.process(t1);
+
+	//	json = doc.toString(tr::JsonFormatting::None);
+	//	ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":{}}"), json);
+	//}
+
+	////- [ ] 空オブジェクトの Load
+	//{
+	//	tr::JsonDocument2 doc;
+	//	doc.parse(json);
+	//	JsonArchiveStore s(&doc);
+	//	Archive2 ar(&s, ArchiveMode::Load);
+
+	//	EmptyTest1 t1;
+	//	ar.process(t1);
+
+	//	json = doc.toString(tr::JsonFormatting::None);
+	//}
+}
+#endif
 
 /*
 - [ ] List<Ref<MyObject>>
