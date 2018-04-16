@@ -45,6 +45,58 @@ TEST_F(Test_Serialization2, Examples)
 }
 
 //------------------------------------------------------------------------------
+//## Extra types
+TEST_F(Test_Serialization2, ExtraTypes)
+{
+	//* [ ] List<> in, int, string, object
+	{
+		struct MyData1
+		{
+			int a;
+
+			void serialize(Archive& ar)
+			{
+				ar & LN_NVP(a);
+			}
+		};
+		struct MyData2
+		{
+			List<int> list1;
+			List<String> list2;
+			List<MyData1> list3;
+
+			void serialize(Archive& ar)
+			{
+				ar & LN_NVP(list1);
+				ar & LN_NVP(list2);
+				ar & LN_NVP(list3);
+			}
+		};
+
+		MyData2 data1;
+		data1.list1 = {1, 2, 3};
+		data1.list2 = { _T("a"), _T("b"), _T("c") };
+		data1.list3 = { MyData1{1}, MyData1{2}, MyData1{3} };
+		String json = JsonSerializer::serialize(data1);
+
+		MyData2 data2;
+		JsonSerializer::deserialize(json, data2);
+		ASSERT_EQ(3, data2.list1.getCount());
+		ASSERT_EQ(3, data2.list2.getCount());
+		ASSERT_EQ(3, data2.list3.getCount());
+		ASSERT_EQ(1, data2.list1[0]);
+		ASSERT_EQ(2, data2.list1[1]);
+		ASSERT_EQ(3, data2.list1[2]);
+		ASSERT_EQ(_T("a"), data2.list2[0]);
+		ASSERT_EQ(_T("b"), data2.list2[1]);
+		ASSERT_EQ(_T("c"), data2.list2[2]);
+		ASSERT_EQ(1, data2.list3[0].a);
+		ASSERT_EQ(2, data2.list3[1].a);
+		ASSERT_EQ(3, data2.list3[2].a);
+	}
+}
+
+//------------------------------------------------------------------------------
 //## Basic
 TEST_F(Test_Serialization2, SimpleSave)
 {

@@ -366,6 +366,7 @@ private:
 
 		m_store->setNextName(nvp.name);
 		m_nextReadValueDefault = &nvp;
+		preReadValue();
 		readValue(*nvp.value);
 	}
 
@@ -375,13 +376,27 @@ private:
 		moveState(NodeHeadState::Object);
 		m_nodeInfoStack.top().nextBaseCall = true;
 		m_store->setNextName(ClassBaseKey);
+		preReadValue();
 		readValue(*base.basePtr);
 	}
 
 	template<typename TValue>
 	void processLoad(TValue& value)
 	{
+		preReadValue();
 		readValue(value);
+	}
+
+	void preReadValue()
+	{
+		if (!m_nodeInfoStack.empty())
+		{
+			if (m_store->getContainerType() == ArchiveContainerType::Array)
+			{
+				m_nodeInfoStack.top().arrayIndex++;
+				m_store->setNextIndex(m_nodeInfoStack.top().arrayIndex);
+			}
+		}
 	}
 
 	void preReadContainer()
@@ -405,8 +420,8 @@ private:
 		{
 			if (m_store->getContainerType() == ArchiveContainerType::Array)
 			{
-				m_nodeInfoStack.top().arrayIndex++;
-				m_store->setNextIndex(m_nodeInfoStack.top().arrayIndex);
+				//m_nodeInfoStack.top().arrayIndex++;
+				//m_store->setNextIndex(m_nodeInfoStack.top().arrayIndex);
 			}
 		}
 	}
@@ -506,7 +521,7 @@ private:
 
 
 		//if (m_nodeInfoStack.top().headState == NodeHeadState::ContainerOpend)
-			m_store->readContainerEnd();
+		m_store->readContainerEnd();
 		m_nodeInfoStack.pop();
 
 		if (!m_nodeInfoStack.empty()) {
@@ -526,7 +541,7 @@ private:
 
 	void onError()
 	{
-		LN_UNREACHABLE();	// TODO
+		LN_NOTIMPLEMENTED();
 	}
 
 	ArchiveStore* m_store;
@@ -599,9 +614,19 @@ private:
 	bool				m_processing;
 };
 
+/**
+ * オブジェクトと JSON 文字列間のシリアライズ/デシリアライズ行うユーティリティです。
+ */
 class JsonSerializer
 {
 public:
+
+	/**
+	 * オブジェクトを JSON 文字列へシリアライズします。
+	 * @param[in] 	value 		: データが格納されたオブジェクトへの参照
+	 * @param[in] 	formatting	: JSON 文字列の整形方法
+	 * @return		JSON 文字列
+	 */
 	template<typename TValue>
 	static String serialize(TValue&& value, tr::JsonFormatting formatting = tr::JsonFormatting::None)
 	{
@@ -610,6 +635,11 @@ public:
 		return ar.toString(formatting);
 	}
 
+	/**
+	 * JSON 文字列をオブジェクトへデシリアライズします。
+	 * @param[in] 	jsonText	: JSON 文字列
+	 * @param[in] 	value 		: データを格納するオブジェクトへの参照
+	 */
 	template<typename TValue>
 	static void deserialize(const StringRef& jsonText, TValue& value)
 	{
