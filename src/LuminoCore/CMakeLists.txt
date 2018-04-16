@@ -117,12 +117,12 @@ set(LN_SOURCES_Math
 
 set(LN_SOURCES_Serialization
 	include/Lumino/Serialization/Common.hpp
-	include/Lumino/Serialization/ArchiveStore.h
-	include/Lumino/Serialization/Serialization2.h
-	include/Lumino/Serialization/SerializeTypes.h
+	include/Lumino/Serialization/ArchiveStore.hpp
+	include/Lumino/Serialization/Serialization.hpp
+	include/Lumino/Serialization/SerializeTypes.inl
 	src/Serialization/Internal.hpp
 	src/Serialization/ArchiveStore.cpp
-	src/Serialization/Serialization2.cpp
+	src/Serialization/Serialization.cpp
 )
 
 set(LN_SOURCES_Testing

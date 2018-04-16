@@ -1,9 +1,6 @@
 ﻿#include "Common.hpp"
-//#include <Lumino/Base/Serialization.h>
 #include <Lumino/Json/JsonDocument.h>
-//#include <Lumino/Reflection/ReflectionObject.h>
-//#include <Lumino/Base/Uuid.h>
-#include <Lumino/Serialization/Serialization2.h>
+#include <Lumino/Serialization/Serialization.hpp>
 
 //==============================================================================
 //# シリアライズのテスト
@@ -41,6 +38,38 @@ TEST_F(Test_Serialization2, Examples)
 		JsonSerializer::deserialize(json, data2);
 		ASSERT_EQ(_T("example"), data2.name);
 		ASSERT_EQ(100, data2.value);
+	}
+
+	//* [ ] Example 2
+	{
+		struct Documents
+		{
+			String caption;
+			List<Path> fileList;
+
+			void serialize(Archive& ar)
+			{
+				ar & LN_NVP(caption);
+				ar & LN_NVP(fileList);
+			}
+		};
+
+		Documents docs1;
+		docs1.caption = "note";
+		docs1.fileList.add("file1.md");
+		docs1.fileList.add("file2.md");
+
+		String json = JsonSerializer::serialize(docs1);
+		ASSERT_EQ(_T("{\"caption\":\"note\",\"fileList\":[\"file1.md\",\"file2.md\"]}"), json);
+
+
+		//------ check
+		Documents data2;
+		JsonSerializer::deserialize(json, data2);
+		ASSERT_EQ(_T("note"), data2.caption);
+		ASSERT_EQ(2, data2.fileList.getCount());
+		ASSERT_EQ(_T("file1.md"), data2.fileList[0].str());
+		ASSERT_EQ(_T("file2.md"), data2.fileList[1].str());
 	}
 }
 
@@ -156,7 +185,7 @@ TEST_F(Test_Serialization2, SimpleSave)
 		EmptyTest1 t1;
 		ar.process(t1);
 
-		json = doc.toString(tr::JsonFormatting::None);
+		json = doc.toString(JsonFormatting::None);
 		ASSERT_EQ(_T("{}"), json);
 	}
 
@@ -170,83 +199,10 @@ TEST_F(Test_Serialization2, SimpleSave)
 		EmptyTest1 t1;
 		ar.process(t1);
 
-		json = doc.toString(tr::JsonFormatting::None);
+		json = doc.toString(JsonFormatting::None);
 	}
 }
 
-//------------------------------------------------------------------------------
-//## Array
-#if 0
-TEST_F(Test_Serialization2, Array)
-{
-	class Test2
-	{
-	public:
-		int x = 200;
-		void serialize(Archive& ar)
-		{
-			ar & LN_NVP(x);
-		}
-	};
-
-	//* [ ] Save
-	{
-		List<int> list1 = { 1, 2, 3 };
-
-		tr::JsonDocument2 doc;
-		JsonArchiveStore s(&doc);
-		Archive ar(&s, ArchiveMode::Save);
-		auto json = doc.toString();
-
-	}
-
-	//Test1 t1;
-	//Test2 t2;
-	////ar.process(LN_NVP(t1));
-	//ar.process(LN_NVP(t2));
-
-	//auto json = doc.toString();
-
-	////- [ ] Load
-	//{
-	//	t2.x = 1;
-
-	//	tr::JsonDocument2 doc;
-	//	doc.parse(json);
-	//	JsonArchiveStore s(&doc);
-	//	Archive ar(&s, ArchiveMode::Load);
-
-
-	//	ar.process(LN_NVP(t2));
-	//}
-
-	////- [ ] 空オブジェクトの Save
-	//{
-	//	tr::JsonDocument2 doc;
-	//	JsonArchiveStore s(&doc);
-	//	Archive ar(&s, ArchiveMode::Save);
-
-	//	EmptyTest1 t1;
-	//	ar.process(t1);
-
-	//	json = doc.toString(tr::JsonFormatting::None);
-	//	ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":{}}"), json);
-	//}
-
-	////- [ ] 空オブジェクトの Load
-	//{
-	//	tr::JsonDocument2 doc;
-	//	doc.parse(json);
-	//	JsonArchiveStore s(&doc);
-	//	Archive ar(&s, ArchiveMode::Load);
-
-	//	EmptyTest1 t1;
-	//	ar.process(t1);
-
-	//	json = doc.toString(tr::JsonFormatting::None);
-	//}
-}
-#endif
 
 /*
 - [ ] List<Ref<MyObject>>
@@ -297,7 +253,7 @@ TEST_F(Test_Serialization2, EmptyContainer)
 		EmptyTest2 t;
 		ar.process(t);
 
-		json = ar.toString(tr::JsonFormatting::None);
+		json = ar.toString(JsonFormatting::None);
 		ASSERT_EQ(_T("{\"t1\":{},\"t2\":[],\"t3\":{\"x\":200}}"), json);
 	}
 
@@ -341,7 +297,7 @@ TEST_F(Test_Serialization2, RootNode_Json)
 		t1.y = 500;
 		ar.save(t1);
 
-		json = ar.toString(tr::JsonFormatting::None);
+		json = ar.toString(JsonFormatting::None);
 		ASSERT_EQ(_T("{\"x\":200,\"y\":500}"), json);
 	}
 
@@ -386,7 +342,7 @@ TEST_F(Test_Serialization2, RootNode_Json)
 		//ar.process(ary[1]);
 		//ar.process(ary[2]);
 
-		json = ar.toString(tr::JsonFormatting::None);
+		json = ar.toString(JsonFormatting::None);
 		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":[100,200,300]}"), json);
 	}
 
@@ -482,7 +438,7 @@ TEST_F(Test_Serialization2, PrimitiveValues)
 	{
 		JsonTextOutputArchive ar;
 		ar.process(obj1);
-		json = ar.toString(tr::JsonFormatting::None);
+		json = ar.toString(JsonFormatting::None);
 	}
 
 	// Load
@@ -561,7 +517,7 @@ TEST_F(Test_Serialization2, ClassVersion)
 		ClassVersionTest1 t1;
 		ar.process(t1);
 
-		json = ar.toString(tr::JsonFormatting::None);
+		json = ar.toString(JsonFormatting::None);
 		ASSERT_EQ(_T("{\"lumino_class_version\":1,\"x\":0,\"flag\":false}"), json);
 	}
 
@@ -648,7 +604,7 @@ TEST_F(Test_Serialization2, BaseClass)
 		t.y = 77;
 		ar.process(t);
 
-		json = ar.toString(tr::JsonFormatting::None);
+		json = ar.toString(JsonFormatting::None);
 		ASSERT_EQ(_T("{\"lumino_base_class\":{\"x\":55},\"y\":77}"), json);
 	}
 
@@ -704,7 +660,7 @@ TEST_F(Test_Serialization2, DefaultValue)
 		JsonTextOutputArchive ar;
 		DefaultTest1 t;
 		ar.process(t);
-		json = ar.toString(tr::JsonFormatting::None);
+		json = ar.toString(JsonFormatting::None);
 	}
 
 	//- [ ] Load

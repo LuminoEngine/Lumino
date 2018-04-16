@@ -1,6 +1,6 @@
 ﻿
 #include "Internal.hpp"
-#include <Lumino/Serialization/ArchiveStore.h>
+#include <Lumino/Serialization/ArchiveStore.hpp>
 
 namespace ln {
 

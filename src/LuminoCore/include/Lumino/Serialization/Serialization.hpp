@@ -7,7 +7,7 @@
 #include "String.h"
 #include "../Json/JsonDocument.h"
 #include "Common.hpp"
-#include "ArchiveStore.h"
+#include "ArchiveStore.hpp"
 
 namespace ln {
 
@@ -91,14 +91,15 @@ public:
 
 	void makeArrayTag(int* outSize)
 	{
-		moveState(NodeHeadState::Array);
-
-		if (isLoading())
+		//
+		if (isSaving())
 		{
-			// この時点で size を返したいので、store を ArrayContainer まで移動して size を得る必要がある
-			//preReadValue(false);
-
-			//preReadContainer();
+			moveState(NodeHeadState::Array);
+		}
+		else if (isLoading())
+		{
+			// ArrayContainer としてデシリアライズしている場合、この時点で size を返したいので、store を ArrayContainer まで移動して size を得る必要がある
+			preReadValue();
 			if (LN_REQUIRE(m_store->getContainerType() == ArchiveContainerType::Array)) return;
 			if (outSize) *outSize = m_store->getArrayElementCount();
 		}
@@ -162,7 +163,7 @@ private:
 	struct NodeInfo
 	{
 		NodeHeadState headState = NodeHeadState::Ready;
-		int arrayIndex = -1;
+		int arrayIndex = 0;
 		int classVersion = 0;
 		bool root = false;
 		bool nextBaseCall = false;
@@ -334,13 +335,19 @@ private:
 			preWriteValue();
 		}
 
-
+		bool taggedValueObject = (m_nodeInfoStack.top().headState == NodeHeadState::Value);
 
 		m_nodeInfoStack.pop();
-		if (m_store->getContainerType() == ArchiveContainerType::Object)
+
+		if (taggedValueObject) {
+			// since it was written as a value(e.g:String), it's not needs close container.
+		}
+		else if (m_store->getContainerType() == ArchiveContainerType::Object) {
 			m_store->writeObjectEnd();
-		else if (m_store->getContainerType() == ArchiveContainerType::Array)
+		}
+		else if (m_store->getContainerType() == ArchiveContainerType::Array) {
 			m_store->writeArrayEnd();
+		}
 
 		if (!m_nodeInfoStack.empty()) {
 			m_nodeInfoStack.top().nextBaseCall = false;
@@ -362,22 +369,24 @@ private:
 	template<typename TValue>
 	void processLoad(NameValuePair<TValue>& nvp)
 	{
+		preReadValue();
 		moveState(NodeHeadState::Object);	// BaseClass は Object のシリアライズの一部なので、親ノードは必ず Object
 
 		m_store->setNextName(nvp.name);
 		m_nextReadValueDefault = &nvp;
-		preReadValue();
 		readValue(*nvp.value);
+		postReadValue();
 	}
 
 	template<typename TValue>
 	void processLoad(BaseClass<TValue>& base)
 	{
+		preReadValue();
 		moveState(NodeHeadState::Object);
 		m_nodeInfoStack.top().nextBaseCall = true;
 		m_store->setNextName(ClassBaseKey);
-		preReadValue();
 		readValue(*base.basePtr);
+		postReadValue();
 	}
 
 	template<typename TValue>
@@ -385,9 +394,27 @@ private:
 	{
 		preReadValue();
 		readValue(value);
+		postReadValue();
 	}
 
 	void preReadValue()
+	{
+		// この時点で stack.top は今回読もうとしているオブジェクトの1つ上のコンテナを指している
+
+		if (!m_nodeInfoStack.empty())
+		{
+			if (m_nodeInfoStack.top().headState == NodeHeadState::Ready)
+			{
+				m_store->readContainer();
+				m_nodeInfoStack.top().headState = NodeHeadState::ContainerOpend;
+			}
+
+			
+		}
+	}
+
+	// after pop value node. stack top refers to parent container.
+	void postReadValue()
 	{
 		if (!m_nodeInfoStack.empty())
 		{
@@ -401,29 +428,29 @@ private:
 
 	void preReadContainer()
 	{
-		m_store->readContainer();
+		//m_store->readContainer();
 
-		if (m_nodeInfoStack.empty())
-		{
-		}
-		else if (m_nodeInfoStack.top().headState == NodeHeadState::Object)
-		{
-			if (m_store->getContainerType() == ArchiveContainerType::Object)
-				readClassVersion();
-			moveState(NodeHeadState::ContainerOpend);
-		}
-		else if (m_nodeInfoStack.top().headState == NodeHeadState::Array)
-		{
-			moveState(NodeHeadState::ContainerOpend);
-		}
-		else if (m_nodeInfoStack.top().headState == NodeHeadState::ContainerOpend)
-		{
-			if (m_store->getContainerType() == ArchiveContainerType::Array)
-			{
-				//m_nodeInfoStack.top().arrayIndex++;
-				//m_store->setNextIndex(m_nodeInfoStack.top().arrayIndex);
-			}
-		}
+		//if (m_nodeInfoStack.empty())
+		//{
+		//}
+		//else if (m_nodeInfoStack.top().headState == NodeHeadState::Object)
+		//{
+		//	if (m_store->getContainerType() == ArchiveContainerType::Object)
+		//		readClassVersion();
+		//	moveState(NodeHeadState::ContainerOpend);
+		//}
+		//else if (m_nodeInfoStack.top().headState == NodeHeadState::Array)
+		//{
+		//	moveState(NodeHeadState::ContainerOpend);
+		//}
+		//else if (m_nodeInfoStack.top().headState == NodeHeadState::ContainerOpend)
+		//{
+		//	if (m_store->getContainerType() == ArchiveContainerType::Array)
+		//	{
+		//		//m_nodeInfoStack.top().arrayIndex++;
+		//		//m_store->setNextIndex(m_nodeInfoStack.top().arrayIndex);
+		//	}
+		//}
 	}
 
 	template<typename TValue>
@@ -512,7 +539,8 @@ private:
 		if (m_nodeInfoStack.top().headState == NodeHeadState::Ready)
 		{
 			// 空オブジェクトをシリアライズした。コンテナを開始していないので開始する
-			moveState(NodeHeadState::Object);
+			//moveState(NodeHeadState::Object);
+			preReadValue();
 		}
 		//if (m_nodeInfoStack.top().headState != NodeHeadState::ContainerOpend)
 		//{
@@ -520,8 +548,12 @@ private:
 		//}
 
 
-		//if (m_nodeInfoStack.top().headState == NodeHeadState::ContainerOpend)
-		m_store->readContainerEnd();
+		bool taggedValueObject = (m_nodeInfoStack.top().headState == NodeHeadState::Value);
+
+		if (!taggedValueObject) {
+			//if (m_nodeInfoStack.top().headState == NodeHeadState::ContainerOpend)
+			m_store->readContainerEnd();
+		}
 		m_nodeInfoStack.pop();
 
 		if (!m_nodeInfoStack.empty()) {
@@ -583,7 +615,7 @@ public:
 		m_processing = false;
 	}
 
-	String toString(tr::JsonFormatting formatting = tr::JsonFormatting::None);
+	String toString(JsonFormatting formatting = JsonFormatting::None);
 
 private:
 	tr::JsonDocument2	m_localDoc;
@@ -620,7 +652,6 @@ private:
 class JsonSerializer
 {
 public:
-
 	/**
 	 * オブジェクトを JSON 文字列へシリアライズします。
 	 * @param[in] 	value 		: データが格納されたオブジェクトへの参照
@@ -628,7 +659,7 @@ public:
 	 * @return		JSON 文字列
 	 */
 	template<typename TValue>
-	static String serialize(TValue&& value, tr::JsonFormatting formatting = tr::JsonFormatting::None)
+	static String serialize(TValue&& value, JsonFormatting formatting = JsonFormatting::None)
 	{
 		JsonTextOutputArchive ar;
 		ar.save(std::forward<TValue>(value));
@@ -650,4 +681,4 @@ public:
 
 } // namespace ln
 
-#include "SerializeTypes.h"
+#include "SerializeTypes.inl"

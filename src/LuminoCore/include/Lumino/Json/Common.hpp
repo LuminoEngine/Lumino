@@ -52,13 +52,14 @@ enum class JsonParseResult
 	Error = 1,
 };
 
+} // namespace tr
 
+/** JSON 文字列の整形方法 */
 enum class JsonFormatting
 {
-	None = 0,
-	Indented = 1,
+	None,
+	Indented,
 };
 
-} // namespace tr
 } // namespace ln
 

@@ -49,6 +49,35 @@ data2.name  // => "example"
 data2.value // => 100
 ```
 
+Lumino で定義されているオブジェクトのシリアライズ
+--------------------
+List や Path など、Lumino で定義されているオブジェクトは Serialization モジュールによるシリアライズをサポートしています。
+
+> [!WARNING]
+> 0.5.0 時点では、特によく使うクラスを優先的にサポートしています。
+> 今はサポートしていないクラスについても、今後のバージョンアップでサポートしていく予定です。
+
+```
+struct Documents
+{
+    String caption;
+    List<Path> fileList;
+
+    void serialize(Archive& ar)
+    {
+        ar & LN_NVP(caption);
+        ar & LN_NVP(fileList);
+    }
+};
+
+Documents docs;
+docs.caption = "note";
+docs.fileList.add("file1.md");
+docs.fileList.add("file2.md");
+
+String json = JsonSerializer::serialize(docs);
+// {"caption":"note","fileList":["file1.md","file2.md"]}
+```
 
 
 
