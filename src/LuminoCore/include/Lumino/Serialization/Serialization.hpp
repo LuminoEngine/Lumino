@@ -105,7 +105,7 @@ public:
 		}
 	}
 
-	/**
+	/*
 	Note: オブジェクトを単純な文字列としてシリアライズする場合に使用します。
 	この関数を呼び出した serialize() 内では他の値をシリアライズすることはできません。
 	*/
@@ -128,22 +128,6 @@ protected:
 	{
 		m_store = store;
 		m_mode = mode;
-
-		// コンテナの種類が本当に ArchiveStore に書き込まれるのは、最初の processWrite()
-		//NodeInfo node = {};
-		//node.root = true;
-		//node.headState = NodeHeadState::Object;
-		//m_nodeInfoStack.push(node);
-
-		//if (m_mode == ArchiveMode::Save)
-		//{
-		//	m_archiveVersion = ArchiveVersion;
-		//	writeArchiveHeader();
-		//}
-		//else
-		//{
-		//	readArchiveHeader();
-		//}
 	}
 
 private:
@@ -152,8 +136,7 @@ private:
 	{
 		Ready,			// 値の書き始め。"key": の直後や Array メンバ
 		RequestPrimitiveValue,
-		UserObject,	// ユーザー定義の型を書こうとしている。まだ Object にするべきか Array にするべきかわからない。
-		//Pending,	
+		UserObject,		// ユーザー定義の型を書こうとしている。まだ Object にするべきか Array にするべきかわからない。
 		Object,			// Object 確定状態
 		Array,			// Array 確定状態
 		Value,			
@@ -300,7 +283,6 @@ private:
 		bool baseCall = (m_nodeInfoStack.empty()) ? false : m_nodeInfoStack.top().nextBaseCall;
 		m_nodeInfoStack.push(NodeInfo{});
 		m_nodeInfoStack.top().classVersion = getClassVersion<TValue>();//ln::detail::SerializeClassVersionInfo<TValue>::value;
-		//m_nodeInfoStack.top().headState = (m_nodeInfoStack.size() == 1) ? NodeHeadState::ContainerOpend : NodeHeadState::Ready;
 
 		if (baseCall)
 			value.TValue::serialize(*this);
@@ -317,8 +299,7 @@ private:
 		void writeValue(TValue& value)
 	{
 		m_nodeInfoStack.push(NodeInfo{});
-		m_nodeInfoStack.top().classVersion = getClassVersion<TValue>();//ln::detail::SerializeClassVersionInfo<TValue>::value;
-		//m_nodeInfoStack.top().headState = (m_nodeInfoStack.size() == 1) ? NodeHeadState::ContainerOpend : NodeHeadState::Ready;
+		m_nodeInfoStack.top().classVersion = getClassVersion<TValue>();
 		serialize(*this, value);
 		postContainerWrite();
 	}
@@ -405,11 +386,11 @@ private:
 		{
 			if (m_nodeInfoStack.top().headState == NodeHeadState::Ready)
 			{
+				// setTagXXXX に備えて、コンテナか値かはまだ確定していないことがある。
+				// 確定していないにも関わらず読み取ろうとした場合はコンテナ確定。
 				m_store->readContainer();
 				m_nodeInfoStack.top().headState = NodeHeadState::ContainerOpend;
 			}
-
-			
 		}
 	}
 
@@ -428,29 +409,6 @@ private:
 
 	void preReadContainer()
 	{
-		//m_store->readContainer();
-
-		//if (m_nodeInfoStack.empty())
-		//{
-		//}
-		//else if (m_nodeInfoStack.top().headState == NodeHeadState::Object)
-		//{
-		//	if (m_store->getContainerType() == ArchiveContainerType::Object)
-		//		readClassVersion();
-		//	moveState(NodeHeadState::ContainerOpend);
-		//}
-		//else if (m_nodeInfoStack.top().headState == NodeHeadState::Array)
-		//{
-		//	moveState(NodeHeadState::ContainerOpend);
-		//}
-		//else if (m_nodeInfoStack.top().headState == NodeHeadState::ContainerOpend)
-		//{
-		//	if (m_store->getContainerType() == ArchiveContainerType::Array)
-		//	{
-		//		//m_nodeInfoStack.top().arrayIndex++;
-		//		//m_store->setNextIndex(m_nodeInfoStack.top().arrayIndex);
-		//	}
-		//}
 	}
 
 	template<typename TValue>
@@ -485,17 +443,6 @@ private:
 		typename std::enable_if<detail::has_member_serialize_function<TValue>::value, std::nullptr_t>::type = nullptr>
 	void readValue(TValue& outValue)
 	{
-		// ユーザーオブジェクトのシリアライズの場合、実際にコンテナ内に入るのは最初の値が書かれてからになる。
-		// しかし、デフォルト値のためのプロパティ存在チェックはそのタイミングだと遅い。ここで行う。
-		//auto* nvp = static_cast<NameValuePair<TValue>*>(m_nodeInfoStack.top().lastNVP);
-		//if (nvp &&
-		//	nvp->defaultValue &&
-		//	!m_store->hasKey(nvp->name))
-		//{
-		//	outValue = *nvp->defaultValue;
-		//	return;
-		//}
-
 		preReadContainer();
 
 		bool baseCall = (m_nodeInfoStack.empty()) ? false : m_nodeInfoStack.top().nextBaseCall;
@@ -515,16 +462,6 @@ private:
 		typename std::enable_if<detail::non_member_serialize_function<TValue>::value, std::nullptr_t>::type = nullptr>
 	void readValue(TValue& outValue)
 	{
-		// ユーザーオブジェクトのシリアライズの場合、実際にコンテナ内に入るのは最初の値が書かれてからになる。
-		// しかし、デフォルト値のためのプロパティ存在チェックはそのタイミングだと遅い。ここで行う。
-		//auto* nvp = static_cast<NameValuePair<TValue>*>(m_nodeInfoStack.top().lastNVP);
-		//if (nvp &&
-		//	nvp->defaultValue &&
-		//	!m_store->hasKey(nvp->name))
-		//{
-		//	outValue = *nvp->defaultValue;
-		//	return;
-		//}
 		preReadContainer();
 
 		m_nodeInfoStack.push(NodeInfo{});
@@ -538,20 +475,13 @@ private:
 	{
 		if (m_nodeInfoStack.top().headState == NodeHeadState::Ready)
 		{
-			// 空オブジェクトをシリアライズした。コンテナを開始していないので開始する
-			//moveState(NodeHeadState::Object);
+			// serialized empty object. start container, has not been started.
 			preReadValue();
 		}
-		//if (m_nodeInfoStack.top().headState != NodeHeadState::ContainerOpend)
-		//{
-		//	preReadValue();
-		//}
-
 
 		bool taggedValueObject = (m_nodeInfoStack.top().headState == NodeHeadState::Value);
 
 		if (!taggedValueObject) {
-			//if (m_nodeInfoStack.top().headState == NodeHeadState::ContainerOpend)
 			m_store->readContainerEnd();
 		}
 		m_nodeInfoStack.pop();
@@ -565,8 +495,7 @@ private:
 	{
 		m_store->setNextName(ClassVersionKey);
 		int64_t version;
-		if (m_store->readValue(&version))
-		{
+		if (m_store->readValue(&version)) {
 			m_nodeInfoStack.top().classVersion = static_cast<int>(version);
 		}
 	}
@@ -598,7 +527,6 @@ NameValuePair<TValue> makeNVP(const StringRef& name, TValue& valueRef, const TVa
 	return NameValuePair<TValue>(name, &valueRef, defaultValue);
 }
 
-
 class JsonTextOutputArchive
 	: public Archive
 {
@@ -622,7 +550,6 @@ private:
 	JsonArchiveStore	m_localStore;
 	bool				m_processing;
 };
-
 
 class JsonTextInputArchive
 	: public Archive
