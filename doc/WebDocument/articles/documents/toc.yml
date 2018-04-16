@@ -3,6 +3,8 @@
   items:
     - name: ログ出力
       href: Base_Logging.md
+    - name: オブジェクトのシリアライズ
+      href: Serialization.md
 
 - name: Math
   href: Math/Index.md
