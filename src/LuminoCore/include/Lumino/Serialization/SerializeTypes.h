@@ -6,7 +6,7 @@
 namespace ln {
 
 template<typename TValue>
-void serialize(Archive2& ar, Ref<TValue>& value)
+void serialize(Archive& ar, Ref<TValue>& value)
 {
 	if (value.isNull())
 	{
@@ -17,7 +17,7 @@ void serialize(Archive2& ar, Ref<TValue>& value)
 }
 
 template<typename TValue>
-void serialize(Archive2& ar, List<TValue>& value)
+void serialize(Archive& ar, List<TValue>& value)
 {
 	int size = 0;
 	ar.makeArrayTag(&size);
@@ -33,7 +33,7 @@ void serialize(Archive2& ar, List<TValue>& value)
 	}
 }
 
-inline void serialize(Archive2& ar, Path& value)
+inline void serialize(Archive& ar, Path& value)
 {
 	if (ar.isSaving())
 	{
@@ -48,7 +48,7 @@ inline void serialize(Archive2& ar, Path& value)
 	}
 }
 
-//inline void serialize(Archive2& ar, Uuid& value)
+//inline void serialize(Archive& ar, Uuid& value)
 //{
 //	if (ar.isSaving())
 //	{

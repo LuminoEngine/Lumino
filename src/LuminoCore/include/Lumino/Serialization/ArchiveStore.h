@@ -5,7 +5,7 @@
 #include "../Json/JsonDocument.h"
 
 namespace ln {
-class Archive2;
+class Archive;
 
 enum class ArchiveContainerType
 {
@@ -110,9 +110,10 @@ public:
 	//}
 
 	JsonArchiveStore(tr::JsonDocument2* doc)
+		: m_localDoc(doc)
 	{
 		// TODO: 今 JsonDocument2 はルート Array に対応していないのでこんな感じ。
-		m_nodeStack.push(doc);
+		//m_nodeStack.push(doc);
 	}
 
 	~JsonArchiveStore()
@@ -133,7 +134,12 @@ protected:
 
 	virtual void onWriteObject() override
 	{
-		if (m_nodeStack.top()->getType() == tr::JsonValueType::Object)
+		if (m_nodeStack.empty())
+		{
+			// TODO: 今 JsonDocument2 はルート Array に対応していないのでこんな感じ。
+			m_nodeStack.push(m_localDoc);
+		}
+		else if (m_nodeStack.top()->getType() == tr::JsonValueType::Object)
 		{
 			if (LN_REQUIRE(hasNextName())) return;
 			tr::JsonObject2* v = static_cast<tr::JsonObject2*>(m_nodeStack.top())->addMemberObject(getNextName());
@@ -220,7 +226,13 @@ protected:
 	virtual bool onReadContainer(int* outElementCount) override
 	{
 		tr::JsonElement2* element;
-		if (checkTopType(tr::JsonValueType::Object))
+		if (m_nodeStack.empty())
+		{
+			// TODO: 今 JsonDocument2 はルート Array に対応していないのでこんな感じ。
+			m_nodeStack.push(m_localDoc);
+			element = m_localDoc;
+		}
+		else if (checkTopType(tr::JsonValueType::Object))
 		{
 			if (LN_REQUIRE(hasNextName())) return false;
 			element = static_cast<tr::JsonObject2*>(m_nodeStack.top())->find(getNextName());
@@ -349,7 +361,7 @@ private:
 	bool checkTopType(tr::JsonValueType t) const { return m_nodeStack.top()->getType() == t; }
 
 	std::stack<tr::JsonElement2*>	m_nodeStack;
-	//Ref<tr::JsonDocument2>			m_localDoc;
+	Ref<tr::JsonDocument2>			m_localDoc;
 };
 
 } // namespace ln

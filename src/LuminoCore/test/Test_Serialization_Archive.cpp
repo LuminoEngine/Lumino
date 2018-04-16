@@ -18,7 +18,30 @@ protected:
 //## Examples
 TEST_F(Test_Serialization2, Examples)
 {
+	//* [ ] Example 1
+	{
+		struct MyData
+		{
+			String name;
+			int value;
 
+			void serialize(Archive& ar)
+			{
+				ar & LN_NVP(name);
+				ar & LN_NVP(value);
+			}
+		};
+
+		MyData data1;
+		data1.name = "example";
+		data1.value = 100;
+		String json = JsonSerializer::serialize(data1);
+
+		MyData data2;
+		JsonSerializer::deserialize(json, data2);
+		ASSERT_EQ(_T("example"), data2.name);
+		ASSERT_EQ(100, data2.value);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -33,16 +56,16 @@ TEST_F(Test_Serialization2, SimpleSave)
 	{
 	public:
 		int x = 200;
-		void serialize(Archive2& ar)
+		void serialize(Archive& ar)
 		{
-			ar & LN_NVP2(x);
+			ar & LN_NVP(x);
 		}
 	};
 
 	class EmptyTest1
 	{
 	public:
-		void serialize(Archive2& ar)
+		void serialize(Archive& ar)
 		{
 		}
 	};
@@ -50,12 +73,12 @@ TEST_F(Test_Serialization2, SimpleSave)
 	//- [ ] Save
 	tr::JsonDocument2 doc;
 	JsonArchiveStore s(&doc);
-	Archive2 ar(&s, ArchiveMode::Save);
+	Archive ar(&s, ArchiveMode::Save);
 
 	Test1 t1;
 	Test2 t2;
-	//ar.process(LN_NVP2(t1));
-	ar.process(LN_NVP2(t2));
+	//ar.process(LN_NVP(t1));
+	ar.process(LN_NVP(t2));
 
 	auto json = doc.toString();
 
@@ -66,23 +89,23 @@ TEST_F(Test_Serialization2, SimpleSave)
 		tr::JsonDocument2 doc;
 		doc.parse(json);
 		JsonArchiveStore s(&doc);
-		Archive2 ar(&s, ArchiveMode::Load);
+		Archive ar(&s, ArchiveMode::Load);
 
 
-		ar.process(LN_NVP2(t2));
+		ar.process(LN_NVP(t2));
 	}
 
 	//- [ ] 空オブジェクトの Save
 	{
 		tr::JsonDocument2 doc;
 		JsonArchiveStore s(&doc);
-		Archive2 ar(&s, ArchiveMode::Save);
+		Archive ar(&s, ArchiveMode::Save);
 
 		EmptyTest1 t1;
 		ar.process(t1);
 
 		json = doc.toString(tr::JsonFormatting::None);
-		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":{}}"), json);
+		ASSERT_EQ(_T("{}"), json);
 	}
 
 	//- [ ] 空オブジェクトの Load
@@ -90,7 +113,7 @@ TEST_F(Test_Serialization2, SimpleSave)
 		tr::JsonDocument2 doc;
 		doc.parse(json);
 		JsonArchiveStore s(&doc);
-		Archive2 ar(&s, ArchiveMode::Load);
+		Archive ar(&s, ArchiveMode::Load);
 
 		EmptyTest1 t1;
 		ar.process(t1);
@@ -108,9 +131,9 @@ TEST_F(Test_Serialization2, Array)
 	{
 	public:
 		int x = 200;
-		void serialize(Archive2& ar)
+		void serialize(Archive& ar)
 		{
-			ar & LN_NVP2(x);
+			ar & LN_NVP(x);
 		}
 	};
 
@@ -120,15 +143,15 @@ TEST_F(Test_Serialization2, Array)
 
 		tr::JsonDocument2 doc;
 		JsonArchiveStore s(&doc);
-		Archive2 ar(&s, ArchiveMode::Save);
+		Archive ar(&s, ArchiveMode::Save);
 		auto json = doc.toString();
 
 	}
 
 	//Test1 t1;
 	//Test2 t2;
-	////ar.process(LN_NVP2(t1));
-	//ar.process(LN_NVP2(t2));
+	////ar.process(LN_NVP(t1));
+	//ar.process(LN_NVP(t2));
 
 	//auto json = doc.toString();
 
@@ -139,17 +162,17 @@ TEST_F(Test_Serialization2, Array)
 	//	tr::JsonDocument2 doc;
 	//	doc.parse(json);
 	//	JsonArchiveStore s(&doc);
-	//	Archive2 ar(&s, ArchiveMode::Load);
+	//	Archive ar(&s, ArchiveMode::Load);
 
 
-	//	ar.process(LN_NVP2(t2));
+	//	ar.process(LN_NVP(t2));
 	//}
 
 	////- [ ] 空オブジェクトの Save
 	//{
 	//	tr::JsonDocument2 doc;
 	//	JsonArchiveStore s(&doc);
-	//	Archive2 ar(&s, ArchiveMode::Save);
+	//	Archive ar(&s, ArchiveMode::Save);
 
 	//	EmptyTest1 t1;
 	//	ar.process(t1);
@@ -163,7 +186,7 @@ TEST_F(Test_Serialization2, Array)
 	//	tr::JsonDocument2 doc;
 	//	doc.parse(json);
 	//	JsonArchiveStore s(&doc);
-	//	Archive2 ar(&s, ArchiveMode::Load);
+	//	Archive ar(&s, ArchiveMode::Load);
 
 	//	EmptyTest1 t1;
 	//	ar.process(t1);
@@ -187,15 +210,15 @@ TEST_F(Test_Serialization2, EmptyContainer)
 	{
 	public:
 		int x = 200;
-		void serialize(Archive2& ar)
+		void serialize(Archive& ar)
 		{
-			ar & LN_NVP2(x);
+			ar & LN_NVP(x);
 		}
 	};
 	class EmptyTest1
 	{
 	public:
-		void serialize(Archive2& ar)
+		void serialize(Archive& ar)
 		{
 		}
 	};
@@ -205,11 +228,11 @@ TEST_F(Test_Serialization2, EmptyContainer)
 		EmptyTest1 t1;
 		List<int> t2;
 		Test2 t3;
-		void serialize(Archive2& ar)
+		void serialize(Archive& ar)
 		{
-			ar & LN_NVP2(t1);
-			ar & LN_NVP2(t2);
-			ar & LN_NVP2(t3);
+			ar & LN_NVP(t1);
+			ar & LN_NVP(t2);
+			ar & LN_NVP(t3);
 		}
 	};
 
@@ -223,7 +246,7 @@ TEST_F(Test_Serialization2, EmptyContainer)
 		ar.process(t);
 
 		json = ar.toString(tr::JsonFormatting::None);
-		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":{\"t1\":{},\"t2\":[],\"t3\":{\"x\":200}}}"), json);
+		ASSERT_EQ(_T("{\"t1\":{},\"t2\":[],\"t3\":{\"x\":200}}"), json);
 	}
 
 	//- [ ] 空オブジェクトの Load
@@ -248,10 +271,10 @@ TEST_F(Test_Serialization2, RootNode_Json)
 	public:
 		int x = 0;
 		int y = 0;
-		void serialize(Archive2& ar)
+		void serialize(Archive& ar)
 		{
-			ar & LN_NVP2(x);
-			ar & LN_NVP2(y);
+			ar & LN_NVP(x);
+			ar & LN_NVP(y);
 		}
 	};
 
@@ -267,7 +290,7 @@ TEST_F(Test_Serialization2, RootNode_Json)
 		ar.save(t1);
 
 		json = ar.toString(tr::JsonFormatting::None);
-		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":{\"x\":200,\"y\":500}}"), json);
+		ASSERT_EQ(_T("{\"x\":200,\"y\":500}"), json);
 	}
 
 	//- [ ] root の名前無し Object を Load
@@ -286,7 +309,7 @@ TEST_F(Test_Serialization2, RootNode_Json)
 	{
 	public:
 		int ary[3];
-		void serialize(Archive2& ar)
+		void serialize(Archive& ar)
 		{
 			ar.makeArrayTag(nullptr);
 			ar.process(ary[0]);
@@ -295,6 +318,7 @@ TEST_F(Test_Serialization2, RootNode_Json)
 		}
 	};
 
+#if 0	// TODO: JsonDocument が root の Array 未対応
 	//- [ ] root に名前無しで Array を Save
 	{
 		JsonTextOutputArchive ar;
@@ -326,6 +350,7 @@ TEST_F(Test_Serialization2, RootNode_Json)
 		ASSERT_EQ(200, t1.ary[1]);
 		ASSERT_EQ(300, t1.ary[2]);
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -357,28 +382,28 @@ TEST_F(Test_Serialization2, PrimitiveValues)
 
 		String v_str;
 
-		void serialize(Archive2& ar)
+		void serialize(Archive& ar)
 		{
-			ar & LN_NVP2(v_s8l);
-			ar & LN_NVP2(v_s16l);
-			ar & LN_NVP2(v_s32l);
-			ar & LN_NVP2(v_s64l);
+			ar & LN_NVP(v_s8l);
+			ar & LN_NVP(v_s16l);
+			ar & LN_NVP(v_s32l);
+			ar & LN_NVP(v_s64l);
 
-			ar & LN_NVP2(v_s8u);
-			ar & LN_NVP2(v_s16u);
-			ar & LN_NVP2(v_s32u);
-			ar & LN_NVP2(v_s64u);
+			ar & LN_NVP(v_s8u);
+			ar & LN_NVP(v_s16u);
+			ar & LN_NVP(v_s32u);
+			ar & LN_NVP(v_s64u);
 
-			ar & LN_NVP2(v_floatl);
-			ar & LN_NVP2(v_doublel);
+			ar & LN_NVP(v_floatl);
+			ar & LN_NVP(v_doublel);
 
-			ar & LN_NVP2(v_floatu);
-			ar & LN_NVP2(v_doubleu);
+			ar & LN_NVP(v_floatu);
+			ar & LN_NVP(v_doubleu);
 
-			ar & LN_NVP2(v_floatm);
-			ar & LN_NVP2(v_doublem);
+			ar & LN_NVP(v_floatm);
+			ar & LN_NVP(v_doublem);
 
-			ar & LN_NVP2(v_str);
+			ar & LN_NVP(v_str);
 		}
 	};
 
@@ -442,10 +467,10 @@ class ClassVersionTest1
 public:
 	int x = 0;
 	bool flag = false;
-	void serialize(Archive2& ar)
+	void serialize(Archive& ar)
 	{
-		ar & LN_NVP2(x);
-		ar & LN_NVP2(flag);
+		ar & LN_NVP(x);
+		ar & LN_NVP(flag);
 	}
 };
 LN_SERIALIZE_CLASS_VERSION_NI(ClassVersionTest1, 1);
@@ -455,13 +480,13 @@ class ClassVersionTest2
 public:
 	int x = -1;
 	int flags = 0;
-	void serialize(Archive2& ar)
+	void serialize(Archive& ar)
 	{
-		ar & LN_NVP2(x);
+		ar & LN_NVP(x);
 
 		if (ar.isSaving())
 		{
-			ar & LN_NVP2(flags);
+			ar & LN_NVP(flags);
 		}
 		else
 		{
@@ -485,7 +510,7 @@ TEST_F(Test_Serialization2, ClassVersion)
 		ar.process(t1);
 
 		json = ar.toString(tr::JsonFormatting::None);
-		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":{\"lumino_class_version\":1,\"x\":0,\"flag\":false}}"), json);
+		ASSERT_EQ(_T("{\"lumino_class_version\":1,\"x\":0,\"flag\":false}"), json);
 	}
 
 	//- [ ] Load
@@ -511,9 +536,9 @@ public:
 	int ver = 0;
 
 	LN_SERIALIZE_CLASS_VERSION(1);
-	void serialize(Archive2& ar)
+	void serialize(Archive& ar)
 	{
-		ar & LN_NVP2(x);
+		ar & LN_NVP(x);
 		ver = ar.classVersion();
 	}
 };
@@ -539,9 +564,9 @@ class BaseTest1
 public:
 	int x = 0;
 
-	void serialize(Archive2& ar)
+	void serialize(Archive& ar)
 	{
-		ar & LN_NVP2(x);
+		ar & LN_NVP(x);
 	}
 };
 
@@ -551,10 +576,10 @@ class DerivedTest1
 public:
 	int y = 0;
 
-	void serialize(Archive2& ar)
+	void serialize(Archive& ar)
 	{
-		ar & Archive2::BaseClass<BaseTest1>(this);
-		ar & LN_NVP2(y);
+		ar & Archive::BaseClass<BaseTest1>(this);
+		ar & LN_NVP(y);
 	}
 };
 
@@ -572,7 +597,7 @@ TEST_F(Test_Serialization2, BaseClass)
 		ar.process(t);
 
 		json = ar.toString(tr::JsonFormatting::None);
-		ASSERT_EQ(_T("{\"lumino_archive_version\":1,\"lumino_archive_root\":{\"lumino_base_class\":{\"x\":55},\"y\":77}}"), json);
+		ASSERT_EQ(_T("{\"lumino_base_class\":{\"x\":55},\"y\":77}"), json);
 	}
 
 	//- [ ] Load
@@ -601,10 +626,10 @@ TEST_F(Test_Serialization2, DefaultValue)
 		int x = 1;
 		int y = 2;
 
-		void serialize(Archive2& ar)
+		void serialize(Archive& ar)
 		{
-			ar & LN_NVP2(x);
-			ar & LN_NVP2(y);
+			ar & LN_NVP(x);
+			ar & LN_NVP(y);
 		}
 	};
 	class DefaultTest2
@@ -613,10 +638,10 @@ TEST_F(Test_Serialization2, DefaultValue)
 		int x = 10;
 		int z = 20;
 
-		void serialize(Archive2& ar)
+		void serialize(Archive& ar)
 		{
-			ar & LN_NVP2(x);
-			ar & LN_NVP2(z, 55);
+			ar & LN_NVP(x);
+			ar & LN_NVP(z, 55);
 		}
 	};
 
