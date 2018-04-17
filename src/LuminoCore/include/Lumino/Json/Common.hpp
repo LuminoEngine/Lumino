@@ -3,7 +3,6 @@
 #pragma once
 
 namespace ln {
-namespace tr {
 
 enum class JsonToken
 {
@@ -51,8 +50,6 @@ enum class JsonParseResult
 	Success = 0,
 	Error = 1,
 };
-
-} // namespace tr
 
 /** JSON 文字列の整形方法 */
 enum class JsonFormatting

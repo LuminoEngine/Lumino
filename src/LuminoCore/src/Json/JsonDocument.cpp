@@ -298,7 +298,7 @@ void JsonValue2::onSave(JsonWriter* writer)
 			writer->writeDouble(m_double);
 			break;
 		case JsonValueType::String:
-			writer->writeString(m_string->c_str(), m_string->length());
+			writer->writeString(*m_string);
 			break;
 		default:
 			LN_UNREACHABLE();

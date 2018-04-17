@@ -6,8 +6,8 @@
 #include "JsonValue.h"
 
 namespace ln {
-namespace tr {
 class JsonWriter;
+namespace tr {
 class JsonReader2;
 class JsonElement2;
 class JsonObject2;

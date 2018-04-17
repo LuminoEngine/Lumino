@@ -14,6 +14,7 @@ set(LN_SOURCES
 	Test_IO_FileSystem.cpp
 	Test_IO_Path.cpp
 	Test_IO_TextWriter.cpp
+	Test_Json_JsonWriter.cpp
 	Test_Math_Common.hpp
 	Test_Math.cpp
 	Test_Math_Matrix.cpp
