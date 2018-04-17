@@ -41,6 +41,13 @@ Path TestHelper::getFilePathU(const char* baseFilePath, const Char* fileName)
 
 Path TestHelper::getTempPath(const char* fileName)
 {
+	// TODO:
+	return Path(String::fromCString(fileName));
+}
+
+Path TestHelper::getAssetPath(const char* fileName)
+{
+	// TODO:
 	return Path(String::fromCString(fileName));
 }
 

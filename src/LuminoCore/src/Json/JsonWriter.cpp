@@ -1,7 +1,7 @@
 ﻿
 #include "Internal.hpp"
 #include <Lumino/Base/String.hpp>
-#include <Lumino/Json/JsonWriter.h>
+#include <Lumino/Json/JsonWriter.hpp>
 
 namespace ln {
 
@@ -162,12 +162,12 @@ void JsonWriter::autoComplete(JsonToken token)
 
         if (token != JsonToken::EndObject && token != JsonToken::EndArray) {
             if (level.justSawKey) {
-                onPrefix(PrefixType_Key, level.valueCount);
+                onPrefix(PrefixType::Key, level.valueCount);
             } else if (level.valueCount > 0) {
                 if (level.inArray) {
-                    onPrefix(PrefixType_Array, level.valueCount);
+                    onPrefix(PrefixType::Array, level.valueCount);
                 } else {
-                    onPrefix(PrefixType_Object, level.valueCount);
+                    onPrefix(PrefixType::Object, level.valueCount);
                 }
             }
         }
@@ -201,7 +201,7 @@ void JsonWriter::autoComplete(JsonToken token)
 
 void JsonWriter::onPrefix(PrefixType type, int valueCount)
 {
-    if (type == PrefixType_Array || type == PrefixType_Object) {
+    if (type == PrefixType::Array || type == PrefixType::Object) {
         if (valueCount > 0) {
             m_textWriter->write(_LT(','));
         }

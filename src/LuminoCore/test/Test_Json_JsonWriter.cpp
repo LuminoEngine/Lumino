@@ -1,6 +1,6 @@
 ﻿#include "Common.hpp"
 #include <Lumino/IO/StringWriter.hpp>
-#include <Lumino/Json/JsonWriter.h>
+#include <Lumino/Json/JsonWriter.hpp>
 
 //==============================================================================
 class Test_Json_JsonWriter : public ::testing::Test {};

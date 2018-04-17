@@ -8,49 +8,6 @@
 namespace ln {
 namespace tr {
 
-#if 0
-/**
-	@brief	SAX スタイルの JSON パーサです。
-	@note	RFC 4627
-			https://www.ietf.org/rfc/rfc4627.txt
-*/
-class JsonReader
-{
-public:
-	JsonReader(JsonHandler* handler);
-	~JsonReader();
-
-public:
-	void parse(const String& text);
-	void parse(const Char* text, int len = -1);
-	void parse(TextReader* textReader);
-	bool hasError() const { return m_error.ErrorCode != JsonParseError::NoError; }
-	const JsonError& getError() const { return m_error; }
-
-private:
-	bool skipWhitespace();
-	bool parseValue();
-	bool parseNull();
-	bool parseTrue();
-	bool parseFalse();
-	bool parseNumber();
-	bool parseString(bool isKey);
-	bool parseArray();
-	bool parseObject();
-
-private:
-	JsonError		m_error;
-	JsonHandler*	m_handler;
-	TextReader*		m_reader;
-	MemoryStream	m_tmpStream;
-	int				m_currentCharCount;	// エラー表示用
-};
-
-#endif
-
-
-
-
 
 
 
@@ -61,130 +18,27 @@ class PositioningTextReader
 	: public TextReader
 {
 public:
-	PositioningTextReader(TextReader* innter)
-	{
-		m_innter = innter;
-		m_pos = 0;
-		m_line = 0;
-		m_column = 0;
-		m_lastCR = false;
-		//m_matched = 0;
-	}
-
-	virtual int peek() override
-	{
-		return m_innter->peek();
-	}
-
-	virtual int read() override
-	{
-		int c = m_innter->read();
-		if (c >= 0) {
-			advancePosition((Char)c);
-		}
-		return c;
-	}
-
-	// TODO: ReadLine と ReadToEnd は Read を実装すれば使えるようにするべき
-	virtual bool readLine(String* line) override
-	{
-		LN_NOTIMPLEMENTED();
-		return false;
-		//bool r = m_innter->ReadLine(line);
-		//++m_line;
-		//m_column = 0;
-		//return r;
-	}
-
-	virtual String readToEnd() override
-	{
-		LN_NOTIMPLEMENTED();
-		return String();
-	}
-
-	virtual bool isEOF() override
-	{
-		return m_innter->isEOF();
-	}
-
-	int getPosition() const
-	{
-		return m_pos;
-	}
-
-	int getLineNumber() const
-	{
-		return m_line;
-	}
-
-	int getColumnNumber() const
-	{
-		return m_column;
-	}
+	PositioningTextReader(TextReader* innter);
+	virtual int peek() override;
+	virtual int read() override;
+	virtual bool readLine(String* line) override;
+	virtual String readToEnd() override;
+	virtual bool isEOF() override;
+	int getPosition() const;
+	int getLineNumber() const;
+	int getColumnNumber() const;
 
 private:
+	void advancePosition(Char ch);
 
-	void advancePosition(Char ch)
-	{
-		++m_pos;
-		if (m_lastCR)
-		{
-			m_lastCR = false;
-			if (ch == '\n')
-			{
-				return;
-			}
-		}
-		
-		if (ch == '\r' || ch == '\n')
-		{
-			++m_line;
-			m_column = 0;
-			if (ch == '\r') {
-				m_lastCR = true;
-			}
-			return;
-		}
-
-		++m_column;
-
-		//if (m_lastCR)
-		//{
-		//	if (ch == '/n')
-		//	{
-		//		/* CRLF */
-		//		++m_line;
-		//		m_column = 0;
-		//		m_lastCR = false;
-		//		return;
-		//	}
-		//	else
-		//	{
-		//		/* CR */
-
-		//	}
-		//}
-		//if (ch == '/r')
-		//{
-		//	m_lastCR = true;
-		//	return;
-		//}
-		//else if (ch == '/n')
-		//{
-
-		//}
-	}
-
-private:
 	Ref<TextReader>	m_innter;
 	int					m_pos;
 	int					m_line;
 	int					m_column;
 	bool				m_lastCR;
-	//int					m_matched;
 };
 
-}
+} // namespace detail
 
 
 class JsonReader2
@@ -197,12 +51,13 @@ public:
 public:
 	
 	/**
-		@brief		次のノード読み取ります。
-		@return		正常に読み取られた場合は true。それ以上読み取るノードが存在しない場合は false。
+		次のノード読み取ります。　
+
+		正常に読み取られた場合は true を返します。続いて getValue() などで値を取得できます。
+		それ以上読み取るノードが存在しない場合は false を返します。
 	*/
 	bool read();
 
-	bool tryRead();
 
 	/**
 		@brief		現在のノードの種類を取得します。

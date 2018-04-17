@@ -30,11 +30,11 @@ public:
     bool isComplete() const;
 
 protected:
-    enum PrefixType
+    enum class PrefixType
     {
-        PrefixType_Array,
-        PrefixType_Object,
-        PrefixType_Key,
+        Array,
+        Object,
+        Key,
     };
 
     void onPrefix(PrefixType type, int valueCount);

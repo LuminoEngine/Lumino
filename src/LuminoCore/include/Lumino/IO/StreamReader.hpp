@@ -1,10 +1,10 @@
 ﻿
 #pragma once
 #include "../Text/EncodingConverter.hpp"
+#include "Stream.hpp"
 #include "TextReader.hpp"
 
 namespace ln {
-class Stream;
 
 /**
 	@brief	特定のエンコーディングのストリームを文字列として読み込む TextReader です。

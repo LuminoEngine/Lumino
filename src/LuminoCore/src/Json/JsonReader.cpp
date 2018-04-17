@@ -8,470 +8,92 @@
 namespace ln {
 namespace tr {
 
-#if 0
-//==============================================================================
-// JsonReader
-//==============================================================================
-//------------------------------------------------------------------------------
-JsonReader::JsonReader(JsonHandler* handler)
-	: m_error()
-	, m_handler(handler)
-	, m_reader(NULL)
-	, m_tmpStream()
-	, m_currentCharCount(0)
+
+namespace detail
 {
+
+PositioningTextReader::PositioningTextReader(TextReader* innter)
+{
+	m_innter = innter;
+	m_pos = 0;
+	m_line = 0;
+	m_column = 0;
+	m_lastCR = false;
+	//m_matched = 0;
 }
 
-//------------------------------------------------------------------------------
-JsonReader::~JsonReader()
+int PositioningTextReader::peek()
 {
+	return m_innter->peek();
 }
 
-//------------------------------------------------------------------------------
-void JsonReader::parse(const String& text)
+int PositioningTextReader::read()
 {
-	StringReader textReader(text);
-	parse(&textReader);
+	int c = m_innter->read();
+	if (c >= 0) {
+		advancePosition((Char)c);
+	}
+	return c;
 }
 
-//------------------------------------------------------------------------------
-void JsonReader::parse(const Char* text, int len)
+bool PositioningTextReader::readLine(String* line)
 {
-	StringReader textReader(String(text, len));
-	parse(&textReader);
+	LN_NOTIMPLEMENTED();
+	return false;
 }
 
-//------------------------------------------------------------------------------
-void JsonReader::parse(TextReader* textReader)
+String PositioningTextReader::readToEnd()
 {
-	if (LN_REQUIRE(textReader != nullptr)) return;
+	LN_NOTIMPLEMENTED();
+	return String();
+}
 
-	m_reader = textReader;
+bool PositioningTextReader::isEOF()
+{
+	return m_innter->isEOF();
+}
 
-	// 一時バッファ。もし足りなければ拡張される
-	m_tmpStream.initialize(512);
+int PositioningTextReader::getPosition() const
+{
+	return m_pos;
+}
 
-	// バッファ先頭の空白を読み飛ばす
-	if (!skipWhitespace())
+int PositioningTextReader::getLineNumber() const
+{
+	return m_line;
+}
+
+int PositioningTextReader::getColumnNumber() const
+{
+	return m_column;
+}
+
+void PositioningTextReader::advancePosition(Char ch)
+{
+	++m_pos;
+	if (m_lastCR)
 	{
-		// Error: バッファが空だった
-		m_error.setError(JsonParseError::DocumentEmpty, m_currentCharCount);
+		m_lastCR = false;
+		if (ch == '\n')
+		{
+			return;
+		}
+	}
+
+	if (ch == '\r' || ch == '\n')
+	{
+		++m_line;
+		m_column = 0;
+		if (ch == '\r') {
+			m_lastCR = true;
+		}
 		return;
 	}
 
-	// ルート要素の解析
-	if (!parseValue()) {
-		return;
-	}
-
-	// バッファ終端の空白を読み飛ばす
-	if (skipWhitespace())
-	{
-		// Error: 複数のルート要素が見つかった
-		m_error.setError(JsonParseError::DocumentRootNotSingular, m_currentCharCount);
-		return;
-	}
+	++m_column;
 }
 
-//------------------------------------------------------------------------------
-bool JsonReader::skipWhitespace()
-{
-	while (m_reader->peek() == ' ' || m_reader->peek() == '\n' || m_reader->peek() == '\r' || m_reader->peek() == '\t') {
-		m_reader->read();
-	}
-	return !m_reader->isEOF();
-}
-
-//------------------------------------------------------------------------------
-bool JsonReader::parseValue()
-{
-	switch (m_reader->peek())
-	{
-		case 'n': return parseNull();			// null かもしれない
-		case 't': return parseTrue();			// true かもしれない
-		case 'f': return parseFalse();			// false かもしれない
-		case '"': return parseString(false);	// 文字列かもしれない
-		case '[': return parseArray();			// 配列かもしれない
-		case '{': return parseObject();			// オブジェクトかもしれない
-		default: return parseNumber();			// 数値かもしれない
-	}
-}
-
-//------------------------------------------------------------------------------
-bool JsonReader::parseNull()
-{
-	m_reader->read();	// skip 'n'
-	if (m_reader->read() == 'u' &&
-		m_reader->read() == 'l' &&
-		m_reader->read() == 'l')
-	{
-		if (!m_handler->onNull())
-		{
-			// 中断
-			m_error.setError(JsonParseError::Termination, m_currentCharCount);
-			return false;
-		}
-	}
-	else
-	{
-		// Error: "null" ではなかった
-		m_error.setError(JsonParseError::ValueInvalid, m_currentCharCount);
-		return false;
-	}
-	return true;
-}
-
-//------------------------------------------------------------------------------
-bool JsonReader::parseTrue()
-{
-	m_reader->read();	// skip 't'
-	if (m_reader->read() == 'r' &&
-		m_reader->read() == 'u' &&
-		m_reader->read() == 'e')
-	{
-		if (!m_handler->onBool(true))
-		{
-			// 中断
-			m_error.setError(JsonParseError::Termination, m_currentCharCount);
-			return false;
-		}
-	}
-	else
-	{
-		// Error: "true" ではなかった
-		m_error.setError(JsonParseError::ValueInvalid, m_currentCharCount);
-		return false;
-	}
-	return true;
-}
-
-//------------------------------------------------------------------------------
-bool JsonReader::parseFalse()
-{
-	m_reader->read();	// skip 'f'
-	if (m_reader->read() == 'a' &&
-		m_reader->read() == 'l' &&
-		m_reader->read() == 's' &&
-		m_reader->read() == 'e')
-	{
-		if (!m_handler->onBool(false))
-		{
-			// 中断
-			m_error.setError(JsonParseError::Termination, m_currentCharCount);
-			return false;
-		}
-	}
-	else
-	{
-		// Error: "false" ではなかった
-		m_error.setError(JsonParseError::ValueInvalid, m_currentCharCount);
-		return false;
-	}
-	return true;
-}
-
-//------------------------------------------------------------------------------
-bool JsonReader::parseNumber()
-{
-	// 数値への変換には strtod を使用する。そのため、まずは数値扱いできる文字を全て読み取る
-	m_tmpStream.seek(0, SeekOrigin_Begin);
-	int len = 0;
-	Char ch;
-	while (true)
-	{
-		ch = m_reader->peek();	// 読むだけ。ポインタは進めない
-		if (ch == '.' ||
-			('0' <= ch && ch <= '9') ||
-			(ch == 'e' || ch == 'E') ||
-			(ch == '+' || ch == '-'))
-		{
-			m_tmpStream.write(&ch, sizeof(Char));
-			++len;
-			m_reader->read();	// ここで1つ進める
-		}
-		else {
-			break;				// 一致しなければポインタは進めない
-		}
-	}
-	if (len == 0)
-	{
-		// Error: 数値っぽい文字が見つからなかった
-		m_error.setError(JsonParseError::NumberInvalid, m_currentCharCount);
-		return false;
-	}
-	ch = '\0';
-	m_tmpStream.write(&ch, sizeof(Char));	// 終端 \0
-
-	// double へ変換する
-	Char* str = (Char*)m_tmpStream.getBuffer();
-	const Char* endptr = NULL;
-	NumberConversionResult result;
-	double value = StringHelper::toDouble(str, len, &endptr, &result);
-	if ((endptr - str) != len)	// 正常に変換できていれば、読み取った文字数が全て消費されるはず
-	{
-		// Error: 構文が正しくない
-		m_error.setError(JsonParseError::NumberInvalid, m_currentCharCount);
-		return false;
-	}
-	if (result == NumberConversionResult::Overflow) {
-		// Error: オーバーフローが発生した
-		m_error.setError(JsonParseError::NumberOverflow, m_currentCharCount);
-		return false;
-	}
-
-	// Handler に通知する
-	if (!m_handler->onDouble(value))
-	{
-		// 中断
-		m_error.setError(JsonParseError::Termination, m_currentCharCount);
-		return false;
-	}
-	return true;
-}
-
-
-//------------------------------------------------------------------------------
-bool JsonReader::parseString(bool isKey)
-{
-	// http://json.org/json-ja.html
-	static const Char escapeTable[256] =
-	{
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-		0, 0, '\"', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '/',
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '\\', 0, 0, 0,
-		0, 0, '\b', 0, 0, 0, '\f', 0, 0, 0, 0, 0, 0, 0, '\n', 0,
-		0, 0, '\r', 0, '\t', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	};
-
-	// 1つずつ読んだ文字を格納していく一時バッファ。シーク位置を先頭に戻しておく
-	m_tmpStream.seek(0, SeekOrigin_Begin);
-
-	m_reader->read();	// skip '"'
-	while (true)
-	{
-		Char c = m_reader->peek();
-
-		// エスケープシーケンス
-		if (c == '\\')
-		{
-			m_reader->read();	// skip '\'
-			Char esc = m_reader->read();
-			// 基本的なエスケープ
-			if (unsigned(esc) < 256 && escapeTable[(unsigned char)esc])
-			{
-				m_tmpStream.write(&escapeTable[(unsigned char)esc], sizeof(Char));
-			}
-			// Unicode エスケープ
-			else if (esc == 'u')
-			{
-				// 未実装
-				m_error.setError(JsonParseError::StringEscapeInvalid, m_currentCharCount);
-				return false;
-			}
-			else
-			{
-				// Error: 無効なエスケープ
-				m_error.setError(JsonParseError::StringEscapeInvalid, m_currentCharCount);
-				return false;
-			}
-		}
-		// 文字列終端
-		else if (c == '"')
-		{
-			m_reader->read();	// skip '"'
-			break;
-		}
-		// 文字列の途中でバッファが切れた
-		else if (m_reader->isEOF() || c == '\0')
-		{
-			// Error: " が一致しなかった
-			m_error.setError(JsonParseError::StringMissQuotationMark, m_currentCharCount);
-			return false;
-		}
-		// 0x20 未満の制御文字は使えない
-		else if ((unsigned)c < 0x20) {
-			// RFC 4627: unescaped = %x20-21 / %x23-5B / %x5D-10FFFF
-			m_error.setError(JsonParseError::StringEscapeInvalid, m_currentCharCount);
-			return false;
-		}
-		// 普通の文字
-		else
-		{
-			m_tmpStream.write(&c, sizeof(Char));
-			m_reader->read();
-		}
-	}
-
-	// Handler に通知
-	bool cont = false;
-	if (isKey) {
-		cont = m_handler->onKey((Char*)m_tmpStream.getBuffer(), ((int)m_tmpStream.getPosition()) / sizeof(Char));
-	}
-	else {
-		cont = m_handler->onString((Char*)m_tmpStream.getBuffer(), ((int)m_tmpStream.getPosition()) / sizeof(Char));
-	}
-	if (!cont)
-	{
-		// 中断
-		m_error.setError(JsonParseError::Termination, m_currentCharCount);
-		return false;
-	}
-	return true;
-}
-
-//------------------------------------------------------------------------------
-bool JsonReader::parseArray()
-{
-	m_reader->read();  // skip '['
-
-	// Handler に Array の開始を通知
-	if (!m_handler->onStartArray())
-	{
-		// 中断
-		m_error.setError(JsonParseError::Termination, m_currentCharCount);
-		return false;
-	}
-
-	skipWhitespace();
-	if (m_reader->peek() == ']')
-	{
-		// 空配列だった。Array の終了を通知する
-		m_reader->read(); 	// ']' の次を指しておく
-		if (!m_handler->onEndArray(0))
-		{
-			// 中断
-			m_error.setError(JsonParseError::Termination, m_currentCharCount);
-			return false;
-		}
-		return true;
-	}
-
-	skipWhitespace();
-	size_t elementCount = 0;
-	while (true)
-	{
-		if (!parseValue()) {
-			return false;	// エラーは処理済み
-		}
-
-		++elementCount;
-		skipWhitespace();
-
-		switch (m_reader->read())
-		{
-		case ',':
-			skipWhitespace();
-			break;
-		case ']':
-			// 配列の終端
-			if (!m_handler->onEndArray(elementCount))
-			{
-				// 中断
-				m_error.setError(JsonParseError::Termination, m_currentCharCount);
-				return false;
-			}
-			skipWhitespace();
-			return true;
-		default:
-			m_error.setError(JsonParseError::ArrayMissCommaOrSquareBracket, m_currentCharCount);
-			return false;
-		}
-	}
-
-	// ここに来ることはない
-}
-
-//------------------------------------------------------------------------------
-bool JsonReader::parseObject()
-{
-	m_reader->read();  // Skip '{'
-
-	// オブジェクト定義の開始
-	if (!m_handler->onStartObject())
-	{
-		// 中断
-		m_error.setError(JsonParseError::Termination, m_currentCharCount);
-		return false;
-	}
-
-	skipWhitespace();
-	if (m_reader->peek() == '}')
-	{
-		// メンバが1つも無かった
-		m_reader->read();	// '}' の次を指しておく
-		if (!m_handler->onEndObject(0))
-		{
-			// 中断
-			m_error.setError(JsonParseError::Termination, m_currentCharCount);
-			return false;
-		}
-		return true;
-	}
-
-	int memberCount = 0;
-	while (true)
-	{
-		// 最初はメンバ名
-		if (m_reader->peek() != '"')
-		{
-			// Error: メンバ名の開始が見つからなかった
-			m_error.setError(JsonParseError::ObjectMissKeyStart, m_currentCharCount);
-			return false;
-		}
-		if (!parseString(true)) return false;
-		skipWhitespace();
-
-		// 続いて ':'
-		if (m_reader->read() != ':')
-		{
-			// Error: ':' が見つからなかった
-			m_error.setError(JsonParseError::ObjectMissColon, m_currentCharCount);
-			return false;
-		}
-		skipWhitespace();
-
-		// 最後に値
-		if (!parseValue()) return false;
-		skipWhitespace();
-
-		++memberCount;
-
-		switch (m_reader->read())
-		{
-		case ',':
-			skipWhitespace();
-			break;
-		case '}':
-			// オブジェクト定義終端
-			if (!m_handler->onEndObject(memberCount))
-			{
-				// 中断
-				m_error.setError(JsonParseError::Termination, m_currentCharCount);
-				return false;
-			}
-			skipWhitespace();
-			return true;
-		default:
-			m_error.setError(JsonParseError::ObjectMissCommaOrCurlyBracket, m_currentCharCount);
-			return false;
-		}
-	}
-
-	// ここには来ないはず
-}
-
-#endif
+} // namespace detail
 
 //==============================================================================
 // JsonReader
@@ -506,13 +128,6 @@ JsonReader2::~JsonReader2()
 //------------------------------------------------------------------------------
 bool JsonReader2::read()
 {
-	return tryRead();
-	// TODO: 例外
-}
-
-//------------------------------------------------------------------------------
-bool JsonReader2::tryRead()
-{
 	m_textCache.clear();
 
 	bool skip;
@@ -521,25 +136,27 @@ bool JsonReader2::tryRead()
 		skip = false;
 		switch (m_currentState.state)
 		{
-			case State::Start:
-			case State::Property:
-			case State::ArrayStart:
-			case State::Array:
-				return parseValue();
-			case State::ObjectStart:
-			case State::Object:
-				return parseObject();
-				break;
-			case State::PostValue:
-			{
-				bool r = ParsePostValue(&skip);
-				if (!skip) return r;
-			}
+		case State::Start:
+		case State::Property:
+		case State::ArrayStart:
+		case State::Array:
+			return parseValue();
+		case State::ObjectStart:
+		case State::Object:
+			return parseObject();
+			break;
+		case State::PostValue:
+		{
+			bool r = ParsePostValue(&skip);
+			if (!skip) return r;
+		}
 		}
 
 	} while (skip);
+
 	return false;
 }
+
 
 //------------------------------------------------------------------------------
 JsonToken JsonReader2::getTokenType() const

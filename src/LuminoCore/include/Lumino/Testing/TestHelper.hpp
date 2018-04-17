@@ -20,6 +20,7 @@ public:
 	static Path getFilePathU(const char* baseFilePath, const Char* fileName);
 
 	static Path getTempPath(const char* fileName);
+	static Path getAssetPath(const char* fileName);
 
 	/// 2 つの配列をバイト単位で比較する
 	static bool checkArrays(const void* ary1, const void* ary2, size_t count);
@@ -44,3 +45,4 @@ public:
 
 #define LN_TEMPFILE(fileName) ln::TestHelper::getTempPath(fileName).c_str()
 
+#define LN_ASSETFILE(fileName) LN_LOCALFILE(fileName)//ln::TestHelper::getAssetPath(fileName).c_str()

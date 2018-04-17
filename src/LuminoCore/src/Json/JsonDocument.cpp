@@ -8,7 +8,7 @@
 #include <Lumino/IO/StreamWriter.hpp>
 #include <Lumino/IO/StringWriter.hpp>
 #include <Lumino/Json/JsonReader.h>
-#include <Lumino/Json/JsonWriter.h>
+#include <Lumino/Json/JsonWriter.hpp>
 #include <Lumino/Json/JsonDocument.h>
 
 namespace ln {
