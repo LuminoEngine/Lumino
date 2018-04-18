@@ -111,8 +111,6 @@ using Char = wchar_t;
 #else
 #endif
 
-#define LN__FILE__ _LT(__FILE__)
-
 #if !defined(_T)
 #define _T(x) _TT(x) 
 #endif

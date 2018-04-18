@@ -33,11 +33,15 @@ public:
 	{
 		LN_DCHECK(dst);
 		LN_DCHECK(src);
+		if (dstLen == 0) return;
+		dstLen--;
+		TChar* end = dst + dstLen;
 		while (dstLen && *src)
 		{
 			dstLen--;
 			*dst++ = *src++;
 		}
+		*dst = '\0';
 	}
 
 #ifdef va_start

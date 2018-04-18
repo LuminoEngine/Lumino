@@ -10,7 +10,7 @@ namespace ln {
 class Exception;
 class String;
 
-#define _LN_CHECK(expr, exception, ...)			(!(expr)) && ln::detail::notifyException<exception>(LN__FILE__, __LINE__, ##__VA_ARGS__)
+#define _LN_CHECK(expr, exception, ...)			(!(expr)) && ln::detail::notifyException<exception>(__FILE__, __LINE__, #expr, ##__VA_ARGS__)
 
 // core
 /**
@@ -108,9 +108,9 @@ public:
 namespace detail {
 
 template<class TException, typename... TArgs>
-bool notifyException(const Char* file, int line, TArgs... args);
+bool notifyException(const char* file, int line, const char* exprString, TArgs... args);
 
-void Exception_setSourceLocationInfo(Exception& e, const Char* filePath, int fileLine);
+void Exception_setSourceLocationInfo(Exception& e, const char* filePath, int fileLine, const char* assertionMessage);
 
 } // namespace detail
 
@@ -142,19 +142,21 @@ protected:
 	void setMessage(const wchar_t* format, ...);
 	void setMessageU(const Char* message);
 
-private:
+public:	// TODO
 	void appendMessage(const Char* message, size_t len);
-	void setSourceLocationInfo(const Char* filePath, int fileLine);
+	void setSourceLocationInfo(const char* filePath, int fileLine, const char* assertionMessage);
 
 	static const int MaxPathSize = 260;
-	Char					m_sourceFilePath[MaxPathSize];
+	static const int MaxAssertionMessageSize = 100;
+	char					m_sourceFilePath[MaxPathSize];
 	int						m_sourceFileLine;
+	char					m_assertionMessage[MaxAssertionMessageSize];
 	void*					m_stackBuffer[32];
 	int						m_stackBufferSize;
 	std::basic_string<Char>	m_caption;
 	std::basic_string<Char>	m_message;
 
-	friend void detail::Exception_setSourceLocationInfo(Exception& e, const Char* filePath, int fileLine);
+	friend void detail::Exception_setSourceLocationInfo(Exception& e, const char* filePath, int fileLine, const char* assertionMessage);
 };
 
 /** 前提条件の間違いなどプログラム内の論理的な誤りが原因で発生したエラーを表します。 */
@@ -222,13 +224,13 @@ void errorPrintf(Char* buf, size_t bufSize);
 void printError(const Exception& e);
 
 template<class TException, typename... TArgs>
-inline bool notifyException(const Char* file, int line, TArgs... args)
+inline bool notifyException(const char* file, int line, const char* exprString, TArgs... args)
 {
 	const size_t BUFFER_SIZE = 512;
 	Char str[BUFFER_SIZE] = {};
 	errorPrintf(str, BUFFER_SIZE, args...);
 	TException e(str);
-	detail::Exception_setSourceLocationInfo(e, file, line);
+	detail::Exception_setSourceLocationInfo(e, file, line, exprString);
 	auto h = Assertion::getNotifyVerificationHandler();
 	if (h != nullptr && h(e)) return true;
 #if 1

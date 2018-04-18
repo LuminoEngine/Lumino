@@ -559,7 +559,7 @@ void JsonObject2::addMemberString(const StringRef& name, const StringRef& value)
 //------------------------------------------------------------------------------
 JsonArray2* JsonObject2::addMemberArray(const StringRef& name)
 {
-	int index = m_memberList.indexOf([name](const Member& m) { return m.name == name; });
+	int index = m_memberList.indexOfIf([name](const Member& m) { return m.name == name; });
 	if (index >= 0)
 	{
 		Member& m = m_memberList[index];
@@ -578,7 +578,7 @@ JsonArray2* JsonObject2::addMemberArray(const StringRef& name)
 JsonObject2* JsonObject2::addMemberObject(const StringRef& name)
 {
 
-	int index = m_memberList.indexOf([name](const Member& m) { return m.name == name; });
+	int index = m_memberList.indexOfIf([name](const Member& m) { return m.name == name; });
 	if (index >= 0)
 	{
 		Member& m = m_memberList[index];
@@ -607,7 +607,7 @@ JsonObject2* JsonObject2::addMemberObject(const StringRef& name)
 //------------------------------------------------------------------------------
 JsonElement2* JsonObject2::find(const StringRef& name) const
 {
-	int index = m_memberList.indexOf([name](const Member& m) { return m.name == name; });
+	int index = m_memberList.indexOfIf([name](const Member& m) { return m.name == name; });
 	if (index >= 0)
 		return m_memberList[index].value;
 	else
@@ -663,7 +663,7 @@ JsonParseResult JsonObject2::onLoad(JsonReader2* reader)
 //------------------------------------------------------------------------------
 JsonValue2* JsonObject2::getValue(const StringRef& name)
 {
-	int index = m_memberList.indexOf([name](const Member& m) { return m.name == name; });
+	int index = m_memberList.indexOfIf([name](const Member& m) { return m.name == name; });
 	if (index >= 0)
 	{
 		Member& m = m_memberList[index];

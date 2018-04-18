@@ -141,17 +141,19 @@ void errorPrintf(Char* buf, size_t bufSize)
 	buf[0] = '\0';
 }
 
+// Lumino default error notification
 void printError(const Exception& e)
 {
 	const size_t BUFFER_SIZE = 512;
 	char buf[BUFFER_SIZE] = {};
-	convertChar16ToLocalChar(e.getMessage(), BUFFER_SIZE, buf, BUFFER_SIZE);
+	int len = sprintf_s(buf, BUFFER_SIZE, "%s(%d):\"%s\" ", e.m_sourceFilePath, e.m_sourceFileLine, e.m_assertionMessage);
+	convertChar16ToLocalChar(e.getMessage(), BUFFER_SIZE, buf + len, BUFFER_SIZE - len);
 	LN_LOG_ERROR << buf;
 }
 
-void Exception_setSourceLocationInfo(Exception& e, const Char* filePath, int fileLine)
+void Exception_setSourceLocationInfo(Exception& e, const char* filePath, int fileLine, const char* assertionMessage)
 {
-	e.setSourceLocationInfo(filePath, fileLine);
+	e.setSourceLocationInfo(filePath, fileLine, assertionMessage);
 }
 
 } // namespace detail
@@ -280,10 +282,11 @@ void Exception::appendMessage(const Char* message, size_t len)
 	m_message.append(message, len);
 }
 
-void Exception::setSourceLocationInfo(const Char* filePath, int fileLine)
+void Exception::setSourceLocationInfo(const char* filePath, int fileLine, const char* assertionMessage)
 {
 	StringHelper::strcpy(m_sourceFilePath, MaxPathSize - 1, filePath);
 	m_sourceFileLine = fileLine;
+	StringHelper::strcpy(m_assertionMessage, MaxAssertionMessageSize - 1, assertionMessage);
 }
 
 //==============================================================================

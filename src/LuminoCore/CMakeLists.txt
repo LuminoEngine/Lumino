@@ -20,6 +20,7 @@ set(LN_SOURCES_Base
 	include/Lumino/Base/List.inl
 	include/Lumino/Base/Locale.hpp
 	include/Lumino/Base/Logger.hpp
+	include/Lumino/Base/Optional.hpp
 	include/Lumino/Base/Platform.hpp
 	include/Lumino/Base/RefObject.hpp
 	include/Lumino/Base/StlHelper.hpp
