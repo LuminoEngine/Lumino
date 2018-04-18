@@ -559,35 +559,63 @@ void JsonObject2::addMemberString(const StringRef& name, const StringRef& value)
 //------------------------------------------------------------------------------
 JsonArray2* JsonObject2::addMemberArray(const StringRef& name)
 {
-	Member* m = m_memberList.find([name](const Member& m) { return m.name == name; });
-	if (m == nullptr || m->value->getType() != JsonValueType::Array)
+	int index = m_memberList.indexOf([name](const Member& m) { return m.name == name; });
+	if (index >= 0)
 	{
-		auto* ptr = getOwnerDocument()->newElement<JsonArray2>();
-		m_memberList.add({ name, ptr });
-		return ptr;
+		Member& m = m_memberList[index];
+		if (m.value->getType() == JsonValueType::Array)
+		{
+			return static_cast<JsonArray2*>(m.value);
+		}
 	}
-	return static_cast<JsonArray2*>(m->value);
+
+	auto* ptr = getOwnerDocument()->newElement<JsonArray2>();
+	m_memberList.add({ name, ptr });
+	return ptr;
 }
 
 //------------------------------------------------------------------------------
 JsonObject2* JsonObject2::addMemberObject(const StringRef& name)
 {
-	Member* m = m_memberList.find([name](const Member& m) { return m.name == name; });
-	if (m == nullptr || m->value->getType() != JsonValueType::Object)
+
+	int index = m_memberList.indexOf([name](const Member& m) { return m.name == name; });
+	if (index >= 0)
 	{
-		auto* ptr = getOwnerDocument()->newElement<JsonObject2>();
-		m_memberList.add({ name, ptr });
-		return ptr;
+		Member& m = m_memberList[index];
+		if (m.value->getType() == JsonValueType::Object)
+		{
+			return static_cast<JsonObject2*>(m.value);
+		}
 	}
-	return static_cast<JsonObject2*>(m->value);
+
+	auto* ptr = getOwnerDocument()->newElement<JsonObject2>();
+	m_memberList.add({ name, ptr });
+	return ptr;
+
+
+
+	//Member* m = m_memberList.find([name](const Member& m) { return m.name == name; });
+	//if (m == nullptr || m->value->getType() != JsonValueType::Object)
+	//{
+	//	auto* ptr = getOwnerDocument()->newElement<JsonObject2>();
+	//	m_memberList.add({ name, ptr });
+	//	return ptr;
+	//}
+	//return static_cast<JsonObject2*>(m->value);
 }
 
 //------------------------------------------------------------------------------
 JsonElement2* JsonObject2::find(const StringRef& name) const
 {
-	Member* m = m_memberList.find([name](const Member& m) { return m.name == name; });
-	if (m == nullptr) return nullptr;
-	return m->value;
+	int index = m_memberList.indexOf([name](const Member& m) { return m.name == name; });
+	if (index >= 0)
+		return m_memberList[index].value;
+	else
+		return nullptr;
+
+	//Member* m = m_memberList.find([name](const Member& m) { return m.name == name; });
+	//if (m == nullptr) return nullptr;
+	//return m->value;
 }
 
 //------------------------------------------------------------------------------
@@ -635,14 +663,27 @@ JsonParseResult JsonObject2::onLoad(JsonReader2* reader)
 //------------------------------------------------------------------------------
 JsonValue2* JsonObject2::getValue(const StringRef& name)
 {
-	Member* m = m_memberList.find([name](const Member& m) { return m.name == name; });
-	if (m == nullptr || !detail::JsonHelper::isValueType(m->value->getType()))
+	int index = m_memberList.indexOf([name](const Member& m) { return m.name == name; });
+	if (index >= 0)
 	{
-		auto* ptr = getOwnerDocument()->newElement<JsonValue2>();
-		m_memberList.add({ name, ptr });
-		return ptr;
+		Member& m = m_memberList[index];
+		if (detail::JsonHelper::isValueType(m.value->getType()))
+		{
+			return static_cast<JsonValue2*>(m.value);
+		}
 	}
-	return static_cast<JsonValue2*>(m->value);
+
+	auto* ptr = getOwnerDocument()->newElement<JsonValue2>();
+	m_memberList.add({ name, ptr });
+	return ptr;
+	//Member* m = m_memberList.find([name](const Member& m) { return m.name == name; });
+	//if (m == nullptr || !detail::JsonHelper::isValueType(m->value->getType()))
+	//{
+	//	auto* ptr = getOwnerDocument()->newElement<JsonValue2>();
+	//	m_memberList.add({ name, ptr });
+	//	return ptr;
+	//}
+	//return static_cast<JsonValue2*>(m->value);
 }
 
 //------------------------------------------------------------------------------
@@ -748,14 +789,14 @@ JsonElement2* JsonElementCache::alloc(size_t size)
 {
 	if (LN_REQUIRE(size <= BufferSize)) return nullptr;
 
-	BufferInfo* cur = &m_buffers.getLast();
+	BufferInfo* cur = &m_buffers.back();
 	if (cur->buffer.getSize() - cur->used < size)
 	{
 		BufferInfo info;
 		info.buffer.resize(2048);
 		info.used = 0;
 		m_buffers.add(info);
-		cur = &m_buffers.getLast();
+		cur = &m_buffers.back();
 	}
 
 	JsonElement2* buf = reinterpret_cast<JsonElement2*>(cur->buffer.getData() + cur->used);

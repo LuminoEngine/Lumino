@@ -67,7 +67,7 @@ TEST_F(Test_Serialization2, Examples)
 		Documents data2;
 		JsonSerializer::deserialize(json, data2);
 		ASSERT_EQ(_T("note"), data2.caption);
-		ASSERT_EQ(2, data2.fileList.getCount());
+		ASSERT_EQ(2, data2.fileList.size());
 		ASSERT_EQ(_T("file1.md"), data2.fileList[0].str());
 		ASSERT_EQ(_T("file2.md"), data2.fileList[1].str());
 	}
@@ -110,9 +110,9 @@ TEST_F(Test_Serialization2, ExtraTypes)
 
 		MyData2 data2;
 		JsonSerializer::deserialize(json, data2);
-		ASSERT_EQ(3, data2.list1.getCount());
-		ASSERT_EQ(3, data2.list2.getCount());
-		ASSERT_EQ(3, data2.list3.getCount());
+		ASSERT_EQ(3, data2.list1.size());
+		ASSERT_EQ(3, data2.list2.size());
+		ASSERT_EQ(3, data2.list3.size());
 		ASSERT_EQ(1, data2.list1[0]);
 		ASSERT_EQ(2, data2.list1[1]);
 		ASSERT_EQ(3, data2.list1[2]);

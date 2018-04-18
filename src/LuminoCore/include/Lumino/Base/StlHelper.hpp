@@ -33,20 +33,20 @@ public:
 
 	// vector から等しい要素をすべて削除する
 	template <class T, typename TAllocator>
-	static bool removeAll(std::vector<T, TAllocator>& vec, const T& value)
+	static size_t removeAll(std::vector<T, TAllocator>& vec, const T& value)
     {
         size_t n = vec.size();
         vec.erase( std::remove( vec.begin(), vec.end(), value ), vec.end() );
-        return n != vec.size();
+        return n - vec.size();
     }
 
 	// vector から等しい要素をすべて削除する
 	template <class T, typename TAllocator, typename TPred>
-	static bool removeAll(std::vector<T, TAllocator>& vec, TPred pred)
+	static size_t removeAll(std::vector<T, TAllocator>& vec, TPred pred)
 	{
 		size_t n = vec.size();
 		vec.erase(std::remove_if(vec.begin(), vec.end(), pred), vec.end());
-		return n != vec.size();
+		return n - vec.size();
 	}
 
 	// std::vector に要素が含まれているかチェックする

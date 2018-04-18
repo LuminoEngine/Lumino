@@ -4,193 +4,184 @@
 #include <algorithm>
 #include "Assertion.hpp"
 #include "StlHelper.hpp"
+#include "RefObject.hpp"
 
 namespace ln {
 
-/**
-	@brief		動的配列のテンプレートクラス
-	@details	隣接するメモリ位置に要素を格納し、高速なランダムアクセスを行うことができます。
-				内部では、メモリ使用量を削減し、データの不必要なコピーを避けるためにコピーオンライト(COW)の共有を行います。
+/** 参照カウントを持つ可変長配列のコンテナテンプレートクラスです。
+
+インデックスに基づく高速アクセスとインデックスベースの挿入と削除などの機能を提供します。
+
+std::vector と同様に使用できますが、ヒープに確保された List のインスタンスはベースクラスの RefObject が持つ参照カウントによっても寿命を管理されます。
 */
-template<typename T, typename TAllocator = detail::StlAllocator<T> >
-class List
+template<typename T>
+class List : public RefObject
 {
 public:
-	typedef typename std::vector<T, TAllocator>		std_vector;
-	typedef typename std_vector::value_type			value_type;
-	typedef typename std_vector::difference_type	difference_type;
-	typedef typename std_vector::pointer			pointer;
-	typedef typename std_vector::const_pointer		const_pointer;
-	typedef typename std_vector::iterator			iterator;
-	typedef typename std_vector::const_iterator		const_iterator;
-	typedef typename std_vector::reference			reference;
-	typedef typename std_vector::const_reference	const_reference;
+	typedef typename std::vector<T>::value_type			value_type;
+	typedef typename std::vector<T>::difference_type	difference_type;
+	typedef typename std::vector<T>::pointer			pointer;
+	typedef typename std::vector<T>::const_pointer		const_pointer;
+	typedef typename std::vector<T>::iterator			iterator;
+	typedef typename std::vector<T>::const_iterator		const_iterator;
+	typedef typename std::vector<T>::reference			reference;
+	typedef typename std::vector<T>::const_reference	const_reference;
 
-public:
-
-	/** 空の配列で新しい配列を作成します。*/
+	/** 空の配列で新しい配列を構築します。 */
 	List();
 
-	/** 配列をコピーして新しい配列を作成します。*/
+	/** 配列をコピーして新しい配列を構築します。 */
 	List(const List& ary);
 
-	/** 別の配列からムーブして作成します。*/
+	/** 別の配列からムーブして構築します。 */
 	List(List&& ary);
 
-	/** 初期化子リストから作成します。*/
+	/** 初期化子リストから構築します。 */
 	List(std::initializer_list<T> list);
 
+	/** イテレータの範囲からリストを構築します。 */
 	template <class TIter>
 	List(TIter begin, TIter end);
 
 	/** デストラクタ */
 	~List();
 
-public:
+	/** 別の List をこの List に割り当てます。*/
+	List& operator=(const List& ary);
+
+	/** 別の List をこの List に割り当てます。*/
+	List& operator=(List&& other);
+
+	/** 指定したインデックスにある要素への参照を取得します。*/
+	T& operator[] (int index);
+
+	/** 指定したインデックスにある要素への参照を取得します。*/
+	const T& operator[] (int index) const;
+
 
 	/** 配列が空であるかを確認します。*/
-	bool isEmpty() const
-	{
-		return m_data->m_vector.empty();
-	}
+	bool isEmpty() const LN_NOEXCEPT;
 
 	/** 格納されている要素の数を取得します。*/
-	int getCount() const
-	{
-		return (int)m_data->m_vector.size();
-	}
+	int size() const LN_NOEXCEPT;
 
 	/** 追加のメモリ割り当てを行わずに追加できる要素の最大数を取得します。*/
-	int capacity() const
-	{ 
-		return m_data->m_vector.capacity();
-	}
+	int capacity() const LN_NOEXCEPT;
+
+
+	/** 指定したインデックスにある要素への参照を取得します。*/
+	reference at(int index);
+
+	/** 指定したインデックスにある要素への参照を取得します。*/
+	const_reference at(int index) const;
+
+	/** 先頭要素の参照を返します。*/
+	reference front();
+
+	/** 先頭要素の参照を返します。*/
+	const_reference front() const;
+
+	/** 終端要素の参照を返します。*/
+	reference back();
+
+	/** 終端要素の参照を返します。*/
+	const_reference back() const;
+
+
+	/** メモリを指定したサイズで確保します。 */
+	void reserve(int count);
+
+	/** 要素数を変更します。 */
+	void resize(int count);
+
+	/** デフォルト値を指定して、要素数を変更します。 */
+	void resize(int count, const T& value);
+
+	/** メモリ領域を現在の要素数まで切り詰めます。 */
+	void shrinkToFit();
+
+
+	/** 先頭要素を指すイテレータを取得します。 */
+	iterator begin() LN_NOEXCEPT { return m_data.begin(); }
+
+	/** 先頭要素を指すイテレータを取得します。 */
+	const_iterator begin() const LN_NOEXCEPT { return m_data.begin(); }
+
+	/** 末尾の次を指すイテレータを取得します。 */
+	iterator end() LN_NOEXCEPT { return m_data.end(); }
+
+	/** 末尾の次を指すイテレータを取得します。 */
+	const_iterator end() const LN_NOEXCEPT { return m_data.end(); }
+
+	/** 先頭要素を指す読み取り専用イテレータを取得します。 */
+	const_iterator cbegin() const LN_NOEXCEPT { return m_data.cbegin(); }
+
+	/** 末尾の次を指す読み取り専用イテレータを取得します。 */
+	const_iterator cend() const LN_NOEXCEPT { return m_data.cend(); }
+
 
 	/** 配列を初期化し、指定した範囲の要素をコピーします。*/
 	template<typename TItr>
-	void assign(TItr first, TItr last)
-	{
-		checkDetachShared();
-		m_data->m_vector.assign(first, last);
-	}
+	void assign(TItr first, TItr last);
 
 	/** 末尾に要素を追加します。*/
-	void add(const value_type& item)
-	{
-		checkDetachShared();
-		m_data->m_vector.push_back(item);
-	}
+	void add(const value_type& item);
 
 	/** 末尾に別の配列を連結します。*/
-	void addRange(const List<T>& items)
-	{
-		checkDetachShared();
-		m_data->m_vector.insert(m_data->m_vector.end(), items.m_data->m_vector.begin(), items.m_data->m_vector.end());
-	}
+	void addRange(const List<T>& items);
 
 	/** 指定したインデックスの位置に要素を挿入します。*/
-	void insert(int index, const value_type& item)
-	{
-		if (LN_REQUIRE(0 <= index && index <= getCount())) return;	// Count と同じインデックスを指定できる
-		checkDetachShared();
-		m_data->m_vector.insert(m_data->m_vector.begin() + index, item);
-	}
+	void insert(int index, const value_type& item);
 
 	/** 指定したインデックスの位置に要素を挿入します。*/
-	void insertRange(int index, const List<T>& items)
-	{
-		if (LN_REQUIRE(0 <= index && index <= getCount())) return;	// Count と同じインデックスを指定できる
-		checkDetachShared();
-		m_data->m_vector.insert(m_data->m_vector.begin() + index, items.m_data->m_vector.begin(), items.m_data->m_vector.end());
-	}
+	void insertRange(int index, const List<T>& items);
 
 	/** 全ての要素を削除します。*/
-	void clear()
-	{
-		checkDetachShared();
-		m_data->m_vector.clear();
-	}
+	void clear();
+
+	/** イテレータで示された位置の要素を削除し、次の要素を示すイテレータを返します。 */
+	iterator erase(iterator pos);
+
+	/** イテレータで示された位置の要素を削除し、次の要素を示すイテレータを返します。 */
+	iterator erase(iterator begin, iterator end);
 
 	/** item に一致する最初の要素を削除します。(正常に削除された場合は true を返す。要素が見つからなければ false を返す)*/
-	bool remove(const value_type& item)
-	{
-		checkDetachShared();
-		return detail::StlHelper::remove(m_data->m_vector, item);
-	}
+	bool remove(const value_type& item);
 
 	/** 指定した条件に一致する最初の要素を削除します。(正常に削除された場合は true を返す。要素が見つからなければ false を返す)*/
 	template<typename TPred>
-	bool removeIf(TPred pred)
-	{
-		checkDetachShared();
-		auto itr = m_data->m_vector.begin();
-		auto end = m_data->m_vector.end();
-		for (; itr != end; ++itr)
-		{
-			if (pred((*itr))) {
-				m_data->m_vector.erase(itr);
-				return true;
-			}
-		}
-		return false;
-	}
+	bool removeIf(TPred pred);
+
+	/** item に一致する全ての要素を削除し、削除された要素数を返します。 */
+	int removeAll(const value_type& item);
+
+	/** 指定した条件に一致する全ての要素を削除し、削除された要素数を返します。 */
+	template<typename TPred>
+	int removeAllIf(TPred pred);
 
 	/** 指定したインデックスにある要素を削除します。*/
-	void removeAt(int index)
-	{
-		checkOutOfRange(index);
-		checkDetachShared();
-		m_data->m_vector.erase(m_data->m_vector.begin() + index);
-	}
+	void removeAt(int index);
 
-	/** item に一致する全ての要素を削除します。*/
-	void removeAll(const value_type& item)
-	{
-		checkDetachShared();
-		detail::StlHelper::removeAll(m_data->m_vector, item);
-	}
-
-	/** 指定した条件に一致する全ての要素を削除します。*/
-	template<typename TPred>
-	void removeAll(TPred pred)
-	{
-		checkDetachShared();
-		detail::StlHelper::removeAll(m_data->m_vector, pred);
-	}
+	/** 先頭要素を削除します。*/
+	void removeFirst();
 
 	/** 終端要素を削除します。*/
-	void removeLast()
-	{
-		checkOutOfRange(getCount() - 1);
-		checkDetachShared();
-		removeAt(getCount() - 1);
-	}
+	void removeLast();
 
-	/** 配列用のメモリを指定したサイズで確保します。*/
-	void reserve(int count)
-	{
-		checkDetachShared();
-		m_data->m_vector.reserve(count);
-	}
 
-	/** 配列の要素数を変更します。*/
-	void resize(int count)
-	{
-		checkDetachShared();
-		m_data->m_vector.resize(count);
-	}
+
 
 	/** 指定した要素がこの配列内に存在するかどうかを判断します。*/
 	bool contains(const value_type& item) const
 	{
-		return std::find(m_data->m_vector.begin(), m_data->m_vector.end(), item) != m_data->m_vector.end();
+		return std::find(m_data.begin(), m_data.end(), item) != m_data.end();
 	}
 
 	/** 指定した条件と一致する要素がこの配列内に存在するかどうかを判断します。*/
 	template<typename TPred>
 	bool containsIf(TPred pred) const
 	{
-		return std::find_if(m_data->m_vector.begin(), m_data->m_vector.end(), pred) != m_data->m_vector.end();
+		return std::find_if(m_data.begin(), m_data.end(), pred) != m_data.end();
 	}
 
 	/**
@@ -201,10 +192,11 @@ public:
 	*/
 	int indexOf(const value_type& item, int startIndex = 0) const
 	{
-		if (isEmpty()) { return -1; }
-		checkOutOfRange(startIndex);
-		const_iterator itr = std::find(m_data->m_vector.begin() + startIndex, m_data->m_vector.end(), item);
-		if (itr != m_data->m_vector.end()) { return itr - m_data->m_vector.begin(); }
+		if (LN_REQUIRE(!isOutOfRange(startIndex))) return -1;
+		if (isEmpty()) return -1;
+
+		const_iterator itr = std::find(m_data.begin() + startIndex, m_data.end(), item);
+		if (itr != m_data.end()) { return itr - m_data.begin(); }
 		return -1;
 	}
 	
@@ -215,145 +207,279 @@ public:
 		@return		検索した要素が最初に現れた位置。見つからなかった場合は -1。
 	*/
 	template<typename TPred>
-	int indexOf(TPred pred, int startIndex = 0) const
+	int indexOfIf(TPred pred, int startIndex = 0) const
 	{
-		if (isEmpty()) { return -1; }
-		checkOutOfRange(startIndex);
-		const_iterator itr = std::find_if(m_data->m_vector.begin() + startIndex, m_data->m_vector.end(), pred);
-		if (itr != m_data->m_vector.end()) { return itr - m_data->m_vector.begin(); }
+		if (LN_REQUIRE(!isOutOfRange(startIndex))) return -1;
+		if (isEmpty()) return -1;
+
+		const_iterator itr = std::find_if(m_data.begin() + startIndex, m_data.end(), pred);
+		if (itr != m_data.end()) { return itr - m_data.begin(); }
 		return -1;
 	}
 
-	/** 指定した要素と一致する最初の要素を検索し、その要素を指すポインタを返します。見つからなければ NULL を返します。*/
-	value_type* find(const value_type& item) const
-	{
-		auto itr = std::find(m_data->m_vector.begin(), m_data->m_vector.end(), item);
-		if (itr != end()) {
-			return &(*itr);
-		}
-		return nullptr;
-	}
+	///** 指定した要素と一致する最初の要素を検索し、その要素を指すポインタを返します。見つからなければ NULL を返します。*/
+	//value_type* find(const value_type& item) const
+	//{
+	//	auto itr = std::find(m_data.begin(), m_data.end(), item);
+	//	if (itr != end()) {
+	//		return &(*itr);
+	//	}
+	//	return nullptr;
+	//}
 
-	/** 指定した条件と一致する最初の要素を検索し、その要素を指すポインタを返します。見つからなければ NULL を返します。*/
-	template<typename TPred>
-	value_type* find(TPred pred) const
-	{
-		auto itr = std::find_if(m_data->m_vector.begin(), m_data->m_vector.end(), pred);
-		if (itr != end()) {
-			return &(*itr);
-		}
-		return nullptr;
-	}
+	///** 指定した条件と一致する最初の要素を検索し、その要素を指すポインタを返します。見つからなければ NULL を返します。*/
+	//template<typename TPred>
+	//const value_type* find(TPred pred) const
+	//{
+	//	auto itr = std::find_if(m_data.begin(), m_data.end(), pred);
+	//	if (itr != end()) {
+	//		return &(*itr);
+	//	}
+	//	return nullptr;
+	//}
 
-	/** 指定したインデックスに要素を設定します。*/
-	void getAt(int index, const T& item)
-	{
-		checkOutOfRange(index);
-		checkDetachShared();
-		m_data->m_vector.at(index) = item;
-	}
+	///** 指定したインデックスに要素を設定します。*/
+	//void getAt(int index, const T& item)
+	//{
+	//	checkOutOfRange(index);
+	//	m_data.at(index) = item;
+	//}
 
-	/** 指定したインデックスにある要素への参照を取得します。*/
-	reference getAt(int index)
-	{
-		checkOutOfRange(index);
-		checkDetachShared();
-		return m_data->m_vector.at(index);
-	}
-
-	/** 指定したインデックスにある要素への参照を取得します。*/
-	const_reference getAt(int index) const
-	{
-		checkOutOfRange(index);
-		return m_data->m_vector.at(index);
-	}
-
-	/** 先頭要素の参照を返します。*/
-	reference getFront()
-	{
-		LN_FATAL(!isEmpty());
-		checkDetachShared();
-		return m_data->m_vector.front();
-	}
-
-	/** 先頭要素の参照を返します。*/
-	const_reference getFront() const
-	{
-		LN_FATAL(!isEmpty());
-		return m_data->m_vector.front();
-	}
-
-	/** 終端要素の参照を返します。*/
-	reference getLast()
-	{
-		LN_FATAL(!isEmpty());
-		checkDetachShared();
-		return m_data->m_vector.back();
-	}
-
-	/** 終端要素の参照を返します。*/
-	const_reference getLast() const
-	{
-		LN_FATAL(!isEmpty());
-		return m_data->m_vector.back();
-	}
-
-	/** 別の配列をこの配列に上書きコピーします。*/
-	void copyFrom(const List<T>& ary)
-	{
-		checkDetachShared();
-		m_data->m_vector = ary.m_data->m_vector;
-	}
+	///** 別の配列をこの配列に上書きコピーします。*/
+	//void copyFrom(const List<T>& ary)
+	//{
+	//	m_data = ary.m_data;
+	//}
 
 	/** 指定したインデックスがこの配列の境界の範囲外かを確認します。*/
 	bool isOutOfRange(int index) const
 	{
-		return (index < 0 || getCount() <= index);
+		return (index < 0 || size() <= index);
 	}
 
-	/** 別の配列をこの配列に割り当てます。*/
-	List& operator=(const List& ary);
-
-	/** 指定したインデックスにある要素への参照を取得します。*/
-	T& operator[] (int index);
-
-	/** 指定したインデックスにある要素への参照を取得します。*/
-	const T& operator[] (int index) const;
-
-	/*-----------------------------------------------------------------------*/
-	/** @name STL interface */
-	/** @{ */
-
-	iterator		begin()			{ checkDetachShared(); return m_data->m_vector.begin(); }
-	const_iterator	begin() const	{ return m_data->m_vector.begin(); }
-	iterator		end()			{ checkDetachShared(); return m_data->m_vector.end(); }
-	const_iterator	end() const		{ return m_data->m_vector.end(); }
-	const_iterator	cbegin() const	{ return m_data->m_vector.cbegin(); }
-	const_iterator	cend() const	{ return m_data->m_vector.cend(); }
-	iterator		erase(iterator pos) { checkDetachShared(); return m_data->m_vector.erase(pos); }
-	iterator		erase(iterator begin, iterator end) { checkDetachShared(); return m_data->m_vector.erase(begin, end); }
-
-	/** @} */
 
 private:
-	void checkDetachShared();
-	void checkOutOfRange(int index) const;
-
-private:
-	struct ArrayData
-	{
-		int			m_refCount;
-		std_vector	m_vector;
-		ArrayData(int refCount) : m_refCount(refCount) {}
-		ArrayData(const std_vector& vec) : m_refCount(1), m_vector(vec) {}
-		inline bool isShared() const { return (m_refCount > 1); }
-		inline void addRef() { ++m_refCount; }
-		inline void release();
-		static ArrayData* getSharedEmpty();
-	};
-
-	ArrayData*	m_data;
+	std::vector<T> m_data;
 };
+
+
+template<typename T>
+List<T>& List<T>::operator=(const List& ary)
+{
+	m_data = ary.m_data;
+	return *this;
+}
+
+template<typename T>
+List<T>& List<T>::operator=(List&& other)
+{
+	m_data = std::move(other.m_data);
+	return *this;
+}
+
+template<typename T>
+T& List<T>::operator[] (int index)
+{
+	LN_FATAL(!isOutOfRange(index));
+	return m_data[index];
+}
+
+template<typename T>
+const T& List<T>::operator[] (int index) const
+{
+	LN_FATAL(!isOutOfRange(index));
+	return m_data[index];
+}
+
+template<typename T>
+bool List<T>::isEmpty() const LN_NOEXCEPT
+{
+	return m_data.empty();
+}
+
+template<typename T>
+int List<T>::size() const LN_NOEXCEPT
+{
+	return static_cast<int>(m_data.size());
+}
+
+template<typename T>
+int List<T>::capacity() const LN_NOEXCEPT
+{
+	return m_data.capacity();
+}
+
+template<typename T>
+typename List<T>::reference List<T>::at(int index)
+{
+	LN_FATAL(!isOutOfRange(index));
+	return m_data.at(index);
+}
+
+template<typename T>
+typename List<T>::const_reference List<T>::at(int index) const
+{
+	LN_FATAL(!isOutOfRange(index));
+	return m_data.at(index);
+}
+
+template<typename T>
+typename List<T>::reference List<T>::front()
+{
+	LN_FATAL(!isEmpty());
+	return m_data.front();
+}
+
+template<typename T>
+typename List<T>::const_reference List<T>::front() const
+{
+	LN_FATAL(!isEmpty());
+	return m_data.front();
+}
+
+template<typename T>
+typename List<T>::reference List<T>::back()
+{
+	LN_FATAL(!isEmpty());
+	return m_data.back();
+}
+
+template<typename T>
+typename List<T>::const_reference List<T>::back() const
+{
+	LN_FATAL(!isEmpty());
+	return m_data.back();
+}
+
+template<typename T>
+void List<T>::reserve(int count)
+{
+	m_data.reserve(count);
+}
+
+template<typename T>
+void List<T>::resize(int count)
+{
+	m_data.resize(count);
+}
+
+template<typename T>
+void List<T>::resize(int count, const T& value)
+{
+	m_data.resize(count, value);
+}
+
+template<typename T>
+void List<T>::shrinkToFit()
+{
+	m_data.shrink_to_fit();
+}
+
+template<typename T> template<typename TItr>
+void List<T>::assign(TItr first, TItr last)
+{
+	m_data.assign(first, last);
+}
+
+template<typename T>
+void List<T>::add(const value_type& item)
+{
+	m_data.push_back(item);
+}
+
+template<typename T>
+void List<T>::addRange(const List<T>& items)
+{
+	m_data.insert(m_data.end(), items.m_data.begin(), items.m_data.end());
+}
+
+template<typename T>
+void List<T>::insert(int index, const value_type& item)
+{
+	if (LN_REQUIRE(0 <= index && index <= size())) return;
+	m_data.insert(m_data.begin() + index, item);
+}
+
+template<typename T>
+void List<T>::insertRange(int index, const List<T>& items)
+{
+	if (LN_REQUIRE(0 <= index && index <= size())) return;
+	m_data.insert(m_data.begin() + index, items.m_data.begin(), items.m_data.end());
+}
+
+template<typename T>
+void List<T>::clear()
+{
+	m_data.clear();
+}
+
+template<typename T>
+typename List<T>::iterator List<T>::erase(iterator pos)
+{
+	return m_data.erase(pos);
+}
+
+template<typename T>
+typename List<T>::iterator List<T>::erase(iterator begin, iterator end)
+{
+	return m_data.erase(begin, end);
+}
+
+template<typename T>
+bool List<T>::remove(const value_type& item)
+{
+	return detail::StlHelper::remove(m_data, item);
+}
+
+template<typename T>
+template<typename TPred>
+bool List<T>::removeIf(TPred pred)
+{
+	auto itr = m_data.begin();
+	auto end = m_data.end();
+	for (; itr != end; ++itr)
+	{
+		if (pred((*itr))) {
+			m_data.erase(itr);
+			return true;
+		}
+	}
+	return false;
+}
+
+template<typename T>
+int List<T>::removeAll(const value_type& item)
+{
+	return static_cast<int>(detail::StlHelper::removeAll(m_data, item));
+}
+
+template<typename T>
+template<typename TPred>
+int List<T>::removeAllIf(TPred pred)
+{
+	return static_cast<int>(detail::StlHelper::removeAll(m_data, pred));
+}
+
+template<typename T>
+void List<T>::removeAt(int index)
+{
+	if (LN_REQUIRE(!isOutOfRange(index))) return;
+	m_data.erase(m_data.begin() + index);
+}
+
+template<typename T>
+void List<T>::removeFirst()
+{
+	if (LN_REQUIRE(!isEmpty())) return;
+	removeAt(0);
+}
+
+template<typename T>
+void List<T>::removeLast()
+{
+	if (LN_REQUIRE(!isEmpty())) return;
+	removeAt(size() - 1);
+}
 
 } // namespace ln
 

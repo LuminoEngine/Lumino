@@ -125,7 +125,7 @@ TEST_F(Test_IO_FileSystem, GetFilesOrDirectory)
 		auto pathes = FileSystem::getFiles(LN_TEMPFILE("GetFilesTest1/dir3"), StringRef(), SearchOption::TopDirectoryOnly);
 		List<Path> list;
 		for (auto& path : pathes) list.add(path);
-		ASSERT_EQ(2, list.getCount());
+		ASSERT_EQ(2, list.size());
 		ASSERT_EQ(true, list.containsIf([](const Path& path) { return path.str().contains(_TT("file3.txt")); }));
 		ASSERT_EQ(true, list.containsIf([](const Path& path) { return path.str().contains(_TT("file4.dat")); }));
 	}
@@ -135,7 +135,7 @@ TEST_F(Test_IO_FileSystem, GetFilesOrDirectory)
 		auto pathes = FileSystem::getFiles(LN_TEMPFILE("GetFilesTest1/dir3"), _LT("*.txt"), SearchOption::TopDirectoryOnly);
 		List<Path> list;
 		for (auto& path : pathes) list.add(path);
-		ASSERT_EQ(1, list.getCount());
+		ASSERT_EQ(1, list.size());
 		ASSERT_EQ(true, list.containsIf([](const Path& path) { return path.str().contains(_TT("file3.txt")); }));
 	}
 
@@ -144,7 +144,7 @@ TEST_F(Test_IO_FileSystem, GetFilesOrDirectory)
 		auto pathes = FileSystem::getFiles(LN_TEMPFILE("GetFilesTest1"), StringRef(), SearchOption::Recursive);
 		List<Path> list;
 		for (auto& path : pathes) list.add(path);
-		ASSERT_EQ(4, list.getCount());
+		ASSERT_EQ(4, list.size());
 		ASSERT_EQ(true, list.containsIf([](const Path& path) { return path.str().contains(_TT("file1.txt")); }));
 		ASSERT_EQ(true, list.containsIf([](const Path& path) { return path.str().contains(_TT("file2.md")); }));
 		ASSERT_EQ(true, list.containsIf([](const Path& path) { return path.str().contains(_TT("file3.txt")); }));
@@ -156,7 +156,7 @@ TEST_F(Test_IO_FileSystem, GetFilesOrDirectory)
 		auto files = FileSystem::getFiles(LN_TEMPFILE("GetFilesTest1"), _LT("*.txt"), SearchOption::Recursive);
 		List<Path> list;
 		for (auto& path : files) list.add(path);
-		ASSERT_EQ(2, list.getCount());
+		ASSERT_EQ(2, list.size());
 		ASSERT_EQ(true, list.containsIf([](const Path& path) { return path.str().contains(_TT("file1.txt")); }));
 		ASSERT_EQ(true, list.containsIf([](const Path& path) { return path.str().contains(_TT("file3.txt")); }));
 	}
@@ -166,7 +166,7 @@ TEST_F(Test_IO_FileSystem, GetFilesOrDirectory)
 		auto files = FileSystem::getFiles(LN_TEMPFILE("GetFilesTest1/dir3/dir4"), StringRef(), SearchOption::Recursive);
 		List<Path> list;
 		for (auto& path : files) list.add(path);
-		ASSERT_EQ(0, list.getCount());
+		ASSERT_EQ(0, list.size());
 	}
 
 	//* [ ] directory enumeration
@@ -174,7 +174,7 @@ TEST_F(Test_IO_FileSystem, GetFilesOrDirectory)
 		auto pathes = FileSystem::getDirectories(LN_TEMPFILE("GetFilesTest1"), StringRef(), SearchOption::TopDirectoryOnly);
 		List<Path> list;
 		for (auto& path : pathes) list.add(path);
-		ASSERT_EQ(2, list.getCount());
+		ASSERT_EQ(2, list.size());
 		ASSERT_EQ(true, list.containsIf([](const Path& path) { return path.str().contains(_TT("dir2")); }));
 		ASSERT_EQ(true, list.containsIf([](const Path& path) { return path.str().contains(_TT("dir3")); }));
 	}
@@ -184,7 +184,7 @@ TEST_F(Test_IO_FileSystem, GetFilesOrDirectory)
 		auto pathes = FileSystem::getDirectories(LN_TEMPFILE("GetFilesTest1"), StringRef(), SearchOption::Recursive);
 		List<Path> list;
 		for (auto& path : pathes) list.add(path);
-		ASSERT_EQ(3, list.getCount());
+		ASSERT_EQ(3, list.size());
 		ASSERT_EQ(true, list.containsIf([](const Path& path) { return path.str().contains(_TT("dir2")); }));
 		ASSERT_EQ(true, list.containsIf([](const Path& path) { return path.str().contains(_TT("dir3")); }));
 		ASSERT_EQ(true, list.containsIf([](const Path& path) { return path.str().contains(_TT("dir4")); }));

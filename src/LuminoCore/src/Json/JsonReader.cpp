@@ -602,7 +602,7 @@ bool JsonReader2::tryParsePropertyName()
 		m_reader->read();
 
 		if (!m_textCache.isEmpty()) {
-			setToken(JsonToken::PropertyName, &m_textCache[0], m_textCache.getCount());
+			setToken(JsonToken::PropertyName, &m_textCache[0], m_textCache.size());
 		}
 		else {
 			setToken(JsonToken::PropertyName);
@@ -724,7 +724,7 @@ bool JsonReader2::parseString(bool isKey)
 	else
 	{
 		if (!m_textCache.isEmpty()) {
-			setToken(JsonToken::String, &m_textCache[0], m_textCache.getCount());
+			setToken(JsonToken::String, &m_textCache[0], m_textCache.size());
 		}
 		else {
 			setToken(JsonToken::String);

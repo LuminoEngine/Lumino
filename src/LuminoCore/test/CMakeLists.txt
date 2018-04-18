@@ -8,6 +8,7 @@ set(LN_SOURCES
 	Test_Base_EnumFlags.cpp
 	Test_Base_Event.cpp
 	Test_Base_Formatter.cpp
+	Test_Base_List.cpp
 	Test_Base_Logger.cpp
 	Test_Base_String.cpp
 	Test_IO_FileStream.cpp

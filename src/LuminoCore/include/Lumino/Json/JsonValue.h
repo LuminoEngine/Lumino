@@ -124,9 +124,9 @@ private:
 
 	friend class JsonDOMHandler;
 	void resizeValueList(int count) { m_valueList->resize(count); }
-	JsonValue& getAtValue(int index) { return m_valueList->getAt(index); }
+	JsonValue& getAtValue(int index) { return m_valueList->at(index); }
 	void resizeMemberList(int count) { m_memberList->resize(count); }
-	JsonMember& getAtMember(int index) { return m_memberList->getAt(index); }
+	JsonMember& getAtMember(int index) { return m_memberList->at(index); }
 
 private:
 	typedef List<JsonValue>	ValueList;

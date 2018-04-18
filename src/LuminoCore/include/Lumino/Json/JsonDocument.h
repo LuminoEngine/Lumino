@@ -208,8 +208,8 @@ public:
 	JsonArray2* addArray();
 	JsonObject2* addObject();
 
-	int getElementCount() const { return m_itemList.getCount(); }
-	JsonElement2* getElement(int index) const { return m_itemList.getAt(index); }
+	int getElementCount() const { return m_itemList.size(); }
+	JsonElement2* getElement(int index) const { return m_itemList.at(index); }
 
 protected:
 	//// ISerializeElement interface

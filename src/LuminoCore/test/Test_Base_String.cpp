@@ -680,7 +680,7 @@ TEST_F(Test_Base_String, split)
 	{
 		String str(_TT("a,b,c"));
 		List<String> lines = str.split(_TT(","), StringSplitOptions::None);
-		ASSERT_EQ(3, lines.getCount());
+		ASSERT_EQ(3, lines.size());
 		ASSERT_EQ(_TT("a"), lines[0]);
 		ASSERT_EQ(_TT("b"), lines[1]);
 		ASSERT_EQ(_TT("c"), lines[2]);
@@ -690,21 +690,21 @@ TEST_F(Test_Base_String, split)
 	{
 		String str = _TT("");
 		List<String> lines = str.split(_TT(","), StringSplitOptions::None);
-		ASSERT_EQ(1, lines.getCount());
+		ASSERT_EQ(1, lines.size());
 	}
 
 	// 空文字の RemoveEmptyEntries
 	{
 		String str = _TT("");
 		List<String> lines = str.split(_TT(","), StringSplitOptions::RemoveEmptyEntries);
-		ASSERT_EQ(0, lines.getCount());
+		ASSERT_EQ(0, lines.size());
 	}
 
 	// 区切り無し
 	{
 		String str = _TT("abc");
 		List<String> lines = str.split(_TT(","), StringSplitOptions::None);
-		ASSERT_EQ(1, lines.getCount());
+		ASSERT_EQ(1, lines.size());
 		ASSERT_EQ(_TT("abc"), lines[0]);
 	}
 
@@ -712,14 +712,14 @@ TEST_F(Test_Base_String, split)
 	{
 		String str = _TT("abc");
 		List<String> lines = str.split(_TT(","), StringSplitOptions::RemoveEmptyEntries);
-		ASSERT_EQ(1, lines.getCount());
+		ASSERT_EQ(1, lines.size());
 	}
 
 	// トークン無し
 	{
 		String str = _TT(",");
 		List<String> lines = str.split(_TT(","), StringSplitOptions::None);
-		ASSERT_EQ(2, lines.getCount());
+		ASSERT_EQ(2, lines.size());
 		ASSERT_EQ(_TT(""), lines[0]);
 		ASSERT_EQ(_TT(""), lines[1]);
 	}
@@ -728,28 +728,28 @@ TEST_F(Test_Base_String, split)
 	{
 		String str = _TT(",");
 		List<String> lines = str.split(_TT(","), StringSplitOptions::RemoveEmptyEntries);
-		ASSERT_EQ(0, lines.getCount());
+		ASSERT_EQ(0, lines.size());
 	}
 
 	// トークン無し 2
 	{
 		String str = _TT(",,");
 		List<String> lines = str.split(_TT(","), StringSplitOptions::None);
-		ASSERT_EQ(3, lines.getCount());
+		ASSERT_EQ(3, lines.size());
 	}
 
 	// トークン無し 2 RemoveEmptyEntries
 	{
 		String str = _TT(",,");
 		List<String> lines = str.split(_TT(","), StringSplitOptions::RemoveEmptyEntries);
-		ASSERT_EQ(0, lines.getCount());
+		ASSERT_EQ(0, lines.size());
 	}
 
 	// 空要素付き
 	{
 		String str = _TT("a,,c");
 		List<String> lines = str.split(_TT(","), StringSplitOptions::None);
-		ASSERT_EQ(3, lines.getCount());
+		ASSERT_EQ(3, lines.size());
 		ASSERT_EQ(_TT("a"), lines[0]);
 		ASSERT_EQ(_TT(""), lines[1]);
 		ASSERT_EQ(_TT("c"), lines[2]);
@@ -759,7 +759,7 @@ TEST_F(Test_Base_String, split)
 	{
 		String str = _TT("a,,c");
 		List<String> lines = str.split(_TT(","), StringSplitOptions::RemoveEmptyEntries);
-		ASSERT_EQ(2, lines.getCount());
+		ASSERT_EQ(2, lines.size());
 		ASSERT_EQ(_TT("a"), lines[0]);
 		ASSERT_EQ(_TT("c"), lines[1]);
 	}
@@ -768,7 +768,7 @@ TEST_F(Test_Base_String, split)
 	{
 		String str = _TT(",b,c");
 		List<String> lines = str.split(_TT(","), StringSplitOptions::None);
-		ASSERT_EQ(3, lines.getCount());
+		ASSERT_EQ(3, lines.size());
 		ASSERT_EQ(_TT(""), lines[0]);
 		ASSERT_EQ(_TT("b"), lines[1]);
 		ASSERT_EQ(_TT("c"), lines[2]);
@@ -778,7 +778,7 @@ TEST_F(Test_Base_String, split)
 	{
 		String str = _TT(",b,c");
 		List<String> lines = str.split(_TT(","), StringSplitOptions::RemoveEmptyEntries);
-		ASSERT_EQ(2, lines.getCount());
+		ASSERT_EQ(2, lines.size());
 		ASSERT_EQ(_TT("b"), lines[0]);
 		ASSERT_EQ(_TT("c"), lines[1]);
 	}
@@ -787,7 +787,7 @@ TEST_F(Test_Base_String, split)
 	{
 		String str = _TT("a,b,");
 		List<String> lines = str.split(_TT(","), StringSplitOptions::None);
-		ASSERT_EQ(3, lines.getCount());
+		ASSERT_EQ(3, lines.size());
 		ASSERT_EQ(_TT("a"), lines[0]);
 		ASSERT_EQ(_TT("b"), lines[1]);
 		ASSERT_EQ(_TT(""), lines[2]);
@@ -797,7 +797,7 @@ TEST_F(Test_Base_String, split)
 	{
 		String str = _TT("a,b,");
 		List<String> lines = str.split(_TT(","), StringSplitOptions::RemoveEmptyEntries);
-		ASSERT_EQ(2, lines.getCount());
+		ASSERT_EQ(2, lines.size());
 		ASSERT_EQ(_TT("a"), lines[0]);
 		ASSERT_EQ(_TT("b"), lines[1]);
 	}
@@ -806,7 +806,7 @@ TEST_F(Test_Base_String, split)
 	{
 		String str = _TT(",b,");
 		List<String> lines = str.split(_TT(","), StringSplitOptions::None);
-		ASSERT_EQ(3, lines.getCount());
+		ASSERT_EQ(3, lines.size());
 		ASSERT_EQ(_TT(""), lines[0]);
 		ASSERT_EQ(_TT("b"), lines[1]);
 		ASSERT_EQ(_TT(""), lines[2]);
@@ -816,14 +816,14 @@ TEST_F(Test_Base_String, split)
 	{
 		String str = _TT(",b,");
 		List<String> lines = str.split(_TT(","), StringSplitOptions::RemoveEmptyEntries);
-		ASSERT_EQ(1, lines.getCount());
+		ASSERT_EQ(1, lines.size());
 		ASSERT_EQ(_TT("b"), lines[0]);
 	}
 	// 長さ2以上のデリミタ
 	{
 		String str = _TT("a::b");
 		List<String> lines = str.split(_TT("::"), StringSplitOptions::None);
-		ASSERT_EQ(2, lines.getCount());
+		ASSERT_EQ(2, lines.size());
 		ASSERT_EQ(_TT("a"), lines[0]);
 		ASSERT_EQ(_TT("b"), lines[1]);
 	}

@@ -139,7 +139,7 @@ void JsonValue::setArray()
 int JsonValue::getItemCount() const
 {
 	if (LN_REQUIRE(m_type == JsonType::Array && m_valueList != NULL)) return 0;
-	return m_valueList->getCount();
+	return m_valueList->size();
 }
 
 //------------------------------------------------------------------------------
@@ -153,12 +153,12 @@ void JsonValue::addItem(const JsonValue& value)
 JsonValue& JsonValue::operator[](int index)
 {
 	LN_FATAL(m_type == JsonType::Array && m_valueList != NULL);
-	return m_valueList->getAt(index);
+	return m_valueList->at(index);
 }
 const JsonValue& JsonValue::operator[](int index) const
 {
 	LN_FATAL(m_type == JsonType::Array && m_valueList != NULL);
-	return m_valueList->getAt(index);
+	return m_valueList->at(index);
 }
 
 //------------------------------------------------------------------------------
@@ -173,7 +173,7 @@ void JsonValue::setObject()
 int JsonValue::getMemberCount() const
 {
 	if (LN_REQUIRE(m_type == JsonType::Object && m_memberList != NULL)) return 0;
-	return m_memberList->getCount();
+	return m_memberList->size();
 }
 
 //------------------------------------------------------------------------------
