@@ -43,7 +43,10 @@ add_executable(LuminoCore_Test ${LN_SOURCES})
 target_link_libraries(${PROJECT_NAME} LuminoCore)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Lumino")
 
-#em_link_pre_js(LuminoCore_Test ${CMAKE_CURRENT_SOURCE_DIR}/pre.js)
+if (DEFINED EMSCRIPTEN)
+	em_link_pre_js(LuminoCore_Test ${CMAKE_CURRENT_SOURCE_DIR}/pre.js)
+endif()
+
 
 
 #set_target_properties(${PROJECT_NAME} PROPERTIES

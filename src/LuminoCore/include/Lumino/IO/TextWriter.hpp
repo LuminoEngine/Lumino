@@ -76,7 +76,7 @@ public:
 	void write(const Char* str, int length);
 
 	template<typename... TArgs>
-	void writeFormat(const StringRef& str, const TArgs&... args) { String s = String::format(str, args...); writeInternal(s.c_str(), s.getLength()); }
+	void writeFormat(const StringRef& str, const TArgs&... args) { String s = String::format(str, args...); writeInternal(s.c_str(), s.length()); }
 
 	/**
 		@brief		改行を書き込みます。

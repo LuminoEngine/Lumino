@@ -24,10 +24,58 @@ class Optional
 public:
     LN_CONSTEXPR Optional() LN_NOEXCEPT;
     LN_CONSTEXPR Optional(std::nullptr_t) LN_NOEXCEPT;
-    Optional(const Optional& other);
-    Optional(Optional&& other) LN_NOEXCEPT;
+	LN_CONSTEXPR Optional(const Optional<T>& other)
+		: m_value(other.m_value)
+		, m_hasValue(other.m_hasValue)
+	{
+	}
+
+	LN_CONSTEXPR Optional(Optional&& other) LN_NOEXCEPT;
     Optional(const T& value);
     Optional(T&& value);
+
+	template <class U>
+	explicit Optional(const Optional<U>& rhs)
+		: m_value(std::forward<U>(rhs.m_value)), m_hasValue(rhs.m_hasValue)
+	{}
+
+	template <class U>
+	explicit Optional(Optional<U>&& rhs)
+		: m_value(std::forward<U>(rhs.m_value)), m_hasValue(rhs.m_hasValue)
+	{}
+
+	// non-explicitコンストラクタ
+	template<class U,
+		typename std::enable_if<
+		std::is_constructible<T, U>::value &&
+		std::is_convertible<U, T>::value
+		, bool>::type = false
+	>
+	//template<class U = T>
+	LN_CONSTEXPR Optional(U&& value)
+		: m_value(std::forward<U>(value)), m_hasValue(true)
+	{
+	}
+
+
+	// explicitコンストラクタ
+	template<class U,
+		typename std::enable_if<
+		std::is_constructible<T, U>::value &&
+		!std::is_convertible<U, T>::value
+		, bool>::type = false
+	>
+	explicit LN_CONSTEXPR Optional(U&& value)
+		: m_value(std::forward<U>(value)), m_hasValue(true)
+	{
+	}
+
+
+	//template <class U>
+	//explicit Optional(const Optional<U>& rhs)
+	//	: m_value(rhs.m_value), m_hasValue(rhs.m_hasValue)
+	//{
+	//}
 
     Optional& operator=(const Optional& other);
     Optional& operator=(Optional&& other) LN_NOEXCEPT;
@@ -99,7 +147,7 @@ LN_CONSTEXPR bool operator==(const Optional<T>& lhs, const Optional<T>& rhs)
     return lhs.equals(rhs);
 }
 template<class T>
-LN_CONSTEXPR bool operator==(const Optional<T>& lhs, nullptr_t rhs)
+LN_CONSTEXPR bool operator==(const Optional<T>& lhs, std::nullptr_t rhs)
 {
     return !lhs.hasValue();
 }
@@ -114,7 +162,7 @@ LN_CONSTEXPR bool operator!=(const Optional<T>& lhs, const Optional<T>& rhs)
     return !operator==(lhs, rhs);
 }
 template<class T>
-LN_CONSTEXPR bool operator!=(const Optional<T>& lhs, nullptr_t rhs)
+LN_CONSTEXPR bool operator!=(const Optional<T>& lhs, std::nullptr_t rhs)
 {
     return !operator==(lhs, rhs);
 }
@@ -133,15 +181,15 @@ LN_CONSTEXPR Optional<T>::Optional(std::nullptr_t) LN_NOEXCEPT
 {
 }
 
-template<class T>
-Optional<T>::Optional(const Optional& other)
-    : m_value(other.m_value)
-    , m_hasValue(other.m_hasValue)
-{
-}
+//template<class T>
+//LN_CONSTEXPR Optional<T>::Optional(const Optional& other)
+//    : m_value(other.m_value)
+//    , m_hasValue(other.m_hasValue)
+//{
+//}
 
 template<class T>
-Optional<T>::Optional(Optional&& other) LN_NOEXCEPT
+LN_CONSTEXPR Optional<T>::Optional(Optional&& other) LN_NOEXCEPT
     : m_value(std::move(other.m_value))
     , m_hasValue(other.m_hasValue)
 {
@@ -300,7 +348,7 @@ bool Optional<T>::equals(const Optional& right) const
 namespace detail {
 
 template<class T>
-void hashCode(ln::Optional<T>& opt)
+uint32_t hashCode(ln::Optional<T>& opt)
 {
     return (opt.hasValue()) ? CRCHash::compute(reinterpret_cast<const char*>(&opt.value()), sizeof(T)) : 0;
 }

@@ -146,7 +146,7 @@ void printError(const Exception& e)
 {
 	const size_t BUFFER_SIZE = 512;
 	char buf[BUFFER_SIZE] = {};
-	int len = sprintf_s(buf, BUFFER_SIZE, "%s(%d):\"%s\" ", e.m_sourceFilePath, e.m_sourceFileLine, e.m_assertionMessage);
+	int len = snprintf(buf, BUFFER_SIZE, "%s(%d):\"%s\" ", e.m_sourceFilePath, e.m_sourceFileLine, e.m_assertionMessage);
 	convertChar16ToLocalChar(e.getMessage(), BUFFER_SIZE, buf + len, BUFFER_SIZE - len);
 	LN_LOG_ERROR << buf;
 }

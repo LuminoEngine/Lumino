@@ -5,16 +5,16 @@
 
 namespace ln {
 
-template<typename TValue>
-void serialize(Archive& ar, Ref<TValue>& value)
-{
-	if (value.isNull())
-	{
-		value = newObject<TValue>();
-	}
-
-	value->serialize(ar);
-}
+//template<typename TValue>
+//void serialize(Archive& ar, Ref<TValue>& value)
+//{
+//	if (value.isNull())
+//	{
+//		value = newObject<TValue>();
+//	}
+//
+//	value->serialize(ar);
+//}
 
 template<typename TValue>
 void serialize(Archive& ar, List<TValue>& value)

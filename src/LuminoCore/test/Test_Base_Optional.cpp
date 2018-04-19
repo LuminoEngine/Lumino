@@ -11,7 +11,7 @@ TEST_F(Test_Base_Optional, Construct)
 
 		Optional<String> opt1;
 		Optional<String> opt2 = nullptr;
-		Optional<String> opt3 = _T("test");
+		Optional<String> opt3 = String(_T("test"));
 		Optional<String> opt4 = std::move(test1);
 
 		ASSERT_EQ(false, opt1.hasValue());

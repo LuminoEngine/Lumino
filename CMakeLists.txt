@@ -22,6 +22,11 @@ set(LUMINO_INCLUDE_DIRECTORIES
     "${LUMINO_ROOT_PATH}/src/LuminoCore/include"
     "${LUMINO_ROOT_PATH}/src/LuminoEngine/include")
 
+if (DEFINED EMSCRIPTEN)
+    include_directories("${EMSCRIPTEN_ROOT_PATH}/system/lib/libcxxabi/include")
+    set(CMAKE_EXECUTABLE_SUFFIX .html)
+endif()
+
 #------------------------------------------------------------------------------
 
 include(external/External.cmake)
