@@ -17,7 +17,6 @@ set(LN_SOURCES_Base
 	include/Lumino/Base/Environment.hpp
 	include/Lumino/Base/Event.hpp
 	include/Lumino/Base/List.hpp
-	include/Lumino/Base/List.inl
 	include/Lumino/Base/Locale.hpp
 	include/Lumino/Base/Logger.hpp
 	include/Lumino/Base/Optional.hpp

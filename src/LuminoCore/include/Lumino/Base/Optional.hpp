@@ -1,213 +1,320 @@
-
+ï»¿// Copyright (c) 2018 lriki. Distributed under the MIT license.
 #pragma once
+
 #include "CRCHash.hpp"
 
 namespace ln {
 
-template<typename T> 
+/**
+ * ä»»æ„ã®å‹Tã®å€¤ã¨ã€è¿½åŠ ã®ç„¡åŠ¹å€¤çŠ¶æ…‹ã‚’è¡¨ç¾ã§ãã‚‹å‹ã§ã™ã€‚
+ * 
+ * æ¬¡ã®ä¾‹ã§ã¯ã€å€¤ã‚’è¡¨ç¤ºã™ã‚‹å‰ã«å¤‰æ•°ã«å€¤ãŒæ ¼ç´ã•ã‚Œã¦ã„ã‚‹ã‹ã©ã†ã‹ã‚’ãƒ†ã‚¹ãƒˆã—ã¾ã™ã€‚
+ * 
+ * ~~~{.cpp}
+ * Optional<int> x = 10;
+ * if (x)
+ *     std::cout << x.value();
+ * else
+ *     std::cout << "Undefined";
+ * ~~~
+ */
+template<typename T>
 class Optional
 {
 public:
-	LN_CONSTEXPR Optional() LN_NOEXCEPT
-		: m_value(), m_hasValue(false)
-	{}
+    LN_CONSTEXPR Optional() LN_NOEXCEPT;
+    LN_CONSTEXPR Optional(std::nullptr_t) LN_NOEXCEPT;
+    Optional(const Optional& other);
+    Optional(Optional&& other) LN_NOEXCEPT;
+    Optional(const T& value);
+    Optional(T&& value);
 
-	LN_CONSTEXPR Optional(std::nullptr_t) LN_NOEXCEPT
-		: m_value(), m_hasValue(false)
-	{}
+    Optional& operator=(const Optional& other);
+    Optional& operator=(Optional&& other) LN_NOEXCEPT;
+    Optional& operator=(std::nullptr_t) LN_NOEXCEPT;
+    Optional& operator=(const T& value);
+    Optional& operator=(T&& value);
 
-	Optional(const Optional& other)
-		: m_value(other.m_value), m_hasValue(other.m_hasValue)
-	{}
+    /** å€¤ã‚’ä¿æŒã—ã¦ã„ãªã„çŠ¶æ…‹ã«ã—ã¾ã™ã€‚ */
+    void reset() LN_NOEXCEPT { m_hasValue = false; }
 
-	Optional(Optional&& other) LN_NOEXCEPT
-		: m_value(std::move(other.m_value)), m_hasValue(other.m_hasValue)
-	{
-		other.reset();
-	}
+    /** å€¤ã‚’ä¿æŒã—ã¦ã„ã‚‹ã‹ã‚’ç¢ºèªã—ã¾ã™ã€‚ */
+    LN_CONSTEXPR explicit operator bool() const LN_NOEXCEPT { return m_hasValue; }
 
-	Optional(const T& value)
-		: m_value(value), m_hasValue(true)
-	{}
+    /** å€¤ã‚’ä¿æŒã—ã¦ã„ã‚‹ã‹ã‚’ç¢ºèªã—ã¾ã™ã€‚ */
+    bool hasValue() const { return m_hasValue; }
 
-	Optional(T&& value)
-		: m_value(std::move(value)), m_hasValue(true)
-	{}
+    /** é–“æ¥å‚ç…§æ¼”ç®—å­ã§å€¤ã‚’å–å¾—ã—ã¾ã™ã€‚ */
+    LN_CONSTEXPR T& operator*() &;
 
+    /** é–“æ¥å‚ç…§æ¼”ç®—å­ã§å€¤ã‚’å–å¾—ã—ã¾ã™ã€‚ */
+    LN_CONSTEXPR const T& operator*() const &;
 
-    Optional& operator=(const Optional& other) 
-    {
-		if (this != &other)
-		{
-			m_value = other.m_value;
-			m_hasValue = other.m_hasValue;
-		}
-        return *this;
-    }
+    /** é–“æ¥å‚ç…§æ¼”ç®—å­ã§å€¤ã‚’å–å¾—ã—ã¾ã™ã€‚ */
+    LN_CONSTEXPR T&& operator*() &&;
 
-	Optional& operator=(Optional&& other) LN_NOEXCEPT
-	{
-		m_value = std::move(other.m_value);
-		m_hasValue = other.m_hasValue;
-		other.m_hasValue = false;
-		return *this;
-	}
+    /** é–“æ¥å‚ç…§æ¼”ç®—å­ã§å€¤ã‚’å–å¾—ã—ã¾ã™ã€‚ */
+    LN_CONSTEXPR const T&& operator*() const &&;
 
-	Optional& operator=(std::nullptr_t) LN_NOEXCEPT
-	{
-		reset();
-		return *this;
-	}
+    /** ä¿æŒã—ã¦ã„ã‚‹å€¤ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’è¿”ã—ã¾ã™ã€‚ */
+    LN_CONSTEXPR T* operator->();
 
-	Optional& operator=(const T& value)
-	{
-		m_hasValue = true;
-		return *this;
-	}
+    /** ä¿æŒã—ã¦ã„ã‚‹å€¤ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’è¿”ã—ã¾ã™ã€‚ */
+    LN_CONSTEXPR const T* operator->() const;
 
-	Optional& operator=(T&& value)
-	{
-		m_value = std::move(value);
-		m_hasValue = true;
-		return *this;
-	}
+    /** å€¤ã‚’å–å¾—ã—ã¾ã™ã€‚ */
+    LN_CONSTEXPR T& value() &;
 
+    /** å€¤ã‚’å–å¾—ã—ã¾ã™ã€‚ */
+    LN_CONSTEXPR const T& value() const &;
 
-	/** ’l‚ğ•Û‚µ‚Ä‚¢‚È‚¢ó‘Ô‚É‚µ‚Ü‚·B */
-	void reset() LN_NOEXCEPT { m_hasValue = false; }
+    /** å€¤ã‚’å–å¾—ã—ã¾ã™ã€‚ */
+    LN_CONSTEXPR T&& value() &&;
 
-	/** ’l‚ğ•Û‚µ‚Ä‚¢‚é‚©‚ğŠm”F‚µ‚Ü‚·B */
-	LN_CONSTEXPR explicit operator bool() const LN_NOEXCEPT
-	{
-		return m_hasValue;
-	}
+    /** å€¤ã‚’å–å¾—ã—ã¾ã™ã€‚ */
+    LN_CONSTEXPR const T&& value() const &&;
+    /** å€¤ã‚’å–å¾—ã—ã¾ã™ã€‚å€¤ã‚’ä¿æŒã—ã¦ã„ãªã„å ´åˆã¯æŒ‡å®šã•ã‚ŒãŸæ—¢å®šå€¤ã‚’è¿”ã—ã¾ã™ã€‚ */
+    template<class U>
+    LN_CONSTEXPR T valueOr(U&& defaultValue) const &;
 
-	/** ’l‚ğ•Û‚µ‚Ä‚¢‚é‚©‚ğŠm”F‚µ‚Ü‚·B */
-	bool hasValue() const { return m_hasValue; }
+    /** å€¤ã‚’å–å¾—ã—ã¾ã™ã€‚å€¤ã‚’ä¿æŒã—ã¦ã„ãªã„å ´åˆã¯æŒ‡å®šã•ã‚ŒãŸæ—¢å®šå€¤ã‚’è¿”ã—ã¾ã™ã€‚ */
+    template<class U>
+    LN_CONSTEXPR T valueOr(U&& defaultValue) &&;
 
-	/** ŠÔÚQÆ‰‰Zq‚Å’l‚ğæ“¾‚µ‚Ü‚·B */
-	LN_CONSTEXPR T& operator*() &
-	{
-		LN_FATAL(m_hasValue);
-		return m_value;
-	}
-
-	/** ŠÔÚQÆ‰‰Zq‚Å’l‚ğæ“¾‚µ‚Ü‚·B */
-	LN_CONSTEXPR const T& operator*() const&
-	{
-		LN_FATAL(m_hasValue);
-		return m_value;
-	}
-
-	/** ŠÔÚQÆ‰‰Zq‚Å’l‚ğæ“¾‚µ‚Ü‚·B */
-	LN_CONSTEXPR T&& operator*() &&
-	{
-		LN_FATAL(m_hasValue);
-		return std::move(m_value);
-	}
-
-	/** ŠÔÚQÆ‰‰Zq‚Å’l‚ğæ“¾‚µ‚Ü‚·B */
-	LN_CONSTEXPR const T&& operator*() const&&
-	{
-		LN_FATAL(m_hasValue);
-		return std::move(m_value);
-	}
-
-	/** •Û‚µ‚Ä‚¢‚é’l‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğ•Ô‚µ‚Ü‚·B */
-	LN_CONSTEXPR T* operator->()
-	{
-		LN_FATAL(m_hasValue);
-		return &m_value;
-	}
-
-	/** •Û‚µ‚Ä‚¢‚é’l‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğ•Ô‚µ‚Ü‚·B */
-	LN_CONSTEXPR const T* operator->() const
-	{
-		LN_FATAL(m_hasValue);
-		return &m_value;
-	}
-
-	/** ’l‚ğæ“¾‚µ‚Ü‚·B */
-	LN_CONSTEXPR T& value() &
-	{
-		LN_FATAL(m_hasValue);
-		return m_value;
-	}
-
-	/** ’l‚ğæ“¾‚µ‚Ü‚·B */
-	LN_CONSTEXPR const T& value() const&
-	{
-		LN_FATAL(m_hasValue);
-		return m_value;
-	}
-
-	/** ’l‚ğæ“¾‚µ‚Ü‚·B */
-	LN_CONSTEXPR T&& value() &&
-	{
-		LN_FATAL(m_hasValue);
-		return std::move(m_value);
-	}
-
-	/** ’l‚ğæ“¾‚µ‚Ü‚·B */
-	LN_CONSTEXPR const T&& value() const&&
-	{
-		LN_FATAL(m_hasValue);
-		return std::move(m_value);
-	}
-
-	/** ’l‚ğæ“¾‚µ‚Ü‚·B’l‚ğ•Û‚µ‚Ä‚¢‚È‚¢ê‡‚Íw’è‚³‚ê‚½Šù’è’l‚ğ•Ô‚µ‚Ü‚·B */
-	template <class U>
-	LN_CONSTEXPR T valueOr(U&& defaultValue) const&
-	{
-		return hasValue() ? value() : static_cast<T>(std::forward<U>(defaultValue));
-	}
-
-	/** ’l‚ğæ“¾‚µ‚Ü‚·B’l‚ğ•Û‚µ‚Ä‚¢‚È‚¢ê‡‚Íw’è‚³‚ê‚½Šù’è’l‚ğ•Ô‚µ‚Ü‚·B */
-	template <class U>
-	LN_CONSTEXPR T valueOr(U&& defaultValue) &&
-	{
-		return hasValue() ? std::move(value()) : static_cast<T>(std::forward<U>(defaultValue));
-	}
-
-	uint32_t hashCode() const
-	{
-		return (m_hasValue) ? Hash::calcHash(reinterpret_cast<const char*>(&m_value), sizeof(m_value)) : 0;
-	}
-
-	bool equals(const Optional& right) const
-	{
-		if (m_hasValue != right.m_hasValue) return false;
-		if (!m_hasValue && !right.m_hasValue) return true;
-		return m_value == right.m_value;
-	}
+    bool equals(const Optional& right) const;
 
 private:
     T m_value;
     bool m_hasValue;
 };
 
-template <class T>
-LN_CONSTEXPR bool operator==(const Optional<T>& lhs, const T& rhs) { return lhs.hasValue() && lhs.value() == rhs; }
-template <class T>
-LN_CONSTEXPR bool operator==(const Optional<T>& lhs, const Optional<T>& rhs) { return lhs.equals(rhs); }
-template <class T>
-LN_CONSTEXPR bool operator==(const Optional<T>& lhs, nullptr_t rhs) { return !lhs.hasValue(); }
-template <class T>
-LN_CONSTEXPR bool operator!=(const Optional<T>& lhs, const T& rhs) { return !operator==(lhs, rhs); }
-template <class T>
-LN_CONSTEXPR bool operator!=(const Optional<T>& lhs, const Optional<T>& rhs) { return !operator==(lhs, rhs); }
-template <class T>
-LN_CONSTEXPR bool operator!=(const Optional<T>& lhs, nullptr_t rhs) { return !operator==(lhs, rhs); }
+template<class T>
+LN_CONSTEXPR bool operator==(const Optional<T>& lhs, const T& rhs)
+{
+    return lhs.hasValue() && lhs.value() == rhs;
+}
+template<class T>
+LN_CONSTEXPR bool operator==(const Optional<T>& lhs, const Optional<T>& rhs)
+{
+    return lhs.equals(rhs);
+}
+template<class T>
+LN_CONSTEXPR bool operator==(const Optional<T>& lhs, nullptr_t rhs)
+{
+    return !lhs.hasValue();
+}
+template<class T>
+LN_CONSTEXPR bool operator!=(const Optional<T>& lhs, const T& rhs)
+{
+    return !operator==(lhs, rhs);
+}
+template<class T>
+LN_CONSTEXPR bool operator!=(const Optional<T>& lhs, const Optional<T>& rhs)
+{
+    return !operator==(lhs, rhs);
+}
+template<class T>
+LN_CONSTEXPR bool operator!=(const Optional<T>& lhs, nullptr_t rhs)
+{
+    return !operator==(lhs, rhs);
+}
 
+template<class T>
+LN_CONSTEXPR Optional<T>::Optional() LN_NOEXCEPT
+    : m_value()
+    , m_hasValue(false)
+{
+}
+
+template<class T>
+LN_CONSTEXPR Optional<T>::Optional(std::nullptr_t) LN_NOEXCEPT
+    : m_value()
+    , m_hasValue(false)
+{
+}
+
+template<class T>
+Optional<T>::Optional(const Optional& other)
+    : m_value(other.m_value)
+    , m_hasValue(other.m_hasValue)
+{
+}
+
+template<class T>
+Optional<T>::Optional(Optional&& other) LN_NOEXCEPT
+    : m_value(std::move(other.m_value))
+    , m_hasValue(other.m_hasValue)
+{
+    other.reset();
+}
+
+template<class T>
+Optional<T>::Optional(const T& value)
+    : m_value(value)
+    , m_hasValue(true)
+{
+}
+
+template<class T>
+Optional<T>::Optional(T&& value)
+    : m_value(std::move(value))
+    , m_hasValue(true)
+{
+}
+
+template<class T>
+Optional<T>& Optional<T>::operator=(const Optional& other)
+{
+    if (this != &other) {
+        m_value = other.m_value;
+        m_hasValue = other.m_hasValue;
+    }
+    return *this;
+}
+
+template<class T>
+Optional<T>& Optional<T>::operator=(Optional&& other) LN_NOEXCEPT
+{
+    m_value = std::move(other.m_value);
+    m_hasValue = other.m_hasValue;
+    other.m_hasValue = false;
+    return *this;
+}
+
+template<class T>
+Optional<T>& Optional<T>::operator=(std::nullptr_t) LN_NOEXCEPT
+{
+    reset();
+    return *this;
+}
+
+template<class T>
+Optional<T>& Optional<T>::operator=(const T& value)
+{
+    m_hasValue = true;
+    return *this;
+}
+
+template<class T>
+Optional<T>& Optional<T>::operator=(T&& value)
+{
+    m_value = std::move(value);
+    m_hasValue = true;
+    return *this;
+}
+
+template<class T>
+LN_CONSTEXPR T& Optional<T>::operator*() &
+{
+    LN_FATAL(m_hasValue);
+    return m_value;
+}
+
+template<class T>
+LN_CONSTEXPR const T& Optional<T>::operator*() const &
+{
+    LN_FATAL(m_hasValue);
+    return m_value;
+}
+
+template<class T>
+LN_CONSTEXPR T&& Optional<T>::operator*() &&
+{
+    LN_FATAL(m_hasValue);
+    return std::move(m_value);
+}
+
+template<class T>
+LN_CONSTEXPR const T&& Optional<T>::operator*() const &&
+{
+    LN_FATAL(m_hasValue);
+    return std::move(m_value);
+}
+
+template<class T>
+LN_CONSTEXPR T* Optional<T>::operator->()
+{
+    LN_FATAL(m_hasValue);
+    return &m_value;
+}
+
+template<class T>
+LN_CONSTEXPR const T* Optional<T>::operator->() const
+{
+    LN_FATAL(m_hasValue);
+    return &m_value;
+}
+
+template<class T>
+LN_CONSTEXPR T& Optional<T>::value() &
+{
+    LN_FATAL(m_hasValue);
+    return m_value;
+}
+
+template<class T>
+LN_CONSTEXPR const T& Optional<T>::value() const &
+{
+    LN_FATAL(m_hasValue);
+    return m_value;
+}
+
+template<class T>
+LN_CONSTEXPR T&& Optional<T>::value() &&
+{
+    LN_FATAL(m_hasValue);
+    return std::move(m_value);
+}
+
+template<class T>
+LN_CONSTEXPR const T&& Optional<T>::value() const &&
+{
+    LN_FATAL(m_hasValue);
+    return std::move(m_value);
+}
+
+template<class T>
+template<class U>
+LN_CONSTEXPR T Optional<T>::valueOr(U&& defaultValue) const &
+{
+    return hasValue() ? value() : static_cast<T>(std::forward<U>(defaultValue));
+}
+
+template<class T>
+template<class U>
+LN_CONSTEXPR T Optional<T>::valueOr(U&& defaultValue) &&
+{
+    return hasValue() ? std::move(value()) : static_cast<T>(std::forward<U>(defaultValue));
+}
+
+template<class T>
+bool Optional<T>::equals(const Optional& right) const
+{
+    if (m_hasValue != right.m_hasValue)
+        return false;
+    if (!m_hasValue && !right.m_hasValue)
+        return true;
+    return m_value == right.m_value;
+}
+
+namespace detail {
+
+template<class T>
+void hashCode(ln::Optional<T>& opt)
+{
+    return (opt.hasValue()) ? CRCHash::compute(reinterpret_cast<const char*>(&opt.value()), sizeof(T)) : 0;
+}
+
+} // namespace detail
 } // namespace ln
 
 namespace std {
 
-template <class T>
+template<class T>
 void swap(ln::Optional<T>& a, ln::Optional<T>& b) LN_NOEXCEPT
 {
-	std::swap(a.m_hasValue, b.m_hasValue);
-	std::swap(a.m_value, b.m_value);
+    std::swap(a.m_hasValue, b.m_hasValue);
+    std::swap(a.m_value, b.m_value);
 }
 
 } // namespace std

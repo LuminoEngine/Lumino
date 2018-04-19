@@ -250,92 +250,31 @@ TEST_F(Test_Base_List, Algorithm)
 		ASSERT_EQ(-1, list1.indexOfIf([](int i) { return i == 5; }));
 		ASSERT_EQ(-1, list1.indexOfIf([](int i) { return i == 1; }, 3));
 	}
-}
 
-#if 0
-TEST_F(Test_Base_List, CopyFramework)
-{
-	// <Test> copy
+	//* [ ] indexOf
 	{
-		SharedList<int> a1 = { 1, 2, 3 };
-		SharedList<int> a2 = a1;
-		SharedList<int> a3;
-		a3 = a1;
-		ASSERT_EQ(3, a1.size());
-		ASSERT_EQ(1, a1[0]);
-		ASSERT_EQ(2, a1[1]);
-		ASSERT_EQ(3, a1[2]);
-		ASSERT_EQ(3, a2.size());
-		ASSERT_EQ(1, a2[0]);
-		ASSERT_EQ(2, a2[1]);
-		ASSERT_EQ(3, a2[2]);
-		ASSERT_EQ(3, a3.size());
-		ASSERT_EQ(1, a3[0]);
-		ASSERT_EQ(2, a3[1]);
-		ASSERT_EQ(3, a3[2]);
+		List<int> list1 = { 1, 2, 3 };
+		auto v = list1.find(1);
+		if (v) {
+			ASSERT_EQ(1, v.value());
+		}
+		else {
+			FAIL();
+		}
 
-		// 共有なので全部影響する
-		a1[1] = 100;
-		ASSERT_EQ(100, a1[1]);
-		ASSERT_EQ(100, a2[1]);
-		ASSERT_EQ(100, a3[1]);
+		ASSERT_EQ(false, list1.find(10).hasValue());
 	}
-	// <Test> copy (this)
+	//* [ ] indexOfIf
 	{
-		SharedList<int> a1 = { 1, 2, 3 };
-		a1 = a1;
-		ASSERT_EQ(3, a1.size());
-		ASSERT_EQ(1, a1[0]);
-		ASSERT_EQ(2, a1[1]);
-		ASSERT_EQ(3, a1[2]);
-	}
-	// <Test> move
-	{
-		SharedList<int> a1 = { 1, 2, 3 };
-		SharedList<int> a2 = std::move(a1);
-		ASSERT_EQ(nullptr, a1);
-		ASSERT_EQ(3, a2.size());
-		ASSERT_EQ(1, a2[0]);
-		ASSERT_EQ(2, a2[1]);
-		ASSERT_EQ(3, a2[2]);
+		List<int> list1 = { 1, 2, 3 };
+		auto v = list1.findIf([](int i) { return i == 1; });
+		if (v) {
+			ASSERT_EQ(1, v.value());
+		}
+		else {
+			FAIL();
+		}
+
+		ASSERT_EQ(false, list1.findIf([](int i) { return i == 10; }).hasValue());
 	}
 }
-
-TEST_F(Test_Base_List, ArrayAccess)
-{
-	// <Test> non const
-	{
-		SharedList<int> a1 = { 1, 2, 3 };
-		ASSERT_EQ(3, a1.size());
-		ASSERT_EQ(1, a1[0]);
-		ASSERT_EQ(2, a1[1]);
-		ASSERT_EQ(3, a1[2]);
-	}
-	// <Test> const
-	{
-		const SharedList<int> a1 = { 1, 2, 3 };
-		ASSERT_EQ(3, a1.size());
-		ASSERT_EQ(1, a1[0]);
-		ASSERT_EQ(2, a1[1]);
-		ASSERT_EQ(3, a1[2]);
-	}
-}
-
-TEST_F(Test_Base_List, Iteraotr)
-{
-	// <Test> non const
-	{
-		SharedList<int> a1 = { 1, 2, 3 };
-		int t = 0;
-		for (auto i : a1) t += i;
-		ASSERT_EQ(6, t);
-	}
-	// <Test> const
-	{
-		const SharedList<int> a1 = { 1, 2, 3 };
-		int t = 0;
-		for (auto i : a1) t += i;
-		ASSERT_EQ(6, t);
-	}
-}
-#endif
