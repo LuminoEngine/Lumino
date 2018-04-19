@@ -461,14 +461,12 @@ void List<T>::removeLast()
     removeAt(size() - 1);
 }
 
-/** 指定した要素がこの配列内に存在するかどうかを判断します。*/
 template<typename T>
 bool List<T>::contains(const value_type& item) const
 {
     return std::find(m_data.begin(), m_data.end(), item) != m_data.end();
 }
 
-/** 指定した条件と一致する要素がこの配列内に存在するかどうかを判断します。*/
 template<typename T>
 template<typename TPred>
 bool List<T>::containsIf(TPred pred) const
