@@ -12,6 +12,7 @@ set(LN_SOURCES
 	Test_Base_Logger.cpp
 	Test_Base_Optional.cpp
 	Test_Base_String.cpp
+	Test_IO_CommandLineParser.cpp
 	Test_IO_FileStream.cpp
 	Test_IO_FileSystem.cpp
 	Test_IO_Path.cpp

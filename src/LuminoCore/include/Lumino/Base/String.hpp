@@ -610,6 +610,8 @@ public:
 	const Char* getBegin() const { return data(); }
 	const Char* getEnd() const { return end(); }
 
+	std::string toStdString() const;
+	std::wstring toStdWString() const;
 
 private:
 	const String*	m_string;

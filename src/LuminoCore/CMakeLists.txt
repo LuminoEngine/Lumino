@@ -42,10 +42,12 @@ set(LN_SOURCES_Base
 	src/Base/StlHelper.cpp
 	src/Base/String.cpp
 	src/Base/StringHelper.cpp
+	src/Base/StringRef.cpp
 )
 
 set(LN_SOURCES_IO
 	include/Lumino/IO/Common.hpp
+	include/Lumino/IO/CommandLineParser.hpp
 	include/Lumino/IO/FileStream.hpp
 	include/Lumino/IO/FileSystem.hpp
 	include/Lumino/IO/Path.hpp
@@ -57,6 +59,7 @@ set(LN_SOURCES_IO
 	include/Lumino/IO/TextReader.hpp
 	include/Lumino/IO/TextWriter.hpp
 	src/IO/Internal.hpp
+	src/IO/CommandLineParser.cpp
 	src/IO/FileStream.cpp
 	src/IO/Path.cpp
 	src/IO/FileSystem.cpp

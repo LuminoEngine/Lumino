@@ -116,6 +116,9 @@ public:
 	/** String をバイトシーケンスへ変換します。 */
 	std::vector<byte_t> encode(const String& str, int* outUsedDefaultCharCount = nullptr) const;
 
+	/** Char 配列をバイトシーケンスへ変換します。 */
+	std::vector<byte_t> encode(const Char* str, int length, int* outUsedDefaultCharCount = nullptr) const;
+
 	/**
 		@brief		このエンコーディングの名前を取得します。
 		@details	名前は IANA 文字セット名です。(http://www.iana.org/assignments/character-sets/character-sets.xhtml)

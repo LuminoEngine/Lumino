@@ -261,10 +261,15 @@ String TextEncoding::decode(const byte_t* bytes, int length, int* outUsedDefault
 
 std::vector<byte_t> TextEncoding::encode(const String& str, int* outUsedDefaultCharCount) const
 {
+	return encode(str.c_str(), str.length(), outUsedDefaultCharCount);
+}
+
+std::vector<byte_t> TextEncoding::encode(const Char* str, int length, int* outUsedDefaultCharCount) const
+{
 	// TODO: this が UTF16 なら memcpy でよい
 
 	// 入力に入っている最悪パターンの文字数
-	size_t srcMaxCharCount = str.length();
+	size_t srcMaxCharCount = length;
 
 	// 出力バッファに必要な最大バイト数
 	size_t outputMaxByteCount = srcMaxCharCount * getMaxByteCount();
@@ -272,12 +277,12 @@ std::vector<byte_t> TextEncoding::encode(const String& str, int* outUsedDefaultC
 	// 出力バッファ作成
 	std::vector<byte_t> output(outputMaxByteCount + getMaxByteCount());	// \0 強制格納に備え、1文字分余裕のあるサイズを指定する
 
-	// convert
+																		// convert
 	std::unique_ptr<TextEncoder> encoder(createEncoder());
 	TextEncoder::EncodeResult result;
 	encoder->convertFromUTF16(
-		(const UTF16*)str.c_str(),
-		str.length(),
+		(const UTF16*)str,
+		length,
 		output.data(),
 		output.size(),
 		&result);
