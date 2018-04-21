@@ -20,14 +20,14 @@ enum class CommandLineOptionFlags
 };
 LN_FLAGS_OPERATORS(CommandLineOptionFlags);
 
-//enum class CommandLinePositionalArgumentFlags
-//{
-//	None = 0x0000,
-//
-//	/** オプションをフラグとして扱います。フラグは値を持ちません。 */
-//	Flag = 0x0001,
-//};
-//LN_FLAGS_OPERATORS(CommandLineOptionFlags);
+enum class CommandLinePositionalArgumentFlags
+{
+	None = 0x0000,
+
+	/** 引数を省略可能とします。 */
+	Optional = 0x0001,
+};
+LN_FLAGS_OPERATORS(CommandLinePositionalArgumentFlags);
 
 class CommandLineOption
 	: public RefObject
@@ -83,6 +83,7 @@ public:
 	//int maxValues() const { return m_maxValues; }
 
 	bool isList() const { return m_isList; }
+	bool isOptional() const { return m_flags.hasFlag(CommandLinePositionalArgumentFlags::Optional); }
 	String helpDescriptionCaption() const;
 	String helpDescriptionText() const;
 
@@ -92,11 +93,13 @@ private:
 	void setName(const String& value) { m_name = value; }
 	void setDescription(const String& value) { m_description = value; }
 	void setListType(bool value) { m_isList = value; }
+	void setFlags(const Flags<CommandLinePositionalArgumentFlags>& flags) { m_flags = flags; }
 	void addValue(const String& value) { m_values.add(value); }
 
 	String m_name;
 	String m_description;
 	List<String> m_values;
+	Flags<CommandLinePositionalArgumentFlags> m_flags;
 	//int m_maxValues;
 	bool m_isList;
 
@@ -157,7 +160,7 @@ protected:
 		return option;
 	}
 
-	CommandLinePositionalArgument* addPositionalArgumentInternal(const String& name, const String& description)
+	CommandLinePositionalArgument* addPositionalArgumentInternal(const String& name, const String& description, CommandLinePositionalArgumentFlags flags)
 	{
 		if (!m_positionalArguments.isEmpty()) {
 			if (LN_REQUIRE(!m_positionalArguments.back()->isList(), "List positional argument has already been added.")) {
@@ -168,11 +171,12 @@ protected:
 		auto pa = Ref<CommandLinePositionalArgument>(LN_NEW CommandLinePositionalArgument(), false);
 		pa->setName(name);
 		pa->setDescription(description);
+		pa->setFlags(flags);
 		m_positionalArguments.add(pa);
 		return pa;
 	}
 
-	CommandLinePositionalArgument* addListPositionalArgumentInternal(const String& name, const String& description)
+	CommandLinePositionalArgument* addListPositionalArgumentInternal(const String& name, const String& description, CommandLinePositionalArgumentFlags flags)
 	{
 		if (!m_positionalArguments.isEmpty()) {
 			if (LN_REQUIRE(!m_positionalArguments.back()->isList(), "List positional argument has already been added.")) {
@@ -183,6 +187,7 @@ protected:
 		auto pa = Ref<CommandLinePositionalArgument>(LN_NEW CommandLinePositionalArgument(), false);
 		pa->setName(name);
 		pa->setDescription(description);
+		pa->setFlags(flags);
 		pa->setListType(true);
 		m_positionalArguments.add(pa);
 		return pa;
@@ -199,6 +204,8 @@ protected:
 
 
 private:
+	bool isRootCommand() const { return m_name.isEmpty(); }
+
 	String m_name;
 	String m_description;
 	List<Ref<CommandLineOption>> m_options;
@@ -253,14 +260,14 @@ public:
 		return addNamedValueOptionInternal(shortName, longName, description, namedValues, defaultValue);
 	}
 
-	CommandLinePositionalArgument* addPositionalArgument(const String& name, const String& description)
+	CommandLinePositionalArgument* addPositionalArgument(const String& name, const String& description, CommandLinePositionalArgumentFlags flags = CommandLinePositionalArgumentFlags::None)
 	{
-		return addPositionalArgumentInternal(name, description);
+		return addPositionalArgumentInternal(name, description, flags);
 	}
 
-	CommandLinePositionalArgument* addListPositionalArgument(const String& name, const String& description)
+	CommandLinePositionalArgument* addListPositionalArgument(const String& name, const String& description, CommandLinePositionalArgumentFlags flags = CommandLinePositionalArgumentFlags::None)
 	{
-		return addListPositionalArgumentInternal(name, description);
+		return addListPositionalArgumentInternal(name, description, flags);
 	}
 
 
@@ -448,16 +455,17 @@ public:
 		return addNamedValueOptionInternal(shortName, longName, description, namedValues, defaultValue);
 	}
 
-	CommandLinePositionalArgument* addPositionalArgument(const String& name, const String& description)
+	CommandLinePositionalArgument* addPositionalArgument(const String& name, const String& description, CommandLinePositionalArgumentFlags flags = CommandLinePositionalArgumentFlags::None)
 	{
-		return addPositionalArgumentInternal(name, description);
+		return addPositionalArgumentInternal(name, description, flags);
 	}
 
-	CommandLinePositionalArgument* addListPositionalArgument(const String& name, const String& description)
+	CommandLinePositionalArgument* addListPositionalArgument(const String& name, const String& description, CommandLinePositionalArgumentFlags flags = CommandLinePositionalArgumentFlags::None)
 	{
-		return addListPositionalArgumentInternal(name, description);
+		return addListPositionalArgumentInternal(name, description, flags);
 	}
 
+	void setHelpEnabled();
 
 	//void addOption(const CommandLineOption& option)
 	//{
@@ -471,6 +479,8 @@ public:
 
 	void addOption(const CommandLineOption& option);
 
+	Optional<Ref<CommandLineCommand>> findCommand(const StringRef& commandName) const;
+
 	/** コマンドライン引数を解析します。--help や --version の指定がある場合は標準出力します。 */
 	bool process(int argc, char** argv);
 
@@ -479,7 +489,7 @@ public:
 	bool isSet(const CommandLineOption* option) const;
 
 	/** ヘルプ情報を標準出力します。 */
-	void printHelp(/*const StringRef& command = StringRef()*/) const;
+	void printHelp(const StringRef& commandName = StringRef()) const;
 
 private:
 	bool parse(const List<String>& args);

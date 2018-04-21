@@ -135,7 +135,8 @@ void CommandLineOption::makeDislayParamsName(String* shortName, String* longName
 // CommandLinePositionalArgument
 
 CommandLinePositionalArgument::CommandLinePositionalArgument()
-	: m_isList(false)
+	: m_flags(CommandLinePositionalArgumentFlags::None)
+	, m_isList(false)
 {
 }
 
@@ -291,12 +292,18 @@ String CommandLineCommandBase::buildHelpText() const
 	if (!args.isEmpty()) {
 		for (auto& a : args) {
 			sw.write(_T(" "));
+			if (a->isOptional()) {
+				sw.write(_T("["));
+			}
 			if (a->isList()) {
 				sw.write(a->name());
 				sw.write(_T("..."));
 			}
 			else {
 				sw.write(a->name());
+			}
+			if (a->isOptional()) {
+				sw.write(_T("]"));
 			}
 		}
 	}
@@ -310,8 +317,12 @@ String CommandLineCommandBase::buildHelpText() const
 
 	buildHelpDescriptionText(&sw);
 
+	if (isRootCommand())
+	{
+		Path appPath = Environment::executablePath();
+		sw.writeLine(_T("See '{0} help <command>' to read about a specific command."), appPath.fileNameWithoutExtension());
+	}
 
-	sw.writeLine(_T("See '{0} help <command>' to read about a specific command."), appPath.fileNameWithoutExtension());
 	sw.writeLine();
 
 	return sw.toString();
@@ -341,15 +352,35 @@ CommandLineParser::~CommandLineParser()
 {
 }
 
+Optional<Ref<CommandLineCommand>> CommandLineParser::findCommand(const StringRef& commandName) const
+{
+	const auto& commands = getCommandsInternal();
+	return commands.findIf([commandName](const Ref<CommandLineCommand>& cmd) { return cmd->name() == commandName; });
+}
+
 bool CommandLineParser::process(int argc, char** argv)
 {
+	bool hasVersion = false;
+	bool hasHelp = false;
+	int helpTargetCommandIndex = -1;
+
 	List<String> argList;
 	for (int i = 1; i < argc; i++)	// skip [0] (program name)
 	{
 		argList.add(String::fromCString(argv[i]));
+
+		if (argList.back() == _T("help")) {
+			hasHelp = true;
+			if (i + 1 < argc) {
+				helpTargetCommandIndex = i;
+			}
+		}
 	}
 
-	if (!parse(argList))
+	if (hasHelp) {
+		printHelp(helpTargetCommandIndex >= 0 ? argList[helpTargetCommandIndex] : StringRef());
+	}
+	else if (!parse(argList))
 	{
 		std::cerr << m_message.toStdString() << std::endl;
 		return false;
@@ -360,6 +391,7 @@ bool CommandLineParser::process(int argc, char** argv)
 
 bool CommandLineParser::parse(const List<String>& args)
 {
+
 	const auto& commands = getCommandsInternal();
 	int nextIndex = 0;
 
@@ -373,7 +405,7 @@ bool CommandLineParser::parse(const List<String>& args)
 	{
 		// find <command> position
 		auto& name = args[nextIndex];
-		Optional<Ref<CommandLineCommand>> command = commands.findIf([name](const Ref<CommandLineCommand>& cmd) { return cmd->name() == name; });
+		Optional<Ref<CommandLineCommand>> command = findCommand(name);
 		if (!command)
 		{
 			m_message = String::format(_T("'{0}' is invalid command name."), name);
@@ -400,8 +432,16 @@ bool CommandLineParser::isSet(const CommandLineOption* option) const
 	return option->isSet();
 }
 
-void CommandLineParser::printHelp() const
+void CommandLineParser::printHelp(const StringRef& commandName) const
 {
+	if (!commandName.IsNullOrEmpty()) {
+		Optional<Ref<CommandLineCommand>> command = findCommand(commandName);
+		if (command) {
+			std::cout << (*command)->buildHelpText();
+			return;
+		}
+	}
+
 	std::cout << buildHelpText().toStdString();
 	//const auto& commands = getCommandsInternal();
 	//const auto& args = positionalArguments();

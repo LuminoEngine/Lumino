@@ -50,22 +50,26 @@ TEST_F(Test_IO_CommandLineParser, Help)
 
 	auto* analyzeCommand = parser.addCommand(_T("analyze"), _T("analyze database."));
 	auto* modeOption = analyzeCommand->addNamedValueOption("", "mode", "analyze mode.", { "normal", "fast" });
-	//auto* filesOption = initCommand->addFlagOption("s", "shared", "add shared attribute.");
+	auto* reportOption = analyzeCommand->addListPositionalArgument("report", "report list.", CommandLinePositionalArgumentFlags::Optional);
 
 
-	char* args[] =
+	char* argv[] =
 	{
 		"<program>",
-		"-f",
-		"--size=100",
-		"-d",
-		"--lang=cs",
+		//"-f",
+		//"--size=100",
+		//"-d",
+		//"--lang=cs",
+		"help",
+		//"init",
 	};
-	int argc = sizeof(args) / sizeof(char*);
+	int argc = sizeof(argv) / sizeof(char*);
 
-	parser.printHelp();
+	parser.process(argc, argv);
 
-	std::cout << initCommand->buildHelpText();
+	//parser.printHelp();
+
+	//std::cout << initCommand->buildHelpText();
 	//std::cout << analyzeCommand->buildHelpText();
 }
 
